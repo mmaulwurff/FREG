@@ -8,6 +8,7 @@ extern short view,
              cloth[];
 extern WINDOW *world,
               *pocketwin;
+extern short *craft;
 
 void map(),
      pocketshow();
@@ -15,9 +16,9 @@ void map(),
 short cur[]={1, 0, 0, 0, 0};
 
 void mark(x, y, wind, c)
-short x, y;
+short  x, y;
 WINDOW *wind;
-char c; {
+char   c; {
 	wattrset(wind, COLOR_PAIR(8));
 	if (c=='e') { //empty
 		(void)mvwprintw(wind, y, x-1, ">");
@@ -32,64 +33,60 @@ void keytoinv(key)
 int key; {
 	short pocketflag=0;
 	switch (key) {
-		case 'u': view=0; pocketflag=1; break; //surface view
-		case 'f': view=1; pocketflag=1; break; //floor view
-		case 'h': view=2; pocketflag=1; break; //head viw
-		case 'k': view=3; pocketflag=1; break; //sky view
-		case 'r': view=4; pocketflag=1; break; //front view
+		case 'u': case 'f': case 'h': case 'k':
+		case 'r': view=key; pocketflag=1; free(craft); break; //front view
 		case KEY_LEFT:
 			//chest
 			if (cur[0]==1) cur[1]=(cur[1]==0) ? 9 : cur[1]-1;
-			break;
+		break;
 		case KEY_RIGHT:
 			//chest
 			if (cur[0]==1) cur[1]=(cur[1]==9) ? 0 : cur[1]+1;
-			break;
+		break;
 		case KEY_UP:
 			//chest
 			if      (cur[0]==1) cur[2]=(cur[2]==0) ? 2 : cur[2]-1;
 			//player
 			else if (cur[0]==2) cur[2]=(cur[2]==0) ? 3 : cur[2]-1;
-			break;
+		break;
 		case KEY_DOWN:
 			//chest
 			if      (cur[0]==1) cur[2]=(cur[2]==2) ? 0 : cur[2]+1;
 			//player
 			else if (cur[0]==2) cur[2]=(cur[2]==3) ? 0 : cur[2]+1;
-			break;
+		break;
 		case '\t':
 			cur[1]=cur[2]=0;
 			cur[0]=(cur[0]==3) ? 0 : cur[0]+1;
 			//all function inventory types should be here
-			if (!(view==6) && cur[0]==0) cur[0]=1;
-			break;
+			if (!(view=='t' || view=='n') && cur[0]==0) cur[0]=1;
+		break;
 		case '\n': {
-				short *markedwhat, *markednum;
-				if (cur[0]==1) { //backpack
-					markedwhat=&inv[cur[1]][cur[2]].what;
-					markednum =&inv[cur[1]][cur[2]].num;
-				}
-				if (cur[3]==0) { //get
-					cur[3]=*markedwhat;
-					       *markedwhat=0;
-					cur[4]=*markednum;
-					       *markednum=0;
-				} else if (cur[3]==*markedwhat) { //add
-					while (*markednum!=9 &&	cur[4]!=0) {
-						++*markednum;
-						--cur[4];
-					}
-					if (cur[4]==0) cur[3]=0;
-				} else { //change
-					short save=*markedwhat;
-					*markedwhat=cur[3];
-					cur[3]=save;
-					save=*markednum;
-					*markednum=cur[4];
-					cur[4]=save;
-				}
+			short *markedwhat, *markednum;
+			if (cur[0]==1) { //backpack
+				markedwhat=&inv[cur[1]][cur[2]].what;
+				markednum =&inv[cur[1]][cur[2]].num;
 			}
-			break;
+			if (cur[3]==0) { //get
+				cur[3]=*markedwhat;
+				       *markedwhat=0;
+				cur[4]=*markednum;
+				       *markednum=0;
+			} else if (cur[3]==*markedwhat) { //add
+				while (*markednum!=9 &&	cur[4]!=0) {
+					++*markednum;
+					--cur[4];
+				}
+				if (cur[4]==0) cur[3]=0;
+			} else { //change
+				short save=*markedwhat;
+				*markedwhat=cur[3];
+				cur[3]=save;
+				save=*markednum;
+				*markednum=cur[4];
+				cur[4]=save;
+			}
+		} break;
 	}
 	map();
 	if (pocketflag) pocketshow();
@@ -116,15 +113,15 @@ void invview() {
 			case 0: //head
 				wattrset(world, COLOR_PAIR(3));
 				(void)mvwprintw(world, 2, 3, "''");
-				break;
+			break;
 			case 1:	case 2: //body & legs
 				wattrset(world, COLOR_PAIR(1));
 				(void)mvwprintw(world, 2+i, 3, "  ");
-				break;
+			break;
 			case 3: //feet
 				wattrset(world, COLOR_PAIR(3));
 				(void)mvwprintw(world, 5, 3, "db");
-				break;
+			break;
 		}
 	for (j=0; j<=9; ++j)
 	for (i=0; i<=2; ++i)
@@ -136,17 +133,15 @@ void invview() {
 	}*/
 	switch(cur[0]) {
 		//chest
-		case 1:
+		case 1: {
+			short temp1=cur[2]+19+((cur[2]==2) ? 1 : 0),
+			      temp2=cur[1]*3+7;
 			if (cur[3]!=0) {
-				(void)mvwprintw(world, cur[2]+19+((cur[2]==2) ? 1 : 0),
-					cur[1]*3+7, "%c%d",
+				(void)mvwprintw(world, temp1, temp2, "%c%d",
 					getname(0, 0, HEAVEN+4), cur[4]);
-				mark(cur[1]*3+7, cur[2]+19+((cur[2]==2) ? 1 : 0),
-					world, 'f');
-			} else
-				mark(cur[1]*3+7, cur[2]+19+((cur[2]==2) ? 1 : 0),
-					world, 'e');
-			break;
+				mark(temp2, temp1, world, 'f');
+			} else	mark(temp2, temp1, world, 'e');
+		} break;
 		//player
 		case 2: mark(3, cur[2]+2, world); break;
 	}

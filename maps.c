@@ -202,8 +202,7 @@ void savegame() {
 }
 
 //this checks if new squares should be loaded
-//this function makes game world 2000 km long!
-//TODO: optimization
+//TODO: borders, or tor?
 void onbound() {
 	if (xp<64) {
 		xp+=64;

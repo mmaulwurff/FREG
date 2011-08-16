@@ -15,7 +15,7 @@ short chikenx=104,
 void allmech() {
 	mechtoggle=(mechtoggle) ? 0 : 1;
 	chiken_move();
-	if (view!=5) map();
+	if (view!='i') map();
 }
 
 void chiken_move() {

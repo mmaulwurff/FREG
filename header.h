@@ -1,5 +1,5 @@
 #include <ncurses.h>
 #include <pthread.h>
-#include <stdio.h>
+#include <stdlib.h>
 
 #define HEAVEN 128

@@ -11,8 +11,18 @@ short jump;
 short eye[2];
 //save previous eyes for 'w' key
 short eyes[2];
-//view mode
-short view;
+/* view mode:
+ * sUrface
+ * Floor
+ * Head
+ * sKy
+ * fRont
+ * Inventory
+ * Chest
+ * crafTtable
+ * furNace
+*/
+char view;
 //show player or no
 short pl;
 //9 loaded squares
@@ -22,7 +32,8 @@ short sky[39][39];
 WINDOW *world,
        *textwin,
        *pocketwin;
-
+//pointer for crafttable
+short *craft;
 short mechtoggle;
 
 struct item {
@@ -92,7 +103,8 @@ void main() {
 	notify("Game started.", 0);
 	//this is the game itself
 	while ((ch=getch())!=(int)'q')
-		if (view<5) keytogame(ch);
+		if (view=='u' || view=='f' || view=='h' || view=='k' || view=='r')
+			keytogame(ch);
 		else keytoinv(ch);
 	//stop parallel thread
 	(void)pthread_cancel(mechthread);
@@ -116,18 +128,18 @@ void *mech(void *vptr_args) {
 // this prints visible world
 void map() {
 	(void)wclear(world);
-	if (view<4) surf();
-	else if (view==4) frontview();
+	if (view=='u' || view=='f' || view=='h' || view=='k') surf();
+	else if (view=='r') frontview();
 	else invview();
 	wstandend(world);
 	switch (view) {
-		case  0: (void)mvwprintw(world, 22, 1, "Surface"  ); break;
-		case  1: (void)mvwprintw(world, 22, 1, "Floor"    ); break;
-		case  2: (void)mvwprintw(world, 22, 1, "Head"     ); break;
-		case  3: (void)mvwprintw(world, 22, 1, "Sky"      ); break;
-		case  4: (void)mvwprintw(world, 22, 1, "Front               ^^"); break;
-		case  5: (void)mvwprintw(world,  1, 1, "Inventory"); break;
-		default: (void)mvwprintw(world, 22, 1, "Another"  ); break;
+		case  'u': (void)mvwprintw(world, 22, 1, "Surface"  ); break;
+		case  'f': (void)mvwprintw(world, 22, 1, "Floor"    ); break;
+		case  'h': (void)mvwprintw(world, 22, 1, "Head"     ); break;
+		case  'k': (void)mvwprintw(world, 22, 1, "Sky"      ); break;
+		case  'r': (void)mvwprintw(world, 22, 1, "Front               ^^"); break;
+		case  'i': (void)mvwprintw(world,  1, 1, "Inventory"); break;
+		default  : (void)mvwprintw(world, 22, 1, "Another"  ); break;
 	}
 	if (!pl) (void)mvwprintw(world, 22, 21, "^^");
 	(void)mvwprintw(world, 0, 0, "");
@@ -207,11 +219,11 @@ void frontview() {
 
 //surface view
 void surf() {
-	int x, y, z,
-	    xcor,  ycor,
-	    xarr,  yarr,
-	    xrarr, yrarr,
-	    skycor=(view==3) ? (-1) : 1;
+	short x, y, z,
+	      xcor,  ycor,
+	      xarr,  yarr,
+	      xrarr, yrarr,
+	      skycor=(view==3) ? (-1) : 1;
 	if (eye[0]==0) {
 		if (eye[1]==-1) {//north
 			xcor=xp-11;
@@ -245,10 +257,10 @@ void surf() {
 		      newx=xcor+xarr*x+xrarr*y,
 		      newy=ycor+yarr*y+yrarr*x;
 		switch (view) {
-			case  1: st=zp;     en=0;      plus=-1; break; //floor
-			case  2: st=zp+1;   en=0;      plus=-1; break; //head
-			case  3: st=zp+2;   en=HEAVEN; plus= 1; break; //sky
-			default: st=HEAVEN; en=0;      plus=-1; break; //surface 
+			case  'f': st=zp;     en=0;      plus=-1; break; //floor
+			case  'h': st=zp+1;   en=0;      plus=-1; break; //head
+			case  'k': st=zp+2;   en=HEAVEN; plus= 1; break; //sky
+			default  : st=HEAVEN; en=0;      plus=-1; break; //surface 
 		}
 		for (z=st; z!=en && earth[newx][newy][z]==0; z+=plus);
 		if (z==HEAVEN) {
@@ -275,7 +287,7 @@ void surf() {
 				}
 	}
 	//show player or not
-	if (pl && view!=3) {
+	if (pl && view!='k') {
 		for (z=HEAVEN; z!=zp && earth[xp][yp][z]==0; --z);
 		if (z==zp) {
 			wattrset(world, COLOR_PAIR(1));
@@ -327,7 +339,7 @@ short x, y, z; {
 				wattrset(pwin, COLOR_PAIR(7));
 				return('f');
 			}
-			break;
+		break;
 		case 0: if (z>HEAVEN) {
 				wstandend(pwin);
 				return(' ');
@@ -365,6 +377,7 @@ short x1, y1, z1,
 	else if (visible2(imin, jmin, kmin, x2, y2, z2)) return(1);
 }
 
+//TODO: perfect visibility function (visible2x3)
 //this is visibility checker. it is not perfect, but it works
 //(with the second one)
 int visible(x, y, z)
@@ -394,12 +407,13 @@ short nf, ns, nt, kf, ks, kt, wh; {
 		else if (abs(ns-ks)>=abs(nt-kt)) ns+=mfs;
 		else                             nt+=mft;
 		switch (wh) {
-			case 0: x=nf; y=ns; z=nt; break;
-//			case 1: x=nf; z=ns; y=nt; break;
-			case 2: y=nf; x=ns; z=nt; break;
-//			case 3: y=nf; z=ns; x=nt; break;
-			case 4: z=nf; x=ns; y=nt; break;
-			case 5: z=nf; y=ns; x=nt; break;
+			case  0: x=nf; y=ns; z=nt; break;
+//			case  1: x=nf; z=ns; y=nt; break;
+			case  2: y=nf; x=ns; z=nt; break;
+//			case  3: y=nf; z=ns; x=nt; break;
+			case  4: z=nf; x=ns; y=nt; break;
+			//case 5:
+			default: z=nf; y=ns; x=nt; break;
 		}	
 		if (!property(earth[x][y][z], 't') &&
 			!( x==xp && y==yp && z<=zp-1 )) ++count;
@@ -439,7 +453,7 @@ void start() {
 	loadgame();
 //	equip.weap=0;
 }
-
+	
 //this is game physics and interface
 void keytogame(key)
 int key; {
@@ -455,26 +469,26 @@ int key; {
 			if ((notc=step(-eye[1]*(abs(eye[0])-1),
 			                eye[0]*(abs(eye[1])-1))==1) || notc==5)
 				mapflag=0;
-			break;
+		break;
 		case KEY_RIGHT:
 			if ((notc=step( eye[1]*(abs(eye[0])-1),
 			               -eye[0]*(abs(eye[1])-1))==1) || notc==5)
 				mapflag=0;
-			break;
+		break;
 		case KEY_UP:
 			if ((notc=step( eye[0],  eye[1])==1) || notc==5)
 				mapflag=0;
-		       	break;
+	       	break;
 		case KEY_DOWN:
 			if ((notc=step(-eye[0], -eye[1])==1) || notc==5)
 				mapflag=0;
-			break;
+		break;
 		case ' '://one ' ' - jump forward and up
 			 //two ' ' - jump forward two blocks
 			jump=(jump==1) ? 2 : 1;
 			notc=2;
 			mapflag=0;
-			break;
+		break;
 		//camera position
 		case ','://returns previous camera position
 			//'w' for qwerty
@@ -484,7 +498,7 @@ int key; {
 			save=eye[1];
 			eye[1]=eyes[1];
 			eyes[1]=save;
-			break;
+		break;
 		case 'e'://turn to right
 			//'d' for qwerty
 			save=eyes[0]=eye[0];
@@ -492,47 +506,43 @@ int key; {
 			//this mathematics does the turns
 			eye[0]=eye[1]*(abs(eye[0])-1);
 			eye[1]= -save*(abs(eye[1])-1);
-			break;
+		break;
 		case 'o'://turn back
 			//'s' for qwerty
 			eyes[0]=eye[0];
 			eyes[1]=eye[1];
 			eye[0]=-eye[0];
 			eye[1]=-eye[1];
-			break;
+		break;
 		case 'a'://turn to left
 			save=eyes[0]=eye[0];
 			eyes[1]=eye[1];
 			eye[0]=-eye[1]*(abs(eye[0])-1);
 			eye[1]=   save*(abs(eye[1])-1);
-			break;
+		break;
 		case 'v': pl=(pl) ? 0 : 1; break; //toggle player visibility on map
 		case 'S': savegame(); notc=6; mapflag=0; break;
 		case 'L': loadgame(); notc=7;            break;
-		case 'u': view=0; break; //surface view
-		case 'f': view=1; break; //floor view
-		case 'h': view=2; break; //head viw
-		case 'k': view=3; break; //sky view
-		case 'r': view=4; break; //front view
-		case 'i': view=5; break; //inventory
+		case 'i': craft=malloc(5*sizeof(short));
+		case 'u': case 'f': case 'h': case 'k': case 'r': view=key; break;
 		case '?':
 			focus(&wx, &wy, &wz);
 			notc=30+earth[wx][wy][wz];
 			mapflag=0;
-			break;
+		break;
 		case '0': case '1': case '2': case '3': case '4':
 		case '5': case '6': case '7': case '8': case '9':
 			cloth[4]=key-'0';
 			pocketshow();
-			break;
+		break;
 		case '+': 
 			cloth[4]=(cloth[4]==9) ? 0 : cloth[4]+1;
 			pocketshow();
-			break;
+		break;
 		case '-':
 			cloth[4]=(cloth[4]==0) ? 9 : cloth[4]-1;
 			pocketshow();
-			break;
+		break;
 		default : notc=8; mapflag=0; break;
 	}
 	//falling down
@@ -624,22 +634,22 @@ short *px, *py, *pz; {
 	}
 }
 
-
+//all properties for all blocks
 int property(id, c)
 short id;
-char c; {
+char  c; {
 	switch (c) {
 		case 's': //stackable
 			if (id==6) return(0);
 			else return(1);
-			break;
+		break;
 		case 't': //transparent
 			if (id==0) return(1);
 			else return(0);
-			break;
+		break;
 		case 'p': //passable
 			if (id==0) return(1);
 			else return(0);
-			break;
+		break;
 	}
 }
