@@ -35,7 +35,7 @@ short eyes[2];
  * fRont
  * Inventory
  * Chest
- * crafTtable
+ * Workbench
  * furNace
 */
 char view;
@@ -48,16 +48,14 @@ short sky[39][39];
 WINDOW *world,
        *textwin,
        *pocketwin;
-//pointer for crafttable
-short *craft;
 short mechtoggle;
 
 struct item {
 	short what,
 	      num;
-} inv[10][3];
-
-short cloth[5];
+} inv[10][3], //backpack
+  *craft,     //workbench
+  cloth[5];   //clothes (armour), cloth[4].num is an index of the last line of "inv"
 
 extern short cur[];
 //flag used for optimization, for not notifying when nothing happens
@@ -149,13 +147,13 @@ void map() {
 	else invview();
 	wstandend(world);
 	switch (view) {
-		case  'u': (void)mvwprintw(world, 22, 1, "Surface"  ); break;
-		case  'f': (void)mvwprintw(world, 22, 1, "Floor"    ); break;
-		case  'h': (void)mvwprintw(world, 22, 1, "Head"     ); break;
-		case  'k': (void)mvwprintw(world, 22, 1, "Sky"      ); break;
-		case  'r': (void)mvwprintw(world, 22, 1, "Front               ^^"); break;
-		case  'i': (void)mvwprintw(world,  1, 1, "Inventory"); break;
-		default  : (void)mvwprintw(world, 22, 1, "Another"  ); break;
+		case 'u': (void)mvwprintw(world, 22, 1,  "Surface"  ); break;
+		case 'f': (void)mvwprintw(world, 22, 1,  "Floor"    ); break;
+		case 'h': (void)mvwprintw(world, 22, 1,  "Head"     ); break;
+		case 'k': (void)mvwprintw(world, 22, 1,  "Sky"      ); break;
+		case 'r': (void)mvwprintw(world, 22, 1,  "Front               ^^"); break;
+		case 'i': (void)mvwprintw(world,  1, 17, "Inventory"); break;
+		default : (void)mvwprintw(world, 22, 1,  "Another"  ); break;
 	}
 	if (!pl) (void)mvwprintw(world, 22, 21, "^^");
 	(void)mvwprintw(world, 0, 0, "");
@@ -315,7 +313,7 @@ void surf() {
 int getname(x, y, z)
 short x, y, z; {
 	WINDOW *pwin;
-	short block, sum;
+	short block;
 	if (z<HEAVEN+1) { //normal
 		block=earth[x][y][z];
 		pwin=world;
@@ -323,13 +321,16 @@ short x, y, z; {
 		block=inv[x][y].what;
 		pwin=pocketwin;
 	} else if (z==HEAVEN+2) { //cloth except weapon
-		block=cloth[x];
+		block=cloth[x].what;
 		pwin=world;
 	} else if (z==HEAVEN+3) { //inventory
 		block=inv[x][y].what;
 		pwin=world;
-	} else /*if (z==HEAVEN+4)*/ { //cursor
+	} else if (z==HEAVEN+4) { //cursor
 		block=cur[3];
+		pwin=world;
+	} else /*if (z==HEAVEN+5)*/{ //workbench
+		block=craft[x].what;
 		pwin=world;
 	}
 	switch (block) {
@@ -345,8 +346,8 @@ short x, y, z; {
 		case 4: //chiken
 			wattrset(pwin, COLOR_PAIR(5));
 			return('c'); break;
-		case 5: //fire
-			sum=(x+y+z)%2;
+		case 5: { //fire
+			short sum=(x+y+z)%2;
 			if (( mechtoggle &&  sum) ||
 			    (!mechtoggle && !sum)) {
 				wattrset(pwin, COLOR_PAIR(4));
@@ -355,7 +356,7 @@ short x, y, z; {
 				wattrset(pwin, COLOR_PAIR(7));
 				return('f');
 			}
-		break;
+		} break;
 		case 0: if (z>HEAVEN) {
 				wstandend(pwin);
 				return(' ');
@@ -459,7 +460,7 @@ void pocketshow() {
 	(void)wclear(pocketwin);
 	for (x=0; x<=9; ++x) (void)mvwprintw(pocketwin, 0, 7+x*3, "%c%d",
 		getname(x, 2, HEAVEN+1), inv[x][2].num);
-	mark(7+cloth[4]*3, 0, pocketwin, 'e');
+	mark(7+cloth[4].num*3, 0, pocketwin, 'e');
 	(void)wrefresh(pocketwin);
 }
 
@@ -475,8 +476,7 @@ void keytogame(key)
 int key; {
 	short notc=0,
 	      save,
-	      mapflag=1,
-	      wx, wy, wz;
+	      mapflag=1;
 	switch(key) {
 		//player movement
 		//TODO: read keys from file
@@ -506,7 +506,7 @@ int key; {
 			mapflag=0;
 		break;
 		//camera position
-		case ','://returns previous camera position
+		case ',': //returns previous camera position
 			//'w' for qwerty
 			save=eye[0];
 			eye[0]=eyes[0];
@@ -515,7 +515,7 @@ int key; {
 			eye[1]=eyes[1];
 			eyes[1]=save;
 		break;
-		case 'e'://turn to right
+		case 'e': //turn to right
 			//'d' for qwerty
 			save=eyes[0]=eye[0];
 			eyes[1]=eye[1];
@@ -530,7 +530,7 @@ int key; {
 			eye[0]=-eye[0];
 			eye[1]=-eye[1];
 		break;
-		case 'a'://turn to left
+		case 'a': //turn to left
 			save=eyes[0]=eye[0];
 			eyes[1]=eye[1];
 			eye[0]=-eye[1]*(abs(eye[0])-1);
@@ -539,24 +539,27 @@ int key; {
 		case 'v': pl=(pl) ? 0 : 1; break; //toggle player visibility on map
 		case 'S': savegame(); notc=6; mapflag=0; break;
 		case 'L': loadgame(); notc=7;            break;
-		case 'i': craft=malloc(5*sizeof(short));
+		case 'i':
+			craft=malloc(5*sizeof(struct item));
+			for (save=0; save<5; ++save) craft[save].what=craft[save].num=0;
 		case 'u': case 'f': case 'h': case 'k': case 'r': view=key; break;
-		case '?':
+		case '?': {
+			short wx, wy, wz;
 			focus(&wx, &wy, &wz);
 			notc=30+earth[wx][wy][wz];
 			mapflag=0;
-		break;
+		} break;
 		case '0': case '1': case '2': case '3': case '4':
 		case '5': case '6': case '7': case '8': case '9':
-			cloth[4]=key-'0';
+			cloth[4].num=key-'0';
 			pocketshow();
 		break;
 		case '+': 
-			cloth[4]=(cloth[4]==9) ? 0 : cloth[4]+1;
+			cloth[4].num=(cloth[4].num==9) ? 0 : cloth[4].num+1;
 			pocketshow();
 		break;
 		case '-':
-			cloth[4]=(cloth[4]==0) ? 9 : cloth[4]-1;
+			cloth[4].num=(cloth[4].num==0) ? 9 : cloth[4].num-1;
 			pocketshow();
 		break;
 		default : notc=8; mapflag=0; break;
@@ -655,15 +658,21 @@ int property(id, c)
 short id;
 char  c; {
 	switch (c) {
-		case 's': //stackable
+		case 'p': //passable
+			if (id==0) return(1);
+			else return(0);
+		break;
+		//all unstackable except armor
+		case 's': if (1) { //stackable
+				  return(0);
+				  break;
+			  } //vv
+		case 'n': //not armor (all armor is unstackable)
+			//armor
 			if (id==6) return(0);
 			else return(1);
 		break;
 		case 't': //transparent
-			if (id==0) return(1);
-			else return(0);
-		break;
-		case 'p': //passable
 			if (id==0) return(1);
 			else return(0);
 		break;

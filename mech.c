@@ -35,6 +35,7 @@ void allmech() {
 }
 
 void chiken_move() {
+	//TODO: borders (active squares)
 	FILE* file=fopen("/dev/urandom", "rt");
 	short c=(unsigned)fgetc(file)%5;
 	earth[chikenx][chikeny][chikenz]=0;
