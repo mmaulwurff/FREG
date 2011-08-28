@@ -113,29 +113,46 @@ int key; {
 			if (!(view=='n') && cur[0]==0) cur[0]=1;
 		break;
 		case '\n': {
-			short *markedwhat, *markednum;
-			if (cur[0]==1) { //backpack
-				markedwhat=&inv[cur[1]][cur[2]].what;
-				markednum =&inv[cur[1]][cur[2]].num;
+			short *markedwhat,
+			      *markednum;
+			switch (cur[0]) {
+				case 1: //backpack
+					markedwhat=&inv[cur[1]][cur[2]].what;
+					markednum =&inv[cur[1]][cur[2]].num;
+				break;
+				case 2: //player
+					markedwhat=&cloth[cur[2]].what;
+					markednum =&cloth[cur[2]].num;
+				break;
+				case 3: {//workbench
+					short i=(cur[1]!=3) ? 1+cur[2]+cur[1]*2 : 0;
+					markedwhat=&craft[i].what;
+					markednum= &craft[i].num;
+				} break;
 			}
 			if (cur[3]==0) { //get
 				cur[3]=*markedwhat;
-				       *markedwhat=0;
+				*markedwhat=0;
 				cur[4]=*markednum;
-				       *markednum=0;
-			} else if (cur[3]==*markedwhat) { //add
-				while (*markednum!=9 &&	cur[4]!=0) {
-					++*markednum;
-					--cur[4];
-				}
-				if (cur[4]==0) cur[3]=0;
-			} else { //change (put)
-				short save=*markedwhat;
-				*markedwhat=cur[3];
-				cur[3]=save;
-				save=*markednum;
-				*markednum=cur[4];
-				cur[4]=save;
+				*markednum=0;
+			} else if (cur[3]==*markedwhat && cur[0]!=2 &&
+				 property(*markedwhat, 's') &&
+				!property(*markedwhat, 'a')) { //add
+					for ( ; *markednum!=9 && cur[4]!=0; --cur[4])
+						++*markednum;
+					if (cur[4]==0) cur[3]=0;
+			} else if (cur[0]!=2 ||
+				(cur[2]==0 && property(*markedwhat, 'a')=='h') ||
+				(cur[2]==1 && property(*markedwhat, 'a')=='a') ||
+				(cur[2]==2 && property(*markedwhat, 'a')=='l') ||
+				(cur[2]==3 && property(*markedwhat, 'a')=='b')) {
+					//change (put)
+					short save=*markedwhat;
+					*markedwhat=cur[3];
+					cur[3]=save;
+					save=*markednum;
+					*markednum=cur[4];
+					cur[4]=save;
 			}
 		} break;
 	}
@@ -191,7 +208,7 @@ void invview() {
 		for (j=0; j<=2; ++j)
 			(void)mvwprintw(world, 12+i, 7+j*3, "%c%d",
 				getname(i+2*j+1, 0, HEAVEN+5), craft[i+2*j+1].num);
-	(void)mvwprintw(world, 13, 17, "%c%d", getname(0, 0, HEAVEN+5), craft[0]);
+	(void)mvwprintw(world, 13, 17, "%c%d", getname(0, 0, HEAVEN+5),	craft[0].num);
 	//cursor (i, j are now coordinates)
 	switch (cur[0]) {
 		case 1: //chest

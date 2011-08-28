@@ -48,7 +48,6 @@ short sky[39][39];
 WINDOW *world,
        *textwin,
        *pocketwin;
-short mechtoggle;
 
 struct item {
 	short what,
@@ -57,7 +56,20 @@ struct item {
   *craft,     //workbench
   cloth[5];   //clothes (armour), cloth[4].num is an index of the last line of "inv"
 
-extern short cur[];
+struct animal {
+	short x, y, z,
+	      life;
+	struct animal *animals;
+} *animalstart;
+
+struct thing {
+	short x, y, z;
+	struct thing *things;
+} *thingstart;
+
+extern char  signal;
+extern short cur[],
+             mechtoggle;
 //flag used for optimization, for not notifying when nothing happens
 short notflag=1;
 
@@ -68,6 +80,7 @@ void loadgame(),
      onbound(),
 //mech.c
      allmech(),
+     eraseanimals(),
 //inv.c
      mark(),
      keytoinv(),
@@ -79,7 +92,6 @@ void *mech(),
      surf(),
      notify(),
      pocketshow(),
-     start(),
      keytogame(),
      focus();
 int  getname(),
@@ -92,6 +104,7 @@ int  getname(),
 
 void main() {
 	int ch;
+	signal='w';
 	pthread_t mechthread;
 	//start parallel thread
 	(void)pthread_create(&mechthread, NULL, mech, NULL);
@@ -112,7 +125,7 @@ void main() {
 	pocketwin=newwin(1,  44, 24, 0);
 	textwin=  newwin(6,  44, 25, 0);
 	(void)refresh();
-	start();
+	loadgame();
 	map();
 	notify("Game started.", 0);
 	//this is the game itself
@@ -121,6 +134,7 @@ void main() {
 			keytogame(ch);
 		else keytoinv(ch);
 	//stop parallel thread
+	eraseanimals();
 	(void)pthread_cancel(mechthread);
 	(void)delwin(world    );
 	(void)delwin(textwin  );
@@ -280,8 +294,11 @@ void surf() {
 		if (z==HEAVEN) {
 			if (visible2(xp, yp, zp, newx, newy, z)) {
 				switch (sky[newx-xp+20][newy-yp+20]) {
+					//stars
 					case  1: wattrset(world, COLOR_PAIR(3)); break;
+					//sun
 					case  2: wattrset(world, COLOR_PAIR(4)); break;
+					//blue sky
 					default: wattrset(world, COLOR_PAIR(1)); break;
 				}
 				(void)mvwprintw(world, y, 2*x-1, "  ");
@@ -462,13 +479,6 @@ void pocketshow() {
 		getname(x, 2, HEAVEN+1), inv[x][2].num);
 	mark(7+cloth[4].num*3, 0, pocketwin, 'e');
 	(void)wrefresh(pocketwin);
-}
-
-//this was map constructor
-void start() {
-	mechtoggle=0;
-	loadgame();
-//	equip.weap=0;
 }
 	
 //this is game physics and interface
@@ -658,23 +668,38 @@ int property(id, c)
 short id;
 char  c; {
 	switch (c) {
-		case 'p': //passable
-			if (id==0) return(1);
-			else return(0);
+		case 'a': //Armour
+			switch (id) {
+				//helmets
+				case  6: return 'h'; break;
+				//body armour
+				//return 'a'; break;
+				//legs armour
+				//return 'l'; break;
+				//boots
+				//return 'b'; break;
+				default: return 0; break;
+			}
 		break;
-		//all unstackable except armor
-		case 's': if (1) { //stackable
-				  return(0);
-				  break;
-			  } //vv
-		case 'n': //not armor (all armor is unstackable)
-			//armor
-			if (id==6) return(0);
-			else return(1);
+		case 'h': //active tHing (like sand)
+			if (0) return 1;
+			else return 0;
+		case 'n': //aNimal
+			if (id==4) return 1;
+			else return 0;
 		break;
-		case 't': //transparent
-			if (id==0) return(1);
-			else return(0);
+		case 'p': //Passable
+			if (id==0) return 1;
+			else return 0;
 		break;
+		case 's': //Stackable (armour is already mentioned)
+			if (1) return 1;
+			else return 0;
+		break;
+		case 't': //Transparent
+			if (id==0) return 1;
+			else return 0;
+		break;
+		default: break;
 	}
 }
