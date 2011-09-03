@@ -33,16 +33,12 @@ extern struct item {
 } inv[][3],
   cloth[];
 
-extern struct animal {
-	short x, y, z,
-	      life;
-	struct animal *next;
+extern struct something {
+	struct something *next;
+	short  *arr;
 } *animalstart,
+  *thingstart,
   *findanimal();
-extern struct thing {
-	short x, y, z;
-	struct thing *next;
-} *thingstart;
 
 void pocketshow(),
      eraseanimals();
@@ -118,42 +114,26 @@ void load() {
 			//chiken
 			for (k=HEAVEN; earth[40+nx][40+ny][k-1]==0; --k);
 			earth[40+nx][40+ny][k]=4;
-			spawn(40+nx, 40+ny, k, 9);
+			spawn(40+nx, 40+ny, k, NULL);//, 'a');
+			//chest
+//			earth[41+nx][41+ny][k]=7;
+//			spawn(41+nx, 41+ny, NULL, 'c');
 			//fire
 			earth[45+nx][45+ny][80]=5;
 			earth[46+nx][45+ny][80]=5;
 			earth[45+nx][46+ny][80]=5;
 			earth[46+nx][46+ny][80]=5;
 		} else {//loader
-			for (i=nx; i<=63+nx; ++i)
-			for (j=ny; j<=63+ny; ++j)
-			for (k=0; k<=HEAVEN; ++k) {
+			for (i=nx; i<=63+nx;  ++i)
+			for (j=ny; j<=63+ny;  ++j)
+			for (k= 0; k<=HEAVEN; ++k) {
 				earth[i][j][k]=getc(file);
-				if (property(earth[i][j][k], 'n'))
-					//animals
-					spawn(i, j, k, 8/*getc(file)*/);
-				/*else if (property(earth[i][j][k], 'h')) {
-					//things
-					struct thing *thingcar;
-					if (thingstart==NULL) thingstart=thingcar=
-						malloc(sizeof(struct thing));
-					else {
-						for (thingcar=thingstart;
-							thingcar->next!=NULL;
-							thingcar=thingcar->next);
-						thingcar=thingcar->next=
-							malloc(sizeof(struct thing));
-					}
-					thingcar->x=i;
-					thingcar->y=j;
-					thingcar->z=k;
-					thingcar->next=NULL;
-				}*/
+				//fprintf(stderr, "prop %d\n",/*
+				spawn(i, j, k, file);//, property(earth[i][j][k], 'n'));
 			}
 			fclose(file);
 		}
 	}
-	//	signal='w'; //resume movements
 }
 
 void save() {
@@ -168,8 +148,8 @@ void save() {
 		for (j=64*(n/3); j<=63+64*(n/3); ++j)
 		for (k=0; k<=HEAVEN; ++k) {
 			fputc(earth[i][j][k], file);
-		//	if (property(earth[i][j][k], 'n')) //animal
-		//		fputc(/*findanimal(i, j, k)->life*/8, file);
+			if (property(earth[i][j][k], 'n')) //animal
+				fputc(findanimal(i, j, k)->arr[3], file);
 		}
 		fclose(file);
 	}

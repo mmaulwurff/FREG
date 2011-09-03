@@ -56,17 +56,6 @@ struct item {
   *craft,     //workbench
   cloth[5];   //clothes (armour), cloth[4].num is an index of the last line of "inv"
 
-struct animal {
-	short x, y, z,
-	      life;
-	struct animal *animals;
-} *animalstart;
-
-struct thing {
-	short x, y, z;
-	struct thing *things;
-} *thingstart;
-
 extern char  signal;
 extern short cur[],
              mechtoggle;
@@ -121,6 +110,7 @@ void main() {
 	(void)init_pair(6, COLOR_WHITE,  COLOR_BLACK );  //?
 	(void)init_pair(7, COLOR_YELLOW, COLOR_RED   );  //fire2
 	(void)init_pair(8, COLOR_BLACK,  COLOR_RED   );  //pointer
+	(void)init_pair(9, COLOR_BLACK,  COLOR_YELLOW);  //wood
 	world=    newwin(24, 44, 0,  0);
 	pocketwin=newwin(1,  44, 24, 0);
 	textwin=  newwin(6,  44, 25, 0);
@@ -374,6 +364,11 @@ short x, y, z; {
 				return('f');
 			}
 		} break;
+		case 6: //steel helmet
+			wattrset(pwin, COLOR_PAIR(3));
+			return('h'); break;
+		case 7: wattrset(pwin, COLOR_PAIR(9));
+			return('c'); break;
 		case 0: if (z>HEAVEN) {
 				wstandend(pwin);
 				return(' ');
@@ -381,6 +376,30 @@ short x, y, z; {
 			}
 		default: return('?'); break;
 	}
+}
+
+int visible2x3(x1, y1, z1, x2, y2, z2)
+short x1, y1, z1,
+      x2, y2, z2; {
+	if (visible2(x1, y1, z1, x2, y2, z2)) return 1;
+	else {
+		short count=0;
+		count+=visible2(x1, y1, z1, x2-1, y2,   z2  );
+		count+=visible2(x1, y1, z1, x2+1, y2,   z2  );
+		count+=visible2(x1, y1, z1, x2,   y2-1, z2  );
+		count+=visible2(x1, y1, z1, x2,   y2+1, z2  );
+		count+=visible2(x1, y1, z1, x2,   y2,   z2-1);
+		count+=visible2(x1, y1, z1, x2,   y2,   z2+1);
+		if (count>0) return 1;
+		else return 0;
+	}
+/*	else if (visible2(x1, y1, z1, x2-1, y2,   z2  )) return 1;
+	else if (visible2(x1, y1, z1, x2+1, y2,   z2  )) return 1;
+	else if (visible2(x1, y1, z1, x2,   y2-1, z2  )) return 1;
+	else if (visible2(x1, y1, z1, x2,   y2+1, z2  )) return 1;
+	else if (visible2(x1, y1, z1, x2,   y2,   z2-1)) return 1;
+	else if (visible2(x1, y1, z1, x2,   y2,   z2+1)) return 1;
+	else return 0;*/
 }
 
 //this is the second vibility checker. it works with the first.
@@ -575,7 +594,7 @@ int key; {
 		default : notc=8; mapflag=0; break;
 	}
 	//falling down
-	for (save=0; earth[xp][yp][zp-1]==0; ++save, --zp);
+	for (save=0; property(earth[xp][yp][zp-1], 'p'); ++save, --zp);
        	if (save>1) {
 		notc=4;
 		//damage should be here
@@ -678,15 +697,19 @@ char  c; {
 				//return 'l'; break;
 				//boots
 				//return 'b'; break;
-				default: return 0; break;
+				default: return  0 ; break;
 			}
 		break;
-		case 'h': //active tHing (like sand)
-			if (0) return 1;
-			else return 0;
-		case 'n': //aNimal
-			if (id==4) return 1;
-			else return 0;
+		case 'n': //active things
+			switch (id) {
+				//animals
+				case  4: return 'a'; break;
+				//thing
+//				case  : return 't'; break;
+//				//chest
+				case  7: return 'c'; break;
+				default: return  0 ; break;
+			}
 		break;
 		case 'p': //Passable
 			if (id==0) return 1;
