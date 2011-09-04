@@ -6,6 +6,23 @@ It is written in C with ncurses and pthread libraries.
 It is not even an alpha version for now, and there is lots of work to do.
 This program is an interface experiment, it will try to be a prototype, proof of concept.
 
+Advices are welcome.
+
+Compile notes:
+I use gcc with -lncurses and -pthread keys.
+
+Items table
+                 Armour  Active  Passable  Stackable  Transparent
+0. Air           no      no      yes       no         yes
+1. Grass         no      no      no        no         no
+2. Stone         no      no      no        yes        no
+3. Player*       no      no      no        no         no
+4. Chiken        no      animal  no        no         no
+5. Fire          no      no      no        no         no
+6. Steel helmet  helmet  no      no        no         no
+7. Chest         no      chest   no        no         no
+
+*Player is not used, number is reserved.
 
 This file is part of Eyecube.
 
