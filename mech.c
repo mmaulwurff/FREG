@@ -22,8 +22,8 @@ struct something {
 	struct something *next;
 	short  *arr;
 } *animalstart=NULL,
-  *thingstart =NULL,
-  *cheststart =NULL;
+  *cheststart =NULL,
+  *thingstart =NULL;
 
 extern short earth[][192][HEAVEN+1];
 extern short view;
@@ -67,23 +67,36 @@ struct something *animalp; {
 	      save=earth[animalp->arr[0]][animalp->arr[1]][animalp->arr[2]];
 	fclose(file);
 	earth[animalp->arr[0]][animalp->arr[1]][animalp->arr[2]]=0;
-	if      (c==0 && animalp->arr[0]!=191) ++(animalp->arr[0]);
-	else if (c==1 && animalp->arr[0]!=0  ) --(animalp->arr[0]);
-	else if (c==2 && animalp->arr[1]!=191) ++(animalp->arr[1]);
-	else if (c==3 && animalp->arr[1]!=0  ) --(animalp->arr[1]);
+	if      (c==0 && animalp->arr[0]!=191 &&
+		property(earth[animalp->arr[0]+1][animalp->arr[1]][animalp->arr[2], 'p']))
+			++(animalp->arr[0]);
+	else if (c==1 && animalp->arr[0]!=0   &&
+		property(earth[animalp->arr[0]-1][animalp->arr[1]][animalp->arr[2]], 'p'))
+			--(animalp->arr[0]);
+	else if (c==2 && animalp->arr[1]!=191 &&
+		property(earth[animalp->arr[0]][animalp->arr[1]+1][animalp->arr[2]], 'p'))
+			++(animalp->arr[1]);
+	else if (c==3 && animalp->arr[1]!=0   &&
+		property(earth[animalp->arr[0]][animalp->arr[1]-1][animalp->arr[2]], 'p'))
+			--(animalp->arr[1]);
 	earth[animalp->arr[0]][animalp->arr[1]][animalp->arr[2]]=save;
 }
 
-//this finds pointer to an animal with coordinates
+//this finds pointer to a thing with coordinates
 struct something *findanimal(x, y, z)
 short x, y, z; {
 //	fprintf(stderr, "findanimal\n");
-	struct something *animalcar=animalstart;
-	while (animalcar!=NULL)
-		if (x==animalcar->arr[0] &&
-		    y==animalcar->arr[1] &&
-		    z==animalcar->arr[2]) return(animalcar);
-		else animalcar=animalcar->next;
+	struct something *car=animalstart;
+	switch (property(earth[x][y][z], 'n')) {
+		case 'a': car=animalstart; break;
+		case 'c': car=cheststart;  break;
+	}
+	while (car!=NULL)
+		if (x==car->arr[0] &&
+		    y==car->arr[1] &&
+		    z==car->arr[2]) return(car);
+		else car=car->next;
+//		case
 }
 
 //this adds new active thing to list of loaded animals
@@ -119,12 +132,15 @@ FILE  *file; {
 				(*animalcar)->arr[3]=(file==NULL) ? 9 : getc(file);
 			break;
 			case 'c': { //chest
-				(*animalcar)->arr=malloc(33*sizeof(short));
+				(*animalcar)->arr=malloc(63*sizeof(short));
 				short i=3;
-				if (file==NULL)
-					while (i<33) (*animalcar)->arr[i++]=0;
-				else
-					while (i<33) (*animalcar)->arr[i++]=getc(file);
+				if (file==NULL) {
+					while (i<63) (*animalcar)->arr[i++]=0;
+					//put helmet to all new chests
+					(*animalcar)->arr[4 ]=6;
+					(*animalcar)->arr[34]=1;
+				} else
+					while (i<63) (*animalcar)->arr[i++]=getc(file);
 			} break;
 			case 't': //thing
 				(*animalcar)->arr=malloc( 3*sizeof(short));

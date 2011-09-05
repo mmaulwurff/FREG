@@ -29,7 +29,8 @@ extern WINDOW *world,
 extern char   view;
 
 void map(),
-     pocketshow();
+     pocketshow(),
+     focus();
 
 void mark(x, y, wind, c)
 short  x, y;
@@ -191,11 +192,17 @@ void invview() {
 				(void)mvwprintw(world, 5, 3, "db");
 			break;
 		}
-	//chest
+	//backpack
 	for (j=0; j<=9; ++j)
 	for (i=0; i<=2; ++i)
 		(void)mvwprintw(world, i+19+((i==2) ? 1 : 0), j*3+7, "%c%d",
 			getname(j, i, HEAVEN+3), inv[j][i].num);
+	//chest
+/*	if ('c'==view) {
+		for (j=0; j<=9; ++j)
+		for (i=0; i<=2; ++i)
+			
+	}*/
 	//workbench
 	(void)mvwprintw(world, 11, 9, "Workbench");
 	if (view!='w')

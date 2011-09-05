@@ -156,6 +156,7 @@ void map() {
 		case 'h': (void)mvwprintw(world, 22, 1,  "Head"     ); break;
 		case 'k': (void)mvwprintw(world, 22, 1,  "Sky"      ); break;
 		case 'r': (void)mvwprintw(world, 22, 1,  "Front               ^^"); break;
+		case 'c':
 		case 'i': (void)mvwprintw(world,  1, 17, "Inventory"); break;
 		default : (void)mvwprintw(world, 22, 1,  "Another"  ); break;
 	}
@@ -591,7 +592,20 @@ int key; {
 			cloth[4].num=(cloth[4].num==0) ? 9 : cloth[4].num-1;
 			pocketshow();
 		break;
-		default : notc=8; mapflag=0; break;
+		case '\n': { //use
+			short x, y, z;
+			focus(&x, &y, &z);
+			switch (property(earth[x][y][z], 'n')) {
+				case 'c':
+					craft=malloc(5*sizeof(struct item));
+					for (save=0; save<5; ++save)
+						craft[save].what=craft[save].num=0;
+					view='c';
+				break;
+				default : notc=10; break;
+			}
+		} break;			   
+		default  : notc=8; mapflag=0; break;
 	}
 	//falling down
 	for (save=0; property(earth[xp][yp][zp-1], 'p'); ++save, --zp);
@@ -610,14 +624,15 @@ int key; {
 			case  5: notify("Something is over your head.", 0); break;
 			case  6: notify("Game saved.",                  0); break;
 			case  7: notify("Game loaded.",                 0); break;
-			case  8: notify("?",                            0); break;
 			case  9: notify("Something unknown!",           0); break;
+			case 10: notify("Can't use",                    0); break;
 			case 30: notify("Nothing except air",           0); break;
 			case 31: notify("Grass or leaves",              0); break;
 			case 32: notify("Stone",                        0); break;
 			case 33: notify("It is somebody!",              0); break;
 			case 34: notify("Chiken",                       0); break;
 			case 35: notify("Careful! Fire",                0); break;
+			case  8:
 			default: notify("?",                            0); break;
 		}
 		notflag=notc;

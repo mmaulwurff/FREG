@@ -3,7 +3,7 @@ Eyecube is a Minecraft©-inspired game for Linux terminals.
 It uses neither GUI nor CLI, it is based on text, and without ASCII- and ANSI-art.
 It is written in C with ncurses and pthread libraries.
 
-It is not even an alpha version for now, and there is lots of work to do.
+It is not even an alpha version for now, and there is lot of work to do.
 This program is an interface experiment, it will try to be a prototype, proof of concept.
 
 Advices are welcome.

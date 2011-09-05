@@ -114,10 +114,10 @@ void load() {
 			//chiken
 			for (k=HEAVEN; earth[40+nx][40+ny][k-1]==0; --k);
 			earth[40+nx][40+ny][k]=4;
-			spawn(40+nx, 40+ny, k, NULL);//, 'a');
+			spawn(40+nx, 40+ny, k, NULL);
 			//chest
-//			earth[41+nx][41+ny][k]=7;
-//			spawn(41+nx, 41+ny, NULL, 'c');
+			earth[41+nx][41+ny][k]=7;
+			spawn(41+nx, 41+ny, k, NULL);
 			//fire
 			earth[45+nx][45+ny][80]=5;
 			earth[46+nx][45+ny][80]=5;
@@ -129,7 +129,7 @@ void load() {
 			for (k= 0; k<=HEAVEN; ++k) {
 				earth[i][j][k]=getc(file);
 				//fprintf(stderr, "prop %d\n",/*
-				spawn(i, j, k, file);//, property(earth[i][j][k], 'n'));
+				spawn(i, j, k, file);
 			}
 			fclose(file);
 		}
@@ -146,18 +146,29 @@ void save() {
 		short i, j, k;
 		for (i=64*(n%3); i<=63+64*(n%3); ++i)
 		for (j=64*(n/3); j<=63+64*(n/3); ++j)
-		for (k=0; k<=HEAVEN; ++k) {
+		for (k=0;        k<=HEAVEN;      ++k) {
 			fputc(earth[i][j][k], file);
-			if (property(earth[i][j][k], 'n')) //animal
-				fputc(findanimal(i, j, k)->arr[3], file);
+			switch (property(earth[i][j][k], 'n')) {
+				case 'a': //animal
+					fputc(findanimal(i, j, k)->arr[3], file);
+					break;
+				case 'c': {//chest
+//					fprintf(stderr, "savechest\n");
+					short count=3;
+					struct something *point=findanimal(i, j, k);
+					while (count<63) fputc(point->arr[count++], file);
+				} break;
+
+			}
 		}
 		fclose(file);
 	}
+//	fprintf(stderr, "endsave\n");
 }
 
 void loadgame() {
 //	fprintf(stderr, "loadgame\n");
-	//ask what to load - todo
+	//TODO: ask what to load
 	short i, j;
 	FILE* file=fopen("save", "r");
 	if (file!=NULL) { //load
