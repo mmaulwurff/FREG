@@ -49,6 +49,11 @@ WINDOW *world,
        *textwin,
        *pocketwin;
 
+struct something {
+	struct something *next;
+	short  *arr;
+} ;
+
 struct item {
 	short what,
 	      num;
@@ -64,27 +69,20 @@ short notflag=1;
 
 //functions from other files
 //maps.c
-void loadgame(),
-     savegame(),
-     onbound(),
+void onbound(),
 //mech.c
      allmech(),
-     eraseanimals(),
 //inv.c
      mark(),
      keytoinv(),
      invview();
 //this file
 void *mech(),
-     map(),
      frontview(),
      surf(),
-     notify(),
      pocketshow(),
-     keytogame(),
      focus();
-int  getname(),
-     visible2(),
+int  visible2(),
      visible(),
      visin(),
      fall(),
@@ -92,6 +90,12 @@ int  getname(),
      property();
 
 void main() {
+	void keytogame(),
+	     keytoinv(),
+	     eraseanimals(),
+	     loadgame(),
+	     map(),
+	     notify();
 	int ch;
 	signal='w';
 	pthread_t mechthread;
@@ -102,6 +106,7 @@ void main() {
 	(void)cbreak();
 	(void)noecho();
 	(void)keypad(stdscr, TRUE);
+	curs_set(0); //make cursor invisible
 	(void)init_pair(1, COLOR_WHITE,  COLOR_BLUE  );  //player, sky
 	(void)init_pair(2, COLOR_BLACK,  COLOR_GREEN );  //grass, dwarf
 	(void)init_pair(3, COLOR_BLACK,  COLOR_WHITE );  //stone, skin
@@ -119,7 +124,7 @@ void main() {
 	map();
 	notify("Game started.", 0);
 	//this is the game itself
-	while ((ch=getch())!=(int)'q')
+	while ((ch=getch())!=(int)'Q')
 		if (view=='u' || view=='f' || view=='h' || view=='k' || view=='r')
 			keytogame(ch);
 		else keytoinv(ch);
@@ -134,6 +139,7 @@ void main() {
 
 //parallel thread
 void *mech(void *vptr_args) {
+	void allmech();
 	while (1) {
 		sleep(1);
 		pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
@@ -145,6 +151,9 @@ void *mech(void *vptr_args) {
 
 // this prints visible world
 void map() {
+	void invview(),
+	     surf(),
+	     frontview();
 	(void)wclear(world);
 	if (view=='u' || view=='f' || view=='h' || view=='k') surf();
 	else if (view=='r') frontview();
@@ -154,56 +163,40 @@ void map() {
 		case 'u': (void)mvwprintw(world, 22, 1,  "Surface"  ); break;
 		case 'f': (void)mvwprintw(world, 22, 1,  "Floor"    ); break;
 		case 'h': (void)mvwprintw(world, 22, 1,  "Head"     ); break;
-		case 'k': (void)mvwprintw(world, 22, 1,  "Sky"      ); break;
+		case 'k': (void)mvwprintw(world, 22, 1,  "Sky                 ^^"); break;
 		case 'r': (void)mvwprintw(world, 22, 1,  "Front               ^^"); break;
 		case 'c':
 		case 'i': (void)mvwprintw(world,  1, 17, "Inventory"); break;
 		default : (void)mvwprintw(world, 22, 1,  "Another"  ); break;
 	}
 	if (!pl) (void)mvwprintw(world, 22, 21, "^^");
-	(void)mvwprintw(world, 0, 0, "");
 	(void)box(world, 0, 0);
 	(void)wrefresh(world);
 }
 
 void frontview() {
-	short x, y, zend, flag,
-	      xplus, zplus,
-	      xsave, zsave;
-	if (eye[0]==0) {
-		if (eye[1]==-1) {//north
-			xsave=xp-11;
-			xplus=1;
-			zsave=yp-1;
-			zend=yp-21;
-			zplus=-1;
-		} else {//south
-			xsave=xp+11;
-			xplus=-1;
-			zsave=yp+1;
-			zend=yp+21;
-			zplus=1;
-		}
-		flag=1;
-	} else if (eye[0]==-1) {//west
-		xsave=yp+11;
-		xplus=-1;
-		zsave=xp-1;
-		zend=xp-21;
-		zplus=-1;
-		flag=0;
-	} else {//east
-		xsave=yp-11;
-		xplus=1;
-		zsave=xp+1;
-		zend=xp+21;
-		zplus=1;
-		flag=0;
-	}	
+	void in_frontview();
+	if (eye[0]==0)
+		if (eye[1]==-1) //north
+			in_frontview(xp-11,  1, yp-1, yp-21, -1, 1);
+		else //south
+			in_frontview(xp+11, -1, yp+1, yp+21,  1, 1);
+	else if (eye[0]==-1) //west
+			in_frontview(yp+11, -1, xp-1, xp-21, -1, 0);
+	else //east
+			in_frontview(yp-11,  1, xp+1, xp+21,  1, 0);
+}
+
+void in_frontview(xsave, xplus, zsave, zend, zplus, flag)
+short xsave, xplus,
+      zsave, zend,
+      zplus, flag; {
+	char getname();
+	short x, y;
 	for (x=1; x<=21; ++x)
 	for (y=1; y<=21; ++y) {
 		short save, p, z,
-		      xnew,ynew=zp+20-y;
+		      xnew, ynew=zp+20-y;
 		if (flag) {
 			xnew=xsave+x*xplus;
 			z=zsave;
@@ -216,11 +209,11 @@ void frontview() {
 			while (xnew!=zend && earth[xnew][z][ynew]==0) xnew+=zplus;
 			save=xnew;
 			p=xp;
-		} 
+		}
 		if (visible2(xp, yp, zp+1, xnew, z, ynew) || visible(xnew, z, ynew)) {
 			if (save!=zend) {
 				//TODO: this can be without 'names'
-				char name=getname(xnew, z, ynew), name2;
+				char name=getname(earth[xnew][z][ynew], world), name2;
 				if (abs(save-p)==1)      name2=name;
 				else if (abs(save-p)<11) name2=abs(save-p)-1+'0';
 				else                     name2='+';
@@ -238,38 +231,25 @@ void frontview() {
 
 //surface view
 void surf() {
-	short x, y, z,
-	      xcor,  ycor,
-	      xarr,  yarr,
-	      xrarr, yrarr,
-	      skycor=(view==3) ? (-1) : 1;
-	if (eye[0]==0) {
-		if (eye[1]==-1) {//north
-			xcor=xp-11;
-			ycor=yp-20*skycor;
-			xarr=1;
-			yarr=skycor;
-			xrarr=yrarr=0;
-		} else {//south
-			xcor=xp+11;
-			ycor=yp+20*skycor;
-			xarr=-1;
-			yarr=-skycor;
-			xrarr=yrarr=0;
-		}
-	} else if (eye[0]==-1) {//west
-		xcor=xp-20*skycor;
-		ycor=yp+11;
-		xarr=yarr=0;
-		xrarr=skycor;
-		yrarr=-1;
-	} else {//east
-		xcor=xp+20*skycor;
-		ycor=yp-11;
-		xarr=yarr=0;
-		xrarr=-skycor;
-		yrarr=1;
-	}
+	void in_surf();
+	short skycor=(view==3) ? (-1) : 1;
+	if (eye[0]==0)
+		if (eye[1]==-1) //north
+			in_surf(xp-11,        yp-20*skycor,  1,  skycor,  0,       0);
+		else //south
+			in_surf(xp+11,        yp+20*skycor, -1, -skycor,  0,       0);
+	else if (eye[0]==-1) //west
+			in_surf(xp-20*skycor, yp+11,         0,  0,       skycor, -1);
+	else //east
+			in_surf(xp+20*skycor, yp-11,         0,  0,      -skycor,  1);
+}
+
+void in_surf(xcor, ycor, xarr, yarr, xrarr, yrarr)
+short xcor,  ycor,
+      xarr,  yarr,
+      xrarr, yrarr; {
+	char getname();
+	short x, y, z;
 	for (y=1; y<=21; ++y)
 	for (x=1; x<=21; ++x) {
 		short st, en, plus,
@@ -281,7 +261,7 @@ void surf() {
 			case  'k': st=zp+2;   en=HEAVEN; plus= 1; break; //sky
 			default  : st=HEAVEN; en=0;      plus=-1; break; //surface 
 		}
-		for (z=st; z!=en && earth[newx][newy][z]==0; z+=plus);
+		for (z=st; z!=en && property(earth[newx][newy][z], 't'); z+=plus);
 		if (z==HEAVEN) {
 			if (visible2(xp, yp, zp, newx, newy, z)) {
 				switch (sky[newx-xp+20][newy-yp+20]) {
@@ -297,13 +277,16 @@ void surf() {
 		} else if (visible2(xp, yp, zp+1, newx, newy, z) ||
 			visible(newx, newy, z))
 				if (z-zp>=10) (void)mvwprintw(world, y, 2*x-1,
-					"%c%c", getname(newx, newy, z), '+');
+					"%c%c", getname(earth[newx][newy][z], world),
+					'+');
 				else if (z-zp>-1) (void)mvwprintw(world, y, 2*x-1,
-					"%c%c", getname(newx, newy, z), z-zp+1+'0');
+					"%c%c", getname(earth[newx][newy][z], world),
+					z-zp+1+'0');
 				else if (z-zp<-1) (void)mvwprintw(world, y, 2*x-1,
-					"%c%c", getname(newx, newy, z), '-');
+					"%c%c", getname(earth[newx][newy][z], world),
+					'-');
 				else {
-					char name=getname(newx, newy, z);
+					char name=getname(earth[newx][newy][z], world);
 					(void)mvwprintw(world, y, 2*x-1,
 					"%c%c", name, name);
 				}
@@ -318,64 +301,28 @@ void surf() {
 	}
 }
 
-int getname(x, y, z)
-short x, y, z; {
-	WINDOW *pwin;
-	short block;
-	if (z<HEAVEN+1) { //normal
-		block=earth[x][y][z];
-		pwin=world;
-	} else if (z==HEAVEN+1) { //pockets
-		block=inv[x][y].what;
-		pwin=pocketwin;
-	} else if (z==HEAVEN+2) { //cloth except weapon
-		block=cloth[x].what;
-		pwin=world;
-	} else if (z==HEAVEN+3) { //inventory
-		block=inv[x][y].what;
-		pwin=world;
-	} else if (z==HEAVEN+4) { //cursor
-		block=cur[3];
-		pwin=world;
-	} else /*if (z==HEAVEN+5)*/{ //workbench
-		block=craft[x].what;
-		pwin=world;
-	}
+//int getname(x, y, z)
+char getname(block, pwin)
+short  block;
+WINDOW *pwin; {
 	switch (block) {
-		case 1: //grass
-			wattrset(pwin, COLOR_PAIR(2));
-			return('|'); break;
-		case 2: //stone
-			wattrset(pwin, COLOR_PAIR(3));
-			return('s'); break;
-		case 3: //reserved for player
-			wattrset(pwin, COLOR_PAIR(2));
-			return('p'); break;
-		case 4: //chiken
-			wattrset(pwin, COLOR_PAIR(5));
-			return('c'); break;
-		case 5: { //fire
-			short sum=(x+y+z)%2;
-			if (( mechtoggle &&  sum) ||
-			    (!mechtoggle && !sum)) {
+		case 1: wattrset(pwin, COLOR_PAIR(2)); return('|'); break; //grass
+		case 2: wattrset(pwin, COLOR_PAIR(3)); return('s'); break; //stone
+		case 3: wattrset(pwin, COLOR_PAIR(2)); return('p'); break; //player
+		case 4: wattrset(pwin, COLOR_PAIR(5)); return('c'); break; //chiken
+		case 5:
+			if (mechtoggle) { //fire
 				wattrset(pwin, COLOR_PAIR(4));
 				return('F');
 			} else {
 				wattrset(pwin, COLOR_PAIR(7));
 				return('f');
 			}
-		} break;
-		case 6: //steel helmet
-			wattrset(pwin, COLOR_PAIR(3));
-			return('h'); break;
-		case 7: wattrset(pwin, COLOR_PAIR(9));
-			return('c'); break;
-		case 0: if (z>HEAVEN) {
-				wstandend(pwin);
-				return(' ');
-				break;
-			}
-		default: return('?'); break;
+		break;
+		case 6:	wattrset(pwin, COLOR_PAIR(3)); return('h'); break; //steel helmet
+		case 7: wattrset(pwin, COLOR_PAIR(9)); return('c'); break; //chest
+		case 0: wstandend(pwin);               return(' '); break; //air
+		default:                               return('?'); break;
 	}
 }
 
@@ -486,7 +433,6 @@ short noc; {
 	(void)mvwprintw(textwin, 2, 1, "x: %d", xp);
 	(void)mvwprintw(textwin, 3, 1, "y: %d", yp);
 	(void)mvwprintw(textwin, 4, 1, "z: %d", zp);
-	(void)mvwprintw(textwin, 0, 0, "");
 	(void)box(textwin, 0, 0);
 	(void)wrefresh(textwin);
 }
@@ -496,7 +442,7 @@ void pocketshow() {
 	short x;
 	(void)wclear(pocketwin);
 	for (x=0; x<=9; ++x) (void)mvwprintw(pocketwin, 0, 7+x*3, "%c%d",
-		getname(x, 2, HEAVEN+1), inv[x][2].num);
+		getname(inv[x][2].what, pocketwin), inv[x][2].num);
 	mark(7+cloth[4].num*3, 0, pocketwin, 'e');
 	(void)wrefresh(pocketwin);
 }
@@ -568,7 +514,11 @@ int key; {
 		break;
 		case 'v': pl=(pl) ? 0 : 1; break; //toggle player visibility on map
 		case 'S': savegame(); notc=6; mapflag=0; break;
-		case 'L': loadgame(); notc=7;            break;
+		case 'L': {
+			void loadgame();
+			loadgame();
+			notc=7;
+		} break;
 		case 'i':
 			craft=malloc(5*sizeof(struct item));
 			for (save=0; save<5; ++save) craft[save].what=craft[save].num=0;
@@ -701,15 +651,17 @@ short *px, *py, *pz; {
 int property(id, c)
 short id;
 char  c; {
+//	fprintf(stderr, "property, id is %d\n", id);
 	switch (c) {
 		case 'a': //Armour
+//			fprintf(stderr, "id is %d\n", id);
 			switch (id) {
 				//helmets
 				case  6: return 'h'; break;
 				//body armour
 				//return 'a'; break;
 				//legs armour
-				//return 'l'; break;
+				//return 'l'; ibreak;
 				//boots
 				//return 'b'; break;
 				default: return  0 ; break;

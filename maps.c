@@ -114,7 +114,7 @@ void load() {
 			//chiken
 			for (k=HEAVEN; earth[40+nx][40+ny][k-1]==0; --k);
 			earth[40+nx][40+ny][k]=4;
-			spawn(40+nx, 40+ny, k, NULL);
+//			spawn(40+nx, 40+ny, k, NULL);
 			//chest
 			earth[41+nx][41+ny][k]=7;
 			spawn(41+nx, 41+ny, k, NULL);
@@ -129,7 +129,7 @@ void load() {
 			for (k= 0; k<=HEAVEN; ++k) {
 				earth[i][j][k]=getc(file);
 				//fprintf(stderr, "prop %d\n",/*
-				spawn(i, j, k, file);
+//				spawn(i, j, k, file);
 			}
 			fclose(file);
 		}
