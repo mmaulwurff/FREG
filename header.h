@@ -14,8 +14,13 @@
 * along with Eyecube. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <ncurses.h>
-#include <pthread.h>
-#include <stdlib.h>
-
 #define HEAVEN 128
+
+struct something {
+	struct something *next;
+	short  *arr;
+};
+struct item {
+	short what,
+	      num;
+};

@@ -15,67 +15,93 @@
 */
 
 #include "header.h"
+#include <ncurses.h>
 
-extern char  signal;
-extern short earth[][192][HEAVEN+1],
-             sky[][39],
-             xp, yp, zp,
-             spx, spy,
-             jump,
-             eye[],
-             eyes[],
-             view,
-             pl;
+short       xp, yp, zp, //player coordinates
+            spx, spy,   //player square position
+            jump,       //shows if player jumps
+	    eye[2],      //camera position
+	    eyes[2],     //previous camera position
+	    pl,         //show player or no
+            earth[192][192][HEAVEN+1], //current loaded world
+	    sky[39][39];
+char        view, /*view modes: sUrface, Floor, Head, sKy, fRont,
+                    Inventory, Chest, Workbench, furNace */
+            view_last; //save previous view
+struct item inv[10][3], //inventory
+	    cloth[5];   //(armour), cloth[4].num is an index of the last line of "inv"
 
-extern struct item {
-	short what,
-	      num;
-} inv[][3],
-  cloth[];
-
-extern struct something {
-	struct something *next;
-	short  *arr;
-} *animalstart,
-  *thingstart,
-  *findanimal();
-
-void pocketshow(),
-     eraseanimals();
-int  property();
-
-//makes square file name from square coordinates
-void makename(x, y, name)
-short x, y;
-char name[]; {
-//	fprintf(stderr, "makename\n");
-	short i=0;
-	name[i++]='m';
-	name[i++]='a';
-	name[i++]='p';
-	name[i++]='/';
-	if (x<0) {
-		x=abs(x);
-		name[i++]='-';
+//loads a game
+void loadgame() {
+//	fprintf(stderr, "loadgame\n");
+	//TODO: ask what to load
+	void pocketshow(),
+	     load();
+	short i, j;
+	FILE* file=fopen("save", "r");
+	if (file!=NULL) { //load
+		xp=       getc(file);
+		yp=       getc(file);
+		zp=       getc(file);
+		jump=     getc(file);
+		eye[0]=   getc(file)-1;
+		eye[1]=   getc(file)-1;
+		eyes[0]=  getc(file)-1;
+		eyes[1]=  getc(file)-1;
+		pl=       getc(file);
+		view=     getc(file);
+//		view_last=getc(file);
+		spx=(((getc(file))=='-') ? (-1) : 1)*getc(file);
+		spy=(((getc(file))=='-') ? (-1) : 1)*getc(file);
+		for (i=0; i<=38; ++i)
+		for (j=0; j<=38; ++j)
+			sky[i][j]=getc(file);
+		for (i=0; i<=9; ++i)
+		for (j=0; j<=2; ++j) {
+			inv[i][j].what=getc(file);
+			inv[i][j].num=getc(file);
+		}
+		for (i=0; i<=4; ++i) {
+			cloth[i].what=getc(file);
+			cloth[i].num =getc(file);
+		}
+		fclose(file);
+		load();
+	} else { //new game
+		int property();
+		spy=spx=0;
+		load();
+		xp=80;
+		yp=80;
+		for (zp=HEAVEN; property(earth[xp][yp][zp-1], 'p'); --zp);
+		jump=0;
+		eye[0]=0; //north
+		eye[1]=-1;
+		eyes[0]=0;
+		eyes[1]=-1;
+		pl=1;
+		view=view_last='u';
+		for (i=0; i<=38; ++i)
+		for (j=0; j<=38; ++j)
+			sky[i][j]=0;
+		sky[19][19]=2;
+		for (i=0; i<=9; ++i)
+		for (j=0; j<=2; ++j) {
+			inv[i][j].what=0;
+			inv[i][j].num =0;
+		}
+		for (i=0; i<=4; ++i) {
+			cloth[i].what=0;
+			cloth[i].num =0;
+		}
 	}
-	do {
-		name[i++]='0'+x % 10;
-		x/=10;
-	} while (x!=0);
-	name[i++]='+';
-	if (y<0) {
-		y=abs(y);
-		name[i++]='-';
-	}
-	do {
-		name[i++]='0'+y % 10;
-		y/=10;
-	} while (y!=0);
-	name[i]='\0';
+	pocketshow();
 }
 
+//loads or generates squares
 void load() {
 //	fprintf(stderr, "load\n");
+	void eraseanimals();
 	eraseanimals();
 	short n=0;
 	for (n=0; n<=8; ++n) {
@@ -113,8 +139,8 @@ void load() {
 				earth[i][12+ny][k]=2;
 			//chiken
 			for (k=HEAVEN; earth[40+nx][40+ny][k-1]==0; --k);
-			earth[40+nx][40+ny][k]=4;
-//			spawn(40+nx, 40+ny, k, NULL);
+			earth[41+nx][47+ny][k]=4;
+			spawn(41+nx, 47+ny, k, NULL);
 			//chest
 			earth[41+nx][41+ny][k]=7;
 			spawn(41+nx, 41+ny, k, NULL);
@@ -129,108 +155,17 @@ void load() {
 			for (k= 0; k<=HEAVEN; ++k) {
 				earth[i][j][k]=getc(file);
 				//fprintf(stderr, "prop %d\n",/*
-//				spawn(i, j, k, file);
+				spawn(i, j, k, file);
 			}
 			fclose(file);
 		}
 	}
 }
 
-void save() {
-//	fprintf(stderr, "save\n");
-	short n;
-	for (n=0; n<=8; ++n) {
-		char name[50];
-		makename(spx+n%3-1, spy+n/3-1, name);
-		FILE *file=fopen(name, "wb");
-		short i, j, k;
-		for (i=64*(n%3); i<=63+64*(n%3); ++i)
-		for (j=64*(n/3); j<=63+64*(n/3); ++j)
-		for (k=0;        k<=HEAVEN;      ++k) {
-			fputc(earth[i][j][k], file);
-			switch (property(earth[i][j][k], 'n')) {
-				case 'a': //animal
-					fputc(findanimal(i, j, k)->arr[3], file);
-					break;
-				case 'c': {//chest
-//					fprintf(stderr, "savechest\n");
-					short count=3;
-					struct something *point=findanimal(i, j, k);
-					while (count<63) fputc(point->arr[count++], file);
-				} break;
-
-			}
-		}
-		fclose(file);
-	}
-//	fprintf(stderr, "endsave\n");
-}
-
-void loadgame() {
-//	fprintf(stderr, "loadgame\n");
-	//TODO: ask what to load
-	short i, j;
-	FILE* file=fopen("save", "r");
-	if (file!=NULL) { //load
-		xp=      getc(file);
-		yp=      getc(file);
-		zp=      getc(file);
-		jump=    getc(file);
-		eye[0]=  getc(file)-1;
-		eye[1]=  getc(file)-1;
-		eyes[0]= getc(file)-1;
-		eyes[1]= getc(file)-1;
-		pl=      getc(file);
-		view=    getc(file);
-		spx=(((getc(file))=='-') ? (-1) : 1)*getc(file);
-		spy=(((getc(file))=='-') ? (-1) : 1)*getc(file);
-		for (i=0; i<=38; ++i)
-		for (j=0; j<=38; ++j)
-			sky[i][j]=getc(file);
-		for (i=0; i<=9; ++i)
-		for (j=0; j<=2; ++j) {
-			inv[i][j].what=getc(file);
-			inv[i][j].num=getc(file);
-		}
-		for (i=0; i<=4; ++i) {
-			cloth[i].what=getc(file);
-			cloth[i].num =getc(file);
-		}
-		fclose(file);
-		load();
-	} else { //new game
-		spy=spx=0;
-		load();
-		xp=80;
-		yp=80;
-		for (zp=HEAVEN; property(earth[xp][yp][zp-1], 'p'); --zp);
-		jump=0;
-		eye[0]=0; //north
-		eye[1]=-1;
-		eyes[0]=0;
-		eyes[1]=-1;
-		pl=1;
-		view='u';
-		for (i=0; i<=38; ++i)
-		for (j=0; j<=38; ++j)
-			sky[i][j]=0;
-		sky[19][19]=2;
-		for (i=0; i<=9; ++i)
-		for (j=0; j<=2; ++j) {
-			inv[i][j].what=0;
-			inv[i][j].num =0;
-		}
-		for (i=0; i<=4; ++i) {
-			cloth[i].what=0;
-			cloth[i].num =0;
-		}
-	}
-	pocketshow();
-}
-
 void savegame() {
 //	fprintf(stderr, "savegame\n");
 //ask save name should be here - todo
+	void save();
 	save();
 	short i, j,
 	      n=0;
@@ -246,6 +181,7 @@ void savegame() {
 	fputc(eyes[1]+1, file);
 	fputc(pl,        file);
 	fputc(view,      file);
+//	fputc(view_last, file);
 	//spx and spy may be longs, so there should be another way
 	if (spx<0) fputc('-', file);
 	else       fputc('+', file);
@@ -269,9 +205,41 @@ void savegame() {
 	fclose(file);
 }
 
+void save() {
+//	fprintf(stderr, "save\n");
+	short n;
+	for (n=0; n<=8; ++n) {
+		struct something *findanimal();
+		int  property();
+		char name[50];
+		makename(spx+n%3-1, spy+n/3-1, name);
+		FILE *file=fopen(name, "wb");
+		short i, j, k;
+		for (i=64*(n%3); i<=63+64*(n%3); ++i)
+		for (j=64*(n/3); j<=63+64*(n/3); ++j)
+		for (k=0;        k<=HEAVEN;      ++k) {
+			fputc(earth[i][j][k], file);
+			switch (property(earth[i][j][k], 'n')) {
+				case 'a': //animal
+					fputc(findanimal(i, j, k)->arr[3], file);
+					break;
+				case 'c': {//chest
+//					fprintf(stderr, "savechest\n");
+					short count=3;
+					struct something *point=findanimal(i, j, k);
+					while (count<63) fputc(point->arr[count++], file);
+				} break;
+			}
+		}
+		fclose(file);
+	}
+//	fprintf(stderr, "endsave\n");
+}
+
 //this checks if new squares should be loaded
 //TODO: borders, or tor?
 void onbound() {
+	void eraseanimals();
 //	fprintf(stderr, "onbound\n");
 	if (xp<64) { //west
 		xp+=64;

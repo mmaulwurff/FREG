@@ -1,42 +1,57 @@
-/*This file is part of Eyecube.
-*
-* Eyecube is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Eyecube is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with Eyecube. If not, see <http://www.gnu.org/licenses/>.
-*/
-
 #include "header.h"
+#include <ncurses.h>
+#include <stdlib.h>
 
-char signal;
-
-struct something {
-	struct something *next;
-	short  *arr;
-} *animalstart=NULL,
-  *cheststart =NULL,
-  *thingstart =NULL;
-
-extern short earth[][192][HEAVEN+1];
-extern short view;
-extern short notflag;
-extern short xp, yp, zp;
-
-void map(),
-     chiken_move(),
-     erasein();
+extern char  signal, view;
+extern short xp, yp, zp, earth[][192][HEAVEN+1], jump, notflag;
 
 short mechtoggle=0;
 
+struct something *animalstart=NULL,
+                 *cheststart =NULL,
+                 *thingstart =NULL;
+//drops block
+int fall(x, y, z)
+short x, y, z; {
+	short h,
+	      save=earth[x][y][z];
+	for (h=0; earth[x][y][z-1]==0; --z, ++h);
+	earth[x][y][z]=save;
+	return(h);
+}
+
+//moves player
+int step(x, y)
+short x, y; {
+	void  onbound();
+	int   property();
+	short notc=0;
+	if (jump==1)
+		if (property(earth[xp][yp][zp+2], 'p')) ++zp;
+		else notc=5;
+	else if (jump==2) {
+		if (property(earth[xp+x][yp+y][zp  ], 'p') &&
+		    property(earth[xp+x][yp+y][zp+1], 'p')) {
+			xp+=x;
+			yp+=y;
+		}
+		else notc=1;
+	}
+	if (property(earth[xp+x][yp+y][zp  ], 'p') &&
+	    property(earth[xp+x][yp+y][zp+1], 'p')) {
+		xp+=x;
+		yp+=y;
+	}
+	else notc=1;
+	jump=0;
+	onbound();
+	return(notc);
+}
+
+//all mechanics events
 void allmech() {
+	void map(),
+	     chiken_move();
 //	fprintf(stderr, "allmech, %c\n", signal);
 	if (signal=='w') {
 		struct something *animalcar=animalstart;
@@ -68,35 +83,22 @@ struct something *animalp; {
 	fclose(file);
 	earth[animalp->arr[0]][animalp->arr[1]][animalp->arr[2]]=0;
 	if      (c==0 && animalp->arr[0]!=191 &&
-		property(earth[animalp->arr[0]+1][animalp->arr[1]][animalp->arr[2], 'p']))
+		property(earth[animalp->arr[0]+1][animalp->arr[1]][animalp->arr[2]], 'p')
+		&& !(xp==animalp->arr[0]+1 && yp==animalp->arr[1] && zp==animalp->arr[2]))
 			++(animalp->arr[0]);
-	else if (c==1 && animalp->arr[0]!=0   &&
-		property(earth[animalp->arr[0]-1][animalp->arr[1]][animalp->arr[2]], 'p'))
+	else if (c==1 && animalp->arr[0]!=0 &&
+		property(earth[animalp->arr[0]-1][animalp->arr[1]][animalp->arr[2]], 'p')
+		&& !(xp==animalp->arr[0]-1 && yp==animalp->arr[1] && zp==animalp->arr[2]))
 			--(animalp->arr[0]);
 	else if (c==2 && animalp->arr[1]!=191 &&
-		property(earth[animalp->arr[0]][animalp->arr[1]+1][animalp->arr[2]], 'p'))
+		property(earth[animalp->arr[0]][animalp->arr[1]+1][animalp->arr[2]], 'p')
+		&& !(xp==animalp->arr[0] && yp==animalp->arr[1]+1 && zp==animalp->arr[2]))
 			++(animalp->arr[1]);
-	else if (c==3 && animalp->arr[1]!=0   &&
-		property(earth[animalp->arr[0]][animalp->arr[1]-1][animalp->arr[2]], 'p'))
+	else if (c==3 && animalp->arr[1]!=0 &&
+		property(earth[animalp->arr[0]][animalp->arr[1]-1][animalp->arr[2]], 'p')
+		&& !(xp==animalp->arr[0] && yp==animalp->arr[1]-1 && zp==animalp->arr[2]))
 			--(animalp->arr[1]);
 	earth[animalp->arr[0]][animalp->arr[1]][animalp->arr[2]]=save;
-}
-
-//this finds pointer to a thing with coordinates
-struct something *findanimal(x, y, z)
-short x, y, z; {
-//	fprintf(stderr, "findanimal\n");
-	struct something *car=animalstart;
-	switch (property(earth[x][y][z], 'n')) {
-		case 'a': car=animalstart; break;
-		case 'c': car=cheststart;  break;
-	}
-	while (car!=NULL)
-		if (x==car->arr[0] &&
-		    y==car->arr[1] &&
-		    z==car->arr[2]) return(car);
-		else car=car->next;
-//		case
 }
 
 //this adds new active thing to list of loaded animals
@@ -157,6 +159,7 @@ FILE  *file; {
 //this erases list of loaded animals
 void eraseanimals() {
 //	fprintf(stderr, "eraseanimals\n");
+	void erasein();
 	signal='s';
 	erasein(animalstart);
 	animalstart=NULL;
@@ -167,6 +170,7 @@ void eraseanimals() {
 	signal='w';
 }
 
+//inside eraseanimals()
 void erasein(car)
 struct something *car; {
 	while (car!=NULL) {
