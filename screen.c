@@ -265,6 +265,7 @@ void invview() {
 	for (i=0; i<=2; ++i)
 		(void)mvwprintw(world, i+19+((i==2) ? 1 : 0), j*3+7, "%c%d",
 			getname(inv[j][i].what, world), inv[j][i].num);
+	wstandend(world);
 	//chest
 	if ('c'==view) {
 		(void)mvwprintw(world, 17, 1, "Chest");
@@ -309,6 +310,7 @@ void invview() {
 			i=(cur[1]!=3) ? cur[2]+12 : 13;
 			j=(cur[1]!=3) ? (cur[1]*3+((view!='w') ? 10 : 7)) : 17;
 		break;
+		//0 is functional field
 	}
 	if (cur[3]!=0) {
 		(void)mvwprintw(world, i, j, "%c%d",
@@ -339,6 +341,7 @@ WINDOW *pwin; {
 		break;
 		case 6:	wattrset(pwin, COLOR_PAIR(3)); return('h'); break; //steel helmet
 		case 7: wattrset(pwin, COLOR_PAIR(9)); return('c'); break; //chest
+		case 8: wattrset(pwin, COLOR_PAIR(6)); return('h'); break; //heap
 		case 0: wstandend(pwin);               return(' '); break; //air
 		default:                               return('?'); break;
 	}

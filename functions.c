@@ -19,7 +19,8 @@
 
 extern struct something *animalstart,
                         *cheststart,
-                        *thingstart;
+                        *thingstart,
+			*heapstart;
 extern short xp, yp, zp,
              view,
 	     eye[],
@@ -54,6 +55,7 @@ char  c; {
 //				case  : return 't'; break;
 //				//chest
 				case  7: return 'c'; break;
+				case  8: return 'h'; break;
 				default: return  0 ; break;
 			}
 		break;
@@ -81,6 +83,7 @@ short x, y, z; {
 	switch (property(earth[x][y][z], 'n')) {
 		case 'a': car=animalstart; break;
 		case 'c': car=cheststart;  break;
+		case 'h': car=heapstart;   break;
 	}
 	while (car!=NULL)
 		if (x==car->arr[0] &&

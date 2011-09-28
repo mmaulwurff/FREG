@@ -50,7 +50,7 @@ void loadgame() {
 		eyes[1]=  getc(file)-1;
 		pl=       getc(file);
 		view=     getc(file);
-//		view_last=getc(file);
+		view_last=getc(file);
 		spx=(((getc(file))=='-') ? (-1) : 1)*getc(file);
 		spy=(((getc(file))=='-') ? (-1) : 1)*getc(file);
 		for (i=0; i<=38; ++i)
@@ -101,17 +101,20 @@ void loadgame() {
 //loads or generates squares
 void load() {
 //	fprintf(stderr, "load\n");
+	struct something *spawn();
 	void eraseanimals();
 	eraseanimals();
-	short n=0;
+	short n=0,
+	      i, j, k,
+	      nx, ny;
+	char name[50]; //50!?
+	FILE *file;
 	for (n=0; n<=8; ++n) {
 		//fprintf(stderr, "loop %d\n", n);
-		short i, j, k,
-		      nx=64*(n%3),
-		      ny=64*(n/3);
-		char name[50]; //50!?
+		nx=64*(n%3),
+		ny=64*(n/3);
 		makename(spx+n%3-1, spy+n/3-1, name);
-		FILE *file=fopen(name, "rb");
+		file=fopen(name, "rb");
 		if (!file) {
 			//generator
 			//TODO: randoms
@@ -140,10 +143,10 @@ void load() {
 			//chiken
 			for (k=HEAVEN; earth[40+nx][40+ny][k-1]==0; --k);
 			earth[41+nx][47+ny][k]=4;
-			spawn(41+nx, 47+ny, k, NULL);
+			(void)spawn(41+nx, 47+ny, k, NULL);
 			//chest
 			earth[41+nx][41+ny][k]=7;
-			spawn(41+nx, 41+ny, k, NULL);
+			(void)spawn(41+nx, 41+ny, k, NULL);
 			//fire
 			earth[45+nx][45+ny][80]=5;
 			earth[46+nx][45+ny][80]=5;
@@ -155,7 +158,7 @@ void load() {
 			for (k= 0; k<=HEAVEN; ++k) {
 				earth[i][j][k]=getc(file);
 				//fprintf(stderr, "prop %d\n",/*
-				spawn(i, j, k, file);
+				(void)spawn(i, j, k, file);
 			}
 			fclose(file);
 		}
@@ -181,7 +184,7 @@ void savegame() {
 	fputc(eyes[1]+1, file);
 	fputc(pl,        file);
 	fputc(view,      file);
-//	fputc(view_last, file);
+	fputc(view_last, file);
 	//spx and spy may be longs, so there should be another way
 	if (spx<0) fputc('-', file);
 	else       fputc('+', file);
@@ -211,23 +214,27 @@ void save() {
 	for (n=0; n<=8; ++n) {
 		struct something *findanimal();
 		int  property();
-		char name[50];
+		char name[50],
+		     type;
 		makename(spx+n%3-1, spy+n/3-1, name);
 		FILE *file=fopen(name, "wb");
-		short i, j, k;
+		short i, j, k,
+		      if_heap=0;
 		for (i=64*(n%3); i<=63+64*(n%3); ++i)
 		for (j=64*(n/3); j<=63+64*(n/3); ++j)
 		for (k=0;        k<=HEAVEN;      ++k) {
 			fputc(earth[i][j][k], file);
-			switch (property(earth[i][j][k], 'n')) {
+			type=property(earth[i][j][k], 'n');
+			switch (type) {
 				case 'a': //animal
 					fputc(findanimal(i, j, k)->arr[3], file);
-					break;
-				case 'c': {//chest
+				break;
+				case 'h': case 'c': {//chest or heap
 //					fprintf(stderr, "savechest\n");
 					short count=3;
 					struct something *point=findanimal(i, j, k);
-					while (count<63) fputc(point->arr[count++], file);
+					while (count<63+('h'==type) ? 1 : 0)
+						fputc(point->arr[count++], file);
 				} break;
 			}
 		}

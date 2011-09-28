@@ -9,7 +9,8 @@ short mechtoggle=0;
 
 struct something *animalstart=NULL,
                  *cheststart =NULL,
-                 *thingstart =NULL;
+                 *thingstart =NULL,
+		 *heapstart  =NULL;
 //drops block
 int fall(x, y, z)
 short x, y, z; {
@@ -69,6 +70,8 @@ void allmech() {
 			//damage
 		}
 	}
+	//clock should be here
+	//sand falls, heaps dissapear, night and day come
 	mechtoggle=(mechtoggle) ? 0 : 1;
 	if (view!='i' && view!='w') map();
 }
@@ -102,18 +105,21 @@ struct something *animalp; {
 }
 
 //this adds new active thing to list of loaded animals
-void spawn(x, y, z, file)//, type)
+struct something *spawn(x, y, z, file)
 short x, y, z;
 FILE  *file; {
-//char type; {
 	//fprintf(stderr, "spawn\n");
+	int  property();
 	char type=property(earth[x][y][z], 'n');
 	if (type) {
+		short if_heap=0;
 		struct something **animalcar,
-				 **start;
+				 **start,
+				 *save;
 		switch (type) {
 			case 'a': start=&animalstart; break; //animal
 			case 'c': start=&cheststart;  break; //chest
+			case 'h': start=&heapstart;   break; //heap
 			case 't': start=&thingstart;  break; //thing
 		}
 //		fprintf(stderr, "spawn2\n");
@@ -133,16 +139,20 @@ FILE  *file; {
 				(*animalcar)->arr=malloc( 4*sizeof(short));
 				(*animalcar)->arr[3]=(file==NULL) ? 9 : getc(file);
 			break;
-			case 'c': { //chest
-				(*animalcar)->arr=malloc(63*sizeof(short));
+			case 'h': case 'c': { //heap or chest
+				(*animalcar)->arr=
+					malloc((('h'==type) ? 1 : 0)+63*sizeof(short));
 				short i=3;
 				if (file==NULL) {
 					while (i<63) (*animalcar)->arr[i++]=0;
 					//put helmet to all new chests
 					(*animalcar)->arr[4 ]=6;
 					(*animalcar)->arr[34]=1;
+					//
+					if ('h'==type) (*animalcar)->arr[i]=24;
 				} else
-					while (i<63) (*animalcar)->arr[i++]=getc(file);
+					while (i<63+(('h'==type) ? 1 : 0))
+						(*animalcar)->arr[i++]=getc(file);
 			} break;
 			case 't': //thing
 				(*animalcar)->arr=malloc( 3*sizeof(short));
@@ -152,8 +162,10 @@ FILE  *file; {
 		(*animalcar)->arr[1]=y;
 		(*animalcar)->arr[2]=z;
 		(*animalcar)->next=NULL;
+		save=*animalcar;
 		free(animalcar);
-	}
+		return save;
+	} else return NULL;
 }
 
 //this erases list of loaded animals
@@ -167,16 +179,21 @@ void eraseanimals() {
 	thingstart =NULL;
 	erasein(cheststart );
 	cheststart =NULL;
+	erasein(heapstart  );
+	heapstart  =NULL;
 	signal='w';
 }
 
 //inside eraseanimals()
 void erasein(car)
 struct something *car; {
+	struct something *animalerase;
 	while (car!=NULL) {
-		struct something *animalerase=car;
+		animalerase=car;
 		car=car->next;
 		free(animalerase->arr);
 		free(animalerase);
 	}
 }
+
+//int drop_into

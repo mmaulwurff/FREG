@@ -9,7 +9,8 @@ This program is an interface experiment, it will try to be a prototype, proof of
 Advices are welcome.
 
 Compile notes:
-I use gcc with -lncurses and -pthread keys.
+(libncurses5-dev should be installed)
+gcc -lncurses -pthread
 
 Items table
                  Armour  Active  Passable  Stackable  Transparent
@@ -21,6 +22,7 @@ Items table
 5. Fire          no      no      no        no         no
 6. Steel helmet  helmet  no      no        no         no
 7. Chest         no      chest   no        no         no
+8. Heap          no      chest   no        no         no
 
 *Player is not used, number is reserved.
 

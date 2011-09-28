@@ -62,7 +62,7 @@ void main() {
 	(void)init_pair(3, COLOR_BLACK,  COLOR_WHITE );  //stone, skin
 	(void)init_pair(4, COLOR_RED,    COLOR_YELLOW);  //sun, fire1
 	(void)init_pair(5, COLOR_RED,    COLOR_WHITE );  //chiken
-	(void)init_pair(6, COLOR_WHITE,  COLOR_BLACK );  //?
+	(void)init_pair(6, COLOR_WHITE,  COLOR_BLACK );  //?, heap
 	(void)init_pair(7, COLOR_YELLOW, COLOR_RED   );  //fire2
 	(void)init_pair(8, COLOR_BLACK,  COLOR_RED   );  //pointer
 	(void)init_pair(9, COLOR_BLACK,  COLOR_YELLOW);  //wood

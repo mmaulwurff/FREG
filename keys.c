@@ -27,7 +27,8 @@ extern char  view, view_last;
 extern struct item inv[][3],
                    cloth[];
 
-short cur[]={1, 0, 0, 0, 0};
+short cur[]={1, 0, 0, 0, 0}; /*0.field (0.chest, 1.player, 2.function),
+                               1.x, 2.y, 3.id, 4.number*/
 short notflag=1; //flag used for optimization, for not notifying when nothing happens
 struct item *craft;
 
@@ -107,32 +108,9 @@ int key; {
 			if (!(view=='n') && cur[0]==0) cur[0]=1;
 		break;
 		case '\n': {
-			short *markedwhat,
-			      *markednum;
-			switch (cur[0]) {
-				case 1: //backpack
-					if (cur[2]>2) {
-						struct something *open_chest(),
-							         *chest=open_chest();
-						markedwhat=&(chest->arr
-							[cur[1]+(cur[2]-3)*10+3]);
-						markednum =&(chest->arr
-							[cur[1]+(cur[2]-3)*10+33]);
-					} else {
-						markedwhat=&inv[cur[1]][cur[2]].what;
-						markednum =&inv[cur[1]][cur[2]].num;
-					}
-				break;
-				case 2: //player
-					markedwhat=&cloth[cur[2]].what;
-					markednum =&cloth[cur[2]].num;
-				break;
-				case 3: {//workbench
-					short i=(cur[1]!=3) ? 1+cur[2]+cur[1]*2 : 0;
-					markedwhat=&craft[i].what;
-					markednum= &craft[i].num;
-				} break;
-			}
+			void know_marked();
+			short *markedwhat, *markednum;
+			know_marked(&markedwhat, &markednum);
 //			fprintf(stderr, "marked is %d\n", *markedwhat);
 //			fprintf(stderr, "cur[2] is %d\n", cur[2]);
 			if (cur[3]==0) { //get
@@ -166,6 +144,33 @@ int key; {
 	if (pocketflag) {
 		void pocketshow();
 		pocketshow();
+	}
+}
+
+//returns 
+void know_marked(markedwhat, markednum)
+short **markedwhat, **markednum; {
+	switch (cur[0]) {
+		case 1: //backpack
+			if (cur[2]>2) {
+				struct something *open_chest(),
+					         *chest=open_chest();
+				*markedwhat=&(chest->arr[cur[1]+(cur[2]-3)*10+3]);
+				*markednum =&(chest->arr[cur[1]+(cur[2]-3)*10+33]);
+			} else {
+				*markedwhat=&inv[cur[1]][cur[2]].what;
+				*markednum =&inv[cur[1]][cur[2]].num;
+			}
+		break;
+		case 2: //player
+			*markedwhat=&cloth[cur[2]].what;
+			*markednum =&cloth[cur[2]].num;
+		break;
+		case 3: {//workbench
+			short i=(cur[1]!=3) ? 1+cur[2]+cur[1]*2 : 0;
+			*markedwhat=&craft[i].what;
+			*markednum= &craft[i].num;
+		} break;
 	}
 }
 
@@ -247,12 +252,13 @@ int key; {
 		case 'i':
 			craft=malloc(5*sizeof(struct item));
 			for (save=0; save<5; ++save) craft[save].what=craft[save].num=0;
+			if (cur[0]==1 && cur[2]>2) cur[2]=0;
 			//right, no break here
 		case 'u': case 'f': case 'h': case 'k': case 'r':
 			view_last=view;
 			view=key;
 		break;
-		case 'p':
+		case 'p': //return to previous view mode
 			save=view;
 			view=view_last;
 			view_last=save;
@@ -265,16 +271,18 @@ int key; {
 			mapflag=0;
 		} break;
 		case '0': case '1': case '2': case '3': case '4':
-		case '5': case '6': case '7': case '8': case '9':
+		case '5': case '6': case '7': case '8': case '9': //choose weapon
 			cloth[4].num=key-'0';
 			pocketshow();
 		break;
-		case '+': 
+		case '+': //next weapon
 			cloth[4].num=(cloth[4].num==9) ? 0 : cloth[4].num+1;
+			notc=36;
 			pocketshow();
 		break;
-		case '-':
+		case '-': //previous weapon
 			cloth[4].num=(cloth[4].num==0) ? 9 : cloth[4].num-1;
+			notc=36;
 			pocketshow();
 		break;
 		case '\n': { //use
@@ -282,15 +290,24 @@ int key; {
 			short x, y, z;
 			focus(&x, &y, &z);
 			switch (property(earth[x][y][z], 'n')) {
-				case 'c':
+				case 'h': case 'c':
 					craft=malloc(5*sizeof(struct item));
 					for (save=0; save<5; ++save)
 						craft[save].what=craft[save].num=0;
+					view_last=view;
 					view='c';
 				break;
 				default : notc=10; break;
 			}
-		} break;			   
+		} break;
+		case 'x': { //drop weapon
+			short x, y, z;
+			void  focus();
+			focus(&x, &y, &z);
+			earth[x][y][z]=8;
+			spawn(x, y, z, NULL);
+			notc=11;
+		} break;
 		default  : notc=8; mapflag=0; break;
 	}
 	//falling down
@@ -315,12 +332,13 @@ int key; {
 			case  7: notify("Game loaded.",                 0); break;
 			case  9: notify("Something unknown!",           0); break;
 			case 10: notify("Can't use",                    0); break;
-			case 30: notify("Nothing except air",           0); break;
+			case 11: notify("You dropped something",        0); break;
 			case 31: notify("Grass or leaves",              0); break;
 			case 32: notify("Stone",                        0); break;
 			case 33: notify("It is somebody!",              0); break;
 			case 34: notify("Chiken",                       0); break;
 			case 35: notify("Careful! Fire",                0); break;
+			case 36: notify("Weapon", cloth[4].num); break;
 			case  8:
 			default: notify("?",                            0); break;
 		}
