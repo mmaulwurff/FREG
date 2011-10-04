@@ -47,6 +47,12 @@ char  c; {
 				default: return  0 ; break;
 			}
 		break;
+		case 'd': //dangerous
+			switch (id) {
+				case  5: return 1; //fire
+				default: return 0;
+			}
+		break;
 		case 'n': //active things
 			switch (id) {
 				//animals
@@ -59,7 +65,7 @@ char  c; {
 				default: return  0 ; break;
 			}
 		break;
-		case 'p': //Passable
+		case 'p': //Passable: air
 			if (id==0) return 1;
 			else return 0;
 		break;

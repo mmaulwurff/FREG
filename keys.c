@@ -26,6 +26,7 @@ extern short xp, yp, zp,
 extern char  view, view_last;
 extern struct item inv[][3],
                    cloth[];
+extern struct something *heapstart;
 
 short cur[]={1, 0, 0, 0, 0}; /*0.field (0.chest, 1.player, 2.function),
                                1.x, 2.y, 3.id, 4.number*/
@@ -38,6 +39,26 @@ int key; {
 	short pocketflag=0;
 	switch (key) {
 		case 'u': case 'f': case 'h': case 'k': case 'r': case 27: //views;
+			if ('c'==view) {
+//				fprintf(stderr, "")
+				short x, y, z;
+				void  focus();
+				focus(&x, &y, &z);
+				if (8==earth[x][y][z]) {
+					short i, flag_erase=1;
+					struct something *findanimal(),
+					                 *heap=findanimal(x, y, z);
+					for (i=3; i<33; ++i) if (0!=heap->arr[i]) {
+						flag_erase=0;
+						break;
+					}
+					if (1==flag_erase) {
+						void erase_by_xyz();
+						earth[x][y][z]=0;
+						erase_by_xyz(x, y, z, &heapstart);
+					}
+				}
+			}
 			free(craft);
 			view=(27==key) ? view_last : key;
 			pocketflag=1;
@@ -289,25 +310,43 @@ int key; {
 			void  focus();
 			short x, y, z;
 			focus(&x, &y, &z);
-			switch (property(earth[x][y][z], 'n')) {
-				case 'h': case 'c':
-					craft=malloc(5*sizeof(struct item));
-					for (save=0; save<5; ++save)
-						craft[save].what=craft[save].num=0;
-					view_last=view;
-					view='c';
-				break;
-				default : notc=10; break;
+			if (!property(earth[x][y][z-1], 'p')) { //thing isn't falling
+				switch (property(earth[x][y][z], 'n')) {
+					case 'h': case 'c': //chest or heap
+						craft=malloc(5*sizeof(struct item));
+						for (save=0; save<5; ++save)
+							craft[save].what=
+								craft[save].num=0;
+						view_last=view;
+						view='c';
+					break;
+					default : notc=10; break;
+				}
 			}
 		} break;
-		case 'x': { //drop weapon
-			short x, y, z;
+		case 'x': if (inv[cloth[4].num][2].what) { //drop weapon
+			struct something *spawn(), *findanimal(),
+					 *drop_into;
+			short x, y, z, i;
 			void  focus();
 			focus(&x, &y, &z);
-			earth[x][y][z]=8;
-			spawn(x, y, z, NULL);
-			notc=11;
-		} break;
+			if (7==earth[x][y][z] || 8==earth[x][y][z])
+				drop_into=findanimal(x, y, z);
+			else {
+				earth[x][y][z]=8;
+				drop_into=spawn(x, y, z, NULL);
+			}
+			for (i=3; i<33; ++i) if (0==drop_into->arr[i]) {
+				drop_into->arr[i]   =inv[cloth[4].num][2].what;
+				drop_into->arr[i+30]=inv[cloth[4].num][2].num;
+				inv[cloth[4].num][2].what=0;
+				inv[cloth[4].num][2].num =0;
+				pocketshow();
+				notc=11;
+				break;
+			}
+		} else notc=12;
+		break;
 		default  : notc=8; mapflag=0; break;
 	}
 	//falling down
@@ -333,6 +372,7 @@ int key; {
 			case  9: notify("Something unknown!",           0); break;
 			case 10: notify("Can't use",                    0); break;
 			case 11: notify("You dropped something",        0); break;
+			case 12: notify("Nothing to drop",              0); break;
 			case 31: notify("Grass or leaves",              0); break;
 			case 32: notify("Stone",                        0); break;
 			case 33: notify("It is somebody!",              0); break;

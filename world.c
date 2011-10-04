@@ -14,10 +14,15 @@ struct something *animalstart=NULL,
 //drops block
 int fall(x, y, z)
 short x, y, z; {
-	short h,
-	      save=earth[x][y][z];
-	for (h=0; earth[x][y][z-1]==0; --z, ++h);
-	earth[x][y][z]=save;
+	int   property();
+	short h;
+	for (h=0; property(earth[x][y][z-h-1], 'p'); ++h);
+//	fprintf(stderr, "fall: h=%d\n", h);
+	if (h>0) {
+		short env=earth[x][y][z-h];
+		earth[x][y][z-h]=earth[x][y][z];
+		earth[x][y][z]=env;
+	}
 	return(h);
 }
 
@@ -60,8 +65,9 @@ void allmech() {
 			chiken_move(animalcar);
 			animalcar=animalcar->next;
 		}
-	} 
-	{
+	}
+//	fprintf(stderr, "allmech: moving is ok\n");
+	{ //gravity
 		short height=0;
 		for ( ; property(earth[xp][yp][zp-1], 'p'); ++height, --zp);
 		if (height>1) { //gravity
@@ -72,6 +78,11 @@ void allmech() {
 	}
 	//clock should be here
 	//sand falls, heaps dissapear, night and day come
+	{ //everything falls
+		void move_down_chain();
+		if (NULL!=heapstart  ) move_down_chain(&heapstart  );
+		if (NULL!=animalstart) move_down_chain(&animalstart);
+	}
 	mechtoggle=(mechtoggle) ? 0 : 1;
 	if (view!='i' && view!='w') map();
 }
@@ -196,4 +207,54 @@ struct something *car; {
 	}
 }
 
-//int drop_into
+//erases one thing from list with coordinates
+void erase_by_xyz(x, y, z, chain)
+short x, y, z;
+struct something **chain; {
+//	fprintf(stderr, "erase_by_xyz started\n");
+	struct something *to_erase;
+	if (!(x==(*chain)->arr[0] && y==(*chain)->arr[1] && z==(*chain)->arr[2])) {
+		while (NULL!=(*chain)->next &&
+			!((*((*chain)->next)).arr[0]==x &&
+			  (*((*chain)->next)).arr[1]==y &&
+			  (*((*chain)->next)).arr[2]==z)) {
+//			fprintf(stderr, "erase_by_xyz next\n");
+			*chain=(*chain)->next;
+		}
+//		fprintf(stderr, "erase_by_xyz found to erase\n");
+		to_erase=(*chain)->next;
+		(*chain)->next=(*((*chain)->next)).next;
+	} else {	
+		to_erase=*chain;
+		*chain=(*chain)->next;
+	}
+//	fprintf(stderr, "erase_by_xyz ready to erase\n");
+	free(to_erase->arr);
+	free(to_erase);
+}
+
+//moves down all elements of a chain
+void move_down_chain(chain_start)
+struct something **chain_start; {
+	int  fall(), property();
+	struct something *chain=*chain_start,
+			 *chain_last=chain;
+//	fprintf(stderr, "move_down_chain: started\n");
+	do {
+		chain->arr[2]-=fall(chain->arr[0], chain->arr[1], chain->arr[2]);
+		if (property(earth[chain->arr[0]][chain->arr[1]][chain->arr[2]-1], 'd')) {
+		 	//environment instead of zero
+			earth[chain->arr[0]][chain->arr[1]][chain->arr[2]]=0;
+			if (chain==*chain_start) *chain_start=chain->next;
+			chain_last->next=chain->next;
+			free(chain->arr);
+			free(chain);
+			chain=chain_last->next;
+		}
+		if (NULL!=chain) {
+			chain_last=chain;
+			chain=chain->next;
+		}
+//		fprintf(stderr, "move_down_chain: one\n");
+	} while (NULL!=chain);
+}
