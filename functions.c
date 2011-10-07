@@ -47,6 +47,9 @@ char  c; {
 				default: return  0 ; break;
 			}
 		break;
+		case 'c': //chest-like
+			if (7==id || 8==id) return 1;
+			else return 0;
 		case 'd': //dangerous
 			switch (id) {
 				case  5: return 1; //fire
@@ -70,8 +73,8 @@ char  c; {
 			else return 0;
 		break;
 		case 's': //Stackable (armour is already mentioned)
-			if (1) return 1;
-			else return 0;
+			if (6!=id) return 0;
+			else return 1;
 		break;
 		case 't': //Transparent
 			if (id==0) return 1;

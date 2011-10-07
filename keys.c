@@ -140,8 +140,7 @@ int key; {
 				cur[4]=*markednum;
 				*markednum=0;
 			} else if (cur[3]==*markedwhat && cur[0]!=2 &&
-					 property(*markedwhat, 's') &&
-					!property(*markedwhat, 'a')) { //add
+					 property(*markedwhat, 's')) { //add
 				for ( ; *markednum!=9 && cur[4]!=0; --cur[4])
 					++*markednum;
 				if (cur[4]==0) cur[3]=0;

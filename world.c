@@ -158,7 +158,7 @@ FILE  *file; {
 					while (i<63) (*animalcar)->arr[i++]=0;
 					//put helmet to all new chests
 					(*animalcar)->arr[4 ]=6;
-					(*animalcar)->arr[34]=1;
+					(*animalcar)->arr[34]=9;
 					//
 					if ('h'==type) (*animalcar)->arr[i]=24;
 				} else
@@ -238,11 +238,35 @@ void move_down_chain(chain_start)
 struct something **chain_start; {
 	int  fall(), property();
 	struct something *chain=*chain_start,
-			 *chain_last=chain;
+	                 *chain_last=chain;
+	short empty_flag;
 //	fprintf(stderr, "move_down_chain: started\n");
 	do {
+		empty_flag=0;
 		chain->arr[2]-=fall(chain->arr[0], chain->arr[1], chain->arr[2]);
-		if (property(earth[chain->arr[0]][chain->arr[1]][chain->arr[2]-1], 'd')) {
+		if (property(earth[chain->arr[0]][chain->arr[1]]
+		                         [chain->arr[2]-1], 'c')) {
+			short i, j;
+			struct something *findanimal(),
+			                 *lower_chest=findanimal(chain->arr[0],
+			                 chain->arr[1], chain->arr[2]-1);
+			for (i=3; i<=33; ++i) if (chain->arr[i])
+				for (j=3; j<=33; ++j) if (!lower_chest->arr[j]) {
+//					fprintf(stderr, "one thing fell into\n");
+					lower_chest->arr[j   ]=chain->arr[i   ];
+					lower_chest->arr[j+30]=chain->arr[i+30];
+					chain->arr[i]=chain->arr[i+30]=0;
+					break;
+				}
+			empty_flag=1;
+			for (i=3; i<=33; ++i) if (chain->arr[i]) {
+				empty_flag=0;
+				break;
+			}
+
+		}
+		if (property(earth[chain->arr[0]][chain->arr[1]][chain->arr[2]-1], 'd') ||
+				empty_flag) {
 		 	//environment instead of zero
 			earth[chain->arr[0]][chain->arr[1]][chain->arr[2]]=0;
 			if (chain==*chain_start) *chain_start=chain->next;
