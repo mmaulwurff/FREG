@@ -56,6 +56,10 @@ char  c; {
 				default: return 0;
 			}
 		break;
+		case 'm': //movable
+			if(4==id || 8==id) return 1;
+			else return 0;
+		break;
 		case 'n': //active things
 			switch (id) {
 				//animals
@@ -89,16 +93,18 @@ struct something *findanimal(x, y, z)
 short x, y, z; {
 //	fprintf(stderr, "findanimal\n");
 	struct something *car;
-	switch (property(earth[x][y][z], 'n')) {
-		case 'a': car=animalstart; break;
-		case 'c': car=cheststart;  break;
-		case 'h': car=heapstart;   break;
-	}
-	while (car!=NULL)
-		if (x==car->arr[0] &&
-		    y==car->arr[1] &&
-		    z==car->arr[2]) return(car);
-		else car=car->next;
+	if (property(earth[x][y][z], 'n')) {
+		switch (property(earth[x][y][z], 'n')) {
+			case 'a': car=animalstart; break;
+			case 'c': car=cheststart;  break;
+			case 'h': car=heapstart;   break;
+		}
+		while (car!=NULL)
+			if (x==car->arr[0] &&
+			    y==car->arr[1] &&
+			    z==car->arr[2]) return car;
+			else car=car->next;
+	} else return NULL;
 }
 
 //returns pointer to chest to open

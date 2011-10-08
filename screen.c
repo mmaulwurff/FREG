@@ -243,10 +243,10 @@ void invview() {
 	else wattrset(world, COLOR_PAIR(1));
 	(void)mvwprintw(world, 3, 2, "    ");
 	for (i=0; i<=3; ++i)
-		if (cloth[i].what) {
-			char name=getname(cloth[i].what, world);
-			(void)mvwprintw(world, 2+i, 3, "%c%c", name, name);
-		} else switch (i) {
+		if (cloth[i].what)
+			(void)mvwprintw(world, 2+i, 3, "%c%d",
+				getname(cloth[i].what, world), cloth[i].num);
+		else switch (i) {
 			case 0: //head
 				wattrset(world, COLOR_PAIR(3));
 				(void)mvwprintw(world, 2, 3, "''");

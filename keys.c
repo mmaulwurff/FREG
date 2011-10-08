@@ -361,17 +361,18 @@ int key; {
 	if (notflag!=notc) {
 		switch (notc) {
 			case  0: notify("Nothing special happened.",    0); break;
-			case  1: notify("This is the wall.",            0); break;
-			case  2: notify("Ready to jump.",               0); break;
-			case  3: notify("Can't jump.",                  0); break;
-			case  4: notify("You fell down.",               0); break;
+			case  1: notify("You can't move this way.",     0); break;
+			case  2: notify("You're ready to jump.",        0); break;
+			case  3: notify("You can't jump.",              0); break;
+			case  4: notify("You fall down.",               0); break;
 			case  5: notify("Something is over your head.", 0); break;
-			case  6: notify("Game saved.",                  0); break;
-			case  7: notify("Game loaded.",                 0); break;
+			case  6: notify("Game is saved.",               0); break;
+			case  7: notify("Game is loaded.",              0); break;
 			case  9: notify("Something unknown!",           0); break;
-			case 10: notify("Can't use",                    0); break;
-			case 11: notify("You dropped something",        0); break;
+			case 10: notify("You can't use this.",          0); break;
+			case 11: notify("You drop something.",          0); break;
 			case 12: notify("Nothing to drop",              0); break;
+			case 13: notify("You move a block.",            0); break;
 			case 31: notify("Grass or leaves",              0); break;
 			case 32: notify("Stone",                        0); break;
 			case 33: notify("It is somebody!",              0); break;

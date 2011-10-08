@@ -23,7 +23,7 @@ short x, y, z; {
 		earth[x][y][z-h]=earth[x][y][z];
 		earth[x][y][z]=env;
 	}
-	return(h);
+	return h;
 }
 
 //moves player
@@ -40,18 +40,41 @@ short x, y; {
 		    property(earth[xp+x][yp+y][zp+1], 'p')) {
 			xp+=x;
 			yp+=y;
-		}
-		else notc=1;
+		} else notc=1;
 	}
-	if (property(earth[xp+x][yp+y][zp  ], 'p') &&
-	    property(earth[xp+x][yp+y][zp+1], 'p')) {
-		xp+=x;
-		yp+=y;
-	}
-	else notc=1;
+	if (property(earth[xp+x][yp+y][zp+1], 'p'))
+		if (property(earth[xp+x][yp+y][zp], 'p')) {
+			xp+=x;
+			yp+=y;
+		} else if (property(earth[xp+x][yp+y][zp], 'm') &&
+				property(earth[xp+2*x][yp+2*y][zp], 'p')) {
+			void push();
+			push(xp+x, yp+y, zp, x, y);
+			xp+=x;
+			yp+=y;
+			notc=13;
+		} else notc=1;
 	jump=0;
 	onbound();
-	return(notc);
+	return notc;
+}
+
+//pushes block from target xyz to changed xyz
+void push(x_target, y_target, z_target, x_change, y_change)
+short x_target, y_target, z_target,
+      x_change, y_change; {
+	struct something *findanimal(),
+	                 *target=findanimal(x_target, y_target, z_target);
+	short save=earth[x_target+x_change]
+	                [y_target+y_change]
+	                [z_target];
+	if (NULL!=target) {
+		target->arr[0]+=x_change;
+		target->arr[1]+=y_change;
+	}
+	earth[x_target+x_change][y_target+y_change][z_target]=
+		earth[x_target][y_target][z_target];
+	earth[x_target][y_target][z_target]=save;
 }
 
 //all mechanics events
@@ -123,59 +146,45 @@ FILE  *file; {
 	int  property();
 	char type=property(earth[x][y][z], 'n');
 	if (type) {
-		short if_heap=0;
-		struct something **animalcar,
-				 **start,
-				 *save;
+		struct something **start,
+		                 *thing_new;
 		switch (type) {
 			case 'a': start=&animalstart; break; //animal
 			case 'c': start=&cheststart;  break; //chest
 			case 'h': start=&heapstart;   break; //heap
 			case 't': start=&thingstart;  break; //thing
 		}
-//		fprintf(stderr, "spawn2\n");
-		if (*start==NULL) {
-			 animalcar=malloc(sizeof(struct something *));
-			*animalcar=malloc(sizeof(struct something));
-			*start=*animalcar;
-		} else {
-			animalcar=malloc(sizeof(struct something *));
-			for (*animalcar=*start; (*animalcar)->next!=NULL;
-				*animalcar=(*animalcar)->next);
-			*animalcar=(*animalcar)->next=malloc(sizeof(struct something));
-		}
+		(thing_new=malloc(sizeof(struct something)))->next=*start;
+		*start=thing_new;
 //		fprintf(stderr, "spawn3\n");
 		switch (type) {
 			case 'a': //animal
-				(*animalcar)->arr=malloc( 4*sizeof(short));
-				(*animalcar)->arr[3]=(file==NULL) ? 9 : getc(file);
+				thing_new->arr=malloc(4*sizeof(short));
+				thing_new->arr[3]=(file==NULL) ? 9 : getc(file);
 			break;
 			case 'h': case 'c': { //heap or chest
-				(*animalcar)->arr=
-					malloc((('h'==type) ? 1 : 0)+63*sizeof(short));
 				short i=3;
+				thing_new->arr=
+					malloc((('h'==type) ? 1 : 0)+63*sizeof(short));
 				if (file==NULL) {
-					while (i<63) (*animalcar)->arr[i++]=0;
+					while (i<63) thing_new->arr[i++]=0;
 					//put helmet to all new chests
-					(*animalcar)->arr[4 ]=6;
-					(*animalcar)->arr[34]=9;
+					thing_new->arr[4 ]=6;
+					thing_new->arr[34]=9;
 					//
-					if ('h'==type) (*animalcar)->arr[i]=24;
+					if ('h'==type) thing_new->arr[i]=24;
 				} else
 					while (i<63+(('h'==type) ? 1 : 0))
-						(*animalcar)->arr[i++]=getc(file);
+						thing_new->arr[i++]=getc(file);
 			} break;
 			case 't': //thing
-				(*animalcar)->arr=malloc( 3*sizeof(short));
+				thing_new->arr=malloc(3*sizeof(short));
 			break;
 		}
-		(*animalcar)->arr[0]=x;
-		(*animalcar)->arr[1]=y;
-		(*animalcar)->arr[2]=z;
-		(*animalcar)->next=NULL;
-		save=*animalcar;
-		free(animalcar);
-		return save;
+		thing_new->arr[0]=x;
+		thing_new->arr[1]=y;
+		thing_new->arr[2]=z;
+		return thing_new;
 	} else return NULL;
 }
 
@@ -233,7 +242,7 @@ struct something **chain; {
 	free(to_erase);
 }
 
-//moves down all elements of a chain
+//moves down all elements of a chain and does some service
 void move_down_chain(chain_start)
 struct something **chain_start; {
 	int  fall(), property();
@@ -244,8 +253,9 @@ struct something **chain_start; {
 	do {
 		empty_flag=0;
 		chain->arr[2]-=fall(chain->arr[0], chain->arr[1], chain->arr[2]);
-		if (property(earth[chain->arr[0]][chain->arr[1]]
-		                         [chain->arr[2]-1], 'c')) {
+		if (property(earth[chain->arr[0]][chain->arr[1]][chain->arr[2]], 'c') &&
+		    property(earth[chain->arr[0]][chain->arr[1]][chain->arr[2]-1], 'c')) {
+			//falling into
 			short i, j;
 			struct something *findanimal(),
 			                 *lower_chest=findanimal(chain->arr[0],
@@ -259,15 +269,14 @@ struct something **chain_start; {
 					break;
 				}
 			empty_flag=1;
-			for (i=3; i<=33; ++i) if (chain->arr[i]) {
+			for (i=3; i<=33; ++i) if (chain->arr[i]) { //if empty, delete
 				empty_flag=0;
 				break;
 			}
-
 		}
 		if (property(earth[chain->arr[0]][chain->arr[1]][chain->arr[2]-1], 'd') ||
-				empty_flag) {
-		 	//environment instead of zero
+				empty_flag) { //delete if danger or empty
+		 	//TODO: environment instead of zero:
 			earth[chain->arr[0]][chain->arr[1]][chain->arr[2]]=0;
 			if (chain==*chain_start) *chain_start=chain->next;
 			chain_last->next=chain->next;
