@@ -34,7 +34,7 @@ void *mech(void *vptr_args) {
 		sleep(1);
 		pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
 		//all mech and animal functions
-		allmech();
+		if ('m'!=view) allmech();
 		pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
 	}
 }
@@ -45,6 +45,7 @@ void main() {
 	     eraseanimals(),
 	     loadgame(),
 	     map(),
+	     sounds_print(),
 	     notify(),
 	     *mech();
 	int  ch;
@@ -76,12 +77,17 @@ void main() {
 	(void)refresh();
 	loadgame();
 	map();
+	sounds_print();
 	notify("Game started.", 0);
 	//this is the game itself
 	while ((ch=getch())!=(int)'Q')
-		if (view=='u' || view=='f' || view=='h' || view=='k' || view=='r')
+		switch (view) {
+			case 'u': case 'f': case 'h': case 'k': case 'r':
 			keytogame(ch);
-		else keytoinv(ch);
+			break;
+			case 'm': key_to_menu(ch); break;
+			default : keytoinv(ch); break;
+		}
 	//stop parallel thread
 	eraseanimals();
 	(void)pthread_cancel(mechthread);

@@ -21,25 +21,44 @@
 
 extern short xp, yp, zp,
              jump, eye[], eyes[], pl,
-	     earth[][192][HEAVEN+1],
-	     radar_dist;
+             earth[][192][HEAVEN+1],
+             radar_dist;
 extern char  view, view_last;
 extern struct item inv[][3],
                    cloth[];
 extern struct something *heapstart;
 
-short cur[]={1, 0, 0, 0, 0}; /*0.field (0.chest, 1.player, 2.function),
-                               1.x, 2.y, 3.id, 4.number*/
-short notflag=1; //flag used for optimization, for not notifying when nothing happens
+short  cur[]={1, 0, 0, 0, 0}; /*0.field (0.chest, 1.player, 2.function),
+                                1.x, 2.y, 3.id, 4.number*/
+short  notflag=1; //flag used for optimization, for not notifying when nothing happens
 struct item *craft;
+char   last_view2;
 
+//menu keys
+void key_to_menu(key)
+int key; {
+	void notify();
+	switch (key) {
+		case 27: case 'm':
+			view=last_view2;
+			notify("Game is resumed.", 0);
+		break;
+	}
+}
+
+//inventory keys
 void keytoinv(key)
 int key; {
-	void map();
+	void map(), notify();
 	short pocketflag=0;
 	switch (key) {
+		case 'm':
+			last_view2=view;
+			view='m';
+			notify("Pause", 0);
+		break;
 		case 'u': case 'f': case 'h': case 'k': case 'r': case 27: //views;
-			if ('c'==view) {
+			if ('c'==view) { //close chest
 //				fprintf(stderr, "")
 				short x, y, z;
 				void  focus();
@@ -161,7 +180,7 @@ int key; {
 		} break;
 		case '!': radar_dist=(NEAR==radar_dist) ? FAR : NEAR; break;
 	}
-	map();
+	if ('m'!=view) map();
 	if (pocketflag) {
 		void pocketshow();
 		pocketshow();
@@ -198,7 +217,7 @@ short **markedwhat, **markednum; {
 //this is game physics and interface
 void keytogame(key)
 int key; {
-	void  pocketshow(), sounds_print();
+	void  pocketshow(), sounds_print(), notify();
 	int   step(),
 	      property();
 	short notc=0,
@@ -208,6 +227,11 @@ int key; {
 		//player movement
 		//TODO: read keys from file
 		//these are optimized for Dvorak programmer layout
+		case 'm':
+			last_view2=view;
+			view='m';
+			notify("Pause", 0);
+		break;
 		case KEY_LEFT:
 			if ((notc=step(-eye[1]*(abs(eye[0])-1),
 			                eye[0]*(abs(eye[1])-1))==1) || notc==5)
@@ -351,42 +375,44 @@ int key; {
 		default  : notc=8; mapflag=0; break;
 	}
 	//falling down
-	for (save=0; property(earth[xp][yp][zp-1], 'p'); ++save, --zp);
-       	if (save>1) {
-		notc=4;
-		//damage should be here
-	}
-	if (mapflag) {
-		void map();
-		map();
-	}
-	sounds_print();
-	if (notflag!=notc) {
-		switch (notc) { //max number of chars in line: 30
-			//               |                            |
-			case  0: notify("Nothing special happened.",    0); break;
-			case  1: notify("You can't move this way.",     0); break;
-			case  2: notify("You're ready to jump.",        0); break;
-			case  3: notify("You can't jump.",              0); break;
-			case  4: notify("You fall down.",               0); break;
-			case  5: notify("Something is over your head.", 0); break;
-			case  6: notify("Game is saved.",               0); break;
-			case  7: notify("Game is loaded.",              0); break;
-			case  9: notify("Something unknown!",           0); break;
-			case 10: notify("You can't use this.",          0); break;
-			case 11: notify("You drop something.",          0); break;
-			case 12: notify("Nothing to drop",              0); break;
-			case 13: notify("You move a block.",            0); break;
-			case 31: notify("Grass or leaves",              0); break;
-			case 32: notify("Stone",                        0); break;
-			case 33: notify("It is somebody!",              0); break;
-			case 34: notify("Chiken",                       0); break;
-			case 35: notify("Careful! Fire",                0); break;
-			case 36: notify("Weapon", cloth[4].num); break;
-			case  8: //no break
-			default: notify("?",                            0); break;
+	if ('m'!=view) {
+		for (save=0; property(earth[xp][yp][zp-1], 'p'); ++save, --zp);
+	       	if (save>1) {
+			notc=4;
+			//damage should be here
 		}
-		notflag=notc;
+		if (mapflag) {
+			void map();
+			map();
+		}
+		sounds_print();
+		if (notflag!=notc) {
+			switch (notc) { //max number of chars in line: 30
+				//               |                            |
+				case  0: notify("Nothing special happened.",    0); break;
+				case  1: notify("You can't move this way.",     0); break;
+				case  2: notify("You're ready to jump.",        0); break;
+				case  3: notify("You can't jump.",              0); break;
+				case  4: notify("You fall down.",               0); break;
+				case  5: notify("Something is over your head.", 0); break;
+				case  6: notify("Game is saved.",               0); break;
+				case  7: notify("Game is loaded.",              0); break;
+				case  9: notify("Something unknown!",           0); break;
+				case 10: notify("You can't use this.",          0); break;
+				case 11: notify("You drop something.",          0); break;
+				case 12: notify("Nothing to drop",              0); break;
+				case 13: notify("You move a block.",            0); break;
+				case 31: notify("Grass or leaves",              0); break;
+				case 32: notify("Stone",                        0); break;
+				case 33: notify("It is somebody!",              0); break;
+				case 34: notify("Chiken",                       0); break;
+				case 35: notify("Careful! Fire",                0); break;
+				case 36: notify("Weapon",            cloth[4].num); break;
+				case  8: //no break
+				default: notify("?",                            0); break;
+			}
+			notflag=notc;
+		}
 	}
 }
 

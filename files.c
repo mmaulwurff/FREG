@@ -20,13 +20,13 @@
 short       xp, yp, zp, //player coordinates
             spx, spy,   //player square position
             jump,       //shows if player jumps
-	    eye[2],      //camera position: 
-	    eyes[2],     //previous camera position
+	    eye[2],     //camera position: 
+	    eyes[2],    //previous camera position
 	    pl,         //show player or no
             earth[192][192][HEAVEN+1], //current loaded world
 	    sky[39][39],
 	    radar_dist;
-char        view, /*view modes: sUrface, Floor, Head, sKy, fRont,
+char        view, /*view modes: sUrface, Floor, Head, sKy, fRont, Menu
                     Inventory, Chest, Workbench, furNace */
             view_last; //save previous view
 struct item inv[10][3], //inventory
