@@ -20,11 +20,12 @@
 short       xp, yp, zp, //player coordinates
             spx, spy,   //player square position
             jump,       //shows if player jumps
-	    eye[2],      //camera position
+	    eye[2],      //camera position: 
 	    eyes[2],     //previous camera position
 	    pl,         //show player or no
             earth[192][192][HEAVEN+1], //current loaded world
-	    sky[39][39];
+	    sky[39][39],
+	    radar_dist;
 char        view, /*view modes: sUrface, Floor, Head, sKy, fRont,
                     Inventory, Chest, Workbench, furNace */
             view_last; //save previous view
@@ -40,17 +41,18 @@ void loadgame() {
 	short i, j;
 	FILE* file=fopen("save", "r");
 	if (file!=NULL) { //load
-		xp=       getc(file);
-		yp=       getc(file);
-		zp=       getc(file);
-		jump=     getc(file);
-		eye[0]=   getc(file)-1;
-		eye[1]=   getc(file)-1;
-		eyes[0]=  getc(file)-1;
-		eyes[1]=  getc(file)-1;
-		pl=       getc(file);
-		view=     getc(file);
-		view_last=getc(file);
+		xp=        getc(file);
+		yp=        getc(file);
+		zp=        getc(file);
+		jump=      getc(file);
+		eye[0]=    getc(file)-1;
+		eye[1]=    getc(file)-1;
+		eyes[0]=   getc(file)-1;
+		eyes[1]=   getc(file)-1;
+		pl=        getc(file);
+		view=      getc(file);
+		view_last= getc(file);
+		radar_dist=getc(file);
 		spx=(((getc(file))=='-') ? (-1) : 1)*getc(file);
 		spy=(((getc(file))=='-') ? (-1) : 1)*getc(file);
 		for (i=0; i<=38; ++i)
@@ -174,17 +176,18 @@ void savegame() {
 	      n=0;
 	FILE* file=fopen("save", "wb");
 //write saving time should be here
-	fputc(xp,        file);
-	fputc(yp,        file);
-	fputc(zp,        file);
-	fputc(jump,      file);
-	fputc(eye[0]+1,  file);
-	fputc(eye[1]+1,  file);
-	fputc(eyes[0]+1, file);
-	fputc(eyes[1]+1, file);
-	fputc(pl,        file);
-	fputc(view,      file);
-	fputc(view_last, file);
+	fputc(xp,         file);
+	fputc(yp,         file);
+	fputc(zp,         file);
+	fputc(jump,       file);
+	fputc(eye[0]+1,   file);
+	fputc(eye[1]+1,   file);
+	fputc(eyes[0]+1,  file);
+	fputc(eyes[1]+1,  file);
+	fputc(pl,         file);
+	fputc(view,       file);
+	fputc(view_last,  file);
+	fputc(radar_dist, file);
 	//spx and spy may be longs, so there should be another way
 	if (spx<0) fputc('-', file);
 	else       fputc('+', file);
@@ -273,4 +276,12 @@ void onbound() {
 		++spy;
 		load();
 	}
+}
+
+//random number (linux only)
+int random_linux() {
+	FILE* file=fopen("/dev/urandom", "rb");
+	char c=fgetc(file);
+	fclose(file);
+	return c;
 }

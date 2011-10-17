@@ -17,12 +17,12 @@
 #include "header.h"
 #include <ncurses.h>
 #include <stdlib.h>
+#include <locale.h>
 
 extern short xp, yp, zp,
-             jump,
-             eye[], eyes[],
-	     pl,
-	     earth[][192][HEAVEN+1];
+             jump, eye[], eyes[], pl,
+	     earth[][192][HEAVEN+1],
+	     radar_dist;
 extern char  view, view_last;
 extern struct item inv[][3],
                    cloth[];
@@ -159,6 +159,7 @@ int key; {
 				cur[4]=save;
 			}
 		} break;
+		case '!': radar_dist=(NEAR==radar_dist) ? FAR : NEAR; break;
 	}
 	map();
 	if (pocketflag) {
@@ -197,7 +198,7 @@ short **markedwhat, **markednum; {
 //this is game physics and interface
 void keytogame(key)
 int key; {
-	void  pocketshow();
+	void  pocketshow(), sounds_print();
 	int   step(),
 	      property();
 	short notc=0,
@@ -346,6 +347,7 @@ int key; {
 			}
 		} else notc=12;
 		break;
+		case '!': radar_dist=(NEAR==radar_dist) ? FAR : NEAR; break;
 		default  : notc=8; mapflag=0; break;
 	}
 	//falling down
@@ -358,8 +360,10 @@ int key; {
 		void map();
 		map();
 	}
+	sounds_print();
 	if (notflag!=notc) {
-		switch (notc) {
+		switch (notc) { //max number of chars in line: 30
+			//               |                            |
 			case  0: notify("Nothing special happened.",    0); break;
 			case  1: notify("You can't move this way.",     0); break;
 			case  2: notify("You're ready to jump.",        0); break;
@@ -379,7 +383,7 @@ int key; {
 			case 34: notify("Chiken",                       0); break;
 			case 35: notify("Careful! Fire",                0); break;
 			case 36: notify("Weapon", cloth[4].num); break;
-			case  8:
+			case  8: //no break
 			default: notify("?",                            0); break;
 		}
 		notflag=notc;

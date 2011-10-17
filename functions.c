@@ -16,6 +16,7 @@
 
 #include "header.h"
 #include <stdlib.h>
+//#include <ncurses.h> //for debug only
 
 extern struct something *animalstart,
                         *cheststart,
@@ -56,7 +57,7 @@ char  c; {
 				default: return 0;
 			}
 		break;
-		case 'm': //movable
+		case 'm': //Movable
 			if(4==id || 8==id) return 1;
 			else return 0;
 		break;
@@ -71,6 +72,13 @@ char  c; {
 				case  8: return 'h'; break;
 				default: return  0 ; break;
 			}
+		break;
+		case 'o': //sOunds
+			if (4==id) {
+				char getname();
+//				fprintf(stderr, "%c", getname(id, NULL));
+				return getname(id, NULL);
+			} else return 0;
 		break;
 		case 'p': //Passable: air
 			if (id==0) return 1;

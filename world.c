@@ -7,23 +7,28 @@ extern short xp, yp, zp, earth[][192][HEAVEN+1], jump, notflag;
 
 short mechtoggle=0;
 
+//TODO: char instead of short
+struct item radar[9];
+extern short radar_dist;
+
 struct something *animalstart=NULL,
                  *cheststart =NULL,
                  *thingstart =NULL,
 		 *heapstart  =NULL;
+
 //drops block
 int fall(x, y, z)
 short x, y, z; {
 	int   property();
-	short h;
-	for (h=0; property(earth[x][y][z-h-1], 'p'); ++h);
-//	fprintf(stderr, "fall: h=%d\n", h);
-	if (h>0) {
-		short env=earth[x][y][z-h];
-		earth[x][y][z-h]=earth[x][y][z];
+	short height;
+	for (height=0; property(earth[x][y][z-height-1], 'p'); ++height);
+//	fprintf(stderr, "fall: height=%d\n", height);
+	if (height>0) {
+		short env=earth[x][y][z-height];
+		earth[x][y][z-height]=earth[x][y][z];
 		earth[x][y][z]=env;
 	}
-	return h;
+	return height;
 }
 
 //moves player
@@ -79,7 +84,7 @@ short x_target, y_target, z_target,
 
 //all mechanics events
 void allmech() {
-	void map(),
+	void map(), sounds_print(),
 	     chiken_move();
 //	fprintf(stderr, "allmech, %c\n", signal);
 	if (signal=='w') {
@@ -107,17 +112,91 @@ void allmech() {
 		if (NULL!=animalstart) move_down_chain(&animalstart);
 	}
 	mechtoggle=(mechtoggle) ? 0 : 1;
+	{
+		void sounds();
+		sounds(animalstart);
+	}
+	sounds_print();
 	if (view!='i' && view!='w') map();
 }
+
+//this checks if sowething sounds and modifies radar array
+void sounds(start)
+struct something *start; {
+//	fprintf(stderr, "sounds started\n");
+	int   property();
+	char  name;
+	for ( ; NULL!=start; start=start->next) {
+//		fprintf(stderr, "sounds inside: %d, %d, %d\n", abs(xp-start->arr[0]),
+//				abs(yp-start->arr[1]), abs(zp-start->arr[2]));
+		if (abs(start->arr[0]-xp)<=radar_dist &&
+		    abs(start->arr[1]-yp)<=radar_dist &&
+		    abs(start->arr[2]-zp)<=NEAR &&
+		    (name=property(earth[start->arr[0]][start->arr[1]][start->arr[2]],
+		   'o'))) {
+			void change_radar();
+			// ^
+			if ((start->arr[1]-yp)<-abs(start->arr[0]-xp))
+				change_radar(1, start->arr[2]-zp, name);
+			// <
+			else if (start->arr[0]-xp<-abs(start->arr[1]-yp))
+				change_radar(3, start->arr[2]-zp, name);
+			// v
+			else if (start->arr[1]-yp>abs(start->arr[0]-xp))
+				change_radar(7, start->arr[2]-zp, name);
+			// >
+			else if (start->arr[0]-xp>abs(start->arr[1]-yp))
+				change_radar(5, start->arr[2]-zp, name);
+			// <v
+			else if (start->arr[0]-xp==yp-start->arr[1] &&
+					start->arr[0]-xp<0)
+				change_radar(6, start->arr[2]-zp, name);
+			// >^
+			else if (start->arr[0]-xp==yp-start->arr[1] &&
+					start->arr[0]-xp>0)
+				change_radar(2, start->arr[2]-zp, name);
+			// <^
+			else if (start->arr[0]-xp==start->arr[1]-yp &&
+					start->arr[0]-xp<0)
+				change_radar(0, start->arr[2]-zp, name);
+			// >v
+			else if (start->arr[0]-xp==start->arr[1]-yp &&
+					start->arr[0]-xp>0)
+				change_radar(8, start->arr[2]-zp, name);
+			// .
+			else change_radar(4, start->arr[2]-zp, name);
+			}
+	}
+}
+
+void change_radar(i, height, name)
+short i, height;
+char  name; {
+//	fprintf(stderr, "change_radar started\n");
+	if (' '!=radar[i].what && radar[i].what!=name) {
+		radar[i].what='#';
+		radar[i].num= (radar[i].num-+height)/2;
+	} else {
+		radar[i].what=name;
+		radar[i].num =height;
+	}
+/*	fprintf(stderr, "%c%c%c%c%c%c\n%c%c%c%c%c%c\n%c%c%c%c%c%c\n",
+		radar[0].what, radar[0].num, radar[1].what, radar[1].num,
+		radar[2].what, radar[2].num,
+		radar[3].what, radar[3].num, radar[4].what, radar[4].num,
+		radar[5].what, radar[5].num,
+		radar[6].what, radar[6].num, radar[7].what, radar[7].num,
+		radar[8].what, radar[8].num);*/
+}
+
 
 //this moves an animal
 void chiken_move(animalp)
 struct something *animalp; {
 //	fprintf(stderr, "chiken_move\n");
-	FILE* file=fopen("/dev/urandom", "rb");
-	short c=(unsigned)fgetc(file)%5,
+	int   random_linux();
+	short c=(unsigned)random_linux()%5,
 	      save=earth[animalp->arr[0]][animalp->arr[1]][animalp->arr[2]];
-	fclose(file);
 	earth[animalp->arr[0]][animalp->arr[1]][animalp->arr[2]]=0;
 	if      (c==0 && animalp->arr[0]!=191 &&
 		property(earth[animalp->arr[0]+1][animalp->arr[1]][animalp->arr[2]], 'p')
@@ -253,7 +332,7 @@ struct something **chain_start; {
 	do {
 		empty_flag=0;
 		chain->arr[2]-=fall(chain->arr[0], chain->arr[1], chain->arr[2]);
-		if (property(earth[chain->arr[0]][chain->arr[1]][chain->arr[2]], 'c') &&
+		if (property(earth[chain->arr[0]][chain->arr[1]][chain->arr[2]],   'c') &&
 		    property(earth[chain->arr[0]][chain->arr[1]][chain->arr[2]-1], 'c')) {
 			//falling into
 			short i, j;

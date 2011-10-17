@@ -16,24 +16,27 @@
 
 #include "header.h"
 #include <ncurses.h>
+#include <locale.h>
 
-extern WINDOW      *world, *textwin, *pocketwin;
+extern WINDOW      *world, *textwin, *pocketwin, *sound_window;
 extern short       xp, yp, zp, pl, eye[], earth[][192][HEAVEN+1],
-                   sky[][39], cur[], mechtoggle;
-extern struct item inv[][3], cloth[], *craft;
+                   sky[][39], cur[], mechtoggle, radar_dist;
+extern struct item inv[][3], cloth[], radar[], *craft;
+extern struct something *animalstart;
 extern char        view;
 
 //global notify system.
 void notify(not, noc)
 char not[];
 short noc; {
+//:	setlocale(LC_ALL, "ru_RU.utf8");
 	(void)wclear(textwin);
 	wstandend(textwin);
 	mvwaddstr(textwin, 1, 1, not);
 	if (noc) wprintw(textwin, "%d", noc);
-	(void)mvwprintw(textwin, 2, 1, "x: %d", xp);
-	(void)mvwprintw(textwin, 3, 1, "y: %d", yp);
-	(void)mvwprintw(textwin, 4, 1, "z: %d", zp);
+//	(void)mvwprintw(textwin, 2, 1, "x: %d", xp);
+//	(void)mvwprintw(textwin, 3, 1, "y: %d", yp);
+//	(void)mvwprintw(textwin, 4, 1, "z: %d", zp);
 	(void)box(textwin, 0, 0);
 	(void)wrefresh(textwin);
 }
@@ -67,9 +70,8 @@ char   c; {
 
 // this prints visible world
 void map() {
-	void invview(),
-	     surf(),
-	     frontview();
+	void  invview(), surf(), frontview(),
+	      sound();
 	(void)wclear(world);
 	if (view=='u' || view=='f' || view=='h' || view=='k') surf();
 	else if (view=='r') frontview();
@@ -90,18 +92,78 @@ void map() {
 	(void)wrefresh(world);
 }
 
+//prints sounds
+void sounds_print() {
+	short i;
+	for (i=0; i<9; ++i) {
+		radar[i].what=' ';
+		radar[i].num=0;
+	}
+	sounds(animalstart);
+	for (i=0; i<9; ++i) {
+		if (radar[i].num<0) radar[i].num='-';
+		else if (radar[i].num>9) radar[i].num='+';
+		else if (0==radar[i].num) radar[i].num+=' ';
+		else radar[i].num+='0';
+	}
+	if (' '==radar[4].what) radar[4].what='.';
+	(void)wclear(sound_window);
+	wmove(sound_window, 1, 1);
+/* 0 1 2
+ * 3 4 5
+ * 6 7 8
+ * this looks ugly, but should work fast:*/
+	if (eye[0]==0)
+		if (eye[1]==-1)
+			(void)wprintw(sound_window, //north
+			"%c%c%c%c%c%c\n %c%c%c%c%c%c\n %c%c%c%c%c%c",
+			radar[0].what, radar[0].num, radar[1].what, radar[1].num,
+			radar[2].what, radar[2].num,
+			radar[3].what, radar[3].num, radar[4].what, radar[4].num,
+			radar[5].what, radar[5].num,
+			radar[6].what, radar[6].num, radar[7].what, radar[7].num,
+			radar[8].what, radar[8].num);
+		else
+			(void)wprintw(sound_window, //south
+			"%c%c%c%c%c%c\n %c%c%c%c%c%c\n %c%c%c%c%c%c",
+			radar[8].what, radar[8].num, radar[7].what, radar[7].num,
+			radar[6].what, radar[6].num,
+			radar[5].what, radar[5].num, radar[4].what, radar[4].num,
+			radar[3].what, radar[3].num,
+			radar[2].what, radar[2].num, radar[1].what, radar[1].num,
+			radar[0].what, radar[0].num);
+	else if (eye[0]==-1)
+			(void)wprintw(sound_window, //west
+			"%c%c%c%c%c%c\n %c%c%c%c%c%c\n %c%c%c%c%c%c",
+			radar[6].what, radar[6].num, radar[3].what, radar[3].num,
+			radar[0].what, radar[0].num,
+			radar[7].what, radar[7].num, radar[4].what, radar[4].num,
+			radar[1].what, radar[1].num,
+			radar[8].what, radar[8].num, radar[5].what, radar[5].num,
+			radar[2].what, radar[2].num);
+	else
+			(void)wprintw(sound_window, //east
+			"%c%c%c%c%c%c\n %c%c%c%c%c%c\n %c%c%c%c%c%c",
+			radar[2].what, radar[2].num, radar[5].what, radar[5].num,
+			radar[8].what, radar[8].num,
+			radar[1].what, radar[1].num, radar[4].what, radar[4].num,
+			radar[7].what, radar[7].num,
+			radar[0].what, radar[0].num, radar[3].what, radar[3].num,
+			radar[6].what, radar[6].num);
+	(void)box(sound_window, 0, 0);
+	(void)mvwprintw(sound_window, 0, 1, "sounds");
+	mvwprintw(sound_window, 4, 2, (NEAR==radar_dist) ? "near" : "far");
+	(void)wrefresh(sound_window);
+}
+
 //this prints world in front view
 void frontview() {
 	void in_frontview();
 	if (eye[0]==0)
-		if (eye[1]==-1) //north
-			in_frontview(xp-11,  1, yp-1, yp-21, -1, 1);
-		else            //south
-			in_frontview(xp+11, -1, yp+1, yp+21,  1, 1);
-	else if (eye[0]==-1)    //west
-			in_frontview(yp+11, -1, xp-1, xp-21, -1, 0);
-	else                    //east
-			in_frontview(yp-11,  1, xp+1, xp+21,  1, 0);
+		if (eye[1]==-1) in_frontview(xp-11,  1, yp-1, yp-21, -1, 1); //north
+		else            in_frontview(xp+11, -1, yp+1, yp+21,  1, 1); //south
+	else if (eye[0]==-1)    in_frontview(yp+11, -1, xp-1, xp-21, -1, 0); //west
+	else                    in_frontview(yp-11,  1, xp+1, xp+21,  1, 0); //east
 }
 
 //this function is used inside frontview()
@@ -326,23 +388,44 @@ char getname(block, pwin)
 short  block;
 WINDOW *pwin; {
 	switch (block) {
-		case 1: wattrset(pwin, COLOR_PAIR(2)); return('|'); break; //grass
-		case 2: wattrset(pwin, COLOR_PAIR(3)); return('s'); break; //stone
-		case 3: wattrset(pwin, COLOR_PAIR(2)); return('p'); break; //player
-		case 4: wattrset(pwin, COLOR_PAIR(5)); return('c'); break; //chiken
-		case 5:
-			if (mechtoggle) { //fire
-				wattrset(pwin, COLOR_PAIR(4));
-				return('F');
+		case 1: //grass
+			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(2));
+			return '|';
+		break;
+		case 2: //stone
+			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(3));
+			return 's';
+		break;
+		case 3: //player
+			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(2));
+			return 'p';
+		break;
+		case 4: //chiken
+			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(5));
+			return 'c';
+		break;
+		case 5: //fire
+			if (mechtoggle) {
+				if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(4));
+				return 'F';
 			} else {
-				wattrset(pwin, COLOR_PAIR(7));
-				return('f');
+				if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(7));
+				return 'f';
 			}
 		break;
-		case 6:	wattrset(pwin, COLOR_PAIR(3)); return('h'); break; //steel helmet
-		case 7: wattrset(pwin, COLOR_PAIR(9)); return('c'); break; //chest
-		case 8: wattrset(pwin, COLOR_PAIR(6)); return('h'); break; //heap
-		case 0: wstandend(pwin);               return(' '); break; //air
-		default:                               return('?'); break;
+		case 6: //steel helmet
+			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(3));
+			return 'h';
+		break;
+		case 7: //chest
+			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(9));
+			return 'c';
+		break;
+		case 8: //heap
+			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(6));
+			return 'h';
+		break;
+		case 0:  if (NULL!=pwin) wstandend(pwin); return ' '; break; //air
+		default: return '?'; break;
 	}
 }

@@ -17,13 +17,15 @@
 //#include "header.h"
 #include <pthread.h>
 #include <ncurses.h>
+#include <locale.h>
 
 extern char view;
 
 char signal='w';
 WINDOW *world,
        *textwin,
-       *pocketwin;
+       *pocketwin,
+       *sound_window;
 
 //parallel thread
 void *mech(void *vptr_args) {
@@ -56,6 +58,7 @@ void main() {
 	(void)cbreak();
 	(void)noecho();
 	(void)keypad(stdscr, TRUE);
+	setlocale(LC_ALL, "ru_Ru.utf8");
 	curs_set(0); //make cursor invisible
 	(void)init_pair(1, COLOR_WHITE,  COLOR_BLUE  );  //player, sky
 	(void)init_pair(2, COLOR_BLACK,  COLOR_GREEN );  //grass, dwarf
@@ -66,9 +69,10 @@ void main() {
 	(void)init_pair(7, COLOR_YELLOW, COLOR_RED   );  //fire2
 	(void)init_pair(8, COLOR_BLACK,  COLOR_RED   );  //pointer
 	(void)init_pair(9, COLOR_BLACK,  COLOR_YELLOW);  //wood
-	world=    newwin(24, 44, 0,  0);
-	pocketwin=newwin(1,  44, 24, 0);
-	textwin=  newwin(6,  44, 25, 0);
+	world=       newwin(24, 44, 0,  0);
+	pocketwin=   newwin(1,  44, 24, 0);
+	textwin=     newwin(5,  36, 25, 8);
+	sound_window=newwin(5,   8, 25, 0);
 	(void)refresh();
 	loadgame();
 	map();
