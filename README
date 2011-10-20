@@ -12,6 +12,9 @@ Compile notes:
 (libncurses5-dev should be installed)
 gcc -lncurses -pthread
 
+Debug:
+./Eyecube-*.bin 2>log
+
 Items table
                  Armour  Active  Passable  Stackable  Transparent
 0. Air           no      no      yes       no         yes

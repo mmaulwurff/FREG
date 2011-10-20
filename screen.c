@@ -25,10 +25,13 @@ extern struct item inv[][3], cloth[], radar[], *craft;
 extern struct something *animalstart;
 extern char        view;
 
+void tolog();
+
 //global notify system.
 void notify(not, noc)
 char not[];
 short noc; {
+	tolog("notify start\n");
 //:	setlocale(LC_ALL, "ru_RU.utf8");
 	(void)wclear(textwin);
 	wstandend(textwin);
@@ -39,10 +42,12 @@ short noc; {
 //	(void)mvwprintw(textwin, 4, 1, "z: %d", zp);
 	(void)box(textwin, 0, 0);
 	(void)wrefresh(textwin);
+	tolog("notify finish\n");
 }
 
 //this prints pockets contents
 void pocketshow() {
+	tolog("pocketshow start\n");
 	void  mark();
 	char  getname();
 	short x;
@@ -51,6 +56,7 @@ void pocketshow() {
 		getname(inv[x][2].what, pocketwin), inv[x][2].num);
 	mark(7+cloth[4].num*3, 0, pocketwin, 'e');
 	(void)wrefresh(pocketwin);
+	tolog("pocketshow finish\n");
 }
 
 //this marks chosen item in inventory and pockets
@@ -58,11 +64,12 @@ void mark(x, y, wind, c)
 short  x, y;
 WINDOW *wind;
 char   c; {
-	wattrset(wind, COLOR_PAIR(8));
 	if (c=='e') { //empty
-		(void)mvwprintw(wind, y, x-1, ">");
-		(void)mvwprintw(wind, y, x+2, "<");
+		wattrset(wind, COLOR_PAIR(2));
+		(void)mvwprintw(wind, y, x-1, " ");
+		(void)mvwprintw(wind, y, x+2, " ");
 	} else {      //full
+		wattrset(wind, COLOR_PAIR(8));
 		(void)mvwprintw(wind, y, x-1, "!");
 		(void)mvwprintw(wind, y, x+2, "!");
 	}
@@ -70,6 +77,7 @@ char   c; {
 
 // this prints visible world
 void map() {
+	tolog("map start\n");
 	void  invview(), surf(), frontview(),
 	      sound();
 	(void)wclear(world);
@@ -90,10 +98,12 @@ void map() {
 	if (!pl) (void)mvwprintw(world, 22, 21, "^^");
 	(void)box(world, 0, 0);
 	(void)wrefresh(world);
+	tolog("map finish\n");
 }
 
 //prints sounds
 void sounds_print() {
+	tolog("sounds_print start\n");
 	short i;
 	for (i=0; i<9; ++i) {
 		radar[i].what=' ';
@@ -154,16 +164,19 @@ void sounds_print() {
 	(void)mvwprintw(sound_window, 0, 1, "sounds");
 	mvwprintw(sound_window, 4, 2, (NEAR==radar_dist) ? "near" : "far");
 	(void)wrefresh(sound_window);
+	tolog("sounds_print finish\n");
 }
 
 //this prints world in front view
 void frontview() {
+	tolog("frontview start\n");
 	void in_frontview();
 	if (eye[0]==0)
 		if (eye[1]==-1) in_frontview(xp-11,  1, yp-1, yp-21, -1, 1); //north
 		else            in_frontview(xp+11, -1, yp+1, yp+21,  1, 1); //south
 	else if (eye[0]==-1)    in_frontview(yp+11, -1, xp-1, xp-21, -1, 0); //west
 	else                    in_frontview(yp-11,  1, xp+1, xp+21,  1, 0); //east
+	tolog("frontview finish\n");
 }
 
 //this function is used inside frontview()
@@ -213,6 +226,7 @@ short xsave, xplus,
 
 //surface view
 void surf() {
+	tolog("surf start\n");
 	void  in_surf();
 	short skycor=(view==3) ? (-1) : 1;
 	if (eye[0]==0)
@@ -224,6 +238,7 @@ void surf() {
 			in_surf(xp-20*skycor, yp+11,         0,  0,       skycor, -1);
 	else                    //east
 			in_surf(xp+20*skycor, yp-11,         0,  0,      -skycor,  1);
+	tolog("surf finish\n");
 }
 
 //this function is inside surf function
@@ -289,6 +304,7 @@ short xcor,  ycor,
 
 //this prints inventory
 void invview() {
+	tolog("invview start\n");
 	void  mark();
 	char  getname();
 	short i, j;
@@ -335,7 +351,6 @@ void invview() {
 		(void)mvwprintw(world, 17, 6, "|");
 		(void)mvwprintw(world, 18, 6, "|");
 		struct something *open_chest(), *chest=open_chest();
-//		struct something *chest=open_chest();
 		for (j=0; j<=9; ++j)
 		for (i=0; i<=2; ++i)
 			(void)mvwprintw(world, i+16, j*3+7, "%c%d",
@@ -381,12 +396,14 @@ void invview() {
 	} else  mark(j, i, world, 'e');
 	(void)wclear(pocketwin);
 	(void)wrefresh(pocketwin);
+	tolog("invview finish\n");
 }
 
 //return char name for IDs, also sets colors
 char getname(block, pwin)
 short  block;
 WINDOW *pwin; {
+//	tolog("getname start\n");
 	switch (block) {
 		case 1: //grass
 			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(2));

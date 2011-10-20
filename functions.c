@@ -16,7 +16,6 @@
 
 #include "header.h"
 #include <stdlib.h>
-//#include <ncurses.h> //for debug only
 
 extern struct something *animalstart,
                         *cheststart,
@@ -27,15 +26,15 @@ extern short xp, yp, zp,
 	     eye[],
 	     pl,
              earth[][192][HEAVEN+1];
+void tolog();
 
 //all properties for all blocks
 int property(id, c)
 short id;
 char  c; {
-//	fprintf(stderr, "property, id is %d\n", id);
+//	tolog("property start\n"); //no finish
 	switch (c) {
 		case 'a': //Armour
-//			fprintf(stderr, "id is %d\n", id);
 			switch (id) {
 				//helmets
 				case  6: return 'h'; break;
@@ -76,7 +75,6 @@ char  c; {
 		case 'o': //sOunds
 			if (4==id) {
 				char getname();
-//				fprintf(stderr, "%c", getname(id, NULL));
 				return getname(id, NULL);
 			} else return 0;
 		break;
@@ -85,7 +83,7 @@ char  c; {
 			else return 0;
 		break;
 		case 's': //Stackable (armour is already mentioned)
-			if (6!=id) return 0;
+			if (6==id) return 0;
 			else return 1;
 		break;
 		case 't': //Transparent
@@ -99,7 +97,7 @@ char  c; {
 //this finds pointer to a thing with coordinates
 struct something *findanimal(x, y, z)
 short x, y, z; {
-//	fprintf(stderr, "findanimal\n");
+	tolog("findanimal start\n");
 	struct something *car;
 	if (property(earth[x][y][z], 'n')) {
 		switch (property(earth[x][y][z], 'n')) {
@@ -117,10 +115,12 @@ short x, y, z; {
 
 //returns pointer to chest to open
 struct something *open_chest() {
+	tolog("open_chest start\n");
 	struct something *findanimal();
 	void   focus();
 	short  x, y, z;
 	focus(&x, &y, &z);
+	tolog("open_chest finish\n");
         return(findanimal(x, y, z));
 }
 
@@ -128,7 +128,7 @@ struct something *open_chest() {
 void makename(x, y, name)
 short x, y;
 char name[]; {
-//	fprintf(stderr, "makename\n");
+	tolog("makename start\n");
 	short i=0;
 	name[i++]='m';
 	name[i++]='a';
@@ -152,11 +152,13 @@ char name[]; {
 		y/=10;
 	} while (y!=0);
 	name[i]='\0';
+	tolog("makename finish\n");
 }
 
 //this shows what block player is focused on
 void focus(px, py, pz)
 short *px, *py, *pz; {
+	tolog("focus start\n");
 	if (pl || view==4) {
 		if (eye[0]==0) {
 			*px=xp;
@@ -176,6 +178,7 @@ short *px, *py, *pz; {
 		*py=yp;
 		*pz=zp-1;
 	}
+	tolog("focus finish\n");
 }
 
 //visibility checkers section
@@ -210,6 +213,7 @@ short x1, y1, z1,
 //(with the second one)
 int visible(x, y, z)
 short x, y, z; {
+//	tolog("visible start\n");
 	int   visin();
 	short count=0;
 	if (z>zp+1) {
@@ -219,6 +223,7 @@ short x, y, z; {
 		count+=visin(xp,   yp, zp+1, x, y, z, 0);
 		count+=visin(yp,   xp, zp+1, y, x, z, 2);
 	}
+//	tolog("visible finish\n");
 	return((count>1) ? 0 : 1);
 }
 
@@ -256,6 +261,7 @@ int visible2(x1, y1, z1,
              x2, y2, z2)
 short x1, y1, z1,
       x2, y2, z2; {
+//	tolog("visible2 start\n");
 	//TODO: optimize loops
 	int   property();
 	short i, j, k,
@@ -275,6 +281,7 @@ short x1, y1, z1,
 			kmin=k;
 			min=newmin;
 		}
+//	tolog("visible2 ~finish\n");
 	if (min==0) return(1);
 	else if (!property(earth[imin][jmin][kmin], 't')) return(0);
 	else if (visible2(imin, jmin, kmin, x2, y2, z2)) return(1);

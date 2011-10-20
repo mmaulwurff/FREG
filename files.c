@@ -26,15 +26,21 @@ short       xp, yp, zp, //player coordinates
             earth[192][192][HEAVEN+1], //current loaded world
 	    sky[39][39],
 	    radar_dist;
-char        view, /*view modes: sUrface, Floor, Head, sKy, fRont, Menu
+char        view, /*view modes: sUrface, Floor, Head, sKy, fRont, Menu,
                     Inventory, Chest, Workbench, furNace */
             view_last; //save previous view
 struct item inv[10][3], //inventory
 	    cloth[5];   //(armour), cloth[4].num is an index of the last line of "inv"
 
+//comment out fprintf to turn off debugging
+void tolog(string)
+char *string; {
+	fprintf(stderr, string);
+}
+
 //loads a game
 void loadgame() {
-//	fprintf(stderr, "loadgame\n");
+	tolog("loadgame start\n");
 	//TODO: ask what to load
 	void pocketshow(),
 	     load();
@@ -98,11 +104,12 @@ void loadgame() {
 		}
 	}
 	pocketshow();
+	tolog("loadgame finish\n");
 }
 
 //loads or generates squares
 void load() {
-//	fprintf(stderr, "load\n");
+	tolog("load start\n");
 	struct something *spawn();
 	void eraseanimals();
 	eraseanimals();
@@ -112,7 +119,6 @@ void load() {
 	char name[50]; //50!?
 	FILE *file;
 	for (n=0; n<=8; ++n) {
-		//fprintf(stderr, "loop %d\n", n);
 		nx=64*(n%3),
 		ny=64*(n/3);
 		makename(spx+n%3-1, spy+n/3-1, name);
@@ -159,23 +165,23 @@ void load() {
 			for (j=ny; j<=63+ny;  ++j)
 			for (k= 0; k<=HEAVEN; ++k) {
 				earth[i][j][k]=getc(file);
-				//fprintf(stderr, "prop %d\n",/*
 				(void)spawn(i, j, k, file);
 			}
 			fclose(file);
 		}
 	}
+	tolog("load finish\n");
 }
 
 void savegame() {
-//	fprintf(stderr, "savegame\n");
+	tolog("savegame start\n");
 //ask save name should be here - todo
 	void save();
 	save();
 	short i, j,
 	      n=0;
 	FILE* file=fopen("save", "wb");
-//write saving time should be here
+//	write saving time should be here
 	fputc(xp,         file);
 	fputc(yp,         file);
 	fputc(zp,         file);
@@ -209,10 +215,11 @@ void savegame() {
 		fputc(cloth[i].num,  file);
 	}
 	fclose(file);
+	tolog("savegame finish\n");
 }
 
 void save() {
-//	fprintf(stderr, "save\n");
+	tolog("save start\n");
 	short n;
 	for (n=0; n<=8; ++n) {
 		struct something *findanimal();
@@ -233,7 +240,6 @@ void save() {
 					fputc(findanimal(i, j, k)->arr[3], file);
 				break;
 				case 'h': case 'c': {//chest or heap
-//					fprintf(stderr, "savechest\n");
 					short count=3;
 					struct something *point=findanimal(i, j, k);
 					while (count<63+('h'==type) ? 1 : 0)
@@ -243,14 +249,14 @@ void save() {
 		}
 		fclose(file);
 	}
-//	fprintf(stderr, "endsave\n");
+	tolog("save finish\n");
 }
 
 //this checks if new squares should be loaded
 //TODO: borders, or tor?
 void onbound() {
+	tolog("onbound start");
 	void eraseanimals();
-//	fprintf(stderr, "onbound\n");
 	if (xp<64) { //west
 		xp+=64;
 		save();
@@ -276,12 +282,26 @@ void onbound() {
 		++spy;
 		load();
 	}
+	tolog("onbound finish\n");
 }
 
 //random number (linux only)
 int random_linux() {
+	tolog("random_linux start\n");
 	FILE* file=fopen("/dev/urandom", "rb");
 	char c=fgetc(file);
 	fclose(file);
+	tolog("random_linux finish\n");
 	return c;
+}
+
+//returns 1 with prob probability, with prob=100 not always 1, with prob=0 always 0
+int random_prob(prob)
+short prob; {
+	tolog("random_prob start\n");
+	FILE* file=fopen("/dev/urandom", "rb");
+	char c=fgetc(file);
+	fclose(file);
+	tolog("random_prob finish\n");
+	return (128+c<prob*2.55) ? 1 : 0;
 }

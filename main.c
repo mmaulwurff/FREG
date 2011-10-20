@@ -14,10 +14,10 @@
 * along with Eyecube. If not, see <http://www.gnu.org/licenses/>.
 */
 
-//#include "header.h"
+#include "header.h"
 #include <pthread.h>
 #include <ncurses.h>
-#include <locale.h>
+//#include <locale.h>
 
 extern char view;
 
@@ -26,6 +26,7 @@ WINDOW *world,
        *textwin,
        *pocketwin,
        *sound_window;
+void tolog();
 
 //parallel thread
 void *mech(void *vptr_args) {
@@ -40,6 +41,7 @@ void *mech(void *vptr_args) {
 }
 
 void main() {
+	tolog("main start\n");
 	void keytogame(),
 	     keytoinv(),
 	     eraseanimals(),
@@ -48,7 +50,7 @@ void main() {
 	     sounds_print(),
 	     notify(),
 	     *mech();
-	int  ch;
+	int       ch;
 	pthread_t mechthread;
 	(void)set_escdelay(10);
 //	signal='w';
@@ -59,7 +61,7 @@ void main() {
 	(void)cbreak();
 	(void)noecho();
 	(void)keypad(stdscr, TRUE);
-	setlocale(LC_ALL, "ru_Ru.utf8");
+//	setlocale(LC_ALL, "ru_Ru.utf8");
 	curs_set(0); //make cursor invisible
 	(void)init_pair(1, COLOR_WHITE,  COLOR_BLUE  );  //player, sky
 	(void)init_pair(2, COLOR_BLACK,  COLOR_GREEN );  //grass, dwarf
@@ -95,4 +97,5 @@ void main() {
 	(void)delwin(textwin  );
 	(void)delwin(pocketwin);
 	(void)endwin();
+	tolog("main finish\n");
 }
