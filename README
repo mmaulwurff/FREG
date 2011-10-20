@@ -8,11 +8,16 @@ This program is an interface experiment.
 
 Advices are welcome.
 
+i386 version might be older than amd64 one.
+
+Run notes:
+directory 'map' should exist in directory with executable
+
 Compile notes:
 (libncurses5-dev should be installed)
 gcc -lncurses -pthread
 
-Debug:
+Debug notes:
 ./Eyecube-*.bin 2>log
 
 Items table
