@@ -20,7 +20,8 @@
 
 extern WINDOW      *world, *textwin, *pocketwin, *sound_window;
 extern short       xp, yp, zp, pl, eye[], earth[][192][HEAVEN+1],
-                   sky[][39], cur[], mechtoggle, radar_dist;
+                   sky[][39], cur[], radar_dist;
+extern unsigned    time;
 extern struct item inv[][3], cloth[], radar[], *craft;
 extern struct something *animalstart;
 extern char        view;
@@ -80,23 +81,39 @@ void map() {
 	tolog("map start\n");
 	void  invview(), surf(), frontview(),
 	      sound();
+	short i;
 	(void)wclear(world);
 	if (view=='u' || view=='f' || view=='h' || view=='k') surf();
 	else if (view=='r') frontview();
 	else invview();
 	wstandend(world);
+	(void)box(world, 0, 0);
 	switch (view) {
-		case 'u': (void)mvwprintw(world, 22, 1,  "Surface"  ); break;
-		case 'f': (void)mvwprintw(world, 22, 1,  "Floor"    ); break;
-		case 'h': (void)mvwprintw(world, 22, 1,  "Head"     ); break;
-		case 'k': (void)mvwprintw(world, 22, 1,  "Sky                 ^^"); break;
-		case 'r': (void)mvwprintw(world, 22, 1,  "Front               ^^"); break;
+		case 'u': (void)mvwprintw(world, 22, 1, "surface"  ); break;
+		case 'f': (void)mvwprintw(world, 22, 1, "floor"    ); break;
+		case 'h': (void)mvwprintw(world, 22, 1, "head"     ); break;
+		case 'k':
+			(void)mvwprintw(world, 22, 1,  "sky");
+			(void)mvwprintw(world, 22, 21, "^^" );
+		break;
+		case 'r':
+			(void)mvwprintw(world, 22, 1,  "front");
+			(void)mvwprintw(world, 22, 21, "^^"   );
+		break;
 		case 'c':
-		case 'i': (void)mvwprintw(world,  1, 17, "Inventory"); break;
-		default : (void)mvwprintw(world, 22, 1,  "Another"  ); break;
+		case 'i': (void)mvwprintw(world, 22, 1, "inventory"); break;
+		default : (void)mvwprintw(world, 22, 1, "another"  ); break;
 	}
 	if (!pl) (void)mvwprintw(world, 22, 21, "^^");
-	(void)box(world, 0, 0);
+	for (i=0; i<30; ++i) if (9==inv[i%10][i/10].what) {
+		(void)mvwprintw(world, 22, 38, "%2d:%2d", (int)time/60, time%60);
+		break;
+	}
+	if (30==i)
+		if (time<6*60) (void)mvwprintw(world, 22, 37, "night");
+		else if (time<12*60) (void)mvwprintw(world, 22, 36, "morning");
+		else if (time<18*60) (void)mvwprintw(world, 22, 40, "day");
+		else (void)mvwprintw(world, 22, 36, "evening");
 	(void)wrefresh(world);
 	tolog("map finish\n");
 }
@@ -104,7 +121,7 @@ void map() {
 //prints sounds
 void sounds_print() {
 	tolog("sounds_print start\n");
-	short i;
+	register short i;
 	for (i=0; i<9; ++i) {
 		radar[i].what=' ';
 		radar[i].num=0;
@@ -187,7 +204,7 @@ short xsave, xplus,
 	int   visible(),
 	      visible2();
 	char  getname();
-	short x, y;
+	register short x, y;
 	for (x=1; x<=21; ++x)
 	for (y=1; y<=21; ++y) {
 		short save, p, z,
@@ -205,7 +222,7 @@ short xsave, xplus,
 			save=xnew;
 			p=xp;
 		}
-		if (visible2(xp, yp, zp+1, xnew, z, ynew) || visible(xnew, z, ynew)) {
+		if (visible2x3(xp, yp, zp+1, xnew, z, ynew)) {
 			if (save!=zend) {
 				//TODO: this can be without 'names'
 				char name=getname(earth[xnew][z][ynew], world), name2;
@@ -250,7 +267,7 @@ short xcor,  ycor,
 	      visible2(),
 	      property();
 	char  getname();
-	short x, y, z;
+	register short x, y, z;
 	for (y=1; y<=21; ++y)
 	for (x=1; x<=21; ++x) {
 		short st, en, plus,
@@ -275,8 +292,7 @@ short xcor,  ycor,
 				}
 				(void)mvwprintw(world, y, 2*x-1, "  ");
 			}
-		} else if (visible2(xp, yp, zp+1, newx, newy, z) ||
-			visible(newx, newy, z))
+		} else if (visible2x3(xp, yp, zp+1, newx, newy, z))
 				if (z-zp>=10) (void)mvwprintw(world, y, 2*x-1,
 					"%c%c", getname(earth[newx][newy][z], world),
 					'+');
@@ -341,42 +357,42 @@ void invview() {
 	//backpack
 	for (j=0; j<=9; ++j)
 	for (i=0; i<=2; ++i)
-		(void)mvwprintw(world, i+19+((i==2) ? 1 : 0), j*3+7, "%c%d",
+		(void)mvwprintw(world, i+18+((i==2) ? 1 : 0), j*3+7, "%c%d",
 			getname(inv[j][i].what, world), inv[j][i].num);
 	wstandend(world);
 	//chest
 	if ('c'==view) {
-		(void)mvwprintw(world, 17, 1, "Chest");
+		(void)mvwprintw(world, 16, 1, "Chest");
+		(void)mvwprintw(world, 15, 6, "|");
 		(void)mvwprintw(world, 16, 6, "|");
 		(void)mvwprintw(world, 17, 6, "|");
-		(void)mvwprintw(world, 18, 6, "|");
 		struct something *open_chest(), *chest=open_chest();
 		for (j=0; j<=9; ++j)
 		for (i=0; i<=2; ++i)
-			(void)mvwprintw(world, i+16, j*3+7, "%c%d",
+			(void)mvwprintw(world, i+15, j*3+7, "%c%d",
 				getname(chest->arr[3+j+i*10], world),
 				        chest->arr[33+j+i*10]);
 	}
 	//workbench
-	(void)mvwprintw(world, 11, 9, "Workbench");
+	(void)mvwprintw(world, 10, 9, "Workbench");
 	if (view!='w')
 		for (i=0; i<=1; ++i)
 		for (j=0; j<=1; ++j)
-			(void)mvwprintw(world, 12+i, 10+j*3, "%c%d",
+			(void)mvwprintw(world, 11+i, 10+j*3, "%c%d",
 				getname(craft[i+2*j+1].what, world),
 				        craft[i+2*j+1].num);
 	else
 		for (i=0; i<=2; ++i)
 		for (j=0; j<=2; ++j)
-			(void)mvwprintw(world, 12+i, 7+j*3, "%c%d",
+			(void)mvwprintw(world, 11+i, 7+j*3, "%c%d",
 				getname(craft[i+2*j+1].what, world),
 				        craft[i+2*j+1].num);
-	(void)mvwprintw(world, 13, 17, "%c%d", getname(craft[0].what, world),
+	(void)mvwprintw(world, 12, 17, "%c%d", getname(craft[0].what, world),
 	                                               craft[0].num);
 	//cursor (i, j are now coordinates)
 	switch (cur[0]) {
 		case 1: //chest
-			i=cur[2]+((cur[2]>2) ? 13 : 19+((cur[2]==2) ? 1 : 0));
+			i=cur[2]+((cur[2]>2) ? 12 : 18+((cur[2]==2) ? 1 : 0));
 			j=cur[1]*3+7;
 		break;
 		case 2: //player
@@ -384,7 +400,7 @@ void invview() {
 			j=3;
 		break;
 		case 3: //workbench
-			i=(cur[1]!=3) ? cur[2]+12 : 13;
+			i=(cur[1]!=3) ? cur[2]+11 : 12;
 			j=(cur[1]!=3) ? (cur[1]*3+((view!='w') ? 10 : 7)) : 17;
 		break;
 		//0 is functional field
@@ -422,7 +438,7 @@ WINDOW *pwin; {
 			return 'c';
 		break;
 		case 5: //fire
-			if (mechtoggle) {
+			if (time%2) {
 				if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(4));
 				return 'F';
 			} else {
@@ -441,6 +457,10 @@ WINDOW *pwin; {
 		case 8: //heap
 			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(6));
 			return 'h';
+		break;
+		case 9: //clock
+			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(10));
+			return 'c';
 		break;
 		case 0:  if (NULL!=pwin) wstandend(pwin); return ' '; break; //air
 		default: return '?'; break;

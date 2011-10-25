@@ -16,6 +16,7 @@
 
 #include "header.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 extern struct something *animalstart,
                         *cheststart,
@@ -104,7 +105,9 @@ short x, y, z; {
 			case 'a': car=animalstart; break;
 			case 'c': car=cheststart;  break;
 			case 'h': car=heapstart;   break;
+			default : return NULL;     break;
 		}
+		if (NULL==car) fprintf(stderr, "find null\n");
 		while (car!=NULL)
 			if (x==car->arr[0] &&
 			    y==car->arr[1] &&
@@ -184,92 +187,33 @@ short *px, *py, *pz; {
 //visibility checkers section
 
 //this could be perfect visibility function, but it is not
-/*int visible2x3(x1, y1, z1, x2, y2, z2)
+int visible2x3(x1, y1, z1, x2, y2, z2)
 short x1, y1, z1,
       x2, y2, z2; {
-	int visible2();
+	int visible2(), property();
+	short savecor;
 	if (visible2(x1, y1, z1, x2, y2, z2)) return 1;
-	else {
-		short count=0;
-		count+=visible2(x1, y1, z1, x2-1, y2,   z2  );
-		count+=visible2(x1, y1, z1, x2+1, y2,   z2  );
-		count+=visible2(x1, y1, z1, x2,   y2-1, z2  );
-		count+=visible2(x1, y1, z1, x2,   y2+1, z2  );
-		count+=visible2(x1, y1, z1, x2,   y2,   z2-1);
-		count+=visible2(x1, y1, z1, x2,   y2,   z2+1);
-		if (count>0) return 1;
-		else return 0;
-	}*/
-/*	else if (visible2(x1, y1, z1, x2-1, y2,   z2  )) return 1;
-	else if (visible2(x1, y1, z1, x2+1, y2,   z2  )) return 1;
-	else if (visible2(x1, y1, z1, x2,   y2-1, z2  )) return 1;
-	else if (visible2(x1, y1, z1, x2,   y2+1, z2  )) return 1;
-	else if (visible2(x1, y1, z1, x2,   y2,   z2-1)) return 1;
-	else if (visible2(x1, y1, z1, x2,   y2,   z2+1)) return 1;
-	else return 0;*/
-//}
-
-//this is visibility checker. it is not perfect, but it works
-//(with the second one)
-int visible(x, y, z)
-short x, y, z; {
-//	tolog("visible start\n");
-	int   visin();
-	short count=0;
-	if (z>zp+1) {
-		count+=visin(zp+1, xp, yp,   z, x, y, 4);
-		count+=visin(zp+1, yp, xp,   z, y, x, 5);
-	} else {
-		count+=visin(xp,   yp, zp+1, x, y, z, 0);
-		count+=visin(yp,   xp, zp+1, y, x, z, 2);
-	}
-//	tolog("visible finish\n");
-	return((count>1) ? 0 : 1);
+	else if ((x2!=x1 && property(earth[x2+(savecor=(x2>x1) ? (-1) : 1)][y2][z2], 't')
+		&& visible2(x1, y1, z1, x2+savecor, y2, z2)) ||
+		(y2!=y1 && property(earth[x2][y2+(savecor=(y2>y1) ? (-1) : 1)][z2], 't')
+		&& visible2(x1, y1, z1, x2, y2+savecor, z2)) ||
+		(z2!=z1 && property(earth[x2][y2][z2+(savecor=(z2>z1) ? (-1) : 1)], 't')
+		&& visible2(x1, y1, z1, x2, y2, z2+savecor))) return 1;
+	else return 0;
 }
 
-//this function is inside visible function
-int visin(nf, ns, nt, kf, ks, kt, wh)
-short nf, ns, nt, kf, ks, kt, wh; {
-	int   property();
-	short count=0,
-	      mff=(nf>kf) ? (-1) : (1),
-	      mfs=(ns>ks) ? (-1) : (1),
-	      mft=(nt>kt) ? (-1) : (1);
-	while (!( nf==kf && ns==ks && nt==kt )) {
-		short x, y, z;
-		if ((abs(nf-kf)>=abs(ns-ks)) &&
-		    (abs(nf-kf)>=abs(nt-kt)))    nf+=mff;
-		else if (abs(ns-ks)>=abs(nt-kt)) ns+=mfs;
-		else                             nt+=mft;
-		switch (wh) {
-			case  0: x=nf; y=ns; z=nt; break;
-//			case  1: x=nf; z=ns; y=nt; break;
-			case  2: y=nf; x=ns; z=nt; break;
-//			case  3: y=nf; z=ns; x=nt; break;
-			case  4: z=nf; x=ns; y=nt; break;
-			//case 5:
-			default: z=nf; y=ns; x=nt; break;
-		}	
-		if (!property(earth[x][y][z], 't') &&
-			!( x==xp && y==yp && z<=zp-1 )) ++count;
-	}
-	return(count-1);
-}
-
-//this is the second vibility checker. it works with the first.
+//this is the vibility checker. it is ~perfect
 int visible2(x1, y1, z1,
              x2, y2, z2)
 short x1, y1, z1,
       x2, y2, z2; {
 //	tolog("visible2 start\n");
 	//TODO: optimize loops
-	int   property();
-	short i, j, k,
-	      imin, jmin, kmin,
-	      newmin,
-	      min=(x1-x2)*(x1-x2)+
-	          (y1-y2)*(y1-y2)+
-	          (z1-z2)*(z1-z2);
+	int property();
+	register short i, j, k,
+	               imin, jmin, kmin;
+	register int   newmin,
+	               min=19*19+10*10+HEAVEN*HEAVEN;
 	for (i=x1-1; i<=x1+1; ++i)
 	for (j=y1-1; j<=y1+1; ++j)
 	for (k=z1-1; k<=z1+1; ++k)

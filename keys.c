@@ -79,9 +79,10 @@ int key; {
 						break;
 					}
 					if (1==flag_erase) {
-						void erase_by_xyz();
+						struct something *erase_by_xyz();
 						earth[x][y][z]=0;
-						erase_by_xyz(x, y, z, &heapstart);
+						heapstart=erase_by_xyz(x, y, z,
+							heapstart);
 					}
 				}
 			}

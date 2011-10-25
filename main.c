@@ -63,19 +63,20 @@ void main() {
 	(void)keypad(stdscr, TRUE);
 //	setlocale(LC_ALL, "ru_Ru.utf8");
 	curs_set(0); //make cursor invisible
-	(void)init_pair(1, COLOR_WHITE,  COLOR_BLUE  );  //player, sky
-	(void)init_pair(2, COLOR_BLACK,  COLOR_GREEN );  //grass, dwarf
-	(void)init_pair(3, COLOR_BLACK,  COLOR_WHITE );  //stone, skin
-	(void)init_pair(4, COLOR_RED,    COLOR_YELLOW);  //sun, fire1
-	(void)init_pair(5, COLOR_RED,    COLOR_WHITE );  //chiken
-	(void)init_pair(6, COLOR_WHITE,  COLOR_BLACK );  //?, heap
-	(void)init_pair(7, COLOR_YELLOW, COLOR_RED   );  //fire2
-	(void)init_pair(8, COLOR_BLACK,  COLOR_RED   );  //pointer
-	(void)init_pair(9, COLOR_BLACK,  COLOR_YELLOW);  //wood
-	world=       newwin(24, 44, 0,  0);
-	pocketwin=   newwin(1,  44, 24, 0);
-	textwin=     newwin(5,  36, 25, 8);
-	sound_window=newwin(5,   8, 25, 0);
+	(void)init_pair(1,  COLOR_WHITE,  COLOR_BLUE  );  //player, sky
+	(void)init_pair(2,  COLOR_BLACK,  COLOR_GREEN );  //grass, dwarf
+	(void)init_pair(3,  COLOR_BLACK,  COLOR_WHITE );  //stone, skin
+	(void)init_pair(4,  COLOR_RED,    COLOR_YELLOW);  //sun, fire1
+	(void)init_pair(5,  COLOR_RED,    COLOR_WHITE );  //chiken
+	(void)init_pair(6,  COLOR_WHITE,  COLOR_BLACK );  //?, heap
+	(void)init_pair(7,  COLOR_YELLOW, COLOR_RED   );  //fire2
+	(void)init_pair(8,  COLOR_BLACK,  COLOR_RED   );  //pointer
+	(void)init_pair(9,  COLOR_BLACK,  COLOR_YELLOW);  //wood
+	(void)init_pair(10, COLOR_BLUE,   COLOR_YELLOW);  //clock
+	world=       newwin(23, 44, 0,  0);
+	pocketwin=   newwin(1,  44, 23, 0);
+	textwin=     newwin(5,  36, 24, 8);
+	sound_window=newwin(5,   8, 24, 0);
 	(void)refresh();
 	loadgame();
 	map();

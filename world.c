@@ -5,7 +5,7 @@
 extern char  signal, view;
 extern short xp, yp, zp, earth[][192][HEAVEN+1], jump, notflag;
 
-short mechtoggle=0;
+extern unsigned time;
 
 //TODO: char instead of short
 struct item radar[9];
@@ -116,13 +116,14 @@ void allmech() {
 		if (NULL!=heapstart  ) move_down_chain(&heapstart  );
 		if (NULL!=animalstart) move_down_chain(&animalstart);
 	}
-	mechtoggle=(mechtoggle) ? 0 : 1;
+	time=(24*60==time) ? 0 : time+1;
 	{
 		void sounds();
 		sounds(animalstart);
 	}
 	sounds_print();
-	if ('i'!=view && 'w'!=view && 'c'!=view && 'n'!=view) map();
+	map();
+//	if ('i'!=view && 'w'!=view && 'c'!=view && 'n'!=view) map();
 	tolog("allmech finish\n");
 }
 
@@ -255,11 +256,11 @@ FILE  *file; {
 				if (file==NULL) {
 					while (i<63) thing_new->arr[i++]=0;
 					//put helmet to all new chests
-					thing_new->arr[4 ]=6;
+					thing_new->arr[4 ]=9;
 					thing_new->arr[34]=9;
 					//and some stones
-					thing_new->arr[5 ]=2;
-					thing_new->arr[35]=9;
+					/*thing_new->arr[5 ]=2;
+					thing_new->arr[35]=9;*/
 					//
 					if ('h'==type) thing_new->arr[i]=24;
 				} else
@@ -311,27 +312,22 @@ struct something *car; {
 }
 
 //erases one thing from list with coordinates
-void erase_by_xyz(x, y, z, chain)
+struct something *erase_by_xyz(x, y, z, chain)
 short x, y, z;
-struct something **chain; {
+struct something *chain; {
 	tolog("erase_by_xyz start\n");
-	struct something *to_erase;
-	if (!(x==(*chain)->arr[0] && y==(*chain)->arr[1] && z==(*chain)->arr[2])) {
-		while (NULL!=(*chain)->next &&
-			!((*((*chain)->next)).arr[0]==x &&
-			  (*((*chain)->next)).arr[1]==y &&
-			  (*((*chain)->next)).arr[2]==z)) {
-			*chain=(*chain)->next;
-		}
-		to_erase=(*chain)->next;
-		(*chain)->next=(*((*chain)->next)).next;
-	} else {	
-		to_erase=*chain;
-		*chain=(*chain)->next;
-	}
-	free(to_erase->arr);
-	free(to_erase);
+	struct something *car, *save;
+	for (car=chain; !(x==car->arr[0] &&
+	                  y==car->arr[1] &&
+	                  z==car->arr[2]); car=car->next) save=car;
+	if (car!=chain) {
+		save->next=car->next;
+		save=heapstart;
+	} else save=heapstart->next;
+	free(car->arr);
+	free(car);
 	tolog("erase_by_xyz finish\n");
+	return save;
 }
 
 //moves down all elements of a chain and does some service
@@ -346,8 +342,10 @@ struct something **chain_start; {
 		empty_flag=0;
 		chain->arr[2]-=fall(chain->arr[0], chain->arr[1], chain->arr[2]);
 		if (property(earth[chain->arr[0]][chain->arr[1]][chain->arr[2]],   'c') &&
-		    property(earth[chain->arr[0]][chain->arr[1]][chain->arr[2]-1], 'c')) {
+		    property(earth[chain->arr[0]][chain->arr[1]][-1+chain->arr[2]], 'c'))
+				{
 			//falling into
+			tolog("falling into\n");
 			short i, j;
 			struct something *findanimal(),
 			                 *lower_chest=findanimal(chain->arr[0],
@@ -357,15 +355,18 @@ struct something **chain_start; {
 						(lower_chest->arr[j]==chain->arr[i] &&
 						 lower_chest->arr[j+30]<9 &&
 						 property(chain->arr[i], 's'))) {
-					lower_chest->arr[j   ]=chain->arr[i   ];
+					lower_chest->arr[j]=chain->arr[i];
 					while (lower_chest->arr[j+30]<9 &&
 							chain->arr[i+30]>0) {
 						++lower_chest->arr[j+30];
 						--chain->arr[i+30];
 					}
-					if (0==chain->arr[i+30]) break;
-					else chain->arr[i]=0;
+					if (0==chain->arr[i+30]) {
+						chain->arr[i]=0;
+						break;
+					}
 				}
+			tolog("fell into\n");
 			empty_flag=1;
 			for (i=3; i<=33; ++i) if (chain->arr[i]) { //if empty, delete
 				empty_flag=0;

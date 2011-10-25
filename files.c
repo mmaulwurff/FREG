@@ -20,12 +20,20 @@
 short       xp, yp, zp, //player coordinates
             spx, spy,   //player square position
             jump,       //shows if player jumps
-	    eye[2],     //camera position: 
-	    eyes[2],    //previous camera position
-	    pl,         //show player or no
+            eye[2],     //camera position: 
+            eyes[2],    //previous camera position
+            pl,         //show player or no
             earth[192][192][HEAVEN+1], //current loaded world
-	    sky[39][39],
-	    radar_dist;
+            sky[39][39],
+            radar_dist;
+unsigned    time;
+/*One real minute is an hour in Eyecube.
+ *00:00 - 06:00 - night
+ *06:00 - 12:00 - morning
+ *12:00 - 18:00 - day
+ *18:00 - 00:00 - evening
+ */
+
 char        view, /*view modes: sUrface, Floor, Head, sKy, fRont, Menu,
                     Inventory, Chest, Workbench, furNace */
             view_last; //save previous view
@@ -42,10 +50,12 @@ char *string; {
 void loadgame() {
 	tolog("loadgame start\n");
 	//TODO: ask what to load
+	int  read_int();
 	void pocketshow(),
 	     load();
 	short i, j;
 	FILE* file=fopen("save", "r");
+	fprintf(stderr, "load\n");
 	if (file!=NULL) { //load
 		xp=        getc(file);
 		yp=        getc(file);
@@ -59,13 +69,12 @@ void loadgame() {
 		view=      getc(file);
 		view_last= getc(file);
 		radar_dist=getc(file);
+		time=read_int(file);
 		spx=(((getc(file))=='-') ? (-1) : 1)*getc(file);
 		spy=(((getc(file))=='-') ? (-1) : 1)*getc(file);
-		for (i=0; i<=38; ++i)
-		for (j=0; j<=38; ++j)
+		for (i=0; i<=38; ++i) for (j=0; j<=38; ++j)
 			sky[i][j]=getc(file);
-		for (i=0; i<=9; ++i)
-		for (j=0; j<=2; ++j) {
+		for (i=0; i<=9; ++i) for (j=0; j<=2; ++j) {
 			inv[i][j].what=getc(file);
 			inv[i][j].num=getc(file);
 		}
@@ -88,13 +97,14 @@ void loadgame() {
 		eyes[0]=0;
 		eyes[1]=-1;
 		pl=1;
+		time=6*60;
+		radar_dist=FAR;
 		view=view_last='u';
 		for (i=0; i<=38; ++i)
 		for (j=0; j<=38; ++j)
 			sky[i][j]=0;
 		sky[19][19]=2;
-		for (i=0; i<=9; ++i)
-		for (j=0; j<=2; ++j) {
+		for (i=0; i<=9; ++i) for (j=0; j<=2; ++j) {
 			inv[i][j].what=0;
 			inv[i][j].num =0;
 		}
@@ -176,7 +186,7 @@ void load() {
 void savegame() {
 	tolog("savegame start\n");
 //ask save name should be here - todo
-	void save();
+	void save(), write_int();
 	save();
 	short i, j,
 	      n=0;
@@ -194,6 +204,7 @@ void savegame() {
 	fputc(view,       file);
 	fputc(view_last,  file);
 	fputc(radar_dist, file);
+	write_int(time, file);
 	//spx and spy may be longs, so there should be another way
 	if (spx<0) fputc('-', file);
 	else       fputc('+', file);
@@ -205,11 +216,10 @@ void savegame() {
 	for (j=0; j<=38; ++j)
 		fputc(sky[i][j], file);
 	for (i=0; i<=9; ++i)
-	for (j=0; j<=2; ++j)
+	for (j=0; j<=2; ++j) {
 		fputc(inv[i][j].what, file);
-	for (i=0; i<=9; ++i)
-	for (j=0; j<=2; ++j)
 		fputc(inv[i][j].num, file);
+	}
 	for (i=0; i<=4; ++i) {
 		fputc(cloth[i].what, file);
 		fputc(cloth[i].num,  file);
@@ -304,4 +314,25 @@ short prob; {
 	fclose(file);
 	tolog("random_prob finish\n");
 	return (128+c<prob*2.55) ? 1 : 0;
+}
+
+//write integer into a file
+void write_int(d, file)
+int  d;
+FILE *file; {
+	short i=0;
+	do {
+		fputc(d, file);
+		d>>=8*sizeof(char);
+	} while (++i<sizeof(int)/(2*sizeof(char)));
+}
+
+//read integer from a file
+int read_int(file)
+FILE  *file; {
+	int   d=0;
+	short i=0;
+	do d+=fgetc(file)<<i*8*sizeof(char);
+	while (++i<sizeof(int)/(2*sizeof(char)));
+	return d;
 }
