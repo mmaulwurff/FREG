@@ -222,7 +222,8 @@ short xsave, xplus,
 			save=xnew;
 			p=xp;
 		}
-		if (visible2x3(xp, yp, zp+1, xnew, z, ynew)) {
+		if (visible2x3(xp, yp, zp+1, xnew, z, ynew) &&
+				illuminated(xnew, z, ynew)) {
 			if (save!=zend) {
 				//TODO: this can be without 'names'
 				char name=getname(earth[xnew][z][ynew], world), name2;
@@ -292,7 +293,8 @@ short xcor,  ycor,
 				}
 				(void)mvwprintw(world, y, 2*x-1, "  ");
 			}
-		} else if (visible2x3(xp, yp, zp+1, newx, newy, z))
+		} else if (visible2x3(xp, yp, zp+1, newx, newy, z) && 
+					illuminated(newx, newy, z))
 				if (z-zp>=10) (void)mvwprintw(world, y, 2*x-1,
 					"%c%c", getname(earth[newx][newy][z], world),
 					'+');

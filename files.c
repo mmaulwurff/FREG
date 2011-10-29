@@ -170,6 +170,7 @@ void load() {
 			earth[46+nx][45+ny][80]=5;
 			earth[45+nx][46+ny][80]=5;
 			earth[46+nx][46+ny][80]=5;
+			earth[46+nx][46+ny][81]=5;
 		} else {//loader
 			for (i=nx; i<=63+nx;  ++i)
 			for (j=ny; j<=63+ny;  ++j)

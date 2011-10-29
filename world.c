@@ -14,7 +14,8 @@ extern short radar_dist;
 struct something *animalstart=NULL,
                  *cheststart =NULL,
                  *thingstart =NULL,
-		 *heapstart  =NULL;
+                 *heapstart  =NULL,
+                 *lightstart =NULL;
 void tolog();
 
 //drops block
@@ -240,6 +241,7 @@ FILE  *file; {
 			case 'a': start=&animalstart; break; //animal
 			case 'c': start=&cheststart;  break; //chest
 			case 'h': start=&heapstart;   break; //heap
+			case 'l': start=&lightstart;  break; //light
 			case 't': start=&thingstart;  break; //thing
 		}
 		(thing_new=malloc(sizeof(struct something)))->next=*start;
@@ -266,6 +268,11 @@ FILE  *file; {
 				} else
 					while (i<63+(('h'==type) ? 1 : 0))
 						thing_new->arr[i++]=getc(file);
+			} break;
+			case 'l': {//light
+				int light_radius();
+				thing_new->arr=malloc(4*sizeof(short));
+				thing_new->arr[3]=light_radius(x, y, z);
 			} break;
 			case 't': //thing
 				thing_new->arr=malloc(3*sizeof(short));

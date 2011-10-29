@@ -18,15 +18,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-extern struct something *animalstart,
-                        *cheststart,
-                        *thingstart,
-			*heapstart;
-extern short xp, yp, zp,
-             view,
-	     eye[],
-	     pl,
-             earth[][192][HEAVEN+1];
+extern struct something *animalstart, *cheststart, *thingstart, *heapstart;
+extern short    xp, yp, zp,
+                view, eye[], pl,
+                earth[][192][HEAVEN+1];
+extern unsigned time;
 void tolog();
 
 //all properties for all blocks
@@ -57,6 +53,10 @@ char  c; {
 				default: return 0;
 			}
 		break;
+		case 'l': //gives Light
+			if (5==id) return 5;
+			else return 0;
+		break;
 		case 'm': //Movable
 			if(4==id || 8==id) return 1;
 			else return 0;
@@ -70,6 +70,8 @@ char  c; {
 //				//chest
 				case  7: return 'c'; break;
 				case  8: return 'h'; break;
+				//light
+				case  5: return 'l'; break;
 				default: return  0 ; break;
 			}
 		break;
@@ -88,10 +90,18 @@ char  c; {
 			else return 1;
 		break;
 		case 't': //Transparent
-			if (id==0) return 1;
+			if (0==id) return 1;
 			else return 0;
 		break;
 		default: break;
+	}
+}
+
+int light_radius(x, y, z)
+short x, y, z; {
+	switch(earth[x][y][z]) {
+		case  5: return 5; break; //fire 
+		default: return 0; break;
 	}
 }
 
@@ -202,8 +212,18 @@ short x1, y1, z1,
 	else return 0;
 }
 
-//this is the vibility checker. it is ~perfect
 int visible2(x1, y1, z1,
+             x2, y2, z2)
+short x1, y1, z1,
+      x2, y2, z2; {
+	int visible2_0(), visible2_1();
+	fprintf(stderr, "%d-%d-%d %d:%d\n", x2, y2, z2, visible2_0(x1, y1, z1, x2, y2, z2,
+		visible2_1(x1, y1, z1, x2, y2, z2)));
+	return visible2_1(x1, y1, z1, x2, y2, z2);
+}
+
+//this is the vibility checker. it is ~perfect
+int visible2_0(x1, y1, z1,
              x2, y2, z2)
 short x1, y1, z1,
       x2, y2, z2; {
@@ -211,12 +231,15 @@ short x1, y1, z1,
 	//TODO: optimize loops
 	int property();
 	register short i, j, k,
-	               imin, jmin, kmin;
+	               imin, jmin, kmin,
+		       zmin, zmax;
 	register int   newmin,
 	               min=19*19+10*10+HEAVEN*HEAVEN;
+	zmin=(z1>1) ? z1 : 0;
+	zmax=(z1<HEAVEN-1) ? z1 : HEAVEN;
 	for (i=x1-1; i<=x1+1; ++i)
 	for (j=y1-1; j<=y1+1; ++j)
-	for (k=z1-1; k<=z1+1; ++k)
+	for (k=zmin-1; k<=zmax+1; ++k)
 		if ((newmin=(i-x2)*(i-x2)+
 		            (j-y2)*(j-y2)+
 			    (k-z2)*(k-z2))<min) {
@@ -225,8 +248,128 @@ short x1, y1, z1,
 			kmin=k;
 			min=newmin;
 		}
-//	tolog("visible2 ~finish\n");
-	if (min==0) return(1);
-	else if (!property(earth[imin][jmin][kmin], 't')) return(0);
-	else if (visible2(imin, jmin, kmin, x2, y2, z2)) return(1);
+//	tolog("visible2 ~finish\n");	
+	if (min==0) return 1;
+	else if (!property(earth[imin][jmin][kmin], 't')) return 0;
+	else return visible2_0(imin, jmin, kmin, x2, y2, z2);
+}
+
+int visible2_1(x1, y1, z1,
+               x2, y2, z2)
+short x1, y1, z1,
+      x2, y2, z2; {
+	int property();
+	register struct {
+		unsigned x : 2;
+		unsigned y : 2;
+		unsigned z : 2;
+	} shift, minshift;
+	register int newmin, min;
+
+	//MOAR optimization needed!
+	if (x2<x1) shift.x=0;
+	else if (x2>x1) shift.x=2;
+	else shift.x=1;
+
+	if (y2<y1) shift.y=0;
+	else if (y2>y1) shift.y=2;
+	else shift.y=1;
+
+	if (z2<z1) shift.z=0;
+	else if (z2>z1) shift.z=2;
+	else shift.z=1;
+
+	//corners
+	if ((shift.x==shift.y && (0==shift.x || 2==shift.y)) || 2==abs(shift.x-shift.y)) {
+		minshift.x=shift.x;
+		minshift.y=shift.y;
+		minshift.z=shift.z;
+		min=(x1+shift.x-1-x2)*(x1+shift.x-1-x2)+
+		    (y1+shift.y-1-y2)*(y1+shift.y-1-y2)+
+		    (z1+shift.z-1-z2)*(z1+shift.z-1-z2);
+		if (min>(newmin=((x1-x2)*(x1-x2))+
+		    (y1+shift.y-1-y2)*(y1+shift.y-1-y2)+
+		    (z1+shift.z-1-z2)*(z1+shift.z-1-z2))) {
+			minshift.x=0;
+			minshift.y=shift.y;
+			minshift.z=shift.z;
+			min=newmin;
+		}
+		if (min>(newmin=(x1+shift.x-1-x2)*(x1+shift.x-1-x2)+
+		    (y1-y2)*(y1-y2)+
+		    (z1+shift.z-1-z2)*(z1+shift.z-1-z2))) {
+			minshift.x=shift.x;
+			minshift.y=0;
+			minshift.z=shift.z;
+			min=newmin;
+		}
+		if (min>(x1+shift.x-1-x2)*(x1+shift.x-1-x2)+
+		    (y1+shift.y-1-y2)*(y1+shift.y-1-y2)+
+		    (z1-z2)*(z1-z2)) {
+			minshift.x=shift.x;
+			minshift.y=shift.y;
+			minshift.z=0;
+		}
+	} else if (1==abs(shift.x-shift.y)) { //edges
+		minshift.x=1;
+		minshift.y=shift.y;
+		minshift.z=shift.z;
+		min=(x1-x2)*(x1-x2)+
+		    (y1+shift.y-1-y2)*(y1+shift.y-1-y2)+
+		    (z1+shift.z-1-z2)*(z1+shift.z-1-z2);
+		if (min>(newmin=(x1+shift.x-1-x2)*(x1+shift.x-1-x2)+
+		    (y1-y2)*(y1-y2)+
+		    (z1+shift.z-1-z2)*(z1+shift.z-1-z2))) {
+			minshift.x=shift.x;
+			minshift.y=1;
+			minshift.z=shift.z;
+			min=newmin;
+		}
+		if (min>(x1+shift.x-1-x2)*(x1+shift.x-1-x2)+
+		    (y1+shift.y-1-y2)*(y1+shift.y-1-y2)+
+		    (z1-z2)*(z1-z2)) {
+			minshift.x=shift.x;
+			minshift.y=shift.y;
+			minshift.z=1;
+		}
+	} else { //centers
+		minshift.x=shift.x;
+		minshift.y=shift.y;
+		minshift.z=shift.z;
+	}
+	if (x1+minshift.x-1==x2 && y1+minshift.y-1==y2 && z1+minshift.z-1==z2) return 1;
+	else if (!property(earth[x1+minshift.x-1][y1+minshift.y-1][z1+minshift.z-1], 't'))
+		return 0;
+	else return visible2_1(x1+minshift.x-1, y1+minshift.y-1, z1+minshift.z-1,
+		x2, y2, z2);
+}
+
+//returns 1 if block is illuminated so visible
+int illuminated(x, y, z)
+short x, y, z; {
+	if (property(earth[x][y][z], 'l')) return 1;
+	else if (abs(xp-x)<2 && abs(yp-y)<2 && abs(zp-z)<3) return 1;
+	else if (time>=6*60) {
+		register short i;
+		int   property(),
+		      nigth_illuminated();
+		for (i=z; i<HEAVEN && property(earth[x][y][i], 't'); ++i);
+		if (HEAVEN>=i) return 1;
+		else return night_illuminated(x, y, z);
+	} else return night_illuminated(x, y, z);
+}
+
+int night_illuminated(x, y, z)
+short x, y, z; {
+	int property();
+	register short i, j, k,
+	               kmin=(z>5) ? z-5 : 0,
+	               kmax=(z<HEAVEN-5) ? z+5 : HEAVEN,
+	               flag=0;
+	for (i=x-5; i<=x+5 && !flag; ++i)
+	for (j=y-5; j<=y+5 && !flag; ++j)
+	for (k=kmin; k<=kmax && !flag; ++k)
+		if (property(earth[i][j][k], 'l') && visible2x3(i, j, k, x, y, z))
+			flag=1;
+	return flag;
 }

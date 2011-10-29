@@ -15,6 +15,7 @@
 */
 
 #define HEAVEN 128
+
 #define NEAR 3
 #define FAR 30
 
