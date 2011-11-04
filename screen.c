@@ -1,17 +1,5 @@
-/*This file is part of Eyecube.
-*
-* Eyecube is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Eyecube is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with Eyecube. If not, see <http://www.gnu.org/licenses/>.
+/*Eyecube, sandbox game.
+* Copyright (C) 2011 Alexander Kromm, see README file for details.
 */
 
 #include "header.h"
@@ -19,12 +7,13 @@
 #include <locale.h>
 
 extern WINDOW      *world, *textwin, *pocketwin, *sound_window;
-extern short       xp, yp, zp, pl, eye[], earth[][192][HEAVEN+1],
-                   sky[][39], cur[], radar_dist;
+extern short       xp, yp, zp, pl, eye[], earth[][3*WIDTH][HEAVEN+1],
+                   cur[], radar_dist;
 extern unsigned    time;
+extern char        view;
 extern struct item inv[][3], cloth[], radar[], *craft;
 extern struct something *animalstart;
-extern char        view;
+extern struct for_sky sky[][39];
 
 void tolog();
 
@@ -66,11 +55,11 @@ short  x, y;
 WINDOW *wind;
 char   c; {
 	if (c=='e') { //empty
-		wattrset(wind, COLOR_PAIR(2));
+		wattrset(wind, COLOR_PAIR(BLACK_GREEN));
 		(void)mvwprintw(wind, y, x-1, " ");
 		(void)mvwprintw(wind, y, x+2, " ");
 	} else {      //full
-		wattrset(wind, COLOR_PAIR(8));
+		wattrset(wind, COLOR_PAIR(BLACK_RED));
 		(void)mvwprintw(wind, y, x-1, "!");
 		(void)mvwprintw(wind, y, x+2, "!");
 	}
@@ -79,41 +68,67 @@ char   c; {
 // this prints visible world
 void map() {
 	tolog("map start\n");
-	void  invview(), surf(), frontview(),
-	      sound();
-	short i;
+	void invview(), surf(), frontview();
+	short i,
+	      number=NUMBER_OF_USEFUL;
 	(void)wclear(world);
-	if (view=='u' || view=='f' || view=='h' || view=='k') surf();
-	else if (view=='r') frontview();
-	else invview();
 	wstandend(world);
 	(void)box(world, 0, 0);
-	switch (view) {
-		case 'u': (void)mvwprintw(world, 22, 1, "surface"  ); break;
-		case 'f': (void)mvwprintw(world, 22, 1, "floor"    ); break;
-		case 'h': (void)mvwprintw(world, 22, 1, "head"     ); break;
-		case 'k':
-			(void)mvwprintw(world, 22, 1,  "sky");
-			(void)mvwprintw(world, 22, 21, "^^" );
-		break;
-		case 'r':
-			(void)mvwprintw(world, 22, 1,  "front");
-			(void)mvwprintw(world, 22, 21, "^^"   );
-		break;
-		case 'c':
-		case 'i': (void)mvwprintw(world, 22, 1, "inventory"); break;
-		default : (void)mvwprintw(world, 22, 1, "another"  ); break;
+	if (!pl) {
+		(void)mvwprintw(world, 22, 21, "^^");
+		(void)mvwprintw(world, 20,  0, ">" );
+		(void)mvwprintw(world, 20, 43, "<" );
 	}
-	if (!pl) (void)mvwprintw(world, 22, 21, "^^");
-	for (i=0; i<30; ++i) if (9==inv[i%10][i/10].what) {
-		(void)mvwprintw(world, 22, 38, "%2d:%2d", (int)time/60, time%60);
-		break;
+	for (i=0; i<30 && number; ++i) {
+		switch (inv[i%10][i/10].what) {
+			case CLOCK:
+				(void)mvwprintw(world, 22, 38, "%2d:%2d",
+					time/60, time%60);
+				--number;
+			break;
+			case COMPASS:
+				if (eye[0]==0)
+					if (eye[1]*(('k'==view) ? (-1) : 1)==-1)
+						(void)mvwprintw(world, 0, 1, "^north^");
+					else
+						(void)mvwprintw(world, 0, 1, "^south^");
+				else if (eye[0]==-1)
+						(void)mvwprintw(world, 0, 1, "^west^");
+				else
+						(void)mvwprintw(world, 0, 1, "^east^");
+				--number;
+			break;
+			default: break;	
+		}
 	}
 	if (30==i)
 		if (time<6*60) (void)mvwprintw(world, 22, 37, "night");
 		else if (time<12*60) (void)mvwprintw(world, 22, 36, "morning");
 		else if (time<18*60) (void)mvwprintw(world, 22, 40, "day");
 		else (void)mvwprintw(world, 22, 36, "evening");
+	switch (view) {
+		case 'u': (void)mvwprintw(world, 22, 1, "surface"); surf(); break;
+		case 'f': (void)mvwprintw(world, 22, 1, "floor"  ); surf(); break;
+		case 'h': (void)mvwprintw(world, 22, 1, "head"   ); surf(); break;
+		case 'k':
+			(void)mvwprintw(world, 22,  1, "sky");
+			(void)mvwprintw(world, 22, 21, "^^" );
+			(void)mvwprintw(world,  0, 21, "vv" );
+			(void)mvwprintw(world,  2,  0, ">"  );
+			(void)mvwprintw(world,  2, 43, "<"  );
+			surf();
+		break;
+		case 'r':
+			(void)mvwprintw(world, 22,  1, "front");
+			(void)mvwprintw(world, 22, 21, "^^"   );
+			(void)mvwprintw(world, 20,  0, ">"    );
+			(void)mvwprintw(world, 20, 43, "<"    );
+			frontview();
+		break;
+		case 'c': //no break
+		case 'i': (void)mvwprintw(world, 22, 1, "inventory"); invview(); break;
+		default : (void)mvwprintw(world, 22, 1, "another"  ); invview(); break;
+	}
 	(void)wrefresh(world);
 	tolog("map finish\n");
 }
@@ -205,10 +220,11 @@ short xsave, xplus,
 	      visible2();
 	char  getname();
 	register short x, y;
+	short save, p, z,
+	      xnew, ynew;
 	for (x=1; x<=21; ++x)
 	for (y=1; y<=21; ++y) {
-		short save, p, z,
-		      xnew, ynew=zp+20-y;
+		ynew=zp+20-y;
 		if (flag) {
 			xnew=xsave+x*xplus;
 			z=zsave;
@@ -232,10 +248,10 @@ short xsave, xplus,
 				else                     name2='+';
 				(void)mvwprintw(world, y, 2*x-1, "%c%c", name, name2);
 			} else if (earth[xnew][z][ynew]!=0) {
-					wattrset(world, COLOR_PAIR(6));
+					wattrset(world, COLOR_PAIR(WHITE_BLACK));
 					(void)mvwprintw(world, y, 2*x-1, "??");
 			} else {
-				wattrset(world, COLOR_PAIR(1));
+				wattrset(world, COLOR_PAIR(WHITE_BLUE));
 				(void)mvwprintw(world, y, 2*x-1, ". ");
 			}
 		}
@@ -264,57 +280,56 @@ void in_surf(xcor, ycor, xarr, yarr, xrarr, yrarr)
 short xcor,  ycor,
       xarr,  yarr,
       xrarr, yrarr; {
-	int   visible(),
-	      visible2(),
+	int   visible2(), visible2x3(),
 	      property();
-	char  getname();
+	char  getname(), get_sky_name();
 	register short x, y, z;
+	short st, en, plus,
+	      newx, newy;
+	switch (view) {
+		case  'f': st=zp;     en=0;      plus=-1; break; //floor
+		case  'h': st=zp+1;   en=0;      plus=-1; break; //head
+		case  'k': st=zp+2;   en=HEAVEN; plus= 1; break; //sky
+		default  : st=HEAVEN; en=0;      plus=-1; break; //surface 
+	}
 	for (y=1; y<=21; ++y)
 	for (x=1; x<=21; ++x) {
-		short st, en, plus,
-		      newx=xcor+xarr*x+xrarr*y,
-		      newy=ycor+yarr*y+yrarr*x;
-		switch (view) {
-			case  'f': st=zp;     en=0;      plus=-1; break; //floor
-			case  'h': st=zp+1;   en=0;      plus=-1; break; //head
-			case  'k': st=zp+2;   en=HEAVEN; plus= 1; break; //sky
-			default  : st=HEAVEN; en=0;      plus=-1; break; //surface 
-		}
+		newx=xcor+xarr*x+xrarr*y+(('k'==view) ? -eye[0]*18 : 0);
+		newy=ycor+yarr*y+yrarr*x+(('k'==view) ? -eye[1]*18 : 0);
 		for (z=st; z!=en && property(earth[newx][newy][z], 't'); z+=plus);
 		if (z==HEAVEN) {
-			if (visible2(xp, yp, zp, newx, newy, z)) {
-				switch (sky[newx-xp+20][newy-yp+20]) {
-					//stars
-					case  1: wattrset(world, COLOR_PAIR(3)); break;
-					//sun
-					case  2: wattrset(world, COLOR_PAIR(4)); break;
-					//blue sky
-					default: wattrset(world, COLOR_PAIR(1)); break;
-				}
-				(void)mvwprintw(world, y, 2*x-1, "  ");
-			}
+			if (visible2(xp, yp, zp, newx, newy, z)) //print sky
+				if (sky[newx-xp+19][newy-yp+19].birds)
+					(void)mvwprintw(world, y, 2*x-1, "%c ",
+					get_sky_name(sky[newx-xp+19][newy-yp+19].birds));
+				else if (sky[newx-xp+19][newy-yp+19].clouds)
+					(void)mvwprintw(world, y, 2*x-1, "%c ",
+					get_sky_name(sky[newx-xp+19][newy-yp+19].clouds));
+				else if (sky[newx-xp+19][newy-yp+19].sun)
+					(void)mvwprintw(world, y, 2*x-1, "%c ",
+					get_sky_name(sky[newx-xp+19][newy-yp+19].sun));
+				else (void)mvwprintw(world, y, 2*x-1, "%c ",
+					get_sky_name(sky[newx-xp+19][newy-yp+19].sky));
 		} else if (visible2x3(xp, yp, zp+1, newx, newy, z) && 
-					illuminated(newx, newy, z))
-				if (z-zp>=10) (void)mvwprintw(world, y, 2*x-1,
-					"%c%c", getname(earth[newx][newy][z], world),
-					'+');
-				else if (z-zp>-1) (void)mvwprintw(world, y, 2*x-1,
-					"%c%c", getname(earth[newx][newy][z], world),
-					z-zp+1+'0');
-				else if (z-zp<-1) (void)mvwprintw(world, y, 2*x-1,
-					"%c%c", getname(earth[newx][newy][z], world),
-					'-');
-				else {
-					char name=getname(earth[newx][newy][z], world);
-					(void)mvwprintw(world, y, 2*x-1,
-					"%c%c", name, name);
-				}
+				illuminated(newx, newy, z))
+			if (z-zp>=10) (void)mvwprintw(world, y, 2*x-1,
+				"%c%c", getname(earth[newx][newy][z], world), '+');
+			else if (z-zp>-1) (void)mvwprintw(world, y, 2*x-1,
+				"%c%c", getname(earth[newx][newy][z], world), z-zp+1+'0');
+			else if (z-zp==-2) (void)mvwprintw(world, y, 2*x-1,
+				"%c%c", getname(earth[newx][newy][z], world), '-');
+			else if (z-zp<-2) (void)mvwprintw(world, y, 2*x-1,
+				"%c%c", getname(earth[newx][newy][z], world), '!');
+			else {
+				char name=getname(earth[newx][newy][z], world);
+				(void)mvwprintw(world, y, 2*x-1, "%c%c", name, name);
+			}
 	}
 	//show player or not
 	if (pl && view!='k') {
 		for (z=HEAVEN; z!=zp && earth[xp][yp][z]==0; --z);
 		if (z==zp) {
-			wattrset(world, COLOR_PAIR(1));
+			wattrset(world, COLOR_PAIR(WHITE_BLUE));
 			(void)mvwprintw(world, 20, 21, "  ");
 		}
 	}
@@ -327,7 +342,7 @@ void invview() {
 	char  getname();
 	short i, j;
 	//left arm
-	wattrset(world, COLOR_PAIR(3));
+	wattrset(world, COLOR_PAIR(BLACK_WHITE));
 	(void)mvwprintw(world, 4, 5, "U");
 	//right arm
 	if (inv[cloth[4].num][2].what) (void)mvwprintw(world, 4, 1, "%c%d",
@@ -336,7 +351,7 @@ void invview() {
 	else (void)mvwprintw(world, 4, 2, "U");
 	//shoulders
 	if (cloth[1].what) (void)getname(cloth[1].what, world);
-	else wattrset(world, COLOR_PAIR(1));
+	else wattrset(world, COLOR_PAIR(WHITE_BLUE));
 	(void)mvwprintw(world, 3, 2, "    ");
 	for (i=0; i<=3; ++i)
 		if (cloth[i].what)
@@ -344,15 +359,15 @@ void invview() {
 				getname(cloth[i].what, world), cloth[i].num);
 		else switch (i) {
 			case 0: //head
-				wattrset(world, COLOR_PAIR(3));
+				wattrset(world, COLOR_PAIR(BLACK_WHITE));
 				(void)mvwprintw(world, 2, 3, "''");
 			break;
 			case 1:	case 2: //body & legs
-				wattrset(world, COLOR_PAIR(1));
+				wattrset(world, COLOR_PAIR(WHITE_BLUE));
 				(void)mvwprintw(world, 2+i, 3, "  ");
 			break;
 			case 3: //feet
-				wattrset(world, COLOR_PAIR(3));
+				wattrset(world, COLOR_PAIR(BLACK_WHITE));
 				(void)mvwprintw(world, 5, 3, "db");
 			break;
 		}
@@ -423,48 +438,76 @@ short  block;
 WINDOW *pwin; {
 //	tolog("getname start\n");
 	switch (block) {
-		case 1: //grass
-			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(2));
+		case GRASS:
+			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(BLACK_GREEN));
 			return '|';
 		break;
-		case 2: //stone
-			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(3));
+		case STONE:
+			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(BLACK_WHITE));
 			return 's';
 		break;
 		case 3: //player
-			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(2));
+			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(WHITE_BLUE));
 			return 'p';
 		break;
-		case 4: //chiken
-			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(5));
+		case CHICKEN:
+			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(RED_WHITE));
 			return 'c';
 		break;
-		case 5: //fire
+		case FIRE:
 			if (time%2) {
-				if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(4));
+				if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(RED_YELLOW));
 				return 'F';
 			} else {
-				if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(7));
+				if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(YELLOW_RED));
 				return 'f';
 			}
 		break;
-		case 6: //steel helmet
-			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(3));
+		case STEEL_HELMET:
+			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(BLACK_WHITE));
 			return 'h';
 		break;
-		case 7: //chest
-			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(9));
+		case CHEST:
+			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(BLACK_YELLOW));
 			return 'c';
 		break;
-		case 8: //heap
-			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(6));
+		case HEAP:
+			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(WHITE_BLACK));
 			return 'h';
 		break;
-		case 9: //clock
-			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(10));
+		case CLOCK:
+			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(BLUE_YELLOW));
 			return 'c';
 		break;
-		case 0:  if (NULL!=pwin) wstandend(pwin); return ' '; break; //air
+		case COMPASS:
+			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(RED_BLACK));
+			return 'c';
+		break;
+		case AIR: if (NULL!=pwin) wstandend(pwin); return ' '; break;
 		default: return '?'; break;
 	}
 }
+
+char get_sky_name(id)
+short id; {
+switch (id) {
+	case BLUE_SKY:    wattrset(world, COLOR_PAIR(WHITE_BLUE));   return ' '; break;
+	case CYAN_SKY:    wattrset(world, COLOR_PAIR(WHITE_CYAN));   return ' '; break;
+	case BLACK_SKY:   wattrset(world, COLOR_PAIR(WHITE_BLACK));  return ' '; break;
+	case BLUE_STAR:   wattrset(world, COLOR_PAIR(WHITE_BLUE));   return '.'; break;
+	case BLACK_STAR:  wattrset(world, COLOR_PAIR(WHITE_BLACK));  return '.'; break;
+	case SUN:         wattrset(world, COLOR_PAIR(RED_YELLOW));   return ' '; break;
+	case MOON:        wattrset(world, COLOR_PAIR(BLACK_WHITE));  return ' '; break;
+	case CLOUD:       wattrset(world, COLOR_PAIR(BLACK_WHITE));  return 'c'; break;
+	case BLUE_RAVEN:  wattrset(world, COLOR_PAIR(BLACK_BLUE));   return 'r'; break;
+	case CYAN_RAVEN:  wattrset(world, COLOR_PAIR(BLACK_CYAN));   return 'r'; break;
+	case BLACK_RAVEN: wattrset(world, COLOR_PAIR(WHITE_BLACK));  return ' '; break;
+	case CLOUD_RAVEN: wattrset(world, COLOR_PAIR(BLACK_WHITE));  return 'r'; break;
+	case SUN_RAVEN:   wattrset(world, COLOR_PAIR(BLACK_YELLOW)); return 'r'; break;
+	case BLUE_BIRD:   wattrset(world, COLOR_PAIR(RED_BLUE));     return 'b'; break;
+	case CYAN_BIRD:   wattrset(world, COLOR_PAIR(RED_CYAN));     return 'b'; break;
+	case BLACK_BIRD:  wattrset(world, COLOR_PAIR(RED_BLACK));    return 'b'; break;
+	case CLOUD_BIRD:  wattrset(world, COLOR_PAIR(RED_WHITE));    return 'b'; break;
+	case SUN_BIRD:    wattrset(world, COLOR_PAIR(RED_YELLOW));   return 'b'; break;
+	default:          wattrset(world, COLOR_PAIR(WHITE_BLACK));  return '?'; break;
+}}

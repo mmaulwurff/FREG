@@ -1,17 +1,5 @@
-/*This file is part of Eyecube.
-*
-* Eyecube is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Eyecube is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with Eyecube. If not, see <http://www.gnu.org/licenses/>.
+/*Eyecube, sandbox game.
+* Copyright (C) 2011 Alexander Kromm, see README file for details.
 */
 
 #include "header.h"
@@ -23,10 +11,11 @@ short       xp, yp, zp, //player coordinates
             eye[2],     //camera position: 
             eyes[2],    //previous camera position
             pl,         //show player or no
-            earth[192][192][HEAVEN+1], //current loaded world
-            sky[39][39],
+            earth[3*WIDTH][3*WIDTH][HEAVEN+1], //current loaded world
             radar_dist;
-unsigned    time;
+struct for_sky sky[39][39]; 
+//(0,19) - west, (38,19) - east, (19,0) - south, (19,38) - north
+unsigned time;
 /*One real minute is an hour in Eyecube.
  *00:00 - 06:00 - night
  *06:00 - 12:00 - morning
@@ -34,15 +23,16 @@ unsigned    time;
  *18:00 - 00:00 - evening
  */
 
-char        view, /*view modes: sUrface, Floor, Head, sKy, fRont, Menu,
-                    Inventory, Chest, Workbench, furNace */
-            view_last; //save previous view
+char view, /*view modes: sUrface, Floor, Head, sKy, fRont, Menu,
+             Inventory, Chest, Workbench, furNace */
+     view_last; //save previous view
 struct item inv[10][3], //inventory
 	    cloth[5];   //(armour), cloth[4].num is an index of the last line of "inv"
 
 //comment out fprintf to turn off debugging
 void tolog(string)
 char *string; {
+	fprintf(stderr, "%2d:%2d: ", (int)time/60, time%60);
 	fprintf(stderr, string);
 }
 
@@ -55,7 +45,6 @@ void loadgame() {
 	     load();
 	short i, j;
 	FILE* file=fopen("save", "r");
-	fprintf(stderr, "load\n");
 	if (file!=NULL) { //load
 		xp=        getc(file);
 		yp=        getc(file);
@@ -72,9 +61,15 @@ void loadgame() {
 		time=read_int(file);
 		spx=(((getc(file))=='-') ? (-1) : 1)*getc(file);
 		spy=(((getc(file))=='-') ? (-1) : 1)*getc(file);
-		for (i=0; i<=38; ++i) for (j=0; j<=38; ++j)
-			sky[i][j]=getc(file);
-		for (i=0; i<=9; ++i) for (j=0; j<=2; ++j) {
+		for (i=0; i<=38; ++i)
+		for (j=0; j<=38; ++j) {
+			sky[i][j].sky   =getc(file);
+			sky[i][j].sun   =getc(file);
+			sky[i][j].clouds=getc(file);
+			sky[i][j].birds =getc(file);
+		}
+		for (i=0; i<=9; ++i)
+		for (j=0; j<=2; ++j) {
 			inv[i][j].what=getc(file);
 			inv[i][j].num=getc(file);
 		}
@@ -101,10 +96,15 @@ void loadgame() {
 		radar_dist=FAR;
 		view=view_last='u';
 		for (i=0; i<=38; ++i)
-		for (j=0; j<=38; ++j)
-			sky[i][j]=0;
-		sky[19][19]=2;
-		for (i=0; i<=9; ++i) for (j=0; j<=2; ++j) {
+		for (j=0; j<=38; ++j) {
+			sky[i][j].sky=BLUE_SKY;
+			sky[i][j].sun=0;
+			sky[i][j].clouds=0;
+			sky[i][j].birds=0;
+		}
+		sky[38][19].sun=SUN;
+		for (i=0; i<=9; ++i)
+		for (j=0; j<=2; ++j) {
 			inv[i][j].what=0;
 			inv[i][j].num =0;
 		}
@@ -129,7 +129,9 @@ void load() {
 	char name[50]; //50!?
 	FILE *file;
 	for (n=0; n<=8; ++n) {
-		nx=64*(n%3),
+//		nx=WIDTH*(n%3);
+//		ny=WIDTH*(n/3);
+		nx=64*(n%3);
 		ny=64*(n/3);
 		makename(spx+n%3-1, spy+n/3-1, name);
 		file=fopen(name, "rb");
@@ -139,38 +141,44 @@ void load() {
 			for (i=nx; i<=63+nx; ++i)
 			for (j=ny; j<=63+ny; ++j)
 			for (k=0; k<=HEAVEN-1; ++k)
-				earth[i][j][k]=0;
+				earth[i][j][k]=AIR;
 			for (i=nx; i<=63+nx; ++i)
 			for (j=ny; j<=63+ny; ++j)
 			for (k=0; k<=80; ++k)
-				earth[i][j][k]=1;
+				earth[i][j][k]=GRASS;
 			//hills
-			for (k=80; k<=88; ++k)
+/*			for (k=80; k<=88; ++k)
 			for (i=nx+10+k-81; i<=nx+24-k+81; ++i)
 			for (j=ny+10+k-81; j<=ny+24-k+81; ++j)
-				earth[i][j][k]=2;
+				earth[i][j][k]=STONE;*/
 			//pits
 			for (k=80; k>=76; --k)
 			for (i=nx+20-k+80; i<=nx+24+k-80; ++i)
 			for (j=ny+20-k+80; j<=ny+24+k-80; ++j)
-				earth[i][j][k]=0;
+				earth[i][j][k]=AIR;
 			//walls (rocks?)
 			for (i=10+nx; i<=20+nx; ++i)
 			for (k=80; k<=85; ++k)
-				earth[i][12+ny][k]=2;
-			//chiken
+				earth[i][12+ny][k]=STONE;
+			earth[12+nx][13+ny][81]=FIRE;
+			(void)spawn(12+nx, 13+ny, 81, NULL);
+			//chicken
 			for (k=HEAVEN; earth[40+nx][40+ny][k-1]==0; --k);
-			earth[41+nx][47+ny][k]=4;
+			earth[41+nx][47+ny][k]=CHICKEN;
 			(void)spawn(41+nx, 47+ny, k, NULL);
-			//chest
-			earth[41+nx][41+ny][k]=7;
+			earth[41+nx][41+ny][k]=CHEST;
 			(void)spawn(41+nx, 41+ny, k, NULL);
-			//fire
-			earth[45+nx][45+ny][80]=5;
-			earth[46+nx][45+ny][80]=5;
-			earth[45+nx][46+ny][80]=5;
-			earth[46+nx][46+ny][80]=5;
-			earth[46+nx][46+ny][81]=5;
+
+			earth[45+nx][45+ny][80]=FIRE;
+			(void)spawn(45+nx, 45+ny, 80, NULL);
+			earth[46+nx][45+ny][80]=FIRE;
+			(void)spawn(46+nx, 45+ny, 80, NULL);
+			earth[45+nx][46+ny][80]=FIRE;
+			(void)spawn(45+nx, 46+ny, 80, NULL);
+			earth[46+nx][46+ny][80]=FIRE;
+			(void)spawn(46+nx, 46+ny, 80, NULL);
+			earth[46+nx][46+ny][81]=FIRE;
+			(void)spawn(46+nx, 46+ny, 81, NULL);
 		} else {//loader
 			for (i=nx; i<=63+nx;  ++i)
 			for (j=ny; j<=63+ny;  ++j)
@@ -214,8 +222,12 @@ void savegame() {
 	else       fputc('+', file);
 	fputc(abs(spy),  file);
 	for (i=0; i<=38; ++i)
-	for (j=0; j<=38; ++j)
-		fputc(sky[i][j], file);
+	for (j=0; j<=38; ++j) {
+		fputc(sky[i][j].sky,    file);
+		fputc(sky[i][j].sun,    file);
+		fputc(sky[i][j].clouds, file);
+		fputc(sky[i][j].birds,  file);
+	}
 	for (i=0; i<=9; ++i)
 	for (j=0; j<=2; ++j) {
 		fputc(inv[i][j].what, file);
@@ -231,16 +243,20 @@ void savegame() {
 
 void save() {
 	tolog("save start\n");
-	short n;
+	struct something *findanimal();
+	int   property();
+	short n,
+	      i, j, k,
+	      if_heap;
+	char  name[50],
+	      type;
+	FILE  *file;
 	for (n=0; n<=8; ++n) {
-		struct something *findanimal();
-		int  property();
-		char name[50],
-		     type;
 		makename(spx+n%3-1, spy+n/3-1, name);
-		FILE *file=fopen(name, "wb");
-		short i, j, k,
-		      if_heap=0;
+		file=fopen(name, "wb");
+		if_heap=0;
+//		for (i=WIDTH*(n%3); i<=(WIDTH-1+WIDTH*(n%3)); ++i)
+//		for (j=WIDTH*(n/3); j<=(WIDTH-1+WIDTH*(n/3)); ++j)
 		for (i=64*(n%3); i<=63+64*(n%3); ++i)
 		for (j=64*(n/3); j<=63+64*(n/3); ++j)
 		for (k=0;        k<=HEAVEN;      ++k) {
@@ -268,25 +284,25 @@ void save() {
 void onbound() {
 	tolog("onbound start");
 	void eraseanimals();
-	if (xp<64) { //west
-		xp+=64;
+	if (xp<WIDTH) { //west
+		xp+=WIDTH;
 		save();
 		eraseanimals();
 		--spx;
 		load();
-	} else if (xp>127) { //east
+	} else if (xp>2*WIDTH-1) { //east
 		xp-=64;
 		save();
 		eraseanimals();
 		++spx;
 		load();
-	} else if (yp<64) { //north
+	} else if (yp<WIDTH) { //north
 		yp+=64;
 		save();
 		eraseanimals();
 		--spy;
 		load();
-	} else if (yp>127) { //south
+	} else if (yp>2*WIDTH-1) { //south
 		yp-=64;
 		save();
 		eraseanimals();
@@ -299,7 +315,7 @@ void onbound() {
 //random number (linux only)
 int random_linux() {
 	tolog("random_linux start\n");
-	FILE* file=fopen("/dev/urandom", "rb");
+	FILE *file=fopen("/dev/urandom", "rb");
 	char c=fgetc(file);
 	fclose(file);
 	tolog("random_linux finish\n");
@@ -310,7 +326,7 @@ int random_linux() {
 int random_prob(prob)
 short prob; {
 	tolog("random_prob start\n");
-	FILE* file=fopen("/dev/urandom", "rb");
+	FILE *file=fopen("/dev/urandom", "rb");
 	char c=fgetc(file);
 	fclose(file);
 	tolog("random_prob finish\n");

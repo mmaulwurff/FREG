@@ -1,15 +1,20 @@
+/*Eyecube, sandbox game.
+* Copyright (C) 2011 Alexander Kromm, see README file for details.
+*/
+
 #include "header.h"
 #include <ncurses.h>
 #include <stdlib.h>
 
 extern char  signal, view;
-extern short xp, yp, zp, earth[][192][HEAVEN+1], jump, notflag;
+extern short xp, yp, zp, earth[][3*WIDTH][HEAVEN+1], jump, notflag;
 
 extern unsigned time;
 
 //TODO: char instead of short
 struct item radar[9];
 extern short radar_dist;
+extern struct for_sky sky[][39];
 
 struct something *animalstart=NULL,
                  *cheststart =NULL,
@@ -17,6 +22,46 @@ struct something *animalstart=NULL,
                  *heapstart  =NULL,
                  *lightstart =NULL;
 void tolog();
+
+char skymap[][78]={"                          .         . .                 .                     ",
+"                    .   .       .   .                 .                       ",
+"                                  .     .         .                           ",
+"                          . .           .                                     ",
+"                                        .           .                         ",
+"                                .   .   .   .   .                             ",
+"                          .           . . .     .                             ",
+"                        .               .           .                         ",
+"                    .                                                         ",
+"                      .     .         .       .   .       .               . . ",
+"                  .   . .         .   .   .               .         .         ",
+".   .   . .     .       . . .   .                                             ",
+"    . .       .                   .     .                   .   .         .   ",
+"          .         .           .   .     . .       .                   .     ",
+". .                 . .     .         .   .                     .             ",
+"      .   .                                     .             . .   .     .   ",
+"        .   .                             .   .       .             .         ",
+"  .           .         .   .     .                   .   .                   ",
+"      . .         .                                     .       .         .   ",
+"        .               .               .               .   .         .       ",
+"  .     .                   .   .     .     . . .                             ",
+". .   .               . .               .     .     .                 .   .   ",
+"              .     .                     .                 .     .     .     ",
+"      .   .       . .           .           .     .                 .         ",
+"  .     .                                           . .         .   .         ",
+"      .             .         .                                 .   .         ",
+"              .   .         .     .     .   .             .     .             ",
+".   .     .     .                   .                                         ",
+"            .     .             . . .   .                             .   .   ",
+"            .                 .             .     . .     .         .         ",
+"                      .         .   .     .               .                   ",
+"                      .       .           .             .                     ",
+"                    .         .             .   .                             ",
+"                                          .             .                     ",
+"                                                    . .                       ",
+"                  .     .         .         .                                 ",
+"                    . .         .   .                 . .                     ",
+"                                  .       .     .                             ",
+"                  .     .       .       .                                     "};
 
 //drops block
 int fall(x, y, z)
@@ -94,12 +139,91 @@ void allmech() {
 	tolog("allmech start\n");
 	void map(), sounds_print(),
 	     chiken_move();
-	if (signal=='w') {
-		struct something *animalcar=animalstart;
-		while (animalcar!=NULL) {
-			chiken_move(animalcar);
-			animalcar=animalcar->next;
+	//sky section
+	if (time>=6*60) {
+		if (0==time%((24*60-1-6*60)/39)) {
+			short sun_pos=38-((time-6*60)*39/(24*60-1-6*60));
+			if (38!=sun_pos) sky[sun_pos+1][19].sun=NOTHING;
+			sky[sun_pos][19].sun=SUN;
 		}
+	} else {
+		if (0==time%((6*60)/39)) {
+			short sun_pos=38-(time*39/(6*60));
+			if (38!=sun_pos) sky[sun_pos+1][19].sun=NOTHING;
+			sky[sun_pos][19].sun=MOON;
+		}
+	}
+	switch (time) {
+		case 0: {
+			register short x, y;
+			for (x=0; x<39; ++x)
+			for (y=0; y<39; ++y) 
+				sky[x][y].sky=('.'==skymap[y][2*x]) ?
+					BLACK_STAR : BLACK_SKY;
+			sky[ 0][19].sun=NOTHING;
+			sky[38][19].sun=MOON;
+		} break;
+		case 6*60: sky[0][19].sun=NOTHING; sky[38][19].sun=SUN; //no break;
+		case 23*60: {
+			register short x, y;
+			for (x=0; x<39; ++x)
+			for (y=0; y<39; ++y)
+				sky[x][y].sky=('.'==skymap[y][2*x]) ?
+					BLUE_STAR : BLUE_SKY;
+		} break;
+		case 7*60: {
+			register short x, y;
+			for (x=0; x<39; ++x)
+			for (y=0; y<39; ++y)
+				sky[x][y].sky=BLUE_SKY;
+		} break;
+		case 12*60: {
+			register short x, y;
+			for (x=0; x<39; ++x)
+			for (y=0; y<39; ++y)
+				sky[x][y].sky=CYAN_SKY;
+		} break;
+		case 18*60: {
+			register short x, y;
+			for (x=0; x<39; ++x)
+			for (y=0; y<39; ++y)
+				sky[x][y].sky=BLUE_SKY;
+		} break;
+		default: break;
+	}
+	//physics section
+	time=(24*60-1==time) ? 0 : time+1;
+	if (signal=='w') {
+		void move_down_chain();
+		struct something *car;
+		//move animals
+		for (car=animalstart; NULL!=car; car=car->next) chiken_move(car);
+		//heap lifetime
+		if (0==time%60) {
+			struct something *car_last=heapstart;
+			car=heapstart;
+			while (NULL!=car) if (0==--(car->arr[63]))
+				if (car==heapstart) {
+					heapstart=car->next;
+					earth[car->arr[0]][car->arr[1]][car->arr[2]]=0;
+					free(car->arr);
+					free(car);
+					car=heapstart;
+				} else {
+					car_last->next=car->next;
+					earth[car->arr[0]][car->arr[1]][car->arr[2]]=0;
+					free(car->arr);
+					free(car);
+					car=car_last->next;
+				}
+			else {
+				car_last=car;
+				car=car->next;
+			}
+		}
+		//everything falls
+		if (NULL!=heapstart  ) move_down_chain(&heapstart  );
+		if (NULL!=animalstart) move_down_chain(&animalstart);
 	}
 	{ //gravity
 		short height=0;
@@ -110,21 +234,12 @@ void allmech() {
 			//damage
 		}
 	}
-	//clock should be here
-	//sand falls, heaps dissapear, night and day come
-	{ //everything falls
-		void move_down_chain();
-		if (NULL!=heapstart  ) move_down_chain(&heapstart  );
-		if (NULL!=animalstart) move_down_chain(&animalstart);
-	}
-	time=(24*60==time) ? 0 : time+1;
 	{
 		void sounds();
 		sounds(animalstart);
 	}
 	sounds_print();
 	map();
-//	if ('i'!=view && 'w'!=view && 'c'!=view && 'n'!=view) map();
 	tolog("allmech finish\n");
 }
 
@@ -207,7 +322,7 @@ struct something *animalp; {
 	short c=(unsigned)random_linux()%5,
 	      save=earth[animalp->arr[0]][animalp->arr[1]][animalp->arr[2]];
 	earth[animalp->arr[0]][animalp->arr[1]][animalp->arr[2]]=0;
-	if      (c==0 && animalp->arr[0]!=191 &&
+	if      (c==0 && animalp->arr[0]!=3*WIDTH-1 &&
 		property(earth[animalp->arr[0]+1][animalp->arr[1]][animalp->arr[2]], 'p')
 		&& !(xp==animalp->arr[0]+1 && yp==animalp->arr[1] && zp==animalp->arr[2]))
 			++(animalp->arr[0]);
@@ -215,7 +330,7 @@ struct something *animalp; {
 		property(earth[animalp->arr[0]-1][animalp->arr[1]][animalp->arr[2]], 'p')
 		&& !(xp==animalp->arr[0]-1 && yp==animalp->arr[1] && zp==animalp->arr[2]))
 			--(animalp->arr[0]);
-	else if (c==2 && animalp->arr[1]!=191 &&
+	else if (c==2 && animalp->arr[1]!=3*WIDTH-1 &&
 		property(earth[animalp->arr[0]][animalp->arr[1]+1][animalp->arr[2]], 'p')
 		&& !(xp==animalp->arr[0] && yp==animalp->arr[1]+1 && zp==animalp->arr[2]))
 			++(animalp->arr[1]);
@@ -257,14 +372,14 @@ FILE  *file; {
 					malloc((('h'==type) ? 1 : 0)+63*sizeof(short));
 				if (file==NULL) {
 					while (i<63) thing_new->arr[i++]=0;
-					//put helmet to all new chests
-					thing_new->arr[4 ]=9;
+					//put something to all new chests
+					thing_new->arr[4 ]=COMPASS;
 					thing_new->arr[34]=9;
 					//and some stones
-					/*thing_new->arr[5 ]=2;
+					/*thing_new->arr[5 ]=STONE;
 					thing_new->arr[35]=9;*/
 					//
-					if ('h'==type) thing_new->arr[i]=24;
+					if ('h'==type) thing_new->arr[i]=24; //hours
 				} else
 					while (i<63+(('h'==type) ? 1 : 0))
 						thing_new->arr[i++]=getc(file);
@@ -272,7 +387,7 @@ FILE  *file; {
 			case 'l': {//light
 				int light_radius();
 				thing_new->arr=malloc(4*sizeof(short));
-				thing_new->arr[3]=light_radius(x, y, z);
+				thing_new->arr[3]=1; //hour
 			} break;
 			case 't': //thing
 				thing_new->arr=malloc(3*sizeof(short));
@@ -303,7 +418,7 @@ void eraseanimals() {
 	erasein(heapstart  );
 	heapstart  =NULL;
 	signal='w';
-	tolog("eraseanimals\n");
+	tolog("eraseanimals finish\n");
 }
 
 //inside eraseanimals()
