@@ -88,11 +88,11 @@ void map() {
 			break;
 			case COMPASS:
 				if (eye[0]==0)
-					if (eye[1]*(('k'==view) ? (-1) : 1)==-1)
+					if (-1==eye[1]*(('k'==view) ? (-1) : 1))
 						(void)mvwprintw(world, 0, 1, "^north^");
 					else
 						(void)mvwprintw(world, 0, 1, "^south^");
-				else if (eye[0]==-1)
+				else if (-1==eye[0]*(('k'==view) ? (-1) : 1))
 						(void)mvwprintw(world, 0, 1, "^west^");
 				else
 						(void)mvwprintw(world, 0, 1, "^east^");
@@ -112,7 +112,6 @@ void map() {
 		case 'h': (void)mvwprintw(world, 22, 1, "head"   ); surf(); break;
 		case 'k':
 			(void)mvwprintw(world, 22,  1, "sky");
-			(void)mvwprintw(world, 22, 21, "^^" );
 			(void)mvwprintw(world,  0, 21, "vv" );
 			(void)mvwprintw(world,  2,  0, ">"  );
 			(void)mvwprintw(world,  2, 43, "<"  );
@@ -216,12 +215,12 @@ void in_frontview(xsave, xplus, zsave, zend, zplus, flag)
 short xsave, xplus,
       zsave, zend,
       zplus, flag; {
-	int   visible(),
-	      visible2();
+	int   visible2x3();
 	char  getname();
 	register short x, y;
 	short save, p, z,
 	      xnew, ynew;
+	p=(flag) ? yp : xp;
 	for (x=1; x<=21; ++x)
 	for (y=1; y<=21; ++y) {
 		ynew=zp+20-y;
@@ -230,13 +229,13 @@ short xsave, xplus,
 			z=zsave;
 			while (z!=zend && earth[xnew][z][ynew]==0) z+=zplus;
 			save=z;
-			p=yp;
+//			p=yip;
 		} else {
 			z=xsave+x*xplus;
 			xnew=zsave;
 			while (xnew!=zend && earth[xnew][z][ynew]==0) xnew+=zplus;
 			save=xnew;
-			p=xp;
+//k			p=xp;
 		}
 		if (visible2x3(xp, yp, zp+1, xnew, z, ynew) &&
 				illuminated(xnew, z, ynew)) {
@@ -262,7 +261,7 @@ short xsave, xplus,
 void surf() {
 	tolog("surf start\n");
 	void  in_surf();
-	short skycor=(view==3) ? (-1) : 1;
+	short skycor=('k'==view) ? (-1) : 1;
 	if (eye[0]==0)
 		if (eye[1]==-1) //north
 			in_surf(xp-11,        yp-20*skycor,  1,  skycor,  0,       0);
@@ -294,8 +293,8 @@ short xcor,  ycor,
 	}
 	for (y=1; y<=21; ++y)
 	for (x=1; x<=21; ++x) {
-		newx=xcor+xarr*x+xrarr*y+(('k'==view) ? -eye[0]*18 : 0);
-		newy=ycor+yarr*y+yrarr*x+(('k'==view) ? -eye[1]*18 : 0);
+		newx=xcor+xarr*x+xrarr*y+(('k'==view) ? eye[0]*18 : 0);
+		newy=ycor+yarr*y+yrarr*x+(('k'==view) ? eye[1]*18 : 0);
 		for (z=st; z!=en && property(earth[newx][newy][z], 't'); z+=plus);
 		if (z==HEAVEN) {
 			if (visible2(xp, yp, zp, newx, newy, z)) //print sky
