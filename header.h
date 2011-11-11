@@ -67,6 +67,22 @@
 #define CLOCK 9
 #define COMPASS 10
 
+//views
+#define VIEW_SURFACE 0
+#define VIEW_FLOOR 1
+#define VIEW_HEAD 2
+#define VIEW_SKY 3
+#define VIEW_FRONT 4
+#define VIEW_MENU 5
+#define VIEW_INVENTORY 6
+#define VIEW_CHEST 7
+#define VIEW_WORKBENCH 8
+#define VIEW_FURNACE 9
+
+//sicnals
+#define STOP 0
+#define RUN 1
+
 struct something {
 	struct something *next;
 	short  *arr;

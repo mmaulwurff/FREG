@@ -23,7 +23,7 @@ unsigned time;
  *18:00 - 00:00 - evening
  */
 
-char view, /*view modes: sUrface, Floor, Head, sKy, fRont, Menu,
+short view, /*view modes: sUrface, Floor, Head, sKy, fRont, Menu,
              Inventory, Chest, Workbench, furNace */
      view_last; //save previous view
 struct item inv[10][3], //inventory
@@ -94,7 +94,7 @@ void loadgame() {
 		pl=1;
 		time=6*60;
 		radar_dist=FAR;
-		view=view_last='u';
+		view=view_last=VIEW_SURFACE;
 		for (i=0; i<=38; ++i)
 		for (j=0; j<=38; ++j) {
 			sky[i][j].sky=BLUE_SKY;

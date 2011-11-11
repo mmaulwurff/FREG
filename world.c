@@ -6,8 +6,7 @@
 #include <ncurses.h>
 #include <stdlib.h>
 
-extern char  signal, view;
-extern short xp, yp, zp, earth[][3*WIDTH][HEAVEN+1], jump, notflag;
+extern short xp, yp, zp, earth[][3*WIDTH][HEAVEN+1], jump, notflag, view, signal;
 
 extern unsigned time;
 
@@ -89,13 +88,12 @@ short x, y; {
 	if (jump==1)
 		if (property(earth[xp][yp][zp+2], 'p')) ++zp;
 		else notc=5;
-	else if (jump==2) {
+	else if (jump==2)
 		if (property(earth[xp+x][yp+y][zp  ], 'p') &&
 		    property(earth[xp+x][yp+y][zp+1], 'p')) {
 			xp+=x;
 			yp+=y;
 		} else notc=1;
-	}
 	if (property(earth[xp+x][yp+y][zp+1], 'p'))
 		if (property(earth[xp+x][yp+y][zp], 'p')) {
 			xp+=x;
@@ -108,6 +106,7 @@ short x, y; {
 			yp+=y;
 			notc=13;
 		} else notc=1;
+	else notc=1;
 	jump=0;
 	onbound();
 	tolog("step finish\n");
@@ -119,6 +118,7 @@ void push(x_target, y_target, z_target, x_change, y_change)
 short x_target, y_target, z_target,
       x_change, y_change; {
 	tolog("push start\n");
+	signal=STOP;
 	struct something *findanimal(),
 	                 *target=findanimal(x_target, y_target, z_target);
 	short save=earth[x_target+x_change]
@@ -131,6 +131,7 @@ short x_target, y_target, z_target,
 	earth[x_target+x_change][y_target+y_change][z_target]=
 		earth[x_target][y_target][z_target];
 	earth[x_target][y_target][z_target]=save;
+	signal=RUN;
 	tolog("push finish\n");
 }
 
@@ -193,9 +194,11 @@ void allmech() {
 	}
 	//physics section
 	time=(24*60-1==time) ? 0 : time+1;
-	if (signal=='w') {
-		void move_down_chain();
+	if (RUN==signal) { //another operation with the world isn't running
+		void move_down_chain(),
+		     sounds();
 		struct something *car;
+		sounds(animalstart);
 		//move animals
 		for (car=animalstart; NULL!=car; car=car->next) chiken_move(car);
 		//heap lifetime
@@ -233,10 +236,6 @@ void allmech() {
 			notflag=4;
 			//damage
 		}
-	}
-	{
-		void sounds();
-		sounds(animalstart);
 	}
 	sounds_print();
 	map();
@@ -358,7 +357,9 @@ FILE  *file; {
 			case 'h': start=&heapstart;   break; //heap
 			case 'l': start=&lightstart;  break; //light
 			case 't': start=&thingstart;  break; //thing
+			default : return NULL;        break;
 		}
+		signal=STOP;
 		(thing_new=malloc(sizeof(struct something)))->next=*start;
 		*start=thing_new;
 		switch (type) {
@@ -397,6 +398,7 @@ FILE  *file; {
 		thing_new->arr[1]=y;
 		thing_new->arr[2]=z;
 //		tolog("spawn finish\n");
+		signal=RUN;
 		return thing_new;
 	} else {
 		return NULL;
@@ -408,7 +410,7 @@ FILE  *file; {
 void eraseanimals() {
 	tolog("eraseanimals start\n");
 	void erasein();
-	signal='s';
+	signal=STOP;
 	erasein(animalstart);
 	animalstart=NULL;
 	erasein(thingstart );
@@ -417,7 +419,7 @@ void eraseanimals() {
 	cheststart =NULL;
 	erasein(heapstart  );
 	heapstart  =NULL;
-	signal='w';
+	signal=RUN;
 	tolog("eraseanimals finish\n");
 }
 
@@ -442,12 +444,14 @@ struct something *chain; {
 	for (car=chain; !(x==car->arr[0] &&
 	                  y==car->arr[1] &&
 	                  z==car->arr[2]); car=car->next) save=car;
+	signal=STOP;
 	if (car!=chain) {
 		save->next=car->next;
 		save=heapstart;
 	} else save=heapstart->next;
 	free(car->arr);
 	free(car);
+	signal=RUN;
 	tolog("erase_by_xyz finish\n");
 	return save;
 }
@@ -460,6 +464,7 @@ struct something **chain_start; {
 	struct something *chain=*chain_start,
 	                 *chain_last=chain;
 	short empty_flag;
+	signal=STOP;
 	do {
 		empty_flag=0;
 		chain->arr[2]-=fall(chain->arr[0], chain->arr[1], chain->arr[2]);
@@ -510,6 +515,7 @@ struct something **chain_start; {
 			chain=chain->next;
 		}
 	} while (NULL!=chain);
+	signal=RUN;
 	tolog("move_down_chain finish\n");
 }
 
@@ -525,12 +531,13 @@ struct item *thing; {
 			property(earth[x][y][z], 'c'))) {
 		struct something *drop_into;
 		short i;
+		signal=STOP;
 		if (property(earth[x][y][z], 'c')) {
 			struct something *findanimal();
 			drop_into=findanimal(x, y, z);
 		} else {
+			earth[x][y][z]=HEAP;
 			struct something *spawn();
-			earth[x][y][z]=8;
 			drop_into=spawn(x, y, z, NULL);
 		}
 		for (i=3; i<33; ++i) if (0==drop_into->arr[i] || 
@@ -544,6 +551,7 @@ struct item *thing; {
 			}
 			if (0==thing->num) break;
 		}
+		signal=RUN;
 		thing->what=0;
 		if (thing->num) {
 			thing->num=0;

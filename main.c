@@ -7,7 +7,7 @@
 #include <ncurses.h>
 //#include <locale.h>
 
-extern char view;
+extern short view;
 
 char signal='w';
 WINDOW *world,
@@ -24,7 +24,7 @@ void *mech(void *vptr_args) {
 		sleep(1);
 		pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
 		//all mech and animal functions
-		if ('m'!=view) allmech();
+		if (VIEW_MENU!=view) allmech();
 		pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
 	}
 	tolog("mech finish\n");
@@ -32,7 +32,7 @@ void *mech(void *vptr_args) {
 
 void main() {
 	tolog("main start\n");
-	printf("Eyecube\nCopyright (C) 2011 Alexander Kromm\nThis program comes with ABSOLUTELY NO WARRANTY.\nThis is free software, and you are welcome to redistribute it under certain conditions; see README for details.\n");
+	printf("Eyecube\nCopyright (C) 2011 Alexander Kromm\nThis program comes with ABSOLUTELY NO WARRANTY.\nThis is free software, and you are welcome to redistribute it\nunder certain conditions; see README for details.\n");
 	void keytogame(),
 	     keytoinv(),
 	     eraseanimals(),
@@ -82,10 +82,9 @@ void main() {
 	//this is the game itself
 	while ((ch=getch())!=(int)'Q')
 		switch (view) {
-			case 'u': case 'f': case 'h': case 'k': case 'r':
-			keytogame(ch);
-			break;
-			case 'm': key_to_menu(ch); break;
+			case VIEW_SURFACE: case VIEW_FLOOR: case VIEW_HEAD: case VIEW_SKY:
+		       	case VIEW_FRONT: keytogame(ch);   break;
+			case VIEW_MENU:  key_to_menu(ch); break;
 			default : keytoinv(ch); break;
 		}
 	//stop parallel thread

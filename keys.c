@@ -11,17 +11,17 @@ extern short xp, yp, zp,
              jump, eye[], eyes[], pl,
              earth[][3*WIDTH][HEAVEN+1],
              radar_dist;
-extern char  view, view_last;
+extern short view, view_last;
 extern struct item inv[][3],
                    cloth[];
 extern struct something *heapstart;
 
-short  cur[]={1, 0, 0, 0, 0}; /*0.field (0.chest, 1.player, 2.function),
-                                1.x, 2.y, 3.id, 4.number*/
-short  notflag=1; //flag used for optimization, for not notifying when nothing happens
 struct item *craft;
-char   last_view2;
-void   tolog();
+void  tolog();
+short cur[]={1, 0, 0, 0, 0}; /*0.field (0.chest, 1.player, 2.function),
+                                1.x, 2.y, 3.id, 4.number*/
+short last_view2,
+      notflag=1; //flag used for optimization, for not notifying when nothing happens
 
 //menu keys
 void key_to_menu(key)
@@ -48,17 +48,16 @@ int key; {
 	switch (key) {
 		case 'm':
 			last_view2=view;
-			view='m';
+			view=VIEW_MENU;
 			notify("Pause", 0);
 		break;
-		case 'u': case 'f': case 'h': case 'k': case 'r': case 27: //views;
-			if ('c'==view) { //close chest
-//				fprintf(stderr, "")
-				int   drop_tning();
+		case 'u': case 'f': case 'h': case 'k': case 'r': case 27: { //views;
+			int drop_tning();
+			if (VIEW_CHEST==view) { //close chest
 				void  focus();
 				short x, y, z;
 				focus(&x, &y, &z);
-				if (8==earth[x][y][z]) {
+				if (HEAP==earth[x][y][z]) { //erase if empty
 					short i, flag_erase=1;
 					struct something *findanimal(),
 					                 *heap=findanimal(x, y, z);
@@ -66,7 +65,7 @@ int key; {
 						flag_erase=0;
 						break;
 					}
-					if (1==flag_erase) {
+					if (flag_erase) {
 						struct something *erase_by_xyz();
 						earth[x][y][z]=0;
 						heapstart=erase_by_xyz(x, y, z,
@@ -76,9 +75,16 @@ int key; {
 			}
 			free(craft);
 			notc=drop_thing(&cur[3], &cur[4]);
-			view=(27==key) ? view_last : key;
+			switch (key) {
+				case 'u': view=VIEW_SURFACE; break;
+				case 'f': view=VIEW_FLOOR;   break;
+				case 'h': view=VIEW_HEAD;    break;
+				case 'k': view=VIEW_SKY;     break;
+				case 'r': view=VIEW_FRONT;   break;
+				default : view=view_last;    break;
+			}
 			pocketflag=1;
-		break;
+		} break;
 		case KEY_LEFT:
 			switch (cur[0]) {
 				 //chest
@@ -88,7 +94,7 @@ int key; {
 						cur[1]=3;
 						cur[2]=0;
 					} else if (cur[1]==3) {
-						cur[1]=(view=='w') ? 2 : 1;
+						cur[1]=(VIEW_WORKBENCH==view) ? 2 : 1;
 						cur[2]=1;
 					} else --cur[1];
 				break;
@@ -99,7 +105,7 @@ int key; {
 				//chest
 				case 1: cur[1]=(cur[1]==9) ? 0 : cur[1]+1; break;
 				case 3: //workbench
-					if (cur[1]==((view=='w') ? 2 : 1)) {
+					if (cur[1]==((VIEW_WORKBENCH==view) ? 2 : 1)) {
 						cur[1]=3;
 						cur[2]=0;
 					} else if (cur[1]==3) {
@@ -112,29 +118,30 @@ int key; {
 		case KEY_UP:
 			switch (cur[0]) {
 				//chest
-				case 1: cur[2]=(cur[2]==0) ? ((view=='c') ? 5 : 2) :
-					cur[2]-1;
+				case 1: cur[2]=(cur[2]==0) ?
+					((VIEW_CHEST==view) ? 5 : 2) : cur[2]-1;
 				break;
 				//player
 				case 2: cur[2]=(cur[2]==0) ? 3 : cur[2]-1; break;
 				case 3: //workbench
 					if (cur[1]!=3) cur[2]=(cur[2]==0) ?
-						((view=='w') ? 2 : 1) : cur[2]-1;
+						((VIEW_WORKBENCH==view) ? 2 : 1) :
+							cur[2]-1;
 				break;
 			}
 		break;
 		case KEY_DOWN:
 			switch (cur[0]) {
 				//chest
-				case 1: cur[2]=(cur[2]==((view=='c') ? 5 : 2)) ?
+				case 1: cur[2]=(cur[2]==((VIEW_CHEST==view) ? 5 : 2)) ?
 					0 : cur[2]+1;
 				break;
 				//player
 				case 2: cur[2]=(cur[2]==3) ? 0 : cur[2]+1; break;
 				case 3: //workbench
-					if (cur[1]!=3)
-						cur[2]=(cur[2]==((view=='w') ? 2 : 1)) ?
-							0 : cur[2]+1;
+					if (cur[1]!=3) cur[2]=
+						(cur[2]==((VIEW_WORKBENCH==view) ?
+							2 : 1)) ? 0 : cur[2]+1;
 				break;
 			}
 		break;
@@ -142,7 +149,7 @@ int key; {
 			cur[1]=cur[2]=0;
 			cur[0]=(cur[0]==3) ? 0 : cur[0]+1;
 			//all function inventory types should be here
-			if (!(view=='n') && cur[0]==0) cur[0]=1;
+			if (!(VIEW_FURNACE==view) && cur[0]==0) cur[0]=1;
 		break;
 		case 'x': {//put or add one element
 			void  know_marked();
@@ -194,7 +201,7 @@ int key; {
 		case '!': radar_dist=(NEAR==radar_dist) ? FAR : NEAR; break;
 		default : break;
 	}
-	if ('m'!=view) map();
+	if (VIEW_MENU!=view) map();
 	if (pocketflag) {
 		void pocketshow();
 		pocketshow();
@@ -258,7 +265,7 @@ int key; {
 		//these are optimized for Dvorak programmer layout
 		case 'm':
 			last_view2=view;
-			view='m';
+			view=VIEW_MENU;
 			notify("Pause", 0);
 			mapflag=0;
 		break;
@@ -329,15 +336,18 @@ int key; {
 			notc=7;
 		} break;
 		case 'i':
+			view_last=view;
+			view=VIEW_INVENTORY;
 			craft=malloc(5*sizeof(struct item));
 			for (save=0; save<5; ++save) craft[save].what=craft[save].num=0;
 			if (cur[0]==1 && cur[2]>2) cur[2]=0;
-			//right, no break here
-		case 'u': case 'f': case 'h': case 'k': case 'r':
-			view_last=view;
-			view=key;
 		break;
-		case 'p': //return to previous view mode
+		case 'u': view_last=view; view=VIEW_SURFACE; break;
+		case 'f': view_last=view; view=VIEW_FLOOR;   break;
+		case 'h': view_last=view; view=VIEW_HEAD;    break;
+		case 'k': view_last=view; view=VIEW_SKY;     break;
+		case 'r': view_last=view; view=VIEW_FRONT;   break;
+		case 'p': //return to previous view
 			save=view;
 			view=view_last;
 			view_last=save;
@@ -376,14 +386,14 @@ int key; {
 							craft[save].what=
 								craft[save].num=0;
 						view_last=view;
-						view='c';
+						view=VIEW_CHEST;
 					break;
 					default : notc=10; break;
 				}
 			}
 		} break;
 		case 'x': { //drop weapon
-			int drop_thing();
+			int  drop_thing();
 			void pocketshow();
 			notc=drop_thing(&inv[cloth[4].num][2]);
 			pocketshow();

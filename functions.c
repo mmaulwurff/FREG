@@ -160,7 +160,7 @@ char name[]; {
 void focus(px, py, pz)
 short *px, *py, *pz; {
 	tolog("focus start\n");
-	if (pl || view==4) {
+	if (pl || VIEW_FRONT==view) {
 		if (eye[0]==0) {
 			*px=xp;
 			*py=(eye[1]==-1) ? yp-1 : yp+1;
@@ -169,10 +169,10 @@ short *px, *py, *pz; {
 			*py=yp;
 		}
 		switch (view) {
-			case 1:  *pz=zp-1; break; //floor
-			case 2:  *pz=zp+1; break; //head
-			case 3:  *pz=zp+2; break; //sky
-			default: *pz=zp;   break; //surface and front
+			case VIEW_FLOOR: *pz=zp-1; break;
+			case VIEW_HEAD:  *pz=zp+1; break;
+			case VIEW_SKY:   *pz=zp+2; break;
+			default:         *pz=zp;   break;
 		}
 	} else {
 		*px=xp;
