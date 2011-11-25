@@ -287,25 +287,25 @@ void onbound() {
 	if (xp<WIDTH) { //west
 		xp+=WIDTH;
 		save();
-		eraseanimals();
+		eraseanimals(0);
 		--spx;
 		load();
 	} else if (xp>2*WIDTH-1) { //east
 		xp-=64;
 		save();
-		eraseanimals();
+		eraseanimals(0);
 		++spx;
 		load();
 	} else if (yp<WIDTH) { //north
 		yp+=64;
 		save();
-		eraseanimals();
+		eraseanimals(0);
 		--spy;
 		load();
 	} else if (yp>2*WIDTH-1) { //south
 		yp-=64;
 		save();
-		eraseanimals();
+		eraseanimals(0);
 		++spy;
 		load();
 	}

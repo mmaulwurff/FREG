@@ -97,3 +97,7 @@ struct for_sky {
 	unsigned clouds : 5;
 	unsigned birds  : 5;
 };
+struct list_to_clear {
+	struct something *address;
+	struct list_to_clear *next;
+};

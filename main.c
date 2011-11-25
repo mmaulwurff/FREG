@@ -9,7 +9,6 @@
 
 extern short view;
 
-char signal='w';
 WINDOW *world,
        *textwin,
        *pocketwin,
@@ -85,10 +84,10 @@ void main() {
 			case VIEW_SURFACE: case VIEW_FLOOR: case VIEW_HEAD: case VIEW_SKY:
 		       	case VIEW_FRONT: keytogame(ch);   break;
 			case VIEW_MENU:  key_to_menu(ch); break;
-			default : keytoinv(ch); break;
+			default: keytoinv(ch); break;
 		}
 	//stop parallel thread
-	eraseanimals();
+	eraseanimals(1);
 	(void)pthread_cancel(mechthread);
 	(void)delwin(world    );
 	(void)delwin(textwin  );

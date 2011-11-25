@@ -6,7 +6,7 @@
 #include <ncurses.h>
 #include <stdlib.h>
 
-extern short xp, yp, zp, earth[][3*WIDTH][HEAVEN+1], jump, notflag, view, signal;
+extern short xp, yp, zp, earth[][3*WIDTH][HEAVEN+1], jump, notflag, view;
 
 extern unsigned time;
 
@@ -20,6 +20,7 @@ struct something *animalstart=NULL,
                  *thingstart =NULL,
                  *heapstart  =NULL,
                  *lightstart =NULL;
+struct list_to_clear *clear_start=NULL;
 void tolog();
 
 char skymap[][78]={"                          .         . .                 .                     ",
@@ -118,20 +119,20 @@ void push(x_target, y_target, z_target, x_change, y_change)
 short x_target, y_target, z_target,
       x_change, y_change; {
 	tolog("push start\n");
-	signal=STOP;
 	struct something *findanimal(),
 	                 *target=findanimal(x_target, y_target, z_target);
-	short save=earth[x_target+x_change]
-	                [y_target+y_change]
-	                [z_target];
-	if (NULL!=target) {
-		target->arr[0]+=x_change;
-		target->arr[1]+=y_change;
+	if (HEAVEN+1!=target->arr[0]) {
+			short save=earth[x_target+x_change]
+	      	                [y_target+y_change]
+		                [z_target];
+		if (NULL!=target) {
+			target->arr[0]+=x_change;
+			target->arr[1]+=y_change;
+		}
+		earth[x_target+x_change][y_target+y_change][z_target]=
+			earth[x_target][y_target][z_target];
+		earth[x_target][y_target][z_target]=save;
 	}
-	earth[x_target+x_change][y_target+y_change][z_target]=
-		earth[x_target][y_target][z_target];
-	earth[x_target][y_target][z_target]=save;
-	signal=RUN;
 	tolog("push finish\n");
 }
 
@@ -194,40 +195,37 @@ void allmech() {
 	}
 	//physics section
 	time=(24*60-1==time) ? 0 : time+1;
-	if (RUN==signal) { //another operation with the world isn't running
-		void move_down_chain(),
-		     sounds();
-		struct something *car;
-		sounds(animalstart);
-		//move animals
-		for (car=animalstart; NULL!=car; car=car->next) chiken_move(car);
-		//heap lifetime
-		if (0==time%60) {
-			struct something *car_last=heapstart;
-			car=heapstart;
-			while (NULL!=car) if (0==--(car->arr[63]))
-				if (car==heapstart) {
-					heapstart=car->next;
-					earth[car->arr[0]][car->arr[1]][car->arr[2]]=0;
-					free(car->arr);
-					free(car);
-					car=heapstart;
-				} else {
-					car_last->next=car->next;
-					earth[car->arr[0]][car->arr[1]][car->arr[2]]=0;
-					free(car->arr);
-					free(car);
-					car=car_last->next;
-				}
-			else {
-				car_last=car;
-				car=car->next;
+	void move_down_chain(),
+	     sounds();
+	struct something *car;
+	sounds(animalstart);
+	//move animals
+	for (car=animalstart; NULL!=car; car=car->next) chiken_move(car);
+	//heap lifetime
+	if (0==time%60) {
+		void new_clear();
+		struct something *car_last=heapstart;
+		car=heapstart;
+		while (NULL!=car) if (0==--(car->arr[63]))
+			if (car==heapstart) {
+				heapstart=car->next;
+				earth[car->arr[0]][car->arr[1]][car->arr[2]]=0;
+				new_clear(car);
+				car=heapstart;
+			} else {
+				car_last->next=car->next;
+				earth[car->arr[0]][car->arr[1]][car->arr[2]]=0;
+				new_clear(car);
+				car=car_last->next;
 			}
+		else {
+			car_last=car;
+			car=car->next;
 		}
-		//everything falls
-		if (NULL!=heapstart  ) move_down_chain(&heapstart  );
-		if (NULL!=animalstart) move_down_chain(&animalstart);
 	}
+	//everything falls
+	if (NULL!=heapstart  ) move_down_chain(&heapstart  );
+	if (NULL!=animalstart) move_down_chain(&animalstart);
 	{ //gravity
 		short height=0;
 		for ( ; property(earth[xp][yp][zp-1], 'p'); ++height, --zp);
@@ -242,7 +240,44 @@ void allmech() {
 	tolog("allmech finish\n");
 }
 
-//this checks if sowething sounds and modifies radar array
+//this creates nem item in clear_list
+void new_clear(address)
+struct something *address; {
+	struct list_to_clear *new_item;
+	address->arr[0]=HEAVEN+1; //flag
+	address->arr[1]=1;
+	address->arr[2]=1;
+	(new_item=malloc(sizeof(struct list_to_clear)))->next=clear_start;
+	clear_start=new_item;
+	new_item->address=address;
+}
+
+//this cheks items of list to clear and frees them when needed
+void free_clear_list(proc)
+short proc; {
+	struct list_to_clear *car, *prevcar=car;
+	for (car=clear_start; NULL!=car; ) {
+		car->address->arr[proc+1]=0;
+		if (!car->address->arr[1+!proc]) {
+			struct list_to_clear *to_free;
+			if (clear_start==car) {
+				clear_start=car->next;
+				free(car->address->arr);
+				free(car->address);
+				free(car);
+				car=clear_start;
+			} else {
+				prevcar->next=car->next;
+				free(car->address->arr);
+				free(car->address);
+				free(car);
+				car=prevcar->next;
+			}
+		} else car=car->next;
+	}
+}
+
+//this checks if something happens and modifies radar array
 void sounds(start)
 struct something *start; {
 	tolog("sounds start\n");
@@ -317,27 +352,37 @@ char  name; {
 void chiken_move(animalp)
 struct something *animalp; {
 	tolog("chiken_move start\n");
-	int   random_linux();
-	short c=(unsigned)random_linux()%5,
-	      save=earth[animalp->arr[0]][animalp->arr[1]][animalp->arr[2]];
-	earth[animalp->arr[0]][animalp->arr[1]][animalp->arr[2]]=0;
-	if      (c==0 && animalp->arr[0]!=3*WIDTH-1 &&
-		property(earth[animalp->arr[0]+1][animalp->arr[1]][animalp->arr[2]], 'p')
-		&& !(xp==animalp->arr[0]+1 && yp==animalp->arr[1] && zp==animalp->arr[2]))
+	if (HEAVEN+1!=animalp->arr[0]) {
+		int   random_linux();
+		short c=(unsigned)random_linux()%5,
+		      save=earth[animalp->arr[0]][animalp->arr[1]][animalp->arr[2]];
+		earth[animalp->arr[0]][animalp->arr[1]][animalp->arr[2]]=0;
+		if (c==0 && animalp->arr[0]!=3*WIDTH-1 &&
+				property(earth[animalp->arr[0]+1][animalp->arr[1]]
+					[animalp->arr[2]], 'p') &&
+				!(xp==animalp->arr[0]+1 && yp==animalp->arr[1] &&
+					zp==animalp->arr[2]))
 			++(animalp->arr[0]);
-	else if (c==1 && animalp->arr[0]!=0 &&
-		property(earth[animalp->arr[0]-1][animalp->arr[1]][animalp->arr[2]], 'p')
-		&& !(xp==animalp->arr[0]-1 && yp==animalp->arr[1] && zp==animalp->arr[2]))
+		else if (c==1 && animalp->arr[0]!=0 &&
+				property(earth[animalp->arr[0]-1][animalp->arr[1]]
+					[animalp->arr[2]], 'p') &&
+				!(xp==animalp->arr[0]-1 && yp==animalp->arr[1] &&
+					zp==animalp->arr[2]))
 			--(animalp->arr[0]);
-	else if (c==2 && animalp->arr[1]!=3*WIDTH-1 &&
-		property(earth[animalp->arr[0]][animalp->arr[1]+1][animalp->arr[2]], 'p')
-		&& !(xp==animalp->arr[0] && yp==animalp->arr[1]+1 && zp==animalp->arr[2]))
+		else if (c==2 && animalp->arr[1]!=3*WIDTH-1 &&
+				property(earth[animalp->arr[0]][animalp->arr[1]+1]
+					[animalp->arr[2]], 'p') &&
+				!(xp==animalp->arr[0] && yp==animalp->arr[1]+1 &&
+					zp==animalp->arr[2]))
 			++(animalp->arr[1]);
-	else if (c==3 && animalp->arr[1]!=0 &&
-		property(earth[animalp->arr[0]][animalp->arr[1]-1][animalp->arr[2]], 'p')
-		&& !(xp==animalp->arr[0] && yp==animalp->arr[1]-1 && zp==animalp->arr[2]))
+		else if (c==3 && animalp->arr[1]!=0 &&
+				property(earth[animalp->arr[0]][animalp->arr[1]-1]
+					[animalp->arr[2]], 'p') &&
+				!(xp==animalp->arr[0] && yp==animalp->arr[1]-1 &&
+				       	zp==animalp->arr[2]))
 			--(animalp->arr[1]);
-	earth[animalp->arr[0]][animalp->arr[1]][animalp->arr[2]]=save;
+		earth[animalp->arr[0]][animalp->arr[1]][animalp->arr[2]]=save;
+	}
 	tolog("chiken_move_finish\n");
 }
 
@@ -359,7 +404,6 @@ FILE  *file; {
 			case 't': start=&thingstart;  break; //thing
 			default : return NULL;        break;
 		}
-		signal=STOP;
 		(thing_new=malloc(sizeof(struct something)))->next=*start;
 		*start=thing_new;
 		switch (type) {
@@ -398,7 +442,6 @@ FILE  *file; {
 		thing_new->arr[1]=y;
 		thing_new->arr[2]=z;
 //		tolog("spawn finish\n");
-		signal=RUN;
 		return thing_new;
 	} else {
 		return NULL;
@@ -407,31 +450,33 @@ FILE  *file; {
 }
 
 //this erases list of loaded animals
-void eraseanimals() {
+void eraseanimals(final)
+short final; {
 	tolog("eraseanimals start\n");
 	void erasein();
-	signal=STOP;
-	erasein(animalstart);
+	erasein(animalstart, final);
 	animalstart=NULL;
-	erasein(thingstart );
+	erasein(thingstart,  final);
 	thingstart =NULL;
-	erasein(cheststart );
+	erasein(cheststart,  final);
 	cheststart =NULL;
-	erasein(heapstart  );
+	erasein(heapstart,   final);
 	heapstart  =NULL;
-	signal=RUN;
 	tolog("eraseanimals finish\n");
 }
 
 //inside eraseanimals()
-void erasein(car)
+void erasein(car, final)
 struct something *car; {
+	void new_clear();
 	struct something *animalerase;
 	while (car!=NULL) {
 		animalerase=car;
 		car=car->next;
-		free(animalerase->arr);
-		free(animalerase);
+		if (final) {
+			free(animalerase->arr);
+			free(animalerase);
+		} else new_clear(animalerase);
 	}
 }
 
@@ -440,18 +485,16 @@ struct something *erase_by_xyz(x, y, z, chain)
 short x, y, z;
 struct something *chain; {
 	tolog("erase_by_xyz start\n");
+	void new_clear();
 	struct something *car, *save;
 	for (car=chain; !(x==car->arr[0] &&
 	                  y==car->arr[1] &&
 	                  z==car->arr[2]); car=car->next) save=car;
-	signal=STOP;
 	if (car!=chain) {
 		save->next=car->next;
 		save=heapstart;
 	} else save=heapstart->next;
-	free(car->arr);
-	free(car);
-	signal=RUN;
+	new_clear(car);
 	tolog("erase_by_xyz finish\n");
 	return save;
 }
@@ -464,58 +507,61 @@ struct something **chain_start; {
 	struct something *chain=*chain_start,
 	                 *chain_last=chain;
 	short empty_flag;
-	signal=STOP;
 	do {
 		empty_flag=0;
-		chain->arr[2]-=fall(chain->arr[0], chain->arr[1], chain->arr[2]);
-		if (property(earth[chain->arr[0]][chain->arr[1]][chain->arr[2]],   'c') &&
-		    property(earth[chain->arr[0]][chain->arr[1]][-1+chain->arr[2]], 'c'))
-				{
-			//falling into
-			tolog("falling into\n");
-			short i, j;
-			struct something *findanimal(),
-			                 *lower_chest=findanimal(chain->arr[0],
-			                 chain->arr[1], chain->arr[2]-1);
-			for (i=3; i<=33; ++i) if (chain->arr[i])
-				for (j=3; j<=33; ++j) if (0==lower_chest->arr[j] ||
-						(lower_chest->arr[j]==chain->arr[i] &&
-						 lower_chest->arr[j+30]<9 &&
-						 property(chain->arr[i], 's'))) {
-					lower_chest->arr[j]=chain->arr[i];
-					while (lower_chest->arr[j+30]<9 &&
-							chain->arr[i+30]>0) {
-						++lower_chest->arr[j+30];
-						--chain->arr[i+30];
+		if (HEAVEN+1!=chain->arr[0]) {
+			chain->arr[2]-=fall(chain->arr[0], chain->arr[1], chain->arr[2]);
+			if (property(earth[chain->arr[0]][chain->arr[1]][chain->arr[2]],
+					'c') &&
+			    property(earth[chain->arr[0]][chain->arr[1]][chain->arr[2]-1],
+					'c')) {
+				//falling into
+				tolog("falling into\n");
+				short i, j;
+				struct something *findanimal(),
+				                 *lower_chest=findanimal(chain->arr[0],
+				                 chain->arr[1], chain->arr[2]-1);
+				for (i=3; i<=33; ++i) if (chain->arr[i])
+					for (j=3; j<=33; ++j) if (0==lower_chest->arr[j]
+							|| (lower_chest->arr[j]==
+								chain->arr[i] &&
+							lower_chest->arr[j+30]<9 &&
+							property(chain->arr[i], 's'))) {
+						lower_chest->arr[j]=chain->arr[i];
+						while (lower_chest->arr[j+30]<9 &&
+								chain->arr[i+30]>0) {
+							++lower_chest->arr[j+30];
+							--chain->arr[i+30];
+						}
+						if (0==chain->arr[i+30]) {
+							chain->arr[i]=0;
+							break;
+						}
 					}
-					if (0==chain->arr[i+30]) {
-						chain->arr[i]=0;
-						break;
-					}
+				tolog("fell into\n");
+				empty_flag=1;
+				for (i=3; i<=33; ++i) if (chain->arr[i]) {
+					//if empty, delete
+					empty_flag=0;
+					break;
 				}
-			tolog("fell into\n");
-			empty_flag=1;
-			for (i=3; i<=33; ++i) if (chain->arr[i]) { //if empty, delete
-				empty_flag=0;
-				break;
 			}
-		}
-		if (property(earth[chain->arr[0]][chain->arr[1]][chain->arr[2]-1], 'd') ||
-				empty_flag) { //delete if danger or empty
-		 	//TODO: environment instead of zero:
-			earth[chain->arr[0]][chain->arr[1]][chain->arr[2]]=0;
-			if (chain==*chain_start) *chain_start=chain->next;
-			chain_last->next=chain->next;
-			free(chain->arr);
-			free(chain);
-			chain=chain_last->next;
+			if (property(earth[chain->arr[0]][chain->arr[1]][chain->arr[2]-1],
+					'd') || empty_flag) { //delete if danger or empty
+			 	//TODO: environment instead of zero:
+				void new_clear();
+				earth[chain->arr[0]][chain->arr[1]][chain->arr[2]]=0;
+				if (chain==*chain_start) *chain_start=chain->next;
+				chain_last->next=chain->next;
+				new_clear(chain);
+				chain=chain_last->next;
+			}
 		}
 		if (NULL!=chain) {
 			chain_last=chain;
 			chain=chain->next;
 		}
 	} while (NULL!=chain);
-	signal=RUN;
 	tolog("move_down_chain finish\n");
 }
 
@@ -531,14 +577,19 @@ struct item *thing; {
 			property(earth[x][y][z], 'c'))) {
 		struct something *drop_into;
 		short i;
-		signal=STOP;
-		if (property(earth[x][y][z], 'c')) {
-			struct something *findanimal();
-			drop_into=findanimal(x, y, z);
-		} else {
-			earth[x][y][z]=HEAP;
-			struct something *spawn();
-			drop_into=spawn(x, y, z, NULL);
+		switch (property(earth[x][y][z], 'c')) {
+			case  1: {
+				struct something *findanimal();
+				drop_into=findanimal(x, y, z);
+				//if drop_into is already deleted, make new
+				if (HEAVEN+1!=drop_into->arr[0]) break;
+			}
+			default: {
+				earth[x][y][z]=HEAP;
+				struct something *spawn();
+				drop_into=spawn(x, y, z, NULL);
+				break;
+			}
 		}
 		for (i=3; i<33; ++i) if (0==drop_into->arr[i] || 
 				(drop_into->arr[i]==thing->what &&
@@ -551,7 +602,6 @@ struct item *thing; {
 			}
 			if (0==thing->num) break;
 		}
-		signal=RUN;
 		thing->what=0;
 		if (thing->num) {
 			thing->num=0;
