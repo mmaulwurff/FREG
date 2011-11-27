@@ -31,7 +31,7 @@ void *mech(void *vptr_args) {
 
 void main() {
 	tolog("main start\n");
-	printf("Eyecube\nCopyright (C) 2011 Alexander Kromm\nThis program comes with ABSOLUTELY NO WARRANTY.\nThis is free software, and you are welcome to redistribute it\nunder certain conditions; see README for details.\n");
+	printf("\nEyecube\nCopyright (C) 2011 Alexander Kromm\nThis program comes with ABSOLUTELY NO WARRANTY.\nThis is free software, and you are welcome to redistribute it\nunder certain conditions; see README for details.\n\n");
 	void keytogame(),
 	     keytoinv(),
 	     eraseanimals(),
@@ -47,7 +47,8 @@ void main() {
 	//start parallel thread
 	(void)initscr();
 	(void)start_color();
-	(void)cbreak();
+//	(void)cbreak();
+	(void)raw();
 	(void)noecho();
 	(void)keypad(stdscr, TRUE);
 //	setlocale(LC_ALL, "ru_Ru.utf8");
@@ -79,13 +80,16 @@ void main() {
 	sounds_print();
 	notify("Game started.", 0);
 	//this is the game itself
-	while ((ch=getch())!=(int)'Q')
+	while ((ch=getch())!=(int)'Q') {
 		switch (view) {
 			case VIEW_SURFACE: case VIEW_FLOOR: case VIEW_HEAD: case VIEW_SKY:
 		       	case VIEW_FRONT: keytogame(ch);   break;
 			case VIEW_MENU:  key_to_menu(ch); break;
 			default: keytoinv(ch); break;
 		}
+//		sleep(1);
+		usleep(10000);
+	}
 	//stop parallel thread
 	eraseanimals(1);
 	(void)pthread_cancel(mechthread);

@@ -73,38 +73,47 @@ void map() {
 	(void)wclear(world);
 	wstandend(world);
 	(void)box(world, 0, 0);
-	if (!pl) {
-		(void)mvwprintw(world, 22, 21, "^^");
-		(void)mvwprintw(world, 20,  0, ">" );
-		(void)mvwprintw(world, 20, 43, "<" );
-	}
-	for (i=0; i<30 && number; ++i) {
-		switch (inv[i%10][i/10].what) {
-			case CLOCK:
-				(void)mvwprintw(world, 22, 38, "%2d:%2d",
-					time/60, time%60);
-				--number;
-			break;
-			case COMPASS:
-				if (eye[0]==0)
-					if (-1==eye[1]*((VIEW_SKY==view) ? (-1) : 1))
-						(void)mvwprintw(world, 0, 1, "^north^");
+	if (VIEW_SURFACE==view || VIEW_FLOOR==view || VIEW_HEAD==view || VIEW_SKY==view ||
+			VIEW_FRONT==view) {
+		if (!pl) {
+			(void)mvwprintw(world, 22, 21, "^^");
+			(void)mvwprintw(world, 20,  0, ">" );
+			(void)mvwprintw(world, 20, 43, "<" );
+		} 
+		for (i=0; i<30 && number; ++i) {
+			switch (inv[i%10][i/10].what) {
+				case CLOCK:
+					(void)mvwprintw(world, 22, 38, "%2d:%2d",
+						time/60, time%60);
+					--number;
+				break;
+				case COMPASS:
+					if (eye[0]==0)
+						if (-1==eye[1]*((VIEW_SKY==view) ?
+								(-1) : 1))
+							(void)mvwprintw(world, 0, 1,
+									"^north^");
+						else
+							(void)mvwprintw(world, 0, 1,
+									"^south^");
+					else if (-1==eye[0]*((VIEW_SKY==view) ?
+								(-1) : 1))
+							(void)mvwprintw(world, 0, 1,
+									"^west^");
 					else
-						(void)mvwprintw(world, 0, 1, "^south^");
-				else if (-1==eye[0]*((VIEW_SKY==view) ? (-1) : 1))
-						(void)mvwprintw(world, 0, 1, "^west^");
-				else
-						(void)mvwprintw(world, 0, 1, "^east^");
-				--number;
-			break;
-			default: break;	
+							(void)mvwprintw(world, 0, 1,
+									"^east^");
+					--number;
+				break;
+				default: break;	
+			}
 		}
+		if (30==i)
+			if (time<6*60) (void)mvwprintw(world, 22, 37, "night");
+			else if (time<12*60) (void)mvwprintw(world, 22, 36, "morning");
+			else if (time<18*60) (void)mvwprintw(world, 22, 40, "day");
+			else (void)mvwprintw(world, 22, 36, "evening");
 	}
-	if (30==i)
-		if (time<6*60) (void)mvwprintw(world, 22, 37, "night");
-		else if (time<12*60) (void)mvwprintw(world, 22, 36, "morning");
-		else if (time<18*60) (void)mvwprintw(world, 22, 40, "day");
-		else (void)mvwprintw(world, 22, 36, "evening");
 	switch (view) {
 		case VIEW_SURFACE:
 			(void)mvwprintw(world, 22, 1, "surface");
@@ -246,7 +255,7 @@ short xsave, xplus,
 			if (save!=zend) {
 				//TODO: this can be without 'names'
 				char name=getname(earth[xnew][z][ynew], world), name2;
-				if (abs(save-p)==1)      name2=name;
+				if (abs(save-p)==1)      name2=' ';
 				else if (abs(save-p)<11) name2=abs(save-p)-1+'0';
 				else                     name2='+';
 				(void)mvwprintw(world, y, 2*x-1, "%c%c", name, name2);
@@ -283,8 +292,9 @@ void in_surf(xcor, ycor, xarr, yarr, xrarr, yrarr)
 short xcor,  ycor,
       xarr,  yarr,
       xrarr, yrarr; {
-	int   visible2(), visible2x3(),
-	      property();
+	int   visible3(),
+	      visible2x3(),
+	      transparent();
 	char  getname(), get_sky_name();
 	register short x, y, z;
 	short st, en, plus,
@@ -299,9 +309,9 @@ short xcor,  ycor,
 	for (x=1; x<=21; ++x) {
 		newx=xcor+xarr*x+xrarr*y+((VIEW_SKY==view) ? eye[0]*18 : 0);
 		newy=ycor+yarr*y+yrarr*x+((VIEW_SKY==view) ? eye[1]*18 : 0);
-		for (z=st; z!=en && property(earth[newx][newy][z], 't'); z+=plus);
+		for (z=st; z!=en && transparent(earth[newx][newy][z]); z+=plus);
 		if (z==HEAVEN) {
-			if (visible2(xp, yp, zp, newx, newy, z)) //print sky
+			if (visible3(xp, yp, zp, newx, newy, z)) //print sky
 				if (sky[newx-xp+19][newy-yp+19].birds)
 					(void)mvwprintw(world, y, 2*x-1, "%c ",
 					get_sky_name(sky[newx-xp+19][newy-yp+19].birds));
@@ -323,10 +333,8 @@ short xcor,  ycor,
 				"%c%c", getname(earth[newx][newy][z], world), '-');
 			else if (z-zp<-2) (void)mvwprintw(world, y, 2*x-1,
 				"%c%c", getname(earth[newx][newy][z], world), '!');
-			else {
-				char name=getname(earth[newx][newy][z], world);
-				(void)mvwprintw(world, y, 2*x-1, "%c%c", name, name);
-			}
+			else (void)mvwprintw(world, y, 2*x-1,
+				"%c ", getname(earth[newx][newy][z], world));
 	}
 	//show player or not
 	if (pl && VIEW_SKY!=view) {
@@ -381,17 +389,17 @@ void invview() {
 			getname(inv[j][i].what, world), inv[j][i].num);
 	wstandend(world);
 	if (VIEW_CHEST==view) {
-		(void)mvwprintw(world, 16, 1, "Chest");
-		(void)mvwprintw(world, 15, 6, "|");
-		(void)mvwprintw(world, 16, 6, "|");
-		(void)mvwprintw(world, 17, 6, "|");
-		struct something *open_chest(), *chest=open_chest();
+		(void)mvwprintw(world, 15, 4, "+");
+		(void)mvwprintw(world, 16, 4, "+");
+		(void)mvwprintw(world, 17, 4, "+");
+		short *open_chest(),
+		      *chest=open_chest();
 		for (j=0; j<=9; ++j)
 		for (i=0; i<=2; ++i)
 			(void)mvwprintw(world, i+15, j*3+7, "%c%d",
-				getname(chest->arr[3+j+i*10], world),
-				        chest->arr[33+j+i*10]);
+				getname(chest[3+j+i*10], world), chest[33+j+i*10]);
 	}
+	wstandend(world);
 	(void)mvwprintw(world, 10, 9, "Workbench");
 	if (VIEW_WORKBENCH!=view)
 		for (i=0; i<=1; ++i)

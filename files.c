@@ -80,12 +80,12 @@ void loadgame() {
 		fclose(file);
 		load();
 	} else { //new game
-		int property();
+		int passable();
 		spy=spx=0;
 		load();
 		xp=80;
 		yp=80;
-		for (zp=HEAVEN; property(earth[xp][yp][zp-1], 'p'); --zp);
+		for (zp=HEAVEN; passable(earth[xp][yp][zp-1]); --zp);
 		jump=0;
 		eye[0]=0; //north
 		eye[1]=-1;
@@ -168,7 +168,7 @@ void load() {
 			(void)spawn(41+nx, 47+ny, k, NULL);
 			earth[41+nx][41+ny][k]=CHEST;
 			(void)spawn(41+nx, 41+ny, k, NULL);
-
+			//
 			earth[45+nx][45+ny][80]=FIRE;
 			(void)spawn(45+nx, 45+ny, 80, NULL);
 			earth[46+nx][45+ny][80]=FIRE;
@@ -244,12 +244,10 @@ void savegame() {
 void save() {
 	tolog("save start\n");
 	struct something *findanimal();
-	int   property();
 	short n,
 	      i, j, k,
 	      if_heap;
-	char  name[50],
-	      type;
+	char  name[50];
 	FILE  *file;
 	for (n=0; n<=8; ++n) {
 		makename(spx+n%3-1, spy+n/3-1, name);
@@ -261,15 +259,14 @@ void save() {
 		for (j=64*(n/3); j<=63+64*(n/3); ++j)
 		for (k=0;        k<=HEAVEN;      ++k) {
 			fputc(earth[i][j][k], file);
-			type=property(earth[i][j][k], 'n');
-			switch (type) {
-				case 'a': //animal
+			switch (earth[i][j][k]) {
+				case CHICKEN: case FIRE: //one parameter
 					fputc(findanimal(i, j, k)->arr[3], file);
 				break;
-				case 'h': case 'c': {//chest or heap
+				case HEAP: case CHEST: {//chest or heap
 					short count=3;
 					struct something *point=findanimal(i, j, k);
-					while (count<63+('h'==type) ? 1 : 0)
+					while (count<63+(HEAP==earth[i][j][k]) ? 1 : 0)
 						fputc(point->arr[count++], file);
 				} break;
 			}

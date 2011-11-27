@@ -66,6 +66,7 @@
 #define HEAP 8
 #define CLOCK 9
 #define COMPASS 10
+#define WORKBENCH 11
 
 //views
 #define VIEW_SURFACE 0

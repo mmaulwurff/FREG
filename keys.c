@@ -153,9 +153,10 @@ int key; {
 		break;
 		case 'x': {//put or add one element
 			void  know_marked();
+			int   stackable();
 			short *markedwhat, *markednum;
 			know_marked(&markedwhat, &markednum);
-			if (property(*markedwhat, 's') && property(cur[3], 's')) {
+			if (stackable(*markedwhat) && stackable(cur[3])) {
 				if (cur[3]==*markedwhat && *markednum!=9 && 0!=cur[3]) {
 					--cur[4]; //add
 					++*markednum;
@@ -174,21 +175,22 @@ int key; {
 		} //no break
 		case ' ': case '\n': {
 			void  know_marked();
+			int   stackable(), armour();
 			short *markedwhat, *markednum;
 			know_marked(&markedwhat, &markednum);
 //			fprintf(stderr, "marked is %d\n", *markedwhat);
 //			fprintf(stderr, "cur[2] is %d\n", cur[2]);
-			if (cur[3]==*markedwhat && property(*markedwhat, 's')) { //add
+			if (cur[3]==*markedwhat && stackable(*markedwhat)) { //add
 				while (*markednum!=9 && cur[4]!=0) {
 					--cur[4];
 					++*markednum;
 				}
 				if (cur[4]==0) cur[3]=0;				
 			} else if (cur[0]!=2 || 0==cur[3] || (cur[0]==2 && (
-					(cur[2]==0 && property(cur[3], 'a')=='h') ||
-					(cur[2]==1 && property(cur[3], 'a')=='a') ||
-					(cur[2]==2 && property(cur[3], 'a')=='l') ||
-					(cur[2]==3 && property(cur[3], 'a')=='b')))) {
+					(cur[2]==0 && armour(cur[3])=='h') ||
+					(cur[2]==1 && armour(cur[3])=='a') ||
+					(cur[2]==2 && armour(cur[3])=='l') ||
+					(cur[2]==3 && armour(cur[3])=='b')))) {
 				//put/change/get
 				short save=*markedwhat;
 				*markedwhat=cur[3];
@@ -226,10 +228,10 @@ short **markedwhat, **markednum; {
 	switch (cur[0]) {
 		case 1: //backpack
 			if (cur[2]>2) {
-				struct something *open_chest(),
-					         *chest=open_chest();
-				*markedwhat=&(chest->arr[cur[1]+(cur[2]-3)*10+3]);
-				*markednum =&(chest->arr[cur[1]+(cur[2]-3)*10+33]);
+				short *open_chest(),
+				      *chest=open_chest();
+				*markedwhat=&(chest[cur[1]+(cur[2]-3)*10+3]);
+				*markednum =&(chest[cur[1]+(cur[2]-3)*10+33]);
 			} else {
 				*markedwhat=&inv[cur[1]][cur[2]].what;
 				*markednum =&inv[cur[1]][cur[2]].num;
@@ -255,7 +257,7 @@ int key; {
 	tolog("keytogame start\n");
 	void  pocketshow(), sounds_print(), notify();
 	int   step(),
-	      property();
+	      passable();
 	short notc=0,
 	      save,
 	      mapflag=1, moveflag=0;
@@ -378,8 +380,9 @@ int key; {
 			void  focus();
 			short x, y, z;
 			focus(&x, &y, &z);
-			if (!property(earth[x][y][z-1], 'p')) { //thing isn't falling
-				switch (property(earth[x][y][z], 'n')) {
+			if (!passable(earth[x][y][z-1])) { //thing isn't falling
+				int active();
+				switch (active(earth[x][y][z])) {
 					case 'h': case 'c': //chest or heap
 						craft=malloc(5*sizeof(struct item));
 						for (save=0; save<5; ++save)
@@ -403,7 +406,7 @@ int key; {
 	}
 	//falling down
 	if (moveflag) {
-		for (save=0; property(earth[xp][yp][zp-1], 'p'); ++save, --zp);
+		for (save=0; passable(earth[xp][yp][zp-1]); ++save, --zp);
 	       	if (save>1) {
 			notc=4;
 			//damage should be here
@@ -424,9 +427,9 @@ int key; {
 			case  9: notify("Something unknown!",           0); break;
 			case 10: notify("You can't use this.",          0); break;
 			case 11: notify("You drop something.",          0); break;
-			case 12: notify("You can't throw it away.",     0); break;
+			case 12: notify("No place to throw it.",        0); break;
 			case 13: notify("You move a block.",            0); break;
-			case 14: notify("You lose something.",          0); break;
+			case 14: notify("Nothing to throw away.",       0); break;
 			case 31: notify("Grass or leaves",              0); break;
 			case 32: notify("Stone",                        0); break;
 			case 33: notify("It is somebody!",              0); break;
