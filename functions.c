@@ -6,7 +6,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-extern struct something *animalstart, *cheststart, *thingstart, *heapstart, *lightstart;
+extern struct something *animalstart, *cheststart, *thingstart, *heapstart, *lightstart,
+                        *workbenchstart;
 extern short    xp, yp, zp,
                 view, eye[], pl,
                 earth[][3*WIDTH][HEAVEN+1];
@@ -22,7 +23,7 @@ int arraylength(id)
 short id; {
 	switch (id) {
 		case CHICKEN: case FIRE: return 4; break;
-		case HEAP:  return 64; break;
+		case PILE:  return 64; break;
 		case CHEST: return 63; break;
 		default:    return  0; break;
 	}
@@ -32,20 +33,20 @@ int armour(id)
 short id; {
 	switch (id) {
 		//helmets
-		case STEEL_HELMET: return 'h'; break;
+		case IRON_HELMET: return 'h'; break;
 		//body armour
-		//return 'a'; break;
+		case IRON_CHESTPLATE: return 'a'; break;
 		//legs armour
-		//return 'l'; ibreak;
+		case IRON_GREAVES: return 'l'; break;
 		//boots
-		//return 'b'; break;
+		case IRON_BOOTS: return 'b'; break;
 		default: return 0; break;
 	}
 }
 
 int chestlike(id)
 short id; {
-	if (CHEST==id || HEAP==id) return 1;
+	if (CHEST==id || PILE==id) return 1;
 	else return 0;
 }
 
@@ -65,21 +66,8 @@ short id; {
 
 int movable(id)
 short id; {
-	if(CHICKEN==id || HEAP==id) return 1;
+	if(CHICKEN==id || PILE==id) return 1;
 	else return 0;
-}
-
-int active(id)
-short id; {
-	switch (id) {
-		//animals
-		case CHICKEN: return 'a'; break;
-		case CHEST:   return 'c'; break;
-		case HEAP:    return 'h'; break;
-		//light
-		case FIRE:    return 'l'; break;
-		default:      return  0;  break;
-	}
 }
 
 int passable(id)
@@ -90,7 +78,8 @@ short id; {
 
 int stackable(id)
 short id; {
-	if (STEEL_HELMET==id || CLOCK==id || COMPASS==id) return 0;
+	if (IRON_HELMET==id || CLOCK==id || COMPASS==id || IRON_BOOTS==id ||
+			IRON_GREAVES==id || IRON_CHESTPLATE==id) return 0;
 	else return 1;
 }
 
@@ -103,7 +92,7 @@ short id; {
 int chest_size(id)
 short id; {
 	switch (id) {
-		case CHEST: case HEAP: return 30; break;
+		case CHEST: case PILE: return 30; break;
 		default: return 0; break;
 	}
 }
@@ -122,24 +111,22 @@ short x, y, z; {
 struct something *findanimal(x, y, z)
 short x, y, z; {
 	tolog("findanimal start\n");
-	int active();
 	struct something *car;
-	if (active(earth[x][y][z])) {
-		switch (active(earth[x][y][z])) {
-			case 'a': car=animalstart; break;
-			case 'c': car=cheststart;  break;
-			case 'h': car=heapstart;   break;
-			case 'l': car=lightstart;  break;
-			case 't': car=thingstart;  break;
-			default : return NULL;     break;
-		}
-		while (car!=NULL)
-			if (x==car->arr[0] &&
-			    y==car->arr[1] &&
-			    z==car->arr[2]) return car;
-			else car=car->next;
-		return NULL;
-	} else return NULL;
+	switch (earth[x][y][z]) {
+		case ANIMALS:   car=animalstart;    break;
+		case CHEST:     car=cheststart;     break;
+		case PILE:      car=heapstart;      break;
+		case LIGHTS:    car=lightstart;     break;
+		case WORKBENCH: car=workbenchstart; break;
+//		case 't': car=thingstart;  break;
+		default: return NULL; break;
+	}
+	while (car!=NULL)
+		if (x==car->arr[0] &&
+		    y==car->arr[1] &&
+		    z==car->arr[2]) return car;
+		else car=car->next;
+	return NULL;
 }
 
 //returns pointer to chest to open

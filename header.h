@@ -55,18 +55,24 @@
 //clock, compass
 #define NUMBER_OF_USEFUL 2
 
-//blocks
+#define COMPONENTS_NUMBER 4
+
+//blocks (components for crafting should stay in the beginning for check_craft())
 #define AIR 0
-#define GRASS 1
+#define IRON_INGOT 1
 #define STONE 2
-#define CHICKEN 4
-#define FIRE 5
-#define STEEL_HELMET 6
-#define CHEST 7
-#define HEAP 8
-#define CLOCK 9
-#define COMPASS 10
-#define WORKBENCH 11
+#define CHEST 3
+#define WORKBENCH 4
+#define GRASS 5
+#define CHICKEN 6
+#define FIRE 7
+#define IRON_HELMET 8
+#define PILE 9
+#define CLOCK 10
+#define COMPASS 11
+#define IRON_GREAVES 12
+#define IRON_BOOTS 13
+#define IRON_CHESTPLATE 14
 
 //views
 #define VIEW_SURFACE 0
@@ -83,6 +89,11 @@
 //sicnals
 #define STOP 0
 #define RUN 1
+
+//for groups
+#define ANIMALS CHICKEN
+#define LIGHTS FIRE
+#define CHESTLIKE CHEST: case PILE
 
 struct something {
 	struct something *next;

@@ -6,24 +6,27 @@
 #include <stdlib.h>
 #include <ncurses.h>
 
-extern short xp, yp, zp, earth[][3*WIDTH][HEAVEN+1], jump, notflag, view;
+extern struct for_sky sky[][39];
+extern struct item    *craft;
 
+extern short    xp, yp, zp, earth[][3*WIDTH][HEAVEN+1], jump, notflag, view, *opened,
+                radar_dist;
 extern unsigned time;
 
 //TODO: char instead of short
 struct item radar[9];
-extern short radar_dist;
-extern struct for_sky sky[][39];
 
-struct something *animalstart=NULL,
-                 *cheststart =NULL,
-                 *thingstart =NULL,
-                 *heapstart  =NULL,
-                 *lightstart =NULL;
+struct something *animalstart   =NULL,
+                 *cheststart    =NULL,
+                 *thingstart    =NULL,
+                 *heapstart     =NULL,
+                 *lightstart    =NULL,
+                 *workbenchstart=NULL;
 struct list_to_clear *clear_start=NULL;
 void tolog();
 
-char skymap[][78]={"                          .         . .                 .                     ",
+char skymap[][78]={
+"                          .         . .                 .                     ",
 "                    .   .       .   .                 .                       ",
 "                                  .        ,      .                           ",
 "                          . .                                                 ",
@@ -106,7 +109,7 @@ short x, y; {
 			xp+=x;
 			yp+=y;
 			notc=13;
-		} else if (HEAP==earth[xp+x][yp+y][zp] &&
+		} else if (PILE==earth[xp+x][yp+y][zp] &&
 				chestlike(earth[xp+2*x][yp+2*y][zp])) {
 			struct something *findanimal(),
 					 *push_into=findanimal(xp+2*x, yp+2*y,zp),
@@ -154,10 +157,9 @@ short x_target, y_target, z_target,
 
 //all mechanics events
 void allmech() {
+	void del_expired();
 	tolog("allmech start\n");
-	void map(), sounds_print(),
-	     chiken_move();
-	//sky section
+	//one-time events
 	if (time>=6*60) {
 		if (0==time%((24*60-1-6*60)/39)) {
 			short sun_pos=38-((time-6*60)*39/(24*60-1-6*60));
@@ -209,57 +211,70 @@ void allmech() {
 		} break;
 		default: break;
 	}
-	//physics section
-	time=(24*60-1==time) ? 0 : time+1;
-	void move_down_chain(),
-	     sounds();
-	struct something *car;
-	sounds(animalstart);
-	//move animals
-	for (car=animalstart; NULL!=car; car=car->next) chiken_move(car);
-	//heap lifetime
-	if (0==time%60) {
-		void new_clear();
-		struct something *car_last=heapstart;
-		car=heapstart;
-		while (NULL!=car) if (0==--(car->arr[63]))
-			if (car==heapstart) {
-				heapstart=car->next;
-				earth[car->arr[0]][car->arr[1]][car->arr[2]]=0;
-				car->arr[0]=HEAVEN+1;
-				new_clear(car);
-				car=heapstart;
-			} else {
-				car_last->next=car->next;
-				earth[car->arr[0]][car->arr[1]][car->arr[2]]=0;
-				car->arr[0]=HEAVEN+1;
-				new_clear(car);
-				car=car_last->next;
+	/* every hour events*/ {
+		if (0==time%60) del_expired(&heapstart);
+	}
+	/* every second events */ {
+		void move_down_chain(),
+		     chiken_move(),
+		     sounds(), sounds_print(),
+		     map();
+		struct something *car;
+		time=(24*60-1==time) ? 0 : time+1;
+		del_expired(&lightstart);
+		//everything falls
+		if (NULL!=heapstart  ) move_down_chain(&heapstart  );
+		if (NULL!=animalstart) move_down_chain(&animalstart);
+		//move animals
+		for (car=animalstart; NULL!=car; car=car->next) chiken_move(car);
+		{ //gravity
+			void  notify();
+			int   passable();
+			short height=0;
+			for ( ; passable(earth[xp][yp][zp-1]); ++height, --zp);
+			if (height>1) { //gravity
+				notify("You fell down.", 0);
+				notflag=4;
+				//damage
 			}
-		else {
-			car_last=car;
-			car=car->next;
 		}
+		sounds(animalstart);
+		sounds_print();
+		if (VIEW_SURFACE==view || VIEW_FLOOR==view || VIEW_HEAD==view ||
+				VIEW_SKY==view || VIEW_FRONT==view) map();
 	}
-	//everything falls
-	if (NULL!=heapstart  ) move_down_chain(&heapstart  );
-	if (NULL!=animalstart) move_down_chain(&animalstart);
-	{ //gravity
-		int   passable();
-		short height=0;
-		for ( ; passable(earth[xp][yp][zp-1]); ++height, --zp);
-		if (height>1) { //gravity
-			notify("You fell down.", 0);
-			notflag=4;
-			//damage
-		}
-	}
-	sounds_print();
-	if (VIEW_SURFACE==view || VIEW_FLOOR==view || VIEW_HEAD==view || VIEW_SKY==view ||
-			VIEW_FRONT==view) map();
 	tolog("allmech finish\n");
 }
 
+void del_expired(start)
+struct something **start; {
+	void new_clear();
+	struct something *car_last=*start,
+	                 *car=*start;
+	short life_index;
+	if (*start==heapstart) life_index=63;
+	else if (*start==lightstart) life_index=3;
+	else return;
+	while (NULL!=car) if (0==--(car->arr[life_index]))
+		if (car==*start) {
+			*start=car->next;
+			earth[car->arr[0]][car->arr[1]][car->arr[2]]=0;
+			car->arr[0]=HEAVEN+1;
+			new_clear(car);
+			car=*start;
+		} else {
+			car_last->next=car->next;
+			earth[car->arr[0]][car->arr[1]][car->arr[2]]=0;
+			car->arr[0]=HEAVEN+1;
+			new_clear(car);
+			car=car_last->next;
+		}
+	else {
+		car_last=car;
+		car=car->next;
+	}
+}
+	
 //this creates nem item in clear_list
 void new_clear(address)
 struct something *address; {
@@ -306,8 +321,8 @@ struct something *start; {
 		if (abs(start->arr[0]-xp)<=radar_dist &&
 		    abs(start->arr[1]-yp)<=radar_dist &&
 		    abs(start->arr[2]-zp)<=NEAR &&
-		    (name=getname(earth[start->arr[0]][start->arr[1]][start->arr[2]]))
-		    	!='?' && !(random_linux()%3)) {
+		    (name=getname(earth[start->arr[0]][start->arr[1]][start->arr[2]],
+				  NULL))!='?' && !(random_linux()%3)) {
 			void change_radar();
 			// ^
 			if ((start->arr[1]-yp)<-abs(start->arr[0]-xp))
@@ -410,50 +425,49 @@ struct something *spawn(x, y, z, file)
 short x, y, z;
 FILE  *file; {
 //	tolog("spawn start\n");
-	int  active();
-	char type=active(earth[x][y][z]);
-	if (type) {
-		struct something **start,
-		                 *thing_new;
-		short length;
-		switch (type) {
-			case 'a': start=&animalstart; length=4;  break; //animal
-			case 'c': start=&cheststart;  length=63; break; //chest
-			case 'h': start=&heapstart;   length=64; break; //heap
-			case 'l': start=&lightstart;  length=4;  break; //light
-			case 't': start=&thingstart;  length=3;  break; //thing
-			default : return NULL; break;
-		}
-		(thing_new=malloc(sizeof(struct something)))->next=*start;
-		*start=thing_new;
-		thing_new->arr=malloc(length*sizeof(short));
-		if (file) {
-			short i;
-			for (i=3; i<length; ++i) thing_new->arr[i]=getc(file);
-		} else switch (type) {
-			case 'a': thing_new->arr[3]=9; break; //HP //animals
-			case 'l': thing_new->arr[3]=1; break; //hours //light
-			case 'h': case 'c': { //heap or chest
-				short i;
-				for (i=3; i<63; ++i) thing_new->arr[i]=0;
-				//put something to all new chests
-				thing_new->arr[4 ]=COMPASS;
-				thing_new->arr[34]=9;
-				//and some stones
-				/*thing_new->arr[5 ]=STONE;
-				thing_new->arr[35]=9;*/
-				if ('h'==type) thing_new->arr[63]=24; //hours
-			} break;
-		}
-		thing_new->arr[0]=x;
-		thing_new->arr[1]=y;
-		thing_new->arr[2]=z;
-//		tolog("spawn finish\n");
-		return thing_new;
-	} else {
-		return NULL;
-//		tolog("spawn finish\n");
+	struct something **start,
+	                 *thing_new;
+	short length;
+	switch (earth[x][y][z]) {
+		case CHICKEN:   start=&animalstart;    length= 4; break;
+		case CHEST:     start=&cheststart;     length=63; break;
+		case PILE:      start=&heapstart;      length=64; break;
+		case FIRE:      start=&lightstart;     length= 4; break;
+		case WORKBENCH: start=&workbenchstart; length=23; break;
+//		case : start=&thingstart;  length=3;  break;
+		default : return NULL; break;
 	}
+	(thing_new=malloc(sizeof(struct something)))->next=*start;
+	*start=thing_new;
+	thing_new->arr=malloc(length*sizeof(short));
+	if (file) {
+		short i;
+		for (i=3; i<length; ++i) thing_new->arr[i]=getc(file);
+	} else switch (earth[x][y][z]) {
+		case CHICKEN: thing_new->arr[ 3]= 9; break; //HP
+		case FIRE:    thing_new->arr[ 3]= 5; break; //minutes
+		case PILE:    thing_new->arr[63]=24; //hours //no break
+		case CHEST: {
+			short i;
+			for (i=3; i<63; ++i) thing_new->arr[i]=0;
+			//put something to all new chests
+			thing_new->arr[4 ]=IRON_INGOT;
+			thing_new->arr[34]=9;
+			//and some stones
+			/*thing_new->arr[5 ]=STONE;
+			thing_new->arr[35]=9;*/
+		} break;
+		case WORKBENCH: {
+//			short i;
+//			for (i=3; i<23; ++i) thing_new->arr[i]=9;
+		} break;
+		default: break;
+	}
+	thing_new->arr[0]=x;
+	thing_new->arr[1]=y;
+	thing_new->arr[2]=z;
+//	tolog("spawn finish\n");
+	return thing_new;
 }
 
 //this erases list of loaded animals
@@ -615,7 +629,7 @@ struct item *thing; {
 					if (HEAVEN+1!=drop_into->arr[0]) break;
 				}
 				default: {
-					earth[x][y][z]=HEAP;
+					earth[x][y][z]=PILE;
 					struct something *spawn();
 					drop_into=spawn(x, y, z, NULL);
 					break;
@@ -649,4 +663,42 @@ struct item *thing; {
 			else return 12; //"No place to throw it"
 		} else return 12; //"No place to throw it"
 	} else return 14; //"Nothing to throw away"
+}
+
+void check_craft(workbench)
+short *workbench; {
+	tolog("check_craft started\n");
+	void  notify();
+	short full_list[COMPONENTS_NUMBER+1], i, sum=0,
+	      *product_id, *product_num;
+	for (i=1; i<=COMPONENTS_NUMBER; ++i) full_list[i]=0;
+	if (VIEW_WORKBENCH==view) {
+		product_id =&workbench[12];
+		product_num=&workbench[22];
+	      	for (i=3; i<12; ++i) if (workbench[i]<=COMPONENTS_NUMBER) {
+			full_list[workbench[i]]+=workbench[i+10];
+			sum+=workbench[i+10];
+		} else return;
+	} else if (craft[1].what<=COMPONENTS_NUMBER && craft[2].what<=COMPONENTS_NUMBER) {
+		product_id =&craft[0].what;
+		product_num=&craft[0].num;
+		full_list[craft[1].what] =craft[1].num;
+		full_list[craft[2].what]+=craft[2].num;
+		sum+=craft[1].num+craft[2].num;
+	} else return;
+	//recipes
+	if (4==full_list[IRON_INGOT] && 4==sum && VIEW_WORKBENCH==view) {
+		*product_id=IRON_BOOTS;
+		*product_num=9;
+	} else if (8==full_list[IRON_INGOT] && 8==sum && VIEW_WORKBENCH==view) {
+		*product_id=IRON_CHESTPLATE;
+		*product_num=9;
+	} else if (5==full_list[IRON_INGOT] && 5==sum && VIEW_WORKBENCH==view) {
+		*product_id=IRON_HELMET;
+		*product_num=9;
+	} else if (7==full_list[IRON_INGOT] && 7==sum && VIEW_WORKBENCH==view) {
+		*product_id=IRON_GREAVES;
+		*product_num=9;
+	} else *product_id=*product_num=0;
+	tolog("check_craft finished\n");
 }

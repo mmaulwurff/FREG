@@ -121,18 +121,15 @@ void loadgame() {
 void load() {
 	tolog("load start\n");
 	struct something *spawn();
-	void eraseanimals();
+	void makename(), eraseanimals();
 	eraseanimals();
-	short n=0,
-	      i, j, k,
-	      nx, ny;
+	short i, j, k,
+	      nx, ny,
+	      n=0;
 	char name[50]; //50!?
 	FILE *file;
-	for (n=0; n<=8; ++n) {
-//		nx=WIDTH*(n%3);
-//		ny=WIDTH*(n/3);
-		nx=64*(n%3);
-		ny=64*(n/3);
+	for (nx=0; nx<=WIDTH*2; nx+=64)
+	for (ny=0; ny<=WIDTH*2; ny+=64, ++n) {
 		makename(spx+n%3-1, spy+n/3-1, name);
 		file=fopen(name, "rb");
 		if (!file) {
@@ -168,6 +165,8 @@ void load() {
 			(void)spawn(41+nx, 47+ny, k, NULL);
 			earth[41+nx][41+ny][k]=CHEST;
 			(void)spawn(41+nx, 41+ny, k, NULL);
+			earth[42+nx][41+ny][k]=WORKBENCH;
+			(void)spawn(42+nx, 41+ny, k, NULL);
 			//
 			earth[45+nx][45+ny][80]=FIRE;
 			(void)spawn(45+nx, 45+ny, 80, NULL);
@@ -244,31 +243,33 @@ void savegame() {
 void save() {
 	tolog("save start\n");
 	struct something *findanimal();
-	short n,
-	      i, j, k,
-	      if_heap;
+	void  makename();
+	short x, y, i, j, k,
+	      length,
+	      count,
+	      *point;
 	char  name[50];
 	FILE  *file;
-	for (n=0; n<=8; ++n) {
-		makename(spx+n%3-1, spy+n/3-1, name);
+	for (x=0; x<3; ++x)
+	for (y=0; y<3; ++y) {
+		makename(spx+x-1, spy+y-1, name);
 		file=fopen(name, "wb");
-		if_heap=0;
-//		for (i=WIDTH*(n%3); i<=(WIDTH-1+WIDTH*(n%3)); ++i)
-//		for (j=WIDTH*(n/3); j<=(WIDTH-1+WIDTH*(n/3)); ++j)
-		for (i=64*(n%3); i<=63+64*(n%3); ++i)
-		for (j=64*(n/3); j<=63+64*(n/3); ++j)
-		for (k=0;        k<=HEAVEN;      ++k) {
+		for (i=WIDTH*x; i<=(WIDTH-1+WIDTH*x); ++i)
+		for (j=WIDTH*y; j<=(WIDTH-1+WIDTH*y); ++j)
+		for (k=0;       k<=HEAVEN;            ++k) {
 			fputc(earth[i][j][k], file);
 			switch (earth[i][j][k]) {
-				case CHICKEN: case FIRE: //one parameter
-					fputc(findanimal(i, j, k)->arr[3], file);
-				break;
-				case HEAP: case CHEST: {//chest or heap
-					short count=3;
-					struct something *point=findanimal(i, j, k);
-					while (count<63+(HEAP==earth[i][j][k]) ? 1 : 0)
-						fputc(point->arr[count++], file);
-				} break;
+				case ANIMALS: //no break;
+				case LIGHTS:    length= 4; break;
+				case CHEST:     length=63; break;
+				case PILE:      length=64; break;
+				case WORKBENCH:	length=23; break;
+				default:        length= 0; break;
+			}
+			if (length) {
+				point=findanimal(i, j, k)->arr;
+				for (count=3; count<length; ++count)
+					fputc(point[count], file);
 			}
 		}
 		fclose(file);
@@ -279,7 +280,7 @@ void save() {
 //this checks if new squares should be loaded
 //TODO: borders, or tor?
 void onbound() {
-	tolog("onbound start");
+	tolog("onbound start\n");
 	void eraseanimals();
 	if (xp<WIDTH) { //west
 		xp+=WIDTH;

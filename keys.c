@@ -21,7 +21,8 @@ void  tolog();
 short cur[]={1, 0, 0, 0, 0}; /*0.field (0.chest, 1.player, 2.function),
                                 1.x, 2.y, 3.id, 4.number*/
 short last_view2,
-      notflag=1; //flag used for optimization, for not notifying when nothing happens
+      notflag=1, //flag used for optimization, for not notifying when nothing happens
+      *opened;
 
 //menu keys
 void key_to_menu(key)
@@ -41,7 +42,8 @@ int key; {
 //inventory keys
 void keytoinv(key)
 int key; {
-	tolog("keytoinv start\n");
+	tolog("keytoinv start: ");
+	fprintf(stderr, "%c - %d\n", key, key);
 	void map(), notify();
 	short pocketflag=0,
 	      notc=0;
@@ -52,12 +54,13 @@ int key; {
 			notify("Pause", 0);
 		break;
 		case 'u': case 'f': case 'h': case 'k': case 'r': case 27: { //views;
+			fprintf(stderr, "views\n");
 			int drop_tning();
 			if (VIEW_CHEST==view) { //close chest
 				void  focus();
 				short x, y, z;
 				focus(&x, &y, &z);
-				if (HEAP==earth[x][y][z]) { //erase if empty
+				if (PILE==earth[x][y][z]) { //erase if empty
 					short i, flag_erase=1;
 					struct something *findanimal(),
 					                 *heap=findanimal(x, y, z);
@@ -73,7 +76,7 @@ int key; {
 					}
 				}
 			}
-			free(craft);
+			if (VIEW_WORKBENCH!=view) free(craft);
 			notc=drop_thing(&cur[3], &cur[4]);
 			switch (key) {
 				case 'u': view=VIEW_SURFACE; break;
@@ -84,6 +87,7 @@ int key; {
 				default : view=view_last;    break;
 			}
 			pocketflag=1;
+			fprintf(stderr, "27 finished\n");
 		} break;
 		case KEY_LEFT:
 			switch (cur[0]) {
@@ -94,7 +98,7 @@ int key; {
 						cur[1]=3;
 						cur[2]=0;
 					} else if (cur[1]==3) {
-						cur[1]=(VIEW_WORKBENCH==view) ? 2 : 1;
+						cur[1]=(VIEW_WORKBENCH==view) ? 2 : 0;
 						cur[2]=1;
 					} else --cur[1];
 				break;
@@ -105,7 +109,7 @@ int key; {
 				//chest
 				case 1: cur[1]=(cur[1]==9) ? 0 : cur[1]+1; break;
 				case 3: //workbench
-					if (cur[1]==((VIEW_WORKBENCH==view) ? 2 : 1)) {
+					if (cur[1]==((VIEW_WORKBENCH==view) ? 2 : 0)) {
 						cur[1]=3;
 						cur[2]=0;
 					} else if (cur[1]==3) {
@@ -170,6 +174,7 @@ int key; {
 					*markednum=1;
 					if (--cur[4]==0) cur[3]=0;
 				}
+				if (3==cur[0]) check_craft(opened);
 				break;
 			}
 		} //no break
@@ -178,6 +183,22 @@ int key; {
 			int   stackable(), armour();
 			short *markedwhat, *markednum;
 			know_marked(&markedwhat, &markednum);
+			if (VIEW_WORKBENCH==view && markedwhat==&(opened[12])) {
+				if (0==opened[12]) break;
+				else {
+					short i;
+					for (i= 3; i<12; ++i) opened[i]=0;
+					for (i=13; i<22; ++i) opened[i]=0;
+				}
+			} else if (VIEW_WORKBENCH!=view &&
+					markedwhat==&(craft[0].what))
+				if (0==craft[0].what) break;
+				else {
+					craft[1].what=0;
+					craft[1].num =0;
+					craft[2].what=0;
+					craft[2].num =0;
+				}
 //			fprintf(stderr, "marked is %d\n", *markedwhat);
 //			fprintf(stderr, "cur[2] is %d\n", cur[2]);
 			if (cur[3]==*markedwhat && stackable(*markedwhat)) { //add
@@ -190,7 +211,8 @@ int key; {
 					(cur[2]==0 && armour(cur[3])=='h') ||
 					(cur[2]==1 && armour(cur[3])=='a') ||
 					(cur[2]==2 && armour(cur[3])=='l') ||
-					(cur[2]==3 && armour(cur[3])=='b')))) {
+					(cur[2]==3 && armour(cur[3])=='b'))) &&
+					!(3==cur[0] && 0==*markedwhat)) {
 				//put/change/get
 				short save=*markedwhat;
 				*markedwhat=cur[3];
@@ -199,6 +221,7 @@ int key; {
 				*markednum=cur[4];
 				cur[4]=save;
 			}
+			if (3==cur[0]) check_craft(opened);
 		} break;
 		case '!': radar_dist=(NEAR==radar_dist) ? FAR : NEAR; break;
 		default : break;
@@ -228,10 +251,8 @@ short **markedwhat, **markednum; {
 	switch (cur[0]) {
 		case 1: //backpack
 			if (cur[2]>2) {
-				short *open_chest(),
-				      *chest=open_chest();
-				*markedwhat=&(chest[cur[1]+(cur[2]-3)*10+3]);
-				*markednum =&(chest[cur[1]+(cur[2]-3)*10+33]);
+				*markedwhat=&(opened[cur[1]+(cur[2]-3)*10+3]);
+				*markednum =&(opened[cur[1]+(cur[2]-3)*10+33]);
 			} else {
 				*markedwhat=&inv[cur[1]][cur[2]].what;
 				*markednum =&inv[cur[1]][cur[2]].num;
@@ -242,9 +263,20 @@ short **markedwhat, **markednum; {
 			*markednum =&cloth[cur[2]].num;
 		break;
 		case 3: {//workbench
-			short i=(cur[1]!=3) ? 1+cur[2]+cur[1]*2 : 0;
-			*markedwhat=&craft[i].what;
-			*markednum= &craft[i].num;
+			if (VIEW_WORKBENCH==view) {
+				short i=(cur[1]!=3) ? 3+cur[2]+cur[1]*3 : 12;
+				*markedwhat=&(opened[i   ]);
+				*markednum= &(opened[i+10]);
+			} else if (3==cur[1]) {
+				*markedwhat=&(craft[0].what);
+				*markednum =&(craft[0].num);
+			} else if (0==cur[2]) {
+				*markedwhat=&(craft[1].what);
+				*markednum =&(craft[1].num);
+			} else {
+				*markedwhat=&(craft[2].what);
+				*markednum =&(craft[2].num);
+			}
 		} break;
 		default: break;
 	}
@@ -254,7 +286,8 @@ short **markedwhat, **markednum; {
 //this is game physics and interface
 void keytogame(key)
 int key; {
-	tolog("keytogame start\n");
+	tolog("keytogame start: ");
+	fprintf(stderr, "%c - %d\n", key, key);
 	void  pocketshow(), sounds_print(), notify();
 	int   step(),
 	      passable();
@@ -340,8 +373,8 @@ int key; {
 		case 'i':
 			view_last=view;
 			view=VIEW_INVENTORY;
-			craft=malloc(5*sizeof(struct item));
-			for (save=0; save<5; ++save) craft[save].what=craft[save].num=0;
+			craft=malloc(3*sizeof(struct item));
+			for (save=0; save<3; ++save) craft[save].what=craft[save].num=0;
 			if (cur[0]==1 && cur[2]>2) cur[2]=0;
 		break;
 		case 'u': view_last=view; view=VIEW_SURFACE; break;
@@ -381,16 +414,23 @@ int key; {
 			short x, y, z;
 			focus(&x, &y, &z);
 			if (!passable(earth[x][y][z-1])) { //thing isn't falling
-				int active();
-				switch (active(earth[x][y][z])) {
-					case 'h': case 'c': //chest or heap
-						craft=malloc(5*sizeof(struct item));
-						for (save=0; save<5; ++save)
+				switch (earth[x][y][z]) {
+					case CHESTLIKE: {
+						short *open_chest();
+						opened=open_chest();
+						craft=malloc(3*sizeof(struct item));
+						for (save=0; save<3; ++save)
 							craft[save].what=
 								craft[save].num=0;
 						view_last=view;
 						view=VIEW_CHEST;
-					break;
+					} break;
+					case WORKBENCH: {
+						short *open_chest();
+						opened=open_chest();
+						view_last=view;
+						view=VIEW_WORKBENCH;
+					} break;
 					default : notc=10; break;
 				}
 			}

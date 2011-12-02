@@ -8,7 +8,7 @@
 
 extern WINDOW      *world, *textwin, *pocketwin, *sound_window;
 extern short       xp, yp, zp, pl, eye[], earth[][3*WIDTH][HEAVEN+1],
-                   cur[], radar_dist, view;
+                   cur[], radar_dist, view, *opened;
 extern unsigned    time;
 extern struct item inv[][3], cloth[], radar[], *craft;
 extern struct something *animalstart;
@@ -137,6 +137,10 @@ void map() {
 		break;
 		case VIEW_CHEST: case VIEW_INVENTORY:
 			(void)mvwprintw(world, 22, 1, "inventory");
+			invview();
+		break;
+		case VIEW_WORKBENCH:
+			(void)mvwprintw(world, 22, 1, "workbench");
 			invview();
 		break;
 		default : (void)mvwprintw(world, 22, 1, "another"  ); invview(); break;
@@ -292,13 +296,13 @@ void in_surf(xcor, ycor, xarr, yarr, xrarr, yrarr)
 short xcor,  ycor,
       xarr,  yarr,
       xrarr, yrarr; {
-	int   visible3(),
-	      visible2x3(),
+	int   visible3(), visible2x3(),
 	      transparent();
 	char  getname(), get_sky_name();
 	register short x, y, z;
 	short st, en, plus,
-	      newx, newy;
+	      newx, newy,
+	      sky_x, sky_y;
 	switch (view) {
 		case VIEW_FLOOR: st=zp;     en=0;      plus=-1; break;
 		case VIEW_HEAD:  st=zp+1;   en=0;      plus=-1; break;
@@ -311,28 +315,30 @@ short xcor,  ycor,
 		newy=ycor+yarr*y+yrarr*x+((VIEW_SKY==view) ? eye[1]*18 : 0);
 		for (z=st; z!=en && transparent(earth[newx][newy][z]); z+=plus);
 		if (z==HEAVEN) {
+			sky_x=newx-xp+19;
+			sky_y=newy-yp+19;
 			if (visible3(xp, yp, zp, newx, newy, z)) //print sky
-				if (sky[newx-xp+19][newy-yp+19].birds)
+				if (sky[sky_x][sky_y].birds)
 					(void)mvwprintw(world, y, 2*x-1, "%c ",
-					get_sky_name(sky[newx-xp+19][newy-yp+19].birds));
-				else if (sky[newx-xp+19][newy-yp+19].clouds)
+						get_sky_name(sky[sky_x][sky_y].birds));
+				else if (sky[sky_x][sky_y].clouds)
 					(void)mvwprintw(world, y, 2*x-1, "%c ",
-					get_sky_name(sky[newx-xp+19][newy-yp+19].clouds));
-				else if (sky[newx-xp+19][newy-yp+19].sun)
+						get_sky_name(sky[sky_x][sky_y].clouds));
+				else if (sky[sky_x][sky_y].sun)
 					(void)mvwprintw(world, y, 2*x-1, "%c ",
-					get_sky_name(sky[newx-xp+19][newy-yp+19].sun));
+						get_sky_name(sky[sky_x][sky_y].sun));
 				else (void)mvwprintw(world, y, 2*x-1, "%c ",
-					get_sky_name(sky[newx-xp+19][newy-yp+19].sky));
+						get_sky_name(sky[sky_x][sky_y].sky));
 		} else if (visible2x3(xp, yp, zp+1, newx, newy, z) && 
 				illuminated(newx, newy, z))
 			if (z-zp>=10) (void)mvwprintw(world, y, 2*x-1,
-				"%c%c", getname(earth[newx][newy][z], world), '+');
+				"%c+", getname(earth[newx][newy][z], world));
 			else if (z-zp>-1) (void)mvwprintw(world, y, 2*x-1,
-				"%c%c", getname(earth[newx][newy][z], world), z-zp+1+'0');
+				"%c%d", getname(earth[newx][newy][z], world), z-zp+1);
 			else if (z-zp==-2) (void)mvwprintw(world, y, 2*x-1,
-				"%c%c", getname(earth[newx][newy][z], world), '-');
+				"%c-", getname(earth[newx][newy][z], world));
 			else if (z-zp<-2) (void)mvwprintw(world, y, 2*x-1,
-				"%c%c", getname(earth[newx][newy][z], world), '!');
+				"%c!", getname(earth[newx][newy][z], world));
 			else (void)mvwprintw(world, y, 2*x-1,
 				"%c ", getname(earth[newx][newy][z], world));
 	}
@@ -350,7 +356,7 @@ short xcor,  ycor,
 void invview() {
 	tolog("invview start\n");
 	void  mark();
-	char  getname();
+	char  getname(), *real_name();
 	short i, j;
 	//left arm
 	wattrset(world, COLOR_PAIR(BLACK_WHITE));
@@ -382,6 +388,11 @@ void invview() {
 				(void)mvwprintw(world, 5, 3, "db");
 			break;
 		}
+	wstandend(world);
+	(void)mvwprintw(world, 2, 8, "%s on head", real_name(cloth[0].what));
+	(void)mvwprintw(world, 3, 8, "%s on body", real_name(cloth[1].what));
+	(void)mvwprintw(world, 4, 8, "%s on legs", real_name(cloth[2].what));
+	(void)mvwprintw(world, 5, 8, "%s on feet", real_name(cloth[3].what));
 	//backpack
 	for (j=0; j<=9; ++j)
 	for (i=0; i<=2; ++i)
@@ -392,31 +403,31 @@ void invview() {
 		(void)mvwprintw(world, 15, 4, "+");
 		(void)mvwprintw(world, 16, 4, "+");
 		(void)mvwprintw(world, 17, 4, "+");
-		short *open_chest(),
-		      *chest=open_chest();
 		for (j=0; j<=9; ++j)
 		for (i=0; i<=2; ++i)
 			(void)mvwprintw(world, i+15, j*3+7, "%c%d",
-				getname(chest[3+j+i*10], world), chest[33+j+i*10]);
+				getname(opened[3+j+i*10], world), opened[33+j+i*10]);
 	}
 	wstandend(world);
-	(void)mvwprintw(world, 10, 9, "Workbench");
-	if (VIEW_WORKBENCH!=view)
-		for (i=0; i<=1; ++i)
-		for (j=0; j<=1; ++j)
-			(void)mvwprintw(world, 11+i, 10+j*3, "%c%d",
-				getname(craft[i+2*j+1].what, world),
-				        craft[i+2*j+1].num);
-	else
+	(void)mvwprintw(world, 10, 9, "Crafting");
+	if (VIEW_WORKBENCH!=view) {
+		(void)mvwprintw(world, 11, 10, "%c%d",
+			getname(craft[1].what, world), craft[1].num);
+		(void)mvwprintw(world, 12, 10, "%c%d",
+			getname(craft[2].what, world), craft[2].num);
+		(void)mvwprintw(world, 12, 17, "%c%d",
+			getname(craft[0].what, world), craft[0].num);
+	} else {
 		for (i=0; i<=2; ++i)
 		for (j=0; j<=2; ++j)
 			(void)mvwprintw(world, 11+i, 7+j*3, "%c%d",
-				getname(craft[i+2*j+1].what, world),
-				        craft[i+2*j+1].num);
-	(void)mvwprintw(world, 12, 17, "%c%d", getname(craft[0].what, world),
-	                                               craft[0].num);
+				getname(opened[i+3*j+3], world), opened[i+3*j+3+10]);
+		(void)mvwprintw(world, 12, 17, "%c%d",
+			getname(opened[12], world), opened[22]);
+	}
 	//cursor (i, j are now coordinates)
 	switch (cur[0]) {
+//		case 0: furnace
 		case 1: //chest
 			i=cur[2]+((cur[2]>2) ? 12 : 18+((cur[2]==2) ? 1 : 0));
 			j=cur[1]*3+7;
@@ -436,6 +447,14 @@ void invview() {
 			getname(cur[3], world), cur[4]);
 		mark(j, i, world, 'f');
 	} else  mark(j, i, world, 'e');
+	{
+		void know_marked();
+		short *markedwhat, *markednum;
+		char string[30]="";
+		know_marked(&markedwhat, &markednum);
+		if (*markedwhat) notify(real_name(*markedwhat));
+		else notify("");
+	}
 	(void)wclear(pocketwin);
 	(void)wrefresh(pocketwin);
 	tolog("invview finish\n");
@@ -447,52 +466,48 @@ short  block;
 WINDOW *pwin; {
 //	tolog("getname start\n");
 	switch (block) {
-		case GRASS:
-			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(BLACK_GREEN));
-			return '|';
-		break;
-		case STONE:
-			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(BLACK_WHITE));
-			return 's';
-		break;
-		case 3: //player
-			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(WHITE_BLUE));
-			return 'p';
-		break;
-		case CHICKEN:
-			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(RED_WHITE));
-			return 'c';
-		break;
+		case GRASS:   wattrset(pwin, COLOR_PAIR(BLACK_GREEN));  return '|'; break;
+		case STONE:   wattrset(pwin, COLOR_PAIR(BLACK_WHITE));  return 's'; break;
+		case CHEST:   wattrset(pwin, COLOR_PAIR(BLACK_YELLOW)); return 'c'; break;
+		case PILE:    wattrset(pwin, COLOR_PAIR(WHITE_BLACK));  return 'h'; break;
+		case CLOCK:   wattrset(pwin, COLOR_PAIR(BLUE_YELLOW));  return 'c'; break;
+		case COMPASS: wattrset(pwin, COLOR_PAIR(RED_BLACK));    return 'c'; break;
+		case CHICKEN: wattrset(pwin, COLOR_PAIR(RED_WHITE));    return 'c'; break;
+//		case 3:       wattrset(pwin, COLOR_PAIR(WHITE_BLUE));   return 'p'; break;
+		case AIR:     wstandend(pwin);                          return ' '; break;
 		case FIRE:
 			if (time%2) {
-				if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(RED_YELLOW));
+				wattrset(pwin, COLOR_PAIR(RED_YELLOW));
 				return 'F';
 			} else {
-				if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(YELLOW_RED));
+				wattrset(pwin, COLOR_PAIR(YELLOW_RED));
 				return 'f';
 			}
 		break;
-		case STEEL_HELMET:
-			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(BLACK_WHITE));
+		case IRON_INGOT:
+			wattrset(pwin, COLOR_PAIR(BLACK_WHITE));
+			return 'i';
+		break;
+		case IRON_HELMET:
+			wattrset(pwin, COLOR_PAIR(BLACK_WHITE));
 			return 'h';
 		break;
-		case CHEST:
-			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(BLACK_YELLOW));
-			return 'c';
+		case IRON_CHESTPLATE:
+			wattrset(pwin, COLOR_PAIR(BLACK_WHITE));
+			return 'p';
 		break;
-		case HEAP:
-			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(WHITE_BLACK));
-			return 'h';
+		case IRON_BOOTS:
+			wattrset(pwin, COLOR_PAIR(BLACK_WHITE));
+			return 'b';
 		break;
-		case CLOCK:
-			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(BLUE_YELLOW));
-			return 'c';
+		case IRON_GREAVES:
+			wattrset(pwin, COLOR_PAIR(BLACK_WHITE));
+			return 'g';
 		break;
-		case COMPASS:
-			if (NULL!=pwin) wattrset(pwin, COLOR_PAIR(RED_BLACK));
-			return 'c';
+		case WORKBENCH:
+			wattrset(pwin, COLOR_PAIR(BLACK_YELLOW));
+			return 'w';
 		break;
-		case AIR: if (NULL!=pwin) wstandend(pwin); return ' '; break;
 		default: return '?'; break;
 	}
 }
@@ -520,3 +535,26 @@ switch (id) {
 	case SUN_BIRD:    wattrset(world, COLOR_PAIR(RED_YELLOW));   return 'b'; break;
 	default:          wattrset(world, COLOR_PAIR(WHITE_BLACK));  return '?'; break;
 }}
+
+char *real_name(id) 
+short id; {
+switch (id) {
+	case AIR:             return "Nothing";            break;
+	case IRON_INGOT:      return "Iron ingot";         break;
+	case STONE:           return "Stone";              break;
+	case CHEST:           return "Chest";              break;
+	case WORKBENCH:       return "Workbench";          break;
+	case GRASS:           return "Grass";              break;
+	case CHICKEN:         return "Chicken";            break;
+	case FIRE:            return "Fire";               break;
+	case IRON_HELMET:     return "Iron helmet";        break;
+	case PILE:            return "Pile of something";  break;
+	case CLOCK:           return "Clock";              break;
+	case COMPASS:         return "Compass";            break;
+	case IRON_GREAVES:    return "Iron greaves";       break;
+	case IRON_BOOTS:      return "Iron boots";         break;
+	case IRON_CHESTPLATE: return "Iron chestplate";    break;
+	default:              return "Some unknown thing"; break;
+}
+tolog("realname finish\n");
+}
