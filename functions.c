@@ -1,13 +1,27 @@
-/*Eyecube, sandbox game.
-* Copyright (C) 2011 Alexander Kromm, see README file for details.
-*/
+/*Copyright (C) 2011 Alexander Kromm
+ *
+ *This file is part of Eyecube.
+ *
+ *Eyecube is free software: you can redistribute it and/or modify
+ *it under the terms of the GNU General Public License as published by
+ *the Free Software Foundation, either version 3 of the License, or
+ *(at your option) any later version.
+ *
+ *Eyecube is distributed in the hope that it will be useful,
+ *but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *GNU General Public License for more details.
+ *
+ *You should have received a copy of the GNU General Public License
+ *along with Eyecube.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include "header.h"
 #include <stdlib.h>
 #include <stdio.h>
 
 extern struct something *animalstart, *cheststart, *thingstart, *heapstart, *lightstart,
-                        *workbenchstart;
+                        *workbenchstart, *signstart;
 extern short    xp, yp, zp,
                 view, eye[], pl,
                 earth[][3*WIDTH][HEAVEN+1];
@@ -46,7 +60,7 @@ short id; {
 
 int chestlike(id)
 short id; {
-	if (CHEST==id || PILE==id) return 1;
+	if (CHEST==id || PILE==id || WORKBENCH==id) return 1;
 	else return 0;
 }
 
@@ -93,8 +107,15 @@ int chest_size(id)
 short id; {
 	switch (id) {
 		case CHEST: case PILE: return 30; break;
+		case WORKBENCH: return 10; break;
 		default: return 0; break;
 	}
+}
+
+int minus(id)
+short id; {
+	if (WORKBENCH==id) return 1;
+	else return 0;
 }
 
 int light_radius(x, y, z)
@@ -118,6 +139,7 @@ short x, y, z; {
 		case PILE:      car=heapstart;      break;
 		case LIGHTS:    car=lightstart;     break;
 		case WORKBENCH: car=workbenchstart; break;
+		case SIGN:      car=signstart;      break;
 //		case 't': car=thingstart;  break;
 		default: return NULL; break;
 	}

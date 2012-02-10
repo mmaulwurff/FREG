@@ -1,6 +1,20 @@
-/*Eyecube, sandbox game.
-* Copyright (C) 2011 Alexander Kromm, see README file for details.
-*/
+/*Copyright (C) 2011 Alexander Kromm
+ *
+ *This file is part of Eyecube.
+ *
+ *Eyecube is free software: you can redistribute it and/or modify
+ *it under the terms of the GNU General Public License as published by
+ *the Free Software Foundation, either version 3 of the License, or
+ *(at your option) any later version.
+ *
+ *Eyecube is distributed in the hope that it will be useful,
+ *but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *GNU General Public License for more details.
+ *
+ *You should have received a copy of the GNU General Public License
+ *along with Eyecube.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include "header.h"
 #include <ncurses.h>
@@ -167,6 +181,8 @@ void load() {
 			(void)spawn(41+nx, 41+ny, k, NULL);
 			earth[42+nx][41+ny][k]=WORKBENCH;
 			(void)spawn(42+nx, 41+ny, k, NULL);
+			earth[43+nx][41+ny][k]=SIGN;
+			(void)spawn(43+nx, 41+ny, k, NULL);
 			//
 			earth[45+nx][45+ny][80]=FIRE;
 			(void)spawn(45+nx, 45+ny, 80, NULL);
@@ -264,6 +280,7 @@ void save() {
 				case CHEST:     length=63; break;
 				case PILE:      length=64; break;
 				case WORKBENCH:	length=23; break;
+				case SIGN:      length=6663; break;
 				default:        length= 0; break;
 			}
 			if (length) {

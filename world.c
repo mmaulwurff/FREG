@@ -1,6 +1,20 @@
-/*Eyecube, sandbox game.
-* Copyright (C) 2011 Alexander Kromm, see README file for details.
-*/
+/*Copyright (C) 2011 Alexander Kromm
+ *
+ *This file is part of Eyecube.
+ *
+ *Eyecube is free software: you can redistribute it and/or modify
+ *it under the terms of the GNU General Public License as published by
+ *the Free Software Foundation, either version 3 of the License, or
+ *(at your option) any later version.
+ *
+ *Eyecube is distributed in the hope that it will be useful,
+ *but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *GNU General Public License for more details.
+ *
+ *You should have received a copy of the GNU General Public License
+ *along with Eyecube.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include "header.h"
 #include <stdlib.h>
@@ -21,7 +35,8 @@ struct something *animalstart   =NULL,
                  *thingstart    =NULL,
                  *heapstart     =NULL,
                  *lightstart    =NULL,
-                 *workbenchstart=NULL;
+                 *workbenchstart=NULL,
+                 *signstart     =NULL;
 struct list_to_clear *clear_start=NULL;
 void tolog();
 
@@ -112,12 +127,17 @@ short x, y; {
 		} else if (PILE==earth[xp+x][yp+y][zp] &&
 				chestlike(earth[xp+2*x][yp+2*y][zp])) {
 			struct something *findanimal(),
-					 *push_into=findanimal(xp+2*x, yp+2*y,zp),
-					 *push_from=findanimal(xp+  x, yp+  y,zp);
-			int chest_size();
-			int pour_into();
+					 *push_into=findanimal(xp+2*x, yp+2*y, zp),
+					 *push_from=findanimal(xp+  x, yp+  y, zp);
+			int chest_size(), minus(),
+			    pour_into();
+			fprintf(stderr, "chestsize: %d\nminus: %d\n",
+				chest_size(earth[xp+2*x][yp+2*y][zp]),
+				minus(earth[xp+2*x][yp+2*y][zp]));
 			if (pour_into(push_from->arr, chest_size(earth[xp+x][yp+y][zp]),
-				push_into->arr, chest_size(earth[xp+2*x][yp+2*y][zp]))) {
+					push_into->arr,
+					chest_size(earth[xp+2*x][yp+2*y][zp]),
+					minus(earth[xp+2*x][yp+2*y][zp]))) {
 				void new_clear();
 				earth[xp+x][yp+y][zp]=0;
 				push_from->arr[0]=HEAVEN+1;
@@ -434,6 +454,7 @@ FILE  *file; {
 		case PILE:      start=&heapstart;      length=64; break;
 		case FIRE:      start=&lightstart;     length= 4; break;
 		case WORKBENCH: start=&workbenchstart; length=23; break;
+		case SIGN:      start=&signstart;      length=63; break;
 //		case : start=&thingstart;  length=3;  break;
 		default : return NULL; break;
 	}
@@ -460,6 +481,10 @@ FILE  *file; {
 		case WORKBENCH: {
 //			short i;
 //			for (i=3; i<23; ++i) thing_new->arr[i]=9;
+		} break;
+		case SIGN: {
+			short i;
+			while (thing_new->arr[3+i]="This is a sign, hello player! Eyecube greet you."[i++]);
 		} break;
 		default: break;
 	}
@@ -568,16 +593,18 @@ struct something **chain_start; {
 }
 
 //this pours from things one array to another
-int pour_into(from, from_length, to, to_length)
+int pour_into(from, from_length, to, to_length, min)
 short *from, *to,
-       from_length, to_length; {
+       from_length, to_length,
+       min; {
 	tolog("pour_into start\n");
 	int   stackable();
 	short i, j,
 	      empty_flag=1;
-	for (i=3; i<=from_length+3; ++i) if (from[i]) {
+	fprintf(stderr, "min=%d\n", min);
+	for (i=3; i<from_length+3; ++i) if (from[i]) {
 		if (stackable(from[i]))
-			for (j=3; j<=to_length+3; ++j) {
+			for (j=3; j<to_length+3-min; ++j) {
 				if (0==to[j]) to[j]=from[i];
 				if (to[j]==from[i]) {// && to[j+30]<stack_len) {
 					while (to[j+to_length]<9 && from[i+from_length]) {
@@ -591,7 +618,7 @@ short *from, *to,
 				}
 			}
 		else
-			for (j=3; j<=to_length+3; ++j)
+			for (j=3; j<=to_length+3-min; ++j)
 				if (0==to[j]) {
 					to  [j]=from[i];
 					from[i]=0;

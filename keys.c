@@ -1,6 +1,20 @@
-/*Eyecube, sandbox game.
-* Copyright (C) 2011 Alexander Kromm, see README file for details.
-*/
+/*Copyright (C) 2011 Alexander Kromm
+ *
+ *This file is part of Eyecube.
+ *
+ *Eyecube is free software: you can redistribute it and/or modify
+ *it under the terms of the GNU General Public License as published by
+ *the Free Software Foundation, either version 3 of the License, or
+ *(at your option) any later version.
+ *
+ *Eyecube is distributed in the hope that it will be useful,
+ *but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *GNU General Public License for more details.
+ *
+ *You should have received a copy of the GNU General Public License
+ *along with Eyecube.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include "header.h"
 #include <ncurses.h>
@@ -389,9 +403,18 @@ int key; {
 		break;	
 		case '?': { //ask "what's this?"
 			void focus();
+			char *real_name();
 			short wx, wy, wz;
 			focus(&wx, &wy, &wz);
-			notc=30+earth[wx][wy][wz];
+			if (SIGN==earth[wx][wy][wz]) {
+				struct something *findanimal(),
+				                 *sign;
+				char *line;
+				short i;
+				sign=findanimal(wx, wy, wz);
+				while (line[i]=sign->arr[3+i++]);
+				notify(line);
+			} else notify(real_name(earth[wx][wy][wz]));
 			mapflag=0;
 		} break;
 		case '0': case '1': case '2': case '3': case '4':
@@ -470,12 +493,7 @@ int key; {
 			case 12: notify("No place to throw it.",        0); break;
 			case 13: notify("You move a block.",            0); break;
 			case 14: notify("Nothing to throw away.",       0); break;
-			case 31: notify("Grass or leaves",              0); break;
-			case 32: notify("Stone",                        0); break;
-			case 33: notify("It is somebody!",              0); break;
-			case 34: notify("Chiken",                       0); break;
-			case 35: notify("Careful! Fire",                0); break;
-			case 36: notify("Weapon",            cloth[4].num); break;
+			case 15: /* do nothing */ break;
 			case  8: //no break
 			default: notify("?",                            0); break;
 		}

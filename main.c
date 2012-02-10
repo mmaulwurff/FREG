@@ -1,6 +1,18 @@
-/*Eyecube, sandbox game.
-* Copyright (C) 2011 Alexander Kromm, see README file for details.
-*/
+/*This file is part of Eyecube.
+ *
+ *Eyecube is free software: you can redistribute it and/or modify
+ *it under the terms of the GNU General Public License as published by
+ *the Free Software Foundation, either version 3 of the License, or
+ *(at your option) any later version.
+ *
+ *Eyecube is distributed in the hope that it will be useful,
+ *but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *GNU General Public License for more details.
+ *
+ *You should have received a copy of the GNU General Public License
+ *along with Eyecube. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include "header.h"
 #include <pthread.h>
@@ -31,20 +43,16 @@ void *mech(void *vptr_args) {
 
 void main() {
 	tolog("main start\n");
-	printf("\nEyecube\nCopyright (C) 2011 Alexander Kromm\nThis program comes with ABSOLUTELY NO WARRANTY.\nThis is free software, and you are welcome to redistribute it\nunder certain conditions; see README for details.\n\n");
-	void keytogame(),
-	     keytoinv(),
-	     eraseanimals(),
-	     loadgame(),
-	     map(),
-	     sounds_print(),
-	     notify(),
-	     *mech();
+	void      keytogame(), keytoinv(),
+	          map(), notify(), sounds_print(),
+	          loadgame(),
+	          eraseanimals(),
+	          *mech();
 	int       ch;
 	pthread_t mechthread;
+	printf("\nEyecube\nCopyright (C) 2011 Alexander Kromm\nThis program comes with ABSOLUTELY NO WARRANTY.\nThis is free software, and you are welcome to redistribute it\nunder certain conditions; see README for details.\n\n");
 	(void)set_escdelay(10);
 //	signal='w';
-	//start parallel thread
 	(void)initscr();
 	(void)start_color();
 //	(void)cbreak();
@@ -75,6 +83,7 @@ void main() {
 	sound_window=newwin(5,   8, 24, 0);
 	(void)refresh();
 	loadgame();
+	//start parallel thread
 	(void)pthread_create(&mechthread, NULL, mech, NULL);
 	map();
 	sounds_print();

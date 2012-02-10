@@ -1,19 +1,18 @@
-Eyecube is a sandbox game for Linux terminals.
+Eyecube is a sandbox game.
 
-It uses text graphics.
-It is written in C with ncurses and pthread libraries.
-
-It is not even an alpha version for now, and there is lot of work to do.
-This program is an interface experiment.
+Earsy version will be rewritten with help of Qt.
+Now universal server and client for terminals (with ncurses) are developed.
 
 Some screenshots are available here: https://picasaweb.google.com/mmaulwurff/Eyecube?authuser=0&feat=directlink
 
 Advices are welcome.
 
-i386 version might be older than one for amd64.
 
-Run notes:
-directory 'map' should exist in directory with executable
+
+Early Eyecube (C):
+
+Some keys (',' instead of 'w', 'o' intstead of 's', 'e' intstead of 'd')
+are set for Dvorak keyboard.
 
 Compile notes:
 (libncurses5-dev should be installed)
@@ -23,17 +22,22 @@ Debug notes:
 ./Eyecube-*.bin 2>log
 
 Items:
-0. Air: passable, transparent. Default block.
-1. Grass
-2. Stone
-3. Reserved for player. Isn't used.
-4. Chicken: living walking chiken. Makes sounds. Burns in a fire(5).
-5. Fire. Burns things as chickens(4) and heaps(8).
-6. Steel helmet: unstackable. Used as a helmet.
-7. Chest. Can contain up to 30 items. Collects items falling on it.
-8. Heap. Can contain up to 30 items. Collects items falling on it. Dissapears after 24 game hours.
-9. Clock: unstackable. If there is a clock in an inventory, exact time is shown instead of part of a day.
-10.Compass: unstackable. If there is a compass in an inventory, direction is shown.
+ - Air: passable, transparent. Default block.
+ - Grass
+ - Stone
+ - Chicken: walking chiken. Makes sounds. Burns in a fire.
+ - Fire. Burns things as chickens and piles. Dissapears in one hour.
+ - Chest. Can contain up to 30 items. Collects items falling on it.
+ - Pile. Can contain up to 30 items. Collects items falling on it.
+   Dissapears after 24 game hours.
+ - Clock: unstackable. If there is a clock in an inventory, exact time is shown instead
+   of part of a day.
+ - Compass: unstackable. If there is a compass in an inventory, direction is shown.
+ - Iron ingot: iron armor (helmet, chestplate, greaves, boots) can be crafted from it.
+ - Iron helmet: unstackable. Used as a helmet. Can be crafted from 5 iron ingots.
+ - Iron boots: unstackable. Can be crafted from 4 iron ingots.
+ - Iron greaves: unstackable. Can be crafted from 7 iron ingots.
+ - Iron chestplate: unstackable. Can be crafted from 8 iron ingots.
 
 Copyright (C) 2011 Alexander Kromm (mmaulwurff@gmail.com)
 Source code is available at GitHub: https://github.com/mmaulwurff/Eyecube

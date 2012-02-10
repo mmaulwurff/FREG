@@ -1,6 +1,20 @@
-/*Eyecube, sandbox game.
-* Copyright (C) 2011 Alexander Kromm, see README file for details.
-*/
+/*Copyright (C) 2011 Alexander Kromm
+ *
+ *This file is part of Eyecube.
+ *
+ *Eyecube is free software: you can redistribute it and/or modify
+ *it under the terms of the GNU General Public License as published by
+ *the Free Software Foundation, either version 3 of the License, or
+ *(at your option) any later version.
+ *
+ *Eyecube is distributed in the hope that it will be useful,
+ *but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *GNU General Public License for more details.
+ *
+ *You should have received a copy of the GNU General Public License
+ *along with Eyecube.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include "header.h"
 #include <ncurses.h>
@@ -20,10 +34,14 @@ void tolog();
 void notify(not, noc)
 char not[];
 short noc; {
+	char  line[3][30];
+	short i=0;
 	tolog("notify start\n");
 //:	setlocale(LC_ALL, "ru_RU.utf8");
+//	while (i<30 && (line[i/3][i%10]=not[i++]));
 	(void)wclear(textwin);
 	wstandend(textwin);
+//	for (i=0; i<3; ++i) mvwaddstr(textwin, i+1, 1, line[i]);
 	mvwaddstr(textwin, 1, 1, not);
 	if (noc) wprintw(textwin, "%d", noc);
 //	(void)mvwprintw(textwin, 2, 1, "x: %d", xp);
@@ -474,6 +492,7 @@ WINDOW *pwin; {
 		case COMPASS: wattrset(pwin, COLOR_PAIR(RED_BLACK));    return 'c'; break;
 		case CHICKEN: wattrset(pwin, COLOR_PAIR(RED_WHITE));    return 'c'; break;
 //		case 3:       wattrset(pwin, COLOR_PAIR(WHITE_BLUE));   return 'p'; break;
+		case SIGN:    wattrset(pwin, COLOR_PAIR(BLACK_YELLOW)); return 's'; break;
 		case AIR:     wstandend(pwin);                          return ' '; break;
 		case FIRE:
 			if (time%2) {
@@ -494,7 +513,7 @@ WINDOW *pwin; {
 		break;
 		case IRON_CHESTPLATE:
 			wattrset(pwin, COLOR_PAIR(BLACK_WHITE));
-			return 'p';
+			return 'c';
 		break;
 		case IRON_BOOTS:
 			wattrset(pwin, COLOR_PAIR(BLACK_WHITE));
@@ -554,6 +573,7 @@ switch (id) {
 	case IRON_GREAVES:    return "Iron greaves";       break;
 	case IRON_BOOTS:      return "Iron boots";         break;
 	case IRON_CHESTPLATE: return "Iron chestplate";    break;
+	case SIGN:            return "Sign";               break;
 	default:              return "Some unknown thing"; break;
 }
 tolog("realname finish\n");
