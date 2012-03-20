@@ -1,15 +1,14 @@
 Eyecube is a sandbox game.
 
-Earsy version will be rewritten with help of Qt.
-Now universal server and client for terminals (with ncurses) are developed.
+Early version will be rewritten in C++.
+Now server and client for terminals (with ncurses) are developed.
 
 Some screenshots are available here: https://picasaweb.google.com/mmaulwurff/Eyecube?authuser=0&feat=directlink
 
 Advices are welcome.
 
 
-
-Early Eyecube (C):
+Early Eyecube:
 
 Some keys (',' instead of 'w', 'o' intstead of 's', 'e' intstead of 'd')
 are set for Dvorak keyboard.

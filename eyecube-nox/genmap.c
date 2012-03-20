@@ -1,32 +1,27 @@
 //generate simple map without attributes and physics
 #include <stdio.h>
+#include "subs.h"
 
-#define AIR 0
-#define STONE 1
-#define SOIL 2
+#define WIDTH 20
+#define HEIGHT 100
 
-char name[99]="map/";
-
-char * makename(int x, int y) {
-	short i=4+sprintf(&name[4], "%d", x);
-	name[i++]='x';
-	i+=sprintf(&name[i], "%d", y);
-	name[i]='\0';
-	return name;
+void gen_shred(int i, int j) { //this function will be used in server
+	char name[99]; //99?
+	sprintf(name, "map/%dx%d\0", i, j);
+	FILE * out=fopen(name, "w");
+	fprintf(out, "This file is an eyecube shred.\nWidth:%d\nHeight:%d\nType:normal\n", WIDTH, HEIGHT);
+	unsigned short x, y, z;
+	for (x=0; x<WIDTH; ++x)
+	for (y=0; y<WIDTH; ++y) {
+		for (z=0; z<HEIGHT/4; ++z) fputc(STONE, out);
+		for (   ; z<HEIGHT/2; ++z) fputc(SOIL, out);
+		for (   ; z<HEIGHT;   ++z) fputc(AIR, out);
+	}
+	fclose(out);
 }
 
 main() {
-	FILE * out;
-	int i, j, x, y, z;
+	int i, j;
 	for (i=-10; i<=10; ++i)
-	for (j=-10; j<=10; ++j) {
-		out=fopen(makename(i, j), "w");
-		for (x=0; x<20; ++x)
-		for (y=0; y<20; ++y) {
-			for (z=0; z<110; ++z) fputc(STONE, out);
-			for (   ; z<120; ++z) fputc(SOIL, out);
-			for (   ; z<200; ++z) fputc(AIR, out);
-		}
-		fclose(out);
-	}
+	for (j=-10; j<=10; ++j) gen_shred(i, j);
 }
