@@ -139,6 +139,9 @@ inline color_pairs color(subs sub) {
 		default:    return WHITE_BLACK;
 	}
 };
+//there isn't the only way for light from one point to another
+//this finds one of them, and it is not the straight line.
+//it works fast
 
 class player;
 class screen;
@@ -148,6 +151,8 @@ class world { //world without physics
 	subs blocks[shred_width*3][shred_width*3][height];
 	friend void print_env(WINDOW *, const player &, const world &, const screen &);
 	public:
+	friend int visible2x3(short, short, short, short, short, short, const world &);
+	friend int visible3(short, short, short, short, short, short, const world &);
 	world() {
 		//TODO connect, get map, rewrite all costructor
 		time=0;
@@ -159,6 +164,9 @@ class world { //world without physics
 			for (   ; k<height;   ++k) blocks[i][j][k]=AIR;
 		}
 		blocks[shred_width+10][shred_width+7][height/2]=STONE;
+		blocks[shred_width+15][shred_width+9][height/2]=STONE;
+		blocks[shred_width+9][shred_width+9][height/2]=STONE;
+		blocks[shred_width+15][shred_width+17][height/2]=STONE;
 	};
 	void proc_key(int ch) {};
 };
@@ -198,7 +206,7 @@ class screen {
 		pocket_win     =newwin( 1, 44, 23,  0);
 		text_win       =newwin( 5, 36, 24,  8);
 		sound_win      =newwin( 5,  8, 24,  0);
-		right_view=VIEW_NORTH;
+		right_view=VIEW_EAST;
 		left_view=VIEW_EARTH;
 		refresh();
 	}
@@ -251,6 +259,33 @@ class player {
 	};
 };
 
+int visible3(short x, short y, short z,
+             short xtarget, short ytarget, short ztarget,
+	     const world & W) {
+	if (x==xtarget && y==ytarget && z==ztarget) return 1;
+	else if (!transparent(W.blocks[x][y][z])) return 0;
+	else {
+		if (x!=xtarget) x+=(xtarget>x) ? 1 : -1;
+		if (y!=ytarget) y+=(ytarget>y) ? 1 : -1;
+		if (z!=ztarget) z+=(ztarget>z) ? 1 : -1;
+		return visible3(x, y, z, xtarget, ytarget, ztarget, W);
+	}
+}
+
+int visible2x3(short x1, short y1, short z1,
+               short x2, short y2, short z2,
+	       const world & W) {
+	short savecor;
+	if (visible3(x1, y1, z1, x2, y2, z2, W)) return 1;
+	else if ((x2!=x1 && transparent(W.blocks[x2+(savecor=(x2>x1) ? (-1) : 1)][y2][z2])
+		&& visible3(x1, y1, z1, x2+savecor, y2, z2, W)) ||
+		(y2!=y1 && transparent(W.blocks[x2][y2+(savecor=(y2>y1) ? (-1) : 1)][z2])
+		&& visible3(x1, y1, z1, x2, y2+savecor, z2, W)) ||
+		(z2!=z1 && transparent(W.blocks[x2][y2][z2+(savecor=(z2>z1) ? (-1) : 1)])
+		&& visible3(x1, y1, z1, x2, y2, z2+savecor, W))) return 1;
+	else return 0;
+}
+
 void print_env(WINDOW * print_win, const player & P, const world & W, const screen & S) {
 	short x, y, z,
 	      * i, * j, * k,
@@ -272,43 +307,80 @@ void print_env(WINDOW * print_win, const player & P, const world & W, const scre
 			kbound=-1;
 		}
 	} else {
+		j=&(z=P.z+19);
+		jdir=-1;
 		switch (S.right_view) {
 			case VIEW_NORTH:
 				i=&(x=P.x-10);
 				idir=1;
-				j=&(z=P.z+19);
-				jdir=-1;
 				coor=P.y;
 				k=&(y=P.y-1);
 				kdir=-1;
 				kbound=-1;
+			break;
+			case VIEW_SOUTH:
+				i=&(x=P.x+10);
+				idir=-1;
+				coor=P.y;
+				k=&(y=P.y+1);
+				kdir=1;
+				kbound=shred_width*3;
+			break;
+			case VIEW_WEST:
+				i=&(y=P.y+10);
+				idir=-1;
+				coor=P.x;
+				k=&(x=P.x-1);
+				kdir=-1;
+				kbound=-1;
+			break;
+			case VIEW_EAST:
+				i=&(y=P.y-10);
+				idir=1;
+				coor=P.x;
+				k=&(x=P.x+1);
+				kdir=1;
+				kbound=shred_width*3;
 			break;
 		}
 	}
 	unsigned short scrx, scry, ksave=*k, jsave=*j;
 	for (scrx=1;           scrx<=screen_width*2-1; scrx+=2, *i+=idir)
 	for (scry=1, *j=jsave; scry<=screen_width;   ++scry,    *j+=jdir) {
-		for (*k=ksave ; *k!=kbound; *k+=kdir) {
+		for (*k=ksave ; *k!=kbound; *k+=kdir)
 			if ( !transparent(W.blocks[x][y][z]) ) {
-				char ch;
-				if (S.world_left_win==print_win) {//set second character
-					if (*k<coor-2) ch='!';
-					else if (*k==coor-2) ch='_';
-					else if (*k==coor-1) ch=' ';
-					else if (*k<coor+9) ch='0'+*k-coor+1;
-					else ch='+';
+				if ( visible2x3(P.x, P.y, P.z, x, y, z, W) ) {
+					char ch;
+					//set second character
+					if (S.world_left_win==print_win) {
+						if (*k<coor-2) ch='!';
+						else if (*k==coor-2) ch='_';
+						else if (*k==coor-1) ch=' ';
+						else if (*k<coor+9) ch='0'+*k-coor+1;
+						else ch='+';
+					} else {
+						if (*k==coor+kdir) ch=' ';
+						else if (kdir*(*k-coor)<11)
+							ch='0'+kdir*(*k-coor)-1;
+						else ch='+';
+					}
+					wattrset(print_win,
+						COLOR_PAIR(color(W.blocks[x][y][z])));
+					mvwprintw(print_win, scry, scrx, "%c%c",
+						name(W.blocks[x][y][z]), ch);
 				} else {
-					if (*k==coor+kdir) ch=' ';
-					else if (kdir*(*k-coor)<11) ch='0'+kdir*(*k-coor);
-					else ch='+';
+					wstandend(print_win);
+					mvwprintw(print_win, scry, scrx, "  ");
 				}
-				wattrset(print_win, COLOR_PAIR(color(W.blocks[x][y][z])));
-				mvwprintw(print_win, scry, scrx, "%c%c",
-					name(W.blocks[x][y][z]), ch);
 				break;
 			}
-			//print background
-		}
+		if (*k==kbound)
+			if (S.world_left_win==print_win && S.left_view==VIEW_SKY) {
+				//print sky
+			} else {
+				wattrset(print_win, COLOR_PAIR(BLACK_WHITE));
+				mvwprintw(print_win, scry, scrx, "  ");
+			}
 	}
 	if (S.world_left_win==print_win) {//print player
 		char ch;
@@ -321,6 +393,12 @@ void print_env(WINDOW * print_win, const player & P, const world & W, const scre
 		}
 		wattrset(print_win, COLOR_PAIR(WHITE_BLUE));
 		mvwprintw(print_win, screen_width/2+1, screen_width, "@%c", ch);
+	} else {//print player locating arrows
+		wstandend(print_win);
+		mvwprintw(print_win, screen_width-1,            0, ">");
+		mvwprintw(print_win, screen_width-1, screen_width*2+1, "<");
+		mvwprintw(print_win, screen_width+1,   screen_width, "^^");
+
 	}
 }
 
