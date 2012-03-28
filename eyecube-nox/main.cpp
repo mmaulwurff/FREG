@@ -1,4 +1,4 @@
-/*
+	/*
 	*This file is part of Eyecube.
 	*
 	*Eyecube is free software: you can redistribute it and/or modify
@@ -13,34 +13,13 @@
 	*
 	*You should have received a copy of the GNU General Public License
 	*along with Eyecube. If not, see <http://www.gnu.org/licenses/>.
-*/
+	*/
 
 #include <ncurses.h>
 #include <unistd.h>
 
 #define DEBUG 1
 
-enum subs {
-	AIR,
-	STONE,
-	SOIL
-};
-enum right_views {
-	VIEW_NORTH,
-	VIEW_EAST,
-	VIEW_SOUTH,
-	VIEW_WEST,
-	VIEW_MENU,
-	VIEW_INVENTORY,
-	VIEW_CHEST,
-	VIEW_WORKBENCH,
-	VIEW_FURNACE
-};
-enum left_views {
-	VIEW_SKY,
-	VIEW_EARTH,
-	VIEW_MIDDLE
-};
 enum color_pairs {
 	BLACK_BLACK=1,
 	BLACK_RED,
@@ -119,40 +98,74 @@ const int shred_width=20;//TODO make variables
 const int height=100;
 const int screen_width=21;
 
-inline int name(subs sub) {
-	switch(sub) {
-		case SOIL : return '|';
-		case STONE: return '#';
-		default   : return '?';
-	}
+class player {
+	long planet_x, planet_y; //current shred coordinates
+	//unsigned health : 7; //max 127, but 100 will be used for normal health and 120 for increased health
+	//unsigned regen : 2; //regeneration
+	public:
+	unsigned short x, y, z; 
+	player() {
+		planet_x=0;
+		planet_y=0;
+		x=30;
+		y=30;
+		z=height/2;
+	};
 };
-inline int transparent(subs sub) {
-	switch(sub) {
-		case AIR: return 1;
-		default : return 0;
-	}
-};
-inline color_pairs color(subs sub) {
-	switch (sub) {
-		case SOIL:  return BLACK_GREEN;
-		case STONE: return BLACK_WHITE;
-		default:    return WHITE_BLACK;
-	}
-};
-//there isn't the only way for light from one point to another
-//this finds one of them, and it is not the straight line.
-//it works fast
-
-class player;
-class screen;
 
 class world { //world without physics
 	unsigned long time; //global game world time
-	subs blocks[shred_width*3][shred_width*3][height];
-	friend void print_env(WINDOW *, const player &, const world &, const screen &);
+	enum subs {
+		AIR,
+		STONE,
+		SOIL
+	} blocks[shred_width*3][shred_width*3][height];
+	//there isn't the only way for light from one point to another
+	//this finds one of them, and it is not the straight line.
+	//it works fast
+	int visible3(short x, short y, short z,
+	             short xtarget, short ytarget, short ztarget) {
+		if (x==xtarget && y==ytarget && z==ztarget) return 1;
+		else if (!transparent(x, y, z)) return 0;
+		else {
+			if (x!=xtarget) x+=(xtarget>x) ? 1 : -1;
+			if (y!=ytarget) y+=(ytarget>y) ? 1 : -1;
+			if (z!=ztarget) z+=(ztarget>z) ? 1 : -1;
+			return visible3(x, y, z, xtarget, ytarget, ztarget);
+		}
+	};
 	public:
-	friend int visible2x3(short, short, short, short, short, short, const world &);
-	friend int visible3(short, short, short, short, short, short, const world &);
+	int visible2x3(short x1, short y1, short z1, short x2, short y2, short z2) {
+		short savecor;
+		if (visible3(x1, y1, z1, x2, y2, z2)) return 1;
+		else if ((x2!=x1 && transparent(x2+(savecor=(x2>x1) ? (-1) : 1), y2, z2)
+			&& visible3(x1, y1, z1, x2+savecor, y2, z2)) ||
+			(y2!=y1 && transparent(x2, y2+(savecor=(y2>y1) ? (-1) : 1), z2)
+			&& visible3(x1, y1, z1, x2, y2+savecor, z2)) ||
+			(z2!=z1 && transparent(x2, y2, z2+(savecor=(z2>z1) ? (-1) : 1))
+			&& visible3(x1, y1, z1, x2, y2, z2+savecor))) return 1;
+		else return 0;
+	};
+	inline int name(short x, short y, short z) {
+		switch(blocks[x][y][z]) {
+			case SOIL : return '|';
+			case STONE: return '#';
+			default   : return '?';
+		}
+	};
+	inline int transparent(short x, short y, short z) {
+		switch(blocks[x][y][z]) {
+			case AIR: return 1;
+			default : return 0;
+		}
+	};
+	inline color_pairs color(short x, short y, short z) {
+		switch (blocks[x][y][z]) {
+			case SOIL:  return BLACK_GREEN;
+			case STONE: return BLACK_WHITE;
+			default:    return WHITE_BLACK;
+		}
+	};
 	world() {
 		//TODO connect, get map, rewrite all costructor
 		time=0;
@@ -172,10 +185,138 @@ class world { //world without physics
 };
 
 class screen {
-	right_views right_view;
-	left_views left_view;
+	enum right_views {
+		VIEW_NORTH,
+		VIEW_EAST,
+		VIEW_SOUTH,
+		VIEW_WEST,
+		VIEW_MENU,
+		VIEW_INVENTORY,
+		VIEW_CHEST,
+		VIEW_WORKBENCH,
+		VIEW_FURNACE
+	} right_view;
+	enum left_views {
+		VIEW_SKY,
+		VIEW_EARTH,
+		VIEW_MIDDLE
+	} left_view;
 	WINDOW * world_left_win, * world_right_win, * pocket_win, * text_win, * sound_win;
-	friend void print_env(WINDOW *, const player &, const world &, const screen & S);
+	void print_env(WINDOW * print_win, const player & P, world & W) {
+		short x, y, z,
+		      * i, * j, * k,
+		      idir, jdir, kdir,
+		      kbound, coor;
+		if (world_left_win==print_win) {//set variables
+			i=&(x=P.x-10);
+			j=&(y=P.y-10);
+			idir=1;
+			jdir=1;
+			coor=P.z;
+			if (VIEW_SKY==left_view) {
+				k=&(z=P.z+1);
+				kdir=1;
+				kbound=height;
+			} else {
+				k=&(z=height-1);
+				kdir=-1;
+				kbound=-1;
+			}
+		} else {
+			j=&(z=P.z+19);
+			jdir=-1;
+			switch (right_view) {
+				case VIEW_NORTH:
+					i=&(x=P.x-10);
+					idir=1;
+					coor=P.y;
+					k=&(y=P.y-1);
+					kdir=-1;
+					kbound=-1;
+				break;
+				case VIEW_SOUTH:
+					i=&(x=P.x+10);
+					idir=-1;
+					coor=P.y;
+					k=&(y=P.y+1);
+					kdir=1;
+					kbound=shred_width*3;
+				break;
+				case VIEW_WEST:
+					i=&(y=P.y+10);
+					idir=-1;
+					coor=P.x;
+					k=&(x=P.x-1);
+					kdir=-1;
+					kbound=-1;
+				break;
+				case VIEW_EAST:
+					i=&(y=P.y-10);
+					idir=1;
+					coor=P.x;
+					k=&(x=P.x+1);
+					kdir=1;
+					kbound=shred_width*3;
+				break;
+			}
+		}
+		unsigned short scrx, scry, ksave=*k, jsave=*j;
+		for (scrx=1;           scrx<=screen_width*2-1; scrx+=2, *i+=idir)
+		for (scry=1, *j=jsave; scry<=screen_width;   ++scry,    *j+=jdir) {
+			for (*k=ksave ; *k!=kbound; *k+=kdir)
+				if ( !W.transparent(x, y, z) ) {
+					if ( W.visible2x3(P.x, P.y, P.z, x, y, z) ) {
+						char ch;
+						//set second character
+						if (world_left_win==print_win) {
+							if (*k<coor-2) ch='!';
+							else if (*k==coor-2) ch='_';
+							else if (*k==coor-1) ch=' ';
+							else if (*k<coor+9)
+								ch='0'+*k-coor+1;
+							else ch='+';
+						} else {
+							if (*k==coor+kdir) ch=' ';
+							else if (kdir*(*k-coor)<11)
+								ch='0'+kdir*(*k-coor)-1;
+							else ch='+';
+						}
+						wattrset(print_win,
+							COLOR_PAIR(W.color(x, y, z)));
+						mvwprintw(print_win, scry, scrx, "%c%c",
+							W.name(x, y, z), ch);
+					} else {
+						wstandend(print_win);
+						mvwprintw(print_win, scry, scrx, "  ");
+					}
+					break;
+				}
+			if (*k==kbound)
+				if (world_left_win==print_win && left_view==VIEW_SKY) {
+					//print sky
+				} else {
+					wattrset(print_win, COLOR_PAIR(BLACK_WHITE));
+					mvwprintw(print_win, scry, scrx, "  ");
+				}
+		}
+		if (world_left_win==print_win) {//print player
+			char ch;
+			switch (right_view) {
+				case VIEW_NORTH: ch='^'; break;
+				case VIEW_SOUTH: ch='v'; break;
+				case VIEW_WEST:  ch='<'; break;
+				case VIEW_EAST:  ch='>'; break;
+				default: ch=' '; break;
+			}
+			wattrset(print_win, COLOR_PAIR(WHITE_BLUE));
+			mvwprintw(print_win, screen_width/2+1, screen_width, "@%c", ch);
+		} else {//print player locating arrows
+			wstandend(print_win);
+			mvwprintw(print_win, screen_width-1,            0, ">");
+			mvwprintw(print_win, screen_width-1, screen_width*2+1, "<");
+			mvwprintw(print_win, screen_width+1,   screen_width, "^^");	
+		}
+	};
 	public:
 	screen() {
 		set_escdelay(10);
@@ -210,7 +351,7 @@ class screen {
 		left_view=VIEW_EARTH;
 		refresh();
 	}
-	void map(const player & P, const world & W, const screen & S) {
+	void map(const player & P, world & W, const screen & S) {
 		wclear(world_left_win);
 		wclear(world_right_win);
 		//
@@ -220,8 +361,8 @@ class screen {
 		box(world_left_win,  0, 0);
 		box(world_right_win, 0, 0);
 		//
-		print_env(world_left_win,  P, W, S);
-		print_env(world_right_win, P, W, S);
+		print_env(world_left_win,  P, W);
+		print_env(world_right_win, P, W);
 		//
 		wrefresh(world_left_win);
 		wrefresh(world_right_win);
@@ -242,165 +383,6 @@ class screen {
 		endwin();
 	}
 };
-
-class player {
-	long planet_x, planet_y; //current shred coordinates
-	unsigned short x, y, z; 
-	//unsigned health : 7; //max 127, but 100 will be used for normal health and 120 for increased health
-	//unsigned regen : 2; //regeneration
-	friend void print_env(WINDOW *, const player &, const world &, const screen &);
-	public:
-	player() {
-		planet_x=0;
-		planet_y=0;
-		x=30;
-		y=30;
-		z=height/2;
-	};
-};
-
-int visible3(short x, short y, short z,
-             short xtarget, short ytarget, short ztarget,
-	     const world & W) {
-	if (x==xtarget && y==ytarget && z==ztarget) return 1;
-	else if (!transparent(W.blocks[x][y][z])) return 0;
-	else {
-		if (x!=xtarget) x+=(xtarget>x) ? 1 : -1;
-		if (y!=ytarget) y+=(ytarget>y) ? 1 : -1;
-		if (z!=ztarget) z+=(ztarget>z) ? 1 : -1;
-		return visible3(x, y, z, xtarget, ytarget, ztarget, W);
-	}
-}
-
-int visible2x3(short x1, short y1, short z1,
-               short x2, short y2, short z2,
-	       const world & W) {
-	short savecor;
-	if (visible3(x1, y1, z1, x2, y2, z2, W)) return 1;
-	else if ((x2!=x1 && transparent(W.blocks[x2+(savecor=(x2>x1) ? (-1) : 1)][y2][z2])
-		&& visible3(x1, y1, z1, x2+savecor, y2, z2, W)) ||
-		(y2!=y1 && transparent(W.blocks[x2][y2+(savecor=(y2>y1) ? (-1) : 1)][z2])
-		&& visible3(x1, y1, z1, x2, y2+savecor, z2, W)) ||
-		(z2!=z1 && transparent(W.blocks[x2][y2][z2+(savecor=(z2>z1) ? (-1) : 1)])
-		&& visible3(x1, y1, z1, x2, y2, z2+savecor, W))) return 1;
-	else return 0;
-}
-
-void print_env(WINDOW * print_win, const player & P, const world & W, const screen & S) {
-	short x, y, z,
-	      * i, * j, * k,
-	      idir, jdir, kdir,
-	      kbound, coor;
-	if (S.world_left_win==print_win) {//set variables
-		i=&(x=P.x-10);
-		j=&(y=P.y-10);
-		idir=1;
-		jdir=1;
-		coor=P.z;
-		if (VIEW_SKY==S.left_view) {
-			k=&(z=P.z+1);
-			kdir=1;
-			kbound=height;
-		} else {
-			k=&(z=height-1);
-			kdir=-1;
-			kbound=-1;
-		}
-	} else {
-		j=&(z=P.z+19);
-		jdir=-1;
-		switch (S.right_view) {
-			case VIEW_NORTH:
-				i=&(x=P.x-10);
-				idir=1;
-				coor=P.y;
-				k=&(y=P.y-1);
-				kdir=-1;
-				kbound=-1;
-			break;
-			case VIEW_SOUTH:
-				i=&(x=P.x+10);
-				idir=-1;
-				coor=P.y;
-				k=&(y=P.y+1);
-				kdir=1;
-				kbound=shred_width*3;
-			break;
-			case VIEW_WEST:
-				i=&(y=P.y+10);
-				idir=-1;
-				coor=P.x;
-				k=&(x=P.x-1);
-				kdir=-1;
-				kbound=-1;
-			break;
-			case VIEW_EAST:
-				i=&(y=P.y-10);
-				idir=1;
-				coor=P.x;
-				k=&(x=P.x+1);
-				kdir=1;
-				kbound=shred_width*3;
-			break;
-		}
-	}
-	unsigned short scrx, scry, ksave=*k, jsave=*j;
-	for (scrx=1;           scrx<=screen_width*2-1; scrx+=2, *i+=idir)
-	for (scry=1, *j=jsave; scry<=screen_width;   ++scry,    *j+=jdir) {
-		for (*k=ksave ; *k!=kbound; *k+=kdir)
-			if ( !transparent(W.blocks[x][y][z]) ) {
-				if ( visible2x3(P.x, P.y, P.z, x, y, z, W) ) {
-					char ch;
-					//set second character
-					if (S.world_left_win==print_win) {
-						if (*k<coor-2) ch='!';
-						else if (*k==coor-2) ch='_';
-						else if (*k==coor-1) ch=' ';
-						else if (*k<coor+9) ch='0'+*k-coor+1;
-						else ch='+';
-					} else {
-						if (*k==coor+kdir) ch=' ';
-						else if (kdir*(*k-coor)<11)
-							ch='0'+kdir*(*k-coor)-1;
-						else ch='+';
-					}
-					wattrset(print_win,
-						COLOR_PAIR(color(W.blocks[x][y][z])));
-					mvwprintw(print_win, scry, scrx, "%c%c",
-						name(W.blocks[x][y][z]), ch);
-				} else {
-					wstandend(print_win);
-					mvwprintw(print_win, scry, scrx, "  ");
-				}
-				break;
-			}
-		if (*k==kbound)
-			if (S.world_left_win==print_win && S.left_view==VIEW_SKY) {
-				//print sky
-			} else {
-				wattrset(print_win, COLOR_PAIR(BLACK_WHITE));
-				mvwprintw(print_win, scry, scrx, "  ");
-			}
-	}
-	if (S.world_left_win==print_win) {//print player
-		char ch;
-		switch (S.right_view) {
-			case VIEW_NORTH: ch='^'; break;
-			case VIEW_SOUTH: ch='v'; break;
-			case VIEW_WEST:  ch='<'; break;
-			case VIEW_EAST:  ch='>'; break;
-			default: ch=' '; break;
-		}
-		wattrset(print_win, COLOR_PAIR(WHITE_BLUE));
-		mvwprintw(print_win, screen_width/2+1, screen_width, "@%c", ch);
-	} else {//print player locating arrows
-		wstandend(print_win);
-		mvwprintw(print_win, screen_width-1,            0, ">");
-		mvwprintw(print_win, screen_width-1, screen_width*2+1, "<");
-		mvwprintw(print_win, screen_width+1,   screen_width, "^^");
-
-	}
-}
 
 int main(int argc, char *argv[]) {
 	player mole;
