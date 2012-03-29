@@ -93,10 +93,48 @@ enum color_pairs {
 	WHITE_CYAN,
 	WHITE_WHITE,
 };
+enum weathers {
+	CLEAR,
+	RAIN,
+	SNOW,
+	HAIL,
+	FROGS
+};
 
 const int shred_width=20;//TODO make variables
 const int height=100;
 const int screen_width=21;
+const char skymap[screen_width][screen_width+1]={
+	"   ..  .. .      ..  ",
+	"       .        .    ",
+	"   .     .   .   .   ",
+	" ..     .   .    .  .",
+	"     . . .     . ..  ",
+	" .. .  .    .    .   ",
+	" .              .    ",
+	"   .          .      ",
+	"     .   ..    .     ",
+	".        .      ..   ",
+	" .       .       .   ",
+	"                     ",
+	" .      .   .     .  ",
+	"       ...  .        ",
+	"      .     .   .    ",
+	".  ....       ..   ..",
+	"          .        . ",
+	"   .    ..  . .    ..",
+	"  .      .           ",
+	"              .     .",
+	".      .   ...  .   ."
+};
+const int prec_prob=20;
+
+int random_prob(short prob) {
+	FILE *file=fopen("/dev/urandom", "rb");
+	char c=fgetc(file);
+	fclose(file);
+	return (128+c<prob*2.55) ? 1 : 0;
+}
 
 class player {
 	long planet_x, planet_y; //current shred coordinates
@@ -114,7 +152,6 @@ class player {
 };
 
 class world { //world without physics
-	unsigned long time; //global game world time
 	enum subs {
 		AIR,
 		STONE,
@@ -135,6 +172,8 @@ class world { //world without physics
 		}
 	};
 	public:
+	unsigned long time; //global game world time
+	weathers weather;
 	int visible2x3(short x1, short y1, short z1, short x2, short y2, short z2) {
 		short savecor;
 		if (visible3(x1, y1, z1, x2, y2, z2)) return 1;
@@ -168,7 +207,8 @@ class world { //world without physics
 	};
 	world() {
 		//TODO connect, get map, rewrite all costructor
-		time=0;
+		time=1*60;
+		weather=FROGS;
 		unsigned short i, j, k;
 		for (i=0; i<shred_width*3; ++i)
 		for (j=0; j<shred_width*3; ++j) {
@@ -292,29 +332,71 @@ class screen {
 					break;
 				}
 			if (*k==kbound)
-				if (world_left_win==print_win && left_view==VIEW_SKY) {
-					//print sky
+				if (world_left_win==print_win) {
+					if (W.weather!=CLEAR && random_prob(prec_prob))
+						switch (W.weather) {
+							case RAIN:
+				wattrset(print_win, (W.time%(24*60)<6*60) ?
+					COLOR_PAIR(BLUE_BLACK) : COLOR_PAIR(BLUE_CYAN));
+				mvwprintw(print_win, scry, scrx, ", ");
+							break;
+							case SNOW:
+				wattrset(print_win, (W.time%(24*60)<6*60) ?
+					COLOR_PAIR(WHITE_BLACK) : COLOR_PAIR(WHITE_CYAN));
+				mvwprintw(print_win, scry, scrx, "* ");
+							break;
+							case HAIL:
+				wattrset(print_win, (W.time%(24*60)<6*60) ?
+					COLOR_PAIR(WHITE_BLACK) : COLOR_PAIR(WHITE_CYAN));
+				mvwprintw(print_win, scry, scrx, "o ");
+							break;
+							case FROGS:
+				wattrset(print_win, (W.time%(24*60)<6*60) ?
+					COLOR_PAIR(GREEN_BLACK) : COLOR_PAIR(GREEN_CYAN));
+				mvwprintw(print_win, scry, scrx, "f ");
+						}
+					else if (W.time%(24*60)<6*60) {
+						wattrset(print_win,
+							COLOR_PAIR(WHITE_BLACK));
+						mvwprintw(print_win, scry, scrx, "%c ",
+							skymap[scry-1][scrx/2-1]);
+					} else {
+						wattrset(print_win,
+							COLOR_PAIR(WHITE_CYAN));
+						mvwprintw(print_win, scry, scrx, "  ");
+					}
 				} else {
 					wattrset(print_win, COLOR_PAIR(BLACK_WHITE));
 					mvwprintw(print_win, scry, scrx, "  ");
 				}
+				//print sun/moon
 		}
-		if (world_left_win==print_win) {//print player
-			char ch;
-			switch (right_view) {
-				case VIEW_NORTH: ch='^'; break;
-				case VIEW_SOUTH: ch='v'; break;
-				case VIEW_WEST:  ch='<'; break;
-				case VIEW_EAST:  ch='>'; break;
-				default: ch=' '; break;
+		if (world_left_win==print_win)//print player
+			if (left_view==VIEW_SKY) {
+				wstandend(print_win);
+				mvwprintw(print_win, screen_width/2+1, 0, ">");
+				mvwprintw(print_win, screen_width/2+1,
+					screen_width*2+1, "<");
+				mvwprintw(print_win, screen_width+1, screen_width, "^^");
+				mvwprintw(print_win, 0, screen_width, "vv");
+			} else {
+				char ch;
+				switch (right_view) {
+					case VIEW_NORTH: ch='^'; break;
+					case VIEW_SOUTH: ch='v'; break;
+					case VIEW_WEST:  ch='<'; break;
+					case VIEW_EAST:  ch='>'; break;
+					default: ch=' '; break;
+				}
+				wattrset(print_win, COLOR_PAIR(WHITE_BLUE));
+				mvwprintw(print_win, screen_width/2+1, screen_width,
+					"@%c", ch);
 			}
-			wattrset(print_win, COLOR_PAIR(WHITE_BLUE));
-			mvwprintw(print_win, screen_width/2+1, screen_width, "@%c", ch);
-		} else {//print player locating arrows
+		else {//print player locating arrows
 			wstandend(print_win);
 			mvwprintw(print_win, screen_width-1,            0, ">");
 			mvwprintw(print_win, screen_width-1, screen_width*2+1, "<");
-			mvwprintw(print_win, screen_width+1,   screen_width, "^^");	
+			mvwprintw(print_win, screen_width+1,   screen_width, "^^");
 		}
 	};
 	public:
@@ -326,22 +408,32 @@ class screen {
 		noecho();
 		keypad(stdscr, TRUE);
 		curs_set(0);
-		init_pair(WHITE_BLUE,   COLOR_WHITE,  COLOR_BLUE  ); //player, sky
-		init_pair(BLACK_GREEN,  COLOR_BLACK,  COLOR_GREEN ); //grass, dwarf
-		init_pair(BLACK_WHITE,  COLOR_BLACK,  COLOR_WHITE ); //stone, skin
-		init_pair(RED_YELLOW,   COLOR_RED,    COLOR_YELLOW); //sun, fire1
-		init_pair(RED_WHITE,    COLOR_RED,    COLOR_WHITE ); //chiken
-		init_pair(WHITE_BLACK,  COLOR_WHITE,  COLOR_BLACK ); //?, heap
-		init_pair(YELLOW_RED,   COLOR_YELLOW, COLOR_RED   ); //fire2
-		init_pair(BLACK_RED,    COLOR_BLACK,  COLOR_RED   ); //pointer
-		init_pair(BLACK_YELLOW, COLOR_BLACK,  COLOR_YELLOW); //wood
-		init_pair(BLUE_YELLOW,  COLOR_BLUE,   COLOR_YELLOW); //clock
-		init_pair(WHITE_CYAN,   COLOR_WHITE,  COLOR_CYAN  ); //noon sky
-		init_pair(BLACK_BLUE,   COLOR_BLACK,  COLOR_BLUE  ); //raven
-		init_pair(BLACK_CYAN,   COLOR_BLACK,  COLOR_CYAN  ); //raven
-		init_pair(RED_BLUE,     COLOR_RED,    COLOR_BLUE  ); //bird
-		init_pair(RED_CYAN,     COLOR_RED,    COLOR_CYAN  ); //bird
-		init_pair(RED_BLACK,    COLOR_RED,    COLOR_BLACK ); //bird
+		init_pair(BLACK_BLACK,  COLOR_BLACK,  COLOR_BLACK );
+		init_pair(BLACK_RED,    COLOR_BLACK,  COLOR_RED   );
+		init_pair(BLACK_GREEN,  COLOR_BLACK,  COLOR_GREEN );
+		init_pair(BLACK_YELLOW, COLOR_BLACK,  COLOR_YELLOW);
+		init_pair(BLACK_BLUE,   COLOR_BLACK,  COLOR_BLUE  );
+		init_pair(BLACK_CYAN,   COLOR_BLACK,  COLOR_CYAN  );
+		init_pair(BLACK_WHITE,  COLOR_BLACK,  COLOR_WHITE );
+		//
+		init_pair(RED_BLACK,    COLOR_RED,    COLOR_BLACK );
+		init_pair(RED_YELLOW,   COLOR_RED,    COLOR_YELLOW);
+		init_pair(RED_BLUE,     COLOR_RED,    COLOR_BLUE  );
+		init_pair(RED_CYAN,     COLOR_RED,    COLOR_CYAN  );
+		init_pair(RED_WHITE,    COLOR_RED,    COLOR_WHITE );
+		//
+		init_pair(GREEN_BLACK,  COLOR_GREEN,  COLOR_BLACK );
+		init_pair(GREEN_CYAN,   COLOR_GREEN,  COLOR_CYAN  );
+		//
+		init_pair(YELLOW_RED,   COLOR_YELLOW, COLOR_RED   );
+		//
+		init_pair(BLUE_BLACK,   COLOR_BLUE,   COLOR_BLACK );
+		init_pair(BLUE_YELLOW,  COLOR_BLUE,   COLOR_YELLOW);
+		init_pair(BLUE_CYAN,    COLOR_BLUE,   COLOR_CYAN  );
+		//
+		init_pair(WHITE_BLACK,  COLOR_WHITE,  COLOR_BLACK );
+		init_pair(WHITE_BLUE,   COLOR_WHITE,  COLOR_BLUE  );
+		init_pair(WHITE_CYAN,   COLOR_WHITE,  COLOR_CYAN  );
 		world_left_win =newwin(23, 44,  0,  0);
 		world_right_win=newwin(23, 44,  0, 44);
 		pocket_win     =newwin( 1, 44, 23,  0);
@@ -351,7 +443,7 @@ class screen {
 		left_view=VIEW_EARTH;
 		refresh();
 	}
-	void map(const player & P, world & W, const screen & S) {
+	void map(const player & P, world & W) {
 		wclear(world_left_win);
 		wclear(world_right_win);
 		//
@@ -388,12 +480,12 @@ int main(int argc, char *argv[]) {
 	player mole;
 	world earth;
 	screen scr;
-	scr.map(mole, earth, scr);
+	scr.map(mole, earth);
 	int ch;
 	while ((ch=getch())!='Q') {
 		//proc_key(ch);
 		scr.notify("hollo");
-		scr.map(mole, earth, scr);
+		scr.map(mole, earth);
 		usleep(10000);
 	}
 }
