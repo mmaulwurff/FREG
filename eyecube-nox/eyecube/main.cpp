@@ -65,6 +65,36 @@ class World {
 			default: return new (id) Block;
 		}
 	}
+	void DeleteBlock(Block * delblock) {
+		if (delblock!=NULL)
+			switch (delblock->Id()) {
+				case DWARF: delete (Dwarf *)delblock; break;
+				default: delete delblock; break;
+			}
+	}
+	void LoadShred(long longi, long lati, unsigned short istart, unsigned short jstart) {
+		unsigned short i, j, k;
+		for (i=istart; i<istart+shred_width; ++i)
+		for (j=jstart; j<jstart+shred_width; ++j) {
+			for (k=0; k<height/2; ++k)
+				blocks[i][j][k]=(Block*)CreateBlock(STONE);
+			for ( ; k<height; ++k)
+				blocks[i][j][k]=NULL;
+		}
+	}
+	void Reload() {
+		long i, j;
+		unsigned short k;
+		for (i=0; i<shred_width*3; ++i)
+		for (j=0; j<shred_width*3; ++j)
+			for (k=0; k<height; ++k)
+				DeleteBlock(blocks[i][j][k]);
+		for (i=longitude-1; i<=longitude+1; ++i)
+		for (j=latitude-1;  j<=latitude+1;  ++j)
+			LoadShred(longitude, latitude, (i-longitude+1)*shred_width, (j-latitude+1)*shred_width);
+		blocks[playerX][playerY][playerZ] =(Block*)( playerP=(Dwarf*)CreateBlock(DWARF) );
+		blocks[shred_width*2-5][shred_width*2-5][height/2]=(Block*)CreateBlock(DWARF);
+	}
 	public:
 	int Move(int i, int j, int k, dirs dir) {
 		if (blocks[i][j][k]==NULL)
@@ -92,6 +122,23 @@ class World {
 					playerX=newi;
 					playerY=newj;
 					playerZ=newk;
+					if (playerX==shred_width-1) {
+						playerX+=shred_width;
+						--latitude;
+						Reload();
+					} else if (playerX==shred_width*2) {
+						playerX-=shred_width;
+						++latitude;
+						Reload();
+					} else if (playerY==shred_width-1) {
+						playerY+=shred_width;
+						--longitude;
+						Reload();
+					} else if (playerY==shred_width*2) {
+						playerY-=shred_width;
+						++longitude;
+						Reload();
+					}
 				}
 				Block *temp=blocks[i][j][k];
 				blocks[i][j][k]=blocks[newi][newj][newk];
@@ -111,30 +158,38 @@ class World {
 	}
 	World() {//generate new world
 		//TODO: add load and save
-		longitude=0;
-		latitude=0;
-		unsigned short i, j, k;
-		for (i=0; i<shred_width*3; ++i)
-		for (j=0; j<shred_width*3; ++j) {
-			for (k=0; k<height/2; ++k)
-				blocks[i][j][k]=(Block*)CreateBlock(STONE);
-			for ( ; k<height; ++k)
-				blocks[i][j][k]=NULL;
+		FILE * file=fopen("world.txt", "r");
+		if (file==NULL) {
+			longitude=0;
+			latitude=0;
+			playerX=shred_width*2-7;
+			playerY=shred_width*2-7;
+			playerZ=height/2;
+		} else {
+			fscanf(file, "longitude: %ld\nlatitude: %ld\nplayerX: %hd\n playerY: %hd\n playerZ: %hd\n",
+					&longitude, &latitude, &playerX, &playerY, &playerZ);
+			fclose(file);
 		}
-		playerX=shred_width*2;
-		playerY=shred_width*2;
-		playerZ=height/2;
+		long i, j;
+		for (i=longitude-1; i<=longitude+1; ++i)
+		for (j=latitude-1;  j<=latitude+1;  ++j)
+			LoadShred(longitude, latitude, (i-longitude+1)*shred_width, (j-latitude+1)*shred_width);
 		blocks[playerX][playerY][playerZ] =(Block*)( playerP=(Dwarf*)CreateBlock(DWARF) );
 		blocks[shred_width*2-5][shred_width*2-5][height/2]=(Block*)CreateBlock(DWARF);
-
 	}
 	~World() {
+		FILE * file=fopen("world.txt", "w");
+		if ("file!=NULL") {
+			fprintf(file, "longitude: %ld\nlatitude: %ld\nplayerX: %hd\nplayerY: %hd\nplayerZ: %hd\n",
+					longitude, latitude, playerX, playerY, playerZ);
+			fclose(file);
+		}
+		//save shreds
 		unsigned short i, j, k;
 		for (i=0; i<shred_width*3; ++i)
 		for (j=0; j<shred_width*3; ++j)
 			for (k=0; k<height; ++k)
-				if (blocks[i][j][k]!=NULL)
-					delete blocks[i][j][k];
+				DeleteBlock(blocks[i][j][k]);
 	}
 };
 
