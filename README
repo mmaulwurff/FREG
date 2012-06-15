@@ -1,42 +1,14 @@
 Eyecube is a sandbox game.
 
-Early version will be rewritten in C++.
-Now server and client for terminals (with ncurses) are developed.
+Language: C++
+Now only singleplayer is developed.
 
-Some screenshots are available here: https://picasaweb.google.com/mmaulwurff/Eyecube?authuser=0&feat=directlink
+Screenshots of early versions are available here: https://picasaweb.google.com/mmaulwurff/Eyecube?authuser=0&feat=directlink
 
 Advices are welcome.
 
-
-Early Eyecube:
-
 Some keys (',' instead of 'w', 'o' intstead of 's', 'e' intstead of 'd')
 are set for Dvorak keyboard.
-
-Compile notes:
-(libncurses5-dev should be installed)
-gcc -lncurses -pthread
-
-Debug notes:
-./Eyecube-*.bin 2>log
-
-Items:
- - Air: passable, transparent. Default block.
- - Grass
- - Stone
- - Chicken: walking chiken. Makes sounds. Burns in a fire.
- - Fire. Burns things as chickens and piles. Dissapears in one hour.
- - Chest. Can contain up to 30 items. Collects items falling on it.
- - Pile. Can contain up to 30 items. Collects items falling on it.
-   Dissapears after 24 game hours.
- - Clock: unstackable. If there is a clock in an inventory, exact time is shown instead
-   of part of a day.
- - Compass: unstackable. If there is a compass in an inventory, direction is shown.
- - Iron ingot: iron armor (helmet, chestplate, greaves, boots) can be crafted from it.
- - Iron helmet: unstackable. Used as a helmet. Can be crafted from 5 iron ingots.
- - Iron boots: unstackable. Can be crafted from 4 iron ingots.
- - Iron greaves: unstackable. Can be crafted from 7 iron ingots.
- - Iron chestplate: unstackable. Can be crafted from 8 iron ingots.
 
 Copyright (C) 2011 Alexander Kromm (mmaulwurff@gmail.com)
 Source code is available at GitHub: https://github.com/mmaulwurff/Eyecube

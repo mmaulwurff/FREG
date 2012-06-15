@@ -100,10 +100,24 @@ enum weathers {
 	HAIL,
 	FROGS
 };
+enum directions {
+	NORTH,
+	SOUTH,
+	EAST,
+	WEST
+};
+enum subs {
+	STONE,
+	SOIL,
+	PLAYER,
+	OTHER_PLAYER,
+	BALL
+};
 
-const int shred_width=20;//TODO make variables
+const int shred_width=100;//TODO make variables
 const int height=100;
 const int screen_width=21;
+const int note_length=145;
 const char skymap[screen_width][screen_width+1]={
 	"   ..  .. .      ..  ",
 	"       .        .    ",
@@ -136,45 +150,84 @@ int random_prob(short prob) {
 	return (128+c<prob*2.55) ? 1 : 0;
 }
 
-class player {
-	long planet_x, planet_y; //current shred coordinates
-	//unsigned health : 7; //max 127, but 100 will be used for normal health and 120 for increased health
-	//unsigned regen : 2; //regeneration
+class Block {
+	subs id;
+	unsigned short health;
+	unsigned short durability;
+	//char * note;
 	public:
-	unsigned short x, y, z; 
-	player() {
-		planet_x=0;
-		planet_y=0;
-		x=30;
-		y=30;
-		z=height/2;
-	};
+	bool transparent;
+	/*void WriteNote(const char * const text) {
+		note=new char[note_length];
+		strncpy(note, text, note_length-1);
+		note[note_length-1]='\0';
+	}*/
+	//virtual void Push() {};
+	//virtual void Use() {};
+	/*virtual bool Destroy(unsigned short damage) {
+		return ((health-=damage)<=0);
+	}*/
+	char Name() {
+		switch (id) {
+			case STONE: return '#'; break;
+			default: return '?'; break;
+		}
+	}
+	color_pairs Color() {
+		switch (id) {
+			case SOIL:  return BLACK_GREEN;
+			case STONE: return BLACK_WHITE;
+			default:    return WHITE_BLACK;
+		}
+	}
+	/*Block(subs n) : transparent(false), health(100) {
+	}*/
+	void * operator new(size_t size, subs n) {
+		Block * newblock=::new Block;
+		newblock->transparent=false;
+		newblock->health=100;
+		newblock->id=n;
+		switch (n) {
+			case STONE: newblock->durability=10; break;
+			default: newblock->durability=1; break;
+		}
+		return newblock;
+	}
+	virtual ~Block() {}
 };
 
-class world { //world without physics
-	enum subs {
-		AIR,
-		STONE,
-		SOIL
-	} blocks[shred_width*3][shred_width*3][height];
-	//there isn't the only way for light from one point to another
-	//this finds one of them, and it is not the straight line.
-	//it works fast
-	int visible3(short x, short y, short z,
+class World {
+	long planet_x, planet_y; //player's current shred coordinates
+	/*there isn't the only way for light from one point to another
+	 *this finds one of them, and it is not the straight line.*/
+	/*int visible3(short x, short y, short z,
 	             short xtarget, short ytarget, short ztarget) {
 		if (x==xtarget && y==ytarget && z==ztarget) return 1;
-		else if (!transparent(x, y, z)) return 0;
+		else if ( !*blocks[x][y][s]->transparent ) return 0;
 		else {
 			if (x!=xtarget) x+=(xtarget>x) ? 1 : -1;
 			if (y!=ytarget) y+=(ytarget>y) ? 1 : -1;
 			if (z!=ztarget) z+=(ztarget>z) ? 1 : -1;
 			return visible3(x, y, z, xtarget, ytarget, ztarget);
 		}
-	};
+	}*/
 	public:
+	//Block * blocks[shred_width*3][shred_width*3][height];
+	unsigned short x, y, z;
+	struct sound {
+		char snd;//sound character
+		char lev;//sound level
+	} sounds[3][3];
+	int moon_left() {//will form different forms of the moon depending on time
+		return '(';
+	}
+	int moon_right() {
+		return ')';
+	}
 	unsigned long time; //global game world time
 	weathers weather;
-	int visible2x3(short x1, short y1, short z1, short x2, short y2, short z2) {
+	/*int visible2x3(short x1, short y1, short z1,
+	               short x2, short y2, short z2) {
 		short savecor;
 		if (visible3(x1, y1, z1, x2, y2, z2)) return 1;
 		else if ((x2!=x1 && transparent(x2+(savecor=(x2>x1) ? (-1) : 1), y2, z2)
@@ -184,47 +237,46 @@ class world { //world without physics
 			(z2!=z1 && transparent(x2, y2, z2+(savecor=(z2>z1) ? (-1) : 1))
 			&& visible3(x1, y1, z1, x2, y2, z2+savecor))) return 1;
 		else return 0;
-	};
-	inline int name(short x, short y, short z) {
-		switch(blocks[x][y][z]) {
-			case SOIL : return '|';
-			case STONE: return '#';
-			default   : return '?';
-		}
-	};
-	inline int transparent(short x, short y, short z) {
-		switch(blocks[x][y][z]) {
-			case AIR: return 1;
-			default : return 0;
-		}
-	};
-	inline color_pairs color(short x, short y, short z) {
-		switch (blocks[x][y][z]) {
-			case SOIL:  return BLACK_GREEN;
-			case STONE: return BLACK_WHITE;
-			default:    return WHITE_BLACK;
-		}
-	};
-	world() {
+	}*/
+	World() {
 		//TODO connect, get map, rewrite all costructor
-		time=1*60;
-		weather=FROGS;
+		planet_x=0;
+		planet_y=0;
+		x=y=1.5*shred_width;
+		z=height/2;
+		time=5*60;
+		weather=CLEAR;
+		puts("allok");
+		/**blocks[shred_width+10][shred_width+7][height/2]=STONE;
+		*blocks[shred_width+15][shred_width+9][height/2]=STONE;
+		*blocks[shred_width+9][shred_width+9][height/2]=STONE;
+		*blocks[shred_width+15][shred_width+17][height/2]=STONE;*/
 		unsigned short i, j, k;
-		for (i=0; i<shred_width*3; ++i)
+	/*	for (i=0; i<shred_width*3; ++i)
 		for (j=0; j<shred_width*3; ++j) {
-			for (k=0; k<height/4; ++k) blocks[i][j][k]=STONE;
-			for (   ; k<height/2; ++k) blocks[i][j][k]=SOIL;
-			for (   ; k<height;   ++k) blocks[i][j][k]=AIR;
+			for (k=0; k<height/4; ++k) blocks[i][j][k]=new (STONE) Block;
+			for (   ; k<height/2; ++k) blocks[i][j][k]=new (SOIL) Block;
+			for (   ; k<height;   ++k) blocks[i][j][k]=NULL;//air
+		}*/
+		/*for (i=0; i<3; ++i)
+		for (j=0; j<3; ++j) {
+			sounds[i][j].snd=' ';
+			sounds[i][j].lev=' ';
 		}
-		blocks[shred_width+10][shred_width+7][height/2]=STONE;
-		blocks[shred_width+15][shred_width+9][height/2]=STONE;
-		blocks[shred_width+9][shred_width+9][height/2]=STONE;
-		blocks[shred_width+15][shred_width+17][height/2]=STONE;
-	};
+		sounds[0][2].snd='c';
+		sounds[0][2].lev='+';*/
+	}
+	~World() {
+/*		unsigned short i, j, k;
+		for (i=0; i<shred_width*3; ++i)
+		for (j=0; j<shred_width*3; ++j)
+		for (k=0; k<height; ++k)
+			if (blocks[i][j][k]!=NULL) delete blocks[i][j][k];*/
+	}
 	void proc_key(int ch) {};
 };
 
-class screen {
+/*class Screen {
 	enum right_views {
 		VIEW_NORTH,
 		VIEW_EAST,
@@ -242,19 +294,19 @@ class screen {
 		VIEW_MIDDLE
 	} left_view;
 	WINDOW * world_left_win, * world_right_win, * pocket_win, * text_win, * sound_win;
-	void print_env(WINDOW * print_win, const player & P, world & W) {
+	void print_env(WINDOW * print_win, World & W) {
 		short x, y, z,
 		      * i, * j, * k,
 		      idir, jdir, kdir,
 		      kbound, coor;
 		if (world_left_win==print_win) {//set variables
-			i=&(x=P.x-10);
-			j=&(y=P.y-10);
+			i=&(x=W.x-10);
+			j=&(y=W.y-10);
 			idir=1;
 			jdir=1;
-			coor=P.z;
+			coor=W.z;
 			if (VIEW_SKY==left_view) {
-				k=&(z=P.z+1);
+				k=&(z=W.z+1);
 				kdir=1;
 				kbound=height;
 			} else {
@@ -263,38 +315,38 @@ class screen {
 				kbound=-1;
 			}
 		} else {
-			j=&(z=P.z+19);
+			j=&(z=W.z+19);
 			jdir=-1;
 			switch (right_view) {
 				case VIEW_NORTH:
-					i=&(x=P.x-10);
+					i=&(x=W.x-10);
 					idir=1;
-					coor=P.y;
-					k=&(y=P.y-1);
+					coor=W.y;
+					k=&(y=W.y-1);
 					kdir=-1;
 					kbound=-1;
 				break;
 				case VIEW_SOUTH:
-					i=&(x=P.x+10);
+					i=&(x=W.x+10);
 					idir=-1;
-					coor=P.y;
-					k=&(y=P.y+1);
+					coor=W.y;
+					k=&(y=W.y+1);
 					kdir=1;
 					kbound=shred_width*3;
 				break;
 				case VIEW_WEST:
-					i=&(y=P.y+10);
+					i=&(y=W.y+10);
 					idir=-1;
-					coor=P.x;
-					k=&(x=P.x-1);
+					coor=W.x;
+					k=&(x=W.x-1);
 					kdir=-1;
 					kbound=-1;
 				break;
 				case VIEW_EAST:
-					i=&(y=P.y-10);
+					i=&(y=W.y-10);
 					idir=1;
-					coor=P.x;
-					k=&(x=P.x+1);
+					coor=W.x;
+					k=&(x=W.x+1);
 					kdir=1;
 					kbound=shred_width*3;
 				break;
@@ -304,8 +356,8 @@ class screen {
 		for (scrx=1;           scrx<=screen_width*2-1; scrx+=2, *i+=idir)
 		for (scry=1, *j=jsave; scry<=screen_width;   ++scry,    *j+=jdir) {
 			for (*k=ksave ; *k!=kbound; *k+=kdir)
-				if ( !W.transparent(x, y, z) ) {
-					if ( W.visible2x3(P.x, P.y, P.z, x, y, z) ) {
+				if ( W.blocks[x][y][z]!=NULL && !W.blocks[x][y][z]->transparent ) {
+					if ( true )//W.visible2x3(W.x, W.y, W.z, x, y, z) ) {
 						char ch;
 						//set second character
 						if (world_left_win==print_win) {
@@ -321,17 +373,18 @@ class screen {
 								ch='0'+kdir*(*k-coor)-1;
 							else ch='+';
 						}
-						wattrset(print_win,
-							COLOR_PAIR(W.color(x, y, z)));
-						mvwprintw(print_win, scry, scrx, "%c%c",
-							W.name(x, y, z), ch);
+						wattrset( print_win,
+							COLOR_PAIR(W.blocks[x][y][z]->Color()) );
+						mvwprintw( print_win, scry, scrx, "%c%c",
+							W.blocks[x][y][z]->Name(), ch );
 					} else {
 						wstandend(print_win);
 						mvwprintw(print_win, scry, scrx, "  ");
 					}
 					break;
 				}
-			if (*k==kbound)
+			if (*k==kbound) { *k-=kdir;
+			if ( true )//W.visible2x3(W.x, W.y, W.z, x, y, z) ) {
 				if (world_left_win==print_win) {
 					if (W.weather!=CLEAR && random_prob(prec_prob))
 						switch (W.weather) {
@@ -369,9 +422,9 @@ class screen {
 					wattrset(print_win, COLOR_PAIR(BLACK_WHITE));
 					mvwprintw(print_win, scry, scrx, "  ");
 				}
-				//print sun/moon
+			}}
 		}
-		if (world_left_win==print_win)//print player
+		if (world_left_win==print_win)//print player and sun or moon
 			if (left_view==VIEW_SKY) {
 				wstandend(print_win);
 				mvwprintw(print_win, screen_width/2+1, 0, ">");
@@ -379,6 +432,18 @@ class screen {
 					screen_width*2+1, "<");
 				mvwprintw(print_win, screen_width+1, screen_width, "^^");
 				mvwprintw(print_win, 0, screen_width, "vv");
+				if ( W.time%(24*60)>6*60 ) {//sun
+					wattrset(print_win, COLOR_PAIR(BLACK_YELLOW));
+					mvwprintw(print_win, screen_width/2+1,
+						( (screen_width*2*((W.time%(24*60))-6*60))
+						/(18*60)+1 ), "  ");
+				} else {//moon
+					wattrset(print_win, COLOR_PAIR(BLACK_WHITE));
+					mvwprintw( print_win, screen_width/2+1,
+						( (screen_width*2*(W.time%(24*60)))
+						/(6*60)+1 ), "%c%c",
+						W.moon_left(), W.moon_right() );
+				}
 			} else {
 				char ch;
 				switch (right_view) {
@@ -398,9 +463,9 @@ class screen {
 			mvwprintw(print_win, screen_width-1, screen_width*2+1, "<");
 			mvwprintw(print_win, screen_width+1,   screen_width, "^^");
 		}
-	};
+	}
 	public:
-	screen() {
+	Screen() {
 		set_escdelay(10);
 		initscr();
 		start_color();
@@ -440,10 +505,10 @@ class screen {
 		text_win       =newwin( 5, 36, 24,  8);
 		sound_win      =newwin( 5,  8, 24,  0);
 		right_view=VIEW_EAST;
-		left_view=VIEW_EARTH;
+		left_view=VIEW_SKY;
 		refresh();
 	}
-	void map(const player & P, world & W) {
+	void map(World & W) {
 		wclear(world_left_win);
 		wclear(world_right_win);
 		//
@@ -453,8 +518,8 @@ class screen {
 		box(world_left_win,  0, 0);
 		box(world_right_win, 0, 0);
 		//
-		print_env(world_left_win,  P, W);
-		print_env(world_right_win, P, W);
+		print_env(world_left_win,  W);
+		print_env(world_right_win, W);
 		//
 		wrefresh(world_left_win);
 		wrefresh(world_right_win);
@@ -465,8 +530,23 @@ class screen {
 		mvwaddstr(text_win, 1, 1, n);
 		box(text_win, 0, 0);
 		wrefresh(text_win);
-	};
-	~screen() {
+	}
+	void print_sounds(World & W) {
+		wclear(sound_win);
+		char ch;
+		short i=0, j;
+		while (i<3) {
+			for (j=0; j<3; ++j)
+				mvwprintw(sound_win, j+1, i*2+1, "%c%c",
+					W.sounds[i][j].snd, W.sounds[i][j].lev);
+			mvwaddch(sound_win, j+1, i*2+1, '\n');
+			++i;
+		}
+		box(sound_win, 0, 0);
+		wrefresh(sound_win);
+	}
+	void print_pocket(World & W) {};
+	~Screen() {
 		delwin(world_left_win);
 		delwin(world_right_win);
 		delwin(text_win);
@@ -474,18 +554,18 @@ class screen {
 		delwin(sound_win);
 		endwin();
 	}
-};
+};*/
 
 int main(int argc, char *argv[]) {
-	player mole;
-	world earth;
-	screen scr;
-	scr.map(mole, earth);
+	World earth;
+//	Screen scr;
+//	scr.map(earth);
+//	scr.notify("Game started.");
+//	scr.print_sounds(earth);
 	int ch;
-	while ((ch=getch())!='Q') {
+	while ( (ch=getch())!='Q' ) {
 		//proc_key(ch);
-		scr.notify("hollo");
-		scr.map(mole, earth);
-		usleep(10000);
+//		scr.map(earth);
+//		usleep(10000);
 	}
 }

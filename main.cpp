@@ -18,6 +18,8 @@
 //#include <ncurses.h>
 #include <stdio.h>
 
+int abs(int number) { return (number>0) ? number : -number; }
+
 const unsigned short shred_width=10;
 const unsigned short height=100;
 enum subs {
@@ -33,6 +35,7 @@ class Block {
 	bool movable;
 	public:
 	bool Movable() { return movable; }
+	bool Transparent() { return false; }
 	subs Id() { return id; }
 	void* operator new(size_t, subs n) {
 		Block * nblock=::new Block;
@@ -59,7 +62,7 @@ class World {
 	Dwarf * playerP;
 	unsigned short playerX, playerY, playerZ;
 	long longitude, latitude;
-	void *CreateBlock(subs id) {
+	void * CreateBlock(subs id) {
 		switch (id) {
 			case DWARF: return new Dwarf;
 			default: return new (id) Block;
@@ -82,13 +85,25 @@ class World {
 				blocks[i][j][k]=NULL;
 		}
 	}
-	void Reload() {
-		long i, j;
-		unsigned short k;
-		for (i=0; i<shred_width*3; ++i)
-		for (j=0; j<shred_width*3; ++j)
+	void SaveShred(long longi, long lati, unsigned short istart, unsigned short jstart) {
+		unsigned short i, j, k;
+		for (i=istart; i<istart+shred_width; ++i)
+		for (j=jstart; j<jstart+shred_width; ++j)
 			for (k=0; k<height; ++k)
 				DeleteBlock(blocks[i][j][k]);
+		printf("saveok\n");
+	}
+	void ReloadShreds(enum dirs direction) {
+		long i, j;
+		for (i=longitude-1; i<=longitude+1; ++i)
+		for (j=latitude-1;  j<=latitude+1;  ++j)
+			SaveShred(longitude, latitude, (i-longitude+1)*shred_width, (j-latitude+1)*shred_width);
+		switch (direction) {
+			case NORTH: --longitude; break;
+			case SOUTH: ++longitude; break;
+			case EAST:  ++latitude;  break;
+			case WEST:  --latitude;  break;
+		}
 		for (i=longitude-1; i<=longitude+1; ++i)
 		for (j=latitude-1;  j<=latitude+1;  ++j)
 			LoadShred(longitude, latitude, (i-longitude+1)*shred_width, (j-latitude+1)*shred_width);
@@ -96,6 +111,21 @@ class World {
 		blocks[shred_width*2-5][shred_width*2-5][height/2]=(Block*)CreateBlock(DWARF);
 	}
 	public:
+	bool Visible(unsigned short x_from, unsigned short y_from, unsigned short z_from,
+				unsigned short x_to,   unsigned short y_to,   unsigned short z_to) {
+		unsigned short max=(abs(z_from-z_to) > abs(y_from-y_to)) ? abs(z_from-z_to) : abs(y_from-y_to);
+		if (abs(x_from-x_to) > max) max=abs(x_from-x_to);
+		float x_step=(x_to-x_from)/max,
+		      y_step=(y_to-y_from)/max,
+		      z_step=(z_to-z_from)/max;
+		unsigned short i;
+		for (i=1; i<max; ++i)
+			if ( blocks[int(x_from+i*x_step)][int(y_from+i*y_step)][int(z_from+i*z_step)]->Transparent() ) return false;
+		return true;
+	}
+	bool Visible(unsigned short x_to,   unsigned short y_to,   unsigned short z_to) {
+		return Visible(playerX, playerY, playerZ, x_to, y_to, z_to);
+	}
 	int Move(int i, int j, int k, dirs dir) {
 		if (blocks[i][j][k]==NULL)
 			return 1;
@@ -124,20 +154,16 @@ class World {
 					playerZ=newk;
 					if (playerX==shred_width-1) {
 						playerX+=shred_width;
-						--latitude;
-						Reload();
+						ReloadShreds(WEST);
 					} else if (playerX==shred_width*2) {
 						playerX-=shred_width;
-						++latitude;
-						Reload();
+						ReloadShreds(EAST);
 					} else if (playerY==shred_width-1) {
 						playerY+=shred_width;
-						--longitude;
-						Reload();
+						ReloadShreds(NORTH);
 					} else if (playerY==shred_width*2) {
 						playerY-=shred_width;
-						++longitude;
-						Reload();
+						ReloadShreds(SOUTH);
 					}
 				}
 				Block *temp=blocks[i][j][k];
@@ -149,12 +175,8 @@ class World {
 	}
 	void Move(dirs dir) { Move(playerX, playerY, playerZ, dir); }
 	subs Id(int i, int j, int k) { return blocks[i][j][k]->Id(); }
-	int Transparent(int i, int j, int k) {
-		if (blocks[i][j][k]==NULL)
-			return 1;
-		else switch ( blocks[i][j][k]->Id() ) {
-			default: return 0;
-		}
+	bool Transparent(int i, int j, int k) {
+		return (NULL==blocks[i][j][k]) ? true : blocks[i][j][k]->Transparent();
 	}
 	World() {//generate new world
 		//TODO: add load and save
@@ -184,12 +206,10 @@ class World {
 					longitude, latitude, playerX, playerY, playerZ);
 			fclose(file);
 		}
-		//save shreds
-		unsigned short i, j, k;
-		for (i=0; i<shred_width*3; ++i)
-		for (j=0; j<shred_width*3; ++j)
-			for (k=0; k<height; ++k)
-				DeleteBlock(blocks[i][j][k]);
+		long i, j;
+		for (i=longitude-1; i<=longitude+1; ++i)
+		for (j=latitude-1;  j<=latitude+1;  ++j)
+			SaveShred(longitude, latitude, (i-longitude+1)*shred_width, (j-latitude+1)*shred_width);
 	}
 };
 
@@ -210,7 +230,7 @@ class Screen {
 		for ( j=0; j<shred_width*3; ++j, printf("\n") )
 		for ( i=0; i<shred_width*3; ++i )
 			for (k=height-1; k>=0; --k)
-				if ( !w->Transparent(i, j, k) ) {
+				if ( !(w->Transparent(i, j, k)) && w->Visible(i, j, k)) {
 					printf( "%c", CharName(i, j, k) );
 					break;
 				}
