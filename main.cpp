@@ -15,8 +15,9 @@
 	*along with Eyecube. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-//#include <ncurses.h>
-#include <stdio.h>
+#include <ncurses.h>
+#include <cstdio>
+#include <cmath>
 
 int abs(int number) { return (number>0) ? number : -number; }
 
@@ -26,6 +27,79 @@ enum subs {
 	STONE,
 	SOIL,
 	DWARF
+};
+enum color_pairs {
+        BLACK_BLACK=1,
+        BLACK_RED,
+        BLACK_GREEN,
+        BLACK_YELLOW,
+        BLACK_BLUE,
+        BLACK_MAGENTA,
+        BLACK_CYAN,
+        BLACK_WHITE,
+        //
+        RED_BLACK,
+        RED_RED,
+        RED_GREEN,
+        RED_YELLOW,
+        RED_BLUE,
+        RED_MAGENTA,
+        RED_CYAN,
+        RED_WHITE,
+        //
+        GREEN_BLACK,
+        GREEN_RED,
+        GREEN_GREEN,
+        GREEN_YELLOW,
+        GREEN_BLUE,
+        GREEN_MAGENTA,
+        GREEN_CYAN,
+        GREEN_WHITE,
+        //
+        YELLOW_BLACK,
+        YELLOW_RED,
+        YELLOW_GREEN,
+        YELLOW_YELLOW,
+        YELLOW_BLUE,
+        YELLOW_MAGENTA,
+        YELLOW_CYAN,
+        YELLOW_WHITE,
+        //
+        BLUE_BLACK,
+        BLUE_RED,
+        BLUE_GREEN,
+        BLUE_YELLOW,
+        BLUE_BLUE,
+        BLUE_MAGENTA,
+        BLUE_CYAN,
+        BLUE_WHITE,
+        //
+	MAGENTA_BLACK,
+        MAGENTA_RED,
+        MAGENTA_GREEN,
+        MAGENTA_YELLOW,
+        MAGENTA_BLUE,
+        MAGENTA_MAGENTA,
+        MAGENTA_CYAN,
+        MAGENTA_WHITE,
+        //
+        CYAN_BLACK,
+        CYAN_RED,
+        CYAN_GREEN,
+        CYAN_YELLOW,
+        CYAN_BLUE,
+        CYAN_MAGENTA,
+        CYAN_CYAN,
+        CYAN_WHITE,
+        //
+        WHITE_BLACK,
+        WHITE_RED,
+        WHITE_GREEN,
+        WHITE_YELLOW,
+        WHITE_BLUE,
+        WHITE_MAGENTA,
+        WHITE_CYAN,
+        WHITE_WHITE,
 };
 enum dirs { NORTH, SOUTH, EAST, WEST, UP, DOWN };
 
@@ -60,6 +134,7 @@ class Dwarf : private Block {
 class World {
 	Block *blocks[shred_width*3][shred_width*3][height];
 	Dwarf * playerP;
+	dirs playerDir;
 	unsigned short playerX, playerY, playerZ;
 	long longitude, latitude;
 	void * CreateBlock(subs id) {
@@ -84,6 +159,9 @@ class World {
 			for ( ; k<height; ++k)
 				blocks[i][j][k]=NULL;
 		}
+	/*	for (i=istart+1; i<istart+7; ++i)
+		for (k=height/2; k<height/2+1; ++k)
+			blocks[i][jstart+1][k]=(Block*)CreateBlock(STONE);*/
 	}
 	void SaveShred(long longi, long lati, unsigned short istart, unsigned short jstart) {
 		unsigned short i, j, k;
@@ -91,7 +169,6 @@ class World {
 		for (j=jstart; j<jstart+shred_width; ++j)
 			for (k=0; k<height; ++k)
 				DeleteBlock(blocks[i][j][k]);
-		printf("saveok\n");
 	}
 	void ReloadShreds(enum dirs direction) {
 		long i, j;
@@ -111,19 +188,47 @@ class World {
 		blocks[shred_width*2-5][shred_width*2-5][height/2]=(Block*)CreateBlock(DWARF);
 	}
 	public:
-	bool Visible(unsigned short x_from, unsigned short y_from, unsigned short z_from,
-				unsigned short x_to,   unsigned short y_to,   unsigned short z_to) {
+	char CharNumber(unsigned short i, unsigned short j, unsigned short k) {
+		if (i==playerX && j==playerY && k==playerZ)
+			switch (playerDir) {
+				case NORTH: return '^';
+				case SOUTH: return 'v';
+				case EAST:  return '>';
+				case WEST:  return '<';
+				case DOWN:  return 'x';
+				case UP:    return '.';
+			}
+		if (k < playerZ-2) return '!';
+		if (k== playerZ-2) return '_';
+		if (k== playerZ-1) return ' '; //floor
+		if (k > playerZ-1 && k < playerZ+9) return k-playerZ+1+'0';
+		return '+';
+	}
+	bool DirVisible(unsigned short x_from, unsigned short y_from, unsigned short z_from,
+	                unsigned short x_to,   unsigned short y_to,   unsigned short z_to) {
+		if (x_from==x_to && y_from==y_to && z_from==z_to) return true;
 		unsigned short max=(abs(z_from-z_to) > abs(y_from-y_to)) ? abs(z_from-z_to) : abs(y_from-y_to);
 		if (abs(x_from-x_to) > max) max=abs(x_from-x_to);
-		float x_step=(x_to-x_from)/max,
-		      y_step=(y_to-y_from)/max,
-		      z_step=(z_to-z_from)/max;
+		float x_step=(float)(x_to-x_from)/max,
+		      y_step=(float)(y_to-y_from)/max,
+		      z_step=(float)(z_to-z_from)/max;
 		unsigned short i;
 		for (i=1; i<max; ++i)
-			if ( blocks[int(x_from+i*x_step)][int(y_from+i*y_step)][int(z_from+i*z_step)]->Transparent() ) return false;
+			if ( !Transparent(x_from+ ceil(i*x_step), y_from+ceil(i*y_step),  z_from+ceil(i*z_step)) ||
+			     !Transparent(x_from+floor(i*x_step), y_from+floor(i*y_step), z_from+floor(i*z_step))) return false;
 		return true;
 	}
-	bool Visible(unsigned short x_to,   unsigned short y_to,   unsigned short z_to) {
+	bool Visible(unsigned short x_from, unsigned short y_from, unsigned short z_from,
+	             unsigned short x_to,   unsigned short y_to,   unsigned short z_to) {
+		short temp;
+		if ((DirVisible(x_from, y_from, z_from, x_to, y_to, z_to)) ||
+			(Transparent(x_to+(temp=(x_to>x_from) ? (-1) : 1), y_to, z_to) && DirVisible(x_from, y_from, z_from, x_to+temp, y_to, z_to)) ||
+			(Transparent(x_to, y_to+(temp=(y_to>y_from) ? (-1) : 1), z_to) && DirVisible(x_from, y_from, z_from, x_to, y_to+temp, z_to)) ||
+			(Transparent(x_to, y_to, z_to+(temp=(z_to>z_from) ? (-1) : 1)) && DirVisible(x_from, y_from, z_from, x_to, y_to, z_to+temp)))		
+				return true;
+		return false;
+	}
+	bool Visible(unsigned short x_to, unsigned short y_to, unsigned short z_to) {
 		return Visible(playerX, playerY, playerZ, x_to, y_to, z_to);
 	}
 	int Move(int i, int j, int k, dirs dir) {
@@ -198,6 +303,7 @@ class World {
 			LoadShred(longitude, latitude, (i-longitude+1)*shred_width, (j-latitude+1)*shred_width);
 		blocks[playerX][playerY][playerZ] =(Block*)( playerP=(Dwarf*)CreateBlock(DWARF) );
 		blocks[shred_width*2-5][shred_width*2-5][height/2]=(Block*)CreateBlock(DWARF);
+		playerDir=NORTH;
 	}
 	~World() {
 		FILE * file=fopen("world.txt", "w");
@@ -215,7 +321,8 @@ class World {
 
 class Screen {
 	World * const w; //connected world
-	char CharName(int i, int j, int k) {
+	WINDOW * leftWin;
+	char CharName(unsigned short i, unsigned short j, unsigned short k) {
 		switch ( w->Id(i, j, k) ) {
 			case STONE: return '#';
 			case SOIL:  return 's';
@@ -223,17 +330,68 @@ class Screen {
 			default: return '?';
 		}
 	}
+	int Color(unsigned short i, unsigned short j, unsigned short k) {
+		switch ( w->Id(i, j, k) ) {
+			case DWARF: return COLOR_PAIR(WHITE_BLUE);
+			default:    return COLOR_PAIR(BLACK_WHITE);
+		}
+	}
 	public:
-	Screen(World *wor) : w(wor) {}
-	void print() {//real print() will be written with ncurses
+	Screen(World *wor) : w(wor) {
+		set_escdelay(10);
+		initscr();
+		start_color();
+		raw();
+		noecho();
+		keypad(stdscr, TRUE);
+		curs_set(0);
+		init_pair(BLACK_BLACK,  COLOR_BLACK,  COLOR_BLACK );
+		init_pair(BLACK_RED,    COLOR_BLACK,  COLOR_RED   );
+		init_pair(BLACK_GREEN,  COLOR_BLACK,  COLOR_GREEN );
+		init_pair(BLACK_YELLOW, COLOR_BLACK,  COLOR_YELLOW);
+		init_pair(BLACK_BLUE,   COLOR_BLACK,  COLOR_BLUE  );
+		init_pair(BLACK_CYAN,   COLOR_BLACK,  COLOR_CYAN  );
+		init_pair(BLACK_WHITE,  COLOR_BLACK,  COLOR_WHITE );
+		//
+		init_pair(RED_BLACK,    COLOR_RED,    COLOR_BLACK );
+		init_pair(RED_YELLOW,   COLOR_RED,    COLOR_YELLOW);
+		init_pair(RED_BLUE,     COLOR_RED,    COLOR_BLUE  );
+		init_pair(RED_CYAN,     COLOR_RED,    COLOR_CYAN  );
+		init_pair(RED_WHITE,    COLOR_RED,    COLOR_WHITE );
+		//
+		init_pair(GREEN_BLACK,  COLOR_GREEN,  COLOR_BLACK );
+		init_pair(GREEN_CYAN,   COLOR_GREEN,  COLOR_CYAN  );
+		//
+		init_pair(YELLOW_RED,   COLOR_YELLOW, COLOR_RED   );
+		//
+		init_pair(BLUE_BLACK,   COLOR_BLUE,   COLOR_BLACK );
+		init_pair(BLUE_YELLOW,  COLOR_BLUE,   COLOR_YELLOW);
+		init_pair(BLUE_CYAN,    COLOR_BLUE,   COLOR_CYAN  );
+		//
+		init_pair(WHITE_BLACK,  COLOR_WHITE,  COLOR_BLACK );
+		init_pair(WHITE_BLUE,   COLOR_WHITE,  COLOR_BLUE  );
+		init_pair(WHITE_CYAN,   COLOR_WHITE,  COLOR_CYAN  );
+		leftWin=newwin(shred_width*3+2, shred_width*2*3+2, 0, 0);
+		refresh();
+	}
+	void print() {
+		wstandend(leftWin);
+		box(leftWin,  0, 0);
 		unsigned short i, j, k;
-		for ( j=0; j<shred_width*3; ++j, printf("\n") )
+		for ( j=0; j<shred_width*3; ++j )
 		for ( i=0; i<shred_width*3; ++i )
 			for (k=height-1; k>=0; --k)
-				if ( !(w->Transparent(i, j, k)) && w->Visible(i, j, k)) {
-					printf( "%c", CharName(i, j, k) );
-					break;
-				}
+				if ( !w->Transparent(i, j, k) )
+					if ( w->Visible(i, j, k) ) {
+						wattrset(leftWin, Color(i, j, k));
+						mvwprintw( leftWin, j+1, i*2+1, "%c%c", CharName(i, j, k), w->CharNumber(i, j, k) );
+						break;
+					} else {
+						wattrset(leftWin, COLOR_PAIR(BLACK_BLACK));
+						mvwprintw(leftWin, j+1, i*2+1, "  ");
+						break;
+					}
+		wrefresh(leftWin);
 	}
 };
 
