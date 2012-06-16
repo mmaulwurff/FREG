@@ -19,11 +19,12 @@
 #include <cstdio>
 #include <cmath>
 
-int abs(int number) { return (number>0) ? number : -number; }
+int abs(int number) { return (number<0) ? (-number) : number; }
 
 const unsigned short shred_width=10;
 const unsigned short height=100;
 enum subs {
+	AIR, //though there is no air block.
 	STONE,
 	SOIL,
 	DWARF
@@ -106,15 +107,14 @@ enum dirs { NORTH, SOUTH, EAST, WEST, UP, DOWN };
 class Block {
 	protected:
 	subs id;
-	bool movable;
 	public:
-	bool Movable() { return movable; }
-	bool Transparent() { return false; }
+	virtual bool Movable() { return false; }
+	virtual bool Transparent() { return false; } //totally invisible blocks
+	virtual bool HalfTransparent() { return false; } //example: glass is not transparent, but halftransparent (blocks are visible through it).
 	subs Id() { return id; }
 	void* operator new(size_t, subs n) {
 		Block * nblock=::new Block;
 		nblock->id=n;
-		nblock->movable=false;
 		return nblock;
 	}
 };
@@ -122,10 +122,10 @@ class Block {
 class Dwarf : private Block {
 	int health;
 	public:
+	virtual bool Movable() { return true; }
 	void *operator new(size_t) {
 		Dwarf *ndwarf=::new Dwarf;
 		ndwarf->id=DWARF;
-		ndwarf->movable=true;
 		ndwarf->health=1;
 		return ndwarf;
 	}
@@ -159,9 +159,9 @@ class World {
 			for ( ; k<height; ++k)
 				blocks[i][j][k]=NULL;
 		}
-	/*	for (i=istart+1; i<istart+7; ++i)
+		for (i=istart+1; i<istart+7; ++i)
 		for (k=height/2; k<height/2+1; ++k)
-			blocks[i][jstart+1][k]=(Block*)CreateBlock(STONE);*/
+			blocks[i][jstart+1][k]=(Block*)CreateBlock(STONE);
 	}
 	void SaveShred(long longi, long lati, unsigned short istart, unsigned short jstart) {
 		unsigned short i, j, k;
@@ -204,27 +204,29 @@ class World {
 		if (k > playerZ-1 && k < playerZ+9) return k-playerZ+1+'0';
 		return '+';
 	}
-	bool DirVisible(unsigned short x_from, unsigned short y_from, unsigned short z_from,
-	                unsigned short x_to,   unsigned short y_to,   unsigned short z_to) {
+	bool DirectlyVisible(unsigned short x_from, unsigned short y_from, unsigned short z_from,
+	                     unsigned short x_to,   unsigned short y_to,   unsigned short z_to) {
 		if (x_from==x_to && y_from==y_to && z_from==z_to) return true;
-		unsigned short max=(abs(z_from-z_to) > abs(y_from-y_to)) ? abs(z_from-z_to) : abs(y_from-y_to);
-		if (abs(x_from-x_to) > max) max=abs(x_from-x_to);
+		unsigned short max=(abs(z_to-z_from) > abs(y_to-y_from)) ? abs(z_to-z_from) : abs(y_to-y_from);
+		if (abs(x_to-x_from) > max) max=abs(x_to-x_from);
 		float x_step=(float)(x_to-x_from)/max,
 		      y_step=(float)(y_to-y_from)/max,
 		      z_step=(float)(z_to-z_from)/max;
 		unsigned short i;
 		for (i=1; i<max; ++i)
-			if ( !Transparent(x_from+ ceil(i*x_step), y_from+ceil(i*y_step),  z_from+ceil(i*z_step)) ||
-			     !Transparent(x_from+floor(i*x_step), y_from+floor(i*y_step), z_from+floor(i*z_step))) return false;
+			if ( !HalfTransparent(nearbyint(x_from+i*x_step),
+			                      nearbyint(y_from+i*y_step),
+			                      nearbyint(z_from+i*z_step)))
+			   	return false;
 		return true;
 	}
 	bool Visible(unsigned short x_from, unsigned short y_from, unsigned short z_from,
 	             unsigned short x_to,   unsigned short y_to,   unsigned short z_to) {
 		short temp;
-		if ((DirVisible(x_from, y_from, z_from, x_to, y_to, z_to)) ||
-			(Transparent(x_to+(temp=(x_to>x_from) ? (-1) : 1), y_to, z_to) && DirVisible(x_from, y_from, z_from, x_to+temp, y_to, z_to)) ||
-			(Transparent(x_to, y_to+(temp=(y_to>y_from) ? (-1) : 1), z_to) && DirVisible(x_from, y_from, z_from, x_to, y_to+temp, z_to)) ||
-			(Transparent(x_to, y_to, z_to+(temp=(z_to>z_from) ? (-1) : 1)) && DirVisible(x_from, y_from, z_from, x_to, y_to, z_to+temp)))		
+		if ((DirectlyVisible(x_from, y_from, z_from, x_to, y_to, z_to)) ||
+			(Transparent(x_to+(temp=(x_to>x_from) ? (-1) : 1), y_to, z_to) && DirectlyVisible(x_from, y_from, z_from, x_to+temp, y_to, z_to)) ||
+			(Transparent(x_to, y_to+(temp=(y_to>y_from) ? (-1) : 1), z_to) && DirectlyVisible(x_from, y_from, z_from, x_to, y_to+temp, z_to)) ||
+			(Transparent(x_to, y_to, z_to+(temp=(z_to>z_from) ? (-1) : 1)) && DirectlyVisible(x_from, y_from, z_from, x_to, y_to, z_to+temp)))
 				return true;
 		return false;
 	}
@@ -234,7 +236,7 @@ class World {
 	int Move(int i, int j, int k, dirs dir) {
 		if (blocks[i][j][k]==NULL)
 			return 1;
-		else if ( !blocks[i][j][k]->Movable() ||
+		if ( !blocks[i][j][k]->Movable() ||
 				(!i && dir==WEST ) ||
 				(!j && dir==NORTH) ||
 				(!k && dir==DOWN ) ||
@@ -242,46 +244,50 @@ class World {
 				(j==shred_width*3-1 && dir==SOUTH) ||
 				(k==height-1 && dir==UP) )
 			return 0;
-		else {
-			int newi=i, newj=j, newk=k;
-			switch (dir) {
-				case NORTH: --newj; break;
-				case SOUTH: ++newj; break;
-				case EAST:  ++newi; break;
-				case WEST:  --newi; break;
-				case UP:    ++newk; break;
-				case DOWN:  --newk; break;
-			}
-			if ( Move(newi, newj, newk, dir) ) {
-				if (blocks[i][j][k]==(Block*)playerP) {
-					playerX=newi;
-					playerY=newj;
-					playerZ=newk;
-					if (playerX==shred_width-1) {
-						playerX+=shred_width;
-						ReloadShreds(WEST);
-					} else if (playerX==shred_width*2) {
-						playerX-=shred_width;
-						ReloadShreds(EAST);
-					} else if (playerY==shred_width-1) {
-						playerY+=shred_width;
-						ReloadShreds(NORTH);
-					} else if (playerY==shred_width*2) {
-						playerY-=shred_width;
-						ReloadShreds(SOUTH);
-					}
-				}
-				Block *temp=blocks[i][j][k];
-				blocks[i][j][k]=blocks[newi][newj][newk];
-				blocks[newi][newj][newk]=temp;
-				return 1;
-			} else return 0;
+		int newi=i, newj=j, newk=k;
+		switch (dir) {
+			case NORTH: --newj; break;
+			case SOUTH: ++newj; break;
+			case EAST:  ++newi; break;
+			case WEST:  --newi; break;
+			case UP:    ++newk; break;
+			case DOWN:  --newk; break;
 		}
+		if ( Move(newi, newj, newk, dir) ) {
+			if (blocks[i][j][k]==(Block*)playerP) {
+				playerX=newi;
+				playerY=newj;
+				playerZ=newk;
+				if (playerX==shred_width-1) {
+					playerX+=shred_width;
+					ReloadShreds(WEST);
+				} else if (playerX==shred_width*2) {
+					playerX-=shred_width;
+					ReloadShreds(EAST);
+				} else if (playerY==shred_width-1) {
+					playerY+=shred_width;
+					ReloadShreds(NORTH);
+				} else if (playerY==shred_width*2) {
+					playerY-=shred_width;
+					ReloadShreds(SOUTH);
+				}
+			}
+			Block *temp=blocks[i][j][k];
+			blocks[i][j][k]=blocks[newi][newj][newk];
+			blocks[newi][newj][newk]=temp;
+			return 1;
+		}
+		return 0;
 	}
 	void Move(dirs dir) { Move(playerX, playerY, playerZ, dir); }
-	subs Id(int i, int j, int k) { return blocks[i][j][k]->Id(); }
-	bool Transparent(int i, int j, int k) {
+	subs Id(int i, int j, int k) {
+		return (NULL==blocks[i][j][k]) ? AIR : blocks[i][j][k]->Id();
+	}
+	bool Transparent(unsigned short i, unsigned short j, unsigned short k) {
 		return (NULL==blocks[i][j][k]) ? true : blocks[i][j][k]->Transparent();
+	}
+	bool HalfTransparent(unsigned short i, unsigned short j, unsigned short k) {
+		return (NULL==blocks[i][j][k]) ? true : blocks[i][j][k]->HalfTransparent();
 	}
 	World() {//generate new world
 		//TODO: add load and save
@@ -375,22 +381,23 @@ class Screen {
 		refresh();
 	}
 	void print() {
-		wstandend(leftWin);
-		box(leftWin,  0, 0);
+		wmove(leftWin, 1, 1);
 		unsigned short i, j, k;
-		for ( j=0; j<shred_width*3; ++j )
+		for ( j=0; j<shred_width*3; ++j, wprintw(leftWin, "\n_") )
 		for ( i=0; i<shred_width*3; ++i )
-			for (k=height-1; k>=0; --k)
-				if ( !w->Transparent(i, j, k) )
+			for (k=height-1; k>=0; --k) //bottom is made from undestructable stone, loop will find what to print everytime
+				if ( !w->Transparent(i, j, k) ) {
 					if ( w->Visible(i, j, k) ) {
 						wattrset(leftWin, Color(i, j, k));
-						mvwprintw( leftWin, j+1, i*2+1, "%c%c", CharName(i, j, k), w->CharNumber(i, j, k) );
-						break;
-					} else {
-						wattrset(leftWin, COLOR_PAIR(BLACK_BLACK));
-						mvwprintw(leftWin, j+1, i*2+1, "  ");
+						wprintw( leftWin, "%c%c", CharName(i, j, k), w->CharNumber(i, j, k) );
 						break;
 					}
+					wattrset(leftWin, COLOR_PAIR(BLACK_BLACK));
+					wprintw(leftWin, "  ");
+					break;
+				}
+		wstandend(leftWin);
+		box(leftWin, 0, 0);
 		wrefresh(leftWin);
 	}
 };

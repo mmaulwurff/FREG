@@ -1,6 +1,6 @@
 Eyecube is a sandbox game.
 
-Language: C++
+C++ with ncurses and pthreads
 Now only singleplayer is developed.
 
 Screenshots of early versions are available here: https://picasaweb.google.com/mmaulwurff/Eyecube?authuser=0&feat=directlink
