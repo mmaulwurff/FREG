@@ -16,6 +16,8 @@
 	*/
 
 #include <ncurses.h>
+#include <pthread.h>
+#include <unistd.h>
 #include <cstdio>
 #include <cmath>
 
@@ -131,12 +133,29 @@ class Dwarf : private Block {
 	}
 };
 
+class World;
+
+class Screen {
+	World * const w; //connected world
+	WINDOW * leftWin;
+	char CharName(unsigned short i, unsigned short j, unsigned short k);
+	int Color(unsigned short i, unsigned short j, unsigned short k);
+	bool screenMute;
+	public:
+	Screen(World *wor);
+	void print();
+};
+
+void *PhysThread(void *vptr_args);
 class World {
 	Block *blocks[shred_width*3][shred_width*3][height];
 	Dwarf * playerP;
 	dirs playerDir;
 	unsigned short playerX, playerY, playerZ;
 	long longitude, latitude;
+	unsigned long time;
+	pthread_t eventsThread;
+	pthread_mutex_t fastMutex;
 	void * CreateBlock(subs id) {
 		switch (id) {
 			case DWARF: return new Dwarf;
@@ -172,6 +191,7 @@ class World {
 	}
 	void ReloadShreds(enum dirs direction) {
 		long i, j;
+		pthread_mutex_lock(&fastMutex);
 		for (i=longitude-1; i<=longitude+1; ++i)
 		for (j=latitude-1;  j<=latitude+1;  ++j)
 			SaveShred(longitude, latitude, (i-longitude+1)*shred_width, (j-latitude+1)*shred_width);
@@ -186,8 +206,15 @@ class World {
 			LoadShred(longitude, latitude, (i-longitude+1)*shred_width, (j-latitude+1)*shred_width);
 		blocks[playerX][playerY][playerZ] =(Block*)( playerP=(Dwarf*)CreateBlock(DWARF) );
 		blocks[shred_width*2-5][shred_width*2-5][height/2]=(Block*)CreateBlock(DWARF);
+		pthread_mutex_unlock(&fastMutex);
 	}
 	public:
+	Screen * scr;
+	void PhysEvents() {
+		++time;
+		if (NULL!=scr) scr->print();
+	}
+	unsigned long Time() { return time; }
 	char CharNumber(unsigned short i, unsigned short j, unsigned short k) {
 		if (i==playerX && j==playerY && k==playerZ)
 			switch (playerDir) {
@@ -289,6 +316,7 @@ class World {
 	bool HalfTransparent(unsigned short i, unsigned short j, unsigned short k) {
 		return (NULL==blocks[i][j][k]) ? true : blocks[i][j][k]->HalfTransparent();
 	}
+	friend void Screen::print();
 	World() {//generate new world
 		//TODO: add load and save
 		FILE * file=fopen("world.txt", "r");
@@ -310,8 +338,14 @@ class World {
 		blocks[playerX][playerY][playerZ] =(Block*)( playerP=(Dwarf*)CreateBlock(DWARF) );
 		blocks[shred_width*2-5][shred_width*2-5][height/2]=(Block*)CreateBlock(DWARF);
 		playerDir=NORTH;
+		time=0;
+		scr=NULL;
+		pthread_mutex_init(&fastMutex, NULL);
+		pthread_create(&eventsThread, NULL, PhysThread, this);
 	}
 	~World() {
+		pthread_cancel(eventsThread);
+		pthread_mutex_destroy(&fastMutex);
 		FILE * file=fopen("world.txt", "w");
 		if ("file!=NULL") {
 			fprintf(file, "longitude: %ld\nlatitude: %ld\nplayerX: %hd\nplayerY: %hd\nplayerZ: %hd\n",
@@ -324,85 +358,99 @@ class World {
 			SaveShred(longitude, latitude, (i-longitude+1)*shred_width, (j-latitude+1)*shred_width);
 	}
 };
+void *PhysThread(void *vptr_args) {
+	while (1) {
+		((World*)vptr_args)->PhysEvents();
+		sleep(1);
+	}
+}
 
-class Screen {
-	World * const w; //connected world
-	WINDOW * leftWin;
-	char CharName(unsigned short i, unsigned short j, unsigned short k) {
-		switch ( w->Id(i, j, k) ) {
-			case STONE: return '#';
-			case SOIL:  return 's';
-			case DWARF: return '@';
-			default: return '?';
-		}
+char Screen::CharName(unsigned short i, unsigned short j, unsigned short k) {
+	switch ( w->Id(i, j, k) ) {
+		case STONE: return '#';
+		case SOIL:  return 's';
+		case DWARF: return '@';
+		default: return '?';
 	}
-	int Color(unsigned short i, unsigned short j, unsigned short k) {
-		switch ( w->Id(i, j, k) ) {
-			case DWARF: return COLOR_PAIR(WHITE_BLUE);
-			default:    return COLOR_PAIR(BLACK_WHITE);
-		}
+}
+void Screen::print() {
+	if (pthread_mutex_trylock(&(w->fastMutex))) {
+		fprintf(stderr, "busy\n");
+		return;
 	}
-	public:
-	Screen(World *wor) : w(wor) {
-		set_escdelay(10);
-		initscr();
-		start_color();
-		raw();
-		noecho();
-		keypad(stdscr, TRUE);
-		curs_set(0);
-		init_pair(BLACK_BLACK,  COLOR_BLACK,  COLOR_BLACK );
-		init_pair(BLACK_RED,    COLOR_BLACK,  COLOR_RED   );
-		init_pair(BLACK_GREEN,  COLOR_BLACK,  COLOR_GREEN );
-		init_pair(BLACK_YELLOW, COLOR_BLACK,  COLOR_YELLOW);
-		init_pair(BLACK_BLUE,   COLOR_BLACK,  COLOR_BLUE  );
-		init_pair(BLACK_CYAN,   COLOR_BLACK,  COLOR_CYAN  );
-		init_pair(BLACK_WHITE,  COLOR_BLACK,  COLOR_WHITE );
-		//
-		init_pair(RED_BLACK,    COLOR_RED,    COLOR_BLACK );
-		init_pair(RED_YELLOW,   COLOR_RED,    COLOR_YELLOW);
-		init_pair(RED_BLUE,     COLOR_RED,    COLOR_BLUE  );
-		init_pair(RED_CYAN,     COLOR_RED,    COLOR_CYAN  );
-		init_pair(RED_WHITE,    COLOR_RED,    COLOR_WHITE );
-		//
-		init_pair(GREEN_BLACK,  COLOR_GREEN,  COLOR_BLACK );
-		init_pair(GREEN_CYAN,   COLOR_GREEN,  COLOR_CYAN  );
-		//
-		init_pair(YELLOW_RED,   COLOR_YELLOW, COLOR_RED   );
-		//
-		init_pair(BLUE_BLACK,   COLOR_BLUE,   COLOR_BLACK );
-		init_pair(BLUE_YELLOW,  COLOR_BLUE,   COLOR_YELLOW);
-		init_pair(BLUE_CYAN,    COLOR_BLUE,   COLOR_CYAN  );
-		//
-		init_pair(WHITE_BLACK,  COLOR_WHITE,  COLOR_BLACK );
-		init_pair(WHITE_BLUE,   COLOR_WHITE,  COLOR_BLUE  );
-		init_pair(WHITE_CYAN,   COLOR_WHITE,  COLOR_CYAN  );
-		leftWin=newwin(shred_width*3+2, shred_width*2*3+2, 0, 0);
-		refresh();
-	}
-	void print() {
-		wmove(leftWin, 1, 1);
-		unsigned short i, j, k;
-		for ( j=0; j<shred_width*3; ++j, wprintw(leftWin, "\n_") )
-		for ( i=0; i<shred_width*3; ++i )
-			for (k=height-1; k>=0; --k) //bottom is made from undestructable stone, loop will find what to print everytime
-				if ( !w->Transparent(i, j, k) ) {
-					if ( w->Visible(i, j, k) ) {
-						wattrset(leftWin, Color(i, j, k));
-						wprintw( leftWin, "%c%c", CharName(i, j, k), w->CharNumber(i, j, k) );
-						break;
-					}
-					wattrset(leftWin, COLOR_PAIR(BLACK_BLACK));
-					wprintw(leftWin, "  ");
+	fprintf(stderr, "printstar ");
+	//if (screenMute) return;
+	//screenMute=true;
+	wmove(leftWin, 1, 1);
+	unsigned short i, j, k;
+	for ( j=0; j<shred_width*3; ++j, wprintw(leftWin, "\n_") )
+	for ( i=0; i<shred_width*3; ++i )
+		for (k=height-1; k>=0; --k) //bottom is made from undestructable stone, loop will find what to print everytime
+			if ( !w->Transparent(i, j, k) ) {
+				if ( w->Visible(i, j, k) ) {
+					wattrset(leftWin, Color(i, j, k));
+					wprintw( leftWin, "%c%c", CharName(i, j, k), w->CharNumber(i, j, k) );
 					break;
 				}
-		wstandend(leftWin);
-		box(leftWin, 0, 0);
-		wrefresh(leftWin);
+				wattrset(leftWin, COLOR_PAIR(BLACK_BLACK));
+				wprintw(leftWin, "  ");
+				break;
+			}
+	wstandend(leftWin);
+	box(leftWin, 0, 0);
+	wprintw(leftWin, "%ld", w->Time());
+	wrefresh(leftWin);
+	pthread_mutex_unlock(&(w->fastMutex));
+	fprintf(stderr, "printend\n");
+	//screenMute=false;
+}
+int Screen::Color(unsigned short i, unsigned short j, unsigned short k) {
+	switch ( w->Id(i, j, k) ) {
+		case DWARF: return COLOR_PAIR(WHITE_BLUE);
+		default:    return COLOR_PAIR(BLACK_WHITE);
 	}
-};
+}
+Screen::Screen(World *wor) : w(wor) {
+	set_escdelay(10);
+	initscr();
+	start_color();
+	raw();
+	noecho();
+	keypad(stdscr, TRUE);
+	curs_set(0);
+	init_pair(BLACK_BLACK,  COLOR_BLACK,  COLOR_BLACK );
+	init_pair(BLACK_RED,    COLOR_BLACK,  COLOR_RED   );
+	init_pair(BLACK_GREEN,  COLOR_BLACK,  COLOR_GREEN );
+	init_pair(BLACK_YELLOW, COLOR_BLACK,  COLOR_YELLOW);
+	init_pair(BLACK_BLUE,   COLOR_BLACK,  COLOR_BLUE  );
+	init_pair(BLACK_CYAN,   COLOR_BLACK,  COLOR_CYAN  );
+	init_pair(BLACK_WHITE,  COLOR_BLACK,  COLOR_WHITE );
+	//
+	init_pair(RED_BLACK,    COLOR_RED,    COLOR_BLACK );
+	init_pair(RED_YELLOW,   COLOR_RED,    COLOR_YELLOW);
+	init_pair(RED_BLUE,     COLOR_RED,    COLOR_BLUE  );
+	init_pair(RED_CYAN,     COLOR_RED,    COLOR_CYAN  );
+	init_pair(RED_WHITE,    COLOR_RED,    COLOR_WHITE );
+	//
+	init_pair(GREEN_BLACK,  COLOR_GREEN,  COLOR_BLACK );
+	init_pair(GREEN_CYAN,   COLOR_GREEN,  COLOR_CYAN  );
+	//
+	init_pair(YELLOW_RED,   COLOR_YELLOW, COLOR_RED   );
+	//
+	init_pair(BLUE_BLACK,   COLOR_BLUE,   COLOR_BLACK );
+	init_pair(BLUE_YELLOW,  COLOR_BLUE,   COLOR_YELLOW);
+	init_pair(BLUE_CYAN,    COLOR_BLUE,   COLOR_CYAN  );
+	//
+	init_pair(WHITE_BLACK,  COLOR_WHITE,  COLOR_BLACK );
+	init_pair(WHITE_BLUE,   COLOR_WHITE,  COLOR_BLUE  );
+	init_pair(WHITE_CYAN,   COLOR_WHITE,  COLOR_CYAN  );
+	leftWin=newwin(shred_width*3+2, shred_width*2*3+2, 0, 0);
+	refresh();
+	w->scr=this;
+	screenMute=false;
+}
 
-int main() {
+void *PlayerThread(void *vptr_args) {
 	World earth;
 	Screen screen(&earth);
 	char c;
@@ -412,6 +460,20 @@ int main() {
 			case 'o': earth.Move(SOUTH); screen.print(); break;
 			case 'e': earth.Move(EAST ); screen.print(); break;
 			case 'a': earth.Move(WEST ); screen.print(); break;
+		}
+	}
+	*((bool*)vptr_args)=true; //stop signal
+}
+
+int main() {
+	bool signalStop=false;
+	pthread_t playerThread;
+	pthread_create(&playerThread, NULL, PlayerThread, &signalStop);
+	while (1) {
+		sleep(1);
+		if (signalStop) {
+			pthread_cancel(playerThread);
+			return 0;
 		}
 	}
 }
