@@ -1,7 +1,17 @@
-Eyecube is a sandbox game.
+Eyecube is an open world game with destructible and buildable environment.
+Inspired by Minecraft and Angband.
 
-C++ with ncurses and pthreads
-Now only singleplayer is developed.
+Development stage: implementing basics.
+
+Language: C++
+Non-standard libraries: ncurses, pthreads
+
+Compile:
+g++  -lncurses -pthread main.cpp
+
+Development is run on GNU/Linux, but on MS Windows should work too with PDCurses ( http://pdcurses.sourceforge.net/ ) and Pthreads-w32 ( http://sources.redhat.com/pthreads-win32/ ).
+
+Now only singleplayer is developed, multiplayer is planned.
 
 Screenshots of early versions are available here: https://picasaweb.google.com/mmaulwurff/Eyecube?authuser=0&feat=directlink
 
