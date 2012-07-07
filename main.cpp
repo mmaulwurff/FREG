@@ -20,11 +20,14 @@
 #include <unistd.h>
 #include <cstdio>
 #include <cmath>
+#include <string.h>
 
 int abs(int number) { return (number<0) ? (-number) : number; }
 
 const unsigned short shred_width=10;
 const unsigned short height=100;
+const unsigned short full_name_length=30;
+void WriteName(char * str, const char * name) { strncpy(str, name, full_name_length); }
 enum subs {
 	AIR, //though there is no air block.
 	STONE,
@@ -126,11 +129,21 @@ class Block { //blocks without special physics and attributes
 	dirs GetDir() { return direction; }
 	void SetDir(dirs dir) { direction=dir; }
 	subs Id() { return id; }
+	virtual bool Stackable() { return  true; }
 	virtual int Movable() { return NOT_MOVABLE; }
 	virtual int Transparent() {
 		switch (id) {
 			case GLASS: return 1;
 			default: return 0; //0 - totally invisible blocks, 1 - block is visible, but light can pass through it, 2 - invisible
+		}
+	}
+	virtual void FullName(char * str) {
+		switch (id) {
+			case STONE: WriteName(str, "Stone"); break;
+			case NULLSTONE: WriteName(str, "Undestructible nullstone"); break;
+			case SOIL: WriteName(str, "Soil"); break;
+			case GLASS: WriteName(str, "Glass"); break;
+			default: WriteName(str, "Some unknown thing");
 		}
 	}
 	Block(subs n) : id(n), shown_mass(1), mass(1), direction(NORTH) {}
@@ -141,24 +154,47 @@ class Animal : public Block {
 	int health;
 	public:
 	virtual int Movable() { return MOVABLE; }
+	virtual bool Stackable() { return false; }
+	virtual void FullName(char * str) {
+		switch (id) {
+			default: WriteName(str, "Some animal");
+		}
+	}
 	Animal(subs n) : Block::Block(n) {}
 };
 
 class Dwarf : public Animal {
+	struct {
+		Block * block;
+		unsigned short number;
+	} inventory[20];
+	Block * onHead;
+	Block * onBody;
+	Block * onFeet;
+	Block * onArms;
+	Block * inLeftHand;
+	Block * inRightHand;
 	public:
 	Dwarf() : Animal::Animal(DWARF) {}
+	virtual void FullName(char * str) {
+		switch (id) {
+			default: WriteName(str, "Dwarf");
+		}
+	}
 };
 
 class Screen {
 	World * const w; //connected world
-	WINDOW * leftWin;
-	WINDOW * rightWin;
+	WINDOW * leftWin,
+	       * rightWin,
+	       * notifyWin;
 	char CharName(unsigned short i, unsigned short j, unsigned short k);
 	int Color(unsigned short i, unsigned short j, unsigned short k);
 	public:
 	Screen(World *wor);
 	~Screen();
 	void Print();
+	void Notify(char *);
 };
 
 void *PhysThread(void *vptr_args);
@@ -183,9 +219,24 @@ class World {
 	bool Visible(int x_to, int y_to, int z_to) { return Visible(playerX, playerY, playerZ, x_to, y_to, z_to); }
 	int  Move(int, int, int, dirs);
 	void Jump(int, int, int);
+	void Focus(int i, int j, int k, int & i_target, int & j_target, int & k_target) {
+		i_target=i;
+		j_target=j;
+		k_target=k;
+		switch ( blocks[i][j][k]->GetDir() ) {
+			case NORTH: --j_target; break;
+			case SOUTH: ++j_target; break;
+			case EAST:  ++i_target; break;
+			case WEST:  --i_target; break;
+			case DOWN:  --k_target; break;
+			case UP:    ++k_target; break;
+		}
+	}
+	void PlayerFocus(int & i_target, int & j_target, int & k_target) { Focus(playerX, playerY, playerZ, i_target, j_target, k_target); }
 	void SetPlayerDir(dirs dir) { playerP->SetDir(dir); }
 	dirs GetPlayerDir() { return playerP->GetDir(); }
 	void GetPlayerCoords(short * const x, short * const y, short * const z) { *x=playerX; *y=playerY; *z=playerZ; }
+	void FullName(char * str, int i, int j, int k) { (NULL==blocks[i][j][k]) ? WriteName(str, "Air") : blocks[i][j][k]->FullName(str); }
 	subs Id(int i, int j, int k)          { return (NULL==blocks[i][j][k]) ? AIR : blocks[i][j][k]->Id(); }
 	int  Transparent(int i, int j, int k) { return (NULL==blocks[i][j][k]) ? 2 : blocks[i][j][k]->Transparent(); }
 	int  Movable(Block * block)           { return (NULL==block) ? GAS : block->Movable(); }
@@ -445,7 +496,6 @@ void Screen::Print() {
 		return;
 	//left window
 	wmove(leftWin, 1, 1);
-	//unsigned short i, j, k;
 	short i, j, k;
 	for ( j=0; j<shred_width*3; ++j, waddstr(leftWin, "\n_") )
 	for ( i=0; i<shred_width*3; ++i )
@@ -468,15 +518,17 @@ void Screen::Print() {
 		mvwaddstr(leftWin, 0, 1, "Normal View");
 	//wprintw(leftWin, "%ld", w->Time());
 	wrefresh(leftWin);
-	if ( UP==w->GetPlayerDir() || DOWN==w->GetPlayerDir() ) return;
+	if ( UP==w->GetPlayerDir() || DOWN==w->GetPlayerDir() ) {
+		wclear(rightWin);
+		wrefresh(rightWin);
+		return;
+	}
 	//right window
 	short pX, pY, pZ,
-	    x_step, z_step,
-	    x_end, z_end,
-	    * x, * z;
-	unsigned short //* x, *z,
-	               x_start, z_start,
-	//	       x_end, z_end,
+	      x_step, z_step,
+	      x_end, z_end,
+	      * x, * z;
+	unsigned short x_start, z_start,
 	               k_start,
 	               arrow_Y, arrow_X;
 	w->GetPlayerCoords(&pX, &pY, &pZ);
@@ -501,7 +553,7 @@ void Screen::Print() {
 			z_step=1;
 			z_start=pY+1;
 			z_end=shred_width*3;
-			arrow_X=(shred_width*3-pX)*2;
+			arrow_X=(shred_width*3-pX)*2-1;
 		break;
 		case WEST:
 			x=&j;
@@ -537,39 +589,44 @@ void Screen::Print() {
 		arrow_Y=shred_width*1.5+1;
 	}
 	wmove(rightWin, 1, 1);
-	for (k=k_start; k_start-k<=shred_width*3; --k, waddstr(rightWin, "\n_"))
-	for (*x=x_start; *x!=x_end; *x+=x_step) {
-		for (*z=z_start; *z!=z_end; *z+=z_step)
-			if (w->Transparent(i, j, k) < 2) {
-				if ( w->Visible(i, j, k) ) {
-					wattrset(rightWin, Color(i, j, k));
-					wprintw( rightWin, "%c%c", CharName(i, j, k), w->CharNumberFront(i, j) );
+	for (k=k_start; k_start-k<shred_width*3; --k, waddstr(rightWin, "\n_"))
+		for (*x=x_start; *x!=x_end; *x+=x_step) {
+			for (*z=z_start; *z!=z_end; *z+=z_step)
+				if (w->Transparent(i, j, k) < 2) {
+					if ( w->Visible(i, j, k) ) {
+						wattrset(rightWin, Color(i, j, k));
+						wprintw( rightWin, "%c%c", CharName(i, j, k), w->CharNumberFront(i, j) );
+					} else {
+						wattrset(rightWin, COLOR_PAIR(BLACK_BLACK));
+						wprintw(rightWin, "  ");
+					}
+					break;
+				}
+			if (*z==z_end) { //print background decorations
+				*z-=z_step;
+				if (w->Visible(i, j, k)) {
+				       	wattrset(rightWin, COLOR_PAIR(WHITE_BLUE));
+					wprintw(rightWin, " .");
 				} else {
 					wattrset(rightWin, COLOR_PAIR(BLACK_BLACK));
-					wprintw(rightWin, "  ");
+					waddstr(rightWin, "  ");
 				}
-				break;
-			}
-		if (*z==z_end) { //print background decorations
-			*z-=z_step;
-			if (w->Visible(i, j, k)) {
-			       	wattrset(rightWin, COLOR_PAIR(WHITE_BLUE));
-				wprintw(rightWin, " .");
-			} else {
-				wattrset(rightWin, COLOR_PAIR(BLACK_BLACK));
-				waddstr(rightWin, "  ");
 			}
 		}
-	}
 	wstandend(rightWin);
 	box(rightWin, 0, 0);
 	mvwaddstr(rightWin, 0, 1, "Front View");
-	mvwprintw(rightWin, 0,               arrow_X,            "vv");
-	mvwprintw(rightWin, shred_width*3+1, arrow_X,            "^^");
+	mvwprintw(rightWin, 0,               arrow_X,           "vv");
+	mvwprintw(rightWin, shred_width*3+1, arrow_X,           "^^");
 	mvwprintw(rightWin, arrow_Y,         0,                 ">");
 	mvwprintw(rightWin, arrow_Y,         shred_width*3*2+1, "<");
 	wrefresh(rightWin);
 	pthread_mutex_unlock(&(w->mutex));
+}
+void Screen::Notify(char * str) {
+	mvwprintw(notifyWin, 1, 1, "%s", str);
+	box(notifyWin, 0, 0);
+	wrefresh(notifyWin);
 }
 int Screen::Color(unsigned short i, unsigned short j, unsigned short k) {
 	switch ( w->Id(i, j, k) ) {
@@ -600,12 +657,15 @@ Screen::Screen(World *wor) : w(wor) {
 	};
 	for (i=BLACK_BLACK; i<=WHITE_WHITE; ++i)
 		init_pair(i, colors[(i-1)/8], colors[(i-1)%8]  );
-	leftWin =newwin(shred_width*3+2, shred_width*2*3+2, 0, 0);
-	rightWin=newwin(shred_width*3+2, shred_width*2*3+2, 0, shred_width*2*3+2);
+	leftWin  =newwin(shred_width*3+2, shred_width*2*3+2, 0, 0);
+	rightWin =newwin(shred_width*3+2, shred_width*2*3+2, 0, shred_width*2*3+2);
+	notifyWin=newwin(5, (shred_width*2*3+2)*2, shred_width*3+2, 0);
 	w->scr=this;
 }
 Screen::~Screen() {
 	delwin(leftWin);
+	delwin(rightWin);
+	delwin(notifyWin);
 	endwin();
 	w->scr=NULL;
 }
@@ -628,6 +688,13 @@ int main() {
 			case KEY_UP:    earth.SetPlayerDir(NORTH); break;
 			case 'v':       earth.SetPlayerDir(DOWN);  break;
 			case '^':       earth.SetPlayerDir(UP);    break;
+			case '?': {
+				int i, j, k;
+				earth.PlayerFocus(i, j, k);
+				char str[full_name_length];
+				earth.FullName(str, i, j, k);
+				screen.Notify(str);
+			} break;
 		}
 		if (print_flag) screen.Print();
 	}
