@@ -26,16 +26,10 @@ int abs(int number) { return (number<0) ? (-number) : number; }
 
 const unsigned short shred_width=10;
 const unsigned short height=100;
-const unsigned short full_name_length=30;
+const unsigned short full_name_length=20;
+const unsigned short inventory_size=26;
+const unsigned short max_stack_num=9; //num_str in Screen::PrintInv must be big enough
 void WriteName(char * str, const char * name) { strncpy(str, name, full_name_length); }
-enum subs {
-	AIR, //though there is no air block.
-	STONE,
-	NULLSTONE,
-	SOIL,
-	DWARF,
-	GLASS
-};
 enum color_pairs { //do not change colors order!
         BLACK_BLACK=1,
         BLACK_RED,
@@ -109,23 +103,32 @@ enum color_pairs { //do not change colors order!
         WHITE_CYAN,
         WHITE_WHITE,
 };
+enum special_views { NONE, INVENTORY };
 enum dirs { NORTH, SOUTH, EAST, WEST, UP, DOWN };
 enum { NOT_MOVABLE, MOVABLE,  GAS };
+enum subs {
+	AIR, //though there is no air block.
+	STONE,
+	NULLSTONE,
+	SOIL,
+	DWARF,
+	GLASS
+};
 
 class World;
 class Block { //blocks without special physics and attributes
 	protected:
 	const subs id;
-	int mass;
-	int shown_mass;
+	double weight;
+	int shown_weight;
 	dirs direction;
 	public:
-	void SetMass(int m) { 
-		mass=shown_mass;
-		shown_mass=m;
+	void SetWeight(double m) { 
+		weight=shown_weight;
+		shown_weight=m;
 	}
-	void SetMass() { shown_mass=mass; }
-	int Mass() { return shown_mass; }
+	void SetWeight() { shown_weight=weight; }
+	double Weight() { return shown_weight; }
 	dirs GetDir() { return direction; }
 	void SetDir(dirs dir) { direction=dir; }
 	subs Id() { return id; }
@@ -140,13 +143,13 @@ class Block { //blocks without special physics and attributes
 	virtual void FullName(char * str) {
 		switch (id) {
 			case STONE: WriteName(str, "Stone"); break;
-			case NULLSTONE: WriteName(str, "Undestructible nullstone"); break;
+			case NULLSTONE: WriteName(str, "Nullstone"); break;
 			case SOIL: WriteName(str, "Soil"); break;
 			case GLASS: WriteName(str, "Glass"); break;
 			default: WriteName(str, "Some unknown thing");
 		}
 	}
-	Block(subs n) : id(n), shown_mass(1), mass(1), direction(NORTH) {}
+	Block(subs n) : id(n), shown_weight(1), weight(1), direction(NORTH) {}
 };
 
 class Animal : public Block {
@@ -167,15 +170,35 @@ class Dwarf : public Animal {
 	struct {
 		Block * block;
 		unsigned short number;
-	} inventory[20];
-	Block * onHead;
-	Block * onBody;
-	Block * onFeet;
-	Block * onArms;
-	Block * inLeftHand;
-	Block * inRightHand;
+	} inventory[inventory_size];
+	Block * &onHead;
+	Block * &onBody;
+	Block * &onFeet;
+	Block * &inRightHand;
+	Block * &inLeftHand;
 	public:
-	Dwarf() : Animal::Animal(DWARF) {}
+	Dwarf() : Animal::Animal(DWARF), onHead(inventory[0].block), onBody(inventory[1].block), onFeet(inventory[2].block),
+			inRightHand(inventory[3].block), inLeftHand(inventory[4].block) {
+		unsigned short i;
+		for (i=0; i<inventory_size; ++i) {
+			inventory[i].block=new Block(STONE);
+			inventory[i].number=2;
+		}
+	}
+	~Dwarf() {
+		unsigned short i;
+		for (i=0; i<inventory_size; ++i)
+			delete inventory[i].block;
+	}
+	void FullName(char * str, int i) { (NULL==inventory[i].block) ? WriteName(str, "") : inventory[i].block->FullName(str); }
+	void NumStr(char * str, int i) {
+		if (1==inventory[i].number)
+			strcpy(str, "");
+		else
+			sprintf(str, "(%hdx) ", inventory[i].number);
+	}
+	double GetInvWeight(int i) { return (NULL==inventory[i].block) ? 0 : inventory[i].block->Weight()*inventory[i].number; }
+	subs GetInvId(int i) { return (NULL==inventory[i].block) ? AIR : inventory[i].block->Id(); }
 	virtual void FullName(char * str) {
 		switch (id) {
 			default: WriteName(str, "Dwarf");
@@ -189,12 +212,22 @@ class Screen {
 	       * rightWin,
 	       * notifyWin;
 	char CharName(unsigned short i, unsigned short j, unsigned short k);
-	int Color(unsigned short i, unsigned short j, unsigned short k);
+	void PrintInv();
 	public:
+	special_views view;
 	Screen(World *wor);
 	~Screen();
+	int Color(subs);
+	int Color(unsigned short i, unsigned short j, unsigned short k);
 	void Print();
 	void Notify(char *);
+	void InvOnOff() {
+		if (NONE==view) {
+			view=INVENTORY;
+			wclear(rightWin);
+		} else
+			view=NONE;
+	}
 };
 
 void *PhysThread(void *vptr_args);
@@ -236,17 +269,18 @@ class World {
 	void SetPlayerDir(dirs dir) { playerP->SetDir(dir); }
 	dirs GetPlayerDir() { return playerP->GetDir(); }
 	void GetPlayerCoords(short * const x, short * const y, short * const z) { *x=playerX; *y=playerY; *z=playerZ; }
+	Dwarf * GetPlayerP() { return playerP; }
 	void FullName(char * str, int i, int j, int k) { (NULL==blocks[i][j][k]) ? WriteName(str, "Air") : blocks[i][j][k]->FullName(str); }
 	subs Id(int i, int j, int k)          { return (NULL==blocks[i][j][k]) ? AIR : blocks[i][j][k]->Id(); }
 	int  Transparent(int i, int j, int k) { return (NULL==blocks[i][j][k]) ? 2 : blocks[i][j][k]->Transparent(); }
 	int  Movable(Block * block)           { return (NULL==block) ? GAS : block->Movable(); }
-	int  Mass(Block * block)              { return (NULL==block) ? 0 : block->Mass(); }
+	double Weight(Block * block)          { return (NULL==block) ? 0 : block->Weight(); }
 	int  PlayerMove(dirs dir)             { return Move( playerX, playerY, playerZ, dir ); }
 	int  PlayerMove()                     { return Move( playerX, playerY, playerZ, playerP->GetDir() ); }
 	void PlayerJump() {
-		playerP->SetMass(0);
+		playerP->SetWeight(0);
 		if ( PlayerMove(UP) ) PlayerMove();
-		playerP->SetMass();
+		playerP->SetWeight();
 		PlayerMove(DOWN);
 	}
 	unsigned long Time() { return time; }
@@ -382,12 +416,12 @@ int World::Move(int i, int j, int k, dirs dir) {
 		Block *temp=blocks[i][j][k];
 		blocks[i][j][k]=blocks[newi][newj][newk];
 		blocks[newi][newj][newk]=temp;
-		int mass;
-		if ( mass=Mass(blocks[i][j][k]) )
-			if (mass>0) Move(i, j, k, DOWN);
+		int weight;
+		if ( weight=Weight(blocks[i][j][k]) )
+			if (weight>0) Move(i, j, k, DOWN);
 			else        Move(i, j, k, UP);
-		if ( mass=Mass(blocks[newi][newj][newk]) )
-			if (mass>0) newk-=Move(newi, newj, newk, DOWN);
+		if ( weight=Weight(blocks[newi][newj][newk]) )
+			if (weight>0) newk-=Move(newi, newj, newk, DOWN);
 			else        newk+=Move(newi, newj, newk, UP);
 		if (blocks[newi][newj][newk]==(Block*)playerP) {
 			playerX=newi;
@@ -415,7 +449,7 @@ int World::Move(int i, int j, int k, dirs dir) {
 }
 void World::Jump(int i, int j, int k) {
 	if ( NULL!=blocks[i][j][k] && blocks[i][j][k]->Movable() ) {
-		blocks[i][j][k]->SetMass(0);
+		blocks[i][j][k]->SetWeight(0);
 		if ( Move(i, j, k, UP) ) {
 			++k;
 			dirs dir;
@@ -429,7 +463,7 @@ void World::Jump(int i, int j, int k) {
 					case DOWN:  --k; break;
 				}
 		}
-		blocks[i][j][k]->SetMass();
+		blocks[i][j][k]->SetWeight();
 		Move(i, j, k, DOWN);
 	}
 }
@@ -516,14 +550,16 @@ void Screen::Print() {
 		mvwaddstr(leftWin, 0, 1, "Sky View");
 	else 
 		mvwaddstr(leftWin, 0, 1, "Normal View");
-	//wprintw(leftWin, "%ld", w->Time());
 	wrefresh(leftWin);
-	if ( UP==w->GetPlayerDir() || DOWN==w->GetPlayerDir() ) {
+	//right window
+	if (INVENTORY==view) {
+		PrintInv();
+		return;
+	} else if ( UP==w->GetPlayerDir() || DOWN==w->GetPlayerDir() ) {
 		wclear(rightWin);
 		wrefresh(rightWin);
 		return;
 	}
-	//right window
 	short pX, pY, pZ,
 	      x_step, z_step,
 	      x_end, z_end,
@@ -623,20 +659,51 @@ void Screen::Print() {
 	wrefresh(rightWin);
 	pthread_mutex_unlock(&(w->mutex));
 }
+void Screen::PrintInv() {
+	//wclear(rightWin);
+	Dwarf * player=w->GetPlayerP();
+	unsigned short i;
+	double sum_weight=0, temp_weight;
+	char str[full_name_length],
+	     num_str[6];
+	mvwaddstr(rightWin, 1, 50, "Weight");
+	mvwaddstr(rightWin, 2, 4, "On head:");
+	mvwaddstr(rightWin, 3, 4, "On body:");
+	mvwaddstr(rightWin, 4, 4, "On feet:");
+	mvwaddstr(rightWin, 5, 4, "In right hand:");
+	mvwaddstr(rightWin, 6, 4, "In left hand:");
+	for (i=0; i<inventory_size; ++i) {
+		player->FullName(str, i);
+		player->NumStr(num_str, i);
+		mvwprintw(rightWin, 2+i, 20, "%c) %s", 'a'+i, num_str);
+		wattrset( rightWin, Color(player->GetInvId(i)) );
+		wprintw(rightWin, "%s", str);
+		wstandend(rightWin);
+		if ('\0'!=str[0]) {
+			mvwprintw(rightWin, 2+i, 50, "%2.1f kg", temp_weight=player->GetInvWeight(i));
+			sum_weight+=temp_weight;
+		}
+	}
+	mvwprintw(rightWin, 2+i, 43, "Sum:%6.1f kg", sum_weight);
+	box(rightWin, 0, 0);
+	mvwprintw(rightWin, 0, 1, "Inventory");
+	wrefresh(rightWin);
+}
 void Screen::Notify(char * str) {
 	mvwprintw(notifyWin, 1, 1, "%s", str);
 	box(notifyWin, 0, 0);
 	wrefresh(notifyWin);
 }
-int Screen::Color(unsigned short i, unsigned short j, unsigned short k) {
-	switch ( w->Id(i, j, k) ) {
+int Screen::Color(subs sub) {
+	switch (sub) {
 		case DWARF:     return COLOR_PAIR(WHITE_BLUE);
 		case GLASS:     return COLOR_PAIR(BLUE_WHITE);
 		case NULLSTONE: return COLOR_PAIR(WHITE_BLACK);
 		default:        return COLOR_PAIR(BLACK_WHITE);
 	}
 }
-Screen::Screen(World *wor) : w(wor) {
+inline int Screen::Color(unsigned short i, unsigned short j, unsigned short k) { return Color( w->Id(i, j, k) ); }
+Screen::Screen(World *wor) : w(wor), view(NONE) {
 	set_escdelay(10);
 	initscr();
 	start_color();
@@ -656,7 +723,7 @@ Screen::Screen(World *wor) : w(wor) {
 		COLOR_WHITE
 	};
 	for (i=BLACK_BLACK; i<=WHITE_WHITE; ++i)
-		init_pair(i, colors[(i-1)/8], colors[(i-1)%8]  );
+		init_pair(i, colors[(i-1)/8], colors[(i-1)%8]);
 	leftWin  =newwin(shred_width*3+2, shred_width*2*3+2, 0, 0);
 	rightWin =newwin(shred_width*3+2, shred_width*2*3+2, 0, shred_width*2*3+2);
 	notifyWin=newwin(5, (shred_width*2*3+2)*2, shred_width*3+2, 0);
@@ -688,6 +755,7 @@ int main() {
 			case KEY_UP:    earth.SetPlayerDir(NORTH); break;
 			case 'v':       earth.SetPlayerDir(DOWN);  break;
 			case '^':       earth.SetPlayerDir(UP);    break;
+			case 'i': screen.InvOnOff(); break;
 			case '?': {
 				int i, j, k;
 				earth.PlayerFocus(i, j, k);
