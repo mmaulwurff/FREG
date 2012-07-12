@@ -29,6 +29,8 @@ const unsigned short height=100;
 const unsigned short full_name_length=20;
 const unsigned short inventory_size=26;
 const unsigned short max_stack_num=9; //num_str in Screen::PrintInv must be big enough
+const unsigned short seconds_in_hour=60;
+const unsigned short seconds_in_day=24*60;
 void WriteName(char * str, const char * name) { strncpy(str, name, full_name_length); }
 enum color_pairs { //do not change colors order!
         BLACK_BLACK=1,
@@ -106,13 +108,17 @@ enum color_pairs { //do not change colors order!
 enum special_views { NONE, INVENTORY };
 enum dirs { NORTH, SOUTH, EAST, WEST, UP, DOWN };
 enum { NOT_MOVABLE, MOVABLE,  GAS };
+enum { MORNING, NOON, EVENING, NIGHT };
 enum subs {
 	AIR, //though there is no air block.
 	STONE,
 	NULLSTONE,
+	SKY,
+	STAR,
 	SOIL,
 	DWARF,
-	GLASS
+	GLASS,
+	CHEST
 };
 
 class World;
@@ -146,6 +152,7 @@ class Block { //blocks without special physics and attributes
 			case NULLSTONE: WriteName(str, "Nullstone"); break;
 			case SOIL: WriteName(str, "Soil"); break;
 			case GLASS: WriteName(str, "Glass"); break;
+			case SKY: WriteName(str, "Sky"); break;
 			default: WriteName(str, "Some unknown thing");
 		}
 	}
@@ -165,8 +172,13 @@ class Animal : public Block {
 	}
 	Animal(subs n) : Block::Block(n) {}
 };
-
-class Dwarf : public Animal {
+/*
+class Chest: public Block {
+	public:
+	Chest() : Block::Block(CHEST) {}
+};
+*/
+class Dwarf : public Animal {//, public Chest {
 	struct {
 		Block * block;
 		unsigned short number;
@@ -225,9 +237,11 @@ class Screen {
 		if (NONE==view) {
 			view=INVENTORY;
 			wclear(rightWin);
+			wrefresh(rightWin);
 		} else
 			view=NONE;
 	}
+	void UpDownView(dirs);
 };
 
 void *PhysThread(void *vptr_args);
@@ -242,6 +256,12 @@ class World {
 	void LoadShred(long, long, unsigned short, unsigned short);
 	void SaveShred(long, long, unsigned short, unsigned short);
 	void ReloadShreds(dirs);
+	bool random_prob(unsigned short prob) {
+		FILE *file=fopen("/dev/urandom", "rb");
+		char c=fgetc(file);
+		fclose(file);
+		return (128+c<prob*2.55) ? true : false;
+	}
 	public:
 	Screen * scr;
 	void PhysEvents();
@@ -270,6 +290,14 @@ class World {
 	dirs GetPlayerDir() { return playerP->GetDir(); }
 	void GetPlayerCoords(short * const x, short * const y, short * const z) { *x=playerX; *y=playerY; *z=playerZ; }
 	Dwarf * GetPlayerP() { return playerP; }
+	unsigned long GetTime() { return time; }
+	int TimeOfDay() {
+		unsigned short time_day=time%(24*60);
+		if (time_day< 6*60) return NIGHT;
+		if (time_day<12*60) return MORNING;
+		if (time_day<18*60) return NOON;
+		return EVENING;
+	}
 	void FullName(char * str, int i, int j, int k) { (NULL==blocks[i][j][k]) ? WriteName(str, "Air") : blocks[i][j][k]->FullName(str); }
 	subs Id(int i, int j, int k)          { return (NULL==blocks[i][j][k]) ? AIR : blocks[i][j][k]->Id(); }
 	int  Transparent(int i, int j, int k) { return (NULL==blocks[i][j][k]) ? 2 : blocks[i][j][k]->Transparent(); }
@@ -308,6 +336,9 @@ void World::LoadShred(long longi, long lati, unsigned short istart, unsigned sho
 		delete blocks [istart+3][jstart+3][k];
 		blocks[istart+3][jstart+3][k]=NULL;
 	}
+	for (i=istart; i<istart+shred_width; ++i)
+	for (j=jstart; j<jstart+shred_width; ++j)
+		blocks[i][j][height-1]=new Block( random_prob(19) ? STAR : SKY );
 }
 void World::SaveShred(long longi, long lati, unsigned short istart, unsigned short jstart) {
 	unsigned short i, j, k;
@@ -317,6 +348,7 @@ void World::SaveShred(long longi, long lati, unsigned short istart, unsigned sho
 			delete blocks[i][j][k];
 }
 void World::ReloadShreds(dirs direction) { //ReloadShreds is called from Move, so there is no need to use mutex in this function
+	dirs save_dir=GetPlayerDir();
 	long i, j;
 	for (i=longitude-1; i<=longitude+1; ++i)
 	for (j=latitude-1;  j<=latitude+1;  ++j)
@@ -330,7 +362,8 @@ void World::ReloadShreds(dirs direction) { //ReloadShreds is called from Move, s
 	for (i=longitude-1; i<=longitude+1; ++i)
 	for (j=latitude-1;  j<=latitude+1;  ++j)
 		LoadShred(longitude, latitude, (i-longitude+1)*shred_width, (j-latitude+1)*shred_width);
-	blocks[playerX][playerY][playerZ] =(Block*)( playerP=new Dwarf );
+	blocks[playerX][playerY][playerZ]=(Block*)(playerP=new Dwarf);
+	SetPlayerDir(save_dir);
 	blocks[shred_width*2-5][shred_width*2-5][height/2]=(Block *)new Dwarf;
 }
 void World::PhysEvents() {
@@ -339,6 +372,7 @@ void World::PhysEvents() {
 	if (NULL!=scr) scr->Print();
 }
 char World::CharNumber(int i, int j, int k) {
+	if (height-1==k) return ' ';
 	if (i==playerX && j==playerY && k==playerZ)
 		switch ( playerP->GetDir() ) {
 			case NORTH: return '^';
@@ -487,7 +521,7 @@ World::World() {
 		LoadShred(longitude, latitude, (i-longitude+1)*shred_width, (j-latitude+1)*shred_width);
 	blocks[playerX][playerY][playerZ] =(Block*)( playerP=new Dwarf );
 	blocks[shred_width*2-5][shred_width*2-5][height/2]=(Block*)new Dwarf;
-	time=0;
+	time=19*60;
 	scr=NULL;
 	pthread_mutexattr_t mutex_attr;
 	pthread_mutexattr_settype(&mutex_attr, PTHREAD_MUTEX_RECURSIVE);
@@ -522,6 +556,8 @@ char Screen::CharName(unsigned short i, unsigned short j, unsigned short k) {
 		case SOIL:  return 's';
 		case DWARF: return '@';
 		case GLASS: return 'g';
+		case SKY:   return ' ';
+		case STAR:  return '.';
 		default: return '?';
 	}
 }
@@ -529,11 +565,22 @@ void Screen::Print() {
 	if (pthread_mutex_trylock(&(w->mutex)))
 		return;
 	//left window
+	unsigned short k_start;
+	short k_step, k_end;
+	if ( UP==w->GetPlayerDir() ) {
+		k_start=w->playerZ+1;
+		k_step=1;
+		k_end=height;
+	} else {
+		k_start=w->playerZ;
+		k_step=-1;
+		k_end=-1;
+	}
 	wmove(leftWin, 1, 1);
 	short i, j, k;
 	for ( j=0; j<shred_width*3; ++j, waddstr(leftWin, "\n_") )
 	for ( i=0; i<shred_width*3; ++i )
-		for (k=w->playerZ; k>=0; --k) //bottom is made from undestructable stone, loop will find what to print everytime
+		for (k=k_start; k!=k_end; k+=k_step) //bottom is made from undestructable stone, loop will find what to print everytime
 			if (w->Transparent(i, j, k) < 2) {
 				if ( w->Visible(i, j, k) ) {
 					wattrset(leftWin, Color(i, j, k));
@@ -556,8 +603,8 @@ void Screen::Print() {
 		PrintInv();
 		return;
 	} else if ( UP==w->GetPlayerDir() || DOWN==w->GetPlayerDir() ) {
-		wclear(rightWin);
-		wrefresh(rightWin);
+	//	wclear(rightWin);
+	//	wrefresh(rightWin);
 		return;
 	}
 	short pX, pY, pZ,
@@ -565,7 +612,6 @@ void Screen::Print() {
 	      x_end, z_end,
 	      * x, * z;
 	unsigned short x_start, z_start,
-	               k_start,
 	               arrow_Y, arrow_X;
 	w->GetPlayerCoords(&pX, &pY, &pZ);
 	switch ( w->GetPlayerDir() ) {
@@ -615,8 +661,8 @@ void Screen::Print() {
 		break;
 	}
 	if (pZ+shred_width*1.5>=height) {
-		k_start=height-1;
-		arrow_Y=height-pZ+1;
+		k_start=height-2;
+		arrow_Y=height-pZ;
 	} else if (pZ-shred_width*1.5<0) {
 		k_start=shred_width*3-1;
 		arrow_Y=shred_width*3-pZ;
@@ -699,10 +745,21 @@ int Screen::Color(subs sub) {
 		case DWARF:     return COLOR_PAIR(WHITE_BLUE);
 		case GLASS:     return COLOR_PAIR(BLUE_WHITE);
 		case NULLSTONE: return COLOR_PAIR(WHITE_BLACK);
+		case SKY: case STAR: switch ( w->TimeOfDay() ) {
+			case NIGHT:   return COLOR_PAIR(WHITE_BLACK);
+			case MORNING: return COLOR_PAIR(WHITE_BLUE);
+			case NOON:    return COLOR_PAIR(CYAN_CYAN);
+			case EVENING: return COLOR_PAIR(WHITE_BLUE);
+		}
 		default:        return COLOR_PAIR(BLACK_WHITE);
 	}
 }
 inline int Screen::Color(unsigned short i, unsigned short j, unsigned short k) { return Color( w->Id(i, j, k) ); }
+inline void Screen::UpDownView(dirs dir) {
+	w->SetPlayerDir(dir);
+	wclear(rightWin);
+	wrefresh(rightWin);
+}
 Screen::Screen(World *wor) : w(wor), view(NONE) {
 	set_escdelay(10);
 	initscr();
@@ -753,8 +810,8 @@ int main() {
 			case KEY_RIGHT: earth.SetPlayerDir(EAST);  break;
 			case KEY_DOWN:  earth.SetPlayerDir(SOUTH); break;
 			case KEY_UP:    earth.SetPlayerDir(NORTH); break;
-			case 'v':       earth.SetPlayerDir(DOWN);  break;
-			case '^':       earth.SetPlayerDir(UP);    break;
+			case 'v':       screen.UpDownView(DOWN); break; //earth.SetPlayerDir(DOWN);  break;
+			case '^':       screen.UpDownView(UP); break; //earth.SetPlayerDir(UP);    break;
 			case 'i': screen.InvOnOff(); break;
 			case '?': {
 				int i, j, k;

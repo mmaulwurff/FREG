@@ -3,10 +3,9 @@
 main() {
 	FILE *file=fopen("sky.txt", "w");
 	short x, y;
-	for (x=0; x<21; ++x) {
-		for (y=0; y<21; ++y) fprintf(file, random_prob(19) ? "." : " ");
-		fprintf(file, "\n");
-	}
+	for ( x=0; x<21; ++x, fprintf(file, "\n") )
+	for ( y=0; y<21; ++y )
+		fprintf(file, random_prob(19) ? "." : " ");
 	fclose(file);	
 }
 
