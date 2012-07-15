@@ -22,7 +22,7 @@
 #include <cmath>
 #include <string.h>
 
-int abs(int number) { return (number<0) ? (-number) : number; }
+inline int abs(int number) { return (number<0) ? (-number) : number; }
 
 const unsigned short shred_width=10;
 const unsigned short height=100;
@@ -30,7 +30,11 @@ const unsigned short full_name_length=20;
 const unsigned short inventory_size=26;
 const unsigned short max_stack_num=9; //num_str in Screen::PrintInv must be big enough
 const unsigned short seconds_in_hour=60;
-const unsigned short seconds_in_day=24*60;
+const unsigned short seconds_in_day=24*seconds_in_hour;
+const unsigned short end_of_night  = 6*seconds_in_hour;
+const unsigned short end_of_morning=12*seconds_in_hour;
+const unsigned short end_of_noon   =18*seconds_in_hour;
+
 void WriteName(char * str, const char * name) { strncpy(str, name, full_name_length); }
 enum color_pairs { //do not change colors order!
         BLACK_BLACK=1,
@@ -108,13 +112,14 @@ enum color_pairs { //do not change colors order!
 enum special_views { NONE, INVENTORY };
 enum dirs { NORTH, SOUTH, EAST, WEST, UP, DOWN };
 enum { NOT_MOVABLE, MOVABLE,  GAS };
-enum { MORNING, NOON, EVENING, NIGHT };
+enum times_of_day { MORNING, NOON, EVENING, NIGHT };
 enum subs {
 	AIR, //though there is no air block.
 	STONE,
 	NULLSTONE,
 	SKY,
 	STAR,
+	SUN_MOON,
 	SOIL,
 	DWARF,
 	GLASS,
@@ -152,7 +157,8 @@ class Block { //blocks without special physics and attributes
 			case NULLSTONE: WriteName(str, "Nullstone"); break;
 			case SOIL: WriteName(str, "Soil"); break;
 			case GLASS: WriteName(str, "Glass"); break;
-			case SKY: WriteName(str, "Sky"); break;
+			case STAR: case SUN_MOON:
+			case SKY: WriteName(str, "Air"); break;
 			default: WriteName(str, "Some unknown thing");
 		}
 	}
@@ -172,17 +178,27 @@ class Animal : public Block {
 	}
 	Animal(subs n) : Block::Block(n) {}
 };
-/*
-class Chest: public Block {
-	public:
-	Chest() : Block::Block(CHEST) {}
-};
-*/
-class Dwarf : public Animal {//, public Chest {
+
+class Inventory {
+	protected:
 	struct {
 		Block * block;
 		unsigned short number;
 	} inventory[inventory_size];
+	public:
+	void InvFullName(char * str, int i) { (NULL==inventory[i].block) ? WriteName(str, "") : inventory[i].block->FullName(str); }
+	void NumStr(char * str, int i) {
+		if (1==inventory[i].number)
+			strcpy(str, "");
+		else
+			sprintf(str, "(%hdx) ", inventory[i].number);
+	}
+	double GetInvWeight(int i) { return (NULL==inventory[i].block) ? 0 : inventory[i].block->Weight()*inventory[i].number; }
+	subs GetInvId(int i) { return (NULL==inventory[i].block) ? AIR : inventory[i].block->Id(); }
+	virtual void FullName(char *)=0;
+};
+
+class Dwarf : public Animal, public Inventory {
 	Block * &onHead;
 	Block * &onBody;
 	Block * &onFeet;
@@ -202,15 +218,6 @@ class Dwarf : public Animal {//, public Chest {
 		for (i=0; i<inventory_size; ++i)
 			delete inventory[i].block;
 	}
-	void FullName(char * str, int i) { (NULL==inventory[i].block) ? WriteName(str, "") : inventory[i].block->FullName(str); }
-	void NumStr(char * str, int i) {
-		if (1==inventory[i].number)
-			strcpy(str, "");
-		else
-			sprintf(str, "(%hdx) ", inventory[i].number);
-	}
-	double GetInvWeight(int i) { return (NULL==inventory[i].block) ? 0 : inventory[i].block->Weight()*inventory[i].number; }
-	subs GetInvId(int i) { return (NULL==inventory[i].block) ? AIR : inventory[i].block->Id(); }
 	virtual void FullName(char * str) {
 		switch (id) {
 			default: WriteName(str, "Dwarf");
@@ -291,13 +298,14 @@ class World {
 	void GetPlayerCoords(short * const x, short * const y, short * const z) { *x=playerX; *y=playerY; *z=playerZ; }
 	Dwarf * GetPlayerP() { return playerP; }
 	unsigned long GetTime() { return time; }
-	int TimeOfDay() {
-		unsigned short time_day=time%(24*60);
-		if (time_day< 6*60) return NIGHT;
-		if (time_day<12*60) return MORNING;
-		if (time_day<18*60) return NOON;
+	times_of_day PartOfDay() {
+		unsigned short time_day=TimeOfDay();
+		if (time_day<end_of_night)   return NIGHT;
+		if (time_day<end_of_morning) return MORNING;
+		if (time_day<end_of_noon)    return NOON;
 		return EVENING;
 	}
+	int TimeOfDay() { return time%seconds_in_day; }
 	void FullName(char * str, int i, int j, int k) { (NULL==blocks[i][j][k]) ? WriteName(str, "Air") : blocks[i][j][k]->FullName(str); }
 	subs Id(int i, int j, int k)          { return (NULL==blocks[i][j][k]) ? AIR : blocks[i][j][k]->Id(); }
 	int  Transparent(int i, int j, int k) { return (NULL==blocks[i][j][k]) ? 2 : blocks[i][j][k]->Transparent(); }
@@ -336,9 +344,6 @@ void World::LoadShred(long longi, long lati, unsigned short istart, unsigned sho
 		delete blocks [istart+3][jstart+3][k];
 		blocks[istart+3][jstart+3][k]=NULL;
 	}
-	for (i=istart; i<istart+shred_width; ++i)
-	for (j=jstart; j<jstart+shred_width; ++j)
-		blocks[i][j][height-1]=new Block( random_prob(19) ? STAR : SKY );
 }
 void World::SaveShred(long longi, long lati, unsigned short istart, unsigned short jstart) {
 	unsigned short i, j, k;
@@ -367,8 +372,21 @@ void World::ReloadShreds(dirs direction) { //ReloadShreds is called from Move, s
 	blocks[shred_width*2-5][shred_width*2-5][height/2]=(Block *)new Dwarf;
 }
 void World::PhysEvents() {
+	pthread_mutex_lock(&mutex);
+	static bool if_star=false;
+	unsigned short i=(TimeOfDay()<end_of_night) ?
+		TimeOfDay()*(float)shred_width*3/end_of_night :
+		(TimeOfDay()-end_of_night)*(float)shred_width*3/(seconds_in_day-end_of_night);
+	delete blocks[i][int(shred_width*1.5)][height-1];
+	blocks[i][int(shred_width*1.5)][height-1]=new Block( if_star ? STAR : SKY );
 	++time;
-	unsigned short i, j, k;
+	i=(TimeOfDay()<end_of_night) ?
+		TimeOfDay()*(float)shred_width*3/end_of_night :
+		(TimeOfDay()-end_of_night)*(float)shred_width*3/(seconds_in_day-end_of_night);
+	if_star=( STAR==blocks[i][int(shred_width*1.5)][height-1]->Id() ) ? true : false;
+	delete blocks[i][int(shred_width*1.5)][height-1];
+	blocks[i][int(shred_width*1.5)][height-1]=new Block(SUN_MOON);
+	pthread_mutex_unlock(&mutex);
 	if (NULL!=scr) scr->Print();
 }
 char World::CharNumber(int i, int j, int k) {
@@ -519,9 +537,27 @@ World::World() {
 	for (i=longitude-1; i<=longitude+1; ++i)
 	for (j=latitude-1;  j<=latitude+1;  ++j)
 		LoadShred(longitude, latitude, (i-longitude+1)*shred_width, (j-latitude+1)*shred_width);
+	FILE * sky=fopen("sky.txt", "r");
+	if (NULL==sky) {
+		for (i=0; i<shred_width*3; ++i)
+		for (j=0; j<shred_width*3; ++j)
+			blocks[i][j][height-1]=new Block( random_prob(19) ? STAR : SKY );
+	} else {
+		char c=fgetc(sky)-'0';
+		for (i=0; i<shred_width*3; ++i)
+		for (j=0; j<shred_width*3; ++j)
+			if (c) {
+				blocks[i][j][height-1]=new Block(SKY);
+				--c;
+			} else {
+				blocks[i][j][height-1]=new Block(STAR);
+				c=fgetc(sky)-'0';
+			}
+		fclose(sky);
+	}
 	blocks[playerX][playerY][playerZ] =(Block*)( playerP=new Dwarf );
 	blocks[shred_width*2-5][shred_width*2-5][height/2]=(Block*)new Dwarf;
-	time=19*60;
+	time=end_of_night-5;
 	scr=NULL;
 	pthread_mutexattr_t mutex_attr;
 	pthread_mutexattr_settype(&mutex_attr, PTHREAD_MUTEX_RECURSIVE);
@@ -556,6 +592,7 @@ char Screen::CharName(unsigned short i, unsigned short j, unsigned short k) {
 		case SOIL:  return 's';
 		case DWARF: return '@';
 		case GLASS: return 'g';
+		case SUN_MOON:
 		case SKY:   return ' ';
 		case STAR:  return '.';
 		default: return '?';
@@ -593,18 +630,16 @@ void Screen::Print() {
 			}
 	wstandend(leftWin);
 	box(leftWin, 0, 0);
-	if ( UP==w->GetPlayerDir() )
-		mvwaddstr(leftWin, 0, 1, "Sky View");
-	else 
-		mvwaddstr(leftWin, 0, 1, "Normal View");
+	mvwaddstr(leftWin, 0, 1, ( UP==w->GetPlayerDir() ) ? "Sky View" : "Normal View");
+	//mvwprintw( leftWin, shred_width*3+1, 1, "%d", int(w->time));//w->TimeOfDay() );
 	wrefresh(leftWin);
 	//right window
 	if (INVENTORY==view) {
+		pthread_mutex_unlock(&(w->mutex));
 		PrintInv();
 		return;
 	} else if ( UP==w->GetPlayerDir() || DOWN==w->GetPlayerDir() ) {
-	//	wclear(rightWin);
-	//	wrefresh(rightWin);
+		pthread_mutex_unlock(&(w->mutex));
 		return;
 	}
 	short pX, pY, pZ,
@@ -719,7 +754,7 @@ void Screen::PrintInv() {
 	mvwaddstr(rightWin, 5, 4, "In right hand:");
 	mvwaddstr(rightWin, 6, 4, "In left hand:");
 	for (i=0; i<inventory_size; ++i) {
-		player->FullName(str, i);
+		player->InvFullName(str, i);
 		player->NumStr(num_str, i);
 		mvwprintw(rightWin, 2+i, 20, "%c) %s", 'a'+i, num_str);
 		wattrset( rightWin, Color(player->GetInvId(i)) );
@@ -745,12 +780,13 @@ int Screen::Color(subs sub) {
 		case DWARF:     return COLOR_PAIR(WHITE_BLUE);
 		case GLASS:     return COLOR_PAIR(BLUE_WHITE);
 		case NULLSTONE: return COLOR_PAIR(WHITE_BLACK);
-		case SKY: case STAR: switch ( w->TimeOfDay() ) {
+		case SKY: case STAR: switch ( w->PartOfDay() ) {
 			case NIGHT:   return COLOR_PAIR(WHITE_BLACK);
 			case MORNING: return COLOR_PAIR(WHITE_BLUE);
 			case NOON:    return COLOR_PAIR(CYAN_CYAN);
 			case EVENING: return COLOR_PAIR(WHITE_BLUE);
 		}
+		case SUN_MOON: return COLOR_PAIR( ( NIGHT==w->PartOfDay() ) ? WHITE_WHITE : YELLOW_YELLOW);
 		default:        return COLOR_PAIR(BLACK_WHITE);
 	}
 }
