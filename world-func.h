@@ -2,7 +2,7 @@
 #define WORLD_FUNC_H
 
 #include <unistd.h>
-
+	
 void World::LoadShred(long longi, long lati, unsigned short istart, unsigned short jstart) {
 	unsigned short i, j, k;
 	for (i=istart; i<istart+shred_width; ++i)
@@ -52,6 +52,7 @@ void World::ReloadShreds(dirs direction) { //ReloadShreds is called from Move, s
 	blocks[playerX][playerY][playerZ]=(Block*)(playerP=new Dwarf(this, playerX, playerY, playerZ));
 	SetPlayerDir(save_dir);
 	blocks[shred_width*2-5][shred_width*2-5][height/2]=(Block *)new Dwarf(this, shred_width*2-5, shred_width*2-5, height/2);
+	blocks[shred_width*2-4][shred_width*2-4][height/2]=(Block *)new Chest(this, shred_width*2-5, shred_width*2-5, height/2);
 }
 
 void World::PhysEvents() {
@@ -72,13 +73,15 @@ void World::PhysEvents() {
 	delete blocks[i][int(shred_width*1.5)][height-1];
 	blocks[i][int(shred_width*1.5)][height-1]=new Block(SUN_MOON);
 
-	//sounds
+	//sounds and blocks' own activities
 	for (i=0; i<9; ++i) {
 		soundMap[i].ch=' ';
 		soundMap[i].lev=0;
 		soundMap[i].col=BLACK_BLACK;
 	}
-	for ( Active * temp=activeList; NULL!=temp; temp=temp->GetNext() ) {
+	Active * nexttemp;
+	for ( Active * temp=activeList; NULL!=temp; temp=nexttemp ) {
+		temp->Act();
 		unsigned short x, y, z, n;
 		temp->GetSelfXYZ(x, y, z);
 		switch ( MakeDir(playerX, playerY, x, y) ) {
@@ -108,8 +111,21 @@ void World::PhysEvents() {
 				soundMap[n].lev+=1;
 			}
 		}
+		nexttemp=temp->GetNext();
+		if ( temp->IfToDestroy() ) {
+			unsigned short i, j, k;
+			temp->GetSelfXYZ(i, j, k);
+			if (NULL!=scr->invToPrintRight &&
+					scr->invToPrintRight->GetThis()==blocks[i][j][k])
+				scr->invToPrintRight=NULL;
+			if (NULL!=scr->invToPrintLeft &&
+					scr->invToPrintLeft->GetThis()==blocks[i][j][k])
+				scr->invToPrintLeft=NULL;
+			delete blocks[i][j][k];
+			blocks[i][j][k]=NULL;
+		}
 	}
-
+	
 	pthread_mutex_unlock(&mutex);
 	if (NULL!=scr) {
 		scr->Print();
@@ -196,7 +212,7 @@ int World::Move(int i, int j, int k, dirs dir) {
 		case DOWN:  --newk; break;
 	}
 	int numberMoves=0;
-	if (GAS==Movable(blocks[newi][newj][newk]) || (numberMoves=Move(newi, newj, newk, dir)) ) {
+	if (ENVIRONMENT==Movable(blocks[newi][newj][newk]) || (numberMoves=Move(newi, newj, newk, dir)) ) {
 		blocks[i][j][k]->Move(dir);
 		Block *temp=blocks[i][j][k];
 		blocks[i][j][k]=blocks[newi][newj][newk];
@@ -252,6 +268,26 @@ void World::Jump(int i, int j, int k) {
 		blocks[i][j][k]->SetWeight();
 		Move(i, j, k, DOWN);
 	}
+}
+
+void World::Focus(int i, int j, int k, int & i_target, int & j_target, int & k_target) {
+	i_target=i;
+	j_target=j;
+	k_target=k;
+	switch ( blocks[i][j][k]->GetDir() ) {
+		case NORTH: --j_target; break;
+		case SOUTH: ++j_target; break;
+		case EAST:  ++i_target; break;
+		case WEST:  --i_target; break;
+		case DOWN:  --k_target; break;
+		case UP:    ++k_target; break;
+	}
+	if (i_target<0) i_target=0;
+	else if (i_target>=shred_width*3) i_target=shred_width*3-1;
+	if (j_target<0) j_target=0;
+	else if (j_target>=shred_width*3) j_target=shred_width*3-1;
+	if (k_target<0) k_target=0;
+	else if (k_target>=height) k_target=height-1;
 }
 
 World::World() {

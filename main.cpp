@@ -18,12 +18,13 @@
 #include <cstdio>
 #include <string.h>
 #include <cstdlib>
+#include <curses.h>
 
 const unsigned short shred_width=10;
 const unsigned short height=100;
 const unsigned short full_name_length=20;
 const unsigned short inventory_size=26;
-const unsigned short max_stack_num=9; //num_str in Screen::PrintInv must be big enough
+const unsigned short max_stack_size=9; //num_str in Screen::PrintInv must be big enough
 const unsigned short seconds_in_hour=60;
 const unsigned short seconds_in_day=24*seconds_in_hour;
 const unsigned short end_of_night  = 6*seconds_in_hour;
@@ -105,14 +106,15 @@ enum color_pairs { //do not change colors order! //foreground_background
         WHITE_CYAN,
         WHITE_WHITE,
 };
-enum special_views { NONE, INVENTORY };
 enum dirs { HERE, NORTH, NORTH_EAST, EAST, SOUTH_EAST, SOUTH, SOUTH_WEST, WEST, NORTH_WEST, UP, DOWN };
-enum { NOT_MOVABLE, MOVABLE,  GAS };
+enum { NOT_MOVABLE, MOVABLE, ENVIRONMENT };
+enum window_views { NORMAL, FRONT, INVENTORY };
 enum times_of_day { MORNING, NOON, EVENING, NIGHT };
 enum kinds {//kind of atom
 	BLOCK,
 	BELL,
 	CHEST,
+	PILE,
 	DWARF,
 	ANIMAL
 };
@@ -127,7 +129,8 @@ enum subs {//substance block is made from
 	H_MEAT, //hominid meat
 	A_MEAT, //animal meat
 	GLASS,
-	WOOD
+	WOOD,
+	DIFFERENT
 };
 
 #include "blocks.h"
@@ -147,20 +150,31 @@ int main() {
 	Screen screen(&earth);
 	int c;
 	int print_flag=1; //print only if needed, needed nearly everytime
-	while ((c=getch())!='Q') {
+	while ( 'Q'!=(c=getch()) ) {
 		switch (c) {
-			case ',': earth.PlayerMove(NORTH); break;
-			case 'o': earth.PlayerMove(SOUTH); break;
-			case 'e': earth.PlayerMove(EAST ); break;
-			case 'a': earth.PlayerMove(WEST ); break;
+			case KEY_UP:    earth.PlayerMove(NORTH); break;
+			case KEY_DOWN:  earth.PlayerMove(SOUTH); break;
+			case KEY_RIGHT: earth.PlayerMove(EAST ); break;
+			case KEY_LEFT:  earth.PlayerMove(WEST ); break;
 			case ' ': earth.PlayerJump(); break;
-			case KEY_LEFT:  earth.SetPlayerDir(WEST);  break;
-			case KEY_RIGHT: earth.SetPlayerDir(EAST);  break;
-			case KEY_DOWN:  earth.SetPlayerDir(SOUTH); break;
-			case KEY_UP:    earth.SetPlayerDir(NORTH); break;
-			case 'v':       screen.UpDownView(DOWN); break; //earth.SetPlayerDir(DOWN);  break;
-			case '^':       screen.UpDownView(UP); break; //earth.SetPlayerDir(UP);    break;
-			case 'i': screen.InvOnOff(); break;
+			case 'w': earth.SetPlayerDir(WEST);  break;
+			case 'e': earth.SetPlayerDir(EAST);  break;
+			case 's': earth.SetPlayerDir(SOUTH); break;
+			case 'n': earth.SetPlayerDir(NORTH); break;
+			case 'v': earth.SetPlayerDir(DOWN);  break;
+			case '^': earth.SetPlayerDir(UP);    break;
+			case 'i':
+				if (INVENTORY!=screen.viewRight) {
+					screen.viewRight=INVENTORY;
+					screen.invToPrintRight=earth.GetPlayerP();
+				} else
+					screen.viewRight=FRONT;
+			break;
+			case '\n': {
+				int i, j, k;
+				earth.PlayerFocus(i, j, k);
+				earth.Use(i, j, k);
+			} break;
 			case '?': {
 				int i, j, k;
 				earth.PlayerFocus(i, j, k);
@@ -168,6 +182,9 @@ int main() {
 				earth.FullName(str, i, j, k);
 				screen.Notify(str);
 			} break;
+			case 'd': earth.PlayerDrop(getch()-'a'); break;
+			case 'g': earth.PlayerGet(getch()-'a'); break;
+			default: screen.Notify("What?\n");
 		}
 		if (print_flag) screen.Print();
 	}

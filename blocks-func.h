@@ -24,4 +24,12 @@ Active::~Active() {
 	}
 }
 
+void Chest::Use() {
+	if (INVENTORY!=GetWorld()->scr->viewLeft) {
+		GetWorld()->scr->viewLeft=INVENTORY;
+		GetWorld()->scr->invToPrintLeft=this;
+	} else
+		GetWorld()->scr->viewLeft=NORMAL;
+}
+
 #endif

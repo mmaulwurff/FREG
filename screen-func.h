@@ -14,14 +14,14 @@ char Screen::CharName(unsigned short i, unsigned short j, unsigned short k) {
 			default: return '?';
 		}
 		case DWARF: return '@';
+		case CHEST: return 'c';
 		default: return '?';
 	}
 }
 
-void Screen::Print() {
+void Screen::PrintNormal(WINDOW * window) {
 	if (pthread_mutex_trylock(&(w->mutex)))
 		return;
-	//left window
 	unsigned short k_start;
 	short k_step, k_end;
 	if ( UP==w->GetPlayerDir() ) {
@@ -33,42 +33,44 @@ void Screen::Print() {
 		k_step=-1;
 		k_end=-1;
 	}
-	wmove(leftWin, 1, 1);
-	short i, j, k;
-	for ( j=0; j<shred_width*3; ++j, waddstr(leftWin, "\n_") )
-	for ( i=0; i<shred_width*3; ++i )
-		for (k=k_start; k!=k_end; k+=k_step) //bottom is made from undestructable stone, loop will find what to print everytime
+	wmove(window, 1, 1);
+	for ( short j=0; j<shred_width*3; ++j, waddstr(window, "\n_") )
+	for ( short i=0; i<shred_width*3; ++i )
+		for (short k=k_start; k!=k_end; k+=k_step) //bottom is made from undestructable stone, loop will find what to print everytime
 			if (w->Transparent(i, j, k) < 2) {
 				if ( w->Visible(i, j, k) ) {
-					wcolor_set(leftWin, Color(i, j, k), NULL);
-					wprintw( leftWin, "%c%c", CharName(i, j, k), w->CharNumber(i, j, k) );
+					wcolor_set(window, Color(i, j, k), NULL);
+					wprintw( window, "%c%c", CharName(i, j, k), w->CharNumber(i, j, k) );
 				} else {
-					wcolor_set(leftWin, BLACK_BLACK, NULL);
-					wprintw(leftWin, "  ");
+					wcolor_set(window, BLACK_BLACK, NULL);
+					wprintw(window, "  ");
 				}
 				break;
 			}
-	wstandend(leftWin);
-	box(leftWin, 0, 0);
-	mvwaddstr(leftWin, 0, 1, ( UP==w->GetPlayerDir() ) ? "Sky View" : "Normal View");
-	//mvwprintw( leftWin, shred_width*3+1, 1, "%d", int(w->time));//w->TimeOfDay() );
-	wrefresh(leftWin);
-	//right window
-	if (INVENTORY==view) {
-		pthread_mutex_unlock(&(w->mutex));
-		PrintInv();
+	pthread_mutex_unlock(&(w->mutex));
+	wstandend(window);
+	box(window, 0, 0);
+	mvwaddstr(window, 0, 1, ( UP==w->GetPlayerDir() ) ? "Sky View" : "Normal View");
+	wrefresh(window);
+}
+
+void Screen::PrintFront(WINDOW * window) {
+	if ( UP==w->GetPlayerDir() || DOWN==w->GetPlayerDir() ) {
+		wstandend(window);
+		box(window, 0, 0);
+		mvwaddstr(window, 0, 1, "No view");
+		wrefresh(window);
 		return;
-	} else if ( UP==w->GetPlayerDir() || DOWN==w->GetPlayerDir() ) {
-		pthread_mutex_unlock(&(w->mutex));
+	} else if (pthread_mutex_trylock(&(w->mutex)))
 		return;
-	}
 	short pX, pY, pZ,
 	      x_step, z_step,
 	      x_end, z_end,
-	      * x, * z;
+	      * x, * z,
+	      i, j, k;
 	unsigned short x_start, z_start,
+		       k_start,
 	               arrow_Y, arrow_X;
-	//	       pX, pY, pZ;
 	w->GetPlayerCoords(pX, pY, pZ);
 	switch ( w->GetPlayerDir() ) {
 		case NORTH:
@@ -126,70 +128,81 @@ void Screen::Print() {
 		k_start=pZ+shred_width*1.5;
 		arrow_Y=shred_width*1.5+1;
 	}
-	wmove(rightWin, 1, 1);
-	for (k=k_start; k_start-k<shred_width*3; --k, waddstr(rightWin, "\n_"))
+	wmove(window, 1, 1);
+	for (k=k_start; k_start-k<shred_width*3; --k, waddstr(window, "\n_"))
 		for (*x=x_start; *x!=x_end; *x+=x_step) {
 			for (*z=z_start; *z!=z_end; *z+=z_step)
 				if (w->Transparent(i, j, k) < 2) {
 					if ( w->Visible(i, j, k) ) {
-						wcolor_set(rightWin, Color(i, j, k), NULL);
-						wprintw( rightWin, "%c%c", CharName(i, j, k), w->CharNumberFront(i, j) );
+						wcolor_set(window, Color(i, j, k), NULL);
+						wprintw( window, "%c%c", CharName(i, j, k), w->CharNumberFront(i, j) );
 					} else {
-						wcolor_set(rightWin, BLACK_BLACK, NULL);
-						wprintw(rightWin, "  ");
+						wcolor_set(window, BLACK_BLACK, NULL);
+						wprintw(window, "  ");
 					}
 					break;
 				}
 			if (*z==z_end) { //print background decorations
 				*z-=z_step;
 				if (w->Visible(i, j, k)) {
-				       	wcolor_set(rightWin, WHITE_BLUE, NULL);
-					wprintw(rightWin, " .");
+				       	wcolor_set(window, WHITE_BLUE, NULL);
+					wprintw(window, " .");
 				} else {
-					wcolor_set(rightWin, BLACK_BLACK, NULL);
-					waddstr(rightWin, "  ");
+					wcolor_set(window, BLACK_BLACK, NULL);
+					waddstr(window, "  ");
 				}
 			}
 		}
-	wstandend(rightWin);
-	box(rightWin, 0, 0);
-	mvwaddstr(rightWin, 0, 1, "Front View");
-	mvwprintw(rightWin, 0,               arrow_X,           "vv");
-	mvwprintw(rightWin, shred_width*3+1, arrow_X,           "^^");
-	mvwprintw(rightWin, arrow_Y,         0,                 ">");
-	mvwprintw(rightWin, arrow_Y,         shred_width*3*2+1, "<");
-	wrefresh(rightWin);
+	wstandend(window);
+	box(window, 0, 0);
+	mvwaddstr(window, 0, 1, "Front View");
+	mvwprintw(window, 0,               arrow_X,           "vv");
+	mvwprintw(window, shred_width*3+1, arrow_X,           "^^");
+	mvwprintw(window, arrow_Y,         0,                 ">");
+	mvwprintw(window, arrow_Y,         shred_width*3*2+1, "<");
+	wrefresh(window);
 	pthread_mutex_unlock(&(w->mutex));
 }
 
-void Screen::PrintInv() {
-	Dwarf * player=w->GetPlayerP();
+void Screen::PrintInv(WINDOW * window, Inventory * inv) {
+	if (pthread_mutex_trylock(&(w->mutex)))
+		return;
 	unsigned short i;
 	double sum_weight=0, temp_weight;
 	char str[full_name_length],
 	     num_str[6];
-	mvwaddstr(rightWin, 1, 50, "Weight");
-	mvwaddstr(rightWin, 2, 4, "On head:");
-	mvwaddstr(rightWin, 3, 4, "On body:");
-	mvwaddstr(rightWin, 4, 4, "On feet:");
-	mvwaddstr(rightWin, 5, 4, "In right hand:");
-	mvwaddstr(rightWin, 6, 4, "In left hand:");
+	werase(window);
+	mvwaddstr(window, 1, 50, "Weight");
+	if ( DWARF==inv->Kind() ) {
+		mvwaddstr(window, 2, 4, "On head:");
+		mvwaddstr(window, 3, 4, "On body:");
+		mvwaddstr(window, 4, 4, "On feet:");
+		mvwaddstr(window, 5, 4, "In right hand:");
+		mvwaddstr(window, 6, 4, "In left hand:");
+	}
 	for (i=0; i<inventory_size; ++i) {
-		player->InvFullName(str, i);
-		player->NumStr(num_str, i);
-		mvwprintw(rightWin, 2+i, 20, "%c) %s", 'a'+i, num_str);
-		wcolor_set(rightWin, Color(player->GetInvKind(i), player->GetInvSub(i)), NULL);
-		wprintw(rightWin, "%s", str);
-		wstandend(rightWin);
-		if ('\0'!=str[0]) {
-			mvwprintw(rightWin, 2+i, 50, "%2.1f kg", temp_weight=player->GetInvWeight(i));
+		inv->InvFullName(str, i);
+		inv->NumStr(num_str, i);
+		mvwprintw(window, 2+i, 20, "%c) %s", 'a'+i, num_str);
+		wcolor_set(window, Color(inv->GetInvKind(i), inv->GetInvSub(i)), NULL);
+		wprintw(window, "%s", str);
+		wstandend(window);
+		if ('\0'!=str[0]) { //summ
+			mvwprintw(window, 2+i, 50, "%2.1f kg", temp_weight=inv->GetInvWeight(i));
 			sum_weight+=temp_weight;
 		}
 	}
-	mvwprintw(rightWin, 2+i, 43, "Sum:%6.1f kg", sum_weight);
-	box(rightWin, 0, 0);
-	mvwprintw(rightWin, 0, 1, "Inventory");
-	wrefresh(rightWin);
+	pthread_mutex_unlock(&(w->mutex));
+	mvwprintw(window, 2+i, 43, "Sum:%6.1f kg", sum_weight);
+	box(window, 0, 0);
+	if (w->GetPlayerP()==inv)
+		mvwaddstr(window, 0, 1, "Your inventory");
+	else {
+		char str[full_name_length];
+		inv->FullName(str);
+		mvwaddstr(window, 0, 1, str);
+	}
+	wrefresh(window);
 }
 
 void Screen::PrintSounds() {
@@ -227,18 +240,18 @@ color_pairs Screen::Color(kinds kind, subs sub) {
 			}
 			default: return BLACK_WHITE;
 		}
+		case CHEST: switch (sub) {
+			case WOOD: return BLACK_YELLOW;
+			default: return BLACK_WHITE;
+		}
+		case PILE: return WHITE_BLACK;
 		default: return BLACK_WHITE;
 	}
 }
 inline color_pairs Screen::Color(unsigned short i, unsigned short j, unsigned short k) { return Color( w->Kind(i, j, k), w->Sub(i, j, k) ); }
 
-inline void Screen::UpDownView(dirs dir) {
-	w->SetPlayerDir(dir);
-	werase(rightWin);
-	wrefresh(rightWin);
-}
-
-Screen::Screen(World *wor) : w(wor), view(NONE) {
+Screen::Screen(World * wor) :
+       		w(wor), viewLeft(NORMAL), viewRight(FRONT), invToPrintLeft(NULL), invToPrintRight(NULL) {
 	set_escdelay(10);
 	initscr();
 	start_color();
