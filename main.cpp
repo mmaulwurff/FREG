@@ -25,6 +25,7 @@ const unsigned short height=100;
 const unsigned short full_name_length=20;
 const unsigned short inventory_size=26;
 const unsigned short max_stack_size=9; //num_str in Screen::PrintInv must be big enough
+const unsigned short note_length=144;
 const unsigned short seconds_in_hour=60;
 const unsigned short seconds_in_day=24*seconds_in_hour;
 const unsigned short end_of_night  = 6*seconds_in_hour;
@@ -116,7 +117,9 @@ enum kinds {//kind of atom
 	CHEST,
 	PILE,
 	DWARF,
-	ANIMAL
+	ANIMAL,
+	PICK,
+	TELEGRAPH
 };
 enum subs {//substance block is made from
 	STONE,
@@ -130,7 +133,8 @@ enum subs {//substance block is made from
 	A_MEAT, //animal meat
 	GLASS,
 	WOOD,
-	DIFFERENT
+	DIFFERENT,
+	IRON
 };
 
 #include "blocks.h"
@@ -178,12 +182,15 @@ int main() {
 			case '?': {
 				int i, j, k;
 				earth.PlayerFocus(i, j, k);
-				char str[full_name_length];
+				char str[full_name_length+note_length+20];
 				earth.FullName(str, i, j, k);
+				earth.GetNote(str, i, j, k);
 				screen.Notify(str);
 			} break;
 			case 'd': earth.PlayerDrop(getch()-'a'); break;
 			case 'g': earth.PlayerGet(getch()-'a'); break;
+			case 'W': earth.PlayerWield(getch()-'a'); break;
+			case 'I': earth.PlayerInscribe(); break;
 			default: screen.Notify("What?\n");
 		}
 		if (print_flag) screen.Print();

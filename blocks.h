@@ -9,6 +9,7 @@ class Block { //blocks without special physics and attributes
 	double weight;
 	int shown_weight;
 	dirs direction;
+	char * note;
 	public:
 
 	void SetWeight(double m) { 
@@ -20,9 +21,23 @@ class Block { //blocks without special physics and attributes
 	dirs GetDir() { return direction; }
 	void SetDir(dirs dir) { direction=dir; }
 	subs Sub() const { return sub; }
+	virtual void Inscribe(char * str) {
+		if (NULL==note) note=new char[note_length];
+		strncpy(note, str, note_length);
+		if ('\n'==note[0]) {
+			delete [] note;
+			note=NULL;
+		}
+	}
+	virtual void GetNote(char * str) {
+		if (NULL!=note)
+			strncpy(str, note, note_length);
+		else str[0]='\0';
+	}
 
 	virtual kinds Kind() const { return BLOCK; }
-	virtual bool Stackable() { return  true; }
+	virtual bool CanBeIn() { return true; }
+	virtual bool CanBeOut() { return true; }
 	virtual int Movable() { return NOT_MOVABLE; }
 	virtual int Transparent() {
 		switch (sub) {
@@ -46,14 +61,68 @@ class Block { //blocks without special physics and attributes
 	virtual void Use() {}
 	virtual bool HasInventory() const { return false; }
 	virtual Block * Drop(int n) { fprintf(stderr, "hollo\n"); }
-	virtual int Get(Block *) {}
+	virtual int Get(Block *, int=0) {}
+
+	virtual bool Weapon() { return false; }
+	virtual bool Carving() { return false; }
 
 	virtual bool operator==(const Block& block) const {
 		return ( block.Kind()==Kind() && block.Sub()==Sub() ) ? true : false;
 	}
 
-	Block(subs n) : sub(n), shown_weight(1), weight(1), direction(NORTH) {}
-	virtual ~Block() {}
+	Block(subs n) : sub(n), shown_weight(1), weight(1), direction(NORTH), note(NULL) {}
+	virtual ~Block() { if (NULL!=note) delete [] note; }
+};
+
+class Telegraph : public Block {
+	public:
+	kinds Kind() const { return TELEGRAPH; }
+	void Inscribe(char * str) {
+		Block::Inscribe(str);
+		char command[note_length+40];
+		if (NULL!=note) {
+			strcpy(command, "echo '");
+			strcat(command, note);
+			strcat(command, "' | ttytter 2>&1 > /dev/null");
+			fprintf(stderr, command);
+			system(command);
+		}
+	}
+
+	Telegraph() : Block::Block(DIFFERENT) {}
+};
+
+class Weapons : public Block {
+	protected:
+	unsigned short durability;
+	const kinds kind;
+	public:
+	bool Weapon() { return true; }
+	bool Carving() {
+		switch (kind) {
+			case PICK: return true;
+			default: return false;
+		}
+	}
+	virtual kinds Kind() const=0;
+	bool CanBeOut() { return false; }
+
+	Weapons(subs sub, kinds kind) : kind(kind), durability(9), Block::Block(sub) {}
+	Weapons(kinds kind, subs sub) : kind(kind), durability(9), Block::Block(sub) {}
+};
+
+class Pick : public Weapons {
+	virtual kinds Kind() const { return PICK; }
+
+	public:
+	virtual void FullName(char * str) { 
+		switch (sub) {
+			case IRON: WriteName(str, "Iron pick"); break;
+			default: WriteName(str, "Strange Pick");
+		}
+	}
+
+	Pick(subs sub) : Weapons(PICK, sub) {}
 };
 
 class Active {
@@ -136,8 +205,9 @@ class Inventory {
 		} else
 			return NULL;
 	}
-	int Get(Block * block) {
-		for (unsigned short i=0; i<inventory_size; ++i)
+	int Get(Block * block, int n=0) {
+		if (0>n || inventory_size<=n) n=0;
+		for (unsigned short i=n; i<inventory_size; ++i)
 			if ( NULL==inventory[i][0] ||
 					(*block==*inventory[i][0] && (Number(i) < max_stack_size)) ) {
 				inventory[i][Number(i)]=block;
@@ -150,8 +220,8 @@ class Inventory {
 		for (unsigned short i=0; i<inventory_size; ++i)
 		for (unsigned short j=0; j<max_stack_size; ++j)
 			inventory[i][j]=NULL;
-		inventory[3][0]=new Block(STONE);
-		inventory[3][1]=new Block(STONE);
+		//inventory[3][0]=new Block(STONE);
+		//inventory[3][1]=new Block(STONE);
 	}
 	~Inventory() {
 		for (unsigned short i=0; i<inventory_size; ++i)
@@ -177,10 +247,20 @@ class Dwarf : public Block, public Animal, public Inventory {
 	}
 	virtual char MakeSound() { return (random()%10) ? ' ' : 's'; }
 	virtual int Movable() { return true; }
+	bool CanBeIn() { return false; }
 	virtual void Move(dirs dir) { Animal::Move(dir); }
 	bool HasInventory() const { return true; }
+	bool Stackable() { return false; }
 	Block * Drop(int n) { return Inventory::Drop(n); }
-	int Get(Block * block) { return Inventory::Get(block); }
+	int Wield(Block * block) {
+		if ( block->Weapon() ) {
+			if (NULL==inventory[3][0]) inventory[3][0]=block;
+			else if (NULL==inventory[4][0]) inventory[3][0]=block;
+			return 1;
+		} return 0;
+	}
+	int Get(Block * block, int n=5) { return Inventory::Get(block, (5>n) ? 5 : n);
+	}
 	virtual Block * GetThis() { return this; }
 
 	Dwarf(World * w, unsigned short x, unsigned short y, unsigned short z) :
@@ -188,7 +268,9 @@ class Dwarf : public Block, public Animal, public Inventory {
 			Block::Block(H_MEAT),
 			onHead(inventory[0][0]), onBody(inventory[1][0]), onFeet(inventory[2][0]),
 			inRightHand(inventory[3][0]), inLeftHand(inventory[4][0]),
-			noise(1) {}
+			noise(1) {
+		inventory[7][0]=new Pick(IRON);
+	}
 };
 
 class Chest : public Block, public Active, public Inventory {
@@ -203,7 +285,7 @@ class Chest : public Block, public Active, public Inventory {
 	virtual void Use();
 	bool HasInventory() const { return true; }
 	virtual Block * Drop(int n) { return Inventory::Drop(n); }
-	int Get(Block * block) { return Inventory::Get(block); }
+	int Get(Block * block, int n=0) { return Inventory::Get(block, n); }
 	virtual Block * GetThis() { return this; }
 
 	Chest(World * w, unsigned short x, unsigned short y, unsigned short z, subs s) :
@@ -216,7 +298,7 @@ class Pile : public Chest {
 	unsigned short lifetime;
 
 	public:
-	virtual kinds Kind() { return PILE; }
+	virtual kinds Kind() const { return PILE; }
 	virtual void FullName(char * str) { WriteName(str, "Pile"); }
 	void Act() { if (lifetime) --lifetime; }
 	bool IfToDestroy() { 
@@ -233,9 +315,12 @@ class Pile : public Chest {
 	}
 	virtual Block * GetThis() { return this; }
 
+	int Movable() { return MOVABLE; }
+	void Move(dirs dir) { Active::Move(dir); }
+	bool CanBeIn() { return false; }
+
 	Pile(World * w, unsigned short x, unsigned short y, unsigned short z) :
 		Chest(w , x, y, z, DIFFERENT), lifetime(seconds_in_day) {}
 };
-
 
 #endif

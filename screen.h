@@ -38,6 +38,18 @@ class Screen {
 			case FRONT: PrintFront(rightWin); break;
 		}	
 	}
+	void GetString(char * str) {
+		echo();
+		werase(notifyWin);
+		box(notifyWin, 0, 0);
+		mvwaddstr(notifyWin, 0, 1, "Enter inscription:");
+		wmove(notifyWin, 1, 1);
+		wgetnstr(notifyWin, str, note_length);
+		werase(notifyWin);
+		box(notifyWin, 0, 0);
+		wrefresh(notifyWin);
+		noecho();
+	}
 	void Notify(const char *);
 	void PrintSounds();
 	void UpDownView(dirs);

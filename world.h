@@ -146,6 +146,37 @@ class World {
 		playerP->SetWeight();
 		PlayerMove(DOWN);
 	}
+	int Wield(Dwarf * dwarf, int n) {
+		Block * temp=dwarf->Drop(n);
+		if ( !dwarf->Wield(temp) )
+			dwarf->Get(temp);
+	}
+	int PlayerWield(int n) { return Wield(playerP, n); }
+
+	void Inscribe(Dwarf * dwarf) {
+		unsigned short i, j, k;
+		dwarf->GetSelfXYZ(i, j, k);
+		int i_to, j_to, k_to;
+		Focus(i, j, k, i_to, j_to, k_to);
+		char str[note_length];
+		scr->GetString(str);
+		Inscribe(i_to, j_to, k_to, str);
+	}
+	void PlayerInscribe() { Inscribe(playerP); }
+	void Inscribe(int i, int j, int k, char * str) { if (NULL!=blocks[i][j][k]) blocks[i][j][k]->Inscribe(str); }
+	
+
+	void GetNote(char * str, int i, int j, int k) {
+		char note[note_length];
+		if (NULL!=blocks[i][j][k]) {
+			blocks[i][j][k]->GetNote(note);
+			if ('\0'!=note[0]) {
+				strcat(str, "\n Inscription: \"");
+				strcat(str, note);
+				strcat(str, "\"");
+			}
+		}
+	}
 
 	char MakeSound(int i, int j, int k) { return (NULL==blocks[i][j][k]) ? ' ' : blocks[i][j][k]->MakeSound(); }
 

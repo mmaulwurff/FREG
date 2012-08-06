@@ -15,6 +15,9 @@ char Screen::CharName(unsigned short i, unsigned short j, unsigned short k) {
 		}
 		case DWARF: return '@';
 		case CHEST: return 'c';
+		case PILE: return '*';
+		case PICK: return '\\';
+		case TELEGRAPH: return 't';
 		default: return '?';
 	}
 }
@@ -47,11 +50,11 @@ void Screen::PrintNormal(WINDOW * window) {
 				}
 				break;
 			}
-	pthread_mutex_unlock(&(w->mutex));
 	wstandend(window);
 	box(window, 0, 0);
 	mvwaddstr(window, 0, 1, ( UP==w->GetPlayerDir() ) ? "Sky View" : "Normal View");
 	wrefresh(window);
+	pthread_mutex_unlock(&(w->mutex));
 }
 
 void Screen::PrintFront(WINDOW * window) {
@@ -172,18 +175,18 @@ void Screen::PrintInv(WINDOW * window, Inventory * inv) {
 	char str[full_name_length],
 	     num_str[6];
 	werase(window);
-	mvwaddstr(window, 1, 50, "Weight");
+	mvwaddstr(window, 1, 53, "Weight");
 	if ( DWARF==inv->Kind() ) {
-		mvwaddstr(window, 2, 4, "On head:");
-		mvwaddstr(window, 3, 4, "On body:");
-		mvwaddstr(window, 4, 4, "On feet:");
-		mvwaddstr(window, 5, 4, "In right hand:");
-		mvwaddstr(window, 6, 4, "In left hand:");
+		mvwaddstr(window, 2, 2, "On head:");
+		mvwaddstr(window, 3, 2, "On body:");
+		mvwaddstr(window, 4, 2, "On feet:");
+		mvwaddstr(window, 5, 2, "Right hand:");
+		mvwaddstr(window, 6, 2, "Left hand:");
 	}
 	for (i=0; i<inventory_size; ++i) {
 		inv->InvFullName(str, i);
 		inv->NumStr(num_str, i);
-		mvwprintw(window, 2+i, 20, "%c) %s", 'a'+i, num_str);
+		mvwprintw(window, 2+i, 14, "%c) %s", 'a'+i, num_str);
 		wcolor_set(window, Color(inv->GetInvKind(i), inv->GetInvSub(i)), NULL);
 		wprintw(window, "%s", str);
 		wstandend(window);
@@ -192,7 +195,6 @@ void Screen::PrintInv(WINDOW * window, Inventory * inv) {
 			sum_weight+=temp_weight;
 		}
 	}
-	pthread_mutex_unlock(&(w->mutex));
 	mvwprintw(window, 2+i, 43, "Sum:%6.1f kg", sum_weight);
 	box(window, 0, 0);
 	if (w->GetPlayerP()==inv)
@@ -203,6 +205,7 @@ void Screen::PrintInv(WINDOW * window, Inventory * inv) {
 		mvwaddstr(window, 0, 1, str);
 	}
 	wrefresh(window);
+	pthread_mutex_unlock(&(w->mutex));
 }
 
 void Screen::PrintSounds() {
@@ -240,11 +243,15 @@ color_pairs Screen::Color(kinds kind, subs sub) {
 			}
 			default: return BLACK_WHITE;
 		}
+		case PILE: return WHITE_BLACK;
 		case CHEST: switch (sub) {
 			case WOOD: return BLACK_YELLOW;
 			default: return BLACK_WHITE;
 		}
-		case PILE: return WHITE_BLACK;
+		case PICK: switch (sub) {
+			case IRON: return WHITE_BLACK;
+		}
+		case TELEGRAPH: return CYAN_BLACK;
 		default: return BLACK_WHITE;
 	}
 }

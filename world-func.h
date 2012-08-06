@@ -52,7 +52,7 @@ void World::ReloadShreds(dirs direction) { //ReloadShreds is called from Move, s
 	blocks[playerX][playerY][playerZ]=(Block*)(playerP=new Dwarf(this, playerX, playerY, playerZ));
 	SetPlayerDir(save_dir);
 	blocks[shred_width*2-5][shred_width*2-5][height/2]=(Block *)new Dwarf(this, shred_width*2-5, shred_width*2-5, height/2);
-	blocks[shred_width*2-4][shred_width*2-4][height/2]=(Block *)new Chest(this, shred_width*2-5, shred_width*2-5, height/2);
+	blocks[shred_width*2-4][shred_width*2-4][height/2]=new Telegraph;
 }
 
 void World::PhysEvents() {
