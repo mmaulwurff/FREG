@@ -1,6 +1,23 @@
 #ifndef WORLD_H
 #define WORLD_H
 
+	/*
+	*This file is part of FREG.
+	*
+	*FREG is free software: you can redistribute it and/or modify
+	*it under the terms of the GNU General Public License as published by
+	*the Free Software Foundation, either version 3 of the License, or
+	*(at your option) any later version.
+	*
+	*FREG is distributed in the hope that it will be useful,
+	*but WITHOUT ANY WARRANTY; without even the implied warranty of
+	*MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	*GNU General Public License for more details.
+	*
+	*You should have received a copy of the GNU General Public License
+	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
+	*/
+
 #include <pthread.h>
 #include <cmath>
 
@@ -146,14 +163,20 @@ class World {
 		playerP->SetWeight();
 		PlayerMove(DOWN);
 	}
-	int Wield(Dwarf * dwarf, int n) {
+	void Wield(Dwarf * dwarf, int n) {
+		if (0>n || inventory_size<=n) return;
 		Block * temp=dwarf->Drop(n);
+		if (NULL==temp) return;
 		if ( !dwarf->Wield(temp) )
 			dwarf->Get(temp);
 	}
-	int PlayerWield(int n) { return Wield(playerP, n); }
+	void PlayerWield(int n) { Wield(playerP, n); }
 
 	void Inscribe(Dwarf * dwarf) {
+		if (!dwarf->CarvingWeapon()) {
+			scr->Notify("You need some tool for inscibing!\n");
+			return;
+		}
 		unsigned short i, j, k;
 		dwarf->GetSelfXYZ(i, j, k);
 		int i_to, j_to, k_to;

@@ -1,4 +1,4 @@
-Eyecube is an open world game with destructible and buildable environment.
+FREG is a free-roaming elementary game.
 Inspired by Minecraft and Angband.
 
 Development stage: implementing basics.
@@ -13,25 +13,23 @@ Development is run on GNU/Linux, but on MS Windows should work too with PDCurses
 
 Now only singleplayer is developed, multiplayer is planned.
 
-Screenshots of early versions are available here: https://picasaweb.google.com/mmaulwurff/Eyecube?authuser=0&feat=directlink
+Screenshots of early versions are available here:
+https://picasaweb.google.com/mmaulwurff/Eyecube?authuser=0&feat=directlink
 
 Advices are welcome.
 
-Some keys (',' instead of 'w', 'o' intstead of 's', 'e' intstead of 'd')
-are set for Dvorak keyboard.
-
 Copyright (C) 2011 Alexander Kromm (mmaulwurff@gmail.com)
-Source code is available at GitHub: https://github.com/mmaulwurff/Eyecube
+Source code is available at GitHub: https://github.com/mmaulwurff/FREG
 
-Eyecube is free software: you can redistribute it and/or modify
+FREG is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Eyecube is distributed in the hope that it will be useful,
+FREG is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Eyecube. If not, see <http://www.gnu.org/licenses/>.
+along with FREG. If not, see <http://www.gnu.org/licenses/>.

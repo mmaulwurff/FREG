@@ -1,6 +1,23 @@
 #ifndef BLOCKS_H
 #define BLOCKS_H
 
+	/*
+	*This file is part of FREG.
+	*
+	*FREG is free software: you can redistribute it and/or modify
+	*it under the terms of the GNU General Public License as published by
+	*the Free Software Foundation, either version 3 of the License, or
+	*(at your option) any later version.
+	*
+	*FREG is distributed in the hope that it will be useful,
+	*but WITHOUT ANY WARRANTY; without even the implied warranty of
+	*MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	*GNU General Public License for more details.
+	*
+	*You should have received a copy of the GNU General Public License
+	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
+	*/
+
 class World;
 
 class Block { //blocks without special physics and attributes
@@ -77,6 +94,8 @@ class Block { //blocks without special physics and attributes
 class Telegraph : public Block {
 	public:
 	kinds Kind() const { return TELEGRAPH; }
+	void FullName(char * str) { WriteName(str, "Telegraph"); }
+
 	void Inscribe(char * str) {
 		Block::Inscribe(str);
 		char command[note_length+40];
@@ -239,6 +258,12 @@ class Dwarf : public Block, public Animal, public Inventory {
 	unsigned short noise;
 	public:
 	unsigned short Noise() { return noise; }
+	bool CarvingWeapon() {
+		if ( (NULL!=inRightHand && inRightHand->Carving()) ||
+		     (NULL!=inLeftHand  && inLeftHand->Carving()) ) return true;
+		else return false;
+	}
+
 	virtual kinds Kind() const { return DWARF; }
 	virtual void FullName(char * str) {
 		switch (sub) {
