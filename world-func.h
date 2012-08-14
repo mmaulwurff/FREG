@@ -23,13 +23,13 @@
 void World::SaveAllShreds() {
 	for (long i=longitude-1; i<=longitude+1; ++i)
 	for (long j=latitude-1;  j<=latitude+1;  ++j)
-		SaveShred(i, j, (i-longitude+1)*shred_width, (j-latitude+1)*shred_width);
+		SaveShred(i, j, (j-latitude+1)*shred_width, (i-longitude+1)*shred_width);
 }
 
 void World::LoadAllShreds() {
 	for (long i=longitude-1; i<=longitude+1; ++i)
 	for (long j=latitude-1;  j<=latitude+1;  ++j)
-		LoadShred(i, j, (i-longitude+1)*shred_width, (j-latitude+1)*shred_width);
+		LoadShred(i, j, (j-latitude+1)*shred_width, (i-longitude+1)*shred_width);
 	char str[50];
 	FileName(str, longitude, latitude);
 	FILE * check=fopen(str, "r");
@@ -100,16 +100,16 @@ void World::SaveShred(long longi, long lati, unsigned short istart, unsigned sho
 	if (NULL!=out) fclose(out);
 }
 
-void World::ReloadShreds(dirs direction, dirs save_dir) { //ReloadShreds is called from Move, so there is no need to use mutex in this function
+void World::ReloadShreds(dirs direction) { //ReloadShreds is called from Move, so there is no need to use mutex in this function
 	SaveAllShreds();
 	switch (direction) {
 		case NORTH: --longitude; break;
 		case SOUTH: ++longitude; break;
 		case EAST:  ++latitude;  break;
 		case WEST:  --latitude;  break;
+		default: fprintf(stderr, "World::ReloadShreds(dirs): invalid direction.\n");
 	}
 	LoadAllShreds();
-	SetPlayerDir(save_dir);
 }
 
 void World::PhysEvents() {
@@ -155,7 +155,9 @@ void World::PhysEvents() {
 		if (playerX==x && playerY==y && playerZ==z) {
 			soundMap[n].ch=' ';
 			soundMap[n].lev=playerP->Noise();
-			soundMap[n].col=scr->Color( Kind(x, y, z), Sub(x, y, z) );
+			soundMap[n].col=(NULL!=scr) ?
+				scr->Color( Kind(x, y, z), Sub(x, y, z) ) :
+				BLACK_WHITE;
 		}
 		soundMap[n].ch=(' '==soundMap[n].ch) ? temp->MakeSound() : '*';
 		if (' '!=soundMap[n].ch) {
@@ -164,7 +166,9 @@ void World::PhysEvents() {
 			soundMap[n].lev+=(temp*10)/shred_width;
 			if (soundMap[n].lev>9) soundMap[n].lev=9;
 			if (soundMap[n].lev>0) {
-				soundMap[n].col=scr->Color( Kind(x, y, z), Sub(x, y, z) );
+				soundMap[n].col=(NULL!=scr) ?
+					scr->Color( Kind(x, y, z), Sub(x, y, z) ) :
+					BLACK_WHITE;
 				soundMap[n].lev+=1;
 			}
 		}
@@ -172,12 +176,14 @@ void World::PhysEvents() {
 		if ( temp->IfToDestroy() ) {
 			unsigned short i, j, k;
 			temp->GetSelfXYZ(i, j, k);
-			if (NULL!=scr->invToPrintRight &&
-					scr->invToPrintRight->GetThis()==blocks[i][j][k])
-				scr->invToPrintRight=NULL;
-			if (NULL!=scr->invToPrintLeft &&
-					scr->invToPrintLeft->GetThis()==blocks[i][j][k])
-				scr->invToPrintLeft=NULL;
+			if (NULL!=scr) {
+				if (NULL!=scr->invToPrintRight &&
+						scr->invToPrintRight->GetThis()==blocks[i][j][k])
+					scr->invToPrintRight=NULL;
+				if (NULL!=scr->invToPrintLeft &&
+						scr->invToPrintLeft->GetThis()==blocks[i][j][k])
+					scr->invToPrintLeft=NULL;
+			}
 			delete blocks[i][j][k];
 			blocks[i][j][k]=NULL;
 		}
@@ -286,29 +292,17 @@ int World::Move(int i, int j, int k, dirs dir) {
 			playerY=newj;
 			playerZ=newk;
 			if (playerX==shred_width-1) {
-				dirs dir_save=GetPlayerDir();
-				delete blocks[playerX][playerY][playerZ];
-				blocks[playerX][playerY][playerZ]=NULL;
 				playerX+=shred_width;
-				ReloadShreds(WEST, dir_save);
+				ReloadShreds(WEST);
 			} else if (playerX==shred_width*2) {
-				dirs dir_save=GetPlayerDir();
-				delete blocks[playerX][playerY][playerZ];
-				blocks[playerX][playerY][playerZ]=NULL;
 				playerX-=shred_width;
-				ReloadShreds(EAST, dir_save);
+				ReloadShreds(EAST);
 			} else if (playerY==shred_width-1) {
-				dirs dir_save=GetPlayerDir();
-				delete blocks[playerX][playerY][playerZ];
-				blocks[playerX][playerY][playerZ]=NULL;
 				playerY+=shred_width;
-				ReloadShreds(NORTH, dir_save);
+				ReloadShreds(NORTH);
 			} else if (playerY==shred_width*2) {
-				dirs dir_save=GetPlayerDir();
-				delete blocks[playerX][playerY][playerZ];
-				blocks[playerX][playerY][playerZ]=NULL;
 				playerY-=shred_width;
-				ReloadShreds(SOUTH, dir_save);
+				ReloadShreds(SOUTH);
 			}
 		}
 		pthread_mutex_unlock(&mutex);
