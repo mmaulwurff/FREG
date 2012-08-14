@@ -40,7 +40,8 @@ void World::LoadAllShreds() {
 	} else {
 		fclose(check);
 		if ( DWARF!=Kind(playerX, playerY, playerZ) ) {
-			delete blocks[playerX][playerY][playerZ];
+			if (NULL!=blocks[playerX][playerY][playerZ])
+				delete blocks[playerX][playerY][playerZ];
 			blocks[playerX][playerY][playerZ]=(Block*)(playerP=new Dwarf(this, playerX, playerY, playerZ));
 			fprintf(stderr, "World::LoadAllShreds(): new player place\n");
 		} else
@@ -76,13 +77,10 @@ void World::LoadShred(long longi, long lati, unsigned short istart, unsigned sho
 			blocks[istart+3][jstart+3][k]=NULL;
 		}
 	} else {
-		//fprintf(stderr, "World::LoadShred\n");
 		for (unsigned short i=istart; i<istart+shred_width; ++i)
 		for (unsigned short j=jstart; j<jstart+shred_width; ++j)
-			for (unsigned short k=0; k<height-1; ++k) {
+			for (unsigned short k=0; k<height-1; ++k)
 				BlockFromFile(in, blocks[i][j][k], this, i, j, k);
-				fprintf(stderr, "i: %hd, j: %hd, k: %hd, kind: %d, sub: %d\n", i, j, k, Kind(i, j, k), Sub(i, j, k));
-			}
 		fclose(in);
 	}
 }
@@ -102,8 +100,7 @@ void World::SaveShred(long longi, long lati, unsigned short istart, unsigned sho
 	if (NULL!=out) fclose(out);
 }
 
-void World::ReloadShreds(dirs direction) { //ReloadShreds is called from Move, so there is no need to use mutex in this function
-	dirs save_dir=GetPlayerDir();
+void World::ReloadShreds(dirs direction, dirs save_dir) { //ReloadShreds is called from Move, so there is no need to use mutex in this function
 	SaveAllShreds();
 	switch (direction) {
 		case NORTH: --longitude; break;
@@ -289,17 +286,29 @@ int World::Move(int i, int j, int k, dirs dir) {
 			playerY=newj;
 			playerZ=newk;
 			if (playerX==shred_width-1) {
+				dirs dir_save=GetPlayerDir();
+				delete blocks[playerX][playerY][playerZ];
+				blocks[playerX][playerY][playerZ]=NULL;
 				playerX+=shred_width;
-				ReloadShreds(WEST);
+				ReloadShreds(WEST, dir_save);
 			} else if (playerX==shred_width*2) {
+				dirs dir_save=GetPlayerDir();
+				delete blocks[playerX][playerY][playerZ];
+				blocks[playerX][playerY][playerZ]=NULL;
 				playerX-=shred_width;
-				ReloadShreds(EAST);
+				ReloadShreds(EAST, dir_save);
 			} else if (playerY==shred_width-1) {
+				dirs dir_save=GetPlayerDir();
+				delete blocks[playerX][playerY][playerZ];
+				blocks[playerX][playerY][playerZ]=NULL;
 				playerY+=shred_width;
-				ReloadShreds(NORTH);
+				ReloadShreds(NORTH, dir_save);
 			} else if (playerY==shred_width*2) {
+				dirs dir_save=GetPlayerDir();
+				delete blocks[playerX][playerY][playerZ];
+				blocks[playerX][playerY][playerZ]=NULL;
 				playerY-=shred_width;
-				ReloadShreds(SOUTH);
+				ReloadShreds(SOUTH, dir_save);
 			}
 		}
 		pthread_mutex_unlock(&mutex);

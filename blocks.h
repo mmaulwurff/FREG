@@ -114,7 +114,7 @@ class Block { //blocks without special physics and attributes
 			unsigned short len, i;
 			for (len=0; ' '==str[len]; ++len);
 			for (i=len; i<len+note_len; ++i) str[i]=' ';
-		}
+		} else note=NULL;
 	}
 	virtual ~Block() { if (NULL!=note) delete [] note; }
 };

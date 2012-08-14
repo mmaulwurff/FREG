@@ -35,7 +35,7 @@ class World {
 	Active * activeList;
 	void LoadShred(long, long, unsigned short, unsigned short);
 	void SaveShred(long, long, unsigned short, unsigned short);
-	void ReloadShreds(dirs);
+	void ReloadShreds(dirs, dirs);
 	void LoadAllShreds();
 	void SaveAllShreds();
 	void MakeSky() {

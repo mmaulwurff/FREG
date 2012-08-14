@@ -149,8 +149,6 @@ void BlockFromFile(FILE * in, Block * & block, World * world,
 	fgets(str, 300, in);
 	int kind;
 	sscanf(str, "%d", &kind);
-	//if (BLOCK!=kind && DWARF!=kind && (-1)!=kind)
-	//	fprintf(stderr, "BlockFromFile(): i: %hd, j: %hd, k: %hd\n", i, j, k);
 	switch(kind) {
 		case BLOCK:     block=new Block(str); break;
 		case TELEGRAPH: block=new Telegraph(str); break;
