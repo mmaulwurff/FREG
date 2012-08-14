@@ -20,56 +20,99 @@
 
 #include <unistd.h>
 	
+void World::SaveAllShreds() {
+	for (long i=longitude-1; i<=longitude+1; ++i)
+	for (long j=latitude-1;  j<=latitude+1;  ++j)
+		SaveShred(i, j, (i-longitude+1)*shred_width, (j-latitude+1)*shred_width);
+}
+
+void World::LoadAllShreds() {
+	for (long i=longitude-1; i<=longitude+1; ++i)
+	for (long j=latitude-1;  j<=latitude+1;  ++j)
+		LoadShred(i, j, (i-longitude+1)*shred_width, (j-latitude+1)*shred_width);
+	char str[50];
+	FileName(str, longitude, latitude);
+	FILE * check=fopen(str, "r");
+	if (NULL==check) {
+		blocks[playerX][playerY][playerZ]=(Block*)(playerP=new Dwarf(this, playerX, playerY, playerZ));
+		//blocks[shred_width*2-5][shred_width*2-5][height/2]=(Block *)new Dwarf(this, shred_width*2-5, shred_width*2-5, height/2);
+		//blocks[shred_width*2-4][shred_width*2-4][height/2]=new Telegraph;
+	} else {
+		fclose(check);
+		if ( DWARF!=Kind(playerX, playerY, playerZ) ) {
+			delete blocks[playerX][playerY][playerZ];
+			blocks[playerX][playerY][playerZ]=(Block*)(playerP=new Dwarf(this, playerX, playerY, playerZ));
+			fprintf(stderr, "World::LoadAllShreds(): new player place\n");
+		} else
+			playerP=(Dwarf *)blocks[playerX][playerY][playerZ];
+	}
+}
+
 void World::LoadShred(long longi, long lati, unsigned short istart, unsigned short jstart) {
-	unsigned short i, j, k;
-	for (i=istart; i<istart+shred_width; ++i)
-	for (j=jstart; j<jstart+shred_width; ++j) {
-		blocks[i][j][0]=new Block(NULLSTONE);
-		for (k=1; k<height/2; ++k)
-			blocks[i][j][k]=new Block(STONE);
-		for ( ; k<height; ++k)
-			blocks[i][j][k]=NULL;
-	}
-	for (i=istart+1; i<istart+7; ++i)
-		blocks[i][jstart+1][height/2]=new Block(GLASS);
-	for (i=istart+1; i<istart+7; ++i) {
-		delete blocks[i][jstart+2][height/2-1];
-		blocks[i][jstart+2][height/2-1]=NULL;
-	}
-	for (k=height/2; k>0; --k) {
-		delete blocks [istart+3][jstart+3][k];
-		blocks[istart+3][jstart+3][k]=NULL;
+	char str[50];
+	FileName(str, longi, lati);
+	FILE * in=fopen(str, "r");
+	if (NULL==in) {
+		unsigned short i, j, k;
+		for (i=istart; i<istart+shred_width; ++i)
+		for (j=jstart; j<jstart+shred_width; ++j) {
+			blocks[i][j][0]=new Block(NULLSTONE);
+			for (k=1; k<height/2; ++k)
+				blocks[i][j][k]=new Block(STONE);
+			for ( ; k<height-1; ++k)
+				blocks[i][j][k]=NULL;
+		}
+		//Glass walls
+		for (i=istart+1; i<istart+7; ++i)
+			blocks[i][jstart+1][height/2]=new Block(GLASS);
+		//long pit
+		for (i=istart+1; i<istart+7; ++i) {
+			delete blocks[i][jstart+2][height/2-1];
+			blocks[i][jstart+2][height/2-1]=NULL;
+		}
+		//deep pit
+		for (k=height/2; k>0; --k) {
+			delete blocks [istart+3][jstart+3][k];
+			blocks[istart+3][jstart+3][k]=NULL;
+		}
+	} else {
+		//fprintf(stderr, "World::LoadShred\n");
+		for (unsigned short i=istart; i<istart+shred_width; ++i)
+		for (unsigned short j=jstart; j<jstart+shred_width; ++j)
+			for (unsigned short k=0; k<height-1; ++k) {
+				BlockFromFile(in, blocks[i][j][k], this, i, j, k);
+				fprintf(stderr, "i: %hd, j: %hd, k: %hd, kind: %d, sub: %d\n", i, j, k, Kind(i, j, k), Sub(i, j, k));
+			}
+		fclose(in);
 	}
 }
 
 void World::SaveShred(long longi, long lati, unsigned short istart, unsigned short jstart) {
-	unsigned short i, j, k;
-	for (i=istart; i<istart+shred_width; ++i)
-	for (j=jstart; j<jstart+shred_width; ++j)
-		for (k=0; k<height; ++k)
+	char str[50];
+	FileName(str, longi, lati);
+	FILE * out=fopen(str, "w");
+	for (unsigned short i=istart; i<istart+shred_width; ++i)
+	for (unsigned short j=jstart; j<jstart+shred_width; ++j)
+		for (unsigned short k=0; k<height-1; ++k) {
+			if (NULL!=out)
+				if (NULL!=blocks[i][j][k]) blocks[i][j][k]->SaveToFile(out);
+				else fprintf(out, "-1\n");
 			delete blocks[i][j][k];
+		}
+	if (NULL!=out) fclose(out);
 }
 
 void World::ReloadShreds(dirs direction) { //ReloadShreds is called from Move, so there is no need to use mutex in this function
 	dirs save_dir=GetPlayerDir();
-	long i, j;
-	for (i=longitude-1; i<=longitude+1; ++i)
-	for (j=latitude-1;  j<=latitude+1;  ++j)
-		SaveShred(longitude, latitude, (i-longitude+1)*shred_width, (j-latitude+1)*shred_width);
+	SaveAllShreds();
 	switch (direction) {
 		case NORTH: --longitude; break;
 		case SOUTH: ++longitude; break;
 		case EAST:  ++latitude;  break;
 		case WEST:  --latitude;  break;
 	}
-	for (i=longitude-1; i<=longitude+1; ++i)
-	for (j=latitude-1;  j<=latitude+1;  ++j)
-		LoadShred(longitude, latitude, (i-longitude+1)*shred_width, (j-latitude+1)*shred_width);
-	MakeSky();
-	blocks[playerX][playerY][playerZ]=(Block*)(playerP=new Dwarf(this, playerX, playerY, playerZ));
+	LoadAllShreds();
 	SetPlayerDir(save_dir);
-	blocks[shred_width*2-5][shred_width*2-5][height/2]=(Block *)new Dwarf(this, shred_width*2-5, shred_width*2-5, height/2);
-	blocks[shred_width*2-4][shred_width*2-4][height/2]=new Telegraph;
 }
 
 void World::PhysEvents() {
@@ -307,8 +350,7 @@ void World::Focus(int i, int j, int k, int & i_target, int & j_target, int & k_t
 	else if (k_target>=height) k_target=height-1;
 }
 
-World::World() {
-	//TODO: add load and save
+World::World() : scr(NULL), activeList(NULL) {
 	FILE * file=fopen("save", "r");
 	if (file==NULL) {
 		longitude=0;
@@ -316,26 +358,19 @@ World::World() {
 		playerX=shred_width*2-7;
 		playerY=shred_width*2-7;
 		playerZ=height/2;
+		time=0;
 	} else {
-		fscanf(file, "longitude: %ld\nlatitude: %ld\nplayerX: %hd\n playerY: %hd\n playerZ: %hd\n",
-				&longitude, &latitude, &playerX, &playerY, &playerZ);
+		fscanf(file, "longitude: %ld\nlatitude: %ld\nplayerX: %hd\n playerY: %hd\n playerZ: %hd\ntime: %ld\n",
+				&longitude, &latitude, &playerX, &playerY, &playerZ, &time);
 		fclose(file);
 	}
-	activeList=NULL;
-	long i, j;
-	for (i=longitude-1; i<=longitude+1; ++i)
-	for (j=latitude-1;  j<=latitude+1;  ++j)
-		LoadShred(longitude, latitude, (i-longitude+1)*shred_width, (j-latitude+1)*shred_width);
+	LoadAllShreds();
 	MakeSky();
-	blocks[playerX][playerY][playerZ] =(Block*)( playerP=new Dwarf(this, playerX, playerY, playerZ) );
-	blocks[shred_width*2-5][shred_width*2-5][height/2]=(Block*)new Dwarf(this, shred_width*2-5, shred_width*2-5, height/2);
-	time=end_of_night-5;
-	for (i=0; i<9; ++i) {
+	for (unsigned short i=0; i<9; ++i) {
 		soundMap[i].ch=' ';
 		soundMap[i].lev=0;
 		soundMap[i].col=WHITE_BLACK;
 	}
-	scr=NULL;
 	pthread_mutexattr_t mutex_attr;
 	pthread_mutexattr_settype(&mutex_attr, PTHREAD_MUTEX_RECURSIVE);
 	pthread_mutex_init(&mutex, &mutex_attr);
@@ -346,15 +381,12 @@ World::~World() {
 	pthread_cancel(eventsThread);
 	pthread_mutex_destroy(&mutex);
 	FILE * file=fopen("save", "w");
-	if ("file!=NULL") {
-		fprintf(file, "longitude: %ld\nlatitude: %ld\nplayerX: %hd\nplayerY: %hd\nplayerZ: %hd\n",
-				longitude, latitude, playerX, playerY, playerZ);
+	if (file!=NULL) {
+		fprintf(file, "longitude: %ld\nlatitude: %ld\nplayerX: %hd\nplayerY: %hd\nplayerZ: %hd\ntime: %ld\n",
+				longitude, latitude, playerX, playerY, playerZ, time);
 		fclose(file);
 	}
-	long i, j;
-	for (i=longitude-1; i<=longitude+1; ++i)
-	for (j=latitude-1;  j<=latitude+1;  ++j)
-		SaveShred(longitude, latitude, (i-longitude+1)*shred_width, (j-latitude+1)*shred_width);
+	SaveAllShreds();
 }
 
 void *PhysThread(void *vptr_args) {

@@ -137,7 +137,30 @@ enum subs {//substance block is made from
 	IRON
 };
 
+class Block;
+class World;
+void BlockFromFile(FILE *, Block * &, World * =NULL, unsigned short=0, unsigned short=0, unsigned short=0);
+
 #include "blocks.h"
+
+void BlockFromFile(FILE * in, Block * & block, World * world,
+		unsigned short i, unsigned short j, unsigned short k) {
+	char str[300];
+	fgets(str, 300, in);
+	int kind;
+	sscanf(str, "%d", &kind);
+	//if (BLOCK!=kind && DWARF!=kind && (-1)!=kind)
+	//	fprintf(stderr, "BlockFromFile(): i: %hd, j: %hd, k: %hd\n", i, j, k);
+	switch(kind) {
+		case BLOCK:     block=new Block(str); break;
+		case TELEGRAPH: block=new Telegraph(str); break;
+		case PICK:      block=new Pick(str); break;
+		case DWARF:     block=new Dwarf(world, i, j, k, str, in); break;
+		case CHEST:     block=new Chest(world, i, j, k, str, in); break;
+		case PILE:      block=new Pile(world, i, j, k, str, in); break;
+		default:        block=NULL;
+	}
+}
 
 #include "screen.h"
 
@@ -189,7 +212,7 @@ int main() {
 			} break;
 			case 'd': earth.PlayerDrop(getch()-'a'); break;
 			case 'g': earth.PlayerGet(getch()-'a'); break;
-			case 'W': earth.PlayerWield(getch()-'a'); break;
+			case 'W': earth.PlayerWield(); break;
 			case 'I': earth.PlayerInscribe(); break;
 			default: screen.Notify("What?\n");
 		}

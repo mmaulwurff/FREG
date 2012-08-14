@@ -36,6 +36,8 @@ class World {
 	void LoadShred(long, long, unsigned short, unsigned short);
 	void SaveShred(long, long, unsigned short, unsigned short);
 	void ReloadShreds(dirs);
+	void LoadAllShreds();
+	void SaveAllShreds();
 	void MakeSky() {
 		FILE * sky=fopen("sky.txt", "r");
 		if (NULL==sky) {
@@ -76,6 +78,7 @@ class World {
 		             (y_from-y_to)*(y_from-y_to)+
 		             (z_from-z_to)*(z_from-z_to) );
 	}
+	void FileName(char * str, long longi, long lati) { sprintf(str, "shreds/%ld_%ld", longi, lati); }
 
 	public:
 	Screen * scr;
@@ -170,7 +173,18 @@ class World {
 		if ( !dwarf->Wield(temp) )
 			dwarf->Get(temp);
 	}
-	void PlayerWield(int n) { Wield(playerP, n); }
+	void PlayerWield() {
+		unsigned short i, j;
+		playerP->RangeForWield(i, j);
+		if (i<inventory_size) {
+			char str[18];
+			sprintf(str, "Wield what? (%c-%c)", i+'a', j+'a');
+			scr->Notify(str);
+			Wield(playerP, getch()-'a');
+			scr->Notify("");
+		} else
+			scr->Notify("Nothing to wield.");
+	}
 
 	void Inscribe(Dwarf * dwarf) {
 		if (!dwarf->CarvingWeapon()) {

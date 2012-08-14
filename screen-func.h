@@ -240,7 +240,7 @@ void Screen::PrintSounds() {
 
 void Screen::Notify(const char * str) {
 	werase(notifyWin);
-	mvwprintw(notifyWin, 1, 1, "%s", str);
+	mvwaddstr(notifyWin, 1, 1, str);
 	box(notifyWin, 0, 0);
 	wrefresh(notifyWin);
 }
