@@ -22,15 +22,20 @@
 
 const unsigned short shred_width=10;
 const unsigned short height=100;
+
 const unsigned short full_name_length=20;
+const unsigned short note_length=144;
+
 const unsigned short inventory_size=26;
 const unsigned short max_stack_size=9; //num_str in Screen::PrintInv must be big enough
-const unsigned short note_length=144;
+
 const unsigned short seconds_in_hour=60;
 const unsigned short seconds_in_day=24*seconds_in_hour;
 const unsigned short end_of_night  = 6*seconds_in_hour;
 const unsigned short end_of_morning=12*seconds_in_hour;
 const unsigned short end_of_noon   =18*seconds_in_hour;
+
+const unsigned short max_light_radius=5;
 
 inline void WriteName(char * str, const char * name) { strncpy(str, name, full_name_length); }
 

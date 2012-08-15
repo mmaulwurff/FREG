@@ -80,6 +80,8 @@ class World {
 	}
 	void FileName(char * str, long longi, long lati) { sprintf(str, "shreds/%ld_%ld", longi, lati); }
 
+	bool LegalXYZ(int i, int j, int k) { return (i>=0 && i<shred_width*3 && j>=0 && j<shred_width*3 && k>0 && k<height-1); }
+
 	public:
 	Screen * scr;
 	struct {
@@ -104,6 +106,7 @@ class World {
 	void SetPlayerDir(dirs dir) { playerP->SetDir(dir); }
 	dirs GetPlayerDir() { return playerP->GetDir(); }
 	void GetPlayerCoords(short & x, short & y, short & z) { x=playerX; y=playerY; z=playerZ; }
+	void GetPlayerCoords(short & x, short & y) { x=playerX; y=playerY; }
 	Dwarf * GetPlayerP() { return playerP; }
 
 	unsigned long GetTime() { return time; }
@@ -216,6 +219,39 @@ class World {
 	}
 
 	char MakeSound(int i, int j, int k) { return (NULL==blocks[i][j][k]) ? ' ' : blocks[i][j][k]->MakeSound(); }
+
+	private:
+	float LightRadius(int i, int j, int k) { return (NULL==blocks[i][j][k]) ? 0 : blocks[i][j][k]->LightRadius(); }
+	bool UnderTheSky(int i, int j, int k) {
+		if ( !LegalXYZ(i, j, k) ) return false;
+		for (++k; k<height-1; ++k)
+			if ( !Transparent(i, j, k) )
+				return false;
+		return true;
+	}
+	public:
+	bool Enlightened(int i, int j, int k) {
+		if ( height-1==k || ( NIGHT!=PartOfDay() && (
+				LightRadius(i, j, k) || UnderTheSky(i, j, k) ||
+				UnderTheSky(i-1, j, k) || UnderTheSky(i, j-1, k) ||
+				UnderTheSky(i+1, j, k) || UnderTheSky(i, j+1, k)) ) )
+			return true;
+
+		unsigned short const x_start=(i-max_light_radius>0) ? i-max_light_radius : 0;
+		unsigned short const y_start=(j-max_light_radius>0) ? j-max_light_radius : 0;
+		unsigned short const z_start=(k-max_light_radius>0) ? k-max_light_radius : 0;
+		unsigned short const x_end=(i+max_light_radius<shred_width*3) ? i+max_light_radius : shred_width*3-1;
+		unsigned short const y_end=(j+max_light_radius<shred_width*3) ? j+max_light_radius : shred_width*3-1;
+		unsigned short const z_end=(k+max_light_radius<height-1) ? k+max_light_radius : height-2;
+
+		for (unsigned short x=x_start; x<=x_end; ++x)
+		for (unsigned short y=y_start; y<=y_end; ++y)
+		for (unsigned short z=z_start; z<=z_end; ++z)
+			if (( LightRadius(x, y, z) > Distance(i, j, k, x, y, z) ) &&
+					DirectlyVisible(x, y, z, i, j, k))
+				return true;
+		return false;
+	}
 
 	friend void Screen::PrintNormal(WINDOW *);
 	friend void Screen::PrintFront(WINDOW *);

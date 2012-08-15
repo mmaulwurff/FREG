@@ -49,4 +49,9 @@ void Chest::Use() {
 		GetWorld()->scr->viewLeft=NORMAL;
 }
 
+float Dwarf::LightRadius() {
+	if ( this==whereWorld->GetPlayerP() ) return 1.8;
+	else return 0;
+}
+
 #endif

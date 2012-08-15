@@ -233,8 +233,7 @@ bool World::DirectlyVisible(int x_from, int y_from, int z_from,
 	float x_step=(float)(x_to-x_from)/max,
 	      y_step=(float)(y_to-y_from)/max,
 	      z_step=(float)(z_to-z_from)/max;
-	unsigned short i;
-	for (i=1; i<max; ++i)
+	for (unsigned short i=1; i<max; ++i)
 		if ( !Transparent(nearbyint(x_from+i*x_step),
 		                  nearbyint(y_from+i*y_step),
 		                  nearbyint(z_from+i*z_step)))
@@ -361,7 +360,7 @@ World::World() : scr(NULL), activeList(NULL) {
 		playerX=shred_width*2-7;
 		playerY=shred_width*2-7;
 		playerZ=height/2;
-		time=0;
+		time=end_of_night-5;
 	} else {
 		fscanf(file, "longitude: %ld\nlatitude: %ld\nplayerX: %hd\n playerY: %hd\n playerZ: %hd\ntime: %ld\n",
 				&longitude, &latitude, &playerX, &playerY, &playerZ, &time);

@@ -87,6 +87,8 @@ class Block { //blocks without special physics and attributes
 	virtual bool Weapon() { return false; }
 	virtual bool Carving() { return false; }
 
+	virtual float LightRadius() { return 0; }
+
 	virtual bool operator==(const Block& block) const {
 		return ( block.Kind()==Kind() && block.Sub()==Sub() ) ? true : false;
 	}
@@ -194,8 +196,10 @@ class Pick : public Weapons {
 class Active {
 	Active * next;
 	Active * prev;
-	World * whereWorld;
+
+	protected:
 	unsigned short x_self, y_self, z_self;
+	World * whereWorld;
 
 	public:
 	void Move(dirs dir) {
@@ -378,6 +382,8 @@ class Dwarf : public Block, public Animal, public Inventory {
 		SaveAttributes(out);
 		fprintf(out, "\n");
 	}
+
+	inline virtual float LightRadius();
 
 	Dwarf(World * w, unsigned short x, unsigned short y, unsigned short z) :
 			Block::Block(H_MEAT),

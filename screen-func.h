@@ -48,6 +48,7 @@ void Screen::PrintNormal(WINDOW * window) {
 		k_start=w->playerZ+1;
 		k_step=1;
 		k_end=height;
+
 	} else {
 		k_start=w->playerZ;
 		k_step=-1;
@@ -58,7 +59,7 @@ void Screen::PrintNormal(WINDOW * window) {
 	for ( short i=0; i<shred_width*3; ++i )
 		for (short k=k_start; k!=k_end; k+=k_step) //bottom is made from undestructable stone, loop will find what to print everytime
 			if (w->Transparent(i, j, k) < 2) {
-				if ( w->Visible(i, j, k) ) {
+				if ( w->Visible(i, j, k) && w->Enlightened(i, j, k) ) {
 					wcolor_set(window, Color(i, j, k), NULL);
 					wprintw( window, "%c%c", CharName(i, j, k), w->CharNumber(i, j, k) );
 				} else {
@@ -69,7 +70,16 @@ void Screen::PrintNormal(WINDOW * window) {
 			}
 	wstandend(window);
 	box(window, 0, 0);
-	mvwaddstr(window, 0, 1, ( UP==w->GetPlayerDir() ) ? "Sky View" : "Normal View");
+	if ( UP==w->GetPlayerDir() ) {
+		short arrow_X, arrow_Y;
+		w->GetPlayerCoords(arrow_X, arrow_Y);
+		mvwprintw(window, 0,               arrow_X*2+1,       "vv");
+		mvwprintw(window, shred_width*3+1, arrow_X*2+1,       "^^");
+		mvwprintw(window, arrow_Y+1,       0,                 ">");
+		mvwprintw(window, arrow_Y+1,       shred_width*3*2+1, "<");
+		mvwaddstr(window, 0, 1, "Sky View");
+	} else
+		mvwaddstr(window, 0, 1, "Normal View");
 	wrefresh(window);
 	pthread_mutex_unlock(&(w->mutex));
 }
@@ -77,6 +87,7 @@ void Screen::PrintNormal(WINDOW * window) {
 void Screen::PrintFront(WINDOW * window) {
 	if ( UP==w->GetPlayerDir() || DOWN==w->GetPlayerDir() ) {
 		wstandend(window);
+		werase(window);
 		box(window, 0, 0);
 		mvwaddstr(window, 0, 1, "No view");
 		wrefresh(window);
@@ -153,7 +164,7 @@ void Screen::PrintFront(WINDOW * window) {
 		for (*x=x_start; *x!=x_end; *x+=x_step) {
 			for (*z=z_start; *z!=z_end; *z+=z_step)
 				if (w->Transparent(i, j, k) < 2) {
-					if ( w->Visible(i, j, k) ) {
+					if ( w->Visible(i, j, k) && w->Enlightened(i, j, k) ) {
 						wcolor_set(window, Color(i, j, k), NULL);
 						wprintw( window, "%c%c", CharName(i, j, k), w->CharNumberFront(i, j) );
 					} else {
