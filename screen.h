@@ -27,8 +27,8 @@ class Screen {
 	char CharName(unsigned short i, unsigned short j, unsigned short k);
 
 	public:
-	Inventory * invToPrintLeft,
-	          * invToPrintRight;
+	Block * blockToPrintLeft,
+	      * blockToPrintRight;
 	window_views viewLeft, viewRight;
 	Screen(World *wor);
 	~Screen();
@@ -40,16 +40,16 @@ class Screen {
 	void PrintInv(WINDOW *, Inventory *);
 	void Print() {
 		switch (viewLeft) {
-			case INVENTORY: if (NULL!=invToPrintLeft) {
-				PrintInv(leftWin, invToPrintLeft);
+			case INVENTORY: if (NULL!=blockToPrintLeft) {
+				PrintInv( leftWin, (Inventory *)blockToPrintLeft->HasInventory() );
 				break;
 			}
 			case NORMAL: PrintNormal(leftWin); break;
 			case FRONT: PrintFront(leftWin); break;
 		}	
 		switch (viewRight) {
-			case INVENTORY: if (NULL!=invToPrintRight) {
-				PrintInv(rightWin, invToPrintRight);
+			case INVENTORY: if (NULL!=blockToPrintRight) {
+				PrintInv( rightWin, (Inventory *)blockToPrintRight->HasInventory() );
 				break;
 			}
 			case NORMAL: PrintNormal(rightWin); break;

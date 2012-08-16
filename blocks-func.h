@@ -18,8 +18,9 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-Active::Active(World * w, unsigned short x, unsigned short y, unsigned short z) :
-		x_self(x), y_self(y), z_self(z), whereWorld(w), prev(NULL) {
+void Active::Register(World * w) {
+	whereWorld=w;
+	prev=NULL;
 	if (NULL==whereWorld->activeList)
 		next=NULL;
 	else {
@@ -29,24 +30,18 @@ Active::Active(World * w, unsigned short x, unsigned short y, unsigned short z) 
 	whereWorld->activeList=this;
 }
 
-Active::~Active() {
-	if (NULL!=next)
-		next->prev=prev;
-	if (NULL!=prev)
-		prev->next=next;
-	else {
-		whereWorld->activeList=next;
-		if (NULL!=whereWorld->activeList)
-			whereWorld->activeList->prev=NULL;
+void Active::Unregister() {
+	if (NULL!=whereWorld) {
+		if (NULL!=next)
+			next->prev=prev;
+		if (NULL!=prev)
+			prev->next=next;
+		else {
+			whereWorld->activeList=next;
+			if (NULL!=whereWorld->activeList)
+				whereWorld->activeList->prev=NULL;
+		}
 	}
-}
-
-void Chest::Use() {
-	if (INVENTORY!=GetWorld()->scr->viewLeft) {
-		GetWorld()->scr->viewLeft=INVENTORY;
-		GetWorld()->scr->invToPrintLeft=this;
-	} else
-		GetWorld()->scr->viewLeft=NORMAL;
 }
 
 float Dwarf::LightRadius() {

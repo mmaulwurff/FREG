@@ -286,7 +286,7 @@ color_pairs Screen::Color(kinds kind, subs sub) {
 inline color_pairs Screen::Color(unsigned short i, unsigned short j, unsigned short k) { return Color( w->Kind(i, j, k), w->Sub(i, j, k) ); }
 
 Screen::Screen(World * wor) :
-       		w(wor), viewLeft(NORMAL), viewRight(FRONT), invToPrintLeft(NULL), invToPrintRight(NULL) {
+       		w(wor), viewLeft(NORMAL), viewRight(FRONT), blockToPrintLeft(NULL), blockToPrintRight(NULL) {
 	set_escdelay(10);
 	initscr();
 	start_color();

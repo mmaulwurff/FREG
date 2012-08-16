@@ -120,7 +120,59 @@ class World {
 	int TimeOfDay() { return time%seconds_in_day; }
 	unsigned long Time() { return time; }
 
-	int Use(int i, int j, int k) { if (NULL!=blocks[i][j][k]) blocks[i][j][k]->Use(); }
+	void Damage(int i, int j, int k) {
+		if (NULL!=blocks[i][j][k])
+			if ( !blocks[i][j][k]->Damage() ) {
+				if ( blocks[i][j][k]->DropAfterDamage() && blocks[i][j][k]->CanBeIn() ) {
+					Block * temp=blocks[i][j][k];
+					if ( temp->ActiveBlock() )
+						((Active *)temp)->Unregister();
+					Pile * new_pile=new Pile(this, i, j, k);
+					blocks[i][j][k]=new_pile;
+					if ( temp->HasInventory() ) {
+						new_pile->GetAll( (Inventory *)temp );
+					}
+					if ( !((Pile *)blocks[i][j][k])->Get(temp) )
+						delete temp;
+				} else {
+					delete blocks[i][j][k];
+					blocks[i][j][k]=NULL;
+				}
+			}
+	}
+	void Use(int i, int j, int k) {
+		if (NULL!=blocks[i][j][k])
+			switch ( blocks[i][j][k]->Use() ) {
+				case OPEN:
+					if (INVENTORY!=scr->viewLeft) {
+						scr->viewLeft=INVENTORY;
+						scr->blockToPrintLeft=blocks[i][j][k];
+					} else
+						scr->viewLeft=NORMAL;
+				break;
+				default: scr->viewLeft=NORMAL;
+			}
+	}
+	bool Build(Block * block, int i, int j, int k) {
+		if (NULL==blocks[i][j][k] && block->CanBeOut() ) {
+			block->Restore();
+			if ( block->ActiveBlock() )
+				((Active *)block)->Register(this);
+			blocks[i][j][k]=block;
+			return true;
+		} else {
+			scr->Notify("You can not build.");
+			return false;
+		}
+	};
+	void PlayerBuild(int n) {
+		Block * temp=playerP->Drop(n);
+		int i, j, k;
+		PlayerFocus(i, j, k);
+		if ( !Build(temp, i, j, k) )
+			playerP->Get(temp);
+	}
+
 	void Exchange(int i_from, int j_from, int k_from,
 	              int i_to,   int j_to,   int k_to, int n) {
 		if ( pthread_mutex_trylock(&mutex) ) return;
@@ -149,7 +201,6 @@ class World {
 		int i_from, j_from, k_from;
 		Focus(i, j, k, i_from, j_from, k_from);
 		Exchange(i_from, j_from, k_from, i, j, k, n);
-
 	}
 	void PlayerGet(int n) { Get(playerX, playerY, playerZ, n); }
 
@@ -159,10 +210,13 @@ class World {
 	int  Transparent(int i, int j, int k)  { return (NULL==blocks[i][j][k]) ? 2 : blocks[i][j][k]->Transparent(); }
 	int  Movable(Block * block)            { return (NULL==block) ? ENVIRONMENT : block->Movable(); }
 	double Weight(Block * block)           { return (NULL==block) ? 0 : block->Weight(); }
-	bool HasInventory(int i, int j, int k) { return (NULL==blocks[i][j][k]) ? false : blocks[i][j][k]->HasInventory(); }
+	void * HasInventory(int i, int j, int k) { return (NULL==blocks[i][j][k]) ? NULL : blocks[i][j][k]->HasInventory(); }
 
-	int  PlayerMove(dirs dir)              { return Move( playerX, playerY, playerZ, dir ); }
-	int  PlayerMove()                      { return Move( playerX, playerY, playerZ, playerP->GetDir() ); }
+	int PlayerMove(dirs dir) {
+		scr->viewLeft=NORMAL;
+		return Move( playerX, playerY, playerZ, dir );
+	}
+	int PlayerMove() { return PlayerMove( playerP->GetDir() ); } 
 	void PlayerJump() {
 		playerP->SetWeight(0);
 		if ( PlayerMove(UP) ) PlayerMove();

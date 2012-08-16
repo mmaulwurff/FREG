@@ -30,8 +30,10 @@ class Block { //blocks without special physics and attributes
 		for (i=0; str[i]!='/'; ++i) str[i]=' ';
 		str[i]=' ';
 	}
+	unsigned short durability;
 	public:
 
+	virtual Block * GetThis() { return this; }
 	void SetWeight(double m) { 
 		weight=shown_weight;
 		shown_weight=m;
@@ -78,8 +80,24 @@ class Block { //blocks without special physics and attributes
 	}
 	virtual void Move(dirs) {}
 	virtual char MakeSound() { return ' '; }
-	virtual void Use() {}
-	virtual bool HasInventory() const { return false; }
+	virtual usage_types Use() { return NO; }
+	virtual int Damage() {
+		switch (sub) {
+			case GLASS: durability-=10; break;
+			case STONE: durability-=5; break;
+			default: --durability; break;
+		}
+		return (durability<0) ? 0 : durability;
+	}
+	void Restore() { durability=max_durability; }
+	virtual bool DropAfterDamage() {
+		switch (sub) {
+			case GLASS: return false;
+			default: return true;
+		}
+	}
+	virtual void * HasInventory() { return NULL; }
+	virtual bool ActiveBlock() { return false; }
 	virtual Block * Drop(int n) {}
 	virtual int Get(Block *, int=0) {}
 
@@ -99,15 +117,15 @@ class Block { //blocks without special physics and attributes
 		fprintf(out, "\n");
 	}
 	void SaveAttributes(FILE * out) {
-	       	fprintf(out, "_%d_%f_%d", sub, weight, direction);
+	       	fprintf(out, "_%d_%f_%d_%hd", sub, weight, direction, durability);
 		if (NULL!=note) fprintf(out, "_%d/%s", strlen(note), note);
 		else fprintf(out, "_0/");
 	}
 
-	Block(subs n) : sub(n), shown_weight(1), weight(1), direction(NORTH), note(NULL) {}
+	Block(subs n) : sub(n), shown_weight(1), weight(1), direction(NORTH), note(NULL), durability(max_durability) {}
 	Block(char * str) {
 		unsigned short note_len;
-	       	sscanf(str, "%*d_%d_%f_%d_%hd", &sub, &weight, &direction, &note_len);
+	       	sscanf(str, "%*d_%d_%f_%d_%hd_%hd", &sub, &weight, &direction, &durability, &note_len);
 		shown_weight=weight;
 		CleanString(str);
 		if (0!=note_len) {
@@ -150,7 +168,6 @@ class Telegraph : public Block {
 
 class Weapons : public Block {
 	protected:
-	unsigned short durability;
 	public:
 	virtual kinds Kind() const=0;
 	bool Weapon() { return true; }
@@ -160,14 +177,10 @@ class Weapons : public Block {
 	virtual void SaveToFile(FILE *)=0;
 	void SaveAttributes(FILE * out) {
 		Block::SaveAttributes(out);
-		fprintf(out, "%hd/", durability);
 	}
 
-	Weapons(subs sub) : durability(9), Block::Block(sub) {}
-	Weapons(char * str) : Block::Block(str) {
-		sscanf(str, " %hd", &durability);
-		CleanString(str);
-	}
+	Weapons(subs sub) : Block::Block(sub) {}
+	Weapons(char * str) : Block::Block(str) {}
 };
 
 class Pick : public Weapons {
@@ -202,6 +215,9 @@ class Active {
 	World * whereWorld;
 
 	public:
+	void Register(World *);
+	void Unregister();
+	virtual bool ActiveBlock() { return true; }
 	void Move(dirs dir) {
 		switch (dir) {
 			case NORTH: --y_self; break;
@@ -229,8 +245,10 @@ class Active {
 	virtual void SaveToFile(FILE *)=0;
 	void SaveAttributes(FILE * out) {}
 
-	Active(World *, unsigned short, unsigned short, unsigned short);
-	virtual ~Active();
+	Active(World * w, unsigned short x, unsigned short y, unsigned short z) :
+			x_self(x), y_self(y), z_self(z)
+		{ Register(w); }
+	virtual ~Active() { Unregister(); }
 };
 
 class Animal : public Active {
@@ -250,7 +268,6 @@ class Animal : public Active {
 
 class Inventory {
 	protected:
-	Block * inventory[inventory_size][max_stack_size];
 	int Number(int i) {
 		if (inventory_size<=i) return 0;
 		unsigned short n;
@@ -258,6 +275,7 @@ class Inventory {
 		return n;
 	}
 	public:
+	Block * inventory[inventory_size][max_stack_size];
 	void InvFullName(char * str, int i) { (NULL==inventory[i][0]) ? WriteName(str, "") : inventory[i][0]->FullName(str); }
 	void NumStr(char * str, int i) {
 		unsigned short n=Number(i);
@@ -269,7 +287,9 @@ class Inventory {
 	kinds GetInvKind(int i)    { return (NULL==inventory[i][0]) ? BLOCK : inventory[i][0]->Kind(); }
 	virtual void FullName(char *)=0;
 	virtual kinds Kind() const=0;
-	virtual Block * GetThis()=0;
+
+	void * HasInventory() { return this; }
+	usage_types Use() { return OPEN; }
 
 	Block * Drop(int n) {
 		if (0>n || inventory_size<=n) return NULL;
@@ -282,14 +302,21 @@ class Inventory {
 			return NULL;
 	}
 	int Get(Block * block, int n=0) {
+		if (NULL==block) return 1;
 		if (0>n || inventory_size<=n) n=0;
-		for (unsigned short i=n; i<inventory_size; ++i)
+		for (unsigned short i=n; i<inventory_size; ++i) {
 			if ( NULL==inventory[i][0] ||
 					(*block==*inventory[i][0] && (Number(i) < max_stack_size)) ) {
 				inventory[i][Number(i)]=block;
 				return 1;
 			}
+		}
 		return 0;
+	}
+	void GetAll(Inventory * from) {
+		//for (unsigned short i=0; i<inventory_size; ++i)
+		//for (unsigned short j=0; j<max_stack_size; ++j)
+			if (NULL!=from->inventory[0][0]);// Get(from->inventory[0][0]);
 	}
 	void RangeForWield(unsigned short & i, unsigned short & j) {
 		for (i=5; i<inventory_size; ++i)
@@ -321,7 +348,6 @@ class Inventory {
 	Inventory(char * str, FILE * in) {
 		for (unsigned short i=0; i<inventory_size; ++i)
 		for (unsigned short j=0; j<max_stack_size; ++j)
-			//inventory[i][j]=NULL;
 			BlockFromFile(in, inventory[i][j]);
 		fgets(str, 300, in);
 	}
@@ -357,7 +383,7 @@ class Dwarf : public Block, public Animal, public Inventory {
 	virtual int Movable() { return true; }
 	bool CanBeIn() { return false; }
 	virtual void Move(dirs dir) { Animal::Move(dir); }
-	bool HasInventory() const { return true; }
+	void * HasInventory() { return Inventory::HasInventory(); }
 	bool Stackable() { return false; }
 	Block * Drop(int n) { return Inventory::Drop(n); }
 	int Wield(Block * block) {
@@ -369,7 +395,6 @@ class Dwarf : public Block, public Animal, public Inventory {
 	}
 	int Get(Block * block, int n=5) { return Inventory::Get(block, (5>n) ? 5 : n);
 	}
-	virtual Block * GetThis() { return this; }
 
 	void SaveAttributes(FILE * out) {
 		Block::SaveAttributes(out);
@@ -404,7 +429,7 @@ class Dwarf : public Block, public Animal, public Inventory {
 	}
 };
 
-class Chest : public Block, public Active, public Inventory {
+class Chest : public Block, public Inventory {
 	public:
 	virtual kinds Kind() const { return CHEST; }
 	virtual void FullName(char * str) {
@@ -413,15 +438,15 @@ class Chest : public Block, public Active, public Inventory {
 			default: WriteName(str, "Chest");
 		}
 	}
-	virtual void Use();
-	bool HasInventory() const { return true; }
+	virtual void * HasInventory() { return Inventory::HasInventory(); }
 	virtual Block * Drop(int n) { return Inventory::Drop(n); }
 	int Get(Block * block, int n=0) { return Inventory::Get(block, n); }
 	virtual Block * GetThis() { return this; }
 
+	usage_types Use() { return Inventory::Use(); }
+
 	void SaveAttributes(FILE * out) {
 		Block::SaveAttributes(out);
-		Active::SaveAttributes(out);
 		Inventory::SaveAttributes(out);
 	}
 	virtual void SaveToFile(FILE * out) {
@@ -430,15 +455,14 @@ class Chest : public Block, public Active, public Inventory {
 		fprintf(out, "\n");
 	}
 
-	Chest(World * w, unsigned short x, unsigned short y, unsigned short z, subs s) :
-		Active::Active(w, x, y, z), Block::Block(s) {}
-	Chest(World * w, unsigned short x, unsigned short y, unsigned short z) :
-		Active::Active(w, x, y, z), Block::Block(WOOD) {}
-	Chest(World * w, unsigned short x, unsigned short y, unsigned short z, char * str, FILE * in) :
-		Block::Block(str), Active::Active(w, x, y, z), Inventory::Inventory(str, in) {}
+	Chest(subs s) :	Block::Block(s) {}
+	Chest() : Block::Block(WOOD) {}
+	Chest(char * str, FILE * in) :
+		Block::Block(str),
+		Inventory::Inventory(str, in) {}
 };
 
-class Pile : public Chest {
+class Pile : public Chest , public Active {
 	unsigned short lifetime;
 
 	public:
@@ -462,9 +486,12 @@ class Pile : public Chest {
 	int Movable() { return MOVABLE; }
 	void Move(dirs dir) { Active::Move(dir); }
 	bool CanBeIn() { return false; }
+	virtual bool DropAfterDamage() { return false; }
+	int Damage() { return durability-=10; }
 
 	void SaveAttributes(FILE * out) {
 		Chest::SaveAttributes(out);
+		Active::SaveAttributes(out);
 		fprintf(out, "%hd/", lifetime);
 	}
 	virtual void SaveToFile(FILE * out) {
@@ -474,10 +501,13 @@ class Pile : public Chest {
 	}
 
 	Pile(World * w, unsigned short x, unsigned short y, unsigned short z) :
-			Chest(w , x, y, z, DIFFERENT), lifetime(seconds_in_day) {}
+			Chest(DIFFERENT),
+			Active::Active(w, x, y, z),
+			lifetime(seconds_in_day) {}
 	Pile(World * w, unsigned short x, unsigned short y, unsigned short z, char * str, FILE * in) :
-			Chest(w , x, y, z, str, in) {
-		sscanf(str, " %hd", &lifetime);
+			Chest(str, in),
+			Active(w, x, y, z) {
+		sscanf(str, " %hd\n", &lifetime);
 		CleanString(str);
 	}
 };

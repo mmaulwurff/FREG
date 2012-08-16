@@ -37,6 +37,8 @@ const unsigned short end_of_noon   =18*seconds_in_hour;
 
 const unsigned short max_light_radius=5;
 
+const unsigned short max_durability=10;
+
 inline void WriteName(char * str, const char * name) { strncpy(str, name, full_name_length); }
 
 enum color_pairs { //do not change colors order! //foreground_background
@@ -113,9 +115,13 @@ enum color_pairs { //do not change colors order! //foreground_background
         WHITE_WHITE,
 };
 enum dirs { HERE, NORTH, NORTH_EAST, EAST, SOUTH_EAST, SOUTH, SOUTH_WEST, WEST, NORTH_WEST, UP, DOWN };
+
 enum { NOT_MOVABLE, MOVABLE, ENVIRONMENT };
+
 enum window_views { NORMAL, FRONT, INVENTORY };
+
 enum times_of_day { MORNING, NOON, EVENING, NIGHT };
+
 enum kinds {//kind of atom
 	BLOCK,
 	BELL,
@@ -142,6 +148,8 @@ enum subs {//substance block is made from
 	IRON
 };
 
+enum usage_types { NO, OPEN, INNER_ACTION };
+
 class Block;
 class World;
 void BlockFromFile(FILE *, Block * &, World * =NULL, unsigned short=0, unsigned short=0, unsigned short=0);
@@ -159,7 +167,7 @@ void BlockFromFile(FILE * in, Block * & block, World * world,
 		case TELEGRAPH: block=new Telegraph(str); break;
 		case PICK:      block=new Pick(str); break;
 		case DWARF:     block=new Dwarf(world, i, j, k, str, in); break;
-		case CHEST:     block=new Chest(world, i, j, k, str, in); break;
+		case CHEST:     block=new Chest(str, in); break;
 		case PILE:      block=new Pile(world, i, j, k, str, in); break;
 		default:        block=NULL;
 	}
@@ -196,7 +204,7 @@ int main() {
 			case 'i':
 				if (INVENTORY!=screen.viewRight) {
 					screen.viewRight=INVENTORY;
-					screen.invToPrintRight=earth.GetPlayerP();
+					screen.blockToPrintRight=(Block *)(earth.GetPlayerP());
 				} else
 					screen.viewRight=FRONT;
 			break;
@@ -217,6 +225,12 @@ int main() {
 			case 'g': earth.PlayerGet(getch()-'a'); break;
 			case 'W': earth.PlayerWield(); break;
 			case 'I': earth.PlayerInscribe(); break;
+			case KEY_BACKSPACE: {
+				int i, j, k;
+				earth.PlayerFocus(i, j, k);
+				earth.Damage(i, j, k);
+			} break;
+			case KEY_HOME: earth.PlayerBuild(getch()-'a'); break;
 			default: screen.Notify("What?\n");
 		}
 		if (print_flag) screen.Print();

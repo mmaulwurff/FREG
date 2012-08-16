@@ -76,6 +76,7 @@ void World::LoadShred(long longi, long lati, unsigned short istart, unsigned sho
 			delete blocks [istart+3][jstart+3][k];
 			blocks[istart+3][jstart+3][k]=NULL;
 		}
+		blocks[istart+4][jstart+4][height/2]=new Chest();
 	} else {
 		for (unsigned short i=istart; i<istart+shred_width; ++i)
 		for (unsigned short j=jstart; j<jstart+shred_width; ++j)
@@ -101,6 +102,11 @@ void World::SaveShred(long longi, long lati, unsigned short istart, unsigned sho
 }
 
 void World::ReloadShreds(dirs direction) { //ReloadShreds is called from Move, so there is no need to use mutex in this function
+	bool flagLeft=false, flagRight=false;
+	if (scr->blockToPrintLeft==playerP)
+		flagLeft=true;
+	if (scr->blockToPrintRight==playerP)
+		flagRight=true;
 	SaveAllShreds();
 	switch (direction) {
 		case NORTH: --longitude; break;
@@ -110,6 +116,9 @@ void World::ReloadShreds(dirs direction) { //ReloadShreds is called from Move, s
 		default: fprintf(stderr, "World::ReloadShreds(dirs): invalid direction.\n");
 	}
 	LoadAllShreds();
+	if (flagLeft) scr->blockToPrintLeft=playerP;
+	if (flagRight) scr->blockToPrintRight=playerP;
+
 }
 
 void World::PhysEvents() {
@@ -177,12 +186,12 @@ void World::PhysEvents() {
 			unsigned short i, j, k;
 			temp->GetSelfXYZ(i, j, k);
 			if (NULL!=scr) {
-				if (NULL!=scr->invToPrintRight &&
-						scr->invToPrintRight->GetThis()==blocks[i][j][k])
-					scr->invToPrintRight=NULL;
-				if (NULL!=scr->invToPrintLeft &&
-						scr->invToPrintLeft->GetThis()==blocks[i][j][k])
-					scr->invToPrintLeft=NULL;
+				if (NULL!=scr->blockToPrintRight &&
+						scr->blockToPrintRight->GetThis()==blocks[i][j][k])
+					scr->blockToPrintRight=NULL;
+				if (NULL!=scr->blockToPrintLeft &&
+						scr->blockToPrintLeft->GetThis()==blocks[i][j][k])
+					scr->blockToPrintLeft=NULL;
 			}
 			delete blocks[i][j][k];
 			blocks[i][j][k]=NULL;
