@@ -139,7 +139,7 @@ void World::PhysEvents() {
 	delete blocks[i][int(shred_width*1.5)][height-1];
 	blocks[i][int(shred_width*1.5)][height-1]=new Block(SUN_MOON);
 
-	//sounds and blocks' own activities
+	//sounds and blocks' own activities, falling
 	for (i=0; i<9; ++i) {
 		soundMap[i].ch=' ';
 		soundMap[i].lev=0;
@@ -183,19 +183,18 @@ void World::PhysEvents() {
 		}
 		nexttemp=temp->GetNext();
 		if ( temp->IfToDestroy() ) {
-			unsigned short i, j, k;
-			temp->GetSelfXYZ(i, j, k);
 			if (NULL!=scr) {
 				if (NULL!=scr->blockToPrintRight &&
-						scr->blockToPrintRight->GetThis()==blocks[i][j][k])
+						scr->blockToPrintRight->GetThis()==blocks[x][y][z])
 					scr->blockToPrintRight=NULL;
 				if (NULL!=scr->blockToPrintLeft &&
-						scr->blockToPrintLeft->GetThis()==blocks[i][j][k])
+						scr->blockToPrintLeft->GetThis()==blocks[x][y][z])
 					scr->blockToPrintLeft=NULL;
 			}
-			delete blocks[i][j][k];
-			blocks[i][j][k]=NULL;
-		}
+			delete blocks[x][y][z];
+			blocks[x][y][z]=NULL;
+		} else if ( temp->ShouldFall() )
+			Move(x, y, z, DOWN);
 	}
 	
 	pthread_mutex_unlock(&mutex);

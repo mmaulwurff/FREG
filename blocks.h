@@ -85,6 +85,7 @@ class Block { //blocks without special physics and attributes
 		switch (sub) {
 			case GLASS: durability-=10; break;
 			case STONE: durability-=5; break;
+			case NULLSTONE: break;
 			default: --durability; break;
 		}
 		return (durability<0) ? 0 : durability;
@@ -241,6 +242,8 @@ class Active {
 	virtual char MakeSound() { return ' '; }
 	virtual void FullName(char *)=0;
 	virtual unsigned short Noise() { return 0; }
+
+	bool ShouldFall() { return true; }
 
 	virtual void SaveToFile(FILE *)=0;
 	void SaveAttributes(FILE * out) {}
