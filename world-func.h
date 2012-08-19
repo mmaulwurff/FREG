@@ -118,7 +118,6 @@ void World::ReloadShreds(dirs direction) { //ReloadShreds is called from Move, s
 	LoadAllShreds();
 	if (flagLeft) scr->blockToPrintLeft=playerP;
 	if (flagRight) scr->blockToPrintRight=playerP;
-
 }
 
 void World::PhysEvents() {
@@ -281,6 +280,7 @@ int World::Move(int i, int j, int k, dirs dir) {
 		case UP:    ++newk; break;
 		case DOWN:  --newk; break;
 	}
+	blocks[i][j][k]->BeforeMove(dir);
 	int numberMoves=0;
 	if (ENVIRONMENT==Movable(blocks[newi][newj][newk]) || (numberMoves=Move(newi, newj, newk, dir)) ) {
 		blocks[i][j][k]->Move(dir);

@@ -125,13 +125,13 @@ class World {
 			if ( !blocks[i][j][k]->Damage() ) {
 				if ( blocks[i][j][k]->DropAfterDamage() && blocks[i][j][k]->CanBeIn() ) {
 					Block * temp=blocks[i][j][k];
-					if ( temp->ActiveBlock() )
-						((Active *)temp)->Unregister();
 					Pile * new_pile=new Pile(this, i, j, k);
 					blocks[i][j][k]=new_pile;
 					if ( temp->HasInventory() ) {
-						new_pile->GetAll( (Inventory *)temp );
+						new_pile->GetAll( temp );
 					}
+					if ( temp->ActiveBlock() )
+						((Active *)temp)->Unregister();
 					if ( !((Pile *)blocks[i][j][k])->Get(temp) )
 						delete temp;
 				} else {
@@ -173,6 +173,7 @@ class World {
 			playerP->Get(temp);
 	}
 
+	private:
 	void Exchange(int i_from, int j_from, int k_from,
 	              int i_to,   int j_to,   int k_to, int n) {
 		if ( pthread_mutex_trylock(&mutex) ) return;
@@ -191,6 +192,17 @@ class World {
 			}
 		pthread_mutex_unlock(&mutex);
 	}
+	void ExchangeAll(int i_from, int j_from, int k_from,
+	                 int i_to,   int j_to,   int k_to) {
+		if (NULL!=blocks[i_from][j_from][k_from] && NULL!=blocks[i_to][j_to][k_to]) {
+			Inventory * to=(Inventory *)(blocks[i_to][j_to][k_to]->HasInventory());
+			if (NULL!=to)
+				to->GetAll(blocks[i_from][j_from][k_from]);
+			else
+				fprintf(stderr, "World::ExchangeAll(int, int, int, int, int, int): no inventory in target block\n");
+		}
+	}
+	public:
 	void Drop(int i, int j, int k, int n) {
 		int i_to, j_to, k_to;
 		Focus(i, j, k, i_to, j_to, k_to);
@@ -203,6 +215,17 @@ class World {
 		Exchange(i_from, j_from, k_from, i, j, k, n);
 	}
 	void PlayerGet(int n) { Get(playerX, playerY, playerZ, n); }
+	void DropAll(int i_from, int j_from, int k_from) {
+		int i, j, k;
+		Focus(i_from, j_from, k_from, i, j, k);
+		ExchangeAll(i_from, j_from, k_from, i, j, k);
+	}
+	void GetAll(int i_to, int j_to, int k_to) {
+		int i, j, k;
+		Focus(i_to, j_to, k_to, i, j, k);
+		ExchangeAll(i, j, k, i_to, j_to, k_to);
+	}
+	
 
 	void FullName(char * str, int i, int j, int k) { (NULL==blocks[i][j][k]) ? WriteName(str, "Air") : blocks[i][j][k]->FullName(str); }
 	subs Sub(int i, int j, int k)          { return (NULL==blocks[i][j][k]) ? AIR : blocks[i][j][k]->Sub(); }

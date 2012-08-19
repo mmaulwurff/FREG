@@ -49,4 +49,14 @@ float Dwarf::LightRadius() {
 	else return 0;
 }
 
+void Dwarf::BeforeMove(dirs dir) {
+	if (dir==direction)
+		whereWorld->GetAll(x_self, y_self, z_self);
+}
+
+void Pile::BeforeMove(dirs dir) {
+	direction=dir;
+	whereWorld->DropAll(x_self, y_self, z_self);
+}
+
 #endif

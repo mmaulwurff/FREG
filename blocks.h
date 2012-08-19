@@ -78,6 +78,7 @@ class Block { //blocks without special physics and attributes
 			default: WriteName(str, "Unknown block");
 		}
 	}
+	virtual void BeforeMove(dirs) {}
 	virtual void Move(dirs) {}
 	virtual char MakeSound() { return ' '; }
 	virtual usage_types Use() { return NO; }
@@ -219,7 +220,7 @@ class Active {
 	void Register(World *);
 	void Unregister();
 	virtual bool ActiveBlock() { return true; }
-	void Move(dirs dir) {
+	virtual void Move(dirs dir) {
 		switch (dir) {
 			case NORTH: --y_self; break;
 			case SOUTH: ++y_self; break;
@@ -290,6 +291,7 @@ class Inventory {
 	kinds GetInvKind(int i)    { return (NULL==inventory[i][0]) ? BLOCK : inventory[i][0]->Kind(); }
 	virtual void FullName(char *)=0;
 	virtual kinds Kind() const=0;
+	virtual bool Access()=0;
 
 	void * HasInventory() { return this; }
 	usage_types Use() { return OPEN; }
@@ -304,7 +306,7 @@ class Inventory {
 		} else
 			return NULL;
 	}
-	int Get(Block * block, int n=0) {
+	virtual int Get(Block * block, int n=0) {
 		if (NULL==block) return 1;
 		if (0>n || inventory_size<=n) n=0;
 		for (unsigned short i=n; i<inventory_size; ++i) {
@@ -316,10 +318,19 @@ class Inventory {
 		}
 		return 0;
 	}
-	void GetAll(Inventory * from) {
-		//for (unsigned short i=0; i<inventory_size; ++i)
-		//for (unsigned short j=0; j<max_stack_size; ++j)
-			if (NULL!=from->inventory[0][0]);// Get(from->inventory[0][0]);
+	void GetAll(Block * block) {
+		if (NULL!=block) {
+			Inventory * from;
+			if ( NULL!=(from=(Inventory *)(block->HasInventory())) ) {
+				for (unsigned short i=0; i<inventory_size; ++i)
+					while ( from->Number(i) ) {
+						Block * temp=from->Drop(i);
+						if ( !Get(temp) )
+							from->Get(temp);
+					}
+
+			} else fprintf(stderr, "Inventory::GetAll(Block *): block has no inventory\n");
+		}
 	}
 	void RangeForWield(unsigned short & i, unsigned short & j) {
 		for (i=5; i<inventory_size; ++i)
@@ -368,6 +379,7 @@ class Dwarf : public Block, public Animal, public Inventory {
 	Block * &inRightHand;
 	Block * &inLeftHand;
 	unsigned short noise;
+
 	public:
 	unsigned short Noise() { return noise; }
 	bool CarvingWeapon() {
@@ -385,9 +397,13 @@ class Dwarf : public Block, public Animal, public Inventory {
 	virtual char MakeSound() { return (random()%10) ? ' ' : 's'; }
 	virtual int Movable() { return true; }
 	bool CanBeIn() { return false; }
+
+	inline virtual void BeforeMove(dirs);
 	virtual void Move(dirs dir) { Animal::Move(dir); }
+
 	void * HasInventory() { return Inventory::HasInventory(); }
 	bool Stackable() { return false; }
+	virtual bool Access() { return false; }
 	Block * Drop(int n) { return Inventory::Drop(n); }
 	int Wield(Block * block) {
 		if ( block->Weapon() ) {
@@ -396,7 +412,7 @@ class Dwarf : public Block, public Animal, public Inventory {
 			return 1;
 		} return 0;
 	}
-	int Get(Block * block, int n=5) { return Inventory::Get(block, (5>n) ? 5 : n);
+	virtual int Get(Block * block, int n=5) { return Inventory::Get(block, (5>n) ? 5 : n);
 	}
 
 	void SaveAttributes(FILE * out) {
@@ -445,6 +461,7 @@ class Chest : public Block, public Inventory {
 	virtual Block * Drop(int n) { return Inventory::Drop(n); }
 	int Get(Block * block, int n=0) { return Inventory::Get(block, n); }
 	virtual Block * GetThis() { return this; }
+	virtual bool Access() { return true; }
 
 	usage_types Use() { return Inventory::Use(); }
 
@@ -472,9 +489,15 @@ class Pile : public Chest , public Active {
 	virtual kinds Kind() const { return PILE; }
 	virtual void FullName(char * str) { WriteName(str, "Pile"); }
 	void Act() { if (lifetime) --lifetime; }
-	bool IfToDestroy() { 
-		if (lifetime) return false;
-		else return true;
+	bool IfToDestroy() {
+		bool empty_flag=true;
+		for (unsigned short i=0; i<inventory_size; ++i)
+			if ( Number(i) ) {
+				empty_flag=false;
+				break;
+			}
+		if (!lifetime || empty_flag) return true;
+		else return false;
 	}
 	
 	virtual Block * Drop(int n) {
@@ -486,10 +509,12 @@ class Pile : public Chest , public Active {
 	}
 	virtual Block * GetThis() { return this; }
 
-	int Movable() { return MOVABLE; }
-	void Move(dirs dir) { Active::Move(dir); }
-	bool CanBeIn() { return false; }
+	virtual int Movable() { return MOVABLE; }
+	inline virtual void BeforeMove(dirs);
+	virtual void Move(dirs dir) { Active::Move(dir); } 
+	virtual bool CanBeIn() { return false; }
 	virtual bool DropAfterDamage() { return false; }
+	virtual bool Access() { return true; }
 	int Damage() { return durability-=10; }
 
 	void SaveAttributes(FILE * out) {
