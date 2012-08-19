@@ -59,4 +59,13 @@ void Pile::BeforeMove(dirs dir) {
 	whereWorld->DropAll(x_self, y_self, z_self);
 }
 
+void Liquid::Act() {
+	switch (random()%4) {
+		case 0: whereWorld->Move(x_self, y_self, z_self, NORTH); break;
+		case 1: whereWorld->Move(x_self, y_self, z_self, EAST);  break;
+		case 2: whereWorld->Move(x_self, y_self, z_self, SOUTH); break;
+		case 3: whereWorld->Move(x_self, y_self, z_self, WEST);  break;
+	}
+}
+
 #endif

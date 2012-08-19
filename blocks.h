@@ -113,12 +113,12 @@ class Block { //blocks without special physics and attributes
 		return ( block.Kind()==Kind() && block.Sub()==Sub() ) ? true : false;
 	}
 
-	virtual void SaveToFile(FILE * out) {
-		fprintf(out, "%d", BLOCK);
+	void SaveToFile(FILE * out) {
+		fprintf(out, "%d", (int)Kind());
 		SaveAttributes(out);
 		fprintf(out, "\n");
 	}
-	void SaveAttributes(FILE * out) {
+	virtual void SaveAttributes(FILE * out) {
 	       	fprintf(out, "_%d_%f_%d_%hd", sub, weight, direction, durability);
 		if (NULL!=note) fprintf(out, "_%d/%s", strlen(note), note);
 		else fprintf(out, "_0/");
@@ -158,11 +158,7 @@ class Telegraph : public Block {
 		}
 	}
 
-	void SaveToFile(FILE * out) {
-		fprintf(out, "%d", TELEGRAPH);
-		Block::SaveAttributes(out);
-		fprintf(out, "\n");
-	}
+	virtual void SaveAttributes(FILE * out) { Block::SaveAttributes(out); }
 
 	Telegraph() : Block::Block(DIFFERENT) {}
 	Telegraph(char * str) : Block::Block(str) {}
@@ -176,8 +172,7 @@ class Weapons : public Block {
 	virtual bool Carving()  { return false; }
 	bool CanBeOut() { return false; }
 
-	virtual void SaveToFile(FILE *)=0;
-	void SaveAttributes(FILE * out) {
+	virtual void SaveAttributes(FILE * out) {
 		Block::SaveAttributes(out);
 	}
 
@@ -197,12 +192,7 @@ class Pick : public Weapons {
 
 	virtual bool Carving() { return true; }
 
-	void SaveAttributes(FILE * out) { Weapons::SaveAttributes(out); }
-	virtual void SaveToFile(FILE * out) {
-		fprintf(out, "%d", PICK);
-		SaveAttributes(out);
-		fprintf(out, "\n");
-	}
+	virtual void SaveAttributes(FILE * out) { Weapons::SaveAttributes(out); }
 
 	Pick(subs sub) : Weapons(sub) {}
 	Pick(char * str) : Weapons(str) {}
@@ -242,12 +232,12 @@ class Active {
 
 	virtual char MakeSound() { return ' '; }
 	virtual void FullName(char *)=0;
+	virtual kinds Kind() const=0;
 	virtual unsigned short Noise() { return 0; }
 
-	bool ShouldFall() { return true; }
+	virtual bool ShouldFall() { return true; }
 
-	virtual void SaveToFile(FILE *)=0;
-	void SaveAttributes(FILE * out) {}
+	virtual void SaveAttributes(FILE * out) {}
 
 	Active(World * w, unsigned short x, unsigned short y, unsigned short z) :
 			x_self(x), y_self(y), z_self(z)
@@ -263,8 +253,7 @@ class Animal : public Active {
 	virtual bool Stackable() { return false; }
 	virtual void FullName(char *)=0;
 
-	virtual void SaveToFile(FILE *)=0;
-	void SaveAttributes(FILE * out) { Active::SaveAttributes(out); }
+	virtual void SaveAttributes(FILE * out) { Active::SaveAttributes(out); }
 
 	Animal(World * w, unsigned short i, unsigned short j, unsigned short k, char * str=NULL) :
 		Active::Active(w, i, j, k) {}
@@ -321,15 +310,13 @@ class Inventory {
 	void GetAll(Block * block) {
 		if (NULL!=block) {
 			Inventory * from;
-			if ( NULL!=(from=(Inventory *)(block->HasInventory())) ) {
+			if ( NULL!=(from=(Inventory *)(block->HasInventory())) )
 				for (unsigned short i=0; i<inventory_size; ++i)
 					while ( from->Number(i) ) {
 						Block * temp=from->Drop(i);
 						if ( !Get(temp) )
 							from->Get(temp);
 					}
-
-			} else fprintf(stderr, "Inventory::GetAll(Block *): block has no inventory\n");
 		}
 	}
 	void RangeForWield(unsigned short & i, unsigned short & j) {
@@ -344,7 +331,6 @@ class Inventory {
 		}
 	}
 
-	virtual void SaveToFile(FILE *)=0;
 	void SaveAttributes(FILE * out) {
 		fprintf(out, "\n");
 		for (unsigned short i=0; i<inventory_size; ++i)
@@ -465,14 +451,9 @@ class Chest : public Block, public Inventory {
 
 	usage_types Use() { return Inventory::Use(); }
 
-	void SaveAttributes(FILE * out) {
+	virtual void SaveAttributes(FILE * out) {
 		Block::SaveAttributes(out);
 		Inventory::SaveAttributes(out);
-	}
-	virtual void SaveToFile(FILE * out) {
-		fprintf(out, "%d", CHEST);
-		SaveAttributes(out);
-		fprintf(out, "\n");
 	}
 
 	Chest(subs s) :	Block::Block(s) {}
@@ -517,15 +498,10 @@ class Pile : public Chest , public Active {
 	virtual bool Access() { return true; }
 	int Damage() { return durability-=10; }
 
-	void SaveAttributes(FILE * out) {
+	virtual void SaveAttributes(FILE * out) {
 		Chest::SaveAttributes(out);
 		Active::SaveAttributes(out);
 		fprintf(out, "%hd/", lifetime);
-	}
-	virtual void SaveToFile(FILE * out) {
-		fprintf(out, "%d", PILE);
-		SaveAttributes(out);
-		fprintf(out, "\n");
 	}
 
 	Pile(World * w, unsigned short x, unsigned short y, unsigned short z) :
@@ -538,6 +514,45 @@ class Pile : public Chest , public Active {
 		sscanf(str, " %hd\n", &lifetime);
 		CleanString(str);
 	}
+};
+
+class Liquid : public Block, public Active {
+	public:
+	virtual int Movable() { return ENVIRONMENT; }
+
+	virtual kinds Kind() const { return LIQUID; }
+	virtual void FullName(char * str) {
+		switch (sub) {
+			case WATER: WriteName(str, "Water"); break;
+			case STONE: WriteName(str, "Lava"); break;
+			default: WriteName(str, "Unknown liquid");
+		}
+	}
+
+	virtual int Transparent() {
+		switch (sub) {
+			case WATER: return 1;
+			default: return 0; //0 - totally invisible blocks, 1 - block is visible, but light can pass through it, 2 - invisible
+		}
+	}
+
+	virtual int Damage() { return durability; }
+	virtual bool DropAfterDamage() { return false; }
+
+	inline virtual void Act();
+	virtual void Move(dirs dir) { Active::Move(dir); }
+
+	void SaveAttributes(FILE * out) {
+		Block::SaveAttributes(out);
+		Active::SaveAttributes(out);
+	}
+
+	Liquid(World * w, unsigned short x, unsigned short y, unsigned short z, subs sub) :
+			Block::Block(sub),
+			Active(w, x, y, z) {}
+	Liquid(World * w, unsigned short x, unsigned short y, unsigned short z, char * str, FILE * in) :
+			Block::Block(str),
+			Active::Active(w, x, y, z) {}
 };
 
 #endif

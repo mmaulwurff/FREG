@@ -82,6 +82,21 @@ class World {
 
 	bool LegalXYZ(int i, int j, int k) { return (i>=0 && i<shred_width*3 && j>=0 && j<shred_width*3 && k>0 && k<height-1); }
 
+	dirs Anti(dirs dir) {
+		switch (dir) {
+			case NORTH: return SOUTH;
+			case NORTH_EAST: return SOUTH_WEST;
+			case EAST: return WEST;
+			case SOUTH_EAST: return NORTH_WEST;
+			case SOUTH: return NORTH;
+			case SOUTH_WEST: return NORTH_EAST;
+			case WEST: return EAST;
+			case NORTH_WEST: return SOUTH_EAST;
+			case UP: return DOWN;
+			case DOWN: return UP;
+		}
+	}
+
 	public:
 	Screen * scr;
 	struct {
@@ -100,7 +115,10 @@ class World {
 
 	int  Move(int, int, int, dirs);
 	void Jump(int, int, int);
-	void Focus(int, int, int, int &, int &, int &);
+	int Focus(int, int, int, int &, int &, int &, dirs);
+	int Focus(int i, int j, int k, int & i_target, int & j_target, int & k_target) {
+		return Focus( i, j, k, i_target, j_target, k_target, blocks[i][j][k]->GetDir() );
+	}
 
 	void PlayerFocus(int & i_target, int & j_target, int & k_target) { Focus(playerX, playerY, playerZ, i_target, j_target, k_target); }
 	void SetPlayerDir(dirs dir) { playerP->SetDir(dir); }
@@ -198,8 +216,6 @@ class World {
 			Inventory * to=(Inventory *)(blocks[i_to][j_to][k_to]->HasInventory());
 			if (NULL!=to)
 				to->GetAll(blocks[i_from][j_from][k_from]);
-			else
-				fprintf(stderr, "World::ExchangeAll(int, int, int, int, int, int): no inventory in target block\n");
 		}
 	}
 	public:
@@ -226,7 +242,6 @@ class World {
 		ExchangeAll(i, j, k, i_to, j_to, k_to);
 	}
 	
-
 	void FullName(char * str, int i, int j, int k) { (NULL==blocks[i][j][k]) ? WriteName(str, "Air") : blocks[i][j][k]->FullName(str); }
 	subs Sub(int i, int j, int k)          { return (NULL==blocks[i][j][k]) ? AIR : blocks[i][j][k]->Sub(); }
 	kinds Kind(int i, int j, int k)        { return (NULL==blocks[i][j][k]) ? BLOCK : blocks[i][j][k]->Kind(); }

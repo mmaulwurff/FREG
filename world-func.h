@@ -73,10 +73,12 @@ void World::LoadShred(long longi, long lati, unsigned short istart, unsigned sho
 		}
 		//deep pit
 		for (k=height/2; k>0; --k) {
-			delete blocks [istart+3][jstart+3][k];
-			blocks[istart+3][jstart+3][k]=NULL;
+			delete blocks[istart+4][jstart+3][k];
+			blocks[istart+4][jstart+3][k]=NULL;
 		}
-		blocks[istart+4][jstart+4][height/2]=new Chest();
+		//blocks[istart+4][jstart+4][height/2]=new Chest();
+		blocks[istart+4][jstart+4][height/2+1]=new Liquid(this, istart+4, jstart+4, height/2+1, STONE);
+		blocks[istart+4][jstart+4][height/2+2]=new Liquid(this, istart+4, jstart+4, height/2+2, STONE);
 	} else {
 		for (unsigned short i=istart; i<istart+shred_width; ++i)
 		for (unsigned short j=jstart; j<jstart+shred_width; ++j)
@@ -261,39 +263,32 @@ bool World::Visible(int x_from, int y_from, int z_from,
 
 int World::Move(int i, int j, int k, dirs dir) {
 	pthread_mutex_lock(&mutex);
-	if ( Movable(blocks[i][j][k])==NOT_MOVABLE ||
-			(!i && dir==WEST ) ||
-			(!j && dir==NORTH) ||
-			(!k && dir==DOWN ) ||
-			(i==shred_width*3-1 && dir==EAST ) ||
-			(j==shred_width*3-1 && dir==SOUTH) ||
-			(k==height-1 && dir==UP) ) {
+	int newi, newj, newk;
+	if ( NULL==blocks[i][j][k] ||
+			NOT_MOVABLE==Movable(blocks[i][j][k]) ||
+			Focus(i, j, k, newi, newj, newk, dir) ) {
 		pthread_mutex_unlock(&mutex);
 		return 0;
 	}
-	int newi=i, newj=j, newk=k;
-	switch (dir) {
-		case NORTH: --newj; break;
-		case SOUTH: ++newj; break;
-		case EAST:  ++newi; break;
-		case WEST:  --newi; break;
-		case UP:    ++newk; break;
-		case DOWN:  --newk; break;
-	}
 	blocks[i][j][k]->BeforeMove(dir);
 	int numberMoves=0;
-	if (ENVIRONMENT==Movable(blocks[newi][newj][newk]) || (numberMoves=Move(newi, newj, newk, dir)) ) {
+	if ((ENVIRONMENT==Movable(blocks[newi][newj][newk]) &&
+			( !(UP==dir || DOWN==dir) || ENVIRONMENT!=Movable(blocks[i][j][k]) || Weight(blocks[i][j][k])>Weight(blocks[newi][newj][newk]) ))
+			|| (numberMoves=Move(newi, newj, newk, dir)) ) {
+
 		blocks[i][j][k]->Move(dir);
-		Block *temp=blocks[i][j][k];
+		if (NULL!=blocks[newi][newj][newk])
+			blocks[newi][newj][newk]->Move( Anti(dir) );
+
+		Block * temp=blocks[i][j][k];
 		blocks[i][j][k]=blocks[newi][newj][newk];
 		blocks[newi][newj][newk]=temp;
-		int weight;
-		if ( weight=Weight(blocks[i][j][k]) )
-			if (weight>0) Move(i, j, k, DOWN);
-			else        Move(i, j, k, UP);
-		if ( weight=Weight(blocks[newi][newj][newk]) )
-			if (weight>0) newk-=Move(newi, newj, newk, DOWN);
-			else        newk+=Move(newi, newj, newk, UP);
+
+		float weight=Weight(blocks[i][j][k]);
+		if (weight)
+			Move(i, j, k, (weight>0) ? DOWN : UP);
+		if (weight=Weight(blocks[newi][newj][newk]))
+			Move(newi, newj, newk, (weight>0) ? DOWN : UP);
 		if (blocks[newi][newj][newk]==(Block*)playerP) {
 			playerX=newi;
 			playerY=newj;
@@ -340,11 +335,11 @@ void World::Jump(int i, int j, int k) {
 	}
 }
 
-void World::Focus(int i, int j, int k, int & i_target, int & j_target, int & k_target) {
+int World::Focus(int i, int j, int k, int & i_target, int & j_target, int & k_target, dirs dir) {
 	i_target=i;
 	j_target=j;
 	k_target=k;
-	switch ( blocks[i][j][k]->GetDir() ) {
+	switch (dir) {
 		case NORTH: --j_target; break;
 		case SOUTH: ++j_target; break;
 		case EAST:  ++i_target; break;
@@ -352,12 +347,30 @@ void World::Focus(int i, int j, int k, int & i_target, int & j_target, int & k_t
 		case DOWN:  --k_target; break;
 		case UP:    ++k_target; break;
 	}
-	if (i_target<0) i_target=0;
-	else if (i_target>=shred_width*3) i_target=shred_width*3-1;
-	if (j_target<0) j_target=0;
-	else if (j_target>=shred_width*3) j_target=shred_width*3-1;
-	if (k_target<0) k_target=0;
-	else if (k_target>=height) k_target=height-1;
+
+	bool bound_flag=false;
+	if (i_target<0) {
+		i_target=0;
+		bound_flag=true;
+	} else if (i_target>=shred_width*3) {
+		i_target=shred_width*3-1;
+		bound_flag=true;
+	}
+	if (j_target<0) {
+		j_target=0;
+		bound_flag=true;
+	} else if (j_target>=shred_width*3) {
+		j_target=shred_width*3-1;
+		bound_flag=true;
+	}
+	if (k_target<0) {
+		k_target=0;
+		bound_flag=true;
+	} else if (k_target>=height) {
+		k_target=height-1;
+		bound_flag=true;
+	}
+	return (bound_flag) ? 1 : 0;
 }
 
 World::World() : scr(NULL), activeList(NULL) {

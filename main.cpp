@@ -130,7 +130,8 @@ enum kinds {//kind of atom
 	DWARF,
 	ANIMAL,
 	PICK,
-	TELEGRAPH
+	TELEGRAPH,
+	LIQUID
 };
 enum subs {//substance block is made from
 	STONE,
@@ -145,7 +146,8 @@ enum subs {//substance block is made from
 	GLASS,
 	WOOD,
 	DIFFERENT,
-	IRON
+	IRON,
+	WATER,
 };
 
 enum usage_types { NO, OPEN, INNER_ACTION };
@@ -169,6 +171,7 @@ void BlockFromFile(FILE * in, Block * & block, World * world,
 		case DWARF:     block=new Dwarf(world, i, j, k, str, in); break;
 		case CHEST:     block=new Chest(str, in); break;
 		case PILE:      block=new Pile(world, i, j, k, str, in); break;
+		case LIQUID:    block=new Liquid(world, i, j, k, str, in); break;
 		default:        block=NULL;
 	}
 }

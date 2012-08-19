@@ -35,6 +35,7 @@ char Screen::CharName(unsigned short i, unsigned short j, unsigned short k) {
 		case PILE: return '*';
 		case PICK: return '\\';
 		case TELEGRAPH: return 't';
+		case LIQUID: return '~';
 		default: return '?';
 	}
 }
@@ -280,6 +281,10 @@ color_pairs Screen::Color(kinds kind, subs sub) {
 			case IRON: return WHITE_BLACK;
 		}
 		case TELEGRAPH: return CYAN_BLACK;
+		case LIQUID: switch (sub) {
+			case WATER: return (random()%4) ? CYAN_BLUE : BLUE_CYAN;
+			default: return (random()%4) ? RED_YELLOW : YELLOW_RED;
+		}
 		default: return BLACK_WHITE;
 	}
 }
