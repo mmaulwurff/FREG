@@ -123,6 +123,23 @@ class World {
 	void PlayerFocus(int & i_target, int & j_target, int & k_target) { Focus(playerX, playerY, playerZ, i_target, j_target, k_target); }
 	void SetPlayerDir(dirs dir) { playerP->SetDir(dir); }
 	dirs GetPlayerDir() { return playerP->GetDir(); }
+	dirs TurnRight(dirs dir) {
+		switch (dir) {
+			case NORTH: return EAST;
+			case EAST: return SOUTH;
+			case SOUTH: return WEST;
+			default: return NORTH;
+		}
+	}
+	dirs TurnLeft(dirs dir) {
+		switch (dir) {
+			case NORTH: return WEST;
+			case WEST: return SOUTH;
+			case SOUTH: return EAST;
+			default: return NORTH;
+		}
+	}
+
 	void GetPlayerCoords(short & x, short & y, short & z) { x=playerX; y=playerY; z=playerZ; }
 	void GetPlayerCoords(short & x, short & y) { x=playerX; y=playerY; }
 	Dwarf * GetPlayerP() { return playerP; }
@@ -309,6 +326,16 @@ class World {
 			}
 		}
 	}
+	void GetTemperature(char * str, int i, int j, int k) {
+		char temp_str[10];
+		if (NULL!=blocks[i][j][k]) {
+			sprintf(temp_str, "%d", Temperature(i, j, k));
+			if ('\0'!=temp_str[0]) {
+				strcat(str, "\n Temperature: ");
+				strcat(str, temp_str);
+			}
+		}	
+	}
 
 	char MakeSound(int i, int j, int k) { return (NULL==blocks[i][j][k]) ? ' ' : blocks[i][j][k]->MakeSound(); }
 
@@ -343,6 +370,25 @@ class World {
 					DirectlyVisible(x, y, z, i, j, k))
 				return true;
 		return false;
+	}
+
+	int Temperature(int i, int j, int k) {
+		if (NULL==blocks[i][j][k] || height-1==k) return 0;
+		int temperature=blocks[i][j][k]->Temperature();
+		if ( temperature ) return temperature;
+		int i_start, j_start, k_start,
+		    i_end,   j_end,   k_end;
+		i_start=(i>0) ? i-1 : 0;
+		j_start=(j>0) ? j-1 : 0;
+		k_start=(k>0) ? k-1 : 0;
+		i_end=(i<shred_width*3-1) ? i+1 : shred_width*3-1;
+		j_end=(j<shred_width*3-1) ? j+1 : shred_width*3-1;
+		k_end=(k<height-2)        ? k+1 : height-2;
+		for (i=i_start; i<=i_end; ++i)
+		for (j=j_start; j<=j_end; ++j)
+		for (k=k_start; k<=k_end; ++k)
+			if (NULL!=blocks[i][j][k]) temperature+=blocks[i][j][k]->Temperature();
+		return temperature/2;
 	}
 
 	friend void Screen::PrintNormal(WINDOW *);

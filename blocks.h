@@ -109,6 +109,8 @@ class Block { //blocks without special physics and attributes
 
 	virtual float LightRadius() { return 0; }
 
+	virtual int Temperature() { return 0; }
+
 	virtual bool operator==(const Block& block) const {
 		return ( block.Kind()==Kind() && block.Sub()==Sub() ) ? true : false;
 	}
@@ -541,6 +543,11 @@ class Liquid : public Block, public Active {
 
 	inline virtual void Act();
 	virtual void Move(dirs dir) { Active::Move(dir); }
+
+	virtual int Temperature() {
+		if (WATER==sub) return 0;
+		else return 1000;
+	}
 
 	void SaveAttributes(FILE * out) {
 		Block::SaveAttributes(out);

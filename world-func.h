@@ -272,10 +272,8 @@ int World::Move(int i, int j, int k, dirs dir) {
 	}
 	blocks[i][j][k]->BeforeMove(dir);
 	int numberMoves=0;
-	if ((ENVIRONMENT==Movable(blocks[newi][newj][newk]) &&
-			( !(UP==dir || DOWN==dir) || ENVIRONMENT!=Movable(blocks[i][j][k]) || Weight(blocks[i][j][k])>Weight(blocks[newi][newj][newk]) ))
-			|| (numberMoves=Move(newi, newj, newk, dir)) ) {
-
+	if (blocks[i][j][k]!=blocks[newi][newj][newk] &&
+			(ENVIRONMENT==Movable(blocks[newi][newj][newk]) || (numberMoves=Move(newi, newj, newk, dir)) )) {
 		blocks[i][j][k]->Move(dir);
 		if (NULL!=blocks[newi][newj][newk])
 			blocks[newi][newj][newk]->Move( Anti(dir) );
@@ -285,10 +283,9 @@ int World::Move(int i, int j, int k, dirs dir) {
 		blocks[newi][newj][newk]=temp;
 
 		float weight=Weight(blocks[i][j][k]);
-		if (weight)
+		if (weight && DOWN!=dir && UP!=dir)
 			Move(i, j, k, (weight>0) ? DOWN : UP);
-		if (weight=Weight(blocks[newi][newj][newk]))
-			Move(newi, newj, newk, (weight>0) ? DOWN : UP);
+
 		if (blocks[newi][newj][newk]==(Block*)playerP) {
 			playerX=newi;
 			playerY=newj;
@@ -381,7 +378,7 @@ World::World() : scr(NULL), activeList(NULL) {
 		playerX=shred_width*2-7;
 		playerY=shred_width*2-7;
 		playerZ=height/2;
-		time=end_of_night-5;
+		time=end_of_night+5;
 	} else {
 		fscanf(file, "longitude: %ld\nlatitude: %ld\nplayerX: %hd\n playerY: %hd\n playerZ: %hd\ntime: %ld\n",
 				&longitude, &latitude, &playerX, &playerY, &playerZ, &time);

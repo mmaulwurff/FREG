@@ -197,6 +197,8 @@ int main() {
 			case KEY_DOWN:  earth.PlayerMove(SOUTH); break;
 			case KEY_RIGHT: earth.PlayerMove(EAST ); break;
 			case KEY_LEFT:  earth.PlayerMove(WEST ); break;
+			case '>': earth.SetPlayerDir( earth.TurnRight(earth.GetPlayerDir()) ); break;
+			case '<': earth.SetPlayerDir( earth.TurnLeft(earth.GetPlayerDir()) );  break;
 			case ' ': earth.PlayerJump(); break;
 			case 'w': earth.SetPlayerDir(WEST);  break;
 			case 'e': earth.SetPlayerDir(EAST);  break;
@@ -219,9 +221,10 @@ int main() {
 			case '?': {
 				int i, j, k;
 				earth.PlayerFocus(i, j, k);
-				char str[full_name_length+note_length+20];
+				char str[full_name_length+note_length+20+10];
 				earth.FullName(str, i, j, k);
 				earth.GetNote(str, i, j, k);
+				earth.GetTemperature(str, i, j, k);
 				screen.Notify(str);
 			} break;
 			case 'd': earth.PlayerDrop(getch()-'a'); break;
