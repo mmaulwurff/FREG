@@ -77,8 +77,9 @@ void World::LoadShred(long longi, long lati, unsigned short istart, unsigned sho
 			blocks[istart+4][jstart+3][k]=NULL;
 		}
 		//blocks[istart+4][jstart+4][height/2]=new Chest();
-		blocks[istart+4][jstart+4][height/2+1]=new Liquid(this, istart+4, jstart+4, height/2+1, STONE);
-		blocks[istart+4][jstart+4][height/2+2]=new Liquid(this, istart+4, jstart+4, height/2+2, STONE);
+		//blocks[istart+4][jstart+4][height/2+1]=new Liquid(this, istart+4, jstart+4, height/2+1, STONE);
+		//blocks[istart+4][jstart+4][height/2+2]=new Liquid(this, istart+4, jstart+4, height/2+2, STONE);
+		blocks[istart+4][jstart+4][height/2]=new Block(WATER);
 	} else {
 		for (unsigned short i=istart; i<istart+shred_width; ++i)
 		for (unsigned short j=jstart; j<jstart+shred_width; ++j)

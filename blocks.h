@@ -63,19 +63,23 @@ class Block { //blocks without special physics and attributes
 	virtual int Movable() { return NOT_MOVABLE; }
 	virtual int Transparent() {
 		switch (sub) {
+			case WATER:
 			case GLASS: return 1;
 			default: return 0; //0 - totally invisible blocks, 1 - block is visible, but light can pass through it, 2 - invisible
 		}
 	}
 	virtual void FullName(char * str) {
 		switch (sub) {
+			case WATER: WriteName(str, "Ice"); break;
 			case STONE: WriteName(str, "Stone"); break;
 			case NULLSTONE: WriteName(str, "Nullstone"); break;
 			case SOIL: WriteName(str, "Soil"); break;
 			case GLASS: WriteName(str, "Glass"); break;
 			case STAR: case SUN_MOON:
 			case SKY: WriteName(str, "Air"); break;
-			default: WriteName(str, "Unknown block");
+			default:
+				fprintf(stderr, "Block::FullName(char *): Block has unknown substance: %d", int(sub));
+				WriteName(str, "Unknown block");
 		}
 	}
 	virtual void BeforeMove(dirs) {}
@@ -109,7 +113,12 @@ class Block { //blocks without special physics and attributes
 
 	virtual float LightRadius() { return 0; }
 
-	virtual int Temperature() { return 0; }
+	virtual int Temperature() { 
+		switch (sub) {
+			case WATER: return -100;
+			default: return 0;
+		}
+	}
 
 	virtual bool operator==(const Block& block) const {
 		return ( block.Kind()==Kind() && block.Sub()==Sub() ) ? true : false;
@@ -188,7 +197,9 @@ class Pick : public Weapons {
 	virtual void FullName(char * str) { 
 		switch (sub) {
 			case IRON: WriteName(str, "Iron pick"); break;
-			default: WriteName(str, "Strange pick");
+			default:
+				fprintf(stderr, "Pic::FullName(char *): Pick has unknown substance: %d\n", int(sub));
+				WriteName(str, "Strange pick");
 		}
 	}
 
@@ -442,7 +453,9 @@ class Chest : public Block, public Inventory {
 	virtual void FullName(char * str) {
 		switch (sub) {
 			case WOOD: WriteName(str, "Wooden Chest"); break;
-			default: WriteName(str, "Chest");
+			default:
+				fprintf(stderr, "Chest::FullName(char *): Chest has unknown substance: %d\n", int(sub));
+				WriteName(str, "Chest");
 		}
 	}
 	virtual void * HasInventory() { return Inventory::HasInventory(); }
@@ -527,7 +540,9 @@ class Liquid : public Block, public Active {
 		switch (sub) {
 			case WATER: WriteName(str, "Water"); break;
 			case STONE: WriteName(str, "Lava"); break;
-			default: WriteName(str, "Unknown liquid");
+			default:
+				fprintf(stderr, "Liquid::FullName(char *): Liquid has unknown substance: %d\n", int(sub));
+				WriteName(str, "Unknown liquid");
 		}
 	}
 

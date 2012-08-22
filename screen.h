@@ -25,6 +25,7 @@ class Screen {
 	       * notifyWin,
 	       * soundWin;
 	char CharName(unsigned short i, unsigned short j, unsigned short k);
+	FILE * notifyLog;
 
 	public:
 	Block * blockToPrintLeft,

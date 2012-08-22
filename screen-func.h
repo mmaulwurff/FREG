@@ -28,7 +28,10 @@ char Screen::CharName(unsigned short i, unsigned short j, unsigned short k) {
 			case SUN_MOON:
 			case SKY:   return ' ';
 			case STAR:  return '.';
-			default: return '?';
+			case WATER: return '~';
+			default:
+				fprintf(stderr, "Screen::CharName(uns short, uns short, uns short): Block has unlisted substance: %d\n", int(Sub(i, j, k)));
+				return '?';
 		}
 		case DWARF: return '@';
 		case CHEST: return 'c';
@@ -36,7 +39,9 @@ char Screen::CharName(unsigned short i, unsigned short j, unsigned short k) {
 		case PICK: return '\\';
 		case TELEGRAPH: return 't';
 		case LIQUID: return '~';
-		default: return '?';
+		default:
+			fprintf(stderr, "Screen::CharName(uns short, uns short, uns short): Unlisted kind: %d\n", int(Kind(i, j, k)));
+			return '?';
 	}
 }
 
@@ -253,6 +258,7 @@ void Screen::PrintSounds() {
 void Screen::Notify(const char * str) {
 	werase(notifyWin);
 	mvwaddstr(notifyWin, 1, 1, str);
+	fprintf(notifyLog, "%s\n", str);
 	box(notifyWin, 0, 0);
 	wrefresh(notifyWin);
 }
@@ -261,6 +267,7 @@ color_pairs Screen::Color(kinds kind, subs sub) {
 	switch (kind) {
 		case DWARF: return WHITE_BLUE;
 		case BLOCK: switch (sub) {
+			case WATER:     return WHITE_CYAN;
 			case GLASS:     return BLUE_WHITE;
 			case NULLSTONE: return WHITE_BLACK;
 			case SUN_MOON:  return ( NIGHT==w->PartOfDay() ) ? WHITE_WHITE : YELLOW_YELLOW;
@@ -317,6 +324,7 @@ Screen::Screen(World * wor) :
 	notifyWin=newwin(3+2, (shred_width*2*3+2)*2-8, shred_width*3+2, 8);
 	soundWin =newwin(3+2, 3*2+2, shred_width*3+2, 0);
 	w->scr=this;
+	notifyLog=fopen("messages.txt", "w");
 }
 
 Screen::~Screen() {
@@ -326,6 +334,8 @@ Screen::~Screen() {
 	delwin(soundWin);
 	endwin();
 	w->scr=NULL;
+	if (NULL!=notifyLog)
+		fclose(notifyLog);
 }
 
 #endif
