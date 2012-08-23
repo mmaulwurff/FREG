@@ -49,7 +49,7 @@ void World::LoadAllShreds() {
 	}
 }
 
-void World::LoadShred(long longi, long lati, unsigned short istart, unsigned short jstart) {
+void World::LoadShred(long longi, long lati, const unsigned short istart, const unsigned short jstart) {
 	char str[50];
 	FileName(str, longi, lati);
 	FILE * in=fopen(str, "r");

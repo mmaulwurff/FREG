@@ -204,8 +204,8 @@ int main() {
 			case 'e': earth.SetPlayerDir(EAST);  break;
 			case 's': earth.SetPlayerDir(SOUTH); break;
 			case 'n': earth.SetPlayerDir(NORTH); break;
-			case KEY_NPAGE: earth.SetPlayerDir(DOWN);  break;
-			case KEY_PPAGE: earth.SetPlayerDir(UP);    break;
+			case KEY_NPAGE: earth.SetPlayerDir(DOWN);  break; //page down key
+			case KEY_PPAGE: earth.SetPlayerDir(UP);    break; //page up key
 			case 'i':
 				if (INVENTORY!=screen.viewRight) {
 					screen.viewRight=INVENTORY;
@@ -213,7 +213,7 @@ int main() {
 				} else
 					screen.viewRight=FRONT;
 			break;
-			case '\n': {
+			case '\n': { //enter key
 				int i, j, k;
 				earth.PlayerFocus(i, j, k);
 				earth.Use(i, j, k);
