@@ -113,7 +113,7 @@ class World {
 	bool Visible(int, int, int, int, int, int);
 	bool Visible(int x_to, int y_to, int z_to) { return Visible(playerX, playerY, playerZ, x_to, y_to, z_to); }
 
-	int  Move(int, int, int, dirs);
+	int  Move(int, int, int, dirs, unsigned=3); //unsigned is how much should block fall or rise at one turn
 	void Jump(int, int, int);
 	int Focus(int, int, int, int &, int &, int &, dirs);
 	int Focus(int i, int j, int k, int & i_target, int & j_target, int & k_target) {
@@ -389,6 +389,12 @@ class World {
 		for (k=k_start; k<=k_end; ++k)
 			if (NULL!=blocks[i][j][k]) temperature+=blocks[i][j][k]->Temperature();
 		return temperature/2;
+	}
+
+	bool Equal(Block * block1, Block * block2) {
+		if (NULL==block1 && NULL==block2) return true;
+		if (NULL==block1 || NULL==block2) return false;
+		return *block1==*block2;
 	}
 
 	friend void Screen::PrintNormal(WINDOW *);

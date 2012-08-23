@@ -59,23 +59,25 @@ void World::LoadShred(long longi, long lati, unsigned short istart, unsigned sho
 		for (j=jstart; j<jstart+shred_width; ++j) {
 			blocks[i][j][0]=new Block(NULLSTONE);
 			for (k=1; k<height/2; ++k)
-				blocks[i][j][k]=new Block(STONE);
+				blocks[i][j][k]=new Liquid(this, i, j, k, WATER);
 			for ( ; k<height-1; ++k)
 				blocks[i][j][k]=NULL;
 		}
-		//Glass walls
-		for (i=istart+1; i<istart+7; ++i)
-			blocks[i][jstart+1][height/2]=new Block(GLASS);
-		//long pit
 		for (i=istart+1; i<istart+7; ++i) {
+			if (NULL==blocks[i][jstart+1][height/2-1])
+				delete blocks[i][jstart][height/2-1];
+			blocks[i][jstart+1][height/2-1]=new Block(STONE);
+		}
+		//long pit
+		/*for (i=istart+1; i<istart+7; ++i) {
 			delete blocks[i][jstart+2][height/2-1];
 			blocks[i][jstart+2][height/2-1]=NULL;
-		}
+		}*/
 		//deep pit
-		for (k=height/2; k>0; --k) {
+		/*for (k=height/2; k>0; --k) {
 			delete blocks[istart+4][jstart+3][k];
 			blocks[istart+4][jstart+3][k]=NULL;
-		}
+		}*/
 		//blocks[istart+4][jstart+4][height/2]=new Chest();
 		//blocks[istart+4][jstart+4][height/2+1]=new Liquid(this, istart+4, jstart+4, height/2+1, STONE);
 		//blocks[istart+4][jstart+4][height/2+2]=new Liquid(this, istart+4, jstart+4, height/2+2, STONE);
@@ -221,7 +223,7 @@ char World::CharNumber(int i, int j, int k) {
 		if (k > playerZ && k < playerZ+10) return k-playerZ+'0';
 	} else {
 		if (k==playerZ) return ' ';
-		return playerZ-k+'0';
+		if (k>playerZ-10) return playerZ-k+'0';
 	}
 	return '+';
 }
@@ -262,7 +264,7 @@ bool World::Visible(int x_from, int y_from, int z_from,
 	return false;
 }
 
-int World::Move(int i, int j, int k, dirs dir) {
+int World::Move(int i, int j, int k, dirs dir, unsigned stop) {
 	pthread_mutex_lock(&mutex);
 	int newi, newj, newk;
 	if ( NULL==blocks[i][j][k] ||
@@ -273,8 +275,8 @@ int World::Move(int i, int j, int k, dirs dir) {
 	}
 	blocks[i][j][k]->BeforeMove(dir);
 	int numberMoves=0;
-	if (blocks[i][j][k]!=blocks[newi][newj][newk] &&
-			(ENVIRONMENT==Movable(blocks[newi][newj][newk]) || (numberMoves=Move(newi, newj, newk, dir)) )) {
+	if (stop && (ENVIRONMENT!=Movable(blocks[i][j][k]) || !Equal(blocks[i][j][k], blocks[newi][newj][newk])) &&
+			(ENVIRONMENT==Movable(blocks[newi][newj][newk]) || (numberMoves=Move(newi, newj, newk, dir, stop-1)) )) {
 		blocks[i][j][k]->Move(dir);
 		if (NULL!=blocks[newi][newj][newk])
 			blocks[newi][newj][newk]->Move( Anti(dir) );
@@ -283,9 +285,9 @@ int World::Move(int i, int j, int k, dirs dir) {
 		blocks[i][j][k]=blocks[newi][newj][newk];
 		blocks[newi][newj][newk]=temp;
 
-		float weight=Weight(blocks[i][j][k]);
-		if (weight && DOWN!=dir && UP!=dir)
-			Move(i, j, k, (weight>0) ? DOWN : UP);
+		float weight=Weight(blocks[newi][newj][newk])-Weight(blocks[newi][newj][newk-1]);
+		if (stop && weight)
+			Move(newi, newj, newk, (weight>0) ? DOWN : UP, stop-1);
 
 		if (blocks[newi][newj][newk]==(Block*)playerP) {
 			playerX=newi;
@@ -312,25 +314,14 @@ int World::Move(int i, int j, int k, dirs dir) {
 	return 0;
 }
 
-void World::Jump(int i, int j, int k) {
-	if ( NULL!=blocks[i][j][k] && blocks[i][j][k]->Movable() ) {
-		blocks[i][j][k]->SetWeight(0);
-		if ( Move(i, j, k, UP) ) {
-			++k;
-			dirs dir;
-			if (Move( i, j, k, dir=blocks[i][j][k]->GetDir() ));
-				switch (dir) {
-					case NORTH: --j; break;
-					case SOUTH: ++j; break;
-					case EAST:  ++i; break;
-					case WEST:  --i; break;
-					case UP:    ++k; break;
-					case DOWN:  --k; break;
-				}
-		}
-		blocks[i][j][k]->SetWeight();
-		Move(i, j, k, DOWN);
-	}
+void World::Jump(int i, int j, int k) { if ( NULL!=blocks[i][j][k] &&
+		blocks[i][j][k]->Movable() ) { blocks[i][j][k]->SetWeight(0);
+	if ( Move(i, j, k, UP) ) { ++k; dirs dir; if (Move( i, j, k,
+				dir=blocks[i][j][k]->GetDir() )); switch (dir)
+	{ case NORTH: --j; break; case SOUTH: ++j; break; case EAST:  ++i;
+		break; case WEST:  --i; break; case UP:    ++k; break; case
+			DOWN:  --k; break; } } blocks[i][j][k]->SetWeight();
+	Move(i, j, k, DOWN); }
 }
 
 int World::Focus(int i, int j, int k, int & i_target, int & j_target, int & k_target, dirs dir) {
@@ -399,7 +390,9 @@ World::World() : scr(NULL), activeList(NULL) {
 }
 
 World::~World() {
+	pthread_mutex_lock(&mutex);
 	pthread_cancel(eventsThread);
+	pthread_mutex_unlock(&mutex);
 	pthread_mutex_destroy(&mutex);
 	FILE * file=fopen("save", "w");
 	if (file!=NULL) {

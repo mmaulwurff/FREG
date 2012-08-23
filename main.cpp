@@ -204,8 +204,8 @@ int main() {
 			case 'e': earth.SetPlayerDir(EAST);  break;
 			case 's': earth.SetPlayerDir(SOUTH); break;
 			case 'n': earth.SetPlayerDir(NORTH); break;
-			case 'v': earth.SetPlayerDir(DOWN);  break;
-			case '^': earth.SetPlayerDir(UP);    break;
+			case KEY_NPAGE: earth.SetPlayerDir(DOWN);  break;
+			case KEY_PPAGE: earth.SetPlayerDir(UP);    break;
 			case 'i':
 				if (INVENTORY!=screen.viewRight) {
 					screen.viewRight=INVENTORY;

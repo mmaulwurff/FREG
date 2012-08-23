@@ -61,10 +61,23 @@ void Pile::BeforeMove(dirs dir) {
 
 void Liquid::Act() {
 	switch (random()%4) {
-		case 0: whereWorld->Move(x_self, y_self, z_self, NORTH); break;
-		case 1: whereWorld->Move(x_self, y_self, z_self, EAST);  break;
-		case 2: whereWorld->Move(x_self, y_self, z_self, SOUTH); break;
-		case 3: whereWorld->Move(x_self, y_self, z_self, WEST);  break;
+		//when player is on the border of shred, moving him causes World::ReloadShreds(dir). so, cheks are neede for liquids not to push player.
+		case 0:
+			if (y_self!=shred_width+1)
+				whereWorld->Move(x_self, y_self, z_self, NORTH);
+			break;
+		case 1:
+			if (x_self!=shred_width*2-2)
+				whereWorld->Move(x_self, y_self, z_self, EAST);
+			break;
+		case 2:
+			if (y_self!=shred_width*2-2)
+				whereWorld->Move(x_self, y_self, z_self, SOUTH);
+			break;
+		case 3:
+			if (x_self!=shred_width+1)
+				whereWorld->Move(x_self, y_self, z_self, WEST);
+			break;
 	}
 }
 

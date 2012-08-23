@@ -30,7 +30,7 @@ char Screen::CharName(unsigned short i, unsigned short j, unsigned short k) {
 			case STAR:  return '.';
 			case WATER: return '~';
 			default:
-				fprintf(stderr, "Screen::CharName(uns short, uns short, uns short): Block has unlisted substance: %d\n", int(Sub(i, j, k)));
+				fprintf(stderr, "Screen::CharName(uns short, uns short, uns short): Block has unlisted substance: %d\n", int(w->Sub(i, j, k)));
 				return '?';
 		}
 		case DWARF: return '@';
@@ -40,7 +40,7 @@ char Screen::CharName(unsigned short i, unsigned short j, unsigned short k) {
 		case TELEGRAPH: return 't';
 		case LIQUID: return '~';
 		default:
-			fprintf(stderr, "Screen::CharName(uns short, uns short, uns short): Unlisted kind: %d\n", int(Kind(i, j, k)));
+			fprintf(stderr, "Screen::CharName(uns short, uns short, uns short): Unlisted kind: %d\n", int(w->Kind(i, j, k)));
 			return '?';
 	}
 }
