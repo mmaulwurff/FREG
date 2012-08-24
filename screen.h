@@ -1,6 +1,3 @@
-#ifndef SCREEN_H
-#define SCREEN_H
-
 	/*
 	*This file is part of FREG.
 	*
@@ -17,6 +14,13 @@
 	*You should have received a copy of the GNU General Public License
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
+
+#ifndef SCREEN_H
+#define SCREEN_H
+
+#include "blocks.h"
+
+class World;
 
 class Screen {
 	World * const w; //connected world

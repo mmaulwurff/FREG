@@ -1,6 +1,3 @@
-#ifndef BLOCKS_FUNC_H
-#define BLOCKS_FUNC_H
-
 	/*
 	*This file is part of FREG.
 	*
@@ -17,6 +14,27 @@
 	*You should have received a copy of the GNU General Public License
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
+
+#include "blocks.h"
+#include "world.h"
+
+void BlockFromFile(FILE * in, Block * & block, World * world,
+		unsigned short i, unsigned short j, unsigned short k) {
+	char str[300];
+	fgets(str, 300, in);
+	int kind;
+	sscanf(str, "%d", &kind);
+	switch(kind) {
+		case BLOCK:     block=new Block(str); break;
+		case TELEGRAPH: block=new Telegraph(str); break;
+		case PICK:      block=new Pick(str); break;
+		case DWARF:     block=new Dwarf(world, i, j, k, str, in); break;
+		case CHEST:     block=new Chest(str, in); break;
+		case PILE:      block=new Pile(world, i, j, k, str, in); break;
+		case LIQUID:    block=new Liquid(world, i, j, k, str, in); break;
+		default:        block=NULL;
+	}
+}
 
 void Active::Register(World * w) {
 	whereWorld=w;
@@ -80,5 +98,3 @@ void Liquid::Act() {
 			break;
 	}
 }
-
-#endif

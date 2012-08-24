@@ -1,6 +1,3 @@
-#ifndef SCREEN_FUNC_H
-#define SCREEN_FUNC_H
-
 	/*
 	*This file is part of FREG.
 	*
@@ -17,6 +14,12 @@
 	*You should have received a copy of the GNU General Public License
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
+
+#ifndef SCREEN_FUNC_H
+#define SCREEN_FUNC_H
+
+#include "screen.h"
+#include "world.h"
 
 char Screen::CharName(unsigned short i, unsigned short j, unsigned short k) {
 	switch ( w->Kind(i, j, k) ) {

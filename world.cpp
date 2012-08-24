@@ -1,6 +1,3 @@
-#ifndef WORLD_FUNC_H
-#define WORLD_FUNC_H
-
 	/*
 	*This file is part of FREG.
 	*
@@ -19,6 +16,8 @@
 	*/
 
 #include <unistd.h>
+#include "header.h"
+#include "world.h"
 	
 void World::SaveAllShreds() {
 	for (long i=longitude-1; i<=longitude+1; ++i)
@@ -409,5 +408,3 @@ void *PhysThread(void *vptr_args) {
 		sleep(1);
 	}
 }
-
-#endif

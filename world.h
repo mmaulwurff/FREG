@@ -1,6 +1,3 @@
-#ifndef WORLD_H
-#define WORLD_H
-
 	/*
 	*This file is part of FREG.
 	*
@@ -18,10 +15,16 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
+#ifndef WORLD_H
+#define WORLD_H
+
 #include <pthread.h>
 #include <cmath>
+#include "screen.h"
 
-class Screen;
+class Block;
+class Dwarf;
+class Active;
 
 void *PhysThread(void *vptr_args);
 class World {

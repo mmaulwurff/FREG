@@ -1,6 +1,3 @@
-#ifndef BLOCKS_H
-#define BLOCKS_H
-
 	/*
 	*This file is part of FREG.
 	*
@@ -17,6 +14,15 @@
 	*You should have received a copy of the GNU General Public License
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
+
+#ifndef BLOCKS_H
+#define BLOCKS_H
+
+#include "header.h"
+
+class World;
+class Block;
+void BlockFromFile(FILE *, Block * &, World * =NULL, unsigned short=0, unsigned short=0, unsigned short=0);
 
 class Block { //blocks without special physics and attributes
 	protected:
@@ -397,7 +403,7 @@ class Dwarf : public Block, public Animal, public Inventory {
 	virtual int Movable() { return true; }
 	bool CanBeIn() { return false; }
 
-	inline virtual void BeforeMove(dirs);
+	virtual void BeforeMove(dirs);
 	virtual void Move(dirs dir) { Animal::Move(dir); }
 
 	void * HasInventory() { return Inventory::HasInventory(); }
@@ -426,7 +432,7 @@ class Dwarf : public Block, public Animal, public Inventory {
 		fprintf(out, "\n");
 	}
 
-	inline virtual float LightRadius();
+	virtual float LightRadius();
 
 	Dwarf(World * w, unsigned short x, unsigned short y, unsigned short z) :
 			Block::Block(H_MEAT),
@@ -506,7 +512,7 @@ class Pile : public Chest , public Active {
 	virtual Block * GetThis() { return this; }
 
 	virtual int Movable() { return MOVABLE; }
-	inline virtual void BeforeMove(dirs);
+	virtual void BeforeMove(dirs);
 	virtual void Move(dirs dir) { Active::Move(dir); } 
 	virtual bool CanBeIn() { return false; }
 	virtual bool DropAfterDamage() { return false; }
@@ -556,7 +562,7 @@ class Liquid : public Block, public Active {
 	virtual int Damage() { return durability; }
 	virtual bool DropAfterDamage() { return false; }
 
-	inline virtual void Act();
+	virtual void Act();
 	virtual void Move(dirs dir) { Active::Move(dir); }
 
 	virtual int Temperature() {
