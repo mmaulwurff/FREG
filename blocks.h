@@ -597,6 +597,9 @@ class Grass : public Block, public Active {
 	virtual int Movable() { return MOVABLE; }
 	virtual bool ShouldFall() { return false; }
 
+	virtual int Damage() { return durability=0; }
+	virtual bool DropAfterDamage() { return false; }
+
 	virtual before_move_return BeforeMove(dirs) { return DESTROY; }
 	virtual void Act();
 
