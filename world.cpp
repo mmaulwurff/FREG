@@ -58,15 +58,15 @@ void World::LoadShred(long longi, long lati, const unsigned short istart, const 
 		for (j=jstart; j<jstart+shred_width; ++j) {
 			blocks[i][j][0]=new Block(NULLSTONE);
 			for (k=1; k<height/2; ++k)
-				blocks[i][j][k]=new Liquid(this, i, j, k, WATER);
+				blocks[i][j][k]=new  Block(STONE);//Liquid(this, i, j, k, WATER);
 			for ( ; k<height-1; ++k)
 				blocks[i][j][k]=NULL;
 		}
-		for (i=istart+1; i<istart+7; ++i) {
+		/*for (i=istart+1; i<istart+7; ++i) {
 			if (NULL==blocks[i][jstart+1][height/2-1])
 				delete blocks[i][jstart][height/2-1];
 			blocks[i][jstart+1][height/2-1]=new Block(STONE);
-		}
+		}*/
 		//long pit
 		/*for (i=istart+1; i<istart+7; ++i) {
 			delete blocks[i][jstart+2][height/2-1];
@@ -77,10 +77,10 @@ void World::LoadShred(long longi, long lati, const unsigned short istart, const 
 			delete blocks[istart+4][jstart+3][k];
 			blocks[istart+4][jstart+3][k]=NULL;
 		}*/
-		//blocks[istart+4][jstart+4][height/2]=new Chest();
-		//blocks[istart+4][jstart+4][height/2+1]=new Liquid(this, istart+4, jstart+4, height/2+1, STONE);
-		//blocks[istart+4][jstart+4][height/2+2]=new Liquid(this, istart+4, jstart+4, height/2+2, STONE);
-		blocks[istart+4][jstart+4][height/2]=new Block(WATER);
+		for (i=istart; i<istart+3; ++i)
+		for (j=jstart; j<jstart+3; ++j)
+			blocks[i][j][height/2]=new Block(SOIL);
+		blocks[istart][jstart][height/2+1]=new Grass(this, istart, jstart, height/2+1);
 	} else {
 		for (unsigned short i=istart; i<istart+shred_width; ++i)
 		for (unsigned short j=jstart; j<jstart+shred_width; ++j)
@@ -272,7 +272,12 @@ int World::Move(int i, int j, int k, dirs dir, unsigned stop) {
 		pthread_mutex_unlock(&mutex);
 		return 0;
 	}
-	blocks[i][j][k]->BeforeMove(dir);
+	if ( DESTROY==(blocks[i][j][k]->BeforeMove(dir)) ) {
+		delete blocks[i][j][k];
+		blocks[i][j][k]=NULL;
+		pthread_mutex_unlock(&mutex);
+		return 1;
+	}
 	int numberMoves=0;
 	if (stop && (ENVIRONMENT!=Movable(blocks[i][j][k]) || !Equal(blocks[i][j][k], blocks[newi][newj][newk])) &&
 			(ENVIRONMENT==Movable(blocks[newi][newj][newk]) || (numberMoves=Move(newi, newj, newk, dir, stop-1)) )) {

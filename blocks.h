@@ -79,16 +79,16 @@ class Block { //blocks without special physics and attributes
 			case WATER: WriteName(str, "Ice"); break;
 			case STONE: WriteName(str, "Stone"); break;
 			case NULLSTONE: WriteName(str, "Nullstone"); break;
-			case SOIL: WriteName(str, "Soil"); break;
 			case GLASS: WriteName(str, "Glass"); break;
 			case STAR: case SUN_MOON:
 			case SKY: WriteName(str, "Air"); break;
+			case SOIL: WriteName(str, "Soil"); break;
 			default:
 				fprintf(stderr, "Block::FullName(char *): Block has unknown substance: %d", int(sub));
 				WriteName(str, "Unknown block");
 		}
 	}
-	virtual void BeforeMove(dirs) {}
+	virtual before_move_return BeforeMove(dirs) { return NOTHING; }
 	virtual void Move(dirs) {}
 	virtual char MakeSound() { return ' '; }
 	virtual usage_types Use() { return NO; }
@@ -189,9 +189,7 @@ class Weapons : public Block {
 	virtual bool Carving()  { return false; }
 	bool CanBeOut() { return false; }
 
-	virtual void SaveAttributes(FILE * out) {
-		Block::SaveAttributes(out);
-	}
+	virtual void SaveAttributes(FILE * out) { Block::SaveAttributes(out); }
 
 	Weapons(subs sub) : Block::Block(sub) {}
 	Weapons(char * str) : Block::Block(str) {}
@@ -350,7 +348,7 @@ class Inventory {
 		}
 	}
 
-	void SaveAttributes(FILE * out) {
+	virtual void SaveAttributes(FILE * out) {
 		fprintf(out, "\n");
 		for (unsigned short i=0; i<inventory_size; ++i)
 		for (unsigned short j=0; j<max_stack_size; ++j) {
@@ -403,7 +401,7 @@ class Dwarf : public Block, public Animal, public Inventory {
 	virtual int Movable() { return true; }
 	bool CanBeIn() { return false; }
 
-	virtual void BeforeMove(dirs);
+	virtual before_move_return BeforeMove(dirs);
 	virtual void Move(dirs dir) { Animal::Move(dir); }
 
 	void * HasInventory() { return Inventory::HasInventory(); }
@@ -420,17 +418,17 @@ class Dwarf : public Block, public Animal, public Inventory {
 	virtual int Get(Block * block, int n=5) { return Inventory::Get(block, (5>n) ? 5 : n);
 	}
 
-	void SaveAttributes(FILE * out) {
+	virtual void SaveAttributes(FILE * out) {
 		Block::SaveAttributes(out);
 		Animal::SaveAttributes(out);
 		Inventory::SaveAttributes(out);
 		fprintf(out, "%hd/", noise);
 	}
-	virtual void SaveToFile(FILE * out) {
+	/*virtual void SaveToFile(FILE * out) {
 		fprintf(out, "%d", DWARF);
 		SaveAttributes(out);
 		fprintf(out, "\n");
-	}
+	}*/
 
 	virtual float LightRadius();
 
@@ -512,7 +510,7 @@ class Pile : public Chest , public Active {
 	virtual Block * GetThis() { return this; }
 
 	virtual int Movable() { return MOVABLE; }
-	virtual void BeforeMove(dirs);
+	virtual before_move_return BeforeMove(dirs);
 	virtual void Move(dirs dir) { Active::Move(dir); } 
 	virtual bool CanBeIn() { return false; }
 	virtual bool DropAfterDamage() { return false; }
@@ -583,4 +581,35 @@ class Liquid : public Block, public Active {
 			Active::Active(w, x, y, z) {}
 };
 
+class Grass : public Block, public Active {
+	public:
+	virtual void FullName(char * str) {
+		switch (sub) {
+			case GRASS: WriteName(str, "Grass");
+			default:
+				fprintf(stderr, "Plant::FullName(char *): unlisted sub\n");
+				WriteName(str, "Unknown plant");
+		}
+	}
+	virtual kinds Kind() const { return GRASS; }
+
+	virtual int Transparent() { return 1; }
+	virtual int Movable() { return MOVABLE; }
+	virtual bool ShouldFall() { return false; }
+
+	virtual before_move_return BeforeMove(dirs) { return DESTROY; }
+	virtual void Act();
+
+	void SaveAttributes(FILE * out) {
+		Block::SaveAttributes(out);
+		Active::SaveAttributes(out);
+	}
+
+	Grass(World * w, unsigned short x, unsigned short y, unsigned short z) :
+			Block::Block(GREENERY),
+			Active(w, x, y, z) {}
+	Grass(World * w, unsigned short x, unsigned short y, unsigned short z, char * str, FILE * in) :
+			Block::Block(str),
+			Active::Active(w, x, y, z) {}
+};
 #endif

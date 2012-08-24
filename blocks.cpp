@@ -32,7 +32,11 @@ void BlockFromFile(FILE * in, Block * & block, World * world,
 		case CHEST:     block=new Chest(str, in); break;
 		case PILE:      block=new Pile(world, i, j, k, str, in); break;
 		case LIQUID:    block=new Liquid(world, i, j, k, str, in); break;
-		default:        block=NULL;
+		case GRASS:     block=new Grass(world, i, j, k, str, in); break;
+		case -1:        block=NULL; break;
+		default:
+			fprintf(stderr, "BlockFromFile(FILE *, Block * &, World *, unsigned short, unsigned short, unsigned short): unlisted kind\n");
+			block=NULL;
 	}
 }
 
@@ -67,14 +71,16 @@ float Dwarf::LightRadius() {
 	else return 0;
 }
 
-void Dwarf::BeforeMove(dirs dir) {
+before_move_return Dwarf::BeforeMove(dirs dir) {
 	if (dir==direction)
 		whereWorld->GetAll(x_self, y_self, z_self);
+	return NOTHING;
 }
 
-void Pile::BeforeMove(dirs dir) {
+before_move_return Pile::BeforeMove(dirs dir) {
 	direction=dir;
 	whereWorld->DropAll(x_self, y_self, z_self);
+	return NOTHING;
 }
 
 void Liquid::Act() {
@@ -96,5 +102,25 @@ void Liquid::Act() {
 			if (x_self!=shred_width+1)
 				whereWorld->Move(x_self, y_self, z_self, WEST);
 			break;
+	}
+}
+
+void Grass::Act() {
+	if (!(random()%10)) {
+		unsigned short i_start, j_start, k_start,
+			       i_end,   j_end,   k_end,
+			       i, j, k;
+		i_start=(x_self>0) ? x_self-1 : 0;
+		j_start=(y_self>0) ? y_self-1 : 0;
+		k_start=(z_self>0) ? z_self-1 : 0;
+		i_end=(x_self<shred_width*3-1) ? x_self+1 : shred_width*3-1;
+		j_end=(y_self<shred_width*3-1) ? y_self+1 : shred_width*3-1;
+		k_end=(z_self<height-2)        ? z_self+1 : height-2;
+
+		for (i=i_start; i<=i_end; ++i)
+		for (j=j_start; j<=j_end; ++j)
+		for (k=k_start; k<=k_end; ++k)
+			if ( SOIL==whereWorld->Sub(i, j, k) && AIR==whereWorld->Sub(i, j, ++k) )
+				whereWorld->blocks[i][j][k]=new Grass(whereWorld, i, j, k);
 	}
 }

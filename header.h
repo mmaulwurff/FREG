@@ -134,10 +134,12 @@ enum kinds {//kind of atom
 	ANIMAL,
 	PICK,
 	TELEGRAPH,
-	LIQUID
+	LIQUID,
+	GRASS
 };
 enum subs {//substance block is made from
 	STONE,
+	MOSS_STONE,
 	NULLSTONE,
 	AIR, //though there is no air block.
 	SKY,
@@ -151,7 +153,11 @@ enum subs {//substance block is made from
 	DIFFERENT,
 	IRON,
 	WATER,
+	GREENERY,
+	SAND
 };
+
+enum before_move_return { NOTHING, DESTROY };
 
 enum usage_types { NO, OPEN, INNER_ACTION };
 

@@ -46,7 +46,7 @@ class World {
 		if (NULL==sky) {
 			for (unsigned short i=0; i<shred_width*3; ++i)
 			for (unsigned short j=0; j<shred_width*3; ++j)
-				blocks[i][j][height-1]=new Block( random()%5 ? STAR : SKY );
+				blocks[i][j][height-1]=new Block( random()%5 ? SKY : STAR );
 		} else {
 			char c=fgetc(sky)-'0';
 			for (unsigned short i=0; i<shred_width*3; ++i)
@@ -404,6 +404,8 @@ class World {
 	friend void Screen::PrintFront(WINDOW *);
 	friend void Screen::PrintInv(WINDOW *, Inventory *);
 	friend class Active;
+
+	friend void Grass::Act();
 
 	World();
 	~World();

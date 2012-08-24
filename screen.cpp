@@ -26,12 +26,12 @@ char Screen::CharName(unsigned short i, unsigned short j, unsigned short k) {
 		case BLOCK: switch (w->Sub(i, j, k)) {
 			case NULLSTONE:
 			case STONE: return '#';
-			case SOIL:  return 's';
 			case GLASS: return 'g';
 			case SUN_MOON:
 			case SKY:   return ' ';
 			case STAR:  return '.';
 			case WATER: return '~';
+			case SOIL:  return '.';
 			default:
 				fprintf(stderr, "Screen::CharName(uns short, uns short, uns short): Block has unlisted substance: %d\n", int(w->Sub(i, j, k)));
 				return '?';
@@ -42,6 +42,7 @@ char Screen::CharName(unsigned short i, unsigned short j, unsigned short k) {
 		case PICK: return '\\';
 		case TELEGRAPH: return 't';
 		case LIQUID: return '~';
+		case GRASS: return '.';
 		default:
 			fprintf(stderr, "Screen::CharName(uns short, uns short, uns short): Unlisted kind: %d\n", int(w->Kind(i, j, k)));
 			return '?';
@@ -267,9 +268,11 @@ void Screen::Notify(const char * str) {
 }
 
 color_pairs Screen::Color(kinds kind, subs sub) {
-	switch (kind) {
+	switch (kind) { //foreground_background
 		case DWARF: return WHITE_BLUE;
 		case BLOCK: switch (sub) {
+			case WOOD:
+			case SOIL:      return BLACK_YELLOW;
 			case WATER:     return WHITE_CYAN;
 			case GLASS:     return BLUE_WHITE;
 			case NULLSTONE: return WHITE_BLACK;
@@ -295,6 +298,8 @@ color_pairs Screen::Color(kinds kind, subs sub) {
 			case WATER: return (random()%4) ? CYAN_BLUE : BLUE_CYAN;
 			default: return (random()%4) ? RED_YELLOW : YELLOW_RED;
 		}
+		case GRASS: return BLACK_GREEN;
+
 		default: return BLACK_WHITE;
 	}
 }
