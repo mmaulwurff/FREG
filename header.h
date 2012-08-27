@@ -135,7 +135,8 @@ enum kinds {//kind of atom
 	PICK,
 	TELEGRAPH,
 	LIQUID,
-	GRASS
+	GRASS,
+	BUSH
 };
 enum subs {//substance block is made from
 	STONE,
@@ -154,7 +155,9 @@ enum subs {//substance block is made from
 	IRON,
 	WATER,
 	GREENERY,
-	SAND
+	SAND,
+	HAZELNUT,
+	ROSE
 };
 
 enum before_move_return { NOTHING, DESTROY };

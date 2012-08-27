@@ -57,8 +57,10 @@ void World::LoadShred(long longi, long lati, const unsigned short istart, const 
 		for (i=istart; i<istart+shred_width; ++i)
 		for (j=jstart; j<jstart+shred_width; ++j) {
 			blocks[i][j][0]=new Block(NULLSTONE);
-			for (k=1; k<height/2; ++k)
+			for (k=1; k<height/2-2; ++k)
 				blocks[i][j][k]=new  Block(STONE);//Liquid(this, i, j, k, WATER);
+			blocks[i][j][k++]=new Block(SOIL);
+			blocks[i][j][k++]=new Grass(this, i, j, height/2);
 			for ( ; k<height-1; ++k)
 				blocks[i][j][k]=NULL;
 		}
@@ -77,10 +79,18 @@ void World::LoadShred(long longi, long lati, const unsigned short istart, const 
 			delete blocks[istart+4][jstart+3][k];
 			blocks[istart+4][jstart+3][k]=NULL;
 		}*/
-		for (i=istart; i<istart+3; ++i)
-		for (j=jstart; j<jstart+3; ++j)
-			blocks[i][j][height/2]=new Block(SOIL);
-		blocks[istart][jstart][height/2+1]=new Grass(this, istart, jstart, height/2+1);
+		delete blocks[istart][jstart][height/2-1];
+		blocks[istart][jstart][height/2-1]=new Bush(this, istart, jstart, height/2-1);
+
+		for (i=istart; i<=istart+2; ++i)
+		for (j=jstart+6; j<=jstart+8; ++j) {
+			delete blocks[i][j][height/2-1];
+			blocks[i][j][height/2-1]=NULL;
+		}
+		Tree(istart+1, jstart+6, height/2-1, 4);
+
+		delete blocks[istart+1][jstart][height/2-1];
+		blocks[istart+1][jstart][height/2-1]=new Block(ROSE);
 	} else {
 		for (unsigned short i=istart; i<istart+shred_width; ++i)
 		for (unsigned short j=jstart; j<jstart+shred_width; ++j)

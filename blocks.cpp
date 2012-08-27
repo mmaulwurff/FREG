@@ -24,6 +24,8 @@ void BlockFromFile(FILE * in, Block * & block, World * world,
 	fgets(str, 300, in);
 	int kind;
 	sscanf(str, "%d", &kind);
+	//if some kind will not be listed here, blocks of this kind just will not load.
+	//unless kind is inherited from Inventory class or one of its derivatives - in this case this may cause something bad.
 	switch(kind) {
 		case BLOCK:     block=new Block(str); break;
 		case TELEGRAPH: block=new Telegraph(str); break;
@@ -33,6 +35,7 @@ void BlockFromFile(FILE * in, Block * & block, World * world,
 		case PILE:      block=new Pile(world, i, j, k, str, in); break;
 		case LIQUID:    block=new Liquid(world, i, j, k, str, in); break;
 		case GRASS:     block=new Grass(world, i, j, k, str, in); break;
+		case BUSH:      block=new Bush(world, i, j, k, str, in); break;
 		case -1:        block=NULL; break;
 		default:
 			fprintf(stderr, "BlockFromFile(FILE *, Block * &, World *, unsigned short, unsigned short, unsigned short): unlisted kind\n");
@@ -106,7 +109,7 @@ void Liquid::Act() {
 }
 
 void Grass::Act() {
-	if (!(random()%10)) {
+	if ( !(random()%seconds_in_hour) ) {
 		unsigned short i_start, j_start, k_start,
 			       i_end,   j_end,   k_end,
 			       i, j, k;

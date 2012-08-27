@@ -24,7 +24,7 @@
 char Screen::CharName(unsigned short i, unsigned short j, unsigned short k) {
 	switch ( w->Kind(i, j, k) ) {
 		case BLOCK: switch (w->Sub(i, j, k)) {
-			case NULLSTONE:
+			case NULLSTONE: case MOSS_STONE: case WOOD:
 			case STONE: return '#';
 			case GLASS: return 'g';
 			case SUN_MOON:
@@ -32,12 +32,16 @@ char Screen::CharName(unsigned short i, unsigned short j, unsigned short k) {
 			case STAR:  return '.';
 			case WATER: return '~';
 			case SOIL:  return '.';
+			case GREENERY: return '`';
+			case ROSE:  return ';';
 			default:
 				fprintf(stderr, "Screen::CharName(uns short, uns short, uns short): Block has unlisted substance: %d\n", int(w->Sub(i, j, k)));
 				return '?';
 		}
 		case DWARF: return '@';
 		case CHEST: return 'c';
+		case BUSH: return ';';
+		case HAZELNUT: return ',';
 		case PILE: return '*';
 		case PICK: return '\\';
 		case TELEGRAPH: return 't';
@@ -48,6 +52,39 @@ char Screen::CharName(unsigned short i, unsigned short j, unsigned short k) {
 			return '?';
 	}
 }
+
+color_pairs Screen::Color(kinds kind, subs sub) {
+	switch (kind) { //foreground_background
+		case DWARF:     return WHITE_BLUE;
+		case PILE:      return WHITE_BLACK;
+		case TELEGRAPH: return CYAN_BLACK;
+		case LIQUID: switch (sub) {
+			case WATER: return (random()%4) ? CYAN_BLUE : BLUE_CYAN;
+			default:    return (random()%4) ? RED_YELLOW : YELLOW_RED;
+		}
+
+		default: switch (sub) {
+			case WOOD: case HAZELNUT:
+			case SOIL:       return BLACK_YELLOW;
+			case GREENERY:   return BLACK_GREEN;
+			case WATER:      return WHITE_CYAN;
+			case GLASS:      return BLUE_WHITE;
+			case NULLSTONE:  return WHITE_BLACK;
+			case MOSS_STONE: return GREEN_WHITE;
+			case IRON:       return WHITE_BLACK;
+			case ROSE:       return RED_GREEN;
+			case SUN_MOON:   return ( NIGHT==w->PartOfDay() ) ? WHITE_WHITE : YELLOW_YELLOW;
+			case SKY: case STAR: switch ( w->PartOfDay() ) {
+				case NIGHT:   return WHITE_BLACK;
+				case MORNING: return WHITE_BLUE;
+				case NOON:    return CYAN_CYAN;
+				case EVENING: return WHITE_BLUE;
+			}
+			default: return BLACK_WHITE;
+		}
+	}
+}
+inline color_pairs Screen::Color(unsigned short i, unsigned short j, unsigned short k) { return Color( w->Kind(i, j, k), w->Sub(i, j, k) ); }
 
 void Screen::PrintNormal(WINDOW * window) {
 	if (pthread_mutex_trylock(&(w->mutex)))
@@ -266,44 +303,6 @@ void Screen::Notify(const char * str) {
 	box(notifyWin, 0, 0);
 	wrefresh(notifyWin);
 }
-
-color_pairs Screen::Color(kinds kind, subs sub) {
-	switch (kind) { //foreground_background
-		case DWARF: return WHITE_BLUE;
-		case BLOCK: switch (sub) {
-			case WOOD:
-			case SOIL:      return BLACK_YELLOW;
-			case WATER:     return WHITE_CYAN;
-			case GLASS:     return BLUE_WHITE;
-			case NULLSTONE: return WHITE_BLACK;
-			case SUN_MOON:  return ( NIGHT==w->PartOfDay() ) ? WHITE_WHITE : YELLOW_YELLOW;
-			case SKY: case STAR: switch ( w->PartOfDay() ) {
-				case NIGHT:   return WHITE_BLACK;
-				case MORNING: return WHITE_BLUE;
-				case NOON:    return CYAN_CYAN;
-				case EVENING: return WHITE_BLUE;
-			}
-			default: return BLACK_WHITE;
-		}
-		case PILE: return WHITE_BLACK;
-		case CHEST: switch (sub) {
-			case WOOD: return BLACK_YELLOW;
-			default: return BLACK_WHITE;
-		}
-		case PICK: switch (sub) {
-			case IRON: return WHITE_BLACK;
-		}
-		case TELEGRAPH: return CYAN_BLACK;
-		case LIQUID: switch (sub) {
-			case WATER: return (random()%4) ? CYAN_BLUE : BLUE_CYAN;
-			default: return (random()%4) ? RED_YELLOW : YELLOW_RED;
-		}
-		case GRASS: return BLACK_GREEN;
-
-		default: return BLACK_WHITE;
-	}
-}
-inline color_pairs Screen::Color(unsigned short i, unsigned short j, unsigned short k) { return Color( w->Kind(i, j, k), w->Sub(i, j, k) ); }
 
 Screen::Screen(World * wor) :
        		w(wor), viewLeft(NORMAL), viewRight(FRONT), blockToPrintLeft(NULL), blockToPrintRight(NULL) {

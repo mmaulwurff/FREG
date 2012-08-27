@@ -100,6 +100,31 @@ class World {
 		}
 	}
 
+	//block combinations section (trees, houses, etc)
+	
+	bool Tree(const unsigned short x, const unsigned short y, const unsigned short z, const unsigned short height) {
+		if (0>x || shred_width*3<x+2 ||
+		    0>y || shred_width*3<y+2 ||
+		    0>z || ::height-1<z+height ||
+		    height<2) return false;
+		unsigned short i, j, k;
+		for (i=x; i<x+2; ++i)
+		for (j=y; j<y+2; ++j)
+		for (k=z; k<z+height; ++k)
+			if (NULL!=blocks[i][j][k])
+				return false;
+
+		for (k=z; k<z+height; ++k) //trunk
+			blocks[x+1][y+1][k]=new Block(WOOD);
+
+		for (i=x; i<=x+2; ++i) //leaves
+		for (j=y; j<=y+2; ++j)
+		for (k=z+height/2; k<z+height; ++k)
+			blocks[i][j][k]=new Block(GREENERY);
+		
+		return true;
+	}
+
 	public:
 	Screen * scr;
 	struct {
@@ -159,15 +184,26 @@ class World {
 	unsigned long Time() { return time; }
 
 	void Damage(int i, int j, int k) {
-		if (NULL!=blocks[i][j][k])
-			if ( !blocks[i][j][k]->Damage() ) {
-				if ( blocks[i][j][k]->DropAfterDamage() && blocks[i][j][k]->CanBeIn() ) {
-					Block * temp=blocks[i][j][k];
+		if (NULL!=blocks[i][j][k]) {
+			if ( 0>=blocks[i][j][k]->Damage() ) {
+				Block * temp=blocks[i][j][k];
+				if (temp==scr->blockToPrintLeft)
+					scr->viewLeft=NORMAL;
+				if (temp==scr->blockToPrintRight)
+					scr->viewRight=NORMAL;
+
+				if ( temp->HasInventory() ) {
 					Pile * new_pile=new Pile(this, i, j, k);
 					blocks[i][j][k]=new_pile;
-					if ( temp->HasInventory() ) {
-						new_pile->GetAll( temp );
-					}
+					new_pile->GetAll(temp);
+					if (temp==scr->blockToPrintLeft)
+						scr->viewLeft=NORMAL;
+					if (temp==scr->blockToPrintRight)
+						scr->viewRight=NORMAL;
+					delete temp;
+				} else if ( temp->DropAfterDamage() && temp->CanBeIn() ) {
+					Pile * new_pile=new Pile(this, i, j, k);
+					blocks[i][j][k]=new_pile;
 					if ( temp->ActiveBlock() )
 						((Active *)temp)->Unregister();
 					if ( !((Pile *)blocks[i][j][k])->Get(temp) )
@@ -177,6 +213,7 @@ class World {
 					blocks[i][j][k]=NULL;
 				}
 			}
+		}
 	}
 	void Use(int i, int j, int k) {
 		if (NULL!=blocks[i][j][k])
