@@ -36,7 +36,7 @@ class Block { //blocks without special physics and attributes
 		for (i=0; str[i]!='/'; ++i) str[i]=' ';
 		str[i]=' ';
 	}
-	unsigned short durability;
+	short durability;
 	public:
 
 	virtual Block * GetThis() { return this; }
