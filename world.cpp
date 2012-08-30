@@ -58,7 +58,7 @@ void World::LoadShred(long longi, long lati, const unsigned short istart, const 
 		for (j=jstart; j<jstart+shred_width; ++j) {
 			blocks[i][j][0]=new Block(NULLSTONE);
 			for (k=1; k<height/2-2; ++k)
-				blocks[i][j][k]=new  Block(STONE);//Liquid(this, i, j, k, WATER);
+				blocks[i][j][k]=new Block;//Liquid(this, i, j, k, WATER);
 			blocks[i][j][k++]=new Block(SOIL);
 			blocks[i][j][k++]=new Grass(this, i, j, height/2);
 			for ( ; k<height-1; ++k)
@@ -90,7 +90,7 @@ void World::LoadShred(long longi, long lati, const unsigned short istart, const 
 		Tree(istart+1, jstart+6, height/2-1, 4);
 
 		delete blocks[istart+1][jstart][height/2-1];
-		blocks[istart+1][jstart][height/2-1]=new Block(ROSE);
+		blocks[istart+1][jstart][height/2-1]=new Rabbit(this, istart+1, jstart, height/2-1);
 	} else {
 		for (unsigned short i=istart; i<istart+shred_width; ++i)
 		for (unsigned short j=jstart; j<jstart+shred_width; ++j)
@@ -194,8 +194,8 @@ void World::PhysEvents() {
 				soundMap[n].lev+=1;
 			}
 		}
-		nexttemp=temp->GetNext();
 		if ( temp->IfToDestroy() ) {
+			nexttemp=temp->GetNext();
 			if (NULL!=scr) {
 				if (NULL!=scr->blockToPrintRight &&
 						scr->blockToPrintRight->GetThis()==blocks[x][y][z])
@@ -206,8 +206,12 @@ void World::PhysEvents() {
 			}
 			delete blocks[x][y][z];
 			blocks[x][y][z]=NULL;
-		} else if ( temp->ShouldFall() )
+		} else if ( temp->ShouldFall() ) {
 			Move(x, y, z, DOWN);
+			nexttemp=temp->GetNext();
+		} else
+			nexttemp=temp->GetNext();
+
 	}
 	
 	pthread_mutex_unlock(&mutex);
@@ -283,6 +287,9 @@ int World::Move(int i, int j, int k, dirs dir, unsigned stop) {
 		return 0;
 	}
 	if ( DESTROY==(blocks[i][j][k]->BeforeMove(dir)) ) {
+		/*Active * check=(Active *)(blocks[i][j][k]->ActiveBlock());
+		if (NULL!=check)
+			check->Unregister();*/
 		delete blocks[i][j][k];
 		blocks[i][j][k]=NULL;
 		pthread_mutex_unlock(&mutex);
@@ -328,14 +335,15 @@ int World::Move(int i, int j, int k, dirs dir, unsigned stop) {
 	return 0;
 }
 
-void World::Jump(int i, int j, int k) { if ( NULL!=blocks[i][j][k] &&
-		blocks[i][j][k]->Movable() ) { blocks[i][j][k]->SetWeight(0);
-	if ( Move(i, j, k, UP) ) { ++k; dirs dir; if (Move( i, j, k,
-				dir=blocks[i][j][k]->GetDir() )); switch (dir)
-	{ case NORTH: --j; break; case SOUTH: ++j; break; case EAST:  ++i;
-		break; case WEST:  --i; break; case UP:    ++k; break; case
-			DOWN:  --k; break; } } blocks[i][j][k]->SetWeight();
-	Move(i, j, k, DOWN); }
+void World::Jump(int i, int j, int k) {
+	if ( NULL!=blocks[i][j][k] && blocks[i][j][k]->Movable() ) {
+		blocks[i][j][k]->SetWeight(0);
+		if ( Move(i, j, k, UP) ) {
+			blocks[i][j][++k]->SetWeight();
+			Move( i, j, k, blocks[i][j][k]->GetDir() );
+		} else
+			blocks[i][j][k]->SetWeight();
+	}
 }
 
 int World::Focus(int i, int j, int k, int & i_target, int & j_target, int & k_target, dirs dir) {

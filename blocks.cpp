@@ -36,11 +36,28 @@ void BlockFromFile(FILE * in, Block * & block, World * world,
 		case LIQUID:    block=new Liquid(world, i, j, k, str, in); break;
 		case GRASS:     block=new Grass(world, i, j, k, str, in); break;
 		case BUSH:      block=new Bush(world, i, j, k, str, in); break;
+		case RABBIT:    block=new Rabbit(world, i, j, k, str); break;
 		case -1:        block=NULL; break;
 		default:
 			fprintf(stderr, "BlockFromFile(FILE *, Block * &, World *, unsigned short, unsigned short, unsigned short): unlisted kind\n");
 			block=NULL;
 	}
+}
+
+void Active::SafeMove() {
+	//when player is on the border of shred, moving him causes World::ReloadShreds(dir). so, cheks are neede for liquids not to push player.
+	int x_focus, y_focus, z_focus;
+	whereWorld->Focus(x_self, y_self, z_self, x_focus, y_focus, z_focus, direction);
+	if (x_focus!=whereWorld->playerX || y_focus!=whereWorld->playerY)
+		whereWorld->Move(x_self, y_self, z_self, direction);
+}
+void Active::SafeJump() {
+	SetWeight(0);
+	if ( whereWorld->Move(x_self, y_self, z_self, UP) ) {
+		SetWeight();
+		SafeMove();
+	} else
+		SetWeight();
 }
 
 void Active::Register(World * w) {
@@ -88,24 +105,12 @@ before_move_return Pile::BeforeMove(dirs dir) {
 
 void Liquid::Act() {
 	switch (random()%4) {
-		//when player is on the border of shred, moving him causes World::ReloadShreds(dir). so, cheks are neede for liquids not to push player.
-		case 0:
-			if (y_self!=shred_width+1)
-				whereWorld->Move(x_self, y_self, z_self, NORTH);
-			break;
-		case 1:
-			if (x_self!=shred_width*2-2)
-				whereWorld->Move(x_self, y_self, z_self, EAST);
-			break;
-		case 2:
-			if (y_self!=shred_width*2-2)
-				whereWorld->Move(x_self, y_self, z_self, SOUTH);
-			break;
-		case 3:
-			if (x_self!=shred_width+1)
-				whereWorld->Move(x_self, y_self, z_self, WEST);
-			break;
+		case 0: SetDir(NORTH); break;
+		case 1:	SetDir(EAST);  break;
+		case 2: SetDir(SOUTH); break;
+		case 3:	SetDir(WEST);  break;
 	}
+	SafeMove();
 }
 
 void Grass::Act() {
@@ -126,4 +131,48 @@ void Grass::Act() {
 			if ( SOIL==whereWorld->Sub(i, j, k) && AIR==whereWorld->Sub(i, j, ++k) )
 				whereWorld->blocks[i][j][k]=new Grass(whereWorld, i, j, k);
 	}
+}
+
+void Rabbit::Act() {
+	if (random()%6) {
+		short for_north=0, for_west=0;
+
+		unsigned short const x_start=(x_self-7>0) ? x_self-7 : 0;
+		unsigned short const y_start=(y_self-7>0) ? y_self-7 : 0;
+		unsigned short const z_start=(z_self-1>0) ? z_self-1 : 0;
+		unsigned short const x_end=(x_self+7<shred_width*3) ? x_self+7 : shred_width*3-1;
+		unsigned short const y_end=(y_self+7<shred_width*3) ? y_self+7 : shred_width*3-1;
+		unsigned short const z_end=(z_self+1<height-1) ? z_self+1 : height-2;
+
+		for (unsigned short x=x_start; x<=x_end; ++x)
+		for (unsigned short y=y_start; y<=y_end; ++y)
+		for (unsigned short z=z_start; z<=z_end; ++z)
+			switch ( whereWorld->Kind(x, y, z) ) {
+				case DWARF:
+					for_north+=y-y_self;
+					for_west+=x-x_self;
+					//fprintf(stderr, "Rabbit noticed dwarf at %hd, %hd, %hd\n", x, y, z);
+				break;
+				case RABBIT:
+					for_north-=y-y_self;
+					for_west-=x-x_self;
+				break;
+			}
+
+		if ( abs(for_north)>abs(for_west) ) {
+			if (for_north>0) SetDir(NORTH);
+			else SetDir(SOUTH);
+		} else {
+			if (for_west>0) SetDir(WEST);
+			else SetDir(EAST);
+		}
+	} else {
+		switch (random()%4) {
+			case 0: SetDir(NORTH); break;
+			case 1: SetDir(SOUTH); break;
+			case 2: SetDir(EAST);  break;
+			case 3: SetDir(WEST);  break;
+		}
+	}
+	(random()%2) ? SafeMove() : SafeJump();
 }

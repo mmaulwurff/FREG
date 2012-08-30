@@ -47,6 +47,7 @@ char Screen::CharName(unsigned short i, unsigned short j, unsigned short k) {
 		case TELEGRAPH: return 't';
 		case LIQUID: return '~';
 		case GRASS: return '.';
+		case RABBIT: return 'r';
 		default:
 			fprintf(stderr, "Screen::CharName(uns short, uns short, uns short): Unlisted kind: %d\n", int(w->Kind(i, j, k)));
 			return '?';
@@ -58,6 +59,7 @@ color_pairs Screen::Color(kinds kind, subs sub) {
 		case DWARF:     return WHITE_BLUE;
 		case PILE:      return WHITE_BLACK;
 		case TELEGRAPH: return CYAN_BLACK;
+		case RABBIT:    return RED_WHITE;
 		case LIQUID: switch (sub) {
 			case WATER: return (random()%4) ? CYAN_BLUE : BLUE_CYAN;
 			default:    return (random()%4) ? RED_YELLOW : YELLOW_RED;

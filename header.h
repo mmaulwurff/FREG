@@ -136,7 +136,9 @@ enum kinds {//kind of atom
 	TELEGRAPH,
 	LIQUID,
 	GRASS,
-	BUSH
+	BUSH,
+	RABBIT,
+	ACTIVE
 };
 enum subs {//substance block is made from
 	STONE,
