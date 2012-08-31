@@ -28,7 +28,8 @@ class Screen {
 	       * rightWin,
 	       * notifyWin,
 	       * soundWin;
-	char CharName(unsigned short i, unsigned short j, unsigned short k);
+	char CharName(unsigned short, unsigned short, unsigned short);
+	char CharName(kinds, subs);
 	FILE * notifyLog;
 
 	public:

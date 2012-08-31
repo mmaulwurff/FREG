@@ -21,9 +21,9 @@
 #include "screen.h"
 #include "world.h"
 
-char Screen::CharName(unsigned short i, unsigned short j, unsigned short k) {
-	switch ( w->Kind(i, j, k) ) {
-		case BLOCK: switch (w->Sub(i, j, k)) {
+char Screen::CharName(kinds kind, subs sub) {
+	switch (kind)  {
+		case BLOCK: switch (sub) {
 			case NULLSTONE: case MOSS_STONE: case WOOD:
 			case STONE: return '#';
 			case GLASS: return 'g';
@@ -36,8 +36,9 @@ char Screen::CharName(unsigned short i, unsigned short j, unsigned short k) {
 			case ROSE:  return ';';
 			case A_MEAT: case H_MEAT:
 			case HAZELNUT: return ',';
+			case AIR:   return ' ';
 			default:
-				fprintf(stderr, "Screen::CharName(uns short, uns short, uns short): Block has unlisted substance: %d\n", int(w->Sub(i, j, k)));
+				fprintf(stderr, "Screen::CharName(uns short, uns short, uns short): Block has unlisted substance: %d\n", int(sub));
 				return '?';
 		}
 		case DWARF: return '@';
@@ -50,9 +51,12 @@ char Screen::CharName(unsigned short i, unsigned short j, unsigned short k) {
 		case GRASS: return '.';
 		case RABBIT: return 'r';
 		default:
-			fprintf(stderr, "Screen::CharName(uns short, uns short, uns short): Unlisted kind: %d\n", int(w->Kind(i, j, k)));
+			fprintf(stderr, "Screen::CharName(uns short, uns short, uns short): Unlisted kind: %d\n", int(kind));
 			return '?';
 	}
+}
+char Screen::CharName(unsigned short i, unsigned short j, unsigned short k) {
+	return CharName( w->Kind(i, j, k), w->Sub(i, j, k) );
 }
 
 color_pairs Screen::Color(kinds kind, subs sub) {
@@ -250,10 +254,6 @@ void Screen::PrintFront(WINDOW * window) {
 void Screen::PrintInv(WINDOW * window, Inventory * inv) {
 	if (pthread_mutex_trylock(&(w->mutex)))
 		return;
-	unsigned short i;
-	double sum_weight=0, temp_weight;
-	char str[full_name_length],
-	     num_str[6];
 	werase(window);
 	mvwaddstr(window, 1, 53, "Weight");
 	if ( DWARF==inv->Kind() ) {
@@ -263,16 +263,23 @@ void Screen::PrintInv(WINDOW * window, Inventory * inv) {
 		mvwaddstr(window, 5, 2, "Right hand:");
 		mvwaddstr(window, 6, 2, "Left hand:");
 	}
+	unsigned short i;
+	double sum_weight=0, temp_weight;
+	char str[full_name_length],
+	     num_str[6];
 	for (i=0; i<inventory_size; ++i) {
-		inv->InvFullName(str, i);
-		inv->NumStr(num_str, i);
-		mvwprintw(window, 2+i, 14, "%c) %s", 'a'+i, num_str);
-		wcolor_set(window, Color(inv->GetInvKind(i), inv->GetInvSub(i)), NULL);
-		wprintw(window, "%s", str);
-		wstandend(window);
-		if ('\0'!=str[0]) { //summ
-			mvwprintw(window, 2+i, 50, "%2.1f kg", temp_weight=inv->GetInvWeight(i));
-			sum_weight+=temp_weight;
+		mvwprintw(window, 2+i, 14, "%c)", 'a'+i);
+		if ( inv->Number(i) ) {
+			inv->InvFullName(str, i);
+			inv->NumStr(num_str, i);
+			wcolor_set(window, Color(inv->GetInvKind(i), inv->GetInvSub(i)), NULL);
+			mvwprintw(window, 2+i, 17, "[%c]%s", CharName( inv->GetInvKind(i), inv->GetInvSub(i) ), str);
+			wprintw(window, " %s", num_str);
+			wstandend(window);
+			if ('\0'!=str[0]) { //summ
+				mvwprintw(window, 2+i, 50, "%2.1f kg", temp_weight=inv->GetInvWeight(i));
+				sum_weight+=temp_weight;
+			}
 		}
 	}
 	mvwprintw(window, 2+i, 43, "Sum:%6.1f kg", sum_weight);

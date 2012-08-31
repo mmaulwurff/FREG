@@ -301,23 +301,23 @@ class Animal : public Active {
 
 class Inventory {
 	protected:
+	Block * inventory[inventory_size][max_stack_size];
+	public:
+	void InvFullName(char * str, int i) { (NULL==inventory[i][0]) ? WriteName(str, "") : inventory[i][0]->FullName(str); }
+	void NumStr(char * str, int i) {
+		unsigned short n=Number(i);
+		if (1>=n) strcpy(str, "");
+		else sprintf(str, "(%hdx)", n);
+	}
+	double GetInvWeight(int i) { return (NULL==inventory[i][0]) ? 0     : inventory[i][0]->Weight()*Number(i); }
+	subs GetInvSub(int i)      { return (NULL==inventory[i][0]) ? AIR   : inventory[i][0]->Sub(); }
+	kinds GetInvKind(int i)    { return (NULL==inventory[i][0]) ? BLOCK : inventory[i][0]->Kind(); }
 	int Number(int i) {
 		if (inventory_size<=i) return 0;
 		unsigned short n;
 		for (n=0; n<max_stack_size && NULL!=inventory[i][n]; ++n);
 		return n;
 	}
-	public:
-	Block * inventory[inventory_size][max_stack_size];
-	void InvFullName(char * str, int i) { (NULL==inventory[i][0]) ? WriteName(str, "") : inventory[i][0]->FullName(str); }
-	void NumStr(char * str, int i) {
-		unsigned short n=Number(i);
-		if (1>=n) strcpy(str, "");
-		else sprintf(str, "(%hdx) ", n);
-	}
-	double GetInvWeight(int i) { return (NULL==inventory[i][0]) ? 0     : inventory[i][0]->Weight()*Number(i); }
-	subs GetInvSub(int i)      { return (NULL==inventory[i][0]) ? AIR   : inventory[i][0]->Sub(); }
-	kinds GetInvKind(int i)    { return (NULL==inventory[i][0]) ? BLOCK : inventory[i][0]->Kind(); }
 	virtual void FullName(char *)=0;
 	virtual kinds Kind() const=0;
 	virtual bool Access()=0;
