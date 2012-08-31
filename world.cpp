@@ -53,44 +53,10 @@ void World::LoadShred(long longi, long lati, const unsigned short istart, const 
 	FileName(str, longi, lati);
 	FILE * in=fopen(str, "r");
 	if (NULL==in) {
-		unsigned short i, j, k;
-		for (i=istart; i<istart+shred_width; ++i)
-		for (j=jstart; j<jstart+shred_width; ++j) {
-			blocks[i][j][0]=new Block(NULLSTONE);
-			for (k=1; k<height/2-2; ++k)
-				blocks[i][j][k]=new Block;//Liquid(this, i, j, k, WATER);
-			blocks[i][j][k++]=new Block(SOIL);
-			blocks[i][j][k++]=new Grass(this, i, j, height/2);
-			for ( ; k<height-1; ++k)
-				blocks[i][j][k]=NULL;
+		switch ( TypeOfShred(longi, lati) ) {
+			case '#': NullMountain(istart, jstart); break;
+			default: Plain(istart, jstart);
 		}
-		/*for (i=istart+1; i<istart+7; ++i) {
-			if (NULL==blocks[i][jstart+1][height/2-1])
-				delete blocks[i][jstart][height/2-1];
-			blocks[i][jstart+1][height/2-1]=new Block(STONE);
-		}*/
-		//long pit
-		/*for (i=istart+1; i<istart+7; ++i) {
-			delete blocks[i][jstart+2][height/2-1];
-			blocks[i][jstart+2][height/2-1]=NULL;
-		}*/
-		//deep pit
-		/*for (k=height/2; k>0; --k) {
-			delete blocks[istart+4][jstart+3][k];
-			blocks[istart+4][jstart+3][k]=NULL;
-		}*/
-		delete blocks[istart][jstart][height/2-1];
-		blocks[istart][jstart][height/2-1]=new Bush(this, istart, jstart, height/2-1);
-
-		for (i=istart; i<=istart+2; ++i)
-		for (j=jstart+6; j<=jstart+8; ++j) {
-			delete blocks[i][j][height/2-1];
-			blocks[i][j][height/2-1]=NULL;
-		}
-		Tree(istart+1, jstart+6, height/2-1, 4);
-
-		delete blocks[istart+1][jstart][height/2-1];
-		blocks[istart+1][jstart][height/2-1]=new Rabbit(this, istart+1, jstart, height/2-1);
 	} else {
 		for (unsigned short i=istart; i<istart+shred_width; ++i)
 		for (unsigned short j=jstart; j<jstart+shred_width; ++j)
@@ -387,15 +353,17 @@ int World::Focus(int i, int j, int k, int & i_target, int & j_target, int & k_ta
 World::World() : scr(NULL), activeList(NULL) {
 	FILE * file=fopen("save", "r");
 	if (file==NULL) {
-		longitude=0;
-		latitude=0;
+		longitude=3;
+		latitude=3;
 		playerX=shred_width*2-7;
 		playerY=shred_width*2-7;
 		playerZ=height/2;
 		time=end_of_night+5;
+		strncpy(worldName, "The_Land_of_Doubts\0", 20);
+		worldSize=1000;
 	} else {
-		fscanf(file, "longitude: %ld\nlatitude: %ld\nplayerX: %hd\n playerY: %hd\n playerZ: %hd\ntime: %ld\n",
-				&longitude, &latitude, &playerX, &playerY, &playerZ, &time);
+		fscanf(file, "longitude: %ld\nlatitude: %ld\nplayerX: %hd\n playerY: %hd\n playerZ: %hd\ntime: %ld\nWorld:%s\nSize:%hd\n",
+				&longitude, &latitude, &playerX, &playerY, &playerZ, &time, worldName, &worldSize);
 		fclose(file);
 	}
 	LoadAllShreds();
@@ -418,8 +386,8 @@ World::~World() {
 	pthread_mutex_destroy(&mutex);
 	FILE * file=fopen("save", "w");
 	if (file!=NULL) {
-		fprintf(file, "longitude: %ld\nlatitude: %ld\nplayerX: %hd\nplayerY: %hd\nplayerZ: %hd\ntime: %ld\n",
-				longitude, latitude, playerX, playerY, playerZ, time);
+		fprintf(file, "longitude: %ld\nlatitude: %ld\nplayerX: %hd\nplayerY: %hd\nplayerZ: %hd\ntime: %ld\nWorld:%s\nSize:%hd\n",
+				longitude, latitude, playerX, playerY, playerZ, time, worldName, worldSize);
 		fclose(file);
 	}
 	SaveAllShreds();

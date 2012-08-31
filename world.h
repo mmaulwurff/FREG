@@ -36,6 +36,9 @@ class World {
 	pthread_t eventsThread;
 	pthread_mutex_t mutex;
 	Active * activeList;
+	char worldName[20];
+	unsigned short worldSize;
+
 	void LoadShred(long, long, unsigned short, unsigned short);
 	void SaveShred(long, long, unsigned short, unsigned short);
 	void ReloadShreds(dirs);
@@ -74,8 +77,8 @@ class World {
 		else if (y<-3*x && y>-x/3) return SOUTH_WEST;
 		else if (y<=-x/3 && y>=x/3) return WEST;
 		else return NORTH_WEST;
-	}
-	double Distance(unsigned short x_from, unsigned short y_from, unsigned short z_from,
+	} double Distance(unsigned short x_from, unsigned short y_from,
+			unsigned short z_from,
 	                unsigned short x_to,   unsigned short y_to,   unsigned short z_to) {
 		return sqrt( (x_from-x_to)*(x_from-x_to)+
 		             (y_from-y_to)*(y_from-y_to)+
@@ -97,6 +100,74 @@ class World {
 			case NORTH_WEST: return SOUTH_EAST;
 			case UP: return DOWN;
 			case DOWN: return UP;
+		}
+	}
+
+	char TypeOfShred(long longi, long lati) {
+		FILE * map=fopen(worldName, "r");
+		if (NULL==map)
+			return '.';
+
+		char find_start[2];
+		do fgets(find_start, 3, map);
+		while ('#'!=find_start[0] || '#'!=find_start[1]);
+
+		fseek(map, (worldSize+1)*lati+longi-2, SEEK_CUR);
+		char c=fgetc(map);
+		fclose(map);
+		return c;
+	}
+
+	//shred generators section
+
+	void NullMountain(const unsigned short istart, const unsigned short jstart) {
+		unsigned short i, j, k;
+		for (i=istart; i<istart+shred_width; ++i)
+		for (j=jstart; j<jstart+shred_width; ++j) {
+			blocks[i][j][0]=new Block(NULLSTONE);
+
+			for (k=1; k<height/2-1; ++k)
+				if (i==istart+4 || i==istart+5 || j==jstart+4 || j==jstart+5)
+					blocks[i][j][k]=new Block(NULLSTONE);
+				else
+					blocks[i][j][k]=new Block;
+
+			for ( ; k<height-1; ++k)
+				if (i==istart+4 || i==istart+5 || j==jstart+4 || j==jstart+5)
+					blocks[i][j][k]=new Block(NULLSTONE);
+				else
+					blocks[i][j][k]=NULL;
+		}
+		
+	}
+
+	void Plain(const unsigned short istart, const unsigned short jstart) {
+		unsigned short i, j, k;
+		for (i=istart; i<istart+shred_width; ++i)
+		for (j=jstart; j<jstart+shred_width; ++j) {
+			blocks[i][j][0]=new Block(NULLSTONE);
+			for (k=1; k<height/2-2; ++k)
+				blocks[i][j][k]=new Block;
+			blocks[i][j][k++]=new Block(SOIL);
+			blocks[i][j][k++]=new Grass(this, i, j, height/2);
+			for ( ; k<height-1; ++k)
+				blocks[i][j][k]=NULL;
+		}
+
+		short rand=random()%10;
+		for (i=0; i<rand; ++i) {
+			short x=istart+random()%shred_width,
+			      y=jstart+random()%shred_width;
+			delete blocks[x][y][height/2-1];
+			blocks[x][y][height/2-1]=new Bush(this, x, y, height/2-1);
+		}
+
+		rand=random()%3;
+		for (i=0; i<rand; ++i) {
+			short x=istart+random()%shred_width,
+			      y=jstart+random()%shred_width;
+			delete blocks[x][y][height/2-1];
+			blocks[x][y][height/2-1]=new Rabbit(this, x, y, height/2-1);
 		}
 	}
 
