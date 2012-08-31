@@ -176,16 +176,7 @@ class World {
 		return Move( playerX, playerY, playerZ, dir );
 	}
 	int PlayerMove() { return PlayerMove( playerP->GetDir() ); } 
-	void PlayerJump() {
-		Jump(playerX, playerY, playerZ);
-		/*playerP->SetWeight(0);
-		if ( PlayerMove(UP) ) {
-			playerP->SetWeight();
-			PlayerMove();
-		} else
-			playerP->SetWeight();
-		//PlayerMove(DOWN);*/
-	}
+	void PlayerJump() { Jump(playerX, playerY, playerZ); }
 
 	//player specific functions section
 	void SetPlayerDir(dirs dir) { playerP->SetDir(dir); }
@@ -208,35 +199,24 @@ class World {
 
 	//interactions section
 	void Damage(int i, int j, int k) {
-		if (NULL!=blocks[i][j][k]) {
-			if ( 0>=blocks[i][j][k]->Damage() ) {
-				Block * temp=blocks[i][j][k];
-				if (temp==scr->blockToPrintLeft)
-					scr->viewLeft=NORMAL;
-				if (temp==scr->blockToPrintRight)
-					scr->viewRight=NORMAL;
-
-				if ( temp->HasInventory() ) {
-					Pile * new_pile=new Pile(this, i, j, k);
-					blocks[i][j][k]=new_pile;
+		if ( NULL!=blocks[i][j][k] && 0>=blocks[i][j][k]->Damage() ) {
+			Block * temp=blocks[i][j][k];
+			if (temp==scr->blockToPrintLeft)
+				scr->viewLeft=NORMAL;
+			if (temp==scr->blockToPrintRight)
+				scr->viewRight=NORMAL;
+			
+			Block * dropped=temp->DropAfterDamage();
+			if ( PILE!=temp->Kind() && (temp->HasInventory() || NULL!=dropped) ) {
+				Pile * new_pile=new Pile(this, i, j, k);
+				blocks[i][j][k]=new_pile;
+				if ( temp->HasInventory() )
 					new_pile->GetAll(temp);
-					if (temp==scr->blockToPrintLeft)
-						scr->viewLeft=NORMAL;
-					if (temp==scr->blockToPrintRight)
-						scr->viewRight=NORMAL;
-					delete temp;
-				} else if ( temp->DropAfterDamage() && temp->CanBeIn() ) {
-					Pile * new_pile=new Pile(this, i, j, k);
-					blocks[i][j][k]=new_pile;
-					if ( temp->ActiveBlock() )
-						((Active *)temp)->Unregister();
-					if ( !((Pile *)blocks[i][j][k])->Get(temp) )
-						delete temp;
-				} else {
-					delete blocks[i][j][k];
-					blocks[i][j][k]=NULL;
-				}
-			}
+				if ( !(new_pile->Get(dropped)) )
+					delete dropped;
+			} else
+				blocks[i][j][k]=NULL;
+			delete temp;
 		}
 	}
 	void Use(int i, int j, int k) {

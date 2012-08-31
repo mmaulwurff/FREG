@@ -37,7 +37,29 @@ class Block { //blocks without special physics and attributes
 		str[i]=' ';
 	}
 	short durability;
+
 	public:
+	virtual void FullName(char * str) {
+		switch (sub) {
+			case WATER:      WriteName(str, "Ice"); break;
+			case STONE:      WriteName(str, "Stone"); break;
+			case MOSS_STONE: WriteName(str, "Moss stone"); break;
+			case NULLSTONE:  WriteName(str, "Nullstone"); break;
+			case GLASS:      WriteName(str, "Glass"); break;
+			case STAR: case SUN_MOON:
+			case SKY:        WriteName(str, "Air"); break;
+			case SOIL:       WriteName(str, "Soil"); break;
+			case HAZELNUT:   WriteName(str, "Hazelnut"); break;
+			case WOOD:       WriteName(str, "Wood"); break;
+			case GREENERY:   WriteName(str, "Leaves"); break;
+			case ROSE:       WriteName(str, "Rose"); break;
+			case A_MEAT:     WriteName(str, "Animal meat"); break;
+			case H_MEAT:     WriteName(str, "Not animal meat"); break;
+			default:
+				fprintf(stderr, "Block::FullName(char *): Block has unknown substance: %d", int(sub));
+				WriteName(str, "Unknown block");
+		}
+	}
 
 	virtual Block * GetThis() { return this; }
 	void SetWeight(double m) { shown_weight=m; }
@@ -76,25 +98,6 @@ class Block { //blocks without special physics and attributes
 			default: return 0; //0 - totally invisible blocks, 1 - block is visible, but light can pass through it, 2 - invisible
 		}
 	}
-	virtual void FullName(char * str) {
-		switch (sub) {
-			case WATER: WriteName(str, "Ice"); break;
-			case STONE: WriteName(str, "Stone"); break;
-			case MOSS_STONE: WriteName(str, "Moss stone"); break;
-			case NULLSTONE: WriteName(str, "Nullstone"); break;
-			case GLASS: WriteName(str, "Glass"); break;
-			case STAR: case SUN_MOON:
-			case SKY: WriteName(str, "Air"); break;
-			case SOIL: WriteName(str, "Soil"); break;
-			case HAZELNUT: WriteName(str, "Hazelnut"); break;
-			case WOOD: WriteName(str, "Wood"); break;
-			case GREENERY: WriteName(str, "Leaves"); break;
-			case ROSE: WriteName(str, "Rose"); break;
-			default:
-				fprintf(stderr, "Block::FullName(char *): Block has unknown substance: %d", int(sub));
-				WriteName(str, "Unknown block");
-		}
-	}
 	virtual before_move_return BeforeMove(dirs) { return NOTHING; }
 	virtual void Move(dirs) {}
 	virtual char MakeSound() { return ' '; }
@@ -106,14 +109,13 @@ class Block { //blocks without special physics and attributes
 			case NULLSTONE: break;
 			default: --durability; break;
 		}
-		return (durability<0) ? 0 : durability;
+		return durability;
 	}
 	void Restore() { durability=max_durability; }
-	virtual bool DropAfterDamage() {
-		switch (sub) {
-			case GLASS: return false;
-			default: return true;
-		}
+	virtual Block * DropAfterDamage() {
+		if (BLOCK==Kind() && GLASS!=sub)
+			return new Block(sub);
+		return NULL;
 	}
 	virtual void * HasInventory() { return NULL; }
 	void * ActiveBlock() { return NULL; }
@@ -180,11 +182,12 @@ class Telegraph : public Block {
 			system(command);
 		}
 	}
+	virtual Block * DropAfterDamage() { return new Telegraph(); }
 
 	virtual void SaveAttributes(FILE * out) { Block::SaveAttributes(out); }
 
-	Telegraph() : Block::Block(DIFFERENT) {}
-	Telegraph(char * str) : Block::Block(str) {}
+	Telegraph() : Block(DIFFERENT) {}
+	Telegraph(char * str) : Block(str) {}
 };
 
 class Weapons : public Block {
@@ -437,6 +440,7 @@ class Dwarf : public Animal, public Inventory {
 	}
 	virtual int Get(Block * block, int n=5) { return Inventory::Get(block, (5>n) ? 5 : n);
 	}
+	virtual Block * DropAfterDamage() { return new Block(H_MEAT); }
 
 	virtual void SaveAttributes(FILE * out) {
 		Animal::SaveAttributes(out);
@@ -482,22 +486,15 @@ class Chest : public Block, public Inventory {
 
 	usage_types Use() { return Inventory::Use(); }
 
-	virtual int Damage() {
-		if ( 0>=(durability-=4) ) {
-			Block * tempChest=new Chest(sub);
-			if (!Get(tempChest) && NULL!=tempChest)
-				delete tempChest;
-		}
-		return durability;
-	}
+	virtual int Damage() { return durability-=4; }
+	Block * DropAfterDamage() { return new Chest(); }
 
 	virtual void SaveAttributes(FILE * out) {
 		Block::SaveAttributes(out);
 		Inventory::SaveAttributes(out);
 	}
 
-	Chest(subs s) :	Block::Block(s) {}
-	Chest() : Block::Block(WOOD) {}
+	Chest(subs s=WOOD) : Block(s) {}
 	Chest(char * str, FILE * in) :
 		Block(str),
 		Inventory(str, in) {}
@@ -537,7 +534,6 @@ class Pile : public Active, public Inventory {
 
 	virtual before_move_return BeforeMove(dirs);
 	virtual bool CanBeIn() { return false; }
-	virtual bool DropAfterDamage() { return false; }
 	virtual bool Access() { return true; }
 	int Damage() { return durability-=10; }
 
@@ -583,7 +579,6 @@ class Liquid : public Active {
 	}
 
 	virtual int Damage() { return durability; }
-	virtual bool DropAfterDamage() { return false; }
 
 	virtual void Act();
 
@@ -616,7 +611,6 @@ class Grass : public Active {
 	virtual bool ShouldFall() { return false; }
 
 	virtual int Damage() { return durability=0; }
-	virtual bool DropAfterDamage() { return false; }
 
 	virtual before_move_return BeforeMove(dirs) { return DESTROY; }
 	virtual void Act();
@@ -637,11 +631,7 @@ class Bush : public Active, public Inventory {
 	virtual bool Access() { return true; }
 	usage_types Use() { return Inventory::Use(); }
 	virtual void * HasInventory() { return Inventory::HasInventory(); }
-
-	virtual void SaveAttributes(FILE * out) {
-		Active::SaveAttributes(out);
-		Inventory::SaveAttributes(out);
-	}
+	virtual int Movable() { return NOT_MOVABLE; }
 
 	virtual void Act() {
 		if (0==random()%seconds_in_hour) {
@@ -651,13 +641,12 @@ class Bush : public Active, public Inventory {
 		}
 	}
 
-	virtual int Damage() {
-		if ( 0>=(durability-=4) ) {
-			Block * tempWood=new Block(WOOD);
-			if (!Get(tempWood) && NULL!=tempWood)
-				delete tempWood;
-		}
-		return durability;
+	Block * DropAfterDamage() { return new Block(WOOD); }
+	virtual int Damage() { return durability-=4; }
+
+	virtual void SaveAttributes(FILE * out) {
+		Active::SaveAttributes(out);
+		Inventory::SaveAttributes(out);
 	}
 
 	Bush(World * w, unsigned short x, unsigned short y, unsigned short z) :
@@ -673,6 +662,9 @@ class Rabbit : public Active {
 	kinds Kind() const { return RABBIT; }
 
 	void Act();
+
+	virtual int Damage() { return durability-=4; }
+	Block * DropAfterDamage() { return new Block(A_MEAT); }
 
 	void SaveAttributes(FILE * out) { Active::SaveAttributes(out); }
 

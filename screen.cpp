@@ -34,6 +34,8 @@ char Screen::CharName(unsigned short i, unsigned short j, unsigned short k) {
 			case SOIL:  return '.';
 			case GREENERY: return '`';
 			case ROSE:  return ';';
+			case A_MEAT: case H_MEAT:
+			case HAZELNUT: return ',';
 			default:
 				fprintf(stderr, "Screen::CharName(uns short, uns short, uns short): Block has unlisted substance: %d\n", int(w->Sub(i, j, k)));
 				return '?';
@@ -41,7 +43,6 @@ char Screen::CharName(unsigned short i, unsigned short j, unsigned short k) {
 		case DWARF: return '@';
 		case CHEST: return 'c';
 		case BUSH: return ';';
-		case HAZELNUT: return ',';
 		case PILE: return '*';
 		case PICK: return '\\';
 		case TELEGRAPH: return 't';
@@ -66,6 +67,8 @@ color_pairs Screen::Color(kinds kind, subs sub) {
 		}
 
 		default: switch (sub) {
+			case A_MEAT:     return WHITE_RED;
+			case H_MEAT:     return BLACK_RED;
 			case WOOD: case HAZELNUT:
 			case SOIL:       return BLACK_YELLOW;
 			case GREENERY:   return BLACK_GREEN;

@@ -62,14 +62,19 @@ void Active::SafeJump() {
 
 void Active::Register(World * w) {
 	whereWorld=w;
-	prev=NULL;
-	if (NULL==whereWorld->activeList)
+	if (NULL!=whereWorld) {
+		prev=NULL;
+		if (NULL==whereWorld->activeList)
+			next=NULL;
+		else {
+			next=whereWorld->activeList;
+			whereWorld->activeList->prev=this;
+		}
+		whereWorld->activeList=this;
+	} else {
 		next=NULL;
-	else {
-		next=whereWorld->activeList;
-		whereWorld->activeList->prev=this;
+		prev=NULL;
 	}
-	whereWorld->activeList=this;
 }
 
 void Active::Unregister() {
