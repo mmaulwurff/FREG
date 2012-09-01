@@ -112,7 +112,7 @@ class World {
 		do fgets(find_start, 3, map);
 		while ('#'!=find_start[0] || '#'!=find_start[1]);
 
-		fseek(map, (worldSize+1)*lati+longi-2, SEEK_CUR);
+		fseek(map, (worldSize+1)*longi+lati-2, SEEK_CUR);
 		char c=fgetc(map);
 		fclose(map);
 		return c;
@@ -122,11 +122,23 @@ class World {
 	//this functions fill space between the lowest nullstone layer and sky. so use k from 1 to heigth-2.
 	//unfilled blocks are air.
 
+	void NormalUnderground(const unsigned short istart, const unsigned short jstart) {
+		for (unsigned short i=istart; i<istart+shred_width; ++i)
+		for (unsigned short j=jstart; j<jstart+shred_width; ++j) {
+			unsigned short k;
+			for (k=1; k<height/2-6; ++k)
+				blocks[i][j][k]=new Block;
+			blocks[i][j][k++]=new Block((random()%2) ? STONE : SOIL);
+			for (; k<height/2; ++k)
+				blocks[i][j][k]=new Block(SOIL);
+		}
+	}
+
 	void NullMountain(const unsigned short istart, const unsigned short jstart) {
 		unsigned short i, j, k;
 		for (i=istart; i<istart+shred_width; ++i)
 		for (j=jstart; j<jstart+shred_width; ++j) {
-			for (k=1; k<height/2-1; ++k)
+			for (k=1; k<height/2; ++k)
 				if (i==istart+4 || i==istart+5 || j==jstart+4 || j==jstart+5)
 					blocks[i][j][k]=new Block(NULLSTONE);
 				else
@@ -139,54 +151,75 @@ class World {
 	}
 
 	void Plain(const unsigned short istart, const unsigned short jstart) {
-		unsigned short i, j, k;
+		NormalUnderground(istart, jstart);
+		unsigned short i, j;
 		for (i=istart; i<istart+shred_width; ++i)
-		for (j=jstart; j<jstart+shred_width; ++j) {
-			for (k=1; k<height/2-2; ++k)
-				blocks[i][j][k]=new Block;
-			blocks[i][j][k++]=new Block(SOIL);
-			blocks[i][j][k++]=new Grass(this, i, j, height/2);
-		}
+		for (j=jstart; j<jstart+shred_width; ++j)
+			blocks[i][j][height/2]=new Grass(this, i, j, height/2);
 
+		//bush
 		short rand=random()%2;
 		for (i=0; i<rand; ++i) {
 			short x=istart+random()%shred_width,
 			      y=jstart+random()%shred_width;
-			if (NULL!=blocks[x][y][height/2-1])
-				delete blocks[x][y][height/2-1];
-			blocks[x][y][height/2-1]=new Bush(this, x, y, height/2-1);
+			if (NULL!=blocks[x][y][height/2])
+				delete blocks[x][y][height/2];
+			blocks[x][y][height/2]=new Bush(this, x, y, height/2);
 		}
 
+		//rabbits
 		rand=random()%2;
 		for (i=0; i<rand; ++i) {
 			short x=istart+random()%shred_width,
 			      y=jstart+random()%shred_width;
-			if (NULL!=blocks[x][y][height/2-1])
-				delete blocks[x][y][height/2-1];
-			blocks[x][y][height/2-1]=new Rabbit(this, x, y, height/2-1);
+			if (NULL!=blocks[x][y][height/2])
+				delete blocks[x][y][height/2];
+			blocks[x][y][height/2]=new Rabbit(this, x, y, height/2);
 		}
+	}
+
+	void Forest(const unsigned short istart, const unsigned short jstart, const long longi, const long lati) {
+		NormalUnderground(istart, jstart);
+		long i, j;
+		unsigned short number_of_trees=0;
+		for (i=longi-1; i<=longi+1; ++i)
+		for (j=lati-1;  j<=lati+1;  ++j)
+			if ( 't'==TypeOfShred(i, j) )
+				++number_of_trees;
+
+		for (i=0; i<number_of_trees; ++i) {
+			short x=istart+random()%(shred_width-2),
+			      y=jstart+random()%(shred_width-2);
+			Tree(x, y, height/2, 4+random()%5);
+		}
+
+		for (i=istart; i<istart+shred_width; ++i)
+		for (j=jstart; j<jstart+shred_width; ++j)
+			if (NULL==blocks[i][j][height/2])
+				blocks[i][j][height/2]=new Grass(this, i, j, height/2);
 	}
 
 	//block combinations section (trees, houses, etc)
 	bool Tree(const unsigned short x, const unsigned short y, const unsigned short z, const unsigned short height) {
-		if (0>x || shred_width*3<x+2 ||
-		    0>y || shred_width*3<y+2 ||
-		    0>z || ::height-1<z+height ||
+		if (0>x || shred_width*3<=x+2 ||
+		    0>y || shred_width*3<=y+2 ||
+		    0>z || ::height-1<=z+height ||
 		    height<2) return false;
 		unsigned short i, j, k;
-		for (i=x; i<x+2; ++i)
-		for (j=y; j<y+2; ++j)
+		for (i=x; i<=x+2; ++i)
+		for (j=y; j<=y+2; ++j)
 		for (k=z; k<z+height; ++k)
 			if (NULL!=blocks[i][j][k])
 				return false;
 
-		for (k=z; k<z+height; ++k) //trunk
+		for (k=z; k<z+height-1; ++k) //trunk
 			blocks[x+1][y+1][k]=new Block(WOOD);
 
 		for (i=x; i<=x+2; ++i) //leaves
 		for (j=y; j<=y+2; ++j)
 		for (k=z+height/2; k<z+height; ++k)
-			blocks[i][j][k]=new Block(GREENERY);
+			if (NULL==blocks[i][j][k])
+				blocks[i][j][k]=new Block(GREENERY);
 		
 		return true;
 	}

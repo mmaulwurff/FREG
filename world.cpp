@@ -66,7 +66,11 @@ void World::LoadShred(long longi, long lati, const unsigned short istart, const 
 				
 		switch ( TypeOfShred(longi, lati) ) {
 			case '#': NullMountain(istart, jstart); break;
-			default: Plain(istart, jstart);
+			case 't': Forest(istart, jstart, longi, lati); break;
+			case '.': Plain(istart, jstart); break;
+			default:
+				Plain(istart, jstart);
+				fprintf(stderr, "World::LoadShred: unknown type of shred: %c", TypeOfShred(longi, lati));
 		}
 	} else {
 		for (unsigned short i=istart; i<istart+shred_width; ++i)
@@ -317,7 +321,8 @@ void World::Jump(int i, int j, int k) {
 		blocks[i][j][k]->SetWeight(0);
 		if ( Move(i, j, k, UP) ) {
 			blocks[i][j][++k]->SetWeight();
-			Move( i, j, k, blocks[i][j][k]->GetDir() );
+			if ( !Move( i, j, k, blocks[i][j][k]->GetDir()) )
+				Move(i, j, k, DOWN);
 		} else
 			blocks[i][j][k]->SetWeight();
 	}
