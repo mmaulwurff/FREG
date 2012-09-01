@@ -119,13 +119,13 @@ class World {
 	}
 
 	//shred generators section
+	//this functions fill space between the lowest nullstone layer and sky. so use k from 1 to heigth-2.
+	//unfilled blocks are air.
 
 	void NullMountain(const unsigned short istart, const unsigned short jstart) {
 		unsigned short i, j, k;
 		for (i=istart; i<istart+shred_width; ++i)
 		for (j=jstart; j<jstart+shred_width; ++j) {
-			blocks[i][j][0]=new Block(NULLSTONE);
-
 			for (k=1; k<height/2-1; ++k)
 				if (i==istart+4 || i==istart+5 || j==jstart+4 || j==jstart+5)
 					blocks[i][j][k]=new Block(NULLSTONE);
@@ -135,38 +135,34 @@ class World {
 			for ( ; k<height-1; ++k)
 				if (i==istart+4 || i==istart+5 || j==jstart+4 || j==jstart+5)
 					blocks[i][j][k]=new Block(NULLSTONE);
-				else
-					blocks[i][j][k]=NULL;
 		}
-		
 	}
 
 	void Plain(const unsigned short istart, const unsigned short jstart) {
 		unsigned short i, j, k;
 		for (i=istart; i<istart+shred_width; ++i)
 		for (j=jstart; j<jstart+shred_width; ++j) {
-			blocks[i][j][0]=new Block(NULLSTONE);
 			for (k=1; k<height/2-2; ++k)
 				blocks[i][j][k]=new Block;
 			blocks[i][j][k++]=new Block(SOIL);
 			blocks[i][j][k++]=new Grass(this, i, j, height/2);
-			for ( ; k<height-1; ++k)
-				blocks[i][j][k]=NULL;
 		}
 
-		short rand=random()%10;
+		short rand=random()%2;
 		for (i=0; i<rand; ++i) {
 			short x=istart+random()%shred_width,
 			      y=jstart+random()%shred_width;
-			delete blocks[x][y][height/2-1];
+			if (NULL!=blocks[x][y][height/2-1])
+				delete blocks[x][y][height/2-1];
 			blocks[x][y][height/2-1]=new Bush(this, x, y, height/2-1);
 		}
 
-		rand=random()%3;
+		rand=random()%2;
 		for (i=0; i<rand; ++i) {
 			short x=istart+random()%shred_width,
 			      y=jstart+random()%shred_width;
-			delete blocks[x][y][height/2-1];
+			if (NULL!=blocks[x][y][height/2-1])
+				delete blocks[x][y][height/2-1];
 			blocks[x][y][height/2-1]=new Rabbit(this, x, y, height/2-1);
 		}
 	}
