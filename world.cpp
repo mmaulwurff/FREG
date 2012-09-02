@@ -67,6 +67,7 @@ void World::LoadShred(long longi, long lati, const unsigned short istart, const 
 		switch ( TypeOfShred(longi, lati) ) {
 			case '#': NullMountain(istart, jstart); break;
 			case 't': Forest(istart, jstart, longi, lati); break;
+			case '~': Water(istart, jstart, longi, lati); break;
 			case '.': Plain(istart, jstart); break;
 			default:
 				Plain(istart, jstart);
@@ -192,7 +193,6 @@ void World::PhysEvents() {
 			nexttemp=temp->GetNext();
 		} else
 			nexttemp=temp->GetNext();
-
 	}
 	
 	pthread_mutex_unlock(&mutex);
@@ -289,7 +289,7 @@ int World::Move(int i, int j, int k, dirs dir, unsigned stop) {
 
 		float weight=Weight(blocks[newi][newj][newk])-Weight(blocks[newi][newj][newk-1]);
 		if (stop && weight)
-			Move(newi, newj, newk, (weight>0) ? DOWN : UP, stop-1);
+			numberMoves+=Move(newi, newj, newk, (weight>0) ? DOWN : UP, stop-1);
 
 		if (blocks[newi][newj][newk]==(Block*)playerP) {
 			playerX=newi;
@@ -309,18 +309,19 @@ int World::Move(int i, int j, int k, dirs dir, unsigned stop) {
 				ReloadShreds(SOUTH);
 			}
 		}
-		pthread_mutex_unlock(&mutex);
-		return numberMoves+1;
+		++numberMoves;
 	}
 	pthread_mutex_unlock(&mutex);
-	return 0;
+	return numberMoves;
 }
 
 void World::Jump(int i, int j, int k) {
 	if ( NULL!=blocks[i][j][k] && blocks[i][j][k]->Movable() ) {
 		blocks[i][j][k]->SetWeight(0);
-		if ( Move(i, j, k, UP) ) {
-			blocks[i][j][++k]->SetWeight();
+		int k_plus;
+		if ( (k_plus=Move(i, j, k, UP)) ) {
+			k+=k_plus;
+			blocks[i][j][k]->SetWeight();
 			if ( !Move( i, j, k, blocks[i][j][k]->GetDir()) )
 				Move(i, j, k, DOWN);
 		} else
@@ -363,7 +364,7 @@ int World::Focus(int i, int j, int k, int & i_target, int & j_target, int & k_ta
 		k_target=height-1;
 		bound_flag=true;
 	}
-	return (bound_flag) ? 1 : 0;
+	return ((bound_flag) ? 1 : 0);
 }
 
 World::World() : scr(NULL), activeList(NULL) {

@@ -108,6 +108,15 @@ before_move_return Pile::BeforeMove(dirs dir) {
 	return NOTHING;
 }
 
+bool Liquid::CheckWater(dirs dir) {
+	int i_check, j_check, k_check;
+	if ( (whereWorld->Focus(x_self, y_self, z_self, i_check, j_check, k_check, dir)) )
+		return false;
+	if ( WATER==whereWorld->Sub(i_check, j_check, k_check) )
+		return true;
+	return false;
+}
+
 void Liquid::Act() {
 	switch (random()%4) {
 		case 0: SetDir(NORTH); break;

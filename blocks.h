@@ -557,6 +557,8 @@ class Pile : public Active, public Inventory {
 };
 
 class Liquid : public Active {
+	bool CheckWater(dirs);
+
 	public:
 	virtual int Movable() { return ENVIRONMENT; }
 
@@ -582,6 +584,15 @@ class Liquid : public Active {
 
 	virtual void Act();
 
+	bool IfToDestroy() {
+		if ( !(random()%10) &&
+				!CheckWater(DOWN)  && !CheckWater(UP) &&
+				!CheckWater(NORTH) && !CheckWater(SOUTH) &&
+				!CheckWater(EAST)  && !CheckWater(WEST))
+			return true;
+		return false;
+	}
+
 	virtual int Temperature() {
 		if (WATER==sub) return 0;
 		else return 1000;
@@ -589,7 +600,7 @@ class Liquid : public Active {
 
 	void SaveAttributes(FILE * out) { Active::SaveAttributes(out); }
 
-	Liquid(World * w, unsigned short x, unsigned short y, unsigned short z, subs sub) :
+	Liquid(World * w, unsigned short x, unsigned short y, unsigned short z, subs sub=WATER) :
 			Active(w, x, y, z, sub) {}
 	Liquid(World * w, unsigned short x, unsigned short y, unsigned short z, char * str, FILE * in) :
 			Active(w, x, y, z, str) {}

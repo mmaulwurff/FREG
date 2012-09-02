@@ -122,14 +122,14 @@ class World {
 	//this functions fill space between the lowest nullstone layer and sky. so use k from 1 to heigth-2.
 	//unfilled blocks are air.
 
-	void NormalUnderground(const unsigned short istart, const unsigned short jstart) {
+	void NormalUnderground(const unsigned short istart, const unsigned short jstart, const unsigned short depth=0) {
 		for (unsigned short i=istart; i<istart+shred_width; ++i)
 		for (unsigned short j=jstart; j<jstart+shred_width; ++j) {
 			unsigned short k;
-			for (k=1; k<height/2-6; ++k)
+			for (k=1; k<height/2-6 && k<height/2-depth; ++k)
 				blocks[i][j][k]=new Block;
 			blocks[i][j][k++]=new Block((random()%2) ? STONE : SOIL);
-			for (; k<height/2; ++k)
+			for (; k<height/2-depth; ++k)
 				blocks[i][j][k]=new Block(SOIL);
 		}
 	}
@@ -199,7 +199,60 @@ class World {
 				blocks[i][j][height/2]=new Grass(this, i, j, height/2);
 	}
 
-	//block combinations section (trees, houses, etc)
+	void Water(const unsigned short istart, const unsigned short jstart, const long longi, const long lati) {
+		unsigned short depth=1;
+		char map[3][3];
+		for (long i=longi-1; i<=longi+1; ++i)
+		for (long j=lati-1;  j<=lati+1;  ++j)
+			if ( '~'==(map[i-longi+1][j-lati+1]=TypeOfShred(i, j)) )
+				++depth;
+
+		NormalUnderground(istart, jstart, depth);
+
+		if ('~'!=map[1][0] && '~'!=map[0][1]) { //north-west rounding
+			for (unsigned short i=istart; i<istart+shred_width/2; ++i)	
+			for (unsigned short j=jstart; j<jstart+shred_width/2; ++j)
+				for (unsigned short k=height/2-depth; k<height/2; ++k)
+					if (((istart+4-i)*(istart+4-i)+
+					     (jstart+4-j)*(jstart+4-j)+
+					     (height/2-k)*(height/2-k))>16)
+						blocks[i][j][k]=new Block(SOIL);
+		}
+		if ('~'!=map[1][0] && '~'!=map[2][1]) { //south-west rounding
+			for (unsigned short i=istart; i<istart+shred_width/2; ++i)	
+			for (unsigned short j=jstart+shred_width/2; j<jstart+shred_width; ++j)
+				for (unsigned short k=height/2-depth; k<height/2; ++k)
+					if (((istart+4-i)*(istart+4-i)+
+					     (jstart+5-j)*(jstart+5-j)+
+					     (height/2-k)*(height/2-k))>16)
+						blocks[i][j][k]=new Block(SOIL);
+		}
+		if ('~'!=map[2][1] && '~'!=map[1][2]) { //south-east rounding
+			for (unsigned short i=istart+shred_width/2; i<istart+shred_width; ++i)	
+			for (unsigned short j=jstart+shred_width/2; j<jstart+shred_width; ++j)
+				for (unsigned short k=height/2-depth; k<height/2; ++k)
+					if (((istart+5-i)*(istart+5-i)+
+					     (jstart+5-j)*(jstart+5-j)+
+					     (height/2-k)*(height/2-k))>16)
+						blocks[i][j][k]=new Block(SOIL);
+		}
+		if ('~'!=map[1][2] && '~'!=map[0][1]) { //north-east rounding
+			for (unsigned short i=istart+shred_width/2; i<istart+shred_width; ++i)	
+			for (unsigned short j=jstart; j<jstart+shred_width/2; ++j)
+				for (unsigned short k=height/2-depth; k<height/2; ++k)
+					if (((istart+5-i)*(istart+5-i)+
+					     (jstart+4-j)*(jstart+4-j)+
+					     (height/2-k)*(height/2-k))>16)
+						blocks[i][j][k]=new Block(SOIL);
+		}
+		for (unsigned short i=istart; i<istart+shred_width; ++i)	
+		for (unsigned short j=jstart; j<jstart+shred_width; ++j)
+		for (unsigned short k=height/2-depth; k<height/2; ++k)
+			if (NULL==blocks[i][j][k])
+				blocks[i][j][k]=new Liquid(this, i, j, k);
+	}
+
+	//block combinations section (trees, buildings, etc)
 	bool Tree(const unsigned short x, const unsigned short y, const unsigned short z, const unsigned short height) {
 		if (0>x || shred_width*3<=x+2 ||
 		    0>y || shred_width*3<=y+2 ||
