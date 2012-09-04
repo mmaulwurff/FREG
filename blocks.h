@@ -118,7 +118,7 @@ class Block { //blocks without special physics and attributes
 		return NULL;
 	}
 	virtual void * HasInventory() { return NULL; }
-	void * ActiveBlock() { return NULL; }
+	virtual void * ActiveBlock() { return NULL; }
 	virtual Block * Drop(int n) {}
 
 	virtual bool Armour() { return false; }
@@ -269,6 +269,11 @@ class Active : public Block {
 	virtual bool ShouldFall() { return true; }
 
 	virtual void SaveAttributes(FILE * out) { Block::SaveAttributes(out); }
+
+	void ReloadToNorth() { y_self+=shred_width; }
+	void ReloadToSouth() { y_self-=shred_width; }
+	void ReloadToWest()  { x_self+=shred_width; }
+	void ReloadToEast()  { x_self-=shred_width; }
 
 	void Register(World *);
 	void Unregister();

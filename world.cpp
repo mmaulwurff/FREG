@@ -68,6 +68,7 @@ void World::LoadShred(long longi, long lati, const unsigned short istart, const 
 			case '#': NullMountain(istart, jstart); break;
 			case 't': Forest(istart, jstart, longi, lati); break;
 			case '~': Water(istart, jstart, longi, lati); break;
+			case '+': Hill(istart, jstart, longi, lati); break;
 			case '.': Plain(istart, jstart); break;
 			default:
 				Plain(istart, jstart);
@@ -98,22 +99,80 @@ void World::SaveShred(long longi, long lati, unsigned short istart, unsigned sho
 }
 
 void World::ReloadShreds(dirs direction) { //ReloadShreds is called from Move, so there is no need to use mutex in this function
-	bool flagLeft=false, flagRight=false;
-	if (scr->blockToPrintLeft==playerP)
-		flagLeft=true;
-	if (scr->blockToPrintRight==playerP)
-		flagRight=true;
-	SaveAllShreds();
+	long l;
+	Active * block;
+	short i, j, k;
 	switch (direction) {
-		case NORTH: --longitude; break;
-		case SOUTH: ++longitude; break;
-		case EAST:  ++latitude;  break;
-		case WEST:  --latitude;  break;
+		case NORTH:
+			for (l=latitude-1; l<=latitude+1; ++l)
+				SaveShred(longitude+1, l, (l-latitude+1)*shred_width, 2*shred_width);
+			
+			for (i=0; i<shred_width*3; ++i)
+			for (j=shred_width*2-1; j>=0; --j)
+			for (k=0; k<height-1; ++k) {
+				blocks[i][j+shred_width][k]=blocks[i][j][k];
+				block=(Active *)( ActiveBlock(i, j, k) );
+				if (NULL!=block)
+					block->ReloadToNorth();
+			}
+
+			--longitude;
+			for (l=latitude-1; l<=latitude+1; ++l)
+				LoadShred(longitude-1, l, (l-latitude+1)*shred_width, 0);
+		break;
+		case SOUTH:
+			for (l=latitude-1; l<=latitude+1; ++l)
+				SaveShred(longitude-1, l, (l-latitude+1)*shred_width, 0);
+ 
+			for (i=0; i<shred_width*3; ++i)
+			for (j=shred_width; j<shred_width*3; ++j)
+			for (k=0; k<height-1; ++k) {
+				blocks[i][j-shred_width][k]=blocks[i][j][k];
+				block=(Active *)( ActiveBlock(i, j, k) );
+				if (NULL!=block)
+					block->ReloadToSouth();
+			}
+
+			++longitude;
+			for (l=latitude-1; l<=latitude+1; ++l)
+				LoadShred(longitude+1, l, (l-latitude+1)*shred_width, shred_width*2);
+		break;
+		case EAST:
+			for (l=longitude-1; l<=longitude+1; ++l)
+				SaveShred(l, latitude-1, 0, (l-longitude+1)*shred_width);
+ 
+			for (i=shred_width; i<shred_width*3; ++i)
+			for (j=0; j<shred_width*3; ++j)
+			for (k=0; k<height-1; ++k) {
+				blocks[i-shred_width][j][k]=blocks[i][j][k];
+				block=(Active *)( ActiveBlock(i, j, k) );
+				if (NULL!=block)
+					block->ReloadToEast();
+			}
+
+			++latitude;
+			for (l=longitude-1; l<=longitude+1; ++l)
+				LoadShred(l, latitude+1, shred_width*2, (l-longitude+1)*shred_width);
+		break;
+		case WEST:
+			for (l=longitude-1; l<=longitude+1; ++l)
+				SaveShred(l, latitude+1, shred_width*2, (l-longitude+1)*shred_width);
+
+			for (i=shred_width*2-1; i>=0; --i)
+			for (j=0; j<shred_width*3; ++j)
+			for (k=0; k<height-1; ++k) {
+				blocks[i+shred_width][j][k]=blocks[i][j][k];
+				block=(Active *)( ActiveBlock(i, j, k) );
+				if (NULL!=block)
+					block->ReloadToWest();
+			}
+
+			--latitude;
+			for (l=longitude-1; l<=longitude+1; ++l)
+				LoadShred(l, latitude-1, 0, (l-longitude+1)*shred_width);
+		break;
 		default: fprintf(stderr, "World::ReloadShreds(dirs): invalid direction.\n");
 	}
-	LoadAllShreds();
-	if (flagLeft) scr->blockToPrintLeft=playerP;
-	if (flagRight) scr->blockToPrintRight=playerP;
 }
 
 void World::PhysEvents() {
@@ -408,6 +467,10 @@ World::~World() {
 		fclose(file);
 	}
 	SaveAllShreds();
+
+	for (unsigned short i=0; i<shred_width*3; ++i)
+	for (unsigned short j=0; j<shred_width*3; ++j)
+		delete blocks[i][j][height-1];
 }
 
 void *PhysThread(void *vptr_args) {

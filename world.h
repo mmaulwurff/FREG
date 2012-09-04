@@ -134,6 +134,16 @@ class World {
 		}
 	}
 
+	void PlantGrass(const unsigned short istart, const unsigned short jstart) {
+		for (unsigned short i=istart; i<istart+shred_width; ++i)	
+		for (unsigned short j=jstart; j<jstart+shred_width; ++j) {
+			unsigned short k;
+			for (k=height-2; NULL==blocks[i][j][k]; --k);
+			if ( SOIL==Sub(i, j, k++) )
+				blocks[i][j][k]=new Grass(this, i, j, k);
+		}
+	}
+
 	void NullMountain(const unsigned short istart, const unsigned short jstart) {
 		unsigned short i, j, k;
 		for (i=istart; i<istart+shred_width; ++i)
@@ -215,7 +225,7 @@ class World {
 				for (unsigned short k=height/2-depth; k<height/2; ++k)
 					if (((istart+4-i)*(istart+4-i)+
 					     (jstart+4-j)*(jstart+4-j)+
-					     (height/2-k)*(height/2-k))>16)
+					     (height/2-k)*(height/2-k)*16/depth/depth)>16)
 						blocks[i][j][k]=new Block(SOIL);
 		}
 		if ('~'!=map[1][0] && '~'!=map[2][1]) { //south-west rounding
@@ -224,7 +234,7 @@ class World {
 				for (unsigned short k=height/2-depth; k<height/2; ++k)
 					if (((istart+4-i)*(istart+4-i)+
 					     (jstart+5-j)*(jstart+5-j)+
-					     (height/2-k)*(height/2-k))>16)
+					     (height/2-k)*(height/2-k)*16/depth/depth)>16)
 						blocks[i][j][k]=new Block(SOIL);
 		}
 		if ('~'!=map[2][1] && '~'!=map[1][2]) { //south-east rounding
@@ -233,7 +243,7 @@ class World {
 				for (unsigned short k=height/2-depth; k<height/2; ++k)
 					if (((istart+5-i)*(istart+5-i)+
 					     (jstart+5-j)*(jstart+5-j)+
-					     (height/2-k)*(height/2-k))>16)
+					     (height/2-k)*(height/2-k)*16/depth/depth)>16)
 						blocks[i][j][k]=new Block(SOIL);
 		}
 		if ('~'!=map[1][2] && '~'!=map[0][1]) { //north-east rounding
@@ -242,7 +252,7 @@ class World {
 				for (unsigned short k=height/2-depth; k<height/2; ++k)
 					if (((istart+5-i)*(istart+5-i)+
 					     (jstart+4-j)*(jstart+4-j)+
-					     (height/2-k)*(height/2-k))>16)
+					     (height/2-k)*(height/2-k)*16/depth/depth)>16)
 						blocks[i][j][k]=new Block(SOIL);
 		}
 		for (unsigned short i=istart; i<istart+shred_width; ++i)	
@@ -250,6 +260,28 @@ class World {
 		for (unsigned short k=height/2-depth; k<height/2; ++k)
 			if (NULL==blocks[i][j][k])
 				blocks[i][j][k]=new Liquid(this, i, j, k);
+
+		PlantGrass(istart, jstart);
+	}
+
+	void Hill(const unsigned short istart, const unsigned short jstart, const long longi, const long lati) {
+		unsigned short hill_height=1;
+		for (long i=longi-1; i<=longi+1; ++i)
+		for (long j=lati-1;  j<=lati+1;  ++j)
+			if ( '+'==TypeOfShred(i, j) )
+				++hill_height;
+
+		NormalUnderground(istart, jstart);
+
+		for (unsigned short i=istart; i<istart+shred_width; ++i)	
+		for (unsigned short j=jstart; j<jstart+shred_width; ++j)
+		for (unsigned short k=height/2; k<height/2+hill_height; ++k)
+			if (((istart+4.5-i)*(istart+4.5-i)+
+			     (jstart+4.5-j)*(jstart+4.5-j)+
+			     (height/2-0.5-k)*(height/2-0.5-k)*16/hill_height/hill_height)<=16)
+				blocks[i][j][k]=new Block(SOIL);
+		
+		PlantGrass(istart, jstart);
 	}
 
 	//block combinations section (trees, buildings, etc)
@@ -502,6 +534,7 @@ class World {
 	int  Movable(Block * block)            { return (NULL==block) ? ENVIRONMENT : block->Movable(); }
 	double Weight(Block * block)           { return (NULL==block) ? 0 : block->Weight(); }
 	void * HasInventory(int i, int j, int k) { return (NULL==blocks[i][j][k]) ? NULL : blocks[i][j][k]->HasInventory(); }
+	void * ActiveBlock(int i, int j, int k) { return (NULL==blocks[i][j][k]) ? NULL : blocks[i][j][k]->ActiveBlock(); }
 	void GetNote(char * str, int i, int j, int k) {
 		char note[note_length];
 		if (NULL!=blocks[i][j][k]) {
