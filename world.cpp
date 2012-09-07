@@ -33,18 +33,18 @@ void World::LoadAllShreds() {
 	FileName(str, longitude, latitude);
 	FILE * check=fopen(str, "r");
 	if (NULL==check) {
-		blocks[playerX][playerY][playerZ]=(Block*)(playerP=new Dwarf(this, playerX, playerY, playerZ));
+		blocks[spawnX][spawnY][spawnZ]=(Block*)(playerP=new Dwarf(this, spawnX, spawnY, spawnZ));
 		//blocks[shred_width*2-5][shred_width*2-5][height/2]=(Block *)new Dwarf(this, shred_width*2-5, shred_width*2-5, height/2);
 		//blocks[shred_width*2-4][shred_width*2-4][height/2]=new Telegraph;
 	} else {
 		fclose(check);
-		if ( DWARF!=Kind(playerX, playerY, playerZ) ) {
-			if (NULL!=blocks[playerX][playerY][playerZ])
-				delete blocks[playerX][playerY][playerZ];
-			blocks[playerX][playerY][playerZ]=(Block*)(playerP=new Dwarf(this, playerX, playerY, playerZ));
+		if ( DWARF!=Kind(spawnX, spawnY, spawnZ) ) {
+			if (NULL!=blocks[spawnX][spawnY][spawnZ])
+				delete blocks[spawnX][spawnY][spawnZ];
+			blocks[spawnX][spawnY][spawnZ]=(Block*)(playerP=new Dwarf(this, spawnX, spawnY, spawnZ));
 			fprintf(stderr, "World::LoadAllShreds(): new player place\n");
 		} else
-			playerP=(Dwarf *)blocks[playerX][playerY][playerZ];
+			playerP=(Dwarf *)blocks[spawnX][spawnY][spawnZ];
 	}
 }
 
@@ -104,7 +104,6 @@ void World::ReloadShreds(dirs direction) { //ReloadShreds is called from Move, s
 	short i, j, k;
 	switch (direction) {
 		case NORTH:
-			playerY+=shred_width;
 			for (l=latitude-1; l<=latitude+1; ++l)
 				SaveShred(longitude+1, l, (l-latitude+1)*shred_width, 2*shred_width);
 			
@@ -122,7 +121,6 @@ void World::ReloadShreds(dirs direction) { //ReloadShreds is called from Move, s
 				LoadShred(longitude-1, l, (l-latitude+1)*shred_width, 0);
 		break;
 		case SOUTH:
-			playerY-=shred_width;
 			for (l=latitude-1; l<=latitude+1; ++l)
 				SaveShred(longitude-1, l, (l-latitude+1)*shred_width, 0);
  
@@ -140,7 +138,6 @@ void World::ReloadShreds(dirs direction) { //ReloadShreds is called from Move, s
 				LoadShred(longitude+1, l, (l-latitude+1)*shred_width, shred_width*2);
 		break;
 		case EAST:
-			playerX-=shred_width;
 			for (l=longitude-1; l<=longitude+1; ++l)
 				SaveShred(l, latitude-1, 0, (l-longitude+1)*shred_width);
  
@@ -158,7 +155,6 @@ void World::ReloadShreds(dirs direction) { //ReloadShreds is called from Move, s
 				LoadShred(l, latitude+1, shred_width*2, (l-longitude+1)*shred_width);
 		break;
 		case WEST:
-			playerX+=shred_width;
 			for (l=longitude-1; l<=longitude+1; ++l)
 				SaveShred(l, latitude+1, shred_width*2, (l-longitude+1)*shred_width);
 
@@ -210,6 +206,8 @@ void World::PhysEvents() {
 		temp->Act();
 		unsigned short x, y, z, n;
 		temp->GetSelfXYZ(x, y, z);
+		unsigned short playerX, playerY, playerZ;
+		playerP->GetSelfXYZ(playerX, playerY, playerZ);
 		switch ( MakeDir(playerX, playerY, x, y) ) {
 			case HERE:       n=4; break;
 			case NORTH:      n=1; break;
@@ -221,7 +219,7 @@ void World::PhysEvents() {
 			case WEST:       n=3; break;
 			case NORTH_WEST: n=0; break;
 		}
-		if (playerX==x && playerY==y && playerZ==z) {
+		if ((Block *)playerP==blocks[x][y][z]) {
 			soundMap[n].ch=' ';
 			soundMap[n].lev=playerP->Noise();
 			soundMap[n].col=(NULL!=scr) ?
@@ -270,7 +268,7 @@ void World::PhysEvents() {
 
 char World::CharNumber(int i, int j, int k) {
 	if (height-1==k) return ' ';
-	if (i==playerX && j==playerY && k==playerZ)
+	if ((Block *)playerP==blocks[i][j][k])
 		switch ( playerP->GetDir() ) {
 			case NORTH: return '^';
 			case SOUTH: return 'v';
@@ -278,7 +276,10 @@ char World::CharNumber(int i, int j, int k) {
 			case WEST:  return '<';
 			case DOWN:  return 'x';
 			case UP:    return '.';
-		}	
+		}
+
+	unsigned short playerX, playerY, playerZ;
+	playerP->GetSelfXYZ(playerX, playerY, playerZ);
 	if ( UP==GetPlayerDir() ) {
 		if (k > playerZ && k < playerZ+10) return k-playerZ+'0';
 	} else {
@@ -290,6 +291,8 @@ char World::CharNumber(int i, int j, int k) {
 
 char World::CharNumberFront(int i, int j) {
 	unsigned short ret;
+	unsigned short playerX, playerY, playerZ;
+	playerP->GetSelfXYZ(playerX, playerY, playerZ);
 	if ( NORTH==playerP->GetDir() || SOUTH==playerP->GetDir() ) {
 		if ( (ret=abs(playerY-j))<10 ) return ret+'0';
 	} else
@@ -334,9 +337,6 @@ int World::Move(int i, int j, int k, dirs dir, unsigned stop) {
 		return 0;
 	}
 	if ( DESTROY==(blocks[i][j][k]->BeforeMove(dir)) ) {
-		/*Active * check=(Active *)(blocks[i][j][k]->ActiveBlock());
-		if (NULL!=check)
-			check->Unregister();*/
 		delete blocks[i][j][k];
 		blocks[i][j][k]=NULL;
 		pthread_mutex_unlock(&mutex);
@@ -345,31 +345,18 @@ int World::Move(int i, int j, int k, dirs dir, unsigned stop) {
 	int numberMoves=0;
 	if (stop && (ENVIRONMENT!=Movable(blocks[i][j][k]) || !Equal(blocks[i][j][k], blocks[newi][newj][newk])) &&
 			(ENVIRONMENT==Movable(blocks[newi][newj][newk]) || (numberMoves=Move(newi, newj, newk, dir, stop-1)) )) {
-		blocks[i][j][k]->Move(dir);
-		if (NULL!=blocks[newi][newj][newk])
-			blocks[newi][newj][newk]->Move( Anti(dir) );
-
 		Block * temp=blocks[i][j][k];
 		blocks[i][j][k]=blocks[newi][newj][newk];
 		blocks[newi][newj][newk]=temp;
+
+		blocks[newi][newj][newk]->Move(dir);
+		if (NULL!=blocks[i][j][k])
+			blocks[i][j][k]->Move( Anti(dir) );
 
 		float weight=Weight(blocks[newi][newj][newk])-Weight(blocks[newi][newj][newk-1]);
 		if (stop && weight)
 			numberMoves+=Move(newi, newj, newk, (weight>0) ? DOWN : UP, stop-1);
 
-		if (blocks[newi][newj][newk]==(Block*)playerP) {
-			playerX=newi;
-			playerY=newj;
-			playerZ=newk;
-			if (playerX==shred_width-1)
-				ReloadShreds(WEST);
-			else if (playerX==shred_width*2)
-				ReloadShreds(EAST);
-			else if (playerY==shred_width-1)
-				ReloadShreds(NORTH);
-			else if (playerY==shred_width*2)
-				ReloadShreds(SOUTH);
-		}
 		++numberMoves;
 	}
 	pthread_mutex_unlock(&mutex);
@@ -433,15 +420,15 @@ World::World() : scr(NULL), activeList(NULL), time_step(0) {
 	if (file==NULL) {
 		longitude=3;
 		latitude=3;
-		playerX=shred_width*2-7;
-		playerY=shred_width*2-7;
-		playerZ=height/2;
+		spawnX=shred_width*2-7;
+		spawnY=shred_width*2-7;
+		spawnZ=height/2;
 		time=end_of_night+5;
 		strncpy(worldName, "The_Land_of_Doubts\0", 20);
 		worldSize=1000;
 	} else {
-		fscanf(file, "longitude: %ld\nlatitude: %ld\nplayerX: %hd\n playerY: %hd\n playerZ: %hd\ntime: %ld\nWorld:%s\nSize:%hd\n",
-				&longitude, &latitude, &playerX, &playerY, &playerZ, &time, worldName, &worldSize);
+		fscanf(file, "longitude: %ld\nlatitude: %ld\nspawnX: %hd\n spawnY: %hd\n spawnZ: %hd\ntime: %ld\nWorld:%s\nSize:%hd\n",
+				&longitude, &latitude, &spawnX, &spawnY, &spawnZ, &time, worldName, &worldSize);
 		fclose(file);
 	}
 	LoadAllShreds();
@@ -462,10 +449,11 @@ World::~World() {
 	pthread_cancel(eventsThread);
 	pthread_mutex_unlock(&mutex);
 	pthread_mutex_destroy(&mutex);
+	GetPlayerCoords(spawnX, spawnY);
 	FILE * file=fopen("save", "w");
 	if (file!=NULL) {
-		fprintf(file, "longitude: %ld\nlatitude: %ld\nplayerX: %hd\nplayerY: %hd\nplayerZ: %hd\ntime: %ld\nWorld:%s\nSize:%hd\n",
-				longitude, latitude, playerX, playerY, playerZ, time, worldName, worldSize);
+		fprintf(file, "longitude: %ld\nlatitude: %ld\nspawnX: %hd\nspawnY: %hd\nspawnZ: %hd\ntime: %ld\nWorld:%s\nSize:%hd\n",
+				longitude, latitude, spawnX, spawnY, spawnZ, time, worldName, worldSize);
 		fclose(file);
 	}
 	SaveAllShreds();

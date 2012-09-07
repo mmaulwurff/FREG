@@ -100,13 +100,15 @@ void Screen::PrintNormal(WINDOW * window) {
 		return;
 	unsigned short k_start;
 	short k_step, k_end;
+	unsigned short playerZ;
+	w->GetPlayerZ(playerZ);
 	if ( UP==w->GetPlayerDir() ) {
-		k_start=w->playerZ+1;
+		k_start=playerZ+1;
 		k_step=1;
 		k_end=height;
 
 	} else {
-		k_start=w->playerZ;
+		k_start=playerZ;
 		k_step=-1;
 		k_end=-1;
 	}
@@ -127,7 +129,7 @@ void Screen::PrintNormal(WINDOW * window) {
 	wstandend(window);
 	box(window, 0, 0);
 	if ( UP==w->GetPlayerDir() ) {
-		short arrow_X, arrow_Y;
+		unsigned short arrow_X, arrow_Y;
 		w->GetPlayerCoords(arrow_X, arrow_Y);
 		wcolor_set(window, WHITE_RED, NULL);
 		mvwprintw(window, 0,               arrow_X*2+1,       "vv");
@@ -151,11 +153,11 @@ void Screen::PrintFront(WINDOW * window) {
 		return;
 	} else if (pthread_mutex_trylock(&(w->mutex)))
 		return;
-	short pX, pY, pZ,
-	      x_step, z_step,
+	short x_step, z_step,
 	      x_end, z_end,
 	      * x, * z,
 	      i, j, k;
+	unsigned short pX, pY, pZ;
 	unsigned short x_start, z_start,
 		       k_start,
 	               arrow_Y, arrow_X;

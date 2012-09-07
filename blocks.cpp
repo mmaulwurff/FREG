@@ -48,7 +48,8 @@ void Active::SafeMove() {
 	//when player is on the border of shred, moving him causes World::ReloadShreds(dir). so, cheks are neede for liquids not to push player.
 	int x_focus, y_focus, z_focus;
 	whereWorld->Focus(x_self, y_self, z_self, x_focus, y_focus, z_focus, direction);
-	if (x_focus!=whereWorld->playerX || y_focus!=whereWorld->playerY)
+	//if (x_focus!=whereWorld->playerX || y_focus!=whereWorld->playerY)
+	if ((Block *)(whereWorld->playerP)!=whereWorld->blocks[x_focus][y_focus][z_focus])
 		whereWorld->Move(x_self, y_self, z_self, direction);
 }
 void Active::SafeJump() {
@@ -94,6 +95,14 @@ void Active::Unregister() {
 float Dwarf::LightRadius() {
 	if ( this==whereWorld->GetPlayerP() ) return 1.8;
 	else return 0;
+}
+
+void Dwarf::Move(dirs dir) {
+	Active::Move(dir);
+	if ( this==whereWorld->playerP && (
+			(x_self==shred_width-1 || x_self==shred_width*2 ||
+			 y_self==shred_width-1 || y_self==shred_width*2)) )
+		whereWorld->ReloadShreds(dir);
 }
 
 before_move_return Dwarf::BeforeMove(dirs dir) {

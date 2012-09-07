@@ -256,6 +256,11 @@ class Active : public Block {
 		y=y_self;
 		z=z_self;
 	}
+	void GetSelfXY(unsigned short & x, unsigned short & y) {
+		x=x_self;
+		y=y_self;
+	}
+	void GetSelfZ(unsigned short & z) { z=z_self; }
 	World * GetWorld() { return whereWorld; }
 	virtual void Act() {}
 	void SafeMove();
@@ -431,6 +436,7 @@ class Dwarf : public Animal, public Inventory {
 	bool CanBeIn() { return false; }
 
 	virtual before_move_return BeforeMove(dirs);
+	void Move(dirs);
 
 	void * HasInventory() { return Inventory::HasInventory(); }
 	bool Stackable() { return false; }

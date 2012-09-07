@@ -32,7 +32,7 @@ class World {
 	unsigned long time;
 	Block *blocks[shred_width*3][shred_width*3][height];
 	Dwarf * playerP;
-	unsigned short playerX, playerY, playerZ;
+	unsigned short spawnX, spawnY, spawnZ;
 	long longitude, latitude;
 	pthread_t eventsThread;
 	Active * activeList;
@@ -330,7 +330,11 @@ class World {
 	int Focus(int i, int j, int k, int & i_target, int & j_target, int & k_target) {
 		return Focus( i, j, k, i_target, j_target, k_target, blocks[i][j][k]->GetDir() );
 	}
-	void PlayerFocus(int & i_target, int & j_target, int & k_target) { Focus(playerX, playerY, playerZ, i_target, j_target, k_target); }
+	void PlayerFocus(int & i_target, int & j_target, int & k_target) {
+		unsigned short playerX, playerY, playerZ;
+		GetPlayerCoords(playerX, playerY, playerZ);
+		Focus(playerX, playerY, playerZ, i_target, j_target, k_target);
+	}
 	dirs TurnRight(dirs dir) {
 		switch (dir) {
 			case NORTH: return EAST;
@@ -351,24 +355,35 @@ class World {
 	//visibility section
 	bool DirectlyVisible(int, int, int, int, int, int);
 	bool Visible(int, int, int, int, int, int);
-	bool Visible(int x_to, int y_to, int z_to) { return Visible(playerX, playerY, playerZ, x_to, y_to, z_to); }
+	bool Visible(int x_to, int y_to, int z_to) {
+		unsigned short playerX, playerY, playerZ;
+		GetPlayerCoords(playerX, playerY, playerZ);
+		return Visible(playerX, playerY, playerZ, x_to, y_to, z_to);
+	}
 
 	//movement section
 	void PhysEvents();
 	int  Move(int, int, int, dirs, unsigned=3); //unsigned is how much should block fall or rise at one turn
 	void Jump(int, int, int);
 	int PlayerMove(dirs dir) {
+		unsigned short playerX, playerY, playerZ;
+		GetPlayerCoords(playerX, playerY, playerZ);
 		scr->viewLeft=NORMAL;
 		return Move( playerX, playerY, playerZ, dir );
 	}
 	int PlayerMove() { return PlayerMove( playerP->GetDir() ); } 
-	void PlayerJump() { Jump(playerX, playerY, playerZ); }
+	void PlayerJump() {
+		unsigned short playerX, playerY, playerZ;
+		GetPlayerCoords(playerX, playerY, playerZ);
+		Jump(playerX, playerY, playerZ);
+	}
 
 	//player specific functions section
 	void SetPlayerDir(dirs dir) { playerP->SetDir(dir); }
 	dirs GetPlayerDir() { return playerP->GetDir(); }
-	void GetPlayerCoords(short & x, short & y, short & z) { x=playerX; y=playerY; z=playerZ; }
-	void GetPlayerCoords(short & x, short & y) { x=playerX; y=playerY; }
+	void GetPlayerCoords(unsigned short & x, unsigned short & y, unsigned short & z) { playerP->GetSelfXYZ(x, y, z); }
+	void GetPlayerCoords(unsigned short & x, unsigned short & y) { playerP->GetSelfXY(x, y); }
+	void GetPlayerZ(unsigned short & z) { playerP->GetSelfZ(z); }
 	Dwarf * GetPlayerP() { return playerP; }
 
 	//time section
@@ -490,13 +505,21 @@ class World {
 		Focus(i, j, k, i_to, j_to, k_to);
 		Exchange(i, j, k, i_to, j_to, k_to, n);
 	}
-	void PlayerDrop(int n) { Drop(playerX, playerY, playerZ, n); }
+	void PlayerDrop(int n) {
+		unsigned short playerX, playerY, playerZ;
+		GetPlayerCoords(playerX, playerY, playerZ);
+		Drop(playerX, playerY, playerZ, n);
+	}
 	void Get(int i, int j, int k, int n) {
 		int i_from, j_from, k_from;
 		Focus(i, j, k, i_from, j_from, k_from);
 		Exchange(i_from, j_from, k_from, i, j, k, n);
 	}
-	void PlayerGet(int n) { Get(playerX, playerY, playerZ, n); }
+	void PlayerGet(int n) {
+		unsigned short playerX, playerY, playerZ;
+		GetPlayerCoords(playerX, playerY, playerZ);
+		Get(playerX, playerY, playerZ, n);
+	}
 	void DropAll(int i_from, int j_from, int k_from) {
 		int i, j, k;
 		Focus(i_from, j_from, k_from, i, j, k);
@@ -619,6 +642,7 @@ class World {
 	friend class Active;
 
 	friend void Grass::Act();
+	friend void Dwarf::Move(dirs);
 
 	public:
 	World();
