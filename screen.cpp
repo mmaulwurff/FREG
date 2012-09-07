@@ -66,8 +66,8 @@ color_pairs Screen::Color(kinds kind, subs sub) {
 		case TELEGRAPH: return CYAN_BLACK;
 		case RABBIT:    return RED_WHITE;
 		case LIQUID: switch (sub) {
-			case WATER: return (random()%4) ? CYAN_BLUE : BLUE_CYAN;
-			default:    return (random()%4) ? RED_YELLOW : YELLOW_RED;
+			case WATER: return CYAN_BLUE;
+			default:    return RED_YELLOW;
 		}
 
 		default: switch (sub) {
@@ -129,6 +129,7 @@ void Screen::PrintNormal(WINDOW * window) {
 	if ( UP==w->GetPlayerDir() ) {
 		short arrow_X, arrow_Y;
 		w->GetPlayerCoords(arrow_X, arrow_Y);
+		wcolor_set(window, WHITE_RED, NULL);
 		mvwprintw(window, 0,               arrow_X*2+1,       "vv");
 		mvwprintw(window, shred_width*3+1, arrow_X*2+1,       "^^");
 		mvwprintw(window, arrow_Y+1,       0,                 ">");
@@ -243,6 +244,7 @@ void Screen::PrintFront(WINDOW * window) {
 	wstandend(window);
 	box(window, 0, 0);
 	mvwaddstr(window, 0, 1, "Front View");
+	wcolor_set(window, WHITE_RED, NULL);
 	mvwprintw(window, 0,               arrow_X,           "vv");
 	mvwprintw(window, shred_width*3+1, arrow_X,           "^^");
 	mvwprintw(window, arrow_Y,         0,                 ">");
@@ -296,6 +298,8 @@ void Screen::PrintInv(WINDOW * window, Inventory * inv) {
 }
 
 void Screen::PrintSounds() {
+	if (pthread_mutex_trylock(&(w->mutex)))
+		return;
 	unsigned short temp;
 	for (unsigned short i=0; i<3; ++i)
 	for (unsigned short j=0; j<3; ++j) {
@@ -306,6 +310,7 @@ void Screen::PrintSounds() {
 	box(soundWin, 0, 0);
 	mvwaddstr(soundWin, 0, 1, "Sounds");
 	wrefresh(soundWin);
+	pthread_mutex_unlock(&(w->mutex));
 }
 
 void Screen::Notify(const char * str) {
@@ -347,6 +352,7 @@ Screen::Screen(World * wor) :
 }
 
 Screen::~Screen() {
+	pthread_mutex_lock(&(w->mutex));
 	delwin(leftWin);
 	delwin(rightWin);
 	delwin(notifyWin);
@@ -355,6 +361,7 @@ Screen::~Screen() {
 	w->scr=NULL;
 	if (NULL!=notifyLog)
 		fclose(notifyLog);
+	pthread_mutex_unlock(&(w->mutex));
 }
 
 #endif

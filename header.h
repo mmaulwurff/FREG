@@ -32,6 +32,7 @@ const unsigned short note_length=144;
 const unsigned short inventory_size=26;
 const unsigned short max_stack_size=9; //num_str in Screen::PrintInv must be big enough
 
+const unsigned short time_steps_in_sec=10;
 const unsigned short seconds_in_hour=60;
 const unsigned short seconds_in_day=24*seconds_in_hour;
 const unsigned short end_of_night  = 6*seconds_in_hour;

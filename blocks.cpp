@@ -148,31 +148,32 @@ void Grass::Act() {
 }
 
 void Rabbit::Act() {
-	if (random()%6) {
-		short for_north=0, for_west=0;
+	unsigned short const x_start=(x_self-7>0) ? x_self-7 : 0;
+	unsigned short const y_start=(y_self-7>0) ? y_self-7 : 0;
+	unsigned short const z_start=(z_self-1>0) ? z_self-1 : 0;
+	unsigned short const x_end=(x_self+7<shred_width*3) ? x_self+7 : shred_width*3-1;
+	unsigned short const y_end=(y_self+7<shred_width*3) ? y_self+7 : shred_width*3-1;
+	unsigned short const z_end=(z_self+1<height-1) ? z_self+1 : height-2;
 
-		unsigned short const x_start=(x_self-7>0) ? x_self-7 : 0;
-		unsigned short const y_start=(y_self-7>0) ? y_self-7 : 0;
-		unsigned short const z_start=(z_self-1>0) ? z_self-1 : 0;
-		unsigned short const x_end=(x_self+7<shred_width*3) ? x_self+7 : shred_width*3-1;
-		unsigned short const y_end=(y_self+7<shred_width*3) ? y_self+7 : shred_width*3-1;
-		unsigned short const z_end=(z_self+1<height-1) ? z_self+1 : height-2;
+	float attractive;
+	float for_north=0, for_west=0;
+	for (unsigned short x=x_start; x<=x_end; ++x)
+	for (unsigned short y=y_start; y<=y_end; ++y)
+	for (unsigned short z=z_start; z<=z_end; ++z) {
+		switch ( whereWorld->Kind(x, y, z) ) {
+			case DWARF:  attractive=-9; break;
+			case RABBIT: attractive=0.8;  break;
+			default:     attractive=0;
+		}
+		if (attractive) {
+			if (y!=y_self)
+				for_north+=attractive/(y_self-y);
+			if (x!=x_self)
+				for_west +=attractive/(x_self-x);
+		}
+	}
 
-		for (unsigned short x=x_start; x<=x_end; ++x)
-		for (unsigned short y=y_start; y<=y_end; ++y)
-		for (unsigned short z=z_start; z<=z_end; ++z)
-			switch ( whereWorld->Kind(x, y, z) ) {
-				case DWARF:
-					for_north+=y-y_self;
-					for_west+=x-x_self;
-					//fprintf(stderr, "Rabbit noticed dwarf at %hd, %hd, %hd\n", x, y, z);
-				break;
-				case RABBIT:
-					for_north-=y-y_self;
-					for_west-=x-x_self;
-				break;
-			}
-
+	if (abs(for_north)>1 || abs(for_west)>1) {
 		if ( abs(for_north)>abs(for_west) ) {
 			if (for_north>0) SetDir(NORTH);
 			else SetDir(SOUTH);
@@ -180,13 +181,14 @@ void Rabbit::Act() {
 			if (for_west>0) SetDir(WEST);
 			else SetDir(EAST);
 		}
-	} else {
+		(random()%2) ? SafeMove() : SafeJump();
+	} else if (0==random()%60) {
 		switch (random()%4) {
 			case 0: SetDir(NORTH); break;
 			case 1: SetDir(SOUTH); break;
 			case 2: SetDir(EAST);  break;
 			case 3: SetDir(WEST);  break;
 		}
+		(random()%2) ? SafeMove() : SafeJump();
 	}
-	(random()%2) ? SafeMove() : SafeJump();
 }

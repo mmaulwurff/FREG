@@ -28,13 +28,13 @@ class Active;
 
 void *PhysThread(void *vptr_args);
 class World {
+	unsigned short time_step;
 	unsigned long time;
 	Block *blocks[shred_width*3][shred_width*3][height];
 	Dwarf * playerP;
 	unsigned short playerX, playerY, playerZ;
 	long longitude, latitude;
 	pthread_t eventsThread;
-	pthread_mutex_t mutex;
 	Active * activeList;
 	char worldName[20];
 	unsigned short worldSize;
@@ -310,6 +310,7 @@ class World {
 	}
 
 	public:
+	pthread_mutex_t mutex;
 	Screen * scr;
 	struct {
 		char ch;

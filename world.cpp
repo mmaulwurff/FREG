@@ -104,6 +104,7 @@ void World::ReloadShreds(dirs direction) { //ReloadShreds is called from Move, s
 	short i, j, k;
 	switch (direction) {
 		case NORTH:
+			playerY+=shred_width;
 			for (l=latitude-1; l<=latitude+1; ++l)
 				SaveShred(longitude+1, l, (l-latitude+1)*shred_width, 2*shred_width);
 			
@@ -121,6 +122,7 @@ void World::ReloadShreds(dirs direction) { //ReloadShreds is called from Move, s
 				LoadShred(longitude-1, l, (l-latitude+1)*shred_width, 0);
 		break;
 		case SOUTH:
+			playerY-=shred_width;
 			for (l=latitude-1; l<=latitude+1; ++l)
 				SaveShred(longitude-1, l, (l-latitude+1)*shred_width, 0);
  
@@ -138,6 +140,7 @@ void World::ReloadShreds(dirs direction) { //ReloadShreds is called from Move, s
 				LoadShred(longitude+1, l, (l-latitude+1)*shred_width, shred_width*2);
 		break;
 		case EAST:
+			playerX-=shred_width;
 			for (l=longitude-1; l<=longitude+1; ++l)
 				SaveShred(l, latitude-1, 0, (l-longitude+1)*shred_width);
  
@@ -155,6 +158,7 @@ void World::ReloadShreds(dirs direction) { //ReloadShreds is called from Move, s
 				LoadShred(l, latitude+1, shred_width*2, (l-longitude+1)*shred_width);
 		break;
 		case WEST:
+			playerX+=shred_width;
 			for (l=longitude-1; l<=longitude+1; ++l)
 				SaveShred(l, latitude+1, shred_width*2, (l-longitude+1)*shred_width);
 
@@ -185,7 +189,9 @@ void World::PhysEvents() {
 		(TimeOfDay()-end_of_night)*(float)shred_width*3/(seconds_in_day-end_of_night);
 	delete blocks[i][int(shred_width*1.5)][height-1];
 	blocks[i][int(shred_width*1.5)][height-1]=new Block( if_star ? STAR : SKY );
-	++time;
+	++time_step;
+	if ( !(time_step % time_steps_in_sec) )
+		++time;
 	i=(TimeOfDay()<end_of_night) ?
 		TimeOfDay()*(float)shred_width*3/end_of_night :
 		(TimeOfDay()-end_of_night)*(float)shred_width*3/(seconds_in_day-end_of_night);
@@ -221,18 +227,19 @@ void World::PhysEvents() {
 			soundMap[n].col=(NULL!=scr) ?
 				scr->Color( Kind(x, y, z), Sub(x, y, z) ) :
 				BLACK_WHITE;
-		}
-		soundMap[n].ch=(' '==soundMap[n].ch) ? temp->MakeSound() : '*';
-		if (' '!=soundMap[n].ch) {
-			short temp=shred_width-Distance(playerX, playerY, playerZ, x, y, z);
-			if (temp<0) temp=0;
-			soundMap[n].lev+=(temp*10)/shred_width;
-			if (soundMap[n].lev>9) soundMap[n].lev=9;
-			if (soundMap[n].lev>0) {
-				soundMap[n].col=(NULL!=scr) ?
-					scr->Color( Kind(x, y, z), Sub(x, y, z) ) :
-					BLACK_WHITE;
-				soundMap[n].lev+=1;
+		} else if ( ' '!=temp->MakeSound() ) {
+			soundMap[n].ch=(' '==soundMap[n].ch) ? temp->MakeSound() : '*';
+			if (' '!=soundMap[n].ch) {
+				short temp=shred_width-Distance(playerX, playerY, playerZ, x, y, z);
+				if (temp<0) temp=0;
+				soundMap[n].lev+=(temp*10)/shred_width;
+				if (soundMap[n].lev>9) soundMap[n].lev=9;
+				if (soundMap[n].lev>0) {
+					soundMap[n].col=(NULL!=scr) ?
+						scr->Color( Kind(x, y, z), Sub(x, y, z) ) :
+						BLACK_WHITE;
+					soundMap[n].lev+=1;
+				}
 			}
 		}
 		if ( temp->IfToDestroy() ) {
@@ -254,11 +261,11 @@ void World::PhysEvents() {
 			nexttemp=temp->GetNext();
 	}
 	
-	pthread_mutex_unlock(&mutex);
 	if (NULL!=scr) {
 		scr->Print();
 		scr->PrintSounds();
 	}
+	pthread_mutex_unlock(&mutex);
 }
 
 char World::CharNumber(int i, int j, int k) {
@@ -354,19 +361,14 @@ int World::Move(int i, int j, int k, dirs dir, unsigned stop) {
 			playerX=newi;
 			playerY=newj;
 			playerZ=newk;
-			if (playerX==shred_width-1) {
-				playerX+=shred_width;
+			if (playerX==shred_width-1)
 				ReloadShreds(WEST);
-			} else if (playerX==shred_width*2) {
-				playerX-=shred_width;
+			else if (playerX==shred_width*2)
 				ReloadShreds(EAST);
-			} else if (playerY==shred_width-1) {
-				playerY+=shred_width;
+			else if (playerY==shred_width-1)
 				ReloadShreds(NORTH);
-			} else if (playerY==shred_width*2) {
-				playerY-=shred_width;
+			else if (playerY==shred_width*2)
 				ReloadShreds(SOUTH);
-			}
 		}
 		++numberMoves;
 	}
@@ -426,7 +428,7 @@ int World::Focus(int i, int j, int k, int & i_target, int & j_target, int & k_ta
 	return ((bound_flag) ? 1 : 0);
 }
 
-World::World() : scr(NULL), activeList(NULL) {
+World::World() : scr(NULL), activeList(NULL), time_step(0) {
 	FILE * file=fopen("save", "r");
 	if (file==NULL) {
 		longitude=3;
@@ -476,6 +478,6 @@ World::~World() {
 void *PhysThread(void *vptr_args) {
 	while (1) {
 		((World*)vptr_args)->PhysEvents();
-		sleep(1);
+		usleep(1000000/time_steps_in_sec);
 	}
 }
