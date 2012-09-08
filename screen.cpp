@@ -129,6 +129,7 @@ void Screen::PrintNormal(WINDOW * window) {
 	wstandend(window);
 	box(window, 0, 0);
 	if ( UP==w->GetPlayerDir() ) {
+		mvwaddstr(window, 0, 1, "Sky View");
 		unsigned short arrow_X, arrow_Y;
 		w->GetPlayerCoords(arrow_X, arrow_Y);
 		wcolor_set(window, WHITE_RED, NULL);
@@ -136,7 +137,6 @@ void Screen::PrintNormal(WINDOW * window) {
 		mvwprintw(window, shred_width*3+1, arrow_X*2+1,       "^^");
 		mvwprintw(window, arrow_Y+1,       0,                 ">");
 		mvwprintw(window, arrow_Y+1,       shred_width*3*2+1, "<");
-		mvwaddstr(window, 0, 1, "Sky View");
 	} else
 		mvwaddstr(window, 0, 1, "Normal View");
 	wrefresh(window);
@@ -207,6 +207,9 @@ void Screen::PrintFront(WINDOW * window) {
 			z_end=shred_width*3;
 			arrow_X=pY*2+1;
 		break;
+		default:
+			fprintf(stderr, "Screen::PrintFront(WINDOW *): unlisted dir: %d\n", (int)w->GetPlayerDir());
+			return;
 	}
 	if (pZ+shred_width*1.5>=height) {
 		k_start=height-2;

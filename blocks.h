@@ -119,7 +119,7 @@ class Block { //blocks without special physics and attributes
 	}
 	virtual void * HasInventory() { return NULL; }
 	virtual void * ActiveBlock() { return NULL; }
-	virtual Block * Drop(int n) {}
+	virtual Block * Drop(int n) { return NULL; }
 
 	virtual bool Armour() { return false; }
 	virtual bool Weapon() { return false; }
@@ -145,7 +145,7 @@ class Block { //blocks without special physics and attributes
 	}
 	virtual void SaveAttributes(FILE * out) {
 	       	fprintf(out, "_%d_%f_%d_%hd", sub, weight, direction, durability);
-		if (NULL!=note) fprintf(out, "_%d/%s", strlen(note), note);
+		if (NULL!=note) fprintf(out, "_%lu/%s", strlen(note), note);
 		else fprintf(out, "_0/");
 	}
 
@@ -178,7 +178,6 @@ class Telegraph : public Block {
 			strcpy(command, "echo '");
 			strcat(command, note);
 			strcat(command, "' | ttytter 2>&1 > /dev/null&");
-			fprintf(stderr, command);
 			system(command);
 		}
 	}
@@ -247,6 +246,7 @@ class Active : public Block {
 			case WEST:  --x_self; break;
 			case UP:    ++z_self; break;
 			case DOWN:  --z_self; break;
+			default: fprintf(stderr, "Active::Move(dirs): unlisted dir: %d\n", (int)dir);
 		}
 	}
 

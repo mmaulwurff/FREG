@@ -100,6 +100,9 @@ class World {
 			case NORTH_WEST: return SOUTH_EAST;
 			case UP: return DOWN;
 			case DOWN: return UP;
+			default:
+				fprintf(stderr, "World::Anti(dirs): unlisted dir: %d\n", (int)dir);
+				return HERE;
 		}
 	}
 
