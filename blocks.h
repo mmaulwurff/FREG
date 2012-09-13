@@ -39,6 +39,7 @@ class Block { //blocks without special physics and attributes
 	short durability;
 
 	public:
+	short enlightened;
 	virtual void FullName(char * str) {
 		switch (sub) {
 			case WATER:      WriteName(str, "Ice"); break;
@@ -95,7 +96,7 @@ class Block { //blocks without special physics and attributes
 		switch (sub) {
 			case WATER: case GREENERY:
 			case GLASS: return 1;
-			default: return 0; //0 - totally invisible blocks, 1 - block is visible, but light can pass through it, 2 - invisible
+			default: return 0; //0 - normal block, 1 - block is visible, but light can pass through it, 2 - invisible block
 		}
 	}
 	virtual before_move_return BeforeMove(dirs) { return NOTHING; }
@@ -144,15 +145,15 @@ class Block { //blocks without special physics and attributes
 		fprintf(out, "\n");
 	}
 	virtual void SaveAttributes(FILE * out) {
-	       	fprintf(out, "_%d_%f_%d_%hd", sub, weight, direction, durability);
+	       	fprintf(out, "_%d_%f_%d_%hd_%hd", sub, weight, direction, durability, enlightened);
 		if (NULL!=note) fprintf(out, "_%lu/%s", strlen(note), note);
 		else fprintf(out, "_0/");
 	}
 
-	Block(subs n=STONE) : sub(n), shown_weight(1), weight(1), direction(NORTH), note(NULL), durability(max_durability) {}
+	Block(subs n=STONE) : sub(n), shown_weight(1), weight(1), direction(NORTH), note(NULL), durability(max_durability), enlightened(0) {}
 	Block(char * str) {
 		unsigned short note_len;
-	       	sscanf(str, "%*d_%d_%f_%d_%hd_%hd", &sub, &weight, &direction, &durability, &note_len);
+	       	sscanf(str, "%*d_%d_%f_%d_%hd_%hd_%hd", &sub, &weight, &direction, &durability, &enlightened, &note_len);
 		shown_weight=weight;
 		CleanString(str);
 		if (0!=note_len) {
@@ -459,7 +460,7 @@ class Dwarf : public Animal, public Inventory {
 		fprintf(out, "%hd/", noise);
 	}
 
-	virtual float LightRadius();
+	float LightRadius() { return 1.8; }
 
 	Dwarf(World * w, unsigned short x, unsigned short y, unsigned short z) :
 			Animal(w, x, y, z, H_MEAT),

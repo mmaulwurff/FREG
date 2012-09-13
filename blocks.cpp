@@ -92,11 +92,6 @@ void Active::Unregister() {
 	}
 }
 
-float Dwarf::LightRadius() {
-	if ( this==whereWorld->GetPlayerP() ) return 1.8;
-	else return 0;
-}
-
 void Dwarf::Move(dirs dir) {
 	Active::Move(dir);
 	if ( this==whereWorld->playerP && (
@@ -137,50 +132,40 @@ void Liquid::Act() {
 }
 
 void Grass::Act() {
-	if ( !(random()%seconds_in_hour) ) {
-		unsigned short i_start, j_start, k_start,
-			       i_end,   j_end,   k_end,
-			       i, j, k;
-		i_start=(x_self>0) ? x_self-1 : 0;
-		j_start=(y_self>0) ? y_self-1 : 0;
-		k_start=(z_self>0) ? z_self-1 : 0;
-		i_end=(x_self<shred_width*3-1) ? x_self+1 : shred_width*3-1;
-		j_end=(y_self<shred_width*3-1) ? y_self+1 : shred_width*3-1;
-		k_end=(z_self<height-2)        ? z_self+1 : height-2;
+	if ( random()%seconds_in_hour )
+		return;
 
-		for (i=i_start; i<=i_end; ++i)
-		for (j=j_start; j<=j_end; ++j)
-		for (k=k_start; k<=k_end; ++k)
-			if ( SOIL==whereWorld->Sub(i, j, k) && AIR==whereWorld->Sub(i, j, ++k) )
-				whereWorld->blocks[i][j][k]=new Grass(whereWorld, i, j, k);
-	}
+	for (short i=x_self-1; i<=x_self+1; ++i)
+	for (short j=y_self-1; j<=y_self+1; ++j)
+	for (short k=z_self-1; k<=z_self+1; ++k)
+		if ( whereWorld->InBounds(i, j, k) &&
+				SOIL==whereWorld->Sub(i, j, k) &&
+				AIR==whereWorld->Sub(i, j, ++k) &&
+				whereWorld->UnderTheSky(i, j, k) ) {
+			whereWorld->blocks[i][j][k]=new Grass(whereWorld, i, j, k);
+			whereWorld->blocks[i][j][k]->enlightened=1;
+		}
 }
 
 void Rabbit::Act() {
-	unsigned short const x_start=(x_self-7>0) ? x_self-7 : 0;
-	unsigned short const y_start=(y_self-7>0) ? y_self-7 : 0;
-	unsigned short const z_start=(z_self-1>0) ? z_self-1 : 0;
-	unsigned short const x_end=(x_self+7<shred_width*3) ? x_self+7 : shred_width*3-1;
-	unsigned short const y_end=(y_self+7<shred_width*3) ? y_self+7 : shred_width*3-1;
-	unsigned short const z_end=(z_self+1<height-1) ? z_self+1 : height-2;
-
 	float attractive;
 	float for_north=0, for_west=0;
-	for (unsigned short x=x_start; x<=x_end; ++x)
-	for (unsigned short y=y_start; y<=y_end; ++y)
-	for (unsigned short z=z_start; z<=z_end; ++z) {
-		switch ( whereWorld->Kind(x, y, z) ) {
-			case DWARF:  attractive=-9; break;
-			case RABBIT: attractive=0.8;  break;
-			default:     attractive=0;
+	for (short x=x_self-7; x<=x_self+7; ++x)
+	for (short y=y_self-7; y<=y_self+7; ++y)
+	for (short z=z_self-7; z<=z_self+7; ++z)
+		if ( whereWorld->InBounds(x, y, z) ) {
+			switch ( whereWorld->Kind(x, y, z) ) {
+				case DWARF:  attractive=-9; break;
+				case RABBIT: attractive=0.8;  break;
+				default:     attractive=0;
+			}
+			if (attractive) {
+				if (y!=y_self)
+					for_north+=attractive/(y_self-y);
+				if (x!=x_self)
+					for_west +=attractive/(x_self-x);
+			}
 		}
-		if (attractive) {
-			if (y!=y_self)
-				for_north+=attractive/(y_self-y);
-			if (x!=x_self)
-				for_west +=attractive/(x_self-x);
-		}
-	}
 
 	if (abs(for_north)>1 || abs(for_west)>1) {
 		if ( abs(for_north)>abs(for_west) ) {

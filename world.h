@@ -45,15 +45,16 @@ class World {
 	void LoadAllShreds();
 	void SaveAllShreds();
 	void MakeSky() {
+		unsigned short i, j;
 		FILE * sky=fopen("sky.txt", "r");
 		if (NULL==sky) {
-			for (unsigned short i=0; i<shred_width*3; ++i)
-			for (unsigned short j=0; j<shred_width*3; ++j)
+			for (i=0; i<shred_width*3; ++i)
+			for (j=0; j<shred_width*3; ++j)
 				blocks[i][j][height-1]=new Block( random()%5 ? SKY : STAR );
 		} else {
 			char c=fgetc(sky)-'0';
-			for (unsigned short i=0; i<shred_width*3; ++i)
-			for (unsigned short j=0; j<shred_width*3; ++j)
+			for (i=0; i<shred_width*3; ++i)
+			for (j=0; j<shred_width*3; ++j)
 				if (c) {
 					blocks[i][j][height-1]=new Block(SKY);
 					--c;
@@ -63,6 +64,9 @@ class World {
 				}
 			fclose(sky);
 		}
+		for (i=0; i<shred_width*3; ++i)
+		for (j=0; j<shred_width*3; ++j)
+			blocks[i][j][height-1]->enlightened=1; //sky is always enlightened
 	}
 	dirs MakeDir(unsigned short x_center, unsigned short y_center, unsigned short x_target, unsigned short y_target) {
 		//if (x_center==x_target && y_center==y_target) return HERE;
@@ -119,6 +123,75 @@ class World {
 		char c=fgetc(map);
 		fclose(map);
 		return c;
+	}
+
+	//lighting section
+	void ReEnlighten(const int i, const int j, const int k) {
+		if ( !InBounds(i, j, k) || NULL==blocks[i][j][k] || Transparent(i, j, k) )
+			return;
+
+		for (short x=i-max_light_radius-1; x<=i+max_light_radius+1; ++x)
+		for (short y=j-max_light_radius-1; y<=j+max_light_radius+1; ++y)
+		for (short z=k-max_light_radius-1; z<=k+max_light_radius+1; ++z)
+			if ( InBounds(x, y, z) && NULL!=blocks[i][j][k] )
+				blocks[i][j][k]->enlightened=0;
+
+		for (short x=i-max_light_radius-1; x<=i+max_light_radius+1; ++x)
+		for (short y=j-max_light_radius-1; y<=j+max_light_radius+1; ++y)
+		for (short z=k-max_light_radius-1; z<=k+max_light_radius+1; ++z)
+			Shine(x, y, z);
+	}
+
+	void ReEnlightenAll() {
+		unsigned short i, j, k;
+
+		for (i=0; i<shred_width*3; ++i)
+		for (j=0; j<shred_width*3; ++j)
+		for (k=0; k<height-1; ++k)
+			if (NULL!=blocks[i][j][k]) blocks[i][j][k]->enlightened=0;
+
+		for (i=0; i<shred_width*3; ++i)
+		for (j=0; j<shred_width*3; ++j)
+		for (k=0; k<height-1; ++k)
+			Shine(i, j, k);
+
+		if ( NIGHT!=PartOfDay() )
+			for (i=0; i<shred_width*3; ++i)
+			for (j=0; j<shred_width*3; ++j)
+				SunShine(i, j);
+	}
+
+	void SunShine(const int i, const int j) {
+		unsigned short k;
+		for (k=height-2; Transparent(i, j, k); --k)
+			if (NULL!=blocks[i][j][k])
+				blocks[i][j][k]->enlightened=1;
+		blocks[i][j][k]->enlightened=1;
+	}
+
+	void SunReShine(const int i, const int j) { 
+		if ( NIGHT==PartOfDay() )
+			return;
+
+		for (unsigned short k=height-2; Transparent(i, j, k); --k)
+			if ( NULL!=blocks[i][j][k] )
+				blocks[i][j][k]->enlightened=0;
+		SunShine(i, j);
+	}
+
+	void Shine(const int i, const int j, const int k) {
+		float light_radius;
+		if ( !InBounds(i, j, k) || NULL==blocks[i][j][k] || 0==(light_radius=blocks[i][j][k]->LightRadius()) )
+			return;
+
+		for (short x=ceil(i-light_radius); x<=floor(i+light_radius); ++x)
+		for (short y=ceil(j-light_radius); y<=floor(j+light_radius); ++y)
+		for (short z=ceil(k-light_radius); z<=floor(k+light_radius); ++z)
+			if (InBounds(x, y, z) &&
+					NULL!=blocks[x][y][z] &&
+					Distance(i, j, k, x, y, z)<=light_radius &&
+					DirectlyVisible(i, j, k, x, y, z))
+				blocks[x][y][z]->enlightened=1;
 	}
 
 	//shred generators section
@@ -554,17 +627,21 @@ class World {
 	}
 
 	//block information section	
-	void FullName(char * str, int i, int j, int k) { (NULL==blocks[i][j][k]) ? WriteName(str, "Air") : blocks[i][j][k]->FullName(str); }
-	subs Sub(int i, int j, int k)          { return (NULL==blocks[i][j][k]) ? AIR : blocks[i][j][k]->Sub(); }
-	kinds Kind(int i, int j, int k)        { return (NULL==blocks[i][j][k]) ? BLOCK : blocks[i][j][k]->Kind(); }
-	int  Transparent(int i, int j, int k)  { return (NULL==blocks[i][j][k]) ? 2 : blocks[i][j][k]->Transparent(); }
+	bool InBounds(int i, int j, int k) { return (i>=0 && i<shred_width*3 && j>=0 && j<shred_width*3 && k>=0 && k<height); }
+	void FullName(char * str, int i, int j, int k) {
+		if ( InBounds(i, j, k) )
+			(NULL==blocks[i][j][k]) ? WriteName(str, "Air") : blocks[i][j][k]->FullName(str);
+	}
+	subs Sub(int i, int j, int k)          { return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? AIR : blocks[i][j][k]->Sub(); }
+	kinds Kind(int i, int j, int k)        { return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? BLOCK : blocks[i][j][k]->Kind(); }
+	int  Transparent(int i, int j, int k)  { return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? 2 : blocks[i][j][k]->Transparent(); }
 	int  Movable(Block * block)            { return (NULL==block) ? ENVIRONMENT : block->Movable(); }
 	double Weight(Block * block)           { return (NULL==block) ? 0 : block->Weight(); }
-	void * HasInventory(int i, int j, int k) { return (NULL==blocks[i][j][k]) ? NULL : blocks[i][j][k]->HasInventory(); }
-	void * ActiveBlock(int i, int j, int k) { return (NULL==blocks[i][j][k]) ? NULL : blocks[i][j][k]->ActiveBlock(); }
+	void * HasInventory(int i, int j, int k) { return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? NULL : blocks[i][j][k]->HasInventory(); }
+	void * ActiveBlock(int i, int j, int k)  { return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? NULL : blocks[i][j][k]->ActiveBlock(); }
 	void GetNote(char * str, int i, int j, int k) {
 		char note[note_length];
-		if (NULL!=blocks[i][j][k]) {
+		if (InBounds(i, j, k) && NULL!=blocks[i][j][k]) {
 			blocks[i][j][k]->GetNote(note);
 			if ('\0'!=note[0]) {
 				strcat(str, "\n Inscription: \"");
@@ -583,22 +660,18 @@ class World {
 			}
 		}	
 	}
-	int Temperature(int i, int j, int k) {
-		if (NULL==blocks[i][j][k] || height-1==k) return 0;
-		int temperature=blocks[i][j][k]->Temperature();
-		if ( temperature ) return temperature;
-		int i_start, j_start, k_start,
-		    i_end,   j_end,   k_end;
-		i_start=(i>0) ? i-1 : 0;
-		j_start=(j>0) ? j-1 : 0;
-		k_start=(k>0) ? k-1 : 0;
-		i_end=(i<shred_width*3-1) ? i+1 : shred_width*3-1;
-		j_end=(j<shred_width*3-1) ? j+1 : shred_width*3-1;
-		k_end=(k<height-2)        ? k+1 : height-2;
-		for (i=i_start; i<=i_end; ++i)
-		for (j=j_start; j<=j_end; ++j)
-		for (k=k_start; k<=k_end; ++k)
-			if (NULL!=blocks[i][j][k]) temperature+=blocks[i][j][k]->Temperature();
+	int Temperature(int i_center, int j_center, int k_center) {
+		if (!InBounds(i_center, j_center, k_center) || NULL==blocks[i_center][j_center][k_center] || height-1==k_center)
+			return 0;
+		int temperature=blocks[i_center][j_center][k_center]->Temperature();
+		if ( temperature )
+			return temperature;
+
+		for (int i=i_center-1; i<=i_center+1; ++i)
+		for (int j=j_center-1; j<=j_center+1; ++j)
+		for (int k=k_center-1; k<=k_center+1; ++k)
+			if (InBounds(i, j, k) && NULL!=blocks[i][j][k])
+				temperature+=blocks[i][j][k]->Temperature();
 		return temperature/2;
 	}
 	bool Equal(Block * block1, Block * block2) {
@@ -607,26 +680,9 @@ class World {
 		return *block1==*block2;
 	}
 	bool Enlightened(int i, int j, int k) {
-		if ( height-1==k || ( NIGHT!=PartOfDay() && (
-				LightRadius(i, j, k) || UnderTheSky(i, j, k) ||
-				UnderTheSky(i-1, j, k) || UnderTheSky(i, j-1, k) ||
-				UnderTheSky(i+1, j, k) || UnderTheSky(i, j+1, k)) ) )
-			return true;
-
-		unsigned short const x_start=(i-max_light_radius>0) ? i-max_light_radius : 0;
-		unsigned short const y_start=(j-max_light_radius>0) ? j-max_light_radius : 0;
-		unsigned short const z_start=(k-max_light_radius>0) ? k-max_light_radius : 0;
-		unsigned short const x_end=(i+max_light_radius<shred_width*3) ? i+max_light_radius : shred_width*3-1;
-		unsigned short const y_end=(j+max_light_radius<shred_width*3) ? j+max_light_radius : shred_width*3-1;
-		unsigned short const z_end=(k+max_light_radius<height-1) ? k+max_light_radius : height-2;
-
-		for (unsigned short x=x_start; x<=x_end; ++x)
-		for (unsigned short y=y_start; y<=y_end; ++y)
-		for (unsigned short z=z_start; z<=z_end; ++z)
-			if (( LightRadius(x, y, z) > Distance(i, j, k, x, y, z) ) &&
-					DirectlyVisible(x, y, z, i, j, k))
-				return true;
-		return false;
+		if ( !InBounds(i, j, k) || NULL==blocks[i][j][k])
+			return false;
+		return blocks[i][j][k]->enlightened;
 	}
 	private:
 	float LightRadius(int i, int j, int k) { return (NULL==blocks[i][j][k]) ? 0 : blocks[i][j][k]->LightRadius(); }

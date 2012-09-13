@@ -46,6 +46,8 @@ void World::LoadAllShreds() {
 		} else
 			playerP=(Dwarf *)blocks[spawnX][spawnY][spawnZ];
 	}
+
+	ReEnlightenAll();
 }
 
 void World::LoadShred(long longi, long lati, const unsigned short istart, const unsigned short jstart) {
@@ -363,6 +365,10 @@ int World::Move(int i, int j, int k, dirs dir, unsigned stop) {
 		Block * temp=blocks[i][j][k];
 		blocks[i][j][k]=blocks[newi][newj][newk];
 		blocks[newi][newj][newk]=temp;
+		
+		ReEnlighten(i, j, k);
+		SunReShine(i, j);
+		SunReShine(newi, newj);
 
 		blocks[newi][newj][newk]->Move(dir);
 		if (NULL!=blocks[i][j][k])

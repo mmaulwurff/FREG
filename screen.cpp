@@ -262,6 +262,7 @@ void Screen::PrintInv(WINDOW * window, Inventory * inv) {
 	if (pthread_mutex_trylock(&(w->mutex)))
 		return;
 	werase(window);
+	wstandend(window);
 	mvwaddstr(window, 1, 53, "Weight");
 	if ( DWARF==inv->Kind() ) {
 		mvwaddstr(window, 2, 2, "On head:");
