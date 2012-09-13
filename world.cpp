@@ -175,6 +175,8 @@ void World::ReloadShreds(dirs direction) { //ReloadShreds is called from Move, s
 		break;
 		default: fprintf(stderr, "World::ReloadShreds(dirs): invalid direction.\n");
 	}
+
+	ReEnlightenAll();
 }
 
 void World::PhysEvents() {

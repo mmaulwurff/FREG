@@ -133,8 +133,8 @@ class World {
 		for (short x=i-max_light_radius-1; x<=i+max_light_radius+1; ++x)
 		for (short y=j-max_light_radius-1; y<=j+max_light_radius+1; ++y)
 		for (short z=k-max_light_radius-1; z<=k+max_light_radius+1; ++z)
-			if ( InBounds(x, y, z) && NULL!=blocks[i][j][k] )
-				blocks[i][j][k]->enlightened=0;
+			if ( InBounds(x, y, z) && NULL!=blocks[x][y][z] )
+				blocks[x][y][z]->enlightened=0;
 
 		for (short x=i-max_light_radius-1; x<=i+max_light_radius+1; ++x)
 		for (short y=j-max_light_radius-1; y<=j+max_light_radius+1; ++y)
@@ -476,25 +476,30 @@ class World {
 
 	//interactions section
 	void Damage(int i, int j, int k) {
-		if ( NULL!=blocks[i][j][k] && 0>=blocks[i][j][k]->Damage() ) {
-			Block * temp=blocks[i][j][k];
-			if (temp==scr->blockToPrintLeft)
-				scr->viewLeft=NORMAL;
-			if (temp==scr->blockToPrintRight)
-				scr->viewRight=NORMAL;
-			
-			Block * dropped=temp->DropAfterDamage();
-			if ( PILE!=temp->Kind() && (temp->HasInventory() || NULL!=dropped) ) {
-				Pile * new_pile=new Pile(this, i, j, k);
-				blocks[i][j][k]=new_pile;
-				if ( temp->HasInventory() )
-					new_pile->GetAll(temp);
-				if ( !(new_pile->Get(dropped)) )
-					delete dropped;
-			} else
-				blocks[i][j][k]=NULL;
-			delete temp;
-		}
+		if ( NULL==blocks[i][j][k] || 0<blocks[i][j][k]->Damage() )
+			return;
+
+		Block * temp=blocks[i][j][k];
+		if (temp==scr->blockToPrintLeft)
+			scr->viewLeft=NORMAL;
+		if (temp==scr->blockToPrintRight)
+			scr->viewRight=NORMAL;
+		
+		Block * dropped=temp->DropAfterDamage();
+		if ( PILE!=temp->Kind() && (temp->HasInventory() || NULL!=dropped) ) {
+			Pile * new_pile=new Pile(this, i, j, k);
+			blocks[i][j][k]=new_pile;
+			if ( temp->HasInventory() )
+				new_pile->GetAll(temp);
+			if ( !(new_pile->Get(dropped)) )
+				delete dropped;
+		} else
+			blocks[i][j][k]=NULL;
+
+		delete temp;
+
+		ReEnlighten(i, j, k);
+		SunReShine(i, j);
 	}
 	void Use(int i, int j, int k) {
 		if (NULL!=blocks[i][j][k])
@@ -513,14 +518,15 @@ class World {
 		if (NULL==blocks[i][j][k] && block->CanBeOut() ) {
 			block->Restore();
 			if ( block->ActiveBlock() )
-				((Active *)block)->Register(this);
+				((Active *)block)->Register(this, i, j, k);
 			blocks[i][j][k]=block;
+			ReEnlighten(i, j, k);
+			SunReShine(i, j);
 			return true;
-		} else {
-			scr->Notify("You can not build.");
-			return false;
 		}
-	};
+		scr->Notify("You can not build.");
+		return false;
+	}
 	void PlayerBuild(int n) {
 		Block * temp=playerP->Drop(n);
 		int i, j, k;

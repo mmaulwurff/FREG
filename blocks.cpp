@@ -61,9 +61,12 @@ void Active::SafeJump() {
 		SetWeight();
 }
 
-void Active::Register(World * w) {
+void Active::Register(World * w, const int x, const int y, const int z) {
 	whereWorld=w;
 	if (NULL!=whereWorld) {
+		x_self=x;
+		y_self=y;
+		z_self=z;
 		prev=NULL;
 		if (NULL==whereWorld->activeList)
 			next=NULL;
@@ -134,17 +137,23 @@ void Liquid::Act() {
 void Grass::Act() {
 	if ( random()%seconds_in_hour )
 		return;
+	
+	short i=x_self, j=y_self;
+	switch ( random()%4 /* increase this if grass grows too fast */) {
+		case 0: ++i; break;
+		case 1: --i; break;
+		case 2: ++j; break;
+		case 3: --j; break;
+		default: return;
+	}
 
-	for (short i=x_self-1; i<=x_self+1; ++i)
-	for (short j=y_self-1; j<=y_self+1; ++j)
-	for (short k=z_self-1; k<=z_self+1; ++k)
-		if ( whereWorld->InBounds(i, j, k) &&
-				SOIL==whereWorld->Sub(i, j, k) &&
-				AIR==whereWorld->Sub(i, j, ++k) &&
-				whereWorld->UnderTheSky(i, j, k) ) {
-			whereWorld->blocks[i][j][k]=new Grass(whereWorld, i, j, k);
-			whereWorld->blocks[i][j][k]->enlightened=1;
-		}
+	if ( whereWorld->InBounds(i, j, z_self) )
+		if ( AIR==whereWorld->Sub(i, j, z_self) &&
+				whereWorld->InBounds(i, j, z_self-1) && SOIL==whereWorld->Sub(i, j, z_self-1) )
+			whereWorld->Build(new Grass(), i, j, z_self);
+		else if ( SOIL==whereWorld->Sub(i, j, z_self) &&
+				whereWorld->InBounds(i, j, z_self+1) && AIR==whereWorld->Sub(i, j, z_self+1) )
+			whereWorld->Build(new Grass(), i, j, z_self+1);
 }
 
 void Rabbit::Act() {
@@ -153,11 +162,12 @@ void Rabbit::Act() {
 	for (short x=x_self-7; x<=x_self+7; ++x)
 	for (short y=y_self-7; y<=y_self+7; ++y)
 	for (short z=z_self-7; z<=z_self+7; ++z)
-		if ( whereWorld->InBounds(x, y, z) ) {
+		if ( whereWorld->InBounds(x, y, z)) {// && whereWorld->DirectlyVisible(x_self, y_self, z_self, x, y, z) ) {
+			attractive=0;
 			switch ( whereWorld->Kind(x, y, z) ) {
-				case DWARF:  attractive=-9; break;
-				case RABBIT: attractive=0.8;  break;
-				default:     attractive=0;
+				case DWARF:  if (whereWorld->DirectlyVisible(x_self, y_self, z_self, x, y, z)) attractive=-9; break;
+				case RABBIT: if (whereWorld->DirectlyVisible(x_self, y_self, z_self, x, y, z)) attractive=0.8;  break;
+				default: attractive=0;
 			}
 			if (attractive) {
 				if (y!=y_self)

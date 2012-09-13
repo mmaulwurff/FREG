@@ -281,17 +281,18 @@ class Active : public Block {
 	void ReloadToWest()  { x_self+=shred_width; }
 	void ReloadToEast()  { x_self-=shred_width; }
 
-	void Register(World *);
+	void Register(World *, int, int, int);
 	void Unregister();
 
+	Active(subs sub) :
+		Block(sub),
+		whereWorld(NULL) {}
 	Active(World * w, unsigned short x, unsigned short y, unsigned short z, subs sub) :
-			Block(sub),
-			x_self(x), y_self(y), z_self(z)
-		{ Register(w); }
+			Block(sub)
+		{ Register(w, x, y, z); }
 	Active(World * w, unsigned short x, unsigned short y, unsigned short z, char * str) :
-			Block(str),
-			x_self(x), y_self(y), z_self(z)
-		{ Register(w); }
+			Block(str)
+		{ Register(w, x, y, z); }
 	virtual ~Active() { Unregister(); }
 };
 
@@ -640,6 +641,7 @@ class Grass : public Active {
 
 	virtual void SaveAttributes(FILE * out) { Active::SaveAttributes(out); }
 
+	Grass() : Active(GREENERY) {}
 	Grass(World * w, unsigned short x, unsigned short y, unsigned short z) :
 			Active(w, x, y, z, GREENERY) {}
 	Grass(World * w, unsigned short x, unsigned short y, unsigned short z, char * str, FILE * in) :
@@ -686,7 +688,7 @@ class Rabbit : public Active {
 
 	void Act();
 
-	virtual int Damage() { return durability-=4; }
+	int Damage() { return durability-=4; }
 	Block * DropAfterDamage() { return new Block(A_MEAT); }
 
 	void SaveAttributes(FILE * out) { Active::SaveAttributes(out); }
