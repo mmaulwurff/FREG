@@ -369,8 +369,6 @@ int World::Move(int i, int j, int k, dirs dir, unsigned stop) {
 		blocks[newi][newj][newk]=temp;
 		
 		ReEnlighten(i, j, k);
-		SunReShine(i, j);
-		SunReShine(newi, newj);
 
 		blocks[newi][newj][newk]->Move(dir);
 		if (NULL!=blocks[i][j][k])

@@ -332,6 +332,7 @@ class Inventory {
 	}
 	virtual void FullName(char *)=0;
 	virtual kinds Kind() const=0;
+	virtual subs Sub() const=0;
 	virtual bool Access()=0;
 
 	void * HasInventory() { return this; }
@@ -429,6 +430,7 @@ class Dwarf : public Animal, public Inventory {
 	}
 
 	virtual kinds Kind() const { return DWARF; }
+	subs Sub() const { return Block::Sub(); }
 	virtual void FullName(char * str) {
 		switch (sub) {
 			default: WriteName(str, "Dwarf");
@@ -483,6 +485,7 @@ class Dwarf : public Animal, public Inventory {
 class Chest : public Block, public Inventory {
 	public:
 	virtual kinds Kind() const { return CHEST; }
+	subs Sub() const { return Block::Sub(); }
 	virtual void FullName(char * str) {
 		switch (sub) {
 			case WOOD: WriteName(str, "Wooden Chest"); break;
@@ -518,6 +521,7 @@ class Pile : public Active, public Inventory {
 
 	public:
 	virtual kinds Kind() const { return PILE; }
+	subs Sub() const { return Block::Sub(); }
 	virtual void FullName(char * str) { WriteName(str, "Pile"); }
 
 	virtual void * HasInventory() { return Inventory::HasInventory(); }
@@ -652,6 +656,7 @@ class Bush : public Active, public Inventory {
 	public:
 	virtual void FullName(char * str) { WriteName(str, "Bush"); }
 	virtual kinds Kind() const { return BUSH; }
+	subs Sub() const { return Block::Sub(); }
 
 	virtual bool Access() { return true; }
 	usage_types Use() { return Inventory::Use(); }

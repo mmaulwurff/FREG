@@ -127,19 +127,25 @@ class World {
 
 	//lighting section
 	void ReEnlighten(const int i, const int j, const int k) {
-		if ( !InBounds(i, j, k) || NULL==blocks[i][j][k] || Transparent(i, j, k) )
+		if ( !InBounds(i, j, k) )
 			return;
 
-		for (short x=i-max_light_radius-1; x<=i+max_light_radius+1; ++x)
-		for (short y=j-max_light_radius-1; y<=j+max_light_radius+1; ++y)
-		for (short z=k-max_light_radius-1; z<=k+max_light_radius+1; ++z)
-			if ( InBounds(x, y, z) && NULL!=blocks[x][y][z] )
+		short x, y, z;
+		for (x=i-max_light_radius-1; x<=i+max_light_radius+1; ++x)
+		for (y=j-max_light_radius-1; y<=j+max_light_radius+1; ++y)
+		for (z=k-max_light_radius-1; z<=k+max_light_radius+1; ++z)
+			if ( InBounds(x, y, z) && NULL!=blocks[x][y][z] && z<height-1)
 				blocks[x][y][z]->enlightened=0;
 
-		for (short x=i-max_light_radius-1; x<=i+max_light_radius+1; ++x)
-		for (short y=j-max_light_radius-1; y<=j+max_light_radius+1; ++y)
-		for (short z=k-max_light_radius-1; z<=k+max_light_radius+1; ++z)
+		for (x=i-max_light_radius-max_light_radius-1; x<=i+max_light_radius+max_light_radius+1; ++x)
+		for (y=j-max_light_radius-max_light_radius-1; y<=j+max_light_radius+max_light_radius+1; ++y)
+		for (z=k-max_light_radius-max_light_radius-1; z<=k+max_light_radius+max_light_radius+1; ++z)
 			Shine(x, y, z);
+
+		for (x=i-max_light_radius-1; x<=i+max_light_radius+1; ++x)
+		for (y=j-max_light_radius-1; y<=j+max_light_radius+1; ++y)
+			if ( InBounds(x, y, 0) )
+				SunReShine(x, y);
 	}
 
 	void ReEnlightenAll() {
@@ -521,7 +527,6 @@ class World {
 				((Active *)block)->Register(this, i, j, k);
 			blocks[i][j][k]=block;
 			ReEnlighten(i, j, k);
-			SunReShine(i, j);
 			return true;
 		}
 		scr->Notify("You can not build.");

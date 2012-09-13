@@ -291,10 +291,12 @@ void Screen::PrintInv(WINDOW * window, Inventory * inv) {
 		}
 	}
 	mvwprintw(window, 2+i, 43, "Sum:%6.1f kg", sum_weight);
-	box(window, 0, 0);
-	if (w->GetPlayerP()==inv)
+	if (w->GetPlayerP()==inv) {
+		box(window, 0, 0);
 		mvwaddstr(window, 0, 1, "Your inventory");
-	else {
+	} else {
+		wcolor_set(window, Color(inv->Kind(), inv->Sub()), NULL);
+		box(window, 0, 0);
 		char str[full_name_length];
 		inv->FullName(str);
 		mvwaddstr(window, 0, 1, str);
