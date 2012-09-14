@@ -278,11 +278,9 @@ void Screen::PrintInv(WINDOW * window, Inventory * inv) {
 	for (i=0; i<inventory_size; ++i) {
 		mvwprintw(window, 2+i, 14, "%c)", 'a'+i);
 		if ( inv->Number(i) ) {
-			inv->InvFullName(str, i);
-			inv->NumStr(num_str, i);
 			wcolor_set(window, Color(inv->GetInvKind(i), inv->GetInvSub(i)), NULL);
-			mvwprintw(window, 2+i, 17, "[%c]%s", CharName( inv->GetInvKind(i), inv->GetInvSub(i) ), str);
-			wprintw(window, " %s", num_str);
+			mvwprintw( window, 2+i, 17, "[%c]%s", CharName( inv->GetInvKind(i), inv->GetInvSub(i) ), inv->InvFullName(str, i) );
+			waddstr(window, inv->NumStr(num_str, i));
 			wstandend(window);
 			if ('\0'!=str[0]) { //summ
 				mvwprintw(window, 2+i, 50, "%2.1f kg", temp_weight=inv->GetInvWeight(i));

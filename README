@@ -7,7 +7,7 @@ Language: C++
 Non-standard libraries: ncurses, pthreads
 
 Compile:
-g++  -lncurses -pthread main.cpp
+g++ -lncurses -pthread main.cpp world.cpp blocks.cpp screen.cpp -o FREG.bin
 
 Development is run on GNU/Linux, but on MS Windows should work too with PDCurses ( http://pdcurses.sourceforge.net/ ) and Pthreads-w32 ( http://sources.redhat.com/pthreads-win32/ ).
 

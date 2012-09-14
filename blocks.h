@@ -314,10 +314,13 @@ class Inventory {
 	Block * inventory[inventory_size][max_stack_size];
 	public:
 	char * InvFullName(char * str, int i) { return (NULL==inventory[i][0]) ? WriteName(str, "") : inventory[i][0]->FullName(str); }
-	void NumStr(char * str, int i) {
+	char * NumStr(char * str, int i) {
 		unsigned short n=Number(i);
-		if (1>=n) strcpy(str, "");
-		else sprintf(str, "(%hdx)", n);
+		if (1>=n)
+			str[0]='\0';
+		else
+			sprintf(str, " (%hdx)", n);
+		return str;
 	}
 	double GetInvWeight(int i) { return (NULL==inventory[i][0]) ? 0     : inventory[i][0]->Weight()*Number(i); }
 	subs GetInvSub(int i)      { return (NULL==inventory[i][0]) ? AIR   : inventory[i][0]->Sub(); }

@@ -167,11 +167,21 @@ class World {
 				SunShine(i, j);
 	}
 
+	void SafeEnlighten(const int i, const int j, const int k) {
+		if ( InBounds(i, j, k) && NULL!=blocks[i][j][k])
+			blocks[i][j][k]->enlightened=1;
+	}
+
 	void SunShine(const int i, const int j) {
 		unsigned short k;
-		for (k=height-2; Transparent(i, j, k); --k)
+		for (k=height-2; Transparent(i, j, k); --k) {
 			if ( NULL!=blocks[i][j][k] )
 				blocks[i][j][k]->enlightened=1;
+			SafeEnlighten(i+1, j, k);
+			SafeEnlighten(i-1, j, k);
+			SafeEnlighten(i, j+1, k);
+			SafeEnlighten(i, j-1, k);
+		}
 		blocks[i][j][k]->enlightened=1;
 	}
 
