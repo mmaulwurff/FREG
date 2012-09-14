@@ -150,10 +150,10 @@ class Block { //blocks without special physics and attributes
 		else fprintf(out, "_0/");
 	}
 
-	Block(subs n=STONE) : sub(n), shown_weight(1), weight(1), direction(NORTH), note(NULL), durability(max_durability), enlightened(0) {}
+	Block(subs n=STONE) : sub(n), weight(1), shown_weight(1), direction(NORTH), note(NULL), durability(max_durability), enlightened(0) {}
 	Block(char * str) {
 		unsigned short note_len;
-	       	sscanf(str, "%*d_%d_%f_%d_%hd_%hd_%hd", &sub, &weight, &direction, &durability, &enlightened, &note_len);
+	       	sscanf(str, "%*d_%d_%f_%d_%hd_%hd_%hd", (int *)(&sub), &weight, (int *)(&direction), &durability, &enlightened, &note_len);
 		shown_weight=weight;
 		CleanString(str);
 		if (0!=note_len) {
@@ -468,9 +468,9 @@ class Dwarf : public Animal, public Inventory {
 
 	Dwarf(World * w, unsigned short x, unsigned short y, unsigned short z) :
 			Animal(w, x, y, z, H_MEAT),
-			noise(1),
 			onHead(inventory[0][0]), onBody(inventory[1][0]), onFeet(inventory[2][0]),
-			inRightHand(inventory[3][0]), inLeftHand(inventory[4][0]) {
+			inRightHand(inventory[3][0]), inLeftHand(inventory[4][0]),
+			noise(1) {
 		inventory[7][0]=new Pick(IRON);
 	}
 	Dwarf(World * w, unsigned short x, unsigned short y, unsigned short z, char * str, FILE * in) :

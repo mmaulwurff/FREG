@@ -305,7 +305,7 @@ void Screen::PrintInv(WINDOW * window, Inventory * inv) {
 void Screen::PrintSounds() {
 	if (pthread_mutex_trylock(&(w->mutex)))
 		return;
-	unsigned short temp;
+
 	for (unsigned short i=0; i<3; ++i)
 	for (unsigned short j=0; j<3; ++j) {
 		wcolor_set(soundWin, w->soundMap[i*3+j].col, NULL);
@@ -327,7 +327,7 @@ void Screen::Notify(const char * str) {
 }
 
 Screen::Screen(World * wor) :
-       		w(wor), viewLeft(NORMAL), viewRight(FRONT), blockToPrintLeft(NULL), blockToPrintRight(NULL) {
+       		w(wor), blockToPrintLeft(NULL), blockToPrintRight(NULL), viewLeft(NORMAL), viewRight(FRONT) {
 	set_escdelay(10);
 	initscr();
 	start_color();

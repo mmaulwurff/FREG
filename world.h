@@ -574,7 +574,7 @@ class World {
 		Inventory * inv_from=(Inventory *)( HasInventory(i_from, j_from, k_from) );
 		Inventory * inv_to=(Inventory *)( HasInventory(i_to, j_to, k_to) );
 
-		if (NULL!=inv_from)
+		if (NULL!=inv_from) {
 			if (NULL!=inv_to) {
 				Block * temp=inv_from->Drop(n);
 				if ( NULL!=temp && !inv_to->Get(temp) ) {
@@ -586,6 +586,7 @@ class World {
 				newpile->Get( inv_from->Drop(n) );
 				blocks[i_to][j_to][k_to]=newpile;
 			}
+		}
 		pthread_mutex_unlock(&mutex);
 	}
 	void ExchangeAll(int i_from, int j_from, int k_from,

@@ -89,15 +89,22 @@ void World::SaveShred(long longi, long lati, unsigned short istart, unsigned sho
 	char str[50];
 	FileName(str, longi, lati);
 	FILE * out=fopen(str, "w");
-	for (unsigned short i=istart; i<istart+shred_width; ++i)
-	for (unsigned short j=jstart; j<jstart+shred_width; ++j)
-		for (unsigned short k=0; k<height-1; ++k) {
-			if (NULL!=out)
-				if (NULL!=blocks[i][j][k]) blocks[i][j][k]->SaveToFile(out);
-				else fprintf(out, "-1\n");
-			delete blocks[i][j][k];
-		}
-	if (NULL!=out) fclose(out);
+
+	if (NULL!=out) {
+		for (unsigned short i=istart; i<istart+shred_width; ++i)
+		for (unsigned short j=jstart; j<jstart+shred_width; ++j)
+		for (unsigned short k=0; k<height-1; ++k)
+			if (NULL!=blocks[i][j][k]) {
+				blocks[i][j][k]->SaveToFile(out);
+				delete blocks[i][j][k];
+			} else fprintf(out, "-1\n");
+		fclose(out);
+	} else
+		for (unsigned short i=istart; i<istart+shred_width; ++i)
+		for (unsigned short j=jstart; j<jstart+shred_width; ++j)
+		for (unsigned short k=0; k<height-1; ++k)
+			if (NULL!=blocks[i][j][k])
+				delete blocks[i][j][k];
 }
 
 void World::ReloadShreds(dirs direction) { //ReloadShreds is called from Move, so there is no need to use mutex in this function
@@ -442,7 +449,7 @@ int World::Focus(int i, int j, int k, int & i_target, int & j_target, int & k_ta
 	return ((bound_flag) ? 1 : 0);
 }
 
-World::World() : scr(NULL), activeList(NULL), time_step(0) {
+World::World() : time_step(0), activeList(NULL), scr(NULL) {
 	FILE * file=fopen("save", "r");
 	if (file==NULL) {
 		longitude=3;
@@ -495,4 +502,5 @@ void *PhysThread(void *vptr_args) {
 		((World*)vptr_args)->PhysEvents();
 		usleep(1000000/time_steps_in_sec);
 	}
+	return NULL;
 }

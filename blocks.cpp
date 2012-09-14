@@ -147,13 +147,14 @@ void Grass::Act() {
 		default: return;
 	}
 
-	if ( whereWorld->InBounds(i, j, z_self) )
+	if ( whereWorld->InBounds(i, j, z_self) ) {
 		if ( AIR==whereWorld->Sub(i, j, z_self) &&
 				whereWorld->InBounds(i, j, z_self-1) && SOIL==whereWorld->Sub(i, j, z_self-1) )
 			whereWorld->Build(new Grass(), i, j, z_self);
 		else if ( SOIL==whereWorld->Sub(i, j, z_self) &&
 				whereWorld->InBounds(i, j, z_self+1) && AIR==whereWorld->Sub(i, j, z_self+1) )
 			whereWorld->Build(new Grass(), i, j, z_self+1);
+	}
 }
 
 void Rabbit::Act() {
