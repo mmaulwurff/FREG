@@ -298,8 +298,7 @@ void Screen::PrintInv(WINDOW * window, Inventory * inv) {
 		wcolor_set(window, Color(inv->Kind(), inv->Sub()), NULL);
 		box(window, 0, 0);
 		char str[full_name_length];
-		inv->FullName(str);
-		mvwaddstr(window, 0, 1, str);
+		mvwprintw(window, 0, 1, "[%c]%s", CharName(inv->Kind(), inv->Sub()), inv->FullName(str));
 	}
 	wrefresh(window);
 	pthread_mutex_unlock(&(w->mutex));

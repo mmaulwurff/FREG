@@ -38,12 +38,13 @@ const unsigned short seconds_in_day=24*seconds_in_hour;
 const unsigned short end_of_night  = 6*seconds_in_hour;
 const unsigned short end_of_morning=12*seconds_in_hour;
 const unsigned short end_of_noon   =18*seconds_in_hour;
+const unsigned short end_of_evening= 0*seconds_in_hour;
 
 const unsigned short max_light_radius=5;
 
 const unsigned short max_durability=10;
 
-inline void WriteName(char * str, const char * name) { strncpy(str, name, full_name_length); }
+inline char * WriteName(char * str, const char * name) { strncpy(str, name, full_name_length); return str; }
 
 enum color_pairs { //do not change colors order! //foreground_background
         BLACK_BLACK=1,

@@ -207,6 +207,11 @@ void World::PhysEvents() {
 			soundMap[i].lev=0;
 			soundMap[i].col=BLACK_BLACK;
 		}
+
+		switch (time) {
+			case end_of_evening:
+			case end_of_night: ReEnlightenAll(); break;
+		}
 	}
 
 	//blocks' own activities, falling
@@ -445,7 +450,7 @@ World::World() : scr(NULL), activeList(NULL), time_step(0) {
 		spawnX=shred_width*2-7;
 		spawnY=shred_width*2-7;
 		spawnZ=height/2;
-		time=end_of_night+5;
+		time=end_of_night-5;
 		strncpy(worldName, "The_Land_of_Doubts\0", 20);
 		worldSize=1000;
 	} else {

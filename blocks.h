@@ -40,25 +40,25 @@ class Block { //blocks without special physics and attributes
 
 	public:
 	short enlightened;
-	virtual void FullName(char * str) {
+	virtual char * FullName(char * str) {
 		switch (sub) {
-			case WATER:      WriteName(str, "Ice"); break;
-			case STONE:      WriteName(str, "Stone"); break;
-			case MOSS_STONE: WriteName(str, "Moss stone"); break;
-			case NULLSTONE:  WriteName(str, "Nullstone"); break;
-			case GLASS:      WriteName(str, "Glass"); break;
+			case WATER:      return WriteName(str, "Ice");
+			case STONE:      return WriteName(str, "Stone");
+			case MOSS_STONE: return WriteName(str, "Moss stone");
+			case NULLSTONE:  return WriteName(str, "Nullstone");
+			case GLASS:      return WriteName(str, "Glass");
 			case STAR: case SUN_MOON:
-			case SKY:        WriteName(str, "Air"); break;
-			case SOIL:       WriteName(str, "Soil"); break;
-			case HAZELNUT:   WriteName(str, "Hazelnut"); break;
-			case WOOD:       WriteName(str, "Wood"); break;
-			case GREENERY:   WriteName(str, "Leaves"); break;
-			case ROSE:       WriteName(str, "Rose"); break;
-			case A_MEAT:     WriteName(str, "Animal meat"); break;
-			case H_MEAT:     WriteName(str, "Not animal meat"); break;
+			case SKY:        return WriteName(str, "Air");
+			case SOIL:       return WriteName(str, "Soil");
+			case HAZELNUT:   return WriteName(str, "Hazelnut");
+			case WOOD:       return WriteName(str, "Wood");
+			case GREENERY:   return WriteName(str, "Leaves");
+			case ROSE:       return WriteName(str, "Rose");
+			case A_MEAT:     return WriteName(str, "Animal meat");
+			case H_MEAT:     return WriteName(str, "Not animal meat");
 			default:
 				fprintf(stderr, "Block::FullName(char *): Block has unknown substance: %d", int(sub));
-				WriteName(str, "Unknown block");
+				return WriteName(str, "Unknown block");
 		}
 	}
 
@@ -170,7 +170,7 @@ class Block { //blocks without special physics and attributes
 class Telegraph : public Block {
 	public:
 	kinds Kind() const { return TELEGRAPH; }
-	void FullName(char * str) { WriteName(str, "Telegraph"); }
+	char * FullName(char * str) { return WriteName(str, "Telegraph"); }
 
 	void Inscribe(char * str) {
 		Block::Inscribe(str);
@@ -207,12 +207,12 @@ class Weapons : public Block {
 class Pick : public Weapons {
 	public:
 	virtual kinds Kind() const { return PICK; }
-	virtual void FullName(char * str) { 
+	virtual char * FullName(char * str) { 
 		switch (sub) {
-			case IRON: WriteName(str, "Iron pick"); break;
+			case IRON: return WriteName(str, "Iron pick");
 			default:
 				fprintf(stderr, "Pic::FullName(char *): Pick has unknown substance: %d\n", int(sub));
-				WriteName(str, "Strange pick");
+				return WriteName(str, "Strange pick");
 		}
 	}
 
@@ -233,9 +233,7 @@ class Active : public Block {
 	World * whereWorld;
 
 	public:
-	virtual void FullName(char * str) {
-		WriteName(str, "Active block");
-	}
+	virtual char * FullName(char * str) { return WriteName(str, "Active block"); }
 	virtual kinds Kind() const { return ACTIVE; }
 
 	void * ActiveBlock() { return this; }
@@ -301,7 +299,7 @@ class Animal : public Active {
 	//int health;
 	public:
 	virtual bool Stackable() { return false; }
-	virtual void FullName(char *)=0;
+	virtual char * FullName(char *)=0;
 
 	virtual void SaveAttributes(FILE * out) { Active::SaveAttributes(out); }
 
@@ -315,7 +313,7 @@ class Inventory {
 	protected:
 	Block * inventory[inventory_size][max_stack_size];
 	public:
-	void InvFullName(char * str, int i) { (NULL==inventory[i][0]) ? WriteName(str, "") : inventory[i][0]->FullName(str); }
+	char * InvFullName(char * str, int i) { return (NULL==inventory[i][0]) ? WriteName(str, "") : inventory[i][0]->FullName(str); }
 	void NumStr(char * str, int i) {
 		unsigned short n=Number(i);
 		if (1>=n) strcpy(str, "");
@@ -330,7 +328,7 @@ class Inventory {
 		for (n=0; n<max_stack_size && NULL!=inventory[i][n]; ++n);
 		return n;
 	}
-	virtual void FullName(char *)=0;
+	virtual char * FullName(char *)=0;
 	virtual kinds Kind() const=0;
 	virtual subs Sub() const=0;
 	virtual bool Access()=0;
@@ -431,9 +429,9 @@ class Dwarf : public Animal, public Inventory {
 
 	virtual kinds Kind() const { return DWARF; }
 	subs Sub() const { return Block::Sub(); }
-	virtual void FullName(char * str) {
+	virtual char * FullName(char * str) {
 		switch (sub) {
-			default: WriteName(str, "Dwarf");
+			default: return WriteName(str, "Dwarf");
 		}
 	}
 	virtual char MakeSound() { return (random()%10) ? ' ' : 's'; }
@@ -486,12 +484,12 @@ class Chest : public Block, public Inventory {
 	public:
 	virtual kinds Kind() const { return CHEST; }
 	subs Sub() const { return Block::Sub(); }
-	virtual void FullName(char * str) {
+	virtual char * FullName(char * str) {
 		switch (sub) {
-			case WOOD: WriteName(str, "Wooden Chest"); break;
+			case WOOD: return WriteName(str, "Wooden Chest");
 			default:
 				fprintf(stderr, "Chest::FullName(char *): Chest has unknown substance: %d\n", int(sub));
-				WriteName(str, "Chest");
+				return WriteName(str, "Chest");
 		}
 	}
 	virtual void * HasInventory() { return Inventory::HasInventory(); }
@@ -522,7 +520,7 @@ class Pile : public Active, public Inventory {
 	public:
 	virtual kinds Kind() const { return PILE; }
 	subs Sub() const { return Block::Sub(); }
-	virtual void FullName(char * str) { WriteName(str, "Pile"); }
+	virtual char * FullName(char * str) { return WriteName(str, "Pile"); }
 
 	virtual void * HasInventory() { return Inventory::HasInventory(); }
 	int Get(Block * block, int n=0) { return Inventory::Get(block, n); }
@@ -580,13 +578,13 @@ class Liquid : public Active {
 	virtual int Movable() { return ENVIRONMENT; }
 
 	virtual kinds Kind() const { return LIQUID; }
-	virtual void FullName(char * str) {
+	virtual char * FullName(char * str) {
 		switch (sub) {
-			case WATER: WriteName(str, "Water"); break;
-			case STONE: WriteName(str, "Lava"); break;
+			case WATER: return WriteName(str, "Water");
+			case STONE: return WriteName(str, "Lava");
 			default:
 				fprintf(stderr, "Liquid::FullName(char *): Liquid has unknown substance: %d\n", int(sub));
-				WriteName(str, "Unknown liquid");
+				return WriteName(str, "Unknown liquid");
 		}
 	}
 
@@ -625,12 +623,12 @@ class Liquid : public Active {
 
 class Grass : public Active {
 	public:
-	virtual void FullName(char * str) {
+	virtual char * FullName(char * str) {
 		switch (sub) {
-			case GRASS: WriteName(str, "Grass");
+			case GRASS: return WriteName(str, "Grass");
 			default:
 				fprintf(stderr, "Plant::FullName(char *): unlisted sub\n");
-				WriteName(str, "Unknown plant");
+				return WriteName(str, "Unknown plant");
 		}
 	}
 	virtual kinds Kind() const { return GRASS; }
@@ -654,7 +652,7 @@ class Grass : public Active {
 
 class Bush : public Active, public Inventory {
 	public:
-	virtual void FullName(char * str) { WriteName(str, "Bush"); }
+	virtual char * FullName(char * str) { return WriteName(str, "Bush"); }
 	virtual kinds Kind() const { return BUSH; }
 	subs Sub() const { return Block::Sub(); }
 
@@ -688,7 +686,7 @@ class Bush : public Active, public Inventory {
 
 class Rabbit : public Active {
 	public:
-	void FullName(char * str) { WriteName(str, "Rabbit"); }
+	char * FullName(char * str) { return WriteName(str, "Rabbit"); }
 	kinds Kind() const { return RABBIT; }
 
 	void Act();

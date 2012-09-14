@@ -170,7 +170,7 @@ class World {
 	void SunShine(const int i, const int j) {
 		unsigned short k;
 		for (k=height-2; Transparent(i, j, k); --k)
-			if (NULL!=blocks[i][j][k])
+			if ( NULL!=blocks[i][j][k] )
 				blocks[i][j][k]->enlightened=1;
 		blocks[i][j][k]->enlightened=1;
 	}
