@@ -115,7 +115,7 @@ class World {
 		if (NULL==map)
 			return '.';
 
-		char find_start[2];
+		char find_start[3];
 		do fgets(find_start, 3, map);
 		while ('#'!=find_start[0] || '#'!=find_start[1]);
 

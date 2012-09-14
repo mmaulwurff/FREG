@@ -15,6 +15,7 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
+#include <unistd.h>
 #include "header.h"
 #include "screen.h"
 #include "world.h"
@@ -73,5 +74,6 @@ int main() {
 			default: screen.Notify("What?\n");
 		}
 		if (print_flag) screen.Print();
+		usleep(10000);
 	}
 }
