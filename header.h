@@ -117,7 +117,7 @@ enum color_pairs { //do not change colors order! //foreground_background
         WHITE_BLUE,
         WHITE_MAGENTA,
         WHITE_CYAN,
-        WHITE_WHITE,
+        WHITE_WHITE
 };
 enum dirs { HERE, NORTH, NORTH_EAST, EAST, SOUTH_EAST, SOUTH, SOUTH_WEST, WEST, NORTH_WEST, UP, DOWN };
 

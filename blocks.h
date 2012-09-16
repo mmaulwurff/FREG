@@ -40,7 +40,7 @@ class Block { //blocks without special physics and attributes
 
 	public:
 	short enlightened;
-	virtual char * FullName(char * str) {
+	virtual char * FullName(char * str) const {
 		switch (sub) {
 			case WATER:      return WriteName(str, "Ice");
 			case STONE:      return WriteName(str, "Stone");
@@ -62,11 +62,10 @@ class Block { //blocks without special physics and attributes
 		}
 	}
 
-	virtual Block * GetThis() { return this; }
 	void SetWeight(double m) { shown_weight=m; }
 	void SetWeight() { shown_weight=weight; }
-	double Weight() { return shown_weight; }
-	dirs GetDir() { return direction; }
+	double Weight() const { return shown_weight; }
+	dirs GetDir() const { return direction; }
 	void SetDir(dirs dir) { direction=dir; }
 	subs Sub() const { return sub; }
 	virtual void Inscribe(char * str) {
@@ -77,31 +76,31 @@ class Block { //blocks without special physics and attributes
 			note=NULL;
 		}
 	}
-	virtual void GetNote(char * str) {
+	virtual void GetNote(char * const str) const {
 		if (NULL!=note)
 			strncpy(str, note, note_length);
 		else str[0]='\0';
 	}
 
 	virtual kinds Kind() const { return BLOCK; }
-	virtual bool CanBeIn() { return true; }
-	virtual bool CanBeOut() {
+	virtual bool CanBeIn() const { return true; }
+	virtual bool CanBeOut() const {
 		switch (sub) {
 			case HAZELNUT: return false;
 			default: return true;
 		}
 	}
-	virtual int Movable() { return NOT_MOVABLE; }
-	virtual int Transparent() {
+	virtual int Movable() const { return NOT_MOVABLE; }
+	virtual int Transparent() const { //0 - normal block, 1 - block is visible, but light can pass through it, 2 - invisible block
 		switch (sub) {
 			case WATER: case GREENERY:
 			case GLASS: return 1;
-			default: return 0; //0 - normal block, 1 - block is visible, but light can pass through it, 2 - invisible block
+			default: return 0;
 		}
 	}
 	virtual before_move_return BeforeMove(dirs) { return NOTHING; }
-	virtual void Move(dirs) {}
-	virtual char MakeSound() { return ' '; }
+	virtual int Move(dirs) { return 0; }
+	virtual char MakeSound() const { return ' '; }
 	virtual usage_types Use() { return NO; }
 	virtual int Damage() {
 		switch (sub) {
@@ -150,7 +149,13 @@ class Block { //blocks without special physics and attributes
 		else fprintf(out, "_0/");
 	}
 
-	Block(subs n=STONE) : sub(n), weight(1), shown_weight(1), direction(NORTH), note(NULL), durability(max_durability), enlightened(0) {}
+	Block(subs n=STONE) : sub(n), weight(1), shown_weight(1), direction(NORTH), note(NULL), durability(max_durability), enlightened(1) {
+		switch (sub) {
+			case STONE: weight=2; break;
+			default: weight=1;
+		}
+		shown_weight=weight;
+	}
 	Block(char * str) {
 		unsigned short note_len;
 	       	sscanf(str, "%*d_%d_%f_%d_%hd_%hd_%hd", (int *)(&sub), &weight, (int *)(&direction), &durability, &enlightened, &note_len);
@@ -170,7 +175,7 @@ class Block { //blocks without special physics and attributes
 class Telegraph : public Block {
 	public:
 	kinds Kind() const { return TELEGRAPH; }
-	char * FullName(char * str) { return WriteName(str, "Telegraph"); }
+	char * FullName(char * str) const { return WriteName(str, "Telegraph"); }
 
 	void Inscribe(char * str) {
 		Block::Inscribe(str);
@@ -182,9 +187,9 @@ class Telegraph : public Block {
 			system(command);
 		}
 	}
-	virtual Block * DropAfterDamage() { return new Telegraph(); }
+	Block * DropAfterDamage() { return new Telegraph(); }
 
-	virtual void SaveAttributes(FILE * out) { Block::SaveAttributes(out); }
+	void SaveAttributes(FILE * out) { Block::SaveAttributes(out); }
 
 	Telegraph() : Block(DIFFERENT) {}
 	Telegraph(char * str) : Block(str) {}
@@ -196,7 +201,7 @@ class Weapons : public Block {
 	virtual kinds Kind() const=0;
 	bool Weapon() { return true; }
 	virtual bool Carving()  { return false; }
-	bool CanBeOut() { return false; }
+	bool CanBeOut() const { return false; }
 
 	virtual void SaveAttributes(FILE * out) { Block::SaveAttributes(out); }
 
@@ -207,7 +212,7 @@ class Weapons : public Block {
 class Pick : public Weapons {
 	public:
 	virtual kinds Kind() const { return PICK; }
-	virtual char * FullName(char * str) { 
+	virtual char * FullName(char * str) const { 
 		switch (sub) {
 			case IRON: return WriteName(str, "Iron pick");
 			default:
@@ -233,11 +238,11 @@ class Active : public Block {
 	World * whereWorld;
 
 	public:
-	virtual char * FullName(char * str) { return WriteName(str, "Active block"); }
+	virtual char * FullName(char * str) const { return WriteName(str, "Active block"); }
 	virtual kinds Kind() const { return ACTIVE; }
 
 	void * ActiveBlock() { return this; }
-	virtual void Move(dirs dir) {
+	virtual int Move(dirs dir) {
 		switch (dir) {
 			case NORTH: --y_self; break;
 			case SOUTH: ++y_self; break;
@@ -247,6 +252,7 @@ class Active : public Block {
 			case DOWN:  --z_self; break;
 			default: fprintf(stderr, "Active::Move(dirs): unlisted dir: %d\n", (int)dir);
 		}
+		return 0;
 	}
 
 	Active * GetNext() { return next; }
@@ -265,11 +271,11 @@ class Active : public Block {
 	void SafeMove();
 	void SafeJump();
 
-	virtual char MakeSound() { return ' '; }
+	virtual char MakeSound() const { return ' '; }
 	virtual unsigned short Noise() { return 0; }
 
 	virtual bool IfToDestroy() { return false; }
-	virtual int Movable() { return MOVABLE; }
+	virtual int Movable() const { return MOVABLE; }
 	virtual bool ShouldFall() { return true; }
 
 	virtual void SaveAttributes(FILE * out) { Block::SaveAttributes(out); }
@@ -299,7 +305,7 @@ class Animal : public Active {
 	//int health;
 	public:
 	virtual bool Stackable() { return false; }
-	virtual char * FullName(char *)=0;
+	virtual char * FullName(char *) const=0;
 
 	virtual void SaveAttributes(FILE * out) { Active::SaveAttributes(out); }
 
@@ -331,7 +337,7 @@ class Inventory {
 		for (n=0; n<max_stack_size && NULL!=inventory[i][n]; ++n);
 		return n;
 	}
-	virtual char * FullName(char *)=0;
+	virtual char * FullName(char *) const=0;
 	virtual kinds Kind() const=0;
 	virtual subs Sub() const=0;
 	virtual bool Access()=0;
@@ -432,16 +438,16 @@ class Dwarf : public Animal, public Inventory {
 
 	virtual kinds Kind() const { return DWARF; }
 	subs Sub() const { return Block::Sub(); }
-	virtual char * FullName(char * str) {
+	virtual char * FullName(char * str) const {
 		switch (sub) {
 			default: return WriteName(str, "Dwarf");
 		}
 	}
-	virtual char MakeSound() { return (random()%10) ? ' ' : 's'; }
-	bool CanBeIn() { return false; }
+	virtual char MakeSound() const { return (random()%10) ? ' ' : 's'; }
+	bool CanBeIn() const { return false; }
 
 	virtual before_move_return BeforeMove(dirs);
-	void Move(dirs);
+	int Move(dirs);
 
 	void * HasInventory() { return Inventory::HasInventory(); }
 	bool Stackable() { return false; }
@@ -487,7 +493,7 @@ class Chest : public Block, public Inventory {
 	public:
 	virtual kinds Kind() const { return CHEST; }
 	subs Sub() const { return Block::Sub(); }
-	virtual char * FullName(char * str) {
+	virtual char * FullName(char * str) const {
 		switch (sub) {
 			case WOOD: return WriteName(str, "Wooden Chest");
 			default:
@@ -498,7 +504,6 @@ class Chest : public Block, public Inventory {
 	virtual void * HasInventory() { return Inventory::HasInventory(); }
 	virtual Block * Drop(int n) { return Inventory::Drop(n); }
 	int Get(Block * block, int n=0) { return Inventory::Get(block, n); }
-	virtual Block * GetThis() { return this; }
 	virtual bool Access() { return true; }
 
 	usage_types Use() { return Inventory::Use(); }
@@ -523,7 +528,7 @@ class Pile : public Active, public Inventory {
 	public:
 	virtual kinds Kind() const { return PILE; }
 	subs Sub() const { return Block::Sub(); }
-	virtual char * FullName(char * str) { return WriteName(str, "Pile"); }
+	virtual char * FullName(char * str) const { return WriteName(str, "Pile"); }
 
 	virtual void * HasInventory() { return Inventory::HasInventory(); }
 	int Get(Block * block, int n=0) { return Inventory::Get(block, n); }
@@ -548,10 +553,9 @@ class Pile : public Active, public Inventory {
 		lifetime=0;
 		return temp;
 	}
-	virtual Block * GetThis() { return this; }
 
 	virtual before_move_return BeforeMove(dirs);
-	virtual bool CanBeIn() { return false; }
+	virtual bool CanBeIn() const { return false; }
 	virtual bool Access() { return true; }
 	int Damage() { return durability-=10; }
 
@@ -578,10 +582,10 @@ class Liquid : public Active {
 	bool CheckWater(dirs);
 
 	public:
-	virtual int Movable() { return ENVIRONMENT; }
+	virtual int Movable() const { return ENVIRONMENT; }
 
 	virtual kinds Kind() const { return LIQUID; }
-	virtual char * FullName(char * str) {
+	virtual char * FullName(char * str) const {
 		switch (sub) {
 			case WATER: return WriteName(str, "Water");
 			case STONE: return WriteName(str, "Lava");
@@ -591,7 +595,7 @@ class Liquid : public Active {
 		}
 	}
 
-	virtual int Transparent() {
+	virtual int Transparent() const {
 		switch (sub) {
 			case WATER: return 1;
 			default: return 0; //0 - totally invisible blocks, 1 - block is visible, but light can pass through it, 2 - invisible
@@ -626,7 +630,7 @@ class Liquid : public Active {
 
 class Grass : public Active {
 	public:
-	virtual char * FullName(char * str) {
+	virtual char * FullName(char * str) const {
 		switch (sub) {
 			case GRASS: return WriteName(str, "Grass");
 			default:
@@ -636,7 +640,7 @@ class Grass : public Active {
 	}
 	virtual kinds Kind() const { return GRASS; }
 
-	virtual int Transparent() { return 1; }
+	virtual int Transparent() const { return 1; }
 	virtual bool ShouldFall() { return false; }
 
 	virtual int Damage() { return durability=0; }
@@ -655,14 +659,14 @@ class Grass : public Active {
 
 class Bush : public Active, public Inventory {
 	public:
-	virtual char * FullName(char * str) { return WriteName(str, "Bush"); }
+	virtual char * FullName(char * str) const { return WriteName(str, "Bush"); }
 	virtual kinds Kind() const { return BUSH; }
 	subs Sub() const { return Block::Sub(); }
 
 	virtual bool Access() { return true; }
 	usage_types Use() { return Inventory::Use(); }
 	virtual void * HasInventory() { return Inventory::HasInventory(); }
-	virtual int Movable() { return NOT_MOVABLE; }
+	virtual int Movable() const { return NOT_MOVABLE; }
 
 	virtual void Act() {
 		if (0==random()%seconds_in_hour) {
@@ -689,7 +693,7 @@ class Bush : public Active, public Inventory {
 
 class Rabbit : public Active {
 	public:
-	char * FullName(char * str) { return WriteName(str, "Rabbit"); }
+	char * FullName(char * str) const { return WriteName(str, "Rabbit"); }
 	kinds Kind() const { return RABBIT; }
 
 	void Act();

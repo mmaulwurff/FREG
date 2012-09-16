@@ -48,12 +48,12 @@ int main() {
 					screen.viewRight=FRONT;
 			break;
 			case '\n': { //enter key
-				int i, j, k;
+				unsigned short i, j, k;
 				earth.PlayerFocus(i, j, k);
 				earth.Use(i, j, k);
 			} break;
 			case '?': {
-				int i, j, k;
+				unsigned short i, j, k;
 				earth.PlayerFocus(i, j, k);
 				char str[full_name_length+note_length+20+10];
 				earth.FullName(str, i, j, k);
@@ -66,7 +66,7 @@ int main() {
 			case 'W': earth.PlayerWield(); break;
 			case 'I': earth.PlayerInscribe(); break;
 			case KEY_BACKSPACE: {
-				int i, j, k;
+				unsigned short i, j, k;
 				earth.PlayerFocus(i, j, k);
 				earth.Damage(i, j, k);
 			} break;

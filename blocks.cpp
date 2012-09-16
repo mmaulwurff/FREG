@@ -18,7 +18,7 @@
 #include "blocks.h"
 #include "world.h"
 
-void BlockFromFile(FILE * in, Block * & block, World * world,
+void BlockFromFile(FILE * const in, Block * & block, World * world,
 		unsigned short i, unsigned short j, unsigned short k) {
 	char str[300];
 	fgets(str, 300, in);
@@ -46,9 +46,8 @@ void BlockFromFile(FILE * in, Block * & block, World * world,
 
 void Active::SafeMove() {
 	//when player is on the border of shred, moving him causes World::ReloadShreds(dir). so, cheks are neede for liquids not to push player.
-	int x_focus, y_focus, z_focus;
+	unsigned short x_focus, y_focus, z_focus;
 	whereWorld->Focus(x_self, y_self, z_self, x_focus, y_focus, z_focus, direction);
-	//if (x_focus!=whereWorld->playerX || y_focus!=whereWorld->playerY)
 	if ((Block *)(whereWorld->playerP)!=whereWorld->blocks[x_focus][y_focus][z_focus])
 		whereWorld->Move(x_self, y_self, z_self, direction);
 }
@@ -61,7 +60,7 @@ void Active::SafeJump() {
 		SetWeight();
 }
 
-void Active::Register(World * w, const int x, const int y, const int z) {
+void Active::Register(World * const w, const int x, const int y, const int z) {
 	whereWorld=w;
 	if (NULL!=whereWorld) {
 		x_self=x;
@@ -95,28 +94,31 @@ void Active::Unregister() {
 	}
 }
 
-void Dwarf::Move(dirs dir) {
+int Dwarf::Move(const dirs dir) {
 	Active::Move(dir);
 	if ( this==whereWorld->playerP && (
 			(x_self==shred_width-1 || x_self==shred_width*2 ||
-			 y_self==shred_width-1 || y_self==shred_width*2)) )
+			 y_self==shred_width-1 || y_self==shred_width*2)) ) {
 		whereWorld->ReloadShreds(dir);
+		return 1;
+	}
+	return 0;
 }
 
-before_move_return Dwarf::BeforeMove(dirs dir) {
+before_move_return Dwarf::BeforeMove(const dirs dir) {
 	if (dir==direction)
 		whereWorld->GetAll(x_self, y_self, z_self);
 	return NOTHING;
 }
 
-before_move_return Pile::BeforeMove(dirs dir) {
+before_move_return Pile::BeforeMove(const dirs dir) {
 	direction=dir;
 	whereWorld->DropAll(x_self, y_self, z_self);
 	return NOTHING;
 }
 
-bool Liquid::CheckWater(dirs dir) {
-	int i_check, j_check, k_check;
+bool Liquid::CheckWater(const dirs dir) {
+	unsigned short i_check, j_check, k_check;
 	if ( (whereWorld->Focus(x_self, y_self, z_self, i_check, j_check, k_check, dir)) )
 		return false;
 	if ( WATER==whereWorld->Sub(i_check, j_check, k_check) )
@@ -163,7 +165,7 @@ void Rabbit::Act() {
 	for (short x=x_self-7; x<=x_self+7; ++x)
 	for (short y=y_self-7; y<=y_self+7; ++y)
 	for (short z=z_self-7; z<=z_self+7; ++z)
-		if ( whereWorld->InBounds(x, y, z)) {// && whereWorld->DirectlyVisible(x_self, y_self, z_self, x, y, z) ) {
+		if ( whereWorld->InBounds(x, y, z) ) {
 			attractive=0;
 			switch ( whereWorld->Kind(x, y, z) ) {
 				case DWARF:  if (whereWorld->DirectlyVisible(x_self, y_self, z_self, x, y, z)) attractive=-9; break;

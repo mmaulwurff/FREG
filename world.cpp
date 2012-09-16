@@ -50,7 +50,7 @@ void World::LoadAllShreds() {
 	ReEnlightenAll();
 }
 
-void World::LoadShred(long longi, long lati, const unsigned short istart, const unsigned short jstart) {
+void World::LoadShred(const long longi, const long lati, const unsigned short istart, const unsigned short jstart) {
 	char str[50];
 	FileName(str, longi, lati);
 	FILE * in=fopen(str, "r");
@@ -85,7 +85,7 @@ void World::LoadShred(long longi, long lati, const unsigned short istart, const 
 	}
 }
 
-void World::SaveShred(long longi, long lati, unsigned short istart, unsigned short jstart) {
+void World::SaveShred(const long longi, const long lati, const unsigned short istart, const unsigned short jstart) {
 	char str[50];
 	FileName(str, longi, lati);
 	FILE * out=fopen(str, "w");
@@ -107,7 +107,7 @@ void World::SaveShred(long longi, long lati, unsigned short istart, unsigned sho
 				delete blocks[i][j][k];
 }
 
-void World::ReloadShreds(dirs direction) { //ReloadShreds is called from Move, so there is no need to use mutex in this function
+void World::ReloadShreds(const dirs direction) { //ReloadShreds is called from Move, so there is no need to use mutex in this function
 	long l;
 	Active * block;
 	short i, j, k;
@@ -271,10 +271,10 @@ void World::PhysEvents() {
 			nexttemp=temp->GetNext();
 			if (NULL!=scr) {
 				if (NULL!=scr->blockToPrintRight &&
-						scr->blockToPrintRight->GetThis()==blocks[x][y][z])
+						(Block *)(scr->blockToPrintRight)==blocks[x][y][z])
 					scr->blockToPrintRight=NULL;
 				if (NULL!=scr->blockToPrintLeft &&
-						scr->blockToPrintLeft->GetThis()==blocks[x][y][z])
+						(Block *)(scr->blockToPrintLeft)==blocks[x][y][z])
 					scr->blockToPrintLeft=NULL;
 			}
 			delete blocks[x][y][z];
@@ -294,7 +294,7 @@ void World::PhysEvents() {
 	pthread_mutex_unlock(&mutex);
 }
 
-char World::CharNumber(int i, int j, int k) {
+char World::CharNumber(const int i, const int j, const int k) {
 	if (height-1==k) return ' ';
 	if ((Block *)playerP==blocks[i][j][k])
 		switch ( playerP->GetDir() ) {
@@ -320,7 +320,7 @@ char World::CharNumber(int i, int j, int k) {
 	return '+';
 }
 
-char World::CharNumberFront(int i, int j) {
+char World::CharNumberFront(const int i, const int j) {
 	unsigned short ret;
 	unsigned short playerX, playerY, playerZ;
 	playerP->GetSelfXYZ(playerX, playerY, playerZ);
@@ -331,8 +331,8 @@ char World::CharNumberFront(int i, int j) {
 	return '+';
 }
 
-bool World::DirectlyVisible(int x_from, int y_from, int z_from,
-                            int x_to,   int y_to,   int z_to) {
+bool World::DirectlyVisible(const int x_from, const int y_from, const int z_from,
+                            const int x_to,   const int y_to,   const int z_to) {
 	if (x_from==x_to && y_from==y_to && z_from==z_to) return true;
 	unsigned short max=(abs(z_to-z_from) > abs(y_to-y_from)) ? abs(z_to-z_from) : abs(y_to-y_from);
 	if (abs(x_to-x_from) > max) max=abs(x_to-x_from);
@@ -347,8 +347,8 @@ bool World::DirectlyVisible(int x_from, int y_from, int z_from,
 	return true;
 }
 
-bool World::Visible(int x_from, int y_from, int z_from,
-                    int x_to,   int y_to,   int z_to) {
+bool World::Visible(const int x_from, const int y_from, const int z_from,
+                    const int x_to,   const int y_to,   const int z_to) {
 	short temp;
 	if ((DirectlyVisible(x_from, y_from, z_from, x_to, y_to, z_to)) ||
 		(Transparent(x_to+(temp=(x_to>x_from) ? (-1) : 1), y_to, z_to) && DirectlyVisible(x_from, y_from, z_from, x_to+temp, y_to, z_to)) ||
@@ -358,9 +358,9 @@ bool World::Visible(int x_from, int y_from, int z_from,
 	return false;
 }
 
-int World::Move(int i, int j, int k, dirs dir, unsigned stop) {
+int World::Move(const unsigned short i, const unsigned short j, const unsigned short k, const dirs dir, const unsigned stop) {
 	pthread_mutex_lock(&mutex);
-	int newi, newj, newk;
+	unsigned short newi, newj, newk;
 	if ( NULL==blocks[i][j][k] ||
 			NOT_MOVABLE==Movable(blocks[i][j][k]) ||
 			Focus(i, j, k, newi, newj, newk, dir) ) {
@@ -374,21 +374,26 @@ int World::Move(int i, int j, int k, dirs dir, unsigned stop) {
 		return 1;
 	}
 	int numberMoves=0;
-	if (stop && (ENVIRONMENT!=Movable(blocks[i][j][k]) || !Equal(blocks[i][j][k], blocks[newi][newj][newk])) &&
+	if (stop && (ENVIRONMENT!=blocks[i][j][k]->Movable() || !Equal(blocks[i][j][k], blocks[newi][newj][newk])) &&
 			(ENVIRONMENT==Movable(blocks[newi][newj][newk]) || (numberMoves=Move(newi, newj, newk, dir, stop-1)) )) {
 		Block * temp=blocks[i][j][k];
 		blocks[i][j][k]=blocks[newi][newj][newk];
 		blocks[newi][newj][newk]=temp;
 		
-		ReEnlighten(i, j, k);
+		ReEnlighten(newi, newj, newk);
 
-		blocks[newi][newj][newk]->Move(dir);
-		if (NULL!=blocks[i][j][k])
+		if ( NULL!=blocks[i][j][k] )
 			blocks[i][j][k]->Move( Anti(dir) );
 
+		if ( blocks[newi][newj][newk]->Move(dir) )
+			GetPlayerCoords(newi, newj, newk);
+
 		float weight=Weight(blocks[newi][newj][newk])-Weight(blocks[newi][newj][newk-1]);
-		if (stop && weight)
-			numberMoves+=Move(newi, newj, newk, (weight>0) ? DOWN : UP, stop-1);
+		if ( weight<0 ) {
+			if ( ENVIRONMENT==blocks[newi][newj][newk]->Movable() )
+				numberMoves+=Move(newi, newj, newk, UP, stop-1);
+		} else if (weight)
+			numberMoves+=Move(newi, newj, newk, DOWN, stop-1);
 
 		++numberMoves;
 	}
@@ -396,21 +401,25 @@ int World::Move(int i, int j, int k, dirs dir, unsigned stop) {
 	return numberMoves;
 }
 
-void World::Jump(int i, int j, int k) {
-	if ( NULL!=blocks[i][j][k] && blocks[i][j][k]->Movable() ) {
+void World::Jump(const int i, const int j, int k) {
+	pthread_mutex_lock(&mutex);
+	if ( NULL!=blocks[i][j][k] && MOVABLE==blocks[i][j][k]->Movable() ) {
+		Block * to_move=blocks[i][j][k];
 		blocks[i][j][k]->SetWeight(0);
 		int k_plus;
 		if ( (k_plus=Move(i, j, k, UP)) ) {
 			k+=k_plus;
 			blocks[i][j][k]->SetWeight();
-			if ( !Move( i, j, k, blocks[i][j][k]->GetDir()) )
+			if ( !Move( i, j, k, to_move->GetDir()) )
 				Move(i, j, k, DOWN);
 		} else
 			blocks[i][j][k]->SetWeight();
 	}
+	pthread_mutex_unlock(&mutex);
 }
 
-int World::Focus(int i, int j, int k, int & i_target, int & j_target, int & k_target, dirs dir) {
+int World::Focus(const unsigned short i, const unsigned short j, const unsigned short k,
+		unsigned short & i_target, unsigned short & j_target, unsigned short & k_target, const dirs dir) {
 	i_target=i;
 	j_target=j;
 	k_target=k;
@@ -483,7 +492,7 @@ World::~World() {
 	pthread_cancel(eventsThread);
 	pthread_mutex_unlock(&mutex);
 	pthread_mutex_destroy(&mutex);
-	GetPlayerCoords(spawnX, spawnY);
+	GetPlayerCoords(spawnX, spawnY, spawnZ);
 	FILE * file=fopen("save", "w");
 	if (file!=NULL) {
 		fprintf(file, "longitude: %ld\nlatitude: %ld\nspawnX: %hd\nspawnY: %hd\nspawnZ: %hd\ntime: %ld\nWorld:%s\nSize:%hd\n",

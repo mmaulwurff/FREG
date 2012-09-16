@@ -68,7 +68,7 @@ class World {
 		for (j=0; j<shred_width*3; ++j)
 			blocks[i][j][height-1]->enlightened=1; //sky is always enlightened
 	}
-	dirs MakeDir(unsigned short x_center, unsigned short y_center, unsigned short x_target, unsigned short y_target) {
+	dirs MakeDir(const unsigned short x_center, const unsigned short y_center, const unsigned short x_target, const unsigned short y_target) {
 		//if (x_center==x_target && y_center==y_target) return HERE;
 		if (abs(x_center-x_target)<=1 && abs(y_center-y_target)<=1) return HERE;
 		float x=x_target-x_center,
@@ -81,18 +81,16 @@ class World {
 		else if (y<-3*x && y>-x/3) return SOUTH_WEST;
 		else if (y<=-x/3 && y>=x/3) return WEST;
 		else return NORTH_WEST;
-	} double Distance(unsigned short x_from, unsigned short y_from,
-			unsigned short z_from,
-	                unsigned short x_to,   unsigned short y_to,   unsigned short z_to) {
+	}
+	double Distance(const unsigned short x_from, const unsigned short y_from, const unsigned short z_from,
+	                const unsigned short x_to,   const unsigned short y_to,   const unsigned short z_to) {
 		return sqrt( (x_from-x_to)*(x_from-x_to)+
 		             (y_from-y_to)*(y_from-y_to)+
 		             (z_from-z_to)*(z_from-z_to) );
 	}
-	void FileName(char * str, long longi, long lati) { sprintf(str, "shreds/%ld_%ld", longi, lati); }
+	void FileName(char * const str, const long longi, const long lati) { sprintf(str, "shreds/%ld_%ld", longi, lati); }
 
-	bool LegalXYZ(int i, int j, int k) { return (i>=0 && i<shred_width*3 && j>=0 && j<shred_width*3 && k>0 && k<height-1); }
-
-	dirs Anti(dirs dir) {
+	dirs Anti(const dirs dir) {
 		switch (dir) {
 			case NORTH: return SOUTH;
 			case NORTH_EAST: return SOUTH_WEST;
@@ -110,7 +108,7 @@ class World {
 		}
 	}
 
-	char TypeOfShred(long longi, long lati) {
+	char TypeOfShred(const long longi, const long lati) {
 		FILE * map=fopen(worldName, "r");
 		if (NULL==map)
 			return '.';
@@ -127,8 +125,8 @@ class World {
 
 	//lighting section
 	void ReEnlighten(const int i, const int j, const int k) {
-		if ( !InBounds(i, j, k) )
-			return;
+	//	if ( Transparent(i, j, k) )
+	//		return;
 
 		short x, y, z;
 		for (x=i-max_light_radius-1; x<=i+max_light_radius+1; ++x)
@@ -146,6 +144,26 @@ class World {
 		for (y=j-max_light_radius-1; y<=j+max_light_radius+1; ++y)
 			if ( InBounds(x, y, 0) )
 				SunReShine(x, y);
+	}
+
+	void DirectReEnlighten(const int i, const int j, const int k) {
+		if ( NIGHT!=PartOfDay() && UnderTheSky(i, j, k) ) {
+			blocks[i][j][k]->enlightened=1;
+			return;
+		}
+
+		short x, y, z;
+		for (x=i-max_light_radius; x<=i+max_light_radius; ++x)
+		for (y=j-max_light_radius; y<=j+max_light_radius; ++y)
+		for (z=k-max_light_radius; z<=k+max_light_radius; ++z)
+			if ( InBounds(x, y, z) && !(x==i && y==j && z==k) &&
+					( Distance(i, j, k, x, y, z)<=LightRadius(x, y, z) ) &&
+					DirectlyVisible(i, j, k, x, y, z) ) {
+				fprintf(stderr, "light! ijk: %d %d %d, xyz: %hd %hd %hd", i, j, k, x, y, z);
+				blocks[i][j][k]->enlightened=1;
+				return;
+			}
+		blocks[i][j][k]->enlightened=0;
 	}
 
 	void ReEnlightenAll() {
@@ -173,16 +191,15 @@ class World {
 	}
 
 	void SunShine(const int i, const int j) {
-		unsigned short k;
-		for (k=height-2; Transparent(i, j, k); --k) {
+		unsigned short k=height-2;
+		do {
 			if ( NULL!=blocks[i][j][k] )
 				blocks[i][j][k]->enlightened=1;
 			SafeEnlighten(i+1, j, k);
 			SafeEnlighten(i-1, j, k);
 			SafeEnlighten(i, j+1, k);
 			SafeEnlighten(i, j-1, k);
-		}
-		blocks[i][j][k]->enlightened=1;
+		} while ( Transparent(i, j, k--) );
 	}
 
 	void SunReShine(const int i, const int j) { 
@@ -218,7 +235,7 @@ class World {
 		for (unsigned short i=istart; i<istart+shred_width; ++i)
 		for (unsigned short j=jstart; j<jstart+shred_width; ++j) {
 			unsigned short k;
-			for (k=1; k<height/2-6 && k<height/2-depth; ++k)
+			for (k=1; k<height/2-6 && k<height/2-depth-1; ++k)
 				blocks[i][j][k]=new Block;
 			blocks[i][j][k++]=new Block((random()%2) ? STONE : SOIL);
 			for (; k<height/2-depth; ++k)
@@ -254,10 +271,7 @@ class World {
 
 	void Plain(const unsigned short istart, const unsigned short jstart) {
 		NormalUnderground(istart, jstart);
-		unsigned short i, j;
-		for (i=istart; i<istart+shred_width; ++i)
-		for (j=jstart; j<jstart+shred_width; ++j)
-			blocks[i][j][height/2]=new Grass(this, i, j, height/2);
+		unsigned short i;
 
 		//bush
 		short rand=random()%2;
@@ -278,6 +292,8 @@ class World {
 				delete blocks[x][y][height/2];
 			blocks[x][y][height/2]=new Rabbit(this, x, y, height/2);
 		}
+
+		PlantGrass(istart, jstart);
 	}
 
 	void Forest(const unsigned short istart, const unsigned short jstart, const long longi, const long lati) {
@@ -349,9 +365,9 @@ class World {
 		}
 		for (unsigned short i=istart; i<istart+shred_width; ++i)	
 		for (unsigned short j=jstart; j<jstart+shred_width; ++j)
-		for (unsigned short k=height/2-depth; k<height/2; ++k)
-			if (NULL==blocks[i][j][k])
-				blocks[i][j][k]=new Liquid(this, i, j, k);
+		//for (unsigned short k=height/2-depth; k<height/2; ++k)
+			if (NULL==blocks[i][j][height/2-depth])
+				blocks[i][j][height/2-depth]=new Liquid(this, i, j, height/2-depth);
 
 		PlantGrass(istart, jstart);
 	}
@@ -410,24 +426,25 @@ class World {
 		color_pairs col;
 	} soundMap[9];
 	private:
-	char MakeSound(int i, int j, int k) { return (NULL==blocks[i][j][k]) ? ' ' : blocks[i][j][k]->MakeSound(); }
+	char MakeSound(const int i, const int j, const int k) { return (NULL==blocks[i][j][k]) ? ' ' : blocks[i][j][k]->MakeSound(); }
 
 	private:
-	char CharNumber(int, int, int);
-	char CharNumberFront(int, int);
+	char CharNumber(const int, const int, const int);
+	char CharNumberFront(const int, const int);
 
 	//information section
 	public:
-	int Focus(int, int, int, int &, int &, int &, dirs);
-	int Focus(int i, int j, int k, int & i_target, int & j_target, int & k_target) {
+	int Focus(const unsigned short, const unsigned short, const unsigned short, unsigned short &, unsigned short &, unsigned short &, const dirs);
+	int Focus(const unsigned short i, const unsigned short j, const unsigned short k,
+			unsigned short & i_target, unsigned short & j_target, unsigned short & k_target) {
 		return Focus( i, j, k, i_target, j_target, k_target, blocks[i][j][k]->GetDir() );
 	}
-	void PlayerFocus(int & i_target, int & j_target, int & k_target) {
+	void PlayerFocus(unsigned short & i_target, unsigned short & j_target, unsigned short & k_target) {
 		unsigned short playerX, playerY, playerZ;
 		GetPlayerCoords(playerX, playerY, playerZ);
 		Focus(playerX, playerY, playerZ, i_target, j_target, k_target);
 	}
-	dirs TurnRight(dirs dir) {
+	dirs TurnRight(const dirs dir) {
 		switch (dir) {
 			case NORTH: return EAST;
 			case EAST: return SOUTH;
@@ -435,7 +452,7 @@ class World {
 			default: return NORTH;
 		}
 	}
-	dirs TurnLeft(dirs dir) {
+	dirs TurnLeft(const dirs dir) {
 		switch (dir) {
 			case NORTH: return WEST;
 			case WEST: return SOUTH;
@@ -445,9 +462,9 @@ class World {
 	}
 
 	//visibility section
-	bool DirectlyVisible(int, int, int, int, int, int);
-	bool Visible(int, int, int, int, int, int);
-	bool Visible(int x_to, int y_to, int z_to) {
+	bool DirectlyVisible(const int, const int, const int, const int, const int, const int);
+	bool Visible(const int, const int, const int, const int, const int, const int);
+	bool Visible(const int x_to, const int y_to, const int z_to) {
 		unsigned short playerX, playerY, playerZ;
 		GetPlayerCoords(playerX, playerY, playerZ);
 		return Visible(playerX, playerY, playerZ, x_to, y_to, z_to);
@@ -455,9 +472,9 @@ class World {
 
 	//movement section
 	void PhysEvents();
-	int  Move(int, int, int, dirs, unsigned=3); //unsigned is how much should block fall or rise at one turn
-	void Jump(int, int, int);
-	int PlayerMove(dirs dir) {
+	int  Move(const unsigned short, const unsigned short, const unsigned short, const dirs, unsigned=2); //last arg is how much block fall/rise at one turn
+	void Jump(const int, const int, const int);
+	int PlayerMove(const dirs dir) {
 		unsigned short playerX, playerY, playerZ;
 		GetPlayerCoords(playerX, playerY, playerZ);
 		scr->viewLeft=NORMAL;
@@ -471,7 +488,7 @@ class World {
 	}
 
 	//player specific functions section
-	void SetPlayerDir(dirs dir) { playerP->SetDir(dir); }
+	void SetPlayerDir(const dirs dir) { playerP->SetDir(dir); }
 	dirs GetPlayerDir() { return playerP->GetDir(); }
 	void GetPlayerCoords(unsigned short & x, unsigned short & y, unsigned short & z) { playerP->GetSelfXYZ(x, y, z); }
 	void GetPlayerCoords(unsigned short & x, unsigned short & y) { playerP->GetSelfXY(x, y); }
@@ -491,7 +508,7 @@ class World {
 	unsigned long Time() { return time; }
 
 	//interactions section
-	void Damage(int i, int j, int k) {
+	void Damage(const int i, const int j, const int k) {
 		if ( NULL==blocks[i][j][k] || 0<blocks[i][j][k]->Damage() )
 			return;
 
@@ -517,7 +534,7 @@ class World {
 		ReEnlighten(i, j, k);
 		SunReShine(i, j);
 	}
-	void Use(int i, int j, int k) {
+	void Use(const int i, const int j, const int k) {
 		if (NULL!=blocks[i][j][k])
 			switch ( blocks[i][j][k]->Use() ) {
 				case OPEN:
@@ -530,45 +547,48 @@ class World {
 				default: scr->viewLeft=NORMAL;
 			}
 	}
-	bool Build(Block * block, int i, int j, int k) {
+	bool Build(Block * block, const int i, const int j, const int k) {
 		if (NULL==blocks[i][j][k] && block->CanBeOut() ) {
 			block->Restore();
 			if ( block->ActiveBlock() )
 				((Active *)block)->Register(this, i, j, k);
 			blocks[i][j][k]=block;
-			ReEnlighten(i, j, k);
+			if ( block->Transparent() )
+				DirectReEnlighten(i, j, k);
+			else
+				ReEnlighten(i, j, k);
 			return true;
 		}
 		scr->Notify("You can not build.");
 		return false;
 	}
-	void PlayerBuild(int n) {
+	void PlayerBuild(const int n) {
 		Block * temp=playerP->Drop(n);
-		int i, j, k;
+		unsigned short i, j, k;
 		PlayerFocus(i, j, k);
 		if ( !Build(temp, i, j, k) )
 			playerP->Get(temp);
 	}
-	void Inscribe(Dwarf * dwarf) {
+	void Inscribe(Dwarf * const dwarf) {
 		if (!dwarf->CarvingWeapon()) {
 			scr->Notify("You need some tool for inscribing!\n");
 			return;
 		}
 		unsigned short i, j, k;
 		dwarf->GetSelfXYZ(i, j, k);
-		int i_to, j_to, k_to;
+		unsigned short i_to, j_to, k_to;
 		Focus(i, j, k, i_to, j_to, k_to);
 		char str[note_length];
 		scr->GetString(str);
 		Inscribe(i_to, j_to, k_to, str);
 	}
 	void PlayerInscribe() { Inscribe(playerP); }
-	void Inscribe(int i, int j, int k, char * str) { if (NULL!=blocks[i][j][k]) blocks[i][j][k]->Inscribe(str); }
+	void Inscribe(const int i, const int j, const int k, char * const str) { if (NULL!=blocks[i][j][k]) blocks[i][j][k]->Inscribe(str); }
 
 	//inventory functions section
 	private:
-	void Exchange(int i_from, int j_from, int k_from,
-	              int i_to,   int j_to,   int k_to, int n) {
+	void Exchange(const int i_from, const int j_from, const int k_from,
+	              const int i_to,   const int j_to,   const int k_to, const int n) {
 		if ( pthread_mutex_trylock(&mutex) ) return;
 
 		Inventory * inv_from=(Inventory *)( HasInventory(i_from, j_from, k_from) );
@@ -589,8 +609,8 @@ class World {
 		}
 		pthread_mutex_unlock(&mutex);
 	}
-	void ExchangeAll(int i_from, int j_from, int k_from,
-	                 int i_to,   int j_to,   int k_to) {
+	void ExchangeAll(const int i_from, const int j_from, const int k_from,
+	                 const int i_to,   const int j_to,   const int k_to) {
 		if (NULL!=blocks[i_from][j_from][k_from] && NULL!=blocks[i_to][j_to][k_to]) {
 			Inventory * to=(Inventory *)(blocks[i_to][j_to][k_to]->HasInventory());
 			if (NULL!=to)
@@ -598,37 +618,37 @@ class World {
 		}
 	}
 	public:
-	void Drop(int i, int j, int k, int n) {
-		int i_to, j_to, k_to;
+	void Drop(const unsigned short i, const unsigned short j, const unsigned short k, int n) {
+		unsigned short i_to, j_to, k_to;
 		Focus(i, j, k, i_to, j_to, k_to);
 		Exchange(i, j, k, i_to, j_to, k_to, n);
 	}
-	void PlayerDrop(int n) {
+	void PlayerDrop(const int n) {
 		unsigned short playerX, playerY, playerZ;
 		GetPlayerCoords(playerX, playerY, playerZ);
 		Drop(playerX, playerY, playerZ, n);
 	}
-	void Get(int i, int j, int k, int n) {
-		int i_from, j_from, k_from;
+	void Get(const unsigned short i, const unsigned short j, const unsigned short k, int n) {
+		unsigned short i_from, j_from, k_from;
 		Focus(i, j, k, i_from, j_from, k_from);
 		Exchange(i_from, j_from, k_from, i, j, k, n);
 	}
-	void PlayerGet(int n) {
+	void PlayerGet(const int n) {
 		unsigned short playerX, playerY, playerZ;
 		GetPlayerCoords(playerX, playerY, playerZ);
 		Get(playerX, playerY, playerZ, n);
 	}
-	void DropAll(int i_from, int j_from, int k_from) {
-		int i, j, k;
+	void DropAll(const unsigned short i_from, const unsigned short j_from, const unsigned short k_from) {
+		unsigned short i, j, k;
 		Focus(i_from, j_from, k_from, i, j, k);
 		ExchangeAll(i_from, j_from, k_from, i, j, k);
 	}
-	void GetAll(int i_to, int j_to, int k_to) {
-		int i, j, k;
+	void GetAll(const unsigned short i_to, const unsigned short j_to, const unsigned short k_to) {
+		unsigned short i, j, k;
 		Focus(i_to, j_to, k_to, i, j, k);
 		ExchangeAll(i, j, k, i_to, j_to, k_to);
 	}
-	void Wield(Dwarf * dwarf, int n) {
+	void Wield(Dwarf * const dwarf, const int n) {
 		if (0>n || inventory_size<=n) return;
 		Block * temp=dwarf->Drop(n);
 		if (NULL==temp) return;
@@ -649,19 +669,23 @@ class World {
 	}
 
 	//block information section	
-	bool InBounds(int i, int j, int k) { return (i>=0 && i<shred_width*3 && j>=0 && j<shred_width*3 && k>=0 && k<height); }
-	void FullName(char * str, int i, int j, int k) {
+	bool InBounds(const int i, const int j, const int k) { return (i>=0 && i<shred_width*3 && j>=0 && j<shred_width*3 && k>=0 && k<height); }
+	void FullName(char * str, const int i, const int j, const int k) {
 		if ( InBounds(i, j, k) )
 			(NULL==blocks[i][j][k]) ? WriteName(str, "Air") : blocks[i][j][k]->FullName(str);
 	}
-	subs Sub(int i, int j, int k)          { return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? AIR : blocks[i][j][k]->Sub(); }
-	kinds Kind(int i, int j, int k)        { return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? BLOCK : blocks[i][j][k]->Kind(); }
-	int  Transparent(int i, int j, int k)  { return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? 2 : blocks[i][j][k]->Transparent(); }
-	int  Movable(Block * block)            { return (NULL==block) ? ENVIRONMENT : block->Movable(); }
-	double Weight(Block * block)           { return (NULL==block) ? 0 : block->Weight(); }
-	void * HasInventory(int i, int j, int k) { return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? NULL : blocks[i][j][k]->HasInventory(); }
-	void * ActiveBlock(int i, int j, int k)  { return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? NULL : blocks[i][j][k]->ActiveBlock(); }
-	void GetNote(char * str, int i, int j, int k) {
+	subs Sub(const int i, const int j, const int k)          { return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? AIR : blocks[i][j][k]->Sub(); }
+	kinds Kind(const int i, const int j, const int k)        { return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? BLOCK : blocks[i][j][k]->Kind(); }
+	int  Transparent(const int i, const int j, const int k)  { return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? 2 : blocks[i][j][k]->Transparent(); }
+	int  Movable(const Block * const block)                  { return (NULL==block) ? ENVIRONMENT : block->Movable(); }
+	double Weight(const Block * const block)                 { return (NULL==block) ? 0 : block->Weight(); }
+	void * HasInventory(const int i, const int j, const int k) {
+		return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? NULL : blocks[i][j][k]->HasInventory();
+	}
+	void * ActiveBlock(const int i, const int j, const int k) {
+		return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? NULL : blocks[i][j][k]->ActiveBlock();
+	}
+	void GetNote(char * str, const int i, const int j, const int k) {
 		char note[note_length];
 		if (InBounds(i, j, k) && NULL!=blocks[i][j][k]) {
 			blocks[i][j][k]->GetNote(note);
@@ -672,7 +696,7 @@ class World {
 			}
 		}
 	}
-	void GetTemperature(char * str, int i, int j, int k) {
+	void GetTemperature(char * str, const int i, const int j, const int k) {
 		char temp_str[10];
 		if (NULL!=blocks[i][j][k]) {
 			sprintf(temp_str, "%d", Temperature(i, j, k));
@@ -682,7 +706,7 @@ class World {
 			}
 		}	
 	}
-	int Temperature(int i_center, int j_center, int k_center) {
+	int Temperature(const int i_center, const int j_center, const int k_center) {
 		if (!InBounds(i_center, j_center, k_center) || NULL==blocks[i_center][j_center][k_center] || height-1==k_center)
 			return 0;
 		int temperature=blocks[i_center][j_center][k_center]->Temperature();
@@ -696,20 +720,20 @@ class World {
 				temperature+=blocks[i][j][k]->Temperature();
 		return temperature/2;
 	}
-	bool Equal(Block * block1, Block * block2) {
+	bool Equal(const Block * const block1, const Block * const block2) {
 		if (NULL==block1 && NULL==block2) return true;
 		if (NULL==block1 || NULL==block2) return false;
 		return *block1==*block2;
 	}
-	bool Enlightened(int i, int j, int k) {
+	bool Enlightened(const int i, const int j, const int k) {
 		if ( !InBounds(i, j, k) || NULL==blocks[i][j][k])
 			return false;
 		return blocks[i][j][k]->enlightened;
 	}
 	private:
-	float LightRadius(int i, int j, int k) { return (NULL==blocks[i][j][k]) ? 0 : blocks[i][j][k]->LightRadius(); }
-	bool UnderTheSky(int i, int j, int k) {
-		if ( !LegalXYZ(i, j, k) ) return false;
+	float LightRadius(const int i, const int j, const int k) { return (NULL==blocks[i][j][k]) ? 0 : blocks[i][j][k]->LightRadius(); }
+	bool UnderTheSky(const int i, const int j, int k) {
+		if ( !InBounds(i, j, k) ) return false;
 		for (++k; k<height-1; ++k)
 			if ( !Transparent(i, j, k) )
 				return false;
@@ -723,7 +747,7 @@ class World {
 	friend class Active;
 
 	friend void Grass::Act();
-	friend void Dwarf::Move(dirs);
+	friend int Dwarf::Move(dirs);
 
 	public:
 	World();
