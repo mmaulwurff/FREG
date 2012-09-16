@@ -741,9 +741,9 @@ class World {
 	}
 
 	private:
-	friend void Screen::PrintNormal(WINDOW *);
-	friend void Screen::PrintFront(WINDOW *);
-	friend void Screen::PrintInv(WINDOW *, Inventory *);
+	friend void Screen::PrintNormal(WINDOW *) const;
+	friend void Screen::PrintFront(WINDOW *) const;
+	friend void Screen::PrintInv(WINDOW *, Inventory *) const;
 	friend class Active;
 
 	friend void Grass::Act();

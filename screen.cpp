@@ -21,7 +21,7 @@
 #include "screen.h"
 #include "world.h"
 
-char Screen::CharName(kinds kind, subs sub) {
+char Screen::CharName(const kinds kind, const subs sub) const {
 	switch (kind)  {
 		case BLOCK: switch (sub) {
 			case NULLSTONE: case MOSS_STONE: case WOOD:
@@ -55,11 +55,11 @@ char Screen::CharName(kinds kind, subs sub) {
 			return '?';
 	}
 }
-char Screen::CharName(unsigned short i, unsigned short j, unsigned short k) {
+char Screen::CharName(const unsigned short i, const unsigned short j, const unsigned short k) const {
 	return CharName( w->Kind(i, j, k), w->Sub(i, j, k) );
 }
 
-color_pairs Screen::Color(kinds kind, subs sub) {
+color_pairs Screen::Color(const kinds kind, const subs sub) const {
 	switch (kind) { //foreground_background
 		case DWARF:     return WHITE_BLUE;
 		case PILE:      return WHITE_BLACK;
@@ -93,9 +93,11 @@ color_pairs Screen::Color(kinds kind, subs sub) {
 		}
 	}
 }
-inline color_pairs Screen::Color(unsigned short i, unsigned short j, unsigned short k) { return Color( w->Kind(i, j, k), w->Sub(i, j, k) ); }
+inline color_pairs Screen::Color(const unsigned short i, const unsigned short j, const unsigned short k) const {
+	return Color( w->Kind(i, j, k), w->Sub(i, j, k) );
+}
 
-void Screen::PrintNormal(WINDOW * window) {
+void Screen::PrintNormal(WINDOW * const window) const {
 	if (pthread_mutex_trylock(&(w->mutex)))
 		return;
 	unsigned short k_start;
@@ -143,7 +145,7 @@ void Screen::PrintNormal(WINDOW * window) {
 	pthread_mutex_unlock(&(w->mutex));
 }
 
-void Screen::PrintFront(WINDOW * window) {
+void Screen::PrintFront(WINDOW * const window) const {
 	if ( UP==w->GetPlayerDir() || DOWN==w->GetPlayerDir() ) {
 		wstandend(window);
 		werase(window);
@@ -258,7 +260,7 @@ void Screen::PrintFront(WINDOW * window) {
 	pthread_mutex_unlock(&(w->mutex));
 }
 
-void Screen::PrintInv(WINDOW * window, Inventory * inv) {
+void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 	if (pthread_mutex_trylock(&(w->mutex)))
 		return;
 	werase(window);
@@ -302,7 +304,7 @@ void Screen::PrintInv(WINDOW * window, Inventory * inv) {
 	pthread_mutex_unlock(&(w->mutex));
 }
 
-void Screen::PrintSounds() {
+void Screen::PrintSounds() const {
 	if (pthread_mutex_trylock(&(w->mutex)))
 		return;
 
@@ -318,7 +320,7 @@ void Screen::PrintSounds() {
 	pthread_mutex_unlock(&(w->mutex));
 }
 
-void Screen::Notify(const char * str) {
+void Screen::Notify(const char * const str) const {
 	werase(notifyWin);
 	mvwaddstr(notifyWin, 1, 1, str);
 	fprintf(notifyLog, "%s\n", str);
@@ -326,7 +328,7 @@ void Screen::Notify(const char * str) {
 	wrefresh(notifyWin);
 }
 
-Screen::Screen(World * wor) :
+Screen::Screen(World * const wor) :
        		w(wor), blockToPrintLeft(NULL), blockToPrintRight(NULL), viewLeft(NORMAL), viewRight(FRONT) {
 	set_escdelay(10);
 	initscr();

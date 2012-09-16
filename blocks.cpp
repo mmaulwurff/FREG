@@ -18,8 +18,8 @@
 #include "blocks.h"
 #include "world.h"
 
-void BlockFromFile(FILE * const in, Block * & block, World * world,
-		unsigned short i, unsigned short j, unsigned short k) {
+void BlockFromFile(FILE * const in, Block * & block, World * const world,
+		const unsigned short i, const unsigned short j, const unsigned short k) {
 	char str[300];
 	fgets(str, 300, in);
 	int kind;
@@ -117,7 +117,7 @@ before_move_return Pile::BeforeMove(const dirs dir) {
 	return NOTHING;
 }
 
-bool Liquid::CheckWater(const dirs dir) {
+bool Liquid::CheckWater(const dirs dir) const {
 	unsigned short i_check, j_check, k_check;
 	if ( (whereWorld->Focus(x_self, y_self, z_self, i_check, j_check, k_check, dir)) )
 		return false;

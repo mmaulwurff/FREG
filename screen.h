@@ -28,23 +28,23 @@ class Screen {
 	       * rightWin,
 	       * notifyWin,
 	       * soundWin;
-	char CharName(unsigned short, unsigned short, unsigned short);
-	char CharName(kinds, subs);
+	char CharName(const unsigned short, const unsigned short, const unsigned short) const;
+	char CharName(const kinds, const subs) const;
 	FILE * notifyLog;
 
 	public:
 	Block * blockToPrintLeft,
 	      * blockToPrintRight;
 	window_views viewLeft, viewRight;
-	Screen(World *wor);
+	Screen(World * const wor);
 	~Screen();
-	color_pairs Color(kinds, subs);
-	color_pairs Color(unsigned short i, unsigned short j, unsigned short k);
-	color_pairs Color(subs sub, kinds kind) { return Screen::Color(kind, sub); }
-	void PrintNormal(WINDOW *);
-	void PrintFront(WINDOW *);
-	void PrintInv(WINDOW *, Inventory *);
-	void Print() {
+	color_pairs Color(const kinds, const subs) const;
+	color_pairs Color(const unsigned short i, const unsigned short j, const unsigned short k) const;
+	color_pairs Color(const subs sub, const kinds kind) const { return Screen::Color(kind, sub); }
+	void PrintNormal(WINDOW * const) const;
+	void PrintFront(WINDOW * const) const;
+	void PrintInv(WINDOW * const, Inventory * const) const;
+	void Print() const {
 		switch (viewLeft) {
 			case INVENTORY: if (NULL!=blockToPrintLeft) {
 				PrintInv( leftWin, (Inventory *)blockToPrintLeft->HasInventory() );
@@ -62,7 +62,7 @@ class Screen {
 			case FRONT: PrintFront(rightWin); break;
 		}	
 	}
-	void GetString(char * str) {
+	void GetString(char * const str) const {
 		echo();
 		werase(notifyWin);
 		box(notifyWin, 0, 0);
@@ -74,9 +74,9 @@ class Screen {
 		wrefresh(notifyWin);
 		noecho();
 	}
-	void Notify(const char *);
-	void PrintSounds();
-	void UpDownView(dirs);
+	void Notify(const char * const) const;
+	void PrintSounds() const;
+	void UpDownView(const dirs) const;
 };
 
 #endif

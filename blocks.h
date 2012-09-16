@@ -31,7 +31,7 @@ class Block { //blocks without special physics and attributes
 	float shown_weight;
 	dirs direction;
 	char * note;
-	void CleanString(char * str) {
+	void CleanString(char * const str) {
 		unsigned short i;
 		for (i=0; str[i]!='/'; ++i) str[i]=' ';
 		str[i]=' ';
@@ -40,7 +40,7 @@ class Block { //blocks without special physics and attributes
 
 	public:
 	short enlightened;
-	virtual char * FullName(char * str) const {
+	virtual char * FullName(char * const str) const {
 		switch (sub) {
 			case WATER:      return WriteName(str, "Ice");
 			case STONE:      return WriteName(str, "Stone");
@@ -62,13 +62,13 @@ class Block { //blocks without special physics and attributes
 		}
 	}
 
-	void SetWeight(double m) { shown_weight=m; }
+	void SetWeight(const double m) { shown_weight=m; }
 	void SetWeight() { shown_weight=weight; }
 	double Weight() const { return shown_weight; }
 	dirs GetDir() const { return direction; }
-	void SetDir(dirs dir) { direction=dir; }
+	void SetDir(const dirs dir) { direction=dir; }
 	subs Sub() const { return sub; }
-	virtual void Inscribe(char * str) {
+	virtual void Inscribe(char * const str) {
 		if (NULL==note) note=new char[note_length];
 		strncpy(note, str, note_length);
 		if ('\n'==note[0]) {
@@ -98,8 +98,8 @@ class Block { //blocks without special physics and attributes
 			default: return 0;
 		}
 	}
-	virtual before_move_return BeforeMove(dirs) { return NOTHING; }
-	virtual int Move(dirs) { return 0; }
+	virtual before_move_return BeforeMove(const dirs) { return NOTHING; }
+	virtual int Move(const dirs) { return 0; }
 	virtual char MakeSound() const { return ' '; }
 	virtual usage_types Use() { return NO; }
 	virtual int Damage() {
@@ -112,7 +112,7 @@ class Block { //blocks without special physics and attributes
 		return durability;
 	}
 	void Restore() { durability=max_durability; }
-	virtual Block * DropAfterDamage() {
+	virtual Block * DropAfterDamage() const {
 		if (BLOCK==Kind() && GLASS!=sub)
 			return new Block(sub);
 		return NULL;
@@ -121,13 +121,13 @@ class Block { //blocks without special physics and attributes
 	virtual void * ActiveBlock() { return NULL; }
 	virtual Block * Drop(int n) { return NULL; }
 
-	virtual bool Armour() { return false; }
-	virtual bool Weapon() { return false; }
-	virtual bool Carving() { return false; }
+	virtual bool Armour() const { return false; }
+	virtual bool Weapon() const { return false; }
+	virtual bool Carving() const { return false; }
 
-	virtual float LightRadius() { return 0; }
+	virtual float LightRadius() const { return 0; }
 
-	virtual int Temperature() { 
+	virtual int Temperature() const { 
 		switch (sub) {
 			case WATER: return -100;
 			default: return 0;
@@ -138,25 +138,25 @@ class Block { //blocks without special physics and attributes
 		return ( block.Kind()==Kind() && block.Sub()==Sub() ) ? true : false;
 	}
 
-	void SaveToFile(FILE * out) {
+	void SaveToFile(FILE * const out) const {
 		fprintf(out, "%d", (int)Kind());
 		SaveAttributes(out);
 		fprintf(out, "\n");
 	}
-	virtual void SaveAttributes(FILE * out) {
+	virtual void SaveAttributes(FILE * const out) const {
 	       	fprintf(out, "_%d_%f_%d_%hd_%hd", sub, weight, direction, durability, enlightened);
 		if (NULL!=note) fprintf(out, "_%lu/%s", strlen(note), note);
 		else fprintf(out, "_0/");
 	}
 
-	Block(subs n=STONE) : sub(n), weight(1), shown_weight(1), direction(NORTH), note(NULL), durability(max_durability), enlightened(1) {
+	Block(const subs n=STONE) : sub(n), weight(1), shown_weight(1), direction(NORTH), note(NULL), durability(max_durability), enlightened(1) {
 		switch (sub) {
 			case STONE: weight=2; break;
 			default: weight=1;
 		}
 		shown_weight=weight;
 	}
-	Block(char * str) {
+	Block(char * const str) {
 		unsigned short note_len;
 	       	sscanf(str, "%*d_%d_%f_%d_%hd_%hd_%hd", (int *)(&sub), &weight, (int *)(&direction), &durability, &enlightened, &note_len);
 		shown_weight=weight;
@@ -187,9 +187,9 @@ class Telegraph : public Block {
 			system(command);
 		}
 	}
-	Block * DropAfterDamage() { return new Telegraph(); }
+	Block * DropAfterDamage() const { return new Telegraph(); }
 
-	void SaveAttributes(FILE * out) { Block::SaveAttributes(out); }
+	void SaveAttributes(FILE * out) const { Block::SaveAttributes(out); }
 
 	Telegraph() : Block(DIFFERENT) {}
 	Telegraph(char * str) : Block(str) {}
@@ -199,20 +199,20 @@ class Weapons : public Block {
 	protected:
 	public:
 	virtual kinds Kind() const=0;
-	bool Weapon() { return true; }
-	virtual bool Carving()  { return false; }
+	bool Weapon() const { return true; }
+	virtual bool Carving()  const { return false; }
 	bool CanBeOut() const { return false; }
 
-	virtual void SaveAttributes(FILE * out) { Block::SaveAttributes(out); }
+	virtual void SaveAttributes(FILE * const out) const { Block::SaveAttributes(out); }
 
-	Weapons(subs sub) : Block::Block(sub) {}
-	Weapons(char * str) : Block::Block(str) {}
+	Weapons(const subs sub) : Block::Block(sub) {}
+	Weapons(char * const str) : Block::Block(str) {}
 };
 
 class Pick : public Weapons {
 	public:
 	virtual kinds Kind() const { return PICK; }
-	virtual char * FullName(char * str) const { 
+	virtual char * FullName(char * const str) const { 
 		switch (sub) {
 			case IRON: return WriteName(str, "Iron pick");
 			default:
@@ -221,12 +221,12 @@ class Pick : public Weapons {
 		}
 	}
 
-	virtual bool Carving() { return true; }
+	virtual bool Carving() const { return true; }
 
-	virtual void SaveAttributes(FILE * out) { Weapons::SaveAttributes(out); }
+	virtual void SaveAttributes(FILE * const out) const { Weapons::SaveAttributes(out); }
 
-	Pick(subs sub) : Weapons(sub) {}
-	Pick(char * str) : Weapons(str) {}
+	Pick(const subs sub) : Weapons(sub) {}
+	Pick(char * const str) : Weapons(str) {}
 };
 
 class Active : public Block {
@@ -238,11 +238,11 @@ class Active : public Block {
 	World * whereWorld;
 
 	public:
-	virtual char * FullName(char * str) const { return WriteName(str, "Active block"); }
+	virtual char * FullName(char * const str) const { return WriteName(str, "Active block"); }
 	virtual kinds Kind() const { return ACTIVE; }
 
 	void * ActiveBlock() { return this; }
-	virtual int Move(dirs dir) {
+	virtual int Move(const dirs dir) {
 		switch (dir) {
 			case NORTH: --y_self; break;
 			case SOUTH: ++y_self; break;
@@ -255,30 +255,30 @@ class Active : public Block {
 		return 0;
 	}
 
-	Active * GetNext() { return next; }
-	void GetSelfXYZ(unsigned short & x, unsigned short & y, unsigned short & z) {
+	Active * GetNext() const { return next; }
+	void GetSelfXYZ(unsigned short & x, unsigned short & y, unsigned short & z) const {
 		x=x_self;
 		y=y_self;
 		z=z_self;
 	}
-	void GetSelfXY(unsigned short & x, unsigned short & y) {
+	void GetSelfXY(unsigned short & x, unsigned short & y) const {
 		x=x_self;
 		y=y_self;
 	}
-	void GetSelfZ(unsigned short & z) { z=z_self; }
-	World * GetWorld() { return whereWorld; }
+	void GetSelfZ(unsigned short & z) const { z=z_self; }
+	World * GetWorld() const { return whereWorld; }
 	virtual void Act() {}
 	void SafeMove();
 	void SafeJump();
 
 	virtual char MakeSound() const { return ' '; }
-	virtual unsigned short Noise() { return 0; }
+	virtual unsigned short Noise() const { return 0; }
 
-	virtual bool IfToDestroy() { return false; }
+	virtual bool IfToDestroy() const { return false; }
 	virtual int Movable() const { return MOVABLE; }
-	virtual bool ShouldFall() { return true; }
+	virtual bool ShouldFall() const { return true; }
 
-	virtual void SaveAttributes(FILE * out) { Block::SaveAttributes(out); }
+	virtual void SaveAttributes(FILE * const out) const { Block::SaveAttributes(out); }
 
 	void ReloadToNorth() { y_self+=shred_width; }
 	void ReloadToSouth() { y_self-=shred_width; }
@@ -288,13 +288,13 @@ class Active : public Block {
 	void Register(World *, int, int, int);
 	void Unregister();
 
-	Active(subs sub) :
+	Active(const subs sub) :
 		Block(sub),
 		whereWorld(NULL) {}
-	Active(World * w, unsigned short x, unsigned short y, unsigned short z, subs sub) :
+	Active(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, subs sub) :
 			Block(sub)
 		{ Register(w, x, y, z); }
-	Active(World * w, unsigned short x, unsigned short y, unsigned short z, char * str) :
+	Active(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, char * str) :
 			Block(str)
 		{ Register(w, x, y, z); }
 	virtual ~Active() { Unregister(); }
@@ -304,14 +304,13 @@ class Animal : public Active {
 	protected:
 	//int health;
 	public:
-	virtual bool Stackable() { return false; }
-	virtual char * FullName(char *) const=0;
+	virtual char * FullName(char * const) const=0;
 
-	virtual void SaveAttributes(FILE * out) { Active::SaveAttributes(out); }
+	virtual void SaveAttributes(FILE * const out) const { Active::SaveAttributes(out); }
 
-	Animal(World * w, unsigned short i, unsigned short j, unsigned short k, subs sub) :
+	Animal(World * const w, const unsigned short i, const unsigned short j, const unsigned short k, subs sub) :
 		Active(w, i, j, k, sub) {}
-	Animal(World * w, unsigned short i, unsigned short j, unsigned short k, char * str) :
+	Animal(World * const w, const unsigned short i, const unsigned short j, const unsigned short k, char * str) :
 		Active(w, i, j, k, str) {}
 };
 
@@ -319,8 +318,8 @@ class Inventory {
 	protected:
 	Block * inventory[inventory_size][max_stack_size];
 	public:
-	char * InvFullName(char * str, int i) { return (NULL==inventory[i][0]) ? WriteName(str, "") : inventory[i][0]->FullName(str); }
-	char * NumStr(char * str, int i) {
+	char * InvFullName(char * const str, const int i) const { return (NULL==inventory[i][0]) ? WriteName(str, "") : inventory[i][0]->FullName(str); }
+	char * NumStr(char * const str, const int i) const {
 		unsigned short n=Number(i);
 		if (1>=n)
 			str[0]='\0';
@@ -328,19 +327,19 @@ class Inventory {
 			sprintf(str, " (%hdx)", n);
 		return str;
 	}
-	double GetInvWeight(int i) { return (NULL==inventory[i][0]) ? 0     : inventory[i][0]->Weight()*Number(i); }
-	subs GetInvSub(int i)      { return (NULL==inventory[i][0]) ? AIR   : inventory[i][0]->Sub(); }
-	kinds GetInvKind(int i)    { return (NULL==inventory[i][0]) ? BLOCK : inventory[i][0]->Kind(); }
-	int Number(int i) {
+	double GetInvWeight(int i) const { return (NULL==inventory[i][0]) ? 0     : inventory[i][0]->Weight()*Number(i); }
+	subs GetInvSub(int i)      const { return (NULL==inventory[i][0]) ? AIR   : inventory[i][0]->Sub(); }
+	kinds GetInvKind(int i)    const { return (NULL==inventory[i][0]) ? BLOCK : inventory[i][0]->Kind(); }
+	int Number(const int i) const {
 		if (inventory_size<=i) return 0;
 		unsigned short n;
 		for (n=0; n<max_stack_size && NULL!=inventory[i][n]; ++n);
 		return n;
 	}
-	virtual char * FullName(char *) const=0;
+	virtual char * FullName(char * const) const=0;
 	virtual kinds Kind() const=0;
 	virtual subs Sub() const=0;
-	virtual bool Access()=0;
+	virtual bool Access() const=0;
 
 	void * HasInventory() { return this; }
 	usage_types Use() { return OPEN; }
@@ -381,7 +380,7 @@ class Inventory {
 					}
 		}
 	}
-	void RangeForWield(unsigned short & i, unsigned short & j) {
+	void RangeForWield(unsigned short & i, unsigned short & j) const {
 		for (i=5; i<inventory_size; ++i)
 			if (NULL!=inventory[i][0] &&
 					(inventory[i][0]->Weapon() || inventory[i][0]->Armour())) break;
@@ -393,7 +392,7 @@ class Inventory {
 		}
 	}
 
-	virtual void SaveAttributes(FILE * out) {
+	virtual void SaveAttributes(FILE * const out) const {
 		fprintf(out, "\n");
 		for (unsigned short i=0; i<inventory_size; ++i)
 		for (unsigned short j=0; j<max_stack_size; ++j) {
@@ -407,7 +406,7 @@ class Inventory {
 		for (unsigned short j=0; j<max_stack_size; ++j)
 			inventory[i][j]=NULL;
 	}
-	Inventory(char * str, FILE * in) {
+	Inventory(char * const str, FILE * const in) {
 		for (unsigned short i=0; i<inventory_size; ++i)
 		for (unsigned short j=0; j<max_stack_size; ++j)
 			BlockFromFile(in, inventory[i][j]);
@@ -429,8 +428,8 @@ class Dwarf : public Animal, public Inventory {
 	unsigned short noise;
 
 	public:
-	unsigned short Noise() { return noise; }
-	bool CarvingWeapon() {
+	unsigned short Noise() const { return noise; }
+	bool CarvingWeapon() const {
 		if ( (NULL!=inRightHand && inRightHand->Carving()) ||
 		     (NULL!=inLeftHand  && inLeftHand->Carving()) ) return true;
 		else return false;
@@ -438,7 +437,7 @@ class Dwarf : public Animal, public Inventory {
 
 	virtual kinds Kind() const { return DWARF; }
 	subs Sub() const { return Block::Sub(); }
-	virtual char * FullName(char * str) const {
+	virtual char * FullName(char * const str) const {
 		switch (sub) {
 			default: return WriteName(str, "Dwarf");
 		}
@@ -446,12 +445,11 @@ class Dwarf : public Animal, public Inventory {
 	virtual char MakeSound() const { return (random()%10) ? ' ' : 's'; }
 	bool CanBeIn() const { return false; }
 
-	virtual before_move_return BeforeMove(dirs);
-	int Move(dirs);
+	virtual before_move_return BeforeMove(const dirs);
+	int Move(const dirs);
 
 	void * HasInventory() { return Inventory::HasInventory(); }
-	bool Stackable() { return false; }
-	virtual bool Access() { return false; }
+	virtual bool Access() const { return false; }
 	Block * Drop(int n) { return Inventory::Drop(n); }
 	int Wield(Block * block) {
 		if ( block->Weapon() ) {
@@ -462,24 +460,24 @@ class Dwarf : public Animal, public Inventory {
 	}
 	virtual int Get(Block * block, int n=5) { return Inventory::Get(block, (5>n) ? 5 : n);
 	}
-	virtual Block * DropAfterDamage() { return new Block(H_MEAT); }
+	virtual Block * DropAfterDamage() const { return new Block(H_MEAT); }
 
-	virtual void SaveAttributes(FILE * out) {
+	virtual void SaveAttributes(FILE * const out) const {
 		Animal::SaveAttributes(out);
 		Inventory::SaveAttributes(out);
 		fprintf(out, "%hd/", noise);
 	}
 
-	float LightRadius() { return 1.8; }
+	float LightRadius() const { return 1.8; }
 
-	Dwarf(World * w, unsigned short x, unsigned short y, unsigned short z) :
+	Dwarf(World * const w, const unsigned short x, const unsigned short y, const unsigned short z) :
 			Animal(w, x, y, z, H_MEAT),
 			onHead(inventory[0][0]), onBody(inventory[1][0]), onFeet(inventory[2][0]),
 			inRightHand(inventory[3][0]), inLeftHand(inventory[4][0]),
 			noise(1) {
 		inventory[7][0]=new Pick(IRON);
 	}
-	Dwarf(World * w, unsigned short x, unsigned short y, unsigned short z, char * str, FILE * in) :
+	Dwarf(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, char * const str, FILE * const in) :
 			Animal(w, x, y, z, str),
 			Inventory(str, in),
 			onHead(inventory[0][0]), onBody(inventory[1][0]), onFeet(inventory[2][0]),
@@ -493,7 +491,7 @@ class Chest : public Block, public Inventory {
 	public:
 	virtual kinds Kind() const { return CHEST; }
 	subs Sub() const { return Block::Sub(); }
-	virtual char * FullName(char * str) const {
+	virtual char * FullName(char * const str) const {
 		switch (sub) {
 			case WOOD: return WriteName(str, "Wooden Chest");
 			default:
@@ -502,22 +500,22 @@ class Chest : public Block, public Inventory {
 		}
 	}
 	virtual void * HasInventory() { return Inventory::HasInventory(); }
-	virtual Block * Drop(int n) { return Inventory::Drop(n); }
-	int Get(Block * block, int n=0) { return Inventory::Get(block, n); }
-	virtual bool Access() { return true; }
+	virtual Block * Drop(const int n) { return Inventory::Drop(n); }
+	int Get(Block * const block, int n=0) { return Inventory::Get(block, n); }
+	virtual bool Access() const { return true; }
 
 	usage_types Use() { return Inventory::Use(); }
 
 	virtual int Damage() { return durability-=4; }
-	Block * DropAfterDamage() { return new Chest(); }
+	Block * DropAfterDamage() const { return new Chest(); }
 
-	virtual void SaveAttributes(FILE * out) {
+	virtual void SaveAttributes(FILE * const out) const {
 		Block::SaveAttributes(out);
 		Inventory::SaveAttributes(out);
 	}
 
-	Chest(subs s=WOOD) : Block(s) {}
-	Chest(char * str, FILE * in) :
+	Chest(const subs s=WOOD) : Block(s) {}
+	Chest(char * const str, FILE * const in) :
 		Block(str),
 		Inventory(str, in) {}
 };
@@ -528,14 +526,14 @@ class Pile : public Active, public Inventory {
 	public:
 	virtual kinds Kind() const { return PILE; }
 	subs Sub() const { return Block::Sub(); }
-	virtual char * FullName(char * str) const { return WriteName(str, "Pile"); }
+	virtual char * FullName(char * const str) const { return WriteName(str, "Pile"); }
 
 	virtual void * HasInventory() { return Inventory::HasInventory(); }
-	int Get(Block * block, int n=0) { return Inventory::Get(block, n); }
+	int Get(Block * const block, int n=0) { return Inventory::Get(block, n); }
 	usage_types Use() { return Inventory::Use(); }
 
 	void Act() { if (lifetime) --lifetime; }
-	bool IfToDestroy() {
+	bool IfToDestroy() const {
 		bool empty_flag=true;
 		for (unsigned short i=0; i<inventory_size; ++i)
 			if ( Number(i) ) {
@@ -546,7 +544,7 @@ class Pile : public Active, public Inventory {
 		else return false;
 	}
 	
-	virtual Block * Drop(int n) {
+	virtual Block * Drop(const int n) {
 		Block * temp=Inventory::Drop(n);
 		for (unsigned short i=0; i<max_stack_size; ++i)
 			if ( Number(i) ) return temp;
@@ -554,23 +552,23 @@ class Pile : public Active, public Inventory {
 		return temp;
 	}
 
-	virtual before_move_return BeforeMove(dirs);
+	virtual before_move_return BeforeMove(const dirs);
 	virtual bool CanBeIn() const { return false; }
-	virtual bool Access() { return true; }
+	virtual bool Access()  const{ return true; }
 	int Damage() { return durability-=10; }
 
-	virtual void SaveAttributes(FILE * out) {
+	virtual void SaveAttributes(FILE * const out) const {
 		Active::SaveAttributes(out);
 		Inventory::SaveAttributes(out);
 		fprintf(out, "%hd/", lifetime);
 	}
 
-	Pile(World * w, unsigned short x, unsigned short y, unsigned short z, Block * block=NULL) :
+	Pile(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, Block * const block=NULL) :
 			Active(w, x, y, z, DIFFERENT),
 			lifetime(seconds_in_day) {
 		Get(block);
 	}
-	Pile(World * w, unsigned short x, unsigned short y, unsigned short z, char * str, FILE * in) :
+	Pile(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, char * const str, FILE * const in) :
 			Active(w, x, y, z, str),
 			Inventory(str, in) {
 		sscanf(str, " %hd\n", &lifetime);
@@ -579,13 +577,13 @@ class Pile : public Active, public Inventory {
 };
 
 class Liquid : public Active {
-	bool CheckWater(dirs);
+	bool CheckWater(dirs) const;
 
 	public:
 	virtual int Movable() const { return ENVIRONMENT; }
 
 	virtual kinds Kind() const { return LIQUID; }
-	virtual char * FullName(char * str) const {
+	virtual char * FullName(char * const str) const {
 		switch (sub) {
 			case WATER: return WriteName(str, "Water");
 			case STONE: return WriteName(str, "Lava");
@@ -606,7 +604,7 @@ class Liquid : public Active {
 
 	virtual void Act();
 
-	bool IfToDestroy() {
+	bool IfToDestroy() const {
 		if ( !(random()%10) &&
 				!CheckWater(DOWN)  && !CheckWater(UP) &&
 				!CheckWater(NORTH) && !CheckWater(SOUTH) &&
@@ -615,22 +613,22 @@ class Liquid : public Active {
 		return false;
 	}
 
-	virtual int Temperature() {
+	virtual int Temperature() const {
 		if (WATER==sub) return 0;
 		else return 1000;
 	}
 
-	void SaveAttributes(FILE * out) { Active::SaveAttributes(out); }
+	void SaveAttributes(FILE * const out) const { Active::SaveAttributes(out); }
 
-	Liquid(World * w, unsigned short x, unsigned short y, unsigned short z, subs sub=WATER) :
+	Liquid(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, const subs sub=WATER) :
 			Active(w, x, y, z, sub) {}
-	Liquid(World * w, unsigned short x, unsigned short y, unsigned short z, char * str, FILE * in) :
+	Liquid(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, char * const str, FILE * const in) :
 			Active(w, x, y, z, str) {}
 };
 
 class Grass : public Active {
 	public:
-	virtual char * FullName(char * str) const {
+	virtual char * FullName(char * const str) const {
 		switch (sub) {
 			case GRASS: return WriteName(str, "Grass");
 			default:
@@ -641,29 +639,29 @@ class Grass : public Active {
 	virtual kinds Kind() const { return GRASS; }
 
 	virtual int Transparent() const { return 1; }
-	virtual bool ShouldFall() { return false; }
+	virtual bool ShouldFall() const { return false; }
 
 	virtual int Damage() { return durability=0; }
 
 	virtual before_move_return BeforeMove(dirs) { return DESTROY; }
 	virtual void Act();
 
-	virtual void SaveAttributes(FILE * out) { Active::SaveAttributes(out); }
+	virtual void SaveAttributes(FILE * const out) const { Active::SaveAttributes(out); }
 
 	Grass() : Active(GREENERY) {}
-	Grass(World * w, unsigned short x, unsigned short y, unsigned short z) :
+	Grass(World * const w, const unsigned short x, const unsigned short y, const unsigned short z) :
 			Active(w, x, y, z, GREENERY) {}
-	Grass(World * w, unsigned short x, unsigned short y, unsigned short z, char * str, FILE * in) :
+	Grass(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, char * const str, FILE * const in) :
 			Active(w, x, y, z, str) {}
 };
 
 class Bush : public Active, public Inventory {
 	public:
-	virtual char * FullName(char * str) const { return WriteName(str, "Bush"); }
+	virtual char * FullName(char * const str) const { return WriteName(str, "Bush"); }
 	virtual kinds Kind() const { return BUSH; }
 	subs Sub() const { return Block::Sub(); }
 
-	virtual bool Access() { return true; }
+	virtual bool Access() const { return true; }
 	usage_types Use() { return Inventory::Use(); }
 	virtual void * HasInventory() { return Inventory::HasInventory(); }
 	virtual int Movable() const { return NOT_MOVABLE; }
@@ -676,36 +674,36 @@ class Bush : public Active, public Inventory {
 		}
 	}
 
-	Block * DropAfterDamage() { return new Block(WOOD); }
+	Block * DropAfterDamage() const { return new Block(WOOD); }
 	virtual int Damage() { return durability-=4; }
 
-	virtual void SaveAttributes(FILE * out) {
+	virtual void SaveAttributes(FILE * const out) const {
 		Active::SaveAttributes(out);
 		Inventory::SaveAttributes(out);
 	}
 
-	Bush(World * w, unsigned short x, unsigned short y, unsigned short z) :
+	Bush(World * const w, const unsigned short x, const unsigned short y, const unsigned short z) :
 		Active(w, x, y, z, GREENERY) {}
-	Bush(World * w, unsigned short x, unsigned short y, unsigned short z, char * str, FILE * in) :
+	Bush(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, char * const str, FILE * const in) :
 		Active(w, x, y, z, str),
 		Inventory(str, in) {}
 };
 
 class Rabbit : public Active {
 	public:
-	char * FullName(char * str) const { return WriteName(str, "Rabbit"); }
+	char * FullName(char * const str) const { return WriteName(str, "Rabbit"); }
 	kinds Kind() const { return RABBIT; }
 
 	void Act();
 
 	int Damage() { return durability-=4; }
-	Block * DropAfterDamage() { return new Block(A_MEAT); }
+	Block * DropAfterDamage() const { return new Block(A_MEAT); }
 
-	void SaveAttributes(FILE * out) { Active::SaveAttributes(out); }
+	void SaveAttributes(FILE * const out) const { Active::SaveAttributes(out); }
 
-	Rabbit(World * w, unsigned short x, unsigned short y, unsigned short z) :
+	Rabbit(World * const w, const unsigned short x, const unsigned short y, const unsigned short z) :
 		Active(w, x, y, z, A_MEAT) {}
-	Rabbit(World * w, unsigned short x, unsigned short y, unsigned short z, char * str) :
+	Rabbit(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, char * str) :
 		Active(w, x, y, z, str) {}
 };
 #endif
