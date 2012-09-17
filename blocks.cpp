@@ -47,8 +47,8 @@ void BlockFromFile(FILE * const in, Block * & block, World * const world,
 void Active::SafeMove() {
 	//when player is on the border of shred, moving him causes World::ReloadShreds(dir). so, cheks are neede for liquids not to push player.
 	unsigned short x_focus, y_focus, z_focus;
-	whereWorld->Focus(x_self, y_self, z_self, x_focus, y_focus, z_focus, direction);
-	if ((Block *)(whereWorld->playerP)!=whereWorld->blocks[x_focus][y_focus][z_focus])
+	if ( !(whereWorld->Focus(x_self, y_self, z_self, x_focus, y_focus, z_focus, direction)) &&
+			(Block *)(whereWorld->playerP)!=whereWorld->blocks[x_focus][y_focus][z_focus] )
 		whereWorld->Move(x_self, y_self, z_self, direction);
 }
 void Active::SafeJump() {

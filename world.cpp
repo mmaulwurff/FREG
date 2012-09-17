@@ -294,7 +294,7 @@ void World::PhysEvents() {
 	pthread_mutex_unlock(&mutex);
 }
 
-char World::CharNumber(const int i, const int j, const int k) {
+char World::CharNumber(const int i, const int j, const int k) const {
 	if (height-1==k) return ' ';
 	if ((Block *)playerP==blocks[i][j][k])
 		switch ( playerP->GetDir() ) {
@@ -320,7 +320,7 @@ char World::CharNumber(const int i, const int j, const int k) {
 	return '+';
 }
 
-char World::CharNumberFront(const int i, const int j) {
+char World::CharNumberFront(const int i, const int j) const {
 	unsigned short ret;
 	unsigned short playerX, playerY, playerZ;
 	playerP->GetSelfXYZ(playerX, playerY, playerZ);
@@ -332,7 +332,7 @@ char World::CharNumberFront(const int i, const int j) {
 }
 
 bool World::DirectlyVisible(const int x_from, const int y_from, const int z_from,
-                            const int x_to,   const int y_to,   const int z_to) {
+                            const int x_to,   const int y_to,   const int z_to) const {
 	if (x_from==x_to && y_from==y_to && z_from==z_to) return true;
 	unsigned short max=(abs(z_to-z_from) > abs(y_to-y_from)) ? abs(z_to-z_from) : abs(y_to-y_from);
 	if (abs(x_to-x_from) > max) max=abs(x_to-x_from);
@@ -348,7 +348,7 @@ bool World::DirectlyVisible(const int x_from, const int y_from, const int z_from
 }
 
 bool World::Visible(const int x_from, const int y_from, const int z_from,
-                    const int x_to,   const int y_to,   const int z_to) {
+                    const int x_to,   const int y_to,   const int z_to) const {
 	short temp;
 	if ((DirectlyVisible(x_from, y_from, z_from, x_to, y_to, z_to)) ||
 		(Transparent(x_to+(temp=(x_to>x_from) ? (-1) : 1), y_to, z_to) && DirectlyVisible(x_from, y_from, z_from, x_to+temp, y_to, z_to)) ||
@@ -419,7 +419,7 @@ void World::Jump(const int i, const int j, int k) {
 }
 
 int World::Focus(const unsigned short i, const unsigned short j, const unsigned short k,
-		unsigned short & i_target, unsigned short & j_target, unsigned short & k_target, const dirs dir) {
+		unsigned short & i_target, unsigned short & j_target, unsigned short & k_target, const dirs dir) const {
 	i_target=i;
 	j_target=j;
 	k_target=k;
@@ -432,30 +432,7 @@ int World::Focus(const unsigned short i, const unsigned short j, const unsigned 
 		case UP:    ++k_target; break;
 		default: fprintf(stderr, "World::Focus(int, int, int, int&, int&, int&, dirs): unlisted dir: %d\n", (int)dir);
 	}
-
-	bool bound_flag=false;
-	if (i_target<0) {
-		i_target=0;
-		bound_flag=true;
-	} else if (i_target>=shred_width*3) {
-		i_target=shred_width*3-1;
-		bound_flag=true;
-	}
-	if (j_target<0) {
-		j_target=0;
-		bound_flag=true;
-	} else if (j_target>=shred_width*3) {
-		j_target=shred_width*3-1;
-		bound_flag=true;
-	}
-	if (k_target<0) {
-		k_target=0;
-		bound_flag=true;
-	} else if (k_target>=height) {
-		k_target=height-1;
-		bound_flag=true;
-	}
-	return ((bound_flag) ? 1 : 0);
+	return ( !InBounds(i, j, k) );
 }
 
 World::World() : time_step(0), activeList(NULL), scr(NULL) {
