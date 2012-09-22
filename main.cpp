@@ -85,6 +85,5 @@ int main() {
 			default: screen.Notify("What?\n");
 		}
 		if (print_flag) screen.Print();
-		usleep(10000);
 	}
 }
