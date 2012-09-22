@@ -108,9 +108,8 @@ void Screen::PrintNormal(WINDOW * const window) const {
 		k_start=playerZ+1;
 		k_step=1;
 		k_end=height;
-
 	} else {
-		k_start=playerZ;
+		k_start=( DOWN==w->GetPlayerDir() ) ? playerZ-1 : playerZ;
 		k_step=-1;
 		k_end=-1;
 	}
@@ -130,15 +129,11 @@ void Screen::PrintNormal(WINDOW * const window) const {
 			}
 	wstandend(window);
 	box(window, 0, 0);
-	if ( UP==w->GetPlayerDir() ) {
-		mvwaddstr(window, 0, 1, "Sky View");
+	if ( UP==w->GetPlayerDir() || DOWN==w->GetPlayerDir() ) {
+		mvwaddstr(window, 0, 1, ( UP==w->GetPlayerDir() ) ? "Sky View" : "Ground View");
 		unsigned short arrow_X, arrow_Y;
 		w->GetPlayerCoords(arrow_X, arrow_Y);
-		wcolor_set(window, WHITE_RED, NULL);
-		mvwprintw(window, 0,               arrow_X*2+1,       "vv");
-		mvwprintw(window, shred_width*3+1, arrow_X*2+1,       "^^");
-		mvwprintw(window, arrow_Y+1,       0,                 ">");
-		mvwprintw(window, arrow_Y+1,       shred_width*3*2+1, "<");
+		Arrows(window , arrow_X*2+1, arrow_Y+1);
 	} else
 		mvwaddstr(window, 0, 1, "Normal View");
 	wrefresh(window);
@@ -251,11 +246,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 	wstandend(window);
 	box(window, 0, 0);
 	mvwaddstr(window, 0, 1, "Front View");
-	wcolor_set(window, WHITE_RED, NULL);
-	mvwprintw(window, 0,               arrow_X,           "vv");
-	mvwprintw(window, shred_width*3+1, arrow_X,           "^^");
-	mvwprintw(window, arrow_Y,         0,                 ">");
-	mvwprintw(window, arrow_Y,         shred_width*3*2+1, "<");
+	Arrows(window, arrow_X, arrow_Y);
 	wrefresh(window);
 	pthread_mutex_unlock(&(w->mutex));
 }

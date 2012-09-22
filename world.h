@@ -252,6 +252,11 @@ class World {
 		}
 	}
 
+	void TestShred(const unsigned short istart, const unsigned short jstart) {
+		NormalUnderground(istart, jstart);
+		blocks[istart+2][jstart][height/2]=new Chest();
+	}
+
 	void NullMountain(const unsigned short istart, const unsigned short jstart) {
 		unsigned short i, j, k;
 		for (i=istart; i<istart+shred_width; ++i)

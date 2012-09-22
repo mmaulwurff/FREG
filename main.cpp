@@ -23,14 +23,25 @@
 int main() {
 	World earth;
 	Screen screen(&earth);
-	int c;
+	FILE * scenario=fopen("scenario.txt", "r");
+	int c='.';
 	int print_flag=1; //print only if needed, needed nearly everytime
-	while ( 'Q'!=(c=getch()) ) {
+	while ( 'Q'!=c ) {
+		if ( NULL!=scenario ) {
+			c=fgetc(scenario);
+			if ( EOF==c || '\n'==c ) {
+				fclose(scenario);
+				scenario=NULL;
+				c=getch();
+			} else
+				fprintf(stderr, "Scenario used, key is: '%c'.\n", c);
+		} else
+			c=getch();
 		switch (c) {
-			case KEY_UP:    earth.PlayerMove(NORTH); break;
-			case KEY_DOWN:  earth.PlayerMove(SOUTH); break;
-			case KEY_RIGHT: earth.PlayerMove(EAST ); break;
-			case KEY_LEFT:  earth.PlayerMove(WEST ); break;
+			case 'U': case KEY_UP:    earth.PlayerMove(NORTH); break;
+			case 'D': case KEY_DOWN:  earth.PlayerMove(SOUTH); break;
+			case 'R': case KEY_RIGHT: earth.PlayerMove(EAST ); break;
+			case 'L': case KEY_LEFT:  earth.PlayerMove(WEST ); break;
 			case '>': earth.SetPlayerDir( earth.TurnRight(earth.GetPlayerDir()) ); break;
 			case '<': earth.SetPlayerDir( earth.TurnLeft(earth.GetPlayerDir()) );  break;
 			case ' ': earth.PlayerJump(); break;
@@ -38,8 +49,8 @@ int main() {
 			case 'e': earth.SetPlayerDir(EAST);  break;
 			case 's': earth.SetPlayerDir(SOUTH); break;
 			case 'n': earth.SetPlayerDir(NORTH); break;
-			case KEY_NPAGE: earth.SetPlayerDir(DOWN);  break; //page down key
-			case KEY_PPAGE: earth.SetPlayerDir(UP);    break; //page up key
+			case 'P': case KEY_NPAGE: earth.SetPlayerDir(DOWN);  break; //page down key
+			case 'p': case KEY_PPAGE: earth.SetPlayerDir(UP);    break; //page up key
 			case 'i':
 				if (INVENTORY!=screen.viewRight) {
 					screen.viewRight=INVENTORY;
@@ -47,7 +58,7 @@ int main() {
 				} else
 					screen.viewRight=FRONT;
 			break;
-			case '\n': { //enter key
+			case 'N': case '\n': { //enter key
 				unsigned short i, j, k;
 				earth.PlayerFocus(i, j, k);
 				earth.Use(i, j, k);
@@ -65,12 +76,12 @@ int main() {
 			case 'g': earth.PlayerGet(getch()-'a'); break;
 			case 'W': earth.PlayerWield(); break;
 			case 'I': earth.PlayerInscribe(); break;
-			case KEY_BACKSPACE: {
+			case 'B': case KEY_BACKSPACE: {
 				unsigned short i, j, k;
 				earth.PlayerFocus(i, j, k);
 				earth.Damage(i, j, k);
 			} break;
-			case KEY_HOME: earth.PlayerBuild(getch()-'a'); break;
+			case 'H': case KEY_HOME: earth.PlayerBuild(getch()-'a'); break;
 			default: screen.Notify("What?\n");
 		}
 		if (print_flag) screen.Print();

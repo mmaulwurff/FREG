@@ -30,6 +30,13 @@ class Screen {
 	       * soundWin;
 	char CharName(const unsigned short, const unsigned short, const unsigned short) const;
 	char CharName(const kinds, const subs) const;
+	void Arrows(WINDOW * const window, const unsigned short x, const unsigned short y) const {
+		wcolor_set(window, WHITE_RED, NULL);
+		mvwprintw(window, 0, x, "vv");
+		mvwprintw(window, shred_width*3+1, x, "^^");
+		mvwprintw(window, y, 0, ">");
+		mvwprintw(window, y, shred_width*3*2+1, "<");	
+	}
 	FILE * notifyLog;
 
 	public:

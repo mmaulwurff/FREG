@@ -68,10 +68,11 @@ void World::LoadShred(const long longi, const long lati, const unsigned short is
 				
 		switch ( TypeOfShred(longi, lati) ) {
 			case '#': NullMountain(istart, jstart); break;
-			case 't': Forest(istart, jstart, longi, lati); break;
+			case '%': Forest(istart, jstart, longi, lati); break;
 			case '~': Water(istart, jstart, longi, lati); break;
 			case '+': Hill(istart, jstart, longi, lati); break;
 			case '.': Plain(istart, jstart); break;
+			case 't': TestShred(istart, jstart); break;
 			default:
 				Plain(istart, jstart);
 				fprintf(stderr, "World::LoadShred: unknown type of shred: %c", TypeOfShred(longi, lati));
@@ -438,10 +439,10 @@ int World::Focus(const unsigned short i, const unsigned short j, const unsigned 
 World::World() : time_step(0), activeList(NULL), scr(NULL) {
 	FILE * file=fopen("save", "r");
 	if (file==NULL) {
-		longitude=3;
-		latitude=3;
-		spawnX=shred_width*2-7;
-		spawnY=shred_width*2-7;
+		longitude=2;
+		latitude=2;
+		spawnX=shred_width;
+		spawnY=shred_width;
 		spawnZ=height/2;
 		time=end_of_night-5;
 		strncpy(worldName, "The_Land_of_Doubts\0", 20);
