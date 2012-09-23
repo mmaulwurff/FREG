@@ -32,7 +32,7 @@ char Screen::CharName(const kinds kind, const subs sub) const {
 			case STAR:  return '.';
 			case WATER: return '~';
 			case SOIL:  return '.';
-			case GREENERY: return '`';
+			case GREENERY: return '%';
 			case ROSE:  return ';';
 			case A_MEAT: case H_MEAT:
 			case HAZELNUT: return ',';

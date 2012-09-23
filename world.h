@@ -306,7 +306,7 @@ class World {
 		unsigned short number_of_trees=0;
 		for (i=longi-1; i<=longi+1; ++i)
 		for (j=lati-1;  j<=lati+1;  ++j)
-			if ( 't'==TypeOfShred(i, j) )
+			if ( '%'==TypeOfShred(i, j) )
 				++number_of_trees;
 
 		for (i=0; i<number_of_trees; ++i) {
@@ -369,9 +369,9 @@ class World {
 		}
 		for (unsigned short i=istart; i<istart+shred_width; ++i)	
 		for (unsigned short j=jstart; j<jstart+shred_width; ++j)
-		//for (unsigned short k=height/2-depth; k<height/2; ++k)
-			if (NULL==blocks[i][j][height/2-depth])
-				blocks[i][j][height/2-depth]=new Liquid(this, i, j, height/2-depth);
+		for (unsigned short k=height/2-depth; k<height/2; ++k)
+			if (NULL==blocks[i][j][k])
+				blocks[i][j][k]=new Liquid(this, i, j, k);
 
 		PlantGrass(istart, jstart);
 	}

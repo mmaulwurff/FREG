@@ -433,7 +433,7 @@ int World::Focus(const unsigned short i, const unsigned short j, const unsigned 
 		case UP:    ++k_target; break;
 		default: fprintf(stderr, "World::Focus(int, int, int, int&, int&, int&, dirs): unlisted dir: %d\n", (int)dir);
 	}
-	return ( !InBounds(i, j, k) );
+	return ( !InBounds(i_target, j_target, k_target) );
 }
 
 World::World() : time_step(0), activeList(NULL), scr(NULL) {
