@@ -112,6 +112,7 @@ class Block { //blocks without special physics and attributes
 		return durability;
 	}
 	void Restore() { durability=max_durability; }
+	short Durability() const { return durability; }
 	virtual Block * DropAfterDamage() const {
 		if (BLOCK==Kind() && GLASS!=sub)
 			return new Block(sub);
@@ -149,7 +150,8 @@ class Block { //blocks without special physics and attributes
 		else fprintf(out, "_0/");
 	}
 
-	Block(const subs n=STONE) : sub(n), weight(1), shown_weight(1), direction(NORTH), note(NULL), durability(max_durability), enlightened(1) {
+	Block(const subs n=STONE, const short dur=max_durability) :
+			sub(n), shown_weight(1), direction(NORTH), note(NULL), durability(dur), enlightened(1) {
 		switch (sub) {
 			case STONE: weight=2; break;
 			default: weight=1;
@@ -288,11 +290,11 @@ class Active : public Block {
 	void Register(World *, int, int, int);
 	void Unregister();
 
-	Active(const subs sub) :
-		Block(sub),
+	Active(const subs sub, const short dur=max_durability) :
+		Block(sub, dur),
 		whereWorld(NULL) {}
-	Active(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, subs sub) :
-			Block(sub)
+	Active(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, subs sub, const short dur=max_durability) :
+			Block(sub, dur)
 		{ Register(w, x, y, z); }
 	Active(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, char * str) :
 			Block(str)
@@ -308,8 +310,8 @@ class Animal : public Active {
 
 	virtual void SaveAttributes(FILE * const out) const { Active::SaveAttributes(out); }
 
-	Animal(World * const w, const unsigned short i, const unsigned short j, const unsigned short k, subs sub) :
-		Active(w, i, j, k, sub) {}
+	Animal(World * const w, const unsigned short i, const unsigned short j, const unsigned short k, subs sub, const short dur=max_durability) :
+		Active(w, i, j, k, sub, dur) {}
 	Animal(World * const w, const unsigned short i, const unsigned short j, const unsigned short k, char * str) :
 		Active(w, i, j, k, str) {}
 };
@@ -471,7 +473,7 @@ class Dwarf : public Animal, public Inventory {
 	float LightRadius() const { return 1.8; }
 
 	Dwarf(World * const w, const unsigned short x, const unsigned short y, const unsigned short z) :
-			Animal(w, x, y, z, H_MEAT),
+			Animal(w, x, y, z, H_MEAT, 100),
 			onHead(inventory[0][0]), onBody(inventory[1][0]), onFeet(inventory[2][0]),
 			inRightHand(inventory[3][0]), inLeftHand(inventory[4][0]),
 			noise(1) {
@@ -630,9 +632,9 @@ class Grass : public Active {
 	public:
 	virtual char * FullName(char * const str) const {
 		switch (sub) {
-			case GRASS: return WriteName(str, "Grass");
+			case GREENERY: return WriteName(str, "Grass");
 			default:
-				fprintf(stderr, "Plant::FullName(char *): unlisted sub\n");
+				fprintf(stderr, "GRASS::FullName(char *): unlisted sub\n");
 				return WriteName(str, "Unknown plant");
 		}
 	}

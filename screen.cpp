@@ -97,6 +97,37 @@ inline color_pairs Screen::Color(const unsigned short i, const unsigned short j,
 	return Color( w->Kind(i, j, k), w->Sub(i, j, k) );
 }
 
+void Screen::Print() const {
+	switch (viewLeft) {
+		case INVENTORY: if (NULL!=blockToPrintLeft) {
+			PrintInv( leftWin, (Inventory *)blockToPrintLeft->HasInventory() );
+			break;
+		}
+		case NORMAL: PrintNormal(leftWin); break;
+		case FRONT: PrintFront(leftWin); break;
+	}	
+	switch (viewRight) {
+		case INVENTORY: if (NULL!=blockToPrintRight) {
+			PrintInv( rightWin, (Inventory *)blockToPrintRight->HasInventory() );
+			break;
+		}
+		case NORMAL: PrintNormal(rightWin); break;
+		case FRONT: PrintFront(rightWin); break;
+	}
+
+	Dwarf * playerP=w->GetPlayerP();
+	if (NULL==playerP) return;
+	werase(hudWin);
+	short dur=playerP->Durability();
+	wstandend(hudWin);
+	mvwprintw(hudWin, 0, 1, "HP: %hd%%", dur);
+	wcolor_set(hudWin, WHITE_RED, NULL);
+	wmove(hudWin, 0, 10);
+	for (unsigned short i=0; i*dur/10<max_durability; ++i)
+		waddch(hudWin, '.');
+	wrefresh(hudWin);
+}
+
 void Screen::PrintNormal(WINDOW * const window) const {
 	if (pthread_mutex_trylock(&(w->mutex)))
 		return;
@@ -311,12 +342,12 @@ void Screen::PrintSounds() const {
 	pthread_mutex_unlock(&(w->mutex));
 }
 
-void Screen::Notify(const char * const str) const {
+void Screen::Notify(const char * const str, color_pairs color) const {
 	werase(notifyWin);
-	mvwaddstr(notifyWin, 1, 1, str);
-	fprintf(notifyLog, "%s\n", str);
-	box(notifyWin, 0, 0);
+	wcolor_set(notifyWin, color, NULL);
+	mvwaddstr(notifyWin, 0, 0, str);
 	wrefresh(notifyWin);
+	fprintf(notifyLog, "%s\n", str);
 }
 
 Screen::Screen(World * const wor) :
@@ -329,7 +360,7 @@ Screen::Screen(World * const wor) :
 	keypad(stdscr, TRUE);
 	curs_set(0);
 	//all available color pairs (maybe some of them will not be used)
-	short i, colors[]={ //do not change colors order!
+	short colors[]={ //do not change colors order!
 		COLOR_BLACK,
 		COLOR_RED,
 		COLOR_GREEN,
@@ -339,14 +370,15 @@ Screen::Screen(World * const wor) :
 		COLOR_CYAN,
 		COLOR_WHITE
 	};
-	for (i=BLACK_BLACK; i<=WHITE_WHITE; ++i)
+	for (short i=BLACK_BLACK; i<=WHITE_WHITE; ++i)
 		init_pair(i, colors[(i-1)/8], colors[(i-1)%8]);
 	leftWin  =newwin(shred_width*3+2, shred_width*2*3+2, 0, 0);
 	rightWin =newwin(shred_width*3+2, shred_width*2*3+2, 0, shred_width*2*3+2);
-	notifyWin=newwin(3+2, (shred_width*2*3+2)*2-8, shred_width*3+2, 8);
+	hudWin=newwin(3+2, (shred_width*2*3+2)*2-8, shred_width*3+2, 8);
+	notifyWin=newwin(0, COLS, shred_width*3+2+5, 0);
 	soundWin =newwin(3+2, 3*2+2, shred_width*3+2, 0);
 	w->scr=this;
-	notifyLog=fopen("messages.txt", "w");
+	notifyLog=fopen("messages.txt", "a");
 }
 
 Screen::~Screen() {
@@ -354,6 +386,7 @@ Screen::~Screen() {
 	delwin(leftWin);
 	delwin(rightWin);
 	delwin(notifyWin);
+	delwin(hudWin);
 	delwin(soundWin);
 	endwin();
 	w->scr=NULL;

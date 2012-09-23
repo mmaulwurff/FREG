@@ -27,7 +27,8 @@ class Screen {
 	WINDOW * leftWin,
 	       * rightWin,
 	       * notifyWin,
-	       * soundWin;
+	       * soundWin,
+	       * hudWin;
 	char CharName(const unsigned short, const unsigned short, const unsigned short) const;
 	char CharName(const kinds, const subs) const;
 	void Arrows(WINDOW * const window, const unsigned short x, const unsigned short y) const {
@@ -51,24 +52,7 @@ class Screen {
 	void PrintNormal(WINDOW * const) const;
 	void PrintFront(WINDOW * const) const;
 	void PrintInv(WINDOW * const, Inventory * const) const;
-	void Print() const {
-		switch (viewLeft) {
-			case INVENTORY: if (NULL!=blockToPrintLeft) {
-				PrintInv( leftWin, (Inventory *)blockToPrintLeft->HasInventory() );
-				break;
-			}
-			case NORMAL: PrintNormal(leftWin); break;
-			case FRONT: PrintFront(leftWin); break;
-		}	
-		switch (viewRight) {
-			case INVENTORY: if (NULL!=blockToPrintRight) {
-				PrintInv( rightWin, (Inventory *)blockToPrintRight->HasInventory() );
-				break;
-			}
-			case NORMAL: PrintNormal(rightWin); break;
-			case FRONT: PrintFront(rightWin); break;
-		}	
-	}
+	void Print() const;
 	void GetString(char * const str) const {
 		echo();
 		werase(notifyWin);
@@ -81,7 +65,7 @@ class Screen {
 		wrefresh(notifyWin);
 		noecho();
 	}
-	void Notify(const char * const) const;
+	void Notify(const char * const, color_pairs=WHITE_BLACK) const;
 	void PrintSounds() const;
 	void UpDownView(const dirs) const;
 };

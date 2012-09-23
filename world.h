@@ -709,8 +709,8 @@ class World {
 		char temp_str[10];
 		if (NULL!=blocks[i][j][k]) {
 			sprintf(temp_str, "%d", Temperature(i, j, k));
-			if ('\0'!=temp_str[0]) {
-				strcat(str, "\n Temperature: ");
+			if ('0'!=temp_str[0]) {
+				strcat(str, "\nTemperature: ");
 				strcat(str, temp_str);
 			}
 		}	

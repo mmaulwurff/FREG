@@ -82,6 +82,7 @@ int main() {
 				earth.Damage(i, j, k);
 			} break;
 			case 'H': case KEY_HOME: earth.PlayerBuild(getch()-'a'); break;
+			case 'Q': break;
 			default: screen.Notify("What?\n");
 		}
 		if (print_flag) screen.Print();

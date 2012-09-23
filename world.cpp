@@ -447,6 +447,8 @@ World::World() : time_step(0), activeList(NULL), scr(NULL) {
 		time=end_of_night-5;
 		strncpy(worldName, "The_Land_of_Doubts\0", 20);
 		worldSize=1000;
+		FILE * messages=fopen("messages.txt", "w");
+		fclose(messages);
 	} else {
 		fscanf(file, "longitude: %ld\nlatitude: %ld\nspawnX: %hd\n spawnY: %hd\n spawnZ: %hd\ntime: %ld\nWorld:%s\nSize:%hd\n",
 				&longitude, &latitude, &spawnX, &spawnY, &spawnZ, &time, worldName, &worldSize);
