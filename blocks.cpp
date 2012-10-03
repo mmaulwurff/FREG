@@ -48,8 +48,10 @@ void Active::SafeMove() {
 	//when player is on the border of shred, moving him causes World::ReloadShreds(dir). so, cheks are neede for liquids not to push player.
 	unsigned short x_focus, y_focus, z_focus;
 	if ( !(whereWorld->Focus(x_self, y_self, z_self, x_focus, y_focus, z_focus, direction)) &&
-			(Block *)(whereWorld->playerP)!=whereWorld->blocks[x_focus][y_focus][z_focus] )
+			((Block *)(whereWorld->playerP)!=whereWorld->blocks[x_focus][y_focus][z_focus] ||
+			 UP==direction || DOWN==direction ) ) {
 		whereWorld->Move(x_self, y_self, z_self, direction);
+	}
 }
 void Active::SafeJump() {
 	SetWeight(0);
@@ -92,6 +94,18 @@ void Active::Unregister() {
 				whereWorld->activeList->prev=NULL;
 		}
 	}
+}
+
+void Animal::Act() {
+	if (!breath) {
+		Damage(10);
+		return;
+	}
+		
+	if ( LIQUID==whereWorld->Kind(x_self, y_self, z_self+1) )
+		--breath;
+	else
+		breath=100;
 }
 
 int Dwarf::Move(const dirs dir) {

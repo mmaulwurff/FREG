@@ -102,17 +102,19 @@ class Block { //blocks without special physics and attributes
 	virtual int Move(const dirs) { return 0; }
 	virtual char MakeSound() const { return ' '; }
 	virtual usage_types Use() { return NO; }
-	virtual int Damage(const unsigned short dmg, const damage_kinds dmg_kind) {
+	virtual int Damage(const unsigned short dmg, const damage_kinds dmg_kind=CRUSH) {
+		if (!durability)
+			return 0;
 		switch (sub) {
 			case GLASS: return durability=0;
 			case MOSS_STONE:
-			case STONE:  return (MINE==dmg_kind) ? durability-=2*dmg : durability-=dmg;
+			case STONE:  return ((MINE==dmg_kind) ? durability-=2*dmg : durability-=dmg);
 			case GREENERY: case ROSE: case HAZELNUT:
-			case WOOD:   return  (CUT==dmg_kind) ? durability-=2*dmg : durability-=dmg;
+			case WOOD:   return  ((CUT==dmg_kind) ? durability-=2*dmg : durability-=dmg);
 			case SAND:
-			case SOIL:   return  (DIG==dmg_kind) ? durability-=2*dmg : durability-=dmg;
+			case SOIL:   return  ((DIG==dmg_kind) ? durability-=2*dmg : durability-=dmg);
 			case A_MEAT:
-			case H_MEAT: return (THRUST==dmg_kind) ? durability-=2*dmg : durability-=dmg;
+			case H_MEAT: return ((THRUST==dmg_kind) ? durability-=2*dmg : durability-=dmg);
 			case DIFFERENT: case AIR: case SKY: case SUN_MOON: case WATER:
 			case NULLSTONE: return durability;
 			default: return durability-=dmg;
@@ -160,7 +162,10 @@ class Block { //blocks without special physics and attributes
 	Block(const subs n=STONE, const short dur=max_durability) :
 			sub(n), shown_weight(1), direction(NORTH), note(NULL), durability(dur), enlightened(1) {
 		switch (sub) {
-			case STONE: weight=2; break;
+			case STONE: weight=10; break;
+			case A_MEAT:
+			case H_MEAT: weight=1; break;
+			case WATER: weight=3; break;
 			default: weight=1;
 		}
 		shown_weight=weight;
@@ -309,14 +314,21 @@ class Active : public Block {
 
 class Animal : public Active {
 	protected:
-	//int health;
+	short breath;
 	public:
 	virtual char * FullName(char * const) const=0;
 
-	virtual void SaveAttributes(FILE * const out) const { Active::SaveAttributes(out); }
+	short Breath() { return breath; }
+
+	virtual void Act();
+
+	virtual void SaveAttributes(FILE * const out) const {
+		Active::SaveAttributes(out);
+		fprintf(out, "%hd/", breath);
+	}
 
 	Animal(World * const w, const unsigned short i, const unsigned short j, const unsigned short k, subs sub, const short dur=max_durability) :
-		Active(w, i, j, k, sub, dur) {}
+		Active(w, i, j, k, sub, dur), breath(max_breath) {}
 	Animal(World * const w, const unsigned short i, const unsigned short j, const unsigned short k, char * str) :
 		Active(w, i, j, k, str) {}
 };

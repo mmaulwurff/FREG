@@ -374,30 +374,36 @@ int World::Move(const unsigned short i, const unsigned short j, const unsigned s
 		pthread_mutex_unlock(&mutex);
 		return 1;
 	}
-	int numberMoves=0;
-	if (stop && (ENVIRONMENT!=blocks[i][j][k]->Movable() || !Equal(blocks[i][j][k], blocks[newi][newj][newk])) &&
-			(ENVIRONMENT==Movable(blocks[newi][newj][newk]) || (numberMoves=Move(newi, newj, newk, dir, stop-1)) )) {
-		Block * temp=blocks[i][j][k];
-		blocks[i][j][k]=blocks[newi][newj][newk];
-		blocks[newi][newj][newk]=temp;
-		
-		ReEnlighten(newi, newj, newk);
-
-		if ( NULL!=blocks[i][j][k] )
-			blocks[i][j][k]->Move( Anti(dir) );
-
-		if ( blocks[newi][newj][newk]->Move(dir) )
-			GetPlayerCoords(newi, newj, newk);
-
-		float weight=Weight(blocks[newi][newj][newk])-Weight(blocks[newi][newj][newk-1]);
-		if ( weight<0 ) {
-			if ( ENVIRONMENT==blocks[newi][newj][newk]->Movable() )
-				numberMoves+=Move(newi, newj, newk, UP, stop-1);
-		} else if (weight)
-			numberMoves+=Move(newi, newj, newk, DOWN, stop-1);
-
-		++numberMoves;
+	if ( !stop || (ENVIRONMENT==blocks[i][j][k]->Movable() && Equal(blocks[i][j][k], blocks[newi][newj][newk])) ) {
+		pthread_mutex_unlock(&mutex);
+		return 0;
 	}
+	short numberMoves=0;
+	if ( ENVIRONMENT!=Movable(blocks[newi][newj][newk]) && !(numberMoves=Move(newi, newj, newk, dir, stop-1)) ) {
+		pthread_mutex_unlock(&mutex);
+		return 0;
+	}
+
+	Block * temp=blocks[i][j][k];
+	blocks[i][j][k]=blocks[newi][newj][newk];
+	blocks[newi][newj][newk]=temp;
+	
+	ReEnlighten(newi, newj, newk);
+
+	if ( NULL!=blocks[i][j][k] )
+		blocks[i][j][k]->Move( Anti(dir) );
+
+	if ( blocks[newi][newj][newk]->Move(dir) )
+		GetPlayerCoords(newi, newj, newk);
+
+	if ( Weight(blocks[newi][newj][newk]) )
+		if ( Weight(blocks[newi][newj][newk])>Weight(blocks[newi][newj][newk-1]) )
+			numberMoves+=Move(newi, newj, newk, DOWN, stop-1);
+		else if ( Weight(blocks[newi][newj][newk])<Weight(blocks[newi][newj][newk+1]) )
+			numberMoves+=Move(newi, newj, newk, UP, stop-1);
+
+	++numberMoves;
+
 	pthread_mutex_unlock(&mutex);
 	return numberMoves;
 }
@@ -407,9 +413,10 @@ void World::Jump(const int i, const int j, int k) {
 	if ( NULL!=blocks[i][j][k] && MOVABLE==blocks[i][j][k]->Movable() ) {
 		Block * to_move=blocks[i][j][k];
 		blocks[i][j][k]->SetWeight(0);
-		int k_plus;
-		if ( (k_plus=Move(i, j, k, UP)) ) {
-			k+=k_plus;
+		dirs dir=to_move->GetDir();
+		short k_plus=Move(i, j, k, (DOWN==dir) ? DOWN : UP);
+		if ( k_plus ) {
+			k+=((DOWN==dir) ? (-1) : 1) * k_plus;
 			blocks[i][j][k]->SetWeight();
 			if ( !Move( i, j, k, to_move->GetDir()) )
 				Move(i, j, k, DOWN);

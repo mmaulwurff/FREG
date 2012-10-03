@@ -119,11 +119,16 @@ void Screen::Print() const {
 	if (NULL==playerP) return;
 	werase(hudWin);
 	short dur=playerP->Durability();
+	short breath=playerP->Breath();
 	wstandend(hudWin);
-	mvwprintw(hudWin, 0, 1, "HP: %hd%%", dur);
+	mvwprintw(hudWin, 0, 1, "HP: %hd%%\n BR: %d%%", dur, breath);
 	wcolor_set(hudWin, WHITE_RED, NULL);
 	wmove(hudWin, 0, 10);
-	for (unsigned short i=0; i*dur/10<max_durability; ++i)
+	for (unsigned short i=0; i<10*dur/max_durability; ++i)
+		waddch(hudWin, '.');
+	wmove(hudWin, 1, 10);
+	wcolor_set(hudWin, WHITE_BLUE, NULL);
+	for (unsigned short i=0; i<10*breath/max_breath; ++i)
 		waddch(hudWin, '.');
 	wrefresh(hudWin);
 }

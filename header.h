@@ -43,6 +43,7 @@ const unsigned short end_of_evening= 0*seconds_in_hour;
 const unsigned short max_light_radius=5;
 
 const unsigned short max_durability=100;
+const unsigned short max_breath=100;
 
 inline char * WriteName(char * str, const char * name) { strncpy(str, name, full_name_length); return str; }
 
