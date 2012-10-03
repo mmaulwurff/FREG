@@ -68,7 +68,7 @@ class Block { //blocks without special physics and attributes
 	dirs GetDir() const { return direction; }
 	void SetDir(const dirs dir) { direction=dir; }
 	subs Sub() const { return sub; }
-	virtual void Inscribe(char * const str) {
+	virtual void Inscribe(const char * const str) {
 		if (NULL==note) note=new char[note_length];
 		strncpy(note, str, note_length);
 		if ('\n'==note[0]) {
@@ -102,14 +102,21 @@ class Block { //blocks without special physics and attributes
 	virtual int Move(const dirs) { return 0; }
 	virtual char MakeSound() const { return ' '; }
 	virtual usage_types Use() { return NO; }
-	virtual int Damage() {
+	virtual int Damage(const unsigned short dmg, const damage_kinds dmg_kind) {
 		switch (sub) {
-			case GLASS: durability-=10; break;
-			case STONE: durability-=5; break;
-			case NULLSTONE: break;
-			default: --durability; break;
+			case GLASS: return durability=0;
+			case MOSS_STONE:
+			case STONE:  return (MINE==dmg_kind) ? durability-=2*dmg : durability-=dmg;
+			case GREENERY: case ROSE: case HAZELNUT:
+			case WOOD:   return  (CUT==dmg_kind) ? durability-=2*dmg : durability-=dmg;
+			case SAND:
+			case SOIL:   return  (DIG==dmg_kind) ? durability-=2*dmg : durability-=dmg;
+			case A_MEAT:
+			case H_MEAT: return (THRUST==dmg_kind) ? durability-=2*dmg : durability-=dmg;
+			case DIFFERENT: case AIR: case SKY: case SUN_MOON: case WATER:
+			case NULLSTONE: return durability;
+			default: return durability-=dmg;
 		}
-		return durability;
 	}
 	void Restore() { durability=max_durability; }
 	short Durability() const { return durability; }
@@ -177,9 +184,9 @@ class Block { //blocks without special physics and attributes
 class Telegraph : public Block {
 	public:
 	kinds Kind() const { return TELEGRAPH; }
-	char * FullName(char * str) const { return WriteName(str, "Telegraph"); }
+	char * FullName(char * const str) const { return WriteName(str, "Telegraph"); }
 
-	void Inscribe(char * str) {
+	void Inscribe(const char * const str) {
 		Block::Inscribe(str);
 		char command[note_length+40];
 		if (NULL!=note) {
@@ -191,23 +198,21 @@ class Telegraph : public Block {
 	}
 	Block * DropAfterDamage() const { return new Telegraph(); }
 
-	void SaveAttributes(FILE * out) const { Block::SaveAttributes(out); }
+	void SaveAttributes(FILE * const out) const { Block::SaveAttributes(out); }
 
-	Telegraph() : Block(DIFFERENT) {}
-	Telegraph(char * str) : Block(str) {}
+	Telegraph() : Block(IRON) {}
+	Telegraph(char * const str) : Block(str) {}
 };
 
 class Weapons : public Block {
-	protected:
 	public:
 	virtual kinds Kind() const=0;
 	bool Weapon() const { return true; }
-	virtual bool Carving()  const { return false; }
 	bool CanBeOut() const { return false; }
 
 	virtual void SaveAttributes(FILE * const out) const { Block::SaveAttributes(out); }
 
-	Weapons(const subs sub) : Block::Block(sub) {}
+	Weapons(const subs sub, const short durability=max_durability) : Block::Block(sub, durability) {}
 	Weapons(char * const str) : Block::Block(str) {}
 };
 
@@ -227,7 +232,7 @@ class Pick : public Weapons {
 
 	virtual void SaveAttributes(FILE * const out) const { Weapons::SaveAttributes(out); }
 
-	Pick(const subs sub) : Weapons(sub) {}
+	Pick(const subs sub, const short durability=max_durability) : Weapons(sub, durability) {}
 	Pick(char * const str) : Weapons(str) {}
 };
 
@@ -508,7 +513,6 @@ class Chest : public Block, public Inventory {
 
 	usage_types Use() { return Inventory::Use(); }
 
-	virtual int Damage() { return durability-=4; }
 	Block * DropAfterDamage() const { return new Chest(); }
 
 	virtual void SaveAttributes(FILE * const out) const {
@@ -516,7 +520,7 @@ class Chest : public Block, public Inventory {
 		Inventory::SaveAttributes(out);
 	}
 
-	Chest(const subs s=WOOD) : Block(s) {}
+	Chest(const subs s=WOOD, const short dur=max_durability) : Block(s, dur) {}
 	Chest(char * const str, FILE * const in) :
 		Block(str),
 		Inventory(str, in) {}
@@ -557,7 +561,6 @@ class Pile : public Active, public Inventory {
 	virtual before_move_return BeforeMove(const dirs);
 	virtual bool CanBeIn() const { return false; }
 	virtual bool Access()  const{ return true; }
-	int Damage() { return durability-=10; }
 
 	virtual void SaveAttributes(FILE * const out) const {
 		Active::SaveAttributes(out);
@@ -602,7 +605,7 @@ class Liquid : public Active {
 		}
 	}
 
-	virtual int Damage() { return durability; }
+	virtual int Damage(const unsigned short, const damage_kinds) { return durability; }
 
 	virtual void Act();
 
@@ -643,8 +646,6 @@ class Grass : public Active {
 	virtual int Transparent() const { return 1; }
 	virtual bool ShouldFall() const { return false; }
 
-	virtual int Damage() { return durability=0; }
-
 	virtual before_move_return BeforeMove(dirs) { return DESTROY; }
 	virtual void Act();
 
@@ -652,7 +653,7 @@ class Grass : public Active {
 
 	Grass() : Active(GREENERY) {}
 	Grass(World * const w, const unsigned short x, const unsigned short y, const unsigned short z) :
-			Active(w, x, y, z, GREENERY) {}
+			Active(w, x, y, z, GREENERY, 1) {}
 	Grass(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, char * const str, FILE * const in) :
 			Active(w, x, y, z, str) {}
 };
@@ -677,7 +678,6 @@ class Bush : public Active, public Inventory {
 	}
 
 	Block * DropAfterDamage() const { return new Block(WOOD); }
-	virtual int Damage() { return durability-=4; }
 
 	virtual void SaveAttributes(FILE * const out) const {
 		Active::SaveAttributes(out);
@@ -698,7 +698,6 @@ class Rabbit : public Active {
 
 	void Act();
 
-	int Damage() { return durability-=4; }
 	Block * DropAfterDamage() const { return new Block(A_MEAT); }
 
 	void SaveAttributes(FILE * const out) const { Active::SaveAttributes(out); }

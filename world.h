@@ -512,8 +512,8 @@ class World {
 	unsigned long Time() const { return time; }
 
 	//interactions section
-	void Damage(const int i, const int j, const int k) {
-		if ( NULL==blocks[i][j][k] || 0<blocks[i][j][k]->Damage() )
+	void Damage(const int i, const int j, const int k, const unsigned short dmg=1, const damage_kinds dmg_kind=CRUSH) {
+		if ( NULL==blocks[i][j][k] || 0<blocks[i][j][k]->Damage(dmg, dmg_kind) )
 			return;
 
 		Block * temp=blocks[i][j][k];
