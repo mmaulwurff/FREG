@@ -488,7 +488,7 @@ class World {
 	}
 
 	//visibility section
-	bool DirectlyVisible(const int, const int, const int, const int, const int, const int) const;
+	bool DirectlyVisible(const float, const float, const float, const int, const int, const int) const;
 	bool Visible(const int, const int, const int, const int, const int, const int) const;
 	bool Visible(const int x_to, const int y_to, const int z_to) const {
 		unsigned short playerX, playerY, playerZ;
@@ -713,8 +713,11 @@ class World {
 	short Durability(const int i, const int j, const int k) const {
 		return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? 0 : blocks[i][j][k]->Durability();
 	}
-	int  Transparent(const int i, const int j, const int k) const {
-		return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? 2 : blocks[i][j][k]->Transparent();
+	int Transparent(const int i, const int j, const int k) const {
+		return ( !InBounds(i, j, k) ) ? 2 : TransparentNotSafe(i, j, k);
+	}
+	int TransparentNotSafe(const int i, const int j, const int k) const {
+		return ( NULL==blocks[i][j][k] ) ? 2 : blocks[i][j][k]->Transparent();
 	}
 	int  Movable(const Block * const block) const            { return (NULL==block) ? ENVIRONMENT : block->Movable(); }
 	double Weight(const Block * const block) const           { return (NULL==block) ? 0 : block->Weight(); }

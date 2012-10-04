@@ -332,18 +332,25 @@ char World::CharNumberFront(const int i, const int j) const {
 	return '+';
 }
 
-bool World::DirectlyVisible(const int x_from, const int y_from, const int z_from,
-                            const int x_to,   const int y_to,   const int z_to) const {
-	if (x_from==x_to && y_from==y_to && z_from==z_to) return true;
-	unsigned short max=(abs(z_to-z_from) > abs(y_to-y_from)) ? abs(z_to-z_from) : abs(y_to-y_from);
-	if (abs(x_to-x_from) > max) max=abs(x_to-x_from);
+bool World::DirectlyVisible(float x_from, float y_from, float z_from,
+		const int x_to, const int y_to, const int z_to) const {
+	if (x_from==x_to && y_from==y_to && z_from==z_to)
+		return true;
+
+	unsigned short max=(abs(z_to-z_from) > abs(y_to-y_from)) ?
+		abs(z_to-z_from) :
+		abs(y_to-y_from);
+	if (abs(x_to-x_from) > max)
+		max=abs(x_to-x_from);
+
 	float x_step=(float)(x_to-x_from)/max,
 	      y_step=(float)(y_to-y_from)/max,
 	      z_step=(float)(z_to-z_from)/max;
+
 	for (unsigned short i=1; i<max; ++i)
-		if ( !Transparent(nearbyint(x_from+i*x_step),
-		                  nearbyint(y_from+i*y_step),
-		                  nearbyint(z_from+i*z_step)))
+		if ( !TransparentNotSafe(nearbyint(x_from+=x_step),
+		                         nearbyint(y_from+=y_step),
+		                         nearbyint(z_from+=z_step)) )
 		   	return false;
 	return true;
 }
@@ -451,7 +458,7 @@ World::World() : time_step(0), activeList(NULL), scr(NULL) {
 		spawnX=shred_width;
 		spawnY=shred_width;
 		spawnZ=height/2;
-		time=end_of_night-5;
+		time=end_of_noon-5;
 		strncpy(worldName, "The_Land_of_Doubts\0", 20);
 		worldSize=1000;
 		FILE * messages=fopen("messages.txt", "w");
