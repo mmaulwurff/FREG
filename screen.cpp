@@ -347,16 +347,21 @@ void Screen::PrintSounds() const {
 	pthread_mutex_unlock(&(w->mutex));
 }
 
-void Screen::Notify(const char * const str, color_pairs color) const {
-	werase(notifyWin);
+void Screen::NotifyAdd(const char * const str, color_pairs color) {
+	if (!str[0])
+		return;
 	wcolor_set(notifyWin, color, NULL);
-	mvwaddstr(notifyWin, 0, 0, str);
+	mvwaddstr(notifyWin, notifyLines++, 0, str);
 	wrefresh(notifyWin);
 	fprintf(notifyLog, "%s\n", str);
 }
 
 Screen::Screen(World * const wor) :
-       		w(wor), blockToPrintLeft(NULL), blockToPrintRight(NULL), viewLeft(NORMAL), viewRight(FRONT) {
+       		w(wor), notifyLines(0),
+		blockToPrintLeft(NULL),
+		blockToPrintRight(NULL),
+		viewLeft(NORMAL),
+		viewRight(FRONT) {
 	set_escdelay(10);
 	initscr();
 	start_color();

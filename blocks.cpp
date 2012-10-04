@@ -97,15 +97,14 @@ void Active::Unregister() {
 }
 
 void Animal::Act() {
-	if (!breath) {
-		Damage(10);
+	if ( LIQUID==whereWorld->Kind(x_self, y_self, z_self+1) ) {
+		if (!breath)
+			whereWorld->Damage(x_self, y_self, z_self, 10, CRUSH, false);
+		else
+			--breath;
 		return;
-	}
-		
-	if ( LIQUID==whereWorld->Kind(x_self, y_self, z_self+1) )
-		--breath;
-	else
-		breath=100;
+	} else
+		breath=max_breath;
 }
 
 int Dwarf::Move(const dirs dir) {
@@ -117,6 +116,10 @@ int Dwarf::Move(const dirs dir) {
 		return 1;
 	}
 	return 0;
+}
+
+void Dwarf::Act() {
+	Animal::Act();
 }
 
 before_move_return Dwarf::BeforeMove(const dirs dir) {
@@ -212,4 +215,6 @@ void Rabbit::Act() {
 		}
 		(random()%2) ? SafeMove() : SafeJump();
 	}
+
+	Animal::Act();
 }

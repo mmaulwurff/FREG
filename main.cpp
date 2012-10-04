@@ -63,15 +63,7 @@ int main() {
 				earth.PlayerFocus(i, j, k);
 				earth.Use(i, j, k);
 			} break;
-			case '?': {
-				unsigned short i, j, k;
-				earth.PlayerFocus(i, j, k);
-				char str[full_name_length+note_length+20+10];
-				earth.FullName(str, i, j, k);
-				earth.GetNote(str, i, j, k);
-				earth.GetTemperature(str, i, j, k);
-				screen.Notify(str);
-			} break;
+			case '?': earth.Examine(); break;
 			case 'd': earth.PlayerDrop(getch()-'a'); break;
 			case 'g': earth.PlayerGet(getch()-'a'); break;
 			case 'W': earth.PlayerWield(); break;
@@ -82,6 +74,7 @@ int main() {
 				earth.Damage(i, j, k);
 			} break;
 			case 'H': case KEY_HOME: earth.PlayerBuild(getch()-'a'); break;
+			case 'l': screen.RePrint(); break;
 			case 'Q': break;
 			default: screen.Notify("What?\n");
 		}

@@ -464,6 +464,28 @@ class World {
 			default: return NORTH;
 		}
 	}
+	void Examine() {
+		unsigned short i, j, k;
+		PlayerFocus(i, j, k);
+		char str[note_length];
+
+		FullName(str, i, j, k);
+		scr->Notify(str);
+		str[0]=0;
+		
+		GetNote(str, i, j, k);
+		if (str[0])
+			scr->NotifyAdd("Inscription:");
+		scr->NotifyAdd(str);
+		str[0]=0;
+
+		scr->NotifyAdd(GetTemperature(str, i, j, k));
+		str[0]=0;
+
+		sprintf(str, "Durability: %hd", Durability(i, j, k));
+		scr->NotifyAdd(str);
+		str[0]=0;
+	}
 
 	//visibility section
 	bool DirectlyVisible(const int, const int, const int, const int, const int, const int) const;
@@ -512,7 +534,7 @@ class World {
 	unsigned long Time() const { return time; }
 
 	//interactions section
-	void Damage(const int i, const int j, const int k, const unsigned short dmg=1, const damage_kinds dmg_kind=CRUSH) {
+	void Damage(const int i, const int j, const int k, const unsigned short dmg=1, const damage_kinds dmg_kind=CRUSH, const bool destroy=true) {
 		if ( NULL==blocks[i][j][k] || 0<blocks[i][j][k]->Damage(dmg, dmg_kind) )
 			return;
 
@@ -532,8 +554,13 @@ class World {
 				delete dropped;
 		} else
 			blocks[i][j][k]=NULL;
-
-		delete temp;
+		
+		if (destroy)
+			delete temp;
+		else {
+			temp->ToDestroy();
+			temp->Unregister();
+		}
 
 		ReEnlighten(i, j, k);
 		SunReShine(i, j);
@@ -683,6 +710,9 @@ class World {
 	}
 	subs Sub(const int i, const int j, const int k) const    { return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? AIR : blocks[i][j][k]->Sub(); }
 	kinds Kind(const int i, const int j, const int k) const  { return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? BLOCK : blocks[i][j][k]->Kind(); }
+	short Durability(const int i, const int j, const int k) const {
+		return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? 0 : blocks[i][j][k]->Durability();
+	}
 	int  Transparent(const int i, const int j, const int k) const {
 		return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? 2 : blocks[i][j][k]->Transparent();
 	}
@@ -695,25 +725,13 @@ class World {
 		return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? NULL : blocks[i][j][k]->ActiveBlock();
 	}
 	void GetNote(char * const str, const int i, const int j, const int k) const {
-		char note[note_length];
-		if (InBounds(i, j, k) && NULL!=blocks[i][j][k]) {
-			blocks[i][j][k]->GetNote(note);
-			if ('\0'!=note[0]) {
-				strcat(str, "\n Inscription: \"");
-				strcat(str, note);
-				strcat(str, "\"");
-			}
-		}
+		if ( InBounds(i, j, k) && NULL!=blocks[i][j][k] )
+			blocks[i][j][k]->GetNote(str);
 	}
-	void GetTemperature(char * const str, const int i, const int j, const int k) const {
-		char temp_str[10];
-		if (NULL!=blocks[i][j][k]) {
-			sprintf(temp_str, "%d", Temperature(i, j, k));
-			if ('0'!=temp_str[0]) {
-				strcat(str, "\nTemperature: ");
-				strcat(str, temp_str);
-			}
-		}	
+	char * GetTemperature(char * const str, const int i, const int j, const int k) const {
+		if ( InBounds(i, j, k) && NULL!=blocks[i][j][k] )
+			sprintf(str, "Temperature: %d", Temperature(i, j, k));
+		return str;
 	}
 	int Temperature(const int i_center, const int j_center, const int k_center) const {
 		if (!InBounds(i_center, j_center, k_center) || NULL==blocks[i_center][j_center][k_center] || height-1==k_center)

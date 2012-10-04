@@ -39,20 +39,17 @@ class Screen {
 		mvwprintw(window, y, shred_width*3*2+1, "<");	
 	}
 	FILE * notifyLog;
+	unsigned short notifyLines;
+
+	void PrintNormal(WINDOW * const) const;
+	void PrintFront(WINDOW * const) const;
+	void PrintInv(WINDOW * const, Inventory * const) const;
+	void UpDownView(const dirs) const;
 
 	public:
 	Block * blockToPrintLeft,
 	      * blockToPrintRight;
 	window_views viewLeft, viewRight;
-	Screen(World * const wor);
-	~Screen();
-	color_pairs Color(const kinds, const subs) const;
-	color_pairs Color(const unsigned short i, const unsigned short j, const unsigned short k) const;
-	color_pairs Color(const subs sub, const kinds kind) const { return Screen::Color(kind, sub); }
-	void PrintNormal(WINDOW * const) const;
-	void PrintFront(WINDOW * const) const;
-	void PrintInv(WINDOW * const, Inventory * const) const;
-	void Print() const;
 	void GetString(char * const str) const {
 		echo();
 		werase(notifyWin);
@@ -65,9 +62,29 @@ class Screen {
 		wrefresh(notifyWin);
 		noecho();
 	}
-	void Notify(const char * const, color_pairs=WHITE_BLACK) const;
+	void Notify(const char * const str, color_pairs color=WHITE_BLACK) {
+		werase(notifyWin);
+		notifyLines=0;
+		NotifyAdd(str, color);
+	}
+	void NotifyAdd(const char * const, color_pairs=WHITE_BLACK);
+	void Print() const;
 	void PrintSounds() const;
-	void UpDownView(const dirs) const;
+	void RePrint() {
+		wclear(leftWin);
+		wclear(rightWin);
+		wclear(notifyWin);
+		wclear(soundWin);
+		wclear(hudWin);
+		Print();
+		PrintSounds();
+	}
+	color_pairs Color(const kinds, const subs) const;
+	color_pairs Color(const unsigned short i, const unsigned short j, const unsigned short k) const;
+	color_pairs Color(const subs sub, const kinds kind) const { return Screen::Color(kind, sub); }
+
+	Screen(World * const wor);
+	~Screen();
 };
 
 #endif
