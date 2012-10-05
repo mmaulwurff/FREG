@@ -98,13 +98,18 @@ void Active::Unregister() {
 
 void Animal::Act() {
 	if ( LIQUID==whereWorld->Kind(x_self, y_self, z_self+1) ) {
-		if (!breath)
-			whereWorld->Damage(x_self, y_self, z_self, 10, CRUSH, false);
+		if (0>=breath)
+			whereWorld->Damage(x_self, y_self, z_self, 10, BREATH, false);
 		else
 			--breath;
 		return;
-	} else
-		breath=max_breath;
+	} else if ( breath<max_breath )
+		++breath;
+
+	if (0<satiation)
+		--satiation;
+	else
+		whereWorld->Damage(x_self, y_self, z_self, 1, HUNGER, false);
 }
 
 int Dwarf::Move(const dirs dir) {
@@ -183,10 +188,10 @@ void Rabbit::Act() {
 	for (short y=y_self-7; y<=y_self+7; ++y)
 	for (short z=z_self-7; z<=z_self+7; ++z)
 		if ( whereWorld->InBounds(x, y, z) ) {
-			attractive=0;
 			switch ( whereWorld->Kind(x, y, z) ) {
 				case DWARF:  if (whereWorld->DirectlyVisible(x_self, y_self, z_self, x, y, z)) attractive=-9; break;
-				case RABBIT: if (whereWorld->DirectlyVisible(x_self, y_self, z_self, x, y, z)) attractive=0.8;  break;
+				case RABBIT: if (whereWorld->DirectlyVisible(x_self, y_self, z_self, x, y, z)) attractive=0.8; break;
+				case GRASS:  if (whereWorld->DirectlyVisible(x_self, y_self, z_self, x, y, z)) attractive=0.1; break;
 				default: attractive=0;
 			}
 			if (attractive) {
@@ -214,6 +219,16 @@ void Rabbit::Act() {
 			case 3: SetDir(WEST);  break;
 		}
 		(random()%2) ? SafeMove() : SafeJump();
+	}
+
+	if ( seconds_in_day*time_steps_in_sec/2>satiation ) {
+		for (short i=x_self-1; i<=x_self+1; ++i)
+		for (short j=y_self-1; j<=y_self+1; ++j)
+		for (short k=z_self-1; k<=z_self+1; ++k)
+			if ( GREENERY==whereWorld->Sub(i, j, k) ) {
+				whereWorld->Eat(x_self, y_self, z_self, i, j, k);
+				fprintf(stderr, "Rabbit wants to eat\n");
+			}
 	}
 
 	Animal::Act();

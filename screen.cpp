@@ -42,9 +42,9 @@ char Screen::CharName(const kinds kind, const subs sub) const {
 				return '?';
 		}
 		case DWARF: return '@';
-		case CHEST: return 'c';
+		case CHEST: return '&';
 		case BUSH: return ';';
-		case PILE: return '*';
+		case PILE: return '&';
 		case PICK: return '\\';
 		case TELEGRAPH: return 't';
 		case LIQUID: return '~';
@@ -116,20 +116,35 @@ void Screen::Print() const {
 	}
 
 	Dwarf * playerP=w->GetPlayerP();
-	if (NULL==playerP) return;
+	if (NULL==playerP)
+		return;
+
 	werase(hudWin);
+
 	short dur=playerP->Durability();
 	short breath=playerP->Breath();
+	short satiation=playerP->Satiation();
+
 	wstandend(hudWin);
 	mvwprintw(hudWin, 0, 1, "HP: %hd%%\n BR: %d%%", dur, breath);
+	if ( 3*seconds_in_day/4<satiation ) {
+		wcolor_set(hudWin, GREEN_BLACK, NULL);
+		mvwaddstr(hudWin, 2, 1, "Full");
+	} else if (seconds_in_day/4>satiation) {
+		wcolor_set(hudWin, RED_BLACK, NULL);
+		mvwaddstr(hudWin, 2, 1, "Hungry");
+	}
+
 	wcolor_set(hudWin, WHITE_RED, NULL);
 	wmove(hudWin, 0, 10);
 	for (unsigned short i=0; i<10*dur/max_durability; ++i)
 		waddch(hudWin, '.');
+
 	wmove(hudWin, 1, 10);
 	wcolor_set(hudWin, WHITE_BLUE, NULL);
 	for (unsigned short i=0; i<10*breath/max_breath; ++i)
 		waddch(hudWin, '.');
+
 	wrefresh(hudWin);
 }
 

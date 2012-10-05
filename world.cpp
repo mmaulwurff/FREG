@@ -458,7 +458,7 @@ World::World() : time_step(0), activeList(NULL), scr(NULL) {
 		spawnX=shred_width;
 		spawnY=shred_width;
 		spawnZ=height/2;
-		time=end_of_noon-5;
+		time=end_of_evening-5;
 		strncpy(worldName, "The_Land_of_Doubts\0", 20);
 		worldSize=1000;
 		FILE * messages=fopen("messages.txt", "w");

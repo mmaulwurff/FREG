@@ -616,6 +616,37 @@ class World {
 	}
 	void PlayerInscribe() { Inscribe(playerP); }
 	void Inscribe(const int i, const int j, const int k, char * const str) { if (NULL!=blocks[i][j][k]) blocks[i][j][k]->Inscribe(str); }
+	void Eat(Block * who, Block * & food) {
+		if ( NULL==who || NULL==food )
+			return;
+		if ( who->Eat(food) ) {
+			delete food;
+			food=NULL;
+		}
+	}
+	void Eat(const int i, const int j, const int k, const int i_food, const int j_food, const int k_food) {
+		if ( !InBounds(i, j, k) || !InBounds(i_food, j_food, k_food) )
+			return;
+		Eat(blocks[i][j][k], blocks[i_food][j_food][k_food]);
+	}
+	void PlayerEat(int n) {
+		if ( 0>n || inventory_size<=n ) {
+			scr->Notify("What?");
+			return;
+		}
+		if ( seconds_in_day-seconds_in_hour < playerP->Satiation() ) {
+			scr->Notify("You can't eat, you are full!");
+			return;
+		}
+		unsigned short playerX, playerY, playerZ;
+		playerP->GetSelfXYZ(playerX, playerY, playerZ);
+		Block * food=playerP->Drop(n);
+		if ( !playerP->Eat(food) ) {
+			playerP->Get(food);
+			scr->Notify("You can't eat this.");
+		} else
+			scr->Notify("Yum!");
+	}
 
 	//inventory functions section
 	private:

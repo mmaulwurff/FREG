@@ -67,6 +67,7 @@ int main() {
 			case 'd': earth.PlayerDrop(getch()-'a'); break;
 			case 'g': earth.PlayerGet(getch()-'a'); break;
 			case 'W': earth.PlayerWield(); break;
+			case 'E': earth.PlayerEat(getch()-'a'); break;
 			case 'I': earth.PlayerInscribe(); break;
 			case 'B': case KEY_BACKSPACE: {
 				unsigned short i, j, k;

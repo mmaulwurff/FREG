@@ -128,7 +128,7 @@ enum window_views { NORMAL, FRONT, INVENTORY };
 
 enum times_of_day { MORNING, NOON, EVENING, NIGHT };
 
-enum damage_kinds { MINE, DIG, CUT, THRUST, CRUSH, HEAT, FREEZE, MELT, ELECTRO };
+enum damage_kinds { MINE, DIG, CUT, THRUST, CRUSH, HEAT, FREEZE, MELT, ELECTRO, HUNGER, BREATH };
 
 enum kinds {//kind of atom
 	BLOCK,

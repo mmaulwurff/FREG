@@ -138,6 +138,7 @@ class Block { //blocks without special physics and attributes
 
 	virtual void ToDestroy(const bool=false) {}
 	virtual void Unregister() {}
+	virtual int Eat(Block *) { return 0; }
 
 	virtual float LightRadius() const { return 0; }
 
@@ -324,23 +325,26 @@ class Active : public Block {
 class Animal : public Active {
 	protected:
 	short breath;
+	int satiation;
 	public:
 	virtual char * FullName(char * const) const=0;
 
-	short Breath() { return breath; }
+	short Breath() const { return breath; }
+	short Satiation() const { return satiation; }
+	virtual int Eat(Block *)=0;
 
 	virtual void Act();
 
 	virtual void SaveAttributes(FILE * const out) const {
 		Active::SaveAttributes(out);
-		fprintf(out, "%hd/", breath);
+		fprintf(out, "%hd_%d/", breath, satiation);
 	}
 
 	Animal(World * const w, const unsigned short i, const unsigned short j, const unsigned short k, subs sub=A_MEAT, const short dur=max_durability) :
-		Active(w, i, j, k, sub, dur), breath(max_breath) {}
+		Active(w, i, j, k, sub, dur), breath(max_breath), satiation(seconds_in_day*time_steps_in_sec) {}
 	Animal(World * const w, const unsigned short i, const unsigned short j, const unsigned short k, char * str) :
 		Active(w, i, j, k, str) {
-			sscanf(str, " %hd\n", &breath);
+			sscanf(str, " %hd_%d/", &breath, &satiation);
 			CleanString(str);		
 		}
 };
@@ -479,6 +483,20 @@ class Dwarf : public Animal, public Inventory {
 	virtual before_move_return BeforeMove(const dirs);
 	int Move(const dirs);
 	void Act();
+
+	int Eat(Block * to_eat) {
+		if ( NULL==to_eat ) {
+			return 2;
+		}
+		switch ( to_eat->Sub() ) {
+			case HAZELNUT: satiation+=seconds_in_hour*time_steps_in_sec; break;
+			case H_MEAT:   satiation+=seconds_in_hour*time_steps_in_sec*2.5; break;
+			case A_MEAT:   satiation+=seconds_in_hour*time_steps_in_sec*2; break;
+			default: return 0; //not ate
+		}
+		
+		return 1; //ate
+	}
 
 	void * HasInventory() { return Inventory::HasInventory(); }
 	virtual bool Access() const { return false; }
@@ -662,7 +680,7 @@ class Grass : public Active {
 		switch (sub) {
 			case GREENERY: return WriteName(str, "Grass");
 			default:
-				fprintf(stderr, "GRASS::FullName(char *): unlisted sub\n");
+				fprintf(stderr, "Grass::FullName(char *): unlisted sub\n");
 				return WriteName(str, "Unknown plant");
 		}
 	}
@@ -724,6 +742,16 @@ class Rabbit : public Animal {
 	kinds Kind() const { return RABBIT; }
 
 	void Act();
+
+	int Eat(Block * to_eat) {
+		if ( NULL==to_eat )
+			return 2;
+		if ( GREENERY==to_eat->Sub() ) {
+			satiation+=seconds_in_hour*time_steps_in_sec*4;
+			return 1;
+		}
+		return 0;
+	}
 
 	Block * DropAfterDamage() const { return new Block(A_MEAT); }
 
