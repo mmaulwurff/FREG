@@ -255,6 +255,7 @@ class World {
 	void TestShred(const unsigned short istart, const unsigned short jstart) {
 		NormalUnderground(istart, jstart);
 		blocks[istart+2][jstart][height/2]=new Chest();
+		blocks[istart+3][jstart+1][height/2]=new Active(this, istart+3, jstart+1, height/2, SAND);
 	}
 
 	void NullMountain(const unsigned short istart, const unsigned short jstart) {
@@ -634,10 +635,6 @@ class World {
 			scr->Notify("What?");
 			return;
 		}
-		if ( seconds_in_day-seconds_in_hour < playerP->Satiation() ) {
-			scr->Notify("You can't eat, you are full!");
-			return;
-		}
 		unsigned short playerX, playerY, playerZ;
 		playerP->GetSelfXYZ(playerX, playerY, playerZ);
 		Block * food=playerP->Drop(n);
@@ -646,6 +643,8 @@ class World {
 			scr->Notify("You can't eat this.");
 		} else
 			scr->Notify("Yum!");
+		if ( seconds_in_day*time_steps_in_sec < playerP->Satiation() )
+			scr->NotifyAdd("You have gorged yourself!");
 	}
 
 	//inventory functions section

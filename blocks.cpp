@@ -27,16 +27,17 @@ void BlockFromFile(FILE * const in, Block * & block, World * const world,
 	//if some kind will not be listed here, blocks of this kind just will not load.
 	//unless kind is inherited from Inventory class or one of its derivatives - in this case this may cause something bad.
 	switch(kind) {
-		case BLOCK:     block=new Block(str); break;
+		case BLOCK:     block=new Block(str);     break;
 		case TELEGRAPH: block=new Telegraph(str); break;
-		case PICK:      block=new Pick(str); break;
-		case DWARF:     block=new Dwarf(world, i, j, k, str, in); break;
+		case PICK:      block=new Pick(str);      break;
 		case CHEST:     block=new Chest(str, in); break;
-		case PILE:      block=new Pile(world, i, j, k, str, in); break;
-		case LIQUID:    block=new Liquid(world, i, j, k, str, in); break;
-		case GRASS:     block=new Grass(world, i, j, k, str, in); break;
-		case BUSH:      block=new Bush(world, i, j, k, str, in); break;
 		case RABBIT:    block=new Rabbit(world, i, j, k, str); break;
+		case ACTIVE:    block=new Active(world, i, j, k, str); break;
+		case DWARF:     block=new Dwarf (world, i, j, k, str, in); break;
+		case PILE:      block=new Pile  (world, i, j, k, str, in); break;
+		case LIQUID:    block=new Liquid(world, i, j, k, str, in); break;
+		case GRASS:     block=new Grass (world, i, j, k, str, in); break;
+		case BUSH:      block=new Bush  (world, i, j, k, str, in); break;
 		case -1:        block=NULL; break;
 		default:
 			fprintf(stderr, "BlockFromFile(FILE *, Block * &, World *, unsigned short, unsigned short, unsigned short): unlisted kind\n");

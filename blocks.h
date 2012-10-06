@@ -256,7 +256,14 @@ class Active : public Block {
 	World * whereWorld;
 
 	public:
-	virtual char * FullName(char * const str) const { return WriteName(str, "Active block"); }
+	virtual char * FullName(char * const str) const {
+		switch (sub) {
+			case SAND: return WriteName(str, "Sand");
+			default:
+				fprintf(stderr, "Active:FullName(char *): Unlisted sub: %d\n", (int)sub);
+				return WriteName(str, "Unkown active block");
+		}
+	}
 	virtual kinds Kind() const { return ACTIVE; }
 
 	void * ActiveBlock() { return this; }
@@ -352,6 +359,7 @@ class Animal : public Active {
 class Inventory {
 	protected:
 	Block * inventory[inventory_size][max_stack_size];
+
 	public:
 	char * InvFullName(char * const str, const int i) const { return (NULL==inventory[i][0]) ? WriteName(str, "") : inventory[i][0]->FullName(str); }
 	char * NumStr(char * const str, const int i) const {
@@ -362,15 +370,24 @@ class Inventory {
 			sprintf(str, " (%hdx)", n);
 		return str;
 	}
-	double GetInvWeight(int i) const { return (NULL==inventory[i][0]) ? 0     : inventory[i][0]->Weight()*Number(i); }
-	subs GetInvSub(int i)      const { return (NULL==inventory[i][0]) ? AIR   : inventory[i][0]->Sub(); }
-	kinds GetInvKind(int i)    const { return (NULL==inventory[i][0]) ? BLOCK : inventory[i][0]->Kind(); }
+	double GetInvWeight(const int i) const { return (NULL==inventory[i][0]) ? 0     : inventory[i][0]->Weight()*Number(i); }
+	subs GetInvSub(const int i)      const { return (NULL==inventory[i][0]) ? AIR   : inventory[i][0]->Sub(); }
+	kinds GetInvKind(const int i)    const { return (NULL==inventory[i][0]) ? BLOCK : inventory[i][0]->Kind(); }
+	double AllInvWeight() const {
+		float sum=0;
+		for (unsigned short i=0; i<inventory_size; ++i)
+			sum+=GetInvWeight(i)*Number(i);
+		return sum;
+	}
 	int Number(const int i) const {
-		if (inventory_size<=i) return 0;
+		if (inventory_size<=i)
+			return 0;
+
 		unsigned short n;
 		for (n=0; n<max_stack_size && NULL!=inventory[i][n]; ++n);
 		return n;
 	}
+
 	virtual char * FullName(char * const) const=0;
 	virtual kinds Kind() const=0;
 	virtual subs Sub() const=0;
@@ -402,18 +419,21 @@ class Inventory {
 		return 0;
 	}
 	void GetAll(Block * block) {
-		if (NULL!=block) {
-			Inventory * from;
-			if ( NULL!=(from=(Inventory *)(block->HasInventory())) )
-				for (unsigned short i=0; i<inventory_size; ++i)
-					while ( from->Number(i) ) {
-						Block * temp=from->Drop(i);
-						if ( !Get(temp) ) {
-							from->Get(temp);
-							return;
-						}
-					}
-		}
+		if (NULL==block)
+			return;
+
+		Inventory * from=(Inventory *)(block->HasInventory());
+		if ( NULL==from || !from->Access() )
+			return;
+
+		for (unsigned short i=0; i<inventory_size; ++i)
+			while ( from->Number(i) ) {
+				Block * temp=from->Drop(i);
+				if ( !Get(temp) ) {
+					from->Get(temp);
+					return;
+				}
+			}
 	}
 	void RangeForWield(unsigned short & i, unsigned short & j) const {
 		for (i=5; i<inventory_size; ++i)
@@ -485,9 +505,9 @@ class Dwarf : public Animal, public Inventory {
 	void Act();
 
 	int Eat(Block * to_eat) {
-		if ( NULL==to_eat ) {
+		if ( NULL==to_eat )
 			return 2;
-		}
+
 		switch ( to_eat->Sub() ) {
 			case HAZELNUT: satiation+=seconds_in_hour*time_steps_in_sec; break;
 			case H_MEAT:   satiation+=seconds_in_hour*time_steps_in_sec*2.5; break;
@@ -495,6 +515,9 @@ class Dwarf : public Animal, public Inventory {
 			default: return 0; //not ate
 		}
 		
+		if ( seconds_in_day*time_steps_in_sec < satiation )
+			satiation=1.1*seconds_in_day*time_steps_in_sec;
+
 		return 1; //ate
 	}
 

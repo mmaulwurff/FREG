@@ -23,7 +23,16 @@
 
 char Screen::CharName(const kinds kind, const subs sub) const {
 	switch (kind)  {
-		case BLOCK: switch (sub) {
+		case CHEST:
+		case PILE:   return '&';
+		case BUSH:   return ';';
+		case PICK:   return '\\';
+		case DWARF:  return '@';
+		case LIQUID: return '~';
+		case GRASS:  return '.';
+		case RABBIT: return 'r';
+		case TELEGRAPH: return 't';
+		default: switch (sub) {
 			case NULLSTONE: case MOSS_STONE: case WOOD:
 			case STONE: return '#';
 			case GLASS: return 'g';
@@ -31,6 +40,7 @@ char Screen::CharName(const kinds kind, const subs sub) const {
 			case SKY:   return ' ';
 			case STAR:  return '.';
 			case WATER: return '~';
+			case SAND:
 			case SOIL:  return '.';
 			case GREENERY: return '%';
 			case ROSE:  return ';';
@@ -41,18 +51,6 @@ char Screen::CharName(const kinds kind, const subs sub) const {
 				fprintf(stderr, "Screen::CharName(uns short, uns short, uns short): Block has unlisted substance: %d\n", int(sub));
 				return '?';
 		}
-		case DWARF: return '@';
-		case CHEST: return '&';
-		case BUSH: return ';';
-		case PILE: return '&';
-		case PICK: return '\\';
-		case TELEGRAPH: return 't';
-		case LIQUID: return '~';
-		case GRASS: return '.';
-		case RABBIT: return 'r';
-		default:
-			fprintf(stderr, "Screen::CharName(uns short, uns short, uns short): Unlisted kind: %d\n", int(kind));
-			return '?';
 	}
 }
 char Screen::CharName(const unsigned short i, const unsigned short j, const unsigned short k) const {
@@ -71,6 +69,7 @@ color_pairs Screen::Color(const kinds kind, const subs sub) const {
 		}
 
 		default: switch (sub) {
+			case SAND:       return YELLOW_WHITE;
 			case A_MEAT:     return WHITE_RED;
 			case H_MEAT:     return BLACK_RED;
 			case WOOD: case HAZELNUT:
@@ -127,10 +126,13 @@ void Screen::Print() const {
 
 	wstandend(hudWin);
 	mvwprintw(hudWin, 0, 1, "HP: %hd%%\n BR: %d%%", dur, breath);
-	if ( 3*seconds_in_day/4<satiation ) {
+	if ( seconds_in_day*time_steps_in_sec<satiation ) {
+		wcolor_set(hudWin, BLUE_BLACK, NULL);
+		mvwaddstr(hudWin, 2, 1, "Gorged");
+	} else if ( 3*seconds_in_day*time_steps_in_sec/4<satiation ) {
 		wcolor_set(hudWin, GREEN_BLACK, NULL);
 		mvwaddstr(hudWin, 2, 1, "Full");
-	} else if (seconds_in_day/4>satiation) {
+	} else if (seconds_in_day*time_steps_in_sec/4>satiation) {
 		wcolor_set(hudWin, RED_BLACK, NULL);
 		mvwaddstr(hudWin, 2, 1, "Hungry");
 	}
@@ -168,13 +170,14 @@ void Screen::PrintNormal(WINDOW * const window) const {
 	for ( short j=0; j<shred_width*3; ++j, waddstr(window, "\n_") )
 	for ( short i=0; i<shred_width*3; ++i )
 		for (short k=k_start; k!=k_end; k+=k_step) //bottom is made from undestructable stone, loop will find what to print everytime
-			if (w->Transparent(i, j, k) < 2) {
-				if ( w->Visible(i, j, k) && w->Enlightened(i, j, k) ) {
+			if (w->TransparentNotSafe(i, j, k) < 2) {
+				if ( w->Enlightened(i, j, k) && w->Visible(i, j, k) ) {
 					wcolor_set(window, Color(i, j, k), NULL);
-					wprintw( window, "%c%c", CharName(i, j, k), w->CharNumber(i, j, k) );
+					waddch(window, CharName(i, j, k));
+					waddch(window, w->CharNumber(i, j, k));
 				} else {
 					wcolor_set(window, BLACK_BLACK, NULL);
-					wprintw(window, "  ");
+					waddstr(window, "  ");
 				}
 				break;
 			}
@@ -276,10 +279,11 @@ void Screen::PrintFront(WINDOW * const window) const {
 				if (w->Transparent(i, j, k) < 2) {
 					if ( w->Visible(i, j, k) && w->Enlightened(i, j, k) ) {
 						wcolor_set(window, Color(i, j, k), NULL);
-						wprintw( window, "%c%c", CharName(i, j, k), w->CharNumberFront(i, j) );
+						waddch(window, CharName(i, j, k));
+						waddch(window, w->CharNumberFront(i, j));
 					} else {
 						wcolor_set(window, BLACK_BLACK, NULL);
-						wprintw(window, "  ");
+						waddstr(window, "  ");
 					}
 					break;
 				}
@@ -287,7 +291,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 				*z-=z_step;
 				if (w->Visible(i, j, k)) {
 				       	wcolor_set(window, WHITE_BLUE, NULL);
-					wprintw(window, " .");
+					waddstr(window, " .");
 				} else {
 					wcolor_set(window, BLACK_BLACK, NULL);
 					waddstr(window, "  ");
