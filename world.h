@@ -470,22 +470,27 @@ class World {
 		PlayerFocus(i, j, k);
 		char str[note_length];
 
-		FullName(str, i, j, k);
-		scr->Notify(str);
+		color_pairs col=scr->Color(Kind(i, j, k), Sub(i, j, k));
+		scr->Notify( FullName(str, i, j, k), col );
 		str[0]=0;
 		
-		GetNote(str, i, j, k);
-		if (str[0])
+		if ( GetNote(str, i, j, k) )
 			scr->NotifyAdd("Inscription:");
 		scr->NotifyAdd(str);
 		str[0]=0;
-
-		scr->NotifyAdd(GetTemperature(str, i, j, k));
+	
+		sprintf(str, "Temperature: %d", Temperature(i, j, k));
+		scr->NotifyAdd(str);
 		str[0]=0;
 
 		sprintf(str, "Durability: %hd", Durability(i, j, k));
 		scr->NotifyAdd(str);
 		str[0]=0;
+
+		sprintf(str, "Weight: %.0f", Weight(i, j, k));
+		scr->NotifyAdd(str);
+		str[0]=0;
+
 	}
 
 	//visibility section
@@ -734,9 +739,10 @@ class World {
 	bool InBounds(const unsigned short i, const unsigned short j, const unsigned short k) const {
 		return (i<shred_width*3 && j<shred_width*3 && k<height);
 	}
-	void FullName(char * str, const int i, const int j, const int k) const {
+	char * FullName(char * const str, const int i, const int j, const int k) const {
 		if ( InBounds(i, j, k) )
 			(NULL==blocks[i][j][k]) ? WriteName(str, "Air") : blocks[i][j][k]->FullName(str);
+		return str;
 	}
 	subs Sub(const int i, const int j, const int k) const    { return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? AIR : blocks[i][j][k]->Sub(); }
 	kinds Kind(const int i, const int j, const int k) const  { return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? BLOCK : blocks[i][j][k]->Kind(); }
@@ -751,20 +757,19 @@ class World {
 	}
 	int  Movable(const Block * const block) const            { return (NULL==block) ? ENVIRONMENT : block->Movable(); }
 	double Weight(const Block * const block) const           { return (NULL==block) ? 0 : block->Weight(); }
+	double Weight(const unsigned short i, const unsigned short j, const unsigned short k) const {
+		return (!InBounds(i, j, k)) ? 1000 : Weight(blocks[i][j][k]);
+	}
 	void * HasInventory(const int i, const int j, const int k) const {
 		return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? NULL : blocks[i][j][k]->HasInventory();
 	}
 	void * ActiveBlock(const int i, const int j, const int k) const {
 		return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? NULL : blocks[i][j][k]->ActiveBlock();
 	}
-	void GetNote(char * const str, const int i, const int j, const int k) const {
+	bool GetNote(char * const str, const int i, const int j, const int k) const {
 		if ( InBounds(i, j, k) && NULL!=blocks[i][j][k] )
-			blocks[i][j][k]->GetNote(str);
-	}
-	char * GetTemperature(char * const str, const int i, const int j, const int k) const {
-		if ( InBounds(i, j, k) && NULL!=blocks[i][j][k] )
-			sprintf(str, "Temperature: %d", Temperature(i, j, k));
-		return str;
+			return blocks[i][j][k]->GetNote(str);
+		return false;
 	}
 	int Temperature(const int i_center, const int j_center, const int k_center) const {
 		if (!InBounds(i_center, j_center, k_center) || NULL==blocks[i_center][j_center][k_center] || height-1==k_center)

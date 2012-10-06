@@ -64,7 +64,7 @@ class Block { //blocks without special physics and attributes
 
 	void SetWeight(const double m) { shown_weight=m; }
 	void SetWeight() { shown_weight=weight; }
-	double Weight() const { return shown_weight; }
+	virtual double Weight() const { return shown_weight; }
 	dirs GetDir() const { return direction; }
 	void SetDir(const dirs dir) { direction=dir; }
 	subs Sub() const { return sub; }
@@ -76,10 +76,14 @@ class Block { //blocks without special physics and attributes
 			note=NULL;
 		}
 	}
-	virtual void GetNote(char * const str) const {
-		if (NULL!=note)
-			strncpy(str, note, note_length);
-		else str[0]='\0';
+	virtual bool GetNote(char * const str) const {
+		if (NULL==note) {
+			str[0]='\0';
+			return false;
+		}
+			
+		strncpy(str, note, note_length);
+		return true;
 	}
 
 	virtual kinds Kind() const { return BLOCK; }
@@ -164,14 +168,29 @@ class Block { //blocks without special physics and attributes
 		else fprintf(out, "_0/");
 	}
 
-	Block(const subs n=STONE, const short dur=max_durability) :
-			sub(n), shown_weight(1), direction(NORTH), note(NULL), durability(dur), enlightened(1) {
+	Block(const subs n=STONE, const short dur=max_durability, const double w=0) :
+			sub(n), direction(NORTH), note(NULL), durability(dur), enlightened(1) {
+		if (w) {
+			weight=w;
+			shown_weight=weight;
+			return;
+		}
+
 		switch (sub) {
-			case STONE: weight=10; break;
-			case A_MEAT: weight=10; break;
-			case H_MEAT: weight=1; break;
-			case WATER: weight=3; break;
-			default: weight=1;
+			case NULLSTONE: weight=4444; break;
+			case SOIL:      weight=1500; break;
+			case GLASS:     weight=2500; break;
+			case WOOD:      weight=999;  break;
+			case IRON:      weight=7874; break;
+			case GREENERY:  weight=2;    break;
+			case SAND:      weight=1250; break;
+			case ROSE:
+			case HAZELNUT:  weight=0.1;  break;
+			case MOSS_STONE:
+			case STONE:     weight=2600; break;
+			case A_MEAT:    weight=1;    break;
+			case H_MEAT:    weight=1;    break;
+			default: weight=1000;
 		}
 		shown_weight=weight;
 	}
@@ -239,6 +258,7 @@ class Pick : public Weapons {
 	}
 
 	virtual bool Carving() const { return true; }
+	double Weight() const { return 10; }
 
 	virtual void SaveAttributes(FILE * const out) const { Weapons::SaveAttributes(out); }
 
@@ -373,7 +393,7 @@ class Inventory {
 	double GetInvWeight(const int i) const { return (NULL==inventory[i][0]) ? 0     : inventory[i][0]->Weight()*Number(i); }
 	subs GetInvSub(const int i)      const { return (NULL==inventory[i][0]) ? AIR   : inventory[i][0]->Sub(); }
 	kinds GetInvKind(const int i)    const { return (NULL==inventory[i][0]) ? BLOCK : inventory[i][0]->Kind(); }
-	double AllInvWeight() const {
+	double InvWeightAll() const {
 		float sum=0;
 		for (unsigned short i=0; i<inventory_size; ++i)
 			sum+=GetInvWeight(i)*Number(i);
@@ -499,6 +519,7 @@ class Dwarf : public Animal, public Inventory {
 	}
 	virtual char MakeSound() const { return (random()%10) ? ' ' : 's'; }
 	bool CanBeIn() const { return false; }
+	double Weight() const { return InvWeightAll()+100; }
 
 	virtual before_move_return BeforeMove(const dirs);
 	int Move(const dirs);
@@ -576,6 +597,7 @@ class Chest : public Block, public Inventory {
 	virtual Block * Drop(const int n) { return Inventory::Drop(n); }
 	int Get(Block * const block, int n=0) { return Inventory::Get(block, n); }
 	virtual bool Access() const { return true; }
+	double Weight() const { return InvWeightAll()+300; }
 
 	usage_types Use() { return Inventory::Use(); }
 
@@ -603,6 +625,7 @@ class Pile : public Active, public Inventory {
 	virtual void * HasInventory() { return Inventory::HasInventory(); }
 	int Get(Block * const block, int n=0) { return Inventory::Get(block, n); }
 	usage_types Use() { return Inventory::Use(); }
+	double Weight() const { return InvWeightAll(); }
 
 	void Act() { if (lifetime) --lifetime; }
 	bool IfToDestroy() const {
@@ -736,6 +759,7 @@ class Bush : public Active, public Inventory {
 	usage_types Use() { return Inventory::Use(); }
 	virtual void * HasInventory() { return Inventory::HasInventory(); }
 	virtual int Movable() const { return NOT_MOVABLE; }
+	double Weight() const { return InvWeightAll()+Block::Weight(); }
 
 	virtual void Act() {
 		if (0==random()%seconds_in_hour) {
@@ -753,7 +777,7 @@ class Bush : public Active, public Inventory {
 	}
 
 	Bush(World * const w, const unsigned short x, const unsigned short y, const unsigned short z) :
-		Active(w, x, y, z, GREENERY) {}
+		Active(w, x, y, z, WOOD) {}
 	Bush(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, char * const str, FILE * const in) :
 		Active(w, x, y, z, str),
 		Inventory(str, in) {}
@@ -765,6 +789,7 @@ class Rabbit : public Animal {
 	kinds Kind() const { return RABBIT; }
 
 	void Act();
+	double Weight() const { return 2; }
 
 	int Eat(Block * to_eat) {
 		if ( NULL==to_eat )
