@@ -1,4 +1,4 @@
-./FREG.bin 2>log.txt;
-echo 'log:';
-tail log.txt;
-echo 'log end.';
+./FREG.bin 2>errors.txt;
+echo 'errors:';
+tail errors.txt;
+echo 'errors end.';

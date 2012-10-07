@@ -22,6 +22,8 @@
 #include <string.h>
 #include <cstdlib>
 #include <curses.h>
+#include <libintl.h>
+#include <locale.h>
 
 const unsigned short shred_width=10;
 const unsigned short height=100;

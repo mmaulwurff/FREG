@@ -21,6 +21,7 @@
 #include "world.h"
 
 int main() {
+	setlocale(LC_MESSAGES, "ru");
 	World earth;
 	Screen screen(&earth);
 	FILE * scenario=fopen("scenario.txt", "r");
@@ -77,7 +78,7 @@ int main() {
 			case 'H': case KEY_HOME: earth.PlayerBuild(getch()-'a'); break;
 			case 'l': screen.RePrint(); break;
 			case 'Q': break;
-			default: screen.Notify("What?\n");
+			default: screen.Notify(gettext("What?\n"));
 		}
 		if (print_flag) screen.Print();
 		usleep(90000);
