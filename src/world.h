@@ -50,7 +50,7 @@ class World {
 		if (NULL==sky) {
 			for (i=0; i<shred_width*3; ++i)
 			for (j=0; j<shred_width*3; ++j)
-				blocks[i][j][height-1]=new Block( random()%5 ? SKY : STAR );
+				blocks[i][j][height-1]=new Block( rand()%5 ? SKY : STAR );
 		} else {
 			char c=fgetc(sky)-'0';
 			for (i=0; i<shred_width*3; ++i)
@@ -84,9 +84,9 @@ class World {
 	}
 	double Distance(const unsigned short x_from, const unsigned short y_from, const unsigned short z_from,
 	                const unsigned short x_to,   const unsigned short y_to,   const unsigned short z_to) const {
-		return sqrt( (x_from-x_to)*(x_from-x_to)+
-		             (y_from-y_to)*(y_from-y_to)+
-		             (z_from-z_to)*(z_from-z_to) );
+		return sqrt( float((x_from-x_to)*(x_from-x_to)+
+		                   (y_from-y_to)*(y_from-y_to)+
+		                   (z_from-z_to)*(z_from-z_to)) );
 	}
 	void FileName(char * const str, const long longi, const long lati) const { sprintf(str, "shreds/%ld_%ld", longi, lati); }
 
@@ -236,7 +236,7 @@ class World {
 			unsigned short k;
 			for (k=1; k<height/2-6 && k<height/2-depth-1; ++k)
 				blocks[i][j][k]=new Block;
-			blocks[i][j][k++]=new Block((random()%2) ? STONE : SOIL);
+			blocks[i][j][k++]=new Block((rand()%2) ? STONE : SOIL);
 			for (; k<height/2-depth; ++k)
 				blocks[i][j][k]=new Block(SOIL);
 		}
@@ -279,20 +279,20 @@ class World {
 		unsigned short i;
 
 		//bush
-		short rand=random()%2;
-		for (i=0; i<rand; ++i) {
-			short x=istart+random()%shred_width,
-			      y=jstart+random()%shred_width;
+		short random=rand()%2;
+		for (i=0; i<random; ++i) {
+			short x=istart+rand()%shred_width,
+			      y=jstart+rand()%shred_width;
 			if (NULL!=blocks[x][y][height/2])
 				delete blocks[x][y][height/2];
 			blocks[x][y][height/2]=new Bush(this, x, y, height/2);
 		}
 
 		//rabbits
-		rand=random()%2;
-		for (i=0; i<rand; ++i) {
-			short x=istart+random()%shred_width,
-			      y=jstart+random()%shred_width;
+		random=rand()%2;
+		for (i=0; i<random; ++i) {
+			short x=istart+rand()%shred_width,
+			      y=jstart+rand()%shred_width;
 			if (NULL!=blocks[x][y][height/2])
 				delete blocks[x][y][height/2];
 			blocks[x][y][height/2]=new Rabbit(this, x, y, height/2);
@@ -311,9 +311,9 @@ class World {
 				++number_of_trees;
 
 		for (i=0; i<number_of_trees; ++i) {
-			short x=istart+random()%(shred_width-2),
-			      y=jstart+random()%(shred_width-2);
-			Tree(x, y, height/2, 4+random()%5);
+			short x=istart+rand()%(shred_width-2),
+			      y=jstart+rand()%(shred_width-2);
+			Tree(x, y, height/2, 4+rand()%5);
 		}
 
 		for (i=istart; i<istart+shred_width; ++i)
@@ -399,9 +399,9 @@ class World {
 
 	//block combinations section (trees, buildings, etc)
 	bool Tree(const unsigned short x, const unsigned short y, const unsigned short z, const unsigned short height) {
-		if (0>x || shred_width*3<=x+2 ||
-		    0>y || shred_width*3<=y+2 ||
-		    0>z || ::height-1<=z+height ||
+		if (shred_width*3<=x+2 ||
+		    shred_width*3<=y+2 ||
+		    ::height-1<=z+height ||
 		    height<2) return false;
 		unsigned short i, j, k;
 		for (i=x; i<=x+2; ++i)

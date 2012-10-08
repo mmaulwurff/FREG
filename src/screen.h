@@ -41,9 +41,6 @@ class Screen {
 	FILE * notifyLog;
 	unsigned short notifyLines;
 
-	void PrintNormal(WINDOW * const) const;
-	void PrintFront(WINDOW * const) const;
-	void PrintInv(WINDOW * const, Inventory * const) const;
 	void UpDownView(const dirs) const;
 
 	public:
@@ -69,6 +66,9 @@ class Screen {
 	}
 	void NotifyAdd(const char * const, color_pairs=WHITE_BLACK);
 	void Print() const;
+	void PrintNormal(WINDOW * const) const;
+	void PrintFront(WINDOW * const) const;
+	void PrintInv(WINDOW * const, Inventory * const) const;
 	void PrintSounds() const;
 	void RePrint() {
 		wclear(leftWin);

@@ -337,9 +337,9 @@ bool World::DirectlyVisible(float x_from, float y_from, float z_from,
 	if (x_from==x_to && y_from==y_to && z_from==z_to)
 		return true;
 
-	unsigned short max=(abs(z_to-z_from) > abs(y_to-y_from)) ?
-		abs(z_to-z_from) :
-		abs(y_to-y_from);
+	unsigned short max=(abs(z_to-(int)z_from) > abs(y_to-(int)y_from)) ?
+		abs(z_to-(int)z_from) :
+		abs(y_to-(int)y_from);
 	if (abs(x_to-x_from) > max)
 		max=abs(x_to-x_from);
 

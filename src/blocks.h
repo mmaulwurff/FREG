@@ -241,8 +241,8 @@ class Weapons : public Block {
 
 	virtual void SaveAttributes(FILE * const out) const { Block::SaveAttributes(out); }
 
-	Weapons(const subs sub, const short durability=max_durability) : Block::Block(sub, durability) {}
-	Weapons(char * const str) : Block::Block(str) {}
+	Weapons(const subs sub, const short dur=max_durability) : Block(sub, dur) {}
+	Weapons(char * const str) : Block(str) {}
 };
 
 class Pick : public Weapons {
@@ -517,7 +517,7 @@ class Dwarf : public Animal, public Inventory {
 			default: return WriteName(str, "Dwarf");
 		}
 	}
-	virtual char MakeSound() const { return (random()%10) ? ' ' : 's'; }
+	virtual char MakeSound() const { return (rand()%10) ? ' ' : 's'; }
 	bool CanBeIn() const { return false; }
 	double Weight() const { return InvWeightAll()+100; }
 
@@ -699,7 +699,7 @@ class Liquid : public Active {
 	virtual void Act();
 
 	bool IfToDestroy() const {
-		if ( !(random()%10) &&
+		if ( !(rand()%10) &&
 				!CheckWater(DOWN)  && !CheckWater(UP) &&
 				!CheckWater(NORTH) && !CheckWater(SOUTH) &&
 				!CheckWater(EAST)  && !CheckWater(WEST))
@@ -762,7 +762,7 @@ class Bush : public Active, public Inventory {
 	double Weight() const { return InvWeightAll()+Block::Weight(); }
 
 	virtual void Act() {
-		if (0==random()%seconds_in_hour) {
+		if (0==rand()%seconds_in_hour) {
 			Block * tempNut=new Block(HAZELNUT);
 			if (!Get(tempNut) && NULL!=tempNut)
 				delete tempNut;
