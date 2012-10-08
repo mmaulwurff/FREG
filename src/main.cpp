@@ -15,19 +15,17 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-#ifdef _WIN32
+//#ifdef _WIN32
 	#include <windows.h>
 	void usleep(unsigned short n) { Sleep(n/1000); }
-#endif
+/*#endif
 #ifndef _WIN32
 	#include <unistd.h>
-#endif
+#endif*/
 
 #include "header.h"
 #include "screen.h"
 #include "world.h"
-
-
 
 int main() {
 	World earth;
