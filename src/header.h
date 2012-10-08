@@ -23,6 +23,14 @@
 #include <cstdlib>
 #include <curses.h>
 
+#ifdef _WIN32
+	#include <windows.h>
+	void usleep(unsigned int n) { Sleep(n/1000); }
+#endif
+#ifndef _WIN32
+	#include <unistd.h>
+#endif
+
 /*internationalization (planned)
 #include <libintl.h>
 
