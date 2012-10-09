@@ -425,17 +425,6 @@ class World {
 	public:
 	pthread_mutex_t mutex;
 	Screen * scr;
-	struct {
-		char ch;
-		unsigned short lev;
-		color_pairs col;
-	} soundMap[9];
-	private:
-	char MakeSound(const int i, const int j, const int k) const { return (NULL==blocks[i][j][k]) ? ' ' : blocks[i][j][k]->MakeSound(); }
-
-	private:
-	char CharNumber(const int, const int, const int) const;
-	char CharNumberFront(const int, const int) const;
 
 	//information section
 	public:
@@ -470,8 +459,7 @@ class World {
 		PlayerFocus(i, j, k);
 		char str[note_length];
 
-		color_pairs col=scr->Color(Kind(i, j, k), Sub(i, j, k));
-		scr->Notify( FullName(str, i, j, k), col );
+		scr->Notify( FullName(str, i, j, k), Kind(i, j, k), Sub(i, j, k));
 		str[0]=0;
 		
 		if ( GetNote(str, i, j, k) )
@@ -490,8 +478,9 @@ class World {
 		sprintf(str, "Weight: %.0f", Weight(i, j, k));
 		scr->NotifyAdd(str);
 		str[0]=0;
-
 	}
+	char CharNumber(const int, const int, const int) const;
+	char CharNumberFront(const int, const int) const;
 
 	//visibility section
 	bool DirectlyVisible(const float, const float, const float, const int, const int, const int) const;
@@ -614,14 +603,16 @@ class World {
 		unsigned short i, j, k;
 		dwarf->GetSelfXYZ(i, j, k);
 		unsigned short i_to, j_to, k_to;
-		if ( !Focus(i, j, k, i_to, j_to, k_to) ) {
-			char str[note_length];
-			scr->GetString(str);
-			Inscribe(i_to, j_to, k_to, str);
-		}
+		if ( !Focus(i, j, k, i_to, j_to, k_to) )
+			Inscribe(i_to, j_to, k_to);
 	}
 	void PlayerInscribe() { Inscribe(playerP); }
-	void Inscribe(const int i, const int j, const int k, char * const str) { if (NULL!=blocks[i][j][k]) blocks[i][j][k]->Inscribe(str); }
+	void Inscribe(const int i, const int j, const int k) {
+		if (NULL!=blocks[i][j][k]) {
+			char str[note_length];
+			blocks[i][j][k]->Inscribe(scr->GetString(str));
+		}
+	}
 	void Eat(Block * who, Block * & food) {
 		if ( NULL==who || NULL==food )
 			return;
@@ -795,6 +786,7 @@ class World {
 			return false;
 		return blocks[i][j][k]->enlightened;
 	}
+	char MakeSound(const int i, const int j, const int k) const { return (NULL==blocks[i][j][k]) ? ' ' : blocks[i][j][k]->MakeSound(); }
 	private:
 	float LightRadius(const int i, const int j, const int k) const { return (NULL==blocks[i][j][k]) ? 0 : blocks[i][j][k]->LightRadius(); }
 	bool UnderTheSky(const int i, const int j, int k) const {
@@ -806,13 +798,14 @@ class World {
 	}
 
 	private:
-	friend void Screen::PrintNormal(WINDOW *) const;
-	friend void Screen::PrintFront(WINDOW *) const;
-	friend void Screen::PrintInv(WINDOW *, Inventory *) const;
 	friend class Active;
 
 	friend void Grass::Act();
 	friend int Dwarf::Move(dirs);
+
+	public:
+	int mutex_trylock() { return pthread_mutex_trylock(&mutex); }
+	int mutex_unlock() { return pthread_mutex_unlock(&mutex); }
 
 	public:
 	World();

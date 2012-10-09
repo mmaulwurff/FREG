@@ -602,7 +602,7 @@ class Chest : public Block, public Inventory {
 	usage_types Use() { return Inventory::Use(); }
 
 	Block * DropAfterDamage() const { return new Chest(); }
-
+	
 	virtual void SaveAttributes(FILE * const out) const {
 		Block::SaveAttributes(out);
 		Inventory::SaveAttributes(out);
@@ -650,6 +650,8 @@ class Pile : public Active, public Inventory {
 	virtual before_move_return BeforeMove(const dirs);
 	virtual bool CanBeIn() const { return false; }
 	virtual bool Access()  const{ return true; }
+
+	char MakeSound() const { return 't'; }
 
 	virtual void SaveAttributes(FILE * const out) const {
 		Active::SaveAttributes(out);

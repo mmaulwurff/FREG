@@ -29,6 +29,13 @@ class Screen {
 	       * notifyWin,
 	       * soundWin,
 	       * hudWin;
+
+	struct {
+		char ch;
+		unsigned short lev;
+		color_pairs col;
+	} soundMap[9];
+
 	char CharName(const unsigned short, const unsigned short, const unsigned short) const;
 	char CharName(const kinds, const subs) const;
 	void Arrows(WINDOW * const window, const unsigned short x, const unsigned short y) const {
@@ -43,33 +50,41 @@ class Screen {
 
 	void UpDownView(const dirs) const;
 
+	void PrintNormal(WINDOW * const) const;
+	void PrintFront(WINDOW * const) const;
+	void PrintInv(WINDOW * const, Inventory * const) const;
+
+	color_pairs Color(const kinds, const subs) const;
+	color_pairs Color(const unsigned short i, const unsigned short j, const unsigned short k) const;
+	color_pairs Color(const subs sub, const kinds kind) const { return Screen::Color(kind, sub); }
+
 	public:
 	Block * blockToPrintLeft,
 	      * blockToPrintRight;
 	window_views viewLeft, viewRight;
-	void GetString(char * const str) const {
+
+	char * GetString(char * const str) const {
 		echo();
 		werase(notifyWin);
-		box(notifyWin, 0, 0);
-		mvwaddstr(notifyWin, 0, 1, "Enter inscription:");
-		wmove(notifyWin, 1, 1);
+		mvwaddstr(notifyWin, 0, 0, "Enter inscription:");
+		wmove(notifyWin, 1, 0);
 		wgetnstr(notifyWin, str, note_length);
 		werase(notifyWin);
-		box(notifyWin, 0, 0);
 		wrefresh(notifyWin);
 		noecho();
+		return str;
 	}
-	void Notify(const char * const str, color_pairs color=WHITE_BLACK) {
+	void Notify(const char * const str, const kinds kind=BLOCK, const subs sub=DIFFERENT) {
 		werase(notifyWin);
 		notifyLines=0;
-		NotifyAdd(str, color);
+		NotifyAdd(str, kind, sub);
 	}
-	void NotifyAdd(const char * const, color_pairs=WHITE_BLACK);
+	void NotifyAdd(const char * const, const kinds=BLOCK, const subs=DIFFERENT);
 	void Print() const;
-	void PrintNormal(WINDOW * const) const;
-	void PrintFront(WINDOW * const) const;
-	void PrintInv(WINDOW * const, Inventory * const) const;
-	void PrintSounds() const;
+
+	void GetSound(const unsigned short, const unsigned short, const char, const kinds, const subs);
+	void PrintSounds();
+
 	void RePrint() {
 		wclear(leftWin);
 		wclear(rightWin);
@@ -79,9 +94,6 @@ class Screen {
 		Print();
 		PrintSounds();
 	}
-	color_pairs Color(const kinds, const subs) const;
-	color_pairs Color(const unsigned short i, const unsigned short j, const unsigned short k) const;
-	color_pairs Color(const subs sub, const kinds kind) const { return Screen::Color(kind, sub); }
 
 	Screen(World * const wor);
 	~Screen();

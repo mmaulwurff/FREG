@@ -151,7 +151,7 @@ void Screen::Print() const {
 }
 
 void Screen::PrintNormal(WINDOW * const window) const {
-	if (pthread_mutex_trylock(&(w->mutex)))
+	if ( w->mutex_trylock() )
 		return;
 	unsigned short k_start;
 	short k_step, k_end;
@@ -191,7 +191,7 @@ void Screen::PrintNormal(WINDOW * const window) const {
 	} else
 		mvwaddstr(window, 0, 1, "Normal View");
 	wrefresh(window);
-	pthread_mutex_unlock(&(w->mutex));
+	w->mutex_unlock();
 }
 
 void Screen::PrintFront(WINDOW * const window) const {
@@ -202,7 +202,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 		mvwaddstr(window, 0, 1, "No view");
 		wrefresh(window);
 		return;
-	} else if (pthread_mutex_trylock(&(w->mutex)))
+	} else if ( w->mutex_trylock() )
 		return;
 	short x_step, z_step,
 	      x_end, z_end,
@@ -303,11 +303,11 @@ void Screen::PrintFront(WINDOW * const window) const {
 	mvwaddstr(window, 0, 1, "Front View");
 	Arrows(window, arrow_X, arrow_Y);
 	wrefresh(window);
-	pthread_mutex_unlock(&(w->mutex));
+	w->mutex_unlock();
 }
 
 void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
-	if (pthread_mutex_trylock(&(w->mutex)))
+	if ( w->mutex_trylock() )
 		return;
 	werase(window);
 	wstandend(window);
@@ -347,29 +347,53 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 		mvwprintw(window, 0, 1, "[%c]%s", CharName(inv->Kind(), inv->Sub()), inv->FullName(str));
 	}
 	wrefresh(window);
-	pthread_mutex_unlock(&(w->mutex));
+	w->mutex_unlock();
 }
 
-void Screen::PrintSounds() const {
-	if (pthread_mutex_trylock(&(w->mutex)))
+void Screen::GetSound(const unsigned short n, const unsigned short dist, const char sound, const kinds kind, const subs sub) {
+	if ( w->mutex_trylock() )
 		return;
 
-	for (unsigned short i=0; i<3; ++i)
-	for (unsigned short j=0; j<3; ++j) {
-		wcolor_set(soundWin, w->soundMap[i*3+j].col, NULL);
-		mvwprintw(soundWin, i+1, j*2+1, "%c%hd", w->soundMap[i*3+j].ch, w->soundMap[i*3+j].lev);
+	soundMap[n].ch=(' '!=soundMap[n].ch) ? '&' : sound;
+
+	short temp=shred_width-dist;
+	if (temp<0)
+		temp=0;
+	soundMap[n].lev+=(temp*10)/shred_width;
+	if (soundMap[n].lev>9)
+		soundMap[n].lev=9;
+	if (soundMap[n].lev>0) {
+		soundMap[n].col=Color(kind, sub); 
+		soundMap[n].lev+=1;
 	}
+
+	w->mutex_unlock();
+}
+void Screen::PrintSounds() {
+	if ( w->mutex_trylock() )
+		return;
+
+	werase(soundWin);
+	for (unsigned short i=0; i<3; ++i)
+	for (unsigned short j=0; j<3; ++j)
+		if ( ' '!=soundMap[i*3+j].ch ) {
+			wcolor_set(soundWin, soundMap[i*3+j].col, NULL);
+			mvwprintw(soundWin, i+1, j*2+1, "%c%hd", soundMap[i*3+j].ch, soundMap[i*3+j].lev);
+			soundMap[i*3+j].ch=' ';
+			soundMap[i*3+j].lev=0;
+			soundMap[i*3+j].col=WHITE_BLACK;
+		}
 	wstandend(soundWin);
 	box(soundWin, 0, 0);
 	mvwaddstr(soundWin, 0, 1, "Sounds");
 	wrefresh(soundWin);
-	pthread_mutex_unlock(&(w->mutex));
+	w->mutex_unlock();
 }
 
-void Screen::NotifyAdd(const char * const str, color_pairs color) {
+void Screen::NotifyAdd(const char * const str, const kinds kind, const subs sub) {
 	if (!str[0])
 		return;
-	wcolor_set(notifyWin, color, NULL);
+	wcolor_set(notifyWin, Color(kind, sub), NULL);
 	mvwaddstr(notifyWin, notifyLines++, 0, str);
 	wrefresh(notifyWin);
 	fprintf(notifyLog, "%s\n", str);
@@ -406,6 +430,13 @@ Screen::Screen(World * const wor) :
 	hudWin=newwin(3+2, (shred_width*2*3+2)*2-8, shred_width*3+2, 8);
 	notifyWin=newwin(0, COLS, shred_width*3+2+5, 0);
 	soundWin =newwin(3+2, 3*2+2, shred_width*3+2, 0);
+	
+	for (unsigned short i=0; i<9; ++i) {
+		soundMap[i].ch=' ';
+		soundMap[i].lev=0;
+		soundMap[i].col=WHITE_BLACK;
+	}
+
 	w->scr=this;
 	notifyLog=fopen("messages.txt", "a");
 }

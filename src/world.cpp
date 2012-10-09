@@ -210,12 +210,6 @@ void World::PhysEvents() {
 		delete blocks[i][int(shred_width*1.5)][height-1];
 		blocks[i][int(shred_width*1.5)][height-1]=new Block(SUN_MOON);
 
-		for (i=0; i<9; ++i) {
-			soundMap[i].ch=' ';
-			soundMap[i].lev=0;
-			soundMap[i].col=BLACK_BLACK;
-		}
-
 		switch (time) {
 			case end_of_evening:
 			case end_of_night: ReEnlightenAll(); break;
@@ -229,43 +223,27 @@ void World::PhysEvents() {
 		unsigned short x, y, z;
 		temp->GetSelfXYZ(x, y, z);
 		if (0==time_step) {//sounds
-			unsigned short n;
-			unsigned short playerX, playerY, playerZ;
-			playerP->GetSelfXYZ(playerX, playerY, playerZ);
-			switch ( MakeDir(playerX, playerY, x, y) ) {
-				case HERE:       n=4; break;
-				case NORTH:      n=1; break;
-				case NORTH_EAST: n=2; break;
-				case EAST:       n=5; break;
-				case SOUTH_EAST: n=8; break;
-				case SOUTH:      n=7; break;
-				case SOUTH_WEST: n=6; break;
-				case WEST:       n=3; break;
-				case NORTH_WEST: n=0; break;
-				default:
-					n=4;
-					fprintf(stderr, "World::PhysEvents(): unlisted dir\n");
-			}
-			if ((Block *)playerP==blocks[x][y][z]) {
-				soundMap[n].ch=' ';
-				soundMap[n].lev=playerP->Noise();
-				soundMap[n].col=(NULL!=scr) ?
-					scr->Color( Kind(x, y, z), Sub(x, y, z) ) :
-					BLACK_WHITE;
-			} else if ( ' '!=temp->MakeSound() ) {
-				soundMap[n].ch=(' '==soundMap[n].ch) ? temp->MakeSound() : '*';
-				if (' '!=soundMap[n].ch) {
-					short temp=shred_width-Distance(playerX, playerY, playerZ, x, y, z);
-					if (temp<0) temp=0;
-					soundMap[n].lev+=(temp*10)/shred_width;
-					if (soundMap[n].lev>9) soundMap[n].lev=9;
-					if (soundMap[n].lev>0) {
-						soundMap[n].col=(NULL!=scr) ?
-							scr->Color( Kind(x, y, z), Sub(x, y, z) ) :
-							BLACK_WHITE;
-						soundMap[n].lev+=1;
-					}
+			if ( ' '!=temp->MakeSound() && NULL!=scr) {
+				unsigned short playerX, playerY, playerZ;
+				playerP->GetSelfXYZ(playerX, playerY, playerZ);
+				unsigned short n;
+				switch ( MakeDir(playerX, playerY, x, y) ) {
+					case HERE:       n=4; break;
+					case NORTH:      n=1; break;
+					case NORTH_EAST: n=2; break;
+					case EAST:       n=5; break;
+					case SOUTH_EAST: n=8; break;
+					case SOUTH:      n=7; break;
+					case SOUTH_WEST: n=6; break;
+					case WEST:       n=3; break;
+					case NORTH_WEST: n=0; break;
+					default:
+						n=4;
+						fprintf(stderr, "World::PhysEvents(): unlisted dir: %d\n", int(MakeDir(playerX, playerY, x, y)) );
 				}
+				
+				unsigned short dist=Distance(playerX, playerY, playerZ, x, y, z);
+				scr->GetSound( n, dist, temp->MakeSound(), temp->Kind(), temp->Sub() );
 			}
 		}
 		if ( temp->IfToDestroy() ) {
@@ -470,11 +448,7 @@ World::World() : time_step(0), activeList(NULL), scr(NULL) {
 	}
 	LoadAllShreds();
 	MakeSky();
-	for (unsigned short i=0; i<9; ++i) {
-		soundMap[i].ch=' ';
-		soundMap[i].lev=0;
-		soundMap[i].col=WHITE_BLACK;
-	}
+
 	pthread_mutexattr_t mutex_attr;
 	pthread_mutexattr_settype(&mutex_attr, PTHREAD_MUTEX_RECURSIVE);
 	pthread_mutex_init(&mutex, &mutex_attr);
