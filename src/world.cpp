@@ -399,7 +399,7 @@ void World::Jump(const int i, const int j, int k) {
 		Block * to_move=blocks[i][j][k];
 		blocks[i][j][k]->SetWeight(0);
 		dirs dir=to_move->GetDir();
-		short k_plus=Move(i, j, k, (DOWN==dir) ? DOWN : UP);
+		short k_plus=Move(i, j, k, (DOWN==dir) ? DOWN : UP, 1);
 		if ( k_plus ) {
 			k+=((DOWN==dir) ? (-1) : 1) * k_plus;
 			blocks[i][j][k]->SetWeight();
