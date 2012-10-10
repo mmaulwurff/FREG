@@ -19,6 +19,7 @@
 #define SCREEN_H
 
 #include "blocks.h"
+#include <curses.h>
 
 class World;
 

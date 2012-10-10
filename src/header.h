@@ -21,7 +21,6 @@
 #include <cstdio>
 #include <string.h>
 #include <cstdlib>
-#include <curses.h>
 
 #ifdef _WIN32
 	#include <windows.h>
