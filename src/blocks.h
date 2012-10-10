@@ -105,6 +105,7 @@ class Block { //blocks without special physics and attributes
 	virtual before_move_return BeforeMove(const dirs) { return NOTHING; }
 	virtual int Move(const dirs) { return 0; }
 	virtual char MakeSound() const { return ' '; }
+	virtual unsigned short Noise() const { return 1; }
 	virtual usage_types Use() { return NO; }
 	virtual int Damage(const unsigned short dmg, const damage_kinds dmg_kind=CRUSH) {
 		if (0>=durability)
@@ -317,7 +318,6 @@ class Active : public Block {
 	void SafeJump();
 
 	virtual char MakeSound() const { return ' '; }
-	virtual unsigned short Noise() const { return 0; }
 
 	virtual bool IfToDestroy() const { return ifToDestroy; }
 	void ToDestroy(const bool to_dest=true) { ifToDestroy=to_dest; }
@@ -650,8 +650,6 @@ class Pile : public Active, public Inventory {
 	virtual before_move_return BeforeMove(const dirs);
 	virtual bool CanBeIn() const { return false; }
 	virtual bool Access()  const{ return true; }
-
-	char MakeSound() const { return 't'; }
 
 	virtual void SaveAttributes(FILE * const out) const {
 		Active::SaveAttributes(out);

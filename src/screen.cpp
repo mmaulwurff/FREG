@@ -63,12 +63,14 @@ color_pairs Screen::Color(const kinds kind, const subs sub) const {
 		case PILE:      return WHITE_BLACK;
 		case TELEGRAPH: return CYAN_BLACK;
 		case RABBIT:    return RED_WHITE;
+		case BUSH:      return BLACK_GREEN;
 		case LIQUID: switch (sub) {
 			case WATER: return CYAN_BLUE;
 			default:    return RED_YELLOW;
 		}
 
 		default: switch (sub) {
+			case STONE:      return BLACK_WHITE;
 			case SAND:       return YELLOW_WHITE;
 			case A_MEAT:     return WHITE_RED;
 			case H_MEAT:     return BLACK_RED;
@@ -88,7 +90,7 @@ color_pairs Screen::Color(const kinds kind, const subs sub) const {
 				case NOON:    return CYAN_CYAN;
 				case EVENING: return WHITE_BLUE;
 			}
-			default: return BLACK_WHITE;
+			default: return WHITE_BLACK;
 		}
 	}
 }
@@ -97,6 +99,9 @@ inline color_pairs Screen::Color(const unsigned short i, const unsigned short j,
 }
 
 void Screen::Print() const {
+	if ( w->mutex_trylock() )
+		return;
+
 	switch (viewLeft) {
 		case INVENTORY: if (NULL!=blockToPrintLeft) {
 			PrintInv( leftWin, (Inventory *)blockToPrintLeft->HasInventory() );
@@ -113,46 +118,46 @@ void Screen::Print() const {
 		case NORMAL: PrintNormal(rightWin); break;
 		case FRONT: PrintFront(rightWin); break;
 	}
-
+	
 	Dwarf * playerP=w->GetPlayerP();
 	if (NULL==playerP)
 		return;
 
 	werase(hudWin);
 
-	short dur=playerP->Durability();
-	short breath=playerP->Breath();
-	short satiation=playerP->Satiation();
-
 	wstandend(hudWin);
-	mvwprintw(hudWin, 0, 1, "HP: %hd%%\n BR: %d%%", dur, breath);
-	if ( seconds_in_day*time_steps_in_sec<satiation ) {
-		wcolor_set(hudWin, BLUE_BLACK, NULL);
-		mvwaddstr(hudWin, 2, 1, "Gorged");
-	} else if ( 3*seconds_in_day*time_steps_in_sec/4<satiation ) {
-		wcolor_set(hudWin, GREEN_BLACK, NULL);
-		mvwaddstr(hudWin, 2, 1, "Full");
-	} else if (seconds_in_day*time_steps_in_sec/4>satiation) {
-		wcolor_set(hudWin, RED_BLACK, NULL);
-		mvwaddstr(hudWin, 2, 1, "Hungry");
-	}
-
+	short dur=playerP->Durability();
+	wprintw(hudWin, " HP: %hd%% ", dur);
 	wcolor_set(hudWin, WHITE_RED, NULL);
-	wmove(hudWin, 0, 10);
 	for (unsigned short i=0; i<10*dur/max_durability; ++i)
 		waddch(hudWin, '.');
+	waddch(hudWin, '\n');
 
-	wmove(hudWin, 1, 10);
+	wstandend(hudWin);
+	short breath=playerP->Breath();
+	wprintw(hudWin, " BR: %hd%% ", breath);
 	wcolor_set(hudWin, WHITE_BLUE, NULL);
 	for (unsigned short i=0; i<10*breath/max_breath; ++i)
 		waddch(hudWin, '.');
+	waddch(hudWin, '\n');
+
+	short satiation=playerP->Satiation();
+	if ( seconds_in_day*time_steps_in_sec<satiation ) {
+		wcolor_set(hudWin, BLUE_BLACK, NULL);
+		mvwaddstr(hudWin, 2, 1, "Gorged\n");
+	} else if ( 3*seconds_in_day*time_steps_in_sec/4<satiation ) {
+		wcolor_set(hudWin, GREEN_BLACK, NULL);
+		mvwaddstr(hudWin, 2, 1, "Full\n");
+	} else if (seconds_in_day*time_steps_in_sec/4>satiation) {
+		wcolor_set(hudWin, RED_BLACK, NULL);
+		mvwaddstr(hudWin, 2, 1, "Hungry\n");
+	}
 
 	wrefresh(hudWin);
+	w->mutex_unlock();
 }
 
 void Screen::PrintNormal(WINDOW * const window) const {
-	if ( w->mutex_trylock() )
-		return;
 	unsigned short k_start;
 	short k_step, k_end;
 	unsigned short playerZ;
@@ -191,7 +196,6 @@ void Screen::PrintNormal(WINDOW * const window) const {
 	} else
 		mvwaddstr(window, 0, 1, "Normal View");
 	wrefresh(window);
-	w->mutex_unlock();
 }
 
 void Screen::PrintFront(WINDOW * const window) const {
@@ -202,8 +206,8 @@ void Screen::PrintFront(WINDOW * const window) const {
 		mvwaddstr(window, 0, 1, "No view");
 		wrefresh(window);
 		return;
-	} else if ( w->mutex_trylock() )
-		return;
+	}
+
 	short x_step, z_step,
 	      x_end, z_end,
 	      * x, * z,
@@ -303,12 +307,9 @@ void Screen::PrintFront(WINDOW * const window) const {
 	mvwaddstr(window, 0, 1, "Front View");
 	Arrows(window, arrow_X, arrow_Y);
 	wrefresh(window);
-	w->mutex_unlock();
 }
 
 void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
-	if ( w->mutex_trylock() )
-		return;
 	werase(window);
 	wstandend(window);
 	mvwaddstr(window, 1, 53, "Weight");
@@ -347,7 +348,6 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 		mvwprintw(window, 0, 1, "[%c]%s", CharName(inv->Kind(), inv->Sub()), inv->FullName(str));
 	}
 	wrefresh(window);
-	w->mutex_unlock();
 }
 
 void Screen::GetSound(const unsigned short n, const unsigned short dist, const char sound, const kinds kind, const subs sub) {
