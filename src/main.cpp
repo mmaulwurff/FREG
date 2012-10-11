@@ -31,11 +31,11 @@ int main() {
 			if ( EOF==c || '\n'==c ) {
 				fclose(scenario);
 				scenario=NULL;
-				c=getch();
+				c=screen.Getch();
 			} else
 				fprintf(stderr, "Scenario used, key is: '%c'.\n", c);
 		} else
-			c=getch();
+			c=screen.Getch();
 		switch (c) {
 			case 'U': case KEY_UP:    earth.PlayerMove(NORTH); break;
 			case 'D': case KEY_DOWN:  earth.PlayerMove(SOUTH); break;
@@ -63,17 +63,17 @@ int main() {
 				earth.Use(i, j, k);
 			} break;
 			case '?': earth.Examine(); break;
-			case 'd': earth.PlayerDrop(getch()-'a'); break;
-			case 'g': earth.PlayerGet(getch()-'a'); break;
+			case 'd': earth.PlayerDrop(screen.Getch()-'a'); break;
+			case 'g': earth.PlayerGet(screen.Getch()-'a'); break;
 			case 'W': earth.PlayerWield(); break;
-			case 'E': earth.PlayerEat(getch()-'a'); break;
+			case 'E': earth.PlayerEat(screen.Getch()-'a'); break;
 			case 'I': earth.PlayerInscribe(); break;
 			case 'B': case KEY_BACKSPACE: {
 				unsigned short i, j, k;
 				earth.PlayerFocus(i, j, k);
 				earth.Damage(i, j, k);
 			} break;
-			case 'H': case KEY_HOME: earth.PlayerBuild(getch()-'a'); break;
+			case 'H': case KEY_HOME: earth.PlayerBuild(screen.Getch()-'a'); break;
 			case 'l': screen.RePrint(); break;
 			case 'Q': break;
 			default: screen.Notify("What?\n");

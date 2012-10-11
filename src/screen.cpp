@@ -21,8 +21,9 @@
 #include "screen.h"
 #include "world.h"
 
-char Screen::CharName(const kinds kind, const subs sub) const {
+char Screen::CharName(const kinds kind, const subs sub) const { //вернуть символ, обозначающий блок
 	switch (kind)  {
+		//блоки, для символа которых тип важнее вещества
 		case CHEST:
 		case PILE:   return '&';
 		case BUSH:   return ';';
@@ -33,6 +34,7 @@ char Screen::CharName(const kinds kind, const subs sub) const {
 		case RABBIT: return 'r';
 		case TELEGRAPH: return 't';
 		default: switch (sub) {
+			//блоки, для символа которых вещество важнее типа
 			case NULLSTONE: case MOSS_STONE: case WOOD:
 			case STONE: return '#';
 			case GLASS: return 'g';
@@ -57,8 +59,9 @@ char Screen::CharName(const unsigned short i, const unsigned short j, const unsi
 	return CharName( w->Kind(i, j, k), w->Sub(i, j, k) );
 }
 
-color_pairs Screen::Color(const kinds kind, const subs sub) const {
+color_pairs Screen::Color(const kinds kind, const subs sub) const { //пара цветов текст_фон в зависимоти от типа (kind) и вещества (sub) блока.
 	switch (kind) { //foreground_background
+		//блоки, для цвета которых тип важнее вещества
 		case DWARF:     return WHITE_BLUE;
 		case PILE:      return WHITE_BLACK;
 		case TELEGRAPH: return CYAN_BLACK;
@@ -66,10 +69,10 @@ color_pairs Screen::Color(const kinds kind, const subs sub) const {
 		case BUSH:      return BLACK_GREEN;
 		case LIQUID: switch (sub) {
 			case WATER: return CYAN_BLUE;
-			default:    return RED_YELLOW;
+			default:    return RED_YELLOW; //всё расплавленное
 		}
-
 		default: switch (sub) {
+			//блоки, для цвета которых вещество важнее типа
 			case STONE:      return BLACK_WHITE;
 			case SAND:       return YELLOW_WHITE;
 			case A_MEAT:     return WHITE_RED;
@@ -99,8 +102,9 @@ inline color_pairs Screen::Color(const unsigned short i, const unsigned short j,
 }
 
 void Screen::Print() const {
-	if ( w->mutex_trylock() )
+	if ( w->mutex_trylock() ) //если другой процесс использует мир.
 		return;
+	//мьютекс (знак) заблокирован, другой процесс (нить) не сможет использовать мир до разблокировки.
 
 	switch (viewLeft) {
 		case INVENTORY: if (NULL!=blockToPrintLeft) {
@@ -119,30 +123,35 @@ void Screen::Print() const {
 		case FRONT: PrintFront(rightWin); break;
 	}
 	
-	Dwarf * playerP=w->GetPlayerP();
+	Dwarf * playerP=w->GetPlayerP(); //если игрока нет, и жизнь рисовать незачем.
 	if (NULL==playerP)
 		return;
 
-	werase(hudWin);
+	werase(hudWin); 
 
-	wstandend(hudWin);
-	short dur=playerP->Durability();
-	wprintw(hudWin, " HP: %hd%% ", dur);
+	//строка с жизнью
+	wstandend(hudWin); //вернуть окну стандартный цвет
+	short dur=playerP->Durability(); //прочность есть у всех блоков. для игрока прочность - жизнь
+	wprintw(hudWin, " HP: %3hd%% <", dur);
 	wcolor_set(hudWin, WHITE_RED, NULL);
 	for (unsigned short i=0; i<10*dur/max_durability; ++i)
 		waddch(hudWin, '.');
-	waddch(hudWin, '\n');
-
 	wstandend(hudWin);
+	mvwaddstr(hudWin, 0, 21, ">\n"); //передвинуть на y=0, x=21 и вывести строку
+
+	//строка с дыханием
 	short breath=playerP->Breath();
-	wprintw(hudWin, " BR: %hd%% ", breath);
+	wprintw(hudWin, " BR: %3hd%% <", breath);
 	wcolor_set(hudWin, WHITE_BLUE, NULL);
 	for (unsigned short i=0; i<10*breath/max_breath; ++i)
 		waddch(hudWin, '.');
-	waddch(hudWin, '\n');
-
+	wstandend(hudWin);
+	mvwaddstr(hudWin, 1, 21, ">\n");
+	
+	//строка с сытостью/голодом
 	short satiation=playerP->Satiation();
-	if ( seconds_in_day*time_steps_in_sec<satiation ) {
+	 //полная насыщённость численно равна количеству секунд в дне * количество шагов в секунде
+	if ( seconds_in_day*time_steps_in_sec<satiation ) { //если насыщенность больше - объелся и т.д.
 		wcolor_set(hudWin, BLUE_BLACK, NULL);
 		mvwaddstr(hudWin, 2, 1, "Gorged\n");
 	} else if ( 3*seconds_in_day*time_steps_in_sec/4<satiation ) {
@@ -153,53 +162,52 @@ void Screen::Print() const {
 		mvwaddstr(hudWin, 2, 1, "Hungry\n");
 	}
 
-	wrefresh(hudWin);
-	w->mutex_unlock();
+	wrefresh(hudWin); //обновить окно, в curses нужно, чтобы вывести символы из временного буфера непосредственно на экран
+	w->mutex_unlock(); //мьютекс разблокирован
 }
 
 void Screen::PrintNormal(WINDOW * const window) const {
 	unsigned short k_start;
-	short k_step, k_end;
+	short k_step;
 	unsigned short playerZ;
-	w->GetPlayerZ(playerZ);
-	if ( UP==w->GetPlayerDir() ) {
+	w->GetPlayerZ(playerZ); //получить z-координату игрока
+	if ( UP==w->GetPlayerDir() ) { //подготовка: откуда начинать отрисовку и куда идти: в направлении роста или уменьшения z
 		k_start=playerZ+1;
 		k_step=1;
-		k_end=height;
 	} else {
+		//если игрок смотрит в сторону, то рисовать всё с уровнем игрока, если смотрит в пол, то только пол и ниже
 		k_start=( DOWN==w->GetPlayerDir() ) ? playerZ-1 : playerZ;
 		k_step=-1;
-		k_end=-1;
 	}
-	wmove(window, 1, 1);
+	wmove(window, 1, 1); //передвинуть курсор (невидимый) в 1,1. в клетке 0,0 начинается рамка.
 	for ( short j=0; j<shred_width*3; ++j, waddstr(window, "\n_") )
 	for ( short i=0; i<shred_width*3; ++i )
-		for (short k=k_start; k!=k_end; k+=k_step) //bottom is made from undestructable stone, loop will find what to print everytime
-			if (w->TransparentNotSafe(i, j, k) < 2) {
-				if ( w->Enlightened(i, j, k) && w->Visible(i, j, k) ) {
-					wcolor_set(window, Color(i, j, k), NULL);
-					waddch(window, CharName(i, j, k));
-					waddch(window, w->CharNumber(i, j, k));
+		for (short k=k_start; ; k+=k_step) //верх и низ лоскута (чанка) - непрозрачные нуль-камень и небесная твердь. за границы массива на выйдет.
+			if (w->TransparentNotSafe(i, j, k) < 2) { //проверка прозрачности. NotSafe - т.к. гарантированно внутри массива
+				if ( w->Enlightened(i, j, k) && w->Visible(i, j, k) ) { //освещено ли, не загорожено ли
+					wcolor_set(window, Color(i, j, k), NULL); //цвет
+					waddch(window, CharName(i, j, k)); //символ
+					waddch(window, w->CharNumber(i, j, k)); //цифра (или +, если далеко)
 				} else {
 					wcolor_set(window, BLACK_BLACK, NULL);
 					waddstr(window, "  ");
 				}
 				break;
 			}
-	wstandend(window);
-	box(window, 0, 0);
-	if ( UP==w->GetPlayerDir() || DOWN==w->GetPlayerDir() ) {
+	wstandend(window); //вернуть окну стандартный цвет
+	box(window, 0, 0); //рамка
+	if ( UP==w->GetPlayerDir() || DOWN==w->GetPlayerDir() ) { //заголовок окна
 		mvwaddstr(window, 0, 1, ( UP==w->GetPlayerDir() ) ? "Sky View" : "Ground View");
 		unsigned short arrow_X, arrow_Y;
 		w->GetPlayerCoords(arrow_X, arrow_Y);
 		Arrows(window , arrow_X*2+1, arrow_Y+1);
 	} else
 		mvwaddstr(window, 0, 1, "Normal View");
-	wrefresh(window);
+	wrefresh(window); //вывод на экран
 }
 
 void Screen::PrintFront(WINDOW * const window) const {
-	if ( UP==w->GetPlayerDir() || DOWN==w->GetPlayerDir() ) {
+	if ( UP==w->GetPlayerDir() || DOWN==w->GetPlayerDir() ) { //если игрок смотрит не в сторону, то взгляд в сторону рисовать не нужно
 		wstandend(window);
 		werase(window);
 		box(window, 0, 0);
@@ -208,6 +216,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 		return;
 	}
 
+	//подготовка сложнее, чем в PrintNormal: не только откуда и куда отрисовывать, но и какие переменные менять по ходу дела (указатели) *x и *z
 	short x_step, z_step,
 	      x_end, z_end,
 	      * x, * z,
@@ -291,7 +300,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 					}
 					break;
 				}
-			if (*z==z_end) { //print background decorations
+			if (*z==z_end) { //рисовать декорации дальнего вида (белые точки на синем)
 				*z-=z_step;
 				if (w->Visible(i, j, k)) {
 				       	wcolor_set(window, WHITE_BLUE, NULL);
@@ -405,13 +414,13 @@ Screen::Screen(World * const wor) :
 		blockToPrintRight(NULL),
 		viewLeft(NORMAL),
 		viewRight(FRONT) {
-	set_escdelay(10);
-	initscr();
-	start_color();
-	raw();
-	noecho();
-	keypad(stdscr, TRUE);
-	curs_set(0);
+	set_escdelay(10); //задержка после нажатия esc. для обработки esc-последовательностей, пока не используется.
+	initscr(); //инициировать экран
+	start_color(); //цетной режим
+	raw(); //коды нажатия клавиш поступают в программу без обработки (сырыми)
+	noecho(); //не показывать то, что введено
+	keypad(stdscr, TRUE); //использовать стрелки
+	curs_set(0); //сделать курсор невидимым
 	//all available color pairs (maybe some of them will not be used)
 	short colors[]={ //do not change colors order!
 		COLOR_BLACK,
@@ -423,11 +432,13 @@ Screen::Screen(World * const wor) :
 		COLOR_CYAN,
 		COLOR_WHITE
 	};
+	//ввести все цвета
 	for (short i=BLACK_BLACK; i<=WHITE_WHITE; ++i)
 		init_pair(i, colors[(i-1)/8], colors[(i-1)%8]);
+	//задать положения и размеры окон
 	leftWin  =newwin(shred_width*3+2, shred_width*2*3+2, 0, 0);
 	rightWin =newwin(shred_width*3+2, shred_width*2*3+2, 0, shred_width*2*3+2);
-	hudWin=newwin(3+2, (shred_width*2*3+2)*2-8, shred_width*3+2, 8);
+	hudWin=newwin(3+2, (shred_width*2*3+2)*2-8, shred_width*3+2, 8); //окно для жизни, дыхания и т.д.
 	notifyWin=newwin(0, COLS, shred_width*3+2+5, 0);
 	soundWin =newwin(3+2, 3*2+2, shred_width*3+2, 0);
 	
@@ -437,22 +448,24 @@ Screen::Screen(World * const wor) :
 		soundMap[i].col=WHITE_BLACK;
 	}
 
-	w->scr=this;
+	w->scr=this; //привязать экран к миру
 	notifyLog=fopen("messages.txt", "a");
 }
 
 Screen::~Screen() {
-	pthread_mutex_lock(&(w->mutex));
+	w->mutex_lock();
+	//удалить окна
 	delwin(leftWin);
 	delwin(rightWin);
 	delwin(notifyWin);
 	delwin(hudWin);
 	delwin(soundWin);
+	//закончить оконный режим, очистить экран
 	endwin();
-	w->scr=NULL;
+	w->scr=NULL; //отвязаться от мира
 	if (NULL!=notifyLog)
 		fclose(notifyLog);
-	pthread_mutex_unlock(&(w->mutex));
+	w->mutex_unlock();
 }
 
 #endif

@@ -29,7 +29,7 @@ class Screen {
 	       * rightWin,
 	       * notifyWin,
 	       * soundWin,
-	       * hudWin;
+	       * hudWin; //окно для жизни, дыхания и т.д.
 
 	struct {
 		char ch;
@@ -37,34 +37,35 @@ class Screen {
 		color_pairs col;
 	} soundMap[9];
 
-	char CharName(const unsigned short, const unsigned short, const unsigned short) const;
+	char CharName(const unsigned short, const unsigned short, const unsigned short) const; //вернуть символ, обозначающий блок
 	char CharName(const kinds, const subs) const;
 	void Arrows(WINDOW * const window, const unsigned short x, const unsigned short y) const {
+		//стрелки, показывающие положение игрока.
+		//используются, когда его самого не видно (например, вид неба)
 		wcolor_set(window, WHITE_RED, NULL);
 		mvwprintw(window, 0, x, "vv");
 		mvwprintw(window, shred_width*3+1, x, "^^");
 		mvwprintw(window, y, 0, ">");
 		mvwprintw(window, y, shred_width*3*2+1, "<");	
 	}
-	FILE * notifyLog;
-	unsigned short notifyLines;
-
-	void UpDownView(const dirs) const;
+	FILE * notifyLog; //весь текст уведомлений (notification) дублируется в файл.
+	unsigned short notifyLines; //для NotifyAdd() - сколько строк уже с текстом
 
 	void PrintNormal(WINDOW * const) const;
 	void PrintFront(WINDOW * const) const;
 	void PrintInv(WINDOW * const, Inventory * const) const;
 
-	color_pairs Color(const kinds, const subs) const;
-	color_pairs Color(const unsigned short i, const unsigned short j, const unsigned short k) const;
-	color_pairs Color(const subs sub, const kinds kind) const { return Screen::Color(kind, sub); }
+	color_pairs Color(const kinds, const subs) const; //пара цветов текст_фон в зависимоти от типа (kind) и вещества (sub) блока.
+	color_pairs Color(const subs sub, const kinds kind) const { return Screen::Color(kind, sub); } //чтобы можно было путать порядок
+	color_pairs Color(const unsigned short i, const unsigned short j, const unsigned short k) const; //в зависимости от координаты
 
 	public:
 	Block * blockToPrintLeft,
-	      * blockToPrintRight;
-	window_views viewLeft, viewRight;
+	      * blockToPrintRight; //блоки, связанные с экраном (например, блок открытого в текущий момент сундука)
+	window_views viewLeft, viewRight; //тип вида: пока или NORMAL, или FRONT, или INVENTORY
 
-	char * GetString(char * const str) const {
+	int Getch() { return getch(); }
+	char * GetString(char * const str) const { //ввод строки пользователем
 		echo();
 		werase(notifyWin);
 		mvwaddstr(notifyWin, 0, 0, "Enter inscription:");
@@ -75,18 +76,18 @@ class Screen {
 		noecho();
 		return str;
 	}
-	void Notify(const char * const str, const kinds kind=BLOCK, const subs sub=DIFFERENT) {
+	void Notify(const char * const str, const kinds kind=BLOCK, const subs sub=DIFFERENT) { //новое уведомление
 		werase(notifyWin);
 		notifyLines=0;
 		NotifyAdd(str, kind, sub);
 	}
-	void NotifyAdd(const char * const, const kinds=BLOCK, const subs=DIFFERENT);
+	void NotifyAdd(const char * const, const kinds=BLOCK, const subs=DIFFERENT); //добавить строку к уведомлению
 	void Print() const;
 
-	void GetSound(const unsigned short, const unsigned short, const char, const kinds, const subs);
+	void GetSound(const unsigned short, const unsigned short, const char, const kinds, const subs); //получить отдельный звук для звуковой карты
 	void PrintSounds();
 
-	void RePrint() {
+	void RePrint() { //стереть всё с экрана и перерисовать всё с нуля (можно сделать пустой)
 		wclear(leftWin);
 		wclear(rightWin);
 		wclear(notifyWin);

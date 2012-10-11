@@ -804,6 +804,7 @@ class World {
 	friend int Dwarf::Move(dirs);
 
 	public:
+	int mutex_lock() { return pthread_mutex_lock(&mutex); }
 	int mutex_trylock() { return pthread_mutex_trylock(&mutex); }
 	int mutex_unlock() { return pthread_mutex_unlock(&mutex); }
 
