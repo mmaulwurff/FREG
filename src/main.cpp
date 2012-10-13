@@ -80,6 +80,6 @@ int main() {
 		}
 		if (print_flag) screen.Print();
 		usleep(90000);
-		flushinp();
+		screen.Flushinp();
 	}
 }

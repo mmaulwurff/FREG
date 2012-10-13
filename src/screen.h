@@ -65,6 +65,7 @@ class Screen {
 	window_views viewLeft, viewRight; //тип вида: пока или NORMAL, или FRONT, или INVENTORY
 
 	int Getch() { return getch(); }
+	void Flushinp() { flushinp(); }
 	char * GetString(char * const str) const { //ввод строки пользователем
 		echo();
 		werase(notifyWin);
