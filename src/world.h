@@ -236,8 +236,8 @@ class World {
 			unsigned short k;
 			for (k=1; k<height/2-6 && k<height/2-depth-1; ++k)
 				blocks[i][j][k]=new Block;
-			blocks[i][j][k++]=new Block((rand()%2) ? STONE : SOIL);
-			for (; k<height/2-depth; ++k)
+			blocks[i][j][++k]=new Block((rand()%2) ? STONE : SOIL);
+			for (++k; k<height/2-depth; ++k)
 				blocks[i][j][k]=new Block(SOIL);
 		}
 	}
