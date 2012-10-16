@@ -55,16 +55,12 @@ void World::LoadShred(const long longi, const long lati, const unsigned short is
 	FileName(str, longi, lati);
 	FILE * in=fopen(str, "r");
 	if (NULL==in) {
-		unsigned short i, j;
-		for (i=istart; i<istart+shred_width; ++i)
-		for (j=jstart; j<jstart+shred_width; ++j)
+		for (unsigned short i=istart; i<istart+shred_width; ++i)
+		for (unsigned short j=jstart; j<jstart+shred_width; ++j) {
 			blocks[i][j][0]=new Block(NULLSTONE);
-
-		unsigned short k;
-		for (i=istart; i<istart+shred_width; ++i)
-		for (j=jstart; j<jstart+shred_width; ++j)
-		for (k=1; k<height-1; ++k)
-			blocks[i][j][k]=NULL;
+			for (unsigned short k=1; k<height-1; ++k)
+				blocks[i][j][k]=NULL;
+		}
 				
 		switch ( TypeOfShred(longi, lati) ) {
 			case '#': NullMountain(istart, jstart); break;

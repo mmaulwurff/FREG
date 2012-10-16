@@ -26,7 +26,7 @@ void BlockFromFile(FILE * const in, Block * & block, World * const world,
 	sscanf(str, "%d", &kind);
 	//if some kind will not be listed here, blocks of this kind just will not load.
 	//unless kind is inherited from Inventory class or one of its derivatives - in this case this may cause something bad.
-	switch(kind) {
+	switch (kind) {
 		case BLOCK:     block=new Block(str);     break;
 		case TELEGRAPH: block=new Telegraph(str); break;
 		case PICK:      block=new Pick(str);      break;
