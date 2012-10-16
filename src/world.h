@@ -31,6 +31,10 @@ class World {
 	unsigned short time_step;
 	unsigned long time;
 	Block *blocks[shred_width*3][shred_width*3][height];
+	struct {
+		Block * block;
+		unsigned short number;
+	} block_numbers[AIR];
 	Dwarf * playerP;
 	unsigned short spawnX, spawnY, spawnZ;
 	long longitude, latitude;

@@ -77,7 +77,7 @@ void World::LoadShred(const long longi, const long lati, const unsigned short is
 		for (unsigned short i=istart; i<istart+shred_width; ++i)
 		for (unsigned short j=jstart; j<jstart+shred_width; ++j)
 			for (unsigned short k=0; k<height-1; ++k)
-				BlockFromFile(in, blocks[i][j][k], this, i, j, k);
+				blocks[i][j][k]=BlockFromFile(in, this, i, j, k);
 		fclose(in);
 	}
 }

@@ -22,7 +22,7 @@
 
 class World;
 class Block;
-void BlockFromFile(FILE *, Block * &, World * =NULL, unsigned short=0, unsigned short=0, unsigned short=0);
+Block * BlockFromFile(FILE *, World * =NULL, unsigned short=0, unsigned short=0, unsigned short=0);
 
 class Block { //blocks without special physics and attributes
 	protected:
@@ -155,7 +155,7 @@ class Block { //blocks without special physics and attributes
 	}
 
 	virtual bool operator==(const Block& block) const {
-		return ( block.Kind()==Kind() && block.Sub()==Sub() ) ? true : false;
+		return ( block.Kind()==Kind() && block.Sub()==Sub() && strcpy(block.note, note) );
 	}
 
 	void SaveToFile(FILE * const out) const {
@@ -484,7 +484,7 @@ class Inventory {
 	Inventory(char * const str, FILE * const in) {
 		for (unsigned short i=0; i<inventory_size; ++i)
 		for (unsigned short j=0; j<max_stack_size; ++j)
-			BlockFromFile(in, inventory[i][j]);
+			inventory[i][j]=BlockFromFile(in);
 		fgets(str, 300, in);
 	}
 	~Inventory() {

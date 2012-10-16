@@ -164,7 +164,6 @@ enum subs {//substance block is made from
 	STONE,
 	MOSS_STONE,
 	NULLSTONE,
-	AIR, //though there is no air block.
 	SKY,
 	STAR,
 	SUN_MOON,
@@ -179,7 +178,8 @@ enum subs {//substance block is made from
 	GREENERY,
 	SAND,
 	HAZELNUT,
-	ROSE
+	ROSE,
+	AIR //keep it last in this list
 };
 
 enum before_move_return { NOTHING, DESTROY };
