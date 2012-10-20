@@ -47,6 +47,8 @@ class World {
 
 	public:
 	Block * NewNormal(subs sub) { return normal_blocks[sub]; }
+	pthread_mutex_t mutex;
+	Screen * scr;
 	
 	private:
 	void LoadShred(const long, const long, const unsigned short, const unsigned short);
@@ -74,9 +76,6 @@ class World {
 				}
 			fclose(sky);
 		}
-		/*for (i=0; i<shred_width*3; ++i)
-		for (j=0; j<shred_width*3; ++j)
-			lightMap[i][j][height-1]=1; //sky is always enlightened*/
 	}
 	dirs MakeDir(const unsigned short x_center, const unsigned short y_center, const unsigned short x_target, const unsigned short y_target) const {
 		//if (x_center==x_target && y_center==y_target) return HERE;
@@ -134,8 +133,9 @@ class World {
 	}
 
 	//lighting section
+	private:
 	void ReEnlighten(const int i, const int j, const int k) {
-		if ( Transparent(i, j, k) || height-1==k )
+		if ( height-1==k )
 			return;
 
 		short x, y, z;
@@ -146,36 +146,12 @@ class World {
 				lightMap[x][y][z]=0;
 
 		for (x=i-max_light_radius-max_light_radius-1; x<=i+max_light_radius+max_light_radius+1; ++x)
-		for (y=j-max_light_radius-max_light_radius-1; y<=j+max_light_radius+max_light_radius+1; ++y)
-		for (z=k-max_light_radius-max_light_radius-1; z<=k+max_light_radius+max_light_radius+1; ++z)
-			Shine(x, y, z);
-
-		for (x=i-max_light_radius-1; x<=i+max_light_radius+1; ++x)
-		for (y=j-max_light_radius-1; y<=j+max_light_radius+1; ++y)
+		for (y=j-max_light_radius-max_light_radius-1; y<=j+max_light_radius+max_light_radius+1; ++y) {
 			if ( InBounds(x, y, 0) )
 				SunShine(x, y);
-	}
-
-	void DirectReEnlighten(const int i, const int j, const int k) {
-		if ( height-1==k )
-			return;
-
-		if ( NIGHT!=PartOfDay() && UnderTheSky(i, j, k) ) {
-			lightMap[i][j][k]=10;
-			return;
+			for (z=k-max_light_radius-max_light_radius-1; z<=k+max_light_radius+max_light_radius+1; ++z)
+				Shine(x, y, z);
 		}
-
-		lightMap[i][j][k]=0;
-		for (short x=i-max_light_radius; x<=i+max_light_radius; ++x)
-		for (short y=j-max_light_radius; y<=j+max_light_radius; ++y)
-		for (short z=k-max_light_radius; z<=k+max_light_radius; ++z)
-			if ( InBounds(x, y, z) && !(x==i && y==j && z==k) &&
-					( Distance(i, j, k, x, y, z)<=LightRadius(x, y, z) ) &&
-					DirectlyVisible(i, j, k, x, y, z) )
-				lightMap[i][j][k]+=max_light_radius/Distance(i, j, k, x, y, z)+1;
-
-		if ( lightMap[i][j][k]>10 )
-			lightMap[i][j][k]=10;
 	}
 
 	void ReEnlightenAll() {
@@ -183,23 +159,20 @@ class World {
 
 		for (i=0; i<shred_width*3; ++i)
 		for (j=0; j<shred_width*3; ++j)
-		for (k=0; k<height-2; ++k)
+		for (k=0; k<height-1; ++k)
 			lightMap[i][j][k]=0;
 
 		for (i=0; i<shred_width*3; ++i)
-		for (j=0; j<shred_width*3; ++j)
-		for (k=0; k<height-2; ++k)
-			Shine(i, j, k);
-
-		if ( NIGHT!=PartOfDay() )
-			for (i=0; i<shred_width*3; ++i)
-			for (j=0; j<shred_width*3; ++j)
-				SunShine(i, j);
+		for (j=0; j<shred_width*3; ++j) {
+			SunShine(i, j);
+			for (k=1; k<height-1; ++k)
+				Shine(i, j, k);
+		}
 	}
-
+	
 	void SafeEnlighten(const int i, const int j, const int k) {
-		if ( InBounds(i, j, k) && height-1!=k )
-			lightMap[i][j][k]=1;
+		if ( InBounds(i, j, k) && k<height-1 )
+			lightMap[i][j][k]=10;
 	}
 
 	void SunShine(const int i, const int j) {
@@ -216,12 +189,6 @@ class World {
 		} while ( Transparent(i, j, k--) );
 	}
 
-	void SunReShine(const int i, const int j) { 
-		for (unsigned short k=height-2; TransparentNotSafe(i, j, k); --k)
-			lightMap[i][j][k]=0;
-		SunShine(i, j);
-	}
-
 	void Shine(const int i, const int j, const int k) {
 		float light_radius;
 		if ( !InBounds(i, j, k) || NULL==blocks[i][j][k] || 0==(light_radius=blocks[i][j][k]->LightRadius()) )
@@ -230,16 +197,19 @@ class World {
 		for (short x=ceil(i-light_radius); x<=floor(i+light_radius); ++x)
 		for (short y=ceil(j-light_radius); y<=floor(j+light_radius); ++y)
 		for (short z=ceil(k-light_radius); z<=floor(k+light_radius) && z<height-1; ++z)
-			if (InBounds(x, y, z) &&
+			if ( InBounds(x, y, z) &&
 					Distance(i, j, k, x, y, z)<=light_radius &&
-					DirectlyVisible(i, j, k, x, y, z))
+					DirectlyVisible(i, j, k, x, y, z) ) {
 				lightMap[x][y][z]+=max_light_radius/Distance(i, j, k, x, y, z)+1;
+				if ( lightMap[x][y][z]>10 )
+					lightMap[x][y][z]=10;
+			}
 	}
 
 	//shred generators section
-	//this functions fill space between the lowest nullstone layer and sky. so use k from 1 to heigth-2.
+	//these functions fill space between the lowest nullstone layer and sky. so use k from 1 to heigth-2.
 	//unfilled blocks are air.
-
+	private:
 	void NormalUnderground(const unsigned short istart, const unsigned short jstart, const unsigned short depth=0) {
 		for (unsigned short i=istart; i<istart+shred_width; ++i)
 		for (unsigned short j=jstart; j<jstart+shred_width; ++j) {
@@ -426,10 +396,6 @@ class World {
 		return true;
 	}
 
-	public:
-	pthread_mutex_t mutex;
-	Screen * scr;
-
 	//information section
 	public:
 	int Focus(const unsigned short, const unsigned short, const unsigned short, unsigned short &, unsigned short &, unsigned short &, const dirs) const;
@@ -487,6 +453,7 @@ class World {
 	char CharNumberFront(const int, const int) const;
 
 	//visibility section
+	public:
 	bool DirectlyVisible(const float, const float, const float, const int, const int, const int) const;
 	bool Visible(const int, const int, const int, const int, const int, const int) const;
 	bool Visible(const int x_to, const int y_to, const int z_to) const {
@@ -496,6 +463,7 @@ class World {
 	}
 
 	//movement section
+	public:
 	void PhysEvents();
 	int  Move(const unsigned short, const unsigned short, const unsigned short, const dirs, unsigned=2); //last arg is how much block fall/rise at one turn
 	void Jump(const int, const int, const int);
@@ -513,6 +481,7 @@ class World {
 	}
 
 	//player specific functions section
+	public:
 	void SetPlayerDir(const dirs dir) { playerP->SetDir(dir); }
 	dirs GetPlayerDir() const { return playerP->GetDir(); }
 	void GetPlayerCoords(unsigned short & x, unsigned short & y, unsigned short & z) const { playerP->GetSelfXYZ(x, y, z); }
@@ -521,6 +490,7 @@ class World {
 	Dwarf * GetPlayerP() const { return playerP; }
 
 	//time section
+	public:
 	unsigned long GetTime() const { return time; }
 	times_of_day PartOfDay() const {
 		unsigned short time_day=TimeOfDay();
@@ -533,6 +503,7 @@ class World {
 	unsigned long Time() const { return time; }
 
 	//interactions section
+	public:
 	void Damage(const int i, const int j, const int k, const unsigned short dmg=1, const damage_kinds dmg_kind=CRUSH, const bool destroy=true) {
 		if ( NULL==blocks[i][j][k] )
 			return;
@@ -568,7 +539,6 @@ class World {
 		}
 
 		ReEnlighten(i, j, k);
-		SunReShine(i, j);
 	}
 	void Use(const int i, const int j, const int k) {
 		if (NULL!=blocks[i][j][k])
@@ -589,10 +559,7 @@ class World {
 			if ( block->ActiveBlock() )
 				((Active *)block)->Register(this, i, j, k);
 			blocks[i][j][k]=block;
-			if ( block->Transparent() )
-				DirectReEnlighten(i, j, k);
-			else
-				ReEnlighten(i, j, k);
+			ReEnlighten(i, j, k);
 			return true;
 		}
 		scr->Notify("You can not build.");
@@ -738,7 +705,8 @@ class World {
 			scr->Notify("Nothing to wield.");
 	}
 
-	//block information section	
+	//block information section
+	public:
 	bool InBounds(const unsigned short i, const unsigned short j, const unsigned short k) const {
 		return (i<shred_width*3 && j<shred_width*3 && k<height);
 	}
