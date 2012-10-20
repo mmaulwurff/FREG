@@ -266,7 +266,7 @@ void World::PhysEvents() {
 	pthread_mutex_unlock(&mutex);
 }
 
-char World::CharNumber(const int i, const int j, const int k) const {
+char World::CharNumber(const unsigned short i, const unsigned short j, const unsigned short k) const {
 	if (height-1==k) return ' ';
 	if ((Block *)playerP==blocks[i][j][k])
 		switch ( playerP->GetDir() ) {
@@ -292,7 +292,7 @@ char World::CharNumber(const int i, const int j, const int k) const {
 	return '+';
 }
 
-char World::CharNumberFront(const int i, const int j) const {
+char World::CharNumberFront(const unsigned short i, const unsigned  short j) const {
 	unsigned short ret;
 	unsigned short playerX, playerY, playerZ;
 	playerP->GetSelfXYZ(playerX, playerY, playerZ);
@@ -304,7 +304,7 @@ char World::CharNumberFront(const int i, const int j) const {
 }
 
 bool World::DirectlyVisible(float x_from, float y_from, float z_from,
-		const int x_to, const int y_to, const int z_to) const {
+		const unsigned short x_to, const unsigned short y_to, const unsigned short z_to) const {
 	if (x_from==x_to && y_from==y_to && z_from==z_to)
 		return true;
 
@@ -326,8 +326,8 @@ bool World::DirectlyVisible(float x_from, float y_from, float z_from,
 	return true;
 }
 
-bool World::Visible(const int x_from, const int y_from, const int z_from,
-                    const int x_to,   const int y_to,   const int z_to) const {
+bool World::Visible(const unsigned short x_from, const unsigned short y_from, const unsigned short z_from,
+                    const unsigned short x_to,   const unsigned short y_to,   const unsigned short z_to) const {
 	short temp;
 	if ((DirectlyVisible(x_from, y_from, z_from, x_to, y_to, z_to)) ||
 		(Transparent(x_to+(temp=(x_to>x_from) ? (-1) : 1), y_to, z_to) && DirectlyVisible(x_from, y_from, z_from, x_to+temp, y_to, z_to)) ||
@@ -386,7 +386,7 @@ int World::Move(const unsigned short i, const unsigned short j, const unsigned s
 	return numberMoves;
 }
 
-void World::Jump(const int i, const int j, int k) {
+void World::Jump(const unsigned short i, const unsigned short j, unsigned short k) {
 	pthread_mutex_lock(&mutex);
 	if ( NULL!=blocks[i][j][k] && MOVABLE==blocks[i][j][k]->Movable() ) {
 		Block * to_move=blocks[i][j][k];

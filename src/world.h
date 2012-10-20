@@ -134,8 +134,8 @@ class World {
 
 	//lighting section
 	private:
-	void ReEnlighten(const int i, const int j, const int k) {
-		if ( height-1==k )
+	void ReEnlighten(const unsigned short i, const unsigned short j, const unsigned short k) {
+		if ( height-1==k || !InBounds(i, j, k) )
 			return;
 
 		short x, y, z;
@@ -170,12 +170,12 @@ class World {
 		}
 	}
 	
-	void SafeEnlighten(const int i, const int j, const int k) {
+	void SafeEnlighten(const unsigned short i, const unsigned short j, const unsigned short k) {
 		if ( InBounds(i, j, k) && k<height-1 )
 			lightMap[i][j][k]=10;
 	}
 
-	void SunShine(const int i, const int j) {
+	void SunShine(const unsigned short i, const unsigned short j) {
 		if ( NIGHT==PartOfDay() )
 			return;
 
@@ -189,7 +189,7 @@ class World {
 		} while ( Transparent(i, j, k--) );
 	}
 
-	void Shine(const int i, const int j, const int k) {
+	void Shine(const unsigned short i, const unsigned short j, const unsigned short k) {
 		float light_radius;
 		if ( !InBounds(i, j, k) || NULL==blocks[i][j][k] || 0==(light_radius=blocks[i][j][k]->LightRadius()) )
 			return;
@@ -449,14 +449,15 @@ class World {
 		scr->NotifyAdd(str);
 		str[0]=0;
 	}
-	char CharNumber(const int, const int, const int) const;
-	char CharNumberFront(const int, const int) const;
+	char CharNumber(const unsigned short, const unsigned short, const unsigned short) const;
+	char CharNumberFront(const unsigned short, const unsigned short) const;
 
 	//visibility section
 	public:
-	bool DirectlyVisible(const float, const float, const float, const int, const int, const int) const;
-	bool Visible(const int, const int, const int, const int, const int, const int) const;
-	bool Visible(const int x_to, const int y_to, const int z_to) const {
+	bool DirectlyVisible(const float, const float, const float, const unsigned short, const unsigned short, const unsigned short) const;
+	bool Visible(const unsigned short, const unsigned short, const unsigned short,
+	             const unsigned short, const unsigned short, const unsigned short) const;
+	bool Visible(const unsigned short x_to, const unsigned short y_to, const unsigned short z_to) const {
 		unsigned short playerX, playerY, playerZ;
 		GetPlayerCoords(playerX, playerY, playerZ);
 		return Visible(playerX, playerY, playerZ, x_to, y_to, z_to);
@@ -466,7 +467,7 @@ class World {
 	public:
 	void PhysEvents();
 	int  Move(const unsigned short, const unsigned short, const unsigned short, const dirs, unsigned=2); //last arg is how much block fall/rise at one turn
-	void Jump(const int, const int, const int);
+	void Jump(const unsigned short, const unsigned short, const unsigned short);
 	int PlayerMove(const dirs dir) {
 		unsigned short playerX, playerY, playerZ;
 		GetPlayerCoords(playerX, playerY, playerZ);
@@ -504,8 +505,9 @@ class World {
 
 	//interactions section
 	public:
-	void Damage(const int i, const int j, const int k, const unsigned short dmg=1, const damage_kinds dmg_kind=CRUSH, const bool destroy=true) {
-		if ( NULL==blocks[i][j][k] )
+	void Damage(const unsigned short i, const unsigned short j, const unsigned short k,
+			const unsigned short dmg=1, const damage_kinds dmg_kind=CRUSH, const bool destroy=true) {
+		if ( !InBounds(i, j, k) || NULL==blocks[i][j][k] )
 			return;
 				
 		if ( blocks[i][j][k]->Normal() )
@@ -540,32 +542,35 @@ class World {
 
 		ReEnlighten(i, j, k);
 	}
-	void Use(const int i, const int j, const int k) {
-		if (NULL!=blocks[i][j][k])
-			switch ( blocks[i][j][k]->Use() ) {
-				case OPEN:
-					if (INVENTORY!=scr->viewLeft) {
-						scr->viewLeft=INVENTORY;
-						scr->blockToPrintLeft=blocks[i][j][k];
-					} else
-						scr->viewLeft=NORMAL;
-				break;
-				default: scr->viewLeft=NORMAL;
-			}
-	}
-	bool Build(Block * block, const int i, const int j, const int k) {
-		if (NULL==blocks[i][j][k] && block->CanBeOut() ) {
-			block->Restore();
-			if ( block->ActiveBlock() )
-				((Active *)block)->Register(this, i, j, k);
-			blocks[i][j][k]=block;
-			ReEnlighten(i, j, k);
-			return true;
+	void Use(const unsigned short i, const unsigned short j, const unsigned short k) {
+		if ( !InBounds(i, j, k) || NULL==blocks[i][j][k] )
+			return;
+
+		switch ( blocks[i][j][k]->Use() ) {
+			case OPEN:
+				if (INVENTORY!=scr->viewLeft) {
+					scr->viewLeft=INVENTORY;
+					scr->blockToPrintLeft=blocks[i][j][k];
+				} else
+					scr->viewLeft=NORMAL;
+			break;
+			default: scr->viewLeft=NORMAL;
 		}
-		scr->Notify("You can not build.");
-		return false;
 	}
-	void PlayerBuild(const int n) {
+	bool Build(Block * block, const unsigned short i, const unsigned short j, const unsigned short k) {
+		if ( !(InBounds(i, j, k) && NULL==blocks[i][j][k] && block->CanBeOut()) ) {
+			scr->Notify("You can not build.");
+			return false;
+		}
+
+		block->Restore();
+		if ( block->ActiveBlock() )
+			((Active *)block)->Register(this, i, j, k);
+		blocks[i][j][k]=block;
+		ReEnlighten(i, j, k);
+		return true;
+	}
+	void PlayerBuild(const unsigned short n) {
 		Block * temp=playerP->Drop(n);
 		unsigned short i, j, k;
 		PlayerFocus(i, j, k);
@@ -584,13 +589,14 @@ class World {
 			Inscribe(i_to, j_to, k_to);
 	}
 	void PlayerInscribe() { Inscribe(playerP); }
-	void Inscribe(const int i, const int j, const int k) {
-		if (NULL!=blocks[i][j][k]) {
-			if ( blocks[i][j][k]->Normal() )
-				blocks[i][j][k]=new Block(blocks[i][j][k]->Sub());
-			char str[note_length];
-			blocks[i][j][k]->Inscribe(scr->GetString(str));
-		}
+	void Inscribe(const unsigned short i, const unsigned short j, const unsigned short k) {
+		if ( !InBounds(i, j, k) || NULL==blocks[i][j][k] )
+			return;
+
+		if ( blocks[i][j][k]->Normal() )
+			blocks[i][j][k]=new Block(blocks[i][j][k]->Sub());
+		char str[note_length];
+		blocks[i][j][k]->Inscribe(scr->GetString(str));
 	}
 	void Eat(Block * who, Block * & food) {
 		if ( NULL==who || NULL==food )
@@ -600,12 +606,13 @@ class World {
 			food=NULL;
 		}
 	}
-	void Eat(const int i, const int j, const int k, const int i_food, const int j_food, const int k_food) {
+	void Eat(const unsigned short i, const unsigned short j, const unsigned short k,
+			const unsigned short i_food, const unsigned short j_food, const unsigned short k_food) {
 		if ( !InBounds(i, j, k) || !InBounds(i_food, j_food, k_food) )
 			return;
 		Eat(blocks[i][j][k], blocks[i_food][j_food][k_food]);
 	}
-	void PlayerEat(int n) {
+	void PlayerEat(unsigned short n) {
 		if ( 0>n || inventory_size<=n ) {
 			scr->Notify("What?");
 			return;
@@ -624,53 +631,58 @@ class World {
 
 	//inventory functions section
 	private:
-	void Exchange(const int i_from, const int j_from, const int k_from,
-	              const int i_to,   const int j_to,   const int k_to, const int n) {
-		if ( pthread_mutex_trylock(&mutex) ) return;
+	void Exchange(const unsigned short i_from, const unsigned short j_from, const unsigned short k_from,
+	              const unsigned short i_to,   const unsigned short j_to,   const unsigned short k_to, const unsigned short n) {
+		if ( pthread_mutex_trylock(&mutex) )
+			return;
 
 		Inventory * inv_from=(Inventory *)( HasInventory(i_from, j_from, k_from) );
 		Inventory * inv_to=(Inventory *)( HasInventory(i_to, j_to, k_to) );
 
-		if (NULL!=inv_from) {
-			if (NULL!=inv_to) {
-				Block * temp=inv_from->Drop(n);
-				if ( NULL!=temp && !inv_to->Get(temp) ) {
-					inv_from->Get(temp);
-					scr->Notify("Not enough room\n");
-				}
-			} else if (NULL==blocks[i_to][j_to][k_to]) {
-				Pile * newpile=new Pile(this, i_to, j_to, k_to);
-				newpile->Get( inv_from->Drop(n) );
-				blocks[i_to][j_to][k_to]=newpile;
+		if ( NULL==inv_from ) {
+			pthread_mutex_unlock(&mutex);
+			return;
+		}
+
+		if ( NULL!=inv_to ) {
+			Block * temp=inv_from->Drop(n);
+			if ( NULL!=temp && !inv_to->Get(temp) ) {
+				inv_from->Get(temp);
+				scr->Notify("Not enough room\n");
 			}
+		} else if ( NULL==blocks[i_to][j_to][k_to] ) {
+			Pile * newpile=new Pile(this, i_to, j_to, k_to);
+			newpile->Get( inv_from->Drop(n) );
+			blocks[i_to][j_to][k_to]=newpile;
 		}
 		pthread_mutex_unlock(&mutex);
 	}
-	void ExchangeAll(const int i_from, const int j_from, const int k_from,
-	                 const int i_to,   const int j_to,   const int k_to) {
-		if (NULL!=blocks[i_from][j_from][k_from] && NULL!=blocks[i_to][j_to][k_to]) {
-			Inventory * to=(Inventory *)(blocks[i_to][j_to][k_to]->HasInventory());
-			if (NULL!=to)
-				to->GetAll(blocks[i_from][j_from][k_from]);
-		}
+	void ExchangeAll(const unsigned short i_from, const unsigned short j_from, const unsigned short k_from,
+	                 const unsigned short i_to,   const unsigned short j_to,   const unsigned short k_to) {
+		if ( NULL==blocks[i_from][j_from][k_from] || NULL==blocks[i_to][j_to][k_to] )
+			return;       
+		
+		Inventory * to=(Inventory *)(blocks[i_to][j_to][k_to]->HasInventory());
+		if ( NULL!=to )
+			to->GetAll(blocks[i_from][j_from][k_from]);
 	}
 	public:
-	void Drop(const unsigned short i, const unsigned short j, const unsigned short k, int n) {
+	void Drop(const unsigned short i, const unsigned short j, const unsigned short k, const unsigned short n) {
 		unsigned short i_to, j_to, k_to;
 		if ( !Focus(i, j, k, i_to, j_to, k_to) )
 			Exchange(i, j, k, i_to, j_to, k_to, n);
 	}
-	void PlayerDrop(const int n) {
+	void PlayerDrop(const unsigned short n) {
 		unsigned short playerX, playerY, playerZ;
 		GetPlayerCoords(playerX, playerY, playerZ);
 		Drop(playerX, playerY, playerZ, n);
 	}
-	void Get(const unsigned short i, const unsigned short j, const unsigned short k, int n) {
+	void Get(const unsigned short i, const unsigned short j, const unsigned short k, const unsigned short n) {
 		unsigned short i_from, j_from, k_from;
 		if ( !Focus(i, j, k, i_from, j_from, k_from) )
 			Exchange(i_from, j_from, k_from, i, j, k, n);
 	}
-	void PlayerGet(const int n) {
+	void PlayerGet(const unsigned short n) {
 		unsigned short playerX, playerY, playerZ;
 		GetPlayerCoords(playerX, playerY, playerZ);
 		Get(playerX, playerY, playerZ, n);
@@ -685,7 +697,7 @@ class World {
 		if ( !Focus(i_to, j_to, k_to, i, j, k) )
 			ExchangeAll(i, j, k, i_to, j_to, k_to);
 	}
-	void Wield(Dwarf * const dwarf, const int n) {
+	void Wield(Dwarf * const dwarf, const unsigned short n) {
 		if (0>n || inventory_size<=n) return;
 		Block * temp=dwarf->Drop(n);
 		if (NULL==temp) return;
@@ -710,48 +722,52 @@ class World {
 	bool InBounds(const unsigned short i, const unsigned short j, const unsigned short k) const {
 		return (i<shred_width*3 && j<shred_width*3 && k<height);
 	}
-	char * FullName(char * const str, const int i, const int j, const int k) const {
+	char * FullName(char * const str, const unsigned short i, const unsigned short j, const unsigned short k) const {
 		if ( InBounds(i, j, k) )
 			(NULL==blocks[i][j][k]) ? WriteName(str, "Air") : blocks[i][j][k]->FullName(str);
 		return str;
 	}
-	subs Sub(const int i, const int j, const int k) const    { return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? AIR : blocks[i][j][k]->Sub(); }
-	kinds Kind(const int i, const int j, const int k) const  { return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? BLOCK : blocks[i][j][k]->Kind(); }
-	short Durability(const int i, const int j, const int k) const {
-		return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? 0 : blocks[i][j][k]->Durability();
-	}
-	int Transparent(const int i, const int j, const int k) const {
-		return ( !InBounds(i, j, k) ) ? 2 : TransparentNotSafe(i, j, k);
-	}
-	int TransparentNotSafe(const int i, const int j, const int k) const {
-		return ( NULL==blocks[i][j][k] ) ? 2 : blocks[i][j][k]->Transparent();
-	}
-	int  Movable(const Block * const block) const            { return (NULL==block) ? ENVIRONMENT : block->Movable(); }
-	double Weight(const Block * const block) const           { return (NULL==block) ? 0 : block->Weight(); }
-	double Weight(const unsigned short i, const unsigned short j, const unsigned short k) const {
-		return (!InBounds(i, j, k)) ? 1000 : Weight(blocks[i][j][k]);
-	}
-	void * HasInventory(const int i, const int j, const int k) const {
-		return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? NULL : blocks[i][j][k]->HasInventory();
-	}
-	void * ActiveBlock(const int i, const int j, const int k) const {
-		return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? NULL : blocks[i][j][k]->ActiveBlock();
-	}
-	bool GetNote(char * const str, const int i, const int j, const int k) const {
+	subs Sub(const unsigned short i, const unsigned short j, const unsigned short k) const
+		{ return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? AIR : blocks[i][j][k]->Sub(); }
+
+	kinds Kind(const unsigned short i, const unsigned short j, const unsigned short k) const
+		{ return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? BLOCK : blocks[i][j][k]->Kind(); }
+
+	short Durability(const unsigned short i, const unsigned short j, const unsigned short k) const
+		{ return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? 0 : blocks[i][j][k]->Durability(); }
+
+	int Transparent(const unsigned short i, const unsigned short j, const unsigned short k) const
+		{ return ( !InBounds(i, j, k) ) ? 2 : TransparentNotSafe(i, j, k); }
+
+	int TransparentNotSafe(const unsigned short i, const unsigned short j, const unsigned short k) const
+		{ return ( NULL==blocks[i][j][k] ) ? 2 : blocks[i][j][k]->Transparent(); }
+
+	int  Movable(const Block * const block) const  { return (NULL==block) ? ENVIRONMENT : block->Movable(); }
+	double Weight(const Block * const block) const { return (NULL==block) ? 0 : block->Weight(); }
+	double Weight(const unsigned short i, const unsigned short j, const unsigned short k) const
+		{ return (!InBounds(i, j, k)) ? 1000 : Weight(blocks[i][j][k]); }
+
+	void * HasInventory(const unsigned short i, const unsigned short j, const unsigned short k) const
+		{ return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? NULL : blocks[i][j][k]->HasInventory(); }
+
+	void * ActiveBlock(const unsigned short i, const unsigned short j, const unsigned short k) const
+		{ return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? NULL : blocks[i][j][k]->ActiveBlock(); }
+
+	bool GetNote(char * const str, const unsigned short i, const unsigned short j, const unsigned short k) const {
 		if ( InBounds(i, j, k) && NULL!=blocks[i][j][k] )
 			return blocks[i][j][k]->GetNote(str);
 		return false;
 	}
-	int Temperature(const int i_center, const int j_center, const int k_center) const {
+	int Temperature(const unsigned short i_center, const unsigned short j_center, const unsigned short k_center) const {
 		if (!InBounds(i_center, j_center, k_center) || NULL==blocks[i_center][j_center][k_center] || height-1==k_center)
 			return 0;
-		int temperature=blocks[i_center][j_center][k_center]->Temperature();
+		short temperature=blocks[i_center][j_center][k_center]->Temperature();
 		if ( temperature )
 			return temperature;
 
-		for (int i=i_center-1; i<=i_center+1; ++i)
-		for (int j=j_center-1; j<=j_center+1; ++j)
-		for (int k=k_center-1; k<=k_center+1; ++k)
+		for (short i=i_center-1; i<=i_center+1; ++i)
+		for (short j=j_center-1; j<=j_center+1; ++j)
+		for (short k=k_center-1; k<=k_center+1; ++k)
 			if (InBounds(i, j, k) && NULL!=blocks[i][j][k])
 				temperature+=blocks[i][j][k]->Temperature();
 		return temperature/2;
@@ -761,18 +777,24 @@ class World {
 		if (NULL==block1 || NULL==block2) return false;
 		return *block1==*block2;
 	}
-	short Enlightened(const int i, const int j, const int k) const {
+	short Enlightened(const unsigned short i, const unsigned short j, const unsigned short k) const {
 		if ( !InBounds(i, j, k) || NULL==blocks[i][j][k] )
 			return 0;
 		if ( height-1==k )
 			return 10;
 		return lightMap[i][j][k];
 	}
-	char MakeSound(const int i, const int j, const int k) const { return (NULL==blocks[i][j][k]) ? ' ' : blocks[i][j][k]->MakeSound(); }
+	char MakeSound(const unsigned short i, const unsigned short j, const unsigned short k) const
+		{ return (NULL==blocks[i][j][k]) ? ' ' : blocks[i][j][k]->MakeSound(); }
+
 	private:
-	float LightRadius(const int i, const int j, const int k) const { return (NULL==blocks[i][j][k]) ? 0 : blocks[i][j][k]->LightRadius(); }
-	bool UnderTheSky(const int i, const int j, int k) const {
-		if ( !InBounds(i, j, k) ) return false;
+	float LightRadius(const unsigned short i, const unsigned short j, const unsigned short k) const
+		{ return (NULL==blocks[i][j][k]) ? 0 : blocks[i][j][k]->LightRadius(); }
+
+	bool UnderTheSky(const unsigned short i, const unsigned short j, unsigned short k) const {
+		if ( !InBounds(i, j, k) )
+			return false;
+
 		for (++k; k<height-1; ++k)
 			if ( !Transparent(i, j, k) )
 				return false;
