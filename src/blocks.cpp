@@ -27,7 +27,15 @@ Block * BlockFromFile(FILE * const in, World * const world,
 	//if some kind will not be listed here, blocks of this kind just will not load,
 	//unless kind is inherited from Inventory class or one of its derivatives - in this case this may cause something bad.
 	switch (kind) {
-		case BLOCK:     return new Block(str);
+		case BLOCK: {
+				    short normal=0;
+				    int sub=0;
+				    sscanf(str, "%*d_%hd_%d", &normal, &sub);
+				    if (normal)
+					    return world->NewNormal(subs(sub));
+				    else
+					    return new Block(str);
+		}
 		case TELEGRAPH: return new Telegraph(str);
 		case PICK:      return new Pick(str);
 		case CHEST:     return new Chest(str, in);
@@ -35,12 +43,12 @@ Block * BlockFromFile(FILE * const in, World * const world,
 		case ACTIVE:    return new Active(world, i, j, k, str);
 		case DWARF:     return new Dwarf (world, i, j, k, str, in);
 		case PILE:      return new Pile  (world, i, j, k, str, in);
-		case LIQUID:    return new Liquid(world, i, j, k, str, in);
-		case GRASS:     return new Grass (world, i, j, k, str, in);
+		case LIQUID:    return new Liquid(world, i, j, k, str);
+		case GRASS:     return new Grass (world, i, j, k, str);
 		case BUSH:      return new Bush  (world, i, j, k, str, in);
 		case -1:        return NULL;
 		default:
-			fprintf(stderr, "BlockFromFile(FILE *, Block * &, World *, unsigned short, unsigned short, unsigned short): unlisted kind\n");
+			fprintf(stderr, "BlockFromFile(): unlisted kind: %d\n", kind);
 			return NULL;
 	}
 }

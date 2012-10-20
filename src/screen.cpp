@@ -290,7 +290,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 		for (*x=x_start; *x!=x_end; *x+=x_step) {
 			for (*z=z_start; *z!=z_end; *z+=z_step)
 				if (w->Transparent(i, j, k) < 2) {
-					if ( w->Visible(i, j, k) && w->Enlightened(i, j, k) ) {
+					if ( w->Enlightened(i, j, k) && w->Visible(i, j, k) ) {
 						wcolor_set(window, Color(i, j, k), NULL);
 						waddch(window, CharName(i, j, k));
 						waddch(window, w->CharNumberFront(i, j));

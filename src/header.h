@@ -161,7 +161,7 @@ enum kinds {//kind of atom
 	ACTIVE
 };
 enum subs {//substance block is made from
-	STONE,
+	STONE, //keep it first in this list
 	MOSS_STONE,
 	NULLSTONE,
 	SKY,

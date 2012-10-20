@@ -30,7 +30,9 @@ void *PhysThread(void *vptr_args);
 class World {
 	unsigned short time_step;
 	unsigned long time;
-	Block *blocks[shred_width*3][shred_width*3][height];
+	Block * blocks[shred_width*3][shred_width*3][height];
+	Block * normal_blocks[AIR];
+	short lightMap[shred_width*3][shred_width*3][height-1];
 	struct {
 		Block * block;
 		unsigned short number;
@@ -43,6 +45,10 @@ class World {
 	char worldName[20];
 	unsigned short worldSize;
 
+	public:
+	Block * NewNormal(subs sub) { return normal_blocks[sub]; }
+	
+	private:
 	void LoadShred(const long, const long, const unsigned short, const unsigned short);
 	void SaveShred(const long, const long, const unsigned short, const unsigned short);
 	void ReloadShreds(const dirs);
@@ -54,23 +60,23 @@ class World {
 		if (NULL==sky) {
 			for (i=0; i<shred_width*3; ++i)
 			for (j=0; j<shred_width*3; ++j)
-				blocks[i][j][height-1]=new Block( rand()%5 ? SKY : STAR );
+				blocks[i][j][height-1]=NewNormal( rand()%5 ? SKY : STAR );
 		} else {
 			char c=fgetc(sky)-'0';
 			for (i=0; i<shred_width*3; ++i)
 			for (j=0; j<shred_width*3; ++j)
 				if (c) {
-					blocks[i][j][height-1]=new Block(SKY);
+					blocks[i][j][height-1]=NewNormal(SKY);
 					--c;
 				} else {
-					blocks[i][j][height-1]=new Block(STAR);
+					blocks[i][j][height-1]=NewNormal(STAR);
 					c=fgetc(sky)-'0';
 				}
 			fclose(sky);
 		}
-		for (i=0; i<shred_width*3; ++i)
+		/*for (i=0; i<shred_width*3; ++i)
 		for (j=0; j<shred_width*3; ++j)
-			blocks[i][j][height-1]->enlightened=1; //sky is always enlightened
+			lightMap[i][j][height-1]=1; //sky is always enlightened*/
 	}
 	dirs MakeDir(const unsigned short x_center, const unsigned short y_center, const unsigned short x_target, const unsigned short y_target) const {
 		//if (x_center==x_target && y_center==y_target) return HERE;
@@ -129,15 +135,15 @@ class World {
 
 	//lighting section
 	void ReEnlighten(const int i, const int j, const int k) {
-		if ( Transparent(i, j, k) )
+		if ( Transparent(i, j, k) || height-1==k )
 			return;
 
 		short x, y, z;
 		for (x=i-max_light_radius-1; x<=i+max_light_radius+1; ++x)
 		for (y=j-max_light_radius-1; y<=j+max_light_radius+1; ++y)
-		for (z=k-max_light_radius-1; z<=k+max_light_radius+1; ++z)
-			if ( InBounds(x, y, z) && NULL!=blocks[x][y][z] && z<height-1)
-				blocks[x][y][z]->enlightened=0;
+		for (z=k-max_light_radius-1; z<=k+max_light_radius+1 && z<height-1; ++z)
+			if ( InBounds(x, y, z) )
+				lightMap[x][y][z]=0;
 
 		for (x=i-max_light_radius-max_light_radius-1; x<=i+max_light_radius+max_light_radius+1; ++x)
 		for (y=j-max_light_radius-max_light_radius-1; y<=j+max_light_radius+max_light_radius+1; ++y)
@@ -147,26 +153,29 @@ class World {
 		for (x=i-max_light_radius-1; x<=i+max_light_radius+1; ++x)
 		for (y=j-max_light_radius-1; y<=j+max_light_radius+1; ++y)
 			if ( InBounds(x, y, 0) )
-				SunReShine(x, y);
+				SunShine(x, y);
 	}
 
 	void DirectReEnlighten(const int i, const int j, const int k) {
+		if ( height-1==k )
+			return;
+
 		if ( NIGHT!=PartOfDay() && UnderTheSky(i, j, k) ) {
-			blocks[i][j][k]->enlightened=1;
+			lightMap[i][j][k]=10;
 			return;
 		}
 
-		short x, y, z;
-		for (x=i-max_light_radius; x<=i+max_light_radius; ++x)
-		for (y=j-max_light_radius; y<=j+max_light_radius; ++y)
-		for (z=k-max_light_radius; z<=k+max_light_radius; ++z)
+		lightMap[i][j][k]=0;
+		for (short x=i-max_light_radius; x<=i+max_light_radius; ++x)
+		for (short y=j-max_light_radius; y<=j+max_light_radius; ++y)
+		for (short z=k-max_light_radius; z<=k+max_light_radius; ++z)
 			if ( InBounds(x, y, z) && !(x==i && y==j && z==k) &&
 					( Distance(i, j, k, x, y, z)<=LightRadius(x, y, z) ) &&
-					DirectlyVisible(i, j, k, x, y, z) ) {
-				blocks[i][j][k]->enlightened=1;
-				return;
-			}
-		blocks[i][j][k]->enlightened=0;
+					DirectlyVisible(i, j, k, x, y, z) )
+				lightMap[i][j][k]+=max_light_radius/Distance(i, j, k, x, y, z)+1;
+
+		if ( lightMap[i][j][k]>10 )
+			lightMap[i][j][k]=10;
 	}
 
 	void ReEnlightenAll() {
@@ -174,12 +183,12 @@ class World {
 
 		for (i=0; i<shred_width*3; ++i)
 		for (j=0; j<shred_width*3; ++j)
-		for (k=0; k<height-1; ++k)
-			if (NULL!=blocks[i][j][k]) blocks[i][j][k]->enlightened=0;
+		for (k=0; k<height-2; ++k)
+			lightMap[i][j][k]=0;
 
 		for (i=0; i<shred_width*3; ++i)
 		for (j=0; j<shred_width*3; ++j)
-		for (k=0; k<height-1; ++k)
+		for (k=0; k<height-2; ++k)
 			Shine(i, j, k);
 
 		if ( NIGHT!=PartOfDay() )
@@ -189,15 +198,17 @@ class World {
 	}
 
 	void SafeEnlighten(const int i, const int j, const int k) {
-		if ( InBounds(i, j, k) && NULL!=blocks[i][j][k])
-			blocks[i][j][k]->enlightened=1;
+		if ( InBounds(i, j, k) && height-1!=k )
+			lightMap[i][j][k]=1;
 	}
 
 	void SunShine(const int i, const int j) {
+		if ( NIGHT==PartOfDay() )
+			return;
+
 		unsigned short k=height-2;
 		do {
-			if ( NULL!=blocks[i][j][k] )
-				blocks[i][j][k]->enlightened=1;
+			lightMap[i][j][k]=10;
 			SafeEnlighten(i+1, j, k);
 			SafeEnlighten(i-1, j, k);
 			SafeEnlighten(i, j+1, k);
@@ -206,12 +217,8 @@ class World {
 	}
 
 	void SunReShine(const int i, const int j) { 
-		if ( NIGHT==PartOfDay() )
-			return;
-
-		for (unsigned short k=height-2; Transparent(i, j, k); --k)
-			if ( NULL!=blocks[i][j][k] )
-				blocks[i][j][k]->enlightened=0;
+		for (unsigned short k=height-2; TransparentNotSafe(i, j, k); --k)
+			lightMap[i][j][k]=0;
 		SunShine(i, j);
 	}
 
@@ -222,12 +229,11 @@ class World {
 
 		for (short x=ceil(i-light_radius); x<=floor(i+light_radius); ++x)
 		for (short y=ceil(j-light_radius); y<=floor(j+light_radius); ++y)
-		for (short z=ceil(k-light_radius); z<=floor(k+light_radius); ++z)
+		for (short z=ceil(k-light_radius); z<=floor(k+light_radius) && z<height-1; ++z)
 			if (InBounds(x, y, z) &&
-					NULL!=blocks[x][y][z] &&
 					Distance(i, j, k, x, y, z)<=light_radius &&
 					DirectlyVisible(i, j, k, x, y, z))
-				blocks[x][y][z]->enlightened=1;
+				lightMap[x][y][z]+=max_light_radius/Distance(i, j, k, x, y, z)+1;
 	}
 
 	//shred generators section
@@ -239,10 +245,10 @@ class World {
 		for (unsigned short j=jstart; j<jstart+shred_width; ++j) {
 			unsigned short k;
 			for (k=1; k<height/2-6 && k<height/2-depth-1; ++k)
-				blocks[i][j][k]=new Block;
-			blocks[i][j][++k]=new Block((rand()%2) ? STONE : SOIL);
+				blocks[i][j][k]=NewNormal(STONE);
+			blocks[i][j][++k]=NewNormal((rand()%2) ? STONE : SOIL);
 			for (++k; k<height/2-depth; ++k)
-				blocks[i][j][k]=new Block(SOIL);
+				blocks[i][j][k]=NewNormal(SOIL);
 		}
 	}
 
@@ -250,8 +256,8 @@ class World {
 		for (unsigned short i=istart; i<istart+shred_width; ++i)	
 		for (unsigned short j=jstart; j<jstart+shred_width; ++j) {
 			unsigned short k;
-			for (k=height-2; NULL==blocks[i][j][k]; --k);
-			if ( SOIL==Sub(i, j, k++) )
+			for (k=height-2; TransparentNotSafe(i, j, k); --k);
+			if ( SOIL==Sub(i, j, k++) && NULL==blocks[i][j][k] )
 				blocks[i][j][k]=new Grass(this, i, j, k);
 		}
 	}
@@ -267,14 +273,11 @@ class World {
 		for (i=istart; i<istart+shred_width; ++i)
 		for (j=jstart; j<jstart+shred_width; ++j) {
 			for (k=1; k<height/2; ++k)
-				if (i==istart+4 || i==istart+5 || j==jstart+4 || j==jstart+5)
-					blocks[i][j][k]=new Block(NULLSTONE);
-				else
-					blocks[i][j][k]=new Block;
+				blocks[i][j][k]=NewNormal( (i==istart+4 || i==istart+5 || j==jstart+4 || j==jstart+5) ? NULLSTONE : STONE );
 
 			for ( ; k<height-1; ++k)
 				if (i==istart+4 || i==istart+5 || j==jstart+4 || j==jstart+5)
-					blocks[i][j][k]=new Block(NULLSTONE);
+					blocks[i][j][k]=NewNormal(NULLSTONE);
 		}
 	}
 
@@ -320,10 +323,7 @@ class World {
 			Tree(x, y, height/2, 4+rand()%5);
 		}
 
-		for (i=istart; i<istart+shred_width; ++i)
-		for (j=jstart; j<jstart+shred_width; ++j)
-			if (NULL==blocks[i][j][height/2])
-				blocks[i][j][height/2]=new Grass(this, i, j, height/2);
+		PlantGrass(istart, jstart);
 	}
 
 	void Water(const unsigned short istart, const unsigned short jstart, const long longi, const long lati) {
@@ -343,7 +343,7 @@ class World {
 					if (((istart+4-i)*(istart+4-i)+
 					     (jstart+4-j)*(jstart+4-j)+
 					     (height/2-k)*(height/2-k)*16/depth/depth)>16)
-						blocks[i][j][k]=new Block(SOIL);
+						blocks[i][j][k]=NewNormal(SOIL);
 		}
 		if ('~'!=map[1][0] && '~'!=map[2][1]) { //south-west rounding
 			for (unsigned short i=istart; i<istart+shred_width/2; ++i)	
@@ -352,7 +352,7 @@ class World {
 					if (((istart+4-i)*(istart+4-i)+
 					     (jstart+5-j)*(jstart+5-j)+
 					     (height/2-k)*(height/2-k)*16/depth/depth)>16)
-						blocks[i][j][k]=new Block(SOIL);
+						blocks[i][j][k]=NewNormal(SOIL);
 		}
 		if ('~'!=map[2][1] && '~'!=map[1][2]) { //south-east rounding
 			for (unsigned short i=istart+shred_width/2; i<istart+shred_width; ++i)	
@@ -361,7 +361,7 @@ class World {
 					if (((istart+5-i)*(istart+5-i)+
 					     (jstart+5-j)*(jstart+5-j)+
 					     (height/2-k)*(height/2-k)*16/depth/depth)>16)
-						blocks[i][j][k]=new Block(SOIL);
+						blocks[i][j][k]=NewNormal(SOIL);
 		}
 		if ('~'!=map[1][2] && '~'!=map[0][1]) { //north-east rounding
 			for (unsigned short i=istart+shred_width/2; i<istart+shred_width; ++i)	
@@ -370,7 +370,7 @@ class World {
 					if (((istart+5-i)*(istart+5-i)+
 					     (jstart+4-j)*(jstart+4-j)+
 					     (height/2-k)*(height/2-k)*16/depth/depth)>16)
-						blocks[i][j][k]=new Block(SOIL);
+						blocks[i][j][k]=NewNormal(SOIL);
 		}
 		for (unsigned short i=istart; i<istart+shred_width; ++i)	
 		for (unsigned short j=jstart; j<jstart+shred_width; ++j)
@@ -396,7 +396,7 @@ class World {
 			if (((istart+4.5-i)*(istart+4.5-i)+
 			     (jstart+4.5-j)*(jstart+4.5-j)+
 			     (height/2-0.5-k)*(height/2-0.5-k)*16/hill_height/hill_height)<=16)
-				blocks[i][j][k]=new Block(SOIL);
+				blocks[i][j][k]=NewNormal(SOIL);
 		
 		PlantGrass(istart, jstart);
 	}
@@ -415,13 +415,13 @@ class World {
 				return false;
 
 		for (k=z; k<z+height-1; ++k) //trunk
-			blocks[x+1][y+1][k]=new Block(WOOD);
+			blocks[x+1][y+1][k]=NewNormal(WOOD);
 
 		for (i=x; i<=x+2; ++i) //leaves
 		for (j=y; j<=y+2; ++j)
 		for (k=z+height/2; k<z+height; ++k)
 			if (NULL==blocks[i][j][k])
-				blocks[i][j][k]=new Block(GREENERY);
+				blocks[i][j][k]=NewNormal(GREENERY);
 		
 		return true;
 	}
@@ -534,7 +534,13 @@ class World {
 
 	//interactions section
 	void Damage(const int i, const int j, const int k, const unsigned short dmg=1, const damage_kinds dmg_kind=CRUSH, const bool destroy=true) {
-		if ( NULL==blocks[i][j][k] || 0<blocks[i][j][k]->Damage(dmg, dmg_kind) )
+		if ( NULL==blocks[i][j][k] )
+			return;
+				
+		if ( blocks[i][j][k]->Normal() )
+			blocks[i][j][k]=new Block(blocks[i][j][k]->Sub());
+			
+		if ( 0<blocks[i][j][k]->Damage(dmg, dmg_kind) )
 			return;
 
 		Block * temp=blocks[i][j][k];
@@ -613,6 +619,8 @@ class World {
 	void PlayerInscribe() { Inscribe(playerP); }
 	void Inscribe(const int i, const int j, const int k) {
 		if (NULL!=blocks[i][j][k]) {
+			if ( blocks[i][j][k]->Normal() )
+				blocks[i][j][k]=new Block(blocks[i][j][k]->Sub());
 			char str[note_length];
 			blocks[i][j][k]->Inscribe(scr->GetString(str));
 		}
@@ -785,10 +793,12 @@ class World {
 		if (NULL==block1 || NULL==block2) return false;
 		return *block1==*block2;
 	}
-	bool Enlightened(const int i, const int j, const int k) const {
-		if ( !InBounds(i, j, k) || NULL==blocks[i][j][k])
-			return false;
-		return blocks[i][j][k]->enlightened;
+	short Enlightened(const int i, const int j, const int k) const {
+		if ( !InBounds(i, j, k) || NULL==blocks[i][j][k] )
+			return 0;
+		if ( height-1==k )
+			return 10;
+		return lightMap[i][j][k];
 	}
 	char MakeSound(const int i, const int j, const int k) const { return (NULL==blocks[i][j][k]) ? ' ' : blocks[i][j][k]->MakeSound(); }
 	private:

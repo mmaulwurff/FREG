@@ -32,14 +32,12 @@ void World::LoadAllShreds() {
 	char str[50];
 	FileName(str, longitude, latitude);
 	FILE * check=fopen(str, "r");
-	if (NULL==check) {
+	if (NULL==check)
 		blocks[spawnX][spawnY][spawnZ]=(Block*)(playerP=new Dwarf(this, spawnX, spawnY, spawnZ));
-		//blocks[shred_width*2-5][shred_width*2-5][height/2]=(Block *)new Dwarf(this, shred_width*2-5, shred_width*2-5, height/2);
-		//blocks[shred_width*2-4][shred_width*2-4][height/2]=new Telegraph;
-	} else {
+	else {
 		fclose(check);
 		if ( DWARF!=Kind(spawnX, spawnY, spawnZ) ) {
-			if (NULL!=blocks[spawnX][spawnY][spawnZ])
+			if (NULL!=blocks[spawnX][spawnY][spawnZ] && !(blocks[spawnX][spawnY][spawnZ]->Normal()) )
 				delete blocks[spawnX][spawnY][spawnZ];
 			blocks[spawnX][spawnY][spawnZ]=(Block*)(playerP=new Dwarf(this, spawnX, spawnY, spawnZ));
 			fprintf(stderr, "World::LoadAllShreds(): new player place\n");
@@ -57,7 +55,7 @@ void World::LoadShred(const long longi, const long lati, const unsigned short is
 	if (NULL==in) {
 		for (unsigned short i=istart; i<istart+shred_width; ++i)
 		for (unsigned short j=jstart; j<jstart+shred_width; ++j) {
-			blocks[i][j][0]=new Block(NULLSTONE);
+			blocks[i][j][0]=NewNormal(NULLSTONE);
 			for (unsigned short k=1; k<height-1; ++k)
 				blocks[i][j][k]=NULL;
 		}
@@ -87,20 +85,21 @@ void World::SaveShred(const long longi, const long lati, const unsigned short is
 	FileName(str, longi, lati);
 	FILE * out=fopen(str, "w");
 
-	if (NULL!=out) {
+	if ( NULL!=out ) {
 		for (unsigned short i=istart; i<istart+shred_width; ++i)
 		for (unsigned short j=jstart; j<jstart+shred_width; ++j)
 		for (unsigned short k=0; k<height-1; ++k)
 			if (NULL!=blocks[i][j][k]) {
 				blocks[i][j][k]->SaveToFile(out);
-				delete blocks[i][j][k];
+				if ( !(blocks[i][j][k]->Normal()) )
+					delete blocks[i][j][k];
 			} else fprintf(out, "-1\n");
 		fclose(out);
 	} else
 		for (unsigned short i=istart; i<istart+shred_width; ++i)
 		for (unsigned short j=jstart; j<jstart+shred_width; ++j)
 		for (unsigned short k=0; k<height-1; ++k)
-			if (NULL!=blocks[i][j][k])
+			if ( NULL!=blocks[i][j][k] && !(blocks[i][j][k]->Normal()) )
 				delete blocks[i][j][k];
 }
 
@@ -194,8 +193,7 @@ void World::PhysEvents() {
 		unsigned short i=(TimeOfDay()<end_of_night) ?
 			TimeOfDay()*(float)shred_width*3/end_of_night :
 			(TimeOfDay()-end_of_night)*(float)shred_width*3/(seconds_in_day-end_of_night);
-		delete blocks[i][int(shred_width*1.5)][height-1];
-		blocks[i][int(shred_width*1.5)][height-1]=new Block( if_star ? STAR : SKY );
+		blocks[i][int(shred_width*1.5)][height-1]=NewNormal( if_star ? STAR : SKY );
 
 		++time;
 
@@ -203,8 +201,7 @@ void World::PhysEvents() {
 			TimeOfDay()*(float)shred_width*3/end_of_night :
 			(TimeOfDay()-end_of_night)*(float)shred_width*3/(seconds_in_day-end_of_night);
 		if_star=( STAR==blocks[i][int(shred_width*1.5)][height-1]->Sub() ) ? true : false;
-		delete blocks[i][int(shred_width*1.5)][height-1];
-		blocks[i][int(shred_width*1.5)][height-1]=new Block(SUN_MOON);
+		blocks[i][int(shred_width*1.5)][height-1]=NewNormal(SUN_MOON);
 
 		switch (time) {
 			case end_of_evening:
@@ -425,6 +422,11 @@ int World::Focus(const unsigned short i, const unsigned short j, const unsigned 
 }
 
 World::World() : time_step(0), activeList(NULL), scr(NULL) {
+	for (subs i=STONE; i<AIR; ++i) {
+		normal_blocks[i]=new Block(i);
+		normal_blocks[i]->SetNormal(1);
+	}
+
 	FILE * file=fopen("save", "r");
 	if (file==NULL) {
 		longitude=2;
@@ -456,6 +458,7 @@ World::~World() {
 	pthread_cancel(eventsThread);
 	pthread_mutex_unlock(&mutex);
 	pthread_mutex_destroy(&mutex);
+
 	GetPlayerCoords(spawnX, spawnY, spawnZ);
 	FILE * file=fopen("save", "w");
 	if (file!=NULL) {
@@ -465,9 +468,8 @@ World::~World() {
 	}
 	SaveAllShreds();
 
-	for (unsigned short i=0; i<shred_width*3; ++i)
-	for (unsigned short j=0; j<shred_width*3; ++j)
-		delete blocks[i][j][height-1];
+	for (subs i=STONE; i<AIR; ++i)
+		delete normal_blocks[i];
 }
 
 void *PhysThread(void *vptr_args) {

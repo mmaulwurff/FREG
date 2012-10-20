@@ -25,6 +25,11 @@ class Block;
 Block * BlockFromFile(FILE *, World * =NULL, unsigned short=0, unsigned short=0, unsigned short=0);
 
 class Block { //blocks without special physics and attributes
+	short normal;
+	public:
+	void SetNormal(short n) { normal=n; }
+	bool Normal() { return normal; }
+
 	protected:
 	subs sub;
 	float weight;
@@ -39,7 +44,7 @@ class Block { //blocks without special physics and attributes
 	short durability;
 
 	public:
-	short enlightened;
+	//short enlightened;
 	virtual char * FullName(char * const str) const {
 		switch (sub) {
 			case WATER:      return WriteName(str, "Ice");
@@ -155,7 +160,8 @@ class Block { //blocks without special physics and attributes
 	}
 
 	virtual bool operator==(const Block& block) const {
-		return ( block.Kind()==Kind() && block.Sub()==Sub() && strcpy(block.note, note) );
+		return ( block.Kind()==Kind() && block.Sub()==Sub() &&
+			((NULL==block.note && NULL==note) || (NULL!=block.note && NULL!=note && strcpy(block.note, note))) );
 	}
 
 	void SaveToFile(FILE * const out) const {
@@ -164,19 +170,24 @@ class Block { //blocks without special physics and attributes
 		fprintf(out, "\n");
 	}
 	virtual void SaveAttributes(FILE * const out) const {
-	       	fprintf(out, "_%d_%f_%d_%hd_%hd", sub, weight, direction, durability, enlightened);
+		if (normal) {
+			fprintf(out, "_%hd_%d", normal, sub);
+			return;
+		}
+	       	fprintf(out, "_%hd_%d_%f_%d_%hd", normal, sub, weight, direction, durability);
 		if (NULL!=note) fprintf(out, "_%lu/%s", strlen(note), note);
 		else fprintf(out, "_0/");
 	}
 
 	Block(const subs n=STONE, const short dur=max_durability, const double w=0) :
-			sub(n), direction(NORTH), note(NULL), durability(dur), enlightened(1) {
+			normal(0), sub(n), direction(NORTH), note(NULL), durability(dur) {
 		if (w) {
 			weight=w;
 			shown_weight=weight;
 			return;
 		}
 
+		//weights
 		switch (sub) {
 			case NULLSTONE: weight=4444; break;
 			case SOIL:      weight=1500; break;
@@ -195,9 +206,9 @@ class Block { //blocks without special physics and attributes
 		}
 		shown_weight=weight;
 	}
-	Block(char * const str) {
+	Block(char * const str) : normal(0) {
 		unsigned short note_len;
-	       	sscanf(str, "%*d_%d_%f_%d_%hd_%hd_%hd", (int *)(&sub), &weight, (int *)(&direction), &durability, &enlightened, &note_len);
+	       	sscanf(str, "%*d_%*hd_%d_%f_%d_%hd_%hd", (int *)(&sub), &weight, (int *)(&direction), &durability, &note_len);
 		shown_weight=weight;
 		CleanString(str);
 		if (0!=note_len) {
@@ -716,7 +727,7 @@ class Liquid : public Active {
 
 	Liquid(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, const subs sub=WATER) :
 			Active(w, x, y, z, sub) {}
-	Liquid(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, char * const str, FILE * const in) :
+	Liquid(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, char * const str) :
 			Active(w, x, y, z, str) {}
 };
 
@@ -745,7 +756,7 @@ class Grass : public Active {
 	Grass() : Active(GREENERY, 1) {}
 	Grass(World * const w, const unsigned short x, const unsigned short y, const unsigned short z) :
 			Active(w, x, y, z, GREENERY, 1) {}
-	Grass(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, char * const str, FILE * const in) :
+	Grass(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, char * const str) :
 			Active(w, x, y, z, str) {}
 };
 
