@@ -140,7 +140,7 @@ class Block { //blocks without special physics and attributes
 	}
 	virtual void * HasInventory() { return NULL; }
 	virtual void * ActiveBlock() { return NULL; }
-	virtual Block * Drop(int n) { return NULL; }
+	virtual Block * Drop(int) { return NULL; }
 
 	virtual bool Armour() const { return false; }
 	virtual bool Weapon() const { return false; }

@@ -158,7 +158,7 @@ bool Liquid::CheckWater(const dirs dir) const {
 }
 
 void Liquid::Act() {
-	switch (random()%4) {
+	switch (rand()%4) {
 		case 0: SetDir(NORTH); break;
 		case 1:	SetDir(EAST);  break;
 		case 2: SetDir(SOUTH); break;
@@ -168,11 +168,11 @@ void Liquid::Act() {
 }
 
 void Grass::Act() {
-	if ( random()%seconds_in_hour )
+	if ( rand()%seconds_in_hour )
 		return;
 	
 	short i=x_self, j=y_self;
-	switch ( random()%4 /* increase this if grass grows too fast */) {
+	switch ( rand()%4 /* increase this if grass grows too fast */) {
 		case 0: ++i; break;
 		case 1: --i; break;
 		case 2: ++j; break;
@@ -191,7 +191,7 @@ void Grass::Act() {
 }
 
 void Rabbit::Act() {
-	float attractive;
+	float attractive=0;
 	float for_north=0, for_west=0;
 	for (short x=x_self-7; x<=x_self+7; ++x)
 	for (short y=y_self-7; y<=y_self+7; ++y)
@@ -203,7 +203,7 @@ void Rabbit::Act() {
 				case GRASS:  if (whereWorld->DirectlyVisible(x_self, y_self, z_self, x, y, z)) attractive=0.1; break;
 				default: attractive=0;
 			}
-			if (attractive) {
+			if ( attractive ) {
 				if (y!=y_self)
 					for_north+=attractive/(y_self-y);
 				if (x!=x_self)
@@ -211,7 +211,7 @@ void Rabbit::Act() {
 			}
 		}
 
-	if (abs(for_north)>1 || abs(for_west)>1) {
+	if ( abs(for_north)>1 || abs(for_west)>1 ) {
 		if ( abs(for_north)>abs(for_west) ) {
 			if (for_north>0) SetDir(NORTH);
 			else SetDir(SOUTH);
@@ -219,15 +219,15 @@ void Rabbit::Act() {
 			if (for_west>0) SetDir(WEST);
 			else SetDir(EAST);
 		}
-		(random()%2) ? SafeMove() : SafeJump();
-	} else if (0==random()%60) {
-		switch (random()%4) {
+		(rand()%2) ? SafeMove() : SafeJump();
+	} else if ( 0==rand()%60 ) {
+		switch (rand()%4) {
 			case 0: SetDir(NORTH); break;
 			case 1: SetDir(SOUTH); break;
 			case 2: SetDir(EAST);  break;
 			case 3: SetDir(WEST);  break;
 		}
-		(random()%2) ? SafeMove() : SafeJump();
+		(rand()%2) ? SafeMove() : SafeJump();
 	}
 
 	if ( seconds_in_day*time_steps_in_sec/2>satiation ) {
@@ -236,7 +236,7 @@ void Rabbit::Act() {
 		for (short k=z_self-1; k<=z_self+1; ++k)
 			if ( GREENERY==whereWorld->Sub(i, j, k) ) {
 				whereWorld->Eat(x_self, y_self, z_self, i, j, k);
-				fprintf(stderr, "Rabbit wants to eat\n");
+				break;
 			}
 	}
 

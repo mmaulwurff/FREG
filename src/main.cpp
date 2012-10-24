@@ -78,7 +78,9 @@ int main() {
 			case 'Q': break;
 			default: screen.Notify("What?\n");
 		}
-		if (print_flag) screen.Print();
+
+		if ( print_flag )
+			screen.Print();
 		usleep(90000);
 		screen.Flushinp();
 	}

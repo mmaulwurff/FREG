@@ -18,7 +18,7 @@
 #include <unistd.h>
 #include "header.h"
 #include "world.h"
-	
+
 void World::SaveAllShreds() {
 	for (long i=longitude-1; i<=longitude+1; ++i)
 	for (long j=latitude-1;  j<=latitude+1;  ++j)
@@ -183,7 +183,7 @@ void World::ReloadShreds(const dirs direction) { //ReloadShreds is called from M
 }
 
 void World::PhysEvents() {
-	pthread_mutex_lock(&mutex);
+	mutex_lock();
 
 	//sun/moon moving, time increment
 	++time_step;
@@ -263,7 +263,7 @@ void World::PhysEvents() {
 		if (0==time_step)
 			scr->PrintSounds();
 	}
-	pthread_mutex_unlock(&mutex);
+	mutex_unlock();
 }
 
 char World::CharNumber(const unsigned short i, const unsigned short j, const unsigned short k) const {
@@ -338,27 +338,27 @@ bool World::Visible(const unsigned short x_from, const unsigned short y_from, co
 }
 
 int World::Move(const unsigned short i, const unsigned short j, const unsigned short k, const dirs dir, const unsigned stop) {
-	pthread_mutex_lock(&mutex);
+	mutex_lock();
 	unsigned short newi, newj, newk;
 	if ( NULL==blocks[i][j][k] ||
 			NOT_MOVABLE==Movable(blocks[i][j][k]) ||
 			Focus(i, j, k, newi, newj, newk, dir) ) {
-		pthread_mutex_unlock(&mutex);
+		mutex_unlock();
 		return 0;
 	}
 	if ( DESTROY==(blocks[i][j][k]->BeforeMove(dir)) ) {
 		delete blocks[i][j][k];
 		blocks[i][j][k]=NULL;
-		pthread_mutex_unlock(&mutex);
+		mutex_unlock();
 		return 1;
 	}
 	if ( !stop || (ENVIRONMENT==blocks[i][j][k]->Movable() && Equal(blocks[i][j][k], blocks[newi][newj][newk])) ) {
-		pthread_mutex_unlock(&mutex);
+		mutex_unlock();
 		return 0;
 	}
 	short numberMoves=0;
 	if ( ENVIRONMENT!=Movable(blocks[newi][newj][newk]) && !(numberMoves=Move(newi, newj, newk, dir, stop-1)) ) {
-		pthread_mutex_unlock(&mutex);
+		mutex_unlock();
 		return 0;
 	}
 
@@ -374,20 +374,21 @@ int World::Move(const unsigned short i, const unsigned short j, const unsigned s
 	if ( blocks[newi][newj][newk]->Move(dir) )
 		GetPlayerCoords(newi, newj, newk);
 
-	if ( Weight(blocks[newi][newj][newk]) )
+	if ( Weight(blocks[newi][newj][newk]) ) {
 		if ( Weight(blocks[newi][newj][newk])>Weight(blocks[newi][newj][newk-1]) )
 			numberMoves+=Move(newi, newj, newk, DOWN, stop-1);
 		else if ( Weight(blocks[newi][newj][newk])<Weight(blocks[newi][newj][newk+1]) )
 			numberMoves+=Move(newi, newj, newk, UP, stop-1);
+	}
 
 	++numberMoves;
 
-	pthread_mutex_unlock(&mutex);
+	mutex_unlock();
 	return numberMoves;
 }
 
 void World::Jump(const unsigned short i, const unsigned short j, unsigned short k) {
-	pthread_mutex_lock(&mutex);
+	mutex_lock();
 	if ( NULL!=blocks[i][j][k] && MOVABLE==blocks[i][j][k]->Movable() ) {
 		Block * to_move=blocks[i][j][k];
 		blocks[i][j][k]->SetWeight(0);
@@ -401,7 +402,7 @@ void World::Jump(const unsigned short i, const unsigned short j, unsigned short 
 		} else
 			blocks[i][j][k]->SetWeight();
 	}
-	pthread_mutex_unlock(&mutex);
+	mutex_unlock();
 }
 
 int World::Focus(const unsigned short i, const unsigned short j, const unsigned short k,
@@ -421,9 +422,9 @@ int World::Focus(const unsigned short i, const unsigned short j, const unsigned 
 	return ( !InBounds(i_target, j_target, k_target) );
 }
 
-World::World() : time_step(0), activeList(NULL), scr(NULL) {
-	for (subs i=STONE; i<AIR; ++i) {
-		normal_blocks[i]=new Block(i);
+World::World() : time_step(0), activeList(NULL), mutex(QMutex::Recursive), scr(NULL) {
+	for (unsigned short i=STONE; i<AIR; ++i) {
+		normal_blocks[i]=new Block(subs(i));
 		normal_blocks[i]->SetNormal(1);
 	}
 
@@ -447,17 +448,16 @@ World::World() : time_step(0), activeList(NULL), scr(NULL) {
 	LoadAllShreds();
 	MakeSky();
 
-	pthread_mutexattr_t mutex_attr;
-	pthread_mutexattr_settype(&mutex_attr, PTHREAD_MUTEX_RECURSIVE);
-	pthread_mutex_init(&mutex, &mutex_attr);
-	pthread_create(&eventsThread, NULL, PhysThread, this);
+	thread=new Thread(this);
+	thread->start();
 }
 
 World::~World() {
-	pthread_mutex_lock(&mutex);
-	pthread_cancel(eventsThread);
-	pthread_mutex_unlock(&mutex);
-	pthread_mutex_destroy(&mutex);
+	mutex_lock();
+	thread->Stop();
+	thread->wait();
+	delete thread;
+	mutex_unlock();
 
 	GetPlayerCoords(spawnX, spawnY, spawnZ);
 	FILE * file=fopen("save", "w");
@@ -468,14 +468,6 @@ World::~World() {
 	}
 	SaveAllShreds();
 
-	for (subs i=STONE; i<AIR; ++i)
+	for (unsigned short i=STONE; i<AIR; ++i)
 		delete normal_blocks[i];
-}
-
-void *PhysThread(void *vptr_args) {
-	while (1) {
-		((World*)vptr_args)->PhysEvents();
-		usleep(1000000/time_steps_in_sec);
-	}
-	return NULL;
 }

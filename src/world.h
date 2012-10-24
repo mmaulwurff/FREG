@@ -18,15 +18,16 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-#include <pthread.h>
 #include <cmath>
 #include "screen.h"
+#include <QMutex>
+#include "thread.h"
 
 class Block;
 class Dwarf;
 class Active;
+class Thread;
 
-void *PhysThread(void *vptr_args);
 class World {
 	unsigned short time_step;
 	unsigned long time;
@@ -40,14 +41,14 @@ class World {
 	Dwarf * playerP;
 	unsigned short spawnX, spawnY, spawnZ;
 	long longitude, latitude;
-	pthread_t eventsThread;
 	Active * activeList;
 	char worldName[20];
 	unsigned short worldSize;
 
 	public:
 	Block * NewNormal(subs sub) { return normal_blocks[sub]; }
-	pthread_mutex_t mutex;
+	QMutex mutex;
+	Thread * thread;
 	Screen * scr;
 	
 	private:
@@ -613,7 +614,7 @@ class World {
 		Eat(blocks[i][j][k], blocks[i_food][j_food][k_food]);
 	}
 	void PlayerEat(unsigned short n) {
-		if ( 0>n || inventory_size<=n ) {
+		if ( inventory_size<=n ) {
 			scr->Notify("What?");
 			return;
 		}
@@ -633,14 +634,14 @@ class World {
 	private:
 	void Exchange(const unsigned short i_from, const unsigned short j_from, const unsigned short k_from,
 	              const unsigned short i_to,   const unsigned short j_to,   const unsigned short k_to, const unsigned short n) {
-		if ( pthread_mutex_trylock(&mutex) )
+		if ( mutex_trylock() )
 			return;
 
 		Inventory * inv_from=(Inventory *)( HasInventory(i_from, j_from, k_from) );
 		Inventory * inv_to=(Inventory *)( HasInventory(i_to, j_to, k_to) );
 
 		if ( NULL==inv_from ) {
-			pthread_mutex_unlock(&mutex);
+			mutex_unlock();
 			return;
 		}
 
@@ -655,7 +656,7 @@ class World {
 			newpile->Get( inv_from->Drop(n) );
 			blocks[i_to][j_to][k_to]=newpile;
 		}
-		pthread_mutex_unlock(&mutex);
+		mutex_unlock();
 	}
 	void ExchangeAll(const unsigned short i_from, const unsigned short j_from, const unsigned short k_from,
 	                 const unsigned short i_to,   const unsigned short j_to,   const unsigned short k_to) {
@@ -698,23 +699,30 @@ class World {
 			ExchangeAll(i, j, k, i_to, j_to, k_to);
 	}
 	void Wield(Dwarf * const dwarf, const unsigned short n) {
-		if (0>n || inventory_size<=n) return;
+		if ( inventory_size<=n )
+			return;
+
 		Block * temp=dwarf->Drop(n);
-		if (NULL==temp) return;
+		if ( NULL==temp )
+			return;
+
 		if ( !dwarf->Wield(temp) )
 			dwarf->Get(temp);
 	}
 	void PlayerWield() {
-		unsigned short i, j;
+		unsigned short i, j=0;
 		playerP->RangeForWield(i, j);
-		if (i<inventory_size) {
-			char str[18];
-			sprintf(str, "Wield what? (%c-%c)", i+'a', j+'a');
-			scr->Notify(str);
-			Wield(playerP, getch()-'a');
-			scr->Notify("");
-		} else
+
+		if ( i>=inventory_size ) {
 			scr->Notify("Nothing to wield.");
+			return;
+		}
+
+		char str[18];
+		sprintf(str, "Wield what? (%c-%c)", i+'a', j+'a');
+		scr->Notify(str);
+		Wield(playerP, getch()-'a');
+		scr->Notify("");
 	}
 
 	//block information section
@@ -808,9 +816,9 @@ class World {
 	friend int Dwarf::Move(dirs);
 
 	public:
-	int mutex_lock() { return pthread_mutex_lock(&mutex); }
-	int mutex_trylock() { return pthread_mutex_trylock(&mutex); }
-	int mutex_unlock() { return pthread_mutex_unlock(&mutex); }
+	void mutex_lock()    { mutex.lock(); }
+	bool mutex_trylock() { return !mutex.tryLock(); }
+	void mutex_unlock()  { mutex.unlock(); }
 
 	public:
 	World();
