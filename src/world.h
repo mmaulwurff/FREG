@@ -710,7 +710,7 @@ class World {
 			dwarf->Get(temp);
 	}
 	void PlayerWield() {
-		unsigned short i, j=0;
+		/*unsigned short i, j=0;
 		playerP->RangeForWield(i, j);
 
 		if ( i>=inventory_size ) {
@@ -721,8 +721,8 @@ class World {
 		char str[18];
 		sprintf(str, "Wield what? (%c-%c)", i+'a', j+'a');
 		scr->Notify(str);
-		Wield(playerP, getch()-'a');
-		scr->Notify("");
+		//Wield(playerP, getch()-'a');
+		scr->Notify("");*/
 	}
 
 	//block information section

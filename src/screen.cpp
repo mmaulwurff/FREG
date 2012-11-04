@@ -101,7 +101,7 @@ inline color_pairs Screen::Color(const unsigned short i, const unsigned short j,
 	return Color( w->Kind(i, j, k), w->Sub(i, j, k) );
 }
 
-void Screen::Print() const {
+void Screen::Print() const {/*
 	if ( w->mutex_trylock() ) //если другой процесс использует мир.
 		return;
 	//мьютекс (знак) заблокирован, другой процесс (нить) не сможет использовать мир до разблокировки.
@@ -164,9 +164,9 @@ void Screen::Print() const {
 
 	wrefresh(hudWin); //обновить окно, в curses нужно, чтобы вывести символы из временного буфера непосредственно на экран
 	w->mutex_unlock(); //мьютекс разблокирован
-}
+*/}
 
-void Screen::PrintNormal(WINDOW * const window) const {
+void Screen::PrintNormal() const {/*
 	unsigned short k_start;
 	short k_step;
 	unsigned short playerZ;
@@ -204,121 +204,9 @@ void Screen::PrintNormal(WINDOW * const window) const {
 	} else
 		mvwaddstr(window, 0, 1, "Normal View");
 	wrefresh(window); //вывод на экран
-}
+*/}
 
-void Screen::PrintFront(WINDOW * const window) const {
-	if ( UP==w->GetPlayerDir() || DOWN==w->GetPlayerDir() ) { //если игрок смотрит не в сторону, то взгляд в сторону рисовать не нужно
-		wstandend(window);
-		werase(window);
-		box(window, 0, 0);
-		mvwaddstr(window, 0, 1, "No view");
-		wrefresh(window);
-		return;
-	}
-
-	//подготовка сложнее, чем в PrintNormal: не только откуда и куда отрисовывать, но и какие переменные менять по ходу дела (указатели) *x и *z
-	short x_step, z_step,
-	      x_end, z_end,
-	      * x, * z,
-	      i, j, k;
-	unsigned short pX, pY, pZ;
-	unsigned short x_start, z_start,
-		       k_start,
-	               arrow_Y, arrow_X;
-	w->GetPlayerCoords(pX, pY, pZ);
-	switch ( w->GetPlayerDir() ) {
-		case NORTH:
-			x=&i;
-			x_step=1;
-			x_start=0;
-			x_end=shred_width*3;
-			z=&j;
-			z_step=-1;
-			z_start=pY-1;
-			z_end=-1;
-			arrow_X=pX*2+1;
-		break;
-		case SOUTH:
-			x=&i;
-			x_step=-1;
-			x_start=shred_width*3-1;
-			x_end=-1;
-			z=&j;
-			z_step=1;
-			z_start=pY+1;
-			z_end=shred_width*3;
-			arrow_X=(shred_width*3-pX)*2-1;
-		break;
-		case WEST:
-			x=&j;
-			x_step=-1;
-			x_start=shred_width*3-1;
-			x_end=-1;
-			z=&i;
-			z_step=-1;
-			z_start=pX-1;
-			z_end=-1;
-			arrow_X=(shred_width*3-pY)*2-1;
-		break;
-		case EAST:
-			x=&j;
-			x_step=1;
-			x_start=0;
-			x_end=shred_width*3;
-			z=&i;
-			z_step=1;
-			z_start=pX+1;
-			z_end=shred_width*3;
-			arrow_X=pY*2+1;
-		break;
-		default:
-			fprintf(stderr, "Screen::PrintFront(WINDOW *): unlisted dir: %d\n", (int)w->GetPlayerDir());
-			return;
-	}
-	if (pZ+shred_width*1.5>=height) {
-		k_start=height-2;
-		arrow_Y=height-pZ;
-	} else if (pZ-shred_width*1.5<0) {
-		k_start=shred_width*3-1;
-		arrow_Y=shred_width*3-pZ;
-	} else {
-		k_start=pZ+shred_width*1.5;
-		arrow_Y=shred_width*1.5+1;
-	}
-	wmove(window, 1, 1);
-	for (k=k_start; k_start-k<shred_width*3; --k, waddstr(window, "\n_"))
-		for (*x=x_start; *x!=x_end; *x+=x_step) {
-			for (*z=z_start; *z!=z_end; *z+=z_step)
-				if (w->Transparent(i, j, k) < 2) {
-					if ( w->Enlightened(i, j, k) && w->Visible(i, j, k) ) {
-						wcolor_set(window, Color(i, j, k), NULL);
-						waddch(window, CharName(i, j, k));
-						waddch(window, w->CharNumberFront(i, j));
-					} else {
-						wcolor_set(window, BLACK_BLACK, NULL);
-						waddstr(window, "  ");
-					}
-					break;
-				}
-			if (*z==z_end) { //рисовать декорации дальнего вида (белые точки на синем)
-				*z-=z_step;
-				if (w->Visible(i, j, k)) {
-				       	wcolor_set(window, WHITE_BLUE, NULL);
-					waddstr(window, " .");
-				} else {
-					wcolor_set(window, BLACK_BLACK, NULL);
-					waddstr(window, "  ");
-				}
-			}
-		}
-	wstandend(window);
-	box(window, 0, 0);
-	mvwaddstr(window, 0, 1, "Front View");
-	Arrows(window, arrow_X, arrow_Y);
-	wrefresh(window);
-}
-
-void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
+void Screen::PrintInv(Inventory * const inv) const {/*
 	werase(window);
 	wstandend(window);
 	mvwaddstr(window, 1, 53, "Weight");
@@ -357,7 +245,7 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 		mvwprintw(window, 0, 1, "[%c]%s", CharName(inv->Kind(), inv->Sub()), inv->FullName(str));
 	}
 	wrefresh(window);
-}
+*/}
 
 void Screen::GetSound(const unsigned short n, const unsigned short dist, const char sound, const kinds kind, const subs sub) {
 	if ( w->mutex_trylock() )
@@ -378,7 +266,7 @@ void Screen::GetSound(const unsigned short n, const unsigned short dist, const c
 
 	w->mutex_unlock();
 }
-void Screen::PrintSounds() {
+void Screen::PrintSounds() {/*
 	if ( w->mutex_trylock() )
 		return;
 
@@ -397,15 +285,65 @@ void Screen::PrintSounds() {
 	mvwaddstr(soundWin, 0, 1, "Sounds");
 	wrefresh(soundWin);
 	w->mutex_unlock();
-}
+*/}
 
-void Screen::NotifyAdd(const char * const str, const kinds kind, const subs sub) {
+void Screen::NotifyAdd(const char * const str, const kinds kind, const subs sub) {/*
 	if (!str[0])
 		return;
 	wcolor_set(notifyWin, Color(kind, sub), NULL);
 	mvwaddstr(notifyWin, notifyLines++, 0, str);
 	wrefresh(notifyWin);
 	fprintf(notifyLog, "%s\n", str);
+*/}
+
+void Screen::keyPressEvent(QKeyEvent *event) {
+	switch (event->key()) {
+		case 'U': /*case KEY_UP:*/    w->PlayerMove(NORTH); break;
+		case 'D': /*case KEY_DOWN:*/  w->PlayerMove(SOUTH); break;
+		case 'R': /*case KEY_RIGHT:*/ w->PlayerMove(EAST ); break;
+		case 'L': /*case KEY_LEFT:*/  w->PlayerMove(WEST ); break;
+		case '>': w->SetPlayerDir( w->TurnRight(w->GetPlayerDir()) ); break;
+		case '<': w->SetPlayerDir( w->TurnLeft(w->GetPlayerDir()) );  break;
+		case ' ': w->PlayerJump(); break;
+		case 'w': w->SetPlayerDir(WEST);  break;
+		case 'e': w->SetPlayerDir(EAST);  break;
+		case 's': w->SetPlayerDir(SOUTH); break;
+		case 'n': w->SetPlayerDir(NORTH); break;
+		case 'P': /*case KEY_NPAGE:*/ w->SetPlayerDir(DOWN);  break; //page down key
+		case 'p': /*case KEY_PPAGE:*/ w->SetPlayerDir(UP);    break; //page up key
+		case 'i':
+			if (INVENTORY!=viewRight) {
+				viewRight=INVENTORY;
+				blockToPrintRight=(Block *)(w->GetPlayerP());
+			} else
+				viewRight=FRONT;
+		break;
+		case 'N': case '\n': { //enter key
+			unsigned short i, j, k;
+			w->PlayerFocus(i, j, k);
+			w->Use(i, j, k);
+		} break;
+		case '?': w->Examine(); break;
+		//case 'd': w->PlayerDrop(Getch()-'a'); break;
+		//case 'g': w->PlayerGet(Getch()-'a'); break;
+		case 'W': w->PlayerWield(); break;
+		//case 'E': w->PlayerEat(Getch()-'a'); break;
+		case 'I': w->PlayerInscribe(); break;
+		case 'B': /*case KEY_BACKSPACE:*/ {
+			unsigned short i, j, k;
+			w->PlayerFocus(i, j, k);
+			w->Damage(i, j, k);
+		} break;
+		//case 'H': /*case KEY_HOME:*/ w->PlayerBuild(screen.Getch()-'a'); break;
+		case 'l': RePrint(); break;
+		case 'Q': break;
+		default: Notify("What?\n");
+	}
+
+	//if ( print_flag )
+		Print();
+	//usleep(90000);
+	Flushinp();
 }
 
 Screen::Screen(World * const wor) :
@@ -414,7 +352,7 @@ Screen::Screen(World * const wor) :
 		blockToPrintRight(NULL),
 		viewLeft(NORMAL),
 		viewRight(FRONT) {
-	set_escdelay(10); //задержка после нажатия esc. для обработки esc-последовательностей, пока не используется.
+	/*set_escdelay(10); //задержка после нажатия esc. для обработки esc-последовательностей, пока не используется.
 	initscr(); //инициировать экран
 	start_color(); //цетной режим
 	raw(); //коды нажатия клавиш поступают в программу без обработки (сырыми)
@@ -441,7 +379,7 @@ Screen::Screen(World * const wor) :
 	hudWin=newwin(3+2, (shred_width*2*3+2)*2-8, shred_width*3+2, 8); //окно для жизни, дыхания и т.д.
 	notifyWin=newwin(0, COLS, shred_width*3+2+5, 0);
 	soundWin =newwin(3+2, 3*2+2, shred_width*3+2, 0);
-	
+	*/
 	for (unsigned short i=0; i<9; ++i) {
 		soundMap[i].ch=' ';
 		soundMap[i].lev=0;
@@ -450,18 +388,21 @@ Screen::Screen(World * const wor) :
 
 	w->scr=this; //привязать экран к миру
 	notifyLog=fopen("messages.txt", "a");
+
+	setWindowTitle(tr("freg"));
+	resize(550, 370);
 }
 
 Screen::~Screen() {
 	w->mutex_lock();
 	//удалить окна
-	delwin(leftWin);
+	/*delwin(leftWin);
 	delwin(rightWin);
 	delwin(notifyWin);
 	delwin(hudWin);
 	delwin(soundWin);
 	//закончить оконный режим, очистить экран
-	endwin();
+	endwin();*/
 	w->scr=NULL; //отвязаться от мира
 	if (NULL!=notifyLog)
 		fclose(notifyLog);

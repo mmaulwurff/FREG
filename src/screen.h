@@ -19,17 +19,19 @@
 #define SCREEN_H
 
 #include "blocks.h"
-#include <curses.h>
+//#include <curses.h>
+#include <QGLWidget>
+#include <QKeyEvent>
 
 class World;
 
-class Screen {
+class Screen : public QGLWidget {
 	World * const w; //connected world
-	WINDOW * leftWin,
+	/*WINDOW * leftWin,
 	       * rightWin,
 	       * notifyWin,
 	       * soundWin,
-	       * hudWin; //окно для жизни, дыхания и т.д.
+	       * hudWin; //окно для жизни, дыхания и т.д.*/
 
 	struct {
 		char ch;
@@ -39,48 +41,50 @@ class Screen {
 
 	char CharName(const unsigned short, const unsigned short, const unsigned short) const; //вернуть символ, обозначающий блок
 	char CharName(const kinds, const subs) const;
-	void Arrows(WINDOW * const window, const unsigned short x, const unsigned short y) const {
+	/*void Arrows(WINDOW * const window, const unsigned short x, const unsigned short y) const {
 		//стрелки, показывающие положение игрока.
 		//используются, когда его самого не видно (например, вид неба)
 		wcolor_set(window, WHITE_RED, NULL);
 		mvwprintw(window, 0, x, "vv");
 		mvwprintw(window, shred_width*3+1, x, "^^");
 		mvwprintw(window, y, 0, ">");
-		mvwprintw(window, y, shred_width*3*2+1, "<");	
-	}
+		mvwprintw(window, y, shred_width*3*2+1, "<");
+	}*/
 	FILE * notifyLog; //весь текст уведомлений (notification) дублируется в файл.
 	unsigned short notifyLines; //для NotifyAdd() - сколько строк уже с текстом
 
-	void PrintNormal(WINDOW * const) const;
-	void PrintFront(WINDOW * const) const;
-	void PrintInv(WINDOW * const, Inventory * const) const;
+	void PrintNormal() const;
+	void PrintInv(Inventory * const) const;
 
 	color_pairs Color(const kinds, const subs) const; //пара цветов текст_фон в зависимоти от типа (kind) и вещества (sub) блока.
 	color_pairs Color(const subs sub, const kinds kind) const { return Screen::Color(kind, sub); } //чтобы можно было путать порядок
 	color_pairs Color(const unsigned short i, const unsigned short j, const unsigned short k) const; //в зависимости от координаты
 
-	public:
+protected:
+	void keyPressEvent(QKeyEvent *event);
+
+public:
 	Block * blockToPrintLeft,
 	      * blockToPrintRight; //блоки, связанные с экраном (например, блок открытого в текущий момент сундука)
 	window_views viewLeft, viewRight; //тип вида: пока или NORMAL, или FRONT, или INVENTORY
 
-	int Getch() { return getch(); }
-	void Flushinp() { flushinp(); }
+//	int Getch() { return getch(); }
+	void Flushinp() { /*flushinp();*/ }
 	char * GetString(char * const str) const { //ввод строки пользователем
-		echo();
+		/*echo();
 		werase(notifyWin);
 		mvwaddstr(notifyWin, 0, 0, "Enter inscription:");
 		wmove(notifyWin, 1, 0);
 		wgetnstr(notifyWin, str, note_length);
 		werase(notifyWin);
 		wrefresh(notifyWin);
-		noecho();
+		noecho();*/
 		return str;
 	}
 	void Notify(const char * const str, const kinds kind=BLOCK, const subs sub=DIFFERENT) { //новое уведомление
-		werase(notifyWin);
+		/*werase(notifyWin);
 		notifyLines=0;
-		NotifyAdd(str, kind, sub);
+		NotifyAdd(str, kind, sub);*/
 	}
 	void NotifyAdd(const char * const, const kinds=BLOCK, const subs=DIFFERENT); //добавить строку к уведомлению
 	void Print() const;
@@ -89,11 +93,11 @@ class Screen {
 	void PrintSounds();
 
 	void RePrint() { //стереть всё с экрана и перерисовать всё с нуля (можно сделать пустой)
-		wclear(leftWin);
+		/*wclear(leftWin);
 		wclear(rightWin);
 		wclear(notifyWin);
 		wclear(soundWin);
-		wclear(hudWin);
+		wclear(hudWin);*/
 		Print();
 		PrintSounds();
 	}

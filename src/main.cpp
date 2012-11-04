@@ -15,14 +15,17 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
+#include <QtGui>
 #include "header.h"
 #include "screen.h"
 #include "world.h"
 
-int main() {
+int main(int argc, char *argv[]) {
+	QApplication freg(argc, argv);
 	World earth;
 	Screen screen(&earth);
-	FILE * scenario=fopen("scenario.txt", "r");
+	screen.show();
+/*	FILE * scenario=fopen("scenario.txt", "r");
 	int c='.';
 	int print_flag=1; //print only if needed, needed nearly everytime
 	while ( 'Q'!=c ) {
@@ -35,8 +38,8 @@ int main() {
 			} else
 				fprintf(stderr, "Scenario used, key is: '%c'.\n", c);
 		} else
-			c=screen.Getch();
-		switch (c) {
+			c=screen.Getch();*/
+		/*switch (c) {
 			case 'U': case KEY_UP:    earth.PlayerMove(NORTH); break;
 			case 'D': case KEY_DOWN:  earth.PlayerMove(SOUTH); break;
 			case 'R': case KEY_RIGHT: earth.PlayerMove(EAST ); break;
@@ -82,6 +85,7 @@ int main() {
 		if ( print_flag )
 			screen.Print();
 		usleep(90000);
-		screen.Flushinp();
-	}
+		screen.Flushinp();*/
+	//}
+	return freg.exec();
 }
