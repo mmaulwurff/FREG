@@ -50,6 +50,8 @@ class FREGGLWidget : public QGLWidget {
 	void setZRotation(int) {}
 
 	private:
+	void horAngle; //0 for north
+	void verAngle; //0 for horizontal view
 	void draw();
 
 	QColor qtPurple;
