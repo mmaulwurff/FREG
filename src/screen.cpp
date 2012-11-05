@@ -20,8 +20,69 @@
 
 #include "screen.h"
 #include "world.h"
+#include <QtGui>
+#include <QtOpenGL>
+#include <QColor>
 
-char Screen::CharName(const kinds kind, const subs sub) const { //вернуть символ, обозначающий блок
+#ifndef GL_MULTISAMPLE
+#define GL_MULTISAMPLE  0x809D
+#endif
+
+enum Qt::Key;
+
+FREGGLWidget::FREGGLWidget(QWidget *parent) :
+		QGLWidget(QGLFormat(QGL::SampleBuffers), parent) {
+	qtPurple=QColor::fromCmykF(0.39, 0.39, 0.0, 0.0);
+}
+
+FREGGLWidget::~FREGGLWidget() {}
+
+QSize FREGGLWidget::minimumSizeHint() const {
+	return QSize(50, 50);
+}
+
+QSize FREGGLWidget::sizeHint() const {
+	return QSize(400, 400);
+}
+
+void FREGGLWidget::initializeGL() {
+	qglClearColor(qtPurple.dark());
+
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	glShadeModel(GL_SMOOTH);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glEnable(GL_MULTISAMPLE);
+	static GLfloat lightPosition[4] = { 0.5, 5.0, 7.0, 1.0 };
+	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+}
+
+void FREGGLWidget::resizeGL(int width, int height) {
+	int side = qMin(width, height);
+	glViewport((width-side)/2, (height-side)/2, side, side);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	#ifdef QT_OPENGL_ES_1
+	glOrthof(-0.5, +0.5, -0.5, +0.5, 4.0, 15.0);
+	#else
+	glOrtho(-0.5, +0.5, -0.5, +0.5, 4.0, 15.0);
+	#endif
+
+	glMatrixMode(GL_MODELVIEW);
+}
+
+void FREGGLWidget::paintGL() {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glLoadIdentity();
+	draw();
+}
+
+void FREGGLWidget::draw() {}
+
+char Screen::CharName(const kinds kind, const subs sub) const {
 	switch (kind)  {
 		//блоки, для символа которых тип важнее вещества
 		case CHEST:
@@ -59,7 +120,7 @@ char Screen::CharName(const unsigned short i, const unsigned short j, const unsi
 	return CharName( w->Kind(i, j, k), w->Sub(i, j, k) );
 }
 
-color_pairs Screen::Color(const kinds kind, const subs sub) const { //пара цветов текст_фон в зависимоти от типа (kind) и вещества (sub) блока.
+color_pairs Screen::Color(const kinds kind, const subs sub) const {
 	switch (kind) { //foreground_background
 		//блоки, для цвета которых тип важнее вещества
 		case DWARF:     return WHITE_BLUE;
@@ -97,15 +158,17 @@ color_pairs Screen::Color(const kinds kind, const subs sub) const { //пара �
 		}
 	}
 }
-inline color_pairs Screen::Color(const unsigned short i, const unsigned short j, const unsigned short k) const {
+inline color_pairs Screen::Color(const unsigned short i,
+                                 const unsigned short j,
+                                 const unsigned short k) const {
 	return Color( w->Kind(i, j, k), w->Sub(i, j, k) );
 }
 
-void Screen::Print() const {/*
+void Screen::Print() const {
 	if ( w->mutex_trylock() ) //если другой процесс использует мир.
 		return;
 	//мьютекс (знак) заблокирован, другой процесс (нить) не сможет использовать мир до разблокировки.
-
+	/*
 	switch (viewLeft) {
 		case INVENTORY: if (NULL!=blockToPrintLeft) {
 			PrintInv( leftWin, (Inventory *)blockToPrintLeft->HasInventory() );
@@ -163,8 +226,9 @@ void Screen::Print() const {/*
 	}
 
 	wrefresh(hudWin); //обновить окно, в curses нужно, чтобы вывести символы из временного буфера непосредственно на экран
+	*/
 	w->mutex_unlock(); //мьютекс разблокирован
-*/}
+}
 
 void Screen::PrintNormal() const {/*
 	unsigned short k_start;
@@ -266,10 +330,11 @@ void Screen::GetSound(const unsigned short n, const unsigned short dist, const c
 
 	w->mutex_unlock();
 }
-void Screen::PrintSounds() {/*
+void Screen::PrintSounds() {
 	if ( w->mutex_trylock() )
 		return;
 
+	/*
 	werase(soundWin);
 	for (unsigned short i=0; i<3; ++i)
 	for (unsigned short j=0; j<3; ++j)
@@ -283,34 +348,34 @@ void Screen::PrintSounds() {/*
 	wstandend(soundWin);
 	box(soundWin, 0, 0);
 	mvwaddstr(soundWin, 0, 1, "Sounds");
-	wrefresh(soundWin);
+	wrefresh(soundWin);*/
 	w->mutex_unlock();
-*/}
+}
 
-void Screen::NotifyAdd(const char * const str, const kinds kind, const subs sub) {/*
-	if (!str[0])
+void Screen::NotifyAdd(const char * const str,
+                       const kinds kind,
+                       const subs sub) {
+	if ( !str[0] )
 		return;
-	wcolor_set(notifyWin, Color(kind, sub), NULL);
-	mvwaddstr(notifyWin, notifyLines++, 0, str);
-	wrefresh(notifyWin);
+	notifyWidget->append(str);
 	fprintf(notifyLog, "%s\n", str);
-*/}
+}
 
 void Screen::keyPressEvent(QKeyEvent *event) {
 	switch (event->key()) {
-		case 'U': /*case KEY_UP:*/    w->PlayerMove(NORTH); break;
-		case 'D': /*case KEY_DOWN:*/  w->PlayerMove(SOUTH); break;
-		case 'R': /*case KEY_RIGHT:*/ w->PlayerMove(EAST ); break;
-		case 'L': /*case KEY_LEFT:*/  w->PlayerMove(WEST ); break;
-		case '>': w->SetPlayerDir( w->TurnRight(w->GetPlayerDir()) ); break;
-		case '<': w->SetPlayerDir( w->TurnLeft(w->GetPlayerDir()) );  break;
+		case 'u': case Qt::Key_Up:    w->PlayerMove(NORTH); break;
+		case 'd': case Qt::Key_Down:  w->PlayerMove(SOUTH); break;
+		case 'r': case Qt::Key_Right: w->PlayerMove(EAST ); break;
+		case 'l': case Qt::Key_Left:  w->PlayerMove(WEST ); break;
+		case '>':
+			w->SetPlayerDir( w->TurnRight(w->GetPlayerDir()) );
+		break;
+		case '<':
+			w->SetPlayerDir( w->TurnLeft(w->GetPlayerDir()) );
+		break;
 		case ' ': w->PlayerJump(); break;
-		case 'w': w->SetPlayerDir(WEST);  break;
-		case 'e': w->SetPlayerDir(EAST);  break;
-		case 's': w->SetPlayerDir(SOUTH); break;
-		case 'n': w->SetPlayerDir(NORTH); break;
-		case 'P': /*case KEY_NPAGE:*/ w->SetPlayerDir(DOWN);  break; //page down key
-		case 'p': /*case KEY_PPAGE:*/ w->SetPlayerDir(UP);    break; //page up key
+		case 'v': case Qt::Key_PageDown: w->SetPlayerDir(DOWN); break;
+		case 'p': case Qt::Key_PageUp:   w->SetPlayerDir(UP);   break;
 		case 'i':
 			if (INVENTORY!=viewRight) {
 				viewRight=INVENTORY;
@@ -318,7 +383,7 @@ void Screen::keyPressEvent(QKeyEvent *event) {
 			} else
 				viewRight=FRONT;
 		break;
-		case 'N': case '\n': { //enter key
+		case 'n': case Qt::Key_Enter: { //enter key
 			unsigned short i, j, k;
 			w->PlayerFocus(i, j, k);
 			w->Use(i, j, k);
@@ -329,15 +394,13 @@ void Screen::keyPressEvent(QKeyEvent *event) {
 		case 'W': w->PlayerWield(); break;
 		//case 'E': w->PlayerEat(Getch()-'a'); break;
 		case 'I': w->PlayerInscribe(); break;
-		case 'B': /*case KEY_BACKSPACE:*/ {
+		case 'B': case Qt::Key_Backspace: {
 			unsigned short i, j, k;
 			w->PlayerFocus(i, j, k);
 			w->Damage(i, j, k);
 		} break;
 		//case 'H': /*case KEY_HOME:*/ w->PlayerBuild(screen.Getch()-'a'); break;
-		case 'l': RePrint(); break;
-		case 'Q': break;
-		default: Notify("What?\n");
+		case 'Q': exit(0); break;
 	}
 
 	//if ( print_flag )
@@ -347,66 +410,46 @@ void Screen::keyPressEvent(QKeyEvent *event) {
 }
 
 Screen::Screen(World * const wor) :
-       		w(wor), notifyLines(0),
+       		w(wor),
 		blockToPrintLeft(NULL),
 		blockToPrintRight(NULL),
 		viewLeft(NORMAL),
 		viewRight(FRONT) {
-	/*set_escdelay(10); //задержка после нажатия esc. для обработки esc-последовательностей, пока не используется.
-	initscr(); //инициировать экран
-	start_color(); //цетной режим
-	raw(); //коды нажатия клавиш поступают в программу без обработки (сырыми)
-	noecho(); //не показывать то, что введено
-	keypad(stdscr, TRUE); //использовать стрелки
-	curs_set(0); //сделать курсор невидимым
-	//all available color pairs (maybe some of them will not be used)
-	short colors[]={ //do not change colors order!
-		COLOR_BLACK,
-		COLOR_RED,
-		COLOR_GREEN,
-		COLOR_YELLOW,
-		COLOR_BLUE,
-		COLOR_MAGENTA,
-		COLOR_CYAN,
-		COLOR_WHITE
-	};
-	//ввести все цвета
-	for (short i=BLACK_BLACK; i<=WHITE_WHITE; ++i)
-		init_pair(i, colors[(i-1)/8], colors[(i-1)%8]);
-	//задать положения и размеры окон
-	leftWin  =newwin(shred_width*3+2, shred_width*2*3+2, 0, 0);
-	rightWin =newwin(shred_width*3+2, shred_width*2*3+2, 0, shred_width*2*3+2);
-	hudWin=newwin(3+2, (shred_width*2*3+2)*2-8, shred_width*3+2, 8); //окно для жизни, дыхания и т.д.
-	notifyWin=newwin(0, COLS, shred_width*3+2+5, 0);
-	soundWin =newwin(3+2, 3*2+2, shred_width*3+2, 0);
-	*/
 	for (unsigned short i=0; i<9; ++i) {
 		soundMap[i].ch=' ';
 		soundMap[i].lev=0;
 		soundMap[i].col=WHITE_BLACK;
 	}
 
+	graphWidget=new FREGGLWidget;
+
+	notifyWidget=new QTextEdit("Game started");
+	notifyWidget->setReadOnly(true);
+	notifyWidget->setFocusPolicy(Qt::NoFocus);
+
+	layout=new QVBoxLayout;
+	layout->addWidget(graphWidget);
+	layout->addWidget(notifyWidget);
+	setLayout(layout);
+
 	w->scr=this; //привязать экран к миру
 	notifyLog=fopen("messages.txt", "a");
 
 	setWindowTitle(tr("freg"));
-	resize(550, 370);
+	resize(700, 700);
 }
 
 Screen::~Screen() {
 	w->mutex_lock();
-	//удалить окна
-	/*delwin(leftWin);
-	delwin(rightWin);
-	delwin(notifyWin);
-	delwin(hudWin);
-	delwin(soundWin);
-	//закончить оконный режим, очистить экран
-	endwin();*/
+
 	w->scr=NULL; //отвязаться от мира
 	if (NULL!=notifyLog)
 		fclose(notifyLog);
 	w->mutex_unlock();
+
+	delete layout;
+	delete notifyWidget;
+	delete graphWidget;
 }
 
 #endif

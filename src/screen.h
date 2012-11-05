@@ -19,19 +19,49 @@
 #define SCREEN_H
 
 #include "blocks.h"
-//#include <curses.h>
+
 #include <QGLWidget>
+#include <QTextEdit>
+#include <QVBoxLayout>
 #include <QKeyEvent>
 
 class World;
 
-class Screen : public QGLWidget {
+class FREGGLWidget : public QGLWidget {
+	Q_OBJECT
+
+	public:
+	FREGGLWidget(QWidget *parent=0);
+	~FREGGLWidget();
+
+	QSize minimumSizeHint() const;
+	QSize sizeHint() const;
+
+	protected:
+	void initializeGL();
+	void resizeGL(int, int);
+	void paintGL();
+	void mousePressEvent(QMouseEvent *) {}
+	void mouseMoveEvent(QMouseEvent *) {}
+
+	public slots:
+	void setXRotation(int) {}
+	void setYRotation(int) {}
+	void setZRotation(int) {}
+
+	private:
+	void draw();
+
+	QColor qtPurple;
+};
+
+class Screen : public QWidget {
+	Q_OBJECT
+
 	World * const w; //connected world
-	/*WINDOW * leftWin,
-	       * rightWin,
-	       * notifyWin,
-	       * soundWin,
-	       * hudWin; //окно для жизни, дыхания и т.д.*/
+	FREGGLWidget *graphWidget;
+	QTextEdit *notifyWidget;
+	QVBoxLayout *layout;
 
 	struct {
 		char ch;
@@ -41,17 +71,7 @@ class Screen : public QGLWidget {
 
 	char CharName(const unsigned short, const unsigned short, const unsigned short) const; //вернуть символ, обозначающий блок
 	char CharName(const kinds, const subs) const;
-	/*void Arrows(WINDOW * const window, const unsigned short x, const unsigned short y) const {
-		//стрелки, показывающие положение игрока.
-		//используются, когда его самого не видно (например, вид неба)
-		wcolor_set(window, WHITE_RED, NULL);
-		mvwprintw(window, 0, x, "vv");
-		mvwprintw(window, shred_width*3+1, x, "^^");
-		mvwprintw(window, y, 0, ">");
-		mvwprintw(window, y, shred_width*3*2+1, "<");
-	}*/
 	FILE * notifyLog; //весь текст уведомлений (notification) дублируется в файл.
-	unsigned short notifyLines; //для NotifyAdd() - сколько строк уже с текстом
 
 	void PrintNormal() const;
 	void PrintInv(Inventory * const) const;
@@ -60,15 +80,13 @@ class Screen : public QGLWidget {
 	color_pairs Color(const subs sub, const kinds kind) const { return Screen::Color(kind, sub); } //чтобы можно было путать порядок
 	color_pairs Color(const unsigned short i, const unsigned short j, const unsigned short k) const; //в зависимости от координаты
 
-protected:
+	protected:
 	void keyPressEvent(QKeyEvent *event);
 
-public:
+	public:
 	Block * blockToPrintLeft,
 	      * blockToPrintRight; //блоки, связанные с экраном (например, блок открытого в текущий момент сундука)
 	window_views viewLeft, viewRight; //тип вида: пока или NORMAL, или FRONT, или INVENTORY
-
-//	int Getch() { return getch(); }
 	void Flushinp() { /*flushinp();*/ }
 	char * GetString(char * const str) const { //ввод строки пользователем
 		/*echo();
@@ -81,11 +99,9 @@ public:
 		noecho();*/
 		return str;
 	}
-	void Notify(const char * const str, const kinds kind=BLOCK, const subs sub=DIFFERENT) { //новое уведомление
-		/*werase(notifyWin);
-		notifyLines=0;
-		NotifyAdd(str, kind, sub);*/
-	}
+	void Notify(const char * const str,
+	            const kinds kind=BLOCK,
+	            const subs sub=DIFFERENT) { NotifyAdd(str, kind, sub); }
 	void NotifyAdd(const char * const, const kinds=BLOCK, const subs=DIFFERENT); //добавить строку к уведомлению
 	void Print() const;
 
