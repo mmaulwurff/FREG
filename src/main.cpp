@@ -16,15 +16,35 @@
 	*/
 
 #include <QtGui>
+#include <QString>
 #include "header.h"
-#include "screen.h"
 #include "world.h"
+#include "screen.h"
 
 int main(int argc, char *argv[]) {
 	QApplication freg(argc, argv);
-	World earth;
-	Screen screen(&earth);
+
+	QString worldName="The_Land_Of_Doubts";
+	unsigned short numShreds=3;
+	World * earth;
+	FILE * file=fopen((worldName+"_save").toAscii().constData(), "r");
+	if ( NULL!=file ) {
+		unsigned long longitude, latitude;
+		unsigned long time;
+		unsigned short spawnX, spawnY, spawnZ;
+		fscanf(file, "longitude: %ld\nlatitude: %ld\nspawnX: %hd\n spawnY: %hd\n spawnZ: %hd\ntime: %ld\nSize:%hd\n",
+			&longitude, &latitude,
+			&spawnX, &spawnY, &spawnZ,
+			&time);
+		fclose(file);
+		earth=new World(worldName, longitude, latitude,
+			spawnX, spawnY, spawnZ, time, numShreds);
+	} else
+		earth=new World(worldName);
+
+	Screen screen(earth);
 	screen.show();
+
 /*	FILE * scenario=fopen("scenario.txt", "r");
 	int c='.';
 	int print_flag=1; //print only if needed, needed nearly everytime
@@ -39,53 +59,5 @@ int main(int argc, char *argv[]) {
 				fprintf(stderr, "Scenario used, key is: '%c'.\n", c);
 		} else
 			c=screen.Getch();*/
-		/*switch (c) {
-			case 'U': case KEY_UP:    earth.PlayerMove(NORTH); break;
-			case 'D': case KEY_DOWN:  earth.PlayerMove(SOUTH); break;
-			case 'R': case KEY_RIGHT: earth.PlayerMove(EAST ); break;
-			case 'L': case KEY_LEFT:  earth.PlayerMove(WEST ); break;
-			case '>': earth.SetPlayerDir( earth.TurnRight(earth.GetPlayerDir()) ); break;
-			case '<': earth.SetPlayerDir( earth.TurnLeft(earth.GetPlayerDir()) );  break;
-			case ' ': earth.PlayerJump(); break;
-			case 'w': earth.SetPlayerDir(WEST);  break;
-			case 'e': earth.SetPlayerDir(EAST);  break;
-			case 's': earth.SetPlayerDir(SOUTH); break;
-			case 'n': earth.SetPlayerDir(NORTH); break;
-			case 'P': case KEY_NPAGE: earth.SetPlayerDir(DOWN);  break; //page down key
-			case 'p': case KEY_PPAGE: earth.SetPlayerDir(UP);    break; //page up key
-			case 'i':
-				if (INVENTORY!=screen.viewRight) {
-					screen.viewRight=INVENTORY;
-					screen.blockToPrintRight=(Block *)(earth.GetPlayerP());
-				} else
-					screen.viewRight=FRONT;
-			break;
-			case 'N': case '\n': { //enter key
-				unsigned short i, j, k;
-				earth.PlayerFocus(i, j, k);
-				earth.Use(i, j, k);
-			} break;
-			case '?': earth.Examine(); break;
-			case 'd': earth.PlayerDrop(screen.Getch()-'a'); break;
-			case 'g': earth.PlayerGet(screen.Getch()-'a'); break;
-			case 'W': earth.PlayerWield(); break;
-			case 'E': earth.PlayerEat(screen.Getch()-'a'); break;
-			case 'I': earth.PlayerInscribe(); break;
-			case 'B': case KEY_BACKSPACE: {
-				unsigned short i, j, k;
-				earth.PlayerFocus(i, j, k);
-				earth.Damage(i, j, k);
-			} break;
-			case 'H': case KEY_HOME: earth.PlayerBuild(screen.Getch()-'a'); break;
-			case 'l': screen.RePrint(); break;
-			case 'Q': break;
-			default: screen.Notify("What?\n");
-		}
-
-		if ( print_flag )
-			screen.Print();
-		usleep(90000);
-		screen.Flushinp();*/
-	//}
 	return freg.exec();
 }

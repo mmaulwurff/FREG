@@ -18,14 +18,14 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
-#include "blocks.h"
-
 #include <QGLWidget>
 #include <QTextEdit>
 #include <QVBoxLayout>
 #include <QKeyEvent>
+#include "header.h"
 
 class World;
+class Block;
 
 class FREGGLWidget : public QGLWidget {
 	Q_OBJECT
@@ -50,8 +50,8 @@ class FREGGLWidget : public QGLWidget {
 	void setZRotation(int) {}
 
 	private:
-	void horAngle; //0 for north
-	void verAngle; //0 for horizontal view
+	int horAngle; //0 for north
+	int verAngle; //0 for horizontal view
 	void draw();
 
 	QColor qtPurple;
@@ -76,7 +76,7 @@ class Screen : public QWidget {
 	FILE * notifyLog; //весь текст уведомлений (notification) дублируется в файл.
 
 	void PrintNormal() const;
-	void PrintInv(Inventory * const) const;
+	void PrintInv(class Inventory * const) const;
 
 	color_pairs Color(const kinds, const subs) const; //пара цветов текст_фон в зависимоти от типа (kind) и вещества (sub) блока.
 	color_pairs Color(const subs sub, const kinds kind) const { return Screen::Color(kind, sub); } //чтобы можно было путать порядок
@@ -86,7 +86,7 @@ class Screen : public QWidget {
 	void keyPressEvent(QKeyEvent *event);
 
 	public:
-	Block * blockToPrintLeft,
+	class Block * blockToPrintLeft,
 	      * blockToPrintRight; //блоки, связанные с экраном (например, блок открытого в текущий момент сундука)
 	window_views viewLeft, viewRight; //тип вида: пока или NORMAL, или FRONT, или INVENTORY
 	void Flushinp() { /*flushinp();*/ }

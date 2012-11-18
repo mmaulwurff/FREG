@@ -20,6 +20,7 @@
 
 #include "screen.h"
 #include "world.h"
+#include "blocks.h"
 #include <QtGui>
 #include <QtOpenGL>
 #include <QColor>

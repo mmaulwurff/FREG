@@ -19,6 +19,7 @@
 #define BLOCKS_H
 
 #include "header.h"
+#include "world.h"
 
 class World;
 class Block;
@@ -279,8 +280,6 @@ class Pick : public Weapons {
 };
 
 class Active : public Block {
-	Active * next;
-	Active * prev;
 	bool ifToDestroy;
 
 	protected:
@@ -312,7 +311,6 @@ class Active : public Block {
 		return 0;
 	}
 
-	Active * GetNext() const { return next; }
 	void GetSelfXYZ(unsigned short & x, unsigned short & y, unsigned short & z) const {
 		x=x_self;
 		y=y_self;
@@ -390,6 +388,7 @@ class Animal : public Active {
 class Inventory {
 	protected:
 	Block * inventory[inventory_size][max_stack_size];
+	World * inWorld;
 
 	public:
 	char * InvFullName(char * const str, const int i) const { return (NULL==inventory[i][0]) ? WriteName(str, "") : inventory[i][0]->FullName(str); }
@@ -487,15 +486,17 @@ class Inventory {
 		}
 	}
 
-	Inventory() {
+	Inventory(World * const w) :
+			inWorld(w) {
 		for (unsigned short i=0; i<inventory_size; ++i)
 		for (unsigned short j=0; j<max_stack_size; ++j)
 			inventory[i][j]=NULL;
 	}
-	Inventory(char * const str, FILE * const in) {
+	Inventory(World * const w, char * const str, FILE * const in) :
+			inWorld(w) {
 		for (unsigned short i=0; i<inventory_size; ++i)
 		for (unsigned short j=0; j<max_stack_size; ++j)
-			inventory[i][j]=BlockFromFile(in);
+			inventory[i][j]=inWorld->BlockFromFile(in, 0, 0, 0);
 		fgets(str, 300, in);
 	}
 	~Inventory() {
@@ -563,8 +564,8 @@ class Dwarf : public Animal, public Inventory {
 			return 1;
 		} return 0;
 	}
-	virtual int Get(Block * block, int n=5) { return Inventory::Get(block, (5>n) ? 5 : n);
-	}
+	virtual int Get(Block * block, int n=5)
+		{ return Inventory::Get(block, (5>n) ? 5 : n); }
 	virtual Block * DropAfterDamage() const { return new Block(H_MEAT); }
 
 	virtual void SaveAttributes(FILE * const out) const {
@@ -575,18 +576,35 @@ class Dwarf : public Animal, public Inventory {
 
 	float LightRadius() const { return 1.8; }
 
-	Dwarf(World * const w, const unsigned short x, const unsigned short y, const unsigned short z) :
+	Dwarf(World * const w,
+			const unsigned short x,
+			const unsigned short y,
+			const unsigned short z)
+			:
 			Animal(w, x, y, z, H_MEAT, 100),
-			onHead(inventory[0][0]), onBody(inventory[1][0]), onFeet(inventory[2][0]),
-			inRightHand(inventory[3][0]), inLeftHand(inventory[4][0]),
+			Inventory(w),
+			onHead(inventory[0][0]),
+			onBody(inventory[1][0]),
+			onFeet(inventory[2][0]),
+			inRightHand(inventory[3][0]),
+			inLeftHand(inventory[4][0]),
 			noise(1) {
 		inventory[7][0]=new Pick(IRON);
 	}
-	Dwarf(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, char * const str, FILE * const in) :
+	Dwarf(World * const w,
+			const unsigned short x,
+			const unsigned short y,
+			const unsigned short z,
+			char * const str,
+			FILE * const in)
+			:
 			Animal(w, x, y, z, str),
-			Inventory(str, in),
-			onHead(inventory[0][0]), onBody(inventory[1][0]), onFeet(inventory[2][0]),
-			inRightHand(inventory[3][0]), inLeftHand(inventory[4][0]) {
+			Inventory(w, str, in),
+			onHead(inventory[0][0]),
+			onBody(inventory[1][0]),
+			onFeet(inventory[2][0]),
+			inRightHand(inventory[3][0]),
+			inLeftHand(inventory[4][0]) {
 		sscanf(str, " %hd\n", &noise);
 		CleanString(str);
 	}
@@ -606,23 +624,29 @@ class Chest : public Block, public Inventory {
 	}
 	virtual void * HasInventory() { return Inventory::HasInventory(); }
 	virtual Block * Drop(const int n) { return Inventory::Drop(n); }
-	int Get(Block * const block, int n=0) { return Inventory::Get(block, n); }
+	int Get(Block * const block, int n=0)
+		{ return Inventory::Get(block, n); }
 	virtual bool Access() const { return true; }
 	double Weight() const { return InvWeightAll()+300; }
 
 	usage_types Use() { return Inventory::Use(); }
 
-	Block * DropAfterDamage() const { return new Chest(); }
+	Block * DropAfterDamage() const { return new Chest(inWorld, sub); }
 	
 	virtual void SaveAttributes(FILE * const out) const {
 		Block::SaveAttributes(out);
 		Inventory::SaveAttributes(out);
 	}
 
-	Chest(const subs s=WOOD, const short dur=max_durability) : Block(s, dur) {}
-	Chest(char * const str, FILE * const in) :
+	Chest(World * const w,
+			const subs s=WOOD,
+			const short dur=max_durability)
+			:
+			Block(s, dur),
+			Inventory(w) {}
+	Chest(World * const w, char * const str, FILE * const in) :
 		Block(str),
-		Inventory(str, in) {}
+		Inventory(w, str, in) {}
 };
 
 class Pile : public Active, public Inventory {
@@ -634,7 +658,8 @@ class Pile : public Active, public Inventory {
 	virtual char * FullName(char * const str) const { return WriteName(str, "Pile"); }
 
 	virtual void * HasInventory() { return Inventory::HasInventory(); }
-	int Get(Block * const block, int n=0) { return Inventory::Get(block, n); }
+	int Get(Block * const block, int n=0)
+		{ return Inventory::Get(block, n); }
 	usage_types Use() { return Inventory::Use(); }
 	double Weight() const { return InvWeightAll(); }
 
@@ -668,14 +693,26 @@ class Pile : public Active, public Inventory {
 		fprintf(out, "%hd/", lifetime);
 	}
 
-	Pile(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, Block * const block=NULL) :
+	Pile(World * const w,
+			const unsigned short x,
+			const unsigned short y,
+			const unsigned short z,
+			Block * const block=NULL)
+			:
 			Active(w, x, y, z, DIFFERENT),
+			Inventory(w),
 			lifetime(seconds_in_day) {
 		Get(block);
 	}
-	Pile(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, char * const str, FILE * const in) :
+	Pile(World * const w,
+			const unsigned short x,
+			const unsigned short y,
+			const unsigned short z,
+			char * const str,
+			FILE * const in)
+			:
 			Active(w, x, y, z, str),
-			Inventory(str, in) {
+			Inventory(w, str, in) {
 		sscanf(str, " %hd\n", &lifetime);
 		CleanString(str);
 	}
@@ -762,7 +799,8 @@ class Grass : public Active {
 
 class Bush : public Active, public Inventory {
 	public:
-	virtual char * FullName(char * const str) const { return WriteName(str, "Bush"); }
+	virtual char * FullName(char * const str) const
+		{ return WriteName(str, "Bush"); }
 	virtual kinds Kind() const { return BUSH; }
 	subs Sub() const { return Block::Sub(); }
 
@@ -787,11 +825,12 @@ class Bush : public Active, public Inventory {
 		Inventory::SaveAttributes(out);
 	}
 
-	Bush(World * const w, const unsigned short x, const unsigned short y, const unsigned short z) :
-		Active(w, x, y, z, WOOD) {}
-	Bush(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, char * const str, FILE * const in) :
-		Active(w, x, y, z, str),
-		Inventory(str, in) {}
+	Bush(World * const w) :
+		Active(w, 0, 0, 0, WOOD),
+       		Inventory(w) {}
+	Bush(World * const w, char * const str, FILE * const in) :
+		Active(w, 0, 0, 0, str),
+		Inventory(w, str, in) {}
 };
 
 class Rabbit : public Animal {

@@ -18,46 +18,11 @@
 #include "blocks.h"
 #include "world.h"
 
-Block * BlockFromFile(FILE * const in, World * const world,
-		const unsigned short i, const unsigned short j, const unsigned short k) {
-	char str[300];
-	fgets(str, 300, in);
-	int kind;
-	sscanf(str, "%d", &kind);
-	//if some kind will not be listed here, blocks of this kind just will not load,
-	//unless kind is inherited from Inventory class or one of its derivatives - in this case this may cause something bad.
-	switch (kind) {
-		case BLOCK: {
-				    short normal=0;
-				    int sub=0;
-				    sscanf(str, "%*d_%hd_%d", &normal, &sub);
-				    if (normal)
-					    return world->NewNormal(subs(sub));
-				    else
-					    return new Block(str);
-		}
-		case TELEGRAPH: return new Telegraph(str);
-		case PICK:      return new Pick(str);
-		case CHEST:     return new Chest(str, in);
-		case RABBIT:    return new Rabbit(world, i, j, k, str);
-		case ACTIVE:    return new Active(world, i, j, k, str);
-		case DWARF:     return new Dwarf (world, i, j, k, str, in);
-		case PILE:      return new Pile  (world, i, j, k, str, in);
-		case LIQUID:    return new Liquid(world, i, j, k, str);
-		case GRASS:     return new Grass (world, i, j, k, str);
-		case BUSH:      return new Bush  (world, i, j, k, str, in);
-		case -1:        return NULL;
-		default:
-			fprintf(stderr, "BlockFromFile(): unlisted kind: %d\n", kind);
-			return NULL;
-	}
-}
-
 void Active::SafeMove() {
 	//when player is on the border of shred, moving him causes World::ReloadShreds(dir). so, cheks are neede for liquids not to push player.
 	unsigned short x_focus, y_focus, z_focus;
 	if ( !(whereWorld->Focus(x_self, y_self, z_self, x_focus, y_focus, z_focus, direction)) &&
-			((Block *)(whereWorld->playerP)!=whereWorld->blocks[x_focus][y_focus][z_focus] ||
+			((Block *)(whereWorld->playerP)!=whereWorld->Block(x_focus, y_focus, z_focus) ||
 			 UP==direction || DOWN==direction ) ) {
 		whereWorld->Move(x_self, y_self, z_self, direction);
 	}
@@ -73,36 +38,20 @@ void Active::SafeJump() {
 
 void Active::Register(World * const w, const int x, const int y, const int z) {
 	whereWorld=w;
-	if (NULL!=whereWorld) {
-		x_self=x;
-		y_self=y;
-		z_self=z;
-		prev=NULL;
-		if (NULL==whereWorld->activeList)
-			next=NULL;
-		else {
-			next=whereWorld->activeList;
-			whereWorld->activeList->prev=this;
-		}
-		whereWorld->activeList=this;
-	} else {
-		next=NULL;
-		prev=NULL;
-	}
+	if ( NULL==whereWorld )
+		return;
+
+	x_self=x;
+	y_self=y;
+	z_self=z;
+	whereWorld->AddActive(this, x, y);
 }
 
 void Active::Unregister() {
-	if (NULL!=whereWorld) {
-		if (NULL!=next)
-			next->prev=prev;
-		if (NULL!=prev)
-			prev->next=next;
-		else {
-			whereWorld->activeList=next;
-			if (NULL!=whereWorld->activeList)
-				whereWorld->activeList->prev=NULL;
-		}
-	}
+	if ( NULL==whereWorld )
+		return;
+	
+	whereWorld->RemActive(this, x_self, y_self);
 }
 
 void Animal::Act() {
@@ -123,7 +72,7 @@ void Animal::Act() {
 
 int Dwarf::Move(const dirs dir) {
 	Active::Move(dir);
-	if ( this==whereWorld->playerP && (
+	if ( this==whereWorld->GetPlayerP() && (
 			(x_self==shred_width-1 || x_self==shred_width*2 ||
 			 y_self==shred_width-1 || y_self==shred_width*2)) ) {
 		whereWorld->ReloadShreds(dir);

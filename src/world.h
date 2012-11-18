@@ -19,64 +19,84 @@
 #define WORLD_H
 
 #include <cmath>
-#include "screen.h"
 #include <QMutex>
+#include <QString>
 #include "thread.h"
+#include "header.h"
 
+class Screen;
 class Block;
 class Dwarf;
 class Active;
-class Thread;
+class Shred;
 
 class World {
 	unsigned short time_step;
 	unsigned long time;
-	Block * blocks[shred_width*3][shred_width*3][height];
+	Shred ** shreds;
 	Block * normal_blocks[AIR];
-	short lightMap[shred_width*3][shred_width*3][height-1];
-	struct {
-		Block * block;
-		unsigned short number;
-	} block_numbers[AIR];
 	Dwarf * playerP;
 	unsigned short spawnX, spawnY, spawnZ;
-	long longitude, latitude;
-	Active * activeList;
-	char worldName[20];
-	unsigned short worldSize;
+	unsigned long longitude, latitude;
+	QString worldName;
+	unsigned short numShreds;
+	QMutex mutex;
 
 	public:
+	Block * BlockFromFile(FILE *,
+			const unsigned short,
+			const unsigned short,
+			const unsigned short);
+	void AddActive(Active *, unsigned short, unsigned short);
+	void RemActive(Active *, unsigned short, unsigned short);
 	Block * NewNormal(subs sub) { return normal_blocks[sub]; }
-	QMutex mutex;
 	Thread * thread;
 	Screen * scr;
-	
+
 	private:
-	void LoadShred(const long, const long, const unsigned short, const unsigned short);
-	void SaveShred(const long, const long, const unsigned short, const unsigned short);
-	void ReloadShreds(const dirs);
-	void LoadAllShreds();
+	Block * Block(const unsigned short,
+	              const unsigned short,
+	              const unsigned short) const;
+	void SetBlock(class Block *,
+		const unsigned short,
+		const unsigned short,
+		const unsigned short);
+
+	short LightMap(const unsigned short,
+	               const unsigned short,
+	               const unsigned short) const;
+	void SetLightMap(const unsigned short,
+			const unsigned short,
+			const unsigned short,
+			const unsigned short);
+	void PlusLightMap(const unsigned short,
+			const unsigned short,
+			const unsigned short,
+			const unsigned short);
+
 	void SaveAllShreds();
 	void MakeSky() {
 		unsigned short i, j;
 		FILE * sky=fopen("sky.txt", "r");
-		if (NULL==sky) {
+		if ( NULL==sky ) {
 			for (i=0; i<shred_width*3; ++i)
 			for (j=0; j<shred_width*3; ++j)
-				blocks[i][j][height-1]=NewNormal( rand()%5 ? SKY : STAR );
-		} else {
-			char c=fgetc(sky)-'0';
-			for (i=0; i<shred_width*3; ++i)
-			for (j=0; j<shred_width*3; ++j)
-				if (c) {
-					blocks[i][j][height-1]=NewNormal(SKY);
-					--c;
-				} else {
-					blocks[i][j][height-1]=NewNormal(STAR);
-					c=fgetc(sky)-'0';
-				}
-			fclose(sky);
+				SetBlock(NewNormal( rand()%5 ? SKY : STAR ),
+					i, j, height-1);
+			return;
 		}
+
+		char c=fgetc(sky)-'0';
+		for (i=0; i<shred_width*3; ++i)
+		for (j=0; j<shred_width*3; ++j)
+			if ( c ) {
+				SetBlock(NewNormal(SKY), i, j, height-1);
+				--c;
+			} else {
+				SetBlock(NewNormal(STAR), i, j, height-1);
+				c=fgetc(sky)-'0';
+			}
+		fclose(sky);
 	}
 	dirs MakeDir(const unsigned short x_center, const unsigned short y_center, const unsigned short x_target, const unsigned short y_target) const {
 		//if (x_center==x_target && y_center==y_target) return HERE;
@@ -98,8 +118,6 @@ class World {
 		                   (y_from-y_to)*(y_from-y_to)+
 		                   (z_from-z_to)*(z_from-z_to)) );
 	}
-	void FileName(char * const str, const long longi, const long lati) const { sprintf(str, "shreds/%ld_%ld", longi, lati); }
-
 	dirs Anti(const dirs dir) const {
 		switch (dir) {
 			case NORTH: return SOUTH;
@@ -118,21 +136,6 @@ class World {
 		}
 	}
 
-	char TypeOfShred(const long longi, const long lati) const {
-		FILE * map=fopen(worldName, "r");
-		if (NULL==map)
-			return '.';
-
-		char find_start[3];
-		do fgets(find_start, 3, map);
-		while ('#'!=find_start[0] || '#'!=find_start[1]);
-
-		fseek(map, (worldSize+1)*longi+lati-2, SEEK_CUR);
-		char c=fgetc(map);
-		fclose(map);
-		return c;
-	}
-
 	//lighting section
 	private:
 	void ReEnlighten(const unsigned short i, const unsigned short j, const unsigned short k) {
@@ -144,7 +147,7 @@ class World {
 		for (y=j-max_light_radius-1; y<=j+max_light_radius+1; ++y)
 		for (z=k-max_light_radius-1; z<=k+max_light_radius+1 && z<height-1; ++z)
 			if ( InBounds(x, y, z) )
-				lightMap[x][y][z]=0;
+				SetLightMap(0, x, y, z);
 
 		for (x=i-max_light_radius-max_light_radius-1; x<=i+max_light_radius+max_light_radius+1; ++x)
 		for (y=j-max_light_radius-max_light_radius-1; y<=j+max_light_radius+max_light_radius+1; ++y) {
@@ -161,7 +164,7 @@ class World {
 		for (i=0; i<shred_width*3; ++i)
 		for (j=0; j<shred_width*3; ++j)
 		for (k=0; k<height-1; ++k)
-			lightMap[i][j][k]=0;
+			SetLightMap(0, i, j, k);
 
 		for (i=0; i<shred_width*3; ++i)
 		for (j=0; j<shred_width*3; ++j) {
@@ -173,7 +176,7 @@ class World {
 	
 	void SafeEnlighten(const unsigned short i, const unsigned short j, const unsigned short k) {
 		if ( InBounds(i, j, k) && k<height-1 )
-			lightMap[i][j][k]=10;
+			SetLightMap(10, i, j, k);
 	}
 
 	void SunShine(const unsigned short i, const unsigned short j) {
@@ -182,7 +185,7 @@ class World {
 
 		unsigned short k=height-2;
 		do {
-			lightMap[i][j][k]=10;
+			SetLightMap(10, i, j, k);
 			SafeEnlighten(i+1, j, k);
 			SafeEnlighten(i-1, j, k);
 			SafeEnlighten(i, j+1, k);
@@ -190,220 +193,25 @@ class World {
 		} while ( Transparent(i, j, k--) );
 	}
 
-	void Shine(const unsigned short i, const unsigned short j, const unsigned short k) {
-		float light_radius;
-		if ( !InBounds(i, j, k) || NULL==blocks[i][j][k] || 0==(light_radius=blocks[i][j][k]->LightRadius()) )
-			return;
-
-		for (short x=ceil(i-light_radius); x<=floor(i+light_radius); ++x)
-		for (short y=ceil(j-light_radius); y<=floor(j+light_radius); ++y)
-		for (short z=ceil(k-light_radius); z<=floor(k+light_radius) && z<height-1; ++z)
-			if ( InBounds(x, y, z) &&
-					Distance(i, j, k, x, y, z)<=light_radius &&
-					DirectlyVisible(i, j, k, x, y, z) ) {
-				lightMap[x][y][z]+=max_light_radius/Distance(i, j, k, x, y, z)+1;
-				if ( lightMap[x][y][z]>10 )
-					lightMap[x][y][z]=10;
-			}
-	}
-
-	//shred generators section
-	//these functions fill space between the lowest nullstone layer and sky. so use k from 1 to heigth-2.
-	//unfilled blocks are air.
-	private:
-	void NormalUnderground(const unsigned short istart, const unsigned short jstart, const unsigned short depth=0) {
-		for (unsigned short i=istart; i<istart+shred_width; ++i)
-		for (unsigned short j=jstart; j<jstart+shred_width; ++j) {
-			unsigned short k;
-			for (k=1; k<height/2-6 && k<height/2-depth-1; ++k)
-				blocks[i][j][k]=NewNormal(STONE);
-			blocks[i][j][++k]=NewNormal((rand()%2) ? STONE : SOIL);
-			for (++k; k<height/2-depth; ++k)
-				blocks[i][j][k]=NewNormal(SOIL);
-		}
-	}
-
-	void PlantGrass(const unsigned short istart, const unsigned short jstart) {
-		for (unsigned short i=istart; i<istart+shred_width; ++i)	
-		for (unsigned short j=jstart; j<jstart+shred_width; ++j) {
-			unsigned short k;
-			for (k=height-2; TransparentNotSafe(i, j, k); --k);
-			if ( SOIL==Sub(i, j, k++) && NULL==blocks[i][j][k] )
-				blocks[i][j][k]=new Grass(this, i, j, k);
-		}
-	}
-
-	void TestShred(const unsigned short istart, const unsigned short jstart) {
-		NormalUnderground(istart, jstart);
-		blocks[istart+2][jstart][height/2]=new Chest();
-		blocks[istart+3][jstart+1][height/2]=new Active(this, istart+3, jstart+1, height/2, SAND);
-	}
-
-	void NullMountain(const unsigned short istart, const unsigned short jstart) {
-		unsigned short i, j, k;
-		for (i=istart; i<istart+shred_width; ++i)
-		for (j=jstart; j<jstart+shred_width; ++j) {
-			for (k=1; k<height/2; ++k)
-				blocks[i][j][k]=NewNormal( (i==istart+4 || i==istart+5 || j==jstart+4 || j==jstart+5) ? NULLSTONE : STONE );
-
-			for ( ; k<height-1; ++k)
-				if (i==istart+4 || i==istart+5 || j==jstart+4 || j==jstart+5)
-					blocks[i][j][k]=NewNormal(NULLSTONE);
-		}
-	}
-
-	void Plain(const unsigned short istart, const unsigned short jstart) {
-		NormalUnderground(istart, jstart);
-		unsigned short i;
-
-		//bush
-		short random=rand()%2;
-		for (i=0; i<random; ++i) {
-			short x=istart+rand()%shred_width,
-			      y=jstart+rand()%shred_width;
-			if (NULL!=blocks[x][y][height/2])
-				delete blocks[x][y][height/2];
-			blocks[x][y][height/2]=new Bush(this, x, y, height/2);
-		}
-
-		//rabbits
-		random=rand()%2;
-		for (i=0; i<random; ++i) {
-			short x=istart+rand()%shred_width,
-			      y=jstart+rand()%shred_width;
-			if (NULL!=blocks[x][y][height/2])
-				delete blocks[x][y][height/2];
-			blocks[x][y][height/2]=new Rabbit(this, x, y, height/2);
-		}
-
-		PlantGrass(istart, jstart);
-	}
-
-	void Forest(const unsigned short istart, const unsigned short jstart, const long longi, const long lati) {
-		NormalUnderground(istart, jstart);
-		long i, j;
-		unsigned short number_of_trees=0;
-		for (i=longi-1; i<=longi+1; ++i)
-		for (j=lati-1;  j<=lati+1;  ++j)
-			if ( '%'==TypeOfShred(i, j) )
-				++number_of_trees;
-
-		for (i=0; i<number_of_trees; ++i) {
-			short x=istart+rand()%(shred_width-2),
-			      y=jstart+rand()%(shred_width-2);
-			Tree(x, y, height/2, 4+rand()%5);
-		}
-
-		PlantGrass(istart, jstart);
-	}
-
-	void Water(const unsigned short istart, const unsigned short jstart, const long longi, const long lati) {
-		unsigned short depth=1;
-		char map[3][3];
-		for (long i=longi-1; i<=longi+1; ++i)
-		for (long j=lati-1;  j<=lati+1;  ++j)
-			if ( '~'==(map[i-longi+1][j-lati+1]=TypeOfShred(i, j)) )
-				++depth;
-
-		NormalUnderground(istart, jstart, depth);
-
-		if ('~'!=map[1][0] && '~'!=map[0][1]) { //north-west rounding
-			for (unsigned short i=istart; i<istart+shred_width/2; ++i)	
-			for (unsigned short j=jstart; j<jstart+shred_width/2; ++j)
-				for (unsigned short k=height/2-depth; k<height/2; ++k)
-					if (((istart+4-i)*(istart+4-i)+
-					     (jstart+4-j)*(jstart+4-j)+
-					     (height/2-k)*(height/2-k)*16/depth/depth)>16)
-						blocks[i][j][k]=NewNormal(SOIL);
-		}
-		if ('~'!=map[1][0] && '~'!=map[2][1]) { //south-west rounding
-			for (unsigned short i=istart; i<istart+shred_width/2; ++i)	
-			for (unsigned short j=jstart+shred_width/2; j<jstart+shred_width; ++j)
-				for (unsigned short k=height/2-depth; k<height/2; ++k)
-					if (((istart+4-i)*(istart+4-i)+
-					     (jstart+5-j)*(jstart+5-j)+
-					     (height/2-k)*(height/2-k)*16/depth/depth)>16)
-						blocks[i][j][k]=NewNormal(SOIL);
-		}
-		if ('~'!=map[2][1] && '~'!=map[1][2]) { //south-east rounding
-			for (unsigned short i=istart+shred_width/2; i<istart+shred_width; ++i)	
-			for (unsigned short j=jstart+shred_width/2; j<jstart+shred_width; ++j)
-				for (unsigned short k=height/2-depth; k<height/2; ++k)
-					if (((istart+5-i)*(istart+5-i)+
-					     (jstart+5-j)*(jstart+5-j)+
-					     (height/2-k)*(height/2-k)*16/depth/depth)>16)
-						blocks[i][j][k]=NewNormal(SOIL);
-		}
-		if ('~'!=map[1][2] && '~'!=map[0][1]) { //north-east rounding
-			for (unsigned short i=istart+shred_width/2; i<istart+shred_width; ++i)	
-			for (unsigned short j=jstart; j<jstart+shred_width/2; ++j)
-				for (unsigned short k=height/2-depth; k<height/2; ++k)
-					if (((istart+5-i)*(istart+5-i)+
-					     (jstart+4-j)*(jstart+4-j)+
-					     (height/2-k)*(height/2-k)*16/depth/depth)>16)
-						blocks[i][j][k]=NewNormal(SOIL);
-		}
-		for (unsigned short i=istart; i<istart+shred_width; ++i)	
-		for (unsigned short j=jstart; j<jstart+shred_width; ++j)
-		for (unsigned short k=height/2-depth; k<height/2; ++k)
-			if (NULL==blocks[i][j][k])
-				blocks[i][j][k]=new Liquid(this, i, j, k);
-
-		PlantGrass(istart, jstart);
-	}
-
-	void Hill(const unsigned short istart, const unsigned short jstart, const long longi, const long lati) {
-		unsigned short hill_height=1;
-		for (long i=longi-1; i<=longi+1; ++i)
-		for (long j=lati-1;  j<=lati+1;  ++j)
-			if ( '+'==TypeOfShred(i, j) )
-				++hill_height;
-
-		NormalUnderground(istart, jstart);
-
-		for (unsigned short i=istart; i<istart+shred_width; ++i)	
-		for (unsigned short j=jstart; j<jstart+shred_width; ++j)
-		for (unsigned short k=height/2; k<height/2+hill_height; ++k)
-			if (((istart+4.5-i)*(istart+4.5-i)+
-			     (jstart+4.5-j)*(jstart+4.5-j)+
-			     (height/2-0.5-k)*(height/2-0.5-k)*16/hill_height/hill_height)<=16)
-				blocks[i][j][k]=NewNormal(SOIL);
-		
-		PlantGrass(istart, jstart);
-	}
-
-	//block combinations section (trees, buildings, etc)
-	bool Tree(const unsigned short x, const unsigned short y, const unsigned short z, const unsigned short height) {
-		if (shred_width*3<=x+2 ||
-		    shred_width*3<=y+2 ||
-		    ::height-1<=z+height ||
-		    height<2) return false;
-		unsigned short i, j, k;
-		for (i=x; i<=x+2; ++i)
-		for (j=y; j<=y+2; ++j)
-		for (k=z; k<z+height; ++k)
-			if (NULL!=blocks[i][j][k])
-				return false;
-
-		for (k=z; k<z+height-1; ++k) //trunk
-			blocks[x+1][y+1][k]=NewNormal(WOOD);
-
-		for (i=x; i<=x+2; ++i) //leaves
-		for (j=y; j<=y+2; ++j)
-		for (k=z+height/2; k<z+height; ++k)
-			if (NULL==blocks[i][j][k])
-				blocks[i][j][k]=NewNormal(GREENERY);
-		
-		return true;
-	}
+	void Shine(
+			const unsigned short,
+			const unsigned short,
+			const unsigned short);
 
 	//information section
 	public:
-	int Focus(const unsigned short, const unsigned short, const unsigned short, unsigned short &, unsigned short &, unsigned short &, const dirs) const;
-	int Focus(const unsigned short i, const unsigned short j, const unsigned short k,
-			unsigned short & i_target, unsigned short & j_target, unsigned short & k_target) const {
-		return Focus( i, j, k, i_target, j_target, k_target, blocks[i][j][k]->GetDir() );
-	}
+	int Focus(const unsigned short,
+	          const unsigned short,
+	          const unsigned short,
+	          unsigned short &,
+	          unsigned short &,
+	          unsigned short &, const dirs) const;
+	int Focus(const unsigned short,
+	          const unsigned short,
+	          const unsigned short,
+	          unsigned short &,
+	          unsigned short &,
+	          unsigned short &) const;
 	void PlayerFocus(unsigned short & i_target, unsigned short & j_target, unsigned short & k_target) const {
 		unsigned short playerX, playerY, playerZ;
 		GetPlayerCoords(playerX, playerY, playerZ);
@@ -425,31 +233,7 @@ class World {
 			default: return NORTH;
 		}
 	}
-	void Examine() {
-		unsigned short i, j, k;
-		PlayerFocus(i, j, k);
-		char str[note_length];
-
-		scr->Notify( FullName(str, i, j, k), Kind(i, j, k), Sub(i, j, k));
-		str[0]=0;
-		
-		if ( GetNote(str, i, j, k) )
-			scr->NotifyAdd("Inscription:");
-		scr->NotifyAdd(str);
-		str[0]=0;
-	
-		sprintf(str, "Temperature: %d", Temperature(i, j, k));
-		scr->NotifyAdd(str);
-		str[0]=0;
-
-		sprintf(str, "Durability: %hd", Durability(i, j, k));
-		scr->NotifyAdd(str);
-		str[0]=0;
-
-		sprintf(str, "Weight: %.0f", Weight(i, j, k));
-		scr->NotifyAdd(str);
-		str[0]=0;
-	}
+	void Examine() const;
 	char CharNumber(const unsigned short, const unsigned short, const unsigned short) const;
 	char CharNumberFront(const unsigned short, const unsigned short) const;
 
@@ -466,16 +250,20 @@ class World {
 
 	//movement section
 	public:
+	void ReloadShreds(const dirs);	
 	void PhysEvents();
-	int  Move(const unsigned short, const unsigned short, const unsigned short, const dirs, unsigned=2); //last arg is how much block fall/rise at one turn
-	void Jump(const unsigned short, const unsigned short, const unsigned short);
-	int PlayerMove(const dirs dir) {
-		unsigned short playerX, playerY, playerZ;
-		GetPlayerCoords(playerX, playerY, playerZ);
-		scr->viewLeft=NORMAL;
-		return Move( playerX, playerY, playerZ, dir );
-	}
-	int PlayerMove() { return PlayerMove( playerP->GetDir() ); } 
+	int  Move(
+			const unsigned short,
+			const unsigned short,
+			const unsigned short,
+			const dirs,
+			unsigned=2); //how much block fall/rise at one turn
+	void Jump(
+			const unsigned short,
+			const unsigned short,
+			const unsigned short);
+	int PlayerMove(const dirs dir);
+	int PlayerMove();
 	void PlayerJump() {
 		unsigned short playerX, playerY, playerZ;
 		GetPlayerCoords(playerX, playerY, playerZ);
@@ -484,11 +272,16 @@ class World {
 
 	//player specific functions section
 	public:
-	void SetPlayerDir(const dirs dir) { playerP->SetDir(dir); }
-	dirs GetPlayerDir() const { return playerP->GetDir(); }
-	void GetPlayerCoords(unsigned short & x, unsigned short & y, unsigned short & z) const { playerP->GetSelfXYZ(x, y, z); }
-	void GetPlayerCoords(unsigned short & x, unsigned short & y) const { playerP->GetSelfXY(x, y); }
-	void GetPlayerZ(unsigned short & z) const { playerP->GetSelfZ(z); }
+	void SetPlayerDir(const dirs);
+	dirs GetPlayerDir() const;
+	void GetPlayerCoords(
+			unsigned short &,
+			unsigned short &,
+			unsigned short &) const;
+	void GetPlayerCoords(
+			unsigned short &,
+			unsigned short &) const;
+	void GetPlayerZ(unsigned short &) const;
 	Dwarf * GetPlayerP() const { return playerP; }
 
 	//time section
@@ -506,167 +299,58 @@ class World {
 
 	//interactions section
 	public:
-	void Damage(const unsigned short i, const unsigned short j, const unsigned short k,
-			const unsigned short dmg=1, const damage_kinds dmg_kind=CRUSH, const bool destroy=true) {
-		if ( !InBounds(i, j, k) || NULL==blocks[i][j][k] )
-			return;
-				
-		if ( blocks[i][j][k]->Normal() )
-			blocks[i][j][k]=new Block(blocks[i][j][k]->Sub());
-			
-		if ( 0<blocks[i][j][k]->Damage(dmg, dmg_kind) )
-			return;
-
-		Block * temp=blocks[i][j][k];
-		if (temp==scr->blockToPrintLeft)
-			scr->viewLeft=NORMAL;
-		if (temp==scr->blockToPrintRight)
-			scr->viewRight=NORMAL;
-		
-		Block * dropped=temp->DropAfterDamage();
-		if ( PILE!=temp->Kind() && (temp->HasInventory() || NULL!=dropped) ) {
-			Pile * new_pile=new Pile(this, i, j, k);
-			blocks[i][j][k]=new_pile;
-			if ( temp->HasInventory() )
-				new_pile->GetAll(temp);
-			if ( !(new_pile->Get(dropped)) )
-				delete dropped;
-		} else
-			blocks[i][j][k]=NULL;
-		
-		if (destroy)
-			delete temp;
-		else {
-			temp->ToDestroy();
-			temp->Unregister();
-		}
-
-		ReEnlighten(i, j, k);
-	}
-	void Use(const unsigned short i, const unsigned short j, const unsigned short k) {
-		if ( !InBounds(i, j, k) || NULL==blocks[i][j][k] )
-			return;
-
-		switch ( blocks[i][j][k]->Use() ) {
-			case OPEN:
-				if (INVENTORY!=scr->viewLeft) {
-					scr->viewLeft=INVENTORY;
-					scr->blockToPrintLeft=blocks[i][j][k];
-				} else
-					scr->viewLeft=NORMAL;
-			break;
-			default: scr->viewLeft=NORMAL;
-		}
-	}
-	bool Build(Block * block, const unsigned short i, const unsigned short j, const unsigned short k) {
-		if ( !(InBounds(i, j, k) && NULL==blocks[i][j][k] && block->CanBeOut()) ) {
-			scr->Notify("You can not build.");
-			return false;
-		}
-
-		block->Restore();
-		if ( block->ActiveBlock() )
-			((Active *)block)->Register(this, i, j, k);
-		blocks[i][j][k]=block;
-		ReEnlighten(i, j, k);
-		return true;
-	}
-	void PlayerBuild(const unsigned short n) {
-		Block * temp=playerP->Drop(n);
-		unsigned short i, j, k;
-		PlayerFocus(i, j, k);
-		if ( !Build(temp, i, j, k) )
-			playerP->Get(temp);
-	}
-	void Inscribe(Dwarf * const dwarf) {
-		if (!dwarf->CarvingWeapon()) {
-			scr->Notify("You need some tool for inscribing!\n");
-			return;
-		}
-		unsigned short i, j, k;
-		dwarf->GetSelfXYZ(i, j, k);
-		unsigned short i_to, j_to, k_to;
-		if ( !Focus(i, j, k, i_to, j_to, k_to) )
-			Inscribe(i_to, j_to, k_to);
-	}
+	void Damage(
+			const unsigned short,
+			const unsigned short,
+			const unsigned short,
+			const unsigned short=1,
+			const damage_kinds=CRUSH,
+			const bool=true);
+	void Use(
+			const unsigned short,
+			const unsigned short,
+			const unsigned short);
+	bool Build(class Block *,
+			const unsigned short,
+			const unsigned short,
+			const unsigned short);
+	void PlayerBuild(const unsigned short);
+	void Inscribe(Dwarf * const);
 	void PlayerInscribe() { Inscribe(playerP); }
-	void Inscribe(const unsigned short i, const unsigned short j, const unsigned short k) {
-		if ( !InBounds(i, j, k) || NULL==blocks[i][j][k] )
-			return;
-
-		if ( blocks[i][j][k]->Normal() )
-			blocks[i][j][k]=new Block(blocks[i][j][k]->Sub());
-		char str[note_length];
-		blocks[i][j][k]->Inscribe(scr->GetString(str));
-	}
-	void Eat(Block * who, Block * & food) {
-		if ( NULL==who || NULL==food )
-			return;
-		if ( who->Eat(food) ) {
-			delete food;
-			food=NULL;
-		}
-	}
-	void Eat(const unsigned short i, const unsigned short j, const unsigned short k,
-			const unsigned short i_food, const unsigned short j_food, const unsigned short k_food) {
+	void Inscribe(
+			const unsigned short,
+			const unsigned short,
+			const unsigned short);
+	void Eat(class Block *, class Block *);
+	void Eat(const unsigned short i,
+	         const unsigned short j,
+	         const unsigned short k,
+	         const unsigned short i_food,
+	         const unsigned short j_food,
+	         const unsigned short k_food) {
 		if ( !InBounds(i, j, k) || !InBounds(i_food, j_food, k_food) )
 			return;
-		Eat(blocks[i][j][k], blocks[i_food][j_food][k_food]);
+		Eat(Block(i, j, k), Block(i_food, j_food, k_food));
 	}
-	void PlayerEat(unsigned short n) {
-		if ( inventory_size<=n ) {
-			scr->Notify("What?");
-			return;
-		}
-		unsigned short playerX, playerY, playerZ;
-		playerP->GetSelfXYZ(playerX, playerY, playerZ);
-		Block * food=playerP->Drop(n);
-		if ( !playerP->Eat(food) ) {
-			playerP->Get(food);
-			scr->Notify("You can't eat this.");
-		} else
-			scr->Notify("Yum!");
-		if ( seconds_in_day*time_steps_in_sec < playerP->Satiation() )
-			scr->NotifyAdd("You have gorged yourself!");
-	}
+	void PlayerEat(unsigned short);
 
 	//inventory functions section
 	private:
-	void Exchange(const unsigned short i_from, const unsigned short j_from, const unsigned short k_from,
-	              const unsigned short i_to,   const unsigned short j_to,   const unsigned short k_to, const unsigned short n) {
-		if ( mutex_trylock() )
-			return;
-
-		Inventory * inv_from=(Inventory *)( HasInventory(i_from, j_from, k_from) );
-		Inventory * inv_to=(Inventory *)( HasInventory(i_to, j_to, k_to) );
-
-		if ( NULL==inv_from ) {
-			mutex_unlock();
-			return;
-		}
-
-		if ( NULL!=inv_to ) {
-			Block * temp=inv_from->Drop(n);
-			if ( NULL!=temp && !inv_to->Get(temp) ) {
-				inv_from->Get(temp);
-				scr->Notify("Not enough room\n");
-			}
-		} else if ( NULL==blocks[i_to][j_to][k_to] ) {
-			Pile * newpile=new Pile(this, i_to, j_to, k_to);
-			newpile->Get( inv_from->Drop(n) );
-			blocks[i_to][j_to][k_to]=newpile;
-		}
-		mutex_unlock();
-	}
-	void ExchangeAll(const unsigned short i_from, const unsigned short j_from, const unsigned short k_from,
-	                 const unsigned short i_to,   const unsigned short j_to,   const unsigned short k_to) {
-		if ( NULL==blocks[i_from][j_from][k_from] || NULL==blocks[i_to][j_to][k_to] )
-			return;       
-		
-		Inventory * to=(Inventory *)(blocks[i_to][j_to][k_to]->HasInventory());
-		if ( NULL!=to )
-			to->GetAll(blocks[i_from][j_from][k_from]);
-	}
+	void Exchange(
+			const unsigned short i_from,
+			const unsigned short j_from,
+			const unsigned short k_from,
+			const unsigned short i_to,
+			const unsigned short j_to,
+			const unsigned short k_to,
+			const unsigned short n);
+	void ExchangeAll(
+			const unsigned short,
+			const unsigned short,
+			const unsigned short,
+			const unsigned short,
+			const unsigned short,
+			const unsigned short);
 	public:
 	void Drop(const unsigned short i, const unsigned short j, const unsigned short k, const unsigned short n) {
 		unsigned short i_to, j_to, k_to;
@@ -698,17 +382,7 @@ class World {
 		if ( !Focus(i_to, j_to, k_to, i, j, k) )
 			ExchangeAll(i, j, k, i_to, j_to, k_to);
 	}
-	void Wield(Dwarf * const dwarf, const unsigned short n) {
-		if ( inventory_size<=n )
-			return;
-
-		Block * temp=dwarf->Drop(n);
-		if ( NULL==temp )
-			return;
-
-		if ( !dwarf->Wield(temp) )
-			dwarf->Get(temp);
-	}
+	void Wield(Dwarf * const, const unsigned short);
 	void PlayerWield() {
 		/*unsigned short i, j=0;
 		playerP->RangeForWield(i, j);
@@ -727,77 +401,86 @@ class World {
 
 	//block information section
 	public:
-	bool InBounds(const unsigned short i, const unsigned short j, const unsigned short k) const {
-		return (i<shred_width*3 && j<shred_width*3 && k<height);
+	bool InBounds(
+			const unsigned short i,
+			const unsigned short j,
+			const unsigned short k) const
+		{ return (i<shred_width*3 && j<shred_width*3 && k<height); }
+	char * FullName(char * const,
+			const unsigned short,
+			const unsigned short,
+			const unsigned short) const;
+	subs Sub(
+			const unsigned short,
+			const unsigned short,
+			const unsigned short) const;
+	kinds Kind(
+			const unsigned short,
+			const unsigned short,
+			const unsigned short) const;
+	short Durability(
+			const unsigned short,
+			const unsigned short,
+			const unsigned short) const;
+
+	int Transparent(
+			const unsigned short i,
+			const unsigned short j,
+			const unsigned short k) const
+	{
+		return ( !InBounds(i, j, k) ) ?
+			2 :
+			TransparentNotSafe(i, j, k);
 	}
-	char * FullName(char * const str, const unsigned short i, const unsigned short j, const unsigned short k) const {
-		if ( InBounds(i, j, k) )
-			(NULL==blocks[i][j][k]) ? WriteName(str, "Air") : blocks[i][j][k]->FullName(str);
-		return str;
-	}
-	subs Sub(const unsigned short i, const unsigned short j, const unsigned short k) const
-		{ return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? AIR : blocks[i][j][k]->Sub(); }
 
-	kinds Kind(const unsigned short i, const unsigned short j, const unsigned short k) const
-		{ return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? BLOCK : blocks[i][j][k]->Kind(); }
+	int TransparentNotSafe(
+			const unsigned short,
+			const unsigned short,
+			const unsigned short k) const;
 
-	short Durability(const unsigned short i, const unsigned short j, const unsigned short k) const
-		{ return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? 0 : blocks[i][j][k]->Durability(); }
-
-	int Transparent(const unsigned short i, const unsigned short j, const unsigned short k) const
-		{ return ( !InBounds(i, j, k) ) ? 2 : TransparentNotSafe(i, j, k); }
-
-	int TransparentNotSafe(const unsigned short i, const unsigned short j, const unsigned short k) const
-		{ return ( NULL==blocks[i][j][k] ) ? 2 : blocks[i][j][k]->Transparent(); }
-
-	int  Movable(const Block * const block) const  { return (NULL==block) ? ENVIRONMENT : block->Movable(); }
-	double Weight(const Block * const block) const { return (NULL==block) ? 0 : block->Weight(); }
+	int Movable(const class Block * const) const;
+	double Weight(const class Block * const) const;
 	double Weight(const unsigned short i, const unsigned short j, const unsigned short k) const
-		{ return (!InBounds(i, j, k)) ? 1000 : Weight(blocks[i][j][k]); }
+		{ return (!InBounds(i, j, k)) ? 1000 : Weight(Block(i, j, k)); }
 
-	void * HasInventory(const unsigned short i, const unsigned short j, const unsigned short k) const
-		{ return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? NULL : blocks[i][j][k]->HasInventory(); }
+	void * HasInventory(
+			const unsigned short,
+			const unsigned short,
+			const unsigned short k) const;	
 
-	void * ActiveBlock(const unsigned short i, const unsigned short j, const unsigned short k) const
-		{ return (!InBounds(i, j, k) || NULL==blocks[i][j][k]) ? NULL : blocks[i][j][k]->ActiveBlock(); }
+	void * ActiveBlock(
+			const unsigned short,
+			const unsigned short,
+			const unsigned short) const;
 
-	bool GetNote(char * const str, const unsigned short i, const unsigned short j, const unsigned short k) const {
-		if ( InBounds(i, j, k) && NULL!=blocks[i][j][k] )
-			return blocks[i][j][k]->GetNote(str);
-		return false;
-	}
-	int Temperature(const unsigned short i_center, const unsigned short j_center, const unsigned short k_center) const {
-		if (!InBounds(i_center, j_center, k_center) || NULL==blocks[i_center][j_center][k_center] || height-1==k_center)
-			return 0;
-		short temperature=blocks[i_center][j_center][k_center]->Temperature();
-		if ( temperature )
-			return temperature;
-
-		for (short i=i_center-1; i<=i_center+1; ++i)
-		for (short j=j_center-1; j<=j_center+1; ++j)
-		for (short k=k_center-1; k<=k_center+1; ++k)
-			if (InBounds(i, j, k) && NULL!=blocks[i][j][k])
-				temperature+=blocks[i][j][k]->Temperature();
-		return temperature/2;
-	}
-	bool Equal(const Block * const block1, const Block * const block2) const {
-		if (NULL==block1 && NULL==block2) return true;
-		if (NULL==block1 || NULL==block2) return false;
-		return *block1==*block2;
-	}
+	bool GetNote(char * const,
+			const unsigned short,
+			const unsigned short,
+			const unsigned short k) const;
+	int Temperature(
+			const unsigned short,
+			const unsigned short,
+			const unsigned short) const;
+	bool Equal(
+			const class Block * const,
+			const class Block * const) const;
 	short Enlightened(const unsigned short i, const unsigned short j, const unsigned short k) const {
-		if ( !InBounds(i, j, k) || NULL==blocks[i][j][k] )
+		if ( !InBounds(i, j, k) || NULL==Block(i, j, k) )
 			return 0;
 		if ( height-1==k )
 			return 10;
-		return lightMap[i][j][k];
+		return LightMap(i, j, k);
 	}
-	char MakeSound(const unsigned short i, const unsigned short j, const unsigned short k) const
-		{ return (NULL==blocks[i][j][k]) ? ' ' : blocks[i][j][k]->MakeSound(); }
+	char MakeSound(
+			const unsigned short,
+			const unsigned short,
+		       	const unsigned short) const;
 
 	private:
-	float LightRadius(const unsigned short i, const unsigned short j, const unsigned short k) const
-		{ return (NULL==blocks[i][j][k]) ? 0 : blocks[i][j][k]->LightRadius(); }
+	float LightRadius(
+			const unsigned short,
+			const unsigned short,
+			const unsigned short) const;
 
 	bool UnderTheSky(const unsigned short i, const unsigned short j, unsigned short k) const {
 		if ( !InBounds(i, j, k) )
@@ -812,16 +495,21 @@ class World {
 	private:
 	friend class Active;
 
-	friend void Grass::Act();
-	friend int Dwarf::Move(dirs);
-
 	public:
 	void mutex_lock()    { mutex.lock(); }
 	bool mutex_trylock() { return !mutex.tryLock(); }
 	void mutex_unlock()  { mutex.unlock(); }
 
 	public:
-	World();
+	World(QString);
+	World(QString,
+			const unsigned long,
+			const unsigned long,
+			const unsigned short,
+			const unsigned short,
+			const unsigned short,
+			const unsigned long,
+			const unsigned short);
 	~World();
 };
 
