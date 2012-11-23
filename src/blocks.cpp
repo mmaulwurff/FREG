@@ -17,65 +17,226 @@
 
 #include "blocks.h"
 #include "world.h"
+#include "Shred.h"
+
+char * Block::FullName(char * const str) const {
+	switch (sub) {
+		case WATER:      return WriteName(str, "Ice");
+		case STONE:      return WriteName(str, "Stone");
+		case MOSS_STONE: return WriteName(str, "Moss stone");
+		case NULLSTONE:  return WriteName(str, "Nullstone");
+		case GLASS:      return WriteName(str, "Glass");
+		case STAR: case SUN_MOON:
+		case SKY:        return WriteName(str, "Air");
+		case SOIL:       return WriteName(str, "Soil");
+		case HAZELNUT:   return WriteName(str, "Hazelnut");
+		case WOOD:       return WriteName(str, "Wood");
+		case GREENERY:   return WriteName(str, "Leaves");
+		case ROSE:       return WriteName(str, "Rose");
+		case A_MEAT:     return WriteName(str, "Animal meat");
+		case H_MEAT:     return WriteName(str, "Not animal meat");
+		default:
+			fprintf(stderr, "Block::FullName(char *): Block has unknown substance: %d", int(sub));
+			return WriteName(str, "Unknown block");
+	}
+}
+
+int Block::Damage(
+		const unsigned short dmg,
+		const damage_kinds dmg_kind=CRUSH) {
+	if ( 0>=durability )
+		return 0;
+
+	switch (sub) {
+		case GLASS: return durability=0;
+		case MOSS_STONE:
+		case STONE:
+			return (MINE==dmg_kind) ?
+				durability-=2*dmg :
+				durability-=dmg;
+		case GREENERY: case ROSE: case HAZELNUT: case WOOD:
+			return (CUT==dmg_kind) ?
+				durability-=2*dmg :
+				durability-=dmg;
+		case SAND: case SOIL:
+			return (DIG==dmg_kind) ?
+				durability-=2*dmg :
+				durability-=dmg;
+		case A_MEAT: case H_MEAT:
+			return (THRUST==dmg_kind) ?
+				durability-=2*dmg :
+				durability-=dmg;
+		case DIFFERENT: case AIR: case SKY: case SUN_MOON: case WATER:
+		case NULLSTONE:
+			return durability;
+		default:
+			return durability-=dmg;
+	}
+}
+
+bool Block::operator==(const Block & block) const {
+	//return false;
+	/*if ( block.Kind()!=Kind() )
+		return false;
+	fprintf(stderr, "Block::==: kind ok\n");*/
+	/*if ( block.Sub()!=Sub() )
+		return false;
+	fprintf(stderr, "Block::==: sub ok\n");*/
+
+	/*if ( !((NULL==block.note && NULL==note) ||
+			(NULL!=block.note && NULL!=note &&
+			strcpy(block.note, note))) )
+		return false;
+
+	fprintf(stderr, "Block::==:note ok\n");*/
+	//return true;
+	return ( block.Kind()==Kind() && block.Sub()==Sub() &&
+		((NULL==block.note && NULL==note) ||
+			(NULL!=block.note &&
+				NULL!=note &&
+				strcpy(block.note, note))) );
+}
+
+Block::Block(
+		const subs n,
+		const short dur,
+		const double w) //see blocks.h for default parameters
+		:
+		normal(0),
+		sub(n),
+		direction(NORTH),
+		note(NULL),
+		durability(dur)
+{
+	if ( w ) {
+		weight=w;
+		shown_weight=weight;
+		return;
+	}
+
+	//weights
+	switch (sub) {
+		case NULLSTONE: weight=4444; break;
+		case SOIL:      weight=1500; break;
+		case GLASS:     weight=2500; break;
+		case WOOD:      weight=999;  break;
+		case IRON:      weight=7874; break;
+		case GREENERY:  weight=2;    break;
+		case SAND:      weight=1250; break;
+		case ROSE:
+		case HAZELNUT:  weight=0.1;  break;
+		case MOSS_STONE:
+		case STONE:     weight=2600; break;
+		case A_MEAT:    weight=1;    break;
+		case H_MEAT:    weight=1;    break;
+		default: weight=1000;
+	}
+	shown_weight=weight;
+}
+
+Block::Block(char * const str) : normal(0) {
+	unsigned short note_len;
+	sscanf(str, "%*d_%*hd_%d_%f_%d_%hd_%hd",
+			(int *)(&sub),
+			&weight,
+			(int *)(&direction),
+			&durability,
+			&note_len);
+	shown_weight=weight;
+	CleanString(str);
+	if ( 0==note_len ) {
+		note=NULL;
+		return;
+	}
+
+	note=new char[note_length];
+	sscanf(str, " %s", note);
+	unsigned short len, i;
+	for (len=0; ' '==str[len]; ++len);
+	for (i=len; i<len+note_len; ++i) str[i]=' ';
+}
 
 void Active::SafeMove() {
 	//when player is on the border of shred, moving him causes World::ReloadShreds(dir). so, cheks are neede for liquids not to push player.
 	unsigned short x_focus, y_focus, z_focus;
-	if ( !(whereWorld->Focus(x_self, y_self, z_self, x_focus, y_focus, z_focus, direction)) &&
-			((Block *)(whereWorld->playerP)!=whereWorld->Block(x_focus, y_focus, z_focus) ||
-			 UP==direction || DOWN==direction ) ) {
-		whereWorld->Move(x_self, y_self, z_self, direction);
-	}
+	World * world=whereShred->GetWorld();
+	if ( !(world->Focus(x_self, y_self, z_self,
+				x_focus, y_focus, z_focus, direction)) &&
+			((Block *)(world->playerP)!=world->
+			 	GetBlock(x_focus, y_focus, z_focus) ||
+			 UP==direction || DOWN==direction ) )
+		world->Move(x_self, y_self, z_self, direction);
 }
 void Active::SafeJump() {
 	SetWeight(0);
-	if ( whereWorld->Move(x_self, y_self, z_self, UP) ) {
+	if ( whereShred->GetWorld()->Move(x_self, y_self, z_self, UP) ) {
 		SetWeight();
 		SafeMove();
 	} else
 		SetWeight();
 }
 
-void Active::Register(World * const w, const int x, const int y, const int z) {
-	whereWorld=w;
-	if ( NULL==whereWorld )
+void Active::Register(Shred * const sh,
+		const int x,
+		const int y,
+		const int z)
+{
+	whereShred=sh;
+	if ( NULL==whereShred )
 		return;
 
 	x_self=x;
 	y_self=y;
 	z_self=z;
-	whereWorld->AddActive(this, x, y);
+	whereShred->AddActive(this);
 }
 
 void Active::Unregister() {
-	if ( NULL==whereWorld )
+	if ( NULL==whereShred )
 		return;
 	
-	whereWorld->RemActive(this, x_self, y_self);
+	whereShred->RemActive(this);
 }
 
+Active::~Active() { Unregister(); }
+
 void Animal::Act() {
-	if ( LIQUID==whereWorld->Kind(x_self, y_self, z_self+1) ) {
-		if (0>=breath)
-			whereWorld->Damage(x_self, y_self, z_self, 10, BREATH, false);
+	if ( LIQUID==whereShred->GetWorld()->Kind(x_self, y_self, z_self+1) ) {
+		if ( 0>=breath )
+			whereShred->GetWorld()->Damage(x_self, y_self, z_self,
+					10, BREATH, false);
 		else
 			--breath;
 		return;
 	} else if ( breath<max_breath )
 		++breath;
 
-	if (0<satiation)
+	if ( 0<satiation )
 		--satiation;
 	else
-		whereWorld->Damage(x_self, y_self, z_self, 1, HUNGER, false);
+		whereShred->GetWorld()->Damage(x_self, y_self, z_self,
+				1, HUNGER, false);
+}
+
+Inventory::Inventory(Shred * const sh,
+		char * const str,
+		FILE * const in)
+		:
+		inShred(sh)
+{
+	for (unsigned short i=0; i<inventory_size; ++i)
+	for (unsigned short j=0; j<max_stack_size; ++j)
+		inventory[i][j]=inShred->GetWorld()->
+			BlockFromFile(in, 0, 0, 0);
+	fgets(str, 300, in);
 }
 
 int Dwarf::Move(const dirs dir) {
 	Active::Move(dir);
-	if ( this==whereWorld->GetPlayerP() && (
+	if ( this==whereShred->GetWorld()->GetPlayerP() && (
 			(x_self==shred_width-1 || x_self==shred_width*2 ||
 			 y_self==shred_width-1 || y_self==shred_width*2)) ) {
-		whereWorld->ReloadShreds(dir);
+		whereShred->GetWorld()->ReloadShreds(dir);
 		return 1;
 	}
 	return 0;
@@ -87,22 +248,25 @@ void Dwarf::Act() {
 
 before_move_return Dwarf::BeforeMove(const dirs dir) {
 	if (dir==direction)
-		whereWorld->GetAll(x_self, y_self, z_self);
+		whereShred->GetWorld()->GetAll(x_self, y_self, z_self);
 	return NOTHING;
 }
 
 before_move_return Pile::BeforeMove(const dirs dir) {
 	direction=dir;
-	whereWorld->DropAll(x_self, y_self, z_self);
+	whereShred->GetWorld()->DropAll(x_self, y_self, z_self);
 	return NOTHING;
 }
 
 bool Liquid::CheckWater(const dirs dir) const {
 	unsigned short i_check, j_check, k_check;
-	if ( (whereWorld->Focus(x_self, y_self, z_self, i_check, j_check, k_check, dir)) )
+	if ( (whereShred->GetWorld()->Focus(x_self, y_self, z_self,
+			i_check, j_check, k_check, dir)) )
 		return false;
-	if ( WATER==whereWorld->Sub(i_check, j_check, k_check) )
+
+	if ( WATER==whereShred->GetWorld()->Sub(i_check, j_check, k_check) )
 		return true;
+
 	return false;
 }
 
@@ -129,27 +293,33 @@ void Grass::Act() {
 		default: return;
 	}
 
-	if ( whereWorld->InBounds(i, j, z_self) ) {
-		if ( AIR==whereWorld->Sub(i, j, z_self) &&
-				whereWorld->InBounds(i, j, z_self-1) && SOIL==whereWorld->Sub(i, j, z_self-1) )
-			whereWorld->Build(new Grass(), i, j, z_self);
-		else if ( SOIL==whereWorld->Sub(i, j, z_self) &&
-				whereWorld->InBounds(i, j, z_self+1) && AIR==whereWorld->Sub(i, j, z_self+1) )
-			whereWorld->Build(new Grass(), i, j, z_self+1);
+	World * world=whereShred->GetWorld();
+
+	if ( world->InBounds(i, j, z_self) ) {
+		if ( AIR==world->Sub(i, j, z_self) &&
+				world->InBounds(i, j, z_self-1) &&
+				SOIL==world->Sub(i, j, z_self-1) )
+			world->Build(new Grass(), i, j, z_self);
+		else if ( SOIL==world->Sub(i, j, z_self) &&
+				world->InBounds(i, j, z_self+1) &&
+				AIR==world->Sub(i, j, z_self+1) )
+			world->Build(new Grass(), i, j, z_self+1);
 	}
 }
 
 void Rabbit::Act() {
+	World * world=whereShred->GetWorld();
 	float attractive=0;
 	float for_north=0, for_west=0;
-	for (short x=x_self-7; x<=x_self+7; ++x)
-	for (short y=y_self-7; y<=y_self+7; ++y)
-	for (short z=z_self-7; z<=z_self+7; ++z)
-		if ( whereWorld->InBounds(x, y, z) ) {
-			switch ( whereWorld->Kind(x, y, z) ) {
-				case DWARF:  if (whereWorld->DirectlyVisible(x_self, y_self, z_self, x, y, z)) attractive=-9; break;
-				case RABBIT: if (whereWorld->DirectlyVisible(x_self, y_self, z_self, x, y, z)) attractive=0.8; break;
-				case GRASS:  if (whereWorld->DirectlyVisible(x_self, y_self, z_self, x, y, z)) attractive=0.1; break;
+	short x, y, z;
+	for (x=x_self-7; x<=x_self+7; ++x)
+	for (y=y_self-7; y<=y_self+7; ++y)
+	for (z=z_self-7; z<=z_self+7; ++z)
+		if ( world->InBounds(x, y, z) ) {
+			switch ( world->Kind(x, y, z) ) {
+				case DWARF:  if (world->DirectlyVisible(x_self, y_self, z_self, x, y, z)) attractive=-9; break;
+				case RABBIT: if (world->DirectlyVisible(x_self, y_self, z_self, x, y, z)) attractive=0.8; break;
+				case GRASS:  if (world->DirectlyVisible(x_self, y_self, z_self, x, y, z)) attractive=0.1; break;
 				default: attractive=0;
 			}
 			if ( attractive ) {
@@ -162,11 +332,15 @@ void Rabbit::Act() {
 
 	if ( abs(for_north)>1 || abs(for_west)>1 ) {
 		if ( abs(for_north)>abs(for_west) ) {
-			if (for_north>0) SetDir(NORTH);
-			else SetDir(SOUTH);
+			if ( for_north>0 )
+				SetDir(NORTH);
+			else
+				SetDir(SOUTH);
 		} else {
-			if (for_west>0) SetDir(WEST);
-			else SetDir(EAST);
+			if ( for_west>0 )
+				SetDir(WEST);
+			else
+				SetDir(EAST);
 		}
 		(rand()%2) ? SafeMove() : SafeJump();
 	} else if ( 0==rand()%60 ) {
@@ -180,11 +354,11 @@ void Rabbit::Act() {
 	}
 
 	if ( seconds_in_day*time_steps_in_sec/2>satiation ) {
-		for (short i=x_self-1; i<=x_self+1; ++i)
-		for (short j=y_self-1; j<=y_self+1; ++j)
-		for (short k=z_self-1; k<=z_self+1; ++k)
-			if ( GREENERY==whereWorld->Sub(i, j, k) ) {
-				whereWorld->Eat(x_self, y_self, z_self, i, j, k);
+		for (x=x_self-1; x<=x_self+1; ++x)
+		for (y=y_self-1; y<=y_self+1; ++y)
+		for (z=z_self-1; z<=z_self+1; ++z)
+			if ( GREENERY==world->Sub(x, y, z) ) {
+				world->Eat(x_self, y_self, z_self, x, y, z);
 				break;
 			}
 	}

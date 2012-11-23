@@ -22,8 +22,6 @@
 #include "blocks.h"
 #include "Shred.h"
 
-class Block;
-
 void World::Examine() const {
 	unsigned short i, j, k;
 	PlayerFocus(i, j, k);
@@ -62,6 +60,7 @@ Block * World::BlockFromFile(FILE * const in,
 	//blocks of this kind just will not load,
 	//unless kind is inherited from Inventory class or one
 	//of its derivatives - in this case this may cause something bad.
+	
 	switch (kind) {
 		case BLOCK: {
 			short normal=0;
@@ -69,19 +68,30 @@ Block * World::BlockFromFile(FILE * const in,
 			sscanf(str, "%*d_%hd_%d", &normal, &sub);
 			return ( normal ) ?
 				NewNormal(subs(sub)) :
-				new class Block(str);
+				new Block(str);
 		}
-		case TELEGRAPH: return new Telegraph(str);
-		case PICK:      return new Pick(str);
-		case CHEST:     return new Chest (this, str, in);
-		case RABBIT:    return new Rabbit(this, i, j, k, str);
-		case ACTIVE:    return new Active(this, i, j, k, str);
-		case DWARF:     return new Dwarf (this, i, j, k, str, in);
-		case PILE:      return new Pile  (this, i, j, k, str, in);
-		case LIQUID:    return new Liquid(this, i, j, k, str);
-		case GRASS:     return new Grass (this, i, j, k, str);
-		case BUSH:      return new Bush  (this, str, in);
-		case -1:        return NULL;
+		case TELEGRAPH:
+			return new Telegraph(str);
+		case PICK:
+			return new Pick(str);
+		case CHEST:
+			return new Chest (GetShred(i, j), str, in);
+		case RABBIT:
+			return new Rabbit(GetShred(i, j), i, j, k, str);
+		case ACTIVE:
+			return new Active(GetShred(i, j), i, j, k, str);
+		case DWARF:
+			return new Dwarf (GetShred(i, j), i, j, k, str, in);
+		case PILE:
+			return new Pile  (GetShred(i, j), i, j, k, str, in);
+		case LIQUID:
+			return new Liquid(GetShred(i, j), i, j, k, str);
+		case GRASS:
+			return new Grass (GetShred(i, j), i, j, k, str);
+		case BUSH:
+			return new Bush  (GetShred(i, j), str, in);
+		case -1:
+			return NULL;
 		default:
 			fprintf(stderr, "BlockFromFile(): unlisted kind: %d\n",
 					kind);
@@ -89,51 +99,35 @@ Block * World::BlockFromFile(FILE * const in,
 	}
 }
 
-void World::AddActive(Active * active, unsigned short x, unsigned short y) {
-	shreds[y%shred_width*numShreds+x%shred_width]->AddActive(active);
-}
+Block * World::GetBlock(
+		const unsigned short x,
+		const unsigned short y,
+		const unsigned short z) const
+	{ return GetShred(x, y)->GetBlock(x%shred_width, y%shred_width, z); }
 
-void World::RemActive(Active * active, unsigned short x, unsigned short y) {
-	shreds[y%shred_width*numShreds+x%shred_width]->RemActive(active);
-}
-
-Block * World::Block(const unsigned short x,
-                     const unsigned short y,
-                     const unsigned short z) const
-{
-	return shreds[y/shred_width*numShreds+x/shred_width]->
-		Block(x%shred_width, y%shred_width, z);
-}
-void World::SetBlock(class Block * block,
+void World::SetBlock(Block * block,
 		const unsigned short x,
 		const unsigned short y,
 		const unsigned short z)
-{
-	shreds[y/shred_width*numShreds+x/shred_width]->SetBlock(block, x, y, z);
-}
+	{ GetShred(x, y)->SetBlock(block, x, y, z); }
 
 short World::LightMap(const unsigned short i,
                       const unsigned short j,
                       const unsigned short k) const
-{
-	return shreds[j/shred_width*numShreds+i/shred_width]->
-		LightMap(i%shred_width, j%shred_width, k);
-}
+	{ return GetShred(i, j)-> LightMap(i%shred_width, j%shred_width, k); }
 void World::SetLightMap(const unsigned short level,
 		const unsigned short i,
 		const unsigned short j,
 		const unsigned short k)
 {
-	shreds[j/shred_width*numShreds+i/shred_width]->
-		SetLightMap(level, i%shred_width, j%shred_width, k);
+       	GetShred(i, j)-> SetLightMap(level, i%shred_width, j%shred_width, k);
 }
 void World::PlusLightMap(const unsigned short level,
 		const unsigned short i,
 		const unsigned short j,
 		const unsigned short k)
 {
-	shreds[j/shred_width*numShreds+i/shred_width]->
-		PlusLightMap(level, i%shred_width, j%shred_width, k);
+	GetShred(i, j)->PlusLightMap(level, i%shred_width, j%shred_width, k);
 }
 
 void World::Shine(
@@ -142,9 +136,10 @@ void World::Shine(
 		const unsigned short k)
 {
 	float light_radius;
+	//fprintf(stderr, "World::Shine: %hu, %hu, %hu\n", i, j, k);
 	if ( !InBounds(i, j, k) ||
-		NULL==Block(i, j, k) ||
-		0==(light_radius=Block(i, j, k)->LightRadius()) )
+		NULL==GetBlock(i, j, k) ||
+		0==(light_radius=GetBlock(i, j, k)->LightRadius()) )
 		return;
 
 	for (short x=ceil(i-light_radius); x<=floor(i+light_radius); ++x)
@@ -163,8 +158,10 @@ void World::SaveAllShreds() {
 		delete shreds[i];
 }
 
-void World::ReloadShreds(const dirs direction) { //ReloadShreds is called from Move, so there is no need to use mutex in this function
-	unsigned short x, y;
+void World::ReloadShreds(const dirs direction) {
+	//ReloadShreds is called from Move,
+	//so there is no need to use mutex in this function
+	short x, y; //do not make unsigned, values <0 are needed for checks
 	switch (direction) {
 		case NORTH:
 			--longitude;
@@ -190,7 +187,7 @@ void World::ReloadShreds(const dirs direction) { //ReloadShreds is called from M
 					shreds[(y-1)*numShreds+x]->
 						ReloadToSouth();
 				}
-				shreds[numShreds*(numShreds-1)+x]=new
+				shreds[numShreds*(numShreds-1)+x]=new 
 					Shred(this, worldName, x, numShreds-1,
 						longitude, latitude);
 			}
@@ -205,7 +202,7 @@ void World::ReloadShreds(const dirs direction) { //ReloadShreds is called from M
 					shreds[(x-1)+y*numShreds]->
 						ReloadToEast();
 				}
-				shreds[numShreds-1+y*numShreds]=new
+				shreds[numShreds-1+y*numShreds]=new 
 					Shred(this, worldName, numShreds-1, y,
 						longitude, latitude);
 			}
@@ -220,8 +217,9 @@ void World::ReloadShreds(const dirs direction) { //ReloadShreds is called from M
 					shreds[(x+1)+y*numShreds]->
 						ReloadToWest();
 				}
-				shreds[y*numShreds]=new Shred(this, worldName,
-						0, y, longitude, latitude);
+				shreds[y*numShreds]=new Shred(this,
+						worldName, 0, y,
+						longitude, latitude);
 			}
 		break;
 		default: fprintf(stderr,
@@ -252,7 +250,7 @@ void World::PhysEvents() {
 			TimeOfDay()*(float)shred_width*3/end_of_night :
 			(TimeOfDay()-end_of_night)*(float)shred_width*3/
 				(seconds_in_day-end_of_night);
-		if_star=( STAR==Block(i, int(shred_width*1.5),
+		if_star=( STAR==GetBlock(i, int(shred_width*1.5),
 			height-1)->Sub() ) ? true : false;
 		SetBlock(NewNormal(SUN_MOON),
 			i, int(shred_width*1.5), height-1);
@@ -266,7 +264,7 @@ void World::PhysEvents() {
 	//blocks' own activities, falling
 	for (unsigned short i=0; i<numShreds*numShreds; ++i)
 	for (         short j=0; j<shreds[i]->activeList.size(); ++j) {
-		Active * temp=shreds[i]->activeList[j];
+		Active * temp=&(shreds[i]->activeList[j]);
 		temp->Act();
 		unsigned short x, y, z;
 		temp->GetSelfXYZ(x, y, z);
@@ -299,13 +297,13 @@ void World::PhysEvents() {
 			--j;
 			if ( NULL!=scr ) {
 				if ( NULL!=scr->blockToPrintRight &&
-						(class Block *)(scr->blockToPrintRight)==Block(x, y, z) )
+						(Block *)(scr->blockToPrintRight)==GetBlock(x, y, z) )
 					scr->blockToPrintRight=NULL;
 				if ( NULL!=scr->blockToPrintLeft &&
-						(class Block *)(scr->blockToPrintLeft)==Block(x, y, z) )
+						(Block *)(scr->blockToPrintLeft)==GetBlock(x, y, z) )
 					scr->blockToPrintLeft=NULL;
 			}
-			delete Block(x, y, z);
+			delete GetBlock(x, y, z);
 			SetBlock(NULL, x, y, z);
 		} else if ( temp->ShouldFall() )
 			Move(x, y, z, DOWN);
@@ -323,7 +321,7 @@ char World::CharNumber(const unsigned short i, const unsigned short j, const uns
 	if ( height-1==k )
 		return ' ';
 
-	if ( (class Block *)playerP==Block(i, j, k) )
+	if ( (Block *)playerP==GetBlock(i, j, k) )
 		switch ( playerP->GetDir() ) {
 			case NORTH: return '^';
 			case SOUTH: return 'v';
@@ -404,48 +402,49 @@ int World::Move(
 {
 	mutex_lock();
 	unsigned short newi, newj, newk;
-	if ( NULL==Block(i, j, k) ||
-			NOT_MOVABLE==Movable(Block(i, j, k)) ||
+	if ( NULL==GetBlock(i, j, k) ||
+			NOT_MOVABLE==Movable(GetBlock(i, j, k)) ||
 			Focus(i, j, k, newi, newj, newk, dir) ) {
 		mutex_unlock();
 		return 0;
 	}
-	if ( DESTROY==(Block(i, j, k)->BeforeMove(dir)) ) {
-		delete Block(i, j, k);
+	if ( DESTROY==(GetBlock(i, j, k)->BeforeMove(dir)) ) {
+		delete GetBlock(i, j, k);
 		SetBlock(NULL, i, j, k);
 		mutex_unlock();
 		return 1;
 	}
-	if ( !stop || (ENVIRONMENT==Block(i, j, k)->Movable() &&
-			Equal(Block(i, j, k), Block(newi, newj, newk))) ) {
+	if ( !stop || (ENVIRONMENT==GetBlock(i, j, k)->Movable() &&
+			Equal(GetBlock(i, j, k), GetBlock(newi, newj, newk))) )
+	{
 		mutex_unlock();
 		return 0;
 	}
 	short numberMoves=0;
-	if ( ENVIRONMENT!=Movable(Block(newi, newj, newk)) &&
+	if ( ENVIRONMENT!=Movable(GetBlock(newi, newj, newk)) &&
 			!(numberMoves=Move(newi, newj, newk, dir, stop-1)) ) {
 		mutex_unlock();
 		return 0;
 	}
 
-	class Block * temp=Block(i, j, k);
-	SetBlock(Block(newi, newj, newk), i, j, k);
+	Block * temp=GetBlock(i, j, k);
+	SetBlock(GetBlock(newi, newj, newk), i, j, k);
 	SetBlock(temp, newi, newj, newk);
 	
 	ReEnlighten(newi, newj, newk);
 
-	if ( NULL!=Block(i, j, k) )
-		Block(i, j, k)->Move( Anti(dir) );
+	if ( NULL!=GetBlock(i, j, k) )
+		GetBlock(i, j, k)->Move( Anti(dir) );
 
-	if ( Block(newi, newj, newk)->Move(dir) )
+	if ( GetBlock(newi, newj, newk)->Move(dir) )
 		GetPlayerCoords(newi, newj, newk);
 
-	if ( Weight(Block(newi, newj, newk)) ) {
-		if ( Weight(Block(newi, newj, newk))>
-				Weight(Block(newi, newj, newk-1)) )
+	if ( Weight(GetBlock(newi, newj, newk)) ) {
+		if ( Weight(GetBlock(newi, newj, newk))>
+				Weight(GetBlock(newi, newj, newk-1)) )
 			numberMoves+=Move(newi, newj, newk, DOWN, stop-1);
-		else if ( Weight(Block(newi, newj, newk))<
-				Weight(Block(newi, newj, newk+1)) )
+		else if ( Weight(GetBlock(newi, newj, newk))<
+				Weight(GetBlock(newi, newj, newk+1)) )
 			numberMoves+=Move(newi, newj, newk, UP, stop-1);
 	}
 
@@ -470,22 +469,23 @@ void World::Jump(
 		unsigned short k)
 {
 	mutex_lock();
-	if ( NULL==Block(i, j, k) || MOVABLE!=Block(i, j, k)->Movable() ) {
+	if ( NULL==GetBlock(i, j, k) ||
+			MOVABLE!=GetBlock(i, j, k)->Movable() ) {
 		mutex_unlock();
 		return;
 	}
 
-	class Block * to_move=Block(i, j, k);
-	Block(i, j, k)->SetWeight(0);
+	Block * to_move=GetBlock(i, j, k);
+	GetBlock(i, j, k)->SetWeight(0);
 	dirs dir=to_move->GetDir();
 	short k_plus=Move(i, j, k, (DOWN==dir) ? DOWN : UP, 1);
 	if ( k_plus ) {
 		k+=((DOWN==dir) ? (-1) : 1) * k_plus;
-		Block(i, j, k)->SetWeight();
+		GetBlock(i, j, k)->SetWeight();
 		if ( !Move( i, j, k, to_move->GetDir()) )
 			Move(i, j, k, DOWN);
 	} else
-		Block(i, j, k)->SetWeight();
+		GetBlock(i, j, k)->SetWeight();
 
 	mutex_unlock();
 }
@@ -540,7 +540,7 @@ int World::Focus(
 		unsigned short & k_target) const
 {
 	return Focus( i, j, k, i_target, j_target, k_target,
-		Block(i, j, k)->GetDir() );
+		GetBlock(i, j, k)->GetDir() );
 }
 
 void World::Damage(
@@ -551,24 +551,24 @@ void World::Damage(
 		const damage_kinds dmg_kind, //see default in class definition
 		const bool destroy) //see default in class definition
 {
-	if ( !InBounds(i, j, k) || NULL==Block(i, j, k) )
+	if ( !InBounds(i, j, k) || NULL==GetBlock(i, j, k) )
 		return;
 			
-	if ( Block(i, j, k)->Normal() )
-		SetBlock(new class Block(Block(i, j, k)->Sub()), i, k, k);
+	if ( GetBlock(i, j, k)->Normal() )
+		SetBlock(new Block(GetBlock(i, j, k)->Sub()), i, k, k);
 		
-	if ( 0<Block(i, j, k)->Damage(dmg, dmg_kind) )
+	if ( 0<GetBlock(i, j, k)->Damage(dmg, dmg_kind) )
 		return;
 
-	class Block * temp=Block(i, j, k);
+	Block * temp=GetBlock(i, j, k);
 	if (temp==scr->blockToPrintLeft)
 		scr->viewLeft=NORMAL;
 	if (temp==scr->blockToPrintRight)
 		scr->viewRight=NORMAL;
 	
-	class Block * dropped=temp->DropAfterDamage();
+	Block * dropped=temp->DropAfterDamage();
 	if ( PILE!=temp->Kind() && (temp->HasInventory() || NULL!=dropped) ) {
-		Pile * new_pile=new Pile(this, i, j, k);
+		Pile * new_pile=new Pile(GetShred(i, j), i, j, k);
 		SetBlock(new_pile, i, j, k);
 		if ( temp->HasInventory() )
 			new_pile->GetAll(temp);
@@ -592,14 +592,14 @@ void World::Use(
 		const unsigned short j,
 		const unsigned short k)
 {
-	if ( !InBounds(i, j, k) || NULL==Block(i, j, k) )
+	if ( !InBounds(i, j, k) || NULL==GetBlock(i, j, k) )
 		return;
 
-	switch ( Block(i, j, k)->Use() ) {
+	switch ( GetBlock(i, j, k)->Use() ) {
 		case OPEN:
 			if (INVENTORY!=scr->viewLeft) {
 				scr->viewLeft=INVENTORY;
-				scr->blockToPrintLeft=Block(i, j, k);
+				scr->blockToPrintLeft=GetBlock(i, j, k);
 			} else
 				scr->viewLeft=NORMAL;
 		break;
@@ -607,12 +607,12 @@ void World::Use(
 	}
 }
 
-bool World::Build(class Block * block,
+bool World::Build(Block * block,
 		const unsigned short i,
 		const unsigned short j,
 		const unsigned short k) {
 	if ( !(InBounds(i, j, k) &&
-			NULL==Block(i, j, k) &&
+			NULL==GetBlock(i, j, k) &&
 			block->CanBeOut()) ) {
 		scr->Notify("You can not build.");
 		return false;
@@ -620,14 +620,14 @@ bool World::Build(class Block * block,
 
 	block->Restore();
 	if ( block->ActiveBlock() )
-		((Active *)block)->Register(this, i, j, k);
+		((Active *)block)->Register(GetShred(i, j), i, j, k);
 	SetBlock(block, i, j, k);
 	ReEnlighten(i, j, k);
 	return true;
 }
 
 void World::PlayerBuild(const unsigned short n) {
-	class Block * temp=playerP->Drop(n);
+	Block * temp=playerP->Drop(n);
 	unsigned short i, j, k;
 	PlayerFocus(i, j, k);
 	if ( !Build(temp, i, j, k) )
@@ -651,17 +651,17 @@ void World::Inscribe(
 		const unsigned short j,
 		const unsigned short k)
 {
-	if ( !InBounds(i, j, k) || NULL==Block(i, j, k) )
+	if ( !InBounds(i, j, k) || NULL==GetBlock(i, j, k) )
 		return;
 
-	if ( Block(i, j, k)->Normal() )
-		SetBlock(new class Block(Block(i, j, k)->Sub()),
+	if ( GetBlock(i, j, k)->Normal() )
+		SetBlock(new Block(GetBlock(i, j, k)->Sub()),
 			i, j, k);
 	char str[note_length];
-	Block(i, j, k)->Inscribe(scr->GetString(str));
+	GetBlock(i, j, k)->Inscribe(scr->GetString(str));
 }
 
-void World::Eat(class Block * who, class Block * food) {
+void World::Eat(Block * who, Block * food) {
 	if ( NULL==who || NULL==food )
 		return;
 	if ( who->Eat(food) ) {
@@ -677,7 +677,7 @@ void World::PlayerEat(unsigned short n) {
 	}
 	unsigned short playerX, playerY, playerZ;
 	playerP->GetSelfXYZ(playerX, playerY, playerZ);
-	class Block * food=playerP->Drop(n);
+	Block * food=playerP->Drop(n);
 	if ( !playerP->Eat(food) ) {
 		playerP->Get(food);
 		scr->Notify("You can't eat this.");
@@ -709,7 +709,7 @@ void World::Exchange(
 	}
 
 	if ( NULL!=inv_to ) {
-		class Block * temp=inv_from->Drop(n);
+		Block * temp=inv_from->Drop(n);
 		if ( NULL!=temp && !inv_to->Get(temp) ) {
 			inv_from->Get(temp);
 			scr->Notify("Not enough room\n");
@@ -718,9 +718,10 @@ void World::Exchange(
 		return;
 	}
 	
-	class Block * block=Block(i_to, j_to, k_to);
+	Block * block=GetBlock(i_to, j_to, k_to);
 	if ( NULL==block ) {
-		Pile * newpile=new Pile(this, i_to, j_to, k_to);
+		Pile * newpile=new
+			Pile(GetShred(i_to, j_to), i_to, j_to, k_to);
 		newpile->Get( inv_from->Drop(n) );
 		block=newpile;
 	}
@@ -736,20 +737,21 @@ void World::ExchangeAll(
 		const unsigned short j_to,
 		const unsigned short k_to)
 {
-	if ( NULL==Block(i_from, j_from, k_from) ||
-			NULL==Block(i_to, j_to, k_to) )
+	if ( NULL==GetBlock(i_from, j_from, k_from) ||
+			NULL==GetBlock(i_to, j_to, k_to) )
 		return;       
 	
-	Inventory * to=(Inventory *)(Block(i_to, j_to, k_to)->HasInventory());
+	Inventory * to=(Inventory *)(GetBlock(i_to, j_to, k_to)->
+			HasInventory());
 	if ( NULL!=to )
-		to->GetAll(Block(i_from, j_from, k_from));
+		to->GetAll(GetBlock(i_from, j_from, k_from));
 }
 
 void World::Wield(Dwarf * const dwarf, const unsigned short n) {
 	if ( inventory_size<=n )
 		return;
 
-	class Block * temp=dwarf->Drop(n);
+	Block * temp=dwarf->Drop(n);
 	if ( NULL==temp )
 		return;
 
@@ -763,9 +765,9 @@ char * World::FullName(char * const str,
 		const unsigned short k) const
 {
 	if ( InBounds(i, j, k) )
-		(NULL==Block(i, j, k)) ?
+		(NULL==GetBlock(i, j, k)) ?
 			WriteName(str, "Air") :
-			Block(i, j, k)->FullName(str);
+			GetBlock(i, j, k)->FullName(str);
 	return str;
 }
 
@@ -773,40 +775,36 @@ subs World::Sub(
 		const unsigned short i,
 		const unsigned short j,
 		const unsigned short k) const
-{
-	return (!InBounds(i, j, k) || NULL==Block(i, j, k)) ?
-		AIR :
-		Block(i, j, k)->Sub();
-}
+	{ return GetShred(i, j)->Sub(i%shred_width, j%shred_width, k); }
 
 kinds World::Kind(
 		const unsigned short i,
 		const unsigned short j,
 		const unsigned short k) const
-{
-	return (!InBounds(i, j, k) ||
-			NULL==Block(i, j, k)) ? BLOCK : Block(i, j, k)->Kind(); }
+	{ return GetShred(i, j)->Kind(i%shred_width, j%shred_width, k); }
 
 short World::Durability(
 		const unsigned short i,
 		const unsigned short j,
 		const unsigned short k) const
 {
-	return (!InBounds(i, j, k) || NULL==Block(i, j, k)) ?
+	return (!InBounds(i, j, k) || NULL==GetBlock(i, j, k)) ?
 		0 :
-		Block(i, j, k)->Durability();
+		GetBlock(i, j, k)->Durability();
 }
 
 int World::TransparentNotSafe(
 		const unsigned short i,
 		const unsigned short j,
-		const unsigned short k) const
-	{ return ( NULL==Block(i, j, k) ) ? 2 : Block(i, j, k)->Transparent(); }
+		const unsigned short k) const {
+	return GetShred(i, j)->
+		Transparent(i%shred_width, j%shred_width, k);
+}
 
-int World::Movable(const class Block * const block) const
+int World::Movable(const Block * const block) const
 	{ return (NULL==block) ? ENVIRONMENT : block->Movable(); }
 
-double World::Weight(const class Block * const block) const
+double World::Weight(const Block * const block) const
 	{ return (NULL==block) ? 0 : block->Weight(); }
 
 void * World::HasInventory(
@@ -814,9 +812,9 @@ void * World::HasInventory(
 		const unsigned short j,
 		const unsigned short k) const
 {
-	return (!InBounds(i, j, k) || NULL==Block(i, j, k)) ?
+	return (!InBounds(i, j, k) || NULL==GetBlock(i, j, k)) ?
 		NULL :
-		Block(i, j, k)->HasInventory();
+		GetBlock(i, j, k)->HasInventory();
 }
 
 void * World::ActiveBlock(
@@ -824,9 +822,9 @@ void * World::ActiveBlock(
 		const unsigned short j,
 		const unsigned short k) const
 {
-	return (!InBounds(i, j, k) || NULL==Block(i, j, k)) ?
+	return (!InBounds(i, j, k) || NULL==GetBlock(i, j, k)) ?
 		NULL :
-		Block(i, j, k)->ActiveBlock();
+		GetBlock(i, j, k)->ActiveBlock();
 }
 
 int World::Temperature(
@@ -835,19 +833,20 @@ int World::Temperature(
 		const unsigned short k_center) const
 {
 	if (!InBounds(i_center, j_center, k_center) ||
-			NULL==Block(i_center, j_center, k_center) ||
+			NULL==GetBlock(i_center, j_center, k_center) ||
 			height-1==k_center)
 		return 0;
 
-	short temperature=Block(i_center, j_center, k_center)->Temperature();
+	short temperature=GetBlock(i_center, j_center, k_center)->
+		Temperature();
 	if ( temperature )
 		return temperature;
 
 	for (short i=i_center-1; i<=i_center+1; ++i)
 	for (short j=j_center-1; j<=j_center+1; ++j)
 	for (short k=k_center-1; k<=k_center+1; ++k)
-		if (InBounds(i, j, k) && NULL!=Block(i, j, k))
-			temperature+=Block(i, j, k)->Temperature();
+		if (InBounds(i, j, k) && NULL!=GetBlock(i, j, k))
+			temperature+=GetBlock(i, j, k)->Temperature();
 	return temperature/2;
 }
 
@@ -856,14 +855,14 @@ bool World::GetNote(char * const str,
 		const unsigned short j,
 		const unsigned short k) const
 {
-	if ( InBounds(i, j, k) && NULL!=Block(i, j, k) )
-		return Block(i, j, k)->GetNote(str);
+	if ( InBounds(i, j, k) && NULL!=GetBlock(i, j, k) )
+		return GetBlock(i, j, k)->GetNote(str);
 	return false;
 }
 
 bool World::Equal(
-		const class Block * const block1,
-		const class Block * const block2) const
+		const Block * const block1,
+		const Block * const block2) const
 {
 	if ( NULL==block1 && NULL==block2 ) return true;
 	if ( NULL==block1 || NULL==block2 ) return false;
@@ -874,19 +873,27 @@ char World::MakeSound(
 		const unsigned short i,
 		const unsigned short j,
 		const unsigned short k) const
-	{ return (NULL==Block(i, j, k)) ? ' ' : Block(i, j, k)->MakeSound(); }
+{
+	return (NULL==GetBlock(i, j, k)) ?
+		' ' :
+		GetBlock(i, j, k)->MakeSound();
+}
 
 float World::LightRadius(
 		const unsigned short i,
 		const unsigned short j,
 		const unsigned short k) const
-	{ return (NULL==Block(i, j, k)) ? 0 : Block(i, j, k)->LightRadius(); }
+{
+	return (NULL==GetBlock(i, j, k)) ?
+		0 :
+		GetBlock(i, j, k)->LightRadius();
+}
 
-World::World(QString world_name) {
+/*World::World(QString world_name) {
 	World(world_name, 1, 1,
 		shred_width, shred_width, height/2,
 		end_of_night, 3);
-}
+}*/
 
 World::World(QString world_name,
 		const unsigned long longi,
@@ -910,35 +917,40 @@ World::World(QString world_name,
 		scr(NULL)
 {
 	for (unsigned short i=STONE; i<AIR; ++i) {
-		normal_blocks[i]=new class Block(subs(i));
+		normal_blocks[i]=new Block(subs(i));
 		normal_blocks[i]->SetNormal(1);
 	}
 
 	if ( numShreds<3 || numShreds%2!=1 )
 		numShreds=3;
 
-	shreds=new class Shred *[numShreds*numShreds];
+	shreds=new Shred *[numShreds*numShreds];
 	unsigned short x, y;
 	unsigned long i, j;
 	for (i=longi-numShreds/2, x=0; x<numShreds; ++i, ++x)
 	for (j=lati -numShreds/2, y=0; y<numShreds; ++j, ++y)
 		shreds[y*numShreds+x]=new Shred(this, world_name, x, y, i, j);
-
+	
 	if ( DWARF!=Kind(spawnX, spawnY, spawnZ) ) {
-		if (NULL!=Block(spawnX, spawnY, spawnZ) &&
-				!(Block(spawnX, spawnY, spawnZ)->Normal()) )
-			delete Block(spawnX, spawnY, spawnZ);
-		SetBlock((class Block*)(playerP=new Dwarf(this,
+		if (NULL!=GetBlock(spawnX, spawnY, spawnZ) &&
+				!(GetBlock(spawnX, spawnY, spawnZ)->
+					Normal()) ) {
+			fprintf(stderr, "World::World: ok\n");
+			delete GetBlock(spawnX, spawnY, spawnZ);
+		}
+
+		SetBlock((Block*)(playerP=new
+			Dwarf(GetShred(spawnX, spawnY),
 				spawnX, spawnY, spawnZ)),
 			spawnX, spawnY, spawnZ);
-		fprintf(stderr, "World::LoadAllShreds(): new player place\n");
+		fprintf(stderr, "World::World: new player place\n");
 	} else
-		playerP=(Dwarf *)Block(spawnX, spawnY, spawnZ);
-
+		playerP=(Dwarf *)GetBlock(spawnX, spawnY, spawnZ);
+	
 	ReEnlightenAll();
 
-	thread=new Thread(this);
-	thread->start();
+	//thread=new Thread(this);
+	//thread->start();
 }
 
 World::~World() {
@@ -948,17 +960,19 @@ World::~World() {
 	delete thread;
 	mutex_unlock();
 
-	GetPlayerCoords(spawnX, spawnY, spawnZ);
-	FILE * file=fopen(worldName.toAscii().constData(), "w");
-	if (file!=NULL) {
-		fprintf(file, "longitude: %ld\nlatitude: %ld\nspawnX: %hd\nspawnY: %hd\nspawnZ: %hd\ntime: %ld\nWorld:%s\n",
-				longitude, latitude,
-				spawnX, spawnY, spawnZ,
-				time, worldName.toAscii().constData());
-		fclose(file);
-	}
 	SaveAllShreds();
 
 	for (unsigned short i=STONE; i<AIR; ++i)
 		delete normal_blocks[i];
+
+	GetPlayerCoords(spawnX, spawnY, spawnZ);
+	FILE * file=fopen((worldName+"_save").toAscii().constData(), "w");
+	if ( file==NULL )
+       		return;
+
+	fprintf(file, "longitude: %ld\nlatitude: %ld\nspawnX: %hd\nspawnY: %hd\nspawnZ: %hd\ntime: %ld\nWorld:%s\n",
+			longitude, latitude,
+			spawnX, spawnY, spawnZ,
+			time, worldName.toAscii().constData());
+	fclose(file);
 }

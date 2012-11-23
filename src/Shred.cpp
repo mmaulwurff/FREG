@@ -32,6 +32,7 @@ Shred::Shred(World * const world_,
 		latitude(lati),
 		shredX(shred_x),
 		shredY(shred_y)
+		//activeList()
 {
 	char str[50];
 	FILE * in=fopen(FileName(str), "r");
@@ -98,37 +99,59 @@ Shred::~Shred() {
 			delete blocks[i][j][k];
 }
 
-void Shred::AddActive(Active * active) {
-	activeList.append(active);
+int Shred::Transparent(
+		const unsigned short i,
+		const unsigned short j,
+		const unsigned short k) const
+{
+	return ( NULL==blocks[i][j][k] ) ? 2 : blocks[i][j][k]->Transparent();
 }
 
-void Shred::RemActive(Active * active) {
-	activeList.removeOne(active);
+subs Shred::Sub(
+		const unsigned short i,
+		const unsigned short j,
+		const unsigned short k) const
+	{ return ( NULL==blocks[i][j][k] ) ? AIR : blocks[i][j][k]->Sub(); }
+
+kinds Shred::Kind(
+		const unsigned short i,
+		const unsigned short j,
+		const unsigned short k) const
+	{ return ( NULL==blocks[i][j][k] ) ? BLOCK : blocks[i][j][k]->Kind(); }
+
+void Shred::AddActive(const Active * const active) {
+	activeList.append(*active);
+}
+
+void Shred::RemActive(const Active * const active) {
+	activeList.removeOne(*active);
 }
 
 void Shred::ReloadToNorth() {
 	for (unsigned short i=0; i<activeList.size(); ++i)
-		activeList[i]->ReloadToNorth();
+		activeList[i].ReloadToNorth();
 }
 void Shred::ReloadToEast() {
 	for (unsigned short i=0; i<activeList.size(); ++i)
-		activeList[i]->ReloadToEast();
+		activeList[i].ReloadToEast();
 }
 void Shred::ReloadToSouth() {
 	for (unsigned short i=0; i<activeList.size(); ++i)
-		activeList[i]->ReloadToSouth();
+		activeList[i].ReloadToSouth();
 }
 void Shred::ReloadToWest() {
 	for (unsigned short i=0; i<activeList.size(); ++i)
-		activeList[i]->ReloadToWest();
+		activeList[i].ReloadToWest();
 }
 
-class Block * Shred::Block(const unsigned short x,
-                     const unsigned short y,
-                     const unsigned short z) const {
+Block * Shred::GetBlock(
+		const unsigned short x,
+		const unsigned short y,
+		const unsigned short z) const {
+	//fprintf(stderr, "Shred::GetBlock::x: %hu, y: %hu, z:%hu\n", x, y, z);
 	return blocks[x][y][z];
 }
-void Shred::SetBlock(class Block * block,
+void Shred::SetBlock(Block * block,
 		const unsigned short x,
 		const unsigned short y,
 		const unsigned short z)
@@ -170,9 +193,12 @@ char Shred::TypeOfShred(
 
 	unsigned long mapSize;
 	while ( '#'==getc(map) ) //'#' is for comment
-		while ( '\n'==getc(map) );
+		while ( '\n'!=getc(map) );
 
-	fscanf(map, "ize:%lu\n", &mapSize);
+	if ( !fscanf(map, "ize:%lu\n", &mapSize) ) {
+		fprintf(stderr, "Shred::TypoOfShred:Map read error.\n");
+		return '#';
+	}
 
 	if ( longi > mapSize || lati  > mapSize )
 		return '#';
@@ -204,7 +230,7 @@ void Shred::PlantGrass() {
 		unsigned short k;
 		for (k=height-2; Transparent(i, j, k); --k);
 		if ( SOIL==Sub(i, j, k++) && NULL==blocks[i][j][k] )
-			blocks[i][j][k]=new Grass(world,
+			blocks[i][j][k]=new Grass(this,
 				i+shredX*shred_width,
 				j+shredY*shred_width, k);
 	}
@@ -212,8 +238,8 @@ void Shred::PlantGrass() {
 
 void Shred::TestShred() {
 	NormalUnderground();
-	blocks[2][0][height/2]=new Chest(world);
-	blocks[3][1][height/2]=new Active(world,
+	blocks[2][0][height/2]=new Chest(this);
+	blocks[3][1][height/2]=new Active(this,
 		shredX*shred_width+3,
 		shredY*shred_width+1, height/2, SAND);
 }
@@ -246,7 +272,7 @@ void Shred::Plain() {
 		short x=rand()%shred_width,
 		      y=rand()%shred_width;
 		if ( NULL==blocks[x][y][height/2] )
-			blocks[x][y][height/2]=new Bush(world);
+			blocks[x][y][height/2]=new Bush(this);
 	}
 
 	//rabbits
@@ -255,7 +281,7 @@ void Shred::Plain() {
 		short x=rand()%shred_width,
 		      y=rand()%shred_width;
 		if ( NULL==blocks[x][y][height/2] )
-			blocks[x][y][height/2]=new Rabbit(world,
+			blocks[x][y][height/2]=new Rabbit(this,
 				shredX*shred_width+x,
 				shredY*shred_width+y, height/2);
 	}
@@ -337,7 +363,7 @@ void Shred::Water(const long longi, const long lati) {
 	for (j=0; j<shred_width; ++j)
 	for (k=height/2-depth; k<height/2; ++k)
 		if ( NULL==blocks[i][j][k] )
-			blocks[i][j][k]=new Liquid(world,
+			blocks[i][j][k]=new Liquid(this,
 			                i+shred_width*shredX,
 			                j+shred_width*shredY, k);
 

@@ -29,7 +29,7 @@
 #define GL_MULTISAMPLE  0x809D
 #endif
 
-enum Qt::Key;
+//enum Qt::Key;
 
 FREGGLWidget::FREGGLWidget(QWidget *parent) :
 		QGLWidget(QGLFormat(QGL::SampleBuffers), parent) {

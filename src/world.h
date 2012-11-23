@@ -47,17 +47,20 @@ class World {
 			const unsigned short,
 			const unsigned short,
 			const unsigned short);
-	void AddActive(Active *, unsigned short, unsigned short);
-	void RemActive(Active *, unsigned short, unsigned short);
 	Block * NewNormal(subs sub) { return normal_blocks[sub]; }
 	Thread * thread;
 	Screen * scr;
 
 	private:
-	Block * Block(const unsigned short,
-	              const unsigned short,
-	              const unsigned short) const;
-	void SetBlock(class Block *,
+	Block * GetBlock(
+			const unsigned short,
+			const unsigned short,
+			const unsigned short) const;
+	Shred * GetShred(
+			const unsigned short i,
+			const unsigned short j) const
+		{ return shreds[j/shred_width*numShreds+i/shred_width]; }
+	void SetBlock(Block *,
 		const unsigned short,
 		const unsigned short,
 		const unsigned short);
@@ -310,7 +313,7 @@ class World {
 			const unsigned short,
 			const unsigned short,
 			const unsigned short);
-	bool Build(class Block *,
+	bool Build(Block *,
 			const unsigned short,
 			const unsigned short,
 			const unsigned short);
@@ -321,7 +324,7 @@ class World {
 			const unsigned short,
 			const unsigned short,
 			const unsigned short);
-	void Eat(class Block *, class Block *);
+	void Eat(Block *, Block *);
 	void Eat(const unsigned short i,
 	         const unsigned short j,
 	         const unsigned short k,
@@ -330,7 +333,7 @@ class World {
 	         const unsigned short k_food) {
 		if ( !InBounds(i, j, k) || !InBounds(i_food, j_food, k_food) )
 			return;
-		Eat(Block(i, j, k), Block(i_food, j_food, k_food));
+		Eat(GetBlock(i, j, k), GetBlock(i_food, j_food, k_food));
 	}
 	void PlayerEat(unsigned short);
 
@@ -438,10 +441,15 @@ class World {
 			const unsigned short,
 			const unsigned short k) const;
 
-	int Movable(const class Block * const) const;
-	double Weight(const class Block * const) const;
-	double Weight(const unsigned short i, const unsigned short j, const unsigned short k) const
-		{ return (!InBounds(i, j, k)) ? 1000 : Weight(Block(i, j, k)); }
+	int Movable(const Block * const) const;
+	double Weight(const Block * const) const;
+	double Weight(
+			const unsigned short i,
+			const unsigned short j,
+			const unsigned short k) const
+	{
+		return (!InBounds(i, j, k)) ? 1000 : Weight(GetBlock(i, j, k));
+	}
 
 	void * HasInventory(
 			const unsigned short,
@@ -461,14 +469,18 @@ class World {
 			const unsigned short,
 			const unsigned short,
 			const unsigned short) const;
-	bool Equal(
-			const class Block * const,
-			const class Block * const) const;
-	short Enlightened(const unsigned short i, const unsigned short j, const unsigned short k) const {
-		if ( !InBounds(i, j, k) || NULL==Block(i, j, k) )
+	bool Equal(const Block * const, const Block * const) const;
+	short Enlightened(
+			const unsigned short i,
+			const unsigned short j,
+			const unsigned short k) const
+	{
+		if ( !InBounds(i, j, k) || NULL==GetBlock(i, j, k) )
 			return 0;
+
 		if ( height-1==k )
 			return 10;
+
 		return LightMap(i, j, k);
 	}
 	char MakeSound(

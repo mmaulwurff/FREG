@@ -19,11 +19,9 @@
 #define BLOCKS_H
 
 #include "header.h"
-#include "world.h"
 
 class World;
-class Block;
-Block * BlockFromFile(FILE *, World * =NULL, unsigned short=0, unsigned short=0, unsigned short=0);
+class Shred;
 
 class Block { //blocks without special physics and attributes
 	short normal;
@@ -46,27 +44,7 @@ class Block { //blocks without special physics and attributes
 
 	public:
 	//short enlightened;
-	virtual char * FullName(char * const str) const {
-		switch (sub) {
-			case WATER:      return WriteName(str, "Ice");
-			case STONE:      return WriteName(str, "Stone");
-			case MOSS_STONE: return WriteName(str, "Moss stone");
-			case NULLSTONE:  return WriteName(str, "Nullstone");
-			case GLASS:      return WriteName(str, "Glass");
-			case STAR: case SUN_MOON:
-			case SKY:        return WriteName(str, "Air");
-			case SOIL:       return WriteName(str, "Soil");
-			case HAZELNUT:   return WriteName(str, "Hazelnut");
-			case WOOD:       return WriteName(str, "Wood");
-			case GREENERY:   return WriteName(str, "Leaves");
-			case ROSE:       return WriteName(str, "Rose");
-			case A_MEAT:     return WriteName(str, "Animal meat");
-			case H_MEAT:     return WriteName(str, "Not animal meat");
-			default:
-				fprintf(stderr, "Block::FullName(char *): Block has unknown substance: %d", int(sub));
-				return WriteName(str, "Unknown block");
-		}
-	}
+	virtual char * FullName(char * const) const;
 
 	void SetWeight(const double m) { shown_weight=m; }
 	void SetWeight() { shown_weight=weight; }
@@ -113,24 +91,7 @@ class Block { //blocks without special physics and attributes
 	virtual char MakeSound() const { return ' '; }
 	virtual unsigned short Noise() const { return 1; }
 	virtual usage_types Use() { return NO; }
-	virtual int Damage(const unsigned short dmg, const damage_kinds dmg_kind=CRUSH) {
-		if (0>=durability)
-			return 0;
-		switch (sub) {
-			case GLASS: return durability=0;
-			case MOSS_STONE:
-			case STONE:  return ((MINE==dmg_kind) ? durability-=2*dmg : durability-=dmg);
-			case GREENERY: case ROSE: case HAZELNUT:
-			case WOOD:   return  ((CUT==dmg_kind) ? durability-=2*dmg : durability-=dmg);
-			case SAND:
-			case SOIL:   return  ((DIG==dmg_kind) ? durability-=2*dmg : durability-=dmg);
-			case A_MEAT:
-			case H_MEAT: return ((THRUST==dmg_kind) ? durability-=2*dmg : durability-=dmg);
-			case DIFFERENT: case AIR: case SKY: case SUN_MOON: case WATER:
-			case NULLSTONE: return durability;
-			default: return durability-=dmg;
-		}
-	}
+	virtual int Damage(const unsigned short, const damage_kinds dmg_kind);
 	virtual short Max_durability() const { return max_durability; }
 	void Restore() { durability=Max_durability(); }
 	short Durability() const { return durability; }
@@ -160,10 +121,7 @@ class Block { //blocks without special physics and attributes
 		}
 	}
 
-	virtual bool operator==(const Block& block) const {
-		return ( block.Kind()==Kind() && block.Sub()==Sub() &&
-			((NULL==block.note && NULL==note) || (NULL!=block.note && NULL!=note && strcpy(block.note, note))) );
-	}
+	virtual bool operator==(const Block &) const;
 
 	void SaveToFile(FILE * const out) const {
 		fprintf(out, "%d", (int)Kind());
@@ -180,46 +138,11 @@ class Block { //blocks without special physics and attributes
 		else fprintf(out, "_0/");
 	}
 
-	Block(const subs n=STONE, const short dur=max_durability, const double w=0) :
-			normal(0), sub(n), direction(NORTH), note(NULL), durability(dur) {
-		if (w) {
-			weight=w;
-			shown_weight=weight;
-			return;
-		}
-
-		//weights
-		switch (sub) {
-			case NULLSTONE: weight=4444; break;
-			case SOIL:      weight=1500; break;
-			case GLASS:     weight=2500; break;
-			case WOOD:      weight=999;  break;
-			case IRON:      weight=7874; break;
-			case GREENERY:  weight=2;    break;
-			case SAND:      weight=1250; break;
-			case ROSE:
-			case HAZELNUT:  weight=0.1;  break;
-			case MOSS_STONE:
-			case STONE:     weight=2600; break;
-			case A_MEAT:    weight=1;    break;
-			case H_MEAT:    weight=1;    break;
-			default: weight=1000;
-		}
-		shown_weight=weight;
-	}
-	Block(char * const str) : normal(0) {
-		unsigned short note_len;
-	       	sscanf(str, "%*d_%*hd_%d_%f_%d_%hd_%hd", (int *)(&sub), &weight, (int *)(&direction), &durability, &note_len);
-		shown_weight=weight;
-		CleanString(str);
-		if (0!=note_len) {
-			note=new char[note_length];
-			sscanf(str, " %s", note);
-			unsigned short len, i;
-			for (len=0; ' '==str[len]; ++len);
-			for (i=len; i<len+note_len; ++i) str[i]=' ';
-		} else note=NULL;
-	}
+	Block(
+			const subs=STONE,
+			const short=max_durability,
+			const double=0);
+	Block(char * const);
 	virtual ~Block() { if (NULL!=note) delete [] note; }
 };
 
@@ -284,7 +207,7 @@ class Active : public Block {
 
 	protected:
 	unsigned short x_self, y_self, z_self;
-	World * whereWorld;
+	Shred * whereShred;
 
 	public:
 	virtual char * FullName(char * const str) const {
@@ -321,7 +244,6 @@ class Active : public Block {
 		y=y_self;
 	}
 	void GetSelfZ(unsigned short & z) const { z=z_self; }
-	World * GetWorld() const { return whereWorld; }
 	virtual void Act() {}
 	void SafeMove();
 	void SafeJump();
@@ -340,22 +262,35 @@ class Active : public Block {
 	void ReloadToWest()  { x_self+=shred_width; }
 	void ReloadToEast()  { x_self-=shred_width; }
 
-	void Register(World *, int, int, int);
+	void Register(Shred *, int, int, int);
 	void Unregister();
 
-	Active(const subs sub, const short dur=max_durability) :
-		Block(sub, dur),
-		ifToDestroy(false),
-		whereWorld(NULL) {}
-	Active(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, subs sub, const short dur=max_durability) :
+	Active(const subs sub,
+			const short dur=max_durability)
+			:
+			Block(sub, dur),
+			ifToDestroy(false),
+	       		whereShred(NULL) {}
+	Active(Shred * const sh,
+			const unsigned short x,
+			const unsigned short y,
+			const unsigned short z,
+			subs sub,
+			const short dur=max_durability)
+			:
 			Block(sub, dur),
 			ifToDestroy(false)
-		{ Register(w, x, y, z); }
-	Active(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, char * str) :
+		{ Register(sh, x, y, z); }
+	Active(Shred * const sh,
+			const unsigned short x,
+			const unsigned short y,
+			const unsigned short z,
+			char * str)
+			:
 			Block(str),
 			ifToDestroy(false)	
-		{ Register(w, x, y, z); }
-	virtual ~Active() { Unregister(); }
+		{ Register(sh, x, y, z); }
+	virtual ~Active();
 };
 
 class Animal : public Active {
@@ -376,19 +311,33 @@ class Animal : public Active {
 		fprintf(out, "%hd_%d/", breath, satiation);
 	}
 
-	Animal(World * const w, const unsigned short i, const unsigned short j, const unsigned short k, subs sub=A_MEAT, const short dur=max_durability) :
-		Active(w, i, j, k, sub, dur), breath(max_breath), satiation(seconds_in_day*time_steps_in_sec) {}
-	Animal(World * const w, const unsigned short i, const unsigned short j, const unsigned short k, char * str) :
-		Active(w, i, j, k, str) {
+	Animal(Shred * const sh,
+			const unsigned short i,
+			const unsigned short j,
+			const unsigned short k,
+			subs sub=A_MEAT,
+			const short dur=max_durability)
+			:
+			Active(sh, i, j, k, sub, dur),
+			breath(max_breath),
+			satiation(seconds_in_day*time_steps_in_sec) {}
+	Animal(Shred * const sh,
+			const unsigned short i,
+			const unsigned short j,
+			const unsigned short k,
+			char * str)
+			:
+			Active(sh, i, j, k, str)
+	{
 			sscanf(str, " %hd_%d/", &breath, &satiation);
 			CleanString(str);		
-		}
+	}
 };
 
 class Inventory {
 	protected:
 	Block * inventory[inventory_size][max_stack_size];
-	World * inWorld;
+	Shred * inShred;
 
 	public:
 	char * InvFullName(char * const str, const int i) const { return (NULL==inventory[i][0]) ? WriteName(str, "") : inventory[i][0]->FullName(str); }
@@ -427,21 +376,24 @@ class Inventory {
 	usage_types Use() { return OPEN; }
 
 	Block * Drop(int n) {
-		if (0>n || inventory_size<=n) return NULL;
-		unsigned short temp_n=Number(n);
-		if (temp_n) {
-			Block * temp=inventory[n][temp_n-1];
-			inventory[n][temp_n-1]=NULL;
-			return temp;
-		} else
+		if ( 0>n || inventory_size<=n )
 			return NULL;
+
+		unsigned short temp_n=Number(n);
+		if ( !temp_n )
+			return NULL;
+
+		Block * temp=inventory[n][temp_n-1];
+		inventory[n][temp_n-1]=NULL;
+		return temp;
 	}
 	virtual int Get(Block * block, int n=0) {
 		if (NULL==block) return 1;
 		if (0>n || inventory_size<=n) n=0;
 		for (unsigned short i=n; i<inventory_size; ++i) {
 			if ( NULL==inventory[i][0] ||
-					(*block==*inventory[i][0] && (Number(i) < max_stack_size)) ) {
+					(*block==*inventory[i][0] &&
+						(Number(i)<max_stack_size)) ) {
 				inventory[i][Number(i)]=block;
 				return 1;
 			}
@@ -486,19 +438,15 @@ class Inventory {
 		}
 	}
 
-	Inventory(World * const w) :
-			inWorld(w) {
+	Inventory(Shred * const sh) :
+			inShred(sh) {
 		for (unsigned short i=0; i<inventory_size; ++i)
 		for (unsigned short j=0; j<max_stack_size; ++j)
 			inventory[i][j]=NULL;
 	}
-	Inventory(World * const w, char * const str, FILE * const in) :
-			inWorld(w) {
-		for (unsigned short i=0; i<inventory_size; ++i)
-		for (unsigned short j=0; j<max_stack_size; ++j)
-			inventory[i][j]=inWorld->BlockFromFile(in, 0, 0, 0);
-		fgets(str, 300, in);
-	}
+	Inventory(Shred * const,
+			char * const,
+			FILE * const in);
 	~Inventory() {
 		for (unsigned short i=0; i<inventory_size; ++i)
 		for (unsigned short j=0; j<max_stack_size; ++j)
@@ -576,35 +524,35 @@ class Dwarf : public Animal, public Inventory {
 
 	float LightRadius() const { return 1.8; }
 
-	Dwarf(World * const w,
+	Dwarf(Shred * const sh,
 			const unsigned short x,
 			const unsigned short y,
 			const unsigned short z)
 			:
-			Animal(w, x, y, z, H_MEAT, 100),
-			Inventory(w),
+			Animal(sh, x, y, z, H_MEAT, 100),
+			Inventory(sh),
 			onHead(inventory[0][0]),
 			onBody(inventory[1][0]),
 			onFeet(inventory[2][0]),
 			inRightHand(inventory[3][0]),
 			inLeftHand(inventory[4][0]),
-			noise(1) {
-		inventory[7][0]=new Pick(IRON);
-	}
-	Dwarf(World * const w,
+			noise(1)
+		{ inventory[7][0]=new Pick(IRON); }
+	Dwarf(Shred * const sh,
 			const unsigned short x,
 			const unsigned short y,
 			const unsigned short z,
 			char * const str,
 			FILE * const in)
 			:
-			Animal(w, x, y, z, str),
-			Inventory(w, str, in),
+			Animal(sh, x, y, z, str),
+			Inventory(sh, str, in),
 			onHead(inventory[0][0]),
 			onBody(inventory[1][0]),
 			onFeet(inventory[2][0]),
 			inRightHand(inventory[3][0]),
-			inLeftHand(inventory[4][0]) {
+			inLeftHand(inventory[4][0])
+	{
 		sscanf(str, " %hd\n", &noise);
 		CleanString(str);
 	}
@@ -631,22 +579,25 @@ class Chest : public Block, public Inventory {
 
 	usage_types Use() { return Inventory::Use(); }
 
-	Block * DropAfterDamage() const { return new Chest(inWorld, sub); }
+	Block * DropAfterDamage() const { return new Chest(inShred, sub); }
 	
 	virtual void SaveAttributes(FILE * const out) const {
 		Block::SaveAttributes(out);
 		Inventory::SaveAttributes(out);
 	}
 
-	Chest(World * const w,
+	Chest(Shred * const sh,
 			const subs s=WOOD,
 			const short dur=max_durability)
 			:
 			Block(s, dur),
-			Inventory(w) {}
-	Chest(World * const w, char * const str, FILE * const in) :
-		Block(str),
-		Inventory(w, str, in) {}
+			Inventory(sh) {}
+	Chest(Shred * const sh,
+			char * const str,
+			FILE * const in)
+			:
+			Block(str),
+			Inventory(sh, str, in) {}
 };
 
 class Pile : public Active, public Inventory {
@@ -693,26 +644,26 @@ class Pile : public Active, public Inventory {
 		fprintf(out, "%hd/", lifetime);
 	}
 
-	Pile(World * const w,
+	Pile(Shred * const sh,
 			const unsigned short x,
 			const unsigned short y,
 			const unsigned short z,
 			Block * const block=NULL)
 			:
-			Active(w, x, y, z, DIFFERENT),
-			Inventory(w),
+			Active(sh, x, y, z, DIFFERENT),
+			Inventory(sh),
 			lifetime(seconds_in_day) {
 		Get(block);
 	}
-	Pile(World * const w,
+	Pile(Shred * const sh,
 			const unsigned short x,
 			const unsigned short y,
 			const unsigned short z,
 			char * const str,
 			FILE * const in)
 			:
-			Active(w, x, y, z, str),
-			Inventory(w, str, in) {
+			Active(sh, x, y, z, str),
+			Inventory(sh, str, in) {
 		sscanf(str, " %hd\n", &lifetime);
 		CleanString(str);
 	}
@@ -737,8 +688,9 @@ class Liquid : public Active {
 
 	virtual int Transparent() const {
 		switch (sub) {
-			case WATER: return 1;
-			default: return 0; //0 - totally invisible blocks, 1 - block is visible, but light can pass through it, 2 - invisible
+			//2 - invisible
+			case WATER: return 1; //visible, but light pass through
+			default: return 0; //0 - totally invisible blocks
 		}
 	}
 
@@ -762,10 +714,20 @@ class Liquid : public Active {
 
 	void SaveAttributes(FILE * const out) const { Active::SaveAttributes(out); }
 
-	Liquid(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, const subs sub=WATER) :
-			Active(w, x, y, z, sub) {}
-	Liquid(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, char * const str) :
-			Active(w, x, y, z, str) {}
+	Liquid(Shred * const sh,
+			const unsigned short x,
+			const unsigned short y,
+			const unsigned short z,
+			const subs sub=WATER)
+			:
+			Active(sh, x, y, z, sub) {}
+	Liquid(Shred * const sh,
+			const unsigned short x,
+			const unsigned short y,
+			const unsigned short z,
+			char * const str)
+			:
+			Active(sh, x, y, z, str) {}
 };
 
 class Grass : public Active {
@@ -788,13 +750,23 @@ class Grass : public Active {
 	virtual before_move_return BeforeMove(dirs) { return DESTROY; }
 	virtual void Act();
 
-	virtual void SaveAttributes(FILE * const out) const { Active::SaveAttributes(out); }
+	virtual void SaveAttributes(FILE * const out) const
+		{ Active::SaveAttributes(out); }
 
 	Grass() : Active(GREENERY, 1) {}
-	Grass(World * const w, const unsigned short x, const unsigned short y, const unsigned short z) :
-			Active(w, x, y, z, GREENERY, 1) {}
-	Grass(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, char * const str) :
-			Active(w, x, y, z, str) {}
+	Grass(Shred * const sh,
+			const unsigned short x,
+			const unsigned short y,
+			const unsigned short z)
+			:
+			Active(sh, x, y, z, GREENERY, 1) {}
+	Grass(Shred * const sh,
+			const unsigned short x,
+			const unsigned short y,
+			const unsigned short z,
+			char * const str)
+			:
+			Active(sh, x, y, z, str) {}
 };
 
 class Bush : public Active, public Inventory {
@@ -825,12 +797,15 @@ class Bush : public Active, public Inventory {
 		Inventory::SaveAttributes(out);
 	}
 
-	Bush(World * const w) :
-		Active(w, 0, 0, 0, WOOD),
-       		Inventory(w) {}
-	Bush(World * const w, char * const str, FILE * const in) :
-		Active(w, 0, 0, 0, str),
-		Inventory(w, str, in) {}
+	Bush(Shred * const sh) :
+			Active(sh, 0, 0, 0, WOOD),
+	       		Inventory(sh) {}
+	Bush(Shred * const sh,
+			char * const str,
+			FILE * const in)
+			:
+			Active(sh, 0, 0, 0, str),
+			Inventory(sh, str, in) {}
 };
 
 class Rabbit : public Animal {
@@ -855,9 +830,18 @@ class Rabbit : public Animal {
 
 	void SaveAttributes(FILE * const out) const { Animal::SaveAttributes(out); }
 
-	Rabbit(World * const w, const unsigned short x, const unsigned short y, const unsigned short z) :
-		Animal(w, x, y, z) {}
-	Rabbit(World * const w, const unsigned short x, const unsigned short y, const unsigned short z, char * str) :
-		Animal(w, x, y, z, str) {}
+	Rabbit(Shred * const sh,
+			const unsigned short x,
+			const unsigned short y,
+			const unsigned short z)
+			:
+			Animal(sh, x, y, z) {}
+	Rabbit(Shred * const sh,
+			const unsigned short x,
+			const unsigned short y,
+			const unsigned short z,
+			char * str)
+			:
+			Animal(sh, x, y, z, str) {}
 };
 #endif

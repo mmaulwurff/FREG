@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
 		unsigned long longitude, latitude;
 		unsigned long time;
 		unsigned short spawnX, spawnY, spawnZ;
-		fscanf(file, "longitude: %ld\nlatitude: %ld\nspawnX: %hd\n spawnY: %hd\n spawnZ: %hd\ntime: %ld\nSize:%hd\n",
+		fscanf(file, "longitude: %lu\nlatitude: %lu\nspawnX: %hu\n spawnY: %hu\n spawnZ: %hu\ntime: %lu\n",
 			&longitude, &latitude,
 			&spawnX, &spawnY, &spawnZ,
 			&time);
@@ -40,7 +40,10 @@ int main(int argc, char *argv[]) {
 		earth=new World(worldName, longitude, latitude,
 			spawnX, spawnY, spawnZ, time, numShreds);
 	} else
-		earth=new World(worldName);
+		//earth=new World(worldName);
+		earth=new World(worldName, 1, 1,
+			shred_width, shred_width, height/2,
+			end_of_night, 3);
 
 	Screen screen(earth);
 	screen.show();

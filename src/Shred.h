@@ -22,7 +22,6 @@
 #include <QList>
 #include <QString>
 
-
 class Shred {
 	Block * blocks[shred_width][shred_width][height];
 	short lightMap[shred_width][shred_width][height-1];
@@ -34,19 +33,22 @@ class Shred {
 	const unsigned short shredY;
 
 	public:
-	QList<Active *> activeList;
-	void AddActive(Active * const);
-	void RemActive(Active * const);
+	QList<Active> activeList;
+	void AddActive(const Active * const);
+	void RemActive(const Active * const);
+
+	World * GetWorld() const { return world; }
 
 	void ReloadToNorth();
 	void ReloadToEast();
 	void ReloadToSouth();
 	void ReloadToWest();
 
-	class Block * Block(const unsigned short,
-	              const unsigned short,
-	              const unsigned short) const;
-	void SetBlock(class Block *,
+	Block * GetBlock(
+			const unsigned short,
+			const unsigned short,
+			const unsigned short) const;
+	void SetBlock(Block *,
 			const unsigned short,
 			const unsigned short,
 			const unsigned short);
@@ -63,30 +65,33 @@ class Shred {
 			const unsigned short,
 			const unsigned short);
 
-
-	Shred(World * const, QString,
-			const unsigned short, const unsigned short,
-			const long, const long);
+	Shred(World * const,
+			QString,
+			const unsigned short,
+			const unsigned short,
+			const long,
+			const long);
 	~Shred();
+
+	public:
+	subs Sub(
+			const unsigned short,
+			const unsigned short,
+			const unsigned short) const;
+	kinds Kind(
+			const unsigned short,
+			const unsigned short,
+			const unsigned short) const;
+
+	int Transparent(
+			const unsigned short,
+			const unsigned short,
+			const unsigned short) const;
 
 	private:
 	char * FileName(char * const) const;
 	char TypeOfShred(const unsigned long, const unsigned long) const;
-	int Transparent(
-			const unsigned short i,
-			const unsigned short j,
-			const unsigned short k) {
-		return world->TransparentNotSafe(i+shredX*shred_width,
-				j+shredY*shred_width, k);
-	}
-	subs Sub(
-			const unsigned short i,
-			const unsigned short j,
-			const unsigned short k) {
-		return world->Sub(i+shredX*shred_width,
-			j+shredY*shred_width, k);
-	}
-	class Block * NewNormal(subs sub) { return world->NewNormal(sub); }
+	Block * NewNormal(subs sub) { return world->NewNormal(sub); }
 
 	void NormalUnderground(const unsigned short);
 	void PlantGrass();
