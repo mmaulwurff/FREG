@@ -33,9 +33,9 @@ class Shred {
 	const unsigned short shredY;
 
 	public:
-	QList<Active> activeList;
-	void AddActive(const Active * const);
-	void RemActive(const Active * const);
+	QList<Active *> activeList;
+	void AddActive(Active * const);
+	void RemActive(Active * const);
 
 	World * GetWorld() const { return world; }
 

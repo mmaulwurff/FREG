@@ -121,22 +121,14 @@ class Block { //blocks without special physics and attributes
 		}
 	}
 
-	virtual bool operator==(const Block &) const;
+	bool operator==(const Block &) const;
 
 	void SaveToFile(FILE * const out) const {
 		fprintf(out, "%d", (int)Kind());
 		SaveAttributes(out);
 		fprintf(out, "\n");
 	}
-	virtual void SaveAttributes(FILE * const out) const {
-		if (normal) {
-			fprintf(out, "_%hd_%d", normal, sub);
-			return;
-		}
-	       	fprintf(out, "_%hd_%d_%f_%d_%hd", normal, sub, weight, direction, durability);
-		if (NULL!=note) fprintf(out, "_%lu/%s", strlen(note), note);
-		else fprintf(out, "_0/");
-	}
+	virtual void SaveAttributes(FILE * const) const;
 
 	Block(
 			const subs=STONE,
@@ -234,7 +226,11 @@ class Active : public Block {
 		return 0;
 	}
 
-	void GetSelfXYZ(unsigned short & x, unsigned short & y, unsigned short & z) const {
+	void GetSelfXYZ(
+			unsigned short & x,
+			unsigned short & y,
+			unsigned short & z) const
+	{
 		x=x_self;
 		y=y_self;
 		z=z_self;
@@ -255,7 +251,8 @@ class Active : public Block {
 	virtual int Movable() const { return MOVABLE; }
 	virtual bool ShouldFall() const { return true; }
 
-	virtual void SaveAttributes(FILE * const out) const { Block::SaveAttributes(out); }
+	virtual void SaveAttributes(FILE * const out) const
+		{ Block::SaveAttributes(out); }
 
 	void ReloadToNorth() { y_self+=shred_width; }
 	void ReloadToSouth() { y_self-=shred_width; }

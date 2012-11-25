@@ -264,7 +264,7 @@ void World::PhysEvents() {
 	//blocks' own activities, falling
 	for (unsigned short i=0; i<numShreds*numShreds; ++i)
 	for (         short j=0; j<shreds[i]->activeList.size(); ++j) {
-		Active * temp=&(shreds[i]->activeList[j]);
+		Active * temp=shreds[i]->activeList[j];
 		temp->Act();
 		unsigned short x, y, z;
 		temp->GetSelfXYZ(x, y, z);

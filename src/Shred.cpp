@@ -119,29 +119,29 @@ kinds Shred::Kind(
 		const unsigned short k) const
 	{ return ( NULL==blocks[i][j][k] ) ? BLOCK : blocks[i][j][k]->Kind(); }
 
-void Shred::AddActive(const Active * const active) {
-	activeList.append(*active);
+void Shred::AddActive(Active * const active) {
+	activeList.append(active);
 }
 
-void Shred::RemActive(const Active * const active) {
-	activeList.removeOne(*active);
+void Shred::RemActive(Active * const active) {
+	activeList.removeOne(active);
 }
 
 void Shred::ReloadToNorth() {
 	for (unsigned short i=0; i<activeList.size(); ++i)
-		activeList[i].ReloadToNorth();
+		activeList[i]->ReloadToNorth();
 }
 void Shred::ReloadToEast() {
 	for (unsigned short i=0; i<activeList.size(); ++i)
-		activeList[i].ReloadToEast();
+		activeList[i]->ReloadToEast();
 }
 void Shred::ReloadToSouth() {
 	for (unsigned short i=0; i<activeList.size(); ++i)
-		activeList[i].ReloadToSouth();
+		activeList[i]->ReloadToSouth();
 }
 void Shred::ReloadToWest() {
 	for (unsigned short i=0; i<activeList.size(); ++i)
-		activeList[i].ReloadToWest();
+		activeList[i]->ReloadToWest();
 }
 
 Block * Shred::GetBlock(

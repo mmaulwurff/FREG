@@ -74,6 +74,20 @@ int Block::Damage(
 	}
 }
 
+void Block::SaveAttributes(FILE * const out) const {
+	/*if ( normal ) {
+		fprintf(out, "_%hd_%d", normal, sub);
+		return;
+	}*/
+
+	//fprintf(out, "_%hd_%d_%f_%d_%hd",
+	//	normal, sub, weight, direction, durability);
+	if ( NULL!=note )
+		fprintf(out, "_%lu/%s", strlen(note), note);
+	else
+		fprintf(out, "_0/");
+}
+
 bool Block::operator==(const Block & block) const {
 	//return false;
 	/*if ( block.Kind()!=Kind() )
