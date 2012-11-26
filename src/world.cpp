@@ -309,11 +309,11 @@ void World::PhysEvents() {
 			Move(x, y, z, DOWN);
 	}
 	
-	if (NULL!=scr) {
+	/*if (NULL!=scr) {
 		scr->Print();
 		if (0==time_step)
 			scr->PrintSounds();
-	}
+	}*/
 	mutex_unlock();
 }
 
@@ -934,10 +934,8 @@ World::World(QString world_name,
 	if ( DWARF!=Kind(spawnX, spawnY, spawnZ) ) {
 		if (NULL!=GetBlock(spawnX, spawnY, spawnZ) &&
 				!(GetBlock(spawnX, spawnY, spawnZ)->
-					Normal()) ) {
-			fprintf(stderr, "World::World: ok\n");
+					Normal()) )
 			delete GetBlock(spawnX, spawnY, spawnZ);
-		}
 
 		SetBlock((Block*)(playerP=new
 			Dwarf(GetShred(spawnX, spawnY),
@@ -955,9 +953,9 @@ World::World(QString world_name,
 
 World::~World() {
 	mutex_lock();
-	thread->Stop();
-	thread->wait();
-	delete thread;
+	//thread->Stop();
+	//thread->wait();
+	//delete thread;
 	mutex_unlock();
 
 	SaveAllShreds();
@@ -966,9 +964,13 @@ World::~World() {
 		delete normal_blocks[i];
 
 	GetPlayerCoords(spawnX, spawnY, spawnZ);
+	fprintf(stderr, "hello\n");
 	FILE * file=fopen((worldName+"_save").toAscii().constData(), "w");
-	if ( file==NULL )
+	if ( NULL==file ) {
+		fprintf(stderr, "World::~World: Savefile write error: %s\n",
+				(worldName+"_save").toAscii().constData());
        		return;
+	}
 
 	fprintf(file, "longitude: %ld\nlatitude: %ld\nspawnX: %hd\nspawnY: %hd\nspawnZ: %hd\ntime: %ld\nWorld:%s\n",
 			longitude, latitude,

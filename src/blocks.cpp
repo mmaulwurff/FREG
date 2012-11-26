@@ -75,13 +75,13 @@ int Block::Damage(
 }
 
 void Block::SaveAttributes(FILE * const out) const {
-	/*if ( normal ) {
+	if ( normal ) {
 		fprintf(out, "_%hd_%d", normal, sub);
 		return;
-	}*/
+	}
 
-	//fprintf(out, "_%hd_%d_%f_%d_%hd",
-	//	normal, sub, weight, direction, durability);
+	fprintf(out, "_%hd_%d_%f_%d_%hd",
+		normal, sub, weight, direction, durability);
 	if ( NULL!=note )
 		fprintf(out, "_%lu/%s", strlen(note), note);
 	else
@@ -150,12 +150,21 @@ Block::Block(
 
 Block::Block(char * const str) : normal(0) {
 	unsigned short note_len;
-	sscanf(str, "%*d_%*hd_%d_%f_%d_%hd_%hd",
-			(int *)(&sub),
-			&weight,
-			(int *)(&direction),
-			&durability,
-			&note_len);
+	if ( 0==sscanf(str, "%*d_%*d_%d_%f_%d_%hd_%hd",
+				(int *)(&sub),
+				&weight,
+				(int *)(&direction),
+				&durability,
+				&note_len) ) {
+		fprintf(stderr, "Block::Block: read failure, string: %s\n",
+			str);
+		sub=STONE;
+		weight=2600;
+		direction=NORTH;
+		durability=max_durability;
+		note_len=0;
+	}
+
 	shown_weight=weight;
 	CleanString(str);
 	if ( 0==note_len ) {
@@ -165,9 +174,10 @@ Block::Block(char * const str) : normal(0) {
 
 	note=new char[note_length];
 	sscanf(str, " %s", note);
-	unsigned short len, i;
+	unsigned short len;
 	for (len=0; ' '==str[len]; ++len);
-	for (i=len; i<len+note_len; ++i) str[i]=' ';
+	for (unsigned short i=len; i<len+note_len; ++i)
+		str[i]=' ';
 }
 
 void Active::SafeMove() {
@@ -191,9 +201,9 @@ void Active::SafeJump() {
 }
 
 void Active::Register(Shred * const sh,
-		const int x,
-		const int y,
-		const int z)
+		const unsigned short x,
+		const unsigned short y,
+		const unsigned short z)
 {
 	whereShred=sh;
 	if ( NULL==whereShred )

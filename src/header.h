@@ -30,14 +30,16 @@
 	#include <unistd.h>
 #endif
 
-const unsigned short shred_width=10;
+const unsigned short shred_width=16;
 const unsigned short height=100;
 
 const unsigned short full_name_length=20;
 const unsigned short note_length=144;
 
 const unsigned short inventory_size=26;
-const unsigned short max_stack_size=9; //num_str in Screen::PrintInv must be big enough
+
+//num_str in Screen::PrintInv must be big enough
+const unsigned short max_stack_size=9;
 
 const unsigned short time_steps_in_sec=10;
 const unsigned short seconds_in_hour=60;

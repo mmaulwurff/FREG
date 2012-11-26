@@ -32,7 +32,6 @@ Shred::Shred(World * const world_,
 		latitude(lati),
 		shredX(shred_x),
 		shredY(shred_y)
-		//activeList()
 {
 	char str[50];
 	FILE * in=fopen(FileName(str), "r");
@@ -82,7 +81,7 @@ Shred::~Shred() {
 		for (i=0; i<shred_width; ++i)
 		for (j=0; j<shred_width; ++j)
 		for (k=0; k<height-1; ++k)
-			if (NULL!=blocks[i][j][k]) {
+			if ( NULL!=blocks[i][j][k] ) {
 				blocks[i][j][k]->SaveToFile(out);
 				if ( !(blocks[i][j][k]->Normal()) )
 					delete blocks[i][j][k];
@@ -92,6 +91,7 @@ Shred::~Shred() {
 		return;
 	}
 
+	fprintf(stderr, "Shred::~Shred: Write Error, filename: %s\n", str);
 	for (i=0; i<shred_width; ++i)
 	for (j=0; j<shred_width; ++j)
 	for (k=0; k<height-1; ++k)
@@ -179,7 +179,7 @@ void Shred::PlusLightMap(const short level,
 }
 
 char * Shred::FileName(char * const str) const {
-	sprintf(str, "%s_shreds/%ld_%ld", worldName.toAscii().constData(),
+	sprintf(str, "%s_shreds/%lu_%lu", worldName.toAscii().constData(),
 		longitude, latitude);
 	return str;
 }

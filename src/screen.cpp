@@ -401,7 +401,7 @@ void Screen::keyPressEvent(QKeyEvent *event) {
 			w->Damage(i, j, k);
 		} break;
 		//case 'H': /*case KEY_HOME:*/ w->PlayerBuild(screen.Getch()-'a'); break;
-		case 'Q': exit(0); break;
+		case 'Q': close(); break;
 	}
 
 	//if ( print_flag )
@@ -438,6 +438,7 @@ Screen::Screen(World * const wor) :
 
 	setWindowTitle(tr("freg"));
 	resize(700, 700);
+	show();
 }
 
 Screen::~Screen() {

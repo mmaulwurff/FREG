@@ -43,7 +43,6 @@ class Block { //blocks without special physics and attributes
 	short durability;
 
 	public:
-	//short enlightened;
 	virtual char * FullName(char * const) const;
 
 	void SetWeight(const double m) { shown_weight=m; }
@@ -53,9 +52,10 @@ class Block { //blocks without special physics and attributes
 	void SetDir(const dirs dir) { direction=dir; }
 	subs Sub() const { return sub; }
 	virtual void Inscribe(const char * const str) {
-		if (NULL==note) note=new char[note_length];
+		if ( NULL==note )
+			note=new char[note_length];
 		strncpy(note, str, note_length);
-		if ('\n'==note[0]) {
+		if ( '\n'==note[0] ) {
 			delete [] note;
 			note=NULL;
 		}
@@ -79,7 +79,10 @@ class Block { //blocks without special physics and attributes
 		}
 	}
 	virtual int Movable() const { return NOT_MOVABLE; }
-	virtual int Transparent() const { //0 - normal block, 1 - block is visible, but light can pass through it, 2 - invisible block
+	virtual int Transparent() const {
+		//0 - normal block,
+		//1 - block is visible, but light can pass through it,
+		//2 - invisible block
 		switch (sub) {
 			case WATER: case GREENERY:
 			case GLASS: return 1;
@@ -259,7 +262,10 @@ class Active : public Block {
 	void ReloadToWest()  { x_self+=shred_width; }
 	void ReloadToEast()  { x_self-=shred_width; }
 
-	void Register(Shred *, int, int, int);
+	void Register(Shred *,
+			const unsigned short,
+			const unsigned short,
+			const unsigned short);
 	void Unregister();
 
 	Active(const subs sub,

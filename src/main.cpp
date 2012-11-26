@@ -39,14 +39,18 @@ int main(int argc, char *argv[]) {
 		fclose(file);
 		earth=new World(worldName, longitude, latitude,
 			spawnX, spawnY, spawnZ, time, numShreds);
-	} else
+	} else {
+		fprintf(stderr, "main: Cannot read savefile: %s\n",
+			(worldName+"_save").toAscii().constData());
 		//earth=new World(worldName);
-		earth=new World(worldName, 1, 1,
-			shred_width, shred_width, height/2,
+		earth=new World(worldName,
+			1, 1,
+			shred_width*numShreds/2,
+			shred_width*numShreds/2,
+			height/2,
 			end_of_night, 3);
-
+	}
 	Screen screen(earth);
-	screen.show();
 
 /*	FILE * scenario=fopen("scenario.txt", "r");
 	int c='.';
@@ -61,6 +65,9 @@ int main(int argc, char *argv[]) {
 			} else
 				fprintf(stderr, "Scenario used, key is: '%c'.\n", c);
 		} else
-			c=screen.Getch();*/
-	return freg.exec();
+			c=screen.Getch();
+*/
+	int ret=freg.exec();
+	delete earth;
+	return ret;
 }
