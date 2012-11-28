@@ -3,13 +3,17 @@ Inspired by Minecraft and Angband.
 
 Development stage: implementing basics.
 
-Language: C++
-Non-standard libraries: ncurses, pthreads
+Language: C++ with Qt
 
 Compile:
-g++ -lncurses -pthread main.cpp world.cpp blocks.cpp screen.cpp -o FREG.bin
 
-Development is run on GNU/Linux, but on MS Windows should work too with PDCurses ( http://pdcurses.sourceforge.net/ ) and Pthreads-w32 ( http://sources.redhat.com/pthreads-win32/ ).
+In console:
+in src/ directory:
+qmake -project
+qmake src.pro
+make
+
+Or just open scr.pro file with QtCreator.
 
 Now only singleplayer is developed, multiplayer is planned.
 
@@ -18,7 +22,7 @@ https://picasaweb.google.com/mmaulwurff/Eyecube?authuser=0&feat=directlink
 
 Advices are welcome.
 
-Copyright (C) 2011 Alexander Kromm (mmaulwurff@gmail.com)
+Copyright (C) 2011, 2012 Alexander Kromm (mmaulwurff@gmail.com)
 Source code is available at GitHub: https://github.com/mmaulwurff/FREG
 
 FREG is free software: you can redistribute it and/or modify
