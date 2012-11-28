@@ -250,7 +250,7 @@ Inventory::Inventory(Shred * const sh,
 {
 	for (unsigned short i=0; i<inventory_size; ++i)
 	for (unsigned short j=0; j<max_stack_size; ++j)
-		inventory[i][j]=inShred->GetWorld()->
+		inventory[i][j]=inShred->
 			BlockFromFile(in, 0, 0, 0);
 	fgets(str, 300, in);
 }

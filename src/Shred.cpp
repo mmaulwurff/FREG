@@ -42,9 +42,7 @@ Shred::Shred(World * const world_,
 		for (i=0; i<shred_width; ++i)
 		for (j=0; j<shred_width; ++j)
 			for (k=0; k<height-1; ++k)
-				blocks[i][j][k]=world->BlockFromFile(in,
-					i+shred_width*shred_x,
-					j+shred_width*shred_y, k);
+				blocks[i][j][k]=BlockFromFile(in, i, j, k);
 		fclose(in);
 		return;
 	}
@@ -97,6 +95,61 @@ Shred::~Shred() {
 	for (k=0; k<height-1; ++k)
 		if ( NULL!=blocks[i][j][k] && !(blocks[i][j][k]->Normal()) )
 			delete blocks[i][j][k];
+}
+
+Block * Shred::BlockFromFile(FILE * const in,
+		unsigned short i,
+		unsigned short j,
+		const unsigned short k)
+{
+	char str[300];
+	fgets(str, 300, in);
+	int kind;
+	sscanf(str, "%d", &kind);
+	//if some kind will not be listed here,
+	//blocks of this kind just will not load,
+	//unless kind is inherited from Inventory class or one
+	//of its derivatives - in this case this may cause something bad.
+	
+	i+=shredX*shred_width;
+	j+=shredX*shred_width;
+
+	switch ( kind ) {
+		case BLOCK: {
+			short normal=0;
+			int sub=0;
+			sscanf(str, "%*d_%hd_%d", &normal, &sub);
+			return ( normal ) ?
+				NewNormal(subs(sub)) :
+				new Block(str);
+		}
+		case TELEGRAPH:
+			return new Telegraph(str);
+		case PICK:
+			return new Pick(str);
+		case CHEST:
+			return new Chest (this, str, in);
+		case RABBIT:
+			return new Rabbit(this, i, j, k, str);
+		case ACTIVE:
+			return new Active(this, i, j, k, str);
+		case DWARF:
+			return new Dwarf (this, i, j, k, str, in);
+		case PILE:
+			return new Pile  (this, i, j, k, str, in);
+		case LIQUID:
+			return new Liquid(this, i, j, k, str);
+		case GRASS:
+			return new Grass (this, i, j, k, str);
+		case BUSH:
+			return new Bush  (this, str, in);
+		case -1:
+			return NULL;
+		default:
+			fprintf(stderr, "BlockFromFile(): unlisted kind: %d\n",
+					kind);
+			return NULL;
+	}
 }
 
 int Shred::Transparent(

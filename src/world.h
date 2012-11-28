@@ -21,9 +21,9 @@
 #include <cmath>
 #include <QMutex>
 #include <QString>
-#include "thread.h"
 #include "header.h"
 
+class Thread;
 class Screen;
 class Block;
 class Dwarf;
@@ -43,10 +43,6 @@ class World {
 	QMutex mutex;
 
 	public:
-	Block * BlockFromFile(FILE *,
-			const unsigned short,
-			const unsigned short,
-			const unsigned short);
 	Block * NewNormal(subs sub) { return normal_blocks[sub]; }
 	Thread * thread;
 	Screen * scr;

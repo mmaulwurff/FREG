@@ -48,57 +48,6 @@ void World::Examine() const {
 	str[0]=0;
 }
 
-Block * World::BlockFromFile(FILE * const in,
-		const unsigned short i,
-		const unsigned short j,
-		const unsigned short k) {
-	char str[300];
-	fgets(str, 300, in);
-	int kind;
-	sscanf(str, "%d", &kind);
-	//if some kind will not be listed here,
-	//blocks of this kind just will not load,
-	//unless kind is inherited from Inventory class or one
-	//of its derivatives - in this case this may cause something bad.
-	
-	switch (kind) {
-		case BLOCK: {
-			short normal=0;
-			int sub=0;
-			sscanf(str, "%*d_%hd_%d", &normal, &sub);
-			return ( normal ) ?
-				NewNormal(subs(sub)) :
-				new Block(str);
-		}
-		case TELEGRAPH:
-			return new Telegraph(str);
-		case PICK:
-			return new Pick(str);
-		case CHEST:
-			return new Chest (GetShred(i, j), str, in);
-		case RABBIT:
-			return new Rabbit(GetShred(i, j), i, j, k, str);
-		case ACTIVE:
-			return new Active(GetShred(i, j), i, j, k, str);
-		case DWARF:
-			return new Dwarf (GetShred(i, j), i, j, k, str, in);
-		case PILE:
-			return new Pile  (GetShred(i, j), i, j, k, str, in);
-		case LIQUID:
-			return new Liquid(GetShred(i, j), i, j, k, str);
-		case GRASS:
-			return new Grass (GetShred(i, j), i, j, k, str);
-		case BUSH:
-			return new Bush  (GetShred(i, j), str, in);
-		case -1:
-			return NULL;
-		default:
-			fprintf(stderr, "BlockFromFile(): unlisted kind: %d\n",
-					kind);
-			return NULL;
-	}
-}
-
 Block * World::GetBlock(
 		const unsigned short x,
 		const unsigned short y,

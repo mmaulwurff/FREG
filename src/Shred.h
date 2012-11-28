@@ -21,6 +21,7 @@
 #include "world.h"
 #include <QList>
 #include <QString>
+#include <blocks.h>
 
 class Shred {
 	Block * blocks[shred_width][shred_width][height];
@@ -92,6 +93,10 @@ class Shred {
 	char * FileName(char * const) const;
 	char TypeOfShred(const unsigned long, const unsigned long) const;
 	Block * NewNormal(subs sub) { return world->NewNormal(sub); }
+	Block * BlockFromFile(FILE * const,
+			const unsigned short,
+			const unsigned short,
+			const unsigned short);
 
 	void NormalUnderground(const unsigned short);
 	void PlantGrass();
@@ -104,6 +109,9 @@ class Shred {
 	//block combinations section (trees, buildings, etc)
 	bool Tree(const unsigned short, const unsigned short,
 			const unsigned short, const unsigned short);
+	friend Inventory::Inventory(Shred * const,
+			char * const str,
+			FILE * const in);
 };
 
 #endif
