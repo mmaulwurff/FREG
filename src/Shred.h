@@ -18,23 +18,27 @@
 #ifndef SHRED_H
 #define SHRED_H
 
-#include "world.h"
 #include <QList>
 #include <QString>
 #include <blocks.h>
 
+class World;
+
 class Shred {
 	Block * blocks[shred_width][shred_width][height];
+	const Block air;
 	short lightMap[shred_width][shred_width][height-1];
 	QString worldName;
 	World * world;
-	const long longitude;
-	const long latitude;
-	const unsigned short shredX;
-	const unsigned short shredY;
+	const ulong longitude, latitude;
+
+	unsigned short shredX;
+	unsigned short shredY;
+	QList<Active *> activeList;
 
 	public:
-	QList<Active *> activeList;
+	void PhysEvents();
+
 	void AddActive(Active * const);
 	void RemActive(Active * const);
 
@@ -50,68 +54,82 @@ class Shred {
 			const unsigned short,
 			const unsigned short) const;
 	void SetBlock(Block *,
-			const unsigned short,
-			const unsigned short,
-			const unsigned short);
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &);
 
-	short LightMap(const unsigned short,
-	               const unsigned short,
-	               const unsigned short) const;
-	void SetLightMap(const short,
-			const unsigned short,
-			const unsigned short,
-			const unsigned short);
-	void PlusLightMap(const short,
-			const unsigned short,
-			const unsigned short,
-			const unsigned short);
+	short LightMap(const unsigned short &,
+	               const unsigned short &,
+	               const unsigned short &) const;
+	void SetLightMap(const short &,
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &);
+	void PlusLightMap(const short &,
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &);
+
+	int Sub(
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &) const;
+	int Kind(
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &) const;
+	int Durability(
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &) const;
+	int Movable(
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &) const;
+	int Transparent(
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &) const;
+	double Weight(
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &) const;
+
 
 	Shred(World * const,
 			QString,
-			const unsigned short,
-			const unsigned short,
-			const long,
-			const long);
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned long &,
+			const unsigned long &);
 	~Shred();
 
-	public:
-	subs Sub(
-			const unsigned short,
-			const unsigned short,
-			const unsigned short) const;
-	kinds Kind(
-			const unsigned short,
-			const unsigned short,
-			const unsigned short) const;
-
-	int Transparent(
-			const unsigned short,
-			const unsigned short,
-			const unsigned short) const;
+	Block * BlockFromFile(FILE * const,
+			unsigned short,
+			unsigned short,
+			const unsigned short);
 
 	private:
 	char * FileName(char * const) const;
-	char TypeOfShred(const unsigned long, const unsigned long) const;
-	Block * NewNormal(subs sub) { return world->NewNormal(sub); }
-	Block * BlockFromFile(FILE * const,
-			const unsigned short,
-			const unsigned short,
-			const unsigned short);
+	char TypeOfShred(
+			const unsigned long,
+			const unsigned long);
+	Block * NewNormal(const subs & sub) const;
 
 	void NormalUnderground(const unsigned short);
 	void PlantGrass();
 	void TestShred();
 	void NullMountain();
 	void Plain();
-	void Forest(const long, const long);
-	void Water( const long, const long);
-	void Hill(  const long, const long);
+	void Forest(const long &, const long &);
+	void Water( const long &, const long &);
+	void Hill(  const long &, const long &);
 	//block combinations section (trees, buildings, etc)
-	bool Tree(const unsigned short, const unsigned short,
-			const unsigned short, const unsigned short);
-	friend Inventory::Inventory(Shred * const,
-			char * const str,
-			FILE * const in);
+	bool Tree(
+			const unsigned short & x,
+			const unsigned short & y,
+			const unsigned short & z,
+			const unsigned short & height);
 };
 
 #endif

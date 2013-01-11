@@ -15,59 +15,39 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-#include <QtGui>
+#include "screen.h" //NOX, if needed, is defined in screen.h
+
+#ifdef NOX //no need for X server
+	#include <QCoreApplication>
+#else
+	#include <QApplication>
+#endif
+
 #include <QString>
 #include "header.h"
 #include "world.h"
-#include "screen.h"
+#include "Player.h"
 
 int main(int argc, char *argv[]) {
-	QApplication freg(argc, argv);
-
+	#ifdef NOX
+		QCoreApplication freg(argc, argv);
+	#else
+		QApplication freg(argc, argv);
+	#endif
 	QString worldName="The_Land_Of_Doubts";
-	unsigned short numShreds=3;
-	World * earth;
-	FILE * file=fopen((worldName+"_save").toAscii().constData(), "r");
-	if ( NULL!=file ) {
-		unsigned long longitude, latitude;
-		unsigned long time;
-		unsigned short spawnX, spawnY, spawnZ;
-		fscanf(file, "longitude: %lu\nlatitude: %lu\nspawnX: %hu\n spawnY: %hu\n spawnZ: %hu\ntime: %lu\n",
-			&longitude, &latitude,
-			&spawnX, &spawnY, &spawnZ,
-			&time);
-		fclose(file);
-		earth=new World(worldName, longitude, latitude,
-			spawnX, spawnY, spawnZ, time, numShreds);
-	} else {
-		fprintf(stderr, "main: Cannot read savefile: %s\n",
-			(worldName+"_save").toAscii().constData());
-		//earth=new World(worldName);
-		earth=new World(worldName,
-			1, 1,
-			shred_width*numShreds/2,
-			shred_width*numShreds/2,
-			height/2,
-			end_of_night, 3);
-	}
-	Screen screen(earth);
+	World earth(worldName, 3);
+	Player player(&earth);
+	Screen screen(&earth, &player);
 
-/*	FILE * scenario=fopen("scenario.txt", "r");
-	int c='.';
-	int print_flag=1; //print only if needed, needed nearly everytime
-	while ( 'Q'!=c ) {
-		if ( NULL!=scenario ) {
-			c=fgetc(scenario);
-			if ( EOF==c || '\n'==c ) {
-				fclose(scenario);
-				scenario=NULL;
-				c=screen.Getch();
-			} else
-				fprintf(stderr, "Scenario used, key is: '%c'.\n", c);
-		} else
-			c=screen.Getch();
-*/
-	int ret=freg.exec();
-	delete earth;
-	return ret;
+	QObject::connect(&freg, SIGNAL(aboutToQuit()),
+		&screen, SLOT(CleanAll()));
+	QObject::connect(&freg, SIGNAL(aboutToQuit()),
+		&player, SLOT(CleanAll()));
+	QObject::connect(&freg, SIGNAL(aboutToQuit()),
+		&earth, SLOT(CleanAll()));
+
+	QObject::connect(&screen, SIGNAL(ExitReceived()),
+		&freg, SLOT(quit()));
+
+	return freg.exec();
 }

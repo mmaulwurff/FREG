@@ -19,35 +19,52 @@
 #define WORLD_H
 
 #include <cmath>
-#include <QMutex>
-#include <QString>
+#include <QReadWriteLock>
+#include <QReadLocker>
+#include <QWriteLocker>
+#include <QThread>
 #include "header.h"
 
-class Thread;
-class Screen;
 class Block;
 class Dwarf;
+class Inventory;
 class Active;
 class Shred;
 
-class World {
-	unsigned short time_step;
+class World : public QThread {
+	Q_OBJECT
+
 	unsigned long time;
 	Shred ** shreds;
 	Block * normal_blocks[AIR];
-	Dwarf * playerP;
-	unsigned short spawnX, spawnY, spawnZ;
-	unsigned long longitude, latitude;
+	ulong longitude, latitude; //center of active zone
+	unsigned long spawnLongi, spawnLati;
 	QString worldName;
-	unsigned short numShreds;
-	QMutex mutex;
+	unsigned short numShreds; //size of active zone
+	QReadWriteLock rwLock;
+
+	bool cleaned;
+	unsigned short sun_moon_x;
+	bool if_star;
+
+	unsigned long mapSize;
+
+	protected:
+	void run();
 
 	public:
-	Block * NewNormal(subs sub) { return normal_blocks[sub]; }
-	Thread * thread;
-	Screen * scr;
+	ulong MapSize() const { return mapSize; }
+	dirs TurnRight(const dirs) const;
+	dirs TurnLeft(const dirs) const;
+	unsigned long GetSpawnLongi() const { return spawnLongi; }
+	unsigned long GetSpawnLati()  const { return spawnLati; }
 
-	private:
+	unsigned short NumShreds() const { return numShreds; }
+
+	Block * NewNormal(const subs & sub) const {
+		return normal_blocks[sub];
+	}
+	
 	Block * GetBlock(
 			const unsigned short,
 			const unsigned short,
@@ -55,64 +72,52 @@ class World {
 	Shred * GetShred(
 			const unsigned short i,
 			const unsigned short j) const
-		{ return shreds[j/shred_width*numShreds+i/shred_width]; }
+	{
+		return shreds[j/shred_width*numShreds+
+		              i/shred_width];
+	}	
 	void SetBlock(Block *,
-		const unsigned short,
-		const unsigned short,
-		const unsigned short);
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &);
 
-	short LightMap(const unsigned short,
-	               const unsigned short,
-	               const unsigned short) const;
-	void SetLightMap(const unsigned short,
-			const unsigned short,
-			const unsigned short,
-			const unsigned short);
-	void PlusLightMap(const unsigned short,
-			const unsigned short,
-			const unsigned short,
-			const unsigned short);
-
-	void SaveAllShreds();
-	void MakeSky() {
-		unsigned short i, j;
-		FILE * sky=fopen("sky.txt", "r");
-		if ( NULL==sky ) {
-			for (i=0; i<shred_width*3; ++i)
-			for (j=0; j<shred_width*3; ++j)
-				SetBlock(NewNormal( rand()%5 ? SKY : STAR ),
-					i, j, height-1);
-			return;
-		}
-
-		char c=fgetc(sky)-'0';
-		for (i=0; i<shred_width*3; ++i)
-		for (j=0; j<shred_width*3; ++j)
-			if ( c ) {
-				SetBlock(NewNormal(SKY), i, j, height-1);
-				--c;
-			} else {
-				SetBlock(NewNormal(STAR), i, j, height-1);
-				c=fgetc(sky)-'0';
-			}
-		fclose(sky);
+	private:
+	unsigned short SunMoonX() const {
+		return ( NIGHT==PartOfDay() ) ?
+			TimeOfDay()*shred_width*numShreds/
+				seconds_in_night :
+			(TimeOfDay()-seconds_in_night)*shred_width*numShreds/
+				seconds_in_daylight;
 	}
-	dirs MakeDir(const unsigned short x_center, const unsigned short y_center, const unsigned short x_target, const unsigned short y_target) const {
-		//if (x_center==x_target && y_center==y_target) return HERE;
-		if (abs(x_center-x_target)<=1 && abs(y_center-y_target)<=1) return HERE;
-		float x=x_target-x_center,
-		      y=y_target-y_center;
-		if (y<=3*x && y<=-3*x) return NORTH;
-		else if (y>-3*x && y<-x/3) return NORTH_EAST;
-		else if (y>=-x/3 && y<=x/3) return EAST;
-		else if (y>x/3 && y<3*x) return SOUTH_EAST;
-		else if (y>=3*x && y>=-3*x) return SOUTH;
-		else if (y<-3*x && y>-x/3) return SOUTH_WEST;
-		else if (y<=-x/3 && y>=x/3) return WEST;
-		else return NORTH_WEST;
-	}
-	double Distance(const unsigned short x_from, const unsigned short y_from, const unsigned short z_from,
-	                const unsigned short x_to,   const unsigned short y_to,   const unsigned short z_to) const {
+	short LightMap(
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &) const;
+	void SetLightMap(
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &);
+	void PlusLightMap(
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &);
+
+	void MakeSky();
+	int MakeDir(
+			const unsigned short,
+			const unsigned short,
+			const unsigned short,
+			const unsigned short) const;
+	double Distance(
+			const unsigned short x_from,
+			const unsigned short y_from,
+			const unsigned short z_from,
+	                const unsigned short x_to,
+			const unsigned short y_to,
+			const unsigned short z_to) const
+	{
 		return sqrt( float((x_from-x_to)*(x_from-x_to)+
 		                   (y_from-y_to)*(y_from-y_to)+
 		                   (z_from-z_to)*(z_from-z_to)) );
@@ -137,52 +142,27 @@ class World {
 
 	//lighting section
 	private:
-	void ReEnlighten(const unsigned short i, const unsigned short j, const unsigned short k) {
-		if ( height-1==k || !InBounds(i, j, k) )
-			return;
-
-		short x, y, z;
-		for (x=i-max_light_radius-1; x<=i+max_light_radius+1; ++x)
-		for (y=j-max_light_radius-1; y<=j+max_light_radius+1; ++y)
-		for (z=k-max_light_radius-1; z<=k+max_light_radius+1 && z<height-1; ++z)
-			if ( InBounds(x, y, z) )
-				SetLightMap(0, x, y, z);
-
-		for (x=i-max_light_radius-max_light_radius-1; x<=i+max_light_radius+max_light_radius+1; ++x)
-		for (y=j-max_light_radius-max_light_radius-1; y<=j+max_light_radius+max_light_radius+1; ++y) {
-			if ( InBounds(x, y, 0) )
-				SunShine(x, y);
-			for (z=k-max_light_radius-max_light_radius-1; z<=k+max_light_radius+max_light_radius+1; ++z)
-				Shine(x, y, z);
-		}
-	}
-
-	void ReEnlightenAll() {
-		unsigned short i, j, k;
-
-		for (i=0; i<shred_width*3; ++i)
-		for (j=0; j<shred_width*3; ++j)
-		for (k=0; k<height-1; ++k)
-			SetLightMap(0, i, j, k);
-
-		for (i=0; i<shred_width*3; ++i)
-		for (j=0; j<shred_width*3; ++j) {
-			SunShine(i, j);
-			for (k=1; k<height-1; ++k)
-				Shine(i, j, k);
-		}
-	}
-	
-	void SafeEnlighten(const unsigned short i, const unsigned short j, const unsigned short k) {
+	void ReEnlighten(
+			const ushort i,
+			const ushort j,
+			const ushort k);
+	void ReEnlightenAll();
+	void SafeEnlighten(
+			const ushort i,
+			const ushort j,
+			const ushort k) {
 		if ( InBounds(i, j, k) && k<height-1 )
 			SetLightMap(10, i, j, k);
 	}
 
-	void SunShine(const unsigned short i, const unsigned short j) {
+	void SunShine(
+			const ushort i,
+			const ushort j)
+	{
 		if ( NIGHT==PartOfDay() )
 			return;
 
-		unsigned short k=height-2;
+		ushort k=height-2;
 		do {
 			SetLightMap(10, i, j, k);
 			SafeEnlighten(i+1, j, k);
@@ -193,99 +173,63 @@ class World {
 	}
 
 	void Shine(
-			const unsigned short,
-			const unsigned short,
-			const unsigned short);
+			const ushort,
+			const ushort,
+			const ushort);
 
 	//information section
 	public:
-	int Focus(const unsigned short,
-	          const unsigned short,
-	          const unsigned short,
+	QString WorldName(QString str) {
+		return str=worldName;
+	}
+	//TODO: make one Focus
+	int Focus(const unsigned short &,
+	          const unsigned short &,
+	          const unsigned short &,
 	          unsigned short &,
 	          unsigned short &,
-	          unsigned short &, const dirs) const;
-	int Focus(const unsigned short,
-	          const unsigned short,
-	          const unsigned short,
+	          unsigned short &,
+		  const dirs &) const;
+	int Focus(const unsigned short &,
+	          const unsigned short &,
+	          const unsigned short &,
 	          unsigned short &,
 	          unsigned short &,
 	          unsigned short &) const;
-	void PlayerFocus(unsigned short & i_target, unsigned short & j_target, unsigned short & k_target) const {
-		unsigned short playerX, playerY, playerZ;
-		GetPlayerCoords(playerX, playerY, playerZ);
-		Focus(playerX, playerY, playerZ, i_target, j_target, k_target);
-	}
-	dirs TurnRight(const dirs dir) const {
-		switch (dir) {
-			case NORTH: return EAST;
-			case EAST: return SOUTH;
-			case SOUTH: return WEST;
-			default: return NORTH;
-		}
-	}
-	dirs TurnLeft(const dirs dir) const {
-		switch (dir) {
-			case NORTH: return WEST;
-			case WEST: return SOUTH;
-			case SOUTH: return EAST;
-			default: return NORTH;
-		}
-	}
-	void Examine() const;
-	char CharNumber(const unsigned short, const unsigned short, const unsigned short) const;
-	char CharNumberFront(const unsigned short, const unsigned short) const;
 
 	//visibility section
 	public:
-	bool DirectlyVisible(const float, const float, const float, const unsigned short, const unsigned short, const unsigned short) const;
-	bool Visible(const unsigned short, const unsigned short, const unsigned short,
-	             const unsigned short, const unsigned short, const unsigned short) const;
-	bool Visible(const unsigned short x_to, const unsigned short y_to, const unsigned short z_to) const {
-		unsigned short playerX, playerY, playerZ;
-		GetPlayerCoords(playerX, playerY, playerZ);
-		return Visible(playerX, playerY, playerZ, x_to, y_to, z_to);
-	}
+	bool DirectlyVisible(
+			float,
+			float,
+			float,
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &) const;
+	bool Visible(
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &) const;
 
 	//movement section
 	public:
-	void ReloadShreds(const dirs);	
-	void PhysEvents();
 	int  Move(
-			const unsigned short,
-			const unsigned short,
-			const unsigned short,
-			const dirs,
-			unsigned=2); //how much block fall/rise at one turn
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &,
+			const dirs &,
+			const unsigned=2); //how much block fall/rise at one turn
 	void Jump(
-			const unsigned short,
-			const unsigned short,
-			const unsigned short);
-	int PlayerMove(const dirs dir);
-	int PlayerMove();
-	void PlayerJump() {
-		unsigned short playerX, playerY, playerZ;
-		GetPlayerCoords(playerX, playerY, playerZ);
-		Jump(playerX, playerY, playerZ);
-	}
+			const unsigned short &,
+			const unsigned short &,
+			unsigned short);
 
-	//player specific functions section
-	public:
-	void SetPlayerDir(const dirs);
-	dirs GetPlayerDir() const;
-	void GetPlayerCoords(
-			unsigned short &,
-			unsigned short &,
-			unsigned short &) const;
-	void GetPlayerCoords(
-			unsigned short &,
-			unsigned short &) const;
-	void GetPlayerZ(unsigned short &) const;
-	Dwarf * GetPlayerP() const { return playerP; }
 
 	//time section
 	public:
-	unsigned long GetTime() const { return time; }
 	times_of_day PartOfDay() const {
 		unsigned short time_day=TimeOfDay();
 		if (time_day<end_of_night)   return NIGHT;
@@ -298,24 +242,22 @@ class World {
 
 	//interactions section
 	public:
-	void Damage(
-			const unsigned short,
-			const unsigned short,
-			const unsigned short,
+	bool Damage(
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &,
 			const unsigned short=1,
 			const damage_kinds=CRUSH,
 			const bool=true);
-	void Use(
-			const unsigned short,
-			const unsigned short,
-			const unsigned short);
+	bool Use(
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &);
 	bool Build(Block *,
-			const unsigned short,
-			const unsigned short,
-			const unsigned short);
-	void PlayerBuild(const unsigned short);
-	void Inscribe(Dwarf * const);
-	void PlayerInscribe() { Inscribe(playerP); }
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &);
+	bool Inscribe(Dwarf * const);
 	void Inscribe(
 			const unsigned short,
 			const unsigned short,
@@ -331,18 +273,17 @@ class World {
 			return;
 		Eat(GetBlock(i, j, k), GetBlock(i_food, j_food, k_food));
 	}
-	void PlayerEat(unsigned short);
 
 	//inventory functions section
 	private:
-	void Exchange(
-			const unsigned short i_from,
-			const unsigned short j_from,
-			const unsigned short k_from,
-			const unsigned short i_to,
-			const unsigned short j_to,
-			const unsigned short k_to,
-			const unsigned short n);
+	int Exchange(
+			const unsigned short & i_from,
+			const unsigned short & j_from,
+			const unsigned short & k_from,
+			const unsigned short & i_to,
+			const unsigned short & j_to,
+			const unsigned short & k_to,
+			const unsigned short & n);
 	void ExchangeAll(
 			const unsigned short,
 			const unsigned short,
@@ -356,20 +297,10 @@ class World {
 		if ( !Focus(i, j, k, i_to, j_to, k_to) )
 			Exchange(i, j, k, i_to, j_to, k_to, n);
 	}
-	void PlayerDrop(const unsigned short n) {
-		unsigned short playerX, playerY, playerZ;
-		GetPlayerCoords(playerX, playerY, playerZ);
-		Drop(playerX, playerY, playerZ, n);
-	}
 	void Get(const unsigned short i, const unsigned short j, const unsigned short k, const unsigned short n) {
 		unsigned short i_from, j_from, k_from;
 		if ( !Focus(i, j, k, i_from, j_from, k_from) )
 			Exchange(i_from, j_from, k_from, i, j, k, n);
-	}
-	void PlayerGet(const unsigned short n) {
-		unsigned short playerX, playerY, playerZ;
-		GetPlayerCoords(playerX, playerY, playerZ);
-		Get(playerX, playerY, playerZ, n);
 	}
 	void DropAll(const unsigned short i_from, const unsigned short j_from, const unsigned short k_from) {
 		unsigned short i, j, k;
@@ -382,21 +313,6 @@ class World {
 			ExchangeAll(i, j, k, i_to, j_to, k_to);
 	}
 	void Wield(Dwarf * const, const unsigned short);
-	void PlayerWield() {
-		/*unsigned short i, j=0;
-		playerP->RangeForWield(i, j);
-
-		if ( i>=inventory_size ) {
-			scr->Notify("Nothing to wield.");
-			return;
-		}
-
-		char str[18];
-		sprintf(str, "Wield what? (%c-%c)", i+'a', j+'a');
-		scr->Notify(str);
-		//Wield(playerP, getch()-'a');
-		scr->Notify("");*/
-	}
 
 	//block information section
 	public:
@@ -404,85 +320,72 @@ class World {
 			const unsigned short i,
 			const unsigned short j,
 			const unsigned short k) const
-		{ return (i<shred_width*3 && j<shred_width*3 && k<height); }
-	char * FullName(char * const,
+	{
+		static const unsigned short max_x_y=shred_width*numShreds;
+		return (i<max_x_y && j<max_x_y && k<height);
+	}
+	QString FullName(QString,
 			const unsigned short,
 			const unsigned short,
 			const unsigned short) const;
-	subs Sub(
-			const unsigned short,
-			const unsigned short,
-			const unsigned short) const;
-	kinds Kind(
-			const unsigned short,
-			const unsigned short,
-			const unsigned short) const;
-	short Durability(
-			const unsigned short,
-			const unsigned short,
-			const unsigned short) const;
-
 	int Transparent(
-			const unsigned short i,
-			const unsigned short j,
-			const unsigned short k) const
-	{
-		return ( !InBounds(i, j, k) ) ?
-			2 :
-			TransparentNotSafe(i, j, k);
-	}
-
-	int TransparentNotSafe(
-			const unsigned short,
-			const unsigned short,
-			const unsigned short k) const;
-
-	int Movable(const Block * const) const;
-	double Weight(const Block * const) const;
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &) const;
+	int Durability(
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &) const;
+	int Kind(
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &) const;
+	int Sub(
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &) const;
+	int Movable(
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &) const;
 	double Weight(
-			const unsigned short i,
-			const unsigned short j,
-			const unsigned short k) const
-	{
-		return (!InBounds(i, j, k)) ? 1000 : Weight(GetBlock(i, j, k));
-	}
-
-	void * HasInventory(
+			const unsigned short & i,
+			const unsigned short & j,
+			const unsigned short & k) const;
+	Inventory * HasInventory(
 			const unsigned short,
 			const unsigned short,
 			const unsigned short k) const;	
 
-	void * ActiveBlock(
+	Active * ActiveBlock(
 			const unsigned short,
 			const unsigned short,
 			const unsigned short) const;
 
-	bool GetNote(char * const,
-			const unsigned short,
-			const unsigned short,
-			const unsigned short k) const;
+	bool GetNote(QString,
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &) const;
 	int Temperature(
-			const unsigned short,
-			const unsigned short,
-			const unsigned short) const;
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &) const;
 	bool Equal(const Block * const, const Block * const) const;
 	short Enlightened(
-			const unsigned short i,
-			const unsigned short j,
-			const unsigned short k) const
+			const unsigned short & i,
+			const unsigned short & j,
+			const unsigned short & k) const
 	{
-		if ( !InBounds(i, j, k) || NULL==GetBlock(i, j, k) )
-			return 0;
-
-		if ( height-1==k )
-			return 10;
-
-		return LightMap(i, j, k);
+		return InBounds(i, j, k) ?
+			(( height-1==k ) ?
+				10 :
+				LightMap(i, j, k)) :
+			0;
 	}
 	char MakeSound(
-			const unsigned short,
-			const unsigned short,
-		       	const unsigned short) const;
+			const unsigned short &,
+			const unsigned short &,
+		       	const unsigned short &) const;
 
 	private:
 	float LightRadius(
@@ -490,7 +393,11 @@ class World {
 			const unsigned short,
 			const unsigned short) const;
 
-	bool UnderTheSky(const unsigned short i, const unsigned short j, unsigned short k) const {
+	bool UnderTheSky(
+			const unsigned short & i,
+			const unsigned short & j,
+			unsigned short k) const
+	{
 		if ( !InBounds(i, j, k) )
 			return false;
 
@@ -504,21 +411,28 @@ class World {
 	friend class Active;
 
 	public:
-	void mutex_lock()    { mutex.lock(); }
-	bool mutex_trylock() { return !mutex.tryLock(); }
-	void mutex_unlock()  { mutex.unlock(); }
+	void WriteLock() { rwLock.lockForWrite(); }
+	void ReadLock() { rwLock.lockForRead(); }
+	bool TryReadLock() { return rwLock.tryLockForRead(); }
+	void Unlock() { rwLock.unlock(); }
 
 	public:
-	World(QString);
-	World(QString,
-			const unsigned long,
-			const unsigned long,
-			const unsigned short,
-			const unsigned short,
-			const unsigned short,
-			const unsigned long,
-			const unsigned short);
+	World(const QString, const unsigned short);
 	~World();
+
+	public slots:
+	void CleanAll();
+	void ReloadShreds(const int &);	
+	void PhysEvents();
+
+	signals:
+	void Notify(QString) const;
+	void GetString(QString &) const;
+	void Updated(
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &);
+	void UpdatedAll();
 };
 
 #endif

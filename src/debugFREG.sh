@@ -1,2 +1,2 @@
-valgrind ./freg.bin 2>errors.txt;
+valgrind --leak-check=full ./src 2>errors.txt;
 less errors.txt;

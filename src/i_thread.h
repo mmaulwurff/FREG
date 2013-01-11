@@ -15,21 +15,29 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-#include "thread.h"
-#include "header.h"
-#include "world.h"
+#ifndef THREAD_H
+#define THREAD_H
+
 #include <QThread>
+#include "header.h"
 
-Thread::Thread(World * world) : w(world), stopped(false) {}
+class IThread : public QThread { //thread for keyboard input
+	Q_OBJECT
+	
+	public:
+		IThread();
+		void Stop();
 
-void Thread::run() {
-	while ( !stopped ) {
-		if ( NULL!=w )
-			w->PhysEvents();
-		msleep(1000/time_steps_in_sec);
-	}
-}
+	protected:
+		void run();
+	
+	signals:
+		void InputReceived(int, int);
+		void ExitReceived();
+		void RePrintReceived() const;
 
-void Thread::Stop() {
-	stopped=true;
-}
+	private:
+		volatile bool stopped;
+};
+
+#endif

@@ -19,26 +19,27 @@
 #include "world.h"
 #include "Shred.h"
 
-char * Block::FullName(char * const str) const {
+QString Block::FullName(QString str) const {
 	switch (sub) {
-		case WATER:      return WriteName(str, "Ice");
-		case STONE:      return WriteName(str, "Stone");
-		case MOSS_STONE: return WriteName(str, "Moss stone");
-		case NULLSTONE:  return WriteName(str, "Nullstone");
-		case GLASS:      return WriteName(str, "Glass");
 		case STAR: case SUN_MOON:
-		case SKY:        return WriteName(str, "Air");
-		case SOIL:       return WriteName(str, "Soil");
-		case HAZELNUT:   return WriteName(str, "Hazelnut");
-		case WOOD:       return WriteName(str, "Wood");
-		case GREENERY:   return WriteName(str, "Leaves");
-		case ROSE:       return WriteName(str, "Rose");
-		case A_MEAT:     return WriteName(str, "Animal meat");
-		case H_MEAT:     return WriteName(str, "Not animal meat");
+		case SKY:        str="Air"; break;
+		case WATER:      str="Ice"; break;
+		case STONE:      str="Stone"; break;
+		case MOSS_STONE: str="Moss stone"; break;
+		case NULLSTONE:  str="Nullstone"; break;
+		case GLASS:      str="Glass"; break;
+		case SOIL:       str="Soil"; break;
+		case HAZELNUT:   str="Hazelnut"; break;
+		case WOOD:       str="Wood"; break;
+		case GREENERY:   str="Leaves"; break;
+		case ROSE:       str="Rose"; break;
+		case A_MEAT:     str="Animal meat"; break;
+		case H_MEAT:     str="Not animal meat"; break;
 		default:
-			fprintf(stderr, "Block::FullName(char *): Block has unknown substance: %d", int(sub));
-			return WriteName(str, "Unknown block");
+			fprintf(stderr, "Block::FullName(QString *): Block has unknown substance: %d", int(sub));
+			str="Unknown block";
 	}
+	return str;
 }
 
 int Block::Damage(
@@ -67,10 +68,9 @@ int Block::Damage(
 				durability-=2*dmg :
 				durability-=dmg;
 		case DIFFERENT: case AIR: case SKY: case SUN_MOON: case WATER:
-		case NULLSTONE:
+		case NULLSTONE: case STAR:
 			return durability;
-		default:
-			return durability-=dmg;
+		default: return durability-=dmg;
 	}
 }
 
@@ -143,12 +143,16 @@ Block::Block(
 		case STONE:     weight=2600; break;
 		case A_MEAT:    weight=1;    break;
 		case H_MEAT:    weight=1;    break;
+		case AIR:       weight=0;    break;
 		default: weight=1000;
 	}
 	shown_weight=weight;
 }
 
-Block::Block(char * const str) : normal(0) {
+Block::Block(char * const str)
+		:
+		normal(0)
+{
 	unsigned short note_len;
 	if ( 0==sscanf(str, "%*d_%*d_%d_%f_%d_%hd_%hd",
 				(int *)(&sub),
@@ -156,8 +160,9 @@ Block::Block(char * const str) : normal(0) {
 				(int *)(&direction),
 				&durability,
 				&note_len) ) {
-		fprintf(stderr, "Block::Block: read failure, string: %s\n",
-			str);
+		fprintf(stderr,
+				"Block::Block: read failure, string: %s\n",
+				str);
 		sub=STONE;
 		weight=2600;
 		direction=NORTH;
@@ -168,7 +173,7 @@ Block::Block(char * const str) : normal(0) {
 	shown_weight=weight;
 	CleanString(str);
 	if ( 0==note_len ) {
-		note=NULL;
+		note=0;
 		return;
 	}
 
@@ -176,28 +181,34 @@ Block::Block(char * const str) : normal(0) {
 	sscanf(str, " %s", note);
 	unsigned short len;
 	for (len=0; ' '==str[len]; ++len);
-	for (unsigned short i=len; i<len+note_len; ++i)
-		str[i]=' ';
+	for (unsigned short i=len; i<len+note_len; str[i++]=' ');
 }
 
-void Active::SafeMove() {
-	//when player is on the border of shred, moving him causes World::ReloadShreds(dir). so, cheks are neede for liquids not to push player.
-	unsigned short x_focus, y_focus, z_focus;
-	World * world=whereShred->GetWorld();
-	if ( !(world->Focus(x_self, y_self, z_self,
-				x_focus, y_focus, z_focus, direction)) &&
-			((Block *)(world->playerP)!=world->
-			 	GetBlock(x_focus, y_focus, z_focus) ||
-			 UP==direction || DOWN==direction ) )
-		world->Move(x_self, y_self, z_self, direction);
+int Active::Move(const int dir) {
+	switch ( dir ) {
+		case NORTH: --y_self; break;
+		case SOUTH: ++y_self; break;
+		case EAST:  ++x_self; break;
+		case WEST:  --x_self; break;
+		case UP:    ++z_self; break;
+		case DOWN:  --z_self; break;
+		default:
+			fprintf(stderr,
+				"Active::Move(dirs): unlisted dir: %d\n",
+				(int)dir);
+			return 0;
+	}
+	if ( GetWorld()->GetShred(x_self, y_self)!=whereShred ) {
+		whereShred->RemActive(this);
+		whereShred=GetWorld()->GetShred(x_self, y_self);
+		whereShred->AddActive(this);	
+	}
+	emit Moved(dir);
+	return 0;
 }
-void Active::SafeJump() {
-	SetWeight(0);
-	if ( whereShred->GetWorld()->Move(x_self, y_self, z_self, UP) ) {
-		SetWeight();
-		SafeMove();
-	} else
-		SetWeight();
+
+World * Active::GetWorld() const {
+	return whereShred->GetWorld();
 }
 
 void Active::Register(Shred * const sh,
@@ -206,7 +217,7 @@ void Active::Register(Shred * const sh,
 		const unsigned short z)
 {
 	whereShred=sh;
-	if ( NULL==whereShred )
+	if ( !whereShred )
 		return;
 
 	x_self=x;
@@ -216,7 +227,7 @@ void Active::Register(Shred * const sh,
 }
 
 void Active::Unregister() {
-	if ( NULL==whereShred )
+	if ( !whereShred )
 		return;
 	
 	whereShred->RemActive(this);
@@ -225,9 +236,10 @@ void Active::Unregister() {
 Active::~Active() { Unregister(); }
 
 void Animal::Act() {
-	if ( LIQUID==whereShred->GetWorld()->Kind(x_self, y_self, z_self+1) ) {
+	World * world=whereShred->GetWorld();
+	if ( LIQUID==world->Kind(x_self, y_self, z_self+1) ) {
 		if ( 0>=breath )
-			whereShred->GetWorld()->Damage(x_self, y_self, z_self,
+			world->Damage(x_self, y_self, z_self,
 					10, BREATH, false);
 		else
 			--breath;
@@ -238,7 +250,7 @@ void Animal::Act() {
 	if ( 0<satiation )
 		--satiation;
 	else
-		whereShred->GetWorld()->Damage(x_self, y_self, z_self,
+		world->Damage(x_self, y_self, z_self,
 				1, HUNGER, false);
 }
 
@@ -255,23 +267,12 @@ Inventory::Inventory(Shred * const sh,
 	fgets(str, 300, in);
 }
 
-int Dwarf::Move(const dirs dir) {
-	Active::Move(dir);
-	if ( this==whereShred->GetWorld()->GetPlayerP() && (
-			(x_self==shred_width-1 || x_self==shred_width*2 ||
-			 y_self==shred_width-1 || y_self==shred_width*2)) ) {
-		whereShred->GetWorld()->ReloadShreds(dir);
-		return 1;
-	}
-	return 0;
-}
-
 void Dwarf::Act() {
 	Animal::Act();
 }
 
 before_move_return Dwarf::BeforeMove(const dirs dir) {
-	if (dir==direction)
+	if ( dir==direction )
 		whereShred->GetWorld()->GetAll(x_self, y_self, z_self);
 	return NOTHING;
 }
@@ -282,26 +283,28 @@ before_move_return Pile::BeforeMove(const dirs dir) {
 	return NOTHING;
 }
 
-bool Liquid::CheckWater(const dirs dir) const {
+bool Liquid::CheckWater(const dirs & dir) const {
 	unsigned short i_check, j_check, k_check;
-	if ( (whereShred->GetWorld()->Focus(x_self, y_self, z_self,
+	World * world=whereShred->GetWorld();
+	if ( (world->Focus(x_self, y_self, z_self,
 			i_check, j_check, k_check, dir)) )
 		return false;
 
-	if ( WATER==whereShred->GetWorld()->Sub(i_check, j_check, k_check) )
+	if ( WATER==world->Sub(i_check, j_check, k_check) )
 		return true;
 
 	return false;
 }
 
 void Liquid::Act() {
-	switch (rand()%4) {
-		case 0: SetDir(NORTH); break;
-		case 1:	SetDir(EAST);  break;
-		case 2: SetDir(SOUTH); break;
-		case 3:	SetDir(WEST);  break;
+	dirs dir;
+	switch ( rand()%4 ) {
+		case 0: dir=NORTH; break;
+		case 1: dir=EAST;  break;
+		case 2: dir=SOUTH; break;
+		default: dir=WEST;
 	}
-	SafeMove();
+	whereShred->GetWorld()->Move(x_self, y_self, z_self, dir);
 }
 
 void Grass::Act() {
@@ -366,15 +369,21 @@ void Rabbit::Act() {
 			else
 				SetDir(EAST);
 		}
-		(rand()%2) ? SafeMove() : SafeJump();
+		if ( rand()%2 )
+			world->Move(x_self, y_self, z_self, direction);
+		else
+			world->Jump(x_self, y_self, z_self);
 	} else if ( 0==rand()%60 ) {
 		switch (rand()%4) {
 			case 0: SetDir(NORTH); break;
 			case 1: SetDir(SOUTH); break;
 			case 2: SetDir(EAST);  break;
-			case 3: SetDir(WEST);  break;
+			default: SetDir(WEST);
 		}
-		(rand()%2) ? SafeMove() : SafeJump();
+		if ( rand()%2 )
+			world->Move(x_self, y_self, z_self, direction);
+		else
+			world->Jump(x_self, y_self, z_self);
 	}
 
 	if ( seconds_in_day*time_steps_in_sec/2>satiation ) {
@@ -383,7 +392,8 @@ void Rabbit::Act() {
 		for (z=z_self-1; z<=z_self+1; ++z)
 			if ( GREENERY==world->Sub(x, y, z) ) {
 				world->Eat(x_self, y_self, z_self, x, y, z);
-				break;
+				Animal::Act();
+				return;
 			}
 	}
 

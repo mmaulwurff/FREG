@@ -18,110 +18,184 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
-#include <QGLWidget>
-#include <QTextEdit>
-#include <QVBoxLayout>
-#include <QKeyEvent>
-#include "header.h"
+#define NOX
+#define SCREEN_SIZE 30
 
-class World;
-class Block;
+#include "VirtScreen.h"
+#include <curses.h>
 
-class FREGGLWidget : public QGLWidget {
-	Q_OBJECT
-
-	public:
-	FREGGLWidget(QWidget *parent=0);
-	~FREGGLWidget();
-
-	QSize minimumSizeHint() const;
-	QSize sizeHint() const;
-
-	protected:
-	void initializeGL();
-	void resizeGL(int, int);
-	void paintGL();
-	void mousePressEvent(QMouseEvent *) {}
-	void mouseMoveEvent(QMouseEvent *) {}
-
-	public slots:
-	void setXRotation(int) {}
-	void setYRotation(int) {}
-	void setZRotation(int) {}
-
-	private:
-	int horAngle; //0 for north
-	int verAngle; //0 for horizontal view
-	void draw();
-
-	QColor qtPurple;
+enum color_pairs { //do not change colors order! //foreground_background
+        BLACK_BLACK=1,
+        BLACK_RED,
+        BLACK_GREEN,
+        BLACK_YELLOW,
+        BLACK_BLUE,
+        BLACK_MAGENTA,
+        BLACK_CYAN,
+        BLACK_WHITE,
+        //
+        RED_BLACK,
+        RED_RED,
+        RED_GREEN,
+        RED_YELLOW,
+        RED_BLUE,
+        RED_MAGENTA,
+        RED_CYAN,
+        RED_WHITE,
+        //
+        GREEN_BLACK,
+        GREEN_RED,
+        GREEN_GREEN,
+        GREEN_YELLOW,
+        GREEN_BLUE,
+        GREEN_MAGENTA,
+        GREEN_CYAN,
+        GREEN_WHITE,
+        //
+        YELLOW_BLACK,
+        YELLOW_RED,
+        YELLOW_GREEN,
+        YELLOW_YELLOW,
+        YELLOW_BLUE,
+        YELLOW_MAGENTA,
+        YELLOW_CYAN,
+        YELLOW_WHITE,
+        //
+        BLUE_BLACK,
+        BLUE_RED,
+        BLUE_GREEN,
+        BLUE_YELLOW,
+        BLUE_BLUE,
+        BLUE_MAGENTA,
+        BLUE_CYAN,
+        BLUE_WHITE,
+        //
+	MAGENTA_BLACK,
+        MAGENTA_RED,
+        MAGENTA_GREEN,
+        MAGENTA_YELLOW,
+        MAGENTA_BLUE,
+        MAGENTA_MAGENTA,
+        MAGENTA_CYAN,
+        MAGENTA_WHITE,
+        //
+        CYAN_BLACK,
+        CYAN_RED,
+        CYAN_GREEN,
+        CYAN_YELLOW,
+        CYAN_BLUE,
+        CYAN_MAGENTA,
+        CYAN_CYAN,
+        CYAN_WHITE,
+        //
+        WHITE_BLACK,
+        WHITE_RED,
+        WHITE_GREEN,
+        WHITE_YELLOW,
+        WHITE_BLUE,
+        WHITE_MAGENTA,
+        WHITE_CYAN,
+        WHITE_WHITE
 };
 
-class Screen : public QWidget {
+class IThread;
+class Block;
+class Inventory;
+class QTimer;
+
+class Screen : public VirtScreen {
 	Q_OBJECT
 
-	World * const w; //connected world
-	FREGGLWidget *graphWidget;
-	QTextEdit *notifyWidget;
-	QVBoxLayout *layout;
+	WINDOW * leftWin,
+	       * rightWin,
+	       * notifyWin,
+	       //* soundWin,
+	       * hudWin; //head-up display
+	IThread * input;
+	volatile bool updated;
+	bool cleaned;
 
-	struct {
+	QTimer * timer;
+
+	/*struct {
 		char ch;
 		unsigned short lev;
 		color_pairs col;
-	} soundMap[9];
+	} soundMap[9];*/
 
-	char CharName(const unsigned short, const unsigned short, const unsigned short) const; //вернуть символ, обозначающий блок
-	char CharName(const kinds, const subs) const;
-	FILE * notifyLog; //весь текст уведомлений (notification) дублируется в файл.
-
-	void PrintNormal() const;
-	void PrintInv(class Inventory * const) const;
-
-	color_pairs Color(const kinds, const subs) const; //пара цветов текст_фон в зависимоти от типа (kind) и вещества (sub) блока.
-	color_pairs Color(const subs sub, const kinds kind) const { return Screen::Color(kind, sub); } //чтобы можно было путать порядок
-	color_pairs Color(const unsigned short i, const unsigned short j, const unsigned short k) const; //в зависимости от координаты
-
-	protected:
-	void keyPressEvent(QKeyEvent *event);
-
-	public:
-	class Block * blockToPrintLeft,
-	      * blockToPrintRight; //блоки, связанные с экраном (например, блок открытого в текущий момент сундука)
-	window_views viewLeft, viewRight; //тип вида: пока или NORMAL, или FRONT, или INVENTORY
-	void Flushinp() { /*flushinp();*/ }
-	char * GetString(char * const str) const { //ввод строки пользователем
-		/*echo();
-		werase(notifyWin);
-		mvwaddstr(notifyWin, 0, 0, "Enter inscription:");
-		wmove(notifyWin, 1, 0);
-		wgetnstr(notifyWin, str, note_length);
-		werase(notifyWin);
-		wrefresh(notifyWin);
-		noecho();*/
-		return str;
+	char CharName(
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &) const;
+	char CharName(const int &, const int &) const;
+	char CharNumber(
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &) const;
+	char CharNumberFront(
+			const unsigned short &,
+			const unsigned short &) const;
+	void Arrows(
+			WINDOW * const & window,
+			const unsigned short & x,
+			const unsigned short & y) const
+	{
+		//стрелки, показывающие положение игрока.
+		//используются, когда его самого не видно (например, вид неба)
+		wcolor_set(window, WHITE_RED, NULL);
+		mvwprintw(window, 0, x, "vv");
+		mvwprintw(window, SCREEN_SIZE+1, x, "^^");
+		mvwprintw(window, y, 0, ">");
+		mvwprintw(window, y, SCREEN_SIZE*2+1, "<");	
 	}
-	void Notify(const char * const str,
-	            const kinds kind=BLOCK,
-	            const subs sub=DIFFERENT) { NotifyAdd(str, kind, sub); }
-	void NotifyAdd(const char * const, const kinds=BLOCK, const subs=DIFFERENT); //добавить строку к уведомлению
-	void Print() const;
+	FILE * notifyLog; //весь текст уведомлений (notification) дублируется в файл.
+	unsigned short notifyLines; //для NotifyAdd() - сколько строк уже с текстом
 
-	void GetSound(const unsigned short, const unsigned short, const char, const kinds, const subs); //получить отдельный звук для звуковой карты
-	void PrintSounds();
+	void PrintNormal(WINDOW * const) const;
+	void PrintFront(WINDOW * const) const;
+	void PrintInv(WINDOW * const, Inventory * const) const;
 
+	color_pairs Color(
+			const int & kind,
+			const int & sub) const; //пара цветов текст_фон в зависимоти от типа (kind) и вещества (sub) блока.
+	color_pairs Color(
+			const unsigned short &,
+			const unsigned short &,
+			const unsigned short &) const;
+
+	//void GetSound(const unsigned short, const unsigned short, const char, const kinds, const subs); //получить отдельный звук для звуковой карты
+	//void PrintSounds();
+
+	private slots:
+	void Print();
+
+	public slots:
+	void Notify(QString);
+	void CleanAll();
+	void PassString(QString &) const;
+	void Update(
+			const unsigned short,
+			const unsigned short,
+			const unsigned short);
+	void UpdateAll();
+	void UpdatePlayer();
+	void Flushinp() { flushinp(); }
 	void RePrint() { //стереть всё с экрана и перерисовать всё с нуля (можно сделать пустой)
-		/*wclear(leftWin);
+		wclear(leftWin);
 		wclear(rightWin);
 		wclear(notifyWin);
-		wclear(soundWin);
-		wclear(hudWin);*/
-		Print();
-		PrintSounds();
+		//wclear(soundWin);
+		wclear(hudWin);
+		updated=false;
+		//PrintSounds();
 	}
 
-	Screen(World * const wor);
-	~Screen();
+	signals:
+	void ExitReceived();
+	void InputReceived(int, int) const;
+
+	public:
+	Screen(World * const, Player * const);
 };
 
 #endif
