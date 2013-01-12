@@ -111,7 +111,7 @@ class Block { //blocks without special physics and attributes
 			new Block(sub) :
 			0;
 	}
-	virtual Inventory * HasInventory() const { return 0; }
+	virtual Inventory * HasInventory() { return 0; }
 	virtual Animal * IsAnimal() { return 0; }
 	virtual Active * ActiveBlock() { return 0; }
 	virtual Block * Drop(int) { return 0; }
@@ -388,7 +388,7 @@ class Inventory {
 	virtual QString FullName(QString) const=0;
 	virtual kinds Kind() const=0;
 	virtual subs Sub() const=0;
-	virtual bool Access() { return true; }
+	virtual bool Access() const { return true; }
 
 	virtual Inventory * HasInventory() { return this; }
 	usage_types Use() { return OPEN; }

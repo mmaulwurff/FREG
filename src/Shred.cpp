@@ -72,7 +72,7 @@ Shred::Shred(World * const world_,
 
 Shred::~Shred() {
 	ulong mapSize=world->MapSize();
-	if ( (longitude <= mapSize) && (latitude <= mapSize) ) {
+	if ( (longitude < mapSize) && (latitude < mapSize) ) {
 		char str[50];
 		FILE * out=fopen(FileName(str), "w");
 
@@ -231,6 +231,15 @@ double Shred::Weight(
 		blocks[x][y][z]->Weight() :
 		air.Weight();
 }
+float Shred::LightRadius(
+		const ushort x,
+		const ushort y,
+		const ushort z) const
+{
+	return blocks[x][y][z] ?
+		blocks[x][y][z]->LightRadius() :
+		air.LightRadius();	
+}
 
 void Shred::AddActive(Active * const active) {
 	activeList.append(active);
@@ -277,27 +286,27 @@ void Shred::SetBlock(Block * block,
 }
 
 short Shred::LightMap(
-		const unsigned short & i,
-		const unsigned short & j,
-		const unsigned short & k) const
+		const ushort i,
+		const ushort j,
+		const ushort k) const
 {
 	return lightMap[i][j][k];
 }
-void Shred::SetLightMap(const short & level,
-		const unsigned short & i,
-		const unsigned short & j,
-		const unsigned short & k)
+void Shred::SetLightMap(
+		const short level,
+		const ushort i,
+		const ushort j,
+		const ushort k)
 {
 	lightMap[i][j][k]=level;
 }
-void Shred::PlusLightMap(const short & level,
-		const unsigned short & i,
-		const unsigned short & j,
-		const unsigned short & k)
+void Shred::PlusLightMap(
+		const short level,
+		const ushort i,
+		const ushort j,
+		const ushort k)
 {
 	lightMap[i][j][k]+=level;
-	if ( lightMap[i][j][k]>10 )
-		lightMap[i][j][k]=10;
 }
 
 char * Shred::FileName(char * const str) const {
@@ -313,7 +322,7 @@ char Shred::TypeOfShred(
 {
 	//return '~';
 	ulong mapSize=world->MapSize();
-	if ( longi > mapSize || lati  > mapSize )
+	if ( longi >= mapSize || lati  >= mapSize )
 		return '#';
 
 	QFile map(worldName);

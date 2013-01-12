@@ -39,11 +39,16 @@ class VirtScreen : public QObject {
 	virtual void CleanAll() {};
 	virtual void PassString(QString &) const=0;
 	virtual void Update(
-			const unsigned short,
-			const unsigned short,
-			const unsigned short)=0;
+			const ushort,
+			const ushort,
+			const ushort)=0;
 	virtual void UpdateAll()=0;
 	virtual void UpdatePlayer()=0;
+	virtual void UpdateAround(
+			const ushort,
+			const ushort,
+			const ushort,
+			const ushort level)=0;
 	virtual void RePrint() {}
 
 	signals:

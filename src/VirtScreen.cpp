@@ -39,13 +39,24 @@ VirtScreen::VirtScreen(
 		this, SLOT(UpdatePlayer()),
 		Qt::DirectConnection);
 	connect(w, SIGNAL(Updated(
-			const unsigned short,
-			const unsigned short,
-			const unsigned short)),
+			const ushort,
+			const ushort,
+			const ushort)),
 		this, SLOT(Update(
-			const unsigned short,
-			const unsigned short,
-			const unsigned short)),
+			const ushort,
+			const ushort,
+			const ushort)),
+		Qt::DirectConnection);
+	connect(w, SIGNAL(UpdatedAround(
+			const ushort,
+			const ushort,
+			const ushort,
+			const ushort)),
+		this, SLOT(UpdateAround(
+			const ushort,
+			const ushort,
+			const ushort,
+			const ushort)),
 		Qt::DirectConnection);
 	connect(w, SIGNAL(UpdatedAll()),
 		this, SLOT(UpdateAll()),

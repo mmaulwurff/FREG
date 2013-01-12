@@ -174,11 +174,16 @@ class Screen : public VirtScreen {
 	void CleanAll();
 	void PassString(QString &) const;
 	void Update(
-			const unsigned short,
-			const unsigned short,
-			const unsigned short);
+			const ushort,
+			const ushort,
+			const ushort);
 	void UpdateAll();
 	void UpdatePlayer();
+	void UpdateAround(
+			const ushort,
+			const ushort,
+			const ushort,
+			const ushort level);
 	void Flushinp() { flushinp(); }
 	void RePrint() { //стереть всё с экрана и перерисовать всё с нуля (можно сделать пустой)
 		wclear(leftWin);

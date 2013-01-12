@@ -20,7 +20,8 @@
 
 #include <QList>
 #include <QString>
-#include <blocks.h>
+#include "header.h"
+#include "blocks.h"
 
 class World;
 
@@ -58,17 +59,20 @@ class Shred {
 			const unsigned short &,
 			const unsigned short &);
 
-	short LightMap(const unsigned short &,
-	               const unsigned short &,
-	               const unsigned short &) const;
-	void SetLightMap(const short &,
-			const unsigned short &,
-			const unsigned short &,
-			const unsigned short &);
-	void PlusLightMap(const short &,
-			const unsigned short &,
-			const unsigned short &,
-			const unsigned short &);
+	short LightMap(
+			const ushort,
+			const ushort,
+			const ushort) const;
+	void SetLightMap(
+			const short,
+			const ushort,
+			const ushort,
+			const ushort);
+	void PlusLightMap(
+			const short,
+			const ushort,
+			const ushort,
+			const ushort);
 
 	int Sub(
 			const unsigned short &,
@@ -94,6 +98,10 @@ class Shred {
 			const unsigned short &,
 			const unsigned short &,
 			const unsigned short &) const;
+	float LightRadius(
+			const ushort x,
+			const ushort y,
+			const ushort z) const;
 
 
 	Shred(World * const,

@@ -18,8 +18,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QTimer>
-#include <math.h>
-#include <unistd.h>
+#include <cmath>
 #include "header.h"
 #include "blocks.h"
 #include "Shred.h"
@@ -116,9 +115,9 @@ Block * World::GetBlock(
 }
 
 void World::SetBlock(Block * block,
-		const unsigned short & x,
-		const unsigned short & y,
-		const unsigned short & z)
+		const ushort x,
+		const ushort y,
+		const ushort z)
 {
 	GetShred(x, y)->
 		SetBlock(block, x%shred_width, y%shred_width, z);
@@ -126,32 +125,30 @@ void World::SetBlock(Block * block,
 }
 
 short World::LightMap(
-		const unsigned short & x,
-		const unsigned short & y,
-		const unsigned short & z) const
+		const ushort x,
+		const ushort y,
+		const ushort z) const
 {
 	return GetShred(x, y)->
 		LightMap(x%shred_width, y%shred_width, z);
 }
 void World::SetLightMap(
-		const unsigned short & level,
-		const unsigned short & x,
-		const unsigned short & y,
-		const unsigned short & z)
+		const ushort level,
+		const ushort x,
+		const ushort y,
+		const ushort z)
 {
 	GetShred(x, y)->
 		SetLightMap(level, x%shred_width, y%shred_width, z);
-	emit Updated(x, y, z);
 }
 void World::PlusLightMap(
-		const unsigned short & level,
-		const unsigned short & x,
-		const unsigned short & y,
-		const unsigned short & z)
+		const ushort level,
+		const ushort x,
+		const ushort y,
+		const ushort z)
 {
 	GetShred(x, y)->
 		PlusLightMap(level, x%shred_width, y%shred_width, z);
-	emit Updated(x, y, z);
 }
 
 void World::Shine(
@@ -160,10 +157,8 @@ void World::Shine(
 		const ushort k)
 {
 	float light_radius;
-	//fprintf(stderr, "World::Shine: %hu, %hu, %hu\n", i, j, k);
 	if ( !InBounds(i, j, k) ||
-		!GetBlock(i, j, k) ||
-		0==(light_radius=GetBlock(i, j, k)->LightRadius()) )
+		0==(light_radius=LightRadius(i, j, k)) )
 		return;
 
 	for (short x=ceil(i-light_radius); x<=floor(i+light_radius); ++x)
@@ -177,28 +172,62 @@ void World::Shine(
 				Distance(i, j, k, x, y, z)+1, x, y, z);
 }
 
+void World::SunShine(
+		const ushort i,
+		const ushort j,
+		ushort k=height-2)
+{
+	if ( NIGHT==PartOfDay() || k>height-2 )
+		return;
+
+	bool north=InBounds(i, j-1);
+	bool south=InBounds(i, j+1);
+	bool east =InBounds(i+1, j);
+	bool west =InBounds(i-1, j);
+	do {
+		if ( north && GetBlock(i, j-1, k) )
+			SetLightMap(10, i, j-1, k);
+
+		if ( south && GetBlock(i, j+1, k) )
+			SetLightMap(10, i, j+1, k);
+
+		if ( east  && GetBlock(i+1, j, k) )
+			SetLightMap(10, i+1, j, k);
+
+		if ( west  && GetBlock(i-1, j, k) )
+			SetLightMap(10, i-1, j, k);
+
+		if ( GetBlock(i, j, k) )
+			SetLightMap(10, i, j, k);
+	} while ( Transparent(i, j, k--) );
+}
+
 void World::ReEnlighten(
 		const ushort i,
 		const ushort j,
 		const ushort k)
 {
-	if ( height-1==k || !InBounds(i, j, k) )
+	if ( height-1==k )
 		return;
 
 	short x, y, z;
 	for (x=i-max_light_radius-1; x<=i+max_light_radius+1; ++x)
 	for (y=j-max_light_radius-1; y<=j+max_light_radius+1; ++y)
-	for (z=k-max_light_radius-1; z<=k+max_light_radius+1 && z<height-1; ++z)
-		if ( InBounds(x, y, z) )
-			SetLightMap(0, x, y, z);
+		if ( InBounds(x, y) )
+			for (z=k-max_light_radius-1; z<=k+max_light_radius+1 && z<height-1; ++z)
+				if ( InBounds(x, y, z) )
+					SetLightMap(0, x, y, z);
 
 	for (x=i-2*max_light_radius-1; x<=i+2*max_light_radius+1; ++x)
-	for (y=j-2*max_light_radius-1; y<=j+2*max_light_radius+1; ++y) {
-		if ( InBounds(x, y, 0) )
-			SunShine(x, y);
-		for (z=k-2*max_light_radius-1; z<=k+2*max_light_radius+1; ++z)
-			Shine(x, y, z);
-	}
+	for (y=j-2*max_light_radius-1; y<=j+2*max_light_radius+1; ++y)
+	for (z=k-2*max_light_radius-1; z<=k+2*max_light_radius+1; ++z)
+		Shine(x, y, z);
+
+	for (x=i-max_light_radius-1; x<=i+max_light_radius+1; ++x)
+	for (y=j-max_light_radius-1; y<=j+max_light_radius+1; ++y)
+		if ( InBounds(x, y) )
+			SunShine(x, y, k);
+	emit UpdatedAround(i, j, k, max_light_radius+1);
 }
 
 void World::ReEnlightenAll() {
@@ -211,10 +240,11 @@ void World::ReEnlightenAll() {
 
 	for (i=0; i<shred_width*numShreds; ++i)
 	for (j=0; j<shred_width*numShreds; ++j) {
-		SunShine(i, j);
 		for (k=1; k<height-1; ++k)
 			Shine(i, j, k);
+		SunShine(i, j, height-2);
 	}
+	emit UpdatedAll();
 }
 
 void World::ReloadShreds(const int & direction) {
@@ -288,7 +318,6 @@ void World::ReloadShreds(const int & direction) {
 			direction);
 	}
 	ReEnlightenAll();
-	emit UpdatedAll();
 }
 
 void World::PhysEvents() {
@@ -415,11 +444,12 @@ int World::Move(
 	SetBlock(GetBlock(newi, newj, newk), i, j, k);
 	SetBlock(block, newi, newj, newk);
 	
-	ReEnlighten(newi, newj, newk);
+	if ( !(Transparent(i, j, k) &&
+			Transparent(newi, newj, newk)) )
+		ReEnlighten(newi, newj, newk);
 
 	if ( GetBlock(i, j, k) )
 		GetBlock(i, j, k)->Move( Anti(dir) );
-
 	GetBlock(newi, newj, newk)->Move(dir);
 
 	if ( Weight(newi, newj, newk) ) {
@@ -492,15 +522,16 @@ int World::Focus(
 }
 
 bool World::Damage(
-		const unsigned short & i,
-		const unsigned short & j,
-		const unsigned short & k,
-		const unsigned short dmg, //see default in class definition
+		const ushort i,
+		const ushort j,
+		const ushort k,
+		const ushort dmg, //see default in class definition
 		const damage_kinds dmg_kind, //see default in class definition
 		const bool destroy) //see default in class definition
 {
 	if ( !InBounds(i, j, k) || !GetBlock(i, j, k) )
 		return false;
+	bool light_flag=Transparent(i, j, k);
 			
 	if ( GetBlock(i, j, k)->Normal() )
 		SetBlock(new Block(GetBlock(i, j, k)->Sub()), i, k, k);
@@ -527,7 +558,8 @@ bool World::Damage(
 		temp->Unregister();
 	}
 
-	ReEnlighten(i, j, k);
+	if ( !light_flag )
+		ReEnlighten(i, j, k);
 	return true;
 }
 
@@ -549,9 +581,9 @@ bool World::Use(
 }
 
 bool World::Build(Block * block,
-		const unsigned short & i,
-		const unsigned short & j,
-		const unsigned short & k)
+		const ushort i,
+		const ushort j,
+		const ushort k)
 {
 	if ( !(InBounds(i, j, k) &&
 			!GetBlock(i, j, k) &&
@@ -562,7 +594,10 @@ bool World::Build(Block * block,
 	if ( block->ActiveBlock() )
 		((Active *)block)->Register(GetShred(i, j), i, j, k);
 	SetBlock(block, i, j, k);
-	ReEnlighten(i, j, k);
+	if ( !Transparent(i, j, k) )
+		ReEnlighten(i, j, k);
+	else
+		SunShine(i, j);
 	return true;
 }
 
@@ -729,6 +764,14 @@ double World::Weight(
 	return GetShred(x, y)->
 		Weight(x%shred_width, y%shred_width, z);
 }
+float World::LightRadius(
+		const ushort x,
+		const ushort y,
+		const ushort z) const
+{
+	return GetShred(x, y)->
+		LightRadius(x%shred_width, y%shred_width, z);
+}
 
 Inventory * World::HasInventory(
 		const unsigned short i,
@@ -800,16 +843,6 @@ char World::MakeSound(
 	return GetBlock(i, j, k) ?
 		GetBlock(i, j, k)->MakeSound() :
 		' ';
-}
-
-float World::LightRadius(
-		const unsigned short i,
-		const unsigned short j,
-		const unsigned short k) const
-{
-	return (NULL==GetBlock(i, j, k)) ?
-		0 :
-		GetBlock(i, j, k)->LightRadius();
 }
 
 World::World(const QString world_name,

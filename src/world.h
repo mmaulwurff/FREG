@@ -77,9 +77,9 @@ class World : public QThread {
 		              i/shred_width];
 	}	
 	void SetBlock(Block *,
-			const unsigned short &,
-			const unsigned short &,
-			const unsigned short &);
+			const ushort,
+			const ushort,
+			const ushort);
 
 	private:
 	unsigned short SunMoonX() const {
@@ -90,19 +90,19 @@ class World : public QThread {
 				seconds_in_daylight;
 	}
 	short LightMap(
-			const unsigned short &,
-			const unsigned short &,
-			const unsigned short &) const;
+			const ushort,
+			const ushort,
+			const ushort) const;
 	void SetLightMap(
-			const unsigned short &,
-			const unsigned short &,
-			const unsigned short &,
-			const unsigned short &);
+			const ushort level,
+			const ushort,
+			const ushort,
+			const ushort);
 	void PlusLightMap(
-			const unsigned short &,
-			const unsigned short &,
-			const unsigned short &,
-			const unsigned short &);
+			const ushort level,
+			const ushort,
+			const ushort,
+			const ushort);
 
 	void MakeSky();
 	int MakeDir(
@@ -147,30 +147,11 @@ class World : public QThread {
 			const ushort j,
 			const ushort k);
 	void ReEnlightenAll();
-	void SafeEnlighten(
-			const ushort i,
-			const ushort j,
-			const ushort k) {
-		if ( InBounds(i, j, k) && k<height-1 )
-			SetLightMap(10, i, j, k);
-	}
 
 	void SunShine(
 			const ushort i,
-			const ushort j)
-	{
-		if ( NIGHT==PartOfDay() )
-			return;
-
-		ushort k=height-2;
-		do {
-			SetLightMap(10, i, j, k);
-			SafeEnlighten(i+1, j, k);
-			SafeEnlighten(i-1, j, k);
-			SafeEnlighten(i, j+1, k);
-			SafeEnlighten(i, j-1, k);
-		} while ( Transparent(i, j, k--) );
-	}
+			const ushort j,
+			ushort k);
 
 	void Shine(
 			const ushort,
@@ -243,10 +224,10 @@ class World : public QThread {
 	//interactions section
 	public:
 	bool Damage(
-			const unsigned short &,
-			const unsigned short &,
-			const unsigned short &,
-			const unsigned short=1,
+			const ushort,
+			const ushort,
+			const ushort,
+			const ushort=1,
 			const damage_kinds=CRUSH,
 			const bool=true);
 	bool Use(
@@ -254,9 +235,9 @@ class World : public QThread {
 			const unsigned short &,
 			const unsigned short &);
 	bool Build(Block *,
-			const unsigned short &,
-			const unsigned short &,
-			const unsigned short &);
+			const ushort,
+			const ushort,
+			const ushort);
 	bool Inscribe(Dwarf * const);
 	void Inscribe(
 			const unsigned short,
@@ -317,11 +298,11 @@ class World : public QThread {
 	//block information section
 	public:
 	bool InBounds(
-			const unsigned short i,
-			const unsigned short j,
-			const unsigned short k) const
+			const ushort i,
+			const ushort j,
+			const ushort k=0) const
 	{
-		static const unsigned short max_x_y=shred_width*numShreds;
+		static const ushort max_x_y=shred_width*numShreds;
 		return (i<max_x_y && j<max_x_y && k<height);
 	}
 	QString FullName(QString,
@@ -352,6 +333,10 @@ class World : public QThread {
 			const unsigned short & i,
 			const unsigned short & j,
 			const unsigned short & k) const;
+	float LightRadius(
+			const ushort x,
+			const ushort y,
+			const ushort z) const;
 	Inventory * HasInventory(
 			const unsigned short,
 			const unsigned short,
@@ -388,10 +373,6 @@ class World : public QThread {
 		       	const unsigned short &) const;
 
 	private:
-	float LightRadius(
-			const unsigned short,
-			const unsigned short,
-			const unsigned short) const;
 
 	bool UnderTheSky(
 			const unsigned short & i,
@@ -429,10 +410,15 @@ class World : public QThread {
 	void Notify(QString) const;
 	void GetString(QString &) const;
 	void Updated(
-			const unsigned short &,
-			const unsigned short &,
-			const unsigned short &);
+			const ushort,
+			const ushort,
+			const ushort);
 	void UpdatedAll();
+	void UpdatedAround(
+			const ushort,
+			const ushort,
+			const ushort,
+			const ushort level);
 };
 
 #endif

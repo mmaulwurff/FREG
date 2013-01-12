@@ -539,6 +539,14 @@ void Screen::UpdateAll() {
 void Screen::UpdatePlayer() {
 	updated=false;
 }
+void Screen::UpdateAround(
+		const ushort,
+		const ushort,
+		const ushort,
+		const ushort)
+{
+	updated=false;	
+}
 
 Screen::Screen(
 		World * const wor,
