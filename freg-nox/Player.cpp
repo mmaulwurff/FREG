@@ -24,7 +24,9 @@
 #include <QString>
 
 short Player::HP() const {
-	return player->Durability();
+	return player ?
+		player->Durability() :
+		0;
 }
 
 short Player::Breath() const {
@@ -41,8 +43,8 @@ Inventory * Player::PlayerInventory() {
 	return player->HasInventory();
 }
 
-void Player::Act(int action, int d) {
-	dirs dir=(dirs)d;
+void Player::Act(const int action, const int d) {
+	const int dir=d;
 	//TODO: put writelock only where needed
 	switch ( (actions)action ) {
 		case MOVE:
@@ -73,16 +75,15 @@ void Player::Act(int action, int d) {
 			emit Updated();
 			world->Unlock();
 		break;
+		case OPEN_INVENTORY:
+			if ( player->HasInventory() ) {
+				usingSelfType=( OPEN==usingSelfType ) ? NO : OPEN;
+				emit Updated();
+			}
+		break;
 		//TODO 
-		/*case OPEN_INVENTORY:
-			   if ( INVENTORY!=scr->viewRight ) {
-				   scr->viewRight=INVENTORY;
-				   scr->blockToPrintRight=(Block *)(GetPlayerP());
-			   } else
-				   scr->viewRight=FRONT;
-		break;*/
 		case USE: {
-			unsigned short i, j, k;
+			ushort i, j, k;
 			world->WriteLock();
 			Focus(i, j, k);
 			world->Use(i, j, k);
@@ -107,7 +108,7 @@ void Player::Act(int action, int d) {
 			world->Unlock();
 		break;
 		case DAMAGE: {
-			unsigned short i, j, k;
+			ushort i, j, k;
 			world->WriteLock();
 			Focus(i, j, k);
 			world->Damage(i, j, k);
@@ -121,23 +122,31 @@ void Player::Act(int action, int d) {
 }
 
 void Player::UpdateXYZ() {
-	x=player->X();
-	y=player->Y();
-	z=player->Z();
+	if ( player ) {
+		x=player->X();
+		y=player->Y();
+		z=player->Z();
+	}
 }
 
 void Player::Focus(
-		unsigned short & i_target,
-		unsigned short & j_target,
-		unsigned short & k_target) const
+		ushort & i_target,
+		ushort & j_target,
+		ushort & k_target) const
 {
+	if ( player )
 	world->Focus(x, y, z,
 		i_target, j_target, k_target,
 		player->GetDir());
+	else {
+		i_target=x;
+		j_target=y;
+		k_target=z;
+	}
 }
 
 void Player::Examine() const {
-	unsigned short i, j, k;
+	ushort i, j, k;
 	Focus(i, j, k);
 	
 	QString str;
@@ -162,16 +171,21 @@ void Player::Jump() {
 }
 
 int Player::Move() {
-	return Move( player->GetDir() );
+	if ( player )
+		return Move( player->GetDir() );
+	return 1;
 }
 
-int Player::Move(const dirs dir) {
+int Player::Move(const int dir) {
 	return world->Move(x, y, z, dir);
 }
 
 void Player::Inscribe() { world->Inscribe(x, y, z); }
 
-Block * Player::Drop(const unsigned short n) {
+Block * Player::Drop(const ushort n) {
+	if ( !player )
+		return 0;
+
 	Inventory * inv=player->HasInventory();
 	return inv ?
 		inv->Drop(n) :
@@ -179,6 +193,9 @@ Block * Player::Drop(const unsigned short n) {
 }
 
 void Player::Get(Block * block) {
+	if ( !player )
+		return;
+
 	Inventory * inv=player->HasInventory();
 	if ( inv )
 		inv->Get(block);
@@ -201,26 +218,34 @@ void Player::Wield() {
 }
 
 bool Player::Visible(
-		const unsigned short & x_to,
-		const unsigned short & y_to,
-		const unsigned short & z_to) const
+		const ushort x_to,
+		const ushort y_to,
+		const ushort z_to) const
 {
 	return world->Visible(x, y, z, x_to, y_to, z_to);
 }
 
-void Player::Dir(const dirs dir) { player->SetDir(dir); }
+void Player::Dir(const int direction) {
+	if ( player )
+		player->SetDir(direction);
+	dir=direction;
+	
+}
 
-dirs Player::Dir() const { return player->GetDir(); }
+int Player::Dir() const { return dir; }
 
-void Player::Build(const unsigned short n) {
+void Player::Build(const ushort n) {
 	Block * temp=Drop(n);
-	unsigned short i, j, k;
+	ushort i, j, k;
 	Focus(i, j, k);
 	if ( !world->Build(temp, i, j, k) )
 		Get(temp);
 }
 
-void Player::Eat(unsigned short n) {
+void Player::Eat(ushort n) {
+	if ( !player )
+		return;
+
 	Animal * const pl=player->IsAnimal();
 	if ( !pl )
 		return;
@@ -240,7 +265,7 @@ void Player::Eat(unsigned short n) {
 		emit Notify("You have gorged yourself!");
 }
 
-void Player::CheckOverstep(int dir) {
+void Player::CheckOverstep(const int dir) {
 	UpdateXYZ();
 	if ( shred!=world->GetShred(x, y) ) {
 		shred=world->GetShred(x, y);
@@ -289,7 +314,7 @@ Player::Player(World * const w) :
 		file.close();
 	}
 
-	const unsigned short plus=world->NumShreds()/2*shred_width;
+	const ushort plus=world->NumShreds()/2*shred_width;
 	homeX+=plus;
 	homeY+=plus;
 	x+=plus;
@@ -303,9 +328,13 @@ Player::Player(World * const w) :
 		world->SetBlock(player, x, y, z);
 	} else
 		player=world->ActiveBlock(x, y, z);
+	dir=world->GetBlock(x, y, z)->GetDir();
 
 	connect(player, SIGNAL(Moved(int)),
 		this, SLOT(CheckOverstep(int)),
+		Qt::DirectConnection);
+	connect(player, SIGNAL(Destroyed()),
+		this, SLOT(BlockDestroy()),
 		Qt::DirectConnection);
 	connect(this, SIGNAL(OverstepBorder(int)),
 		world, SLOT(ReloadShreds(int)),
@@ -332,7 +361,7 @@ void Player::CleanAll() {
 		return;
 	}
 	
-	const unsigned short min=world->NumShreds()/2*shred_width;
+	const ushort min=world->NumShreds()/2*shred_width;
 	QTextStream out(&file);
 	out << "World:\n" << world->WorldName(str) << endl
 		<< "Home_longitude:\n" << homeLongi << endl

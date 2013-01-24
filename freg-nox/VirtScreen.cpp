@@ -19,25 +19,7 @@
 #include "Player.h"
 #include "world.h"
 
-VirtScreen::VirtScreen(
-		World * const world_,
-		Player * const player_)
-		:
-		w(world_),
-		player(player_)
-{
-	connect(w, SIGNAL(Notify(QString)),
-		this, SLOT(Notify(QString)));
-	connect(player, SIGNAL(Notify(QString)),
-		this, SLOT(Notify(QString)));
-
-	connect(w, SIGNAL(GetString(QString &)),
-		this, SLOT(PassString(QString &)),
-		Qt::DirectConnection);
-
-	connect(player, SIGNAL(Updated()),
-		this, SLOT(UpdatePlayer()),
-		Qt::DirectConnection);
+void VirtScreen::ConnectWorld() {
 	connect(w, SIGNAL(Updated(
 			const ushort,
 			const ushort,
@@ -58,7 +40,32 @@ VirtScreen::VirtScreen(
 			const ushort,
 			const ushort)),
 		Qt::DirectConnection);
+}
+
+VirtScreen::VirtScreen(
+		World * const world_,
+		Player * const player_)
+		:
+		w(world_),
+		player(player_)
+{
+	connect(w, SIGNAL(Notify(QString)),
+		this, SLOT(Notify(QString)));
+	connect(player, SIGNAL(Notify(QString)),
+		this, SLOT(Notify(QString)));
+
+	connect(w, SIGNAL(GetString(QString &)),
+		this, SLOT(PassString(QString &)),
+		Qt::DirectConnection);
+
+	connect(player, SIGNAL(Updated()),
+		this, SLOT(UpdatePlayer()),
+		Qt::DirectConnection);
+	connect(w, SIGNAL(ReConnect()),
+		this, SLOT(ConnectWorld()),
+		Qt::DirectConnection);
 	connect(w, SIGNAL(UpdatedAll()),
 		this, SLOT(UpdateAll()),
 		Qt::DirectConnection);
+	ConnectWorld();
 }

@@ -48,8 +48,9 @@ class VirtScreen : public QObject {
 			const ushort,
 			const ushort,
 			const ushort,
-			const ushort level)=0;
+			const ushort range)=0;
 	virtual void RePrint() {}
+	void ConnectWorld();
 
 	signals:
 	void ExitReceived();

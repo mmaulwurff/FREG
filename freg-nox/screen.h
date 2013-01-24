@@ -119,29 +119,27 @@ class Screen : public VirtScreen {
 
 	/*struct {
 		char ch;
-		unsigned short lev;
+		ushort lev;
 		color_pairs col;
 	} soundMap[9];*/
 
 	char CharName(
-			const unsigned short &,
-			const unsigned short &,
-			const unsigned short &) const;
-	char CharName(const int &, const int &) const;
+			const ushort,
+			const ushort,
+			const ushort) const;
+	char CharName(const int, const int) const;
 	char CharNumber(
-			const unsigned short &,
-			const unsigned short &,
-			const unsigned short &) const;
+			const ushort,
+			const ushort,
+			const ushort) const;
 	char CharNumberFront(
-			const unsigned short &,
-			const unsigned short &) const;
+			const ushort,
+			const ushort) const;
 	void Arrows(
 			WINDOW * const & window,
-			const unsigned short & x,
-			const unsigned short & y) const
+			const ushort x,
+			const ushort y) const
 	{
-		//стрелки, показывающие положение игрока.
-		//используются, когда его самого не видно (например, вид неба)
 		wcolor_set(window, WHITE_RED, NULL);
 		mvwprintw(window, 0, x, "vv");
 		mvwprintw(window, SCREEN_SIZE+1, x, "^^");
@@ -149,21 +147,21 @@ class Screen : public VirtScreen {
 		mvwprintw(window, y, SCREEN_SIZE*2+1, "<");	
 	}
 	FILE * notifyLog; //весь текст уведомлений (notification) дублируется в файл.
-	unsigned short notifyLines; //для NotifyAdd() - сколько строк уже с текстом
+	ushort notifyLines; //для NotifyAdd() - сколько строк уже с текстом
 
 	void PrintNormal(WINDOW * const) const;
 	void PrintFront(WINDOW * const) const;
 	void PrintInv(WINDOW * const, Inventory * const) const;
 
 	color_pairs Color(
-			const int & kind,
-			const int & sub) const; //пара цветов текст_фон в зависимоти от типа (kind) и вещества (sub) блока.
+			const int kind,
+			const int sub) const; //пара цветов текст_фон в зависимоти от типа (kind) и вещества (sub) блока.
 	color_pairs Color(
-			const unsigned short &,
-			const unsigned short &,
-			const unsigned short &) const;
+			const ushort,
+			const ushort,
+			const ushort) const;
 
-	//void GetSound(const unsigned short, const unsigned short, const char, const kinds, const subs); //получить отдельный звук для звуковой карты
+	//void GetSound(const ushort, const ushort, const char, const kinds, const subs); //получить отдельный звук для звуковой карты
 	//void PrintSounds();
 
 	private slots:
@@ -183,7 +181,7 @@ class Screen : public VirtScreen {
 			const ushort,
 			const ushort,
 			const ushort,
-			const ushort level);
+			const ushort range);
 	void Flushinp() { flushinp(); }
 	void RePrint() { //стереть всё с экрана и перерисовать всё с нуля (можно сделать пустой)
 		wclear(leftWin);

@@ -29,10 +29,11 @@ class Shred;
 class Player : public QObject {
 	Q_OBJECT
 
-	unsigned long homeLongi, homeLati;
-	unsigned short homeX, homeY, homeZ;
-	unsigned short x, y, z; //current position
-	World * world;
+	ulong homeLongi, homeLati;
+	ushort homeX, homeY, homeZ;
+	ushort x, y, z; //current position
+	int dir;
+	World * const world;
 	Active * player;
 	Block * usingBlock;
 	usage_types usingType;
@@ -45,8 +46,9 @@ class Player : public QObject {
 
 	public slots:
 	void CleanAll();
-	void CheckOverstep(int);
-	void Act(int, int);
+	void CheckOverstep(const int);
+	void Act(const int, const int);
+	void BlockDestroy() { player=0; }
 	
 	signals:
 	void Notify(QString) const;
@@ -54,39 +56,41 @@ class Player : public QObject {
 	void Updated();
 
 	public:
-	Block * UsingBlock() { return usingBlock; }
-	usage_types UsingType() { return usingType; }
-	usage_types UsingSelfType() { return usingSelfType; }
-	void Focus(
-		unsigned short &,
-		unsigned short &,
-		unsigned short &) const;
-	void Examine() const;
-	int Move(const dirs dir);
-	int Move();
-	void Jump();
-	void Dir(const dirs);
-	dirs Dir() const;
-	unsigned short X() const { return x; }
-	unsigned short Y() const { return y; }
-	unsigned short Z() const { return z; }
-	Active * GetP() const { return player; }
-	void Build(const unsigned short);
-	void Eat(unsigned short);
-	void Inscribe();
-	Block * Drop(const unsigned short);
-	void Get(Block *);
-	void Wield();
-	bool Visible(
-		const unsigned short &,
-		const unsigned short &,
-		const unsigned short &) const;
-
+	ushort X() const { return x; }
+	ushort Y() const { return y; }
+	ushort Z() const { return z; }
+	int Dir() const;
 	short HP() const;
 	short Breath() const;
 	short Satiation() const;
+	Active * GetP() const { return player; }
+	bool Visible(
+		const ushort,
+		const ushort,
+		const ushort) const;
+	Block * UsingBlock() { return usingBlock; }
+	usage_types UsingType() { return usingType; }
+	usage_types UsingSelfType() { return usingSelfType; }
 	Inventory * PlayerInventory();
 
+	private:
+	void Focus(
+		ushort &,
+		ushort &,
+		ushort &) const;
+	void Examine() const;
+	int Move(const int dir);
+	int Move();
+	void Jump();
+	void Dir(const int dir);
+	void Build(const ushort);
+	void Eat(ushort);
+	void Inscribe();
+	Block * Drop(const ushort);
+	void Get(Block *);
+	void Wield();
+
+	public:
 	Player(World * const);
 	~Player() { CleanAll(); }
 };

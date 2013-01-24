@@ -36,9 +36,9 @@ void Screen::PassString(QString & str) const {
 }
 
 char Screen::CharNumber(
-		const unsigned short & i,
-		const unsigned short & j,
-		const unsigned short & k) const
+		const ushort i,
+		const ushort j,
+		const ushort k) const
 {
 	if ( height-1==k )
 		return ' ';
@@ -53,12 +53,12 @@ char Screen::CharNumber(
 			case UP:    return '.';
 			default:
 				fprintf(stderr,
-					"Screen::ChanNumber(int &, int &, int &): unlisted dir: %d\n",
+					"Screen::CharNumber(ushort, ushort, ushort): unlisted dir: %d\n",
 					(int)player->Dir());
 				return '*';
 		}
 
-	const unsigned short playerZ=player->Z();
+	const ushort playerZ=player->Z();
 	if ( UP==player->Dir() ) {
 		if ( k > playerZ && k < playerZ+10 )
 			return k-playerZ+'0';
@@ -72,10 +72,10 @@ char Screen::CharNumber(
 }
 
 char Screen::CharNumberFront(
-		const unsigned short & i,
-		const unsigned short & j) const
+		const ushort i,
+		const ushort j) const
 {
-	unsigned short ret;
+	ushort ret;
 	if ( NORTH==player->Dir() || SOUTH==player->Dir() ) {
 		if ( (ret=abs(player->Y()-j))<10 )
 			return ret+'0';
@@ -86,11 +86,10 @@ char Screen::CharNumberFront(
 }
 
 char Screen::CharName(
-		const int & kind,
-	       	const int & sub) const
-{ //вернуть символ, обозначающий блок
+		const int kind,
+	       	const int sub) const
+{
 	switch (kind)  {
-		//блоки, для символа которых тип важнее вещества
 		case CHEST:
 		case PILE:   return '&';
 		case BUSH:   return ';';
@@ -101,7 +100,6 @@ char Screen::CharName(
 		case RABBIT: return 'r';
 		case TELEGRAPH: return 't';
 		default: switch (sub) {
-			//блоки, для символа которых вещество важнее типа
 			case NULLSTONE: case MOSS_STONE: case WOOD:
 			case STONE: return '#';
 			case GLASS: return 'g';
@@ -117,26 +115,27 @@ char Screen::CharName(
 			case HAZELNUT: return ',';
 			case AIR:   return ' ';
 			default:
-				fprintf(stderr, "Screen::CharName(uns short, uns short, uns short): Block has unlisted substance: %d\n", int(sub));
+				fprintf(stderr,
+					"Screen::CharName(uns short, uns short, uns short): Block has unlisted substance: %d\n",
+					int(sub));
 				return '?';
 		}
 	}
 }
 char Screen::CharName(
-		const unsigned short & i,
-		const unsigned short & j,
-		const unsigned short & k) const
+		const ushort i,
+		const ushort j,
+		const ushort k) const
 {
 	return CharName( w->Kind(i, j, k),
 		w->Sub(i, j, k) );
 }
 
 color_pairs Screen::Color(
-		const int & kind,
-		const int & sub) const
-{ //пара цветов текст_фон в зависимоти от типа (kind) и вещества (sub) блока.
+		const int kind,
+		const int sub) const
+{
 	switch (kind) { //foreground_background
-		//блоки, для цвета которых тип важнее вещества
 		case DWARF:     return WHITE_BLUE;
 		case PILE:      return WHITE_BLACK;
 		case TELEGRAPH: return CYAN_BLACK;
@@ -144,10 +143,9 @@ color_pairs Screen::Color(
 		case BUSH:      return BLACK_GREEN;
 		case LIQUID: switch (sub) {
 			case WATER: return CYAN_BLUE;
-			default:    return RED_YELLOW; //всё расплавленное
+			default:    return RED_YELLOW;
 		}
 		default: switch (sub) {
-			//блоки, для цвета которых вещество важнее типа
 			case STONE:      return BLACK_WHITE;
 			case SAND:       return YELLOW_WHITE;
 			case A_MEAT:     return WHITE_RED;
@@ -173,9 +171,9 @@ color_pairs Screen::Color(
 	}
 }
 inline color_pairs Screen::Color(
-		const unsigned short & i,
-	       	const unsigned short & j,
-	       	const unsigned short & k) const
+		const ushort i,
+	       	const ushort j,
+	       	const ushort k) const
 {
 	return Color( w->Kind(i, j, k),
 			w->Sub(i, j, k) );
@@ -225,7 +223,7 @@ void Screen::Print() {
 	w->Unlock();
 
 	werase(hudWin); 
-	unsigned short i;
+	ushort i;
 	//HitPoints line
 	wstandend(hudWin);
 	wprintw(hudWin, " HP: %3hd%% <", dur);
@@ -266,27 +264,22 @@ void Screen::Print() {
 }
 
 void Screen::PrintNormal(WINDOW * const window) const {
-	unsigned short k_start;
-	short k_step;
-	unsigned short playerZ=player->Z();
+	const ushort playerZ=player->Z();
+	const int dir=player->Dir();
+	const ushort k_start=( UP!=dir ) ?
+		(( DOWN==dir ) ? playerZ-1 : playerZ) :
+		playerZ+1;
+	const short k_step=( UP!=dir ) ? (-1) : 1;
 	
-	const dirs dir=player->Dir();
-	if ( UP==dir ) { //подготовка: откуда начинать отрисовку и куда идти: в направлении роста или уменьшения z
-		k_start=playerZ+1;
-		k_step=1;
-	} else {
-		//если игрок смотрит в сторону, то рисовать всё с уровнем игрока, если смотрит в пол, то только пол и ниже
-		k_start=( DOWN==dir ) ? playerZ-1 : playerZ;
-		k_step=-1;
-	}
-	wmove(window, 1, 1); //передвинуть курсор (невидимый) в 1,1. в клетке 0,0 начинается рамка.
-	static const unsigned short start=(shred_width*w->NumShreds()-SCREEN_SIZE)/2;
-	unsigned short i, j, k;
+	wmove(window, 1, 1);
+	static const ushort start=(shred_width*w->NumShreds()-SCREEN_SIZE)/2;
+	ushort i, j, k;
+	const int block_side=( dir==UP ) ? DOWN : UP;
 	for ( j=start; j<SCREEN_SIZE+start; ++j, waddstr(window, "\n_") )
 	for ( i=start; i<SCREEN_SIZE+start; ++i )
-		for (k=k_start; ; k+=k_step) //верх и низ лоскута (чанка) - непрозрачные нуль-камень и небесная твердь. за границы массива на выйдет.
+		for (k=k_start; ; k+=k_step)
 			if ( w->Transparent(i, j, k) < 2 ) {
-				if ( w->Enlightened(i, j, k) && player->Visible(i, j, k) ) {
+				if ( w->Enlightened(i, j, k, block_side) && player->Visible(i, j, k) ) {
 					wcolor_set(window, Color(i, j, k), NULL);
 					waddch(window, CharName(i, j, k));
 					waddch(window, CharNumber(i, j, k));
@@ -297,19 +290,20 @@ void Screen::PrintNormal(WINDOW * const window) const {
 				break;
 			}
 	
-	wstandend(window); //вернуть окну стандартный цвет
-	box(window, 0, 0); //рамка
+	wstandend(window);
+	box(window, 0, 0);
+	//mvwprintw(window, SCREEN_SIZE+1, 1, "Time:%d", w->TimeOfDay());
 	if ( UP==dir || DOWN==dir ) {
+		const ushort start=(shred_width*w->NumShreds()-SCREEN_SIZE)/2;
 		mvwaddstr(window, 0, 1, ( UP==dir ) ? "Sky View" : "Ground View");
-		Arrows(window , player->X()*2+1, player->Y()+1);
+		Arrows(window , (player->X()-start)*2+1, player->Y()-start+1);
 	} else
 		mvwaddstr(window, 0, 1, "Normal View");
-	mvwprintw(window, SCREEN_SIZE+1, 1, "Time: %ld", w->Time());
-	wrefresh(window); //вывод на экран
+	wrefresh(window);
 }
 
 void Screen::PrintFront(WINDOW * const window) const {
-	dirs dir=player->Dir();
+	const int dir=player->Dir();
 	if ( UP==dir || DOWN==dir ) {
 		wstandend(window);
 		werase(window);
@@ -319,86 +313,89 @@ void Screen::PrintFront(WINDOW * const window) const {
 		return;
 	}
 
-	//подготовка сложнее, чем в PrintNormal: не только откуда и куда отрисовывать, но и какие переменные менять по ходу дела (указатели) *x и *z
 	short x_step, z_step,
 	      x_end, z_end,
 	      * x, * z,
 	      i, j, k;
-	unsigned short pX=player->X();
-	unsigned short pY=player->Y();
-	unsigned short pZ=player->Z();
-	unsigned short x_start, z_start,
-		       k_start,
-	               arrow_Y, arrow_X;
+	const ushort pX=player->X();
+	const ushort pY=player->Y();
+	const ushort pZ=player->Z();
+	const ushort start=(shred_width*w->NumShreds()-SCREEN_SIZE)/2;
+	ushort x_start, z_start, k_start;
+	ushort arrow_Y, arrow_X;
 	switch ( dir ) {
 		case NORTH:
 			x=&i;
 			x_step=1;
-			x_start=0;
-			x_end=SCREEN_SIZE;
+			x_start=start;
+			x_end=start+SCREEN_SIZE;
 			z=&j;
 			z_step=-1;
 			z_start=pY-1;
 			z_end=-1;
-			arrow_X=pX*2+1;
+			arrow_X=(pX-start)*2+1;
 		break;
 		case SOUTH:
 			x=&i;
 			x_step=-1;
-			x_start=SCREEN_SIZE-1;
-			x_end=-1;
+			x_start=SCREEN_SIZE-1+start;
+			x_end=start-1;
 			z=&j;
 			z_step=1;
 			z_start=pY+1;
-			z_end=SCREEN_SIZE;
-			arrow_X=(SCREEN_SIZE-pX)*2-1;
+			z_end=shred_width*w->NumShreds();
+			arrow_X=(SCREEN_SIZE-pX+start)*2-1;
 		break;
 		case WEST:
 			x=&j;
 			x_step=-1;
-			x_start=SCREEN_SIZE-1;
-			x_end=-1;
+			x_start=SCREEN_SIZE-1+start;
+			x_end=start-1;
 			z=&i;
 			z_step=-1;
 			z_start=pX-1;
 			z_end=-1;
-			arrow_X=(SCREEN_SIZE-pY)*2-1;
+			arrow_X=(SCREEN_SIZE-pY+start)*2-1;
 		break;
 		case EAST:
 			x=&j;
 			x_step=1;
-			x_start=0;
-			x_end=SCREEN_SIZE;
+			x_start=start;
+			x_end=SCREEN_SIZE+start;
 			z=&i;
 			z_step=1;
 			z_start=pX+1;
-			z_end=SCREEN_SIZE;
-			arrow_X=pY*2+1;
+			z_end=shred_width*w->NumShreds();
+			arrow_X=(pY-start)*2+1;
 		break;
 		default:
-			fprintf(stderr, "Screen::PrintFront(WINDOW *): unlisted dir: %d\n", (int)dir);
+			fprintf(stderr,
+				"Screen::PrintFront(WINDOW *): unlisted dir: %d\n",
+				(int)dir);
 			return;
 	}
-	if (pZ+SCREEN_SIZE/2>=height) {
+	if ( pZ+SCREEN_SIZE/2>=height ) {
 		k_start=height-2;
 		arrow_Y=height-pZ;
-	} else if (pZ-SCREEN_SIZE/2<0) {
+	} else if ( pZ-SCREEN_SIZE/2<0 ) {
 		k_start=SCREEN_SIZE-1;
 		arrow_Y=SCREEN_SIZE-pZ;
 	} else {
 		k_start=pZ+SCREEN_SIZE/2;
 		arrow_Y=SCREEN_SIZE/2+1;
 	}
-	/*
+	
+	const int block_side=w->Anti(dir);
 	wmove(window, 1, 1);
 	for (k=k_start; k_start-k<SCREEN_SIZE; --k, waddstr(window, "\n_"))
 		for (*x=x_start; *x!=x_end; *x+=x_step) {
 			for (*z=z_start; *z!=z_end; *z+=z_step)
 				if (w->Transparent(i, j, k) < 2) {
-					if ( w->Enlightened(i, j, k) && w->Visible(i, j, k) ) {
+					if ( w->Enlightened(i, j, k, block_side) &&
+							player->Visible(i, j, k) ) {
 						wcolor_set(window, Color(i, j, k), NULL);
 						waddch(window, CharName(i, j, k));
-						waddch(window, w->CharNumberFront(i, j));
+						waddch(window, CharNumberFront(i, j));
 					} else {
 						wcolor_set(window, BLACK_BLACK, NULL);
 						waddstr(window, "  ");
@@ -407,16 +404,13 @@ void Screen::PrintFront(WINDOW * const window) const {
 				}
 			if (*z==z_end) { //рисовать декорации дальнего вида (белые точки на синем)
 				*z-=z_step;
-				if (w->Visible(i, j, k)) {
-				       	wcolor_set(window, WHITE_BLUE, NULL);
-					waddstr(window, " .");
-				} else {
-					wcolor_set(window, BLACK_BLACK, NULL);
-					waddstr(window, "  ");
-				}
+				wcolor_set(window,
+					(player->Visible(i, j, k) ? WHITE_BLUE : BLACK_BLACK),
+					NULL);
+				waddstr(window, " .");
 			}
 		}
-	*/
+	
 	wstandend(window);
 	box(window, 0, 0);
 	mvwaddstr(window, 0, 1, "Front View");
@@ -435,7 +429,7 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 		mvwaddstr(window, 5, 2, "Right hand:");
 		mvwaddstr(window, 6, 2, "Left hand:");
 	}
-	unsigned short i;
+	ushort i;
 	double sum_weight=0, temp_weight;
 	QString str;
 	char num_str[6];
@@ -456,21 +450,19 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 		}
 	}
 	mvwprintw(window, 2+i, 43, "Sum:%6.1f kg", sum_weight);
-	if ( player->PlayerInventory()==inv ) {
-		box(window, 0, 0);
+	wcolor_set(window, Color(inv->Kind(), inv->Sub()), NULL);
+	box(window, 0, 0);
+	if ( player->PlayerInventory()==inv )
 		mvwaddstr(window, 0, 1, "Your inventory");
-	} else {
-		wcolor_set(window, Color(inv->Kind(), inv->Sub()), NULL);
-		box(window, 0, 0);
+	else
 		mvwprintw(window, 0, 1, "[%c]%s",
 			CharName(inv->Kind(),
 			inv->Sub()),
 			inv->FullName(str).toAscii().constData());
-	}
 	wrefresh(window);
 }
 
-/*void Screen::GetSound(const unsigned short n, const unsigned short dist, const char sound, const kinds kind, const subs sub) {
+/*void Screen::GetSound(const ushort n, const ushort dist, const char sound, const kinds kind, const subs sub) {
 	if ( w->mutex_trylock() )
 		return;
 
@@ -494,8 +486,8 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 		return;
 
 	werase(soundWin);
-	for (unsigned short i=0; i<3; ++i)
-	for (unsigned short j=0; j<3; ++j)
+	for (ushort i=0; i<3; ++i)
+	for (ushort j=0; j<3; ++j)
 		if ( ' '!=soundMap[i*3+j].ch ) {
 			wcolor_set(soundWin, soundMap[i*3+j].col, NULL);
 			mvwprintw(soundWin, i+1, j*2+1, "%c%hd", soundMap[i*3+j].ch, soundMap[i*3+j].lev);
@@ -511,11 +503,10 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 }*/
 
 void Screen::Notify(const QString str) {
-	//TODO do not reprint after each notify
 	static QString lines[5]={"", "", "", "", ""};
 	const short MAX_LINES=5;
 	wclear(notifyWin);
-	for (unsigned short i=0; i<MAX_LINES-1; ++i) {
+	for (ushort i=0; i<MAX_LINES-1; ++i) {
 		lines[i]=lines[i+1];
 		mvwaddstr(notifyWin, i, 0, lines[i].toAscii().constData());
 	}
@@ -527,9 +518,9 @@ void Screen::Notify(const QString str) {
 }
 
 void Screen::Update(
-		const unsigned short,
-		const unsigned short,
-		const unsigned short)
+		const ushort,
+		const ushort,
+		const ushort)
 {
 	updated=false;	
 }
@@ -585,7 +576,7 @@ Screen::Screen(
 	notifyWin=newwin(0, COLS, SCREEN_SIZE+2+5, 0);
 	//soundWin=newwin(3+2, 3*2+2, SCREEN_SIZE+2, 0);
 	
-	/*for (unsigned short i=0; i<9; ++i) {
+	/*for (ushort i=0; i<9; ++i) {
 		soundMap[i].ch=' ';
 		soundMap[i].lev=0;
 		soundMap[i].col=WHITE_BLACK;

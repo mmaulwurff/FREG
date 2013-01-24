@@ -1,19 +1,18 @@
 FREG is a free-roaming elementary game.
 Inspired by Minecraft and Angband.
+This is a version of FREG with text graphics.
 
 Development stage: implementing basics.
 
-Language: C++ with Qt
+Language: C++, Qt
+Non-standard libraries: ncurses
 
 Compile:
-
-In console:
-in src/ directory:
 qmake -project
-qmake src.pro
+qmake freg-nox.pro
 make
 
-Or just open scr.pro file with QtCreator.
+Development is run on GNU/Linux, but on MS Windows should work too with PDCurses ( http://pdcurses.sourceforge.net/ ).
 
 Now only singleplayer is developed, multiplayer is planned.
 

@@ -21,14 +21,12 @@
 #include "world.h"
 
 Shred::Shred(World * const world_,
-		QString world_name,
-		const unsigned short & shred_x,
-		const unsigned short & shred_y,
-		const unsigned long & longi,
-		const unsigned long & lati)
+		const ushort shred_x,
+		const ushort shred_y,
+		const ulong longi,
+		const ulong lati)
 		:
 		air(AIR),
-		worldName(world_name),
 		world(world_),
 		longitude(longi),
 		latitude(lati),
@@ -38,12 +36,14 @@ Shred::Shred(World * const world_,
 	char str[50];
 	FILE * in=fopen(FileName(str), "r");
 
-	unsigned short i, j, k;
-	if ( NULL!=in ) {
+	ushort i, j, k;
+	if ( in ) {
 		for (i=0; i<shred_width; ++i)
-		for (j=0; j<shred_width; ++j)
-			for (k=0; k<height-1; ++k)
+		for (j=0; j<shred_width; ++j) {
+			for (k=0; k<height; ++k)
 				blocks[i][j][k]=BlockFromFile(in, i, j, k);
+			lightMap[i][j][height-1]=max_light_radius;
+		}
 		fclose(in);
 		return;
 	}
@@ -53,6 +53,8 @@ Shred::Shred(World * const world_,
 		blocks[i][j][0]=NewNormal(NULLSTONE);
 		for (k=1; k<height-1; ++k)
 			blocks[i][j][k]=0;
+		blocks[i][j][height-1]=NewNormal( rand()%5 ? SKY : STAR );
+		lightMap[i][j][height-1]=max_light_radius;
 	}
 			
 	switch ( TypeOfShred(longi, lati) ) {
@@ -71,37 +73,36 @@ Shred::Shred(World * const world_,
 }
 
 Shred::~Shred() {
-	ulong mapSize=world->MapSize();
+	const ulong mapSize=world->MapSize();
 	if ( (longitude < mapSize) && (latitude < mapSize) ) {
 		char str[50];
 		FILE * out=fopen(FileName(str), "w");
-
 		if ( out ) {
-			unsigned short i, j, k;
+			ushort i, j, k;
 			for (i=0; i<shred_width; ++i)
 			for (j=0; j<shred_width; ++j)
-			for (k=0; k<height-1; ++k)
+			for (k=0; k<height; ++k)
 				if ( blocks[i][j][k] ) {
 					blocks[i][j][k]->SaveToFile(out);
 					if ( !blocks[i][j][k]->Normal() )
 						delete blocks[i][j][k];
 				} else
-					fprintf(out, "-1\n");
+					fputs("-1\n", out);
 			fclose(out);
 			return;
 		}
 		fprintf(stderr, "Shred::~Shred: Write Error, filename: %s\n", str);
 	}
 
-	unsigned short i, j, k;
+	ushort i, j, k;
 	for (i=0; i<shred_width; ++i)
 	for (j=0; j<shred_width; ++j)
-	for (k=0; k<height-1; ++k)
+	for (k=0; k<height; ++k)
 		if ( blocks[i][j][k] && !(blocks[i][j][k]->Normal()) )
 			delete blocks[i][j][k];
 }
 
-Block * Shred::NewNormal(const subs & sub) const {
+Block * Shred::NewNormal(const subs sub) const {
 	return world->NewNormal(sub);
 }
 
@@ -109,9 +110,9 @@ void Shred::PhysEvents() {
 	for (short j=0; j<activeList.size(); ++j) {
 		Active * temp=activeList[j];
 		temp->Act();
-		const unsigned short x=temp->X();
-		const unsigned short y=temp->Y();
-		const unsigned short z=temp->Z();
+		const ushort x=temp->X();
+		const ushort y=temp->Y();
+		const ushort z=temp->Z();
 
 		if ( temp->IfToDestroy() ) {
 			--j;
@@ -123,9 +124,9 @@ void Shred::PhysEvents() {
 }
 
 Block * Shred::BlockFromFile(FILE * const in,
-		unsigned short i,
-		unsigned short j,
-		const unsigned short k) 
+		ushort i,
+		ushort j,
+		const ushort k) 
 {
 	char str[300];
 	fgets(str, 300, in);
@@ -178,67 +179,58 @@ Block * Shred::BlockFromFile(FILE * const in,
 }
 
 int Shred::Sub(
-		const unsigned short & x,
-		const unsigned short & y,
-		const unsigned short & z) const
+		const ushort x,
+		const ushort y,
+		const ushort z) const
 {
 	return blocks[x][y][z] ?
 		blocks[x][y][z]->Sub() :
 		air.Sub();
 }
 int Shred::Kind(
-		const unsigned short & x,
-		const unsigned short & y,
-		const unsigned short & z) const
+		const ushort x,
+		const ushort y,
+		const ushort z) const
 {
 	return blocks[x][y][z] ?
 		blocks[x][y][z]->Kind() :
 		air.Kind();
 }
 int Shred::Durability(
-		const unsigned short & x,
-		const unsigned short & y,
-		const unsigned short & z) const
+		const ushort x,
+		const ushort y,
+		const ushort z) const
 {
 	return blocks[x][y][z] ?
 		blocks[x][y][z]->Durability() :
 		air.Durability();
 }
 int Shred::Movable(
-		const unsigned short & x,
-		const unsigned short & y,
-		const unsigned short & z) const
+		const ushort x,
+		const ushort y,
+		const ushort z) const
 {
 	return blocks[x][y][z] ?
 		blocks[x][y][z]->Movable() :
 		air.Movable();
 }
 int Shred::Transparent(
-		const unsigned short & x,
-		const unsigned short & y,
-		const unsigned short & z) const
-{
-	return blocks[x][y][z] ?
-		blocks[x][y][z]->Transparent() :
-		air.Transparent();
-}
-double Shred::Weight(
-		const unsigned short & x,
-		const unsigned short & y,
-		const unsigned short & z) const
-{
-	return blocks[x][y][z] ?
-		blocks[x][y][z]->Weight() :
-		air.Weight();
-}
-float Shred::LightRadius(
 		const ushort x,
 		const ushort y,
 		const ushort z) const
 {
 	return blocks[x][y][z] ?
-		blocks[x][y][z]->LightRadius() :
-		air.LightRadius();	
+		blocks[x][y][z]->Transparent() :
+		air.Transparent();
+}
+float Shred::Weight(
+		const ushort x,
+		const ushort y,
+		const ushort z) const
+{
+	return blocks[x][y][z] ?
+		blocks[x][y][z]->Weight() :
+		air.Weight();
 }
 
 void Shred::AddActive(Active * const active) {
@@ -250,86 +242,65 @@ void Shred::RemActive(Active * const active) {
 }
 
 void Shred::ReloadToNorth() {
-	for (unsigned short i=0; i<activeList.size(); ++i)
+	for (ushort i=0; i<activeList.size(); ++i)
 		activeList[i]->ReloadToNorth();
 	++shredY;
 }
 void Shred::ReloadToEast() {
-	for (unsigned short i=0; i<activeList.size(); ++i)
+	for (ushort i=0; i<activeList.size(); ++i)
 		activeList[i]->ReloadToEast();
 	--shredX;
 }
 void Shred::ReloadToSouth() {
-	for (unsigned short i=0; i<activeList.size(); ++i)
+	for (ushort i=0; i<activeList.size(); ++i)
 		activeList[i]->ReloadToSouth();
 	--shredY;
 }
 void Shred::ReloadToWest() {
-	for (unsigned short i=0; i<activeList.size(); ++i)
+	for (ushort i=0; i<activeList.size(); ++i)
 		activeList[i]->ReloadToWest();
 	++shredX;
 }
 
 Block * Shred::GetBlock(
-		const unsigned short x,
-		const unsigned short y,
-		const unsigned short z) const {
+		const ushort x,
+		const ushort y,
+		const ushort z) const {
 	//fprintf(stderr, "Shred::GetBlock::x: %hu, y: %hu, z:%hu\n", x, y, z);
 	return blocks[x][y][z];
 }
 void Shred::SetBlock(Block * block,
-		const unsigned short & x,
-		const unsigned short & y,
-		const unsigned short & z)
+		const ushort x,
+		const ushort y,
+		const ushort z)
 {
 	blocks[x][y][z]=block;
 }
 
-short Shred::LightMap(
-		const ushort i,
-		const ushort j,
-		const ushort k) const
-{
-	return lightMap[i][j][k];
-}
-void Shred::SetLightMap(
-		const short level,
-		const ushort i,
-		const ushort j,
-		const ushort k)
-{
-	lightMap[i][j][k]=level;
-}
-void Shred::PlusLightMap(
-		const short level,
-		const ushort i,
-		const ushort j,
-		const ushort k)
-{
-	lightMap[i][j][k]+=level;
-}
-
 char * Shred::FileName(char * const str) const {
-	sprintf(str, "%s_shreds%c%lu_%lu", worldName.toAscii().constData(),
+	QString temp;
+	sprintf(str, "%s_shreds%c%lu_%lu",
+		world->WorldName(temp).toAscii().constData(),
 		SEPARATOR,
 		longitude, latitude);
 	return str;
 }
 
 char Shred::TypeOfShred(
-		const unsigned long longi,
-		const unsigned long lati)
+		const ulong longi,
+		const ulong lati) const
 {
-	//return '~';
-	ulong mapSize=world->MapSize();
+	//return '.';
+	const ulong mapSize=world->MapSize();
 	if ( longi >= mapSize || lati  >= mapSize )
 		return '#';
 
-	QFile map(worldName);
+	QString temp;
+	QFile map(world->WorldName(temp));
 	if ( !map.open(QIODevice::ReadOnly | QIODevice::Text) )
 		return '.';
-	QTextStream in_map(&map);
 
+	QTextStream in_map(&map);
 	in_map.seek((mapSize+1)*longi+lati); //+1 is for '\n' in file
 	char c;
 	in_map >> &c;
@@ -339,10 +310,10 @@ char Shred::TypeOfShred(
 //shred generators section
 //these functions fill space between the lowest nullstone layer and sky. so use k from 1 to heigth-2.
 //unfilled blocks are air.
-void Shred::NormalUnderground(const unsigned short depth=0) {
-	for (unsigned short i=0; i<shred_width; ++i)
-	for (unsigned short j=0; j<shred_width; ++j) {
-		unsigned short k;
+void Shred::NormalUnderground(const ushort depth=0) {
+	for (ushort i=0; i<shred_width; ++i)
+	for (ushort j=0; j<shred_width; ++j) {
+		ushort k;
 		for (k=1; k<height/2-6 && k<height/2-depth-1; ++k)
 			blocks[i][j][k]=NewNormal(STONE);
 		blocks[i][j][k]=NewNormal((rand()%2) ? STONE : SOIL);
@@ -352,9 +323,9 @@ void Shred::NormalUnderground(const unsigned short depth=0) {
 }
 
 void Shred::PlantGrass() {
-	for (unsigned short i=0; i<shred_width; ++i)	
-	for (unsigned short j=0; j<shred_width; ++j) {
-		unsigned short k;
+	for (ushort i=0; i<shred_width; ++i)	
+	for (ushort j=0; j<shred_width; ++j) {
+		ushort k;
 		for (k=height-2; Transparent(i, j, k); --k);
 		if ( SOIL==Sub(i, j, k++) && !blocks[i][j][k] )
 			blocks[i][j][k]=new Grass(this,
@@ -372,7 +343,7 @@ void Shred::TestShred() {
 }
 
 void Shred::NullMountain() {
-	unsigned short i, j, k;
+	ushort i, j, k;
 	for (i=0; i<shred_width; ++i)
 	for (j=0; j<shred_width; ++j) {
 		for (k=1; k<height/2; ++k)
@@ -390,19 +361,19 @@ void Shred::NullMountain() {
 
 void Shred::Plain() {
 	NormalUnderground();
-	unsigned short i, num, x, y;
+	ushort i, num, x, y;
 
 	//bush
-	/*num=rand()%4;
+	num=rand()%4;
 	for (i=0; i<=num; ++i) {
 		x=rand()%shred_width;
 		y=rand()%shred_width;
 		if ( !blocks[x][y][height/2] )
 			blocks[x][y][height/2]=new Bush(this);
-	}*/
+	}
 
 	//rabbits
-	/*num=rand()%4;
+	num=rand()%4;
 	for (i=0; i<=num; ++i) {
 		x=rand()%shred_width;
 		y=rand()%shred_width;
@@ -410,16 +381,16 @@ void Shred::Plain() {
 			blocks[x][y][height/2]=new Rabbit(this,
 				shredX*shred_width+x,
 				shredY*shred_width+y, height/2);
-	}*/
+	}
 
 	PlantGrass();
 }
 
-void Shred::Forest(const long & longi, const long & lati) {
+void Shred::Forest(const long longi, const long lati) {
 	NormalUnderground();
 
 	long i, j;
-	unsigned short number_of_trees=0;
+	ushort number_of_trees=0;
 	for (i=longi-1; i<=longi+1; ++i)
 	for (j=lati-1;  j<=lati+1;  ++j)
 		if ( '%'==TypeOfShred(i, j) )
@@ -434,8 +405,8 @@ void Shred::Forest(const long & longi, const long & lati) {
 	PlantGrass();
 }
 
-void Shred::Water(const long & longi, const long & lati) {
-	unsigned short depth=1;
+void Shred::Water(const long longi, const long lati) {
+	ushort depth=1;
 	char map[3][3];
 	for (long i=longi-1; i<=longi+1; ++i)
 	for (long j=lati-1;  j<=lati+1;  ++j)
@@ -443,7 +414,7 @@ void Shred::Water(const long & longi, const long & lati) {
 			++depth;
 
 	NormalUnderground(depth);
-	unsigned short i, j, k;
+	ushort i, j, k;
 
 	if ('~'!=map[1][0] && '~'!=map[0][1]) { //north-west rounding
 		for (i=0; i<shred_width/2; ++i)	
@@ -488,7 +459,7 @@ void Shred::Water(const long & longi, const long & lati) {
 	for (i=0; i<shred_width; ++i)	
 	for (j=0; j<shred_width; ++j)
 	for (k=height/2-depth; k<height/2; ++k)
-		if ( NULL==blocks[i][j][k] )
+		if ( !blocks[i][j][k] )
 			blocks[i][j][k]=new Liquid(this,
 			                i+shred_width*shredX,
 			                j+shred_width*shredY, k);
@@ -496,8 +467,8 @@ void Shred::Water(const long & longi, const long & lati) {
 	PlantGrass();
 }
 
-void Shred::Hill(const long & longi, const long & lati) {
-	unsigned short hill_height=1;
+void Shred::Hill(const long longi, const long lati) {
+	ushort hill_height=1;
 	for (long i=longi-1; i<=longi+1; ++i)
 	for (long j=lati-1;  j<=lati+1;  ++j)
 		if ( '+'==TypeOfShred(i, j) )
@@ -505,9 +476,9 @@ void Shred::Hill(const long & longi, const long & lati) {
 
 	NormalUnderground();
 
-	for (unsigned short i=0; i<shred_width; ++i)	
-	for (unsigned short j=0; j<shred_width; ++j)
-	for (unsigned short k=height/2; k<height/2+hill_height; ++k)
+	for (ushort i=0; i<shred_width; ++i)	
+	for (ushort j=0; j<shred_width; ++j)
+	for (ushort k=height/2; k<height/2+hill_height; ++k)
 		if (((4.5-i)*(4.5-i)+
 		     (4.5-j)*(4.5-j)+
 		     (height/2-0.5-k)*(height/2-0.5-k)*16/hill_height/hill_height)<=16)
@@ -517,22 +488,22 @@ void Shred::Hill(const long & longi, const long & lati) {
 }
 
 bool Shred::Tree(
-		const unsigned short & x,
-		const unsigned short & y,
-		const unsigned short & z,
-		const unsigned short & height)
+		const ushort x,
+		const ushort y,
+		const ushort z,
+		const ushort height)
 {
-	if ( shred_width*3<=x+2 ||
-			shred_width*3<=y+2 ||
+	if ( shred_width<=x+2 ||
+			shred_width<=y+2 ||
 			::height-1<=z+height ||
 			height<2 )
 		return false;
 
-	unsigned short i, j, k;
+	ushort i, j, k;
 	for (i=x; i<=x+2; ++i)
 	for (j=y; j<=y+2; ++j)
 	for (k=z; k<z+height; ++k)
-		if ( NULL!=blocks[i][j][k] )
+		if ( blocks[i][j][k] )
 			return false;
 
 	for (k=z; k<z+height-1; ++k) //trunk
@@ -541,7 +512,7 @@ bool Shred::Tree(
 	for (i=x; i<=x+2; ++i) //leaves
 	for (j=y; j<=y+2; ++j)
 	for (k=z+height/2; k<z+height; ++k)
-		if ( NULL==blocks[i][j][k] )
+		if ( !blocks[i][j][k] )
 			blocks[i][j][k]=NewNormal(GREENERY);
 	
 	return true;

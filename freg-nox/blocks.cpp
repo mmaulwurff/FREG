@@ -36,14 +36,16 @@ QString Block::FullName(QString str) const {
 		case A_MEAT:     str="Animal meat"; break;
 		case H_MEAT:     str="Not animal meat"; break;
 		default:
-			fprintf(stderr, "Block::FullName(QString *): Block has unknown substance: %d", int(sub));
+			fprintf(stderr,
+				"Block::FullName(QString *): Block has unknown substance: %d",
+				int(sub));
 			str="Unknown block";
 	}
 	return str;
 }
 
 int Block::Damage(
-		const unsigned short dmg,
+		const ushort dmg,
 		const damage_kinds dmg_kind=CRUSH) {
 	if ( 0>=durability )
 		return 0;
@@ -82,10 +84,10 @@ void Block::SaveAttributes(FILE * const out) const {
 
 	fprintf(out, "_%hd_%d_%f_%d_%hd",
 		normal, sub, weight, direction, durability);
-	if ( NULL!=note )
+	if ( note )
 		fprintf(out, "_%lu/%s", strlen(note), note);
 	else
-		fprintf(out, "_0/");
+		fputs("_0/", out);
 }
 
 bool Block::operator==(const Block & block) const {
@@ -104,17 +106,17 @@ bool Block::operator==(const Block & block) const {
 
 	fprintf(stderr, "Block::==:note ok\n");*/
 	//return true;
-	return ( block.Kind()==Kind() && block.Sub()==Sub() &&
-		((NULL==block.note && NULL==note) ||
-			(NULL!=block.note &&
-				NULL!=note &&
-				strcpy(block.note, note))) );
+	return ( block.Kind()==Kind() &&
+			block.Sub()==Sub() &&
+			((!block.note && !note) ||
+				(block.note && note &&
+					strcpy(block.note, note))) );
 }
 
 Block::Block(
 		const subs n,
 		const short dur,
-		const double w) //see blocks.h for default parameters
+		const float w) //see blocks.h for default parameters
 		:
 		normal(0),
 		sub(n),
@@ -153,16 +155,16 @@ Block::Block(char * const str)
 		:
 		normal(0)
 {
-	unsigned short note_len;
+	ushort note_len;
 	if ( 0==sscanf(str, "%*d_%*d_%d_%f_%d_%hd_%hd",
 				(int *)(&sub),
 				&weight,
-				(int *)(&direction),
+				&direction,
 				&durability,
 				&note_len) ) {
 		fprintf(stderr,
-				"Block::Block: read failure, string: %s\n",
-				str);
+			"Block::Block: read failure, string: %s\n",
+			str);
 		sub=STONE;
 		weight=2600;
 		direction=NORTH;
@@ -179,9 +181,9 @@ Block::Block(char * const str)
 
 	note=new char[note_length];
 	sscanf(str, " %s", note);
-	unsigned short len;
+	ushort len;
 	for (len=0; ' '==str[len]; ++len);
-	for (unsigned short i=len; i<len+note_len; str[i++]=' ');
+	for (ushort i=len; i<len+note_len; str[i++]=' ');
 }
 
 int Active::Move(const int dir) {
@@ -195,7 +197,7 @@ int Active::Move(const int dir) {
 		default:
 			fprintf(stderr,
 				"Active::Move(dirs): unlisted dir: %d\n",
-				(int)dir);
+				dir);
 			return 0;
 	}
 	if ( GetWorld()->GetShred(x_self, y_self)!=whereShred ) {
@@ -212,9 +214,9 @@ World * Active::GetWorld() const {
 }
 
 void Active::Register(Shred * const sh,
-		const unsigned short x,
-		const unsigned short y,
-		const unsigned short z)
+		const ushort x,
+		const ushort y,
+		const ushort z)
 {
 	whereShred=sh;
 	if ( !whereShred )
@@ -233,7 +235,10 @@ void Active::Unregister() {
 	whereShred->RemActive(this);
 }
 
-Active::~Active() { Unregister(); }
+Active::~Active() {
+       	Unregister();
+	emit Destroyed();
+}
 
 void Animal::Act() {
 	World * world=whereShred->GetWorld();
@@ -260,10 +265,11 @@ Inventory::Inventory(Shred * const sh,
 		:
 		inShred(sh)
 {
-	for (unsigned short i=0; i<inventory_size; ++i)
-	for (unsigned short j=0; j<max_stack_size; ++j)
-		inventory[i][j]=inShred->
+	for (ushort i=0; i<inventory_size; ++i) {
+		fscanf(in, "%hu\n", &inventory_num[i]);
+		inventory[i]=inShred->
 			BlockFromFile(in, 0, 0, 0);
+	}
 	fgets(str, 300, in);
 }
 
@@ -271,20 +277,20 @@ void Dwarf::Act() {
 	Animal::Act();
 }
 
-before_move_return Dwarf::BeforeMove(const dirs dir) {
+before_move_return Dwarf::BeforeMove(const int dir) {
 	if ( dir==direction )
 		whereShred->GetWorld()->GetAll(x_self, y_self, z_self);
 	return NOTHING;
 }
 
-before_move_return Pile::BeforeMove(const dirs dir) {
+before_move_return Pile::BeforeMove(const int dir) {
 	direction=dir;
 	whereShred->GetWorld()->DropAll(x_self, y_self, z_self);
 	return NOTHING;
 }
 
-bool Liquid::CheckWater(const dirs & dir) const {
-	unsigned short i_check, j_check, k_check;
+bool Liquid::CheckWater(const int dir) const {
+	ushort i_check, j_check, k_check;
 	World * world=whereShred->GetWorld();
 	if ( (world->Focus(x_self, y_self, z_self,
 			i_check, j_check, k_check, dir)) )
@@ -297,7 +303,7 @@ bool Liquid::CheckWater(const dirs & dir) const {
 }
 
 void Liquid::Act() {
-	dirs dir;
+	int dir;
 	switch ( rand()%4 ) {
 		case 0: dir=NORTH; break;
 		case 1: dir=EAST;  break;

@@ -49,7 +49,7 @@ const unsigned short end_of_evening= 0*seconds_in_hour;
 const unsigned short seconds_in_night=end_of_night;
 const unsigned short seconds_in_daylight=seconds_in_day-end_of_night;
 
-const unsigned short max_light_radius=5;
+const unsigned char max_light_radius=9;
 
 const unsigned short max_durability=100;
 const unsigned short max_breath=100;

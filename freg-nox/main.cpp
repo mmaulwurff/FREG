@@ -24,6 +24,8 @@
 #endif
 
 #include <QString>
+#include <QFile>
+#include <QTextStream>
 #include "header.h"
 #include "world.h"
 #include "Player.h"
@@ -34,8 +36,19 @@ int main(int argc, char *argv[]) {
 	#else
 		QApplication freg(argc, argv);
 	#endif
-	QString worldName="The_Land_Of_Doubts";
-	World earth(worldName, 3);
+	QString worldName, temp;
+	ushort size;
+	QFile file("options.txt");
+	if ( !file.open(QIODevice::ReadOnly | QIODevice::Text) ) {
+		worldName="The_Land_Of_Doubts";
+		size=3;
+	} else {
+		QTextStream in(&file);
+		in >> temp >> worldName
+			>> temp >> size;
+	}
+
+	World earth(worldName, size);
 	Player player(&earth);
 	Screen screen(&earth, &player);
 

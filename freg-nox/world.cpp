@@ -33,7 +33,7 @@ void World::run() {
 	exec();
 }
 
-dirs World::TurnRight(const dirs dir) const {
+int World::TurnRight(const int dir) const {
 	switch (dir) {
 		case NORTH: return EAST;
 		case EAST: return SOUTH;
@@ -47,7 +47,7 @@ dirs World::TurnRight(const dirs dir) const {
 			return NORTH;
 	}
 }
-dirs World::TurnLeft(const dirs dir) const {
+int World::TurnLeft(const int dir) const {
 	switch (dir) {
 		case UP: case DOWN:
 		case NORTH: return WEST;
@@ -60,10 +60,10 @@ dirs World::TurnLeft(const dirs dir) const {
 	}
 }
 int World::MakeDir(
-		const unsigned short x_center,
-		const unsigned short y_center,
-		const unsigned short x_target,
-		const unsigned short y_target) const
+		const ushort x_center,
+		const ushort y_center,
+		const ushort x_target,
+		const ushort y_target) const
 {
 	//if (x_center==x_target && y_center==y_target) return HERE;
 	if ( abs(x_center-x_target)<=1 && abs(y_center-y_target)<=1 )
@@ -80,35 +80,16 @@ int World::MakeDir(
 	else return NORTH_WEST;
 }
 
-void World::MakeSky() {
-	FILE * sky=fopen("sky.txt", "r");
-	if ( sky ) {
-		char c=fgetc(sky)-'0';
-		for (unsigned short i=0; i<shred_width*numShreds; ++i)
-		for (unsigned short j=0; j<shred_width*numShreds; ++j)
-			if ( c ) {
-				SetBlock(NewNormal(SKY), i, j, height-1);
-				--c;
-			} else {
-				SetBlock(NewNormal(STAR), i, j, height-1);
-				c=fgetc(sky)-'0';
-			}
-		fclose(sky);
-	} else {
-		for (unsigned short i=0; i<shred_width*numShreds; ++i)
-		for (unsigned short j=0; j<shred_width*numShreds; ++j)
-			SetBlock(NewNormal( rand()%5 ? SKY : STAR ),
-				i, j, height-1);
-	}
+void World::MakeSun() {
 	sun_moon_x=SunMoonX();
-	if_star=( STAR==Sub(sun_moon_x, shred_width*numShreds/2, height-1) );
+	ifStar=( STAR==Sub(sun_moon_x, shred_width*numShreds/2, height-1) );
 	SetBlock(NewNormal(SUN_MOON), sun_moon_x, shred_width*numShreds/2, height-1);
 }
 
 Block * World::GetBlock(
-		const unsigned short x,
-		const unsigned short y,
-		const unsigned short z) const
+		const ushort x,
+		const ushort y,
+		const ushort z) const
 {
 	return GetShred(x, y)->
 		GetBlock(x%shred_width, y%shred_width, z);
@@ -121,134 +102,30 @@ void World::SetBlock(Block * block,
 {
 	GetShred(x, y)->
 		SetBlock(block, x%shred_width, y%shred_width, z);
-	emit Updated(x, y, z);
 }
-
-short World::LightMap(
-		const ushort x,
-		const ushort y,
-		const ushort z) const
-{
-	return GetShred(x, y)->
-		LightMap(x%shred_width, y%shred_width, z);
-}
-void World::SetLightMap(
-		const ushort level,
-		const ushort x,
-		const ushort y,
-		const ushort z)
-{
-	GetShred(x, y)->
-		SetLightMap(level, x%shred_width, y%shred_width, z);
-}
-void World::PlusLightMap(
-		const ushort level,
-		const ushort x,
-		const ushort y,
-		const ushort z)
-{
-	GetShred(x, y)->
-		PlusLightMap(level, x%shred_width, y%shred_width, z);
-}
-
-void World::Shine(
-		const ushort i,
-		const ushort j,
-		const ushort k)
-{
-	float light_radius;
-	if ( !InBounds(i, j, k) ||
-		0==(light_radius=LightRadius(i, j, k)) )
-		return;
-
-	for (short x=ceil(i-light_radius); x<=floor(i+light_radius); ++x)
-	for (short y=ceil(j-light_radius); y<=floor(j+light_radius); ++y)
-	for (short z=ceil(k-light_radius); z<=floor(k+light_radius) &&
-			z<height-1; ++z)
-		if ( InBounds(x, y, z) &&
-				Distance(i, j, k, x, y, z)<=light_radius &&
-				DirectlyVisible(i, j, k, x, y, z) )
-			PlusLightMap(max_light_radius/
-				Distance(i, j, k, x, y, z)+1, x, y, z);
-}
-
-void World::SunShine(
-		const ushort i,
-		const ushort j,
-		ushort k=height-2)
-{
-	if ( NIGHT==PartOfDay() || k>height-2 )
-		return;
-
-	bool north=InBounds(i, j-1);
-	bool south=InBounds(i, j+1);
-	bool east =InBounds(i+1, j);
-	bool west =InBounds(i-1, j);
-	do {
-		if ( north && GetBlock(i, j-1, k) )
-			SetLightMap(10, i, j-1, k);
-
-		if ( south && GetBlock(i, j+1, k) )
-			SetLightMap(10, i, j+1, k);
-
-		if ( east  && GetBlock(i+1, j, k) )
-			SetLightMap(10, i+1, j, k);
-
-		if ( west  && GetBlock(i-1, j, k) )
-			SetLightMap(10, i-1, j, k);
-
-		if ( GetBlock(i, j, k) )
-			SetLightMap(10, i, j, k);
-	} while ( Transparent(i, j, k--) );
-}
-
-void World::ReEnlighten(
-		const ushort i,
-		const ushort j,
-		const ushort k)
-{
-	if ( height-1==k )
-		return;
-
-	short x, y, z;
-	for (x=i-max_light_radius-1; x<=i+max_light_radius+1; ++x)
-	for (y=j-max_light_radius-1; y<=j+max_light_radius+1; ++y)
-		if ( InBounds(x, y) )
-			for (z=k-max_light_radius-1; z<=k+max_light_radius+1 && z<height-1; ++z)
-				if ( InBounds(x, y, z) )
-					SetLightMap(0, x, y, z);
-
-	for (x=i-2*max_light_radius-1; x<=i+2*max_light_radius+1; ++x)
-	for (y=j-2*max_light_radius-1; y<=j+2*max_light_radius+1; ++y)
-	for (z=k-2*max_light_radius-1; z<=k+2*max_light_radius+1; ++z)
-		Shine(x, y, z);
-
-	for (x=i-max_light_radius-1; x<=i+max_light_radius+1; ++x)
-	for (y=j-max_light_radius-1; y<=j+max_light_radius+1; ++y)
-		if ( InBounds(x, y) )
-			SunShine(x, y, k);
-	emit UpdatedAround(i, j, k, max_light_radius+1);
-}
-
-void World::ReEnlightenAll() {
-	ushort i, j, k;
-
-	for (i=0; i<shred_width*numShreds; ++i)
-	for (j=0; j<shred_width*numShreds; ++j)
-	for (k=0; k<height-1; ++k)
-		SetLightMap(0, i, j, k);
-
-	for (i=0; i<shred_width*numShreds; ++i)
-	for (j=0; j<shred_width*numShreds; ++j) {
-		for (k=1; k<height-1; ++k)
-			Shine(i, j, k);
-		SunShine(i, j, height-2);
+int World::Anti(const int dir) const {
+	switch (dir) {
+		case NORTH: return SOUTH;
+		case NORTH_EAST: return SOUTH_WEST;
+		case EAST: return WEST;
+		case SOUTH_EAST: return NORTH_WEST;
+		case SOUTH: return NORTH;
+		case SOUTH_WEST: return NORTH_EAST;
+		case WEST: return EAST;
+		case NORTH_WEST: return SOUTH_EAST;
+		case UP: return DOWN;
+		case DOWN: return UP;
+		default:
+			fprintf(stderr,
+				"World::Anti(int): unlisted dir: %d\n",
+				(int)dir);
+			return HERE;
 	}
-	emit UpdatedAll();
 }
 
-void World::ReloadShreds(const int & direction) {
+void World::ReloadShreds(const int direction) {
 	short x, y; //do not make unsigned, values <0 are needed for checks
+	RemSun();
 	switch ( direction ) {
 		case NORTH:
 			--longitude;
@@ -260,7 +137,7 @@ void World::ReloadShreds(const int & direction) {
 					shreds[(y+1)*numShreds+x]->
 						ReloadToNorth();
 				}
-				shreds[x]=new Shred(this, worldName, x, 0,
+				shreds[x]=new Shred(this, x, 0,
 						longitude-numShreds/2,
 						latitude-numShreds/2+x);
 			}
@@ -276,7 +153,7 @@ void World::ReloadShreds(const int & direction) {
 						ReloadToSouth();
 				}
 				shreds[numShreds*(numShreds-1)+x]=new 
-					Shred(this, worldName, x, numShreds-1,
+					Shred(this, x, numShreds-1,
 						longitude+numShreds/2,
 						latitude-numShreds/2+x);
 			}
@@ -292,7 +169,7 @@ void World::ReloadShreds(const int & direction) {
 						ReloadToEast();
 				}
 				shreds[numShreds-1+y*numShreds]=new 
-					Shred(this, worldName, numShreds-1, y,
+					Shred(this, numShreds-1, y,
 						longitude-numShreds/2+y,
 						latitude+numShreds/2);
 			}
@@ -307,51 +184,48 @@ void World::ReloadShreds(const int & direction) {
 					shreds[(x+1)+y*numShreds]->
 						ReloadToWest();
 				}
-				shreds[y*numShreds]=new Shred(this,
-						worldName, 0, y,
+				shreds[y*numShreds]=new Shred(this, 0, y,
 						longitude-numShreds/2+y,
 						latitude-numShreds/2);
 			}
 		break;
 		default: fprintf(stderr,
-			"World::ReloadShreds(dirs): invalid direction: %d\n",
+			"World::ReloadShreds(int): invalid direction: %d\n",
 			direction);
 	}
+	MakeSun();
 	ReEnlightenAll();
 }
 
 void World::PhysEvents() {
 	WriteLock();
 
-	static unsigned short timeStep=0;
+	static ushort timeStep=0;
 	if ( time_steps_in_sec<=timeStep ) {
 		timeStep=0;
 		++time;
-
+		
 		//sun/moon moving
 		if ( sun_moon_x!=SunMoonX() ) {
-			SetBlock(NewNormal(if_star ? STAR : SKY),
-					sun_moon_x,
-					shred_width*numShreds/2,
-					height-1);
+			const ushort y=shred_width*numShreds/2;
+			SetBlock(NewNormal(ifStar ? STAR : SKY),
+					sun_moon_x, y, height-1);
+			emit Updated(sun_moon_x, y, height-1);
 			sun_moon_x=SunMoonX();
-			if_star=( STAR==Sub(sun_moon_x,
-					shred_width*numShreds/2,
-					height-1) );
+			ifStar=( STAR==Sub(sun_moon_x, y, height-1) );
 			SetBlock(NewNormal(SUN_MOON),
-					sun_moon_x,
-					shred_width*numShreds/2,
-					height-1);
+					sun_moon_x, y, height-1);
+			emit Updated(sun_moon_x, y, height-1);
 		}
 
 		switch ( TimeOfDay() ) {
 			case end_of_evening:
-			case end_of_night: ReEnlightenAll(); break;
+			case end_of_night: ReEnlightenTime(); break;
 		}
 	} else
 		++timeStep;
 
-	for (unsigned short i=0; i<numShreds*numShreds; ++i)
+	for (ushort i=0; i<numShreds*numShreds; ++i)
 		shreds[i]->PhysEvents();
 
 	Unlock();
@@ -361,17 +235,17 @@ bool World::DirectlyVisible(
 		float x_from,
 		float y_from,
 		float z_from,
-		const unsigned short & x_to,
-		const unsigned short & y_to,
-		const unsigned short & z_to) const
+		const ushort x_to,
+		const ushort y_to,
+		const ushort z_to) const
 {
 	if ( x_from==x_to && y_from==y_to && z_from==z_to )
 		return true;
 
-	const unsigned short xdif=abs(x_to-(int)x_from);
-	const unsigned short ydif=abs(y_to-(int)y_from);
-	const unsigned short zdif=abs(z_to-(int)z_from);
-	unsigned short max=(zdif > ydif) ?
+	const ushort xdif=abs(x_to-(int)x_from);
+	const ushort ydif=abs(y_to-(int)y_from);
+	const ushort zdif=abs(z_to-(int)z_from);
+	ushort max=(zdif > ydif) ?
 		zdif :
 		ydif;
 	if ( xdif > max )
@@ -381,7 +255,7 @@ bool World::DirectlyVisible(
 	const float y_step=(float)(y_to-y_from)/max;
 	const float z_step=(float)(z_to-z_from)/max;
 
-	for (unsigned short i=1; i<max; ++i)
+	for (ushort i=1; i<max; ++i)
 		if ( !Transparent(
 				nearbyint(x_from+=x_step),
 				nearbyint(y_from+=y_step),
@@ -391,12 +265,12 @@ bool World::DirectlyVisible(
 }
 
 bool World::Visible(
-		const unsigned short & x_from,
-		const unsigned short & y_from,
-		const unsigned short & z_from,
-		const unsigned short & x_to,
-		const unsigned short & y_to,
-		const unsigned short & z_to) const
+		const ushort x_from,
+		const ushort y_from,
+		const ushort z_from,
+		const ushort x_to,
+		const ushort y_to,
+		const ushort z_to) const
 {
 	short temp;
 	if ( (DirectlyVisible(x_from, y_from, z_from, x_to, y_to, z_to)) ||
@@ -408,11 +282,11 @@ bool World::Visible(
 }
 
 int World::Move(
-		const unsigned short & i,
-		const unsigned short & j,
-		const unsigned short & k,
-		const dirs & dir,
-		const unsigned stop) //see default in "world.h"
+		const ushort i,
+		const ushort j,
+		const ushort k,
+		const int dir,
+		const ushort stop) //see default in "world.h"
 {
 	if ( !InBounds(i, j, k) )
 		return 0;
@@ -421,7 +295,7 @@ int World::Move(
 	if ( !block )
 		return 1;
 
-	unsigned short newi, newj, newk;
+	ushort newi, newj, newk;
 	if ( NOT_MOVABLE==Movable(i, j, k) ||
 			Focus(i, j, k, newi, newj, newk, dir) )
 		return 0;
@@ -444,9 +318,8 @@ int World::Move(
 	SetBlock(GetBlock(newi, newj, newk), i, j, k);
 	SetBlock(block, newi, newj, newk);
 	
-	if ( !(Transparent(i, j, k) &&
-			Transparent(newi, newj, newk)) )
-		ReEnlighten(newi, newj, newk);
+	ReEnlighten(newi, newj, newk);
+	ReEnlighten(i, j, k);
 
 	if ( GetBlock(i, j, k) )
 		GetBlock(i, j, k)->Move( Anti(dir) );
@@ -465,16 +338,16 @@ int World::Move(
 }
 
 void World::Jump(
-		const unsigned short & i,
-		const unsigned short & j,
-		unsigned short k)
+		const ushort i,
+		const ushort j,
+		ushort k)
 {
 	Block * to_move=GetBlock(i, j, k);
 	if ( !to_move || MOVABLE!=to_move->Movable() )
 		return;
 
 	to_move->SetWeight(0);
-	dirs dir=to_move->GetDir();
+	const int dir=to_move->GetDir();
 	short k_plus=Move(i, j, k, (DOWN==dir) ? DOWN : UP, 1);
 	if ( k_plus ) {
 		k+=((DOWN==dir) ? (-1) : 1) * k_plus;
@@ -486,36 +359,38 @@ void World::Jump(
 }
 
 int World::Focus(
-		const unsigned short & i,
-		const unsigned short & j,
-		const unsigned short & k,
-		unsigned short & i_target,
-		unsigned short & j_target,
-		unsigned short & k_target,
-		const dirs & dir) const
+		const ushort i,
+		const ushort j,
+		const ushort k,
+		ushort & i_target,
+		ushort & j_target,
+		ushort & k_target,
+		const int dir) const
 {
 	i_target=i;
 	j_target=j;
 	k_target=k;
-	switch (dir) {
+	switch ( dir ) {
 		case NORTH: --j_target; break;
 		case SOUTH: ++j_target; break;
 		case EAST:  ++i_target; break;
 		case WEST:  --i_target; break;
 		case DOWN:  --k_target; break;
 		case UP:    ++k_target; break;
-		default: fprintf(stderr, "World::Focus(int, int, int, int&, int&, int&, dirs): unlisted dir: %d\n", (int)dir);
+		default: fprintf(stderr,
+			"World::Focus: unlisted dir: %d\n",
+			dir);
 	}
 	return !InBounds(i_target, j_target, k_target);
 }
 
 int World::Focus(
-		const unsigned short & i,
-		const unsigned short & j,
-		const unsigned short & k,
-		unsigned short & i_target,
-		unsigned short & j_target,
-		unsigned short & k_target) const
+		const ushort i,
+		const ushort j,
+		const ushort k,
+		ushort & i_target,
+		ushort & j_target,
+		ushort & k_target) const
 {
 	return Focus( i, j, k, i_target, j_target, k_target,
 		GetBlock(i, j, k)->GetDir() );
@@ -529,18 +404,18 @@ bool World::Damage(
 		const damage_kinds dmg_kind, //see default in class definition
 		const bool destroy) //see default in class definition
 {
-	if ( !InBounds(i, j, k) || !GetBlock(i, j, k) )
+	Block * temp=GetBlock(i, j, k);
+	if ( !InBounds(i, j, k) || !temp )
 		return false;
-	bool light_flag=Transparent(i, j, k);
 			
-	if ( GetBlock(i, j, k)->Normal() )
-		SetBlock(new Block(GetBlock(i, j, k)->Sub()), i, k, k);
+	if ( temp->Normal() )
+		SetBlock(new Block(temp->Sub()), i, j, k);
 		
-	if ( 0<GetBlock(i, j, k)->Damage(dmg, dmg_kind) )
+	if ( 0<temp->Damage(dmg, dmg_kind) )
 		return false;
 
-	Block * temp=GetBlock(i, j, k);
-	Block * dropped=temp->DropAfterDamage();
+	//TODO: restore (this falled to infloop)
+	/*Block * dropped=temp->DropAfterDamage();
 	if ( PILE!=temp->Kind() && (temp->HasInventory() || dropped) ) {
 		Pile * new_pile=new Pile(GetShred(i, j), i, j, k);
 		SetBlock(new_pile, i, j, k);
@@ -548,25 +423,24 @@ bool World::Damage(
 			new_pile->GetAll(temp);
 		if ( !(new_pile->Get(dropped)) )
 			delete dropped;
-	} else
+	} else*/
 		SetBlock(0, i, j, k);
 	
-	if ( destroy )
+	if ( destroy && !temp->Normal() )
 		delete temp;
 	else {
 		temp->ToDestroy();
 		temp->Unregister();
 	}
 
-	if ( !light_flag )
-		ReEnlighten(i, j, k);
+	ReEnlighten(i, j, k);
 	return true;
 }
 
 bool World::Use(
-		const unsigned short & i,
-		const unsigned short & j,
-		const unsigned short & k)
+		const ushort i,
+		const ushort j,
+		const ushort k)
 {
 	if ( !InBounds(i, j, k) || NULL==GetBlock(i, j, k) )
 		return false;
@@ -594,10 +468,8 @@ bool World::Build(Block * block,
 	if ( block->ActiveBlock() )
 		((Active *)block)->Register(GetShred(i, j), i, j, k);
 	SetBlock(block, i, j, k);
-	if ( !Transparent(i, j, k) )
-		ReEnlighten(i, j, k);
-	else
-		SunShine(i, j);
+
+	ReEnlighten(i, j, k);
 	return true;
 }
 
@@ -605,10 +477,10 @@ bool World::Inscribe(Dwarf * const dwarf) {
 	if ( !dwarf->CarvingWeapon() )
 		return false;
 
-	unsigned short i=dwarf->X();
-	unsigned short j=dwarf->Y();
-	unsigned short k=dwarf->Z();
-	unsigned short i_to, j_to, k_to;
+	ushort i=dwarf->X();
+	ushort j=dwarf->Y();
+	ushort k=dwarf->Z();
+	ushort i_to, j_to, k_to;
 	if ( !Focus(i, j, k, i_to, j_to, k_to) ) {
 		Inscribe(i_to, j_to, k_to);
 		return true;
@@ -617,9 +489,9 @@ bool World::Inscribe(Dwarf * const dwarf) {
 }
 
 void World::Inscribe(
-		const unsigned short i,
-		const unsigned short j,
-		const unsigned short k)
+		const ushort i,
+		const ushort j,
+		const ushort k)
 {
 	if ( !InBounds(i, j, k) || NULL==GetBlock(i, j, k) )
 		return;
@@ -642,13 +514,13 @@ void World::Eat(Block * who, Block * food) {
 }
 
 int World::Exchange(
-		const unsigned short & i_from,
-		const unsigned short & j_from,
-		const unsigned short & k_from,
-		const unsigned short & i_to,
-		const unsigned short & j_to,
-		const unsigned short & k_to,
-		const unsigned short & n)
+		const ushort i_from,
+		const ushort j_from,
+		const ushort k_from,
+		const ushort i_to,
+		const ushort j_to,
+		const ushort k_to,
+		const ushort n)
 {
 	Inventory * inv_from=HasInventory(i_from, j_from, k_from);
 	Inventory * inv_to=HasInventory(i_to, j_to, k_to);
@@ -675,12 +547,12 @@ int World::Exchange(
 }
 
 void World::ExchangeAll(
-		const unsigned short i_from,
-		const unsigned short j_from,
-		const unsigned short k_from,
-		const unsigned short i_to,
-		const unsigned short j_to,
-		const unsigned short k_to)
+		const ushort i_from,
+		const ushort j_from,
+		const ushort k_from,
+		const ushort i_to,
+		const ushort j_to,
+		const ushort k_to)
 {
 	if ( NULL==GetBlock(i_from, j_from, k_from) ||
 			NULL==GetBlock(i_to, j_to, k_to) )
@@ -692,7 +564,7 @@ void World::ExchangeAll(
 		to->GetAll(GetBlock(i_from, j_from, k_from));
 }
 
-void World::Wield(Dwarf * const dwarf, const unsigned short n) {
+void World::Wield(Dwarf * const dwarf, const ushort n) {
 	if ( inventory_size<=n )
 		return;
 
@@ -705,9 +577,9 @@ void World::Wield(Dwarf * const dwarf, const unsigned short n) {
 }
 
 QString World::FullName(QString str,
-		const unsigned short i,
-		const unsigned short j,
-		const unsigned short k) const
+		const ushort i,
+		const ushort j,
+		const ushort k) const
 {
 	if ( InBounds(i, j, k) )
 		str=(NULL==GetBlock(i, j, k)) ?
@@ -717,66 +589,58 @@ QString World::FullName(QString str,
 }
 
 int World::Transparent(
-		const unsigned short & x,
-		const unsigned short & y,
-		const unsigned short & z) const
-{
-	return GetShred(x, y)->
-		Transparent(x%shred_width, y%shred_width, z);
-}
-int World::Durability(
-		const unsigned short & x,
-		const unsigned short & y,
-		const unsigned short & z) const
-{
-	return GetShred(x, y)->
-		Durability(x%shred_width, y%shred_width, z);
-}
-int World::Kind(
-		const unsigned short & x,
-		const unsigned short & y,
-		const unsigned short & z) const
-{
-	return GetShred(x, y)->
-		Kind(x%shred_width, y%shred_width, z);
-}
-int World::Sub(
-		const unsigned short & x,
-		const unsigned short & y,
-		const unsigned short & z) const
-{
-	return GetShred(x, y)->
-		Sub(x%shred_width, y%shred_width, z);
-}
-int World::Movable(
-		const unsigned short & x,
-		const unsigned short & y,
-		const unsigned short & z) const
-{
-	return GetShred(x, y)->
-		Movable(x%shred_width, y%shred_width, z);
-}
-double World::Weight(
-		const unsigned short & x,
-		const unsigned short & y,
-		const unsigned short & z) const
-{
-	return GetShred(x, y)->
-		Weight(x%shred_width, y%shred_width, z);
-}
-float World::LightRadius(
 		const ushort x,
 		const ushort y,
 		const ushort z) const
 {
 	return GetShred(x, y)->
-		LightRadius(x%shred_width, y%shred_width, z);
+		Transparent(x%shred_width, y%shred_width, z);
+}
+int World::Durability(
+		const ushort x,
+		const ushort y,
+		const ushort z) const
+{
+	return GetShred(x, y)->
+		Durability(x%shred_width, y%shred_width, z);
+}
+int World::Kind(
+		const ushort x,
+		const ushort y,
+		const ushort z) const
+{
+	return GetShred(x, y)->
+		Kind(x%shred_width, y%shred_width, z);
+}
+int World::Sub(
+		const ushort x,
+		const ushort y,
+		const ushort z) const
+{
+	return GetShred(x, y)->
+		Sub(x%shred_width, y%shred_width, z);
+}
+int World::Movable(
+		const ushort x,
+		const ushort y,
+		const ushort z) const
+{
+	return GetShred(x, y)->
+		Movable(x%shred_width, y%shred_width, z);
+}
+float World::Weight(
+		const ushort x,
+		const ushort y,
+		const ushort z) const
+{
+	return GetShred(x, y)->
+		Weight(x%shred_width, y%shred_width, z);
 }
 
 Inventory * World::HasInventory(
-		const unsigned short i,
-		const unsigned short j,
-		const unsigned short k) const
+		const ushort i,
+		const ushort j,
+		const ushort k) const
 {
 	return (!InBounds(i, j, k) || NULL==GetBlock(i, j, k)) ?
 		NULL :
@@ -784,9 +648,9 @@ Inventory * World::HasInventory(
 }
 
 Active * World::ActiveBlock(
-		const unsigned short i,
-		const unsigned short j,
-		const unsigned short k) const
+		const ushort i,
+		const ushort j,
+		const ushort k) const
 {
 	return ( InBounds(i, j, k) && GetBlock(i, j, k) ) ?
 		GetBlock(i, j, k)->ActiveBlock() :
@@ -794,9 +658,9 @@ Active * World::ActiveBlock(
 }
 
 int World::Temperature(
-		const unsigned short & i_center,
-		const unsigned short & j_center,
-		const unsigned short & k_center) const
+		const ushort i_center,
+		const ushort j_center,
+		const ushort k_center) const
 {
 	if ( !InBounds(i_center, j_center, k_center) ||
 			!GetBlock(i_center, j_center, k_center) ||
@@ -817,9 +681,9 @@ int World::Temperature(
 }
 
 bool World::GetNote(QString str,
-		const unsigned short & i,
-		const unsigned short & j,
-		const unsigned short & k) const
+		const ushort i,
+		const ushort j,
+		const ushort k) const
 {
 	return ( InBounds(i, j, k) && GetBlock(i, j, k) ) ?
 		GetBlock(i, j, k)->GetNote(str):
@@ -836,9 +700,9 @@ bool World::Equal(
 }
 
 char World::MakeSound(
-		const unsigned short & i,
-		const unsigned short & j,
-		const unsigned short & k) const
+		const ushort i,
+		const ushort j,
+		const ushort k) const
 {
 	return GetBlock(i, j, k) ?
 		GetBlock(i, j, k)->MakeSound() :
@@ -891,10 +755,10 @@ World::World(const QString world_name,
 	ulong i, j;
 	for (i=latitude -numShreds/2, x=0; x<numShreds; ++i, ++x)
 	for (j=longitude-numShreds/2, y=0; y<numShreds; ++j, ++y)
-		shreds[y*numShreds+x]=new Shred(this, world_name, x, y, j, i);
+		shreds[y*numShreds+x]=new Shred(this, x, y, j, i);
 
-	MakeSky();
-	ReEnlightenAll();
+	MakeSun();
+	ReEnlightenTime();
 	start();
 }
 
@@ -913,6 +777,7 @@ void World::CleanAll() {
 	Unlock();
 	wait();
 
+	RemSun();
 	ushort i;
 	for (i=0; i<numShreds*numShreds; ++i)
 		delete shreds[i];
