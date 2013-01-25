@@ -114,11 +114,7 @@ void Shred::PhysEvents() {
 		const ushort y=temp->Y();
 		const ushort z=temp->Z();
 
-		if ( temp->IfToDestroy() ) {
-			--j;
-			delete blocks[x][y][z];
-			blocks[x][y][z]=0;
-		} else if ( temp->ShouldFall() )
+		if ( temp->ShouldFall() )
 			world->Move(x, y, z, DOWN);
 	}
 }
@@ -336,10 +332,10 @@ void Shred::PlantGrass() {
 
 void Shred::TestShred() {
 	NormalUnderground();
-	blocks[2][0][height/2]=new Chest(this);
-	blocks[3][1][height/2]=new Active(this,
+	//blocks[2][0][height/2]=new Chest(this);
+	/*blocks[3][1][height/2]=new Active(this,
 		shredX*shred_width+3,
-		shredY*shred_width+1, height/2, SAND);
+		shredY*shred_width+1, height/2, SAND);*/
 }
 
 void Shred::NullMountain() {
@@ -420,40 +416,40 @@ void Shred::Water(const long longi, const long lati) {
 		for (i=0; i<shred_width/2; ++i)	
 		for (j=0; j<shred_width/2; ++j)
 			for (k=height/2-depth; k<height/2; ++k)
-				if ( ((4-i)*(4-i) +
-				      (4-j)*(4-j) +
+				if ( ((7-i)*(7-i) +
+				      (7-j)*(7-j) +
 				      (height/2-k)*(height/2-k)*16/depth/depth)
-						> 16 )
+						> 49 )
 					blocks[i][j][k]=NewNormal(SOIL);
 	}
 	if ('~'!=map[1][0] && '~'!=map[2][1]) { //south-west rounding
 		for (i=0; i<shred_width/2; ++i)	
 		for (j=shred_width/2; j<shred_width; ++j)
 			for (k=height/2-depth; k<height/2; ++k)
-				if ( ((4-i)*(4-i)+
-				      (5-j)*(5-j)+
+				if ( ((7-i)*(7-i)+
+				      (8-j)*(8-j)+
 				      (height/2-k)*(height/2-k)*16/depth/depth)
-						> 16 )
+						> 49 )
 					blocks[i][j][k]=NewNormal(SOIL);
 	}
 	if ('~'!=map[2][1] && '~'!=map[1][2]) { //south-east rounding
 		for (i=shred_width/2; i<shred_width; ++i)
 		for (j=shred_width/2; j<shred_width; ++j)
 			for (k=height/2-depth; k<height/2; ++k)
-				if ( ((5-i)*(5-i)+
-				      (5-j)*(5-j)+
+				if ( ((8-i)*(8-i)+
+				      (8-j)*(8-j)+
 				      (height/2-k)*(height/2-k)*16/depth/depth)
-						> 16 )
+						> 49 )
 					blocks[i][j][k]=NewNormal(SOIL);
 	}
 	if ('~'!=map[1][2] && '~'!=map[0][1]) { //north-east rounding
 		for (i=shred_width/2; i<shred_width; ++i)
 		for (j=0; j<shred_width/2; ++j)
 			for (k=height/2-depth; k<height/2; ++k)
-				if ( ((5-i)*(5-i)+
-				      (4-j)*(4-j)+
+				if ( ((8-i)*(8-i)+
+				      (7-j)*(7-j)+
 				      (height/2-k)*(height/2-k)*16/depth/depth)
-						> 16 )
+						> 49 )
 					blocks[i][j][k]=NewNormal(SOIL);
 	}
 	for (i=0; i<shred_width; ++i)	

@@ -291,7 +291,7 @@ before_move_return Pile::BeforeMove(const int dir) {
 
 bool Liquid::CheckWater(const int dir) const {
 	ushort i_check, j_check, k_check;
-	World * world=whereShred->GetWorld();
+	World * const world=whereShred->GetWorld();
 	if ( (world->Focus(x_self, y_self, z_self,
 			i_check, j_check, k_check, dir)) )
 		return false;
@@ -303,14 +303,25 @@ bool Liquid::CheckWater(const int dir) const {
 }
 
 void Liquid::Act() {
+	World * const world=whereShred->GetWorld();
+	if ( !(rand()%10) &&
+			!CheckWater(DOWN)  && !CheckWater(UP) &&
+			!CheckWater(NORTH) && !CheckWater(SOUTH) &&
+			!CheckWater(EAST)  && !CheckWater(WEST) ) {
+		world->Damage(x_self, y_self, z_self,
+			max_durability, HEAT, false);
+		return;
+	}
+
 	int dir;
-	switch ( rand()%4 ) {
+	switch ( rand()%20 ) {
 		case 0: dir=NORTH; break;
 		case 1: dir=EAST;  break;
 		case 2: dir=SOUTH; break;
-		default: dir=WEST;
+		case 3: dir=WEST;  break;
+		default: return;
 	}
-	whereShred->GetWorld()->Move(x_self, y_self, z_self, dir);
+	world->Move(x_self, y_self, z_self, dir);
 }
 
 void Grass::Act() {

@@ -247,7 +247,6 @@ class Active : public QObject, public Block {
 
 	char MakeSound() const { return ' '; }
 
-	virtual bool IfToDestroy() const { return ifToDestroy; }
 	void ToDestroy(const bool to_dest=true) { ifToDestroy=to_dest; }
 	int Movable() const { return MOVABLE; }
 	virtual bool ShouldFall() const { return true; }
@@ -634,15 +633,6 @@ class Pile : public Active, public Inventory {
 	float Weight() const { return InvWeightAll(); }
 
 	void Act() { if (lifetime) --lifetime; }
-	bool IfToDestroy() const {
-		if ( !lifetime )
-			return false;
-
-		for (ushort i=0; i<inventory_size; ++i)
-			if ( Number(i) )
-				return false;
-		return true;
-	}
 	
 	Block * Drop(const int n) {
 		Block * temp=Inventory::Drop(n);
@@ -708,18 +698,16 @@ class Liquid : public Active {
 		}
 	}
 
-	int Damage(const ushort, const damage_kinds) { return durability; }
+	int Damage(
+			const ushort dam,
+			const damage_kinds dam_kind)
+	{
+		return ( HEAT==dam_kind ) ?
+			durability-=dam :
+			durability;
+	}
 
 	void Act();
-
-	bool IfToDestroy() const {
-		if ( !(rand()%10) &&
-				!CheckWater(DOWN)  && !CheckWater(UP) &&
-				!CheckWater(NORTH) && !CheckWater(SOUTH) &&
-				!CheckWater(EAST)  && !CheckWater(WEST))
-			return true;
-		return false;
-	}
 
 	int Temperature() const {
 		if (WATER==sub) return 0;

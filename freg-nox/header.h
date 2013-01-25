@@ -49,7 +49,7 @@ const unsigned short end_of_evening= 0*seconds_in_hour;
 const unsigned short seconds_in_night=end_of_night;
 const unsigned short seconds_in_daylight=seconds_in_day-end_of_night;
 
-const unsigned char max_light_radius=9;
+const unsigned char max_light_radius=10;
 
 const unsigned short max_durability=100;
 const unsigned short max_breath=100;
@@ -72,7 +72,19 @@ enum { NOT_MOVABLE, MOVABLE, ENVIRONMENT };
 
 enum times_of_day { MORNING, NOON, EVENING, NIGHT };
 
-enum damage_kinds { MINE, DIG, CUT, THRUST, CRUSH, HEAT, FREEZE, MELT, ELECTRO, HUNGER, BREATH };
+enum damage_kinds {
+	MINE,
+	DIG,
+	CUT,
+	THRUST,
+	CRUSH,
+	HEAT,
+	FREEZE,
+	MELT,
+	ELECTRO,
+	HUNGER,
+	BREATH
+};
 
 enum kinds {//kind of atom
 	BLOCK,
