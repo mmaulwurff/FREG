@@ -188,11 +188,11 @@ class Pick : public Weapons {
 	public:
 	kinds Kind() const { return PICK; }
 	QString FullName(QString str) const { 
-		switch (sub) {
+		switch ( sub ) {
 			case IRON: return str="Iron pick";
 			default:
 				fprintf(stderr,
-					"Pic::FullName(QString): Pick has unknown substance: %d\n",
+					"Pick::FullName(QString): Pick has unknown substance: %d\n",
 					int(sub));
 				return str="Strange pick";
 		}
@@ -210,9 +210,6 @@ class Pick : public Weapons {
 class Active : public QObject, public Block {
 	Q_OBJECT
 	
-	bool ifToDestroy;
-	bool iAmPlayer;
-
 	protected:
 	ushort x_self, y_self, z_self;
 	Shred * whereShred;
@@ -247,7 +244,6 @@ class Active : public QObject, public Block {
 
 	char MakeSound() const { return ' '; }
 
-	void ToDestroy(const bool to_dest=true) { ifToDestroy=to_dest; }
 	int Movable() const { return MOVABLE; }
 	virtual bool ShouldFall() const { return true; }
 
@@ -269,7 +265,6 @@ class Active : public QObject, public Block {
 			const short dur=max_durability)
 			:
 			Block(sub, dur),
-			ifToDestroy(false),
 	       		whereShred(NULL)
 		{}
 	Active(Shred * const sh,
@@ -279,8 +274,7 @@ class Active : public QObject, public Block {
 			subs sub,
 			const short dur=max_durability)
 			:
-			Block(sub, dur),
-			ifToDestroy(false)
+			Block(sub, dur)
 		{ Register(sh, x, y, z); }
 	Active(Shred * const sh,
 			const ushort x,
@@ -288,8 +282,7 @@ class Active : public QObject, public Block {
 			const ushort z,
 			char * str)
 			:
-			Block(str),
-			ifToDestroy(false)	
+			Block(str)
 		{ Register(sh, x, y, z); }
 	virtual ~Active();
 };
@@ -298,21 +291,21 @@ class Animal : public Active {
 	Q_OBJECT
 	
 	protected:
-	short breath;
-	int satiation;
+	ushort breath;
+	ushort satiation;
 
 	public:
 	QString FullName(QString) const=0;
 
-	short Breath() const { return breath; }
-	short Satiation() const { return satiation; }
+	ushort Breath() const { return breath; }
+	ushort Satiation() const { return satiation; }
 	int Eat(Block *)=0;
 
 	void Act();
 
 	void SaveAttributes(FILE * const out) const {
 		Active::SaveAttributes(out);
-		fprintf(out, "%hd_%d/", breath, satiation);
+		fprintf(out, "%hu_%hu/", breath, satiation);
 	}
 
 	Animal * IsAnimal() { return this; }
@@ -335,7 +328,7 @@ class Animal : public Active {
 			:
 			Active(sh, i, j, k, str)
 	{
-			sscanf(str, " %hd_%d/", &breath, &satiation);
+			sscanf(str, " %hu_%hu/", &breath, &satiation);
 			CleanString(str);		
 	}
 };
@@ -826,6 +819,7 @@ class Rabbit : public Animal {
 	int Eat(Block * to_eat) {
 		if ( NULL==to_eat )
 			return 2;
+
 		if ( GREENERY==to_eat->Sub() ) {
 			satiation+=seconds_in_hour*time_steps_in_sec*4;
 			return 1;
@@ -851,4 +845,5 @@ class Rabbit : public Animal {
 			:
 			Animal(sh, x, y, z, str) {}
 };
+
 #endif
