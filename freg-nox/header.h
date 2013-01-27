@@ -19,14 +19,13 @@
 #define HEADER_H
 
 #include <cstdio>
+#include <QtGlobal>
 
 #ifdef Q_OS_WIN32
 	#include <windows.h>
 	#define usleep(n) { Sleep(n/1000); }
-	#define SEPARATOR '\\'
 #else
 	#include <unistd.h>
-	#define SEPARATOR '/'
 #endif
 
 const unsigned short shred_width=16;
@@ -52,7 +51,7 @@ const unsigned short seconds_in_daylight=seconds_in_day-end_of_night;
 const unsigned char max_light_radius=10;
 
 const unsigned short max_durability=100;
-const unsigned short max_breath=100;
+const unsigned short max_breath=60;
 
 enum dirs {
 	HERE,

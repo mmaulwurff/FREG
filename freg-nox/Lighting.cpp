@@ -187,9 +187,7 @@ uchar Shred::LightRadius(
 		const ushort y,
 		const ushort z) const
 {
-	return blocks[x][y][z] ?
-		blocks[x][y][z]->LightRadius() :
-		air.LightRadius();	
+	return blocks[x][y][z]->LightRadius();
 }
 
 uchar Shred::LightMap(

@@ -36,7 +36,7 @@ class World : public QThread {
 
 	ulong time;
 	Shred ** shreds;
-	Block * normal_blocks[AIR];
+	Block * normal_blocks[AIR+1];
 	ulong longitude, latitude; //center of active zone
 	ulong spawnLongi, spawnLati;
 	const QString worldName;
@@ -71,7 +71,7 @@ class World : public QThread {
 			const ushort);
 
 	private:
-	Block * NewNormal(const subs sub) const {
+	Block * NewNormal(const int sub) const {
 		return normal_blocks[sub];
 	}
 	void MakeSun();
@@ -132,7 +132,7 @@ class World : public QThread {
 
 	//information section
 	public:
-	QString WorldName(QString &str) const {
+	QString & WorldName(QString & str) const {
 		return str=worldName;
 	}
 	int Focus(const ushort,
@@ -271,12 +271,12 @@ class World : public QThread {
 			const ushort k_to,
 			const ushort n);
 	void ExchangeAll(
-			const ushort,
-			const ushort,
-			const ushort,
-			const ushort,
-			const ushort,
-			const ushort);
+			const ushort x_from,
+			const ushort y_from,
+			const ushort z_from,
+			const ushort x_to,
+			const ushort y_to,
+			const ushort z_to);
 	public:
 	void Drop(
 			const ushort i,
@@ -328,7 +328,7 @@ class World : public QThread {
 		const ushort max_x_y=shred_width*numShreds;
 		return (i<max_x_y && j<max_x_y && k<height);
 	}
-	QString FullName(QString,
+	QString & FullName(QString &,
 			const ushort,
 			const ushort,
 			const ushort) const;
@@ -370,7 +370,7 @@ class World : public QThread {
 			const ushort,
 			const ushort) const;
 
-	bool GetNote(QString,
+	QString & GetNote(QString &,
 			const ushort,
 			const ushort,
 			const ushort) const;
@@ -395,7 +395,7 @@ class World : public QThread {
 	void Unlock() { rwLock.unlock(); }
 
 	public:
-	World(const QString, const ushort);
+	World(const QString &, const ushort);
 	~World();
 
 	public slots:

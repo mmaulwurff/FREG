@@ -17,6 +17,8 @@
 
 #include <QFile>
 #include <QTextStream>
+#include <QByteArray>
+#include <QBuffer>
 #include "Shred.h"
 #include "world.h"
 
@@ -26,17 +28,16 @@ Shred::Shred(World * const world_,
 		const ulong longi,
 		const ulong lati)
 		:
-		air(AIR),
 		world(world_),
 		longitude(longi),
 		latitude(lati),
 		shredX(shred_x),
 		shredY(shred_y)
 {
-	char str[50];
+	ushort i, j, k;
+	/*char str[50];
 	FILE * in=fopen(FileName(str), "r");
 
-	ushort i, j, k;
 	if ( in ) {
 		for (i=0; i<shred_width; ++i)
 		for (j=0; j<shred_width; ++j) {
@@ -47,12 +48,12 @@ Shred::Shred(World * const world_,
 		fclose(in);
 		return;
 	}
-
+	*/
 	for (i=0; i<shred_width; ++i)
 	for (j=0; j<shred_width; ++j) {
 		blocks[i][j][0]=NewNormal(NULLSTONE);
 		for (k=1; k<height-1; ++k)
-			blocks[i][j][k]=0;
+			blocks[i][j][k]=NewNormal(AIR);
 		blocks[i][j][height-1]=NewNormal( rand()%5 ? SKY : STAR );
 		lightMap[i][j][height-1]=max_light_radius;
 	}
@@ -75,34 +76,38 @@ Shred::Shred(World * const world_,
 Shred::~Shred() {
 	const ulong mapSize=world->MapSize();
 	if ( (longitude < mapSize) && (latitude < mapSize) ) {
-		char str[50];
-		FILE * out=fopen(FileName(str), "w");
-		if ( out ) {
+		QString str;
+		QFile file(FileName(str));
+		if ( !file.open(QIODevice::WriteOnly) ) {
+			QByteArray shred_data;
+			QBuffer buf(&shred_data);
+			buf.open(QIODevice::WriteOnly);
+			QDataStream outstr(&buf);
 			ushort i, j, k;
 			for (i=0; i<shred_width; ++i)
 			for (j=0; j<shred_width; ++j)
-			for (k=0; k<height; ++k)
-				if ( blocks[i][j][k] ) {
-					blocks[i][j][k]->SaveToFile(out);
-					if ( !blocks[i][j][k]->Normal() )
-						delete blocks[i][j][k];
-				} else
-					fputs("-1\n", out);
-			fclose(out);
+			for (k=0; k<height; ++k) {
+				blocks[i][j][k]->SaveToFile(outstr);
+				if ( !(blocks[i][j][k]->Normal()) )
+					delete blocks[i][j][k];
+			}
+			file.write(buf.buffer());
+			buf.close();
+			file.close();
 			return;
 		}
-		fprintf(stderr, "Shred::~Shred: Write Error, filename: %s\n", str);
+		fputs("Shred::~Shred: Write Error\n", stderr);
 	}
 
 	ushort i, j, k;
 	for (i=0; i<shred_width; ++i)
 	for (j=0; j<shred_width; ++j)
 	for (k=0; k<height; ++k)
-		if ( blocks[i][j][k] && !(blocks[i][j][k]->Normal()) )
+		if ( !(blocks[i][j][k]->Normal()) )
 			delete blocks[i][j][k];
 }
 
-Block * Shred::NewNormal(const subs sub) const {
+Block * Shred::NewNormal(const int sub) const {
 	return world->NewNormal(sub);
 }
 
@@ -119,58 +124,40 @@ void Shred::PhysEvents() {
 	}
 }
 
-Block * Shred::BlockFromFile(FILE * const in,
+Block * Shred::BlockFromFile(QDataStream & str,
 		ushort i,
 		ushort j,
 		const ushort k) 
 {
-	char str[300];
-	fgets(str, 300, in);
-	int kind;
-	sscanf(str, "%d", &kind);
-	//if some kind will not be listed here,
-	//blocks of this kind just will not load,
-	//unless kind is inherited from Inventory class or one
-	//of its derivatives - in this case this may cause something bad.
+	int kind, sub;
+	bool normal;
+	str >> kind >> sub >> normal;
+	if ( normal )
+		return NewNormal(sub);
 	
 	i+=shredX*shred_width;
 	j+=shredY*shred_width;
 
+	//if some kind will not be listed here,
+	//blocks of this kind just will not load,
+	//unless kind is inherited from Inventory class or one
+	//of its derivatives - in this case this may cause something bad.
 	switch ( kind ) {
-		case BLOCK: {
-			short normal=0;
-			int sub=0;
-			sscanf(str, "%*d_%hd_%d", &normal, &sub);
-			return ( normal ) ?
-				NewNormal(subs(sub)) :
-				new Block(str);
-		}
-		case TELEGRAPH:
-			return new Telegraph(str);
-		case PICK:
-			return new Pick(str);
-		case CHEST:
-			return new Chest (this, str, in);
-		case RABBIT:
-			return new Rabbit(this, i, j, k, str);
-		case ACTIVE:
-			return new Active(this, i, j, k, str);
-		case DWARF:
-			return new Dwarf (this, i, j, k, str, in);
-		case PILE:
-			return new Pile  (this, i, j, k, str, in);
-		case LIQUID:
-			return new Liquid(this, i, j, k, str);
-		case GRASS:
-			return new Grass (this, i, j, k, str);
-		case BUSH:
-			return new Bush  (this, str, in);
-		case -1:
-			return 0;
+		case BLOCK:  return new Block(str, sub);
+		case PICK:   return new Pick (str, sub);
+		case CHEST:  return new Chest (this, str, sub);
+		case BUSH:   return new Bush  (this, str, sub);
+		case RABBIT: return new Rabbit(this, i, j, k, str, sub);
+		case ACTIVE: return new Active(this, i, j, k, str, sub);
+		case DWARF:  return new Dwarf (this, i, j, k, str, sub);
+		case PILE:   return new Pile  (this, i, j, k, str, sub);
+		case LIQUID: return new Liquid(this, i, j, k, str, sub);
+		case GRASS:  return new Grass (this, i, j, k, str, sub);
 		default:
-			fprintf(stderr, "BlockFromFile(): unlisted kind: %d\n",
-					kind);
-			return 0;
+			fprintf(stderr,
+				"BlockFromFile(): unlisted kind: %d\n",
+				kind);
+			return NewNormal(sub);
 	}
 }
 
@@ -179,54 +166,42 @@ int Shred::Sub(
 		const ushort y,
 		const ushort z) const
 {
-	return blocks[x][y][z] ?
-		blocks[x][y][z]->Sub() :
-		air.Sub();
+	return blocks[x][y][z]->Sub();
 }
 int Shred::Kind(
 		const ushort x,
 		const ushort y,
 		const ushort z) const
 {
-	return blocks[x][y][z] ?
-		blocks[x][y][z]->Kind() :
-		air.Kind();
+	return blocks[x][y][z]->Kind();
 }
 int Shred::Durability(
 		const ushort x,
 		const ushort y,
 		const ushort z) const
 {
-	return blocks[x][y][z] ?
-		blocks[x][y][z]->Durability() :
-		air.Durability();
+	return blocks[x][y][z]->Durability();
 }
 int Shred::Movable(
 		const ushort x,
 		const ushort y,
 		const ushort z) const
 {
-	return blocks[x][y][z] ?
-		blocks[x][y][z]->Movable() :
-		air.Movable();
+	return blocks[x][y][z]->Movable();
 }
 int Shred::Transparent(
 		const ushort x,
 		const ushort y,
 		const ushort z) const
 {
-	return blocks[x][y][z] ?
-		blocks[x][y][z]->Transparent() :
-		air.Transparent();
+	return blocks[x][y][z]->Transparent();
 }
 float Shred::Weight(
 		const ushort x,
 		const ushort y,
 		const ushort z) const
 {
-	return blocks[x][y][z] ?
-		blocks[x][y][z]->Weight() :
-		air.Weight();
+	return blocks[x][y][z]->Weight();
 }
 
 void Shred::AddActive(Active * const active) {
@@ -273,13 +248,11 @@ void Shred::SetBlock(Block * block,
 	blocks[x][y][z]=block;
 }
 
-char * Shred::FileName(char * const str) const {
-	QString temp;
-	sprintf(str, "%s_shreds%c%lu_%lu",
-		world->WorldName(temp).toAscii().constData(),
-		SEPARATOR,
-		longitude, latitude);
-	return str;
+QString & Shred::FileName(QString & str) const {
+	world->WorldName(str);
+	return str=str+"_shreds/"+
+		QString::number(longitude)+'_'+
+		QString::number(latitude);
 }
 
 char Shred::TypeOfShred(
@@ -305,7 +278,6 @@ char Shred::TypeOfShred(
 
 //shred generators section
 //these functions fill space between the lowest nullstone layer and sky. so use k from 1 to heigth-2.
-//unfilled blocks are air.
 void Shred::NormalUnderground(const ushort depth=0) {
 	for (ushort i=0; i<shred_width; ++i)
 	for (ushort j=0; j<shred_width; ++j) {
@@ -499,7 +471,7 @@ bool Shred::Tree(
 	for (i=x; i<=x+2; ++i)
 	for (j=y; j<=y+2; ++j)
 	for (k=z; k<z+height; ++k)
-		if ( blocks[i][j][k] )
+		if ( AIR==Kind(i, j, k) )
 			return false;
 
 	for (k=z; k<z+height-1; ++k) //trunk

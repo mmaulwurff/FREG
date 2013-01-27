@@ -201,29 +201,32 @@ void World::PhysEvents() {
 	WriteLock();
 
 	static ushort timeStep=0;
-	if ( time_steps_in_sec<=timeStep ) {
-		timeStep=0;
-		++time;
-		
-		//sun/moon moving
-		if ( sun_moon_x!=SunMoonX() ) {
-			const ushort y=shred_width*numShreds/2;
-			SetBlock(NewNormal(ifStar ? STAR : SKY),
-					sun_moon_x, y, height-1);
-			emit Updated(sun_moon_x, y, height-1);
-			sun_moon_x=SunMoonX();
-			ifStar=( STAR==Sub(sun_moon_x, y, height-1) );
-			SetBlock(NewNormal(SUN_MOON),
-					sun_moon_x, y, height-1);
-			emit Updated(sun_moon_x, y, height-1);
-		}
-
-		switch ( TimeOfDay() ) {
-			case end_of_evening:
-			case end_of_night: ReEnlightenTime(); break;
-		}
-	} else
+	if ( time_steps_in_sec>timeStep ) {
 		++timeStep;
+		Unlock();
+		return;
+	}
+
+	timeStep=0;
+	++time;
+	
+	//sun/moon moving
+	if ( sun_moon_x!=SunMoonX() ) {
+		const ushort y=shred_width*numShreds/2;
+		SetBlock(NewNormal(ifStar ? STAR : SKY),
+				sun_moon_x, y, height-1);
+		emit Updated(sun_moon_x, y, height-1);
+		sun_moon_x=SunMoonX();
+		ifStar=( STAR==Sub(sun_moon_x, y, height-1) );
+		SetBlock(NewNormal(SUN_MOON),
+				sun_moon_x, y, height-1);
+		emit Updated(sun_moon_x, y, height-1);
+	}
+
+	switch ( TimeOfDay() ) {
+		case end_of_evening:
+		case end_of_night: ReEnlightenTime(); break;
+	}
 
 	for (ushort i=0; i<numShreds*numShreds; ++i)
 		shreds[i]->PhysEvents();
@@ -291,18 +294,15 @@ int World::Move(
 	if ( !InBounds(i, j, k) )
 		return 0;
 
-	Block * block=GetBlock(i, j, k);
-	if ( !block )
-		return 1;
-
 	ushort newi, newj, newk;
 	if ( NOT_MOVABLE==Movable(i, j, k) ||
 			Focus(i, j, k, newi, newj, newk, dir) )
 		return 0;
 
+	Block * const block=GetBlock(i, j, k);
 	if ( DESTROY==(block->BeforeMove(dir)) ) {
 		delete block;
-		SetBlock(0, i, j, k);
+		SetBlock(NewNormal(AIR), i, j, k);
 		return 1;
 	}
 
@@ -342,13 +342,13 @@ void World::Jump(
 		const ushort j,
 		ushort k)
 {
-	Block * to_move=GetBlock(i, j, k);
-	if ( !to_move || MOVABLE!=to_move->Movable() )
+	Block * const to_move=GetBlock(i, j, k);
+	if ( MOVABLE!=to_move->Movable() )
 		return;
 
 	to_move->SetWeight(0);
 	const int dir=to_move->GetDir();
-	short k_plus=Move(i, j, k, (DOWN==dir) ? DOWN : UP, 1);
+	const short k_plus=Move(i, j, k, (DOWN==dir) ? DOWN : UP, 1);
 	if ( k_plus ) {
 		k+=((DOWN==dir) ? (-1) : 1) * k_plus;
 		to_move->SetWeight();
@@ -404,13 +404,14 @@ bool World::Damage(
 		const damage_kinds dmg_kind, //see default in class definition
 		const bool destroy) //see default in class definition
 {
-	Block * temp=GetBlock(i, j, k);
-	if ( !InBounds(i, j, k) || !temp )
+	if ( !InBounds(i, j, k) )
 		return false;
-			
+
+	Block * const temp=GetBlock(i, j, k);
+	//TODO: prevent creating new block when no damage	
 	if ( temp->Normal() )
 		SetBlock(new Block(temp->Sub()), i, j, k);
-		
+	
 	if ( 0<temp->Damage(dmg, dmg_kind) )
 		return false;
 
@@ -424,7 +425,7 @@ bool World::Damage(
 		if ( !(new_pile->Get(dropped)) )
 			delete dropped;
 	} else*/
-		SetBlock(0, i, j, k);
+		SetBlock(NewNormal(AIR), i, j, k);
 	
 	if ( destroy && !temp->Normal() )
 		delete temp;
@@ -442,12 +443,12 @@ bool World::Use(
 		const ushort j,
 		const ushort k)
 {
-	if ( !InBounds(i, j, k) || NULL==GetBlock(i, j, k) )
+	if ( !InBounds(i, j, k) )
 		return false;
-
+	
+	//TODO: restore OPEN
 	switch ( GetBlock(i, j, k)->Use() ) {
-		case OPEN:
-		break;
+		case OPEN: break;
 		default:
 			return false;
 	}
@@ -460,7 +461,6 @@ bool World::Build(Block * block,
 		const ushort k)
 {
 	if ( !(InBounds(i, j, k) &&
-			!GetBlock(i, j, k) &&
 			block->CanBeOut()) )
 		return false;
 
@@ -493,15 +493,17 @@ void World::Inscribe(
 		const ushort j,
 		const ushort k)
 {
-	if ( !InBounds(i, j, k) || NULL==GetBlock(i, j, k) )
+	Block * block;
+	if ( !InBounds(i, j, k) ||
+			!(block=GetBlock(i, j, k))->Inscribable() )
 		return;
 
-	if ( GetBlock(i, j, k)->Normal() )
-		SetBlock(new Block(GetBlock(i, j, k)->Sub()),
+	if ( block->Normal() )
+		SetBlock(new Block(block->Sub()),
 			i, j, k);
 	QString str="No note received\n";
 	emit GetString(str);
-	GetBlock(i, j, k)->Inscribe(str.toAscii().constData());
+	block->Inscribe(str);
 }
 
 void World::Eat(Block * who, Block * food) {
@@ -522,46 +524,44 @@ int World::Exchange(
 		const ushort k_to,
 		const ushort n)
 {
-	Inventory * inv_from=HasInventory(i_from, j_from, k_from);
-	Inventory * inv_to=HasInventory(i_to, j_to, k_to);
+	Inventory * const inv_from=HasInventory(i_from, j_from, k_from);
+	Inventory * const inv_to=HasInventory(i_to, j_to, k_to);
 
 	if ( !inv_from )
 		return 1;
 
 	if ( inv_to ) {
-		Block * temp=inv_from->Drop(n);
+		Block * const temp=inv_from->Drop(n);
 		if ( temp && !inv_to->Get(temp) ) {
 			inv_from->Get(temp);
 		}
 		return 2;
 	}
 	
-	Block * block=GetBlock(i_to, j_to, k_to);
-	if ( !block ) {
+	if ( AIR==Sub(i_to, j_to, k_to) ) {
 		Pile * newpile=new
 			Pile(GetShred(i_to, j_to), i_to, j_to, k_to);
 		newpile->Get( inv_from->Drop(n) );
-		block=newpile;
+		SetBlock(newpile, i_to, j_to, k_to);
 	}
 	return 0;
 }
 
 void World::ExchangeAll(
-		const ushort i_from,
-		const ushort j_from,
-		const ushort k_from,
-		const ushort i_to,
-		const ushort j_to,
-		const ushort k_to)
+		const ushort x_from,
+		const ushort y_from,
+		const ushort z_from,
+		const ushort x_to,
+		const ushort y_to,
+		const ushort z_to)
 {
-	if ( NULL==GetBlock(i_from, j_from, k_from) ||
-			NULL==GetBlock(i_to, j_to, k_to) )
-		return;       
+	Inventory * const inv_from=HasInventory(x_from, y_from, z_from);
+	Inventory * const inv_to=HasInventory(x_to, y_to, z_to);
+
+	if ( !inv_from )
+		return;
 	
-	Inventory * to=(Inventory *)(GetBlock(i_to, j_to, k_to)->
-			HasInventory());
-	if ( NULL!=to )
-		to->GetAll(GetBlock(i_from, j_from, k_from));
+	inv_to->GetAll(inv_from);
 }
 
 void World::Wield(Dwarf * const dwarf, const ushort n) {
@@ -576,15 +576,13 @@ void World::Wield(Dwarf * const dwarf, const ushort n) {
 		dwarf->Get(temp);
 }
 
-QString World::FullName(QString str,
+QString & World::FullName(QString & str,
 		const ushort i,
 		const ushort j,
 		const ushort k) const
 {
 	if ( InBounds(i, j, k) )
-		str=(NULL==GetBlock(i, j, k)) ?
-			"Air" :
-			GetBlock(i, j, k)->FullName(str);
+		str=GetBlock(i, j, k)->FullName(str);
 	return str;
 }
 
@@ -642,9 +640,9 @@ Inventory * World::HasInventory(
 		const ushort j,
 		const ushort k) const
 {
-	return (!InBounds(i, j, k) || NULL==GetBlock(i, j, k)) ?
-		NULL :
-		GetBlock(i, j, k)->HasInventory();
+	return ( InBounds(i, j, k) ) ?
+		GetBlock(i, j, k)->HasInventory() :
+		NULL;
 }
 
 Active * World::ActiveBlock(
@@ -652,7 +650,7 @@ Active * World::ActiveBlock(
 		const ushort j,
 		const ushort k) const
 {
-	return ( InBounds(i, j, k) && GetBlock(i, j, k) ) ?
+	return ( InBounds(i, j, k) ) ?
 		GetBlock(i, j, k)->ActiveBlock() :
 		0;
 }
@@ -663,7 +661,6 @@ int World::Temperature(
 		const ushort k_center) const
 {
 	if ( !InBounds(i_center, j_center, k_center) ||
-			!GetBlock(i_center, j_center, k_center) ||
 			height-1==k_center )
 		return 0;
 
@@ -675,19 +672,19 @@ int World::Temperature(
 	for (short i=i_center-1; i<=i_center+1; ++i)
 	for (short j=j_center-1; j<=j_center+1; ++j)
 	for (short k=k_center-1; k<=k_center+1; ++k)
-		if (InBounds(i, j, k) && NULL!=GetBlock(i, j, k))
+		if ( InBounds(i, j, k) )
 			temperature+=GetBlock(i, j, k)->Temperature();
 	return temperature/2;
 }
 
-bool World::GetNote(QString str,
+QString & World::GetNote(QString & str,
 		const ushort i,
 		const ushort j,
 		const ushort k) const
 {
-	return ( InBounds(i, j, k) && GetBlock(i, j, k) ) ?
-		GetBlock(i, j, k)->GetNote(str):
-		false;
+	return str=( InBounds(i, j, k)  ) ?
+		GetBlock(i, j, k)->GetNote(str) :
+		"";
 }
 
 bool World::Equal(
@@ -699,17 +696,7 @@ bool World::Equal(
 	return *block1==*block2;
 }
 
-char World::MakeSound(
-		const ushort i,
-		const ushort j,
-		const ushort k) const
-{
-	return GetBlock(i, j, k) ?
-		GetBlock(i, j, k)->MakeSound() :
-		' ';
-}
-
-World::World(const QString world_name,
+World::World(const QString & world_name,
 		const ushort num_shreds)
 		:
 		worldName(world_name),
@@ -740,7 +727,7 @@ World::World(const QString world_name,
 	}
 
 	ushort x;
-	for (x=STONE; x<AIR; ++x) {
+	for (x=STONE; x<=AIR; ++x) {
 		normal_blocks[x]=new Block(subs(x));
 		normal_blocks[x]->SetNormal(1);
 	}

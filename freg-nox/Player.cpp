@@ -152,9 +152,8 @@ void Player::Examine() const {
 	QString str;
 	emit Notify( world->FullName(str, i, j, k) );
 	
-	if ( world->GetNote(str, i, j, k) )
-		emit Notify("Inscription:");
-	emit Notify(str);
+	if ( ""!=world->GetNote(str, i, j, k) )
+		emit Notify("Inscription: "+str);
 
 	str="Temperature: "+QString::number(world->Temperature(i, j, k));
 	emit Notify(str);
@@ -323,7 +322,9 @@ Player::Player(World * const w) :
 	shred=world->GetShred(x, y);
 
 	if ( DWARF!=world->Kind(x, y, z) ) {
-		delete world->GetBlock(x, y, z);
+		Block * const temp=world->GetBlock(x, y, z);
+		if ( !temp->Normal() )
+			delete temp;
 		player=new Dwarf(shred, x, y, z);
 		world->SetBlock(player, x, y, z);
 	} else

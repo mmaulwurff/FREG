@@ -19,10 +19,10 @@
 #include "world.h"
 #include "Shred.h"
 
-QString Block::FullName(QString str) const {
+QString & Block::FullName(QString & str) const {
 	switch (sub) {
-		case STAR: case SUN_MOON:
-		case SKY:        str="Air"; break;
+		case STAR: case SUN_MOON: case SKY:
+		case AIR:        str="Air"; break;
 		case WATER:      str="Ice"; break;
 		case STONE:      str="Stone"; break;
 		case MOSS_STONE: str="Moss stone"; break;
@@ -38,7 +38,7 @@ QString Block::FullName(QString str) const {
 		default:
 			fprintf(stderr,
 				"Block::FullName(QString *): Block has unknown substance: %d",
-				int(sub));
+				sub);
 			str="Unknown block";
 	}
 	return str;
@@ -76,52 +76,21 @@ int Block::Damage(
 	}
 }
 
-void Block::SaveAttributes(FILE * const out) const {
-	if ( normal ) {
-		fprintf(out, "_%hd_%d", normal, sub);
-		return;
-	}
-
-	fprintf(out, "_%hd_%d_%f_%d_%hd",
-		normal, sub, weight, direction, durability);
-	if ( note )
-		fprintf(out, "_%lu/%s", strlen(note), note);
-	else
-		fputs("_0/", out);
-}
-
 bool Block::operator==(const Block & block) const {
-	//return false;
-	/*if ( block.Kind()!=Kind() )
-		return false;
-	fprintf(stderr, "Block::==: kind ok\n");*/
-	/*if ( block.Sub()!=Sub() )
-		return false;
-	fprintf(stderr, "Block::==: sub ok\n");*/
-
-	/*if ( !((NULL==block.note && NULL==note) ||
-			(NULL!=block.note && NULL!=note &&
-			strcpy(block.note, note))) )
-		return false;
-
-	fprintf(stderr, "Block::==:note ok\n");*/
-	//return true;
 	return ( block.Kind()==Kind() &&
 			block.Sub()==Sub() &&
-			((!block.note && !note) ||
-				(block.note && note &&
-					strcpy(block.note, note))) );
+			block.note==note );
 }
 
 Block::Block(
-		const subs n,
+		const int n,
 		const short dur,
 		const float w) //see blocks.h for default parameters
 		:
-		normal(0),
+		normal(false),
 		sub(n),
 		direction(NORTH),
-		note(NULL),
+		note(""),
 		durability(dur)
 {
 	if ( w ) {
@@ -130,8 +99,7 @@ Block::Block(
 		return;
 	}
 
-	//weights
-	switch (sub) {
+	switch (sub) { //weights
 		case NULLSTONE: weight=4444; break;
 		case SOIL:      weight=1500; break;
 		case GLASS:     weight=2500; break;
@@ -151,39 +119,15 @@ Block::Block(
 	shown_weight=weight;
 }
 
-Block::Block(char * const str)
+Block::Block(QDataStream & str, const int sub_)
 		:
-		normal(0)
+		normal(false),
+		sub(sub_)
 {
-	ushort note_len;
-	if ( 0==sscanf(str, "%*d_%*d_%d_%f_%d_%hd_%hd",
-				(int *)(&sub),
-				&weight,
-				&direction,
-				&durability,
-				&note_len) ) {
-		fprintf(stderr,
-			"Block::Block: read failure, string: %s\n",
-			str);
-		sub=STONE;
-		weight=2600;
-		direction=NORTH;
-		durability=max_durability;
-		note_len=0;
-	}
-
+	str >> weight >>
+		direction >>
+		durability >> note;
 	shown_weight=weight;
-	CleanString(str);
-	if ( 0==note_len ) {
-		note=0;
-		return;
-	}
-
-	note=new char[note_length];
-	sscanf(str, " %s", note);
-	ushort len;
-	for (len=0; ' '==str[len]; ++len);
-	for (ushort i=len; i<len+note_len; str[i++]=' ');
 }
 
 int Active::Move(const int dir) {
@@ -241,6 +185,13 @@ Active::~Active() {
 }
 
 void Animal::Act() {
+	static ushort timeStep=0;
+	if ( time_steps_in_sec>timeStep ) {
+		++timeStep;
+		return;
+	}
+
+	timeStep=0;
 	World * world=whereShred->GetWorld();
 	if ( LIQUID==world->Kind(x_self, y_self, z_self+1) ) {
 		if ( 0>=breath )
@@ -260,17 +211,16 @@ void Animal::Act() {
 }
 
 Inventory::Inventory(Shred * const sh,
-		char * const str,
-		FILE * const in)
+		QDataStream & str)
 		:
 		inShred(sh)
 {
 	for (ushort i=0; i<inventory_size; ++i) {
-		fscanf(in, "%hu\n", &inventory_num[i]);
-		inventory[i]=inShred->
-			BlockFromFile(in, 0, 0, 0);
+		str >> inventory_num[i];
+		if ( inventory_num[i] )
+			inventory[i]=inShred->
+				BlockFromFile(str, 0, 0, 0);
 	}
-	fgets(str, 300, in);
 }
 
 void Dwarf::Act() {

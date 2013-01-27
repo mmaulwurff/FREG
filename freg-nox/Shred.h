@@ -20,6 +20,7 @@
 
 #include <QList>
 #include <QString>
+#include <QDataStream>
 #include "header.h"
 #include "blocks.h"
 
@@ -28,7 +29,6 @@ class World;
 class Shred {
 	Block * blocks[shred_width][shred_width][height];
 	uchar lightMap[shred_width][shred_width][height];
-	const Block air;
 	World * const world;
 	const ulong longitude, latitude;
 
@@ -108,17 +108,17 @@ class Shred {
 			const ulong);
 	~Shred();
 
-	Block * BlockFromFile(FILE * const,
+	Block * BlockFromFile(QDataStream &,
 			ushort,
 			ushort,
 			const ushort);
 
 	private:
-	char * FileName(char * const) const;
+	QString & FileName(QString &) const;
 	char TypeOfShred(
 			const ulong,
 			const ulong) const;
-	Block * NewNormal(const subs sub) const;
+	Block * NewNormal(const int sub) const;
 
 	void NormalUnderground(const ushort);
 	void PlantGrass();
