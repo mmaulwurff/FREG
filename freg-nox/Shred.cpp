@@ -79,24 +79,26 @@ Shred::~Shred() {
 		QString str;
 		QFile file(FileName(str));
 		if ( !file.open(QIODevice::WriteOnly) ) {
-			QByteArray shred_data;
-			QBuffer buf(&shred_data);
-			buf.open(QIODevice::WriteOnly);
-			QDataStream outstr(&buf);
-			ushort i, j, k;
-			for (i=0; i<shred_width; ++i)
-			for (j=0; j<shred_width; ++j)
-			for (k=0; k<height; ++k) {
-				blocks[i][j][k]->SaveToFile(outstr);
-				if ( !(blocks[i][j][k]->Normal()) )
-					delete blocks[i][j][k];
-			}
-			file.write(buf.buffer());
-			buf.close();
-			file.close();
+			fputs("Shred::~Shred: Write Error\n", stderr);
 			return;
 		}
-		fputs("Shred::~Shred: Write Error\n", stderr);
+
+		QByteArray shred_data;
+		QBuffer buf(&shred_data);
+		buf.open(QIODevice::WriteOnly);
+		QDataStream outstr(&buf);
+		ushort i, j, k;
+		for (i=0; i<shred_width; ++i)
+		for (j=0; j<shred_width; ++j)
+		for (k=0; k<height; ++k) {
+			blocks[i][j][k]->SaveToFile(outstr);
+			if ( !(blocks[i][j][k]->Normal()) )
+				delete blocks[i][j][k];
+		}
+		file.write(qCompress(shred_data));
+		buf.close();
+		file.close();
+		return;
 	}
 
 	ushort i, j, k;
@@ -295,7 +297,7 @@ void Shred::PlantGrass() {
 	for (ushort j=0; j<shred_width; ++j) {
 		ushort k;
 		for (k=height-2; Transparent(i, j, k); --k);
-		if ( SOIL==Sub(i, j, k++) && !blocks[i][j][k] )
+		if ( SOIL==Sub(i, j, k++) && AIR==Sub(i, j, k) )
 			blocks[i][j][k]=new Grass(this,
 				i+shredX*shred_width,
 				j+shredY*shred_width, k);
@@ -336,7 +338,7 @@ void Shred::Plain() {
 	for (i=0; i<=num; ++i) {
 		x=rand()%shred_width;
 		y=rand()%shred_width;
-		if ( !blocks[x][y][height/2] )
+		if ( AIR==Sub(x, y, height/2) )
 			blocks[x][y][height/2]=new Bush(this);
 	}
 
@@ -345,7 +347,7 @@ void Shred::Plain() {
 	for (i=0; i<=num; ++i) {
 		x=rand()%shred_width;
 		y=rand()%shred_width;
-		if ( !blocks[x][y][height/2] )
+		if ( AIR==Sub(x, y, height/2) )
 			blocks[x][y][height/2]=new Rabbit(this,
 				shredX*shred_width+x,
 				shredY*shred_width+y, height/2);
@@ -427,7 +429,7 @@ void Shred::Water(const long longi, const long lati) {
 	for (i=0; i<shred_width; ++i)	
 	for (j=0; j<shred_width; ++j)
 	for (k=height/2-depth; k<height/2; ++k)
-		if ( !blocks[i][j][k] )
+		if ( AIR==Sub(i, j, k) )
 			blocks[i][j][k]=new Liquid(this,
 			                i+shred_width*shredX,
 			                j+shred_width*shredY, k);
@@ -471,7 +473,7 @@ bool Shred::Tree(
 	for (i=x; i<=x+2; ++i)
 	for (j=y; j<=y+2; ++j)
 	for (k=z; k<z+height; ++k)
-		if ( AIR==Kind(i, j, k) )
+		if ( AIR==Sub(i, j, k) )
 			return false;
 
 	for (k=z; k<z+height-1; ++k) //trunk
@@ -480,7 +482,7 @@ bool Shred::Tree(
 	for (i=x; i<=x+2; ++i) //leaves
 	for (j=y; j<=y+2; ++j)
 	for (k=z+height/2; k<z+height; ++k)
-		if ( !blocks[i][j][k] )
+		if ( AIR==Sub(i, j, k) )
 			blocks[i][j][k]=NewNormal(GREENERY);
 	
 	return true;

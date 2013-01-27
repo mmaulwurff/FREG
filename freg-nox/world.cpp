@@ -203,6 +203,9 @@ void World::PhysEvents() {
 	static ushort timeStep=0;
 	if ( time_steps_in_sec>timeStep ) {
 		++timeStep;
+		for (ushort i=0; i<numShreds*numShreds; ++i)
+			shreds[i]->PhysEvents();
+
 		Unlock();
 		return;
 	}
@@ -227,9 +230,6 @@ void World::PhysEvents() {
 		case end_of_evening:
 		case end_of_night: ReEnlightenTime(); break;
 	}
-
-	for (ushort i=0; i<numShreds*numShreds; ++i)
-		shreds[i]->PhysEvents();
 
 	Unlock();
 }

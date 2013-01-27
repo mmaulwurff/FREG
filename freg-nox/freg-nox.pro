@@ -7,6 +7,8 @@ TARGET =
 DEPENDPATH += .
 INCLUDEPATH += .
 
+QT -= gui
+
 # Input
 HEADERS += blocks.h \
            header.h \
