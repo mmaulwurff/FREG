@@ -108,17 +108,17 @@ class Shred {
 			const ulong);
 	~Shred();
 
+	Block * NewNormal(const int sub) const;
 	Block * BlockFromFile(QDataStream &,
 			ushort,
 			ushort,
 			const ushort);
 
 	private:
-	QString & FileName(QString &) const;
+	QString FileName() const;
 	char TypeOfShred(
 			const ulong,
 			const ulong) const;
-	Block * NewNormal(const int sub) const;
 
 	void NormalUnderground(const ushort);
 	void PlantGrass();

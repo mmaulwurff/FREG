@@ -35,20 +35,24 @@ Shred::Shred(World * const world_,
 		shredY(shred_y)
 {
 	ushort i, j, k;
-	/*char str[50];
-	FILE * in=fopen(FileName(str), "r");
-
-	if ( in ) {
+	QFile file(FileName());
+	if ( file.open(QIODevice::ReadOnly) ) {
+		QByteArray read_data=file.readAll();
+		file.close();
+		QByteArray uncompressed=qUncompress(read_data);
+		QBuffer buf(&uncompressed);
+		buf.open(QIODevice::ReadOnly);
+		QDataStream in(&buf);
 		for (i=0; i<shred_width; ++i)
 		for (j=0; j<shred_width; ++j) {
 			for (k=0; k<height; ++k)
 				blocks[i][j][k]=BlockFromFile(in, i, j, k);
 			lightMap[i][j][height-1]=max_light_radius;
 		}
-		fclose(in);
+		buf.close();
 		return;
 	}
-	*/
+	
 	for (i=0; i<shred_width; ++i)
 	for (j=0; j<shred_width; ++j) {
 		blocks[i][j][0]=NewNormal(NULLSTONE);
@@ -76,8 +80,7 @@ Shred::Shred(World * const world_,
 Shred::~Shred() {
 	const ulong mapSize=world->MapSize();
 	if ( (longitude < mapSize) && (latitude < mapSize) ) {
-		QString str;
-		QFile file(FileName(str));
+		QFile file(FileName());
 		if ( !file.open(QIODevice::WriteOnly) ) {
 			fputs("Shred::~Shred: Write Error\n", stderr);
 			return;
@@ -131,11 +134,12 @@ Block * Shred::BlockFromFile(QDataStream & str,
 		ushort j,
 		const ushort k) 
 {
-	int kind, sub;
+	quint16 kind, sub;
 	bool normal;
 	str >> kind >> sub >> normal;
-	if ( normal )
+	if ( normal ) {
 		return NewNormal(sub);
+	}
 	
 	i+=shredX*shred_width;
 	j+=shredY*shred_width;
@@ -250,7 +254,8 @@ void Shred::SetBlock(Block * block,
 	blocks[x][y][z]=block;
 }
 
-QString & Shred::FileName(QString & str) const {
+QString Shred::FileName() const {
+	QString str;
 	world->WorldName(str);
 	return str=str+"_shreds/"+
 		QString::number(longitude)+'_'+

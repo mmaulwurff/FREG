@@ -192,7 +192,7 @@ void Animal::Act() {
 	}
 
 	timeStep=0;
-	World * world=whereShred->GetWorld();
+	World * world=GetWorld();
 	if ( LIQUID==world->Kind(x_self, y_self, z_self+1) ) {
 		if ( 0>=breath )
 			world->Damage(x_self, y_self, z_self,
@@ -217,9 +217,9 @@ Inventory::Inventory(Shred * const sh,
 {
 	for (ushort i=0; i<inventory_size; ++i) {
 		str >> inventory_num[i];
-		if ( inventory_num[i] )
-			inventory[i]=inShred->
-				BlockFromFile(str, 0, 0, 0);
+		inventory[i]=( inventory_num[i] ) ?
+			inShred->BlockFromFile(str, 0, 0, 0) :
+			0;
 	}
 }
 
@@ -227,21 +227,25 @@ void Dwarf::Act() {
 	Animal::Act();
 }
 
+Block * Dwarf::DropAfterDamage() const {
+	return whereShred->NewNormal(H_MEAT);
+}
+
 before_move_return Dwarf::BeforeMove(const int dir) {
 	if ( dir==direction )
-		whereShred->GetWorld()->GetAll(x_self, y_self, z_self);
+		GetWorld()->GetAll(x_self, y_self, z_self);
 	return NOTHING;
 }
 
 before_move_return Pile::BeforeMove(const int dir) {
 	direction=dir;
-	whereShred->GetWorld()->DropAll(x_self, y_self, z_self);
+	GetWorld()->DropAll(x_self, y_self, z_self);
 	return NOTHING;
 }
 
 bool Liquid::CheckWater(const int dir) const {
 	ushort i_check, j_check, k_check;
-	World * const world=whereShred->GetWorld();
+	World * const world=GetWorld();
 	if ( (world->Focus(x_self, y_self, z_self,
 			i_check, j_check, k_check, dir)) )
 		return false;
@@ -253,7 +257,7 @@ bool Liquid::CheckWater(const int dir) const {
 }
 
 void Liquid::Act() {
-	World * const world=whereShred->GetWorld();
+	World * const world=GetWorld();
 	if ( !(rand()%10) &&
 			!CheckWater(DOWN)  && !CheckWater(UP) &&
 			!CheckWater(NORTH) && !CheckWater(SOUTH) &&
@@ -287,7 +291,7 @@ void Grass::Act() {
 		default: return;
 	}
 
-	World * world=whereShred->GetWorld();
+	World * world=GetWorld();
 
 	if ( world->InBounds(i, j, z_self) ) {
 		if ( AIR==world->Sub(i, j, z_self) &&
@@ -301,8 +305,18 @@ void Grass::Act() {
 	}
 }
 
+void Bush::Act() {
+	if ( 0==rand()%seconds_in_hour ) {
+		Get(whereShred->NewNormal(HAZELNUT));
+	}
+}
+
+Block * Bush::DropAfterDamage() const {
+	return whereShred->NewNormal(WOOD);
+}
+
 void Rabbit::Act() {
-	World * world=whereShred->GetWorld();
+	World * world=GetWorld();
 	float attractive=0;
 	float for_north=0, for_west=0;
 	short x, y, z;
@@ -365,4 +379,8 @@ void Rabbit::Act() {
 	}
 
 	Animal::Act();
+}
+
+Block * Rabbit::DropAfterDamage() const { 
+	return whereShred->NewNormal(A_MEAT);
 }

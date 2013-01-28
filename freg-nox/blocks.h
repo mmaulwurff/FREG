@@ -35,12 +35,12 @@ class Block { //blocks without special physics and attributes
 	bool Normal() const { return normal; }
 
 	protected:
-	int sub;
+	quint16 sub;
 	float weight;
 	float shown_weight;
-	int direction;
+	quint8 direction;
 	QString note;
-	short durability;
+	qint16 durability;
 
 	public:
 	virtual QString & FullName(QString&) const;
@@ -120,7 +120,7 @@ class Block { //blocks without special physics and attributes
 	bool operator==(const Block &) const;
 
 	void SaveToFile(QDataStream & out) const {
-		out << Kind() << sub << normal;
+		out << (quint16)Kind() << sub << normal;
 		
 		if ( normal )
 			return;
@@ -344,7 +344,7 @@ class Inventory {
 	float InvWeightAll() const {
 		float sum=0;
 		for (ushort i=0; i<inventory_size; ++i)
-			sum+=GetInvWeight(i)*Number(i);
+			sum+=GetInvWeight(i);
 		return sum;
 	}
 	int Number(const ushort i) const {
@@ -368,7 +368,8 @@ class Inventory {
 		Block * const temp=new Block(*inventory[n]);
 		--inventory_num[n];
 		if ( !inventory_num[n] ) {
-			delete inventory[n];
+			if ( !inventory[n]->Normal() )
+				delete inventory[n];
 			inventory[n]=0;
 		}
 		return temp;
@@ -386,7 +387,8 @@ class Inventory {
 			if ( *block==*inventory[i] &&
 					inventory_num[i]<max_stack_size ) {
 				++inventory_num[i];
-				delete block;
+				if ( !block->Normal() )
+					delete block;
 				return 1;
 			}
 		}
@@ -426,7 +428,7 @@ class Inventory {
 			QDataStream & str);
 	~Inventory() {
 		for (ushort i=0; i<inventory_size; ++i)
-			if ( inventory[i] )
+			if ( inventory[i] && !inventory[i]->Normal() )
 				delete inventory[i];
 	}
 };
@@ -490,7 +492,7 @@ class Dwarf : public Animal, public Inventory {
 			return 1;
 		} return 0;
 	}
-	Block * DropAfterDamage() const { return new Block(H_MEAT); }
+	Block * DropAfterDamage() const;
 
 	void SaveAttributes(QDataStream & out) const {
 		Animal::SaveAttributes(out);
@@ -579,7 +581,7 @@ class Chest : public Block, public Inventory {
 class Pile : public Active, public Inventory {
 	Q_OBJECT
 	
-	ushort lifetime;
+	quint16 lifetime;
 
 	public:
 	int Kind() const { return PILE; }
@@ -745,15 +747,9 @@ class Bush : public Active, public Inventory {
 	int Movable() const { return NOT_MOVABLE; }
 	float Weight() const { return InvWeightAll()+Block::Weight(); }
 
-	void Act() {
-		if (0==rand()%seconds_in_hour) {
-			Block * tempNut=new Block(HAZELNUT);
-			if (!Get(tempNut) && NULL!=tempNut)
-				delete tempNut;
-		}
-	}
+	void Act();
 
-	Block * DropAfterDamage() const { return new Block(WOOD); }
+	Block * DropAfterDamage() const;
 
 	void SaveAttributes(QDataStream & out) const {
 		Active::SaveAttributes(out);
@@ -792,7 +788,7 @@ class Rabbit : public Animal {
 		return 0;
 	}
 
-	Block * DropAfterDamage() const { return new Block(A_MEAT); }
+	Block * DropAfterDamage() const;
 
 	Rabbit(Shred * const sh,
 			const ushort x,

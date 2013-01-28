@@ -691,9 +691,7 @@ bool World::Equal(
 		const Block * const block1,
 		const Block * const block2) const
 {
-	if ( block1==block2 ) return true;
-	if ( !block1 || !block2 ) return false;
-	return *block1==*block2;
+	return ( block1==block2 || *block1==*block2 );
 }
 
 World::World(const QString & world_name,
