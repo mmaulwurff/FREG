@@ -87,6 +87,7 @@ Shred::~Shred() {
 		}
 
 		QByteArray shred_data;
+		shred_data.reserve(200000);
 		QBuffer buf(&shred_data);
 		buf.open(QIODevice::WriteOnly);
 		QDataStream outstr(&buf);
