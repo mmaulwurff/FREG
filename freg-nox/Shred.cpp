@@ -22,6 +22,8 @@
 #include "Shred.h"
 #include "world.h"
 
+const int datastream_version=QDataStream::Qt_4_6; //Qt version in Debian stable now.
+
 Shred::Shred(World * const world_,
 		const ushort shred_x,
 		const ushort shred_y,
@@ -43,6 +45,13 @@ Shred::Shred(World * const world_,
 		QBuffer buf(&uncompressed);
 		buf.open(QIODevice::ReadOnly);
 		QDataStream in(&buf);
+		quint8 version;
+		in >> version;
+		if ( datastream_version!=version )
+			fprintf(stderr,
+				"Wrong version: %d\nBut trying to read.\n",
+				datastream_version);
+		in.setVersion(datastream_version);
 		for (i=0; i<shred_width; ++i)
 		for (j=0; j<shred_width; ++j) {
 			for (k=0; k<height; ++k)
@@ -91,6 +100,8 @@ Shred::~Shred() {
 		QBuffer buf(&shred_data);
 		buf.open(QIODevice::WriteOnly);
 		QDataStream outstr(&buf);
+		outstr << (quint8)datastream_version;
+		outstr.setVersion(datastream_version);
 		ushort i, j, k;
 		for (i=0; i<shred_width; ++i)
 		for (j=0; j<shred_width; ++j)
