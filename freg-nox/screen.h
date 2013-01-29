@@ -165,9 +165,6 @@ class Screen : public VirtScreen {
 			const ushort,
 			const ushort) const;
 
-	//void GetSound(const ushort, const ushort, const char, const kinds, const subs); //получить отдельный звук для звуковой карты
-	//void PrintSounds();
-
 	private slots:
 	void Print();
 
@@ -186,15 +183,9 @@ class Screen : public VirtScreen {
 			const ushort,
 			const ushort,
 			const ushort range);
-	void Flushinp() { flushinp(); }
-	void RePrint() { //стереть всё с экрана и перерисовать всё с нуля (можно сделать пустой)
-		wclear(leftWin);
-		wclear(rightWin);
-		wclear(notifyWin);
-		//wclear(soundWin);
-		wclear(hudWin);
+	void RePrint() {
+		clear();
 		updated=false;
-		//PrintSounds();
 	}
 
 	signals:

@@ -33,7 +33,7 @@ void Screen::PassString(QString & str) const {
 	mvwgetnstr(notifyWin, 1, 0, temp_str, note_length);
 	str=temp_str;
 	werase(notifyWin);
-	wrefresh(notifyWin);
+	wnoutrefresh(notifyWin);
 	noecho();
 }
 
@@ -195,7 +195,7 @@ void Screen::Print() {
 	//do not print player stats if there is no player
 	//TODO PrintNormal and PrintFront with parameters (for printing w/o player)
 	/*if ( !player ) {
-		wrefresh(hudWin);
+		wnoutrefresh(hudWin);
 		PrintNormal(leftWin);
 		PrintFront(rightWin);
 		w->mutex_unlock();
@@ -259,8 +259,9 @@ void Screen::Print() {
 		}
 	}
 
-	wrefresh(hudWin);
-	wrefresh(notifyWin);
+	wnoutrefresh(hudWin);
+	wnoutrefresh(notifyWin);
+	doupdate();
 
 	//fprintf(stderr, "player x: %hu, y: %hu", player->X(), player->Y());
 }
@@ -301,7 +302,7 @@ void Screen::PrintNormal(WINDOW * const window) const {
 		Arrows(window , (player->X()-start)*2+1, player->Y()-start+1);
 	} else
 		mvwaddstr(window, 0, 1, "Normal View");
-	wrefresh(window);
+	wnoutrefresh(window);
 }
 
 void Screen::PrintFront(WINDOW * const window) const {
@@ -311,7 +312,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 		werase(window);
 		box(window, 0, 0);
 		mvwaddstr(window, 0, 1, "No view");
-		wrefresh(window);
+		wnoutrefresh(window);
 		return;
 	}
 
@@ -334,7 +335,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 			z=&j;
 			z_step=-1;
 			z_start=pY-1;
-			z_end=-1;
+			z_end=(w->NumShreds()/2-1)*shred_width-1;
 			arrow_X=(pX-start)*2+1;
 		break;
 		case SOUTH:
@@ -345,7 +346,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 			z=&j;
 			z_step=1;
 			z_start=pY+1;
-			z_end=shred_width*w->NumShreds();
+			z_end=(w->NumShreds()/2+2)*shred_width;
 			arrow_X=(SCREEN_SIZE-pX+start)*2-1;
 		break;
 		case WEST:
@@ -356,7 +357,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 			z=&i;
 			z_step=-1;
 			z_start=pX-1;
-			z_end=-1;
+			z_end=(w->NumShreds()/2-1)*shred_width-1;
 			arrow_X=(SCREEN_SIZE-pY+start)*2-1;
 		break;
 		case EAST:
@@ -367,7 +368,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 			z=&i;
 			z_step=1;
 			z_start=pX+1;
-			z_end=shred_width*w->NumShreds();
+			z_end=(w->NumShreds()/2+2)*shred_width;
 			arrow_X=(pY-start)*2+1;
 		break;
 		default:
@@ -417,7 +418,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 	box(window, 0, 0);
 	mvwaddstr(window, 0, 1, "Front View");
 	Arrows(window, arrow_X, arrow_Y);
-	wrefresh(window);
+	wnoutrefresh(window);
 }
 
 void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
@@ -461,48 +462,8 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 			CharName(inv->Kind(),
 			inv->Sub()),
 			inv->FullName(str).toAscii().constData());
-	wrefresh(window);
+	wnoutrefresh(window);
 }
-
-/*void Screen::GetSound(const ushort n, const ushort dist, const char sound, const kinds kind, const subs sub) {
-	if ( w->mutex_trylock() )
-		return;
-
-	soundMap[n].ch=(' '!=soundMap[n].ch) ? '&' : sound;
-
-	short temp=shred_width-dist;
-	if (temp<0)
-		temp=0;
-	soundMap[n].lev+=(temp*10)/shred_width;
-	if (soundMap[n].lev>9)
-		soundMap[n].lev=9;
-	if (soundMap[n].lev>0) {
-		soundMap[n].col=Color(kind, sub); 
-		soundMap[n].lev+=1;
-	}
-
-	w->mutex_unlock();
-}*/
-/*void Screen::PrintSounds() {
-	if ( w->mutex_trylock() )
-		return;
-
-	werase(soundWin);
-	for (ushort i=0; i<3; ++i)
-	for (ushort j=0; j<3; ++j)
-		if ( ' '!=soundMap[i*3+j].ch ) {
-			wcolor_set(soundWin, soundMap[i*3+j].col, NULL);
-			mvwprintw(soundWin, i+1, j*2+1, "%c%hd", soundMap[i*3+j].ch, soundMap[i*3+j].lev);
-			soundMap[i*3+j].ch=' ';
-			soundMap[i*3+j].lev=0;
-			soundMap[i*3+j].col=WHITE_BLACK;
-		}
-	wstandend(soundWin);
-	box(soundWin, 0, 0);
-	mvwaddstr(soundWin, 0, 1, "Sounds");
-	wrefresh(soundWin);
-	w->mutex_unlock();
-}*/
 
 void Screen::Notify(const QString & str) {
 	static QString lines[5]={"", "", "", "", ""};
