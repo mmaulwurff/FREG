@@ -54,8 +54,10 @@ Shred::Shred(World * const world_,
 		in.setVersion(datastream_version);
 		for (i=0; i<shred_width; ++i)
 		for (j=0; j<shred_width; ++j) {
-			for (k=0; k<height; ++k)
+			for (k=0; k<height; ++k) {
 				blocks[i][j][k]=BlockFromFile(in, i, j, k);
+				lightMap[i][j][k]=0;
+			}
 			lightMap[i][j][height-1]=max_light_radius;
 		}
 		buf.close();
@@ -65,8 +67,10 @@ Shred::Shred(World * const world_,
 	for (i=0; i<shred_width; ++i)
 	for (j=0; j<shred_width; ++j) {
 		blocks[i][j][0]=NewNormal(NULLSTONE);
-		for (k=1; k<height-1; ++k)
+		for (k=1; k<height-1; ++k) {
 			blocks[i][j][k]=NewNormal(AIR);
+			lightMap[i][j][k]=0;
+		}
 		blocks[i][j][height-1]=NewNormal( rand()%5 ? SKY : STAR );
 		lightMap[i][j][height-1]=max_light_radius;
 	}

@@ -537,21 +537,15 @@ Screen::Screen(
 	rightWin=newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, SCREEN_SIZE*2+2);
 	hudWin=newwin(3+2, (SCREEN_SIZE*2+2)*2-8, SCREEN_SIZE+2, 8); //окно для жизни, дыхания и т.д.
 	notifyWin=newwin(0, COLS, SCREEN_SIZE+2+5, 0);
-	//soundWin=newwin(3+2, 3*2+2, SCREEN_SIZE+2, 0);
 	
-	/*for (ushort i=0; i<9; ++i) {
-		soundMap[i].ch=' ';
-		soundMap[i].lev=0;
-		soundMap[i].col=WHITE_BLACK;
-	}*/
-
 	input=new IThread();
 	connect(input, SIGNAL(RePrintReceived()),
 		this, SLOT(RePrint()),
 		Qt::DirectConnection);
 
 	connect(input, SIGNAL(ExitReceived()),
-		this, SIGNAL(ExitReceived()));
+		this, SIGNAL(ExitReceived()),
+		Qt::DirectConnection);
 
 	connect(input, SIGNAL(InputReceived(int, int)),
 		this, SIGNAL(InputReceived(int, int)),
