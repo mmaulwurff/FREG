@@ -15,7 +15,7 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-//input thread for curses scren for freg
+//input thread for text screens for freg
 
 #include "i_thread.h"
 #include "header.h"
@@ -26,7 +26,7 @@ IThread::IThread() : stopped(false) {}
 void IThread::run() {
 	while ( !stopped ) {
 		static int c;
-		switch ( c=getch() ) {
+		switch ( c=getchar() ) {
 			case KEY_UP:
 			case 'u': emit InputReceived(MOVE, NORTH); break;
 			case KEY_DOWN:
@@ -63,7 +63,6 @@ void IThread::run() {
 		//fprintf(stderr, "Input received: '%c' (code %d)\n", (char)c, c);
 
 		msleep(90);
-		flushinp();
 	}
 }
 

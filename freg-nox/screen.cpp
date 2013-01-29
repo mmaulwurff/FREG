@@ -15,6 +15,8 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
+//this file is related to curses screen for freg.
+
 #include <QString>
 #include <QTimer>
 #include "screen.h"
@@ -502,7 +504,7 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 	w->mutex_unlock();
 }*/
 
-void Screen::Notify(const QString str) {
+void Screen::Notify(const QString & str) {
 	static QString lines[5]={"", "", "", "", ""};
 	const short MAX_LINES=5;
 	wclear(notifyWin);
@@ -606,6 +608,7 @@ Screen::Screen(
 	timer->start(100);
 
 	notifyLog=fopen("messages.txt", "a");
+	Notify("Game started.");
 }
 
 void Screen::CleanAll() {

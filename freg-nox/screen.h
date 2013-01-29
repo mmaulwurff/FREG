@@ -15,6 +15,10 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
+//this file provides curses (text-based graphics interface) screen for freg.
+//screen.cpp provides definitions for methods,
+//i_thread.h and i_thred.cpp provide input thread for this screen.
+
 #ifndef SCREEN_H
 #define SCREEN_H
 
@@ -168,7 +172,7 @@ class Screen : public VirtScreen {
 	void Print();
 
 	public slots:
-	void Notify(QString);
+	void Notify(const QString &);
 	void CleanAll();
 	void PassString(QString &) const;
 	void Update(

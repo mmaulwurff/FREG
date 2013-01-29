@@ -15,7 +15,7 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-//this file provides declaration of inputh thread for curses screen for freg.
+//this file provides declaration of inputh thread for text (stub) screen for freg.
 
 #ifndef THREAD_H
 #define THREAD_H

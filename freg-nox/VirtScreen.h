@@ -15,6 +15,8 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
+//this file provides base for all screens for freg.
+
 #ifndef VIRTSCREEN_H
 #define VIRTSCREEN_H
 
@@ -35,7 +37,7 @@ class VirtScreen : public QObject {
 
 	public slots:
 	virtual void Print()=0;
-	virtual void Notify(QString)=0;
+	virtual void Notify(const QString &)=0;
 	virtual void CleanAll() {};
 	virtual void PassString(QString &) const=0;
 	virtual void Update(
@@ -54,7 +56,7 @@ class VirtScreen : public QObject {
 
 	signals:
 	void ExitReceived();
-	void InputReceived(int, int) const;
+	void InputReceived(const int, const int) const;
 
 	public:
 	VirtScreen(
