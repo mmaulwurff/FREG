@@ -770,6 +770,8 @@ class Bush : public Active, public Inventory {
 class Rabbit : public Animal {
 	Q_OBJECT
 	
+	float Attractive(int kind) const;
+	
 	public:
 	QString & FullName(QString & str) const { return str="Rabbit"; }
 	int Kind() const { return RABBIT; }
@@ -795,7 +797,8 @@ class Rabbit : public Animal {
 			const ushort y,
 			const ushort z)
 			:
-			Animal(sh, x, y, z) {}
+			Animal(sh, x, y, z)
+		{}
 	Rabbit(Shred * const sh,
 			const ushort x,
 			const ushort y,

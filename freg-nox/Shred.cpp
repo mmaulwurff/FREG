@@ -116,7 +116,6 @@ Shred::~Shred() {
 		}
 		file.write(qCompress(shred_data));
 		buf.close();
-		file.close();
 		return;
 	}
 
@@ -282,7 +281,6 @@ char Shred::TypeOfShred(
 		const ulong longi,
 		const ulong lati) const
 {
-	//return '.';
 	const ulong mapSize=world->MapSize();
 	if ( longi >= mapSize || lati  >= mapSize )
 		return '#';
@@ -292,11 +290,10 @@ char Shred::TypeOfShred(
 	if ( !map.open(QIODevice::ReadOnly | QIODevice::Text) )
 		return '.';
 
-	QTextStream in_map(&map);
-	in_map.seek((mapSize+1)*longi+lati); //+1 is for '\n' in file
+	map.seek((mapSize+1)*longi+lati); //+1 is for '\n' in file
 	char c;
-	in_map >> &c;
-	return c;
+	return ( map.getChar(&c) ) ? c : '.';
+
 }
 
 //shred generators section

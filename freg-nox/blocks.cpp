@@ -315,57 +315,48 @@ Block * Bush::DropAfterDamage() const {
 	return whereShred->NewNormal(WOOD);
 }
 
+float Rabbit::Attractive(int kind) const {
+	switch ( kind ) {
+		case DWARF: return -9;
+		case GRASS: return 0.1;
+		case RABBIT: return 0.8;
+		default: return 0;
+	}
+}
+
 void Rabbit::Act() {
-	World * world=GetWorld();
-	float attractive=0;
+	World * const world=GetWorld();
 	float for_north=0, for_west=0;
-	short x, y, z;
-	for (x=x_self-7; x<=x_self+7; ++x)
-	for (y=y_self-7; y<=y_self+7; ++y)
-	for (z=z_self-7; z<=z_self+7; ++z)
+	ushort x, y, z;
+	int kind;
+	for (x=x_self-6; x<=x_self+6; ++x)
+	for (y=y_self-6; y<=y_self+6; ++y)
+	for (z=z_self-6; z<=z_self+6; ++z)
 		if ( world->InBounds(x, y, z) ) {
-			switch ( world->Kind(x, y, z) ) {
-				case DWARF:  if (world->DirectlyVisible(x_self, y_self, z_self, x, y, z)) attractive=-9; break;
-				case RABBIT: if (world->DirectlyVisible(x_self, y_self, z_self, x, y, z)) attractive=0.8; break;
-				case GRASS:  if (world->DirectlyVisible(x_self, y_self, z_self, x, y, z)) attractive=0.1; break;
-				default: attractive=0;
-			}
-			if ( attractive ) {
-				if (y!=y_self)
-					for_north+=attractive/(y_self-y);
-				if (x!=x_self)
-					for_west +=attractive/(x_self-x);
+			kind=world->Kind(x, y, z);
+			if ( (GRASS==kind || RABBIT==kind || DWARF==kind) && 
+					world->DirectlyVisible(x_self, y_self, z_self, x, y, z) ) {
+				if ( y!=y_self )
+					for_north+=Attractive(kind)/(y_self-y);
+				if ( x!=x_self )
+					for_west +=Attractive(kind)/(x_self-x);
 			}
 		}
 
 	if ( abs(for_north)>1 || abs(for_west)>1 ) {
-		if ( abs(for_north)>abs(for_west) ) {
-			if ( for_north>0 )
-				SetDir(NORTH);
-			else
-				SetDir(SOUTH);
-		} else {
-			if ( for_west>0 )
-				SetDir(WEST);
-			else
-				SetDir(EAST);
-		}
+		SetDir( ( abs(for_north)>abs(for_west) ) ?
+			( ( for_north>0 ) ? NORTH : SOUTH ) :
+			( ( for_west >0 ) ? WEST  : EAST  ) );
 		if ( rand()%2 )
 			world->Move(x_self, y_self, z_self, direction);
 		else
 			world->Jump(x_self, y_self, z_self);
-	} else if ( 0==rand()%60 ) {
-		switch (rand()%4) {
-			case 0: SetDir(NORTH); break;
-			case 1: SetDir(SOUTH); break;
-			case 2: SetDir(EAST);  break;
-			default: SetDir(WEST);
+	} else switch ( rand()%60 ) {
+			case 0: world->Move(x_self, y_self, z_self, NORTH); break;
+			case 1: world->Move(x_self, y_self, z_self, SOUTH); break;
+			case 2: world->Move(x_self, y_self, z_self, EAST);  break;
+			case 3: world->Move(x_self, y_self, z_self, WEST);  break;
 		}
-		if ( rand()%2 )
-			world->Move(x_self, y_self, z_self, direction);
-		else
-			world->Jump(x_self, y_self, z_self);
-	}
 
 	if ( seconds_in_day*time_steps_in_sec/2>satiation ) {
 		for (x=x_self-1; x<=x_self+1; ++x)

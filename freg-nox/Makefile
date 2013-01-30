@@ -8,13 +8,13 @@
 
 ####### Compiler, tools and options
 
-CC            = gcc
-CXX           = g++
+CC            = clang
+CXX           = clang++
 DEFINES       = -DQT_NO_DEBUG -DQT_CORE_LIB -DQT_SHARED
 CFLAGS        = -m64 -pipe -O2 -Wall -W -D_REENTRANT $(DEFINES)
 CXXFLAGS      = -m64 -pipe -O2 -Wall -W -D_REENTRANT $(DEFINES)
 INCPATH       = -I/usr/share/qt4/mkspecs/linux-g++-64 -I. -I/usr/include/qt4/QtCore -I/usr/include/qt4 -I. -I.
-LINK          = g++
+LINK          = clang++
 LFLAGS        = -m64 -Wl,-O1
 LIBS          = $(SUBLIBS)  -L/usr/lib/x86_64-linux-gnu -lQtCore -lpthread -lncurses
 AR            = ar cqs
