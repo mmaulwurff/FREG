@@ -232,26 +232,22 @@ void Shred::RemActive(Active * const active) {
 
 void Shred::ReloadToNorth() {
 	for (ushort i=0; i<activeList.size(); ++i)
-		if ( activeList[i] )
-			activeList[i]->ReloadToNorth();
+		activeList[i]->ReloadToNorth();
 	++shredY;
 }
 void Shred::ReloadToEast() {
 	for (ushort i=0; i<activeList.size(); ++i)
-		if ( activeList[i] )
-			activeList[i]->ReloadToEast();
+		activeList[i]->ReloadToEast();
 	--shredX;
 }
 void Shred::ReloadToSouth() {
 	for (ushort i=0; i<activeList.size(); ++i)
-		if ( activeList[i] )
-			activeList[i]->ReloadToSouth();
+		activeList[i]->ReloadToSouth();
 	--shredY;
 }
 void Shred::ReloadToWest() {
 	for (ushort i=0; i<activeList.size(); ++i)
-		if ( activeList[i] )
-			activeList[i]->ReloadToWest();
+		activeList[i]->ReloadToWest();
 	++shredX;
 }
 
