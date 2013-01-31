@@ -361,7 +361,6 @@ class Inventory {
 
 	Block * Drop(const ushort n) {
 		if ( inventory_size<=n ||
-				!inventory_num[n] ||
 				!inventory_num[n])
 			return 0;
 

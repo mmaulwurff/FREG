@@ -71,7 +71,7 @@ Shred::Shred(World * const world_,
 			blocks[i][j][k]=NewNormal(AIR);
 			lightMap[i][j][k]=0;
 		}
-		blocks[i][j][height-1]=NewNormal( rand()%5 ? SKY : STAR );
+		blocks[i][j][height-1]=NewNormal( (rand()%5) ? SKY : STAR );
 		lightMap[i][j][height-1]=max_light_radius;
 	}
 			

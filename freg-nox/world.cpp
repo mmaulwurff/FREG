@@ -460,8 +460,9 @@ bool World::Build(Block * block,
 		return false;
 
 	block->Restore();
-	if ( block->ActiveBlock() )
-		((Active *)block)->Register(GetShred(i, j), i, j, k);
+	Active * const active=ActiveBlock();
+	if ( active )
+		active->Register(GetShred(i, j), i, j, k);
 	SetBlock(block, i, j, k);
 
 	ReEnlighten(i, j, k);

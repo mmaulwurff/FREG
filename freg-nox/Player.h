@@ -45,7 +45,19 @@ class Player : public QObject {
 	void UpdateXYZ();
 
 	public slots:
+	/// For cleaning player-related data before exiting program.
+	/**
+	 * This is connected to app's aboutToQuit() signal, also it
+	 * is called from destructor. There is a check for data deleting
+	 * not to be called twice.
+	 */
 	void CleanAll();
+	/// Checks if player walked over the shred border.
+	/**
+	 * This is connected to player's block signal Moved(int).
+	 * It emits OverstepBorder(int) signal when player walks
+	 * over the shred border.
+	 */
 	void CheckOverstep(const int);
 	void Act(const int, const int);
 	void BlockDestroy() { player=0; }
