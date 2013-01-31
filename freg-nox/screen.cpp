@@ -190,16 +190,6 @@ void Screen::Print() {
 	}
 	updated=true;
 
-	//do not print player stats if there is no player
-	//TODO PrintNormal and PrintFront with parameters (for printing w/o player)
-	/*if ( !player ) {
-		wnoutrefresh(hudWin);
-		PrintNormal(leftWin);
-		PrintFront(rightWin);
-		w->mutex_unlock();
-		return;
-	}*/
-
 	if ( player->UsingBlock() )
 		switch ( player->UsingType() ) {
 			case OPEN:
@@ -217,30 +207,30 @@ void Screen::Print() {
 		default: PrintFront(rightWin);
 	}
 
-	short dur=player->HP();
-	short breath=player->Breath();
-	short satiation=player->Satiation();
+	const short dur=player->HP();
+	const short breath=player->Breath();
+	const short satiation=player->Satiation();
 	w->Unlock();
 
 	werase(hudWin); 
 	ushort i;
 	//HitPoints line
 	wstandend(hudWin);
-	wprintw(hudWin, " HP: %3hd%% <", dur);
+	wprintw(hudWin, " HP: %3hd  [", dur);
 	wcolor_set(hudWin, WHITE_RED, NULL);
 	for (i=0; i<10*dur/max_durability; ++i)
 		waddch(hudWin, '.');
 	wstandend(hudWin);
-	mvwaddstr(hudWin, 0, 21, ">\n");
+	mvwaddstr(hudWin, 0, 21, "]\n");
 
 	//breath line
 	if ( -1!=breath ) {
-		wprintw(hudWin, " BR: %3hd%% <", breath);
+		wprintw(hudWin, " BR: %3hd%% [", 100*breath/max_breath);
 		wcolor_set(hudWin, WHITE_BLUE, NULL);
 		for (i=0; i<10*breath/max_breath; ++i)
 			waddch(hudWin, '.');
 		wstandend(hudWin);
-		mvwaddstr(hudWin, 1, 21, ">\n");
+		mvwaddstr(hudWin, 1, 21, "]\n");
 	}
 	
 	//satiation line
@@ -258,7 +248,6 @@ void Screen::Print() {
 	}
 
 	wnoutrefresh(hudWin);
-	wnoutrefresh(notifyWin);
 	doupdate();
 
 	//fprintf(stderr, "player x: %hu, y: %hu", player->X(), player->Y());
@@ -475,7 +464,7 @@ void Screen::Notify(const QString & str) {
 		str.toAscii().constData());
 	lines[MAX_LINES-1]=str;
 	fputs(str.toAscii().constData(), notifyLog);
-	updated=false;	
+	wrefresh(notifyWin);
 }
 
 void Screen::Update(

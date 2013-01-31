@@ -24,23 +24,25 @@
 #include <QString>
 
 short Player::HP() const {
-	return player ?
-		player->Durability() :
-		0;
+	return player ? player->Durability() : 0;
 }
 
 short Player::Breath() const {
-	Animal * animal=player->IsAnimal();
+	if ( !player )
+		return -1;
+	Animal const * const animal=player->IsAnimal();
 	return animal ? animal->Breath() : -1;
 }
 
 short Player::Satiation() const {
-	Animal * animal=player->IsAnimal();
+	if ( !player )
+		return -1;
+	Animal const * const animal=player->IsAnimal();
 	return animal ? animal->Satiation() : -1;
 }
 
 Inventory * Player::PlayerInventory() {
-	return player->HasInventory();
+	return player ? player->HasInventory() : 0;
 }
 
 void Player::Act(const int action, const int d) {
