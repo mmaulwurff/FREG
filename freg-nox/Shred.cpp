@@ -293,7 +293,6 @@ char Shred::TypeOfShred(
 	map.seek((mapSize+1)*longi+lati); //+1 is for '\n' in file
 	char c;
 	return ( map.getChar(&c) ) ? c : '.';
-
 }
 
 //shred generators section
@@ -491,7 +490,7 @@ bool Shred::Tree(
 	for (i=x; i<=x+2; ++i)
 	for (j=y; j<=y+2; ++j)
 	for (k=z; k<z+height; ++k)
-		if ( AIR==Sub(i, j, k) )
+		if ( AIR!=Sub(i, j, k) )
 			return false;
 
 	for (k=z; k<z+height-1; ++k) //trunk
