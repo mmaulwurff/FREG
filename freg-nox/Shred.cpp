@@ -133,14 +133,11 @@ Block * Shred::NewNormal(const int sub) const {
 
 void Shred::PhysEvents() {
 	for (short j=0; j<activeList.size(); ++j) {
-		Active * temp=activeList[j];
-		temp->Act();
-		const ushort x=temp->X();
-		const ushort y=temp->Y();
-		const ushort z=temp->Z();
-
+		Active * const temp=activeList[j];
 		if ( temp->ShouldFall() )
-			world->Move(x, y, z, DOWN);
+			world->Move(temp->X(), temp->Y(), temp->Z(), DOWN);
+		if ( temp->Act() )
+			activeList.removeAt(j--);
 	}
 }
 
@@ -235,22 +232,26 @@ void Shred::RemActive(Active * const active) {
 
 void Shred::ReloadToNorth() {
 	for (ushort i=0; i<activeList.size(); ++i)
-		activeList[i]->ReloadToNorth();
+		if ( activeList[i] )
+			activeList[i]->ReloadToNorth();
 	++shredY;
 }
 void Shred::ReloadToEast() {
 	for (ushort i=0; i<activeList.size(); ++i)
-		activeList[i]->ReloadToEast();
+		if ( activeList[i] )
+			activeList[i]->ReloadToEast();
 	--shredX;
 }
 void Shred::ReloadToSouth() {
 	for (ushort i=0; i<activeList.size(); ++i)
-		activeList[i]->ReloadToSouth();
+		if ( activeList[i] )
+			activeList[i]->ReloadToSouth();
 	--shredY;
 }
 void Shred::ReloadToWest() {
 	for (ushort i=0; i<activeList.size(); ++i)
-		activeList[i]->ReloadToWest();
+		if ( activeList[i] )
+			activeList[i]->ReloadToWest();
 	++shredX;
 }
 

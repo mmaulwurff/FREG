@@ -401,21 +401,22 @@ bool World::Damage(
 		const ushort j,
 		const ushort k,
 		const ushort dmg, //see default in class definition
-		const damage_kinds dmg_kind, //see default in class definition
-		const bool destroy) //see default in class definition
+		const damage_kinds dmg_kind) //see default in class definition
 {
 	if ( !InBounds(i, j, k) )
 		return false;
 
-	Block * const temp=GetBlock(i, j, k);
+	Block * temp=GetBlock(i, j, k);
 	//TODO: prevent creating new block when no damage	
-	if ( temp->Normal() )
-		SetBlock(new Block(temp->Sub()), i, j, k);
+	if ( temp->Normal() ) {
+		temp=new Block(temp->Sub());
+		SetBlock(temp, i, j, k);
+	}
 	
 	if ( 0<temp->Damage(dmg, dmg_kind) )
 		return false;
 
-	//TODO: restore (this falled to infloop)
+	//TODO: restore this
 	/*Block * dropped=temp->DropAfterDamage();
 	if ( PILE!=temp->Kind() && (temp->HasInventory() || dropped) ) {
 		Pile * new_pile=new Pile(GetShred(i, j), i, j, k);
@@ -427,13 +428,7 @@ bool World::Damage(
 	} else*/
 		SetBlock(NewNormal(AIR), i, j, k);
 	
-	if ( destroy && !temp->Normal() )
-		delete temp;
-	else {
-		temp->ToDestroy();
-		temp->Unregister();
-	}
-
+	delete temp;
 	ReEnlighten(i, j, k);
 	return true;
 }
@@ -506,13 +501,18 @@ void World::Inscribe(
 	block->Inscribe(str);
 }
 
-void World::Eat(Block * who, Block * food) {
-	if ( NULL==who || NULL==food )
+void World::Eat(
+		const ushort i,
+		const ushort j,
+		const ushort k,
+		const ushort i_food,
+		const ushort j_food,
+		const ushort k_food)
+{
+	if ( !InBounds(i, j, k) || !InBounds(i_food, j_food, k_food) )
 		return;
-	if ( who->Eat(food) ) {
-		delete food;
-		food=NULL;
-	}
+	if ( GetBlock(i, j, k)->Eat(GetBlock(i_food, j_food, k_food)) )
+		Damage(i_food, j_food, k_food, max_durability, EATEN);
 }
 
 int World::Exchange(
@@ -725,7 +725,7 @@ World::World(const QString & world_name,
 	}
 
 	ushort x;
-	for (x=STONE; x<=AIR; ++x) {
+	for (x=0; x<=AIR; ++x) {
 		normal_blocks[x]=new Block(subs(x));
 		normal_blocks[x]->SetNormal(1);
 	}
@@ -768,7 +768,7 @@ void World::CleanAll() {
 		delete shreds[i];
 	delete [] shreds;
 
-	for (i=STONE; i<AIR; ++i)
+	for (i=0; i<=AIR; ++i)
 		delete normal_blocks[i];
 
 	QFile file(worldName+"_save");

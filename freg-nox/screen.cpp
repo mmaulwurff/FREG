@@ -183,8 +183,6 @@ inline color_pairs Screen::Color(
 
 void Screen::Print() {
 	w->ReadLock();
-	//if ( !w->TryReadLock() )
-	//	return;
 
 	if ( updated ) {
 		w->Unlock();

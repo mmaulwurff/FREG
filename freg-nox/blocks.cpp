@@ -184,30 +184,30 @@ Active::~Active() {
 	emit Destroyed();
 }
 
-void Animal::Act() {
+bool Animal::Act() {
 	static ushort timeStep=0;
 	if ( time_steps_in_sec>timeStep ) {
 		++timeStep;
-		return;
+		return false;
 	}
 
 	timeStep=0;
-	World * world=GetWorld();
+	World * const world=GetWorld();
 	if ( LIQUID==world->Kind(x_self, y_self, z_self+1) ) {
 		if ( 0>=breath )
-			world->Damage(x_self, y_self, z_self,
-					10, BREATH, false);
-		else
-			--breath;
-		return;
+			return world->Damage(x_self, y_self, z_self,
+					10, BREATH);
+		--breath;
+		return false;
 	} else if ( breath<max_breath )
 		++breath;
 
-	if ( 0<satiation )
-		--satiation;
-	else
-		world->Damage(x_self, y_self, z_self,
-				1, HUNGER, false);
+	if ( 0>=satiation )
+		return world->Damage(x_self, y_self, z_self,
+			1, HUNGER);
+
+	--satiation;
+	return false;
 }
 
 Inventory::Inventory(Shred * const sh,
@@ -223,8 +223,8 @@ Inventory::Inventory(Shred * const sh,
 	}
 }
 
-void Dwarf::Act() {
-	Animal::Act();
+bool Dwarf::Act() {
+	return Animal::Act();
 }
 
 Block * Dwarf::DropAfterDamage() const {
@@ -256,16 +256,14 @@ bool Liquid::CheckWater(const int dir) const {
 	return false;
 }
 
-void Liquid::Act() {
+bool Liquid::Act() {
 	World * const world=GetWorld();
 	if ( !(rand()%10) &&
 			!CheckWater(DOWN)  && !CheckWater(UP) &&
 			!CheckWater(NORTH) && !CheckWater(SOUTH) &&
-			!CheckWater(EAST)  && !CheckWater(WEST) ) {
-		world->Damage(x_self, y_self, z_self,
-			max_durability, HEAT, false);
-		return;
-	}
+			!CheckWater(EAST)  && !CheckWater(WEST) )
+		return world->Damage(x_self, y_self, z_self,
+			max_durability, HEAT);
 
 	int dir;
 	switch ( rand()%20 ) {
@@ -273,14 +271,15 @@ void Liquid::Act() {
 		case 1: dir=EAST;  break;
 		case 2: dir=SOUTH; break;
 		case 3: dir=WEST;  break;
-		default: return;
+		default: return false;
 	}
 	world->Move(x_self, y_self, z_self, dir);
+	return false;
 }
 
-void Grass::Act() {
+bool Grass::Act() {
 	if ( rand()%seconds_in_hour )
-		return;
+		return false;
 	
 	short i=x_self, j=y_self;
 	switch ( rand()%4 /* increase this if grass grows too fast */) {
@@ -288,10 +287,10 @@ void Grass::Act() {
 		case 1: --i; break;
 		case 2: ++j; break;
 		case 3: --j; break;
-		default: return;
+		default: return false;
 	}
 
-	World * world=GetWorld();
+	World * const world=GetWorld();
 
 	if ( world->InBounds(i, j, z_self) ) {
 		if ( AIR==world->Sub(i, j, z_self) &&
@@ -303,12 +302,14 @@ void Grass::Act() {
 				AIR==world->Sub(i, j, z_self+1) )
 			world->Build(new Grass(), i, j, z_self+1);
 	}
+	return false;
 }
 
-void Bush::Act() {
+bool Bush::Act() {
 	if ( 0==rand()%seconds_in_hour ) {
 		Get(whereShred->NewNormal(HAZELNUT));
 	}
+	return false;
 }
 
 Block * Bush::DropAfterDamage() const {
@@ -324,7 +325,7 @@ float Rabbit::Attractive(int kind) const {
 	}
 }
 
-void Rabbit::Act() {
+bool Rabbit::Act() {
 	World * const world=GetWorld();
 	float for_north=0, for_west=0;
 	ushort x, y, z;
@@ -364,12 +365,11 @@ void Rabbit::Act() {
 		for (z=z_self-1; z<=z_self+1; ++z)
 			if ( GREENERY==world->Sub(x, y, z) ) {
 				world->Eat(x_self, y_self, z_self, x, y, z);
-				Animal::Act();
-				return;
+				return Animal::Act();
 			}
 	}
 
-	Animal::Act();
+	return Animal::Act();
 }
 
 Block * Rabbit::DropAfterDamage() const { 

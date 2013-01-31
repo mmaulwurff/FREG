@@ -105,7 +105,6 @@ class Block { //blocks without special physics and attributes
 	virtual bool Weapon() const { return false; }
 	virtual bool Carving() const { return false; }
 
-	virtual void ToDestroy(const bool=false) {}
 	virtual void Unregister() {}
 	virtual int Eat(Block *) { return 0; }
 
@@ -211,7 +210,8 @@ class Active : public QObject, public Block {
 	ushort Y() const { return y_self; }
 	ushort Z() const { return z_self; }
 	
-	virtual void Act() {}
+	//!returns if block should be destroyed
+	virtual bool Act() { return false; }
 
 	char MakeSound() const { return ' '; }
 
@@ -274,7 +274,7 @@ class Animal : public Active {
 	ushort Satiation() const { return satiation; }
 	int Eat(Block *)=0;
 
-	void Act();
+	bool Act();
 
 	void SaveAttributes(QDataStream & out) const {
 		Block::SaveAttributes(out);
@@ -461,7 +461,7 @@ class Dwarf : public Animal, public Inventory {
 	float Weight() const { return InvWeightAll()+100; }
 
 	before_move_return BeforeMove(const int);
-	void Act();
+	bool Act();
 
 	int Eat(Block * to_eat) {
 		if ( NULL==to_eat )
@@ -592,7 +592,9 @@ class Pile : public Active, public Inventory {
 	usage_types Use() { return Inventory::Use(); }
 	float Weight() const { return InvWeightAll(); }
 
-	void Act() { if (lifetime) --lifetime; }
+	bool Act() {
+		return ( --lifetime ) ? false : true;
+	}
 	
 	Block * Drop(const int n) {
 		Block * temp=Inventory::Drop(n);
@@ -668,7 +670,7 @@ class Liquid : public Active {
 			durability;
 	}
 
-	void Act();
+	bool Act();
 
 	int Temperature() const {
 		if (WATER==sub) return 0;
@@ -714,7 +716,7 @@ class Grass : public Active {
 	bool ShouldFall() const { return false; }
 
 	before_move_return BeforeMove(const int) { return DESTROY; }
-	void Act();
+	bool Act();
 
 	Grass() : Active(GREENERY, 1) {}
 	Grass(Shred * const sh,
@@ -747,7 +749,7 @@ class Bush : public Active, public Inventory {
 	int Movable() const { return NOT_MOVABLE; }
 	float Weight() const { return InvWeightAll()+Block::Weight(); }
 
-	void Act();
+	bool Act();
 
 	Block * DropAfterDamage() const;
 
@@ -776,7 +778,7 @@ class Rabbit : public Animal {
 	QString & FullName(QString & str) const { return str="Rabbit"; }
 	int Kind() const { return RABBIT; }
 
-	void Act();
+	bool Act();
 	float Weight() const { return 2; }
 
 	int Eat(Block * to_eat) {

@@ -222,7 +222,8 @@ void Shred::SetAllLightMap(const uchar level) {
 void Shred::ShineAll() {
 	for (short j=0; j<activeList.size(); ++j) {
 		Active const * const temp=activeList[j];
-		world->Shine(temp->X(), temp->Y(), temp->Z(),
-			temp->LightRadius(), true);
+		if ( temp )
+			world->Shine(temp->X(), temp->Y(), temp->Z(),
+				temp->LightRadius(), true);
 	}	
 }

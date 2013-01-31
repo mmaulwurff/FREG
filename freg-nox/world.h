@@ -231,8 +231,7 @@ class World : public QThread {
 			const ushort,
 			const ushort,
 			const ushort=1,
-			const damage_kinds=CRUSH,
-			const bool=true);
+			const damage_kinds=CRUSH);
 	bool Use(
 			const ushort,
 			const ushort,
@@ -246,19 +245,13 @@ class World : public QThread {
 			const ushort,
 			const ushort,
 			const ushort);
-	void Eat(Block *, Block *);
 	void Eat(
 			const ushort i,
 			const ushort j,
 			const ushort k,
 			const ushort i_food,
 			const ushort j_food,
-			const ushort k_food)
-	{
-		if ( !InBounds(i, j, k) || !InBounds(i_food, j_food, k_food) )
-			return;
-		Eat(GetBlock(i, j, k), GetBlock(i_food, j_food, k_food));
-	}
+			const ushort k_food);
 
 	//inventory functions section
 	private:
