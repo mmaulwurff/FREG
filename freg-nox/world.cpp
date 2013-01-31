@@ -460,7 +460,7 @@ bool World::Build(Block * block,
 		return false;
 
 	block->Restore();
-	Active * const active=ActiveBlock();
+	Active * const active=block->ActiveBlock();
 	if ( active )
 		active->Register(GetShred(i, j), i, j, k);
 	SetBlock(block, i, j, k);
