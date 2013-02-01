@@ -171,6 +171,7 @@ void World::ReEnlightenMove(const int dir) {
 				shreds[NumShreds()*i]->ShineAll();
 				shreds[NumShreds()*i+1]->ShineAll();
 			}
+		break;
 		default:
 			fprintf(stderr,
 				"World::ReEnlightenMove: unlisted direction: %d\n",
@@ -266,6 +267,6 @@ void Shred::ShineAll() {
 	}
 	if ( NIGHT!=world->PartOfDay() )
 		for (ushort i=shredX*shred_width; i<shred_width*(shredX+1); ++i)
-		for (ushort j=shredX*shred_width; j<shred_width*(shredX+1); ++j)
+		for (ushort j=shredY*shred_width; j<shred_width*(shredY+1); ++j)
 			world->SunShine(i, j);
 }

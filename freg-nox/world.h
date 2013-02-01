@@ -41,6 +41,7 @@ class World : public QThread {
 	ulong spawnLongi, spawnLati;
 	const QString worldName;
 	ushort numShreds; //size of active zone
+	ushort numActiveShreds;
 	QReadWriteLock rwLock;
 
 	bool cleaned;
@@ -390,7 +391,10 @@ class World : public QThread {
 	void Unlock() { rwLock.unlock(); }
 
 	public:
-	World(const QString &, const ushort);
+	World(
+			const QString &,
+			const ushort,
+			const ushort);
 	~World();
 
 	public slots:

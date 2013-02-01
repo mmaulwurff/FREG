@@ -202,10 +202,13 @@ void World::PhysEvents() {
 	WriteLock();
 
 	static ushort timeStep=0;
+	static const ushort start=numShreds/2-numActiveShreds/2;
+	static const ushort end=start+numActiveShreds;
 	if ( time_steps_in_sec>timeStep ) {
 		++timeStep;
-		for (ushort i=0; i<numShreds*numShreds; ++i)
-			shreds[i]->PhysEvents();
+		for (ushort i=start; i<end; ++i)
+		for (ushort j=start; j<end; ++j)
+			shreds[i+j*NumShreds()]->PhysEvents();
 
 		Unlock();
 		return;
@@ -697,10 +700,12 @@ bool World::Equal(
 }
 
 World::World(const QString & world_name,
-		const ushort num_shreds)
+		const ushort num_shreds,
+		const ushort num_active_shreds)
 		:
 		worldName(world_name),
 		numShreds(num_shreds),
+		numActiveShreds(num_active_shreds),
 		cleaned(false)
 {
 	QFile file(worldName+"_save");
@@ -736,6 +741,12 @@ World::World(const QString & world_name,
 			"World::World:Invalid numShreds: %hu\n",
 			numShreds);
 		numShreds=3;
+	}
+	if ( numActiveShreds > numShreds ) {
+		fprintf(stderr,
+			"Active shreds number (%hu) was more than all shreds number\n",
+			numActiveShreds);
+		numActiveShreds=numShreds;
 	}
 	shreds=new Shred *[numShreds*numShreds];
 	ushort y;

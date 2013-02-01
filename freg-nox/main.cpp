@@ -38,17 +38,20 @@ int main(int argc, char *argv[]) {
 	#endif
 	QString worldName, temp;
 	ushort size;
+	ushort sizeActive;
 	QFile file("options.txt");
 	if ( !file.open(QIODevice::ReadOnly | QIODevice::Text) ) {
 		worldName="The_Land_Of_Doubts";
 		size=3;
+		sizeActive=3;
 	} else {
 		QTextStream in(&file);
 		in >> temp >> worldName
-			>> temp >> size;
+			>> temp >> size
+			>> temp >> sizeActive;
 	}
 
-	World earth(worldName, size);
+	World earth(worldName, size, sizeActive);
 	Player player(&earth);
 	Screen screen(&earth, &player);
 
