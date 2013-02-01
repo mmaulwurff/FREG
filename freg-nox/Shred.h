@@ -36,6 +36,10 @@ class Shred {
 	QList<Active *> activeList;
 
 	public:
+	ulong Longitude() const { return longitude; }
+	ulong Latitude()  const { return latitude; }
+	ushort ShredX() const { return shredX; }
+	ushort ShredY() const { return shredY; }
 	void PhysEvents();
 
 	void AddActive(Active * const);
