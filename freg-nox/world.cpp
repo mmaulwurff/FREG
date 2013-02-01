@@ -736,17 +736,34 @@ World::World(const QString & world_name,
 		normal_blocks[x]=new Block(subs(x));
 		normal_blocks[x]->SetNormal(1);
 	}
-	if ( numShreds<3 || numShreds%2!=1 ) {
+	if ( 1!=numShreds%2 ) {
+		++numShreds;
 		fprintf(stderr,
-			"World::World:Invalid numShreds: %hu\n",
+			"Invalid number of shreds. Set to %hu.\n",
+			numShreds);
+	}
+	if ( numShreds<3  ) {
+		fprintf(stderr,
+			"Number of shreds: to small: %hu. Set to 3.\n",
 			numShreds);
 		numShreds=3;
+	}
+	if ( numActiveShreds%2 ) {
+		++numActiveShreds;
+		fprintf(stderr,
+			"Invalid number of active shreds. Set to %hu.\n",
+			numActiveShreds);
 	}
 	if ( numActiveShreds > numShreds ) {
 		fprintf(stderr,
 			"Active shreds number (%hu) was more than all shreds number\n",
 			numActiveShreds);
 		numActiveShreds=numShreds;
+	} else if ( numActiveShreds < 1 ) {
+		fprintf(stderr,
+			"Active shreds number (%hu) too small. Set to 1.\n",
+			numActiveShreds);
+		numActiveShreds=1;
 	}
 	shreds=new Shred *[numShreds*numShreds];
 	ushort y;
