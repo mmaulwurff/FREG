@@ -243,7 +243,7 @@ void Player::Build(const ushort n) {
 		Get(temp);
 }
 
-void Player::Eat(ushort n) {
+void Player::Eat(const ushort n) {
 	if ( !player )
 		return;
 

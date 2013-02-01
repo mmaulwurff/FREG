@@ -15,6 +15,23 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
+/** \class Player Player.h
+ * \brief This class contains information specific to player
+ * and interface for manipulating him.
+ *
+ * It receives input from screen, processes it, and dispatches
+ * actions to world.
+ *
+ * It loads player from file and saves him to it.
+ *
+ * Note: player block with its inventory is stored it shred
+ * file with all other blocks. player_save contains only
+ * coordinates where player is, his home coordinates and world
+ * player belongs to.
+ *
+ * Also it does checks for player walking over the shred border.
+ */
+
 #include <header.h>
 #include <QString>
 #include <QObject>
@@ -45,13 +62,16 @@ class Player : public QObject {
 	void UpdateXYZ();
 
 	public slots:
+
 	/// For cleaning player-related data before exiting program.
 	/**
 	 * This is connected to app's aboutToQuit() signal, also it
 	 * is called from destructor. There is a check for data deleting
 	 * not to be called twice.
+	 * Also this saves player to file player_save.
 	 */
 	void CleanAll();
+
 	/// Checks if player walked over the shred border.
 	/**
 	 * This is connected to player's block signal Moved(int).
@@ -59,30 +79,84 @@ class Player : public QObject {
 	 * over the shred border.
 	 */
 	void CheckOverstep(const int);
+
+	///Calls player actions, such as moving, turning, etc.
+	/**
+	 * This is an interface for player actions, which are private.
+	 * It should be connected to screen::InputReceived(int, int)
+	 * signal and receive input.
+	 */
 	void Act(const int, const int);
+	///This is called when player block is destroyed.
 	void BlockDestroy() { player=0; }
 	
 	signals:
-	void Notify(QString) const;
-	void OverstepBorder(int);
+	///This is emitted when a notification is needed to be displayed.
+	/**
+	 * It should be connected to screen::Notify(const QString &).
+	 */
+	void Notify(const QString &) const;
+
+	///This is emitted when player walks over shred border.
+	/**
+	 * It should be connected to World::ReloadShreds(int) signal.
+	 */
+	void OverstepBorder(const int);
+
+	///This is emitted when some player property is updated.
+	/**
+	 * It shoul be connected to screen::UpdatePlayer() signal.
+	 */
 	void Updated();
 
 	public:
+	///This returns current player block X position (coordinates in loaded zone)
 	ushort X() const { return x; }
+
+	///This returns current player block Y position (coordinates in loaded zone)
 	ushort Y() const { return y; }
+
+	///This returns current player block Z position (coordinates in loaded zone)
 	ushort Z() const { return z; }
+
+	///This returns current player direction (see enum dirs in header.h)
 	int Dir() const;
+
+	///This returns player hitpoints, also known as durability.
 	short HP() const;
+
+	///This returns player breath reserve.
 	short Breath() const;
+
 	short Satiation() const;
+
+	///This returns player block itself.
 	Active * GetP() const { return player; }
+
+	///This returns true if block at (x, y, z) is visible to player.
 	bool Visible(
-		const ushort,
-		const ushort,
-		const ushort) const;
-	Block * UsingBlock() { return usingBlock; }
-	usage_types UsingType() { return usingType; }
-	usage_types UsingSelfType() { return usingSelfType; }
+		const ushort x, 
+		const ushort y,
+		const ushort z) const;
+
+	///This returns block which is now used by player.
+	/*
+	 * See enum usage_types in header.h.
+	 */
+	Block * UsingBlock() const { return usingBlock; }
+
+	///This returns how player is using something now.
+	/*
+	 * See enum usage_types in header.h.
+	 */
+	usage_types UsingType() const { return usingType; }
+	
+	//This returns how player is using himself.
+	/*
+	 * For example, OPEN means he is looking in his backpack.
+	 */
+	usage_types UsingSelfType() const { return usingSelfType; }
+
 	Inventory * PlayerInventory();
 
 	private:
@@ -96,13 +170,21 @@ class Player : public QObject {
 	void Jump();
 	void Dir(const int dir);
 	void Build(const ushort);
-	void Eat(ushort);
+	void Eat(const ushort);
 	void Inscribe();
 	Block * Drop(const ushort);
 	void Get(Block *);
 	void Wield();
 
 	public:
+	///Constructor creates or loads player.
+	/**
+	 * It reads player_save file if it exists,
+	 * puts player block to the world if there is no player block,
+	 * and makes necessary connections.
+	 */
 	Player(World * const);
+	
+	///Destructor calls Player::CleanAll().
 	~Player() { CleanAll(); }
 };
