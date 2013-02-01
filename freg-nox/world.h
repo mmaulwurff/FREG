@@ -119,6 +119,8 @@ class World : public QThread {
 			const ushort k);
 	void ReEnlightenAll();
 	void ReEnlightenTime();
+	///Called from World::ReloadShreds(int), enlighens only need shreds.
+	void ReEnlightenMove(const int direction);
 
 	void SunShine(
 			const ushort i,
@@ -409,6 +411,8 @@ class World : public QThread {
 			const ushort,
 			const ushort,
 			const ushort level);
+	///Emitted when world active zone moved to int direction.
+	void Moved(const int);
 	void ReConnect();
 };
 

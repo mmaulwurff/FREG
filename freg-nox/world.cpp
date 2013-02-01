@@ -194,7 +194,8 @@ void World::ReloadShreds(const int direction) {
 			direction);
 	}
 	MakeSun();
-	ReEnlightenAll();
+	ReEnlightenMove(direction);
+	emit Moved(direction);
 }
 
 void World::PhysEvents() {

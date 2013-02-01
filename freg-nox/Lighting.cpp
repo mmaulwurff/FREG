@@ -132,11 +132,50 @@ void World::ReEnlightenAll() {
 	for (ushort i=0; i<NumShreds()*NumShreds(); ++i)
 		shreds[i]->ShineAll();
 
-	if ( NIGHT!=PartOfDay() )
-		for (ushort i=0; i<shred_width*numShreds; ++i)
-		for (ushort j=0; j<shred_width*numShreds; ++j)
-			SunShine(i, j);
 	emit UpdatedAll();
+	emit ReConnect();
+}
+
+void World::ReEnlightenMove(const int dir) {
+	disconnect(this, SIGNAL(Updated(
+		const ushort,
+		const ushort,
+		const ushort)), 0, 0);
+	disconnect(this, SIGNAL(UpdatedAround(
+		const ushort,
+		const ushort,
+		const ushort,
+		const ushort)), 0, 0);
+
+	switch ( dir ) {
+		case NORTH:
+			for (ushort i=0; i<NumShreds(); ++i) {
+				shreds[i]->ShineAll();
+				shreds[i+NumShreds()]->ShineAll();
+			}
+		break;
+		case SOUTH:
+			for (ushort i=0; i<NumShreds(); ++i) {
+				shreds[i+NumShreds()*(NumShreds()-1)]->ShineAll();
+				shreds[i+NumShreds()*(NumShreds()-2)]->ShineAll();
+			}
+		break;
+		case EAST:
+			for (ushort i=0; i<NumShreds(); ++i) {
+				shreds[NumShreds()*i+NumShreds()-1]->ShineAll();
+				shreds[NumShreds()*i+NumShreds()-2]->ShineAll();
+			}
+		break;
+		case WEST:
+			for (ushort i=0; i<NumShreds(); ++i) {
+				shreds[NumShreds()*i]->ShineAll();
+				shreds[NumShreds()*i+1]->ShineAll();
+			}
+		default:
+			fprintf(stderr,
+				"World::ReEnlightenMove: unlisted direction: %d\n",
+				dir);
+	}
 	emit ReConnect();
 }
 
@@ -220,9 +259,13 @@ void Shred::SetAllLightMap(const uchar level) {
 
 //make all shining blocks of shred shine.
 void Shred::ShineAll() {
-	for (short j=0; j<activeList.size(); ++j) {
+	for (ushort j=0; j<activeList.size(); ++j) {
 		Active const * const temp=activeList[j];
 		world->Shine(temp->X(), temp->Y(), temp->Z(),
 			temp->LightRadius(), true);
-	}	
+	}
+	if ( NIGHT!=world->PartOfDay() )
+		for (ushort i=shredX*shred_width; i<shred_width*(shredX+1); ++i)
+		for (ushort j=shredX*shred_width; j<shred_width*(shredX+1); ++j)
+			world->SunShine(i, j);
 }
