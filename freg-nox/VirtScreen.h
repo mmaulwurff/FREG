@@ -17,7 +17,7 @@
 
 
 /** \class VirtScreen VirtScreen.h
- * \brief This file provides base for all screens for freg.
+ * \brief This class provides base for all screens for freg.
  * It provides interface for world-screen and player-screen
  * communications by its slots and signals.
  */
