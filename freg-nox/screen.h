@@ -113,19 +113,12 @@ class Screen : public VirtScreen {
 	WINDOW * leftWin,
 	       * rightWin,
 	       * notifyWin,
-	       //* soundWin,
 	       * hudWin; //head-up display
 	IThread * input;
 	volatile bool updated;
 	bool cleaned;
 
 	QTimer * timer;
-
-	/*struct {
-		char ch;
-		ushort lev;
-		color_pairs col;
-	} soundMap[9];*/
 
 	char CharName(
 			const ushort,
@@ -151,7 +144,6 @@ class Screen : public VirtScreen {
 		mvwprintw(window, y, SCREEN_SIZE*2+1, "<");	
 	}
 	FILE * notifyLog; //весь текст уведомлений (notification) дублируется в файл.
-	ushort notifyLines; //для NotifyAdd() - сколько строк уже с текстом
 
 	void PrintNormal(WINDOW * const) const;
 	void PrintFront(WINDOW * const) const;
@@ -175,14 +167,20 @@ class Screen : public VirtScreen {
 	void Update(
 			const ushort,
 			const ushort,
-			const ushort);
-	void UpdateAll();
-	void UpdatePlayer();
+			const ushort)
+	{
+		updated=false;
+	}
+	void UpdateAll() { updated=false; };
+	void UpdatePlayer() { updated=false; };
 	void UpdateAround(
 			const ushort,
 			const ushort,
 			const ushort,
-			const ushort range);
+			const ushort)
+	{
+		updated=false;
+	}
 	void Move(const int) { updated=false; }
 	void RePrint() {
 		clear();

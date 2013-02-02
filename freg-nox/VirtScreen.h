@@ -15,14 +15,17 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-//this file provides base for all screens for freg.
+
+/** \class VirtScreen VirtScreen.h
+ * \brief This file provides base for all screens for freg.
+ * It provides interface for world-screen and player-screen
+ * communications by its slots and signals.
+ */
 
 #ifndef VIRTSCREEN_H
 #define VIRTSCREEN_H
 
 #include <QObject>
-
-enum window_views { NORMAL, FRONT, INVENTORY };
 
 class QString;
 class World;
@@ -31,39 +34,117 @@ class Player;
 class VirtScreen : public QObject {
 	Q_OBJECT
 	
+	enum window_views { NORMAL, FRONT, INVENTORY };
+
 	protected:
+	///world to print
 	World * const w;
+	///player to print (HP, inventory, etc)
 	Player * const player;
 
-	public slots:
+	private slots:
+	///Prints world. Should not be called not within screen.
 	virtual void Print()=0;
+
+	public slots:
+	///This is called for a notification to be displayed.
 	virtual void Notify(const QString &)=0;
+
+	///This is called when program is stopped and from destructor.
+	/**
+	 * When implemented, this should contain check to prevent double cleaning.
+	 */
 	virtual void CleanAll() {};
+
+	///This is called when string is needed to be received from input.
+	/**
+	 * It is connected to world in constructor.
+	 */
 	virtual void PassString(QString &) const=0;
+
+	///This is called when block at (x, y, z) should be updated in screen.
+	/**
+	 * When implemented, this should work fast.
+	 * It is connected to world in constructor.
+	 */
 	virtual void Update(
-			const ushort,
-			const ushort,
-			const ushort)=0;
+			const ushort x,
+			const ushort y,
+			const ushort z)=0;
+
+	///This is called when all world should be updated in sceen.
+	/**
+	 * When implemented, this should work fast.
+	 * It is connected to world in constructor.
+	 */
 	virtual void UpdateAll()=0;
+
+	///This is called when loaded zone of world is moved to update world in screen properly.
+	/**
+	 * When implemented, this should work fast.
+	 * It is connected to world in constructor.
+	 */
 	virtual void Move(const int)=0;
+
+	///This is called when some player property are needed to be updated in screen.
+	/**
+	 * When implemented, this should work fast.
+	 * It is connected to world in constructor.
+	 */
 	virtual void UpdatePlayer()=0;
+	
+	///This is called when area around x, y, z with range is needed to be updated in screen.
+	/**
+	 * When implemented, this should work fast.
+	 * It is connected to world in constructor.
+	 */
 	virtual void UpdateAround(
-			const ushort,
-			const ushort,
-			const ushort,
+			const ushort x,
+			const ushort y,
+			const ushort z,
 			const ushort range)=0;
+
+	///This is called if screen is needed to be updated.
 	virtual void RePrint() {}
+
+	///This is called to restore some connections.
+	/**
+	 * This restores connections to VirtScreen::Update and
+	 * VirtScreen::UpdateAround which can be temporarily
+	 * disconnected.
+	 */
 	void ConnectWorld();
 
 	signals:
+	///This is emitted when input receives exit key.
+	/**
+	 * This is connected to application exit.
+	 */
 	void ExitReceived();
-	void InputReceived(const int, const int) const;
+
+	///This is emitted when input receives action key.
+	/**
+	 * Should be connected to player in constructor by this code:
+	 * connect(this, SIGNAL(InputReceived(int, int)),
+	 * 	player, SLOT(Act(int, int)),
+	 * 	Qt::DirectConnection);
+	 */
+	void InputReceived(const int action, const int dir) const;
 
 	public:
+	///Constructor makes player and world connections.
+	/**
+	 * Constructor of non-virtual screen should contain this code
+	 * to connect to player for sending input:
+	 * connect(this, SIGNAL(InputReceived(int, int)),
+	 * 	player, SLOT(Act(int, int)),
+	 * 	Qt::DirectConnection);
+	 */
 	VirtScreen(
 			World * const,
 		       	Player * const);
-	virtual ~VirtScreen() { CleanAll(); }
+	///Destructor only calls VirtScreen::CleanAll, not needed to be reimplemented.
+	~VirtScreen() { CleanAll(); }
 };
 
 #endif

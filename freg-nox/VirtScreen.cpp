@@ -67,5 +67,8 @@ VirtScreen::VirtScreen(
 	connect(w, SIGNAL(UpdatedAll()),
 		this, SLOT(UpdateAll()),
 		Qt::DirectConnection);
+	connect(w, SIGNAL(Moved(const int)),
+		this, SLOT(Move(const int)),
+		Qt::DirectConnection);
 	ConnectWorld();
 }

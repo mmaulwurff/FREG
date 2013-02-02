@@ -467,36 +467,13 @@ void Screen::Notify(const QString & str) {
 	wrefresh(notifyWin);
 }
 
-void Screen::Update(
-		const ushort,
-		const ushort,
-		const ushort)
-{
-	updated=false;	
-}
-void Screen::UpdateAll() {
-	updated=false;	
-}
-void Screen::UpdatePlayer() {
-	updated=false;
-}
-void Screen::UpdateAround(
-		const ushort,
-		const ushort,
-		const ushort,
-		const ushort)
-{
-	updated=false;	
-}
-
 Screen::Screen(
 		World * const wor,
 		Player * const pl)
 		:
 		VirtScreen(wor, pl),
 		updated(false),
-		cleaned(false),
-		notifyLines(0)
+		cleaned(false)
 {
 	set_escdelay(10); //задержка после нажатия esc. для обработки esc-последовательностей, пока не используется.
 	initscr(); //инициировать экран
