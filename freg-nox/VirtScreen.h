@@ -45,6 +45,7 @@ class VirtScreen : public QObject {
 			const ushort,
 			const ushort)=0;
 	virtual void UpdateAll()=0;
+	virtual void Move(const int)=0;
 	virtual void UpdatePlayer()=0;
 	virtual void UpdateAround(
 			const ushort,

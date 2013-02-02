@@ -183,6 +183,7 @@ class Screen : public VirtScreen {
 			const ushort,
 			const ushort,
 			const ushort range);
+	void Move(const int) { updated=false; }
 	void RePrint() {
 		clear();
 		updated=false;
