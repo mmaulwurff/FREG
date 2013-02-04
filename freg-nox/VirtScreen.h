@@ -15,11 +15,8 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-
-/** \class VirtScreen VirtScreen.h
- * \brief This class provides base for all screens for freg.
- * It provides interface for world-screen and player-screen
- * communications by its slots and signals.
+/** \file
+ * \brief VirtScreen class declaration.
  */
 
 #ifndef VIRTSCREEN_H
@@ -32,6 +29,13 @@ class World;
 class Player;
 
 class VirtScreen : public QObject {
+	/** \class VirtScreen VirtScreen.h
+		* \brief This class provides base for all screens for freg.
+		*
+		* It provides interface for world-screen and player-screen
+		* communications by its slots and signals.
+	*/
+
 	Q_OBJECT
 	
 	enum window_views { NORMAL, FRONT, INVENTORY };

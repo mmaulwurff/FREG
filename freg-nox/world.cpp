@@ -748,7 +748,7 @@ World::World(const QString & world_name,
 			numShreds);
 		numShreds=3;
 	}
-	if ( numActiveShreds%2 ) {
+	if ( 1!=numActiveShreds%2 ) {
 		++numActiveShreds;
 		fprintf(stderr,
 			"Invalid number of active shreds. Set to %hu.\n",
