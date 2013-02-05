@@ -476,7 +476,17 @@ Screen::Screen(
 		cleaned(false)
 {
 	set_escdelay(10); //задержка после нажатия esc. для обработки esc-последовательностей, пока не используется.
+	#ifdef Q_OS_WIN32
+		AllocConsole();
+		freopen( "conout$", "w", stdout );
+		freopen( "conin$", "r", stdin );
+	#endif
+
 	initscr(); //инициировать экран
+
+	#ifdef Q_OS_WIN32
+		resize_term( (SCREEN_SIZE + 2) + (2 + 5) + (2 + 3), SCREEN_SIZE * 4 + 4 );
+	#endif
 	start_color();
 	raw(); //коды нажатия клавиш поступают в программу без обработки (сырыми)
 	noecho(); //не показывать то, что введено
