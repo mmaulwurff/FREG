@@ -108,9 +108,6 @@ class VirtScreen : public QObject {
 			const ushort z,
 			const ushort range)=0;
 
-	///This is called if screen is needed to be updated.
-	virtual void RePrint() {}
-
 	///This is called to restore some connections.
 	/**
 	 * This restores connections to VirtScreen::Update and

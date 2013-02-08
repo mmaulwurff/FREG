@@ -16,8 +16,7 @@
 	*/
 
 //this file provides curses (text-based graphics interface) screen for freg.
-//screen.cpp provides definitions for methods,
-//i_thread.h and i_thred.cpp provide input thread for this screen.
+//screen.cpp provides definitions for methods.
 
 #ifndef SCREEN_H
 #define SCREEN_H
@@ -117,9 +116,10 @@ class Screen : public VirtScreen {
 	IThread * input;
 	volatile bool updated;
 	bool cleaned;
-
 	QTimer * timer;
-
+	FILE * notifyLog; //весь текст уведомлений (notification) дублируется в файл.
+	int actionMode;
+	
 	char CharName(
 			const ushort,
 			const ushort,
@@ -143,7 +143,6 @@ class Screen : public VirtScreen {
 		mvwprintw(window, y, 0, ">");
 		mvwprintw(window, y, SCREEN_SIZE*2+1, "<");	
 	}
-	FILE * notifyLog; //весь текст уведомлений (notification) дублируется в файл.
 
 	void PrintNormal(WINDOW * const) const;
 	void PrintFront(WINDOW * const) const;
@@ -192,7 +191,37 @@ class Screen : public VirtScreen {
 	void InputReceived(int, int) const;
 
 	public:
+	void ControlPlayer(const int);
 	Screen(World * const, Player * const);
+};
+
+/** \class IThread i_thread.h
+ * \brief Keyboard input thread for curses screen for freg.
+ *
+ * This class is thread, with IThread::run containing input loop.
+ */
+
+#include <QThread>
+#include "header.h"
+
+class IThread : public QThread {
+	Q_OBJECT
+
+	Screen * const screen;
+
+	public:
+		IThread(Screen * const);
+		void Stop();
+
+	protected:
+		void run();
+	
+	signals:
+		void ExitReceived();
+		void RePrintReceived() const;
+
+	private:
+		volatile bool stopped;
 };
 
 #endif

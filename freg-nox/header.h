@@ -144,15 +144,17 @@ enum actions {
 	OPEN_INVENTORY,
 	USE,
 	EXAMINE,
-	DROP,
-	GET,
-	WIELD,
+	THROW,
+	GET, //maybe remove this
+	OBTAIN, 
+	WIELD, //maybe remove this
 	INSCRIBE,
 	EAT,
 	DAMAGE,
 	BUILD,
 	CRAFT,
-	TAKEOFF
+	TAKEOFF,
+	NOACTION
 };
 
 //for debugging reasons:

@@ -22,7 +22,6 @@
 #include "screen.h"
 #include "world.h"
 #include "blocks.h"
-#include "i_thread.h"
 #include "Player.h"
 
 void Screen::PassString(QString & str) const {
@@ -181,6 +180,46 @@ inline color_pairs Screen::Color(
 			w->Sub(i, j, k) );
 }
 
+void Screen::ControlPlayer(const int ch) {
+	if ( 'Q'==ch ) {
+		emit ExitReceived();
+		return;
+	}
+	if ( ch>='A' && ch<='Z' ) {
+		const int num=ch-'A';
+		switch ( actionMode ) {
+			case THROW: player->Throw(num); break;
+			case OBTAIN: player->Obtain(num); break;
+			case EAT: player->Eat(num); break;
+			default: break;
+		}
+		return;
+	}
+	switch ( ch ) {
+		case KEY_UP: player->Move(NORTH); break;
+		case KEY_DOWN: player->Move(SOUTH); break;
+		case KEY_RIGHT: player->Move(EAST); break;
+		case KEY_LEFT: player->Move(WEST); break;
+		case ' ': player->Jump(); break;
+		
+		case '>': player->Turn(w->TurnRight(player->Dir())); break;
+		case '<': player->Turn(w->TurnLeft(player->Dir())); break;
+		case KEY_NPAGE: player->Turn(DOWN); break;
+		case KEY_PPAGE: player->Turn(UP); break;
+	
+		case 'i': player->Backpack(); break;
+		case '\n': player->Use(); break;
+		case '?': player->Examine(); break;
+		case 's': player->Inscribe(); break;
+		
+		case 't': actionMode=THROW; break;
+		case 'o': actionMode=OBTAIN; break;
+		case 'e': actionMode=EAT; break;
+		case 'l': RePrint(); break;
+		default: break;
+	}
+}
+
 void Screen::Print() {
 	w->ReadLock();
 
@@ -232,16 +271,28 @@ void Screen::Print() {
 	
 	//satiation line
 	if ( -1!=satiation ) {
+		wmove(hudWin, 2, 1);
 		if ( seconds_in_day*time_steps_in_sec<satiation ) {
 			wcolor_set(hudWin, BLUE_BLACK, NULL);
-			mvwaddstr(hudWin, 2, 1, "Gorged\n");
+			waddstr(hudWin, "Gorged");
 		} else if ( 3*seconds_in_day*time_steps_in_sec/4<satiation ) {
 			wcolor_set(hudWin, GREEN_BLACK, NULL);
-			mvwaddstr(hudWin, 2, 1, "Full\n");
+			waddstr(hudWin, "Full");
 		} else if (seconds_in_day*time_steps_in_sec/4>satiation) {
 			wcolor_set(hudWin, RED_BLACK, NULL);
-			mvwaddstr(hudWin, 2, 1, "Hungry\n");
+			waddstr(hudWin, "Hungry");
 		}
+	}
+
+	//action mode
+	wstandend(hudWin);
+	wmove(hudWin, 0, 30);
+	waddstr(hudWin, "Action: ");
+	switch ( actionMode ) {
+		case THROW: waddstr(hudWin, "Throw"); break;
+		case OBTAIN: waddstr(hudWin, "Obtain"); break;
+		case EAT: waddstr(hudWin, "Eat"); break;
+		default: waddstr(hudWin, "Unknown");
 	}
 
 	wnoutrefresh(hudWin);
@@ -470,7 +521,8 @@ Screen::Screen(
 		:
 		VirtScreen(wor, pl),
 		updated(false),
-		cleaned(false)
+		cleaned(false),
+		actionMode(NOACTION)
 {
 	set_escdelay(10); //задержка после нажатия esc. для обработки esc-последовательностей, пока не используется.
 	//ifdefs are adjustments for windows console, added by Panzerschrek
@@ -510,7 +562,7 @@ Screen::Screen(
 	hudWin=newwin(3+2, (SCREEN_SIZE*2+2)*2-8, SCREEN_SIZE+2, 8); //окно для жизни, дыхания и т.д.
 	notifyWin=newwin(0, COLS, SCREEN_SIZE+2+5, 0);
 	
-	input=new IThread();
+	input=new IThread(this);
 	connect(input, SIGNAL(RePrintReceived()),
 		this, SLOT(RePrint()),
 		Qt::DirectConnection);
@@ -563,3 +615,39 @@ void Screen::CleanAll() {
 	if ( NULL!=notifyLog )
 		fclose(notifyLog);
 }
+	/*
+	*This file is part of FREG.
+	*
+	*FREG is free software: you can redistribute it and/or modify
+	*it under the terms of the GNU General Public License as published by
+	*the Free Software Foundation, either version 3 of the License, or
+	*(at your option) any later version.
+	*
+	*FREG is distributed in the hope that it will be useful,
+	*but WITHOUT ANY WARRANTY; without even the implied warranty of
+	*MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	*GNU General Public License for more details.
+	*
+	*You should have received a copy of the GNU General Public License
+	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
+	*/
+
+IThread::IThread(Screen * const scr)
+		:
+	screen(scr),
+	stopped(false)
+{}
+
+void IThread::run() {
+	while ( !stopped ) {
+		//static int c;
+		screen->ControlPlayer(getch());
+		
+		//fprintf(stderr, "Input received: '%c' (code %d)\n", (char)c, c);
+
+		msleep(90);
+		flushinp();
+	}
+}
+
+void IThread::Stop() { stopped=true; }

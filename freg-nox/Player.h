@@ -52,7 +52,6 @@ class Player : public QObject {
 	int dir;
 	World * const world;
 	Active * player;
-	//Block * usingBlock;
 	int usingType;
 	int usingSelfType;
 	Shred * shred;
@@ -80,13 +79,6 @@ class Player : public QObject {
 	 */
 	void CheckOverstep(const int);
 
-	///Calls player actions, such as moving, turning, etc.
-	/**
-	 * This is an interface for player actions, which are private.
-	 * It should be connected to screen::InputReceived(int, int)
-	 * signal and receive input.
-	 */
-	void Act(const int, const int);
 	///This is called when player block is destroyed.
 	void BlockDestroy() { player=0; }
 	
@@ -159,17 +151,21 @@ class Player : public QObject {
 
 	Inventory * PlayerInventory();
 
-	void Examine() const;
+	void Turn(const int dir);
 	int Move(const int dir);
 	void Jump();
 	void Inscribe();
+	void Backpack();
+	void Damage();
+	void Use();
+	void Examine() const;
 	void Build(const ushort);
 	void Eat(const ushort);
 	void Obtain(const ushort) {}
 	void Throw(const ushort) {}
 	void Wield(const ushort) {}
-	void Wield() {}
 	void TakeOff(const ushort) {}
+
 	private:
 	void Get(Block *);
 	Block * Drop(const ushort);

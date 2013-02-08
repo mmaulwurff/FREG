@@ -45,84 +45,6 @@ Inventory * Player::PlayerInventory() {
 	return player ? player->HasInventory() : 0;
 }
 
-void Player::Act(const int action, const int d) {
-	const int dir=d;
-	//TODO: put writelock only where needed
-	switch ( (actions)action ) {
-		case MOVE:
-			world->WriteLock();
-			Move(dir);
-			world->Unlock();
-		break;
-		case TURN_RIGHT:
-			world->WriteLock();
-			Dir( world->TurnRight(Dir()) );
-			emit Updated();
-			world->Unlock();
-		break;
-		case TURN_LEFT: 
-			world->WriteLock();
-			Dir( world->TurnLeft(Dir()) );
-			emit Updated();
-			world->Unlock();
-		break;
-		case JUMP:
-			world->WriteLock();
-			Jump();
-			world->Unlock();
-		break;
-		case TURN:
-			world->WriteLock();
-			Dir(dir);
-			emit Updated();
-			world->Unlock();
-		break;
-		case OPEN_INVENTORY:
-			if ( player->HasInventory() ) {
-				usingSelfType=( OPEN==usingSelfType ) ? NO : OPEN;
-				emit Updated();
-			}
-		break;
-		//TODO 
-		case USE: {
-			ushort i, j, k;
-			world->WriteLock();
-			Focus(i, j, k);
-			usingType=world->Use(i, j, k);
-			world->Unlock();
-		} break;
-		case EXAMINE:
-			world->ReadLock();
-			Examine();
-			world->Unlock();
-		break;
-		case DROP: /*Drop();*/ break;
-		case GET: /*Get();*/ break;
-		case WIELD:
-			world->WriteLock();
-			Wield();
-			world->Unlock();
-		break;
-		case EAT: /*Eat();*/ break;
-		case INSCRIBE:
-			world->WriteLock();
-			Inscribe();
-			world->Unlock();
-		break;
-		case DAMAGE: {
-			ushort i, j, k;
-			world->WriteLock();
-			Focus(i, j, k);
-			world->Damage(i, j, k);
-			world->Unlock();
-		} break;
-		case BUILD: /*Build();*/ break;
-		default:
-			fprintf(stderr, "Player::Act: unlisted action: %d\n",
-				(int)action);
-	}
-}
-
 void Player::UpdateXYZ() {
 	if ( player ) {
 		x=player->X();
@@ -149,6 +71,7 @@ void Player::Focus(
 
 void Player::Examine() const {
 	ushort i, j, k;
+	world->ReadLock();
 	Focus(i, j, k);
 	
 	QString str;
@@ -164,19 +87,51 @@ void Player::Examine() const {
 	emit Notify(str);
 
 	str="Weight: "+QString::number(world->Weight(i, j, k));
+	world->Unlock();
 	emit Notify(str);
 }
 
 void Player::Jump() {
+	world->WriteLock();
 	world->Jump(x, y, z);
+	world->WriteLock();
 }
 
 int Player::Move(const int dir) {
+	world->WriteLock();
 	usingType=NO;
-	return world->Move(x, y, z, dir);
+	const int ret=world->Move(x, y, z, dir);
+	world->Unlock();
+	return ret;
 }
 
-void Player::Inscribe() { world->Inscribe(x, y, z); }
+void Player::Turn(const int dir) {
+	world->WriteLock();
+	Dir(dir);
+	emit Updated();
+	world->Unlock();
+}
+
+void Player::Backpack() {
+	if ( player->HasInventory() ) {
+		usingSelfType=( OPEN==usingSelfType ) ? NO : OPEN;
+		emit Updated();
+	}
+}
+
+void Player::Use() {
+	ushort i, j, k;
+	world->WriteLock();
+	Focus(i, j, k);
+	usingType=world->Use(i, j, k);
+	world->Unlock();
+}
+
+void Player::Inscribe() {
+	world->WriteLock();
+	world->Inscribe(x, y, z);
+	world->Unlock();
+}
 
 Block * Player::Drop(const ushort n) {
 	if ( !player )
@@ -215,17 +170,26 @@ void Player::Dir(const int direction) {
 	if ( player )
 		player->SetDir(direction);
 	dir=direction;
-	
 }
 
 int Player::Dir() const { return dir; }
 
 void Player::Build(const ushort n) {
-	Block * temp=Drop(n);
+	world->WriteLock();
+	Block * const temp=Drop(n);
 	ushort i, j, k;
 	Focus(i, j, k);
 	if ( !world->Build(temp, i, j, k) )
 		Get(temp);
+	world->Unlock();
+}
+
+void Player::Damage() {
+	ushort i, j, k;
+	world->WriteLock();
+	Focus(i, j, k);
+	world->Damage(i, j, k);
+	world->Unlock();
 }
 
 void Player::Eat(const ushort n) {
@@ -241,6 +205,7 @@ void Player::Eat(const ushort n) {
 		return;
 	}
 
+	world->WriteLock();
 	Block * food=Drop(n);
 	if ( !pl->Eat(food) ) {
 		Get(food);
@@ -249,6 +214,7 @@ void Player::Eat(const ushort n) {
 		emit Notify("Yum!");
 	if ( seconds_in_day*time_steps_in_sec < pl->Satiation() )
 		emit Notify("You have gorged yourself!");
+	world->Unlock();
 }
 
 void Player::CheckOverstep(const int dir) {
