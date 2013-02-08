@@ -15,7 +15,11 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-//this file provides declaration of inputh thread for curses screen for freg.
+/** \class IThread i_thread.h
+ * \brief Keyboard input thread for curses screen for freg.
+ *
+ * This class is thread, with IThread::run containing input loop.
+ */
 
 #ifndef THREAD_H
 #define THREAD_H
@@ -23,7 +27,7 @@
 #include <QThread>
 #include "header.h"
 
-class IThread : public QThread { //thread for keyboard input
+class IThread : public QThread {
 	Q_OBJECT
 	
 	public:

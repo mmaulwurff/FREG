@@ -127,6 +127,14 @@ enum before_move_return { NOTHING, DESTROY };
 
 enum usage_types { NO, OPEN, INNER_ACTION };
 
+enum props {
+	KIND,
+	SUB,
+	DURABILITY,
+	TRANSPARENCY,
+	MOVABILITY
+};
+
 enum actions {
 	MOVE,
 	TURN_RIGHT,
@@ -142,15 +150,9 @@ enum actions {
 	INSCRIBE,
 	EAT,
 	DAMAGE,
-	BUILD
-};
-
-enum props {
-	KIND,
-	SUB,
-	DURABILITY,
-	TRANSPARENCY,
-	MOVABILITY
+	BUILD,
+	CRAFT,
+	TAKEOFF
 };
 
 //for debugging reasons:

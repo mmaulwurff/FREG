@@ -202,22 +202,6 @@ void Player::Get(Block * block) {
 		inv->Get(block);
 }
 
-void Player::Wield() {
-	/*unsigned short i, j=0;
-	playerP->RangeForWield(i, j);
-
-	if ( i>=inventory_size ) {
-		scr->Notify("Nothing to wield.");
-		return;
-	}
-
-	char str[18];
-	sprintf(str, "Wield what? (%c-%c)", i+'a', j+'a');
-	scr->Notify(str);
-	//Wield(playerP, getch()-'a');
-	scr->Notify("");*/
-}
-
 bool Player::Visible(
 		const ushort x_to,
 		const ushort y_to,

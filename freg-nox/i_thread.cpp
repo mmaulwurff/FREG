@@ -15,10 +15,7 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-//input thread for curses scren for freg
-
 #include "i_thread.h"
-#include "header.h"
 #include "curses.h"
 
 IThread::IThread() : stopped(false) {}

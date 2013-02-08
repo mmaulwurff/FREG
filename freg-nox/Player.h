@@ -159,22 +159,26 @@ class Player : public QObject {
 
 	Inventory * PlayerInventory();
 
-	private:
-	void Focus(
-		ushort &,
-		ushort &,
-		ushort &) const;
 	void Examine() const;
 	int Move(const int dir);
 	int Move();
 	void Jump();
-	void Dir(const int dir);
+	void Inscribe();
 	void Build(const ushort);
 	void Eat(const ushort);
-	void Inscribe();
-	Block * Drop(const ushort);
+	void Obtain(const ushort) {}
+	void Throw(const ushort) {}
+	void Wield(const ushort) {}
+	void Wield() {}
+	void TakeOff(const ushort) {}
+	private:
 	void Get(Block *);
-	void Wield();
+	Block * Drop(const ushort);
+	void Focus(
+		ushort &,
+		ushort &,
+		ushort &) const;
+	void Dir(const int dir);
 
 	public:
 	///Constructor creates or loads player.
