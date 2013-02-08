@@ -234,7 +234,8 @@ void World::PhysEvents() {
 		case end_of_evening:
 		case end_of_night: ReEnlightenTime(); break;
 	}
-
+	
+	emit UpdatesEnded();
 	Unlock();
 }
 

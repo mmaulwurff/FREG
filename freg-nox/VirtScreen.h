@@ -119,6 +119,13 @@ class VirtScreen : public QObject {
 	 */
 	void ConnectWorld();
 
+	///This is called when current group of updates is ended.
+	/**
+	 * This is called from world when pack of world changing is ended.
+	 * ( Can be used in screen optimization. )
+	 */
+	virtual void UpdatesEnd() {}
+
 	signals:
 	///This is emitted when input receives exit key.
 	/**

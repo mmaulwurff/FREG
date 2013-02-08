@@ -418,6 +418,8 @@ class World : public QThread {
 	///Emitted when world active zone moved to int direction.
 	void Moved(const int);
 	void ReConnect();
+	///This is emitted when a pack of updates is complete.
+	void UpdatesEnded();
 };
 
 #endif

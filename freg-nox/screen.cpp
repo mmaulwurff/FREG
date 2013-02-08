@@ -476,6 +476,7 @@ Screen::Screen(
 		cleaned(false)
 {
 	set_escdelay(10); //задержка после нажатия esc. для обработки esc-последовательностей, пока не используется.
+	//ifdefs are adjustments for windows console, added by Panzerschrek
 	#ifdef Q_OS_WIN32
 		AllocConsole();
 		freopen( "conout$", "w", stdout );
@@ -488,7 +489,7 @@ Screen::Screen(
 		resize_term( (SCREEN_SIZE + 2) + (2 + 5) + (2 + 3), SCREEN_SIZE * 4 + 4 );
 	#endif
 	start_color();
-	raw(); //коды нажатия клавиш поступают в программу без обработки (сырыми)
+	//raw(); //коды нажатия клавиш поступают в программу без обработки (сырыми)
 	noecho(); //не показывать то, что введено
 	keypad(stdscr, TRUE); //использовать стрелки
 	curs_set(0); //сделать курсор невидимым
