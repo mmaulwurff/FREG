@@ -190,20 +190,17 @@ void Screen::Print() {
 	}
 	updated=true;
 
-	if ( player->UsingBlock() )
-		switch ( player->UsingType() ) {
-			case OPEN:
-				PrintInv(leftWin, player->UsingBlock()->HasInventory());
-			break;
-			default: PrintNormal(leftWin);
-		}
-	else
-		PrintNormal(leftWin);
+	switch ( player->UsingType() ) {
+		case OPEN:
+			PrintInv(leftWin, player->UsingBlock()->HasInventory());
+		break;
+		default: PrintNormal(leftWin);
+	}
 
 	switch ( player->UsingSelfType() ) {
 		case OPEN:
 			PrintInv(rightWin, player->GetP()->HasInventory());
-			break;
+		break;
 		default: PrintFront(rightWin);
 	}
 

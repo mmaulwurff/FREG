@@ -88,7 +88,7 @@ void Player::Act(const int action, const int d) {
 			ushort i, j, k;
 			world->WriteLock();
 			Focus(i, j, k);
-			world->Use(i, j, k);
+			usingType=world->Use(i, j, k);
 			world->Unlock();
 		} break;
 		case EXAMINE:
@@ -171,13 +171,8 @@ void Player::Jump() {
 	world->Jump(x, y, z);
 }
 
-int Player::Move() {
-	if ( player )
-		return Move( player->GetDir() );
-	return 1;
-}
-
 int Player::Move(const int dir) {
+	usingType=NO;
 	return world->Move(x, y, z, dir);
 }
 
@@ -208,6 +203,12 @@ bool Player::Visible(
 		const ushort z_to) const
 {
 	return world->Visible(x, y, z, x_to, y_to, z_to);
+}
+
+Block * Player::UsingBlock() const {
+	ushort x, y, z;
+	Focus(x, y, z);
+	return world->GetBlock(x, y, z);
 }
 
 void Player::Dir(const int direction) {
@@ -261,7 +262,6 @@ void Player::CheckOverstep(const int dir) {
 
 Player::Player(World * const w) :
 		world(w),
-		usingBlock(0),
 		usingType(NO),
 		usingSelfType(NO),
 		cleaned(false)

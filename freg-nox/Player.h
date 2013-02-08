@@ -52,9 +52,9 @@ class Player : public QObject {
 	int dir;
 	World * const world;
 	Active * player;
-	Block * usingBlock;
-	usage_types usingType;
-	usage_types usingSelfType;
+	//Block * usingBlock;
+	int usingType;
+	int usingSelfType;
 	Shred * shred;
 
 	volatile bool cleaned;
@@ -143,25 +143,24 @@ class Player : public QObject {
 	/*
 	 * See enum usage_types in header.h.
 	 */
-	Block * UsingBlock() const { return usingBlock; }
+	Block * UsingBlock() const;
 
 	///This returns how player is using something now.
 	/*
 	 * See enum usage_types in header.h.
 	 */
-	usage_types UsingType() const { return usingType; }
+	int UsingType() const { return usingType; }
 	
 	//This returns how player is using himself.
 	/*
 	 * For example, OPEN means he is looking in his backpack.
 	 */
-	usage_types UsingSelfType() const { return usingSelfType; }
+	int UsingSelfType() const { return usingSelfType; }
 
 	Inventory * PlayerInventory();
 
 	void Examine() const;
 	int Move(const int dir);
-	int Move();
 	void Jump();
 	void Inscribe();
 	void Build(const ushort);

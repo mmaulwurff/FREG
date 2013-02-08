@@ -438,7 +438,7 @@ bool World::Damage(
 	return true;
 }
 
-bool World::Use(
+int World::Use(
 		const ushort i,
 		const ushort j,
 		const ushort k)
@@ -446,13 +446,7 @@ bool World::Use(
 	if ( !InBounds(i, j, k) )
 		return false;
 	
-	//TODO: restore OPEN
-	switch ( GetBlock(i, j, k)->Use() ) {
-		case OPEN: break;
-		default:
-			return false;
-	}
-	return true;
+	return GetBlock(i, j, k)->Use();
 }
 
 bool World::Build(Block * block,
