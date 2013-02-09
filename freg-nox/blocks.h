@@ -399,7 +399,7 @@ class Inventory {
 	virtual Inventory * HasInventory() { return this; }
 	usage_types Use() { return OPEN; }
 
-	Block * Drop(const ushort n) {
+	virtual Block * Drop(const ushort n) {
 		if ( inventory_size<=n || !Number(n) )
 			return 0;
 
@@ -605,8 +605,8 @@ class Chest : public Block, public Inventory {
 
 class Pile : public Active, public Inventory {
 	Q_OBJECT
-	
-	qint16 lifetime;
+
+	bool ifToDestroy;
 
 	public:
 	int Kind() const { return PILE; }
@@ -617,12 +617,16 @@ class Pile : public Active, public Inventory {
 	usage_types Use() { return Inventory::Use(); }
 	float Weight() const { return InvWeightAll(); }
 
-	bool Act() { return ( --lifetime < 0 ); }
+	bool Act();
 	
 	Block * Drop(const ushort n) {
 		Block * const temp=Inventory::Drop(n);
-		if ( 1==Number(n) )
-			lifetime=0;
+		ifToDestroy=true;
+		for (ushort i=0; i<inventory_size; ++i)
+			if ( Number(i) ) {
+				ifToDestroy=false;
+				break;
+			}
 		return temp;
 	}
 
@@ -632,7 +636,7 @@ class Pile : public Active, public Inventory {
 	void SaveAttributes(QDataStream & out) const {
 		Active::SaveAttributes(out);
 		Inventory::SaveAttributes(out);
-		out << lifetime;
+		out << ifToDestroy;
 	}
 
 	Pile(
@@ -644,7 +648,7 @@ class Pile : public Active, public Inventory {
 			:
 			Active(sh, x, y, z, DIFFERENT),
 			Inventory(sh),
-			lifetime(seconds_in_day)
+			ifToDestroy(false)
 	{
 		Get(block);
 	}
@@ -658,7 +662,7 @@ class Pile : public Active, public Inventory {
 			Active(sh, x, y, z, str, sub),
 			Inventory(sh, str)
 	{
-		str >> lifetime;
+		str >> ifToDestroy;
 	}
 };
 

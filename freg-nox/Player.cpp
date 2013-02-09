@@ -74,25 +74,29 @@ void Player::Examine() const {
 	world->ReadLock();
 	Focus(i, j, k);
 	
+	emit Notify("");
+
 	QString str;
 	emit Notify( world->FullName(str, i, j, k) );
-	
+
 	if ( ""!=world->GetNote(str, i, j, k) )
 		emit Notify("Inscription: "+str);
 
-	str="Temperature: "+QString::number(world->Temperature(i, j, k));
-	emit Notify(str);
+	emit Notify("Temperature: "+
+		QString::number(world->Temperature(i, j, k)));
 
-	str="Durability: "+QString::number(world->Durability(i, j, k));
-	emit Notify(str);
+	emit Notify("Durability: "+
+		QString::number(world->Durability(i, j, k)));
 
-	str="Weight: "+QString::number(world->Weight(i, j, k));
+	emit Notify("Weight: "+
+		QString::number(world->Weight(i, j, k)));
 	world->Unlock();
 	emit Notify(str);
 }
 
 void Player::Jump() {
 	world->WriteLock();
+	usingType=NO;
 	world->Jump(x, y, z);
 	world->WriteLock();
 }
@@ -107,6 +111,7 @@ int Player::Move(const int dir) {
 
 void Player::Turn(const int dir) {
 	world->WriteLock();
+	usingType=NO;
 	Dir(dir);
 	emit Updated();
 	world->Unlock();

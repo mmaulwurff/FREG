@@ -533,7 +533,8 @@ void Screen::Notify(const QString & str) {
 		waddch(notifyWin, '\n');
 	}
 	waddstr(notifyWin, str.toAscii().constData());
-	wrefresh(notifyWin);
+	updated=false;
+	wnoutrefresh(notifyWin);
 	lines[MAX_LINES-1]=str;
 	fputs(str.toAscii().constData(), notifyLog);
 }

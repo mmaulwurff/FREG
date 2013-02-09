@@ -258,7 +258,7 @@ class World : public QThread {
 
 	//inventory functions section
 	private:
-	int Exchange(
+	bool Exchange(
 			const ushort i_from,
 			const ushort j_from,
 			const ushort k_from,
@@ -266,7 +266,7 @@ class World : public QThread {
 			const ushort j_to,
 			const ushort k_to,
 			const ushort n);
-	void ExchangeAll(
+	bool ExchangeAll(
 			const ushort x_from,
 			const ushort y_from,
 			const ushort z_from,
@@ -274,43 +274,45 @@ class World : public QThread {
 			const ushort y_to,
 			const ushort z_to);
 	public:
-	int Drop(
+	bool Drop(
 			const ushort i,
 			const ushort j,
 			const ushort k,
 			const ushort n)
 	{
 		ushort i_to, j_to, k_to;
-		return ( !Focus(i, j, k, i_to, j_to, k_to) ) ?
-			Exchange(i, j, k, i_to, j_to, k_to, n) : 1;
+		return ( Focus(i, j, k, i_to, j_to, k_to) ) ? false :
+			Exchange(i, j, k, i_to, j_to, k_to, n);
 	}
-	int Get(
+	bool Get(
 			const ushort i,
 			const ushort j,
 			const ushort k,
 			const ushort n)
 	{
 		ushort i_from, j_from, k_from;
-		return ( !Focus(i, j, k, i_from, j_from, k_from) ) ?
-			Exchange(i_from, j_from, k_from, i, j, k, n) : 1;
+		return ( Focus(i, j, k, i_from, j_from, k_from) ) ? false :
+			Exchange(i_from, j_from, k_from, i, j, k, n);
 	}
-	void DropAll(
+	bool DropAll(
 			const ushort i_from,
 			const ushort j_from,
 			const ushort k_from)
 	{
 		ushort i, j, k;
-		if ( !Focus(i_from, j_from, k_from, i, j, k) )
-			ExchangeAll(i_from, j_from, k_from, i, j, k);
+		if ( Focus(i_from, j_from, k_from, i, j, k) )
+			return false;
+		return ExchangeAll(i_from, j_from, k_from, i, j, k);
 	}
-	void GetAll(
+	bool GetAll(
 			const ushort i_to,
 			const ushort j_to,
 			const ushort k_to)
 	{
 		ushort i, j, k;
-		if ( !Focus(i_to, j_to, k_to, i, j, k) )
-			ExchangeAll(i, j, k, i_to, j_to, k_to);
+		if ( Focus(i_to, j_to, k_to, i, j, k) )
+			return false;
+		return ExchangeAll(i, j, k, i_to, j_to, k_to);
 	}
 	void Wield(Dwarf * const, const ushort);
 

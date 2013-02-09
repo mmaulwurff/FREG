@@ -83,7 +83,8 @@ enum damage_kinds {
 	ELECTRO,
 	HUNGER,
 	BREATH,
-	EATEN
+	EATEN,
+	TIME
 };
 
 enum kinds {//kind of atom

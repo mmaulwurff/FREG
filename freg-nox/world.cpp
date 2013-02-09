@@ -515,7 +515,7 @@ void World::Eat(
 		Damage(i_food, j_food, k_food, max_durability, EATEN);
 }
 
-int World::Exchange(
+bool World::Exchange(
 		const ushort i_from,
 		const ushort j_from,
 		const ushort k_from,
@@ -528,13 +528,13 @@ int World::Exchange(
 	Inventory * const inv_to=HasInventory(i_to, j_to, k_to);
 
 	if ( !inv_from )
-		return 1;
+		return false;
 	if ( inv_to ) {
 		Block * const temp=inv_from->Drop(n);
 		if ( temp && !inv_to->Get(temp) ) {
 			inv_from->Get(temp);
 		}
-		return 2;
+		return true;
 	}
 	
 	if ( AIR==Sub(i_to, j_to, k_to) )
@@ -542,10 +542,10 @@ int World::Exchange(
 				i_to, j_to, k_to,
 				inv_from->Drop(n)),
 			i_to, j_to, k_to);
-	return 0;
+	return true;
 }
 
-void World::ExchangeAll(
+bool World::ExchangeAll(
 		const ushort x_from,
 		const ushort y_from,
 		const ushort z_from,
@@ -557,9 +557,12 @@ void World::ExchangeAll(
 	Inventory * const inv_to=HasInventory(x_to, y_to, z_to);
 
 	if ( !inv_from )
-		return;
-	
-	inv_to->GetAll(inv_from);
+		return false;
+	if ( inv_to ) {
+		inv_to->GetAll(inv_from);
+		return true;
+	}
+	return false;
 }
 
 void World::Wield(Dwarf * const dwarf, const ushort n) {

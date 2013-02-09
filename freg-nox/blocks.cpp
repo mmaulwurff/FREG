@@ -69,7 +69,11 @@ int Block::Damage(
 			return (THRUST==dmg_kind) ?
 				durability-=2*dmg :
 				durability-=dmg;
-		case DIFFERENT: case AIR: case SKY: case SUN_MOON: case WATER:
+		case DIFFERENT:
+			if (TIME==dmg_kind)
+				return 0;
+			//no break;
+		case AIR: case SKY: case SUN_MOON: case WATER:
 		case NULLSTONE: case STAR:
 			return durability;
 		default: return durability-=dmg;
@@ -232,9 +236,7 @@ Inventory::Inventory(
 	}
 }
 
-bool Dwarf::Act() {
-	return Animal::Act();
-}
+bool Dwarf::Act() { return Animal::Act(); }
 
 Block * Dwarf::DropAfterDamage() const {
 	return whereShred->NewNormal(H_MEAT);
@@ -247,9 +249,15 @@ before_move_return Dwarf::BeforeMove(const int dir) {
 }
 
 before_move_return Pile::BeforeMove(const int dir) {
-	//direction=dir;
-	//GetWorld()->DropAll(x_self, y_self, z_self);
+	direction=dir;
+	GetWorld()->DropAll(x_self, y_self, z_self);
 	return NOTHING;
+}
+
+bool Pile::Act() {
+	return ( ifToDestroy ) ?
+		GetWorld()->Damage(x_self, y_self, z_self, 0, TIME) :
+		false;
 }
 
 bool Liquid::CheckWater(const int dir) const {
