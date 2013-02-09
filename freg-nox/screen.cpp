@@ -248,62 +248,55 @@ void Screen::Print() {
 
 	switch ( player->UsingType() ) {
 		case OPEN:
-			PrintInv(leftWin, player->UsingBlock()->HasInventory());
-		break;
+			if ( player ) {
+				PrintInv(leftWin, player->UsingBlock()->HasInventory());
+				break;
+			}
 		default: PrintNormal(leftWin);
 	}
 
 	switch ( player->UsingSelfType() ) {
 		case OPEN:
-			PrintInv(rightWin, player->GetP()->HasInventory());
-		break;
-		default: PrintFront(rightWin);
+			if ( player && player->GetP()->HasInventory() ) {
+				PrintInv(rightWin, player->GetP()->HasInventory());
+				break;
+			} //no break;
+		default:
+			PrintFront(rightWin);
 	}
+
+	if ( !player || !player->GetP() )
+		return;
 
 	const short dur=player->HP();
 	const short breath=player->Breath();
 	const short satiation=player->Satiation();
 	w->Unlock();
 
-	werase(hudWin); 
 	ushort i;
 	//HitPoints line
+	werase(hudWin); 
 	wstandend(hudWin);
-	wprintw(hudWin, " HP: %3hd  [", dur);
+	wmove(hudWin, 0, 0);
+	wprintw(hudWin, "HP: %3hd  [", dur);
 	wcolor_set(hudWin, WHITE_RED, NULL);
 	for (i=0; i<10*dur/max_durability; ++i)
 		waddch(hudWin, '.');
 	wstandend(hudWin);
-	mvwaddstr(hudWin, 0, 21, "]\n");
+	mvwaddstr(hudWin, 0, 20, "]\n");
 
 	//breath line
 	if ( -1!=breath ) {
-		wprintw(hudWin, " BR: %3hd%% [", 100*breath/max_breath);
+		wprintw(hudWin, "BR: %3hd%% [", 100*breath/max_breath);
 		wcolor_set(hudWin, WHITE_BLUE, NULL);
 		for (i=0; i<10*breath/max_breath; ++i)
 			waddch(hudWin, '.');
 		wstandend(hudWin);
-		mvwaddstr(hudWin, 1, 21, "]\n");
+		mvwaddstr(hudWin, 1, 20, "]\n");
 	}
 	
-	//satiation line
-	if ( -1!=satiation ) {
-		wmove(hudWin, 2, 1);
-		if ( seconds_in_day*time_steps_in_sec<satiation ) {
-			wcolor_set(hudWin, BLUE_BLACK, NULL);
-			waddstr(hudWin, "Gorged");
-		} else if ( 3*seconds_in_day*time_steps_in_sec/4<satiation ) {
-			wcolor_set(hudWin, GREEN_BLACK, NULL);
-			waddstr(hudWin, "Full");
-		} else if (seconds_in_day*time_steps_in_sec/4>satiation) {
-			wcolor_set(hudWin, RED_BLACK, NULL);
-			waddstr(hudWin, "Hungry");
-		}
-	}
-
 	//action mode
 	wstandend(hudWin);
-	wmove(hudWin, 0, 30);
 	waddstr(hudWin, "Action: ");
 	switch ( actionMode ) {
 		case USE:      waddstr(hudWin, "Use in inventory"); break;
@@ -320,7 +313,44 @@ void Screen::Print() {
 				"Screen::Print: Unlisted actionMode: %d\n",
 				actionMode);
 	}
+	waddch(hudWin, '\n');
 
+	//satiation line
+	if ( -1!=satiation ) {
+		if ( seconds_in_day*time_steps_in_sec<satiation ) {
+			wcolor_set(hudWin, BLUE_BLACK, NULL);
+			waddstr(hudWin, "Gorged\n");
+		} else if ( 3*seconds_in_day*time_steps_in_sec/4<satiation ) {
+			wcolor_set(hudWin, GREEN_BLACK, NULL);
+			waddstr(hudWin, "Full\n");
+		} else if (seconds_in_day*time_steps_in_sec/4>satiation) {
+			wcolor_set(hudWin, RED_BLACK, NULL);
+			waddstr(hudWin, "Hungry\n");
+		}
+	}
+
+	//quick inventory
+	Inventory * inv;
+	if ( (inv=player->GetP()->HasInventory()) ) {
+		wstandend(hudWin);
+		wmove(hudWin, 0, 36);
+		for (i=0; i<inventory_size; ++i)
+			wprintw(hudWin, "%c ", 'A'+i);
+		wmove(hudWin, 1, 36);
+		ushort num;
+		for (i=0; i<inventory_size; ++i)
+			if ( (num=inv->Number(i)) ) {
+				wcolor_set(hudWin,
+					Color(inv->GetInvKind(i),
+					inv->GetInvSub(i)), NULL);
+				wprintw(hudWin, "%c%hu",
+					CharName( inv->GetInvKind(i),
+					inv->GetInvSub(i) ), num);
+			} else {
+				wstandend(hudWin);
+				waddstr(hudWin, "  ");
+			}
+	}
 	wnoutrefresh(hudWin);
 	doupdate();
 
@@ -498,7 +528,7 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 	QString str;
 	char num_str[6];
 	for (i=0; i<inventory_size; ++i) {
-		mvwprintw(window, 2+i, 12, "%c) ", 'a'+i);
+		mvwprintw(window, 2+i, 12, "%c) ", 'A'+i);
 		if ( inv->Number(i) ) {
 			wcolor_set(window, Color(inv->GetInvKind(i), inv->GetInvSub(i)), NULL);
 			wprintw(window, "[%c]%s",
@@ -568,12 +598,12 @@ Screen::Screen(
 		resize_term( (SCREEN_SIZE + 2) + (2 + 5) + (2 + 3), SCREEN_SIZE * 4 + 4 );
 	#endif
 	start_color();
-	//raw(); //коды нажатия клавиш поступают в программу без обработки (сырыми)
+	raw(); //коды нажатия клавиш поступают в программу без обработки (сырыми)
 	noecho(); //не показывать то, что введено
 	keypad(stdscr, TRUE); //использовать стрелки
 	curs_set(0); //сделать курсор невидимым
 	//all available color pairs (maybe some of them will not be used)
-	short colors[]={ //do not change colors order!
+	const short colors[]={ //do not change colors order!
 		COLOR_BLACK,
 		COLOR_RED,
 		COLOR_GREEN,
@@ -586,10 +616,9 @@ Screen::Screen(
 	//ввести все цвета
 	for (short i=BLACK_BLACK; i<=WHITE_WHITE; ++i)
 		init_pair(i, colors[(i-1)/8], colors[(i-1)%8]);
-	//задать положения и размеры окон
 	leftWin =newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, 0);
 	rightWin=newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, SCREEN_SIZE*2+2);
-	hudWin=newwin(3+2, (SCREEN_SIZE*2+2)*2-8, SCREEN_SIZE+2, 8); //окно для жизни, дыхания и т.д.
+	hudWin=newwin(3+2, (SCREEN_SIZE*2+2)*2, SCREEN_SIZE+2, 0);
 	notifyWin=newwin(0, COLS, SCREEN_SIZE+2+5, 0);
 	
 	input=new IThread(this);
