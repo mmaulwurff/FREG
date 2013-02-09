@@ -390,6 +390,8 @@ class World : public QThread {
 	bool TryReadLock() { return rwLock.tryLockForRead(); }
 	void Unlock() { rwLock.unlock(); }
 
+	void EmitNotify(const QString & str) const { emit Notify(str); }
+
 	public:
 	World(
 			const QString &,
@@ -403,7 +405,7 @@ class World : public QThread {
 	void PhysEvents();
 
 	signals:
-	void Notify(QString) const;
+	void Notify(const QString &) const;
 	void GetString(QString &) const;
 	void Updated(
 			const ushort,

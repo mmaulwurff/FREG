@@ -163,17 +163,21 @@ Block * Shred::BlockFromFile(QDataStream & str,
 	switch ( kind ) {
 		case BLOCK:  return new Block(str, sub);
 		case PICK:   return new Pick (str, sub);
+
 		case CHEST:  return new Chest (this, str, sub);
 		case BUSH:   return new Bush  (this, str, sub);
+
 		case RABBIT: return new Rabbit(this, i, j, k, str, sub);
 		case ACTIVE: return new Active(this, i, j, k, str, sub);
 		case DWARF:  return new Dwarf (this, i, j, k, str, sub);
 		case PILE:   return new Pile  (this, i, j, k, str, sub);
 		case LIQUID: return new Liquid(this, i, j, k, str, sub);
 		case GRASS:  return new Grass (this, i, j, k, str, sub);
+
+		case CLOCK:  return new Clock(str, world, sub);
 		default:
 			fprintf(stderr,
-				"BlockFromFile(): unlisted kind: %d\n",
+				"Shred::BlockFromFile(): unlisted kind: %d\n",
 				kind);
 			return NewNormal(sub);
 	}
@@ -320,6 +324,7 @@ void Shred::PlantGrass() {
 
 void Shred::TestShred() {
 	NormalUnderground();
+	blocks[0][1][height/2]=new Clock(world, IRON);
 	//blocks[2][0][height/2]=new Chest(this);
 	/*blocks[3][1][height/2]=new Active(this,
 		shredX*shred_width+3,

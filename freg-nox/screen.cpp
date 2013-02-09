@@ -99,6 +99,7 @@ char Screen::CharName(
 		case LIQUID: return '~';
 		case GRASS:  return '.';
 		case RABBIT: return 'r';
+		case CLOCK:  return 'c';  
 		case TELEGRAPH: return 't';
 		default: switch (sub) {
 			case NULLSTONE: case MOSS_STONE: case WOOD:
@@ -188,9 +189,15 @@ void Screen::ControlPlayer(const int ch) {
 	if ( ch>='A' && ch<='Z' ) {
 		const int num=ch-'A';
 		switch ( actionMode ) {
+			case USE:   player->Use(num); break;
 			case THROW: player->Throw(num); break;
 			case OBTAIN: player->Obtain(num); break;
+			case WIELD: player->Wield(num); break;
+			case INSCRIBE: player->Inscribe(num); break;
 			case EAT: player->Eat(num); break;
+			case BUILD: player->Build(num); break;
+			case CRAFT: player->Craft(num); break;
+			case TAKEOFF: player->TakeOff(num); break;
 			default: break;
 		}
 		return;
@@ -207,16 +214,23 @@ void Screen::ControlPlayer(const int ch) {
 		case KEY_NPAGE: player->Turn(DOWN); break;
 		case KEY_PPAGE: player->Turn(UP); break;
 	
-		case 'i': player->Backpack(); break;
+		case  KEY_HOME: player->Backpack(); break;
 		case '\n': player->Use(); break;
-		case '?': player->Examine(); break;
-		case 's': player->Inscribe(); break;
+		case  '?': player->Examine(); break;
+		case  '~': player->Inscribe(); break;
 		
+		case 'u': actionMode=USE; break;
 		case 't': actionMode=THROW; break;
 		case 'o': actionMode=OBTAIN; break;
+		case 'w': actionMode=WIELD; break;
+		case 'i': actionMode=INSCRIBE; break;
 		case 'e': actionMode=EAT; break;
+		case 'b': actionMode=BUILD; break;
+		case 'c': actionMode=CRAFT; break;
+		case 'f': actionMode=TAKEOFF; break;
+
 		case 'l': RePrint(); break;
-		default: break;
+		default: Notify("Don't know what such key means."); break;
 	}
 }
 
@@ -289,10 +303,19 @@ void Screen::Print() {
 	wmove(hudWin, 0, 30);
 	waddstr(hudWin, "Action: ");
 	switch ( actionMode ) {
-		case THROW: waddstr(hudWin, "Throw"); break;
-		case OBTAIN: waddstr(hudWin, "Obtain"); break;
-		case EAT: waddstr(hudWin, "Eat"); break;
-		default: waddstr(hudWin, "Unknown");
+		case USE:      waddstr(hudWin, "Use in inventory"); break;
+		case THROW:    waddstr(hudWin, "Throw"); break;
+		case OBTAIN:   waddstr(hudWin, "Obtain"); break;
+		case WIELD:    waddstr(hudWin, "Wield"); break;
+		case INSCRIBE: waddstr(hudWin, "Inscribe in inventory"); break;
+		case EAT:      waddstr(hudWin, "Eat"); break;
+		case BUILD:    waddstr(hudWin, "Build"); break;
+		case CRAFT:    waddstr(hudWin, "Craft"); break;
+		case TAKEOFF:  waddstr(hudWin, "Take off"); break;
+		default:       waddstr(hudWin, "Unknown");
+			fprintf(stderr,
+				"Screen::Print: Unlisted actionMode: %d\n",
+				actionMode);
 	}
 
 	wnoutrefresh(hudWin);
@@ -506,13 +529,13 @@ void Screen::Notify(const QString & str) {
 	wclear(notifyWin);
 	for (ushort i=0; i<MAX_LINES-1; ++i) {
 		lines[i]=lines[i+1];
-		mvwaddstr(notifyWin, i, 0, lines[i].toAscii().constData());
+		waddstr(notifyWin, lines[i].toAscii().constData());
+		waddch(notifyWin, '\n');
 	}
-	mvwaddstr(notifyWin, MAX_LINES-1, 0,
-		str.toAscii().constData());
+	waddstr(notifyWin, str.toAscii().constData());
+	wrefresh(notifyWin);
 	lines[MAX_LINES-1]=str;
 	fputs(str.toAscii().constData(), notifyLog);
-	wrefresh(notifyWin);
 }
 
 Screen::Screen(
@@ -522,7 +545,7 @@ Screen::Screen(
 		VirtScreen(wor, pl),
 		updated(false),
 		cleaned(false),
-		actionMode(NOACTION)
+		actionMode(USE)
 {
 	set_escdelay(10); //задержка после нажатия esc. для обработки esc-последовательностей, пока не используется.
 	//ifdefs are adjustments for windows console, added by Panzerschrek
@@ -642,9 +665,7 @@ void IThread::run() {
 	while ( !stopped ) {
 		//static int c;
 		screen->ControlPlayer(getch());
-		
 		//fprintf(stderr, "Input received: '%c' (code %d)\n", (char)c, c);
-
 		msleep(90);
 		flushinp();
 	}

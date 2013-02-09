@@ -27,6 +27,17 @@
 #include "VirtScreen.h"
 #include <curses.h>
 
+enum actions {
+	USE,
+	THROW,
+	OBTAIN, 
+	WIELD,
+	INSCRIBE,
+	EAT,
+	BUILD,
+	CRAFT,
+	TAKEOFF,
+};
 enum color_pairs { //do not change colors order! //foreground_background
         BLACK_BLACK=1,
         BLACK_RED,
@@ -195,14 +206,13 @@ class Screen : public VirtScreen {
 	Screen(World * const, Player * const);
 };
 
-/** \class IThread i_thread.h
+/** \class IThread screen.h
  * \brief Keyboard input thread for curses screen for freg.
  *
  * This class is thread, with IThread::run containing input loop.
  */
 
 #include <QThread>
-#include "header.h"
 
 class IThread : public QThread {
 	Q_OBJECT

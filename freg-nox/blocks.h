@@ -140,6 +140,41 @@ class Block { //blocks without special physics and attributes
 	virtual ~Block() {}
 };
 
+class Clock : public Block {
+	World * world;
+
+	public:
+	int Kind() const { return CLOCK; }
+	QString & FullName(QString & str) const {
+		switch ( sub ) {
+			case IRON: return str="Iron clock";
+			default:
+				fprintf(stderr,
+					"Clock::FullName: unlisted sub: %d\n",
+					sub);
+				return str="Strange clock";
+		}
+	}
+	
+	usage_types Use();
+
+	Clock(
+			World * const w,
+			const int sub)
+			:
+			Block(sub, max_durability, 0.1),
+			world (w)
+	{}
+	Clock (
+			QDataStream & str,
+			World * const w,
+			const int sub)
+			:
+			Block(str, sub),
+			world(w)
+	{}
+};
+
 class Weapons : public Block {
 	public:
 	int Kind() const=0;
@@ -229,13 +264,15 @@ class Active : public QObject, public Block {
 			const ushort);
 	void Unregister();
 
-	Active(const int sub,
+	Active(
+			const int sub,
 			const short dur=max_durability)
 			:
 			Block(sub, dur),
 	       		whereShred(NULL)
-		{}
-	Active(Shred * const sh,
+	{}
+	Active(
+			Shred * const sh,
 			const ushort x,
 			const ushort y,
 			const ushort z,
@@ -246,7 +283,8 @@ class Active : public QObject, public Block {
 	{
 		Register(sh, x, y, z);
 	}
-	Active(Shred * const sh,
+	Active(
+			Shred * const sh,
 			const ushort x,
 			const ushort y,
 			const ushort z,
@@ -350,6 +388,11 @@ class Inventory {
 	int Number(const ushort i) const {
 		return inventory_num[i];
 	}
+	Block * ShowBlock(const ushort num) {
+		if ( num>inventory_size )
+			return 0;
+		return inventory[num];
+	}
 
 	virtual QString & FullName(QString&) const=0;
 	virtual int Kind() const=0;
@@ -373,11 +416,11 @@ class Inventory {
 		}
 		return temp;
 	}
-	virtual int Get(Block * const block) {
+	virtual int Get(Block * const block, const ushort num=0) {
 		if ( !block )
 			return 1;
 
-		for (ushort i=0; i<inventory_size; ++i) {
+		for (ushort i=num; i<inventory_size; ++i) {
 			if ( !inventory[i] ) {
 				inventory[i]=block;
 				inventory_num[i]=1;
@@ -515,6 +558,7 @@ class Dwarf : public Animal, public Inventory {
 			inLeftHand(inventory[4]),
 			noise(1)
 	{
+		Get(new Clock(GetWorld(), IRON), 5);
 		Inscribe("Urist");
 	}
 	Dwarf(Shred * const sh,

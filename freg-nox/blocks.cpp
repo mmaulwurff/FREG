@@ -130,6 +130,15 @@ Block::Block(QDataStream & str, const int sub_)
 	shown_weight=weight;
 }
 
+usage_types Clock::Use() {
+	QString temp;
+	world->EmitNotify("Time is "+
+		temp.setNum(world->TimeOfDay()/60)+
+		((world->TimeOfDay()%60 < 10) ? ":0" : ":")+
+		temp.setNum(world->TimeOfDay()%60)+'.');
+	return NO;
+}
+
 int Active::Move(const int dir) {
 	switch ( dir ) {
 		case NORTH: --y_self; break;

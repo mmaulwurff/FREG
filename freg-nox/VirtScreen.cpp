@@ -49,10 +49,10 @@ VirtScreen::VirtScreen(
 		w(world_),
 		player(player_)
 {
-	connect(w, SIGNAL(Notify(QString)),
-		this, SLOT(Notify(QString)));
-	connect(player, SIGNAL(Notify(QString)),
-		this, SLOT(Notify(QString)));
+	connect(w, SIGNAL(Notify(const QString &)),
+		this, SLOT(Notify(const QString &)));
+	connect(player, SIGNAL(Notify(const QString &)),
+		this, SLOT(Notify(const QString &)));
 
 	connect(w, SIGNAL(GetString(QString &)),
 		this, SLOT(PassString(QString &)),

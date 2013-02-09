@@ -99,7 +99,8 @@ enum kinds {//kind of atom
 	GRASS,
 	BUSH,
 	RABBIT,
-	ACTIVE
+	ACTIVE,
+	CLOCK
 };
 enum subs {//substance block is made from
 	STONE, //keep it first in this list
@@ -126,36 +127,6 @@ enum subs {//substance block is made from
 enum before_move_return { NOTHING, DESTROY };
 
 enum usage_types { NO, OPEN, INNER_ACTION };
-
-enum props {
-	KIND,
-	SUB,
-	DURABILITY,
-	TRANSPARENCY,
-	MOVABILITY
-};
-
-enum actions {
-	MOVE,
-	TURN_RIGHT,
-	TURN_LEFT,
-	TURN,
-	JUMP,
-	OPEN_INVENTORY,
-	USE,
-	EXAMINE,
-	THROW,
-	GET, //maybe remove this
-	OBTAIN, 
-	WIELD, //maybe remove this
-	INSCRIBE,
-	EAT,
-	DAMAGE,
-	BUILD,
-	CRAFT,
-	TAKEOFF,
-	NOACTION
-};
 
 //for debugging reasons:
 #define eprint(n) { fputs(n"\n", stderr); }

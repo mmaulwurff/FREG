@@ -148,25 +148,31 @@ class Player : public QObject {
 	 * For example, OPEN means he is looking in his backpack.
 	 */
 	int UsingSelfType() const { return usingSelfType; }
-
+	
 	Inventory * PlayerInventory();
 
 	void Turn(const int dir);
 	int Move(const int dir);
 	void Jump();
+
 	void Inscribe();
 	void Backpack();
 	void Damage();
 	void Use();
 	void Examine() const;
-	void Build(const ushort);
-	void Eat(const ushort);
-	void Obtain(const ushort) {}
-	void Throw(const ushort) {}
-	void Wield(const ushort) {}
-	void TakeOff(const ushort) {}
+
+	void Use(const ushort num);
+	void Throw(const ushort num) {}
+	void Obtain(const ushort num) {}
+	void Wield(const ushort num) {}
+	void Inscribe(const ushort num) {}
+	void Eat(const ushort num);
+	void Build(const ushort num);
+	void Craft(const ushort num) {}
+	void TakeOff(const ushort num) {}
 
 	private:
+	Block * ValidBlock(const ushort num);
 	void Get(Block *);
 	Block * Drop(const ushort);
 	void Focus(

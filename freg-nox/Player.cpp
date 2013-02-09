@@ -123,13 +123,70 @@ void Player::Use() {
 	ushort i, j, k;
 	world->WriteLock();
 	Focus(i, j, k);
-	usingType=world->Use(i, j, k);
+	const int us_type=world->Use(i, j, k);
+	usingType=( us_type==usingType ) ?
+		NO :
+		us_type;
 	world->Unlock();
 }
 
 void Player::Inscribe() {
 	world->WriteLock();
 	world->Inscribe(x, y, z);
+	world->Unlock();
+}
+
+Block * Player::ValidBlock(const ushort num) {
+	if ( !player )
+		return 0;
+	Inventory * const inv=player->HasInventory();
+	if ( !inv )
+		return 0;
+	return inv->ShowBlock(num);
+}
+
+void Player::Use(const ushort num) {
+	Block * const block=ValidBlock(num);
+	if ( block )
+		block->Use();
+}
+
+/*void Player::Throw(const ushort num) {
+	Block * const
+}*/
+
+void Player::Eat(const ushort n) {
+	if ( !player )
+		return;
+
+	Animal * const pl=player->IsAnimal();
+	if ( !pl )
+		return;
+
+	if ( inventory_size<=n ) {
+		emit Notify("What?");
+		return;
+	}
+
+	world->WriteLock();
+	Block * food=Drop(n);
+	if ( !pl->Eat(food) ) {
+		Get(food);
+		emit Notify("You can't eat this.");
+	} else
+		emit Notify("Yum!");
+	if ( seconds_in_day*time_steps_in_sec < pl->Satiation() )
+		emit Notify("You have gorged yourself!");
+	world->Unlock();
+}
+
+void Player::Build(const ushort n) {
+	world->WriteLock();
+	Block * const temp=Drop(n);
+	ushort i, j, k;
+	Focus(i, j, k);
+	if ( !world->Build(temp, i, j, k) )
+		Get(temp);
 	world->Unlock();
 }
 
@@ -174,46 +231,11 @@ void Player::Dir(const int direction) {
 
 int Player::Dir() const { return dir; }
 
-void Player::Build(const ushort n) {
-	world->WriteLock();
-	Block * const temp=Drop(n);
-	ushort i, j, k;
-	Focus(i, j, k);
-	if ( !world->Build(temp, i, j, k) )
-		Get(temp);
-	world->Unlock();
-}
-
 void Player::Damage() {
 	ushort i, j, k;
 	world->WriteLock();
 	Focus(i, j, k);
 	world->Damage(i, j, k);
-	world->Unlock();
-}
-
-void Player::Eat(const ushort n) {
-	if ( !player )
-		return;
-
-	Animal * const pl=player->IsAnimal();
-	if ( !pl )
-		return;
-
-	if ( inventory_size<=n ) {
-		emit Notify("What?");
-		return;
-	}
-
-	world->WriteLock();
-	Block * food=Drop(n);
-	if ( !pl->Eat(food) ) {
-		Get(food);
-		emit Notify("You can't eat this.");
-	} else
-		emit Notify("Yum!");
-	if ( seconds_in_day*time_steps_in_sec < pl->Satiation() )
-		emit Notify("You have gorged yourself!");
 	world->Unlock();
 }
 
