@@ -185,6 +185,20 @@ void Player::Obtain(const ushort num) {
 	world->Unlock();
 }
 
+void Player::Wield(const ushort num) {
+	world->WriteLock();
+	if ( !player || DWARF!=player->Kind() ) {
+		world->Unlock();
+		return;
+	}
+	const int wield_code=((Dwarf *)player)->Wield(num);
+	if ( 1==wield_code )
+		emit Notify("Nothing here.");
+	else if ( 2==wield_code )
+		emit Notify("Can not weild this.");
+	world->Unlock();
+}
+
 void Player::Eat(const ushort n) {
 	if ( !player )
 		return;

@@ -565,18 +565,6 @@ bool World::ExchangeAll(
 	return false;
 }
 
-void World::Wield(Dwarf * const dwarf, const ushort n) {
-	if ( inventory_size<=n )
-		return;
-
-	Block * temp=dwarf->Drop(n);
-	if ( NULL==temp )
-		return;
-
-	if ( !dwarf->Wield(temp) )
-		dwarf->Get(temp);
-}
-
 QString & World::FullName(QString & str,
 		const ushort i,
 		const ushort j,

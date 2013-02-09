@@ -314,7 +314,6 @@ class World : public QThread {
 			return false;
 		return ExchangeAll(i, j, k, i_to, j_to, k_to);
 	}
-	void Wield(Dwarf * const, const ushort);
 
 	//block information section
 	public:

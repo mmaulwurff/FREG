@@ -161,15 +161,15 @@ class Player : public QObject {
 	void Use();
 	void Examine() const;
 
-	void Use(const ushort num);
-	void Throw(const ushort num);
-	void Obtain(const ushort num);
-	void Wield(const ushort num) {}
+	void Use     (const ushort num);
+	void Throw   (const ushort num);
+	void Obtain  (const ushort num);
+	void Wield   (const ushort num);
 	void Inscribe(const ushort num) {}
-	void Eat(const ushort num);
-	void Build(const ushort num);
-	void Craft(const ushort num) {}
-	void TakeOff(const ushort num) {}
+	void Eat     (const ushort num);
+	void Build   (const ushort num);
+	void Craft   (const ushort num) {}
+	void TakeOff (const ushort num) {}
 
 	private:
 	Block * ValidBlock(const ushort num) const;

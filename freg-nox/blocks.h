@@ -513,16 +513,21 @@ class Dwarf : public Animal, public Inventory {
 	Inventory * HasInventory() { return Inventory::HasInventory(); }
 	bool Access() const { return false; }
 	Block * Drop(const ushort n) { return Inventory::Drop(n); }
-	bool Wield(Block * const block) {
+	int Wield(const ushort num) {
+		Block *  const block=Drop(num);
+		if  ( !block )
+			return 1;
+
 		if ( block->Weapon() ) {
 			if ( !ShowBlock(inRight) )
 				return GetExact(block, inRight);
 			if ( !ShowBlock(inLeft) )
 				return GetExact(block, inLeft);
-			return false;
+			return 0;
 		}
 		//TODO: clothes, armour
-		return 0;
+		Get(block);
+		return 2;
 	}
 	Block * DropAfterDamage() const;
 
