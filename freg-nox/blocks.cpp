@@ -131,11 +131,10 @@ Block::Block(QDataStream & str, const int sub_)
 }
 
 usage_types Clock::Use() {
-	QString temp;
-	world->EmitNotify("Time is "+
-		temp.setNum(world->TimeOfDay()/60)+
-		((world->TimeOfDay()%60 < 10) ? ":0" : ":")+
-		temp.setNum(world->TimeOfDay()%60)+'.');
+	world->EmitNotify(QString("Time is %1%2%3.").
+		arg(world->TimeOfDay()/60).
+		arg((world->TimeOfDay()%60 < 10) ? ":0" : ":").
+		arg(world->TimeOfDay()%60));
 	return NO;
 }
 
@@ -219,16 +218,17 @@ bool Animal::Act() {
 	return false;
 }
 
-Inventory::Inventory(Shred * const sh,
+Inventory::Inventory(
+		Shred * const sh,
 		QDataStream & str)
 		:
 		inShred(sh)
 {
 	for (ushort i=0; i<inventory_size; ++i) {
-		str >> inventory_num[i];
-		inventory[i]=( inventory_num[i] ) ?
-			inShred->BlockFromFile(str, 0, 0, 0) :
-			0;
+		quint8 num;
+		str >> num;
+		while ( num-- )
+			inventory[i].push(inShred->BlockFromFile(str, 0, 0, 0));
 	}
 }
 
@@ -247,8 +247,8 @@ before_move_return Dwarf::BeforeMove(const int dir) {
 }
 
 before_move_return Pile::BeforeMove(const int dir) {
-	direction=dir;
-	GetWorld()->DropAll(x_self, y_self, z_self);
+	//direction=dir;
+	//GetWorld()->DropAll(x_self, y_self, z_self);
 	return NOTHING;
 }
 

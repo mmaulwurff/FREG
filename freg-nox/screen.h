@@ -226,10 +226,6 @@ class IThread : public QThread {
 	protected:
 		void run();
 	
-	signals:
-		void ExitReceived();
-		void RePrintReceived() const;
-
 	private:
 		volatile bool stopped;
 };

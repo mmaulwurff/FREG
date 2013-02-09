@@ -130,46 +130,64 @@ void Player::Use() {
 	world->Unlock();
 }
 
-void Player::Inscribe() {
+void Player::Inscribe() const {
 	world->WriteLock();
 	world->Inscribe(x, y, z);
 	world->Unlock();
 }
 
-Block * Player::ValidBlock(const ushort num) {
-	if ( !player )
+Block * Player::ValidBlock(const ushort num) const {
+	if ( !player ) {
+		emit Notify("Player does not exist.");
 		return 0;
+	}
 	Inventory * const inv=player->HasInventory();
-	if ( !inv )
+	if ( !inv ) {
+		emit Notify("Player has no inventory.");
 		return 0;
+	}
 	return inv->ShowBlock(num);
 }
 
 void Player::Use(const ushort num) {
+	world->WriteLock();
 	Block * const block=ValidBlock(num);
 	if ( block )
 		block->Use();
+	else
+		emit Notify("Nothing here.");
+	world->Unlock();
 }
 
-/*void Player::Throw(const ushort num) {
-	Block * const
-}*/
+void Player::Throw(const ushort num) {
+	world->WriteLock();
+	Block * const block=ValidBlock(num);
+	if ( !block ) {
+		world->Unlock();
+		emit Notify("Nothing here.");
+		return;
+	}
+	if ( !world->Drop(x, y, z, num) )
+		emit Notify("No place to drop.");
+
+	world->Unlock();
+}
 
 void Player::Eat(const ushort n) {
 	if ( !player )
 		return;
-
+	world->WriteLock();
 	Animal * const pl=player->IsAnimal();
-	if ( !pl )
-		return;
-
-	if ( inventory_size<=n ) {
-		emit Notify("What?");
+	if ( !pl ) {
+		world->Unlock();
 		return;
 	}
 
-	world->WriteLock();
 	Block * food=Drop(n);
+	if ( !food ) {
+		world->Unlock();
+		return;
+	}
 	if ( !pl->Eat(food) ) {
 		Get(food);
 		emit Notify("You can't eat this.");
@@ -194,10 +212,8 @@ Block * Player::Drop(const ushort n) {
 	if ( !player )
 		return 0;
 
-	Inventory * inv=player->HasInventory();
-	return inv ?
-		inv->Drop(n) :
-		NULL;
+	Inventory * const inv=player->HasInventory();
+	return inv ? inv->Drop(n) : 0;
 }
 
 void Player::Get(Block * block) {

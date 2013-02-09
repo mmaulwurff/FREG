@@ -21,6 +21,7 @@
 #include "header.h"
 #include <QObject>
 #include <QDataStream>
+#include <QStack>
 
 class World;
 class Shred;
@@ -99,7 +100,7 @@ class Block { //blocks without special physics and attributes
 	virtual Inventory * HasInventory() { return 0; }
 	virtual Animal * IsAnimal() { return 0; }
 	virtual Active * ActiveBlock() { return 0; }
-	virtual Block * Drop(int) { return 0; }
+	virtual Block * Drop(const ushort) { return 0; }
 
 	virtual bool Armour() const { return false; }
 	virtual bool Weapon() const { return false; }
@@ -345,16 +346,14 @@ class Animal : public Active {
 };
 
 class Inventory {
+	QStack<Block *> inventory[inventory_size];
 	protected:
-	Block * inventory[inventory_size];
-	quint8 inventory_num[inventory_size];
 	Shred * inShred;
 
 	public:
 	QString & InvFullName(QString & str, const ushort i) const {
-		return str=( inventory[i] ) ? 
-			inventory[i]->FullName(str) :
-			"";
+		return str=( inventory[i].isEmpty() ) ? "" :
+			inventory[i].top()->FullName(str);
 	}
 	char * NumStr(char * const str, const ushort i) const {
 		const ushort n=Number(i);
@@ -365,19 +364,16 @@ class Inventory {
 		return str;
 	}
 	float GetInvWeight(const ushort i) const {
-		return ( inventory[i] ) ?
-			inventory[i]->Weight()*Number(i) :
-			0;
+		return ( inventory[i].isEmpty() ) ? 0 :
+			inventory[i].top()->Weight()*Number(i);
 	}
 	int GetInvSub(const ushort i) const {
-		return ( inventory[i] ) ?
-			inventory[i]->Sub() :
-			AIR;
+		return ( inventory[i].isEmpty() ) ? AIR :
+			inventory[i].top()->Sub();
 	}
 	int GetInvKind(const ushort i) const {
-		return ( inventory[i] ) ?
-			inventory[i]->Kind() :
-			BLOCK;
+		return ( inventory[i].isEmpty() ) ? BLOCK :
+			inventory[i].top()->Kind();
 	}
 	float InvWeightAll() const {
 		float sum=0;
@@ -385,13 +381,13 @@ class Inventory {
 			sum+=GetInvWeight(i);
 		return sum;
 	}
-	int Number(const ushort i) const {
-		return inventory_num[i];
+	quint8 Number(const ushort i) const {
+		return inventory[i].size();
 	}
-	Block * ShowBlock(const ushort num) {
-		if ( num>inventory_size )
+	Block * ShowBlock(const ushort num) const {
+		if ( num>inventory_size || inventory[num].isEmpty() )
 			return 0;
-		return inventory[num];
+		return inventory[num].top();
 	}
 
 	virtual QString & FullName(QString&) const=0;
@@ -399,49 +395,41 @@ class Inventory {
 	virtual int Sub() const=0;
 	virtual bool Access() const { return true; }
 
+	virtual ushort InventoryStart() const { return 0; } 
 	virtual Inventory * HasInventory() { return this; }
 	usage_types Use() { return OPEN; }
 
 	Block * Drop(const ushort n) {
-		if ( inventory_size<=n ||
-				!inventory_num[n])
+		if ( inventory_size<=n || !Number(n) )
 			return 0;
 
-		Block * const temp=new Block(*inventory[n]);
-		--inventory_num[n];
-		if ( !inventory_num[n] ) {
-			if ( !inventory[n]->Normal() )
-				delete inventory[n];
-			inventory[n]=0;
-		}
-		return temp;
+		return inventory[n].pop();
 	}
-	virtual int Get(Block * const block, const ushort num=0) {
+	bool Get(Block * const block) {
 		if ( !block )
-			return 1;
+			return true;
 
-		for (ushort i=num; i<inventory_size; ++i) {
-			if ( !inventory[i] ) {
-				inventory[i]=block;
-				inventory_num[i]=1;
-				return 1;
-			}
-			if ( *block==*inventory[i] &&
-					inventory_num[i]<max_stack_size ) {
-				++inventory_num[i];
-				if ( !block->Normal() )
-					delete block;
-				return 1;
-			}
+		for (ushort i=InventoryStart(); i<inventory_size; ++i)
+			if ( GetExact(block, i) )
+				return true;
+		return false;
+	}
+	bool GetExact(Block * const block, const ushort num) {
+		if ( inventory[num].isEmpty() ||
+				( *block==*inventory[num].top() &&
+				Number(num)<max_stack_size ) )
+		{
+			inventory[num].push(block);
+			return true;
 		}
-		return 0;
+		return false;
 	}
 	void GetAll(Inventory * const from) {
 		if ( !from || !from->Access() )
 			return;
 
 		for (ushort i=0; i<inventory_size; ++i)
-			while ( from->inventory_num[i] ) {
+			while ( from->Number(i) ) {
 				Block * const temp=from->Drop(i);
 				if ( !Get(temp) ) {
 					from->Get(temp);
@@ -451,46 +439,45 @@ class Inventory {
 	}
 	virtual void SaveAttributes(QDataStream & out) const {
 		for (ushort i=0; i<inventory_size; ++i) {
-			out << inventory_num[i];
-			if ( inventory[i] )
-				inventory[i]->SaveToFile(out);
+			out << Number(i);
+			for (ushort j=0; j<Number(i); ++j)
+				inventory[i].top()->SaveToFile(out);
 		}
 	}
 
 	Inventory(Shred * const sh)
 			:
 			inShred(sh)
-	{
-		for (ushort i=0; i<inventory_size; ++i) {
-			inventory[i]=0;
-			inventory_num[i]=0;
-		}
-	}
-	Inventory(Shred * const,
+	{}
+	Inventory(
+			Shred * const,
 			QDataStream & str);
 	~Inventory() {
 		for (ushort i=0; i<inventory_size; ++i)
-			if ( inventory[i] && !inventory[i]->Normal() )
-				delete inventory[i];
+			while ( !inventory[i].isEmpty() ) {
+				Block * const block=inventory[i].pop();
+				if ( !block->Normal() )
+					delete block;
+			}
 	}
 };
 
 class Dwarf : public Animal, public Inventory {
 	Q_OBJECT
 	
-	Block * &onHead;
-	Block * &onBody;
-	Block * &onFeet;
-	Block * &inRightHand;
-	Block * &inLeftHand;
 	quint16 noise;
+
+	static const uchar onHead=0;
+	static const uchar inRight=1;
+	static const uchar inLeft=2;
+	static const uchar onBody=3;
+	static const uchar onLegs=4;
 
 	public:
 	ushort Noise() const { return noise; }
 	bool CarvingWeapon() const {
-		if ( (NULL!=inRightHand && inRightHand->Carving()) ||
-		     (NULL!=inLeftHand  && inLeftHand->Carving()) ) return true;
-		else return false;
+		return ( (ShowBlock(inRight) && ShowBlock(inRight)->Carving()) ||
+		         (ShowBlock(inLeft)  && ShowBlock(inLeft )->Carving()) );
 	}
 
 	int Kind() const { return DWARF; }
@@ -501,6 +488,7 @@ class Dwarf : public Animal, public Inventory {
 	char MakeSound() const { return (rand()%10) ? ' ' : 's'; }
 	bool CanBeIn() const { return false; }
 	float Weight() const { return InvWeightAll()+100; }
+	ushort InventoryStart() const { return 5; } 
 
 	before_move_return BeforeMove(const int);
 	bool Act();
@@ -524,15 +512,17 @@ class Dwarf : public Animal, public Inventory {
 
 	Inventory * HasInventory() { return Inventory::HasInventory(); }
 	bool Access() const { return false; }
-	Block * Drop(int n) { return Inventory::Drop(n); }
-	int Wield(Block * block) {
+	Block * Drop(const ushort n) { return Inventory::Drop(n); }
+	bool Wield(Block * const block) {
 		if ( block->Weapon() ) {
-			if ( !inventory[3] )
-				inventory[3]=block;
-			else if ( !inventory[4] )
-				inventory[3]=block;
-			return 1;
-		} return 0;
+			if ( !ShowBlock(inRight) )
+				return GetExact(block, inRight);
+			if ( !ShowBlock(inLeft) )
+				return GetExact(block, inLeft);
+			return false;
+		}
+		//TODO: clothes, armour
+		return 0;
 	}
 	Block * DropAfterDamage() const;
 
@@ -544,24 +534,21 @@ class Dwarf : public Animal, public Inventory {
 
 	uchar LightRadius() const { return 3; }
 
-	Dwarf(Shred * const sh,
+	Dwarf(
+			Shred * const sh,
 			const ushort x,
 			const ushort y,
 			const ushort z)
 			:
 			Animal(sh, x, y, z, H_MEAT, 100),
 			Inventory(sh),
-			onHead(inventory[0]),
-			onBody(inventory[1]),
-			onFeet(inventory[2]),
-			inRightHand(inventory[3]),
-			inLeftHand(inventory[4]),
 			noise(1)
 	{
-		Get(new Clock(GetWorld(), IRON), 5);
+		Get(new Clock(GetWorld(), IRON));
 		Inscribe("Urist");
 	}
-	Dwarf(Shred * const sh,
+	Dwarf(
+			Shred * const sh,
 			const ushort x,
 			const ushort y,
 			const ushort z,
@@ -569,12 +556,7 @@ class Dwarf : public Animal, public Inventory {
 			const int sub)
 			:
 			Animal(sh, x, y, z, str, sub),
-			Inventory(sh, str),
-			onHead(inventory[0]),
-			onBody(inventory[1]),
-			onFeet(inventory[2]),
-			inRightHand(inventory[3]),
-			inLeftHand(inventory[4])
+			Inventory(sh, str)
 	{
 		str >> noise;
 	}
@@ -595,7 +577,7 @@ class Chest : public Block, public Inventory {
 		}
 	}
 	Inventory * HasInventory() { return Inventory::HasInventory(); }
-	Block * Drop(const int n) { return Inventory::Drop(n); }
+	Block * Drop(const ushort n) { return Inventory::Drop(n); }
 	float Weight() const { return InvWeightAll()+300; }
 
 	usage_types Use() { return Inventory::Use(); }
@@ -624,7 +606,7 @@ class Chest : public Block, public Inventory {
 class Pile : public Active, public Inventory {
 	Q_OBJECT
 	
-	quint16 lifetime;
+	qint16 lifetime;
 
 	public:
 	int Kind() const { return PILE; }
@@ -635,16 +617,12 @@ class Pile : public Active, public Inventory {
 	usage_types Use() { return Inventory::Use(); }
 	float Weight() const { return InvWeightAll(); }
 
-	bool Act() {
-		return ( --lifetime ) ? false : true;
-	}
+	bool Act() { return ( --lifetime < 0 ); }
 	
-	Block * Drop(const int n) {
-		Block * temp=Inventory::Drop(n);
-		for (ushort i=0; i<max_stack_size; ++i)
-			if ( Number(i) )
-				return temp;
-		lifetime=0;
+	Block * Drop(const ushort n) {
+		Block * const temp=Inventory::Drop(n);
+		if ( 1==Number(n) )
+			lifetime=0;
 		return temp;
 	}
 
@@ -657,7 +635,8 @@ class Pile : public Active, public Inventory {
 		out << lifetime;
 	}
 
-	Pile(Shred * const sh,
+	Pile(
+			Shred * const sh,
 			const ushort x,
 			const ushort y,
 			const ushort z,

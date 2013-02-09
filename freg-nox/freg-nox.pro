@@ -7,7 +7,9 @@ TARGET =
 DEPENDPATH += .
 INCLUDEPATH += .
 
+CONFIG += qt thead debug
 QT -= gui
+LIBS += -lncurses
 
 # Input
 HEADERS += blocks.h header.h Player.h screen.h Shred.h VirtScreen.h world.h

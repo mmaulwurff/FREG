@@ -529,7 +529,6 @@ int World::Exchange(
 
 	if ( !inv_from )
 		return 1;
-
 	if ( inv_to ) {
 		Block * const temp=inv_from->Drop(n);
 		if ( temp && !inv_to->Get(temp) ) {
@@ -538,12 +537,11 @@ int World::Exchange(
 		return 2;
 	}
 	
-	if ( AIR==Sub(i_to, j_to, k_to) ) {
-		Pile * newpile=new
-			Pile(GetShred(i_to, j_to), i_to, j_to, k_to);
-		newpile->Get( inv_from->Drop(n) );
-		SetBlock(newpile, i_to, j_to, k_to);
-	}
+	if ( AIR==Sub(i_to, j_to, k_to) )
+		SetBlock(new Pile(GetShred(i_to, j_to),
+				i_to, j_to, k_to,
+				inv_from->Drop(n)),
+			i_to, j_to, k_to);
 	return 0;
 }
 

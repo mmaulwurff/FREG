@@ -155,14 +155,14 @@ class Player : public QObject {
 	int Move(const int dir);
 	void Jump();
 
-	void Inscribe();
+	void Inscribe() const;
 	void Backpack();
 	void Damage();
 	void Use();
 	void Examine() const;
 
 	void Use(const ushort num);
-	void Throw(const ushort num) {}
+	void Throw(const ushort num);
 	void Obtain(const ushort num) {}
 	void Wield(const ushort num) {}
 	void Inscribe(const ushort num) {}
@@ -172,7 +172,7 @@ class Player : public QObject {
 	void TakeOff(const ushort num) {}
 
 	private:
-	Block * ValidBlock(const ushort num);
+	Block * ValidBlock(const ushort num) const;
 	void Get(Block *);
 	Block * Drop(const ushort);
 	void Focus(

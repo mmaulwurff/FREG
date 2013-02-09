@@ -586,21 +586,6 @@ Screen::Screen(
 	notifyWin=newwin(0, COLS, SCREEN_SIZE+2+5, 0);
 	
 	input=new IThread(this);
-	connect(input, SIGNAL(RePrintReceived()),
-		this, SLOT(RePrint()),
-		Qt::DirectConnection);
-
-	connect(input, SIGNAL(ExitReceived()),
-		this, SIGNAL(ExitReceived()),
-		Qt::DirectConnection);
-
-	connect(input, SIGNAL(InputReceived(int, int)),
-		this, SIGNAL(InputReceived(int, int)),
-		Qt::DirectConnection);
-	
-	connect(this, SIGNAL(InputReceived(int, int)),
-		player, SLOT(Act(int, int)),
-		Qt::DirectConnection);
 
 	input->start();
 

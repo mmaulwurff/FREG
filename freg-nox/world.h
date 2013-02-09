@@ -274,25 +274,25 @@ class World : public QThread {
 			const ushort y_to,
 			const ushort z_to);
 	public:
-	void Drop(
+	int Drop(
 			const ushort i,
 			const ushort j,
 			const ushort k,
 			const ushort n)
 	{
 		ushort i_to, j_to, k_to;
-		if ( !Focus(i, j, k, i_to, j_to, k_to) )
-			Exchange(i, j, k, i_to, j_to, k_to, n);
+		return ( !Focus(i, j, k, i_to, j_to, k_to) ) ?
+			Exchange(i, j, k, i_to, j_to, k_to, n) : 1;
 	}
-	void Get(
+	int Get(
 			const ushort i,
 			const ushort j,
 			const ushort k,
 			const ushort n)
 	{
 		ushort i_from, j_from, k_from;
-		if ( !Focus(i, j, k, i_from, j_from, k_from) )
-			Exchange(i_from, j_from, k_from, i, j, k, n);
+		return ( !Focus(i, j, k, i_from, j_from, k_from) ) ?
+			Exchange(i_from, j_from, k_from, i, j, k, n) : 1;
 	}
 	void DropAll(
 			const ushort i_from,
