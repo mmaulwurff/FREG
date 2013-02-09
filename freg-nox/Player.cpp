@@ -91,7 +91,6 @@ void Player::Examine() const {
 	emit Notify("Weight: "+
 		QString::number(world->Weight(i, j, k)));
 	world->Unlock();
-	emit Notify(str);
 }
 
 void Player::Jump() {
@@ -136,8 +135,17 @@ void Player::Use() {
 }
 
 void Player::Inscribe() const {
+	ushort x, y, z;
 	world->WriteLock();
-	world->Inscribe(x, y, z);
+	Focus(x, y, z);
+	const bool carving=((Dwarf *)player)->CarvingWeapon();
+	if ( !carving ) {
+		emit Notify("You need some tool to inscribe.");
+		world->Unlock();
+		return;
+	}
+	if ( !world->Inscribe(x, y, z) )
+		emit Notify("Can not inscribe this.");
 	world->Unlock();
 }
 
@@ -188,6 +196,7 @@ void Player::Obtain(const ushort num) {
 void Player::Wield(const ushort num) {
 	world->WriteLock();
 	if ( !player || DWARF!=player->Kind() ) {
+		emit Notify("You can wield nothing.");
 		world->Unlock();
 		return;
 	}
@@ -195,7 +204,22 @@ void Player::Wield(const ushort num) {
 	if ( 1==wield_code )
 		emit Notify("Nothing here.");
 	else if ( 2==wield_code )
-		emit Notify("Can not weild this.");
+		emit Notify("Can not wield this.");
+	world->Unlock();
+}
+
+void Player::Inscribe(const ushort num) {
+	world->WriteLock();
+	Block * const block=ValidBlock(num);
+	if ( !block ) {
+		emit Notify("Nothing here.");
+		world->Unlock();
+		return;
+	}
+	QString str;
+	emit GetString(str);
+	if ( !block->Inscribe(str) )
+		emit Notify("Can not inscribe this.");
 	world->Unlock();
 }
 

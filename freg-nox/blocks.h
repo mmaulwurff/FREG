@@ -31,6 +31,15 @@ class Animal;
 
 class Block { //blocks without special physics and attributes
 	bool normal;
+	
+	bool Inscribable() const {
+		return !( sub==AIR ||
+			sub==NULLSTONE ||
+			sub==A_MEAT ||
+			sub==GREENERY ||
+			sub==H_MEAT);
+	}
+	
 	public:
 	void SetNormal(const bool n) { normal=n; }
 	bool Normal() const { return normal; }
@@ -52,10 +61,13 @@ class Block { //blocks without special physics and attributes
 	int GetDir() const { return direction; }
 	void SetDir(const int dir) { direction=dir; }
 	int Sub() const { return sub; }
-	bool Inscribable() const {
-		return !( sub==AIR || sub==NULLSTONE );
+	virtual bool Inscribe(const QString & str) {
+		if ( Inscribable() ) {
+			note=str;
+			return true;
+		}
+		return false;
 	}
-	virtual void Inscribe(const QString & str) { note=str; }
 	virtual QString & GetNote(QString & str) const { return str=note; }
 
 	virtual int Kind() const { return BLOCK; }
@@ -207,10 +219,18 @@ class Pick : public Weapons {
 	bool Carving() const { return true; }
 	float Weight() const { return 10; }
 
-	Pick(const int sub, const short durability=max_durability) : Weapons(sub, durability) {}
-	Pick(QDataStream & str, const int sub)
+	Pick(
+			const int sub,
+			const short durability=max_durability)
 			:
-			Weapons(str, sub) {}
+			Weapons(sub, durability)
+	{}
+	Pick(
+			QDataStream & str,
+			const int sub)
+			:
+			Weapons(str, sub)
+	{}
 };
 
 class Active : public QObject, public Block {
@@ -375,6 +395,9 @@ class Inventory {
 		return ( inventory[i].isEmpty() ) ? BLOCK :
 			inventory[i].top()->Kind();
 	}
+	QString & GetInvNote(QString & str, const ushort num) const {
+		return str=inventory[num].top()->GetNote(str);
+	}
 	float InvWeightAll() const {
 		float sum=0;
 		for (ushort i=0; i<inventory_size; ++i)
@@ -519,11 +542,14 @@ class Dwarf : public Animal, public Inventory {
 			return 1;
 
 		if ( block->Weapon() ) {
-			if ( !ShowBlock(inRight) )
-				return GetExact(block, inRight);
-			if ( !ShowBlock(inLeft) )
-				return GetExact(block, inLeft);
-			return 0;
+			if ( !ShowBlock(inRight) ) {
+				GetExact(block, inRight);
+				return 0;
+			}
+			if ( !ShowBlock(inLeft) ) {
+				GetExact(block, inLeft);
+				return 0;
+			}
 		}
 		//TODO: clothes, armour
 		Get(block);
@@ -594,18 +620,24 @@ class Chest : public Block, public Inventory {
 		Inventory::SaveAttributes(out);
 	}
 
-	Chest(Shred * const sh,
+	Chest(
+			Shred * const sh,
 			const int s=WOOD,
 			const short dur=max_durability)
 			:
 			Block(s, dur),
-			Inventory(sh) {}
-	Chest(Shred * const sh,
+			Inventory(sh)
+	{
+		Get(new Pick(IRON));
+	}
+	Chest(
+			Shred * const sh,
 			QDataStream & str,
 			const int sub)
 			:
 			Block(str, sub),
-			Inventory(sh, str) {}
+			Inventory(sh, str)
+	{}
 };
 
 class Pile : public Active, public Inventory {

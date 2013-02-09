@@ -468,37 +468,21 @@ bool World::Build(Block * block,
 	return true;
 }
 
-bool World::Inscribe(Dwarf * const dwarf) {
-	if ( !dwarf->CarvingWeapon() )
-		return false;
-
-	ushort i=dwarf->X();
-	ushort j=dwarf->Y();
-	ushort k=dwarf->Z();
-	ushort i_to, j_to, k_to;
-	if ( !Focus(i, j, k, i_to, j_to, k_to) ) {
-		Inscribe(i_to, j_to, k_to);
-		return true;
-	}
-	return false;
-}
-
-void World::Inscribe(
+bool World::Inscribe(
 		const ushort i,
 		const ushort j,
 		const ushort k)
 {
-	Block * block;
-	if ( !InBounds(i, j, k) ||
-			!(block=GetBlock(i, j, k))->Inscribable() )
-		return;
+	if ( !InBounds(i, j, k) )
+		return false;
 
+	Block * block=GetBlock(i, j, k);
 	if ( block->Normal() )
-		SetBlock(new Block(block->Sub()),
+		SetBlock(block=new Block(block->Sub()),
 			i, j, k);
 	QString str="No note received\n";
 	emit GetString(str);
-	block->Inscribe(str);
+	return block->Inscribe(str);
 }
 
 void World::Eat(

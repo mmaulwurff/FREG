@@ -100,6 +100,7 @@ class Player : public QObject {
 	 * It shoul be connected to screen::UpdatePlayer() signal.
 	 */
 	void Updated();
+	void GetString(QString &);
 
 	public:
 	///This returns current player block X position (coordinates in loaded zone)
@@ -165,7 +166,7 @@ class Player : public QObject {
 	void Throw   (const ushort num);
 	void Obtain  (const ushort num);
 	void Wield   (const ushort num);
-	void Inscribe(const ushort num) {}
+	void Inscribe(const ushort num);
 	void Eat     (const ushort num);
 	void Build   (const ushort num);
 	void Craft   (const ushort num) {}

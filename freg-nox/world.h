@@ -243,8 +243,7 @@ class World : public QThread {
 			const ushort,
 			const ushort,
 			const ushort);
-	bool Inscribe(Dwarf * const);
-	void Inscribe(
+	bool Inscribe(
 			const ushort,
 			const ushort,
 			const ushort);

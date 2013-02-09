@@ -26,6 +26,7 @@
 
 void Screen::PassString(QString & str) const {
 	echo();
+	curs_set(1);
 	werase(notifyWin);
 	mvwaddstr(notifyWin, 0, 0, "Enter inscription:");
 	char temp_str[note_length+1];
@@ -34,6 +35,7 @@ void Screen::PassString(QString & str) const {
 	werase(notifyWin);
 	wnoutrefresh(notifyWin);
 	noecho();
+	curs_set(0);
 }
 
 char Screen::CharNumber(
@@ -232,6 +234,7 @@ void Screen::ControlPlayer(const int ch) {
 		case 'l': RePrint(); break;
 		default: Notify("Don't know what such key means."); break;
 	}
+	updated=false;
 }
 
 void Screen::Print() {
@@ -482,32 +485,35 @@ void Screen::PrintFront(WINDOW * const window) const {
 void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 	werase(window);
 	wstandend(window);
-	mvwaddstr(window, 1, 53, "Weight");
+	mvwaddstr(window, 1, 55, "Weight");
 	if ( DWARF==inv->Kind() ) {
-		mvwaddstr(window, 2, 2, "On head:");
-		mvwaddstr(window, 3, 2, "On body:");
-		mvwaddstr(window, 4, 2, "On feet:");
-		mvwaddstr(window, 5, 2, "Right hand:");
-		mvwaddstr(window, 6, 2, "Left hand:");
+		mvwaddstr(window, 2, 1, "      Head");
+		mvwaddstr(window, 3, 1, "Right hand");
+		mvwaddstr(window, 4, 1, " Left hand");
+		mvwaddstr(window, 5, 1, "      Body");
+		mvwaddstr(window, 6, 1, "      Legs");
 	}
 	ushort i;
 	double sum_weight=0, temp_weight;
 	QString str;
 	char num_str[6];
 	for (i=0; i<inventory_size; ++i) {
-		mvwprintw(window, 2+i, 14, "%c)", 'a'+i);
+		mvwprintw(window, 2+i, 12, "%c) ", 'a'+i);
 		if ( inv->Number(i) ) {
 			wcolor_set(window, Color(inv->GetInvKind(i), inv->GetInvSub(i)), NULL);
-			mvwprintw( window, 2+i, 17, "[%c]%s",
+			wprintw(window, "[%c]%s",
 					CharName( inv->GetInvKind(i),
 					inv->GetInvSub(i) ),
-					inv->InvFullName(str, i).toAscii().constData() );
-			waddstr(window, inv->NumStr(num_str, i));
+					inv->InvFullName(str, i).toLocal8Bit().constData() );
+			if ( 1<inv->Number(i) )
+				waddstr(window, inv->NumStr(num_str, i));
+			if ( ""!=inv->GetInvNote(str, i) )
+				waddstr(window, (" ~:"+
+					(( str.size()<24 ) ? str : str.left(20)+"...")).
+						toLocal8Bit().constData());
 			wstandend(window);
-			if ( ""!=str ) { //summ
-				mvwprintw(window, 2+i, 50, "%2.1f kg", temp_weight=inv->GetInvWeight(i));
-				sum_weight+=temp_weight;
-			}
+			mvwprintw(window, 2+i, 54, "%4.1f kg", 2, temp_weight=inv->GetInvWeight(i));
+			sum_weight+=temp_weight;
 		}
 	}
 	mvwprintw(window, 2+i, 43, "Sum:%6.1f kg", sum_weight);
@@ -519,7 +525,7 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 		mvwprintw(window, 0, 1, "[%c]%s",
 			CharName(inv->Kind(),
 			inv->Sub()),
-			inv->FullName(str).toAscii().constData());
+			inv->FullName(str).toLocal8Bit().constData());
 	wnoutrefresh(window);
 }
 
@@ -529,14 +535,14 @@ void Screen::Notify(const QString & str) {
 	wclear(notifyWin);
 	for (ushort i=0; i<MAX_LINES-1; ++i) {
 		lines[i]=lines[i+1];
-		waddstr(notifyWin, lines[i].toAscii().constData());
+		waddstr(notifyWin, lines[i].toLocal8Bit().constData());
 		waddch(notifyWin, '\n');
 	}
-	waddstr(notifyWin, str.toAscii().constData());
+	waddstr(notifyWin, str.toLocal8Bit().constData());
 	updated=false;
 	wnoutrefresh(notifyWin);
 	lines[MAX_LINES-1]=str;
-	fputs(str.toAscii().constData(), notifyLog);
+	fputs(str.toLocal8Bit().constData(), notifyLog);
 }
 
 Screen::Screen(

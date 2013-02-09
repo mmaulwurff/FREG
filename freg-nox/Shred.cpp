@@ -325,7 +325,7 @@ void Shred::PlantGrass() {
 void Shred::TestShred() {
 	NormalUnderground();
 	blocks[0][1][height/2]=new Clock(world, IRON);
-	//blocks[2][0][height/2]=new Chest(this);
+	blocks[2][0][height/2]=new Chest(this);
 	/*blocks[3][1][height/2]=new Active(this,
 		shredX*shred_width+3,
 		shredY*shred_width+1, height/2, SAND);*/

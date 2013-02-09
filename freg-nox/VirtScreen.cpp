@@ -57,6 +57,9 @@ VirtScreen::VirtScreen(
 	connect(w, SIGNAL(GetString(QString &)),
 		this, SLOT(PassString(QString &)),
 		Qt::DirectConnection);
+	connect(player, SIGNAL(GetString(QString &)),
+		this, SLOT(PassString(QString &)),
+		Qt::DirectConnection);
 
 	connect(player, SIGNAL(Updated()),
 		this, SLOT(UpdatePlayer()),
