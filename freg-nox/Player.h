@@ -163,7 +163,7 @@ class Player : public QObject {
 
 	void Use(const ushort num);
 	void Throw(const ushort num);
-	void Obtain(const ushort num) {}
+	void Obtain(const ushort num);
 	void Wield(const ushort num) {}
 	void Inscribe(const ushort num) {}
 	void Eat(const ushort num);

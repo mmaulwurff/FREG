@@ -98,7 +98,7 @@ void Player::Jump() {
 	world->WriteLock();
 	usingType=NO;
 	world->Jump(x, y, z);
-	world->WriteLock();
+	world->Unlock();
 }
 
 int Player::Move(const int dir) {
@@ -178,6 +178,13 @@ void Player::Throw(const ushort num) {
 	world->Unlock();
 }
 
+void Player::Obtain(const ushort num) {
+	world->WriteLock();
+	if ( !world->Get(x, y, z, num) )
+		Notify("Nothing here.");
+	world->Unlock();
+}
+
 void Player::Eat(const ushort n) {
 	if ( !player )
 		return;
@@ -225,7 +232,7 @@ void Player::Get(Block * block) {
 	if ( !player )
 		return;
 
-	Inventory * inv=player->HasInventory();
+	Inventory * const inv=player->HasInventory();
 	if ( inv )
 		inv->Get(block);
 }
