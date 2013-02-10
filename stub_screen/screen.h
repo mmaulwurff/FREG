@@ -52,13 +52,6 @@ class Screen : public VirtScreen {
 			const ushort,
 			const ushort) const;
 	char CharName(const int, const int) const;
-	char CharNumber(
-			const ushort,
-			const ushort,
-			const ushort) const;
-	char CharNumberFront(
-			const ushort,
-			const ushort) const;
 
 	private slots:
 	void Print() {}

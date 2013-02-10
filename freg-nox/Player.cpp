@@ -74,12 +74,13 @@ void Player::Examine() const {
 	world->ReadLock();
 	Focus(i, j, k);
 	
-	emit Notify("");
+	emit Notify("------");
 
 	QString str;
 	emit Notify( world->FullName(str, i, j, k) );
 
-	if ( AIR==world->Sub(i, j, k) ) {
+	const int sub=world->Sub(i, j, k);
+	if ( AIR==sub || SKY==sub || SUN_MOON==sub ) {
 		world->Unlock();
 		return;	
 	}

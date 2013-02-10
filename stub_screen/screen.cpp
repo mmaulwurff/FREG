@@ -31,56 +31,6 @@ void Screen::PassString(QString & str) const {
 	str=temp_str;
 }
 
-char Screen::CharNumber(
-		const ushort i,
-		const ushort j,
-		const ushort k) const
-{
-	if ( height-1==k )
-		return ' ';
-
-	if ( player->GetP()==w->GetBlock(i, j, k) )
-		switch ( player->Dir() ) {
-			case NORTH: return '^';
-			case SOUTH: return 'v';
-			case EAST:  return '>';
-			case WEST:  return '<';
-			case DOWN:  return 'x';
-			case UP:    return '.';
-			default:
-				fprintf(stderr,
-					"Screen::CharNumber(ushort, ushort, ushort): unlisted dir: %d\n",
-					(int)player->Dir());
-				return '*';
-		}
-
-	const ushort playerZ=player->Z();
-	if ( UP==player->Dir() ) {
-		if ( k > playerZ && k < playerZ+10 )
-			return k-playerZ+'0';
-	} else {
-		if ( k==playerZ )
-			return ' ';
-		if ( k>playerZ-10 )
-			return playerZ-k+'0';
-	}
-	return '+';
-}
-
-char Screen::CharNumberFront(
-		const ushort i,
-		const ushort j) const
-{
-	ushort ret;
-	if ( NORTH==player->Dir() || SOUTH==player->Dir() ) {
-		if ( (ret=abs(player->Y()-j))<10 )
-			return ret+'0';
-	} else
-		if ( (ret=abs(player->X()-i))<10 )
-			return ret+'0';
-	return '+';
-}
-
 char Screen::CharName(
 		const int kind,
 	       	const int sub) const

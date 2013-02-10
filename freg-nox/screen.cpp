@@ -320,14 +320,15 @@ void Screen::Print() {
 	waddch(hudWin, '\n');
 
 	//satiation line
+	wprintw(hudWin, "Sat: %u ", satiation);
 	if ( -1!=satiation ) {
-		if ( seconds_in_day*time_steps_in_sec<satiation ) {
+		if ( seconds_in_day<satiation ) {
 			wcolor_set(hudWin, BLUE_BLACK, NULL);
 			waddstr(hudWin, "Gorged\n");
-		} else if ( 3*seconds_in_day*time_steps_in_sec/4<satiation ) {
+		} else if ( 3*seconds_in_day/4<satiation ) {
 			wcolor_set(hudWin, GREEN_BLACK, NULL);
 			waddstr(hudWin, "Full\n");
-		} else if (seconds_in_day*time_steps_in_sec/4>satiation) {
+		} else if (seconds_in_day/4>satiation) {
 			wcolor_set(hudWin, RED_BLACK, NULL);
 			waddstr(hudWin, "Hungry\n");
 		}

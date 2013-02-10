@@ -379,7 +379,7 @@ class Animal : public Active {
 			:
 			Active(sh, i, j, k, sub, dur),
 			breath(max_breath),
-			satiation(seconds_in_day*time_steps_in_sec) {}
+			satiation(seconds_in_day) {}
 	Animal(Shred * const sh,
 			const ushort i,
 			const ushort j,
