@@ -170,7 +170,7 @@ class Player : public QObject {
 	void Eat     (const ushort num);
 	void Build   (const ushort num);
 	void Craft   (const ushort num) {}
-	void TakeOff (const ushort num) {}
+	void TakeOff (const ushort num);
 
 	private:
 	Block * ValidBlock(const ushort num) const;

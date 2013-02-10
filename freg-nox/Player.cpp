@@ -278,6 +278,16 @@ void Player::Build(const ushort num) {
 	world->Unlock();
 }
 
+void Player::TakeOff(const ushort num) {
+	world->WriteLock();
+	Block * const block=ValidBlock(num);
+	if ( block )
+		Get(Drop(num));
+	else
+		emit Notify("Nothing here.");
+	world->Unlock();
+}
+
 Block * Player::Drop(const ushort n) {
 	if ( !player )
 		return 0;
