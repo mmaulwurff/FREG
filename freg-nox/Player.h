@@ -156,11 +156,11 @@ class Player : public QObject {
 	int Move(const int dir);
 	void Jump();
 
-	void Inscribe() const;
 	void Backpack();
+	void Inscribe() const;
+	void Examine() const;
 	void Damage();
 	void Use();
-	void Examine() const;
 
 	void Use     (const ushort num);
 	void Throw   (const ushort num);
@@ -174,6 +174,8 @@ class Player : public QObject {
 
 	private:
 	Block * ValidBlock(const ushort num) const;
+	int DamageKind() const;
+	ushort DamageLevel() const;
 	void Get(Block *);
 	Block * Drop(const ushort);
 	void Focus(

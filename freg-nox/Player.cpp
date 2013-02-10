@@ -313,8 +313,31 @@ void Player::Damage() {
 	ushort i, j, k;
 	world->WriteLock();
 	Focus(i, j, k);
-	world->Damage(i, j, k);
+	world->Damage(i, j, k,
+		DamageLevel(),
+		DamageKind());
 	world->Unlock();
+}
+
+int Player::DamageKind() const {
+	Block * weapon=ValidBlock(inRight);
+	if ( weapon )
+		return weapon->DamageKind();
+	weapon=ValidBlock(inLeft);
+	if ( weapon )
+		return weapon->DamageKind();
+	return CRUSH;
+}
+
+ushort Player::DamageLevel() const {
+	ushort level=1;
+	Block * weapon=ValidBlock(inRight);
+	if ( weapon )
+		level+=weapon->DamageLevel();
+	weapon=ValidBlock(inLeft);
+	if ( weapon )
+		level+=weapon->DamageLevel();
+	return level;
 }
 
 void Player::CheckOverstep(const int dir) {

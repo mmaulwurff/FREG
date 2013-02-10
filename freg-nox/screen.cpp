@@ -200,7 +200,10 @@ void Screen::ControlPlayer(const int ch) {
 			case BUILD: player->Build(num); break;
 			case CRAFT: player->Craft(num); break;
 			case TAKEOFF: player->TakeOff(num); break;
-			default: break;
+			default:
+				fprintf(stderr,
+					"Screen::ControlPlayer: unlisted action mode: %d\n",
+					actionMode);
 		}
 		return;
 	}
@@ -216,7 +219,8 @@ void Screen::ControlPlayer(const int ch) {
 		case KEY_NPAGE: player->Turn(DOWN); break;
 		case KEY_PPAGE: player->Turn(UP); break;
 	
-		case  KEY_HOME: player->Backpack(); break;
+		case KEY_HOME: player->Backpack(); break;
+		case KEY_BACKSPACE: player->Damage(); break;
 		case '\n': player->Use(); break;
 		case  '?': player->Examine(); break;
 		case  '~': player->Inscribe(); break;

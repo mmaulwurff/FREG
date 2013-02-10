@@ -46,7 +46,7 @@ QString & Block::FullName(QString & str) const {
 
 int Block::Damage(
 		const ushort dmg,
-		const damage_kinds dmg_kind=CRUSH) {
+		const int dmg_kind=CRUSH) {
 	if ( 0>=durability )
 		return 0;
 

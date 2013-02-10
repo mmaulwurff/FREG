@@ -406,7 +406,7 @@ bool World::Damage(
 		const ushort j,
 		const ushort k,
 		const ushort dmg, //see default in class definition
-		const damage_kinds dmg_kind) //see default in class definition
+		const int dmg_kind) //see default in class definition
 {
 	if ( !InBounds(i, j, k) )
 		return false;
@@ -421,16 +421,16 @@ bool World::Damage(
 	if ( 0<temp->Damage(dmg, dmg_kind) )
 		return false;
 
-	//TODO: restore this
-	/*Block * dropped=temp->DropAfterDamage();
+	Block * const dropped=temp->DropAfterDamage();
 	if ( PILE!=temp->Kind() && (temp->HasInventory() || dropped) ) {
-		Pile * new_pile=new Pile(GetShred(i, j), i, j, k);
+		Pile * const new_pile=new Pile(GetShred(i, j), i, j, k);
 		SetBlock(new_pile, i, j, k);
-		if ( temp->HasInventory() )
-			new_pile->GetAll(temp);
-		if ( !(new_pile->Get(dropped)) )
+		Inventory * const inv=temp->HasInventory();
+		if ( inv )
+			new_pile->GetAll(inv);
+		if ( !new_pile->Get(dropped) && !dropped->Normal() )
 			delete dropped;
-	} else*/
+	} else
 		SetBlock(NewNormal(AIR), i, j, k);
 	
 	delete temp;

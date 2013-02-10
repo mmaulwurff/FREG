@@ -29,6 +29,12 @@ class Inventory;
 class Active;
 class Animal;
 
+const uchar onHead=0;
+const uchar inRight=1;
+const uchar inLeft=2;
+const uchar onBody=3;
+const uchar onLegs=4;
+
 class Block { //blocks without special physics and attributes
 	bool normal;
 	
@@ -100,7 +106,7 @@ class Block { //blocks without special physics and attributes
 	virtual char MakeSound() const { return ' '; }
 	virtual ushort Noise() const { return 1; }
 	virtual usage_types Use() { return NO; }
-	virtual int Damage(const ushort, const damage_kinds dmg_kind);
+	virtual int Damage(const ushort, const int dmg_kind);
 	virtual short Max_durability() const { return max_durability; }
 	void Restore() { durability=Max_durability(); }
 	short Durability() const { return durability; }
@@ -117,6 +123,8 @@ class Block { //blocks without special physics and attributes
 	virtual bool Armour() const { return false; }
 	virtual bool Weapon() const { return false; }
 	virtual bool Carving() const { return false; }
+	virtual int DamageKind() const { return CRUSH; }
+	virtual ushort DamageLevel() const { return 1; }
 
 	virtual void Unregister() {}
 	virtual int Eat(Block * const) { return 0; }
@@ -191,6 +199,8 @@ class Clock : public Block {
 class Weapons : public Block {
 	public:
 	int Kind() const=0;
+	int DamageKind() const=0;
+	ushort DamageLevel() const=0;
 	bool Weapon() const { return true; }
 	bool CanBeOut() const { return false; }
 
@@ -205,6 +215,17 @@ class Weapons : public Block {
 class Pick : public Weapons {
 	public:
 	int Kind() const { return PICK; }
+	int DamageKind() const { return MINE; }
+	ushort DamageLevel() const {
+		switch ( Sub() ) {
+			case IRON: return 10;
+			default:
+				fprintf(stderr,
+					"Pick::DamageLevel: unlisted sub: %d\n",
+					Sub());
+				return 1;
+		}
+	}
 	QString & FullName(QString & str) const { 
 		switch ( sub ) {
 			case IRON: return str="Iron pick";
@@ -489,12 +510,6 @@ class Dwarf : public Animal, public Inventory {
 	Q_OBJECT
 	
 	quint16 noise;
-
-	static const uchar onHead=0;
-	static const uchar inRight=1;
-	static const uchar inLeft=2;
-	static const uchar onBody=3;
-	static const uchar onLegs=4;
 
 	public:
 	ushort Noise() const { return noise; }

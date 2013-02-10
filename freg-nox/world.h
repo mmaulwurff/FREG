@@ -234,7 +234,7 @@ class World : public QThread {
 			const ushort,
 			const ushort,
 			const ushort=1,
-			const damage_kinds=CRUSH);
+			const int=CRUSH);
 	int Use(
 			const ushort,
 			const ushort,
