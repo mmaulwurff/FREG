@@ -75,6 +75,14 @@ class World : public QThread {
 	Block * NewNormal(const int sub) const {
 		return normal_blocks[sub];
 	}
+	void ReplaceWithNormal(
+			const ushort x,
+			const ushort y,
+			const ushort z) {
+		SetBlock(ReplaceWithNormal(GetBlock(x, y, z)),
+			x, y, z);
+	}
+	Block * ReplaceWithNormal(Block * const block);
 	void MakeSun();
 	void RemSun() {
 		SetBlock(NewNormal(ifStar ? STAR : SKY),

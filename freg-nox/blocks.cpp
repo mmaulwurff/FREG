@@ -83,6 +83,7 @@ int Block::Damage(
 bool Block::operator==(const Block & block) const {
 	return ( block.Kind()==Kind() &&
 			block.Sub()==Sub() &&
+			block.Durability()==Durability() &&
 			block.note==note );
 }
 

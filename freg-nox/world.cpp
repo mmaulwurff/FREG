@@ -103,6 +103,15 @@ void World::SetBlock(Block * block,
 	GetShred(x, y)->
 		SetBlock(block, x%shred_width, y%shred_width, z);
 }
+
+Block * World::ReplaceWithNormal(Block * const block) {
+	if ( !block->Normal() && block==NewNormal(block->Sub()) ) {
+		delete block;
+		return NewNormal(block->Sub());
+	}
+	return block;
+}
+
 int World::Anti(const int dir) const {
 	switch (dir) {
 		case NORTH: return SOUTH;
@@ -418,8 +427,10 @@ bool World::Damage(
 		SetBlock(temp, i, j, k);
 	}
 	
-	if ( 0<temp->Damage(dmg, dmg_kind) )
+	if ( 0<temp->Damage(dmg, dmg_kind) ) {
+		ReplaceWithNormal(i, j, k);
 		return false;
+	}
 
 	Block * const dropped=temp->DropAfterDamage();
 	if ( PILE!=temp->Kind() && (temp->HasInventory() || dropped) ) {
@@ -484,7 +495,9 @@ bool World::Inscribe(
 			i, j, k);
 	QString str="No note received\n";
 	emit GetString(str);
-	return block->Inscribe(str);
+	const bool inscribe=block->Inscribe(str);
+	ReplaceWithNormal(i, j, k);
+	return inscribe;
 }
 
 void World::Eat(

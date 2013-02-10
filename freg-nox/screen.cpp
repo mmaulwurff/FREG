@@ -26,9 +26,9 @@
 
 void Screen::PassString(QString & str) const {
 	echo();
-	curs_set(1);
 	werase(notifyWin);
 	mvwaddstr(notifyWin, 0, 0, "Enter inscription:");
+	curs_set(1);
 	char temp_str[note_length+1];
 	mvwgetnstr(notifyWin, 1, 0, temp_str, note_length);
 	str=temp_str;
