@@ -188,8 +188,8 @@ void Screen::ControlPlayer(const int ch) {
 		emit ExitReceived();
 		return;
 	}
-	if ( ch>='A' && ch<='Z' ) {
-		const int num=ch-'A';
+	if ( ch>='a' && ch<='z' ) {
+		const int num=ch-'a';
 		switch ( actionMode ) {
 			case USE:   player->Use(num); break;
 			case THROW: player->Throw(num); break;
@@ -221,17 +221,17 @@ void Screen::ControlPlayer(const int ch) {
 		case  '?': player->Examine(); break;
 		case  '~': player->Inscribe(); break;
 		
-		case 'u': actionMode=USE; break;
-		case 't': actionMode=THROW; break;
-		case 'o': actionMode=OBTAIN; break;
-		case 'w': actionMode=WIELD; break;
-		case 'i': actionMode=INSCRIBE; break;
-		case 'e': actionMode=EAT; break;
-		case 'b': actionMode=BUILD; break;
-		case 'c': actionMode=CRAFT; break;
-		case 'f': actionMode=TAKEOFF; break;
+		case 'U': actionMode=USE; break;
+		case 'T': actionMode=THROW; break;
+		case 'O': actionMode=OBTAIN; break;
+		case 'W': actionMode=WIELD; break;
+		case 'I': actionMode=INSCRIBE; break;
+		case 'E': actionMode=EAT; break;
+		case 'B': actionMode=BUILD; break;
+		case 'C': actionMode=CRAFT; break;
+		case 'F': actionMode=TAKEOFF; break;
 
-		case 'l': RePrint(); break;
+		case 'L': RePrint(); break;
 		default: Notify("Don't know what such key means."); break;
 	}
 	updated=false;
@@ -335,7 +335,7 @@ void Screen::Print() {
 		wstandend(hudWin);
 		wmove(hudWin, 0, 36);
 		for (i=0; i<inventory_size; ++i)
-			wprintw(hudWin, "%c ", 'A'+i);
+			wprintw(hudWin, "%c ", 'a'+i);
 		wmove(hudWin, 1, 36);
 		ushort num;
 		for (i=0; i<inventory_size; ++i)
@@ -528,7 +528,7 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 	QString str;
 	char num_str[6];
 	for (i=0; i<inventory_size; ++i) {
-		mvwprintw(window, 2+i, 12, "%c) ", 'A'+i);
+		mvwprintw(window, 2+i, 12, "%c) ", 'a'+i);
 		if ( inv->Number(i) ) {
 			wcolor_set(window, Color(inv->GetInvKind(i), inv->GetInvSub(i)), NULL);
 			wprintw(window, "[%c]%s",

@@ -7,7 +7,7 @@ TARGET =
 DEPENDPATH += .
 INCLUDEPATH += .
 
-CONFIG += qt thead debug
+CONFIG += qt thread debug
 QT -= gui
 LIBS += -lncurses
 

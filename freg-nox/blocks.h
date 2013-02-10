@@ -119,7 +119,7 @@ class Block { //blocks without special physics and attributes
 	virtual bool Carving() const { return false; }
 
 	virtual void Unregister() {}
-	virtual int Eat(Block *) { return 0; }
+	virtual int Eat(Block * const) { return 0; }
 
 	virtual uchar LightRadius() const { return 0; }
 
@@ -331,7 +331,7 @@ class Animal : public Active {
 
 	ushort Breath() const { return breath; }
 	ushort Satiation() const { return satiation; }
-	int Eat(Block *)=0;
+	int Eat(Block * const)=0;
 
 	bool Act();
 
@@ -516,8 +516,8 @@ class Dwarf : public Animal, public Inventory {
 	before_move_return BeforeMove(const int);
 	bool Act();
 
-	int Eat(Block * to_eat) {
-		if ( NULL==to_eat )
+	int Eat(Block * const to_eat) {
+		if ( !to_eat )
 			return 2;
 
 		switch ( to_eat->Sub() ) {
@@ -844,7 +844,7 @@ class Rabbit : public Animal {
 	bool Act();
 	float Weight() const { return 2; }
 
-	int Eat(Block * to_eat) {
+	int Eat(Block * const to_eat) {
 		if ( NULL==to_eat )
 			return 2;
 

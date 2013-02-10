@@ -224,16 +224,16 @@ void Player::Inscribe(const ushort num) {
 }
 
 void Player::Eat(const ushort n) {
+	world->WriteLock();
 	if ( !player )
 		return;
-	world->WriteLock();
 	Animal * const pl=player->IsAnimal();
 	if ( !pl ) {
 		world->Unlock();
 		return;
 	}
 
-	Block * food=Drop(n);
+	Block * const food=Drop(n);
 	if ( !food ) {
 		world->Unlock();
 		return;
