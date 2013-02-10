@@ -218,33 +218,45 @@ void Player::Inscribe(const ushort num) {
 	}
 	QString str;
 	emit GetString(str);
-	if ( !block->Inscribe(str) )
+	if ( block->Normal() ) {
+		Drop(num);
+		Block * const nblock=new Block(block->Sub());
+		if ( !nblock->Inscribe(str) )
+			emit Notify("Can not inscribe this.");
+		Get(nblock);
+	} else if ( !block->Inscribe(str) )
 		emit Notify("Can not inscribe this.");
 	world->Unlock();
 }
 
 void Player::Eat(const ushort n) {
 	world->WriteLock();
-	if ( !player )
+	if ( !player ) {
+		emit Notify("No player.");
+		world->Unlock();
 		return;
+	}
 	Animal * const pl=player->IsAnimal();
 	if ( !pl ) {
+		emit Notify("You can't eat.");
 		world->Unlock();
 		return;
 	}
 
 	Block * const food=Drop(n);
-	if ( !food ) {
-		world->Unlock();
-		return;
-	}
-	if ( !pl->Eat(food) ) {
+	const int eat=pl->Eat(food);
+	if ( 2==eat )
+		emit Notify("Nothing here.");
+	else if ( 0==eat ) {
 		Get(food);
 		emit Notify("You can't eat this.");
-	} else
+	} else {
 		emit Notify("Yum!");
-	if ( seconds_in_day*time_steps_in_sec < pl->Satiation() )
-		emit Notify("You have gorged yourself!");
+		if ( seconds_in_day*time_steps_in_sec < pl->Satiation() )
+			emit Notify("You have gorged yourself!");
+		if ( !food->Normal() )
+			delete food;
+	}
 	world->Unlock();
 }
 
@@ -266,7 +278,7 @@ Block * Player::Drop(const ushort n) {
 	return inv ? inv->Drop(n) : 0;
 }
 
-void Player::Get(Block * block) {
+void Player::Get(Block * const block) {
 	if ( !player )
 		return;
 
