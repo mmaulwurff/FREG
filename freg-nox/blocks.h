@@ -107,13 +107,18 @@ class Block { //blocks without special physics and attributes
 	virtual ushort Noise() const { return 1; }
 	virtual usage_types Use() { return NO; }
 	virtual int Damage(const ushort, const int dmg_kind);
-	virtual short Max_durability() const { return max_durability; }
-	void Restore() { durability=Max_durability(); }
+	virtual short MaxDurability() const {
+		switch ( Sub() ) {
+			case GREENERY: return 1;
+			case GLASS: return 2;
+			default: return max_durability;
+		}
+	}
+	void Restore() { durability=MaxDurability(); }
 	short Durability() const { return durability; }
 	virtual Block * DropAfterDamage() const {
 		return ( BLOCK==Kind() && GLASS!=sub ) ?
-			new Block(sub) :
-			0;
+			new Block(sub) : 0;
 	}
 	virtual Inventory * HasInventory() { return 0; }
 	virtual Animal * IsAnimal() { return 0; }
@@ -177,13 +182,15 @@ class Clock : public Block {
 		}
 	}
 	
+	Block * DropAfterDamage() const { return new Clock(world, Sub()); }
+	short MaxDurability() const { return 2; }
 	usage_types Use();
 
 	Clock(
 			World * const w,
 			const int sub)
 			:
-			Block(sub, max_durability, 0.1),
+			Block(sub, 2, 0.1),
 			world (w)
 	{}
 	Clock (
@@ -788,8 +795,6 @@ class Grass : public Active {
 		}
 	}
 	int Kind() const { return GRASS; }
-
-	short Max_durability() const { return 1; } 
 
 	bool ShouldFall() const { return false; }
 

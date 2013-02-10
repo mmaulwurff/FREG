@@ -449,14 +449,16 @@ int World::Use(
 	return GetBlock(i, j, k)->Use();
 }
 
-bool World::Build(Block * block,
+int World::Build(
+		Block * const block,
 		const ushort i,
 		const ushort j,
 		const ushort k)
 {
-	if ( !(InBounds(i, j, k) &&
-			block->CanBeOut()) )
-		return false;
+	if ( !InBounds(i, j, k) || AIR!=Sub(i, j, k)  )
+		return 1;
+	if (! block->CanBeOut() )
+		return 2;
 
 	block->Restore();
 	Active * const active=block->ActiveBlock();
@@ -465,7 +467,7 @@ bool World::Build(Block * block,
 	SetBlock(block, i, j, k);
 
 	ReEnlighten(i, j, k);
-	return true;
+	return 0;
 }
 
 bool World::Inscribe(

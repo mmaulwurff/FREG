@@ -260,13 +260,21 @@ void Player::Eat(const ushort n) {
 	world->Unlock();
 }
 
-void Player::Build(const ushort n) {
+void Player::Build(const ushort num) {
 	world->WriteLock();
-	Block * const temp=Drop(n);
-	ushort i, j, k;
-	Focus(i, j, k);
-	if ( !world->Build(temp, i, j, k) )
-		Get(temp);
+	Block * const block=ValidBlock(num);
+	if ( block ) {
+		ushort x, y, z;
+		Focus(x, y, z);
+		const int build=world->Build(block, x, y, z);
+		if ( 1==build )
+			emit Notify("Can not build here.");
+		else if ( 2==build )
+			emit Notify("Can not build this.");
+		else
+			Drop(num);
+	} else
+		emit Notify("Nothing here.");
 	world->Unlock();
 }
 

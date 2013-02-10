@@ -239,7 +239,8 @@ class World : public QThread {
 			const ushort,
 			const ushort,
 			const ushort);
-	bool Build(Block *,
+	int Build(
+			Block * const,
 			const ushort,
 			const ushort,
 			const ushort);
