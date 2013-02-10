@@ -113,7 +113,6 @@ enum color_pairs { //do not change colors order! //foreground_background
 };
 
 class IThread;
-class Block;
 class Inventory;
 class QTimer;
 
@@ -181,8 +180,8 @@ class Screen : public VirtScreen {
 	{
 		updated=false;
 	}
-	void UpdateAll() { updated=false; };
-	void UpdatePlayer() { updated=false; };
+	void UpdateAll() { updated=false; }
+	void UpdatePlayer() { updated=false; }
 	void UpdateAround(
 			const ushort,
 			const ushort,
