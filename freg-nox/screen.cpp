@@ -564,17 +564,17 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 }
 
 void Screen::Notify(const QString & str) {
-	static QString lines[5]={"", "", "", "", ""};
 	const short MAX_LINES=5;
-	wclear(notifyWin);
+	static QString lines[MAX_LINES]={"", "", "", "", ""};
+	werase(notifyWin);
 	for (ushort i=0; i<MAX_LINES-1; ++i) {
 		lines[i]=lines[i+1];
 		waddstr(notifyWin, lines[i].toLocal8Bit().constData());
 		waddch(notifyWin, '\n');
 	}
 	waddstr(notifyWin, str.toLocal8Bit().constData());
-	updated=false;
 	wnoutrefresh(notifyWin);
+	updated=false;
 	lines[MAX_LINES-1]=str;
 	fputs(str.toLocal8Bit().constData(), notifyLog);
 }
@@ -624,18 +624,20 @@ Screen::Screen(
 	rightWin=newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, SCREEN_SIZE*2+2);
 	hudWin=newwin(3+2, (SCREEN_SIZE*2+2)*2, SCREEN_SIZE+2, 0);
 	notifyWin=newwin(0, COLS, SCREEN_SIZE+2+5, 0);
-	
-	input=new IThread(this);
 
+	notifyLog=fopen("messages.txt", "a");
+
+	addstr("Press any key.");
+	getch();
+	Notify("Game started.");
+
+	input=new IThread(this);
 	input->start();
 
 	timer=new QTimer(this);
 	connect(timer, SIGNAL(timeout()),
 		this, SLOT(Print()));
 	timer->start(100);
-
-	notifyLog=fopen("messages.txt", "a");
-	Notify("Game started.");
 }
 
 void Screen::CleanAll() {
@@ -657,7 +659,6 @@ void Screen::CleanAll() {
 	delwin(rightWin);
 	delwin(notifyWin);
 	delwin(hudWin);
-	//delwin(soundWin);
 	//закончить оконный режим, очистить экран
 	endwin();
 	if ( NULL!=notifyLog )

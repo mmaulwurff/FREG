@@ -79,6 +79,11 @@ void Player::Examine() const {
 	QString str;
 	emit Notify( world->FullName(str, i, j, k) );
 
+	if ( AIR==world->Sub(i, j, k) ) {
+		world->Unlock();
+		return;	
+	}
+
 	if ( ""!=world->GetNote(str, i, j, k) )
 		emit Notify("Inscription: "+str);
 

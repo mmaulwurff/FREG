@@ -157,6 +157,10 @@ class Screen : public VirtScreen {
 	void PrintNormal(WINDOW * const) const;
 	void PrintFront(WINDOW * const) const;
 	void PrintInv(WINDOW * const, Inventory * const) const;
+	void RePrint() {
+		clear();
+		updated=false;
+	}
 
 	color_pairs Color(
 			const int kind,
@@ -191,14 +195,6 @@ class Screen : public VirtScreen {
 		updated=false;
 	}
 	void Move(const int) { updated=false; }
-	void RePrint() {
-		clear();
-		updated=false;
-	}
-
-	signals:
-	void ExitReceived();
-	void InputReceived(int, int) const;
 
 	public:
 	void ControlPlayer(const int);

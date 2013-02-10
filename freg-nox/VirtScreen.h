@@ -130,15 +130,6 @@ class VirtScreen : public QObject {
 	 */
 	void ExitReceived();
 
-	///This is emitted when input receives action key.
-	/**
-	 * Should be connected to player in constructor by this code:
-	 * connect(this, SIGNAL(InputReceived(int, int)),
-	 * 	player, SLOT(Act(int, int)),
-	 * 	Qt::DirectConnection);
-	 */
-	void InputReceived(const int action, const int dir) const;
-
 	public:
 	///Constructor makes player and world connections.
 	/**
