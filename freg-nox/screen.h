@@ -1,198 +1,180 @@
-	/*
-	*This file is part of FREG.
-	*
-	*FREG is free software: you can redistribute it and/or modify
-	*it under the terms of the GNU General Public License as published by
-	*the Free Software Foundation, either version 3 of the License, or
-	*(at your option) any later version.
-	*
-	*FREG is distributed in the hope that it will be useful,
-	*but WITHOUT ANY WARRANTY; without even the implied warranty of
-	*MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	*GNU General Public License for more details.
-	*
-	*You should have received a copy of the GNU General Public License
-	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
-	*/
-
-//this file provides curses (text-based graphics interface) screen for freg.
-//screen.cpp provides definitions for methods,
-//i_thread.h and i_thred.cpp provide input thread for this screen.
+/*
+*This file is part of FREG.
+*
+*FREG is free software: you can redistribute it and/or modify
+*it under the terms of the GNU General Public License as published by
+*the Free Software Foundation, either version 3 of the License, or
+*(at your option) any later version.
+*
+*FREG is distributed in the hope that it will be useful,
+*but WITHOUT ANY WARRANTY; without even the implied warranty of
+*MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*GNU General Public License for more details.
+*
+*You should have received a copy of the GNU General Public License
+*along with FREG. If not, see <http://www.gnu.org/licenses/>.
+*/
 
 #ifndef SCREEN_H
 #define SCREEN_H
 
-#define NOX
-#define SCREEN_SIZE 30
-
+#include "header.h"
+#include <QObject>
+#include <QVBoxLayout>
+#include <QEvent.h>
 #include "VirtScreen.h"
-#include <curses.h>
+#include "renderer/renderer.h"
 
-enum color_pairs { //do not change colors order! //foreground_background
-        BLACK_BLACK=1,
-        BLACK_RED,
-        BLACK_GREEN,
-        BLACK_YELLOW,
-        BLACK_BLUE,
-        BLACK_MAGENTA,
-        BLACK_CYAN,
-        BLACK_WHITE,
-        //
-        RED_BLACK,
-        RED_RED,
-        RED_GREEN,
-        RED_YELLOW,
-        RED_BLUE,
-        RED_MAGENTA,
-        RED_CYAN,
-        RED_WHITE,
-        //
-        GREEN_BLACK,
-        GREEN_RED,
-        GREEN_GREEN,
-        GREEN_YELLOW,
-        GREEN_BLUE,
-        GREEN_MAGENTA,
-        GREEN_CYAN,
-        GREEN_WHITE,
-        //
-        YELLOW_BLACK,
-        YELLOW_RED,
-        YELLOW_GREEN,
-        YELLOW_YELLOW,
-        YELLOW_BLUE,
-        YELLOW_MAGENTA,
-        YELLOW_CYAN,
-        YELLOW_WHITE,
-        //
-        BLUE_BLACK,
-        BLUE_RED,
-        BLUE_GREEN,
-        BLUE_YELLOW,
-        BLUE_BLUE,
-        BLUE_MAGENTA,
-        BLUE_CYAN,
-        BLUE_WHITE,
-        //
-	MAGENTA_BLACK,
-        MAGENTA_RED,
-        MAGENTA_GREEN,
-        MAGENTA_YELLOW,
-        MAGENTA_BLUE,
-        MAGENTA_MAGENTA,
-        MAGENTA_CYAN,
-        MAGENTA_WHITE,
-        //
-        CYAN_BLACK,
-        CYAN_RED,
-        CYAN_GREEN,
-        CYAN_YELLOW,
-        CYAN_BLUE,
-        CYAN_MAGENTA,
-        CYAN_CYAN,
-        CYAN_WHITE,
-        //
-        WHITE_BLACK,
-        WHITE_RED,
-        WHITE_GREEN,
-        WHITE_YELLOW,
-        WHITE_BLUE,
-        WHITE_MAGENTA,
-        WHITE_CYAN,
-        WHITE_WHITE
-};
+#define CONSOLE_SCREEN 0 //panzerschrek
+#include "freg_lib/vec.h"
 
-class IThread;
+#define FREG_GL_VERSION_MAJOR 3
+#define FREG_GL_VERSION_MINOR 0
+
+//Panzerschrk -  key scan codes
+#define FREG_KEY_UP             ( ( Qt::Key_Up & 0xff ) | ( Qt::Key_Up >> 16 ) )
+#define FREG_KEY_DOWN           ( ( Qt::Key_Down & 0xff ) | ( Qt::Key_Down >> 16 ) )
+#define FREG_KEY_LEFT           ( ( Qt::Key_Left & 0xff ) | ( Qt::Key_Left >> 16 ) )
+#define FREG_KEY_RIGHT          ( ( Qt::Key_Right & 0xff ) | ( Qt::Key_Right >> 16 ) )
+#define FREG_KEY_FORWARD        Qt::Key_W
+#define FREG_KEY_BACKWARD       Qt::Key_S
+#define FREG_KEY_STRAFE_LEFT    Qt::Key_A
+#define FREG_KEY_STRAFE_RIGHT   Qt::Key_D
+#define FREG_KEY_JUMP           Qt::Key_Space
+#define FREG_KEY_CROUCH         Qt::Key_C
+
+
+class World;
+class Player;
 class Block;
 class Inventory;
+class QString;
 class QTimer;
 
-class Screen : public VirtScreen {
-	Q_OBJECT
+class Screen;
+class FREGGLWidget : public QGLWidget
+{
+    Q_OBJECT
 
-	WINDOW * leftWin,
-	       * rightWin,
-	       * notifyWin,
-	       * hudWin; //head-up display
-	IThread * input;
-	volatile bool updated;
-	bool cleaned;
+public:
+    FREGGLWidget(QWidget *parent=0);
+    FREGGLWidget( Screen* s, r_Renderer* screen_renderer, QGLFormat format, QWidget* parent );
+    ~FREGGLWidget();
 
-	QTimer * timer;
+    QSize minimumSizeHint() const;
+    QSize sizeHint() const;
 
-	char CharName(
-			const ushort,
-			const ushort,
-			const ushort) const;
-	char CharName(const int, const int) const;
-	char CharNumber(
-			const ushort,
-			const ushort,
-			const ushort) const;
-	char CharNumberFront(
-			const ushort,
-			const ushort) const;
-	void Arrows(
-			WINDOW * const & window,
-			const ushort x,
-			const ushort y) const
-	{
-		wcolor_set(window, WHITE_RED, NULL);
-		mvwprintw(window, 0, x, "vv");
-		mvwprintw(window, SCREEN_SIZE+1, x, "^^");
-		mvwprintw(window, y, 0, ">");
-		mvwprintw(window, y, SCREEN_SIZE*2+1, "<");	
-	}
-	FILE * notifyLog; //весь текст уведомлений (notification) дублируется в файл.
+protected:
+    void initializeGL();
+    void resizeGL(int, int);
+    void paintGL();
+    void mousePressEvent(QMouseEvent* e);
+    void mouseMoveEvent(QMouseEvent* e);
+    void keyPressEvent(QKeyEvent* e);
+    void keyReleaseEvent(QKeyEvent* e);
+    void closeEvent(QCloseEvent* e);
 
-	void PrintNormal(WINDOW * const) const;
-	void PrintFront(WINDOW * const) const;
-	void PrintInv(WINDOW * const, Inventory * const) const;
+public slots:
+    void setXRotation(int) {}
+    void setYRotation(int) {}
+    void setZRotation(int) {}
 
-	color_pairs Color(
-			const int kind,
-			const int sub) const; //пара цветов текст_фон в зависимоти от типа (kind) и вещества (sub) блока.
-	color_pairs Color(
-			const ushort,
-			const ushort,
-			const ushort) const;
+private:
+    void draw();
 
-	private slots:
-	void Print();
+    r_Renderer* renderer;
+    Screen* screen;
 
-	public slots:
-	void Notify(const QString &);
-	void CleanAll();
-	void PassString(QString &) const;
-	void Update(
-			const ushort,
-			const ushort,
-			const ushort)
-	{
-		updated=false;
-	}
-	void UpdateAll() { updated=false; };
-	void UpdatePlayer() { updated=false; };
-	void UpdateAround(
-			const ushort,
-			const ushort,
-			const ushort,
-			const ushort)
-	{
-		updated=false;
-	}
-	void Move(const int) { updated=false; }
-	void RePrint() {
-		clear();
-		updated=false;
-	}
-
-	signals:
-	void ExitReceived();
-	void InputReceived(int, int) const;
-
-	public:
-	Screen(World * const, Player * const);
+    QColor qtPurple;
 };
+
+
+class Screen : public VirtScreen
+{
+    Q_OBJECT
+
+    //World * const w; //connected world
+    //Player * const player;
+    /*WINDOW * leftWin,
+           * rightWin,
+           * notifyWin,
+           * soundWin,
+           * hudWin; //head-up display
+    IThread * input;*/
+    bool updated;
+
+    bool cleaned;
+
+   // QTimer * timer;
+
+private slots:
+    void Print();
+
+public slots:
+    void Notify(const QString&);
+    void CleanAll();
+    void PassString(QString &) const;
+    void Update(
+        const unsigned short,
+        const unsigned short,
+        const unsigned short);
+    void UpdateAll();
+    void Move(const int dir){ renderer->MoveMap(dir);printf( "moved. dir= %d\n",dir ); }
+    void UpdateAround() {}
+    void UpdateAround(
+        const ushort,
+        const ushort,
+        const ushort,
+        const ushort range);
+    void UpdatePlayer() {};
+    void Flushinp()
+    {
+        /*flushinp();*/
+    }
+    void RePrint()
+    {
+
+    }
+
+signals:
+    void ExitReceived();
+    void InputReceived(int, int) const;
+public:
+
+    Screen(World * const, Player * const);
+    void mousePressEvent(QMouseEvent * e);
+    void mouseMoveEvent(QMouseEvent * e);
+    void keyPressEvent( QKeyEvent* e );
+    void keyReleaseEvent( QKeyEvent* e );
+    void closeEvent(QCloseEvent* e);
+    ~Screen();
+
+private:
+    r_Renderer* renderer;
+
+
+
+private://Panzerschrek
+    QTime startup_time;
+    int screen_width, screen_height;
+    QVBoxLayout *layout;
+    FREGGLWidget* gl_widget;
+    QWidget* window;
+    //static WINUSERAPI LRESULT WINAPI WindowProc( HWND,UINT,WPARAM,LPARAM );
+    bool keys[ 512 ];//для хранения состояния клавиш
+    bool use_mouse;
+private:
+
+    m_Vec3 cam_pos, cam_ang;
+    r_UniversalThread input_thread;
+    inline static void sInputTick();
+    void InputTick();
+    static Screen* current_screen;
+};
+
+inline void Screen::sInputTick()
+{
+    current_screen->InputTick();
+}
 
 #endif
