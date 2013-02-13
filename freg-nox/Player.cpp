@@ -284,6 +284,17 @@ void Player::Build(const ushort num) {
 	world->Unlock();
 }
 
+void Player::Craft(const ushort num) {
+	world->WriteLock();
+	/*if ( !player ) {
+		emit Notify("Player does not exist.");
+		return 0;
+	}
+	Inventory * const inv=player->HasInventory();
+	if inv->MiniCraft(num);*/
+	world->Unlock();
+}
+
 void Player::TakeOff(const ushort num) {
 	world->WriteLock();
 	Block * const block=ValidBlock(num);

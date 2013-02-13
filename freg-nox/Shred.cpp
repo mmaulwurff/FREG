@@ -16,9 +16,7 @@
 	*/
 
 #include <QFile>
-#include <QTextStream>
 #include <QByteArray>
-#include <QBuffer>
 #include "Shred.h"
 #include "world.h"
 
@@ -42,9 +40,7 @@ Shred::Shred(World * const world_,
 		QByteArray read_data=file.readAll();
 		file.close();
 		QByteArray uncompressed=qUncompress(read_data);
-		QBuffer buf(&uncompressed);
-		buf.open(QIODevice::ReadOnly);
-		QDataStream in(&buf);
+		QDataStream in(uncompressed);
 		quint8 version;
 		in >> version;
 		if ( datastream_version!=version )
@@ -60,7 +56,6 @@ Shred::Shred(World * const world_,
 			}
 			lightMap[i][j][height-1]=max_light_radius;
 		}
-		buf.close();
 		return;
 	}
 	
@@ -91,6 +86,7 @@ Shred::Shred(World * const world_,
 }
 
 Shred::~Shred() {
+	ushort i, j, k;
 	const ulong mapSize=world->MapSize();
 	if ( (longitude < mapSize) && (latitude < mapSize) ) {
 		QFile file(FileName());
@@ -101,12 +97,9 @@ Shred::~Shred() {
 
 		QByteArray shred_data;
 		shred_data.reserve(200000);
-		QBuffer buf(&shred_data);
-		buf.open(QIODevice::WriteOnly);
-		QDataStream outstr(&buf);
+		QDataStream outstr(&shred_data, QIODevice::WriteOnly);
 		outstr << (quint8)datastream_version;
 		outstr.setVersion(datastream_version);
-		ushort i, j, k;
 		for (i=0; i<shred_width; ++i)
 		for (j=0; j<shred_width; ++j)
 		for (k=0; k<height; ++k) {
@@ -115,11 +108,9 @@ Shred::~Shred() {
 				delete blocks[i][j][k];
 		}
 		file.write(qCompress(shred_data));
-		buf.close();
 		return;
 	}
 
-	ushort i, j, k;
 	for (i=0; i<shred_width; ++i)
 	for (j=0; j<shred_width; ++j)
 	for (k=0; k<height; ++k)

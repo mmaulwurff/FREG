@@ -20,8 +20,6 @@
 
 #include <cmath>
 #include <QReadWriteLock>
-#include <QReadLocker>
-#include <QWriteLocker>
 #include <QThread>
 #include "header.h"
 

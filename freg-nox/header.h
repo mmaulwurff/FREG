@@ -29,7 +29,7 @@
 #endif
 
 const unsigned short shred_width=16;
-const unsigned short height=100;
+const unsigned short height=128;
 
 const unsigned short note_length=144;
 
@@ -54,17 +54,17 @@ const unsigned short max_durability=100;
 const unsigned short max_breath=60;
 
 enum dirs {
-	HERE,
-	NORTH,
-	NORTH_EAST,
-	EAST,
-	SOUTH_EAST,
-	SOUTH,
-	SOUTH_WEST,
-	WEST,
-	NORTH_WEST,
 	UP,
-	DOWN
+	DOWN,
+	NORTH,
+	SOUTH,
+	EAST,
+	WEST,
+	NORTH_EAST,
+	SOUTH_EAST,
+	SOUTH_WEST,
+	NORTH_WEST,
+	HERE
 };
 
 enum { NOT_MOVABLE, MOVABLE, ENVIRONMENT };
@@ -128,8 +128,5 @@ enum subs {//substance block is made from
 enum before_move_return { NOTHING, DESTROY };
 
 enum usage_types { NO, OPEN, INNER_ACTION };
-
-//for debugging reasons:
-#define eprint(n) { fputs(n"\n", stderr); }
 
 #endif

@@ -169,7 +169,7 @@ class Player : public QObject {
 	void Inscribe(const ushort num);
 	void Eat     (const ushort num);
 	void Build   (const ushort num);
-	void Craft   (const ushort num) {}
+	void Craft   (const ushort num);
 	void TakeOff (const ushort num);
 
 	private:

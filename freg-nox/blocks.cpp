@@ -94,7 +94,7 @@ Block::Block(
 		:
 		normal(false),
 		sub(n),
-		direction(NORTH),
+		direction(UP),
 		note(""),
 		durability(dur)
 {
@@ -371,10 +371,22 @@ bool Rabbit::Act() {
 		else
 			world->Jump(x_self, y_self, z_self);
 	} else switch ( rand()%60 ) {
-			case 0: world->Move(x_self, y_self, z_self, NORTH); break;
-			case 1: world->Move(x_self, y_self, z_self, SOUTH); break;
-			case 2: world->Move(x_self, y_self, z_self, EAST);  break;
-			case 3: world->Move(x_self, y_self, z_self, WEST);  break;
+			case 0:
+				SetDir(NORTH);
+				world->Move(x_self, y_self, z_self, NORTH);
+			break;
+			case 1:
+				SetDir(SOUTH);
+				world->Move(x_self, y_self, z_self, SOUTH);
+			break;
+			case 2:
+				SetDir(EAST);
+				world->Move(x_self, y_self, z_self, EAST);
+			break;
+			case 3:
+				SetDir(WEST);
+				world->Move(x_self, y_self, z_self, WEST);
+			break;
 		}
 
 	if ( seconds_in_day*time_steps_in_sec/2>satiation ) {
