@@ -54,6 +54,7 @@ int main(int argc, char *argv[]) {
 	World earth(worldName, size, sizeActive);
 	Player player(&earth);
 	Screen screen(&earth, &player);
+	earth.start();
 
 	QObject::connect(&freg, SIGNAL(aboutToQuit()),
 		&screen, SLOT(CleanAll()));

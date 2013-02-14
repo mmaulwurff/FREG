@@ -450,11 +450,9 @@ class Inventory {
 	virtual Inventory * HasInventory() { return this; }
 	usage_types Use() { return OPEN; }
 
-	virtual Block * Drop(const ushort n) {
-		if ( inventory_size<=n || !Number(n) )
-			return 0;
-
-		return inventory[n].pop();
+	virtual Block * Drop(const ushort num) {
+		return ( inventory_size>num && Number(num) ) ?
+			inventory[num].pop() : 0;
 	}
 	bool Get(Block * const block) {
 		if ( !block )
@@ -488,6 +486,9 @@ class Inventory {
 				}
 			}
 	}
+
+	int MiniCraft(const ushort num);
+
 	virtual void SaveAttributes(QDataStream & out) const {
 		for (ushort i=0; i<inventory_size; ++i) {
 			out << Number(i);
@@ -621,7 +622,8 @@ class Chest : public Block, public Inventory {
 	int Sub() const { return Block::Sub(); }
 	QString & FullName(QString & str) const {
 		switch (sub) {
-			case WOOD: return str="Wooden Chest";
+			case WOOD: return str="Wooden chest";
+			case STONE: return str="Stone chest";
 			default:
 				fprintf(stderr,
 					"Chest::FullName(QString&): Chest has unknown substance: %d\n",
@@ -841,15 +843,19 @@ class Bush : public Active, public Inventory {
 		Inventory::SaveAttributes(out);
 	}
 
-	Bush(Shred * const sh) :
-			Active(sh, 0, 0, 0, WOOD),
-	       		Inventory(sh) {}
-	Bush(Shred * const sh,
-			QDataStream & str,
-			const int sub)
+	Bush(
+			Shred * const sh)
 			:
-			Active(sh, 0, 0, 0, str, sub),
-			Inventory(sh, str) {}
+			Active(sh, 0, 0, 0, WOOD),
+	       		Inventory(sh)
+	{}
+	Bush(
+			Shred * const sh,
+			QDataStream & str)
+			:
+			Active(sh, 0, 0, 0, str, WOOD),
+			Inventory(sh, str)
+	{}
 };
 
 class Rabbit : public Animal {
@@ -877,22 +883,23 @@ class Rabbit : public Animal {
 
 	Block * DropAfterDamage() const;
 
-	Rabbit(Shred * const sh,
+	Rabbit(
+			Shred * const sh,
 			const ushort x,
 			const ushort y,
 			const ushort z)
 			:
 			Animal(sh, x, y, z)
-		{}
-	Rabbit(Shred * const sh,
+	{}
+	Rabbit(
+			Shred * const sh,
 			const ushort x,
 			const ushort y,
 			const ushort z,
-			QDataStream & str,
-			const int sub)
+			QDataStream & str)
 			:
-			Animal(sh, x, y, z, str, sub)
-		{}
+			Animal(sh, x, y, z, str, A_MEAT)
+	{}
 };
 
 #endif

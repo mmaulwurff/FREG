@@ -151,7 +151,7 @@ void Player::Inscribe() const {
 		return;
 	}
 	if ( !world->Inscribe(x, y, z) )
-		emit Notify("Can not inscribe this.");
+		emit Notify("Cannot inscribe this.");
 	world->Unlock();
 }
 
@@ -210,7 +210,7 @@ void Player::Wield(const ushort num) {
 	if ( 1==wield_code )
 		emit Notify("Nothing here.");
 	else if ( 2==wield_code )
-		emit Notify("Can not wield this.");
+		emit Notify("Cannot wield this.");
 	world->Unlock();
 }
 
@@ -228,10 +228,10 @@ void Player::Inscribe(const ushort num) {
 		Drop(num);
 		Block * const nblock=new Block(block->Sub());
 		if ( !nblock->Inscribe(str) )
-			emit Notify("Can not inscribe this.");
+			emit Notify("Cannot inscribe this.");
 		Get(nblock);
 	} else if ( !block->Inscribe(str) )
-		emit Notify("Can not inscribe this.");
+		emit Notify("Cannot inscribe this.");
 	world->Unlock();
 }
 
@@ -274,9 +274,9 @@ void Player::Build(const ushort num) {
 		Focus(x, y, z);
 		const int build=world->Build(block, x, y, z);
 		if ( 1==build )
-			emit Notify("Can not build here.");
+			emit Notify("Cannot build here.");
 		else if ( 2==build )
-			emit Notify("Can not build this.");
+			emit Notify("Cannot build this.");
 		else
 			Drop(num);
 	} else
@@ -286,12 +286,19 @@ void Player::Build(const ushort num) {
 
 void Player::Craft(const ushort num) {
 	world->WriteLock();
-	/*if ( !player ) {
-		emit Notify("Player does not exist.");
-		return 0;
+	Inventory * const inv=PlayerInventory();
+	if ( !inv ) {
+		Notify("Cannot craft.");
+		world->Unlock();
+		return;
 	}
-	Inventory * const inv=player->HasInventory();
-	if inv->MiniCraft(num);*/
+	const int craft=inv->MiniCraft(num);
+	if ( 1==craft )
+		Notify("Nothing here.");
+	else if ( 2==craft )
+		Notify("You don't know how to make something from this.");
+	else
+		Notify("Craft successful.");
 	world->Unlock();
 }
 

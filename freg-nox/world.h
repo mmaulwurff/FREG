@@ -29,6 +29,12 @@ class Inventory;
 class Active;
 class Shred;
 
+typedef struct {
+	ushort num;
+	int kind;
+	int sub;
+} craft_item;
+
 class World : public QThread {
 	Q_OBJECT
 
@@ -47,6 +53,31 @@ class World : public QThread {
 	bool ifStar;
 
 	ulong mapSize;
+
+	typedef QList<craft_item *> craft_recipe;
+	QList<craft_recipe *> recipes;
+
+	void LoadRecipes();
+	void CleanRecipes();
+
+	Block * NewNormal(const int sub) const {
+		return normal_blocks[sub];
+	}
+	void ReplaceWithNormal(
+			const ushort x,
+			const ushort y,
+			const ushort z) {
+		SetBlock(ReplaceWithNormal(GetBlock(x, y, z)),
+			x, y, z);
+	}
+	Block * ReplaceWithNormal(Block * const block);
+	void MakeSun();
+	void RemSun() {
+		SetBlock(NewNormal(ifStar ? STAR : SKY),
+			sun_moon_x,
+			shred_width*numShreds/2,
+			height-1);
+	}
 
 	protected:
 	void run();
@@ -68,26 +99,6 @@ class World : public QThread {
 			const ushort,
 			const ushort,
 			const ushort);
-
-	private:
-	Block * NewNormal(const int sub) const {
-		return normal_blocks[sub];
-	}
-	void ReplaceWithNormal(
-			const ushort x,
-			const ushort y,
-			const ushort z) {
-		SetBlock(ReplaceWithNormal(GetBlock(x, y, z)),
-			x, y, z);
-	}
-	Block * ReplaceWithNormal(Block * const block);
-	void MakeSun();
-	void RemSun() {
-		SetBlock(NewNormal(ifStar ? STAR : SKY),
-			sun_moon_x,
-			shred_width*numShreds/2,
-			height-1);	
-	}
 
 	//lighting section
 	public:
@@ -386,6 +397,14 @@ class World : public QThread {
 			const ushort,
 			const ushort,
 		       	const ushort) const;
+
+	//craft section
+	bool MiniCraft(craft_item & item, craft_item & result) {
+		craft_recipe recipe;
+		recipe.append(&item);
+		return Craft(recipe, result);
+	}
+	bool Craft(const craft_recipe & recipe, craft_item & result);
 
 	private:
 	friend class Active;

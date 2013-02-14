@@ -223,6 +223,30 @@ bool Animal::Act() {
 	return false;
 }
 
+int Inventory::MiniCraft(const ushort num) {
+	const ushort size=inventory[num].size();
+	if ( !size )
+		return 1; //empty
+	craft_item item={
+		size,
+		GetInvKind(num),
+		GetInvSub(num)
+	};
+	craft_item result;
+
+	if ( inShred->GetWorld()->MiniCraft(item, result) ) {
+		while ( !inventory[num].isEmpty() ) {
+			Block * const todrop=Drop(num);
+			if ( !todrop->Normal() )
+				delete todrop;
+		}
+		for (ushort i=0; i<result.num; ++i)
+			Get(inShred->CraftBlock(result.kind, result.sub));
+		return 0; //success
+	}
+	return 2; //no such recipe
+}
+
 Inventory::Inventory(
 		Shred * const sh,
 		QDataStream & str)

@@ -24,6 +24,65 @@
 #include "Shred.h"
 #include "world.h"
 
+void World::LoadRecipes() {
+	QFile file("recipes.txt");
+	if ( !file.open(QIODevice::ReadOnly | QIODevice::Text) ) {
+		fputs("No recipes file found.\n", stderr);
+		return;
+	}
+	while ( !file.atEnd() ) {
+		QByteArray rec_arr=file.readLine();
+		if ( rec_arr.isEmpty() ) {
+			qDebug("recipes read error.");
+			break;
+		}
+		QTextStream in(rec_arr, QIODevice::ReadOnly | QIODevice::Text);
+		craft_recipe * recipe=new craft_recipe;
+		for (;;) {
+			craft_item * item=new craft_item;
+			item->num=0;
+			in >> item->num >> item->kind >> item->sub;
+			if ( !item->num ) {
+				delete item;
+				break;
+			}
+			else
+				recipe->append(item);
+		}
+		recipes.append(recipe);
+	}
+}
+
+void World::CleanRecipes() {
+	for (ushort j=0; j<recipes.size(); ++j) {
+		for (ushort i=0; i<recipes.at(j)->size(); ++i)
+			delete recipes.at(j)->at(i);
+		delete recipes.at(j);
+	}
+}
+
+bool World::Craft(
+		const craft_recipe & recipe,
+		craft_item & result)
+{
+	const ushort size=recipe.size();
+	for (ushort i=0; i<recipes.size(); ++i) {
+		if ( recipes.at(i)->size()!=size+1 )
+			continue;
+		ushort j=0;
+		for ( ; j<size && recipes.at(i)->at(j)->num==recipe.at(j)->num &&
+				recipes.at(i)->at(j)->kind==recipe.at(j)->kind &&
+				recipes.at(i)->at(j)->sub==recipe.at(j)->sub; ++j);
+		if ( j==size ) {
+			result.num=recipes.at(i)->at(j)->num;
+			result.kind=recipes.at(i)->at(j)->kind;
+			result.sub=recipes.at(i)->at(j)->sub;
+			return true;
+		}
+	}
+	return false;
+}
+
 void World::run() {
 	QTimer timer;
 	connect(&timer, SIGNAL(timeout()),
@@ -757,7 +816,7 @@ World::World(const QString & world_name,
 
 	MakeSun();
 	ReEnlightenTime();
-	start();
+	LoadRecipes();
 }
 
 World::~World() { CleanAll(); }
@@ -774,6 +833,8 @@ void World::CleanAll() {
 	quit();
 	Unlock();
 	wait();
+
+	CleanRecipes();
 
 	RemSun();
 	ushort i;

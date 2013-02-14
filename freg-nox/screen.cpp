@@ -320,7 +320,7 @@ void Screen::Print() {
 	waddch(hudWin, '\n');
 
 	//satiation line
-	wprintw(hudWin, "Sat: %u ", satiation);
+	//wprintw(hudWin, "Sat: %u ", satiation);
 	if ( -1!=satiation ) {
 		if ( seconds_in_day<satiation ) {
 			wcolor_set(hudWin, BLUE_BLACK, NULL);

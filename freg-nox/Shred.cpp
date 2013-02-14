@@ -156,9 +156,9 @@ Block * Shred::BlockFromFile(QDataStream & str,
 		case PICK:   return new Pick (str, sub);
 
 		case CHEST:  return new Chest (this, str, sub);
-		case BUSH:   return new Bush  (this, str, sub);
+		case BUSH:   return new Bush  (this, str);
 
-		case RABBIT: return new Rabbit(this, i, j, k, str, sub);
+		case RABBIT: return new Rabbit(this, i, j, k, str);
 		case ACTIVE: return new Active(this, i, j, k, str, sub);
 		case DWARF:  return new Dwarf (this, i, j, k, str, sub);
 		case PILE:   return new Pile  (this, i, j, k, str, sub);
