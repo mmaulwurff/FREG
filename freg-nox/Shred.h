@@ -110,19 +110,7 @@ class Shred {
 			const ulong);
 	~Shred();
 	
-	Block * CraftBlock(const int kind, const int sub) {
-		switch ( kind ) {
-			case BLOCK: return NewNormal(sub);
-			case PICK:  return new Pick(sub);
-			case CHEST: return new Chest(0, sub);
-			case CLOCK: return new Clock(GetWorld(), sub);
-			default:
-				fprintf(stderr,
-					"Shred::CraftBlock: unlisted kind: %d\n",
-					kind);
-				return NewNormal(sub);
-		}
-	}
+	Block * CraftBlock(const int kind, const int sub) const;
 	Block * NewNormal(const int sub) const;
 	Block * BlockFromFile(QDataStream &,
 			ushort,

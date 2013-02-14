@@ -118,6 +118,22 @@ Shred::~Shred() {
 			delete blocks[i][j][k];
 }
 
+Block * Shred::CraftBlock(const int kind, const int sub) const {
+	switch ( kind ) {
+		case BLOCK:  return NewNormal(sub);
+		case PICK:   return new Pick(sub);
+		case CHEST:  return new Chest(0, sub);
+		case CLOCK:  return new Clock(GetWorld(), sub);
+		case ACTIVE: return new Active(sub);
+		case GRASS:  return new Grass();
+		default:
+			fprintf(stderr,
+				"Shred::CraftBlock: unlisted kind: %d\n",
+				kind);
+			return NewNormal(sub);
+	}
+}
+
 Block * Shred::NewNormal(const int sub) const {
 	return world->NewNormal(sub);
 }
@@ -135,7 +151,7 @@ void Shred::PhysEvents() {
 Block * Shred::BlockFromFile(QDataStream & str,
 		ushort i,
 		ushort j,
-		const ushort k) 
+		const ushort k)
 {
 	quint16 kind, sub;
 	bool normal;
@@ -155,15 +171,15 @@ Block * Shred::BlockFromFile(QDataStream & str,
 		case BLOCK:  return new Block(str, sub);
 		case PICK:   return new Pick (str, sub);
 
-		case CHEST:  return new Chest (this, str, sub);
 		case BUSH:   return new Bush  (this, str);
+		case CHEST:  return new Chest (this, str, sub);
 
 		case RABBIT: return new Rabbit(this, i, j, k, str);
+		case DWARF:  return new Dwarf (this, i, j, k, str);
+		case PILE:   return new Pile  (this, i, j, k, str);
+		case GRASS:  return new Grass (this, i, j, k, str);
 		case ACTIVE: return new Active(this, i, j, k, str, sub);
-		case DWARF:  return new Dwarf (this, i, j, k, str, sub);
-		case PILE:   return new Pile  (this, i, j, k, str, sub);
 		case LIQUID: return new Liquid(this, i, j, k, str, sub);
-		case GRASS:  return new Grass (this, i, j, k, str, sub);
 
 		case CLOCK:  return new Clock(str, world, sub);
 		default:

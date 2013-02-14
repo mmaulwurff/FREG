@@ -211,12 +211,18 @@ class Weapons : public Block {
 	bool Weapon() const { return true; }
 	bool CanBeOut() const { return false; }
 
-	Weapons(const int sub, const short dur=max_durability)
+	Weapons(
+			const int sub,
+			const short dur=max_durability)
 			:
-			Block(sub, dur) {}
-	Weapons(QDataStream & str, const int sub)
+			Block(sub, dur)
+	{}
+	Weapons(
+			QDataStream & str,
+			const int sub)
 			:
-			Block(str, sub) {}
+			Block(str, sub)
+	{}
 };
 
 class Pick : public Weapons {
@@ -370,7 +376,8 @@ class Animal : public Active {
 
 	Animal * IsAnimal() { return this; }
 
-	Animal(Shred * const sh,
+	Animal(
+			Shred * const sh,
 			const ushort i,
 			const ushort j,
 			const ushort k,
@@ -379,8 +386,10 @@ class Animal : public Active {
 			:
 			Active(sh, i, j, k, sub, dur),
 			breath(max_breath),
-			satiation(seconds_in_day) {}
-	Animal(Shred * const sh,
+			satiation(seconds_in_day)
+	{}
+	Animal(
+			Shred * const sh,
 			const ushort i,
 			const ushort j,
 			const ushort k,
@@ -606,10 +615,9 @@ class Dwarf : public Animal, public Inventory {
 			const ushort x,
 			const ushort y,
 			const ushort z,
-			QDataStream & str,
-			const int sub)
+			QDataStream & str)
 			:
-			Animal(sh, x, y, z, str, sub),
+			Animal(sh, x, y, z, str, H_MEAT),
 			Inventory(sh, str)
 	{
 		str >> noise;
@@ -713,14 +721,14 @@ class Pile : public Active, public Inventory {
 	{
 		Get(block);
 	}
-	Pile(Shred * const sh,
+	Pile(
+			Shred * const sh,
 			const ushort x,
 			const ushort y,
 			const ushort z,
-			QDataStream & str,
-			const int sub)
+			QDataStream & str)
 			:
-			Active(sh, x, y, z, str, sub),
+			Active(sh, x, y, z, str, DIFFERENT),
 			Inventory(sh, str)
 	{
 		str >> ifToDestroy;
@@ -764,14 +772,17 @@ class Liquid : public Active {
 		else return 1000;
 	}
 
-	Liquid(Shred * const sh,
+	Liquid(
+			Shred * const sh,
 			const ushort x,
 			const ushort y,
 			const ushort z,
 			const int sub=WATER)
 			:
-			Active(sh, x, y, z, sub) {}
-	Liquid(Shred * const sh,
+			Active(sh, x, y, z, sub)
+	{}
+	Liquid(
+			Shred * const sh,
 			const ushort x,
 			const ushort y,
 			const ushort z,
@@ -779,7 +790,7 @@ class Liquid : public Active {
 			const int sub)
 			:
 			Active(sh, x, y, z, str, sub)
-		{}
+	{}
 };
 
 class Grass : public Active {
@@ -803,22 +814,27 @@ class Grass : public Active {
 	before_move_return BeforeMove(const int) { return DESTROY; }
 	bool Act();
 
-	Grass() : Active(GREENERY, 1) {}
-	Grass(Shred * const sh,
+	Grass()
+			:
+			Active(GREENERY, 1)
+	{}
+	Grass(
+			Shred * const sh,
 			const ushort x,
 			const ushort y,
 			const ushort z)
 			:
-			Active(sh, x, y, z, GREENERY, 1) {}
-	Grass(Shred * const sh,
+			Active(sh, x, y, z, GREENERY, 1)
+	{}
+	Grass(
+			Shred * const sh,
 			const ushort x,
 			const ushort y,
 			const ushort z,
-			QDataStream & str,
-			const int sub)
+			QDataStream & str)
 			:
-			Active(sh, x, y, z, str, sub)
-		{}
+			Active(sh, x, y, z, str, GREENERY)
+	{}
 };
 
 class Bush : public Active, public Inventory {
