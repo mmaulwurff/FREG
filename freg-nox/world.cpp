@@ -572,7 +572,7 @@ void World::Eat(
 {
 	if ( !InBounds(i, j, k) || !InBounds(i_food, j_food, k_food) )
 		return;
-	if ( GetBlock(i, j, k)->Eat(GetBlock(i_food, j_food, k_food)) )
+	if ( GetBlock(i, j, k)->IsAnimal()->Eat(GetBlock(i_food, j_food, k_food)) )
 		Damage(i_food, j_food, k_food, max_durability, EATEN);
 }
 

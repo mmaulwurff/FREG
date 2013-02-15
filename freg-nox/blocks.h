@@ -31,7 +31,7 @@ class Animal;
 
 class Block { //blocks without special physics and attributes
 	bool normal;
-	
+
 	bool Inscribable() const {
 		return !( sub==AIR ||
 			sub==NULLSTONE ||
@@ -39,10 +39,6 @@ class Block { //blocks without special physics and attributes
 			sub==GREENERY ||
 			sub==H_MEAT);
 	}
-	
-	public:
-	void SetNormal(const bool n) { normal=n; }
-	bool Normal() const { return normal; }
 
 	protected:
 	quint16 sub;
@@ -54,22 +50,6 @@ class Block { //blocks without special physics and attributes
 
 	public:
 	virtual QString & FullName(QString&) const;
-
-	void SetWeight(const float m) { shown_weight=m; }
-	void SetWeight() { shown_weight=weight; }
-	virtual float Weight() const { return shown_weight; }
-	int GetDir() const { return direction; }
-	void SetDir(const int dir) { direction=dir; }
-	int Sub() const { return sub; }
-	virtual bool Inscribe(const QString & str) {
-		if ( Inscribable() ) {
-			note=str;
-			return true;
-		}
-		return false;
-	}
-	virtual QString & GetNote(QString & str) const { return str=note; }
-
 	virtual int Kind() const { return BLOCK; }
 	virtual bool CanBeIn() const { return true; }
 	virtual bool CanBeOut() const {
@@ -79,10 +59,63 @@ class Block { //blocks without special physics and attributes
 		}
 	}
 	virtual int Movable() const {
-	       return ( AIR==Sub() ) ?
-		       ENVIRONMENT :
-		       NOT_MOVABLE;
+		return ( AIR==Sub() ) ? ENVIRONMENT : NOT_MOVABLE;
 	}
+	virtual float Weight() const { return shown_weight; }
+	virtual bool Inscribe(const QString & str) {
+		if ( Inscribable() ) {
+			note=str;
+			return true;
+		}
+		return false;
+	}
+	virtual before_move_return BeforeMove(const int) { return NOTHING; }
+	virtual int Move(const int) { return 0; }
+	virtual usage_types Use() { return NO; }
+	virtual int Damage(const ushort, const int dmg_kind);
+	virtual short MaxDurability() const {
+		switch ( Sub() ) {
+			case GREENERY: return 1;
+			case GLASS: return 2;
+			default: return max_durability;
+		}
+	}
+	virtual Block * DropAfterDamage() const {
+		return ( BLOCK==Kind() && GLASS!=sub ) ?
+			new Block(sub) : 0;
+	}
+
+	virtual Inventory * HasInventory() { return 0; }
+	virtual Animal * IsAnimal() { return 0; }
+	virtual Active * ActiveBlock() { return 0; }
+
+	virtual bool Armour() const { return false; }
+	virtual bool Weapon() const { return false; }
+	virtual bool Carving() const { return false; }
+	virtual int DamageKind() const { return CRUSH; }
+	virtual ushort DamageLevel() const { return 1; }
+
+	virtual uchar LightRadius() const { return 0; }
+	virtual int Temperature() const {
+		switch (sub) {
+			case WATER: return -100;
+			default: return 0;
+		}
+	}
+
+	virtual void SaveAttributes(QDataStream &) const {}
+
+	void Restore() { durability=MaxDurability(); }
+	void SetWeight() { shown_weight=weight; }
+	void SetWeight(const float m) { shown_weight=m; }
+	void SetDir(const int dir) { direction=dir; }
+	void SetNormal(const bool n) { normal=n; }
+
+	bool Normal() const { return normal; }
+	int  GetDir() const { return direction; }
+	int  Sub() const { return sub; }
+	short Durability() const { return durability; }
+	QString & GetNote(QString & str) const { return str=note; }
 	int Transparent() const {
 		//0 - normal block,
 		//1 - block is visible, but light can pass through it,
@@ -94,53 +127,12 @@ class Block { //blocks without special physics and attributes
 			default: return 0;
 		}
 	}
-	virtual before_move_return BeforeMove(const int) { return NOTHING; }
-	virtual int Move(const int) { return 0; }
-	virtual int Move() { return 0; }
-	virtual char MakeSound() const { return ' '; }
-	virtual ushort Noise() const { return 1; }
-	virtual usage_types Use() { return NO; }
-	virtual int Damage(const ushort, const int dmg_kind);
-	virtual short MaxDurability() const {
-		switch ( Sub() ) {
-			case GREENERY: return 1;
-			case GLASS: return 2;
-			default: return max_durability;
-		}
-	}
-	void Restore() { durability=MaxDurability(); }
-	short Durability() const { return durability; }
-	virtual Block * DropAfterDamage() const {
-		return ( BLOCK==Kind() && GLASS!=sub ) ?
-			new Block(sub) : 0;
-	}
-	virtual Inventory * HasInventory() { return 0; }
-	virtual Animal * IsAnimal() { return 0; }
-	virtual Active * ActiveBlock() { return 0; }
-	virtual Block * Drop(const ushort) { return 0; }
 
-	virtual bool Armour() const { return false; }
-	virtual bool Weapon() const { return false; }
-	virtual bool Carving() const { return false; }
-	virtual int DamageKind() const { return CRUSH; }
-	virtual ushort DamageLevel() const { return 1; }
-
-	virtual void Unregister() {}
-	virtual int Eat(Block * const) { return 0; }
-
-	virtual uchar LightRadius() const { return 0; }
-
-	virtual int Temperature() const { 
-		switch (sub) {
-			case WATER: return -100;
-			default: return 0;
-		}
-	}
 	bool operator==(const Block &) const;
 
 	void SaveToFile(QDataStream & out) const {
 		out << (quint16)Kind() << sub << normal;
-		
+
 		if ( normal )
 			return;
 
@@ -150,7 +142,6 @@ class Block { //blocks without special physics and attributes
 			<< note;
 		SaveAttributes(out);
 	}
-	virtual void SaveAttributes(QDataStream &) const {}
 
 	Block(
 			const int=STONE,
@@ -175,7 +166,7 @@ class Clock : public Block {
 				return str="Strange clock";
 		}
 	}
-	
+
 	Block * DropAfterDamage() const { return new Clock(world, Sub()); }
 	short MaxDurability() const { return 2; }
 	usage_types Use();
@@ -233,7 +224,7 @@ class Pick : public Weapons {
 				return 1;
 		}
 	}
-	QString & FullName(QString & str) const { 
+	QString & FullName(QString & str) const {
 		switch ( sub ) {
 			case IRON: return str="Iron pick";
 			default:
@@ -263,7 +254,7 @@ class Pick : public Weapons {
 
 class Active : public QObject, public Block {
 	Q_OBJECT
-	
+
 	protected:
 	ushort x_self, y_self, z_self;
 	Shred * whereShred;
@@ -288,16 +279,13 @@ class Active : public QObject, public Block {
 
 	Active * ActiveBlock() { return this; }
 	int Move(const int);
-	int Move() { return Move(direction); }
 
 	ushort X() const { return x_self; }
 	ushort Y() const { return y_self; }
 	ushort Z() const { return z_self; }
-	
+
 	//!returns if block should be destroyed
 	virtual bool Act() { return false; }
-
-	char MakeSound() const { return ' '; }
 
 	int Movable() const { return MOVABLE; }
 	virtual bool ShouldFall() const { return true; }
@@ -349,7 +337,7 @@ class Active : public QObject, public Block {
 
 class Animal : public Active {
 	Q_OBJECT
-	
+
 	protected:
 	quint16 breath;
 	quint16 satiation;
@@ -359,7 +347,7 @@ class Animal : public Active {
 
 	ushort Breath() const { return breath; }
 	ushort Satiation() const { return satiation; }
-	int Eat(Block * const)=0;
+	virtual int Eat(Block * const)=0;
 
 	bool Act();
 
@@ -529,8 +517,6 @@ class Inventory {
 
 class Dwarf : public Animal, public Inventory {
 	Q_OBJECT
-	
-	quint16 noise;
 
 	static const uchar onHead=0;
 	static const uchar inRight=1;
@@ -539,7 +525,6 @@ class Dwarf : public Animal, public Inventory {
 	static const uchar onLegs=4;
 
 	public:
-	ushort Noise() const { return noise; }
 	bool CarvingWeapon() const {
 		return ( (ShowBlock(inRight) && ShowBlock(inRight)->Carving()) ||
 		         (ShowBlock(inLeft)  && ShowBlock(inLeft )->Carving()) );
@@ -550,10 +535,9 @@ class Dwarf : public Animal, public Inventory {
 	QString & FullName(QString & str) const {
 		return str="Dwarf"+note;
 	}
-	char MakeSound() const { return (rand()%10) ? ' ' : 's'; }
 	bool CanBeIn() const { return false; }
 	float Weight() const { return InvWeightAll()+100; }
-	ushort Start() const { return 5; } 
+	ushort Start() const { return 5; }
 	int DamageKind() const {
 		if ( !inventory[inRight].isEmpty() )
 			return inventory[inRight].top()->DamageKind();
@@ -583,7 +567,7 @@ class Dwarf : public Animal, public Inventory {
 			case A_MEAT:   satiation+=seconds_in_hour*time_steps_in_sec*2; break;
 			default: return 0; //not ate
 		}
-		
+
 		if ( seconds_in_day*time_steps_in_sec < satiation )
 			satiation=1.1*seconds_in_day*time_steps_in_sec;
 
@@ -617,7 +601,6 @@ class Dwarf : public Animal, public Inventory {
 	void SaveAttributes(QDataStream & out) const {
 		Animal::SaveAttributes(out);
 		Inventory::SaveAttributes(out);
-		out << noise;
 	}
 
 	uchar LightRadius() const { return 3; }
@@ -629,8 +612,7 @@ class Dwarf : public Animal, public Inventory {
 			const ushort z)
 			:
 			Animal(sh, x, y, z, H_MEAT, 100),
-			Inventory(sh),
-			noise(1)
+			Inventory(sh)
 	{
 		Get(new Clock(GetWorld(), IRON));
 		Inscribe("Urist");
@@ -644,9 +626,7 @@ class Dwarf : public Animal, public Inventory {
 			:
 			Animal(sh, x, y, z, str, H_MEAT),
 			Inventory(sh, str)
-	{
-		str >> noise;
-	}
+	{}
 };
 
 class Chest : public Block, public Inventory {
@@ -671,7 +651,7 @@ class Chest : public Block, public Inventory {
 	usage_types Use() { return Inventory::Use(); }
 
 	Block * DropAfterDamage() const { return new Chest(0, sub); }
-	
+
 	void SaveAttributes(QDataStream & out) const {
 		Block::SaveAttributes(out);
 		Inventory::SaveAttributes(out);
@@ -712,7 +692,7 @@ class Pile : public Active, public Inventory {
 	float Weight() const { return InvWeightAll(); }
 
 	bool Act();
-	
+
 	Block * Drop(const ushort n) {
 		Block * const temp=Inventory::Drop(n);
 		ifToDestroy=true;
@@ -762,7 +742,7 @@ class Pile : public Active, public Inventory {
 
 class Liquid : public Active {
 	Q_OBJECT
-	
+
 	bool CheckWater(const int dir) const;
 
 	public:
@@ -783,7 +763,7 @@ class Liquid : public Active {
 
 	int Damage(
 			const ushort dam,
-			const damage_kinds dam_kind)
+			const int dam_kind)
 	{
 		return ( HEAT==dam_kind ) ?
 			durability-=dam :
@@ -820,7 +800,7 @@ class Liquid : public Active {
 
 class Grass : public Active {
 	Q_OBJECT
-	
+
 	public:
 	QString & FullName(QString & str) const {
 		switch ( sub ) {
@@ -864,7 +844,7 @@ class Grass : public Active {
 
 class Bush : public Active, public Inventory {
 	Q_OBJECT
-	
+
 	public:
 	QString & FullName(QString & str) const { return str="Bush"; }
 	int Kind() const { return BUSH; }
@@ -901,9 +881,9 @@ class Bush : public Active, public Inventory {
 
 class Rabbit : public Animal {
 	Q_OBJECT
-	
+
 	float Attractive(int kind) const;
-	
+
 	public:
 	QString & FullName(QString & str) const { return str="Rabbit"; }
 	int Kind() const { return RABBIT; }
