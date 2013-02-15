@@ -33,11 +33,6 @@ const unsigned short height=128;
 
 const unsigned short note_length=144;
 
-const unsigned short inventory_size=26;
-
-//num_str in Screen::PrintInv must be big enough
-const unsigned short max_stack_size=9;
-
 const unsigned short time_steps_in_sec=10;
 const unsigned short seconds_in_hour=60;
 const unsigned short seconds_in_day=24*seconds_in_hour;
@@ -88,6 +83,7 @@ enum damage_kinds {
 };
 
 enum kinds {//kind of atom
+	//do not change order, or rewrite craft recipes.
 	BLOCK,
 	BELL,
 	CHEST,
@@ -104,7 +100,8 @@ enum kinds {//kind of atom
 	CLOCK
 };
 enum subs {//substance block is made from
-	STONE, //keep it first in this list
+	//do not change order, or rewrite craft recipes.
+	STONE,
 	MOSS_STONE,
 	NULLSTONE,
 	SKY,

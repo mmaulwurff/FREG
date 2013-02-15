@@ -403,22 +403,24 @@ class Animal : public Active {
 };
 
 class Inventory {
-	QStack<Block *> inventory[inventory_size];
 	protected:
+	static const ushort inventory_size=26;
+	static const ushort max_stack_size=9;
+
 	Shred * inShred;
+
+	private:
+	QStack<Block *> inventory[inventory_size];
 
 	public:
 	QString & InvFullName(QString & str, const ushort i) const {
 		return str=( inventory[i].isEmpty() ) ? "" :
 			inventory[i].top()->FullName(str);
 	}
-	char * NumStr(char * const str, const ushort i) const {
-		const ushort n=Number(i);
-		if ( 1>=n )
-			str[0]='\0';
-		else
-			sprintf(str, " (%hdx)", n);
-		return str;
+	QString & NumStr(QString & str, const ushort i) const {
+		return str=( 1<Number(i) ) ?
+			QString(" (%1x)").arg(Number(i)) :
+			"";
 	}
 	float GetInvWeight(const ushort i) const {
 		return ( inventory[i].isEmpty() ) ? 0 :
@@ -455,7 +457,8 @@ class Inventory {
 	virtual int Sub() const=0;
 	virtual bool Access() const { return true; }
 
-	virtual ushort InventoryStart() const { return 0; } 
+	virtual ushort Start() const { return 0; }
+	virtual ushort Size() const { return inventory_size; }
 	virtual Inventory * HasInventory() { return this; }
 	usage_types Use() { return OPEN; }
 
@@ -467,7 +470,7 @@ class Inventory {
 		if ( !block )
 			return true;
 
-		for (ushort i=InventoryStart(); i<inventory_size; ++i)
+		for (ushort i=Start(); i<inventory_size; ++i)
 			if ( GetExact(block, i) )
 				return true;
 		return false;

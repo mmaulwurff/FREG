@@ -339,11 +339,12 @@ void Screen::Print() {
 	if ( (inv=player->GetP()->HasInventory()) ) {
 		wstandend(hudWin);
 		wmove(hudWin, 0, 36);
-		for (i=0; i<inventory_size; ++i)
+		const ushort size=inv->Size();
+		for (i=0; i<size; ++i)
 			wprintw(hudWin, "%c ", 'a'+i);
 		wmove(hudWin, 1, 36);
 		ushort num;
-		for (i=0; i<inventory_size; ++i)
+		for (i=0; i<size; ++i)
 			if ( (num=inv->Number(i)) ) {
 				wcolor_set(hudWin,
 					Color(inv->GetInvKind(i),
@@ -520,47 +521,37 @@ void Screen::PrintFront(WINDOW * const window) const {
 void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 	werase(window);
 	wstandend(window);
-	mvwaddstr(window, 1, 55, "Weight");
-	if ( DWARF==inv->Kind() ) {
-		mvwaddstr(window, 2, 1, "      Head");
-		mvwaddstr(window, 3, 1, "Right hand");
-		mvwaddstr(window, 4, 1, " Left hand");
-		mvwaddstr(window, 5, 1, "      Body");
-		mvwaddstr(window, 6, 1, "      Legs");
-	}
-	ushort i;
-	double sum_weight=0, temp_weight;
+	if ( DWARF==inv->Kind() )
+		mvwaddstr(window, 2, 1, "      Head\n Right hand\n  Left hand\n       Body\n       Legs");
+	mvwprintw(window, 2+inv->Size(), 40, "All weight: %6.1f kg", player->GetP()->Weight());
 	QString str;
-	char num_str[6];
-	for (i=0; i<inventory_size; ++i) {
-		mvwprintw(window, 2+i, 12, "%c) ", 'a'+i);
+	for (ushort i=0; i<inv->Size(); ++i) {
+		mvwprintw(window, 2+i, 12, "%c)", 'a'+i);
 		if ( inv->Number(i) ) {
 			wcolor_set(window, Color(inv->GetInvKind(i), inv->GetInvSub(i)), NULL);
 			wprintw(window, "[%c]%s",
 					CharName( inv->GetInvKind(i),
-					inv->GetInvSub(i) ),
-					inv->InvFullName(str, i).toLocal8Bit().constData() );
+						inv->GetInvSub(i) ),
+					qPrintable(inv->InvFullName(str, i)) );
 			if ( 1<inv->Number(i) )
-				waddstr(window, inv->NumStr(num_str, i));
+				waddstr(window, qPrintable(inv->NumStr(str, i)));
 			if ( ""!=inv->GetInvNote(str, i) )
-				waddstr(window, (" ~:"+
-					(( str.size()<24 ) ? str : str.left(20)+"...")).
-						toLocal8Bit().constData());
+				waddstr(window, qPrintable((" ~:"+
+					(( str.size()<24 ) ? str : str.left(13)+"..."))));
 			wstandend(window);
-			mvwprintw(window, 2+i, 54, "%4.1f kg", 2, temp_weight=inv->GetInvWeight(i));
-			sum_weight+=temp_weight;
+			mvwprintw(window, 2+i, 53, "%5.1f kg", 2, inv->GetInvWeight(i));
 		}
 	}
-	mvwprintw(window, 2+i, 43, "Sum:%6.1f kg", sum_weight);
 	wcolor_set(window, Color(inv->Kind(), inv->Sub()), NULL);
 	box(window, 0, 0);
+	wmove(window, 0, 1);
 	if ( player->PlayerInventory()==inv )
-		mvwaddstr(window, 0, 1, "Your inventory");
+		waddstr(window, "Your inventory");
 	else
-		mvwprintw(window, 0, 1, "[%c]%s",
+		wprintw(window, "[%c]%s",
 			CharName(inv->Kind(),
-			inv->Sub()),
-			inv->FullName(str).toLocal8Bit().constData());
+				inv->Sub()),
+			qPrintable(inv->FullName(str)));
 	wnoutrefresh(window);
 }
 
@@ -570,14 +561,13 @@ void Screen::Notify(const QString & str) {
 	werase(notifyWin);
 	for (ushort i=0; i<MAX_LINES-1; ++i) {
 		lines[i]=lines[i+1];
-		waddstr(notifyWin, lines[i].toLocal8Bit().constData());
-		waddch(notifyWin, '\n');
+		waddstr(notifyWin, qPrintable(lines[i]+'\n'));
 	}
-	waddstr(notifyWin, str.toLocal8Bit().constData());
+	waddstr(notifyWin, qPrintable(str));
 	wnoutrefresh(notifyWin);
 	updated=false;
 	lines[MAX_LINES-1]=str;
-	fputs(str.toLocal8Bit().constData(), notifyLog);
+	fputs(qPrintable(str), notifyLog);
 }
 
 Screen::Screen(
