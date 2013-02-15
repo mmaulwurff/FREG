@@ -253,7 +253,8 @@ Inventory::Inventory(
 		:
 		inShred(sh)
 {
-	for (ushort i=0; i<inventory_size; ++i) {
+	inventory=new QStack<Block *>[Size()];
+	for (ushort i=0; i<Size(); ++i) {
 		quint8 num;
 		str >> num;
 		while ( num-- )

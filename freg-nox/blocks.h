@@ -29,12 +29,6 @@ class Inventory;
 class Active;
 class Animal;
 
-const uchar onHead=0;
-const uchar inRight=1;
-const uchar inLeft=2;
-const uchar onBody=3;
-const uchar onLegs=4;
-
 class Block { //blocks without special physics and attributes
 	bool normal;
 	
@@ -404,13 +398,10 @@ class Animal : public Active {
 
 class Inventory {
 	protected:
-	static const ushort inventory_size=26;
 	static const ushort max_stack_size=9;
 
 	Shred * inShred;
-
-	private:
-	QStack<Block *> inventory[inventory_size];
+	QStack<Block *> * inventory;
 
 	public:
 	QString & InvFullName(QString & str, const ushort i) const {
@@ -439,7 +430,7 @@ class Inventory {
 	}
 	float InvWeightAll() const {
 		float sum=0;
-		for (ushort i=0; i<inventory_size; ++i)
+		for (ushort i=0; i<Size(); ++i)
 			sum+=GetInvWeight(i);
 		return sum;
 	}
@@ -447,7 +438,7 @@ class Inventory {
 		return inventory[i].size();
 	}
 	Block * ShowBlock(const ushort num) const {
-		if ( num>inventory_size || inventory[num].isEmpty() )
+		if ( num>Size() || inventory[num].isEmpty() )
 			return 0;
 		return inventory[num].top();
 	}
@@ -458,19 +449,22 @@ class Inventory {
 	virtual bool Access() const { return true; }
 
 	virtual ushort Start() const { return 0; }
-	virtual ushort Size() const { return inventory_size; }
+	//it is not recommended to make inventory size more than 26,
+	//because it will not be convenient to deal with inventory
+	//in console version.
+	virtual ushort Size() const { return 26; }
 	virtual Inventory * HasInventory() { return this; }
 	usage_types Use() { return OPEN; }
 
 	virtual Block * Drop(const ushort num) {
-		return ( inventory_size>num && Number(num) ) ?
+		return ( Size()>num && Number(num) ) ?
 			inventory[num].pop() : 0;
 	}
 	bool Get(Block * const block) {
 		if ( !block )
 			return true;
 
-		for (ushort i=Start(); i<inventory_size; ++i)
+		for (ushort i=Start(); i<Size(); ++i)
 			if ( GetExact(block, i) )
 				return true;
 		return false;
@@ -489,7 +483,7 @@ class Inventory {
 		if ( !from || !from->Access() )
 			return;
 
-		for (ushort i=0; i<inventory_size; ++i)
+		for (ushort i=0; i<Size(); ++i)
 			while ( from->Number(i) ) {
 				Block * const temp=from->Drop(i);
 				if ( !Get(temp) ) {
@@ -506,7 +500,7 @@ class Inventory {
 	}
 
 	virtual void SaveAttributes(QDataStream & out) const {
-		for (ushort i=0; i<inventory_size; ++i) {
+		for (ushort i=0; i<Size(); ++i) {
 			out << Number(i);
 			for (ushort j=0; j<Number(i); ++j)
 				inventory[i].top()->SaveToFile(out);
@@ -516,17 +510,20 @@ class Inventory {
 	Inventory(Shred * const sh)
 			:
 			inShred(sh)
-	{}
+	{
+		inventory=new QStack<Block *>[Size()];
+	}
 	Inventory(
 			Shred * const,
 			QDataStream & str);
 	~Inventory() {
-		for (ushort i=0; i<inventory_size; ++i)
+		for (ushort i=0; i<Size(); ++i)
 			while ( !inventory[i].isEmpty() ) {
 				Block * const block=inventory[i].pop();
 				if ( !block->Normal() )
 					delete block;
 			}
+		delete [] inventory;
 	}
 };
 
@@ -534,6 +531,12 @@ class Dwarf : public Animal, public Inventory {
 	Q_OBJECT
 	
 	quint16 noise;
+
+	static const uchar onHead=0;
+	static const uchar inRight=1;
+	static const uchar inLeft=2;
+	static const uchar onBody=3;
+	static const uchar onLegs=4;
 
 	public:
 	ushort Noise() const { return noise; }
@@ -550,7 +553,22 @@ class Dwarf : public Animal, public Inventory {
 	char MakeSound() const { return (rand()%10) ? ' ' : 's'; }
 	bool CanBeIn() const { return false; }
 	float Weight() const { return InvWeightAll()+100; }
-	ushort InventoryStart() const { return 5; } 
+	ushort Start() const { return 5; } 
+	int DamageKind() const {
+		if ( !inventory[inRight].isEmpty() )
+			return inventory[inRight].top()->DamageKind();
+		if ( !inventory[inLeft].isEmpty() )
+			return inventory[inLeft].top()->DamageKind();
+		return CRUSH;
+	}
+	ushort DamageLevel() const {
+		ushort level=1;
+		if ( !inventory[inRight].isEmpty() )
+			level+=inventory[inRight].top()->DamageLevel();
+		if ( !inventory[inLeft].isEmpty() )
+			level+=inventory[inRight].top()->DamageLevel();
+		return level;
+	}
 
 	before_move_return BeforeMove(const int);
 	bool Act();
@@ -698,7 +716,7 @@ class Pile : public Active, public Inventory {
 	Block * Drop(const ushort n) {
 		Block * const temp=Inventory::Drop(n);
 		ifToDestroy=true;
-		for (ushort i=0; i<inventory_size; ++i)
+		for (ushort i=0; i<Size(); ++i)
 			if ( Number(i) ) {
 				ifToDestroy=false;
 				break;

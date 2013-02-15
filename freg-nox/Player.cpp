@@ -362,24 +362,11 @@ void Player::Damage() {
 }
 
 int Player::DamageKind() const {
-	Block * weapon=ValidBlock(inRight);
-	if ( weapon )
-		return weapon->DamageKind();
-	weapon=ValidBlock(inLeft);
-	if ( weapon )
-		return weapon->DamageKind();
-	return CRUSH;
+	return player ? player->DamageKind() : NO_HARM;
 }
 
 ushort Player::DamageLevel() const {
-	ushort level=1;
-	Block * weapon=ValidBlock(inRight);
-	if ( weapon )
-		level+=weapon->DamageLevel();
-	weapon=ValidBlock(inLeft);
-	if ( weapon )
-		level+=weapon->DamageLevel();
-	return level;
+	return player ? player->DamageLevel() : 0;
 }
 
 void Player::CheckOverstep(const int dir) {
