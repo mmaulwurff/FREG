@@ -498,6 +498,10 @@ class Inventory {
 
 	int MiniCraft(const ushort num);
 
+	void Register(Shred * const sh) {
+		inShred=sh;
+	}
+
 	virtual void SaveAttributes(QDataStream & out) const {
 		for (ushort i=0; i<inventory_size; ++i) {
 			out << Number(i);
@@ -645,7 +649,7 @@ class Chest : public Block, public Inventory {
 
 	usage_types Use() { return Inventory::Use(); }
 
-	Block * DropAfterDamage() const { return new Chest(inShred, sub); }
+	Block * DropAfterDamage() const { return new Chest(0, sub); }
 	
 	void SaveAttributes(QDataStream & out) const {
 		Block::SaveAttributes(out);

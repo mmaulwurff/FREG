@@ -534,6 +534,9 @@ int World::Build(
 	Active * const active=block->ActiveBlock();
 	if ( active )
 		active->Register(GetShred(i, j), i, j, k);
+	Inventory * const inv=block->HasInventory();
+	if ( inv )
+		inv->Register(GetShred(i, j));
 	SetBlock(block, i, j, k);
 
 	ReEnlighten(i, j, k);

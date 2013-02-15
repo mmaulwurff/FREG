@@ -66,7 +66,8 @@ class World : public QThread {
 	void ReplaceWithNormal(
 			const ushort x,
 			const ushort y,
-			const ushort z) {
+			const ushort z)
+	{
 		SetBlock(ReplaceWithNormal(GetBlock(x, y, z)),
 			x, y, z);
 	}
