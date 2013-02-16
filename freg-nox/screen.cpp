@@ -525,7 +525,7 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 	wstandend(window);
 	if ( DWARF==inv->Kind() )
 		mvwaddstr(window, 2, 1, "      Head\n Right hand\n  Left hand\n       Body\n       Legs");
-	mvwprintw(window, 2+inv->Size(), 40, "All weight: %6.1f kg", player->GetP()->Weight());
+	mvwprintw(window, 2+inv->Size(), 40, "All weight: %6.1f kg", inv->Weight());
 	QString str;
 	for (ushort i=0; i<inv->Size(); ++i) {
 		mvwprintw(window, 2+i, 12, "%c)", 'a'+i);

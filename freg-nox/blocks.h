@@ -47,6 +47,9 @@ class Block { //blocks without special physics and attributes
 	QString note;
 	qint16 durability;
 
+	private:
+	virtual float TrueWeight() const;
+
 	public:
 	virtual QString & FullName(QString & str) const;
 	virtual int Kind() const { return BLOCK; }
@@ -60,7 +63,6 @@ class Block { //blocks without special physics and attributes
 	virtual int Movable() const {
 		return ( AIR==Sub() ) ? ENVIRONMENT : NOT_MOVABLE;
 	}
-	virtual float TrueWeight() const;
 	virtual bool Inscribe(const QString & str) {
 		if ( Inscribable() ) {
 			note=str;
@@ -481,6 +483,7 @@ class Inventory {
 	virtual QString & FullName(QString&) const=0;
 	virtual int Kind() const=0;
 	virtual int Sub() const=0;
+	virtual float Weight() const=0;
 	virtual bool Access() const { return true; }
 
 	virtual ushort Start() const { return 0; }
@@ -588,6 +591,7 @@ class Dwarf : public Animal, public Inventory {
 	}
 	bool CanBeIn() const { return false; }
 	float TrueWeight() const { return InvWeightAll()+60; }
+	float Weight() const { return Block::Weight(); }
 	ushort Start() const { return 5; }
 	int DamageKind() const {
 		if ( !inventory[inRight].isEmpty() )
@@ -713,6 +717,7 @@ class Chest : public Block, public Inventory {
 				return 100+InvWeightAll();
 		}
 	}
+	float Weight() const { return Block::Weight(); }
 
 	void SaveAttributes(QDataStream & out) const {
 		Block::SaveAttributes(out);
@@ -751,6 +756,7 @@ class Pile : public Active, public Inventory {
 	Inventory * HasInventory() { return Inventory::HasInventory(); }
 	usage_types Use() { return Inventory::Use(); }
 	float TrueWeight() const { return InvWeightAll(); }
+	float Weight() const { return Block::Weight(); }
 
 	bool Act();
 
@@ -910,6 +916,7 @@ class Bush : public Active, public Inventory {
 	Inventory * HasInventory() { return Inventory::HasInventory(); }
 	int Movable() const { return NOT_MOVABLE; }
 	float TrueWeight() const { return InvWeightAll()+20; }
+	float Weight() const { return Block::Weight(); }
 
 	bool Act();
 
@@ -994,6 +1001,7 @@ class Workbench : public Block, public Inventory {
 	}
 	int Kind() const { return WORKBENCH; }
 	float TrueWeight() const { return 80; }
+	float Weight() const { return Block::Weight(); }
 	usage_types Use() { return OPEN; }
 	Block * DropAfterDamage() const { return new Workbench(inShred, Sub()); }
 	Inventory * HasInventory() { return Inventory::HasInventory(); }
