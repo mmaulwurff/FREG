@@ -335,10 +335,7 @@ class Active : public QObject, public Block {
 
 	int Movable() const { return MOVABLE; }
 	virtual bool ShouldFall() const { return true; }
-	before_move_return BeforeMove(const int dir) {
-		SetDir(dir);
-		return NOTHING;
-	}
+	before_move_return BeforeMove(const int) { return NOTHING; }
 
 	void ReloadToNorth() { y_self+=shred_width; }
 	void ReloadToSouth() { y_self-=shred_width; }

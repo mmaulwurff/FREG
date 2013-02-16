@@ -384,10 +384,10 @@ int World::Move(
 		return 0;
 
 	Block * const block_to=GetBlock(newi, newj, newk);
-	if ( block_to && block && dir==block->GetDir() )
+	if ( block_to && block && DOWN!=dir )
 		switch ( block_to->BeforePush() ) {
 			case MOVE_UP:
-				Jump(i, j, k);
+				Jump(i, j, k, dir);
 				return 0;
 			default: break;
 		}
@@ -420,21 +420,29 @@ int World::Move(
 }
 
 void World::Jump(
+		const ushort x,
+		const ushort y,
+		const ushort z)
+{
+	Jump(x, y, z, GetBlock(x, y, z)->GetDir());
+}
+
+void World::Jump(
 		const ushort i,
 		const ushort j,
-		ushort k)
+		ushort k,
+		const int dir)
 {
 	Block * const to_move=GetBlock(i, j, k);
 	if ( MOVABLE!=to_move->Movable() )
 		return;
 
 	to_move->NullWeight(true);
-	const int dir=to_move->GetDir();
 	const short k_plus=Move(i, j, k, (DOWN==dir) ? DOWN : UP, 1);
 	if ( k_plus ) {
 		k+=((DOWN==dir) ? (-1) : 1) * k_plus;
 		to_move->NullWeight(false);
-		if ( !Move( i, j, k, to_move->GetDir()) )
+		if ( !Move( i, j, k, dir) )
 			Move(i, j, k, DOWN);
 	} else
 		to_move->NullWeight(false);

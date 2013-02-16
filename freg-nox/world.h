@@ -229,9 +229,14 @@ class World : public QThread {
 			const int dir,
 			const ushort=2); //how much block fall/rise at one turn
 	void Jump(
+			const ushort x,
+			const ushort y,
+			const ushort z);
+	void Jump(
 			const ushort,
 			const ushort,
-			ushort);
+			ushort,
+			const int dir);
 
 	//time section
 	public:
