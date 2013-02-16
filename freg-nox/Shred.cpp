@@ -58,7 +58,7 @@ Shred::Shred(World * const world_,
 		}
 		return;
 	}
-	
+
 	for (i=0; i<shred_width; ++i)
 	for (j=0; j<shred_width; ++j) {
 		blocks[i][j][0]=NewNormal(NULLSTONE);
@@ -69,7 +69,7 @@ Shred::Shred(World * const world_,
 		blocks[i][j][height-1]=NewNormal( (rand()%5) ? SKY : STAR );
 		lightMap[i][j][height-1]=max_light_radius;
 	}
-			
+
 	switch ( TypeOfShred(longi, lati) ) {
 		case '#': NullMountain(); break;
 		case '.': Plain(); break;
@@ -127,6 +127,7 @@ Block * Shred::CraftBlock(const int kind, const int sub) const {
 		case ACTIVE: return new Active(sub);
 		case GRASS:  return new Grass();
 		case PLATE:  return new Plate(sub);
+		case WORKBENCH: return new Workbench(0, sub);
 		default:
 			fprintf(stderr,
 				"Shred::CraftBlock: unlisted kind: %d\n",
@@ -160,7 +161,7 @@ Block * Shred::BlockFromFile(QDataStream & str,
 	if ( normal ) {
 		return NewNormal(sub);
 	}
-	
+
 	i+=shredX*shred_width;
 	j+=shredY*shred_width;
 
@@ -173,8 +174,9 @@ Block * Shred::BlockFromFile(QDataStream & str,
 		case PICK:   return new Pick (str, sub);
 		case PLATE:  return new Plate(str, sub);
 
-		case BUSH:   return new Bush  (this, str);
-		case CHEST:  return new Chest (this, str, sub);
+		case BUSH:   return new Bush (this, str);
+		case CHEST:  return new Chest(this, str, sub);
+		case WORKBENCH: return new Workbench(this, str, sub);
 
 		case RABBIT: return new Rabbit(this, i, j, k, str);
 		case DWARF:  return new Dwarf (this, i, j, k, str);
@@ -186,8 +188,8 @@ Block * Shred::BlockFromFile(QDataStream & str,
 		case CLOCK:  return new Clock(str, world, sub);
 		default:
 			fprintf(stderr,
-				"Shred::BlockFromFile(): unlisted kind: %d\n",
-				kind);
+				"Shred::BlockFromFile: unlisted kind: %d, x: %hu, y: %hu, z: %hu.\n",
+				kind, i, j, k);
 			return NewNormal(sub);
 	}
 }
@@ -320,7 +322,7 @@ void Shred::NormalUnderground(const ushort depth=0) {
 }
 
 void Shred::PlantGrass() {
-	for (ushort i=0; i<shred_width; ++i)	
+	for (ushort i=0; i<shred_width; ++i)
 	for (ushort j=0; j<shred_width; ++j) {
 		ushort k;
 		for (k=height-2; Transparent(i, j, k); --k);
@@ -415,7 +417,7 @@ void Shred::Water(const long longi, const long lati) {
 	ushort i, j, k;
 
 	if ('~'!=map[1][0] && '~'!=map[0][1]) { //north-west rounding
-		for (i=0; i<shred_width/2; ++i)	
+		for (i=0; i<shred_width/2; ++i)
 		for (j=0; j<shred_width/2; ++j)
 			for (k=height/2-depth; k<height/2; ++k)
 				if ( ((7-i)*(7-i) +
@@ -425,7 +427,7 @@ void Shred::Water(const long longi, const long lati) {
 					blocks[i][j][k]=NewNormal(SOIL);
 	}
 	if ('~'!=map[1][0] && '~'!=map[2][1]) { //south-west rounding
-		for (i=0; i<shred_width/2; ++i)	
+		for (i=0; i<shred_width/2; ++i)
 		for (j=shred_width/2; j<shred_width; ++j)
 			for (k=height/2-depth; k<height/2; ++k)
 				if ( ((7-i)*(7-i)+
@@ -454,7 +456,7 @@ void Shred::Water(const long longi, const long lati) {
 						> 49 )
 					blocks[i][j][k]=NewNormal(SOIL);
 	}
-	for (i=0; i<shred_width; ++i)	
+	for (i=0; i<shred_width; ++i)
 	for (j=0; j<shred_width; ++j)
 	for (k=height/2-depth; k<height/2; ++k)
 		if ( AIR==Sub(i, j, k) )
@@ -474,14 +476,14 @@ void Shred::Hill(const long longi, const long lati) {
 
 	NormalUnderground();
 
-	for (ushort i=0; i<shred_width; ++i)	
+	for (ushort i=0; i<shred_width; ++i)
 	for (ushort j=0; j<shred_width; ++j)
 	for (ushort k=height/2; k<height/2+hill_height; ++k)
 		if (((4.5-i)*(4.5-i)+
 		     (4.5-j)*(4.5-j)+
 		     (height/2-0.5-k)*(height/2-0.5-k)*16/hill_height/hill_height)<=16)
 			blocks[i][j][k]=NewNormal(SOIL);
-	
+
 	PlantGrass();
 }
 
@@ -512,6 +514,6 @@ bool Shred::Tree(
 	for (k=z+height/2; k<z+height; ++k)
 		if ( AIR==Sub(i, j, k) )
 			blocks[i][j][k]=NewNormal(GREENERY);
-	
+
 	return true;
 }

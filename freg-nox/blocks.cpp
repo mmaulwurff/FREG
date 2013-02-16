@@ -142,7 +142,7 @@ int Active::Move(const int dir) {
 	if ( GetWorld()->GetShred(x_self, y_self)!=whereShred ) {
 		whereShred->RemActive(this);
 		whereShred=GetWorld()->GetShred(x_self, y_self);
-		whereShred->AddActive(this);	
+		whereShred->AddActive(this);
 	}
 	emit Moved(dir);
 	return 0;
@@ -170,7 +170,7 @@ void Active::Register(Shred * const sh,
 void Active::Unregister() {
 	if ( !whereShred )
 		return;
-	
+
 	whereShred->RemActive(this);
 }
 
@@ -231,8 +231,10 @@ int Inventory::MiniCraft(const ushort num) {
 
 Inventory::Inventory(
 		Shred * const sh,
-		QDataStream & str)
+		QDataStream & str,
+		const ushort sz)
 		:
+		size(sz),
 		inShred(sh)
 {
 	inventory=new QStack<Block *>[Size()];
@@ -299,7 +301,7 @@ bool Liquid::Act() {
 bool Grass::Act() {
 	if ( rand()%seconds_in_hour )
 		return false;
-	
+
 	short i=x_self, j=y_self;
 	switch ( rand()%4 /* increase this if grass grows too fast */) {
 		case 0: ++i; break;
@@ -354,7 +356,7 @@ bool Rabbit::Act() {
 	for (z=z_self-6; z<=z_self+6; ++z)
 		if ( world->InBounds(x, y, z) ) {
 			kind=world->Kind(x, y, z);
-			if ( (GRASS==kind || RABBIT==kind || DWARF==kind) && 
+			if ( (GRASS==kind || RABBIT==kind || DWARF==kind) &&
 					world->DirectlyVisible(x_self, y_self, z_self, x, y, z) ) {
 				if ( y!=y_self )
 					for_north+=Attractive(kind)/(y_self-y);
@@ -403,6 +405,6 @@ bool Rabbit::Act() {
 	return Animal::Act();
 }
 
-Block * Rabbit::DropAfterDamage() const { 
+Block * Rabbit::DropAfterDamage() const {
 	return whereShred->NewNormal(A_MEAT);
 }

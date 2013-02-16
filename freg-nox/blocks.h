@@ -178,7 +178,7 @@ class Plate : public Block {
 
 	public:
 	Plate(const int sub) :
-			Block(sub, max_durability)
+			Block(sub)
 	{}
 	Plate(
 			QDataStream & str,
@@ -353,7 +353,7 @@ class Active : public QObject, public Block {
 			const short dur=max_durability)
 			:
 			Block(sub, dur),
-	       		whereShred(NULL)
+	       		whereShred(0)
 	{}
 	Active(
 			Shred * const sh,
@@ -410,10 +410,9 @@ class Animal : public Active {
 			const ushort i,
 			const ushort j,
 			const ushort k,
-			const int sub=A_MEAT,
-			const short dur=max_durability)
+			const int sub=A_MEAT)
 			:
-			Active(sh, i, j, k, sub, dur),
+			Active(sh, i, j, k, sub),
 			breath(max_breath),
 			satiation(seconds_in_day)
 	{}
@@ -432,6 +431,7 @@ class Animal : public Active {
 };
 
 class Inventory {
+	const ushort size;
 	protected:
 	static const ushort max_stack_size=9;
 
@@ -484,10 +484,7 @@ class Inventory {
 	virtual bool Access() const { return true; }
 
 	virtual ushort Start() const { return 0; }
-	//it is not recommended to make inventory size more than 26,
-	//because it will not be convenient to deal with inventory
-	//in console version.
-	virtual ushort Size() const { return 26; }
+	ushort Size() const { return size; }
 	virtual Inventory * HasInventory() { return this; }
 	usage_types Use() { return OPEN; }
 
@@ -542,16 +539,23 @@ class Inventory {
 		}
 	}
 
-	Inventory(Shred * const sh)
+	//it is not recommended to make inventory size more than 26,
+	//because it will not be convenient to deal with inventory
+	//in console version.
+	Inventory(
+			Shred * const sh,
+			const ushort sz=26)
 			:
+			size(sz),
 			inShred(sh)
 	{
 		inventory=new QStack<Block *>[Size()];
 	}
 	Inventory(
 			Shred * const,
-			QDataStream & str);
-	~Inventory() {
+			QDataStream & str,
+			const ushort size=26);
+	virtual ~Inventory() {
 		for (ushort i=0; i<Size(); ++i)
 			while ( !inventory[i].isEmpty() ) {
 				Block * const block=inventory[i].pop();
@@ -717,10 +721,9 @@ class Chest : public Block, public Inventory {
 
 	Chest(
 			Shred * const sh,
-			const int s=WOOD,
-			const short dur=max_durability)
+			const int s=WOOD)
 			:
-			Block(s, dur),
+			Block(s),
 			Inventory(sh)
 	{
 		Get(new Pick(IRON));
@@ -973,6 +976,49 @@ class Rabbit : public Animal {
 			QDataStream & str)
 			:
 			Animal(sh, x, y, z, str, A_MEAT)
+	{}
+};
+
+class Workbench : public Block, public Inventory {
+	static const ushort workbench_size=10;
+	public:
+	QString & FullName(QString & str) const {
+		switch ( Sub() ) {
+			case WOOD: return str="Workbench";
+			default:
+				fprintf(stderr,
+					"Bench::FullName: unlisted sub: %d\n",
+					Sub());
+				return str="Strange workbench";
+		}
+	}
+	int Kind() const { return WORKBENCH; }
+	float TrueWeight() const { return 80; }
+	usage_types Use() { return OPEN; }
+	Block * DropAfterDamage() const { return new Workbench(inShred, Sub()); }
+	Inventory * HasInventory() { return Inventory::HasInventory(); }
+
+	int Sub() const { return Block::Sub(); }
+
+	void SaveAttributes(QDataStream & out) const {
+		Block::SaveAttributes(out);
+		Inventory::SaveAttributes(out);
+	}
+
+	Workbench(
+			Shred * const sh,
+			const int sub)
+			:
+			Block(sub),
+			Inventory(sh, workbench_size)
+	{}
+	Workbench(
+			Shred * const sh,
+			QDataStream & str,
+			const int sub)
+			:
+			Block(str, sub),
+			Inventory(sh, str, workbench_size)
 	{}
 };
 

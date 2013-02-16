@@ -101,8 +101,9 @@ char Screen::CharName(
 		case LIQUID: return '~';
 		case GRASS:  return '.';
 		case RABBIT: return 'r';
-		case CLOCK:  return 'c';  
+		case CLOCK:  return 'c';
 		case PLATE:  return '-';
+		case WORKBENCH: return '*';
 		case TELEGRAPH: return 't';
 		default: switch (sub) {
 			case NULLSTONE: case MOSS_STONE: case WOOD:
@@ -213,18 +214,18 @@ void Screen::ControlPlayer(const int ch) {
 		case KEY_RIGHT: player->Move(EAST); break;
 		case KEY_LEFT: player->Move(WEST); break;
 		case ' ': player->Jump(); break;
-		
+
 		case '>': player->Turn(w->TurnRight(player->Dir())); break;
 		case '<': player->Turn(w->TurnLeft(player->Dir())); break;
 		case KEY_NPAGE: player->Turn(DOWN); break;
 		case KEY_PPAGE: player->Turn(UP); break;
-	
+
 		case KEY_HOME: player->Backpack(); break;
 		case KEY_BACKSPACE: player->Damage(); break;
 		case '\n': player->Use(); break;
 		case  '?': player->Examine(); break;
 		case  '~': player->Inscribe(); break;
-		
+
 		case 'U': actionMode=USE; break;
 		case 'T': actionMode=THROW; break;
 		case 'O': actionMode=OBTAIN; break;
@@ -279,7 +280,7 @@ void Screen::Print() {
 
 	ushort i;
 	//HitPoints line
-	werase(hudWin); 
+	werase(hudWin);
 	wstandend(hudWin);
 	wmove(hudWin, 0, 0);
 	wprintw(hudWin, "HP: %3hd  [", dur);
@@ -298,7 +299,7 @@ void Screen::Print() {
 		wstandend(hudWin);
 		mvwaddstr(hudWin, 1, 20, "]\n");
 	}
-	
+
 	//action mode
 	wstandend(hudWin);
 	waddstr(hudWin, "Action: ");
@@ -371,7 +372,7 @@ void Screen::PrintNormal(WINDOW * const window) const {
 		(( DOWN==dir ) ? playerZ-1 : playerZ) :
 		playerZ+1;
 	const short k_step=( UP!=dir ) ? (-1) : 1;
-	
+
 	wmove(window, 1, 1);
 	static const ushort start=(shred_width*w->NumShreds()-SCREEN_SIZE)/2;
 	ushort i, j, k;
@@ -390,7 +391,7 @@ void Screen::PrintNormal(WINDOW * const window) const {
 				}
 				break;
 			}
-	
+
 	wstandend(window);
 	box(window, 0, 0);
 	//mvwprintw(window, SCREEN_SIZE+1, 1, "Time:%d", w->TimeOfDay());
@@ -485,7 +486,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 		k_start=pZ+SCREEN_SIZE/2;
 		arrow_Y=SCREEN_SIZE/2+1;
 	}
-	
+
 	const int block_side=w->Anti(dir);
 	wmove(window, 1, 1);
 	for (k=k_start; k_start-k<SCREEN_SIZE; --k, waddstr(window, "\n_"))
@@ -511,7 +512,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 				waddstr(window, " .");
 			}
 		}
-	
+
 	wstandend(window);
 	box(window, 0, 0);
 	mvwaddstr(window, 0, 1, "Front View");

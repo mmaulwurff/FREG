@@ -99,7 +99,8 @@ enum kinds {//kind of atom
 	RABBIT,
 	ACTIVE,
 	CLOCK,
-	PLATE
+	PLATE,
+	WORKBENCH
 };
 enum subs {//substance block is made from
 	//do not change order, or rewrite craft recipes.
