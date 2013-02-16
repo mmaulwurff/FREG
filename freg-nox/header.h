@@ -95,10 +95,11 @@ enum kinds {//kind of atom
 	TELEGRAPH,
 	LIQUID,
 	GRASS,
-	BUSH,
+	BUSH, //10
 	RABBIT,
 	ACTIVE,
-	CLOCK
+	CLOCK,
+	PLATE
 };
 enum subs {//substance block is made from
 	//do not change order, or rewrite craft recipes.
@@ -112,7 +113,7 @@ enum subs {//substance block is made from
 	H_MEAT, //hominid meat
 	A_MEAT, //animal meat
 	GLASS,
-	WOOD,
+	WOOD, //10
 	DIFFERENT,
 	IRON,
 	WATER,
@@ -124,6 +125,7 @@ enum subs {//substance block is made from
 };
 
 enum before_move_return { NOTHING, DESTROY };
+enum before_push_action { NO_ACTION, MOVE_UP };
 
 enum usage_types { NO, OPEN, INNER_ACTION };
 

@@ -49,7 +49,7 @@ class Block { //blocks without special physics and attributes
 	qint16 durability;
 
 	public:
-	virtual QString & FullName(QString&) const;
+	virtual QString & FullName(QString & str) const;
 	virtual int Kind() const { return BLOCK; }
 	virtual bool CanBeIn() const { return true; }
 	virtual bool CanBeOut() const {
@@ -70,6 +70,7 @@ class Block { //blocks without special physics and attributes
 		return false;
 	}
 	virtual before_move_return BeforeMove(const int) { return NOTHING; }
+	virtual int BeforePush() const { return NO_ACTION; }
 	virtual int Move(const int) { return 0; }
 	virtual usage_types Use() { return NO; }
 	virtual int Damage(const ushort, const int dmg_kind);
@@ -149,6 +150,35 @@ class Block { //blocks without special physics and attributes
 			const float=0);
 	Block(QDataStream &, const int sub_);
 	virtual ~Block() {}
+};
+
+class Plate : public Block {
+	QString & FullName(QString & str) const {
+		switch ( Sub() ) {
+			case WOOD: return str="Wooden board";
+			case IRON: return str="Iron plate";
+			case STONE: return str="Stone slab";
+			default:
+				fprintf(stderr,
+					"Plate::FullName: unlisted sub: %d",
+					Sub());
+				return str="Strange plate";
+		}
+	}
+	int Kind() const { return PLATE; }
+	Block * DropAfterDamage() const { return new Plate(Sub()); }
+	int BeforePush() const { return MOVE_UP; }
+
+	public:
+	Plate(const int sub) :
+			Block(sub, max_durability, 10)
+	{}
+	Plate(
+			QDataStream & str,
+			const int sub)
+			:
+			Block(str, sub)
+	{}
 };
 
 class Clock : public Block {
@@ -704,7 +734,6 @@ class Pile : public Active, public Inventory {
 		return temp;
 	}
 
-	before_move_return BeforeMove(const int dir);
 	bool CanBeIn() const { return false; }
 
 	void SaveAttributes(QDataStream & out) const {

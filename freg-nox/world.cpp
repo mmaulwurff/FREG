@@ -383,6 +383,15 @@ int World::Move(
 			Equal(block, GetBlock(newi, newj, newk))) )
 		return 0;
 
+	Block * const block_to=GetBlock(newi, newj, newk);
+	if ( block_to && block && dir==block->GetDir() )
+		switch ( block_to->BeforePush() ) {
+			case MOVE_UP:
+				Jump(i, j, k);
+				return 1;
+			default: break;
+		}
+
 	short numberMoves=0;
 	if ( ENVIRONMENT!=Movable(newi, newj, newk) &&
 			!(numberMoves=Move(newi, newj, newk, dir, stop-1)) )
@@ -390,7 +399,7 @@ int World::Move(
 
 	SetBlock(GetBlock(newi, newj, newk), i, j, k);
 	SetBlock(block, newi, newj, newk);
-	
+
 	ReEnlighten(newi, newj, newk);
 	ReEnlighten(i, j, k);
 

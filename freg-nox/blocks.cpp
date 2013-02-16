@@ -274,12 +274,6 @@ before_move_return Dwarf::BeforeMove(const int dir) {
 	return NOTHING;
 }
 
-before_move_return Pile::BeforeMove(const int dir) {
-	direction=dir;
-	GetWorld()->DropAll(x_self, y_self, z_self);
-	return NOTHING;
-}
-
 bool Pile::Act() {
 	return ( ifToDestroy ) ?
 		GetWorld()->Damage(x_self, y_self, z_self, 0, TIME) :

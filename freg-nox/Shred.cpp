@@ -126,6 +126,7 @@ Block * Shred::CraftBlock(const int kind, const int sub) const {
 		case CLOCK:  return new Clock(GetWorld(), sub);
 		case ACTIVE: return new Active(sub);
 		case GRASS:  return new Grass();
+		case PLATE:  return new Plate(sub);
 		default:
 			fprintf(stderr,
 				"Shred::CraftBlock: unlisted kind: %d\n",
@@ -170,6 +171,7 @@ Block * Shred::BlockFromFile(QDataStream & str,
 	switch ( kind ) {
 		case BLOCK:  return new Block(str, sub);
 		case PICK:   return new Pick (str, sub);
+		case PLATE:  return new Plate(str, sub);
 
 		case BUSH:   return new Bush  (this, str);
 		case CHEST:  return new Chest (this, str, sub);

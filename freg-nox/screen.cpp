@@ -102,13 +102,14 @@ char Screen::CharName(
 		case GRASS:  return '.';
 		case RABBIT: return 'r';
 		case CLOCK:  return 'c';  
+		case PLATE:  return '-';
 		case TELEGRAPH: return 't';
 		default: switch (sub) {
 			case NULLSTONE: case MOSS_STONE: case WOOD:
 			case STONE: return '#';
 			case GLASS: return 'g';
-			case SUN_MOON:
-			case SKY:   return ' ';
+			case SUN_MOON: case SKY:
+			case AIR:   return ' ';
 			case STAR:  return '.';
 			case WATER: return '~';
 			case SAND:
@@ -117,11 +118,10 @@ char Screen::CharName(
 			case ROSE:  return ';';
 			case A_MEAT: case H_MEAT:
 			case HAZELNUT: return ',';
-			case AIR:   return ' ';
 			default:
 				fprintf(stderr,
-					"Screen::CharName(uns short, uns short, uns short): Block has unlisted substance: %d\n",
-					int(sub));
+					"Screen::CharName: unlisted substance: %d\n",
+					sub);
 				return '?';
 		}
 	}
@@ -349,9 +349,10 @@ void Screen::Print() {
 				wcolor_set(hudWin,
 					Color(inv->GetInvKind(i),
 					inv->GetInvSub(i)), NULL);
-				wprintw(hudWin, "%c%hu",
-					CharName( inv->GetInvKind(i),
-					inv->GetInvSub(i) ), num);
+				waddch(hudWin, CharName( inv->GetInvKind(i),
+					inv->GetInvSub(i) ));
+				wstandend(hudWin);
+				wprintw(hudWin, "%hu", num);
 			} else {
 				wstandend(hudWin);
 				waddstr(hudWin, "  ");
