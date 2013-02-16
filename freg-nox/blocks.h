@@ -42,8 +42,7 @@ class Block { //blocks without special physics and attributes
 
 	protected:
 	quint16 sub;
-	float weight;
-	float shown_weight;
+	bool nullWeight;
 	quint8 direction;
 	QString note;
 	qint16 durability;
@@ -61,7 +60,7 @@ class Block { //blocks without special physics and attributes
 	virtual int Movable() const {
 		return ( AIR==Sub() ) ? ENVIRONMENT : NOT_MOVABLE;
 	}
-	virtual float Weight() const { return shown_weight; }
+	virtual float TrueWeight() const;
 	virtual bool Inscribe(const QString & str) {
 		if ( Inscribable() ) {
 			note=str;
@@ -107,8 +106,8 @@ class Block { //blocks without special physics and attributes
 	virtual void SaveAttributes(QDataStream &) const {}
 
 	void Restore() { durability=MaxDurability(); }
-	void SetWeight() { shown_weight=weight; }
-	void SetWeight(const float m) { shown_weight=m; }
+	void NullWeight(const bool null) { nullWeight=null; }
+	float Weight() const { return nullWeight ? 0 : TrueWeight(); }
 	void SetDir(const int dir) { direction=dir; }
 	void SetNormal(const bool n) { normal=n; }
 
@@ -137,7 +136,7 @@ class Block { //blocks without special physics and attributes
 		if ( normal )
 			return;
 
-		out << weight
+		out << nullWeight
 			<< direction
 			<< durability
 			<< note;
@@ -145,9 +144,16 @@ class Block { //blocks without special physics and attributes
 	}
 
 	Block(
-			const int=STONE,
-			const short=max_durability,
-			const float=0);
+			const int sb=STONE,
+			const short dur=max_durability)
+			:
+			normal(false),
+			sub(sb),
+			nullWeight(false),
+			direction(UP),
+			note(""),
+			durability(dur)
+	{}
 	Block(QDataStream &, const int sub_);
 	virtual ~Block() {}
 };
@@ -168,10 +174,11 @@ class Plate : public Block {
 	int Kind() const { return PLATE; }
 	Block * DropAfterDamage() const { return new Plate(Sub()); }
 	int BeforePush() const { return MOVE_UP; }
+	float TrueWeight() const { return 10; }
 
 	public:
 	Plate(const int sub) :
-			Block(sub, max_durability, 10)
+			Block(sub, max_durability)
 	{}
 	Plate(
 			QDataStream & str,
@@ -200,12 +207,13 @@ class Clock : public Block {
 	Block * DropAfterDamage() const { return new Clock(world, Sub()); }
 	short MaxDurability() const { return 2; }
 	usage_types Use();
+	float TrueWeight() const { return 0.1; }
 
 	Clock(
 			World * const w,
 			const int sub)
 			:
-			Block(sub, 2, 0.1),
+			Block(sub, 2),
 			world (w)
 	{}
 	Clock (
@@ -223,14 +231,14 @@ class Weapons : public Block {
 	int Kind() const=0;
 	int DamageKind() const=0;
 	ushort DamageLevel() const=0;
+	float TrueWeight() const=0;
 	bool Weapon() const { return true; }
 	bool CanBeOut() const { return false; }
 
 	Weapons(
-			const int sub,
-			const short dur=max_durability)
+			const int sub)
 			:
-			Block(sub, dur)
+			Block(sub)
 	{}
 	Weapons(
 			QDataStream & str,
@@ -266,13 +274,21 @@ class Pick : public Weapons {
 	}
 
 	bool Carving() const { return true; }
-	float Weight() const { return 10; }
+	float TrueWeight() const {
+		switch ( Sub() ) {
+			case IRON: return 10;
+			default:
+				fprintf(stderr,
+					"Pick::Pick: unlisted sub: %d\n",
+					Sub());
+				return 8;
+		}
+	}
 
 	Pick(
-			const int sub,
-			const short durability=max_durability)
+			const int sub)
 			:
-			Weapons(sub, durability)
+			Weapons(sub)
 	{}
 	Pick(
 			QDataStream & str,
@@ -319,6 +335,10 @@ class Active : public QObject, public Block {
 
 	int Movable() const { return MOVABLE; }
 	virtual bool ShouldFall() const { return true; }
+	before_move_return BeforeMove(const int dir) {
+		SetDir(dir);
+		return NOTHING;
+	}
 
 	void ReloadToNorth() { y_self+=shred_width; }
 	void ReloadToSouth() { y_self-=shred_width; }
@@ -343,7 +363,7 @@ class Active : public QObject, public Block {
 			const ushort x,
 			const ushort y,
 			const ushort z,
-			int sub,
+			const int sub,
 			const short dur=max_durability)
 			:
 			Block(sub, dur)
@@ -393,7 +413,7 @@ class Animal : public Active {
 			const ushort i,
 			const ushort j,
 			const ushort k,
-			int sub=A_MEAT,
+			const int sub=A_MEAT,
 			const short dur=max_durability)
 			:
 			Active(sh, i, j, k, sub, dur),
@@ -566,7 +586,7 @@ class Dwarf : public Animal, public Inventory {
 		return str="Dwarf"+note;
 	}
 	bool CanBeIn() const { return false; }
-	float Weight() const { return InvWeightAll()+100; }
+	float TrueWeight() const { return InvWeightAll()+60; }
 	ushort Start() const { return 5; }
 	int DamageKind() const {
 		if ( !inventory[inRight].isEmpty() )
@@ -641,7 +661,7 @@ class Dwarf : public Animal, public Inventory {
 			const ushort y,
 			const ushort z)
 			:
-			Animal(sh, x, y, z, H_MEAT, 100),
+			Animal(sh, x, y, z, H_MEAT),
 			Inventory(sh)
 	{
 		Get(new Clock(GetWorld(), IRON));
@@ -676,11 +696,22 @@ class Chest : public Block, public Inventory {
 	}
 	Inventory * HasInventory() { return Inventory::HasInventory(); }
 	Block * Drop(const ushort n) { return Inventory::Drop(n); }
-	float Weight() const { return InvWeightAll()+300; }
 
 	usage_types Use() { return Inventory::Use(); }
 
 	Block * DropAfterDamage() const { return new Chest(0, sub); }
+	float TrueWeight() const {
+		switch ( Sub() ) {
+			case WOOD:  return 100+InvWeightAll();
+			case IRON:  return 150+InvWeightAll();
+			case STONE: return 120+InvWeightAll();
+			default:
+				fprintf(stderr,
+					"Chest::Chest: unlisted sub: %d\n",
+					Sub());
+				return 100+InvWeightAll();
+		}
+	}
 
 	void SaveAttributes(QDataStream & out) const {
 		Block::SaveAttributes(out);
@@ -719,7 +750,7 @@ class Pile : public Active, public Inventory {
 
 	Inventory * HasInventory() { return Inventory::HasInventory(); }
 	usage_types Use() { return Inventory::Use(); }
-	float Weight() const { return InvWeightAll(); }
+	float TrueWeight() const { return InvWeightAll(); }
 
 	bool Act();
 
@@ -848,15 +879,11 @@ class Grass : public Active {
 	before_move_return BeforeMove(const int) { return DESTROY; }
 	bool Act();
 
-	Grass()
-			:
-			Active(GREENERY, 1)
-	{}
 	Grass(
-			Shred * const sh,
-			const ushort x,
-			const ushort y,
-			const ushort z)
+			Shred * const sh=0,
+			const ushort x=0,
+			const ushort y=0,
+			const ushort z=0)
 			:
 			Active(sh, x, y, z, GREENERY, 1)
 	{}
@@ -882,7 +909,7 @@ class Bush : public Active, public Inventory {
 	usage_types Use() { return Inventory::Use(); }
 	Inventory * HasInventory() { return Inventory::HasInventory(); }
 	int Movable() const { return NOT_MOVABLE; }
-	float Weight() const { return InvWeightAll()+Block::Weight(); }
+	float TrueWeight() const { return InvWeightAll()+20; }
 
 	bool Act();
 
@@ -918,7 +945,7 @@ class Rabbit : public Animal {
 	int Kind() const { return RABBIT; }
 
 	bool Act();
-	float Weight() const { return 2; }
+	float TrueWeight() const { return 20; }
 
 	int Eat(Block * const to_eat) {
 		if ( NULL==to_eat )

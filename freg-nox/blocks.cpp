@@ -87,41 +87,24 @@ bool Block::operator==(const Block & block) const {
 			block.note==note );
 }
 
-Block::Block(
-		const int n,
-		const short dur,
-		const float w) //see blocks.h for default parameters
-		:
-		normal(false),
-		sub(n),
-		direction(UP),
-		note(""),
-		durability(dur)
-{
-	if ( w ) {
-		weight=w;
-		shown_weight=weight;
-		return;
-	}
-
-	switch (sub) { //weights
-		case NULLSTONE: weight=4444; break;
-		case SOIL:      weight=1500; break;
-		case GLASS:     weight=2500; break;
-		case WOOD:      weight=999;  break;
-		case IRON:      weight=7874; break;
-		case GREENERY:  weight=2;    break;
-		case SAND:      weight=1250; break;
+float Block::TrueWeight() const {
+	switch ( Sub() ) {
+		case NULLSTONE: return 4444;
+		case SOIL:      return 1500;
+		case GLASS:     return 2500;
+		case WOOD:      return 999;
+		case IRON:      return 7874;
+		case GREENERY:  return 2;
+		case SAND:      return 1250;
 		case ROSE:
-		case HAZELNUT:  weight=0.1;  break;
+		case HAZELNUT:  return 0.1;
 		case MOSS_STONE:
-		case STONE:     weight=2600; break;
-		case A_MEAT:    weight=1;    break;
-		case H_MEAT:    weight=1;    break;
-		case AIR:       weight=0;    break;
-		default: weight=1000;
+		case STONE:     return 2600;
+		case A_MEAT:    return 1;
+		case H_MEAT:    return 1;
+		case AIR:       return 0;
+		default: return 1000;
 	}
-	shown_weight=weight;
 }
 
 Block::Block(QDataStream & str, const int sub_)
@@ -129,10 +112,9 @@ Block::Block(QDataStream & str, const int sub_)
 		normal(false),
 		sub(sub_)
 {
-	str >> weight >>
+	str >> nullWeight >>
 		direction >>
 		durability >> note;
-	shown_weight=weight;
 }
 
 usage_types Clock::Use() {
@@ -153,7 +135,7 @@ int Active::Move(const int dir) {
 		case DOWN:  --z_self; break;
 		default:
 			fprintf(stderr,
-				"Active::Move(dirs): unlisted dir: %d\n",
+				"Active::Move: unlisted dir: %d\n",
 				dir);
 			return 0;
 	}

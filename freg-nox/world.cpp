@@ -388,7 +388,7 @@ int World::Move(
 		switch ( block_to->BeforePush() ) {
 			case MOVE_UP:
 				Jump(i, j, k);
-				return 1;
+				return 0;
 			default: break;
 		}
 
@@ -428,16 +428,16 @@ void World::Jump(
 	if ( MOVABLE!=to_move->Movable() )
 		return;
 
-	to_move->SetWeight(0);
+	to_move->NullWeight(true);
 	const int dir=to_move->GetDir();
 	const short k_plus=Move(i, j, k, (DOWN==dir) ? DOWN : UP, 1);
 	if ( k_plus ) {
 		k+=((DOWN==dir) ? (-1) : 1) * k_plus;
-		to_move->SetWeight();
+		to_move->NullWeight(false);
 		if ( !Move( i, j, k, to_move->GetDir()) )
 			Move(i, j, k, DOWN);
 	} else
-		to_move->SetWeight();
+		to_move->NullWeight(false);
 }
 
 int World::Focus(
