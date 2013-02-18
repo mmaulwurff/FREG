@@ -493,6 +493,8 @@ class Inventory {
 	virtual int Drop(const ushort num, Inventory * const inv_to) {
 		if ( !inv_to )
 			return 1;
+		if ( num>=Size() )
+			return 6;
 		if ( inventory[num].isEmpty() )
 			return 6;
 		if ( !inv_to->Get(inventory[num].top()) )
@@ -525,7 +527,7 @@ class Inventory {
 		if ( !from->Access() )
 			return 2;
 
-		for (ushort i=0; i<Size(); ++i)
+		for (ushort i=0; i<from->Size(); ++i)
 			while ( from->Number(i) )
 				if ( from->Drop(i, this) )
 					return 3;
@@ -660,7 +662,6 @@ class Dwarf : public Animal, public Inventory {
 
 	Inventory * HasInventory() { return Inventory::HasInventory(); }
 	bool Access() const { return false; }
-	//int Drop(const ushort n, Inventory * const inv) { return Inventory::Drop(n, inv); }
 	int Wield(const ushort num) {
 		Block *  const block=ShowBlock(num);
 		if  ( !block )
@@ -730,7 +731,6 @@ class Chest : public Block, public Inventory {
 		}
 	}
 	Inventory * HasInventory() { return Inventory::HasInventory(); }
-	int Drop(const ushort n, Inventory * const inv) { return Inventory::Drop(n, inv); }
 
 	usage_types Use() { return Inventory::Use(); }
 
@@ -1030,13 +1030,14 @@ class Workbench : public Block, public Inventory {
 		}
 	}
 	int Kind() const { return WORKBENCH; }
-	float TrueWeight() const { return 80; }
+	float TrueWeight() const { return InvWeightAll()+80; }
 	float Weight() const { return Block::Weight(); }
 	usage_types Use() { return OPEN; }
 	Block * DropAfterDamage() const { return new Workbench(InShred(), Sub()); }
 	Inventory * HasInventory() { return Inventory::HasInventory(); }
 
 	int Sub() const { return Block::Sub(); }
+	ushort Start() const { return 1; }
 
 	void SaveAttributes(QDataStream & out) const {
 		Block::SaveAttributes(out);
