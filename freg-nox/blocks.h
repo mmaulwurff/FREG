@@ -440,6 +440,7 @@ class Inventory {
 
 	public:
 	Shred * InShred() const { return inShred; }
+	World * InWorld() const;
 	QString & InvFullName(QString & str, const ushort i) const {
 		return str=( inventory[i].isEmpty() ) ? "" :
 			inventory[i].top()->FullName(str);
@@ -502,7 +503,11 @@ class Inventory {
 		Pull(num);
 		return 0;
 	}
-	bool Get(Block * const block) {
+	virtual void Pull(const ushort num) {
+		if ( !inventory[num].isEmpty() )
+			inventory[num].pop();
+	}
+	virtual bool Get(Block * const block) {
 		if ( !block )
 			return true;
 
@@ -521,7 +526,7 @@ class Inventory {
 		}
 		return false;
 	}
-	int GetAll(Inventory * const from) {
+	virtual int GetAll(Inventory * const from) {
 		if ( !from )
 			return 1;
 		if ( !from->Access() )
@@ -535,10 +540,6 @@ class Inventory {
 	}
 
 	int MiniCraft(const ushort num);
-	void Pull(const ushort num) {
-		if ( !inventory[num].isEmpty() )
-			inventory[num].pop();
-	}
 	int InscribeInv(const ushort num, const QString & str) {
 		const int number=Number(num);
 		if ( !number )
@@ -560,10 +561,14 @@ class Inventory {
 				return true;
 		return false;
 	}
-
-	void Register(Shred * const sh) {
-		inShred=sh;
+	bool IsEmpty() {
+		for (ushort i=0; i<Size(); ++i)
+			if ( !inventory[i].isEmpty() )
+				return false;
+		return true;
 	}
+
+	void Register(Shred * const sh) { inShred=sh; }
 
 	virtual void SaveAttributes(QDataStream & out) const {
 		for (ushort i=0; i<Size(); ++i) {
@@ -792,13 +797,12 @@ class Pile : public Active, public Inventory {
 
 	int Drop(const ushort n, Inventory * const inv) {
 		const int ret=Inventory::Drop(n, inv);
-		ifToDestroy=true;
-		for (ushort i=0; i<Size(); ++i)
-			if ( Number(i) ) {
-				ifToDestroy=false;
-				break;
-			}
+		ifToDestroy=IsEmpty();
 		return ret;
+	}
+	void Pull(const ushort num) {
+		Inventory::Pull(num);
+		ifToDestroy=IsEmpty();
 	}
 
 	bool CanBeIn() const { return false; }
@@ -1018,6 +1022,9 @@ class Rabbit : public Animal {
 
 class Workbench : public Block, public Inventory {
 	static const ushort workbench_size=10;
+
+	void Craft();
+
 	public:
 	QString & FullName(QString & str) const {
 		switch ( Sub() ) {
@@ -1038,6 +1045,50 @@ class Workbench : public Block, public Inventory {
 
 	int Sub() const { return Block::Sub(); }
 	ushort Start() const { return 1; }
+
+	virtual int Drop(const ushort num, Inventory * const inv_to) {
+		if ( !inv_to )
+			return 1;
+		if ( num>=Size() )
+			return 6;
+		if ( !Number(num) )
+			return 6;
+		if ( num==0 ) {
+			while ( Number(0) ) {
+				if ( !inv_to->Get(ShowBlock(0)) )
+					return 2;
+				Pull(0);
+			}
+			for (ushort i=Start(); i<Size(); ++i)
+				while ( Number(i) ) {
+					Block * const to_pull=ShowBlock(i);
+					Pull(i);
+					if ( !to_pull->Normal() )
+						delete to_pull;
+				}
+		} else {
+			if ( !inv_to->Get(ShowBlock(num)) )
+				return 2;
+			Pull(num);
+			Craft();
+		}
+		return 0;
+	}
+	bool Get(Block * const block) {
+		if ( Inventory::Get(block) ) {
+			Craft();
+			return true;
+		}
+		return false;
+	}
+	int GetAll(Inventory * const from) {
+		const int err=Inventory::GetAll(from);
+		if ( !err ) {
+			Craft();
+			return 0;
+		} else
+			return err;
+	}
 
 	void SaveAttributes(QDataStream & out) const {
 		Block::SaveAttributes(out);

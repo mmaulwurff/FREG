@@ -107,6 +107,7 @@ char Screen::CharName(
 		case TELEGRAPH: return 't';
 		default: switch (sub) {
 			case NULLSTONE: case MOSS_STONE: case WOOD:
+			case IRON:
 			case STONE: return '#';
 			case GLASS: return 'g';
 			case SUN_MOON: case SKY:

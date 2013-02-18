@@ -34,6 +34,7 @@ typedef struct {
 	int kind;
 	int sub;
 } craft_item;
+typedef QList<craft_item *> craft_recipe;
 
 class World : public QThread {
 	Q_OBJECT
@@ -54,7 +55,6 @@ class World : public QThread {
 
 	ulong mapSize;
 
-	typedef QList<craft_item *> craft_recipe;
 	QList<craft_recipe *> recipes;
 
 	void LoadRecipes();

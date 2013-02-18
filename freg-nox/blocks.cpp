@@ -22,26 +22,26 @@
 QString & Block::FullName(QString & str) const {
 	switch (sub) {
 		case STAR: case SUN_MOON: case SKY:
-		case AIR:        str="Air"; break;
-		case WATER:      str="Ice"; break;
-		case STONE:      str="Stone"; break;
-		case MOSS_STONE: str="Moss stone"; break;
-		case NULLSTONE:  str="Nullstone"; break;
-		case GLASS:      str="Glass"; break;
-		case SOIL:       str="Soil"; break;
-		case HAZELNUT:   str="Hazelnut"; break;
-		case WOOD:       str="Wood"; break;
-		case GREENERY:   str="Leaves"; break;
-		case ROSE:       str="Rose"; break;
-		case A_MEAT:     str="Animal meat"; break;
-		case H_MEAT:     str="Not animal meat"; break;
+		case AIR:        return str="Air";
+		case WATER:      return str="Ice";
+		case STONE:      return str="Stone";
+		case MOSS_STONE: return str="Moss stone";
+		case NULLSTONE:  return str="Nullstone";
+		case GLASS:      return str="Glass";
+		case SOIL:       return str="Soil";
+		case HAZELNUT:   return str="Hazelnut";
+		case WOOD:       return str="Wood";
+		case GREENERY:   return str="Leaves";
+		case ROSE:       return str="Rose";
+		case A_MEAT:     return str="Animal meat";
+		case H_MEAT:     return str="Not animal meat";
+		case IRON:       return str="Iron block";
 		default:
 			fprintf(stderr,
-				"Block::FullName(QString *): Block has unknown substance: %d",
+				"Block::FullName: unlisted sub: %d.\n",
 				sub);
-			str="Unknown block";
+			return str="Unknown block";
 	}
-	return str;
 }
 
 int Block::Damage(
@@ -204,6 +204,8 @@ bool Animal::Act() {
 	--satiation;
 	return false;
 }
+
+World * Inventory::InWorld() const { return inShred->GetWorld(); }
 
 int Inventory::MiniCraft(const ushort num) {
 	const ushort size=inventory[num].size();
@@ -408,4 +410,28 @@ bool Rabbit::Act() {
 
 Block * Rabbit::DropAfterDamage() const {
 	return whereShred->NewNormal(A_MEAT);
+}
+
+void Workbench::Craft() {
+	while ( Number(0) ) { //remove previous product
+		Block * const to_push=ShowBlock(0);
+		Pull(0);
+		if ( !to_push->Normal() )
+			delete to_push;
+	}
+	craft_recipe recipe;
+	for (ushort i=Start(); i<Size(); ++i)
+		if ( Number(i) ) {
+			craft_item * item=new craft_item;
+			item->num=Number(i);
+			item->kind=GetInvKind(i);
+			item->sub=GetInvSub(i);
+			recipe.append(item);
+		}
+	craft_item result;
+	if ( InWorld()->Craft(recipe, result) )
+		for (ushort i=0; i<result.num; ++i)
+			GetExact(InShred()->CraftBlock(result.kind, result.sub), 0);
+	for (ushort i=0; i<recipe.size(); ++i)
+		delete recipe.at(i);
 }
