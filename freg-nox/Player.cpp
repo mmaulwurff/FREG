@@ -165,7 +165,16 @@ Block * Player::ValidBlock(const ushort num) const {
 		emit Notify("Player has no inventory.");
 		return 0;
 	}
-	return inv->ShowBlock(num);
+	if ( num>=inv->Size() ) {
+		emit Notify("No such place.");
+		return 0;
+	}
+	Block * const block=inv->ShowBlock(num);
+	if ( !block ) {
+		emit Notify("Nothing here.");
+		return 0;
+	}
+	return block;
 }
 
 void Player::Use(const ushort num) {
@@ -173,8 +182,6 @@ void Player::Use(const ushort num) {
 	Block * const block=ValidBlock(num);
 	if ( block )
 		block->Use();
-	else
-		emit Notify("Nothing here.");
 	world->Unlock();
 }
 
@@ -183,19 +190,25 @@ void Player::Throw(const ushort num) {
 	Block * const block=ValidBlock(num);
 	if ( !block ) {
 		world->Unlock();
-		emit Notify("Nothing here.");
 		return;
 	}
-	if ( !world->Drop(x, y, z, num) )
+	const int err=world->Drop(x, y, z, num);
+	if ( 5==err || 4==err )
 		emit Notify("No place to drop.");
-
+	else
+		emit Updated();
 	world->Unlock();
 }
 
 void Player::Obtain(const ushort num) {
 	world->WriteLock();
-	if ( !world->Get(x, y, z, num) )
-		Notify("Nothing here.");
+	const int err=world->Get(x, y, z, num);
+	if ( 5==err || 3==err || 6==err )
+		emit Notify("Nothing here.");
+	else if ( 4==err || 2==err )
+		emit Notify("No room.");
+	else
+		emit Updated();
 	world->Unlock();
 }
 
@@ -211,6 +224,8 @@ void Player::Wield(const ushort num) {
 		emit Notify("Nothing here.");
 	else if ( 2==wield_code )
 		emit Notify("Cannot wield this.");
+	else
+		emit Updated();
 	world->Unlock();
 }
 
@@ -218,30 +233,23 @@ void Player::Inscribe(const ushort num) {
 	world->WriteLock();
 	Block * const block=ValidBlock(num);
 	if ( !block ) {
-		emit Notify("Nothing here.");
 		world->Unlock();
 		return;
 	}
 	QString str;
 	emit GetString(str);
-	if ( block->Normal() ) {
-		Drop(num);
-		Block * const nblock=new Block(block->Sub());
-		if ( !nblock->Inscribe(str) )
-			emit Notify("Cannot inscribe this.");
-		Get(nblock);
-	} else if ( !block->Inscribe(str) )
+	Inventory * const inv=PlayerInventory();
+	const int err=inv->InscribeInv(num, str);
+	if ( 1==err )
 		emit Notify("Cannot inscribe this.");
+	else
+		emit Notify("Inscribed.");
 	world->Unlock();
 }
 
-void Player::Eat(const ushort n) {
+void Player::Eat(const ushort num) {
 	world->WriteLock();
-	if ( !player ) {
-		emit Notify("No player.");
-		world->Unlock();
-		return;
-	}
+	Block * const food=ValidBlock(num);
 	Animal * const pl=player->IsAnimal();
 	if ( !pl ) {
 		emit Notify("You can't eat.");
@@ -249,19 +257,16 @@ void Player::Eat(const ushort n) {
 		return;
 	}
 
-	Block * const food=Drop(n);
 	const int eat=pl->Eat(food);
 	if ( 2==eat )
-		emit Notify("Nothing here.");
-	else if ( 0==eat ) {
-		Get(food);
 		emit Notify("You can't eat this.");
-	} else {
-		emit Notify("Yum!");
-		if ( seconds_in_day*time_steps_in_sec < pl->Satiation() )
-			emit Notify("You have gorged yourself!");
+	else {
+		emit Notify(( seconds_in_day < pl->Satiation() ) ?
+			"You have gorged yourself!" : "Yum!");
+		PlayerInventory()->Pull(num);
 		if ( !food->Normal() )
 			delete food;
+		emit Updated();
 	}
 	world->Unlock();
 }
@@ -269,18 +274,19 @@ void Player::Eat(const ushort n) {
 void Player::Build(const ushort num) {
 	world->WriteLock();
 	Block * const block=ValidBlock(num);
-	if ( block ) {
-		ushort x, y, z;
-		Focus(x, y, z);
-		const int build=world->Build(block, x, y, z);
-		if ( 1==build )
-			emit Notify("Cannot build here.");
-		else if ( 2==build )
-			emit Notify("Cannot build this.");
-		else
-			Drop(num);
-	} else
-		emit Notify("Nothing here.");
+	if ( !block ) {
+		world->Unlock();
+		return;
+	}
+	ushort x, y, z;
+	Focus(x, y, z);
+	const int build=world->Build(block, x, y, z);
+	if ( 1==build )
+		emit Notify("Cannot build here.");
+	else if ( 2==build )
+		emit Notify("Cannot build this.");
+	else
+		PlayerInventory()->Pull(num);
 	world->Unlock();
 }
 
@@ -297,27 +303,28 @@ void Player::Craft(const ushort num) {
 		Notify("Nothing here.");
 	else if ( 2==craft )
 		Notify("You don't know how to make something from this.");
-	else
+	else {
 		Notify("Craft successful.");
+		emit Updated();
+	}
 	world->Unlock();
 }
 
 void Player::TakeOff(const ushort num) {
 	world->WriteLock();
 	Block * const block=ValidBlock(num);
-	if ( block )
-		Get(Drop(num));
-	else
-		emit Notify("Nothing here.");
+	if ( !block ) {
+		world->Unlock();
+		return;
+	}
+	Inventory * const inv=PlayerInventory();
+	if ( !inv->HasRoom() ) {
+		emit Notify("No place to take off.");
+		world->Unlock();
+		return;
+	}
+	inv->Drop(num, inv);
 	world->Unlock();
-}
-
-Block * Player::Drop(const ushort n) {
-	if ( !player )
-		return 0;
-
-	Inventory * const inv=player->HasInventory();
-	return inv ? inv->Drop(n) : 0;
 }
 
 void Player::Get(Block * const block) {

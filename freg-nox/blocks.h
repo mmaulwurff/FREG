@@ -32,14 +32,6 @@ class Animal;
 class Block { //blocks without special physics and attributes
 	bool normal;
 
-	bool Inscribable() const {
-		return !( sub==AIR ||
-			sub==NULLSTONE ||
-			sub==A_MEAT ||
-			sub==GREENERY ||
-			sub==H_MEAT);
-	}
-
 	protected:
 	quint16 sub;
 	bool nullWeight;
@@ -104,6 +96,14 @@ class Block { //blocks without special physics and attributes
 			default: return 0;
 		}
 	}
+	virtual bool Inscribable() const {
+		return !( sub==AIR ||
+			sub==NULLSTONE ||
+			sub==A_MEAT ||
+			sub==GREENERY ||
+			sub==H_MEAT);
+	}
+
 
 	virtual void SaveAttributes(QDataStream &) const {}
 
@@ -433,14 +433,13 @@ class Animal : public Active {
 };
 
 class Inventory {
-	const ushort size;
-	protected:
 	static const ushort max_stack_size=9;
-
-	Shred * inShred;
+	const ushort size;
 	QStack<Block *> * inventory;
+	Shred * inShred;
 
 	public:
+	Shred * InShred() const { return inShred; }
 	QString & InvFullName(QString & str, const ushort i) const {
 		return str=( inventory[i].isEmpty() ) ? "" :
 			inventory[i].top()->FullName(str);
@@ -491,9 +490,15 @@ class Inventory {
 	virtual Inventory * HasInventory() { return this; }
 	usage_types Use() { return OPEN; }
 
-	virtual Block * Drop(const ushort num) {
-		return ( Size()>num && Number(num) ) ?
-			inventory[num].pop() : 0;
+	virtual int Drop(const ushort num, Inventory * const inv_to) {
+		if ( !inv_to )
+			return 1;
+		if ( inventory[num].isEmpty() )
+			return 6;
+		if ( !inv_to->Get(inventory[num].top()) )
+			return 2;
+		Pull(num);
+		return 0;
 	}
 	bool Get(Block * const block) {
 		if ( !block )
@@ -514,21 +519,45 @@ class Inventory {
 		}
 		return false;
 	}
-	void GetAll(Inventory * const from) {
-		if ( !from || !from->Access() )
-			return;
+	int GetAll(Inventory * const from) {
+		if ( !from )
+			return 1;
+		if ( !from->Access() )
+			return 2;
 
 		for (ushort i=0; i<Size(); ++i)
-			while ( from->Number(i) ) {
-				Block * const temp=from->Drop(i);
-				if ( !Get(temp) ) {
-					from->Get(temp);
-					return;
-				}
-			}
+			while ( from->Number(i) )
+				if ( from->Drop(i, this) )
+					return 3;
+		return 0;
 	}
 
 	int MiniCraft(const ushort num);
+	void Pull(const ushort num) {
+		if ( !inventory[num].isEmpty() )
+			inventory[num].pop();
+	}
+	int InscribeInv(const ushort num, const QString & str) {
+		const int number=Number(num);
+		if ( !number )
+			return 0;
+		if ( !inventory[num].top()->Inscribable() )
+			return 1;
+		if ( inventory[num].top()->Normal() ) {
+			const int sub=inventory[num].top()->Sub();
+			for (ushort i=0; i<number; ++i)
+				inventory[num].replace(i, new Block(sub));
+		}
+		for (ushort i=0; i<number; ++i)
+			inventory[num].at(i)->Inscribe(str);
+		return 0;
+	}
+	bool HasRoom() {
+		for (ushort i=Start(); i<Size(); ++i)
+			if ( inventory[i].isEmpty() )
+				return true;
+		return false;
+	}
 
 	void Register(Shred * const sh) {
 		inShred=sh;
@@ -594,18 +623,18 @@ class Dwarf : public Animal, public Inventory {
 	float Weight() const { return Block::Weight(); }
 	ushort Start() const { return 5; }
 	int DamageKind() const {
-		if ( !inventory[inRight].isEmpty() )
-			return inventory[inRight].top()->DamageKind();
-		if ( !inventory[inLeft].isEmpty() )
-			return inventory[inLeft].top()->DamageKind();
+		if ( Number(inRight) )
+			return ShowBlock(inRight)->DamageKind();
+		if ( Number(inLeft) )
+			return ShowBlock(inLeft)->DamageKind();
 		return CRUSH;
 	}
 	ushort DamageLevel() const {
 		ushort level=1;
-		if ( !inventory[inRight].isEmpty() )
-			level+=inventory[inRight].top()->DamageLevel();
-		if ( !inventory[inLeft].isEmpty() )
-			level+=inventory[inRight].top()->DamageLevel();
+		if ( Number(inRight) )
+			level+=ShowBlock(inRight)->DamageLevel();
+		if ( Number(inLeft) )
+			level+=ShowBlock(inRight)->DamageLevel();
 		return level;
 	}
 
@@ -614,41 +643,42 @@ class Dwarf : public Animal, public Inventory {
 
 	int Eat(Block * const to_eat) {
 		if ( !to_eat )
-			return 2;
+			return 1;
 
 		switch ( to_eat->Sub() ) {
 			case HAZELNUT: satiation+=seconds_in_hour*time_steps_in_sec; break;
 			case H_MEAT:   satiation+=seconds_in_hour*time_steps_in_sec*2.5; break;
 			case A_MEAT:   satiation+=seconds_in_hour*time_steps_in_sec*2; break;
-			default: return 0; //not ate
+			default: return 2; //not ate
 		}
 
 		if ( seconds_in_day*time_steps_in_sec < satiation )
 			satiation=1.1*seconds_in_day*time_steps_in_sec;
 
-		return 1; //ate
+		return 0; //ate
 	}
 
 	Inventory * HasInventory() { return Inventory::HasInventory(); }
 	bool Access() const { return false; }
-	Block * Drop(const ushort n) { return Inventory::Drop(n); }
+	//int Drop(const ushort n, Inventory * const inv) { return Inventory::Drop(n, inv); }
 	int Wield(const ushort num) {
-		Block *  const block=Drop(num);
+		Block *  const block=ShowBlock(num);
 		if  ( !block )
 			return 1;
 
 		if ( block->Weapon() ) {
 			if ( !ShowBlock(inRight) ) {
 				GetExact(block, inRight);
+				Pull(num);
 				return 0;
 			}
 			if ( !ShowBlock(inLeft) ) {
 				GetExact(block, inLeft);
+				Pull(num);
 				return 0;
 			}
 		}
 		//TODO: clothes, armour
-		Get(block);
 		return 2;
 	}
 	Block * DropAfterDamage() const;
@@ -700,7 +730,7 @@ class Chest : public Block, public Inventory {
 		}
 	}
 	Inventory * HasInventory() { return Inventory::HasInventory(); }
-	Block * Drop(const ushort n) { return Inventory::Drop(n); }
+	int Drop(const ushort n, Inventory * const inv) { return Inventory::Drop(n, inv); }
 
 	usage_types Use() { return Inventory::Use(); }
 
@@ -760,15 +790,15 @@ class Pile : public Active, public Inventory {
 
 	bool Act();
 
-	Block * Drop(const ushort n) {
-		Block * const temp=Inventory::Drop(n);
+	int Drop(const ushort n, Inventory * const inv) {
+		const int ret=Inventory::Drop(n, inv);
 		ifToDestroy=true;
 		for (ushort i=0; i<Size(); ++i)
 			if ( Number(i) ) {
 				ifToDestroy=false;
 				break;
 			}
-		return temp;
+		return ret;
 	}
 
 	bool CanBeIn() const { return false; }
@@ -1003,7 +1033,7 @@ class Workbench : public Block, public Inventory {
 	float TrueWeight() const { return 80; }
 	float Weight() const { return Block::Weight(); }
 	usage_types Use() { return OPEN; }
-	Block * DropAfterDamage() const { return new Workbench(inShred, Sub()); }
+	Block * DropAfterDamage() const { return new Workbench(InShred(), Sub()); }
 	Inventory * HasInventory() { return Inventory::HasInventory(); }
 
 	int Sub() const { return Block::Sub(); }

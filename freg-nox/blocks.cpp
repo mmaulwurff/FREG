@@ -218,9 +218,10 @@ int Inventory::MiniCraft(const ushort num) {
 
 	if ( inShred->GetWorld()->MiniCraft(item, result) ) {
 		while ( !inventory[num].isEmpty() ) {
-			Block * const todrop=Drop(num);
-			if ( !todrop->Normal() )
-				delete todrop;
+			Block * const to_drop=ShowBlock(num);
+			Pull(num);
+			if ( !to_drop->Normal() )
+				delete to_drop;
 		}
 		for (ushort i=0; i<result.num; ++i)
 			Get(inShred->CraftBlock(result.kind, result.sub));

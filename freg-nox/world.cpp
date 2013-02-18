@@ -593,54 +593,41 @@ void World::Eat(
 		Damage(i_food, j_food, k_food, max_durability, EATEN);
 }
 
-bool World::Exchange(
+int World::Exchange(
 		const ushort i_from,
 		const ushort j_from,
 		const ushort k_from,
 		const ushort i_to,
 		const ushort j_to,
 		const ushort k_to,
-		const ushort n)
+		const ushort num)
 {
 	Inventory * const inv_from=HasInventory(i_from, j_from, k_from);
-	Inventory * const inv_to=HasInventory(i_to, j_to, k_to);
-
 	if ( !inv_from )
-		return false;
-	if ( inv_to ) {
-		Block * const temp=inv_from->Drop(n);
-		if ( temp && !inv_to->Get(temp) ) {
-			inv_from->Get(temp);
-		}
-		return true;
-	}
-	
+		return 3;
 	if ( AIR==Sub(i_to, j_to, k_to) )
 		SetBlock(new Pile(GetShred(i_to, j_to),
-				i_to, j_to, k_to,
-				inv_from->Drop(n)),
+				i_to, j_to, k_to),
 			i_to, j_to, k_to);
-	return true;
+	Inventory * const inv_to=HasInventory(i_to, j_to, k_to);
+	if ( !inv_to )
+		return 4;
+	return inv_from->Drop(num, inv_to);
 }
 
-bool World::ExchangeAll(
-		const ushort x_from,
-		const ushort y_from,
-		const ushort z_from,
+int World::GetAll(
 		const ushort x_to,
 		const ushort y_to,
 		const ushort z_to)
 {
+	ushort x_from, y_from, z_from;
+	if ( Focus(x_to, y_to, z_to, x_from, y_from, z_from) )
+		return 5;
 	Inventory * const inv_from=HasInventory(x_from, y_from, z_from);
 	Inventory * const inv_to=HasInventory(x_to, y_to, z_to);
-
-	if ( !inv_from )
-		return false;
-	if ( inv_to ) {
-		inv_to->GetAll(inv_from);
-		return true;
-	}
-	return false;
+	if ( !inv_to )
+		return 6;
+	return inv_to->GetAll(inv_from);
 }
 
 QString & World::FullName(QString & str,
