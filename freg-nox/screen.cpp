@@ -524,8 +524,13 @@ void Screen::PrintFront(WINDOW * const window) const {
 void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 	werase(window);
 	wstandend(window);
-	if ( DWARF==inv->Kind() )
-		mvwaddstr(window, 2, 1, "      Head\n Right hand\n  Left hand\n       Body\n       Legs");
+	switch ( inv->Kind() ) {
+		case DWARF:
+			mvwaddstr(window, 2, 1, "      Head\n Right hand\n  Left hand\n       Body\n       Legs");
+		break;
+		case WORKBENCH: mvwaddstr(window, 2, 1, "   Product"); break;
+		default: break;
+	}
 	mvwprintw(window, 2+inv->Size(), 40, "All weight: %6.1f kg", inv->Weight());
 	QString str;
 	for (ushort i=0; i<inv->Size(); ++i) {

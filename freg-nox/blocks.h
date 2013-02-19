@@ -653,14 +653,14 @@ class Dwarf : public Animal, public Inventory {
 			return 1;
 
 		switch ( to_eat->Sub() ) {
-			case HAZELNUT: satiation+=seconds_in_hour*time_steps_in_sec; break;
-			case H_MEAT:   satiation+=seconds_in_hour*time_steps_in_sec*2.5; break;
-			case A_MEAT:   satiation+=seconds_in_hour*time_steps_in_sec*2; break;
+			case HAZELNUT: satiation+=seconds_in_hour; break;
+			case H_MEAT:   satiation+=seconds_in_hour*2.5; break;
+			case A_MEAT:   satiation+=seconds_in_hour*2; break;
 			default: return 2; //not ate
 		}
 
-		if ( seconds_in_day*time_steps_in_sec < satiation )
-			satiation=1.1*seconds_in_day*time_steps_in_sec;
+		if ( seconds_in_day < satiation )
+			satiation=1.1*seconds_in_day;
 
 		return 0; //ate
 	}
@@ -795,6 +795,7 @@ class Pile : public Active, public Inventory {
 
 	bool Act();
 
+	before_move_return BeforeMove(const int dir);
 	int Drop(const ushort n, Inventory * const inv) {
 		const int ret=Inventory::Drop(n, inv);
 		ifToDestroy=IsEmpty();
@@ -993,7 +994,7 @@ class Rabbit : public Animal {
 			return 2;
 
 		if ( GREENERY==to_eat->Sub() ) {
-			satiation+=seconds_in_hour*time_steps_in_sec*4;
+			satiation+=seconds_in_hour*4;
 			return 1;
 		}
 		return 0;
@@ -1046,7 +1047,7 @@ class Workbench : public Block, public Inventory {
 	int Sub() const { return Block::Sub(); }
 	ushort Start() const { return 1; }
 
-	virtual int Drop(const ushort num, Inventory * const inv_to) {
+	int Drop(const ushort num, Inventory * const inv_to) {
 		if ( !inv_to )
 			return 1;
 		if ( num>=Size() )

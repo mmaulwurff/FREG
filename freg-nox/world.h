@@ -39,6 +39,8 @@ typedef QList<craft_item *> craft_recipe;
 class World : public QThread {
 	Q_OBJECT
 
+	static const ushort time_steps_in_sec=10;
+
 	ulong time;
 	Shred ** shreds;
 	Block * normal_blocks[AIR+1];
@@ -95,7 +97,7 @@ class World : public QThread {
 	{
 		return shreds[j/shred_width*numShreds+
 		              i/shred_width];
-	}	
+	}
 	void SetBlock(Block *,
 			const ushort,
 			const ushort,
@@ -175,7 +177,8 @@ class World : public QThread {
 	int Anti(const int dir) const;
 	ulong GetSpawnLongi() const { return spawnLongi; }
 	ulong GetSpawnLati()  const { return spawnLati; }
-	
+	ushort TimeStepsInSec() const { return time_steps_in_sec; }
+
 	private:
 	ulong MapSize() const { return mapSize; }
 	ushort SunMoonX() const {
@@ -360,7 +363,7 @@ class World : public QThread {
 	Inventory * HasInventory(
 			const ushort,
 			const ushort,
-			const ushort k) const;	
+			const ushort k) const;
 
 	Active * ActiveBlock(
 			const ushort,
@@ -410,7 +413,7 @@ class World : public QThread {
 
 	public slots:
 	void CleanAll();
-	void ReloadShreds(const int);	
+	void ReloadShreds(const int);
 	void PhysEvents();
 
 	signals:

@@ -373,8 +373,9 @@ int World::Move(
 		return 0;
 
 	Block * const block=GetBlock(i, j, k);
-	if ( DESTROY==(block->BeforeMove(dir)) ) {
-		delete block;
+	if ( DESTROY==block->BeforeMove(dir) ) {
+		if ( !block->Normal() )
+			delete block;
 		SetBlock(NewNormal(AIR), i, j, k);
 		return 1;
 	}

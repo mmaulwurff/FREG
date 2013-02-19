@@ -181,13 +181,13 @@ Active::~Active() {
 
 bool Animal::Act() {
 	static ushort timeStep=0;
-	if ( time_steps_in_sec>timeStep ) {
+	World * const world=GetWorld();
+	if ( world->TimeStepsInSec() > timeStep ) {
 		++timeStep;
 		return false;
 	}
 
 	timeStep=0;
-	World * const world=GetWorld();
 	if ( LIQUID==world->Kind(x_self, y_self, z_self+1) ) {
 		if ( 0>=breath )
 			return world->Damage(x_self, y_self, z_self,
@@ -258,6 +258,19 @@ Block * Dwarf::DropAfterDamage() const {
 before_move_return Dwarf::BeforeMove(const int dir) {
 	if ( dir==direction )
 		GetWorld()->GetAll(x_self, y_self, z_self);
+	return NOTHING;
+}
+
+before_move_return Pile::BeforeMove(const int dir) {
+	ushort x_to, y_to, z_to;
+	World * const world=GetWorld();
+	if ( world->Focus(x_self, y_self, z_self, x_to, y_to, z_to, dir) )
+		return NOTHING;
+	Inventory * const inv=world->HasInventory(x_to, y_to, z_to);
+	if ( inv )
+		inv->GetAll(this);
+	if ( IsEmpty() )
+		ifToDestroy=true;
 	return NOTHING;
 }
 
@@ -395,7 +408,7 @@ bool Rabbit::Act() {
 			break;
 		}
 
-	if ( seconds_in_day*time_steps_in_sec/2>satiation ) {
+	if ( seconds_in_day/2 > satiation ) {
 		for (x=x_self-1; x<=x_self+1; ++x)
 		for (y=y_self-1; y<=y_self+1; ++y)
 		for (z=z_self-1; z<=z_self+1; ++z)
