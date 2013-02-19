@@ -205,6 +205,68 @@ bool Animal::Act() {
 	return false;
 }
 
+int Inventory::Drop(const ushort num, Inventory * const inv_to) {
+	if ( !inv_to )
+		return 1;
+	if ( num>=Size() )
+		return 6;
+	if ( inventory[num].isEmpty() )
+		return 6;
+	if ( !inv_to->Get(inventory[num].top()) )
+		return 2;
+	Pull(num);
+	return 0;
+}
+
+int Inventory::GetAll(Inventory * const from) {
+	if ( !from )
+		return 1;
+	if ( !from->Access() )
+		return 2;
+
+	for (ushort i=0; i<from->Size(); ++i)
+		while ( from->Number(i) )
+			if ( from->Drop(i, this) )
+				return 3;
+	return 0;
+}
+
+bool Inventory::Get(Block * const block) {
+	if ( !block )
+		return true;
+
+	for (ushort i=Start(); i<Size(); ++i)
+		if ( GetExact(block, i) )
+			return true;
+	return false;
+}
+
+bool Inventory::GetExact(Block * const block, const ushort num) {
+	if ( inventory[num].isEmpty() ||
+			( *block==*inventory[num].top() &&
+			Number(num)<max_stack_size ) )
+	{
+		inventory[num].push(block);
+		return true;
+	}
+	return false;
+}
+
+int Inventory::InscribeInv(const ushort num, const QString & str) {
+	const int number=Number(num);
+	if ( !number )
+		return 0;
+	if ( !inventory[num].top()->Inscribable() )
+		return 1;
+	if ( inventory[num].top()->Normal() ) {
+		const int sub=inventory[num].top()->Sub();
+		for (ushort i=0; i<number; ++i)
+			inventory[num].replace(i, new Block(sub));
+	}
+	for (ushort i=0; i<number; ++i)
+		inventory[num].at(i)->Inscribe(str);
+	return 0;
+}
 World * Inventory::InWorld() const { return inShred->GetWorld(); }
 
 int Inventory::MiniCraft(const ushort num) {

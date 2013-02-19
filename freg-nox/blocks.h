@@ -104,7 +104,6 @@ class Block { //blocks without special physics and attributes
 			sub==H_MEAT);
 	}
 
-
 	virtual void SaveAttributes(QDataStream &) const {}
 
 	void Restore() { durability=MaxDurability(); }
@@ -439,8 +438,36 @@ class Inventory {
 	Shred * inShred;
 
 	public:
-	Shred * InShred() const { return inShred; }
+	virtual QString & FullName(QString&) const=0;
+	virtual int Kind() const=0;
+	virtual int Sub() const=0;
+	virtual float Weight() const=0;
+	virtual bool Access() const { return true; }
+	virtual ushort Start() const { return 0; }
+	virtual Inventory * HasInventory() { return this; }
+	virtual int Drop(const ushort num, Inventory * const inv_to);
+	virtual bool Get(Block * const block);
+	virtual int GetAll(Inventory * const from);
+	virtual usage_types Use() { return OPEN; }
+	virtual void Pull(const ushort num) {
+		if ( !inventory[num].isEmpty() )
+			inventory[num].pop();
+	}
+	virtual void SaveAttributes(QDataStream & out) const {
+		for (ushort i=0; i<Size(); ++i) {
+			out << Number(i);
+			for (ushort j=0; j<Number(i); ++j)
+				inventory[i].top()->SaveToFile(out);
+		}
+	}
+	
 	World * InWorld() const;
+	Shred * InShred() const { return inShred; }
+	ushort Size() const { return size; }
+	void Register(Shred * const sh) { inShred=sh; }
+	bool GetExact(Block * const block, const ushort num);
+	int MiniCraft(const ushort num);
+	int InscribeInv(const ushort num, const QString & str);
 	QString & InvFullName(QString & str, const ushort i) const {
 		return str=( inventory[i].isEmpty() ) ? "" :
 			inventory[i].top()->FullName(str);
@@ -480,81 +507,6 @@ class Inventory {
 		return inventory[num].top();
 	}
 
-	virtual QString & FullName(QString&) const=0;
-	virtual int Kind() const=0;
-	virtual int Sub() const=0;
-	virtual float Weight() const=0;
-	virtual bool Access() const { return true; }
-
-	virtual ushort Start() const { return 0; }
-	ushort Size() const { return size; }
-	virtual Inventory * HasInventory() { return this; }
-	usage_types Use() { return OPEN; }
-
-	virtual int Drop(const ushort num, Inventory * const inv_to) {
-		if ( !inv_to )
-			return 1;
-		if ( num>=Size() )
-			return 6;
-		if ( inventory[num].isEmpty() )
-			return 6;
-		if ( !inv_to->Get(inventory[num].top()) )
-			return 2;
-		Pull(num);
-		return 0;
-	}
-	virtual void Pull(const ushort num) {
-		if ( !inventory[num].isEmpty() )
-			inventory[num].pop();
-	}
-	virtual bool Get(Block * const block) {
-		if ( !block )
-			return true;
-
-		for (ushort i=Start(); i<Size(); ++i)
-			if ( GetExact(block, i) )
-				return true;
-		return false;
-	}
-	bool GetExact(Block * const block, const ushort num) {
-		if ( inventory[num].isEmpty() ||
-				( *block==*inventory[num].top() &&
-				Number(num)<max_stack_size ) )
-		{
-			inventory[num].push(block);
-			return true;
-		}
-		return false;
-	}
-	virtual int GetAll(Inventory * const from) {
-		if ( !from )
-			return 1;
-		if ( !from->Access() )
-			return 2;
-
-		for (ushort i=0; i<from->Size(); ++i)
-			while ( from->Number(i) )
-				if ( from->Drop(i, this) )
-					return 3;
-		return 0;
-	}
-
-	int MiniCraft(const ushort num);
-	int InscribeInv(const ushort num, const QString & str) {
-		const int number=Number(num);
-		if ( !number )
-			return 0;
-		if ( !inventory[num].top()->Inscribable() )
-			return 1;
-		if ( inventory[num].top()->Normal() ) {
-			const int sub=inventory[num].top()->Sub();
-			for (ushort i=0; i<number; ++i)
-				inventory[num].replace(i, new Block(sub));
-		}
-		for (ushort i=0; i<number; ++i)
-			inventory[num].at(i)->Inscribe(str);
-		return 0;
-	}
 	bool HasRoom() {
 		for (ushort i=Start(); i<Size(); ++i)
 			if ( inventory[i].isEmpty() )
@@ -566,16 +518,6 @@ class Inventory {
 			if ( !inventory[i].isEmpty() )
 				return false;
 		return true;
-	}
-
-	void Register(Shred * const sh) { inShred=sh; }
-
-	virtual void SaveAttributes(QDataStream & out) const {
-		for (ushort i=0; i<Size(); ++i) {
-			out << Number(i);
-			for (ushort j=0; j<Number(i); ++j)
-				inventory[i].top()->SaveToFile(out);
-		}
 	}
 
 	//it is not recommended to make inventory size more than 26,
