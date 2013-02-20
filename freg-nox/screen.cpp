@@ -103,6 +103,7 @@ char Screen::CharName(
 		case RABBIT: return 'r';
 		case CLOCK:  return 'c';
 		case PLATE:  return '-';
+		case LADDER: return '^';
 		case WORKBENCH: return '*';
 		case TELEGRAPH: return 't';
 		case WEAPON: switch ( sub ) {
@@ -347,29 +348,22 @@ void Screen::Print() {
 	}
 
 	//quick inventory
-	Inventory * inv;
-	if ( (inv=player->GetP()->HasInventory()) ) {
-		wstandend(hudWin);
-		wmove(hudWin, 0, 36);
-		const ushort size=inv->Size();
-		for (i=0; i<size; ++i)
-			wprintw(hudWin, "%c ", 'a'+i);
-		wmove(hudWin, 1, 36);
-		ushort num;
-		for (i=0; i<size; ++i)
-			if ( (num=inv->Number(i)) ) {
+	Inventory * const inv=player->GetP()->HasInventory();
+	if ( inv )
+		for (i=0; i<inv->Size(); ++i) {
+			wstandend(hudWin);
+			const int x=36+i*2;
+			mvwaddch(hudWin, 0, x, 'a'+i);
+			if ( inv->Number(i) ) {
 				wcolor_set(hudWin,
-					Color(inv->GetInvKind(i),
-					inv->GetInvSub(i)), NULL);
-				waddch(hudWin, CharName( inv->GetInvKind(i),
-					inv->GetInvSub(i) ));
-				wstandend(hudWin);
-				wprintw(hudWin, "%hu", num);
-			} else {
-				wstandend(hudWin);
-				waddstr(hudWin, "  ");
+					Color( inv->GetInvKind(i),
+						inv->GetInvSub(i) ), NULL);
+				mvwaddch(hudWin, 1, x,
+					CharName( inv->GetInvKind(i),
+						inv->GetInvSub(i) ));
+				mvwprintw(hudWin, 2, x, "%hu", inv->Number(i));
 			}
-	}
+		}
 	wnoutrefresh(hudWin);
 	doupdate();
 
