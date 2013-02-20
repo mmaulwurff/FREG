@@ -84,6 +84,7 @@ enum damage_kinds {
 
 enum kinds {//kind of atom
 	//do not change order, or rewrite craft recipes.
+	//add new kinds to bottom.
 	BLOCK,
 	BELL,
 	CHEST,
@@ -99,10 +100,12 @@ enum kinds {//kind of atom
 	ACTIVE,
 	CLOCK,
 	PLATE,
-	WORKBENCH
+	WORKBENCH,
+	WEAPON
 };
 enum subs {//substance block is made from
 	//do not change order, or rewrite craft recipes.
+	//add new substances before air.
 	STONE,
 	MOSS_STONE,
 	NULLSTONE,

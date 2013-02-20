@@ -84,7 +84,7 @@ class Block { //blocks without special physics and attributes
 	virtual Active * ActiveBlock() { return 0; }
 
 	virtual bool Armour() const { return false; }
-	virtual bool Weapon() const { return false; }
+	virtual bool IsWeapon() const { return false; }
 	virtual bool Carving() const { return false; }
 	virtual int DamageKind() const { return CRUSH; }
 	virtual ushort DamageLevel() const { return 1; }
@@ -227,21 +227,43 @@ class Clock : public Block {
 	{}
 };
 
-class Weapons : public Block {
+class Weapon : public Block {
 	public:
-	int Kind() const=0;
-	int DamageKind() const=0;
-	ushort DamageLevel() const=0;
-	float TrueWeight() const=0;
-	bool Weapon() const { return true; }
+	QString & FullName(QString & str) const {
+		switch ( Sub() ) {
+			case STONE: return str="Pebble";
+			case IRON:  return str="Blade";
+			case WOOD:  return str="Stick";
+			default:
+				fprintf(stderr,
+					"Weapon::FullName: unlisted sub: %d\n",
+					Sub());
+			return str="Some weapon";
+		}
+	}
+	int Kind() const { return WEAPON; }
+	ushort DamageLevel() const {
+		switch ( Sub() ) {
+			case WOOD: return 4;
+			case IRON: return 6;
+			case STONE: return 5;
+			default:
+				fprintf(stderr,
+					"Weapon::DamageLevel: unlisted sub: %d\n",
+					Sub());
+				return 1;
+		}
+	}
+	float TrueWeight() const { return 1; }
+	bool IsWeapon() const { return true; }
 	bool CanBeOut() const { return false; }
 
-	Weapons(
+	Weapon(
 			const int sub)
 			:
 			Block(sub)
 	{}
-	Weapons(
+	Weapon(
 			QDataStream & str,
 			const int sub)
 			:
@@ -249,7 +271,7 @@ class Weapons : public Block {
 	{}
 };
 
-class Pick : public Weapons {
+class Pick : public Weapon {
 	public:
 	int Kind() const { return PICK; }
 	int DamageKind() const { return MINE; }
@@ -289,13 +311,13 @@ class Pick : public Weapons {
 	Pick(
 			const int sub)
 			:
-			Weapons(sub)
+			Weapon(sub)
 	{}
 	Pick(
 			QDataStream & str,
 			const int sub)
 			:
-			Weapons(str, sub)
+			Weapon(str, sub)
 	{}
 };
 
@@ -614,7 +636,7 @@ class Dwarf : public Animal, public Inventory {
 		if  ( !block )
 			return 1;
 
-		if ( block->Weapon() ) {
+		if ( block->IsWeapon() ) {
 			if ( !ShowBlock(inRight) ) {
 				GetExact(block, inRight);
 				Pull(num);

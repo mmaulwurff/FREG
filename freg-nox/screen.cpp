@@ -92,7 +92,7 @@ char Screen::CharName(
 		const int kind,
 	       	const int sub) const
 {
-	switch (kind)  {
+	switch ( kind )  {
 		case CHEST:
 		case PILE:   return '&';
 		case BUSH:   return ';';
@@ -105,7 +105,17 @@ char Screen::CharName(
 		case PLATE:  return '-';
 		case WORKBENCH: return '*';
 		case TELEGRAPH: return 't';
-		default: switch (sub) {
+		case WEAPON: switch ( sub ) {
+			case WOOD:  return '/';
+			case STONE: return '.';
+			case IRON:  return '/';
+			default:
+				fprintf(stderr,
+					"Screen::CharName: unlisted sub: %d\n",
+					sub);
+				return '.';
+		}
+		default: switch ( sub ) {
 			case NULLSTONE: case MOSS_STONE: case WOOD:
 			case IRON:
 			case STONE: return '#';
