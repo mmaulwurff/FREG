@@ -387,8 +387,11 @@ int World::Move(
 	Block * const block_to=GetBlock(newi, newj, newk);
 	if ( block_to && block && DOWN!=dir )
 		switch ( block_to->BeforePush() ) {
-			case MOVE_UP:
+			case JUMP:
 				Jump(i, j, k, dir);
+				return 0;
+			case MOVE_UP:
+				Move(i, j, k, UP);
 				return 0;
 			default: break;
 		}
@@ -408,12 +411,11 @@ int World::Move(
 		GetBlock(i, j, k)->Move( Anti(dir) );
 	GetBlock(newi, newj, newk)->Move(dir);
 
-	if ( Weight(newi, newj, newk) ) {
-		if ( Weight(newi, newj, newk) >
-				Weight(newi, newj, newk-1) )
+	const float weight=Weight(newi, newj, newk);
+	if ( weight ) {
+		if ( weight > Weight(newi, newj, newk-1) )
 			numberMoves+=Move(newi, newj, newk, DOWN, stop-1);
-		else if ( Weight(newi, newj, newk) <
-				Weight(newi, newj, newk+1) )
+		else if ( weight < Weight(newi, newj, newk+1) )
 			numberMoves+=Move(newi, newj, newk, UP, stop-1);
 	}
 

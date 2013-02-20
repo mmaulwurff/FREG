@@ -541,7 +541,7 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 		case WORKBENCH: mvwaddstr(window, 2, 1, "   Product"); break;
 		default: break;
 	}
-	mvwprintw(window, 2+inv->Size(), 40, "All weight: %6.1f kg", inv->Weight());
+	mvwprintw(window, 2+inv->Size(), 40, "All weight: %6.1f kg", inv->TrueWeight());
 	QString str;
 	for (ushort i=0; i<inv->Size(); ++i) {
 		mvwprintw(window, 2+i, 12, "%c)", 'a'+i);

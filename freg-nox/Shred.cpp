@@ -127,6 +127,7 @@ Block * Shred::CraftBlock(const int kind, const int sub) const {
 		case ACTIVE: return new Active(sub);
 		case GRASS:  return new Grass();
 		case PLATE:  return new Plate(sub);
+		case LADDER: return new Ladder(sub);
 		case WORKBENCH: return new Workbench(0, sub);
 		case WEAPON: return new Weapon(sub);
 		default:
@@ -171,9 +172,10 @@ Block * Shred::BlockFromFile(QDataStream & str,
 	//unless kind is inherited from Inventory class or one
 	//of its derivatives - in this case this may cause something bad.
 	switch ( kind ) {
-		case BLOCK:  return new Block(str, sub);
-		case PICK:   return new Pick (str, sub);
-		case PLATE:  return new Plate(str, sub);
+		case BLOCK:  return new Block (str, sub);
+		case PICK:   return new Pick  (str, sub);
+		case PLATE:  return new Plate (str, sub);
+		case LADDER: return new Ladder(str, sub);
 		case WEAPON: return new Weapon(str, sub);
 
 		case BUSH:   return new Bush (this, str);

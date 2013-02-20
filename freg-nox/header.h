@@ -101,7 +101,8 @@ enum kinds {//kind of atom
 	CLOCK,
 	PLATE,
 	WORKBENCH,
-	WEAPON
+	WEAPON,
+	LADDER
 };
 enum subs {//substance block is made from
 	//do not change order, or rewrite craft recipes.
@@ -128,7 +129,7 @@ enum subs {//substance block is made from
 };
 
 enum before_move_return { NOTHING, DESTROY };
-enum before_push_action { NO_ACTION, MOVE_UP };
+enum before_push_action { NO_ACTION, MOVE_UP, JUMP };
 
 enum usage_types { NO, OPEN, INNER_ACTION };
 

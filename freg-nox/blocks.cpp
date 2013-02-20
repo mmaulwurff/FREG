@@ -143,6 +143,9 @@ int Active::Move(const int dir) {
 		whereShred->RemActive(this);
 		whereShred=GetWorld()->GetShred(x_self, y_self);
 		whereShred->AddActive(this);
+		Inventory * const inv=HasInventory();
+		if ( inv )
+			inv->SetShred(whereShred);
 	}
 	emit Moved(dir);
 	return 0;
@@ -309,6 +312,18 @@ Inventory::Inventory(
 		while ( num-- )
 			inventory[i].push(inShred->BlockFromFile(str, 0, 0, 0));
 	}
+}
+
+bool Dwarf::ShouldFall() const {
+	World * const world=GetWorld();
+	return !( (world->InBounds(x_self+1, y_self) &&
+			world->GetBlock(x_self+1, y_self, z_self)->Catchable()) ||
+		(world->InBounds(x_self-1, y_self) &&
+			world->GetBlock(x_self-1, y_self, z_self)->Catchable()) ||
+		(world->InBounds(x_self, y_self+1) &&
+			world->GetBlock(x_self, y_self+1, z_self)->Catchable()) ||
+		(world->InBounds(x_self, y_self-1) &&
+			world->GetBlock(x_self, y_self-1, z_self)->Catchable()));
 }
 
 bool Dwarf::Act() { return Animal::Act(); }

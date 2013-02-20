@@ -39,12 +39,11 @@ class Block { //blocks without special physics and attributes
 	QString note;
 	qint16 durability;
 
-	private:
-	virtual float TrueWeight() const;
-
 	public:
 	virtual QString & FullName(QString & str) const;
 	virtual int Kind() const { return BLOCK; }
+	virtual float TrueWeight() const;
+	virtual bool Catchable() const { return false; }
 	virtual bool CanBeIn() const { return true; }
 	virtual bool CanBeOut() const {
 		switch (sub) {
@@ -174,14 +173,35 @@ class Plate : public Block {
 	}
 	int Kind() const { return PLATE; }
 	Block * DropAfterDamage() const { return new Plate(Sub()); }
-	int BeforePush() const { return MOVE_UP; }
+	int BeforePush() const { return JUMP; }
 	float TrueWeight() const { return 10; }
 
 	public:
-	Plate(const int sub) :
+	Plate(const int sub)
+			:
 			Block(sub)
 	{}
 	Plate(
+			QDataStream & str,
+			const int sub)
+			:
+			Block(str, sub)
+	{}
+};
+
+class Ladder : public Block {
+	QString & FullName(QString & str) const { return str="Ladder"; }
+	int Kind() const { return LADDER; }
+	Block * DropAfterDamage() const { return new Ladder(Sub()); }
+	int BeforePush() const { return MOVE_UP; }
+	float TrueWeight() const { return 20; }
+	virtual bool Catchable() const { return true; }
+	
+	public:
+	Ladder(const int sub) :
+			Block(sub)
+	{}
+	Ladder(
 			QDataStream & str,
 			const int sub)
 			:
@@ -463,7 +483,7 @@ class Inventory {
 	virtual QString & FullName(QString&) const=0;
 	virtual int Kind() const=0;
 	virtual int Sub() const=0;
-	virtual float Weight() const=0;
+	virtual float TrueWeight() const=0;
 	virtual bool Access() const { return true; }
 	virtual ushort Start() const { return 0; }
 	virtual Inventory * HasInventory() { return this; }
@@ -485,6 +505,7 @@ class Inventory {
 	
 	World * InWorld() const;
 	Shred * InShred() const { return inShred; }
+	void SetShred(Shred * const sh) { inShred=sh; }
 	ushort Size() const { return size; }
 	void Register(Shred * const sh) { inShred=sh; }
 	bool GetExact(Block * const block, const ushort num);
@@ -590,8 +611,8 @@ class Dwarf : public Animal, public Inventory {
 		return str="Dwarf"+note;
 	}
 	bool CanBeIn() const { return false; }
-	float TrueWeight() const { return InvWeightAll()+60; }
-	float Weight() const { return Block::Weight(); }
+	float TrueWeight() const { return ShouldFall() ? InvWeightAll()+60 : 0; }
+	bool ShouldFall() const;
 	ushort Start() const { return 5; }
 	int DamageKind() const {
 		if ( Number(inRight) )
@@ -716,7 +737,6 @@ class Chest : public Block, public Inventory {
 				return 100+InvWeightAll();
 		}
 	}
-	float Weight() const { return Block::Weight(); }
 
 	void SaveAttributes(QDataStream & out) const {
 		Block::SaveAttributes(out);
@@ -755,7 +775,6 @@ class Pile : public Active, public Inventory {
 	Inventory * HasInventory() { return Inventory::HasInventory(); }
 	usage_types Use() { return Inventory::Use(); }
 	float TrueWeight() const { return InvWeightAll(); }
-	float Weight() const { return Block::Weight(); }
 
 	bool Act();
 
@@ -915,7 +934,6 @@ class Bush : public Active, public Inventory {
 	Inventory * HasInventory() { return Inventory::HasInventory(); }
 	int Movable() const { return NOT_MOVABLE; }
 	float TrueWeight() const { return InvWeightAll()+20; }
-	float Weight() const { return Block::Weight(); }
 
 	bool Act();
 
@@ -1003,7 +1021,6 @@ class Workbench : public Block, public Inventory {
 	}
 	int Kind() const { return WORKBENCH; }
 	float TrueWeight() const { return InvWeightAll()+80; }
-	float Weight() const { return Block::Weight(); }
 	usage_types Use() { return OPEN; }
 	Block * DropAfterDamage() const { return new Workbench(InShred(), Sub()); }
 	Inventory * HasInventory() { return Inventory::HasInventory(); }
