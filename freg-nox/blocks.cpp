@@ -107,11 +107,23 @@ float Block::TrueWeight() const {
 	}
 }
 
-Block::Block(QDataStream & str, const int sub_)
+Block::Block(
+		QDataStream & str,
+		const int sub_,
+		const quint8 transp)
 		:
 		normal(false),
 		sub(sub_)
 {
+	if ( 5==transp )
+		switch ( sub ) {
+			case AIR: transparent=INVISIBLE; break;
+			case WATER: case GREENERY:
+			case GLASS: transparent=TRANSPARENT; break;
+			default: transparent=OPAQUE;
+		}
+	else
+		transparent=transp;
 	str >> nullWeight >>
 		direction >>
 		durability >> note;

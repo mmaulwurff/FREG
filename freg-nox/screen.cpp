@@ -385,7 +385,7 @@ void Screen::PrintNormal(WINDOW * const window) const {
 	for ( j=start; j<SCREEN_SIZE+start; ++j, waddstr(window, "\n_") )
 	for ( i=start; i<SCREEN_SIZE+start; ++i )
 		for (k=k_start; ; k+=k_step)
-			if ( w->Transparent(i, j, k) < 2 ) {
+			if ( w->Transparent(i, j, k) != INVISIBLE ) {
 				if ( w->Enlightened(i, j, k, block_side) && player->Visible(i, j, k) ) {
 					wcolor_set(window, Color(i, j, k), NULL);
 					waddch(window, CharName(i, j, k));
@@ -497,7 +497,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 	for (k=k_start; k_start-k<SCREEN_SIZE; --k, waddstr(window, "\n_"))
 		for (*x=x_start; *x!=x_end; *x+=x_step) {
 			for (*z=z_start; *z!=z_end; *z+=z_step)
-				if (w->Transparent(i, j, k) < 2) {
+				if ( w->Transparent(i, j, k) != INVISIBLE ) {
 					if ( w->Enlightened(i, j, k, block_side) &&
 							player->Visible(i, j, k) ) {
 						wcolor_set(window, Color(i, j, k), NULL);

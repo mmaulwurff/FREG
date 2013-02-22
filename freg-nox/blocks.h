@@ -33,6 +33,7 @@ class Block { //blocks without special physics and attributes
 	bool normal;
 
 	protected:
+	quint8 transparent;
 	quint16 sub;
 	bool nullWeight;
 	quint8 direction;
@@ -116,17 +117,7 @@ class Block { //blocks without special physics and attributes
 	int  Sub() const { return sub; }
 	short Durability() const { return durability; }
 	QString & GetNote(QString & str) const { return str=note; }
-	int Transparent() const {
-		//0 - normal block,
-		//1 - block is visible, but light can pass through it,
-		//2 - invisible block
-		switch (sub) {
-			case AIR: return 2;
-			case WATER: case GREENERY:
-			case GLASS: return 1;
-			default: return 0;
-		}
-	}
+	int Transparent() const { return transparent; }
 
 	bool operator==(const Block &) const;
 
@@ -145,7 +136,8 @@ class Block { //blocks without special physics and attributes
 
 	Block(
 			const int sb=STONE,
-			const short dur=max_durability)
+			const short dur=max_durability,
+			const quint8 transp=UNDEF)
 			:
 			normal(false),
 			sub(sb),
@@ -153,8 +145,21 @@ class Block { //blocks without special physics and attributes
 			direction(UP),
 			note(""),
 			durability(dur)
-	{}
-	Block(QDataStream &, const int sub_);
+	{
+		if ( 5==transp )
+			switch ( sub ) {
+				case AIR: transparent=INVISIBLE; break;
+				case WATER: case GREENERY:
+				case GLASS: transparent=TRANSPARENT; break;
+				default: transparent=OPAQUE;
+			}
+		else
+			transparent=transp;
+	}
+	Block(
+			QDataStream &,
+			const int sub_,
+			const quint8 transp=UNDEF);
 	virtual ~Block() {}
 };
 
@@ -179,13 +184,13 @@ class Plate : public Block {
 	public:
 	Plate(const int sub)
 			:
-			Block(sub)
+			Block(sub, max_durability, NONSTANDARD)
 	{}
 	Plate(
 			QDataStream & str,
 			const int sub)
 			:
-			Block(str, sub)
+			Block(str, sub, NONSTANDARD)
 	{}
 };
 
@@ -393,9 +398,10 @@ class Active : public QObject, public Block {
 
 	Active(
 			const int sub,
-			const short dur=max_durability)
+			const short dur=max_durability,
+			const quint8 transp=UNDEF)
 			:
-			Block(sub, dur),
+			Block(sub, dur, transp),
 	       		whereShred(0)
 	{}
 	Active(
@@ -404,9 +410,10 @@ class Active : public QObject, public Block {
 			const ushort y,
 			const ushort z,
 			const int sub,
-			const short dur=max_durability)
+			const short dur=max_durability,
+			const quint8 transp=UNDEF)
 			:
-			Block(sub, dur)
+			Block(sub, dur, transp)
 	{
 		Register(sh, x, y, z);
 	}
@@ -416,9 +423,10 @@ class Active : public QObject, public Block {
 			const ushort y,
 			const ushort z,
 			QDataStream & str,
-			const int sub)
+			const int sub,
+			const quint8 transp=UNDEF)
 			:
-			Block(str, sub)
+			Block(str, sub, transp)
 	{
 		Register(sh, x, y, z);
 	}
@@ -455,7 +463,7 @@ class Animal : public Active {
 			const ushort k,
 			const int sub=A_MEAT)
 			:
-			Active(sh, i, j, k, sub),
+			Active(sh, i, j, k, sub, NONSTANDARD),
 			breath(max_breath),
 			satiation(seconds_in_day)
 	{}
@@ -467,7 +475,7 @@ class Animal : public Active {
 			QDataStream & str,
 			const int sub)
 			:
-			Active(sh, i, j, k, str, sub)
+			Active(sh, i, j, k, str, sub, NONSTANDARD)
 	{
 		str >> breath >> satiation;
 	}
