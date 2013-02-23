@@ -212,9 +212,11 @@ bool Animal::Act() {
 	} else if ( breath<max_breath )
 		++breath;
 
-	if ( 0>=satiation )
+	if ( satiation <= 0 )
 		return world->Damage(x_self, y_self, z_self,
 			1, HUNGER);
+	else if ( durability < MaxDurability() )
+		++durability;
 
 	--satiation;
 	return false;

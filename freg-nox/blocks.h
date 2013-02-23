@@ -63,7 +63,7 @@ class Block { //blocks without special physics and attributes
 		return false;
 	}
 	virtual before_move_return BeforeMove(const int) { return NOTHING; }
-	virtual int BeforePush() const { return NO_ACTION; }
+	virtual int BeforePush() { return NO_ACTION; }
 	virtual int Move(const int) { return 0; }
 	virtual usage_types Use() { return NO; }
 	virtual int Damage(const ushort, const int dmg_kind);
@@ -178,7 +178,7 @@ class Plate : public Block {
 	}
 	int Kind() const { return PLATE; }
 	Block * DropAfterDamage() const { return new Plate(Sub()); }
-	int BeforePush() const { return JUMP; }
+	int BeforePush() { return JUMP; }
 	float TrueWeight() const { return 10; }
 
 	public:
@@ -198,7 +198,7 @@ class Ladder : public Block {
 	QString & FullName(QString & str) const { return str="Ladder"; }
 	int Kind() const { return LADDER; }
 	Block * DropAfterDamage() const { return new Ladder(Sub()); }
-	int BeforePush() const { return MOVE_UP; }
+	int BeforePush() { return MOVE_UP; }
 	float TrueWeight() const { return 20; }
 	virtual bool Catchable() const { return true; }
 	
@@ -233,6 +233,10 @@ class Clock : public Block {
 	Block * DropAfterDamage() const { return new Clock(world, Sub()); }
 	short MaxDurability() const { return 2; }
 	usage_types Use();
+	int BeforePush() {
+		Use();
+		return NO_ACTION;
+	}
 	float TrueWeight() const { return 0.1; }
 
 	Clock(
