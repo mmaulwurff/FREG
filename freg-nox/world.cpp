@@ -386,7 +386,7 @@ int World::Move(
 
 	Block * const block_to=GetBlock(newi, newj, newk);
 	if ( block_to && block && DOWN!=dir && UP!=dir )
-		switch ( block_to->BeforePush() ) {
+		switch ( block_to->BeforePush(dir) ) {
 			case JUMP:
 				Jump(i, j, k, dir);
 				return 0;

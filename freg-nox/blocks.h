@@ -63,7 +63,7 @@ class Block { //blocks without special physics and attributes
 		return false;
 	}
 	virtual before_move_return BeforeMove(const int) { return NOTHING; }
-	virtual int BeforePush() { return NO_ACTION; }
+	virtual int BeforePush(const int) { return NO_ACTION; }
 	virtual int Move(const int) { return 0; }
 	virtual usage_types Use() { return NO; }
 	virtual int Damage(const ushort, const int dmg_kind);
@@ -178,7 +178,7 @@ class Plate : public Block {
 	}
 	int Kind() const { return PLATE; }
 	Block * DropAfterDamage() const { return new Plate(Sub()); }
-	int BeforePush() { return JUMP; }
+	int BeforePush(const int) { return JUMP; }
 	float TrueWeight() const { return 10; }
 
 	public:
@@ -198,7 +198,7 @@ class Ladder : public Block {
 	QString & FullName(QString & str) const { return str="Ladder"; }
 	int Kind() const { return LADDER; }
 	Block * DropAfterDamage() const { return new Ladder(Sub()); }
-	int BeforePush() { return MOVE_UP; }
+	int BeforePush(const int) { return MOVE_UP; }
 	float TrueWeight() const { return 20; }
 	virtual bool Catchable() const { return true; }
 
@@ -233,7 +233,7 @@ class Clock : public Block {
 	Block * DropAfterDamage() const { return new Clock(world, Sub()); }
 	short MaxDurability() const { return 2; }
 	usage_types Use();
-	int BeforePush() {
+	int BeforePush(const int) {
 		Use();
 		return NO_ACTION;
 	}
@@ -1118,7 +1118,7 @@ class Door : public Active {
 		locked=locked ? false : true;
 		return NO;
 	}
-	int BeforePush();
+	int BeforePush(const int dir);
 	bool Act();
 	Block * DropAfterDamage() const { return new Door(0, 0, 0, 0, Sub()); }
 

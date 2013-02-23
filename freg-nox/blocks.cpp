@@ -540,8 +540,8 @@ void Workbench::Craft() {
 		delete recipe.at(i);
 }
 
-int Door::BeforePush() {
-	if ( locked || shifted )
+int Door::BeforePush(const int dir) {
+	if ( locked || shifted || dir==GetWorld()->Anti(GetDir()) )
 		return NO_ACTION;
 	movable=MOVABLE;
 	NullWeight(true);
