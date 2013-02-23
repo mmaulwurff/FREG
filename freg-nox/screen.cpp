@@ -96,7 +96,6 @@ char Screen::CharName(
 		case CHEST:
 		case PILE:   return '&';
 		case BUSH:   return ';';
-		case PICK:   return '\\';
 		case DWARF:  return '@';
 		case LIQUID: return '~';
 		case GRASS:  return '.';
@@ -104,6 +103,8 @@ char Screen::CharName(
 		case CLOCK:  return 'c';
 		case PLATE:  return '-';
 		case LADDER: return '^';
+		case PICK:   return '\\';
+		case DOOR:   return '\'';
 		case WORKBENCH: return '*';
 		case TELEGRAPH: return 't';
 		case WEAPON: switch ( sub ) {

@@ -90,7 +90,7 @@ enum kinds {//kind of atom
 	CHEST,
 	PILE,
 	DWARF,
-	ANIMAL,
+	ANIMAL, //5
 	PICK,
 	TELEGRAPH,
 	LIQUID,
@@ -100,9 +100,10 @@ enum kinds {//kind of atom
 	ACTIVE,
 	CLOCK,
 	PLATE,
-	WORKBENCH,
+	WORKBENCH, //15
 	WEAPON,
-	LADDER
+	LADDER,
+	DOOR
 };
 enum subs {//substance block is made from
 	//do not change order, or rewrite craft recipes.
@@ -112,7 +113,7 @@ enum subs {//substance block is made from
 	NULLSTONE,
 	SKY,
 	STAR,
-	SUN_MOON,
+	SUN_MOON, //5
 	SOIL,
 	H_MEAT, //hominid meat
 	A_MEAT, //animal meat
@@ -122,7 +123,7 @@ enum subs {//substance block is made from
 	IRON,
 	WATER,
 	GREENERY,
-	SAND,
+	SAND, //15
 	HAZELNUT,
 	ROSE,
 	AIR //keep it last in this list

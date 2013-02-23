@@ -543,7 +543,8 @@ int World::Build(
 		Block * const block,
 		const ushort i,
 		const ushort j,
-		const ushort k)
+		const ushort k,
+		const int dir)
 {
 	if ( !InBounds(i, j, k) || AIR!=Sub(i, j, k)  )
 		return 1;
@@ -558,6 +559,7 @@ int World::Build(
 	if ( inv )
 		inv->Register(GetShred(i, j));
 	SetBlock(block, i, j, k);
+	block->SetDir(dir);
 
 	ReEnlighten(i, j, k);
 	return 0;

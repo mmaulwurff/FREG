@@ -539,3 +539,34 @@ void Workbench::Craft() {
 	for (ushort i=0; i<recipe.size(); ++i)
 		delete recipe.at(i);
 }
+
+int Door::BeforePush() {
+	if ( locked || shifted )
+		return NO_ACTION;
+	movable=MOVABLE;
+	NullWeight(true);
+	if ( GetWorld()->Move(x_self, y_self, z_self, GetDir()) )
+		shifted=true;
+	movable=NOT_MOVABLE;
+	NullWeight(false);
+	return NO_ACTION;
+}
+
+bool Door::Act() {
+	if ( !shifted )
+		return false;
+	World * const world=GetWorld();
+	ushort x, y, z;
+	world->Focus(x_self, y_self, z_self, x, y, z,
+		world->Anti(GetDir()));
+	if ( AIR==world->Sub(x, y, z) ) {
+		movable=MOVABLE;
+		NullWeight(true);
+		world->Move(x_self, y_self, z_self,
+			world->Anti(GetDir()));
+		shifted=false;
+		movable=NOT_MOVABLE;
+		NullWeight(false);
+	}
+	return false;
+}

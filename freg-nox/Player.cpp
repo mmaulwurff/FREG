@@ -280,7 +280,8 @@ void Player::Build(const ushort num) {
 	}
 	ushort x, y, z;
 	Focus(x, y, z);
-	const int build=world->Build(block, x, y, z);
+	const int build=world->Build(block, x, y, z,
+		world->TurnRight(Dir()));
 	if ( 1==build )
 		emit Notify("Cannot build here.");
 	else if ( 2==build )
@@ -440,7 +441,7 @@ Player::Player(World * const w) :
 		world->SetBlock(player, x, y, z);
 	} else
 		player=world->ActiveBlock(x, y, z);
-	dir=world->GetBlock(x, y, z)->GetDir();
+	world->GetBlock(x, y, z)->SetDir(dir=NORTH);
 
 	connect(player, SIGNAL(Moved(int)),
 		this, SLOT(CheckOverstep(int)),

@@ -201,7 +201,7 @@ class Ladder : public Block {
 	int BeforePush() { return MOVE_UP; }
 	float TrueWeight() const { return 20; }
 	virtual bool Catchable() const { return true; }
-	
+
 	public:
 	Ladder(const int sub) :
 			Block(sub)
@@ -514,7 +514,7 @@ class Inventory {
 				inventory[i].top()->SaveToFile(out);
 		}
 	}
-	
+
 	World * InWorld() const;
 	Shred * InShred() const { return inShred; }
 	void SetShred(Shred * const sh) { inShred=sh; }
@@ -868,10 +868,7 @@ class Liquid : public Active {
 
 	bool Act();
 
-	int Temperature() const {
-		if (WATER==sub) return 0;
-		else return 1000;
-	}
+	int Temperature() const { return ( WATER==sub ) ? 0 : 1000; }
 
 	Liquid(
 			Shred * const sh,
@@ -896,7 +893,7 @@ class Liquid : public Active {
 
 class Grass : public Active {
 	Q_OBJECT
-
+	static const quint8 grass_dur=1;
 	public:
 	QString & FullName(QString & str) const {
 		switch ( sub ) {
@@ -909,6 +906,7 @@ class Grass : public Active {
 		}
 	}
 	int Kind() const { return GRASS; }
+	short MaxDurability() const { return grass_dur; }
 
 	bool ShouldFall() const { return false; }
 
@@ -921,7 +919,7 @@ class Grass : public Active {
 			const ushort y=0,
 			const ushort z=0)
 			:
-			Active(sh, x, y, z, GREENERY, 1)
+			Active(sh, x, y, z, GREENERY, grass_dur)
 	{}
 	Grass(
 			Shred * const sh,
@@ -936,11 +934,12 @@ class Grass : public Active {
 
 class Bush : public Active, public Inventory {
 	Q_OBJECT
-
+	static const quint8 bush_dur=20;
 	public:
 	QString & FullName(QString & str) const { return str="Bush"; }
 	int Kind() const { return BUSH; }
 	int Sub() const { return Block::Sub(); }
+	short MaxDurability() const { return bush_dur; }
 
 	usage_types Use() { return Inventory::Use(); }
 	Inventory * HasInventory() { return Inventory::HasInventory(); }
@@ -959,7 +958,7 @@ class Bush : public Active, public Inventory {
 	Bush(
 			Shred * const sh)
 			:
-			Active(sh, 0, 0, 0, WOOD),
+			Active(sh, 0, 0, 0, WOOD, bush_dur),
 	       		Inventory(sh)
 	{}
 	Bush(
@@ -1104,6 +1103,56 @@ class Workbench : public Block, public Inventory {
 			Block(str, sub),
 			Inventory(sh, str, workbench_size)
 	{}
+};
+
+class Door : public Active {
+	bool shifted;
+	bool locked;
+	int movable;
+	int Kind() const { return DOOR; }
+	QString & FullName(QString & str) const {
+		return str=(locked ? "Locked door" : "Door");
+	}
+	int Movable() const { return movable; }
+	usage_types Use() {
+		locked=locked ? false : true;
+		return NO;
+	}
+	int BeforePush();
+	bool Act();
+	Block * DropAfterDamage() const { return new Door(0, 0, 0, 0, Sub()); }
+
+	void SaveAttributes(QDataStream & out) const {
+		Block::SaveAttributes(out);
+		out << shifted << locked;
+	}
+
+	public:
+	Door(
+			Shred * const sh,
+			const ushort x,
+			const ushort y,
+			const ushort z,
+			const int sub)
+			:
+			Active(sh, x, y, z, sub, max_durability, NONSTANDARD),
+			shifted(false),
+			locked(false),
+			movable(NOT_MOVABLE)
+	{}
+	Door(
+			Shred * const sh,
+			const ushort x,
+			const ushort y,
+			const ushort z,
+			QDataStream & str,
+			const int sub)
+			:
+			Active(sh, x, y, z, str, sub, NONSTANDARD),
+			movable(NOT_MOVABLE)
+	{
+		str >> shifted >> locked;
+	}
 };
 
 #endif

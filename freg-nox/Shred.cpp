@@ -121,15 +121,16 @@ Shred::~Shred() {
 Block * Shred::CraftBlock(const int kind, const int sub) const {
 	switch ( kind ) {
 		case BLOCK:  return NewNormal(sub);
-		case PICK:   return new Pick(sub);
-		case CHEST:  return new Chest(0, sub);
-		case CLOCK:  return new Clock(GetWorld(), sub);
-		case ACTIVE: return new Active(sub);
 		case GRASS:  return new Grass();
+		case PICK:   return new Pick(sub);
 		case PLATE:  return new Plate(sub);
+		case ACTIVE: return new Active(sub);
 		case LADDER: return new Ladder(sub);
-		case WORKBENCH: return new Workbench(0, sub);
 		case WEAPON: return new Weapon(sub);
+		case CHEST:  return new Chest(0, sub);
+		case DOOR:   return new Door(0, 0, 0, 0, sub);
+		case CLOCK:  return new Clock(GetWorld(), sub);
+		case WORKBENCH: return new Workbench(0, sub);
 		default:
 			fprintf(stderr,
 				"Shred::CraftBlock: unlisted kind: %d\n",
@@ -188,6 +189,7 @@ Block * Shred::BlockFromFile(QDataStream & str,
 		case GRASS:  return new Grass (this, i, j, k, str);
 		case ACTIVE: return new Active(this, i, j, k, str, sub);
 		case LIQUID: return new Liquid(this, i, j, k, str, sub);
+		case DOOR:   return new Door  (this, i, j, k, str, sub);
 
 		case CLOCK:  return new Clock(str, world, sub);
 		default:

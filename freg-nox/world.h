@@ -39,7 +39,7 @@ typedef QList<craft_item *> craft_recipe;
 class World : public QThread {
 	Q_OBJECT
 
-	static const ushort time_steps_in_sec=10;
+	const ushort time_steps_in_sec=10;
 
 	ulong time;
 	Shred ** shreds;
@@ -269,7 +269,8 @@ class World : public QThread {
 			Block * const,
 			const ushort,
 			const ushort,
-			const ushort);
+			const ushort,
+			const int dir=UP);
 	bool Inscribe(
 			const ushort,
 			const ushort,
