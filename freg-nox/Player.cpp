@@ -250,6 +250,10 @@ void Player::Inscribe(const ushort num) {
 void Player::Eat(const ushort num) {
 	world->WriteLock();
 	Block * const food=ValidBlock(num);
+	if ( !food ) {
+		world->Unlock();
+		return;
+	}
 	Animal * const pl=player->IsAnimal();
 	if ( !pl ) {
 		emit Notify("You can't eat.");
