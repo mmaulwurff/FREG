@@ -467,7 +467,7 @@ class Animal : public Active {
 			const ushort k,
 			const int sub=A_MEAT)
 			:
-			Active(sh, i, j, k, sub, NONSTANDARD),
+			Active(sh, i, j, k, sub, max_durability, NONSTANDARD),
 			breath(max_breath),
 			satiation(seconds_in_day)
 	{}

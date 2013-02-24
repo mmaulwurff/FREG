@@ -80,7 +80,7 @@ class Player : public QObject {
 	void CheckOverstep(const int);
 
 	///This is called when player block is destroyed.
-	void BlockDestroy() { player=0; }
+	void BlockDestroy();
 	
 	signals:
 	///This is emitted when a notification is needed to be displayed.

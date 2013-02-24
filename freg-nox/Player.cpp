@@ -390,6 +390,33 @@ void Player::CheckOverstep(const int dir) {
 	}
 }
 
+void Player::BlockDestroy() {
+	if ( cleaned )
+		return;
+	const ushort plus=world->NumShreds()/2*shred_width;
+	x=plus+homeX;
+	y=plus+homeY;
+	z=homeZ;
+	usingType=NO;
+	usingSelfType=NO;
+
+	player=new Dwarf(world->GetShred(x, y), x, y, z);
+	Block * const todel=world->GetBlock(x, y, z);
+	if ( !todel->Normal() )
+		delete todel;
+	world->SetBlock(player, x, y, z);
+
+	connect(player, SIGNAL(Moved(int)),
+		this, SLOT(CheckOverstep(int)),
+		Qt::DirectConnection);
+	connect(player, SIGNAL(Destroyed()),
+		this, SLOT(BlockDestroy()),
+		Qt::DirectConnection);
+	connect(this, SIGNAL(OverstepBorder(int)),
+		world, SLOT(ReloadShreds(int)),
+		Qt::DirectConnection);
+}
+
 Player::Player(World * const w) :
 		world(w),
 		usingType(NO),
