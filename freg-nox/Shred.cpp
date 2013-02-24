@@ -341,11 +341,40 @@ void Shred::PlantGrass() {
 
 void Shred::TestShred() {
 	NormalUnderground();
-	blocks[0][1][height/2]=new Clock(world, IRON);
-	blocks[2][0][height/2]=new Chest(this);
-	/*blocks[3][1][height/2]=new Active(this,
+	blocks[1][1][height/2]=new Clock(world, IRON);
+	blocks[3][1][height/2]=new Chest(this);
+	blocks[5][1][height/2]=new Active(this,
+		shredX*shred_width+5,
+		shredY*shred_width+1, height/2, SAND);
+	blocks[7][1][height/2]=NewNormal(GLASS);
+	blocks[9][1][height/2]=new Pile(this,
+		shredX*shred_width+9,
+		shredY*shred_width+1, height/2, NewNormal(STONE));
+	blocks[11][1][height/2]=new Plate(STONE);
+	blocks[13][1][height/2]=NewNormal(NULLSTONE);
+
+	blocks[1][3][height/2]=new Ladder(NULLSTONE);
+	blocks[1][3][height/2+1]=new Ladder(WOOD);
+	blocks[3][3][height/2]=new Dwarf(this,
 		shredX*shred_width+3,
-		shredY*shred_width+1, height/2, SAND);*/
+		shredY*shred_width+3, height/2);
+	blocks[5][3][height/2-3]=new Liquid(this,
+		shredX*shred_width+5,
+		shredY*shred_width+3, height/2-3);
+	blocks[5][3][height/2-2]=new Liquid(this,
+		shredX*shred_width+5,
+		shredY*shred_width+3, height/2-2);
+	blocks[5][3][height/2-1]=NewNormal(AIR);
+	blocks[7][3][height/2]=new Bush(this);
+	blocks[9][3][height/2-2]=new Rabbit(this,
+		shredX*shred_width+9,
+		shredY*shred_width+3, height/2-2);
+	blocks[9][3][height/2-1]=NewNormal(AIR);
+	blocks[11][3][height/2]=new Workbench(this, IRON);
+	blocks[13][3][height/2]=new Door(this,
+		shredX*shred_width+13,
+		shredY*shred_width+3, height/2, GLASS);
+	blocks[13][3][height/2]->SetDir(NORTH);
 }
 
 void Shred::NullMountain() {
