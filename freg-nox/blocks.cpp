@@ -119,8 +119,8 @@ Block::Block(
 		switch ( sub ) {
 			case AIR: transparent=INVISIBLE; break;
 			case WATER: case GREENERY:
-			case GLASS: transparent=TRANSPARENT; break;
-			default: transparent=OPAQUE;
+			case GLASS: transparent=BLOCK_TRANSPARENT; break;
+			default: transparent=BLOCK_OPAQUE;
 		}
 	else
 		transparent=transp;

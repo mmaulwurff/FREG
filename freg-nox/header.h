@@ -135,8 +135,8 @@ enum before_push_action { NO_ACTION, MOVE_UP, JUMP };
 enum usage_types { NO, OPEN, INNER_ACTION };
 
 enum transparency {
-	OPAQUE,
-	TRANSPARENT,
+	BLOCK_OPAQUE,
+	BLOCK_TRANSPARENT,
 	INVISIBLE,
 	NONSTANDARD=4,
 	UNDEF
