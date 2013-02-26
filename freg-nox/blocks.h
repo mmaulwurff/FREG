@@ -146,7 +146,7 @@ class Block { //blocks without special physics and attributes
 			note(""),
 			durability(dur)
 	{
-		if ( 5==transp )
+		if ( UNDEF==transp )
 			switch ( sub ) {
 				case AIR: transparent=INVISIBLE; break;
 				case WATER: case GREENERY:
@@ -261,7 +261,7 @@ class Weapon : public Block {
 	QString & FullName(QString & str) const {
 		switch ( Sub() ) {
 			case STONE: return str="Pebble";
-			case IRON:  return str="Blade";
+			case IRON:  return str="Spike";
 			case WOOD:  return str="Stick";
 			default:
 				fprintf(stderr,
@@ -283,6 +283,10 @@ class Weapon : public Block {
 				return 1;
 		}
 	}
+	int BeforePush(const int) {
+		return ( IRON==Sub() ) ? DAMAGE : NO_ACTION;
+	}
+
 	float TrueWeight() const { return 1; }
 	bool IsWeapon() const { return true; }
 	bool CanBeOut() const { return false; }

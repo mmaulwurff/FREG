@@ -73,7 +73,7 @@ void Player::Examine() const {
 	ushort i, j, k;
 	world->ReadLock();
 	Focus(i, j, k);
-	
+
 	emit Notify("------");
 
 	QString str;
@@ -123,7 +123,7 @@ void Player::Turn(const int dir) {
 }
 
 void Player::Backpack() {
-	if ( player->HasInventory() ) {
+	if ( player && player->HasInventory() ) {
 		usingSelfType=( OPEN==usingSelfType ) ? NO : OPEN;
 		emit Updated();
 	}
@@ -134,24 +134,21 @@ void Player::Use() {
 	world->WriteLock();
 	Focus(i, j, k);
 	const int us_type=world->Use(i, j, k);
-	usingType=( us_type==usingType ) ?
-		NO :
-		us_type;
+	usingType=( us_type==usingType ) ? NO : us_type;
 	world->Unlock();
 }
 
 void Player::Inscribe() const {
-	ushort x, y, z;
 	world->WriteLock();
-	Focus(x, y, z);
-	const bool carving=((Dwarf *)player)->CarvingWeapon();
-	if ( !carving ) {
-		emit Notify("You need some tool to inscribe.");
-		world->Unlock();
-		return;
+	if ( player ) {
+		ushort x, y, z;
+		Focus(x, y, z);
+		if ( ((Dwarf *)player)->CarvingWeapon() ) {
+			if ( !world->Inscribe(x, y, z) )
+				emit Notify("Cannot inscribe this.");
+		} else
+			emit Notify("You need some tool to inscribe.");
 	}
-	if ( !world->Inscribe(x, y, z) )
-		emit Notify("Cannot inscribe this.");
 	world->Unlock();
 }
 
@@ -188,15 +185,13 @@ void Player::Use(const ushort num) {
 void Player::Throw(const ushort num) {
 	world->WriteLock();
 	Block * const block=ValidBlock(num);
-	if ( !block ) {
-		world->Unlock();
-		return;
+	if ( block ) {
+		const int err=world->Drop(x, y, z, num);
+		if ( 5==err || 4==err )
+			emit Notify("No place to drop.");
+		else
+			emit Updated();
 	}
-	const int err=world->Drop(x, y, z, num);
-	if ( 5==err || 4==err )
-		emit Notify("No place to drop.");
-	else
-		emit Updated();
 	world->Unlock();
 }
 
@@ -214,63 +209,55 @@ void Player::Obtain(const ushort num) {
 
 void Player::Wield(const ushort num) {
 	world->WriteLock();
-	if ( !player || DWARF!=player->Kind() ) {
-		emit Notify("You can wield nothing.");
-		world->Unlock();
-		return;
+	if ( ValidBlock(num) ) {
+		if ( DWARF==player->Kind() ) {
+			const int wield_code=((Dwarf *)player)->Wield(num);
+			if ( 1==wield_code )
+				emit Notify("Nothing here.");
+			else if ( 2==wield_code )
+				emit Notify("Cannot wield this.");
+			else
+				emit Updated();
+		} else
+			emit Notify("You can wield nothing.");
 	}
-	const int wield_code=((Dwarf *)player)->Wield(num);
-	if ( 1==wield_code )
-		emit Notify("Nothing here.");
-	else if ( 2==wield_code )
-		emit Notify("Cannot wield this.");
-	else
-		emit Updated();
 	world->Unlock();
 }
 
 void Player::Inscribe(const ushort num) {
 	world->WriteLock();
-	Block * const block=ValidBlock(num);
-	if ( !block ) {
-		world->Unlock();
-		return;
+	if ( ValidBlock(num) ) {
+		QString str;
+		emit GetString(str);
+		Inventory * const inv=PlayerInventory();
+		const int err=inv->InscribeInv(num, str);
+		if ( 1==err )
+			emit Notify("Cannot inscribe this.");
+		else
+			emit Notify("Inscribed.");
 	}
-	QString str;
-	emit GetString(str);
-	Inventory * const inv=PlayerInventory();
-	const int err=inv->InscribeInv(num, str);
-	if ( 1==err )
-		emit Notify("Cannot inscribe this.");
-	else
-		emit Notify("Inscribed.");
 	world->Unlock();
 }
 
 void Player::Eat(const ushort num) {
 	world->WriteLock();
 	Block * const food=ValidBlock(num);
-	if ( !food ) {
-		world->Unlock();
-		return;
-	}
-	Animal * const pl=player->IsAnimal();
-	if ( !pl ) {
-		emit Notify("You can't eat.");
-		world->Unlock();
-		return;
-	}
-
-	const int eat=pl->Eat(food);
-	if ( 2==eat )
-		emit Notify("You can't eat this.");
-	else {
-		emit Notify(( seconds_in_day < pl->Satiation() ) ?
-			"You have gorged yourself!" : "Yum!");
-		PlayerInventory()->Pull(num);
-		if ( !food->Normal() )
-			delete food;
-		emit Updated();
+	if ( food ) {
+		Animal * const pl=player->IsAnimal();
+		if ( pl ) {
+			const int eat=pl->Eat(food);
+			if ( 2==eat )
+				emit Notify("You can't eat this.");
+			else {
+				emit Notify(( seconds_in_day < pl->Satiation() ) ?
+					"You have gorged yourself!" : "Yum!");
+				PlayerInventory()->Pull(num);
+				if ( !food->Normal() )
+					delete food;
+				emit Updated();
+			}
+		} else
+			emit Notify("You can't eat.");
 	}
 	world->Unlock();
 }
@@ -278,67 +265,57 @@ void Player::Eat(const ushort num) {
 void Player::Build(const ushort num) {
 	world->WriteLock();
 	Block * const block=ValidBlock(num);
-	if ( !block ) {
-		world->Unlock();
-		return;
+	if ( block ) {
+		ushort x, y, z;
+		Focus(x, y, z);
+		const int build=world->Build(block, x, y, z,
+			world->TurnRight(Dir()));
+		if ( 1==build )
+			emit Notify("Cannot build here.");
+		else if ( 2==build )
+			emit Notify("Cannot build this.");
+		else
+			PlayerInventory()->Pull(num);
 	}
-	ushort x, y, z;
-	Focus(x, y, z);
-	const int build=world->Build(block, x, y, z,
-		world->TurnRight(Dir()));
-	if ( 1==build )
-		emit Notify("Cannot build here.");
-	else if ( 2==build )
-		emit Notify("Cannot build this.");
-	else
-		PlayerInventory()->Pull(num);
 	world->Unlock();
 }
 
 void Player::Craft(const ushort num) {
 	world->WriteLock();
 	Inventory * const inv=PlayerInventory();
-	if ( !inv ) {
+	if ( inv ) {
+		const int craft=inv->MiniCraft(num);
+		if ( 1==craft )
+			Notify("Nothing here.");
+		else if ( 2==craft )
+			Notify("You don't know how to make something from this.");
+		else {
+			Notify("Craft successful.");
+			emit Updated();
+		}
+	} else
 		Notify("Cannot craft.");
-		world->Unlock();
-		return;
-	}
-	const int craft=inv->MiniCraft(num);
-	if ( 1==craft )
-		Notify("Nothing here.");
-	else if ( 2==craft )
-		Notify("You don't know how to make something from this.");
-	else {
-		Notify("Craft successful.");
-		emit Updated();
-	}
 	world->Unlock();
 }
 
 void Player::TakeOff(const ushort num) {
 	world->WriteLock();
-	Block * const block=ValidBlock(num);
-	if ( !block ) {
-		world->Unlock();
-		return;
+	if ( ValidBlock(num) ) {
+		Inventory * const inv=PlayerInventory();
+		if ( inv->HasRoom() )
+			inv->Drop(num, inv);
+		else
+			emit Notify("No place to take off.");
 	}
-	Inventory * const inv=PlayerInventory();
-	if ( !inv->HasRoom() ) {
-		emit Notify("No place to take off.");
-		world->Unlock();
-		return;
-	}
-	inv->Drop(num, inv);
 	world->Unlock();
 }
 
 void Player::Get(Block * const block) {
-	if ( !player )
-		return;
-
-	Inventory * const inv=player->HasInventory();
-	if ( inv )
-		inv->Get(block);
+	if ( player ) {
+		Inventory * const inv=player->HasInventory();
+		if ( inv )
+			inv->Get(block);
+	}
 }
 
 bool Player::Visible(
@@ -393,27 +370,34 @@ void Player::CheckOverstep(const int dir) {
 void Player::BlockDestroy() {
 	if ( cleaned )
 		return;
-	const ushort plus=world->NumShreds()/2*shred_width;
-	x=plus+homeX;
-	y=plus+homeY;
+	emit Notify("You died.");
+	player=0;
+	x=homeX;
+	y=homeY;
 	z=homeZ;
 	usingType=NO;
 	usingSelfType=NO;
 
-	player=new Dwarf(world->GetShred(x, y), x, y, z);
-	Block * const todel=world->GetBlock(x, y, z);
-	if ( !todel->Normal() )
-		delete todel;
-	world->SetBlock(player, x, y, z);
+	world->ReloadAllShreds(homeLati, homeLongi, world->NumShreds());
+}
+
+void Player::SetPlayer() {
+	shred=world->GetShred(x, y);
+	if ( DWARF!=world->Kind(x, y, z) ) {
+		Block * const temp=world->GetBlock(x, y, z);
+		if ( !temp->Normal() )
+			delete temp;
+		player=new Dwarf(shred, x, y, z);
+		world->SetBlock(player, x, y, z);
+	} else
+		player=world->ActiveBlock(x, y, z);
+	world->GetBlock(x, y, z)->SetDir(dir=NORTH);
 
 	connect(player, SIGNAL(Moved(int)),
 		this, SLOT(CheckOverstep(int)),
 		Qt::DirectConnection);
 	connect(player, SIGNAL(Destroyed()),
 		this, SLOT(BlockDestroy()),
-		Qt::DirectConnection);
-	connect(this, SIGNAL(OverstepBorder(int)),
-		world, SLOT(ReloadShreds(int)),
 		Qt::DirectConnection);
 }
 
@@ -451,7 +435,7 @@ Player::Player(World * const w) :
 			in >> temp >> x;
 			in >> temp >> y;
 			in >> temp >> z;
-		} 
+		}
 
 		file.close();
 	}
@@ -461,27 +445,13 @@ Player::Player(World * const w) :
 	homeY+=plus;
 	x+=plus;
 	y+=plus;
-	
-	shred=world->GetShred(x, y);
+	SetPlayer();
 
-	if ( DWARF!=world->Kind(x, y, z) ) {
-		Block * const temp=world->GetBlock(x, y, z);
-		if ( !temp->Normal() )
-			delete temp;
-		player=new Dwarf(shred, x, y, z);
-		world->SetBlock(player, x, y, z);
-	} else
-		player=world->ActiveBlock(x, y, z);
-	world->GetBlock(x, y, z)->SetDir(dir=NORTH);
-
-	connect(player, SIGNAL(Moved(int)),
-		this, SLOT(CheckOverstep(int)),
-		Qt::DirectConnection);
-	connect(player, SIGNAL(Destroyed()),
-		this, SLOT(BlockDestroy()),
-		Qt::DirectConnection);
 	connect(this, SIGNAL(OverstepBorder(int)),
 		world, SLOT(ReloadShreds(int)),
+		Qt::DirectConnection);
+	connect(world, SIGNAL(NeedPlayer()),
+		this, SLOT(SetPlayer()),
 		Qt::DirectConnection);
 
 	world->Unlock();
@@ -504,7 +474,7 @@ void Player::CleanAll() {
 		world->Unlock();
 		return;
 	}
-	
+
 	const ushort min=world->NumShreds()/2*shred_width;
 	QTextStream out(&file);
 	out << "World:\n" << world->WorldName(str) << endl

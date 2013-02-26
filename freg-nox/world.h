@@ -59,6 +59,10 @@ class World : public QThread {
 
 	QList<craft_recipe *> recipes;
 
+	ulong newLati, newLongi;
+	ushort newNumShreds;
+	volatile bool toReSet;
+
 	void LoadRecipes();
 	void CleanRecipes();
 
@@ -81,6 +85,8 @@ class World : public QThread {
 			shred_width*numShreds/2,
 			height-1);
 	}
+	void LoadAllShreds();
+	void SaveAllShreds();
 
 	protected:
 	void run();
@@ -393,8 +399,14 @@ class World : public QThread {
 	}
 	bool Craft(const craft_recipe & recipe, craft_item & result);
 
+	void ReloadAllShreds(ulong lati, ulong longi, ushort nshr) {
+		newLati=lati;
+		newLongi=longi;
+		newNumShreds=nshr;
+		toReSet=true;
+	}
+
 	private:
-	friend class Active;
 	friend class Shred;
 
 	public:
@@ -435,6 +447,7 @@ class World : public QThread {
 	void ReConnect();
 	///This is emitted when a pack of updates is complete.
 	void UpdatesEnded();
+	void NeedPlayer();
 };
 
 #endif

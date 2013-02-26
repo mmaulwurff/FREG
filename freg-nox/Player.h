@@ -81,6 +81,7 @@ class Player : public QObject {
 
 	///This is called when player block is destroyed.
 	void BlockDestroy();
+	void SetPlayer();
 	
 	signals:
 	///This is emitted when a notification is needed to be displayed.

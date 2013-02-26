@@ -258,7 +258,7 @@ void Screen::ControlPlayer(const int ch) {
 void Screen::Print() {
 	w->ReadLock();
 
-	if ( updated ) {
+	if ( updated || !player || !player->GetP() ) {
 		w->Unlock();
 		return;
 	}
@@ -272,7 +272,6 @@ void Screen::Print() {
 			}
 		default: PrintNormal(leftWin);
 	}
-
 	switch ( player->UsingSelfType() ) {
 		case OPEN:
 			if ( player && player->GetP()->HasInventory() ) {
@@ -282,9 +281,6 @@ void Screen::Print() {
 		default:
 			PrintFront(rightWin);
 	}
-
-	if ( !player || !player->GetP() )
-		return;
 
 	const short dur=player->HP();
 	const short breath=player->Breath();
@@ -580,7 +576,10 @@ void Screen::Notify(const QString & str) {
 	wnoutrefresh(notifyWin);
 	updated=false;
 	lines[MAX_LINES-1]=str;
-	fputs(qPrintable(str), notifyLog);
+	fputs(qPrintable(
+			QString::number(w->Time())+
+			": "+str+'\n'),
+		notifyLog);
 }
 
 Screen::Screen(

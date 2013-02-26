@@ -130,7 +130,12 @@ enum subs {//substance block is made from
 };
 
 enum before_move_return { NOTHING, DESTROY };
-enum before_push_action { NO_ACTION, MOVE_UP, JUMP };
+enum before_push_action {
+	NO_ACTION,
+	MOVE_UP,
+	JUMP,
+	DAMAGE
+};
 
 enum usage_types { NO, OPEN, INNER_ACTION };
 
@@ -138,7 +143,7 @@ enum transparency {
 	BLOCK_OPAQUE,
 	BLOCK_TRANSPARENT,
 	INVISIBLE,
-	NONSTANDARD=4,
+	NONSTANDARD=6,
 	UNDEF
 };
 

@@ -72,7 +72,7 @@ int Block::Damage(
 		case DIFFERENT:
 			if (TIME==dmg_kind)
 				return 0;
-			//no break;
+			//no break, only time damages DIFFERENT
 		case AIR: case SKY: case SUN_MOON: case WATER:
 		case NULLSTONE: case STAR:
 			return durability;
@@ -386,7 +386,7 @@ bool Liquid::CheckWater(const int dir) const {
 
 bool Liquid::Act() {
 	World * const world=GetWorld();
-	if ( !(rand()%10) &&
+	if ( WATER==Sub() && !(rand()%10) &&
 			!CheckWater(DOWN)  && !CheckWater(UP) &&
 			!CheckWater(NORTH) && !CheckWater(SOUTH) &&
 			!CheckWater(EAST)  && !CheckWater(WEST) )

@@ -269,9 +269,21 @@ void World::ReloadShreds(const int direction) {
 void World::PhysEvents() {
 	WriteLock();
 
+	if ( toReSet ) {
+		toReSet=false;
+		SaveAllShreds();
+		longitude=newLongi;
+		latitude=newLati;
+		numShreds=newNumShreds;
+		LoadAllShreds();
+		emit NeedPlayer();
+		Unlock();
+		return;
+	}
+
 	static ushort timeStep=0;
-	static const ushort start=numShreds/2-numActiveShreds/2;
-	static const ushort end=start+numActiveShreds;
+	const ushort start=numShreds/2-numActiveShreds/2;
+	const ushort end=start+numActiveShreds;
 	if ( time_steps_in_sec>timeStep ) {
 		++timeStep;
 		for (ushort i=start; i<end; ++i)
@@ -281,10 +293,9 @@ void World::PhysEvents() {
 		Unlock();
 		return;
 	}
-
 	timeStep=0;
 	++time;
-	
+
 	//sun/moon moving
 	if ( sun_moon_x!=SunMoonX() ) {
 		const ushort y=shred_width*numShreds/2;
@@ -302,7 +313,6 @@ void World::PhysEvents() {
 		case end_of_evening:
 		case end_of_night: ReEnlightenTime(); break;
 	}
-	
 	emit UpdatesEnded();
 	Unlock();
 }
@@ -398,6 +408,12 @@ int World::Move(
 					Move(i, j, k, UP);
 					return 0;
 				}
+			break;
+			case DAMAGE:
+				Damage(i, j, k,
+					block_to->DamageLevel(),
+					block_to->DamageKind());
+				return 0;
 			break;
 			default: break;
 		}
@@ -506,12 +522,12 @@ bool World::Damage(
 		return false;
 
 	Block * temp=GetBlock(i, j, k);
-	//TODO: prevent creating new block when no damage	
-	if ( temp->Normal() ) {
+	//TODO: prevent creating new block when no damage
+	if ( temp->Normal() && AIR!=temp->Sub() ) {
 		temp=new Block(temp->Sub());
 		SetBlock(temp, i, j, k);
 	}
-	
+
 	if ( 0<temp->Damage(dmg, dmg_kind) ) {
 		ReplaceWithNormal(i, j, k);
 		return false;
@@ -528,7 +544,7 @@ bool World::Damage(
 			delete dropped;
 	} else
 		SetBlock(NewNormal(AIR), i, j, k);
-	
+
 	delete temp;
 	ReEnlighten(i, j, k);
 	return true;
@@ -541,7 +557,7 @@ int World::Use(
 {
 	if ( !InBounds(i, j, k) )
 		return false;
-	
+
 	return GetBlock(i, j, k)->Use();
 }
 
@@ -759,6 +775,22 @@ bool World::Equal(
 	return ( block1==block2 || *block1==*block2 );
 }
 
+void World::LoadAllShreds() {
+	shreds=new Shred *[numShreds*numShreds];
+	for (ulong i=latitude -numShreds/2, x=0; x<numShreds; ++i, ++x)
+	for (ulong j=longitude-numShreds/2, y=0; y<numShreds; ++j, ++y)
+		shreds[y*numShreds+x]=new Shred(this, x, y, j, i);
+	MakeSun();
+	ReEnlightenTime();
+}
+
+void World::SaveAllShreds() {
+	RemSun();
+	for (ushort i=0; i<numShreds*numShreds; ++i)
+		delete shreds[i];
+	delete [] shreds;
+}
+
 World::World(const QString & world_name,
 		const ushort num_shreds,
 		const ushort num_active_shreds)
@@ -766,7 +798,8 @@ World::World(const QString & world_name,
 		worldName(world_name),
 		numShreds(num_shreds),
 		numActiveShreds(num_active_shreds),
-		cleaned(false)
+		cleaned(false),
+		toReSet(false)
 {
 	QFile file(worldName+"_save");
 	if ( !file.open(QIODevice::ReadOnly | QIODevice::Text) ) {
@@ -791,8 +824,7 @@ World::World(const QString & world_name,
 		file.close();
 	}
 
-	ushort x;
-	for (x=0; x<=AIR; ++x) {
+	for (ushort x=0; x<=AIR; ++x) {
 		normal_blocks[x]=new Block(subs(x));
 		normal_blocks[x]->SetNormal(1);
 	}
@@ -825,15 +857,8 @@ World::World(const QString & world_name,
 			numActiveShreds);
 		numActiveShreds=1;
 	}
-	shreds=new Shred *[numShreds*numShreds];
-	ushort y;
-	ulong i, j;
-	for (i=latitude -numShreds/2, x=0; x<numShreds; ++i, ++x)
-	for (j=longitude-numShreds/2, y=0; y<numShreds; ++j, ++y)
-		shreds[y*numShreds+x]=new Shred(this, x, y, j, i);
 
-	MakeSun();
-	ReEnlightenTime();
+	LoadAllShreds();
 	LoadRecipes();
 }
 
@@ -845,22 +870,15 @@ void World::CleanAll() {
 		Unlock();
 		return;
 	}
-
 	cleaned=true;
-	
+
 	quit();
 	Unlock();
 	wait();
 
 	CleanRecipes();
-
-	RemSun();
-	ushort i;
-	for (i=0; i<numShreds*numShreds; ++i)
-		delete shreds[i];
-	delete [] shreds;
-
-	for (i=0; i<=AIR; ++i)
+	SaveAllShreds();
+	for (ushort i=0; i<=AIR; ++i)
 		delete normal_blocks[i];
 
 	QFile file(worldName+"_save");
@@ -878,6 +896,4 @@ void World::CleanAll() {
 		<< "latitude:\n" << latitude << endl
 		<< "spawn_longitude:\n" << spawnLongi << endl
 		<< "spawn_latitude:\n" << spawnLati << endl;
-
-	file.close();
 }

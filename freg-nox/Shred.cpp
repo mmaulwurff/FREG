@@ -375,6 +375,8 @@ void Shred::TestShred() {
 		shredX*shred_width+13,
 		shredY*shred_width+3, height/2, GLASS);
 	blocks[13][3][height/2]->SetDir(NORTH);
+
+	blocks[1][5][height/2]=new Weapon(IRON);
 }
 
 void Shred::NullMountain() {
