@@ -270,15 +270,15 @@ void World::PhysEvents() {
 	WriteLock();
 
 	if ( toReSet ) {
-		toReSet=false;
+		emit StartReloadAll();
 		SaveAllShreds();
 		longitude=newLongi;
 		latitude=newLati;
 		numShreds=newNumShreds;
+		toReSet=false;
 		LoadAllShreds();
-		emit NeedPlayer();
-		Unlock();
-		return;
+		emit NeedPlayer(newX, newY, newZ);
+		emit FinishReloadAll();
 	}
 
 	static ushort timeStep=0;
@@ -789,6 +789,26 @@ void World::SaveAllShreds() {
 	for (ushort i=0; i<numShreds*numShreds; ++i)
 		delete shreds[i];
 	delete [] shreds;
+}
+
+void World::SetNumActiveShreds(ushort num) {
+	WriteLock();
+	if ( 1 != num%2 ) {
+		emit Notify(QString(
+			"Invalid shreds number:%1x%2.").arg(num).arg(num));
+		++num;
+	}
+	if ( !num )
+		emit Notify(QString(
+			"Active shreds number too small: %1x%2.").arg(num).arg(num));
+	else if ( num > numShreds )
+		emit Notify(QString(
+			"Active shreds number too big: %1x%2").arg(num).arg(num));
+	else
+		numActiveShreds=num;
+	emit Notify(QString(
+		"Active shreds number is %1x%2.").arg(num).arg(num));
+	Unlock();
 }
 
 World::World(const QString & world_name,

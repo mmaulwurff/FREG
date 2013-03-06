@@ -249,6 +249,24 @@ void Screen::ControlPlayer(const int ch) {
 		case 'C': actionMode=CRAFT; break;
 		case 'F': actionMode=TAKEOFF; break;
 
+		case '+': w->SetNumActiveShreds(w->NumActiveShreds()+2); break;
+		case '-':
+			if ( w->NumActiveShreds() > 1 )
+				w->SetNumActiveShreds(w->NumActiveShreds()-2);
+			else
+				Notify(QString(
+					"Active shreds number too small: %1x%2.").
+						arg(w->NumActiveShreds()).
+						arg(w->NumActiveShreds()));
+		break;
+		case '#':
+			Notify("Don't make shreds number too big.");
+			player->SetNumShreds(w->NumShreds()+2);
+		break;
+		case '_':
+			player->SetNumShreds(w->NumShreds()-2);
+		break;
+
 		case 'L': RePrint(); break;
 		default: Notify("Don't know what such key means."); break;
 	}
@@ -376,7 +394,7 @@ void Screen::PrintNormal(WINDOW * const window) const {
 	const short k_step=( UP!=dir ) ? (-1) : 1;
 
 	wmove(window, 1, 1);
-	static const ushort start=(shred_width*w->NumShreds()-SCREEN_SIZE)/2;
+	const ushort start=(shred_width*w->NumShreds()-SCREEN_SIZE)/2;
 	ushort i, j, k;
 	const int block_side=( dir==UP ) ? DOWN : UP;
 	for ( j=start; j<SCREEN_SIZE+start; ++j, waddstr(window, "\n_") )
@@ -676,9 +694,7 @@ IThread::IThread(Screen * const scr)
 
 void IThread::run() {
 	while ( !stopped ) {
-		//static int c;
 		screen->ControlPlayer(getch());
-		//fprintf(stderr, "Input received: '%c' (code %d)\n", (char)c, c);
 		msleep(90);
 		flushinp();
 	}

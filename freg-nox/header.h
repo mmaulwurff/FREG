@@ -85,47 +85,47 @@ enum damage_kinds {
 enum kinds {//kind of atom
 	//do not change order, or rewrite craft recipes.
 	//add new kinds to bottom.
-	BLOCK,
-	BELL,
-	CHEST,
-	PILE,
-	DWARF,
-	ANIMAL, //5
-	PICK,
-	TELEGRAPH,
-	LIQUID,
-	GRASS,
-	BUSH, //10
-	RABBIT,
-	ACTIVE,
-	CLOCK,
-	PLATE,
-	WORKBENCH, //15
-	WEAPON,
-	LADDER,
-	DOOR
+	BLOCK, ///<0
+	BELL, ///<1
+	CHEST, ///<2
+	PILE, ///<3
+	DWARF, ///<4
+	ANIMAL, ///<5
+	PICK, ///<6
+	TELEGRAPH, ///<7
+	LIQUID, ///<8
+	GRASS, ///<9
+	BUSH, ///<10
+	RABBIT, ///<11
+	ACTIVE, ///<12
+	CLOCK, ///<13
+	PLATE, ///<14
+	WORKBENCH, ///<15
+	WEAPON, ///<16
+	LADDER, ///<17
+	DOOR ///<18
 };
 enum subs {//substance block is made from
 	//do not change order, or rewrite craft recipes.
-	//add new substances before air.
-	STONE,
-	MOSS_STONE,
-	NULLSTONE,
-	SKY,
-	STAR,
-	SUN_MOON, //5
-	SOIL,
-	H_MEAT, //hominid meat
-	A_MEAT, //animal meat
-	GLASS,
-	WOOD, //10
-	DIFFERENT,
-	IRON,
-	WATER,
-	GREENERY,
-	SAND, //15
-	HAZELNUT,
-	ROSE,
+	//add new substances right before air.
+	STONE,      ///<0
+	MOSS_STONE, ///<1
+	NULLSTONE,  ///<2
+	SKY,        ///<3
+	STAR,       ///<4
+	SUN_MOON,   ///<5
+	SOIL,       ///<6
+	H_MEAT,     ///<7 (hominid meat)
+	A_MEAT,     ///<8 (animal meat)
+	GLASS,      ///<9
+	WOOD,       ///<10
+	DIFFERENT,  ///<11
+	IRON,       ///<12
+	WATER,      ///<13
+	GREENERY,   ///<14
+	SAND,       ///<15
+	HAZELNUT,   ///<16
+	ROSE,       ///<17
 	AIR //keep it last in this list
 };
 

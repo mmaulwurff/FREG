@@ -372,16 +372,36 @@ void Player::BlockDestroy() {
 		return;
 	emit Notify("You died.");
 	player=0;
-	x=homeX;
-	y=homeY;
-	z=homeZ;
 	usingType=NO;
 	usingSelfType=NO;
 
-	world->ReloadAllShreds(homeLati, homeLongi, world->NumShreds());
+	world->ReloadAllShreds(
+		homeLati,
+		homeLongi,
+		homeX,
+		homeY,
+		homeZ,
+		world->NumShreds());
 }
 
-void Player::SetPlayer() {
+void Player::WorldSizeReloadStart() {
+	disconnect(player, SIGNAL(Destroyed()), 0, 0);
+}
+
+void Player::WorldSizeReloadFinish() {
+	connect(player, SIGNAL(Destroyed()),
+		this, SLOT(BlockDestroy()),
+		Qt::DirectConnection);
+}
+
+void Player::SetPlayer(
+		const ushort player_x,
+		const ushort player_y,
+		const ushort player_z)
+{
+	x=player_x;
+	y=player_y;
+	z=player_z;
 	shred=world->GetShred(x, y);
 	if ( DWARF!=world->Kind(x, y, z) ) {
 		Block * const temp=world->GetBlock(x, y, z);
@@ -396,9 +416,29 @@ void Player::SetPlayer() {
 	connect(player, SIGNAL(Moved(int)),
 		this, SLOT(CheckOverstep(int)),
 		Qt::DirectConnection);
-	connect(player, SIGNAL(Destroyed()),
-		this, SLOT(BlockDestroy()),
-		Qt::DirectConnection);
+}
+
+void Player::SetNumShreds(ushort num) const {
+	if ( num < 3 ) {
+		emit Notify(QString(
+			"Shreds number too small: %1x%2.").arg(num).arg(num));
+		return;
+	}
+	if ( 1 != num%2 ) {
+		emit Notify(QString(
+			"Invalid shreds number: %1x%2,").arg(num).arg(num));
+		++num;
+		return;
+	}
+	emit Notify(QString("Shreds number is %1x%2.").arg(num).arg(num));
+
+	world->ReloadAllShreds(
+		world->Latitude(),
+		world->Longitude(),
+		x+(num/2-world->NumShreds()/2)*shred_width,
+		y+(num/2-world->NumShreds()/2)*shred_width,
+		z,
+		num);
 }
 
 Player::Player(World * const w) :
@@ -407,8 +447,6 @@ Player::Player(World * const w) :
 		usingSelfType(NO),
 		cleaned(false)
 {
-	world->WriteLock();
-
 	QFile file("player_save");
 	if ( !file.open(QIODevice::ReadOnly | QIODevice::Text) ) {
 		homeLongi=world->GetSpawnLongi();
@@ -445,16 +483,29 @@ Player::Player(World * const w) :
 	homeY+=plus;
 	x+=plus;
 	y+=plus;
-	SetPlayer();
+	SetPlayer(x, y, z);
 
+	connect(player, SIGNAL(Destroyed()),
+		this, SLOT(BlockDestroy()),
+		Qt::DirectConnection);
 	connect(this, SIGNAL(OverstepBorder(int)),
 		world, SLOT(ReloadShreds(int)),
 		Qt::DirectConnection);
-	connect(world, SIGNAL(NeedPlayer()),
-		this, SLOT(SetPlayer()),
+	connect(world, SIGNAL(NeedPlayer(
+			const ushort,
+			const ushort,
+			const ushort)),
+		this, SLOT(SetPlayer(
+			const ushort,
+			const ushort,
+			const ushort)),
 		Qt::DirectConnection);
-
-	world->Unlock();
+	connect(world, SIGNAL(StartReloadAll()),
+		this, SLOT(WorldSizeReloadStart()),
+		Qt::DirectConnection);
+	connect(world, SIGNAL(FinishReloadAll()),
+		this, SLOT(WorldSizeReloadFinish()),
+		Qt::DirectConnection);
 }
 
 void Player::CleanAll() {

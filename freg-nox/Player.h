@@ -49,6 +49,7 @@ class Player : public QObject {
 	ulong homeLongi, homeLati;
 	ushort homeX, homeY, homeZ;
 	ushort x, y, z; //current position
+	short tempX, tempY;
 	int dir;
 	World * const world;
 	Active * player;
@@ -81,8 +82,15 @@ class Player : public QObject {
 
 	///This is called when player block is destroyed.
 	void BlockDestroy();
-	void SetPlayer();
-	
+
+	void WorldSizeReloadStart();
+	void WorldSizeReloadFinish();
+
+	void SetPlayer(
+			const ushort set_x,
+			const ushort set_y,
+			const ushort set_z);
+
 	signals:
 	///This is emitted when a notification is needed to be displayed.
 	/**
@@ -129,7 +137,7 @@ class Player : public QObject {
 
 	///This returns true if block at (x, y, z) is visible to player.
 	bool Visible(
-		const ushort x, 
+		const ushort x,
 		const ushort y,
 		const ushort z) const;
 
@@ -144,13 +152,13 @@ class Player : public QObject {
 	 * See enum usage_types in header.h.
 	 */
 	int UsingType() const { return usingType; }
-	
+
 	//This returns how player is using himself.
 	/*
 	 * For example, OPEN means he is looking in his backpack.
 	 */
 	int UsingSelfType() const { return usingSelfType; }
-	
+
 	Inventory * PlayerInventory();
 
 	void Turn(const int dir);
@@ -186,6 +194,8 @@ class Player : public QObject {
 	void Dir(const int dir);
 
 	public:
+	void SetNumShreds(ushort num) const;
+
 	///Constructor creates or loads player.
 	/**
 	 * It reads player_save file if it exists,
@@ -193,7 +203,7 @@ class Player : public QObject {
 	 * and makes necessary connections.
 	 */
 	Player(World * const);
-	
+
 	///Destructor calls Player::CleanAll().
 	~Player() { CleanAll(); }
 };

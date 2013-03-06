@@ -47,8 +47,8 @@ class World : public QThread {
 	ulong longitude, latitude; //center of active zone
 	ulong spawnLongi, spawnLati;
 	const QString worldName;
-	ushort numShreds; //size of active zone
-	ushort numActiveShreds;
+	ushort numShreds; //size of loaded zone
+	ushort numActiveShreds; //size of active zone
 	QReadWriteLock rwLock;
 
 	bool cleaned;
@@ -60,7 +60,8 @@ class World : public QThread {
 	QList<craft_recipe *> recipes;
 
 	ulong newLati, newLongi;
-	ushort newNumShreds;
+	ushort newNumShreds, newNumActiveShreds;
+	ushort newX, newY, newZ;
 	volatile bool toReSet;
 
 	void LoadRecipes();
@@ -178,11 +179,14 @@ class World : public QThread {
 	          ushort &,
 	          ushort &) const;
 	ushort NumShreds() const { return numShreds; }
+	ushort NumActiveShreds() const { return numActiveShreds; }
 	int TurnRight(const int dir) const;
 	int TurnLeft(const int dir) const;
 	int Anti(const int dir) const;
 	ulong GetSpawnLongi() const { return spawnLongi; }
 	ulong GetSpawnLati()  const { return spawnLati; }
+	ulong Longitude() const { return longitude; }
+	ulong Latitude() const { return latitude; }
 	ushort TimeStepsInSec() const { return time_steps_in_sec; }
 
 	private:
@@ -399,12 +403,25 @@ class World : public QThread {
 	}
 	bool Craft(const craft_recipe & recipe, craft_item & result);
 
-	void ReloadAllShreds(ulong lati, ulong longi, ushort nshr) {
+	void ReloadAllShreds(
+		const ulong lati,
+		const ulong longi,
+		const ushort new_x,
+		const ushort new_y,
+		const ushort new_z,
+		const ushort new_num_shreds)
+	{
 		newLati=lati;
 		newLongi=longi;
-		newNumShreds=nshr;
+		newX=new_x;
+		newY=new_y;
+		newZ=new_z;
+		if ( numActiveShreds > new_num_shreds )
+			numActiveShreds=new_num_shreds;
+		newNumShreds=new_num_shreds;
 		toReSet=true;
 	}
+	void SetNumActiveShreds(ushort num);
 
 	private:
 	friend class Shred;
@@ -447,7 +464,12 @@ class World : public QThread {
 	void ReConnect();
 	///This is emitted when a pack of updates is complete.
 	void UpdatesEnded();
-	void NeedPlayer();
+	void NeedPlayer(
+			const ushort,
+			const ushort,
+			const ushort);
+	void StartReloadAll();
+	void FinishReloadAll();
 };
 
 #endif
