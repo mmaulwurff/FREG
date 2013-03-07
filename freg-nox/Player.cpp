@@ -117,7 +117,10 @@ int Player::Move(const int dir) {
 void Player::Turn(const int dir) {
 	world->WriteLock();
 	usingType=NO;
-	Dir(dir);
+	Dir(( (DOWN==Dir() && UP!=dir) ||
+			(UP==Dir() && DOWN!=dir) ) ?
+		NORTH :
+		dir);
 	emit Updated();
 	world->Unlock();
 }

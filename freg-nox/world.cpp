@@ -97,8 +97,9 @@ int World::TurnRight(const int dir) const {
 		case NORTH: return EAST;
 		case EAST: return SOUTH;
 		case SOUTH: return WEST;
-		case UP: case DOWN:
 		case WEST: return NORTH;
+		case UP: case DOWN:
+			return dir;
 		default:
 			fprintf(stderr,
 				"World::TurnRight:Unlisted dir: %d\n",
@@ -108,11 +109,12 @@ int World::TurnRight(const int dir) const {
 }
 int World::TurnLeft(const int dir) const {
 	switch (dir) {
-		case UP: case DOWN:
 		case NORTH: return WEST;
 		case WEST: return SOUTH;
 		case SOUTH: return EAST;
 		case EAST: return NORTH;
+		case UP: case DOWN:
+			return dir;
 		default:
 			fprintf(stderr, "TurnLeft:Unlisted dir: %d\n", (int)dir);
 			return NORTH;
