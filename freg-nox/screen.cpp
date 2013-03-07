@@ -386,35 +386,32 @@ void Screen::Print() {
 }
 
 void Screen::PrintNormal(WINDOW * const window) const {
-	const ushort playerZ=player->Z();
 	const int dir=player->Dir();
 	const ushort k_start=( UP!=dir ) ?
-		(( DOWN==dir ) ? playerZ-1 : playerZ) :
-		playerZ+1;
+		(( DOWN==dir ) ? player->Z()-1 : player->Z()) :
+		player->Z()+1;
 	const short k_step=( UP!=dir ) ? (-1) : 1;
 
 	wmove(window, 1, 1);
-	const ushort start=(shred_width*w->NumShreds()-SCREEN_SIZE)/2;
-	ushort i, j, k;
+	const ushort start_x=(player->X()/shred_width)*shred_width+(shred_width-SCREEN_SIZE)/2;
+	const ushort start_y=(player->Y()/shred_width)*shred_width+(shred_width-SCREEN_SIZE)/2;
 	const int block_side=( dir==UP ) ? DOWN : UP;
-	for ( j=start; j<SCREEN_SIZE+start; ++j, waddstr(window, "\n_") )
-	for ( i=start; i<SCREEN_SIZE+start; ++i )
-		for (k=k_start; ; k+=k_step)
-			if ( w->Transparent(i, j, k) != INVISIBLE ) {
-				if ( w->Enlightened(i, j, k, block_side) && player->Visible(i, j, k) ) {
-					wcolor_set(window, Color(i, j, k), NULL);
-					waddch(window, CharName(i, j, k));
-					waddch(window, CharNumber(i, j, k));
-				} else {
-					wcolor_set(window, BLACK_BLACK, NULL);
-					waddstr(window, "  ");
-				}
-				break;
-			}
+	for ( ushort j=start_x; j<SCREEN_SIZE+start_x; ++j, waddstr(window, "\n_") )
+	for ( ushort i=start_y; i<SCREEN_SIZE+start_y; ++i ) {
+		ushort k;
+		for (k=k_start; INVISIBLE == w->Transparent(i, j, k); k+=k_step);
+		if ( w->Enlightened(i, j, k, block_side) && player->Visible(i, j, k) ) {
+			wcolor_set(window, Color(i, j, k), NULL);
+			waddch(window, CharName(i, j, k));
+			waddch(window, CharNumber(i, j, k));
+		} else {
+			wcolor_set(window, BLACK_BLACK, NULL);
+			waddstr(window, "  ");
+		}
+	}
 
 	wstandend(window);
 	box(window, 0, 0);
-	//mvwprintw(window, SCREEN_SIZE+1, 1, "Time:%d", w->TimeOfDay());
 	if ( UP==dir || DOWN==dir ) {
 		const ushort start=(shred_width*w->NumShreds()-SCREEN_SIZE)/2;
 		mvwaddstr(window, 0, 1, ( UP==dir ) ? "Sky View" : "Ground View");
@@ -442,53 +439,55 @@ void Screen::PrintFront(WINDOW * const window) const {
 	const ushort pX=player->X();
 	const ushort pY=player->Y();
 	const ushort pZ=player->Z();
-	const ushort start=(shred_width*w->NumShreds()-SCREEN_SIZE)/2;
+	//const ushort start=(shred_width*w->NumShreds()-SCREEN_SIZE)/2;
+	const ushort begin_x=(pX/shred_width)*shred_width+(shred_width-SCREEN_SIZE)/2;
+	const ushort begin_y=(pY/shred_width)*shred_width+(shred_width-SCREEN_SIZE)/2;
 	ushort x_start, z_start, k_start;
 	ushort arrow_Y, arrow_X;
 	switch ( dir ) {
 		case NORTH:
 			x=&i;
 			x_step=1;
-			x_start=start;
-			x_end=start+SCREEN_SIZE;
+			x_start=begin_x;
+			x_end=x_start+SCREEN_SIZE;
 			z=&j;
 			z_step=-1;
 			z_start=pY-1;
-			z_end=(w->NumShreds()/2-1)*shred_width-1;
-			arrow_X=(pX-start)*2+1;
+			z_end=pY-shred_width-1;
+			arrow_X=(pX-begin_x)*2+1;
 		break;
 		case SOUTH:
 			x=&i;
 			x_step=-1;
-			x_start=SCREEN_SIZE-1+start;
-			x_end=start-1;
+			x_start=SCREEN_SIZE-1+begin_x;
+			x_end=begin_x-1;
 			z=&j;
 			z_step=1;
 			z_start=pY+1;
-			z_end=(w->NumShreds()/2+2)*shred_width;
-			arrow_X=(SCREEN_SIZE-pX+start)*2-1;
+			z_end=pY+shred_width+1;
+			arrow_X=(SCREEN_SIZE-pX+begin_x)*2-1;
 		break;
 		case WEST:
 			x=&j;
 			x_step=-1;
-			x_start=SCREEN_SIZE-1+start;
-			x_end=start-1;
+			x_start=SCREEN_SIZE-1+begin_y;
+			x_end=begin_y-1;
 			z=&i;
 			z_step=-1;
 			z_start=pX-1;
-			z_end=(w->NumShreds()/2-1)*shred_width-1;
-			arrow_X=(SCREEN_SIZE-pY+start)*2-1;
+			z_end=pX-shred_width-1;
+			arrow_X=(SCREEN_SIZE-pY+begin_y)*2-1;
 		break;
 		case EAST:
 			x=&j;
 			x_step=1;
-			x_start=start;
-			x_end=SCREEN_SIZE+start;
+			x_start=begin_y;
+			x_end=SCREEN_SIZE+begin_y;
 			z=&i;
 			z_step=1;
 			z_start=pX+1;
-			z_end=(w->NumShreds()/2+2)*shred_width;
-			arrow_X=(pY-start)*2+1;
+			z_end=pX+shred_width+1;
+			arrow_X=(pY-begin_y)*2+1;
 		break;
 		default:
 			fprintf(stderr,
@@ -524,7 +523,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 					}
 					break;
 				}
-			if (*z==z_end) { //рисовать декорации дальнего вида (белые точки на синем)
+			if ( *z==z_end ) { //far decorations
 				*z-=z_step;
 				wcolor_set(window,
 					(player->Visible(i, j, k) ? WHITE_BLUE : BLACK_BLACK),
