@@ -360,11 +360,14 @@ ushort Player::DamageLevel() const {
 
 void Player::CheckOverstep(const int dir) {
 	UpdateXYZ();
-	if ( shred!=world->GetShred(x, y) ) {
-		shred=world->GetShred(x, y);
+	if ( x < (world->NumShreds()/2-1)*shred_width ||
+			y < (world->NumShreds()/2-1)*shred_width ||
+			x >= (world->NumShreds()/2+2)*shred_width ||
+			y >= (world->NumShreds()/2+2)*shred_width ) {
 		emit OverstepBorder(dir);
 		UpdateXYZ();
 	}
+	shred=world->GetShred(x, y);
 }
 
 void Player::BlockDestroy() {
@@ -424,26 +427,27 @@ void Player::SetPlayer(
 }
 
 void Player::SetNumShreds(ushort num) const {
-	if ( num < 3 ) {
+	if ( num < 5 ) {
 		emit Notify(QString(
 			"Shreds number too small: %1x%2.").arg(num).arg(num));
-		return;
-	}
-	if ( 1 != num%2 ) {
+		emit Notify(QString("Shreds number is %1x%2.")
+			.arg(world->NumShreds()).arg(world->NumShreds()));
+	} else if ( 1 != num%2 ) {
 		emit Notify(QString(
 			"Invalid shreds number: %1x%2.").arg(num).arg(num));
-		++num;
-		return;
+		emit Notify(QString("Shreds number is %1x%2.")
+			.arg(world->NumShreds()).arg(world->NumShreds()));
+	} else {
+		world->ReloadAllShreds(
+			world->Latitude(),
+			world->Longitude(),
+			x+(num/2-world->NumShreds()/2)*shred_width,
+			y+(num/2-world->NumShreds()/2)*shred_width,
+			z,
+			num);
+		emit Notify(QString("Shreds number is %1x%2.")
+			.arg(num).arg(num));
 	}
-	emit Notify(QString("Shreds number is %1x%2.").arg(num).arg(num));
-
-	world->ReloadAllShreds(
-		world->Latitude(),
-		world->Longitude(),
-		x+(num/2-world->NumShreds()/2)*shred_width,
-		y+(num/2-world->NumShreds()/2)*shred_width,
-		z,
-		num);
 }
 
 Player::Player(World * const w) :
@@ -479,8 +483,6 @@ Player::Player(World * const w) :
 			in >> temp >> y;
 			in >> temp >> z;
 		}
-
-		file.close();
 	}
 
 	const ushort plus=world->NumShreds()/2*shred_width;

@@ -396,8 +396,8 @@ void Screen::PrintNormal(WINDOW * const window) const {
 	const ushort start_x=(player->X()/shred_width)*shred_width+(shred_width-SCREEN_SIZE)/2;
 	const ushort start_y=(player->Y()/shred_width)*shred_width+(shred_width-SCREEN_SIZE)/2;
 	const int block_side=( dir==UP ) ? DOWN : UP;
-	for ( ushort j=start_x; j<SCREEN_SIZE+start_x; ++j, waddstr(window, "\n_") )
-	for ( ushort i=start_y; i<SCREEN_SIZE+start_y; ++i ) {
+	for ( ushort j=start_y; j<SCREEN_SIZE+start_y; ++j, waddstr(window, "\n_") )
+	for ( ushort i=start_x; i<SCREEN_SIZE+start_x; ++i ) {
 		ushort k;
 		for (k=k_start; INVISIBLE == w->Transparent(i, j, k); k+=k_step);
 		if ( w->Enlightened(i, j, k, block_side) && player->Visible(i, j, k) ) {
