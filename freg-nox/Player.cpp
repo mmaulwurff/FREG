@@ -385,13 +385,15 @@ void Player::BlockDestroy() {
 }
 
 void Player::WorldSizeReloadStart() {
-	disconnect(player, SIGNAL(Destroyed()), 0, 0);
+	if ( player )
+		disconnect(player, SIGNAL(Destroyed()), 0, 0);
+	homeX-=world->NumShreds()/2*shred_width;
+	homeY-=world->NumShreds()/2*shred_width;
 }
 
 void Player::WorldSizeReloadFinish() {
-	connect(player, SIGNAL(Destroyed()),
-		this, SLOT(BlockDestroy()),
-		Qt::DirectConnection);
+	homeX+=world->NumShreds()/2*shred_width;
+	homeY+=world->NumShreds()/2*shred_width;
 }
 
 void Player::SetPlayer(
@@ -413,6 +415,9 @@ void Player::SetPlayer(
 		player=world->ActiveBlock(x, y, z);
 	world->GetBlock(x, y, z)->SetDir(dir=NORTH);
 
+	connect(player, SIGNAL(Destroyed()),
+		this, SLOT(BlockDestroy()),
+		Qt::DirectConnection);
 	connect(player, SIGNAL(Moved(int)),
 		this, SLOT(CheckOverstep(int)),
 		Qt::DirectConnection);
@@ -426,7 +431,7 @@ void Player::SetNumShreds(ushort num) const {
 	}
 	if ( 1 != num%2 ) {
 		emit Notify(QString(
-			"Invalid shreds number: %1x%2,").arg(num).arg(num));
+			"Invalid shreds number: %1x%2.").arg(num).arg(num));
 		++num;
 		return;
 	}
@@ -485,12 +490,6 @@ Player::Player(World * const w) :
 	y+=plus;
 	SetPlayer(x, y, z);
 
-	connect(player, SIGNAL(Destroyed()),
-		this, SLOT(BlockDestroy()),
-		Qt::DirectConnection);
-	connect(this, SIGNAL(OverstepBorder(int)),
-		world, SLOT(ReloadShreds(int)),
-		Qt::DirectConnection);
 	connect(world, SIGNAL(NeedPlayer(
 			const ushort,
 			const ushort,
@@ -499,6 +498,9 @@ Player::Player(World * const w) :
 			const ushort,
 			const ushort,
 			const ushort)),
+		Qt::DirectConnection);
+	connect(this, SIGNAL(OverstepBorder(int)),
+		world, SLOT(ReloadShreds(int)),
 		Qt::DirectConnection);
 	connect(world, SIGNAL(StartReloadAll()),
 		this, SLOT(WorldSizeReloadStart()),

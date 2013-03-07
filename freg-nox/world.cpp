@@ -803,11 +803,11 @@ void World::SetNumActiveShreds(ushort num) {
 			"Active shreds number too small: %1x%2.").arg(num).arg(num));
 	else if ( num > numShreds )
 		emit Notify(QString(
-			"Active shreds number too big: %1x%2").arg(num).arg(num));
+			"Active shreds number too big: %1x%2.").arg(num).arg(num));
 	else
 		numActiveShreds=num;
 	emit Notify(QString(
-		"Active shreds number is %1x%2.").arg(num).arg(num));
+		"Active shreds number is %1x%2.").arg(numActiveShreds).arg(numActiveShreds));
 	Unlock();
 }
 

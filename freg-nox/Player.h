@@ -47,9 +47,8 @@ class Player : public QObject {
 	Q_OBJECT
 
 	ulong homeLongi, homeLati;
-	ushort homeX, homeY, homeZ;
+	short homeX, homeY, homeZ;
 	ushort x, y, z; //current position
-	short tempX, tempY;
 	int dir;
 	World * const world;
 	Active * player;
