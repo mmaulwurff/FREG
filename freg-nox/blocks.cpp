@@ -202,12 +202,25 @@ void Animal::Act() {
 	}
 
 	timeStep=0;
-	if ( LIQUID==world->Kind(x_self, y_self, z_self+1) ) {
+	if (
+			world->InBounds(x_self, y_self, z_self+1) &&
+				AIR!=world->Sub(x_self, y_self, z_self+1) &&
+			world->InBounds(x_self, y_self, z_self-1) &&
+				AIR!=world->Sub(x_self, y_self, z_self-1) &&
+			world->InBounds(x_self+1, y_self, z_self) &&
+				AIR!=world->Sub(x_self+1, y_self, z_self) &&
+			world->InBounds(x_self-1, y_self, z_self) &&
+				AIR!=world->Sub(x_self-1, y_self, z_self) &&
+			world->InBounds(x_self, y_self+1, z_self) &&
+				AIR!=world->Sub(x_self, y_self+1, z_self) &&
+			world->InBounds(x_self, y_self-1, z_self) &&
+				AIR!=world->Sub(x_self, y_self-1, z_self) )
+	{
 		if ( breath <= 0 )
 			world->Damage(x_self, y_self, z_self, 10, BREATH);
 		else
 			--breath;
-	} else if ( breath<max_breath )
+	} else if ( breath < max_breath )
 		++breath;
 
 	if ( satiation <= 0 )
@@ -405,7 +418,7 @@ void Liquid::Act() {
 
 void Grass::Act() {
 	short i=x_self, j=y_self;
-	switch ( rand()%(seconds_in_hour*4) /* increase this if grass grows too fast */ ) {
+	switch ( rand()%(seconds_in_hour*10) /* increase this if grass grows too fast */ ) {
 		case 0: ++i; break;
 		case 1: --i; break;
 		case 2: ++j; break;
