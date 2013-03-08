@@ -271,6 +271,31 @@ void World::ReloadShreds(const int direction) {
 void World::PhysEvents() {
 	WriteLock();
 
+	switch ( deferredActionType ) {
+		case DEFERRED_MOVE:
+			deferredActionType=DEFERRED_NOTHING;
+			Move(
+				deferredActionX,
+				deferredActionY,
+				deferredActionZ,
+				deferredActionDir);
+		break;
+		case DEFERRED_JUMP:
+			deferredActionType=DEFERRED_NOTHING;
+			Jump(
+				deferredActionX,
+				deferredActionY,
+				deferredActionZ,
+				deferredActionDir);
+		break;
+		case DEFERRED_NOTHING: break;
+		default:
+			deferredActionType=DEFERRED_NOTHING;
+			fprintf(stderr,
+				"World::PhysEvents: unlisted deferred_action: %d\n",
+				deferredActionType);
+	}
+
 	if ( toReSet ) {
 		emit StartReloadAll();
 		SaveAllShreds();
@@ -817,7 +842,8 @@ World::World(const QString & world_name)
 		:
 		worldName(world_name),
 		cleaned(false),
-		toReSet(false)
+		toReSet(false),
+		deferredActionType(DEFERRED_NOTHING)
 {
 	QFile file(worldName+"_save");
 	if ( !file.open(QIODevice::ReadOnly | QIODevice::Text) ) {

@@ -36,6 +36,12 @@ typedef struct {
 } craft_item;
 typedef QList<craft_item *> craft_recipe;
 
+enum deferred_actions {
+	DEFERRED_NOTHING,
+	DEFERRED_MOVE,
+	DEFERRED_JUMP
+};
+
 class World : public QThread {
 	Q_OBJECT
 
@@ -63,6 +69,12 @@ class World : public QThread {
 	ushort newNumShreds, newNumActiveShreds;
 	ushort newX, newY, newZ;
 	volatile bool toReSet;
+
+	ushort deferredActionX;
+	ushort deferredActionY;
+	ushort deferredActionZ;
+	int deferredActionDir;
+	int deferredActionType;
 
 	void LoadRecipes();
 	void CleanRecipes();
@@ -250,6 +262,20 @@ class World : public QThread {
 			const ushort,
 			ushort,
 			const int dir);
+	void SetDefferredAction(
+			const ushort x,
+			const ushort y,
+			const ushort z,
+			const int dir,
+			const int action)
+	{
+		deferredActionX=x;
+		deferredActionY=y;
+		deferredActionZ=z;
+		deferredActionDir=dir;
+		deferredActionType=action;
+	}
+
 
 	//time section
 	public:

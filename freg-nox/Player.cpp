@@ -102,16 +102,16 @@ void Player::Examine() const {
 void Player::Jump() {
 	world->WriteLock();
 	usingType=NO;
-	world->Jump(x, y, z);
+	world->SetDefferredAction(x, y, z, dir, DEFERRED_JUMP);
 	world->Unlock();
 }
 
 int Player::Move(const int dir) {
 	world->WriteLock();
 	usingType=NO;
-	const int ret=world->Move(x, y, z, dir);
+	world->SetDefferredAction(x, y, z, dir, DEFERRED_MOVE);
 	world->Unlock();
-	return ret;
+	return 0;
 }
 
 void Player::Turn(const int dir) {
