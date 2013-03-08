@@ -161,7 +161,7 @@ class Block { //blocks without special physics and attributes
 			const int sub_,
 			const quint8 transp=UNDEF);
 	virtual ~Block() {}
-};
+}; //Block
 
 class Plate : public Block {
 	QString & FullName(QString & str) const {
@@ -192,7 +192,7 @@ class Plate : public Block {
 			:
 			Block(str, sub, NONSTANDARD)
 	{}
-};
+}; //Plate
 
 class Ladder : public Block {
 	QString & FullName(QString & str) const { return str="Ladder"; }
@@ -212,7 +212,7 @@ class Ladder : public Block {
 			:
 			Block(str, sub)
 	{}
-};
+}; //Ladder
 
 class Clock : public Block {
 	World * world;
@@ -254,7 +254,7 @@ class Clock : public Block {
 			Block(str, sub),
 			world(w)
 	{}
-};
+}; //Clock
 
 class Weapon : public Block {
 	public:
@@ -302,7 +302,7 @@ class Weapon : public Block {
 			:
 			Block(str, sub)
 	{}
-};
+}; //Weapon
 
 class Pick : public Weapon {
 	public:
@@ -352,7 +352,7 @@ class Pick : public Weapon {
 			:
 			Weapon(str, sub)
 	{}
-};
+}; //Pick
 
 class Active : public QObject, public Block {
 	Q_OBJECT
@@ -386,8 +386,7 @@ class Active : public QObject, public Block {
 	ushort Y() const { return y_self; }
 	ushort Z() const { return z_self; }
 
-	//!returns if block should be destroyed
-	virtual bool Act() { return false; }
+	virtual void Act() {}
 
 	int Movable() const { return MOVABLE; }
 	virtual bool ShouldFall() const { return true; }
@@ -439,7 +438,7 @@ class Active : public QObject, public Block {
 		Register(sh, x, y, z);
 	}
 	virtual ~Active();
-};
+}; //Active
 
 class Animal : public Active {
 	Q_OBJECT
@@ -455,7 +454,7 @@ class Animal : public Active {
 	ushort Satiation() const { return satiation; }
 	virtual int Eat(Block * const)=0;
 
-	bool Act();
+	void Act();
 
 	void SaveAttributes(QDataStream & out) const {
 		Block::SaveAttributes(out);
@@ -487,7 +486,7 @@ class Animal : public Active {
 	{
 		str >> breath >> satiation;
 	}
-};
+}; //Animal
 
 class Inventory {
 	static const ushort max_stack_size=9;
@@ -604,7 +603,7 @@ class Inventory {
 			}
 		delete [] inventory;
 	}
-};
+}; //Inventory
 
 class Dwarf : public Animal, public Inventory {
 	Q_OBJECT
@@ -647,7 +646,7 @@ class Dwarf : public Animal, public Inventory {
 	}
 
 	before_move_return BeforeMove(const int);
-	bool Act();
+	void Act();
 
 	int Eat(Block * const to_eat) {
 		if ( !to_eat )
@@ -719,7 +718,7 @@ class Dwarf : public Animal, public Inventory {
 			Animal(sh, x, y, z, str, H_MEAT),
 			Inventory(sh, str)
 	{}
-};
+}; //Dwarf
 
 class Chest : public Block, public Inventory {
 	public:
@@ -776,7 +775,7 @@ class Chest : public Block, public Inventory {
 			Block(str, sub),
 			Inventory(sh, str)
 	{}
-};
+}; //Chest
 
 class Pile : public Active, public Inventory {
 	Q_OBJECT
@@ -792,7 +791,7 @@ class Pile : public Active, public Inventory {
 	usage_types Use() { return Inventory::Use(); }
 	float TrueWeight() const { return InvWeightAll(); }
 
-	bool Act();
+	void Act();
 
 	before_move_return BeforeMove(const int dir);
 	int Drop(const ushort n, Inventory * const inv) {
@@ -838,7 +837,7 @@ class Pile : public Active, public Inventory {
 	{
 		str >> ifToDestroy;
 	}
-};
+}; //Pile
 
 class Liquid : public Active {
 	Q_OBJECT
@@ -870,7 +869,7 @@ class Liquid : public Active {
 			durability;
 	}
 
-	bool Act();
+	void Act();
 
 	int Temperature() const { return ( WATER==sub ) ? 0 : 1000; }
 
@@ -893,7 +892,7 @@ class Liquid : public Active {
 			:
 			Active(sh, x, y, z, str, sub)
 	{}
-};
+}; //Liquid
 
 class Grass : public Active {
 	Q_OBJECT
@@ -915,7 +914,7 @@ class Grass : public Active {
 	bool ShouldFall() const { return false; }
 
 	before_move_return BeforeMove(const int) { return DESTROY; }
-	bool Act();
+	void Act();
 
 	Grass(
 			Shred * const sh=0,
@@ -934,7 +933,7 @@ class Grass : public Active {
 			:
 			Active(sh, x, y, z, str, GREENERY)
 	{}
-};
+}; //Grass
 
 class Bush : public Active, public Inventory {
 	Q_OBJECT
@@ -950,7 +949,7 @@ class Bush : public Active, public Inventory {
 	int Movable() const { return NOT_MOVABLE; }
 	float TrueWeight() const { return InvWeightAll()+20; }
 
-	bool Act();
+	void Act();
 
 	Block * DropAfterDamage() const;
 
@@ -972,7 +971,7 @@ class Bush : public Active, public Inventory {
 			Active(sh, 0, 0, 0, str, WOOD),
 			Inventory(sh, str)
 	{}
-};
+}; //Bush
 
 class Rabbit : public Animal {
 	Q_OBJECT
@@ -983,7 +982,7 @@ class Rabbit : public Animal {
 	QString & FullName(QString & str) const { return str="Rabbit"; }
 	int Kind() const { return RABBIT; }
 
-	bool Act();
+	void Act();
 	float TrueWeight() const { return 20; }
 
 	int Eat(Block * const to_eat) {
@@ -1016,7 +1015,7 @@ class Rabbit : public Animal {
 			:
 			Animal(sh, x, y, z, str, A_MEAT)
 	{}
-};
+}; //Rabbit
 
 class Workbench : public Block, public Inventory {
 	static const ushort workbench_size=10;
@@ -1107,7 +1106,7 @@ class Workbench : public Block, public Inventory {
 			Block(str, sub),
 			Inventory(sh, str, workbench_size)
 	{}
-};
+}; //Workbench
 
 class Door : public Active {
 	bool shifted;
@@ -1123,7 +1122,7 @@ class Door : public Active {
 		return NO;
 	}
 	int BeforePush(const int dir);
-	bool Act();
+	void Act();
 	Block * DropAfterDamage() const { return new Door(0, 0, 0, 0, Sub()); }
 
 	void SaveAttributes(QDataStream & out) const {
@@ -1157,6 +1156,6 @@ class Door : public Active {
 	{
 		str >> shifted >> locked;
 	}
-};
+}; //Door
 
 #endif

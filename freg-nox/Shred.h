@@ -21,6 +21,7 @@
 #include <QList>
 #include <QString>
 #include <QDataStream>
+#include <QFile>
 #include "header.h"
 #include "blocks.h"
 
@@ -102,6 +103,7 @@ class Shred {
 			const ushort,
 			const ushort) const;
 
+	int LoadShred(QFile &);
 
 	Shred(World * const,
 			const ushort,

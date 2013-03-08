@@ -413,9 +413,8 @@ void Screen::PrintNormal(WINDOW * const window) const {
 	wstandend(window);
 	box(window, 0, 0);
 	if ( UP==dir || DOWN==dir ) {
-		const ushort start=(shred_width*w->NumShreds()-SCREEN_SIZE)/2;
 		mvwaddstr(window, 0, 1, ( UP==dir ) ? "Sky View" : "Ground View");
-		Arrows(window , (player->X()-start)*2+1, player->Y()-start+1);
+		Arrows(window , (player->X()-start_x)*2+1, player->Y()-start_y+1);
 	} else
 		mvwaddstr(window, 0, 1, "Normal View");
 	wnoutrefresh(window);

@@ -405,11 +405,11 @@ int World::Move(
 		return 0;
 
 	ushort newi, newj, newk;
-	if ( NOT_MOVABLE==Movable(i, j, k) ||
+	Block * const block=GetBlock(i, j, k);
+	if ( NOT_MOVABLE==block->Movable() ||
 			Focus(i, j, k, newi, newj, newk, dir) )
 		return 0;
 
-	Block * const block=GetBlock(i, j, k);
 	if ( DESTROY==block->BeforeMove(dir) ) {
 		if ( !block->Normal() )
 			delete block;
@@ -417,48 +417,48 @@ int World::Move(
 		return 1;
 	}
 
-	if ( !stop || (ENVIRONMENT==Movable(i, j, k) &&
-			Equal(block, GetBlock(newi, newj, newk))) )
+	Block * block_to=GetBlock(newi, newj, newk);
+	if ( !stop || (ENVIRONMENT==block->Movable() &&
+			Equal(block, block_to)) )
 		return 0;
 
-	Block * const block_to=GetBlock(newi, newj, newk);
-	if ( block_to && block )
-		switch ( block_to->BeforePush(dir) ) {
-			case JUMP:
-				if ( DOWN!=dir && UP!=dir ) {
-					Jump(i, j, k, dir);
-					return 0;
-				}
-			break;
-			case MOVE_UP:
-				if ( DOWN!=dir ) {
-					Move(i, j, k, UP);
-					return 0;
-				}
-			break;
-			case DAMAGE:
-				Damage(i, j, k,
-					block_to->DamageLevel(),
-					block_to->DamageKind());
+	switch ( block_to->BeforePush(dir) ) {
+		case JUMP:
+			if ( DOWN!=dir && UP!=dir ) {
+				Jump(i, j, k, dir);
 				return 0;
-			break;
-			default: break;
-		}
+			}
+		break;
+		case MOVE_UP:
+			if ( DOWN!=dir ) {
+				Move(i, j, k, UP);
+				return 0;
+			}
+		break;
+		case DAMAGE:
+			Damage(i, j, k,
+				block_to->DamageLevel(),
+				block_to->DamageKind());
+			return 0;
+		break;
+		default: break;
+	}
+	block_to=GetBlock(newi, newj, newk); //BeforePush could change block_to
 
 	short numberMoves=0;
-	if ( ENVIRONMENT!=Movable(newi, newj, newk) &&
+	if ( ENVIRONMENT!=block_to->Movable() &&
 			!(numberMoves=Move(newi, newj, newk, dir, stop-1)) )
 		return 0;
+	block_to=GetBlock(newi, newj, newk); //Move could change block_to
 
-	SetBlock(GetBlock(newi, newj, newk), i, j, k);
+	SetBlock(block_to, i, j, k);
 	SetBlock(block, newi, newj, newk);
 
 	ReEnlighten(newi, newj, newk);
 	ReEnlighten(i, j, k);
 
-	if ( GetBlock(i, j, k) )
-		GetBlock(i, j, k)->Move( Anti(dir) );
-	GetBlock(newi, newj, newk)->Move(dir);
+	block_to->Move( Anti(dir) );
+	block->Move(dir);
 
 	const float weight=Weight(newi, newj, newk);
 	if ( weight ) {
@@ -554,8 +554,8 @@ bool World::Damage(
 		SetBlock(temp, i, j, k);
 	}
 
-	if ( 0 < temp->Damage(dmg, dmg_kind) ) {
-		ReplaceWithNormal(i, j, k);
+	if ( temp->Damage(dmg, dmg_kind) > 0 ) {
+		ReplaceWithNormal(i, j, k); //checks are inside
 		return false;
 	}
 

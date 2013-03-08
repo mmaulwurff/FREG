@@ -167,26 +167,25 @@ World * Active::GetWorld() const {
 	return whereShred->GetWorld();
 }
 
-void Active::Register(Shred * const sh,
+void Active::Register(
+		Shred * const sh,
 		const ushort x,
 		const ushort y,
 		const ushort z)
 {
-	whereShred=sh;
-	if ( !whereShred )
-		return;
-
-	x_self=x;
-	y_self=y;
-	z_self=z;
-	whereShred->AddActive(this);
+	if ( (whereShred=sh) ) {
+		x_self=x;
+		y_self=y;
+		z_self=z;
+		whereShred->AddActive(this);
+	}
 }
 
 void Active::Unregister() {
-	if ( !whereShred )
-		return;
-
-	whereShred->RemActive(this);
+	if ( whereShred ) {
+		whereShred->RemActive(this);
+		whereShred=0;
+	}
 }
 
 Active::~Active() {
@@ -194,32 +193,30 @@ Active::~Active() {
 	emit Destroyed();
 }
 
-bool Animal::Act() {
+void Animal::Act() {
 	static ushort timeStep=0;
 	World * const world=GetWorld();
 	if ( world->TimeStepsInSec() > timeStep ) {
 		++timeStep;
-		return false;
+		return;
 	}
 
 	timeStep=0;
 	if ( LIQUID==world->Kind(x_self, y_self, z_self+1) ) {
-		if ( 0>=breath )
-			return world->Damage(x_self, y_self, z_self,
-					10, BREATH);
-		--breath;
-		return false;
+		if ( breath <= 0 )
+			world->Damage(x_self, y_self, z_self, 10, BREATH);
+		else
+			--breath;
 	} else if ( breath<max_breath )
 		++breath;
 
 	if ( satiation <= 0 )
-		return world->Damage(x_self, y_self, z_self,
-			1, HUNGER);
-	else if ( durability < MaxDurability() )
-		++durability;
-
-	--satiation;
-	return false;
+		world->Damage(x_self, y_self, z_self, 1, HUNGER);
+	else {
+		if ( durability < MaxDurability() )
+			++durability;
+		--satiation;
+	}
 }
 
 int Inventory::Drop(const ushort num, Inventory * const inv_to) {
@@ -340,7 +337,7 @@ bool Dwarf::ShouldFall() const {
 			world->GetBlock(x_self, y_self-1, z_self)->Catchable()));
 }
 
-bool Dwarf::Act() { return Animal::Act(); }
+void Dwarf::Act() { Animal::Act(); }
 
 Block * Dwarf::DropAfterDamage() const {
 	return whereShred->NewNormal(H_MEAT);
@@ -365,13 +362,13 @@ before_move_return Pile::BeforeMove(const int dir) {
 	return NOTHING;
 }
 
-bool Pile::Act() {
-	return ( ifToDestroy ) ?
-		GetWorld()->Damage(x_self, y_self, z_self, 0, TIME) :
-		false;
+void Pile::Act() {
+	if ( ifToDestroy )
+		GetWorld()->Damage(x_self, y_self, z_self, 0, TIME);
 }
 
 bool Liquid::CheckWater(const int dir) const {
+	//return true;
 	ushort i_check, j_check, k_check;
 	World * const world=GetWorld();
 	if ( (world->Focus(x_self, y_self, z_self,
@@ -384,42 +381,39 @@ bool Liquid::CheckWater(const int dir) const {
 	return false;
 }
 
-bool Liquid::Act() {
+void Liquid::Act() {
 	World * const world=GetWorld();
+	//IDEA: turn off water drying up in ocean
 	if ( WATER==Sub() && !(rand()%10) &&
 			!CheckWater(DOWN)  && !CheckWater(UP) &&
 			!CheckWater(NORTH) && !CheckWater(SOUTH) &&
 			!CheckWater(EAST)  && !CheckWater(WEST) )
-		return world->Damage(x_self, y_self, z_self,
+		world->Damage(x_self, y_self, z_self,
 			max_durability, HEAT);
-
-	int dir;
-	switch ( rand()%20 ) {
-		case 0: dir=NORTH; break;
-		case 1: dir=EAST;  break;
-		case 2: dir=SOUTH; break;
-		case 3: dir=WEST;  break;
-		default: return false;
+	else {
+		int dir;
+		switch ( rand()%20 ) {
+			case 0: dir=NORTH; break;
+			case 1: dir=EAST;  break;
+			case 2: dir=SOUTH; break;
+			case 3: dir=WEST;  break;
+			default: return;
+		}
+		world->Move(x_self, y_self, z_self, dir);
 	}
-	world->Move(x_self, y_self, z_self, dir);
-	return false;
 }
 
-bool Grass::Act() {
-	if ( rand()%seconds_in_hour )
-		return false;
-
+void Grass::Act() {
 	short i=x_self, j=y_self;
-	switch ( rand()%4 /* increase this if grass grows too fast */) {
+	switch ( rand()%(seconds_in_hour*4) /* increase this if grass grows too fast */ ) {
 		case 0: ++i; break;
 		case 1: --i; break;
 		case 2: ++j; break;
 		case 3: --j; break;
-		default: return false;
+		default: return;
 	}
 
 	World * const world=GetWorld();
-
 	if ( world->InBounds(i, j, z_self) ) {
 		if ( AIR==world->Sub(i, j, z_self) &&
 				world->InBounds(i, j, z_self-1) &&
@@ -430,14 +424,11 @@ bool Grass::Act() {
 				AIR==world->Sub(i, j, z_self+1) )
 			world->Build(new Grass(), i, j, z_self+1);
 	}
-	return false;
 }
 
-bool Bush::Act() {
-	if ( 0==rand()%seconds_in_hour ) {
+void Bush::Act() {
+	if ( 0==rand()%seconds_in_hour )
 		Get(whereShred->NewNormal(HAZELNUT));
-	}
-	return false;
 }
 
 Block * Bush::DropAfterDamage() const {
@@ -453,7 +444,7 @@ float Rabbit::Attractive(int kind) const {
 	}
 }
 
-bool Rabbit::Act() {
+void Rabbit::Act() {
 	World * const world=GetWorld();
 	float for_north=0, for_west=0;
 	ushort x, y, z;
@@ -505,11 +496,11 @@ bool Rabbit::Act() {
 		for (z=z_self-1; z<=z_self+1; ++z)
 			if ( GREENERY==world->Sub(x, y, z) ) {
 				world->Eat(x_self, y_self, z_self, x, y, z);
-				return Animal::Act();
+				Animal::Act();
+				return;
 			}
 	}
-
-	return Animal::Act();
+	Animal::Act();
 }
 
 Block * Rabbit::DropAfterDamage() const {
@@ -552,21 +543,20 @@ int Door::BeforePush(const int dir) {
 	return NO_ACTION;
 }
 
-bool Door::Act() {
-	if ( !shifted )
-		return false;
-	World * const world=GetWorld();
-	ushort x, y, z;
-	world->Focus(x_self, y_self, z_self, x, y, z,
-		world->Anti(GetDir()));
-	if ( AIR==world->Sub(x, y, z) ) {
-		movable=MOVABLE;
-		NullWeight(true);
-		world->Move(x_self, y_self, z_self,
+void Door::Act() {
+	if ( shifted ) {
+		World * const world=GetWorld();
+		ushort x, y, z;
+		world->Focus(x_self, y_self, z_self, x, y, z,
 			world->Anti(GetDir()));
-		shifted=false;
-		movable=NOT_MOVABLE;
-		NullWeight(false);
+		if ( AIR==world->Sub(x, y, z) ) {
+			movable=MOVABLE;
+			NullWeight(true);
+			world->Move(x_self, y_self, z_self,
+				world->Anti(GetDir()));
+			shifted=false;
+			movable=NOT_MOVABLE;
+			NullWeight(false);
+		}
 	}
-	return false;
 }

@@ -22,6 +22,30 @@
 
 const int datastream_version=QDataStream::Qt_4_6; //Qt version in Debian stable now.
 
+int Shred::LoadShred(QFile & file) {
+		QByteArray read_data=file.readAll();
+		QByteArray uncompressed=qUncompress(read_data);
+		QDataStream in(uncompressed);
+		quint8 version;
+		in >> version;
+		if ( datastream_version!=version ) {
+			fprintf(stderr,
+				"Wrong version: %d\nGenerating new shred.\n",
+				datastream_version);
+			return 1;
+		}
+		in.setVersion(datastream_version);
+		for (ushort i=0; i<shred_width; ++i)
+		for (ushort j=0; j<shred_width; ++j) {
+			for (ushort k=0; k<height; ++k) {
+				blocks[i][j][k]=BlockFromFile(in, i, j, k);
+				lightMap[i][j][k]=0;
+			}
+			lightMap[i][j][height-1]=max_light_radius;
+		}
+		return 0;
+}
+
 Shred::Shred(World * const world_,
 		const ushort shred_x,
 		const ushort shred_y,
@@ -34,35 +58,14 @@ Shred::Shred(World * const world_,
 		shredX(shred_x),
 		shredY(shred_y)
 {
-	ushort i, j, k;
 	QFile file(FileName());
-	if ( file.open(QIODevice::ReadOnly) ) {
-		QByteArray read_data=file.readAll();
-		file.close();
-		QByteArray uncompressed=qUncompress(read_data);
-		QDataStream in(uncompressed);
-		quint8 version;
-		in >> version;
-		if ( datastream_version!=version )
-			fprintf(stderr,
-				"Wrong version: %d\nBut trying to read.\n",
-				datastream_version);
-		in.setVersion(datastream_version);
-		for (i=0; i<shred_width; ++i)
-		for (j=0; j<shred_width; ++j) {
-			for (k=0; k<height; ++k) {
-				blocks[i][j][k]=BlockFromFile(in, i, j, k);
-				lightMap[i][j][k]=0;
-			}
-			lightMap[i][j][height-1]=max_light_radius;
-		}
+	if ( file.open(QIODevice::ReadOnly) && !LoadShred(file) )
 		return;
-	}
 
-	for (i=0; i<shred_width; ++i)
-	for (j=0; j<shred_width; ++j) {
+	for (ushort i=0; i<shred_width; ++i)
+	for (ushort j=0; j<shred_width; ++j) {
 		blocks[i][j][0]=NewNormal(NULLSTONE);
-		for (k=1; k<height-1; ++k) {
+		for (ushort k=1; k<height-1; ++k) {
 			blocks[i][j][k]=NewNormal(AIR);
 			lightMap[i][j][k]=0;
 		}
@@ -144,12 +147,11 @@ Block * Shred::NewNormal(const int sub) const {
 }
 
 void Shred::PhysEvents() {
-	for (short j=0; j<activeList.size(); ++j) {
+	for (int j=0; j<activeList.size(); ++j) {
 		Active * const temp=activeList[j];
 		if ( temp->ShouldFall() )
 			world->Move(temp->X(), temp->Y(), temp->Z(), DOWN);
-		if ( temp->Act() )
-			activeList.removeAt(j--);
+		temp->Act();
 	}
 }
 
@@ -377,6 +379,15 @@ void Shred::TestShred() {
 	blocks[13][3][height/2]->SetDir(NORTH);
 
 	blocks[1][5][height/2]=new Weapon(IRON);
+
+	for (ushort i=1; i<4; ++i)
+	for (ushort j=7; j<10; ++j)
+	for (ushort k=height/2; k<height/2+5; ++k)
+		blocks[i][j][k]=NewNormal(GLASS);
+	for (ushort k=height/2; k<height/2+5; ++k)
+		blocks[2][8][k]=new Liquid(this,
+			shredX*shred_width+2,
+			shredY*shred_width+8, k);
 }
 
 void Shred::NullMountain() {
