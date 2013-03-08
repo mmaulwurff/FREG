@@ -435,10 +435,7 @@ class World : public QThread {
 	void EmitNotify(const QString & str) const { emit Notify(str); }
 
 	public:
-	World(
-			const QString &,
-			const ushort,
-			const ushort);
+	World(const QString &);
 	~World();
 
 	public slots:

@@ -813,13 +813,9 @@ void World::SetNumActiveShreds(ushort num) {
 	Unlock();
 }
 
-World::World(const QString & world_name,
-		const ushort num_shreds,
-		const ushort num_active_shreds)
+World::World(const QString & world_name)
 		:
 		worldName(world_name),
-		numShreds(num_shreds),
-		numActiveShreds(num_active_shreds),
 		cleaned(false),
 		toReSet(false)
 {
@@ -831,6 +827,8 @@ World::World(const QString & world_name,
 		longitude=0;
 		latitude=0;
 		mapSize=0;
+		numShreds=5;
+		numActiveShreds=5;
 		QFile map(worldName);
 		if ( map.open(QIODevice::ReadOnly | QIODevice::Text) )
 			mapSize=int(sqrt(1+4*map.size())-1)/2;
@@ -843,41 +841,42 @@ World::World(const QString & world_name,
 		in >> temp >> latitude;
 		in >> temp >> spawnLongi;
 		in >> temp >> spawnLati;
-		file.close();
+		in >> temp >> numShreds;
+		in >> temp >> numActiveShreds;
+		if ( 1!=numShreds%2 ) {
+			++numShreds;
+			fprintf(stderr,
+				"Invalid number of shreds. Set to %hu.\n",
+				numShreds);
+		}
+		if ( numShreds<5  ) {
+			fprintf(stderr,
+				"Number of shreds: to small: %hu. Set to 5.\n",
+				numShreds);
+			numShreds=5;
+		}
+		if ( 1!=numActiveShreds%2 ) {
+			++numActiveShreds;
+			fprintf(stderr,
+				"Invalid number of active shreds. Set to %hu.\n",
+				numActiveShreds);
+		}
+		if ( numActiveShreds > numShreds ) {
+			fprintf(stderr,
+				"Active shreds number (%hu) was more than all shreds number\n",
+				numActiveShreds);
+			numActiveShreds=numShreds;
+		} else if ( numActiveShreds < 1 ) {
+			fprintf(stderr,
+				"Active shreds number (%hu) too small. Set to 1.\n",
+				numActiveShreds);
+			numActiveShreds=1;
+		}
 	}
 
 	for (ushort x=0; x<=AIR; ++x) {
 		normal_blocks[x]=new Block(subs(x));
 		normal_blocks[x]->SetNormal(1);
-	}
-	if ( 1!=numShreds%2 ) {
-		++numShreds;
-		fprintf(stderr,
-			"Invalid number of shreds. Set to %hu.\n",
-			numShreds);
-	}
-	if ( numShreds<5  ) {
-		fprintf(stderr,
-			"Number of shreds: to small: %hu. Set to 5.\n",
-			numShreds);
-		numShreds=5;
-	}
-	if ( 1!=numActiveShreds%2 ) {
-		++numActiveShreds;
-		fprintf(stderr,
-			"Invalid number of active shreds. Set to %hu.\n",
-			numActiveShreds);
-	}
-	if ( numActiveShreds > numShreds ) {
-		fprintf(stderr,
-			"Active shreds number (%hu) was more than all shreds number\n",
-			numActiveShreds);
-		numActiveShreds=numShreds;
-	} else if ( numActiveShreds < 1 ) {
-		fprintf(stderr,
-			"Active shreds number (%hu) too small. Set to 1.\n",
-			numActiveShreds);
-		numActiveShreds=1;
 	}
 
 	LoadAllShreds();
@@ -917,5 +916,7 @@ void World::CleanAll() {
 		<< "longitude:\n" << longitude << endl
 		<< "latitude:\n" << latitude << endl
 		<< "spawn_longitude:\n" << spawnLongi << endl
-		<< "spawn_latitude:\n" << spawnLati << endl;
+		<< "spawn_latitude:\n" << spawnLati << endl
+		<< "number_of_shreds:\n" << numShreds << endl
+		<< "number_of_active_shreds\n" << numActiveShreds << endl;
 }
