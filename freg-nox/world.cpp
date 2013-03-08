@@ -166,7 +166,7 @@ void World::SetBlock(Block * block,
 }
 
 Block * World::ReplaceWithNormal(Block * const block) {
-	if ( !block->Normal() && block==NewNormal(block->Sub()) ) {
+	if ( !block->Normal() && *block==*NewNormal(block->Sub()) ) {
 		delete block;
 		return NewNormal(block->Sub());
 	}
@@ -222,7 +222,7 @@ void World::ReloadShreds(const int direction) {
 					shreds[(y-1)*numShreds+x]->
 						ReloadToSouth();
 				}
-				shreds[numShreds*(numShreds-1)+x]=new 
+				shreds[numShreds*(numShreds-1)+x]=new
 					Shred(this, x, numShreds-1,
 						longitude+numShreds/2,
 						latitude-numShreds/2+x);
@@ -238,7 +238,7 @@ void World::ReloadShreds(const int direction) {
 					shreds[(x-1)+y*numShreds]->
 						ReloadToEast();
 				}
-				shreds[numShreds-1+y*numShreds]=new 
+				shreds[numShreds-1+y*numShreds]=new
 					Shred(this, numShreds-1, y,
 						longitude-numShreds/2+y,
 						latitude+numShreds/2);
@@ -549,13 +549,12 @@ bool World::Damage(
 		return false;
 
 	Block * temp=GetBlock(i, j, k);
-	//TODO: prevent creating new block when no damage
 	if ( temp->Normal() && AIR!=temp->Sub() ) {
 		temp=new Block(temp->Sub());
 		SetBlock(temp, i, j, k);
 	}
 
-	if ( 0<temp->Damage(dmg, dmg_kind) ) {
+	if ( 0 < temp->Damage(dmg, dmg_kind) ) {
 		ReplaceWithNormal(i, j, k);
 		return false;
 	}
