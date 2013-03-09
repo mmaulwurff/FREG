@@ -359,12 +359,14 @@ class Active : public QObject, public Block {
 	Q_OBJECT
 
 	protected:
+	quint8 timeStep;
 	ushort x_self, y_self, z_self;
 	Shred * whereShred;
 
 	signals:
 	void Moved(int);
 	void Destroyed();
+	void Updated();
 
 	public:
 	World * GetWorld() const;
@@ -398,6 +400,10 @@ class Active : public QObject, public Block {
 	void ReloadToWest()  { x_self+=shred_width; }
 	void ReloadToEast()  { x_self-=shred_width; }
 
+	void SaveAttributes(QDataStream & out) const {
+		out << timeStep;
+	}
+
 	void Register(Shred *,
 			const ushort,
 			const ushort,
@@ -410,6 +416,7 @@ class Active : public QObject, public Block {
 			const quint8 transp=UNDEF)
 			:
 			Block(sub, dur, transp),
+			timeStep(0),
 	       		whereShred(0)
 	{}
 	Active(
@@ -421,7 +428,8 @@ class Active : public QObject, public Block {
 			const short dur=max_durability,
 			const quint8 transp=UNDEF)
 			:
-			Block(sub, dur, transp)
+			Block(sub, dur, transp),
+			timeStep(0)
 	{
 		Register(sh, x, y, z);
 	}
@@ -436,6 +444,7 @@ class Active : public QObject, public Block {
 			:
 			Block(str, sub, transp)
 	{
+		str >> timeStep;
 		Register(sh, x, y, z);
 	}
 	virtual ~Active();
@@ -458,7 +467,7 @@ class Animal : public Active {
 	void Act();
 
 	void SaveAttributes(QDataStream & out) const {
-		Block::SaveAttributes(out);
+		Active::SaveAttributes(out);
 		out << breath << satiation;
 	}
 
@@ -487,6 +496,7 @@ class Animal : public Active {
 	{
 		str >> breath >> satiation;
 	}
+	virtual ~Animal() {}
 }; //Animal
 
 class Inventory {
@@ -719,6 +729,7 @@ class Dwarf : public Animal, public Inventory {
 			Animal(sh, x, y, z, str, H_MEAT),
 			Inventory(sh, str)
 	{}
+	virtual ~Dwarf() {}
 }; //Dwarf
 
 class Chest : public Block, public Inventory {
@@ -755,7 +766,6 @@ class Chest : public Block, public Inventory {
 	}
 
 	void SaveAttributes(QDataStream & out) const {
-		Block::SaveAttributes(out);
 		Inventory::SaveAttributes(out);
 	}
 
@@ -1089,7 +1099,6 @@ class Workbench : public Block, public Inventory {
 	}
 
 	void SaveAttributes(QDataStream & out) const {
-		Block::SaveAttributes(out);
 		Inventory::SaveAttributes(out);
 	}
 
@@ -1128,7 +1137,7 @@ class Door : public Active {
 	Block * DropAfterDamage() const { return new Door(0, 0, 0, 0, Sub()); }
 
 	void SaveAttributes(QDataStream & out) const {
-		Block::SaveAttributes(out);
+		Active::SaveAttributes(out);
 		out << shifted << locked;
 	}
 

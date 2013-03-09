@@ -152,9 +152,7 @@ void Shred::PhysEvents() {
 		Active * const temp=activeList[j];
 		if ( temp->ShouldFall() )
 			world->Move(temp->X(), temp->Y(), temp->Z(), DOWN);
-		fprintf(stderr, "before act\n");
 		temp->Act();
-		fprintf(stderr, "after act\n");
 	}
 }
 
@@ -252,8 +250,8 @@ void Shred::AddActive(Active * const active) {
 	activeList.append(active);
 }
 
-void Shred::RemActive(Active * const active) {
-	activeList.removeOne(active);
+bool Shred::RemActive(Active * const active) {
+	return activeList.removeOne(active);
 }
 
 void Shred::ReloadToNorth() {

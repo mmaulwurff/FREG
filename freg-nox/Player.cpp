@@ -427,6 +427,9 @@ void Player::SetPlayer(
 	connect(player, SIGNAL(Moved(int)),
 		this, SLOT(CheckOverstep(int)),
 		Qt::DirectConnection);
+	connect(player, SIGNAL(Updated()),
+		this, SIGNAL(Updated()),
+		Qt::DirectConnection);
 }
 
 void Player::SetNumShreds(ushort num) const {

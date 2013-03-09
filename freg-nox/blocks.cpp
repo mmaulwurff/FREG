@@ -194,13 +194,11 @@ Active::~Active() {
 }
 
 void Animal::Act() {
-	static ushort timeStep=0;
 	World * const world=GetWorld();
 	if ( world->TimeStepsInSec() > timeStep ) {
 		++timeStep;
 		return;
 	}
-
 	timeStep=0;
 	if (
 			world->InBounds(x_self, y_self, z_self+1) &&
@@ -218,19 +216,26 @@ void Animal::Act() {
 	{
 		if ( breath <= 0 ) {
 			world->Damage(x_self, y_self, z_self, 10, BREATH);
+			emit Updated();
 			return;
-		} else
+		} else {
 			--breath;
-	} else if ( breath < max_breath )
+			emit Updated();
+		}
+	} else if ( breath < max_breath ) {
 		++breath;
-
-	if ( satiation <= 0 )
-		world->Damage(x_self, y_self, z_self, 1, HUNGER);
-	else {
-		if ( durability < MaxDurability() )
-			++durability;
-		--satiation;
+		emit Updated();
 	}
+
+	if ( satiation <= 0 ) {
+		world->Damage(x_self, y_self, z_self, 1, HUNGER);
+		emit Updated();
+		return;
+	}
+	if ( durability < MaxDurability() )
+		++durability;
+	--satiation;
+	emit Updated();
 }
 
 int Inventory::Drop(const ushort num, Inventory * const inv_to) {
@@ -419,7 +424,7 @@ void Liquid::Act() {
 
 void Grass::Act() {
 	short i=x_self, j=y_self;
-	switch ( rand()%(seconds_in_hour*10) /* increase this if grass grows too fast */ ) {
+	switch ( rand()%(seconds_in_hour*20) /* increase this if grass grows too fast */ ) {
 		case 0: ++i; break;
 		case 1: --i; break;
 		case 2: ++j; break;

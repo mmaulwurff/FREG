@@ -44,7 +44,7 @@ class Shred {
 	void PhysEvents();
 
 	void AddActive(Active * const);
-	void RemActive(Active * const);
+	bool RemActive(Active * const);
 
 	World * GetWorld() const { return world; }
 
