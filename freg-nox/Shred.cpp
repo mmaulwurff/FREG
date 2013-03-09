@@ -80,6 +80,7 @@ Shred::Shred(World * const world_,
 		case '%': Forest(longi, lati); break;
 		case '~': Water( longi, lati); break;
 		case '+': Hill(  longi, lati); break;
+		case '_': /* empty shred */    break;
 		default:
 			Plain();
 			fprintf(stderr,
@@ -151,7 +152,9 @@ void Shred::PhysEvents() {
 		Active * const temp=activeList[j];
 		if ( temp->ShouldFall() )
 			world->Move(temp->X(), temp->Y(), temp->Z(), DOWN);
+		fprintf(stderr, "before act\n");
 		temp->Act();
+		fprintf(stderr, "after act\n");
 	}
 }
 
@@ -360,6 +363,7 @@ void Shred::TestShred() {
 	blocks[3][3][height/2]=new Dwarf(this,
 		shredX*shred_width+3,
 		shredY*shred_width+3, height/2);
+	blocks[3][3][height/2]->Inscribe("Some dwarf");
 	blocks[5][3][height/2-3]=new Liquid(this,
 		shredX*shred_width+5,
 		shredY*shred_width+3, height/2-3);
@@ -384,9 +388,13 @@ void Shred::TestShred() {
 	for (ushort j=7; j<10; ++j)
 	for (ushort k=height/2; k<height/2+5; ++k)
 		blocks[i][j][k]=NewNormal(GLASS);
-	blocks[2][8][height/2]=new Rabbit(this,
+	for (ushort k=height/2; k<height/2+6; ++k)
+		blocks[2][8][k]=new Liquid(this,
 		shredX*shred_width+2,
-		shredY*shred_width+8, height/2);
+		shredY*shred_width+8, k);
+	/*blocks[2][8][height/2]=new Rabbit(this,
+		shredX*shred_width+2,
+		shredY*shred_width+8, height/2);*/
 }
 
 void Shred::NullMountain() {

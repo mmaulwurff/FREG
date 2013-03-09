@@ -216,9 +216,10 @@ void Animal::Act() {
 			world->InBounds(x_self, y_self-1, z_self) &&
 				AIR!=world->Sub(x_self, y_self-1, z_self) )
 	{
-		if ( breath <= 0 )
+		if ( breath <= 0 ) {
 			world->Damage(x_self, y_self, z_self, 10, BREATH);
-		else
+			return;
+		} else
 			--breath;
 	} else if ( breath < max_breath )
 		++breath;

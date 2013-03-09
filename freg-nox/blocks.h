@@ -97,11 +97,12 @@ class Block { //blocks without special physics and attributes
 		}
 	}
 	virtual bool Inscribable() const {
-		return !( sub==AIR ||
+		//TODO: prevent inscribing living creatures
+		return !(
+			sub==AIR       ||
 			sub==NULLSTONE ||
-			sub==A_MEAT ||
-			sub==GREENERY ||
-			sub==H_MEAT);
+			sub==A_MEAT    ||
+			sub==GREENERY  );
 	}
 
 	virtual void SaveAttributes(QDataStream &) const {}
@@ -1026,6 +1027,7 @@ class Workbench : public Block, public Inventory {
 	QString & FullName(QString & str) const {
 		switch ( Sub() ) {
 			case WOOD: return str="Workbench";
+			case IRON: return str="Iron anvil";
 			default:
 				fprintf(stderr,
 					"Bench::FullName: unlisted sub: %d\n",
