@@ -363,10 +363,12 @@ ushort Player::DamageLevel() const {
 
 void Player::CheckOverstep(const int dir) {
 	UpdateXYZ();
-	if ( x < (world->NumShreds()/2-1)*shred_width ||
-			y < (world->NumShreds()/2-1)*shred_width ||
+	if (
+			x <  (world->NumShreds()/2-1)*shred_width ||
+			y <  (world->NumShreds()/2-1)*shred_width ||
 			x >= (world->NumShreds()/2+2)*shred_width ||
-			y >= (world->NumShreds()/2+2)*shred_width ) {
+			y >= (world->NumShreds()/2+2)*shred_width )
+	{
 		emit OverstepBorder(dir);
 		UpdateXYZ();
 	}

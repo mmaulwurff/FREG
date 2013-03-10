@@ -162,7 +162,7 @@ class Block { //blocks without special physics and attributes
 			const int sub_,
 			const quint8 transp=UNDEF);
 	virtual ~Block() {}
-}; //Block
+}; //class Block
 
 class Plate : public Block {
 	QString & FullName(QString & str) const {
@@ -193,7 +193,7 @@ class Plate : public Block {
 			:
 			Block(str, sub, NONSTANDARD)
 	{}
-}; //Plate
+}; //class Plate
 
 class Ladder : public Block {
 	QString & FullName(QString & str) const { return str="Ladder"; }
@@ -213,7 +213,7 @@ class Ladder : public Block {
 			:
 			Block(str, sub)
 	{}
-}; //Ladder
+}; //class Ladder
 
 class Clock : public Block {
 	World * world;
@@ -255,7 +255,7 @@ class Clock : public Block {
 			Block(str, sub),
 			world(w)
 	{}
-}; //Clock
+}; //class Clock
 
 class Weapon : public Block {
 	public:
@@ -303,7 +303,7 @@ class Weapon : public Block {
 			:
 			Block(str, sub)
 	{}
-}; //Weapon
+}; //class Weapon
 
 class Pick : public Weapon {
 	public:
@@ -353,7 +353,7 @@ class Pick : public Weapon {
 			:
 			Weapon(str, sub)
 	{}
-}; //Pick
+}; //class Pick
 
 class Active : public QObject, public Block {
 	Q_OBJECT
@@ -448,7 +448,7 @@ class Active : public QObject, public Block {
 		Register(sh, x, y, z);
 	}
 	virtual ~Active();
-}; //Active
+}; //class Active
 
 class Animal : public Active {
 	Q_OBJECT
@@ -497,7 +497,7 @@ class Animal : public Active {
 		str >> breath >> satiation;
 	}
 	virtual ~Animal() {}
-}; //Animal
+}; //class Animal
 
 class Inventory {
 	static const ushort max_stack_size=9;
@@ -614,7 +614,7 @@ class Inventory {
 			}
 		delete [] inventory;
 	}
-}; //Inventory
+}; //class Inventory
 
 class Dwarf : public Animal, public Inventory {
 	Q_OBJECT
@@ -730,7 +730,7 @@ class Dwarf : public Animal, public Inventory {
 			Inventory(sh, str)
 	{}
 	virtual ~Dwarf() {}
-}; //Dwarf
+}; //class Dwarf
 
 class Chest : public Block, public Inventory {
 	public:
@@ -786,7 +786,7 @@ class Chest : public Block, public Inventory {
 			Block(str, sub),
 			Inventory(sh, str)
 	{}
-}; //Chest
+}; //class Chest
 
 class Pile : public Active, public Inventory {
 	Q_OBJECT
@@ -848,7 +848,7 @@ class Pile : public Active, public Inventory {
 	{
 		str >> ifToDestroy;
 	}
-}; //Pile
+}; //class Pile
 
 class Liquid : public Active {
 	Q_OBJECT
@@ -903,7 +903,7 @@ class Liquid : public Active {
 			:
 			Active(sh, x, y, z, str, sub)
 	{}
-}; //Liquid
+}; //class Liquid
 
 class Grass : public Active {
 	Q_OBJECT
@@ -944,7 +944,7 @@ class Grass : public Active {
 			:
 			Active(sh, x, y, z, str, GREENERY)
 	{}
-}; //Grass
+}; //class Grass
 
 class Bush : public Active, public Inventory {
 	Q_OBJECT
@@ -982,7 +982,7 @@ class Bush : public Active, public Inventory {
 			Active(sh, 0, 0, 0, str, WOOD),
 			Inventory(sh, str)
 	{}
-}; //Bush
+}; //class Bush
 
 class Rabbit : public Animal {
 	Q_OBJECT
@@ -1026,7 +1026,7 @@ class Rabbit : public Animal {
 			:
 			Animal(sh, x, y, z, str, A_MEAT)
 	{}
-}; //Rabbit
+}; //class Rabbit
 
 class Workbench : public Block, public Inventory {
 	static const ushort workbench_size=10;
@@ -1117,7 +1117,7 @@ class Workbench : public Block, public Inventory {
 			Block(str, sub),
 			Inventory(sh, str, workbench_size)
 	{}
-}; //Workbench
+}; //class Workbench
 
 class Door : public Active {
 	bool shifted;
@@ -1167,6 +1167,6 @@ class Door : public Active {
 	{
 		str >> shifted >> locked;
 	}
-}; //Door
+}; //class Door
 
 #endif

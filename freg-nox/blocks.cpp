@@ -215,22 +215,16 @@ void Animal::Act() {
 				AIR!=world->Sub(x_self, y_self-1, z_self) )
 	{
 		if ( breath <= 0 ) {
-			world->Damage(x_self, y_self, z_self, 10, BREATH);
-			emit Updated();
-			return;
-		} else {
+			if ( world->Damage(x_self, y_self, z_self, 10, BREATH) )
+				return;
+		} else
 			--breath;
-			emit Updated();
-		}
-	} else if ( breath < max_breath ) {
+	} else if ( breath < max_breath )
 		++breath;
-		emit Updated();
-	}
 
 	if ( satiation <= 0 ) {
-		world->Damage(x_self, y_self, z_self, 1, HUNGER);
-		emit Updated();
-		return;
+		if ( world->Damage(x_self, y_self, z_self, 1, HUNGER) )
+			return;
 	}
 	if ( durability < MaxDurability() )
 		++durability;

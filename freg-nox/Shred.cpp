@@ -386,13 +386,13 @@ void Shred::TestShred() {
 	for (ushort j=7; j<10; ++j)
 	for (ushort k=height/2; k<height/2+5; ++k)
 		blocks[i][j][k]=NewNormal(GLASS);
-	for (ushort k=height/2; k<height/2+6; ++k)
+	/*for (ushort k=height/2; k<height/2+6; ++k)
 		blocks[2][8][k]=new Liquid(this,
 		shredX*shred_width+2,
-		shredY*shred_width+8, k);
-	/*blocks[2][8][height/2]=new Rabbit(this,
+		shredY*shred_width+8, k);*/
+	blocks[2][8][height/2]=new Rabbit(this,
 		shredX*shred_width+2,
-		shredY*shred_width+8, height/2);*/
+		shredY*shred_width+8, height/2);
 }
 
 void Shred::NullMountain() {

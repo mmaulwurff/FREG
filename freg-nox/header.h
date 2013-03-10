@@ -59,7 +59,7 @@ enum dirs {
 	SOUTH_WEST,
 	NORTH_WEST,
 	HERE
-};
+}; //enum dirs
 
 enum { NOT_MOVABLE, MOVABLE, ENVIRONMENT };
 
@@ -80,7 +80,7 @@ enum damage_kinds {
 	EATEN,
 	TIME,
 	NO_HARM
-};
+}; //enum damage_kinds
 
 enum kinds {//kind of atom
 	//do not change order, or rewrite craft recipes.
@@ -104,7 +104,7 @@ enum kinds {//kind of atom
 	WEAPON, ///<16
 	LADDER, ///<17
 	DOOR ///<18
-};
+}; //enum kinds
 enum subs {//substance block is made from
 	//do not change order, or rewrite craft recipes.
 	//add new substances right before air.
@@ -127,7 +127,7 @@ enum subs {//substance block is made from
 	HAZELNUT,   ///<16
 	ROSE,       ///<17
 	AIR //keep it last in this list
-};
+}; //enum subs
 
 enum before_move_return { NOTHING, DESTROY };
 enum before_push_action {
@@ -135,7 +135,7 @@ enum before_push_action {
 	MOVE_UP,
 	JUMP,
 	DAMAGE
-};
+}; //enum before_push_action
 
 enum usage_types { NO, OPEN, INNER_ACTION };
 
@@ -145,6 +145,6 @@ enum transparency {
 	INVISIBLE,
 	NONSTANDARD=6,
 	UNDEF
-};
+}; //enum transparency
 
 #endif

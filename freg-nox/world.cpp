@@ -538,6 +538,12 @@ int World::Focus(
 		GetBlock(i, j, k)->GetDir() );
 }
 
+///Makes damage to block at ijk.
+/**
+ * Be careful: it can destroy blocks.
+ * It can create piles if block drops something or has non-empty inventory.
+ * Returns true if block is destroyed, otherwise false.
+ */
 bool World::Damage(
 		const ushort i,
 		const ushort j,

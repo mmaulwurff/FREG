@@ -199,7 +199,7 @@ class Screen : public VirtScreen {
 	public:
 	void ControlPlayer(const int);
 	Screen(World * const, Player * const);
-};
+}; //class screen
 
 /** \class IThread screen.h
  * \brief Keyboard input thread for curses screen for freg.
@@ -223,6 +223,6 @@ class IThread : public QThread {
 	
 	private:
 		volatile bool stopped;
-};
+}; //class IThread
 
 #endif

@@ -144,6 +144,6 @@ class VirtScreen : public QObject {
 		       	Player * const);
 	///Destructor only calls VirtScreen::CleanAll, not needed to be reimplemented.
 	~VirtScreen() { CleanAll(); }
-};
+}; //class VirtScreen
 
 #endif

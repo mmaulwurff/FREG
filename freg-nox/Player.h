@@ -205,4 +205,4 @@ class Player : public QObject {
 
 	///Destructor calls Player::CleanAll().
 	~Player() { CleanAll(); }
-};
+}; //Player

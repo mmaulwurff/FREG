@@ -493,6 +493,6 @@ class World : public QThread {
 			const ushort);
 	void StartReloadAll();
 	void FinishReloadAll();
-};
+}; //world
 
 #endif
