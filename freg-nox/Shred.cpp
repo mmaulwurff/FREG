@@ -81,6 +81,7 @@ Shred::Shred(World * const world_,
 		case '~': Water( longi, lati); break;
 		case '+': Hill(  longi, lati); break;
 		case '_': /* empty shred */    break;
+		case 'p': Pyramid();           break;
 		default:
 			Plain();
 			fprintf(stderr,
@@ -538,6 +539,59 @@ void Shred::Hill(const long longi, const long lati) {
 			blocks[i][j][k]=NewNormal(SOIL);
 
 	PlantGrass();
+}
+
+void Shred::Pyramid()
+{
+	//pyramid by Panzerschrek
+	//'p' - pyramid symbol
+	NormalUnderground();
+	unsigned short z, dz, x, y;
+
+	//пирамида
+	for( z= height/2, dz= 0; dz< 8; z +=2, dz++ )
+	{
+		for( x= dz; x< ( 16 - dz ); x++ )
+		{
+			blocks[x][dz][z]=
+			blocks[x][15 - dz][z]=
+			blocks[x][dz][z+1]=
+			blocks[x][15 - dz][z+1]=NewNormal(STONE);
+		}
+		for( y= dz; y< ( 16 - dz ); y++ )
+		{
+			blocks[dz][y][z]=
+			blocks[15 - dz][y][z]=
+			blocks[dz][y][z + 1]=
+			blocks[15 - dz][y][z + 1]=NewNormal(STONE);
+		}
+	}
+
+	//вход
+	blocks[shred_width/2][0][height/2]= NewNormal( AIR );
+
+	//камера внутри
+	for( z= height/2 - 60, dz=0; dz< 8; dz++, z++ )
+	for( x= 1; x< shred_width - 1; x++ )
+	for( y= 1; y< shred_width - 1; y++ )
+		blocks[x][y][z]= NewNormal( AIR );
+
+	//шахта
+	for( z= height/2 - 52, dz= 0; dz< 52; z++, dz++ )
+		blocks[shred_width/2][shred_width/2][z]= NewNormal( AIR );
+
+	//летающая тарелка
+	return;
+	for( x=0; x< shred_width; x++ )
+	for( y=0; y< shred_width; y++ )
+	{
+		float r= float( ( x - shred_width/2 ) * ( x - shred_width/2 ) )
+		 + float( ( y - shred_width/2 ) * ( y - shred_width/2 ) );
+		if( r < 64.0f )
+			blocks[x][y][ 124 ]= NewNormal( STONE );
+		if( r < 36.0f )
+			blocks[x][y][ 125 ]= NewNormal( STONE );
+	}
 }
 
 bool Shred::Tree(
