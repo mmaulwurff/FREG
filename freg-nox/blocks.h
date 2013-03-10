@@ -31,6 +31,17 @@ class Animal;
 
 class Block { //blocks without special physics and attributes
 	bool normal;
+	void SetTransparency(const quint8 transp) {
+		if ( UNDEF==transp )
+			switch ( sub ) {
+				case AIR: transparent=INVISIBLE; break;
+				case WATER: case GREENERY:
+				case GLASS: transparent=BLOCK_TRANSPARENT; break;
+				default: transparent=BLOCK_OPAQUE;
+			}
+		else
+			transparent=transp;
+	}
 
 	protected:
 	quint8 transparent;
@@ -147,15 +158,7 @@ class Block { //blocks without special physics and attributes
 			note(""),
 			durability(dur)
 	{
-		if ( UNDEF==transp )
-			switch ( sub ) {
-				case AIR: transparent=INVISIBLE; break;
-				case WATER: case GREENERY:
-				case GLASS: transparent=BLOCK_TRANSPARENT; break;
-				default: transparent=BLOCK_OPAQUE;
-			}
-		else
-			transparent=transp;
+		SetTransparency(transp);
 	}
 	Block(
 			QDataStream &,
@@ -244,7 +247,7 @@ class Clock : public Block {
 			World * const w,
 			const int sub)
 			:
-			Block(sub, 2),
+			Block(sub, 2, NONSTANDARD),
 			world (w)
 	{}
 	Clock (
@@ -252,7 +255,7 @@ class Clock : public Block {
 			World * const w,
 			const int sub)
 			:
-			Block(str, sub),
+			Block(str, sub, NONSTANDARD),
 			world(w)
 	{}
 }; //class Clock
@@ -295,13 +298,13 @@ class Weapon : public Block {
 	Weapon(
 			const int sub)
 			:
-			Block(sub)
+			Block(sub, max_durability, NONSTANDARD)
 	{}
 	Weapon(
 			QDataStream & str,
 			const int sub)
 			:
-			Block(str, sub)
+			Block(str, sub, NONSTANDARD)
 	{}
 }; //class Weapon
 
@@ -830,7 +833,7 @@ class Pile : public Active, public Inventory {
 			const ushort z,
 			Block * const block=NULL)
 			:
-			Active(sh, x, y, z, DIFFERENT),
+			Active(sh, x, y, z, DIFFERENT, 1, NONSTANDARD),
 			Inventory(sh),
 			ifToDestroy(false)
 	{
@@ -843,7 +846,7 @@ class Pile : public Active, public Inventory {
 			const ushort z,
 			QDataStream & str)
 			:
-			Active(sh, x, y, z, str, DIFFERENT),
+			Active(sh, x, y, z, str, DIFFERENT, NONSTANDARD),
 			Inventory(sh, str)
 	{
 		str >> ifToDestroy;

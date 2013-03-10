@@ -369,7 +369,7 @@ bool World::DirectlyVisible(
 	const float z_step=(float)(z_to-z_from)/max;
 
 	for (ushort i=1; i<max; ++i)
-		if ( !Transparent(
+		if ( BLOCK_OPAQUE==Transparent(
 				nearbyint(x_from+=x_step),
 				nearbyint(y_from+=y_step),
 				nearbyint(z_from+=z_step)) )

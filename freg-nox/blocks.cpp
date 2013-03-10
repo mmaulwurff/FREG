@@ -115,15 +115,7 @@ Block::Block(
 		normal(false),
 		sub(sub_)
 {
-	if ( 5==transp )
-		switch ( sub ) {
-			case AIR: transparent=INVISIBLE; break;
-			case WATER: case GREENERY:
-			case GLASS: transparent=BLOCK_TRANSPARENT; break;
-			default: transparent=BLOCK_OPAQUE;
-		}
-	else
-		transparent=transp;
+	SetTransparency(transp);
 	str >> nullWeight >>
 		direction >>
 		durability >> note;
