@@ -21,6 +21,7 @@
 #include "header.h"
 #include <QObject>
 #include <QStack>
+#include <QDataStream>
 
 class World;
 class Shred;

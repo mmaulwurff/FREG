@@ -166,7 +166,8 @@ void Shred::PhysEvents() {
 	}
 }
 
-Block * Shred::BlockFromFile(QDataStream & str,
+Block * Shred::BlockFromFile(
+		QDataStream & str,
 		ushort i,
 		ushort j,
 		const ushort k)
