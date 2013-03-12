@@ -18,7 +18,6 @@
 #include <blocks.h>
 #include <Player.h>
 #include <world.h>
-#include <Shred.h>
 #include <QFile>
 #include <QTextStream>
 #include <QString>

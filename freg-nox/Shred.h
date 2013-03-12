@@ -19,12 +19,9 @@
 #define SHRED_H
 
 #include <QList>
-#include <QString>
-#include <QDataStream>
-#include <QFile>
-#include "header.h"
 #include "blocks.h"
 
+class QFile;
 class World;
 
 class Shred {

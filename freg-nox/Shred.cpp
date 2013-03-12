@@ -17,6 +17,7 @@
 
 #include <QFile>
 #include <QByteArray>
+#include <QDataStream>
 #include "Shred.h"
 #include "world.h"
 

@@ -15,6 +15,7 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
+#include <QDataStream>
 #include "blocks.h"
 #include "world.h"
 #include "Shred.h"
@@ -180,6 +181,21 @@ void Active::Unregister() {
 	}
 }
 
+Active::Active(
+		Shred * const sh,
+		const ushort x,
+		const ushort y,
+		const ushort z,
+		QDataStream & str,
+		const int sub,
+		const quint8 transp) //see default in blocks.h
+		:
+		Block(str, sub, transp)
+{
+	str >> timeStep;
+	Register(sh, x, y, z);
+}
+
 Active::~Active() {
        	Unregister();
 	emit Destroyed();
@@ -222,6 +238,19 @@ void Animal::Act() {
 		++durability;
 	--satiation;
 	emit Updated();
+}
+
+Animal::Animal(
+		Shred * const sh,
+		const ushort i,
+		const ushort j,
+		const ushort k,
+		QDataStream & str,
+		const int sub)
+		:
+		Active(sh, i, j, k, str, sub, NONSTANDARD)
+{
+	str >> breath >> satiation;
 }
 
 int Inventory::Drop(const ushort num, Inventory * const inv_to) {
@@ -370,6 +399,19 @@ before_move_return Pile::BeforeMove(const int dir) {
 void Pile::Act() {
 	if ( ifToDestroy )
 		GetWorld()->Damage(x_self, y_self, z_self, 0, TIME);
+}
+
+Pile::Pile(
+		Shred * const sh,
+		const ushort x,
+		const ushort y,
+		const ushort z,
+		QDataStream & str)
+		:
+		Active(sh, x, y, z, str, DIFFERENT, NONSTANDARD),
+		Inventory(sh, str)
+{
+	str >> ifToDestroy;
 }
 
 bool Liquid::CheckWater(const int dir) const {
@@ -564,4 +606,18 @@ void Door::Act() {
 			NullWeight(false);
 		}
 	}
+}
+
+Door::Door(
+		Shred * const sh,
+		const ushort x,
+		const ushort y,
+		const ushort z,
+		QDataStream & str,
+		const int sub)
+		:
+		Active(sh, x, y, z, str, sub, NONSTANDARD),
+		movable(NOT_MOVABLE)
+{
+	str >> shifted >> locked;
 }

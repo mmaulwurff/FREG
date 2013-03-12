@@ -20,7 +20,6 @@
 
 #include "header.h"
 #include <QObject>
-#include <QDataStream>
 #include <QStack>
 
 class World;
@@ -443,13 +442,7 @@ class Active : public QObject, public Block {
 			const ushort z,
 			QDataStream & str,
 			const int sub,
-			const quint8 transp=UNDEF)
-			:
-			Block(str, sub, transp)
-	{
-		str >> timeStep;
-		Register(sh, x, y, z);
-	}
+			const quint8 transp=UNDEF);
 	virtual ~Active();
 }; //class Active
 
@@ -493,12 +486,7 @@ class Animal : public Active {
 			const ushort j,
 			const ushort k,
 			QDataStream & str,
-			const int sub)
-			:
-			Active(sh, i, j, k, str, sub, NONSTANDARD)
-	{
-		str >> breath >> satiation;
-	}
+			const int sub);
 	virtual ~Animal() {}
 }; //class Animal
 
@@ -844,13 +832,7 @@ class Pile : public Active, public Inventory {
 			const ushort x,
 			const ushort y,
 			const ushort z,
-			QDataStream & str)
-			:
-			Active(sh, x, y, z, str, DIFFERENT, NONSTANDARD),
-			Inventory(sh, str)
-	{
-		str >> ifToDestroy;
-	}
+			QDataStream & str);
 }; //class Pile
 
 class Liquid : public Active {
@@ -1163,13 +1145,7 @@ class Door : public Active {
 			const ushort y,
 			const ushort z,
 			QDataStream & str,
-			const int sub)
-			:
-			Active(sh, x, y, z, str, sub, NONSTANDARD),
-			movable(NOT_MOVABLE)
-	{
-		str >> shifted >> locked;
-	}
+			const int sub);
 }; //class Door
 
 #endif
