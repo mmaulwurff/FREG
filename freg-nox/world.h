@@ -40,7 +40,7 @@ enum deferred_actions {
 	DEFERRED_NOTHING,
 	DEFERRED_MOVE,
 	DEFERRED_JUMP
-};
+}; //enum deferred_actions
 
 class World : public QThread {
 	Q_OBJECT
@@ -248,11 +248,10 @@ class World : public QThread {
 	//movement section
 	public:
 	int  Move(
-			const ushort,
-			const ushort,
-			const ushort,
-			const int dir,
-			const ushort=2); //how much block fall/rise at one turn
+			const ushort x,
+			const ushort y,
+			const ushort z,
+			const int dir);
 	void Jump(
 			const ushort x,
 			const ushort y,
@@ -275,7 +274,6 @@ class World : public QThread {
 		deferredActionDir=dir;
 		deferredActionType=action;
 	}
-
 
 	//time section
 	public:

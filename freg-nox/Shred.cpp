@@ -151,8 +151,16 @@ Block * Shred::NewNormal(const int sub) const {
 void Shred::PhysEvents() {
 	for (int j=0; j<activeList.size(); ++j) {
 		Active * const temp=activeList[j];
-		if ( temp->ShouldFall() )
-			world->Move(temp->X(), temp->Y(), temp->Z(), DOWN);
+		const ushort x=temp->X();
+		const ushort y=temp->Y();
+		const ushort z=temp->Z();
+		const float weight=world->Weight(x, y, z);
+		if ( temp->ShouldFall() && weight ) {
+			if ( weight > world->Weight(x, y, z-1) )
+				world->Move(x, y, z, DOWN);
+			else if ( weight < world->Weight(x, y, z+1) )
+				world->Move(x, y, z, UP);
+		}
 		temp->Act();
 	}
 }

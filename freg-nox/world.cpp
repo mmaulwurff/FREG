@@ -398,8 +398,7 @@ int World::Move(
 		const ushort i,
 		const ushort j,
 		const ushort k,
-		const int dir,
-		const ushort stop) //see default in "world.h"
+		const int dir)
 {
 	if ( !InBounds(i, j, k) )
 		return 0;
@@ -418,8 +417,7 @@ int World::Move(
 	}
 
 	Block * block_to=GetBlock(newi, newj, newk);
-	if ( !stop || (ENVIRONMENT==block->Movable() &&
-			Equal(block, block_to)) )
+	if ( ENVIRONMENT==block->Movable() && Equal(block, block_to) )
 		return 0;
 
 	switch ( block_to->BeforePush(dir) ) {
@@ -447,7 +445,7 @@ int World::Move(
 
 	short numberMoves=0;
 	if ( ENVIRONMENT!=block_to->Movable() &&
-			!(numberMoves=Move(newi, newj, newk, dir, stop-1)) )
+			!(numberMoves=Move(newi, newj, newk, dir)) )
 		return 0;
 	block_to=GetBlock(newi, newj, newk); //Move could change block_to
 
@@ -459,14 +457,6 @@ int World::Move(
 
 	block_to->Move( Anti(dir) );
 	block->Move(dir);
-
-	const float weight=Weight(newi, newj, newk);
-	if ( weight ) {
-		if ( weight > Weight(newi, newj, newk-1) )
-			numberMoves+=Move(newi, newj, newk, DOWN, stop-1);
-		else if ( weight < Weight(newi, newj, newk+1) )
-			numberMoves+=Move(newi, newj, newk, UP, stop-1);
-	}
 
 	return ++numberMoves;
 }
@@ -490,7 +480,7 @@ void World::Jump(
 		return;
 
 	to_move->NullWeight(true);
-	const short k_plus=Move(i, j, k, (DOWN==dir) ? DOWN : UP, 1);
+	const short k_plus=Move(i, j, k, (DOWN==dir) ? DOWN : UP);
 	if ( k_plus ) {
 		k+=((DOWN==dir) ? (-1) : 1) * k_plus;
 		to_move->NullWeight(false);
@@ -744,8 +734,9 @@ float World::Weight(
 		const ushort y,
 		const ushort z) const
 {
-	return GetShred(x, y)->
-		Weight(x%shred_width, y%shred_width, z);
+	return InBounds(x, y, z) ?
+		GetShred(x, y)->Weight(x%shred_width, y%shred_width, z) :
+		0;
 }
 
 Inventory * World::HasInventory(
