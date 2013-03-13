@@ -157,6 +157,7 @@ void Shred::PhysEvents() {
 		const ushort z=temp->Z();
 		const float weight=world->Weight(x, y, z);
 		if ( temp->ShouldFall() && weight ) {
+			temp->SetNotFalling();
 			if ( weight > world->Weight(x, y, z-1) )
 				world->Move(x, y, z, DOWN);
 			else if ( weight < world->Weight(x, y, z+1) )

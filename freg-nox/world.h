@@ -42,6 +42,8 @@ enum deferred_actions {
 	DEFERRED_JUMP
 }; //enum deferred_actions
 
+const ushort safe_fall_height=5;
+
 class World : public QThread {
 	Q_OBJECT
 

@@ -418,9 +418,10 @@ void Player::SetPlayer(
 			delete temp;
 		player=new Dwarf(shred, x, y, z);
 		world->SetBlock(player, x, y, z);
-	} else
+	} else {
 		player=world->ActiveBlock(x, y, z);
-	world->GetBlock(x, y, z)->SetDir(dir=NORTH);
+		Dir(world->GetBlock(x, y, z)->GetDir());
+	}
 
 	connect(player, SIGNAL(Destroyed()),
 		this, SLOT(BlockDestroy()),

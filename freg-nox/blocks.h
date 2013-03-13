@@ -361,6 +361,9 @@ class Pick : public Weapon {
 class Active : public QObject, public Block {
 	Q_OBJECT
 
+	quint8 fall_height;
+	bool falling;
+
 	protected:
 	quint8 timeStep;
 	ushort x_self, y_self, z_self;
@@ -387,12 +390,19 @@ class Active : public QObject, public Block {
 
 	Active * ActiveBlock() { return this; }
 	int Move(const int);
+	void SetNotFalling() { falling=false; }
 
 	ushort X() const { return x_self; }
 	ushort Y() const { return y_self; }
 	ushort Z() const { return z_self; }
 
-	virtual void Act() {}
+	///Block's  action, called every game turn.
+	/**
+	 * Active::Act() should be mentioned in derived classes'
+	 * Act() (if reimplemented) before the end.
+	 * This makes common damage from falling.
+	 */
+	virtual void Act();
 
 	int Movable() const { return MOVABLE; }
 	virtual bool ShouldFall() const { return true; }
@@ -404,7 +414,7 @@ class Active : public QObject, public Block {
 	void ReloadToEast()  { x_self-=shred_width; }
 
 	void SaveAttributes(QDataStream & out) const {
-		out << timeStep;
+		out << timeStep << fall_height << falling;
 	}
 
 	void Register(Shred *,
@@ -419,6 +429,8 @@ class Active : public QObject, public Block {
 			const quint8 transp=UNDEF)
 			:
 			Block(sub, dur, transp),
+			fall_height(0),
+			falling(false),
 			timeStep(0),
 	       		whereShred(0)
 	{}
@@ -432,6 +444,8 @@ class Active : public QObject, public Block {
 			const quint8 transp=UNDEF)
 			:
 			Block(sub, dur, transp),
+			fall_height(0),
+			falling(false),
 			timeStep(0)
 	{
 		Register(sh, x, y, z);

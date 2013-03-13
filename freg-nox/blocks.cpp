@@ -143,16 +143,34 @@ int Active::Move(const int dir) {
 				dir);
 			return 0;
 	}
-	if ( GetWorld()->GetShred(x_self, y_self)!=whereShred ) {
-		whereShred->RemActive(this);
-		whereShred=GetWorld()->GetShred(x_self, y_self);
-		whereShred->AddActive(this);
-		Inventory * const inv=HasInventory();
-		if ( inv )
-			inv->SetShred(whereShred);
+	if ( DOWN==dir ) {
+		falling=true;
+		++fall_height;
+	} else {
+		if ( GetWorld()->GetShred(x_self, y_self)!=whereShred ) {
+			whereShred->RemActive(this);
+			whereShred=GetWorld()->GetShred(x_self, y_self);
+			whereShred->AddActive(this);
+			Inventory * const inv=HasInventory();
+			if ( inv )
+				inv->SetShred(whereShred);
+		}
 	}
 	emit Moved(dir);
 	return 0;
+}
+
+void Active::Act() {
+	if ( !falling && fall_height ) {
+		if ( fall_height > safe_fall_height ) {
+			const ushort dmg=(fall_height - safe_fall_height)*10;
+			fall_height=0;
+			GetWorld()->Damage(x_self, y_self, z_self-1, dmg);
+			GetWorld()->Damage(x_self, y_self, z_self, dmg);
+			return;
+		}
+		fall_height=0;
+	}
 }
 
 World * Active::GetWorld() const {
@@ -191,7 +209,7 @@ Active::Active(
 		:
 		Block(str, sub, transp)
 {
-	str >> timeStep;
+	str >> timeStep >> fall_height >> falling;
 	Register(sh, x, y, z);
 }
 
@@ -230,13 +248,14 @@ void Animal::Act() {
 		++breath;
 
 	if ( satiation <= 0 ) {
-		if ( world->Damage(x_self, y_self, z_self, 1, HUNGER) )
+		if ( world->Damage(x_self, y_self, z_self, 5, HUNGER) )
 			return;
-	}
+	} else
+		--satiation;
 	if ( durability < MaxDurability() )
 		++durability;
-	--satiation;
 	emit Updated();
+	Active::Act();
 }
 
 Animal::Animal(
