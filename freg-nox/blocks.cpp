@@ -501,7 +501,7 @@ void Grass::Act() {
 }
 
 void Bush::Act() {
-	if ( 0==rand()%seconds_in_hour )
+	if ( 0==rand()%(seconds_in_hour*4) )
 		Get(whereShred->NewNormal(HAZELNUT));
 }
 

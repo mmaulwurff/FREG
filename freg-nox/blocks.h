@@ -678,7 +678,7 @@ class Dwarf : public Animal, public Inventory {
 			return 1;
 
 		switch ( to_eat->Sub() ) {
-			case HAZELNUT: satiation+=seconds_in_hour; break;
+			case HAZELNUT: satiation+=seconds_in_hour/2; break;
 			case H_MEAT:   satiation+=seconds_in_hour*2.5; break;
 			case A_MEAT:   satiation+=seconds_in_hour*2; break;
 			default: return 2; //not ate
@@ -955,7 +955,10 @@ class Grass : public Active {
 
 class Bush : public Active, public Inventory {
 	Q_OBJECT
+
 	static const quint8 bush_dur=20;
+	static const ushort bush_size=3;
+
 	public:
 	QString & FullName(QString & str) const { return str="Bush"; }
 	int Kind() const { return BUSH; }
@@ -980,14 +983,14 @@ class Bush : public Active, public Inventory {
 			Shred * const sh=0)
 			:
 			Active(sh, 0, 0, 0, WOOD, bush_dur),
-	       		Inventory(sh)
+			Inventory(sh, bush_size)
 	{}
 	Bush(
 			Shred * const sh,
 			QDataStream & str)
 			:
 			Active(sh, 0, 0, 0, str, WOOD),
-			Inventory(sh, str)
+			Inventory(sh, str, bush_size)
 	{}
 }; //class Bush
 
