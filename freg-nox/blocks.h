@@ -77,7 +77,7 @@ class Block { //blocks without special physics and attributes
 	virtual int BeforePush(const int) { return NO_ACTION; }
 	virtual int Move(const int) { return 0; }
 	virtual usage_types Use() { return NO; }
-	virtual int Damage(const ushort, const int dmg_kind);
+	virtual int Damage(const ushort dmg, const int dmg_kind);
 	virtual short MaxDurability() const {
 		switch ( Sub() ) {
 			case GREENERY: return 1;
@@ -407,6 +407,13 @@ class Active : public QObject, public Block {
 	int Movable() const { return MOVABLE; }
 	virtual bool ShouldFall() const { return true; }
 	before_move_return BeforeMove(const int) { return NOTHING; }
+	int Damage(const ushort dmg, const int dmg_kind) {
+		const int last_dur=durability;
+		const int new_dur=Block::Damage(dmg, dmg_kind);
+		if ( last_dur != new_dur )
+			emit Updated();
+		return new_dur;
+	}
 
 	void ReloadToNorth() { y_self+=shred_width; }
 	void ReloadToSouth() { y_self-=shred_width; }

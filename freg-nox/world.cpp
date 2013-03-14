@@ -734,9 +734,7 @@ float World::Weight(
 		const ushort y,
 		const ushort z) const
 {
-	return InBounds(x, y, z) ?
-		GetShred(x, y)->Weight(x%shred_width, y%shred_width, z) :
-		0;
+	return GetShred(x, y)->Weight(x%shred_width, y%shred_width, z);
 }
 
 Inventory * World::HasInventory(

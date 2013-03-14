@@ -155,12 +155,14 @@ void Shred::PhysEvents() {
 		const ushort x=temp->X();
 		const ushort y=temp->Y();
 		const ushort z=temp->Z();
-		const float weight=world->Weight(x, y, z);
+		const float weight=Weight(x%shred_width, y%shred_width, z);
 		if ( temp->ShouldFall() && weight ) {
 			temp->SetNotFalling();
-			if ( weight > world->Weight(x, y, z-1) )
+			if ( z > 0 &&
+					weight > Weight(x%shred_width, y%shred_width, z-1) )
 				world->Move(x, y, z, DOWN);
-			else if ( weight < world->Weight(x, y, z+1) )
+			else if ( z < height-1 &&
+					weight < Weight(x%shred_width, y%shred_width, z+1) )
 				world->Move(x, y, z, UP);
 		}
 		temp->Act();

@@ -46,37 +46,46 @@ QString & Block::FullName(QString & str) const {
 
 int Block::Damage(
 		const ushort dmg,
-		const int dmg_kind=CRUSH) {
-	if ( 0>=durability )
-		return 0;
-
-	switch (sub) {
-		case GLASS: return durability=0;
+		const int dmg_kind=CRUSH)
+{
+	switch ( sub ) {
+		case DIFFERENT:
+			if ( TIME==dmg_kind )
+				return 0;
+			//no break, only time damages DIFFERENT
+		case NULLSTONE:
+		case STAR:
+		case AIR:
+		case SKY:
+		case SUN_MOON:
+		case WATER:
+			return durability;
 		case MOSS_STONE:
 		case STONE:
-			return (MINE==dmg_kind) ?
+			return ( MINE==dmg_kind ) ?
 				durability-=2*dmg :
 				durability-=dmg;
-		case GREENERY: case ROSE: case HAZELNUT: case WOOD:
+		case GLASS:
+			return durability=0;
+		case GREENERY:
+		case ROSE:
+		case HAZELNUT:
+		case WOOD:
 			return (CUT==dmg_kind) ?
 				durability-=2*dmg :
 				durability-=dmg;
-		case SAND: case SOIL:
+		case SAND:
+		case SOIL:
 			return (DIG==dmg_kind) ?
 				durability-=2*dmg :
 				durability-=dmg;
-		case A_MEAT: case H_MEAT:
+		case A_MEAT:
+		case H_MEAT:
 			return (THRUST==dmg_kind) ?
 				durability-=2*dmg :
 				durability-=dmg;
-		case DIFFERENT:
-			if (TIME==dmg_kind)
-				return 0;
-			//no break, only time damages DIFFERENT
-		case AIR: case SKY: case SUN_MOON: case WATER:
-		case NULLSTONE: case STAR:
-			return durability;
-		default: return durability-=dmg;
+		default:
+			return durability-=dmg;
 	}
 }
 
