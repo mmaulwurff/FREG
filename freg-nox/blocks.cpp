@@ -363,7 +363,7 @@ int Inventory::MiniCraft(const ushort num) {
 				delete to_drop;
 		}
 		for (ushort i=0; i<result.num; ++i)
-			Get(inShred->CraftBlock(result.kind, result.sub));
+			Get(inShred->NewBlock(result.kind, result.sub));
 		return 0; //success
 	}
 	return 2; //no such recipe
@@ -600,7 +600,7 @@ void Workbench::Craft() {
 	craft_item result;
 	if ( InWorld()->Craft(recipe, result) )
 		for (ushort i=0; i<result.num; ++i)
-			GetExact(InShred()->CraftBlock(result.kind, result.sub), 0);
+			GetExact(InShred()->NewBlock(result.kind, result.sub), 0);
 	for (ushort i=0; i<recipe.size(); ++i)
 		delete recipe.at(i);
 }

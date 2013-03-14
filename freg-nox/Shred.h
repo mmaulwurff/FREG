@@ -109,7 +109,13 @@ class Shred {
 			const ulong);
 	~Shred();
 	
-	Block * CraftBlock(const int kind, const int sub) const;
+	void SetNewBlock(
+			const int kind,
+			const int sub,
+			const ushort x,
+			const ushort y,
+			const ushort z);
+	Block * NewBlock(const int kind, const int sub) const;
 	Block * NewNormal(const int sub) const;
 	Block * BlockFromFile(QDataStream &,
 			ushort,

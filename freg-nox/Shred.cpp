@@ -124,7 +124,26 @@ Shred::~Shred() {
 			delete blocks[i][j][k];
 }
 
-Block * Shred::CraftBlock(const int kind, const int sub) const {
+void Shred::SetNewBlock(
+		const int kind,
+		const int sub,
+		const ushort x,
+		const ushort y,
+		const ushort z)
+{
+	Block * const block=NewBlock(kind, sub);
+	blocks[x][y][z]=block;
+	Active * const active=block->ActiveBlock();
+	if ( active )
+		active->Register(this,
+			shred_width*shredX+x,
+			shred_width*shredY+y, z);
+	Inventory * const inventory=block->HasInventory();
+	if ( inventory )
+		inventory->SetShred(this);
+}
+
+Block * Shred::NewBlock(const int kind, const int sub) const {
 	switch ( kind ) {
 		case BLOCK:  return NewNormal(sub);
 		case GRASS:  return new Grass();
@@ -133,13 +152,18 @@ Block * Shred::CraftBlock(const int kind, const int sub) const {
 		case ACTIVE: return new Active(sub);
 		case LADDER: return new Ladder(sub);
 		case WEAPON: return new Weapon(sub);
+		case BUSH:   return new Bush();
 		case CHEST:  return new Chest(0, sub);
-		case DOOR:   return new Door(0, 0, 0, 0, sub);
+		case PILE:   return new Pile  (0, 0, 0, 0);
+		case DWARF:  return new Dwarf (0, 0, 0, 0);
+		case RABBIT: return new Rabbit(0, 0, 0, 0);
+		case DOOR:   return new Door  (0, 0, 0, 0, sub);
+		case LIQUID: return new Liquid(0, 0, 0, 0, sub);
 		case CLOCK:  return new Clock(GetWorld(), sub);
 		case WORKBENCH: return new Workbench(0, sub);
 		default:
 			fprintf(stderr,
-				"Shred::CraftBlock: unlisted kind: %d\n",
+				"Shred::NewBlock: unlisted kind: %d\n",
 				kind);
 			return NewNormal(sub);
 	}
@@ -358,55 +382,40 @@ void Shred::PlantGrass() {
 
 void Shred::TestShred() {
 	NormalUnderground();
-	blocks[1][1][height/2]=new Clock(world, IRON);
-	blocks[3][1][height/2]=new Chest(this);
-	blocks[5][1][height/2]=new Active(this,
-		shredX*shred_width+5,
-		shredY*shred_width+1, height/2, SAND);
-	blocks[7][1][height/2]=NewNormal(GLASS);
-	blocks[9][1][height/2]=new Pile(this,
-		shredX*shred_width+9,
-		shredY*shred_width+1, height/2, NewNormal(STONE));
-	blocks[11][1][height/2]=new Plate(STONE);
-	blocks[13][1][height/2]=NewNormal(NULLSTONE);
 
-	blocks[1][3][height/2]=new Ladder(NULLSTONE);
-	blocks[1][3][height/2+1]=new Ladder(WOOD);
-	blocks[3][3][height/2]=new Dwarf(this,
-		shredX*shred_width+3,
-		shredY*shred_width+3, height/2);
-	blocks[3][3][height/2]->Inscribe("Some dwarf");
-	blocks[5][3][height/2-3]=new Liquid(this,
-		shredX*shred_width+5,
-		shredY*shred_width+3, height/2-3);
-	blocks[5][3][height/2-2]=new Liquid(this,
-		shredX*shred_width+5,
-		shredY*shred_width+3, height/2-2);
-	blocks[5][3][height/2-1]=NewNormal(AIR);
-	blocks[7][3][height/2]=new Bush(this);
-	blocks[9][3][height/2-2]=new Rabbit(this,
-		shredX*shred_width+9,
-		shredY*shred_width+3, height/2-2);
-	blocks[9][3][height/2-1]=NewNormal(AIR);
-	blocks[11][3][height/2]=new Workbench(this, IRON);
-	blocks[13][3][height/2]=new Door(this,
-		shredX*shred_width+13,
-		shredY*shred_width+3, height/2, GLASS);
+	//row 1
+	SetNewBlock(CLOCK, IRON, 1, 1, height/2);
+	SetNewBlock(CHEST, WOOD, 3, 1, height/2);
+	SetNewBlock(ACTIVE, SAND, 5, 1, height/2);
+	SetNewBlock(BLOCK, GLASS, 7, 1, height/2);
+	SetNewBlock(PILE, DIFFERENT, 9, 1, height/2);
+	SetNewBlock(PLATE, STONE, 11, 1, height/2);
+	SetNewBlock(BLOCK, NULLSTONE, 13, 1, height/2);
+
+	//row 2
+	SetNewBlock(LADDER, NULLSTONE, 1, 3, height/2);
+	SetNewBlock(LADDER, WOOD, 1, 3, height/2+1);
+	SetNewBlock(DWARF, H_MEAT, 3, 3, height/2);
+	SetNewBlock(LIQUID, WATER, 5, 3, height/2-3);
+	SetNewBlock(LIQUID, WATER, 5, 3, height/2-3);
+	SetNewBlock(LIQUID, WATER, 5, 3, height/2-2);
+	SetNewBlock(BLOCK, AIR, 5, 3, height/2-1);
+	SetNewBlock(BUSH, GREENERY, 7, 3, height/2);
+	SetNewBlock(RABBIT, A_MEAT, 9, 3, height/2-2);
+	SetNewBlock(BLOCK, AIR, 9, 3, height/2-1);
+	SetNewBlock(WORKBENCH, IRON, 11, 3, height/2);
+	SetNewBlock(DOOR, GLASS, 13, 3, height/2);
 	blocks[13][3][height/2]->SetDir(NORTH);
 
-	blocks[1][5][height/2]=new Weapon(IRON);
+	//row 3
+	SetNewBlock(WEAPON, IRON, 1, 5, height/2);
 
+	//suicide booth
 	for (ushort i=1; i<4; ++i)
 	for (ushort j=7; j<10; ++j)
 	for (ushort k=height/2; k<height/2+5; ++k)
-		blocks[i][j][k]=NewNormal(GLASS);
-	/*for (ushort k=height/2; k<height/2+6; ++k)
-		blocks[2][8][k]=new Liquid(this,
-		shredX*shred_width+2,
-		shredY*shred_width+8, k);*/
-	blocks[2][8][height/2]=new Rabbit(this,
-		shredX*shred_width+2,
-		shredY*shred_width+8, height/2);
+		SetNewBlock(BLOCK, GLASS, i, j, k);
+	SetNewBlock(RABBIT, A_MEAT, 2, 8, height/2);
 }
 
 void Shred::NullMountain() {

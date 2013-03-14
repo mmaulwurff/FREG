@@ -366,6 +366,7 @@ class Active : public QObject, public Block {
 
 	protected:
 	quint8 timeStep;
+	///coordinates in loaded world zone
 	ushort x_self, y_self, z_self;
 	Shred * whereShred;
 
@@ -729,7 +730,6 @@ class Dwarf : public Animal, public Inventory {
 			Animal(sh, x, y, z, H_MEAT),
 			Inventory(sh)
 	{
-		Get(new Clock(GetWorld(), IRON));
 		Inscribe("Urist");
 	}
 	Dwarf(
@@ -977,7 +977,7 @@ class Bush : public Active, public Inventory {
 	}
 
 	Bush(
-			Shred * const sh)
+			Shred * const sh=0)
 			:
 			Active(sh, 0, 0, 0, WOOD, bush_dur),
 	       		Inventory(sh)
