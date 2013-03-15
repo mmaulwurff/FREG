@@ -52,8 +52,8 @@ class World : public QThread {
 	ulong time;
 	Shred ** shreds;
 	Block * normal_blocks[AIR+1];
-	ulong longitude, latitude; //center of active zone
-	ulong spawnLongi, spawnLati;
+	long longitude, latitude; //center of active zone
+	long spawnLongi, spawnLati;
 	const QString worldName;
 	ushort numShreds; //size of loaded zone
 	ushort numActiveShreds; //size of active zone
@@ -63,11 +63,11 @@ class World : public QThread {
 	ushort sun_moon_x;
 	bool ifStar;
 
-	ulong mapSize;
+	long mapSize;
 
 	QList<craft_recipe *> recipes;
 
-	ulong newLati, newLongi;
+	long newLati, newLongi;
 	ushort newNumShreds, newNumActiveShreds;
 	ushort newX, newY, newZ;
 	volatile bool toReSet;
@@ -197,14 +197,14 @@ class World : public QThread {
 	int TurnRight(const int dir) const;
 	int TurnLeft(const int dir) const;
 	int Anti(const int dir) const;
-	ulong GetSpawnLongi() const { return spawnLongi; }
-	ulong GetSpawnLati()  const { return spawnLati; }
-	ulong Longitude() const { return longitude; }
-	ulong Latitude() const { return latitude; }
+	long GetSpawnLongi() const { return spawnLongi; }
+	long GetSpawnLati()  const { return spawnLati; }
+	long Longitude() const { return longitude; }
+	long Latitude() const { return latitude; }
 	ushort TimeStepsInSec() const { return time_steps_in_sec; }
 
 	private:
-	ulong MapSize() const { return mapSize; }
+	long MapSize() const { return mapSize; }
 	ushort SunMoonX() const {
 		return ( NIGHT==PartOfDay() ) ?
 			TimeOfDay()*shred_width*numShreds/
@@ -430,8 +430,8 @@ class World : public QThread {
 	bool Craft(const craft_recipe & recipe, craft_item & result);
 
 	void ReloadAllShreds(
-		const ulong lati,
-		const ulong longi,
+		const long lati,
+		const long longi,
 		const ushort new_x,
 		const ushort new_y,
 		const ushort new_z,
@@ -493,6 +493,6 @@ class World : public QThread {
 			const ushort);
 	void StartReloadAll();
 	void FinishReloadAll();
-}; //world
+}; //class world
 
 #endif

@@ -28,14 +28,14 @@ class Shred {
 	Block * blocks[shred_width][shred_width][height];
 	uchar lightMap[shred_width][shred_width][height];
 	World * const world;
-	const ulong longitude, latitude;
+	const long longitude, latitude;
 
 	ushort shredX, shredY;
 	QList<Active *> activeList;
 
 	public:
-	ulong Longitude() const { return longitude; }
-	ulong Latitude()  const { return latitude; }
+	long Longitude() const { return longitude; }
+	long Latitude()  const { return latitude; }
 	ushort ShredX() const { return shredX; }
 	ushort ShredY() const { return shredY; }
 	void PhysEvents();
@@ -102,11 +102,12 @@ class Shred {
 
 	int LoadShred(QFile &);
 
-	Shred(World * const,
-			const ushort,
-			const ushort,
-			const ulong,
-			const ulong);
+	Shred(
+			World * const,
+			const ushort shred_x,
+			const ushort shred_y,
+			const long longi,
+			const long lati);
 	~Shred();
 	
 	void SetNewBlock(
@@ -125,8 +126,8 @@ class Shred {
 	private:
 	QString FileName() const;
 	char TypeOfShred(
-			const ulong,
-			const ulong) const;
+			const long longi,
+			const long lati) const;
 
 	void NormalUnderground(const ushort);
 	void PlantGrass();

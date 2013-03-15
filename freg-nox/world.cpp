@@ -798,8 +798,8 @@ bool World::Equal(
 
 void World::LoadAllShreds() {
 	shreds=new Shred *[numShreds*numShreds];
-	for (ulong i=latitude -numShreds/2, x=0; x<numShreds; ++i, ++x)
-	for (ulong j=longitude-numShreds/2, y=0; y<numShreds; ++j, ++y)
+	for (long i=latitude -numShreds/2, x=0; x<numShreds; ++i, ++x)
+	for (long j=longitude-numShreds/2, y=0; y<numShreds; ++j, ++y)
 		shreds[y*numShreds+x]=new Shred(this, x, y, j, i);
 	MakeSun();
 	ReEnlightenTime();

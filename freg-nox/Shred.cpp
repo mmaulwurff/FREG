@@ -47,11 +47,12 @@ int Shred::LoadShred(QFile & file) {
 		return 0;
 }
 
-Shred::Shred(World * const world_,
+Shred::Shred(
+		World * const world_,
 		const ushort shred_x,
 		const ushort shred_y,
-		const ulong longi,
-		const ulong lati)
+		const long longi,
+		const long lati)
 		:
 		world(world_),
 		longitude(longi),
@@ -93,8 +94,11 @@ Shred::Shred(World * const world_,
 
 Shred::~Shred() {
 	ushort i, j, k;
-	const ulong mapSize=world->MapSize();
-	if ( (longitude < mapSize) && (latitude < mapSize) ) {
+	const long mapSize=world->MapSize();
+	if (
+			(longitude < mapSize) && (longitude >= 0) &&
+			(latitude  < mapSize) && (latitude  >= 0) )
+	{
 		QFile file(FileName());
 		if ( !file.open(QIODevice::WriteOnly) ) {
 			fputs("Shred::~Shred: Write Error\n", stderr);
@@ -337,12 +341,14 @@ QString Shred::FileName() const {
 }
 
 char Shred::TypeOfShred(
-		const ulong longi,
-		const ulong lati) const
+		const long longi,
+		const long lati) const
 {
-	const ulong mapSize=world->MapSize();
-	if ( longi >= mapSize || lati  >= mapSize )
-		return '#';
+	const long mapSize=world->MapSize();
+	if (
+			longi >= mapSize || longi < 0 ||
+			lati  >= mapSize || lati  < 0 )
+		return '.';
 
 	QString temp;
 	QFile map(world->WorldName(temp));
