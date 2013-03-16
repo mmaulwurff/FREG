@@ -26,6 +26,7 @@
 #include <QString>
 #include <QFile>
 #include <QTextStream>
+#include <QSettings>
 #include "header.h"
 #include "world.h"
 #include "Player.h"
@@ -36,14 +37,13 @@ int main(int argc, char *argv[]) {
 	#else
 		QApplication freg(argc, argv);
 	#endif
-	QString worldName, temp;
-	QFile file("options.txt");
-	if ( !file.open(QIODevice::ReadOnly | QIODevice::Text) )
-		worldName="The_Land_Of_Doubts";
-	else {
-		QTextStream in(&file);
-		in >> temp >> worldName;
-	}
+	QCoreApplication::setOrganizationName("freg-team");
+	QCoreApplication::setApplicationName("freg");
+	QSettings::setDefaultFormat(QSettings::IniFormat);
+
+	QSettings sett;
+	const QString worldName=sett.value("global/current_world", "The_Land_Of_Doubts").toString();
+	sett.setValue("global/current_world", worldName);
 
 	World earth(worldName);
 	Player player(&earth);

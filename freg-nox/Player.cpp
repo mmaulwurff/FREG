@@ -21,6 +21,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QString>
+#include <QSettings>
 
 short Player::HP() const {
 	return player ? player->Durability() : 0;
@@ -464,33 +465,25 @@ Player::Player(World * const w) :
 		usingSelfType(NO),
 		cleaned(false)
 {
-	QFile file("player_save");
-	if ( !file.open(QIODevice::ReadOnly | QIODevice::Text) ) {
+	QString temp;
+	world->WorldName(temp);
+	QSettings sett;
+	sett.beginGroup("player");
+	if ( sett.value("world").toString() != temp ) {
 		homeLongi=world->GetSpawnLongi();
 		homeLati= world->GetSpawnLati();
 		x=homeX=0;
 		y=homeY=0;
 		z=homeZ=height/2;
 	} else {
-		QTextStream in(&file);
-		QString temp, temp2;
-		in >> temp >> temp;
-		if ( temp!=world->WorldName(temp2) ) {
-			homeLongi=world->GetSpawnLongi();
-			homeLati= world->GetSpawnLati();
-			x=homeX=0;
-			y=homeY=0;
-			z=homeZ=height/2;
-		} else {
-			in >> temp >> homeLongi;
-			in >> temp >> homeLati;
-			in >> temp >> homeX;
-			in >> temp >> homeY;
-			in >> temp >> homeZ;
-			in >> temp >> x;
-			in >> temp >> y;
-			in >> temp >> z;
-		}
+		homeLongi=sett.value("home_longitude", qlonglong(world->GetSpawnLongi())).toLongLong();
+		homeLati =sett.value("home_latitude", qlonglong(world->GetSpawnLati())).toLongLong();
+		homeX    =sett.value("home_x", 0).toInt();
+		homeY    =sett.value("home_y", 0).toInt();
+		homeZ    =sett.value("home_z", height/2).toInt();
+		x        =sett.value("current_x", 0).toInt();
+		y        =sett.value("current_y", 0).toInt();
+		z        =sett.value("current_z", height/2).toInt();
 	}
 
 	const ushort plus=world->NumShreds()/2*shred_width;
@@ -528,28 +521,20 @@ void Player::CleanAll() {
 	}
 	cleaned=true;
 
-	QString str;
-	QFile file("player_save");
-	if ( !file.open(QIODevice::WriteOnly | QIODevice::Text) ) {
-		QTextStream errors(stderr);
-		errors << "Player::Cleanall(): Savefile write error: "
-			<< str << endl;
-		world->Unlock();
-		return;
-	}
-
 	const ushort min=world->NumShreds()/2*shred_width;
-	QTextStream out(&file);
-	out << "World:\n" << world->WorldName(str) << endl
-		<< "Home_longitude:\n" << homeLongi << endl
-		<< "Home_latitude:\n" << homeLati << endl
-		<< "Home_x:\n" << homeX-min << endl
-		<< "Home_y:\n" << homeY-min << endl
-		<< "Home_z:\n" << homeZ << endl
-		<< "Current_x:\n" << x-min << endl
-		<< "Current_y:\n" << y-min << endl
-		<< "Current_z:\n" << z << endl;
-	file.close();
+	QSettings sett;
+	sett.beginGroup("player");
+	QString temp;
+	world->WorldName(temp);
+	sett.setValue("world", temp);
+	sett.setValue("home_longitude", qlonglong(homeLongi));
+	sett.setValue("home_latitude", qlonglong(homeLati));
+	sett.setValue("home_x", homeX-min);
+	sett.setValue("home_y", homeY-min);
+	sett.setValue("home_z", homeZ);
+	sett.setValue("current_x", x-min);
+	sett.setValue("current_y", y-min);
+	sett.setValue("current_z", z);
 
 	world->Unlock();
 }

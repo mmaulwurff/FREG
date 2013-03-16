@@ -18,6 +18,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QTimer>
+#include <QSettings>
 #include <cmath>
 #include "header.h"
 #include "blocks.h"
@@ -839,59 +840,49 @@ World::World(const QString & world_name)
 		toReSet(false),
 		deferredActionType(DEFERRED_NOTHING)
 {
-	QFile file(worldName+"_save");
-	if ( !file.open(QIODevice::ReadOnly | QIODevice::Text) ) {
-		time=end_of_night;
-		spawnLongi=0;
-		spawnLati=0;
-		longitude=0;
-		latitude=0;
-		mapSize=0;
-		numShreds=5;
-		numActiveShreds=5;
+	QSettings settings;
+	settings.beginGroup("world");
+	time      =settings.value("time", end_of_night).toLongLong();
+	mapSize   =settings.value("mapSize", 0).toLongLong();
+	longitude =settings.value("longitude", 0).toLongLong();
+	latitude  =settings.value("latitude", 0).toLongLong();
+	spawnLongi=settings.value("spawn_longitude", 0).toLongLong();
+	spawnLati =settings.value("spawn_latitude", 0).toLongLong();
+	numShreds =settings.value("number_of_shreds", 5).toLongLong();
+	numActiveShreds=settings.value("number_of_active_shreds", 5).toLongLong();
+	if ( 0==mapSize ) {
 		QFile map(worldName);
 		if ( map.open(QIODevice::ReadOnly | QIODevice::Text) )
 			mapSize=int(sqrt(1+4*map.size())-1)/2;
-	} else {
-		QTextStream in(&file);
-		QString temp;
-		in >> temp >> time;
-		in >> temp >> mapSize;
-		in >> temp >> longitude;
-		in >> temp >> latitude;
-		in >> temp >> spawnLongi;
-		in >> temp >> spawnLati;
-		in >> temp >> numShreds;
-		in >> temp >> numActiveShreds;
-		if ( 1!=numShreds%2 ) {
-			++numShreds;
-			fprintf(stderr,
-				"Invalid number of shreds. Set to %hu.\n",
-				numShreds);
-		}
-		if ( numShreds<5  ) {
-			fprintf(stderr,
-				"Number of shreds: to small: %hu. Set to 5.\n",
-				numShreds);
-			numShreds=5;
-		}
-		if ( 1!=numActiveShreds%2 ) {
-			++numActiveShreds;
-			fprintf(stderr,
-				"Invalid number of active shreds. Set to %hu.\n",
-				numActiveShreds);
-		}
-		if ( numActiveShreds > numShreds ) {
-			fprintf(stderr,
-				"Active shreds number (%hu) was more than all shreds number\n",
-				numActiveShreds);
-			numActiveShreds=numShreds;
-		} else if ( numActiveShreds < 1 ) {
-			fprintf(stderr,
-				"Active shreds number (%hu) too small. Set to 1.\n",
-				numActiveShreds);
-			numActiveShreds=1;
-		}
+	}
+	if ( 1!=numShreds%2 ) {
+		++numShreds;
+		fprintf(stderr,
+			"Invalid number of shreds. Set to %hu.\n",
+			numShreds);
+	}
+	if ( numShreds<5  ) {
+		fprintf(stderr,
+			"Number of shreds: to small: %hu. Set to 5.\n",
+			numShreds);
+		numShreds=5;
+	}
+	if ( 1!=numActiveShreds%2 ) {
+		++numActiveShreds;
+		fprintf(stderr,
+			"Invalid number of active shreds. Set to %hu.\n",
+			numActiveShreds);
+	}
+	if ( numActiveShreds > numShreds ) {
+		fprintf(stderr,
+			"Active shreds number (%hu) was more than all shreds number\n",
+			numActiveShreds);
+		numActiveShreds=numShreds;
+	} else if ( numActiveShreds < 1 ) {
+		fprintf(stderr,
+			"Active shreds number (%hu) too small. Set to 1.\n",
+			numActiveShreds);
+		numActiveShreds=1;
 	}
 
 	for (ushort x=0; x<=AIR; ++x) {
@@ -922,21 +913,14 @@ void World::CleanAll() {
 	for (ushort i=0; i<=AIR; ++i)
 		delete normal_blocks[i];
 
-	QFile file(worldName+"_save");
-	if ( !file.open(QIODevice::WriteOnly | QIODevice::Text) ) {
-		fprintf(stderr,
-			"World::CleanAll(): Savefile write error: %s\n",
-			(worldName+"_save").toAscii().constData());
-       		return;
-	}
-
-	QTextStream out(&file);
-	out << "time:\n" << time << endl
-		<< "map_size:\n" << mapSize << endl
-		<< "longitude:\n" << longitude << endl
-		<< "latitude:\n" << latitude << endl
-		<< "spawn_longitude:\n" << spawnLongi << endl
-		<< "spawn_latitude:\n" << spawnLati << endl
-		<< "number_of_shreds:\n" << numShreds << endl
-		<< "number_of_active_shreds\n" << numActiveShreds << endl;
+	QSettings settings;
+	settings.beginGroup(worldName);
+	settings.setValue("time", qlonglong(time));
+	settings.setValue("mapSize", qlonglong(mapSize));
+	settings.setValue("longitude", qlonglong(longitude));
+	settings.setValue("latitude", qlonglong(latitude));
+	settings.setValue("spawn_longitude", qlonglong(spawnLongi));
+	settings.setValue("spawn_latitude", qlonglong(spawnLati));
+	settings.setValue("number_of_shreds", numShreds);
+	settings.setValue("number_of_active_shreds", numActiveShreds);
 }
