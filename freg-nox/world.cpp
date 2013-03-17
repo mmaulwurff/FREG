@@ -841,7 +841,7 @@ World::World(const QString & world_name)
 		deferredActionType(DEFERRED_NOTHING)
 {
 	QSettings settings;
-	settings.beginGroup("world");
+	settings.beginGroup(worldName);
 	time      =settings.value("time", end_of_night).toLongLong();
 	mapSize   =settings.value("mapSize", 0).toLongLong();
 	longitude =settings.value("longitude", 0).toLongLong();
