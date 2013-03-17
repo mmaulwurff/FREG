@@ -89,12 +89,12 @@ void World::SunShine(
 	do {
 		transparent=Transparent(i, j, k);
 		if ( SetLightMap(light_lev, i, j, k) &&
-				2!=transparent )
+				INVISIBLE!=transparent )
 			emit Updated(i, j, k);
 		if ( 1==transparent )
 			--light_lev;
 		--k;
-	} while ( light_lev && transparent );
+	} while ( light_lev && BLOCK_OPAQUE!=transparent );
 }
 
 //private. called when onet block is moved, built, or destroyed.
