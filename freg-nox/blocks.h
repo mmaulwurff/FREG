@@ -241,7 +241,7 @@ class Clock : public Block {
 		Use();
 		return NO_ACTION;
 	}
-	float TrueWeight() const { return 0.1; }
+	float TrueWeight() const { return 0.1f; }
 
 	Clock(
 			World * const w,

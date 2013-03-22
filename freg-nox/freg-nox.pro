@@ -3,13 +3,13 @@
 ######################################################################
 
 TEMPLATE = app
-TARGET = 
+TARGET = freg-nox
 DEPENDPATH += .
 INCLUDEPATH += .
 
 CONFIG += qt thread debug
 QT -= gui
-LIBS += -lncurses
+LIBS += -lcurses
 
 # Input
 HEADERS += blocks.h header.h Player.h screen.h Shred.h VirtScreen.h world.h

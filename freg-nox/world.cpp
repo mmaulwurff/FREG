@@ -1,4 +1,4 @@
-	/*
+    /*
 	*This file is part of FREG.
 	*
 	*FREG is free software: you can redistribute it and/or modify
@@ -19,11 +19,17 @@
 #include <QTextStream>
 #include <QTimer>
 #include <QSettings>
-#include <cmath>
 #include "header.h"
 #include "blocks.h"
 #include "Shred.h"
 #include "world.h"
+#include <qmath.h>
+
+#ifdef Q_OS_WIN32
+    int round(float r) { return qFloor(r+0.5); }
+#else
+    #include <cmath>
+#endif
 
 void World::LoadRecipes() {
 	QFile file("recipes.txt");
@@ -371,9 +377,9 @@ bool World::DirectlyVisible(
 
 	for (ushort i=1; i<max; ++i)
 		if ( BLOCK_OPAQUE==Transparent(
-				nearbyint(x_from+=x_step),
-				nearbyint(y_from+=y_step),
-				nearbyint(z_from+=z_step)) )
+				round(x_from+=x_step),
+				round(y_from+=y_step),
+				round(z_from+=z_step)) )
 		   	return false;
 	return true;
 }
@@ -853,7 +859,7 @@ World::World(const QString & world_name)
 	if ( 0==mapSize ) {
 		QFile map(worldName);
 		if ( map.open(QIODevice::ReadOnly | QIODevice::Text) )
-			mapSize=int(sqrt(1+4*map.size())-1)/2;
+			mapSize=int(qSqrt(1+4*map.size())-1)/2;
 	}
 	if ( 1!=numShreds%2 ) {
 		++numShreds;

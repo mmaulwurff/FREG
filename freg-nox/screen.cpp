@@ -234,7 +234,9 @@ void Screen::ControlPlayer(const int ch) {
 		case KEY_PPAGE: player->Turn(UP); break;
 
 		case KEY_HOME: player->Backpack(); break;
+		case 8:
 		case KEY_BACKSPACE: player->Damage(); break;
+		case 13:
 		case '\n': player->Use(); break;
 		case  '?': player->Examine(); break;
 		case  '~': player->Inscribe(); break;
@@ -268,7 +270,8 @@ void Screen::ControlPlayer(const int ch) {
 		break;
 
 		case 'L': RePrint(); break;
-		default: Notify("Don't know what such key means."); break;
+		default:
+			Notify(QString("Don't know what such key means: %1").arg(ch));
 	}
 	updated=false;
 }
@@ -607,7 +610,6 @@ Screen::Screen(
 		cleaned(false),
 		actionMode(USE)
 {
-	set_escdelay(10); //задержка после нажатия esc. для обработки esc-последовательностей, пока не используется.
 	//ifdefs are adjustments for windows console, added by Panzerschrek
 	#ifdef Q_OS_WIN32
 		AllocConsole();
@@ -615,11 +617,12 @@ Screen::Screen(
 		freopen( "conin$", "r", stdin );
 	#endif
 
-	initscr(); //инициировать экран
-
 	#ifdef Q_OS_WIN32
 		resize_term( (SCREEN_SIZE + 2) + (2 + 5) + (2 + 3), SCREEN_SIZE * 4 + 4 );
+	#else
+		set_escdelay(10);
 	#endif
+	initscr(); //инициировать экран
 	start_color();
 	raw(); //коды нажатия клавиш поступают в программу без обработки (сырыми)
 	noecho(); //не показывать то, что введено

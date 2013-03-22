@@ -23,7 +23,7 @@
 
 #ifdef Q_OS_WIN32
 	#include <windows.h>
-	#define usleep(n) { Sleep(n/1000); }
+	//#define usleep(n) { Sleep(n/1000); }
 #else
 	#include <unistd.h>
 #endif

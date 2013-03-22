@@ -106,7 +106,7 @@ float Block::TrueWeight() const {
 		case GREENERY:  return 2;
 		case SAND:      return 1250;
 		case ROSE:
-		case HAZELNUT:  return 0.1;
+		case HAZELNUT:  return 0.1f;
 		case MOSS_STONE:
 		case STONE:     return 2600;
 		case A_MEAT:    return 1;
@@ -512,8 +512,8 @@ Block * Bush::DropAfterDamage() const {
 float Rabbit::Attractive(int kind) const {
 	switch ( kind ) {
 		case DWARF: return -9;
-		case GRASS: return 0.1;
-		case RABBIT: return 0.8;
+		case GRASS: return 0.1f;
+		case RABBIT: return 0.8f;
 		default: return 0;
 	}
 }
