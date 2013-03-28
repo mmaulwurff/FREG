@@ -69,13 +69,14 @@ void Player::Focus(
 	}
 }
 
-void Player::Examine() const {
-	ushort i, j, k;
+void Player::Examine(
+		const short i,
+		const short j,
+		const short k) const
+{
 	world->ReadLock();
-	Focus(i, j, k);
 
 	emit Notify("------");
-
 	QString str;
 	emit Notify( world->FullName(str, i, j, k) );
 
@@ -87,13 +88,10 @@ void Player::Examine() const {
 
 	if ( ""!=world->GetNote(str, i, j, k) )
 		emit Notify("Inscription: "+str);
-
 	emit Notify("Temperature: "+
 		QString::number(world->Temperature(i, j, k)));
-
 	emit Notify("Durability: "+
 		QString::number(world->Durability(i, j, k)));
-
 	emit Notify("Weight: "+
 		QString::number(world->Weight(i, j, k)));
 	world->Unlock();
@@ -132,20 +130,24 @@ void Player::Backpack() {
 	}
 }
 
-void Player::Use() {
-	ushort i, j, k;
+void Player::Use(
+		const short x,
+		const short y,
+		const short z)
+{
 	world->WriteLock();
-	Focus(i, j, k);
-	const int us_type=world->Use(i, j, k);
+	const int us_type=world->Use(x, y, z);
 	usingType=( us_type==usingType ) ? NO : us_type;
 	world->Unlock();
 }
 
-void Player::Inscribe() const {
+void Player::Inscribe(
+		const short x,
+		const short y,
+		const short z) const
+{
 	world->WriteLock();
 	if ( player ) {
-		ushort x, y, z;
-		Focus(x, y, z);
 		if ( ((Dwarf *)player)->CarvingWeapon() ) {
 			if ( !world->Inscribe(x, y, z) )
 				emit Notify("Cannot inscribe this.");
@@ -346,7 +348,7 @@ int Player::Dir() const { return dir; }
 void Player::Damage(
 		const short x,
 		const short y,
-		const short z)
+		const short z) const
 {
 	world->WriteLock();
 	if ( world->InBounds(x, y, z) && Visible(x, y, z) ) {

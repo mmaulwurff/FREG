@@ -169,13 +169,22 @@ class Player : public QObject {
 	void Jump();
 
 	void Backpack();
-	void Inscribe() const;
-	void Examine() const;
+	void Inscribe(
+			const short x,
+			const short y,
+			const short z) const;
+	void Examine(
+			const short x,
+			const short y,
+			const short z) const;
 	void Damage(
-			const short x_shift,
-			const short y_shift,
-			const short z_shift);
-	void Use();
+			const short x,
+			const short y,
+			const short z) const;
+	void Use(
+			const short x,
+			const short y,
+			const short z);
 
 	void Use     (const ushort num);
 	void Throw   (const ushort num);

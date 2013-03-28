@@ -236,15 +236,27 @@ void Screen::ControlPlayer(const int ch) {
 
 		case KEY_HOME: player->Backpack(); break;
 		case 8:
-		case KEY_BACKSPACE: {
+		case KEY_BACKSPACE: { //damage
 			ushort x, y, z;
 			ActionXyz(x, y, z);
 			player->Damage(x, y, z);
 		} break;
 		case 13:
-		case '\n': player->Use(); break;
-		case  '?': player->Examine(); break;
-		case  '~': player->Inscribe(); break;
+		case '\n': { //use
+			ushort x, y, z;
+			ActionXyz(x, y, z);
+			player->Use(x, y, z);
+		} break;
+		case  '?': { //examine
+			ushort x, y, z;
+			ActionXyz(x, y, z);
+			player->Examine(x, y, z);
+		} break;
+		case  '~': { //inscribe
+			ushort x, y, z;
+			ActionXyz(x, y, z);
+			player->Inscribe(x, y, z);
+		} break;
 
 		case 'U': actionMode=USE; break;
 		case 'T': actionMode=THROW; break;
@@ -652,12 +664,12 @@ Screen::Screen(
 	#else
 		set_escdelay(10);
 	#endif
-	initscr(); //инициировать экран
+	initscr();
 	start_color();
-	raw(); //коды нажатия клавиш поступают в программу без обработки (сырыми)
-	noecho(); //не показывать то, что введено
-	keypad(stdscr, TRUE); //использовать стрелки
-	curs_set(0); //сделать курсор невидимым
+	raw(); //send typed keys directly
+	noecho(); //do not print typed symbols
+	keypad(stdscr, TRUE); //use arrows
+	curs_set(0); //invisible cursor
 	//all available color pairs (maybe some of them will not be used)
 	const short colors[]={ //do not change colors order!
 		COLOR_BLACK,
@@ -669,7 +681,6 @@ Screen::Screen(
 		COLOR_CYAN,
 		COLOR_WHITE
 	};
-	//ввести все цвета
 	for (short i=BLACK_BLACK; i<=WHITE_WHITE; ++i)
 		init_pair(i, colors[(i-1)/8], colors[(i-1)%8]);
 	leftWin =newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, 0);
