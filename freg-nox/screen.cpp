@@ -212,9 +212,13 @@ void Screen::ControlPlayer(const int ch) {
 			case WIELD: player->Wield(num); break;
 			case INSCRIBE: player->Inscribe(num); break;
 			case EAT: player->Eat(num); break;
-			case BUILD: player->Build(num); break;
 			case CRAFT: player->Craft(num); break;
 			case TAKEOFF: player->TakeOff(num); break;
+			case BUILD: {
+				ushort x, y, z;
+				ActionXyz(x, y, z);
+				player->Build(x, y, z, num);
+			} break;
 			default:
 				fprintf(stderr,
 					"Screen::ControlPlayer: unlisted action mode: %d\n",

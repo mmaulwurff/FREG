@@ -267,12 +267,15 @@ void Player::Eat(const ushort num) {
 	world->Unlock();
 }
 
-void Player::Build(const ushort num) {
+void Player::Build(
+		const short x,
+		const short y,
+		const short z,
+		const ushort num)
+{
 	world->WriteLock();
 	Block * const block=ValidBlock(num);
 	if ( block ) {
-		ushort x, y, z;
-		Focus(x, y, z);
 		const int build=world->Build(block, x, y, z,
 			world->TurnRight(Dir()));
 		if ( 1==build )

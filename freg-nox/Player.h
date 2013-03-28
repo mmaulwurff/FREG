@@ -192,9 +192,13 @@ class Player : public QObject {
 	void Wield   (const ushort num);
 	void Inscribe(const ushort num);
 	void Eat     (const ushort num);
-	void Build   (const ushort num);
 	void Craft   (const ushort num);
 	void TakeOff (const ushort num);
+	void Build(
+			const short x,
+			const short y,
+			const short z,
+			const ushort num);
 
 	private:
 	Block * ValidBlock(const ushort num) const;
