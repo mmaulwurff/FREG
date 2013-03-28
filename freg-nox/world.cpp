@@ -99,7 +99,7 @@ void World::run() {
 	exec();
 }
 
-int World::TurnRight(const int dir) const {
+quint8 World::TurnRight(const quint8 dir) const {
 	switch (dir) {
 		case NORTH: return EAST;
 		case EAST: return SOUTH;
@@ -114,7 +114,7 @@ int World::TurnRight(const int dir) const {
 			return NORTH;
 	}
 }
-int World::TurnLeft(const int dir) const {
+quint8 World::TurnLeft(const quint8 dir) const {
 	switch (dir) {
 		case NORTH: return WEST;
 		case WEST: return SOUTH;
@@ -127,7 +127,7 @@ int World::TurnLeft(const int dir) const {
 			return NORTH;
 	}
 }
-int World::MakeDir(
+quint8 World::MakeDir(
 		const ushort x_center,
 		const ushort y_center,
 		const ushort x_target,
@@ -180,7 +180,7 @@ Block * World::ReplaceWithNormal(Block * const block) {
 	return block;
 }
 
-int World::Anti(const int dir) const {
+quint8 World::Anti(const quint8 dir) const {
 	switch (dir) {
 		case NORTH: return SOUTH;
 		case NORTH_EAST: return SOUTH_WEST;
@@ -405,7 +405,7 @@ int World::Move(
 		const ushort i,
 		const ushort j,
 		const ushort k,
-		const int dir)
+		const quint8 dir)
 {
 	if ( !InBounds(i, j, k) )
 		return 0;
@@ -480,7 +480,7 @@ void World::Jump(
 		const ushort i,
 		const ushort j,
 		ushort k,
-		const int dir)
+		const quint8 dir)
 {
 	Block * const to_move=GetBlock(i, j, k);
 	if ( MOVABLE!=to_move->Movable() )
@@ -504,7 +504,7 @@ int World::Focus(
 		ushort & i_target,
 		ushort & j_target,
 		ushort & k_target,
-		const int dir) const
+		const quint8 dir) const
 {
 	i_target=i;
 	j_target=j;
@@ -595,7 +595,7 @@ int World::Build(
 		const ushort i,
 		const ushort j,
 		const ushort k,
-		const int dir)
+		const quint8 dir)
 {
 	if ( !InBounds(i, j, k) || AIR!=Sub(i, j, k)  )
 		return 1;

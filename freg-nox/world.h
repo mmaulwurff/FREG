@@ -75,7 +75,7 @@ class World : public QThread {
 	ushort deferredActionX;
 	ushort deferredActionY;
 	ushort deferredActionZ;
-	int deferredActionDir;
+	quint8 deferredActionDir;
 	int deferredActionType;
 
 	void LoadRecipes();
@@ -185,7 +185,7 @@ class World : public QThread {
 	          ushort &,
 	          ushort &,
 	          ushort &,
-		  const int dir) const;
+		  const quint8 dir) const;
 	int Focus(const ushort,
 	          const ushort,
 	          const ushort,
@@ -194,9 +194,9 @@ class World : public QThread {
 	          ushort &) const;
 	ushort NumShreds() const { return numShreds; }
 	ushort NumActiveShreds() const { return numActiveShreds; }
-	int TurnRight(const int dir) const;
-	int TurnLeft(const int dir) const;
-	int Anti(const int dir) const;
+	quint8 TurnRight(const quint8 dir) const;
+	quint8 TurnLeft (const quint8 dir) const;
+	quint8 Anti(const quint8 dir) const;
 	long GetSpawnLongi() const { return spawnLongi; }
 	long GetSpawnLati()  const { return spawnLati; }
 	long Longitude() const { return longitude; }
@@ -212,7 +212,7 @@ class World : public QThread {
 			(TimeOfDay()-seconds_in_night)*shred_width*numShreds/
 				seconds_in_daylight;
 	}
-	int MakeDir(
+	quint8 MakeDir(
 			const ushort,
 			const ushort,
 			const ushort,
@@ -253,7 +253,7 @@ class World : public QThread {
 			const ushort x,
 			const ushort y,
 			const ushort z,
-			const int dir);
+			const quint8 dir);
 	void Jump(
 			const ushort x,
 			const ushort y,
@@ -262,12 +262,12 @@ class World : public QThread {
 			const ushort,
 			const ushort,
 			ushort,
-			const int dir);
+			const quint8 dir);
 	void SetDefferredAction(
 			const ushort x,
 			const ushort y,
 			const ushort z,
-			const int dir,
+			const quint8 dir,
 			const int action)
 	{
 		deferredActionX=x;
@@ -306,7 +306,7 @@ class World : public QThread {
 			const ushort,
 			const ushort,
 			const ushort,
-			const int dir=UP);
+			const quint8 dir=UP);
 	bool Inscribe(
 			const ushort,
 			const ushort,

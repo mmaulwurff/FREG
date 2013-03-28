@@ -164,6 +164,7 @@ int Active::Move(const int dir) {
 			if ( inv )
 				inv->SetShred(whereShred);
 		}
+		fall_height=0;
 	}
 	emit Moved(dir);
 	return 0;
@@ -175,10 +176,14 @@ void Active::Act() {
 			const ushort dmg=(fall_height - safe_fall_height)*10;
 			fall_height=0;
 			GetWorld()->Damage(x_self, y_self, z_self-1, dmg);
-			GetWorld()->Damage(x_self, y_self, z_self, dmg);
-			return;
+			if ( GetWorld()->Damage(x_self, y_self, z_self, dmg) ) {
+				return;
+			} else {
+				emit Updated();
+			}
+		} else {
+			fall_height=0;
 		}
-		fall_height=0;
 	}
 }
 
