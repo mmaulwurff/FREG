@@ -19,6 +19,7 @@
 
 #include <QString>
 #include <QTimer>
+#include <QSettings>
 #include "screen.h"
 #include "world.h"
 #include "blocks.h"
@@ -251,6 +252,9 @@ void Screen::ControlPlayer(const int ch) {
 		case 'C': actionMode=CRAFT; break;
 		case 'F': actionMode=TAKEOFF; break;
 
+		case '{': shiftFocus -= ( -1==shiftFocus ) ? 0 : 1; break;
+		case '}': shiftFocus += (  1==shiftFocus ) ? 0 : 1; break;
+
 		case '+': w->SetNumActiveShreds(w->NumActiveShreds()+2); break;
 		case '-':
 			if ( w->NumActiveShreds() > 1 )
@@ -382,9 +386,14 @@ void Screen::Print() {
 				mvwprintw(hudWin, 2, x, "%hu", inv->Number(i));
 			}
 		}
+
+	//shifted focus
+	if ( shiftFocus )
+		mvwaddstr(hudWin, 0, 100, ( -1==shiftFocus ) ?
+			"Focus shift down" : "Focus shift up");
+
 	wnoutrefresh(hudWin);
 	doupdate();
-
 	//fprintf(stderr, "player x: %hu, y: %hu", player->X(), player->Y());
 }
 
@@ -441,7 +450,6 @@ void Screen::PrintFront(WINDOW * const window) const {
 	const ushort pX=player->X();
 	const ushort pY=player->Y();
 	const ushort pZ=player->Z();
-	//const ushort start=(shred_width*w->NumShreds()-SCREEN_SIZE)/2;
 	const ushort begin_x=(pX/shred_width)*shred_width+(shred_width-SCREEN_SIZE)/2;
 	const ushort begin_y=(pY/shred_width)*shred_width+(shred_width-SCREEN_SIZE)/2;
 	ushort x_start, z_start, k_start;
@@ -538,6 +546,9 @@ void Screen::PrintFront(WINDOW * const window) const {
 	box(window, 0, 0);
 	mvwaddstr(window, 0, 1, "Front View");
 	Arrows(window, arrow_X, arrow_Y);
+	if ( shiftFocus ) {
+		HorizontalArrows(window, arrow_Y-=shiftFocus, WHITE_BLUE);
+	}
 	wnoutrefresh(window);
 }
 
@@ -649,6 +660,10 @@ Screen::Screen(
 
 	notifyLog=fopen("messages.txt", "a");
 
+	QSettings sett;
+	sett.beginGroup("screen-curses");
+	shiftFocus=sett.value("focus_shift", 0).toInt();
+
 	addstr("Press any key.");
 	getch();
 	Notify("Game started.");
@@ -676,15 +691,17 @@ void Screen::CleanAll() {
 	delete input;
 	w->Unlock();
 
-	//удалить окна
 	delwin(leftWin);
 	delwin(rightWin);
 	delwin(notifyWin);
 	delwin(hudWin);
-	//закончить оконный режим, очистить экран
 	endwin();
 	if ( NULL!=notifyLog )
 		fclose(notifyLog);
+
+	QSettings sett;
+	sett.beginGroup("screen-curses");
+	sett.setValue("focus_shift", shiftFocus);
 }
 
 IThread::IThread(Screen * const scr)

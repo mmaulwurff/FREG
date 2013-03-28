@@ -30,14 +30,14 @@
 enum actions {
 	USE,
 	THROW,
-	OBTAIN, 
+	OBTAIN,
 	WIELD,
 	INSCRIBE,
 	EAT,
 	BUILD,
 	CRAFT,
 	TAKEOFF,
-};
+}; //enum actions
 enum color_pairs { //do not change colors order! //foreground_background
         BLACK_BLACK=1,
         BLACK_RED,
@@ -110,7 +110,7 @@ enum color_pairs { //do not change colors order! //foreground_background
         WHITE_MAGENTA,
         WHITE_CYAN,
         WHITE_WHITE
-};
+}; //enum color_pairs
 
 class IThread;
 class Inventory;
@@ -127,9 +127,18 @@ class Screen : public VirtScreen {
 	volatile bool updated;
 	bool cleaned;
 	QTimer * timer;
-	FILE * notifyLog; //весь текст уведомлений (notification) дублируется в файл.
+	FILE * notifyLog;
 	int actionMode;
-	
+	short shiftFocus;
+
+	/*short ShiftFocus(
+			const ushort x,
+			const ushort y,
+			const ushort z) const
+	{
+
+	}*/
+
 	char CharName(
 			const ushort,
 			const ushort,
@@ -148,10 +157,18 @@ class Screen : public VirtScreen {
 			const ushort y) const
 	{
 		wcolor_set(window, WHITE_RED, NULL);
-		mvwprintw(window, 0, x, "vv");
-		mvwprintw(window, SCREEN_SIZE+1, x, "^^");
-		mvwprintw(window, y, 0, ">");
-		mvwprintw(window, y, SCREEN_SIZE*2+1, "<");	
+		mvwaddstr(window, 0, x, "vv");
+		mvwaddstr(window, SCREEN_SIZE+1, x, "^^");
+		HorizontalArrows(window, y);
+	}
+	void HorizontalArrows(
+			WINDOW * const & window,
+			const ushort y,
+			const short color=WHITE_RED) const
+	{
+		wcolor_set(window, color, NULL);
+		mvwaddch(window, y, 0, '>');
+		mvwaddch(window, y, SCREEN_SIZE*2+1, '<');
 	}
 
 	void PrintNormal(WINDOW * const) const;
@@ -220,7 +237,7 @@ class IThread : public QThread {
 
 	protected:
 		void run();
-	
+
 	private:
 		volatile bool stopped;
 }; //class IThread
