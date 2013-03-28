@@ -234,7 +234,7 @@ Active::~Active() {
 
 void Animal::Act() {
 	World * const world=GetWorld();
-	if ( world->TimeStepsInSec() > timeStep ) {
+	if ( World::TimeStepsInSec() > timeStep ) {
 		++timeStep;
 		return;
 	}
@@ -611,7 +611,7 @@ void Workbench::Craft() {
 }
 
 int Door::BeforePush(const int dir) {
-	if ( locked || shifted || dir==GetWorld()->Anti(GetDir()) )
+	if ( locked || shifted || dir==World::Anti(GetDir()) )
 		return NO_ACTION;
 	movable=MOVABLE;
 	NullWeight(true);
@@ -627,12 +627,12 @@ void Door::Act() {
 		World * const world=GetWorld();
 		ushort x, y, z;
 		world->Focus(x_self, y_self, z_self, x, y, z,
-			world->Anti(GetDir()));
+			World::Anti(GetDir()));
 		if ( AIR==world->Sub(x, y, z) ) {
 			movable=MOVABLE;
 			NullWeight(true);
 			world->Move(x_self, y_self, z_self,
-				world->Anti(GetDir()));
+				World::Anti(GetDir()));
 			shifted=false;
 			movable=NOT_MOVABLE;
 			NullWeight(false);

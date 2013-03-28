@@ -277,7 +277,7 @@ void Player::Build(
 	Block * const block=ValidBlock(num);
 	if ( block ) {
 		const int build=world->Build(block, x, y, z,
-			world->TurnRight(Dir()));
+			World::TurnRight(Dir()));
 		if ( 1==build )
 			emit Notify("Cannot build here.");
 		else if ( 2==build )

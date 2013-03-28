@@ -99,7 +99,7 @@ void World::run() {
 	exec();
 }
 
-quint8 World::TurnRight(const quint8 dir) const {
+quint8 World::TurnRight(const quint8 dir) {
 	switch (dir) {
 		case NORTH: return EAST;
 		case EAST: return SOUTH;
@@ -114,7 +114,7 @@ quint8 World::TurnRight(const quint8 dir) const {
 			return NORTH;
 	}
 }
-quint8 World::TurnLeft(const quint8 dir) const {
+quint8 World::TurnLeft(const quint8 dir) {
 	switch (dir) {
 		case NORTH: return WEST;
 		case WEST: return SOUTH;
@@ -180,7 +180,7 @@ Block * World::ReplaceWithNormal(Block * const block) {
 	return block;
 }
 
-quint8 World::Anti(const quint8 dir) const {
+quint8 World::Anti(const quint8 dir) {
 	switch (dir) {
 		case NORTH: return SOUTH;
 		case NORTH_EAST: return SOUTH_WEST;

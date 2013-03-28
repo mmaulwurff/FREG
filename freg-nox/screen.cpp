@@ -233,8 +233,8 @@ void Screen::ControlPlayer(const int ch) {
 		case KEY_LEFT: player->Move(WEST); break;
 		case ' ': player->Jump(); break;
 
-		case '>': player->Turn(w->TurnRight(player->Dir())); break;
-		case '<': player->Turn(w->TurnLeft(player->Dir())); break;
+		case '>': player->Turn(World::TurnRight(player->Dir())); break;
+		case '<': player->Turn(World::TurnLeft(player->Dir())); break;
 		case KEY_NPAGE: player->Turn(DOWN); break;
 		case KEY_PPAGE: player->Turn(UP); break;
 

@@ -194,14 +194,14 @@ class World : public QThread {
 	          ushort &) const;
 	ushort NumShreds() const { return numShreds; }
 	ushort NumActiveShreds() const { return numActiveShreds; }
-	quint8 TurnRight(const quint8 dir) const;
-	quint8 TurnLeft (const quint8 dir) const;
-	quint8 Anti(const quint8 dir) const;
+	static quint8 TurnRight(const quint8 dir);
+	static quint8 TurnLeft (const quint8 dir);
+	static quint8 Anti(const quint8 dir);
 	long GetSpawnLongi() const { return spawnLongi; }
 	long GetSpawnLati()  const { return spawnLati; }
 	long Longitude() const { return longitude; }
 	long Latitude() const { return latitude; }
-	ushort TimeStepsInSec() const { return time_steps_in_sec; }
+	static ushort TimeStepsInSec() { return time_steps_in_sec; }
 
 	private:
 	long MapSize() const { return mapSize; }
@@ -416,10 +416,6 @@ class World : public QThread {
 			const ushort,
 			const ushort) const;
 	bool Equal(const Block * const, const Block * const) const;
-	char MakeSound(
-			const ushort,
-			const ushort,
-		       	const ushort) const;
 
 	//craft section
 	bool MiniCraft(craft_item & item, craft_item & result) {
