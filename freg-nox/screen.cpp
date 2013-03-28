@@ -236,7 +236,11 @@ void Screen::ControlPlayer(const int ch) {
 
 		case KEY_HOME: player->Backpack(); break;
 		case 8:
-		case KEY_BACKSPACE: player->Damage(); break;
+		case KEY_BACKSPACE: {
+			ushort x, y, z;
+			ActionXyz(x, y, z);
+			player->Damage(x, y, z);
+		} break;
 		case 13:
 		case '\n': player->Use(); break;
 		case  '?': player->Examine(); break;
@@ -278,6 +282,21 @@ void Screen::ControlPlayer(const int ch) {
 			Notify(QString("Don't know what such key means: %1").arg(ch));
 	}
 	updated=false;
+}
+
+void Screen::ActionXyz(
+		ushort & x,
+		ushort & y,
+		ushort & z) const
+{
+	player->Focus(x, y, z);
+	if (
+			DOWN!=player->Dir() &&
+			UP  !=player->Dir() &&
+			AIR==w->Sub(x, y, z) )
+	{
+		z+=shiftFocus;
+	}
 }
 
 void Screen::Print() {

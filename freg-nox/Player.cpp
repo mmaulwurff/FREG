@@ -343,13 +343,17 @@ void Player::Dir(const int direction) {
 
 int Player::Dir() const { return dir; }
 
-void Player::Damage() {
-	ushort i, j, k;
+void Player::Damage(
+		const short x,
+		const short y,
+		const short z)
+{
 	world->WriteLock();
-	Focus(i, j, k);
-	world->Damage(i, j, k,
-		DamageLevel(),
-		DamageKind());
+	if ( world->InBounds(x, y, z) && Visible(x, y, z) ) {
+		world->Damage(x, y, z,
+			DamageLevel(),
+			DamageKind());
+	}
 	world->Unlock();
 }
 

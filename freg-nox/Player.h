@@ -139,6 +139,10 @@ class Player : public QObject {
 		const ushort x,
 		const ushort y,
 		const ushort z) const;
+	void Focus(
+		ushort &,
+		ushort &,
+		ushort &) const;
 
 	///This returns block which is now used by player.
 	/*
@@ -167,7 +171,10 @@ class Player : public QObject {
 	void Backpack();
 	void Inscribe() const;
 	void Examine() const;
-	void Damage();
+	void Damage(
+			const short x_shift,
+			const short y_shift,
+			const short z_shift);
 	void Use();
 
 	void Use     (const ushort num);
@@ -186,10 +193,6 @@ class Player : public QObject {
 	ushort DamageLevel() const;
 	void Get(Block *);
 	Block * Drop(const ushort);
-	void Focus(
-		ushort &,
-		ushort &,
-		ushort &) const;
 	void Dir(const int dir);
 
 	public:

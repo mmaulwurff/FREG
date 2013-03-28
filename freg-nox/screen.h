@@ -170,6 +170,10 @@ class Screen : public VirtScreen {
 		mvwaddch(window, y, 0, '>');
 		mvwaddch(window, y, SCREEN_SIZE*2+1, '<');
 	}
+	void ActionXyz(
+			ushort & x,
+			ushort & y,
+			ushort & z) const;
 
 	void PrintNormal(WINDOW * const) const;
 	void PrintFront(WINDOW * const) const;
