@@ -144,6 +144,6 @@ class Shred {
 			const ushort y,
 			const ushort z,
 			const ushort height);
-};
+}; //class Shred
 
 #endif

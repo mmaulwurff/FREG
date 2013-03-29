@@ -695,7 +695,7 @@ Screen::Screen(
 	notifyLog=fopen("messages.txt", "a");
 
 	QSettings sett;
-	sett.beginGroup("screen-curses");
+	sett.beginGroup("screen_curses");
 	shiftFocus=sett.value("focus_shift", 0).toInt();
 
 	addstr("Press any key.");
@@ -734,7 +734,7 @@ void Screen::CleanAll() {
 		fclose(notifyLog);
 
 	QSettings sett;
-	sett.beginGroup("screen-curses");
+	sett.beginGroup("screen_curses");
 	sett.setValue("focus_shift", shiftFocus);
 }
 

@@ -493,7 +493,7 @@ void Grass::Act() {
 	}
 
 	World * const world=GetWorld();
-	if ( world->InBounds(i, j, z_self) ) {
+	if ( world->InBounds(i, j, z_self) && world->Enlightened(i, j, z_self) ) {
 		if ( AIR==world->Sub(i, j, z_self) &&
 				world->InBounds(i, j, z_self-1) &&
 				SOIL==world->Sub(i, j, z_self-1) )
