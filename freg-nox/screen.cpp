@@ -653,8 +653,7 @@ Screen::Screen(
 		:
 		VirtScreen(wor, pl),
 		updated(false),
-		cleaned(false),
-		actionMode(USE)
+		cleaned(false)
 {
 	//ifdefs are adjustments for windows console, added by Panzerschrek
 	#ifdef Q_OS_WIN32
@@ -697,6 +696,7 @@ Screen::Screen(
 	QSettings sett;
 	sett.beginGroup("screen_curses");
 	shiftFocus=sett.value("focus_shift", 0).toInt();
+	actionMode=sett.value("action_mode", USE).toInt();
 
 	addstr("Press any key.");
 	getch();
@@ -736,6 +736,7 @@ void Screen::CleanAll() {
 	QSettings sett;
 	sett.beginGroup("screen_curses");
 	sett.setValue("focus_shift", shiftFocus);
+	sett.setValue("action_mode", actionMode);
 }
 
 IThread::IThread(Screen * const scr)
