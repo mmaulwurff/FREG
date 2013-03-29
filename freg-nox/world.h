@@ -39,7 +39,8 @@ typedef QList<craft_item *> craft_recipe;
 enum deferred_actions {
 	DEFERRED_NOTHING,
 	DEFERRED_MOVE,
-	DEFERRED_JUMP
+	DEFERRED_JUMP,
+	DEFERRED_BUILD
 }; //enum deferred_actions
 
 const ushort safe_fall_height=5;
@@ -75,7 +76,12 @@ class World : public QThread {
 	ushort deferredActionX;
 	ushort deferredActionY;
 	ushort deferredActionZ;
+	ushort deferredActionXFrom;
+	ushort deferredActionYFrom;
+	ushort deferredActionZFrom;
 	quint8 deferredActionDir;
+	Block * deferredActionWhat;
+	ushort deferredActionNum;
 	int deferredActionType;
 
 	void LoadRecipes();
@@ -263,18 +269,28 @@ class World : public QThread {
 			const ushort,
 			ushort,
 			const quint8 dir);
-	void SetDefferredAction(
+	void SetDeferredAction(
 			const ushort x,
 			const ushort y,
 			const ushort z,
 			const quint8 dir,
-			const int action)
+			const int action,
+			const ushort x_from=0,
+			const ushort y_from=0,
+			const ushort z_from=0,
+			Block * const what=0,
+			const ushort num=0)
 	{
 		deferredActionX=x;
 		deferredActionY=y;
 		deferredActionZ=z;
+		deferredActionXFrom=x_from;
+		deferredActionYFrom=y_from;
+		deferredActionZFrom=z_from;
 		deferredActionDir=dir;
 		deferredActionType=action;
+		deferredActionWhat=what;
+		deferredActionNum=num;
 	}
 
 	//time section
@@ -302,11 +318,12 @@ class World : public QThread {
 			const ushort,
 			const ushort);
 	int Build(
-			Block * const,
-			const ushort,
-			const ushort,
-			const ushort,
-			const quint8 dir=UP);
+			Block * const thing,
+			const ushort x,
+			const ushort y,
+			const ushort z,
+			const quint8 dir=UP,
+			Block * const who=0);
 	bool Inscribe(
 			const ushort,
 			const ushort,

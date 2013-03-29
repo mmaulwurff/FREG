@@ -100,14 +100,14 @@ void Player::Examine(
 void Player::Jump() {
 	world->WriteLock();
 	usingType=NO;
-	world->SetDefferredAction(x, y, z, dir, DEFERRED_JUMP);
+	world->SetDeferredAction(x, y, z, dir, DEFERRED_JUMP);
 	world->Unlock();
 }
 
 int Player::Move(const int dir) {
 	world->WriteLock();
 	usingType=NO;
-	world->SetDefferredAction(x, y, z, dir, DEFERRED_MOVE);
+	world->SetDeferredAction(x, y, z, dir, DEFERRED_MOVE);
 	world->Unlock();
 	return 0;
 }
@@ -268,22 +268,21 @@ void Player::Eat(const ushort num) {
 }
 
 void Player::Build(
-		const short x,
-		const short y,
-		const short z,
+		const short x_target,
+		const short y_target,
+		const short z_target,
 		const ushort num)
 {
 	world->WriteLock();
 	Block * const block=ValidBlock(num);
 	if ( block && !player->IsFalling() ) {
-		const int build=world->Build(block, x, y, z,
-			World::TurnRight(Dir()));
-		if ( 1==build )
-			emit Notify("Cannot build here.");
-		else if ( 2==build )
-			emit Notify("Cannot build this.");
-		else
-			PlayerInventory()->Pull(num);
+		world->SetDeferredAction(
+			x_target, y_target, z_target,
+			Dir(),
+			DEFERRED_BUILD,
+			x, y, z,
+			block,
+			num);
 	}
 	world->Unlock();
 }

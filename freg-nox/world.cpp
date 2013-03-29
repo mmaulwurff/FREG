@@ -295,6 +295,46 @@ void World::PhysEvents() {
 				deferredActionZ,
 				deferredActionDir);
 		break;
+		case DEFERRED_BUILD: {
+			deferredActionType=DEFERRED_NOTHING;
+			if ( DOWN==deferredActionDir &&
+					AIR!=Sub(
+						deferredActionX,
+						deferredActionY,
+						deferredActionZ) )
+			{
+				if ( !Move(
+						deferredActionXFrom,
+						deferredActionYFrom,
+						deferredActionZFrom,
+						UP) )
+				{
+					break;
+				} else {
+					deferredActionZ += 1;
+					deferredActionZFrom += 1;
+				}
+			}
+
+			const int build=Build(
+				deferredActionWhat,
+				deferredActionX,
+				deferredActionY,
+				deferredActionZ,
+				World::TurnRight(deferredActionDir),
+				GetBlock(
+					deferredActionXFrom,
+					deferredActionYFrom,
+					deferredActionZFrom));
+			if ( !build /*no errors*/ ) {
+				Inventory * const inv=GetBlock(
+						deferredActionXFrom,
+						deferredActionYFrom,
+						deferredActionZFrom)->HasInventory();
+				if ( inv )
+					inv->Pull(deferredActionNum);
+			}
+		} break;
 		case DEFERRED_NOTHING: break;
 		default:
 			deferredActionType=DEFERRED_NOTHING;
@@ -595,12 +635,18 @@ int World::Build(
 		const ushort i,
 		const ushort j,
 		const ushort k,
-		const quint8 dir)
+		const quint8 dir,
+		Block * const who) //see default in class world.h
 {
-	if ( !InBounds(i, j, k) || AIR!=Sub(i, j, k)  )
+	//TODO: add sending messages for who
+	if ( !InBounds(i, j, k) || AIR!=Sub(i, j, k)  ) {
+		if ( who ) {} //"Cannot build here."
 		return 1;
-	if (! block->CanBeOut() )
+	}
+	if (! block->CanBeOut() ) {
+		if ( who ) {} //"Cannot build this."
 		return 2;
+	}
 
 	block->Restore();
 	Active * const active=block->ActiveBlock();
