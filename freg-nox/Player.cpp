@@ -275,7 +275,7 @@ void Player::Build(
 {
 	world->WriteLock();
 	Block * const block=ValidBlock(num);
-	if ( block ) {
+	if ( block && !player->IsFalling() ) {
 		const int build=world->Build(block, x, y, z,
 			World::TurnRight(Dir()));
 		if ( 1==build )

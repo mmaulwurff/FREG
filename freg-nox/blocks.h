@@ -392,6 +392,7 @@ class Active : public QObject, public Block {
 	Active * ActiveBlock() { return this; }
 	int Move(const int);
 	void SetNotFalling() { falling=false; }
+	bool IsFalling() const { return falling; }
 
 	ushort X() const { return x_self; }
 	ushort Y() const { return y_self; }
