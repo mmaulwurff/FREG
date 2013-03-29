@@ -425,12 +425,13 @@ void Player::SetPlayer(
 		Block * const temp=world->GetBlock(x, y, z);
 		if ( !temp->Normal() )
 			delete temp;
-		player=new Dwarf(shred, x, y, z);
-		world->SetBlock(player, x, y, z);
+		world->SetBlock(
+			(player=new Dwarf(shred, x, y, z)),
+			x, y, z);
 	} else {
 		player=world->ActiveBlock(x, y, z);
-		Dir(world->GetBlock(x, y, z)->GetDir());
 	}
+	Dir(world->GetBlock(x, y, z)->GetDir());
 
 	connect(player, SIGNAL(Destroyed()),
 		this, SLOT(BlockDestroy()),
