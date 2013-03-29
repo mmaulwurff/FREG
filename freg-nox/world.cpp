@@ -280,7 +280,6 @@ void World::PhysEvents() {
 
 	switch ( deferredActionType ) {
 		case DEFERRED_MOVE:
-			deferredActionType=DEFERRED_NOTHING;
 			Move(
 				deferredActionX,
 				deferredActionY,
@@ -288,7 +287,6 @@ void World::PhysEvents() {
 				deferredActionDir);
 		break;
 		case DEFERRED_JUMP:
-			deferredActionType=DEFERRED_NOTHING;
 			Jump(
 				deferredActionX,
 				deferredActionY,
@@ -296,7 +294,6 @@ void World::PhysEvents() {
 				deferredActionDir);
 		break;
 		case DEFERRED_BUILD: {
-			deferredActionType=DEFERRED_NOTHING;
 			if ( DOWN==deferredActionDir &&
 					AIR!=Sub(
 						deferredActionX,
@@ -335,13 +332,31 @@ void World::PhysEvents() {
 					inv->Pull(deferredActionNum);
 			}
 		} break;
+		case DEFERRED_DAMAGE:
+			if ( InBounds(deferredActionX, deferredActionY, deferredActionZ) &&
+					Visible(
+						deferredActionXFrom, deferredActionYFrom, deferredActionZFrom,
+						deferredActionX,     deferredActionY,     deferredActionZ) )
+			{
+				const Block * const block=GetBlock(
+					deferredActionXFrom,
+					deferredActionYFrom,
+					deferredActionZFrom);
+				Damage(
+					deferredActionX,
+					deferredActionY,
+					deferredActionZ,
+					block->DamageLevel(),
+					block->DamageKind());
+			}
+		break;
 		case DEFERRED_NOTHING: break;
 		default:
-			deferredActionType=DEFERRED_NOTHING;
 			fprintf(stderr,
 				"World::PhysEvents: unlisted deferred_action: %d\n",
 				deferredActionType);
 	}
+	deferredActionType=DEFERRED_NOTHING;
 
 	if ( toReSet ) {
 		emit StartReloadAll();

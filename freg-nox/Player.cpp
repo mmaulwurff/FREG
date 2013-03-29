@@ -348,16 +348,16 @@ void Player::Dir(const int direction) {
 int Player::Dir() const { return dir; }
 
 void Player::Damage(
-		const short x,
-		const short y,
-		const short z) const
+		const short x_target,
+		const short y_target,
+		const short z_target) const
 {
 	world->WriteLock();
-	if ( world->InBounds(x, y, z) && Visible(x, y, z) ) {
-		world->Damage(x, y, z,
-			DamageLevel(),
-			DamageKind());
-	}
+	world->SetDeferredAction(
+			x_target, y_target, z_target,
+			UP, //doesn't matter here
+			DEFERRED_DAMAGE,
+			x, y, z);
 	world->Unlock();
 }
 

@@ -40,7 +40,8 @@ enum deferred_actions {
 	DEFERRED_NOTHING,
 	DEFERRED_MOVE,
 	DEFERRED_JUMP,
-	DEFERRED_BUILD
+	DEFERRED_BUILD,
+	DEFERRED_DAMAGE
 }; //enum deferred_actions
 
 const ushort safe_fall_height=5;
@@ -246,12 +247,12 @@ class World : public QThread {
 			const ushort,
 			const ushort) const;
 	bool Visible(
-			const ushort,
-			const ushort,
-			const ushort,
-			const ushort,
-			const ushort,
-			const ushort) const;
+			const ushort x_from,
+			const ushort y_from,
+			const ushort z_from,
+			const ushort x_to,
+			const ushort y_to,
+			const ushort z_to) const;
 
 	//movement section
 	public:
