@@ -158,10 +158,10 @@ class World : public QThread {
 			const ushort,
 			const ushort) const;
 	bool SetLightMap(
-			const ushort level,
-			const ushort,
-			const ushort,
-			const ushort);
+			const uchar level,
+			const ushort x,
+			const ushort y,
+			const ushort z);
 
 	void ReEnlighten(
 			const ushort i,
@@ -176,10 +176,10 @@ class World : public QThread {
 			const ushort i,
 			const ushort j);
 	void Shine(
-			const ushort,
-			const ushort,
-			const ushort,
-			const ushort level,
+			const ushort x,
+			const ushort y,
+			const ushort z,
+			const uchar level,
 			const bool init=false);
 
 	//information section

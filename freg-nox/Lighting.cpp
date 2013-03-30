@@ -15,10 +15,22 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-//This file provides simple (also mad) lighting for freg.
+/* This file provides simple (also mad) lighting for freg.
+ * It has light inertia, meaning that block, enlightened by outer
+ * source, will remain enlightened when light source is removed.
+ * Light is divided to sunlight and other light. Sunlight is
+ * changing over the day.
+ * LightMap is uchar:
+ * & 0xF0 bits are for non-sun light,
+ * & 0x0F bits for sun.
+ */
 
 #include "world.h"
 #include "Shred.h"
+
+const uchar MOON_LIGHT_FACTOR=1;
+const uchar  SUN_LIGHT_FACTOR=8;
+const uchar FIRE_LIGHT_FACTOR=4;
 
 //private
 uchar World::LightRadius(
@@ -42,7 +54,7 @@ uchar World::LightMap(
 
 //private
 bool World::SetLightMap(
-		const ushort level,
+		const uchar level,
 		const ushort x,
 		const ushort y,
 		const ushort z)
@@ -52,17 +64,20 @@ bool World::SetLightMap(
 }
 
 //private. make block emit shining
+//receives only non-sun light, from 0 to F
 void World::Shine(
 		const ushort i,
 		const ushort j,
 		const ushort k,
-		const ushort level,
+		const uchar level,
 		const bool init) //see default in class
 {
 	if ( !InBounds(i, j, k) || 0==level )
 		return;
 
-	const bool set=SetLightMap(level, i, j, k);
+	const uchar new_level=(LightMap(i, j, k) & 0x0F) |
+		((( level > 0x0F ) ? 0x0F : level) << 4);
+	const bool set=SetLightMap(new_level, i, j, k);
 	if ( !Transparent(i, j, k) ) {
 		if ( set )
 			emit Updated(i, j, k);
@@ -88,7 +103,9 @@ void World::SunShine(
 	ushort transparent;
 	do {
 		transparent=Transparent(i, j, k);
-		if ( SetLightMap(light_lev, i, j, k) &&
+		const uchar new_light_lev=
+			(LightMap(i, j, k) & 0xF0) | light_lev;
+		if ( SetLightMap(new_light_lev, i, j, k) &&
 				INVISIBLE!=transparent )
 			emit Updated(i, j, k);
 		if ( 1==transparent )
@@ -109,8 +126,7 @@ void World::ReEnlighten(
 	emit Updated(i, j, k);
 }
 
-//private. called when world is created and when is it time to
-//change world lighting (sun rises and falls)
+//private. called when world is created.
 void World::ReEnlightenTime() {
 	for (ushort i=0; i<NumShreds()*NumShreds(); ++i)
 		shreds[i]->SetAllLightMap();
@@ -128,7 +144,7 @@ void World::ReEnlightenAll() {
 		const ushort,
 		const ushort,
 		const ushort)), 0, 0);
-	
+
 	for (ushort i=0; i<NumShreds()*NumShreds(); ++i)
 		shreds[i]->ShineAll();
 
@@ -211,7 +227,8 @@ uchar World::SunLight(
 		const ushort j,
 		const ushort k) const
 {
-	return Enlightened(i, j, k);
+	return (Enlightened(i, j, k) & 0x0F) *
+		( NIGHT==PartOfDay() ? MOON_LIGHT_FACTOR : SUN_LIGHT_FACTOR);
 }
 
 uchar World::FireLight(
@@ -219,7 +236,7 @@ uchar World::FireLight(
 		const ushort j,
 		const ushort k) const
 {
-	return Enlightened(i, j, k);
+	return (Enlightened(i, j, k) & 0xF0) * FIRE_LIGHT_FACTOR;
 }
 
 uchar Shred::LightRadius(
@@ -238,16 +255,28 @@ uchar Shred::LightMap(
 	return lightMap[i][j][k];
 }
 
+//this receives level in format fire:sun
 bool Shred::SetLightMap(
 		const uchar level,
 		const ushort i,
 		const ushort j,
 		const ushort k)
 {
-	if ( lightMap[i][j][k]>=level )
-		return false;
-	lightMap[i][j][k]=level;
-	return true;
+	bool change_flag=false;
+
+	uchar fire=lightMap[i][j][k] & 0xF0;
+	uchar sun= lightMap[i][j][k] & 0x0F;
+
+	if ( (level & 0xF0) > fire ) {
+		change_flag=true;
+		fire=(level & 0xF0);
+	}
+	if ( (level & 0x0F) > sun ) {
+		change_flag=true;
+		sun=level & 0x0F;
+	}
+	lightMap[i][j][k]=fire | sun;
+	return change_flag;
 }
 
 //set lightmap of all shred to level. default level is 0.

@@ -409,10 +409,11 @@ void World::PhysEvents() {
 		emit Updated(sun_moon_x, y, height-1);
 	}
 
-	switch ( TimeOfDay() ) {
-		case end_of_evening:
-		case end_of_night: ReEnlightenTime(); break;
-	}
+	/*switch ( TimeOfDay() ) {
+		case end_of_evening: break;
+		case end_of_night: break;
+		default: break;
+	}*/
 	emit UpdatesEnded();
 	Unlock();
 }
