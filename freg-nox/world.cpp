@@ -278,85 +278,96 @@ void World::ReloadShreds(const int direction) {
 void World::PhysEvents() {
 	WriteLock();
 
-	switch ( deferredActionType ) {
-		case DEFERRED_MOVE:
-			Move(
-				deferredActionX,
-				deferredActionY,
-				deferredActionZ,
-				deferredActionDir);
-		break;
-		case DEFERRED_JUMP:
-			Jump(
-				deferredActionX,
-				deferredActionY,
-				deferredActionZ,
-				deferredActionDir);
-		break;
-		case DEFERRED_BUILD: {
-			if ( DOWN==deferredActionDir &&
-					AIR!=Sub(
-						deferredActionX,
-						deferredActionY,
-						deferredActionZ) )
-			{
-				if ( !Move(
-						deferredActionXFrom,
-						deferredActionYFrom,
-						deferredActionZFrom,
-						UP) )
-				{
-					break;
-				} else {
-					deferredActionZ += 1;
-					deferredActionZFrom += 1;
-				}
-			}
-
-			const int build=Build(
-				deferredActionWhat,
-				deferredActionX,
-				deferredActionY,
-				deferredActionZ,
-				World::TurnRight(deferredActionDir),
-				GetBlock(
-					deferredActionXFrom,
-					deferredActionYFrom,
-					deferredActionZFrom));
-			if ( !build /*no errors*/ ) {
-				Inventory * const inv=GetBlock(
-						deferredActionXFrom,
-						deferredActionYFrom,
-						deferredActionZFrom)->HasInventory();
-				if ( inv )
-					inv->Pull(deferredActionNum);
-			}
-		} break;
-		case DEFERRED_DAMAGE:
-			if ( InBounds(deferredActionX, deferredActionY, deferredActionZ) &&
-					Visible(
-						deferredActionXFrom, deferredActionYFrom, deferredActionZFrom,
-						deferredActionX,     deferredActionY,     deferredActionZ) )
-			{
-				const Block * const block=GetBlock(
-					deferredActionXFrom,
-					deferredActionYFrom,
-					deferredActionZFrom);
-				Damage(
+	if ( DEFERRED_NOTHING!=deferredActionType ) {
+		switch ( deferredActionType ) {
+			case DEFERRED_MOVE:
+				Move(
 					deferredActionX,
 					deferredActionY,
 					deferredActionZ,
-					block->DamageLevel(),
-					block->DamageKind());
-			}
-		break;
-		case DEFERRED_NOTHING: break;
-		default:
-			fprintf(stderr,
-				"World::PhysEvents: unlisted deferred_action: %d\n",
-				deferredActionType);
+					deferredActionDir);
+			break;
+			case DEFERRED_JUMP:
+				Jump(
+					deferredActionX,
+					deferredActionY,
+					deferredActionZ,
+					deferredActionDir);
+			break;
+			case DEFERRED_BUILD: {
+				if ( DOWN==deferredActionDir &&
+						AIR!=Sub(
+							deferredActionX,
+							deferredActionY,
+							deferredActionZ) )
+				{
+					if ( !Move(
+							deferredActionXFrom,
+							deferredActionYFrom,
+							deferredActionZFrom,
+							UP) )
+					{
+						break;
+					} else {
+						deferredActionZ += 1;
+						deferredActionZFrom += 1;
+					}
+				}
+
+				const int build=Build(
+					deferredActionWhat,
+					deferredActionX,
+					deferredActionY,
+					deferredActionZ,
+					World::TurnRight(deferredActionDir),
+					GetBlock(
+						deferredActionXFrom,
+						deferredActionYFrom,
+						deferredActionZFrom));
+				if ( !build /*no errors*/ ) {
+					Inventory * const inv=GetBlock(
+							deferredActionXFrom,
+							deferredActionYFrom,
+							deferredActionZFrom)->HasInventory();
+					if ( inv )
+						inv->Pull(deferredActionNum);
+				}
+			} break;
+			case DEFERRED_DAMAGE:
+				if ( InBounds(deferredActionX, deferredActionY, deferredActionZ) &&
+						Visible(
+							deferredActionXFrom, deferredActionYFrom, deferredActionZFrom,
+							deferredActionX,     deferredActionY,     deferredActionZ) )
+				{
+					const Block * const block=GetBlock(
+						deferredActionXFrom,
+						deferredActionYFrom,
+						deferredActionZFrom);
+					Damage(
+						deferredActionX,
+						deferredActionY,
+						deferredActionZ,
+						block->DamageLevel(),
+						block->DamageKind());
+				}
+			break;
+			case DEFERRED_THROW:
+				if ( !Drop(
+						deferredActionXFrom,
+						deferredActionYFrom,
+						deferredActionZFrom,
+						deferredActionNum) )
+				{
+					//send message to dropper
+				}
+			break;
+			default:
+				fprintf(stderr,
+					"World::PhysEvents: unlisted deferred_action: %d\n",
+					deferredActionType);
+		}
+		deferredActionType=DEFERRED_NOTHING;
 	}
-	deferredActionType=DEFERRED_NOTHING;
 
 	if ( toReSet ) {
 		emit StartReloadAll();
@@ -729,6 +740,7 @@ int World::Exchange(
 	Inventory * const inv_to=HasInventory(i_to, j_to, k_to);
 	if ( !inv_to )
 		return 4;
+
 	return inv_from->Drop(num, inv_to);
 }
 

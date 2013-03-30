@@ -41,7 +41,8 @@ enum deferred_actions {
 	DEFERRED_MOVE,
 	DEFERRED_JUMP,
 	DEFERRED_BUILD,
-	DEFERRED_DAMAGE
+	DEFERRED_DAMAGE,
+	DEFERRED_THROW
 }; //enum deferred_actions
 
 const ushort safe_fall_height=5;
@@ -355,8 +356,8 @@ class World : public QThread {
 			const ushort n)
 	{
 		ushort i_to, j_to, k_to;
-		return ( Focus(i, j, k, i_to, j_to, k_to) ) ? 5 :
-			Exchange(i, j, k, i_to, j_to, k_to, n);
+		return ( Focus(i, j, k, i_to, j_to, k_to) ) ?
+			5 : Exchange(i, j, k, i_to, j_to, k_to, n);
 	}
 	int Get(
 			const ushort i,

@@ -191,11 +191,13 @@ void Player::Throw(const ushort num) {
 	world->WriteLock();
 	Block * const block=ValidBlock(num);
 	if ( block ) {
-		const int err=world->Drop(x, y, z, num);
-		if ( 5==err || 4==err )
-			emit Notify("No place to drop.");
-		else
-			emit Updated();
+		world->SetDeferredAction(
+			0, 0, 0,
+			UP, //doesn't matter here
+			DEFERRED_THROW,
+			x, y, z,
+			0,
+			num);
 	}
 	world->Unlock();
 }
