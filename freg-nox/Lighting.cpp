@@ -120,8 +120,7 @@ void World::ReEnlighten(
 		const ushort j,
 		const ushort k)
 {
-	if ( NIGHT!=PartOfDay() )
-		SunShine(i, j);
+	SunShine(i, j);
 	Shine(i, j, k, LightRadius(i, j, k), true);
 	emit Updated(i, j, k);
 }
@@ -294,8 +293,7 @@ void Shred::ShineAll() {
 		world->Shine(temp->X(), temp->Y(), temp->Z(),
 			temp->LightRadius(), true);
 	}
-	if ( NIGHT!=world->PartOfDay() )
-		for (ushort i=shredX*shred_width; i<shred_width*(shredX+1); ++i)
-		for (ushort j=shredY*shred_width; j<shred_width*(shredY+1); ++j)
-			world->SunShine(i, j);
+	for (ushort i=shredX*shred_width; i<shred_width*(shredX+1); ++i)
+	for (ushort j=shredY*shred_width; j<shred_width*(shredY+1); ++j)
+		world->SunShine(i, j);
 }
