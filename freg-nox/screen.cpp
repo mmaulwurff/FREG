@@ -309,7 +309,10 @@ void Screen::ActionXyz(
 	if (
 			DOWN!=player->Dir() &&
 			UP  !=player->Dir() &&
-			AIR==w->Sub(x, y, z) )
+			( AIR==w->Sub(x, y, z) || AIR==w->Sub(
+				player->X(),
+				player->Y(),
+				player->Z()+shiftFocus) ))
 	{
 		z+=shiftFocus;
 	}

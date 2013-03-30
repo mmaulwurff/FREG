@@ -131,14 +131,6 @@ class Screen : public VirtScreen {
 	int actionMode;
 	short shiftFocus;
 
-	/*short ShiftFocus(
-			const ushort x,
-			const ushort y,
-			const ushort z) const
-	{
-
-	}*/
-
 	char CharName(
 			const ushort,
 			const ushort,
