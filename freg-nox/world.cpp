@@ -563,6 +563,30 @@ void World::Jump(
 		to_move->NullWeight(false);
 }
 
+void World::SetDeferredAction(
+		const ushort x,
+		const ushort y,
+		const ushort z,
+		const quint8 dir,
+		const int action,
+		const ushort x_from, //see defaults in world.h
+		const ushort y_from,
+		const ushort z_from,
+		Block * const what,
+		const ushort num)
+{
+	deferredActionX=x;
+	deferredActionY=y;
+	deferredActionZ=z;
+	deferredActionXFrom=x_from;
+	deferredActionYFrom=y_from;
+	deferredActionZFrom=z_from;
+	deferredActionDir=dir;
+	deferredActionType=action;
+	deferredActionWhat=what;
+	deferredActionNum=num;
+}
+
 int World::Focus(
 		const ushort i,
 		const ushort j,

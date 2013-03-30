@@ -271,6 +271,12 @@ class World : public QThread {
 			const ushort,
 			ushort,
 			const quint8 dir);
+	///Set action that will be executed at start of next physics turn.
+	/**It is needed by graphics screen to reduce execution time of
+	 * player's actions.
+	 * If several actions are set during one physics turn,
+	 * only the last will be done.
+	 */
 	void SetDeferredAction(
 			const ushort x,
 			const ushort y,
@@ -281,19 +287,7 @@ class World : public QThread {
 			const ushort y_from=0,
 			const ushort z_from=0,
 			Block * const what=0,
-			const ushort num=0)
-	{
-		deferredActionX=x;
-		deferredActionY=y;
-		deferredActionZ=z;
-		deferredActionXFrom=x_from;
-		deferredActionYFrom=y_from;
-		deferredActionZFrom=z_from;
-		deferredActionDir=dir;
-		deferredActionType=action;
-		deferredActionWhat=what;
-		deferredActionNum=num;
-	}
+			const ushort num=0);
 
 	//time section
 	public:

@@ -63,8 +63,7 @@ class Player : public QObject {
 	public slots:
 
 	/// For cleaning player-related data before exiting program.
-	/**
-	 * This is connected to app's aboutToQuit() signal, also it
+	/**This is connected to app's aboutToQuit() signal, also it
 	 * is called from destructor. There is a check for data deleting
 	 * not to be called twice.
 	 * Also this saves player to file player_save.
@@ -72,8 +71,7 @@ class Player : public QObject {
 	void CleanAll();
 
 	/// Checks if player walked over the shred border.
-	/**
-	 * This is connected to player's block signal Moved(int).
+	/**This is connected to player's block signal Moved(int).
 	 * It emits OverstepBorder(int) signal when player walks
 	 * over the shred border.
 	 */
@@ -92,21 +90,15 @@ class Player : public QObject {
 
 	signals:
 	///This is emitted when a notification is needed to be displayed.
-	/**
-	 * It should be connected to screen::Notify(const QString &).
-	 */
+	/** It should be connected to screen::Notify(const QString &). */
 	void Notify(const QString &) const;
 
 	///This is emitted when player walks over shred border.
-	/**
-	 * It should be connected to World::ReloadShreds(int) signal.
-	 */
+	/** It should be connected to World::ReloadShreds(int) signal. */
 	void OverstepBorder(const int);
 
 	///This is emitted when some player property is updated.
-	/**
-	 * It shoul be connected to screen::UpdatePlayer() signal.
-	 */
+	/** It shoul be connected to screen::UpdatePlayer() signal. */
 	void Updated();
 	void GetString(QString &);
 
@@ -145,21 +137,15 @@ class Player : public QObject {
 		ushort &) const;
 
 	///This returns block which is now used by player.
-	/*
-	 * See enum usage_types in header.h.
-	 */
+	/** See enum usage_types in header.h. */
 	Block * UsingBlock() const;
 
 	///This returns how player is using something now.
-	/*
-	 * See enum usage_types in header.h.
-	 */
+	/** See enum usage_types in header.h. */
 	int UsingType() const { return usingType; }
 
 	//This returns how player is using himself.
-	/*
-	 * For example, OPEN means he is looking in his backpack.
-	 */
+	/** For example, OPEN means he is looking in his backpack. */
 	int UsingSelfType() const { return usingSelfType; }
 
 	Inventory * PlayerInventory();
@@ -212,8 +198,7 @@ class Player : public QObject {
 	void SetNumShreds(ushort num) const;
 
 	///Constructor creates or loads player.
-	/**
-	 * It reads player_save file if it exists,
+	/**It reads player_save file if it exists,
 	 * puts player block to the world if there is no player block,
 	 * and makes necessary connections.
 	 */
