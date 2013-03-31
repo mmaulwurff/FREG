@@ -28,8 +28,6 @@
 #include "world.h"
 #include "Shred.h"
 
-const uchar MOON_LIGHT_FACTOR=1;
-const uchar  SUN_LIGHT_FACTOR=8;
 const uchar FIRE_LIGHT_FACTOR=4;
 
 //private
@@ -226,8 +224,7 @@ uchar World::SunLight(
 		const ushort j,
 		const ushort k) const
 {
-	return (Enlightened(i, j, k) & 0x0F) *
-		( NIGHT==PartOfDay() ? MOON_LIGHT_FACTOR : SUN_LIGHT_FACTOR);
+	return (Enlightened(i, j, k) & 0x0F) * sunMoonFactor;
 }
 
 uchar World::FireLight(

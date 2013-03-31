@@ -409,11 +409,11 @@ void World::PhysEvents() {
 		emit Updated(sun_moon_x, y, height-1);
 	}
 
-	/*switch ( TimeOfDay() ) {
-		case end_of_evening: break;
-		case end_of_night: break;
+	switch ( TimeOfDay() ) {
+		case end_of_evening: sunMoonFactor=MOON_LIGHT_FACTOR; break;
+		case end_of_night:   sunMoonFactor= SUN_LIGHT_FACTOR; break;
 		default: break;
-	}*/
+	}
 	emit UpdatesEnded();
 	Unlock();
 }
@@ -549,6 +549,8 @@ void World::Jump(
 		ushort k,
 		const quint8 dir)
 {
+	if ( AIR==Sub(i, j, k-1) )
+		return;
 	Block * const to_move=GetBlock(i, j, k);
 	if ( MOVABLE!=to_move->Movable() )
 		return;
@@ -954,6 +956,7 @@ World::World(const QString & world_name)
 	spawnLati =settings.value("spawn_latitude", 0).toLongLong();
 	numShreds =settings.value("number_of_shreds", 5).toLongLong();
 	numActiveShreds=settings.value("number_of_active_shreds", 5).toLongLong();
+	sunMoonFactor=( NIGHT==PartOfDay() ) ? MOON_LIGHT_FACTOR : SUN_LIGHT_FACTOR;
 	if ( 0==mapSize ) {
 		QFile map(worldName);
 		if ( map.open(QIODevice::ReadOnly | QIODevice::Text) )

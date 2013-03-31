@@ -47,6 +47,9 @@ enum deferred_actions {
 
 const ushort safe_fall_height=5;
 
+const uchar MOON_LIGHT_FACTOR=1;
+const uchar  SUN_LIGHT_FACTOR=8;
+
 class World : public QThread {
 	Q_OBJECT
 
@@ -85,6 +88,8 @@ class World : public QThread {
 	Block * deferredActionWhat;
 	ushort deferredActionNum;
 	int deferredActionType;
+
+	uchar sunMoonFactor;
 
 	void LoadRecipes();
 	void CleanRecipes();
