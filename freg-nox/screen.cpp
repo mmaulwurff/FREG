@@ -427,8 +427,8 @@ void Screen::Print() {
 	}
 
 	//shifted focus
+	wstandend(hudWin);
 	if ( shiftFocus ) {
-		wstandend(hudWin);
 		mvwaddstr(hudWin, 0, 100, ( -1==shiftFocus ) ?
 			"Focus shift down" : "Focus shift up");
 	}
