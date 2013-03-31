@@ -105,9 +105,9 @@ char Screen::CharName(
 		case PLATE:  return '-';
 		case LADDER: return '^';
 		case PICK:   return '\\';
-		case DOOR:   return '\'';
 		case WORKBENCH: return '*';
 		case TELEGRAPH: return 't';
+		case DOOR:   return ( STONE==sub ) ? '#' : '\'';
 		case WEAPON: switch ( sub ) {
 			case WOOD:  return '/';
 			case STONE: return '.';
@@ -431,7 +431,8 @@ void Screen::Print() {
 			"Focus shift down" : "Focus shift up");
 
 	//coordinates
-	//mvwprintw(hudWin, 0, 22, "%hu, %hu, %hu", player->X(), player->Y(), player->Z());
+	mvwprintw(hudWin, 2, 22, "xyz: %hu, %hu, %hu", player->X(), player->Y(), player->Z());
+	mvwprintw(hudWin, 1, 22, "XY:  %hu, %hu", player->GetLatitude(), player->GetLongitude());
 
 	wnoutrefresh(hudWin);
 	doupdate();

@@ -548,7 +548,6 @@ class Inventory {
 	Shred * InShred() const { return inShred; }
 	void SetShred(Shred * const sh) { inShred=sh; }
 	ushort Size() const { return size; }
-	void Register(Shred * const sh) { inShred=sh; }
 	bool GetExact(Block * const block, const ushort num);
 	int MiniCraft(const ushort num);
 	int InscribeInv(const ushort num, const QString & str);
@@ -1134,9 +1133,22 @@ class Door : public Active {
 	bool shifted;
 	bool locked;
 	int movable;
+
 	int Kind() const { return DOOR; }
 	QString & FullName(QString & str) const {
-		return str=(locked ? "Locked door" : "Door");
+		QString sub_string;
+		switch ( Sub() ) {
+			case WOOD:  sub_string=" of wood";   break;
+			case STONE: sub_string=" of stone";  break;
+			case GLASS: sub_string=" of glass";  break;
+			case IRON:  sub_string=" of iron";   break;
+			default:
+				sub_string=" of something";
+				fprintf(stderr,
+					"Door::FullName: unlisted sub: %d\n",
+					Sub());
+		}
+		return str=QString((locked ? "Locked door" : "Door")) + sub_string;
 	}
 	int Movable() const { return movable; }
 	usage_types Use() {

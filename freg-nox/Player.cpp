@@ -15,9 +15,10 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-#include <blocks.h>
-#include <Player.h>
-#include <world.h>
+#include "blocks.h"
+#include "Player.h"
+#include "world.h"
+#include "Shred.h"
 #include <QFile>
 #include <QTextStream>
 #include <QString>
@@ -44,6 +45,9 @@ short Player::Satiation() const {
 Inventory * Player::PlayerInventory() {
 	return player ? player->HasInventory() : 0;
 }
+
+ulong Player::GetLongitude() const { return shred->Longitude(); }
+ulong Player::GetLatitude()  const { return shred->Latitude();  }
 
 void Player::UpdateXYZ() {
 	if ( player ) {

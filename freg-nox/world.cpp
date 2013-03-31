@@ -381,15 +381,19 @@ void World::PhysEvents() {
 		emit FinishReloadAll();
 	}
 
-	static ushort timeStep=0;
+	/*static ulong global_step=0;
+	fprintf(stderr, "step: %lu\n", global_step);
+	++global_step;*/
+
 	const ushort start=numShreds/2-numActiveShreds/2;
 	const ushort end=start+numActiveShreds;
+	for (ushort i=start; i<end; ++i)
+	for (ushort j=start; j<end; ++j)
+		shreds[i+j*NumShreds()]->PhysEvents();
+
+	static ushort timeStep=0;
 	if ( time_steps_in_sec>timeStep ) {
 		++timeStep;
-		for (ushort i=start; i<end; ++i)
-		for (ushort j=start; j<end; ++j)
-			shreds[i+j*NumShreds()]->PhysEvents();
-
 		Unlock();
 		return;
 	}
@@ -707,7 +711,7 @@ int World::Build(
 		active->Register(GetShred(i, j), i, j, k);
 	Inventory * const inv=block->HasInventory();
 	if ( inv )
-		inv->Register(GetShred(i, j));
+		inv->SetShred(GetShred(i, j));
 	SetBlock(block, i, j, k);
 	block->SetDir(dir);
 

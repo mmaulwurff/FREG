@@ -32,7 +32,7 @@
  * Also it does checks for player walking over the shred border.
  */
 
-#include <header.h>
+#include "header.h"
 #include <QString>
 #include <QObject>
 
@@ -149,6 +149,9 @@ class Player : public QObject {
 	int UsingSelfType() const { return usingSelfType; }
 
 	Inventory * PlayerInventory();
+
+	ulong GetLongitude() const;
+	ulong GetLatitude() const;
 
 	void Turn(const int dir);
 	int Move(const int dir);

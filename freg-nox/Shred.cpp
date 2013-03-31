@@ -201,7 +201,8 @@ Block * Shred::BlockFromFile(
 		QDataStream & str,
 		ushort i,
 		ushort j,
-		const ushort k)
+		const ushort k,
+		const bool not_reg) //see default in class
 {
 	quint16 kind, sub;
 	bool normal;
@@ -210,6 +211,8 @@ Block * Shred::BlockFromFile(
 		return NewNormal(sub);
 	}
 
+	//if block is loaded into inventory, do not register it.
+	Shred * const shred_reg=( not_reg ) ? 0 : this;
 	i+=shredX*shred_width;
 	j+=shredY*shred_width;
 
@@ -224,17 +227,17 @@ Block * Shred::BlockFromFile(
 		case LADDER: return new Ladder(str, sub);
 		case WEAPON: return new Weapon(str, sub);
 
-		case BUSH:   return new Bush (this, str);
-		case CHEST:  return new Chest(this, str, sub);
-		case WORKBENCH: return new Workbench(this, str, sub);
+		case BUSH:   return new Bush (shred_reg, str);
+		case CHEST:  return new Chest(shred_reg, str, sub);
+		case WORKBENCH: return new Workbench(shred_reg, str, sub);
 
-		case RABBIT: return new Rabbit(this, i, j, k, str);
-		case DWARF:  return new Dwarf (this, i, j, k, str);
-		case PILE:   return new Pile  (this, i, j, k, str);
-		case GRASS:  return new Grass (this, i, j, k, str);
-		case ACTIVE: return new Active(this, i, j, k, str, sub);
-		case LIQUID: return new Liquid(this, i, j, k, str, sub);
-		case DOOR:   return new Door  (this, i, j, k, str, sub);
+		case RABBIT: return new Rabbit(shred_reg, i, j, k, str);
+		case DWARF:  return new Dwarf (shred_reg, i, j, k, str);
+		case PILE:   return new Pile  (shred_reg, i, j, k, str);
+		case GRASS:  return new Grass (shred_reg, i, j, k, str);
+		case ACTIVE: return new Active(shred_reg, i, j, k, str, sub);
+		case LIQUID: return new Liquid(shred_reg, i, j, k, str, sub);
+		case DOOR:   return new Door  (shred_reg, i, j, k, str, sub);
 
 		case CLOCK:  return new Clock(str, world, sub);
 		default:
@@ -335,8 +338,8 @@ void Shred::SetBlock(Block * block,
 QString Shred::FileName() const {
 	QString str;
 	world->WorldName(str);
-	return str=str+"_shreds/"+
-		QString::number(longitude)+'_'+
+	return str=str+"_shreds/y"+
+		QString::number(longitude)+"_x"+
 		QString::number(latitude);
 }
 

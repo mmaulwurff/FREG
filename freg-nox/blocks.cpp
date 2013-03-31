@@ -387,7 +387,7 @@ Inventory::Inventory(
 		quint8 num;
 		str >> num;
 		while ( num-- )
-			inventory[i].push(inShred->BlockFromFile(str, 0, 0, 0));
+			inventory[i].push(inShred->BlockFromFile(str, 0, 0, 0, true));
 	}
 }
 
