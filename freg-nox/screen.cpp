@@ -409,7 +409,7 @@ void Screen::Print() {
 
 	//quick inventory
 	Inventory * const inv=player->GetP()->HasInventory();
-	if ( inv )
+	if ( inv ) {
 		for (i=0; i<inv->Size(); ++i) {
 			wstandend(hudWin);
 			const int x=36+i*2;
@@ -424,11 +424,14 @@ void Screen::Print() {
 				mvwprintw(hudWin, 2, x, "%hu", inv->Number(i));
 			}
 		}
+	}
 
 	//shifted focus
-	if ( shiftFocus )
+	if ( shiftFocus ) {
+		wstandend(hudWin);
 		mvwaddstr(hudWin, 0, 100, ( -1==shiftFocus ) ?
 			"Focus shift down" : "Focus shift up");
+	}
 
 	//coordinates
 	mvwprintw(hudWin, 2, 22, "xyz: %hu, %hu, %hu", player->X(), player->Y(), player->Z());
