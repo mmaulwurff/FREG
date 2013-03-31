@@ -451,22 +451,26 @@ void Player::SetPlayer(
 }
 
 void Player::SetNumShreds(ushort num) const {
+	const ushort num_shreds=world->NumShreds();
 	if ( num < 5 ) {
 		emit Notify(QString(
 			"Shreds number too small: %1x%2.").arg(num).arg(num));
 		emit Notify(QString("Shreds number is %1x%2.")
-			.arg(world->NumShreds()).arg(world->NumShreds()));
+			.arg(num_shreds).arg(num_shreds));
 	} else if ( 1 != num%2 ) {
 		emit Notify(QString(
 			"Invalid shreds number: %1x%2.").arg(num).arg(num));
 		emit Notify(QString("Shreds number is %1x%2.")
-			.arg(world->NumShreds()).arg(world->NumShreds()));
+			.arg(num_shreds).arg(num_shreds));
 	} else {
+		const short shift=num/2 - num_shreds/2;
 		world->ReloadAllShreds(
-			world->Latitude(),
-			world->Longitude(),
-			x+(num/2-world->NumShreds()/2)*shred_width,
-			y+(num/2-world->NumShreds()/2)*shred_width,
+			//put loaded zone center to where player is
+			world->Latitude()  + x/shred_width - num_shreds/2,
+			world->Longitude() + y/shred_width - num_shreds/2,
+			//new x and y correspond to player stanging in loaded zone center
+			x - (x/shred_width)*shred_width + (num_shreds/2+shift)*shred_width,
+			y - (y/shred_width)*shred_width + (num_shreds/2+shift)*shred_width,
 			z,
 			num);
 		emit Notify(QString("Shreds number is %1x%2.")

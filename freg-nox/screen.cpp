@@ -430,9 +430,11 @@ void Screen::Print() {
 		mvwaddstr(hudWin, 0, 100, ( -1==shiftFocus ) ?
 			"Focus shift down" : "Focus shift up");
 
+	//coordinates
+	//mvwprintw(hudWin, 0, 22, "%hu, %hu, %hu", player->X(), player->Y(), player->Z());
+
 	wnoutrefresh(hudWin);
 	doupdate();
-	//fprintf(stderr, "player x: %hu, y: %hu", player->X(), player->Y());
 }
 
 void Screen::PrintNormal(WINDOW * const window) const {

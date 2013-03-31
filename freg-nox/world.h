@@ -55,7 +55,7 @@ class World : public QThread {
 	ulong time;
 	Shred ** shreds;
 	Block * normal_blocks[AIR+1];
-	long longitude, latitude; //center of active zone
+	long longitude, latitude; //center of active zone, longitude is y, latitude is x
 	long spawnLongi, spawnLati;
 	const QString worldName;
 	ushort numShreds; //size of loaded zone
