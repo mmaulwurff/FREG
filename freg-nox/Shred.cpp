@@ -84,6 +84,7 @@ Shred::Shred(
 		case '+': Hill(  longi, lati); break;
 		case '_': /* empty shred */    break;
 		case 'p': Pyramid();           break;
+		case '^': Mountain();          break;
 		default:
 			Plain();
 			fprintf(stderr,
@@ -621,6 +622,43 @@ void Shred::Pyramid()
 			blocks[x][y][ 124 ]= NewNormal( STONE );
 		if( r < 36.0f )
 			blocks[x][y][ 125 ]= NewNormal( STONE );
+	}
+}
+
+void Shred::Mountain() {
+	//Доступные координаты:
+	//x, y - от 0 до shred_width-1 включительно
+	//k - от 1 до height-2 включительно
+
+	//заполнить нижнюю часть лоскута камнем и землёй
+	NormalUnderground();
+
+	//ushort == unsigned short
+	//столб из камня, y=3, x=3
+	//вид сверху:
+	//*---->x
+	//|
+	//| +
+	//|
+	//v y
+	//SetNewBlock устанавливает новый блок. Первый параметр - тип,
+	//второй - вещество, потом координаты x, y, z;
+	for(ushort k=height/2; k<3*height/4; ++k) {
+		SetNewBlock(BLOCK, STONE, 2, 2, k);
+	}
+
+	//стена из нуль-камня с запада на восток высотой 3 блока
+	for(ushort i=4; i<10; ++i)
+	for(ushort k=height/2; k<height/2+3; ++k) {
+		SetNewBlock(BLOCK, NULLSTONE, i, 2, k);
+	}
+	//в стене вырезать дырку (AIR - воздух):
+	SetNewBlock(BLOCK, AIR, 6, 2, height/2+1);
+
+	//блок из дерева появится с вероятностью 1/2.
+	//Если random()%3 - с вероятностью 2/3 и т.д.
+	if ( random()%2 ) {
+		SetNewBlock(BLOCK, WOOD, 7, 7, height/2);
 	}
 }
 

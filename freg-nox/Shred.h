@@ -138,6 +138,7 @@ class Shred {
 	void Water( const long, const long);
 	void Hill(  const long, const long);
 	void Pyramid();
+	void Mountain();
 	//block combinations section (trees, buildings, etc):
 	bool Tree(
 			const ushort x,
