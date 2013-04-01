@@ -788,9 +788,7 @@ class Chest : public Block, public Inventory {
 			:
 			Block(s),
 			Inventory(sh)
-	{
-		Get(new Pick(IRON));
-	}
+	{}
 	Chest(
 			Shred * const sh,
 			QDataStream & str,

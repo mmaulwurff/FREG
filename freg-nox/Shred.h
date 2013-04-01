@@ -121,8 +121,7 @@ class Shred {
 	Block * BlockFromFile(QDataStream &,
 			ushort x,
 			ushort y,
-			const ushort z,
-			const bool not_reg=false);
+			const ushort z);
 
 	private:
 	QString FileName() const;

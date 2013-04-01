@@ -201,8 +201,7 @@ Block * Shred::BlockFromFile(
 		QDataStream & str,
 		ushort i,
 		ushort j,
-		const ushort k,
-		const bool not_reg) //see default in class
+		const ushort k)
 {
 	quint16 kind, sub;
 	bool normal;
@@ -212,7 +211,7 @@ Block * Shred::BlockFromFile(
 	}
 
 	//if block is loaded into inventory, do not register it.
-	Shred * const shred_reg=( not_reg ) ? 0 : this;
+	Shred * const shred_reg=( k==height ) ? 0 : this;
 	i+=shredX*shred_width;
 	j+=shredY*shred_width;
 
