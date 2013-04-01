@@ -285,7 +285,7 @@ void Player::Build(
 {
 	world->WriteLock();
 	Block * const block=ValidBlock(num);
-	if ( block && !player->IsFalling() ) {
+	if ( block && (AIR!=world->Sub(x, y, z-1) || 0==player->Weight()) ) {
 		world->SetDeferredAction(
 			x_target, y_target, z_target,
 			Dir(),

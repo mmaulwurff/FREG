@@ -553,7 +553,7 @@ void World::Jump(
 		ushort k,
 		const quint8 dir)
 {
-	if ( AIR==Sub(i, j, k-1) )
+	if ( (AIR==Sub(i, j, k-1) && Weight(i, j, k)) )
 		return;
 	Block * const to_move=GetBlock(i, j, k);
 	if ( MOVABLE!=to_move->Movable() )
