@@ -856,8 +856,9 @@ class Pile : public Active, public Inventory {
 }; //class Pile
 
 class Liquid : public Active {
-	Q_OBJECT
+	Q_OBJECT;
 
+	//return true if there is water near
 	bool CheckWater(const int dir) const;
 
 	public:

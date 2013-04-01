@@ -338,7 +338,7 @@ QString Shred::FileName() const {
 	QString str;
 	world->WorldName(str);
 	return str=str+"_shreds/y"+
-		QString::number(longitude)+"_x"+
+		QString::number(longitude)+"x"+
 		QString::number(latitude);
 }
 
