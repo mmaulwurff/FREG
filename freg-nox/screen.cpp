@@ -203,7 +203,7 @@ void Screen::ControlPlayer(const int ch) {
 		emit ExitReceived();
 		return;
 	}
-	if ( ch>='a' && ch<='z' ) {
+	if ( ch>='a' && ch<='z' ) { //actions with inventory
 		const int num=ch-'a';
 		switch ( actionMode ) {
 			case USE:   player->Use(num); break;
@@ -226,7 +226,7 @@ void Screen::ControlPlayer(const int ch) {
 		}
 		return;
 	}
-	switch ( ch ) {
+	switch ( ch ) { //interactions with world
 		case KEY_UP: player->Move(NORTH); break;
 		case KEY_DOWN: player->Move(SOUTH); break;
 		case KEY_RIGHT: player->Move(EAST); break;
@@ -248,7 +248,7 @@ void Screen::ControlPlayer(const int ch) {
 		case 13:
 		case '\n': { //use
 			ushort x, y, z;
-			ActionXyz(x, y, z);
+			player->Focus(x, y, z);
 			player->Use(x, y, z);
 		} break;
 		case  '?': { //examine

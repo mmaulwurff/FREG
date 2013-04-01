@@ -414,8 +414,20 @@ void World::PhysEvents() {
 	}
 
 	switch ( TimeOfDay() ) {
-		case end_of_evening: sunMoonFactor=MOON_LIGHT_FACTOR; break;
-		case end_of_night:   sunMoonFactor= SUN_LIGHT_FACTOR; break;
+		case end_of_night:
+			sunMoonFactor=SUN_LIGHT_FACTOR;
+			emit Notify(tr("It's morning now."));
+		break;
+		case end_of_morning:
+			emit Notify(tr("It's day now."));
+		break;
+		case end_of_noon:
+			emit Notify(tr("It's evening now."));
+		break;
+		case end_of_evening:
+			sunMoonFactor=MOON_LIGHT_FACTOR;
+			emit Notify(tr("It's night now."));
+		break;
 		default: break;
 	}
 	emit UpdatesEnded();
