@@ -83,10 +83,12 @@ void Player::Examine(
 	emit Notify("------");
 	QString str;
 	emit Notify( world->FullName(str, i, j, k) );
-	emit Notify(QString("Common light: %1, fire light: %2, sunlight: %3.").
+	//need to know more!
+	emit Notify(QString("Common light: %1, fire light: %2, sunlight: %3. Transparency: %4.").
 		arg(world->Enlightened(i, j, k)).
 		arg(world->FireLight(i, j, k)/16).
-		arg(world->SunLight(i, j, k)));
+		arg(world->SunLight(i, j, k)).
+		arg(world->Transparent(i, j, k)));
 
 	const int sub=world->Sub(i, j, k);
 	if ( AIR==sub || SKY==sub || SUN_MOON==sub ) {

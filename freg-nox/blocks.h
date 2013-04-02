@@ -1171,7 +1171,12 @@ class Door : public Active {
 			const ushort z,
 			const int sub)
 			:
-			Active(sh, x, y, z, sub, max_durability, NONSTANDARD),
+			Active(
+				sh,
+				x, y, z,
+				sub,
+				max_durability,
+				( STONE==sub ) ? BLOCK_OPAQUE : NONSTANDARD),
 			shifted(false),
 			locked(false),
 			movable(NOT_MOVABLE)
