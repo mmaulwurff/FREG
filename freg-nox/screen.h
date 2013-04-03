@@ -131,6 +131,8 @@ class Screen : public VirtScreen {
 	int actionMode;
 	short shiftFocus;
 
+	QString command; //save previous command for further execution
+
 	char CharName(
 			const ushort,
 			const ushort,

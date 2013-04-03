@@ -357,7 +357,7 @@ void Player::ProcessCommand(QString & command) {
 			emit Notify(QString(tr("No place for %1 things.")).arg(num));
 		}
 	} else {
-		emit Notify(tr("Don't know such command."));
+		emit Notify(QString(tr("Don't know such command: \"%1\".")).arg(command));
 	}
 }
 

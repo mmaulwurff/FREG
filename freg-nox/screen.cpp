@@ -299,11 +299,12 @@ void Screen::ControlPlayer(const int ch) {
 			player->SetCreativeMode( player->GetCreativeMode() ?
 				false : true);
 		break;
-		case ':': { //command mode
-			QString command;
+		case ':': //command mode
 			PassString(command);
+		//no break
+		case '.':
 			player->ProcessCommand(command);
-		} break;
+		break;
 
 		case 'L': RePrint(); break;
 		default:
@@ -723,6 +724,7 @@ Screen::Screen(
 	sett.beginGroup("screen_curses");
 	shiftFocus=sett.value("focus_shift", 0).toInt();
 	actionMode=sett.value("action_mode", USE).toInt();
+	command   =sett.value("last_command", "hello").toString();
 
 	addstr("Press any key.");
 	getch();
@@ -763,6 +765,7 @@ void Screen::CleanAll() {
 	sett.beginGroup("screen_curses");
 	sett.setValue("focus_shift", shiftFocus);
 	sett.setValue("action_mode", actionMode);
+	sett.setValue("last_command", command);
 }
 
 IThread::IThread(Screen * const scr)
