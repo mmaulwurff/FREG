@@ -56,6 +56,8 @@ class Player : public QObject {
 	int usingSelfType;
 	Shred * shred;
 
+	bool creativeMode;
+
 	volatile bool cleaned;
 
 	void UpdateXYZ();
@@ -152,6 +154,9 @@ class Player : public QObject {
 
 	ulong GetLongitude() const;
 	ulong GetLatitude() const;
+
+	bool GetCreativeMode() const { return creativeMode; }
+	void SetCreativeMode(const bool turn) { creativeMode=turn; }
 
 	void Turn(const int dir);
 	int Move(const int dir);

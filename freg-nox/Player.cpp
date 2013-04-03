@@ -84,11 +84,13 @@ void Player::Examine(
 	QString str;
 	emit Notify( world->FullName(str, i, j, k) );
 	//need to know more!
-	emit Notify(QString("Common light: %1, fire light: %2, sunlight: %3. Transparency: %4.").
+	emit Notify(QString("Light: %1, fire: %2, sun: %3. Transp: %4. Normal: %5. Direction: %6.").
 		arg(world->Enlightened(i, j, k)).
 		arg(world->FireLight(i, j, k)/16).
 		arg(world->SunLight(i, j, k)).
-		arg(world->Transparent(i, j, k)));
+		arg(world->Transparent(i, j, k)).
+		arg(world->GetBlock(i, j, k)->Normal()).
+		arg(world->GetBlock(i, j, k)->GetDir()));
 
 	const int sub=world->Sub(i, j, k);
 	if ( AIR==sub || SKY==sub || SUN_MOON==sub ) {
@@ -509,6 +511,7 @@ Player::Player(World * const w) :
 		x        =sett.value("current_x", 0).toInt();
 		y        =sett.value("current_y", 0).toInt();
 		z        =sett.value("current_z", HEIGHT/2).toInt();
+		creativeMode=sett.value("creative_mode", false).toBool();
 	}
 
 	const ushort plus=world->NumShreds()/2*SHRED_WIDTH;
@@ -560,6 +563,7 @@ void Player::CleanAll() {
 	sett.setValue("current_x", x-min);
 	sett.setValue("current_y", y-min);
 	sett.setValue("current_z", z);
+	sett.setValue("creative_mode", creativeMode);
 
 	world->Unlock();
 }

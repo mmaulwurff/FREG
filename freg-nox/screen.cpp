@@ -295,6 +295,11 @@ void Screen::ControlPlayer(const int ch) {
 			player->SetNumShreds(w->NumShreds()-2);
 		break;
 
+		case '!':
+			player->SetCreativeMode( player->GetCreativeMode() ?
+				false : true);
+		break;
+
 		case 'L': RePrint(); break;
 		default:
 			Notify(QString("Don't know what such key means: %1").arg(ch));
@@ -435,9 +440,14 @@ void Screen::Print() {
 			"Focus shift down" : "Focus shift up");
 	}
 
+	//creative mode
+	if ( player->GetCreativeMode() ) {
+		mvwaddstr(hudWin, 1, 100, "Creative Mode");
+	}
+
 	//coordinates
-	mvwprintw(hudWin, 2, 22, "xyz: %hu, %hu, %hu", player->X(), player->Y(), player->Z());
-	mvwprintw(hudWin, 1, 22, "XY:  %hu, %hu", player->GetLatitude(), player->GetLongitude());
+	mvwprintw(hudWin, 3, 22, "xyz: %hu, %hu, %hu", player->X(), player->Y(), player->Z());
+	mvwprintw(hudWin, 2, 22, "XY:  %hu, %hu", player->GetLatitude(), player->GetLongitude());
 
 	wnoutrefresh(hudWin);
 	doupdate();
