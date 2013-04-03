@@ -86,7 +86,8 @@ class World : public QThread {
 	ushort deferredActionZFrom;
 	quint8 deferredActionDir;
 	Block * deferredActionWhat;
-	ushort deferredActionNum;
+	int deferredActionData1;
+	int deferredActionData2;
 	int deferredActionType;
 
 	uchar sunMoonFactor;
@@ -292,7 +293,8 @@ class World : public QThread {
 			const ushort y_from=0,
 			const ushort z_from=0,
 			Block * const what=0,
-			const ushort num=0);
+			const int data1=0,
+			const int data2=0);
 
 	//time section
 	public:

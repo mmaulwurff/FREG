@@ -369,9 +369,12 @@ void Player::Damage(
 	world->WriteLock();
 	world->SetDeferredAction(
 			x_target, y_target, z_target,
-			UP, //doesn't matter here
+			0, //direction doesn't matter here
 			DEFERRED_DAMAGE,
-			x, y, z);
+			x, y, z,
+			0, //what block - doesn't matter
+			( creativeMode ? MAX_DURABILITY : player->DamageLevel() ),
+			( creativeMode ? CREATIVE : player->DamageKind() ));
 	world->Unlock();
 }
 

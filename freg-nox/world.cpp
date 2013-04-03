@@ -330,7 +330,7 @@ void World::PhysEvents() {
 							deferredActionYFrom,
 							deferredActionZFrom)->HasInventory();
 					if ( inv )
-						inv->Pull(deferredActionNum);
+						inv->Pull(deferredActionData1);
 				}
 			} break;
 			case DEFERRED_DAMAGE:
@@ -339,16 +339,12 @@ void World::PhysEvents() {
 							deferredActionXFrom, deferredActionYFrom, deferredActionZFrom,
 							deferredActionX,     deferredActionY,     deferredActionZ) )
 				{
-					const Block * const block=GetBlock(
-						deferredActionXFrom,
-						deferredActionYFrom,
-						deferredActionZFrom);
 					Damage(
 						deferredActionX,
 						deferredActionY,
 						deferredActionZ,
-						block->DamageLevel(),
-						block->DamageKind());
+						deferredActionData1,
+						deferredActionData2);
 				}
 			break;
 			case DEFERRED_THROW:
@@ -356,7 +352,7 @@ void World::PhysEvents() {
 						deferredActionXFrom,
 						deferredActionYFrom,
 						deferredActionZFrom,
-						deferredActionNum) )
+						deferredActionData1) )
 				{
 					//send message to dropper
 				}
@@ -592,7 +588,8 @@ void World::SetDeferredAction(
 		const ushort y_from,
 		const ushort z_from,
 		Block * const what,
-		const ushort num)
+		const int data1,
+		const int data2)
 {
 	deferredActionX=x;
 	deferredActionY=y;
@@ -603,7 +600,8 @@ void World::SetDeferredAction(
 	deferredActionDir=dir;
 	deferredActionType=action;
 	deferredActionWhat=what;
-	deferredActionNum=num;
+	deferredActionData1=data1;
+	deferredActionData2=data2;
 }
 
 int World::Focus(

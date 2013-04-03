@@ -92,7 +92,8 @@ enum damage_kinds {
 	BREATH,
 	EATEN,
 	TIME,
-	NO_HARM
+	NO_HARM,
+	CREATIVE
 }; //enum damage_kinds
 
 enum kinds {//kind of atom
