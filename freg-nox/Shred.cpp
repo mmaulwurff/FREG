@@ -148,7 +148,13 @@ void Shred::SetNewBlock(
 		inventory->SetShred(this);
 }
 
-Block * Shred::NewBlock(const int kind, const int sub) const {
+Block * Shred::NewBlock(const int kind, int sub) const {
+	if ( sub > AIR ) {
+		fprintf(stderr,
+			"Don't know such substance: %d.\n",
+			sub);
+		sub=STONE;
+	}
 	switch ( kind ) {
 		case BLOCK:  return NewNormal(sub);
 		case GRASS:  return new Grass();

@@ -25,20 +25,20 @@
 #include "blocks.h"
 #include "Player.h"
 
-void Screen::PassString(QString & str) const {
+QString & Screen::PassString(QString & str) const {
 	static const ushort note_length=144;
 	echo();
 	werase(notifyWin);
+	wcolor_set(notifyWin, BLACK_WHITE, NULL);
 	mvwaddch(notifyWin, 0, 0, ':');
-	//mvwaddstr(notifyWin, 0, 0, "Enter inscription:");
-	curs_set(1);
+	wstandend(notifyWin);
 	char temp_str[note_length+1];
-	mvwgetnstr(notifyWin, 1, 0, temp_str, note_length);
+	wgetnstr(notifyWin, temp_str, note_length);
 	str=temp_str;
 	werase(notifyWin);
 	wnoutrefresh(notifyWin);
 	noecho();
-	curs_set(0);
+	return str;
 }
 
 char Screen::CharNumber(
@@ -299,6 +299,11 @@ void Screen::ControlPlayer(const int ch) {
 			player->SetCreativeMode( player->GetCreativeMode() ?
 				false : true);
 		break;
+		case ':': { //command mode
+			QString command;
+			PassString(command);
+			player->ProcessCommand(command);
+		} break;
 
 		case 'L': RePrint(); break;
 		default:

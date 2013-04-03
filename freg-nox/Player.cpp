@@ -331,6 +331,36 @@ void Player::TakeOff(const ushort num) {
 	world->Unlock();
 }
 
+void Player::ProcessCommand(QString & command) {
+	QTextStream comm_stream(&command);
+	QString request;
+	comm_stream >> request;
+	if ( "give"==request ) {
+		if ( !creativeMode ) {
+			emit Notify(tr("You are not in Creative Mode."));
+			return;
+		}
+		Inventory * const inv=player->HasInventory();
+		if ( !inv ) {
+			emit Notify("No room.");
+			return;
+		}
+		int kind, sub, num;
+		comm_stream >> kind >> sub >> num;
+		while ( num && inv->HasRoom() ) {
+			for (ushort i=9; i && num; --i) {
+				inv->Get(shred->NewBlock(kind, sub));
+				--num;
+			}
+		}
+		if ( num > 0 ) {
+			emit Notify(QString(tr("No place for %1 things.")).arg(num));
+		}
+	} else {
+		emit Notify(tr("Don't know such command."));
+	}
+}
+
 void Player::Get(Block * const block) {
 	if ( player ) {
 		Inventory * const inv=player->HasInventory();

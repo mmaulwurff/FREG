@@ -193,6 +193,7 @@ class Player : public QObject {
 			const short y,
 			const short z,
 			const ushort num);
+	void ProcessCommand(QString & command);
 
 	private:
 	Block * ValidBlock(const ushort num) const;

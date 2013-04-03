@@ -116,7 +116,7 @@ class Shred {
 			const ushort x,
 			const ushort y,
 			const ushort z);
-	Block * NewBlock(const int kind, const int sub) const;
+	Block * NewBlock(const int kind, int sub) const;
 	Block * NewNormal(const int sub) const;
 	Block * BlockFromFile(QDataStream &,
 			ushort x,
