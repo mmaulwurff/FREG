@@ -35,6 +35,8 @@ QString & Screen::PassString(QString & str) const {
 	char temp_str[note_length+1];
 	wgetnstr(notifyWin, temp_str, note_length);
 	str=temp_str;
+	fputs(qPrintable(QString::number(w->Time())+": Command: "+str+'\n'),
+		notifyLog);
 	werase(notifyWin);
 	wnoutrefresh(notifyWin);
 	noecho();

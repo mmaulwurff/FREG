@@ -56,7 +56,6 @@ class Block { //blocks without special physics and attributes
 	virtual int Kind() const { return BLOCK; }
 	virtual float TrueWeight() const;
 	virtual bool Catchable() const { return false; }
-	virtual bool CanBeIn() const { return true; }
 	virtual bool CanBeOut() const {
 		switch (sub) {
 			case HAZELNUT: return false;
@@ -650,7 +649,6 @@ class Dwarf : public Animal, public Inventory {
 	QString & FullName(QString & str) const {
 		return str="Dwarf"+note;
 	}
-	bool CanBeIn() const { return false; }
 	float TrueWeight() const { return ShouldFall() ? InvWeightAll()+60 : 0; }
 	bool ShouldFall() const;
 	ushort Start() const { return 5; }
@@ -825,8 +823,6 @@ class Pile : public Active, public Inventory {
 		Inventory::Pull(num);
 		ifToDestroy=IsEmpty();
 	}
-
-	bool CanBeIn() const { return false; }
 
 	void SaveAttributes(QDataStream & out) const {
 		Active::SaveAttributes(out);
