@@ -26,9 +26,11 @@
 #include "Player.h"
 
 void Screen::PassString(QString & str) const {
+	static const ushort note_length=144;
 	echo();
 	werase(notifyWin);
-	mvwaddstr(notifyWin, 0, 0, "Enter inscription:");
+	mvwaddch(notifyWin, 0, 0, ':');
+	//mvwaddstr(notifyWin, 0, 0, "Enter inscription:");
 	curs_set(1);
 	char temp_str[note_length+1];
 	mvwgetnstr(notifyWin, 1, 0, temp_str, note_length);
@@ -44,7 +46,7 @@ char Screen::CharNumber(
 		const ushort j,
 		const ushort k) const
 {
-	if ( height-1==k )
+	if ( HEIGHT-1==k )
 		return ' ';
 
 	if ( player->GetP()==w->GetBlock(i, j, k) )
@@ -357,16 +359,16 @@ void Screen::Print() {
 	wmove(hudWin, 0, 0);
 	wprintw(hudWin, "HP: %3hd  [", dur);
 	wcolor_set(hudWin, WHITE_RED, NULL);
-	for (i=0; i<10*dur/max_durability; ++i)
+	for (i=0; i<10*dur/MAX_DURABILITY; ++i)
 		waddch(hudWin, '.');
 	wstandend(hudWin);
 	mvwaddstr(hudWin, 0, 20, "]\n");
 
 	//breath line
 	if ( -1!=breath ) {
-		wprintw(hudWin, "BR: %3hd%% [", 100*breath/max_breath);
+		wprintw(hudWin, "BR: %3hd%% [", 100*breath/MAX_BREATH);
 		wcolor_set(hudWin, WHITE_BLUE, NULL);
-		for (i=0; i<10*breath/max_breath; ++i)
+		for (i=0; i<10*breath/MAX_BREATH; ++i)
 			waddch(hudWin, '.');
 		wstandend(hudWin);
 		mvwaddstr(hudWin, 1, 20, "]\n");
@@ -395,13 +397,13 @@ void Screen::Print() {
 	//satiation line
 	//wprintw(hudWin, "Sat: %u ", satiation);
 	if ( -1!=satiation ) {
-		if ( seconds_in_day<satiation ) {
+		if ( SECONDS_IN_DAY<satiation ) {
 			wcolor_set(hudWin, BLUE_BLACK, NULL);
 			waddstr(hudWin, "Gorged\n");
-		} else if ( 3*seconds_in_day/4<satiation ) {
+		} else if ( 3*SECONDS_IN_DAY/4<satiation ) {
 			wcolor_set(hudWin, GREEN_BLACK, NULL);
 			waddstr(hudWin, "Full\n");
-		} else if (seconds_in_day/4>satiation) {
+		} else if (SECONDS_IN_DAY/4>satiation) {
 			wcolor_set(hudWin, RED_BLACK, NULL);
 			waddstr(hudWin, "Hungry\n");
 		}
@@ -449,8 +451,8 @@ void Screen::PrintNormal(WINDOW * const window) const {
 	const short k_step=( UP!=dir ) ? (-1) : 1;
 
 	wmove(window, 1, 1);
-	const ushort start_x=(player->X()/shred_width)*shred_width+(shred_width-SCREEN_SIZE)/2;
-	const ushort start_y=(player->Y()/shred_width)*shred_width+(shred_width-SCREEN_SIZE)/2;
+	const ushort start_x=(player->X()/SHRED_WIDTH)*SHRED_WIDTH+(SHRED_WIDTH-SCREEN_SIZE)/2;
+	const ushort start_y=(player->Y()/SHRED_WIDTH)*SHRED_WIDTH+(SHRED_WIDTH-SCREEN_SIZE)/2;
 	const int block_side=( dir==UP ) ? DOWN : UP;
 	for ( ushort j=start_y; j<SCREEN_SIZE+start_y; ++j, waddstr(window, "\n_") )
 	for ( ushort i=start_x; i<SCREEN_SIZE+start_x; ++i ) {
@@ -494,8 +496,8 @@ void Screen::PrintFront(WINDOW * const window) const {
 	const ushort pX=player->X();
 	const ushort pY=player->Y();
 	const ushort pZ=player->Z();
-	const ushort begin_x=(pX/shred_width)*shred_width+(shred_width-SCREEN_SIZE)/2;
-	const ushort begin_y=(pY/shred_width)*shred_width+(shred_width-SCREEN_SIZE)/2;
+	const ushort begin_x=(pX/SHRED_WIDTH)*SHRED_WIDTH+(SHRED_WIDTH-SCREEN_SIZE)/2;
+	const ushort begin_y=(pY/SHRED_WIDTH)*SHRED_WIDTH+(SHRED_WIDTH-SCREEN_SIZE)/2;
 	ushort x_start, z_start, k_start;
 	ushort arrow_Y, arrow_X;
 	switch ( dir ) {
@@ -507,7 +509,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 			z=&j;
 			z_step=-1;
 			z_start=pY-1;
-			z_end=pY-shred_width-1;
+			z_end=pY-SHRED_WIDTH-1;
 			arrow_X=(pX-begin_x)*2+1;
 		break;
 		case SOUTH:
@@ -518,7 +520,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 			z=&j;
 			z_step=1;
 			z_start=pY+1;
-			z_end=pY+shred_width+1;
+			z_end=pY+SHRED_WIDTH+1;
 			arrow_X=(SCREEN_SIZE-pX+begin_x)*2-1;
 		break;
 		case WEST:
@@ -529,7 +531,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 			z=&i;
 			z_step=-1;
 			z_start=pX-1;
-			z_end=pX-shred_width-1;
+			z_end=pX-SHRED_WIDTH-1;
 			arrow_X=(SCREEN_SIZE-pY+begin_y)*2-1;
 		break;
 		case EAST:
@@ -540,7 +542,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 			z=&i;
 			z_step=1;
 			z_start=pX+1;
-			z_end=pX+shred_width+1;
+			z_end=pX+SHRED_WIDTH+1;
 			arrow_X=(pY-begin_y)*2+1;
 		break;
 		default:
@@ -549,9 +551,9 @@ void Screen::PrintFront(WINDOW * const window) const {
 				(int)dir);
 			return;
 	}
-	if ( pZ+SCREEN_SIZE/2>=height ) {
-		k_start=height-2;
-		arrow_Y=height-pZ;
+	if ( pZ+SCREEN_SIZE/2>=HEIGHT ) {
+		k_start=HEIGHT-2;
+		arrow_Y=HEIGHT-pZ;
 	} else if ( pZ-SCREEN_SIZE/2<0 ) {
 		k_start=SCREEN_SIZE-1;
 		arrow_Y=SCREEN_SIZE-pZ;

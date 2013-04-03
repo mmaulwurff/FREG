@@ -25,8 +25,8 @@ class QFile;
 class World;
 
 class Shred {
-	Block * blocks[shred_width][shred_width][height];
-	uchar lightMap[shred_width][shred_width][height];
+	Block * blocks[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
+	uchar lightMap[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
 	World * const world;
 	const long longitude, latitude;
 

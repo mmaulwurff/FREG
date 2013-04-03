@@ -266,7 +266,7 @@ void Player::Eat(const ushort num) {
 			if ( 2==eat )
 				emit Notify("You can't eat this.");
 			else {
-				emit Notify(( seconds_in_day < pl->Satiation() ) ?
+				emit Notify(( SECONDS_IN_DAY < pl->Satiation() ) ?
 					"You have gorged yourself!" : "Yum!");
 				PlayerInventory()->Pull(num);
 				if ( !food->Normal() )
@@ -384,10 +384,10 @@ ushort Player::DamageLevel() const {
 void Player::CheckOverstep(const int dir) {
 	UpdateXYZ();
 	if (
-			x <  (world->NumShreds()/2-1)*shred_width ||
-			y <  (world->NumShreds()/2-1)*shred_width ||
-			x >= (world->NumShreds()/2+2)*shred_width ||
-			y >= (world->NumShreds()/2+2)*shred_width )
+			x <  (world->NumShreds()/2-1)*SHRED_WIDTH ||
+			y <  (world->NumShreds()/2-1)*SHRED_WIDTH ||
+			x >= (world->NumShreds()/2+2)*SHRED_WIDTH ||
+			y >= (world->NumShreds()/2+2)*SHRED_WIDTH )
 	{
 		emit OverstepBorder(dir);
 		UpdateXYZ();
@@ -415,13 +415,13 @@ void Player::BlockDestroy() {
 void Player::WorldSizeReloadStart() {
 	if ( player )
 		disconnect(player, SIGNAL(Destroyed()), 0, 0);
-	homeX-=world->NumShreds()/2*shred_width;
-	homeY-=world->NumShreds()/2*shred_width;
+	homeX-=world->NumShreds()/2*SHRED_WIDTH;
+	homeY-=world->NumShreds()/2*SHRED_WIDTH;
 }
 
 void Player::WorldSizeReloadFinish() {
-	homeX+=world->NumShreds()/2*shred_width;
-	homeY+=world->NumShreds()/2*shred_width;
+	homeX+=world->NumShreds()/2*SHRED_WIDTH;
+	homeY+=world->NumShreds()/2*SHRED_WIDTH;
 }
 
 void Player::SetPlayer(
@@ -472,11 +472,11 @@ void Player::SetNumShreds(ushort num) const {
 		const short shift=num/2 - num_shreds/2;
 		world->ReloadAllShreds(
 			//put loaded zone center to where player is
-			world->Latitude()  + x/shred_width - num_shreds/2,
-			world->Longitude() + y/shred_width - num_shreds/2,
+			world->Latitude()  + x/SHRED_WIDTH - num_shreds/2,
+			world->Longitude() + y/SHRED_WIDTH - num_shreds/2,
 			//new x and y correspond to player stanging in loaded zone center
-			x - (x/shred_width)*shred_width + (num_shreds/2+shift)*shred_width,
-			y - (y/shred_width)*shred_width + (num_shreds/2+shift)*shred_width,
+			x - (x/SHRED_WIDTH)*SHRED_WIDTH + (num_shreds/2+shift)*SHRED_WIDTH,
+			y - (y/SHRED_WIDTH)*SHRED_WIDTH + (num_shreds/2+shift)*SHRED_WIDTH,
 			z,
 			num);
 		emit Notify(QString("Shreds number is %1x%2.")
@@ -499,19 +499,19 @@ Player::Player(World * const w) :
 		homeLati= world->GetSpawnLati();
 		x=homeX=0;
 		y=homeY=0;
-		z=homeZ=height/2;
+		z=homeZ=HEIGHT/2;
 	} else {
 		homeLongi=sett.value("home_longitude", qlonglong(world->GetSpawnLongi())).toLongLong();
 		homeLati =sett.value("home_latitude", qlonglong(world->GetSpawnLati())).toLongLong();
 		homeX    =sett.value("home_x", 0).toInt();
 		homeY    =sett.value("home_y", 0).toInt();
-		homeZ    =sett.value("home_z", height/2).toInt();
+		homeZ    =sett.value("home_z", HEIGHT/2).toInt();
 		x        =sett.value("current_x", 0).toInt();
 		y        =sett.value("current_y", 0).toInt();
-		z        =sett.value("current_z", height/2).toInt();
+		z        =sett.value("current_z", HEIGHT/2).toInt();
 	}
 
-	const ushort plus=world->NumShreds()/2*shred_width;
+	const ushort plus=world->NumShreds()/2*SHRED_WIDTH;
 	homeX+=plus;
 	homeY+=plus;
 	x+=plus;
@@ -546,7 +546,7 @@ void Player::CleanAll() {
 	}
 	cleaned=true;
 
-	const ushort min=world->NumShreds()/2*shred_width;
+	const ushort min=world->NumShreds()/2*SHRED_WIDTH;
 	QSettings sett;
 	sett.beginGroup("player");
 	QString temp;

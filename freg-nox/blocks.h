@@ -82,7 +82,7 @@ class Block { //blocks without special physics and attributes
 		switch ( Sub() ) {
 			case GREENERY: return 1;
 			case GLASS: return 2;
-			default: return max_durability;
+			default: return MAX_DURABILITY;
 		}
 	}
 	virtual Block * DropAfterDamage() const {
@@ -148,7 +148,7 @@ class Block { //blocks without special physics and attributes
 
 	Block(
 			const int sb=STONE,
-			const short dur=max_durability,
+			const short dur=MAX_DURABILITY,
 			const quint8 transp=UNDEF)
 			:
 			normal(false),
@@ -188,7 +188,7 @@ class Plate : public Block {
 	public:
 	Plate(const int sub)
 			:
-			Block(sub, max_durability, NONSTANDARD)
+			Block(sub, MAX_DURABILITY, NONSTANDARD)
 	{}
 	Plate(
 			QDataStream & str,
@@ -298,7 +298,7 @@ class Weapon : public Block {
 	Weapon(
 			const int sub)
 			:
-			Block(sub, max_durability, NONSTANDARD)
+			Block(sub, MAX_DURABILITY, NONSTANDARD)
 	{}
 	Weapon(
 			QDataStream & str,
@@ -417,10 +417,10 @@ class Active : public QObject, public Block {
 		return new_dur;
 	}
 
-	void ReloadToNorth() { y_self+=shred_width; }
-	void ReloadToSouth() { y_self-=shred_width; }
-	void ReloadToWest()  { x_self+=shred_width; }
-	void ReloadToEast()  { x_self-=shred_width; }
+	void ReloadToNorth() { y_self+=SHRED_WIDTH; }
+	void ReloadToSouth() { y_self-=SHRED_WIDTH; }
+	void ReloadToWest()  { x_self+=SHRED_WIDTH; }
+	void ReloadToEast()  { x_self-=SHRED_WIDTH; }
 
 	void SaveAttributes(QDataStream & out) const {
 		out << timeStep << fall_height << falling;
@@ -434,7 +434,7 @@ class Active : public QObject, public Block {
 
 	Active(
 			const int sub,
-			const short dur=max_durability,
+			const short dur=MAX_DURABILITY,
 			const quint8 transp=UNDEF)
 			:
 			Block(sub, dur, transp),
@@ -449,7 +449,7 @@ class Active : public QObject, public Block {
 			const ushort y,
 			const ushort z,
 			const int sub,
-			const short dur=max_durability,
+			const short dur=MAX_DURABILITY,
 			const quint8 transp=UNDEF)
 			:
 			Block(sub, dur, transp),
@@ -500,9 +500,9 @@ class Animal : public Active {
 			const ushort k,
 			const int sub=A_MEAT)
 			:
-			Active(sh, i, j, k, sub, max_durability, NONSTANDARD),
-			breath(max_breath),
-			satiation(seconds_in_day)
+			Active(sh, i, j, k, sub, MAX_DURABILITY, NONSTANDARD),
+			breath(MAX_BREATH),
+			satiation(SECONDS_IN_DAY)
 	{}
 	Animal(
 			Shred * const sh,
@@ -678,14 +678,14 @@ class Dwarf : public Animal, public Inventory {
 			return 1;
 
 		switch ( to_eat->Sub() ) {
-			case HAZELNUT: satiation+=seconds_in_hour/2; break;
-			case H_MEAT:   satiation+=seconds_in_hour*2.5; break;
-			case A_MEAT:   satiation+=seconds_in_hour*2; break;
+			case HAZELNUT: satiation+=SECONDS_IN_HOUR/2; break;
+			case H_MEAT:   satiation+=SECONDS_IN_HOUR*2.5; break;
+			case A_MEAT:   satiation+=SECONDS_IN_HOUR*2; break;
 			default: return 2; //not ate
 		}
 
-		if ( seconds_in_day < satiation )
-			satiation=1.1*seconds_in_day;
+		if ( SECONDS_IN_DAY < satiation )
+			satiation=1.1*SECONDS_IN_DAY;
 
 		return 0; //ate
 	}
@@ -1010,7 +1010,7 @@ class Rabbit : public Animal {
 			return 2;
 
 		if ( GREENERY==to_eat->Sub() ) {
-			satiation+=seconds_in_hour*4;
+			satiation+=SECONDS_IN_HOUR*4;
 			return 1;
 		}
 		return 0;
@@ -1175,7 +1175,7 @@ class Door : public Active {
 				sh,
 				x, y, z,
 				sub,
-				max_durability,
+				MAX_DURABILITY,
 				( STONE==sub ) ? BLOCK_OPAQUE : NONSTANDARD),
 			shifted(false),
 			locked(false),

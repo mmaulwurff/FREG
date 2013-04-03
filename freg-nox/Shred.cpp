@@ -36,13 +36,13 @@ int Shred::LoadShred(QFile & file) {
 			return 1;
 		}
 		in.setVersion(datastream_version);
-		for (ushort i=0; i<shred_width; ++i)
-		for (ushort j=0; j<shred_width; ++j) {
-			for (ushort k=0; k<height; ++k) {
+		for (ushort i=0; i<SHRED_WIDTH; ++i)
+		for (ushort j=0; j<SHRED_WIDTH; ++j) {
+			for (ushort k=0; k<HEIGHT; ++k) {
 				blocks[i][j][k]=BlockFromFile(in, i, j, k);
 				lightMap[i][j][k]=0;
 			}
-			lightMap[i][j][height-1]=max_light_radius;
+			lightMap[i][j][HEIGHT-1]=MAX_LIGHT_RADIUS;
 		}
 		return 0;
 }
@@ -64,15 +64,15 @@ Shred::Shred(
 	if ( file.open(QIODevice::ReadOnly) && !LoadShred(file) )
 		return;
 
-	for (ushort i=0; i<shred_width; ++i)
-	for (ushort j=0; j<shred_width; ++j) {
+	for (ushort i=0; i<SHRED_WIDTH; ++i)
+	for (ushort j=0; j<SHRED_WIDTH; ++j) {
 		blocks[i][j][0]=NewNormal(NULLSTONE);
-		for (ushort k=1; k<height-1; ++k) {
+		for (ushort k=1; k<HEIGHT-1; ++k) {
 			blocks[i][j][k]=NewNormal(AIR);
 			lightMap[i][j][k]=0;
 		}
-		blocks[i][j][height-1]=NewNormal( (rand()%5) ? SKY : STAR );
-		lightMap[i][j][height-1]=max_light_radius;
+		blocks[i][j][HEIGHT-1]=NewNormal( (rand()%5) ? SKY : STAR );
+		lightMap[i][j][HEIGHT-1]=MAX_LIGHT_RADIUS;
 	}
 
 	switch ( TypeOfShred(longi, lati) ) {
@@ -111,9 +111,9 @@ Shred::~Shred() {
 		QDataStream outstr(&shred_data, QIODevice::WriteOnly);
 		outstr << (quint8)datastream_version;
 		outstr.setVersion(datastream_version);
-		for (i=0; i<shred_width; ++i)
-		for (j=0; j<shred_width; ++j)
-		for (k=0; k<height; ++k) {
+		for (i=0; i<SHRED_WIDTH; ++i)
+		for (j=0; j<SHRED_WIDTH; ++j)
+		for (k=0; k<HEIGHT; ++k) {
 			blocks[i][j][k]->SaveToFile(outstr);
 			if ( !(blocks[i][j][k]->Normal()) )
 				delete blocks[i][j][k];
@@ -122,9 +122,9 @@ Shred::~Shred() {
 		return;
 	}
 
-	for (i=0; i<shred_width; ++i)
-	for (j=0; j<shred_width; ++j)
-	for (k=0; k<height; ++k)
+	for (i=0; i<SHRED_WIDTH; ++i)
+	for (j=0; j<SHRED_WIDTH; ++j)
+	for (k=0; k<HEIGHT; ++k)
 		if ( !(blocks[i][j][k]->Normal()) )
 			delete blocks[i][j][k];
 }
@@ -141,8 +141,8 @@ void Shred::SetNewBlock(
 	Active * const active=block->ActiveBlock();
 	if ( active )
 		active->Register(this,
-			shred_width*shredX+x,
-			shred_width*shredY+y, z);
+			SHRED_WIDTH*shredX+x,
+			SHRED_WIDTH*shredY+y, z);
 	Inventory * const inventory=block->HasInventory();
 	if ( inventory )
 		inventory->SetShred(this);
@@ -184,14 +184,14 @@ void Shred::PhysEvents() {
 		const ushort x=temp->X();
 		const ushort y=temp->Y();
 		const ushort z=temp->Z();
-		const float weight=Weight(x%shred_width, y%shred_width, z);
+		const float weight=Weight(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 		if ( temp->ShouldFall() && weight ) {
 			temp->SetNotFalling();
 			if ( z > 0 &&
-					weight > Weight(x%shred_width, y%shred_width, z-1) )
+					weight > Weight(x%SHRED_WIDTH, y%SHRED_WIDTH, z-1) )
 				world->Move(x, y, z, DOWN);
-			else if ( z < height-1 &&
-					weight < Weight(x%shred_width, y%shred_width, z+1) )
+			else if ( z < HEIGHT-1 &&
+					weight < Weight(x%SHRED_WIDTH, y%SHRED_WIDTH, z+1) )
 				world->Move(x, y, z, UP);
 		}
 		temp->Act();
@@ -212,9 +212,9 @@ Block * Shred::BlockFromFile(
 	}
 
 	//if block is loaded into inventory, do not register it.
-	Shred * const shred_reg=( k==height ) ? 0 : this;
-	i+=shredX*shred_width;
-	j+=shredY*shred_width;
+	Shred * const shred_reg=( k==HEIGHT ) ? 0 : this;
+	i+=shredX*SHRED_WIDTH;
+	j+=shredY*SHRED_WIDTH;
 
 	//if some kind will not be listed here,
 	//blocks of this kind just will not load,
@@ -366,26 +366,26 @@ char Shred::TypeOfShred(
 //shred generators section
 //these functions fill space between the lowest nullstone layer and sky. so use k from 1 to heigth-2.
 void Shred::NormalUnderground(const ushort depth=0) {
-	for (ushort i=0; i<shred_width; ++i)
-	for (ushort j=0; j<shred_width; ++j) {
+	for (ushort i=0; i<SHRED_WIDTH; ++i)
+	for (ushort j=0; j<SHRED_WIDTH; ++j) {
 		ushort k;
-		for (k=1; k<height/2-6 && k<height/2-depth-1; ++k)
+		for (k=1; k<HEIGHT/2-6 && k<HEIGHT/2-depth-1; ++k)
 			blocks[i][j][k]=NewNormal(STONE);
 		blocks[i][j][k]=NewNormal((rand()%2) ? STONE : SOIL);
-		for (++k; k<height/2-depth; ++k)
+		for (++k; k<HEIGHT/2-depth; ++k)
 			blocks[i][j][k]=NewNormal(SOIL);
 	}
 }
 
 void Shred::PlantGrass() {
-	for (ushort i=0; i<shred_width; ++i)
-	for (ushort j=0; j<shred_width; ++j) {
+	for (ushort i=0; i<SHRED_WIDTH; ++i)
+	for (ushort j=0; j<SHRED_WIDTH; ++j) {
 		ushort k;
-		for (k=height-2; Transparent(i, j, k); --k);
+		for (k=HEIGHT-2; Transparent(i, j, k); --k);
 		if ( SOIL==Sub(i, j, k++) && AIR==Sub(i, j, k) )
 			blocks[i][j][k]=new Grass(this,
-				i+shredX*shred_width,
-				j+shredY*shred_width, k);
+				i+shredX*SHRED_WIDTH,
+				j+shredY*SHRED_WIDTH, k);
 	}
 }
 
@@ -393,52 +393,52 @@ void Shred::TestShred() {
 	NormalUnderground();
 
 	//row 1
-	SetNewBlock(CLOCK, IRON, 1, 1, height/2);
-	SetNewBlock(CHEST, WOOD, 3, 1, height/2);
-	SetNewBlock(ACTIVE, SAND, 5, 1, height/2);
-	SetNewBlock(BLOCK, GLASS, 7, 1, height/2);
-	SetNewBlock(PILE, DIFFERENT, 9, 1, height/2);
-	SetNewBlock(PLATE, STONE, 11, 1, height/2);
-	SetNewBlock(BLOCK, NULLSTONE, 13, 1, height/2);
+	SetNewBlock(CLOCK, IRON, 1, 1, HEIGHT/2);
+	SetNewBlock(CHEST, WOOD, 3, 1, HEIGHT/2);
+	SetNewBlock(ACTIVE, SAND, 5, 1, HEIGHT/2);
+	SetNewBlock(BLOCK, GLASS, 7, 1, HEIGHT/2);
+	SetNewBlock(PILE, DIFFERENT, 9, 1, HEIGHT/2);
+	SetNewBlock(PLATE, STONE, 11, 1, HEIGHT/2);
+	SetNewBlock(BLOCK, NULLSTONE, 13, 1, HEIGHT/2);
 
 	//row 2
-	SetNewBlock(LADDER, NULLSTONE, 1, 3, height/2);
-	SetNewBlock(LADDER, WOOD, 1, 3, height/2+1);
-	SetNewBlock(DWARF, H_MEAT, 3, 3, height/2);
-	SetNewBlock(LIQUID, WATER, 5, 3, height/2-3);
-	SetNewBlock(LIQUID, WATER, 5, 3, height/2-3);
-	SetNewBlock(LIQUID, WATER, 5, 3, height/2-2);
-	SetNewBlock(BLOCK, AIR, 5, 3, height/2-1);
-	SetNewBlock(BUSH, GREENERY, 7, 3, height/2);
-	SetNewBlock(RABBIT, A_MEAT, 9, 3, height/2-2);
-	SetNewBlock(BLOCK, AIR, 9, 3, height/2-1);
-	SetNewBlock(WORKBENCH, IRON, 11, 3, height/2);
-	SetNewBlock(DOOR, GLASS, 13, 3, height/2);
-	blocks[13][3][height/2]->SetDir(NORTH);
+	SetNewBlock(LADDER, NULLSTONE, 1, 3, HEIGHT/2);
+	SetNewBlock(LADDER, WOOD, 1, 3, HEIGHT/2+1);
+	SetNewBlock(DWARF, H_MEAT, 3, 3, HEIGHT/2);
+	SetNewBlock(LIQUID, WATER, 5, 3, HEIGHT/2-3);
+	SetNewBlock(LIQUID, WATER, 5, 3, HEIGHT/2-3);
+	SetNewBlock(LIQUID, WATER, 5, 3, HEIGHT/2-2);
+	SetNewBlock(BLOCK, AIR, 5, 3, HEIGHT/2-1);
+	SetNewBlock(BUSH, GREENERY, 7, 3, HEIGHT/2);
+	SetNewBlock(RABBIT, A_MEAT, 9, 3, HEIGHT/2-2);
+	SetNewBlock(BLOCK, AIR, 9, 3, HEIGHT/2-1);
+	SetNewBlock(WORKBENCH, IRON, 11, 3, HEIGHT/2);
+	SetNewBlock(DOOR, GLASS, 13, 3, HEIGHT/2);
+	blocks[13][3][HEIGHT/2]->SetDir(NORTH);
 
 	//row 3
-	SetNewBlock(WEAPON, IRON, 1, 5, height/2);
+	SetNewBlock(WEAPON, IRON, 1, 5, HEIGHT/2);
 
 	//suicide booth
 	for (ushort i=1; i<4; ++i)
 	for (ushort j=7; j<10; ++j)
-	for (ushort k=height/2; k<height/2+5; ++k)
+	for (ushort k=HEIGHT/2; k<HEIGHT/2+5; ++k)
 		SetNewBlock(BLOCK, GLASS, i, j, k);
-	SetNewBlock(RABBIT, A_MEAT, 2, 8, height/2);
+	SetNewBlock(RABBIT, A_MEAT, 2, 8, HEIGHT/2);
 }
 
 void Shred::NullMountain() {
 	ushort i, j, k;
-	for (i=0; i<shred_width; ++i)
-	for (j=0; j<shred_width; ++j) {
-		for (k=1; k<height/2; ++k)
+	for (i=0; i<SHRED_WIDTH; ++i)
+	for (j=0; j<SHRED_WIDTH; ++j) {
+		for (k=1; k<HEIGHT/2; ++k)
 			blocks[i][j][k]=NewNormal( (i==4 ||
 			                            i==5 ||
 			                            j==4 ||
 			                            j==+5) ?
 					NULLSTONE : STONE );
 
-		for ( ; k<height-1; ++k)
+		for ( ; k<HEIGHT-1; ++k)
 			if (i==4 || i==5 || j==4 || j==5)
 				blocks[i][j][k]=NewNormal(NULLSTONE);
 	}
@@ -451,21 +451,21 @@ void Shred::Plain() {
 	//bush
 	num=rand()%4;
 	for (i=0; i<=num; ++i) {
-		x=rand()%shred_width;
-		y=rand()%shred_width;
-		if ( AIR==Sub(x, y, height/2) )
-			blocks[x][y][height/2]=new Bush(this);
+		x=rand()%SHRED_WIDTH;
+		y=rand()%SHRED_WIDTH;
+		if ( AIR==Sub(x, y, HEIGHT/2) )
+			blocks[x][y][HEIGHT/2]=new Bush(this);
 	}
 
 	//rabbits
 	num=rand()%4;
 	for (i=0; i<=num; ++i) {
-		x=rand()%shred_width;
-		y=rand()%shred_width;
-		if ( AIR==Sub(x, y, height/2) )
-			blocks[x][y][height/2]=new Rabbit(this,
-				shredX*shred_width+x,
-				shredY*shred_width+y, height/2);
+		x=rand()%SHRED_WIDTH;
+		y=rand()%SHRED_WIDTH;
+		if ( AIR==Sub(x, y, HEIGHT/2) )
+			blocks[x][y][HEIGHT/2]=new Rabbit(this,
+				shredX*SHRED_WIDTH+x,
+				shredY*SHRED_WIDTH+y, HEIGHT/2);
 	}
 
 	PlantGrass();
@@ -482,9 +482,9 @@ void Shred::Forest(const long longi, const long lati) {
 			++number_of_trees;
 
 	for (i=0; i<number_of_trees; ++i) {
-		short x=rand()%(shred_width-2),
-		      y=rand()%(shred_width-2);
-		Tree(x, y, height/2, 4+rand()%5);
+		short x=rand()%(SHRED_WIDTH-2),
+		      y=rand()%(SHRED_WIDTH-2);
+		Tree(x, y, HEIGHT/2, 4+rand()%5);
 	}
 
 	PlantGrass();
@@ -502,52 +502,52 @@ void Shred::Water(const long longi, const long lati) {
 	ushort i, j, k;
 
 	if ('~'!=map[1][0] && '~'!=map[0][1]) { //north-west rounding
-		for (i=0; i<shred_width/2; ++i)
-		for (j=0; j<shred_width/2; ++j)
-			for (k=height/2-depth; k<height/2; ++k)
+		for (i=0; i<SHRED_WIDTH/2; ++i)
+		for (j=0; j<SHRED_WIDTH/2; ++j)
+			for (k=HEIGHT/2-depth; k<HEIGHT/2; ++k)
 				if ( ((7-i)*(7-i) +
 				      (7-j)*(7-j) +
-				      (height/2-k)*(height/2-k)*16/depth/depth)
+				      (HEIGHT/2-k)*(HEIGHT/2-k)*16/depth/depth)
 						> 49 )
 					blocks[i][j][k]=NewNormal(SOIL);
 	}
 	if ('~'!=map[1][0] && '~'!=map[2][1]) { //south-west rounding
-		for (i=0; i<shred_width/2; ++i)
-		for (j=shred_width/2; j<shred_width; ++j)
-			for (k=height/2-depth; k<height/2; ++k)
+		for (i=0; i<SHRED_WIDTH/2; ++i)
+		for (j=SHRED_WIDTH/2; j<SHRED_WIDTH; ++j)
+			for (k=HEIGHT/2-depth; k<HEIGHT/2; ++k)
 				if ( ((7-i)*(7-i)+
 				      (8-j)*(8-j)+
-				      (height/2-k)*(height/2-k)*16/depth/depth)
+				      (HEIGHT/2-k)*(HEIGHT/2-k)*16/depth/depth)
 						> 49 )
 					blocks[i][j][k]=NewNormal(SOIL);
 	}
 	if ('~'!=map[2][1] && '~'!=map[1][2]) { //south-east rounding
-		for (i=shred_width/2; i<shred_width; ++i)
-		for (j=shred_width/2; j<shred_width; ++j)
-			for (k=height/2-depth; k<height/2; ++k)
+		for (i=SHRED_WIDTH/2; i<SHRED_WIDTH; ++i)
+		for (j=SHRED_WIDTH/2; j<SHRED_WIDTH; ++j)
+			for (k=HEIGHT/2-depth; k<HEIGHT/2; ++k)
 				if ( ((8-i)*(8-i)+
 				      (8-j)*(8-j)+
-				      (height/2-k)*(height/2-k)*16/depth/depth)
+				      (HEIGHT/2-k)*(HEIGHT/2-k)*16/depth/depth)
 						> 49 )
 					blocks[i][j][k]=NewNormal(SOIL);
 	}
 	if ('~'!=map[1][2] && '~'!=map[0][1]) { //north-east rounding
-		for (i=shred_width/2; i<shred_width; ++i)
-		for (j=0; j<shred_width/2; ++j)
-			for (k=height/2-depth; k<height/2; ++k)
+		for (i=SHRED_WIDTH/2; i<SHRED_WIDTH; ++i)
+		for (j=0; j<SHRED_WIDTH/2; ++j)
+			for (k=HEIGHT/2-depth; k<HEIGHT/2; ++k)
 				if ( ((8-i)*(8-i)+
 				      (7-j)*(7-j)+
-				      (height/2-k)*(height/2-k)*16/depth/depth)
+				      (HEIGHT/2-k)*(HEIGHT/2-k)*16/depth/depth)
 						> 49 )
 					blocks[i][j][k]=NewNormal(SOIL);
 	}
-	for (i=0; i<shred_width; ++i)
-	for (j=0; j<shred_width; ++j)
-	for (k=height/2-depth; k<height/2; ++k)
+	for (i=0; i<SHRED_WIDTH; ++i)
+	for (j=0; j<SHRED_WIDTH; ++j)
+	for (k=HEIGHT/2-depth; k<HEIGHT/2; ++k)
 		if ( AIR==Sub(i, j, k) )
 			blocks[i][j][k]=new Liquid(this,
-			                i+shred_width*shredX,
-			                j+shred_width*shredY, k);
+			                i+SHRED_WIDTH*shredX,
+			                j+SHRED_WIDTH*shredY, k);
 
 	PlantGrass();
 }
@@ -561,12 +561,12 @@ void Shred::Hill(const long longi, const long lati) {
 
 	NormalUnderground();
 
-	for (ushort i=0; i<shred_width; ++i)
-	for (ushort j=0; j<shred_width; ++j)
-	for (ushort k=height/2; k<height/2+hill_height; ++k)
+	for (ushort i=0; i<SHRED_WIDTH; ++i)
+	for (ushort j=0; j<SHRED_WIDTH; ++j)
+	for (ushort k=HEIGHT/2; k<HEIGHT/2+hill_height; ++k)
 		if (((4.5-i)*(4.5-i)+
 		     (4.5-j)*(4.5-j)+
-		     (height/2-0.5-k)*(height/2-0.5-k)*16/hill_height/hill_height)<=16)
+		     (HEIGHT/2-0.5-k)*(HEIGHT/2-0.5-k)*16/hill_height/hill_height)<=16)
 			blocks[i][j][k]=NewNormal(SOIL);
 
 	PlantGrass();
@@ -580,7 +580,7 @@ void Shred::Pyramid()
 	unsigned short z, dz, x, y;
 
 	//пирамида
-	for( z= height/2, dz= 0; dz< 8; z +=2, dz++ )
+	for( z= HEIGHT/2, dz= 0; dz< 8; z +=2, dz++ )
 	{
 		for( x= dz; x< ( 16 - dz ); x++ )
 		{
@@ -599,25 +599,25 @@ void Shred::Pyramid()
 	}
 
 	//вход
-	blocks[shred_width/2][0][height/2]= NewNormal( AIR );
+	blocks[SHRED_WIDTH/2][0][HEIGHT/2]= NewNormal( AIR );
 
 	//камера внутри
-	for( z= height/2 - 60, dz=0; dz< 8; dz++, z++ )
-	for( x= 1; x< shred_width - 1; x++ )
-	for( y= 1; y< shred_width - 1; y++ )
+	for( z= HEIGHT/2 - 60, dz=0; dz< 8; dz++, z++ )
+	for( x= 1; x< SHRED_WIDTH - 1; x++ )
+	for( y= 1; y< SHRED_WIDTH - 1; y++ )
 		blocks[x][y][z]= NewNormal( AIR );
 
 	//шахта
-	for( z= height/2 - 52, dz= 0; dz< 52; z++, dz++ )
-		blocks[shred_width/2][shred_width/2][z]= NewNormal( AIR );
+	for( z= HEIGHT/2 - 52, dz= 0; dz< 52; z++, dz++ )
+		blocks[SHRED_WIDTH/2][SHRED_WIDTH/2][z]= NewNormal( AIR );
 
 	//летающая тарелка
 	return;
-	for( x=0; x< shred_width; x++ )
-	for( y=0; y< shred_width; y++ )
+	for( x=0; x< SHRED_WIDTH; x++ )
+	for( y=0; y< SHRED_WIDTH; y++ )
 	{
-		float r= float( ( x - shred_width/2 ) * ( x - shred_width/2 ) )
-		 + float( ( y - shred_width/2 ) * ( y - shred_width/2 ) );
+		float r= float( ( x - SHRED_WIDTH/2 ) * ( x - SHRED_WIDTH/2 ) )
+		 + float( ( y - SHRED_WIDTH/2 ) * ( y - SHRED_WIDTH/2 ) );
 		if( r < 64.0f )
 			blocks[x][y][ 124 ]= NewNormal( STONE );
 		if( r < 36.0f )
@@ -627,8 +627,8 @@ void Shred::Pyramid()
 
 void Shred::Mountain() {
 	//Доступные координаты:
-	//x, y - от 0 до shred_width-1 включительно
-	//k - от 1 до height-2 включительно
+	//x, y - от 0 до SHRED_WIDTH-1 включительно
+	//k - от 1 до HEIGHT-2 включительно
 
 	//заполнить нижнюю часть лоскута камнем и землёй
 	NormalUnderground();
@@ -643,22 +643,22 @@ void Shred::Mountain() {
 	//v y
 	//SetNewBlock устанавливает новый блок. Первый параметр - тип,
 	//второй - вещество, потом координаты x, y, z;
-	for(ushort k=height/2; k<3*height/4; ++k) {
+	for(ushort k=HEIGHT/2; k<3*HEIGHT/4; ++k) {
 		SetNewBlock(BLOCK, STONE, 2, 2, k);
 	}
 
 	//стена из нуль-камня с запада на восток высотой 3 блока
 	for(ushort i=4; i<10; ++i)
-	for(ushort k=height/2; k<height/2+3; ++k) {
+	for(ushort k=HEIGHT/2; k<HEIGHT/2+3; ++k) {
 		SetNewBlock(BLOCK, NULLSTONE, i, 2, k);
 	}
 	//в стене вырезать дырку (AIR - воздух):
-	SetNewBlock(BLOCK, AIR, 6, 2, height/2+1);
+	SetNewBlock(BLOCK, AIR, 6, 2, HEIGHT/2+1);
 
 	//блок из дерева появится с вероятностью 1/2.
 	//Если random()%3 - с вероятностью 2/3 и т.д.
 	if ( random()%2 ) {
-		SetNewBlock(BLOCK, WOOD, 7, 7, height/2);
+		SetNewBlock(BLOCK, WOOD, 7, 7, HEIGHT/2);
 	}
 }
 
@@ -668,9 +668,9 @@ bool Shred::Tree(
 		const ushort z,
 		const ushort height)
 {
-	if ( shred_width<=x+2 ||
-			shred_width<=y+2 ||
-			::height-1<=z+height ||
+	if ( SHRED_WIDTH<=x+2 ||
+			SHRED_WIDTH<=y+2 ||
+			HEIGHT-1<=z+height ||
 			height<2 )
 		return false;
 

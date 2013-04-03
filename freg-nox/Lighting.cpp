@@ -37,7 +37,7 @@ uchar World::LightRadius(
 		const ushort z) const
 {
 	return GetShred(x, y)->
-		LightRadius(x%shred_width, y%shred_width, z);
+		LightRadius(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 
 //private. use Enlightened instead, which is smart wrapper of this.
@@ -47,7 +47,7 @@ uchar World::LightMap(
 		const ushort z) const
 {
 	return GetShred(x, y)->
-		LightMap(x%shred_width, y%shred_width, z);
+		LightMap(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 
 //private
@@ -58,7 +58,7 @@ bool World::SetLightMap(
 		const ushort z)
 {
 	return GetShred(x, y)->
-		SetLightMap(level, x%shred_width, y%shred_width, z);
+		SetLightMap(level, x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 
 //private. make block emit shining
@@ -96,8 +96,8 @@ void World::SunShine(
 		const ushort i,
 		const ushort j)
 {
-	ushort light_lev=max_light_radius;
-	ushort k=height-2;
+	ushort light_lev=MAX_LIGHT_RADIUS;
+	ushort k=HEIGHT-2;
 	ushort transparent;
 	do {
 		transparent=Transparent(i, j, k);
@@ -277,9 +277,9 @@ bool Shred::SetLightMap(
 
 //set lightmap of all shred to level. default level is 0.
 void Shred::SetAllLightMap(const uchar level) {
-	for (ushort i=0; i<shred_width; ++i)
-	for (ushort j=0; j<shred_width; ++j)
-	for (ushort k=0; k<height-1; ++k)
+	for (ushort i=0; i<SHRED_WIDTH; ++i)
+	for (ushort j=0; j<SHRED_WIDTH; ++j)
+	for (ushort k=0; k<HEIGHT-1; ++k)
 		lightMap[i][j][k]=level;
 }
 
@@ -290,7 +290,7 @@ void Shred::ShineAll() {
 		world->Shine(temp->X(), temp->Y(), temp->Z(),
 			temp->LightRadius(), true);
 	}
-	for (ushort i=shredX*shred_width; i<shred_width*(shredX+1); ++i)
-	for (ushort j=shredY*shred_width; j<shred_width*(shredY+1); ++j)
+	for (ushort i=shredX*SHRED_WIDTH; i<SHRED_WIDTH*(shredX+1); ++i)
+	for (ushort j=shredY*SHRED_WIDTH; j<SHRED_WIDTH*(shredY+1); ++j)
 		world->SunShine(i, j);
 }

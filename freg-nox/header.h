@@ -28,10 +28,11 @@
 	#include <unistd.h>
 #endif
 
+//low-case constants soon will be not supported
 const unsigned short shred_width=16;
+const ushort SHRED_WIDTH=16;
 const unsigned short height=128;
-
-const unsigned short note_length=144;
+const ushort HEIGHT=128;
 
 const unsigned short seconds_in_hour=60;
 const unsigned short seconds_in_day=24*seconds_in_hour;
@@ -42,8 +43,20 @@ const unsigned short end_of_evening= 0*seconds_in_hour;
 const unsigned short seconds_in_night=end_of_night;
 const unsigned short seconds_in_daylight=seconds_in_day-end_of_night;
 
+const unsigned short SECONDS_IN_HOUR=60;
+const unsigned short SECONDS_IN_DAY=24*SECONDS_IN_HOUR;
+const unsigned short END_OF_NIGHT  = 6*SECONDS_IN_HOUR;
+const unsigned short END_OF_MORNING=12*SECONDS_IN_HOUR;
+const unsigned short END_OF_NOON   =18*SECONDS_IN_HOUR;
+const unsigned short END_OF_EVENING= 0*SECONDS_IN_HOUR;
+const unsigned short SECONDS_IN_NIGHT=END_OF_NIGHT;
+const unsigned short SECONDS_IN_DAYLIGHT=SECONDS_IN_DAY-END_OF_NIGHT;
+
+const unsigned char MAX_LIGHT_RADIUS=15;
 const unsigned char max_light_radius=15;
 
+const unsigned short MAX_DURABILITY=100;
+const unsigned short MAX_BREATH=60;
 const unsigned short max_durability=100;
 const unsigned short max_breath=60;
 

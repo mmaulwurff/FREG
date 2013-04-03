@@ -110,8 +110,8 @@ class World : public QThread {
 	void RemSun() {
 		SetBlock(NewNormal(ifStar ? STAR : SKY),
 			sun_moon_x,
-			shred_width*numShreds/2,
-			height-1);
+			SHRED_WIDTH*numShreds/2,
+			HEIGHT-1);
 	}
 	void LoadAllShreds();
 	void SaveAllShreds();
@@ -129,8 +129,8 @@ class World : public QThread {
 			const ushort i,
 			const ushort j) const
 	{
-		return shreds[j/shred_width*numShreds+
-		              i/shred_width];
+		return shreds[j/SHRED_WIDTH*numShreds+
+		              i/SHRED_WIDTH];
 	}
 	void SetBlock(Block *,
 			const ushort,
@@ -220,10 +220,10 @@ class World : public QThread {
 	long MapSize() const { return mapSize; }
 	ushort SunMoonX() const {
 		return ( NIGHT==PartOfDay() ) ?
-			TimeOfDay()*shred_width*numShreds/
-				seconds_in_night :
-			(TimeOfDay()-seconds_in_night)*shred_width*numShreds/
-				seconds_in_daylight;
+			TimeOfDay()*SHRED_WIDTH*numShreds/
+				SECONDS_IN_NIGHT :
+			(TimeOfDay()-SECONDS_IN_NIGHT)*SHRED_WIDTH*numShreds/
+				SECONDS_IN_DAYLIGHT;
 	}
 	quint8 MakeDir(
 			const ushort,
@@ -298,12 +298,12 @@ class World : public QThread {
 	public:
 	times_of_day PartOfDay() const {
 		ushort time_day=TimeOfDay();
-		if (time_day<end_of_night)   return NIGHT;
-		if (time_day<end_of_morning) return MORNING;
-		if (time_day<end_of_noon)    return NOON;
+		if (time_day<END_OF_NIGHT)   return NIGHT;
+		if (time_day<END_OF_MORNING) return MORNING;
+		if (time_day<END_OF_NOON)    return NOON;
 		return EVENING;
 	}
-	int TimeOfDay() const { return time%seconds_in_day; }
+	int TimeOfDay() const { return time % SECONDS_IN_DAY; }
 	ulong Time() const { return time; }
 
 	//interactions section
@@ -380,8 +380,8 @@ class World : public QThread {
 			const ushort j,
 			const ushort k=0) const
 	{
-		const ushort max_x_y=shred_width*numShreds;
-		return (i<max_x_y && j<max_x_y && k<height);
+		const ushort max_x_y=SHRED_WIDTH*numShreds;
+		return (i<max_x_y && j<max_x_y && k<HEIGHT);
 	}
 	QString & FullName(QString &,
 			const ushort,

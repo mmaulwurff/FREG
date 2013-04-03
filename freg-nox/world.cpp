@@ -150,8 +150,8 @@ quint8 World::MakeDir(
 
 void World::MakeSun() {
 	sun_moon_x=SunMoonX();
-	ifStar=( STAR==Sub(sun_moon_x, shred_width*numShreds/2, height-1) );
-	SetBlock(NewNormal(SUN_MOON), sun_moon_x, shred_width*numShreds/2, height-1);
+	ifStar=( STAR==Sub(sun_moon_x, SHRED_WIDTH*numShreds/2, HEIGHT-1) );
+	SetBlock(NewNormal(SUN_MOON), sun_moon_x, SHRED_WIDTH*numShreds/2, HEIGHT-1);
 }
 
 Block * World::GetBlock(
@@ -160,7 +160,7 @@ Block * World::GetBlock(
 		const ushort z) const
 {
 	return GetShred(x, y)->
-		GetBlock(x%shred_width, y%shred_width, z);
+		GetBlock(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 
 void World::SetBlock(Block * block,
@@ -169,7 +169,7 @@ void World::SetBlock(Block * block,
 		const ushort z)
 {
 	GetShred(x, y)->
-		SetBlock(block, x%shred_width, y%shred_width, z);
+		SetBlock(block, x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 
 Block * World::ReplaceWithNormal(Block * const block) {
@@ -402,29 +402,29 @@ void World::PhysEvents() {
 
 	//sun/moon moving
 	if ( sun_moon_x!=SunMoonX() ) {
-		const ushort y=shred_width*numShreds/2;
+		const ushort y=SHRED_WIDTH*numShreds/2;
 		SetBlock(NewNormal(ifStar ? STAR : SKY),
-				sun_moon_x, y, height-1);
-		emit Updated(sun_moon_x, y, height-1);
+				sun_moon_x, y, HEIGHT-1);
+		emit Updated(sun_moon_x, y, HEIGHT-1);
 		sun_moon_x=SunMoonX();
-		ifStar=( STAR==Sub(sun_moon_x, y, height-1) );
+		ifStar=( STAR==Sub(sun_moon_x, y, HEIGHT-1) );
 		SetBlock(NewNormal(SUN_MOON),
-				sun_moon_x, y, height-1);
-		emit Updated(sun_moon_x, y, height-1);
+				sun_moon_x, y, HEIGHT-1);
+		emit Updated(sun_moon_x, y, HEIGHT-1);
 	}
 
 	switch ( TimeOfDay() ) {
-		case end_of_night:
+		case END_OF_NIGHT:
 			sunMoonFactor=SUN_LIGHT_FACTOR;
 			emit Notify(tr("It's morning now."));
 		break;
-		case end_of_morning:
+		case END_OF_MORNING:
 			emit Notify(tr("It's day now."));
 		break;
-		case end_of_noon:
+		case END_OF_NOON:
 			emit Notify(tr("It's evening now."));
 		break;
-		case end_of_evening:
+		case END_OF_EVENING:
 			sunMoonFactor=MOON_LIGHT_FACTOR;
 			emit Notify(tr("It's night now."));
 		break;
@@ -761,7 +761,7 @@ void World::Eat(
 	if ( !InBounds(i, j, k) || !InBounds(i_food, j_food, k_food) )
 		return;
 	if ( GetBlock(i, j, k)->IsAnimal()->Eat(GetBlock(i_food, j_food, k_food)) )
-		Damage(i_food, j_food, k_food, max_durability, EATEN);
+		Damage(i_food, j_food, k_food, MAX_DURABILITY, EATEN);
 }
 
 int World::Exchange(
@@ -818,7 +818,7 @@ int World::Transparent(
 		const ushort z) const
 {
 	return GetShred(x, y)->
-		Transparent(x%shred_width, y%shred_width, z);
+		Transparent(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 int World::Durability(
 		const ushort x,
@@ -826,7 +826,7 @@ int World::Durability(
 		const ushort z) const
 {
 	return GetShred(x, y)->
-		Durability(x%shred_width, y%shred_width, z);
+		Durability(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 int World::Kind(
 		const ushort x,
@@ -834,7 +834,7 @@ int World::Kind(
 		const ushort z) const
 {
 	return GetShred(x, y)->
-		Kind(x%shred_width, y%shred_width, z);
+		Kind(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 int World::Sub(
 		const ushort x,
@@ -842,7 +842,7 @@ int World::Sub(
 		const ushort z) const
 {
 	return GetShred(x, y)->
-		Sub(x%shred_width, y%shred_width, z);
+		Sub(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 int World::Movable(
 		const ushort x,
@@ -850,14 +850,14 @@ int World::Movable(
 		const ushort z) const
 {
 	return GetShred(x, y)->
-		Movable(x%shred_width, y%shred_width, z);
+		Movable(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 float World::Weight(
 		const ushort x,
 		const ushort y,
 		const ushort z) const
 {
-	return GetShred(x, y)->Weight(x%shred_width, y%shred_width, z);
+	return GetShred(x, y)->Weight(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 
 Inventory * World::HasInventory(
@@ -886,7 +886,7 @@ int World::Temperature(
 		const ushort k_center) const
 {
 	if ( !InBounds(i_center, j_center, k_center) ||
-			height-1==k_center )
+			HEIGHT-1==k_center )
 		return 0;
 
 	short temperature=GetBlock(i_center, j_center, k_center)->
@@ -964,7 +964,7 @@ World::World(const QString & world_name)
 {
 	QSettings settings;
 	settings.beginGroup(worldName);
-	time      =settings.value("time", end_of_night).toLongLong();
+	time      =settings.value("time", END_OF_NIGHT).toLongLong();
 	mapSize   =settings.value("mapSize", 0).toLongLong();
 	longitude =settings.value("longitude", 0).toLongLong();
 	latitude  =settings.value("latitude", 0).toLongLong();

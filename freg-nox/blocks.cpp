@@ -258,7 +258,7 @@ void Animal::Act() {
 				return;
 		} else
 			--breath;
-	} else if ( breath < max_breath )
+	} else if ( breath < MAX_BREATH )
 		++breath;
 
 	if ( satiation <= 0 ) {
@@ -387,7 +387,7 @@ Inventory::Inventory(
 		quint8 num;
 		str >> num;
 		while ( num-- )
-			inventory[i].push(inShred->BlockFromFile(str, 0, 0, height));
+			inventory[i].push(inShred->BlockFromFile(str, 0, 0, HEIGHT));
 	}
 }
 
@@ -468,7 +468,7 @@ void Liquid::Act() {
 			!CheckWater(NORTH) && !CheckWater(SOUTH) &&
 			!CheckWater(EAST)  && !CheckWater(WEST) )
 		world->Damage(x_self, y_self, z_self,
-			max_durability, HEAT);
+			MAX_DURABILITY, HEAT);
 	else {
 		int dir;
 		switch ( rand()%20 ) {
@@ -484,7 +484,7 @@ void Liquid::Act() {
 
 void Grass::Act() {
 	short i=x_self, j=y_self;
-	switch ( rand()%(seconds_in_hour*20) /* increase this if grass grows too fast */ ) {
+	switch ( rand()%(SECONDS_IN_HOUR*20) /* increase this if grass grows too fast */ ) {
 		case 0: ++i; break;
 		case 1: --i; break;
 		case 2: ++j; break;
@@ -506,7 +506,7 @@ void Grass::Act() {
 }
 
 void Bush::Act() {
-	if ( 0==rand()%(seconds_in_hour*4) )
+	if ( 0==rand()%(SECONDS_IN_HOUR*4) )
 		Get(whereShred->NewNormal(HAZELNUT));
 }
 
@@ -569,7 +569,7 @@ void Rabbit::Act() {
 			break;
 		}
 
-	if ( seconds_in_day/2 > satiation ) {
+	if ( SECONDS_IN_DAY/2 > satiation ) {
 		for (x=x_self-1; x<=x_self+1; ++x)
 		for (y=y_self-1; y<=y_self+1; ++y)
 		for (z=z_self-1; z<=z_self+1; ++z)
