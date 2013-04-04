@@ -332,30 +332,37 @@ void Player::TakeOff(const ushort num) {
 }
 
 void Player::ProcessCommand(QString & command) {
+	//don't forget lock and unlock world mutex where needed:
+	//world->WriteLock();
+	//world->Unlock();
 	QTextStream comm_stream(&command);
 	QString request;
 	comm_stream >> request;
 	if ( "give"==request ) {
+		world->WriteLock();
+		Inventory * const inv=player->HasInventory();
 		if ( !creativeMode ) {
 			emit Notify(tr("You are not in Creative Mode."));
-			return;
-		}
-		Inventory * const inv=player->HasInventory();
-		if ( !inv ) {
+		} else if ( !inv ) {
 			emit Notify("No room.");
-			return;
-		}
-		int kind, sub, num;
-		comm_stream >> kind >> sub >> num;
-		while ( num && inv->HasRoom() ) {
-			for (ushort i=9; i && num; --i) {
-				inv->Get(shred->NewBlock(kind, sub));
-				--num;
+		} else {
+			int kind, sub, num;
+			comm_stream >> kind >> sub >> num;
+			while ( num && inv->HasRoom() ) {
+				for (ushort i=9; i && num; --i) {
+					inv->Get(shred->NewBlock(kind, sub));
+					--num;
+				}
+			}
+			if ( num > 0 ) {
+				emit Notify(QString(tr("No place for %1 things.")).arg(num));
 			}
 		}
-		if ( num > 0 ) {
-			emit Notify(QString(tr("No place for %1 things.")).arg(num));
-		}
+		world->Unlock();
+	} else if ( "move"==request ) {
+		int dir;
+		comm_stream >> dir;
+		Move(dir);
 	} else {
 		emit Notify(QString(tr("Don't know such command: \"%1\".")).arg(command));
 	}

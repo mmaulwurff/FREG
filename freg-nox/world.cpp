@@ -486,7 +486,7 @@ int World::Move(
 		const ushort k,
 		const quint8 dir)
 {
-	if ( !InBounds(i, j, k) )
+	if ( !InBounds(i, j, k) || dir > 5 )
 		return 0;
 
 	ushort newi, newj, newk;
