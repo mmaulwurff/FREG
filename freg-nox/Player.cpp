@@ -83,14 +83,15 @@ void Player::Examine(
 	emit Notify("------");
 	QString str;
 	emit Notify( world->FullName(str, i, j, k) );
-	//need to know more!
-	emit Notify(QString("Light: %1, fire: %2, sun: %3. Transp: %4. Normal: %5. Direction: %6.").
-		arg(world->Enlightened(i, j, k)).
-		arg(world->FireLight(i, j, k)/16).
-		arg(world->SunLight(i, j, k)).
-		arg(world->Transparent(i, j, k)).
-		arg(world->GetBlock(i, j, k)->Normal()).
-		arg(world->GetBlock(i, j, k)->GetDir()));
+	if ( creativeMode ) { //know more
+		emit Notify(QString(tr("Light: %1, fire: %2, sun: %3. Transp: %4. Normal: %5. Direction: %6.")).
+			arg(world->Enlightened(i, j, k)).
+			arg(world->FireLight(i, j, k)/16).
+			arg(world->SunLight(i, j, k)).
+			arg(world->Transparent(i, j, k)).
+			arg(world->GetBlock(i, j, k)->Normal()).
+			arg(world->GetBlock(i, j, k)->GetDir()));
+	}
 
 	const int sub=world->Sub(i, j, k);
 	if ( AIR==sub || SKY==sub || SUN_MOON==sub ) {
@@ -99,12 +100,12 @@ void Player::Examine(
 	}
 
 	if ( ""!=world->GetNote(str, i, j, k) )
-		emit Notify("Inscription: "+str);
-	emit Notify("Temperature: "+
+		emit Notify(tr("Inscription: ")+str);
+	emit Notify(tr("Temperature: ")+
 		QString::number(world->Temperature(i, j, k)));
-	emit Notify("Durability: "+
+	emit Notify(tr("Durability: ")+
 		QString::number(world->Durability(i, j, k)));
-	emit Notify("Weight: "+
+	emit Notify(tr("Weight: ")+
 		QString::number(world->Weight(i, j, k)));
 	world->Unlock();
 }
@@ -334,6 +335,8 @@ void Player::TakeOff(const ushort num) {
 void Player::ProcessCommand(QString & command) {
 	//don't forget lock and unlock world mutex where needed:
 	//world->WriteLock();
+	//or
+	//world->ReadLock();
 	//world->Unlock();
 	QTextStream comm_stream(&command);
 	QString request;
@@ -344,7 +347,7 @@ void Player::ProcessCommand(QString & command) {
 		if ( !creativeMode ) {
 			emit Notify(tr("You are not in Creative Mode."));
 		} else if ( !inv ) {
-			emit Notify("No room.");
+			emit Notify(tr("No room."));
 		} else {
 			int kind, sub, num;
 			comm_stream >> kind >> sub >> num;
@@ -363,6 +366,24 @@ void Player::ProcessCommand(QString & command) {
 		int dir;
 		comm_stream >> dir;
 		Move(dir);
+	} else if ( "what"==request ) {
+		ushort x_what, y_what, z_what;
+		comm_stream >> x_what >> y_what >> z_what;
+		world->ReadLock();
+		if ( creativeMode ) {
+			Examine(x_what, y_what, z_what);	
+		} else {
+			if (
+					qAbs(x-x_what) > 1 ||
+					qAbs(y-y_what) > 1 ||
+					qAbs(z-z_what) > 1)
+			{
+				emit Notify(tr("Too far."));
+			} else {
+				Examine(x_what, y_what, z_what);
+			}
+		}
+		world->Unlock();
 	} else {
 		emit Notify(QString(tr("Don't know such command: \"%1\".")).arg(command));
 	}
