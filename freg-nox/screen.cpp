@@ -441,21 +441,20 @@ void Screen::Print() {
 		}
 	}
 
-	//shifted focus
 	wstandend(hudWin);
+	
+	//shifted focus
 	if ( shiftFocus ) {
 		mvwaddstr(hudWin, 0, 100, ( -1==shiftFocus ) ?
 			"Focus shift down" : "Focus shift up");
 	}
 
-	//creative mode
 	if ( player->GetCreativeMode() ) {
 		mvwaddstr(hudWin, 1, 100, "Creative Mode");
+		//coordinates
+		mvwprintw(hudWin, 3, 22, "xyz: %hu, %hu, %hu", player->X(), player->Y(), player->Z());
+		mvwprintw(hudWin, 2, 22, "XY:  %hu, %hu", player->GetLatitude(), player->GetLongitude());
 	}
-
-	//coordinates
-	mvwprintw(hudWin, 3, 22, "xyz: %hu, %hu, %hu", player->X(), player->Y(), player->Z());
-	mvwprintw(hudWin, 2, 22, "XY:  %hu, %hu", player->GetLatitude(), player->GetLongitude());
 
 	wnoutrefresh(hudWin);
 	doupdate();
