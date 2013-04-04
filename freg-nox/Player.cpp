@@ -371,7 +371,7 @@ void Player::ProcessCommand(QString & command) {
 		comm_stream >> x_what >> y_what >> z_what;
 		world->ReadLock();
 		if ( creativeMode ) {
-			Examine(x_what, y_what, z_what);	
+			Examine(x_what, y_what, z_what);
 		} else {
 			if (
 					qAbs(x-x_what) > 1 ||
