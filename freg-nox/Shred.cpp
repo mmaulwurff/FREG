@@ -389,9 +389,7 @@ void Shred::PlantGrass() {
 		ushort k;
 		for (k=HEIGHT-2; Transparent(i, j, k); --k);
 		if ( SOIL==Sub(i, j, k++) && AIR==Sub(i, j, k) )
-			blocks[i][j][k]=new Grass(this,
-				i+shredX*SHRED_WIDTH,
-				j+shredY*SHRED_WIDTH, k);
+			SetNewBlock(GRASS, GREENERY, i, j, k);
 	}
 }
 
@@ -459,8 +457,9 @@ void Shred::Plain() {
 	for (i=0; i<=num; ++i) {
 		x=rand()%SHRED_WIDTH;
 		y=rand()%SHRED_WIDTH;
-		if ( AIR==Sub(x, y, HEIGHT/2) )
-			blocks[x][y][HEIGHT/2]=new Bush(this);
+		if ( AIR==Sub(x, y, HEIGHT/2) ) {
+			SetNewBlock(BUSH, WOOD, 0, 0, 0);
+		}
 	}
 
 	//rabbits
@@ -468,10 +467,9 @@ void Shred::Plain() {
 	for (i=0; i<=num; ++i) {
 		x=rand()%SHRED_WIDTH;
 		y=rand()%SHRED_WIDTH;
-		if ( AIR==Sub(x, y, HEIGHT/2) )
-			blocks[x][y][HEIGHT/2]=new Rabbit(this,
-				shredX*SHRED_WIDTH+x,
-				shredY*SHRED_WIDTH+y, HEIGHT/2);
+		if ( AIR==Sub(x, y, HEIGHT/2) ) {
+			SetNewBlock(RABBIT, A_MEAT, x, y, HEIGHT/2);
+		}
 	}
 
 	PlantGrass();
@@ -550,10 +548,9 @@ void Shred::Water(const long longi, const long lati) {
 	for (i=0; i<SHRED_WIDTH; ++i)
 	for (j=0; j<SHRED_WIDTH; ++j)
 	for (k=HEIGHT/2-depth; k<HEIGHT/2; ++k)
-		if ( AIR==Sub(i, j, k) )
-			blocks[i][j][k]=new Liquid(this,
-			                i+SHRED_WIDTH*shredX,
-			                j+SHRED_WIDTH*shredY, k);
+		if ( AIR==Sub(i, j, k) ) {
+			SetNewBlock(LIQUID, WATER, i, j, k);
+		}
 
 	PlantGrass();
 }
