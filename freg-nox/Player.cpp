@@ -351,6 +351,9 @@ void Player::ProcessCommand(QString & command) {
 		} else {
 			int kind, sub, num;
 			comm_stream >> kind >> sub >> num;
+			if ( !num ) {
+				num=1;
+			}
 			while ( num && inv->HasRoom() ) {
 				for (ushort i=9; i && num; --i) {
 					inv->Get(shred->NewBlock(kind, sub));

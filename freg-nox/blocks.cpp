@@ -446,39 +446,29 @@ Pile::Pile(
 	str >> ifToDestroy;
 }
 
-bool Liquid::CheckWater(const int dir) const {
-	//return true;
-	ushort i_check, j_check, k_check;
+bool Liquid::CheckWater() const {
 	World * const world=GetWorld();
-	if ( (world->Focus(x_self, y_self, z_self,
-			i_check, j_check, k_check, dir)) )
-		return false;
-
-	if ( WATER==world->Sub(i_check, j_check, k_check) )
-		return true;
-
-	return false;
+	return ( WATER==world->Sub(x_self, y_self, z_self-1) ||
+			WATER==world->Sub(x_self, y_self, z_self+1));
 }
 
 void Liquid::Act() {
 	World * const world=GetWorld();
 	//IDEA: turn off water drying up in ocean
-	if ( WATER==Sub() && !(rand()%10) &&
-			!CheckWater(DOWN)  && !CheckWater(UP) &&
-			!CheckWater(NORTH) && !CheckWater(SOUTH) &&
-			!CheckWater(EAST)  && !CheckWater(WEST) )
-		world->Damage(x_self, y_self, z_self,
-			MAX_DURABILITY, HEAT);
-	else {
-		int dir;
-		switch ( rand()%20 ) {
-			case 0: dir=NORTH; break;
-			case 1: dir=EAST;  break;
-			case 2: dir=SOUTH; break;
-			case 3: dir=WEST;  break;
-			default: return;
+	if ( WATER==Sub() ) {
+		if ( CheckWater() ) {
+			Restore();
+		} else if ( world->Damage(x_self, y_self, z_self,
+				1, HEAT) ) {
+			return;
 		}
-		world->Move(x_self, y_self, z_self, dir);
+	}
+	switch ( rand()%20 ) {
+		case 0: world->Move(x_self, y_self, z_self, NORTH); return;
+		case 1: world->Move(x_self, y_self, z_self, EAST);  return;
+		case 2: world->Move(x_self, y_self, z_self, SOUTH); return;
+		case 3: world->Move(x_self, y_self, z_self, WEST);  return;
+		default: return;
 	}
 }
 

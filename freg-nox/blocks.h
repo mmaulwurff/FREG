@@ -855,7 +855,7 @@ class Liquid : public Active {
 	Q_OBJECT;
 
 	//return true if there is water near
-	bool CheckWater(const int dir) const;
+	bool CheckWater() const;
 
 	public:
 	int Movable() const { return ENVIRONMENT; }
