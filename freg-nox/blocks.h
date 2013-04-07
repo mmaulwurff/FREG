@@ -30,6 +30,7 @@ class Active;
 class Animal;
 
 class Block { //blocks without special physics and attributes
+	bool inMemoryChunk;
 	bool normal;
 	void SetTransparency(const quint8 transp) {
 		if ( UNDEF==transp )
@@ -147,7 +148,6 @@ class Block { //blocks without special physics and attributes
 
 	Block(
 			const int sb=STONE,
-			const short dur=MAX_DURABILITY,
 			const quint8 transp=UNDEF)
 			:
 			normal(false),
@@ -155,7 +155,7 @@ class Block { //blocks without special physics and attributes
 			nullWeight(false),
 			direction(UP),
 			note(""),
-			durability(dur)
+			durability(MAX_DURABILITY)
 	{
 		SetTransparency(transp);
 	}
@@ -187,7 +187,7 @@ class Plate : public Block {
 	public:
 	Plate(const int sub)
 			:
-			Block(sub, MAX_DURABILITY, NONSTANDARD)
+			Block(sub, NONSTANDARD)
 	{}
 	Plate(
 			QDataStream & str,
@@ -246,7 +246,7 @@ class Clock : public Block {
 			World * const w,
 			const int sub)
 			:
-			Block(sub, 2, NONSTANDARD),
+			Block(sub, NONSTANDARD),
 			world (w)
 	{}
 	Clock (
@@ -297,7 +297,7 @@ class Weapon : public Block {
 	Weapon(
 			const int sub)
 			:
-			Block(sub, MAX_DURABILITY, NONSTANDARD)
+			Block(sub, NONSTANDARD)
 	{}
 	Weapon(
 			QDataStream & str,
@@ -433,10 +433,9 @@ class Active : public QObject, public Block {
 
 	Active(
 			const int sub,
-			const short dur=MAX_DURABILITY,
 			const quint8 transp=UNDEF)
 			:
-			Block(sub, dur, transp),
+			Block(sub, transp),
 			fall_height(0),
 			falling(false),
 			timeStep(0),
@@ -448,10 +447,9 @@ class Active : public QObject, public Block {
 			const ushort y,
 			const ushort z,
 			const int sub,
-			const short dur=MAX_DURABILITY,
 			const quint8 transp=UNDEF)
 			:
-			Block(sub, dur, transp),
+			Block(sub, transp),
 			fall_height(0),
 			falling(false),
 			timeStep(0)
@@ -499,7 +497,7 @@ class Animal : public Active {
 			const ushort k,
 			const int sub=A_MEAT)
 			:
-			Active(sh, i, j, k, sub, MAX_DURABILITY, NONSTANDARD),
+			Active(sh, i, j, k, sub, NONSTANDARD),
 			breath(MAX_BREATH),
 			satiation(SECONDS_IN_DAY)
 	{}
@@ -837,7 +835,7 @@ class Pile : public Active, public Inventory {
 			const ushort z,
 			Block * const block=NULL)
 			:
-			Active(sh, x, y, z, DIFFERENT, 1, NONSTANDARD),
+			Active(sh, x, y, z, DIFFERENT, NONSTANDARD),
 			Inventory(sh),
 			ifToDestroy(false)
 	{
@@ -1171,7 +1169,6 @@ class Door : public Active {
 				sh,
 				x, y, z,
 				sub,
-				MAX_DURABILITY,
 				( STONE==sub ) ? BLOCK_OPAQUE : NONSTANDARD),
 			shifted(false),
 			locked(false),

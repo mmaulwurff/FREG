@@ -60,6 +60,7 @@ Shred::Shred(
 		shredX(shred_x),
 		shredY(shred_y)
 {
+	memory_chunk=static_cast<qint8 *>(operator new(10));
 	QFile file(FileName());
 	if ( file.open(QIODevice::ReadOnly) && !LoadShred(file) )
 		return;
@@ -127,6 +128,8 @@ Shred::~Shred() {
 	for (k=0; k<HEIGHT; ++k)
 		if ( !(blocks[i][j][k]->Normal()) )
 			delete blocks[i][j][k];
+
+	operator delete(memory_chunk);
 }
 
 void Shred::SetNewBlock(

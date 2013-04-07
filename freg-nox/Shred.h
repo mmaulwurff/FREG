@@ -33,6 +33,8 @@ class Shred {
 	ushort shredX, shredY;
 	QList<Active *> activeList;
 
+	qint8 * memory_chunk;
+
 	public:
 	long Longitude() const { return longitude; }
 	long Latitude()  const { return latitude; }
