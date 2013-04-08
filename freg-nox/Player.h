@@ -32,6 +32,9 @@
  * Also it does checks for player walking over the shred border.
  */
 
+#ifndef PLAYER_H
+#define PLAYER_H
+
 #include "header.h"
 #include <QString>
 #include <QObject>
@@ -216,3 +219,5 @@ class Player : public QObject {
 	///Destructor calls Player::CleanAll().
 	~Player() { CleanAll(); }
 }; //Player
+
+#endif

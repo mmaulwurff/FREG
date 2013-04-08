@@ -151,7 +151,7 @@ quint8 World::MakeDir(
 void World::MakeSun() {
 	sun_moon_x=SunMoonX();
 	ifStar=( STAR==Sub(sun_moon_x, SHRED_WIDTH*numShreds/2, HEIGHT-1) );
-	SetBlock(NewNormal(SUN_MOON), sun_moon_x, SHRED_WIDTH*numShreds/2, HEIGHT-1);
+	SetBlock(Normal(SUN_MOON), sun_moon_x, SHRED_WIDTH*numShreds/2, HEIGHT-1);
 }
 
 Block * World::GetBlock(
@@ -173,11 +173,12 @@ void World::SetBlock(Block * block,
 }
 
 Block * World::ReplaceWithNormal(Block * const block) {
-	if ( !block->Normal() && *block==*NewNormal(block->Sub()) ) {
+	if ( block!=World::Normal(block->Sub()) && *block==*Normal(block->Sub()) ) {
 		delete block;
-		return NewNormal(block->Sub());
+		return Normal(block->Sub());
+	} else {
+		return block;
 	}
-	return block;
 }
 
 quint8 World::Anti(const quint8 dir) {
@@ -399,12 +400,12 @@ void World::PhysEvents() {
 	//sun/moon moving
 	if ( sun_moon_x!=SunMoonX() ) {
 		const ushort y=SHRED_WIDTH*numShreds/2;
-		SetBlock(NewNormal(ifStar ? STAR : SKY),
+		SetBlock(Normal(ifStar ? STAR : SKY),
 				sun_moon_x, y, HEIGHT-1);
 		emit Updated(sun_moon_x, y, HEIGHT-1);
 		sun_moon_x=SunMoonX();
 		ifStar=( STAR==Sub(sun_moon_x, y, HEIGHT-1) );
-		SetBlock(NewNormal(SUN_MOON),
+		SetBlock(Normal(SUN_MOON),
 				sun_moon_x, y, HEIGHT-1);
 		emit Updated(sun_moon_x, y, HEIGHT-1);
 	}
@@ -496,9 +497,8 @@ int World::Move(
 		return 0;
 
 	if ( DESTROY==block->BeforeMove(dir) ) {
-		if ( !block->Normal() )
-			delete block;
-		SetBlock(NewNormal(AIR), i, j, k);
+		World::DeleteBlock(block);
+		SetBlock(Normal(AIR), i, j, k);
 		return 1;
 	}
 
@@ -659,7 +659,7 @@ bool World::Damage(
 		return false;
 
 	Block * temp=GetBlock(i, j, k);
-	if ( temp->Normal() && AIR!=temp->Sub() ) {
+	if ( temp==World::Normal(temp->Sub()) && AIR!=temp->Sub() ) {
 		temp=new Block(temp->Sub());
 		SetBlock(temp, i, j, k);
 	}
@@ -671,15 +671,18 @@ bool World::Damage(
 
 	Block * const dropped=temp->DropAfterDamage();
 	if ( PILE!=temp->Kind() && (temp->HasInventory() || dropped) ) {
-		Pile * const new_pile=new Pile(GetShred(i, j), i, j, k);
+		Block * const new_pile=Shred::NewBlock(PILE, DIFFERENT);
+		GetShred(i, j)->RegisterBlock(new_pile, i%SHRED_WIDTH, j%SHRED_WIDTH, k);
 		SetBlock(new_pile, i, j, k);
 		Inventory * const inv=temp->HasInventory();
+		Inventory * const new_pile_inv=new_pile->HasInventory();
 		if ( inv )
-			new_pile->GetAll(inv);
-		if ( !new_pile->Get(dropped) && !dropped->Normal() )
-			delete dropped;
+			new_pile_inv->GetAll(inv);
+		if ( !new_pile_inv->Get(dropped) ) {
+			World::DeleteBlock(dropped);
+		}
 	} else
-		SetBlock(NewNormal(AIR), i, j, k);
+		SetBlock(Normal(AIR), i, j, k);
 
 	delete temp;
 	ReEnlighten(i, j, k);
@@ -716,12 +719,7 @@ int World::Build(
 	}
 
 	block->Restore();
-	Active * const active=block->ActiveBlock();
-	if ( active )
-		active->Register(GetShred(i, j), i, j, k);
-	Inventory * const inv=block->HasInventory();
-	if ( inv )
-		inv->SetShred(GetShred(i, j));
+	GetShred(i, j)->RegisterBlock(block, i%SHRED_WIDTH, j%SHRED_WIDTH, k);
 	SetBlock(block, i, j, k);
 	block->SetDir(dir);
 
@@ -738,7 +736,7 @@ bool World::Inscribe(
 		return false;
 
 	Block * block=GetBlock(i, j, k);
-	if ( block->Normal() )
+	if ( block==World::Normal(block->Sub()) )
 		SetBlock(block=new Block(block->Sub()),
 			i, j, k);
 	QString str="No note received\n";
@@ -774,10 +772,15 @@ int World::Exchange(
 	Inventory * const inv_from=HasInventory(i_from, j_from, k_from);
 	if ( !inv_from )
 		return 3;
-	if ( AIR==Sub(i_to, j_to, k_to) )
-		SetBlock(new Pile(GetShred(i_to, j_to),
-				i_to, j_to, k_to),
-			i_to, j_to, k_to);
+	if ( AIR==Sub(i_to, j_to, k_to) ) {
+		Block * const new_pile=Shred::NewBlock(PILE, DIFFERENT);
+		GetShred(i_to, j_to)->RegisterBlock(
+			new_pile,
+			i_to%SHRED_WIDTH,
+			j_to%SHRED_WIDTH,
+			k_to);
+		SetBlock(new_pile, i_to, j_to, k_to);
+	}
 	Inventory * const inv_to=HasInventory(i_to, j_to, k_to);
 	if ( !inv_to )
 		return 4;
@@ -1006,11 +1009,6 @@ World::World(const QString & world_name)
 		numActiveShreds=1;
 	}
 
-	for (ushort x=0; x<=AIR; ++x) {
-		normal_blocks[x]=new Block(subs(x));
-		normal_blocks[x]->SetNormal(1);
-	}
-
 	LoadAllShreds();
 	LoadRecipes();
 }
@@ -1031,8 +1029,6 @@ void World::CleanAll() {
 
 	CleanRecipes();
 	SaveAllShreds();
-	for (ushort i=0; i<=AIR; ++i)
-		delete normal_blocks[i];
 
 	QSettings settings;
 	settings.beginGroup(worldName);

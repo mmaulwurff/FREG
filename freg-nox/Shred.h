@@ -118,11 +118,12 @@ class Shred {
 			const ushort x,
 			const ushort y,
 			const ushort z);
-	Block * NewBlock(const int kind, int sub) const;
-	Block * NewNormal(const int sub) const;
-	Block * BlockFromFile(QDataStream &,
-			ushort x,
-			ushort y,
+	static Block * NewBlock(const int kind, int sub);
+	static Block * BlockFromFile(QDataStream &);
+	void RegisterBlock(
+			Block * const,
+			const ushort x,
+			const ushort y,
 			const ushort z);
 
 	private:
@@ -138,7 +139,6 @@ class Shred {
 	void Plain();
 	void Forest(const long, const long);
 	void Water( const long, const long);
-	void Hill(  const long, const long);
 	void Pyramid();
 	void Mountain();
 	//block combinations section (trees, buildings, etc):

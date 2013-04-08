@@ -89,7 +89,7 @@ void Player::Examine(
 			arg(world->FireLight(i, j, k)/16).
 			arg(world->SunLight(i, j, k)).
 			arg(world->Transparent(i, j, k)).
-			arg(world->GetBlock(i, j, k)->Normal()).
+			arg(world->GetBlock(i, j, k)==World::Normal(world->Sub(i, j, k))).
 			arg(world->GetBlock(i, j, k)->GetDir()));
 	}
 
@@ -272,8 +272,7 @@ void Player::Eat(const ushort num) {
 				emit Notify(( SECONDS_IN_DAY < pl->Satiation() ) ?
 					"You have gorged yourself!" : "Yum!");
 				PlayerInventory()->Pull(num);
-				if ( !food->Normal() )
-					delete food;
+				World::DeleteBlock(food);
 				emit Updated();
 			}
 		} else
@@ -501,11 +500,11 @@ void Player::SetPlayer(
 	shred=world->GetShred(x, y);
 	if ( DWARF!=world->Kind(x, y, z) ) {
 		Block * const temp=world->GetBlock(x, y, z);
-		if ( !temp->Normal() )
-			delete temp;
+		World::DeleteBlock(temp);
 		world->SetBlock(
-			(player=new Dwarf(shred, x, y, z)),
+			(player=new Dwarf(/*shred, x, y, z*/)),
 			x, y, z);
+		shred->RegisterBlock(player, x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 	} else {
 		player=world->ActiveBlock(x, y, z);
 	}

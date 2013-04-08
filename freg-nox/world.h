@@ -22,6 +22,7 @@
 #include <QReadWriteLock>
 #include <QThread>
 #include "header.h"
+#include "BlockManager.h"
 
 class Block;
 class Dwarf;
@@ -50,6 +51,8 @@ const ushort safe_fall_height=5;
 const uchar MOON_LIGHT_FACTOR=1;
 const uchar  SUN_LIGHT_FACTOR=8;
 
+static BlockManager block_manager;
+
 class World : public QThread {
 	Q_OBJECT
 
@@ -57,7 +60,6 @@ class World : public QThread {
 
 	ulong time;
 	Shred ** shreds;
-	Block * normal_blocks[AIR+1];
 	long longitude, latitude; //center of active zone, longitude is y, latitude is x
 	long spawnLongi, spawnLati;
 	const QString worldName;
@@ -95,9 +97,6 @@ class World : public QThread {
 	void LoadRecipes();
 	void CleanRecipes();
 
-	Block * NewNormal(const int sub) const {
-		return normal_blocks[sub];
-	}
 	void ReplaceWithNormal(
 			const ushort x,
 			const ushort y,
@@ -109,7 +108,7 @@ class World : public QThread {
 	Block * ReplaceWithNormal(Block * const block);
 	void MakeSun();
 	void RemSun() {
-		SetBlock(NewNormal(ifStar ? STAR : SKY),
+		SetBlock(Normal(ifStar ? STAR : SKY),
 			sun_moon_x,
 			SHRED_WIDTH*numShreds/2,
 			HEIGHT-1);
@@ -122,6 +121,12 @@ class World : public QThread {
 
 	//block work section
 	public:
+	static Block * Normal(const int sub) {
+		return block_manager.NormalBlock(BLOCK, sub);
+	}
+	static void DeleteBlock(Block * const block) {
+		block_manager.DeleteBlock(block);
+	}
 	Block * GetBlock(
 			const ushort,
 			const ushort,

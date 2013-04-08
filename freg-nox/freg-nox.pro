@@ -12,7 +12,15 @@ QT -= gui
 LIBS += -lcurses
 
 # Input
-HEADERS += blocks.h header.h Player.h screen.h Shred.h VirtScreen.h world.h
+HEADERS += blocks.h \
+           header.h \
+           Player.h \
+           screen.h \
+           Shred.h  \
+           VirtScreen.h \
+           world.h \
+           BlockManager.h
+
 SOURCES += blocks.cpp \
            Lighting.cpp \
            main.cpp \
@@ -20,4 +28,5 @@ SOURCES += blocks.cpp \
            screen.cpp \
            Shred.cpp \
            VirtScreen.cpp \
-           world.cpp
+           world.cpp \
+           BlockManager.cpp

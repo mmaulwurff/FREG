@@ -116,12 +116,26 @@ float Block::TrueWeight() const {
 	}
 }
 
+void Block::SaveToFile(QDataStream & out) const {
+	const bool normal=(this==World::Normal(Sub()));
+	out << (quint16)Kind() << sub << normal;
+
+	if ( normal ) {
+		return;
+	}
+
+	out << nullWeight
+		<< direction
+		<< durability
+		<< note;
+	SaveAttributes(out);
+}
+
 Block::Block(
 		QDataStream & str,
 		const int sub_,
 		const quint8 transp)
 		:
-		normal(false),
 		sub(sub_)
 {
 	SetTransparency(transp);
@@ -130,13 +144,13 @@ Block::Block(
 		durability >> note;
 }
 
-usage_types Clock::Use() {
+/*usage_types Clock::Use() {
 	world->EmitNotify(QString("Time is %1%2%3.").
 		arg(world->TimeOfDay()/60).
 		arg((world->TimeOfDay()%60 < 10) ? ":0" : ":").
 		arg(world->TimeOfDay()%60));
 	return NO;
-}
+}*/
 
 int Active::Move(const int dir) {
 	switch ( dir ) {
@@ -162,7 +176,7 @@ int Active::Move(const int dir) {
 			whereShred->AddActive(this);
 			Inventory * const inv=HasInventory();
 			if ( inv )
-				inv->SetShred(whereShred);
+				inv->Register(whereShred);
 		}
 		fall_height=0;
 	}
@@ -213,10 +227,6 @@ void Active::Unregister() {
 }
 
 Active::Active(
-		Shred * const sh,
-		const ushort x,
-		const ushort y,
-		const ushort z,
 		QDataStream & str,
 		const int sub,
 		const quint8 transp) //see default in blocks.h
@@ -224,7 +234,6 @@ Active::Active(
 		Block(str, sub, transp)
 {
 	str >> timeStep >> fall_height >> falling;
-	Register(sh, x, y, z);
 }
 
 Active::~Active() {
@@ -266,21 +275,17 @@ void Animal::Act() {
 			return;
 	} else
 		--satiation;
-	if ( durability < MaxDurability() )
+	if ( durability < MAX_DURABILITY )
 		++durability;
 	emit Updated();
 	Active::Act();
 }
 
 Animal::Animal(
-		Shred * const sh,
-		const ushort i,
-		const ushort j,
-		const ushort k,
 		QDataStream & str,
 		const int sub)
 		:
-		Active(sh, i, j, k, str, sub, NONSTANDARD)
+		Active(str, sub, NONSTANDARD)
 {
 	str >> breath >> satiation;
 }
@@ -338,8 +343,8 @@ int Inventory::InscribeInv(const ushort num, const QString & str) {
 		return 0;
 	if ( !inventory[num].top()->Inscribable() )
 		return 1;
-	if ( inventory[num].top()->Normal() ) {
-		const int sub=inventory[num].top()->Sub();
+	const int sub=inventory[num].top()->Sub();
+	if ( inventory[num].top()==World::Normal(sub) ) {
 		for (ushort i=0; i<number; ++i)
 			inventory[num].replace(i, new Block(sub));
 	}
@@ -364,8 +369,7 @@ int Inventory::MiniCraft(const ushort num) {
 		while ( !inventory[num].isEmpty() ) {
 			Block * const to_drop=ShowBlock(num);
 			Pull(num);
-			if ( !to_drop->Normal() )
-				delete to_drop;
+			World::DeleteBlock(to_drop);
 		}
 		for (ushort i=0; i<result.num; ++i)
 			Get(inShred->NewBlock(result.kind, result.sub));
@@ -375,20 +379,28 @@ int Inventory::MiniCraft(const ushort num) {
 }
 
 Inventory::Inventory(
-		Shred * const sh,
 		QDataStream & str,
 		const ushort sz)
 		:
 		size(sz),
-		inShred(sh)
+		inShred(0)
 {
 	inventory=new QStack<Block *>[Size()];
 	for (ushort i=0; i<Size(); ++i) {
 		quint8 num;
 		str >> num;
 		while ( num-- )
-			inventory[i].push(inShred->BlockFromFile(str, 0, 0, HEIGHT));
+			inventory[i].push(Shred::BlockFromFile(str));
 	}
+}
+
+Inventory::~Inventory() {
+	for (ushort i=0; i<Size(); ++i)
+		while ( !inventory[i].isEmpty() ) {
+			Block * const block=inventory[i].pop();
+			World::DeleteBlock(block);
+		}
+	delete [] inventory;
 }
 
 bool Dwarf::ShouldFall() const {
@@ -406,7 +418,7 @@ bool Dwarf::ShouldFall() const {
 void Dwarf::Act() { Animal::Act(); }
 
 Block * Dwarf::DropAfterDamage() const {
-	return whereShred->NewNormal(H_MEAT);
+	return World::Normal(H_MEAT);
 }
 
 before_move_return Dwarf::BeforeMove(const int dir) {
@@ -433,15 +445,9 @@ void Pile::Act() {
 		GetWorld()->Damage(x_self, y_self, z_self, 0, TIME);
 }
 
-Pile::Pile(
-		Shred * const sh,
-		const ushort x,
-		const ushort y,
-		const ushort z,
-		QDataStream & str)
-		:
-		Active(sh, x, y, z, str, DIFFERENT, NONSTANDARD),
-		Inventory(sh, str)
+Pile::Pile(QDataStream & str) :
+		Active(str, DIFFERENT, NONSTANDARD),
+		Inventory(str)
 {
 	str >> ifToDestroy;
 }
@@ -497,11 +503,11 @@ void Grass::Act() {
 
 void Bush::Act() {
 	if ( 0==rand()%(SECONDS_IN_HOUR*4) )
-		Get(whereShred->NewNormal(HAZELNUT));
+		Get(World::Normal(HAZELNUT));
 }
 
 Block * Bush::DropAfterDamage() const {
-	return whereShred->NewNormal(WOOD);
+	return World::Normal(WOOD);
 }
 
 float Rabbit::Attractive(int kind) const {
@@ -573,15 +579,14 @@ void Rabbit::Act() {
 }
 
 Block * Rabbit::DropAfterDamage() const {
-	return whereShred->NewNormal(A_MEAT);
+	return World::Normal(A_MEAT);
 }
 
 void Workbench::Craft() {
 	while ( Number(0) ) { //remove previous product
 		Block * const to_push=ShowBlock(0);
 		Pull(0);
-		if ( !to_push->Normal() )
-			delete to_push;
+		World::DeleteBlock(to_push);
 	}
 	craft_recipe recipe;
 	for (ushort i=Start(); i<Size(); ++i)
@@ -598,6 +603,34 @@ void Workbench::Craft() {
 			GetExact(InShred()->NewBlock(result.kind, result.sub), 0);
 	for (ushort i=0; i<recipe.size(); ++i)
 		delete recipe.at(i);
+}
+
+int Workbench::Drop(const ushort num, Inventory * const inv_to) {
+	if ( !inv_to )
+		return 1;
+	if ( num>=Size() )
+		return 6;
+	if ( !Number(num) )
+		return 6;
+	if ( num==0 ) {
+		while ( Number(0) ) {
+			if ( !inv_to->Get(ShowBlock(0)) )
+				return 2;
+			Pull(0);
+		}
+		for (ushort i=Start(); i<Size(); ++i)
+			while ( Number(i) ) {
+				Block * const to_pull=ShowBlock(i);
+				Pull(i);
+				World::DeleteBlock(to_pull);
+			}
+	} else {
+		if ( !inv_to->Get(ShowBlock(num)) )
+			return 2;
+		Pull(num);
+		Craft();
+	}
+	return 0;
 }
 
 int Door::BeforePush(const int dir) {
@@ -631,14 +664,10 @@ void Door::Act() {
 }
 
 Door::Door(
-		Shred * const sh,
-		const ushort x,
-		const ushort y,
-		const ushort z,
 		QDataStream & str,
 		const int sub)
 		:
-		Active(sh, x, y, z, str, sub, NONSTANDARD),
+		Active(str, sub, NONSTANDARD),
 		movable(NOT_MOVABLE)
 {
 	str >> shifted >> locked;

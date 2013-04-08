@@ -31,7 +31,6 @@ class Animal;
 
 class Block { //blocks without special physics and attributes
 	bool inMemoryChunk;
-	bool normal;
 	void SetTransparency(const quint8 transp) {
 		if ( UNDEF==transp )
 			switch ( sub ) {
@@ -78,13 +77,6 @@ class Block { //blocks without special physics and attributes
 	virtual int Move(const int) { return 0; }
 	virtual usage_types Use() { return NO; }
 	virtual int Damage(const ushort dmg, const int dmg_kind);
-	virtual short MaxDurability() const {
-		switch ( Sub() ) {
-			case GREENERY: return 1;
-			case GLASS: return 2;
-			default: return MAX_DURABILITY;
-		}
-	}
 	virtual Block * DropAfterDamage() const {
 		return ( BLOCK==Kind() && GLASS!=sub ) ?
 			new Block(sub) : 0;
@@ -116,15 +108,15 @@ class Block { //blocks without special physics and attributes
 			sub==GREENERY  );
 	}
 
+	protected:
 	virtual void SaveAttributes(QDataStream &) const {}
 
-	void Restore() { durability=MaxDurability(); }
+	public:
+	void Restore() { durability=MAX_DURABILITY; }
 	void NullWeight(const bool null) { nullWeight=null; }
 	float Weight() const { return nullWeight ? 0 : TrueWeight(); }
 	void SetDir(const int dir) { direction=dir; }
-	void SetNormal(const bool n) { normal=n; }
 
-	bool Normal() const { return normal; }
 	int  GetDir() const { return direction; }
 	int  Sub() const { return sub; }
 	short Durability() const { return durability; }
@@ -133,24 +125,12 @@ class Block { //blocks without special physics and attributes
 
 	bool operator==(const Block &) const;
 
-	void SaveToFile(QDataStream & out) const {
-		out << (quint16)Kind() << sub << normal;
-
-		if ( normal )
-			return;
-
-		out << nullWeight
-			<< direction
-			<< durability
-			<< note;
-		SaveAttributes(out);
-	}
+	void SaveToFile(QDataStream & out) const;
 
 	Block(
 			const int sb=STONE,
 			const quint8 transp=UNDEF)
 			:
-			normal(false),
 			sub(sb),
 			nullWeight(false),
 			direction(UP),
@@ -217,7 +197,7 @@ class Ladder : public Block {
 	{}
 }; //class Ladder
 
-class Clock : public Block {
+/*class Clock : public Block {
 	World * world;
 
 	public:
@@ -234,7 +214,6 @@ class Clock : public Block {
 	}
 
 	Block * DropAfterDamage() const { return new Clock(world, Sub()); }
-	short MaxDurability() const { return 2; }
 	usage_types Use();
 	int BeforePush(const int) {
 		Use();
@@ -257,7 +236,7 @@ class Clock : public Block {
 			Block(str, sub, NONSTANDARD),
 			world(w)
 	{}
-}; //class Clock
+}; //class Clock*/
 
 class Weapon : public Block {
 	public:
@@ -442,25 +421,6 @@ class Active : public QObject, public Block {
 	       		whereShred(0)
 	{}
 	Active(
-			Shred * const sh,
-			const ushort x,
-			const ushort y,
-			const ushort z,
-			const int sub,
-			const quint8 transp=UNDEF)
-			:
-			Block(sub, transp),
-			fall_height(0),
-			falling(false),
-			timeStep(0)
-	{
-		Register(sh, x, y, z);
-	}
-	Active(
-			Shred * const sh,
-			const ushort x,
-			const ushort y,
-			const ushort z,
 			QDataStream & str,
 			const int sub,
 			const quint8 transp=UNDEF);
@@ -491,21 +451,13 @@ class Animal : public Active {
 	Animal * IsAnimal() { return this; }
 
 	Animal(
-			Shred * const sh,
-			const ushort i,
-			const ushort j,
-			const ushort k,
 			const int sub=A_MEAT)
 			:
-			Active(sh, i, j, k, sub, NONSTANDARD),
+			Active(sub, NONSTANDARD),
 			breath(MAX_BREATH),
 			satiation(SECONDS_IN_DAY)
 	{}
 	Animal(
-			Shred * const sh,
-			const ushort i,
-			const ushort j,
-			const ushort k,
 			QDataStream & str,
 			const int sub);
 	virtual ~Animal() {}
@@ -543,7 +495,7 @@ class Inventory {
 
 	World * InWorld() const;
 	Shred * InShred() const { return inShred; }
-	void SetShred(Shred * const sh) { inShred=sh; }
+	void Register(Shred * const sh) { inShred=sh; }
 	ushort Size() const { return size; }
 	bool GetExact(Block * const block, const ushort num);
 	int MiniCraft(const ushort num);
@@ -604,27 +556,16 @@ class Inventory {
 	//because it will not be convenient to deal with inventory
 	//in console version.
 	Inventory(
-			Shred * const sh,
 			const ushort sz=26)
 			:
-			size(sz),
-			inShred(sh)
+			size(sz)
 	{
 		inventory=new QStack<Block *>[Size()];
 	}
 	Inventory(
-			Shred * const,
 			QDataStream & str,
 			const ushort size=26);
-	virtual ~Inventory() {
-		for (ushort i=0; i<Size(); ++i)
-			while ( !inventory[i].isEmpty() ) {
-				Block * const block=inventory[i].pop();
-				if ( !block->Normal() )
-					delete block;
-			}
-		delete [] inventory;
-	}
+	virtual ~Inventory();
 }; //class Inventory
 
 class Dwarf : public Animal, public Inventory {
@@ -717,26 +658,17 @@ class Dwarf : public Animal, public Inventory {
 
 	uchar LightRadius() const { return 3; }
 
-	Dwarf(
-			Shred * const sh,
-			const ushort x,
-			const ushort y,
-			const ushort z)
-			:
-			Animal(sh, x, y, z, H_MEAT),
-			Inventory(sh)
+	Dwarf()	:
+			Animal(H_MEAT),
+			Inventory()
 	{
 		Inscribe("Urist");
 	}
 	Dwarf(
-			Shred * const sh,
-			const ushort x,
-			const ushort y,
-			const ushort z,
 			QDataStream & str)
 			:
-			Animal(sh, x, y, z, str, H_MEAT),
-			Inventory(sh, str)
+			Animal(str, H_MEAT),
+			Inventory(str)
 	{}
 	virtual ~Dwarf() {}
 }; //class Dwarf
@@ -760,7 +692,7 @@ class Chest : public Block, public Inventory {
 
 	usage_types Use() { return Inventory::Use(); }
 
-	Block * DropAfterDamage() const { return new Chest(0, sub); }
+	Block * DropAfterDamage() const { return new Chest(sub); }
 	float TrueWeight() const {
 		switch ( Sub() ) {
 			case WOOD:  return 100+InvWeightAll();
@@ -779,19 +711,17 @@ class Chest : public Block, public Inventory {
 	}
 
 	Chest(
-			Shred * const sh,
 			const int s=WOOD)
 			:
 			Block(s),
-			Inventory(sh)
+			Inventory()
 	{}
 	Chest(
-			Shred * const sh,
 			QDataStream & str,
 			const int sub)
 			:
 			Block(str, sub),
-			Inventory(sh, str)
+			Inventory(str)
 	{}
 }; //class Chest
 
@@ -828,25 +758,14 @@ class Pile : public Active, public Inventory {
 		out << ifToDestroy;
 	}
 
-	Pile(
-			Shred * const sh,
-			const ushort x,
-			const ushort y,
-			const ushort z,
-			Block * const block=NULL)
-			:
-			Active(sh, x, y, z, DIFFERENT, NONSTANDARD),
-			Inventory(sh),
+	Pile(Block * const block=NULL) :
+			Active(DIFFERENT, NONSTANDARD),
+			Inventory(),
 			ifToDestroy(false)
 	{
 		Get(block);
 	}
-	Pile(
-			Shred * const sh,
-			const ushort x,
-			const ushort y,
-			const ushort z,
-			QDataStream & str);
+	Pile(QDataStream & str);
 }; //class Pile
 
 class Liquid : public Active {
@@ -884,30 +803,19 @@ class Liquid : public Active {
 
 	int Temperature() const { return ( WATER==sub ) ? 0 : 1000; }
 
-	Liquid(
-			Shred * const sh,
-			const ushort x,
-			const ushort y,
-			const ushort z,
-			const int sub=WATER)
-			:
-			Active(sh, x, y, z, sub)
+	Liquid(const int sub=WATER) :
+			Active(sub)
 	{}
 	Liquid(
-			Shred * const sh,
-			const ushort x,
-			const ushort y,
-			const ushort z,
 			QDataStream & str,
 			const int sub)
 			:
-			Active(sh, x, y, z, str, sub)
+			Active(str, sub)
 	{}
 }; //class Liquid
 
 class Grass : public Active {
 	Q_OBJECT
-	static const quint8 grass_dur=1;
 	public:
 	QString & FullName(QString & str) const {
 		switch ( sub ) {
@@ -920,43 +828,29 @@ class Grass : public Active {
 		}
 	}
 	int Kind() const { return GRASS; }
-	short MaxDurability() const { return grass_dur; }
 
 	bool ShouldFall() const { return false; }
 
 	before_move_return BeforeMove(const int) { return DESTROY; }
 	void Act();
 
-	Grass(
-			Shred * const sh=0,
-			const ushort x=0,
-			const ushort y=0,
-			const ushort z=0)
-			:
-			Active(sh, x, y, z, GREENERY, grass_dur)
+	Grass() :
+			Active(GREENERY)
 	{}
-	Grass(
-			Shred * const sh,
-			const ushort x,
-			const ushort y,
-			const ushort z,
-			QDataStream & str)
-			:
-			Active(sh, x, y, z, str, GREENERY)
+	Grass(QDataStream & str) :
+			Active(str, GREENERY)
 	{}
 }; //class Grass
 
 class Bush : public Active, public Inventory {
 	Q_OBJECT
 
-	static const quint8 bush_dur=20;
 	static const ushort bush_size=3;
 
 	public:
 	QString & FullName(QString & str) const { return str="Bush"; }
 	int Kind() const { return BUSH; }
 	int Sub() const { return Block::Sub(); }
-	short MaxDurability() const { return bush_dur; }
 
 	usage_types Use() { return Inventory::Use(); }
 	Inventory * HasInventory() { return Inventory::HasInventory(); }
@@ -972,18 +866,13 @@ class Bush : public Active, public Inventory {
 		Inventory::SaveAttributes(out);
 	}
 
-	Bush(
-			Shred * const sh=0)
-			:
-			Active(sh, 0, 0, 0, WOOD, bush_dur),
-			Inventory(sh, bush_size)
+	Bush() :
+			Active(WOOD),
+			Inventory(bush_size)
 	{}
-	Bush(
-			Shred * const sh,
-			QDataStream & str)
-			:
-			Active(sh, 0, 0, 0, str, WOOD),
-			Inventory(sh, str, bush_size)
+	Bush(QDataStream & str) :
+			Active(str, WOOD),
+			Inventory(str, bush_size)
 	{}
 }; //class Bush
 
@@ -1012,22 +901,11 @@ class Rabbit : public Animal {
 
 	Block * DropAfterDamage() const;
 
-	Rabbit(
-			Shred * const sh,
-			const ushort x,
-			const ushort y,
-			const ushort z)
-			:
-			Animal(sh, x, y, z)
+	Rabbit() :
+			Animal()
 	{}
-	Rabbit(
-			Shred * const sh,
-			const ushort x,
-			const ushort y,
-			const ushort z,
-			QDataStream & str)
-			:
-			Animal(sh, x, y, z, str, A_MEAT)
+	Rabbit(QDataStream & str) :
+			Animal(str, A_MEAT)
 	{}
 }; //class Rabbit
 
@@ -1051,40 +929,13 @@ class Workbench : public Block, public Inventory {
 	int Kind() const { return WORKBENCH; }
 	float TrueWeight() const { return InvWeightAll()+80; }
 	usage_types Use() { return OPEN; }
-	Block * DropAfterDamage() const { return new Workbench(InShred(), Sub()); }
+	Block * DropAfterDamage() const { return new Workbench(Sub()); }
 	Inventory * HasInventory() { return Inventory::HasInventory(); }
 
 	int Sub() const { return Block::Sub(); }
 	ushort Start() const { return 1; }
 
-	int Drop(const ushort num, Inventory * const inv_to) {
-		if ( !inv_to )
-			return 1;
-		if ( num>=Size() )
-			return 6;
-		if ( !Number(num) )
-			return 6;
-		if ( num==0 ) {
-			while ( Number(0) ) {
-				if ( !inv_to->Get(ShowBlock(0)) )
-					return 2;
-				Pull(0);
-			}
-			for (ushort i=Start(); i<Size(); ++i)
-				while ( Number(i) ) {
-					Block * const to_pull=ShowBlock(i);
-					Pull(i);
-					if ( !to_pull->Normal() )
-						delete to_pull;
-				}
-		} else {
-			if ( !inv_to->Get(ShowBlock(num)) )
-				return 2;
-			Pull(num);
-			Craft();
-		}
-		return 0;
-	}
+	int Drop(const ushort num, Inventory * const inv_to);
 	bool Get(Block * const block) {
 		if ( Inventory::Get(block) ) {
 			Craft();
@@ -1105,20 +956,16 @@ class Workbench : public Block, public Inventory {
 		Inventory::SaveAttributes(out);
 	}
 
-	Workbench(
-			Shred * const sh,
-			const int sub)
-			:
+	Workbench(const int sub) :
 			Block(sub),
-			Inventory(sh, workbench_size)
+			Inventory(workbench_size)
 	{}
 	Workbench(
-			Shred * const sh,
 			QDataStream & str,
 			const int sub)
 			:
 			Block(str, sub),
-			Inventory(sh, str, workbench_size)
+			Inventory(str, workbench_size)
 	{}
 }; //class Workbench
 
@@ -1150,7 +997,7 @@ class Door : public Active {
 	}
 	int BeforePush(const int dir);
 	void Act();
-	Block * DropAfterDamage() const { return new Door(0, 0, 0, 0, Sub()); }
+	Block * DropAfterDamage() const { return new Door(/*0, 0, 0, 0,*/ Sub()); }
 
 	void SaveAttributes(QDataStream & out) const {
 		Active::SaveAttributes(out);
@@ -1158,27 +1005,13 @@ class Door : public Active {
 	}
 
 	public:
-	Door(
-			Shred * const sh,
-			const ushort x,
-			const ushort y,
-			const ushort z,
-			const int sub)
-			:
-			Active(
-				sh,
-				x, y, z,
-				sub,
-				( STONE==sub ) ? BLOCK_OPAQUE : NONSTANDARD),
+	Door(const int sub) :
+			Active(sub, ( STONE==sub ) ? BLOCK_OPAQUE : NONSTANDARD),
 			shifted(false),
 			locked(false),
 			movable(NOT_MOVABLE)
 	{}
 	Door(
-			Shred * const sh,
-			const ushort x,
-			const ushort y,
-			const ushort z,
 			QDataStream & str,
 			const int sub);
 }; //class Door
