@@ -19,6 +19,7 @@
 #include "Player.h"
 #include "world.h"
 #include "Shred.h"
+#include "BlockManager.h"
 #include <QFile>
 #include <QTextStream>
 #include <QString>
@@ -355,7 +356,9 @@ void Player::ProcessCommand(QString & command) {
 			}
 			while ( num && inv->HasRoom() ) {
 				for (ushort i=9; i && num; --i) {
-					inv->Get(shred->NewBlock(kind, sub));
+					inv->Get(block_manager.NewBlock(
+						static_cast<subs>(sub),
+						static_cast<kinds>(kind)));
 					--num;
 				}
 			}
@@ -499,12 +502,8 @@ void Player::SetPlayer(
 	z=player_z;
 	shred=world->GetShred(x, y);
 	if ( DWARF!=world->Kind(x, y, z) ) {
-		Block * const temp=world->GetBlock(x, y, z);
-		World::DeleteBlock(temp);
-		world->SetBlock(
-			(player=new Dwarf(/*shred, x, y, z*/)),
-			x, y, z);
-		shred->RegisterBlock(player, x%SHRED_WIDTH, y%SHRED_WIDTH, z);
+		World::DeleteBlock(world->GetBlock(x, y, z));
+		world->SetBlock( (player=block_manager.NewBlock(H_MEAT, DWARF)->ActiveBlock()), x, y, z );
 	} else {
 		player=world->ActiveBlock(x, y, z);
 	}

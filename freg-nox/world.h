@@ -30,13 +30,6 @@ class Inventory;
 class Active;
 class Shred;
 
-typedef struct {
-	ushort num;
-	int kind;
-	int sub;
-} craft_item;
-typedef QList<craft_item *> craft_recipe;
-
 enum deferred_actions {
 	DEFERRED_NOTHING,
 	DEFERRED_MOVE,
@@ -50,8 +43,6 @@ const ushort safe_fall_height=5;
 
 const uchar MOON_LIGHT_FACTOR=1;
 const uchar  SUN_LIGHT_FACTOR=8;
-
-static BlockManager block_manager;
 
 class World : public QThread {
 	Q_OBJECT
@@ -73,8 +64,6 @@ class World : public QThread {
 
 	long mapSize;
 
-	QList<craft_recipe *> recipes;
-
 	long newLati, newLongi;
 	ushort newNumShreds, newNumActiveShreds;
 	ushort newX, newY, newZ;
@@ -93,9 +82,6 @@ class World : public QThread {
 	int deferredActionType;
 
 	uchar sunMoonFactor;
-
-	void LoadRecipes();
-	void CleanRecipes();
 
 	void ReplaceWithNormal(
 			const ushort x,
@@ -122,7 +108,7 @@ class World : public QThread {
 	//block work section
 	public:
 	static Block * Normal(const int sub) {
-		return block_manager.NormalBlock(BLOCK, sub);
+		return block_manager.NormalBlock(static_cast<subs>(sub));
 	}
 	static void DeleteBlock(Block * const block) {
 		block_manager.DeleteBlock(block);
@@ -138,10 +124,18 @@ class World : public QThread {
 		return shreds[j/SHRED_WIDTH*numShreds+
 		              i/SHRED_WIDTH];
 	}
-	void SetBlock(Block *,
-			const ushort,
-			const ushort,
-			const ushort);
+	///Puts block to coordinates xyz and activates it
+	void SetBlock(
+			Block * const block,
+			const ushort x,
+			const ushort y,
+			const ushort z);
+	///Puts block to coordinates and not activates it (e.g. in World::Move)
+	void PutBlock(
+			Block * const block,
+			const ushort x,
+			const ushort y,
+			const ushort z);
 
 	//lighting section
 	public:
@@ -441,14 +435,6 @@ class World : public QThread {
 			const ushort,
 			const ushort) const;
 	bool Equal(const Block * const, const Block * const) const;
-
-	//craft section
-	bool MiniCraft(craft_item & item, craft_item & result) {
-		craft_recipe recipe;
-		recipe.append(&item);
-		return Craft(recipe, result);
-	}
-	bool Craft(const craft_recipe & recipe, craft_item & result);
 
 	void ReloadAllShreds(
 		const long lati,

@@ -52,6 +52,8 @@ class Block { //blocks without special physics and attributes
 	qint16 durability;
 
 	public:
+	void SetInMemoryChunk(const bool in) { inMemoryChunk=in; }
+	bool InMemoryChunk() const { return inMemoryChunk; }
 	virtual QString & FullName(QString & str) const;
 	virtual int Kind() const { return BLOCK; }
 	virtual float TrueWeight() const;
@@ -117,8 +119,8 @@ class Block { //blocks without special physics and attributes
 	float Weight() const { return nullWeight ? 0 : TrueWeight(); }
 	void SetDir(const int dir) { direction=dir; }
 
-	int  GetDir() const { return direction; }
-	int  Sub() const { return sub; }
+	int GetDir() const { return direction; }
+	int Sub() const { return sub; }
 	short Durability() const { return durability; }
 	QString & GetNote(QString & str) const { return str=note; }
 	int Transparent() const { return transparent; }
@@ -131,6 +133,7 @@ class Block { //blocks without special physics and attributes
 			const int sb=STONE,
 			const quint8 transp=UNDEF)
 			:
+			inMemoryChunk(false),
 			sub(sb),
 			nullWeight(false),
 			direction(UP),
@@ -467,7 +470,6 @@ class Inventory {
 	static const ushort max_stack_size=9;
 	const ushort size;
 	QStack<Block *> * inventory;
-	Shred * inShred;
 
 	public:
 	virtual QString & FullName(QString&) const=0;
@@ -493,9 +495,6 @@ class Inventory {
 		}
 	}
 
-	World * InWorld() const;
-	Shred * InShred() const { return inShred; }
-	void Register(Shred * const sh) { inShred=sh; }
 	ushort Size() const { return size; }
 	bool GetExact(Block * const block, const ushort num);
 	int MiniCraft(const ushort num);

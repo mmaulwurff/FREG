@@ -39,7 +39,7 @@ int Shred::LoadShred(QFile & file) {
 		for (ushort i=0; i<SHRED_WIDTH; ++i)
 		for (ushort j=0; j<SHRED_WIDTH; ++j) {
 			for (ushort k=0; k<HEIGHT; ++k) {
-				RegisterBlock((blocks[i][j][k]=BlockFromFile(in)), i, j, k);
+				SetBlock(block_manager.BlockFromFile(in), i, j, k);
 				lightMap[i][j][k]=0;
 			}
 			lightMap[i][j][HEIGHT-1]=MAX_LIGHT_RADIUS;
@@ -138,9 +138,10 @@ void Shred::SetNewBlock(
 		const ushort y,
 		const ushort z)
 {
-	Block * const block=NewBlock(kind, sub);
-	blocks[x][y][z]=block;
-	RegisterBlock(block, x, y, z);
+	SetBlock( block_manager.NewBlock(
+			static_cast<subs>(sub),
+			static_cast<kinds>(kind)),
+		x, y, z );
 }
 
 void Shred::RegisterBlock(
@@ -150,45 +151,10 @@ void Shred::RegisterBlock(
 		const ushort z)
 {
 	Active * const active=block->ActiveBlock();
-	if ( active )
+	if ( active ) {
 		active->Register(this,
 			SHRED_WIDTH*shredX+x,
 			SHRED_WIDTH*shredY+y, z);
-	Inventory * const inventory=block->HasInventory();
-	if ( inventory ) {
-		inventory->Register(this);
-	}
-}
-
-Block * Shred::NewBlock(const int kind, int sub) {
-	if ( sub > AIR ) {
-		fprintf(stderr,
-			"Don't know such substance: %d.\n",
-			sub);
-		sub=STONE;
-	}
-	switch ( kind ) {
-		case BLOCK:  return World::Normal(sub);
-		case GRASS:  return new Grass();
-		case PICK:   return new Pick(sub);
-		case PLATE:  return new Plate(sub);
-		case ACTIVE: return new Active(sub);
-		case LADDER: return new Ladder(sub);
-		case WEAPON: return new Weapon(sub);
-		case BUSH:   return new Bush();
-		case CHEST:  return new Chest(sub);
-		case PILE:   return new Pile  ();
-		case DWARF:  return new Dwarf ();
-		case RABBIT: return new Rabbit();
-		case DOOR:   return new Door  (sub);
-		case LIQUID: return new Liquid(sub);
-		//case CLOCK:  return new Clock(GetWorld(), sub);
-		case WORKBENCH: return new Workbench(sub);
-		default:
-			fprintf(stderr,
-				"Shred::NewBlock: unlisted kind: %d\n",
-				kind);
-			return World::Normal(sub);
 	}
 }
 
@@ -209,46 +175,6 @@ void Shred::PhysEvents() {
 				world->Move(x, y, z, UP);
 		}
 		temp->Act();
-	}
-}
-
-Block * Shred::BlockFromFile(QDataStream & str) {
-	quint16 kind, sub;
-	bool normal;
-	str >> kind >> sub >> normal;
-	if ( normal ) {
-		return World::Normal(sub);
-	}
-
-	//if some kind will not be listed here,
-	//blocks of this kind just will not load,
-	//unless kind is inherited from Inventory class or one
-	//of its derivatives - in this case this may cause something bad.
-	switch ( kind ) {
-		case BLOCK:  return new Block (str, sub);
-		case PICK:   return new Pick  (str, sub);
-		case PLATE:  return new Plate (str, sub);
-		case LADDER: return new Ladder(str, sub);
-		case WEAPON: return new Weapon(str, sub);
-
-		case BUSH:   return new Bush (str);
-		case CHEST:  return new Chest(str, sub);
-		case WORKBENCH: return new Workbench(str, sub);
-
-		case RABBIT: return new Rabbit(str);
-		case DWARF:  return new Dwarf (str);
-		case PILE:   return new Pile  (str);
-		case GRASS:  return new Grass (str);
-		case ACTIVE: return new Active(str, sub);
-		case LIQUID: return new Liquid(str, sub);
-		case DOOR:   return new Door  (str, sub);
-
-		//case CLOCK:  return new Clock(str, world, sub);
-		default:
-			fprintf(stderr,
-				"Shred::BlockFromFile: unlisted kind: %d.\n",
-				kind);
-			return World::Normal(sub);
 	}
 }
 
@@ -331,7 +257,18 @@ Block * Shred::GetBlock(
 	//fprintf(stderr, "Shred::GetBlock::x: %hu, y: %hu, z:%hu\n", x, y, z);
 	return blocks[x][y][z];
 }
-void Shred::SetBlock(Block * block,
+void Shred::SetBlock(
+		Block * const block,
+		const ushort x,
+		const ushort y,
+		const ushort z)
+{
+	blocks[x][y][z]=block;
+	RegisterBlock(block, x, y, z);
+}
+
+void Shred::PutBlock(
+		Block * const block,
 		const ushort x,
 		const ushort y,
 		const ushort z)

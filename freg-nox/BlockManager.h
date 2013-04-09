@@ -18,6 +18,7 @@
 #ifndef BLOCKMANAGER_H
 #define BLOCKMANAGER_H
 
+#include <QDataStream>
 #include "header.h"
 
 class Block;
@@ -27,11 +28,15 @@ class BlockManager {
 	BlockManager();
 	~BlockManager();
 
-	Block * NormalBlock(const int kind, const int sub);
+	Block * NormalBlock(const subs sub);
+	Block * NewBlock(const subs sub, const kinds kind=BLOCK);
+	Block * BlockFromFile(QDataStream &);
 	void DeleteBlock(Block * const block);
 
 	private:
 	Block * normals[AIR+1];
-};
+}; //class BlockManager
+
+extern BlockManager block_manager;
 
 #endif

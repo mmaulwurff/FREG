@@ -33,7 +33,7 @@ class Shred {
 	ushort shredX, shredY;
 	QList<Active *> activeList;
 
-	qint8 * memory_chunk;
+	//qint8 * memory_chunk;
 
 	public:
 	long Longitude() const { return longitude; }
@@ -56,10 +56,18 @@ class Shred {
 			const ushort,
 			const ushort,
 			const ushort) const;
-	void SetBlock(Block *,
-			const ushort,
-			const ushort,
-			const ushort);
+	///Puts block to coordinates xyz and activates it
+	void SetBlock(
+			Block * const block,
+			const ushort x,
+			const ushort y,
+			const ushort z);
+	///Puts block to coordinates and not activates it (e.g. in World::Move)
+	void PutBlock(
+			Block * const block,
+			const ushort x,
+			const ushort y,
+			const ushort z);
 
 	uchar LightMap(
 			const ushort,
@@ -118,8 +126,7 @@ class Shred {
 			const ushort x,
 			const ushort y,
 			const ushort z);
-	static Block * NewBlock(const int kind, int sub);
-	static Block * BlockFromFile(QDataStream &);
+	private:
 	void RegisterBlock(
 			Block * const,
 			const ushort x,

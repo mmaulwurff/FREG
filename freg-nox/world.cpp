@@ -1,4 +1,4 @@
-    /*
+	/*
 	*This file is part of FREG.
 	*
 	*FREG is free software: you can redistribute it and/or modify
@@ -30,65 +30,6 @@
 #else
     #include <cmath>
 #endif
-
-void World::LoadRecipes() {
-	QFile file("recipes.txt");
-	if ( !file.open(QIODevice::ReadOnly | QIODevice::Text) ) {
-		fputs("No recipes file found.\n", stderr);
-		return;
-	}
-	while ( !file.atEnd() ) {
-		QByteArray rec_arr=file.readLine();
-		if ( rec_arr.isEmpty() ) {
-			qDebug("recipes read error.");
-			break;
-		}
-		QTextStream in(rec_arr, QIODevice::ReadOnly | QIODevice::Text);
-		craft_recipe * recipe=new craft_recipe;
-		for (;;) {
-			craft_item * item=new craft_item;
-			item->num=0;
-			in >> item->num >> item->kind >> item->sub;
-			if ( !item->num ) {
-				delete item;
-				break;
-			}
-			else
-				recipe->append(item);
-		}
-		recipes.append(recipe);
-	}
-}
-
-void World::CleanRecipes() {
-	for (ushort j=0; j<recipes.size(); ++j) {
-		for (ushort i=0; i<recipes.at(j)->size(); ++i)
-			delete recipes.at(j)->at(i);
-		delete recipes.at(j);
-	}
-}
-
-bool World::Craft(
-		const craft_recipe & recipe,
-		craft_item & result)
-{
-	const ushort size=recipe.size();
-	for (ushort i=0; i<recipes.size(); ++i) {
-		if ( recipes.at(i)->size()!=size+1 )
-			continue;
-		ushort j=0;
-		for ( ; j<size && recipes.at(i)->at(j)->num==recipe.at(j)->num &&
-				recipes.at(i)->at(j)->kind==recipe.at(j)->kind &&
-				recipes.at(i)->at(j)->sub==recipe.at(j)->sub; ++j);
-		if ( j==size ) {
-			result.num=recipes.at(i)->at(j)->num;
-			result.kind=recipes.at(i)->at(j)->kind;
-			result.sub=recipes.at(i)->at(j)->sub;
-			return true;
-		}
-	}
-	return false;
-}
 
 void World::run() {
 	QTimer timer;
@@ -163,13 +104,24 @@ Block * World::GetBlock(
 		GetBlock(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 
-void World::SetBlock(Block * block,
+void World::SetBlock(
+		Block * const block,
 		const ushort x,
 		const ushort y,
 		const ushort z)
 {
 	GetShred(x, y)->
 		SetBlock(block, x%SHRED_WIDTH, y%SHRED_WIDTH, z);
+}
+
+void World::PutBlock(
+		Block * const block,
+		const ushort x,
+		const ushort y,
+		const ushort z)
+{
+	GetShred(x, y)->
+		PutBlock(block, x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 
 Block * World::ReplaceWithNormal(Block * const block) {
@@ -498,7 +450,7 @@ int World::Move(
 
 	if ( DESTROY==block->BeforeMove(dir) ) {
 		World::DeleteBlock(block);
-		SetBlock(Normal(AIR), i, j, k);
+		PutBlock(Normal(AIR), i, j, k);
 		return 1;
 	}
 
@@ -535,8 +487,8 @@ int World::Move(
 		return 0;
 	block_to=GetBlock(newi, newj, newk); //Move could change block_to
 
-	SetBlock(block_to, i, j, k);
-	SetBlock(block, newi, newj, newk);
+	PutBlock(block_to, i, j, k);
+	PutBlock(block, newi, newj, newk);
 
 	ReEnlighten(newi, newj, newk);
 	ReEnlighten(i, j, k);
@@ -655,24 +607,20 @@ bool World::Damage(
 		const ushort dmg, //see default in class definition
 		const int dmg_kind) //see default in class definition
 {
-	if ( !InBounds(i, j, k) )
+	if ( !InBounds(i, j, k) ) {
 		return false;
-
+	}
 	Block * temp=GetBlock(i, j, k);
 	if ( temp==World::Normal(temp->Sub()) && AIR!=temp->Sub() ) {
-		temp=new Block(temp->Sub());
-		SetBlock(temp, i, j, k);
+		SetBlock( (temp=new Block(temp->Sub())), i, j, k );
 	}
-
 	if ( temp->Damage(dmg, dmg_kind) > 0 ) {
 		ReplaceWithNormal(i, j, k); //checks are inside
 		return false;
 	}
-
 	Block * const dropped=temp->DropAfterDamage();
 	if ( PILE!=temp->Kind() && (temp->HasInventory() || dropped) ) {
-		Block * const new_pile=Shred::NewBlock(PILE, DIFFERENT);
-		GetShred(i, j)->RegisterBlock(new_pile, i%SHRED_WIDTH, j%SHRED_WIDTH, k);
+		Block * const new_pile=block_manager.NewBlock(DIFFERENT, PILE);
 		SetBlock(new_pile, i, j, k);
 		Inventory * const inv=temp->HasInventory();
 		Inventory * const new_pile_inv=new_pile->HasInventory();
@@ -681,9 +629,9 @@ bool World::Damage(
 		if ( !new_pile_inv->Get(dropped) ) {
 			World::DeleteBlock(dropped);
 		}
-	} else
+	} else {
 		SetBlock(Normal(AIR), i, j, k);
-
+	}
 	delete temp;
 	ReEnlighten(i, j, k);
 	return true;
@@ -719,7 +667,6 @@ int World::Build(
 	}
 
 	block->Restore();
-	GetShred(i, j)->RegisterBlock(block, i%SHRED_WIDTH, j%SHRED_WIDTH, k);
 	SetBlock(block, i, j, k);
 	block->SetDir(dir);
 
@@ -773,12 +720,7 @@ int World::Exchange(
 	if ( !inv_from )
 		return 3;
 	if ( AIR==Sub(i_to, j_to, k_to) ) {
-		Block * const new_pile=Shred::NewBlock(PILE, DIFFERENT);
-		GetShred(i_to, j_to)->RegisterBlock(
-			new_pile,
-			i_to%SHRED_WIDTH,
-			j_to%SHRED_WIDTH,
-			k_to);
+		Block * const new_pile=block_manager.NewBlock(DIFFERENT, PILE);
 		SetBlock(new_pile, i_to, j_to, k_to);
 	}
 	Inventory * const inv_to=HasInventory(i_to, j_to, k_to);
@@ -1010,7 +952,6 @@ World::World(const QString & world_name)
 	}
 
 	LoadAllShreds();
-	LoadRecipes();
 }
 
 World::~World() { CleanAll(); }
@@ -1027,7 +968,6 @@ void World::CleanAll() {
 	Unlock();
 	wait();
 
-	CleanRecipes();
 	SaveAllShreds();
 
 	QSettings settings;

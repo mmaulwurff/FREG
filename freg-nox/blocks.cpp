@@ -18,6 +18,7 @@
 #include "blocks.h"
 #include "world.h"
 #include "Shred.h"
+#include "CraftManager.h"
 
 QString & Block::FullName(QString & str) const {
 	switch (sub) {
@@ -174,9 +175,6 @@ int Active::Move(const int dir) {
 			whereShred->RemActive(this);
 			whereShred=GetWorld()->GetShred(x_self, y_self);
 			whereShred->AddActive(this);
-			Inventory * const inv=HasInventory();
-			if ( inv )
-				inv->Register(whereShred);
 		}
 		fall_height=0;
 	}
@@ -211,7 +209,8 @@ void Active::Register(
 		const ushort y,
 		const ushort z)
 {
-	if ( (whereShred=sh) ) {
+	if ( !whereShred ) {
+		whereShred=sh;
 		x_self=x;
 		y_self=y;
 		z_self=z;
@@ -352,7 +351,6 @@ int Inventory::InscribeInv(const ushort num, const QString & str) {
 		inventory[num].at(i)->Inscribe(str);
 	return 0;
 }
-World * Inventory::InWorld() const { return inShred->GetWorld(); }
 
 int Inventory::MiniCraft(const ushort num) {
 	const ushort size=inventory[num].size();
@@ -365,14 +363,16 @@ int Inventory::MiniCraft(const ushort num) {
 	};
 	craft_item result;
 
-	if ( inShred->GetWorld()->MiniCraft(item, result) ) {
+	if ( craft_manager.MiniCraft(item, result) ) {
 		while ( !inventory[num].isEmpty() ) {
 			Block * const to_drop=ShowBlock(num);
 			Pull(num);
 			World::DeleteBlock(to_drop);
 		}
 		for (ushort i=0; i<result.num; ++i)
-			Get(inShred->NewBlock(result.kind, result.sub));
+			Get(block_manager.NewBlock(
+				static_cast<subs>(result.sub),
+				static_cast<kinds>(result.kind)));
 		return 0; //success
 	}
 	return 2; //no such recipe
@@ -382,15 +382,14 @@ Inventory::Inventory(
 		QDataStream & str,
 		const ushort sz)
 		:
-		size(sz),
-		inShred(0)
+		size(sz)
 {
 	inventory=new QStack<Block *>[Size()];
 	for (ushort i=0; i<Size(); ++i) {
 		quint8 num;
 		str >> num;
 		while ( num-- )
-			inventory[i].push(Shred::BlockFromFile(str));
+			inventory[i].push(block_manager.BlockFromFile(str));
 	}
 }
 
@@ -598,11 +597,17 @@ void Workbench::Craft() {
 			recipe.append(item);
 		}
 	craft_item result;
-	if ( InWorld()->Craft(recipe, result) )
-		for (ushort i=0; i<result.num; ++i)
-			GetExact(InShred()->NewBlock(result.kind, result.sub), 0);
-	for (ushort i=0; i<recipe.size(); ++i)
+	if ( craft_manager.Craft(recipe, result) ) {
+		for (ushort i=0; i<result.num; ++i) {
+			GetExact(block_manager.NewBlock(
+				static_cast<subs>(result.sub),
+				static_cast<kinds>(result.kind)),
+				0);
+		}
+	}
+	for (ushort i=0; i<recipe.size(); ++i) {
 		delete recipe.at(i);
+	}
 }
 
 int Workbench::Drop(const ushort num, Inventory * const inv_to) {

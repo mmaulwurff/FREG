@@ -19,7 +19,8 @@ HEADERS += blocks.h \
            Shred.h  \
            VirtScreen.h \
            world.h \
-           BlockManager.h
+           BlockManager.h \
+           CraftManager.h
 
 SOURCES += blocks.cpp \
            Lighting.cpp \
@@ -29,4 +30,5 @@ SOURCES += blocks.cpp \
            Shred.cpp \
            VirtScreen.cpp \
            world.cpp \
-           BlockManager.cpp
+           BlockManager.cpp \
+           CraftManager.cpp
