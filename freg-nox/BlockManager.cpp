@@ -20,7 +20,10 @@
 
 BlockManager block_manager;
 
-BlockManager::BlockManager() {
+BlockManager::BlockManager()
+		:
+		memory_pos(0)
+{
 	for(ushort sub=0; sub<=AIR; ++sub) {
 		normals[sub]=new Block(sub);
 		normals[sub]->SetInMemoryChunk(true);
@@ -30,6 +33,7 @@ BlockManager::~BlockManager() {
 	for(ushort sub=0; sub<=AIR; ++sub) {
 		delete normals[sub];
 	}
+	//fprintf(stderr, "memory: %d\n", memory_pos);
 }
 
 Block * BlockManager::NormalBlock(const subs sub) {
@@ -44,22 +48,22 @@ Block * BlockManager::NewBlock(subs sub, const kinds kind) {
 		sub=STONE;
 	}
 	switch ( kind ) {
-		case BLOCK:  return new Block(sub);
-		case GRASS:  return new Grass();
-		case PICK:   return new Pick(sub);
-		case PLATE:  return new Plate(sub);
-		case ACTIVE: return new Active(sub);
-		case LADDER: return new Ladder(sub);
-		case WEAPON: return new Weapon(sub);
-		case BUSH:   return new Bush();
-		case CHEST:  return new Chest(sub);
-		case PILE:   return new Pile  ();
-		case DWARF:  return new Dwarf ();
-		case RABBIT: return new Rabbit();
-		case DOOR:   return new Door  (sub);
-		case LIQUID: return new Liquid(sub);
+		case BLOCK:  memory_pos+=sizeof(Block); return new Block(sub);
+		case GRASS:  memory_pos+=sizeof(Grass); return new Grass();
+		case PICK:   memory_pos+=sizeof(Pick); return new Pick(sub);
+		case PLATE:  memory_pos+=sizeof(Plate); return new Plate(sub);
+		case ACTIVE: memory_pos+=sizeof(Active); return new Active(sub);
+		case LADDER: memory_pos+=sizeof(Ladder); return new Ladder(sub);
+		case WEAPON: memory_pos+=sizeof(Weapon); return new Weapon(sub);
+		case BUSH:   memory_pos+=sizeof(Bush); return new Bush();
+		case CHEST:  memory_pos+=sizeof(Chest); return new Chest(sub);
+		case PILE:   memory_pos+=sizeof(Pile); return new Pile();
+		case DWARF:  memory_pos+=sizeof(Dwarf); return new Dwarf();
+		case RABBIT: memory_pos+=sizeof(Rabbit); return new Rabbit();
+		case DOOR:   memory_pos+=sizeof(Door); return new Door(sub);
+		case LIQUID: memory_pos+=sizeof(Liquid); return new Liquid(sub);
 		//case CLOCK:  return new Clock(GetWorld(), sub);
-		case WORKBENCH: return new Workbench(sub);
+		case WORKBENCH: memory_pos+=sizeof(Workbench); return new Workbench(sub);
 		default:
 			fprintf(stderr,
 				"Shred::NewBlock: unlisted kind: %d\n",

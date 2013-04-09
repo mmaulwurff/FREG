@@ -92,7 +92,7 @@ quint8 World::MakeDir(
 void World::MakeSun() {
 	sun_moon_x=SunMoonX();
 	ifStar=( STAR==Sub(sun_moon_x, SHRED_WIDTH*numShreds/2, HEIGHT-1) );
-	SetBlock(Normal(SUN_MOON), sun_moon_x, SHRED_WIDTH*numShreds/2, HEIGHT-1);
+	PutNormalBlock(SUN_MOON, sun_moon_x, SHRED_WIDTH*numShreds/2, HEIGHT-1);
 }
 
 Block * World::GetBlock(
@@ -122,6 +122,15 @@ void World::PutBlock(
 {
 	GetShred(x, y)->
 		PutBlock(block, x%SHRED_WIDTH, y%SHRED_WIDTH, z);
+}
+
+void World::PutNormalBlock(
+		const subs sub,
+		const ushort x,
+		const ushort y,
+		const ushort z)
+{
+	PutBlock(Normal(sub), x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 
 Block * World::ReplaceWithNormal(Block * const block) {
@@ -352,12 +361,12 @@ void World::PhysEvents() {
 	//sun/moon moving
 	if ( sun_moon_x!=SunMoonX() ) {
 		const ushort y=SHRED_WIDTH*numShreds/2;
-		SetBlock(Normal(ifStar ? STAR : SKY),
+		PutBlock(Normal(ifStar ? STAR : SKY),
 				sun_moon_x, y, HEIGHT-1);
 		emit Updated(sun_moon_x, y, HEIGHT-1);
 		sun_moon_x=SunMoonX();
 		ifStar=( STAR==Sub(sun_moon_x, y, HEIGHT-1) );
-		SetBlock(Normal(SUN_MOON),
+		PutBlock(Normal(SUN_MOON),
 				sun_moon_x, y, HEIGHT-1);
 		emit Updated(sun_moon_x, y, HEIGHT-1);
 	}
@@ -612,7 +621,7 @@ bool World::Damage(
 	}
 	Block * temp=GetBlock(i, j, k);
 	if ( temp==World::Normal(temp->Sub()) && AIR!=temp->Sub() ) {
-		SetBlock( (temp=new Block(temp->Sub())), i, j, k );
+		SetBlock( (temp = block_manager.NewBlock( static_cast<subs>(temp->Sub()) )), i, j, k );
 	}
 	if ( temp->Damage(dmg, dmg_kind) > 0 ) {
 		ReplaceWithNormal(i, j, k); //checks are inside
@@ -630,7 +639,7 @@ bool World::Damage(
 			World::DeleteBlock(dropped);
 		}
 	} else {
-		SetBlock(Normal(AIR), i, j, k);
+		PutNormalBlock(AIR, i, j, k);
 	}
 	delete temp;
 	ReEnlighten(i, j, k);
@@ -684,7 +693,7 @@ bool World::Inscribe(
 
 	Block * block=GetBlock(i, j, k);
 	if ( block==World::Normal(block->Sub()) )
-		SetBlock(block=new Block(block->Sub()),
+		SetBlock(block=block_manager.NewBlock( static_cast<subs>(block->Sub()) ),
 			i, j, k);
 	QString str="No note received\n";
 	emit GetString(str);

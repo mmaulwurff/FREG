@@ -34,6 +34,7 @@ class BlockManager {
 	void DeleteBlock(Block * const block);
 
 	private:
+	int memory_pos;
 	Block * normals[AIR+1];
 }; //class BlockManager
 

@@ -124,15 +124,21 @@ class World : public QThread {
 		return shreds[j/SHRED_WIDTH*numShreds+
 		              i/SHRED_WIDTH];
 	}
-	///Puts block to coordinates xyz and activates it
+	///Puts block to coordinates xyz and activates it.
 	void SetBlock(
 			Block * const block,
 			const ushort x,
 			const ushort y,
 			const ushort z);
-	///Puts block to coordinates and not activates it (e.g. in World::Move)
+	///Puts block to coordinates and not activates it (e.g. in World::Move).
 	void PutBlock(
 			Block * const block,
+			const ushort x,
+			const ushort y,
+			const ushort z);
+	///Puts normal block to coordinates.
+	void PutNormalBlock(
+			const subs sub,
 			const ushort x,
 			const ushort y,
 			const ushort z);

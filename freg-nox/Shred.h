@@ -33,8 +33,6 @@ class Shred {
 	ushort shredX, shredY;
 	QList<Active *> activeList;
 
-	//qint8 * memory_chunk;
-
 	public:
 	long Longitude() const { return longitude; }
 	long Latitude()  const { return latitude; }
@@ -65,6 +63,12 @@ class Shred {
 	///Puts block to coordinates and not activates it (e.g. in World::Move)
 	void PutBlock(
 			Block * const block,
+			const ushort x,
+			const ushort y,
+			const ushort z);
+	///Puts normal block to coordinates
+	void PutNormalBlock(
+			const subs sub,
 			const ushort x,
 			const ushort y,
 			const ushort z);

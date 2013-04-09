@@ -60,19 +60,18 @@ Shred::Shred(
 		shredX(shred_x),
 		shredY(shred_y)
 {
-	//memory_chunk=static_cast<qint8 *>(operator new(10));
 	QFile file(FileName());
 	if ( file.open(QIODevice::ReadOnly) && !LoadShred(file) )
 		return;
 
 	for (ushort i=0; i<SHRED_WIDTH; ++i)
 	for (ushort j=0; j<SHRED_WIDTH; ++j) {
-		SetNewBlock(BLOCK, NULLSTONE, i, j, 0);
+		PutNormalBlock(NULLSTONE, i, j, 0);
 		for (ushort k=1; k<HEIGHT-1; ++k) {
-			blocks[i][j][k]=new Block(AIR);//World::NewNormal(AIR);
+			PutNormalBlock(AIR, i, j, k);
 			lightMap[i][j][k]=0;
 		}
-		SetNewBlock(BLOCK, ( (rand()%5) ? SKY : STAR ), i, j, HEIGHT-1);
+		PutNormalBlock(( (rand()%5) ? SKY : STAR ), i, j, HEIGHT-1);
 		lightMap[i][j][HEIGHT-1]=MAX_LIGHT_RADIUS;
 	}
 
@@ -127,8 +126,6 @@ Shred::~Shred() {
 	for (k=1; k<HEIGHT-1; ++k) {
 		World::DeleteBlock(blocks[i][j][k]);
 	}
-
-	//operator delete(memory_chunk);
 }
 
 void Shred::SetNewBlock(
@@ -253,8 +250,8 @@ void Shred::ReloadToWest() {
 Block * Shred::GetBlock(
 		const ushort x,
 		const ushort y,
-		const ushort z) const {
-	//fprintf(stderr, "Shred::GetBlock::x: %hu, y: %hu, z:%hu\n", x, y, z);
+		const ushort z)
+const {
 	return blocks[x][y][z];
 }
 void Shred::SetBlock(
@@ -274,6 +271,15 @@ void Shred::PutBlock(
 		const ushort z)
 {
 	blocks[x][y][z]=block;
+}
+
+void Shred::PutNormalBlock(
+		const subs sub,
+		const ushort x,
+		const ushort y,
+		const ushort z)
+{
+	blocks[x][y][z]=block_manager.NormalBlock(sub);
 }
 
 QString Shred::FileName() const {
@@ -313,10 +319,10 @@ void Shred::NormalUnderground(const ushort depth=0) {
 	for (ushort j=0; j<SHRED_WIDTH; ++j) {
 		ushort k;
 		for (k=1; k<HEIGHT/2-6 && k<HEIGHT/2-depth-1; ++k)
-			SetNewBlock(BLOCK, STONE, i, j, k);
-		SetNewBlock(BLOCK, ((rand()%2) ? STONE : SOIL), i, j, k);
+			PutNormalBlock(STONE, i, j, k);
+		PutNormalBlock(((rand()%2) ? STONE : SOIL), i, j, k);
 		for (++k; k<HEIGHT/2-depth; ++k)
-			SetNewBlock(BLOCK, SOIL, i, j, k);
+			PutNormalBlock(SOIL, i, j, k);
 	}
 }
 
@@ -337,10 +343,10 @@ void Shred::TestShred() {
 	//SetNewBlock(CLOCK, IRON, 1, 1, HEIGHT/2);
 	SetNewBlock(CHEST, WOOD, 3, 1, HEIGHT/2);
 	SetNewBlock(ACTIVE, SAND, 5, 1, HEIGHT/2);
-	SetNewBlock(BLOCK, GLASS, 7, 1, HEIGHT/2);
+	PutNormalBlock(GLASS, 7, 1, HEIGHT/2);
 	SetNewBlock(PILE, DIFFERENT, 9, 1, HEIGHT/2);
 	SetNewBlock(PLATE, STONE, 11, 1, HEIGHT/2);
-	SetNewBlock(BLOCK, NULLSTONE, 13, 1, HEIGHT/2);
+	PutNormalBlock(NULLSTONE, 13, 1, HEIGHT/2);
 
 	//row 2
 	SetNewBlock(LADDER, NULLSTONE, 1, 3, HEIGHT/2);
@@ -349,10 +355,10 @@ void Shred::TestShred() {
 	SetNewBlock(LIQUID, WATER, 5, 3, HEIGHT/2-3);
 	SetNewBlock(LIQUID, WATER, 5, 3, HEIGHT/2-3);
 	SetNewBlock(LIQUID, WATER, 5, 3, HEIGHT/2-2);
-	SetNewBlock(BLOCK, AIR, 5, 3, HEIGHT/2-1);
+	PutNormalBlock(AIR, 5, 3, HEIGHT/2-1);
 	SetNewBlock(BUSH, GREENERY, 7, 3, HEIGHT/2);
 	SetNewBlock(RABBIT, A_MEAT, 9, 3, HEIGHT/2-2);
-	SetNewBlock(BLOCK, AIR, 9, 3, HEIGHT/2-1);
+	PutNormalBlock(AIR, 9, 3, HEIGHT/2-1);
 	SetNewBlock(WORKBENCH, IRON, 11, 3, HEIGHT/2);
 	SetNewBlock(DOOR, GLASS, 13, 3, HEIGHT/2);
 	blocks[13][3][HEIGHT/2]->SetDir(NORTH);
@@ -364,7 +370,7 @@ void Shred::TestShred() {
 	for (ushort i=1; i<4; ++i)
 	for (ushort j=7; j<10; ++j)
 	for (ushort k=HEIGHT/2; k<HEIGHT/2+5; ++k)
-		SetNewBlock(BLOCK, GLASS, i, j, k);
+		PutNormalBlock(GLASS, i, j, k);
 	SetNewBlock(RABBIT, A_MEAT, 2, 8, HEIGHT/2);
 }
 
@@ -373,10 +379,10 @@ void Shred::NullMountain() {
 	for (i=0; i<SHRED_WIDTH; ++i)
 	for (j=0; j<SHRED_WIDTH; ++j) {
 		for (k=1; k<HEIGHT/2; ++k)
-			SetNewBlock(BLOCK, NULLSTONE, i, j, k);
+			PutNormalBlock(NULLSTONE, i, j, k);
 		for ( ; k<HEIGHT-1; ++k)
 			if (i==4 || i==5 || j==4 || j==5)
-				SetNewBlock(BLOCK, NULLSTONE, i, j, k);
+				PutNormalBlock(NULLSTONE, i, j, k);
 	}
 }
 
@@ -445,7 +451,7 @@ void Shred::Water(const long longi, const long lati) {
 				      (7-j)*(7-j) +
 				      (HEIGHT/2-k)*(HEIGHT/2-k)*16/depth/depth)
 						> 49 )
-					SetNewBlock(BLOCK, SOIL, i, j, k);
+					PutNormalBlock(SOIL, i, j, k);
 	}
 	if ('~'!=map[1][0] && '~'!=map[2][1]) { //south-west rounding
 		for (i=0; i<SHRED_WIDTH/2; ++i)
@@ -455,7 +461,7 @@ void Shred::Water(const long longi, const long lati) {
 				      (8-j)*(8-j)+
 				      (HEIGHT/2-k)*(HEIGHT/2-k)*16/depth/depth)
 						> 49 )
-					SetNewBlock(BLOCK, SOIL, i, j, k);
+					PutNormalBlock(SOIL, i, j, k);
 	}
 	if ('~'!=map[2][1] && '~'!=map[1][2]) { //south-east rounding
 		for (i=SHRED_WIDTH/2; i<SHRED_WIDTH; ++i)
@@ -465,7 +471,7 @@ void Shred::Water(const long longi, const long lati) {
 				      (8-j)*(8-j)+
 				      (HEIGHT/2-k)*(HEIGHT/2-k)*16/depth/depth)
 						> 49 )
-					SetNewBlock(BLOCK, SOIL, i, j, k);
+					PutNormalBlock(SOIL, i, j, k);
 	}
 	if ('~'!=map[1][2] && '~'!=map[0][1]) { //north-east rounding
 		for (i=SHRED_WIDTH/2; i<SHRED_WIDTH; ++i)
@@ -475,7 +481,7 @@ void Shred::Water(const long longi, const long lati) {
 				      (7-j)*(7-j)+
 				      (HEIGHT/2-k)*(HEIGHT/2-k)*16/depth/depth)
 						> 49 )
-					SetNewBlock(BLOCK, SOIL, i, j, k);
+					PutNormalBlock(SOIL, i, j, k);
 	}
 	for (i=0; i<SHRED_WIDTH; ++i)
 	for (j=0; j<SHRED_WIDTH; ++j)
@@ -559,21 +565,21 @@ void Shred::Mountain() {
 	//SetNewBlock устанавливает новый блок. Первый параметр - тип,
 	//второй - вещество, потом координаты x, y, z;
 	for(ushort k=HEIGHT/2; k<3*HEIGHT/4; ++k) {
-		SetNewBlock(BLOCK, STONE, 2, 2, k);
+		PutNormalBlock(STONE, 2, 2, k);
 	}
 
 	//стена из нуль-камня с запада на восток высотой 3 блока
 	for(ushort i=4; i<10; ++i)
 	for(ushort k=HEIGHT/2; k<HEIGHT/2+3; ++k) {
-		SetNewBlock(BLOCK, NULLSTONE, i, 2, k);
+		PutNormalBlock(NULLSTONE, i, 2, k);
 	}
 	//в стене вырезать дырку (AIR - воздух):
-	SetNewBlock(BLOCK, AIR, 6, 2, HEIGHT/2+1);
+	PutNormalBlock(AIR, 6, 2, HEIGHT/2+1);
 
 	//блок из дерева появится с вероятностью 1/2.
 	//Если random()%3 - с вероятностью 2/3 и т.д.
 	if ( random()%2 ) {
-		SetNewBlock(BLOCK, WOOD, 7, 7, HEIGHT/2);
+		PutNormalBlock(WOOD, 7, 7, HEIGHT/2);
 	}
 }
 
@@ -597,13 +603,13 @@ bool Shred::Tree(
 			return false;
 
 	for (k=z; k<z+height-1; ++k) //trunk
-		SetNewBlock(BLOCK, WOOD, x+1, y+1, k);
+		PutNormalBlock(WOOD, x+1, y+1, k);
 
 	for (i=x; i<=x+2; ++i) //leaves
 	for (j=y; j<=y+2; ++j)
 	for (k=z+height/2; k<z+height; ++k)
 		if ( AIR==Sub(i, j, k) )
-			SetNewBlock(BLOCK, GREENERY, i, j, k);
+			PutNormalBlock(GREENERY, i, j, k);
 
 	return true;
 }
