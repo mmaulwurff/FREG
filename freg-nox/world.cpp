@@ -130,12 +130,12 @@ void World::PutNormalBlock(
 		const ushort y,
 		const ushort z)
 {
-	PutBlock(Normal(sub), x%SHRED_WIDTH, y%SHRED_WIDTH, z);
+	PutBlock(Normal(sub), x, y, z);
 }
 
 Block * World::ReplaceWithNormal(Block * const block) {
 	if ( block!=World::Normal(block->Sub()) && *block==*Normal(block->Sub()) ) {
-		delete block;
+		block_manager.DeleteBlock(block);
 		return Normal(block->Sub());
 	} else {
 		return block;
@@ -641,7 +641,7 @@ bool World::Damage(
 	} else {
 		PutNormalBlock(AIR, i, j, k);
 	}
-	delete temp;
+	block_manager.DeleteBlock(temp);
 	ReEnlighten(i, j, k);
 	return true;
 }

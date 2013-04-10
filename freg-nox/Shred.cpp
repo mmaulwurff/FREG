@@ -60,6 +60,7 @@ Shred::Shred(
 		shredX(shred_x),
 		shredY(shred_y)
 {
+	activeList.reserve(1000);
 	QFile file(FileName());
 	if ( file.open(QIODevice::ReadOnly) && !LoadShred(file) )
 		return;

@@ -230,7 +230,8 @@ Active::Active(
 		const int sub,
 		const quint8 transp) //see default in blocks.h
 		:
-		Block(str, sub, transp)
+		Block(str, sub, transp),
+		whereShred(0)
 {
 	str >> timeStep >> fall_height >> falling;
 }
