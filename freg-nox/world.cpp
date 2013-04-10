@@ -670,7 +670,7 @@ int World::Build(
 		if ( who ) {} //"Cannot build here."
 		return 1;
 	}
-	if (! block->CanBeOut() ) {
+	if ( !block->CanBeOut() ) {
 		if ( who ) {} //"Cannot build this."
 		return 2;
 	}

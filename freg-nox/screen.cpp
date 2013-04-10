@@ -601,7 +601,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 				wcolor_set(window,
 					(player->Visible(i, j, k) ? WHITE_BLUE : BLACK_BLACK),
 					NULL);
-				waddstr(window, " .");
+				waddstr(window, ". ");
 			}
 		}
 

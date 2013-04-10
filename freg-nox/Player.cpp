@@ -218,13 +218,25 @@ void Player::Throw(const ushort num) {
 
 void Player::Obtain(const ushort num) {
 	world->WriteLock();
+	bool update_flag=false;
 	const int err=world->Get(x, y, z, num);
-	if ( 5==err || 3==err || 6==err )
+	ushort x_from, y_from, z_from;
+	Focus(x_from, y_from, z_from);
+	Inventory * const inv=world->GetBlock(x_from, y_from, z_from)->HasInventory();
+	if ( !inv || inv->IsEmpty() ) {
+		update_flag=true;
+		usingType=NO;
+	}
+	if ( 5==err || 3==err || 6==err ) {
 		emit Notify("Nothing here.");
-	else if ( 4==err || 2==err )
+	} else if ( 4==err || 2==err ) {
 		emit Notify("No room.");
-	else
+	} else {
+		update_flag=true;
+	}
+	if ( update_flag ) {
 		emit Updated();
+	}
 	world->Unlock();
 }
 

@@ -61,6 +61,7 @@ Shred::Shred(
 		shredY(shred_y)
 {
 	activeList.reserve(1000);
+	fallList.reserve(100);
 	QFile file(FileName());
 	if ( file.open(QIODevice::ReadOnly) && !LoadShred(file) )
 		return;
@@ -157,22 +158,25 @@ void Shred::RegisterBlock(
 }
 
 void Shred::PhysEvents() {
-	for (int j=0; j<activeList.size(); ++j) {
-		Active * const temp=activeList[j];
-		const ushort x=temp->X();
-		const ushort y=temp->Y();
-		const ushort z=temp->Z();
-		const float weight=Weight(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
-		if ( temp->ShouldFall() && weight ) {
+	for (int j=0; j<fallList.size(); ++j) {
+		Active * const temp=fallList[j];
+		const float weight=temp->Weight();
+		if ( weight ) {
+			const ushort x=temp->X();
+			const ushort y=temp->Y();
+			const ushort z=temp->Z();
 			temp->SetNotFalling();
-			if ( z > 0 &&
-					weight > Weight(x%SHRED_WIDTH, y%SHRED_WIDTH, z-1) )
+			if ( z > 0 && weight > Weight(x%SHRED_WIDTH, y%SHRED_WIDTH, z-1) ) {
 				world->Move(x, y, z, DOWN);
-			else if ( z < HEIGHT-1 &&
+			} else if ( z < HEIGHT-1 &&
 					weight < Weight(x%SHRED_WIDTH, y%SHRED_WIDTH, z+1) )
+			{
 				world->Move(x, y, z, UP);
+			}
 		}
-		temp->Act();
+	}
+	for (int j=0; j<activeList.size(); ++j) {
+		activeList[j]->Act();
 	}
 }
 
@@ -221,9 +225,15 @@ float Shred::Weight(
 
 void Shred::AddActive(Active * const active) {
 	activeList.append(active);
+	if ( active->ShouldFall() ) {
+		fallList.append(active);
+	}
 }
 
 bool Shred::RemActive(Active * const active) {
+	if ( active->ShouldFall() ) {
+		fallList.removeOne(active);
+	}
 	return activeList.removeOne(active);
 }
 

@@ -42,6 +42,7 @@ class Block { //blocks without special physics and attributes
 		else
 			transparent=transp;
 	}
+	virtual float TrueWeight() const;
 
 	protected:
 	quint8 transparent;
@@ -56,7 +57,6 @@ class Block { //blocks without special physics and attributes
 	bool InMemoryChunk() const { return inMemoryChunk; }
 	virtual QString & FullName(QString & str) const;
 	virtual int Kind() const { return BLOCK; }
-	virtual float TrueWeight() const;
 	virtual bool Catchable() const { return false; }
 	virtual bool CanBeOut() const {
 		switch (sub) {
@@ -133,7 +133,7 @@ class Block { //blocks without special physics and attributes
 			const int sb=STONE,
 			const quint8 transp=UNDEF)
 			:
-			inMemoryChunk(false),
+			inMemoryChunk(true),
 			sub(sb),
 			nullWeight(false),
 			direction(UP),
@@ -587,8 +587,7 @@ class Dwarf : public Animal, public Inventory {
 	QString & FullName(QString & str) const {
 		return str="Dwarf"+note;
 	}
-	float TrueWeight() const { return ShouldFall() ? InvWeightAll()+60 : 0; }
-	bool ShouldFall() const;
+	float TrueWeight() const;
 	ushort Start() const { return 5; }
 	int DamageKind() const {
 		if ( Number(inRight) )

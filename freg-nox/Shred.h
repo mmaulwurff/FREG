@@ -32,6 +32,7 @@ class Shred {
 
 	ushort shredX, shredY;
 	QList<Active *> activeList;
+	QList<Active *> fallList;
 
 	public:
 	long Longitude() const { return longitude; }

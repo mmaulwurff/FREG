@@ -137,6 +137,7 @@ Block::Block(
 		const int sub_,
 		const quint8 transp)
 		:
+		inMemoryChunk(true),
 		sub(sub_)
 {
 	SetTransparency(transp);
@@ -403,16 +404,18 @@ Inventory::~Inventory() {
 	delete [] inventory;
 }
 
-bool Dwarf::ShouldFall() const {
+float Dwarf::TrueWeight() const {
 	World * const world=GetWorld();
-	return !( (world->InBounds(x_self+1, y_self) &&
-			world->GetBlock(x_self+1, y_self, z_self)->Catchable()) ||
-		(world->InBounds(x_self-1, y_self) &&
-			world->GetBlock(x_self-1, y_self, z_self)->Catchable()) ||
-		(world->InBounds(x_self, y_self+1) &&
-			world->GetBlock(x_self, y_self+1, z_self)->Catchable()) ||
-		(world->InBounds(x_self, y_self-1) &&
-			world->GetBlock(x_self, y_self-1, z_self)->Catchable()));
+	return (
+			(world->InBounds(x_self+1, y_self) &&
+				world->GetBlock(x_self+1, y_self, z_self)->Catchable()) ||
+			(world->InBounds(x_self-1, y_self) &&
+				world->GetBlock(x_self-1, y_self, z_self)->Catchable()) ||
+			(world->InBounds(x_self, y_self+1) &&
+				world->GetBlock(x_self, y_self+1, z_self)->Catchable()) ||
+			(world->InBounds(x_self, y_self-1) &&
+				world->GetBlock(x_self, y_self-1, z_self)->Catchable()) ) ?
+		0 : InvWeightAll()+60;
 }
 
 void Dwarf::Act() { Animal::Act(); }
