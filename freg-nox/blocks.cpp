@@ -15,6 +15,7 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
+#include <QDataStream>
 #include "blocks.h"
 #include "world.h"
 #include "Shred.h"

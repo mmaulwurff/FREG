@@ -36,9 +36,9 @@
 #define PLAYER_H
 
 #include "header.h"
-#include <QString>
 #include <QObject>
 
+class QString;
 class World;
 class Block;
 class Active;

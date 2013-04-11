@@ -15,10 +15,10 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-#include <QList>
-
 #ifndef CRAFTMANAGER_H
 #define CRAFTMANAGER_H
+
+#include <QList>
 
 typedef struct {
 	ushort num;

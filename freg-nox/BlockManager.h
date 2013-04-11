@@ -18,15 +18,16 @@
 #ifndef BLOCKMANAGER_H
 #define BLOCKMANAGER_H
 
-#include <QDataStream>
-#include "header.h"
-
 class Block;
+class QDataStream;
 
 class BlockManager {
 	public:
 	BlockManager();
 	~BlockManager();
+
+	void SetMemorySize(ushort numShreds);
+	void FreeMemory();
 
 	Block * NormalBlock(int sub);
 	Block * NewBlock(int kind, int sub=STONE);
@@ -35,12 +36,16 @@ class BlockManager {
 
 	private:
 	Block * normals[AIR+1];
+	static const size_t BYTES_PER_SHRED=500000;
 
-	int memory_pos;
-	int memory_size;
-	void * memory_chunk;
+	size_t memoryPos;
+	size_t memorySize;
+	char * memoryChunk;
+
 	template <typename Thing>
-	Thing * New(const int sub);
+	Thing * New(int sub);
+	template <typename Thing>
+	Thing * New(QDataStream & str, int sub);
 }; //class BlockManager
 
 extern BlockManager block_manager;

@@ -15,10 +15,10 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-#include "CraftManager.h"
 #include <QFile>
 #include <QByteArray>
 #include <QTextStream>
+#include "CraftManager.h"
 
 CraftManager craft_manager;
 

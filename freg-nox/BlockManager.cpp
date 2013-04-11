@@ -15,6 +15,8 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
+#include <QDataStream>
+#include "header.h"
 #include "blocks.h"
 #include "BlockManager.h"
 
@@ -22,7 +24,9 @@ BlockManager block_manager;
 
 BlockManager::BlockManager()
 		:
-		memory_pos(0)
+		memoryPos(0),
+		memorySize(0),
+		memoryChunk(0)
 {
 	for(ushort sub=0; sub<=AIR; ++sub) {
 		normals[sub]=new Block(sub);
@@ -34,6 +38,15 @@ BlockManager::~BlockManager() {
 		delete normals[sub];
 	}
 	//fprintf(stderr, "memory: %d\n", memory_pos);
+}
+
+void BlockManager::SetMemorySize(const ushort numShreds) {
+	memoryPos=0;
+	memoryChunk=static_cast<char *>(operator new(memorySize=numShreds*numShreds*BYTES_PER_SHRED));
+}
+
+void BlockManager::FreeMemory() {
+	delete(memoryChunk);
 }
 
 Block * BlockManager::NormalBlock(const int sub) {
@@ -49,27 +62,27 @@ Block * BlockManager::NewBlock(const int kind, int sub) {
 	}
 	switch ( kind ) {
 		//case BLOCK:  memory_pos+=sizeof(Block); return New<Block>(0, sub);
-		case BLOCK:  return new Block(sub);
-		case GRASS:  return new Grass(sub);
-		case PICK:   return new Pick(sub);
-		case PLATE:  return new Plate(sub);
-		case ACTIVE: return new Active(sub);
-		case LADDER: return new Ladder(sub);
-		case WEAPON: return new Weapon(sub);
-		case BUSH:   return new Bush(sub);
-		case CHEST:  return new Chest(sub);
-		case PILE:   return new Pile(sub);
-		case DWARF:  return new Dwarf(sub);
-		case RABBIT: return new Rabbit(sub);
-		case DOOR:   return new Door(sub);
-		case LIQUID: return new Liquid(sub);
-		//case CLOCK:  return new Clock(GetWorld(), sub);
-		case WORKBENCH: return new Workbench(sub);
+		case BLOCK:  return New<Block >(sub);
+		case GRASS:  return New<Grass >(sub);
+		case PICK:   return New<Pick  >(sub);
+		case PLATE:  return New<Plate >(sub);
+		case ACTIVE: return New<Active>(sub);
+		case LADDER: return New<Ladder>(sub);
+		case WEAPON: return New<Weapon>(sub);
+		case BUSH:   return New<Bush  >(sub);
+		case CHEST:  return New<Chest >(sub);
+		case PILE:   return New<Pile  >(sub);
+		case DWARF:  return New<Dwarf >(sub);
+		case RABBIT: return New<Rabbit>(sub);
+		case DOOR:   return New<Door  >(sub);
+		case LIQUID: return New<Liquid>(sub);
+		//case CLOCK:  return New<Clock>(sub);
+		case WORKBENCH: return New<Workbench>(sub);
 		default:
 			fprintf(stderr,
 				"BlockManager::NewBlock: unlisted kind: %d\n",
 				kind);
-			return new Block(sub);
+			return New<Block>(sub);
 	}
 }
 
@@ -86,48 +99,60 @@ Block * BlockManager::BlockFromFile(QDataStream & str) {
 	//unless kind is inherited from Inventory class or one
 	//of its derivatives - in this case this may cause something bad.
 	switch ( kind ) {
-		case BLOCK:  return new Block (str, sub);
-		case PICK:   return new Pick  (str, sub);
-		case PLATE:  return new Plate (str, sub);
-		case LADDER: return new Ladder(str, sub);
-		case WEAPON: return new Weapon(str, sub);
-
-		case BUSH:   return new Bush (str, sub);
-		case CHEST:  return new Chest(str, sub);
-		case WORKBENCH: return new Workbench(str, sub);
-
-		case RABBIT: return new Rabbit(str, sub);
-		case DWARF:  return new Dwarf (str, sub);
-		case PILE:   return new Pile  (str, sub);
-		case GRASS:  return new Grass (str, sub);
-		case ACTIVE: return new Active(str, sub);
-		case LIQUID: return new Liquid(str, sub);
-		case DOOR:   return new Door  (str, sub);
-
+		case BLOCK:  return New<Block >(str, sub);
+		case PICK:   return New<Pick  >(str, sub);
+		case PLATE:  return New<Plate >(str, sub);
+		case LADDER: return New<Ladder>(str, sub);
+		case WEAPON: return New<Weapon>(str, sub);
+		case BUSH:   return New<Bush  >(str, sub);
+		case CHEST:  return New<Chest >(str, sub);
+		case RABBIT: return New<Rabbit>(str, sub);
+		case DWARF:  return New<Dwarf >(str, sub);
+		case PILE:   return New<Pile  >(str, sub);
+		case GRASS:  return New<Grass >(str, sub);
+		case ACTIVE: return New<Active>(str, sub);
+		case LIQUID: return New<Liquid>(str, sub);
+		case DOOR:   return New<Door  >(str, sub);
+		case WORKBENCH: return New<Workbench>(str, sub);
 		//case CLOCK:  return new Clock(str, world, sub);
 		default:
 			fprintf(stderr,
 				"BlockManager::BlockFromFile: unlisted kind: %d.\n",
 				kind);
-			return NormalBlock(sub);
+			return New<Block>(str, sub);
 	}
 }
 
 void BlockManager::DeleteBlock(Block * const block) {
 	if ( !block ) {
 		return;
-	} else if ( block!=NormalBlock(block->Sub()) ) {
+	} else if ( block!=NormalBlock(block->Sub()) && !block->InMemoryChunk() )
+	{
 		delete block;
 	}
 }
 
 template <typename Thing>
 Thing * BlockManager::New(const int sub) {
-	if ( memory_pos+sizeof(Thing) < memory_size ) {
-		memory_pos+=sizeof(Thing);
-		return new(memory_chunk) Thing(sub);
+	if ( memoryPos+sizeof(Thing) < memorySize ) {
+		Thing * new_thing=new(memoryChunk+memoryPos) Thing(sub);
+		memoryPos+=sizeof(Thing);
+		return new_thing;
 	} else {
-		Block * const new_thing=new Thing(sub);
+		Thing * new_thing=new Thing(sub);
+		new_thing->SetInMemoryChunk(false);
+		return new_thing;
+	}
+}
+
+template <typename Thing>
+Thing * BlockManager::New(QDataStream & str, const int sub) {
+	if ( memoryPos+sizeof(Thing) < memorySize ) {
+		Thing * new_thing=new(memoryChunk+memoryPos) Thing(str, sub);
+		memoryPos+=sizeof(Thing);
+		return new_thing;
+	} else {
+		Thing * new_thing=new Thing(str, sub);
 		new_thing->SetInMemoryChunk(false);
 		return new_thing;
 	}

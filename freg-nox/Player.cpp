@@ -15,15 +15,16 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
+#include <QFile>
+#include <QTextStream>
+#include <QString>
+#include <QSettings>
+#include <QString>
 #include "blocks.h"
 #include "Player.h"
 #include "world.h"
 #include "Shred.h"
 #include "BlockManager.h"
-#include <QFile>
-#include <QTextStream>
-#include <QString>
-#include <QSettings>
 
 short Player::HP() const {
 	return player ? player->Durability() : 0;

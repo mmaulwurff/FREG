@@ -18,11 +18,11 @@
 #ifndef BLOCKS_H
 #define BLOCKS_H
 
-#include "header.h"
 #include <QObject>
 #include <QStack>
-#include <QDataStream>
+#include "header.h"
 
+class QDataStream;
 class World;
 class Shred;
 class Inventory;
