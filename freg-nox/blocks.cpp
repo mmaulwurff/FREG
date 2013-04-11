@@ -19,6 +19,7 @@
 #include "world.h"
 #include "Shred.h"
 #include "CraftManager.h"
+#include "BlockManager.h"
 
 QString & Block::FullName(QString & str) const {
 	switch (sub) {
@@ -90,6 +91,11 @@ int Block::Damage(
 	}
 }
 
+Block * Block::DropAfterDamage() const {
+	return ( BLOCK==Kind() && GLASS!=sub ) ?
+		block_manager.NormalBlock(sub) : 0;
+}
+
 bool Block::operator==(const Block & block) const {
 	return ( block.Kind()==Kind() &&
 			block.Sub()==Sub() &&
@@ -145,6 +151,12 @@ Block::Block(
 		direction >>
 		durability >> note;
 }
+
+Block * Plate::DropAfterDamage() const { return block_manager.NewBlock(PLATE, Sub()); }
+
+Block * Ladder::DropAfterDamage() const { return block_manager.NewBlock(LADDER, Sub()); }
+
+//Block * Clock::DropAfterDamage() const { return block_manager.NewBlock(CLOCK, Sub()); }
 
 /*usage_types Clock::Use() {
 	world->EmitNotify(QString("Time is %1%2%3.").
@@ -347,7 +359,7 @@ int Inventory::InscribeInv(const ushort num, const QString & str) {
 	const int sub=inventory[num].top()->Sub();
 	if ( inventory[num].top()==World::Normal(sub) ) {
 		for (ushort i=0; i<number; ++i)
-			inventory[num].replace(i, new Block(sub));
+			inventory[num].replace(i, block_manager.NormalBlock(sub));
 	}
 	for (ushort i=0; i<number; ++i)
 		inventory[num].at(i)->Inscribe(str);
@@ -372,9 +384,7 @@ int Inventory::MiniCraft(const ushort num) {
 			World::DeleteBlock(to_drop);
 		}
 		for (ushort i=0; i<result.num; ++i)
-			Get(block_manager.NewBlock(
-				static_cast<subs>(result.sub),
-				static_cast<kinds>(result.kind)));
+			Get(block_manager.NewBlock(result.kind, result.sub));
 		return 0; //success
 	}
 	return 2; //no such recipe
@@ -429,6 +439,8 @@ before_move_return Dwarf::BeforeMove(const int dir) {
 		GetWorld()->GetAll(x_self, y_self, z_self);
 	return NOTHING;
 }
+
+Block * Chest::DropAfterDamage() const { return block_manager.NewBlock(CHEST, sub); }
 
 before_move_return Pile::BeforeMove(const int dir) {
 	ushort x_to, y_to, z_to;
@@ -496,11 +508,11 @@ void Grass::Act() {
 		if ( AIR==world->Sub(i, j, z_self) &&
 				world->InBounds(i, j, z_self-1) &&
 				SOIL==world->Sub(i, j, z_self-1) )
-			world->Build(new Grass(), i, j, z_self);
+			world->Build(block_manager.NewBlock(GRASS), i, j, z_self);
 		else if ( SOIL==world->Sub(i, j, z_self) &&
 				world->InBounds(i, j, z_self+1) &&
 				AIR==world->Sub(i, j, z_self+1) )
-			world->Build(new Grass(), i, j, z_self+1);
+			world->Build(block_manager.NewBlock(GRASS), i, j, z_self+1);
 	}
 }
 
@@ -585,6 +597,8 @@ Block * Rabbit::DropAfterDamage() const {
 	return World::Normal(A_MEAT);
 }
 
+Block * Workbench::DropAfterDamage() const { return block_manager.NewBlock(WORKBENCH, Sub()); }
+
 void Workbench::Craft() {
 	while ( Number(0) ) { //remove previous product
 		Block * const to_push=ShowBlock(0);
@@ -603,10 +617,7 @@ void Workbench::Craft() {
 	craft_item result;
 	if ( craft_manager.Craft(recipe, result) ) {
 		for (ushort i=0; i<result.num; ++i) {
-			GetExact(block_manager.NewBlock(
-				static_cast<subs>(result.sub),
-				static_cast<kinds>(result.kind)),
-				0);
+			GetExact(block_manager.NewBlock(result.kind, result.sub), 0);
 		}
 	}
 	for (ushort i=0; i<recipe.size(); ++i) {
@@ -641,6 +652,8 @@ int Workbench::Drop(const ushort num, Inventory * const inv_to) {
 	}
 	return 0;
 }
+
+Block * Door::DropAfterDamage() const { return block_manager.NewBlock(DOOR, Sub()); }
 
 int Door::BeforePush(const int dir) {
 	if ( locked || shifted || dir==World::Anti(GetDir()) )

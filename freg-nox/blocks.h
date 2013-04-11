@@ -79,10 +79,7 @@ class Block { //blocks without special physics and attributes
 	virtual int Move(const int) { return 0; }
 	virtual usage_types Use() { return NO; }
 	virtual int Damage(const ushort dmg, const int dmg_kind);
-	virtual Block * DropAfterDamage() const {
-		return ( BLOCK==Kind() && GLASS!=sub ) ?
-			new Block(sub) : 0;
-	}
+	virtual Block * DropAfterDamage() const;
 
 	virtual Inventory * HasInventory() { return 0; }
 	virtual Animal * IsAnimal() { return 0; }
@@ -163,7 +160,7 @@ class Plate : public Block {
 		}
 	}
 	int Kind() const { return PLATE; }
-	Block * DropAfterDamage() const { return new Plate(Sub()); }
+	Block * DropAfterDamage() const;
 	int BeforePush(const int) { return JUMP; }
 	float TrueWeight() const { return 10; }
 
@@ -183,7 +180,7 @@ class Plate : public Block {
 class Ladder : public Block {
 	QString & FullName(QString & str) const { return str="Ladder"; }
 	int Kind() const { return LADDER; }
-	Block * DropAfterDamage() const { return new Ladder(Sub()); }
+	Block * DropAfterDamage() const;
 	int BeforePush(const int) { return MOVE_UP; }
 	float TrueWeight() const { return 20; }
 	virtual bool Catchable() const { return true; }
@@ -216,7 +213,7 @@ class Ladder : public Block {
 		}
 	}
 
-	Block * DropAfterDamage() const { return new Clock(world, Sub()); }
+	Block * DropAfterDamage() const;
 	usage_types Use();
 	int BeforePush(const int) {
 		Use();
@@ -690,7 +687,7 @@ class Chest : public Block, public Inventory {
 
 	usage_types Use() { return Inventory::Use(); }
 
-	Block * DropAfterDamage() const { return new Chest(sub); }
+	Block * DropAfterDamage() const;
 	float TrueWeight() const {
 		switch ( Sub() ) {
 			case WOOD:  return 100+InvWeightAll();
@@ -927,7 +924,7 @@ class Workbench : public Block, public Inventory {
 	int Kind() const { return WORKBENCH; }
 	float TrueWeight() const { return InvWeightAll()+80; }
 	usage_types Use() { return OPEN; }
-	Block * DropAfterDamage() const { return new Workbench(Sub()); }
+	Block * DropAfterDamage() const;
 	Inventory * HasInventory() { return Inventory::HasInventory(); }
 
 	int Sub() const { return Block::Sub(); }
@@ -995,7 +992,7 @@ class Door : public Active {
 	}
 	int BeforePush(const int dir);
 	void Act();
-	Block * DropAfterDamage() const { return new Door(/*0, 0, 0, 0,*/ Sub()); }
+	Block * DropAfterDamage() const;
 
 	void SaveAttributes(QDataStream & out) const {
 		Active::SaveAttributes(out);

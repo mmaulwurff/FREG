@@ -28,10 +28,10 @@ class BlockManager {
 	BlockManager();
 	~BlockManager();
 
-	Block * NormalBlock(const subs sub);
-	Block * NewBlock(const subs sub, const kinds kind=BLOCK);
+	Block * NormalBlock(int sub);
+	Block * NewBlock(int kind, int sub=STONE);
 	Block * BlockFromFile(QDataStream &);
-	void DeleteBlock(Block * const block);
+	void DeleteBlock(Block * block);
 
 	private:
 	int memory_pos;

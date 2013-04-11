@@ -108,7 +108,7 @@ class World : public QThread {
 	//block work section
 	public:
 	static Block * Normal(const int sub) {
-		return block_manager.NormalBlock(static_cast<subs>(sub));
+		return block_manager.NormalBlock(sub);
 	}
 	static void DeleteBlock(Block * const block) {
 		block_manager.DeleteBlock(block);

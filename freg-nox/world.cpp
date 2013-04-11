@@ -621,7 +621,7 @@ bool World::Damage(
 	}
 	Block * temp=GetBlock(i, j, k);
 	if ( temp==World::Normal(temp->Sub()) && AIR!=temp->Sub() ) {
-		SetBlock( (temp = block_manager.NewBlock( static_cast<subs>(temp->Sub()) )), i, j, k );
+		SetBlock( (temp = block_manager.NewBlock(temp->Kind(), temp->Sub()) ), i, j, k );
 	}
 	if ( temp->Damage(dmg, dmg_kind) > 0 ) {
 		ReplaceWithNormal(i, j, k); //checks are inside
@@ -629,7 +629,7 @@ bool World::Damage(
 	}
 	Block * const dropped=temp->DropAfterDamage();
 	if ( PILE!=temp->Kind() && (temp->HasInventory() || dropped) ) {
-		Block * const new_pile=block_manager.NewBlock(DIFFERENT, PILE);
+		Block * const new_pile=block_manager.NewBlock(PILE);
 		SetBlock(new_pile, i, j, k);
 		Inventory * const inv=temp->HasInventory();
 		Inventory * const new_pile_inv=new_pile->HasInventory();
@@ -693,7 +693,7 @@ bool World::Inscribe(
 
 	Block * block=GetBlock(i, j, k);
 	if ( block==World::Normal(block->Sub()) )
-		SetBlock(block=block_manager.NewBlock( static_cast<subs>(block->Sub()) ),
+		SetBlock(block=block_manager.NewBlock( block->Kind(), block->Sub() ),
 			i, j, k);
 	QString str="No note received\n";
 	emit GetString(str);
@@ -729,7 +729,7 @@ int World::Exchange(
 	if ( !inv_from )
 		return 3;
 	if ( AIR==Sub(i_to, j_to, k_to) ) {
-		Block * const new_pile=block_manager.NewBlock(DIFFERENT, PILE);
+		Block * const new_pile=block_manager.NewBlock(PILE);
 		SetBlock(new_pile, i_to, j_to, k_to);
 	}
 	Inventory * const inv_to=HasInventory(i_to, j_to, k_to);

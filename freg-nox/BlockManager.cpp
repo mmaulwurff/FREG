@@ -36,11 +36,11 @@ BlockManager::~BlockManager() {
 	//fprintf(stderr, "memory: %d\n", memory_pos);
 }
 
-Block * BlockManager::NormalBlock(const subs sub) {
+Block * BlockManager::NormalBlock(const int sub) {
 	return normals[sub];
 }
 
-Block * BlockManager::NewBlock(subs sub, const kinds kind) {
+Block * BlockManager::NewBlock(const int kind, int sub) {
 	if ( sub > AIR ) {
 		fprintf(stderr,
 			"Don't know such substance: %d.\n",

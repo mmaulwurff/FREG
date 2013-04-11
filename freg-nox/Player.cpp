@@ -368,9 +368,7 @@ void Player::ProcessCommand(QString & command) {
 			}
 			while ( num && inv->HasRoom() ) {
 				for (ushort i=9; i && num; --i) {
-					inv->Get(block_manager.NewBlock(
-						static_cast<subs>(sub),
-						static_cast<kinds>(kind)));
+					inv->Get(block_manager.NewBlock(sub, kind));
 					--num;
 				}
 			}
