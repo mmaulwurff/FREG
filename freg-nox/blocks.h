@@ -653,8 +653,8 @@ class Dwarf : public Animal, public Inventory {
 
 	uchar LightRadius() const { return 3; }
 
-	Dwarf()	:
-			Animal(H_MEAT),
+	Dwarf(const int sub=H_MEAT) :
+			Animal(sub),
 			Inventory()
 	{
 		Inscribe("Urist");
@@ -753,13 +753,11 @@ class Pile : public Active, public Inventory {
 		out << ifToDestroy;
 	}
 
-	Pile(Block * const block=NULL) :
-			Active(DIFFERENT, NONSTANDARD),
+	Pile(const int sub=DIFFERENT) :
+			Active(sub, NONSTANDARD),
 			Inventory(),
 			ifToDestroy(false)
-	{
-		Get(block);
-	}
+	{}
 	Pile(QDataStream & str);
 }; //class Pile
 
@@ -829,8 +827,8 @@ class Grass : public Active {
 	before_move_return BeforeMove(const int) { return DESTROY; }
 	void Act();
 
-	Grass() :
-			Active(GREENERY)
+	Grass(const int sub=GREENERY) :
+			Active(sub)
 	{}
 	Grass(QDataStream & str) :
 			Active(str, GREENERY)
@@ -861,8 +859,8 @@ class Bush : public Active, public Inventory {
 		Inventory::SaveAttributes(out);
 	}
 
-	Bush() :
-			Active(WOOD),
+	Bush(const int sub=WOOD) :
+			Active(sub),
 			Inventory(bush_size)
 	{}
 	Bush(QDataStream & str) :
@@ -896,8 +894,8 @@ class Rabbit : public Animal {
 
 	Block * DropAfterDamage() const;
 
-	Rabbit() :
-			Animal()
+	Rabbit(const int sub=A_MEAT) :
+			Animal(sub)
 	{}
 	Rabbit(QDataStream & str) :
 			Animal(str, A_MEAT)

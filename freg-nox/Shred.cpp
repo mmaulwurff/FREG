@@ -305,7 +305,7 @@ char Shred::TypeOfShred(
 			longi >= mapSize || longi < 0 ||
 			lati  >= mapSize || lati  < 0 )
 	{
-		return 't';
+		return '~';
 	}
 
 	QString temp;
