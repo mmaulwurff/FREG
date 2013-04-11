@@ -660,9 +660,10 @@ class Dwarf : public Animal, public Inventory {
 		Inscribe("Urist");
 	}
 	Dwarf(
-			QDataStream & str)
-			:
-			Animal(str, H_MEAT),
+			QDataStream & str,
+			const int sub)
+		:
+			Animal(str, sub),
 			Inventory(str)
 	{}
 	virtual ~Dwarf() {}
@@ -758,7 +759,7 @@ class Pile : public Active, public Inventory {
 			Inventory(),
 			ifToDestroy(false)
 	{}
-	Pile(QDataStream & str);
+	Pile(QDataStream & str, int sub);
 }; //class Pile
 
 class Liquid : public Active {
@@ -830,8 +831,11 @@ class Grass : public Active {
 	Grass(const int sub=GREENERY) :
 			Active(sub)
 	{}
-	Grass(QDataStream & str) :
-			Active(str, GREENERY)
+	Grass(
+			QDataStream & str,
+			const int sub)
+		:
+			Active(str, sub)
 	{}
 }; //class Grass
 
@@ -863,8 +867,11 @@ class Bush : public Active, public Inventory {
 			Active(sub),
 			Inventory(bush_size)
 	{}
-	Bush(QDataStream & str) :
-			Active(str, WOOD),
+	Bush(
+			QDataStream & str,
+			const int sub)
+		:
+			Active(str, sub),
 			Inventory(str, bush_size)
 	{}
 }; //class Bush
@@ -897,8 +904,11 @@ class Rabbit : public Animal {
 	Rabbit(const int sub=A_MEAT) :
 			Animal(sub)
 	{}
-	Rabbit(QDataStream & str) :
-			Animal(str, A_MEAT)
+	Rabbit(
+			QDataStream & str,
+			const int sub)
+		:
+			Animal(str, sub)
 	{}
 }; //class Rabbit
 

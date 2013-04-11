@@ -460,8 +460,11 @@ void Pile::Act() {
 		GetWorld()->Damage(x_self, y_self, z_self, 0, TIME);
 }
 
-Pile::Pile(QDataStream & str) :
-		Active(str, DIFFERENT, NONSTANDARD),
+Pile::Pile(
+		QDataStream & str,
+		const int sub)
+	:
+		Active(str, sub, NONSTANDARD),
 		Inventory(str)
 {
 	str >> ifToDestroy;
@@ -508,11 +511,11 @@ void Grass::Act() {
 		if ( AIR==world->Sub(i, j, z_self) &&
 				world->InBounds(i, j, z_self-1) &&
 				SOIL==world->Sub(i, j, z_self-1) )
-			world->Build(block_manager.NewBlock(GRASS), i, j, z_self);
+			world->Build(block_manager.NewBlock(GRASS, Sub()), i, j, z_self);
 		else if ( SOIL==world->Sub(i, j, z_self) &&
 				world->InBounds(i, j, z_self+1) &&
 				AIR==world->Sub(i, j, z_self+1) )
-			world->Build(block_manager.NewBlock(GRASS), i, j, z_self+1);
+			world->Build(block_manager.NewBlock(GRASS, Sub()), i, j, z_self+1);
 	}
 }
 

@@ -78,7 +78,7 @@ Block * BlockManager::BlockFromFile(QDataStream & str) {
 	bool normal;
 	str >> kind >> sub >> normal;
 	if ( normal ) {
-		return NormalBlock(static_cast<subs>(sub));
+		return NormalBlock(sub);
 	}
 
 	//if some kind will not be listed here,
@@ -92,14 +92,14 @@ Block * BlockManager::BlockFromFile(QDataStream & str) {
 		case LADDER: return new Ladder(str, sub);
 		case WEAPON: return new Weapon(str, sub);
 
-		case BUSH:   return new Bush (str);
+		case BUSH:   return new Bush (str, sub);
 		case CHEST:  return new Chest(str, sub);
 		case WORKBENCH: return new Workbench(str, sub);
 
-		case RABBIT: return new Rabbit(str);
-		case DWARF:  return new Dwarf (str);
-		case PILE:   return new Pile  (str);
-		case GRASS:  return new Grass (str);
+		case RABBIT: return new Rabbit(str, sub);
+		case DWARF:  return new Dwarf (str, sub);
+		case PILE:   return new Pile  (str, sub);
+		case GRASS:  return new Grass (str, sub);
 		case ACTIVE: return new Active(str, sub);
 		case LIQUID: return new Liquid(str, sub);
 		case DOOR:   return new Door  (str, sub);
@@ -109,16 +109,14 @@ Block * BlockManager::BlockFromFile(QDataStream & str) {
 			fprintf(stderr,
 				"BlockManager::BlockFromFile: unlisted kind: %d.\n",
 				kind);
-			return NormalBlock(static_cast<subs>(sub));
+			return NormalBlock(sub);
 	}
 }
 
 void BlockManager::DeleteBlock(Block * const block) {
 	if ( !block ) {
 		return;
-	}
-	if ( block!=NormalBlock(static_cast<subs>(block->Sub())) )
-	{
+	} else if ( block!=NormalBlock(block->Sub()) ) {
 		delete block;
 	}
 }
@@ -129,8 +127,8 @@ Thing * BlockManager::New(const int sub) {
 		memory_pos+=sizeof(Thing);
 		return new(memory_chunk) Thing(sub);
 	} else {
-		Block * new_thing=new Thing(sub);
-		new_thing->SetInMemoryChunk(true);
+		Block * const new_thing=new Thing(sub);
+		new_thing->SetInMemoryChunk(false);
 		return new_thing;
 	}
 }
