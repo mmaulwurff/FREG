@@ -43,11 +43,12 @@ Block * BlockManager::NormalBlock(const int sub) {
 Block * BlockManager::NewBlock(const int kind, int sub) {
 	if ( sub > AIR ) {
 		fprintf(stderr,
-			"Don't know such substance: %d.\n",
+			"BlockManager::NewBlock: Don't know such substance: %d.\n",
 			sub);
 		sub=STONE;
 	}
 	switch ( kind ) {
+		//case BLOCK:  memory_pos+=sizeof(Block); return New<Block>(0, sub);
 		case BLOCK:  memory_pos+=sizeof(Block); return new Block(sub);
 		case GRASS:  memory_pos+=sizeof(Grass); return new Grass();
 		case PICK:   memory_pos+=sizeof(Pick); return new Pick(sub);
@@ -66,7 +67,7 @@ Block * BlockManager::NewBlock(const int kind, int sub) {
 		case WORKBENCH: memory_pos+=sizeof(Workbench); return new Workbench(sub);
 		default:
 			fprintf(stderr,
-				"Shred::NewBlock: unlisted kind: %d\n",
+				"BlockManager::NewBlock: unlisted kind: %d\n",
 				kind);
 			return new Block(sub);
 	}
@@ -106,7 +107,7 @@ Block * BlockManager::BlockFromFile(QDataStream & str) {
 		//case CLOCK:  return new Clock(str, world, sub);
 		default:
 			fprintf(stderr,
-				"Shred::BlockFromFile: unlisted kind: %d.\n",
+				"BlockManager::BlockFromFile: unlisted kind: %d.\n",
 				kind);
 			return NormalBlock(static_cast<subs>(sub));
 	}
@@ -119,5 +120,17 @@ void BlockManager::DeleteBlock(Block * const block) {
 	if ( block!=NormalBlock(static_cast<subs>(block->Sub())) )
 	{
 		delete block;
+	}
+}
+
+template <typename Thing>
+Thing * BlockManager::New(const int sub) {
+	if ( memory_pos+sizeof(Thing) < memory_size ) {
+		memory_pos+=sizeof(Thing);
+		return new(memory_chunk) Thing(sub);
+	} else {
+		Block * new_thing=new Thing(sub);
+		new_thing->SetInMemoryChunk(true);
+		return new_thing;
 	}
 }

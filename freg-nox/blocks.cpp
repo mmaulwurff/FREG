@@ -124,7 +124,7 @@ float Block::TrueWeight() const {
 }
 
 void Block::SaveToFile(QDataStream & out) const {
-	const bool normal=(this==World::Normal(Sub()));
+	const bool normal=(this==block_manager.NormalBlock(Sub()));
 	out << (quint16)Kind() << sub << normal;
 
 	if ( normal ) {
@@ -357,7 +357,7 @@ int Inventory::InscribeInv(const ushort num, const QString & str) {
 	if ( !inventory[num].top()->Inscribable() )
 		return 1;
 	const int sub=inventory[num].top()->Sub();
-	if ( inventory[num].top()==World::Normal(sub) ) {
+	if ( inventory[num].top()==block_manager.NormalBlock(sub) ) {
 		for (ushort i=0; i<number; ++i)
 			inventory[num].replace(i, block_manager.NormalBlock(sub));
 	}
@@ -381,7 +381,7 @@ int Inventory::MiniCraft(const ushort num) {
 		while ( !inventory[num].isEmpty() ) {
 			Block * const to_drop=ShowBlock(num);
 			Pull(num);
-			World::DeleteBlock(to_drop);
+			block_manager.DeleteBlock(to_drop);
 		}
 		for (ushort i=0; i<result.num; ++i)
 			Get(block_manager.NewBlock(result.kind, result.sub));
@@ -409,7 +409,7 @@ Inventory::~Inventory() {
 	for (ushort i=0; i<Size(); ++i)
 		while ( !inventory[i].isEmpty() ) {
 			Block * const block=inventory[i].pop();
-			World::DeleteBlock(block);
+			block_manager.DeleteBlock(block);
 		}
 	delete [] inventory;
 }
@@ -431,7 +431,7 @@ float Dwarf::TrueWeight() const {
 void Dwarf::Act() { Animal::Act(); }
 
 Block * Dwarf::DropAfterDamage() const {
-	return World::Normal(H_MEAT);
+	return block_manager.NormalBlock(H_MEAT);
 }
 
 before_move_return Dwarf::BeforeMove(const int dir) {
@@ -518,11 +518,11 @@ void Grass::Act() {
 
 void Bush::Act() {
 	if ( 0==rand()%(SECONDS_IN_HOUR*4) )
-		Get(World::Normal(HAZELNUT));
+		Get(block_manager.NormalBlock(HAZELNUT));
 }
 
 Block * Bush::DropAfterDamage() const {
-	return World::Normal(WOOD);
+	return block_manager.NormalBlock(WOOD);
 }
 
 float Rabbit::Attractive(int kind) const {
@@ -594,7 +594,7 @@ void Rabbit::Act() {
 }
 
 Block * Rabbit::DropAfterDamage() const {
-	return World::Normal(A_MEAT);
+	return block_manager.NormalBlock(A_MEAT);
 }
 
 Block * Workbench::DropAfterDamage() const { return block_manager.NewBlock(WORKBENCH, Sub()); }
@@ -603,7 +603,7 @@ void Workbench::Craft() {
 	while ( Number(0) ) { //remove previous product
 		Block * const to_push=ShowBlock(0);
 		Pull(0);
-		World::DeleteBlock(to_push);
+		block_manager.DeleteBlock(to_push);
 	}
 	craft_recipe recipe;
 	for (ushort i=Start(); i<Size(); ++i)
@@ -642,7 +642,7 @@ int Workbench::Drop(const ushort num, Inventory * const inv_to) {
 			while ( Number(i) ) {
 				Block * const to_pull=ShowBlock(i);
 				Pull(i);
-				World::DeleteBlock(to_pull);
+				block_manager.DeleteBlock(to_pull);
 			}
 	} else {
 		if ( !inv_to->Get(ShowBlock(num)) )

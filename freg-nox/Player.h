@@ -155,8 +155,8 @@ class Player : public QObject {
 
 	Inventory * PlayerInventory();
 
-	ulong GetLongitude() const;
-	ulong GetLatitude() const;
+	long GetLongitude() const;
+	long GetLatitude() const;
 
 	bool GetCreativeMode() const { return creativeMode; }
 	void SetCreativeMode(const bool turn) { creativeMode=turn; }

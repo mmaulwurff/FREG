@@ -23,6 +23,7 @@
 #include "blocks.h"
 #include "Shred.h"
 #include "world.h"
+#include "BlockManager.h"
 #include <qmath.h>
 
 #ifdef Q_OS_WIN32
@@ -133,8 +134,11 @@ void World::PutNormalBlock(
 	PutBlock(Normal(sub), x, y, z);
 }
 
+Block * World::Normal(const int sub) { return block_manager.NormalBlock(sub); }
+void World::DeleteBlock(Block * const block) { block_manager.DeleteBlock(block); }
+
 Block * World::ReplaceWithNormal(Block * const block) {
-	if ( block!=World::Normal(block->Sub()) && *block==*Normal(block->Sub()) ) {
+	if ( block!=Normal(block->Sub()) && *block==*Normal(block->Sub()) ) {
 		block_manager.DeleteBlock(block);
 		return Normal(block->Sub());
 	} else {
@@ -693,7 +697,7 @@ bool World::Inscribe(
 
 	Block * block=GetBlock(i, j, k);
 	if ( block==World::Normal(block->Sub()) )
-		SetBlock(block=block_manager.NewBlock( block->Kind(), block->Sub() ),
+		SetBlock(block=block_manager.NewBlock(block->Kind(), block->Sub()),
 			i, j, k);
 	QString str="No note received\n";
 	emit GetString(str);
@@ -869,6 +873,14 @@ bool World::Equal(
 		const Block * const block2) const
 {
 	return ( block1==block2 || *block1==*block2 );
+}
+
+void World::RemSun() {
+	SetBlock(
+		block_manager.NormalBlock(ifStar ? STAR : SKY),
+		sun_moon_x,
+		SHRED_WIDTH*numShreds/2,
+		HEIGHT-1);
 }
 
 void World::LoadAllShreds() {

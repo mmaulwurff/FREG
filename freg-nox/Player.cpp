@@ -47,8 +47,8 @@ Inventory * Player::PlayerInventory() {
 	return player ? player->HasInventory() : 0;
 }
 
-ulong Player::GetLongitude() const { return shred->Longitude(); }
-ulong Player::GetLatitude()  const { return shred->Latitude();  }
+long Player::GetLongitude() const { return shred->Longitude(); }
+long Player::GetLatitude()  const { return shred->Latitude();  }
 
 void Player::UpdateXYZ() {
 	if ( player ) {
@@ -90,7 +90,7 @@ void Player::Examine(
 			arg(world->FireLight(i, j, k)/16).
 			arg(world->SunLight(i, j, k)).
 			arg(world->Transparent(i, j, k)).
-			arg(world->GetBlock(i, j, k)==World::Normal(world->Sub(i, j, k))).
+			arg(world->GetBlock(i, j, k)==block_manager.NormalBlock(world->Sub(i, j, k))).
 			arg(world->GetBlock(i, j, k)->GetDir()));
 	}
 
@@ -285,7 +285,7 @@ void Player::Eat(const ushort num) {
 				emit Notify(( SECONDS_IN_DAY < pl->Satiation() ) ?
 					"You have gorged yourself!" : "Yum!");
 				PlayerInventory()->Pull(num);
-				World::DeleteBlock(food);
+				block_manager.DeleteBlock(food);
 				emit Updated();
 			}
 		} else
@@ -512,8 +512,8 @@ void Player::SetPlayer(
 	z=player_z;
 	shred=world->GetShred(x, y);
 	if ( DWARF!=world->Kind(x, y, z) ) {
-		World::DeleteBlock(world->GetBlock(x, y, z));
-		world->SetBlock( (player=block_manager.NewBlock(H_MEAT, DWARF)->ActiveBlock()), x, y, z );
+		block_manager.DeleteBlock(world->GetBlock(x, y, z));
+		world->SetBlock( (player=block_manager.NewBlock(DWARF, H_MEAT)->ActiveBlock()), x, y, z );
 	} else {
 		player=world->ActiveBlock(x, y, z);
 	}

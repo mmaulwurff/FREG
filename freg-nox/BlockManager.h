@@ -34,8 +34,13 @@ class BlockManager {
 	void DeleteBlock(Block * block);
 
 	private:
-	int memory_pos;
 	Block * normals[AIR+1];
+
+	int memory_pos;
+	int memory_size;
+	void * memory_chunk;
+	template <typename Thing>
+	Thing * New(const int sub);
 }; //class BlockManager
 
 extern BlockManager block_manager;

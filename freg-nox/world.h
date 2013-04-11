@@ -22,7 +22,6 @@
 #include <QReadWriteLock>
 #include <QThread>
 #include "header.h"
-#include "BlockManager.h"
 
 class Block;
 class Dwarf;
@@ -93,12 +92,7 @@ class World : public QThread {
 	}
 	Block * ReplaceWithNormal(Block * const block);
 	void MakeSun();
-	void RemSun() {
-		SetBlock(Normal(ifStar ? STAR : SKY),
-			sun_moon_x,
-			SHRED_WIDTH*numShreds/2,
-			HEIGHT-1);
-	}
+	void RemSun();
 	void LoadAllShreds();
 	void SaveAllShreds();
 
@@ -107,12 +101,6 @@ class World : public QThread {
 
 	//block work section
 	public:
-	static Block * Normal(const int sub) {
-		return block_manager.NormalBlock(sub);
-	}
-	static void DeleteBlock(Block * const block) {
-		block_manager.DeleteBlock(block);
-	}
 	Block * GetBlock(
 			const ushort,
 			const ushort,
@@ -142,6 +130,8 @@ class World : public QThread {
 			const ushort x,
 			const ushort y,
 			const ushort z);
+	static Block * Normal(int sub);
+	static void DeleteBlock(Block * block);
 
 	//lighting section
 	public:

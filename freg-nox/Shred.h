@@ -69,10 +69,9 @@ class Shred {
 			const ushort z);
 	///Puts normal block to coordinates
 	void PutNormalBlock(
-			const subs sub,
-			const ushort x,
-			const ushort y,
-			const ushort z);
+			int sub,
+			ushort x, ushort y, ushort z);
+	static Block * Normal(const int sub);
 
 	uchar LightMap(
 			const ushort,
@@ -126,11 +125,8 @@ class Shred {
 	~Shred();
 	
 	void SetNewBlock(
-			const int kind,
-			const int sub,
-			const ushort x,
-			const ushort y,
-			const ushort z);
+			int kind, int sub,
+			ushort x, ushort y, ushort z);
 	private:
 	void RegisterBlock(
 			Block * const,

@@ -20,6 +20,7 @@
 #include <QDataStream>
 #include "Shred.h"
 #include "world.h"
+#include "BlockManager.h"
 
 const int datastream_version=QDataStream::Qt_4_6; //Qt version in Debian stable now.
 
@@ -117,7 +118,7 @@ Shred::~Shred() {
 		for (j=0; j<SHRED_WIDTH; ++j)
 		for (k=0; k<HEIGHT; ++k) {
 			blocks[i][j][k]->SaveToFile(outstr);
-			World::DeleteBlock(blocks[i][j][k]);
+			block_manager.DeleteBlock(blocks[i][j][k]);
 		}
 		file.write(qCompress(shred_data));
 		return;
@@ -126,21 +127,15 @@ Shred::~Shred() {
 	for (i=0; i<SHRED_WIDTH; ++i)
 	for (j=0; j<SHRED_WIDTH; ++j)
 	for (k=1; k<HEIGHT-1; ++k) {
-		World::DeleteBlock(blocks[i][j][k]);
+		block_manager.DeleteBlock(blocks[i][j][k]);
 	}
 }
 
 void Shred::SetNewBlock(
-		const int kind,
-		const int sub,
-		const ushort x,
-		const ushort y,
-		const ushort z)
+		const int kind, const int sub,
+		const ushort x, const ushort y, const ushort z)
 {
-	SetBlock( block_manager.NewBlock(
-			static_cast<subs>(sub),
-			static_cast<kinds>(kind)),
-		x, y, z );
+	SetBlock( block_manager.NewBlock(kind, sub), x, y, z );
 }
 
 void Shred::RegisterBlock(
@@ -285,13 +280,13 @@ void Shred::PutBlock(
 }
 
 void Shred::PutNormalBlock(
-		const subs sub,
-		const ushort x,
-		const ushort y,
-		const ushort z)
+		const int sub,
+		const ushort x, const ushort y, const ushort z)
 {
-	blocks[x][y][z]=block_manager.NormalBlock(sub);
+	blocks[x][y][z]=Normal(sub);
 }
+
+Block * Shred::Normal(const int sub) { return block_manager.NormalBlock(sub); }
 
 QString Shred::FileName() const {
 	QString str;
@@ -519,29 +514,29 @@ void Shred::Pyramid()
 			blocks[x][dz][z]=
 			blocks[x][15 - dz][z]=
 			blocks[x][dz][z+1]=
-			blocks[x][15 - dz][z+1]=World::Normal(STONE);
+			blocks[x][15 - dz][z+1]=Normal(STONE);
 		}
 		for( y= dz; y< ( 16 - dz ); y++ )
 		{
 			blocks[dz][y][z]=
 			blocks[15 - dz][y][z]=
 			blocks[dz][y][z + 1]=
-			blocks[15 - dz][y][z + 1]=World::Normal(STONE);
+			blocks[15 - dz][y][z + 1]=Normal(STONE);
 		}
 	}
 
 	//вход
-	blocks[SHRED_WIDTH/2][0][HEIGHT/2]= World::Normal( AIR );
+	blocks[SHRED_WIDTH/2][0][HEIGHT/2]= Normal( AIR );
 
 	//камера внутри
 	for( z= HEIGHT/2 - 60, dz=0; dz< 8; dz++, z++ )
 	for( x= 1; x< SHRED_WIDTH - 1; x++ )
 	for( y= 1; y< SHRED_WIDTH - 1; y++ )
-		blocks[x][y][z]= World::Normal( AIR );
+		blocks[x][y][z]= Normal( AIR );
 
 	//шахта
 	for( z= HEIGHT/2 - 52, dz= 0; dz< 52; z++, dz++ )
-		blocks[SHRED_WIDTH/2][SHRED_WIDTH/2][z]= World::Normal( AIR );
+		blocks[SHRED_WIDTH/2][SHRED_WIDTH/2][z]= Normal( AIR );
 
 	//летающая тарелка
 	return;
@@ -551,9 +546,9 @@ void Shred::Pyramid()
 		float r= float( ( x - SHRED_WIDTH/2 ) * ( x - SHRED_WIDTH/2 ) )
 		 + float( ( y - SHRED_WIDTH/2 ) * ( y - SHRED_WIDTH/2 ) );
 		if( r < 64.0f )
-			blocks[x][y][ 124 ]= World::Normal( STONE );
+			blocks[x][y][ 124 ]= Normal( STONE );
 		if( r < 36.0f )
-			blocks[x][y][ 125 ]= World::Normal( STONE );
+			blocks[x][y][ 125 ]= Normal( STONE );
 	}
 }
 
