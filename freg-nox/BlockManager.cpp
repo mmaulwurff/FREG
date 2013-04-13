@@ -16,6 +16,7 @@
 	*/
 
 #include <QDataStream>
+#include <memory>
 #include "header.h"
 #include "blocks.h"
 #include "BlockManager.h"
@@ -24,7 +25,6 @@ BlockManager block_manager;
 
 BlockManager::BlockManager()
 		:
-		memoryPos(0),
 		memorySize(0),
 		memoryChunk(0)
 {
@@ -37,12 +37,12 @@ BlockManager::~BlockManager() {
 	for(ushort sub=0; sub<=AIR; ++sub) {
 		delete normals[sub];
 	}
-	//fprintf(stderr, "memory: %d\n", memory_pos);
 }
 
-void BlockManager::SetMemorySize(const ushort numShreds) {
+void BlockManager::SetMemorySize(const ushort num_shreds) {
 	memoryPos=0;
-	memoryChunk=static_cast<char *>(operator new(memorySize=numShreds*numShreds*BYTES_PER_SHRED));
+	memorySize=num_shreds*num_shreds*BYTES_PER_SHRED;
+	memoryChunk=static_cast<char *>(operator new(memorySize));
 }
 
 void BlockManager::FreeMemory() {
@@ -126,9 +126,12 @@ Block * BlockManager::BlockFromFile(QDataStream & str) {
 void BlockManager::DeleteBlock(Block * const block) {
 	if ( !block ) {
 		return;
-	} else if ( block!=NormalBlock(block->Sub()) && !block->InMemoryChunk() )
-	{
+	} else if ( block==NormalBlock(block->Sub()) ) {
+		return;
+	} else if ( !block->InMemoryChunk() ) {
 		delete block;
+	} else {
+		block->~Block();
 	}
 }
 

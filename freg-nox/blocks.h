@@ -31,17 +31,7 @@ class Animal;
 
 class Block { //blocks without special physics and attributes
 	bool inMemoryChunk;
-	void SetTransparency(const quint8 transp) {
-		if ( UNDEF==transp )
-			switch ( sub ) {
-				case AIR: transparent=INVISIBLE; break;
-				case WATER: case GREENERY:
-				case GLASS: transparent=BLOCK_TRANSPARENT; break;
-				default: transparent=BLOCK_OPAQUE;
-			}
-		else
-			transparent=transp;
-	}
+	void SetTransparency(quint8 transp);
 	virtual float TrueWeight() const;
 
 	protected:
@@ -53,74 +43,49 @@ class Block { //blocks without special physics and attributes
 	qint16 durability;
 
 	public:
-	void SetInMemoryChunk(const bool in) { inMemoryChunk=in; }
-	bool InMemoryChunk() const { return inMemoryChunk; }
+	void SetInMemoryChunk(bool in);
+	bool InMemoryChunk() const;
 	virtual QString & FullName(QString & str) const;
-	virtual int Kind() const { return BLOCK; }
-	virtual bool Catchable() const { return false; }
-	virtual bool CanBeOut() const {
-		switch (sub) {
-			case HAZELNUT: return false;
-			default: return true;
-		}
-	}
-	virtual int Movable() const {
-		return ( AIR==Sub() ) ? ENVIRONMENT : NOT_MOVABLE;
-	}
-	virtual bool Inscribe(const QString & str) {
-		if ( Inscribable() ) {
-			note=str;
-			return true;
-		}
-		return false;
-	}
-	virtual before_move_return BeforeMove(const int) { return NOTHING; }
-	virtual int BeforePush(const int) { return NO_ACTION; }
-	virtual int Move(const int) { return 0; }
-	virtual usage_types Use() { return NO; }
-	virtual int Damage(const ushort dmg, const int dmg_kind);
+	virtual int Kind() const;
+	virtual bool Catchable() const;
+	virtual bool CanBeOut() const;
+	virtual int Movable() const;
+	virtual bool Inscribe(const QString & str);
+	virtual before_move_return BeforeMove(int);
+	virtual int BeforePush(int);
+	virtual int Move(int);
+	virtual usage_types Use();
+	virtual int Damage(ushort dmg, int dmg_kind);
 	virtual Block * DropAfterDamage() const;
 
-	virtual Inventory * HasInventory() { return 0; }
-	virtual Animal * IsAnimal() { return 0; }
-	virtual Active * ActiveBlock() { return 0; }
+	virtual Inventory * HasInventory();
+	virtual Animal * IsAnimal();
+	virtual Active * ActiveBlock();
 
-	virtual bool Armour() const { return false; }
-	virtual bool IsWeapon() const { return false; }
-	virtual bool Carving() const { return false; }
-	virtual int DamageKind() const { return CRUSH; }
-	virtual ushort DamageLevel() const { return 1; }
+	virtual bool Armour() const;
+	virtual bool IsWeapon() const;
+	virtual bool Carving() const;
+	virtual int DamageKind() const;
+	virtual ushort DamageLevel() const;
 
-	virtual uchar LightRadius() const { return 0; }
-	virtual int Temperature() const {
-		switch (sub) {
-			case WATER: return -100;
-			default: return 0;
-		}
-	}
-	virtual bool Inscribable() const {
-		//TODO: prevent inscribing living creatures
-		return !(
-			sub==AIR       ||
-			sub==NULLSTONE ||
-			sub==A_MEAT    ||
-			sub==GREENERY  );
-	}
+	virtual uchar LightRadius() const;
+	virtual int Temperature() const;
+	virtual bool Inscribable() const;
 
 	protected:
-	virtual void SaveAttributes(QDataStream &) const {}
+	virtual void SaveAttributes(QDataStream &) const;
 
 	public:
-	void Restore() { durability=MAX_DURABILITY; }
-	void NullWeight(const bool null) { nullWeight=null; }
-	float Weight() const { return nullWeight ? 0 : TrueWeight(); }
-	void SetDir(const int dir) { direction=dir; }
+	void Restore();
+	void NullWeight(const bool null);
+	float Weight() const;
+	void SetDir(const int dir);
 
-	int GetDir() const { return direction; }
-	int Sub() const { return sub; }
-	short Durability() const { return durability; }
-	QString & GetNote(QString & str) const { return str=note; }
-	int Transparent() const { return transparent; }
+	int GetDir() const;
+	int Sub() const;
+	short Durability() const;
+	QString & GetNote(QString & str) const;
+	int Transparent() const;
 
 	bool operator==(const Block &) const;
 
@@ -128,22 +93,12 @@ class Block { //blocks without special physics and attributes
 
 	Block(
 			const int sb=STONE,
-			const quint8 transp=UNDEF)
-			:
-			inMemoryChunk(true),
-			sub(sb),
-			nullWeight(false),
-			direction(UP),
-			note(""),
-			durability(MAX_DURABILITY)
-	{
-		SetTransparency(transp);
-	}
+			const quint8 transp=UNDEF);
 	Block(
 			QDataStream &,
 			const int sub_,
 			const quint8 transp=UNDEF);
-	virtual ~Block() {}
+	virtual ~Block();
 }; //class Block
 
 class Plate : public Block {
@@ -183,7 +138,7 @@ class Ladder : public Block {
 	Block * DropAfterDamage() const;
 	int BeforePush(const int) { return MOVE_UP; }
 	float TrueWeight() const { return 20; }
-	virtual bool Catchable() const { return true; }
+	bool Catchable() const { return true; }
 
 	public:
 	Ladder(const int sub) :
@@ -337,7 +292,7 @@ class Pick : public Weapon {
 }; //class Pick
 
 class Active : public QObject, public Block {
-	Q_OBJECT
+	Q_OBJECT;
 
 	quint8 fall_height;
 	bool falling;
@@ -424,7 +379,7 @@ class Active : public QObject, public Block {
 			QDataStream & str,
 			const int sub,
 			const quint8 transp=UNDEF);
-	virtual ~Active();
+	~Active();
 }; //class Active
 
 class Animal : public Active {
@@ -460,7 +415,6 @@ class Animal : public Active {
 	Animal(
 			QDataStream & str,
 			const int sub);
-	virtual ~Animal() {}
 }; //class Animal
 
 class Inventory {
@@ -561,7 +515,7 @@ class Inventory {
 	Inventory(
 			QDataStream & str,
 			const ushort size=26);
-	virtual ~Inventory();
+	~Inventory();
 }; //class Inventory
 
 class Dwarf : public Animal, public Inventory {
@@ -582,7 +536,7 @@ class Dwarf : public Animal, public Inventory {
 	int Kind() const { return DWARF; }
 	int Sub() const { return Block::Sub(); }
 	QString & FullName(QString & str) const {
-		return str="Dwarf"+note;
+		return str="Dwarf "+note;
 	}
 	float TrueWeight() const;
 	ushort Start() const { return 5; }
@@ -666,7 +620,6 @@ class Dwarf : public Animal, public Inventory {
 			Animal(str, sub),
 			Inventory(str)
 	{}
-	virtual ~Dwarf() {}
 }; //class Dwarf
 
 class Chest : public Block, public Inventory {
@@ -840,7 +793,7 @@ class Grass : public Active {
 }; //class Grass
 
 class Bush : public Active, public Inventory {
-	Q_OBJECT
+	Q_OBJECT;
 
 	static const ushort bush_size=3;
 
@@ -874,6 +827,7 @@ class Bush : public Active, public Inventory {
 			Active(str, sub),
 			Inventory(str, bush_size)
 	{}
+	~Bush();
 }; //class Bush
 
 class Rabbit : public Animal {

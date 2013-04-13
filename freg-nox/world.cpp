@@ -393,6 +393,7 @@ void World::PhysEvents() {
 		default: break;
 	}
 	emit UpdatesEnded();
+	emit ExitReceived(); //close all after 1 turn
 	Unlock();
 }
 

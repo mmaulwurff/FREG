@@ -36,7 +36,7 @@ class VirtScreen : public QObject {
 		* communications by its slots and signals.
 	*/
 
-	Q_OBJECT
+	Q_OBJECT;
 	
 	enum window_views { NORMAL, FRONT, INVENTORY };
 
@@ -143,7 +143,7 @@ class VirtScreen : public QObject {
 			World * const,
 		       	Player * const);
 	///Destructor only calls VirtScreen::CleanAll, not needed to be reimplemented.
-	~VirtScreen() { CleanAll(); }
+	virtual ~VirtScreen() { CleanAll(); }
 }; //class VirtScreen
 
 #endif

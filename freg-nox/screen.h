@@ -24,8 +24,8 @@
 #define NOX
 #define SCREEN_SIZE 30
 
-#include "VirtScreen.h"
 #include <curses.h>
+#include "VirtScreen.h"
 
 enum actions {
 	USE,
@@ -117,7 +117,7 @@ class Inventory;
 class QTimer;
 
 class Screen : public VirtScreen {
-	Q_OBJECT
+	Q_OBJECT;
 
 	WINDOW * leftWin,
 	       * rightWin,
@@ -214,6 +214,7 @@ class Screen : public VirtScreen {
 	public:
 	void ControlPlayer(const int);
 	Screen(World * const, Player * const);
+	~Screen() { CleanAll(); }
 }; //class screen
 
 /** \class IThread screen.h
