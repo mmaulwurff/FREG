@@ -22,53 +22,6 @@
 #include "CraftManager.h"
 #include "BlockManager.h"
 
-//Animal::
-	void Animal::Act() {
-		World * const world=GetWorld();
-		if ( World::TimeStepsInSec() > timeStep ) {
-			++timeStep;
-			return;
-		}
-		timeStep=0;
-		if (
-				world->InBounds(x_self, y_self, z_self+1) &&
-					AIR!=world->Sub(x_self, y_self, z_self+1) &&
-				world->InBounds(x_self, y_self, z_self-1) &&
-					AIR!=world->Sub(x_self, y_self, z_self-1) &&
-				world->InBounds(x_self+1, y_self, z_self) &&
-					AIR!=world->Sub(x_self+1, y_self, z_self) &&
-				world->InBounds(x_self-1, y_self, z_self) &&
-					AIR!=world->Sub(x_self-1, y_self, z_self) &&
-				world->InBounds(x_self, y_self+1, z_self) &&
-					AIR!=world->Sub(x_self, y_self+1, z_self) &&
-				world->InBounds(x_self, y_self-1, z_self) &&
-					AIR!=world->Sub(x_self, y_self-1, z_self) )
-		{
-			if ( breath <= 0 ) {
-				if ( world->Damage(x_self, y_self, z_self, 10, BREATH) )
-					return;
-			} else
-				--breath;
-		} else if ( breath < MAX_BREATH )
-			++breath;
-
-		if ( satiation <= 0 ) {
-			if ( world->Damage(x_self, y_self, z_self, 5, HUNGER) )
-				return;
-		} else
-			--satiation;
-		if ( durability < MAX_DURABILITY )
-			++durability;
-		emit Updated();
-		Active::Act();
-	}
-
-	Animal::Animal(QDataStream & str, const int sub) :
-			Active(str, sub, NONSTANDARD)
-	{
-		str >> breath >> satiation;
-	}
-
 //Dwarf::
 	float Dwarf::TrueWeight() const {
 		World * const world=GetWorld();
@@ -1156,3 +1109,67 @@
 	Pick::Pick(QDataStream & str, const int sub) :
 			Weapon(str, sub)
 	{}
+
+//Animal::
+	void Animal::Act() {
+		World * const world=GetWorld();
+		if ( World::TimeStepsInSec() > timeStep ) {
+			++timeStep;
+			return;
+		}
+		timeStep=0;
+		if (
+				world->InBounds(x_self, y_self, z_self+1) &&
+					AIR!=world->Sub(x_self, y_self, z_self+1) &&
+				world->InBounds(x_self, y_self, z_self-1) &&
+					AIR!=world->Sub(x_self, y_self, z_self-1) &&
+				world->InBounds(x_self+1, y_self, z_self) &&
+					AIR!=world->Sub(x_self+1, y_self, z_self) &&
+				world->InBounds(x_self-1, y_self, z_self) &&
+					AIR!=world->Sub(x_self-1, y_self, z_self) &&
+				world->InBounds(x_self, y_self+1, z_self) &&
+					AIR!=world->Sub(x_self, y_self+1, z_self) &&
+				world->InBounds(x_self, y_self-1, z_self) &&
+					AIR!=world->Sub(x_self, y_self-1, z_self) )
+		{
+			if ( breath <= 0 ) {
+				if ( world->Damage(x_self, y_self, z_self, 10, BREATH) )
+					return;
+			} else
+				--breath;
+		} else if ( breath < MAX_BREATH )
+			++breath;
+
+		if ( satiation <= 0 ) {
+			if ( world->Damage(x_self, y_self, z_self, 5, HUNGER) )
+				return;
+		} else
+			--satiation;
+		if ( durability < MAX_DURABILITY )
+			++durability;
+		emit Updated();
+		Active::Act();
+	}
+
+	ushort Animal::Breath() const { return breath; }
+
+	ushort Animal::Satiation() const { return satiation; }
+
+	void Animal::SaveAttributes(QDataStream & out) const {
+		Active::SaveAttributes(out);
+		out << breath << satiation;
+	}
+
+	Animal * Animal::IsAnimal() { return this; }
+
+	Animal::Animal(const int sub) :
+			Active(sub, NONSTANDARD),
+			breath(MAX_BREATH),
+			satiation(SECONDS_IN_DAY)
+	{}
+
+	Animal::Animal(QDataStream & str, const int sub) :
+			Active(str, sub, NONSTANDARD)
+	{
+		str >> breath >> satiation;
+	}

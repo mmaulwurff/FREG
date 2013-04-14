@@ -245,29 +245,18 @@ class Animal : public Active {
 	public:
 	QString & FullName(QString&) const=0;
 
-	ushort Breath() const { return breath; }
-	ushort Satiation() const { return satiation; }
+	ushort Breath() const;
+	ushort Satiation() const;
 	virtual int Eat(Block * const)=0;
 
 	void Act();
 
-	void SaveAttributes(QDataStream & out) const {
-		Active::SaveAttributes(out);
-		out << breath << satiation;
-	}
+	void SaveAttributes(QDataStream & out) const;
 
-	Animal * IsAnimal() { return this; }
+	Animal * IsAnimal();
 
-	Animal(
-			const int sub=A_MEAT)
-			:
-			Active(sub, NONSTANDARD),
-			breath(MAX_BREATH),
-			satiation(SECONDS_IN_DAY)
-	{}
-	Animal(
-			QDataStream & str,
-			const int sub);
+	Animal(const int sub=A_MEAT);
+	Animal(QDataStream & str, const int sub);
 }; //class Animal
 
 class Inventory {
