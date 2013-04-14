@@ -410,32 +410,16 @@ class Liquid : public Active {
 class Grass : public Active {
 	Q_OBJECT;
 	public:
-	QString & FullName(QString & str) const {
-		switch ( sub ) {
-			case GREENERY: return str="Grass";
-			default:
-				fprintf(stderr,
-					"Grass::FullName(QString&): unlisted sub: %d\n",
-					sub);
-				return str="Unknown plant";
-		}
-	}
-	int Kind() const { return GRASS; }
+	QString & FullName(QString & str) const;
+	int Kind() const;
 
-	bool ShouldFall() const { return false; }
+	bool ShouldFall() const;
 
-	before_move_return BeforeMove(const int) { return DESTROY; }
+	before_move_return BeforeMove(const int);
 	void Act();
 
-	Grass(const int sub=GREENERY) :
-			Active(sub)
-	{}
-	Grass(
-			QDataStream & str,
-			const int sub)
-		:
-			Active(str, sub)
-	{}
+	Grass(const int sub=GREENERY);
+	Grass(QDataStream & str, const int sub);
 }; //class Grass
 
 class Bush : public Active, public Inventory {

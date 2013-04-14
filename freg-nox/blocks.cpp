@@ -336,6 +336,31 @@
 		}
 	}
 
+	QString & Grass::FullName(QString & str) const {
+		switch ( sub ) {
+			case GREENERY: return str="Grass";
+			default:
+				fprintf(stderr,
+					"Grass::FullName(QString&): unlisted sub: %d\n",
+					sub);
+				return str="Unknown plant";
+		}
+	}
+
+	int Grass::Kind() const { return GRASS; }
+
+	bool Grass::ShouldFall() const { return false; }
+
+	before_move_return Grass::BeforeMove(const int) { return DESTROY; }
+
+	Grass::Grass(const int sub) :
+			Active(sub)
+	{}
+
+	Grass::Grass(QDataStream & str, const int sub) :
+			Active(str, sub)
+	{}
+
 //Rabbit::
 	float Rabbit::Attractive(int kind) const {
 		switch ( kind ) {
