@@ -434,6 +434,33 @@
 		return block_manager.NormalBlock(A_MEAT);
 	}
 
+	QString & Rabbit::FullName(QString & str) const { return str="Rabbit"; }
+
+	int Rabbit::Kind() const { return RABBIT; }
+
+	float Rabbit::TrueWeight() const { return 20; }
+
+	int Rabbit::Eat(Block * const to_eat) {
+		if ( NULL==to_eat )
+			return 2;
+
+		if ( GREENERY==to_eat->Sub() ) {
+			satiation+=SECONDS_IN_HOUR*4;
+			return 1;
+		}
+		return 0;
+	}
+
+	Block * Rabbit::DropAfterDamage() const;
+
+	Rabbit::Rabbit(const int sub) :
+			Animal(sub)
+	{}
+
+	Rabbit::Rabbit(QDataStream & str, const int sub) :
+			Animal(str, sub)
+	{}
+
 //Workbench::
 	Block * Workbench::DropAfterDamage() const { return block_manager.NewBlock(WORKBENCH, Sub()); }
 

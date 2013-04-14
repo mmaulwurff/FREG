@@ -446,39 +446,20 @@ class Bush : public Active, public Inventory {
 }; //class Bush
 
 class Rabbit : public Animal {
-	Q_OBJECT
+	Q_OBJECT;
 
 	float Attractive(int kind) const;
 
 	public:
-	QString & FullName(QString & str) const { return str="Rabbit"; }
-	int Kind() const { return RABBIT; }
-
+	QString & FullName(QString & str) const;
+	int Kind() const;
 	void Act();
-	float TrueWeight() const { return 20; }
-
-	int Eat(Block * const to_eat) {
-		if ( NULL==to_eat )
-			return 2;
-
-		if ( GREENERY==to_eat->Sub() ) {
-			satiation+=SECONDS_IN_HOUR*4;
-			return 1;
-		}
-		return 0;
-	}
-
+	float TrueWeight() const;
+	int Eat(Block * const to_eat);
 	Block * DropAfterDamage() const;
 
-	Rabbit(const int sub=A_MEAT) :
-			Animal(sub)
-	{}
-	Rabbit(
-			QDataStream & str,
-			const int sub)
-		:
-			Animal(str, sub)
-	{}
+	Rabbit(const int sub=A_MEAT);
+	Rabbit(QDataStream & str, const int sub);
 }; //class Rabbit
 
 class Workbench : public Block, public Inventory {
