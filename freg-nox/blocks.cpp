@@ -22,16 +22,6 @@
 #include "CraftManager.h"
 #include "BlockManager.h"
 
-//Block * Clock::DropAfterDamage() const { return block_manager.NewBlock(CLOCK, Sub()); }
-
-/*usage_types Clock::Use() {
-	world->EmitNotify(QString("Time is %1%2%3.").
-		arg(world->TimeOfDay()/60).
-		arg((world->TimeOfDay()%60 < 10) ? ":0" : ":").
-		arg(world->TimeOfDay()%60));
-	return NO;
-}*/
-
 void Animal::Act() {
 	World * const world=GetWorld();
 	if ( World::TimeStepsInSec() > timeStep ) {

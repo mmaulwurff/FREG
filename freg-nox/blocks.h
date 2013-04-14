@@ -126,46 +126,18 @@ class Ladder : public Block {
 	Ladder(QDataStream & str, const int sub);
 }; //class Ladder
 
-/*class Clock : public Block {
-	World * world;
-
-	public:
-	int Kind() const { return CLOCK; }
-	QString & FullName(QString & str) const {
-		switch ( sub ) {
-			case IRON: return str="Iron clock";
-			default:
-				fprintf(stderr,
-					"Clock::FullName: unlisted sub: %d\n",
-					sub);
-				return str="Strange clock";
-		}
-	}
+class Clock : public Block {
+	int Kind() const;
+	QString & FullName(QString & str) const;
 
 	Block * DropAfterDamage() const;
 	usage_types Use();
-	int BeforePush(const int) {
-		Use();
-		return NO_ACTION;
-	}
-	float TrueWeight() const { return 0.1f; }
+	int BeforePush(const int);
+	float TrueWeight() const;
 
-	Clock(
-			World * const w,
-			const int sub)
-			:
-			Block(sub, NONSTANDARD),
-			world (w)
-	{}
-	Clock (
-			QDataStream & str,
-			World * const w,
-			const int sub)
-			:
-			Block(str, sub, NONSTANDARD),
-			world(w)
-	{}
-}; //class Clock*/
+	Clock(const int sub);
+	Clock (QDataStream & str, const int sub);
+}; //class Clock
 
 class Weapon : public Block {
 	public:

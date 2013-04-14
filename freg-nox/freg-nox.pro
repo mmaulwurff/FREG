@@ -29,6 +29,7 @@ SOURCES += blocks.cpp \
            Bush.cpp \
            Plate.cpp \
            Ladder.cpp \
+           Clock.cpp \
            Lighting.cpp \
            main.cpp \
            Player.cpp \

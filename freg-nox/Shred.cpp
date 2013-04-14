@@ -346,7 +346,7 @@ void Shred::TestShred() {
 	NormalUnderground();
 
 	//row 1
-	//SetNewBlock(CLOCK, IRON, 1, 1, HEIGHT/2);
+	SetNewBlock(CLOCK, IRON, 1, 1, HEIGHT/2);
 	SetNewBlock(CHEST, WOOD, 3, 1, HEIGHT/2);
 	SetNewBlock(ACTIVE, SAND, 5, 1, HEIGHT/2);
 	PutNormalBlock(GLASS, 7, 1, HEIGHT/2);

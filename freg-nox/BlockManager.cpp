@@ -76,7 +76,7 @@ Block * BlockManager::NewBlock(const int kind, int sub) {
 		case RABBIT: return New<Rabbit>(sub);
 		case DOOR:   return New<Door  >(sub);
 		case LIQUID: return New<Liquid>(sub);
-		//case CLOCK:  return New<Clock>(sub);
+		case CLOCK:  return New<Clock >(sub);
 		case WORKBENCH: return New<Workbench>(sub);
 		default:
 			fprintf(stderr,
@@ -113,8 +113,8 @@ Block * BlockManager::BlockFromFile(QDataStream & str) {
 		case ACTIVE: return New<Active>(str, sub);
 		case LIQUID: return New<Liquid>(str, sub);
 		case DOOR:   return New<Door  >(str, sub);
+		case CLOCK:  return New<Clock >(str, sub);
 		case WORKBENCH: return New<Workbench>(str, sub);
-		//case CLOCK:  return new Clock(str, world, sub);
 		default:
 			fprintf(stderr,
 				"BlockManager::BlockFromFile: unlisted kind: %d.\n",
