@@ -518,6 +518,65 @@
 		return 0;
 	}
 
+	QString & Workbench::FullName(QString & str) const {
+		switch ( Sub() ) {
+			case WOOD: return str="Workbench";
+			case IRON: return str="Iron anvil";
+			default:
+				fprintf(stderr,
+					"Bench::FullName: unlisted sub: %d\n",
+					Sub());
+				return str="Strange workbench";
+		}
+	}
+
+	int Workbench::Kind() const { return WORKBENCH; }
+
+	float Workbench::TrueWeight() const { return InvWeightAll()+80; }
+
+	usage_types Workbench::Use() { return OPEN; }
+
+	Block * Workbench::DropAfterDamage() const;
+
+	Inventory * Workbench::HasInventory() { return Inventory::HasInventory(); }
+
+	int Workbench::Sub() const { return Block::Sub(); }
+
+	ushort Workbench::Start() const { return 1; }
+
+	int Workbench::Drop(const ushort num, Inventory * const inv_to);
+
+	bool Workbench::Get(Block * const block) {
+		if ( Inventory::Get(block) ) {
+			Craft();
+			return true;
+		}
+		return false;
+	}
+
+	int Workbench::GetAll(Inventory * const from) {
+		const int err=Inventory::GetAll(from);
+		if ( !err ) {
+			Craft();
+			return 0;
+		} else
+			return err;
+	}
+
+	void Workbench::SaveAttributes(QDataStream & out) const {
+		Inventory::SaveAttributes(out);
+	}
+
+	Workbench::Workbench(const int sub) :
+			Block(sub),
+			Inventory(workbench_size)
+	{}
+
+	Workbench::Workbench(QDataStream & str, const int sub) :
+			Block(str, sub),
+			Inventory(str, workbench_size)
+	{}
+
 //Door::
 	Block * Door::DropAfterDamage() const { return block_manager.NewBlock(DOOR, Sub()); }
 

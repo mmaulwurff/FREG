@@ -468,58 +468,22 @@ class Workbench : public Block, public Inventory {
 	void Craft();
 
 	public:
-	QString & FullName(QString & str) const {
-		switch ( Sub() ) {
-			case WOOD: return str="Workbench";
-			case IRON: return str="Iron anvil";
-			default:
-				fprintf(stderr,
-					"Bench::FullName: unlisted sub: %d\n",
-					Sub());
-				return str="Strange workbench";
-		}
-	}
-	int Kind() const { return WORKBENCH; }
-	float TrueWeight() const { return InvWeightAll()+80; }
-	usage_types Use() { return OPEN; }
+	QString & FullName(QString & str) const;
+	int Kind() const;
+	float TrueWeight() const;
+	usage_types Use();
 	Block * DropAfterDamage() const;
-	Inventory * HasInventory() { return Inventory::HasInventory(); }
-
-	int Sub() const { return Block::Sub(); }
-	ushort Start() const { return 1; }
-
+	Inventory * HasInventory();
+	int Sub() const;
+	ushort Start() const;
 	int Drop(const ushort num, Inventory * const inv_to);
-	bool Get(Block * const block) {
-		if ( Inventory::Get(block) ) {
-			Craft();
-			return true;
-		}
-		return false;
-	}
-	int GetAll(Inventory * const from) {
-		const int err=Inventory::GetAll(from);
-		if ( !err ) {
-			Craft();
-			return 0;
-		} else
-			return err;
-	}
+	bool Get(Block * const block);
+	int GetAll(Inventory * const from);
 
-	void SaveAttributes(QDataStream & out) const {
-		Inventory::SaveAttributes(out);
-	}
+	void SaveAttributes(QDataStream & out) const;
 
-	Workbench(const int sub) :
-			Block(sub),
-			Inventory(workbench_size)
-	{}
-	Workbench(
-			QDataStream & str,
-			const int sub)
-			:
-			Block(str, sub),
-			Inventory(str, workbench_size)
-	{}
+	Workbench(const int sub);
+	Workbench(QDataStream & str, const int sub);
 }; //class Workbench
 
 class Door : public Active {
