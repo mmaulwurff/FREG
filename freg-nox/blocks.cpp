@@ -211,6 +211,41 @@
 			GetWorld()->Damage(x_self, y_self, z_self, 0, TIME);
 	}
 
+	int Pile::Kind() const { return PILE; }
+
+	int Pile::Sub() const { return Block::Sub(); }
+
+	QString & Pile::FullName(QString & str) const { return str="Pile"; }
+
+	Inventory * Pile::HasInventory() { return Inventory::HasInventory(); }
+
+	usage_types Pile::Use() { return Inventory::Use(); }
+
+	float Pile::TrueWeight() const { return InvWeightAll(); }
+
+	int Pile::Drop(const ushort n, Inventory * const inv) {
+		const int ret=Inventory::Drop(n, inv);
+		ifToDestroy=IsEmpty();
+		return ret;
+	}
+
+	void Pile::Pull(const ushort num) {
+		Inventory::Pull(num);
+		ifToDestroy=IsEmpty();
+	}
+
+	void Pile::SaveAttributes(QDataStream & out) const {
+		Active::SaveAttributes(out);
+		Inventory::SaveAttributes(out);
+		out << ifToDestroy;
+	}
+
+	Pile::Pile(const int sub) :
+			Active(sub, NONSTANDARD),
+			Inventory(),
+			ifToDestroy(false)
+	{}
+
 	Pile::Pile(QDataStream & str, const int sub) :
 			Active(str, sub, NONSTANDARD),
 			Inventory(str)

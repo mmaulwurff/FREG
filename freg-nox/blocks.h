@@ -360,43 +360,28 @@ class Chest : public Block, public Inventory {
 }; //class Chest
 
 class Pile : public Active, public Inventory {
-	Q_OBJECT
+	Q_OBJECT;
 
 	bool ifToDestroy;
 
 	public:
-	int Kind() const { return PILE; }
-	int Sub() const { return Block::Sub(); }
-	QString & FullName(QString & str) const { return str="Pile"; }
+	int Kind() const;
+	int Sub() const;
+	QString & FullName(QString & str) const;
 
-	Inventory * HasInventory() { return Inventory::HasInventory(); }
-	usage_types Use() { return Inventory::Use(); }
-	float TrueWeight() const { return InvWeightAll(); }
+	Inventory * HasInventory();
+	usage_types Use();
+	float TrueWeight() const;
 
 	void Act();
 
 	before_move_return BeforeMove(const int dir);
-	int Drop(const ushort n, Inventory * const inv) {
-		const int ret=Inventory::Drop(n, inv);
-		ifToDestroy=IsEmpty();
-		return ret;
-	}
-	void Pull(const ushort num) {
-		Inventory::Pull(num);
-		ifToDestroy=IsEmpty();
-	}
+	int Drop(const ushort n, Inventory * const inv);
+	void Pull(const ushort num);
 
-	void SaveAttributes(QDataStream & out) const {
-		Active::SaveAttributes(out);
-		Inventory::SaveAttributes(out);
-		out << ifToDestroy;
-	}
+	void SaveAttributes(QDataStream & out) const;
 
-	Pile(const int sub=DIFFERENT) :
-			Active(sub, NONSTANDARD),
-			Inventory(),
-			ifToDestroy(false)
-	{}
+	Pile(const int sub=DIFFERENT);
 	Pile(QDataStream & str, int sub);
 }; //class Pile
 
