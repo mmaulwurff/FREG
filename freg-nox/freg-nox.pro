@@ -28,6 +28,7 @@ SOURCES += blocks.cpp \
            Active.cpp \
            Bush.cpp \
            Plate.cpp \
+           Ladder.cpp \
            Lighting.cpp \
            main.cpp \
            Player.cpp \

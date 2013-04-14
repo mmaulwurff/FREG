@@ -22,8 +22,6 @@
 #include "CraftManager.h"
 #include "BlockManager.h"
 
-Block * Ladder::DropAfterDamage() const { return block_manager.NewBlock(LADDER, Sub()); }
-
 //Block * Clock::DropAfterDamage() const { return block_manager.NewBlock(CLOCK, Sub()); }
 
 /*usage_types Clock::Use() {

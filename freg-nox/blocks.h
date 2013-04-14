@@ -114,23 +114,16 @@ class Plate : public Block {
 }; //class Plate
 
 class Ladder : public Block {
-	QString & FullName(QString & str) const { return str="Ladder"; }
-	int Kind() const { return LADDER; }
+	QString & FullName(QString & str) const;
+	int Kind() const;
 	Block * DropAfterDamage() const;
-	int BeforePush(const int) { return MOVE_UP; }
-	float TrueWeight() const { return 20; }
-	bool Catchable() const { return true; }
+	int BeforePush(const int);
+	float TrueWeight() const;
+	bool Catchable() const;
 
 	public:
-	Ladder(const int sub) :
-			Block(sub)
-	{}
-	Ladder(
-			QDataStream & str,
-			const int sub)
-			:
-			Block(str, sub)
-	{}
+	Ladder(const int sub);
+	Ladder(QDataStream & str, const int sub);
 }; //class Ladder
 
 /*class Clock : public Block {
@@ -339,7 +332,7 @@ class Active : public QObject, public Block {
 }; //class Active
 
 class Animal : public Active {
-	Q_OBJECT
+	Q_OBJECT;
 
 	protected:
 	quint16 breath;
@@ -419,7 +412,7 @@ class Inventory {
 }; //class Inventory
 
 class Dwarf : public Animal, public Inventory {
-	Q_OBJECT
+	Q_OBJECT;
 
 	static const uchar onHead=0;
 	static const uchar inRight=1;
@@ -713,7 +706,6 @@ class Bush : public Active, public Inventory {
 
 	Bush(const int sub=WOOD);
 	Bush(QDataStream & str, const int sub);
-	~Bush();
 }; //class Bush
 
 class Rabbit : public Animal {

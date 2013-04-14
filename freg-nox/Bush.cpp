@@ -56,5 +56,3 @@ Bush::Bush(QDataStream & str, const int sub) :
 		Active(str, sub),
 		Inventory(str, bush_size)
 {}
-
-Bush::~Bush() {}
