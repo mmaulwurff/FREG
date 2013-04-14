@@ -24,6 +24,13 @@
 
 const int datastream_version=QDataStream::Qt_4_6; //Qt version in Debian stable now.
 
+long Shred::Longitude() const { return longitude; }
+long Shred::Latitude()  const { return latitude; }
+ushort Shred::ShredX() const { return shredX; }
+ushort Shred::ShredY() const { return shredY; }
+
+World * Shred::GetWorld() const { return world; }
+
 int Shred::LoadShred(QFile & file) {
 		QByteArray read_data=file.readAll();
 		QByteArray uncompressed=qUncompress(read_data);

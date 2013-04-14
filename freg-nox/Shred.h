@@ -35,110 +35,56 @@ class Shred {
 	QList<Active *> fallList;
 
 	public:
-	long Longitude() const { return longitude; }
-	long Latitude()  const { return latitude; }
-	ushort ShredX() const { return shredX; }
-	ushort ShredY() const { return shredY; }
+	long Longitude() const;
+	long Latitude()  const;
+	ushort ShredX() const;
+	ushort ShredY() const;
 	void PhysEvents();
 
 	void AddActive(Active * const);
 	bool RemActive(Active * const);
 
-	World * GetWorld() const { return world; }
+	World * GetWorld() const;
 
 	void ReloadToNorth();
 	void ReloadToEast();
 	void ReloadToSouth();
 	void ReloadToWest();
 
-	Block * GetBlock(
-			const ushort,
-			const ushort,
-			const ushort) const;
+	Block * GetBlock(ushort x, ushort y, ushort z) const;
 	///Puts block to coordinates xyz and activates it
-	void SetBlock(
-			Block * const block,
-			const ushort x,
-			const ushort y,
-			const ushort z);
+	void SetBlock(Block * block, ushort x, ushort y, ushort z);
 	///Puts block to coordinates and not activates it (e.g. in World::Move)
-	void PutBlock(
-			Block * const block,
-			const ushort x,
-			const ushort y,
-			const ushort z);
+	void PutBlock(Block * block, ushort x, ushort y, ushort z);
 	///Puts normal block to coordinates
-	void PutNormalBlock(
-			int sub,
-			ushort x, ushort y, ushort z);
+	void PutNormalBlock(int sub, ushort x, ushort y, ushort z);
 	static Block * Normal(const int sub);
 
-	uchar LightMap(
-			const ushort,
-			const ushort,
-			const ushort) const;
-	bool SetLightMap(
-			const uchar level,
-			const ushort x,
-			const ushort y,
-			const ushort z);
+	uchar LightMap(ushort x, ushort y, ushort z) const;
+	bool SetLightMap(uchar level, ushort x, ushort y, ushort z);
 	void SetAllLightMap(const uchar=0);
 	void ShineAll();
 
-	int Sub(
-			const ushort,
-			const ushort,
-			const ushort) const;
-	int Kind(
-			const ushort,
-			const ushort,
-			const ushort) const;
-	int Durability(
-			const ushort,
-			const ushort,
-			const ushort) const;
-	int Movable(
-			const ushort,
-			const ushort,
-			const ushort) const;
-	int Transparent(
-			const ushort,
-			const ushort,
-			const ushort) const;
-	float Weight(
-			const ushort,
-			const ushort,
-			const ushort) const;
-	uchar LightRadius(
-			const ushort,
-			const ushort,
-			const ushort) const;
+	int Sub(ushort x, ushort y, ushort z) const;
+	int Kind(ushort x, ushort y, ushort z) const;
+	int Durability(ushort x, ushort y, ushort z) const;
+	int Movable(ushort x, ushort y, ushort z) const;
+	int Transparent(ushort x, ushort y, ushort z) const;
+	float Weight(ushort x, ushort y, ushort z) const;
+	uchar LightRadius(ushort x, ushort y, ushort z) const;
 
 	int LoadShred(QFile &);
 
-	Shred(
-			World * const,
-			const ushort shred_x,
-			const ushort shred_y,
-			const long longi,
-			const long lati);
+	Shred(World *, ushort shred_x, ushort shred_y, long longi, long lati);
 	~Shred();
 	
-	void SetNewBlock(
-			int kind, int sub,
-			ushort x, ushort y, ushort z);
+	void SetNewBlock(int kind, int sub, ushort x, ushort y, ushort z);
 	private:
-	void RegisterBlock(
-			Block * const,
-			const ushort x,
-			const ushort y,
-			const ushort z);
+	void RegisterBlock(Block *, ushort x, ushort y, ushort z);
 
 	private:
 	QString FileName() const;
-	char TypeOfShred(
-			const long longi,
-			const long lati) const;
+	char TypeOfShred(long longi, long lati) const;
 
 	void NormalUnderground(const ushort);
 	void PlantGrass();
@@ -150,11 +96,7 @@ class Shred {
 	void Pyramid();
 	void Mountain();
 	//block combinations section (trees, buildings, etc):
-	bool Tree(
-			const ushort x,
-			const ushort y,
-			const ushort z,
-			const ushort height);
+	bool Tree(ushort x, ushort y, ushort z, ushort height);
 }; //class Shred
 
 #endif
