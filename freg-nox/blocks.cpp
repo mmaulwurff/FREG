@@ -280,6 +280,38 @@
 		}
 	}
 
+	int Liquid::Movable() const { return ENVIRONMENT; }
+
+	int Liquid::Kind() const { return LIQUID; }
+
+	QString & Liquid::FullName(QString & str) const {
+		switch (sub) {
+			case WATER: return str="Water";
+			case STONE: return str="Lava";
+			default:
+				fprintf(stderr,
+					"Liquid::FullName(QString&): Liquid has unknown substance: %d\n",
+					sub);
+				return str="Unknown liquid";
+		}
+	}
+
+	int Liquid::Damage(const ushort dam, const int dam_kind) {
+		return ( HEAT==dam_kind ) ?
+			durability-=dam :
+			durability;
+	}
+
+	int Liquid::Temperature() const { return ( WATER==sub ) ? 0 : 1000; }
+
+	Liquid::Liquid(const int sub) :
+			Active(sub)
+	{}
+
+	Liquid::Liquid(QDataStream & str, const int sub) :
+			Active(str, sub)
+	{}
+
 //Grass::
 	void Grass::Act() {
 		short i=x_self, j=y_self;

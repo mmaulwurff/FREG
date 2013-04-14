@@ -392,47 +392,23 @@ class Liquid : public Active {
 	bool CheckWater() const;
 
 	public:
-	int Movable() const { return ENVIRONMENT; }
+	int Movable() const;
 
-	int Kind() const { return LIQUID; }
-	QString & FullName(QString & str) const {
-		switch (sub) {
-			case WATER: return str="Water";
-			case STONE: return str="Lava";
-			default:
-				fprintf(stderr,
-					"Liquid::FullName(QString&): Liquid has unknown substance: %d\n",
-					sub);
-				return str="Unknown liquid";
-		}
-	}
+	int Kind() const;
+	QString & FullName(QString & str) const;
 
-	int Damage(
-			const ushort dam,
-			const int dam_kind)
-	{
-		return ( HEAT==dam_kind ) ?
-			durability-=dam :
-			durability;
-	}
+	int Damage(const ushort dam, const int dam_kind);
 
 	void Act();
 
-	int Temperature() const { return ( WATER==sub ) ? 0 : 1000; }
+	int Temperature() const;
 
-	Liquid(const int sub=WATER) :
-			Active(sub)
-	{}
-	Liquid(
-			QDataStream & str,
-			const int sub)
-			:
-			Active(str, sub)
-	{}
+	Liquid(const int sub=WATER);
+	Liquid(QDataStream & str, const int sub);
 }; //class Liquid
 
 class Grass : public Active {
-	Q_OBJECT
+	Q_OBJECT;
 	public:
 	QString & FullName(QString & str) const {
 		switch ( sub ) {
