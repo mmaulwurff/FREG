@@ -82,15 +82,8 @@ class World : public QThread {
 
 	uchar sunMoonFactor;
 
-	void ReplaceWithNormal(
-			const ushort x,
-			const ushort y,
-			const ushort z)
-	{
-		SetBlock(ReplaceWithNormal(GetBlock(x, y, z)),
-			x, y, z);
-	}
-	Block * ReplaceWithNormal(Block * const block);
+	void ReplaceWithNormal(ushort x, ushort y, ushort z);
+	Block * ReplaceWithNormal(Block * block);
 	void MakeSun();
 	void RemSun();
 	void LoadAllShreds();
@@ -101,177 +94,82 @@ class World : public QThread {
 
 	//block work section
 	public:
-	Block * GetBlock(
-			const ushort,
-			const ushort,
-			const ushort) const;
-	Shred * GetShred(
-			const ushort i,
-			const ushort j) const
-	{
-		return shreds[j/SHRED_WIDTH*numShreds+
-		              i/SHRED_WIDTH];
-	}
+	Block * GetBlock(ushort x, ushort y, ushort z) const;
+	Shred * GetShred(ushort i, ushort j) const;
 	///Puts block to coordinates xyz and activates it.
-	void SetBlock(
-			Block * const block,
-			const ushort x,
-			const ushort y,
-			const ushort z);
+	void SetBlock(Block * block, ushort x, ushort y, ushort z);
 	///Puts block to coordinates and not activates it (e.g. in World::Move).
-	void PutBlock(
-			Block * const block,
-			const ushort x,
-			const ushort y,
-			const ushort z);
+	void PutBlock(Block * block, ushort x, ushort y, ushort z);
 	///Puts normal block to coordinates.
-	void PutNormalBlock(
-			const subs sub,
-			const ushort x,
-			const ushort y,
-			const ushort z);
+	void PutNormalBlock(subs sub, ushort x, ushort y, ushort z);
 	static Block * Normal(int sub);
 	static void DeleteBlock(Block * block);
 
 	//lighting section
 	public:
-	uchar Enlightened(
-			const ushort,
-			const ushort,
-			const ushort) const;
-	uchar Enlightened(
-			const ushort,
-			const ushort,
-			const ushort,
-			const int dir) const;
-	uchar SunLight(
-			const ushort,
-			const ushort,
-			const ushort) const;
-	uchar FireLight(
-			const ushort,
-			const ushort,
-			const ushort) const;
+	uchar Enlightened(ushort x, ushort y, ushort z) const;
+	uchar Enlightened(ushort x, ushort y, ushort z, int dir) const;
+	uchar SunLight(ushort x, ushort y, ushort z) const;
+	uchar FireLight(ushort x, ushort y, ushort z) const;
 
 	private:
-	uchar LightMap(
-			const ushort,
-			const ushort,
-			const ushort) const;
-	bool SetLightMap(
-			const uchar level,
-			const ushort x,
-			const ushort y,
-			const ushort z);
+	uchar LightMap(ushort x, ushort y, ushort z) const;
+	bool SetLightMap(uchar level, ushort x, ushort y, ushort z);
 
-	void ReEnlighten(
-			const ushort i,
-			const ushort j,
-			const ushort k);
+	void ReEnlighten(ushort i, ushort j, ushort k);
 	void ReEnlightenAll();
 	void ReEnlightenTime();
 	///Called from World::ReloadShreds(int), enlighens only need shreds.
 	void ReEnlightenMove(const int direction);
 
-	void SunShine(
-			const ushort i,
-			const ushort j);
-	void Shine(
-			const ushort x,
-			const ushort y,
-			const ushort z,
-			const uchar level,
-			const bool init=false);
+	void SunShine(ushort i, ushort j);
+	void Shine(ushort x, ushort y, ushort z, uchar level, bool init=false);
 
 	//information section
 	public:
-	QString & WorldName(QString & str) const {
-		return str=worldName;
-	}
-	int Focus(const ushort,
-	          const ushort,
-	          const ushort,
-	          ushort &,
-	          ushort &,
-	          ushort &,
-		  const quint8 dir) const;
-	int Focus(const ushort,
-	          const ushort,
-	          const ushort,
-	          ushort &,
-	          ushort &,
-	          ushort &) const;
-	ushort NumShreds() const { return numShreds; }
-	ushort NumActiveShreds() const { return numActiveShreds; }
+	QString & WorldName(QString & str) const;
+	int Focus(
+			ushort, ushort, ushort,
+			ushort &,  ushort &, ushort &,
+			quint8 dir) const;
+	int Focus(
+			ushort, ushort, ushort,
+			ushort &, ushort &, ushort &) const;
+	ushort NumShreds() const;
+	ushort NumActiveShreds() const;
 	static quint8 TurnRight(const quint8 dir);
 	static quint8 TurnLeft (const quint8 dir);
 	static quint8 Anti(const quint8 dir);
-	long GetSpawnLongi() const { return spawnLongi; }
-	long GetSpawnLati()  const { return spawnLati; }
-	long Longitude() const { return longitude; }
-	long Latitude() const { return latitude; }
-	static ushort TimeStepsInSec() { return time_steps_in_sec; }
+	long GetSpawnLongi() const;
+	long GetSpawnLati()  const;
+	long Longitude() const;
+	long Latitude() const;
+	static ushort TimeStepsInSec();
 
 	private:
-	long MapSize() const { return mapSize; }
-	ushort SunMoonX() const {
-		return ( NIGHT==PartOfDay() ) ?
-			TimeOfDay()*SHRED_WIDTH*numShreds/
-				SECONDS_IN_NIGHT :
-			(TimeOfDay()-SECONDS_IN_NIGHT)*SHRED_WIDTH*numShreds/
-				SECONDS_IN_DAYLIGHT;
-	}
+	long MapSize() const;
+	ushort SunMoonX() const;
 	quint8 MakeDir(
-			const ushort,
-			const ushort,
-			const ushort,
-			const ushort) const;
+			ushort x_cent, ushort y_cent,
+			ushort x_targ, ushort y_targ) const;
 	float Distance(
-			const ushort x_from,
-			const ushort y_from,
-			const ushort z_from,
-	                const ushort x_to,
-			const ushort y_to,
-			const ushort z_to) const
-	{
-		return sqrt( float((x_from-x_to)*(x_from-x_to)+
-		                   (y_from-y_to)*(y_from-y_to)+
-		                   (z_from-z_to)*(z_from-z_to)) );
-	}
+			ushort x_from, ushort y_from, ushort z_from,
+	                ushort x_to,   ushort y_to,   ushort z_to) const;
 
 	//visibility section
 	public:
 	bool DirectlyVisible(
-			float,
-			float,
-			float,
-			const ushort,
-			const ushort,
-			const ushort) const;
+			float, float, float,
+			ushort, ushort, ushort) const;
 	bool Visible(
-			const ushort x_from,
-			const ushort y_from,
-			const ushort z_from,
-			const ushort x_to,
-			const ushort y_to,
-			const ushort z_to) const;
+			ushort x_from, ushort y_from, ushort z_from,
+			ushort x_to,   ushort y_to,   ushort z_to) const;
 
 	//movement section
 	public:
-	int  Move(
-			const ushort x,
-			const ushort y,
-			const ushort z,
-			const quint8 dir);
-	void Jump(
-			const ushort x,
-			const ushort y,
-			const ushort z);
-	void Jump(
-			const ushort,
-			const ushort,
-			ushort,
-			const quint8 dir);
+	int  Move(ushort x, ushort y, ushort z, quint8 dir);
+	void Jump(ushort x, ushort y, ushort z);
+	void Jump(ushort x, ushort y, ushort z, quint8 dir);
 	///Set action that will be executed at start of next physics turn.
 	/**It is needed by graphics screen to reduce execution time of
 	 * player's actions.
@@ -279,189 +177,86 @@ class World : public QThread {
 	 * only the last will be done.
 	 */
 	void SetDeferredAction(
-			const ushort x,
-			const ushort y,
-			const ushort z,
-			const quint8 dir,
-			const int action,
-			const ushort x_from=0,
-			const ushort y_from=0,
-			const ushort z_from=0,
-			Block * const what=0,
-			const int data1=0,
-			const int data2=0);
+			ushort x,
+			ushort y,
+			ushort z,
+			quint8 dir,
+			int action,
+			ushort x_from=0,
+			ushort y_from=0,
+			ushort z_from=0,
+			Block * what=0,
+			int data1=0,
+			int data2=0);
 
 	//time section
 	public:
-	times_of_day PartOfDay() const {
-		ushort time_day=TimeOfDay();
-		if (time_day<END_OF_NIGHT)   return NIGHT;
-		if (time_day<END_OF_MORNING) return MORNING;
-		if (time_day<END_OF_NOON)    return NOON;
-		return EVENING;
-	}
-	int TimeOfDay() const { return time % SECONDS_IN_DAY; }
-	ulong Time() const { return time; }
+	times_of_day PartOfDay() const;
+	int TimeOfDay() const;
+	ulong Time() const;
 
 	//interactions section
 	public:
 	bool Damage(
-			const ushort,
-			const ushort,
-			const ushort,
-			const ushort=1,
-			const int=CRUSH);
-	int Use(
-			const ushort,
-			const ushort,
-			const ushort);
+			ushort x, ushort y, ushort z,
+			ushort level=1, int dmg_kind=CRUSH);
+	int Use(ushort x, ushort y, ushort z);
 	int Build(
-			Block * const thing,
-			const ushort x,
-			const ushort y,
-			const ushort z,
-			const quint8 dir=UP,
-			Block * const who=0);
-	bool Inscribe(
-			const ushort,
-			const ushort,
-			const ushort);
+			Block * thing,
+			ushort x, ushort y, ushort z,
+			quint8 dir=UP,
+			Block * who=0);
+	bool Inscribe(ushort x, ushort y, ushort z);
 	void Eat(
-			const ushort i,
-			const ushort j,
-			const ushort k,
-			const ushort i_food,
-			const ushort j_food,
-			const ushort k_food);
+			ushort i, ushort j, ushort k,
+			ushort i_food, ushort j_food, ushort k_food);
 
 	//inventory functions section
 	private:
 	int Exchange(
-			const ushort i_from,
-			const ushort j_from,
-			const ushort k_from,
-			const ushort i_to,
-			const ushort j_to,
-			const ushort k_to,
-			const ushort n);
+			ushort i_from, ushort j_from, ushort k_from,
+			ushort i_to,   ushort j_to,   ushort k_to,
+			ushort n);
 	public:
-	int Drop(
-			const ushort i,
-			const ushort j,
-			const ushort k,
-			const ushort n)
-	{
-		ushort i_to, j_to, k_to;
-		return ( Focus(i, j, k, i_to, j_to, k_to) ) ?
-			5 : Exchange(i, j, k, i_to, j_to, k_to, n);
-	}
-	int Get(
-			const ushort i,
-			const ushort j,
-			const ushort k,
-			const ushort n)
-	{
-		ushort i_from, j_from, k_from;
-		return ( Focus(i, j, k, i_from, j_from, k_from) ) ? 5 :
-			Exchange(i_from, j_from, k_from, i, j, k, n);
-	}
-	int GetAll(
-			const ushort x_to,
-			const ushort y_to,
-			const ushort z_to);
+	int Drop(ushort i, ushort j, ushort k, ushort n);
+	int Get( ushort i, ushort j, ushort k, ushort n);
+	int GetAll(ushort x_to, ushort y_to, ushort z_to);
 
 	//block information section
 	public:
-	bool InBounds(
-			const ushort i,
-			const ushort j,
-			const ushort k=0) const
-	{
-		const ushort max_x_y=SHRED_WIDTH*numShreds;
-		return (i<max_x_y && j<max_x_y && k<HEIGHT);
-	}
-	QString & FullName(QString &,
-			const ushort,
-			const ushort,
-			const ushort) const;
-	int Transparent(
-			const ushort,
-			const ushort,
-			const ushort) const;
-	int Durability(
-			const ushort,
-			const ushort,
-			const ushort) const;
-	int Kind(
-			const ushort,
-			const ushort,
-			const ushort) const;
-	int Sub(
-			const ushort,
-			const ushort,
-			const ushort) const;
-	int Movable(
-			const ushort,
-			const ushort,
-			const ushort) const;
-	float Weight(
-			const ushort,
-			const ushort,
-			const ushort) const;
-	uchar LightRadius(
-			const ushort x,
-			const ushort y,
-			const ushort z) const;
-	Inventory * HasInventory(
-			const ushort,
-			const ushort,
-			const ushort k) const;
+	bool InBounds(ushort i, ushort j, ushort k=0) const;
+	QString & FullName(QString &, ushort x, ushort y, ushort z) const;
+	int Transparent(ushort x, ushort y, ushort z) const;
+	int Durability(ushort x, ushort y, ushort z) const;
+	int Kind(ushort x, ushort y, ushort z) const;
+	int Sub (ushort x, ushort y, ushort z) const;
+	int Movable(ushort x, ushort y, ushort z) const;
+	float Weight(ushort x, ushort y, ushort z) const;
+	uchar LightRadius(ushort x, ushort y, ushort z) const;
+	Inventory * HasInventory(ushort x, ushort y, ushort z) const;
 
-	Active * ActiveBlock(
-			const ushort,
-			const ushort,
-			const ushort) const;
+	Active * ActiveBlock(ushort x, ushort y, ushort z) const;
 
-	QString & GetNote(QString &,
-			const ushort,
-			const ushort,
-			const ushort) const;
-	int Temperature(
-			const ushort,
-			const ushort,
-			const ushort) const;
-	bool Equal(const Block * const, const Block * const) const;
+	QString & GetNote(QString &, ushort x, ushort y, ushort z) const;
+	int Temperature(ushort x, ushort y, ushort z) const;
+	bool Equal(const Block *, const Block *) const;
 
 	void ReloadAllShreds(
-		const long lati,
-		const long longi,
-		const ushort new_x,
-		const ushort new_y,
-		const ushort new_z,
-		const ushort new_num_shreds)
-	{
-		newLati=lati;
-		newLongi=longi;
-		newX=new_x;
-		newY=new_y;
-		newZ=new_z;
-		if ( numActiveShreds > new_num_shreds )
-			numActiveShreds=new_num_shreds;
-		newNumShreds=new_num_shreds;
-		toReSet=true;
-	}
+		long lati, long longi,
+		ushort new_x, ushort new_y, ushort new_z,
+		ushort new_num_shreds);
 	void SetNumActiveShreds(ushort num);
 
 	private:
 	friend class Shred;
 
 	public:
-	void WriteLock() { rwLock.lockForWrite(); }
-	void ReadLock() { rwLock.lockForRead(); }
-	bool TryReadLock() { return rwLock.tryLockForRead(); }
-	void Unlock() { rwLock.unlock(); }
+	void WriteLock();
+	void ReadLock();
+	bool TryReadLock();
+	void Unlock();
 
-	void EmitNotify(const QString & str) const { emit Notify(str); }
+	void EmitNotify(const QString & str) const;
 
 	public:
 	World(const QString &);
@@ -475,25 +270,17 @@ class World : public QThread {
 	signals:
 	void Notify(const QString &) const;
 	void GetString(QString &) const;
-	void Updated(
-			const ushort,
-			const ushort,
-			const ushort);
+	void Updated(const ushort, const ushort, const ushort);
 	void UpdatedAll();
 	void UpdatedAround(
-			const ushort,
-			const ushort,
-			const ushort,
+			const ushort, const ushort, const ushort,
 			const ushort level);
 	///Emitted when world active zone moved to int direction.
 	void Moved(const int);
 	void ReConnect();
 	///This is emitted when a pack of updates is complete.
 	void UpdatesEnded();
-	void NeedPlayer(
-			const ushort,
-			const ushort,
-			const ushort);
+	void NeedPlayer(const ushort, const ushort, const ushort);
 	void StartReloadAll();
 	void FinishReloadAll();
 	void ExitReceived();

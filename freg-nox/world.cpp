@@ -32,6 +32,111 @@
     #include <cmath>
 #endif
 
+void World::ReplaceWithNormal(
+		const ushort x,
+		const ushort y,
+		const ushort z)
+{
+	SetBlock(ReplaceWithNormal(GetBlock(x, y, z)),
+		x, y, z);
+}
+
+Shred * World::GetShred(const ushort i, const ushort j) const {
+	return shreds[j/SHRED_WIDTH*numShreds+
+		      i/SHRED_WIDTH];
+}
+
+QString & World::WorldName(QString & str) const { return str=worldName; }
+
+ushort World::NumShreds() const { return numShreds; }
+ushort World::NumActiveShreds() const { return numActiveShreds; }
+
+long World::GetSpawnLongi() const { return spawnLongi; }
+long World::GetSpawnLati()  const { return spawnLati; }
+long World::Longitude() const { return longitude; }
+long World::Latitude() const { return latitude; }
+ushort World::TimeStepsInSec() { return time_steps_in_sec; }
+
+long World::MapSize() const { return mapSize; }
+
+ushort World::SunMoonX() const {
+	return ( NIGHT==PartOfDay() ) ?
+		TimeOfDay()*SHRED_WIDTH*numShreds/
+			SECONDS_IN_NIGHT :
+		(TimeOfDay()-SECONDS_IN_NIGHT)*SHRED_WIDTH*numShreds/
+			SECONDS_IN_DAYLIGHT;
+}
+
+float World::Distance(
+		const ushort x_from,
+		const ushort y_from,
+		const ushort z_from,
+		const ushort x_to,
+		const ushort y_to,
+		const ushort z_to) const
+{
+	return sqrt( float((x_from-x_to)*(x_from-x_to)+
+			   (y_from-y_to)*(y_from-y_to)+
+			   (z_from-z_to)*(z_from-z_to)) );
+}
+
+times_of_day World::PartOfDay() const {
+	ushort time_day=TimeOfDay();
+	if (time_day<END_OF_NIGHT)   return NIGHT;
+	if (time_day<END_OF_MORNING) return MORNING;
+	if (time_day<END_OF_NOON)    return NOON;
+	return EVENING;
+}
+
+int World::TimeOfDay() const { return time % SECONDS_IN_DAY; }
+ulong World::Time() const { return time; }
+
+int World::Drop(
+		const ushort i, const ushort j,	const ushort k,
+		const ushort n)
+{
+	ushort i_to, j_to, k_to;
+	return ( Focus(i, j, k, i_to, j_to, k_to) ) ?
+		5 : Exchange(i, j, k, i_to, j_to, k_to, n);
+}
+
+int World::Get(
+		const ushort i, const ushort j, const ushort k,
+		const ushort n)
+{
+	ushort i_from, j_from, k_from;
+	return ( Focus(i, j, k, i_from, j_from, k_from) ) ? 5 :
+		Exchange(i_from, j_from, k_from, i, j, k, n);
+}
+
+bool World::InBounds(const ushort i, const ushort j, const ushort k) const {
+	const ushort max_x_y=SHRED_WIDTH*numShreds;
+	return (i<max_x_y && j<max_x_y && k<HEIGHT);
+}
+
+void World::ReloadAllShreds(
+	const long lati, const long longi,
+	const ushort new_x, const ushort new_y, const ushort new_z,
+	const ushort new_num_shreds)
+{
+	newLati=lati;
+	newLongi=longi;
+	newX=new_x;
+	newY=new_y;
+	newZ=new_z;
+	if ( numActiveShreds > new_num_shreds )
+		numActiveShreds=new_num_shreds;
+	newNumShreds=new_num_shreds;
+	toReSet=true;
+}
+
+void World::WriteLock() { rwLock.lockForWrite(); }
+void World::ReadLock() { rwLock.lockForRead(); }
+bool World::TryReadLock() { return rwLock.tryLockForRead(); }
+void World::Unlock() { rwLock.unlock(); }
+
+void World::EmitNotify(const QString & str) const { emit Notify(str); }
+
 void World::run() {
 	QTimer timer;
 	connect(&timer, SIGNAL(timeout()),
