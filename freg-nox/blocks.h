@@ -102,34 +102,15 @@ class Block { //blocks without special physics and attributes
 }; //class Block
 
 class Plate : public Block {
-	QString & FullName(QString & str) const {
-		switch ( Sub() ) {
-			case WOOD: return str="Wooden board";
-			case IRON: return str="Iron plate";
-			case STONE: return str="Stone slab";
-			default:
-				fprintf(stderr,
-					"Plate::FullName: unlisted sub: %d",
-					Sub());
-				return str="Strange plate";
-		}
-	}
-	int Kind() const { return PLATE; }
+	QString & FullName(QString & str) const;
+	int Kind() const;
 	Block * DropAfterDamage() const;
-	int BeforePush(const int) { return JUMP; }
-	float TrueWeight() const { return 10; }
+	int BeforePush(const int);
+	float TrueWeight() const;
 
 	public:
-	Plate(const int sub)
-			:
-			Block(sub, NONSTANDARD)
-	{}
-	Plate(
-			QDataStream & str,
-			const int sub)
-			:
-			Block(str, sub, NONSTANDARD)
-	{}
+	Plate(const int sub);
+	Plate(QDataStream & str, const int sub);
 }; //class Plate
 
 class Ladder : public Block {

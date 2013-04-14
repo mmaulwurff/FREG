@@ -27,6 +27,7 @@ SOURCES += blocks.cpp \
            Inventory.cpp \
            Active.cpp \
            Bush.cpp \
+           Plate.cpp \
            Lighting.cpp \
            main.cpp \
            Player.cpp \
