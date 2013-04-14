@@ -49,6 +49,99 @@
 		return NOTHING;
 	}
 
+	bool Dwarf::CarvingWeapon() const {
+		return ( (ShowBlock(inRight) && ShowBlock(inRight)->Carving()) ||
+		         (ShowBlock(inLeft)  && ShowBlock(inLeft )->Carving()) );
+	}
+
+	int Dwarf::Kind() const { return DWARF; }
+
+	int Dwarf::Sub() const { return Block::Sub(); }
+
+	QString & Dwarf::FullName(QString & str) const {
+		return str="Dwarf "+note;
+	}
+
+	ushort Dwarf::Start() const { return 5; }
+
+	int Dwarf::DamageKind() const {
+		if ( Number(inRight) )
+			return ShowBlock(inRight)->DamageKind();
+		if ( Number(inLeft) )
+			return ShowBlock(inLeft)->DamageKind();
+		return CRUSH;
+	}
+
+	ushort Dwarf::DamageLevel() const {
+		ushort level=1;
+		if ( Number(inRight) )
+			level+=ShowBlock(inRight)->DamageLevel();
+		if ( Number(inLeft) )
+			level+=ShowBlock(inRight)->DamageLevel();
+		return level;
+	}
+
+	int Dwarf::Eat(Block * const to_eat) {
+		if ( !to_eat )
+			return 1;
+
+		switch ( to_eat->Sub() ) {
+			case HAZELNUT: satiation+=SECONDS_IN_HOUR/2; break;
+			case H_MEAT:   satiation+=SECONDS_IN_HOUR*2.5; break;
+			case A_MEAT:   satiation+=SECONDS_IN_HOUR*2; break;
+			default: return 2; //not ate
+		}
+
+		if ( SECONDS_IN_DAY < satiation )
+			satiation=1.1*SECONDS_IN_DAY;
+
+		return 0; //ate
+	}
+
+	Inventory * Dwarf::HasInventory() { return Inventory::HasInventory(); }
+
+	bool Dwarf::Access() const { return false; }
+
+	int Dwarf::Wield(const ushort num) {
+		Block *  const block=ShowBlock(num);
+		if  ( !block )
+			return 1;
+
+		if ( block->IsWeapon() ) {
+			if ( !ShowBlock(inRight) ) {
+				GetExact(block, inRight);
+				Pull(num);
+				return 0;
+			}
+			if ( !ShowBlock(inLeft) ) {
+				GetExact(block, inLeft);
+				Pull(num);
+				return 0;
+			}
+		}
+		//TODO: clothes, armour
+		return 2;
+	}
+
+	void Dwarf::SaveAttributes(QDataStream & out) const {
+		Animal::SaveAttributes(out);
+		Inventory::SaveAttributes(out);
+	}
+
+	uchar Dwarf::LightRadius() const { return 3; }
+
+	Dwarf::Dwarf(const int sub) :
+			Animal(sub),
+			Inventory()
+	{
+		Inscribe("Urist");
+	}
+
+	Dwarf::Dwarf(QDataStream & str, const int sub) :
+			Animal(str, sub),
+			Inventory(str)
+	{}
+
 //Chest::
 	Block * Chest::DropAfterDamage() const { return block_manager.NewBlock(CHEST, sub); }
 

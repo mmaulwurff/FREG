@@ -314,98 +314,31 @@ class Dwarf : public Animal, public Inventory {
 	static const uchar onLegs=4;
 
 	public:
-	bool CarvingWeapon() const {
-		return ( (ShowBlock(inRight) && ShowBlock(inRight)->Carving()) ||
-		         (ShowBlock(inLeft)  && ShowBlock(inLeft )->Carving()) );
-	}
+	bool CarvingWeapon() const;
 
-	int Kind() const { return DWARF; }
-	int Sub() const { return Block::Sub(); }
-	QString & FullName(QString & str) const {
-		return str="Dwarf "+note;
-	}
+	int Kind() const;
+	int Sub() const;
+	QString & FullName(QString & str) const;
 	float TrueWeight() const;
-	ushort Start() const { return 5; }
-	int DamageKind() const {
-		if ( Number(inRight) )
-			return ShowBlock(inRight)->DamageKind();
-		if ( Number(inLeft) )
-			return ShowBlock(inLeft)->DamageKind();
-		return CRUSH;
-	}
-	ushort DamageLevel() const {
-		ushort level=1;
-		if ( Number(inRight) )
-			level+=ShowBlock(inRight)->DamageLevel();
-		if ( Number(inLeft) )
-			level+=ShowBlock(inRight)->DamageLevel();
-		return level;
-	}
+	ushort Start() const;
+	int DamageKind() const;
+	ushort DamageLevel() const;
 
 	before_move_return BeforeMove(const int);
 	void Act();
+	int Eat(Block * const to_eat);
 
-	int Eat(Block * const to_eat) {
-		if ( !to_eat )
-			return 1;
-
-		switch ( to_eat->Sub() ) {
-			case HAZELNUT: satiation+=SECONDS_IN_HOUR/2; break;
-			case H_MEAT:   satiation+=SECONDS_IN_HOUR*2.5; break;
-			case A_MEAT:   satiation+=SECONDS_IN_HOUR*2; break;
-			default: return 2; //not ate
-		}
-
-		if ( SECONDS_IN_DAY < satiation )
-			satiation=1.1*SECONDS_IN_DAY;
-
-		return 0; //ate
-	}
-
-	Inventory * HasInventory() { return Inventory::HasInventory(); }
-	bool Access() const { return false; }
-	int Wield(const ushort num) {
-		Block *  const block=ShowBlock(num);
-		if  ( !block )
-			return 1;
-
-		if ( block->IsWeapon() ) {
-			if ( !ShowBlock(inRight) ) {
-				GetExact(block, inRight);
-				Pull(num);
-				return 0;
-			}
-			if ( !ShowBlock(inLeft) ) {
-				GetExact(block, inLeft);
-				Pull(num);
-				return 0;
-			}
-		}
-		//TODO: clothes, armour
-		return 2;
-	}
+	Inventory * HasInventory();
+	bool Access() const;
+	int Wield(const ushort num);
 	Block * DropAfterDamage() const;
 
-	void SaveAttributes(QDataStream & out) const {
-		Animal::SaveAttributes(out);
-		Inventory::SaveAttributes(out);
-	}
+	void SaveAttributes(QDataStream & out) const;
 
-	uchar LightRadius() const { return 3; }
+	uchar LightRadius() const;
 
-	Dwarf(const int sub=H_MEAT) :
-			Animal(sub),
-			Inventory()
-	{
-		Inscribe("Urist");
-	}
-	Dwarf(
-			QDataStream & str,
-			const int sub)
-		:
-			Animal(str, sub),
-			Inventory(str)
-	{}
+	Dwarf(const int sub=H_MEAT);
+	Dwarf(QDataStream & str, const int sub);
 }; //class Dwarf
 
 class Chest : public Block, public Inventory {
