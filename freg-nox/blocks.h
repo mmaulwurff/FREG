@@ -310,26 +310,17 @@ class Active : public QObject, public Block {
 
 	public:
 	World * GetWorld() const;
-	QString & FullName(QString & str) const {
-		switch (sub) {
-			case SAND: return str="Sand";
-			default:
-				fprintf(stderr,
-					"Active:FullName(QString&): Unlisted sub: %d\n",
-					sub);
-				return str="Unkown active block";
-		}
-	}
-	int Kind() const { return ACTIVE; }
+	QString & FullName(QString & str) const;
+	int Kind() const;
 
-	Active * ActiveBlock() { return this; }
+	Active * ActiveBlock();
 	int Move(const int);
-	void SetNotFalling() { falling=false; }
-	bool IsFalling() const { return falling; }
+	void SetNotFalling();
+	bool IsFalling() const;
 
-	ushort X() const { return x_self; }
-	ushort Y() const { return y_self; }
-	ushort Z() const { return z_self; }
+	ushort X() const;
+	ushort Y() const;
+	ushort Z() const;
 
 	///Block's  action, called every game turn.
 	/**
@@ -339,42 +330,26 @@ class Active : public QObject, public Block {
 	 */
 	virtual void Act();
 
-	int Movable() const { return MOVABLE; }
-	virtual bool ShouldFall() const { return true; }
-	before_move_return BeforeMove(const int) { return NOTHING; }
-	int Damage(const ushort dmg, const int dmg_kind) {
-		const int last_dur=durability;
-		const int new_dur=Block::Damage(dmg, dmg_kind);
-		if ( last_dur != new_dur )
-			emit Updated();
-		return new_dur;
-	}
+	int Movable() const;
+	virtual bool ShouldFall() const;
+	before_move_return BeforeMove(const int);
+	int Damage(const ushort dmg, const int dmg_kind);
 
-	void ReloadToNorth() { y_self+=SHRED_WIDTH; }
-	void ReloadToSouth() { y_self-=SHRED_WIDTH; }
-	void ReloadToWest()  { x_self+=SHRED_WIDTH; }
-	void ReloadToEast()  { x_self-=SHRED_WIDTH; }
+	void ReloadToNorth();
+	void ReloadToSouth();
+	void ReloadToWest();
+	void ReloadToEast();
 
-	void SaveAttributes(QDataStream & out) const {
-		out << timeStep << fall_height << falling;
-	}
+	void SaveAttributes(QDataStream & out) const;
 
-	void Register(Shred *,
-			const ushort,
-			const ushort,
-			const ushort);
+	void Register(
+			Shred *,
+			const ushort x,
+			const ushort y,
+			const ushort z);
 	void Unregister();
 
-	Active(
-			const int sub,
-			const quint8 transp=UNDEF)
-			:
-			Block(sub, transp),
-			fall_height(0),
-			falling(false),
-			timeStep(0),
-	       		whereShred(0)
-	{}
+	Active(const int sub, const quint8 transp=UNDEF);
 	Active(
 			QDataStream & str,
 			const int sub,

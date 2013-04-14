@@ -25,7 +25,8 @@ HEADERS += blocks.h \
 SOURCES += blocks.cpp \
            Block.cpp \
            Inventory.cpp \
-	   Bush.cpp \
+           Active.cpp \
+           Bush.cpp \
            Lighting.cpp \
            main.cpp \
            Player.cpp \
