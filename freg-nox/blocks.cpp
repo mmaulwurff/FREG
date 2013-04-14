@@ -610,6 +610,43 @@
 		}
 	}
 
+	int Door::Kind() const { return DOOR; }
+
+	QString & Door::FullName(QString & str) const {
+		QString sub_string;
+		switch ( Sub() ) {
+			case WOOD:  sub_string=" of wood";   break;
+			case STONE: sub_string=" of stone";  break;
+			case GLASS: sub_string=" of glass";  break;
+			case IRON:  sub_string=" of iron";   break;
+			default:
+				sub_string=" of something";
+				fprintf(stderr,
+					"Door::FullName: unlisted sub: %d\n",
+					Sub());
+		}
+		return str=QString((locked ? "Locked door" : "Door")) + sub_string;
+	}
+
+	int Door::Movable() const { return movable; }
+
+	usage_types Door::Use() {
+		locked=locked ? false : true;
+		return NO;
+	}
+
+	void Door::SaveAttributes(QDataStream & out) const {
+		Active::SaveAttributes(out);
+		out << shifted << locked;
+	}
+
+	Door::Door(const int sub) :
+			Active(sub, ( STONE==sub ) ? BLOCK_OPAQUE : NONSTANDARD),
+			shifted(false),
+			locked(false),
+			movable(NOT_MOVABLE)
+	{}
+
 	Door::Door(QDataStream & str, const int sub) :
 			Active(str, sub, NONSTANDARD),
 			movable(NOT_MOVABLE)

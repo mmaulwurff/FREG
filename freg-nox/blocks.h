@@ -494,45 +494,18 @@ class Door : public Active {
 	int movable;
 
 	public:
-	int Kind() const { return DOOR; }
-	QString & FullName(QString & str) const {
-		QString sub_string;
-		switch ( Sub() ) {
-			case WOOD:  sub_string=" of wood";   break;
-			case STONE: sub_string=" of stone";  break;
-			case GLASS: sub_string=" of glass";  break;
-			case IRON:  sub_string=" of iron";   break;
-			default:
-				sub_string=" of something";
-				fprintf(stderr,
-					"Door::FullName: unlisted sub: %d\n",
-					Sub());
-		}
-		return str=QString((locked ? "Locked door" : "Door")) + sub_string;
-	}
-	int Movable() const { return movable; }
-	usage_types Use() {
-		locked=locked ? false : true;
-		return NO;
-	}
+	int Kind() const;
+	QString & FullName(QString & str) const;
+	int Movable() const;
+	usage_types Use();
 	int BeforePush(const int dir);
 	void Act();
 	Block * DropAfterDamage() const;
 
-	void SaveAttributes(QDataStream & out) const {
-		Active::SaveAttributes(out);
-		out << shifted << locked;
-	}
+	void SaveAttributes(QDataStream & out) const;
 
-	Door(const int sub) :
-			Active(sub, ( STONE==sub ) ? BLOCK_OPAQUE : NONSTANDARD),
-			shifted(false),
-			locked(false),
-			movable(NOT_MOVABLE)
-	{}
-	Door(
-			QDataStream & str,
-			const int sub);
+	Door(const int sub);
+	Door(QDataStream & str, const int sub);
 }; //class Door
 
 #endif
