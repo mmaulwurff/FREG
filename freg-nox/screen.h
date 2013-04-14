@@ -133,57 +133,26 @@ class Screen : public VirtScreen {
 
 	QString command; //save previous command for further execution
 
-	char CharName(
-			const ushort,
-			const ushort,
-			const ushort) const;
-	char CharName(const int, const int) const;
-	char CharNumber(
-			const ushort,
-			const ushort,
-			const ushort) const;
-	char CharNumberFront(
-			const ushort,
-			const ushort) const;
+	char CharName(ushort x, ushort y, ushort z) const;
+	char CharName(int, int) const;
+	char CharNumber(ushort x, ushort y, ushort z) const;
+	char CharNumberFront(ushort x, ushort y) const;
 	void Arrows(
 			WINDOW * const & window,
-			const ushort x,
-			const ushort y) const
-	{
-		wcolor_set(window, WHITE_RED, NULL);
-		mvwaddstr(window, 0, x, "vv");
-		mvwaddstr(window, SCREEN_SIZE+1, x, "^^");
-		HorizontalArrows(window, y);
-	}
+			ushort x, ushort y) const;
 	void HorizontalArrows(
 			WINDOW * const & window,
-			const ushort y,
-			const short color=WHITE_RED) const
-	{
-		wcolor_set(window, color, NULL);
-		mvwaddch(window, y, 0, '>');
-		mvwaddch(window, y, SCREEN_SIZE*2+1, '<');
-	}
-	void ActionXyz(
-			ushort & x,
-			ushort & y,
-			ushort & z) const;
+			ushort y,
+			short color=WHITE_RED) const
+	void ActionXyz(ushort & x, ushort & y, ushort & z) const;
 
 	void PrintNormal(WINDOW * const) const;
 	void PrintFront(WINDOW * const) const;
 	void PrintInv(WINDOW * const, Inventory * const) const;
-	void RePrint() {
-		clear();
-		updated=false;
-	}
+	void RePrint();
 
-	color_pairs Color(
-			const int kind,
-			const int sub) const; //пара цветов текст_фон в зависимоти от типа (kind) и вещества (sub) блока.
-	color_pairs Color(
-			const ushort,
-			const ushort,
-			const ushort) const;
+	color_pairs Color(int kind, int sub) const;
+	color_pairs Color(ushort x, ushort y, ushort z) const;
 
 	private slots:
 	void Print();
@@ -192,29 +161,20 @@ class Screen : public VirtScreen {
 	void Notify(const QString &);
 	void CleanAll();
 	QString & PassString(QString &) const;
-	void Update(
-			const ushort,
-			const ushort,
-			const ushort)
-	{
-		updated=false;
-	}
-	void UpdateAll() { updated=false; }
-	void UpdatePlayer() { updated=false; }
+	void Update(const ushort, const ushort, const ushort);
+	void UpdateAll();
+	void UpdatePlayer();
 	void UpdateAround(
 			const ushort,
 			const ushort,
 			const ushort,
-			const ushort)
-	{
-		updated=false;
-	}
-	void Move(const int) { updated=false; }
+			const ushort);
+	void Move(const int);
 
 	public:
 	void ControlPlayer(const int);
 	Screen(World * const, Player * const);
-	~Screen() { CleanAll(); }
+	~Screen();
 }; //class screen
 
 /** \class IThread screen.h

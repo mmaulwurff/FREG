@@ -25,6 +25,50 @@
 #include "blocks.h"
 #include "Player.h"
 
+void Screen::Arrows(
+		WINDOW * const & window,
+		const ushort x, const ushort y) const
+{
+	wcolor_set(window, WHITE_RED, NULL);
+	mvwaddstr(window, 0, x, "vv");
+	mvwaddstr(window, SCREEN_SIZE+1, x, "^^");
+	HorizontalArrows(window, y);
+}
+
+void HorizontalArrows(
+		WINDOW * const & window,
+		const ushort y,
+		const short color=WHITE_RED) const
+{
+	wcolor_set(window, color, NULL);
+	mvwaddch(window, y, 0, '>');
+	mvwaddch(window, y, SCREEN_SIZE*2+1, '<');
+}
+
+void Screen::RePrint() {
+	clear();
+	updated=false;
+}
+
+void Screen::Update(const ushort, const ushort, const ushort) {
+	updated=false;
+}
+
+void Screen::UpdateAll() { updated=false; }
+
+void Screen::UpdatePlayer() { updated=false; }
+
+void Screen::UpdateAround(
+		const ushort,
+		const ushort,
+		const ushort,
+		const ushort)
+{
+	updated=false;
+}
+
+void Screen::Move(const int) { updated=false; }
+
 QString & Screen::PassString(QString & str) const {
 	static const ushort note_length=144;
 	echo();
@@ -79,10 +123,7 @@ char Screen::CharNumber(
 	return '+';
 }
 
-char Screen::CharNumberFront(
-		const ushort i,
-		const ushort j) const
-{
+char Screen::CharNumberFront(const ushort i, const ushort j) const {
 	ushort ret;
 	if ( NORTH==player->Dir() || SOUTH==player->Dir() ) {
 		if ( (ret=abs(player->Y()-j))<10 )
@@ -93,10 +134,7 @@ char Screen::CharNumberFront(
 	return '+';
 }
 
-char Screen::CharName(
-		const int kind,
-	       	const int sub) const
-{
+char Screen::CharName(const int kind, const int sub) const {
 	switch ( kind )  {
 		case CHEST:
 		case PILE:   return '&';
@@ -154,10 +192,7 @@ char Screen::CharName(
 		w->Sub(i, j, k) );
 }
 
-color_pairs Screen::Color(
-		const int kind,
-		const int sub) const
-{
+color_pairs Screen::Color(const int kind, const int sub) const {
 	switch (kind) { //foreground_background
 		case DWARF:     return WHITE_BLUE;
 		case PILE:      return WHITE_BLACK;
@@ -768,6 +803,8 @@ void Screen::CleanAll() {
 	sett.setValue("action_mode", actionMode);
 	sett.setValue("last_command", command);
 }
+
+Screen::~Screen() { CleanAll(); }
 
 IThread::IThread(Screen * const scr)
 		:

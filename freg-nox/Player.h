@@ -47,7 +47,7 @@ class Inventory;
 class Shred;
 
 class Player : public QObject {
-	Q_OBJECT
+	Q_OBJECT;
 
 	ulong homeLongi, homeLati;
 	short homeX, homeY, homeZ;
@@ -132,14 +132,8 @@ class Player : public QObject {
 	Active * GetP() const { return player; }
 
 	///This returns true if block at (x, y, z) is visible to player.
-	bool Visible(
-		const ushort x,
-		const ushort y,
-		const ushort z) const;
-	void Focus(
-		ushort &,
-		ushort &,
-		ushort &) const;
+	bool Visible(ushort x, ushort y, ushort z) const;
+	void Focus(ushort & x, ushort & y, ushort & z) const;
 
 	///This returns block which is now used by player.
 	/** See enum usage_types in header.h. */
@@ -166,22 +160,10 @@ class Player : public QObject {
 	void Jump();
 
 	void Backpack();
-	void Inscribe(
-			const short x,
-			const short y,
-			const short z) const;
-	void Examine(
-			const short x,
-			const short y,
-			const short z) const;
-	void Damage(
-			const short x,
-			const short y,
-			const short z) const;
-	void Use(
-			const short x,
-			const short y,
-			const short z);
+	void Inscribe(short x, short y, short z) const;
+	void Examine(short x, short y, short z) const;
+	void Damage(short x, short y, short z) const;
+	void Use(short x, short y, short z);
 
 	void Use     (const ushort num);
 	void Throw   (const ushort num);
@@ -191,11 +173,7 @@ class Player : public QObject {
 	void Eat     (const ushort num);
 	void Craft   (const ushort num);
 	void TakeOff (const ushort num);
-	void Build(
-			const short x,
-			const short y,
-			const short z,
-			const ushort num);
+	void Build(short x, short y, short z, ushort num);
 	void ProcessCommand(QString & command);
 
 	private:
