@@ -42,10 +42,9 @@ void VirtScreen::ConnectWorld() {
 		Qt::DirectConnection);
 }
 
-VirtScreen::VirtScreen(
-		World * const world_,
-		Player * const player_)
-		:
+void VirtScreen::UpdatesEnd() {}
+
+VirtScreen::VirtScreen(World * const world_, Player * const player_) :
 		w(world_),
 		player(player_)
 {
@@ -78,3 +77,7 @@ VirtScreen::VirtScreen(
 		this, SLOT(UpdatesEnd()),
 		Qt::DirectConnection);
 }
+
+void VirtScreen::CleanAll() {};
+
+VirtScreen::~VirtScreen() { CleanAll(); }

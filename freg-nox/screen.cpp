@@ -35,10 +35,10 @@ void Screen::Arrows(
 	HorizontalArrows(window, y);
 }
 
-void HorizontalArrows(
+void Screen::HorizontalArrows(
 		WINDOW * const & window,
 		const ushort y,
-		const short color=WHITE_RED) const
+		const short color) const
 {
 	wcolor_set(window, color, NULL);
 	mvwaddch(window, y, 0, '>');

@@ -143,7 +143,7 @@ class Screen : public VirtScreen {
 	void HorizontalArrows(
 			WINDOW * const & window,
 			ushort y,
-			short color=WHITE_RED) const
+			short color=WHITE_RED) const;
 	void ActionXyz(ushort & x, ushort & y, ushort & z) const;
 
 	void PrintNormal(WINDOW * const) const;
