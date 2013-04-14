@@ -46,19 +46,19 @@ int main(int argc, char *argv[]) {
 	sett.setValue("global/current_world", worldName);
 
 	World earth(worldName);
-	//Player player(&earth);
-	//Screen screen(&earth, &player);
+	Player player(&earth);
+	Screen screen(&earth, &player);
 	earth.start();
 
-	/*QObject::connect(&freg, SIGNAL(aboutToQuit()),
+	QObject::connect(&freg, SIGNAL(aboutToQuit()),
 		&screen, SLOT(CleanAll()));
 	QObject::connect(&freg, SIGNAL(aboutToQuit()),
-		&player, SLOT(CleanAll()));*/
+		&player, SLOT(CleanAll()));
 	QObject::connect(&freg, SIGNAL(aboutToQuit()),
 		&earth, SLOT(CleanAll()));
 
-	/*QObject::connect(&screen, SIGNAL(ExitReceived()),
-		&freg, SLOT(quit()));*/
+	QObject::connect(&screen, SIGNAL(ExitReceived()),
+		&freg, SLOT(quit()));
 	QObject::connect(&earth, SIGNAL(ExitReceived()),
 		&freg, SLOT(quit()));
 

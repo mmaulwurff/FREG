@@ -427,94 +427,38 @@ class Inventory {
 	virtual int Kind() const=0;
 	virtual int Sub() const=0;
 	virtual float TrueWeight() const=0;
-	virtual bool Access() const { return true; }
-	virtual ushort Start() const { return 0; }
-	virtual Inventory * HasInventory() { return this; }
+	virtual bool Access() const;
+	virtual ushort Start() const;
+	virtual Inventory * HasInventory();
 	virtual int Drop(const ushort num, Inventory * const inv_to);
 	virtual bool Get(Block * const block);
 	virtual int GetAll(Inventory * const from);
-	virtual usage_types Use() { return OPEN; }
-	virtual void Pull(const ushort num) {
-		if ( !inventory[num].isEmpty() )
-			inventory[num].pop();
-	}
-	virtual void SaveAttributes(QDataStream & out) const {
-		for (ushort i=0; i<Size(); ++i) {
-			out << Number(i);
-			for (ushort j=0; j<Number(i); ++j)
-				inventory[i].top()->SaveToFile(out);
-		}
-	}
+	virtual usage_types Use();
+	virtual void Pull(const ushort num);
+	virtual void SaveAttributes(QDataStream & out) const;
 
-	ushort Size() const { return size; }
+	ushort Size() const;
 	bool GetExact(Block * const block, const ushort num);
 	int MiniCraft(const ushort num);
 	int InscribeInv(const ushort num, const QString & str);
-	QString & InvFullName(QString & str, const ushort i) const {
-		return str=( inventory[i].isEmpty() ) ? "" :
-			inventory[i].top()->FullName(str);
-	}
-	QString & NumStr(QString & str, const ushort i) const {
-		return str=( 1<Number(i) ) ?
-			QString(" (%1x)").arg(Number(i)) :
-			"";
-	}
-	float GetInvWeight(const ushort i) const {
-		return ( inventory[i].isEmpty() ) ? 0 :
-			inventory[i].top()->Weight()*Number(i);
-	}
-	int GetInvSub(const ushort i) const {
-		return ( inventory[i].isEmpty() ) ? AIR :
-			inventory[i].top()->Sub();
-	}
-	int GetInvKind(const ushort i) const {
-		return ( inventory[i].isEmpty() ) ? BLOCK :
-			inventory[i].top()->Kind();
-	}
-	QString & GetInvNote(QString & str, const ushort num) const {
-		return str=inventory[num].top()->GetNote(str);
-	}
-	float InvWeightAll() const {
-		float sum=0;
-		for (ushort i=0; i<Size(); ++i)
-			sum+=GetInvWeight(i);
-		return sum;
-	}
-	quint8 Number(const ushort i) const {
-		return inventory[i].size();
-	}
-	Block * ShowBlock(const ushort num) const {
-		if ( num>Size() || inventory[num].isEmpty() )
-			return 0;
-		return inventory[num].top();
-	}
+	QString & InvFullName(QString & str, const ushort i) const;
+	QString & NumStr(QString & str, const ushort i) const;
+	float GetInvWeight(const ushort i) const;
+	int GetInvSub(const ushort i) const;
+	int GetInvKind(const ushort i) const;
+	QString & GetInvNote(QString & str, const ushort num) const;
+	float InvWeightAll() const;
+	quint8 Number(const ushort i) const;
+	Block * ShowBlock(const ushort num) const;
 
-	bool HasRoom() {
-		for (ushort i=Start(); i<Size(); ++i)
-			if ( inventory[i].isEmpty() )
-				return true;
-		return false;
-	}
-	bool IsEmpty() {
-		for (ushort i=0; i<Size(); ++i)
-			if ( !inventory[i].isEmpty() )
-				return false;
-		return true;
-	}
+	bool HasRoom();
+	bool IsEmpty();
 
 	//it is not recommended to make inventory size more than 26,
 	//because it will not be convenient to deal with inventory
 	//in console version.
-	Inventory(
-			const ushort sz=26)
-			:
-			size(sz)
-	{
-		inventory=new QStack<Block *>[Size()];
-	}
-	Inventory(
-			QDataStream & str,
-			const ushort size=26);
+	Inventory(const ushort sz=26);
+	Inventory(QDataStream & str, const ushort size=26);
 	~Inventory();
 }; //class Inventory
 
@@ -798,35 +742,21 @@ class Bush : public Active, public Inventory {
 	static const ushort bush_size=3;
 
 	public:
-	QString & FullName(QString & str) const { return str="Bush"; }
-	int Kind() const { return BUSH; }
-	int Sub() const { return Block::Sub(); }
+	int   Kind() const;
+	int   Sub() const;
+	int   Movable() const;
+	float TrueWeight() const;
+	void  Act();
 
-	usage_types Use() { return Inventory::Use(); }
-	Inventory * HasInventory() { return Inventory::HasInventory(); }
-	int Movable() const { return NOT_MOVABLE; }
-	float TrueWeight() const { return InvWeightAll()+20; }
-
-	void Act();
-
+	QString & FullName(QString & str) const;
+	usage_types Use();
+	Inventory * HasInventory();
 	Block * DropAfterDamage() const;
 
-	void SaveAttributes(QDataStream & out) const {
-		Active::SaveAttributes(out);
-		Inventory::SaveAttributes(out);
-	}
+	void SaveAttributes(QDataStream & out) const;
 
-	Bush(const int sub=WOOD) :
-			Active(sub),
-			Inventory(bush_size)
-	{}
-	Bush(
-			QDataStream & str,
-			const int sub)
-		:
-			Active(str, sub),
-			Inventory(str, bush_size)
-	{}
+	Bush(const int sub=WOOD);
+	Bush(QDataStream & str, const int sub);
 	~Bush();
 }; //class Bush
 

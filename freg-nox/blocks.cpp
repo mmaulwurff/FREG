@@ -173,117 +173,6 @@ Animal::Animal(
 	str >> breath >> satiation;
 }
 
-int Inventory::Drop(const ushort num, Inventory * const inv_to) {
-	if ( !inv_to )
-		return 1;
-	if ( num>=Size() )
-		return 6;
-	if ( inventory[num].isEmpty() )
-		return 6;
-	if ( !inv_to->Get(inventory[num].top()) )
-		return 2;
-	Pull(num);
-	return 0;
-}
-
-int Inventory::GetAll(Inventory * const from) {
-	if ( !from )
-		return 1;
-	if ( !from->Access() )
-		return 2;
-
-	for (ushort i=0; i<from->Size(); ++i)
-		while ( from->Number(i) )
-			if ( from->Drop(i, this) )
-				return 3;
-	return 0;
-}
-
-bool Inventory::Get(Block * const block) {
-	if ( !block )
-		return true;
-
-	for (ushort i=Start(); i<Size(); ++i)
-		if ( GetExact(block, i) )
-			return true;
-	return false;
-}
-
-bool Inventory::GetExact(Block * const block, const ushort num) {
-	if ( inventory[num].isEmpty() ||
-			( *block==*inventory[num].top() &&
-			Number(num)<max_stack_size ) )
-	{
-		inventory[num].push(block);
-		return true;
-	}
-	return false;
-}
-
-int Inventory::InscribeInv(const ushort num, const QString & str) {
-	const int number=Number(num);
-	if ( !number )
-		return 0;
-	if ( !inventory[num].top()->Inscribable() )
-		return 1;
-	const int sub=inventory[num].top()->Sub();
-	if ( inventory[num].top()==block_manager.NormalBlock(sub) ) {
-		for (ushort i=0; i<number; ++i)
-			inventory[num].replace(i, block_manager.NormalBlock(sub));
-	}
-	for (ushort i=0; i<number; ++i)
-		inventory[num].at(i)->Inscribe(str);
-	return 0;
-}
-
-int Inventory::MiniCraft(const ushort num) {
-	const ushort size=inventory[num].size();
-	if ( !size )
-		return 1; //empty
-	craft_item item={
-		size,
-		GetInvKind(num),
-		GetInvSub(num)
-	};
-	craft_item result;
-
-	if ( craft_manager.MiniCraft(item, result) ) {
-		while ( !inventory[num].isEmpty() ) {
-			Block * const to_drop=ShowBlock(num);
-			Pull(num);
-			block_manager.DeleteBlock(to_drop);
-		}
-		for (ushort i=0; i<result.num; ++i)
-			Get(block_manager.NewBlock(result.kind, result.sub));
-		return 0; //success
-	}
-	return 2; //no such recipe
-}
-
-Inventory::Inventory(
-		QDataStream & str,
-		const ushort sz)
-		:
-		size(sz)
-{
-	inventory=new QStack<Block *>[Size()];
-	for (ushort i=0; i<Size(); ++i) {
-		quint8 num;
-		str >> num;
-		while ( num-- )
-			inventory[i].push(block_manager.BlockFromFile(str));
-	}
-}
-
-Inventory::~Inventory() {
-	for (ushort i=0; i<Size(); ++i)
-		while ( !inventory[i].isEmpty() ) {
-			Block * const block=inventory[i].pop();
-			block_manager.DeleteBlock(block);
-		}
-	delete [] inventory;
-}
-
 float Dwarf::TrueWeight() const {
 	World * const world=GetWorld();
 	return (
@@ -387,15 +276,6 @@ void Grass::Act() {
 				AIR==world->Sub(i, j, z_self+1) )
 			world->Build(block_manager.NewBlock(GRASS, Sub()), i, j, z_self+1);
 	}
-}
-
-void Bush::Act() {
-	if ( 0==rand()%(SECONDS_IN_HOUR*4) )
-		Get(block_manager.NormalBlock(HAZELNUT));
-}
-
-Block * Bush::DropAfterDamage() const {
-	return block_manager.NormalBlock(WOOD);
 }
 
 float Rabbit::Attractive(int kind) const {

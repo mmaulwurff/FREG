@@ -16,5 +16,45 @@
 	*/
 
 #include "blocks.h"
+#include "BlockManager.h"
+
+
+QString & Bush::FullName(QString & str) const { return str="Bush"; }
+
+int Bush::Kind() const { return BUSH; }
+
+int Bush::Sub() const { return Block::Sub(); }
+
+usage_types Bush::Use() { return Inventory::Use(); }
+
+Inventory * Bush::HasInventory() { return Inventory::HasInventory(); }
+
+int Bush::Movable() const { return NOT_MOVABLE; }
+
+float Bush::TrueWeight() const { return InvWeightAll()+20; }
+
+void Bush::Act() {
+	if ( 0==rand()%(SECONDS_IN_HOUR*4) )
+		Get(block_manager.NormalBlock(HAZELNUT));
+}
+
+Block * Bush::DropAfterDamage() const {
+	return block_manager.NormalBlock(WOOD);
+}
+
+void Bush::SaveAttributes(QDataStream & out) const {
+	Active::SaveAttributes(out);
+	Inventory::SaveAttributes(out);
+}
+
+Bush::Bush(const int sub) :
+		Active(sub),
+		Inventory(bush_size)
+{}
+
+Bush::Bush(QDataStream & str, const int sub) :
+		Active(str, sub),
+		Inventory(str, bush_size)
+{}
 
 Bush::~Bush() {}
