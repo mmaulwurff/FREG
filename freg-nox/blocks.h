@@ -157,52 +157,16 @@ class Weapon : public Block {
 
 class Pick : public Weapon {
 	public:
-	int Kind() const { return PICK; }
-	int DamageKind() const { return MINE; }
-	ushort DamageLevel() const {
-		switch ( Sub() ) {
-			case IRON: return 10;
-			default:
-				fprintf(stderr,
-					"Pick::DamageLevel: unlisted sub: %d\n",
-					Sub());
-				return 1;
-		}
-	}
-	QString & FullName(QString & str) const {
-		switch ( sub ) {
-			case IRON: return str="Iron pick";
-			default:
-				fprintf(stderr,
-					"Pick::FullName(QString&): Pick has unknown substance: %d\n",
-					sub);
-				return str="Strange pick";
-		}
-	}
+	int Kind() const;
+	int DamageKind() const;
+	ushort DamageLevel() const;
+	QString & FullName(QString & str) const;
 
-	bool Carving() const { return true; }
-	float TrueWeight() const {
-		switch ( Sub() ) {
-			case IRON: return 10;
-			default:
-				fprintf(stderr,
-					"Pick::Pick: unlisted sub: %d\n",
-					Sub());
-				return 8;
-		}
-	}
+	bool Carving() const;
+	float TrueWeight() const;
 
-	Pick(
-			const int sub)
-			:
-			Weapon(sub)
-	{}
-	Pick(
-			QDataStream & str,
-			const int sub)
-			:
-			Weapon(str, sub)
-	{}
+	Pick(const int sub);
+	Pick(QDataStream & str, const int sub);
 }; //class Pick
 
 class Active : public QObject, public Block {

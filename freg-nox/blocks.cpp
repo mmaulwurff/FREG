@@ -1108,3 +1108,51 @@
 	Plate::Plate(QDataStream & str, const int sub) :
 			Block(str, sub, NONSTANDARD)
 	{}
+
+//Pick::
+	int Pick::Kind() const { return PICK; }
+
+	int Pick::DamageKind() const { return MINE; }
+
+	ushort Pick::DamageLevel() const {
+		switch ( Sub() ) {
+			case IRON: return 10;
+			default:
+				fprintf(stderr,
+					"Pick::DamageLevel: unlisted sub: %d\n",
+					Sub());
+				return 1;
+		}
+	}
+
+	QString & Pick::FullName(QString & str) const {
+		switch ( sub ) {
+			case IRON: return str="Iron pick";
+			default:
+				fprintf(stderr,
+					"Pick::FullName(QString&): Pick has unknown substance: %d\n",
+					sub);
+				return str="Strange pick";
+		}
+	}
+
+	bool Pick::Carving() const { return true; }
+
+	float Pick::TrueWeight() const {
+		switch ( Sub() ) {
+			case IRON: return 10;
+			default:
+				fprintf(stderr,
+					"Pick::Pick: unlisted sub: %d\n",
+					Sub());
+				return 8;
+		}
+	}
+
+	Pick::Pick(const int sub) :
+			Weapon(sub)
+	{}
+
+	Pick::Pick(QDataStream & str, const int sub) :
+			Weapon(str, sub)
+	{}
