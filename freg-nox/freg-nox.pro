@@ -23,13 +23,6 @@ HEADERS += blocks.h \
            CraftManager.h
 
 SOURCES += blocks.cpp \
-           Block.cpp \
-           Inventory.cpp \
-           Active.cpp \
-           Bush.cpp \
-           Plate.cpp \
-           Ladder.cpp \
-           Clock.cpp \
            Lighting.cpp \
            main.cpp \
            Player.cpp \

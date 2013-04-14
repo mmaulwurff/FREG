@@ -102,18 +102,19 @@ class Block { //blocks without special physics and attributes
 }; //class Block
 
 class Plate : public Block {
+	public:
 	QString & FullName(QString & str) const;
 	int Kind() const;
 	Block * DropAfterDamage() const;
 	int BeforePush(const int);
 	float TrueWeight() const;
 
-	public:
 	Plate(const int sub);
 	Plate(QDataStream & str, const int sub);
 }; //class Plate
 
 class Ladder : public Block {
+	public:
 	QString & FullName(QString & str) const;
 	int Kind() const;
 	Block * DropAfterDamage() const;
@@ -121,12 +122,12 @@ class Ladder : public Block {
 	float TrueWeight() const;
 	bool Catchable() const;
 
-	public:
 	Ladder(const int sub);
 	Ladder(QDataStream & str, const int sub);
 }; //class Ladder
 
 class Clock : public Block {
+	public:
 	int Kind() const;
 	QString & FullName(QString & str) const;
 
@@ -141,50 +142,17 @@ class Clock : public Block {
 
 class Weapon : public Block {
 	public:
-	QString & FullName(QString & str) const {
-		switch ( Sub() ) {
-			case STONE: return str="Pebble";
-			case IRON:  return str="Spike";
-			case WOOD:  return str="Stick";
-			default:
-				fprintf(stderr,
-					"Weapon::FullName: unlisted sub: %d\n",
-					Sub());
-			return str="Some weapon";
-		}
-	}
-	int Kind() const { return WEAPON; }
-	ushort DamageLevel() const {
-		switch ( Sub() ) {
-			case WOOD: return 4;
-			case IRON: return 6;
-			case STONE: return 5;
-			default:
-				fprintf(stderr,
-					"Weapon::DamageLevel: unlisted sub: %d\n",
-					Sub());
-				return 1;
-		}
-	}
-	int BeforePush(const int) {
-		return ( IRON==Sub() ) ? DAMAGE : NO_ACTION;
-	}
+	QString & FullName(QString & str) const;
+	int Kind() const;
+	ushort DamageLevel() const;
+	int BeforePush(const int);
 
-	float TrueWeight() const { return 1; }
-	bool IsWeapon() const { return true; }
-	bool CanBeOut() const { return false; }
+	float TrueWeight() const;
+	bool IsWeapon() const;
+	bool CanBeOut() const;
 
-	Weapon(
-			const int sub)
-			:
-			Block(sub, NONSTANDARD)
-	{}
-	Weapon(
-			QDataStream & str,
-			const int sub)
-			:
-			Block(str, sub, NONSTANDARD)
-	{}
+	Weapon(const int sub);
+	Weapon(QDataStream & str, const int sub);
 }; //class Weapon
 
 class Pick : public Weapon {
@@ -777,10 +745,13 @@ class Workbench : public Block, public Inventory {
 }; //class Workbench
 
 class Door : public Active {
+	Q_OBJECT;
+
 	bool shifted;
 	bool locked;
 	int movable;
 
+	public:
 	int Kind() const { return DOOR; }
 	QString & FullName(QString & str) const {
 		QString sub_string;
@@ -811,7 +782,6 @@ class Door : public Active {
 		out << shifted << locked;
 	}
 
-	public:
 	Door(const int sub) :
 			Active(sub, ( STONE==sub ) ? BLOCK_OPAQUE : NONSTANDARD),
 			shifted(false),
