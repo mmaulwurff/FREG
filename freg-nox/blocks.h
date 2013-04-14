@@ -343,54 +343,20 @@ class Dwarf : public Animal, public Inventory {
 
 class Chest : public Block, public Inventory {
 	public:
-	int Kind() const { return CHEST; }
-	int Sub() const { return Block::Sub(); }
-	QString & FullName(QString & str) const {
-		switch (sub) {
-			case WOOD: return str="Wooden chest";
-			case STONE: return str="Stone chest";
-			default:
-				fprintf(stderr,
-					"Chest::FullName(QString&): Chest has unknown substance: %d\n",
-					sub);
-				return str="Chest";
-		}
-	}
-	Inventory * HasInventory() { return Inventory::HasInventory(); }
+	int Kind() const;
+	int Sub() const;
+	QString & FullName(QString & str) const;
+	Inventory * HasInventory();
 
-	usage_types Use() { return Inventory::Use(); }
+	usage_types Use();
 
 	Block * DropAfterDamage() const;
-	float TrueWeight() const {
-		switch ( Sub() ) {
-			case WOOD:  return 100+InvWeightAll();
-			case IRON:  return 150+InvWeightAll();
-			case STONE: return 120+InvWeightAll();
-			default:
-				fprintf(stderr,
-					"Chest::Chest: unlisted sub: %d\n",
-					Sub());
-				return 100+InvWeightAll();
-		}
-	}
+	float TrueWeight() const;
 
-	void SaveAttributes(QDataStream & out) const {
-		Inventory::SaveAttributes(out);
-	}
+	void SaveAttributes(QDataStream & out) const;
 
-	Chest(
-			const int s=WOOD)
-			:
-			Block(s),
-			Inventory()
-	{}
-	Chest(
-			QDataStream & str,
-			const int sub)
-			:
-			Block(str, sub),
-			Inventory(str)
-	{}
+	Chest(const int s=WOOD);
+	Chest(QDataStream & str, const int sub);
 }; //class Chest
 
 class Pile : public Active, public Inventory {
