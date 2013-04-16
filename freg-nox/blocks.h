@@ -68,6 +68,7 @@ class Block { //blocks without special physics and attributes
 	virtual uchar LightRadius() const;
 	virtual int Temperature() const;
 	virtual bool Inscribable() const;
+	virtual void ReceiveSignal(const QString &);
 
 	protected:
 	virtual void SaveAttributes(QDataStream &) const;
@@ -121,20 +122,6 @@ class Ladder : public Block {
 	Ladder(QDataStream & str, const int sub);
 }; //class Ladder
 
-class Clock : public Block {
-	public:
-	int Kind() const;
-	QString & FullName(QString & str) const;
-
-	Block * DropAfterDamage() const;
-	usage_types Use();
-	int BeforePush(const int);
-	float TrueWeight() const;
-
-	Clock(const int sub);
-	Clock (QDataStream & str, const int sub);
-}; //class Clock
-
 class Weapon : public Block {
 	public:
 	QString & FullName(QString & str) const;
@@ -180,9 +167,11 @@ class Active : public QObject, public Block {
 	void Moved(int);
 	void Destroyed();
 	void Updated();
+	void ReceivedText(const QString &);
 
 	public:
 	World * GetWorld() const;
+	bool InBounds(ushort x, ushort y, ushort z=0) const;
 	QString & FullName(QString & str) const;
 	int Kind() const;
 
@@ -207,6 +196,7 @@ class Active : public QObject, public Block {
 	virtual bool ShouldFall() const;
 	before_move_return BeforeMove(const int);
 	int Damage(const ushort dmg, const int dmg_kind);
+	void ReceiveSignal(const QString &);
 
 	void ReloadToNorth();
 	void ReloadToSouth();
@@ -404,14 +394,13 @@ class Liquid : public Active {
 
 class Grass : public Active {
 	Q_OBJECT;
+
 	public:
 	QString & FullName(QString & str) const;
-	int Kind() const;
-
-	bool ShouldFall() const;
-
-	before_move_return BeforeMove(const int);
 	void Act();
+	int  Kind() const;
+	bool ShouldFall() const;
+	before_move_return BeforeMove(const int);
 
 	Grass(const int sub=GREENERY);
 	Grass(QDataStream & str, const int sub);
@@ -427,6 +416,7 @@ class Bush : public Active, public Inventory {
 	int   Sub() const;
 	int   Movable() const;
 	float TrueWeight() const;
+	bool  ShouldFall() const;
 	void  Act();
 
 	QString & FullName(QString & str) const;
@@ -489,12 +479,13 @@ class Door : public Active {
 	int movable;
 
 	public:
-	int Kind() const;
-	QString & FullName(QString & str) const;
-	int Movable() const;
-	usage_types Use();
-	int BeforePush(const int dir);
 	void Act();
+	int  Kind() const;
+	int  Movable() const;
+	int  BeforePush(const int dir);
+	bool ShouldFall() const;
+	QString & FullName(QString & str) const;
+	usage_types Use();
 	Block * DropAfterDamage() const;
 
 	void SaveAttributes(QDataStream & out) const;
@@ -502,5 +493,21 @@ class Door : public Active {
 	Door(const int sub);
 	Door(QDataStream & str, const int sub);
 }; //class Door
+
+class Clock : public Active {
+	public:
+
+	int   Kind() const;
+	int   Movable() const;
+	bool  ShouldFall() const;
+	int   BeforePush(const int);
+	float TrueWeight() const;
+	Block * DropAfterDamage() const;
+	usage_types Use();
+	QString & FullName(QString & str) const;
+
+	Clock(const int sub);
+	Clock (QDataStream & str, const int sub);
+}; //class Clock
 
 #endif

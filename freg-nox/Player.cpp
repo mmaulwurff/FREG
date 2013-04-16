@@ -529,6 +529,9 @@ void Player::SetPlayer(
 	connect(player, SIGNAL(Updated()),
 		this, SIGNAL(Updated()),
 		Qt::DirectConnection);
+	connect(player, SIGNAL(ReceivedText(const QString &)),
+		this, SIGNAL(Notify(const QString &)),
+		Qt::DirectConnection);
 }
 
 void Player::SetNumShreds(ushort num) const {

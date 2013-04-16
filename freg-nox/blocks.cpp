@@ -26,13 +26,13 @@
 	float Dwarf::TrueWeight() const {
 		World * const world=GetWorld();
 		return (
-				(world->InBounds(x_self+1, y_self) &&
+				(InBounds(x_self+1, y_self) &&
 					world->GetBlock(x_self+1, y_self, z_self)->Catchable()) ||
-				(world->InBounds(x_self-1, y_self) &&
+				(InBounds(x_self-1, y_self) &&
 					world->GetBlock(x_self-1, y_self, z_self)->Catchable()) ||
-				(world->InBounds(x_self, y_self+1) &&
+				(InBounds(x_self, y_self+1) &&
 					world->GetBlock(x_self, y_self+1, z_self)->Catchable()) ||
-				(world->InBounds(x_self, y_self-1) &&
+				(InBounds(x_self, y_self-1) &&
 					world->GetBlock(x_self, y_self-1, z_self)->Catchable()) ) ?
 			0 : InvWeightAll()+60;
 	}
@@ -324,13 +324,11 @@
 		}
 
 		World * const world=GetWorld();
-		if ( world->InBounds(i, j, z_self) && world->Enlightened(i, j, z_self) ) {
+		if ( InBounds(i, j) && world->Enlightened(i, j, z_self) ) {
 			if ( AIR==world->Sub(i, j, z_self) &&
-					world->InBounds(i, j, z_self-1) &&
 					SOIL==world->Sub(i, j, z_self-1) )
 				world->Build(block_manager.NewBlock(GRASS, Sub()), i, j, z_self);
 			else if ( SOIL==world->Sub(i, j, z_self) &&
-					world->InBounds(i, j, z_self+1) &&
 					AIR==world->Sub(i, j, z_self+1) )
 				world->Build(block_manager.NewBlock(GRASS, Sub()), i, j, z_self+1);
 		}
@@ -379,7 +377,7 @@
 		for (x=x_self-6; x<=x_self+6; ++x)
 		for (y=y_self-6; y<=y_self+6; ++y)
 		for (z=z_self-6; z<=z_self+6; ++z)
-			if ( world->InBounds(x, y, z) ) {
+			if ( InBounds(x, y, z) ) {
 				kind=world->Kind(x, y, z);
 				if ( (GRASS==kind || RABBIT==kind || DWARF==kind) &&
 						world->DirectlyVisible(x_self, y_self, z_self, x, y, z) ) {
@@ -630,6 +628,8 @@
 
 	int Door::Movable() const { return movable; }
 
+	bool Door::ShouldFall() const { return false; }
+
 	usage_types Door::Use() {
 		locked=locked ? false : true;
 		return NO;
@@ -856,6 +856,8 @@
 			sub==GREENERY  );
 	}
 
+	void Block::ReceiveSignal(const QString &) {}
+
 	bool Block::CanBeOut() const {
 		switch (sub) {
 			case HAZELNUT: return false;
@@ -960,6 +962,8 @@
 			Get(block_manager.NormalBlock(HAZELNUT));
 	}
 
+	bool Bush::ShouldFall() const { return false; }
+
 	Block * Bush::DropAfterDamage() const {
 		return block_manager.NormalBlock(WOOD);
 	}
@@ -983,11 +987,25 @@
 	Block * Clock::DropAfterDamage() const { return block_manager.NewBlock(CLOCK, Sub()); }
 
 	usage_types Clock::Use() {
-		//TODO: restore clock work
-		/*world->EmitNotify(QString("Time is %1%2%3.").
+		World * const world=GetWorld();
+		const QString signal=QString("Time is %1%2%3.").
 			arg(world->TimeOfDay()/60).
 			arg((world->TimeOfDay()%60 < 10) ? ":0" : ":").
-			arg(world->TimeOfDay()%60));*/
+			arg(world->TimeOfDay()%60);
+		if ( InBounds(x_self-1, y_self) ) {
+			world->GetBlock(x_self-1, y_self, z_self)->ReceiveSignal(signal);
+		}
+		if ( InBounds(x_self+1, y_self) ) {
+			world->GetBlock(x_self+1, y_self, z_self)->ReceiveSignal(signal);
+		}
+		if ( InBounds(x_self, y_self-1) ) {
+			world->GetBlock(x_self, y_self-1, z_self)->ReceiveSignal(signal);
+		}
+		if ( InBounds(x_self, y_self+1) ) {
+			world->GetBlock(x_self, y_self+1, z_self)->ReceiveSignal(signal);
+		}
+		world->GetBlock(x_self, y_self, z_self-1)->ReceiveSignal(signal);
+		world->GetBlock(x_self, y_self, z_self+1)->ReceiveSignal(signal);
 		return NO;
 	}
 
@@ -1011,12 +1029,16 @@
 
 	float Clock::TrueWeight() const { return 0.1f; }
 
+	bool Clock::ShouldFall() const { return false; }
+
+	int Clock::Movable() const { return NOT_MOVABLE; }
+
 	Clock::Clock(const int sub) :
-			Block(sub, NONSTANDARD)
+			Active(sub, NONSTANDARD)
 	{}
 
 	Clock::Clock (QDataStream & str, const int sub) :
-			Block(str, sub, NONSTANDARD)
+			Active(str, sub, NONSTANDARD)
 	{}
 
 //Active::
@@ -1090,6 +1112,14 @@
 
 	World * Active::GetWorld() const { return whereShred->GetWorld(); }
 
+	bool Active::InBounds(
+			const ushort x,
+			const ushort y,
+			const ushort z)
+	const {
+		return GetWorld()->InBounds(x, y, z);
+	}
+
 	int Active::Movable() const { return MOVABLE; }
 
 	bool Active::ShouldFall() const { return true; }
@@ -1103,6 +1133,8 @@
 			emit Updated();
 		return new_dur;
 	}
+
+	void Active::ReceiveSignal(const QString & str) { emit ReceivedText(str); }
 
 	void Active::ReloadToNorth() { y_self+=SHRED_WIDTH; }
 	void Active::ReloadToSouth() { y_self-=SHRED_WIDTH; }
@@ -1468,17 +1500,15 @@
 		}
 		timeStep=0;
 		if (
-				world->InBounds(x_self, y_self, z_self+1) &&
 					AIR!=world->Sub(x_self, y_self, z_self+1) &&
-				world->InBounds(x_self, y_self, z_self-1) &&
 					AIR!=world->Sub(x_self, y_self, z_self-1) &&
-				world->InBounds(x_self+1, y_self, z_self) &&
+				InBounds(x_self+1, y_self) &&
 					AIR!=world->Sub(x_self+1, y_self, z_self) &&
-				world->InBounds(x_self-1, y_self, z_self) &&
+				InBounds(x_self-1, y_self) &&
 					AIR!=world->Sub(x_self-1, y_self, z_self) &&
-				world->InBounds(x_self, y_self+1, z_self) &&
+				InBounds(x_self, y_self+1) &&
 					AIR!=world->Sub(x_self, y_self+1, z_self) &&
-				world->InBounds(x_self, y_self-1, z_self) &&
+				InBounds(x_self, y_self-1) &&
 					AIR!=world->Sub(x_self, y_self-1, z_self) )
 		{
 			if ( breath <= 0 ) {
