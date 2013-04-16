@@ -192,6 +192,7 @@ class World : public QThread {
 	//time section
 	public:
 	times_of_day PartOfDay() const;
+	///This returns seconds from start of current day.
 	int TimeOfDay() const;
 	ulong Time() const;
 
@@ -206,7 +207,7 @@ class World : public QThread {
 			ushort x, ushort y, ushort z,
 			quint8 dir=UP,
 			Block * who=0);
-	bool Inscribe(ushort x, ushort y, ushort z);
+	void Inscribe(ushort x, ushort y, ushort z);
 	void Eat(
 			ushort i, ushort j, ushort k,
 			ushort i_food, ushort j_food, ushort k_food);

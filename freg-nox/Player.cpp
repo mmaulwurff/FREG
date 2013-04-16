@@ -163,11 +163,9 @@ void Player::Inscribe(
 {
 	world->WriteLock();
 	if ( player ) {
-		if ( ((Dwarf *)player)->CarvingWeapon() ) {
-			if ( !world->Inscribe(x, y, z) )
-				emit Notify("Cannot inscribe this.");
-		} else
-			emit Notify("You need some tool to inscribe.");
+		world->Inscribe(x, y, z);
+	} else {
+		emit Notify(tr("No player."));
 	}
 	world->Unlock();
 }

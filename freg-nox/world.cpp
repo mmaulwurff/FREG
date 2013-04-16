@@ -793,23 +793,22 @@ int World::Build(
 	return 0;
 }
 
-bool World::Inscribe(
+void World::Inscribe(
 		const ushort i,
 		const ushort j,
 		const ushort k)
 {
-	if ( !InBounds(i, j, k) )
-		return false;
-
+	if ( !InBounds(i, j, k) ) {
+		return;
+	}
 	Block * block=GetBlock(i, j, k);
 	if ( block==World::Normal(block->Sub()) )
 		SetBlock(block=block_manager.NewBlock(block->Kind(), block->Sub()),
 			i, j, k);
 	QString str="No note received\n";
 	emit GetString(str);
-	const bool inscribe=block->Inscribe(str);
+	block->Inscribe(str);
 	ReplaceWithNormal(i, j, k);
-	return inscribe;
 }
 
 void World::Eat(

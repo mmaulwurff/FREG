@@ -23,6 +23,8 @@
 #include "header.h"
 
 class QDataStream;
+class QTextStream;
+class QString;
 class World;
 class Shred;
 class Inventory;
@@ -38,7 +40,7 @@ class Block { //blocks without special physics and attributes
 	quint16 sub;
 	bool nullWeight;
 	quint8 direction;
-	QString note;
+	QString * note;
 	qint16 durability;
 
 	public:
@@ -47,7 +49,8 @@ class Block { //blocks without special physics and attributes
 	virtual bool Catchable() const;
 	virtual bool CanBeOut() const;
 	virtual int Movable() const;
-	virtual bool Inscribe(const QString & str);
+	///Returns false if block cannot be inscribed, otherwise true.
+	virtual void Inscribe(const QString & str);
 	virtual before_move_return BeforeMove(int);
 	virtual int BeforePush(int);
 	virtual int Move(int);
@@ -61,13 +64,11 @@ class Block { //blocks without special physics and attributes
 
 	virtual bool Armour() const;
 	virtual bool IsWeapon() const;
-	virtual bool Carving() const;
 	virtual int DamageKind() const;
 	virtual ushort DamageLevel() const;
 
 	virtual uchar LightRadius() const;
 	virtual int Temperature() const;
-	virtual bool Inscribable() const;
 	virtual void ReceiveSignal(const QString &);
 
 	protected:
@@ -144,7 +145,6 @@ class Pick : public Weapon {
 	ushort DamageLevel() const;
 	QString & FullName(QString & str) const;
 
-	bool Carving() const;
 	float TrueWeight() const;
 
 	Pick(const int sub);
@@ -162,6 +162,10 @@ class Active : public QObject, public Block {
 	///coordinates in loaded world zone
 	ushort x_self, y_self, z_self;
 	Shred * whereShred;
+
+	///Returns true each second, not every turn.
+	bool IsActiveTurn();
+	void SendSignalAround(const QString &) const;
 
 	signals:
 	void Moved(int);
@@ -299,8 +303,6 @@ class Dwarf : public Animal, public Inventory {
 	static const uchar onLegs=4;
 
 	public:
-	bool CarvingWeapon() const;
-
 	int Kind() const;
 	int Sub() const;
 	QString & FullName(QString & str) const;
@@ -317,6 +319,7 @@ class Dwarf : public Animal, public Inventory {
 	bool Access() const;
 	int Wield(const ushort num);
 	Block * DropAfterDamage() const;
+	void Inscribe(const QString & str);
 
 	void SaveAttributes(QDataStream & out) const;
 
@@ -495,19 +498,26 @@ class Door : public Active {
 }; //class Door
 
 class Clock : public Active {
+	QTextStream * txtStream;
+	short alarmTime;
+	short timerTime;
+
 	public:
 
+	void  Act();
 	int   Kind() const;
 	int   Movable() const;
 	bool  ShouldFall() const;
 	int   BeforePush(const int);
 	float TrueWeight() const;
+	void  Inscribe(const QString & str);
 	Block * DropAfterDamage() const;
 	usage_types Use();
 	QString & FullName(QString & str) const;
 
 	Clock(const int sub);
 	Clock (QDataStream & str, const int sub);
+	~Clock();
 }; //class Clock
 
 #endif

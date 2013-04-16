@@ -16,6 +16,7 @@
 	*/
 
 #include <QDataStream>
+#include <QTextStream>
 #include "blocks.h"
 #include "world.h"
 #include "Shred.h"
@@ -49,17 +50,12 @@
 		return NOTHING;
 	}
 
-	bool Dwarf::CarvingWeapon() const {
-		return ( (ShowBlock(inRight) && ShowBlock(inRight)->Carving()) ||
-		         (ShowBlock(inLeft)  && ShowBlock(inLeft )->Carving()) );
-	}
-
 	int Dwarf::Kind() const { return DWARF; }
 
 	int Dwarf::Sub() const { return Block::Sub(); }
 
 	QString & Dwarf::FullName(QString & str) const {
-		return str="Dwarf "+note;
+		return str="Dwarf " + *note;
 	}
 
 	ushort Dwarf::Start() const { return 5; }
@@ -130,11 +126,15 @@
 
 	uchar Dwarf::LightRadius() const { return 3; }
 
+	void Dwarf::Inscribe(const QString &) {
+		SendSignalAround(tr("Don't touch me!"));
+	}
+
 	Dwarf::Dwarf(const int sub) :
 			Animal(sub),
 			Inventory()
 	{
-		Inscribe("Urist");
+		*note="Urist";
 	}
 
 	Dwarf::Dwarf(QDataStream & str, const int sub) :
@@ -803,8 +803,6 @@
 
 	bool Block::IsWeapon() const { return false; }
 
-	bool Block::Carving() const { return false; }
-
 	int  Block::DamageKind() const { return CRUSH; }
 
 	void Block::Restore() { durability=MAX_DURABILITY; }
@@ -825,7 +823,7 @@
 
 	uchar Block::LightRadius() const { return 0; }
 
-	QString & Block::GetNote(QString & str) const { return str=note; }
+	QString & Block::GetNote(QString & str) const { return str=*note; }
 
 	ushort Block::DamageLevel() const { return 1; }
 
@@ -846,16 +844,6 @@
 		}
 	}
 
-	bool Block::Inscribable() const {
-		//TODO: prevent inscribing living creatures
-		//IDEA: add names to living creatures (maybe taiming)
-		return !(
-			sub==AIR       ||
-			sub==NULLSTONE ||
-			sub==A_MEAT    ||
-			sub==GREENERY  );
-	}
-
 	void Block::ReceiveSignal(const QString &) {}
 
 	bool Block::CanBeOut() const {
@@ -865,13 +853,7 @@
 		}
 	}
 
-	bool Block::Inscribe(const QString & str) {
-		if ( Inscribable() ) {
-			note=str;
-			return true;
-		}
-		return false;
-	}
+	void Block::Inscribe(const QString & str) { *note=str; }
 
 	void Block::SaveAttributes(QDataStream &) const {}
 
@@ -879,7 +861,7 @@
 		return ( block.Kind()==Kind() &&
 				block.Sub()==Sub() &&
 				block.Durability()==Durability() &&
-				block.note==note );
+				*block.note==*note );
 	}
 
 	float Block::TrueWeight() const {
@@ -913,7 +895,7 @@
 		out << nullWeight
 			<< direction
 			<< durability
-			<< note;
+			<< *note;
 		SaveAttributes(out);
 	}
 
@@ -921,7 +903,7 @@
 			sub(sb),
 			nullWeight(false),
 			direction(UP),
-			note(""),
+			note(new QString("")),
 			durability(MAX_DURABILITY)
 	{
 		SetTransparency(transp);
@@ -932,15 +914,16 @@
 			const int sub_,
 			const quint8 transp)
 			:
-			sub(sub_)
+			sub(sub_),
+			note(new QString)
 	{
 		SetTransparency(transp);
 		str >> nullWeight >>
 			direction >>
-			durability >> note;
+			durability >> *note;
 	}
 
-	Block::~Block() {}
+	Block::~Block() { delete note; }
 
 //Bush::
 	QString & Bush::FullName(QString & str) const { return str="Bush"; }
@@ -988,24 +971,10 @@
 
 	usage_types Clock::Use() {
 		World * const world=GetWorld();
-		const QString signal=QString("Time is %1%2%3.").
+		SendSignalAround(QString("Time is %1%2%3.").
 			arg(world->TimeOfDay()/60).
 			arg((world->TimeOfDay()%60 < 10) ? ":0" : ":").
-			arg(world->TimeOfDay()%60);
-		if ( InBounds(x_self-1, y_self) ) {
-			world->GetBlock(x_self-1, y_self, z_self)->ReceiveSignal(signal);
-		}
-		if ( InBounds(x_self+1, y_self) ) {
-			world->GetBlock(x_self+1, y_self, z_self)->ReceiveSignal(signal);
-		}
-		if ( InBounds(x_self, y_self-1) ) {
-			world->GetBlock(x_self, y_self-1, z_self)->ReceiveSignal(signal);
-		}
-		if ( InBounds(x_self, y_self+1) ) {
-			world->GetBlock(x_self, y_self+1, z_self)->ReceiveSignal(signal);
-		}
-		world->GetBlock(x_self, y_self, z_self-1)->ReceiveSignal(signal);
-		world->GetBlock(x_self, y_self, z_self+1)->ReceiveSignal(signal);
+			arg(world->TimeOfDay()%60));
 		return NO;
 	}
 
@@ -1033,13 +1002,52 @@
 
 	int Clock::Movable() const { return NOT_MOVABLE; }
 
+	void Clock::Act() {
+		if ( !IsActiveTurn() ) {
+			return;
+		} else if ( alarmTime==GetWorld()->TimeOfDay() ) {
+			Use();
+		} else if ( timerTime > 0 ) {
+			--timerTime;
+			note->setNum(timerTime);
+		} else if ( timerTime==0 ) {
+			Use();
+			*note=tr("Timer fired.");
+			timerTime=-1;
+		}
+	}
+
+	void Clock::Inscribe(const QString & str) {
+		Block::Inscribe(str);
+		char c;
+		*txtStream >> c;
+		if ( 'a'==c ) {
+			ushort alarm_hour;
+			*txtStream >> alarm_hour;
+			*txtStream >> c; //':' or another separator
+			ushort alarm_minute;
+			*txtStream >> alarm_minute;
+			alarmTime=alarm_hour*60+alarm_minute;
+			timerTime=-1;
+		} else if ( 't'==c ) {
+			*txtStream >> timerTime;
+			alarmTime=-1;
+		} else {
+			alarmTime=timerTime=-1;
+		}
+		txtStream->reset();
+	}
+
 	Clock::Clock(const int sub) :
-			Active(sub, NONSTANDARD)
+			Active(sub, NONSTANDARD),
+			txtStream(new QTextStream(note))
 	{}
 
 	Clock::Clock (QDataStream & str, const int sub) :
-			Active(str, sub, NONSTANDARD)
+			Active(str, sub, NONSTANDARD),
+			txtStream(new QTextStream(note))
 	{}
+	Clock::~Clock() { delete txtStream; }
 
 //Active::
 	QString & Active::FullName(QString & str) const {
@@ -1108,6 +1116,34 @@
 				fall_height=0;
 			}
 		}
+	}
+
+	bool Active::IsActiveTurn() {
+		if ( World::TimeStepsInSec() > timeStep ) {
+			++timeStep;
+			return false;
+		} else {
+			timeStep=0;
+			return true;
+		}
+	}
+
+	void Active::SendSignalAround(const QString & signal) const {
+		World * const world=GetWorld();
+		if ( InBounds(x_self-1, y_self) ) {
+			world->GetBlock(x_self-1, y_self, z_self)->ReceiveSignal(signal);
+		}
+		if ( InBounds(x_self+1, y_self) ) {
+			world->GetBlock(x_self+1, y_self, z_self)->ReceiveSignal(signal);
+		}
+		if ( InBounds(x_self, y_self-1) ) {
+			world->GetBlock(x_self, y_self-1, z_self)->ReceiveSignal(signal);
+		}
+		if ( InBounds(x_self, y_self+1) ) {
+			world->GetBlock(x_self, y_self+1, z_self)->ReceiveSignal(signal);
+		}
+		world->GetBlock(x_self, y_self, z_self-1)->ReceiveSignal(signal);
+		world->GetBlock(x_self, y_self, z_self+1)->ReceiveSignal(signal);
 	}
 
 	World * Active::GetWorld() const { return whereShred->GetWorld(); }
@@ -1264,10 +1300,9 @@
 
 	int Inventory::InscribeInv(const ushort num, const QString & str) {
 		const int number=Number(num);
-		if ( !number )
+		if ( !number ) {
 			return 0;
-		if ( !inventory[num].top()->Inscribable() )
-			return 1;
+		}
 		const int sub=inventory[num].top()->Sub();
 		if ( inventory[num].top()==block_manager.NormalBlock(sub) ) {
 			for (ushort i=0; i<number; ++i)
@@ -1470,8 +1505,6 @@
 		}
 	}
 
-	bool Pick::Carving() const { return true; }
-
 	float Pick::TrueWeight() const {
 		switch ( Sub() ) {
 			case IRON: return 10;
@@ -1493,12 +1526,10 @@
 
 //Animal::
 	void Animal::Act() {
-		World * const world=GetWorld();
-		if ( World::TimeStepsInSec() > timeStep ) {
-			++timeStep;
+		if ( !IsActiveTurn() ) {
 			return;
 		}
-		timeStep=0;
+		World * const world=GetWorld();
 		if (
 					AIR!=world->Sub(x_self, y_self, z_self+1) &&
 					AIR!=world->Sub(x_self, y_self, z_self-1) &&
