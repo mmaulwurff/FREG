@@ -789,10 +789,6 @@
 			block_manager.NormalBlock(sub) : 0;
 	}
 
-	void Block::SetInMemoryChunk(bool in) { inMemoryChunk=in; }
-
-	bool Block::InMemoryChunk() const { return inMemoryChunk; }
-
 	int  Block::Kind() const { return BLOCK; }
 
 	bool Block::Catchable() const { return true; }
@@ -920,7 +916,6 @@
 	}
 
 	Block::Block(const int sb, const quint8 transp) :
-			inMemoryChunk(true),
 			sub(sb),
 			nullWeight(false),
 			direction(UP),
@@ -935,7 +930,6 @@
 			const int sub_,
 			const quint8 transp)
 			:
-			inMemoryChunk(true),
 			sub(sub_)
 	{
 		SetTransparency(transp);

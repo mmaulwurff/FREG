@@ -990,7 +990,6 @@ void World::RemSun() {
 }
 
 void World::LoadAllShreds() {
-	block_manager.SetMemorySize(numShreds);
 	shreds=new Shred *[numShreds*numShreds];
 	for (long i=latitude -numShreds/2, x=0; x<numShreds; ++i, ++x)
 	for (long j=longitude-numShreds/2, y=0; y<numShreds; ++j, ++y)
@@ -1004,7 +1003,6 @@ void World::SaveAllShreds() {
 	for (ushort i=0; i<numShreds*numShreds; ++i)
 		delete shreds[i];
 	delete [] shreds;
-	block_manager.FreeMemory();
 }
 
 void World::SetNumActiveShreds(ushort num) {

@@ -24,29 +24,15 @@
 BlockManager block_manager;
 
 BlockManager::BlockManager()
-		:
-		memorySize(0),
-		memoryChunk(0)
 {
 	for(ushort sub=0; sub<=AIR; ++sub) {
 		normals[sub]=new Block(sub);
-		normals[sub]->SetInMemoryChunk(true);
 	}
 }
 BlockManager::~BlockManager() {
 	for(ushort sub=0; sub<=AIR; ++sub) {
 		delete normals[sub];
 	}
-}
-
-void BlockManager::SetMemorySize(const ushort num_shreds) {
-	memoryPos=0;
-	memorySize=num_shreds*num_shreds*BYTES_PER_SHRED;
-	memoryChunk=static_cast<char *>(operator new(memorySize));
-}
-
-void BlockManager::FreeMemory() {
-	delete(memoryChunk);
 }
 
 Block * BlockManager::NormalBlock(const int sub) {
@@ -124,39 +110,17 @@ Block * BlockManager::BlockFromFile(QDataStream & str) {
 }
 
 void BlockManager::DeleteBlock(Block * const block) {
-	if ( !block ) {
-		return;
-	} else if ( block==NormalBlock(block->Sub()) ) {
-		return;
-	} else if ( !block->InMemoryChunk() ) {
+	if ( block && block!=NormalBlock(block->Sub()) ) {
 		delete block;
-	} else {
-		block->~Block();
 	}
 }
 
 template <typename Thing>
 Thing * BlockManager::New(const int sub) {
-	if ( memoryPos+sizeof(Thing) < memorySize ) {
-		Thing * new_thing=new(memoryChunk+memoryPos) Thing(sub);
-		memoryPos+=sizeof(Thing);
-		return new_thing;
-	} else {
-		Thing * new_thing=new Thing(sub);
-		new_thing->SetInMemoryChunk(false);
-		return new_thing;
-	}
+	return new Thing(sub);
 }
 
 template <typename Thing>
 Thing * BlockManager::New(QDataStream & str, const int sub) {
-	if ( memoryPos+sizeof(Thing) < memorySize ) {
-		Thing * new_thing=new(memoryChunk+memoryPos) Thing(str, sub);
-		memoryPos+=sizeof(Thing);
-		return new_thing;
-	} else {
-		Thing * new_thing=new Thing(str, sub);
-		new_thing->SetInMemoryChunk(false);
-		return new_thing;
-	}
+	return new Thing(str, sub);
 }

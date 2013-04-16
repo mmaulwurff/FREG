@@ -30,7 +30,6 @@ class Active;
 class Animal;
 
 class Block { //blocks without special physics and attributes
-	bool inMemoryChunk;
 	void SetTransparency(quint8 transp);
 	virtual float TrueWeight() const;
 
@@ -43,8 +42,6 @@ class Block { //blocks without special physics and attributes
 	qint16 durability;
 
 	public:
-	void SetInMemoryChunk(bool in);
-	bool InMemoryChunk() const;
 	virtual QString & FullName(QString & str) const;
 	virtual int Kind() const;
 	virtual bool Catchable() const;
@@ -91,9 +88,7 @@ class Block { //blocks without special physics and attributes
 
 	void SaveToFile(QDataStream & out) const;
 
-	Block(
-			const int sb=STONE,
-			const quint8 transp=UNDEF);
+	Block(const int sb=STONE, const quint8 transp=UNDEF);
 	Block(
 			QDataStream &,
 			const int sub_,
