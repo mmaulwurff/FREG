@@ -590,8 +590,8 @@ void Shred::Mountain() {
 	PutNormalBlock(AIR, 6, 2, HEIGHT/2+1);
 
 	//блок из дерева появится с вероятностью 1/2.
-	//Если random()%3 - с вероятностью 2/3 и т.д.
-	if ( random()%2 ) {
+	//Если rand()%3 - с вероятностью 2/3 и т.д.
+	if ( rand()%2 ) {
 		PutNormalBlock(WOOD, 7, 7, HEIGHT/2);
 	}
 }

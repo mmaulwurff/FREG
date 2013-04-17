@@ -44,7 +44,7 @@ const uchar MOON_LIGHT_FACTOR=1;
 const uchar  SUN_LIGHT_FACTOR=8;
 
 class World : public QThread {
-	Q_OBJECT;
+	Q_OBJECT
 
 	static const ushort time_steps_in_sec=10;
 

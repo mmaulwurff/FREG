@@ -152,7 +152,7 @@ class Pick : public Weapon {
 }; //class Pick
 
 class Active : public QObject, public Block {
-	Q_OBJECT;
+	Q_OBJECT
 
 	quint8 fall_height;
 	bool falling;
@@ -225,7 +225,7 @@ class Active : public QObject, public Block {
 }; //class Active
 
 class Animal : public Active {
-	Q_OBJECT;
+	Q_OBJECT
 
 	protected:
 	quint16 breath;
@@ -294,7 +294,7 @@ class Inventory {
 }; //class Inventory
 
 class Dwarf : public Animal, public Inventory {
-	Q_OBJECT;
+	Q_OBJECT
 
 	static const uchar onHead=0;
 	static const uchar inRight=1;
@@ -348,7 +348,7 @@ class Chest : public Block, public Inventory {
 }; //class Chest
 
 class Pile : public Active, public Inventory {
-	Q_OBJECT;
+	Q_OBJECT
 
 	bool ifToDestroy;
 
@@ -374,7 +374,7 @@ class Pile : public Active, public Inventory {
 }; //class Pile
 
 class Liquid : public Active {
-	Q_OBJECT;
+	Q_OBJECT
 
 	//return true if there is water near
 	bool CheckWater() const;
@@ -396,7 +396,7 @@ class Liquid : public Active {
 }; //class Liquid
 
 class Grass : public Active {
-	Q_OBJECT;
+	Q_OBJECT
 
 	public:
 	QString & FullName(QString & str) const;
@@ -410,7 +410,7 @@ class Grass : public Active {
 }; //class Grass
 
 class Bush : public Active, public Inventory {
-	Q_OBJECT;
+	Q_OBJECT
 
 	static const ushort bush_size=3;
 
@@ -434,7 +434,7 @@ class Bush : public Active, public Inventory {
 }; //class Bush
 
 class Rabbit : public Animal {
-	Q_OBJECT;
+	Q_OBJECT
 
 	float Attractive(int kind) const;
 
@@ -475,7 +475,7 @@ class Workbench : public Block, public Inventory {
 }; //class Workbench
 
 class Door : public Active {
-	Q_OBJECT;
+	Q_OBJECT
 
 	bool shifted;
 	bool locked;

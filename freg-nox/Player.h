@@ -47,7 +47,7 @@ class Inventory;
 class Shred;
 
 class Player : public QObject {
-	Q_OBJECT;
+	Q_OBJECT
 
 	ulong homeLongi, homeLati;
 	short homeX, homeY, homeZ;

@@ -36,7 +36,7 @@ class VirtScreen : public QObject {
 		* communications by its slots and signals.
 	*/
 
-	Q_OBJECT;
+	Q_OBJECT
 	
 	enum window_views { NORMAL, FRONT, INVENTORY };
 

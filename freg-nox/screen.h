@@ -117,7 +117,7 @@ class Inventory;
 class QTimer;
 
 class Screen : public VirtScreen {
-	Q_OBJECT;
+	Q_OBJECT
 
 	WINDOW * leftWin,
 	       * rightWin,
