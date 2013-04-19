@@ -143,7 +143,9 @@
 	{}
 
 //Chest::
-	Block * Chest::DropAfterDamage() const { return block_manager.NewBlock(CHEST, sub); }
+	Block * Chest::DropAfterDamage() const {
+		return block_manager.NewBlock(CHEST, sub);
+	}
 
 	int Chest::Kind() const { return CHEST; }
 
@@ -161,7 +163,9 @@
 		}
 	}
 
-	Inventory * Chest::HasInventory() { return Inventory::HasInventory(); }
+	Inventory * Chest::HasInventory() {
+		return Inventory::HasInventory();
+	}
 
 	usage_types Chest::Use() { return Inventory::Use(); }
 
@@ -460,7 +464,9 @@
 	{}
 
 //Workbench::
-	Block * Workbench::DropAfterDamage() const { return block_manager.NewBlock(WORKBENCH, Sub()); }
+	Block * Workbench::DropAfterDamage() const {
+		return block_manager.NewBlock(WORKBENCH, Sub());
+	}
 
 	void Workbench::Craft() {
 		while ( Number(0) ) { //remove previous product
@@ -480,7 +486,8 @@
 		craft_item result;
 		if ( craft_manager.Craft(recipe, result) ) {
 			for (ushort i=0; i<result.num; ++i) {
-				GetExact(block_manager.NewBlock(result.kind, result.sub), 0);
+				GetExact(block_manager.
+					NewBlock(result.kind, result.sub), 0);
 			}
 		}
 		for (ushort i=0; i<recipe.size(); ++i) {
@@ -536,7 +543,9 @@
 
 	Block * Workbench::DropAfterDamage() const;
 
-	Inventory * Workbench::HasInventory() { return Inventory::HasInventory(); }
+	Inventory * Workbench::HasInventory() {
+		return Inventory::HasInventory();
+	}
 
 	int Workbench::Sub() const { return Block::Sub(); }
 
@@ -576,7 +585,9 @@
 	{}
 
 //Door::
-	Block * Door::DropAfterDamage() const { return block_manager.NewBlock(DOOR, Sub()); }
+	Block * Door::DropAfterDamage() const {
+		return block_manager.NewBlock(DOOR, Sub());
+	}
 
 	int Door::BeforePush(const int dir) {
 		if ( locked || shifted || dir==World::Anti(GetDir()) )
@@ -623,7 +634,8 @@
 					"Door::FullName: unlisted sub: %d\n",
 					Sub());
 		}
-		return str=QString((locked ? "Locked door" : "Door")) + sub_string;
+		return str=QString((locked ? "Locked door" : "Door")) +
+			sub_string;
 	}
 
 	int Door::Movable() const { return movable; }
@@ -641,7 +653,9 @@
 	}
 
 	Door::Door(const int sub) :
-			Active(sub, ( STONE==sub ) ? BLOCK_OPAQUE : NONSTANDARD),
+			Active(sub, ( STONE==sub ) ?
+				BLOCK_OPAQUE :
+				NONSTANDARD),
 			shifted(false),
 			locked(false),
 			movable(NOT_MOVABLE)
@@ -967,7 +981,9 @@
 	{}
 
 //Clock::
-	Block * Clock::DropAfterDamage() const { return block_manager.NewBlock(CLOCK, Sub()); }
+	Block * Clock::DropAfterDamage() const {
+		return block_manager.NewBlock(CLOCK, Sub());
+	}
 
 	usage_types Clock::Use() {
 		World * const world=GetWorld();
@@ -1427,9 +1443,13 @@
 	}
 
 //Ladder::
-	Block * Ladder::DropAfterDamage() const { return block_manager.NewBlock(LADDER, Sub()); }
+	Block * Ladder::DropAfterDamage() const {
+		return block_manager.NewBlock(LADDER, Sub());
+	}
 
-	QString & Ladder::FullName(QString & str) const { return str="Ladder"; }
+	QString & Ladder::FullName(QString & str) const {
+		return str="Ladder";
+	}
 
 	int Ladder::Kind() const { return LADDER; }
 

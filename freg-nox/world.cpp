@@ -775,13 +775,16 @@ int World::Build(
 		const quint8 dir,
 		Block * const who) //see default in class world.h
 {
-	//TODO: add sending messages for who
 	if ( !InBounds(i, j, k) || AIR!=Sub(i, j, k)  ) {
-		if ( who ) {} //"Cannot build here."
+		if ( who ) {
+			who->ReceiveSignal(tr("Cannot build here."));
+		}
 		return 1;
 	}
 	if ( !block->CanBeOut() ) {
-		if ( who ) {} //"Cannot build this."
+		if ( who ) {
+			who->ReceiveSignal(tr("Cannot build this."));
+		}
 		return 2;
 	}
 
