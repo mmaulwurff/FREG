@@ -88,10 +88,7 @@ class Player : public QObject {
 	void WorldSizeReloadStart();
 	void WorldSizeReloadFinish();
 
-	void SetPlayer(
-			const ushort set_x,
-			const ushort set_y,
-			const ushort set_z);
+	void SetPlayer(ushort set_x, ushort set_y, ushort set_z);
 
 	signals:
 	///This is emitted when a notification is needed to be displayed.
@@ -108,14 +105,14 @@ class Player : public QObject {
 	void GetString(QString &);
 
 	public:
-	///This returns current player block X position (coordinates in loaded zone)
-	ushort X() const { return x; }
+	///This returns current player block X (coordinates in loaded zone)
+	ushort X() const;
 
-	///This returns current player block Y position (coordinates in loaded zone)
-	ushort Y() const { return y; }
+	///This returns current player block Y (coordinates in loaded zone)
+	ushort Y() const;
 
-	///This returns current player block Z position (coordinates in loaded zone)
-	ushort Z() const { return z; }
+	///This returns current player block Z (coordinates in loaded zone)
+	ushort Z() const;
 
 	///This returns current player direction (see enum dirs in header.h)
 	int Dir() const;
@@ -129,7 +126,7 @@ class Player : public QObject {
 	short Satiation() const;
 
 	///This returns player block itself.
-	Active * GetP() const { return player; }
+	Active * GetP() const;
 
 	///This returns true if block at (x, y, z) is visible to player.
 	bool Visible(ushort x, ushort y, ushort z) const;
@@ -141,19 +138,19 @@ class Player : public QObject {
 
 	///This returns how player is using something now.
 	/** See enum usage_types in header.h. */
-	int UsingType() const { return usingType; }
+	int UsingType() const;
 
 	//This returns how player is using himself.
 	/** For example, OPEN means he is looking in his backpack. */
-	int UsingSelfType() const { return usingSelfType; }
+	int UsingSelfType() const;
 
 	Inventory * PlayerInventory();
 
 	long GetLongitude() const;
 	long GetLatitude() const;
 
-	bool GetCreativeMode() const { return creativeMode; }
-	void SetCreativeMode(const bool turn) { creativeMode=turn; }
+	bool GetCreativeMode() const;
+	void SetCreativeMode(const bool turn);
 
 	void Turn(const int dir);
 	int Move(const int dir);
@@ -195,7 +192,7 @@ class Player : public QObject {
 	Player(World * const);
 
 	///Destructor calls Player::CleanAll().
-	~Player() { CleanAll(); }
+	~Player();
 }; //Player
 
 #endif

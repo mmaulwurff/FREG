@@ -169,7 +169,8 @@
 			case STONE: return str="Stone chest";
 			default:
 				fprintf(stderr,
-					"Chest::FullName(QString&): Chest has unknown substance: %d\n",
+					"Chest::FullName(QString&): \
+					Chest has unknown substance: %d\n",
 					sub);
 				return str="Chest";
 		}
@@ -212,13 +213,18 @@
 	before_move_return Pile::BeforeMove(const int dir) {
 		ushort x_to, y_to, z_to;
 		World * const world=GetWorld();
-		if ( world->Focus(x_self, y_self, z_self, x_to, y_to, z_to, dir) )
+		if ( world->Focus(x_self, y_self, z_self,
+				x_to, y_to, z_to, dir) )
+		{
 			return NOTHING;
+		}
 		Inventory * const inv=world->HasInventory(x_to, y_to, z_to);
-		if ( inv )
+		if ( inv ) {
 			inv->GetAll(this);
-		if ( IsEmpty() )
+		}
+		if ( IsEmpty() ) {
 			ifToDestroy=true;
+		}
 		return NOTHING;
 	}
 
@@ -288,10 +294,18 @@
 			}
 		}
 		switch ( rand()%20 ) {
-			case 0: world->Move(x_self, y_self, z_self, NORTH); return;
-			case 1: world->Move(x_self, y_self, z_self, EAST);  return;
-			case 2: world->Move(x_self, y_self, z_self, SOUTH); return;
-			case 3: world->Move(x_self, y_self, z_self, WEST);  return;
+			case 0:
+				world->Move(x_self, y_self, z_self, NORTH);
+			return;
+			case 1:
+				world->Move(x_self, y_self, z_self, EAST);
+			return;
+			case 2:
+				world->Move(x_self, y_self, z_self, SOUTH);
+			return;
+			case 3:
+				world->Move(x_self, y_self, z_self, WEST);
+			return;
 			default: return;
 		}
 	}
@@ -306,7 +320,8 @@
 			case STONE: return str="Lava";
 			default:
 				fprintf(stderr,
-					"Liquid::FullName(QString&): Liquid has unknown substance: %d\n",
+					"Liquid::FullName(QString&): \
+					Liquid has unknown substance: %d\n",
 					sub);
 				return str="Unknown liquid";
 		}
@@ -331,7 +346,8 @@
 //Grass::
 	void Grass::Act() {
 		short i=x_self, j=y_self;
-		switch ( rand()%(SECONDS_IN_HOUR*20) /* increase this if grass grows too fast */ ) {
+		//increase this if grass grows too fast
+		switch ( rand()%(SECONDS_IN_HOUR*20) ) {
 			case 0: ++i; break;
 			case 1: --i; break;
 			case 2: ++j; break;
@@ -343,10 +359,12 @@
 		if ( InBounds(i, j) && world->Enlightened(i, j, z_self) ) {
 			if ( AIR==world->Sub(i, j, z_self) &&
 					SOIL==world->Sub(i, j, z_self-1) )
-				world->Build(block_manager.NewBlock(GRASS, Sub()), i, j, z_self);
+				world->Build(block_manager.NewBlock(GRASS,
+						Sub()), i, j, z_self);
 			else if ( SOIL==world->Sub(i, j, z_self) &&
 					AIR==world->Sub(i, j, z_self+1) )
-				world->Build(block_manager.NewBlock(GRASS, Sub()), i, j, z_self+1);
+				world->Build(block_manager.NewBlock(GRASS,
+						Sub()), i, j, z_self+1);
 		}
 	}
 
@@ -355,7 +373,8 @@
 			case GREENERY: return str="Grass";
 			default:
 				fprintf(stderr,
-					"Grass::FullName(QString&): unlisted sub: %d\n",
+					"Grass::FullName(QString&): \
+					unlisted sub: %d\n",
 					sub);
 				return str="Unknown plant";
 		}
@@ -448,7 +467,9 @@
 		return block_manager.NormalBlock(A_MEAT);
 	}
 
-	QString & Rabbit::FullName(QString & str) const { return str="Rabbit"; }
+	QString & Rabbit::FullName(QString & str) const {
+		return str="Rabbit";
+	}
 
 	int Rabbit::Kind() const { return RABBIT; }
 
@@ -703,7 +724,8 @@
 			case STONE: return 5;
 			default:
 				fprintf(stderr,
-					"Weapon::DamageLevel: unlisted sub: %d\n",
+					"Weapon::DamageLevel: \
+					unlisted sub: %d\n",
 					Sub());
 				return 1;
 		}
@@ -754,15 +776,18 @@
 	}
 
 	void Block::SetTransparency(const quint8 transp) {
-		if ( UNDEF==transp )
+		if ( UNDEF==transp ) {
 			switch ( sub ) {
 				case AIR: transparent=INVISIBLE; break;
 				case WATER: case GREENERY:
-				case GLASS: transparent=BLOCK_TRANSPARENT; break;
+				case GLASS:
+					  transparent=BLOCK_TRANSPARENT;
+				break;
 				default: transparent=BLOCK_OPAQUE;
 			}
-		else
+		} else {
 			transparent=transp;
+		}
 	}
 
 	int Block::Damage(
@@ -1021,8 +1046,10 @@
 		}
 	}
 
-	int Clock::BeforePush(const int) {
-		Use();
+	int Clock::BeforePush(const int dir) {
+		if ( DOWN!=dir ) {
+			Use();
+		}
 		return NO_ACTION;
 	}
 
@@ -1054,10 +1081,8 @@
 		if ( 'a'==c ) {
 			ushort alarm_hour;
 			*txtStream >> alarm_hour;
-			*txtStream >> c; //':' or another separator
-			ushort alarm_minute;
-			*txtStream >> alarm_minute;
-			alarmTime=alarm_hour*60+alarm_minute;
+			*txtStream >> alarmTime;
+			alarmTime+=alarm_hour*60;
 			timerTime=-1;
 		} else if ( 't'==c ) {
 			*txtStream >> timerTime;
@@ -1065,18 +1090,22 @@
 		} else {
 			alarmTime=timerTime=-1;
 		}
-		txtStream->reset();
+		txtStream->seek(0);
 	}
 
 	Clock::Clock(const int sub) :
 			Active(sub, NONSTANDARD),
-			txtStream(new QTextStream(note))
+			txtStream(new QTextStream(note)),
+			alarmTime(-1),
+			timerTime(-1)
 	{}
 
 	Clock::Clock (QDataStream & str, const int sub) :
 			Active(str, sub, NONSTANDARD),
 			txtStream(new QTextStream(note))
-	{}
+	{
+		Inscribe(*note);
+	}
 	Clock::~Clock() { delete txtStream; }
 
 //Active::
@@ -1119,15 +1148,13 @@
 		if ( DOWN==dir ) {
 			falling=true;
 			++fall_height;
-		} else {
-			if ( GetWorld()->GetShred(x_self, y_self)!=whereShred )
-			{
-				whereShred->RemActive(this);
-				whereShred=GetWorld()->
-					GetShred(x_self, y_self);
-				whereShred->AddActive(this);
-			}
-			fall_height=0;
+		} else if ( GetWorld()->
+				GetShred(x_self, y_self)!=whereShred )
+		{
+			whereShred->RemActive(this);
+			whereShred=GetWorld()->
+				GetShred(x_self, y_self);
+			whereShred->AddActive(this);
 		}
 		emit Moved(dir);
 		return 0;
@@ -1350,7 +1377,8 @@
 		const int sub=inventory[num].top()->Sub();
 		if ( inventory[num].top()==block_manager.NormalBlock(sub) ) {
 			for (ushort i=0; i<number; ++i)
-				inventory[num].replace(i, block_manager.NormalBlock(sub));
+				inventory[num].replace(i,
+					block_manager.NormalBlock(sub));
 		}
 		for (ushort i=0; i<number; ++i)
 			inventory[num].at(i)->Inscribe(str);
@@ -1440,7 +1468,8 @@
 				block_manager.DeleteBlock(to_drop);
 			}
 			for (ushort i=0; i<result.num; ++i)
-				Get(block_manager.NewBlock(result.kind, result.sub));
+				Get(block_manager.
+					NewBlock(result.kind, result.sub));
 			return 0; //success
 		}
 		return 2; //no such recipe
@@ -1460,7 +1489,8 @@
 			quint8 num;
 			str >> num;
 			while ( num-- )
-				inventory[i].push(block_manager.BlockFromFile(str));
+				inventory[i].push(block_manager.
+					BlockFromFile(str));
 		}
 	}
 
@@ -1541,7 +1571,8 @@
 			case IRON: return 10;
 			default:
 				fprintf(stderr,
-					"Pick::DamageLevel: unlisted sub: %d\n",
+					"Pick::DamageLevel: \
+					unlisted sub: %d\n",
 					Sub());
 				return 1;
 		}
@@ -1552,7 +1583,8 @@
 			case IRON: return str="Iron pick";
 			default:
 				fprintf(stderr,
-					"Pick::FullName(QString&): Pick has unknown substance: %d\n",
+					"Pick::FullName(QString&): \
+					Pick has unknown substance: %d\n",
 					sub);
 				return str="Strange pick";
 		}

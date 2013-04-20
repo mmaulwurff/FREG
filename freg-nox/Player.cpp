@@ -26,6 +26,18 @@
 #include "Shred.h"
 #include "BlockManager.h"
 
+ushort Player::X() const { return x; }
+ushort Player::Y() const { return y; }
+ushort Player::Z() const { return z; }
+
+bool Player::GetCreativeMode() const { return creativeMode; }
+void Player::SetCreativeMode(const bool turn) { creativeMode=turn; }
+
+int Player::UsingSelfType() const { return usingSelfType; }
+int Player::UsingType() const { return usingType; }
+
+Active * Player::GetP() const { return player; }
+
 short Player::HP() const {
 	return player ? player->Durability() : 0;
 }
@@ -651,3 +663,5 @@ void Player::CleanAll() {
 
 	world->Unlock();
 }
+
+Player::~Player() { CleanAll(); }
