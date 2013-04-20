@@ -367,12 +367,14 @@ void Player::ProcessCommand(QString & command) {
 			}
 			while ( num && inv->HasRoom() ) {
 				for (ushort i=9; i && num; --i) {
-					inv->Get(block_manager.NewBlock(sub, kind));
+					inv->Get(block_manager.
+						NewBlock(sub, kind));
 					--num;
 				}
 			}
 			if ( num > 0 ) {
-				emit Notify(QString(tr("No place for %1 things.")).arg(num));
+				emit Notify(QString(tr(
+					"No place for %1 things.")).arg(num));
 			}
 		}
 		world->Unlock();
@@ -398,8 +400,16 @@ void Player::ProcessCommand(QString & command) {
 			}
 		}
 		world->Unlock();
+	} else if ( "heal"==request ) {
+		if ( player ) {
+			player->Restore();
+			emit Notify(tr("Healed."));
+		} else {
+			emit Notify(tr("Nothing to heal."));
+		}
 	} else {
-		emit Notify(QString(tr("Don't know such command: \"%1\".")).arg(command));
+		emit Notify(QString(tr(
+			"Don't know such command: \"%1\".")).arg(command));
 	}
 }
 
