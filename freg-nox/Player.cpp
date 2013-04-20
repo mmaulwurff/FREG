@@ -413,8 +413,14 @@ void Player::ProcessCommand(QString & command) {
 		}
 		world->Unlock();
 	} else if ( "heal"==request ) {
+		if ( !creativeMode ) {
+			emit Notify(tr("Not in Creative Mode."));
+			return;
+		}
 		if ( player ) {
+			world->WriteLock();
 			player->Restore();
+			world->Unlock();
 			emit Notify(tr("Healed."));
 		} else {
 			emit Notify(tr("Nothing to heal."));
