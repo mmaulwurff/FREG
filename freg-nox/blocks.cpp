@@ -28,13 +28,25 @@
 		World * const world=GetWorld();
 		return (
 				(InBounds(x_self+1, y_self) &&
-					world->GetBlock(x_self+1, y_self, z_self)->Catchable()) ||
+					world->GetBlock(
+						x_self+1,
+						y_self,
+						z_self)->Catchable()) ||
 				(InBounds(x_self-1, y_self) &&
-					world->GetBlock(x_self-1, y_self, z_self)->Catchable()) ||
+					world->GetBlock(
+						x_self-1,
+						y_self,
+						z_self)->Catchable()) ||
 				(InBounds(x_self, y_self+1) &&
-					world->GetBlock(x_self, y_self+1, z_self)->Catchable()) ||
+					world->GetBlock(
+						x_self,
+						y_self+1,
+						z_self)->Catchable()) ||
 				(InBounds(x_self, y_self-1) &&
-					world->GetBlock(x_self, y_self-1, z_self)->Catchable()) ) ?
+					world->GetBlock(
+						x_self,
+						y_self-1,
+						z_self)->Catchable()) ) ?
 			0 : InvWeightAll()+60;
 	}
 
@@ -805,7 +817,7 @@
 
 	int  Block::Kind() const { return BLOCK; }
 
-	bool Block::Catchable() const { return true; }
+	bool Block::Catchable() const { return false; }
 
 	int  Block::Movable() const {
 		return ( AIR==Sub() ) ? ENVIRONMENT : NOT_MOVABLE;
@@ -1108,9 +1120,11 @@
 			falling=true;
 			++fall_height;
 		} else {
-			if ( GetWorld()->GetShred(x_self, y_self)!=whereShred ) {
+			if ( GetWorld()->GetShred(x_self, y_self)!=whereShred )
+			{
 				whereShred->RemActive(this);
-				whereShred=GetWorld()->GetShred(x_self, y_self);
+				whereShred=GetWorld()->
+					GetShred(x_self, y_self);
 				whereShred->AddActive(this);
 			}
 			fall_height=0;
@@ -1122,10 +1136,14 @@
 	void Active::Act() {
 		if ( !falling && fall_height ) {
 			if ( fall_height > safe_fall_height ) {
-				const ushort dmg=(fall_height - safe_fall_height)*10;
+				const ushort dmg=(fall_height -
+					safe_fall_height)*10;
 				fall_height=0;
-				GetWorld()->Damage(x_self, y_self, z_self-1, dmg);
-				if ( GetWorld()->Damage(x_self, y_self, z_self, dmg) ) {
+				GetWorld()->Damage(x_self, y_self, z_self-1,
+					dmg);
+				if ( GetWorld()->Damage(
+						x_self, y_self,z_self, dmg) )
+				{
 					return;
 				} else {
 					emit Updated();
@@ -1149,19 +1167,25 @@
 	void Active::SendSignalAround(const QString & signal) const {
 		World * const world=GetWorld();
 		if ( InBounds(x_self-1, y_self) ) {
-			world->GetBlock(x_self-1, y_self, z_self)->ReceiveSignal(signal);
+			world->GetBlock(x_self-1, y_self, z_self)->
+				ReceiveSignal(signal);
 		}
 		if ( InBounds(x_self+1, y_self) ) {
-			world->GetBlock(x_self+1, y_self, z_self)->ReceiveSignal(signal);
+			world->GetBlock(x_self+1, y_self, z_self)->
+				ReceiveSignal(signal);
 		}
 		if ( InBounds(x_self, y_self-1) ) {
-			world->GetBlock(x_self, y_self-1, z_self)->ReceiveSignal(signal);
+			world->GetBlock(x_self, y_self-1, z_self)->
+				ReceiveSignal(signal);
 		}
 		if ( InBounds(x_self, y_self+1) ) {
-			world->GetBlock(x_self, y_self+1, z_self)->ReceiveSignal(signal);
+			world->GetBlock(x_self, y_self+1, z_self)->
+				ReceiveSignal(signal);
 		}
-		world->GetBlock(x_self, y_self, z_self-1)->ReceiveSignal(signal);
-		world->GetBlock(x_self, y_self, z_self+1)->ReceiveSignal(signal);
+		world->GetBlock(x_self, y_self, z_self-1)->
+			ReceiveSignal(signal);
+		world->GetBlock(x_self, y_self, z_self+1)->
+			ReceiveSignal(signal);
 	}
 
 	World * Active::GetWorld() const { return whereShred->GetWorld(); }
@@ -1188,7 +1212,9 @@
 		return new_dur;
 	}
 
-	void Active::ReceiveSignal(const QString & str) { emit ReceivedText(str); }
+	void Active::ReceiveSignal(const QString & str) {
+		emit ReceivedText(str);
+	}
 
 	void Active::ReloadToNorth() { y_self+=SHRED_WIDTH; }
 	void Active::ReloadToSouth() { y_self-=SHRED_WIDTH; }
@@ -1357,7 +1383,8 @@
 			inventory[i].top()->Kind();
 	}
 
-	QString & Inventory::GetInvNote(QString & str, const ushort num) const {
+	QString & Inventory::GetInvNote(QString & str, const ushort num)
+	const {
 		return str=inventory[num].top()->GetNote(str);
 	}
 
@@ -1391,7 +1418,9 @@
 		return true;
 	}
 
-	quint8 Inventory::Number(const ushort i) const { return inventory[i].size(); }
+	quint8 Inventory::Number(const ushort i) const {
+		return inventory[i].size();
+	}
 
 	int Inventory::MiniCraft(const ushort num) {
 		const ushort size=inventory[num].size();
@@ -1485,7 +1514,9 @@
 
 	int Plate::Kind() const { return PLATE; }
 
-	Block * Plate::DropAfterDamage() const { return block_manager.NewBlock(PLATE, Sub()); }
+	Block * Plate::DropAfterDamage() const {
+		return block_manager.NewBlock(PLATE, Sub());
+	}
 
 	int Plate::BeforePush(const int) { return JUMP; }
 
@@ -1553,32 +1584,40 @@
 		}
 		World * const world=GetWorld();
 		if (
-					AIR!=world->Sub(x_self, y_self, z_self+1) &&
-					AIR!=world->Sub(x_self, y_self, z_self-1) &&
-				InBounds(x_self+1, y_self) &&
-					AIR!=world->Sub(x_self+1, y_self, z_self) &&
-				InBounds(x_self-1, y_self) &&
-					AIR!=world->Sub(x_self-1, y_self, z_self) &&
-				InBounds(x_self, y_self+1) &&
-					AIR!=world->Sub(x_self, y_self+1, z_self) &&
-				InBounds(x_self, y_self-1) &&
-					AIR!=world->Sub(x_self, y_self-1, z_self) )
+				AIR!=world->Sub(x_self, y_self, z_self+1) &&
+				AIR!=world->Sub(x_self, y_self, z_self-1) &&
+			InBounds(x_self+1, y_self) &&
+				AIR!=world->Sub(x_self+1, y_self, z_self) &&
+			InBounds(x_self-1, y_self) &&
+				AIR!=world->Sub(x_self-1, y_self, z_self) &&
+			InBounds(x_self, y_self+1) &&
+				AIR!=world->Sub(x_self, y_self+1, z_self) &&
+			InBounds(x_self, y_self-1) &&
+				AIR!=world->Sub(x_self, y_self-1, z_self) )
 		{
 			if ( breath <= 0 ) {
-				if ( world->Damage(x_self, y_self, z_self, 10, BREATH) )
+				if ( world->Damage(x_self, y_self, z_self,
+						10, BREATH) )
+				{
 					return;
+				}
 			} else
 				--breath;
-		} else if ( breath < MAX_BREATH )
+		} else if ( breath < MAX_BREATH ) {
 			++breath;
-
+		}
 		if ( satiation <= 0 ) {
-			if ( world->Damage(x_self, y_self, z_self, 5, HUNGER) )
+			if ( world->Damage(x_self, y_self, z_self,
+					5, HUNGER) )
+			{
 				return;
-		} else
+			}
+		} else {
 			--satiation;
-		if ( durability < MAX_DURABILITY )
+		}
+		if ( durability < MAX_DURABILITY ) {
 			++durability;
+		}
 		emit Updated();
 		Active::Act();
 	}
