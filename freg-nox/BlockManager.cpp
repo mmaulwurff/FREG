@@ -42,12 +42,12 @@ Block * BlockManager::NormalBlock(const int sub) {
 Block * BlockManager::NewBlock(const int kind, int sub) {
 	if ( sub > AIR ) {
 		fprintf(stderr,
-			"BlockManager::NewBlock: Don't know such substance: %d.\n",
+			"BlockManager::NewBlock: \
+				Don't know such substance: %d.\n",
 			sub);
 		sub=STONE;
 	}
 	switch ( kind ) {
-		//case BLOCK:  memory_pos+=sizeof(Block); return New<Block>(0, sub);
 		case BLOCK:  return New<Block >(sub);
 		case GRASS:  return New<Grass >(sub);
 		case PICK:   return New<Pick  >(sub);

@@ -37,8 +37,7 @@ void World::ReplaceWithNormal(
 		const ushort y,
 		const ushort z)
 {
-	SetBlock(ReplaceWithNormal(GetBlock(x, y, z)),
-		x, y, z);
+	SetBlock(ReplaceWithNormal(GetBlock(x, y, z)), x, y, z);
 }
 
 Shred * World::GetShred(const ushort i, const ushort j) const {
@@ -240,7 +239,9 @@ void World::PutNormalBlock(
 }
 
 Block * World::Normal(const int sub) { return block_manager.NormalBlock(sub); }
-void World::DeleteBlock(Block * const block) { block_manager.DeleteBlock(block); }
+void World::DeleteBlock(Block * const block) {
+	block_manager.DeleteBlock(block);
+}
 
 Block * World::ReplaceWithNormal(Block * const block) {
 	if ( block!=Normal(block->Sub()) && *block==*Normal(block->Sub()) ) {
@@ -723,15 +724,16 @@ bool World::Damage(
 		const ushort i,
 		const ushort j,
 		const ushort k,
-		const ushort dmg, //see default in class definition
-		const int dmg_kind) //see default in class definition
+		const ushort dmg, //see default in class declaration
+		const int dmg_kind) //see default in class declaration
 {
 	if ( !InBounds(i, j, k) ) {
 		return false;
 	}
 	Block * temp=GetBlock(i, j, k);
-	if ( temp==World::Normal(temp->Sub()) && AIR!=temp->Sub() ) {
-		SetBlock( (temp = block_manager.NewBlock(temp->Kind(), temp->Sub()) ), i, j, k );
+	if ( temp==Normal(temp->Sub()) && AIR!=temp->Sub() ) {
+		SetBlock( (temp = block_manager.
+			NewBlock(temp->Kind(), temp->Sub()) ), i, j, k );
 	}
 	if ( temp->Damage(dmg, dmg_kind) > 0 ) {
 		ReplaceWithNormal(i, j, k); //checks are inside
@@ -739,14 +741,15 @@ bool World::Damage(
 	}
 	Block * const dropped=temp->DropAfterDamage();
 	if ( PILE!=temp->Kind() && (temp->HasInventory() || dropped) ) {
-		Block * const new_pile=block_manager.NewBlock(PILE);
+		Block * const new_pile=block_manager.NewBlock(PILE, DIFFERENT);
 		SetBlock(new_pile, i, j, k);
 		Inventory * const inv=temp->HasInventory();
 		Inventory * const new_pile_inv=new_pile->HasInventory();
-		if ( inv )
+		if ( inv ) {
 			new_pile_inv->GetAll(inv);
+		}
 		if ( !new_pile_inv->Get(dropped) ) {
-			World::DeleteBlock(dropped);
+			DeleteBlock(dropped);
 		}
 	} else {
 		PutNormalBlock(AIR, i, j, k);
@@ -838,15 +841,21 @@ int World::Exchange(
 		const ushort num)
 {
 	Inventory * const inv_from=HasInventory(i_from, j_from, k_from);
-	if ( !inv_from )
+	if ( !inv_from ) {
+		GetBlock(i_from, j_from, k_from)->
+			ReceiveSignal(tr("No inventory."));
 		return 3;
+	}
 	if ( AIR==Sub(i_to, j_to, k_to) ) {
-		Block * const new_pile=block_manager.NewBlock(PILE);
-		SetBlock(new_pile, i_to, j_to, k_to);
+		SetBlock(block_manager.NewBlock(PILE, DIFFERENT),
+			i_to, j_to, k_to);
 	}
 	Inventory * const inv_to=HasInventory(i_to, j_to, k_to);
-	if ( !inv_to )
+	if ( !inv_to ) {
+		GetBlock(i_from, j_from, k_from)->
+			ReceiveSignal(tr("No room there."));
 		return 4;
+	}
 
 	return inv_from->Drop(num, inv_to);
 }

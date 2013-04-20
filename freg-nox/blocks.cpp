@@ -807,7 +807,9 @@
 
 	bool Block::Catchable() const { return true; }
 
-	int  Block::Movable() const { return ( AIR==Sub() ) ? ENVIRONMENT : NOT_MOVABLE; }
+	int  Block::Movable() const {
+		return ( AIR==Sub() ) ? ENVIRONMENT : NOT_MOVABLE;
+	}
 
 	int  Block::BeforePush(const int) { return NO_ACTION; }
 
