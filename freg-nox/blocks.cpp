@@ -56,12 +56,6 @@
 		return block_manager.NormalBlock(H_MEAT);
 	}
 
-	before_move_return Dwarf::BeforeMove(const int dir) {
-		if ( dir==direction )
-			GetWorld()->GetAll(x_self, y_self, z_self);
-		return NOTHING;
-	}
-
 	int Dwarf::Kind() const { return DWARF; }
 
 	int Dwarf::Sub() const { return Block::Sub(); }
@@ -182,6 +176,11 @@
 
 	usage_types Chest::Use() { return Inventory::Use(); }
 
+	int Chest::BeforePush(const int, Block * const who) {
+		Inventory::BeforePush(who);
+		return NO_ACTION;
+	}
+
 	float Chest::TrueWeight() const {
 		switch ( Sub() ) {
 			case WOOD:  return 100+InvWeightAll();
@@ -210,22 +209,9 @@
 	{}
 
 //Pile::
-	before_move_return Pile::BeforeMove(const int dir) {
-		ushort x_to, y_to, z_to;
-		World * const world=GetWorld();
-		if ( world->Focus(x_self, y_self, z_self,
-				x_to, y_to, z_to, dir) )
-		{
-			return NOTHING;
-		}
-		Inventory * const inv=world->HasInventory(x_to, y_to, z_to);
-		if ( inv ) {
-			inv->GetAll(this);
-		}
-		if ( IsEmpty() ) {
-			ifToDestroy=true;
-		}
-		return NOTHING;
+	int Pile::BeforePush(const int, Block * const who) {
+		Inventory::BeforePush(who);
+		return NO_ACTION;
 	}
 
 	void Pile::Act() {
@@ -384,7 +370,7 @@
 
 	bool Grass::ShouldFall() const { return false; }
 
-	before_move_return Grass::BeforeMove(const int) { return DESTROY; }
+	int Grass::BeforePush(const int, Block * const) { return DESTROY; }
 
 	Grass::Grass(const int sub) :
 			Active(sub)
@@ -622,7 +608,7 @@
 		return block_manager.NewBlock(DOOR, Sub());
 	}
 
-	int Door::BeforePush(const int dir) {
+	int Door::BeforePush(const int dir, Block * const) {
 		if ( locked || shifted || dir==World::Anti(GetDir()) )
 			return NO_ACTION;
 		movable=MOVABLE;
@@ -731,7 +717,7 @@
 		}
 	}
 
-	int Weapon::BeforePush(const int) {
+	int Weapon::BeforePush(const int, Block * const) {
 		return ( IRON==Sub() ) ? DAMAGE : NO_ACTION;
 	}
 
@@ -811,9 +797,9 @@
 				return ( MINE==dmg_kind ) ?
 					durability-=2*dmg :
 					durability-=dmg;
+			case GREENERY:
 			case GLASS:
 				return durability=0;
-			case GREENERY:
 			case ROSE:
 			case HAZELNUT:
 			case WOOD:
@@ -848,7 +834,7 @@
 		return ( AIR==Sub() ) ? ENVIRONMENT : NOT_MOVABLE;
 	}
 
-	int  Block::BeforePush(const int) { return NO_ACTION; }
+	int Block::BeforePush(const int, Block * const) { return NO_ACTION; }
 
 	int  Block::Move(const int) { return 0; }
 
@@ -879,8 +865,6 @@
 	QString & Block::GetNote(QString & str) const { return str=*note; }
 
 	ushort Block::DamageLevel() const { return 1; }
-
-	before_move_return Block::BeforeMove(const int) { return NOTHING; }
 
 	usage_types Block::Use() { return NO; }
 
@@ -998,6 +982,11 @@
 			Get(block_manager.NormalBlock(HAZELNUT));
 	}
 
+	int Bush::BeforePush(const int, Block * const who) {
+		Inventory::BeforePush(who);
+		return NO_ACTION;
+	}
+
 	bool Bush::ShouldFall() const { return false; }
 
 	Block * Bush::DropAfterDamage() const {
@@ -1046,7 +1035,7 @@
 		}
 	}
 
-	int Clock::BeforePush(const int dir) {
+	int Clock::BeforePush(const int dir, Block * const) {
 		if ( DOWN!=dir ) {
 			Use();
 		}
@@ -1228,8 +1217,6 @@
 	int Active::Movable() const { return MOVABLE; }
 
 	bool Active::ShouldFall() const { return true; }
-
-	before_move_return Active::BeforeMove(const int) { return NOTHING; }
 
 	int Active::Damage(const ushort dmg, const int dmg_kind) {
 		const int last_dur=durability;
@@ -1446,6 +1433,13 @@
 		return true;
 	}
 
+	void Inventory::BeforePush(Block * const who) {
+		Inventory * const inv = who->HasInventory();
+		if ( inv ) {
+			inv->GetAll(this);
+		}
+	}
+
 	quint8 Inventory::Number(const ushort i) const {
 		return inventory[i].size();
 	}
@@ -1514,7 +1508,7 @@
 
 	int Ladder::Kind() const { return LADDER; }
 
-	int Ladder::BeforePush(const int) { return MOVE_UP; }
+	int Ladder::BeforePush(const int, Block * const) { return MOVE_UP; }
 
 	float Ladder::TrueWeight() const { return 20; }
 
@@ -1548,7 +1542,7 @@
 		return block_manager.NewBlock(PLATE, Sub());
 	}
 
-	int Plate::BeforePush(const int) { return JUMP; }
+	int Plate::BeforePush(const int, Block * const) { return JUMP; }
 
 	float Plate::TrueWeight() const { return 10; }
 

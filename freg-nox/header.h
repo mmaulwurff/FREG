@@ -29,19 +29,8 @@
 #endif
 
 //low-case constants soon will be not supported
-const unsigned short shred_width=16;
 const ushort SHRED_WIDTH=16;
-const unsigned short height=128;
 const ushort HEIGHT=128;
-
-const unsigned short seconds_in_hour=60;
-const unsigned short seconds_in_day=24*seconds_in_hour;
-const unsigned short end_of_night  = 6*seconds_in_hour;
-const unsigned short end_of_morning=12*seconds_in_hour;
-const unsigned short end_of_noon   =18*seconds_in_hour;
-const unsigned short end_of_evening= 0*seconds_in_hour;
-const unsigned short seconds_in_night=end_of_night;
-const unsigned short seconds_in_daylight=seconds_in_day-end_of_night;
 
 const unsigned short SECONDS_IN_HOUR=60;
 const unsigned short SECONDS_IN_DAY=24*SECONDS_IN_HOUR;
@@ -53,12 +42,9 @@ const unsigned short SECONDS_IN_NIGHT=END_OF_NIGHT;
 const unsigned short SECONDS_IN_DAYLIGHT=SECONDS_IN_DAY-END_OF_NIGHT;
 
 const unsigned char MAX_LIGHT_RADIUS=15;
-const unsigned char max_light_radius=15;
 
 const unsigned short MAX_DURABILITY=100;
 const unsigned short MAX_BREATH=60;
-const unsigned short max_durability=100;
-const unsigned short max_breath=60;
 
 enum dirs {
 	UP,
@@ -142,14 +128,6 @@ enum subs {//substance block is made from
 	ROSE,       ///<17
 	AIR //keep it last in this list
 }; //enum subs
-
-enum before_move_return { NOTHING, DESTROY };
-enum before_push_action {
-	NO_ACTION,
-	MOVE_UP,
-	JUMP,
-	DAMAGE
-}; //enum before_push_action
 
 enum usage_types { NO, OPEN, INNER_ACTION };
 

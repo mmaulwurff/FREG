@@ -559,26 +559,25 @@ int World::Move(
 		const ushort k,
 		const quint8 dir)
 {
-	if ( !InBounds(i, j, k) || dir > 5 )
+	if ( !InBounds(i, j, k) || dir > 5 ) {
 		return 0;
-
+	}
 	ushort newi, newj, newk;
 	Block * const block=GetBlock(i, j, k);
 	if ( NOT_MOVABLE==block->Movable() ||
 			Focus(i, j, k, newi, newj, newk, dir) )
+	{
 		return 0;
-
-	if ( DESTROY==block->BeforeMove(dir) ) {
-		World::DeleteBlock(block);
-		PutBlock(Normal(AIR), i, j, k);
-		return 1;
 	}
-
 	Block * block_to=GetBlock(newi, newj, newk);
-	if ( ENVIRONMENT==block->Movable() && Equal(block, block_to) )
+	if ( ENVIRONMENT==block->Movable() && Equal(block, block_to) ) {
 		return 0;
-
-	switch ( block_to->BeforePush(dir) ) {
+	}
+	switch ( block_to->BeforePush(dir, block) ) {
+		case DESTROY:
+			DeleteBlock(block_to);
+			PutBlock((block_to=Normal(AIR)), newi, newj, newk);
+		break;
 		case JUMP:
 			if ( DOWN!=dir && UP!=dir ) {
 				Jump(i, j, k, dir);
@@ -604,7 +603,9 @@ int World::Move(
 	short numberMoves=0;
 	if ( ENVIRONMENT!=block_to->Movable() &&
 			!(numberMoves=Move(newi, newj, newk, dir)) )
+	{
 		return 0;
+	}
 	block_to=GetBlock(newi, newj, newk); //Move could change block_to
 
 	PutBlock(block_to, i, j, k);

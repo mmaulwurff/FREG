@@ -31,6 +31,14 @@ class Inventory;
 class Active;
 class Animal;
 
+enum before_push_action {
+	NO_ACTION,
+	MOVE_UP,
+	JUMP,
+	DAMAGE,
+	DESTROY
+}; //enum before_push_action
+
 class Block { //blocks without special physics and attributes
 	void SetTransparency(quint8 transp);
 	virtual float TrueWeight() const;
@@ -51,8 +59,7 @@ class Block { //blocks without special physics and attributes
 	virtual int Movable() const;
 	///Returns false if block cannot be inscribed, otherwise true.
 	virtual void Inscribe(const QString & str);
-	virtual before_move_return BeforeMove(int);
-	virtual int BeforePush(int);
+	virtual int BeforePush(const int dir, Block * const who);
 	virtual int Move(int);
 	virtual usage_types Use();
 	virtual int Damage(ushort dmg, int dmg_kind);
@@ -103,7 +110,7 @@ class Plate : public Block {
 	QString & FullName(QString & str) const;
 	int Kind() const;
 	Block * DropAfterDamage() const;
-	int BeforePush(const int);
+	int BeforePush(const int dir, Block * const who);
 	float TrueWeight() const;
 
 	Plate(const int sub);
@@ -115,7 +122,7 @@ class Ladder : public Block {
 	QString & FullName(QString & str) const;
 	int Kind() const;
 	Block * DropAfterDamage() const;
-	int BeforePush(const int);
+	int BeforePush(const int dir, Block * const who);
 	float TrueWeight() const;
 	bool Catchable() const;
 
@@ -128,7 +135,7 @@ class Weapon : public Block {
 	QString & FullName(QString & str) const;
 	int Kind() const;
 	ushort DamageLevel() const;
-	int BeforePush(const int);
+	int BeforePush(const int dir, Block * const who);
 
 	float TrueWeight() const;
 	bool IsWeapon() const;
@@ -198,7 +205,6 @@ class Active : public QObject, public Block {
 
 	int Movable() const;
 	virtual bool ShouldFall() const;
-	before_move_return BeforeMove(const int);
 	int Damage(const ushort dmg, const int dmg_kind);
 	void ReceiveSignal(const QString &);
 
@@ -285,6 +291,8 @@ class Inventory {
 	bool HasRoom();
 	bool IsEmpty();
 
+	void BeforePush(Block * const who);
+
 	//it is not recommended to make inventory size more than 26,
 	//because it will not be convenient to deal with inventory
 	//in console version.
@@ -311,7 +319,6 @@ class Dwarf : public Animal, public Inventory {
 	int DamageKind() const;
 	ushort DamageLevel() const;
 
-	before_move_return BeforeMove(const int);
 	void Act();
 	int Eat(Block * const to_eat);
 
@@ -337,6 +344,7 @@ class Chest : public Block, public Inventory {
 	Inventory * HasInventory();
 
 	usage_types Use();
+	int BeforePush(const int dir, Block * const who);
 
 	Block * DropAfterDamage() const;
 	float TrueWeight() const;
@@ -363,7 +371,7 @@ class Pile : public Active, public Inventory {
 
 	void Act();
 
-	before_move_return BeforeMove(const int dir);
+	int BeforePush(const int, Block * const who);
 	int Drop(const ushort n, Inventory * const inv);
 	void Pull(const ushort num);
 
@@ -403,7 +411,8 @@ class Grass : public Active {
 	void Act();
 	int  Kind() const;
 	bool ShouldFall() const;
-	before_move_return BeforeMove(const int);
+	int BeforePush(const int dir, Block * const who);
+
 
 	Grass(const int sub=GREENERY);
 	Grass(QDataStream & str, const int sub);
@@ -421,6 +430,7 @@ class Bush : public Active, public Inventory {
 	float TrueWeight() const;
 	bool  ShouldFall() const;
 	void  Act();
+	int BeforePush(const int dir, Block * const who);
 
 	QString & FullName(QString & str) const;
 	usage_types Use();
@@ -485,7 +495,7 @@ class Door : public Active {
 	void Act();
 	int  Kind() const;
 	int  Movable() const;
-	int  BeforePush(const int dir);
+	int  BeforePush(const int dir, Block * const who);
 	bool ShouldFall() const;
 	QString & FullName(QString & str) const;
 	usage_types Use();
@@ -508,7 +518,7 @@ class Clock : public Active {
 	int   Kind() const;
 	int   Movable() const;
 	bool  ShouldFall() const;
-	int   BeforePush(const int);
+	int   BeforePush(const int dir, Block * const who);
 	float TrueWeight() const;
 	void  Inscribe(const QString & str);
 	Block * DropAfterDamage() const;
