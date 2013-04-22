@@ -591,6 +591,9 @@ int World::CanMove(
 			//BeforePush could change block_to:
 			PutBlock((block_to=Normal(AIR)), newi, newj, newk);
 		break;
+		case MOVE_SELF:
+			block_to=GetBlock(newi, newj, newk);
+		break;
 		case JUMP:
 			if ( DOWN!=dir && UP!=dir ) {
 				Jump(i, j, k, dir);
@@ -604,6 +607,7 @@ int World::CanMove(
 			}
 		break;
 		case DAMAGE:
+			block->ReceiveSignal(tr("Ouch!"));
 			Damage(i, j, k,
 				block_to->DamageLevel(),
 				block_to->DamageKind());
@@ -612,13 +616,9 @@ int World::CanMove(
 		default: break;
 	}
 
-	if ( ENVIRONMENT==block_to->Movable() ) {
-		return 1;
-	} else {
-		short number_moves;
-		return ( (number_moves=Move(newi, newj, newk, dir)) ) ?
-			++number_moves : 0;
-	}
+	return ( ENVIRONMENT==block_to->Movable() ) ?
+		1 :
+		Move(newi, newj, newk, dir);
 }
 
 void World::NoCheckMove(
@@ -643,11 +643,7 @@ void World::NoCheckMove(
 	block->Move(dir);
 }
 
-void World::Jump(
-		const ushort x,
-		const ushort y,
-		const ushort z)
-{
+void World::Jump(const ushort x, const ushort y, const ushort z) {
 	Jump(x, y, z, GetBlock(x, y, z)->GetDir());
 }
 
@@ -657,21 +653,16 @@ void World::Jump(
 		ushort k,
 		const quint8 dir)
 {
-	if ( (AIR==Sub(i, j, k-1) && Weight(i, j, k)) )
-		return;
 	Block * const to_move=GetBlock(i, j, k);
-	if ( MOVABLE!=to_move->Movable() )
-		return;
-
-	to_move->NullWeight(true);
-	const short k_plus=Move(i, j, k, (DOWN==dir) ? DOWN : UP);
-	if ( k_plus ) {
-		k+=((DOWN==dir) ? (-1) : 1) * k_plus;
-		to_move->NullWeight(false);
-		if ( !Move( i, j, k, dir) )
-			Move(i, j, k, DOWN);
-	} else
-		to_move->NullWeight(false);
+	if ( (AIR!=Sub(i, j, k-1) || !to_move->Weight()) ) {
+		const short k_plus=Move(i, j, k, (DOWN==dir) ? DOWN : UP)-1;
+		if ( k_plus > 0 ) {
+			k+=((DOWN==dir) ? (-1) : 1) * k_plus;
+			if ( !Move( i, j, k, dir) ) {
+				Move(i, j, k, DOWN);
+			}
+		}
+	}
 }
 
 void World::SetDeferredAction(

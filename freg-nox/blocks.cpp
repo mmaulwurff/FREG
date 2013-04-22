@@ -612,12 +612,10 @@
 		if ( locked || shifted || dir==World::Anti(GetDir()) )
 			return NO_ACTION;
 		movable=MOVABLE;
-		NullWeight(true);
 		if ( GetWorld()->Move(x_self, y_self, z_self, GetDir()) )
 			shifted=true;
 		movable=NOT_MOVABLE;
-		NullWeight(false);
-		return NO_ACTION;
+		return MOVE_SELF;
 	}
 
 	void Door::Act() {
@@ -628,12 +626,10 @@
 				World::Anti(GetDir()));
 			if ( AIR==world->Sub(x, y, z) ) {
 				movable=MOVABLE;
-				NullWeight(true);
 				world->Move(x_self, y_self, z_self,
 					World::Anti(GetDir()));
 				shifted=false;
 				movable=NOT_MOVABLE;
-				NullWeight(false);
 			}
 		}
 	}
@@ -845,8 +841,6 @@
 	int  Block::DamageKind() const { return CRUSH; }
 
 	void Block::Restore() { durability=MAX_DURABILITY; }
-
-	void Block::NullWeight(const bool null) { nullWeight=null; }
 
 	void Block::SetDir(const int dir) { direction=dir; }
 

@@ -28,7 +28,6 @@
 	#include <unistd.h>
 #endif
 
-//low-case constants soon will be not supported
 const ushort SHRED_WIDTH=16;
 const ushort HEIGHT=128;
 
@@ -47,17 +46,17 @@ const unsigned short MAX_DURABILITY=100;
 const unsigned short MAX_BREATH=60;
 
 enum dirs {
-	UP,
-	DOWN,
-	NORTH,
-	SOUTH,
-	EAST,
-	WEST,
-	NORTH_EAST,
-	SOUTH_EAST,
-	SOUTH_WEST,
-	NORTH_WEST,
-	HERE
+	UP, ///< 0
+	DOWN, ///< 1
+	NORTH, ///< 2
+	SOUTH, ///< 3
+	EAST, ///< 4
+	WEST, ///< 5
+	NORTH_EAST, ///< 6
+	SOUTH_EAST, ///< 7
+	SOUTH_WEST, ///< 8
+	NORTH_WEST, ///< 9
+	HERE ///< 10
 }; //enum dirs
 
 enum { NOT_MOVABLE, MOVABLE, ENVIRONMENT };

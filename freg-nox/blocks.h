@@ -36,7 +36,8 @@ enum before_push_action {
 	MOVE_UP,
 	JUMP,
 	DAMAGE,
-	DESTROY
+	DESTROY,
+	MOVE_SELF
 }; //enum before_push_action
 
 class Block { //blocks without special physics and attributes
@@ -83,7 +84,6 @@ class Block { //blocks without special physics and attributes
 
 	public:
 	void Restore();
-	void NullWeight(bool null);
 	float Weight() const;
 	void SetDir(int dir);
 
