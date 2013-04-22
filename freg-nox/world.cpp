@@ -559,24 +559,39 @@ int World::Move(
 		const ushort k,
 		const quint8 dir)
 {
-	if ( !InBounds(i, j, k) || dir > 5 ) {
-		return 0;
-	}
 	ushort newi, newj, newk;
-	Block * const block=GetBlock(i, j, k);
-	if ( NOT_MOVABLE==block->Movable() ||
-			Focus(i, j, k, newi, newj, newk, dir) )
+	short number_moves;
+	if (!Focus(i, j, k, newi, newj, newk, dir) &&
+			(number_moves=CanMove(i, j, k, newi, newj, newk, dir)))
 	{
+		NoCheckMove(i, j, k, newi, newj, newk, dir);
+		return ++number_moves;
+	} else {
 		return 0;
 	}
+}
+
+int World::CanMove(
+		const ushort i,
+		const ushort j,
+		const ushort k,
+		const ushort newi,
+		const ushort newj,
+		const ushort newk,
+		const quint8 dir)
+{
+	Block * const block=GetBlock(i, j, k);
 	Block * block_to=GetBlock(newi, newj, newk);
-	if ( ENVIRONMENT==block->Movable() && Equal(block, block_to) ) {
+	if ( NOT_MOVABLE==block->Movable() ||
+		( ENVIRONMENT==block->Movable() && Equal(block, block_to) ) )
+	{
 		return 0;
 	}
 	switch ( block_to->BeforePush(dir, block) ) {
 		case DESTROY:
 			DeleteBlock(block_to);
 			PutBlock((block_to=Normal(AIR)), newi, newj, newk);
+			block_to=GetBlock(newi, newj, newk); //BeforePush could change block_to
 		break;
 		case JUMP:
 			if ( DOWN!=dir && UP!=dir ) {
@@ -598,15 +613,27 @@ int World::Move(
 		break;
 		default: break;
 	}
-	block_to=GetBlock(newi, newj, newk); //BeforePush could change block_to
 
-	short numberMoves=0;
+	short number_moves=0;
 	if ( ENVIRONMENT!=block_to->Movable() &&
-			!(numberMoves=Move(newi, newj, newk, dir)) )
+			!(number_moves=Move(newi, newj, newk, dir)) )
 	{
 		return 0;
 	}
-	block_to=GetBlock(newi, newj, newk); //Move could change block_to
+	return ++number_moves;
+}
+
+void World::NoCheckMove(
+		const ushort i,
+		const ushort j,
+		const ushort k,
+		const ushort newi,
+		const ushort newj,
+		const ushort newk,
+		const quint8 dir)
+{
+	Block * const block=GetBlock(i, j, k);
+	Block * const block_to=GetBlock(newi, newj, newk);
 
 	PutBlock(block_to, i, j, k);
 	PutBlock(block, newi, newj, newk);
@@ -616,8 +643,6 @@ int World::Move(
 
 	block_to->Move( Anti(dir) );
 	block->Move(dir);
-
-	return ++numberMoves;
 }
 
 void World::Jump(
@@ -696,9 +721,11 @@ int World::Focus(
 		case WEST:  --i_target; break;
 		case DOWN:  --k_target; break;
 		case UP:    ++k_target; break;
-		default: fprintf(stderr,
-			"World::Focus: unlisted dir: %d\n",
-			dir);
+		default:
+			fprintf(stderr,
+				"World::Focus: unlisted dir: %d\n",
+				dir);
+			return 2;
 	}
 	return !InBounds(i_target, j_target, k_target);
 }
