@@ -41,8 +41,7 @@ void World::ReplaceWithNormal(
 }
 
 Shred * World::GetShred(const ushort i, const ushort j) const {
-	return shreds[j/SHRED_WIDTH*numShreds+
-		      i/SHRED_WIDTH];
+	return shreds[ j/SHRED_WIDTH*numShreds + i/SHRED_WIDTH ];
 }
 
 QString & World::WorldName(QString & str) const { return str=worldName; }
@@ -205,8 +204,7 @@ Block * World::GetBlock(
 		const ushort y,
 		const ushort z) const
 {
-	return GetShred(x, y)->
-		GetBlock(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
+	return GetShred(x, y)->GetBlock(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 
 void World::SetBlock(
@@ -215,8 +213,7 @@ void World::SetBlock(
 		const ushort y,
 		const ushort z)
 {
-	GetShred(x, y)->
-		SetBlock(block, x%SHRED_WIDTH, y%SHRED_WIDTH, z);
+	GetShred(x, y)->SetBlock(block, x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 
 void World::PutBlock(
@@ -581,17 +578,18 @@ int World::CanMove(
 		const quint8 dir)
 {
 	Block * const block=GetBlock(i, j, k);
+	if ( NOT_MOVABLE==block->Movable() ) {
+		return 0;
+	}
 	Block * block_to=GetBlock(newi, newj, newk);
-	if ( NOT_MOVABLE==block->Movable() ||
-		( ENVIRONMENT==block->Movable() && Equal(block, block_to) ) )
-	{
+	if ( ENVIRONMENT==block->Movable() && *block==*block_to ) {
 		return 0;
 	}
 	switch ( block_to->BeforePush(dir, block) ) {
 		case DESTROY:
 			DeleteBlock(block_to);
+			//BeforePush could change block_to:
 			PutBlock((block_to=Normal(AIR)), newi, newj, newk);
-			block_to=GetBlock(newi, newj, newk); //BeforePush could change block_to
 		break;
 		case JUMP:
 			if ( DOWN!=dir && UP!=dir ) {
@@ -614,13 +612,13 @@ int World::CanMove(
 		default: break;
 	}
 
-	short number_moves=0;
-	if ( ENVIRONMENT!=block_to->Movable() &&
-			!(number_moves=Move(newi, newj, newk, dir)) )
-	{
-		return 0;
+	if ( ENVIRONMENT==block_to->Movable() ) {
+		return 1;
+	} else {
+		short number_moves;
+		return ( (number_moves=Move(newi, newj, newk, dir)) ) ?
+			++number_moves : 0;
 	}
-	return ++number_moves;
 }
 
 void World::NoCheckMove(
@@ -1011,13 +1009,6 @@ QString & World::GetNote(QString & str,
 	return str=( InBounds(i, j, k)  ) ?
 		GetBlock(i, j, k)->GetNote(str) :
 		"";
-}
-
-bool World::Equal(
-		const Block * const block1,
-		const Block * const block2) const
-{
-	return ( block1==block2 || *block1==*block2 );
 }
 
 void World::RemSun() {

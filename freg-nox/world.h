@@ -251,7 +251,6 @@ class World : public QThread {
 
 	QString & GetNote(QString &, ushort x, ushort y, ushort z) const;
 	int Temperature(ushort x, ushort y, ushort z) const;
-	bool Equal(const Block *, const Block *) const;
 
 	void ReloadAllShreds(
 		long lati, long longi,
