@@ -59,7 +59,7 @@ class Block { //blocks without special physics and attributes
 	virtual int Movable() const;
 	///Returns false if block cannot be inscribed, otherwise true.
 	virtual void Inscribe(const QString & str);
-	virtual int BeforePush(const int dir, Block * const who);
+	virtual int BeforePush(int dir, Block * who);
 	virtual int Move(int);
 	virtual usage_types Use();
 	virtual int Damage(ushort dmg, int dmg_kind);
@@ -83,9 +83,9 @@ class Block { //blocks without special physics and attributes
 
 	public:
 	void Restore();
-	void NullWeight(const bool null);
+	void NullWeight(bool null);
 	float Weight() const;
-	void SetDir(const int dir);
+	void SetDir(int dir);
 
 	int GetDir() const;
 	int Sub() const;
@@ -97,11 +97,11 @@ class Block { //blocks without special physics and attributes
 
 	void SaveToFile(QDataStream & out) const;
 
-	Block(const int sb=STONE, const quint8 transp=UNDEF);
+	Block(int sb=STONE, quint8 transp=UNDEF);
 	Block(
 			QDataStream &,
-			const int sub_,
-			const quint8 transp=UNDEF);
+			int sub_,
+			quint8 transp=UNDEF);
 	virtual ~Block();
 }; //class Block
 
@@ -110,11 +110,11 @@ class Plate : public Block {
 	QString & FullName(QString & str) const;
 	int Kind() const;
 	Block * DropAfterDamage() const;
-	int BeforePush(const int dir, Block * const who);
+	int BeforePush(int dir, Block * who);
 	float TrueWeight() const;
 
-	Plate(const int sub);
-	Plate(QDataStream & str, const int sub);
+	Plate(int sub);
+	Plate(QDataStream & str, int sub);
 }; //class Plate
 
 class Ladder : public Block {
@@ -122,12 +122,12 @@ class Ladder : public Block {
 	QString & FullName(QString & str) const;
 	int Kind() const;
 	Block * DropAfterDamage() const;
-	int BeforePush(const int dir, Block * const who);
+	int BeforePush(int dir, Block * who);
 	float TrueWeight() const;
 	bool Catchable() const;
 
-	Ladder(const int sub);
-	Ladder(QDataStream & str, const int sub);
+	Ladder(int sub);
+	Ladder(QDataStream & str, int sub);
 }; //class Ladder
 
 class Weapon : public Block {
@@ -135,14 +135,14 @@ class Weapon : public Block {
 	QString & FullName(QString & str) const;
 	int Kind() const;
 	ushort DamageLevel() const;
-	int BeforePush(const int dir, Block * const who);
+	int BeforePush(int dir, Block * who);
 
 	float TrueWeight() const;
 	bool IsWeapon() const;
 	bool CanBeOut() const;
 
-	Weapon(const int sub);
-	Weapon(QDataStream & str, const int sub);
+	Weapon(int sub);
+	Weapon(QDataStream & str, int sub);
 }; //class Weapon
 
 class Pick : public Weapon {
@@ -154,8 +154,8 @@ class Pick : public Weapon {
 
 	float TrueWeight() const;
 
-	Pick(const int sub);
-	Pick(QDataStream & str, const int sub);
+	Pick(int sub);
+	Pick(QDataStream & str, int sub);
 }; //class Pick
 
 class Active : public QObject, public Block {
@@ -187,7 +187,7 @@ class Active : public QObject, public Block {
 	int Kind() const;
 
 	Active * ActiveBlock();
-	int Move(const int);
+	int Move(int);
 	void SetNotFalling();
 	bool IsFalling() const;
 
@@ -205,7 +205,7 @@ class Active : public QObject, public Block {
 
 	int Movable() const;
 	virtual bool ShouldFall() const;
-	int Damage(const ushort dmg, const int dmg_kind);
+	int Damage(ushort dmg, int dmg_kind);
 	void ReceiveSignal(const QString &);
 
 	void ReloadToNorth();
@@ -215,18 +215,11 @@ class Active : public QObject, public Block {
 
 	void SaveAttributes(QDataStream & out) const;
 
-	void Register(
-			Shred *,
-			const ushort x,
-			const ushort y,
-			const ushort z);
+	void Register(Shred *, ushort x, ushort y, ushort z);
 	void Unregister();
 
-	Active(const int sub, const quint8 transp=UNDEF);
-	Active(
-			QDataStream & str,
-			const int sub,
-			const quint8 transp=UNDEF);
+	Active(int sub, quint8 transp=UNDEF);
+	Active(QDataStream & str, int sub, quint8 transp=UNDEF);
 	~Active();
 }; //class Active
 
@@ -250,8 +243,8 @@ class Animal : public Active {
 
 	Animal * IsAnimal();
 
-	Animal(const int sub=A_MEAT);
-	Animal(QDataStream & str, const int sub);
+	Animal(int sub=A_MEAT);
+	Animal(QDataStream & str, int sub);
 }; //class Animal
 
 class Inventory {
@@ -267,37 +260,37 @@ class Inventory {
 	virtual bool Access() const;
 	virtual ushort Start() const;
 	virtual Inventory * HasInventory();
-	virtual int Drop(const ushort num, Inventory * const inv_to);
-	virtual bool Get(Block * const block);
-	virtual int GetAll(Inventory * const from);
+	virtual int Drop(ushort num, Inventory * inv_to);
+	virtual bool Get(Block * block);
+	virtual int GetAll(Inventory * from);
 	virtual usage_types Use();
-	virtual void Pull(const ushort num);
+	virtual void Pull(ushort num);
 	virtual void SaveAttributes(QDataStream & out) const;
 
 	ushort Size() const;
-	bool GetExact(Block * const block, const ushort num);
-	int MiniCraft(const ushort num);
-	int InscribeInv(const ushort num, const QString & str);
-	QString & InvFullName(QString & str, const ushort i) const;
-	QString & NumStr(QString & str, const ushort i) const;
-	float GetInvWeight(const ushort i) const;
-	int GetInvSub(const ushort i) const;
-	int GetInvKind(const ushort i) const;
-	QString & GetInvNote(QString & str, const ushort num) const;
+	bool GetExact(Block * block, ushort num);
+	int MiniCraft(ushort num);
+	int InscribeInv(ushort num, const QString & str);
+	QString & InvFullName(QString & str, ushort i) const;
+	QString & NumStr(QString & str, ushort i) const;
+	float GetInvWeight(ushort i) const;
+	int GetInvSub(ushort i) const;
+	int GetInvKind(ushort i) const;
+	QString & GetInvNote(QString & str, ushort num) const;
 	float InvWeightAll() const;
-	quint8 Number(const ushort i) const;
-	Block * ShowBlock(const ushort num) const;
+	quint8 Number(ushort i) const;
+	Block * ShowBlock(ushort num) const;
 
 	bool HasRoom();
 	bool IsEmpty();
 
-	void BeforePush(Block * const who);
+	void BeforePush(Block * who);
 
 	//it is not recommended to make inventory size more than 26,
 	//because it will not be convenient to deal with inventory
 	//in console version.
-	Inventory(const ushort sz=26);
-	Inventory(QDataStream & str, const ushort size=26);
+	Inventory(ushort sz=26);
+	Inventory(QDataStream & str, ushort size=26);
 	~Inventory();
 }; //class Inventory
 
@@ -320,11 +313,11 @@ class Dwarf : public Animal, public Inventory {
 	ushort DamageLevel() const;
 
 	void Act();
-	int Eat(Block * const to_eat);
+	int Eat(Block * to_eat);
 
 	Inventory * HasInventory();
 	bool Access() const;
-	int Wield(const ushort num);
+	int Wield(ushort num);
 	Block * DropAfterDamage() const;
 	void Inscribe(const QString & str);
 
@@ -332,8 +325,8 @@ class Dwarf : public Animal, public Inventory {
 
 	uchar LightRadius() const;
 
-	Dwarf(const int sub=H_MEAT);
-	Dwarf(QDataStream & str, const int sub);
+	Dwarf(int sub=H_MEAT);
+	Dwarf(QDataStream & str, int sub);
 }; //class Dwarf
 
 class Chest : public Block, public Inventory {
@@ -344,15 +337,15 @@ class Chest : public Block, public Inventory {
 	Inventory * HasInventory();
 
 	usage_types Use();
-	int BeforePush(const int dir, Block * const who);
+	int BeforePush(int dir, Block * who);
 
 	Block * DropAfterDamage() const;
 	float TrueWeight() const;
 
 	void SaveAttributes(QDataStream & out) const;
 
-	Chest(const int s=WOOD);
-	Chest(QDataStream & str, const int sub);
+	Chest(int s=WOOD);
+	Chest(QDataStream & str, int sub);
 }; //class Chest
 
 class Pile : public Active, public Inventory {
@@ -371,13 +364,13 @@ class Pile : public Active, public Inventory {
 
 	void Act();
 
-	int BeforePush(const int, Block * const who);
-	int Drop(const ushort n, Inventory * const inv);
-	void Pull(const ushort num);
+	int BeforePush(int, Block * who);
+	int Drop(ushort n, Inventory * inv);
+	void Pull(ushort num);
 
 	void SaveAttributes(QDataStream & out) const;
 
-	Pile(const int sub=DIFFERENT);
+	Pile(int sub=DIFFERENT);
 	Pile(QDataStream & str, int sub);
 }; //class Pile
 
@@ -393,14 +386,14 @@ class Liquid : public Active {
 	int Kind() const;
 	QString & FullName(QString & str) const;
 
-	int Damage(const ushort dam, const int dam_kind);
+	int Damage(ushort dam, int dam_kind);
 
 	void Act();
 
 	int Temperature() const;
 
-	Liquid(const int sub=WATER);
-	Liquid(QDataStream & str, const int sub);
+	Liquid(int sub=WATER);
+	Liquid(QDataStream & str, int sub);
 }; //class Liquid
 
 class Grass : public Active {
@@ -411,11 +404,11 @@ class Grass : public Active {
 	void Act();
 	int  Kind() const;
 	bool ShouldFall() const;
-	int BeforePush(const int dir, Block * const who);
+	int BeforePush(int dir, Block * who);
 
 
-	Grass(const int sub=GREENERY);
-	Grass(QDataStream & str, const int sub);
+	Grass(int sub=GREENERY);
+	Grass(QDataStream & str, int sub);
 }; //class Grass
 
 class Bush : public Active, public Inventory {
@@ -430,7 +423,7 @@ class Bush : public Active, public Inventory {
 	float TrueWeight() const;
 	bool  ShouldFall() const;
 	void  Act();
-	int BeforePush(const int dir, Block * const who);
+	int BeforePush(int dir, Block * who);
 
 	QString & FullName(QString & str) const;
 	usage_types Use();
@@ -439,8 +432,8 @@ class Bush : public Active, public Inventory {
 
 	void SaveAttributes(QDataStream & out) const;
 
-	Bush(const int sub=WOOD);
-	Bush(QDataStream & str, const int sub);
+	Bush(int sub=WOOD);
+	Bush(QDataStream & str, int sub);
 }; //class Bush
 
 class Rabbit : public Animal {
@@ -453,11 +446,11 @@ class Rabbit : public Animal {
 	int Kind() const;
 	void Act();
 	float TrueWeight() const;
-	int Eat(Block * const to_eat);
+	int Eat(Block * to_eat);
 	Block * DropAfterDamage() const;
 
-	Rabbit(const int sub=A_MEAT);
-	Rabbit(QDataStream & str, const int sub);
+	Rabbit(int sub=A_MEAT);
+	Rabbit(QDataStream & str, int sub);
 }; //class Rabbit
 
 class Workbench : public Block, public Inventory {
@@ -474,14 +467,14 @@ class Workbench : public Block, public Inventory {
 	Inventory * HasInventory();
 	int Sub() const;
 	ushort Start() const;
-	int Drop(const ushort num, Inventory * const inv_to);
-	bool Get(Block * const block);
-	int GetAll(Inventory * const from);
+	int Drop(ushort num, Inventory * inv_to);
+	bool Get(Block * block);
+	int GetAll(Inventory * from);
 
 	void SaveAttributes(QDataStream & out) const;
 
-	Workbench(const int sub);
-	Workbench(QDataStream & str, const int sub);
+	Workbench(int sub);
+	Workbench(QDataStream & str, int sub);
 }; //class Workbench
 
 class Door : public Active {
@@ -495,7 +488,7 @@ class Door : public Active {
 	void Act();
 	int  Kind() const;
 	int  Movable() const;
-	int  BeforePush(const int dir, Block * const who);
+	int  BeforePush(int dir, Block * who);
 	bool ShouldFall() const;
 	QString & FullName(QString & str) const;
 	usage_types Use();
@@ -503,8 +496,8 @@ class Door : public Active {
 
 	void SaveAttributes(QDataStream & out) const;
 
-	Door(const int sub);
-	Door(QDataStream & str, const int sub);
+	Door(int sub);
+	Door(QDataStream & str, int sub);
 }; //class Door
 
 class Clock : public Active {
@@ -518,15 +511,15 @@ class Clock : public Active {
 	int   Kind() const;
 	int   Movable() const;
 	bool  ShouldFall() const;
-	int   BeforePush(const int dir, Block * const who);
+	int   BeforePush(int dir, Block * who);
 	float TrueWeight() const;
 	void  Inscribe(const QString & str);
 	Block * DropAfterDamage() const;
 	usage_types Use();
 	QString & FullName(QString & str) const;
 
-	Clock(const int sub);
-	Clock (QDataStream & str, const int sub);
+	Clock(int sub);
+	Clock (QDataStream & str, int sub);
 	~Clock();
 }; //class Clock
 

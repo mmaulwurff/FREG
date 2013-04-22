@@ -58,11 +58,11 @@ class Shred {
 	void PutBlock(Block * block, ushort x, ushort y, ushort z);
 	///Puts normal block to coordinates
 	void PutNormalBlock(int sub, ushort x, ushort y, ushort z);
-	static Block * Normal(const int sub);
+	static Block * Normal(int sub);
 
 	uchar LightMap(ushort x, ushort y, ushort z) const;
 	bool SetLightMap(uchar level, ushort x, ushort y, ushort z);
-	void SetAllLightMap(const uchar=0);
+	void SetAllLightMap(uchar level=0);
 	void ShineAll();
 
 	int Sub(ushort x, ushort y, ushort z) const;
@@ -86,13 +86,13 @@ class Shred {
 	QString FileName() const;
 	char TypeOfShred(long longi, long lati) const;
 
-	void NormalUnderground(const ushort);
+	void NormalUnderground(ushort);
 	void PlantGrass();
 	void TestShred();
 	void NullMountain();
 	void Plain();
-	void Forest(const long, const long);
-	void Water( const long, const long);
+	void Forest(long, long);
+	void Water( long, long);
 	void Pyramid();
 	void Mountain();
 	//block combinations section (trees, buildings, etc):

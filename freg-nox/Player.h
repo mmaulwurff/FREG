@@ -80,7 +80,7 @@ class Player : public QObject {
 	 * It emits OverstepBorder(int) signal when player walks
 	 * over the shred border.
 	 */
-	void CheckOverstep(const int);
+	void CheckOverstep(int);
 
 	///This is called when player block is destroyed.
 	void BlockDestroy();
@@ -97,7 +97,7 @@ class Player : public QObject {
 
 	///This is emitted when player walks over shred border.
 	/** It should be connected to World::ReloadShreds(int) signal. */
-	void OverstepBorder(const int);
+	void OverstepBorder(int);
 
 	///This is emitted when some player property is updated.
 	/** It shoul be connected to screen::UpdatePlayer() signal. */
@@ -150,10 +150,10 @@ class Player : public QObject {
 	long GetLatitude() const;
 
 	bool GetCreativeMode() const;
-	void SetCreativeMode(const bool turn);
+	void SetCreativeMode(bool turn);
 
-	void Turn(const int dir);
-	int Move(const int dir);
+	void Turn(int dir);
+	int Move(int dir);
 	void Jump();
 
 	void Backpack();
@@ -162,24 +162,24 @@ class Player : public QObject {
 	void Damage(short x, short y, short z) const;
 	void Use(short x, short y, short z);
 
-	void Use     (const ushort num);
-	void Throw   (const ushort num);
-	void Obtain  (const ushort num);
-	void Wield   (const ushort num);
-	void Inscribe(const ushort num);
-	void Eat     (const ushort num);
-	void Craft   (const ushort num);
-	void TakeOff (const ushort num);
+	void Use     (ushort num);
+	void Throw   (ushort num);
+	void Obtain  (ushort num);
+	void Wield   (ushort num);
+	void Inscribe(ushort num);
+	void Eat     (ushort num);
+	void Craft   (ushort num);
+	void TakeOff (ushort num);
 	void Build(short x, short y, short z, ushort num);
 	void ProcessCommand(QString & command);
 
 	private:
-	Block * ValidBlock(const ushort num) const;
+	Block * ValidBlock(ushort num) const;
 	int DamageKind() const;
 	ushort DamageLevel() const;
 	void Get(Block *);
-	Block * Drop(const ushort);
-	void Dir(const int dir);
+	Block * Drop(ushort);
+	void Dir(int dir);
 
 	public:
 	void SetNumShreds(ushort num) const;

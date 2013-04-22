@@ -146,9 +146,9 @@ class Screen : public VirtScreen {
 			short color=WHITE_RED) const;
 	void ActionXyz(ushort & x, ushort & y, ushort & z) const;
 
-	void PrintNormal(WINDOW * const) const;
-	void PrintFront(WINDOW * const) const;
-	void PrintInv(WINDOW * const, Inventory * const) const;
+	void PrintNormal(WINDOW *) const;
+	void PrintFront(WINDOW *) const;
+	void PrintInv(WINDOW *, Inventory *) const;
 	void RePrint();
 
 	color_pairs Color(int kind, int sub) const;
@@ -161,19 +161,15 @@ class Screen : public VirtScreen {
 	void Notify(const QString &);
 	void CleanAll();
 	QString & PassString(QString &) const;
-	void Update(const ushort, const ushort, const ushort);
+	void Update(ushort, ushort, ushort);
 	void UpdateAll();
 	void UpdatePlayer();
-	void UpdateAround(
-			const ushort,
-			const ushort,
-			const ushort,
-			const ushort);
-	void Move(const int);
+	void UpdateAround(ushort, ushort, ushort, ushort);
+	void Move(int);
 
 	public:
-	void ControlPlayer(const int);
-	Screen(World * const, Player * const);
+	void ControlPlayer(int);
+	Screen(World *, Player *);
 	~Screen();
 }; //class screen
 
@@ -191,14 +187,14 @@ class IThread : public QThread {
 	Screen * const screen;
 
 	public:
-		IThread(Screen * const);
-		void Stop();
+	IThread(Screen * const);
+	void Stop();
 
 	protected:
-		void run();
+	void run();
 
 	private:
-		volatile bool stopped;
+	volatile bool stopped;
 }; //class IThread
 
 #endif

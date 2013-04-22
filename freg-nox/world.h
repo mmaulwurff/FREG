@@ -50,7 +50,8 @@ class World : public QThread {
 
 	ulong time;
 	Shred ** shreds;
-	long longitude, latitude; //center of active zone, longitude is y, latitude is x
+	//center of active zone, longitude is y, latitude is x
+	long longitude, latitude;
 	long spawnLongi, spawnLati;
 	const QString worldName;
 	ushort numShreds; //size of loaded zone
@@ -120,7 +121,7 @@ class World : public QThread {
 	void ReEnlightenAll();
 	void ReEnlightenTime();
 	///Called from World::ReloadShreds(int), enlighens only need shreds.
-	void ReEnlightenMove(const int direction);
+	void ReEnlightenMove(int direction);
 
 	void SunShine(ushort i, ushort j);
 	void Shine(ushort x, ushort y, ushort z, uchar level, bool init=false);
@@ -137,9 +138,9 @@ class World : public QThread {
 			ushort &, ushort &, ushort &) const;
 	ushort NumShreds() const;
 	ushort NumActiveShreds() const;
-	static quint8 TurnRight(const quint8 dir);
-	static quint8 TurnLeft (const quint8 dir);
-	static quint8 Anti(const quint8 dir);
+	static quint8 TurnRight(quint8 dir);
+	static quint8 TurnLeft (quint8 dir);
+	static quint8 Anti(quint8 dir);
 	long GetSpawnLongi() const;
 	long GetSpawnLati()  const;
 	long Longitude() const;
@@ -265,23 +266,23 @@ class World : public QThread {
 
 	public slots:
 	void CleanAll();
-	void ReloadShreds(const int);
+	void ReloadShreds(int);
 	void PhysEvents();
 
 	signals:
 	void Notify(const QString &) const;
 	void GetString(QString &) const;
-	void Updated(const ushort, const ushort, const ushort);
+	void Updated(ushort, ushort, ushort);
 	void UpdatedAll();
 	void UpdatedAround(
-			const ushort, const ushort, const ushort,
-			const ushort level);
+			ushort, ushort, ushort,
+			ushort level);
 	///Emitted when world active zone moved to int direction.
-	void Moved(const int);
+	void Moved(int);
 	void ReConnect();
 	///This is emitted when a pack of updates is complete.
 	void UpdatesEnded();
-	void NeedPlayer(const ushort, const ushort, const ushort);
+	void NeedPlayer(ushort, ushort, ushort);
 	void StartReloadAll();
 	void FinishReloadAll();
 	void ExitReceived();

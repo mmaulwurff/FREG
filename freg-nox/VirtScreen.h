@@ -56,7 +56,8 @@ class VirtScreen : public QObject {
 
 	///This is called when program is stopped and from destructor.
 	/**
-	 * When implemented, this should contain check to prevent double cleaning.
+	 * When implemented, this should contain check to prevent
+	 * double cleaning.
 	 */
 	virtual void CleanAll();
 
@@ -71,7 +72,7 @@ class VirtScreen : public QObject {
 	 * When implemented, this should work fast.
 	 * It is connected to world in constructor.
 	 */
-	virtual void Update(const ushort x, const ushort y, const ushort z)=0;
+	virtual void Update(ushort x, ushort y, ushort z)=0;
 
 	///This is called when all world should be updated in sceen.
 	/**
@@ -80,28 +81,28 @@ class VirtScreen : public QObject {
 	 */
 	virtual void UpdateAll()=0;
 
-	///This is called when loaded zone of world is moved to update world in screen properly.
+	///Called when world loaded zone is moved to update world in screen.
 	/**
 	 * When implemented, this should work fast.
 	 * It is connected to world in constructor.
 	 */
-	virtual void Move(const int)=0;
+	virtual void Move(int)=0;
 
-	///This is called when some player property are needed to be updated in screen.
+	///Called when some player property needs to be updated in screen.
 	/**
 	 * When implemented, this should work fast.
 	 * It is connected to world in constructor.
 	 */
 	virtual void UpdatePlayer()=0;
 	
-	///This is called when area around x, y, z with range is needed to be updated in screen.
+	///Called when area around xyz with range needs to be updated.
 	/**
 	 * When implemented, this should work fast.
 	 * It is connected to world in constructor.
 	 */
 	virtual void UpdateAround(
-			const ushort x, const ushort y, const ushort z,
-			const ushort range)=0;
+			ushort x, ushort y, ushort z,
+			ushort range)=0;
 
 	///This is called to restore some connections.
 	/**
@@ -134,8 +135,8 @@ class VirtScreen : public QObject {
 	 * 	player, SLOT(Act(int, int)),
 	 * 	Qt::DirectConnection);
 	 */
-	VirtScreen(World * const, Player * const);
-	///Destructor only calls VirtScreen::CleanAll, not needed to be reimplemented.
+	VirtScreen(World *, Player *);
+	///Only calls VirtScreen::CleanAll, not needed to be reimplemented.
 	virtual ~VirtScreen();
 }; //class VirtScreen
 
