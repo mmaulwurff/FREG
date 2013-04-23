@@ -45,7 +45,7 @@ Shred * World::GetShred(const ushort i, const ushort j) const {
 	return shreds[ j/SHRED_WIDTH*numShreds + i/SHRED_WIDTH ];
 }
 
-QString & World::WorldName(QString & str) const { return str=worldName; }
+QString World::WorldName() const { return worldName; }
 
 ushort World::NumShreds() const { return numShreds; }
 ushort World::NumActiveShreds() const { return numActiveShreds; }

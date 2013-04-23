@@ -20,6 +20,7 @@
 #include <QString>
 #include <QSettings>
 #include <QString>
+#include <QDir>
 #include "blocks.h"
 #include "Player.h"
 #include "world.h"
@@ -594,27 +595,21 @@ Player::Player(World * const w) :
 		usingSelfType(NO),
 		cleaned(false)
 {
-	QString temp;
-	world->WorldName(temp);
-	QSettings sett;
+	QSettings sett(QDir::currentPath()+'/'+
+			world->WorldName()+"/settings.ini",
+		QSettings::IniFormat);
 	sett.beginGroup("player");
-	if ( sett.value("world").toString() != temp ) {
-		homeLongi=world->GetSpawnLongi();
-		homeLati= world->GetSpawnLati();
-		x=homeX=0;
-		y=homeY=0;
-		z=homeZ=HEIGHT/2;
-	} else {
-		homeLongi=sett.value("home_longitude", qlonglong(world->GetSpawnLongi())).toLongLong();
-		homeLati =sett.value("home_latitude", qlonglong(world->GetSpawnLati())).toLongLong();
-		homeX    =sett.value("home_x", 0).toInt();
-		homeY    =sett.value("home_y", 0).toInt();
-		homeZ    =sett.value("home_z", HEIGHT/2).toInt();
-		x        =sett.value("current_x", 0).toInt();
-		y        =sett.value("current_y", 0).toInt();
-		z        =sett.value("current_z", HEIGHT/2).toInt();
-		creativeMode=sett.value("creative_mode", false).toBool();
-	}
+	homeLongi=sett.value("home_longitude",
+		qlonglong(world->GetSpawnLongi())).toLongLong();
+	homeLati =sett.value("home_latitude",
+			qlonglong(world->GetSpawnLati())).toLongLong();
+	homeX    =sett.value("home_x", 0).toInt();
+	homeY    =sett.value("home_y", 0).toInt();
+	homeZ    =sett.value("home_z", HEIGHT/2).toInt();
+	x        =sett.value("current_x", 0).toInt();
+	y        =sett.value("current_y", 0).toInt();
+	z        =sett.value("current_z", HEIGHT/2).toInt();
+	creativeMode=sett.value("creative_mode", false).toBool();
 
 	const ushort plus=world->NumShreds()/2*SHRED_WIDTH;
 	homeX+=plus;
@@ -651,14 +646,13 @@ void Player::CleanAll() {
 	}
 	cleaned=true;
 
-	const ushort min=world->NumShreds()/2*SHRED_WIDTH;
-	QSettings sett;
+	QSettings sett(QDir::currentPath()+'/'+
+			world->WorldName()+"/settings.ini",
+		QSettings::IniFormat);
 	sett.beginGroup("player");
-	QString temp;
-	world->WorldName(temp);
-	sett.setValue("world", temp);
 	sett.setValue("home_longitude", qlonglong(homeLongi));
 	sett.setValue("home_latitude", qlonglong(homeLati));
+	const ushort min=world->NumShreds()/2*SHRED_WIDTH;
 	sett.setValue("home_x", homeX-min);
 	sett.setValue("home_y", homeY-min);
 	sett.setValue("home_z", homeZ);

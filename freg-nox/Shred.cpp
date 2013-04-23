@@ -306,8 +306,7 @@ Block * Shred::Normal(const int sub) {
 }
 
 QString Shred::FileName() const {
-	QString str;
-	return str=world->WorldName(str)+"/y"+
+	return world->WorldName()+"/y"+
 		QString::number(longitude)+"x"+
 		QString::number(latitude);
 }
@@ -323,8 +322,7 @@ char Shred::TypeOfShred(
 	{
 		return '~';
 	}
-	QString temp;
-	QFile map(world->WorldName(temp)+"/map.txt");
+	QFile map(world->WorldName()+"/map.txt");
 	if ( !map.open(QIODevice::ReadOnly | QIODevice::Text) ) {
 		return '.';
 	}

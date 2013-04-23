@@ -128,7 +128,7 @@ class World : public QThread {
 
 	//information section
 	public:
-	QString & WorldName(QString & str) const;
+	QString WorldName() const;
 	int Focus(
 			ushort, ushort, ushort,
 			ushort &,  ushort &, ushort &,
