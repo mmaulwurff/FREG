@@ -472,8 +472,6 @@
 		return 0;
 	}
 
-	Block * Rabbit::DropAfterDamage() const;
-
 	Rabbit::Rabbit(const int sub) :
 			Animal(sub)
 	{}
@@ -560,8 +558,6 @@
 
 	usage_types Workbench::Use() { return OPEN; }
 
-	Block * Workbench::DropAfterDamage() const;
-
 	Inventory * Workbench::HasInventory() {
 		return Inventory::HasInventory();
 	}
@@ -569,8 +565,6 @@
 	int Workbench::Sub() const { return Block::Sub(); }
 
 	ushort Workbench::Start() const { return 1; }
-
-	int Workbench::Drop(const ushort num, Inventory * const inv_to);
 
 	bool Workbench::Get(Block * const block) {
 		if ( Inventory::Get(block) ) {
