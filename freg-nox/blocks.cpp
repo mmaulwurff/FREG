@@ -628,7 +628,7 @@
 		}
 	}
 
-	int Door::Kind() const { return DOOR; }
+	int Door::Kind() const { return locked ? LOCKED_DOOR : DOOR; }
 
 	QString & Door::FullName(QString & str) const {
 		QString sub_string;

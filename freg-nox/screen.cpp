@@ -151,6 +151,7 @@ char Screen::CharName(const int kind, const int sub) const {
 		case WORKBENCH: return '*';
 		case TELEGRAPH: return 't';
 		case DOOR:   return ( STONE==sub ) ? '#' : '\'';
+		case LOCKED_DOOR: return ( STONE==sub ) ? '#' : '`';
 		case WEAPON: switch ( sub ) {
 			case WOOD:  return '/';
 			case STONE: return '.';
