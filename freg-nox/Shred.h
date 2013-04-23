@@ -62,7 +62,7 @@ class Shred {
 
 	uchar LightMap(ushort x, ushort y, ushort z) const;
 	bool SetLightMap(uchar level, ushort x, ushort y, ushort z);
-	void SetAllLightMap(uchar level=0);
+	void SetAllLightMap(uchar level);
 	void ShineAll();
 
 	int Sub(ushort x, ushort y, ushort z) const;

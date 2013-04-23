@@ -480,7 +480,7 @@ void World::PhysEvents() {
 
 	switch ( TimeOfDay() ) {
 		case END_OF_NIGHT:
-			sunMoonFactor=SUN_LIGHT_FACTOR;
+			ReEnlightenTime();
 			emit Notify(tr("It's morning now."));
 		break;
 		case END_OF_MORNING:
@@ -490,7 +490,7 @@ void World::PhysEvents() {
 			emit Notify(tr("It's evening now."));
 		break;
 		case END_OF_EVENING:
-			sunMoonFactor=MOON_LIGHT_FACTOR;
+			ReEnlightenTime();
 			emit Notify(tr("It's night now."));
 		break;
 		default: break;
@@ -1062,8 +1062,8 @@ World::World(const QString & world_name)
 	spawnLongi=settings.value("spawn_longitude", 0).toLongLong();
 	spawnLati =settings.value("spawn_latitude", 0).toLongLong();
 	numShreds =settings.value("number_of_shreds", 5).toLongLong();
-	numActiveShreds=settings.value("number_of_active_shreds", 5).toLongLong();
-	sunMoonFactor=( NIGHT==PartOfDay() ) ? MOON_LIGHT_FACTOR : SUN_LIGHT_FACTOR;
+	numActiveShreds=
+		settings.value("number_of_active_shreds", 5).toLongLong();
 	if ( 0==mapSize ) {
 		QFile map(worldName);
 		if ( map.open(QIODevice::ReadOnly | QIODevice::Text) )
@@ -1089,7 +1089,7 @@ World::World(const QString & world_name)
 	}
 	if ( numActiveShreds > numShreds ) {
 		fprintf(stderr,
-			"Active shreds number (%hu) was more than all shreds number\n",
+			"numActiveShreds (%hu) was more than numShreds\n",
 			numActiveShreds);
 		numActiveShreds=numShreds;
 	} else if ( numActiveShreds < 1 ) {

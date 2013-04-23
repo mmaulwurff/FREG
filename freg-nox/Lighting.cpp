@@ -125,8 +125,12 @@ void World::ReEnlighten(
 
 //private. called when world is created.
 void World::ReEnlightenTime() {
-	for (ushort i=0; i<NumShreds()*NumShreds(); ++i)
-		shreds[i]->SetAllLightMap();
+	for (ushort i=0; i<NumShreds()*NumShreds(); ++i) {
+		shreds[i]->SetAllLightMap(0);
+	}
+	sunMoonFactor=( NIGHT==PartOfDay() ) ?
+		MOON_LIGHT_FACTOR :
+		SUN_LIGHT_FACTOR;
 	ReEnlightenAll();
 }
 

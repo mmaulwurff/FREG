@@ -519,7 +519,6 @@ void Screen::PrintNormal(WINDOW * const window) const {
 			waddstr(window, "  ");
 		}
 	}
-
 	wstandend(window);
 	box(window, 0, 0);
 	if ( UP==dir || DOWN==dir ) {
@@ -540,7 +539,6 @@ void Screen::PrintFront(WINDOW * const window) const {
 		wnoutrefresh(window);
 		return;
 	}
-
 	short x_step, z_step,
 	      x_end, z_end,
 	      * x, * z,
@@ -548,8 +546,10 @@ void Screen::PrintFront(WINDOW * const window) const {
 	const ushort pX=player->X();
 	const ushort pY=player->Y();
 	const ushort pZ=player->Z();
-	const ushort begin_x=(pX/SHRED_WIDTH)*SHRED_WIDTH+(SHRED_WIDTH-SCREEN_SIZE)/2;
-	const ushort begin_y=(pY/SHRED_WIDTH)*SHRED_WIDTH+(SHRED_WIDTH-SCREEN_SIZE)/2;
+	const ushort begin_x = ( pX/SHRED_WIDTH )*SHRED_WIDTH +
+		( SHRED_WIDTH-SCREEN_SIZE )/2;
+	const ushort begin_y = ( pY/SHRED_WIDTH )*SHRED_WIDTH +
+		( SHRED_WIDTH-SCREEN_SIZE )/2;
 	ushort x_start, z_start, k_start;
 	ushort arrow_Y, arrow_X;
 	switch ( dir ) {
@@ -613,10 +613,9 @@ void Screen::PrintFront(WINDOW * const window) const {
 		k_start=pZ+SCREEN_SIZE/2;
 		arrow_Y=SCREEN_SIZE/2+1;
 	}
-
 	const int block_side=w->Anti(dir);
 	wmove(window, 1, 1);
-	for (k=k_start; k_start-k<SCREEN_SIZE; --k, waddstr(window, "\n_"))
+	for (k=k_start; k_start-k<SCREEN_SIZE; --k, waddstr(window, "\n_")) {
 		for (*x=x_start; *x!=x_end; *x+=x_step) {
 			for (*z=z_start; *z!=z_end; *z+=z_step)
 				if ( w->Transparent(i, j, k) != INVISIBLE ) {
@@ -639,7 +638,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 				waddstr(window, ". ");
 			}
 		}
-
+	}
 	wstandend(window);
 	box(window, 0, 0);
 	mvwaddstr(window, 0, 1, "Front View");
