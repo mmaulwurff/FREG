@@ -301,12 +301,13 @@ void Shred::PutNormalBlock(
 	blocks[x][y][z]=Normal(sub);
 }
 
-Block * Shred::Normal(const int sub) { return block_manager.NormalBlock(sub); }
+Block * Shred::Normal(const int sub) {
+	return block_manager.NormalBlock(sub);
+}
 
 QString Shred::FileName() const {
 	QString str;
-	world->WorldName(str);
-	return str=str+"_shreds/y"+
+	return str=world->WorldName(str)+"/y"+
 		QString::number(longitude)+"x"+
 		QString::number(latitude);
 }
@@ -322,19 +323,19 @@ char Shred::TypeOfShred(
 	{
 		return '~';
 	}
-
 	QString temp;
-	QFile map(world->WorldName(temp));
-	if ( !map.open(QIODevice::ReadOnly | QIODevice::Text) )
+	QFile map(world->WorldName(temp)+"/map.txt");
+	if ( !map.open(QIODevice::ReadOnly | QIODevice::Text) ) {
 		return '.';
-
+	}
 	map.seek((mapSize+1)*longi+lati); //+1 is for '\n' in file
 	char c;
 	return ( map.getChar(&c) ) ? c : '.';
 }
 
 //shred generators section
-//these functions fill space between the lowest nullstone layer and sky. so use k from 1 to heigth-2.
+//these functions fill space between the lowest nullstone layer and sky.
+//so use k from 1 to heigth-2.
 void Shred::NormalUnderground(const ushort depth=0) {
 	for (ushort i=0; i<SHRED_WIDTH; ++i)
 	for (ushort j=0; j<SHRED_WIDTH; ++j) {

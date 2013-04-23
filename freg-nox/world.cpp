@@ -19,6 +19,7 @@
 #include <QTextStream>
 #include <QTimer>
 #include <QSettings>
+#include <QDir>
 #include "header.h"
 #include "blocks.h"
 #include "Shred.h"
@@ -1053,10 +1054,9 @@ World::World(const QString & world_name)
 		toReSet(false),
 		deferredActionType(DEFERRED_NOTHING)
 {
-	QSettings settings;
-	settings.beginGroup(worldName);
+	QSettings settings(QDir::currentPath()+'/'+worldName+"/settings.ini",
+		QSettings::IniFormat);
 	time      =settings.value("time", END_OF_NIGHT).toLongLong();
-	mapSize   =settings.value("mapSize", 0).toLongLong();
 	longitude =settings.value("longitude", 0).toLongLong();
 	latitude  =settings.value("latitude", 0).toLongLong();
 	spawnLongi=settings.value("spawn_longitude", 0).toLongLong();
@@ -1064,11 +1064,19 @@ World::World(const QString & world_name)
 	numShreds =settings.value("number_of_shreds", 5).toLongLong();
 	numActiveShreds=
 		settings.value("number_of_active_shreds", 5).toLongLong();
-	if ( 0==mapSize ) {
-		QFile map(worldName);
-		if ( map.open(QIODevice::ReadOnly | QIODevice::Text) )
-			mapSize=int(qSqrt(1+4*map.size())-1)/2;
+
+	QDir::current().mkdir(worldName);
+	QFile map(worldName+"/map.txt");
+	if ( map.open(QIODevice::ReadOnly | QIODevice::Text) ) {
+		mapSize=int(qSqrt(1+4*map.size())-1)/2;
+	} else if ( map.open(QIODevice::WriteOnly |
+			QIODevice::Text) )
+	{
+		char little_map[]=".\n";
+		map.write(little_map);
+		mapSize=1;
 	}
+
 	if ( 1!=numShreds%2 ) {
 		++numShreds;
 		fprintf(stderr,
@@ -1118,14 +1126,13 @@ void World::CleanAll() {
 
 	SaveAllShreds();
 
-	QSettings settings;
-	settings.beginGroup(worldName);
-	settings.setValue("time", qlonglong(time));
-	settings.setValue("mapSize", qlonglong(mapSize));
-	settings.setValue("longitude", qlonglong(longitude));
-	settings.setValue("latitude", qlonglong(latitude));
-	settings.setValue("spawn_longitude", qlonglong(spawnLongi));
-	settings.setValue("spawn_latitude", qlonglong(spawnLati));
-	settings.setValue("number_of_shreds", numShreds);
-	settings.setValue("number_of_active_shreds", numActiveShreds);
+	QSettings sett(QDir::currentPath()+'/'+worldName+"/settings.ini",
+		QSettings::IniFormat);
+	sett.setValue("time", qlonglong(time));
+	sett.setValue("longitude", qlonglong(longitude));
+	sett.setValue("latitude", qlonglong(latitude));
+	sett.setValue("spawn_longitude", qlonglong(spawnLongi));
+	sett.setValue("spawn_latitude", qlonglong(spawnLati));
+	sett.setValue("number_of_shreds", numShreds);
+	sett.setValue("number_of_active_shreds", numActiveShreds);
 }

@@ -42,7 +42,8 @@ int main(int argc, char *argv[]) {
 	QSettings::setDefaultFormat(QSettings::IniFormat);
 
 	QSettings sett;
-	const QString worldName=sett.value("global/current_world", "The_Land_Of_Doubts").toString();
+	const QString worldName=
+		sett.value("global/current_world", "mu").toString();
 	sett.setValue("global/current_world", worldName);
 
 	World earth(worldName);
