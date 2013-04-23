@@ -27,6 +27,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QSettings>
+#include <QDir>
 #include "header.h"
 #include "world.h"
 #include "Player.h"
@@ -41,10 +42,10 @@ int main(int argc, char *argv[]) {
 	QCoreApplication::setApplicationName("freg");
 	QSettings::setDefaultFormat(QSettings::IniFormat);
 
-	QSettings sett;
-	const QString worldName=
-		sett.value("global/current_world", "mu").toString();
-	sett.setValue("global/current_world", worldName);
+	QSettings sett(QDir::currentPath()+"/freg.ini",
+		QSettings::IniFormat);
+	const QString worldName=sett.value("current_world", "mu").toString();
+	sett.setValue("current_world", worldName);
 
 	World earth(worldName);
 	Player player(&earth);

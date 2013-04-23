@@ -20,6 +20,7 @@
 #include <QString>
 #include <QTimer>
 #include <QSettings>
+#include <QDir>
 #include "screen.h"
 #include "world.h"
 #include "blocks.h"
@@ -755,7 +756,8 @@ Screen::Screen(
 
 	notifyLog=fopen("messages.txt", "a");
 
-	QSettings sett;
+	QSettings sett(QDir::currentPath()+"/freg.ini",
+		QSettings::IniFormat);
 	sett.beginGroup("screen_curses");
 	shiftFocus=sett.value("focus_shift", 0).toInt();
 	actionMode=sett.value("action_mode", USE).toInt();
@@ -796,7 +798,8 @@ void Screen::CleanAll() {
 	if ( NULL!=notifyLog )
 		fclose(notifyLog);
 
-	QSettings sett;
+	QSettings sett(QDir::currentPath()+"/freg.ini",
+		QSettings::IniFormat);
 	sett.beginGroup("screen_curses");
 	sett.setValue("focus_shift", shiftFocus);
 	sett.setValue("action_mode", actionMode);
