@@ -168,20 +168,19 @@ void Shred::PhysEvents() {
 			const ushort y=temp->Y();
 			const ushort z=temp->Z();
 			temp->SetNotFalling();
-			Block * target=blocks
-				[x%SHRED_WIDTH][y%SHRED_WIDTH][z-1];
-			if ( weight > target->Weight() &&
-					ENVIRONMENT==target->Movable())
+			if ( weight > Weight(
+					x%SHRED_WIDTH,
+					y%SHRED_WIDTH, z-1) )
 			{
 				world->Move(x, y, z, DOWN);
-				continue;
-			}
-			target=blocks
-				[x%SHRED_WIDTH][y%SHRED_WIDTH][z+1];
-			if ( weight < target->Weight() &&
-					ENVIRONMENT==target->Movable() )
-			{
-				world->Move(x, y, z, UP);
+			} else {
+				Block * target=blocks
+					[x%SHRED_WIDTH][y%SHRED_WIDTH][z+1];
+				if ( ENVIRONMENT==target->Movable() &&
+						weight < target->Weight() )
+				{
+					world->Move(x, y, z, UP);
+				}
 			}
 		}
 	}

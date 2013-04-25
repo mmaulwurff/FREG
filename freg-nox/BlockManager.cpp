@@ -98,6 +98,7 @@ Block * BlockManager::BlockFromFile(QDataStream & str) {
 		case GRASS:  return New<Grass >(str, sub);
 		case ACTIVE: return New<Active>(str, sub);
 		case LIQUID: return New<Liquid>(str, sub);
+		case LOCKED_DOOR:
 		case DOOR:   return New<Door  >(str, sub);
 		case CLOCK:  return New<Clock >(str, sub);
 		case WORKBENCH: return New<Workbench>(str, sub);

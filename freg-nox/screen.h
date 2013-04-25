@@ -133,7 +133,6 @@ class Screen : public VirtScreen {
 
 	QString command; //save previous command for further execution
 
-	char CharName(ushort x, ushort y, ushort z) const;
 	char CharName(int, int) const;
 	char CharNumber(ushort x, ushort y, ushort z) const;
 	char CharNumberFront(ushort x, ushort y) const;
@@ -152,7 +151,7 @@ class Screen : public VirtScreen {
 	void RePrint();
 
 	color_pairs Color(int kind, int sub) const;
-	color_pairs Color(ushort x, ushort y, ushort z) const;
+	void PrintBlock(ushort x, ushort y, ushort z, WINDOW *) const;
 
 	private slots:
 	void Print();

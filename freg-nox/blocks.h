@@ -381,16 +381,12 @@ class Liquid : public Active {
 	bool CheckWater() const;
 
 	public:
-	int Movable() const;
-
-	int Kind() const;
-	QString & FullName(QString & str) const;
-
-	int Damage(ushort dam, int dam_kind);
-
 	void Act();
-
-	int Temperature() const;
+	int  Kind() const;
+	int  Movable() const;
+	int  Temperature() const;
+	int  Damage(ushort dam, int dam_kind);
+	QString & FullName(QString & str) const;
 
 	Liquid(int sub=WATER);
 	Liquid(QDataStream & str, int sub);

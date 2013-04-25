@@ -269,29 +269,30 @@
 	}
 
 	void Liquid::Act() {
+		if ( !IsActiveTurn() ) {
+			return;
+		}
 		World * const world=GetWorld();
 		//IDEA: turn off water drying up in ocean
-		if ( WATER==Sub() ) {
-			if ( CheckWater() ) {
-				Restore();
-			} else if ( world->Damage(x_self, y_self, z_self,
-					1, HEAT) ) {
-				return;
-			}
+		if ( WATER==Sub() && !CheckWater() &&
+				world->Damage(x_self, y_self, z_self,
+					1, HEAT) )
+		{
+			return;
 		}
 		switch ( rand()%20 ) {
 			case 0:
 				world->Move(x_self, y_self, z_self, NORTH);
-			return;
+			break;
 			case 1:
 				world->Move(x_self, y_self, z_self, EAST);
-			return;
+			break;
 			case 2:
 				world->Move(x_self, y_self, z_self, SOUTH);
-			return;
+			break;
 			case 3:
 				world->Move(x_self, y_self, z_self, WEST);
-			return;
+			break;
 			default: return;
 		}
 	}

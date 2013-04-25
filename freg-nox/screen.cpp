@@ -91,35 +91,38 @@ QString & Screen::PassString(QString & str) const {
 char Screen::CharNumber(
 		const ushort i,
 		const ushort j,
-		const ushort k) const
-{
-	if ( HEIGHT-1==k )
+		const ushort k)
+const {
+	if ( HEIGHT-1==k ) { //sky
 		return ' ';
-
-	if ( player->GetP()==w->GetBlock(i, j, k) )
+	}
+	if ( player->GetP()==w->GetBlock(i, j, k) ) {
 		switch ( player->Dir() ) {
 			case NORTH: return '^';
 			case SOUTH: return 'v';
 			case EAST:  return '>';
 			case WEST:  return '<';
-			case DOWN:  return 'x';
-			case UP:    return '.';
 			default:
 				fprintf(stderr,
-					"Screen::CharNumber(ushort, ushort, ushort): unlisted dir: %d\n",
+					"Screen::CharNumber(\
+					ushort, ushort, ushort): \
+					unlisted dir: %d\n",
 					(int)player->Dir());
 				return '*';
 		}
-
+	}
 	const ushort playerZ=player->Z();
 	if ( UP==player->Dir() ) {
-		if ( k > playerZ && k < playerZ+10 )
+		if ( k > playerZ && k < playerZ+10 ) {
 			return k-playerZ+'0';
+		}
 	} else {
-		if ( k==playerZ )
+		if ( k==playerZ ) {
 			return ' ';
-		if ( k>playerZ-10 )
+		}
+		if ( k>playerZ-10 ) {
 			return playerZ-k+'0';
+		}
 	}
 	return '+';
 }
@@ -158,7 +161,8 @@ char Screen::CharName(const int kind, const int sub) const {
 			case IRON:  return '/';
 			default:
 				fprintf(stderr,
-					"Screen::CharName: unlisted sub: %d\n",
+					"Screen::CharName: unlisted sub: \
+					%d\n",
 					sub);
 				return '.';
 		}
@@ -179,33 +183,26 @@ char Screen::CharName(const int kind, const int sub) const {
 			case HAZELNUT: return ',';
 			default:
 				fprintf(stderr,
-					"Screen::CharName: unlisted substance: %d\n",
+					"Screen::CharName: unlisted sub: \
+					%d\n",
 					sub);
 				return '?';
 		}
 	}
 }
-char Screen::CharName(
-		const ushort i,
-		const ushort j,
-		const ushort k) const
-{
-	return CharName( w->Kind(i, j, k),
-		w->Sub(i, j, k) );
-}
 
 color_pairs Screen::Color(const int kind, const int sub) const {
-	switch (kind) { //foreground_background
+	switch ( kind ) { //foreground_background
 		case DWARF:     return WHITE_BLUE;
 		case PILE:      return WHITE_BLACK;
 		case TELEGRAPH: return CYAN_BLACK;
 		case RABBIT:    return RED_WHITE;
 		case BUSH:      return BLACK_GREEN;
-		case LIQUID: switch (sub) {
+		case LIQUID: switch ( sub ) {
 			case WATER: return CYAN_BLUE;
 			default:    return RED_YELLOW;
 		}
-		default: switch (sub) {
+		default: switch ( sub ) {
 			case STONE:      return BLACK_WHITE;
 			case SAND:       return YELLOW_WHITE;
 			case A_MEAT:     return WHITE_RED;
@@ -219,7 +216,8 @@ color_pairs Screen::Color(const int kind, const int sub) const {
 			case MOSS_STONE: return GREEN_WHITE;
 			case IRON:       return WHITE_BLACK;
 			case ROSE:       return RED_GREEN;
-			case SUN_MOON:   return ( NIGHT==w->PartOfDay() ) ? WHITE_WHITE : YELLOW_YELLOW;
+			case SUN_MOON:   return ( NIGHT==w->PartOfDay() ) ?
+				WHITE_WHITE : YELLOW_YELLOW;
 			case SKY: case STAR: switch ( w->PartOfDay() ) {
 				case NIGHT:   return WHITE_BLACK;
 				case MORNING: return WHITE_BLUE;
@@ -229,14 +227,6 @@ color_pairs Screen::Color(const int kind, const int sub) const {
 			default: return WHITE_BLACK;
 		}
 	}
-}
-inline color_pairs Screen::Color(
-		const ushort i,
-	       	const ushort j,
-	       	const ushort k) const
-{
-	return Color( w->Kind(i, j, k),
-			w->Sub(i, j, k) );
 }
 
 void Screen::ControlPlayer(const int ch) {
@@ -368,6 +358,19 @@ void Screen::ActionXyz(
 	{
 		z+=shiftFocus;
 	}
+}
+
+void Screen::PrintBlock(
+		const ushort x,
+		const ushort y,
+		const ushort z,
+		WINDOW * const window)
+const {
+	Block * const block=w->GetBlock(x, y, z);
+	const int kind=block->Kind();
+	const int sub =block->Sub();
+	wcolor_set(window, Color(kind, sub), NULL);
+	waddch(window, CharName(kind, sub));
 }
 
 void Screen::Print() {
@@ -513,8 +516,7 @@ void Screen::PrintNormal(WINDOW * const window) const {
 		ushort k;
 		for (k=k_start; INVISIBLE == w->Transparent(i, j, k); k+=k_step);
 		if ( w->Enlightened(i, j, k, block_side) && player->Visible(i, j, k) ) {
-			wcolor_set(window, Color(i, j, k), NULL);
-			waddch(window, CharName(i, j, k));
+			PrintBlock(i, j, k, window);
 			waddch(window, CharNumber(i, j, k));
 		} else {
 			wcolor_set(window, BLACK_BLACK, NULL);
@@ -526,8 +528,9 @@ void Screen::PrintNormal(WINDOW * const window) const {
 	if ( UP==dir || DOWN==dir ) {
 		mvwaddstr(window, 0, 1, ( UP==dir ) ? "Sky View" : "Ground View");
 		Arrows(window , (player->X()-start_x)*2+1, player->Y()-start_y+1);
-	} else
+	} else {
 		mvwaddstr(window, 0, 1, "Normal View");
+	}
 	wnoutrefresh(window);
 }
 
@@ -623,8 +626,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 				if ( w->Transparent(i, j, k) != INVISIBLE ) {
 					if ( w->Enlightened(i, j, k, block_side) &&
 							player->Visible(i, j, k) ) {
-						wcolor_set(window, Color(i, j, k), NULL);
-						waddch(window, CharName(i, j, k));
+						PrintBlock(i, j, k, window);
 						waddch(window, CharNumberFront(i, j));
 					} else {
 						wcolor_set(window, BLACK_BLACK, NULL);
