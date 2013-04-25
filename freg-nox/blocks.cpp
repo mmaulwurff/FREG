@@ -474,6 +474,7 @@
 			}
 		}
 	}
+	bool Active::ShouldAct() const { return false; }
 
 	bool Active::IsActiveTurn() {
 		//IDEA: make this in Shred and two functions in Active:
@@ -646,6 +647,7 @@
 		emit Updated();
 		Active::Act();
 	}
+	bool Animal::ShouldAct() const { return true; }
 
 	ushort Animal::Breath() const { return breath; }
 
@@ -1077,6 +1079,7 @@
 		if ( ifToDestroy )
 			GetWorld()->Damage(x_self, y_self, z_self, 0, TIME);
 	}
+	bool Pile::ShouldAct() const { return true; }
 
 	int Pile::Kind() const { return PILE; }
 
@@ -1155,6 +1158,7 @@
 			default: return;
 		}
 	}
+	bool Liquid::ShouldAct() const  { return true; }
 
 	int Liquid::Movable() const { return ENVIRONMENT; }
 
@@ -1216,6 +1220,7 @@
 						Sub()), i, j, z_self+1);
 		}
 	}
+	bool Grass::ShouldAct() const  { return true; }
 
 	QString & Grass::FullName(QString & str) const {
 		switch ( sub ) {
@@ -1262,6 +1267,7 @@
 		if ( 0==rand()%(SECONDS_IN_HOUR*4) )
 			Get(block_manager.NormalBlock(HAZELNUT));
 	}
+	bool Bush::ShouldAct() const  { return true; }
 
 	int Bush::BeforePush(const int, Block * const who) {
 		Inventory::BeforePush(who);
@@ -1536,6 +1542,7 @@
 			}
 		}
 	}
+	bool Door::ShouldAct() const  { return true; }
 
 	int Door::Kind() const { return locked ? LOCKED_DOOR : DOOR; }
 
@@ -1640,6 +1647,7 @@
 			timerTime=-1;
 		}
 	}
+	bool Clock::ShouldAct() const  { return true; }
 
 	void Clock::Inscribe(const QString & str) {
 		Block::Inscribe(str);

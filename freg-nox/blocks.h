@@ -202,6 +202,7 @@ class Active : public QObject, public Block {
 	 * This makes common damage from falling.
 	 */
 	virtual void Act();
+	virtual bool ShouldAct() const;
 
 	int Movable() const;
 	virtual bool ShouldFall() const;
@@ -238,6 +239,7 @@ class Animal : public Active {
 	virtual int Eat(Block * const)=0;
 
 	void Act();
+	bool ShouldAct() const;
 
 	void SaveAttributes(QDataStream & out) const;
 
@@ -363,6 +365,7 @@ class Pile : public Active, public Inventory {
 	float TrueWeight() const;
 
 	void Act();
+	bool ShouldAct() const;
 
 	int BeforePush(int, Block * who);
 	int Drop(ushort n, Inventory * inv);
@@ -382,6 +385,7 @@ class Liquid : public Active {
 
 	public:
 	void Act();
+	bool ShouldAct() const;
 	int  Kind() const;
 	int  Movable() const;
 	int  Temperature() const;
@@ -398,6 +402,7 @@ class Grass : public Active {
 	public:
 	QString & FullName(QString & str) const;
 	void Act();
+	bool ShouldAct() const;
 	int  Kind() const;
 	bool ShouldFall() const;
 	int BeforePush(int dir, Block * who);
@@ -419,7 +424,8 @@ class Bush : public Active, public Inventory {
 	float TrueWeight() const;
 	bool  ShouldFall() const;
 	void  Act();
-	int BeforePush(int dir, Block * who);
+	bool  ShouldAct() const;
+	int   BeforePush(int dir, Block * who);
 
 	QString & FullName(QString & str) const;
 	usage_types Use();
@@ -482,6 +488,7 @@ class Door : public Active {
 
 	public:
 	void Act();
+	bool ShouldAct() const;
 	int  Kind() const;
 	int  Movable() const;
 	int  BeforePush(int dir, Block * who);
@@ -504,6 +511,7 @@ class Clock : public Active {
 	public:
 
 	void  Act();
+	bool  ShouldAct() const;
 	int   Kind() const;
 	int   Movable() const;
 	bool  ShouldFall() const;

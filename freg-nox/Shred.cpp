@@ -232,7 +232,9 @@ float Shred::Weight(
 }
 
 void Shred::AddActive(Active * const active) {
-	activeList.append(active);
+	if ( active->ShouldAct() ) {
+		activeList.append(active);
+	}
 }
 
 bool Shred::RemActive(Active * const active) {
