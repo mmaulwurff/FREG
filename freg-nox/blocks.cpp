@@ -1189,9 +1189,12 @@
 
 //Grass::
 	void Grass::Act() {
+		if ( !IsActiveTurn() ) {
+			return;
+		}
 		short i=x_self, j=y_self;
 		//increase this if grass grows too fast
-		switch ( rand()%(SECONDS_IN_HOUR*20) ) {
+		switch ( rand()%(SECONDS_IN_HOUR*2) ) {
 			case 0: ++i; break;
 			case 1: --i; break;
 			case 2: ++j; break;
