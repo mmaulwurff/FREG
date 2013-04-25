@@ -476,6 +476,8 @@
 	}
 
 	bool Active::IsActiveTurn() {
+		//IDEA: make this in Shred and two functions in Active:
+		//ActFrequent and ActRare
 		if ( World::TimeStepsInSec() > timeStep ) {
 			++timeStep;
 			return false;
