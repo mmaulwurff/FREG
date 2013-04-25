@@ -46,7 +46,9 @@ int Shred::LoadShred(QFile & file) {
 		in.setVersion(datastream_version);
 		for (ushort i=0; i<SHRED_WIDTH; ++i)
 		for (ushort j=0; j<SHRED_WIDTH; ++j) {
-			for (ushort k=0; k<HEIGHT; ++k) {
+			PutNormalBlock(NULLSTONE, i, j, 0);
+			lightMap[i][j][0]=0;
+			for (ushort k=1; k<HEIGHT; ++k) {
 				SetBlock(block_manager.BlockFromFile(in), i, j, k);
 				lightMap[i][j][k]=0;
 			}
@@ -71,8 +73,9 @@ Shred::Shred(
 	activeList.reserve(1000);
 	fallList.reserve(100);
 	QFile file(FileName());
-	if ( file.open(QIODevice::ReadOnly) && !LoadShred(file) )
+	if ( file.open(QIODevice::ReadOnly) && !LoadShred(file) ) {
 		return;
+	}
 
 	for (ushort i=0; i<SHRED_WIDTH; ++i)
 	for (ushort j=0; j<SHRED_WIDTH; ++j) {
@@ -91,8 +94,8 @@ Shred::Shred(
 		case 't': TestShred(); break;
 		case '%': Forest(longi, lati); break;
 		case '~': Water( longi, lati); break;
-		//case '+': Hill(  longi, lati); break;
 		case '_': /* empty shred */    break;
+		case '-': NormalUnderground(); break;
 		case 'p': Pyramid();           break;
 		case '^': Mountain();          break;
 		default:
@@ -123,7 +126,7 @@ Shred::~Shred() {
 		outstr.setVersion(datastream_version);
 		for (i=0; i<SHRED_WIDTH; ++i)
 		for (j=0; j<SHRED_WIDTH; ++j)
-		for (k=0; k<HEIGHT; ++k) {
+		for (k=1; k<HEIGHT; ++k) {
 			blocks[i][j][k]->SaveToFile(outstr);
 			block_manager.DeleteBlock(blocks[i][j][k]);
 		}
@@ -172,15 +175,11 @@ void Shred::PhysEvents() {
 					x%SHRED_WIDTH,
 					y%SHRED_WIDTH, z-1) )
 			{
-				world->Move(x, y, z, DOWN);
-			} else {
-				Block * target=blocks
-					[x%SHRED_WIDTH][y%SHRED_WIDTH][z+1];
-				if ( ENVIRONMENT==target->Movable() &&
-						weight < target->Weight() )
-				{
-					world->Move(x, y, z, UP);
+				if ( !world->Move(x, y, z, DOWN) ) {
+					RemFalling(temp);
 				}
+			} else {
+				RemFalling(temp);
 			}
 		}
 	}
@@ -234,16 +233,33 @@ float Shred::Weight(
 
 void Shred::AddActive(Active * const active) {
 	activeList.append(active);
+}
+
+bool Shred::RemActive(Active * const active) {
+	return activeList.removeOne(active);
+}
+
+void Shred::AddFalling(Active * const active) {
 	if ( active->ShouldFall() ) {
 		fallList.append(active);
 	}
 }
 
-bool Shred::RemActive(Active * const active) {
+void Shred::RemFalling(Active * const active) {
 	if ( active->ShouldFall() ) {
 		fallList.removeOne(active);
 	}
-	return activeList.removeOne(active);
+}
+
+void Shred::AddFalling(
+		const ushort x,
+		const ushort y,
+		const ushort z)
+{
+	Active * const active=blocks[x][y][z]->ActiveBlock();
+	if ( active ) {
+		AddFalling(active);
+	}
 }
 
 void Shred::ReloadToNorth() {
@@ -333,7 +349,7 @@ char Shred::TypeOfShred(
 //shred generators section
 //these functions fill space between the lowest nullstone layer and sky.
 //so use k from 1 to heigth-2.
-void Shred::NormalUnderground(const ushort depth=0) {
+void Shred::NormalUnderground(const ushort depth) {
 	for (ushort i=0; i<SHRED_WIDTH; ++i)
 	for (ushort j=0; j<SHRED_WIDTH; ++j) {
 		ushort k;

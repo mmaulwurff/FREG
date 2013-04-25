@@ -556,12 +556,22 @@
 			y_self=y;
 			z_self=z;
 			whereShred->AddActive(this);
+			if ( ENVIRONMENT==sh->Movable(
+					x%SHRED_WIDTH,
+					y%SHRED_WIDTH, z-1) &&
+					!(*this==*sh->GetBlock(
+						x%SHRED_WIDTH,
+						y%SHRED_WIDTH, z-1)) )
+			{
+				whereShred->AddFalling(this);
+			}
 		}
 	}
 
 	void Active::Unregister() {
 		if ( whereShred ) {
 			whereShred->RemActive(this);
+			whereShred->RemFalling(this);
 			whereShred=0;
 		}
 	}

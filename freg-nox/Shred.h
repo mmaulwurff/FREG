@@ -41,8 +41,11 @@ class Shred {
 	ushort ShredY() const;
 	void PhysEvents();
 
-	void AddActive(Active * const);
-	bool RemActive(Active * const);
+	void AddActive(Active *);
+	bool RemActive(Active *);
+	void AddFalling(Active *);
+	void RemFalling(Active *);
+	void AddFalling(ushort x, ushort y, ushort z);
 
 	World * GetWorld() const;
 
@@ -54,7 +57,7 @@ class Shred {
 	Block * GetBlock(ushort x, ushort y, ushort z) const;
 	///Puts block to coordinates xyz and activates it
 	void SetBlock(Block * block, ushort x, ushort y, ushort z);
-	///Puts block to coordinates and not activates it (e.g. in World::Move)
+	///Puts block to coordinates, not activates it (e.g. in World::Move)
 	void PutBlock(Block * block, ushort x, ushort y, ushort z);
 	///Puts normal block to coordinates
 	void PutNormalBlock(int sub, ushort x, ushort y, ushort z);
@@ -75,7 +78,9 @@ class Shred {
 
 	int LoadShred(QFile &);
 
-	Shred(World *, ushort shred_x, ushort shred_y, long longi, long lati);
+	Shred(World *,
+			ushort shred_x, ushort shred_y,
+			long longi, long lati);
 	~Shred();
 	
 	void SetNewBlock(int kind, int sub, ushort x, ushort y, ushort z);
@@ -86,7 +91,7 @@ class Shred {
 	QString FileName() const;
 	char TypeOfShred(long longi, long lati) const;
 
-	void NormalUnderground(ushort);
+	void NormalUnderground(ushort depth=0);
 	void PlantGrass();
 	void TestShred();
 	void NullMountain();

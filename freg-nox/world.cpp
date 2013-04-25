@@ -642,6 +642,13 @@ void World::NoCheckMove(
 
 	block_to->Move( Anti(dir) );
 	block->Move(dir);
+
+	Shred * shred=GetShred(i, j);
+	shred->AddFalling(i%SHRED_WIDTH, j%SHRED_WIDTH, k+1);
+	shred->AddFalling(i%SHRED_WIDTH, j%SHRED_WIDTH, k);
+	shred=GetShred(newi, newj);
+	shred->AddFalling(newi%SHRED_WIDTH, newj%SHRED_WIDTH, newk+1);
+	shred->AddFalling(newi%SHRED_WIDTH, newj%SHRED_WIDTH, newk);
 }
 
 void World::Jump(const ushort x, const ushort y, const ushort z) {
@@ -773,6 +780,7 @@ bool World::Damage(
 		PutNormalBlock(AIR, i, j, k);
 	}
 	block_manager.DeleteBlock(temp);
+	GetShred(i, j)->AddFalling(i%SHRED_WIDTH, j%SHRED_WIDTH, k+1);
 	ReEnlighten(i, j, k);
 	return true;
 }
