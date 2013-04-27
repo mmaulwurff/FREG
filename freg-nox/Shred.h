@@ -31,7 +31,8 @@ class Shred {
 	const long longitude, latitude;
 
 	ushort shredX, shredY;
-	QList<Active *> activeList;
+	QList<Active *> activeListFrequent;
+	QList<Active *> activeListRare;
 	QList<Active *> fallList;
 
 	public:
@@ -39,10 +40,11 @@ class Shred {
 	long Latitude()  const;
 	ushort ShredX() const;
 	ushort ShredY() const;
-	void PhysEvents();
+	void PhysEventsFrequent();
+	void PhysEventsRare();
 
 	void AddActive(Active *);
-	bool RemActive(Active *);
+	void RemActive(Active *);
 	void AddFalling(Active *);
 	void RemFalling(Active *);
 	void AddFalling(ushort x, ushort y, ushort z);

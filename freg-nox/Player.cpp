@@ -502,8 +502,9 @@ void Player::CheckOverstep(const int dir) {
 }
 
 void Player::BlockDestroy() {
-	if ( cleaned )
+	if ( cleaned ) {
 		return;
+	}
 	emit Notify("You died.");
 	player=0;
 	usingType=NO;

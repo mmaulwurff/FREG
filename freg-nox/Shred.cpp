@@ -70,7 +70,8 @@ Shred::Shred(
 		shredX(shred_x),
 		shredY(shred_y)
 {
-	activeList.reserve(1000);
+	activeListFrequent.reserve(100);
+	activeListRare.reserve(1000);
 	fallList.reserve(100);
 	QFile file(FileName());
 	if ( file.open(QIODevice::ReadOnly) && !LoadShred(file) ) {
@@ -162,7 +163,7 @@ void Shred::RegisterBlock(
 	}
 }
 
-void Shred::PhysEvents() {
+void Shred::PhysEventsFrequent() {
 	for (int j=0; j<fallList.size(); ++j) {
 		Active * const temp=fallList[j];
 		const float weight=temp->Weight();
@@ -170,21 +171,27 @@ void Shred::PhysEvents() {
 			const ushort x=temp->X();
 			const ushort y=temp->Y();
 			const ushort z=temp->Z();
-			temp->SetNotFalling();
 			if ( weight > Weight(
 					x%SHRED_WIDTH,
 					y%SHRED_WIDTH, z-1) )
 			{
 				if ( !world->Move(x, y, z, DOWN) ) {
 					RemFalling(temp);
+					temp->FallDamage();
 				}
 			} else {
 				RemFalling(temp);
+				temp->FallDamage();
 			}
 		}
 	}
-	for (int j=0; j<activeList.size(); ++j) {
-		activeList[j]->Act();
+	for (int j=0; j<activeListFrequent.size(); ++j) {
+		activeListFrequent[j]->ActFrequent();
+	}
+}
+void Shred::PhysEventsRare() {
+	for (int j=0; j<activeListRare.size(); ++j) {
+		activeListRare[j]->ActRare();
 	}
 }
 
@@ -232,25 +239,35 @@ float Shred::Weight(
 }
 
 void Shred::AddActive(Active * const active) {
-	if ( active->ShouldAct() ) {
-		activeList.append(active);
+	switch ( active->ShouldAct() ) {
+		case FREQUENT_AND_RARE:
+			activeListFrequent.append(active);
+		//no break;
+		case RARE:
+			activeListRare.append(active);
+		break;
+		case FREQUENT:
+			activeListFrequent.append(active);
+		break;
+		default: break;
 	}
 }
 
-bool Shred::RemActive(Active * const active) {
-	return activeList.removeOne(active);
+void Shred::RemActive(Active * const active) {
+	activeListFrequent.removeOne(active);
+	activeListRare.removeOne(active);
 }
 
 void Shred::AddFalling(Active * const active) {
-	if ( active->ShouldFall() ) {
+	if ( !active->IsFalling() && active->ShouldFall() ) {
+		active->SetFalling(true);
 		fallList.append(active);
 	}
 }
 
 void Shred::RemFalling(Active * const active) {
-	if ( active->ShouldFall() ) {
-		fallList.removeOne(active);
-	}
+	fallList.removeOne(active);
+	active->SetFalling(false);
 }
 
 void Shred::AddFalling(
@@ -265,23 +282,39 @@ void Shred::AddFalling(
 }
 
 void Shred::ReloadToNorth() {
-	for (ushort i=0; i<activeList.size(); ++i)
-		activeList[i]->ReloadToNorth();
+	for (ushort i=0; i<activeListFrequent.size(); ++i) {
+		activeListFrequent[i]->ReloadToNorth();
+	}
+	for (ushort i=0; i<activeListRare.size(); ++i) {
+		activeListRare[i]->ReloadToNorth();
+	}
 	++shredY;
 }
 void Shred::ReloadToEast() {
-	for (ushort i=0; i<activeList.size(); ++i)
-		activeList[i]->ReloadToEast();
+	for (ushort i=0; i<activeListFrequent.size(); ++i) {
+		activeListFrequent[i]->ReloadToEast();
+	}
+	for (ushort i=0; i<activeListRare.size(); ++i) {
+		activeListRare[i]->ReloadToEast();
+	}
 	--shredX;
 }
 void Shred::ReloadToSouth() {
-	for (ushort i=0; i<activeList.size(); ++i)
-		activeList[i]->ReloadToSouth();
+	for (ushort i=0; i<activeListFrequent.size(); ++i) {
+		activeListFrequent[i]->ReloadToSouth();
+	}
+	for (ushort i=0; i<activeListRare.size(); ++i) {
+		activeListRare[i]->ReloadToSouth();
+	}
 	--shredY;
 }
 void Shred::ReloadToWest() {
-	for (ushort i=0; i<activeList.size(); ++i)
-		activeList[i]->ReloadToWest();
+	for (ushort i=0; i<activeListFrequent.size(); ++i) {
+		activeListFrequent[i]->ReloadToWest();
+	}
+	for (ushort i=0; i<activeListRare.size(); ++i) {
+		activeListRare[i]->ReloadToWest();
+	}
 	++shredX;
 }
 

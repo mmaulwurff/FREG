@@ -40,6 +40,13 @@ enum before_push_action {
 	MOVE_SELF
 }; //enum before_push_action
 
+enum ACTIVE_FREQUENCY {
+	FREQUENT_AND_RARE,
+	FREQUENT,
+	RARE,
+	NEVER
+}; //enum ACTIVE_FREQUENCY
+
 class Block { //blocks without special physics and attributes
 	void SetTransparency(quint8 transp);
 	virtual float TrueWeight() const;
@@ -170,8 +177,6 @@ class Active : public QObject, public Block {
 	ushort x_self, y_self, z_self;
 	Shred * whereShred;
 
-	///Returns true each second, not every turn.
-	bool IsActiveTurn();
 	void SendSignalAround(const QString &) const;
 
 	signals:
@@ -188,21 +193,18 @@ class Active : public QObject, public Block {
 
 	Active * ActiveBlock();
 	int Move(int);
-	void SetNotFalling();
+	void SetFalling(bool set);
 	bool IsFalling() const;
+	///Returns true if block is destroyed.
+	bool FallDamage();
 
 	ushort X() const;
 	ushort Y() const;
 	ushort Z() const;
 
-	///Block's  action, called every game turn.
-	/**
-	 * Active::Act() should be mentioned in derived classes'
-	 * Act() (if reimplemented) before the end.
-	 * This makes common damage from falling.
-	 */
-	virtual void Act();
-	virtual bool ShouldAct() const;
+	virtual void ActFrequent();
+	virtual void ActRare();
+	virtual int ShouldAct() const;
 
 	int Movable() const;
 	virtual bool ShouldFall() const;
@@ -238,8 +240,8 @@ class Animal : public Active {
 	ushort Satiation() const;
 	virtual int Eat(Block * const)=0;
 
-	void Act();
-	bool ShouldAct() const;
+	void ActRare();
+	int  ShouldAct() const;
 
 	void SaveAttributes(QDataStream & out) const;
 
@@ -314,7 +316,6 @@ class Dwarf : public Animal, public Inventory {
 	int DamageKind() const;
 	ushort DamageLevel() const;
 
-	void Act();
 	int Eat(Block * to_eat);
 
 	Inventory * HasInventory();
@@ -364,8 +365,8 @@ class Pile : public Active, public Inventory {
 	usage_types Use();
 	float TrueWeight() const;
 
-	void Act();
-	bool ShouldAct() const;
+	void ActRare();
+	int  ShouldAct() const;
 
 	int BeforePush(int, Block * who);
 	int Drop(ushort n, Inventory * inv);
@@ -384,8 +385,8 @@ class Liquid : public Active {
 	bool CheckWater() const;
 
 	public:
-	void Act();
-	bool ShouldAct() const;
+	void ActRare();
+	int  ShouldAct() const;
 	int  Kind() const;
 	int  Movable() const;
 	int  Temperature() const;
@@ -401,8 +402,8 @@ class Grass : public Active {
 
 	public:
 	QString & FullName(QString & str) const;
-	void Act();
-	bool ShouldAct() const;
+	void ActRare();
+	int  ShouldAct() const;
 	int  Kind() const;
 	bool ShouldFall() const;
 	int BeforePush(int dir, Block * who);
@@ -423,8 +424,8 @@ class Bush : public Active, public Inventory {
 	int   Movable() const;
 	float TrueWeight() const;
 	bool  ShouldFall() const;
-	void  Act();
-	bool  ShouldAct() const;
+	void  ActRare();
+	int   ShouldAct() const;
 	int   BeforePush(int dir, Block * who);
 
 	QString & FullName(QString & str) const;
@@ -444,12 +445,13 @@ class Rabbit : public Animal {
 	float Attractive(int kind) const;
 
 	public:
-	QString & FullName(QString & str) const;
-	int Kind() const;
-	void Act();
+	int   Kind() const;
+	void  ActFrequent();
+	int   ShouldAct() const;
 	float TrueWeight() const;
-	int Eat(Block * to_eat);
+	int   Eat(Block * to_eat);
 	Block * DropAfterDamage() const;
+	QString & FullName(QString & str) const;
 
 	Rabbit(int sub=A_MEAT);
 	Rabbit(QDataStream & str, int sub);
@@ -487,8 +489,8 @@ class Door : public Active {
 	int movable;
 
 	public:
-	void Act();
-	bool ShouldAct() const;
+	void ActFrequent();
+	int  ShouldAct() const;
 	int  Kind() const;
 	int  Movable() const;
 	int  BeforePush(int dir, Block * who);
@@ -510,8 +512,8 @@ class Clock : public Active {
 
 	public:
 
-	void  Act();
-	bool  ShouldAct() const;
+	void  ActRare();
+	int   ShouldAct() const;
 	int   Kind() const;
 	int   Movable() const;
 	bool  ShouldFall() const;

@@ -403,9 +403,29 @@ void Screen::Print() {
 	const short dur=player->HP();
 	const short breath=player->Breath();
 	const short satiation=player->Satiation();
-	w->Unlock();
 
 	ushort i;
+	//quick inventory
+	Inventory * const inv=player->GetP()->HasInventory();
+	if ( inv ) {
+		for (i=0; i<inv->Size(); ++i) {
+			wstandend(hudWin);
+			const int x=36+i*2;
+			mvwaddch(hudWin, 0, x, 'a'+i);
+			if ( inv->Number(i) ) {
+				wcolor_set(hudWin,
+					Color( inv->GetInvKind(i),
+						inv->GetInvSub(i) ), NULL);
+				mvwaddch(hudWin, 1, x,
+					CharName( inv->GetInvKind(i),
+						inv->GetInvSub(i) ));
+				mvwprintw(hudWin, 2, x, "%hu", inv->Number(i));
+			}
+		}
+	}
+
+	w->Unlock();
+
 	//HitPoints line
 	werase(hudWin);
 	wstandend(hudWin);
@@ -459,25 +479,6 @@ void Screen::Print() {
 		} else if (SECONDS_IN_DAY/4>satiation) {
 			wcolor_set(hudWin, RED_BLACK, NULL);
 			waddstr(hudWin, "Hungry\n");
-		}
-	}
-
-	//quick inventory
-	Inventory * const inv=player->GetP()->HasInventory();
-	if ( inv ) {
-		for (i=0; i<inv->Size(); ++i) {
-			wstandend(hudWin);
-			const int x=36+i*2;
-			mvwaddch(hudWin, 0, x, 'a'+i);
-			if ( inv->Number(i) ) {
-				wcolor_set(hudWin,
-					Color( inv->GetInvKind(i),
-						inv->GetInvSub(i) ), NULL);
-				mvwaddch(hudWin, 1, x,
-					CharName( inv->GetInvKind(i),
-						inv->GetInvSub(i) ));
-				mvwprintw(hudWin, 2, x, "%hu", inv->Number(i));
-			}
 		}
 	}
 

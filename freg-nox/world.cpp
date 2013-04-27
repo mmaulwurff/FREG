@@ -434,7 +434,6 @@ void World::PhysEvents() {
 		}
 		deferredActionType=DEFERRED_NOTHING;
 	}
-
 	if ( toReSet ) {
 		emit StartReloadAll();
 		SaveAllShreds();
@@ -446,7 +445,6 @@ void World::PhysEvents() {
 		emit NeedPlayer(newX, newY, newZ);
 		emit FinishReloadAll();
 	}
-
 	/*static ulong global_step=0;
 	fprintf(stderr, "step: %lu\n", global_step);
 	++global_step;*/
@@ -454,14 +452,19 @@ void World::PhysEvents() {
 	const ushort start=numShreds/2-numActiveShreds/2;
 	const ushort end=start+numActiveShreds;
 	for (ushort i=start; i<end; ++i)
-	for (ushort j=start; j<end; ++j)
-		shreds[i+j*NumShreds()]->PhysEvents();
+	for (ushort j=start; j<end; ++j) {
+		shreds[i+j*NumShreds()]->PhysEventsFrequent();
+	}
 
 	static ushort timeStep=0;
 	if ( time_steps_in_sec>timeStep ) {
 		++timeStep;
 		Unlock();
 		return;
+	}
+	for (ushort i=start; i<end; ++i)
+	for (ushort j=start; j<end; ++j) {
+		shreds[i+j*NumShreds()]->PhysEventsRare();
 	}
 	timeStep=0;
 	++time;
@@ -558,12 +561,11 @@ int World::Move(
 		const quint8 dir)
 {
 	ushort newi, newj, newk;
-	short number_moves;
-	if (!Focus(i, j, k, newi, newj, newk, dir) &&
-			(number_moves=CanMove(i, j, k, newi, newj, newk, dir)))
+	if ( !Focus(i, j, k, newi, newj, newk, dir) &&
+			CanMove(i, j, k, newi, newj, newk, dir) )
 	{
 		NoCheckMove(i, j, k, newi, newj, newk, dir);
-		return ++number_moves;
+		return 1;
 	} else {
 		return 0;
 	}
@@ -663,7 +665,7 @@ void World::Jump(
 {
 	Block * const to_move=GetBlock(i, j, k);
 	if ( (AIR!=Sub(i, j, k-1) || !to_move->Weight()) ) {
-		const short k_plus=Move(i, j, k, (DOWN==dir) ? DOWN : UP)-1;
+		const short k_plus=Move(i, j, k, (DOWN==dir) ? DOWN : UP);
 		if ( k_plus > 0 ) {
 			k+=((DOWN==dir) ? (-1) : 1) * k_plus;
 			if ( !Move( i, j, k, dir) ) {

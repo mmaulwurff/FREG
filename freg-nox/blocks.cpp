@@ -418,8 +418,23 @@
 
 	Active * Active::ActiveBlock() { return this; }
 
-	void Active::SetNotFalling() { falling=false; }
+	void Active::SetFalling(const bool set) { falling=set; }
 	bool Active::IsFalling() const { return falling; }
+	bool Active::FallDamage() {
+		if ( fall_height > safe_fall_height ) {
+			const ushort dmg=(fall_height -
+				safe_fall_height)*10;
+			fall_height=0;
+			GetWorld()->
+				Damage(x_self, y_self, z_self-1, dmg);
+			emit Updated();
+			return GetWorld()->
+				Damage(x_self, y_self,z_self, dmg);
+		} else {
+			fall_height=0;
+			return false;
+		}
+	}
 
 	ushort Active::X() const { return x_self; }
 	ushort Active::Y() const { return y_self; }
@@ -440,7 +455,6 @@
 				return 0;
 		}
 		if ( DOWN==dir ) {
-			falling=true;
 			++fall_height;
 		} else if ( GetWorld()->
 				GetShred(x_self, y_self)!=whereShred )
@@ -454,39 +468,9 @@
 		return 0;
 	}
 
-	void Active::Act() {
-		if ( !falling && fall_height ) {
-			if ( fall_height > safe_fall_height ) {
-				const ushort dmg=(fall_height -
-					safe_fall_height)*10;
-				fall_height=0;
-				GetWorld()->Damage(x_self, y_self, z_self-1,
-					dmg);
-				if ( GetWorld()->Damage(
-						x_self, y_self,z_self, dmg) )
-				{
-					return;
-				} else {
-					emit Updated();
-				}
-			} else {
-				fall_height=0;
-			}
-		}
-	}
-	bool Active::ShouldAct() const { return false; }
-
-	bool Active::IsActiveTurn() {
-		//IDEA: make this in Shred and two functions in Active:
-		//ActFrequent and ActRare
-		if ( World::TimeStepsInSec() > timeStep ) {
-			++timeStep;
-			return false;
-		} else {
-			timeStep=0;
-			return true;
-		}
-	}
+	void Active::ActFrequent() {}
+	void Active::ActRare() {}
+	int  Active::ShouldAct() const { return NEVER; }
 
 	void Active::SendSignalAround(const QString & signal) const {
 		World * const world=GetWorld();
@@ -529,8 +513,9 @@
 	int Active::Damage(const ushort dmg, const int dmg_kind) {
 		const int last_dur=durability;
 		const int new_dur=Block::Damage(dmg, dmg_kind);
-		if ( last_dur != new_dur )
+		if ( last_dur != new_dur ) {
 			emit Updated();
+		}
 		return new_dur;
 	}
 
@@ -544,7 +529,7 @@
 	void Active::ReloadToEast()  { x_self-=SHRED_WIDTH; }
 
 	void Active::SaveAttributes(QDataStream & out) const {
-		out << timeStep << fall_height << falling;
+		out << timeStep << fall_height;
 	}
 
 	void Active::Register(
@@ -593,9 +578,10 @@
 			const quint8 transp) //see default in blocks.h
 		:
 			Block(str, sub, transp),
+			falling(false),
 			whereShred(0)
 	{
-		str >> timeStep >> fall_height >> falling;
+		str >> timeStep >> fall_height;
 	}
 
 	Active::~Active() {
@@ -604,10 +590,7 @@
 	}
 
 //Animal::
-	void Animal::Act() {
-		if ( !IsActiveTurn() ) {
-			return;
-		}
+	void Animal::ActRare() {
 		World * const world=GetWorld();
 		if (
 				AIR!=world->Sub(x_self, y_self, z_self+1) &&
@@ -645,9 +628,8 @@
 			++durability;
 		}
 		emit Updated();
-		Active::Act();
 	}
-	bool Animal::ShouldAct() const { return true; }
+	int Animal::ShouldAct() const { return RARE; }
 
 	ushort Animal::Breath() const { return breath; }
 
@@ -911,8 +893,6 @@
 			0 : InvWeightAll()+60;
 	}
 
-	void Dwarf::Act() { Animal::Act(); }
-
 	Block * Dwarf::DropAfterDamage() const {
 		return block_manager.NormalBlock(H_MEAT);
 	}
@@ -1075,11 +1055,12 @@
 		return NO_ACTION;
 	}
 
-	void Pile::Act() {
-		if ( ifToDestroy )
+	void Pile::ActRare() {
+		if ( ifToDestroy ) {
 			GetWorld()->Damage(x_self, y_self, z_self, 0, TIME);
+		}
 	}
-	bool Pile::ShouldAct() const { return true; }
+	int Pile::ShouldAct() const { return RARE; }
 
 	int Pile::Kind() const { return PILE; }
 
@@ -1130,10 +1111,7 @@
 				WATER==world->Sub(x_self, y_self, z_self+1));
 	}
 
-	void Liquid::Act() {
-		if ( !IsActiveTurn() ) {
-			return;
-		}
+	void Liquid::ActRare() {
 		World * const world=GetWorld();
 		//IDEA: turn off water drying up in ocean
 		if ( WATER==Sub() && !CheckWater() &&
@@ -1158,7 +1136,7 @@
 			default: return;
 		}
 	}
-	bool Liquid::ShouldAct() const  { return true; }
+	int Liquid::ShouldAct() const  { return RARE; }
 
 	int Liquid::Movable() const { return ENVIRONMENT; }
 
@@ -1194,10 +1172,7 @@
 	{}
 
 //Grass::
-	void Grass::Act() {
-		if ( !IsActiveTurn() ) {
-			return;
-		}
+	void Grass::ActRare() {
 		short i=x_self, j=y_self;
 		//increase this if grass grows too fast
 		switch ( rand()%(SECONDS_IN_HOUR*2) ) {
@@ -1220,7 +1195,7 @@
 						Sub()), i, j, z_self+1);
 		}
 	}
-	bool Grass::ShouldAct() const  { return true; }
+	int Grass::ShouldAct() const  { return RARE; }
 
 	QString & Grass::FullName(QString & str) const {
 		switch ( sub ) {
@@ -1263,11 +1238,12 @@
 
 	float Bush::TrueWeight() const { return InvWeightAll()+20; }
 
-	void Bush::Act() {
-		if ( 0==rand()%(SECONDS_IN_HOUR*4) )
+	void Bush::ActRare() {
+		if ( 0==rand()%(SECONDS_IN_HOUR*4) ) {
 			Get(block_manager.NormalBlock(HAZELNUT));
+		}
 	}
-	bool Bush::ShouldAct() const  { return true; }
+	int Bush::ShouldAct() const  { return RARE; }
 
 	int Bush::BeforePush(const int, Block * const who) {
 		Inventory::BeforePush(who);
@@ -1305,7 +1281,7 @@
 		}
 	}
 
-	void Rabbit::Act() {
+	void Rabbit::ActFrequent() {
 		World * const world=GetWorld();
 		float for_north=0, for_west=0;
 		ushort x, y, z;
@@ -1357,12 +1333,11 @@
 			for (z=z_self-1; z<=z_self+1; ++z)
 				if ( GREENERY==world->Sub(x, y, z) ) {
 					world->Eat(x_self, y_self, z_self, x, y, z);
-					Animal::Act();
 					return;
 				}
 		}
-		Animal::Act();
 	}
+	int Rabbit::ShouldAct() const { return FREQUENT_AND_RARE; }
 
 	Block * Rabbit::DropAfterDamage() const {
 		return block_manager.NormalBlock(A_MEAT);
@@ -1527,7 +1502,7 @@
 		return MOVE_SELF;
 	}
 
-	void Door::Act() {
+	void Door::ActFrequent() {
 		if ( shifted ) {
 			World * const world=GetWorld();
 			ushort x, y, z;
@@ -1542,7 +1517,7 @@
 			}
 		}
 	}
-	bool Door::ShouldAct() const  { return true; }
+	int Door::ShouldAct() const  { return FREQUENT; }
 
 	int Door::Kind() const { return locked ? LOCKED_DOOR : DOOR; }
 
@@ -1633,10 +1608,8 @@
 
 	int Clock::Movable() const { return NOT_MOVABLE; }
 
-	void Clock::Act() {
-		if ( !IsActiveTurn() ) {
-			return;
-		} else if ( alarmTime==GetWorld()->TimeOfDay() ) {
+	void Clock::ActRare() {
+		if ( alarmTime==GetWorld()->TimeOfDay() ) {
 			Use();
 		} else if ( timerTime > 0 ) {
 			--timerTime;
@@ -1647,7 +1620,7 @@
 			timerTime=-1;
 		}
 	}
-	bool Clock::ShouldAct() const  { return true; }
+	int Clock::ShouldAct() const  { return RARE; }
 
 	void Clock::Inscribe(const QString & str) {
 		Block::Inscribe(str);
