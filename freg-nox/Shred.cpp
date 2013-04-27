@@ -401,8 +401,9 @@ void Shred::PlantGrass() {
 	for (ushort j=0; j<SHRED_WIDTH; ++j) {
 		ushort k;
 		for (k=HEIGHT-2; Transparent(i, j, k); --k);
-		if ( SOIL==Sub(i, j, k++) && AIR==Sub(i, j, k) )
+		if ( SOIL==Sub(i, j, k++) && AIR==Sub(i, j, k) ) {
 			SetNewBlock(GRASS, GREENERY, i, j, k);
+		}
 	}
 }
 
@@ -445,31 +446,32 @@ void Shred::TestShred() {
 }
 
 void Shred::NullMountain() {
-	ushort i, j, k;
-	for (i=0; i<SHRED_WIDTH; ++i)
-	for (j=0; j<SHRED_WIDTH; ++j) {
-		for (k=1; k<HEIGHT/2; ++k)
+	for (ushort i=0; i<SHRED_WIDTH; ++i)
+	for (ushort j=0; j<SHRED_WIDTH; ++j) {
+		ushort k;
+		for (k=1; k<HEIGHT/2; ++k) {
 			PutNormalBlock(NULLSTONE, i, j, k);
-		for ( ; k<HEIGHT-1; ++k)
-			if (i==4 || i==5 || j==4 || j==5)
+		}
+		for ( ; k<HEIGHT-1; ++k) {
+			if (i==4 || i==5 || j==4 || j==5) {
 				PutNormalBlock(NULLSTONE, i, j, k);
+			}
+		}
 	}
 }
 
 void Shred::Plain() {
 	NormalUnderground();
 	ushort i, num, x, y;
-
 	//bush
 	num=rand()%4;
 	for (i=0; i<=num; ++i) {
 		x=rand()%SHRED_WIDTH;
 		y=rand()%SHRED_WIDTH;
 		if ( AIR==Sub(x, y, HEIGHT/2) ) {
-			SetNewBlock(BUSH, WOOD, 0, 0, 0);
+			SetNewBlock(BUSH, WOOD, x, y, HEIGHT/2);
 		}
 	}
-
 	//rabbits
 	num=rand()%4;
 	for (i=0; i<=num; ++i) {
@@ -479,26 +481,24 @@ void Shred::Plain() {
 			SetNewBlock(RABBIT, A_MEAT, x, y, HEIGHT/2);
 		}
 	}
-
 	PlantGrass();
 }
 
 void Shred::Forest(const long longi, const long lati) {
 	NormalUnderground();
-
 	long i, j;
 	ushort number_of_trees=0;
 	for (i=longi-1; i<=longi+1; ++i)
-	for (j=lati-1;  j<=lati+1;  ++j)
-		if ( '%'==TypeOfShred(i, j) )
+	for (j=lati-1;  j<=lati+1;  ++j) {
+		if ( '%'==TypeOfShred(i, j) ) {
 			++number_of_trees;
-
+		}
+	}
 	for (i=0; i<number_of_trees; ++i) {
-		short x=rand()%(SHRED_WIDTH-2),
-		      y=rand()%(SHRED_WIDTH-2);
+		short x=rand()%(SHRED_WIDTH-2);
+		short y=rand()%(SHRED_WIDTH-2);
 		Tree(x, y, HEIGHT/2, 4+rand()%5);
 	}
-
 	PlantGrass();
 }
 
@@ -506,10 +506,11 @@ void Shred::Water(const long longi, const long lati) {
 	ushort depth=1;
 	char map[3][3];
 	for (long i=longi-1; i<=longi+1; ++i)
-	for (long j=lati-1;  j<=lati+1;  ++j)
-		if ( '~'==(map[i-longi+1][j-lati+1]=TypeOfShred(i, j)) )
+	for (long j=lati-1;  j<=lati+1;  ++j) {
+		if ( '~'==(map[i-longi+1][j-lati+1]=TypeOfShred(i, j)) ) {
 			++depth;
-
+		}
+	}
 	NormalUnderground(depth);
 	ushort i, j, k;
 
@@ -555,16 +556,15 @@ void Shred::Water(const long longi, const long lati) {
 	}
 	for (i=0; i<SHRED_WIDTH; ++i)
 	for (j=0; j<SHRED_WIDTH; ++j)
-	for (k=HEIGHT/2-depth; k<HEIGHT/2; ++k)
+	for (k=HEIGHT/2-depth; k<HEIGHT/2; ++k) {
 		if ( AIR==Sub(i, j, k) ) {
 			SetNewBlock(LIQUID, WATER, i, j, k);
 		}
-
+	}
 	PlantGrass();
 }
 
-void Shred::Pyramid()
-{
+void Shred::Pyramid() {
 	//pyramid by Panzerschrek
 	//'p' - pyramid symbol
 	NormalUnderground();
@@ -663,23 +663,26 @@ bool Shred::Tree(
 			SHRED_WIDTH<=y+2 ||
 			HEIGHT-1<=z+height ||
 			height<2 )
+	{
 		return false;
-
+	}
 	ushort i, j, k;
 	for (i=x; i<=x+2; ++i)
 	for (j=y; j<=y+2; ++j)
-	for (k=z; k<z+height; ++k)
-		if ( AIR!=Sub(i, j, k) )
+	for (k=z; k<z+height; ++k) {
+		if ( AIR!=Sub(i, j, k) ) {
 			return false;
-
-	for (k=z; k<z+height-1; ++k) //trunk
+		}
+	}
+	for (k=z; k<z+height-1; ++k) { //trunk
 		PutNormalBlock(WOOD, x+1, y+1, k);
-
+	}
 	for (i=x; i<=x+2; ++i) //leaves
 	for (j=y; j<=y+2; ++j)
-	for (k=z+height/2; k<z+height; ++k)
-		if ( AIR==Sub(i, j, k) )
+	for (k=z+height/2; k<z+height; ++k) {
+		if ( AIR==Sub(i, j, k) ) {
 			PutNormalBlock(GREENERY, i, j, k);
-
+		}
+	}
 	return true;
 }
