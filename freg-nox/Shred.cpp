@@ -86,7 +86,7 @@ Shred::Shred(
 			PutNormalBlock(AIR, i, j, k);
 			lightMap[i][j][k]=0;
 		}
-		PutNormalBlock(( (rand()%5) ? SKY : STAR ), i, j, HEIGHT-1);
+		PutNormalBlock(( (qrand()%5) ? SKY : STAR ), i, j, HEIGHT-1);
 		lightMap[i][j][HEIGHT-1]=MAX_LIGHT_RADIUS;
 	}
 	switch ( TypeOfShred(longi, lati) ) {
@@ -369,7 +369,7 @@ void Shred::NormalUnderground(const ushort depth) {
 		ushort k;
 		for (k=1; k<HEIGHT/2-6 && k<HEIGHT/2-depth-1; ++k)
 			PutNormalBlock(STONE, i, j, k);
-		PutNormalBlock(((rand()%2) ? STONE : SOIL), i, j, k);
+		PutNormalBlock(((qrand()%2) ? STONE : SOIL), i, j, k);
 		for (++k; k<HEIGHT/2-depth; ++k)
 			PutNormalBlock(SOIL, i, j, k);
 	}
@@ -443,19 +443,19 @@ void Shred::Plain() {
 	NormalUnderground();
 	ushort i, num, x, y;
 	//bush
-	num=rand()%4;
+	num=qrand()%4;
 	for (i=0; i<=num; ++i) {
-		x=rand()%SHRED_WIDTH;
-		y=rand()%SHRED_WIDTH;
+		x=qrand()%SHRED_WIDTH;
+		y=qrand()%SHRED_WIDTH;
 		if ( AIR==Sub(x, y, HEIGHT/2) ) {
 			SetNewBlock(BUSH, WOOD, x, y, HEIGHT/2);
 		}
 	}
 	//rabbits
-	num=rand()%4;
+	num=qrand()%4;
 	for (i=0; i<=num; ++i) {
-		x=rand()%SHRED_WIDTH;
-		y=rand()%SHRED_WIDTH;
+		x=qrand()%SHRED_WIDTH;
+		y=qrand()%SHRED_WIDTH;
 		if ( AIR==Sub(x, y, HEIGHT/2) ) {
 			SetNewBlock(RABBIT, A_MEAT, x, y, HEIGHT/2);
 		}
@@ -474,9 +474,9 @@ void Shred::Forest(const long longi, const long lati) {
 		}
 	}
 	for (i=0; i<number_of_trees; ++i) {
-		short x=rand()%(SHRED_WIDTH-2);
-		short y=rand()%(SHRED_WIDTH-2);
-		Tree(x, y, HEIGHT/2, 4+rand()%5);
+		short x=qrand()%(SHRED_WIDTH-2);
+		short y=qrand()%(SHRED_WIDTH-2);
+		Tree(x, y, HEIGHT/2, 4+qrand()%5);
 	}
 	PlantGrass();
 }
@@ -626,8 +626,8 @@ void Shred::Mountain() {
 	PutNormalBlock(AIR, 6, 2, HEIGHT/2+1);
 
 	//блок из дерева появится с вероятностью 1/2.
-	//Если rand()%3 - с вероятностью 2/3 и т.д.
-	if ( rand()%2 ) {
+	//Если qrand()%3 - с вероятностью 2/3 и т.д.
+	if ( qrand()%2 ) {
 		PutNormalBlock(WOOD, 7, 7, HEIGHT/2);
 	}
 }

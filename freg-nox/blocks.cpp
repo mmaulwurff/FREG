@@ -1119,7 +1119,7 @@
 		{
 			return;
 		}
-		switch ( rand()%20 ) {
+		switch ( qrand()%20 ) {
 			case 0:
 				world->Move(x_self, y_self, z_self, NORTH);
 			break;
@@ -1174,7 +1174,7 @@
 	void Grass::ActRare() {
 		short i=x_self, j=y_self;
 		//increase this if grass grows too fast
-		switch ( rand()%(SECONDS_IN_HOUR*2) ) {
+		switch ( qrand()%(SECONDS_IN_HOUR*2) ) {
 			case 0: ++i; break;
 			case 1: --i; break;
 			case 2: ++j; break;
@@ -1238,7 +1238,7 @@
 	float Bush::TrueWeight() const { return InvWeightAll()+20; }
 
 	void Bush::ActRare() {
-		if ( 0==rand()%(SECONDS_IN_HOUR*4) ) {
+		if ( 0==qrand()%(SECONDS_IN_HOUR*4) ) {
 			Get(block_manager.NormalBlock(HAZELNUT));
 		}
 	}
@@ -1303,11 +1303,11 @@
 			SetDir( ( abs(for_north)>abs(for_west) ) ?
 				( ( for_north>0 ) ? NORTH : SOUTH ) :
 				( ( for_west >0 ) ? WEST  : EAST  ) );
-			if ( rand()%2 )
+			if ( qrand()%2 )
 				world->Move(x_self, y_self, z_self, direction);
 			else
 				world->Jump(x_self, y_self, z_self);
-		} else switch ( rand()%60 ) {
+		} else switch ( qrand()%60 ) {
 				case 0:
 					SetDir(NORTH);
 					world->Move(x_self, y_self, z_self, NORTH);
