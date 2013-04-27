@@ -460,9 +460,8 @@
 				GetShred(x_self, y_self)!=whereShred )
 		{
 			whereShred->RemActive(this);
-			whereShred=GetWorld()->
-				GetShred(x_self, y_self);
-			whereShred->AddActive(this);
+			(whereShred=GetWorld()->GetShred(x_self, y_self))->
+				AddActive(this);
 		}
 		emit Moved(dir);
 		return 0;
@@ -1337,7 +1336,7 @@
 				}
 		}
 	}
-	int Rabbit::ShouldAct() const { return FREQUENT_AND_RARE; }
+	int Rabbit::ShouldAct() const { return FREQUENT; }
 
 	Block * Rabbit::DropAfterDamage() const {
 		return block_manager.NormalBlock(A_MEAT);

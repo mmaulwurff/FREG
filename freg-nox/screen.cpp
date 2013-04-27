@@ -768,7 +768,7 @@ Screen::Screen(
 	command   =sett.value("last_command", "hello").toString();
 
 	addstr("Press any key.");
-	getch();
+	qsrand(getch());
 	Notify("Game started.");
 
 	input=new IThread(this);

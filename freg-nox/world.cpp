@@ -33,10 +33,7 @@
     #include <cmath>
 #endif
 
-void World::ReplaceWithNormal(
-		const ushort x,
-		const ushort y,
-		const ushort z)
+void World::ReplaceWithNormal(const ushort x, const ushort y, const ushort z)
 {
 	SetBlock(ReplaceWithNormal(GetBlock(x, y, z)), x, y, z);
 }
@@ -67,13 +64,9 @@ ushort World::SunMoonX() const {
 }
 
 float World::Distance(
-		const ushort x_from,
-		const ushort y_from,
-		const ushort z_from,
-		const ushort x_to,
-		const ushort y_to,
-		const ushort z_to) const
-{
+		const ushort x_from, const ushort y_from, const ushort z_from,
+		const ushort x_to,   const ushort y_to,   const ushort z_to)
+const {
 	return sqrt( float((x_from-x_to)*(x_from-x_to)+
 			   (y_from-y_to)*(y_from-y_to)+
 			   (z_from-z_to)*(z_from-z_to)) );
@@ -174,10 +167,8 @@ quint8 World::TurnLeft(const quint8 dir) {
 	}
 }
 quint8 World::MakeDir(
-		const ushort x_center,
-		const ushort y_center,
-		const ushort x_target,
-		const ushort y_target) const
+		const ushort x_center, const ushort y_center,
+		const ushort x_target, const ushort y_target) const
 {
 	//if (x_center==x_target && y_center==y_target) return HERE;
 	if ( abs(x_center-x_target)<=1 && abs(y_center-y_target)<=1 )
@@ -200,28 +191,21 @@ void World::MakeSun() {
 	PutNormalBlock(SUN_MOON, sun_moon_x, SHRED_WIDTH*numShreds/2, HEIGHT-1);
 }
 
-Block * World::GetBlock(
-		const ushort x,
-		const ushort y,
-		const ushort z) const
-{
+Block * World::GetBlock(const ushort x, const ushort y, const ushort z)
+const {
 	return GetShred(x, y)->GetBlock(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 
 void World::SetBlock(
 		Block * const block,
-		const ushort x,
-		const ushort y,
-		const ushort z)
+		const ushort x, const ushort y, const ushort z)
 {
 	GetShred(x, y)->SetBlock(block, x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 
 void World::PutBlock(
 		Block * const block,
-		const ushort x,
-		const ushort y,
-		const ushort z)
+		const ushort x, const ushort y, const ushort z)
 {
 	GetShred(x, y)->
 		PutBlock(block, x%SHRED_WIDTH, y%SHRED_WIDTH, z);
@@ -229,9 +213,7 @@ void World::PutBlock(
 
 void World::PutNormalBlock(
 		const subs sub,
-		const ushort x,
-		const ushort y,
-		const ushort z)
+		const ushort x, const ushort y, const ushort z)
 {
 	PutBlock(Normal(sub), x, y, z);
 }
@@ -279,9 +261,8 @@ void World::ReloadShreds(const int direction) {
 			for (x=0; x<numShreds; ++x) {
 				delete shreds[numShreds*(numShreds-1)+x];
 				for (y=numShreds-2; y>=0; --y) {
-					shreds[(y+1)*numShreds+x]=
-						shreds[y*numShreds+x];
-					shreds[(y+1)*numShreds+x]->
+					(shreds[(y+1)*numShreds+x]=
+						shreds[y*numShreds+x])->
 						ReloadToNorth();
 				}
 				shreds[x]=new Shred(this, x, 0,
@@ -294,9 +275,8 @@ void World::ReloadShreds(const int direction) {
 			for (x=0; x<numShreds; ++x) {
 				delete shreds[x];
 				for (y=1; y<numShreds; ++y) {
-					shreds[(y-1)*numShreds+x]=
-						shreds[y*numShreds+x];
-					shreds[(y-1)*numShreds+x]->
+					(shreds[(y-1)*numShreds+x]=
+						shreds[y*numShreds+x])->
 						ReloadToSouth();
 				}
 				shreds[numShreds*(numShreds-1)+x]=new
@@ -310,9 +290,8 @@ void World::ReloadShreds(const int direction) {
 			for (y=0; y<numShreds; ++y) {
 				delete shreds[y*numShreds];
 				for (x=1; x<numShreds; ++x) {
-					shreds[(x-1)+y*numShreds]=
-						shreds[x+y*numShreds];
-					shreds[(x-1)+y*numShreds]->
+					(shreds[(x-1)+y*numShreds]=
+						shreds[x+y*numShreds])->
 						ReloadToEast();
 				}
 				shreds[numShreds-1+y*numShreds]=new
@@ -326,9 +305,8 @@ void World::ReloadShreds(const int direction) {
 			for (y=0; y<numShreds; ++y) {
 				delete shreds[numShreds-1+y*numShreds];
 				for (x=numShreds-2; x>=0; --x) {
-					shreds[(x+1)+y*numShreds]=
-						shreds[x+y*numShreds];
-					shreds[(x+1)+y*numShreds]->
+					(shreds[(x+1)+y*numShreds]=
+						shreds[x+y*numShreds])->
 						ReloadToWest();
 				}
 				shreds[y*numShreds]=new Shred(this, 0, y,
@@ -787,11 +765,7 @@ bool World::Damage(
 	return true;
 }
 
-int World::Use(
-		const ushort i,
-		const ushort j,
-		const ushort k)
-{
+int World::Use(const ushort i, const ushort j, const ushort k) {
 	if ( !InBounds(i, j, k) )
 		return false;
 
@@ -800,11 +774,8 @@ int World::Use(
 
 int World::Build(
 		Block * const block,
-		const ushort i,
-		const ushort j,
-		const ushort k,
-		const quint8 dir,
-		Block * const who) //see default in class world.h
+		const ushort i, const ushort j, const ushort k,
+		const quint8 dir, Block * const who) //defaults exist
 {
 	if ( !InBounds(i, j, k) || AIR!=Sub(i, j, k)  ) {
 		if ( who ) {
@@ -827,11 +798,7 @@ int World::Build(
 	return 0;
 }
 
-void World::Inscribe(
-		const ushort i,
-		const ushort j,
-		const ushort k)
-{
+void World::Inscribe(const ushort i, const ushort j, const ushort k) {
 	if ( !InBounds(i, j, k) ) {
 		return;
 	}
@@ -846,12 +813,8 @@ void World::Inscribe(
 }
 
 void World::Eat(
-		const ushort i,
-		const ushort j,
-		const ushort k,
-		const ushort i_food,
-		const ushort j_food,
-		const ushort k_food)
+		const ushort i,      const ushort j,      const ushort k,
+		const ushort i_food, const ushort j_food, const ushort k_food)
 {
 	if ( !InBounds(i, j, k) || !InBounds(i_food, j_food, k_food) )
 		return;
@@ -860,12 +823,8 @@ void World::Eat(
 }
 
 int World::Exchange(
-		const ushort i_from,
-		const ushort j_from,
-		const ushort k_from,
-		const ushort i_to,
-		const ushort j_to,
-		const ushort k_to,
+		const ushort i_from, const ushort j_from, const ushort k_from,
+		const ushort i_to,   const ushort j_to,   const ushort k_to,
 		const ushort num)
 {
 	Inventory * const inv_from=HasInventory(i_from, j_from, k_from);
@@ -888,11 +847,7 @@ int World::Exchange(
 	return inv_from->Drop(num, inv_to);
 }
 
-int World::GetAll(
-		const ushort x_to,
-		const ushort y_to,
-		const ushort z_to)
-{
+int World::GetAll(const ushort x_to, const ushort y_to, const ushort z_to) {
 	ushort x_from, y_from, z_from;
 	if ( Focus(x_to, y_to, z_to, x_from, y_from, z_from) )
 		return 5;
@@ -904,78 +859,45 @@ int World::GetAll(
 }
 
 QString & World::FullName(QString & str,
-		const ushort i,
-		const ushort j,
-		const ushort k) const
-{
+		const ushort i, const ushort j, const ushort k)
+const {
 	if ( InBounds(i, j, k) )
 		str=GetBlock(i, j, k)->FullName(str);
 	return str;
 }
 
-int World::Transparent(
-		const ushort x,
-		const ushort y,
-		const ushort z) const
-{
-	return GetShred(x, y)->
-		Transparent(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
+int World::Transparent(const ushort x, const ushort y, const ushort z) const {
+	return GetShred(x, y)->Transparent(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
-int World::Durability(
-		const ushort x,
-		const ushort y,
-		const ushort z) const
-{
+int World::Durability(const ushort x, const ushort y, const ushort z) const {
 	return GetShred(x, y)->
 		Durability(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
-int World::Kind(
-		const ushort x,
-		const ushort y,
-		const ushort z) const
-{
+int World::Kind(const ushort x, const ushort y, const ushort z) const {
 	return GetShred(x, y)->
 		Kind(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
-int World::Sub(
-		const ushort x,
-		const ushort y,
-		const ushort z) const
-{
+int World::Sub(const ushort x, const ushort y, const ushort z) const {
 	return GetShred(x, y)->
 		Sub(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
-int World::Movable(
-		const ushort x,
-		const ushort y,
-		const ushort z) const
-{
+int World::Movable(const ushort x, const ushort y, const ushort z) const {
 	return GetShred(x, y)->
 		Movable(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
-float World::Weight(
-		const ushort x,
-		const ushort y,
-		const ushort z) const
-{
+float World::Weight(const ushort x, const ushort y, const ushort z) const {
 	return GetShred(x, y)->Weight(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 
-Inventory * World::HasInventory(
-		const ushort i,
-		const ushort j,
-		const ushort k) const
-{
+Inventory * World::HasInventory(const ushort i, const ushort j, const ushort k)
+const {
 	return ( InBounds(i, j, k) ) ?
 		GetBlock(i, j, k)->HasInventory() :
 		NULL;
 }
 
-Active * World::ActiveBlock(
-		const ushort i,
-		const ushort j,
-		const ushort k) const
-{
+Active * World::ActiveBlock(const ushort i, const ushort j, const ushort k)
+const {
 	return ( InBounds(i, j, k) ) ?
 		GetBlock(i, j, k)->ActiveBlock() :
 		0;
@@ -984,8 +906,8 @@ Active * World::ActiveBlock(
 int World::Temperature(
 		const ushort i_center,
 		const ushort j_center,
-		const ushort k_center) const
-{
+		const ushort k_center)
+const {
 	if ( !InBounds(i_center, j_center, k_center) ||
 			HEIGHT-1==k_center )
 		return 0;
@@ -1006,8 +928,8 @@ int World::Temperature(
 QString & World::GetNote(QString & str,
 		const ushort i,
 		const ushort j,
-		const ushort k) const
-{
+		const ushort k)
+const {
 	return str=( InBounds(i, j, k)  ) ?
 		GetBlock(i, j, k)->GetNote(str) :
 		"";
@@ -1057,8 +979,7 @@ void World::SetNumActiveShreds(ushort num) {
 	Unlock();
 }
 
-World::World(const QString & world_name)
-		:
+World::World(const QString & world_name) :
 		worldName(world_name),
 		cleaned(false),
 		toReSet(false),
@@ -1110,11 +1031,11 @@ World::World(const QString & world_name)
 			"numActiveShreds (%hu) was more than numShreds\n",
 			numActiveShreds);
 		numActiveShreds=numShreds;
-	} else if ( numActiveShreds < 1 ) {
+	} else if ( numActiveShreds < 3 ) {
 		fprintf(stderr,
-			"Active shreds number (%hu) too small. Set to 1.\n",
+			"Active shreds number (%hu) too small. Set to 3.\n",
 			numActiveShreds);
-		numActiveShreds=1;
+		numActiveShreds=3;
 	}
 
 	LoadAllShreds();

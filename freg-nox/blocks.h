@@ -41,10 +41,9 @@ enum before_push_action {
 }; //enum before_push_action
 
 enum ACTIVE_FREQUENCY {
-	FREQUENT_AND_RARE,
+	NEVER,
 	FREQUENT,
-	RARE,
-	NEVER
+	RARE
 }; //enum ACTIVE_FREQUENCY
 
 class Block { //blocks without special physics and attributes

@@ -22,7 +22,8 @@
 #include "world.h"
 #include "BlockManager.h"
 
-const int datastream_version=QDataStream::Qt_4_6; //Qt version in Debian stable now.
+//Qt version in Debian stable now.
+const int datastream_version=QDataStream::Qt_4_6;
 
 long Shred::Longitude() const { return longitude; }
 long Shred::Latitude()  const { return latitude; }
@@ -49,7 +50,8 @@ int Shred::LoadShred(QFile & file) {
 			PutNormalBlock(NULLSTONE, i, j, 0);
 			lightMap[i][j][0]=0;
 			for (ushort k=1; k<HEIGHT; ++k) {
-				SetBlock(block_manager.BlockFromFile(in), i, j, k);
+				SetBlock(block_manager.BlockFromFile(in),
+					i, j, k);
 				lightMap[i][j][k]=0;
 			}
 			lightMap[i][j][HEIGHT-1]=MAX_LIGHT_RADIUS;
@@ -77,7 +79,6 @@ Shred::Shred(
 	if ( file.open(QIODevice::ReadOnly) && !LoadShred(file) ) {
 		return;
 	}
-
 	for (ushort i=0; i<SHRED_WIDTH; ++i)
 	for (ushort j=0; j<SHRED_WIDTH; ++j) {
 		PutNormalBlock(NULLSTONE, i, j, 0);
@@ -88,7 +89,6 @@ Shred::Shred(
 		PutNormalBlock(( (rand()%5) ? SKY : STAR ), i, j, HEIGHT-1);
 		lightMap[i][j][HEIGHT-1]=MAX_LIGHT_RADIUS;
 	}
-
 	switch ( TypeOfShred(longi, lati) ) {
 		case '#': NullMountain(); break;
 		case '.': Plain(); break;
@@ -240,14 +240,11 @@ float Shred::Weight(
 
 void Shred::AddActive(Active * const active) {
 	switch ( active->ShouldAct() ) {
-		case FREQUENT_AND_RARE:
+		case FREQUENT:
 			activeListFrequent.append(active);
 		//no break;
 		case RARE:
 			activeListRare.append(active);
-		break;
-		case FREQUENT:
-			activeListFrequent.append(active);
 		break;
 		default: break;
 	}
@@ -282,46 +279,31 @@ void Shred::AddFalling(
 }
 
 void Shred::ReloadToNorth() {
-	for (ushort i=0; i<activeListFrequent.size(); ++i) {
-		activeListFrequent[i]->ReloadToNorth();
-	}
 	for (ushort i=0; i<activeListRare.size(); ++i) {
 		activeListRare[i]->ReloadToNorth();
 	}
 	++shredY;
 }
 void Shred::ReloadToEast() {
-	for (ushort i=0; i<activeListFrequent.size(); ++i) {
-		activeListFrequent[i]->ReloadToEast();
-	}
 	for (ushort i=0; i<activeListRare.size(); ++i) {
 		activeListRare[i]->ReloadToEast();
 	}
 	--shredX;
 }
 void Shred::ReloadToSouth() {
-	for (ushort i=0; i<activeListFrequent.size(); ++i) {
-		activeListFrequent[i]->ReloadToSouth();
-	}
 	for (ushort i=0; i<activeListRare.size(); ++i) {
 		activeListRare[i]->ReloadToSouth();
 	}
 	--shredY;
 }
 void Shred::ReloadToWest() {
-	for (ushort i=0; i<activeListFrequent.size(); ++i) {
-		activeListFrequent[i]->ReloadToWest();
-	}
 	for (ushort i=0; i<activeListRare.size(); ++i) {
 		activeListRare[i]->ReloadToWest();
 	}
 	++shredX;
 }
 
-Block * Shred::GetBlock(
-		const ushort x,
-		const ushort y,
-		const ushort z)
+Block * Shred::GetBlock(const ushort x, const ushort y, const ushort z)
 const {
 	return blocks[x][y][z];
 }
@@ -361,10 +343,7 @@ QString Shred::FileName() const {
 		QString::number(latitude);
 }
 
-char Shred::TypeOfShred(
-		const long longi,
-		const long lati) const
-{
+char Shred::TypeOfShred(const long longi, const long lati) const {
 	const long mapSize=world->MapSize();
 	if (
 			longi >= mapSize || longi < 0 ||
@@ -654,9 +633,7 @@ void Shred::Mountain() {
 }
 
 bool Shred::Tree(
-		const ushort x,
-		const ushort y,
-		const ushort z,
+		const ushort x, const ushort y, const ushort z,
 		const ushort height)
 {
 	if ( SHRED_WIDTH<=x+2 ||
