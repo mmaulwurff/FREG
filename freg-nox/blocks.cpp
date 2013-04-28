@@ -25,7 +25,7 @@
 
 //Block::
 	QString & Block::FullName(QString & str) const {
-		switch (sub) {
+		switch ( sub ) {
 			case STAR: case SUN_MOON: case SKY:
 			case AIR:        return str="Air";
 			case WATER:      return str="Ice";
@@ -41,6 +41,7 @@
 			case A_MEAT:     return str="Animal meat";
 			case H_MEAT:     return str="Not animal meat";
 			case IRON:       return str="Iron block";
+			case SAND:       return str="Sandstone";
 			default:
 				fprintf(stderr,
 					"Block::FullName: unlisted sub: %d.\n",

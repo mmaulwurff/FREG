@@ -161,10 +161,18 @@ char Screen::CharName(const int kind, const int sub) const {
 			case IRON:  return '/';
 			default:
 				fprintf(stderr,
-					"Screen::CharName: unlisted sub: \
-					%d\n",
+					"Screen::CharName: unlisted weapon \
+					sub: %d\n",
 					sub);
 				return '.';
+		}
+		case ACTIVE: switch ( sub ) {
+			case SAND: return '.';
+			default:
+				fprintf(stderr,
+					"Screen::CharName: unlisted active \
+					sub: %d\n",
+					sub);
 		}
 		default: switch ( sub ) {
 			case NULLSTONE: case MOSS_STONE: case WOOD:
@@ -175,7 +183,7 @@ char Screen::CharName(const int kind, const int sub) const {
 			case AIR:   return ' ';
 			case STAR:  return '.';
 			case WATER: return '~';
-			case SAND:
+			case SAND:  return '#';
 			case SOIL:  return '.';
 			case GREENERY: return '%';
 			case ROSE:  return ';';
