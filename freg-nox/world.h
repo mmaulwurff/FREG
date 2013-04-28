@@ -49,6 +49,7 @@ class World : public QThread {
 	static const ushort time_steps_in_sec=10;
 
 	ulong time;
+	ushort timeStep;
 	Shred ** shreds;
 	//center of active zone, longitude is y, latitude is x
 	long longitude, latitude;
@@ -206,6 +207,7 @@ class World : public QThread {
 	///This returns seconds from start of current day.
 	int TimeOfDay() const;
 	ulong Time() const;
+	ushort MiniTime() const;
 
 	//interactions section
 	public:

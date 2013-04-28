@@ -82,6 +82,7 @@ times_of_day World::PartOfDay() const {
 
 int World::TimeOfDay() const { return time % SECONDS_IN_DAY; }
 ulong World::Time() const { return time; }
+ushort World::MiniTime() const { return timeStep; }
 
 int World::Drop(
 		const ushort i, const ushort j,	const ushort k,
@@ -444,7 +445,6 @@ void World::PhysEvents() {
 		shreds[i+j*NumShreds()]->PhysEventsFrequent();
 	}
 
-	static ushort timeStep=0;
 	if ( time_steps_in_sec > timeStep ) {
 		++timeStep;
 		Unlock();
@@ -762,7 +762,7 @@ bool World::Damage(
 
 int World::Use(const ushort i, const ushort j, const ushort k) {
 	return ( !InBounds(i, j, k) ) ?
-		false :
+		NO :
 		GetBlock(i, j, k)->Use();
 }
 
@@ -985,6 +985,7 @@ void World::SetNumActiveShreds(ushort num) {
 }
 
 World::World(const QString & world_name) :
+		timeStep(0),
 		worldName(world_name),
 		cleaned(false),
 		toReSet(false),
