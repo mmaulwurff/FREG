@@ -31,31 +31,20 @@
 const uchar FIRE_LIGHT_FACTOR=4;
 
 //private
-uchar World::LightRadius(
-		const ushort x,
-		const ushort y,
-		const ushort z) const
-{
-	return GetShred(x, y)->
-		LightRadius(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
+uchar World::LightRadius(const ushort x, const ushort y, const ushort z)
+const {
+	return GetShred(x, y)->LightRadius(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 
 //private. use Enlightened instead, which is smart wrapper of this.
-uchar World::LightMap(
-		const ushort x,
-		const ushort y,
-		const ushort z) const
-{
-	return GetShred(x, y)->
-		LightMap(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
+uchar World::LightMap(const ushort x, const ushort y, const ushort z)
+const {
+	return GetShred(x, y)->LightMap(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 
 //private
-bool World::SetLightMap(
-		const uchar level,
-		const ushort x,
-		const ushort y,
-		const ushort z)
+bool World::SetLightMap(const uchar level,
+		const ushort x, const ushort y, const ushort z)
 {
 	return GetShred(x, y)->
 		SetLightMap(level, x%SHRED_WIDTH, y%SHRED_WIDTH, z);
@@ -64,9 +53,7 @@ bool World::SetLightMap(
 //private. make block emit shining
 //receives only non-sun light, from 0 to F
 void World::Shine(
-		const ushort i,
-		const ushort j,
-		const ushort k,
+		const ushort i, const ushort j, const ushort k,
 		const uchar level,
 		const bool init) //see default in class
 {
@@ -92,10 +79,7 @@ void World::Shine(
 }
 
 //private
-void World::SunShine(
-		const ushort i,
-		const ushort j)
-{
+void World::SunShine(const ushort i, const ushort j) {
 	ushort light_lev=MAX_LIGHT_RADIUS;
 	ushort k=HEIGHT-2;
 	ushort transparent;
@@ -113,11 +97,7 @@ void World::SunShine(
 }
 
 //private. called when onet block is moved, built, or destroyed.
-void World::ReEnlighten(
-		const ushort i,
-		const ushort j,
-		const ushort k)
-{
+void World::ReEnlighten(const ushort i, const ushort j, const ushort k) {
 	SunShine(i, j);
 	Shine(i, j, k, LightRadius(i, j, k), true);
 	emit Updated(i, j, k);
@@ -173,14 +153,18 @@ void World::ReEnlightenMove(const int dir) {
 		break;
 		case SOUTH:
 			for (ushort i=0; i<NumShreds(); ++i) {
-				shreds[i+NumShreds()*(NumShreds()-1)]->ShineAll();
-				shreds[i+NumShreds()*(NumShreds()-2)]->ShineAll();
+				shreds[i+NumShreds()*(NumShreds()-1)]->
+					ShineAll();
+				shreds[i+NumShreds()*(NumShreds()-2)]->
+					ShineAll();
 			}
 		break;
 		case EAST:
 			for (ushort i=0; i<NumShreds(); ++i) {
-				shreds[NumShreds()*i+NumShreds()-1]->ShineAll();
-				shreds[NumShreds()*i+NumShreds()-2]->ShineAll();
+				shreds[NumShreds()*i+NumShreds()-1]->
+					ShineAll();
+				shreds[NumShreds()*i+NumShreds()-2]->
+					ShineAll();
 			}
 		break;
 		case WEST:
@@ -191,17 +175,15 @@ void World::ReEnlightenMove(const int dir) {
 		break;
 		default:
 			fprintf(stderr,
-				"World::ReEnlightenMove: unlisted direction: %d\n",
+				"World::ReEnlightenMove: \
+				unlisted direction: %d\n",
 				dir);
 	}
 	emit ReConnect();
 }
 
-uchar World::Enlightened(
-		const ushort i,
-		const ushort j,
-		const ushort k) const
-{
+uchar World::Enlightened(const ushort i, const ushort j, const ushort k)
+const {
 	return InBounds(i, j, k) ?
 		LightMap(i, j, k) :
 		0;
@@ -210,11 +192,9 @@ uchar World::Enlightened(
 //returns ligting of the block.
 //if block side lighting is required, just remove first return.
 uchar World::Enlightened(
-		const ushort i,
-		const ushort j,
-		const ushort k,
-		const int dir) const
-{
+		const ushort i, const ushort j, const ushort k,
+		const int dir)
+const {
 	return Enlightened(i, j, k);
 	//next provides lighting of block side, not all block
 	ushort x, y, z;
@@ -223,44 +203,30 @@ uchar World::Enlightened(
 		Enlightened(x, y, z));
 }
 
-uchar World::SunLight(
-		const ushort i,
-		const ushort j,
-		const ushort k) const
-{
+uchar World::SunLight(const ushort i, const ushort j, const ushort k)
+const {
 	return (Enlightened(i, j, k) & 0x0F) * sunMoonFactor;
 }
 
-uchar World::FireLight(
-		const ushort i,
-		const ushort j,
-		const ushort k) const
-{
+uchar World::FireLight(const ushort i, const ushort j, const ushort k)
+const {
 	return (Enlightened(i, j, k) & 0xF0) * FIRE_LIGHT_FACTOR;
 }
 
-uchar Shred::LightRadius(
-		const ushort x,
-		const ushort y,
-		const ushort z) const
-{
+uchar Shred::LightRadius(const ushort x, const ushort y, const ushort z)
+const {
 	return blocks[x][y][z]->LightRadius();
 }
 
-uchar Shred::LightMap(
-		const ushort i,
-		const ushort j,
-		const ushort k) const
-{
+uchar Shred::LightMap(const ushort i, const ushort j, const ushort k)
+const {
 	return lightMap[i][j][k];
 }
 
 //this receives level in format fire:sun
 bool Shred::SetLightMap(
 		const uchar level,
-		const ushort i,
-		const ushort j,
-		const ushort k)
+		const ushort i, const ushort j, const ushort k)
 {
 	bool change_flag=false;
 

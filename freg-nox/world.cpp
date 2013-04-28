@@ -162,7 +162,8 @@ quint8 World::TurnLeft(const quint8 dir) {
 		case UP: case DOWN:
 			return dir;
 		default:
-			fprintf(stderr, "TurnLeft:Unlisted dir: %d\n", (int)dir);
+			fprintf(stderr, "TurnLeft:Unlisted dir: %d\n",
+				(int)dir);
 			return NORTH;
 	}
 }
@@ -188,7 +189,8 @@ quint8 World::MakeDir(
 void World::MakeSun() {
 	sun_moon_x=SunMoonX();
 	ifStar=( STAR==Sub(sun_moon_x, SHRED_WIDTH*numShreds/2, HEIGHT-1) );
-	PutNormalBlock(SUN_MOON, sun_moon_x, SHRED_WIDTH*numShreds/2, HEIGHT-1);
+	PutNormalBlock(SUN_MOON,
+		sun_moon_x, SHRED_WIDTH*numShreds/2, HEIGHT-1);
 }
 
 Block * World::GetBlock(const ushort x, const ushort y, const ushort z)
@@ -207,8 +209,7 @@ void World::PutBlock(
 		Block * const block,
 		const ushort x, const ushort y, const ushort z)
 {
-	GetShred(x, y)->
-		PutBlock(block, x%SHRED_WIDTH, y%SHRED_WIDTH, z);
+	GetShred(x, y)->PutBlock(block, x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 
 void World::PutNormalBlock(
@@ -376,16 +377,24 @@ void World::PhysEvents() {
 					Inventory * const inv=GetBlock(
 							deferredActionXFrom,
 							deferredActionYFrom,
-							deferredActionZFrom)->HasInventory();
+							deferredActionZFrom)->
+								HasInventory();
 					if ( inv )
 						inv->Pull(deferredActionData1);
 				}
 			} break;
 			case DEFERRED_DAMAGE:
-				if ( InBounds(deferredActionX, deferredActionY, deferredActionZ) &&
+				if ( InBounds(
+							deferredActionX,
+							deferredActionY,
+							deferredActionZ) &&
 						Visible(
-							deferredActionXFrom, deferredActionYFrom, deferredActionZFrom,
-							deferredActionX,     deferredActionY,     deferredActionZ) )
+							deferredActionXFrom,
+							deferredActionYFrom,
+							deferredActionZFrom,
+							deferredActionX,
+							deferredActionY,
+							deferredActionZ) )
 				{
 					Damage(
 						deferredActionX,
@@ -407,7 +416,8 @@ void World::PhysEvents() {
 			break;
 			default:
 				fprintf(stderr,
-					"World::PhysEvents: unlisted deferred_action: %d\n",
+					"World::PhysEvents: \
+					unlisted deferred_action: %d\n",
 					deferredActionType);
 		}
 		deferredActionType=DEFERRED_NOTHING;
@@ -483,59 +493,64 @@ void World::PhysEvents() {
 }
 
 bool World::DirectlyVisible(
-		float x_from,
-		float y_from,
-		float z_from,
-		const ushort x_to,
-		const ushort y_to,
-		const ushort z_to) const
-{
-	if ( x_from==x_to && y_from==y_to && z_from==z_to )
+		float x_from, float y_from, float z_from,
+		const ushort x_to, const ushort y_to, const ushort z_to)
+const {
+	if ( x_from==x_to && y_from==y_to && z_from==z_to ) {
 		return true;
-
+	}
 	const ushort xdif=abs(x_to-(int)x_from);
 	const ushort ydif=abs(y_to-(int)y_from);
 	const ushort zdif=abs(z_to-(int)z_from);
 	ushort max=(zdif > ydif) ?
 		zdif :
 		ydif;
-	if ( xdif > max )
+	if ( xdif > max ) {
 		max=xdif;
-
+	}
 	const float x_step=(float)(x_to-x_from)/max;
 	const float y_step=(float)(y_to-y_from)/max;
 	const float z_step=(float)(z_to-z_from)/max;
 
-	for (ushort i=1; i<max; ++i)
+	for (ushort i=1; i<max; ++i) {
 		if ( BLOCK_OPAQUE==Transparent(
 				round(x_from+=x_step),
 				round(y_from+=y_step),
-				round(z_from+=z_step)) )
+				round(z_from+=z_step)) ) {
 		   	return false;
+		}
+	}
 	return true;
 }
 
 bool World::Visible(
-		const ushort x_from,
-		const ushort y_from,
-		const ushort z_from,
-		const ushort x_to,
-		const ushort y_to,
-		const ushort z_to) const
-{
+		const ushort x_from, const ushort y_from, const ushort z_from,
+		const ushort x_to,   const ushort y_to,   const ushort z_to)
+const {
 	short temp;
-	if ( (DirectlyVisible(x_from, y_from, z_from, x_to, y_to, z_to)) ||
-		(Transparent(x_to+(temp=(x_to>x_from) ? (-1) : 1), y_to, z_to) && DirectlyVisible(x_from, y_from, z_from, x_to+temp, y_to, z_to)) ||
-		(Transparent(x_to, y_to+(temp=(y_to>y_from) ? (-1) : 1), z_to) && DirectlyVisible(x_from, y_from, z_from, x_to, y_to+temp, z_to)) ||
-		(Transparent(x_to, y_to, z_to+(temp=(z_to>z_from) ? (-1) : 1)) && DirectlyVisible(x_from, y_from, z_from, x_to, y_to, z_to+temp)) )
+	if (
+		(DirectlyVisible(x_from, y_from, z_from, x_to, y_to, z_to)) ||
+		(Transparent(x_to+(temp=(x_to>x_from) ? (-1) : 1), y_to, z_to)
+			&& DirectlyVisible(
+				 x_from,    y_from, z_from,
+				 x_to+temp, y_to,   z_to)) ||
+		(Transparent(x_to, y_to+(temp=(y_to>y_from) ? (-1) : 1), z_to)
+			&& DirectlyVisible(
+				x_from, y_from, z_from,
+				x_to, y_to+temp, z_to)) ||
+		(Transparent(x_to, y_to, z_to+(temp=(z_to>z_from) ? (-1) : 1))
+			&& DirectlyVisible(
+				x_from, y_from, z_from,
+				x_to,   y_to,   z_to+temp)) )
+	{
 			return true;
-	return false;
+	} else {
+		return false;
+	}
 }
 
 int World::Move(
-		const ushort i,
-		const ushort j,
-		const ushort k,
+		const ushort i, const ushort j, const ushort k,
 		const quint8 dir)
 {
 	ushort newi, newj, newk;
@@ -550,12 +565,8 @@ int World::Move(
 }
 
 int World::CanMove(
-		const ushort i,
-		const ushort j,
-		const ushort k,
-		const ushort newi,
-		const ushort newj,
-		const ushort newk,
+		const ushort i,    const ushort j,    const ushort k,
+		const ushort newi, const ushort newj, const ushort newk,
 		const quint8 dir)
 {
 	Block * const block=GetBlock(i, j, k);
@@ -603,12 +614,8 @@ int World::CanMove(
 }
 
 void World::NoCheckMove(
-		const ushort i,
-		const ushort j,
-		const ushort k,
-		const ushort newi,
-		const ushort newj,
-		const ushort newk,
+		const ushort i,    const ushort j,    const ushort k,
+		const ushort newi, const ushort newj, const ushort newk,
 		const quint8 dir)
 {
 	Block * const block=GetBlock(i, j, k);
@@ -636,9 +643,7 @@ void World::Jump(const ushort x, const ushort y, const ushort z) {
 }
 
 void World::Jump(
-		const ushort i,
-		const ushort j,
-		ushort k,
+		const ushort i, const ushort j, ushort k,
 		const quint8 dir)
 {
 	Block * const to_move=GetBlock(i, j, k);
@@ -680,14 +685,10 @@ void World::SetDeferredAction(
 }
 
 int World::Focus(
-		const ushort i,
-		const ushort j,
-		const ushort k,
-		ushort & i_target,
-		ushort & j_target,
-		ushort & k_target,
-		const quint8 dir) const
-{
+		const ushort i, const ushort j, const ushort k,
+		ushort & i_target, ushort & j_target, ushort & k_target,
+		const quint8 dir)
+const {
 	i_target=i;
 	j_target=j;
 	k_target=k;
@@ -708,13 +709,9 @@ int World::Focus(
 }
 
 int World::Focus(
-		const ushort i,
-		const ushort j,
-		const ushort k,
-		ushort & i_target,
-		ushort & j_target,
-		ushort & k_target) const
-{
+		const ushort i, const ushort j, const ushort k,
+		ushort & i_target, ushort & j_target, ushort & k_target)
+const {
 	return Focus( i, j, k, i_target, j_target, k_target,
 		GetBlock(i, j, k)->GetDir() );
 }
@@ -726,9 +723,7 @@ int World::Focus(
  * Returns true if block is destroyed, otherwise false.
  */
 bool World::Damage(
-		const ushort i,
-		const ushort j,
-		const ushort k,
+		const ushort i, const ushort j, const ushort k,
 		const ushort dmg, //see default in class declaration
 		const int dmg_kind) //see default in class declaration
 {
@@ -766,10 +761,9 @@ bool World::Damage(
 }
 
 int World::Use(const ushort i, const ushort j, const ushort k) {
-	if ( !InBounds(i, j, k) )
-		return false;
-
-	return GetBlock(i, j, k)->Use();
+	return ( !InBounds(i, j, k) ) ?
+		false :
+		GetBlock(i, j, k)->Use();
 }
 
 int World::Build(
@@ -789,7 +783,6 @@ int World::Build(
 		}
 		return 2;
 	}
-
 	block->Restore();
 	SetBlock(block, i, j, k);
 	block->SetDir(dir);
@@ -804,7 +797,8 @@ void World::Inscribe(const ushort i, const ushort j, const ushort k) {
 	}
 	Block * block=GetBlock(i, j, k);
 	if ( block==World::Normal(block->Sub()) )
-		SetBlock(block=block_manager.NewBlock(block->Kind(), block->Sub()),
+		SetBlock(block=block_manager.
+				NewBlock(block->Kind(), block->Sub()),
 			i, j, k);
 	QString str="No note received\n";
 	emit GetString(str);
@@ -816,10 +810,14 @@ void World::Eat(
 		const ushort i,      const ushort j,      const ushort k,
 		const ushort i_food, const ushort j_food, const ushort k_food)
 {
-	if ( !InBounds(i, j, k) || !InBounds(i_food, j_food, k_food) )
+	if ( !InBounds(i, j, k) || !InBounds(i_food, j_food, k_food) ) {
 		return;
-	if ( GetBlock(i, j, k)->IsAnimal()->Eat(GetBlock(i_food, j_food, k_food)) )
+	}
+	if ( GetBlock(i, j, k)->IsAnimal()->
+			Eat(GetBlock(i_food, j_food, k_food)) )
+	{
 		Damage(i_food, j_food, k_food, MAX_DURABILITY, EATEN);
+	}
 }
 
 int World::Exchange(
@@ -843,26 +841,28 @@ int World::Exchange(
 			ReceiveSignal(tr("No room there."));
 		return 4;
 	}
-
 	return inv_from->Drop(num, inv_to);
 }
 
 int World::GetAll(const ushort x_to, const ushort y_to, const ushort z_to) {
 	ushort x_from, y_from, z_from;
-	if ( Focus(x_to, y_to, z_to, x_from, y_from, z_from) )
+	if ( Focus(x_to, y_to, z_to, x_from, y_from, z_from) ) {
 		return 5;
+	}
 	Inventory * const inv_from=HasInventory(x_from, y_from, z_from);
 	Inventory * const inv_to=HasInventory(x_to, y_to, z_to);
-	if ( !inv_to )
+	if ( !inv_to ) {
 		return 6;
+	}
 	return inv_to->GetAll(inv_from);
 }
 
 QString & World::FullName(QString & str,
 		const ushort i, const ushort j, const ushort k)
 const {
-	if ( InBounds(i, j, k) )
+	if ( InBounds(i, j, k) ) {
 		str=GetBlock(i, j, k)->FullName(str);
+	}
 	return str;
 }
 
@@ -870,20 +870,16 @@ int World::Transparent(const ushort x, const ushort y, const ushort z) const {
 	return GetShred(x, y)->Transparent(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 int World::Durability(const ushort x, const ushort y, const ushort z) const {
-	return GetShred(x, y)->
-		Durability(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
+	return GetShred(x, y)->Durability(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 int World::Kind(const ushort x, const ushort y, const ushort z) const {
-	return GetShred(x, y)->
-		Kind(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
+	return GetShred(x, y)->Kind(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 int World::Sub(const ushort x, const ushort y, const ushort z) const {
-	return GetShred(x, y)->
-		Sub(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
+	return GetShred(x, y)->Sub(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 int World::Movable(const ushort x, const ushort y, const ushort z) const {
-	return GetShred(x, y)->
-		Movable(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
+	return GetShred(x, y)->Movable(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 float World::Weight(const ushort x, const ushort y, const ushort z) const {
 	return GetShred(x, y)->Weight(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
@@ -909,26 +905,26 @@ int World::Temperature(
 		const ushort k_center)
 const {
 	if ( !InBounds(i_center, j_center, k_center) ||
-			HEIGHT-1==k_center )
+			HEIGHT-1==k_center ) {
 		return 0;
-
+	}
 	short temperature=GetBlock(i_center, j_center, k_center)->
 		Temperature();
-	if ( temperature )
+	if ( temperature ) {
 		return temperature;
-
+	}
 	for (short i=i_center-1; i<=i_center+1; ++i)
 	for (short j=j_center-1; j<=j_center+1; ++j)
-	for (short k=k_center-1; k<=k_center+1; ++k)
-		if ( InBounds(i, j, k) )
+	for (short k=k_center-1; k<=k_center+1; ++k) {
+		if ( InBounds(i, j, k) ) {
 			temperature+=GetBlock(i, j, k)->Temperature();
+		}
+	}
 	return temperature/2;
 }
 
 QString & World::GetNote(QString & str,
-		const ushort i,
-		const ushort j,
-		const ushort k)
+		const ushort i, const ushort j, const ushort k)
 const {
 	return str=( InBounds(i, j, k)  ) ?
 		GetBlock(i, j, k)->GetNote(str) :
@@ -946,16 +942,18 @@ void World::RemSun() {
 void World::LoadAllShreds() {
 	shreds=new Shred *[numShreds*numShreds];
 	for (long i=latitude -numShreds/2, x=0; x<numShreds; ++i, ++x)
-	for (long j=longitude-numShreds/2, y=0; y<numShreds; ++j, ++y)
+	for (long j=longitude-numShreds/2, y=0; y<numShreds; ++j, ++y) {
 		shreds[y*numShreds+x]=new Shred(this, x, y, j, i);
+	}
 	MakeSun();
 	ReEnlightenTime();
 }
 
 void World::SaveAllShreds() {
 	RemSun();
-	for (ushort i=0; i<numShreds*numShreds; ++i)
+	for (ushort i=0; i<numShreds*numShreds; ++i) {
 		delete shreds[i];
+	}
 	delete [] shreds;
 }
 
@@ -966,16 +964,23 @@ void World::SetNumActiveShreds(ushort num) {
 			"Invalid shreds number:%1x%2.").arg(num).arg(num));
 		++num;
 	}
-	if ( !num )
+	if ( !num ) {
 		emit Notify(QString(
-			"Active shreds number too small: %1x%2.").arg(num).arg(num));
-	else if ( num > numShreds )
+			"Active shreds number too small: %1x%2.").
+				arg(num).
+				arg(num));
+	} else if ( num > numShreds ) {
 		emit Notify(QString(
-			"Active shreds number too big: %1x%2.").arg(num).arg(num));
-	else
+			"Active shreds number too big: %1x%2.").
+				arg(num).
+				arg(num));
+	} else {
 		numActiveShreds=num;
+	}
 	emit Notify(QString(
-		"Active shreds number is %1x%2.").arg(numActiveShreds).arg(numActiveShreds));
+		"Active shreds number is %1x%2.").
+			arg(numActiveShreds).
+			arg(numActiveShreds));
 	Unlock();
 }
 

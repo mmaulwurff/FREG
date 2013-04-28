@@ -406,7 +406,8 @@
 			case SAND: return str="Sand";
 			default:
 				fprintf(stderr,
-					"Active:FullName(QString&): Unlisted sub: %d\n",
+					"Active:FullName(QString&): \
+					Unlisted sub: %d\n",
 					sub);
 				return str="Unkown active block";
 		}
@@ -1285,18 +1286,29 @@
 		int kind;
 		for (x=x_self-6; x<=x_self+6; ++x)
 		for (y=y_self-6; y<=y_self+6; ++y)
-		for (z=z_self-6; z<=z_self+6; ++z)
+		for (z=z_self-6; z<=z_self+6; ++z) {
 			if ( InBounds(x, y, z) ) {
 				kind=world->Kind(x, y, z);
-				if ( (GRASS==kind || RABBIT==kind || DWARF==kind) &&
-						world->DirectlyVisible(x_self, y_self, z_self, x, y, z) ) {
-					if ( y!=y_self )
-						for_north+=Attractive(kind)/(y_self-y);
-					if ( x!=x_self )
-						for_west +=Attractive(kind)/(x_self-x);
+				if ( (
+						GRASS==kind ||
+						RABBIT==kind ||
+						DWARF==kind) &&
+						world->DirectlyVisible(
+							x_self,
+							y_self,
+							z_self, x, y, z) )
+				{
+					if ( y!=y_self ) {
+						for_north+=Attractive(kind)/
+							(y_self-y);
+					}
+					if ( x!=x_self ) {
+						for_west +=Attractive(kind)/
+							(x_self-x);
+					}
 				}
 			}
-
+		}
 		if ( abs(for_north)>1 || abs(for_west)>1 ) {
 			SetDir( ( abs(for_north)>abs(for_west) ) ?
 				( ( for_north>0 ) ? NORTH : SOUTH ) :
@@ -1308,19 +1320,23 @@
 		} else switch ( qrand()%60 ) {
 				case 0:
 					SetDir(NORTH);
-					world->Move(x_self, y_self, z_self, NORTH);
+					world->Move(x_self, y_self, z_self,
+						NORTH);
 				break;
 				case 1:
 					SetDir(SOUTH);
-					world->Move(x_self, y_self, z_self, SOUTH);
+					world->Move(x_self, y_self, z_self,
+						SOUTH);
 				break;
 				case 2:
 					SetDir(EAST);
-					world->Move(x_self, y_self, z_self, EAST);
+					world->Move(x_self, y_self, z_self,
+						EAST);
 				break;
 				case 3:
 					SetDir(WEST);
-					world->Move(x_self, y_self, z_self, WEST);
+					world->Move(x_self, y_self, z_self,
+						WEST);
 				break;
 			}
 
@@ -1329,7 +1345,8 @@
 			for (y=y_self-1; y<=y_self+1; ++y)
 			for (z=z_self-1; z<=z_self+1; ++z)
 				if ( GREENERY==world->Sub(x, y, z) ) {
-					world->Eat(x_self, y_self, z_self, x, y, z);
+					world->Eat(x_self, y_self, z_self,
+						x, y, z);
 					return;
 				}
 		}

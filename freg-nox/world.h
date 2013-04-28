@@ -99,7 +99,7 @@ class World : public QThread {
 	Shred * GetShred(ushort i, ushort j) const;
 	///Puts block to coordinates xyz and activates it.
 	void SetBlock(Block * block, ushort x, ushort y, ushort z);
-	///Puts block to coordinates and not activates it (e.g. in World::Move).
+	///Puts block to coordinates and not activates it.
 	void PutBlock(Block * block, ushort x, ushort y, ushort z);
 	///Puts normal block to coordinates.
 	void PutNormalBlock(subs sub, ushort x, ushort y, ushort z);

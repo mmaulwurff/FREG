@@ -44,21 +44,23 @@ short Player::HP() const {
 }
 
 short Player::Breath() const {
-	if ( !player )
+	if ( !player ) {
 		return -1;
+	}
 	Animal const * const animal=player->IsAnimal();
-	return animal ? animal->Breath() : -1;
+	return ( animal ? animal->Breath() : -1 );
 }
 
 short Player::Satiation() const {
-	if ( !player )
+	if ( !player ) {
 		return -1;
+	}
 	Animal const * const animal=player->IsAnimal();
-	return animal ? animal->Satiation() : -1;
+	return ( animal ? animal->Satiation() : -1 );
 }
 
 Inventory * Player::PlayerInventory() {
-	return player ? player->HasInventory() : 0;
+	return ( player ? player->HasInventory() : 0 );
 }
 
 long Player::GetLongitude() const { return shred->Longitude(); }
@@ -72,48 +74,42 @@ void Player::UpdateXYZ() {
 	}
 }
 
-void Player::Focus(
-		ushort & i_target,
-		ushort & j_target,
-		ushort & k_target) const
-{
-	if ( player )
-	world->Focus(x, y, z,
-		i_target, j_target, k_target,
-		player->GetDir());
-	else {
+void Player::Focus(ushort & i_target, ushort & j_target, ushort & k_target)
+const {
+	if ( player ) {
+		world->Focus(x, y, z,
+			i_target, j_target, k_target,
+			player->GetDir());
+	} else {
 		i_target=x;
 		j_target=y;
 		k_target=z;
 	}
 }
 
-void Player::Examine(
-		const short i,
-		const short j,
-		const short k) const
-{
+void Player::Examine(const short i, const short j, const short k)
+const {
 	world->ReadLock();
 
 	emit Notify("------");
 	QString str;
 	emit Notify( world->FullName(str, i, j, k) );
 	if ( creativeMode ) { //know more
-		emit Notify(QString(tr("Light: %1, fire: %2, sun: %3. Transp: %4. Normal: %5. Direction: %6.")).
+		emit Notify(QString(tr("Light: %1, fire: %2, sun: %3. \
+				Transp: %4. Normal: %5. Direction: %6.")).
 			arg(world->Enlightened(i, j, k)).
 			arg(world->FireLight(i, j, k)/16).
 			arg(world->SunLight(i, j, k)).
 			arg(world->Transparent(i, j, k)).
-			arg(world->GetBlock(i, j, k)==block_manager.NormalBlock(world->Sub(i, j, k))).
+			arg(world->GetBlock(i, j, k)==block_manager.
+				NormalBlock(world->Sub(i, j, k))).
 			arg(world->GetBlock(i, j, k)->GetDir()));
 	}
-
 	const int sub=world->Sub(i, j, k);
 	if ( AIR==sub || SKY==sub || SUN_MOON==sub ) {
 		world->Unlock();
 		return;	
 	}
-
 	if ( ""!=world->GetNote(str, i, j, k) )
 		emit Notify(tr("Inscription: ")+str);
 	emit Notify(tr("Temperature: ")+
@@ -158,22 +154,14 @@ void Player::Backpack() {
 	}
 }
 
-void Player::Use(
-		const short x,
-		const short y,
-		const short z)
-{
+void Player::Use(const short x, const short y, const short z) {
 	world->WriteLock();
 	const int us_type=world->Use(x, y, z);
 	usingType=( us_type==usingType ) ? NO : us_type;
 	world->Unlock();
 }
 
-void Player::Inscribe(
-		const short x,
-		const short y,
-		const short z) const
-{
+void Player::Inscribe(const short x, const short y, const short z) const {
 	world->WriteLock();
 	if ( player ) {
 		world->Inscribe(x, y, z);
@@ -208,8 +196,9 @@ Block * Player::ValidBlock(const ushort num) const {
 void Player::Use(const ushort num) {
 	world->WriteLock();
 	Block * const block=ValidBlock(num);
-	if ( block )
+	if ( block ) {
 		block->Use();
+	}
 	world->Unlock();
 }
 
@@ -234,7 +223,8 @@ void Player::Obtain(const ushort num) {
 	const int err=world->Get(x, y, z, num);
 	ushort x_from, y_from, z_from;
 	Focus(x_from, y_from, z_from);
-	Inventory * const inv=world->GetBlock(x_from, y_from, z_from)->HasInventory();
+	Inventory * const inv=world->
+		GetBlock(x_from, y_from, z_from)->HasInventory();
 	if ( !inv || inv->IsEmpty() ) {
 		update_flag=true;
 		usingType=NO;
@@ -257,14 +247,16 @@ void Player::Wield(const ushort num) {
 	if ( ValidBlock(num) ) {
 		if ( DWARF==player->Kind() ) {
 			const int wield_code=((Dwarf *)player)->Wield(num);
-			if ( 1==wield_code )
+			if ( 1==wield_code ) {
 				emit Notify("Nothing here.");
-			else if ( 2==wield_code )
+			} else if ( 2==wield_code ) {
 				emit Notify("Cannot wield this.");
-			else
+			} else {
 				emit Updated();
-		} else
+			}
+		} else {
 			emit Notify("You can wield nothing.");
+		}
 	}
 	world->Unlock();
 }
@@ -276,10 +268,11 @@ void Player::Inscribe(const ushort num) {
 		emit GetString(str);
 		Inventory * const inv=PlayerInventory();
 		const int err=inv->InscribeInv(num, str);
-		if ( 1==err )
+		if ( 1==err ) {
 			emit Notify("Cannot inscribe this.");
-		else
+		} else {
 			emit Notify("Inscribed.");
+		}
 	}
 	world->Unlock();
 }
@@ -291,17 +284,19 @@ void Player::Eat(const ushort num) {
 		Animal * const pl=player->IsAnimal();
 		if ( pl ) {
 			const int eat=pl->Eat(food);
-			if ( 2==eat )
+			if ( 2==eat ) {
 				emit Notify("You can't eat this.");
-			else {
-				emit Notify(( SECONDS_IN_DAY < pl->Satiation() ) ?
+			} else {
+				emit Notify(
+					(SECONDS_IN_DAY < pl->Satiation() ) ?
 					"You have gorged yourself!" : "Yum!");
 				PlayerInventory()->Pull(num);
 				block_manager.DeleteBlock(food);
 				emit Updated();
 			}
-		} else
+		} else {
 			emit Notify("You can't eat.");
+		}
 	}
 	world->Unlock();
 }
@@ -331,16 +326,18 @@ void Player::Craft(const ushort num) {
 	Inventory * const inv=PlayerInventory();
 	if ( inv ) {
 		const int craft=inv->MiniCraft(num);
-		if ( 1==craft )
+		if ( 1==craft ) {
 			Notify("Nothing here.");
-		else if ( 2==craft )
-			Notify("You don't know how to make something from this.");
-		else {
+		} else if ( 2==craft ) {
+			Notify("You don't know how to make \
+				something from this.");
+		} else {
 			Notify("Craft successful.");
 			emit Updated();
 		}
-	} else
+	} else {
 		Notify("Cannot craft.");
+	}
 	world->Unlock();
 }
 
@@ -348,10 +345,11 @@ void Player::TakeOff(const ushort num) {
 	world->WriteLock();
 	if ( ValidBlock(num) ) {
 		Inventory * const inv=PlayerInventory();
-		if ( inv->HasRoom() )
+		if ( inv->HasRoom() ) {
 			inv->Drop(num, inv);
-		else
+		} else {
 			emit Notify("No place to take off.");
+		}
 	}
 	world->Unlock();
 }
@@ -435,16 +433,14 @@ void Player::ProcessCommand(QString & command) {
 void Player::Get(Block * const block) {
 	if ( player ) {
 		Inventory * const inv=player->HasInventory();
-		if ( inv )
+		if ( inv ) {
 			inv->Get(block);
+		}
 	}
 }
 
-bool Player::Visible(
-		const ushort x_to,
-		const ushort y_to,
-		const ushort z_to) const
-{
+bool Player::Visible(const ushort x_to, const ushort y_to, const ushort z_to)
+const {
 	return world->Visible(x, y, z, x_to, y_to, z_to);
 }
 
@@ -455,8 +451,9 @@ Block * Player::UsingBlock() const {
 }
 
 void Player::Dir(const int direction) {
-	if ( player )
+	if ( player ) {
 		player->SetDir(direction);
+	}
 	dir=direction;
 }
 
@@ -465,8 +462,8 @@ int Player::Dir() const { return dir; }
 void Player::Damage(
 		const short x_target,
 		const short y_target,
-		const short z_target) const
-{
+		const short z_target)
+const {
 	world->WriteLock();
 	world->SetDeferredAction(
 			x_target, y_target, z_target,
@@ -474,7 +471,8 @@ void Player::Damage(
 			DEFERRED_DAMAGE,
 			x, y, z,
 			0, //what block - doesn't matter
-			( creativeMode ? MAX_DURABILITY : player->DamageLevel() ),
+			( creativeMode ?
+				MAX_DURABILITY : player->DamageLevel() ),
 			( creativeMode ? CREATIVE : player->DamageKind() ));
 	world->Unlock();
 }
@@ -583,9 +581,12 @@ void Player::SetNumShreds(ushort num) const {
 			//put loaded zone center to where player is
 			world->Latitude()  + x/SHRED_WIDTH - num_shreds/2,
 			world->Longitude() + y/SHRED_WIDTH - num_shreds/2,
-			//new x and y correspond to player stanging in loaded zone center
-			x - (x/SHRED_WIDTH)*SHRED_WIDTH + (num_shreds/2+shift)*SHRED_WIDTH,
-			y - (y/SHRED_WIDTH)*SHRED_WIDTH + (num_shreds/2+shift)*SHRED_WIDTH,
+			//new x and y correspond to player stanging
+			//in loaded zone center
+			x - (x/SHRED_WIDTH)*SHRED_WIDTH +
+				(num_shreds/2+shift)*SHRED_WIDTH,
+			y - (y/SHRED_WIDTH)*SHRED_WIDTH +
+				(num_shreds/2+shift)*SHRED_WIDTH,
 			z,
 			num);
 		emit Notify(QString("Shreds number is %1x%2.")

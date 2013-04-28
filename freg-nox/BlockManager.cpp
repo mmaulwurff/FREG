@@ -104,7 +104,8 @@ Block * BlockManager::BlockFromFile(QDataStream & str) {
 		case WORKBENCH: return New<Workbench>(str, sub);
 		default:
 			fprintf(stderr,
-				"BlockManager::BlockFromFile: unlisted kind: %d.\n",
+				"BlockManager::BlockFromFile: \
+				unlisted kind: %d.\n",
 				kind);
 			return New<Block>(str, sub);
 	}

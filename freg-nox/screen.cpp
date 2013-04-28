@@ -252,7 +252,8 @@ void Screen::ControlPlayer(const int ch) {
 			} break;
 			default:
 				fprintf(stderr,
-					"Screen::ControlPlayer: unlisted action mode: %d\n",
+					"Screen::ControlPlayer: \
+					unlisted action mode: %d\n",
 					actionMode);
 		}
 		return;
@@ -312,7 +313,8 @@ void Screen::ControlPlayer(const int ch) {
 				w->SetNumActiveShreds(w->NumActiveShreds()-2);
 			else
 				Notify(QString(
-					"Active shreds number too small: %1x%2.").
+					"Active shreds number too small: \
+					%1x%2.").
 						arg(w->NumActiveShreds()).
 						arg(w->NumActiveShreds()));
 		break;
@@ -337,16 +339,13 @@ void Screen::ControlPlayer(const int ch) {
 
 		case 'L': RePrint(); break;
 		default:
-			Notify(QString("Don't know what such key means: %1").arg(ch));
+			Notify(QString("Don't know what such key means: %1").
+				arg(ch));
 	}
 	updated=false;
 }
 
-void Screen::ActionXyz(
-		ushort & x,
-		ushort & y,
-		ushort & z) const
-{
+void Screen::ActionXyz(ushort & x,ushort & y, ushort & z) const {
 	player->Focus(x, y, z);
 	if (
 			DOWN!=player->Dir() &&
@@ -361,9 +360,7 @@ void Screen::ActionXyz(
 }
 
 void Screen::PrintBlock(
-		const ushort x,
-		const ushort y,
-		const ushort z,
+		const ushort x, const ushort y, const ushort z,
 		WINDOW * const window)
 const {
 	Block * const block=w->GetBlock(x, y, z);
@@ -385,7 +382,8 @@ void Screen::Print() {
 	switch ( player->UsingType() ) {
 		case OPEN:
 			if ( player ) {
-				PrintInv(leftWin, player->UsingBlock()->HasInventory());
+				PrintInv(leftWin,
+					player->UsingBlock()->HasInventory());
 				break;
 			}
 		default: PrintNormal(leftWin);
@@ -393,7 +391,8 @@ void Screen::Print() {
 	switch ( player->UsingSelfType() ) {
 		case OPEN:
 			if ( player && player->GetP()->HasInventory() ) {
-				PrintInv(rightWin, player->GetP()->HasInventory());
+				PrintInv(rightWin,
+					player->GetP()->HasInventory());
 				break;
 			} //no break;
 		default:
@@ -487,14 +486,14 @@ void Screen::Print() {
 		mvwaddstr(hudWin, 0, 100, ( -1==shiftFocus ) ?
 			"Focus shift down" : "Focus shift up");
 	}
-
 	if ( player->GetCreativeMode() ) {
 		mvwaddstr(hudWin, 1, 100, "Creative Mode");
 		//coordinates
-		mvwprintw(hudWin, 3, 22, "xyz: %hu, %hu, %hu", player->X(), player->Y(), player->Z());
-		mvwprintw(hudWin, 2, 22, "XY:  %ld, %ld", player->GetLatitude(), player->GetLongitude());
+		mvwprintw(hudWin, 3, 22, "xyz: %hu, %hu, %hu",
+			player->X(), player->Y(), player->Z());
+		mvwprintw(hudWin, 2, 22, "XY:  %ld, %ld",
+			player->GetLatitude(), player->GetLongitude());
 	}
-
 	wnoutrefresh(hudWin);
 	doupdate();
 }
@@ -507,14 +506,19 @@ void Screen::PrintNormal(WINDOW * const window) const {
 	const short k_step=( UP!=dir ) ? (-1) : 1;
 
 	wmove(window, 1, 1);
-	const ushort start_x=(player->X()/SHRED_WIDTH)*SHRED_WIDTH+(SHRED_WIDTH-SCREEN_SIZE)/2;
-	const ushort start_y=(player->Y()/SHRED_WIDTH)*SHRED_WIDTH+(SHRED_WIDTH-SCREEN_SIZE)/2;
+	const ushort start_x=( player->X()/SHRED_WIDTH )*SHRED_WIDTH +
+		( SHRED_WIDTH-SCREEN_SIZE )/2;
+	const ushort start_y=( player->Y()/SHRED_WIDTH )*SHRED_WIDTH +
+		( SHRED_WIDTH-SCREEN_SIZE )/2;
 	const int block_side=( dir==UP ) ? DOWN : UP;
-	for ( ushort j=start_y; j<SCREEN_SIZE+start_y; ++j, waddstr(window, "\n_") )
-	for ( ushort i=start_x; i<SCREEN_SIZE+start_x; ++i ) {
+	ushort i, j;
+	for ( j=start_y; j<SCREEN_SIZE+start_y; ++j, waddstr(window, "\n_") )
+	for ( i=start_x; i<SCREEN_SIZE+start_x; ++i ) {
 		ushort k;
-		for (k=k_start; INVISIBLE == w->Transparent(i, j, k); k+=k_step);
-		if ( w->Enlightened(i, j, k, block_side) && player->Visible(i, j, k) ) {
+		for (k=k_start; INVISIBLE==w->Transparent(i, j, k); k+=k_step);
+		if ( w->Enlightened(i, j, k, block_side) &&
+				player->Visible(i, j, k) )
+		{
 			PrintBlock(i, j, k, window);
 			waddch(window, CharNumber(i, j, k));
 		} else {
@@ -525,8 +529,10 @@ void Screen::PrintNormal(WINDOW * const window) const {
 	wstandend(window);
 	box(window, 0, 0);
 	if ( UP==dir || DOWN==dir ) {
-		mvwaddstr(window, 0, 1, ( UP==dir ) ? "Sky View" : "Ground View");
-		Arrows(window , (player->X()-start_x)*2+1, player->Y()-start_y+1);
+		mvwaddstr(window, 0, 1, ( UP==dir ) ?
+			"Sky View" : "Ground View");
+		Arrows(window ,
+			(player->X()-start_x)*2+1, player->Y()-start_y+1);
 	} else {
 		mvwaddstr(window, 0, 1, "Normal View");
 	}
@@ -603,7 +609,8 @@ void Screen::PrintFront(WINDOW * const window) const {
 		break;
 		default:
 			fprintf(stderr,
-				"Screen::PrintFront(WINDOW *): unlisted dir: %d\n",
+				"Screen::PrintFront(WINDOW *): \
+				unlisted dir: %d\n",
 				(int)dir);
 			return;
 	}
@@ -623,12 +630,17 @@ void Screen::PrintFront(WINDOW * const window) const {
 		for (*x=x_start; *x!=x_end; *x+=x_step) {
 			for (*z=z_start; *z!=z_end; *z+=z_step)
 				if ( w->Transparent(i, j, k) != INVISIBLE ) {
-					if ( w->Enlightened(i, j, k, block_side) &&
-							player->Visible(i, j, k) ) {
+					if ( w->Enlightened(i, j, k,
+							block_side) &&
+							player->
+							Visible(i, j, k) )
+					{
 						PrintBlock(i, j, k, window);
-						waddch(window, CharNumberFront(i, j));
+						waddch(window,
+							CharNumberFront(i, j));
 					} else {
-						wcolor_set(window, BLACK_BLACK, NULL);
+						wcolor_set(window,
+							BLACK_BLACK, NULL);
 						waddstr(window, "  ");
 					}
 					break;
@@ -636,7 +648,8 @@ void Screen::PrintFront(WINDOW * const window) const {
 			if ( *z==z_end ) { //far decorations
 				*z-=z_step;
 				wcolor_set(window,
-					(player->Visible(i, j, k) ? WHITE_BLUE : BLACK_BLACK),
+					(player->Visible(i, j, k) ?
+						WHITE_BLUE : BLACK_BLACK),
 					NULL);
 				waddstr(window, ". ");
 			}
@@ -657,40 +670,49 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 	wstandend(window);
 	switch ( inv->Kind() ) {
 		case DWARF:
-			mvwaddstr(window, 2, 1, "      Head\n Right hand\n  Left hand\n       Body\n       Legs");
+			mvwaddstr(window, 2, 1, "      Head\n Right hand\n  \
+				Left hand\n       Body\n       Legs");
 		break;
 		case WORKBENCH: mvwaddstr(window, 2, 1, "   Product"); break;
 		default: break;
 	}
-	mvwprintw(window, 2+inv->Size(), 40, "All weight: %6.1f kg", inv->TrueWeight());
+	mvwprintw(window, 2+inv->Size(), 40, "All weight: %6.1f kg",
+		inv->TrueWeight());
 	QString str;
 	for (ushort i=0; i<inv->Size(); ++i) {
 		mvwprintw(window, 2+i, 12, "%c)", 'a'+i);
 		if ( inv->Number(i) ) {
-			wcolor_set(window, Color(inv->GetInvKind(i), inv->GetInvSub(i)), NULL);
+			wcolor_set(window, Color(inv->GetInvKind(i),
+				inv->GetInvSub(i)), NULL);
 			wprintw(window, "[%c]%s",
 					CharName( inv->GetInvKind(i),
 						inv->GetInvSub(i) ),
 					qPrintable(inv->InvFullName(str, i)) );
-			if ( 1<inv->Number(i) )
-				waddstr(window, qPrintable(inv->NumStr(str, i)));
-			if ( ""!=inv->GetInvNote(str, i) )
-				waddstr(window, qPrintable((" ~:"+
-					(( str.size()<24 ) ? str : str.left(13)+"..."))));
+			if ( 1<inv->Number(i) ) {
+				waddstr(window,
+					qPrintable(inv->NumStr(str, i)));
+			}
+			if ( ""!=inv->GetInvNote(str, i) ) {
+				waddstr(window,
+					qPrintable((" ~:"+(( str.size()<24 ) ?
+						str : str.left(13)+"..."))));
+			}
 			wstandend(window);
-			mvwprintw(window, 2+i, 53, "%5.1f kg", 2, inv->GetInvWeight(i));
+			mvwprintw(window, 2+i, 53, "%5.1f kg",
+				2, inv->GetInvWeight(i));
 		}
 	}
 	wcolor_set(window, Color(inv->Kind(), inv->Sub()), NULL);
 	box(window, 0, 0);
 	wmove(window, 0, 1);
-	if ( player->PlayerInventory()==inv )
+	if ( player->PlayerInventory()==inv ) {
 		waddstr(window, "Your inventory");
-	else
+	} else {
 		wprintw(window, "[%c]%s",
 			CharName(inv->Kind(),
 				inv->Sub()),
 			qPrintable(inv->FullName(str)));
+	}
 	wnoutrefresh(window);
 }
 
@@ -742,7 +764,8 @@ Screen::Screen(
 	#endif
 
 	#ifdef Q_OS_WIN32
-		resize_term( (SCREEN_SIZE + 2) + (2 + 5) + (2 + 3), SCREEN_SIZE * 4 + 4 );
+		resize_term( (SCREEN_SIZE + 2) + (2 + 5) + (2 + 3),
+			SCREEN_SIZE * 4 + 4 );
 	#else
 		set_escdelay(10);
 	#endif
@@ -824,8 +847,7 @@ void Screen::CleanAll() {
 
 Screen::~Screen() { CleanAll(); }
 
-IThread::IThread(Screen * const scr)
-		:
+IThread::IThread(Screen * const scr) :
 	screen(scr),
 	stopped(false)
 {}
