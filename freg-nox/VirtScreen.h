@@ -119,6 +119,8 @@ class VirtScreen : public QObject {
 	 */
 	virtual void UpdatesEnd();
 
+	void DeathScreen();
+
 	signals:
 	///This is emitted when input receives exit key.
 	/**

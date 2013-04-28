@@ -435,7 +435,7 @@ void World::PhysEvents() {
 	}
 
 	static ushort timeStep=0;
-	if ( time_steps_in_sec>timeStep ) {
+	if ( time_steps_in_sec > timeStep ) {
 		++timeStep;
 		Unlock();
 		return;

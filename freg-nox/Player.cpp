@@ -510,6 +510,7 @@ void Player::BlockDestroy() {
 	usingType=NO;
 	usingSelfType=NO;
 
+	emit Destroyed();
 	world->ReloadAllShreds(
 		homeLati,
 		homeLongi,
@@ -520,8 +521,9 @@ void Player::BlockDestroy() {
 }
 
 void Player::WorldSizeReloadStart() {
-	if ( player )
+	if ( player ) {
 		disconnect(player, SIGNAL(Destroyed()), 0, 0);
+	}
 	homeX-=world->NumShreds()/2*SHRED_WIDTH;
 	homeY-=world->NumShreds()/2*SHRED_WIDTH;
 }
@@ -542,7 +544,8 @@ void Player::SetPlayer(
 	shred=world->GetShred(x, y);
 	if ( DWARF!=world->Kind(x, y, z) ) {
 		block_manager.DeleteBlock(world->GetBlock(x, y, z));
-		world->SetBlock( (player=block_manager.NewBlock(DWARF, H_MEAT)->ActiveBlock()), x, y, z );
+		world->SetBlock( (player=block_manager.
+			NewBlock(DWARF, H_MEAT)->ActiveBlock()), x, y, z );
 	} else {
 		player=world->ActiveBlock(x, y, z);
 	}

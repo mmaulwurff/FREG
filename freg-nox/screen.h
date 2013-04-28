@@ -165,6 +165,7 @@ class Screen : public VirtScreen {
 	void UpdatePlayer();
 	void UpdateAround(ushort, ushort, ushort, ushort);
 	void Move(int);
+	void DeathScreen();
 
 	public:
 	void ControlPlayer(int);

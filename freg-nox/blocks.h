@@ -138,14 +138,12 @@ class Ladder : public Block {
 
 class Weapon : public Block {
 	public:
-	QString & FullName(QString & str) const;
-	int Kind() const;
+	int    Kind() const;
+	bool   IsWeapon() const;
+	float  TrueWeight() const;
+	int    BeforePush(int dir, Block * who);
 	ushort DamageLevel() const;
-	int BeforePush(int dir, Block * who);
-
-	float TrueWeight() const;
-	bool IsWeapon() const;
-	bool CanBeOut() const;
+	QString & FullName(QString & str) const;
 
 	Weapon(int sub);
 	Weapon(QDataStream & str, int sub);

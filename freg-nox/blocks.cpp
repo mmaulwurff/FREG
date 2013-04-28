@@ -344,8 +344,6 @@
 
 	bool Weapon::IsWeapon() const { return true; }
 
-	bool Weapon::CanBeOut() const { return false; }
-
 	Weapon::Weapon(const int sub) :
 			Block(sub, NONSTANDARD)
 	{}

@@ -24,11 +24,8 @@
 #endif
 
 #include <QString>
-#include <QFile>
-#include <QTextStream>
 #include <QSettings>
 #include <QDir>
-#include "header.h"
 #include "world.h"
 #include "Player.h"
 
@@ -51,6 +48,9 @@ int main(int argc, char *argv[]) {
 	Player player(&earth);
 	Screen screen(&earth, &player);
 	earth.start();
+
+	QObject::connect(&player, SIGNAL(Destroyed()),
+		&screen, SLOT(DeathScreen()));
 
 	QObject::connect(&freg, SIGNAL(aboutToQuit()),
 		&screen, SLOT(CleanAll()));

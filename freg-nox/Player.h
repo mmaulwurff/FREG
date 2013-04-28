@@ -103,6 +103,7 @@ class Player : public QObject {
 	/** It shoul be connected to screen::UpdatePlayer() signal. */
 	void Updated();
 	void GetString(QString &);
+	void Destroyed();
 
 	public:
 	///This returns current player block X (coordinates in loaded zone)

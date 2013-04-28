@@ -404,6 +404,7 @@ void Screen::Print() {
 	const short breath=player->Breath();
 	const short satiation=player->Satiation();
 
+	werase(hudWin);
 	ushort i;
 	//quick inventory
 	Inventory * const inv=player->GetP()->HasInventory();
@@ -427,7 +428,6 @@ void Screen::Print() {
 	w->Unlock();
 
 	//HitPoints line
-	werase(hudWin);
 	wstandend(hudWin);
 	wmove(hudWin, 0, 0);
 	wprintw(hudWin, "HP: %3hd  [", dur);
@@ -435,19 +435,20 @@ void Screen::Print() {
 	for (i=0; i<10*dur/MAX_DURABILITY; ++i)
 		waddch(hudWin, '.');
 	wstandend(hudWin);
-	mvwaddstr(hudWin, 0, 20, "]\n");
+	mvwaddch(hudWin, 0, 20, ']');
 
 	//breath line
+	wmove(hudWin, 1, 0);
 	if ( -1!=breath ) {
 		wprintw(hudWin, "BR: %3hd%% [", 100*breath/MAX_BREATH);
 		wcolor_set(hudWin, WHITE_BLUE, NULL);
 		for (i=0; i<10*breath/MAX_BREATH; ++i)
 			waddch(hudWin, '.');
 		wstandend(hudWin);
-		mvwaddstr(hudWin, 1, 20, "]\n");
+		mvwaddch(hudWin, 1, 20, ']');
 	}
-
 	//action mode
+	wmove(hudWin, 2, 0);
 	wstandend(hudWin);
 	waddstr(hudWin, "Action: ");
 	switch ( actionMode ) {
@@ -465,9 +466,8 @@ void Screen::Print() {
 				"Screen::Print: Unlisted actionMode: %d\n",
 				actionMode);
 	}
-	waddch(hudWin, '\n');
-
 	//satiation line
+	wmove(hudWin, 3, 0);
 	//wprintw(hudWin, "Sat: %u ", satiation);
 	if ( -1!=satiation ) {
 		if ( SECONDS_IN_DAY<satiation ) {
@@ -481,10 +481,8 @@ void Screen::Print() {
 			waddstr(hudWin, "Hungry\n");
 		}
 	}
-
-	wstandend(hudWin);
-	
 	//shifted focus
+	wstandend(hudWin);
 	if ( shiftFocus ) {
 		mvwaddstr(hudWin, 0, 100, ( -1==shiftFocus ) ?
 			"Focus shift down" : "Focus shift up");
@@ -712,6 +710,20 @@ void Screen::Notify(const QString & str) {
 			QString::number(w->Time())+
 			": "+str+'\n'),
 		notifyLog);
+}
+
+void Screen::DeathScreen() {
+	fprintf(stderr, "hello\n");
+	werase(leftWin);
+	werase(rightWin);
+	werase(hudWin);
+	mvwaddstr(leftWin, SCREEN_SIZE/2, SCREEN_SIZE-10,
+		qPrintable(tr("Waiting for respawn...")));
+	wnoutrefresh(leftWin);
+	wnoutrefresh(rightWin);
+	wnoutrefresh(hudWin);
+	doupdate();
+	updated=true;
 }
 
 Screen::Screen(
