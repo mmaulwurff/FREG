@@ -29,8 +29,9 @@ class Shred {
 	uchar lightMap[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
 	World * const world;
 	const long longitude, latitude;
-
 	ushort shredX, shredY;
+
+	QList<Active *> activeListAll;
 	QList<Active *> activeListFrequent;
 	QList<Active *> activeListRare;
 	QList<Active *> fallList;

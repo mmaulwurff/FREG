@@ -256,17 +256,13 @@ void Shred::SetAllLightMap(const uchar level) {
 //make all shining blocks of shred shine.
 void Shred::ShineAll() {
 	//TODO: make own lighting list
-	for (ushort j=0; j<activeListFrequent.size(); ++j) {
-		Active const * const temp=activeListFrequent[j];
-		world->Shine(temp->X(), temp->Y(), temp->Z(),
-			temp->LightRadius(), true);
-	}
-	for (ushort j=0; j<activeListRare.size(); ++j) {
-		Active const * const temp=activeListRare[j];
+	for (ushort j=0; j<activeListAll.size(); ++j) {
+		Active const * const temp=activeListAll[j];
 		world->Shine(temp->X(), temp->Y(), temp->Z(),
 			temp->LightRadius(), true);
 	}
 	for (ushort i=shredX*SHRED_WIDTH; i<SHRED_WIDTH*(shredX+1); ++i)
-	for (ushort j=shredY*SHRED_WIDTH; j<SHRED_WIDTH*(shredY+1); ++j)
+	for (ushort j=shredY*SHRED_WIDTH; j<SHRED_WIDTH*(shredY+1); ++j) {
 		world->SunShine(i, j);
+	}
 }

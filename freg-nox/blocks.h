@@ -43,6 +43,7 @@ enum before_push_action {
 enum ACTIVE_FREQUENCY {
 	NEVER,
 	FREQUENT,
+	FREQUENT_AND_RARE,
 	RARE
 }; //enum ACTIVE_FREQUENCY
 

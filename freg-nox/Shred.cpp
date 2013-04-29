@@ -73,7 +73,8 @@ Shred::Shred(
 		shredY(shred_y)
 {
 	activeListFrequent.reserve(100);
-	activeListRare.reserve(1000);
+	activeListRare.reserve(500);
+	activeListAll.reserve(1000);
 	fallList.reserve(100);
 	QFile file(FileName());
 	if ( file.open(QIODevice::ReadOnly) && !LoadShred(file) ) {
@@ -240,8 +241,12 @@ float Shred::Weight(
 }
 
 void Shred::AddActive(Active * const active) {
+	activeListAll.append(active);
 	switch ( active->ShouldAct() ) {
 		case FREQUENT:
+			activeListFrequent.append(active);
+		break;
+		case FREQUENT_AND_RARE:
 			activeListFrequent.append(active);
 		//no break;
 		case RARE:
@@ -252,6 +257,7 @@ void Shred::AddActive(Active * const active) {
 }
 
 void Shred::RemActive(Active * const active) {
+	activeListAll.removeOne(active);
 	activeListFrequent.removeOne(active);
 	activeListRare.removeOne(active);
 }
@@ -280,25 +286,25 @@ void Shred::AddFalling(
 }
 
 void Shred::ReloadToNorth() {
-	for (ushort i=0; i<activeListRare.size(); ++i) {
+	for (ushort i=0; i<activeListAll.size(); ++i) {
 		activeListRare[i]->ReloadToNorth();
 	}
 	++shredY;
 }
 void Shred::ReloadToEast() {
-	for (ushort i=0; i<activeListRare.size(); ++i) {
+	for (ushort i=0; i<activeListAll.size(); ++i) {
 		activeListRare[i]->ReloadToEast();
 	}
 	--shredX;
 }
 void Shred::ReloadToSouth() {
-	for (ushort i=0; i<activeListRare.size(); ++i) {
+	for (ushort i=0; i<activeListAll.size(); ++i) {
 		activeListRare[i]->ReloadToSouth();
 	}
 	--shredY;
 }
 void Shred::ReloadToWest() {
-	for (ushort i=0; i<activeListRare.size(); ++i) {
+	for (ushort i=0; i<activeListAll.size(); ++i) {
 		activeListRare[i]->ReloadToWest();
 	}
 	++shredX;
