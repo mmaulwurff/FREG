@@ -1352,7 +1352,7 @@
 				}
 		}
 	}
-	int Rabbit::ShouldAct() const { return FREQUENT; }
+	int Rabbit::ShouldAct() const { return FREQUENT_AND_RARE; }
 
 	Block * Rabbit::DropAfterDamage() const {
 		return block_manager.NormalBlock(A_MEAT);

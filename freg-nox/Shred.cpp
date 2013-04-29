@@ -287,25 +287,25 @@ void Shred::AddFalling(
 
 void Shred::ReloadToNorth() {
 	for (ushort i=0; i<activeListAll.size(); ++i) {
-		activeListRare[i]->ReloadToNorth();
+		activeListAll[i]->ReloadToNorth();
 	}
 	++shredY;
 }
 void Shred::ReloadToEast() {
 	for (ushort i=0; i<activeListAll.size(); ++i) {
-		activeListRare[i]->ReloadToEast();
+		activeListAll[i]->ReloadToEast();
 	}
 	--shredX;
 }
 void Shred::ReloadToSouth() {
 	for (ushort i=0; i<activeListAll.size(); ++i) {
-		activeListRare[i]->ReloadToSouth();
+		activeListAll[i]->ReloadToSouth();
 	}
 	--shredY;
 }
 void Shred::ReloadToWest() {
 	for (ushort i=0; i<activeListAll.size(); ++i) {
-		activeListRare[i]->ReloadToWest();
+		activeListAll[i]->ReloadToWest();
 	}
 	++shredX;
 }
