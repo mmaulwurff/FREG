@@ -499,24 +499,25 @@ const {
 	if ( x_from==x_to && y_from==y_to && z_from==z_to ) {
 		return true;
 	}
-	const ushort xdif=abs(x_to-(int)x_from);
-	const ushort ydif=abs(y_to-(int)y_from);
-	const ushort zdif=abs(z_to-(int)z_from);
+	const ushort xdif=abs(x_to-(ushort)x_from);
+	const ushort ydif=abs(y_to-(ushort)y_from);
+	const ushort zdif=abs(z_to-(ushort)z_from);
 	ushort max=(zdif > ydif) ?
 		zdif :
 		ydif;
 	if ( xdif > max ) {
 		max=xdif;
 	}
-	const float x_step=(float)(x_to-x_from)/max;
-	const float y_step=(float)(y_to-y_from)/max;
-	const float z_step=(float)(z_to-z_from)/max;
+	const float x_step=(x_to-x_from)/max;
+	const float y_step=(y_to-y_from)/max;
+	const float z_step=(z_to-z_from)/max;
 
 	for (ushort i=1; i<max; ++i) {
 		if ( BLOCK_OPAQUE==Transparent(
-				round(x_from+=x_step),
-				round(y_from+=y_step),
-				round(z_from+=z_step)) ) {
+				qRound(x_from+=x_step),
+				qRound(y_from+=y_step),
+				qRound(z_from+=z_step)) )
+		{
 		   	return false;
 		}
 	}
@@ -527,26 +528,22 @@ bool World::Visible(
 		const ushort x_from, const ushort y_from, const ushort z_from,
 		const ushort x_to,   const ushort y_to,   const ushort z_to)
 const {
+	//TODO: make this symmetric
 	short temp;
-	if (
+	return (
 		(DirectlyVisible(x_from, y_from, z_from, x_to, y_to, z_to)) ||
 		(Transparent(x_to+(temp=(x_to>x_from) ? (-1) : 1), y_to, z_to)
 			&& DirectlyVisible(
-				 x_from,    y_from, z_from,
-				 x_to+temp, y_to,   z_to)) ||
+				x_from,    y_from, z_from,
+				x_to+temp, y_to,   z_to)) ||
 		(Transparent(x_to, y_to+(temp=(y_to>y_from) ? (-1) : 1), z_to)
 			&& DirectlyVisible(
-				x_from, y_from, z_from,
-				x_to, y_to+temp, z_to)) ||
+				x_from, y_from,    z_from,
+				x_to,   y_to+temp, z_to)) ||
 		(Transparent(x_to, y_to, z_to+(temp=(z_to>z_from) ? (-1) : 1))
 			&& DirectlyVisible(
 				x_from, y_from, z_from,
-				x_to,   y_to,   z_to+temp)) )
-	{
-			return true;
-	} else {
-		return false;
-	}
+				x_to,   y_to,   z_to+temp)) );
 }
 
 int World::Move(
