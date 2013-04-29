@@ -99,6 +99,7 @@ Shred::Shred(
 		case '-': NormalUnderground(); break;
 		case 'p': Pyramid();           break;
 		case '^': Mountain();          break;
+		case ':': Desert();            break;
 		default:
 			Plain();
 			fprintf(stderr,
@@ -363,15 +364,28 @@ char Shred::TypeOfShred(const long longi, const long lati) const {
 //shred generators section
 //these functions fill space between the lowest nullstone layer and sky.
 //so use k from 1 to heigth-2.
-void Shred::NormalUnderground(const ushort depth) {
+void Shred::NormalUnderground(const ushort depth, const int sub) {
 	for (ushort i=0; i<SHRED_WIDTH; ++i)
 	for (ushort j=0; j<SHRED_WIDTH; ++j) {
 		ushort k;
-		for (k=1; k<HEIGHT/2-6 && k<HEIGHT/2-depth-1; ++k)
+		for (k=1; k<HEIGHT/2-6 && k<HEIGHT/2-depth-1; ++k) {
 			PutNormalBlock(STONE, i, j, k);
-		PutNormalBlock(((qrand()%2) ? STONE : SOIL), i, j, k);
-		for (++k; k<HEIGHT/2-depth; ++k)
-			PutNormalBlock(SOIL, i, j, k);
+		}
+		PutNormalBlock(((qrand()%2) ? STONE : sub), i, j, k);
+		for (++k; k<HEIGHT/2-depth; ++k) {
+			PutNormalBlock(sub, i, j, k);
+		}
+	}
+}
+
+void Shred::CoverWith(const int kind, const int sub, const ushort thickness) {
+	for (ushort n=thickness; n; --n) {
+		for (ushort i=0; i<SHRED_WIDTH; ++i)
+		for (ushort j=0; j<SHRED_WIDTH; ++j) {
+			ushort k=HEIGHT-2;
+			for ( ; AIR==Sub(i, j, k); --k);
+			SetNewBlock(kind, sub, i, j, ++k);
+		}
 	}
 }
 
@@ -631,6 +645,11 @@ void Shred::Mountain() {
 	if ( qrand()%2 ) {
 		PutNormalBlock(WOOD, 7, 7, HEIGHT/2);
 	}
+}
+
+void Shred::Desert() {
+	NormalUnderground(4, SAND);
+	CoverWith(ACTIVE, SAND, 4);
 }
 
 bool Shred::Tree(

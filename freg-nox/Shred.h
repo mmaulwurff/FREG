@@ -93,7 +93,9 @@ class Shred {
 	QString FileName() const;
 	char TypeOfShred(long longi, long lati) const;
 
-	void NormalUnderground(ushort depth=0);
+	void NormalUnderground(ushort depth=0, int sub=SOIL);
+	void CoverWith(int kind, int sub, ushort thickness);
+
 	void PlantGrass();
 	void TestShred();
 	void NullMountain();
@@ -102,6 +104,7 @@ class Shred {
 	void Water( long, long);
 	void Pyramid();
 	void Mountain();
+	void Desert();
 	//block combinations section (trees, buildings, etc):
 	bool Tree(ushort x, ushort y, ushort z, ushort height);
 }; //class Shred
