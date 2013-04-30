@@ -424,6 +424,12 @@ void Player::ProcessCommand(QString & command) {
 		} else {
 			emit Notify(tr("Nothing to heal."));
 		}
+	} else if ( "moo"==request ) {
+		emit Notify("^__^");
+		emit Notify("(oo)\\_______");
+		emit Notify("(__)\\       )\\/\\");
+		emit Notify("    ||----w |");
+		emit Notify("    ||     ||");
 	} else {
 		emit Notify(QString(tr(
 			"Don't know such command: \"%1\".")).arg(command));

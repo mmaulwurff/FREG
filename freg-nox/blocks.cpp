@@ -1314,38 +1314,36 @@
 			SetDir( ( abs(for_north)>abs(for_west) ) ?
 				( ( for_north>0 ) ? NORTH : SOUTH ) :
 				( ( for_west >0 ) ? WEST  : EAST  ) );
-			if ( qrand()%2 )
+			if ( qrand()%2 ) {
 				world->Move(x_self, y_self, z_self, direction);
-			else
+			} else {
 				world->Jump(x_self, y_self, z_self);
-		} else switch ( qrand()%60 ) {
-				case 0:
-					SetDir(NORTH);
-					world->Move(x_self, y_self, z_self,
-						NORTH);
-				break;
-				case 1:
-					SetDir(SOUTH);
-					world->Move(x_self, y_self, z_self,
-						SOUTH);
-				break;
-				case 2:
-					SetDir(EAST);
-					world->Move(x_self, y_self, z_self,
-						EAST);
-				break;
-				case 3:
-					SetDir(WEST);
-					world->Move(x_self, y_self, z_self,
-						WEST);
-				break;
 			}
-
+		} else switch ( qrand()%60 ) {
+			case 0:
+				SetDir(NORTH);
+				world->Move(x_self, y_self, z_self, NORTH);
+			break;
+			case 1:
+				SetDir(SOUTH);
+				world->Move(x_self, y_self, z_self, SOUTH);
+			break;
+			case 2:
+				SetDir(EAST);
+				world->Move(x_self, y_self, z_self, EAST);
+			break;
+			case 3:
+				SetDir(WEST);
+				world->Move(x_self, y_self, z_self, WEST);
+			break;
+		}
 		if ( SECONDS_IN_DAY/2 > satiation ) {
 			for (x=x_self-1; x<=x_self+1; ++x)
 			for (y=y_self-1; y<=y_self+1; ++y)
 			for (z=z_self-1; z<=z_self+1; ++z)
-				if ( GREENERY==world->Sub(x, y, z) ) {
+				if ( InBounds(x, y) &&
+						GREENERY==world->Sub(x, y, z) )
+				{
 					world->Eat(x_self, y_self, z_self,
 						x, y, z);
 					return;
