@@ -255,33 +255,35 @@ class Inventory {
 	QStack<Block *> * inventory;
 
 	public:
-	virtual QString & FullName(QString&) const=0;
-	virtual int Kind() const=0;
-	virtual int Sub() const=0;
-	virtual float TrueWeight() const=0;
+	virtual int  Kind() const=0;
+	virtual int  Sub() const=0;
+	virtual int  Drop(ushort num, Inventory * inv_to);
+	virtual int  GetAll(Inventory * from);
 	virtual bool Access() const;
-	virtual ushort Start() const;
-	virtual Inventory * HasInventory();
-	virtual int Drop(ushort num, Inventory * inv_to);
 	virtual bool Get(Block * block);
-	virtual int GetAll(Inventory * from);
-	virtual usage_types Use();
 	virtual void Pull(ushort num);
 	virtual void SaveAttributes(QDataStream & out) const;
+	virtual float TrueWeight() const=0;
+	virtual ushort Start() const;
+	virtual usage_types Use();
+	virtual QString & FullName(QString&) const=0;
+	virtual Inventory * HasInventory();
 
 	ushort Size() const;
-	bool GetExact(Block * block, ushort num);
-	int MiniCraft(ushort num);
-	int InscribeInv(ushort num, const QString & str);
-	QString & InvFullName(QString & str, ushort i) const;
-	QString & NumStr(QString & str, ushort i) const;
+	///Returns true if block found its place.
+	bool  GetExact(Block * block, ushort num);
+	void  MoveInside(ushort num_from, ushort num_to);
+	int   MiniCraft(ushort num);
+	int   InscribeInv(ushort num, const QString & str);
+	int   GetInvSub(ushort i) const;
+	int   GetInvKind(ushort i) const;
 	float GetInvWeight(ushort i) const;
-	int GetInvSub(ushort i) const;
-	int GetInvKind(ushort i) const;
-	QString & GetInvNote(QString & str, ushort num) const;
 	float InvWeightAll() const;
 	quint8 Number(ushort i) const;
 	Block * ShowBlock(ushort num) const;
+	QString & GetInvNote(QString & str, ushort num) const;
+	QString & InvFullName(QString & str, ushort i) const;
+	QString & NumStr(QString & str, ushort i) const;
 
 	bool HasRoom();
 	bool IsEmpty();

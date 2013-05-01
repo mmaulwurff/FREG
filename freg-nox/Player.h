@@ -176,6 +176,7 @@ class Player : public QObject {
 	void Craft   (ushort num);
 	void TakeOff (ushort num);
 	void Build(short x, short y, short z, ushort num);
+	void MoveInsideInventory(ushort num_from, ushort num_to);
 	void ProcessCommand(QString & command);
 
 	private:

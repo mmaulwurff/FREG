@@ -405,6 +405,15 @@ void Player::TakeOff(const ushort num) {
 	world->Unlock();
 }
 
+void Player::MoveInsideInventory(const ushort num_from, const ushort num_to) {
+	Inventory * const inv=player ? player->HasInventory() : 0;
+	if ( inv ) {
+		inv->MoveInside(num_from, num_to);
+	} else {
+		emit Notify(tr("No inventory."));
+	}
+}
+
 void Player::ProcessCommand(QString & command) {
 	//don't forget lock and unlock world mutex where needed:
 	//world->WriteLock();

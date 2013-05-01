@@ -724,6 +724,13 @@
 		return false;
 	}
 
+	void Inventory::MoveInside(const ushort num_from, const ushort num_to)
+	{
+		if ( GetExact(ShowBlock(num_from), num_to) ) {
+			Pull(num_from);
+		}
+	}
+
 	int Inventory::InscribeInv(const ushort num, const QString & str) {
 		const int number=Number(num);
 		if ( !number ) {

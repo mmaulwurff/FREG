@@ -312,6 +312,14 @@ void Screen::ControlPlayer(const int ch) {
 		case 'C': actionMode=CRAFT; break;
 		case 'F': actionMode=TAKEOFF; break;
 
+		case ';': {
+			Inventory * const inv=player->GetP() ?
+				player->GetP()->HasInventory() : 0;
+			if ( inv ) {
+				player->MoveInsideInventory(
+					inv->Start(), inv->Size()-1);
+			}
+		} break;
 		case '{': shiftFocus -= ( -1==shiftFocus ) ? 0 : 1; break;
 		case '}': shiftFocus += (  1==shiftFocus ) ? 0 : 1; break;
 
