@@ -441,20 +441,19 @@ void Screen::Print() {
 
 	w->Unlock();
 
-	//HitPoints line
-	wstandend(hudWin);
-	wmove(hudWin, 0, 0);
-	wprintw(hudWin, "HP: %3hd  [", dur);
-	wcolor_set(hudWin, WHITE_RED, NULL);
-	for (i=0; i<10*dur/MAX_DURABILITY; ++i) {
-		waddch(hudWin, '.');
+	if ( -1!=dur ) { //HitPoints line
+		wstandend(hudWin);
+		wmove(hudWin, 0, 0);
+		wprintw(hudWin, "HP: %3hd  [", dur);
+		wcolor_set(hudWin, WHITE_RED, NULL);
+		for (i=0; i<10*dur/MAX_DURABILITY; ++i) {
+			waddch(hudWin, '.');
+		}
+		wstandend(hudWin);
+		mvwaddch(hudWin, 0, 20, ']');
 	}
-	wstandend(hudWin);
-	mvwaddch(hudWin, 0, 20, ']');
-
-	//breath line
-	wmove(hudWin, 1, 0);
-	if ( -1!=breath ) {
+	if ( -1!=breath ) { //breath line
+		wmove(hudWin, 1, 0);
 		wprintw(hudWin, "BR: %3hd%% [", 100*breath/MAX_BREATH);
 		wcolor_set(hudWin, WHITE_BLUE, NULL);
 		for (i=0; i<10*breath/MAX_BREATH; ++i)
@@ -463,7 +462,7 @@ void Screen::Print() {
 		mvwaddch(hudWin, 1, 20, ']');
 	}
 	//action mode
-	wmove(hudWin, 2, 0);
+	wmove(hudWin, 3, 0);
 	wstandend(hudWin);
 	waddstr(hudWin, "Action: ");
 	switch ( actionMode ) {
@@ -481,10 +480,8 @@ void Screen::Print() {
 				"Screen::Print: Unlisted actionMode: %d\n",
 				actionMode);
 	}
-	//satiation line
-	wmove(hudWin, 3, 0);
-	//wprintw(hudWin, "Sat: %u ", satiation);
-	if ( -1!=satiation ) {
+	if ( -1!=satiation ) { //satiation line
+		wmove(hudWin, 2, 0);
 		if ( SECONDS_IN_DAY<satiation ) {
 			wcolor_set(hudWin, BLUE_BLACK, NULL);
 			waddstr(hudWin, "Gorged\n");
@@ -503,12 +500,25 @@ void Screen::Print() {
 			"Focus shift down" : "Focus shift up");
 	}
 	if ( player->GetCreativeMode() ) {
-		mvwaddstr(hudWin, 1, 100, "Creative Mode");
+		mvwaddstr(hudWin, 0, 0, "Creative Mode");
 		//coordinates
-		mvwprintw(hudWin, 3, 22, "xyz: %hu, %hu, %hu",
-			player->X(), player->Y(), player->Z());
-		mvwprintw(hudWin, 2, 22, "XY:  %ld, %ld",
+		mvwprintw(hudWin, 1, 0, "xyz: %hu, %hu, %hu. XY: %ld, %ld",
+			player->X(), player->Y(), player->Z(),
 			player->GetLatitude(), player->GetLongitude());
+		switch ( player->Dir() ) {
+			case NORTH:
+				mvwaddstr(hudWin, 2, 0, "^ North ^");
+			break;
+			case SOUTH:
+				mvwaddstr(hudWin, 2, 0, "v South v");
+			break;
+			case EAST:
+				mvwaddstr(hudWin, 2, 0, "> East >");
+			break;
+			case WEST:
+				mvwaddstr(hudWin, 2, 0, "< West <");
+			break;
+		}
 	}
 	wnoutrefresh(hudWin);
 	doupdate();
@@ -678,7 +688,12 @@ void Screen::PrintFront(WINDOW * const window) const {
 	}
 	wstandend(window);
 	box(window, 0, 0);
-	mvwaddstr(window, 0, 1, "Front View");
+	switch ( dir ) {
+		case NORTH: mvwaddstr(window, 0, 1, "North view:"); break;
+		case SOUTH: mvwaddstr(window, 0, 1, "South view:"); break;
+		case EAST:  mvwaddstr(window, 0, 1, "East view:");  break;
+		case WEST:  mvwaddstr(window, 0, 1, "West view:");  break;
+	}
 	Arrows(window, arrow_X, arrow_Y);
 	if ( shiftFocus ) {
 		HorizontalArrows(window, arrow_Y-=shiftFocus, WHITE_BLUE);
