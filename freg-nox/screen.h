@@ -36,7 +36,7 @@ enum actions {
 	EAT,
 	BUILD,
 	CRAFT,
-	TAKEOFF,
+	TAKEOFF
 }; //enum actions
 enum color_pairs { //do not change colors order! //foreground_background
         BLACK_BLACK=1,

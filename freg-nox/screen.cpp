@@ -245,14 +245,14 @@ void Screen::ControlPlayer(const int ch) {
 	if ( ch>='a' && ch<='z' ) { //actions with inventory
 		const int num=ch-'a';
 		switch ( actionMode ) {
-			case USE:   player->Use(num); break;
-			case THROW: player->Throw(num); break;
-			case OBTAIN: player->Obtain(num); break;
-			case WIELD: player->Wield(num); break;
+			case USE:      player->Use(num); break;
+			case THROW:    player->Throw(num); break;
+			case OBTAIN:   player->Obtain(num); break;
+			case WIELD:    player->Wield(num); break;
 			case INSCRIBE: player->Inscribe(num); break;
-			case EAT: player->Eat(num); break;
-			case CRAFT: player->Craft(num); break;
-			case TAKEOFF: player->TakeOff(num); break;
+			case EAT:      player->Eat(num); break;
+			case CRAFT:    player->Craft(num); break;
+			case TAKEOFF:  player->TakeOff(num); break;
 			case BUILD: {
 				ushort x, y, z;
 				ActionXyz(x, y, z);
@@ -267,10 +267,10 @@ void Screen::ControlPlayer(const int ch) {
 		return;
 	}
 	switch ( ch ) { //interactions with world
-		case KEY_UP: player->Move(NORTH); break;
-		case KEY_DOWN: player->Move(SOUTH); break;
+		case KEY_UP:    player->Move(NORTH); break;
+		case KEY_DOWN:  player->Move(SOUTH); break;
 		case KEY_RIGHT: player->Move(EAST); break;
-		case KEY_LEFT: player->Move(WEST); break;
+		case KEY_LEFT:  player->Move(WEST); break;
 		case ' ': player->Jump(); break;
 
 		case '>': player->Turn(World::TurnRight(player->Dir())); break;
@@ -397,18 +397,16 @@ void Screen::Print() {
 
 	switch ( player->UsingType() ) {
 		case OPEN:
-			if ( player ) {
-				PrintInv(leftWin,
-					player->UsingBlock()->HasInventory());
-				break;
-			}
+			PrintInv(leftWin,
+				player->UsingBlock()->HasInventory());
+			break;
 		default: PrintNormal(leftWin);
 	}
 	switch ( player->UsingSelfType() ) {
 		case OPEN:
-			if ( player && player->GetP()->HasInventory() ) {
+			if ( player->PlayerInventory() ) {
 				PrintInv(rightWin,
-					player->GetP()->HasInventory());
+					player->PlayerInventory());
 				break;
 			} //no break;
 		default:

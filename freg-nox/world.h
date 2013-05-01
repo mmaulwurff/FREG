@@ -78,6 +78,7 @@ class World : public QThread {
 	ushort deferredActionZFrom;
 	quint8 deferredActionDir;
 	Block * deferredActionWhat;
+	Block * deferredActionWho;
 	int deferredActionData1;
 	int deferredActionData2;
 	int deferredActionType;
@@ -198,6 +199,7 @@ class World : public QThread {
 			ushort y_from=0,
 			ushort z_from=0,
 			Block * what=0,
+			Block * who=0,
 			int data1=0,
 			int data2=0);
 

@@ -371,18 +371,14 @@ void World::PhysEvents() {
 					deferredActionY,
 					deferredActionZ,
 					World::TurnRight(deferredActionDir),
-					GetBlock(
-						deferredActionXFrom,
-						deferredActionYFrom,
-						deferredActionZFrom));
+					deferredActionWho);
 				if ( !build /*no errors*/ ) {
-					Inventory * const inv=GetBlock(
-							deferredActionXFrom,
-							deferredActionYFrom,
-							deferredActionZFrom)->
-								HasInventory();
-					if ( inv )
+					Inventory * const inv=
+						deferredActionWho->
+							HasInventory();
+					if ( inv ) {
 						inv->Pull(deferredActionData1);
+					}
 				}
 			} break;
 			case DEFERRED_DAMAGE:
@@ -666,6 +662,7 @@ void World::SetDeferredAction(
 		const ushort y_from,
 		const ushort z_from,
 		Block * const what,
+		Block * const who,
 		const int data1,
 		const int data2)
 {
@@ -678,6 +675,7 @@ void World::SetDeferredAction(
 	deferredActionDir=dir;
 	deferredActionType=action;
 	deferredActionWhat=what;
+	deferredActionWho=who;
 	deferredActionData1=data1;
 	deferredActionData2=data2;
 }

@@ -37,12 +37,10 @@ bool Player::GetCreativeMode() const { return creativeMode; }
 void Player::SetCreativeMode(const bool turn) {
 	creativeMode=turn;
 	if ( turn ) {
-		disconnect(player, SIGNAL(Destroyed()));
-		disconnect(player, SIGNAL(Moved(int)));
-		disconnect(player, SIGNAL(Updated()));
-		disconnect(player, SIGNAL(ReceivedText(const QString &)));
-		player=0;
+		disconnect(player, 0, 0, 0);
+		player=(Active *)block_manager.NewBlock(PILE, DIFFERENT);
 	} else {
+		block_manager.DeleteBlock(player);
 		SetPlayer(x, y, z);
 		player=(Active *)world->GetBlock(x, y, z);
 	}
@@ -54,11 +52,13 @@ int Player::UsingType() const { return usingType; }
 Active * Player::GetP() const { return player; }
 
 short Player::HP() const {
-	return player ? player->Durability() : 0;
+	return ( !player || creativeMode ) ?
+		-1 :
+		player ? player->Durability() : 0;
 }
 
 short Player::Breath() const {
-	if ( !player ) {
+	if ( !player || creativeMode ) {
 		return -1;
 	}
 	Animal const * const animal=player->IsAnimal();
@@ -66,7 +66,7 @@ short Player::Breath() const {
 }
 
 short Player::Satiation() const {
-	if ( !player ) {
+	if ( !player || creativeMode ) {
 		return -1;
 	}
 	Animal const * const animal=player->IsAnimal();
@@ -151,12 +151,12 @@ void Player::Jump() {
 }
 
 void Player::Move(const int dir) {
-	if ( player ) {
+	if ( !creativeMode && player ) {
 		world->WriteLock();
 		usingType=NO;
 		world->SetDeferredAction(x, y, z, dir, DEFERRED_MOVE);
 		world->Unlock();
-	} else if ( creativeMode ) {
+	} else {
 		switch ( dir ) {
 			case NORTH:
 				if ( y>=(world->NumShreds()/2-1)*SHRED_WIDTH+1 ) {
@@ -176,6 +176,16 @@ void Player::Move(const int dir) {
 			case WEST:
 				if ( x>=(world->NumShreds()/2-1)*SHRED_WIDTH+1 ) {
 					--x;
+				}
+			break;
+			case UP:
+				if ( z<HEIGHT-2 ) {
+					++z;
+				}
+			break;
+			case DOWN:
+				if ( z>1 ) {
+					--z;
 				}
 			break;
 			default:
@@ -262,7 +272,8 @@ void Player::Throw(const ushort num) {
 			UP, //doesn't matter here
 			DEFERRED_THROW,
 			x, y, z,
-			0,
+			0, //what, doesn't matter here
+			0, //who
 			num);
 	}
 	world->Unlock();
@@ -367,6 +378,7 @@ void Player::Build(
 			DEFERRED_BUILD,
 			x, y, z,
 			block,
+			player,
 			num);
 	}
 	world->Unlock();
@@ -537,6 +549,7 @@ const {
 			DEFERRED_DAMAGE,
 			x, y, z,
 			0, //what block - doesn't matter
+			0, //who
 			( creativeMode ?
 				MAX_DURABILITY : player->DamageLevel() ),
 			( creativeMode ? CREATIVE : player->DamageKind() ));
@@ -686,7 +699,7 @@ Player::Player(World * const w) :
 	x+=plus;
 	y+=plus;
 	if ( creativeMode ) {
-		player=0;
+		player=(Active *)block_manager.NewBlock(PILE, DIFFERENT);
 		dir=NORTH;
 	} else {
 		SetPlayer(x, y, z);
@@ -720,6 +733,10 @@ void Player::CleanAll() {
 		return;
 	}
 	cleaned=true;
+
+	if ( creativeMode ) {
+		block_manager.DeleteBlock(player);
+	}
 
 	QSettings sett(QDir::currentPath()+'/'+
 			world->WorldName()+"/settings.ini",
