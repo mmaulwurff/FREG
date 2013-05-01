@@ -317,14 +317,14 @@ void Screen::ControlPlayer(const int ch) {
 
 		case '+': w->SetNumActiveShreds(w->NumActiveShreds()+2); break;
 		case '-':
-			if ( w->NumActiveShreds() > 1 )
+			if ( w->NumActiveShreds() > 3 ) {
 				w->SetNumActiveShreds(w->NumActiveShreds()-2);
-			else
+			} else {
 				Notify(QString(
-					"Active shreds number too small: \
-					%1x%2.").
+					"Active zone is too small: %1x%2.").
 						arg(w->NumActiveShreds()).
 						arg(w->NumActiveShreds()));
+			}
 		break;
 		case '#':
 			Notify("Don't make shreds number too big.");
@@ -381,7 +381,7 @@ const {
 void Screen::Print() {
 	w->ReadLock();
 
-	if ( updated || !player || !player->GetP() ) {
+	if ( updated || !player ) {
 		w->Unlock();
 		return;
 	}
@@ -414,7 +414,8 @@ void Screen::Print() {
 	werase(hudWin);
 	ushort i;
 	//quick inventory
-	Inventory * const inv=player->GetP()->HasInventory();
+	Inventory * const inv=player->GetP() ?
+		player->GetP()->HasInventory() : 0;
 	if ( inv ) {
 		for (i=0; i<inv->Size(); ++i) {
 			wstandend(hudWin);
@@ -439,8 +440,9 @@ void Screen::Print() {
 	wmove(hudWin, 0, 0);
 	wprintw(hudWin, "HP: %3hd  [", dur);
 	wcolor_set(hudWin, WHITE_RED, NULL);
-	for (i=0; i<10*dur/MAX_DURABILITY; ++i)
+	for (i=0; i<10*dur/MAX_DURABILITY; ++i) {
 		waddch(hudWin, '.');
+	}
 	wstandend(hudWin);
 	mvwaddch(hudWin, 0, 20, ']');
 
@@ -539,10 +541,15 @@ void Screen::PrintNormal(WINDOW * const window) const {
 	if ( UP==dir || DOWN==dir ) {
 		mvwaddstr(window, 0, 1, ( UP==dir ) ?
 			"Sky View" : "Ground View");
-		Arrows(window ,
+		Arrows(window,
 			(player->X()-start_x)*2+1, player->Y()-start_y+1);
 	} else {
 		mvwaddstr(window, 0, 1, "Normal View");
+		if ( player->GetCreativeMode() ) {
+			Arrows(window,
+				(player->X()-start_x)*2+1,
+				player->Y()-start_y+1);
+		}
 	}
 	wnoutrefresh(window);
 }

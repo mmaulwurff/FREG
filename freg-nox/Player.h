@@ -57,13 +57,13 @@ class Player : public QObject {
 	Active * player;
 	int usingType;
 	int usingSelfType;
-	Shred * shred;
 
 	bool creativeMode;
 
 	volatile bool cleaned;
 
 	void UpdateXYZ();
+	Shred * GetShred() const;
 
 	public slots:
 
@@ -154,17 +154,21 @@ class Player : public QObject {
 	void SetCreativeMode(bool turn);
 
 	void Turn(int dir);
-	int Move(int dir);
+	void Move(int dir);
 	void Jump();
 
+	///Tries to switch usingSelfType from NO to OPEN.
 	void Backpack();
 	void Inscribe(short x, short y, short z) const;
 	void Examine(short x, short y, short z) const;
 	void Damage(short x, short y, short z) const;
 	void Use(short x, short y, short z);
 
+	///Tries to use block number num in inventory.
 	void Use     (ushort num);
+	///Tries to throw (drop out) block number num from inventory.
 	void Throw   (ushort num);
+	///Tries to get block number num from outer inventory.
 	void Obtain  (ushort num);
 	void Wield   (ushort num);
 	void Inscribe(ushort num);

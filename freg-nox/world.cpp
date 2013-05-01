@@ -117,8 +117,9 @@ void World::ReloadAllShreds(
 	newX=new_x;
 	newY=new_y;
 	newZ=new_z;
-	if ( numActiveShreds > new_num_shreds )
+	if ( numActiveShreds > new_num_shreds ) {
 		numActiveShreds=new_num_shreds;
+	}
 	newNumShreds=new_num_shreds;
 	toReSet=true;
 }
@@ -961,7 +962,7 @@ void World::SetNumActiveShreds(ushort num) {
 			"Invalid shreds number:%1x%2.").arg(num).arg(num));
 		++num;
 	}
-	if ( !num ) {
+	if ( num < 3 ) {
 		emit Notify(QString(
 			"Active shreds number too small: %1x%2.").
 				arg(num).

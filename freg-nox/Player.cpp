@@ -31,8 +31,22 @@ ushort Player::X() const { return x; }
 ushort Player::Y() const { return y; }
 ushort Player::Z() const { return z; }
 
+Shred * Player::GetShred() const { return world->GetShred(x, y); }
+
 bool Player::GetCreativeMode() const { return creativeMode; }
-void Player::SetCreativeMode(const bool turn) { creativeMode=turn; }
+void Player::SetCreativeMode(const bool turn) {
+	creativeMode=turn;
+	if ( turn ) {
+		disconnect(player, SIGNAL(Destroyed()));
+		disconnect(player, SIGNAL(Moved(int)));
+		disconnect(player, SIGNAL(Updated()));
+		disconnect(player, SIGNAL(ReceivedText(const QString &)));
+		player=0;
+	} else {
+		SetPlayer(x, y, z);
+		player=(Active *)world->GetBlock(x, y, z);
+	}
+}
 
 int Player::UsingSelfType() const { return usingSelfType; }
 int Player::UsingType() const { return usingType; }
@@ -63,8 +77,8 @@ Inventory * Player::PlayerInventory() {
 	return ( player ? player->HasInventory() : 0 );
 }
 
-long Player::GetLongitude() const { return shred->Longitude(); }
-long Player::GetLatitude()  const { return shred->Latitude();  }
+long Player::GetLongitude() const { return GetShred()->Longitude(); }
+long Player::GetLatitude()  const { return GetShred()->Latitude();  }
 
 void Player::UpdateXYZ() {
 	if ( player ) {
@@ -122,18 +136,55 @@ const {
 }
 
 void Player::Jump() {
-	world->WriteLock();
-	usingType=NO;
-	world->SetDeferredAction(x, y, z, dir, DEFERRED_JUMP);
-	world->Unlock();
+	if ( player ) {
+		world->WriteLock();
+		usingType=NO;
+		world->SetDeferredAction(x, y, z, dir, DEFERRED_JUMP);
+		world->Unlock();
+	} else if ( creativeMode ) {
+		if ( UP==dir && z<HEIGHT-2 ) {
+			++z;
+		} else if ( z>1 ) {
+			--z;
+		}
+	}
 }
 
-int Player::Move(const int dir) {
-	world->WriteLock();
-	usingType=NO;
-	world->SetDeferredAction(x, y, z, dir, DEFERRED_MOVE);
-	world->Unlock();
-	return 0;
+void Player::Move(const int dir) {
+	if ( player ) {
+		world->WriteLock();
+		usingType=NO;
+		world->SetDeferredAction(x, y, z, dir, DEFERRED_MOVE);
+		world->Unlock();
+	} else if ( creativeMode ) {
+		switch ( dir ) {
+			case NORTH:
+				if ( y>=(world->NumShreds()/2-1)*SHRED_WIDTH+1 ) {
+					--y;
+				}
+			break;
+			case SOUTH:
+				if ( y<(world->NumShreds()/2+2)*SHRED_WIDTH-1 ) {
+					++y;
+				}
+			break;
+			case EAST:
+				if ( x<(world->NumShreds()/2+2)*SHRED_WIDTH-1 ) {
+					++x;
+				}
+			break;
+			case WEST:
+				if ( x>=(world->NumShreds()/2-1)*SHRED_WIDTH+1 ) {
+					--x;
+				}
+			break;
+			default:
+				fprintf(stderr,
+					"Player::Move: unlisted dir: %d",
+					dir);
+		}
+		emit Updated();
+	}
 }
 
 void Player::Turn(const int dir) {
@@ -502,7 +553,6 @@ void Player::CheckOverstep(const int dir) {
 		emit OverstepBorder(dir);
 		UpdateXYZ();
 	}
-	shred=world->GetShred(x, y);
 }
 
 void Player::BlockDestroy() {
@@ -545,7 +595,6 @@ void Player::SetPlayer(
 	x=player_x;
 	y=player_y;
 	z=player_z;
-	shred=world->GetShred(x, y);
 	if ( DWARF!=world->Kind(x, y, z) ) {
 		block_manager.DeleteBlock(world->GetBlock(x, y, z));
 		world->SetBlock( (player=block_manager.
@@ -613,13 +662,13 @@ Player::Player(World * const w) :
 	homeLongi=sett.value("home_longitude",
 		qlonglong(world->GetSpawnLongi())).toLongLong();
 	homeLati =sett.value("home_latitude",
-			qlonglong(world->GetSpawnLati())).toLongLong();
-	homeX    =sett.value("home_x", 0).toInt();
-	homeY    =sett.value("home_y", 0).toInt();
-	homeZ    =sett.value("home_z", HEIGHT/2).toInt();
-	x        =sett.value("current_x", 0).toInt();
-	y        =sett.value("current_y", 0).toInt();
-	z        =sett.value("current_z", HEIGHT/2).toInt();
+		qlonglong(world->GetSpawnLati())).toLongLong();
+	homeX=sett.value("home_x", 0).toInt();
+	homeY=sett.value("home_y", 0).toInt();
+	homeZ=sett.value("home_z", HEIGHT/2).toInt();
+	x    =sett.value("current_x", 0).toInt();
+	y    =sett.value("current_y", 0).toInt();
+	z    =sett.value("current_z", HEIGHT/2).toInt();
 	creativeMode=sett.value("creative_mode", false).toBool();
 
 	const ushort plus=world->NumShreds()/2*SHRED_WIDTH;
@@ -627,7 +676,13 @@ Player::Player(World * const w) :
 	homeY+=plus;
 	x+=plus;
 	y+=plus;
-	SetPlayer(x, y, z);
+	if ( creativeMode ) {
+		player=0;
+		dir=NORTH;
+	} else {
+		SetPlayer(x, y, z);
+		dir=player->GetDir();
+	}
 
 	connect(world, SIGNAL(NeedPlayer(
 			const ushort,
