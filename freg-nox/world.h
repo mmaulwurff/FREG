@@ -162,8 +162,8 @@ class World : public QThread {
 	//visibility section
 	public:
 	bool DirectlyVisible(
-			float, float, float,
-			ushort, ushort, ushort) const;
+			float x_from, float y_from, float z_from,
+			ushort x_to, ushort y_to, ushort z_to) const;
 	bool Visible(
 			ushort x_from, ushort y_from, ushort z_from,
 			ushort x_to,   ushort y_to,   ushort z_to) const;

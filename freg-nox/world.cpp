@@ -493,18 +493,12 @@ bool World::DirectlyVisible(
 		float x_from, float y_from, float z_from,
 		const ushort x_to, const ushort y_to, const ushort z_to)
 const {
+	//TODO: make this symmetric
 	if ( x_from==x_to && y_from==y_to && z_from==z_to ) {
 		return true;
 	}
-	const ushort xdif=abs(x_to-(ushort)x_from);
-	const ushort ydif=abs(y_to-(ushort)y_from);
-	const ushort zdif=abs(z_to-(ushort)z_from);
-	ushort max=(zdif > ydif) ?
-		zdif :
-		ydif;
-	if ( xdif > max ) {
-		max=xdif;
-	}
+	const ushort max=qMax(qAbs(x_to-(short)x_from),
+		qMax(qAbs(z_to-(short)z_from), qAbs(y_to-(short)y_from)));
 	const float x_step=(x_to-x_from)/max;
 	const float y_step=(y_to-y_from)/max;
 	const float z_step=(z_to-z_from)/max;
@@ -525,7 +519,6 @@ bool World::Visible(
 		const ushort x_from, const ushort y_from, const ushort z_from,
 		const ushort x_to,   const ushort y_to,   const ushort z_to)
 const {
-	//TODO: make this symmetric
 	short temp;
 	return (
 		(DirectlyVisible(x_from, y_from, z_from, x_to, y_to, z_to)) ||
