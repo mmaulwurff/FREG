@@ -84,6 +84,7 @@ class Block { //blocks without special physics and attributes
 
 	virtual uchar LightRadius() const;
 	virtual int Temperature() const;
+	///Receive text signal.
 	virtual void ReceiveSignal(const QString &);
 
 	protected:

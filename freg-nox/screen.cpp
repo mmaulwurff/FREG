@@ -484,13 +484,13 @@ void Screen::Print() {
 		wmove(hudWin, 2, 0);
 		if ( SECONDS_IN_DAY<satiation ) {
 			wcolor_set(hudWin, BLUE_BLACK, NULL);
-			waddstr(hudWin, "Gorged\n");
+			waddstr(hudWin, "Gorged");
 		} else if ( 3*SECONDS_IN_DAY/4<satiation ) {
 			wcolor_set(hudWin, GREEN_BLACK, NULL);
-			waddstr(hudWin, "Full\n");
+			waddstr(hudWin, "Full");
 		} else if (SECONDS_IN_DAY/4>satiation) {
 			wcolor_set(hudWin, RED_BLACK, NULL);
-			waddstr(hudWin, "Hungry\n");
+			waddstr(hudWin, "Hungry");
 		}
 	}
 	//shifted focus
@@ -771,7 +771,6 @@ void Screen::Notify(const QString & str) {
 }
 
 void Screen::DeathScreen() {
-	fprintf(stderr, "hello\n");
 	werase(leftWin);
 	werase(rightWin);
 	werase(hudWin);

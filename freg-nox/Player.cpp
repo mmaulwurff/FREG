@@ -136,12 +136,12 @@ const {
 }
 
 void Player::Jump() {
-	if ( player ) {
+	if ( !creativeMode ) {
 		world->WriteLock();
 		usingType=NO;
 		world->SetDeferredAction(x, y, z, dir, DEFERRED_JUMP);
 		world->Unlock();
-	} else if ( creativeMode ) {
+	} else {
 		if ( UP==dir && z<HEIGHT-2 ) {
 			++z;
 		} else if ( z>1 ) {
@@ -552,7 +552,7 @@ const {
 			0, //who
 			( creativeMode ?
 				MAX_DURABILITY : player->DamageLevel() ),
-			( creativeMode ? CREATIVE : player->DamageKind() ));
+			( creativeMode ? TIME : player->DamageKind() ));
 	world->Unlock();
 }
 

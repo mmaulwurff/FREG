@@ -724,12 +724,22 @@ bool World::Damage(
 		SetBlock( (temp = block_manager.
 			NewBlock(temp->Kind(), temp->Sub()) ), i, j, k );
 	}
+	switch ( dmg_kind ) {
+		case HUNGER:
+			temp->ReceiveSignal(tr("You faint from hunger."));
+		break;
+		case BREATH:
+			temp->ReceiveSignal(tr("You choke without air."));
+		break;
+		default: temp->ReceiveSignal(tr("You receive damage: %1.").
+			arg(dmg));
+	}
 	if ( temp->Damage(dmg, dmg_kind) > 0 ) {
 		ReplaceWithNormal(i, j, k); //checks are inside
 		return false;
 	}
 	Block * const dropped=temp->DropAfterDamage();
-	if ( PILE!=temp->Kind() && (temp->HasInventory() || dropped) ) {
+	if ( TIME!=dmg_kind && (temp->HasInventory() || dropped) ) {
 		Block * const new_pile=block_manager.NewBlock(PILE, DIFFERENT);
 		SetBlock(new_pile, i, j, k);
 		Inventory * const inv=temp->HasInventory();
