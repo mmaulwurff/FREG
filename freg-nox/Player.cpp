@@ -137,10 +137,8 @@ const {
 
 void Player::Jump() {
 	if ( !creativeMode ) {
-		world->WriteLock();
 		usingType=NO;
 		world->SetDeferredAction(x, y, z, dir, DEFERRED_JUMP);
-		world->Unlock();
 	} else {
 		if ( UP==dir && z<HEIGHT-2 ) {
 			++z;
@@ -152,10 +150,8 @@ void Player::Jump() {
 
 void Player::Move(const int dir) {
 	if ( !creativeMode && player ) {
-		world->WriteLock();
 		usingType=NO;
 		world->SetDeferredAction(x, y, z, dir, DEFERRED_MOVE);
-		world->Unlock();
 	} else {
 		switch ( dir ) {
 			case NORTH:
@@ -266,6 +262,7 @@ void Player::Use(const ushort num) {
 void Player::Throw(const ushort num) {
 	world->WriteLock();
 	Block * const block=ValidBlock(num);
+	world->Unlock();
 	if ( block ) {
 		world->SetDeferredAction(
 			0, 0, 0,
@@ -276,7 +273,6 @@ void Player::Throw(const ushort num) {
 			0, //who
 			num);
 	}
-	world->Unlock();
 }
 
 void Player::Obtain(const ushort num) {
@@ -287,6 +283,7 @@ void Player::Obtain(const ushort num) {
 	Focus(x_from, y_from, z_from);
 	Inventory * const inv=world->
 		GetBlock(x_from, y_from, z_from)->HasInventory();
+	world->Unlock();
 	if ( !inv || inv->IsEmpty() ) {
 		update_flag=true;
 		usingType=NO;
@@ -301,7 +298,6 @@ void Player::Obtain(const ushort num) {
 	if ( update_flag ) {
 		emit Updated();
 	}
-	world->Unlock();
 }
 
 void Player::Wield(const ushort num) {
@@ -371,6 +367,7 @@ void Player::Build(
 {
 	world->WriteLock();
 	Block * const block=ValidBlock(num);
+	world->Unlock();
 	if ( block && (AIR!=world->Sub(x, y, z-1) || 0==player->Weight()) ) {
 		world->SetDeferredAction(
 			x_target, y_target, z_target,
@@ -381,7 +378,6 @@ void Player::Build(
 			player,
 			num);
 	}
-	world->Unlock();
 }
 
 void Player::Craft(const ushort num) {
@@ -542,7 +538,6 @@ void Player::Damage(
 		const short y_target,
 		const short z_target)
 const {
-	world->WriteLock();
 	world->SetDeferredAction(
 			x_target, y_target, z_target,
 			0, //direction doesn't matter here
@@ -553,7 +548,6 @@ const {
 			( creativeMode ?
 				MAX_DURABILITY : player->DamageLevel() ),
 			( creativeMode ? TIME : player->DamageKind() ));
-	world->Unlock();
 }
 
 int Player::DamageKind() const {

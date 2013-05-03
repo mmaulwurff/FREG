@@ -64,21 +64,20 @@ enum { NOT_MOVABLE, MOVABLE, ENVIRONMENT };
 enum times_of_day { MORNING, NOON, EVENING, NIGHT };
 
 enum damage_kinds {
-	MINE,
-	DIG,
-	CUT,
-	THRUST,
-	CRUSH,
-	HEAT,
-	FREEZE,
-	MELT,
-	ELECTRO,
-	HUNGER,
-	BREATH,
-	EATEN,
-	TIME,
-	NO_HARM,
-	CREATIVE
+	MINE,    ///< 0
+	DIG,     ///< 1
+	CUT,     ///< 2
+	THRUST,  ///< 3
+	CRUSH,   ///< 4
+	HEAT,    ///< 5
+	FREEZE,  ///< 6
+	MELT,    ///< 7
+	ELECTRO, ///< 8
+	HUNGER,  ///< 9
+	BREATH,  ///< 10
+	EATEN,   ///< 11
+	TIME,    ///< 12
+	NO_HARM  ///< 13
 }; //enum damage_kinds
 
 enum kinds {//kind of atom

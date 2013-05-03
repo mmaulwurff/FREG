@@ -337,6 +337,10 @@
 		}
 	}
 
+	int  Weapon::DamageKind() const {
+		return ( IRON==Sub() ) ? THRUST : CRUSH;
+	}
+
 	int Weapon::BeforePush(const int, Block * const) {
 		return ( IRON==Sub() ) ? DAMAGE : NO_ACTION;
 	}
@@ -1616,9 +1620,7 @@
 	}
 
 	int Clock::BeforePush(const int dir, Block * const) {
-		if ( DOWN!=dir ) {
-			Use();
-		}
+		Use();
 		return NO_ACTION;
 	}
 

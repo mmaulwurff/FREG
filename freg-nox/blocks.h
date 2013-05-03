@@ -144,6 +144,7 @@ class Weapon : public Block {
 	bool   IsWeapon() const;
 	float  TrueWeight() const;
 	int    BeforePush(int dir, Block * who);
+	int    DamageKind() const;
 	ushort DamageLevel() const;
 	QString & FullName(QString & str) const;
 
