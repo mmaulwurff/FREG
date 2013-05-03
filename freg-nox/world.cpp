@@ -493,16 +493,53 @@ bool World::DirectlyVisible(
 		float x_from, float y_from, float z_from,
 		const ushort x_to, const ushort y_to, const ushort z_to)
 const {
-	//TODO: make this symmetric
-	if ( x_from==x_to && y_from==y_to && z_from==z_to ) {
-		return true;
-	}
+	return ( x_from==x_to && y_from==y_to && z_from==z_to ) ?
+		true : (
+		( x_to<x_from && y_to<y_from ) ||
+		( x_to>x_from && y_to<y_from && y_to>(2*x_from-x_to-3) ) ||
+		( x_to<x_from && y_to>y_from && y_to>(2*x_from-x_to-3) ) ) ?
+			NegativeVisible(x_from, y_from, z_from,
+				x_to, y_to, z_to) :
+			PositiveVisible(x_from, y_from, z_from,
+				x_to, y_to, z_to);
+}
+
+bool World::NegativeVisible(
+		float x_from, float y_from, float z_from,
+		short x_to, short y_to, const short z_to)
+const {
+	//this function is like World::PositiveVisible,
+	//except those 4 lines:
+	x_from=-x_from;
+	y_from=-y_from;
+	x_to=-x_to;
+	y_to=-y_to;
 	const ushort max=qMax(qAbs(x_to-(short)x_from),
 		qMax(qAbs(z_to-(short)z_from), qAbs(y_to-(short)y_from)));
 	const float x_step=(x_to-x_from)/max;
 	const float y_step=(y_to-y_from)/max;
 	const float z_step=(z_to-z_from)/max;
+	for (ushort i=1; i<max; ++i) {
+		if ( BLOCK_OPAQUE==Transparent(
+				-qRound(x_from+=x_step),
+				-qRound(y_from+=y_step),
+				qRound(z_from+=z_step)) )
+		{
+			return false;
+		}
+	}
+	return true;
+}
 
+bool World::PositiveVisible(
+		float x_from, float y_from, float z_from,
+		const ushort x_to, const ushort y_to, const ushort z_to)
+const {
+	const ushort max=qMax(qAbs(x_to-(short)x_from),
+		qMax(qAbs(z_to-(short)z_from), qAbs(y_to-(short)y_from)));
+	const float x_step=(x_to-x_from)/max;
+	const float y_step=(y_to-y_from)/max;
+	const float z_step=(z_to-z_from)/max;
 	for (ushort i=1; i<max; ++i) {
 		if ( BLOCK_OPAQUE==Transparent(
 				qRound(x_from+=x_step),

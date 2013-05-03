@@ -167,6 +167,13 @@ class World : public QThread {
 	bool Visible(
 			ushort x_from, ushort y_from, ushort z_from,
 			ushort x_to,   ushort y_to,   ushort z_to) const;
+	private:
+	bool PositiveVisible(
+			float  x_from, float y_from, float z_from,
+			ushort x_to, ushort y_to, ushort z_to) const;
+	bool NegativeVisible(
+			float x_from, float y_from, float z_from,
+			short x_to,   short y_to,   short z_to) const;
 
 	//movement section
 	public:
