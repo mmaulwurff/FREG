@@ -300,11 +300,11 @@
 	bool Ladder::Catchable() const { return true; }
 
 	Ladder::Ladder(const int sub) :
-			Block(sub)
+			Block(sub, NONSTANDARD)
 	{}
 
 	Ladder::Ladder(QDataStream & str, const int sub) :
-			Block(str, sub)
+			Block(str, sub, NONSTANDARD)
 	{}
 
 //Weapon::
@@ -1619,7 +1619,7 @@
 		}
 	}
 
-	int Clock::BeforePush(const int dir, Block * const) {
+	int Clock::BeforePush(const int, Block * const) {
 		Use();
 		return NO_ACTION;
 	}

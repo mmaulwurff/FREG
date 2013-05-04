@@ -542,8 +542,9 @@ void Screen::PrintNormal(WINDOW * const window) const {
 	for ( i=start_x; i<SCREEN_SIZE+start_x; ++i ) {
 		ushort k;
 		for (k=k_start; INVISIBLE==w->Transparent(i, j, k); k+=k_step);
-		if ( w->Enlightened(i, j, k, block_side) &&
-				player->Visible(i, j, k) )
+		if ( (w->Enlightened(i, j, k, block_side) &&
+				player->Visible(i, j, k)) ||
+				player->GetCreativeMode() )
 		{
 			PrintBlock(i, j, k, window);
 			waddch(window, CharNumber(i, j, k));
@@ -661,10 +662,12 @@ void Screen::PrintFront(WINDOW * const window) const {
 		for (*x=x_start; *x!=x_end; *x+=x_step) {
 			for (*z=z_start; *z!=z_end; *z+=z_step)
 				if ( w->Transparent(i, j, k) != INVISIBLE ) {
-					if ( w->Enlightened(i, j, k,
+					if ( (w->Enlightened(i, j, k,
 							block_side) &&
 							player->
-							Visible(i, j, k) )
+							Visible(i, j, k)) ||
+							player->
+							GetCreativeMode() )
 					{
 						PrintBlock(i, j, k, window);
 						waddch(window,

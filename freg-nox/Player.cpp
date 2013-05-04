@@ -109,8 +109,8 @@ const {
 	QString str;
 	emit Notify( world->FullName(str, i, j, k) );
 	if ( creativeMode ) { //know more
-		emit Notify(QString(tr("Light: %1, fire: %2, sun: %3. \
-				Transp: %4. Normal: %5. Direction: %6.")).
+		emit Notify(QString(tr(
+		"Light:%1, fire:%2, sun:%3. Transp:%4. Norm:%5. Dir:%6.")).
 			arg(world->Enlightened(i, j, k)).
 			arg(world->FireLight(i, j, k)/16).
 			arg(world->SunLight(i, j, k)).
@@ -155,22 +155,26 @@ void Player::Move(const int dir) {
 	} else {
 		switch ( dir ) {
 			case NORTH:
-				if ( y>=(world->NumShreds()/2-1)*SHRED_WIDTH+1 ) {
+				if (y>=(world->NumShreds()/2-1)*SHRED_WIDTH+1 )
+				{
 					--y;
 				}
 			break;
 			case SOUTH:
-				if ( y<(world->NumShreds()/2+2)*SHRED_WIDTH-1 ) {
+				if (y<(world->NumShreds()/2+2)*SHRED_WIDTH-1)
+				{
 					++y;
 				}
 			break;
 			case EAST:
-				if ( x<(world->NumShreds()/2+2)*SHRED_WIDTH-1 ) {
+				if (x<(world->NumShreds()/2+2)*SHRED_WIDTH-1)
+				{
 					++x;
 				}
 			break;
 			case WEST:
-				if ( x>=(world->NumShreds()/2-1)*SHRED_WIDTH+1 ) {
+				if (x>=(world->NumShreds()/2-1)*SHRED_WIDTH+1)
+				{
 					--x;
 				}
 			break;
