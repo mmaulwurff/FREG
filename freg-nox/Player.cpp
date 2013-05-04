@@ -40,9 +40,13 @@ void Player::SetCreativeMode(const bool turn) {
 		disconnect(player, 0, 0, 0);
 		player=(Active *)block_manager.NewBlock(PILE, DIFFERENT);
 	} else {
-		block_manager.DeleteBlock(player);
+		Pile * const creative_inv=(Pile *)player;
 		SetPlayer(x, y, z);
-		player=(Active *)world->GetBlock(x, y, z);
+		Inventory * const inv=PlayerInventory();
+		if ( inv ) {
+			inv->GetAll(creative_inv);
+		}
+		block_manager.DeleteBlock(creative_inv);
 	}
 }
 
