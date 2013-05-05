@@ -184,6 +184,7 @@
 	bool Block::operator==(const Block & block) const {
 		return ( block.Kind()==Kind() &&
 				block.Sub()==Sub() &&
+				block.GetDir()==GetDir() &&
 				block.Durability()==Durability() &&
 				*block.note==*note );
 	}

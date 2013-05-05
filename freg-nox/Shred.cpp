@@ -335,13 +335,14 @@ void Shred::PutBlock(
 
 void Shred::PutNormalBlock(
 		const int sub,
-		const ushort x, const ushort y, const ushort z)
+		const ushort x, const ushort y, const ushort z,
+		const int dir)
 {
-	blocks[x][y][z]=Normal(sub);
+	blocks[x][y][z]=Normal(sub, dir);
 }
 
-Block * Shred::Normal(const int sub) {
-	return block_manager.NormalBlock(sub);
+Block * Shred::Normal(const int sub, const int dir) {
+	return block_manager.NormalBlock(sub, dir);
 }
 
 QString Shred::FileName() const {
@@ -680,7 +681,11 @@ bool Shred::Tree(
 	for (k=z; k<z+height-1; ++k) { //trunk
 		PutNormalBlock(WOOD, x+1, y+1, k);
 	}
-	for (i=x; i<=x+2; ++i) //leaves
+	//branches
+	PutNormalBlock(WOOD, x,   y+1, z+height/2, WEST);
+	PutNormalBlock(WOOD, x+2, y+1, z+height/2, EAST);
+	//leaves
+	for (i=x; i<=x+2; ++i)
 	for (j=y; j<=y+2; ++j)
 	for (k=z+height/2; k<z+height; ++k) {
 		if ( AIR==Sub(i, j, k) ) {

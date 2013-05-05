@@ -63,8 +63,8 @@ class Shred {
 	///Puts block to coordinates, not activates it (e.g. in World::Move)
 	void PutBlock(Block * block, ushort x, ushort y, ushort z);
 	///Puts normal block to coordinates
-	void PutNormalBlock(int sub, ushort x, ushort y, ushort z);
-	static Block * Normal(int sub);
+	void PutNormalBlock(int sub, ushort x, ushort y, ushort z, int dir=UP);
+	static Block * Normal(int sub, int dir=UP);
 
 	uchar LightMap(ushort x, ushort y, ushort z) const;
 	bool SetLightMap(uchar level, ushort x, ushort y, ushort z);

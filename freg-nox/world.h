@@ -105,7 +105,7 @@ class World : public QThread {
 	void PutBlock(Block * block, ushort x, ushort y, ushort z);
 	///Puts normal block to coordinates.
 	void PutNormalBlock(subs sub, ushort x, ushort y, ushort z);
-	static Block * Normal(int sub);
+	static Block * Normal(int sub, int dir=UP);
 	static void DeleteBlock(Block * block);
 
 	//lighting section

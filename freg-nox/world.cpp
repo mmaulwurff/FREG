@@ -221,13 +221,17 @@ void World::PutNormalBlock(
 	PutBlock(Normal(sub), x, y, z);
 }
 
-Block * World::Normal(const int sub) { return block_manager.NormalBlock(sub); }
+Block * World::Normal(const int sub, const int dir) {
+	return block_manager.NormalBlock(sub, dir);
+}
 void World::DeleteBlock(Block * const block) {
 	block_manager.DeleteBlock(block);
 }
 
 Block * World::ReplaceWithNormal(Block * const block) {
-	if ( block!=Normal(block->Sub()) && *block==*Normal(block->Sub()) ) {
+	if ( block!=Normal(block->Sub()) &&
+			*block==*Normal(block->Sub(), block->GetDir()) )
+	{
 		block_manager.DeleteBlock(block);
 		return Normal(block->Sub());
 	} else {
@@ -370,7 +374,7 @@ void World::PhysEvents() {
 					deferredActionX,
 					deferredActionY,
 					deferredActionZ,
-					World::TurnRight(deferredActionDir),
+					TurnRight(deferredActionDir),
 					deferredActionWho);
 				if ( !build /*no errors*/ ) {
 					Inventory * const inv=
@@ -823,7 +827,11 @@ int World::Build(
 	}
 	block->Restore();
 	SetBlock(block, i, j, k);
-	block->SetDir(dir);
+	ReplaceWithNormal(i, j, k);
+	if ( block!=block_manager.NormalBlock(block->Sub(), block->GetDir()) )
+	{
+		block->SetDir(dir);
+	}
 
 	ReEnlighten(i, j, k);
 	return 0;
@@ -834,10 +842,11 @@ void World::Inscribe(const ushort i, const ushort j, const ushort k) {
 		return;
 	}
 	Block * block=GetBlock(i, j, k);
-	if ( block==World::Normal(block->Sub()) )
+	if ( block==Normal(block->Sub()) ) {
 		SetBlock(block=block_manager.
 				NewBlock(block->Kind(), block->Sub()),
 			i, j, k);
+	}
 	QString str="No note received\n";
 	emit GetString(str);
 	block->Inscribe(str);
