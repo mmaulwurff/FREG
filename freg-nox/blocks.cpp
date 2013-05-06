@@ -123,13 +123,13 @@
 		return ( AIR==Sub() ) ? ENVIRONMENT : NOT_MOVABLE;
 	}
 
-	int Block::BeforePush(const int, Block * const) { return NO_ACTION; }
+	int  Block::BeforePush(const int, Block * const) { return NO_ACTION; }
 
 	int  Block::Move(const int) { return 0; }
 
 	bool Block::Armour() const { return false; }
 
-	bool Block::IsWeapon() const { return false; }
+	int  Block::Wearable() const { return WEARABLE_NOWHERE; }
 
 	int  Block::DamageKind() const { return CRUSH; }
 
@@ -348,7 +348,7 @@
 
 	float Weapon::TrueWeight() const { return 1; }
 
-	bool Weapon::IsWeapon() const { return true; }
+	int Weapon::Wearable() const { return WEARABLE_ARM; }
 
 	Weapon::Weapon(const int sub) :
 			Block(sub, NONSTANDARD)
@@ -719,6 +719,9 @@
 	}
 
 	bool Inventory::GetExact(Block * const block, const ushort num) {
+		if ( !block ) {
+			return true;
+		}
 		if ( inventory[num].isEmpty() ||
 				( *block==*inventory[num].top() &&
 				Number(num)<max_stack_size ) )
@@ -729,10 +732,13 @@
 		return false;
 	}
 
-	void Inventory::MoveInside(const ushort num_from, const ushort num_to)
+	bool Inventory::MoveInside(const ushort num_from, const ushort num_to)
 	{
 		if ( GetExact(ShowBlock(num_from), num_to) ) {
 			Pull(num_from);
+			return true;
+		} else {
+			return false;
 		}
 	}
 
@@ -956,25 +962,26 @@
 
 	bool Dwarf::Access() const { return false; }
 
-	int Dwarf::Wield(const ushort num) {
-		Block *  const block=ShowBlock(num);
-		if  ( !block )
-			return 1;
-
-		if ( block->IsWeapon() ) {
-			if ( !ShowBlock(inRight) ) {
-				GetExact(block, inRight);
-				Pull(num);
-				return 0;
-			}
-			if ( !ShowBlock(inLeft) ) {
-				GetExact(block, inLeft);
-				Pull(num);
-				return 0;
-			}
+	bool Dwarf::MoveInside(ushort num_from, ushort num_to) {
+		Block *  const block=ShowBlock(num_from);
+		if  ( !block ) {
+			return true;
+		} else if ( num_to > onLegs ||
+				( onHead==num_to &&
+					WEARABLE_HEAD==block->Wearable() ) ||
+				( (inRight==num_to || inLeft==num_to) &&
+					WEARABLE_ARM==block->Wearable() ) ||
+				( onBody==num_to &&
+					WEARABLE_BODY==block->Wearable() ) ||
+				( onLegs==num_to &&
+					WEARABLE_LEGS==block->Wearable() ) )
+		{
+			GetExact(block, num_to);
+			Pull(num_from);
+			return true;
+		} else {
+			return false;
 		}
-		//TODO: clothes, armour
-		return 2;
 	}
 
 	void Dwarf::SaveAttributes(QDataStream & out) const {

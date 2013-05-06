@@ -170,7 +170,9 @@ class Player : public QObject {
 	void Throw   (ushort num);
 	///Tries to get block number num from outer inventory.
 	void Obtain  (ushort num);
-	void Wield   (ushort num);
+	///Returns true if wielding successful.
+	bool Wield   (ushort num);
+	bool Wield   (ushort num_from, ushort num_to);
 	void Inscribe(ushort num);
 	void Eat     (ushort num);
 	void Craft   (ushort num);
@@ -180,6 +182,7 @@ class Player : public QObject {
 	void ProcessCommand(QString & command);
 
 	private:
+	bool InnerWield(ushort num_from, ushort num_to);
 	Block * ValidBlock(ushort num) const;
 	int DamageKind() const;
 	ushort DamageLevel() const;

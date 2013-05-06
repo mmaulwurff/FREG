@@ -308,23 +308,43 @@ void Player::Obtain(const ushort num) {
 	}
 }
 
-void Player::Wield(const ushort num) {
+bool Player::Wield(const ushort num) {
 	world->WriteLock();
 	if ( ValidBlock(num) ) {
-		if ( DWARF==player->Kind() ) {
-			const int wield_code=((Dwarf *)player)->Wield(num);
-			if ( 1==wield_code ) {
-				emit Notify("Nothing here.");
-			} else if ( 2==wield_code ) {
-				emit Notify("Cannot wield this.");
-			} else {
-				emit Updated();
+		for (ushort i=0; i<=Dwarf::onLegs; ++i ) {
+			if ( InnerWield(num, i) ) {
+				world->Unlock();
+				return true;
 			}
-		} else {
-			emit Notify("You can wield nothing.");
 		}
 	}
+	emit Notify(tr("You cannot wield this."));
 	world->Unlock();
+	return false;
+}
+
+bool Player::Wield(const ushort num_from, const ushort num_to) {
+	world->WriteLock();
+	if ( ValidBlock(num_from) && InnerWield(num_from, num_to) ) {
+		world->Unlock();
+		return true;
+	}
+	emit Notify(tr("You cannot wield this."));
+	world->Unlock();
+	return false;
+}
+
+bool Player::InnerWield(const ushort num_from, const ushort num_to) {
+	Inventory * const inv=PlayerInventory();
+	if ( !inv ) {
+		return false;
+	}
+	if ( inv->MoveInside(num_from, num_to) ) {
+		emit Notify(tr("Wielded."));
+		return true;
+	} else {
+		return false;
+	}
 }
 
 void Player::Inscribe(const ushort num) {

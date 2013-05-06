@@ -47,6 +47,14 @@ enum ACTIVE_FREQUENCY {
 	RARE
 }; //enum ACTIVE_FREQUENCY
 
+enum WEARABLE {
+	WEARABLE_NOWHERE,
+	WEARABLE_HEAD,
+	WEARABLE_ARM,
+	WEARABLE_BODY,
+	WEARABLE_LEGS
+}; //enum WEARABLE
+
 class Block { //blocks without special physics and attributes
 	void SetTransparency(quint8 transp);
 	virtual float TrueWeight() const;
@@ -78,7 +86,7 @@ class Block { //blocks without special physics and attributes
 	virtual Active * ActiveBlock();
 
 	virtual bool Armour() const;
-	virtual bool IsWeapon() const;
+	virtual int Wearable() const;
 	virtual int DamageKind() const;
 	virtual ushort DamageLevel() const;
 
@@ -141,7 +149,7 @@ class Ladder : public Block {
 class Weapon : public Block {
 	public:
 	int    Kind() const;
-	bool   IsWeapon() const;
+	int    Wearable() const;
 	float  TrueWeight() const;
 	int    BeforePush(int dir, Block * who);
 	int    DamageKind() const;
@@ -265,6 +273,7 @@ class Inventory {
 	virtual bool Get(Block * block);
 	virtual void Pull(ushort num);
 	virtual void SaveAttributes(QDataStream & out) const;
+	virtual bool MoveInside(ushort num_from, ushort num_to);
 	virtual float TrueWeight() const=0;
 	virtual ushort Start() const;
 	virtual usage_types Use();
@@ -274,7 +283,6 @@ class Inventory {
 	ushort Size() const;
 	///Returns true if block found its place.
 	bool  GetExact(Block * block, ushort num);
-	void  MoveInside(ushort num_from, ushort num_to);
 	int   MiniCraft(ushort num);
 	int   InscribeInv(ushort num, const QString & str);
 	int   GetInvSub(ushort i) const;
@@ -303,13 +311,13 @@ class Inventory {
 class Dwarf : public Animal, public Inventory {
 	Q_OBJECT
 
+	public:
 	static const uchar onHead=0;
 	static const uchar inRight=1;
 	static const uchar inLeft=2;
 	static const uchar onBody=3;
 	static const uchar onLegs=4;
 
-	public:
 	int Kind() const;
 	int Sub() const;
 	QString & FullName(QString & str) const;
@@ -322,9 +330,9 @@ class Dwarf : public Animal, public Inventory {
 
 	Inventory * HasInventory();
 	bool Access() const;
-	int Wield(ushort num);
 	Block * DropAfterDamage() const;
 	void Inscribe(const QString & str);
+	bool MoveInside(ushort num_from, ushort num_to);
 
 	void SaveAttributes(QDataStream & out) const;
 
