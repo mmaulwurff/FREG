@@ -312,8 +312,9 @@ bool Player::Wield(const ushort num) {
 	world->WriteLock();
 	if ( ValidBlock(num) ) {
 		for (ushort i=0; i<=Dwarf::onLegs; ++i ) {
-			if ( InnerWield(num, i) ) {
+			if ( InnerMove(num, i) ) {
 				world->Unlock();
+				emit Notify(tr("Wielded."));
 				return true;
 			}
 		}
@@ -323,28 +324,22 @@ bool Player::Wield(const ushort num) {
 	return false;
 }
 
-bool Player::Wield(const ushort num_from, const ushort num_to) {
+bool Player::MoveInsideInventory(const ushort num_from, const ushort num_to) {
 	world->WriteLock();
-	if ( ValidBlock(num_from) && InnerWield(num_from, num_to) ) {
+	if ( ValidBlock(num_from) && InnerMove(num_from, num_to) ) {
 		world->Unlock();
 		return true;
 	}
-	emit Notify(tr("You cannot wield this."));
 	world->Unlock();
 	return false;
 }
 
-bool Player::InnerWield(const ushort num_from, const ushort num_to) {
+bool Player::InnerMove(const ushort num_from, const ushort num_to) {
 	Inventory * const inv=PlayerInventory();
 	if ( !inv ) {
 		return false;
 	}
-	if ( inv->MoveInside(num_from, num_to) ) {
-		emit Notify(tr("Wielded."));
-		return true;
-	} else {
-		return false;
-	}
+	return ( inv->MoveInside(num_from, num_to) );
 }
 
 void Player::Inscribe(const ushort num) {
@@ -439,15 +434,6 @@ void Player::TakeOff(const ushort num) {
 		}
 	}
 	world->Unlock();
-}
-
-void Player::MoveInsideInventory(const ushort num_from, const ushort num_to) {
-	Inventory * const inv=player ? player->HasInventory() : 0;
-	if ( inv ) {
-		inv->MoveInside(num_from, num_to);
-	} else {
-		emit Notify(tr("No inventory."));
-	}
 }
 
 void Player::ProcessCommand(QString & command) {

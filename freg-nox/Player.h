@@ -172,17 +172,17 @@ class Player : public QObject {
 	void Obtain  (ushort num);
 	///Returns true if wielding successful.
 	bool Wield   (ushort num);
-	bool Wield   (ushort num_from, ushort num_to);
 	void Inscribe(ushort num);
 	void Eat     (ushort num);
 	void Craft   (ushort num);
 	void TakeOff (ushort num);
 	void Build(short x, short y, short z, ushort num);
-	void MoveInsideInventory(ushort num_from, ushort num_to);
+	///Can also wield appropriate things. True if successful.
+	bool MoveInsideInventory(ushort num_from, ushort num_to);
 	void ProcessCommand(QString & command);
 
 	private:
-	bool InnerWield(ushort num_from, ushort num_to);
+	bool InnerMove(ushort num_from, ushort num_to);
 	Block * ValidBlock(ushort num) const;
 	int DamageKind() const;
 	ushort DamageLevel() const;
