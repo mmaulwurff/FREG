@@ -165,7 +165,7 @@ char Screen::CharName(const int kind, const int sub) const {
 					sub: %d\n",
 					sub);
 				return '.';
-		}
+		} break;
 		case ACTIVE: switch ( sub ) {
 			case SAND: return '.';
 			default:
@@ -173,7 +173,7 @@ char Screen::CharName(const int kind, const int sub) const {
 					"Screen::CharName: unlisted active \
 					sub: %d\n",
 					sub);
-		}
+		} //no break;
 		default: switch ( sub ) {
 			case NULLSTONE: case MOSS_STONE: case WOOD:
 			case IRON:

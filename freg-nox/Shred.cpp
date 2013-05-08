@@ -603,9 +603,9 @@ void Shred::Pyramid() {
 	for( z= HEIGHT/2 - 52, dz= 0; dz< 52; z++, dz++ )
 		blocks[SHRED_WIDTH/2][SHRED_WIDTH/2][z]= Normal( AIR );
 
-	//летающая тарелка
 	return;
-	for( x=0; x< SHRED_WIDTH; x++ )
+	//летающая тарелка
+	/*for( x=0; x< SHRED_WIDTH; x++ )
 	for( y=0; y< SHRED_WIDTH; y++ )
 	{
 		float r= float( ( x - SHRED_WIDTH/2 ) * ( x - SHRED_WIDTH/2 ) )
@@ -614,7 +614,7 @@ void Shred::Pyramid() {
 			blocks[x][y][ 124 ]= Normal( STONE );
 		if( r < 36.0f )
 			blocks[x][y][ 125 ]= Normal( STONE );
-	}
+	}*/
 }
 
 void Shred::Mountain() {

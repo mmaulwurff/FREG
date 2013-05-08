@@ -180,7 +180,6 @@ class Active : public QObject, public Block {
 	bool falling;
 
 	protected:
-	quint8 timeStep;
 	///coordinates in loaded world zone
 	ushort x_self, y_self, z_self;
 	Shred * whereShred;

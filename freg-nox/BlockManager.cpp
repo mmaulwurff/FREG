@@ -50,29 +50,31 @@ Block * BlockManager::NewBlock(const int kind, int sub) {
 			sub);
 		sub=STONE;
 	}
+	Block * block;
 	switch ( kind ) {
-		case BLOCK:  return New<Block >(sub);
-		case GRASS:  return New<Grass >(sub);
-		case PICK:   return New<Pick  >(sub);
-		case PLATE:  return New<Plate >(sub);
-		case ACTIVE: return New<Active>(sub);
-		case LADDER: return New<Ladder>(sub);
-		case WEAPON: return New<Weapon>(sub);
-		case BUSH:   return New<Bush  >(sub);
-		case CHEST:  return New<Chest >(sub);
-		case PILE:   return New<Pile  >(sub);
-		case DWARF:  return New<Dwarf >(sub);
-		case RABBIT: return New<Rabbit>(sub);
-		case DOOR:   return New<Door  >(sub);
-		case LIQUID: return New<Liquid>(sub);
-		case CLOCK:  return New<Clock >(sub);
-		case WORKBENCH: return New<Workbench>(sub);
+		case BLOCK:  block=New<Block >(sub); break;
+		case GRASS:  block=New<Grass >(sub); break;
+		case PICK:   block=New<Pick  >(sub); break;
+		case PLATE:  block=New<Plate >(sub); break;
+		case ACTIVE: block=New<Active>(sub); break;
+		case LADDER: block=New<Ladder>(sub); break;
+		case WEAPON: block=New<Weapon>(sub); break;
+		case BUSH:   block=New<Bush  >(sub); break;
+		case CHEST:  block=New<Chest >(sub); break;
+		case PILE:   block=New<Pile  >(sub); break;
+		case DWARF:  block=New<Dwarf >(sub); break;
+		case RABBIT: block=New<Rabbit>(sub); break;
+		case DOOR:   block=New<Door  >(sub); break;
+		case LIQUID: block=New<Liquid>(sub); break;
+		case CLOCK:  block=New<Clock >(sub); break;
+		case WORKBENCH: block=New<Workbench>(sub); break;
 		default:
 			fprintf(stderr,
 				"BlockManager::NewBlock: unlisted kind: %d\n",
 				kind);
-			return New<Block>(sub);
+			block=New<Block>(sub);
 	}
+	return block;
 }
 
 Block * BlockManager::BlockFromFile(QDataStream & str) {

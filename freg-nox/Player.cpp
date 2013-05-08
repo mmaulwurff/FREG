@@ -461,7 +461,7 @@ void Player::ProcessCommand(QString & command) {
 			while ( num && inv->HasRoom() ) {
 				for (ushort i=9; i && num; --i) {
 					inv->Get(block_manager.
-						NewBlock(sub, kind));
+						NewBlock(kind, sub));
 					--num;
 				}
 			}

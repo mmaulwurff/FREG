@@ -533,7 +533,7 @@
 	void Active::ReloadToEast()  { x_self-=SHRED_WIDTH; }
 
 	void Active::SaveAttributes(QDataStream & out) const {
-		out << timeStep << fall_height;
+		out << fall_height;
 	}
 
 	void Active::Register(
@@ -572,7 +572,9 @@
 			Block(sub, transp),
 			fall_height(0),
 			falling(false),
-			timeStep(0),
+			x_self(0),
+			y_self(0),
+			z_self(0),
 			whereShred(0)
 	{}
 
@@ -583,9 +585,12 @@
 		:
 			Block(str, sub, transp),
 			falling(false),
+			x_self(0),
+			y_self(0),
+			z_self(0),
 			whereShred(0)
 	{
-		str >> timeStep >> fall_height;
+		str >> fall_height;
 	}
 
 	Active::~Active() {

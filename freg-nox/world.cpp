@@ -232,8 +232,9 @@ Block * World::ReplaceWithNormal(Block * const block) {
 	if ( block!=Normal(block->Sub()) &&
 			*block==*Normal(block->Sub(), block->GetDir()) )
 	{
+		const int sub=block->Sub();
 		block_manager.DeleteBlock(block);
-		return Normal(block->Sub());
+		return Normal(sub);
 	} else {
 		return block;
 	}
@@ -987,7 +988,7 @@ void World::RemSun() {
 }
 
 void World::LoadAllShreds() {
-	shreds=new Shred *[numShreds*numShreds];
+	shreds=new Shred *[(int)numShreds*(int)numShreds];
 	for (long i=latitude -numShreds/2, x=0; x<numShreds; ++i, ++x)
 	for (long j=longitude-numShreds/2, y=0; y<numShreds; ++j, ++y) {
 		shreds[y*numShreds+x]=new Shred(this, x, y, j, i);
