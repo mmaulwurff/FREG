@@ -148,7 +148,7 @@ char Screen::CharName(const int kind, const int sub) const {
 		case GRASS:  return '.';
 		case RABBIT: return 'r';
 		case CLOCK:  return 'c';
-		case PLATE:  return '-';
+		case PLATE:  return '_';
 		case LADDER: return '^';
 		case PICK:   return '\\';
 		case WORKBENCH: return '*';
@@ -716,7 +716,7 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 		default: break;
 	}
 	mvwprintw(window, 2+inv->Size(), 40, "All weight: %6.1f kg",
-		inv->TrueWeight());
+		inv->Weight());
 	QString str;
 	for (ushort i=0; i<inv->Size(); ++i) {
 		mvwprintw(window, 2+i, 12, "%c)", 'a'+i);

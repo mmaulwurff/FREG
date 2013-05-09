@@ -76,7 +76,7 @@ class Shred {
 	int Durability(ushort x, ushort y, ushort z) const;
 	int Movable(ushort x, ushort y, ushort z) const;
 	int Transparent(ushort x, ushort y, ushort z) const;
-	float Weight(ushort x, ushort y, ushort z) const;
+	ushort Weight(ushort x, ushort y, ushort z) const;
 	uchar LightRadius(ushort x, ushort y, ushort z) const;
 
 	int LoadShred(QFile &);

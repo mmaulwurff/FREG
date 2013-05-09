@@ -200,43 +200,43 @@ void Shred::PhysEventsRare() {
 int Shred::Sub(
 		const ushort x,
 		const ushort y,
-		const ushort z) const
-{
+		const ushort z)
+const {
 	return blocks[x][y][z]->Sub();
 }
 int Shred::Kind(
 		const ushort x,
 		const ushort y,
-		const ushort z) const
-{
+		const ushort z)
+const {
 	return blocks[x][y][z]->Kind();
 }
 int Shred::Durability(
 		const ushort x,
 		const ushort y,
-		const ushort z) const
-{
+		const ushort z)
+const {
 	return blocks[x][y][z]->Durability();
 }
 int Shred::Movable(
 		const ushort x,
 		const ushort y,
-		const ushort z) const
-{
+		const ushort z)
+const {
 	return blocks[x][y][z]->Movable();
 }
 int Shred::Transparent(
 		const ushort x,
 		const ushort y,
-		const ushort z) const
-{
+		const ushort z)
+const {
 	return blocks[x][y][z]->Transparent();
 }
-float Shred::Weight(
+ushort Shred::Weight(
 		const ushort x,
 		const ushort y,
-		const ushort z) const
-{
+		const ushort z)
+const {
 	return blocks[x][y][z]->Weight();
 }
 
@@ -441,8 +441,9 @@ void Shred::TestShred() {
 	//suicide booth
 	for (ushort i=1; i<4; ++i)
 	for (ushort j=7; j<10; ++j)
-	for (ushort k=HEIGHT/2; k<HEIGHT/2+5; ++k)
+	for (ushort k=HEIGHT/2; k<HEIGHT/2+5; ++k) {
 		PutNormalBlock(GLASS, i, j, k);
+	}
 	SetNewBlock(RABBIT, A_MEAT, 2, 8, HEIGHT/2);
 }
 

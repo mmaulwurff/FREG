@@ -254,7 +254,7 @@ class World : public QThread {
 	int Kind(ushort x, ushort y, ushort z) const;
 	int Sub (ushort x, ushort y, ushort z) const;
 	int Movable(ushort x, ushort y, ushort z) const;
-	float Weight(ushort x, ushort y, ushort z) const;
+	ushort Weight(ushort x, ushort y, ushort z) const;
 	uchar LightRadius(ushort x, ushort y, ushort z) const;
 	Inventory * HasInventory(ushort x, ushort y, ushort z) const;
 

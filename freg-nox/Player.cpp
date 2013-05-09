@@ -38,7 +38,7 @@ void Player::SetCreativeMode(const bool turn) {
 	creativeMode=turn;
 	if ( turn ) {
 		disconnect(player, 0, 0, 0);
-		player=(Active *)block_manager.NewBlock(PILE, DIFFERENT);
+		player=block_manager.NewBlock(PILE, DIFFERENT)->ActiveBlock();
 	} else {
 		Pile * const creative_inv=(Pile *)player;
 		SetPlayer(x, y, z);
@@ -707,7 +707,7 @@ Player::Player(World * const w) :
 	x+=plus;
 	y+=plus;
 	if ( creativeMode ) {
-		player=(Active *)block_manager.NewBlock(PILE, DIFFERENT);
+		player=block_manager.NewBlock(PILE, DIFFERENT)->ActiveBlock();
 		dir=NORTH;
 	} else {
 		SetPlayer(x, y, z);

@@ -929,7 +929,7 @@ int World::Sub(const ushort x, const ushort y, const ushort z) const {
 int World::Movable(const ushort x, const ushort y, const ushort z) const {
 	return GetShred(x, y)->Movable(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
-float World::Weight(const ushort x, const ushort y, const ushort z) const {
+ushort World::Weight(const ushort x, const ushort y, const ushort z) const {
 	return GetShred(x, y)->Weight(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 
@@ -988,7 +988,7 @@ void World::RemSun() {
 }
 
 void World::LoadAllShreds() {
-	shreds=new Shred *[(int)numShreds*(int)numShreds];
+	shreds=new Shred *[(ulong)numShreds*(ulong)numShreds];
 	for (long i=latitude -numShreds/2, x=0; x<numShreds; ++i, ++x)
 	for (long j=longitude-numShreds/2, y=0; y<numShreds; ++j, ++y) {
 		shreds[y*numShreds+x]=new Shred(this, x, y, j, i);
