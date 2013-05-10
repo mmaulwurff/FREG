@@ -96,15 +96,7 @@ void Player::UpdateXYZ() {
 
 void Player::Focus(ushort & i_target, ushort & j_target, ushort & k_target)
 const {
-	if ( player ) {
-		world->Focus(x, y, z,
-			i_target, j_target, k_target,
-			player->GetDir());
-	} else {
-		i_target=x;
-		j_target=y;
-		k_target=z;
-	}
+	world->Focus(x, y, z, i_target, j_target, k_target, Dir());
 }
 
 void Player::Examine(const short i, const short j, const short k)

@@ -269,6 +269,8 @@ class Inventory {
 	const ushort size;
 	QStack<Block *> * inventory;
 
+	protected:
+	static const ushort inv_size=26;
 	public:
 	virtual int  Kind() const=0;
 	virtual int  Sub() const=0;
@@ -285,13 +287,13 @@ class Inventory {
 	virtual QString & FullName(QString&) const=0;
 	virtual Inventory * HasInventory();
 
-	ushort Size() const;
 	///Returns true if block found its place.
-	bool  GetExact(Block * block, ushort num);
-	int   MiniCraft(ushort num);
-	int   InscribeInv(ushort num, const QString & str);
-	int   GetInvSub(ushort i) const;
-	int   GetInvKind(ushort i) const;
+	bool GetExact(Block * block, ushort num);
+	int  MiniCraft(ushort num);
+	int  InscribeInv(ushort num, const QString & str);
+	int  GetInvSub(ushort i) const;
+	int  GetInvKind(ushort i) const;
+	ushort Size() const;
 	ushort GetInvWeight(ushort i) const;
 	quint8 Number(ushort i) const;
 	Block * ShowBlock(ushort num) const;
@@ -307,8 +309,8 @@ class Inventory {
 	//it is not recommended to make inventory size more than 26,
 	//because it will not be convenient to deal with inventory
 	//in console version.
-	Inventory(ushort sz=26);
-	Inventory(QDataStream & str, ushort size=26);
+	Inventory(ushort sz=inv_size);
+	Inventory(QDataStream & str, ushort size=inv_size);
 	~Inventory();
 }; //class Inventory
 
@@ -368,6 +370,7 @@ class Chest : public Block, public Inventory {
 class Pile : public Active, public Inventory {
 	Q_OBJECT
 
+	static const ushort snow_inv_size=2;
 	bool ifToDestroy;
 
 	public:
@@ -404,7 +407,6 @@ class Liquid : public Active {
 	int  Kind() const;
 	int  Movable() const;
 	int  Temperature() const;
-	int  Damage(ushort dam, int dam_kind);
 	QString & FullName(QString & str) const;
 
 	Liquid(int sub=WATER);

@@ -135,7 +135,6 @@ char Screen::CharNumberFront(const ushort i, const ushort j) const {
 char Screen::CharName(const int kind, const int sub) const {
 	switch ( kind )  {
 		case CHEST:
-		case PILE:   return '&';
 		case BUSH:   return ';';
 		case DWARF:  return '@';
 		case LIQUID: return '~';
@@ -147,6 +146,7 @@ char Screen::CharName(const int kind, const int sub) const {
 		case PICK:   return '\\';
 		case WORKBENCH: return '*';
 		case TELEGRAPH: return 't';
+		case PILE:   return ( WATER==sub ) ? '*' : '&';
 		case DOOR:   return ( STONE==sub ) ? '#' : '\'';
 		case LOCKED_DOOR: return ( STONE==sub ) ? '#' : '`';
 		case WEAPON: switch ( sub ) {
@@ -196,10 +196,11 @@ char Screen::CharName(const int kind, const int sub) const {
 color_pairs Screen::Color(const int kind, const int sub) const {
 	switch ( kind ) { //foreground_background
 		case DWARF:     return WHITE_BLUE;
-		case PILE:      return WHITE_BLACK;
 		case TELEGRAPH: return CYAN_BLACK;
 		case RABBIT:    return RED_WHITE;
 		case BUSH:      return BLACK_GREEN;
+		case PILE:      return ( WATER==sub ) ?
+			BLUE_WHITE : WHITE_BLACK;
 		case LIQUID: switch ( sub ) {
 			case WATER: return CYAN_BLUE;
 			default:    return RED_YELLOW;

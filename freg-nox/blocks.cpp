@@ -67,12 +67,10 @@
 	}
 
 	int Block::Damage(const ushort dmg, const int dmg_kind) {
-		const ushort last_dur=durability;
 		switch ( Sub() ) {
 			case DIFFERENT:
 				if ( TIME==dmg_kind ) {
-					durability=0;
-					break;
+					return durability=0;
 				}
 				//no break, only time damages DIFFERENT
 			case NULLSTONE:
@@ -80,59 +78,34 @@
 			case AIR:
 			case SKY:
 			case SUN_MOON:
-			case WATER: return durability;
+			case WATER:
+				return ( HEAT==dmg_kind || TIME==dmg_kind ) ?
+					durability-=dmg : durability;
 			case MOSS_STONE:
 			case STONE:
-				( MINE==dmg_kind ) ?
+				return ( MINE==dmg_kind ) ?
 					durability-=2*dmg :
 					durability-=dmg;
-				break;
 			case GREENERY:
-			case GLASS: durability=0; break;
+			case GLASS: return durability=0;
 			case ROSE:
 			case HAZELNUT:
 			case WOOD:
-				(CUT==dmg_kind) ?
+				return (CUT==dmg_kind) ?
 					durability-=2*dmg :
 					durability-=dmg;
-				break;
 			case SAND:
 			case SOIL:
-				(DIG==dmg_kind) ?
+				return (DIG==dmg_kind) ?
 					durability-=2*dmg :
 					durability-=dmg;
-				break;
 			case A_MEAT:
 			case H_MEAT:
-				(THRUST==dmg_kind) ?
+				return (THRUST==dmg_kind) ?
 					durability-=2*dmg :
 					durability-=dmg;
-				break;
-			default: durability-=dmg;
+			default: return durability-=dmg;
 		}
-		switch ( dmg_kind ) {
-			case HUNGER:
-				ReceiveSignal(QObject::tr(
-					"You faint from hunger!"));
-				break;
-			case HEAT:
-				ReceiveSignal(QObject::tr("You burn!"));
-				break;
-			case BREATH:
-				ReceiveSignal(QObject::tr(
-					"You choke withot air!"));
-				break;
-			case DAMAGE_FALL:
-				ReceiveSignal(
-					QObject::tr("You fall, damage %1.").
-					arg(last_dur-durability));
-				break;
-			default:
-				ReceiveSignal(
-					QObject::tr("Received %1 damage!").
-					arg(last_dur-durability));
-		}
-		return durability;
 	}
 
 	Block * Block::DropAfterDamage() const {
@@ -520,11 +493,36 @@
 
 	int Active::Damage(const ushort dmg, const int dmg_kind) {
 		const int last_dur=durability;
-		const int new_dur=Block::Damage(dmg, dmg_kind);
-		if ( last_dur != new_dur ) {
+		Block::Damage(dmg, dmg_kind);
+		if ( last_dur != durability ) {
+			switch ( dmg_kind ) {
+				case HUNGER:
+					ReceiveSignal(QObject::tr(
+						"You faint from hunger!"));
+					break;
+				case HEAT:
+					ReceiveSignal(QObject::tr(
+						"You burn!"));
+					break;
+				case BREATH:
+					ReceiveSignal(QObject::tr(
+						"You choke withot air!"));
+					break;
+				case DAMAGE_FALL:
+					ReceiveSignal(
+						QObject::tr(
+						"You fall, damage %1.").
+						arg(last_dur-durability));
+					break;
+				default:
+					ReceiveSignal(
+						QObject::tr(
+						"Received %1 damage!").
+						arg(last_dur-durability));
+			}
 			emit Updated();
 		}
-		return new_dur;
+		return durability;
 	}
 
 	void Active::ReceiveSignal(const QString & str) {
@@ -1026,14 +1024,13 @@
 
 	QString & Chest::FullName(QString & str) const {
 		switch (sub) {
-			case WOOD: return str="Wooden chest";
-			case STONE: return str="Stone chest";
+			case WOOD:  return str=QObject::tr("Wooden chest");
+			case STONE: return str=QObject::tr("Stone chest");
 			default:
 				fprintf(stderr,
-					"Chest::FullName(QString&): \
-					Chest has unknown substance: %d\n",
+					"Chest::FullName: unlisted sub: %d\n",
 					sub);
-				return str="Chest";
+				return str=QObject::tr("Chest");
 		}
 	}
 
@@ -1083,23 +1080,36 @@
 
 	int Pile::Sub() const { return Block::Sub(); }
 
-	QString & Pile::FullName(QString & str) const { return str="Pile"; }
+	QString & Pile::FullName(QString & str) const {
+		switch ( Sub() ) {
+			case DIFFERENT: return str=tr("Pile");
+			case WATER:     return str=tr("Snow");
+			default:
+				fprintf(stderr,
+					"Pile::FullName: unlisted sub: %d\n",
+					Sub());
+				return str=tr("Unknown pile");
+		}
+	}
 
 	Inventory * Pile::HasInventory() { return Inventory::HasInventory(); }
 
 	usage_types Pile::Use() { return Inventory::Use(); }
 
-	ushort Pile::Weight() const { return Inventory::Weight(); }
+	ushort Pile::Weight() const {
+		return Inventory::Weight() +
+			(( WATER==Sub() ) ? Block::Weight() : 0);
+	}
 
 	int Pile::Drop(const ushort n, Inventory * const inv) {
 		const int ret=Inventory::Drop(n, inv);
-		ifToDestroy=IsEmpty();
+		ifToDestroy=( WATER==Sub() ) ? false : IsEmpty();
 		return ret;
 	}
 
 	void Pile::Pull(const ushort num) {
 		Inventory::Pull(num);
-		ifToDestroy=IsEmpty();
+		ifToDestroy=( WATER==Sub() ) ? false : IsEmpty();
 	}
 
 	void Pile::SaveAttributes(QDataStream & out) const {
@@ -1110,13 +1120,13 @@
 
 	Pile::Pile(const int sub) :
 			Active(sub, NONSTANDARD),
-			Inventory(),
+			Inventory((WATER==sub) ? snow_inv_size : inv_size),
 			ifToDestroy(false)
 	{}
 
 	Pile::Pile(QDataStream & str, const int sub) :
 			Active(str, sub, NONSTANDARD),
-			Inventory(str)
+			Inventory(str, (WATER==sub) ? snow_inv_size : inv_size)
 	{
 		str >> ifToDestroy;
 	}
@@ -1124,8 +1134,21 @@
 //Liquid::
 	bool Liquid::CheckWater() const {
 		World * const world=GetWorld();
-		return ( WATER==world->Sub(x_self, y_self, z_self-1) ||
-				WATER==world->Sub(x_self, y_self, z_self+1));
+		return (
+				WATER==world->Sub(x_self, y_self, z_self-1) ||
+				WATER==world->Sub(x_self, y_self, z_self+1) ||
+				(InBounds(x_self-1, y_self) &&
+					WATER==world->Sub(
+						x_self-1, y_self, z_self)) ||
+				(InBounds(x_self+1, y_self) &&
+					WATER==world->Sub(
+						x_self+1, y_self, z_self)) ||
+				(InBounds(x_self, y_self-1) &&
+					WATER==world->Sub(
+						x_self, y_self-1, z_self)) ||
+				(InBounds(x_self, y_self+1) &&
+					WATER==world->Sub(
+						x_self, y_self+1, z_self)));
 	}
 
 	void Liquid::ActRare() {
@@ -1170,12 +1193,6 @@
 					sub);
 				return str="Unknown liquid";
 		}
-	}
-
-	int Liquid::Damage(const ushort dam, const int dam_kind) {
-		return ( HEAT==dam_kind ) ?
-			durability-=dam :
-			durability;
 	}
 
 	int Liquid::Temperature() const { return ( WATER==sub ) ? 0 : 1000; }

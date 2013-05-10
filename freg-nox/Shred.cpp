@@ -437,6 +437,8 @@ void Shred::TestShred() {
 	//row 3
 	SetNewBlock(WEAPON, IRON, 1, 5, HEIGHT/2);
 	SetNewBlock(BLOCK, SAND, 3, 5, HEIGHT/2);
+	SetNewBlock(BLOCK, WATER, 5, 5, HEIGHT/2);
+	SetNewBlock(PILE, WATER, 7, 5, HEIGHT/2);
 
 	//suicide booth
 	for (ushort i=1; i<4; ++i)
