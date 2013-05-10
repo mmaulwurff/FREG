@@ -54,6 +54,7 @@ long World::Latitude() const { return latitude; }
 ushort World::TimeStepsInSec() { return time_steps_in_sec; }
 
 long World::MapSize() const { return mapSize; }
+QTextStream * World::MapStream() { return worldMapStream; }
 
 ushort World::SunMoonX() const {
 	return ( NIGHT==PartOfDay() ) ?
@@ -1042,14 +1043,14 @@ World::World(const QString & world_name) :
 	QFile map(worldName+"/map.txt");
 	if ( map.open(QIODevice::ReadOnly | QIODevice::Text) ) {
 		mapSize=int(qSqrt(1+4*map.size())-1)/2;
-	} else if ( map.open(QIODevice::WriteOnly |
-			QIODevice::Text) )
-	{
-		char little_map[]=".\n";
-		map.write(little_map);
+	} else if ( map.open(QIODevice::WriteOnly | QIODevice::Text) ) {
+		map.write(".\n");
+		map.close();
+		map.open(QIODevice::ReadOnly | QIODevice::Text);
 		mapSize=1;
 	}
-
+	worldMap=map.readAll();
+	worldMapStream=new QTextStream(worldMap, QIODevice::ReadOnly);
 	if ( 1!=numShreds%2 ) {
 		++numShreds;
 		fprintf(stderr,
@@ -1079,7 +1080,6 @@ World::World(const QString & world_name) :
 			numActiveShreds);
 		numActiveShreds=3;
 	}
-
 	LoadAllShreds();
 }
 

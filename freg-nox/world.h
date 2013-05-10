@@ -21,8 +21,10 @@
 #include <cmath>
 #include <QReadWriteLock>
 #include <QThread>
+#include <QByteArray>
 #include "header.h"
 
+class QTextStream;
 class Block;
 class Dwarf;
 class Inventory;
@@ -64,6 +66,8 @@ class World : public QThread {
 	bool ifStar;
 
 	long mapSize;
+	QByteArray worldMap;
+	QTextStream * worldMapStream;
 
 	long newLati, newLongi;
 	ushort newNumShreds, newNumActiveShreds;
@@ -151,6 +155,7 @@ class World : public QThread {
 
 	private:
 	long MapSize() const;
+	QTextStream * MapStream();
 	ushort SunMoonX() const;
 	quint8 MakeDir(
 			ushort x_cent, ushort y_cent,

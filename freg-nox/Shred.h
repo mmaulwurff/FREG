@@ -24,6 +24,9 @@
 class QFile;
 class World;
 
+const char DEFAULT_SHRED='.';
+const char OUT_BORDER_SHRED='~';
+
 class Shred {
 	Block * blocks[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
 	uchar lightMap[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];

@@ -18,6 +18,7 @@
 #include <QFile>
 #include <QByteArray>
 #include <QDataStream>
+#include <QTextStream>
 #include "Shred.h"
 #include "world.h"
 #include "BlockManager.h"
@@ -61,11 +62,9 @@ int Shred::LoadShred(QFile & file) {
 
 Shred::Shred(
 		World * const world_,
-		const ushort shred_x,
-		const ushort shred_y,
-		const long longi,
-		const long lati)
-		:
+		const ushort shred_x, const ushort shred_y,
+		const long longi, const long lati)
+	:
 		world(world_),
 		longitude(longi),
 		latitude(lati),
@@ -104,8 +103,9 @@ Shred::Shred(
 		default:
 			Plain();
 			fprintf(stderr,
-				"Shred::Shred: unknown type of shred: %c\n",
-				TypeOfShred(longi, lati));
+				"Shred::Shred: unlisted type: %c, code %d\n",
+				TypeOfShred(longi, lati),
+				int(TypeOfShred(longi, lati)));
 	}
 }
 
@@ -357,15 +357,14 @@ char Shred::TypeOfShred(const long longi, const long lati) const {
 			longi >= mapSize || longi < 0 ||
 			lati  >= mapSize || lati  < 0 )
 	{
-		return '~';
+		return OUT_BORDER_SHRED;
 	}
-	QFile map(world->WorldName()+"/map.txt");
-	if ( !map.open(QIODevice::ReadOnly | QIODevice::Text) ) {
-		return '.';
+	if ( !world->MapStream()->seek((mapSize+1)*longi+lati) ) {
+		return DEFAULT_SHRED;
 	}
-	map.seek((mapSize+1)*longi+lati); //+1 is for '\n' in file
 	char c;
-	return ( map.getChar(&c) ) ? c : '.';
+	*world->MapStream() >> c;
+	return c;
 }
 
 //shred generators section
