@@ -391,20 +391,19 @@ void Screen::Print() {
 
 	switch ( player->UsingType() ) {
 		case OPEN:
-			PrintInv(leftWin,
+			PrintInv(rightWin,
 				player->UsingBlock()->HasInventory());
 			break;
-		default: PrintNormal(leftWin);
+		default: PrintFront(rightWin);
 	}
 	switch ( player->UsingSelfType() ) {
 		case OPEN:
 			if ( player->PlayerInventory() ) {
-				PrintInv(rightWin,
+				PrintInv(leftWin,
 					player->PlayerInventory());
 				break;
 			} //no break;
-		default:
-			PrintFront(rightWin);
+		default: PrintNormal(leftWin);
 	}
 
 	const short dur=player->HP();
@@ -435,28 +434,27 @@ void Screen::Print() {
 
 	w->Unlock();
 
+	wstandend(leftWin);
+	QString str;
 	if ( -1!=dur ) { //HitPoints line
-		wstandend(hudWin);
-		wmove(hudWin, 0, 0);
-		wprintw(hudWin, "HP: %3hd  [", dur);
-		wcolor_set(hudWin, WHITE_RED, NULL);
-		for (i=0; i<10*dur/MAX_DURABILITY; ++i) {
-			waddch(hudWin, '.');
-		}
-		wstandend(hudWin);
-		mvwaddch(hudWin, 0, 20, ']');
+		str=QString("%1").arg(dur, -10, 10, QChar('.'));
+		mvwaddstr(leftWin, SCREEN_SIZE+1, 1, "HP[..........]");
+		wcolor_set(leftWin, WHITE_RED, NULL);
+		mvwaddstr(leftWin, SCREEN_SIZE+1, 4,
+			qPrintable(str.left(10*dur/MAX_DURABILITY)));
+		wstandend(leftWin);
 	}
 	if ( -1!=breath ) { //breath line
-		wmove(hudWin, 1, 0);
-		wprintw(hudWin, "BR: %3hd%% [", 100*breath/MAX_BREATH);
-		wcolor_set(hudWin, WHITE_BLUE, NULL);
-		for (i=0; i<10*breath/MAX_BREATH; ++i)
-			waddch(hudWin, '.');
-		wstandend(hudWin);
-		mvwaddch(hudWin, 1, 20, ']');
+		str=QString("%1%%").arg(100*breath/MAX_BREATH, -10, 10,
+			QChar('.'));
+		mvwaddstr(leftWin, SCREEN_SIZE+1, SCREEN_SIZE*2-13,
+			"BR[..........]");
+		wcolor_set(leftWin, WHITE_BLUE, NULL);
+		mvwaddstr(leftWin, SCREEN_SIZE+1, SCREEN_SIZE*2-13+3,
+			qPrintable(str.left(10*breath/MAX_BREATH)));
 	}
 	//action mode
-	wmove(hudWin, 3, 0);
+	wmove(hudWin, 0, 0);
 	wstandend(hudWin);
 	waddstr(hudWin, "Action: ");
 	switch ( actionMode ) {
@@ -475,7 +473,7 @@ void Screen::Print() {
 				actionMode);
 	}
 	if ( -1!=satiation ) { //satiation line
-		wmove(hudWin, 2, 0);
+		wmove(hudWin, 1, 0);
 		if ( SECONDS_IN_DAY<satiation ) {
 			wcolor_set(hudWin, BLUE_BLACK, NULL);
 			waddstr(hudWin, "Gorged");
@@ -494,27 +492,35 @@ void Screen::Print() {
 			"Focus shift down" : "Focus shift up");
 	}
 	if ( player->GetCreativeMode() ) {
-		mvwaddstr(hudWin, 0, 0, "Creative Mode");
+		mvwaddstr(leftWin, SCREEN_SIZE+1, 1, "Creative Mode");
 		//coordinates
 		mvwprintw(hudWin, 1, 0, "xyz: %hu, %hu, %hu. XY: %ld, %ld",
 			player->X(), player->Y(), player->Z(),
 			player->GetLatitude(), player->GetLongitude());
+		wcolor_set(leftWin, BLACK_WHITE, NULL);
 		switch ( player->Dir() ) {
 			case NORTH:
-				mvwaddstr(hudWin, 2, 0, "^ North ^");
+				mvwaddstr(leftWin, SCREEN_SIZE+1,
+					SCREEN_SIZE*2-8, "^ North ^");
 			break;
 			case SOUTH:
-				mvwaddstr(hudWin, 2, 0, "v South v");
+				mvwaddstr(leftWin, SCREEN_SIZE+1,
+					SCREEN_SIZE*2-8, "v South v");
 			break;
 			case EAST:
-				mvwaddstr(hudWin, 2, 0, "> East >");
+				mvwaddstr(leftWin, SCREEN_SIZE+1,
+					SCREEN_SIZE*2-8, ">   East>");
 			break;
 			case WEST:
-				mvwaddstr(hudWin, 2, 0, "< West <");
+				mvwaddstr(leftWin, SCREEN_SIZE+1,
+					SCREEN_SIZE*2-8, "<West   <");
 			break;
 		}
+	} else if ( player->GetP() && player->GetP()->IsFalling() ) {
+			mvwaddstr(hudWin, 2, 0, "Falling!");
 	}
 	wnoutrefresh(hudWin);
+	wnoutrefresh(leftWin);
 	doupdate();
 }
 
@@ -686,10 +692,10 @@ void Screen::PrintFront(WINDOW * const window) const {
 	wstandend(window);
 	box(window, 0, 0);
 	switch ( dir ) {
-		case NORTH: mvwaddstr(window, 0, 1, "North view:"); break;
-		case SOUTH: mvwaddstr(window, 0, 1, "South view:"); break;
-		case EAST:  mvwaddstr(window, 0, 1, "East view:");  break;
-		case WEST:  mvwaddstr(window, 0, 1, "West view:");  break;
+		case NORTH: mvwaddstr(window, 0, 1, "North view"); break;
+		case SOUTH: mvwaddstr(window, 0, 1, "South view"); break;
+		case EAST:  mvwaddstr(window, 0, 1, "East view");  break;
+		case WEST:  mvwaddstr(window, 0, 1, "West view");  break;
 	}
 	Arrows(window, arrow_X, arrow_Y);
 	if ( shiftFocus ) {
@@ -739,11 +745,11 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 	box(window, 0, 0);
 	wmove(window, 0, 1);
 	if ( player->PlayerInventory()==inv ) {
-		waddstr(window, "Your inventory");
+		wprintw(window, "[%c]Your inventory",
+			CharName(inv->Kind(), inv->Sub()));
 	} else {
 		wprintw(window, "[%c]%s",
-			CharName(inv->Kind(),
-				inv->Sub()),
+			CharName(inv->Kind(), inv->Sub()),
 			qPrintable(inv->FullName(str)));
 	}
 	wnoutrefresh(window);

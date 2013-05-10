@@ -41,7 +41,9 @@ void Player::SetCreativeMode(const bool turn) {
 		player=block_manager.NewBlock(PILE, DIFFERENT)->ActiveBlock();
 	} else {
 		Pile * const creative_inv=(Pile *)player;
+		const int last_dir=dir;
 		SetPlayer(x, y, z);
+		Dir(last_dir);
 		Inventory * const inv=PlayerInventory();
 		if ( inv ) {
 			inv->GetAll(creative_inv);

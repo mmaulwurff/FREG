@@ -168,7 +168,7 @@ void Shred::RegisterBlock(
 void Shred::PhysEventsFrequent() {
 	for (int j=0; j<fallList.size(); ++j) {
 		Active * const temp=fallList[j];
-		const float weight=temp->Weight();
+		const ushort weight=temp->Weight();
 		if ( weight ) {
 			const ushort x=temp->X();
 			const ushort y=temp->Y();

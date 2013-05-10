@@ -410,6 +410,7 @@
 			fall_height=0;
 			GetWorld()->
 				Damage(x_self, y_self, z_self-1, dmg);
+			ReceiveSignal(tr("You fall, damage %1").arg(dmg));
 			emit Updated();
 			return GetWorld()->
 				Damage(x_self, y_self,z_self, dmg);
