@@ -281,11 +281,11 @@ class Inventory {
 	virtual void SaveAttributes(QDataStream & out) const;
 	virtual bool MoveInside(ushort num_from, ushort num_to);
 	virtual ushort Start() const;
+	virtual ushort Weight() const;
 	virtual usage_types Use();
 	virtual QString & FullName(QString&) const=0;
 	virtual Inventory * HasInventory();
 
-	ushort Weight() const;
 	ushort Size() const;
 	///Returns true if block found its place.
 	bool  GetExact(Block * block, ushort num);
@@ -293,7 +293,7 @@ class Inventory {
 	int   InscribeInv(ushort num, const QString & str);
 	int   GetInvSub(ushort i) const;
 	int   GetInvKind(ushort i) const;
-	float GetInvWeight(ushort i) const;
+	ushort GetInvWeight(ushort i) const;
 	quint8 Number(ushort i) const;
 	Block * ShowBlock(ushort num) const;
 	QString & GetInvNote(QString & str, ushort num) const;

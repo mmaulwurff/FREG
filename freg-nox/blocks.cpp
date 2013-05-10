@@ -748,7 +748,7 @@
 			"";
 	}
 
-	float Inventory::GetInvWeight(const ushort i) const {
+	ushort Inventory::GetInvWeight(const ushort i) const {
 		return ( inventory[i].isEmpty() ) ? 0 :
 			inventory[i].top()->Weight()*Number(i);
 	}

@@ -28,8 +28,8 @@
 
 void Screen::Arrows(
 		WINDOW * const & window,
-		const ushort x, const ushort y) const
-{
+		const ushort x, const ushort y)
+const {
 	wcolor_set(window, WHITE_RED, NULL);
 	mvwaddstr(window, 0, x, "vv");
 	mvwaddstr(window, SCREEN_SIZE+1, x, "^^");
@@ -39,8 +39,8 @@ void Screen::Arrows(
 void Screen::HorizontalArrows(
 		WINDOW * const & window,
 		const ushort y,
-		const short color) const
-{
+		const short color)
+const {
 	wcolor_set(window, color, NULL);
 	mvwaddch(window, y, 0, '>');
 	mvwaddch(window, y, SCREEN_SIZE*2+1, '<');
@@ -60,9 +60,7 @@ void Screen::UpdateAll() { updated=false; }
 void Screen::UpdatePlayer() { updated=false; }
 
 void Screen::UpdateAround(
-		const ushort,
-		const ushort,
-		const ushort,
+		const ushort, const ushort, const ushort,
 		const ushort)
 {
 	updated=false;
@@ -88,11 +86,7 @@ QString & Screen::PassString(QString & str) const {
 	return str;
 }
 
-char Screen::CharNumber(
-		const ushort i,
-		const ushort j,
-		const ushort k)
-const {
+char Screen::CharNumber(const ushort i, const ushort j, const ushort k) const {
 	if ( HEIGHT-1==k ) { //sky
 		return ' ';
 	}
@@ -557,11 +551,11 @@ void Screen::PrintNormal(WINDOW * const window) const {
 	box(window, 0, 0);
 	if ( UP==dir || DOWN==dir ) {
 		mvwaddstr(window, 0, 1, ( UP==dir ) ?
-			"Sky View" : "Ground View");
+			"Up view" : "Ground view");
 		Arrows(window,
 			(player->X()-start_x)*2+1, player->Y()-start_y+1);
 	} else {
-		mvwaddstr(window, 0, 1, "Normal View");
+		mvwaddstr(window, 0, 1, "Down view");
 		if ( player->GetCreativeMode() ) {
 			Arrows(window,
 				(player->X()-start_x)*2+1,
@@ -709,13 +703,13 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 	wstandend(window);
 	switch ( inv->Kind() ) {
 		case DWARF:
-			mvwaddstr(window, 2, 1, "      Head\n Right hand\n  \
-				Left hand\n       Body\n       Legs");
+			mvwaddstr(window, 2, 7, "Head\n Right hand\n  ");
+			waddstr(window, "Left hand\n       Body\n       ");
+			waddstr(window, "Legs");
 		break;
-		case WORKBENCH: mvwaddstr(window, 2, 1, "   Product"); break;
-		default: break;
+		case WORKBENCH: mvwaddstr(window, 2, 4, "Product"); break;
 	}
-	mvwprintw(window, 2+inv->Size(), 40, "All weight: %6.1f kg",
+	mvwprintw(window, 2+inv->Size(), 40, "All weight: %6hu mz",
 		inv->Weight());
 	QString str;
 	for (ushort i=0; i<inv->Size(); ++i) {
@@ -737,8 +731,8 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 						str : str.left(13)+"..."))));
 			}
 			wstandend(window);
-			mvwprintw(window, 2+i, 53, "%5.1f kg",
-				2, inv->GetInvWeight(i));
+			mvwprintw(window, 2+i, 53, "%5hu mz",
+				inv->GetInvWeight(i));
 		}
 	}
 	wcolor_set(window, Color(inv->Kind(), inv->Sub()), NULL);
