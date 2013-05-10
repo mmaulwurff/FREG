@@ -755,20 +755,10 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 }
 
 void Screen::Notify(const QString & str) {
-	const short MAX_LINES=5;
-	static QString lines[MAX_LINES]={"", "", "", "", ""};
-	werase(notifyWin);
-	for (ushort i=0; i<MAX_LINES-1; ++i) {
-		lines[i]=lines[i+1];
-		waddstr(notifyWin, qPrintable(lines[i]+'\n'));
-	}
-	waddstr(notifyWin, qPrintable(str));
+	waddstr(notifyWin, qPrintable(str+'\n'));
 	wnoutrefresh(notifyWin);
 	updated=false;
-	lines[MAX_LINES-1]=str;
-	fputs(qPrintable(
-			QString::number(w->Time())+
-			": "+str+'\n'),
+	fputs(qPrintable(QString::number(w->Time())+": "+str+'\n'),
 		notifyLog);
 }
 
@@ -823,12 +813,14 @@ Screen::Screen(
 		COLOR_CYAN,
 		COLOR_WHITE
 	};
-	for (short i=BLACK_BLACK; i<=WHITE_WHITE; ++i)
+	for (short i=BLACK_BLACK; i<=WHITE_WHITE; ++i) {
 		init_pair(i, colors[(i-1)/8], colors[(i-1)%8]);
+	}
 	leftWin =newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, 0);
 	rightWin=newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, SCREEN_SIZE*2+2);
-	hudWin=newwin(3+2, (SCREEN_SIZE*2+2)*2, SCREEN_SIZE+2, 0);
-	notifyWin=newwin(0, COLS, SCREEN_SIZE+2+5, 0);
+	hudWin=newwin(3, (SCREEN_SIZE*2+2)*2, SCREEN_SIZE+2, 0);
+	notifyWin=newwin(0, COLS, SCREEN_SIZE+2+3, 0);
+	scrollok(notifyWin, TRUE);
 
 	notifyLog=fopen("messages.txt", "a");
 
