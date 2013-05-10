@@ -441,17 +441,16 @@ void Screen::Print() {
 		mvwaddstr(leftWin, SCREEN_SIZE+1, 1, "HP[..........]");
 		wcolor_set(leftWin, WHITE_RED, NULL);
 		mvwaddstr(leftWin, SCREEN_SIZE+1, 4,
-			qPrintable(str.left(10*dur/MAX_DURABILITY)));
+			qPrintable(str.left(10*dur/MAX_DURABILITY+1)));
 		wstandend(leftWin);
 	}
 	if ( -1!=breath ) { //breath line
-		str=QString("%1%%").arg(100*breath/MAX_BREATH, -10, 10,
-			QChar('.'));
+		str=QString("%1").arg(breath, -10, 10, QChar('.'));
 		mvwaddstr(leftWin, SCREEN_SIZE+1, SCREEN_SIZE*2-13,
 			"BR[..........]");
 		wcolor_set(leftWin, WHITE_BLUE, NULL);
 		mvwaddstr(leftWin, SCREEN_SIZE+1, SCREEN_SIZE*2-13+3,
-			qPrintable(str.left(10*breath/MAX_BREATH)));
+			qPrintable(str.left(10*breath/MAX_BREATH+1)));
 	}
 	//action mode
 	wmove(hudWin, 0, 0);

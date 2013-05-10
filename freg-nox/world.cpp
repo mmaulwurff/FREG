@@ -766,18 +766,6 @@ bool World::Damage(
 		SetBlock( (temp = block_manager.
 			NewBlock(temp->Kind(), temp->Sub()) ), i, j, k );
 	}
-	switch ( dmg_kind ) { //damage messages
-		case HUNGER:
-			temp->ReceiveSignal(tr("You faint from hunger."));
-		break;
-		case BREATH:
-			temp->ReceiveSignal(tr("You choke without air."));
-		break;
-		default:
-			temp->ReceiveSignal(tr("You receive damage: %1 (%2).").
-			arg(dmg).
-			arg(dmg_kind));
-	}
 	if ( temp->Damage(dmg, dmg_kind) > 0 ) {
 		ReplaceWithNormal(i, j, k); //checks are inside
 		return false;

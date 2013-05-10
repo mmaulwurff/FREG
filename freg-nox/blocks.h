@@ -24,7 +24,6 @@
 
 class QDataStream;
 class QTextStream;
-class QString;
 class World;
 class Shred;
 class Inventory;

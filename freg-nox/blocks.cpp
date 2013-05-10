@@ -17,6 +17,7 @@
 
 #include <QDataStream>
 #include <QTextStream>
+#include <QString>
 #include "blocks.h"
 #include "world.h"
 #include "Shred.h"
@@ -65,49 +66,73 @@
 		}
 	}
 
-	int Block::Damage(
-			const ushort dmg,
-			const int dmg_kind=CRUSH)
-	{
-		switch ( sub ) {
+	int Block::Damage(const ushort dmg, const int dmg_kind) {
+		const ushort last_dur=durability;
+		switch ( Sub() ) {
 			case DIFFERENT:
-				if ( TIME==dmg_kind )
-					return 0;
+				if ( TIME==dmg_kind ) {
+					durability=0;
+					break;
+				}
 				//no break, only time damages DIFFERENT
 			case NULLSTONE:
 			case STAR:
 			case AIR:
 			case SKY:
 			case SUN_MOON:
-			case WATER:
-				return durability;
+			case WATER: return durability;
 			case MOSS_STONE:
 			case STONE:
-				return ( MINE==dmg_kind ) ?
+				( MINE==dmg_kind ) ?
 					durability-=2*dmg :
 					durability-=dmg;
+				break;
 			case GREENERY:
-			case GLASS:
-				return durability=0;
+			case GLASS: durability=0; break;
 			case ROSE:
 			case HAZELNUT:
 			case WOOD:
-				return (CUT==dmg_kind) ?
+				(CUT==dmg_kind) ?
 					durability-=2*dmg :
 					durability-=dmg;
+				break;
 			case SAND:
 			case SOIL:
-				return (DIG==dmg_kind) ?
+				(DIG==dmg_kind) ?
 					durability-=2*dmg :
 					durability-=dmg;
+				break;
 			case A_MEAT:
 			case H_MEAT:
-				return (THRUST==dmg_kind) ?
+				(THRUST==dmg_kind) ?
 					durability-=2*dmg :
 					durability-=dmg;
-			default:
-				return durability-=dmg;
+				break;
+			default: durability-=dmg;
 		}
+		switch ( dmg_kind ) {
+			case HUNGER:
+				ReceiveSignal(QObject::tr(
+					"You faint from hunger!"));
+				break;
+			case HEAT:
+				ReceiveSignal(QObject::tr("You burn!"));
+				break;
+			case BREATH:
+				ReceiveSignal(QObject::tr(
+					"You choke withot air!"));
+				break;
+			case DAMAGE_FALL:
+				ReceiveSignal(
+					QObject::tr("You fall, damage %1.").
+					arg(last_dur-durability));
+				break;
+			default:
+				ReceiveSignal(
+					QObject::tr("Received %1 damage!").
+					arg(last_dur-durability));
+		}
+		return durability;
 	}
 
 	Block * Block::DropAfterDamage() const {
@@ -409,11 +434,11 @@
 				safe_fall_height)*10;
 			fall_height=0;
 			GetWorld()->
-				Damage(x_self, y_self, z_self-1, dmg);
-			ReceiveSignal(tr("You fall, damage %1").arg(dmg));
-			emit Updated();
+				Damage(x_self, y_self, z_self-1, dmg,
+					DAMAGE_FALL);
 			return GetWorld()->
-				Damage(x_self, y_self,z_self, dmg);
+				Damage(x_self, y_self,z_self, dmg,
+					DAMAGE_FALL);
 		} else {
 			fall_height=0;
 			return false;
@@ -906,11 +931,13 @@
 	ushort Dwarf::Start() const { return 5; }
 
 	int Dwarf::DamageKind() const {
-		if ( Number(inRight) )
+		if ( Number(inRight) ) {
 			return ShowBlock(inRight)->DamageKind();
-		if ( Number(inLeft) )
+		} else if ( Number(inLeft) ) {
 			return ShowBlock(inLeft)->DamageKind();
-		return CRUSH;
+		} else {
+			return CRUSH;
+		}
 	}
 
 	ushort Dwarf::DamageLevel() const {
