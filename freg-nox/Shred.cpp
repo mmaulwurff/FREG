@@ -484,8 +484,6 @@ ushort Shred::FlatUndeground(short depth) {
 
 	if (level >= 127) {
 		level = 127;
-	} else if (level < 0) {
-		level = 0;
 	}
 	short i, j, k;
 	for (i = 0; i < SHRED_WIDTH; i++)
@@ -665,6 +663,7 @@ void Shred::TestShred() {
 	SetNewBlock(BLOCK, WATER, 5, 5, level);
 	SetNewBlock(PILE, WATER, 7, 5, level);
 	SetNewBlock(DOOR, STONE, 9, 5, level);
+	blocks[9][5][level]->SetDir(NORTH);
 	//suicide booth
 	for (ushort i=1; i<4; ++i)
 	for (ushort j=7; j<10; ++j)

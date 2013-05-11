@@ -30,6 +30,9 @@ class Inventory;
 class Active;
 class Animal;
 
+const ushort snow_inv_size=2;
+const ushort inv_size=26;
+
 enum before_push_action {
 	NO_ACTION,
 	MOVE_UP,
@@ -269,8 +272,6 @@ class Inventory {
 	const ushort size;
 	QStack<Block *> * inventory;
 
-	protected:
-	static const ushort inv_size=26;
 	public:
 	virtual int  Kind() const=0;
 	virtual int  Sub() const=0;
@@ -370,7 +371,6 @@ class Chest : public Block, public Inventory {
 class Pile : public Active, public Inventory {
 	Q_OBJECT
 
-	static const ushort snow_inv_size=2;
 	bool ifToDestroy;
 
 	public:
