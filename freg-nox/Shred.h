@@ -88,7 +88,7 @@ class Shred {
 			ushort shred_x, ushort shred_y,
 			long longi, long lati);
 	~Shred();
-	
+
 	void SetNewBlock(int kind, int sub, ushort x, ushort y, ushort z);
 	private:
 	void RegisterBlock(Block *, ushort x, ushort y, ushort z);
@@ -111,6 +111,18 @@ class Shred {
 	void Desert();
 	//block combinations section (trees, buildings, etc):
 	bool Tree(ushort x, ushort y, ushort z, ushort height);
-}; //class Shred
 
+	//land generation
+	private:
+	void ShredLandAmplitudeAndLevel(
+			long longi, long lati,
+			ushort* l,
+			float* a) const;
+	void ShredNominalAmplitudeAndLevel(
+			char shred_type,
+			ushort* l,
+			float* a) const;
+	void AddWater();
+	ushort FlatUndeground(short depth=0);
+};//class Shred
 #endif
