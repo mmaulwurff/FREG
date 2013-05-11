@@ -26,9 +26,9 @@
 #include "blocks.h"
 #include "Player.h"
 
-void Screen::Arrows(
-		WINDOW * const & window,
-		const ushort x, const ushort y)
+const char OBSCURE_BLOCK='.';
+
+void Screen::Arrows(WINDOW * const & window, const ushort x, const ushort y)
 const {
 	wcolor_set(window, WHITE_RED, NULL);
 	mvwaddstr(window, 0, x, "vv");
@@ -173,16 +173,17 @@ char Screen::CharName(const int kind, const int sub) const {
 			case IRON:
 			case STONE: return '#';
 			case GLASS: return 'g';
-			case SUN_MOON: case SKY:
 			case AIR:   return ' ';
 			case STAR:  return '.';
 			case WATER: return '~';
 			case SAND:  return '#';
 			case SOIL:  return '.';
-			case GREENERY: return '%';
 			case ROSE:  return ';';
 			case A_MEAT: case H_MEAT:
 			case HAZELNUT: return ',';
+			case SKY:
+			case SUN_MOON: return ' ';
+			case GREENERY: return '%';
 			default:
 				fprintf(stderr,
 					"Screen::CharName: unlisted sub: \
@@ -224,7 +225,7 @@ color_pairs Screen::Color(const int kind, const int sub) const {
 			case SKY: case STAR: switch ( w->PartOfDay() ) {
 				case NIGHT:   return WHITE_BLACK;
 				case MORNING: return WHITE_BLUE;
-				case NOON:    return CYAN_CYAN;
+				case NOON:    return WHITE_CYAN;
 				case EVENING: return WHITE_BLUE;
 			}
 			default: return WHITE_BLACK;
@@ -549,8 +550,9 @@ void Screen::PrintNormal(WINDOW * const window) const {
 			PrintBlock(i, j, k, window);
 			waddch(window, CharNumber(i, j, k));
 		} else {
-			wcolor_set(window, BLACK_BLACK, NULL);
-			waddstr(window, "  ");
+			wstandend(window);
+			waddch(window, OBSCURE_BLOCK);
+			waddch(window, ' ');
 		}
 	}
 	wstandend(window);
@@ -673,19 +675,22 @@ void Screen::PrintFront(WINDOW * const window) const {
 						waddch(window,
 							CharNumberFront(i, j));
 					} else {
-						wcolor_set(window,
-							BLACK_BLACK, NULL);
-						waddstr(window, "  ");
+						wstandend(window);
+						waddch(window, OBSCURE_BLOCK);
+						waddch(window, ' ');
 					}
 					break;
 				}
 			if ( *z==z_end ) { //far decorations
 				*z-=z_step;
-				wcolor_set(window,
-					(player->Visible(i, j, k) ?
-						WHITE_BLUE : BLACK_BLACK),
-					NULL);
-				waddstr(window, ". ");
+				if ( player->Visible(i, j, k ) ) {
+					wcolor_set(window, Color(BLOCK, SKY), NULL);
+					waddch(window, CharName(BLOCK, SKY));
+				} else {
+					wstandend(window);
+					waddch(window, OBSCURE_BLOCK);
+				}
+				waddch(window, ' ');
 			}
 		}
 	}
