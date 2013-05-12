@@ -455,7 +455,7 @@ void Screen::Print() {
 			qPrintable(str.left(10*breath/MAX_BREATH+1)));
 	}
 	//action mode
-	wmove(hudWin, 0, 0);
+	(void)wmove(hudWin, 0, 0);
 	wstandend(hudWin);
 	waddstr(hudWin, "Action: ");
 	switch ( actionMode ) {
@@ -474,7 +474,7 @@ void Screen::Print() {
 				actionMode);
 	}
 	if ( -1!=satiation ) { //satiation line
-		wmove(hudWin, 1, 0);
+		(void)wmove(hudWin, 1, 0);
 		if ( SECONDS_IN_DAY<satiation ) {
 			wcolor_set(hudWin, BLUE_BLACK, NULL);
 			waddstr(hudWin, "Gorged");
@@ -532,7 +532,7 @@ void Screen::PrintNormal(WINDOW * const window) const {
 		player->Z()+1;
 	const short k_step=( UP!=dir ) ? (-1) : 1;
 
-	wmove(window, 1, 1);
+	(void)wmove(window, 1, 1);
 	const ushort start_x=( player->X()/SHRED_WIDTH )*SHRED_WIDTH +
 		( SHRED_WIDTH-SCREEN_SIZE )/2;
 	const ushort start_y=( player->Y()/SHRED_WIDTH )*SHRED_WIDTH +
@@ -659,7 +659,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 		arrow_Y=SCREEN_SIZE/2+1;
 	}
 	const int block_side=w->Anti(dir);
-	wmove(window, 1, 1);
+	(void)wmove(window, 1, 1);
 	for (k=k_start; k_start-k<SCREEN_SIZE; --k, waddstr(window, "\n_")) {
 		for (*x=x_start; *x!=x_end; *x+=x_step) {
 			for (*z=z_start; *z!=z_end; *z+=z_step)
@@ -684,7 +684,8 @@ void Screen::PrintFront(WINDOW * const window) const {
 			if ( *z==z_end ) { //far decorations
 				*z-=z_step;
 				if ( player->Visible(i, j, k ) ) {
-					wcolor_set(window, Color(BLOCK, SKY), NULL);
+					wcolor_set(window, Color(BLOCK, SKY),
+						NULL);
 					waddch(window, CharName(BLOCK, SKY));
 				} else {
 					wstandend(window);
@@ -748,7 +749,7 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 	}
 	wcolor_set(window, Color(inv->Kind(), inv->Sub()), NULL);
 	box(window, 0, 0);
-	wmove(window, 0, 1);
+	(void)wmove(window, 0, 1);
 	if ( player->PlayerInventory()==inv ) {
 		wprintw(window, "[%c]Your inventory",
 			CharName(inv->Kind(), inv->Sub()));

@@ -1046,7 +1046,9 @@ World::World(const QString & world_name) :
 	} else if ( map.open(QIODevice::WriteOnly | QIODevice::Text) ) {
 		map.write(".\n");
 		map.close();
-		map.open(QIODevice::ReadOnly | QIODevice::Text);
+		if ( !map.open(QIODevice::ReadOnly | QIODevice::Text) ) {
+			fputs("World::World:: cannot open map.txt.", stderr);
+		}
 		mapSize=1;
 	}
 	worldMap=map.readAll();

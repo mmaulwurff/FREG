@@ -34,25 +34,23 @@ float Noise2(const int x, const int y) { //range - [-1;1]
 }
 
 float InterpolatedNoise(const short x, const short y) { //range - [-1;1]
-	short X, Y;
-	X = x >> 6;
-	Y = y >> 6;
+	const short X = x >> 6;
+	const short Y = y >> 6;
 
-	float noise[4];
-	noise[0] = Noise2(X, Y);
-	noise[1] = Noise2(X + 1, Y);
-	noise[2] = Noise2(X + 1, Y + 1);
-	noise[3] = Noise2(X, Y + 1);
+	const float noise[4]={
+		Noise2(X, Y),
+		Noise2(X + 1, Y),
+		Noise2(X + 1, Y + 1),
+		Noise2(X, Y + 1)
+	};
 
-	float dx, dy;
+	const float dx = (float (x) - float (X << 6))*0.015625f;
+	const float dy = (float (y) - float (Y << 6))*0.015625f;
 
-	dx = (float (x) - float (X << 6))*0.015625f;
-	dy = (float (y) - float (Y << 6))*0.015625f;
-
-	float interp_x[2];
-	interp_x[0] = dy * noise[3] + (1.0f - dy) * noise[0];
-	interp_x[1] = dy * noise[2] + (1.0f - dy) * noise[1];
-
+	const float interp_x[2]={
+		dy * noise[3] + (1.0f - dy) * noise[0],
+		dy * noise[2] + (1.0f - dy) * noise[1]
+	};
 	return interp_x[1] * dx + interp_x[0] * (1.0f - dx);
 }
 
@@ -102,49 +100,31 @@ void Shred::ShredLandAmplitudeAndLevel(
 		ushort * const l,
 		float * const a)
 const {
-	char shred_types[8];
-	char this_shred_type = TypeOfShred(longi, lati);
-	int i;
+	const char shred_types[8]={
+		TypeOfShred(longi + 1, lati),
+		TypeOfShred(longi - 1, lati),
+		TypeOfShred(longi, lati + 1),
+		TypeOfShred(longi, lati - 1),
 
-	shred_types[0] = TypeOfShred(longi + 1, lati);
-	shred_types[1] = TypeOfShred(longi - 1, lati);
-	shred_types[2] = TypeOfShred(longi, lati + 1);
-	shred_types[3] = TypeOfShred(longi, lati - 1);
-
-	shred_types[4] = TypeOfShred(longi + 1, lati + 1);
-	shred_types[5] = TypeOfShred(longi - 1, lati - 1);
-	shred_types[6] = TypeOfShred(longi - 1, lati + 1);
-	shred_types[7] = TypeOfShred(longi + 1, lati - 1);
-
+		TypeOfShred(longi + 1, lati + 1),
+		TypeOfShred(longi - 1, lati - 1),
+		TypeOfShred(longi - 1, lati + 1),
+		TypeOfShred(longi + 1, lati - 1)
+	};
 	float amplitude, level;
 	float a2;
 	ushort l2;
-	float this_shred_amplitude;
-	float this_shred_level;
 
-	if (
-			this_shred_type == '~' ||
-			this_shred_type == '^' ||
-			this_shred_type == 'p' ||
-			this_shred_type == 't')
-	{ //interpolate level and amplitude
-		ShredNominalAmplitudeAndLevel(this_shred_type, &l2, &a2);
-		this_shred_amplitude = amplitude = a2;
-		this_shred_level = level = float (l2);
-		for (i = 0; i < 8; i++)
-			if (shred_types[i] != this_shred_type) {
-				ShredNominalAmplitudeAndLevel(shred_types[i],
-					&l2, &a2);
-				amplitude +=
-				    (a2 - this_shred_amplitude) * (1.0f/9.0f);
-				level +=
-				    (float (l2) -
-				     this_shred_level)*(1.0f / 9.0f);
-			}
-	} else {
-		ShredNominalAmplitudeAndLevel(this_shred_type, &l2, &a2);
-		amplitude = a2;
-		level = float (l2);
+	const char this_shred_type = TypeOfShred(longi, lati);
+	ShredNominalAmplitudeAndLevel(this_shred_type, &l2, &a2);
+	const float this_shred_amplitude = amplitude = a2;
+	const float this_shred_level = level = float (l2);
+	for (int i = 0; i < 8; i++) {
+		if (shred_types[i] != this_shred_type) {
+			ShredNominalAmplitudeAndLevel(shred_types[i], &l2,&a2);
+			amplitude += (a2 - this_shred_amplitude) * (1.0f/9.0f);
+			level += (float (l2) - this_shred_level)*(1.0f / 9.0f);
+		}
 	}
 	*a = amplitude;
 	*l = ushort(level);
@@ -482,8 +462,8 @@ ushort Shred::FlatUndeground(short depth) {
 	float amplitude;
 	ShredLandAmplitudeAndLevel(longitude, latitude, &level, &amplitude);
 
-	if (level >= 127) {
-		level = 127;
+	if ( level >= HEIGHT-2 ) {
+		level=HEIGHT-2;
 	}
 	short i, j, k;
 	for (i = 0; i < SHRED_WIDTH; i++)
@@ -668,7 +648,9 @@ void Shred::TestShred() {
 	for (ushort i=1; i<4; ++i)
 	for (ushort j=7; j<10; ++j)
 	for (ushort k=level; k<level+5; ++k) {
-		PutNormalBlock(GLASS, i, j, k);
+		if ( k<HEIGHT-1 ) {
+			PutNormalBlock(GLASS, i, j, k);
+		}
 	}
 	SetNewBlock(RABBIT, A_MEAT, 2, 8, level);
 }
