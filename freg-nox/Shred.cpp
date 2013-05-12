@@ -564,8 +564,8 @@ void Shred::NormalUnderground(const ushort depth, const int sub) {
 			   FinalNoise(latitude * 16 + i,
 				      longitude * 16 +
 				      j) * interp_amplitude) - depth;
-		if (h > 127) {
-			h = 127;
+		if( h >= HEIGHT - 1 )
+            		h= HEIGHT - 2;
 		} else if (h < 2) {
 			h = 2;
 		}
@@ -576,7 +576,9 @@ void Shred::NormalUnderground(const ushort depth, const int sub) {
 		} else {
 			dirt_h = 0;
 		}
-		for (k = 1; k < h - dirt_h; ++k) {
+		dirt_h+= short( 3.0f * FinalNoise( (latitude * 16 + i ) * 4, ( longitude * 16 + j ) * 4 ) );
+		
+		for (k = 1; k < h - dirt_h && h < HEIGHT - 1; ++k) {
 			PutNormalBlock(STONE, i, j, k);
 		}
 		for (; k < h; ++k) {
