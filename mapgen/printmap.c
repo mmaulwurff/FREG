@@ -122,6 +122,9 @@ int main() {
 			case '.':
 				color_set(BLACK_GREEN, NULL);
 			break;
+			case '+':
+				color_set(WHITE_GREEN, NULL);
+			break;
 			case '^':
 				color_set(BLACK_WHITE, NULL);
 			break;

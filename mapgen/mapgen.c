@@ -51,6 +51,10 @@ void circle(
 		const ushort size,
 		char map[size][size])
 {
+	if ( min_rad >= max_rad ) {
+		printf("%c: min_rad (%hu) >= max_rad (%hu)\n",
+			ch, min_rad, max_rad);
+	}
 	float maxs[360]={rand()%max_rad};
 	if ( maxs[0]<min_rad ) {
 		maxs[0]=min_rad;
@@ -98,12 +102,13 @@ int main() {
 	}
 
 	circle(min_rad, max_rad, '.', size, map);
-	circle(min_rad/2, max_rad/4, '%', size, map);
-	circle(min_rad/4, max_rad/8, '^', size, map);
+	circle(min_rad/2, max_rad/2, '%', size, map);
+	circle(min_rad/5, max_rad/5, '+', size, map);
+	circle(min_rad/10, max_rad/8, '^', size, map);
 
 	//rivers
 	ushort i;
-	for (i=1; i<359; ++i) {
+	for (i=2; i<358; ++i) {
 		if ( !(rand()%60)) {
 			ushort j;
 			for (j=i-2; j<=i+2; ++j) {

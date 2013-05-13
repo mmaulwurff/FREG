@@ -23,6 +23,22 @@
 #include "world.h"
 #include "BlockManager.h"
 
+const unsigned short SEA_LEVEL= 58;
+const unsigned short SEABED_LEVEL= 48;
+const unsigned short PLANE_LEVEL= 64;
+const unsigned short MOUNTAIN_LEVEL= 111;
+const ushort HILL_LEVEL = 88;
+
+const float SEABED_AMPLITUDE= 12.0f;
+const float PLANE_AMPLITUDE= 8.0f;
+const float MOUNTAIN_AMPLITUDE= 70.0f;
+const float HILL_AMPLITUDE = 50.0f;
+
+//[ level - amplitude; level + amplitude ]
+//faster- [ level - amplitude/2; level + amplitude/2 ]
+//perlin [ -1; 1]
+//h= level + amplitude * perlin
+
 //Qt version in Debian stable now.
 const int datastream_version=QDataStream::Qt_4_6;
 
@@ -91,6 +107,10 @@ const {
 		case '^':
 			*l = MOUNTAIN_LEVEL;
 			*a = MOUNTAIN_AMPLITUDE;
+		break;
+		case '+':
+			*l = HILL_LEVEL;
+			*a = HILL_AMPLITUDE;
 		break;
 	}
 }
@@ -198,6 +218,7 @@ Shred::Shred(
 		case '.': Plain();        break;
 		case 't': TestShred();    break;
 		case 'p': Pyramid();      break;
+		case '+': Hill();         break;
 		case '^': Mountain();     break;
 		case ':': Desert();       break;
 		case '%': Forest(longi, lati); break;
@@ -779,6 +800,11 @@ void Shred::Pyramid() {
 	for (z=HEIGHT/2-52; z<=level; z++) {
 		blocks[SHRED_WIDTH/2][SHRED_WIDTH/2][z]=Normal(AIR);
 	}
+}
+
+void Shred::Hill() {
+	NormalUnderground(0);
+	PlantGrass();
 }
 
 void Shred::Mountain() {
