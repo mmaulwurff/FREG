@@ -250,6 +250,7 @@ void Shred::SetNewBlock(
 		const int kind, const int sub,
 		const ushort x, const ushort y, const ushort z)
 {
+	block_manager.DeleteBlock(blocks[x][y][z]);
 	SetBlock( block_manager.NewBlock(kind, sub), x, y, z );
 }
 
@@ -564,9 +565,9 @@ void Shred::NormalUnderground(const ushort depth, const int sub) {
 			   FinalNoise(latitude * 16 + i,
 				      longitude * 16 +
 				      j) * interp_amplitude) - depth;
-		if( h >= HEIGHT - 1 )
+		if( h >= HEIGHT - 1 ) {
             		h= HEIGHT - 2;
-		} else if (h < 2) {
+		} else if ( h < 2 ) {
 			h = 2;
 		}
 		if (h < 80) {

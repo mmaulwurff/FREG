@@ -120,7 +120,6 @@ int main() {
 	for (y=0; y<size; ++y, fputc('\n', file))
 	for (x=0; x<size; ++x) {
 		fputc(map[x][y], file);
-		fputc(map[x][y], file);
 	}
 
 	fclose(file);

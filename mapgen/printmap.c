@@ -119,8 +119,6 @@ int main() {
 				color_set(CYAN_BLUE, NULL);
 			break;
 			case '%':
-				color_set(BLACK_YELLOW, NULL);
-			break;
 			case '.':
 				color_set(BLACK_GREEN, NULL);
 			break;
@@ -128,7 +126,8 @@ int main() {
 				color_set(BLACK_WHITE, NULL);
 			break;
 		}
-		addch(c=='\n' ? '\n' : ' ');
+		addch(' ');
+		addch(c);
 		c=fgetc(map);
 	}
 	fclose(map);
