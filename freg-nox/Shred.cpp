@@ -564,19 +564,23 @@ void Shred::NormalUnderground(const ushort depth, const int sub) {
 			   FinalNoise(latitude * 16 + i,
 				      longitude * 16 +
 				      j) * interp_amplitude) - depth;
-		if (h > 127) {
-			h = 127;
+		if( h >= HEIGHT - 1 )
+            		h= HEIGHT - 2;
 		} else if (h < 2) {
 			h = 2;
 		}
 		if (h < 80) {
 			dirt_h = 5;
+			dirt_h+= short( 3.0f * FinalNoise( (latitude * 16 + i ) * 4, ( longitude * 16 + j ) * 4 ) );
 		} else if (h < 100) {
 			dirt_h = (100 - h) * 6 / 20;
+			dirt_h+= short( 3.0f * FinalNoise( (latitude * 16 + i ) * 4, ( longitude * 16 + j ) * 4 ) );
+			if( dirt_h < 0 ) dirt_h= 0;
 		} else {
 			dirt_h = 0;
 		}
-		for (k = 1; k < h - dirt_h; ++k) {
+		
+		for (k = 1; k < h - dirt_h && h < HEIGHT - 1; ++k) {
 			PutNormalBlock(STONE, i, j, k);
 		}
 		for (; k < h; ++k) {
@@ -672,6 +676,7 @@ void Shred::NullMountain() {
 
 void Shred::Plain() {
 	NormalUnderground();
+	AddWater();
 	ushort i, num, x, y, k;
 	//bush
 	num=qrand()%4;
@@ -680,7 +685,8 @@ void Shred::Plain() {
 		y=qrand()%SHRED_WIDTH;
 		for (k=HEIGHT-2; k>0; k--) {
 			if ( blocks[x][y][k]->Sub()!=AIR ) {
-				SetNewBlock(BUSH, WOOD, x, y, k+1);
+				if( blocks[x][y][k]->Sub()!= WATER )
+					SetNewBlock(BUSH, WOOD, x, y, k+1);
 				break;
 			}
 
@@ -693,18 +699,19 @@ void Shred::Plain() {
 		y=qrand()%SHRED_WIDTH;
 		for (k=HEIGHT-2; k>0; k--) {
 			if (blocks[x][y][k]->Sub()!=AIR) {
-				SetNewBlock(RABBIT, A_MEAT, x, y, k+1);
+				if( blocks[x][y][k]->Sub()!= WATER )
+					SetNewBlock(RABBIT, A_MEAT, x, y, k+1);
 				break;
 			}
 
 		}
 	}
-	AddWater();
 	PlantGrass();
 }
 
 void Shred::Forest(const long longi, const long lati) {
 	NormalUnderground();
+	AddWater();
 	long i, j;
 	ushort k;
 	ushort number_of_trees=0;
@@ -718,7 +725,7 @@ void Shred::Forest(const long longi, const long lati) {
 		short x=qrand()%(SHRED_WIDTH-2);
 		short y=qrand()%(SHRED_WIDTH-2);
 		for (k=HEIGHT-2; k>0; k--) {
-			if ( blocks[x][y][k]->Sub()!=AIR ) {
+			if ( blocks[x][y][k]->Sub()!=AIR && blocks[x][y][k]->Sub()!=WATER ) {
 				if ( blocks[x][y][k]->Sub()!=GREENERY &&
 						blocks[x][y][k]->Sub()!=WOOD )
 				{
@@ -729,7 +736,6 @@ void Shred::Forest(const long longi, const long lati) {
 
 		}
 	}
-	AddWater();
 	PlantGrass();
 }
 
@@ -804,7 +810,7 @@ bool Shred::Tree(
 	for (i=x; i<=x+2; ++i)
 	for (j=y; j<=y+2; ++j)
 	for (k=z; k<z+height; ++k) {
-		if ( AIR!=Sub(i, j, k) ) {
+		if ( AIR!=Sub(i, j, k) && WATER!=Sub(i, j, k) ) {
 			return false;
 		}
 	}
