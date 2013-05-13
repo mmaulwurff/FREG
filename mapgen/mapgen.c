@@ -1,3 +1,20 @@
+	/*
+	*This file is part of FREG.
+	*
+	*FREG is free software: you can redistribute it and/or modify
+	*it under the terms of the GNU General Public License as published by
+	*the Free Software Foundation, either version 3 of the License, or
+	*(at your option) any later version.
+	*
+	*FREG is distributed in the hope that it will be useful,
+	*but WITHOUT ANY WARRANTY; without even the implied warranty of
+	*MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	*GNU General Public License for more details.
+	*
+	*You should have received a copy of the GNU General Public License
+	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
+	*/
+
 #include <stdio.h>
 #include <math.h>
 
@@ -63,15 +80,15 @@ void circle(
 }
 
 int main() {
-	const ushort size=50;
+	const ushort size=75;
 	const char outer='~';
-	const unsigned int seed=276;
+	const unsigned int seed=371;
 	srand(seed);
 	FILE * const file=fopen("map.txt", "w");
 	ushort x, y;
 	const ushort num_vertex=8;
 	
-	const ushort min_rad=size/6;
+	const ushort min_rad=size/3;
 	const ushort max_rad=size/2-1;
 	
 	char map[size][size];
@@ -81,21 +98,24 @@ int main() {
 	}
 
 	circle(min_rad, max_rad, '.', size, map);
-	circle(min_rad/2, max_rad/2, '%', size, map);
-	circle(min_rad/4, max_rad/4, '^', size, map);
+	circle(min_rad/2, max_rad/4, '%', size, map);
+	circle(min_rad/4, max_rad/8, '^', size, map);
 
 	//rivers
-	/*ushort i;
-	for (i=0; i<360; ++i) {
-		if ( !(rand()%30) ) {
-			ushort r;
-			for (r=max_rad/3; r<max_rad; ++r) {
-				map
-					[(int)(r*cos(i*2*pi/360))+size/2]
-					[(int)(r*sin(i*2*pi/360))+size/2]='~';
+	ushort i;
+	for (i=1; i<359; ++i) {
+		if ( !(rand()%60)) {
+			ushort j;
+			for (j=i-2; j<=i+2; ++j) {
+				ushort r;
+				for (r=max_rad/3; r<max_rad; ++r) {
+					map[(int)(r*cos(j*2*pi/360))+size/2]
+						[(int)(r*sin(j*2*pi/360))+
+							size/2]='~';
+				}
 			}
 		}
-	}*/
+	}
 		
 	for (y=0; y<size; ++y, fputc('\n', file))
 	for (x=0; x<size; ++x) {
