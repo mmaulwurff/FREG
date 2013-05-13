@@ -620,12 +620,9 @@ void Shred::TestShred() {
 	//row 2
 	SetNewBlock(LADDER, NULLSTONE, 1, 3, level);
 	//tall ladder
-	SetNewBlock(LADDER, WOOD, 1, 3, level + 1);
-	SetNewBlock(LADDER, WOOD, 1, 3, level + 2);
-	SetNewBlock(LADDER, WOOD, 1, 3, level + 3);
-	SetNewBlock(LADDER, WOOD, 1, 3, level + 4);
-	SetNewBlock(LADDER, WOOD, 1, 3, level + 5);
-	
+	for (ushort i=level+1; i<=level+5 && i<HEIGHT-1; ++i) {
+		SetNewBlock(LADDER, WOOD, 1, 3, i);
+	}
 	SetNewBlock(DWARF, H_MEAT, 3, 3, level);
 	SetNewBlock(LIQUID, WATER, 5, 3, level - 3);
 	SetNewBlock(LIQUID, WATER, 5, 3, level - 3);
