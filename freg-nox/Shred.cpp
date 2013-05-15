@@ -23,23 +23,25 @@
 #include "world.h"
 #include "BlockManager.h"
 
-const unsigned short SEA_LEVEL= 58;
-const unsigned short SEABED_LEVEL= 48;
-const unsigned short PLANE_LEVEL= 64;
-const unsigned short MOUNTAIN_LEVEL= 111;
-const ushort HILL_LEVEL = 88;
+const ushort SEA_LEVEL    = 58;
+const ushort SEABED_LEVEL = 48;
+const ushort PLANE_LEVEL  = 64;
+const ushort HILL_LEVEL   = 76;
+const ushort MOUNTAIN_LEVEL=88;
 
-const float SEABED_AMPLITUDE= 12.0f;
-const float PLANE_AMPLITUDE= 8.0f;
-const float MOUNTAIN_AMPLITUDE= 70.0f;
-const float HILL_AMPLITUDE = 50.0f;
+const float SEABED_AMPLITUDE = 12.0f;
+const float PLANE_AMPLITUDE  =  8.0f;
+const float HILL_AMPLITUDE   = 29.0f;
+const float MOUNTAIN_AMPLITUDE=50.0f;
 
-//[ level - amplitude; level + amplitude ]
-//faster- [ level - amplitude/2; level + amplitude/2 ]
-//perlin [ -1; 1]
-//h= level + amplitude * perlin
+/*landscape generation:
+ * [ level - amplitude; level + amplitude ]
+ * faster- [ level - amplitude/2; level + amplitude/2 ]
+ * perlin [ -1; 1]
+ * h= level + amplitude * perlin
+*/
 
-//Qt version in Debian stable now.
+//Qt version in Debian stable that time.
 const int datastream_version=QDataStream::Qt_4_6;
 
 float Noise2(const int x, const int y) { //range - [-1;1]
