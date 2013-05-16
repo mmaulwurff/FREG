@@ -460,16 +460,25 @@ char Shred::TypeOfShred(const long longi, const long lati) const {
 
 void Shred::AddWater() {
 	short i, j, k;
-	char shred_types[5];
+	char shred_types[9];
 	shred_types[0] = TypeOfShred(longitude, latitude);
 	shred_types[1] = TypeOfShred(longitude + 1, latitude);
 	shred_types[2] = TypeOfShred(longitude - 1, latitude);
 	shred_types[3] = TypeOfShred(longitude, latitude + 1);
 	shred_types[4] = TypeOfShred(longitude, latitude - 1);
+	
+	shred_types[5] = TypeOfShred(longitude + 1, latitude + 1);
+	shred_types[6] = TypeOfShred(longitude + 1, latitude - 1);
+	shred_types[7] = TypeOfShred(longitude - 1, latitude + 1);
+	shred_types[8] = TypeOfShred(longitude - 1, latitude - 1);
 	if (
 			shred_types[0] == '~' || shred_types[1] == '~' ||
 			shred_types[2] == '~' || shred_types[3] == '~' ||
-			shred_types[4] == '~') {
+			shred_types[4] == '~' || shred_types[5] == '~' ||
+			shred_types[6] == '~' || shred_types[7] == '~' ||
+			shred_types[8] == '~')
+						{
+	
 		for (i = 0; i < SHRED_WIDTH; i++)
 		for (j = 0; j < SHRED_WIDTH; j++)
 		for (k = SEA_LEVEL; true; k--) {
