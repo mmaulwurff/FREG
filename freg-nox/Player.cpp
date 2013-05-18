@@ -329,11 +329,7 @@ bool Player::MoveInsideInventory(const ushort num_from, const ushort num_to) {
 }
 
 bool Player::InnerMove(const ushort num_from, const ushort num_to) {
-	Inventory * const inv=PlayerInventory();
-	if ( !inv ) {
-		return false;
-	}
-	return ( inv->MoveInside(num_from, num_to) );
+	return PlayerInventory()->MoveInside(num_from, num_to);
 }
 
 void Player::Inscribe(const ushort num) {
@@ -547,23 +543,26 @@ void Player::Damage(
 		const short z_target)
 const {
 	world->SetDeferredAction(
-			x_target, y_target, z_target,
-			0, //direction doesn't matter here
-			DEFERRED_DAMAGE,
-			x, y, z,
-			0, //what block - doesn't matter
-			0, //who
-			( creativeMode ?
-				MAX_DURABILITY : player->DamageLevel() ),
-			( creativeMode ? TIME : player->DamageKind() ));
+		x_target, y_target, z_target,
+		0, //direction doesn't matter here
+		DEFERRED_DAMAGE,
+		x, y, z,
+		0, //what block - doesn't matter
+		0, //who
+		DamageLevel(),
+		DamageKind());
 }
 
 int Player::DamageKind() const {
-	return player ? player->DamageKind() : NO_HARM;
+	return creativeMode ?
+		TIME :
+		player ? player->DamageKind() : NO_HARM;
 }
 
 ushort Player::DamageLevel() const {
-	return player ? player->DamageLevel() : 0;
+	return creativeMode ?
+		MAX_DURABILITY :
+		player ? player->DamageLevel() : 0;
 }
 
 void Player::CheckOverstep(const int dir) {

@@ -309,8 +309,7 @@ void Screen::ControlPlayer(const int ch) {
 		case 'F': actionMode=TAKEOFF; break;
 
 		case ';': {
-			Inventory * const inv=player->GetP() ?
-				player->GetP()->HasInventory() : 0;
+			Inventory * const inv=player->PlayerInventory();
 			if ( inv ) {
 				player->MoveInsideInventory(
 					inv->Start(), inv->Size()-1);

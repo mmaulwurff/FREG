@@ -414,8 +414,14 @@ void World::PhysEvents() {
 						deferredActionYFrom,
 						deferredActionZFrom,
 						deferredActionData1) )
-				{
-					//send message to dropper
+				{ //no errors
+					GetBlock(
+							deferredActionXFrom,
+							deferredActionYFrom,
+							deferredActionZFrom)->
+						ReceiveSignal(tr(
+							"You drop something."
+								));
 				}
 			break;
 			default:

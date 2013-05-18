@@ -940,10 +940,12 @@
 
 	ushort Dwarf::DamageLevel() const {
 		ushort level=1;
-		if ( Number(inRight) )
+		if ( Number(inRight) ) {
 			level+=ShowBlock(inRight)->DamageLevel();
-		if ( Number(inLeft) )
+		}
+		if ( Number(inLeft) ) {
 			level+=ShowBlock(inRight)->DamageLevel();
+		}
 		return level;
 	}
 
@@ -970,23 +972,16 @@
 
 	bool Dwarf::MoveInside(ushort num_from, ushort num_to) {
 		Block *  const block=ShowBlock(num_from);
-		if  ( !block ) {
-			return true;
-		} else if ( num_to > onLegs ||
+		return !block ? true :
+			( num_to > onLegs ||
 				inRight==num_to || inLeft==num_to ||
 				( onHead==num_to &&
 					WEARABLE_HEAD==block->Wearable() ) ||
 				( onBody==num_to &&
 					WEARABLE_BODY==block->Wearable() ) ||
 				( onLegs==num_to &&
-					WEARABLE_LEGS==block->Wearable() ) )
-		{
-			GetExact(block, num_to);
-			Pull(num_from);
-			return true;
-		} else {
-			return false;
-		}
+					WEARABLE_LEGS==block->Wearable() ) ) ?
+			Inventory::MoveInside(num_from, num_to) : false;
 	}
 
 	void Dwarf::SaveAttributes(QDataStream & out) const {
