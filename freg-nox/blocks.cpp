@@ -166,13 +166,6 @@
 
 	void Block::ReceiveSignal(const QString &) {}
 
-	bool Block::CanBeOut() const {
-		switch (sub) {
-			case HAZELNUT: return false;
-			default: return true;
-		}
-	}
-
 	void Block::Inscribe(const QString & str) { *note=str; }
 
 	void Block::SaveAttributes(QDataStream &) const {}
@@ -305,7 +298,7 @@
 				fprintf(stderr,
 					"Weapon::FullName: unlisted sub: %d\n",
 					Sub());
-			return str="Some weapon";
+				return str="Some weapon";
 		}
 	}
 

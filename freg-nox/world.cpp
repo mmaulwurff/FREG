@@ -815,12 +815,6 @@ int World::Build(
 		}
 		return 1;
 	}
-	if ( !block->CanBeOut() ) {
-		if ( who ) {
-			who->ReceiveSignal(tr("Cannot build this."));
-		}
-		return 2;
-	}
 	block->Restore();
 	SetBlock(block, i, j, k);
 	ReplaceWithNormal(i, j, k);
