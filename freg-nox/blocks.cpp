@@ -1302,11 +1302,12 @@
 	{}
 
 //Rabbit::
-	float Rabbit::Attractive(int kind) const {
-		switch ( kind ) {
-			case DWARF: return -9;
-			case GRASS: return 0.1f;
-			case RABBIT: return 0.8f;
+	float Rabbit::Attractive(int sub) const {
+		switch ( sub ) {
+			case H_MEAT:
+			case A_MEAT: return -0.8f;
+			case GREENERY: return 0.1f;
+			case SAND: return -0.5f;
 			default: return 0;
 		}
 	}
@@ -1315,32 +1316,30 @@
 		World * const world=GetWorld();
 		float for_north=0, for_west=0;
 		ushort x, y, z;
-		int kind;
-		for (x=x_self-6; x<=x_self+6; ++x)
-		for (y=y_self-6; y<=y_self+6; ++y)
-		for (z=z_self-6; z<=z_self+6; ++z) {
+		//analyse world around
+		for (x=x_self-4; x<=x_self+4; ++x)
+		for (y=y_self-4; y<=y_self+4; ++y)
+		for (z=z_self-1; z<=z_self+3; ++z) {
 			if ( InBounds(x, y, z) ) {
-				kind=world->Kind(x, y, z);
-				if ( (
-						GRASS==kind ||
-						RABBIT==kind ||
-						DWARF==kind) &&
+				const float attractive=
+					Attractive(world->Sub(x, y, z));
+				if ( attractive &&
 						world->DirectlyVisible(
-							x_self,
-							y_self,
-							z_self, x, y, z) )
+							x_self, y_self,	z_self,
+							x, y, z) )
 				{
 					if ( y!=y_self ) {
-						for_north+=Attractive(kind)/
+						for_north+=attractive/
 							(y_self-y);
 					}
 					if ( x!=x_self ) {
-						for_west +=Attractive(kind)/
+						for_west +=attractive/
 							(x_self-x);
 					}
 				}
 			}
 		}
+		//make direction and move there
 		if ( abs(for_north)>1 || abs(for_west)>1 ) {
 			SetDir( ( abs(for_north)>abs(for_west) ) ?
 				( ( for_north>0 ) ? NORTH : SOUTH ) :
@@ -1350,24 +1349,16 @@
 			} else {
 				world->Jump(x_self, y_self, z_self);
 			}
-		} else switch ( qrand()%60 ) {
-			case 0:
-				SetDir(NORTH);
-				world->Move(x_self, y_self, z_self, NORTH);
-			break;
-			case 1:
-				SetDir(SOUTH);
-				world->Move(x_self, y_self, z_self, SOUTH);
-			break;
-			case 2:
-				SetDir(EAST);
-				world->Move(x_self, y_self, z_self, EAST);
-			break;
-			case 3:
-				SetDir(WEST);
-				world->Move(x_self, y_self, z_self, WEST);
-			break;
+		} else {
+			switch ( qrand()%60 ) {
+				case 0: SetDir(NORTH); break;
+				case 1: SetDir(SOUTH); break;
+				case 2: SetDir(EAST);  break;
+				case 3: SetDir(WEST);  break;
+			}
+			world->Move(x_self, y_self, z_self, GetDir());
 		}
+		//eat sometimes
 		if ( SECONDS_IN_DAY/2 > satiation ) {
 			for (x=x_self-1; x<=x_self+1; ++x)
 			for (y=y_self-1; y<=y_self+1; ++y)

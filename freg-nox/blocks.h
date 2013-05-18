@@ -458,7 +458,7 @@ class Bush : public Active, public Inventory {
 class Rabbit : public Animal {
 	Q_OBJECT
 
-	float Attractive(int kind) const;
+	float Attractive(int sub) const;
 
 	public:
 	int  Kind() const;
