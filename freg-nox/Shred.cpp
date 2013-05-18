@@ -850,11 +850,25 @@ bool Shred::Tree(
 		}
 	}
 	for (k=z; k < z + height - 1; ++k) { //trunk
-		PutNormalBlock(WOOD, x + 1, y + 1, k);
+		PutNormalBlock(WOOD, x+1, y+1, k);
+	}
+	if ( ENVIRONMENT==Movable(x+1, y+1, k-1) ) {
+		block_manager.DeleteBlock(blocks[x+1][y+1][k-1]);
+		PutNormalBlock(WOOD, x+1, y+1, k-1);
 	}
 	//branches
-	PutNormalBlock(WOOD, x,   y+1, z+height/2, WEST);
-	PutNormalBlock(WOOD, x+2, y+1, z+height/2, EAST);
+	if ( qrand()%2 ) {
+		PutNormalBlock(WOOD, x,   y+1, z+height/2, WEST);
+	}
+	if ( qrand()%2 ) {
+		PutNormalBlock(WOOD, x+2, y+1, z+height/2, EAST);
+	}
+	if ( qrand()%2 ) {
+		PutNormalBlock(WOOD, x+1, y, z+height/2, NORTH);
+	}
+	if ( qrand()%2 ) {
+		PutNormalBlock(WOOD, x+1, y+2, z+height/2, SOUTH);
+	}
 	//leaves
 	for (i=x; i<=x+2; ++i)
 	for (j=y; j<=y+2; ++j)
