@@ -21,6 +21,8 @@
 #include <QList>
 #include "blocks.h"
 
+const bool FLAT_GENERATION=true;
+
 class QFile;
 class World;
 
@@ -98,7 +100,12 @@ class Shred {
 	char TypeOfShred(long longi, long lati) const;
 
 	void NormalUnderground(ushort depth=0, int sub=SOIL);
-	void CoverWith(int kind, int sub, ushort thickness);
+	void CoverWith(int kind, int sub);
+	///Puts num things(kind-sub) in random places on shred surface.
+	/**If on_water is false, this will not drop things on water,
+	 * otherwise on water too.
+	 */
+	void RandomDrop(ushort num, int kind, int sub, bool on_water=false);
 
 	void PlantGrass();
 	void TestShred();
