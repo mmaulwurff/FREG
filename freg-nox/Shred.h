@@ -97,7 +97,9 @@ class Shred {
 
 	private:
 	QString FileName() const;
+	public: //TODO: make private (made public for map in screen)
 	char TypeOfShred(long longi, long lati) const;
+	private:
 
 	void NormalUnderground(ushort depth=0, int sub=SOIL);
 	void CoverWith(int kind, int sub);
