@@ -108,10 +108,8 @@ class Player : public QObject {
 	public:
 	///This returns current player block X (coordinates in loaded zone)
 	ushort X() const;
-
 	///This returns current player block Y (coordinates in loaded zone)
 	ushort Y() const;
-
 	///This returns current player block Z (coordinates in loaded zone)
 	ushort Z() const;
 
@@ -120,10 +118,8 @@ class Player : public QObject {
 
 	///This returns player hitpoints, also known as durability.
 	short HP() const;
-
 	///This returns player breath reserve.
 	short Breath() const;
-
 	short Satiation() const;
 
 	///This returns player block itself.

@@ -919,7 +919,7 @@
 		return str="Dwarf " + *note;
 	}
 
-	ushort Dwarf::Start() const { return 5; }
+	ushort Dwarf::Start() const { return onLegs+1; }
 
 	int Dwarf::DamageKind() const {
 		if ( Number(inRight) ) {
@@ -937,7 +937,7 @@
 			level+=ShowBlock(inRight)->DamageLevel();
 		}
 		if ( Number(inLeft) ) {
-			level+=ShowBlock(inRight)->DamageLevel();
+			level+=ShowBlock(inLeft)->DamageLevel();
 		}
 		return level;
 	}
@@ -1295,26 +1295,39 @@
 	{}
 
 //Rabbit::
-	float Rabbit::Attractive(int sub) const {
+	short Rabbit::Attractive(const int sub) const {
 		switch ( sub ) {
-			case H_MEAT:
-			case A_MEAT: return -0.8f;
-			case GREENERY: return 0.1f;
-			case SAND: return -0.5f;
+			case H_MEAT: return -8;
+			case A_MEAT: return -1;
+			case GREENERY: return 1;
+			case SAND: return -1;
 			default: return 0;
 		}
 	}
 
 	void Rabbit::ActFrequent() {
 		World * const world=GetWorld();
-		float for_north=0, for_west=0;
-		ushort x, y, z;
+		//eat sometimes
+		if ( SECONDS_IN_DAY/2 > satiation ) {
+			for (ushort x=x_self-1; x<=x_self+1; ++x)
+			for (ushort y=y_self-1; y<=y_self+1; ++y)
+			for (ushort z=z_self-1; z<=z_self+1; ++z) {
+				if ( InBounds(x, y) &&
+						GREENERY==world->Sub(x, y, z) )
+				{
+					world->Eat(x_self, y_self, z_self,
+						x, y, z);
+					return;
+				}
+			}
+		}
 		//analyse world around
-		for (x=x_self-4; x<=x_self+4; ++x)
-		for (y=y_self-4; y<=y_self+4; ++y)
-		for (z=z_self-1; z<=z_self+3; ++z) {
+		short for_north=0, for_west=0;
+		for (ushort x=x_self-4; x<=x_self+4; ++x)
+		for (ushort y=y_self-4; y<=y_self+4; ++y)
+		for (ushort z=z_self-1; z<=z_self+3; ++z) {
 			if ( InBounds(x, y, z) ) {
-				const float attractive=
+				const short attractive=
 					Attractive(world->Sub(x, y, z));
 				if ( attractive &&
 						world->DirectlyVisible(
@@ -1333,8 +1346,9 @@
 			}
 		}
 		//make direction and move there
-		if ( abs(for_north)>1 || abs(for_west)>1 ) {
-			SetDir( ( abs(for_north)>abs(for_west) ) ?
+		const ushort calmness=5;
+		if ( qAbs(for_north)>calmness || qAbs(for_west)>calmness ) {
+			SetDir( ( qAbs(for_north)>qAbs(for_west) ) ?
 				( ( for_north>0 ) ? NORTH : SOUTH ) :
 				( ( for_west >0 ) ? WEST  : EAST  ) );
 			if ( qrand()%2 ) {
@@ -1348,21 +1362,9 @@
 				case 1: SetDir(SOUTH); break;
 				case 2: SetDir(EAST);  break;
 				case 3: SetDir(WEST);  break;
+				default: return;
 			}
 			world->Move(x_self, y_self, z_self, GetDir());
-		}
-		//eat sometimes
-		if ( SECONDS_IN_DAY/2 > satiation ) {
-			for (x=x_self-1; x<=x_self+1; ++x)
-			for (y=y_self-1; y<=y_self+1; ++y)
-			for (z=z_self-1; z<=z_self+1; ++z)
-				if ( InBounds(x, y) &&
-						GREENERY==world->Sub(x, y, z) )
-				{
-					world->Eat(x_self, y_self, z_self,
-						x, y, z);
-					return;
-				}
 		}
 	}
 	int Rabbit::ShouldAct() const { return FREQUENT_AND_RARE; }
