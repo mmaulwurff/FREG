@@ -16,6 +16,7 @@
 	*/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 
 typedef unsigned short ushort;
@@ -96,8 +97,9 @@ int main(int argc, char * argv[]) {
 				case 'o': outer=argv[++i][0]; break;
 				case 'r': srand(atoi(argv[++i])); break;
 				case 'f': {
+					++i;
 					ushort n=0;
-					while ( filename[n]=argv[++i][n++] );
+					while ( (filename[n++]=argv[i][n]) );
 				} break;
 				default:
 					fputs("No such parameter.\n", stderr);

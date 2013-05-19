@@ -1064,7 +1064,12 @@ World::World(const QString & world_name) :
 				qPrintable(worldName+"/map.txt"));
 		#endif
 		system(command);
-		mapSize=map_size;
+		if ( map.open(QIODevice::ReadOnly | QIODevice::Text) ) {
+			mapSize=map_size;
+		} else {
+			mapSize=1;
+			worldMap=".";
+		}
 	}
 	worldMap=map.readAll();
 	worldMapStream=new QTextStream(worldMap, QIODevice::ReadOnly);
