@@ -84,9 +84,10 @@ void circle(
 }
 
 int main(int argc, char * argv[]) {
-	ushort size=50;
+	ushort size=75;
 	char outer='~';
 	srand(0);
+	char filename[50]="map.txt";
 	ushort i;
 	for (i=1; i<argc; ++i) {
 		if ( '-'==argv[i][0] ) {
@@ -94,6 +95,10 @@ int main(int argc, char * argv[]) {
 				case 's': size=atoi(argv[++i]); break;
 				case 'o': outer=argv[++i][0]; break;
 				case 'r': srand(atoi(argv[++i])); break;
+				case 'f': {
+					ushort n=0;
+					while ( filename[n]=argv[++i][n++] );
+				} break;
 				default:
 					fputs("No such parameter.\n", stderr);
 			}
@@ -134,7 +139,7 @@ int main(int argc, char * argv[]) {
 		}
 	}
 		
-	FILE * const file=fopen("map.txt", "w");
+	FILE * const file=fopen(filename, "w");
 	for (y=0; y<size; ++y, fputc('\n', file))
 	for (x=0; x<size; ++x) {
 		fputc(map[x][y], file);

@@ -1043,13 +1043,28 @@ World::World(const QString & world_name) :
 	QFile map(worldName+"/map.txt");
 	if ( map.open(QIODevice::ReadOnly | QIODevice::Text) ) {
 		mapSize=int(qSqrt(1+4*map.size())-1)/2;
-	} else if ( map.open(QIODevice::WriteOnly | QIODevice::Text) ) {
-		map.write(".\n");
-		map.close();
-		if ( !map.open(QIODevice::ReadOnly | QIODevice::Text) ) {
-			fputs("World::World:: cannot open map.txt.", stderr);
-		}
-		mapSize=1;
+	} else {
+		const ushort max_command_length=50;
+		char command[max_command_length];
+		const ushort map_size=75;
+		#ifdef Q_OS_LINUX
+			snprintf(command,
+				max_command_length,
+				"./mapgen -s %hu -r %d -f %s",
+				map_size,
+				qrand(),
+				qPrintable(worldName+"/map.txt"));
+		#endif
+		#ifdef Q_OS_WIN32
+			snprintf(command,
+				max_command_length,
+				"mapgen.exe -s %hu -r %d -f %s",
+				map_size,
+				qrand(),
+				qPrintable(worldName+"/map.txt"));
+		#endif
+		system(command);
+		mapSize=map_size;
 	}
 	worldMap=map.readAll();
 	worldMapStream=new QTextStream(worldMap, QIODevice::ReadOnly);
