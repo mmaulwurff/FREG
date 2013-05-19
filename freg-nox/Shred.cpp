@@ -549,7 +549,7 @@ void Shred::NormalUnderground(const ushort depth, const int sub) {
 	 */
 	ushort h;
 	ushort k;
-	ushort dirt_h;
+	short dirt_h;
 	for (ushort i = 0; i < SHRED_WIDTH; ++i)
 	for (ushort j = 0; j < SHRED_WIDTH; ++j) {
 		/*
@@ -615,7 +615,9 @@ void Shred::NormalUnderground(const ushort depth, const int sub) {
 			dirt_h+= short( 3.0f * FinalNoise(
 				( latitude *16+i )*4,
 				( longitude*16+j )*4 ) );
-			//if( dirt_h < 0 ) dirt_h= 0; //always false, ushort
+			if( dirt_h < 0 ) {
+				dirt_h = 0;
+			}
 		} else {
 			dirt_h = 0;
 		}
