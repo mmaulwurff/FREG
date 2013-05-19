@@ -691,7 +691,7 @@ Player::Player(World * const w) :
 	homeZ=sett.value("home_z", HEIGHT/2).toInt();
 	x    =sett.value("current_x", 0).toInt();
 	y    =sett.value("current_y", 0).toInt();
-	z    =sett.value("current_z", HEIGHT/2).toInt();
+	z    =sett.value("current_z", HEIGHT/2+1).toInt();
 	creativeMode=sett.value("creative_mode", false).toBool();
 
 	const ushort plus=world->NumShreds()/2*SHRED_WIDTH;

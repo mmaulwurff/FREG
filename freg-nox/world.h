@@ -22,6 +22,7 @@
 #include <QReadWriteLock>
 #include <QThread>
 #include <QByteArray>
+#include <QSettings>
 #include "header.h"
 
 class QTextStream;
@@ -88,6 +89,9 @@ class World : public QThread {
 	int deferredActionType;
 
 	uchar sunMoonFactor;
+
+	QSettings settings;
+	QSettings game_settings;
 
 	void ReplaceWithNormal(ushort x, ushort y, ushort z);
 	Block * ReplaceWithNormal(Block * block);

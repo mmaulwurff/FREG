@@ -18,7 +18,6 @@
 #include <QFile>
 #include <QTextStream>
 #include <QTimer>
-#include <QSettings>
 #include <QDir>
 #include "header.h"
 #include "blocks.h"
@@ -1026,18 +1025,16 @@ World::World(const QString & world_name) :
 		worldName(world_name),
 		cleaned(false),
 		toReSet(false),
-		deferredActionType(DEFERRED_NOTHING)
+		deferredActionType(DEFERRED_NOTHING),
+		settings(QDir::currentPath()+'/'+worldName+"/settings.ini",
+			QSettings::IniFormat),
+		game_settings(QDir::currentPath()+"/freg.ini",
+			QSettings::IniFormat)
 {
-	QSettings settings(QDir::currentPath()+'/'+worldName+"/settings.ini",
-		QSettings::IniFormat);
-	time      =settings.value("time", END_OF_NIGHT).toLongLong();
-	longitude =settings.value("longitude", 0).toLongLong();
-	latitude  =settings.value("latitude", 0).toLongLong();
-	spawnLongi=settings.value("spawn_longitude", 0).toLongLong();
-	spawnLati =settings.value("spawn_latitude", 0).toLongLong();
-	numShreds =settings.value("number_of_shreds", 5).toLongLong();
+	numShreds =
+		game_settings.value("number_of_shreds", 5).toLongLong();
 	numActiveShreds=
-		settings.value("number_of_active_shreds", 5).toLongLong();
+		game_settings.value("number_of_active_shreds", 5).toLongLong();
 
 	QDir::current().mkdir(worldName);
 	QFile map(worldName+"/map.txt");
@@ -1073,6 +1070,15 @@ World::World(const QString & world_name) :
 	}
 	worldMap=map.readAll();
 	worldMapStream=new QTextStream(worldMap, QIODevice::ReadOnly);
+
+	time=settings.value("time", END_OF_NIGHT).toLongLong();
+	spawnLongi=settings.value("spawn_longitude",
+		int(qrand()%mapSize)).toLongLong();
+	spawnLati =settings.value("spawn_latitude",
+		int(qrand()%mapSize)).toLongLong();
+	longitude =settings.value("longitude", int(spawnLongi)).toLongLong();
+	latitude  =settings.value("latitude",  int(spawnLati )).toLongLong();
+
 	if ( 1!=numShreds%2 ) {
 		++numShreds;
 		fprintf(stderr,
@@ -1121,13 +1127,11 @@ void World::CleanAll() {
 
 	SaveAllShreds();
 
-	QSettings sett(QDir::currentPath()+'/'+worldName+"/settings.ini",
-		QSettings::IniFormat);
-	sett.setValue("time", qlonglong(time));
-	sett.setValue("longitude", qlonglong(longitude));
-	sett.setValue("latitude", qlonglong(latitude));
-	sett.setValue("spawn_longitude", qlonglong(spawnLongi));
-	sett.setValue("spawn_latitude", qlonglong(spawnLati));
-	sett.setValue("number_of_shreds", numShreds);
-	sett.setValue("number_of_active_shreds", numActiveShreds);
+	settings.setValue("time", qlonglong(time));
+	settings.setValue("longitude", qlonglong(longitude));
+	settings.setValue("latitude", qlonglong(latitude));
+	settings.setValue("spawn_longitude", qlonglong(spawnLongi));
+	settings.setValue("spawn_latitude", qlonglong(spawnLati));
+	game_settings.setValue("number_of_shreds", numShreds);
+	game_settings.setValue("number_of_active_shreds", numActiveShreds);
 }
