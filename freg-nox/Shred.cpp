@@ -753,9 +753,9 @@ void Shred::Forest(const long longi, const long lati) {
 		}
 	}
 	for (ushort i=0; i<number_of_trees; ++i) {
-		ushort x=qrand()%(SHRED_WIDTH-2);
-		ushort y=qrand()%(SHRED_WIDTH-2);
-		for (ushort k=HEIGHT-2; k>0; --k) {
+		const ushort x=qrand()%(SHRED_WIDTH-2);
+		const ushort y=qrand()%(SHRED_WIDTH-2);
+		for (ushort k=HEIGHT-2; ; --k) {
 			const int sub=Sub(x, y, k);
 			if ( sub!=AIR && sub!=WATER ) {
 				if ( sub!=GREENERY && sub!=WOOD ) {
@@ -871,9 +871,9 @@ bool Shred::Tree(
 	for (k=z; k < z + height - 1; ++k) { //trunk
 		PutNormalBlock(WOOD, x+1, y+1, k);
 	}
-	if ( ENVIRONMENT==Movable(x+1, y+1, k-1) ) {
-		block_manager.DeleteBlock(blocks[x+1][y+1][k-1]);
-		PutNormalBlock(WOOD, x+1, y+1, k-1);
+	if ( ENVIRONMENT==Movable(x+1, y+1, z-1) ) {
+		block_manager.DeleteBlock(blocks[x+1][y+1][z-1]);
+		PutNormalBlock(WOOD, x+1, y+1, z-1);
 	}
 	//branches
 	if ( qrand()%2 ) {

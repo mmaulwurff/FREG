@@ -412,12 +412,10 @@ void Screen::Print() {
 	const short satiation=player->Satiation();
 
 	werase(hudWin);
-	ushort i;
 	//quick inventory
-	Inventory * const inv=player->GetP() ?
-		player->GetP()->HasInventory() : 0;
+	Inventory * const inv=player->PlayerInventory();
 	if ( inv ) {
-		for (i=0; i<inv->Size(); ++i) {
+		for (ushort i=0; i<inv->Size(); ++i) {
 			wstandend(hudWin);
 			const int x=36+i*2;
 			mvwaddch(hudWin, 0, x, 'a'+i);

@@ -619,13 +619,16 @@ void Player::SetPlayer(
 	y=player_y;
 	z=player_z;
 	if ( DWARF!=world->Kind(x, y, z) ) {
-		block_manager.DeleteBlock(world->GetBlock(x, y, z));
-		world->SetBlock( (player=block_manager.
-			NewBlock(DWARF, H_MEAT)->ActiveBlock()), x, y, z );
+		world->Build( (player=block_manager.
+				NewBlock(DWARF, H_MEAT)->ActiveBlock()),
+			x, y, z,
+			Dir(),
+			0,
+			true /*force build*/ );
 	} else {
 		player=world->ActiveBlock(x, y, z);
+		Dir(world->GetBlock(x, y, z)->GetDir());
 	}
-	Dir(world->GetBlock(x, y, z)->GetDir());
 
 	connect(player, SIGNAL(Destroyed()),
 		this, SLOT(BlockDestroy()),

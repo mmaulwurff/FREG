@@ -107,6 +107,7 @@ class World : public QThread {
 	public:
 	Block * GetBlock(ushort x, ushort y, ushort z) const;
 	Shred * GetShred(ushort i, ushort j) const;
+	private:
 	///Puts block to coordinates xyz and activates it.
 	void SetBlock(Block * block, ushort x, ushort y, ushort z);
 	///Puts block to coordinates and not activates it.
@@ -237,7 +238,8 @@ class World : public QThread {
 			Block * thing,
 			ushort x, ushort y, ushort z,
 			quint8 dir=UP,
-			Block * who=0);
+			Block * who=0,
+			bool anyway=false);
 	void Inscribe(ushort x, ushort y, ushort z);
 	void Eat(
 			ushort i, ushort j, ushort k,

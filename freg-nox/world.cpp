@@ -806,14 +806,17 @@ int World::Use(const ushort i, const ushort j, const ushort k) {
 int World::Build(
 		Block * const block,
 		const ushort i, const ushort j, const ushort k,
-		const quint8 dir, Block * const who) //defaults exist
+		const quint8 dir,
+		Block * const who,
+		const bool anyway) //defaults exist
 {
-	if ( !InBounds(i, j, k) || ENVIRONMENT!=Movable(i, j, k)  ) {
+	if ( !InBounds(i, j, k) || (!anyway && ENVIRONMENT!=Movable(i, j, k)) ) {
 		if ( who ) {
 			who->ReceiveSignal(tr("Cannot build here."));
 		}
 		return 1;
 	}
+	block_manager.DeleteBlock(GetBlock(i, j, k));
 	block->Restore();
 	SetBlock(block, i, j, k);
 	ReplaceWithNormal(i, j, k);
