@@ -837,6 +837,14 @@ Screen::Screen(
 	actionMode=sett.value("action_mode", USE).toInt();
 	command   =sett.value("last_command", "hello").toString();
 
+	QFile splash("splash.txt");
+	if ( splash.open(QIODevice::ReadOnly | QIODevice::Text) ) {
+		const ushort line_size=80;
+		char line[line_size];
+		while ( -1!=splash.readLine(line, line_size) ) {
+			addstr(line);
+		}
+	}
 	addstr("Press any key.");
 	qsrand(getch());
 	Notify("Game started.");
