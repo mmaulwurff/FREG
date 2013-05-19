@@ -83,35 +83,47 @@ void circle(
 	}
 }
 
-int main() {
-	const ushort size=75;
-	const char outer='~';
-	const unsigned int seed=371;
-	srand(seed);
-	FILE * const file=fopen("map.txt", "w");
-	ushort x, y;
-	const ushort num_vertex=8;
-	
-	const ushort min_rad=size/3;
-	const ushort max_rad=size/2-1;
-	
+int main(int argc, char * argv[]) {
+	ushort size=50;
+	char outer='~';
+	srand(0);
+	ushort i;
+	for (i=1; i<argc; ++i) {
+		if ( '-'==argv[i][0] ) {
+			switch ( argv[i][1] ) {
+				case 's': size=atoi(argv[++i]); break;
+				case 'o': outer=argv[++i][0]; break;
+				case 'r': srand(atoi(argv[++i])); break;
+				default:
+					fputs("No such parameter.\n", stderr);
+			}
+		}
+	}
+	if ( size<10 ) {
+		size=10;
+	}
+
 	char map[size][size];
+	ushort x, y;
 	for (y=0; y<size; ++y)
 	for (x=0; x<size; ++x) {
 		map[x][y]=outer;
 	}
 
+	const ushort min_rad=size/3;
+	const ushort max_rad=size/2;
 	circle(min_rad, max_rad, '.', size, map);
 	circle(min_rad/2, max_rad/2, '%', size, map);
-	circle(min_rad/5, max_rad/5, '+', size, map);
-	circle(min_rad/10, max_rad/8, '^', size, map);
+	circle(min_rad/3, max_rad/3+1, '+', size, map);
+	circle(min_rad/4, max_rad/4+1, '^', size, map);
 
 	//rivers
-	ushort i;
-	for (i=2; i<358; ++i) {
-		if ( !(rand()%60)) {
+	const ushort river_width=4;
+	const ushort river_width_deg=river_width*80/size;
+	for (i=river_width_deg; i<360-river_width_deg; ++i) {
+		if ( !(rand()%(60*80/size)) ) {
 			ushort j;
-			for (j=i-2; j<=i+2; ++j) {
+			for (j=i-river_width_deg; j<=i+river_width_deg; ++j) {
 				ushort r;
 				for (r=max_rad/3; r<max_rad; ++r) {
 					map[(int)(r*cos(j*2*pi/360))+size/2]
@@ -122,6 +134,7 @@ int main() {
 		}
 	}
 		
+	FILE * const file=fopen("map.txt", "w");
 	for (y=0; y<size; ++y, fputc('\n', file))
 	for (x=0; x<size; ++x) {
 		fputc(map[x][y], file);

@@ -607,11 +607,15 @@ void Shred::NormalUnderground(const ushort depth, const int sub) {
 		}
 		if (h < 80) {
 			dirt_h = 5;
-			dirt_h+= short( 3.0f * FinalNoise( (latitude * 16 + i ) * 4, ( longitude * 16 + j ) * 4 ) );
+			dirt_h+= short( 3.0f * FinalNoise(
+				( latitude *16+i )*4,
+				( longitude*16+j )*4 ) );
 		} else if (h < 100) {
 			dirt_h = (100 - h) * 6 / 20;
-			dirt_h+= short( 3.0f * FinalNoise( (latitude * 16 + i ) * 4, ( longitude * 16 + j ) * 4 ) );
-			if( dirt_h < 0 ) dirt_h= 0;
+			dirt_h+= short( 3.0f * FinalNoise(
+				( latitude *16+i )*4,
+				( longitude*16+j )*4 ) );
+			//if( dirt_h < 0 ) dirt_h= 0; //always false, ushort
 		} else {
 			dirt_h = 0;
 		}
