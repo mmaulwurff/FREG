@@ -682,7 +682,9 @@ void Screen::PrintFront(WINDOW * const window) const {
 				}
 			if ( *z==z_end ) { //far decorations
 				*z-=z_step;
-				if ( player->Visible(i, j, k ) ) {
+				if ( player->Visible(i, j, k ) ||
+						player->GetCreativeMode() )
+				{
 					wcolor_set(window, Color(BLOCK, SKY),
 						NULL);
 					waddch(window, CharName(BLOCK, SKY));

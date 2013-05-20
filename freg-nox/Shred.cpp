@@ -827,8 +827,30 @@ void Shred::Pyramid() {
 }
 
 void Shred::Hill() {
-	//TODO: add FLAT_GENERATION hill
 	NormalUnderground();
+	if ( FLAT_GENERATION ) {
+		ushort x, y, z;
+		for (y=0; y<SHRED_WIDTH; ++y) { //north-south '/\'
+			for (x=0; x<SHRED_WIDTH; ++x)
+			for (z=0; z<SHRED_WIDTH/2; ++z) {
+				if ( z <= -qAbs(x-SHRED_WIDTH/2)+
+						SHRED_WIDTH/2-2 )
+				{
+					PutNormalBlock(SOIL, x, y, z+HEIGHT/2);
+				}
+			}
+		}
+		for (x=0; x<SHRED_WIDTH; ++x) { //east-west '/\'
+			for (y=0; y<SHRED_WIDTH; ++y)
+			for (z=0; z<SHRED_WIDTH/2; ++z) {
+				if ( z <= -qAbs(y-SHRED_WIDTH/2)+
+						SHRED_WIDTH/2-2 )
+				{
+					PutNormalBlock(SOIL, x, y, z+HEIGHT/2);
+				}
+			}
+		}
+	}
 	PlantGrass();
 }
 
