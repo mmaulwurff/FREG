@@ -590,7 +590,9 @@ int World::Move(
 {
 	ushort newi, newj, newk;
 	if ( !Focus(i, j, k, newi, newj, newk, dir) &&
-			CanMove(i, j, k, newi, newj, newk, dir) )
+			CanMove(i, j, k, newi, newj, newk, dir) &&
+			(DOWN==dir || !(AIR==Sub(i, j, k-1) &&
+				AIR==Sub(newi, newj, newk-1))) )
 	{
 		NoCheckMove(i, j, k, newi, newj, newk, dir);
 		return 1;
@@ -642,7 +644,6 @@ int World::CanMove(
 		break;
 		default: break;
 	}
-
 	return ( ENVIRONMENT==block_to->Movable() ) ?
 		1 :
 		Move(newi, newj, newk, dir);
