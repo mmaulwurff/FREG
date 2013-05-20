@@ -42,7 +42,9 @@ class Shred {
 	QList<Active *> fallList;
 
 	public:
+	///Returns y (line) shred coordinate on world map.
 	long Longitude() const;
+	///Returns x (column) shred coordinate on world map.
 	long Latitude()  const;
 	ushort ShredX() const;
 	ushort ShredY() const;

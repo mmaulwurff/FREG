@@ -30,6 +30,8 @@
 ushort Player::X() const { return x; }
 ushort Player::Y() const { return y; }
 ushort Player::Z() const { return z; }
+long Player::GlobalX() const { return GetShred()->Latitude()*SHRED_WIDTH+x; }
+long Player::GlobalY() const { return GetShred()->Longitude()*SHRED_WIDTH+y; }
 
 Shred * Player::GetShred() const { return world->GetShred(x, y); }
 

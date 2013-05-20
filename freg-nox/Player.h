@@ -49,7 +49,7 @@ class Shred;
 class Player : public QObject {
 	Q_OBJECT
 
-	ulong homeLongi, homeLati;
+	long homeLongi, homeLati;
 	short homeX, homeY, homeZ;
 	short x, y, z; //current position
 	int dir;
@@ -112,6 +112,8 @@ class Player : public QObject {
 	ushort Y() const;
 	///This returns current player block Z (coordinates in loaded zone)
 	ushort Z() const;
+	long GlobalX() const;
+	long GlobalY() const;
 
 	///This returns current player direction (see enum dirs in header.h)
 	int Dir() const;
