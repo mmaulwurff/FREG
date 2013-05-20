@@ -148,6 +148,7 @@ class Screen : public VirtScreen {
 	void PrintNormal(WINDOW *) const;
 	void PrintFront(WINDOW *) const;
 	void PrintInv(WINDOW *, Inventory *) const;
+	void PrintText(WINDOW *, QString const &) const;
 	void RePrint();
 
 	color_pairs Color(int kind, int sub) const;

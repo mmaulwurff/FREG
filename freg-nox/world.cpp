@@ -810,7 +810,8 @@ int World::Build(
 		Block * const who,
 		const bool anyway) //defaults exist
 {
-	if ( !InBounds(i, j, k) || (!anyway && ENVIRONMENT!=Movable(i, j, k)) ) {
+	if ( !InBounds(i, j, k) || (!anyway && ENVIRONMENT!=Movable(i, j, k)) )
+	{
 		if ( who ) {
 			who->ReceiveSignal(tr("Cannot build here."));
 		}

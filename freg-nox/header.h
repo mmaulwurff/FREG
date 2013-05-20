@@ -25,22 +25,24 @@
 	#include <windows.h>
 #endif
 
+const float FREG_VERSION=0.1;
+
 const ushort SHRED_WIDTH=16;
 const ushort HEIGHT=128;
 
-const unsigned short SECONDS_IN_HOUR=60;
-const unsigned short SECONDS_IN_DAY=24*SECONDS_IN_HOUR;
-const unsigned short END_OF_NIGHT  = 6*SECONDS_IN_HOUR;
-const unsigned short END_OF_MORNING=12*SECONDS_IN_HOUR;
-const unsigned short END_OF_NOON   =18*SECONDS_IN_HOUR;
-const unsigned short END_OF_EVENING= 0*SECONDS_IN_HOUR;
-const unsigned short SECONDS_IN_NIGHT=END_OF_NIGHT;
-const unsigned short SECONDS_IN_DAYLIGHT=SECONDS_IN_DAY-END_OF_NIGHT;
+const ushort SECONDS_IN_HOUR=60;
+const ushort SECONDS_IN_DAY=24*SECONDS_IN_HOUR;
+const ushort END_OF_NIGHT  = 6*SECONDS_IN_HOUR;
+const ushort END_OF_MORNING=12*SECONDS_IN_HOUR;
+const ushort END_OF_NOON   =18*SECONDS_IN_HOUR;
+const ushort END_OF_EVENING= 0*SECONDS_IN_HOUR;
+const ushort SECONDS_IN_NIGHT=END_OF_NIGHT;
+const ushort SECONDS_IN_DAYLIGHT=SECONDS_IN_DAY-END_OF_NIGHT;
 
-const unsigned char MAX_LIGHT_RADIUS=15;
+const uchar MAX_LIGHT_RADIUS=15;
 
-const unsigned short MAX_DURABILITY=100;
-const unsigned short MAX_BREATH=60;
+const ushort MAX_DURABILITY=100;
+const ushort MAX_BREATH=60;
 
 enum dirs {
 	UP, ///< 0

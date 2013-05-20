@@ -392,6 +392,7 @@ void Screen::Print() {
 
 	switch ( player->UsingType() ) {
 		case OPEN:
+			werase(rightWin);
 			PrintInv(rightWin,
 				player->UsingBlock()->HasInventory());
 			break;
@@ -400,6 +401,7 @@ void Screen::Print() {
 	switch ( player->UsingSelfType() ) {
 		case OPEN:
 			if ( player->PlayerInventory() ) {
+				werase(leftWin);
 				PrintInv(leftWin,
 					player->PlayerInventory());
 				break;
@@ -708,7 +710,6 @@ void Screen::PrintFront(WINDOW * const window) const {
 }
 
 void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
-	werase(window);
 	wstandend(window);
 	switch ( inv->Kind() ) {
 		case DWARF:
@@ -758,6 +759,11 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 	wnoutrefresh(window);
 }
 
+void Screen::PrintText(WINDOW * const window, QString const & str) const {
+	waddstr(window, qPrintable(str));
+	wnoutrefresh(window);
+}
+
 void Screen::Notify(const QString & str) {
 	waddstr(notifyWin, qPrintable(str+'\n'));
 	wnoutrefresh(notifyWin);
@@ -770,8 +776,14 @@ void Screen::DeathScreen() {
 	werase(leftWin);
 	werase(rightWin);
 	werase(hudWin);
-	mvwaddstr(leftWin, SCREEN_SIZE/2, SCREEN_SIZE-10,
-		qPrintable(tr("Waiting for respawn...")));
+	wmove(leftWin, 1, 1);
+	wcolor_set(leftWin, WHITE_RED, NULL);
+	QFile death("death.txt");
+	if ( death.open(QIODevice::ReadOnly | QIODevice::Text) ) {
+		const QString str=death.readAll();
+		PrintText(leftWin, str);
+	}
+	box(leftWin, 0, 0);
 	wnoutrefresh(leftWin);
 	wnoutrefresh(rightWin);
 	wnoutrefresh(hudWin);
@@ -837,11 +849,10 @@ Screen::Screen(
 
 	QFile splash("splash.txt");
 	if ( splash.open(QIODevice::ReadOnly | QIODevice::Text) ) {
-		const ushort line_size=80;
-		char line[line_size];
-		while ( -1!=splash.readLine(line, line_size) ) {
-			addstr(line);
-		}
+		const QString str=splash.readAll()+
+			QString("\nVersion %1.\n\n").
+			arg(FREG_VERSION);
+		PrintText(stdscr, str);
 	}
 	addstr("Press any key.");
 	qsrand(getch());
