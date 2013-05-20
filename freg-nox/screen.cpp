@@ -782,6 +782,8 @@ void Screen::DeathScreen() {
 	if ( death.open(QIODevice::ReadOnly | QIODevice::Text) ) {
 		const QString str=death.readAll();
 		PrintText(leftWin, str);
+	} else {
+		waddstr(leftWin, "You die.\nWaiting for respawn...");
 	}
 	box(leftWin, 0, 0);
 	wnoutrefresh(leftWin);
@@ -853,6 +855,9 @@ Screen::Screen(
 			QString("\nVersion %1.\n\n").
 			arg(FREG_VERSION);
 		PrintText(stdscr, str);
+	} else {
+		printw("Free-roaming Elementary Game\n\nVersion %4.1f.\n",
+			FREG_VERSION);
 	}
 	addstr("Press any key.");
 	qsrand(getch());
