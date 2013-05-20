@@ -377,12 +377,12 @@
 
 //Active::
 	QString & Active::FullName(QString & str) const {
-		switch (sub) {
-			case SAND: return str="Sand";
+		switch ( Sub() ) {
+			case SAND:  return str="Sand";
+			case WATER: return str="Snow";
 			default:
 				fprintf(stderr,
-					"Active:FullName(QString&): \
-					Unlisted sub: %d\n",
+					"Active::FullName: Unlisted sub: %d\n",
 					sub);
 				return str="Unkown active block";
 		}
@@ -1070,7 +1070,6 @@
 	QString & Pile::FullName(QString & str) const {
 		switch ( Sub() ) {
 			case DIFFERENT: return str=tr("Pile");
-			case WATER:     return str=tr("Snow");
 			default:
 				fprintf(stderr,
 					"Pile::FullName: unlisted sub: %d\n",
@@ -1083,20 +1082,17 @@
 
 	usage_types Pile::Use() { return Inventory::Use(); }
 
-	ushort Pile::Weight() const {
-		return Inventory::Weight() +
-			(( WATER==Sub() ) ? Block::Weight() : 0);
-	}
+	ushort Pile::Weight() const { return Inventory::Weight(); }
 
 	int Pile::Drop(const ushort n, Inventory * const inv) {
 		const int ret=Inventory::Drop(n, inv);
-		ifToDestroy=( WATER==Sub() ) ? false : IsEmpty();
+		ifToDestroy=IsEmpty();
 		return ret;
 	}
 
 	void Pile::Pull(const ushort num) {
 		Inventory::Pull(num);
-		ifToDestroy=( WATER==Sub() ) ? false : IsEmpty();
+		ifToDestroy=IsEmpty();
 	}
 
 	void Pile::SaveAttributes(QDataStream & out) const {
@@ -1107,13 +1103,13 @@
 
 	Pile::Pile(const int sub) :
 			Active(sub, NONSTANDARD),
-			Inventory((WATER==sub) ? snow_inv_size : inv_size),
+			Inventory(inv_size),
 			ifToDestroy(false)
 	{}
 
 	Pile::Pile(QDataStream & str, const int sub) :
 			Active(str, sub, NONSTANDARD),
-			Inventory(str, (WATER==sub) ? snow_inv_size : inv_size)
+			Inventory(str, inv_size)
 	{
 		str >> ifToDestroy;
 	}

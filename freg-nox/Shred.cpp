@@ -701,7 +701,7 @@ void Shred::TestShred() {
 	SetNewBlock(WEAPON, IRON, 1, 5, level);
 	SetNewBlock(BLOCK, SAND, 3, 5, level);
 	SetNewBlock(BLOCK, WATER, 5, 5, level);
-	SetNewBlock(PILE, WATER, 7, 5, level);
+	SetNewBlock(ACTIVE, WATER, 7, 5, level);
 	SetNewBlock(DOOR, STONE, 9, 5, level);
 	blocks[9][5][level]->SetDir(NORTH);
 	//suicide booth

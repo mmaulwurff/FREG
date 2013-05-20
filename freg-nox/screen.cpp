@@ -146,7 +146,7 @@ char Screen::CharName(const int kind, const int sub) const {
 		case PICK:   return '\\';
 		case WORKBENCH: return '*';
 		case TELEGRAPH: return 't';
-		case PILE:   return ( WATER==sub ) ? '*' : '&';
+		case PILE:   return '&';
 		case DOOR:   return ( STONE==sub ) ? '#' : '\'';
 		case LOCKED_DOOR: return ( STONE==sub ) ? '#' : '`';
 		case WEAPON: switch ( sub ) {
@@ -162,6 +162,7 @@ char Screen::CharName(const int kind, const int sub) const {
 		} break;
 		case ACTIVE: switch ( sub ) {
 			case SAND: return '.';
+			case WATER: return '*';
 			default:
 				fprintf(stderr,
 					"Screen::CharName: unlisted active \
@@ -200,11 +201,15 @@ color_pairs Screen::Color(const int kind, const int sub) const {
 		case TELEGRAPH: return CYAN_BLACK;
 		case RABBIT:    return RED_WHITE;
 		case BUSH:      return BLACK_GREEN;
-		case PILE:      return ( WATER==sub ) ?
-			BLUE_WHITE : WHITE_BLACK;
+		case PILE:      return WHITE_BLACK;
 		case LIQUID: switch ( sub ) {
 			case WATER: return CYAN_BLUE;
 			default:    return RED_YELLOW;
+		}
+		case ACTIVE: switch ( sub ) {
+			case WATER: return CYAN_WHITE;
+			case SAND:  return YELLOW_WHITE;
+			default:    return WHITE_BLACK;
 		}
 		default: switch ( sub ) {
 			case STONE:      return BLACK_WHITE;

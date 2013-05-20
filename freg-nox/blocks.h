@@ -30,7 +30,6 @@ class Inventory;
 class Active;
 class Animal;
 
-const ushort snow_inv_size=2;
 const ushort inv_size=26;
 
 enum before_push_action {
