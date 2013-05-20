@@ -578,6 +578,9 @@ void Player::CheckOverstep(const int dir) {
 		emit OverstepBorder(dir);
 		UpdateXYZ();
 	}
+	emit Moved(
+			GetShred()->Latitude() *SHRED_WIDTH+x,
+			GetShred()->Longitude()*SHRED_WIDTH+y, z);
 }
 
 void Player::BlockDestroy() {

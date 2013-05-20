@@ -91,6 +91,7 @@ class Player : public QObject {
 	void SetPlayer(ushort set_x, ushort set_y, ushort set_z);
 
 	signals:
+	void Moved(long x, long y, ushort z) const;
 	///This is emitted when a notification is needed to be displayed.
 	/** It should be connected to screen::Notify(const QString &). */
 	void Notify(const QString &) const;
