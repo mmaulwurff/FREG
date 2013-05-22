@@ -125,6 +125,7 @@ enum subs {//substance block is made from
 	SAND,       ///<15
 	HAZELNUT,   ///<16
 	ROSE,       ///<17
+	CLAY,       ///<18
 	AIR //keep it last in this list
 }; //enum subs
 

@@ -704,15 +704,16 @@ void Shred::TestShred() {
 	SetNewBlock(ACTIVE, WATER, 7, 5, level);
 	SetNewBlock(DOOR, STONE, 9, 5, level);
 	blocks[9][5][level]->SetDir(NORTH);
+	SetNewBlock(BLOCK, CLAY, 11, 5, level);
 	//suicide booth
-	for (ushort i=1; i<4; ++i)
+	/*for (ushort i=1; i<4; ++i)
 	for (ushort j=7; j<10; ++j)
 	for (ushort k=level; k<level+5; ++k) {
 		if ( k<HEIGHT-1 ) {
 			PutNormalBlock(GLASS, i, j, k);
 		}
 	}
-	SetNewBlock(RABBIT, A_MEAT, 2, 8, level);
+	SetNewBlock(RABBIT, A_MEAT, 2, 8, level);*/
 }
 
 void Shred::NullMountain() {

@@ -43,6 +43,7 @@
 			case H_MEAT:     return str="Not animal meat";
 			case IRON:       return str="Iron block";
 			case SAND:       return str="Sandstone";
+			case CLAY:       return str="Clay brick";
 			default:
 				fprintf(stderr,
 					"Block::FullName: unlisted sub: %d.\n",
