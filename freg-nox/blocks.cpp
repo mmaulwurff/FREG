@@ -709,7 +709,7 @@
 	}
 
 	bool Inventory::Get(Block * const block, ushort start) {
-		if ( start>=inv_size ) {
+		if ( start<Start() ) {
 			start=Start();
 		}
 		if ( !block ) {
@@ -1016,7 +1016,7 @@
 
 //Chest::
 	Block * Chest::DropAfterDamage() const {
-		return block_manager.NewBlock(CHEST, sub);
+		return block_manager.NewBlock(Kind(), Sub());
 	}
 
 	int Chest::Kind() const { return CHEST; }
@@ -1054,14 +1054,14 @@
 		Inventory::SaveAttributes(out);
 	}
 
-	Chest::Chest(const int s) :
+	Chest::Chest(const int s, const ushort size) :
 			Block(s),
-			Inventory()
+			Inventory(size)
 	{}
 
-	Chest::Chest(QDataStream & str, const int sub) :
+	Chest::Chest(QDataStream & str, const int sub, const ushort size) :
 			Block(str, sub),
-			Inventory(str)
+			Inventory(str, size)
 	{}
 
 //Pile::
@@ -1411,10 +1411,6 @@
 	{}
 
 //Workbench::
-	Block * Workbench::DropAfterDamage() const {
-		return block_manager.NewBlock(WORKBENCH, Sub());
-	}
-
 	void Workbench::Craft() {
 		while ( Number(0) ) { //remove previous product
 			Block * const to_push=ShowBlock(0);
@@ -1494,16 +1490,6 @@
 
 	int Workbench::Kind() const { return WORKBENCH; }
 
-	ushort Workbench::Weight() const { return Block::Weight()*4; }
-
-	usage_types Workbench::Use() { return OPEN; }
-
-	Inventory * Workbench::HasInventory() {
-		return Inventory::HasInventory();
-	}
-
-	int Workbench::Sub() const { return Block::Sub(); }
-
 	ushort Workbench::Start() const { return 1; }
 
 	bool Workbench::Get(Block * const block, const ushort start) {
@@ -1516,26 +1502,20 @@
 	}
 
 	bool Workbench::GetAll(Inventory * const from) {
-		if ( !Inventory::GetAll(from) ) {
+		if ( Inventory::GetAll(from) ) {
 			Craft();
-			return false;
-		} else {
 			return true;
+		} else {
+			return false;
 		}
 	}
 
-	void Workbench::SaveAttributes(QDataStream & out) const {
-		Inventory::SaveAttributes(out);
-	}
-
 	Workbench::Workbench(const int sub) :
-			Block(sub),
-			Inventory(workbench_size)
+			Chest(sub, workbench_size)
 	{}
 
 	Workbench::Workbench(QDataStream & str, const int sub) :
-			Block(str, sub),
-			Inventory(str, workbench_size)
+			Chest(str, sub, workbench_size)
 	{}
 
 //Door::

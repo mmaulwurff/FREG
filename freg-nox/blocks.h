@@ -273,13 +273,14 @@ class Inventory {
 	public:
 	virtual int Kind() const=0;
 	virtual int Sub() const=0;
-	///Returns true on success
+	///Returns true on success.
 	virtual bool Drop(ushort src, ushort dest, ushort num,
 			Inventory * inv_to);
+	///Returns true on success.
 	virtual bool GetAll(Inventory * from);
 	virtual bool Access() const;
-	///Returns true on success
-	virtual bool Get(Block * block, ushort start=inv_size);
+	///Returns true on success.
+	virtual bool Get(Block * block, ushort start=0);
 	virtual void Pull(ushort num);
 	virtual void SaveAttributes(QDataStream & out) const;
 	virtual void MoveInside(ushort num_from, ushort num_to, ushort num);
@@ -364,8 +365,8 @@ class Chest : public Block, public Inventory {
 
 	void SaveAttributes(QDataStream & out) const;
 
-	Chest(int s=WOOD);
-	Chest(QDataStream & str, int sub);
+	Chest(int s=WOOD, ushort size=inv_size);
+	Chest(QDataStream & str, int sub, ushort size=inv_size);
 }; //class Chest
 
 class Pile : public Active, public Inventory {
@@ -472,25 +473,18 @@ class Rabbit : public Animal {
 	Rabbit(QDataStream & str, int sub);
 }; //class Rabbit
 
-class Workbench : public Block, public Inventory {
+class Workbench : public Chest {
 	static const ushort workbench_size=10;
 
 	void Craft();
 
 	public:
-	QString & FullName(QString & str) const;
-	int Kind() const;
-	ushort Weight() const;
-	usage_types Use();
-	Block * DropAfterDamage() const;
-	Inventory * HasInventory();
-	int Sub() const;
-	ushort Start() const;
+	int  Kind() const;
 	bool Drop(ushort src, ushort dest, ushort num, Inventory * inv);
-	bool Get(Block * block, ushort start=inv_size);
+	bool Get(Block * block, ushort start=0);
 	bool GetAll(Inventory * from);
-
-	void SaveAttributes(QDataStream & out) const;
+	ushort Start() const;
+	QString & FullName(QString & str) const;
 
 	Workbench(int sub);
 	Workbench(QDataStream & str, int sub);

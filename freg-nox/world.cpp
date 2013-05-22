@@ -237,7 +237,7 @@ Block * World::ReplaceWithNormal(Block * const block) {
 			*block==*Normal(block->Sub(), block->GetDir()) )
 	{
 		const int sub=block->Sub();
-		block_manager.DeleteBlock(block);
+		DeleteBlock(block);
 		return Normal(sub);
 	} else {
 		return block;
@@ -463,13 +463,11 @@ void World::PhysEvents() {
 	//sun/moon moving
 	if ( sun_moon_x!=SunMoonX() ) {
 		const ushort y=SHRED_WIDTH*numShreds/2;
-		PutBlock(Normal(ifStar ? STAR : SKY),
-				sun_moon_x, y, HEIGHT-1);
+		PutNormalBlock((ifStar ? STAR : SKY), sun_moon_x, y, HEIGHT-1);
 		emit Updated(sun_moon_x, y, HEIGHT-1);
 		sun_moon_x=SunMoonX();
 		ifStar=( STAR==Sub(sun_moon_x, y, HEIGHT-1) );
-		PutBlock(Normal(SUN_MOON),
-				sun_moon_x, y, HEIGHT-1);
+		PutNormalBlock(SUN_MOON, sun_moon_x, y, HEIGHT-1);
 		emit Updated(sun_moon_x, y, HEIGHT-1);
 	}
 	switch ( TimeOfDay() ) {
@@ -787,7 +785,7 @@ bool World::Damage(
 	} else {
 		PutNormalBlock(AIR, i, j, k);
 	}
-	block_manager.DeleteBlock(temp);
+	DeleteBlock(temp);
 	GetShred(i, j)->AddFalling(i%SHRED_WIDTH, j%SHRED_WIDTH, k+1);
 	ReEnlighten(i, j, k);
 	return true;
@@ -813,12 +811,11 @@ int World::Build(
 		}
 		return 1;
 	}
-	block_manager.DeleteBlock(GetBlock(i, j, k));
+	DeleteBlock(GetBlock(i, j, k));
 	block->Restore();
 	SetBlock(block, i, j, k);
 	ReplaceWithNormal(i, j, k);
-	if ( block!=block_manager.NormalBlock(block->Sub(), block->GetDir()) )
-	{
+	if ( block!=Normal(block->Sub(), block->GetDir()) ) {
 		block->SetDir(dir);
 	}
 
@@ -973,7 +970,7 @@ const {
 
 void World::RemSun() {
 	SetBlock(
-		block_manager.NormalBlock(ifStar ? STAR : SKY),
+		Normal(ifStar ? STAR : SKY),
 		sun_moon_x,
 		SHRED_WIDTH*numShreds/2,
 		HEIGHT-1);
