@@ -685,24 +685,15 @@
 		return ok_flag;
 	}
 
-	int Inventory::GetAll(Inventory * const from) {
-		if ( !from ) {
-			return 1;
-		}
-		if ( !from->Access() ) {
-			return 2;
+	bool Inventory::GetAll(Inventory * const from) {
+		if ( !from || !from->Access() ) {
+			return false;
 		}
 		for (ushort i=0; i<from->Size(); ++i) {
-			while ( from->Number(i) ) {
-				if ( from->Drop(i, 0, 1, this) ) {
-					return 3;
-				}
-			}
+			from->Drop(i, 0, from->Number(i), this);
 		}
-		return 0;
+		return true;
 	}
-
-	usage_types Inventory::Use() { return OPEN; }
 
 	void Inventory::Pull(const ushort num) {
 		if ( !inventory[num].isEmpty() )
@@ -816,17 +807,8 @@
 			0 : inventory[num].top();
 	}
 
-	bool Inventory::HasRoom() {
+	bool Inventory::IsEmpty() const {
 		for (ushort i=Start(); i<Size(); ++i) {
-			if ( inventory[i].isEmpty() ) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	bool Inventory::IsEmpty() {
-		for (ushort i=0; i<Size(); ++i) {
 			if ( !inventory[i].isEmpty() ) {
 				return false;
 			}
@@ -1049,7 +1031,7 @@
 		return Inventory::HasInventory();
 	}
 
-	usage_types Chest::Use() { return Inventory::Use(); }
+	usage_types Chest::Use() { return OPEN; }
 
 	int Chest::BeforePush(const int, Block * const who) {
 		Inventory::BeforePush(who);
@@ -1104,7 +1086,7 @@
 
 	Inventory * Pile::HasInventory() { return Inventory::HasInventory(); }
 
-	usage_types Pile::Use() { return Inventory::Use(); }
+	usage_types Pile::Use() { return OPEN; }
 
 	ushort Pile::Weight() const { return Inventory::Weight(); }
 
@@ -1273,7 +1255,7 @@
 
 	int Bush::Sub() const { return Block::Sub(); }
 
-	usage_types Bush::Use() { return Inventory::Use(); }
+	usage_types Bush::Use() { return OPEN; }
 
 	Inventory * Bush::HasInventory() { return Inventory::HasInventory(); }
 
@@ -1525,13 +1507,13 @@
 		}
 	}
 
-	int Workbench::GetAll(Inventory * const from) {
-		const int err=Inventory::GetAll(from);
-		if ( !err ) {
+	bool Workbench::GetAll(Inventory * const from) {
+		if ( !Inventory::GetAll(from) ) {
 			Craft();
-			return 0;
-		} else
-			return err;
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	void Workbench::SaveAttributes(QDataStream & out) const {

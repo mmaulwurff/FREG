@@ -832,7 +832,7 @@ void Shred::Hill() {
 		ushort x, y, z;
 		for (y=0; y<SHRED_WIDTH; ++y) { //north-south '/\'
 			for (x=0; x<SHRED_WIDTH; ++x)
-			for (z=0; z<SHRED_WIDTH/2; ++z) {
+			for (z=0; z<SHRED_WIDTH/2-2; ++z) {
 				if ( z <= -qAbs(x-SHRED_WIDTH/2)+
 						SHRED_WIDTH/2-2 )
 				{
@@ -842,7 +842,7 @@ void Shred::Hill() {
 		}
 		for (x=0; x<SHRED_WIDTH; ++x) { //east-west '/\'
 			for (y=0; y<SHRED_WIDTH; ++y)
-			for (z=0; z<SHRED_WIDTH/2; ++z) {
+			for (z=0; z<SHRED_WIDTH/2-2; ++z) {
 				if ( z <= -qAbs(y-SHRED_WIDTH/2)+
 						SHRED_WIDTH/2-2 )
 				{

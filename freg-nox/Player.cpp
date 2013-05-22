@@ -185,7 +185,6 @@ void Player::Move(const int dir) {
 					"Player::Move: unlisted dir: %d",
 					dir);
 		}
-		emit Updated();
 	}
 }
 
@@ -193,13 +192,11 @@ void Player::Turn(const int dir) {
 	usingType=NO;
 	Dir( ((DOWN==Dir() && UP!=dir) || (UP==Dir() && DOWN!=dir) ) ?
 		NORTH : dir);
-	emit Updated();
 }
 
 void Player::Backpack() {
 	if ( player && player->HasInventory() ) {
 		usingSelfType=( OPEN==usingSelfType ) ? NO : OPEN;
-		emit Updated();
 	}
 }
 
@@ -384,7 +381,7 @@ void Player::TakeOff(const ushort num) {
 	world->WriteLock();
 	if ( ValidBlock(num) ) {
 		Inventory * const inv=PlayerInventory();
-		if ( inv->HasRoom() ) {
+		if ( !inv->IsEmpty() ) {
 			inv->Drop(num, inv->Start(), inv->Number(num), inv);
 		} else {
 			emit Notify("No place to take off.");
@@ -415,7 +412,7 @@ void Player::ProcessCommand(QString & command) {
 			if ( !num ) {
 				num=1;
 			}
-			while ( num && inv->HasRoom() ) {
+			while ( num && !inv->IsEmpty() ) {
 				for (ushort i=9; i && num; --i) {
 					inv->Get(block_manager.
 						NewBlock(kind, sub));
@@ -543,9 +540,7 @@ void Player::CheckOverstep(const int dir) {
 		emit OverstepBorder(dir);
 		UpdateXYZ();
 	}
-	emit Moved(
-			GetShred()->Latitude() *SHRED_WIDTH+x,
-			GetShred()->Longitude()*SHRED_WIDTH+y, z);
+	emit Moved(GlobalX(), GlobalY(), z);
 }
 
 void Player::BlockDestroy() {

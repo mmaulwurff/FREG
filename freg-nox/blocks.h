@@ -271,12 +271,12 @@ class Inventory {
 	QStack<Block *> * inventory;
 
 	public:
-	virtual int  Kind() const=0;
-	virtual int  Sub() const=0;
+	virtual int Kind() const=0;
+	virtual int Sub() const=0;
 	///Returns true on success
 	virtual bool Drop(ushort src, ushort dest, ushort num,
 			Inventory * inv_to);
-	virtual int  GetAll(Inventory * from);
+	virtual bool GetAll(Inventory * from);
 	virtual bool Access() const;
 	///Returns true on success
 	virtual bool Get(Block * block, ushort start=inv_size);
@@ -285,7 +285,6 @@ class Inventory {
 	virtual void MoveInside(ushort num_from, ushort num_to, ushort num);
 	virtual ushort Start() const;
 	virtual ushort Weight() const;
-	virtual usage_types Use();
 	virtual QString & FullName(QString&) const=0;
 	virtual Inventory * HasInventory();
 
@@ -303,8 +302,7 @@ class Inventory {
 	QString & InvFullName(QString & str, ushort i) const;
 	QString & NumStr(QString & str, ushort i) const;
 
-	bool HasRoom();
-	bool IsEmpty();
+	bool IsEmpty() const;
 
 	void BeforePush(Block * who);
 
@@ -489,7 +487,7 @@ class Workbench : public Block, public Inventory {
 	ushort Start() const;
 	bool Drop(ushort src, ushort dest, ushort num, Inventory * inv);
 	bool Get(Block * block, ushort start=inv_size);
-	int GetAll(Inventory * from);
+	bool GetAll(Inventory * from);
 
 	void SaveAttributes(QDataStream & out) const;
 
