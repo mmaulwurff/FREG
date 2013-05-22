@@ -263,7 +263,10 @@ void Player::Throw(const ushort src, const ushort dest, const ushort num) {
 void Player::Obtain(const ushort src, const ushort dest, const ushort num) {
 	world->WriteLock();
 	world->Get(x, y, z, src, dest, num);
-	if ( UsingBlock()->HasInventory()->IsEmpty() ) {
+	Block * const using_block=UsingBlock();
+	if ( using_block->HasInventory()->IsEmpty() &&
+			PILE==using_block->Kind())
+	{
 		usingType=NO;
 	}
 	world->Unlock();
@@ -381,7 +384,7 @@ void Player::TakeOff(const ushort num) {
 	world->WriteLock();
 	if ( ValidBlock(num) ) {
 		Inventory * const inv=PlayerInventory();
-		if ( !inv->IsEmpty() ) {
+		if ( inv->HasRoom() ) {
 			inv->Drop(num, inv->Start(), inv->Number(num), inv);
 		} else {
 			emit Notify("No place to take off.");
@@ -412,7 +415,7 @@ void Player::ProcessCommand(QString & command) {
 			if ( !num ) {
 				num=1;
 			}
-			while ( num && !inv->IsEmpty() ) {
+			while ( num && inv->HasRoom() ) {
 				for (ushort i=9; i && num; --i) {
 					inv->Get(block_manager.
 						NewBlock(kind, sub));

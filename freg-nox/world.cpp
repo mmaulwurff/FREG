@@ -435,6 +435,7 @@ void World::PhysEvents() {
 		toReSet=false;
 		LoadAllShreds();
 		emit NeedPlayer(newX, newY, newZ);
+		emit UpdatedAll();
 		emit FinishReloadAll();
 	}
 	/*static ulong global_step=0;
@@ -1112,6 +1113,7 @@ World::World(const QString & world_name) :
 		numActiveShreds=3;
 	}
 	LoadAllShreds();
+	emit UpdatedAll();
 }
 
 World::~World() { CleanAll(); }

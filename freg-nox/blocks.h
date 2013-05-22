@@ -303,6 +303,7 @@ class Inventory {
 	QString & NumStr(QString & str, ushort i) const;
 
 	bool IsEmpty() const;
+	bool HasRoom() const;
 
 	void BeforePush(Block * who);
 
