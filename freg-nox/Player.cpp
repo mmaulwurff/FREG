@@ -155,28 +155,20 @@ void Player::Move(const int dir) {
 	} else {
 		switch ( dir ) {
 			case NORTH:
-				if (y>=(world->NumShreds()/2-1)*SHRED_WIDTH+1 )
-				{
+				if (y>=(world->NumShreds()/2-1)*SHRED_WIDTH+1)
 					--y;
-				}
 			break;
 			case SOUTH:
 				if (y<(world->NumShreds()/2+2)*SHRED_WIDTH-1)
-				{
 					++y;
-				}
 			break;
 			case EAST:
 				if (x<(world->NumShreds()/2+2)*SHRED_WIDTH-1)
-				{
 					++x;
-				}
 			break;
 			case WEST:
 				if (x>=(world->NumShreds()/2-1)*SHRED_WIDTH+1)
-				{
 					--x;
-				}
 			break;
 			case UP:
 				if ( z<HEIGHT-2 ) {
@@ -198,14 +190,10 @@ void Player::Move(const int dir) {
 }
 
 void Player::Turn(const int dir) {
-	world->WriteLock();
 	usingType=NO;
-	Dir(( (DOWN==Dir() && UP!=dir) ||
-			(UP==Dir() && DOWN!=dir) ) ?
-		NORTH :
-		dir);
+	Dir( ((DOWN==Dir() && UP!=dir) || (UP==Dir() && DOWN!=dir) ) ?
+		NORTH : dir);
 	emit Updated();
-	world->Unlock();
 }
 
 void Player::Backpack() {
@@ -263,75 +251,52 @@ void Player::Use(const ushort num) {
 	world->Unlock();
 }
 
-void Player::Throw(const ushort num) {
-	world->WriteLock();
-	Block * const block=ValidBlock(num);
-	world->Unlock();
-	if ( block ) {
-		world->SetDeferredAction(
-			0, 0, 0,
-			UP, //doesn't matter here
-			DEFERRED_THROW,
-			x, y, z,
-			0, //what, doesn't matter here
-			0, //who
-			num);
-	}
+void Player::Throw(const ushort src, const ushort dest, const ushort num) {
+	world->SetDeferredAction(
+		num, 0, 0,
+		UP, //doesn't matter here
+		DEFERRED_THROW,
+		x, y, z,
+		0, //what, doesn't matter here
+		0, //who
+		src,
+		dest);
 }
 
-void Player::Obtain(const ushort num) {
+void Player::Obtain(const ushort src, const ushort dest, const ushort num) {
 	world->WriteLock();
-	bool update_flag=false;
-	const int err=world->Get(x, y, z, num);
-	ushort x_from, y_from, z_from;
-	Focus(x_from, y_from, z_from);
-	Inventory * const inv=world->
-		GetBlock(x_from, y_from, z_from)->HasInventory();
-	world->Unlock();
-	if ( !inv || inv->IsEmpty() ) {
-		update_flag=true;
+	world->Get(x, y, z, src, dest, num);
+	if ( UsingBlock()->HasInventory()->IsEmpty() ) {
 		usingType=NO;
 	}
-	if ( 5==err || 3==err || 6==err ) {
-		emit Notify("Nothing here.");
-	} else if ( 4==err || 2==err ) {
-		emit Notify("No room.");
-	} else {
-		update_flag=true;
-	}
-	if ( update_flag ) {
-		emit Updated();
-	}
+	world->Unlock();
 }
 
 bool Player::Wield(const ushort num) {
 	world->WriteLock();
 	if ( ValidBlock(num) ) {
 		for (ushort i=0; i<=Dwarf::onLegs; ++i ) {
-			if ( InnerMove(num, i) ) {
-				world->Unlock();
-				emit Notify(tr("Wielded."));
-				return true;
-			}
+			InnerMove(num, i);
 		}
 	}
-	emit Notify(tr("You cannot wield this."));
 	world->Unlock();
 	return false;
 }
 
-bool Player::MoveInsideInventory(const ushort num_from, const ushort num_to) {
+void Player::MoveInsideInventory(const ushort num_from, const ushort num_to,
+		const ushort num)
+{
 	world->WriteLock();
-	if ( ValidBlock(num_from) && InnerMove(num_from, num_to) ) {
-		world->Unlock();
-		return true;
+	if ( ValidBlock(num_from) ) {
+		InnerMove(num_from, num_to, num);
 	}
 	world->Unlock();
-	return false;
 }
 
-bool Player::InnerMove(const ushort num_from, const ushort num_to) {
-	return PlayerInventory()->MoveInside(num_from, num_to);
+void Player::InnerMove(const ushort num_from, const ushort num_to,
+		const ushort num)
+{
+	PlayerInventory()->MoveInside(num_from, num_to, num);
 }
 
 void Player::Inscribe(const ushort num) {
@@ -420,7 +385,7 @@ void Player::TakeOff(const ushort num) {
 	if ( ValidBlock(num) ) {
 		Inventory * const inv=PlayerInventory();
 		if ( inv->HasRoom() ) {
-			inv->Drop(num, inv);
+			inv->Drop(num, inv->Start(), inv->Number(num), inv);
 		} else {
 			emit Notify("No place to take off.");
 		}

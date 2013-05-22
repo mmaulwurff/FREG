@@ -84,22 +84,26 @@ int World::TimeOfDay() const { return time % SECONDS_IN_DAY; }
 ulong World::Time() const { return time; }
 ushort World::MiniTime() const { return timeStep; }
 
-int World::Drop(
-		const ushort i, const ushort j,	const ushort k,
-		const ushort n)
+void World::Drop(
+		const ushort x, const ushort y,	const ushort z,
+		const ushort src, const ushort dest,
+		const ushort num)
 {
 	ushort i_to, j_to, k_to;
-	return ( Focus(i, j, k, i_to, j_to, k_to) ) ?
-		5 : Exchange(i, j, k, i_to, j_to, k_to, n);
+	if ( !Focus(x, y, z, i_to, j_to, k_to) ) {
+		Exchange(x, y, z, i_to, j_to, k_to, src, dest, num);
+	}
 }
 
-int World::Get(
-		const ushort i, const ushort j, const ushort k,
-		const ushort n)
+void World::Get(
+		const ushort x, const ushort y, const ushort z,
+		const ushort src, const ushort dest,
+		const ushort num)
 {
 	ushort i_from, j_from, k_from;
-	return ( Focus(i, j, k, i_from, j_from, k_from) ) ? 5 :
-		Exchange(i_from, j_from, k_from, i, j, k, n);
+	if ( !Focus(x, y, z, i_from, j_from, k_from) ) {
+		Exchange(i_from, j_from, k_from, x, y, z, src, dest, num);
+	}
 }
 
 bool World::InBounds(const ushort i, const ushort j, const ushort k) const {
@@ -333,7 +337,6 @@ void World::ReloadShreds(const int direction) {
 
 void World::PhysEvents() {
 	WriteLock();
-
 	if ( DEFERRED_NOTHING!=deferredActionType ) {
 		switch ( deferredActionType ) {
 			case DEFERRED_MOVE:
@@ -408,25 +411,17 @@ void World::PhysEvents() {
 				}
 			break;
 			case DEFERRED_THROW:
-				if ( !Drop(
+				Drop(
 						deferredActionXFrom,
 						deferredActionYFrom,
 						deferredActionZFrom,
-						deferredActionData1) )
-				{ //no errors
-					GetBlock(
-							deferredActionXFrom,
-							deferredActionYFrom,
-							deferredActionZFrom)->
-						ReceiveSignal(tr(
-							"You drop something."
-								));
-				}
+						deferredActionData1, //src
+						deferredActionData2, //dest
+						deferredActionX /* num */);
 			break;
 			default:
 				fprintf(stderr,
-					"World::PhysEvents: \
-					unlisted deferred_action: %d\n",
+					"World::PhysEvents: (?) action: %d\n",
 					deferredActionType);
 		}
 		deferredActionType=DEFERRED_NOTHING;
@@ -464,7 +459,6 @@ void World::PhysEvents() {
 	}
 	timeStep=0;
 	++time;
-
 	//sun/moon moving
 	if ( sun_moon_x!=SunMoonX() ) {
 		const ushort y=SHRED_WIDTH*numShreds/2;
@@ -477,7 +471,6 @@ void World::PhysEvents() {
 				sun_moon_x, y, HEIGHT-1);
 		emit Updated(sun_moon_x, y, HEIGHT-1);
 	}
-
 	switch ( TimeOfDay() ) {
 		case END_OF_NIGHT:
 			ReEnlightenTime();
@@ -862,16 +855,17 @@ void World::Eat(
 	}
 }
 
-int World::Exchange(
+void World::Exchange(
 		const ushort i_from, const ushort j_from, const ushort k_from,
 		const ushort i_to,   const ushort j_to,   const ushort k_to,
+		const ushort src, const ushort dest,
 		const ushort num)
 {
 	Inventory * const inv_from=HasInventory(i_from, j_from, k_from);
+	Block * const block_from=GetBlock(i_from, j_from, k_from);
 	if ( !inv_from ) {
-		GetBlock(i_from, j_from, k_from)->
-			ReceiveSignal(tr("No inventory."));
-		return 3;
+		block_from->ReceiveSignal(tr("No inventory."));
+		return;
 	}
 	if ( AIR==Sub(i_to, j_to, k_to) ) {
 		SetBlock(block_manager.NewBlock(PILE, DIFFERENT),
@@ -879,11 +873,14 @@ int World::Exchange(
 	}
 	Inventory * const inv_to=HasInventory(i_to, j_to, k_to);
 	if ( !inv_to ) {
-		GetBlock(i_from, j_from, k_from)->
-			ReceiveSignal(tr("No room there."));
-		return 4;
+		block_from->ReceiveSignal(tr("No room there."));
+		return;
 	}
-	return inv_from->Drop(num, inv_to);
+	if ( inv_from->Drop(src, dest, num, inv_to) ) {
+		block_from->ReceiveSignal(tr("Your bag is lighter now."));
+		GetBlock(i_to, j_to, k_to)->
+			ReceiveSignal(tr("Your bag is heavier now."));
+	}
 }
 
 int World::GetAll(const ushort x_to, const ushort y_to, const ushort z_to) {

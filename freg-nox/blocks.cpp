@@ -663,29 +663,42 @@
 
 	ushort Inventory::Size() const { return size; }
 
-	int Inventory::Drop(const ushort num, Inventory * const inv_to) {
-		if ( !inv_to )
-			return 1;
-		if ( num>=Size() )
-			return 6;
-		if ( inventory[num].isEmpty() )
-			return 6;
-		if ( !inv_to->Get(inventory[num].top()) )
-			return 2;
-		Pull(num);
-		return 0;
+	bool Inventory::Drop(const ushort src, ushort dest,
+			const ushort num,
+			Inventory * const inv_to)
+	{
+		if ( dest<inv_to->Start() ) {
+			dest=inv_to->Start();
+		}
+		bool ok_flag=false;
+		for (ushort i=0; i<num; ++i) {
+			if ( inv_to &&
+					src<Size() &&
+					dest<inv_to->Size() &&
+					!inventory[src].isEmpty() &&
+					inv_to->Get(inventory[src].top(), dest) )
+			{
+				ok_flag=true;
+			}
+			Pull(src);
+		}
+		return ok_flag;
 	}
 
 	int Inventory::GetAll(Inventory * const from) {
-		if ( !from )
+		if ( !from ) {
 			return 1;
-		if ( !from->Access() )
+		}
+		if ( !from->Access() ) {
 			return 2;
-
-		for (ushort i=0; i<from->Size(); ++i)
-			while ( from->Number(i) )
-				if ( from->Drop(i, this) )
+		}
+		for (ushort i=0; i<from->Size(); ++i) {
+			while ( from->Number(i) ) {
+				if ( from->Drop(i, 0, 1, this) ) {
 					return 3;
+				}
+			}
+		}
 		return 0;
 	}
 
@@ -704,13 +717,18 @@
 		}
 	}
 
-	bool Inventory::Get(Block * const block) {
-		if ( !block )
+	bool Inventory::Get(Block * const block, ushort start) {
+		if ( start>=inv_size ) {
+			start=Start();
+		}
+		if ( !block ) {
 			return true;
-
-		for (ushort i=Start(); i<Size(); ++i)
-			if ( GetExact(block, i) )
+		}
+		for (ushort i=start; i<Size(); ++i) {
+			if ( GetExact(block, i) ) {
 				return true;
+			}
+		}
 		return false;
 	}
 
@@ -728,13 +746,13 @@
 		return false;
 	}
 
-	bool Inventory::MoveInside(const ushort num_from, const ushort num_to)
+	void Inventory::MoveInside(const ushort num_from, const ushort num_to,
+			const ushort num)
 	{
-		if ( GetExact(ShowBlock(num_from), num_to) ) {
-			Pull(num_from);
-			return true;
-		} else {
-			return false;
+		for (ushort i=0; i<num; ++i) {
+			if ( GetExact(ShowBlock(num_from), num_to) ) {
+				Pull(num_from);
+			}
 		}
 	}
 
@@ -963,18 +981,24 @@
 
 	bool Dwarf::Access() const { return false; }
 
-	bool Dwarf::MoveInside(ushort num_from, ushort num_to) {
-		Block *  const block=ShowBlock(num_from);
-		return !block ? true :
-			( num_to > onLegs ||
+	void Dwarf::MoveInside(const ushort num_from, const ushort num_to,
+			const ushort num)
+
+	{
+		Block * const block=ShowBlock(num_from);
+		if ( block && (num_to > onLegs ||
 				inRight==num_to || inLeft==num_to ||
 				( onHead==num_to &&
 					WEARABLE_HEAD==block->Wearable() ) ||
 				( onBody==num_to &&
 					WEARABLE_BODY==block->Wearable() ) ||
 				( onLegs==num_to &&
-					WEARABLE_LEGS==block->Wearable() ) ) ?
-			Inventory::MoveInside(num_from, num_to) : false;
+					WEARABLE_LEGS==block->Wearable() )) )
+		{
+			for (ushort i=0; i<num; ++i) {
+				Inventory::MoveInside(num_from, num_to, 1);
+			}
+		}
 	}
 
 	void Dwarf::SaveAttributes(QDataStream & out) const {
@@ -1084,8 +1108,10 @@
 
 	ushort Pile::Weight() const { return Inventory::Weight(); }
 
-	int Pile::Drop(const ushort n, Inventory * const inv) {
-		const int ret=Inventory::Drop(n, inv);
+	bool Pile::Drop(const ushort src, const ushort dest, const ushort num,
+			Inventory * const inv)
+	{
+		const bool ret=Inventory::Drop(src, dest, num, inv);
 		ifToDestroy=IsEmpty();
 		return ret;
 	}
@@ -1426,32 +1452,42 @@
 		}
 	}
 
-	int Workbench::Drop(const ushort num, Inventory * const inv_to) {
-		if ( !inv_to )
-			return 1;
-		if ( num>=Size() )
-			return 6;
-		if ( !Number(num) )
-			return 6;
-		if ( num==0 ) {
+	bool Workbench::Drop(const ushort src, const ushort dest,
+			const ushort num,
+			Inventory * const inv_to)
+	{
+		if ( !inv_to ||
+				src>=Size() || dest>=inv_to->Size() ||
+				!Number(src) )
+		{
+			return false;
+		}
+		if ( src==0 ) {
 			while ( Number(0) ) {
-				if ( !inv_to->Get(ShowBlock(0)) )
-					return 2;
+				if ( !inv_to->Get(ShowBlock(0)) ) {
+					return false;
+				}
 				Pull(0);
 			}
-			for (ushort i=Start(); i<Size(); ++i)
+			for (ushort i=Start(); i<Size(); ++i) {
 				while ( Number(i) ) {
 					Block * const to_pull=ShowBlock(i);
 					Pull(i);
 					block_manager.DeleteBlock(to_pull);
 				}
+			}
+			return true;
 		} else {
-			if ( !inv_to->Get(ShowBlock(num)) )
-				return 2;
-			Pull(num);
-			Craft();
+			bool ok_flag=false;
+			for (ushort i=0; i<num; ++i) {
+				if ( inv_to->Get(ShowBlock(src), dest) ) {
+					ok_flag=true;
+				}
+				Pull(src);
+				Craft();
+			}
+			return ok_flag;
 		}
-		return 0;
 	}
 
 	QString & Workbench::FullName(QString & str) const {
@@ -1480,12 +1516,13 @@
 
 	ushort Workbench::Start() const { return 1; }
 
-	bool Workbench::Get(Block * const block) {
-		if ( Inventory::Get(block) ) {
+	bool Workbench::Get(Block * const block, const ushort start) {
+		if ( Inventory::Get(block, start) ) {
 			Craft();
 			return true;
+		} else {
+			return false;
 		}
-		return false;
 	}
 
 	int Workbench::GetAll(Inventory * const from) {

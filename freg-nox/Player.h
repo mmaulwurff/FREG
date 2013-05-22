@@ -164,11 +164,11 @@ class Player : public QObject {
 	void Use(short x, short y, short z);
 
 	///Tries to use block number num in inventory.
-	void Use     (ushort num);
+	void Use(ushort num);
 	///Tries to throw (drop out) block number num from inventory.
-	void Throw   (ushort num);
+	void Throw (ushort src, ushort dest=0, ushort num=1);
 	///Tries to get block number num from outer inventory.
-	void Obtain  (ushort num);
+	void Obtain(ushort src, ushort dest=0, ushort num=1);
 	///Returns true if wielding successful.
 	bool Wield   (ushort num);
 	void Inscribe(ushort num);
@@ -176,12 +176,12 @@ class Player : public QObject {
 	void Craft   (ushort num);
 	void TakeOff (ushort num);
 	void Build(short x, short y, short z, ushort num);
-	///Can also wield appropriate things. True if successful.
-	bool MoveInsideInventory(ushort num_from, ushort num_to);
+	///Can also wield appropriate things.
+	void MoveInsideInventory(ushort num_from, ushort num_to, ushort num=1);
 	void ProcessCommand(QString & command);
 
 	private:
-	bool InnerMove(ushort num_from, ushort num_to);
+	void InnerMove(ushort num_from, ushort num_to, ushort num=1);
 	Block * ValidBlock(ushort num) const;
 	int DamageKind() const;
 	ushort DamageLevel() const;
