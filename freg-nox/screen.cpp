@@ -498,8 +498,8 @@ void Screen::Print() {
 	if ( player->GetCreativeMode() ) {
 		mvwaddstr(leftWin, SCREEN_SIZE+1, 1, "Creative Mode");
 		//coordinates
-		mvwprintw(hudWin, 1, 0, "xyz: %hu, %hu, %hu. XY: %ld, %ld",
-			player->X(), player->Y(), player->Z(),
+		mvwprintw(hudWin, 1, 0, "xyz: %ld, %ld, %hu. XY: %ld, %ld",
+			player->GlobalX(), player->GlobalY(), player->Z(),
 			player->GetLatitude(), player->GetLongitude());
 		wcolor_set(leftWin, BLACK_WHITE, NULL);
 		switch ( player->Dir() ) {

@@ -108,11 +108,11 @@ class Player : public QObject {
 
 	public:
 	///This returns current player block X (coordinates in loaded zone)
-	ushort X() const;
+	short X() const;
 	///This returns current player block Y (coordinates in loaded zone)
-	ushort Y() const;
+	short Y() const;
 	///This returns current player block Z (coordinates in loaded zone)
-	ushort Z() const;
+	short Z() const;
 	long GlobalX() const;
 	long GlobalY() const;
 

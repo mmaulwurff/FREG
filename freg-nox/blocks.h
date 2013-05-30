@@ -82,7 +82,6 @@ class Block { //blocks without special physics and attributes
 	virtual int Kind() const;
 	virtual bool Catchable() const;
 	virtual int Movable() const;
-	///Returns false if block cannot be inscribed, otherwise true.
 	virtual void Inscribe(const QString & str);
 	virtual int BeforePush(int dir, Block * who);
 	virtual int Move(int);

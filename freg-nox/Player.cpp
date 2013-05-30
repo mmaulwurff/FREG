@@ -27,11 +27,15 @@
 #include "Shred.h"
 #include "BlockManager.h"
 
-ushort Player::X() const { return x; }
-ushort Player::Y() const { return y; }
-ushort Player::Z() const { return z; }
-long Player::GlobalX() const { return GetShred()->Latitude()*SHRED_WIDTH+x; }
-long Player::GlobalY() const { return GetShred()->Longitude()*SHRED_WIDTH+y; }
+short Player::X() const { return x; }
+short Player::Y() const { return y; }
+short Player::Z() const { return z; }
+long Player::GlobalX() const {
+	return (GetShred()->Latitude() -x/SHRED_WIDTH)*SHRED_WIDTH+x;
+}
+long Player::GlobalY() const {
+	return (GetShred()->Longitude()-y/SHRED_WIDTH)*SHRED_WIDTH+y;
+}
 
 Shred * Player::GetShred() const { return world->GetShred(x, y); }
 
