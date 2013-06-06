@@ -354,8 +354,10 @@ void Screen::ControlPlayer(const int ch) {
 
 		case 'L': RePrint(); break;
 		default:
-			Notify(QString("Don't know what such key means: %1").
-				arg(ch));
+			Notify(QString(
+				"Don't know what such key means: %1 ('%2')").
+				arg(ch).
+				arg(char(ch)));
 	}
 	updated=false;
 }
@@ -840,9 +842,11 @@ Screen::Screen(
 	for (short i=BLACK_BLACK; i<=WHITE_WHITE; ++i) {
 		init_pair(i, colors[(i-1)/8], colors[(i-1)%8]);
 	}
-	leftWin =newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, 0);
-	rightWin=newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, SCREEN_SIZE*2+2);
-	hudWin=newwin(3, (SCREEN_SIZE*2+2)*2, SCREEN_SIZE+2, 0);
+	rightWin=newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, COLS/2);
+	leftWin =newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2,
+		0, COLS/2-SCREEN_SIZE*2-2);
+	hudWin=newwin(3, (SCREEN_SIZE*2+2)*2,
+		SCREEN_SIZE+2, COLS/2-SCREEN_SIZE*2-2);
 	notifyWin=newwin(0, COLS, SCREEN_SIZE+2+3, 0);
 	scrollok(notifyWin, TRUE);
 
@@ -867,6 +871,7 @@ Screen::Screen(
 	}
 	addstr("Press any key.");
 	qsrand(getch());
+	erase();
 	Notify("Game started.");
 
 	input=new IThread(this);
