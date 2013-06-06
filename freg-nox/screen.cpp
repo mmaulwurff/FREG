@@ -355,7 +355,7 @@ void Screen::ControlPlayer(const int ch) {
 		case 'L': RePrint(); break;
 		default:
 			Notify(QString(
-				"Don't know what such key means: %1 ('%2')").
+				"Don't know what such key means: %1 ('%2').").
 				arg(ch).
 				arg(char(ch)));
 	}
@@ -769,7 +769,7 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 
 void Screen::PrintText(WINDOW * const window, QString const & str) const {
 	waddstr(window, qPrintable(str));
-	wnoutrefresh(window);
+	wrefresh(window);
 }
 
 void Screen::Notify(const QString & str) {
@@ -859,15 +859,15 @@ Screen::Screen(
 	actionMode=sett.value("action_mode", USE).toInt();
 	command   =sett.value("last_command", "hello").toString();
 
+	const QString by="\nby mmaulwurff, with help of Panzerschrek\n";
 	QFile splash("splash.txt");
 	if ( splash.open(QIODevice::ReadOnly | QIODevice::Text) ) {
-		const QString str=splash.readAll()+
-			QString("\nVersion %1.\n\n").
-			arg(FREG_VERSION);
-		PrintText(stdscr, str);
+		PrintText(stdscr, splash.readAll()+by+
+			QString("\nVersion %1.\n\n").arg(FREG_VERSION));
 	} else {
-		printw("Free-roaming Elementary Game\n\nVersion %4.1f.\n",
-			FREG_VERSION);
+		addstr("Free-Roaming Elementary Game\n");
+		addstr(qPrintable(by));
+		printw("\nVersion %4.1f.\n\n", FREG_VERSION);
 	}
 	addstr("Press any key.");
 	qsrand(getch());
