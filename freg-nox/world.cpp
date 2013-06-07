@@ -89,9 +89,9 @@ void World::Drop(
 		const ushort src, const ushort dest,
 		const ushort num)
 {
-	ushort i_to, j_to, k_to;
-	if ( !Focus(x, y, z, i_to, j_to, k_to) ) {
-		Exchange(x, y, z, i_to, j_to, k_to, src, dest, num);
+	ushort x_to, y_to, z_to;
+	if ( !Focus(x, y, z, x_to, y_to, z_to) ) {
+		Exchange(x, y, z, x_to, y_to, z_to, src, dest, num);
 	}
 }
 
@@ -100,9 +100,13 @@ void World::Get(
 		const ushort src, const ushort dest,
 		const ushort num)
 {
-	ushort i_from, j_from, k_from;
-	if ( !Focus(x, y, z, i_from, j_from, k_from) ) {
-		Exchange(i_from, j_from, k_from, x, y, z, src, dest, num);
+	ushort x_from, y_from, z_from;
+	Inventory * inv;
+	if ( !Focus(x, y, z, x_from, y_from, z_from) &&
+			(inv=GetBlock(x_from, y_from, z_from)->HasInventory())
+			&& inv->Access() )
+	{
+		Exchange(x_from, y_from, z_from, x, y, z, src, dest, num);
 	}
 }
 

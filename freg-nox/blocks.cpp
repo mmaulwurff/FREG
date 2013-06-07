@@ -678,7 +678,8 @@
 					src<Size() &&
 					dest<inv_to->Size() &&
 					!inventory[src].isEmpty() &&
-					inv_to->Get(inventory[src].top(), dest) )
+					inv_to->Get(inventory[src].top(),
+						dest) )
 			{
 				ok_flag=true;
 			}
@@ -688,7 +689,7 @@
 	}
 
 	bool Inventory::GetAll(Inventory * const from) {
-		if ( !from || !from->Access() ) {
+		if ( !from  ) {
 			return false;
 		}
 		for (ushort i=0; i<from->Size(); ++i) {
