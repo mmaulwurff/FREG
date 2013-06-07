@@ -433,7 +433,7 @@
 		if ( DOWN==dir ) {
 			++fall_height;
 		} else if ( GetWorld()->
-				GetShred(x_self, y_self)!=whereShred )
+				GetShred(x_self, y_self)!=GetShred() )
 		{
 			whereShred->RemActive(this);
 			(whereShred=GetWorld()->GetShred(x_self, y_self))->
@@ -472,6 +472,7 @@
 	}
 
 	World * Active::GetWorld() const { return whereShred->GetWorld(); }
+	Shred * Active::GetShred() const { return whereShred; }
 
 	bool Active::InBounds(
 			const ushort x,
@@ -1207,6 +1208,16 @@
 
 //Grass::
 	void Grass::ActRare() {
+		World * const world=GetWorld();
+		if (
+				SOIL!=GetShred()->Sub(
+					x_self%SHRED_WIDTH,
+					y_self%SHRED_WIDTH, z_self-1) &&
+				world->Damage(x_self, y_self, z_self,
+					durability, TIME) )
+		{
+			return;
+		}
 		short i=x_self, j=y_self;
 		//increase this if grass grows too fast
 		switch ( qrand()%(SECONDS_IN_HOUR*2) ) {
@@ -1216,8 +1227,6 @@
 			case 3: --j; break;
 			default: return;
 		}
-
-		World * const world=GetWorld();
 		if ( InBounds(i, j) && world->Enlightened(i, j, z_self) ) {
 			if ( AIR==world->Sub(i, j, z_self) &&
 					SOIL==world->Sub(i, j, z_self-1) )

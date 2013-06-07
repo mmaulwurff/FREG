@@ -199,6 +199,7 @@ class Active : public QObject, public Block {
 	void ReceivedText(const QString &);
 
 	public:
+	Shred * GetShred() const;
 	World * GetWorld() const;
 	bool InBounds(ushort x, ushort y, ushort z=0) const;
 	QString & FullName(QString & str) const;

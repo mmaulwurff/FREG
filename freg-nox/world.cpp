@@ -440,7 +440,8 @@ void World::PhysEvents() {
 	}
 	/*static ulong global_step=0;
 	fprintf(stderr, "step: %lu\n", global_step);
-	++global_step;*/
+	++global_step;
+	emit Notify(QString("tic-tac: %1").arg(time));*/
 
 	const ushort start=numShreds/2-numActiveShreds/2;
 	const ushort end=start+numActiveShreds;
