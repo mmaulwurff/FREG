@@ -672,16 +672,16 @@ void World::Jump(const ushort x, const ushort y, const ushort z) {
 }
 
 void World::Jump(
-		const ushort i, const ushort j, ushort k,
+		const ushort x, const ushort y, ushort z,
 		const quint8 dir)
 {
-	Block * const to_move=GetBlock(i, j, k);
-	if ( (AIR!=Sub(i, j, k-1) || !to_move->Weight()) ) {
-		const short k_plus=Move(i, j, k, (DOWN==dir) ? DOWN : UP);
-		if ( k_plus > 0 ) {
-			k+=((DOWN==dir) ? (-1) : 1) * k_plus;
-			if ( !Move( i, j, k, dir) ) {
-				Move(i, j, k, DOWN);
+	if ( (AIR!=Sub(x, y, z-1) || !GetBlock(x, y, z)->Weight()) ) {
+		short z_plus=Move(x, y, z, (DOWN==dir) ? DOWN : UP);
+		if ( z_plus ) {
+			z+=((DOWN==dir) ? (-z_plus) : z_plus);
+			if ( !Move(x, y, z, dir) ) {
+				z_plus=Move(x, y, z, DOWN);
+				Move(x, y, z-z_plus, dir);
 			}
 		}
 	}
