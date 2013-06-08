@@ -430,6 +430,7 @@
 		} else if ( GetWorld()->
 				GetShred(x_self, y_self)!=GetShred() )
 		{
+			whereShred->RemFalling(this);
 			whereShred->RemActive(this);
 			(whereShred=GetWorld()->GetShred(x_self, y_self))->
 				AddActive(this);
