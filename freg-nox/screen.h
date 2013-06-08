@@ -161,7 +161,7 @@ class Screen : public VirtScreen {
 	public slots:
 	void Notify(const QString &);
 	void CleanAll();
-	QString & PassString(QString &) const;
+	QString PassString(QString &) const;
 	void Update(ushort, ushort, ushort);
 	void UpdateAll();
 	void UpdatePlayer();

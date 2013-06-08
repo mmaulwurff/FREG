@@ -117,69 +117,39 @@
 				block_manager.NewBlock(Kind(), Sub());
 	}
 
-	int  Block::Kind() const { return BLOCK; }
-
-	bool Block::Catchable() const { return false; }
-
 	int  Block::Movable() const {
 		return ( AIR==Sub() ) ? ENVIRONMENT : NOT_MOVABLE;
 	}
 
+	int  Block::Kind() const { return BLOCK; }
+	bool Block::Catchable() const { return false; }
 	int  Block::BeforePush(const int, Block * const) { return NO_ACTION; }
-
+	void Block::Inscribe(const QString & str) { *note=str; }
 	int  Block::Move(const int) { return 0; }
-
-	bool Block::Armour() const { return false; }
-
-	int  Block::Wearable() const { return WEARABLE_NOWHERE; }
-
-	int  Block::DamageKind() const { return CRUSH; }
-
-	void Block::Restore() { durability=MAX_DURABILITY; }
-
-	void Block::SetDir(const int dir) { direction=dir; }
-
-	int  Block::GetDir() const { return direction; }
-
-	int  Block::Sub() const { return sub; }
-
-	int  Block::Transparent() const { return transparent; }
-
-	short Block::Durability() const { return durability; }
-
-	uchar Block::LightRadius() const { return 0; }
-
-	QString Block::GetNote() const { return *note; }
-
-	ushort Block::DamageLevel() const { return 1; }
-
 	usage_types Block::Use() { return NO; }
+	int  Block::Wearable() const { return WEARABLE_NOWHERE; }
+	int  Block::DamageKind() const { return CRUSH; }
+	ushort Block::DamageLevel() const { return 1; }
+	uchar Block::LightRadius() const { return 0; }
+	void Block::ReceiveSignal(const QString &) {}
 
 	Inventory * Block::HasInventory() { return 0; }
-
 	Animal * Block::IsAnimal() { return 0; }
-
 	Active * Block::ActiveBlock() { return 0; }
+
+	void Block::Restore() { durability=MAX_DURABILITY; }
+	void Block::SetDir(const int dir) { direction=dir; }
+	int  Block::GetDir() const { return direction; }
+	int  Block::Sub() const { return sub; }
+	int  Block::Transparent() const { return transparent; }
+	short Block::Durability() const { return durability; }
+	QString Block::GetNote() const { return *note; }
 
 	int Block::Temperature() const {
 		switch (sub) {
 			case WATER: return -100;
 			default: return 0;
 		}
-	}
-
-	void Block::ReceiveSignal(const QString &) {}
-
-	void Block::Inscribe(const QString & str) { *note=str; }
-
-	void Block::SaveAttributes(QDataStream &) const {}
-
-	bool Block::operator==(const Block & block) const {
-		return ( block.Kind()==Kind() &&
-				block.Sub()==Sub() &&
-				block.GetDir()==GetDir() &&
-				block.Durability()==Durability() &&
-				*block.note==*note );
 	}
 
 	ushort Block::Weight() const {
@@ -205,6 +175,15 @@
 		}
 	}
 
+	bool Block::operator==(const Block & block) const {
+		return ( block.Kind()==Kind() &&
+				block.Sub()==Sub() &&
+				block.GetDir()==GetDir() &&
+				block.Durability()==Durability() &&
+				*block.note==*note );
+	}
+
+	void Block::SaveAttributes(QDataStream &) const {}
 	void Block::SaveToFile(QDataStream & out) const {
 		const bool normal=(this==block_manager.NormalBlock(Sub()));
 		out << (quint16)Kind() << sub << normal;
@@ -222,7 +201,6 @@
 	{
 		SetTransparency(transp);
 	}
-
 	Block::Block(QDataStream & str, const int sub_, const quint8 transp) :
 			sub(sub_),
 			note(new QString)
@@ -230,9 +208,7 @@
 		SetTransparency(transp);
 		str >> direction >> durability >> *note;
 	}
-
 	Block::~Block() { delete note; }
-
 //Plate::
 	QString Plate::FullName() const {
 		switch ( Sub() ) {
@@ -248,20 +224,16 @@
 	}
 
 	int Plate::Kind() const { return PLATE; }
-
 	int Plate::BeforePush(const int, Block * const) { return JUMP; }
-
 	ushort Plate::Weight() const { return Block::Weight()/4; }
 
 	Plate::Plate(const int sub)
 			:
 			Block(sub, NONSTANDARD)
 	{}
-
 	Plate::Plate(QDataStream & str, const int sub) :
 			Block(str, sub, NONSTANDARD)
 	{}
-
 //Ladder::
 	QString Ladder::FullName() const {
 		switch ( Sub() ) {
@@ -275,22 +247,17 @@
 		}
 	}
 
-	int Ladder::Kind() const { return LADDER; }
-
-	int Ladder::BeforePush(const int, Block * const) { return MOVE_UP; }
-
-	ushort Ladder::Weight() const { return Block::Weight()*3; }
-
+	int  Ladder::Kind() const { return LADDER; }
+	int  Ladder::BeforePush(const int, Block * const) { return MOVE_UP; }
 	bool Ladder::Catchable() const { return true; }
+	ushort Ladder::Weight() const { return Block::Weight()*3; }
 
 	Ladder::Ladder(const int sub) :
 			Block(sub, NONSTANDARD)
 	{}
-
 	Ladder::Ladder(QDataStream & str, const int sub) :
 			Block(str, sub, NONSTANDARD)
 	{}
-
 //Weapon::
 	QString Weapon::FullName() const {
 		switch ( Sub() ) {
@@ -305,7 +272,9 @@
 		}
 	}
 
-	int Weapon::Kind() const { return WEAPON; }
+	int    Weapon::Kind() const { return WEAPON; }
+	ushort Weapon::Weight() const { return Block::Weight()/4; }
+	int    Weapon::Wearable() const { return WEARABLE_ARM; }
 
 	ushort Weapon::DamageLevel() const {
 		switch ( Sub() ) {
@@ -329,21 +298,14 @@
 		return ( IRON==Sub() ) ? DAMAGE : NO_ACTION;
 	}
 
-	ushort Weapon::Weight() const { return Block::Weight()/4; }
-
-	int Weapon::Wearable() const { return WEARABLE_ARM; }
-
 	Weapon::Weapon(const int sub) :
 			Block(sub, NONSTANDARD)
 	{}
-
 	Weapon::Weapon(QDataStream & str, const int sub) :
 			Block(str, sub, NONSTANDARD)
 	{}
-
 //Pick::
 	int Pick::Kind() const { return PICK; }
-
 	int Pick::DamageKind() const { return MINE; }
 
 	ushort Pick::DamageLevel() const {
@@ -372,11 +334,9 @@
 	Pick::Pick(const int sub) :
 			Weapon(sub)
 	{}
-
 	Pick::Pick(QDataStream & str, const int sub) :
 			Weapon(str, sub)
 	{}
-
 //Active::
 	QString Active::FullName() const {
 		switch ( Sub() ) {
@@ -391,11 +351,15 @@
 	}
 
 	int Active::Kind() const { return ACTIVE; }
-
 	Active * Active::ActiveBlock() { return this; }
-
+	void Active::ActFrequent() {}
+	void Active::ActRare() {}
+	int  Active::ShouldAct() const { return NEVER; }
 	void Active::SetFalling(const bool set) { falling=set; }
 	bool Active::IsFalling() const { return falling; }
+	int  Active::Movable() const { return MOVABLE; }
+	bool Active::ShouldFall() const { return true; }
+
 	bool Active::FallDamage() {
 		if ( fall_height > safe_fall_height ) {
 			const ushort dmg=(fall_height -
@@ -445,10 +409,6 @@
 		return 0;
 	}
 
-	void Active::ActFrequent() {}
-	void Active::ActRare() {}
-	int  Active::ShouldAct() const { return NEVER; }
-
 	void Active::SendSignalAround(const QString & signal) const {
 		World * const world=GetWorld();
 		if ( InBounds(x_self-1, y_self) ) {
@@ -476,17 +436,10 @@
 	World * Active::GetWorld() const { return whereShred->GetWorld(); }
 	Shred * Active::GetShred() const { return whereShred; }
 
-	bool Active::InBounds(
-			const ushort x,
-			const ushort y,
-			const ushort z)
+	bool Active::InBounds(const ushort x, const ushort y, const ushort z)
 	const {
 		return GetWorld()->InBounds(x, y, z);
 	}
-
-	int Active::Movable() const { return MOVABLE; }
-
-	bool Active::ShouldFall() const { return true; }
 
 	int Active::Damage(const ushort dmg, const int dmg_kind) {
 		const int last_dur=durability;
@@ -537,9 +490,7 @@
 
 	void Active::Register(
 			Shred * const sh,
-			const ushort x,
-			const ushort y,
-			const ushort z)
+			const ushort x, const ushort y, const ushort z)
 	{
 		if ( !whereShred ) {
 			whereShred=sh;
@@ -558,7 +509,6 @@
 			}
 		}
 	}
-
 	void Active::Unregister() {
 		if ( whereShred ) {
 			whereShred->RemActive(this);
@@ -576,7 +526,6 @@
 			z_self(),
 			whereShred(0)
 	{}
-
 	Active::Active(QDataStream & str, const int sub, const quint8 transp) :
 			Block(str, sub, transp),
 			falling(false),
@@ -587,12 +536,10 @@
 	{
 		str >> fall_height;
 	}
-
 	Active::~Active() {
 		Unregister();
 		emit Destroyed();
 	}
-
 //Animal::
 	void Animal::ActRare() {
 		World * const world=GetWorld();
@@ -636,36 +583,29 @@
 	int Animal::ShouldAct() const { return RARE; }
 
 	ushort Animal::Breath() const { return breath; }
-
 	ushort Animal::Satiation() const { return satiation; }
+	Animal * Animal::IsAnimal() { return this; }
 
 	void Animal::SaveAttributes(QDataStream & out) const {
 		Active::SaveAttributes(out);
 		out << breath << satiation;
 	}
 
-	Animal * Animal::IsAnimal() { return this; }
-
 	Animal::Animal(const int sub) :
 			Active(sub, NONSTANDARD),
 			breath(MAX_BREATH),
 			satiation(SECONDS_IN_DAY)
 	{}
-
 	Animal::Animal(QDataStream & str, const int sub) :
 			Active(str, sub, NONSTANDARD)
 	{
 		str >> breath >> satiation;
 	}
-
 //Inventory::
-	bool Inventory::Access() const { return true; }
-
+	bool   Inventory::Access() const { return true; }
 	ushort Inventory::Start() const { return 0; }
-
-	Inventory * Inventory::HasInventory() { return this; }
-
 	ushort Inventory::Size() const { return size; }
+	Inventory * Inventory::HasInventory() { return this; }
 
 	bool Inventory::Drop(const ushort src, ushort dest,
 			const ushort num,
@@ -871,7 +811,6 @@
 	{
 		inventory=new QStack<Block *>[Size()];
 	}
-
 	Inventory::Inventory(QDataStream & str, const ushort sz) :
 			size(sz)
 	{
@@ -884,7 +823,6 @@
 					BlockFromFile(str));
 		}
 	}
-
 	Inventory::~Inventory() {
 		for (ushort i=0; i<Size(); ++i)
 			while ( !inventory[i].isEmpty() ) {
@@ -893,7 +831,6 @@
 			}
 		delete [] inventory;
 	}
-
 //Dwarf::
 	ushort Dwarf::Weight() const {
 		World * const world=GetWorld();
@@ -926,12 +863,13 @@
 	}
 
 	int Dwarf::Kind() const { return DWARF; }
-
 	int Dwarf::Sub() const { return Block::Sub(); }
-
-	QString Dwarf::FullName() const { return "Rational"; }
-
 	ushort Dwarf::Start() const { return onLegs+1; }
+	QString Dwarf::FullName() const { return "Rational"; }
+	Inventory * Dwarf::HasInventory() { return Inventory::HasInventory(); }
+	uchar Dwarf::LightRadius() const { return 3; }
+
+	bool Dwarf::Access() const { return false; }
 
 	int Dwarf::DamageKind() const {
 		if ( Number(inRight) ) {
@@ -971,13 +909,8 @@
 		return 0; //ate
 	}
 
-	Inventory * Dwarf::HasInventory() { return Inventory::HasInventory(); }
-
-	bool Dwarf::Access() const { return false; }
-
 	void Dwarf::MoveInside(const ushort num_from, const ushort num_to,
 			const ushort num)
-
 	{
 		Block * const block=ShowBlock(num_from);
 		if ( block && (num_to > onLegs ||
@@ -1000,8 +933,6 @@
 		Inventory::SaveAttributes(out);
 	}
 
-	uchar Dwarf::LightRadius() const { return 3; }
-
 	void Dwarf::Inscribe(const QString &) {
 		SendSignalAround(tr("Don't touch me!"));
 	}
@@ -1012,16 +943,15 @@
 	{
 		*note="Urist";
 	}
-
 	Dwarf::Dwarf(QDataStream & str, const int sub) :
 			Animal(str, sub),
 			Inventory(str)
 	{}
-
 //Chest::
 	int Chest::Kind() const { return CHEST; }
-
 	int Chest::Sub() const { return Block::Sub(); }
+	Inventory * Chest::HasInventory() { return Inventory::HasInventory(); }
+	usage_types Chest::Use() { return OPEN; }
 
 	QString Chest::FullName() const {
 		switch ( Sub() ) {
@@ -1034,12 +964,6 @@
 				return QObject::tr("Chest");
 		}
 	}
-
-	Inventory * Chest::HasInventory() {
-		return Inventory::HasInventory();
-	}
-
-	usage_types Chest::Use() { return OPEN; }
 
 	int Chest::BeforePush(const int, Block * const who) {
 		Inventory::BeforePush(who);
@@ -1058,12 +982,10 @@
 			Block(s),
 			Inventory(size)
 	{}
-
 	Chest::Chest(QDataStream & str, const int sub, const ushort size) :
 			Block(str, sub),
 			Inventory(str, size)
 	{}
-
 //Pile::
 	int Pile::BeforePush(const int, Block * const who) {
 		Inventory::BeforePush(who);
@@ -1075,11 +997,13 @@
 			GetWorld()->Damage(x_self, y_self, z_self, 0, TIME);
 		}
 	}
+
 	int Pile::ShouldAct() const { return RARE; }
-
 	int Pile::Kind() const { return PILE; }
-
 	int Pile::Sub() const { return Block::Sub(); }
+	Inventory * Pile::HasInventory() { return Inventory::HasInventory(); }
+	usage_types Pile::Use() { return OPEN; }
+	ushort Pile::Weight() const { return Inventory::Weight(); }
 
 	QString Pile::FullName() const {
 		switch ( Sub() ) {
@@ -1091,12 +1015,6 @@
 				return tr("Unknown pile");
 		}
 	}
-
-	Inventory * Pile::HasInventory() { return Inventory::HasInventory(); }
-
-	usage_types Pile::Use() { return OPEN; }
-
-	ushort Pile::Weight() const { return Inventory::Weight(); }
 
 	bool Pile::Drop(const ushort src, const ushort dest, const ushort num,
 			Inventory * const inv)
@@ -1122,14 +1040,12 @@
 			Inventory(inv_size),
 			ifToDestroy(false)
 	{}
-
 	Pile::Pile(QDataStream & str, const int sub) :
 			Active(str, sub, NONSTANDARD),
 			Inventory(str, inv_size)
 	{
 		str >> ifToDestroy;
 	}
-
 //Liquid::
 	bool Liquid::CheckWater() const {
 		World * const world=GetWorld();
@@ -1175,11 +1091,11 @@
 			default: return;
 		}
 	}
+
 	int Liquid::ShouldAct() const  { return RARE; }
-
 	int Liquid::Movable() const { return ENVIRONMENT; }
-
 	int Liquid::Kind() const { return LIQUID; }
+	int Liquid::Temperature() const { return ( WATER==sub ) ? 0 : 1000; }
 
 	QString Liquid::FullName() const {
 		switch ( Sub() ) {
@@ -1193,16 +1109,12 @@
 		}
 	}
 
-	int Liquid::Temperature() const { return ( WATER==sub ) ? 0 : 1000; }
-
 	Liquid::Liquid(const int sub) :
 			Active(sub)
 	{}
-
 	Liquid::Liquid(QDataStream & str, const int sub) :
 			Active(str, sub)
 	{}
-
 //Grass::
 	void Grass::ActRare() {
 		World * const world=GetWorld();
@@ -1235,7 +1147,6 @@
 						Sub()), i, j, z_self+1);
 		}
 	}
-	int Grass::ShouldAct() const  { return RARE; }
 
 	QString Grass::FullName() const {
 		switch ( Sub() ) {
@@ -1248,32 +1159,26 @@
 		}
 	}
 
-	int Grass::Kind() const { return GRASS; }
-
+	int  Grass::ShouldAct() const  { return RARE; }
+	int  Grass::Kind() const { return GRASS; }
 	bool Grass::ShouldFall() const { return false; }
-
-	int Grass::BeforePush(const int, Block * const) { return DESTROY; }
+	int  Grass::BeforePush(const int, Block * const) { return DESTROY; }
 
 	Grass::Grass(const int sub) :
 			Active(sub)
 	{}
-
 	Grass::Grass(QDataStream & str, const int sub) :
 			Active(str, sub)
 	{}
-
 //Bush::
 	QString Bush::FullName() const { return tr("Bush"); }
-
-	int Bush::Kind() const { return BUSH; }
-
-	int Bush::Sub() const { return Block::Sub(); }
-
+	int  Bush::Kind() const { return BUSH; }
+	int  Bush::Sub() const { return Block::Sub(); }
+	int  Bush::Movable() const { return NOT_MOVABLE; }
+	bool Bush::ShouldFall() const { return false; }
+	int  Bush::ShouldAct() const  { return RARE; }
 	usage_types Bush::Use() { return OPEN; }
-
 	Inventory * Bush::HasInventory() { return Inventory::HasInventory(); }
-
-	int Bush::Movable() const { return NOT_MOVABLE; }
 
 	ushort Bush::Weight() const {
 		return Inventory::Weight()+Block::Weight();
@@ -1284,14 +1189,11 @@
 			Get(block_manager.NormalBlock(HAZELNUT));
 		}
 	}
-	int Bush::ShouldAct() const  { return RARE; }
 
 	int Bush::BeforePush(const int, Block * const who) {
 		Inventory::BeforePush(who);
 		return NO_ACTION;
 	}
-
-	bool Bush::ShouldFall() const { return false; }
 
 	Block * Bush::DropAfterDamage() const {
 		Block * const pile=block_manager.NewBlock(PILE, DIFFERENT);
@@ -1309,12 +1211,10 @@
 			Active(sub),
 			Inventory(bush_size)
 	{}
-
 	Bush::Bush(QDataStream & str, const int sub) :
 			Active(str, sub),
 			Inventory(str, bush_size)
 	{}
-
 //Rabbit::
 	short Rabbit::Attractive(const int sub) const {
 		switch ( sub ) {
@@ -1388,14 +1288,13 @@
 			world->Move(x_self, y_self, z_self, GetDir());
 		}
 	}
-	int Rabbit::ShouldAct() const { return FREQUENT_AND_RARE; }
 
 	Block * Rabbit::DropAfterDamage() const {
 		return block_manager.NormalBlock(A_MEAT);
 	}
 
 	QString Rabbit::FullName() const { return tr("Herbivore"); }
-
+	int Rabbit::ShouldAct() const { return FREQUENT_AND_RARE; }
 	int Rabbit::Kind() const { return RABBIT; }
 
 	int Rabbit::Eat(Block * const to_eat) {
@@ -1412,11 +1311,9 @@
 	Rabbit::Rabbit(const int sub) :
 			Animal(sub)
 	{}
-
 	Rabbit::Rabbit(QDataStream & str, const int sub) :
 			Animal(str, sub)
 	{}
-
 //Workbench::
 	void Workbench::Craft() {
 		while ( Number(0) ) { //remove previous product
@@ -1496,7 +1393,6 @@
 	}
 
 	int Workbench::Kind() const { return WORKBENCH; }
-
 	ushort Workbench::Start() const { return 1; }
 
 	bool Workbench::Get(Block * const block, const ushort start) {
@@ -1520,11 +1416,9 @@
 	Workbench::Workbench(const int sub) :
 			Chest(sub, workbench_size)
 	{}
-
 	Workbench::Workbench(QDataStream & str, const int sub) :
 			Chest(str, sub, workbench_size)
 	{}
-
 //Door::
 	int Door::BeforePush(const int dir, Block * const) {
 		if ( locked || shifted || dir==World::Anti(GetDir()) )
@@ -1551,9 +1445,11 @@
 			}
 		}
 	}
-	int Door::ShouldAct() const  { return FREQUENT; }
 
-	int Door::Kind() const { return locked ? LOCKED_DOOR : DOOR; }
+	int  Door::ShouldAct() const  { return FREQUENT; }
+	int  Door::Kind() const { return locked ? LOCKED_DOOR : DOOR; }
+	int  Door::Movable() const { return movable; }
+	bool Door::ShouldFall() const { return false; }
 
 	QString Door::FullName() const {
 		QString sub_string;
@@ -1570,10 +1466,6 @@
 		}
 		return tr(locked ? "Locked door" : "Door") + sub_string;
 	}
-
-	int Door::Movable() const { return movable; }
-
-	bool Door::ShouldFall() const { return false; }
 
 	usage_types Door::Use() {
 		locked=locked ? false : true;
@@ -1593,14 +1485,12 @@
 			locked(false),
 			movable(NOT_MOVABLE)
 	{}
-
 	Door::Door(QDataStream & str, const int sub) :
 			Active(str, sub, NONSTANDARD),
 			movable(NOT_MOVABLE)
 	{
 		str >> shifted >> locked;
 	}
-
 //Clock::
 	usage_types Clock::Use() {
 		World * const world=GetWorld();
@@ -1610,8 +1500,6 @@
 			arg(world->TimeOfDay()%60));
 		return NO;
 	}
-
-	int Clock::Kind() const { return CLOCK; }
 
 	QString Clock::FullName() const {
 		switch ( Sub() ) {
@@ -1629,11 +1517,11 @@
 		return NO_ACTION;
 	}
 
+	int Clock::Kind() const { return CLOCK; }
 	ushort Clock::Weight() const { return Block::Weight()/10; }
-
 	bool Clock::ShouldFall() const { return false; }
-
 	int Clock::Movable() const { return NOT_MOVABLE; }
+	int Clock::ShouldAct() const  { return RARE; }
 
 	void Clock::ActRare() {
 		if ( alarmTime==GetWorld()->TimeOfDay() ) {
@@ -1647,7 +1535,6 @@
 			timerTime=-1;
 		}
 	}
-	int Clock::ShouldAct() const  { return RARE; }
 
 	void Clock::Inscribe(const QString & str) {
 		Block::Inscribe(str);
@@ -1674,7 +1561,6 @@
 			alarmTime(-1),
 			timerTime(-1)
 	{}
-
 	Clock::Clock (QDataStream & str, const int sub) :
 			Active(str, sub, NONSTANDARD),
 			txtStream(new QTextStream(note))

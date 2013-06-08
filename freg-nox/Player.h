@@ -15,23 +15,6 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-/** \class Player Player.h
- * \brief This class contains information specific to player
- * and interface for manipulating him.
- *
- * It receives input from screen, processes it, and dispatches
- * actions to world.
- *
- * It loads player from file and saves him to it.
- *
- * Note: player block with its inventory is stored it shred
- * file with all other blocks. player_save contains only
- * coordinates where player is, his home coordinates and world
- * player belongs to.
- *
- * Also it does checks for player walking over the shred border.
- */
-
 #ifndef PLAYER_H
 #define PLAYER_H
 
@@ -47,6 +30,22 @@ class Inventory;
 class Shred;
 
 class Player : public QObject {
+	/** \class Player Player.h
+	 * \brief This class contains information specific to player
+	 * and interface for manipulating him.
+	 *
+	 * It receives input from screen, processes it, and dispatches
+	 * actions to world.
+	 *
+	 * It loads player from file and saves him to it.
+	 *
+	 * Note: player block with its inventory is stored it shred
+	 * file with all other blocks. player_save contains only
+	 * coordinates where player is, his home coordinates and world
+	 * player belongs to.
+	 *
+	 * Also it does checks for player walking over the shred border.
+	 */
 	Q_OBJECT
 
 	long homeLongi, homeLati;
@@ -80,7 +79,7 @@ class Player : public QObject {
 	 * It emits OverstepBorder(int) signal when player walks
 	 * over the shred border.
 	 */
-	void CheckOverstep(int);
+	void CheckOverstep(int dir);
 
 	///This is called when player block is destroyed.
 	void BlockDestroy();

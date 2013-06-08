@@ -65,7 +65,7 @@ class VirtScreen : public QObject {
 	/**
 	 * It is connected to world in constructor.
 	 */
-	virtual QString & PassString(QString &) const=0;
+	virtual QString PassString(QString &) const=0;
 
 	///This is called when block at (x, y, z) should be updated in screen.
 	/**

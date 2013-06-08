@@ -68,7 +68,7 @@ void Screen::UpdateAround(
 
 void Screen::Move(const int) { updated=false; }
 
-QString & Screen::PassString(QString & str) const {
+QString Screen::PassString(QString & str) const {
 	mvwaddch(commandWin, 0, 0, ':');
 	static const ushort note_length=144;
 	char temp_str[note_length+1];

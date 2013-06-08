@@ -97,7 +97,6 @@ class Block { //blocks without special physics and attributes
 	virtual Animal * IsAnimal();
 	virtual Active * ActiveBlock();
 
-	virtual bool Armour() const;
 	virtual int Wearable() const;
 	virtual int DamageKind() const;
 	virtual ushort DamageLevel() const;
@@ -126,10 +125,7 @@ class Block { //blocks without special physics and attributes
 	void SaveToFile(QDataStream & out) const;
 
 	Block(int sb=STONE, quint8 transp=UNDEF);
-	Block(
-			QDataStream &,
-			int sub_,
-			quint8 transp=UNDEF);
+	Block(QDataStream &, int sub, quint8 transp=UNDEF);
 	virtual ~Block();
 }; //class Block
 
@@ -400,7 +396,7 @@ class Pile : public Active, public Inventory {
 class Liquid : public Active {
 	Q_OBJECT
 
-	//return true if there is water near
+	///Return true if there is water near.
 	bool CheckWater() const;
 
 	public:
@@ -520,7 +516,6 @@ class Clock : public Active {
 	short timerTime;
 
 	public:
-
 	void ActRare();
 	int  ShouldAct() const;
 	int  Kind() const;
