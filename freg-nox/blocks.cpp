@@ -664,13 +664,15 @@
 			const ushort num,
 			Inventory * const inv_to)
 	{
+		if ( !inv_to ) {
+			return true;
+		}
 		if ( dest<inv_to->Start() ) {
 			dest=inv_to->Start();
 		}
 		bool ok_flag=false;
 		for (ushort i=0; i<num; ++i) {
-			if ( inv_to &&
-					src<Size() &&
+			if ( src<Size() &&
 					dest<inv_to->Size() &&
 					!inventory[src].isEmpty() &&
 					inv_to->Get(inventory[src].top(),

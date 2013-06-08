@@ -146,15 +146,15 @@ const {
 }
 
 void Player::Jump() {
-	if ( !creativeMode ) {
-		usingType=NO;
-		world->SetDeferredAction(x, y, z, dir, DEFERRED_JUMP);
-	} else {
+	if ( creativeMode ) {
 		if ( UP==dir && z<HEIGHT-2 ) {
 			++z;
 		} else if ( z>1 ) {
 			--z;
 		}
+	} else {
+		usingType=NO;
+		world->SetDeferredAction(x, y, z, dir, DEFERRED_JUMP);
 	}
 }
 
@@ -417,9 +417,7 @@ void Player::ProcessCommand(QString & command) {
 		Inventory * const inv=player->HasInventory();
 		if ( !creativeMode ) {
 			emit Notify(tr("You are not in Creative Mode."));
-		} else if ( !inv ) {
-			emit Notify(tr("No room."));
-		} else {
+		} else if ( inv ) {
 			int kind, sub, num;
 			comm_stream >> kind >> sub >> num;
 			if ( !num ) {
@@ -436,6 +434,8 @@ void Player::ProcessCommand(QString & command) {
 				emit Notify(QString(tr(
 					"No place for %1 things.")).arg(num));
 			}
+		} else {
+			emit Notify(tr("No room."));
 		}
 		world->Unlock();
 	} else if ( "move"==request ) {

@@ -784,7 +784,7 @@ void Screen::DeathScreen() {
 	werase(leftWin);
 	werase(rightWin);
 	werase(hudWin);
-	wmove(leftWin, 1, 1);
+	(void)wmove(leftWin, 1, 1);
 	wcolor_set(leftWin, WHITE_RED, NULL);
 	QFile death("death.txt");
 	if ( death.open(QIODevice::ReadOnly | QIODevice::Text) ) {

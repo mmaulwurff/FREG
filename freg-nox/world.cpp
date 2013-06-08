@@ -182,17 +182,18 @@ quint8 World::MakeDir(
 		const ushort x_target, const ushort y_target) const
 {
 	//if (x_center==x_target && y_center==y_target) return HERE;
-	if ( abs(x_center-x_target)<=1 && abs(y_center-y_target)<=1 )
+	if ( abs(x_center-x_target)<=1 && abs(y_center-y_target)<=1 ) {
 		return HERE;
+	}
 	const float x=x_target-x_center;
 	const float y=y_target-y_center;
-	if (      y <= 3*x  && y <= -3*x ) return NORTH;
-	else if ( y > -3*x  && y < -x/3 )  return NORTH_EAST;
-	else if ( y >= -x/3 && y <= x/3 )  return EAST;
-	else if ( y > x/3   && y <3 *x )   return SOUTH_EAST;
-	else if ( y >= 3*x  && y >= -3*x ) return SOUTH;
-	else if ( y <- 3*x  && y >- x/3 )  return SOUTH_WEST;
-	else if ( y <=- x/3 && y >= x/3 )  return WEST;
+	if      ( y <=  x*3 && y <= -x*3 ) return NORTH;
+	else if ( y >  -x*3 && y <  -x/3 ) return NORTH_EAST;
+	else if ( y >= -x/3 && y <=  x/3 ) return EAST;
+	else if ( y >   x/3 && y <   x*3 ) return SOUTH_EAST;
+	else if ( y >=  x*3 && y >= -x*3 ) return SOUTH;
+	else if ( y <-  x*3 && y >-  x/3 ) return SOUTH_WEST;
+	else if ( y <= -x/3 && y >=  x/3 ) return WEST;
 	else return NORTH_WEST;
 }
 
@@ -364,16 +365,16 @@ void World::PhysEvents() {
 							deferredActionY,
 							deferredActionZ) )
 				{
-					if ( !Move(
+					if ( Move(
 							deferredActionXFrom,
 							deferredActionYFrom,
 							deferredActionZFrom,
 							UP) )
 					{
-						break;
+						++deferredActionZ;
+						++deferredActionZFrom;
 					} else {
-						deferredActionZ += 1;
-						deferredActionZFrom += 1;
+						break;
 					}
 				}
 
