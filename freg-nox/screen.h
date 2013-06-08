@@ -119,15 +119,16 @@ class QTimer;
 class Screen : public VirtScreen {
 	Q_OBJECT
 
-	WINDOW * leftWin,
-	       * rightWin,
-	       * notifyWin,
-	       * hudWin; //head-up display
-	IThread * input;
+	WINDOW * leftWin;
+	WINDOW * rightWin;
+	WINDOW * notifyWin;
+	WINDOW * commandWin;
+	WINDOW * hudWin; //head-up display
+	IThread * const input;
 	volatile bool updated;
 	bool cleaned;
-	QTimer * timer;
-	FILE * notifyLog;
+	QTimer * const timer;
+	FILE * const notifyLog;
 	int actionMode;
 	short shiftFocus;
 

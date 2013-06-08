@@ -26,7 +26,7 @@
 #include "blocks.h"
 #include "Player.h"
 
-const char OBSCURE_BLOCK='.';
+const char OBSCURE_BLOCK='+';
 
 void Screen::Arrows(WINDOW * const & window, const ushort x, const ushort y)
 const {
@@ -69,21 +69,16 @@ void Screen::UpdateAround(
 void Screen::Move(const int) { updated=false; }
 
 QString & Screen::PassString(QString & str) const {
+	mvwaddch(commandWin, 0, 0, ':');
 	static const ushort note_length=144;
-	echo();
-	werase(notifyWin);
-	wcolor_set(notifyWin, BLACK_WHITE, NULL);
-	mvwaddch(notifyWin, 0, 0, ':');
-	wstandend(notifyWin);
 	char temp_str[note_length+1];
-	wgetnstr(notifyWin, temp_str, note_length);
-	str=temp_str;
-	fputs(qPrintable(QString::number(w->Time())+": Command: "+str+'\n'),
-		notifyLog);
-	werase(notifyWin);
-	wnoutrefresh(notifyWin);
+	echo();
+	wgetnstr(commandWin, temp_str, note_length);
 	noecho();
-	return str;
+	werase(commandWin);
+	wrefresh(commandWin);
+	fprintf(notifyLog, "%lu: Command: %s\n", w->Time(), temp_str);
+	return str=temp_str;
 }
 
 char Screen::CharNumber(const ushort i, const ushort j, const ushort k) const {
@@ -806,8 +801,11 @@ Screen::Screen(
 		Player * const pl)
 		:
 		VirtScreen(wor, pl),
+		input(new IThread(this)),
 		updated(false),
-		cleaned(false)
+		cleaned(false),
+		timer(new QTimer(this)),
+		notifyLog(fopen("messages.txt", "a"))
 {
 	//ifdefs are adjustments for windows console, added by Panzerschrek
 	#ifdef Q_OS_WIN32
@@ -847,10 +845,9 @@ Screen::Screen(
 		0, COLS/2-SCREEN_SIZE*2-2);
 	hudWin=newwin(3, (SCREEN_SIZE*2+2)*2,
 		SCREEN_SIZE+2, COLS/2-SCREEN_SIZE*2-2);
-	notifyWin=newwin(0, COLS, SCREEN_SIZE+2+3, 0);
+	commandWin=newwin(1, COLS, SCREEN_SIZE+2+3, 0);
+	notifyWin =newwin(0, COLS, SCREEN_SIZE+2+4, 0);
 	scrollok(notifyWin, TRUE);
-
-	notifyLog=fopen("messages.txt", "a");
 
 	QSettings sett(QDir::currentPath()+"/freg.ini",
 		QSettings::IniFormat);
@@ -874,12 +871,8 @@ Screen::Screen(
 	erase();
 	Notify("Game started.");
 
-	input=new IThread(this);
 	input->start();
-
-	timer=new QTimer(this);
-	connect(timer, SIGNAL(timeout()),
-		this, SLOT(Print()));
+	connect(timer, SIGNAL(timeout()), this, SLOT(Print()));
 	timer->start(100);
 }
 
@@ -902,9 +895,9 @@ void Screen::CleanAll() {
 	delwin(notifyWin);
 	delwin(hudWin);
 	endwin();
-	if ( NULL!=notifyLog )
+	if ( NULL!=notifyLog ) {
 		fclose(notifyLog);
-
+	}
 	QSettings sett(QDir::currentPath()+"/freg.ini",
 		QSettings::IniFormat);
 	sett.beginGroup("screen_curses");
