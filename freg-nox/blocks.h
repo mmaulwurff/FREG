@@ -78,7 +78,7 @@ class Block { //blocks without special physics and attributes
 	qint16 durability;
 
 	public:
-	virtual QString & FullName(QString & str) const;
+	virtual QString FullName() const;
 	virtual int Kind() const;
 	virtual bool Catchable() const;
 	virtual int Movable() const;
@@ -118,7 +118,7 @@ class Block { //blocks without special physics and attributes
 	int GetDir() const;
 	int Sub() const;
 	short Durability() const;
-	QString & GetNote(QString & str) const;
+	QString GetNote() const;
 	int Transparent() const;
 
 	bool operator==(const Block &) const;
@@ -135,7 +135,7 @@ class Block { //blocks without special physics and attributes
 
 class Plate : public Block {
 	public:
-	QString & FullName(QString & str) const;
+	QString FullName() const;
 	int Kind() const;
 	int BeforePush(int dir, Block * who);
 	ushort Weight() const;
@@ -146,7 +146,7 @@ class Plate : public Block {
 
 class Ladder : public Block {
 	public:
-	QString & FullName(QString & str) const;
+	QString FullName() const;
 	int Kind() const;
 	int BeforePush(int dir, Block * who);
 	ushort Weight() const;
@@ -164,7 +164,7 @@ class Weapon : public Block {
 	int DamageKind() const;
 	ushort DamageLevel() const;
 	ushort Weight() const;
-	QString & FullName(QString & str) const;
+	QString FullName() const;
 
 	Weapon(int sub);
 	Weapon(QDataStream & str, int sub);
@@ -175,7 +175,7 @@ class Pick : public Weapon {
 	int Kind() const;
 	int DamageKind() const;
 	ushort DamageLevel() const;
-	QString & FullName(QString & str) const;
+	QString FullName() const;
 
 	Pick(int sub);
 	Pick(QDataStream & str, int sub);
@@ -204,7 +204,7 @@ class Active : public QObject, public Block {
 	Shred * GetShred() const;
 	World * GetWorld() const;
 	bool InBounds(ushort x, ushort y, ushort z=0) const;
-	QString & FullName(QString & str) const;
+	QString FullName() const;
 	int Kind() const;
 
 	Active * ActiveBlock();
@@ -250,7 +250,7 @@ class Animal : public Active {
 	quint16 satiation;
 
 	public:
-	QString & FullName(QString&) const=0;
+	QString FullName() const=0;
 
 	ushort Breath() const;
 	ushort Satiation() const;
@@ -288,7 +288,7 @@ class Inventory {
 	virtual void MoveInside(ushort num_from, ushort num_to, ushort num);
 	virtual ushort Start() const;
 	virtual ushort Weight() const;
-	virtual QString & FullName(QString&) const=0;
+	virtual QString FullName() const=0;
 	virtual Inventory * HasInventory();
 
 	///Returns true if block found its place.
@@ -301,9 +301,9 @@ class Inventory {
 	ushort GetInvWeight(ushort i) const;
 	quint8 Number(ushort i) const;
 	Block * ShowBlock(ushort num) const;
-	QString & GetInvNote(QString & str, ushort num) const;
-	QString & InvFullName(QString & str, ushort i) const;
-	QString & NumStr(QString & str, ushort i) const;
+	QString GetInvNote(ushort num) const;
+	QString InvFullName(ushort num) const;
+	QString NumStr(ushort num) const;
 
 	bool IsEmpty() const;
 	bool HasRoom() const;
@@ -330,7 +330,7 @@ class Dwarf : public Animal, public Inventory {
 
 	int Kind() const;
 	int Sub() const;
-	QString & FullName(QString & str) const;
+	QString FullName() const;
 	ushort Weight() const;
 	ushort Start() const;
 	int DamageKind() const;
@@ -356,7 +356,7 @@ class Chest : public Block, public Inventory {
 	public:
 	int Kind() const;
 	int Sub() const;
-	QString & FullName(QString & str) const;
+	QString FullName() const;
 	Inventory * HasInventory();
 
 	usage_types Use();
@@ -378,7 +378,7 @@ class Pile : public Active, public Inventory {
 	public:
 	int Kind() const;
 	int Sub() const;
-	QString & FullName(QString & str) const;
+	QString FullName() const;
 
 	Inventory * HasInventory();
 	usage_types Use();
@@ -409,7 +409,7 @@ class Liquid : public Active {
 	int  Kind() const;
 	int  Movable() const;
 	int  Temperature() const;
-	QString & FullName(QString & str) const;
+	QString FullName() const;
 
 	Liquid(int sub=WATER);
 	Liquid(QDataStream & str, int sub);
@@ -419,7 +419,7 @@ class Grass : public Active {
 	Q_OBJECT
 
 	public:
-	QString & FullName(QString & str) const;
+	QString FullName() const;
 	void ActRare();
 	int  ShouldAct() const;
 	int  Kind() const;
@@ -446,7 +446,7 @@ class Bush : public Active, public Inventory {
 	int  BeforePush(int dir, Block * who);
 	ushort Weight() const;
 
-	QString & FullName(QString & str) const;
+	QString FullName() const;
 	usage_types Use();
 	Inventory * HasInventory();
 	Block * DropAfterDamage() const;
@@ -468,7 +468,7 @@ class Rabbit : public Animal {
 	int  ShouldAct() const;
 	int  Eat(Block * to_eat);
 	Block * DropAfterDamage() const;
-	QString & FullName(QString & str) const;
+	QString FullName() const;
 
 	Rabbit(int sub=A_MEAT);
 	Rabbit(QDataStream & str, int sub);
@@ -485,7 +485,7 @@ class Workbench : public Chest {
 	bool Get(Block * block, ushort start=0);
 	bool GetAll(Inventory * from);
 	ushort Start() const;
-	QString & FullName(QString & str) const;
+	QString FullName() const;
 
 	Workbench(int sub);
 	Workbench(QDataStream & str, int sub);
@@ -505,7 +505,7 @@ class Door : public Active {
 	int  Movable() const;
 	int  BeforePush(int dir, Block * who);
 	bool ShouldFall() const;
-	QString & FullName(QString & str) const;
+	QString FullName() const;
 	usage_types Use();
 
 	void SaveAttributes(QDataStream & out) const;
@@ -530,7 +530,7 @@ class Clock : public Active {
 	void Inscribe(const QString & str);
 	ushort Weight() const;
 	usage_types Use();
-	QString & FullName(QString & str) const;
+	QString FullName() const;
 
 	Clock(int sub);
 	Clock (QDataStream & str, int sub);

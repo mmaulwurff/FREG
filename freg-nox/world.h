@@ -252,7 +252,7 @@ class World : public QThread {
 	//block information section
 	public:
 	bool InBounds(ushort i, ushort j, ushort k=0) const;
-	QString & FullName(QString &, ushort x, ushort y, ushort z) const;
+	QString FullName(ushort x, ushort y, ushort z) const;
 	int Transparent(ushort x, ushort y, ushort z) const;
 	int Durability(ushort x, ushort y, ushort z) const;
 	int Kind(ushort x, ushort y, ushort z) const;
@@ -264,7 +264,7 @@ class World : public QThread {
 
 	Active * ActiveBlock(ushort x, ushort y, ushort z) const;
 
-	QString & GetNote(QString &, ushort x, ushort y, ushort z) const;
+	QString GetNote(ushort x, ushort y, ushort z) const;
 	int Temperature(ushort x, ushort y, ushort z) const;
 
 	void ReloadAllShreds(long lati, long longi,

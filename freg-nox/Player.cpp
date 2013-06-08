@@ -116,8 +116,7 @@ const {
 	world->ReadLock();
 
 	emit Notify("------");
-	QString str;
-	emit Notify( world->FullName(str, i, j, k) );
+	emit Notify( world->FullName(i, j, k) );
 	if ( creativeMode ) { //know more
 		emit Notify(QString(tr(
 		"Light:%1, fire:%2, sun:%3. Transp:%4. Norm:%5. Dir:%6.")).
@@ -134,8 +133,10 @@ const {
 		world->Unlock();
 		return;	
 	}
-	if ( ""!=world->GetNote(str, i, j, k) )
+	QString str;
+	if ( ""!=(str=world->GetNote(i, j, k)) ) {
 		emit Notify(tr("Inscription: ")+str);
+	}
 	emit Notify(tr("Temperature: ")+
 		QString::number(world->Temperature(i, j, k)));
 	emit Notify(tr("Durability: ")+

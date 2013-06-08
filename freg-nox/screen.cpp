@@ -724,7 +724,6 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 	}
 	mvwprintw(window, 2+inv->Size(), 40, "All weight: %6hu mz",
 		inv->Weight());
-	QString str;
 	for (ushort i=0; i<inv->Size(); ++i) {
 		mvwprintw(window, 2+i, 12, "%c)", 'a'+i);
 		if ( inv->Number(i) ) {
@@ -733,12 +732,12 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 			wprintw(window, "[%c]%s",
 					CharName( inv->GetInvKind(i),
 						inv->GetInvSub(i) ),
-					qPrintable(inv->InvFullName(str, i)) );
+					qPrintable(inv->InvFullName(i)) );
 			if ( 1<inv->Number(i) ) {
-				waddstr(window,
-					qPrintable(inv->NumStr(str, i)));
+				waddstr(window, qPrintable(inv->NumStr(i)));
 			}
-			if ( ""!=inv->GetInvNote(str, i) ) {
+			QString str;
+			if ( ""!=(str=inv->GetInvNote(i)) ) {
 				waddstr(window,
 					qPrintable((" ~:"+(( str.size()<24 ) ?
 						str : str.left(13)+"..."))));
@@ -757,7 +756,7 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 	} else {
 		wprintw(window, "[%c]%s",
 			CharName(inv->Kind(), inv->Sub()),
-			qPrintable(inv->FullName(str)));
+			qPrintable(inv->FullName()));
 	}
 	wnoutrefresh(window);
 }

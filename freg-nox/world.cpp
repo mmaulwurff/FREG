@@ -901,13 +901,9 @@ int World::GetAll(const ushort x_to, const ushort y_to, const ushort z_to) {
 	return inv_to->GetAll(inv_from);
 }
 
-QString & World::FullName(QString & str,
-		const ushort i, const ushort j, const ushort k)
-const {
-	if ( InBounds(i, j, k) ) {
-		str=GetBlock(i, j, k)->FullName(str);
-	}
-	return str;
+QString World::FullName(const ushort x, const ushort y, const ushort z) const {
+	return InBounds(x, y, z) ?
+		GetBlock(x, y, z)->FullName() : tr("Something somewhere");
 }
 
 int World::Transparent(const ushort x, const ushort y, const ushort z) const {
@@ -967,12 +963,9 @@ const {
 	return temperature/2;
 }
 
-QString & World::GetNote(QString & str,
-		const ushort i, const ushort j, const ushort k)
-const {
-	return str=( InBounds(i, j, k)  ) ?
-		GetBlock(i, j, k)->GetNote(str) :
-		"";
+QString World::GetNote(const ushort x, const ushort y, const ushort z) const {
+	return InBounds(x, y, z) ?
+		GetBlock(x, y, z)->GetNote() : "";
 }
 
 void World::RemSun() {

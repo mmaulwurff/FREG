@@ -25,30 +25,30 @@
 #include "BlockManager.h"
 
 //Block::
-	QString & Block::FullName(QString & str) const {
-		switch ( sub ) {
+	QString Block::FullName() const {
+		switch ( Sub() ) {
 			case STAR: case SUN_MOON: case SKY:
-			case AIR:        return str="Air";
-			case WATER:      return str="Ice";
-			case STONE:      return str="Stone";
-			case MOSS_STONE: return str="Moss stone";
-			case NULLSTONE:  return str="Nullstone";
-			case GLASS:      return str="Glass";
-			case SOIL:       return str="Soil";
-			case HAZELNUT:   return str="Hazelnut";
-			case WOOD:       return str="Wood";
-			case GREENERY:   return str="Leaves";
-			case ROSE:       return str="Rose";
-			case A_MEAT:     return str="Animal meat";
-			case H_MEAT:     return str="Not animal meat";
-			case IRON:       return str="Iron block";
-			case SAND:       return str="Sandstone";
-			case CLAY:       return str="Clay brick";
+			case AIR:        return QObject::tr("Air");
+			case WATER:      return QObject::tr("Ice");
+			case STONE:      return QObject::tr("Stone");
+			case MOSS_STONE: return QObject::tr("Moss stone");
+			case NULLSTONE:  return QObject::tr("Nullstone");
+			case GLASS:      return QObject::tr("Glass");
+			case SOIL:       return QObject::tr("Soil");
+			case HAZELNUT:   return QObject::tr("Hazelnut");
+			case WOOD:       return QObject::tr("Wood");
+			case GREENERY:   return QObject::tr("Leaves");
+			case ROSE:       return QObject::tr("Rose");
+			case A_MEAT:     return QObject::tr("Animal meat");
+			case H_MEAT:     return QObject::tr("Not animal meat");
+			case IRON:       return QObject::tr("Iron block");
+			case SAND:       return QObject::tr("Sandstone");
+			case CLAY:       return QObject::tr("Clay brick");
 			default:
 				fprintf(stderr,
 					"Block::FullName: unlisted sub: %d.\n",
-					sub);
-				return str="Unknown block";
+					Sub());
+				return "Unknown block";
 		}
 	}
 
@@ -149,7 +149,7 @@
 
 	uchar Block::LightRadius() const { return 0; }
 
-	QString & Block::GetNote(QString & str) const { return str=*note; }
+	QString Block::GetNote() const { return *note; }
 
 	ushort Block::DamageLevel() const { return 1; }
 
@@ -208,11 +208,10 @@
 	void Block::SaveToFile(QDataStream & out) const {
 		const bool normal=(this==block_manager.NormalBlock(Sub()));
 		out << (quint16)Kind() << sub << normal;
-		if ( normal ) {
-			return;
+		if ( !normal ) {
+			out << direction << durability << *note;
+			SaveAttributes(out);
 		}
-		out << direction << durability << *note;
-		SaveAttributes(out);
 	}
 
 	Block::Block(const int sb, const quint8 transp) :
@@ -235,16 +234,16 @@
 	Block::~Block() { delete note; }
 
 //Plate::
-	QString & Plate::FullName(QString & str) const {
+	QString Plate::FullName() const {
 		switch ( Sub() ) {
-			case WOOD: return str="Wooden board";
-			case IRON: return str="Iron plate";
-			case STONE: return str="Stone slab";
+			case WOOD:  return QObject::tr("Wooden board");
+			case IRON:  return QObject::tr("Iron plate");
+			case STONE: return QObject::tr("Stone slab");
 			default:
 				fprintf(stderr,
 					"Plate::FullName: unlisted sub: %d",
 					Sub());
-				return str="Strange plate";
+				return "Strange plate";
 		}
 	}
 
@@ -264,8 +263,16 @@
 	{}
 
 //Ladder::
-	QString & Ladder::FullName(QString & str) const {
-		return str="Ladder";
+	QString Ladder::FullName() const {
+		switch ( Sub() ) {
+			case WOOD:  return QObject::tr("Ladder");
+			case STONE: return QObject::tr("Rock with ledges");
+			default:
+				fprintf(stderr,
+					"Ladder::FullName: unlisted sub: %d\n",
+					Sub());
+				return "Strange ladder";
+		}
 	}
 
 	int Ladder::Kind() const { return LADDER; }
@@ -285,16 +292,16 @@
 	{}
 
 //Weapon::
-	QString & Weapon::FullName(QString & str) const {
+	QString Weapon::FullName() const {
 		switch ( Sub() ) {
-			case STONE: return str="Pebble";
-			case IRON:  return str="Spike";
-			case WOOD:  return str="Stick";
+			case STONE: return QObject::tr("Pebble");
+			case IRON:  return QObject::tr("Spike");
+			case WOOD:  return QObject::tr("Stick");
 			default:
 				fprintf(stderr,
 					"Weapon::FullName: unlisted sub: %d\n",
 					Sub());
-				return str="Some weapon";
+				return "Some weapon";
 		}
 	}
 
@@ -351,15 +358,14 @@
 		}
 	}
 
-	QString & Pick::FullName(QString & str) const {
-		switch ( sub ) {
-			case IRON: return str="Iron pick";
+	QString Pick::FullName() const {
+		switch ( Sub() ) {
+			case IRON: return QObject::tr("Iron pick");
 			default:
 				fprintf(stderr,
-					"Pick::FullName(QString&): \
-					Pick has unknown substance: %d\n",
-					sub);
-				return str="Strange pick";
+					"Pick::FullName: unknown sub: %d\n",
+					Sub());
+				return "Strange pick";
 		}
 	}
 
@@ -372,15 +378,15 @@
 	{}
 
 //Active::
-	QString & Active::FullName(QString & str) const {
+	QString Active::FullName() const {
 		switch ( Sub() ) {
-			case SAND:  return str="Sand";
-			case WATER: return str="Snow";
+			case SAND:  return tr("Sand");
+			case WATER: return tr("Snow");
 			default:
 				fprintf(stderr,
 					"Active::FullName: Unlisted sub: %d\n",
-					sub);
-				return str="Unkown active block";
+					Sub());
+				return "Unkown active block";
 		}
 	}
 
@@ -704,8 +710,9 @@
 	void Inventory::SaveAttributes(QDataStream & out) const {
 		for (ushort i=0; i<Size(); ++i) {
 			out << Number(i);
-			for (ushort j=0; j<Number(i); ++j)
+			for (ushort j=0; j<Number(i); ++j) {
 				inventory[i].top()->SaveToFile(out);
+			}
 		}
 	}
 
@@ -764,15 +771,14 @@
 		return 0;
 	}
 
-	QString & Inventory::InvFullName(QString & str, const ushort i) const {
-		return str=( inventory[i].isEmpty() ) ? "" :
-			inventory[i].top()->FullName(str);
+	QString Inventory::InvFullName(const ushort num) const {
+		return inventory[num].isEmpty() ?
+			"" : inventory[num].top()->FullName();
 	}
 
-	QString & Inventory::NumStr(QString & str, const ushort i) const {
-		return str=( 1<Number(i) ) ?
-			QString(" (%1x)").arg(Number(i)) :
-			"";
+	QString Inventory::NumStr(const ushort num) const {
+		return ( 1<Number(num) ) ?
+			QString(" (%1x)").arg(Number(num)) : "";
 	}
 
 	ushort Inventory::GetInvWeight(const ushort i) const {
@@ -790,9 +796,8 @@
 			inventory[i].top()->Kind();
 	}
 
-	QString & Inventory::GetInvNote(QString & str, const ushort num)
-	const {
-		return str=inventory[num].top()->GetNote(str);
+	QString Inventory::GetInvNote(const ushort num) const {
+		return inventory[num].top()->GetNote();
 	}
 
 	ushort Inventory::Weight() const {
@@ -924,9 +929,7 @@
 
 	int Dwarf::Sub() const { return Block::Sub(); }
 
-	QString & Dwarf::FullName(QString & str) const {
-		return str="Dwarf " + *note;
-	}
+	QString Dwarf::FullName() const { return "Rational"; }
 
 	ushort Dwarf::Start() const { return onLegs+1; }
 
@@ -1020,15 +1023,15 @@
 
 	int Chest::Sub() const { return Block::Sub(); }
 
-	QString & Chest::FullName(QString & str) const {
-		switch (sub) {
-			case WOOD:  return str=QObject::tr("Wooden chest");
-			case STONE: return str=QObject::tr("Stone chest");
+	QString Chest::FullName() const {
+		switch ( Sub() ) {
+			case WOOD:  return QObject::tr("Wooden chest");
+			case STONE: return QObject::tr("Stone chest");
 			default:
 				fprintf(stderr,
 					"Chest::FullName: unlisted sub: %d\n",
-					sub);
-				return str=QObject::tr("Chest");
+					Sub());
+				return QObject::tr("Chest");
 		}
 	}
 
@@ -1078,14 +1081,14 @@
 
 	int Pile::Sub() const { return Block::Sub(); }
 
-	QString & Pile::FullName(QString & str) const {
+	QString Pile::FullName() const {
 		switch ( Sub() ) {
-			case DIFFERENT: return str=tr("Pile");
+			case DIFFERENT: return tr("Pile");
 			default:
 				fprintf(stderr,
 					"Pile::FullName: unlisted sub: %d\n",
 					Sub());
-				return str=tr("Unknown pile");
+				return tr("Unknown pile");
 		}
 	}
 
@@ -1178,16 +1181,15 @@
 
 	int Liquid::Kind() const { return LIQUID; }
 
-	QString & Liquid::FullName(QString & str) const {
-		switch (sub) {
-			case WATER: return str="Water";
-			case STONE: return str="Lava";
+	QString Liquid::FullName() const {
+		switch ( Sub() ) {
+			case WATER: return tr("Water");
+			case STONE: return tr("Lava");
 			default:
 				fprintf(stderr,
-					"Liquid::FullName(QString&): \
-					Liquid has unknown substance: %d\n",
-					sub);
-				return str="Unknown liquid";
+					"Liquid::FullName(): sub (?): %d\n",
+					Sub());
+				return "Unknown liquid";
 		}
 	}
 
@@ -1235,15 +1237,14 @@
 	}
 	int Grass::ShouldAct() const  { return RARE; }
 
-	QString & Grass::FullName(QString & str) const {
-		switch ( sub ) {
-			case GREENERY: return str="Grass";
+	QString Grass::FullName() const {
+		switch ( Sub() ) {
+			case GREENERY: return tr("Grass");
 			default:
 				fprintf(stderr,
-					"Grass::FullName(QString&): \
-					unlisted sub: %d\n",
-					sub);
-				return str="Unknown plant";
+					"Grass::FullName(): sub (?): %d\n",
+					Sub());
+				return "Unknown plant";
 		}
 	}
 
@@ -1262,7 +1263,7 @@
 	{}
 
 //Bush::
-	QString & Bush::FullName(QString & str) const { return str="Bush"; }
+	QString Bush::FullName() const { return tr("Bush"); }
 
 	int Bush::Kind() const { return BUSH; }
 
@@ -1393,9 +1394,7 @@
 		return block_manager.NormalBlock(A_MEAT);
 	}
 
-	QString & Rabbit::FullName(QString & str) const {
-		return str="Rabbit";
-	}
+	QString Rabbit::FullName() const { return tr("Herbivore"); }
 
 	int Rabbit::Kind() const { return RABBIT; }
 
@@ -1484,15 +1483,15 @@
 		}
 	}
 
-	QString & Workbench::FullName(QString & str) const {
+	QString Workbench::FullName() const {
 		switch ( Sub() ) {
-			case WOOD: return str="Workbench";
-			case IRON: return str="Iron anvil";
+			case WOOD: return QObject::tr("Workbench");
+			case IRON: return QObject::tr("Iron anvil");
 			default:
 				fprintf(stderr,
 					"Bench::FullName: unlisted sub: %d\n",
 					Sub());
-				return str="Strange workbench";
+				return "Strange workbench";
 		}
 	}
 
@@ -1556,21 +1555,20 @@
 
 	int Door::Kind() const { return locked ? LOCKED_DOOR : DOOR; }
 
-	QString & Door::FullName(QString & str) const {
+	QString Door::FullName() const {
 		QString sub_string;
 		switch ( Sub() ) {
-			case WOOD:  sub_string=" of wood";   break;
-			case STONE: sub_string=" of stone";  break;
-			case GLASS: sub_string=" of glass";  break;
-			case IRON:  sub_string=" of iron";   break;
+			case WOOD:  sub_string=tr(" of wood");  break;
+			case STONE: sub_string=tr(" of stone"); break;
+			case GLASS: sub_string=tr(" of glass"); break;
+			case IRON:  sub_string=tr(" of iron");  break;
 			default:
-				sub_string=" of something";
+				sub_string=tr(" of something");
 				fprintf(stderr,
 					"Door::FullName: unlisted sub: %d\n",
 					Sub());
 		}
-		return str=QString((locked ? "Locked door" : "Door")) +
-			sub_string;
+		return tr(locked ? "Locked door" : "Door") + sub_string;
 	}
 
 	int Door::Movable() const { return movable; }
@@ -1615,14 +1613,14 @@
 
 	int Clock::Kind() const { return CLOCK; }
 
-	QString & Clock::FullName(QString & str) const {
-		switch ( sub ) {
-			case IRON: return str="Iron clock";
+	QString Clock::FullName() const {
+		switch ( Sub() ) {
+			case IRON: return tr("Iron clock");
 			default:
 				fprintf(stderr,
 					"Clock::FullName: unlisted sub: %d\n",
-					sub);
-				return str="Strange clock";
+					Sub());
+				return "Strange clock";
 		}
 	}
 
