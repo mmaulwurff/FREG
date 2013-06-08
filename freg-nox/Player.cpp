@@ -657,6 +657,7 @@ void Player::SetNumShreds(ushort num) const {
 }
 
 Player::Player(World * const w) :
+		dir(NORTH),
 		world(w),
 		usingType(NO),
 		usingSelfType(NO),
