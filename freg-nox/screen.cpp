@@ -417,7 +417,7 @@ void Screen::Print() {
 
 	const short dur=player->HP();
 	const short breath=player->Breath();
-	const short satiation=player->Satiation();
+	const short satiation=player->SatiationPercent();
 
 	werase(hudWin);
 	//quick inventory
@@ -480,13 +480,13 @@ void Screen::Print() {
 	}
 	if ( -1!=satiation ) { //satiation line
 		(void)wmove(hudWin, 1, 0);
-		if ( SECONDS_IN_DAY<satiation ) {
+		if ( 100<satiation ) {
 			wcolor_set(hudWin, BLUE_BLACK, NULL);
 			waddstr(hudWin, "Gorged");
-		} else if ( 3*SECONDS_IN_DAY/4<satiation ) {
+		} else if ( 75<satiation ) {
 			wcolor_set(hudWin, GREEN_BLACK, NULL);
 			waddstr(hudWin, "Full");
-		} else if (SECONDS_IN_DAY/4>satiation) {
+		} else if (25>satiation) {
 			wcolor_set(hudWin, RED_BLACK, NULL);
 			waddstr(hudWin, "Hungry");
 		}

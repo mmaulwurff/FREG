@@ -84,6 +84,12 @@ short Player::Satiation() const {
 	Animal const * const animal=player->IsAnimal();
 	return ( animal ? animal->Satiation() : -1 );
 }
+ushort Player::SatiationPercent() const {
+	const short satiation=Satiation();
+	return ( -1==satiation ) ?
+		50 :
+		satiation*100/SECONDS_IN_DAY;
+}
 
 Inventory * Player::PlayerInventory() {
 	return ( player ? player->HasInventory() : 0 );

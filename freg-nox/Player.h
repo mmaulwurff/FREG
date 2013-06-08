@@ -124,6 +124,8 @@ class Player : public QObject {
 	///This returns player breath reserve.
 	short Breath() const;
 	short Satiation() const;
+	///Can be > 100 if player is gorged. When player is not animal, 50.
+	ushort SatiationPercent() const;
 
 	///This returns player block itself.
 	Active * GetP() const;
