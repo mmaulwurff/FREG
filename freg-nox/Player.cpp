@@ -590,6 +590,9 @@ void Player::SetPlayer(
 	x=player_x;
 	y=player_y;
 	z=player_z;
+	if ( GetCreativeMode() ) {
+		return;
+	}
 	if ( DWARF!=world->Kind(x, y, z) ) {
 		world->Build( (player=block_manager.
 				NewBlock(DWARF, H_MEAT)->ActiveBlock()),
