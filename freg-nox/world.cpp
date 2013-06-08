@@ -777,14 +777,15 @@ bool World::Damage(
 	}
 	Block * const dropped=temp->DropAfterDamage();
 	if ( TIME!=dmg_kind && (temp->HasInventory() || dropped) ) {
-		Block * const new_pile=block_manager.NewBlock(PILE, DIFFERENT);
+		Block * const new_pile=( PILE==dropped->Kind() ?
+			dropped : block_manager.NewBlock(PILE, DIFFERENT) );
 		SetBlock(new_pile, i, j, k);
 		Inventory * const inv=temp->HasInventory();
 		Inventory * const new_pile_inv=new_pile->HasInventory();
 		if ( inv ) {
 			new_pile_inv->GetAll(inv);
 		}
-		if ( !new_pile_inv->Get(dropped) ) {
+		if ( PILE!=dropped->Kind() && !new_pile_inv->Get(dropped) ) {
 			DeleteBlock(dropped);
 		}
 	} else {

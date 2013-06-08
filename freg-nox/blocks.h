@@ -87,6 +87,10 @@ class Block { //blocks without special physics and attributes
 	virtual int Move(int);
 	virtual usage_types Use();
 	virtual int Damage(ushort dmg, int dmg_kind);
+	///Usually, returns new block of the same kind and sub (except glass).
+	/**When reimplemented in derivatives, inside it you can create a pile,
+	 * put several blocks in it and return pile.
+	 */
 	virtual Block * DropAfterDamage() const;
 
 	virtual Inventory * HasInventory();
@@ -133,7 +137,6 @@ class Plate : public Block {
 	public:
 	QString & FullName(QString & str) const;
 	int Kind() const;
-	Block * DropAfterDamage() const;
 	int BeforePush(int dir, Block * who);
 	ushort Weight() const;
 
@@ -145,7 +148,6 @@ class Ladder : public Block {
 	public:
 	QString & FullName(QString & str) const;
 	int Kind() const;
-	Block * DropAfterDamage() const;
 	int BeforePush(int dir, Block * who);
 	ushort Weight() const;
 	bool Catchable() const;
@@ -360,7 +362,6 @@ class Chest : public Block, public Inventory {
 	usage_types Use();
 	int BeforePush(int dir, Block * who);
 
-	Block * DropAfterDamage() const;
 	ushort Weight() const;
 
 	void SaveAttributes(QDataStream & out) const;
@@ -506,7 +507,6 @@ class Door : public Active {
 	bool ShouldFall() const;
 	QString & FullName(QString & str) const;
 	usage_types Use();
-	Block * DropAfterDamage() const;
 
 	void SaveAttributes(QDataStream & out) const;
 
@@ -529,7 +529,6 @@ class Clock : public Active {
 	int  BeforePush(int dir, Block * who);
 	void Inscribe(const QString & str);
 	ushort Weight() const;
-	Block * DropAfterDamage() const;
 	usage_types Use();
 	QString & FullName(QString & str) const;
 

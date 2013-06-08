@@ -110,8 +110,11 @@
 	}
 
 	Block * Block::DropAfterDamage() const {
-		return ( BLOCK==Kind() && GLASS!=sub ) ?
-			block_manager.NormalBlock(sub) : 0;
+		return GLASS==Sub() ?
+			0 :
+			BLOCK==Kind() ?
+				block_manager.NormalBlock(Sub()) :
+				block_manager.NewBlock(Kind(), Sub());
 	}
 
 	int  Block::Kind() const { return BLOCK; }
@@ -247,10 +250,6 @@
 
 	int Plate::Kind() const { return PLATE; }
 
-	Block * Plate::DropAfterDamage() const {
-		return block_manager.NewBlock(PLATE, Sub());
-	}
-
 	int Plate::BeforePush(const int, Block * const) { return JUMP; }
 
 	ushort Plate::Weight() const { return Block::Weight()/4; }
@@ -265,10 +264,6 @@
 	{}
 
 //Ladder::
-	Block * Ladder::DropAfterDamage() const {
-		return block_manager.NewBlock(LADDER, Sub());
-	}
-
 	QString & Ladder::FullName(QString & str) const {
 		return str="Ladder";
 	}
@@ -1018,10 +1013,6 @@
 	{}
 
 //Chest::
-	Block * Chest::DropAfterDamage() const {
-		return block_manager.NewBlock(Kind(), Sub());
-	}
-
 	int Chest::Kind() const { return CHEST; }
 
 	int Chest::Sub() const { return Block::Sub(); }
@@ -1299,7 +1290,10 @@
 	bool Bush::ShouldFall() const { return false; }
 
 	Block * Bush::DropAfterDamage() const {
-		return block_manager.NormalBlock(WOOD);
+		Block * const pile=block_manager.NewBlock(PILE, DIFFERENT);
+		pile->HasInventory()->Get(block_manager.NormalBlock(WOOD));
+		pile->HasInventory()->Get(block_manager.NormalBlock(HAZELNUT));
+		return pile;
 	}
 
 	void Bush::SaveAttributes(QDataStream & out) const {
@@ -1530,10 +1524,6 @@
 	{}
 
 //Door::
-	Block * Door::DropAfterDamage() const {
-		return block_manager.NewBlock(DOOR, Sub());
-	}
-
 	int Door::BeforePush(const int dir, Block * const) {
 		if ( locked || shifted || dir==World::Anti(GetDir()) )
 			return NO_ACTION;
@@ -1611,10 +1601,6 @@
 	}
 
 //Clock::
-	Block * Clock::DropAfterDamage() const {
-		return block_manager.NewBlock(CLOCK, Sub());
-	}
-
 	usage_types Clock::Use() {
 		World * const world=GetWorld();
 		SendSignalAround(QString("Time is %1%2%3.").
