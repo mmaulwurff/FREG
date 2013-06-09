@@ -81,37 +81,35 @@ QString Screen::PassString(QString & str) const {
 	return str=temp_str;
 }
 
-char Screen::CharNumber(const ushort i, const ushort j, const ushort k) const {
-	if ( HEIGHT-1==k ) { //sky
+char Screen::CharNumber(const ushort x, const ushort y, const ushort z) const {
+	if ( HEIGHT-1==z ) { //sky
 		return ' ';
 	}
-	if ( player->GetP()==w->GetBlock(i, j, k) ) {
+	if ( player->X()==x && player->Y()==y && player->Z()==z ) {
 		switch ( player->Dir() ) {
 			case NORTH: return '^';
 			case SOUTH: return 'v';
 			case EAST:  return '>';
 			case WEST:  return '<';
+			case UP:    return '.';
+			case DOWN:  return 'x';
 			default:
 				fprintf(stderr,
 					"Screen::CharNumber: (?) dir: %d\n",
-					(int)player->Dir());
+					player->Dir());
 				return '*';
 		}
 	}
-	const ushort playerZ=player->Z();
-	if ( UP==player->Dir() ) {
-		if ( k > playerZ && k < playerZ+10 ) {
-			return k-playerZ+'0';
-		}
-	} else {
-		if ( k==playerZ ) {
-			return ' ';
-		}
-		if ( k>playerZ-10 ) {
-			return playerZ-k+'0';
-		}
-	}
-	return '+';
+	const short z_dif=( UP==player->Dir() ) ?
+		z - player->Z() :
+		player->Z() - z;
+	return ( !z_dif ) ?
+		' ' :
+		( z_dif<0 ) ?
+			'-' :
+			( z_dif<10 ) ?
+				z_dif+'0' :
+				'+';
 }
 
 char Screen::CharNumberFront(const ushort i, const ushort j) const {
@@ -391,15 +389,20 @@ void Screen::Print() {
 	}
 	updated=true;
 
-	switch ( player->UsingType() ) {
+	switch ( player->UsingType() ) { //right window
 		case OPEN:
 			werase(rightWin);
 			PrintInv(rightWin,
 				player->UsingBlock()->HasInventory());
 			break;
-		default: PrintFront(rightWin);
+		default:
+			if ( UP==player->Dir() || DOWN==player->Dir() ) {
+				PrintNormal(rightWin, player->Dir());
+			} else {
+				PrintFront(rightWin);
+			}
 	}
-	switch ( player->UsingSelfType() ) {
+	switch ( player->UsingSelfType() ) { //left window
 		case OPEN:
 			if ( player->PlayerInventory() ) {
 				werase(leftWin);
@@ -407,7 +410,12 @@ void Screen::Print() {
 					player->PlayerInventory());
 				break;
 			} //no break;
-		default: PrintNormal(leftWin);
+		default:
+			if ( UP==player->Dir() || DOWN==player->Dir() ) {
+				PrintNormal(leftWin, NORTH);
+			} else {
+				PrintNormal(leftWin, player->Dir());
+			}
 	}
 
 	const short dur=player->HP();
@@ -525,8 +533,8 @@ void Screen::Print() {
 	doupdate();
 }
 
-void Screen::PrintNormal(WINDOW * const window) const {
-	const int dir=player->Dir();
+void Screen::PrintNormal(WINDOW * const window, const int dir) const {
+	//const int dir=player->Dir();
 	const ushort k_start=( UP!=dir ) ?
 		(( DOWN==dir ) ? player->Z()-1 : player->Z()) :
 		player->Z()+1;

@@ -146,7 +146,7 @@ class Screen : public VirtScreen {
 			short color=WHITE_RED) const;
 	void ActionXyz(ushort & x, ushort & y, ushort & z) const;
 
-	void PrintNormal(WINDOW *) const;
+	void PrintNormal(WINDOW *, int dir) const;
 	void PrintFront(WINDOW *) const;
 	void PrintInv(WINDOW *, Inventory *) const;
 	void PrintText(WINDOW *, QString const &) const;
