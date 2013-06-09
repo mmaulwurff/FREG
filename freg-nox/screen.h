@@ -115,6 +115,7 @@ enum color_pairs { //do not change colors order! //foreground_background
 class IThread;
 class Inventory;
 class QTimer;
+class QFile;
 
 class Screen : public VirtScreen {
 	Q_OBJECT
@@ -131,8 +132,8 @@ class Screen : public VirtScreen {
 	FILE * const notifyLog;
 	int actionMode;
 	short shiftFocus;
-
 	QString command; //save previous command for further execution
+	QFile * fileToShow;
 
 	char CharName(int, int) const;
 	char CharNumber(ushort x, ushort y, ushort z) const;
@@ -150,6 +151,9 @@ class Screen : public VirtScreen {
 	void PrintFront(WINDOW *) const;
 	void PrintInv(WINDOW *, Inventory *) const;
 	void PrintText(WINDOW *, QString const &) const;
+	///Returns false when file does not exist, otherwise true.
+	bool PrintFile(WINDOW *, QString const & file_name);
+	void CleanFileToShow();
 	void RePrint();
 
 	color_pairs Color(int kind, int sub) const;

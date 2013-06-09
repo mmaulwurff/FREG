@@ -55,7 +55,10 @@ void Screen::Update(const ushort, const ushort, const ushort) {
 	updated=false;
 }
 
-void Screen::UpdateAll() { updated=false; }
+void Screen::UpdateAll() {
+	CleanFileToShow();
+	updated=false;
+}
 
 void Screen::UpdatePlayer() { updated=false; }
 
@@ -231,6 +234,7 @@ color_pairs Screen::Color(const int kind, const int sub) const {
 }
 
 void Screen::ControlPlayer(const int ch) {
+	CleanFileToShow();
 	if ( 'Q'==ch ) {
 		emit ExitReceived();
 		return;
@@ -304,6 +308,11 @@ void Screen::ControlPlayer(const int ch) {
 		case 'B': actionMode=BUILD; break;
 		case 'C': actionMode=CRAFT; break;
 		case 'F': actionMode=TAKEOFF; break;
+
+		case 'H':
+			wstandend(rightWin);
+			PrintFile(rightWin, "help.txt");
+			break;
 
 		case ';': {
 			Inventory * const inv=player->PlayerInventory();
@@ -389,18 +398,21 @@ void Screen::Print() {
 	}
 	updated=true;
 
-	switch ( player->UsingType() ) { //right window
-		case OPEN:
-			werase(rightWin);
-			PrintInv(rightWin,
-				player->UsingBlock()->HasInventory());
-			break;
-		default:
-			if ( UP==player->Dir() || DOWN==player->Dir() ) {
-				PrintNormal(rightWin, player->Dir());
-			} else {
-				PrintFront(rightWin);
-			}
+	if ( !fileToShow ) { //right window
+		switch ( player->UsingType() ) {
+			case OPEN:
+				werase(rightWin);
+				PrintInv(rightWin,
+					player->UsingBlock()->HasInventory());
+				break;
+			default:
+				if ( UP==player->Dir() || DOWN==player->Dir() )
+				{
+					PrintNormal(rightWin, player->Dir());
+				} else {
+					PrintFront(rightWin);
+				}
+		}
 	}
 	switch ( player->UsingSelfType() ) { //left window
 		case OPEN:
@@ -770,8 +782,30 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 }
 
 void Screen::PrintText(WINDOW * const window, QString const & str) const {
+	werase(window);
 	waddstr(window, qPrintable(str));
 	wrefresh(window);
+}
+
+void Screen::CleanFileToShow() {
+	if ( fileToShow ) {
+		delete fileToShow;
+		fileToShow=0;
+	}
+}
+
+bool Screen::PrintFile(WINDOW * const window, QString const & file_name) {
+	CleanFileToShow();
+	fileToShow=new QFile(file_name);
+	if ( fileToShow->open(QIODevice::ReadOnly | QIODevice::Text) ) {
+		const QString str=fileToShow->readAll();
+		PrintText(window, str);
+		return true;
+	} else {
+		PrintText(window, tr("No such file."));
+		CleanFileToShow();
+		return false;
+	}
 }
 
 void Screen::Notify(const QString & str) {
@@ -783,16 +817,11 @@ void Screen::Notify(const QString & str) {
 }
 
 void Screen::DeathScreen() {
-	werase(leftWin);
 	werase(rightWin);
 	werase(hudWin);
 	(void)wmove(leftWin, 1, 1);
 	wcolor_set(leftWin, WHITE_RED, NULL);
-	QFile death("death.txt");
-	if ( death.open(QIODevice::ReadOnly | QIODevice::Text) ) {
-		const QString str=death.readAll();
-		PrintText(leftWin, str);
-	} else {
+	if ( !PrintFile(leftWin, "death.txt") ) {
 		waddstr(leftWin, "You die.\nWaiting for respawn...");
 	}
 	box(leftWin, 0, 0);
@@ -812,7 +841,8 @@ Screen::Screen(
 		updated(false),
 		cleaned(false),
 		timer(new QTimer(this)),
-		notifyLog(fopen("messages.txt", "a"))
+		notifyLog(fopen("messages.txt", "a")),
+		fileToShow(0)
 {
 	//ifdefs are adjustments for windows console, added by Panzerschrek
 	#ifdef Q_OS_WIN32
@@ -863,19 +893,15 @@ Screen::Screen(
 	actionMode=sett.value("action_mode", USE).toInt();
 	command   =sett.value("last_command", "hello").toString();
 
-	const QString by="\nby mmaulwurff, with help of Panzerschrek\n";
-	QFile splash("splash.txt");
-	if ( splash.open(QIODevice::ReadOnly | QIODevice::Text) ) {
-		PrintText(stdscr, splash.readAll()+by+
-			QString("\nVersion %1.\n\n").arg(FREG_VERSION));
-	} else {
+	if ( !PrintFile(stdscr, "splash.txt") ) {
 		addstr("Free-Roaming Elementary Game\n");
-		addstr(qPrintable(by));
+		addstr("\nby mmaulwurff, with help of Panzerschrek\n");
 		printw("\nVersion %4.1f.\n\n", FREG_VERSION);
+		addstr("Press any key.");
 	}
-	addstr("Press any key.");
 	qsrand(getch());
 	erase();
+	CleanFileToShow();
 	Notify("Game started.");
 
 	input->start();
@@ -905,6 +931,7 @@ void Screen::CleanAll() {
 	if ( NULL!=notifyLog ) {
 		fclose(notifyLog);
 	}
+	CleanFileToShow();
 	QSettings sett(QDir::currentPath()+"/freg.ini",
 		QSettings::IniFormat);
 	sett.beginGroup("screen_curses");

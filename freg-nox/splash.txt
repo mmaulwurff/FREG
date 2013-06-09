@@ -15,4 +15,9 @@
 | |  _ / _` | '_ ` _ \ / _ \
 | |_| | (_| | | | | | |  __/
  \____|\__,_|_| |_| |_|\___|
-                            
+
+by mmaulwurff, with help of Panzerschrek
+
+Version 0.1
+
+Press any key.
