@@ -183,8 +183,7 @@ int Shred::LoadShred(QFile & file) {
 	return 0;
 }
 
-Shred::Shred(
-		World * const world_,
+Shred::Shred(World * const world_,
 		const ushort shred_x, const ushort shred_y,
 		const long longi, const long lati)
 	:
@@ -265,16 +264,14 @@ Shred::~Shred() {
 	}
 }
 
-void Shred::SetNewBlock(
-		const int kind, const int sub,
+void Shred::SetNewBlock(const int kind, const int sub,
 		const ushort x, const ushort y, const ushort z)
 {
 	block_manager.DeleteBlock(blocks[x][y][z]);
 	SetBlock( block_manager.NewBlock(kind, sub), x, y, z );
 }
 
-void Shred::RegisterBlock(
-		Block * const block,
+void Shred::RegisterBlock(Block * const block,
 		const ushort x, const ushort y, const ushort z)
 {
 	Active * const active=block->ActiveBlock();
@@ -293,9 +290,7 @@ void Shred::PhysEventsFrequent() {
 			const ushort x=temp->X();
 			const ushort y=temp->Y();
 			const ushort z=temp->Z();
-			if ( weight > Weight(
-					x%SHRED_WIDTH,
-					y%SHRED_WIDTH, z-1) )
+			if ( weight>Weight(x%SHRED_WIDTH, y%SHRED_WIDTH, z-1) )
 			{
 				if ( !world->Move(x, y, z, DOWN) ) {
 					RemFalling(temp);
@@ -405,23 +400,20 @@ Block *Shred::GetBlock(const ushort x, const ushort y, const ushort z) const {
 	return blocks[x][y][z];
 }
 
-void Shred::SetBlock(
-		Block * const block,
+void Shred::SetBlock(Block * const block,
 		const ushort x, const ushort y, const ushort z)
 {
 	blocks[x][y][z]=block;
 	RegisterBlock(block, x, y, z);
 }
 
-void Shred::PutBlock(
-		Block * const block,
+void Shred::PutBlock(Block * const block,
 		const ushort x, const ushort y, const ushort z)
 {
 	blocks[x][y][z]=block;
 }
 
-void Shred::PutNormalBlock(
-		const int sub,
+void Shred::PutNormalBlock(const int sub,
 		const ushort x, const ushort y, const ushort z,
 		const int dir)
 {
@@ -868,8 +860,7 @@ void Shred::Desert() {
 	}
 }
 
-bool Shred::Tree(
-		const ushort x, const ushort y, const ushort z,
+bool Shred::Tree(const ushort x, const ushort y, const ushort z,
 		const ushort height)
 {
 	if (

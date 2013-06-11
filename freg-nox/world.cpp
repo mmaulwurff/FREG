@@ -78,8 +78,7 @@ int World::TimeOfDay() const { return time % SECONDS_IN_DAY; }
 ulong World::Time() const { return time; }
 ushort World::MiniTime() const { return timeStep; }
 
-void World::Drop(
-		const ushort x, const ushort y,	const ushort z,
+void World::Drop(const ushort x, const ushort y,	const ushort z,
 		const ushort src, const ushort dest,
 		const ushort num)
 {
@@ -89,8 +88,7 @@ void World::Drop(
 	}
 }
 
-void World::Get(
-		const ushort x, const ushort y, const ushort z,
+void World::Get(const ushort x, const ushort y, const ushort z,
 		const ushort src, const ushort dest,
 		const ushort num)
 {
@@ -109,8 +107,7 @@ bool World::InBounds(const ushort i, const ushort j, const ushort k) const {
 	return (i<max_x_y && j<max_x_y && k<HEIGHT);
 }
 
-void World::ReloadAllShreds(
-	const long lati, const long longi,
+void World::ReloadAllShreds(const long lati, const long longi,
 	const ushort new_x, const ushort new_y, const ushort new_z,
 	const ushort new_num_shreds)
 {
@@ -173,8 +170,8 @@ quint8 World::TurnLeft(const quint8 dir) {
 }
 quint8 World::MakeDir(
 		const ushort x_center, const ushort y_center,
-		const ushort x_target, const ushort y_target) const
-{
+		const ushort x_target, const ushort y_target)
+const {
 	//if (x_center==x_target && y_center==y_target) return HERE;
 	if ( abs(x_center-x_target)<=1 && abs(y_center-y_target)<=1 ) {
 		return HERE;
@@ -203,22 +200,19 @@ const {
 	return GetShred(x, y)->GetBlock(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 
-void World::SetBlock(
-		Block * const block,
+void World::SetBlock(Block * const block,
 		const ushort x, const ushort y, const ushort z)
 {
 	GetShred(x, y)->SetBlock(block, x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 
-void World::PutBlock(
-		Block * const block,
+void World::PutBlock(Block * const block,
 		const ushort x, const ushort y, const ushort z)
 {
 	GetShred(x, y)->PutBlock(block, x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 
-void World::PutNormalBlock(
-		const subs sub,
+void World::PutNormalBlock(const subs sub,
 		const ushort x, const ushort y, const ushort z)
 {
 	PutBlock(Normal(sub), x, y, z);
@@ -492,8 +486,7 @@ void World::PhysEvents() {
 	Unlock();
 }
 
-bool World::DirectlyVisible(
-		float x_from, float y_from, float z_from,
+bool World::DirectlyVisible(float x_from, float y_from, float z_from,
 		const ushort x_to, const ushort y_to, const ushort z_to)
 const {
 	return ( x_from==x_to && y_from==y_to && z_from==z_to ) ?
@@ -507,8 +500,7 @@ const {
 				x_to, y_to, z_to);
 }
 
-bool World::NegativeVisible(
-		float x_from, float y_from, float z_from,
+bool World::NegativeVisible(float x_from, float y_from, float z_from,
 		short x_to, short y_to, const short z_to)
 const {
 	//this function is like World::PositiveVisible,
@@ -534,8 +526,7 @@ const {
 	return true;
 }
 
-bool World::PositiveVisible(
-		float x_from, float y_from, float z_from,
+bool World::PositiveVisible(float x_from, float y_from, float z_from,
 		const ushort x_to, const ushort y_to, const ushort z_to)
 const {
 	const ushort max=qMax(qAbs(x_to-(short)x_from),
@@ -576,8 +567,7 @@ const {
 				x_to,   y_to,   z_to+temp)) );
 }
 
-int World::Move(
-		const ushort i, const ushort j, const ushort k,
+int World::Move(const ushort i, const ushort j, const ushort k,
 		const quint8 dir)
 {
 	ushort newi, newj, newk;
@@ -667,36 +657,26 @@ void World::NoCheckMove(
 	shred->AddFalling(newi%SHRED_WIDTH, newj%SHRED_WIDTH, newk);
 }
 
-void World::Jump(const ushort x, const ushort y, const ushort z) {
-	Jump(x, y, z, GetBlock(x, y, z)->GetDir());
-}
-
-void World::Jump(const ushort x, const ushort y, ushort z, const quint8 dir) {
-	if ( (AIR!=Sub(x, y, z-1) || !GetBlock(x, y, z)->Weight()) ) {
-		short z_plus=Move(x, y, z, (DOWN==dir) ? DOWN : UP);
-		if ( z_plus ) {
-			z+=((DOWN==dir) ? (-z_plus) : z_plus);
-			if ( !Move(x, y, z, dir) ) {
-				z_plus=Move(x, y, z, DOWN);
-				Move(x, y, z-z_plus, dir);
-			}
-		}
+void World::Jump(const ushort x, const ushort y, const ushort z,
+		const quint8 dir)
+{
+	if ( !(AIR==Sub(x, y, z-1) && Weight(x, y, z)) &&
+			Move(x, y, z, UP) &&
+			!Move(x, y, z+1, dir) )
+	{
+		NoCheckMove(x, y, z+1, x, y, z, DOWN);
+		Move(x, y, z, dir);
 	}
 }
 
 void World::SetDeferredAction(
-		const ushort x,
-		const ushort y,
-		const ushort z,
+		const ushort x, const ushort y, const ushort z,
 		const quint8 dir,
 		const int action,
-		const ushort x_from, //see defaults in world.h
-		const ushort y_from,
-		const ushort z_from,
-		Block * const what,
-		Block * const who,
-		const int data1,
-		const int data2)
+		//see defaults in world.h:
+		const ushort x_from, const ushort y_from, const ushort z_from,
+		Block * const what, Block * const who,
+		const int data1, const int data2)
 {
 	deferredActionX=x;
 	deferredActionY=y;
@@ -712,8 +692,7 @@ void World::SetDeferredAction(
 	deferredActionData2=data2;
 }
 
-int World::Focus(
-		const ushort i, const ushort j, const ushort k,
+int World::Focus(const ushort i, const ushort j, const ushort k,
 		ushort & i_target, ushort & j_target, ushort & k_target,
 		const quint8 dir)
 const {
@@ -736,8 +715,7 @@ const {
 	return !InBounds(i_target, j_target, k_target);
 }
 
-int World::Focus(
-		const ushort i, const ushort j, const ushort k,
+int World::Focus(const ushort i, const ushort j, const ushort k,
 		ushort & i_target, ushort & j_target, ushort & k_target)
 const {
 	return Focus( i, j, k, i_target, j_target, k_target,
@@ -750,8 +728,7 @@ const {
  * It can create piles if block drops something or has non-empty inventory.
  * Returns true if block is destroyed, otherwise false.
  */
-bool World::Damage(
-		const ushort i, const ushort j, const ushort k,
+bool World::Damage(const ushort i, const ushort j, const ushort k,
 		const ushort dmg, //see default in class declaration
 		const int dmg_kind) //see default in class declaration
 {
@@ -795,8 +772,7 @@ int World::Use(const ushort i, const ushort j, const ushort k) {
 		GetBlock(i, j, k)->Use();
 }
 
-int World::Build(
-		Block * const block,
+int World::Build(Block * const block,
 		const ushort i, const ushort j, const ushort k,
 		const quint8 dir,
 		Block * const who,

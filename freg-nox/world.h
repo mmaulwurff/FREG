@@ -198,7 +198,6 @@ class World : public QThread {
 		ushort x,    ushort y,    ushort z,
 		ushort x_to, ushort y_to, ushort z_to,
 		quint8 dir);
-	void Jump(ushort x, ushort y, ushort z);
 	void Jump(ushort x, ushort y, ushort z, quint8 dir);
 	///Set action that will be executed at start of next physics turn.
 	/**It is needed by graphics screen to reduce execution time of

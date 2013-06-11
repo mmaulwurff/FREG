@@ -125,7 +125,7 @@
 	bool Block::Catchable() const { return false; }
 	int  Block::BeforePush(const int, Block * const) { return NO_ACTION; }
 	void Block::Inscribe(const QString & str) { *note=str; }
-	int  Block::Move(const int) { return 0; }
+	void Block::Move(const int) {}
 	usage_types Block::Use() { return NO; }
 	int  Block::Wearable() const { return WEARABLE_NOWHERE; }
 	int  Block::DamageKind() const { return CRUSH; }
@@ -381,32 +381,29 @@
 	ushort Active::Y() const { return y_self; }
 	ushort Active::Z() const { return z_self; }
 
-	int Active::Move(const int dir) {
+	void Active::Move(const int dir) {
 		switch ( dir ) {
 			case NORTH: --y_self; break;
 			case SOUTH: ++y_self; break;
 			case EAST:  ++x_self; break;
 			case WEST:  --x_self; break;
 			case UP:    ++z_self; break;
-			case DOWN:  --z_self; break;
-			default:
-				fprintf(stderr,
-					"Active::Move: unlisted dir: %d\n",
-					dir);
-				return 0;
 		}
 		if ( DOWN==dir ) {
+			--z_self;
 			++fall_height;
-		} else if ( GetWorld()->
-				GetShred(x_self, y_self)!=GetShred() )
-		{
+		} else {
 			whereShred->RemFalling(this);
-			whereShred->RemActive(this);
-			(whereShred=GetWorld()->GetShred(x_self, y_self))->
-				AddActive(this);
+			FallDamage();
+			if ( GetWorld()->GetShred(x_self, y_self)!=GetShred() )
+			{
+				whereShred->RemActive(this);
+				(whereShred=GetWorld()->
+					GetShred(x_self, y_self))->
+						AddActive(this);
+			}
 		}
 		emit Moved(dir);
-		return 0;
 	}
 
 	void Active::SendSignalAround(const QString & signal) const {
@@ -1275,7 +1272,7 @@
 			if ( qrand()%2 ) {
 				world->Move(x_self, y_self, z_self, direction);
 			} else {
-				world->Jump(x_self, y_self, z_self);
+				world->Jump(x_self, y_self, z_self, direction);
 			}
 		} else {
 			switch ( qrand()%60 ) {

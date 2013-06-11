@@ -84,7 +84,7 @@ class Block { //blocks without special physics and attributes
 	virtual int Movable() const;
 	virtual void Inscribe(const QString & str);
 	virtual int BeforePush(int dir, Block * who);
-	virtual int Move(int);
+	virtual void Move(int direction);
 	virtual usage_types Use();
 	virtual int Damage(ushort dmg, int dmg_kind);
 	///Usually, returns new block of the same kind and sub (except glass).
@@ -204,7 +204,7 @@ class Active : public QObject, public Block {
 	int Kind() const;
 
 	Active * ActiveBlock();
-	int Move(int);
+	void Move(int direction);
 	void SetFalling(bool set);
 	bool IsFalling() const;
 	///Returns true if block is destroyed.
