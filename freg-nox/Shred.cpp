@@ -73,16 +73,13 @@ float InterpolatedNoise(const short x, const short y) { //range - [-1;1]
 }
 
 float FinalNoise(short x, short y) { //range [-1;1]  middle= 0
-	float r;
-	r = 0.5f * InterpolatedNoise(x, y);
+	float r = 0.5f * InterpolatedNoise(x, y);
 
 	x <<= 1, y <<= 1;
 	r += 0.25f * InterpolatedNoise(x, y);
 
 	x <<= 1, y <<= 1;
-	r += 0.125f * InterpolatedNoise(x, y);
-
-	return r;
+	return (r += 0.125f * InterpolatedNoise(x, y));
 }
 
 void Shred::ShredNominalAmplitudeAndLevel(

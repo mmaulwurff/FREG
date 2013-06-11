@@ -268,6 +268,7 @@ void Screen::ControlPlayer(const int ch) {
 		case KEY_DOWN:  player->Move(SOUTH); break;
 		case KEY_RIGHT: player->Move(EAST); break;
 		case KEY_LEFT:  player->Move(WEST); break;
+		case KEY_END:   player->Move(DOWN); break;
 		case ' ': player->Jump(); break;
 
 		case '>': player->Turn(World::TurnRight(player->Dir())); break;
@@ -902,7 +903,7 @@ Screen::Screen(
 	qsrand(getch());
 	erase();
 	CleanFileToShow();
-	Notify("Game started.");
+	Notify("Game started. Press 'H' for help.");
 
 	input->start();
 	connect(timer, SIGNAL(timeout()), this, SLOT(Print()));

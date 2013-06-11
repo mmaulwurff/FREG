@@ -26,12 +26,6 @@
 #include "BlockManager.h"
 #include <qmath.h>
 
-#ifdef Q_OS_WIN32
-    int round(float r) { return qFloor(r+0.5); }
-#else
-    #include <cmath>
-#endif
-
 void World::ReplaceWithNormal(const ushort x, const ushort y, const ushort z)
 {
 	SetBlock(ReplaceWithNormal(GetBlock(x, y, z)), x, y, z);
@@ -677,10 +671,7 @@ void World::Jump(const ushort x, const ushort y, const ushort z) {
 	Jump(x, y, z, GetBlock(x, y, z)->GetDir());
 }
 
-void World::Jump(
-		const ushort x, const ushort y, ushort z,
-		const quint8 dir)
-{
+void World::Jump(const ushort x, const ushort y, ushort z, const quint8 dir) {
 	if ( (AIR!=Sub(x, y, z-1) || !GetBlock(x, y, z)->Weight()) ) {
 		short z_plus=Move(x, y, z, (DOWN==dir) ? DOWN : UP);
 		if ( z_plus ) {

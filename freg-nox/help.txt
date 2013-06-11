@@ -1,7 +1,8 @@
-This is freg help file.
-
-game commands:
-arrows    - move
+This is freg help file. Game commands:
+'Q'       - quit game
+arrows    - move in four directions
+End       - move down
+'>', '<'  - turn right and left
 space     - jump
 Page Up   - look up
 Page Down - loo down
@@ -12,22 +13,20 @@ Enter     - use
 '~'       - inscribe
 '!'       - enter creative mode
 ':'       - enter command mode
+'.'       - repeat last command
 'L'       - redraw screen
 '{', '}'  - shift focus down and up
 '-', '+'  - decrease and increase active zone
 '_', '#'  - decrease and increase world size
 Set inventory actions:
-'U' - use
-'T' - throw away
-'O' - obtain from outer inventory (e.g. chest)
-'W' - wield
-'I' - inscribe
-'E' - eat
 'B' - build
 'C' - craft
+'E' - eat
 'F' - takeoff (unwield)
 'H' - show this help
+'I' - inscribe
+'U' - use
+'O' - obtain from outer inventory (e.g. chest)
+'T' - throw away
+'W' - wield
 'a'-'z' - make inventory action with this inventory slot
-
-'Q' - quit game
-'>', '<' - turn right and left
