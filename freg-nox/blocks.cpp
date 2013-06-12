@@ -921,7 +921,8 @@
 					WEARABLE_LEGS==block->Wearable() )) )
 		{
 			for (ushort i=0; i<num; ++i) {
-				Inventory::MoveInside(num_from, num_to, 1);
+				Inventory::MoveInside(num_from, num_to,
+					Number(num_from));
 			}
 		}
 	}

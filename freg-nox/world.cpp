@@ -365,7 +365,8 @@ void World::PhysEvents() {
 						break;
 					}
 				}
-
+				const int kind=deferredActionWhat->Kind();
+				const int sub =deferredActionWhat->Sub();
 				const int build=Build(
 					deferredActionWhat,
 					deferredActionX,
@@ -373,12 +374,33 @@ void World::PhysEvents() {
 					deferredActionZ,
 					TurnRight(deferredActionDir),
 					deferredActionWho);
-				if ( !build /*no errors*/ ) {
-					Inventory * const inv=
-						deferredActionWho->
-							HasInventory();
-					if ( inv ) {
-						inv->Pull(deferredActionData1);
+				if ( build /*errors*/ ) {
+					break;
+				}
+				Inventory * const inv=deferredActionWho->
+					HasInventory();
+				if ( !inv ) {
+					break;
+				}
+				//deferredActionData1 is number
+				//in inventory
+				const ushort num=deferredActionData1;
+				inv->Pull(num);
+				//put more material in building
+				//inventory slot:
+				if ( inv->Number(num) ) {
+					break;
+				}
+				for (ushort i=num+1; i<inv->Size() &&
+					inv->Number(num)<max_stack_size; ++i)
+				{
+					const Block * const block_i=
+						inv->ShowBlock(i);
+					if (block_i && kind==block_i->Kind()
+							&& sub==block_i->Sub())
+					{
+						inv->MoveInside(i, num,
+							inv->Number(i));
 					}
 				}
 			} break;
@@ -772,7 +794,7 @@ int World::Use(const ushort i, const ushort j, const ushort k) {
 		GetBlock(i, j, k)->Use();
 }
 
-int World::Build(Block * const block,
+int World::Build(Block * block,
 		const ushort i, const ushort j, const ushort k,
 		const quint8 dir,
 		Block * const who,
@@ -789,6 +811,7 @@ int World::Build(Block * const block,
 	block->Restore();
 	SetBlock(block, i, j, k);
 	ReplaceWithNormal(i, j, k);
+	block=GetBlock(i, j, k);
 	if ( block!=Normal(block->Sub(), block->GetDir()) ) {
 		block->SetDir(dir);
 	}

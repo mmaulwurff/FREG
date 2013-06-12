@@ -321,6 +321,7 @@ void Player::InnerMove(const ushort num_from, const ushort num_to,
 		const ushort num)
 {
 	PlayerInventory()->MoveInside(num_from, num_to, num);
+	emit Updated();
 }
 
 void Player::Inscribe(const ushort num) {
@@ -371,7 +372,6 @@ void Player::Build(
 {
 	world->WriteLock();
 	Block * const block=ValidBlock(num);
-	world->Unlock();
 	if ( block && (AIR!=world->Sub(x, y, z-1) || 0==player->Weight()) ) {
 		world->SetDeferredAction(
 			x_target, y_target, z_target,
@@ -382,6 +382,7 @@ void Player::Build(
 			player,
 			num);
 	}
+	world->Unlock();
 }
 
 void Player::Craft(const ushort num) {
@@ -407,11 +408,10 @@ void Player::Craft(const ushort num) {
 void Player::TakeOff(const ushort num) {
 	world->WriteLock();
 	if ( ValidBlock(num) ) {
-		Inventory * const inv=PlayerInventory();
-		if ( inv->HasRoom() ) {
-			inv->Drop(num, inv->Start(), inv->Number(num), inv);
-		} else {
-			emit Notify("No place to take off.");
+		for (ushort i=PlayerInventory()->Start();
+				i<PlayerInventory()->Size(); ++i)
+		{
+			InnerMove(num, i, PlayerInventory()->Number(num));
 		}
 	}
 	world->Unlock();

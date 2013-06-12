@@ -31,6 +31,7 @@ class Active;
 class Animal;
 
 const ushort inv_size=26;
+const ushort max_stack_size=9;
 
 enum before_push_action {
 	NO_ACTION,
@@ -264,7 +265,6 @@ class Animal : public Active {
 }; //class Animal
 
 class Inventory {
-	static const ushort max_stack_size=9;
 	const ushort size;
 	QStack<Block *> * inventory;
 
