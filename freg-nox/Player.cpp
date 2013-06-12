@@ -37,6 +37,19 @@ long Player::GlobalY() const {
 	return (GetShred()->Longitude()-y/SHRED_WIDTH)*SHRED_WIDTH+y;
 }
 
+bool Player::IsRightActiveHand() const {
+	return Dwarf::inRight==GetActiveHand();
+}
+ushort Player::GetActiveHand() const {
+	return ( DWARF==GetP()->Kind() ) ?
+		((Dwarf *)GetP())->GetActiveHand() : 0;
+}
+void Player::SetActiveHand(const bool right) {
+	if ( DWARF==GetP()->Kind() ) {
+		((Dwarf *)GetP())->SetActiveHand(right);
+	}
+}
+
 Shred * Player::GetShred() const { return world->GetShred(x, y); }
 
 bool Player::GetCreativeMode() const { return creativeMode; }

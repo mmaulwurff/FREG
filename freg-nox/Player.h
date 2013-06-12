@@ -115,6 +115,13 @@ class Player : public QObject {
 	long GlobalX() const;
 	long GlobalY() const;
 
+	///If player is not dwarf, false is always returned.
+	bool   IsRightActiveHand() const;
+	///If player is not dwarf, 0 is returned.
+	ushort GetActiveHand() const;
+	///If player is not dwarf, does nothing.
+	void   SetActiveHand(bool right);
+
 	///This returns current player direction (see enum dirs in header.h)
 	int Dir() const;
 
@@ -134,17 +141,16 @@ class Player : public QObject {
 	void Focus(ushort & x, ushort & y, ushort & z) const;
 
 	///This returns block which is now used by player.
-	/** See enum usage_types in header.h. */
 	Block * UsingBlock() const;
-
 	///This returns how player is using something now.
 	/** See enum usage_types in header.h. */
 	int UsingType() const;
-
-	//This returns how player is using himself.
-	/** For example, OPEN means he is looking in his backpack. */
+	///This returns how player is using himself.
+	/** For example, OPEN means he is looking in his backpack.
+	 *  See enum usage_types in header.h. */
 	int UsingSelfType() const;
 
+	///Returns 0 if there is no inventory, otherwise returns inventory.
 	Inventory * PlayerInventory();
 
 	long GetLongitude() const;

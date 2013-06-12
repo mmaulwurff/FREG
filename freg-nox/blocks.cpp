@@ -829,6 +829,11 @@
 		delete [] inventory;
 	}
 //Dwarf::
+	uchar Dwarf::GetActiveHand() const { return activeHand; }
+	void  Dwarf::SetActiveHand(const bool right) {
+		activeHand=(right ? quint8(inRight) : inLeft);
+	}
+
 	ushort Dwarf::Weight() const {
 		World * const world=GetWorld();
 		return (
@@ -869,13 +874,9 @@
 	bool Dwarf::Access() const { return false; }
 
 	int Dwarf::DamageKind() const {
-		if ( Number(inRight) ) {
-			return ShowBlock(inRight)->DamageKind();
-		} else if ( Number(inLeft) ) {
-			return ShowBlock(inLeft)->DamageKind();
-		} else {
-			return CRUSH;
-		}
+		return ( Number(GetActiveHand()) ) ?
+			ShowBlock(GetActiveHand())->DamageKind() :
+			CRUSH;
 	}
 
 	ushort Dwarf::DamageLevel() const {
@@ -928,6 +929,7 @@
 	void Dwarf::SaveAttributes(QDataStream & out) const {
 		Animal::SaveAttributes(out);
 		Inventory::SaveAttributes(out);
+		out << activeHand;
 	}
 
 	void Dwarf::Inscribe(const QString &) {
@@ -936,14 +938,17 @@
 
 	Dwarf::Dwarf(const int sub) :
 			Animal(sub),
-			Inventory()
+			Inventory(),
+			activeHand(inRight)
 	{
 		*note="Urist";
 	}
 	Dwarf::Dwarf(QDataStream & str, const int sub) :
 			Animal(str, sub),
 			Inventory(str)
-	{}
+	{
+		str >> activeHand;
+	}
 //Chest::
 	int Chest::Kind() const { return CHEST; }
 	int Chest::Sub() const { return Block::Sub(); }

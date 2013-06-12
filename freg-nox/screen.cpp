@@ -349,8 +349,17 @@ void Screen::ControlPlayer(const int ch) {
 				InventoryAction((mouse_event.x-36)/2);
 			}
 		} break;
+		case 'R':
+			if ( player->GetCreativeMode() ) {
+				break;
+			}
+			player->SetActiveHand(!player->IsRightActiveHand());
+			Notify(tr("Now %1 hand is active.").
+				arg(tr(player->IsRightActiveHand() ?
+					"right" : "left")));
+		break;
 		default:
-			Notify(QString(
+			Notify(tr(
 				"Don't know what such key means: %1 ('%2').").
 				arg(ch).
 				arg(char(ch)));

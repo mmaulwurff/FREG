@@ -317,12 +317,17 @@ class Inventory {
 class Dwarf : public Animal, public Inventory {
 	Q_OBJECT
 
+	quint8 activeHand;
+
 	public:
 	static const uchar onHead=0;
 	static const uchar inRight=1;
 	static const uchar inLeft=2;
 	static const uchar onBody=3;
 	static const uchar onLegs=4;
+
+	uchar GetActiveHand() const;
+	void  SetActiveHand(bool right);
 
 	int Kind() const;
 	int Sub() const;
