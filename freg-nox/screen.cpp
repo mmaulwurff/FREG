@@ -15,7 +15,9 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-//this file is related to curses screen for freg.
+/*\file screen.cpp
+ * This file is related to curses screen for freg.
+ */
 
 #include <QString>
 #include <QTimer>
@@ -62,8 +64,7 @@ void Screen::UpdateAll() {
 
 void Screen::UpdatePlayer() { updated=false; }
 
-void Screen::UpdateAround(
-		const ushort, const ushort, const ushort,
+void Screen::UpdateAround(const ushort, const ushort, const ushort,
 		const ushort)
 {
 	updated=false;
@@ -149,8 +150,7 @@ char Screen::CharName(const int kind, const int sub) const {
 			case IRON:  return '/';
 			default:
 				fprintf(stderr,
-					"Screen::CharName: unlisted weapon \
-					sub: %d\n",
+					"Screen::CharName: weapon sub ?: %d\n",
 					sub);
 				return '.';
 		} break;
@@ -159,8 +159,7 @@ char Screen::CharName(const int kind, const int sub) const {
 			case WATER: return '*';
 			default:
 				fprintf(stderr,
-					"Screen::CharName: unlisted active \
-					sub: %d\n",
+					"Screen::CharName: active sub ?: %d\n",
 					sub);
 		} //no break;
 		default: switch ( sub ) {
@@ -181,8 +180,7 @@ char Screen::CharName(const int kind, const int sub) const {
 			case GREENERY: return '%';
 			default:
 				fprintf(stderr,
-					"Screen::CharName: unlisted sub: \
-					%d\n",
+					"Screen::CharName: unlisted sub: %d\n",
 					sub);
 				return '?';
 		}
@@ -340,7 +338,11 @@ void Screen::ControlPlayer(const int ch) {
 		case KEY_MOUSE: {
 			MEVENT mouse_event;
 			getmouse(&mouse_event);
-			if ( wenclose(hudWin, mouse_event.y, mouse_event.x) ) {
+			if ( wenclose(hudWin, mouse_event.y, mouse_event.x) &&
+					mouse_event.x>=54 &&
+					mouse_event.x<106)
+			{
+				Notify(QString("x: %1").arg(mouse_event.x));
 				wmouse_trafo(hudWin,
 					&mouse_event.y, &mouse_event.x,
 					FALSE);
@@ -392,8 +394,7 @@ void Screen::ActionXyz(ushort & x,ushort & y, ushort & z) const {
 	}
 }
 
-void Screen::PrintBlock(
-		const ushort x, const ushort y, const ushort z,
+void Screen::PrintBlock(const ushort x, const ushort y, const ushort z,
 		WINDOW * const window)
 const {
 	Block * const block=w->GetBlock(x, y, z);
@@ -677,8 +678,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 		break;
 		default:
 			fprintf(stderr,
-				"Screen::PrintFront(WINDOW *): \
-				unlisted dir: %d\n",
+				"Screen::PrintFront(): unlisted dir: %d\n",
 				(int)dir);
 			return;
 	}
@@ -846,10 +846,7 @@ void Screen::DeathScreen() {
 	updated=true;
 }
 
-Screen::Screen(
-		World * const wor,
-		Player * const pl)
-		:
+Screen::Screen(World * const wor, Player * const pl) :
 		VirtScreen(wor, pl),
 		input(new IThread(this)),
 		updated(false),
