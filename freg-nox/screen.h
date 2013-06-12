@@ -156,6 +156,8 @@ class Screen : public VirtScreen {
 	void CleanFileToShow();
 	void RePrint();
 
+	void InventoryAction(ushort num) const;
+
 	color_pairs Color(int kind, int sub) const;
 	void PrintBlock(ushort x, ushort y, ushort z, WINDOW *) const;
 

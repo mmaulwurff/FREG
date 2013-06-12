@@ -87,9 +87,9 @@ class Block { //blocks without special physics and attributes
 	virtual void Move(int direction);
 	virtual usage_types Use();
 	virtual int Damage(ushort dmg, int dmg_kind);
-	///Usually, returns new block of the same kind and sub (except glass).
+	///Usually returns new block of the same kind and sub (except glass).
 	/**When reimplemented in derivatives, inside it you can create a pile,
-	 * put several blocks in it and return pile.
+	 * put several blocks in it, and return pile.
 	 */
 	virtual Block * DropAfterDamage() const;
 

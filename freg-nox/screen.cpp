@@ -240,27 +240,7 @@ void Screen::ControlPlayer(const int ch) {
 		return;
 	}
 	if ( ch>='a' && ch<='z' ) { //actions with inventory
-		const int num=ch-'a';
-		switch ( actionMode ) {
-			case USE:      player->Use(num); break;
-			case THROW:    player->Throw(num); break;
-			case OBTAIN:   player->Obtain(num); break;
-			case WIELD:    player->Wield(num); break;
-			case INSCRIBE: player->Inscribe(num); break;
-			case EAT:      player->Eat(num); break;
-			case CRAFT:    player->Craft(num); break;
-			case TAKEOFF:  player->TakeOff(num); break;
-			case BUILD: {
-				ushort x, y, z;
-				ActionXyz(x, y, z);
-				player->Build(x, y, z, num);
-			} break;
-			default:
-				fprintf(stderr,
-					"Screen::ControlPlayer: \
-					unlisted action mode: %d\n",
-					actionMode);
-		}
+		InventoryAction(ch-'a');
 		return;
 	}
 	switch ( ch ) { //interactions with world
@@ -356,6 +336,17 @@ void Screen::ControlPlayer(const int ch) {
 		break;
 
 		case 'L': RePrint(); break;
+
+		case KEY_MOUSE: {
+			MEVENT mouse_event;
+			getmouse(&mouse_event);
+			if ( wenclose(hudWin, mouse_event.y, mouse_event.x) ) {
+				wmouse_trafo(hudWin,
+					&mouse_event.y, &mouse_event.x,
+					FALSE);
+				InventoryAction((mouse_event.x-36)/2);
+			}
+		} break;
 		default:
 			Notify(QString(
 				"Don't know what such key means: %1 ('%2').").
@@ -363,6 +354,28 @@ void Screen::ControlPlayer(const int ch) {
 				arg(char(ch)));
 	}
 	updated=false;
+}
+
+void Screen::InventoryAction(const ushort num) const {
+	switch ( actionMode ) {
+		case USE:      player->Use(num); break;
+		case THROW:    player->Throw(num); break;
+		case OBTAIN:   player->Obtain(num); break;
+		case WIELD:    player->Wield(num); break;
+		case INSCRIBE: player->Inscribe(num); break;
+		case EAT:      player->Eat(num); break;
+		case CRAFT:    player->Craft(num); break;
+		case TAKEOFF:  player->TakeOff(num); break;
+		case BUILD: {
+			ushort x, y, z;
+			ActionXyz(x, y, z);
+			player->Build(x, y, z, num);
+		} break;
+		default:
+			fprintf(stderr,
+				"Screen::InventoryActiov: action mode ?: %d\n",
+				actionMode);
+	}
 }
 
 void Screen::ActionXyz(ushort & x,ushort & y, ushort & z) const {
@@ -845,14 +858,10 @@ Screen::Screen(
 		notifyLog(fopen("messages.txt", "a")),
 		fileToShow(0)
 {
-	//ifdefs are adjustments for windows console, added by Panzerschrek
-	#ifdef Q_OS_WIN32
+	#ifdef Q_OS_WIN32 //adjustment, added by Panzerschrek
 		AllocConsole();
 		freopen( "conout$", "w", stdout );
 		freopen( "conin$", "r", stdin );
-	#endif
-
-	#ifdef Q_OS_WIN32
 		resize_term( (SCREEN_SIZE + 2) + (2 + 5) + (2 + 3),
 			SCREEN_SIZE * 4 + 4 );
 	#else
@@ -886,6 +895,9 @@ Screen::Screen(
 	commandWin=newwin(1, COLS, SCREEN_SIZE+2+3, 0);
 	notifyWin =newwin(0, COLS, SCREEN_SIZE+2+4, 0);
 	scrollok(notifyWin, TRUE);
+
+	mousemask(BUTTON1_PRESSED, NULL);
+	mouseinterval(0);
 
 	QSettings sett(QDir::currentPath()+"/freg.ini",
 		QSettings::IniFormat);
