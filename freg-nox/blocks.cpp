@@ -365,6 +365,9 @@
 	}
 
 	void Active::SetDeferredAction(DeferredAction * action) {
+		if ( deferredAction ) {
+			delete deferredAction;
+		}
 		deferredAction=action;
 	}
 	DeferredAction * Active::GetDeferredAction() const {
@@ -540,6 +543,9 @@
 		str >> fall_height;
 	}
 	Active::~Active() {
+		if ( deferredAction ) {
+			delete deferredAction;
+		}
 		Unregister();
 		emit Destroyed();
 	}

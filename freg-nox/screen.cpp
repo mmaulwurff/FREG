@@ -549,23 +549,14 @@ void Screen::Print() {
 			player->GlobalX(), player->GlobalY(), player->Z(),
 			player->GetLatitude(), player->GetLongitude());
 		wcolor_set(leftWin, BLACK_WHITE, NULL);
+		wmove(leftWin, SCREEN_SIZE+1, SCREEN_SIZE*2-8);
 		switch ( player->GetDir() ) {
-			case NORTH:
-				mvwaddstr(leftWin, SCREEN_SIZE+1,
-					SCREEN_SIZE*2-8, "^ North ^");
-			break;
-			case SOUTH:
-				mvwaddstr(leftWin, SCREEN_SIZE+1,
-					SCREEN_SIZE*2-8, "v South v");
-			break;
-			case EAST:
-				mvwaddstr(leftWin, SCREEN_SIZE+1,
-					SCREEN_SIZE*2-8, ">   East>");
-			break;
-			case WEST:
-				mvwaddstr(leftWin, SCREEN_SIZE+1,
-					SCREEN_SIZE*2-8, "<West   <");
-			break;
+			case NORTH: waddstr(leftWin, "^ North ^"); break;
+			case SOUTH: waddstr(leftWin, "v South v"); break;
+			case EAST:  waddstr(leftWin, ">   East>"); break;
+			case WEST:  waddstr(leftWin, "<West   <"); break;
+			case DOWN:  waddstr(leftWin, "x DOWN  x"); break;
+			case UP:    waddstr(leftWin, ".   UP  ."); break;
 		}
 	}
 	wnoutrefresh(hudWin);

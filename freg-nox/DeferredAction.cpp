@@ -2,7 +2,7 @@
 #include "blocks.h"
 #include "DeferredAction.h"
 
-void DeferredAction::Move() {
+void DeferredAction::Move() const {
 	attachedBlock->GetWorld()->Move(
 		attachedBlock->X(),
 		attachedBlock->Y(),
@@ -10,7 +10,7 @@ void DeferredAction::Move() {
 		attachedBlock->GetDir());
 }
 
-void DeferredAction::Jump() {
+void DeferredAction::Jump() const {
 	attachedBlock->GetWorld()->Jump(
 		attachedBlock->X(),
 		attachedBlock->Y(),
@@ -66,7 +66,7 @@ void DeferredAction::Build() {
 	}
 }
 
-void DeferredAction::Damage() {
+void DeferredAction::Damage() const {
 	if ( GetWorld()->Visible(
 			attachedBlock->X(),
 			attachedBlock->Y(),
@@ -79,7 +79,7 @@ void DeferredAction::Damage() {
 	}
 }
 
-void DeferredAction::Throw() {
+void DeferredAction::Throw() const {
 	GetWorld()->Drop(
 		attachedBlock->X(),
 		attachedBlock->Y(),
@@ -92,7 +92,7 @@ World * DeferredAction::GetWorld() const { return attachedBlock->GetWorld(); }
 void DeferredAction::SetMove() { type=DEFERRED_MOVE; }
 void DeferredAction::SetJump() { type=DEFERRED_JUMP; }
 void DeferredAction::SetBuild(
-		const ushort x_targ, const ushort y_targ, ushort z_targ,
+		const ushort x_targ, const ushort y_targ, const ushort z_targ,
 		Block * const mat,
 		const ushort builder_slot)
 {
@@ -124,11 +124,11 @@ void DeferredAction::SetThrow(const ushort src, const ushort dest,
 
 void DeferredAction::MakeAction() {
 	switch ( type ) {
-		case DEFERRED_MOVE: Move(); break;
-		case DEFERRED_JUMP: Jump(); break;
-		case DEFERRED_BUILD: Build(); break;
+		case DEFERRED_MOVE:   Move();   break;
+		case DEFERRED_JUMP:   Jump();   break;
+		case DEFERRED_BUILD:  Build();  break;
 		case DEFERRED_DAMAGE: Damage(); break;
-		case DEFERRED_THROW: Throw(); break;
+		case DEFERRED_THROW:  Throw();  break;
 	}
 	type=DEFERRED_NOTHING;
 }

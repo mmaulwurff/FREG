@@ -20,11 +20,11 @@ class DeferredAction {
 	ushort srcSlot, destSlot;
 	ushort num;
 
-	void Move();
-	void Jump();
+	void Move() const;
+	void Jump() const;
 	void Build();
-	void Damage();
-	void Throw();
+	void Damage() const;
+	void Throw() const;
 
 	World * GetWorld() const;
 
