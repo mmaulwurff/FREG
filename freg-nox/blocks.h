@@ -277,8 +277,7 @@ class Inventory {
 	virtual int Kind() const=0;
 	virtual int Sub() const=0;
 	///Returns true on success.
-	virtual bool Drop(ushort src, ushort dest, ushort num,
-			Inventory * inv_to);
+	virtual bool Drop(ushort src, ushort dest, ushort num, Inventory * to);
 	///Returns true on success.
 	virtual bool GetAll(Inventory * from);
 	virtual bool Access() const;

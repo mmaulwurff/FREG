@@ -78,7 +78,6 @@ class World : public QThread {
 	void LoadAllShreds();
 	void SaveAllShreds();
 
-	protected:
 	void run();
 
 	//block work section
@@ -140,9 +139,6 @@ class World : public QThread {
 	long MapSize() const;
 	QTextStream * MapStream();
 	ushort SunMoonX() const;
-	quint8 MakeDir(
-			ushort x_cent, ushort y_cent,
-			ushort x_targ, ushort y_targ) const;
 	float Distance(
 			ushort x_from, ushort y_from, ushort z_from,
 	                ushort x_to,   ushort y_to,   ushort z_to) const;
@@ -183,7 +179,9 @@ class World : public QThread {
 	times_of_day PartOfDay() const;
 	///This returns seconds from start of current day.
 	int TimeOfDay() const;
+	///Returns time in seconds since world creation.
 	ulong Time() const;
+	///Returns number of physics steps since second start.
 	ushort MiniTime() const;
 
 	//interactions section
@@ -238,7 +236,6 @@ class World : public QThread {
 		ushort new_num_shreds);
 	void SetNumActiveShreds(ushort num);
 
-	private:
 	friend class Shred;
 
 	public:

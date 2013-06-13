@@ -140,57 +140,38 @@ void World::run() {
 }
 
 quint8 World::TurnRight(const quint8 dir) {
-	switch (dir) {
-		case NORTH: return EAST;
-		case EAST: return SOUTH;
-		case SOUTH: return WEST;
-		case WEST: return NORTH;
-		case UP: case DOWN:
-			return dir;
+	switch ( dir ) {
 		default:
 			fprintf(stderr,
 				"World::TurnRight:Unlisted dir: %d\n",
 				(int)dir);
-			return NORTH;
+		//no break;
+		case WEST:  return NORTH;
+		case NORTH: return EAST;
+		case EAST:  return SOUTH;
+		case SOUTH: return WEST;
+		case UP:
+		case DOWN:  return dir;
 	}
 }
 quint8 World::TurnLeft(const quint8 dir) {
-	switch (dir) {
-		case NORTH: return WEST;
-		case WEST: return SOUTH;
-		case SOUTH: return EAST;
-		case EAST: return NORTH;
-		case UP: case DOWN:
-			return dir;
+	switch ( dir ) {
 		default:
 			fprintf(stderr, "TurnLeft:Unlisted dir: %d\n",
 				(int)dir);
-			return NORTH;
+		//no break;
+		case EAST:  return NORTH;
+		case NORTH: return WEST;
+		case WEST:  return SOUTH;
+		case SOUTH: return EAST;
+		case UP:
+		case DOWN:  return dir;
 	}
-}
-quint8 World::MakeDir(
-		const ushort x_center, const ushort y_center,
-		const ushort x_target, const ushort y_target)
-const {
-	//if (x_center==x_target && y_center==y_target) return HERE;
-	if ( abs(x_center-x_target)<=1 && abs(y_center-y_target)<=1 ) {
-		return HERE;
-	}
-	const float x=x_target-x_center;
-	const float y=y_target-y_center;
-	if      ( y <=  x*3 && y <= -x*3 ) return NORTH;
-	else if ( y >  -x*3 && y <  -x/3 ) return NORTH_EAST;
-	else if ( y >= -x/3 && y <=  x/3 ) return EAST;
-	else if ( y >   x/3 && y <   x*3 ) return SOUTH_EAST;
-	else if ( y >=  x*3 && y >= -x*3 ) return SOUTH;
-	else if ( y <-  x*3 && y >-  x/3 ) return SOUTH_WEST;
-	else if ( y <= -x/3 && y >=  x/3 ) return WEST;
-	else return NORTH_WEST;
 }
 
 void World::MakeSun() {
-	sun_moon_x=SunMoonX();
-	ifStar=( STAR==Sub(sun_moon_x, SHRED_WIDTH*numShreds/2, HEIGHT-1) );
+	ifStar=( STAR==Sub( (sun_moon_x=SunMoonX()), SHRED_WIDTH*numShreds/2,
+		HEIGHT-1) );
 	PutNormalBlock(SUN_MOON,
 		sun_moon_x, SHRED_WIDTH*numShreds/2, HEIGHT-1);
 }
@@ -655,9 +636,7 @@ bool World::Damage(const ushort i, const ushort j, const ushort k,
 }
 
 int World::Use(const ushort i, const ushort j, const ushort k) {
-	return ( !InBounds(i, j, k) ) ?
-		NO :
-		GetBlock(i, j, k)->Use();
+	return InBounds(i, j, k) ? GetBlock(i, j, k)->Use() : NO;
 }
 
 int World::Build(Block * block,
@@ -681,7 +660,6 @@ int World::Build(Block * block,
 	if ( block!=Normal(block->Sub(), block->GetDir()) ) {
 		block->SetDir(dir);
 	}
-
 	ReEnlighten(i, j, k);
 	return 0;
 }
@@ -779,16 +757,12 @@ ushort World::Weight(const ushort x, const ushort y, const ushort z) const {
 
 Inventory * World::HasInventory(const ushort i, const ushort j, const ushort k)
 const {
-	return ( InBounds(i, j, k) ) ?
-		GetBlock(i, j, k)->HasInventory() :
-		NULL;
+	return InBounds(i, j, k) ? GetBlock(i, j, k)->HasInventory() : 0;
 }
 
 Active * World::ActiveBlock(const ushort i, const ushort j, const ushort k)
 const {
-	return ( InBounds(i, j, k) ) ?
-		GetBlock(i, j, k)->ActiveBlock() :
-		0;
+	return InBounds(i, j, k) ? GetBlock(i, j, k)->ActiveBlock() : 0;
 }
 
 int World::Temperature(
@@ -796,8 +770,7 @@ int World::Temperature(
 		const ushort j_center,
 		const ushort k_center)
 const {
-	if ( !InBounds(i_center, j_center, k_center) ||
-			HEIGHT-1==k_center ) {
+	if ( !InBounds(i_center, j_center, k_center) || HEIGHT-1==k_center ) {
 		return 0;
 	}
 	short temperature=GetBlock(i_center, j_center, k_center)->
@@ -816,8 +789,7 @@ const {
 }
 
 QString World::GetNote(const ushort x, const ushort y, const ushort z) const {
-	return InBounds(x, y, z) ?
-		GetBlock(x, y, z)->GetNote() : "";
+	return InBounds(x, y, z) ? GetBlock(x, y, z)->GetNote() : "";
 }
 
 void World::RemSun() {

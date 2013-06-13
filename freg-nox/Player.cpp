@@ -216,8 +216,7 @@ void Player::Move(const int dir) {
 
 void Player::Turn(const int dir) {
 	usingType=NO;
-	SetDir( ((DOWN==GetDir() && UP!=dir) || (UP==GetDir() && DOWN!=dir) ) ?
-		NORTH : dir);
+	SetDir(dir);
 }
 
 void Player::Backpack() {
