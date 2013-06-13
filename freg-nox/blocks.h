@@ -69,12 +69,13 @@ enum WEARABLE {
 	const ushort WEIGHT_AIR=0;
 
 class Block { //blocks without special physics and attributes
-	void SetTransparency(quint8 transp);
+	quint8 Transparency(quint8 transp, int sub);
 
-	protected:
-	quint8 transparent;
-	quint16 sub;
+	private:
+	const quint8 transparent;
+	const quint16 sub;
 	quint8 direction;
+	protected:
 	QString * note;
 	qint16 durability;
 
@@ -247,23 +248,22 @@ class Active : public QObject, public Block {
 class Animal : public Active {
 	Q_OBJECT
 
-	protected:
 	quint16 breath;
 	quint16 satiation;
 
+	virtual quint16 NutritionalValue(int sub) const=0;
+
 	public:
+	void ActRare();
+	int  ShouldAct() const;
 	QString FullName() const=0;
+	Animal * IsAnimal();
 
 	ushort Breath() const;
 	ushort Satiation() const;
-	virtual int Eat(Block * const)=0;
-
-	void ActRare();
-	int  ShouldAct() const;
+	bool Eat(int sub);
 
 	void SaveAttributes(QDataStream & out) const;
-
-	Animal * IsAnimal();
 
 	Animal(int sub=A_MEAT);
 	Animal(QDataStream & str, int sub);
@@ -342,8 +342,7 @@ class Dwarf : public Animal, public Inventory {
 	ushort Start() const;
 	int DamageKind() const;
 	ushort DamageLevel() const;
-
-	int Eat(Block * to_eat);
+	quint16 NutritionalValue(int sub) const;
 
 	Inventory * HasInventory();
 	bool Access() const;
@@ -473,7 +472,7 @@ class Rabbit : public Animal {
 	int  Kind() const;
 	void ActFrequent();
 	int  ShouldAct() const;
-	int  Eat(Block * to_eat);
+	quint16 NutritionalValue(int sub) const;
 	Block * DropAfterDamage() const;
 	QString FullName() const;
 

@@ -338,21 +338,15 @@ void Player::Eat(const ushort num) {
 	world->WriteLock();
 	Block * const food=ValidBlock(num);
 	if ( food ) {
-		Animal * const pl=player->IsAnimal();
-		if ( pl ) {
-			const int eat=pl->Eat(food);
-			if ( 2==eat ) {
-				emit Notify("You can't eat this.");
-			} else {
-				emit Notify(
-					(SECONDS_IN_DAY < pl->Satiation() ) ?
-					"You have gorged yourself!" : "Yum!");
+		Animal * const animal=player->IsAnimal();
+		if ( animal ) {
+			if ( animal->Eat(food->Sub()) ) {
 				PlayerInventory()->Pull(num);
 				block_manager.DeleteBlock(food);
 				emit Updated();
 			}
 		} else {
-			emit Notify("You can't eat.");
+			emit Notify(tr("You cannot eat."));
 		}
 	}
 	world->Unlock();

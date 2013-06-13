@@ -189,6 +189,8 @@ class Player : public QObject {
 
 	private:
 	void InnerMove(ushort num_from, ushort num_to, ushort num=1);
+	///Checks player existence, inventory existence, size limits,
+	///block existence.
 	Block * ValidBlock(ushort num) const;
 	int DamageKind() const;
 	ushort DamageLevel() const;

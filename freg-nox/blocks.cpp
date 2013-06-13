@@ -53,18 +53,17 @@
 		}
 	}
 
-	void Block::SetTransparency(const quint8 transp) {
+	quint8 Block::Transparency(const quint8 transp, const int sub) {
 		if ( UNDEF==transp ) {
 			switch ( sub ) {
-				case AIR: transparent=INVISIBLE; break;
-				case WATER: case GREENERY:
-				case GLASS:
-					  transparent=BLOCK_TRANSPARENT;
-				break;
-				default: transparent=BLOCK_OPAQUE;
+				case AIR:   return INVISIBLE;
+				case WATER:
+				case GREENERY:
+				case GLASS: return BLOCK_TRANSPARENT;
+				default:    return BLOCK_OPAQUE;
 			}
 		} else {
-			transparent=transp;
+			return transp;
 		}
 	}
 
@@ -194,19 +193,18 @@
 		}
 	}
 
-	Block::Block(const int sb, const quint8 transp) :
-			sub(sb),
+	Block::Block(const int subst, const quint8 transp) :
+			transparent(Transparency(transp, subst)),
+			sub(subst),
 			direction(UP),
 			note(new QString("")),
 			durability(MAX_DURABILITY)
-	{
-		SetTransparency(transp);
-	}
-	Block::Block(QDataStream & str, const int sub_, const quint8 transp) :
-			sub(sub_),
+	{}
+	Block::Block(QDataStream & str, const int subst, const quint8 transp) :
+			transparent(Transparency(transp, subst)),
+			sub(subst),
 			note(new QString)
 	{
-		SetTransparency(transp);
 		str >> direction >> durability >> *note;
 	}
 	Block::~Block() { delete note; }
@@ -588,6 +586,22 @@
 	ushort Animal::Satiation() const { return satiation; }
 	Animal * Animal::IsAnimal() { return this; }
 
+	bool Animal::Eat(const int sub) {
+		const int value=NutritionalValue(sub);
+		if ( value ) {
+			satiation+=value;
+			ReceiveSignal(tr("Yum!"));
+			if ( SECONDS_IN_DAY < satiation ) {
+				satiation=1.1*SECONDS_IN_DAY;
+				ReceiveSignal(tr("You have gorged yourself!"));
+			}
+			return true;
+		} else {
+			ReceiveSignal(tr("You cannot eat this."));
+			return false;
+		}
+	}
+
 	void Animal::SaveAttributes(QDataStream & out) const {
 		Active::SaveAttributes(out);
 		out << breath << satiation;
@@ -888,21 +902,13 @@
 		return level;
 	}
 
-	int Dwarf::Eat(Block * const to_eat) {
-		if ( !to_eat )
-			return 1;
-
-		switch ( to_eat->Sub() ) {
-			case HAZELNUT: satiation+=SECONDS_IN_HOUR/2; break;
-			case H_MEAT:   satiation+=SECONDS_IN_HOUR*2.5; break;
-			case A_MEAT:   satiation+=SECONDS_IN_HOUR*2; break;
-			default: return 2; //not ate
+	quint16 Dwarf::NutritionalValue(const int sub) const {
+		switch ( sub ) {
+			case HAZELNUT: return SECONDS_IN_HOUR/2;
+			case H_MEAT:   return SECONDS_IN_HOUR*2.5;
+			case A_MEAT:   return SECONDS_IN_HOUR*2;
 		}
-
-		if ( SECONDS_IN_DAY < satiation )
-			satiation=1.1*SECONDS_IN_DAY;
-
-		return 0; //ate
+		return 0;
 	}
 
 	void Dwarf::MoveInside(const ushort num_from, const ushort num_to,
@@ -1082,7 +1088,7 @@
 	int Liquid::ShouldAct() const  { return RARE; }
 	int Liquid::Movable() const { return ENVIRONMENT; }
 	int Liquid::Kind() const { return LIQUID; }
-	int Liquid::Temperature() const { return ( WATER==sub ) ? 0 : 1000; }
+	int Liquid::Temperature() const { return ( WATER==Sub() ) ? 0 : 1000; }
 
 	QString Liquid::FullName() const {
 		switch ( Sub() ) {
@@ -1216,7 +1222,7 @@
 	void Rabbit::ActFrequent() {
 		World * const world=GetWorld();
 		//eat sometimes
-		if ( SECONDS_IN_DAY/2 > satiation ) {
+		if ( SECONDS_IN_DAY/2 > Satiation() ) {
 			for (ushort x=X()-1; x<=X()+1; ++x)
 			for (ushort y=Y()-1; y<=Y()+1; ++y)
 			for (ushort z=Z()-1; z<=Z()+1; ++z) {
@@ -1257,9 +1263,9 @@
 				( ( for_north>0 ) ? NORTH : SOUTH ) :
 				( ( for_west >0 ) ? WEST  : EAST  ) );
 			if ( qrand()%2 ) {
-				world->Move(X(), Y(), Z(), direction);
+				world->Move(X(), Y(), Z(), GetDir());
 			} else {
-				world->Jump(X(), Y(), Z(), direction);
+				world->Jump(X(), Y(), Z(), GetDir());
 			}
 		} else {
 			switch ( qrand()%60 ) {
@@ -1281,15 +1287,8 @@
 	int Rabbit::ShouldAct() const { return FREQUENT_AND_RARE; }
 	int Rabbit::Kind() const { return RABBIT; }
 
-	int Rabbit::Eat(Block * const to_eat) {
-		if ( NULL==to_eat )
-			return 2;
-
-		if ( GREENERY==to_eat->Sub() ) {
-			satiation+=SECONDS_IN_HOUR*4;
-			return 1;
-		}
-		return 0;
+	quint16 Rabbit::NutritionalValue(const int sub) const {
+		return ( GREENERY==sub ) ? SECONDS_IN_HOUR*4 : 0;
 	}
 
 	Rabbit::Rabbit(const int sub) :

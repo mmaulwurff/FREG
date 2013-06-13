@@ -197,6 +197,7 @@ class World : public QThread {
 			Block * who=0,
 			bool anyway=false);
 	void Inscribe(ushort x, ushort y, ushort z);
+	///No bounds checks inside, use carefully.
 	void Eat(ushort i, ushort j, ushort k,
 			ushort i_food, ushort j_food, ushort k_food);
 
