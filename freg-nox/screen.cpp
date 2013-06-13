@@ -90,7 +90,7 @@ char Screen::CharNumber(const ushort x, const ushort y, const ushort z) const {
 		return ' ';
 	}
 	if ( player->X()==x && player->Y()==y && player->Z()==z ) {
-		switch ( player->Dir() ) {
+		switch ( player->GetDir() ) {
 			case NORTH: return '^';
 			case SOUTH: return 'v';
 			case EAST:  return '>';
@@ -100,11 +100,11 @@ char Screen::CharNumber(const ushort x, const ushort y, const ushort z) const {
 			default:
 				fprintf(stderr,
 					"Screen::CharNumber: (?) dir: %d\n",
-					player->Dir());
+					player->GetDir());
 				return '*';
 		}
 	}
-	const short z_dif=( UP==player->Dir() ) ?
+	const short z_dif=( UP==player->GetDir() ) ?
 		z - player->Z() :
 		player->Z() - z;
 	return ( !z_dif ) ?
@@ -118,7 +118,7 @@ char Screen::CharNumber(const ushort x, const ushort y, const ushort z) const {
 
 char Screen::CharNumberFront(const ushort i, const ushort j) const {
 	ushort ret;
-	if ( NORTH==player->Dir() || SOUTH==player->Dir() ) {
+	if ( NORTH==player->GetDir() || SOUTH==player->GetDir() ) {
 		if ( (ret=abs(player->Y()-j))<10 )
 			return ret+'0';
 	} else
@@ -249,8 +249,12 @@ void Screen::ControlPlayer(const int ch) {
 		case KEY_END:   player->Move(DOWN); break;
 		case ' ': player->Jump(); break;
 
-		case '>': player->Turn(World::TurnRight(player->Dir())); break;
-		case '<': player->Turn(World::TurnLeft(player->Dir())); break;
+		case '>':
+			player->Turn(World::TurnRight(player->GetDir()));
+		break;
+		case '<':
+			player->Turn(World::TurnLeft(player->GetDir()));
+		break;
 		case KEY_NPAGE: player->Turn(DOWN); break;
 		case KEY_PPAGE: player->Turn(UP); break;
 
@@ -392,8 +396,8 @@ void Screen::InventoryAction(const ushort num) const {
 void Screen::ActionXyz(ushort & x,ushort & y, ushort & z) const {
 	player->Focus(x, y, z);
 	if (
-			DOWN!=player->Dir() &&
-			UP  !=player->Dir() &&
+			DOWN!=player->GetDir() &&
+			UP  !=player->GetDir() &&
 			( AIR==w->Sub(x, y, z) || AIR==w->Sub(
 				player->X(),
 				player->Y(),
@@ -430,9 +434,11 @@ void Screen::Print() {
 					player->UsingBlock()->HasInventory());
 				break;
 			default:
-				if ( UP==player->Dir() || DOWN==player->Dir() )
+				if ( UP==player->GetDir() ||
+						DOWN==player->GetDir() )
 				{
-					PrintNormal(rightWin, player->Dir());
+					PrintNormal(rightWin,
+						player->GetDir());
 				} else {
 					PrintFront(rightWin);
 				}
@@ -447,10 +453,10 @@ void Screen::Print() {
 				break;
 			} //no break;
 		default:
-			if ( UP==player->Dir() || DOWN==player->Dir() ) {
+			if ( UP==player->GetDir() || DOWN==player->GetDir() ) {
 				PrintNormal(leftWin, NORTH);
 			} else {
-				PrintNormal(leftWin, player->Dir());
+				PrintNormal(leftWin, player->GetDir());
 			}
 	}
 
@@ -543,7 +549,7 @@ void Screen::Print() {
 			player->GlobalX(), player->GlobalY(), player->Z(),
 			player->GetLatitude(), player->GetLongitude());
 		wcolor_set(leftWin, BLACK_WHITE, NULL);
-		switch ( player->Dir() ) {
+		switch ( player->GetDir() ) {
 			case NORTH:
 				mvwaddstr(leftWin, SCREEN_SIZE+1,
 					SCREEN_SIZE*2-8, "^ North ^");
@@ -561,8 +567,6 @@ void Screen::Print() {
 					SCREEN_SIZE*2-8, "<West   <");
 			break;
 		}
-	} else if ( player->GetP() && player->GetP()->IsFalling() ) {
-			mvwaddstr(hudWin, 2, 0, "Falling!");
 	}
 	wnoutrefresh(hudWin);
 	wnoutrefresh(leftWin);
@@ -570,7 +574,6 @@ void Screen::Print() {
 }
 
 void Screen::PrintNormal(WINDOW * const window, const int dir) const {
-	//const int dir=player->Dir();
 	const ushort k_start=( UP!=dir ) ?
 		(( DOWN==dir ) ? player->Z()-1 : player->Z()) :
 		player->Z()+1;
@@ -618,7 +621,7 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
 }
 
 void Screen::PrintFront(WINDOW * const window) const {
-	const int dir=player->Dir();
+	const int dir=player->GetDir();
 	if ( UP==dir || DOWN==dir ) {
 		wstandend(window);
 		werase(window);

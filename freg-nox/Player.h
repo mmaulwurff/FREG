@@ -123,7 +123,7 @@ class Player : public QObject {
 	void   SetActiveHand(bool right);
 
 	///This returns current player direction (see enum dirs in header.h)
-	int Dir() const;
+	int GetDir() const;
 
 	///This returns player hitpoints, also known as durability.
 	short HP() const;
@@ -194,7 +194,7 @@ class Player : public QObject {
 	ushort DamageLevel() const;
 	void Get(Block *);
 	Block * Drop(ushort);
-	void Dir(int dir);
+	void SetDir(int dir);
 
 	public:
 	void SetNumShreds(ushort num) const;

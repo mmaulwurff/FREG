@@ -63,7 +63,7 @@ void Player::SetCreativeMode(const bool turn) {
 		Pile * const creative_inv=(Pile *)player;
 		const int last_dir=dir;
 		SetPlayer(x, y, z);
-		Dir(last_dir);
+		SetDir(last_dir);
 		Inventory * const inv=PlayerInventory();
 		if ( inv ) {
 			inv->GetAll(creative_inv);
@@ -122,7 +122,7 @@ void Player::UpdateXYZ() {
 
 void Player::Focus(ushort & i_target, ushort & j_target, ushort & k_target)
 const {
-	world->Focus(x, y, z, i_target, j_target, k_target, Dir());
+	world->Focus(x, y, z, i_target, j_target, k_target, GetDir());
 }
 
 void Player::Examine(const short i, const short j, const short k)
@@ -174,9 +174,9 @@ void Player::Jump() {
 }
 
 void Player::Move(const int dir) {
+	Turn(dir);
 	if ( !creativeMode && player ) {
 		usingType=NO;
-		Turn(dir);
 		player->GetDeferredAction()->SetMove();
 	} else {
 		switch ( dir ) {
@@ -216,7 +216,7 @@ void Player::Move(const int dir) {
 
 void Player::Turn(const int dir) {
 	usingType=NO;
-	Dir( ((DOWN==Dir() && UP!=dir) || (UP==Dir() && DOWN!=dir) ) ?
+	SetDir( ((DOWN==GetDir() && UP!=dir) || (UP==GetDir() && DOWN!=dir) ) ?
 		NORTH : dir);
 }
 
@@ -507,14 +507,13 @@ Block * Player::UsingBlock() const {
 	return world->GetBlock(x, y, z);
 }
 
-void Player::Dir(const int direction) {
+int  Player::GetDir() const { return dir; }
+void Player::SetDir(const int direction) {
 	if ( player ) {
 		player->SetDir(direction);
 	}
 	dir=direction;
 }
-
-int Player::Dir() const { return dir; }
 
 void Player::Damage(
 		const short x_target,
@@ -597,12 +596,12 @@ void Player::SetPlayer(
 		world->Build( (player=block_manager.
 				NewBlock(DWARF, H_MEAT)->ActiveBlock()),
 			x, y, z,
-			Dir(),
+			GetDir(),
 			0,
 			true /*force build*/ );
 	} else {
 		player=world->ActiveBlock(x, y, z);
-		Dir(world->GetBlock(x, y, z)->GetDir());
+		SetDir(world->GetBlock(x, y, z)->GetDir());
 	}
 	player->SetDeferredAction(new DeferredAction(player));
 
