@@ -54,7 +54,7 @@ void DeferredAction::Build() {
 		return;
 	}
 	for (ushort i=srcSlot+1; i<inv->Size() &&
-		inv->Number(srcSlot)<max_stack_size; ++i)
+		inv->Number(srcSlot)<MAX_STACK_SIZE; ++i)
 	{
 		const Block * const block_i=inv->ShowBlock(i);
 		if ( block_i &&

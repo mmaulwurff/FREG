@@ -30,8 +30,8 @@ class Inventory;
 class Active;
 class Animal;
 
-const ushort inv_size=26;
-const ushort max_stack_size=9;
+const ushort INV_SIZE=26;
+const ushort MAX_STACK_SIZE=9;
 
 enum before_push_action {
 	NO_ACTION,
@@ -319,8 +319,8 @@ class Inventory {
 	//it is not recommended to make inventory size more than 26,
 	//because it will not be convenient to deal with inventory
 	//in console version.
-	Inventory(ushort sz=inv_size);
-	Inventory(QDataStream & str, ushort size=inv_size);
+	Inventory(ushort sz=INV_SIZE);
+	Inventory(QDataStream & str, ushort size=INV_SIZE);
 	~Inventory();
 }; //class Inventory
 
@@ -381,8 +381,8 @@ class Chest : public Block, public Inventory {
 	void SaveAttributes(QDataStream & out) const;
 
 	public:
-	Chest(int s=WOOD, ushort size=inv_size);
-	Chest(QDataStream & str, int sub, ushort size=inv_size);
+	Chest(int s=WOOD, ushort size=INV_SIZE);
+	Chest(QDataStream & str, int sub, ushort size=INV_SIZE);
 }; //class Chest
 
 class Pile : public Active, public Inventory {

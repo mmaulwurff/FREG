@@ -29,6 +29,7 @@
 #include "Player.h"
 
 const char OBSCURE_BLOCK='+';
+const int QUICK_INVENTORY_X_SHIFT=36;
 
 void Screen::Arrows(WINDOW * const & window, const ushort x, const ushort y)
 const {
@@ -342,15 +343,23 @@ void Screen::ControlPlayer(const int ch) {
 		case KEY_MOUSE: {
 			MEVENT mouse_event;
 			getmouse(&mouse_event);
-			if ( wenclose(hudWin, mouse_event.y, mouse_event.x) &&
-					mouse_event.x>=54 &&
-					mouse_event.x<106)
+			if ( !wenclose(hudWin, mouse_event.y, mouse_event.x) )
 			{
-				Notify(QString("x: %1").arg(mouse_event.x));
-				wmouse_trafo(hudWin,
-					&mouse_event.y, &mouse_event.x,
-					FALSE);
-				InventoryAction((mouse_event.x-36)/2);
+				break;
+			}
+			wmouse_trafo(hudWin, &mouse_event.y, &mouse_event.x,
+				FALSE);
+			if ( mouse_event.x>=QUICK_INVENTORY_X_SHIFT
+					&& mouse_event.x <
+						QUICK_INVENTORY_X_SHIFT+
+							INV_SIZE*2)
+			{
+				Notify(QString("In place '%1':").
+					arg(char((mouse_event.x-
+						QUICK_INVENTORY_X_SHIFT)/2+
+							'a')));
+				InventoryAction((mouse_event.x -
+					QUICK_INVENTORY_X_SHIFT)/2);
 			}
 		} break;
 		case 'R':
@@ -470,7 +479,7 @@ void Screen::Print() {
 	if ( inv ) {
 		for (ushort i=0; i<inv->Size(); ++i) {
 			wstandend(hudWin);
-			const int x=36+i*2;
+			const int x=QUICK_INVENTORY_X_SHIFT+i*2;
 			mvwaddch(hudWin, 0, x, 'a'+i);
 			if ( inv->Number(i) ) {
 				wcolor_set(hudWin,

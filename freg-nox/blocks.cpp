@@ -699,7 +699,7 @@
 		}
 		if ( inventory[num].isEmpty() ||
 				( *block==*inventory[num].top() &&
-				Number(num)<max_stack_size ) )
+				Number(num)<MAX_STACK_SIZE ) )
 		{
 			inventory[num].push(block);
 			return true;
@@ -1050,12 +1050,12 @@
 
 	Pile::Pile(const int sub) :
 			Active(sub, NONSTANDARD),
-			Inventory(inv_size),
+			Inventory(INV_SIZE),
 			ifToDestroy(false)
 	{}
 	Pile::Pile(QDataStream & str, const int sub) :
 			Active(str, sub, NONSTANDARD),
-			Inventory(str, inv_size)
+			Inventory(str, INV_SIZE)
 	{
 		str >> ifToDestroy;
 	}
