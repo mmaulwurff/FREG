@@ -32,7 +32,7 @@ class Inventory;
 class Active;
 class Shred;
 
-const ushort safe_fall_height=5;
+const ushort SAFE_FALL_HEIGHT=5;
 
 const uchar MOON_LIGHT_FACTOR=1;
 const uchar  SUN_LIGHT_FACTOR=8;

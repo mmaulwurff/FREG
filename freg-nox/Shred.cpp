@@ -42,7 +42,7 @@ const float MOUNTAIN_AMPLITUDE=50.0f;
 */
 
 //Qt version in Debian stable that time.
-const int datastream_version=QDataStream::Qt_4_6;
+const int DATASTREAM_VERSION=QDataStream::Qt_4_6;
 
 float Noise2(const int x, const int y) { //range - [-1;1]
 	int n = x + y * 57;
@@ -162,13 +162,13 @@ int Shred::LoadShred(QFile & file) {
 	QDataStream in(uncompressed);
 	quint8 version;
 	in >> version;
-	if ( datastream_version!=version ) {
+	if ( DATASTREAM_VERSION!=version ) {
 		fprintf(stderr,
 			"Wrong version: %d\nGenerating new shred.\n",
-			datastream_version);
+			DATASTREAM_VERSION);
 		return 1;
 	}
-	in.setVersion(datastream_version);
+	in.setVersion(DATASTREAM_VERSION);
 	for (ushort i=0; i<SHRED_WIDTH; ++i)
 	for (ushort j=0; j<SHRED_WIDTH; ++j) {
 		PutNormalBlock(NULLSTONE, i, j, 0);
@@ -246,8 +246,8 @@ Shred::~Shred() {
 		QByteArray shred_data;
 		shred_data.reserve(200000);
 		QDataStream outstr(&shred_data, QIODevice::WriteOnly);
-		outstr << (quint8)datastream_version;
-		outstr.setVersion(datastream_version);
+		outstr << (quint8)DATASTREAM_VERSION;
+		outstr.setVersion(DATASTREAM_VERSION);
 		for (ushort i=0; i<SHRED_WIDTH; ++i)
 		for (ushort j=0; j<SHRED_WIDTH; ++j)
 		for (ushort k=1; k<HEIGHT; ++k) {

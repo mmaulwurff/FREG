@@ -375,9 +375,9 @@
 	}
 
 	bool Active::FallDamage() {
-		if ( fall_height > safe_fall_height ) {
+		if ( fall_height > SAFE_FALL_HEIGHT ) {
 			const ushort dmg=(fall_height -
-				safe_fall_height)*10;
+				SAFE_FALL_HEIGHT)*10;
 			fall_height=0;
 			GetWorld()->
 				Damage(X(), Y(), Z()-1, dmg, DAMAGE_FALL);
