@@ -71,10 +71,10 @@ enum WEARABLE {
 class Block { //blocks without special physics and attributes
 	quint8 Transparency(quint8 transp, int sub);
 
-	private:
 	const quint8 transparent;
 	const quint16 sub;
 	quint8 direction;
+
 	protected:
 	QString * note;
 	qint16 durability;
@@ -235,8 +235,10 @@ class Active : public QObject, public Block {
 	void ReloadToWest();
 	void ReloadToEast();
 
+	protected:
 	void SaveAttributes(QDataStream & out) const;
 
+	public:
 	void Register(Shred *, ushort x, ushort y, ushort z);
 	void Unregister();
 
@@ -263,8 +265,10 @@ class Animal : public Active {
 	ushort Satiation() const;
 	bool Eat(int sub);
 
+	protected:
 	void SaveAttributes(QDataStream & out) const;
 
+	public:
 	Animal(int sub=A_MEAT);
 	Animal(QDataStream & str, int sub);
 }; //class Animal
@@ -272,6 +276,9 @@ class Animal : public Active {
 class Inventory {
 	const ushort size;
 	QStack<Block *> * inventory;
+
+	protected:
+	virtual void SaveAttributes(QDataStream & out) const;
 
 	public:
 	virtual int Kind() const=0;
@@ -284,7 +291,6 @@ class Inventory {
 	///Returns true on success.
 	virtual bool Get(Block * block, ushort start=0);
 	virtual void Pull(ushort num);
-	virtual void SaveAttributes(QDataStream & out) const;
 	virtual void MoveInside(ushort num_from, ushort num_to, ushort num);
 	virtual ushort Start() const;
 	virtual ushort Weight() const;
@@ -322,6 +328,7 @@ class Dwarf : public Animal, public Inventory {
 	Q_OBJECT
 
 	quint8 activeHand;
+	quint16 NutritionalValue(int sub) const;
 
 	public:
 	static const uchar onHead=0;
@@ -341,7 +348,6 @@ class Dwarf : public Animal, public Inventory {
 	ushort Start() const;
 	int DamageKind() const;
 	ushort DamageLevel() const;
-	quint16 NutritionalValue(int sub) const;
 
 	Inventory * HasInventory();
 	bool Access() const;
@@ -349,8 +355,10 @@ class Dwarf : public Animal, public Inventory {
 	void Inscribe(const QString & str);
 	void MoveInside(ushort num_from, ushort num_to, ushort num);
 
+	protected:
 	void SaveAttributes(QDataStream & out) const;
 
+	public:
 	uchar LightRadius() const;
 
 	Dwarf(int sub=H_MEAT);
@@ -369,8 +377,10 @@ class Chest : public Block, public Inventory {
 
 	ushort Weight() const;
 
+	protected:
 	void SaveAttributes(QDataStream & out) const;
 
+	public:
 	Chest(int s=WOOD, ushort size=inv_size);
 	Chest(QDataStream & str, int sub, ushort size=inv_size);
 }; //class Chest
@@ -396,8 +406,10 @@ class Pile : public Active, public Inventory {
 	bool Drop(ushort src, ushort dest, ushort num, Inventory * inv);
 	void Pull(ushort num);
 
+	protected:
 	void SaveAttributes(QDataStream & out) const;
 
+	public:
 	Pile(int sub=DIFFERENT);
 	Pile(QDataStream & str, int sub);
 }; //class Pile
@@ -456,8 +468,10 @@ class Bush : public Active, public Inventory {
 	Inventory * HasInventory();
 	Block * DropAfterDamage() const;
 
+	protected:
 	void SaveAttributes(QDataStream & out) const;
 
+	public:
 	Bush(int sub=WOOD);
 	Bush(QDataStream & str, int sub);
 }; //class Bush
@@ -466,12 +480,12 @@ class Rabbit : public Animal {
 	Q_OBJECT
 
 	short Attractive(int sub) const;
+	quint16 NutritionalValue(int sub) const;
 
 	public:
 	int  Kind() const;
 	void ActFrequent();
 	int  ShouldAct() const;
-	quint16 NutritionalValue(int sub) const;
 	Block * DropAfterDamage() const;
 	QString FullName() const;
 
@@ -513,8 +527,10 @@ class Door : public Active {
 	QString FullName() const;
 	usage_types Use();
 
+	protected:
 	void SaveAttributes(QDataStream & out) const;
 
+	public:
 	Door(int sub);
 	Door(QDataStream & str, int sub);
 }; //class Door
