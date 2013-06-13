@@ -32,15 +32,6 @@ class Inventory;
 class Active;
 class Shred;
 
-enum deferred_actions {
-	DEFERRED_NOTHING,
-	DEFERRED_MOVE,
-	DEFERRED_JUMP,
-	DEFERRED_BUILD,
-	DEFERRED_DAMAGE,
-	DEFERRED_THROW
-}; //enum deferred_actions
-
 const ushort safe_fall_height=5;
 
 const uchar MOON_LIGHT_FACTOR=1;
@@ -74,19 +65,6 @@ class World : public QThread {
 	ushort newNumShreds, newNumActiveShreds;
 	ushort newX, newY, newZ;
 	volatile bool toReSet;
-
-	ushort deferredActionX;
-	ushort deferredActionY;
-	ushort deferredActionZ;
-	ushort deferredActionXFrom;
-	ushort deferredActionYFrom;
-	ushort deferredActionZFrom;
-	quint8 deferredActionDir;
-	Block * deferredActionWhat;
-	Block * deferredActionWho;
-	int deferredActionData1;
-	int deferredActionData2;
-	int deferredActionType;
 
 	uchar sunMoonFactor;
 
@@ -199,18 +177,6 @@ class World : public QThread {
 		ushort x_to, ushort y_to, ushort z_to,
 		quint8 dir);
 	void Jump(ushort x, ushort y, ushort z, quint8 dir);
-	///Set action that will be executed at start of next physics turn.
-	/**It is needed by graphics screen to reduce execution time of
-	 * player's actions.
-	 * If several actions are set during one physics turn,
-	 * only the last will be done.
-	 */
-	void SetDeferredAction(ushort x, ushort y, ushort z,
-			quint8 dir,
-			int action,
-			ushort x_from=0, ushort y_from=0, ushort z_from=0,
-			Block * what=0, Block * who=0,
-			int data1=0, int data2=0);
 
 	//time section
 	public:

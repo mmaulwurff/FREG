@@ -26,6 +26,7 @@
 #include "world.h"
 #include "Shred.h"
 #include "BlockManager.h"
+#include "DeferredAction.h"
 
 short Player::X() const { return x; }
 short Player::Y() const { return y; }
@@ -168,14 +169,15 @@ void Player::Jump() {
 		}
 	} else {
 		usingType=NO;
-		world->SetDeferredAction(x, y, z, dir, DEFERRED_JUMP);
+		player->GetDeferredAction()->SetJump();
 	}
 }
 
 void Player::Move(const int dir) {
 	if ( !creativeMode && player ) {
 		usingType=NO;
-		world->SetDeferredAction(x, y, z, dir, DEFERRED_MOVE);
+		Turn(dir);
+		player->GetDeferredAction()->SetMove();
 	} else {
 		switch ( dir ) {
 			case NORTH:
@@ -273,15 +275,7 @@ void Player::Use(const ushort num) {
 }
 
 void Player::Throw(const ushort src, const ushort dest, const ushort num) {
-	world->SetDeferredAction(
-		num, 0, 0,
-		UP, //doesn't matter here
-		DEFERRED_THROW,
-		x, y, z,
-		0, //what, doesn't matter here
-		0, //who
-		src,
-		dest);
+	player->GetDeferredAction()->SetThrow(src, dest, num);
 }
 
 void Player::Obtain(const ushort src, const ushort dest, const ushort num) {
@@ -368,19 +362,13 @@ void Player::Build(
 		const short x_target,
 		const short y_target,
 		const short z_target,
-		const ushort num)
+		const ushort slot)
 {
 	world->WriteLock();
-	Block * const block=ValidBlock(num);
+	Block * const block=ValidBlock(slot);
 	if ( block && (AIR!=world->Sub(x, y, z-1) || 0==player->Weight()) ) {
-		world->SetDeferredAction(
-			x_target, y_target, z_target,
-			Dir(),
-			DEFERRED_BUILD,
-			x, y, z,
-			block,
-			player,
-			num);
+		player->GetDeferredAction()->
+			SetBuild(x_target, y_target, z_target, block, slot);
 	}
 	world->Unlock();
 }
@@ -533,15 +521,7 @@ void Player::Damage(
 		const short y_target,
 		const short z_target)
 const {
-	world->SetDeferredAction(
-		x_target, y_target, z_target,
-		0, //direction doesn't matter here
-		DEFERRED_DAMAGE,
-		x, y, z,
-		0, //what block - doesn't matter
-		0, //who
-		DamageLevel(),
-		DamageKind());
+	player->GetDeferredAction()->SetDamage(x_target, y_target, z_target);
 }
 
 int Player::DamageKind() const {
@@ -624,6 +604,7 @@ void Player::SetPlayer(
 		player=world->ActiveBlock(x, y, z);
 		Dir(world->GetBlock(x, y, z)->GetDir());
 	}
+	player->SetDeferredAction(new DeferredAction(player));
 
 	connect(player, SIGNAL(Destroyed()),
 		this, SLOT(BlockDestroy()),

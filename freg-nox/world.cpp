@@ -330,117 +330,6 @@ void World::ReloadShreds(const int direction) {
 
 void World::PhysEvents() {
 	WriteLock();
-	if ( DEFERRED_NOTHING!=deferredActionType ) {
-		switch ( deferredActionType ) {
-			case DEFERRED_MOVE:
-				Move(
-					deferredActionX,
-					deferredActionY,
-					deferredActionZ,
-					deferredActionDir);
-			break;
-			case DEFERRED_JUMP:
-				Jump(
-					deferredActionX,
-					deferredActionY,
-					deferredActionZ,
-					deferredActionDir);
-			break;
-			case DEFERRED_BUILD: {
-				if ( DOWN==deferredActionDir &&
-						AIR!=Sub(
-							deferredActionX,
-							deferredActionY,
-							deferredActionZ) )
-				{
-					if ( Move(
-							deferredActionXFrom,
-							deferredActionYFrom,
-							deferredActionZFrom,
-							UP) )
-					{
-						++deferredActionZ;
-						++deferredActionZFrom;
-					} else {
-						break;
-					}
-				}
-				const int kind=deferredActionWhat->Kind();
-				const int sub =deferredActionWhat->Sub();
-				const int build=Build(
-					deferredActionWhat,
-					deferredActionX,
-					deferredActionY,
-					deferredActionZ,
-					TurnRight(deferredActionDir),
-					deferredActionWho);
-				if ( build /*errors*/ ) {
-					break;
-				}
-				Inventory * const inv=deferredActionWho->
-					HasInventory();
-				if ( !inv ) {
-					break;
-				}
-				//deferredActionData1 is number
-				//in inventory
-				const ushort num=deferredActionData1;
-				inv->Pull(num);
-				//put more material in building
-				//inventory slot:
-				if ( inv->Number(num) ) {
-					break;
-				}
-				for (ushort i=num+1; i<inv->Size() &&
-					inv->Number(num)<max_stack_size; ++i)
-				{
-					const Block * const block_i=
-						inv->ShowBlock(i);
-					if (block_i && kind==block_i->Kind()
-							&& sub==block_i->Sub())
-					{
-						inv->MoveInside(i, num,
-							inv->Number(i));
-					}
-				}
-			} break;
-			case DEFERRED_DAMAGE:
-				if ( InBounds(
-							deferredActionX,
-							deferredActionY,
-							deferredActionZ) &&
-						Visible(
-							deferredActionXFrom,
-							deferredActionYFrom,
-							deferredActionZFrom,
-							deferredActionX,
-							deferredActionY,
-							deferredActionZ) )
-				{
-					Damage(
-						deferredActionX,
-						deferredActionY,
-						deferredActionZ,
-						deferredActionData1,
-						deferredActionData2);
-				}
-			break;
-			case DEFERRED_THROW:
-				Drop(
-						deferredActionXFrom,
-						deferredActionYFrom,
-						deferredActionZFrom,
-						deferredActionData1, //src
-						deferredActionData2, //dest
-						deferredActionX /* num */);
-			break;
-			default:
-				fprintf(stderr,
-					"World::PhysEvents: (?) action: %d\n",
-					deferredActionType);
-		}
-		deferredActionType=DEFERRED_NOTHING;
-	}
 	if ( toReSet ) {
 		emit StartReloadAll();
 		SaveAllShreds();
@@ -689,29 +578,6 @@ void World::Jump(const ushort x, const ushort y, const ushort z,
 		NoCheckMove(x, y, z+1, x, y, z, DOWN);
 		Move(x, y, z, dir);
 	}
-}
-
-void World::SetDeferredAction(
-		const ushort x, const ushort y, const ushort z,
-		const quint8 dir,
-		const int action,
-		//see defaults in world.h:
-		const ushort x_from, const ushort y_from, const ushort z_from,
-		Block * const what, Block * const who,
-		const int data1, const int data2)
-{
-	deferredActionX=x;
-	deferredActionY=y;
-	deferredActionZ=z;
-	deferredActionXFrom=x_from;
-	deferredActionYFrom=y_from;
-	deferredActionZFrom=z_from;
-	deferredActionDir=dir;
-	deferredActionType=action;
-	deferredActionWhat=what;
-	deferredActionWho=who;
-	deferredActionData1=data1;
-	deferredActionData2=data2;
 }
 
 int World::Focus(const ushort i, const ushort j, const ushort k,
@@ -1016,7 +882,6 @@ World::World(const QString & world_name) :
 		worldName(world_name),
 		cleaned(false),
 		toReSet(false),
-		deferredActionType(DEFERRED_NOTHING),
 		settings(QDir::currentPath()+'/'+worldName+"/settings.ini",
 			QSettings::IniFormat),
 		game_settings(QDir::currentPath()+"/freg.ini",

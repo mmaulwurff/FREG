@@ -178,17 +178,20 @@ class Pick : public Weapon {
 	Pick(QDataStream & str, int sub);
 }; //class Pick
 
+class DeferredAction;
+
 class Active : public QObject, public Block {
 	Q_OBJECT
 
 	quint8 fall_height;
 	bool falling;
+	DeferredAction * deferredAction;
 
-	protected:
 	///coordinates in loaded world zone
 	ushort x_self, y_self, z_self;
 	Shred * whereShred;
 
+	protected:
 	void SendSignalAround(const QString &) const;
 
 	signals:
@@ -218,6 +221,8 @@ class Active : public QObject, public Block {
 	virtual void ActFrequent();
 	virtual void ActRare();
 	virtual int ShouldAct() const;
+	void SetDeferredAction(DeferredAction *);
+	DeferredAction * GetDeferredAction() const;
 
 	int Movable() const;
 	virtual bool ShouldFall() const;
@@ -331,6 +336,7 @@ class Dwarf : public Animal, public Inventory {
 
 	int Kind() const;
 	int Sub() const;
+	int ShouldAct() const;
 	QString FullName() const;
 	ushort Weight() const;
 	ushort Start() const;

@@ -23,6 +23,7 @@
 #include "Shred.h"
 #include "CraftManager.h"
 #include "BlockManager.h"
+#include "DeferredAction.h"
 
 //Block::
 	QString Block::FullName() const {
@@ -352,7 +353,6 @@
 
 	int Active::Kind() const { return ACTIVE; }
 	Active * Active::ActiveBlock() { return this; }
-	void Active::ActFrequent() {}
 	void Active::ActRare() {}
 	int  Active::ShouldAct() const { return NEVER; }
 	void Active::SetFalling(const bool set) { falling=set; }
@@ -360,17 +360,28 @@
 	int  Active::Movable() const { return MOVABLE; }
 	bool Active::ShouldFall() const { return true; }
 
+	void Active::ActFrequent() {
+		if ( deferredAction ) {
+			deferredAction->MakeAction();
+		}
+	}
+
+	void Active::SetDeferredAction(DeferredAction * action) {
+		deferredAction=action;
+	}
+	DeferredAction * Active::GetDeferredAction() const {
+		return deferredAction;
+	}
+
 	bool Active::FallDamage() {
 		if ( fall_height > safe_fall_height ) {
 			const ushort dmg=(fall_height -
 				safe_fall_height)*10;
 			fall_height=0;
 			GetWorld()->
-				Damage(x_self, y_self, z_self-1, dmg,
-					DAMAGE_FALL);
+				Damage(X(), Y(), Z()-1, dmg, DAMAGE_FALL);
 			return GetWorld()->
-				Damage(x_self, y_self,z_self, dmg,
-					DAMAGE_FALL);
+				Damage(X(), Y(), Z(), dmg, DAMAGE_FALL);
 		} else {
 			fall_height=0;
 			return false;
@@ -395,12 +406,10 @@
 		} else {
 			whereShred->RemFalling(this);
 			FallDamage();
-			if ( GetWorld()->GetShred(x_self, y_self)!=GetShred() )
-			{
+			if ( GetWorld()->GetShred(X(), Y())!=GetShred() ) {
 				whereShred->RemActive(this);
-				(whereShred=GetWorld()->
-					GetShred(x_self, y_self))->
-						AddActive(this);
+				( whereShred=GetWorld()->GetShred(X(), Y()) )->
+					AddActive(this);
 			}
 		}
 		emit Moved(dir);
@@ -408,26 +417,24 @@
 
 	void Active::SendSignalAround(const QString & signal) const {
 		World * const world=GetWorld();
-		if ( InBounds(x_self-1, y_self) ) {
-			world->GetBlock(x_self-1, y_self, z_self)->
+		if ( InBounds(X()-1, Y()) ) {
+			world->GetBlock(X()-1, Y(), Z())->
 				ReceiveSignal(signal);
 		}
-		if ( InBounds(x_self+1, y_self) ) {
-			world->GetBlock(x_self+1, y_self, z_self)->
+		if ( InBounds(X()+1, Y()) ) {
+			world->GetBlock(X()+1, Y(), Z())->
 				ReceiveSignal(signal);
 		}
-		if ( InBounds(x_self, y_self-1) ) {
-			world->GetBlock(x_self, y_self-1, z_self)->
+		if ( InBounds(X(), Y()-1) ) {
+			world->GetBlock(X(), Y()-1, Z())->
 				ReceiveSignal(signal);
 		}
-		if ( InBounds(x_self, y_self+1) ) {
-			world->GetBlock(x_self, y_self+1, z_self)->
+		if ( InBounds(X(), Y()+1) ) {
+			world->GetBlock(X(), Y()+1, Z())->
 				ReceiveSignal(signal);
 		}
-		world->GetBlock(x_self, y_self, z_self-1)->
-			ReceiveSignal(signal);
-		world->GetBlock(x_self, y_self, z_self+1)->
-			ReceiveSignal(signal);
+		world->GetBlock(X(), Y(), Z()-1)->ReceiveSignal(signal);
+		world->GetBlock(X(), Y(), Z()+1)->ReceiveSignal(signal);
 	}
 
 	World * Active::GetWorld() const { return whereShred->GetWorld(); }
@@ -485,8 +492,7 @@
 		out << fall_height;
 	}
 
-	void Active::Register(
-			Shred * const sh,
+	void Active::Register(Shred * const sh,
 			const ushort x, const ushort y, const ushort z)
 	{
 		if ( !whereShred ) {
@@ -518,6 +524,7 @@
 			Block(sub, transp),
 			fall_height(0),
 			falling(false),
+			deferredAction(0),
 			x_self(),
 			y_self(),
 			z_self(),
@@ -526,6 +533,7 @@
 	Active::Active(QDataStream & str, const int sub, const quint8 transp) :
 			Block(str, sub, transp),
 			falling(false),
+			deferredAction(0),
 			x_self(),
 			y_self(),
 			z_self(),
@@ -541,20 +549,19 @@
 	void Animal::ActRare() {
 		World * const world=GetWorld();
 		if (
-				AIR!=world->Sub(x_self, y_self, z_self+1) &&
-				AIR!=world->Sub(x_self, y_self, z_self-1) &&
-			InBounds(x_self+1, y_self) &&
-				AIR!=world->Sub(x_self+1, y_self, z_self) &&
-			InBounds(x_self-1, y_self) &&
-				AIR!=world->Sub(x_self-1, y_self, z_self) &&
-			InBounds(x_self, y_self+1) &&
-				AIR!=world->Sub(x_self, y_self+1, z_self) &&
-			InBounds(x_self, y_self-1) &&
-				AIR!=world->Sub(x_self, y_self-1, z_self) )
+				AIR!=world->Sub(X(), Y(), Z()+1) &&
+				AIR!=world->Sub(X(), Y(), Z()-1) &&
+			InBounds(X()+1, Y()) &&
+				AIR!=world->Sub(X()+1, Y(), Z()) &&
+			InBounds(X()-1, Y()) &&
+				AIR!=world->Sub(X()-1, Y(), Z()) &&
+			InBounds(X(), Y()+1) &&
+				AIR!=world->Sub(X(), Y()+1, Z()) &&
+			InBounds(X(), Y()-1) &&
+				AIR!=world->Sub(X(), Y()-1, Z()) )
 		{
 			if ( breath <= 0 ) {
-				if ( world->Damage(x_self, y_self, z_self,
-						10, BREATH) )
+				if ( world->Damage(X(), Y(), Z(), 10, BREATH) )
 				{
 					return;
 				}
@@ -564,9 +571,7 @@
 			++breath;
 		}
 		if ( satiation <= 0 ) {
-			if ( world->Damage(x_self, y_self, z_self,
-					5, HUNGER) )
-			{
+			if ( world->Damage(X(), Y(), Z(), 5, HUNGER) ) {
 				return;
 			}
 		} else {
@@ -837,26 +842,18 @@
 	ushort Dwarf::Weight() const {
 		World * const world=GetWorld();
 		return (
-				(InBounds(x_self+1, y_self) &&
-					world->GetBlock(
-						x_self+1,
-						y_self,
-						z_self)->Catchable()) ||
-				(InBounds(x_self-1, y_self) &&
-					world->GetBlock(
-						x_self-1,
-						y_self,
-						z_self)->Catchable()) ||
-				(InBounds(x_self, y_self+1) &&
-					world->GetBlock(
-						x_self,
-						y_self+1,
-						z_self)->Catchable()) ||
-				(InBounds(x_self, y_self-1) &&
-					world->GetBlock(
-						x_self,
-						y_self-1,
-						z_self)->Catchable()) ) ?
+				(InBounds(X()+1, Y()) &&
+					world->GetBlock(X()+1, Y(), Z())->
+						Catchable()) ||
+				(InBounds(X()-1, Y()) &&
+					world->GetBlock(X()-1, Y(), Z())->
+						Catchable()) ||
+				(InBounds(X(), Y()+1) &&
+					world->GetBlock(X(), Y()+1, Z())->
+						Catchable()) ||
+				(InBounds(X(), Y()-1) &&
+					world->GetBlock(X(), Y()-1, Z())->
+						Catchable()) ) ?
 			0 : Inventory::Weight()+Block::Weight();
 	}
 
@@ -866,6 +863,7 @@
 
 	int Dwarf::Kind() const { return DWARF; }
 	int Dwarf::Sub() const { return Block::Sub(); }
+	int Dwarf::ShouldAct() const { return FREQUENT_AND_RARE; }
 	ushort Dwarf::Start() const { return onLegs+1; }
 	QString Dwarf::FullName() const { return "Rational"; }
 	Inventory * Dwarf::HasInventory() { return Inventory::HasInventory(); }
@@ -997,7 +995,7 @@
 
 	void Pile::ActRare() {
 		if ( ifToDestroy ) {
-			GetWorld()->Damage(x_self, y_self, z_self, 0, TIME);
+			GetWorld()->Damage(X(), Y(), Z(), 0, TIME);
 		}
 	}
 
@@ -1053,45 +1051,31 @@
 	bool Liquid::CheckWater() const {
 		World * const world=GetWorld();
 		return (
-				WATER==world->Sub(x_self, y_self, z_self-1) ||
-				WATER==world->Sub(x_self, y_self, z_self+1) ||
-				(InBounds(x_self-1, y_self) &&
-					WATER==world->Sub(
-						x_self-1, y_self, z_self)) ||
-				(InBounds(x_self+1, y_self) &&
-					WATER==world->Sub(
-						x_self+1, y_self, z_self)) ||
-				(InBounds(x_self, y_self-1) &&
-					WATER==world->Sub(
-						x_self, y_self-1, z_self)) ||
-				(InBounds(x_self, y_self+1) &&
-					WATER==world->Sub(
-						x_self, y_self+1, z_self)));
+			WATER==world->Sub(X(), Y(), Z()-1) ||
+			WATER==world->Sub(X(), Y(), Z()+1) ||
+			(InBounds(X()-1, Y()) &&
+				WATER==world->Sub(X()-1, Y(), Z())) ||
+			(InBounds(X()+1, Y()) &&
+				WATER==world->Sub(X()+1, Y(), Z())) ||
+			(InBounds(X(), Y()-1) &&
+				WATER==world->Sub(X(), Y()-1, Z())) ||
+			(InBounds(X(), Y()+1) &&
+				WATER==world->Sub(X(), Y()+1, Z())) );
 	}
 
 	void Liquid::ActRare() {
 		World * const world=GetWorld();
 		//IDEA: turn off water drying up in ocean
 		if ( WATER==Sub() && !CheckWater() &&
-				world->Damage(x_self, y_self, z_self,
-					1, HEAT) )
+				world->Damage(X(), Y(), Z(), 1, HEAT) )
 		{
 			return;
 		}
 		switch ( qrand()%20 ) {
-			case 0:
-				world->Move(x_self, y_self, z_self, NORTH);
-			break;
-			case 1:
-				world->Move(x_self, y_self, z_self, EAST);
-			break;
-			case 2:
-				world->Move(x_self, y_self, z_self, SOUTH);
-			break;
-			case 3:
-				world->Move(x_self, y_self, z_self, WEST);
-			break;
-			default: return;
+			case 0: world->Move(X(), Y(), Z(), NORTH); break;
+			case 1: world->Move(X(), Y(), Z(), EAST);  break;
+			case 2:	world->Move(X(), Y(), Z(), SOUTH); break;
+			case 3: world->Move(X(), Y(), Z(), WEST);  break;
 		}
 	}
 
@@ -1123,14 +1107,14 @@
 		World * const world=GetWorld();
 		if (
 				SOIL!=GetShred()->Sub(
-					x_self%SHRED_WIDTH,
-					y_self%SHRED_WIDTH, z_self-1) &&
-				world->Damage(x_self, y_self, z_self,
+					X()%SHRED_WIDTH,
+					Y()%SHRED_WIDTH, Z()-1) &&
+				world->Damage(X(), Y(), Z(),
 					durability, TIME) )
 		{
 			return;
 		}
-		short i=x_self, j=y_self;
+		short i=X(), j=Y();
 		//increase this if grass grows too fast
 		switch ( qrand()%(SECONDS_IN_HOUR*2) ) {
 			case 0: ++i; break;
@@ -1139,15 +1123,15 @@
 			case 3: --j; break;
 			default: return;
 		}
-		if ( InBounds(i, j) && world->Enlightened(i, j, z_self) ) {
-			if ( AIR==world->Sub(i, j, z_self) &&
-					SOIL==world->Sub(i, j, z_self-1) )
+		if ( InBounds(i, j) && world->Enlightened(i, j, Z()) ) {
+			if ( AIR==world->Sub(i, j, Z()) &&
+					SOIL==world->Sub(i, j, Z()-1) )
 				world->Build(block_manager.NewBlock(GRASS,
-						Sub()), i, j, z_self);
-			else if ( SOIL==world->Sub(i, j, z_self) &&
-					AIR==world->Sub(i, j, z_self+1) )
+						Sub()), i, j, Z());
+			else if ( SOIL==world->Sub(i, j, Z()) &&
+					AIR==world->Sub(i, j, Z()+1) )
 				world->Build(block_manager.NewBlock(GRASS,
-						Sub()), i, j, z_self+1);
+						Sub()), i, j, Z()+1);
 		}
 	}
 
@@ -1233,38 +1217,35 @@
 		World * const world=GetWorld();
 		//eat sometimes
 		if ( SECONDS_IN_DAY/2 > satiation ) {
-			for (ushort x=x_self-1; x<=x_self+1; ++x)
-			for (ushort y=y_self-1; y<=y_self+1; ++y)
-			for (ushort z=z_self-1; z<=z_self+1; ++z) {
+			for (ushort x=X()-1; x<=X()+1; ++x)
+			for (ushort y=Y()-1; y<=Y()+1; ++y)
+			for (ushort z=Z()-1; z<=Z()+1; ++z) {
 				if ( InBounds(x, y) &&
 						GREENERY==world->Sub(x, y, z) )
 				{
-					world->Eat(x_self, y_self, z_self,
-						x, y, z);
+					world->Eat(X(), Y(), Z(), x, y, z);
 					return;
 				}
 			}
 		}
 		//analyse world around
 		short for_north=0, for_west=0;
-		for (ushort x=x_self-4; x<=x_self+4; ++x)
-		for (ushort y=y_self-4; y<=y_self+4; ++y)
-		for (ushort z=z_self-1; z<=z_self+3; ++z) {
+		for (ushort x=X()-4; x<=X()+4; ++x)
+		for (ushort y=Y()-4; y<=Y()+4; ++y)
+		for (ushort z=Z()-1; z<=Z()+3; ++z) {
 			if ( InBounds(x, y, z) ) {
 				const short attractive=
 					Attractive(world->Sub(x, y, z));
 				if ( attractive &&
 						world->DirectlyVisible(
-							x_self, y_self,	z_self,
+							X(), Y(), Z(),
 							x, y, z) )
 				{
-					if ( y!=y_self ) {
-						for_north+=attractive/
-							(y_self-y);
+					if ( y!=Y() ) {
+						for_north+=attractive/(Y()-y);
 					}
-					if ( x!=x_self ) {
-						for_west +=attractive/
-							(x_self-x);
+					if ( x!=X() ) {
+						for_west +=attractive/(X()-x);
 					}
 				}
 			}
@@ -1276,9 +1257,9 @@
 				( ( for_north>0 ) ? NORTH : SOUTH ) :
 				( ( for_west >0 ) ? WEST  : EAST  ) );
 			if ( qrand()%2 ) {
-				world->Move(x_self, y_self, z_self, direction);
+				world->Move(X(), Y(), Z(), direction);
 			} else {
-				world->Jump(x_self, y_self, z_self, direction);
+				world->Jump(X(), Y(), Z(), direction);
 			}
 		} else {
 			switch ( qrand()%60 ) {
@@ -1288,7 +1269,7 @@
 				case 3: SetDir(WEST);  break;
 				default: return;
 			}
-			world->Move(x_self, y_self, z_self, GetDir());
+			world->Move(X(), Y(), Z(), GetDir());
 		}
 	}
 
@@ -1424,11 +1405,13 @@
 	{}
 //Door::
 	int Door::BeforePush(const int dir, Block * const) {
-		if ( locked || shifted || dir==World::Anti(GetDir()) )
+		if ( locked || shifted || dir==World::Anti(GetDir()) ) {
 			return NO_ACTION;
+		}
 		movable=MOVABLE;
-		if ( GetWorld()->Move(x_self, y_self, z_self, GetDir()) )
+		if ( GetWorld()->Move(X(), Y(), Z(), GetDir()) ) {
 			shifted=true;
+		}
 		movable=NOT_MOVABLE;
 		return MOVE_SELF;
 	}
@@ -1437,11 +1420,11 @@
 		if ( shifted ) {
 			World * const world=GetWorld();
 			ushort x, y, z;
-			world->Focus(x_self, y_self, z_self, x, y, z,
+			world->Focus(X(), Y(), Z(), x, y, z,
 				World::Anti(GetDir()));
 			if ( AIR==world->Sub(x, y, z) ) {
 				movable=MOVABLE;
-				world->Move(x_self, y_self, z_self,
+				world->Move(X(), Y(), Z(),
 					World::Anti(GetDir()));
 				shifted=false;
 				movable=NOT_MOVABLE;
