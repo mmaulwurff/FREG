@@ -134,6 +134,13 @@ void DeferredAction::MakeAction() {
 }
 
 DeferredAction::DeferredAction(Active * const attached) :
-	type(DEFERRED_NOTHING),
-	attachedBlock(attached)
+		type(DEFERRED_NOTHING),
+		attachedBlock(attached),
+		xTarg(),
+		yTarg(),
+		zTarg(),
+		material(),
+		srcSlot(),
+		destSlot(),
+		num()
 {}

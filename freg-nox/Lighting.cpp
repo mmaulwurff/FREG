@@ -52,8 +52,7 @@ bool World::SetLightMap(const uchar level,
 
 //private. make block emit shining
 //receives only non-sun light, from 0 to F
-void World::Shine(
-		const ushort i, const ushort j, const ushort k,
+void World::Shine(const ushort i, const ushort j, const ushort k,
 		const uchar level,
 		const bool init) //see default in class
 {
@@ -87,11 +86,31 @@ void World::SunShine(const ushort i, const ushort j) {
 		transparent=Transparent(i, j, k);
 		const uchar new_light_lev=
 			(LightMap(i, j, k) & 0xF0) | light_lev;
-		if ( SetLightMap(new_light_lev, i, j, k) &&
-				INVISIBLE!=transparent )
-			emit Updated(i, j, k);
-		if ( 1==transparent )
+		const struct {
+			ushort x;
+			ushort y;
+			ushort z;
+		} coords[5]={
+			{i, j, k},
+			{i-1, j, k},
+			{i+1, j, k},
+			{i, j-1, k},
+			{i, j+1, k} };
+		for (ushort i=0; i<5; ++i) {
+			if ( InBounds(coords[i].x, coords[i].y) &&
+					SetLightMap(new_light_lev,
+						coords[i].x,
+						coords[i].y,
+						coords[i].z) &&
+					INVISIBLE!=transparent )
+			{
+				emit Updated(coords[i].x, coords[i].y,
+					coords[i].z);
+			}
+		}
+		if ( BLOCK_TRANSPARENT==transparent ) {
 			--light_lev;
+		}
 		--k;
 	} while ( light_lev && BLOCK_OPAQUE!=transparent );
 }
@@ -190,8 +209,7 @@ const {
 
 //returns ligting of the block.
 //if block side lighting is required, just remove first return.
-uchar World::Enlightened(
-		const ushort i, const ushort j, const ushort k,
+uchar World::Enlightened(const ushort i, const ushort j, const ushort k,
 		const int /*dir*/)
 const {
 	return Enlightened(i, j, k);
@@ -223,8 +241,7 @@ const {
 }
 
 //this receives level in format fire:sun
-bool Shred::SetLightMap(
-		const uchar level,
+bool Shred::SetLightMap(const uchar level,
 		const ushort i, const ushort j, const ushort k)
 {
 	bool change_flag=false;
