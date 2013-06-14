@@ -282,8 +282,7 @@
 			case STONE: return 5;
 			default:
 				fprintf(stderr,
-					"Weapon::DamageLevel: \
-					unlisted sub: %d\n",
+					"Weapon::DamageLevel: sub (?): %d\n.",
 					Sub());
 				return 1;
 		}
@@ -312,8 +311,7 @@
 			case IRON: return 10;
 			default:
 				fprintf(stderr,
-					"Pick::DamageLevel: \
-					unlisted sub: %d\n",
+					"Pick::DamageLevel: sub (?): %d\n.",
 					Sub());
 				return 1;
 		}

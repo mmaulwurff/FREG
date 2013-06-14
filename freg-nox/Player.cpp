@@ -374,8 +374,7 @@ void Player::Craft(const ushort num) {
 		if ( 1==craft ) {
 			Notify("Nothing here.");
 		} else if ( 2==craft ) {
-			Notify("You don't know how to make \
-				something from this.");
+			Notify("You don't know how to craft this.");
 		} else {
 			Notify("Craft successful.");
 			emit Updated();

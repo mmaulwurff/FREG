@@ -15,7 +15,7 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-/*\file screen.cpp
+/**\file screen.cpp
  * This file is related to curses screen for freg.
  */
 

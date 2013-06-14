@@ -15,7 +15,9 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-/* This file provides simple (also mad) lighting for freg.
+/**\file Lighting.cpp
+ * This file provides simple (also mad) lighting for freg.
+ *
  * It has light inertia, meaning that block, enlightened by outer
  * source, will remain enlightened when light source is removed.
  * Light is divided to sunlight and other light. Sunlight is
@@ -56,19 +58,19 @@ void World::Shine(const ushort i, const ushort j, const ushort k,
 		const uchar level,
 		const bool init) //see default in class
 {
-	if ( !InBounds(i, j, k) || 0==level )
+	if ( !InBounds(i, j, k) || 0==level ) {
 		return;
-
+	}
 	const uchar new_level=(LightMap(i, j, k) & 0x0F) |
 		((( level > 0x0F ) ? 0x0F : level) << 4);
-	const bool set=SetLightMap(new_level, i, j, k);
 	if ( !Transparent(i, j, k) ) {
-		if ( set )
+		if ( SetLightMap(new_level, i, j, k) ) {
 			emit Updated(i, j, k);
-		if ( !init )
+		}
+		if ( !init ) {
 			return;
+		}
 	}
-
 	Shine(i-1, j, k, level-1);
 	Shine(i+1, j, k, level-1);
 	Shine(i, j-1, k, level-1);
@@ -128,8 +130,7 @@ void World::ReEnlightenTime() {
 		shreds[i]->SetAllLightMap(0);
 	}
 	sunMoonFactor=( NIGHT==PartOfDay() ) ?
-		MOON_LIGHT_FACTOR :
-		SUN_LIGHT_FACTOR;
+		MOON_LIGHT_FACTOR : SUN_LIGHT_FACTOR;
 	ReEnlightenAll();
 }
 
@@ -145,9 +146,9 @@ void World::ReEnlightenAll() {
 		const ushort,
 		const ushort)), 0, 0);
 
-	for (ushort i=0; i<NumShreds()*NumShreds(); ++i)
+	for (ushort i=0; i<NumShreds()*NumShreds(); ++i) {
 		shreds[i]->ShineAll();
-
+	}
 	emit ReConnect();
 }
 
@@ -193,8 +194,7 @@ void World::ReEnlightenMove(const int dir) {
 		break;
 		default:
 			fprintf(stderr,
-				"World::ReEnlightenMove: \
-				unlisted direction: %d\n",
+				"World::ReEnlightenMove: direction (?): %d\n",
 				dir);
 	}
 	emit ReConnect();
@@ -202,9 +202,7 @@ void World::ReEnlightenMove(const int dir) {
 
 uchar World::Enlightened(const ushort i, const ushort j, const ushort k)
 const {
-	return InBounds(i, j, k) ?
-		LightMap(i, j, k) :
-		0;
+	return InBounds(i, j, k) ? LightMap(i, j, k) : 0;
 }
 
 //returns ligting of the block.
@@ -265,8 +263,9 @@ bool Shred::SetLightMap(const uchar level,
 void Shred::SetAllLightMap(const uchar level) {
 	for (ushort i=0; i<SHRED_WIDTH; ++i)
 	for (ushort j=0; j<SHRED_WIDTH; ++j)
-	for (ushort k=0; k<HEIGHT-1; ++k)
+	for (ushort k=0; k<HEIGHT-1; ++k) {
 		lightMap[i][j][k]=level;
+	}
 }
 
 //make all shining blocks of shred shine.

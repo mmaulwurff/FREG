@@ -45,8 +45,7 @@ Block * BlockManager::NormalBlock(const int sub, const int dir) {
 Block * BlockManager::NewBlock(const int kind, int sub) {
 	if ( sub > AIR ) {
 		fprintf(stderr,
-			"BlockManager::NewBlock: \
-				Don't know such substance: %d.\n",
+			"BlockManager::NewBlock: unknown substance: %d.\n",
 			sub);
 		sub=STONE;
 	}
@@ -107,8 +106,7 @@ Block * BlockManager::BlockFromFile(QDataStream & str) {
 		case WORKBENCH: return New<Workbench>(str, sub);
 		default:
 			fprintf(stderr,
-				"BlockManager::BlockFromFile: \
-				unlisted kind: %d.\n",
+				"BlockManager::BlockFromFile: kind (?): %d\n.",
 				kind);
 			return New<Block>(str, sub);
 	}
