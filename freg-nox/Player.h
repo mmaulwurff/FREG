@@ -163,6 +163,8 @@ class Player : public QObject {
 	void Move(int dir);
 	void Jump();
 
+	///Closes backpack, chests, etc.
+	void StopUseAll();
 	///Tries to switch usingSelfType from NO to OPEN.
 	void Backpack();
 	void Inscribe(short x, short y, short z) const;

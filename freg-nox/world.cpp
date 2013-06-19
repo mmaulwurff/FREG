@@ -636,7 +636,7 @@ bool World::Damage(const ushort i, const ushort j, const ushort k,
 }
 
 int World::Use(const ushort i, const ushort j, const ushort k) {
-	return InBounds(i, j, k) ? GetBlock(i, j, k)->Use() : NO;
+	return InBounds(i, j, k) ? GetBlock(i, j, k)->Use() : USAGE_TYPE_NO;
 }
 
 int World::Build(Block * block,

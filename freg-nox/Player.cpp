@@ -168,7 +168,7 @@ void Player::Jump() {
 			--z;
 		}
 	} else {
-		usingType=NO;
+		usingType=USAGE_TYPE_NO;
 		player->GetDeferredAction()->SetJump();
 	}
 }
@@ -176,7 +176,7 @@ void Player::Jump() {
 void Player::Move(const int dir) {
 	Turn(dir);
 	if ( !creativeMode && player ) {
-		usingType=NO;
+		usingType=USAGE_TYPE_NO;
 		player->GetDeferredAction()->SetMove();
 	} else {
 		switch ( dir ) {
@@ -215,20 +215,24 @@ void Player::Move(const int dir) {
 }
 
 void Player::Turn(const int dir) {
-	usingType=NO;
+	usingType=USAGE_TYPE_NO;
 	SetDir(dir);
 }
 
+void Player::StopUseAll() { usingType = usingSelfType = USAGE_TYPE_NO; }
+
 void Player::Backpack() {
-	if ( player && player->HasInventory() ) {
-		usingSelfType=( OPEN==usingSelfType ) ? NO : OPEN;
+	if ( PlayerInventory() ) {
+		usingSelfType=( USAGE_TYPE_OPEN==usingSelfType ) ?
+			USAGE_TYPE_NO :
+			USAGE_TYPE_OPEN;
 	}
 }
 
 void Player::Use(const short x, const short y, const short z) {
 	world->WriteLock();
 	const int us_type=world->Use(x, y, z);
-	usingType=( us_type==usingType ) ? NO : us_type;
+	usingType=( us_type==usingType ) ? USAGE_TYPE_NO : us_type;
 	world->Unlock();
 }
 
@@ -284,7 +288,7 @@ void Player::Obtain(const ushort src, const ushort dest, const ushort num) {
 	if ( using_block->HasInventory()->IsEmpty() &&
 			PILE==using_block->Kind())
 	{
-		usingType=NO;
+		usingType=USAGE_TYPE_NO;
 	}
 	world->Unlock();
 }
@@ -408,7 +412,7 @@ void Player::ProcessCommand(QString & command) {
 	comm_stream >> request;
 	if ( "give"==request ) {
 		world->WriteLock();
-		Inventory * const inv=player->HasInventory();
+		Inventory * const inv=PlayerInventory();
 		if ( !creativeMode ) {
 			emit Notify(tr("You are not in Creative Mode."));
 		} else if ( inv ) {
@@ -480,11 +484,9 @@ void Player::ProcessCommand(QString & command) {
 }
 
 void Player::Get(Block * const block) {
-	if ( player ) {
-		Inventory * const inv=player->HasInventory();
-		if ( inv ) {
-			inv->Get(block);
-		}
+	Inventory * const inv=PlayerInventory();
+	if ( inv ) {
+		inv->Get(block);
 	}
 }
 
@@ -547,8 +549,8 @@ void Player::BlockDestroy() {
 	}
 	emit Notify("You died.");
 	player=0;
-	usingType=NO;
-	usingSelfType=NO;
+	usingType=USAGE_TYPE_NO;
+	usingSelfType=USAGE_TYPE_NO;
 
 	emit Destroyed();
 	world->ReloadAllShreds(
@@ -645,8 +647,8 @@ void Player::SetNumShreds(ushort num) const {
 Player::Player(World * const w) :
 		dir(NORTH),
 		world(w),
-		usingType(NO),
-		usingSelfType(NO),
+		usingType(USAGE_TYPE_NO),
+		usingSelfType(USAGE_TYPE_NO),
 		cleaned(false)
 {
 	QSettings sett(QDir::currentPath()+'/'+

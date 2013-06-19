@@ -282,6 +282,9 @@ void Screen::ControlPlayer(const int ch) {
 			ActionXyz(x, y, z);
 			player->Inscribe(x, y, z);
 		} break;
+		case 27: //esc
+			player->StopUseAll();
+		break;
 
 		case 'U': actionMode=USE; break;
 		case 'T': actionMode=THROW; break;
@@ -328,8 +331,7 @@ void Screen::ControlPlayer(const int ch) {
 		break;
 
 		case '!':
-			player->SetCreativeMode( player->GetCreativeMode() ?
-				false : true);
+			player->SetCreativeMode( !player->GetCreativeMode() );
 		break;
 		case ':': //command mode
 			PassString(command);
@@ -437,7 +439,7 @@ void Screen::Print() {
 
 	if ( !fileToShow ) { //right window
 		switch ( player->UsingType() ) {
-			case OPEN:
+			case USAGE_TYPE_OPEN:
 				werase(rightWin);
 				PrintInv(rightWin,
 					player->UsingBlock()->HasInventory());
@@ -454,7 +456,7 @@ void Screen::Print() {
 		}
 	}
 	switch ( player->UsingSelfType() ) { //left window
-		case OPEN:
+		case USAGE_TYPE_OPEN:
 			if ( player->PlayerInventory() ) {
 				werase(leftWin);
 				PrintInv(leftWin,

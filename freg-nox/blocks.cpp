@@ -126,7 +126,7 @@
 	int  Block::BeforePush(const int, Block * const) { return NO_ACTION; }
 	void Block::Inscribe(const QString & str) { *note=str; }
 	void Block::Move(const int) {}
-	usage_types Block::Use() { return NO; }
+	usage_types Block::Use() { return USAGE_TYPE_NO; }
 	int  Block::Wearable() const { return WEARABLE_NOWHERE; }
 	int  Block::DamageKind() const { return CRUSH; }
 	ushort Block::DamageLevel() const { return 1; }
@@ -962,7 +962,7 @@
 	int Chest::Kind() const { return CHEST; }
 	int Chest::Sub() const { return Block::Sub(); }
 	Inventory * Chest::HasInventory() { return Inventory::HasInventory(); }
-	usage_types Chest::Use() { return OPEN; }
+	usage_types Chest::Use() { return USAGE_TYPE_OPEN; }
 
 	QString Chest::FullName() const {
 		switch ( Sub() ) {
@@ -1013,7 +1013,7 @@
 	int Pile::Kind() const { return PILE; }
 	int Pile::Sub() const { return Block::Sub(); }
 	Inventory * Pile::HasInventory() { return Inventory::HasInventory(); }
-	usage_types Pile::Use() { return OPEN; }
+	usage_types Pile::Use() { return USAGE_TYPE_OPEN; }
 	ushort Pile::Weight() const { return Inventory::Weight(); }
 
 	QString Pile::FullName() const {
@@ -1174,7 +1174,7 @@
 	int  Bush::Movable() const { return NOT_MOVABLE; }
 	bool Bush::ShouldFall() const { return false; }
 	int  Bush::ShouldAct() const  { return RARE; }
-	usage_types Bush::Use() { return OPEN; }
+	usage_types Bush::Use() { return USAGE_TYPE_OPEN; }
 	Inventory * Bush::HasInventory() { return Inventory::HasInventory(); }
 
 	ushort Bush::Weight() const {
@@ -1457,8 +1457,8 @@
 	}
 
 	usage_types Door::Use() {
-		locked=locked ? false : true;
-		return NO;
+		locked=!locked;
+		return USAGE_TYPE_NO;
 	}
 
 	void Door::SaveAttributes(QDataStream & out) const {
@@ -1487,7 +1487,7 @@
 			arg(world->TimeOfDay()/60).
 			arg((world->TimeOfDay()%60 < 10) ? ":0" : ":").
 			arg(world->TimeOfDay()%60));
-		return NO;
+		return USAGE_TYPE_NO;
 	}
 
 	QString Clock::FullName() const {

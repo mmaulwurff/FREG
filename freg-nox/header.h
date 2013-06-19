@@ -129,7 +129,11 @@ enum subs {//substance block is made from
 	AIR //keep it last in this list
 }; //enum subs
 
-enum usage_types { NO, OPEN, INNER_ACTION };
+enum usage_types {
+	USAGE_TYPE_NO,
+	USAGE_TYPE_OPEN,
+	USAGE_TYPE_READ
+}; //enum usage_types
 
 enum transparency {
 	BLOCK_OPAQUE,
