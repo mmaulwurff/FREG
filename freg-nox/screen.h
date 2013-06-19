@@ -131,7 +131,7 @@ class Screen : public VirtScreen {
 	QTimer * const timer;
 	FILE * const notifyLog;
 	int actionMode;
-	short shiftFocus;
+	short shiftFocus; //can be -1, 0, 1 for low, normal, and high focus
 	QString command; //save previous command for further execution
 	QFile * fileToShow;
 

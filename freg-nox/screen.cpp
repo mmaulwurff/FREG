@@ -308,8 +308,8 @@ void Screen::ControlPlayer(const int ch) {
 					inv->Start(), inv->Size()-1);
 			}
 		} break;
-		case '{': shiftFocus -= ( -1==shiftFocus ) ? 0 : 1; break;
-		case '}': shiftFocus += (  1==shiftFocus ) ? 0 : 1; break;
+		case '{': shiftFocus = -!shiftFocus; break; //move focus down
+		case '}': shiftFocus =  !shiftFocus; break; //move focus up
 
 		case '+': w->SetNumActiveShreds(w->NumActiveShreds()+2); break;
 		case '-':
@@ -547,12 +547,7 @@ void Screen::Print() {
 			waddstr(hudWin, "Hungry");
 		}
 	}
-	//shifted focus
 	wstandend(hudWin);
-	if ( shiftFocus ) {
-		mvwaddstr(hudWin, 0, 100, ( -1==shiftFocus ) ?
-			"Focus shift down" : "Focus shift up");
-	}
 	if ( player->GetCreativeMode() ) {
 		mvwaddstr(leftWin, SCREEN_SIZE+1, 1, "Creative Mode");
 		//coordinates
@@ -754,8 +749,21 @@ void Screen::PrintFront(WINDOW * const window) const {
 		case WEST:  mvwaddstr(window, 0, 1, "West view");  break;
 	}
 	Arrows(window, arrow_X, arrow_Y);
-	if ( shiftFocus ) {
-		HorizontalArrows(window, arrow_Y-=shiftFocus, WHITE_BLUE);
+	switch ( shiftFocus ) {
+		case -1:
+			HorizontalArrows(window, arrow_Y+1, WHITE_BLUE);
+			for (ushort i=arrow_Y+2; i<SCREEN_SIZE+1; ++i) {
+				mvwaddch(window, i, 0, '|');
+				mvwaddch(window, i, SCREEN_SIZE*2+1, '|');
+			}
+		break;
+		case 1:
+			HorizontalArrows(window, arrow_Y-1, WHITE_BLUE);
+			for (ushort i=1; i<arrow_Y-1; ++i) {
+				mvwaddch(window, i, 0, '|');
+				mvwaddch(window, i, SCREEN_SIZE*2+1, '|');
+			}
+		break;
 	}
 	wnoutrefresh(window);
 }
