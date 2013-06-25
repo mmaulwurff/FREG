@@ -27,10 +27,10 @@
 
 class QTextStream;
 class Block;
-class Dwarf;
 class Inventory;
 class Active;
 class Shred;
+class DeferredAction;
 
 const ushort SAFE_FALL_HEIGHT=5;
 
@@ -71,6 +71,8 @@ class World : public QThread {
 	QSettings settings;
 	QSettings game_settings;
 
+	QList<DeferredAction *> defActions;
+
 	void ReplaceWithNormal(ushort x, ushort y, ushort z);
 	Block * ReplaceWithNormal(Block * block);
 	void MakeSun();
@@ -84,6 +86,9 @@ class World : public QThread {
 	public:
 	Block * GetBlock(ushort x, ushort y, ushort z) const;
 	Shred * GetShred(ushort i, ushort j) const;
+
+	void AddDeferredAction(DeferredAction *);
+	void RemDeferredAction(DeferredAction *);
 	private:
 	///Puts block to coordinates xyz and activates it.
 	void SetBlock(Block * block, ushort x, ushort y, ushort z);

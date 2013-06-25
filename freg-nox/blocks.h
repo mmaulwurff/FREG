@@ -81,14 +81,14 @@ class Block { //blocks without special physics and attributes
 
 	public:
 	virtual QString FullName() const;
-	virtual int Kind() const;
+	virtual int  Kind() const;
 	virtual bool Catchable() const;
-	virtual int Movable() const;
+	virtual int  Movable() const;
 	virtual void Inscribe(const QString & str);
-	virtual int BeforePush(int dir, Block * who);
+	virtual int  BeforePush(int dir, Block * who);
 	virtual void Move(int direction);
+	virtual int  Damage(ushort dmg, int dmg_kind);
 	virtual usage_types Use();
-	virtual int Damage(ushort dmg, int dmg_kind);
 	///Usually returns new block of the same kind and sub (except glass).
 	/**When reimplemented in derivatives, inside it you can create a pile,
 	 * put several blocks in it, and return pile.
@@ -222,11 +222,12 @@ class Active : public QObject, public Block {
 	virtual void ActFrequent();
 	virtual void ActRare();
 	virtual int ShouldAct() const;
+	virtual bool ShouldFall() const;
+
 	void SetDeferredAction(DeferredAction *);
 	DeferredAction * GetDeferredAction() const;
 
 	int Movable() const;
-	virtual bool ShouldFall() const;
 	int Damage(ushort dmg, int dmg_kind);
 	void ReceiveSignal(const QString &);
 
@@ -556,5 +557,23 @@ class Clock : public Active {
 	Clock (QDataStream & str, int sub);
 	~Clock();
 }; //class Clock
+
+class Creator : public Active, public Inventory {
+	Q_OBJECT
+
+	public:
+	int Kind() const;
+	int Sub() const;
+	QString FullName() const;
+	int DamageKind() const;
+	ushort DamageLevel() const;
+
+	protected:
+	void SaveAttributes(QDataStream & out) const;
+
+	public:
+	Creator(int sub=DIFFERENT);
+	Creator(QDataStream & str, int sub);
+}; //class Creator
 
 #endif

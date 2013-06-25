@@ -52,15 +52,16 @@ void Player::SetActiveHand(const bool right) {
 }
 
 Shred * Player::GetShred() const { return world->GetShred(x, y); }
+World * Player::GetWorld() const { return world; }
 
 bool Player::GetCreativeMode() const { return creativeMode; }
 void Player::SetCreativeMode(const bool turn) {
-	creativeMode=turn;
-	if ( turn ) {
+	if ( (creativeMode=turn) ) {
 		disconnect(player, 0, 0, 0);
-		player=block_manager.NewBlock(PILE, DIFFERENT)->ActiveBlock();
+		player=block_manager.NewBlock(CREATOR, DIFFERENT)->ActiveBlock();
+		player->SetDeferredAction(new DeferredAction(player, GetWorld()));
 	} else {
-		Pile * const creative_inv=(Pile *)player;
+		Creator * const creative_inv=(Creator *)player;
 		const int last_dir=dir;
 		SetPlayer(x, y, z);
 		SetDir(last_dir);
@@ -597,7 +598,7 @@ void Player::SetPlayer(
 		player=world->ActiveBlock(x, y, z);
 		SetDir(world->GetBlock(x, y, z)->GetDir());
 	}
-	player->SetDeferredAction(new DeferredAction(player));
+	player->SetDeferredAction(new DeferredAction(player, GetWorld()));
 
 	connect(player, SIGNAL(Destroyed()),
 		this, SLOT(BlockDestroy()),
@@ -673,7 +674,8 @@ Player::Player(World * const w) :
 	x+=plus;
 	y+=plus;
 	if ( creativeMode ) {
-		player=block_manager.NewBlock(PILE, DIFFERENT)->ActiveBlock();
+		player=block_manager.NewBlock(CREATOR, DIFFERENT)->ActiveBlock();
+		player->SetDeferredAction(new DeferredAction(player, world));
 		dir=NORTH;
 	} else {
 		SetPlayer(x, y, z);

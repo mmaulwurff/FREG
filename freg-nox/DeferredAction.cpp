@@ -3,7 +3,7 @@
 #include "DeferredAction.h"
 
 void DeferredAction::Move() const {
-	attachedBlock->GetWorld()->Move(
+	world->Move(
 		attachedBlock->X(),
 		attachedBlock->Y(),
 		attachedBlock->Z(),
@@ -11,7 +11,7 @@ void DeferredAction::Move() const {
 }
 
 void DeferredAction::Jump() const {
-	attachedBlock->GetWorld()->Jump(
+	world->Jump(
 		attachedBlock->X(),
 		attachedBlock->Y(),
 		attachedBlock->Z(),
@@ -19,7 +19,6 @@ void DeferredAction::Jump() const {
 }
 
 void DeferredAction::Build() {
-	World * const world=GetWorld();
 	if ( DOWN==attachedBlock->GetDir() &&
 			AIR!=world->Sub(xTarg, yTarg, zTarg) )
 	{
@@ -67,30 +66,27 @@ void DeferredAction::Build() {
 }
 
 void DeferredAction::Damage() const {
-	if ( GetWorld()->Visible(
-			attachedBlock->X(),
-			attachedBlock->Y(),
-			attachedBlock->Z(),
-			xTarg, yTarg, zTarg) )
-	{
-		GetWorld()->Damage(xTarg, yTarg, zTarg,
-			attachedBlock->DamageLevel(),
-			attachedBlock->DamageKind());
-	}
+	world->Damage(xTarg, yTarg, zTarg,
+		attachedBlock->DamageLevel(),
+		attachedBlock->DamageKind());
 }
 
 void DeferredAction::Throw() const {
-	GetWorld()->Drop(
+	world->Drop(
 		attachedBlock->X(),
 		attachedBlock->Y(),
 		attachedBlock->Z(),
 		srcSlot, destSlot, num);
 }
 
-World * DeferredAction::GetWorld() const { return attachedBlock->GetWorld(); }
-
-void DeferredAction::SetMove() { type=DEFERRED_MOVE; }
-void DeferredAction::SetJump() { type=DEFERRED_JUMP; }
+void DeferredAction::SetMove() {
+	type=DEFERRED_MOVE;
+	world->AddDeferredAction(this);
+}
+void DeferredAction::SetJump() {
+	type=DEFERRED_JUMP;
+	world->AddDeferredAction(this);
+}
 void DeferredAction::SetBuild(
 		const ushort x_targ, const ushort y_targ, const ushort z_targ,
 		Block * const mat,
@@ -102,6 +98,7 @@ void DeferredAction::SetBuild(
 	material=mat;
 	srcSlot=builder_slot;
 	type=DEFERRED_BUILD;
+	world->AddDeferredAction(this);
 }
 void DeferredAction::SetDamage(
 		const ushort x_targ,
@@ -112,6 +109,7 @@ void DeferredAction::SetDamage(
 	yTarg=y_targ;
 	zTarg=z_targ;
 	type=DEFERRED_DAMAGE;
+	world->AddDeferredAction(this);
 }
 void DeferredAction::SetThrow(const ushort src, const ushort dest,
 		const ushort n)
@@ -120,6 +118,7 @@ void DeferredAction::SetThrow(const ushort src, const ushort dest,
 	destSlot=dest;
 	num=n;
 	type=DEFERRED_THROW;
+	world->AddDeferredAction(this);
 }
 
 void DeferredAction::MakeAction() {
@@ -133,7 +132,9 @@ void DeferredAction::MakeAction() {
 	type=DEFERRED_NOTHING;
 }
 
-DeferredAction::DeferredAction(Active * const attached) :
+World * DeferredAction::GetWorld() const { return world; }
+
+DeferredAction::DeferredAction(Active * const attached, World * const w) :
 		type(DEFERRED_NOTHING),
 		attachedBlock(attached),
 		xTarg(),
@@ -142,5 +143,6 @@ DeferredAction::DeferredAction(Active * const attached) :
 		material(),
 		srcSlot(),
 		destSlot(),
-		num()
+		num(),
+		world(w)
 {}

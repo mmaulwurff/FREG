@@ -19,14 +19,13 @@ class DeferredAction {
 	Block * material;
 	ushort srcSlot, destSlot;
 	ushort num;
+	World * const world;
 
 	void Move() const;
 	void Jump() const;
 	void Build();
 	void Damage() const;
 	void Throw() const;
-
-	World * GetWorld() const;
 
 	public:
 	void SetMove();
@@ -37,8 +36,9 @@ class DeferredAction {
 	void SetDamage(ushort x_targ, ushort y_targ, ushort z_targ);
 	void SetThrow(ushort src_slot, ushort dest_slot, ushort num);
 
+	World * GetWorld() const;
 	int  GetActionType() const;
 	void MakeAction();
 
-	DeferredAction(Active * attached);
+	DeferredAction(Active * attached, World *);
 }; //class DeferredAction

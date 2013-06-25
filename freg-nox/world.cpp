@@ -25,6 +25,7 @@
 #include "world.h"
 #include "BlockManager.h"
 #include <qmath.h>
+#include <DeferredAction.h>
 
 void World::ReplaceWithNormal(const ushort x, const ushort y, const ushort z)
 {
@@ -206,6 +207,14 @@ void World::DeleteBlock(Block * const block) {
 	block_manager.DeleteBlock(block);
 }
 
+void World::AddDeferredAction(DeferredAction * const action) {
+	defActions.append(action);
+}
+
+void World::RemDeferredAction(DeferredAction * const action) {
+	defActions.removeOne(action);
+}
+
 Block * World::ReplaceWithNormal(Block * const block) {
 	if ( block!=Normal(block->Sub()) &&
 			*block==*Normal(block->Sub(), block->GetDir()) )
@@ -311,6 +320,12 @@ void World::ReloadShreds(const int direction) {
 
 void World::PhysEvents() {
 	WriteLock();
+
+	for (int i=0; i<defActions.size(); ++i) {
+		defActions.at(i)->MakeAction();
+		RemDeferredAction(defActions.at(i));
+	}
+
 	if ( toReSet ) {
 		emit StartReloadAll();
 		SaveAllShreds();

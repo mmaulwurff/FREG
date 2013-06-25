@@ -102,7 +102,8 @@ enum kinds {//kind of atom
 	WEAPON, ///<16
 	LADDER, ///<17
 	DOOR, ///< 18
-	LOCKED_DOOR ///< 19
+	LOCKED_DOOR, ///< 19
+	CREATOR      ///< 20
 }; //enum kinds
 enum subs {//substance block is made from
 	//do not change order, or rewrite craft recipes.

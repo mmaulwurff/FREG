@@ -65,6 +65,7 @@ Block * BlockManager::NewBlock(const int kind, int sub) {
 		case DOOR:   return New<Door  >(sub);
 		case LIQUID: return New<Liquid>(sub);
 		case CLOCK:  return New<Clock >(sub);
+		case CREATOR: return New<Creator>(sub);
 		case WORKBENCH: return New<Workbench>(sub);
 		default:
 			fprintf(stderr,
@@ -103,6 +104,7 @@ Block * BlockManager::BlockFromFile(QDataStream & str) {
 		case LOCKED_DOOR:
 		case DOOR:   return New<Door  >(str, sub);
 		case CLOCK:  return New<Clock >(str, sub);
+		case CREATOR: return New<Creator>(str, sub);
 		case WORKBENCH: return New<Workbench>(str, sub);
 		default:
 			fprintf(stderr,

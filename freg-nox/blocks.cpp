@@ -355,15 +355,12 @@
 	bool Active::IsFalling() const { return falling; }
 	int  Active::Movable() const { return MOVABLE; }
 	bool Active::ShouldFall() const { return true; }
+	void Active::ActFrequent() {}
 
-	void Active::ActFrequent() {
+	void Active::SetDeferredAction(DeferredAction * const action) {
+		World * const world=action->GetWorld();
 		if ( deferredAction ) {
-			deferredAction->MakeAction();
-		}
-	}
-
-	void Active::SetDeferredAction(DeferredAction * action) {
-		if ( deferredAction ) {
+			world->RemDeferredAction(deferredAction);
 			delete deferredAction;
 		}
 		deferredAction=action;
@@ -881,7 +878,7 @@
 
 	int Dwarf::Kind() const { return DWARF; }
 	int Dwarf::Sub() const { return Block::Sub(); }
-	int Dwarf::ShouldAct() const { return FREQUENT_AND_RARE; }
+	int Dwarf::ShouldAct() const { return RARE; }
 	ushort Dwarf::Start() const { return onLegs+1; }
 	QString Dwarf::FullName() const { return "Rational"; }
 	Inventory * Dwarf::HasInventory() { return Inventory::HasInventory(); }
@@ -1557,3 +1554,23 @@
 		Inscribe(*note);
 	}
 	Clock::~Clock() { delete txtStream; }
+//Creator::
+	int Creator::Kind() const { return CREATOR; }
+	int Creator::Sub() const { return Block::Sub(); }
+	QString Creator::FullName() const { return tr("Creative block"); }
+	int Creator::DamageKind() const { return TIME; }
+	ushort Creator::DamageLevel() const { return MAX_DURABILITY; }
+
+	void Creator::SaveAttributes(QDataStream & out) const {
+		Active::SaveAttributes(out);
+		Inventory::SaveAttributes(out);
+	}
+
+	Creator::Creator(const int sub) :
+			Active(sub, NONSTANDARD),
+			Inventory(INV_SIZE)
+	{}
+	Creator::Creator(QDataStream & str, const int sub) :
+			Active(str, sub, NONSTANDARD),
+			Inventory(str, INV_SIZE)
+	{}

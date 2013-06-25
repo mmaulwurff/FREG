@@ -63,6 +63,7 @@ class Player : public QObject {
 
 	void UpdateXYZ();
 	Shred * GetShred() const;
+	World * GetWorld() const;
 
 	public slots:
 
