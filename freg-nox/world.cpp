@@ -711,8 +711,11 @@ void World::Exchange(
 		const ushort src, const ushort dest,
 		const ushort num)
 {
-	Inventory * const inv_from=HasInventory(i_from, j_from, k_from);
 	Block * const block_from=GetBlock(i_from, j_from, k_from);
+	if ( !block_from ) {
+		return;
+	}
+	Inventory * const inv_from=block_from->HasInventory();
 	if ( !inv_from ) {
 		block_from->ReceiveSignal(tr("No inventory."));
 		return;
@@ -721,15 +724,19 @@ void World::Exchange(
 		SetBlock(block_manager.NewBlock(PILE, DIFFERENT),
 			i_to, j_to, k_to);
 	}
-	Inventory * const inv_to=HasInventory(i_to, j_to, k_to);
+	Block * const block_to=GetBlock(i_to, j_to, k_to);
+	if ( !block_to ) {
+		block_from->ReceiveSignal(tr("No target."));
+		return;
+	}
+	Inventory * const inv_to=block_to->HasInventory();
 	if ( !inv_to ) {
 		block_from->ReceiveSignal(tr("No room there."));
 		return;
 	}
 	if ( inv_from->Drop(src, dest, num, inv_to) ) {
 		block_from->ReceiveSignal(tr("Your bag is lighter now."));
-		GetBlock(i_to, j_to, k_to)->
-			ReceiveSignal(tr("Your bag is heavier now."));
+		block_to  ->ReceiveSignal(tr("Your bag is heavier now."));
 	}
 }
 
@@ -738,8 +745,9 @@ int World::GetAll(const ushort x_to, const ushort y_to, const ushort z_to) {
 	if ( Focus(x_to, y_to, z_to, x_from, y_from, z_from) ) {
 		return 5;
 	}
-	Inventory * const inv_from=HasInventory(x_from, y_from, z_from);
-	Inventory * const inv_to=HasInventory(x_to, y_to, z_to);
+	Inventory * const inv_from=
+		GetBlock(x_from, y_from, z_from)->HasInventory();
+	Inventory * const inv_to=GetBlock(x_to, y_to, z_to)->HasInventory();
 	if ( !inv_to ) {
 		return 6;
 	}
@@ -768,16 +776,6 @@ int World::Movable(const ushort x, const ushort y, const ushort z) const {
 }
 ushort World::Weight(const ushort x, const ushort y, const ushort z) const {
 	return GetShred(x, y)->Weight(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
-}
-
-Inventory * World::HasInventory(const ushort i, const ushort j, const ushort k)
-const {
-	return InBounds(i, j, k) ? GetBlock(i, j, k)->HasInventory() : 0;
-}
-
-Active * World::ActiveBlock(const ushort i, const ushort j, const ushort k)
-const {
-	return InBounds(i, j, k) ? GetBlock(i, j, k)->ActiveBlock() : 0;
 }
 
 int World::Temperature(

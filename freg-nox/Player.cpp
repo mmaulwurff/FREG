@@ -587,7 +587,8 @@ void Player::SetPlayer(
 	if ( GetCreativeMode() ) {
 		return;
 	}
-	if ( DWARF!=world->Kind(x, y, z) ) {
+	Block * const target_block=world->GetBlock(x, y, z);
+	if ( DWARF!=target_block->Kind() ) {
 		world->Build( (player=block_manager.
 				NewBlock(DWARF, H_MEAT)->ActiveBlock()),
 			x, y, z,
@@ -595,8 +596,8 @@ void Player::SetPlayer(
 			0,
 			true /*force build*/ );
 	} else {
-		player=world->ActiveBlock(x, y, z);
-		SetDir(world->GetBlock(x, y, z)->GetDir());
+		player=target_block->ActiveBlock();
+		SetDir(target_block->GetDir());
 	}
 	player->SetDeferredAction(new DeferredAction(player, GetWorld()));
 

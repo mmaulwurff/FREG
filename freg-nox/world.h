@@ -27,8 +27,6 @@
 
 class QTextStream;
 class Block;
-class Inventory;
-class Active;
 class Shred;
 class DeferredAction;
 
@@ -229,9 +227,6 @@ class World : public QThread {
 	int Movable(ushort x, ushort y, ushort z) const;
 	ushort Weight(ushort x, ushort y, ushort z) const;
 	uchar LightRadius(ushort x, ushort y, ushort z) const;
-	Inventory * HasInventory(ushort x, ushort y, ushort z) const;
-
-	Active * ActiveBlock(ushort x, ushort y, ushort z) const;
 
 	QString GetNote(ushort x, ushort y, ushort z) const;
 	int Temperature(ushort x, ushort y, ushort z) const;

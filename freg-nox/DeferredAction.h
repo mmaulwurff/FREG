@@ -1,3 +1,23 @@
+	/*
+	*This file is part of FREG.
+	*
+	*FREG is free software: you can redistribute it and/or modify
+	*it under the terms of the GNU General Public License as published by
+	*the Free Software Foundation, either version 3 of the License, or
+	*(at your option) any later version.
+	*
+	*FREG is distributed in the hope that it will be useful,
+	*but WITHOUT ANY WARRANTY; without even the implied warranty of
+	*MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	*GNU General Public License for more details.
+	*
+	*You should have received a copy of the GNU General Public License
+	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
+	*/
+
+#ifndef DEFERRED_ACTION_H
+#define DEFERRED_ACTION_H
+
 enum deferred_actions {
 	DEFERRED_NOTHING,
 	DEFERRED_MOVE,
@@ -42,3 +62,5 @@ class DeferredAction {
 
 	DeferredAction(Active * attached, World *);
 }; //class DeferredAction
+
+#endif

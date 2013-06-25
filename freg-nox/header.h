@@ -144,5 +144,4 @@ enum transparency {
 	UNDEF
 }; //enum transparency
 
-
 #endif
