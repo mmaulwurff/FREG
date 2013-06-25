@@ -39,7 +39,7 @@ long Player::GlobalY() const {
 }
 
 bool Player::IsRightActiveHand() const {
-	return Dwarf::inRight==GetActiveHand();
+	return Dwarf::IN_RIGHT==GetActiveHand();
 }
 ushort Player::GetActiveHand() const {
 	return ( DWARF==GetP()->Kind() ) ?
@@ -58,8 +58,10 @@ bool Player::GetCreativeMode() const { return creativeMode; }
 void Player::SetCreativeMode(const bool turn) {
 	if ( (creativeMode=turn) ) {
 		disconnect(player, 0, 0, 0);
-		player=block_manager.NewBlock(CREATOR, DIFFERENT)->ActiveBlock();
-		player->SetDeferredAction(new DeferredAction(player, GetWorld()));
+		player=block_manager.NewBlock(CREATOR, DIFFERENT)->
+			ActiveBlock();
+		player->SetDeferredAction(new DeferredAction(player,
+			GetWorld()));
 	} else {
 		Creator * const creative_inv=(Creator *)player;
 		const int last_dir=dir;
@@ -297,7 +299,7 @@ void Player::Obtain(const ushort src, const ushort dest, const ushort num) {
 bool Player::Wield(const ushort num) {
 	world->WriteLock();
 	if ( ValidBlock(num) ) {
-		for (ushort i=0; i<=Dwarf::onLegs; ++i ) {
+		for (ushort i=0; i<=Dwarf::ON_LEGS; ++i ) {
 			InnerMove(num, i);
 		}
 	}
@@ -675,7 +677,8 @@ Player::Player(World * const w) :
 	x+=plus;
 	y+=plus;
 	if ( creativeMode ) {
-		player=block_manager.NewBlock(CREATOR, DIFFERENT)->ActiveBlock();
+		player=block_manager.NewBlock(CREATOR, DIFFERENT)->
+			ActiveBlock();
 		player->SetDeferredAction(new DeferredAction(player, world));
 		dir=NORTH;
 	} else {

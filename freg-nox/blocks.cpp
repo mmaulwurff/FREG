@@ -851,7 +851,7 @@
 //Dwarf::
 	uchar Dwarf::GetActiveHand() const { return activeHand; }
 	void  Dwarf::SetActiveHand(const bool right) {
-		activeHand=(right ? quint8(inRight) : inLeft);
+		activeHand=(right ? quint8(IN_RIGHT) : IN_LEFT);
 	}
 
 	ushort Dwarf::Weight() const {
@@ -879,7 +879,7 @@
 	int Dwarf::Kind() const { return DWARF; }
 	int Dwarf::Sub() const { return Block::Sub(); }
 	int Dwarf::ShouldAct() const { return RARE; }
-	ushort Dwarf::Start() const { return onLegs+1; }
+	ushort Dwarf::Start() const { return ON_LEGS+1; }
 	QString Dwarf::FullName() const { return "Rational"; }
 	Inventory * Dwarf::HasInventory() { return Inventory::HasInventory(); }
 	uchar Dwarf::LightRadius() const { return 3; }
@@ -894,11 +894,11 @@
 
 	ushort Dwarf::DamageLevel() const {
 		ushort level=1;
-		if ( Number(inRight) ) {
-			level+=ShowBlock(inRight)->DamageLevel();
+		if ( Number(IN_RIGHT) ) {
+			level+=ShowBlock(IN_RIGHT)->DamageLevel();
 		}
-		if ( Number(inLeft) ) {
-			level+=ShowBlock(inLeft)->DamageLevel();
+		if ( Number(IN_LEFT) ) {
+			level+=ShowBlock(IN_LEFT)->DamageLevel();
 		}
 		return level;
 	}
@@ -916,13 +916,13 @@
 			const ushort num)
 	{
 		Block * const block=ShowBlock(num_from);
-		if ( block && (num_to > onLegs ||
-				inRight==num_to || inLeft==num_to ||
-				( onHead==num_to &&
+		if ( block && (num_to > ON_LEGS ||
+				IN_RIGHT==num_to || IN_LEFT==num_to ||
+				( ON_HEAD==num_to &&
 					WEARABLE_HEAD==block->Wearable() ) ||
-				( onBody==num_to &&
+				( ON_BODY==num_to &&
 					WEARABLE_BODY==block->Wearable() ) ||
-				( onLegs==num_to &&
+				( ON_LEGS==num_to &&
 					WEARABLE_LEGS==block->Wearable() )) )
 		{
 			for (ushort i=0; i<num; ++i) {
@@ -945,7 +945,7 @@
 	Dwarf::Dwarf(const int sub) :
 			Animal(sub),
 			Inventory(),
-			activeHand(inRight)
+			activeHand(IN_RIGHT)
 	{
 		*note="Urist";
 	}
@@ -1203,11 +1203,11 @@
 
 	Bush::Bush(const int sub) :
 			Active(sub),
-			Inventory(bush_size)
+			Inventory(BUSH_SIZE)
 	{}
 	Bush::Bush(QDataStream & str, const int sub) :
 			Active(str, sub),
-			Inventory(str, bush_size)
+			Inventory(str, BUSH_SIZE)
 	{}
 //Rabbit::
 	short Rabbit::Attractive(const int sub) const {
@@ -1398,10 +1398,10 @@
 	}
 
 	Workbench::Workbench(const int sub) :
-			Chest(sub, workbench_size)
+			Chest(sub, WORKBENCH_SIZE)
 	{}
 	Workbench::Workbench(QDataStream & str, const int sub) :
-			Chest(str, sub, workbench_size)
+			Chest(str, sub, WORKBENCH_SIZE)
 	{}
 //Door::
 	int Door::BeforePush(const int dir, Block * const) {

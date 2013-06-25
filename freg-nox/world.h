@@ -38,7 +38,7 @@ const uchar  SUN_LIGHT_FACTOR=8;
 class World : public QThread {
 	Q_OBJECT
 
-	static const ushort time_steps_in_sec=10;
+	static const ushort TIME_STEPS_IN_SEC=10;
 
 	ulong time;
 	ushort timeStep;

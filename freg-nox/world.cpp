@@ -45,7 +45,7 @@ long World::GetSpawnLongi() const { return spawnLongi; }
 long World::GetSpawnLati()  const { return spawnLati; }
 long World::Longitude() const { return longitude; }
 long World::Latitude() const { return latitude; }
-ushort World::TimeStepsInSec() { return time_steps_in_sec; }
+ushort World::TimeStepsInSec() { return TIME_STEPS_IN_SEC; }
 
 long World::MapSize() const { return mapSize; }
 QTextStream * World::MapStream() { return worldMapStream; }
@@ -136,7 +136,7 @@ void World::run() {
 	connect(&timer, SIGNAL(timeout()),
 		this, SLOT(PhysEvents()),
 		Qt::DirectConnection);
-	timer.start(1000/time_steps_in_sec);
+	timer.start(1000/TIME_STEPS_IN_SEC);
 	exec();
 }
 
@@ -350,7 +350,7 @@ void World::PhysEvents() {
 		shreds[i+j*NumShreds()]->PhysEventsFrequent();
 	}
 
-	if ( time_steps_in_sec > timeStep ) {
+	if ( TIME_STEPS_IN_SEC > timeStep ) {
 		++timeStep;
 		Unlock();
 		return;

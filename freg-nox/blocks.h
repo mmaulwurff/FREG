@@ -332,11 +332,11 @@ class Dwarf : public Animal, public Inventory {
 	quint16 NutritionalValue(int sub) const;
 
 	public:
-	static const uchar onHead=0;
-	static const uchar inRight=1;
-	static const uchar inLeft=2;
-	static const uchar onBody=3;
-	static const uchar onLegs=4;
+	static const uchar ON_HEAD=0;
+	static const uchar IN_RIGHT=1;
+	static const uchar IN_LEFT=2;
+	static const uchar ON_BODY=3;
+	static const uchar ON_LEGS=4;
 
 	uchar GetActiveHand() const;
 	void  SetActiveHand(bool right);
@@ -452,7 +452,7 @@ class Grass : public Active {
 class Bush : public Active, public Inventory {
 	Q_OBJECT
 
-	static const ushort bush_size=3;
+	static const ushort BUSH_SIZE=3;
 
 	public:
 	int  Kind() const;
@@ -495,7 +495,7 @@ class Rabbit : public Animal {
 }; //class Rabbit
 
 class Workbench : public Chest {
-	static const ushort workbench_size=10;
+	static const ushort WORKBENCH_SIZE=10;
 
 	void Craft();
 

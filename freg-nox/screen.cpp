@@ -75,10 +75,10 @@ void Screen::Move(const int) { updated=false; }
 
 QString Screen::PassString(QString & str) const {
 	mvwaddch(commandWin, 0, 0, ':');
-	static const ushort note_length=144;
-	char temp_str[note_length+1];
+	static const ushort NOTE_LENGTH=144;
+	char temp_str[NOTE_LENGTH+1];
 	echo();
-	wgetnstr(commandWin, temp_str, note_length);
+	wgetnstr(commandWin, temp_str, NOTE_LENGTH);
 	noecho();
 	werase(commandWin);
 	wrefresh(commandWin);
