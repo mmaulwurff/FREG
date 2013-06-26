@@ -217,18 +217,11 @@ class World : public QThread {
 
 	//block information section
 	public:
-	bool InBounds(ushort i, ushort j, ushort k=0) const;
-	QString FullName(ushort x, ushort y, ushort z) const;
-	int Transparent(ushort x, ushort y, ushort z) const;
-	int Durability(ushort x, ushort y, ushort z) const;
-	int Kind(ushort x, ushort y, ushort z) const;
-	int Sub (ushort x, ushort y, ushort z) const;
-	int Movable(ushort x, ushort y, ushort z) const;
-	ushort Weight(ushort x, ushort y, ushort z) const;
-	uchar LightRadius(ushort x, ushort y, ushort z) const;
-
-	QString GetNote(ushort x, ushort y, ushort z) const;
-	int Temperature(ushort x, ushort y, ushort z) const;
+	//For more information, use World::GetBlock(x, y, z) and ->.
+	bool InBounds   (ushort x, ushort y, ushort z=0) const;
+	int  Transparent(ushort x, ushort y, ushort z) const;
+	int  Sub        (ushort x, ushort y, ushort z) const;
+	int  Temperature(ushort x, ushort y, ushort z) const;
 
 	void ReloadAllShreds(long lati, long longi,
 		ushort new_x, ushort new_y, ushort new_z,

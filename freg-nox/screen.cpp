@@ -585,8 +585,8 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
 	ushort i, j;
 	for ( j=start_y; j<SCREEN_SIZE+start_y; ++j, waddstr(window, "\n_") )
 	for ( i=start_x; i<SCREEN_SIZE+start_x; ++i ) {
-		ushort k;
-		for (k=k_start; INVISIBLE==w->Transparent(i, j, k); k+=k_step);
+		ushort k=k_start;
+		for ( ; INVISIBLE==w->Transparent(i, j, k); k+=k_step);
 		if ( (w->Enlightened(i, j, k, block_side) &&
 				player->Visible(i, j, k)) ||
 				player->GetCreativeMode() )

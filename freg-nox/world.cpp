@@ -480,7 +480,7 @@ int World::Move(const ushort i, const ushort j, const ushort k,
 	ushort newi, newj, newk;
 	if ( !Focus(i, j, k, newi, newj, newk, dir) &&
 			CanMove(i, j, k, newi, newj, newk, dir) &&
-			(DOWN==dir || !Weight(i, j, k) || !(
+			(DOWN==dir || !GetBlock(i, j, k)->Weight() || !(
 				AIR==Sub(i, j, k-1) &&
 				AIR==Sub(newi, newj, newk-1))) )
 	{
@@ -567,7 +567,7 @@ void World::NoCheckMove(
 void World::Jump(const ushort x, const ushort y, const ushort z,
 		const quint8 dir)
 {
-	if ( !(AIR==Sub(x, y, z-1) && Weight(x, y, z)) &&
+	if ( !(AIR==Sub(x, y, z-1) && GetBlock(x, y, z)->Weight()) &&
 			Move(x, y, z, UP) &&
 			!Move(x, y, z+1, dir) )
 	{
@@ -660,14 +660,16 @@ int World::Build(Block * block,
 		Block * const who,
 		const bool anyway) //defaults exist
 {
-	if ( !InBounds(i, j, k) || (!anyway && ENVIRONMENT!=Movable(i, j, k)) )
+	Block * const target_block=GetBlock(i, j, k);
+	if ( !InBounds(i, j, k) ||
+			(!anyway && ENVIRONMENT!=target_block->Movable()) )
 	{
 		if ( who ) {
 			who->ReceiveSignal(tr("Cannot build here."));
 		}
 		return 1;
 	}
-	DeleteBlock(GetBlock(i, j, k));
+	DeleteBlock(target_block);
 	block->Restore();
 	SetBlock(block, i, j, k);
 	ReplaceWithNormal(i, j, k);
@@ -754,28 +756,11 @@ int World::GetAll(const ushort x_to, const ushort y_to, const ushort z_to) {
 	return inv_to->GetAll(inv_from);
 }
 
-QString World::FullName(const ushort x, const ushort y, const ushort z) const {
-	return InBounds(x, y, z) ?
-		GetBlock(x, y, z)->FullName() : tr("Something somewhere");
-}
-
 int World::Transparent(const ushort x, const ushort y, const ushort z) const {
 	return GetShred(x, y)->Transparent(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
-int World::Durability(const ushort x, const ushort y, const ushort z) const {
-	return GetShred(x, y)->Durability(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
-}
-int World::Kind(const ushort x, const ushort y, const ushort z) const {
-	return GetShred(x, y)->Kind(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
-}
 int World::Sub(const ushort x, const ushort y, const ushort z) const {
 	return GetShred(x, y)->Sub(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
-}
-int World::Movable(const ushort x, const ushort y, const ushort z) const {
-	return GetShred(x, y)->Movable(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
-}
-ushort World::Weight(const ushort x, const ushort y, const ushort z) const {
-	return GetShred(x, y)->Weight(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 
 int World::Temperature(
@@ -799,10 +784,6 @@ const {
 		}
 	}
 	return temperature/2;
-}
-
-QString World::GetNote(const ushort x, const ushort y, const ushort z) const {
-	return InBounds(x, y, z) ? GetBlock(x, y, z)->GetNote() : "";
 }
 
 void World::RemSun() {

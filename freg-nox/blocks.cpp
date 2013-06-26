@@ -564,8 +564,9 @@
 				{
 					return;
 				}
-			} else
+			} else {
 				--breath;
+			}
 		} else if ( breath < MAX_BREATH ) {
 			++breath;
 		}
@@ -1133,12 +1134,15 @@
 		if ( InBounds(i, j) && world->Enlightened(i, j, Z()) ) {
 			if ( AIR==world->Sub(i, j, Z()) &&
 					SOIL==world->Sub(i, j, Z()-1) )
+			{
 				world->Build(block_manager.NewBlock(GRASS,
 						Sub()), i, j, Z());
-			else if ( SOIL==world->Sub(i, j, Z()) &&
+			} else if ( SOIL==world->Sub(i, j, Z()) &&
 					AIR==world->Sub(i, j, Z()+1) )
+			{
 				world->Build(block_manager.NewBlock(GRASS,
 						Sub()), i, j, Z()+1);
+			}
 		}
 	}
 

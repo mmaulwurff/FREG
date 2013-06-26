@@ -32,12 +32,6 @@
 
 const uchar FIRE_LIGHT_FACTOR=4;
 
-//private
-uchar World::LightRadius(const ushort x, const ushort y, const ushort z)
-const {
-	return GetShred(x, y)->LightRadius(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
-}
-
 //private. use Enlightened instead, which is smart wrapper of this.
 uchar World::LightMap(const ushort x, const ushort y, const ushort z)
 const {
@@ -82,10 +76,8 @@ void World::Shine(const ushort i, const ushort j, const ushort k,
 //private
 void World::SunShine(const ushort i, const ushort j) {
 	ushort light_lev=MAX_LIGHT_RADIUS;
-	ushort k=HEIGHT-2;
-	ushort transparent;
-	do {
-		transparent=Transparent(i, j, k);
+	for (ushort k=HEIGHT-2; light_lev; --k) {
+		const ushort transparent=Transparent(i, j, k);
 		const uchar new_light_lev=
 			(LightMap(i, j, k) & 0xF0) | light_lev;
 		const struct {
@@ -112,15 +104,16 @@ void World::SunShine(const ushort i, const ushort j) {
 		}
 		if ( BLOCK_TRANSPARENT==transparent ) {
 			--light_lev;
+		} else if ( BLOCK_OPAQUE==transparent ) {
+			break;
 		}
-		--k;
-	} while ( light_lev && BLOCK_OPAQUE!=transparent );
+	}
 }
 
 //private. called when onet block is moved, built, or destroyed.
 void World::ReEnlighten(const ushort i, const ushort j, const ushort k) {
 	SunShine(i, j);
-	Shine(i, j, k, LightRadius(i, j, k), true);
+	Shine(i, j, k, GetBlock(i, j, k)->LightRadius(), true);
 	emit Updated(i, j, k);
 }
 
@@ -200,9 +193,9 @@ void World::ReEnlightenMove(const int dir) {
 	emit ReConnect();
 }
 
-uchar World::Enlightened(const ushort i, const ushort j, const ushort k)
+uchar World::Enlightened(const ushort x, const ushort y, const ushort z)
 const {
-	return InBounds(i, j, k) ? LightMap(i, j, k) : 0;
+	return LightMap(x, y, z);
 }
 
 //returns ligting of the block.
@@ -272,7 +265,7 @@ void Shred::SetAllLightMap(const uchar level) {
 void Shred::ShineAll() {
 	//TODO: make own lighting list
 	for (ushort j=0; j<activeListAll.size(); ++j) {
-		Active const * const temp=activeListAll[j];
+		Active const * const temp=activeListAll.at(j);
 		world->Shine(temp->X(), temp->Y(), temp->Z(),
 			temp->LightRadius(), true);
 	}

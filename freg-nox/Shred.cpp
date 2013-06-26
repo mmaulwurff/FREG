@@ -195,7 +195,7 @@ Shred::Shred(World * const world_,
 {
 	activeListFrequent.reserve(100);
 	activeListRare.reserve(500);
-	activeListAll.reserve(1000);
+	activeListAll.reserve(600);
 	fallList.reserve(100);
 	QFile file(FileName());
 	if ( file.open(QIODevice::ReadOnly) && !LoadShred(file) ) {
@@ -284,7 +284,7 @@ void Shred::RegisterBlock(Block * const block,
 
 void Shred::PhysEventsFrequent() {
 	for (int j=0; j<fallList.size(); ++j) {
-		Active * const temp=fallList[j];
+		Active * const temp=fallList.at(j);
 		const ushort weight=temp->Weight();
 		if ( weight ) {
 			const ushort x=temp->X();
@@ -303,12 +303,12 @@ void Shred::PhysEventsFrequent() {
 		}
 	}
 	for (int j=0; j<activeListFrequent.size(); ++j) {
-		activeListFrequent[j]->ActFrequent();
+		activeListFrequent.at(j)->ActFrequent();
 	}
 }
 void Shred::PhysEventsRare() {
 	for (int j=0; j<activeListRare.size(); ++j) {
-		activeListRare[j]->ActRare();
+		activeListRare.at(j)->ActRare();
 	}
 }
 
@@ -373,25 +373,25 @@ void Shred::AddFalling(const ushort x, const ushort y, const ushort z) {
 
 void Shred::ReloadToNorth() {
 	for (ushort i=0; i<activeListAll.size(); ++i) {
-		activeListAll[i]->ReloadToNorth();
+		activeListAll.at(i)->ReloadToNorth();
 	}
 	++shredY;
 }
 void Shred::ReloadToEast() {
 	for (ushort i=0; i<activeListAll.size(); ++i) {
-		activeListAll[i]->ReloadToEast();
+		activeListAll.at(i)->ReloadToEast();
 	}
 	--shredX;
 }
 void Shred::ReloadToSouth() {
 	for (ushort i=0; i<activeListAll.size(); ++i) {
-		activeListAll[i]->ReloadToSouth();
+		activeListAll.at(i)->ReloadToSouth();
 	}
 	--shredY;
 }
 void Shred::ReloadToWest() {
 	for (ushort i=0; i<activeListAll.size(); ++i) {
-		activeListAll[i]->ReloadToWest();
+		activeListAll.at(i)->ReloadToWest();
 	}
 	++shredX;
 }

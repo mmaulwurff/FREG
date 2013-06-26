@@ -36,6 +36,8 @@ class Shred {
 	const long longitude, latitude;
 	ushort shredX, shredY;
 
+	//needed in Shred::ReloadTo... for active blocks not to reload twice
+	//when they are registered both in frequent and rare lists.
 	QList<Active *> activeListAll;
 	QList<Active *> activeListFrequent;
 	QList<Active *> activeListRare;

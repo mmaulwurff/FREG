@@ -127,38 +127,37 @@ const {
 	world->Focus(x, y, z, i_target, j_target, k_target, GetDir());
 }
 
-void Player::Examine(const short i, const short j, const short k)
-const {
+void Player::Examine(const short i, const short j, const short k) const {
 	world->ReadLock();
 
 	emit Notify("------");
-	emit Notify( world->FullName(i, j, k) );
+	const Block * const block=world->GetBlock(i, j, k);
+	const int sub=block->Sub();
+	emit Notify( block->FullName() );
 	if ( creativeMode ) { //know more
 		emit Notify(QString(tr(
 		"Light:%1, fire:%2, sun:%3. Transp:%4. Norm:%5. Dir:%6.")).
 			arg(world->Enlightened(i, j, k)).
 			arg(world->FireLight(i, j, k)/16).
 			arg(world->SunLight(i, j, k)).
-			arg(world->Transparent(i, j, k)).
-			arg(world->GetBlock(i, j, k)==block_manager.
-				NormalBlock(world->Sub(i, j, k))).
-			arg(world->GetBlock(i, j, k)->GetDir()));
+			arg(block->Transparent()).
+			arg(block==block_manager.NormalBlock(sub)).
+			arg(block->GetDir()));
 	}
-	const int sub=world->Sub(i, j, k);
 	if ( AIR==sub || SKY==sub || SUN_MOON==sub ) {
 		world->Unlock();
 		return;	
 	}
 	QString str;
-	if ( ""!=(str=world->GetNote(i, j, k)) ) {
+	if ( ""!=(str=block->GetNote()) ) {
 		emit Notify(tr("Inscription: ")+str);
 	}
 	emit Notify(tr("Temperature: ")+
 		QString::number(world->Temperature(i, j, k)));
 	emit Notify(tr("Durability: ")+
-		QString::number(world->Durability(i, j, k)));
+		QString::number(block->Durability()));
 	emit Notify(tr("Weight: ")+
-		QString::number(world->Weight(i, j, k)));
+		QString::number(block->Weight()));
 	world->Unlock();
 }
 
