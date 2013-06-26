@@ -18,14 +18,12 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "header.h"
 #include <QObject>
 
 class QString;
 class World;
 class Block;
 class Active;
-class Animal;
 class Inventory;
 class Shred;
 
@@ -213,6 +211,6 @@ class Player : public QObject {
 
 	///Destructor calls Player::CleanAll().
 	~Player();
-}; //Player
+}; //class Player
 
 #endif

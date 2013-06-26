@@ -19,7 +19,6 @@
 #include <QTextStream>
 #include <QString>
 #include <QSettings>
-#include <QString>
 #include <QDir>
 #include "blocks.h"
 #include "Player.h"

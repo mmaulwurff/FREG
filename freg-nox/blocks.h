@@ -22,14 +22,6 @@
 #include <QStack>
 #include "header.h"
 
-class QDataStream;
-class QTextStream;
-class World;
-class Shred;
-class Inventory;
-class Active;
-class Animal;
-
 const ushort INV_SIZE=26;
 const ushort MAX_STACK_SIZE=9;
 
@@ -67,6 +59,11 @@ enum WEARABLE {
 	const ushort WEIGHT_MINIMAL=1;
 	const ushort WEIGHT_STONE=200;
 	const ushort WEIGHT_AIR=0;
+
+class QDataStream;
+class Inventory;
+class Active;
+class Animal;
 
 class Block { //blocks without special physics and attributes
 	quint8 Transparency(quint8 transp, int sub);
@@ -180,6 +177,8 @@ class Pick : public Weapon {
 }; //class Pick
 
 class DeferredAction;
+class Shred;
+class World;
 
 class Active : public QObject, public Block {
 	Q_OBJECT
@@ -535,6 +534,8 @@ class Door : public Active {
 	Door(int sub);
 	Door(QDataStream & str, int sub);
 }; //class Door
+
+class QTextStream;
 
 class Clock : public Active {
 	QTextStream * txtStream;

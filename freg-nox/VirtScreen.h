@@ -38,8 +38,6 @@ class VirtScreen : public QObject {
 
 	Q_OBJECT
 	
-	enum window_views { NORMAL, FRONT, INVENTORY };
-
 	protected:
 	///world to print
 	World * const w;

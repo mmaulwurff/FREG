@@ -18,7 +18,6 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-#include <cmath>
 #include <QReadWriteLock>
 #include <QThread>
 #include <QByteArray>
