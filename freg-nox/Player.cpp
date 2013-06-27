@@ -494,6 +494,19 @@ void Player::CheckOverstep(const int dir) {
 			y >= (world->NumShreds()/2+2)*SHRED_WIDTH )
 	{
 		emit OverstepBorder(dir);
+		if ( GetCreativeMode() ) {
+			//coordinates of normal (non-creative) player are
+			//reloaded (shifted corresponding to world reload)
+			//automatically since such player is registered in
+			//his shred.
+			//This helps creative player shift his coordinates.
+			switch ( dir ) {
+				case NORTH: player->ReloadToNorth(); break;
+				case SOUTH: player->ReloadToSouth(); break;
+				case EAST:  player->ReloadToEast();  break;
+				case WEST:  player->ReloadToWest();  break;
+			}
+		}
 		UpdateXYZ();
 	}
 	emit Moved(GlobalX(), GlobalY(), z);

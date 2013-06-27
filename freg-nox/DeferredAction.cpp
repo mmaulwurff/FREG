@@ -20,7 +20,6 @@
 #include "DeferredAction.h"
 
 void DeferredAction::GhostMove() const {
-	fprintf(stderr, "hello from ghost");
 	attachedBlock->Move(attachedBlock->GetDir());
 }
 
