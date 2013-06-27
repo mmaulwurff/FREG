@@ -132,6 +132,7 @@ char Screen::CharName(const int kind, const int sub) const {
 	switch ( kind )  {
 		case CHEST:
 		case BUSH:   return ';';
+		case CREATOR:
 		case DWARF:  return '@';
 		case LIQUID: return '~';
 		case GRASS:  return '.';

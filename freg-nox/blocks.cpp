@@ -358,11 +358,7 @@
 	void Active::ActFrequent() {}
 
 	void Active::SetDeferredAction(DeferredAction * const action) {
-		World * const world=action->GetWorld();
-		if ( deferredAction ) {
-			world->RemDeferredAction(deferredAction);
-			delete deferredAction;
-		}
+		delete deferredAction;
 		deferredAction=action;
 	}
 	DeferredAction * Active::GetDeferredAction() const {
@@ -371,11 +367,9 @@
 
 	bool Active::FallDamage() {
 		if ( fall_height > SAFE_FALL_HEIGHT ) {
-			const ushort dmg=(fall_height -
-				SAFE_FALL_HEIGHT)*10;
+			const ushort dmg=(fall_height - SAFE_FALL_HEIGHT)*10;
 			fall_height=0;
-			GetWorld()->
-				Damage(X(), Y(), Z()-1, dmg, DAMAGE_FALL);
+			GetWorld()->Damage(X(), Y(), Z()-1, dmg, DAMAGE_FALL);
 			return GetWorld()->
 				Damage(X(), Y(), Z(), dmg, DAMAGE_FALL);
 		} else {
@@ -399,7 +393,7 @@
 		if ( DOWN==dir ) {
 			--z_self;
 			++fall_height;
-		} else {
+		} else if ( GetShred() ) {
 			whereShred->RemFalling(this);
 			FallDamage();
 			if ( GetWorld()->GetShred(X(), Y())!=GetShred() ) {
@@ -413,21 +407,20 @@
 
 	void Active::SendSignalAround(const QString & signal) const {
 		World * const world=GetWorld();
-		if ( InBounds(X()-1, Y()) ) {
-			world->GetBlock(X()-1, Y(), Z())->
-				ReceiveSignal(signal);
-		}
-		if ( InBounds(X()+1, Y()) ) {
-			world->GetBlock(X()+1, Y(), Z())->
-				ReceiveSignal(signal);
-		}
-		if ( InBounds(X(), Y()-1) ) {
-			world->GetBlock(X(), Y()-1, Z())->
-				ReceiveSignal(signal);
-		}
-		if ( InBounds(X(), Y()+1) ) {
-			world->GetBlock(X(), Y()+1, Z())->
-				ReceiveSignal(signal);
+		const struct {
+			int x;
+			int y;
+		} coords[]={
+			{ X()-1, Y() },
+			{ X()+1, Y() },
+			{ X(), Y()-1 },
+			{ X(), Y()+1 }
+		};
+		for (ushort i=0; i<sizeof(coords)/sizeof(int); ++i) {
+			if ( InBounds(coords[i].x, coords[i].y) ) {
+				world->GetBlock(coords[i].x, coords[i].y,
+					Z())->ReceiveSignal(signal);
+			}
 		}
 		world->GetBlock(X(), Y(), Z()-1)->ReceiveSignal(signal);
 		world->GetBlock(X(), Y(), Z()+1)->ReceiveSignal(signal);
@@ -449,21 +442,21 @@
 				case HUNGER:
 					ReceiveSignal(QObject::tr(
 						"You faint from hunger!"));
-					break;
+				break;
 				case HEAT:
 					ReceiveSignal(QObject::tr(
 						"You burn!"));
-					break;
+				break;
 				case BREATH:
 					ReceiveSignal(QObject::tr(
 						"You choke withot air!"));
-					break;
+				break;
 				case DAMAGE_FALL:
 					ReceiveSignal(
 						QObject::tr(
 						"You fall, damage %1.").
 						arg(last_dur-durability));
-					break;
+				break;
 				default:
 					ReceiveSignal(
 						QObject::tr(
@@ -488,24 +481,27 @@
 		out << fall_height;
 	}
 
+	void Active::SetXYZ(const ushort x, const ushort y, const ushort z) {
+		x_self=x;
+		y_self=y;
+		z_self=z;
+	}
+
 	void Active::Register(Shred * const sh,
 			const ushort x, const ushort y, const ushort z)
 	{
-		if ( !whereShred ) {
-			whereShred=sh;
-			x_self=x;
-			y_self=y;
-			z_self=z;
-			whereShred->AddActive(this);
-			if ( ENVIRONMENT==sh->Movable(
-					x%SHRED_WIDTH,
-					y%SHRED_WIDTH, z-1) &&
-					!(*this==*sh->GetBlock(
-						x%SHRED_WIDTH,
-						y%SHRED_WIDTH, z-1)) )
-			{
-				whereShred->AddFalling(this);
-			}
+		if ( whereShred ) {
+			return;
+		}
+		whereShred=sh;
+		SetXYZ(x, y, z);
+		whereShred->AddActive(this);
+		if ( ENVIRONMENT==sh->Movable(
+				x%SHRED_WIDTH, y%SHRED_WIDTH, z-1) &&
+				!(*this==*sh->GetBlock(
+					x%SHRED_WIDTH, y%SHRED_WIDTH, z-1)) )
+		{
+			whereShred->AddFalling(this);
 		}
 	}
 	void Active::Unregister() {
@@ -538,9 +534,7 @@
 		str >> fall_height;
 	}
 	Active::~Active() {
-		if ( deferredAction ) {
-			delete deferredAction;
-		}
+		delete deferredAction;
 		Unregister();
 		emit Destroyed();
 	}
@@ -651,18 +645,20 @@
 	}
 
 	bool Inventory::GetAll(Inventory * const from) {
-		if ( !from  ) {
+		if ( from  ) {
+			for (ushort i=0; i<from->Size(); ++i) {
+				from->Drop(i, 0, from->Number(i), this);
+			}
+			return true;
+		} else {
 			return false;
 		}
-		for (ushort i=0; i<from->Size(); ++i) {
-			from->Drop(i, 0, from->Number(i), this);
-		}
-		return true;
 	}
 
 	void Inventory::Pull(const ushort num) {
-		if ( !inventory[num].isEmpty() )
+		if ( !inventory[num].isEmpty() ) {
 			inventory[num].pop();
+		}
 	}
 
 	void Inventory::SaveAttributes(QDataStream & out) const {
@@ -678,29 +674,31 @@
 		if ( start<Start() ) {
 			start=Start();
 		}
-		if ( !block ) {
+		if ( block ) {
+			for (ushort i=start; i<Size(); ++i) {
+				if ( GetExact(block, i) ) {
+					return true;
+				}
+			}
+			return false;
+		} else {
 			return true;
 		}
-		for (ushort i=start; i<Size(); ++i) {
-			if ( GetExact(block, i) ) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	bool Inventory::GetExact(Block * const block, const ushort num) {
-		if ( !block ) {
+		if ( block ) {
+			if ( inventory[num].isEmpty() ||
+					( *block==*inventory[num].top() &&
+					Number(num)<MAX_STACK_SIZE ) )
+			{
+				inventory[num].push(block);
+				return true;
+			}
+			return false;
+		} else {
 			return true;
 		}
-		if ( inventory[num].isEmpty() ||
-				( *block==*inventory[num].top() &&
-				Number(num)<MAX_STACK_SIZE ) )
-		{
-			inventory[num].push(block);
-			return true;
-		}
-		return false;
 	}
 
 	void Inventory::MoveInside(const ushort num_from, const ushort num_to,
@@ -739,8 +737,8 @@
 	}
 
 	QString Inventory::NumStr(const ushort num) const {
-		return ( 1<Number(num) ) ?
-			QString(" (%1x)").arg(Number(num)) : "";
+		return inventory[num].isEmpty() ?
+			"": QString(" (%1x)").arg(Number(num));
 	}
 
 	ushort Inventory::GetInvWeight(const ushort i) const {
@@ -1307,7 +1305,7 @@
 			}
 			world->Move(X(), Y(), Z(), GetDir());
 		}
-	}
+	} //Rabbit::ActFrequent
 
 	Block * Rabbit::DropAfterDamage() const {
 		return block_manager.NormalBlock(A_MEAT);
@@ -1593,6 +1591,7 @@
 	QString Creator::FullName() const { return tr("Creative block"); }
 	int Creator::DamageKind() const { return TIME; }
 	ushort Creator::DamageLevel() const { return MAX_DURABILITY; }
+	Inventory * Creator::HasInventory() { return Inventory::HasInventory(); }
 
 	void Creator::ReceiveSignal(const QString & str) {
 		Active::ReceiveSignal(str);

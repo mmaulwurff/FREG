@@ -55,22 +55,17 @@ World * Player::GetWorld() const { return world; }
 
 bool Player::GetCreativeMode() const { return creativeMode; }
 void Player::SetCreativeMode(const bool turn) {
-	if ( (creativeMode=turn) ) {
-		disconnect(player, 0, 0, 0);
-		player=block_manager.NewBlock(CREATOR, DIFFERENT)->
-			ActiveBlock();
-		player->SetDeferredAction(new DeferredAction(player,
-			GetWorld()));
-	} else {
-		Creator * const creative_inv=(Creator *)player;
-		const int last_dir=dir;
-		SetPlayer(x, y, z);
-		SetDir(last_dir);
-		Inventory * const inv=PlayerInventory();
-		if ( inv ) {
-			inv->GetAll(creative_inv);
-		}
-		block_manager.DeleteBlock(creative_inv);
+	creativeMode=turn;
+	disconnect(player, 0, 0, 0);
+	Active * const prev_player=player;
+	SetPlayer(x, y, z);
+	player->SetDir(prev_player->GetDir());
+	Inventory * const inv=PlayerInventory();
+	if ( inv ) {
+		inv->GetAll(prev_player->HasInventory());
+	}
+	if ( !creativeMode ) {
+		block_manager.DeleteBlock(prev_player);
 	}
 }
 
@@ -175,42 +170,13 @@ void Player::Jump() {
 }
 
 void Player::Move(const int dir) {
-	Turn(dir);
-	if ( !creativeMode && player ) {
+	if ( player ) {
+		Turn(dir);
 		usingType=USAGE_TYPE_NO;
-		player->GetDeferredAction()->SetMove();
-	} else {
-		switch ( dir ) {
-			case NORTH:
-				if (y>=(world->NumShreds()/2-1)*SHRED_WIDTH+1)
-					--y;
-			break;
-			case SOUTH:
-				if (y<(world->NumShreds()/2+2)*SHRED_WIDTH-1)
-					++y;
-			break;
-			case EAST:
-				if (x<(world->NumShreds()/2+2)*SHRED_WIDTH-1)
-					++x;
-			break;
-			case WEST:
-				if (x>=(world->NumShreds()/2-1)*SHRED_WIDTH+1)
-					--x;
-			break;
-			case UP:
-				if ( z<HEIGHT-2 ) {
-					++z;
-				}
-			break;
-			case DOWN:
-				if ( z>1 ) {
-					--z;
-				}
-			break;
-			default:
-				fprintf(stderr,
-					"Player::Move: unlisted dir: %d",
-					dir);
+		if ( GetCreativeMode() ) {
+			player->GetDeferredAction()->SetGhostMove();
+		} else {
+			player->GetDeferredAction()->SetMove();
 		}
 	}
 }
@@ -574,21 +540,24 @@ void Player::SetPlayer(
 	y=player_y;
 	z=player_z;
 	if ( GetCreativeMode() ) {
-		return;
-	}
-	Block * const target_block=world->GetBlock(x, y, z);
-	if ( DWARF!=target_block->Kind() ) {
-		world->Build( (player=block_manager.
-				NewBlock(DWARF, H_MEAT)->ActiveBlock()),
-			x, y, z,
-			GetDir(),
-			0,
-			true /*force build*/ );
+		( player=block_manager.NewBlock(CREATOR, DIFFERENT)->
+			ActiveBlock() )->SetXYZ(x, y, z);
 	} else {
-		player=target_block->ActiveBlock();
-		SetDir(target_block->GetDir());
+		Block * const target_block=world->GetBlock(x, y, z);
+		if ( DWARF!=target_block->Kind() ) {
+			world->Build( (player=block_manager.
+					NewBlock(DWARF, H_MEAT)->
+						ActiveBlock()),
+				x, y, z,
+				GetDir(),
+				0,
+				true /*force build*/ );
+		} else {
+			player=target_block->ActiveBlock();
+		}
 	}
 	player->SetDeferredAction(new DeferredAction(player, GetWorld()));
+	SetDir(player->GetDir());
 
 	connect(player, SIGNAL(Destroyed()),
 		this, SLOT(BlockDestroy()),
@@ -663,15 +632,7 @@ Player::Player(World * const w) :
 	homeY+=plus;
 	x+=plus;
 	y+=plus;
-	if ( creativeMode ) {
-		player=block_manager.NewBlock(CREATOR, DIFFERENT)->
-			ActiveBlock();
-		player->SetDeferredAction(new DeferredAction(player, world));
-		dir=NORTH;
-	} else {
-		SetPlayer(x, y, z);
-		dir=player->GetDir();
-	}
+	SetPlayer(x, y, z);
 
 	connect(world, SIGNAL(NeedPlayer(
 			const ushort,

@@ -239,6 +239,7 @@ class Active : public QObject, public Block {
 	void SaveAttributes(QDataStream & out) const;
 
 	public:
+	void SetXYZ(ushort x, ushort y, ushort z);
 	void Register(Shred *, ushort x, ushort y, ushort z);
 	void Unregister();
 
@@ -570,6 +571,7 @@ class Creator : public Active, public Inventory {
 	int  DamageKind() const;
 	ushort DamageLevel() const;
 	QString FullName() const;
+	Inventory * HasInventory();
 
 	protected:
 	void SaveAttributes(QDataStream & out) const;

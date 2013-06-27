@@ -20,6 +20,7 @@
 
 enum deferred_actions {
 	DEFERRED_NOTHING,
+	DEFERRED_GHOST_MOVE,
 	DEFERRED_MOVE,
 	DEFERRED_JUMP,
 	DEFERRED_BUILD,
@@ -41,6 +42,7 @@ class DeferredAction {
 	ushort num;
 	World * const world;
 
+	void GhostMove() const;
 	void Move() const;
 	void Jump() const;
 	void Build();
@@ -48,6 +50,7 @@ class DeferredAction {
 	void Throw() const;
 
 	public:
+	void SetGhostMove();
 	void SetMove();
 	void SetJump();
 	void SetBuild(ushort x_targ, ushort y_targ, ushort z_targ,
@@ -61,6 +64,7 @@ class DeferredAction {
 	void MakeAction();
 
 	DeferredAction(Active * attached, World *);
+	~DeferredAction();
 }; //class DeferredAction
 
 #endif

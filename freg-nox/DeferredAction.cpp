@@ -19,6 +19,11 @@
 #include "blocks.h"
 #include "DeferredAction.h"
 
+void DeferredAction::GhostMove() const {
+	fprintf(stderr, "hello from ghost");
+	attachedBlock->Move(attachedBlock->GetDir());
+}
+
 void DeferredAction::Move() const {
 	world->Move(
 		attachedBlock->X(),
@@ -96,6 +101,11 @@ void DeferredAction::Throw() const {
 		srcSlot, destSlot, num);
 }
 
+void DeferredAction::SetGhostMove() {
+	type=DEFERRED_GHOST_MOVE;
+	world->AddDeferredAction(this);
+}
+
 void DeferredAction::SetMove() {
 	type=DEFERRED_MOVE;
 	world->AddDeferredAction(this);
@@ -145,6 +155,7 @@ void DeferredAction::MakeAction() {
 		case DEFERRED_BUILD:  Build();  break;
 		case DEFERRED_DAMAGE: Damage(); break;
 		case DEFERRED_THROW:  Throw();  break;
+		case DEFERRED_GHOST_MOVE: GhostMove(); break;
 	}
 	type=DEFERRED_NOTHING;
 }
@@ -163,3 +174,7 @@ DeferredAction::DeferredAction(Active * const attached, World * const w) :
 		num(),
 		world(w)
 {}
+
+DeferredAction::~DeferredAction() {
+	GetWorld()->RemDeferredAction(this);
+}
