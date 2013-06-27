@@ -292,6 +292,7 @@ class Inventory {
 	virtual bool Get(Block * block, ushort start=0);
 	virtual void Pull(ushort num);
 	virtual void MoveInside(ushort num_from, ushort num_to, ushort num);
+	virtual void ReceiveSignal(const QString &)=0;
 	virtual ushort Start() const;
 	virtual ushort Weight() const;
 	virtual QString FullName() const=0;
@@ -299,8 +300,9 @@ class Inventory {
 
 	///Returns true if block found its place.
 	bool GetExact(Block * block, ushort num);
-	int  MiniCraft(ushort num);
-	int  InscribeInv(ushort num, const QString & str);
+	///Returns true on success (something has been crafted).
+	bool MiniCraft(ushort num);
+	void InscribeInv(ushort num, const QString & str);
 	int  GetInvSub(ushort i) const;
 	int  GetInvKind(ushort i) const;
 	ushort Size() const;
@@ -354,6 +356,7 @@ class Dwarf : public Animal, public Inventory {
 	Block * DropAfterDamage() const;
 	void Inscribe(const QString & str);
 	void MoveInside(ushort num_from, ushort num_to, ushort num);
+	void ReceiveSignal(const QString &);
 
 	protected:
 	void SaveAttributes(QDataStream & out) const;
@@ -367,14 +370,13 @@ class Dwarf : public Animal, public Inventory {
 
 class Chest : public Block, public Inventory {
 	public:
-	int Kind() const;
-	int Sub() const;
+	int  Kind() const;
+	int  Sub() const;
+	int  BeforePush(int dir, Block * who);
+	void ReceiveSignal(const QString &);
 	QString FullName() const;
 	Inventory * HasInventory();
-
 	usage_types Use();
-	int BeforePush(int dir, Block * who);
-
 	ushort Weight() const;
 
 	protected:
@@ -387,24 +389,21 @@ class Chest : public Block, public Inventory {
 
 class Pile : public Active, public Inventory {
 	Q_OBJECT
-
 	bool ifToDestroy;
 
 	public:
-	int Kind() const;
-	int Sub() const;
+	int  Kind() const;
+	int  Sub() const;
+	void ReceiveSignal(const QString &);
+	void ActRare();
+	int  ShouldAct() const;
+	int  BeforePush(int, Block * who);
+	bool Drop(ushort src, ushort dest, ushort num, Inventory * inv);
+	void Pull(ushort num);
 	QString FullName() const;
-
 	Inventory * HasInventory();
 	usage_types Use();
 	ushort Weight() const;
-
-	void ActRare();
-	int  ShouldAct() const;
-
-	int BeforePush(int, Block * who);
-	bool Drop(ushort src, ushort dest, ushort num, Inventory * inv);
-	void Pull(ushort num);
 
 	protected:
 	void SaveAttributes(QDataStream & out) const;
@@ -461,6 +460,7 @@ class Bush : public Active, public Inventory {
 	void ActRare();
 	int  ShouldAct() const;
 	int  BeforePush(int dir, Block * who);
+	void ReceiveSignal(const QString &);
 	ushort Weight() const;
 
 	QString FullName() const;
@@ -503,6 +503,7 @@ class Workbench : public Chest {
 	bool Drop(ushort src, ushort dest, ushort num, Inventory * inv);
 	bool Get(Block * block, ushort start=0);
 	bool GetAll(Inventory * from);
+	void ReceiveSignal(const QString &);
 	ushort Start() const;
 	QString FullName() const;
 
@@ -563,11 +564,12 @@ class Creator : public Active, public Inventory {
 	Q_OBJECT
 
 	public:
-	int Kind() const;
-	int Sub() const;
-	QString FullName() const;
-	int DamageKind() const;
+	int  Kind() const;
+	int  Sub() const;
+	void ReceiveSignal(const QString &);
+	int  DamageKind() const;
 	ushort DamageLevel() const;
+	QString FullName() const;
 
 	protected:
 	void SaveAttributes(QDataStream & out) const;

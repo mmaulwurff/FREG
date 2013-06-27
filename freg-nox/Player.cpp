@@ -327,13 +327,7 @@ void Player::Inscribe(const ushort num) {
 	if ( ValidBlock(num) ) {
 		QString str;
 		emit GetString(str);
-		Inventory * const inv=PlayerInventory();
-		const int err=inv->InscribeInv(num, str);
-		if ( 1==err ) {
-			emit Notify("Cannot inscribe this.");
-		} else {
-			emit Notify("Inscribed.");
-		}
+		PlayerInventory()->InscribeInv(num, str);
 	}
 	world->Unlock();
 }
@@ -375,13 +369,8 @@ void Player::Craft(const ushort num) {
 	world->WriteLock();
 	Inventory * const inv=PlayerInventory();
 	if ( inv ) {
-		const int craft=inv->MiniCraft(num);
-		if ( 1==craft ) {
-			Notify("Nothing here.");
-		} else if ( 2==craft ) {
-			Notify("You don't know how to craft this.");
-		} else {
-			Notify("Craft successful.");
+		const bool craft=inv->MiniCraft(num);
+		if ( craft ) {
 			emit Updated();
 		}
 	} else {

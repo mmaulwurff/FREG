@@ -713,20 +713,24 @@
 		}
 	}
 
-	int Inventory::InscribeInv(const ushort num, const QString & str) {
+	void Inventory::InscribeInv(const ushort num, const QString & str) {
 		const int number=Number(num);
 		if ( !number ) {
-			return 0;
+			ReceiveSignal(QObject::tr("Nothing here."));
+			return;
 		}
 		const int sub=inventory[num].top()->Sub();
 		if ( inventory[num].top()==block_manager.NormalBlock(sub) ) {
-			for (ushort i=0; i<number; ++i)
+			for (ushort i=0; i<number; ++i) {
 				inventory[num].replace(i,
 					block_manager.NormalBlock(sub));
+			}
 		}
-		for (ushort i=0; i<number; ++i)
+		for (ushort i=0; i<number; ++i) {
 			inventory[num].at(i)->Inscribe(str);
-		return 0;
+		}
+		ReceiveSignal(QObject::tr("Inscribed."));
+		return;
 	}
 
 	QString Inventory::InvFullName(const ushort num) const {
@@ -745,13 +749,13 @@
 	}
 
 	int Inventory::GetInvSub(const ushort i) const {
-		return ( inventory[i].isEmpty() ) ? AIR :
-			inventory[i].top()->Sub();
+		return inventory[i].isEmpty() ?
+			AIR : inventory[i].top()->Sub();
 	}
 
 	int Inventory::GetInvKind(const ushort i) const {
-		return ( inventory[i].isEmpty() ) ? BLOCK :
-			inventory[i].top()->Kind();
+		return inventory[i].isEmpty() ?
+			BLOCK : inventory[i].top()->Kind();
 	}
 
 	QString Inventory::GetInvNote(const ushort num) const {
@@ -799,10 +803,12 @@
 		return inventory[i].size();
 	}
 
-	int Inventory::MiniCraft(const ushort num) {
+	bool Inventory::MiniCraft(const ushort num) {
 		const ushort size=inventory[num].size();
-		if ( !size )
-			return 1; //empty
+		if ( !size ) {
+			ReceiveSignal(QObject::tr("Nothing here"));
+			return false;
+		}
 		craft_item item={
 			size,
 			GetInvKind(num),
@@ -816,12 +822,16 @@
 				Pull(num);
 				block_manager.DeleteBlock(to_drop);
 			}
-			for (ushort i=0; i<result.num; ++i)
+			for (ushort i=0; i<result.num; ++i) {
 				Get(block_manager.
 					NewBlock(result.kind, result.sub));
-			return 0; //success
+			}
+			ReceiveSignal(QObject::tr("Craft successful."));
+			return true;
 		}
-		return 2; //no such recipe
+		ReceiveSignal(QObject::tr(
+			"You don't know how to craft this."));
+		return false; //no such recipe
 	}
 
 	Inventory::Inventory(const ushort sz) :
@@ -877,15 +887,18 @@
 		return block_manager.NormalBlock(H_MEAT);
 	}
 
-	int Dwarf::Kind() const { return DWARF; }
-	int Dwarf::Sub() const { return Block::Sub(); }
-	int Dwarf::ShouldAct() const { return RARE; }
+	int  Dwarf::Kind() const { return DWARF; }
+	int  Dwarf::Sub() const { return Block::Sub(); }
+	int  Dwarf::ShouldAct() const { return RARE; }
+	bool Dwarf::Access() const { return false; }
 	ushort Dwarf::Start() const { return ON_LEGS+1; }
 	QString Dwarf::FullName() const { return "Rational"; }
 	Inventory * Dwarf::HasInventory() { return Inventory::HasInventory(); }
 	uchar Dwarf::LightRadius() const { return 3; }
 
-	bool Dwarf::Access() const { return false; }
+	void Dwarf::ReceiveSignal(const QString & str) {
+		Active::ReceiveSignal(str);
+	}
 
 	int Dwarf::DamageKind() const {
 		return ( Number(GetActiveHand()) ) ?
@@ -962,6 +975,10 @@
 	Inventory * Chest::HasInventory() { return Inventory::HasInventory(); }
 	usage_types Chest::Use() { return USAGE_TYPE_OPEN; }
 
+	void Chest::ReceiveSignal(const QString & str) {
+		Block::ReceiveSignal(str);
+	}
+
 	QString Chest::FullName() const {
 		switch ( Sub() ) {
 			case WOOD:  return QObject::tr("Wooden chest");
@@ -1013,6 +1030,10 @@
 	Inventory * Pile::HasInventory() { return Inventory::HasInventory(); }
 	usage_types Pile::Use() { return USAGE_TYPE_OPEN; }
 	ushort Pile::Weight() const { return Inventory::Weight(); }
+
+	void Pile::ReceiveSignal(const QString & str) {
+		Active::ReceiveSignal(str);
+	}
 
 	QString Pile::FullName() const {
 		switch ( Sub() ) {
@@ -1177,6 +1198,10 @@
 	int  Bush::ShouldAct() const  { return RARE; }
 	usage_types Bush::Use() { return USAGE_TYPE_OPEN; }
 	Inventory * Bush::HasInventory() { return Inventory::HasInventory(); }
+
+	void Bush::ReceiveSignal(const QString & str) {
+		Active::ReceiveSignal(str);
+	}
 
 	ushort Bush::Weight() const {
 		return Inventory::Weight()+Block::Weight();
@@ -1383,6 +1408,10 @@
 	int Workbench::Kind() const { return WORKBENCH; }
 	ushort Workbench::Start() const { return 1; }
 
+	void Workbench::ReceiveSignal(const QString & str) {
+		Block::ReceiveSignal(str);
+	}
+
 	bool Workbench::Get(Block * const block, const ushort start) {
 		if ( Inventory::Get(block, start) ) {
 			Craft();
@@ -1564,6 +1593,10 @@
 	QString Creator::FullName() const { return tr("Creative block"); }
 	int Creator::DamageKind() const { return TIME; }
 	ushort Creator::DamageLevel() const { return MAX_DURABILITY; }
+
+	void Creator::ReceiveSignal(const QString & str) {
+		Active::ReceiveSignal(str);
+	}
 
 	void Creator::SaveAttributes(QDataStream & out) const {
 		Active::SaveAttributes(out);
