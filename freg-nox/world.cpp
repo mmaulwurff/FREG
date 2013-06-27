@@ -482,18 +482,18 @@ int World::Move(const ushort i, const ushort j, const ushort k,
 	}
 }
 
-int World::CanMove(
+bool World::CanMove(
 		const ushort i,    const ushort j,    const ushort k,
 		const ushort newi, const ushort newj, const ushort newk,
 		const quint8 dir)
 {
 	Block * const block=GetBlock(i, j, k);
 	if ( NOT_MOVABLE==block->Movable() ) {
-		return 0;
+		return false;
 	}
 	Block * block_to=GetBlock(newi, newj, newk);
 	if ( ENVIRONMENT==block->Movable() && *block==*block_to ) {
-		return 0;
+		return false;
 	}
 	switch ( block_to->BeforePush(dir, block) ) {
 		case DESTROY:
@@ -507,13 +507,13 @@ int World::CanMove(
 		case JUMP:
 			if ( DOWN!=dir && UP!=dir ) {
 				Jump(i, j, k, dir);
-				return 0;
+				return false;
 			}
 		break;
 		case MOVE_UP:
 			if ( DOWN!=dir ) {
 				Move(i, j, k, UP);
-				return 0;
+				return false;
 			}
 		break;
 		case DAMAGE:
@@ -521,14 +521,12 @@ int World::CanMove(
 			Damage(i, j, k,
 				block_to->DamageLevel(),
 				block_to->DamageKind());
-			return 0;
+			return false;
 		break;
-		default: break;
 	}
 	return ( ENVIRONMENT==block_to->Movable() ) ?
-		1 :
-		Move(newi, newj, newk, dir);
-}
+		true : Move(newi, newj, newk, dir);
+} //World::CanMove
 
 void World::NoCheckMove(
 		const ushort i,    const ushort j,    const ushort k,
@@ -721,18 +719,16 @@ void World::Exchange(
 	}
 }
 
-int World::GetAll(const ushort x_to, const ushort y_to, const ushort z_to) {
+void World::GetAll(const ushort x_to, const ushort y_to, const ushort z_to) {
 	ushort x_from, y_from, z_from;
 	if ( Focus(x_to, y_to, z_to, x_from, y_from, z_from) ) {
-		return 5;
+		return;
 	}
-	Inventory * const inv_from=
-		GetBlock(x_from, y_from, z_from)->HasInventory();
 	Inventory * const inv_to=GetBlock(x_to, y_to, z_to)->HasInventory();
-	if ( !inv_to ) {
-		return 6;
+	if ( inv_to ) {
+		inv_to->GetAll(GetBlock(x_from, y_from, z_from)->
+			HasInventory());
 	}
-	return inv_to->GetAll(inv_from);
 }
 
 int World::Transparent(const ushort x, const ushort y, const ushort z) const {

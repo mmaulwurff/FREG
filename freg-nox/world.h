@@ -162,7 +162,7 @@ class World : public QThread {
 	///Check and move
 	int Move(ushort x, ushort y, ushort z, quint8 dir);
 	///This CAN move blocks, but not xyz block.
-	int CanMove(
+	bool CanMove(
 		ushort x,    ushort y,    ushort z,
 		ushort x_to, ushort y_to, ushort z_to,
 		quint8 dir);
@@ -208,7 +208,7 @@ class World : public QThread {
 			ushort src, ushort dest, ushort num);
 	void Get(ushort x, ushort y, ushort z,
 			ushort src, ushort dest, ushort num);
-	int GetAll(ushort x_to, ushort y_to, ushort z_to);
+	void GetAll(ushort x_to, ushort y_to, ushort z_to);
 
 	//block information section
 	public:
