@@ -52,7 +52,7 @@ void DeferredAction::Build() {
 	}
 	const int kind=material->Kind();
 	const int sub =material->Sub();
-	if ( world->Build(material,
+	if ( !world->Build(material,
 			xTarg, yTarg, zTarg,
 			World::TurnRight(attachedBlock->GetDir()),
 			attachedBlock) )

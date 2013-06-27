@@ -232,7 +232,7 @@ void Player::Backpack() {
 
 void Player::Use(const short x, const short y, const short z) {
 	world->WriteLock();
-	const int us_type=world->Use(x, y, z);
+	const int us_type=world->GetBlock(x, y, z)->Use();
 	usingType=( us_type==usingType ) ? USAGE_TYPE_NO : us_type;
 	world->Unlock();
 }

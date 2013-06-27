@@ -249,10 +249,13 @@ Shred::~Shred() {
 		outstr << (quint8)DATASTREAM_VERSION;
 		outstr.setVersion(DATASTREAM_VERSION);
 		for (ushort i=0; i<SHRED_WIDTH; ++i)
-		for (ushort j=0; j<SHRED_WIDTH; ++j)
-		for (ushort k=1; k<HEIGHT; ++k) {
+		for (ushort j=0; j<SHRED_WIDTH; ++j) {
+			ushort k=1;
+			for ( ; k<HEIGHT-1; ++k) {
+				blocks[i][j][k]->SaveToFile(outstr);
+				block_manager.DeleteBlock(blocks[i][j][k]);
+			}
 			blocks[i][j][k]->SaveToFile(outstr);
-			block_manager.DeleteBlock(blocks[i][j][k]);
 		}
 		file.write(qCompress(shred_data));
 		return;

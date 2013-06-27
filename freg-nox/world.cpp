@@ -58,15 +58,6 @@ ushort World::SunMoonX() const {
 			SECONDS_IN_DAYLIGHT;
 }
 
-float World::Distance(
-		const ushort x_from, const ushort y_from, const ushort z_from,
-		const ushort x_to,   const ushort y_to,   const ushort z_to)
-const {
-	return sqrt( float((x_from-x_to)*(x_from-x_to)+
-			   (y_from-y_to)*(y_from-y_to)+
-			   (z_from-z_to)*(z_from-z_to)) );
-}
-
 times_of_day World::PartOfDay() const {
 	ushort time_day=TimeOfDay();
 	if (time_day<END_OF_NIGHT)   return NIGHT;
@@ -328,7 +319,7 @@ void World::PhysEvents() {
 
 	if ( toReSet ) {
 		emit StartReloadAll();
-		SaveAllShreds();
+		DeleteAllShreds();
 		longitude=newLongi;
 		latitude=newLati;
 		numShreds=newNumShreds;
@@ -576,7 +567,7 @@ void World::Jump(const ushort x, const ushort y, const ushort z,
 	}
 }
 
-int World::Focus(const ushort i, const ushort j, const ushort k,
+bool World::Focus(const ushort i, const ushort j, const ushort k,
 		ushort & i_target, ushort & j_target, ushort & k_target,
 		const quint8 dir)
 const {
@@ -594,12 +585,12 @@ const {
 			fprintf(stderr,
 				"World::Focus: unlisted dir: %d\n",
 				dir);
-			return 2;
+			return true;
 	}
 	return !InBounds(i_target, j_target, k_target);
 }
 
-int World::Focus(const ushort i, const ushort j, const ushort k,
+bool World::Focus(const ushort i, const ushort j, const ushort k,
 		ushort & i_target, ushort & j_target, ushort & k_target)
 const {
 	return Focus( i, j, k, i_target, j_target, k_target,
@@ -616,9 +607,6 @@ bool World::Damage(const ushort i, const ushort j, const ushort k,
 		const ushort dmg, //see default in class declaration
 		const int dmg_kind) //see default in class declaration
 {
-	if ( !InBounds(i, j, k) ) {
-		return false;
-	}
 	Block * temp=GetBlock(i, j, k);
 	if ( temp==Normal(temp->Sub()) && AIR!=temp->Sub() ) {
 		SetBlock( (temp = block_manager.
@@ -650,24 +638,18 @@ bool World::Damage(const ushort i, const ushort j, const ushort k,
 	return true;
 }
 
-int World::Use(const ushort i, const ushort j, const ushort k) {
-	return InBounds(i, j, k) ? GetBlock(i, j, k)->Use() : USAGE_TYPE_NO;
-}
-
-int World::Build(Block * block,
+bool World::Build(Block * block,
 		const ushort i, const ushort j, const ushort k,
 		const quint8 dir,
 		Block * const who,
 		const bool anyway) //defaults exist
 {
 	Block * const target_block=GetBlock(i, j, k);
-	if ( !InBounds(i, j, k) ||
-			(!anyway && ENVIRONMENT!=target_block->Movable()) )
-	{
+	if ( !(ENVIRONMENT==target_block->Movable() || anyway) ) {
 		if ( who ) {
 			who->ReceiveSignal(tr("Cannot build here."));
 		}
-		return 1;
+		return false;
 	}
 	DeleteBlock(target_block);
 	block->Restore();
@@ -678,20 +660,17 @@ int World::Build(Block * block,
 		block->SetDir(dir);
 	}
 	ReEnlighten(i, j, k);
-	return 0;
+	return true;
 }
 
 void World::Inscribe(const ushort i, const ushort j, const ushort k) {
-	if ( !InBounds(i, j, k) ) {
-		return;
-	}
 	Block * block=GetBlock(i, j, k);
 	if ( block==Normal(block->Sub()) ) {
 		SetBlock(block=block_manager.
 				NewBlock(block->Kind(), block->Sub()),
 			i, j, k);
 	}
-	QString str="No note received\n";
+	QString str=tr("No note received.");
 	emit GetString(str);
 	block->Inscribe(str);
 	ReplaceWithNormal(i, j, k);
@@ -768,7 +747,7 @@ int World::Temperature(
 		const ushort j_center,
 		const ushort k_center)
 const {
-	if ( !InBounds(i_center, j_center, k_center) || HEIGHT-1==k_center ) {
+	if ( HEIGHT-1==k_center ) {
 		return 0;
 	}
 	short temperature=GetBlock(i_center, j_center, k_center)->
@@ -804,7 +783,7 @@ void World::LoadAllShreds() {
 	ReEnlightenTime();
 }
 
-void World::SaveAllShreds() {
+void World::DeleteAllShreds() {
 	RemSun();
 	for (ushort i=0; i<numShreds*numShreds; ++i) {
 		delete shreds[i];
@@ -944,7 +923,7 @@ void World::CleanAll() {
 	Unlock();
 	wait();
 
-	SaveAllShreds();
+	DeleteAllShreds();
 
 	settings.setValue("time", qlonglong(time));
 	settings.setValue("longitude", qlonglong(longitude));

@@ -70,15 +70,6 @@ class World : public QThread {
 
 	QList<DeferredAction *> defActions;
 
-	void ReplaceWithNormal(ushort x, ushort y, ushort z);
-	Block * ReplaceWithNormal(Block * block);
-	void MakeSun();
-	void RemSun();
-	void LoadAllShreds();
-	void SaveAllShreds();
-
-	void run();
-
 	//block work section
 	public:
 	Block * GetBlock(ushort x, ushort y, ushort z) const;
@@ -95,6 +86,11 @@ class World : public QThread {
 	void PutNormalBlock(subs sub, ushort x, ushort y, ushort z);
 	static Block * Normal(int sub, int dir=UP);
 	static void DeleteBlock(Block * block);
+	void ReplaceWithNormal(ushort x, ushort y, ushort z);
+	Block * ReplaceWithNormal(Block * block);
+
+	void MakeSun();
+	void RemSun();
 
 	//lighting section
 	public:
@@ -119,13 +115,16 @@ class World : public QThread {
 	//information section
 	public:
 	QString WorldName() const;
-	int Focus(ushort x, ushort y, ushort z,
+	///True on error, false if focus is received to _targ successfully.
+	bool Focus(ushort x, ushort y, ushort z,
 			ushort & x_targ, ushort & y_targ, ushort & z_targ,
 			quint8 dir) const;
-	int Focus(ushort x, ushort y, ushort z,
+	private:
+	bool Focus(ushort x, ushort y, ushort z,
 			ushort & x_targ,
 			ushort & y_targ,
 			ushort & z_targ) const;
+	public:
 	ushort NumShreds() const;
 	ushort NumActiveShreds() const;
 	static quint8 TurnRight(quint8 dir);
@@ -141,9 +140,6 @@ class World : public QThread {
 	long MapSize() const;
 	QTextStream * MapStream();
 	ushort SunMoonX() const;
-	float Distance(
-			ushort x_from, ushort y_from, ushort z_from,
-	                ushort x_to,   ushort y_to,   ushort z_to) const;
 
 	//visibility section
 	public:
@@ -190,8 +186,7 @@ class World : public QThread {
 	public:
 	bool Damage(ushort x, ushort y, ushort z,
 			ushort level=1, int dmg_kind=CRUSH);
-	int Use(ushort x, ushort y, ushort z);
-	int Build(Block * thing,
+	bool Build(Block * thing,
 			ushort x, ushort y, ushort z,
 			quint8 dir=UP,
 			Block * who=0,
@@ -223,10 +218,17 @@ class World : public QThread {
 	int  Sub        (ushort x, ushort y, ushort z) const;
 	int  Temperature(ushort x, ushort y, ushort z) const;
 
+	//world section
+	public:
 	void ReloadAllShreds(long lati, long longi,
 		ushort new_x, ushort new_y, ushort new_z,
 		ushort new_num_shreds);
 	void SetNumActiveShreds(ushort num);
+	private:
+	///Also saves all shreds.
+	void DeleteAllShreds();
+	void LoadAllShreds();
+	void run();
 
 	friend class Shred;
 

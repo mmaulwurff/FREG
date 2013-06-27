@@ -81,9 +81,9 @@ void World::SunShine(const ushort i, const ushort j) {
 		const uchar new_light_lev=
 			(LightMap(i, j, k) & 0xF0) | light_lev;
 		const struct {
-			ushort x;
-			ushort y;
-			ushort z;
+			int x;
+			int y;
+			int z;
 		} coords[5]={
 			{i, j, k},
 			{i-1, j, k},
