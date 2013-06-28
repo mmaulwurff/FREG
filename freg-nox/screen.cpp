@@ -438,11 +438,14 @@ void Screen::Print() {
 
 	if ( !fileToShow ) { //right window
 		switch ( player->UsingType() ) {
-			case USAGE_TYPE_OPEN:
-				werase(rightWin);
-				PrintInv(rightWin,
-					player->UsingBlock()->HasInventory());
-				break;
+			case USAGE_TYPE_OPEN: {
+				Inventory * const inv=player->UsingBlock()->
+					HasInventory();
+				if ( inv ) {
+					PrintInv(rightWin, inv);
+					break;
+				}
+			} // no break;
 			default:
 				if ( UP==player->GetDir() ||
 						DOWN==player->GetDir() )
@@ -457,7 +460,6 @@ void Screen::Print() {
 	switch ( player->UsingSelfType() ) { //left window
 		case USAGE_TYPE_OPEN:
 			if ( player->PlayerInventory() ) {
-				werase(leftWin);
 				PrintInv(leftWin,
 					player->PlayerInventory());
 				break;
@@ -768,6 +770,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 } //Screen::PrintFront
 
 void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
+	werase(window);
 	wstandend(window);
 	switch ( inv->Kind() ) {
 		case DWARF:
@@ -876,7 +879,7 @@ Screen::Screen(World * const wor, Player * const pl) :
 		notifyLog(fopen("messages.txt", "a")),
 		fileToShow(0)
 {
-	#ifdef Q_OS_WIN32 //adjustment, added by Panzerschrek
+	#ifdef Q_OS_WIN32 //by Panzerschrek
 		AllocConsole();
 		freopen( "conout$", "w", stdout );
 		freopen( "conin$", "r", stdin );

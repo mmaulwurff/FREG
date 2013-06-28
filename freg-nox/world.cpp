@@ -697,14 +697,16 @@ void World::Exchange(
 		block_from->ReceiveSignal(tr("No inventory."));
 		return;
 	}
-	if ( AIR==Sub(i_to, j_to, k_to) ) {
-		SetBlock(block_manager.NewBlock(PILE, DIFFERENT),
-			i_to, j_to, k_to);
-	}
-	Block * const block_to=GetBlock(i_to, j_to, k_to);
-	if ( !block_to ) {
-		block_from->ReceiveSignal(tr("No target."));
+	if ( !inv_from->Number(src) ) {
+		block_from->ReceiveSignal(tr("Nothing here."));
 		return;
+	}
+	Block * block_to;
+	if ( AIR==Sub(i_to, j_to, k_to) ) {
+		SetBlock((block_to=block_manager.NewBlock(PILE, DIFFERENT)),
+			i_to, j_to, k_to);
+	} else {
+		block_to=GetBlock(i_to, j_to, k_to);
 	}
 	Inventory * const inv_to=block_to->HasInventory();
 	if ( !inv_to ) {
@@ -715,7 +717,7 @@ void World::Exchange(
 		block_from->ReceiveSignal(tr("Your bag is lighter now."));
 		block_to  ->ReceiveSignal(tr("Your bag is heavier now."));
 	}
-}
+} //World::Exchange
 
 void World::GetAll(const ushort x_to, const ushort y_to, const ushort z_to) {
 	ushort x_from, y_from, z_from;

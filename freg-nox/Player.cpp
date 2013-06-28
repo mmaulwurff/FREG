@@ -437,7 +437,7 @@ void Player::ProcessCommand(QString & command) {
 		emit Notify(QString(tr(
 			"Don't know such command: \"%1\".")).arg(command));
 	}
-}
+} //Player::ProcessCommand
 
 void Player::Get(Block * const block) {
 	Inventory * const inv=PlayerInventory();
@@ -584,7 +584,7 @@ void Player::SetPlayer(
 	connect(player, SIGNAL(ReceivedText(const QString &)),
 		this, SIGNAL(Notify(const QString &)),
 		Qt::DirectConnection);
-}
+} //Player::SetPlayer
 
 void Player::SetNumShreds(ushort num) const {
 	const ushort num_shreds=world->NumShreds();
@@ -665,7 +665,7 @@ Player::Player(World * const w) :
 	connect(world, SIGNAL(FinishReloadAll()),
 		this, SLOT(WorldSizeReloadFinish()),
 		Qt::DirectConnection);
-}
+} //Player::Player
 
 void Player::CleanAll() {
 	world->WriteLock();
