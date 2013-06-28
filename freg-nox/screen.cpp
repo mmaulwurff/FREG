@@ -118,19 +118,16 @@ char Screen::CharNumber(const ushort x, const ushort y, const ushort z) const {
 }
 
 char Screen::CharNumberFront(const ushort i, const ushort j) const {
-	ushort ret;
-	if ( NORTH==player->GetDir() || SOUTH==player->GetDir() ) {
-		if ( (ret=abs(player->Y()-j))<10 )
-			return ret+'0';
-	} else
-		if ( (ret=abs(player->X()-i))<10 )
-			return ret+'0';
-	return '+';
+	const ushort dist=
+		( NORTH==player->GetDir() || SOUTH==player->GetDir() ) ?
+		abs(player->Y()-j) :
+		abs(player->X()-i);
+	return ( dist<10 ) ?
+		dist+'0' : '+';
 }
 
 char Screen::CharName(const int kind, const int sub) const {
 	switch ( kind )  {
-		case CHEST:
 		case BUSH:   return ';';
 		case CREATOR:
 		case DWARF:  return '@';
@@ -141,23 +138,24 @@ char Screen::CharName(const int kind, const int sub) const {
 		case PLATE:  return '_';
 		case LADDER: return '^';
 		case PICK:   return '\\';
+		case CHEST:
+		case PILE:   return '&';
 		case WORKBENCH: return '*';
 		case TELEGRAPH: return 't';
-		case PILE:   return '&';
-		case DOOR:   return ( STONE==sub ) ? '#' : '\'';
+		case DOOR:        return ( STONE==sub ) ? '#' : '\'';
 		case LOCKED_DOOR: return ( STONE==sub ) ? '#' : '`';
 		case WEAPON: switch ( sub ) {
-			case WOOD:  return '/';
-			case STONE: return '.';
-			case IRON:  return '/';
 			default:
 				fprintf(stderr,
 					"Screen::CharName: weapon sub ?: %d\n",
 					sub);
-				return '.';
+			//no break;
+			case STONE: return '.';
+			case IRON:
+			case WOOD:  return '/';
 		} break;
 		case ACTIVE: switch ( sub ) {
-			case SAND: return '.';
+			case SAND:  return '.';
 			case WATER: return '*';
 			default:
 				fprintf(stderr,
@@ -187,7 +185,7 @@ char Screen::CharName(const int kind, const int sub) const {
 				return '?';
 		}
 	}
-}
+} //Screen::CharName
 
 color_pairs Screen::Color(const int kind, const int sub) const {
 	switch ( kind ) { //foreground_background
@@ -231,7 +229,7 @@ color_pairs Screen::Color(const int kind, const int sub) const {
 			default: return WHITE_BLACK;
 		}
 	}
-}
+} //Screen::Color
 
 void Screen::ControlPlayer(const int ch) {
 	CleanFileToShow();
@@ -381,7 +379,7 @@ void Screen::ControlPlayer(const int ch) {
 				arg(char(ch)));
 	}
 	updated=false;
-}
+} //Screen::ControlPlayer
 
 void Screen::InventoryAction(const ushort num) const {
 	switch ( actionMode ) {
@@ -569,7 +567,7 @@ void Screen::Print() {
 	wnoutrefresh(hudWin);
 	wnoutrefresh(leftWin);
 	doupdate();
-}
+} //Screen::Print
 
 void Screen::PrintNormal(WINDOW * const window, const int dir) const {
 	const ushort k_start=( UP!=dir ) ?
@@ -616,7 +614,7 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
 		}
 	}
 	wnoutrefresh(window);
-}
+} //Screen::PrintNormal
 
 void Screen::PrintFront(WINDOW * const window) const {
 	const int dir=player->GetDir();
@@ -767,7 +765,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 		break;
 	}
 	wnoutrefresh(window);
-}
+} //Screen::PrintFront
 
 void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 	wstandend(window);
@@ -816,7 +814,7 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 			qPrintable(inv->FullName()));
 	}
 	wnoutrefresh(window);
-}
+} //Screen::PrintInv
 
 void Screen::PrintText(WINDOW * const window, QString const & str) const {
 	werase(window);
@@ -882,11 +880,10 @@ Screen::Screen(World * const wor, Player * const pl) :
 		AllocConsole();
 		freopen( "conout$", "w", stdout );
 		freopen( "conin$", "r", stdin );
-		resize_term( (SCREEN_SIZE + 2) + (2 + 5) + (2 + 3),
-			SCREEN_SIZE * 4 + 4 );
-	#else
-		set_escdelay(10);
 	#endif
+	resize_term( SCREEN_SIZE+2 + 3 + 1 + 5, (SCREEN_SIZE*2 + 2)*2 );
+	freopen("errors.txt", "w", stderr);
+	set_escdelay(10);
 	initscr();
 	start_color();
 	raw(); //send typed keys directly
@@ -908,10 +905,10 @@ Screen::Screen(World * const wor, Player * const pl) :
 		init_pair(i, colors[(i-1)/8], colors[(i-1)%8]);
 	}
 	rightWin=newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, COLS/2);
-	leftWin =newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2,
-		0, COLS/2-SCREEN_SIZE*2-2);
-	hudWin=newwin(3, (SCREEN_SIZE*2+2)*2,
-		SCREEN_SIZE+2, COLS/2-SCREEN_SIZE*2-2);
+	leftWin =newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0,
+		COLS/2-SCREEN_SIZE*2-2);
+	hudWin=newwin(3, (SCREEN_SIZE*2+2)*2, SCREEN_SIZE+2,
+		COLS/2-SCREEN_SIZE*2-2);
 	commandWin=newwin(1, COLS, SCREEN_SIZE+2+3, 0);
 	notifyWin =newwin(0, COLS, SCREEN_SIZE+2+4, 0);
 	scrollok(notifyWin, TRUE);
@@ -940,7 +937,7 @@ Screen::Screen(World * const wor, Player * const pl) :
 	input->start();
 	connect(timer, SIGNAL(timeout()), this, SLOT(Print()));
 	timer->start(100);
-}
+} //Screen::Screen
 
 void Screen::CleanAll() {
 	//TODO: make own lock
@@ -961,7 +958,7 @@ void Screen::CleanAll() {
 	delwin(notifyWin);
 	delwin(hudWin);
 	endwin();
-	if ( NULL!=notifyLog ) {
+	if ( notifyLog ) {
 		fclose(notifyLog);
 	}
 	CleanFileToShow();

@@ -19,7 +19,6 @@
 #include <QTextStream>
 #include <QTimer>
 #include <QDir>
-#include "header.h"
 #include "blocks.h"
 #include "Shred.h"
 #include "world.h"
@@ -59,10 +58,10 @@ ushort World::SunMoonX() const {
 }
 
 times_of_day World::PartOfDay() const {
-	ushort time_day=TimeOfDay();
-	if (time_day<END_OF_NIGHT)   return NIGHT;
-	if (time_day<END_OF_MORNING) return MORNING;
-	if (time_day<END_OF_NOON)    return NOON;
+	const ushort time_day=TimeOfDay();
+	if ( time_day < END_OF_NIGHT )   return NIGHT;
+	if ( time_day < END_OF_MORNING ) return MORNING;
+	if ( time_day < END_OF_NOON )    return NOON;
 	return EVENING;
 }
 
@@ -219,16 +218,16 @@ Block * World::ReplaceWithNormal(Block * const block) {
 }
 
 quint8 World::Anti(const quint8 dir) {
-	switch (dir) {
+	switch ( dir ) {
 		case NORTH: return SOUTH;
-		case NORTH_EAST: return SOUTH_WEST;
-		case EAST: return WEST;
-		case SOUTH_EAST: return NORTH_WEST;
+		case EAST:  return WEST;
 		case SOUTH: return NORTH;
-		case SOUTH_WEST: return NORTH_EAST;
-		case WEST: return EAST;
+		case WEST:  return EAST;
+		case NORTH_EAST: return SOUTH_WEST;
 		case NORTH_WEST: return SOUTH_EAST;
-		case UP: return DOWN;
+		case SOUTH_EAST: return NORTH_WEST;
+		case SOUTH_WEST: return NORTH_EAST;
+		case UP:   return DOWN;
 		case DOWN: return UP;
 		default:
 			fprintf(stderr,
@@ -307,7 +306,7 @@ void World::ReloadShreds(const int direction) {
 	MakeSun();
 	ReEnlightenMove(direction);
 	emit Moved(direction);
-}
+} //World::ReloadShreds
 
 void World::PhysEvents() {
 	WriteLock();
@@ -377,12 +376,11 @@ void World::PhysEvents() {
 			ReEnlightenTime();
 			emit Notify(tr("It's night now."));
 		break;
-		default: break;
 	}
 	emit UpdatesEnded();
 	//emit ExitReceived(); //close all after 1 turn
 	Unlock();
-}
+} //World::PhysEvents
 
 bool World::DirectlyVisible(float x_from, float y_from, float z_from,
 		const ushort x_to, const ushort y_to, const ushort z_to)
@@ -634,7 +632,7 @@ bool World::Damage(const ushort i, const ushort j, const ushort k,
 	GetShred(i, j)->AddFalling(i%SHRED_WIDTH, j%SHRED_WIDTH, k+1);
 	ReEnlighten(i, j, k);
 	return true;
-}
+} //World::Damage
 
 bool World::Build(Block * block,
 		const ushort i, const ushort j, const ushort k,
@@ -903,7 +901,7 @@ World::World(const QString & world_name) :
 	}
 	LoadAllShreds();
 	emit UpdatedAll();
-}
+} //World::World
 
 World::~World() { CleanAll(); }
 
