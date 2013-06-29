@@ -85,7 +85,7 @@ class Block { //blocks without special physics and attributes
 	virtual int  BeforePush(int dir, Block * who);
 	virtual void Move(int direction);
 	virtual int  Damage(ushort dmg, int dmg_kind);
-	virtual usage_types Use();
+	virtual usage_types Use(Block * who=0);
 	///Usually returns new block of the same kind and sub (except glass).
 	/**When reimplemented in derivatives, inside it you can create a pile,
 	 * put several blocks in it, and return pile.
@@ -377,7 +377,7 @@ class Chest : public Block, public Inventory {
 	void ReceiveSignal(const QString &);
 	QString FullName() const;
 	Inventory * HasInventory();
-	usage_types Use();
+	usage_types Use(Block * who=0);
 	ushort Weight() const;
 
 	protected:
@@ -403,7 +403,7 @@ class Pile : public Active, public Inventory {
 	void Pull(ushort num);
 	QString FullName() const;
 	Inventory * HasInventory();
-	usage_types Use();
+	usage_types Use(Block * who=0);
 	ushort Weight() const;
 
 	protected:
@@ -465,7 +465,7 @@ class Bush : public Active, public Inventory {
 	ushort Weight() const;
 
 	QString FullName() const;
-	usage_types Use();
+	usage_types Use(Block * who=0);
 	Inventory * HasInventory();
 	Block * DropAfterDamage() const;
 
@@ -527,7 +527,7 @@ class Door : public Active {
 	int  BeforePush(int dir, Block * who);
 	bool ShouldFall() const;
 	QString FullName() const;
-	usage_types Use();
+	usage_types Use(Block * who=0);
 
 	protected:
 	void SaveAttributes(QDataStream & out) const;
@@ -553,7 +553,7 @@ class Clock : public Active {
 	int  BeforePush(int dir, Block * who);
 	void Inscribe(const QString & str);
 	ushort Weight() const;
-	usage_types Use();
+	usage_types Use(Block * who=0);
 	QString FullName() const;
 
 	Clock(int sub);

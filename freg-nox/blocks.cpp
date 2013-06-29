@@ -126,7 +126,7 @@
 	int  Block::BeforePush(const int, Block * const) { return NO_ACTION; }
 	void Block::Inscribe(const QString & str) { *note=str; }
 	void Block::Move(const int) {}
-	usage_types Block::Use() { return USAGE_TYPE_NO; }
+	usage_types Block::Use(Block *) { return USAGE_TYPE_NO; }
 	int  Block::Wearable() const { return WEARABLE_NOWHERE; }
 	int  Block::DamageKind() const { return CRUSH; }
 	ushort Block::DamageLevel() const { return 1; }
@@ -426,8 +426,11 @@
 		world->GetBlock(X(), Y(), Z()+1)->ReceiveSignal(signal);
 	}
 
-	World * Active::GetWorld() const { return whereShred->GetWorld(); }
 	Shred * Active::GetShred() const { return whereShred; }
+	World * Active::GetWorld() const {
+		return whereShred ?
+			whereShred->GetWorld() : 0;
+	}
 
 	bool Active::InBounds(const ushort x, const ushort y, const ushort z)
 	const {
@@ -971,7 +974,7 @@
 	int Chest::Kind() const { return CHEST; }
 	int Chest::Sub() const { return Block::Sub(); }
 	Inventory * Chest::HasInventory() { return Inventory::HasInventory(); }
-	usage_types Chest::Use() { return USAGE_TYPE_OPEN; }
+	usage_types Chest::Use(Block *) { return USAGE_TYPE_OPEN; }
 
 	void Chest::ReceiveSignal(const QString & str) {
 		Block::ReceiveSignal(str);
@@ -1026,7 +1029,7 @@
 	int Pile::Kind() const { return PILE; }
 	int Pile::Sub() const { return Block::Sub(); }
 	Inventory * Pile::HasInventory() { return Inventory::HasInventory(); }
-	usage_types Pile::Use() { return USAGE_TYPE_OPEN; }
+	usage_types Pile::Use(Block *) { return USAGE_TYPE_OPEN; }
 	ushort Pile::Weight() const { return Inventory::Weight(); }
 
 	void Pile::ReceiveSignal(const QString & str) {
@@ -1194,7 +1197,7 @@
 	int  Bush::Movable() const { return NOT_MOVABLE; }
 	bool Bush::ShouldFall() const { return false; }
 	int  Bush::ShouldAct() const  { return RARE; }
-	usage_types Bush::Use() { return USAGE_TYPE_OPEN; }
+	usage_types Bush::Use(Block *) { return USAGE_TYPE_OPEN; }
 	Inventory * Bush::HasInventory() { return Inventory::HasInventory(); }
 
 	void Bush::ReceiveSignal(const QString & str) {
@@ -1484,7 +1487,7 @@
 		return tr(locked ? "Locked door" : "Door") + sub_string;
 	}
 
-	usage_types Door::Use() {
+	usage_types Door::Use(Block *) {
 		locked=!locked;
 		return USAGE_TYPE_NO;
 	}
@@ -1509,12 +1512,16 @@
 		str >> shifted >> locked;
 	}
 //Clock::
-	usage_types Clock::Use() {
-		World * const world=GetWorld();
-		SendSignalAround(QString("Time is %1%2%3.").
-			arg(world->TimeOfDay()/60).
-			arg((world->TimeOfDay()%60 < 10) ? ":0" : ":").
-			arg(world->TimeOfDay()%60));
+	usage_types Clock::Use(Block * const who) {
+		World * world=GetWorld();
+		if ( world ) {
+			SendSignalAround(world->TimeOfDayStr());
+		} else if ( who ) {
+			const Active * const active=who->ActiveBlock();
+			if ( active && (world=active->GetWorld()) ) {
+				who->ReceiveSignal(world->TimeOfDayStr());
+			}
+		}
 		return USAGE_TYPE_NO;
 	}
 

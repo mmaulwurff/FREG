@@ -179,6 +179,7 @@ class World : public QThread {
 	int TimeOfDay() const;
 	///Returns time in seconds since world creation.
 	ulong Time() const;
+	QString TimeOfDayStr() const;
 	///Returns number of physics steps since second start.
 	ushort MiniTime() const;
 

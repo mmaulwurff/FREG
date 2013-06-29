@@ -65,6 +65,12 @@ times_of_day World::PartOfDay() const {
 	return EVENING;
 }
 
+QString World::TimeOfDayStr() const {
+	return tr("Time is %1:%2.").
+		arg(TimeOfDay()/60).
+		arg(TimeOfDay()%60, 2, 10, QChar('0'));
+}
+
 int World::TimeOfDay() const { return time % SECONDS_IN_DAY; }
 ulong World::Time() const { return time; }
 ushort World::MiniTime() const { return timeStep; }

@@ -239,7 +239,7 @@ void Player::Use(const ushort num) {
 	world->WriteLock();
 	Block * const block=ValidBlock(num);
 	if ( block ) {
-		block->Use();
+		block->Use(player);
 	}
 	world->Unlock();
 }
