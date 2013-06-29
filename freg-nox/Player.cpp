@@ -147,12 +147,9 @@ void Player::Examine(const short i, const short j, const short k) const {
 	if ( ""!=(str=block->GetNote()) ) {
 		emit Notify(tr("Inscription: ")+str);
 	}
-	emit Notify(tr("Temperature: ")+
-		QString::number(world->Temperature(i, j, k)));
-	emit Notify(tr("Durability: ")+
-		QString::number(block->Durability()));
-	emit Notify(tr("Weight: ")+
-		QString::number(block->Weight()));
+	emit Notify(tr("Temperature: %1.").arg(world->Temperature(i, j, k)));
+	emit Notify(tr("Durability: %1.").arg(block->Durability()));
+	emit Notify(tr("Weight: %1.").arg(block->Weight()));
 	world->Unlock();
 }
 

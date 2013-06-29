@@ -834,10 +834,11 @@ bool Screen::PrintFile(WINDOW * const window, QString const & file_name) {
 }
 
 void Screen::Notify(const QString & str) {
-	waddstr(notifyWin, qPrintable(str+'\n'));
+	waddstr(notifyWin, qPrintable(str));
+	waddch(notifyWin, '\n');
 	wnoutrefresh(notifyWin);
 	updated=false;
-	fputs(qPrintable(QString::number(w->Time())+": "+str+'\n'),
+	fputs(qPrintable(QString("%1: %2\n").arg(w->Time()).arg(str)),
 		notifyLog);
 }
 

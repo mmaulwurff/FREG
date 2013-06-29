@@ -428,9 +428,10 @@ Block * Shred::Normal(const int sub, const int dir) {
 }
 
 QString Shred::FileName() const {
-	return world->WorldName()+"/y"+
-		QString::number(longitude)+"x"+
-		QString::number(latitude);
+	return QString("%1/y%2x%3").
+		arg(world->WorldName()).
+		arg(longitude).
+		arg(latitude);
 }
 
 char Shred::TypeOfShred(const long longi, const long lati) const {
