@@ -130,8 +130,8 @@ void Player::Examine(const short i, const short j, const short k) const {
 	const int sub=block->Sub();
 	emit Notify( block->FullName() );
 	if ( creativeMode ) { //know more
-		emit Notify(QString(tr(
-		"Light:%1, fire:%2, sun:%3. Transp:%4. Norm:%5. Dir:%6.")).
+		emit Notify(tr(
+		"Light:%1, fire:%2, sun:%3. Transp:%4. Norm:%5. Dir:%6.").
 			arg(world->Enlightened(i, j, k)).
 			arg(world->FireLight(i, j, k)/16).
 			arg(world->SunLight(i, j, k)).
@@ -382,8 +382,8 @@ void Player::ProcessCommand(QString & command) {
 				}
 			}
 			if ( num > 0 ) {
-				emit Notify(QString(tr(
-					"No place for %1 things.")).arg(num));
+				emit Notify(tr("No place for %1 things.").
+					arg(num));
 			}
 		} else {
 			emit Notify(tr("No room."));
@@ -431,8 +431,8 @@ void Player::ProcessCommand(QString & command) {
 		emit Notify("    ||----w |");
 		emit Notify("    ||     ||");
 	} else {
-		emit Notify(QString(tr(
-			"Don't know such command: \"%1\".")).arg(command));
+		emit Notify(tr("Don't know such command: \"%1\".").
+			arg(command));
 	}
 } //Player::ProcessCommand
 
