@@ -796,27 +796,20 @@ void World::DeleteAllShreds() {
 void World::SetNumActiveShreds(ushort num) {
 	WriteLock();
 	if ( 1 != num%2 ) {
-		emit Notify(QString(
-			"Invalid shreds number:%1x%2.").arg(num).arg(num));
+		emit Notify(tr("Invalid shreds number:%1x%1.").arg(num));
 		++num;
 	}
 	if ( num < 3 ) {
-		emit Notify(QString(
-			"Active shreds number too small: %1x%2.").
-				arg(num).
-				arg(num));
+		emit Notify(tr("Active shreds number too small: %1x%1.").
+			arg(num));
 	} else if ( num > numShreds ) {
-		emit Notify(QString(
-			"Active shreds number too big: %1x%2.").
-				arg(num).
-				arg(num));
+		emit Notify(tr("Active shreds number too big: %1x%1.").
+			arg(num));
 	} else {
 		numActiveShreds=num;
 	}
-	emit Notify(QString(
-		"Active shreds number is %1x%2.").
-			arg(numActiveShreds).
-			arg(numActiveShreds));
+	emit Notify(tr("Active shreds number is %1x%1.").
+		arg(numActiveShreds));
 	Unlock();
 }
 

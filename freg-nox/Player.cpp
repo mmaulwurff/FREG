@@ -589,15 +589,9 @@ void Player::SetPlayer(
 void Player::SetNumShreds(ushort num) const {
 	const ushort num_shreds=world->NumShreds();
 	if ( num < 5 ) {
-		emit Notify(QString(
-			"Shreds number too small: %1x%2.").arg(num).arg(num));
-		emit Notify(QString("Shreds number is %1x%2.")
-			.arg(num_shreds).arg(num_shreds));
+		emit Notify(tr("Shreds number too small: %1x%1.").arg(num));
 	} else if ( 1 != num%2 ) {
-		emit Notify(QString(
-			"Invalid shreds number: %1x%2.").arg(num).arg(num));
-		emit Notify(QString("Shreds number is %1x%2.")
-			.arg(num_shreds).arg(num_shreds));
+		emit Notify(tr("Invalid shreds number: %1x%1.").arg(num));
 	} else {
 		const short shift=num/2 - num_shreds/2;
 		world->ReloadAllShreds(
@@ -612,9 +606,8 @@ void Player::SetNumShreds(ushort num) const {
 				(num_shreds/2+shift)*SHRED_WIDTH,
 			z,
 			num);
-		emit Notify(QString("Shreds number is %1x%2.")
-			.arg(num).arg(num));
 	}
+	emit Notify(tr("Shreds number is %1x%1 now.").arg(num_shreds));
 }
 
 Player::Player(World * const w) :

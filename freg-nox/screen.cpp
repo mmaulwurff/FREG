@@ -311,22 +311,11 @@ void Screen::ControlPlayer(const int ch) {
 		case '}': shiftFocus =  !shiftFocus; break; //move focus up
 
 		case '+': w->SetNumActiveShreds(w->NumActiveShreds()+2); break;
-		case '-':
-			if ( w->NumActiveShreds() > 3 ) {
-				w->SetNumActiveShreds(w->NumActiveShreds()-2);
-			} else {
-				Notify(QString(
-					"Active zone is too small: %1x%2.").
-						arg(w->NumActiveShreds()).
-						arg(w->NumActiveShreds()));
-			}
-		break;
+		case '-': w->SetNumActiveShreds(w->NumActiveShreds()-2); break;
+		case '_': player->SetNumShreds(w->NumShreds()-2); break;
 		case '#':
-			Notify("Don't make shreds number too big.");
+			Notify(tr("Don't make shreds number too big."));
 			player->SetNumShreds(w->NumShreds()+2);
-		break;
-		case '_':
-			player->SetNumShreds(w->NumShreds()-2);
 		break;
 
 		case '!':
