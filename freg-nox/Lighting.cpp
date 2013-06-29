@@ -80,17 +80,14 @@ void World::SunShine(const ushort i, const ushort j) {
 		const ushort transparent=Transparent(i, j, k);
 		const uchar new_light_lev=
 			(LightMap(i, j, k) & 0xF0) | light_lev;
-		const struct {
-			int x;
-			int y;
-			int z;
-		} coords[5]={
+		const xyz coords[]={
 			{i, j, k},
 			{i-1, j, k},
 			{i+1, j, k},
 			{i, j-1, k},
-			{i, j+1, k} };
-		for (ushort i=0; i<5; ++i) {
+			{i, j+1, k}
+		};
+		for (ushort i=0; i<sizeof(coords)/sizeof(xyz); ++i) {
 			if ( InBounds(coords[i].x, coords[i].y) &&
 					SetLightMap(new_light_lev,
 						coords[i].x,

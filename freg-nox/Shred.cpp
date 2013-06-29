@@ -138,7 +138,7 @@ const {
 	ShredNominalAmplitudeAndLevel(this_shred_type, &l2, &a2);
 	const float this_shred_amplitude = amplitude = a2;
 	const float this_shred_level = level = float (l2);
-	for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < 8; ++i) {
 		if (shred_types[i] != this_shred_type) {
 			ShredNominalAmplitudeAndLevel(shred_types[i], &l2,&a2);
 			amplitude += (a2 - this_shred_amplitude) * (1.0f/9.0f);
@@ -156,9 +156,9 @@ ushort Shred::ShredY() const { return shredY; }
 
 World * Shred::GetWorld() const { return world; }
 
-int Shred::LoadShred(QFile & file) {
-	QByteArray read_data=file.readAll();
-	QByteArray uncompressed=qUncompress(read_data);
+bool Shred::LoadShred(QFile & file) {
+	const QByteArray read_data=file.readAll();
+	const QByteArray uncompressed=qUncompress(read_data);
 	QDataStream in(uncompressed);
 	quint8 version;
 	in >> version;
@@ -166,7 +166,7 @@ int Shred::LoadShred(QFile & file) {
 		fprintf(stderr,
 			"Wrong version: %d\nGenerating new shred.\n",
 			DATASTREAM_VERSION);
-		return 1;
+		return false;
 	}
 	in.setVersion(DATASTREAM_VERSION);
 	for (ushort i=0; i<SHRED_WIDTH; ++i)
@@ -180,7 +180,7 @@ int Shred::LoadShred(QFile & file) {
 		}
 		lightMap[i][j][HEIGHT-1]=MAX_LIGHT_RADIUS;
 	}
-	return 0;
+	return true;
 }
 
 Shred::Shred(World * const world_,
@@ -198,7 +198,7 @@ Shred::Shred(World * const world_,
 	activeListAll.reserve(600);
 	fallList.reserve(100);
 	QFile file(FileName());
-	if ( file.open(QIODevice::ReadOnly) && !LoadShred(file) ) {
+	if ( file.open(QIODevice::ReadOnly) && LoadShred(file) ) {
 		return;
 	}
 	for (ushort i=0; i<SHRED_WIDTH; ++i)
@@ -230,7 +230,7 @@ Shred::Shred(World * const world_,
 				TypeOfShred(longi, lati),
 				int(TypeOfShred(longi, lati)));
 	}
-}
+} //Shred::Shred
 
 Shred::~Shred() {
 	const long mapSize=world->MapSize();
@@ -265,7 +265,7 @@ Shred::~Shred() {
 	for (ushort k=1; k<HEIGHT-1; ++k) {
 		block_manager.DeleteBlock(blocks[i][j][k]);
 	}
-}
+} //Shred::~Shred
 
 void Shred::SetNewBlock(const int kind, const int sub,
 		const ushort x, const ushort y, const ushort z)
@@ -441,8 +441,7 @@ char Shred::TypeOfShred(const long longi, const long lati) const {
 			lati  >= mapSize || lati  < 0 )
 	{
 		return OUT_BORDER_SHRED;
-	}
-	if ( !world->MapStream()->seek((mapSize+1)*longi+lati) ) {
+	} else if ( !world->MapStream()->seek((mapSize+1)*longi+lati) ) {
 		return DEFAULT_SHRED;
 	}
 	char c;
@@ -622,7 +621,7 @@ void Shred::NormalUnderground(const ushort depth, const int sub) {
 			PutNormalBlock(sub, i, j, k);
 		}
 	}
-}
+} //Shred::NormalUnderground
 
 void Shred::CoverWith(const int kind, const int sub) {
 	for (ushort i=0; i<SHRED_WIDTH; ++i)
@@ -664,7 +663,7 @@ void Shred::PlantGrass() {
 }
 
 void Shred::TestShred() {
-	ushort level=FlatUndeground()+1;
+	const ushort level=FlatUndeground()+1;
 	//row 1
 	SetNewBlock(CLOCK, IRON, 1, 1, level);
 	SetNewBlock(CHEST, WOOD, 3, 1, level);
@@ -707,7 +706,7 @@ void Shred::TestShred() {
 		}
 	}
 	SetNewBlock(RABBIT, A_MEAT, 2, 8, level);*/
-}
+} //Shred::TestShred
 
 void Shred::NullMountain() {
 	for (ushort i=0; i<SHRED_WIDTH; ++i)
@@ -818,7 +817,7 @@ void Shred::Pyramid() {
 	for (z=HEIGHT/2-52; z<=level; z++) {
 		blocks[SHRED_WIDTH/2][SHRED_WIDTH/2][z]=Normal(AIR);
 	}
-}
+} //Shred::Pyramid
 
 void Shred::Hill() {
 	NormalUnderground();
@@ -891,18 +890,10 @@ bool Shred::Tree(const ushort x, const ushort y, const ushort z,
 		PutNormalBlock(WOOD, x+1, y+1, z-1);
 	}
 	//branches
-	if ( qrand()%2 ) {
-		PutNormalBlock(WOOD, x,   y+1, z+height/2, WEST);
-	}
-	if ( qrand()%2 ) {
-		PutNormalBlock(WOOD, x+2, y+1, z+height/2, EAST);
-	}
-	if ( qrand()%2 ) {
-		PutNormalBlock(WOOD, x+1, y, z+height/2, NORTH);
-	}
-	if ( qrand()%2 ) {
-		PutNormalBlock(WOOD, x+1, y+2, z+height/2, SOUTH);
-	}
+	if ( qrand()%2 ) PutNormalBlock(WOOD, x,   y+1, z+height/2, WEST);
+	if ( qrand()%2 ) PutNormalBlock(WOOD, x+2, y+1, z+height/2, EAST);
+	if ( qrand()%2 ) PutNormalBlock(WOOD, x+1, y,   z+height/2, NORTH);
+	if ( qrand()%2 ) PutNormalBlock(WOOD, x+1, y+2, z+height/2, SOUTH);
 	//leaves
 	for (i=x; i<=x+2; ++i)
 	for (j=y; j<=y+2; ++j)
@@ -912,4 +903,4 @@ bool Shred::Tree(const ushort x, const ushort y, const ushort z,
 		}
 	}
 	return true;
-}
+} //Shred::Tree

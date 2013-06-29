@@ -407,16 +407,13 @@
 
 	void Active::SendSignalAround(const QString & signal) const {
 		World * const world=GetWorld();
-		const struct {
-			int x;
-			int y;
-		} coords[]={
+		const xy coords[]={
 			{ X()-1, Y() },
 			{ X()+1, Y() },
 			{ X(), Y()-1 },
 			{ X(), Y()+1 }
 		};
-		for (ushort i=0; i<sizeof(coords)/sizeof(int); ++i) {
+		for (ushort i=0; i<sizeof(coords)/sizeof(xy); ++i) {
 			if ( InBounds(coords[i].x, coords[i].y) ) {
 				world->GetBlock(coords[i].x, coords[i].y,
 					Z())->ReceiveSignal(signal);

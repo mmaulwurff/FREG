@@ -88,7 +88,7 @@ class Shred {
 	ushort Weight(ushort x, ushort y, ushort z) const;
 	uchar LightRadius(ushort x, ushort y, ushort z) const;
 
-	int LoadShred(QFile &);
+	bool LoadShred(QFile &);
 
 	Shred(World *,
 			ushort shred_x, ushort shred_y,
