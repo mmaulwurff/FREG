@@ -49,6 +49,8 @@ class DeferredAction {
 	void Damage() const;
 	void Throw() const;
 
+	void UnsetDeferredAction();
+
 	public:
 	void SetGhostMove();
 	void SetMove();

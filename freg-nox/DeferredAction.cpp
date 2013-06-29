@@ -100,16 +100,25 @@ void DeferredAction::Throw() const {
 		srcSlot, destSlot, num);
 }
 
+void DeferredAction::UnsetDeferredAction() {
+	if ( DEFERRED_NOTHING != type ) {
+		world->RemDeferredAction(this);
+	}
+}
+
 void DeferredAction::SetGhostMove() {
+	UnsetDeferredAction();
 	type=DEFERRED_GHOST_MOVE;
 	world->AddDeferredAction(this);
 }
 
 void DeferredAction::SetMove() {
+	UnsetDeferredAction();
 	type=DEFERRED_MOVE;
 	world->AddDeferredAction(this);
 }
 void DeferredAction::SetJump() {
+	UnsetDeferredAction();
 	type=DEFERRED_JUMP;
 	world->AddDeferredAction(this);
 }
@@ -118,6 +127,7 @@ void DeferredAction::SetBuild(
 		Block * const mat,
 		const ushort builder_slot)
 {
+	UnsetDeferredAction();
 	xTarg=x_targ;
 	yTarg=y_targ;
 	zTarg=z_targ;
@@ -131,6 +141,7 @@ void DeferredAction::SetDamage(
 		const ushort y_targ,
 		const ushort z_targ)
 {
+	UnsetDeferredAction();
 	xTarg=x_targ;
 	yTarg=y_targ;
 	zTarg=z_targ;
@@ -140,6 +151,7 @@ void DeferredAction::SetDamage(
 void DeferredAction::SetThrow(const ushort src, const ushort dest,
 		const ushort n)
 {
+	UnsetDeferredAction();
 	srcSlot=src;
 	destSlot=dest;
 	num=n;

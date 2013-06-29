@@ -154,14 +154,15 @@ void Player::Examine(const short i, const short j, const short k) const {
 }
 
 void Player::Jump() {
-	if ( creativeMode ) {
-		if ( UP==dir && z<HEIGHT-2 ) {
-			++z;
-		} else if ( z>1 ) {
-			--z;
+	if ( !player ) {
+		return;
+	}
+	usingType=USAGE_TYPE_NO;
+	if ( GetCreativeMode() ) {
+		if ( (UP==dir && z<HEIGHT-2) || (DOWN==dir && z>1) ) {
+			player->GetDeferredAction()->SetGhostMove();
 		}
 	} else {
-		usingType=USAGE_TYPE_NO;
 		player->GetDeferredAction()->SetJump();
 	}
 }
@@ -371,7 +372,7 @@ void Player::ProcessCommand(QString & command) {
 		} else if ( inv ) {
 			int kind, sub, num;
 			comm_stream >> kind >> sub >> num;
-			if ( !num ) {
+			if ( num <= 0 ) {
 				num=1;
 			}
 			while ( num && inv->HasRoom() ) {
@@ -411,19 +412,6 @@ void Player::ProcessCommand(QString & command) {
 			}
 		}
 		world->Unlock();
-	} else if ( "heal"==request ) {
-		if ( !creativeMode ) {
-			emit Notify(tr("Not in Creative Mode."));
-			return;
-		}
-		if ( player ) {
-			world->WriteLock();
-			player->Restore();
-			world->Unlock();
-			emit Notify(tr("Healed."));
-		} else {
-			emit Notify(tr("Nothing to heal."));
-		}
 	} else if ( "moo"==request ) {
 		emit Notify("^__^");
 		emit Notify("(oo)\\_______");
