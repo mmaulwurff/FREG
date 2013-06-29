@@ -155,6 +155,7 @@ class Screen : public VirtScreen {
 	bool PrintFile(WINDOW *, QString const & file_name);
 	void CleanFileToShow();
 	void RePrint();
+	void MouseAction();
 
 	void InventoryAction(ushort num) const;
 

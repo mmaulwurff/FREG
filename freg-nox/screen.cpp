@@ -341,28 +341,7 @@ void Screen::ControlPlayer(const int ch) {
 
 		case 'L': RePrint(); break;
 
-		case KEY_MOUSE: {
-			MEVENT mouse_event;
-			getmouse(&mouse_event);
-			if ( !wenclose(hudWin, mouse_event.y, mouse_event.x) )
-			{
-				break;
-			}
-			wmouse_trafo(hudWin, &mouse_event.y, &mouse_event.x,
-				FALSE);
-			if ( mouse_event.x>=QUICK_INVENTORY_X_SHIFT
-					&& mouse_event.x <
-						QUICK_INVENTORY_X_SHIFT+
-							INV_SIZE*2)
-			{
-				Notify(QString("In place '%1':").
-					arg(char((mouse_event.x-
-						QUICK_INVENTORY_X_SHIFT)/2+
-							'a')));
-				InventoryAction((mouse_event.x -
-					QUICK_INVENTORY_X_SHIFT)/2);
-			}
-		} break;
+		case KEY_MOUSE: MouseAction(); break;
 		case 'R':
 			if ( player->GetCreativeMode() ) {
 				break;
@@ -380,6 +359,25 @@ void Screen::ControlPlayer(const int ch) {
 	}
 	updated=false;
 } //Screen::ControlPlayer
+
+void Screen::MouseAction() {
+	#ifdef Q_OS_LINUX //mouse events are in ncurses, but not in pdcurses
+	MEVENT mouse_event;
+	getmouse(&mouse_event);
+	if ( !wenclose(hudWin, mouse_event.y, mouse_event.x) ) {
+		return;
+	}
+	wmouse_trafo(hudWin, &mouse_event.y, &mouse_event.x, FALSE);
+	if ( mouse_event.x>=QUICK_INVENTORY_X_SHIFT
+			&& mouse_event.x < QUICK_INVENTORY_X_SHIFT+INV_SIZE*2)
+	{
+		Notify(QString("In place '%1':").
+			arg(char((mouse_event.x-QUICK_INVENTORY_X_SHIFT)/2+
+				'a')));
+		InventoryAction((mouse_event.x -QUICK_INVENTORY_X_SHIFT)/2);
+	}
+	#endif
+}
 
 void Screen::InventoryAction(const ushort num) const {
 	switch ( actionMode ) {
@@ -883,10 +881,11 @@ Screen::Screen(World * const wor, Player * const pl) :
 		AllocConsole();
 		freopen( "conout$", "w", stdout );
 		freopen( "conin$", "r", stdin );
+	#else
+		set_escdelay(10);
 	#endif
 	resize_term( SCREEN_SIZE+2 + 3 + 1 + 5, (SCREEN_SIZE*2 + 2)*2 );
 	freopen("errors.txt", "w", stderr);
-	set_escdelay(10);
 	initscr();
 	start_color();
 	raw(); //send typed keys directly
