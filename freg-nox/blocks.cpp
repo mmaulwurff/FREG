@@ -1264,39 +1264,20 @@
 
 	void Rabbit::ActFrequent() {
 		World * const world=GetWorld();
-		//eat sometimes
-		if ( SECONDS_IN_DAY/2 > Satiation() ) {
-			for (ushort x=X()-1; x<=X()+1; ++x)
-			for (ushort y=Y()-1; y<=Y()+1; ++y)
-			for (ushort z=Z()-1; z<=Z()+1; ++z) {
-				if ( InBounds(x, y) &&
-						GREENERY==world->Sub(x, y, z) )
-				{
-					world->Eat(X(), Y(), Z(), x, y, z);
-					return;
-				}
-			}
-		}
 		//analyse world around
 		short for_north=0, for_west=0;
 		for (ushort x=X()-4; x<=X()+4; ++x)
 		for (ushort y=Y()-4; y<=Y()+4; ++y)
 		for (ushort z=Z()-1; z<=Z()+3; ++z) {
-			if ( InBounds(x, y, z) ) {
-				const short attractive=
-					Attractive(world->Sub(x, y, z));
-				if ( attractive &&
-						world->DirectlyVisible(
-							X(), Y(), Z(),
-							x, y, z) )
-				{
-					if ( y!=Y() ) {
-						for_north+=attractive/(Y()-y);
-					}
-					if ( x!=X() ) {
-						for_west +=attractive/(X()-x);
-					}
-				}
+			short attractive;
+			if ( InBounds(x, y, z) &&
+					(attractive=Attractive(
+						world->Sub(x, y, z))) &&
+					world->DirectlyVisible(
+						X(), Y(), Z(), x, y, z) )
+			{
+				if ( y!=Y() ) for_north+=attractive/(Y()-y);
+				if ( x!=X() ) for_west +=attractive/(X()-x);
 			}
 		}
 		//make direction and move there
@@ -1310,17 +1291,35 @@
 			} else {
 				world->Jump(X(), Y(), Z(), GetDir());
 			}
-		} else {
-			switch ( qrand()%60 ) {
-				case 0: SetDir(NORTH); break;
-				case 1: SetDir(SOUTH); break;
-				case 2: SetDir(EAST);  break;
-				case 3: SetDir(WEST);  break;
-				default: return;
-			}
-			world->Move(X(), Y(), Z(), GetDir());
 		}
 	} //Rabbit::ActFrequent
+
+	void Rabbit::ActRare() {
+		Animal::ActRare();
+		//eat sometimes
+		World * const world=GetWorld();
+		if ( SECONDS_IN_DAY/2 > Satiation() ) {
+			for (ushort x=X()-1; x<=X()+1; ++x)
+			for (ushort y=Y()-1; y<=Y()+1; ++y)
+			for (ushort z=Z();   z<=Z()+1; ++z) {
+				if ( InBounds(x, y) &&
+						GREENERY==world->Sub(x, y, z) )
+				{
+					world->Eat(X(), Y(), Z(), x, y, z);
+					return;
+				}
+			}
+		}
+		//random movement
+		switch ( qrand()%60 ) {
+			case 0: SetDir(NORTH); break;
+			case 1: SetDir(SOUTH); break;
+			case 2: SetDir(EAST);  break;
+			case 3: SetDir(WEST);  break;
+			default: return;
+		}
+		world->Move(X(), Y(), Z(), GetDir());
+	}
 
 	Block * Rabbit::DropAfterDamage() const {
 		return block_manager.NormalBlock(A_MEAT);

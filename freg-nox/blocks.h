@@ -489,6 +489,7 @@ class Rabbit : public Animal {
 	public:
 	int  Kind() const;
 	void ActFrequent();
+	void ActRare();
 	int  ShouldAct() const;
 	Block * DropAfterDamage() const;
 	QString FullName() const;
