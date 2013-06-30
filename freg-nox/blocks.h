@@ -426,6 +426,7 @@ class Liquid : public Active {
 	int  Kind() const;
 	int  Movable() const;
 	int  Temperature() const;
+	uchar LightRadius() const;
 	QString FullName() const;
 
 	Liquid(int sub=WATER);

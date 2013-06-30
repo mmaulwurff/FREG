@@ -490,12 +490,11 @@
 	void Active::Register(Shred * const sh,
 			const ushort x, const ushort y, const ushort z)
 	{
-		if ( whereShred ) {
+		if ( whereShred ) { //prevent duplicate registering
 			return;
 		}
-		whereShred=sh;
 		SetXYZ(x, y, z);
-		whereShred->AddActive(this);
+		(whereShred=sh)->AddActive(this);
 		if ( ENVIRONMENT==sh->Movable(
 				x%SHRED_WIDTH, y%SHRED_WIDTH, z-1) &&
 				!(*this==*sh->GetBlock(
@@ -503,11 +502,15 @@
 		{
 			whereShred->AddFalling(this);
 		}
+		if ( LightRadius() ) {
+			whereShred->AddShining(this);
+		}
 	}
 	void Active::Unregister() {
 		if ( whereShred ) {
 			whereShred->RemActive(this);
 			whereShred->RemFalling(this);
+			whereShred->RemShining(this);
 			whereShred=0;
 		}
 	}
@@ -1110,6 +1113,7 @@
 	int Liquid::Movable() const { return ENVIRONMENT; }
 	int Liquid::Kind() const { return LIQUID; }
 	int Liquid::Temperature() const { return ( WATER==Sub() ) ? 0 : 1000; }
+	uchar Liquid::LightRadius() const { return ( WATER==Sub() ) ? 0 : 3; }
 
 	QString Liquid::FullName() const {
 		switch ( Sub() ) {

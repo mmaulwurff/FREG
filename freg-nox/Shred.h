@@ -42,6 +42,7 @@ class Shred {
 	QList<Active *> activeListFrequent;
 	QList<Active *> activeListRare;
 	QList<Active *> fallList;
+	QList<Active *> shiningList;
 
 	public:
 	///Returns y (line) shred coordinate on world map.
@@ -58,6 +59,8 @@ class Shred {
 	void AddFalling(Active *);
 	void RemFalling(Active *);
 	void AddFalling(ushort x, ushort y, ushort z);
+	void AddShining(Active *);
+	void RemShining(Active *);
 
 	World * GetWorld() const;
 

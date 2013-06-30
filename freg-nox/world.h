@@ -31,9 +31,6 @@ class DeferredAction;
 
 const ushort SAFE_FALL_HEIGHT=5;
 
-const uchar MOON_LIGHT_FACTOR=1;
-const uchar  SUN_LIGHT_FACTOR=8;
-
 class World : public QThread {
 	Q_OBJECT
 

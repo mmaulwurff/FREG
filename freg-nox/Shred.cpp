@@ -374,6 +374,14 @@ void Shred::AddFalling(const ushort x, const ushort y, const ushort z) {
 	}
 }
 
+void Shred::AddShining(Active * const active) {
+	shiningList.append(active);
+}
+
+void Shred::RemShining(Active * const active) {
+	shiningList.removeOne(active);
+}
+
 void Shred::ReloadToNorth() {
 	for (ushort i=0; i<activeListAll.size(); ++i) {
 		activeListAll.at(i)->ReloadToNorth();
@@ -697,6 +705,7 @@ void Shred::TestShred() {
 	SetNewBlock(DOOR, STONE, 9, 5, level);
 	blocks[9][5][level]->SetDir(NORTH);
 	SetNewBlock(BLOCK, CLAY, 11, 5, level);
+	SetNewBlock(LIQUID, STONE, 13, 5, level-1);
 	//suicide booth
 	/*for (ushort i=1; i<4; ++i)
 	for (ushort j=7; j<10; ++j)

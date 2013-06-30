@@ -16,7 +16,7 @@
 	*/
 
 /**\file Lighting.cpp
- * This file provides simple (also mad) lighting for freg.
+ * \brief This file provides simple (also mad) lighting for freg.
  *
  * It has light inertia, meaning that block, enlightened by outer
  * source, will remain enlightened when light source is removed.
@@ -31,6 +31,9 @@
 #include "Shred.h"
 
 const uchar FIRE_LIGHT_FACTOR=4;
+
+const uchar MOON_LIGHT_FACTOR=1;
+const uchar  SUN_LIGHT_FACTOR=8;
 
 //private. use Enlightened instead, which is smart wrapper of this.
 uchar World::LightMap(const ushort x, const ushort y, const ushort z)
@@ -55,10 +58,8 @@ void World::Shine(const ushort i, const ushort j, const ushort k,
 	if ( !InBounds(i, j, k) || 0==level ) {
 		return;
 	}
-	const uchar new_level=(LightMap(i, j, k) & 0x0F) |
-		((( level > 0x0F ) ? 0x0F : level) << 4);
-	if ( !Transparent(i, j, k) ) {
-		if ( SetLightMap(new_level, i, j, k) ) {
+	if ( INVISIBLE!=Transparent(i, j, k) ) {
+		if ( SetLightMap(level << 4, i, j, k) ) {
 			emit Updated(i, j, k);
 		}
 		if ( !init ) {
@@ -78,8 +79,6 @@ void World::SunShine(const ushort i, const ushort j) {
 	ushort light_lev=MAX_LIGHT_RADIUS;
 	for (ushort k=HEIGHT-2; light_lev; --k) {
 		const ushort transparent=Transparent(i, j, k);
-		const uchar new_light_lev=
-			(LightMap(i, j, k) & 0xF0) | light_lev;
 		const xyz coords[]={
 			{i, j, k},
 			{i-1, j, k},
@@ -89,7 +88,7 @@ void World::SunShine(const ushort i, const ushort j) {
 		};
 		for (ushort i=0; i<sizeof(coords)/sizeof(xyz); ++i) {
 			if ( InBounds(coords[i].x, coords[i].y) &&
-					SetLightMap(new_light_lev,
+					SetLightMap(light_lev,
 						coords[i].x,
 						coords[i].y,
 						coords[i].z) &&
@@ -192,7 +191,9 @@ void World::ReEnlightenMove(const int dir) {
 
 uchar World::Enlightened(const ushort x, const ushort y, const ushort z)
 const {
-	return LightMap(x, y, z);
+	const uchar light=LightMap(x, y, z);
+	return (light & 0x0F) * sunMoonFactor +
+	       (light & 0xF0) * FIRE_LIGHT_FACTOR;
 }
 
 //returns ligting of the block.
@@ -210,12 +211,12 @@ const {
 
 uchar World::SunLight(const ushort i, const ushort j, const ushort k)
 const {
-	return (Enlightened(i, j, k) & 0x0F) * sunMoonFactor;
+	return (LightMap(i, j, k) & 0x0F) * sunMoonFactor;
 }
 
 uchar World::FireLight(const ushort i, const ushort j, const ushort k)
 const {
-	return (Enlightened(i, j, k) & 0xF0) * FIRE_LIGHT_FACTOR;
+	return (LightMap(i, j, k) & 0xF0) * FIRE_LIGHT_FACTOR;
 }
 
 uchar Shred::LightRadius(const ushort x, const ushort y, const ushort z)
@@ -243,7 +244,7 @@ bool Shred::SetLightMap(const uchar level,
 	}
 	if ( (level & 0x0F) > sun ) {
 		change_flag=true;
-		sun=level & 0x0F;
+		sun=(level & 0x0F);
 	}
 	lightMap[i][j][k]=fire | sun;
 	return change_flag;
@@ -261,8 +262,8 @@ void Shred::SetAllLightMap(const uchar level) {
 //make all shining blocks of shred shine.
 void Shred::ShineAll() {
 	//TODO: make own lighting list
-	for (ushort j=0; j<activeListAll.size(); ++j) {
-		Active const * const temp=activeListAll.at(j);
+	for (ushort j=0; j<shiningList.size(); ++j) {
+		Active const * const temp=shiningList.at(j);
 		world->Shine(temp->X(), temp->Y(), temp->Z(),
 			temp->LightRadius(), true);
 	}
