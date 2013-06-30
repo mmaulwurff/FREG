@@ -331,7 +331,9 @@ class Dwarf : public Animal, public Inventory {
 	Q_OBJECT
 
 	quint8 activeHand;
+	uchar lightRadius;
 	quint16 NutritionalValue(int sub) const;
+	void UpdateLightRadius();
 
 	public:
 	static const uchar ON_HEAD=0;

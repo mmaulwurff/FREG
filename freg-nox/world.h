@@ -107,6 +107,8 @@ class World : public QThread {
 	void ReEnlightenMove(int direction);
 
 	void SunShine(ushort i, ushort j);
+	public:
+	///If init is false, light will not spread from non-invisible blocks.
 	void Shine(ushort x, ushort y, ushort z, uchar level, bool init=false);
 
 	//information section

@@ -261,7 +261,6 @@ void Shred::SetAllLightMap(const uchar level) {
 
 //make all shining blocks of shred shine.
 void Shred::ShineAll() {
-	//TODO: make own lighting list
 	for (ushort j=0; j<shiningList.size(); ++j) {
 		Active const * const temp=shiningList.at(j);
 		world->Shine(temp->X(), temp->Y(), temp->Z(),

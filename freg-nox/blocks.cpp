@@ -895,7 +895,15 @@
 	ushort Dwarf::Start() const { return ON_LEGS+1; }
 	QString Dwarf::FullName() const { return "Rational"; }
 	Inventory * Dwarf::HasInventory() { return Inventory::HasInventory(); }
-	uchar Dwarf::LightRadius() const { return 3; }
+	uchar Dwarf::LightRadius() const { return lightRadius; }
+
+	void Dwarf::UpdateLightRadius() {
+		Block * const in_left =ShowBlock(IN_LEFT);
+		Block * const in_right=ShowBlock(IN_RIGHT);
+		const uchar  left_rad=in_left  ? in_left ->LightRadius() : 0;
+		const uchar right_rad=in_right ? in_right->LightRadius() : 0;
+		lightRadius=qMax(uchar(2), qMax(left_rad, right_rad));
+	}
 
 	void Dwarf::ReceiveSignal(const QString & str) {
 		Active::ReceiveSignal(str);
@@ -945,6 +953,8 @@
 					Number(num_from));
 			}
 		}
+		UpdateLightRadius();
+		GetWorld()->Shine(X(), Y(), Z(), lightRadius, true);
 	}
 
 	void Dwarf::SaveAttributes(QDataStream & out) const {
@@ -960,7 +970,8 @@
 	Dwarf::Dwarf(const int sub) :
 			Animal(sub),
 			Inventory(),
-			activeHand(IN_RIGHT)
+			activeHand(IN_RIGHT),
+			lightRadius(2)
 	{
 		*note="Urist";
 	}
@@ -969,6 +980,7 @@
 			Inventory(str)
 	{
 		str >> activeHand;
+		UpdateLightRadius();
 	}
 //Chest::
 	int Chest::Kind() const { return CHEST; }
