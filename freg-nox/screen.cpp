@@ -404,14 +404,12 @@ void Screen::ActionXyz(ushort & x,ushort & y, ushort & z) const {
 	}
 }
 
-void Screen::PrintBlock(const ushort x, const ushort y, const ushort z,
-		WINDOW * const window)
+char Screen::PrintBlock(const Block * const block, WINDOW * const window)
 const {
-	Block * const block=w->GetBlock(x, y, z);
 	const int kind=block->Kind();
 	const int sub =block->Sub();
 	wcolor_set(window, Color(kind, sub), NULL);
-	waddch(window, CharName(kind, sub));
+	return CharName(kind, sub);
 }
 
 void Screen::Print() {
@@ -473,12 +471,8 @@ void Screen::Print() {
 			mvwaddch(hudWin, 0, x, 'a'+i);
 			const int number=inv->Number(i);
 			if ( number ) {
-				wcolor_set(hudWin,
-					Color( inv->GetInvKind(i),
-						inv->GetInvSub(i) ), NULL);
 				mvwaddch(hudWin, 1, x,
-					CharName( inv->GetInvKind(i),
-						inv->GetInvSub(i) ));
+					PrintBlock(inv->ShowBlock(i), hudWin));
 				if ( number > 1 ) {
 					mvwprintw(hudWin, 2, x, "%hu", number);
 				}
@@ -571,17 +565,18 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
 		( SHRED_WIDTH-SCREEN_SIZE )/2;
 	const ushort start_y=( player->Y()/SHRED_WIDTH )*SHRED_WIDTH +
 		( SHRED_WIDTH-SCREEN_SIZE )/2;
-	//const int block_side=( dir==UP ) ? DOWN : UP;
-	ushort i, j;
-	for ( j=start_y; j<SCREEN_SIZE+start_y; ++j, waddstr(window, "\n_") )
-	for ( i=start_x; i<SCREEN_SIZE+start_x; ++i ) {
+	for (ushort j=start_y; j<SCREEN_SIZE+start_y;
+		++j, waddstr(window, "\n_"))
+	for (ushort i=start_x; i<SCREEN_SIZE+start_x; ++i ) {
 		ushort k=k_start;
-		for ( ; INVISIBLE==w->Transparent(i, j, k); k+=k_step);
-		if ( (w->Enlightened(i, j, k/*, block_side*/) &&
+		const Block * block;
+		for ( ; INVISIBLE==(block=w->GetBlock(i, j, k))->
+			Transparent(); k+=k_step);
+		if ( (w->Enlightened(i, j, k) &&
 				player->Visible(i, j, k)) ||
 				player->GetCreativeMode() )
 		{
-			PrintBlock(i, j, k, window);
+			waddch(window, PrintBlock(block, window));
 			waddch(window, CharNumber(i, j, k));
 		} else {
 			wstandend(window);
@@ -609,14 +604,6 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
 
 void Screen::PrintFront(WINDOW * const window) const {
 	const int dir=player->GetDir();
-	if ( UP==dir || DOWN==dir ) {
-		wstandend(window);
-		werase(window);
-		box(window, 0, 0);
-		mvwaddstr(window, 0, 1, "No view");
-		wnoutrefresh(window);
-		return;
-	}
 	short x_step, z_step,
 	      x_end, z_end,
 	      * x, * z,
@@ -691,41 +678,30 @@ void Screen::PrintFront(WINDOW * const window) const {
 		k_start=pZ+SCREEN_SIZE/2;
 		arrow_Y=SCREEN_SIZE/2+1;
 	}
-	//const int block_side=w->Anti(dir);
 	(void)wmove(window, 1, 1);
 	for (k=k_start; k_start-k<SCREEN_SIZE; --k, waddstr(window, "\n_")) {
 		for (*x=x_start; *x!=x_end; *x+=x_step) {
-			for (*z=z_start; *z!=z_end; *z+=z_step)
-				if ( w->Transparent(i, j, k) != INVISIBLE ) {
-					if ( (w->Enlightened(i, j, k/*,
-							block_side*/) &&
-							player->
-							Visible(i, j, k)) ||
-							player->
-							GetCreativeMode() )
-					{
-						PrintBlock(i, j, k, window);
-						waddch(window,
-							CharNumberFront(i, j));
-					} else {
-						wstandend(window);
-						waddch(window, OBSCURE_BLOCK);
-						waddch(window, ' ');
-					}
-					break;
-				}
-			if ( *z==z_end ) { //far decorations
-				*z-=z_step;
-				if ( player->Visible(i, j, k ) ||
+			const Block * block;
+			for (*z=z_start; *z!=z_end &&
+				(block=w->GetBlock(i, j, k))->
+					Transparent()==INVISIBLE; *z+=z_step);
+			if ( (*z==z_end || (w->Enlightened(i, j, k) &&
+					player->Visible(i, j, k))) ||
 						player->GetCreativeMode() )
-				{
+			{
+				if ( *z!=z_end ) {
+					waddch(window,
+						PrintBlock(block, window));
+					waddch(window, CharNumberFront(i, j));
+				} else {
 					wcolor_set(window, Color(BLOCK, SKY),
 						NULL);
 					waddch(window, CharName(BLOCK, SKY));
-				} else {
-					wstandend(window);
-					waddch(window, OBSCURE_BLOCK);
+					waddch(window, ' ');
 				}
+			} else {
+				wstandend(window);
+				waddch(window, OBSCURE_BLOCK);
 				waddch(window, ' ');
 			}
 		}
@@ -773,12 +749,10 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 	for (ushort i=0; i<inv->Size(); ++i) {
 		mvwprintw(window, 2+i, 12, "%c)", 'a'+i);
 		if ( inv->Number(i) ) {
-			wcolor_set(window, Color(inv->GetInvKind(i),
-				inv->GetInvSub(i)), NULL);
+			const Block * const block=inv->ShowBlock(i);
 			wprintw(window, "[%c]%s",
-					CharName( inv->GetInvKind(i),
-						inv->GetInvSub(i) ),
-					qPrintable(inv->InvFullName(i)) );
+				PrintBlock(block, window),
+				qPrintable(inv->InvFullName(i)) );
 			if ( 1<inv->Number(i) ) {
 				waddstr(window, qPrintable(inv->NumStr(i)));
 			}

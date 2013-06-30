@@ -116,6 +116,7 @@ class IThread;
 class Inventory;
 class QTimer;
 class QFile;
+class Block;
 
 class Screen : public VirtScreen {
 	Q_OBJECT
@@ -160,7 +161,7 @@ class Screen : public VirtScreen {
 	void InventoryAction(ushort num) const;
 
 	color_pairs Color(int kind, int sub) const;
-	void PrintBlock(ushort x, ushort y, ushort z, WINDOW *) const;
+	char PrintBlock(const Block *, WINDOW *) const;
 
 	private slots:
 	void Print();
