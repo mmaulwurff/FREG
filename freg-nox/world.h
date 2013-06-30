@@ -159,7 +159,7 @@ class World : public QThread {
 	//movement section
 	public:
 	///Check and move
-	int Move(ushort x, ushort y, ushort z, quint8 dir);
+	bool Move(ushort x, ushort y, ushort z, quint8 dir);
 	///This CAN move blocks, but not xyz block.
 	bool CanMove(
 		ushort x,    ushort y,    ushort z,

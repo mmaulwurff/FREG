@@ -469,7 +469,7 @@ const {
 				x_to,   y_to,   z_to+temp)) );
 }
 
-int World::Move(const ushort i, const ushort j, const ushort k,
+bool World::Move(const ushort i, const ushort j, const ushort k,
 		const quint8 dir)
 {
 	ushort newi, newj, newk;
@@ -480,9 +480,9 @@ int World::Move(const ushort i, const ushort j, const ushort k,
 				AIR==Sub(newi, newj, newk-1))) )
 	{
 		NoCheckMove(i, j, k, newi, newj, newk, dir);
-		return 1;
+		return true;
 	} else {
-		return 0;
+		return false;
 	}
 }
 

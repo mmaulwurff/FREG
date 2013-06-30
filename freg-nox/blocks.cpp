@@ -740,8 +740,7 @@
 	}
 
 	QString Inventory::NumStr(const ushort num) const {
-		return inventory[num].isEmpty() ?
-			"": QString(" (%1x)").arg(Number(num));
+		return QString(" (%1x)").arg(Number(num));
 	}
 
 	ushort Inventory::GetInvWeight(const ushort i) const {
@@ -1611,7 +1610,9 @@
 	QString Creator::FullName() const { return tr("Creative block"); }
 	int Creator::DamageKind() const { return TIME; }
 	ushort Creator::DamageLevel() const { return MAX_DURABILITY; }
-	Inventory * Creator::HasInventory() { return Inventory::HasInventory(); }
+	Inventory * Creator::HasInventory() {
+		return Inventory::HasInventory();
+	}
 
 	void Creator::ReceiveSignal(const QString & str) {
 		Active::ReceiveSignal(str);

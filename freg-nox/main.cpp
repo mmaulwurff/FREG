@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
 
 	World earth(worldName);
 	Player player(&earth);
-	Screen screen(&earth, &player);
+	const Screen screen(&earth, &player);
 	earth.start();
 
 	QObject::connect(&player, SIGNAL(Destroyed()),

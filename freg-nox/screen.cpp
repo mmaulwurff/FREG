@@ -28,7 +28,7 @@
 #include "blocks.h"
 #include "Player.h"
 
-const char OBSCURE_BLOCK='+';
+const char OBSCURE_BLOCK=' ';
 const int QUICK_INVENTORY_X_SHIFT=36;
 
 void Screen::Arrows(WINDOW * const & window, const ushort x, const ushort y)
@@ -471,14 +471,17 @@ void Screen::Print() {
 			wstandend(hudWin);
 			const int x=QUICK_INVENTORY_X_SHIFT+i*2;
 			mvwaddch(hudWin, 0, x, 'a'+i);
-			if ( inv->Number(i) ) {
+			const int number=inv->Number(i);
+			if ( number ) {
 				wcolor_set(hudWin,
 					Color( inv->GetInvKind(i),
 						inv->GetInvSub(i) ), NULL);
 				mvwaddch(hudWin, 1, x,
 					CharName( inv->GetInvKind(i),
 						inv->GetInvSub(i) ));
-				mvwprintw(hudWin, 2, x, "%hu", inv->Number(i));
+				if ( number > 1 ) {
+					mvwprintw(hudWin, 2, x, "%hu", number);
+				}
 			}
 		}
 	}
@@ -504,9 +507,8 @@ void Screen::Print() {
 			qPrintable(str.left(10*breath/MAX_BREATH+1)));
 	}
 	//action mode
-	(void)wmove(hudWin, 0, 0);
 	wstandend(hudWin);
-	waddstr(hudWin, "Action: ");
+	mvwaddstr(hudWin, 0, 0, "Action: ");
 	switch ( actionMode ) {
 		case USE:      waddstr(hudWin, "Use in inventory"); break;
 		case THROW:    waddstr(hudWin, "Throw"); break;
@@ -569,13 +571,13 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
 		( SHRED_WIDTH-SCREEN_SIZE )/2;
 	const ushort start_y=( player->Y()/SHRED_WIDTH )*SHRED_WIDTH +
 		( SHRED_WIDTH-SCREEN_SIZE )/2;
-	const int block_side=( dir==UP ) ? DOWN : UP;
+	//const int block_side=( dir==UP ) ? DOWN : UP;
 	ushort i, j;
 	for ( j=start_y; j<SCREEN_SIZE+start_y; ++j, waddstr(window, "\n_") )
 	for ( i=start_x; i<SCREEN_SIZE+start_x; ++i ) {
 		ushort k=k_start;
 		for ( ; INVISIBLE==w->Transparent(i, j, k); k+=k_step);
-		if ( (w->Enlightened(i, j, k, block_side) &&
+		if ( (w->Enlightened(i, j, k/*, block_side*/) &&
 				player->Visible(i, j, k)) ||
 				player->GetCreativeMode() )
 		{
@@ -689,14 +691,14 @@ void Screen::PrintFront(WINDOW * const window) const {
 		k_start=pZ+SCREEN_SIZE/2;
 		arrow_Y=SCREEN_SIZE/2+1;
 	}
-	const int block_side=w->Anti(dir);
+	//const int block_side=w->Anti(dir);
 	(void)wmove(window, 1, 1);
 	for (k=k_start; k_start-k<SCREEN_SIZE; --k, waddstr(window, "\n_")) {
 		for (*x=x_start; *x!=x_end; *x+=x_step) {
 			for (*z=z_start; *z!=z_end; *z+=z_step)
 				if ( w->Transparent(i, j, k) != INVISIBLE ) {
-					if ( (w->Enlightened(i, j, k,
-							block_side) &&
+					if ( (w->Enlightened(i, j, k/*,
+							block_side*/) &&
 							player->
 							Visible(i, j, k)) ||
 							player->
@@ -762,8 +764,7 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 	switch ( inv->Kind() ) {
 		case DWARF:
 			mvwaddstr(window, 2, 7, "Head\n Right hand\n  ");
-			waddstr(window, "Left hand\n       Body\n       ");
-			waddstr(window, "Legs");
+			waddstr(window, "Left hand\n       Body\n       Legs");
 		break;
 		case WORKBENCH: mvwaddstr(window, 2, 4, "Product"); break;
 	}
@@ -794,15 +795,11 @@ void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
 	}
 	wcolor_set(window, Color(inv->Kind(), inv->Sub()), NULL);
 	box(window, 0, 0);
-	(void)wmove(window, 0, 1);
-	if ( player->PlayerInventory()==inv ) {
-		wprintw(window, "[%c]Your inventory",
-			CharName(inv->Kind(), inv->Sub()));
-	} else {
-		wprintw(window, "[%c]%s",
-			CharName(inv->Kind(), inv->Sub()),
+	mvwprintw(window, 0, 1, "[%c]%s",
+		CharName(inv->Kind(), inv->Sub()),
+		( player->PlayerInventory()==inv ) ?
+			"Your inventory" :
 			qPrintable(inv->FullName()));
-	}
 	wnoutrefresh(window);
 } //Screen::PrintInv
 
