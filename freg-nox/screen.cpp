@@ -31,7 +31,7 @@
 const char OBSCURE_BLOCK=' ';
 const int QUICK_INVENTORY_X_SHIFT=36;
 
-void Screen::Arrows(WINDOW * const & window, const ushort x, const ushort y)
+void Screen::Arrows(WINDOW * const window, const ushort x, const ushort y)
 const {
 	wcolor_set(window, WHITE_RED, NULL);
 	mvwaddstr(window, 0, x, "vv");
@@ -39,8 +39,7 @@ const {
 	HorizontalArrows(window, y);
 }
 
-void Screen::HorizontalArrows(
-		WINDOW * const & window,
+void Screen::HorizontalArrows(WINDOW * const window,
 		const ushort y,
 		const short color)
 const {
@@ -52,6 +51,7 @@ const {
 void Screen::RePrint() {
 	clear();
 	updated=false;
+	updatedPlayer=false;
 }
 
 void Screen::Update(const ushort, const ushort, const ushort) {
@@ -268,7 +268,7 @@ void Screen::ControlPlayer(const int ch) {
 		case 13:
 		case '\n': { //use
 			ushort x, y, z;
-			player->Focus(x, y, z);
+			ActionXyz(x, y, z);
 			player->Use(x, y, z);
 		} break;
 		case  '?': { //examine
@@ -281,9 +281,7 @@ void Screen::ControlPlayer(const int ch) {
 			ActionXyz(x, y, z);
 			player->Inscribe(x, y, z);
 		} break;
-		case 27: //esc
-			player->StopUseAll();
-		break;
+		case 27: /*esc*/ player->StopUseAll(); break;
 
 		case 'U': actionMode=USE; break;
 		case 'T': actionMode=THROW; break;
@@ -414,6 +412,7 @@ const {
 
 void Screen::Print() {
 	w->ReadLock();
+	PrintHUD();
 	if ( updated || !player ) {
 		w->Unlock();
 		return;
@@ -453,13 +452,12 @@ void Screen::Print() {
 					DOWN==player->GetDir() ) ?
 				NORTH : player->GetDir());
 	}
-	PrintHUD();
 	w->Unlock();
 	doupdate();
 } //Screen::Print
 
 void Screen::PrintHUD() {
-	if ( updatedPlayer ) {
+	if ( updatedPlayer || !player ) {
 		return;
 	} else {
 		updatedPlayer=true;
@@ -566,7 +564,7 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
 	const ushort start_y=( player->Y()/SHRED_WIDTH )*SHRED_WIDTH +
 		( SHRED_WIDTH-SCREEN_SIZE )/2;
 	for (ushort j=start_y; j<SCREEN_SIZE+start_y;
-		++j, waddstr(window, "\n_"))
+			++j, waddstr(window, "\n_"))
 	for (ushort i=start_x; i<SCREEN_SIZE+start_x; ++i ) {
 		ushort k=k_start;
 		const Block * block;
@@ -607,7 +605,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 	short x_step, z_step,
 	      x_end, z_end,
 	      * x, * z,
-	      i, j, k;
+	      i, j;
 	const ushort pX=player->X();
 	const ushort pY=player->Y();
 	const ushort pZ=player->Z();
@@ -679,7 +677,9 @@ void Screen::PrintFront(WINDOW * const window) const {
 		arrow_Y=SCREEN_SIZE/2+1;
 	}
 	(void)wmove(window, 1, 1);
-	for (k=k_start; k_start-k<SCREEN_SIZE; --k, waddstr(window, "\n_")) {
+	for (ushort k=k_start; k_start-k<SCREEN_SIZE;
+			--k, waddstr(window, "\n_"))
+	{
 		for (*x=x_start; *x!=x_end; *x+=x_step) {
 			const Block * block;
 			for (*z=z_start; *z!=z_end &&
@@ -714,23 +714,16 @@ void Screen::PrintFront(WINDOW * const window) const {
 		case EAST:  mvwaddstr(window, 0, 1, "East view");  break;
 		case WEST:  mvwaddstr(window, 0, 1, "West view");  break;
 	}
-	Arrows(window, arrow_X, arrow_Y);
-	switch ( shiftFocus ) {
-		case -1:
-			HorizontalArrows(window, arrow_Y+1, WHITE_BLUE);
-			for (ushort i=arrow_Y+2; i<SCREEN_SIZE+1; ++i) {
-				mvwaddch(window, i, 0, '|');
-				mvwaddch(window, i, SCREEN_SIZE*2+1, '|');
-			}
-		break;
-		case 1:
-			HorizontalArrows(window, arrow_Y-1, WHITE_BLUE);
-			for (ushort i=1; i<arrow_Y-1; ++i) {
-				mvwaddch(window, i, 0, '|');
-				mvwaddch(window, i, SCREEN_SIZE*2+1, '|');
-			}
-		break;
+	if ( shiftFocus ) {
+		HorizontalArrows(window, arrow_Y-shiftFocus, WHITE_BLUE);
+		for (ushort i=arrow_Y-shiftFocus; i<SCREEN_SIZE+1 && i>0;
+				i-=shiftFocus)
+		{
+			mvwaddch(window, i, 0, '|');
+			mvwaddch(window, i, SCREEN_SIZE*2+1, '|');
+		}
 	}
+	Arrows(window, arrow_X, arrow_Y);
 	wnoutrefresh(window);
 } //Screen::PrintFront
 
@@ -804,11 +797,10 @@ bool Screen::PrintFile(WINDOW * const window, QString const & file_name) {
 	}
 }
 
-void Screen::Notify(const QString & str) {
+void Screen::Notify(const QString & str) const {
 	waddstr(notifyWin, qPrintable(str));
 	waddch(notifyWin, '\n');
-	wnoutrefresh(notifyWin);
-	updated=false;
+	wrefresh(notifyWin);
 	fputs(qPrintable(QString("%1: %2\n").arg(w->Time()).arg(str)),
 		notifyLog);
 }

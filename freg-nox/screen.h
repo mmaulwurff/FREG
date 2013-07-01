@@ -140,13 +140,8 @@ class Screen : public VirtScreen {
 	char CharName(int, int) const;
 	char CharNumber(ushort x, ushort y, ushort z) const;
 	char CharNumberFront(ushort x, ushort y) const;
-	void Arrows(
-			WINDOW * const & window,
-			ushort x, ushort y) const;
-	void HorizontalArrows(
-			WINDOW * const & window,
-			ushort y,
-			short color=WHITE_RED) const;
+	void Arrows(WINDOW *, ushort x, ushort y) const;
+	void HorizontalArrows(WINDOW *, ushort y, short color=WHITE_RED) const;
 	void ActionXyz(ushort & x, ushort & y, ushort & z) const;
 
 	void PrintNormal(WINDOW *, int dir) const;
@@ -169,7 +164,7 @@ class Screen : public VirtScreen {
 	void Print();
 
 	public slots:
-	void Notify(const QString &);
+	void Notify(const QString &) const;
 	void CleanAll();
 	QString PassString(QString &) const;
 	void Update(ushort, ushort, ushort);
