@@ -128,6 +128,7 @@ class Screen : public VirtScreen {
 	WINDOW * hudWin; //head-up display
 	IThread * const input;
 	volatile bool updated;
+	volatile bool updatedPlayer;
 	bool cleaned;
 	QTimer * const timer;
 	FILE * const notifyLog;
@@ -154,6 +155,7 @@ class Screen : public VirtScreen {
 	void PrintText(WINDOW *, QString const &) const;
 	///Returns false when file does not exist, otherwise true.
 	bool PrintFile(WINDOW *, QString const & file_name);
+	void PrintHUD();
 	void CleanFileToShow();
 	void RePrint();
 	void MouseAction();

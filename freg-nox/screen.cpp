@@ -63,7 +63,7 @@ void Screen::UpdateAll() {
 	updated=false;
 }
 
-void Screen::UpdatePlayer() { updated=false; }
+void Screen::UpdatePlayer() { updatedPlayer=false; }
 
 void Screen::UpdateAround(const ushort, const ushort, const ushort,
 		const ushort)
@@ -414,13 +414,11 @@ const {
 
 void Screen::Print() {
 	w->ReadLock();
-
 	if ( updated || !player ) {
 		w->Unlock();
 		return;
 	}
 	updated=true;
-
 	if ( !fileToShow ) { //right window
 		switch ( player->UsingType() ) {
 			case USAGE_TYPE_OPEN: {
@@ -450,13 +448,22 @@ void Screen::Print() {
 				break;
 			} //no break;
 		default:
-			if ( UP==player->GetDir() || DOWN==player->GetDir() ) {
-				PrintNormal(leftWin, NORTH);
-			} else {
-				PrintNormal(leftWin, player->GetDir());
-			}
+			PrintNormal(leftWin,
+					( UP==player->GetDir() ||
+					DOWN==player->GetDir() ) ?
+				NORTH : player->GetDir());
 	}
+	PrintHUD();
+	w->Unlock();
+	doupdate();
+} //Screen::Print
 
+void Screen::PrintHUD() {
+	if ( updatedPlayer ) {
+		return;
+	} else {
+		updatedPlayer=true;
+	}
 	const short dur=player->HP();
 	const short breath=player->Breath();
 	const short satiation=player->SatiationPercent();
@@ -468,41 +475,36 @@ void Screen::Print() {
 		for (ushort i=0; i<inv->Size(); ++i) {
 			wstandend(hudWin);
 			const int x=QUICK_INVENTORY_X_SHIFT+i*2;
-			mvwaddch(hudWin, 0, x, 'a'+i);
+			mvwaddch(hudWin, 1, x, 'a'+i);
 			const int number=inv->Number(i);
 			if ( number ) {
-				mvwaddch(hudWin, 1, x,
+				mvwaddch(hudWin, 2, x,
 					PrintBlock(inv->ShowBlock(i), hudWin));
 				if ( number > 1 ) {
-					mvwprintw(hudWin, 2, x, "%hu", number);
+					mvwprintw(hudWin, 3, x, "%hu", number);
 				}
 			}
 		}
 	}
-
-	w->Unlock();
-
-	wstandend(leftWin);
-	QString str;
 	if ( -1!=dur ) { //HitPoints line
-		str=QString("%1").arg(dur, -10, 10, QChar('.'));
-		mvwaddstr(leftWin, SCREEN_SIZE+1, 1, "HP[..........]");
-		wcolor_set(leftWin, WHITE_RED, NULL);
-		mvwaddstr(leftWin, SCREEN_SIZE+1, 4,
+		wstandend(hudWin);
+		const QString str=QString("%1").arg(dur, -10, 10, QChar('.'));
+		mvwaddstr(hudWin, 0, 0, "HP[..........]");
+		wcolor_set(hudWin, WHITE_RED, NULL);
+		mvwaddstr(hudWin, 0, 3,
 			qPrintable(str.left(10*dur/MAX_DURABILITY+1)));
-		wstandend(leftWin);
 	}
 	if ( -1!=breath ) { //breath line
-		str=QString("%1").arg(breath, -10, 10, QChar('.'));
-		mvwaddstr(leftWin, SCREEN_SIZE+1, SCREEN_SIZE*2-13,
-			"BR[..........]");
-		wcolor_set(leftWin, WHITE_BLUE, NULL);
-		mvwaddstr(leftWin, SCREEN_SIZE+1, SCREEN_SIZE*2-13+3,
+		wstandend(hudWin);
+		const QString str=QString("%1").arg(breath, -10, 10, QChar('.'));
+		mvwaddstr(hudWin, 0, 15, "BR[..........]");
+		wcolor_set(hudWin, WHITE_BLUE, NULL);
+		mvwaddstr(hudWin, 0, 15+3,
 			qPrintable(str.left(10*breath/MAX_BREATH+1)));
 	}
 	//action mode
 	wstandend(hudWin);
-	mvwaddstr(hudWin, 0, 0, "Action: ");
+	mvwaddstr(hudWin, 1, 0, "Action: ");
 	switch ( actionMode ) {
 		case USE:      waddstr(hudWin, "Use in inventory"); break;
 		case THROW:    waddstr(hudWin, "Throw"); break;
@@ -519,7 +521,7 @@ void Screen::Print() {
 				actionMode);
 	}
 	if ( -1!=satiation ) { //satiation line
-		(void)wmove(hudWin, 1, 0);
+		(void)wmove(hudWin, 2, 0);
 		if ( 100<satiation ) {
 			wcolor_set(hudWin, BLUE_BLACK, NULL);
 			waddstr(hudWin, "Gorged");
@@ -531,28 +533,26 @@ void Screen::Print() {
 			waddstr(hudWin, "Hungry");
 		}
 	}
-	wstandend(hudWin);
 	if ( player->GetCreativeMode() ) {
-		mvwaddstr(leftWin, SCREEN_SIZE+1, 1, "Creative Mode");
+		wstandend(hudWin);
+		mvwaddstr(hudWin, 0, 0, "Creative Mode");
 		//coordinates
-		mvwprintw(hudWin, 1, 0, "xyz: %ld, %ld, %hu. XY: %ld, %ld",
+		mvwprintw(hudWin, 2, 0, "xyz: %ld, %ld, %hu. XY: %ld, %ld",
 			player->GlobalX(), player->GlobalY(), player->Z(),
 			player->GetLatitude(), player->GetLongitude());
-		wcolor_set(leftWin, BLACK_WHITE, NULL);
-		(void)wmove(leftWin, SCREEN_SIZE+1, SCREEN_SIZE*2-8);
+		wcolor_set(hudWin, BLACK_WHITE, NULL);
+		(void)wmove(hudWin, 0, SCREEN_SIZE*2-8);
 		switch ( player->GetDir() ) {
-			case NORTH: waddstr(leftWin, "^ North ^"); break;
-			case SOUTH: waddstr(leftWin, "v South v"); break;
-			case EAST:  waddstr(leftWin, ">   East>"); break;
-			case WEST:  waddstr(leftWin, "<West   <"); break;
-			case DOWN:  waddstr(leftWin, "x DOWN  x"); break;
-			case UP:    waddstr(leftWin, ".   UP  ."); break;
+			case NORTH: waddstr(hudWin, "^ North ^"); break;
+			case SOUTH: waddstr(hudWin, "v South v"); break;
+			case EAST:  waddstr(hudWin, ">   East>"); break;
+			case WEST:  waddstr(hudWin, "<West   <"); break;
+			case DOWN:  waddstr(hudWin, "x DOWN  x"); break;
+			case UP:    waddstr(hudWin, ".   UP  ."); break;
 		}
 	}
 	wnoutrefresh(hudWin);
-	wnoutrefresh(leftWin);
-	doupdate();
-} //Screen::Print
+} //Screen::PrintHUD
 
 void Screen::PrintNormal(WINDOW * const window, const int dir) const {
 	const ushort k_start=( UP!=dir ) ?
@@ -833,6 +833,7 @@ Screen::Screen(World * const wor, Player * const pl) :
 		VirtScreen(wor, pl),
 		input(new IThread(this)),
 		updated(false),
+		updatedPlayer(false),
 		cleaned(false),
 		timer(new QTimer(this)),
 		notifyLog(fopen("messages.txt", "a")),
@@ -870,10 +871,10 @@ Screen::Screen(World * const wor, Player * const pl) :
 	rightWin=newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, COLS/2);
 	leftWin =newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0,
 		COLS/2-SCREEN_SIZE*2-2);
-	hudWin=newwin(3, (SCREEN_SIZE*2+2)*2, SCREEN_SIZE+2,
+	hudWin=newwin(4, (SCREEN_SIZE*2+2)*2, SCREEN_SIZE+2,
 		COLS/2-SCREEN_SIZE*2-2);
-	commandWin=newwin(1, COLS, SCREEN_SIZE+2+3, 0);
-	notifyWin =newwin(0, COLS, SCREEN_SIZE+2+4, 0);
+	commandWin=newwin(1, COLS, SCREEN_SIZE+2+4, 0);
+	notifyWin =newwin(0, COLS, SCREEN_SIZE+2+5, 0);
 	scrollok(notifyWin, TRUE);
 
 	mousemask(BUTTON1_PRESSED, NULL);

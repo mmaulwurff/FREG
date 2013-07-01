@@ -67,6 +67,7 @@ void Player::SetCreativeMode(const bool turn) {
 	if ( !creativeMode ) {
 		block_manager.DeleteBlock(prev_player);
 	}
+	emit Updated();
 }
 
 int Player::UsingSelfType() const { return usingSelfType; }
