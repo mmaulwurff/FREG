@@ -226,8 +226,7 @@
 	int Plate::BeforePush(const int, Block * const) { return JUMP; }
 	ushort Plate::Weight() const { return Block::Weight()/4; }
 
-	Plate::Plate(const int sub)
-			:
+	Plate::Plate(const int sub) :
 			Block(sub, NONSTANDARD)
 	{}
 	Plate::Plate(QDataStream & str, const int sub) :
@@ -440,26 +439,24 @@
 		if ( last_dur != durability ) {
 			switch ( dmg_kind ) {
 				case HUNGER:
-					ReceiveSignal(QObject::tr(
+					ReceiveSignal(tr(
 						"You faint from hunger!"));
 				break;
 				case HEAT:
-					ReceiveSignal(QObject::tr(
+					ReceiveSignal(tr(
 						"You burn!"));
 				break;
 				case BREATH:
-					ReceiveSignal(QObject::tr(
+					ReceiveSignal(tr(
 						"You choke withot air!"));
 				break;
 				case DAMAGE_FALL:
-					ReceiveSignal(
-						QObject::tr(
+					ReceiveSignal(tr(
 						"You fall, damage %1.").
 						arg(last_dur-durability));
 				break;
 				default:
-					ReceiveSignal(
-						QObject::tr(
+					ReceiveSignal(tr(
 						"Received %1 damage!").
 						arg(last_dur-durability));
 			}
@@ -626,9 +623,6 @@
 			const ushort num,
 			Inventory * const inv_to)
 	{
-		if ( !inv_to ) {
-			return true;
-		}
 		if ( dest<inv_to->Start() ) {
 			dest=inv_to->Start();
 		}
@@ -648,14 +642,13 @@
 	}
 
 	bool Inventory::GetAll(Inventory * const from) {
-		if ( from  ) {
-			for (ushort i=0; i<from->Size(); ++i) {
-				from->Drop(i, 0, from->Number(i), this);
+		bool flag=false;
+		for (ushort i=0; i<from->Size(); ++i) {
+			if ( from->Drop(i, 0, from->Number(i), this) ) {
+				flag=true;
 			}
-			return true;
-		} else {
-			return false;
 		}
+		return flag;
 	}
 
 	void Inventory::Pull(const ushort num) {
@@ -731,7 +724,6 @@
 			inventory[num].at(i)->Inscribe(str);
 		}
 		ReceiveSignal(QObject::tr("Inscribed."));
-		return;
 	}
 
 	QString Inventory::InvFullName(const ushort num) const {
@@ -846,17 +838,19 @@
 		for (ushort i=0; i<Size(); ++i) {
 			quint8 num;
 			str >> num;
-			while ( num-- )
+			while ( num-- ) {
 				inventory[i].push(block_manager.
 					BlockFromFile(str));
+			}
 		}
 	}
 	Inventory::~Inventory() {
-		for (ushort i=0; i<Size(); ++i)
+		for (ushort i=0; i<Size(); ++i) {
 			while ( !inventory[i].isEmpty() ) {
 				Block * const block=inventory[i].pop();
 				block_manager.DeleteBlock(block);
 			}
+		}
 		delete [] inventory;
 	}
 //Dwarf::
