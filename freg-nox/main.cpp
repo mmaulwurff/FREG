@@ -26,10 +26,13 @@
 #include <QString>
 #include <QSettings>
 #include <QDir>
+#include <QTime>
 #include "world.h"
 #include "Player.h"
 
 int main(int argc, char *argv[]) {
+	freopen("errors.txt", "w", stderr);
+	qsrand(QTime::currentTime().msec());
 	#ifdef NOX
 		QCoreApplication freg(argc, argv);
 	#else

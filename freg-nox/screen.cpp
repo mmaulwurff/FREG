@@ -844,7 +844,6 @@ Screen::Screen(World * const wor, Player * const pl) :
 		set_escdelay(10);
 	#endif
 	resize_term( SCREEN_SIZE+2 + 3 + 1 + 5, (SCREEN_SIZE*2 + 2)*2 );
-	freopen("errors.txt", "w", stderr);
 	initscr();
 	start_color();
 	raw(); //send typed keys directly

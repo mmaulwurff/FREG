@@ -891,6 +891,15 @@ void Shred::Mountain() {
 				PutNormalBlock(STONE, i, j, mount_top);
 			}
 		}
+		//water pool
+		if ( !(qrand()%10) ) {
+			fprintf(stderr, "pool\n");
+			for (i=1; i<SHRED_WIDTH/2-1; ++i)
+			for (j=1; j<SHRED_WIDTH/2-1; ++j)
+			for (ushort k=mount_top-3; k<=mount_top; ++k) {
+				SetNewBlock(LIQUID, WATER, i, j, k);
+			}
+		}
 	}
 	PlantGrass();
 }
