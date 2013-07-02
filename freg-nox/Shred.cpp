@@ -23,6 +23,20 @@
 #include "world.h"
 #include "BlockManager.h"
 
+enum shred_type {
+	SHRED_NULLMOUNTAIN='#',
+	SHRED_PLAIN='.',
+	SHRED_TESTSHRED='t',
+	SHRED_PYRAMID='p',
+	SHRED_HILL='+',
+	SHRED_DESERT=':',
+	SHRED_WATER='~',
+	SHRED_FOREST='%',
+	SHRED_MOUNTAIN='^',
+	SHRED_EMPTY='_',
+	SHRED_NORMAL_UNDERGROUND='-'
+};
+
 const ushort SEA_LEVEL    = 58;
 const ushort SEABED_LEVEL = 48;
 const ushort PLANE_LEVEL  = 64;
@@ -34,7 +48,7 @@ const float PLANE_AMPLITUDE  =  8.0f;
 const float HILL_AMPLITUDE   = 29.0f;
 const float MOUNTAIN_AMPLITUDE=50.0f;
 
-/*landscape generation:
+/* landscape generation:
  * [ level - amplitude; level + amplitude ]
  * faster- [ level - amplitude/2; level + amplitude/2 ]
  * perlin [ -1; 1]
@@ -88,26 +102,26 @@ void Shred::ShredNominalAmplitudeAndLevel(
 		float * const a)
 const {
 	switch (shred_type) {
-		case 't':
-		case 'p':
-		case '%':
-		case '#':
-		case ';':
+		case SHRED_TESTSHRED:
+		case SHRED_PYRAMID:
+		case SHRED_FOREST:
+		case SHRED_NULMOUNTAIN:
+		case SHRED_DESERT:
 		default:
 			*l = PLANE_LEVEL;
 			*a = PLANE_AMPLITUDE;
 		break;
 
-		case '~':
+		case SHRED_WATER:
 			*l = SEABED_LEVEL;
 			*a = SEABED_AMPLITUDE;
 		break;
 
-		case '^':
+		case SHRED_MOUNTAIN:
 			*l = MOUNTAIN_LEVEL;
 			*a = MOUNTAIN_AMPLITUDE;
 		break;
-		case '+':
+		case SHRED_HILL:
 			*l = HILL_LEVEL;
 			*a = HILL_AMPLITUDE;
 		break;
@@ -212,17 +226,17 @@ Shred::Shred(World * const world_,
 		lightMap[i][j][HEIGHT-1]=MAX_LIGHT_RADIUS;
 	}
 	switch ( TypeOfShred(longi, lati) ) {
-		case '#': NullMountain(); break;
-		case '.': Plain();        break;
-		case 't': TestShred();    break;
-		case 'p': Pyramid();      break;
-		case '+': Hill();         break;
-		case '^': Mountain();     break;
-		case ':': Desert();       break;
-		case '%': Forest(longi, lati); break;
-		case '~': Water( longi, lati); break;
-		case '_': /* empty shred */    break;
-		case '-': NormalUnderground(); break;
+		case SHRED_NULLMOUNTAIN: NullMountain(); break;
+		case SHRED_PLAIN: Plain(); break;
+		case SHRED_TESTSHRED: TestShred(); break;
+		case SHRED_PYRAMID: Pyramid(); break;
+		case SHRED_HILL: Hill(); break;
+		case SHRED_DESERT: Desert(); break;
+		case SHRED_WATER: Water(); break;
+		case SHRED_FOREST: Forest(); break;
+		case SHRED_MOUNTAIN: Mountain(); break;
+		case SHRED_EMPTY: /* empty shred */ break;
+		case SHRED_NORMAL_UNDERGROUND: NormalUnderground(); break;
 		default:
 			Plain();
 			fprintf(stderr,
@@ -460,7 +474,7 @@ char Shred::TypeOfShred(const long longi, const long lati) const {
 void Shred::AddWater() {
 	for (long longi=longitude-1; longi<=longitude+1; ++longi)
 	for (long lati =latitude -1; lati <=latitude +1; ++lati ) {
-		if ( '~'==TypeOfShred(longi, lati) ) {
+		if ( SHRED_WATER==TypeOfShred(longi, lati) ) {
 			for (ushort i = 0; i < SHRED_WIDTH; i++)
 			for (ushort j = 0; j < SHRED_WIDTH; j++) {
 				for (ushort k = SEA_LEVEL; true; k--) {
@@ -520,45 +534,38 @@ void Shred::NormalUnderground(const ushort depth, const int sub) {
 	}
 	float amplitude[9];
 	ushort level[9];
-	float interp_level, interp_amplitude;
-	float il[4], ia[4];
-	float ik_x, ik_y;
-
-	ShredLandAmplitudeAndLevel(longitude, latitude, &level[8],
-		&amplitude[8]);
-	ShredLandAmplitudeAndLevel(longitude + 1, latitude, &level[0],
-		&amplitude[0]);
-	ShredLandAmplitudeAndLevel(longitude - 1, latitude, &level[1],
-		&amplitude[1]);
-	ShredLandAmplitudeAndLevel(longitude, latitude + 1, &level[2],
-		&amplitude[2]);
-	ShredLandAmplitudeAndLevel(longitude, latitude - 1, &level[3],
-		&amplitude[3]);
-	ShredLandAmplitudeAndLevel(longitude + 1, latitude - 1, &level[4],
-		&amplitude[4]);
-	ShredLandAmplitudeAndLevel(longitude + 1, latitude + 1, &level[5],
-		&amplitude[5]);
-	ShredLandAmplitudeAndLevel(longitude - 1, latitude + 1, &level[6],
-		&amplitude[6]);
-	ShredLandAmplitudeAndLevel(longitude - 1, latitude - 1, &level[7],
-		&amplitude[7]);
-	/*
-	   7 1 6
-	   3 8 2
-	   4 0 5
-	 */
-	ushort h;
-	ushort k;
-	short dirt_h;
+	const struct {
+		ushort * lev;
+		float * ampl;
+	} ampllev[]={
+		/* 7 1 6
+		 * 3 8 2
+		 * 4 0 5 */
+		{&level[7], &amplitude[7]},
+		{&level[1], &amplitude[1]},
+		{&level[6], &amplitude[6]},
+		{&level[3], &amplitude[3]},
+		{&level[8], &amplitude[8]},
+		{&level[2], &amplitude[2]},
+		{&level[4], &amplitude[4]},
+		{&level[0], &amplitude[0]},
+		{&level[5], &amplitude[5]},
+	};
+	for (int i=-1; i<=1; ++i)
+	for (int j=-1; j<=1; ++j) {
+		ShredLandAmplitudeAndLevel(i+longitude, j+latitude,
+			ampllev[(i+1)*3+j].lev,
+			ampllev[(i+1)*3+j].ampl);
+	}
 	for (ushort i = 0; i < SHRED_WIDTH; ++i)
 	for (ushort j = 0; j < SHRED_WIDTH; ++j) {
-		/*
-		 * 3+---+2
+		/* 3+---+2
 		 *  |...|
-                 *  |...|
-		 * 0+---+1
-		 */
+		 *  |...|
+		 * 0+---+1 */
 		//interpolate land amplitude and level
+		float il[4], ia[4];
+		float ik_x, ik_y;
 		if (j < SHRED_WIDTH / 2 && i < SHRED_WIDTH / 2) {
 			il[0] = float (level[3]), ia[0] = amplitude[3];
 			il[1] = float (level[8]), ia[1] = amplitude[8];
@@ -590,21 +597,18 @@ void Shred::NormalUnderground(const ushort depth, const int sub) {
 		}
 		il[0] = il[0] * ik_y + (1.0f - ik_y) * il[3];
 		il[1] = il[1] * ik_y + (1.0f - ik_y) * il[2];
-		interp_level = il[0] * (1.0f - ik_x) + il[1] * ik_x;
+		const float interp_level = il[0]*(1.0f - ik_x) + il[1] * ik_x;
 
 		ia[0] = ia[0] * ik_y + (1.0f - ik_y) * ia[3];
 		ia[1] = ia[1] * ik_y + (1.0f - ik_y) * ia[2];
-		interp_amplitude = ia[0] * (1.0f - ik_x) + ia[1] * ik_x;
+		const float interp_amplitude = ia[0]*(1.0f-ik_x) + ia[1]*ik_x;
 
-		h = short (interp_level +
-			   FinalNoise(latitude * 16 + i,
-				      longitude * 16 +
-				      j) * interp_amplitude) - depth;
-		if( h >= HEIGHT - 1 ) {
-            		h= HEIGHT - 2;
-		} else if ( h < 2 ) {
-			h = 2;
-		}
+		const ushort h = qBound(2,
+			short (interp_level + FinalNoise(
+				latitude *16 + i,
+				longitude*16 + j) * interp_amplitude) - depth,
+			HEIGHT - 2);
+		short dirt_h;
 		if (h < 80) {
 			dirt_h = 5;
 			dirt_h+= short( 3.0f * FinalNoise(
@@ -621,7 +625,8 @@ void Shred::NormalUnderground(const ushort depth, const int sub) {
 		} else {
 			dirt_h = 0;
 		}
-		
+
+		ushort k;
 		for (k = 1; k < h - dirt_h && h < HEIGHT - 1; ++k) {
 			PutNormalBlock(STONE, i, j, k);
 		}
@@ -742,15 +747,15 @@ void Shred::Plain() {
 	PlantGrass();
 }
 
-void Shred::Forest(const long longi, const long lati) {
+void Shred::Forest() {
 	NormalUnderground();
 	if ( !FLAT_GENERATION ) {
 		AddWater();
 	}
 	ushort number_of_trees=0;
-	for (long i=longi-1; i<=longi+1; ++i)
-	for (long j=lati -1; j<=lati +1; ++j) {
-		if ( '%'==TypeOfShred(i, j) ) {
+	for (long i=longitude-1; i<=longitude+1; ++i)
+	for (long j=latitude -1; j<=latitude +1; ++j) {
+		if ( SHRED_FOREST==TypeOfShred(i, j) ) {
 			++number_of_trees;
 		}
 	}
@@ -770,12 +775,12 @@ void Shred::Forest(const long longi, const long lati) {
 	PlantGrass();
 }
 
-void Shred::Water(const long, const long) {
+void Shred::Water() {
 	if ( FLAT_GENERATION ) {
 		ushort depth=0;
 		for (long longi=longitude-1; longi<=longitude+1; ++longi)
 		for (long lati =latitude -1; lati <=latitude +1; ++lati ) {
-			if ( '~'==TypeOfShred(longi, lati) ) {
+			if ( SHRED_WATER==TypeOfShred(longi, lati) ) {
 				depth+=2;
 			}
 		}
@@ -792,7 +797,6 @@ void Shred::Water(const long, const long) {
 
 void Shred::Pyramid() {
 	//pyramid by Panzerschrek
-	//'p' - pyramid symbol
 	ushort level=FlatUndeground();
 	if ( level > 127-16 ) {
 		level=127-16;
@@ -857,8 +861,37 @@ void Shred::Hill() {
 }
 
 void Shred::Mountain() {
-	//TODO: add FLAT_GENERATION mountain
 	NormalUnderground();
+	if ( FLAT_GENERATION ) {
+		/* ###
+		 * #~#??? east bridge
+		 * ###
+		 *  ?
+		 *  ? south bridge
+		 *  ?
+		 * */
+		ushort i, j;
+		const ushort mount_top=3*HEIGHT/4;
+		for (i=0; i<SHRED_WIDTH/2; ++i)
+		for (j=0; j<SHRED_WIDTH/2; ++j)
+		for (ushort k=1; k<mount_top; ++k) {
+			PutNormalBlock(STONE, i, j, k);
+		}
+		//south bridge
+		if ( SHRED_MOUNTAIN==TypeOfShred(longitude+1, latitude) ) {
+			for (i=SHRED_WIDTH/4-1; i<SHRED_WIDTH/4+1; ++i)
+			for (j=SHRED_WIDTH/2; j<SHRED_WIDTH; ++j) {
+				PutNormalBlock(STONE, i, j, mount_top);
+			}
+		}
+		//east bridge
+		if ( SHRED_MOUNTAIN==TypeOfShred(longitude, latitude+1) ) {
+			for (i=SHRED_WIDTH/2; i<SHRED_WIDTH; ++i )
+			for (j=SHRED_WIDTH/4-1; j<SHRED_WIDTH/4+1; ++j) {
+				PutNormalBlock(STONE, i, j, mount_top);
+			}
+		}
+	}
 	PlantGrass();
 }
 

@@ -120,8 +120,8 @@ class Shred {
 	void TestShred();
 	void NullMountain();
 	void Plain();
-	void Forest(long, long);
-	void Water( long, long);
+	void Forest();
+	void Water();
 	void Pyramid();
 	void Mountain();
 	void Hill();

@@ -119,11 +119,13 @@ char Screen::CharNumber(const ushort x, const ushort y, const ushort z) const {
 
 char Screen::CharNumberFront(const ushort i, const ushort j) const {
 	const ushort dist=
-		( NORTH==player->GetDir() || SOUTH==player->GetDir() ) ?
+		(( NORTH==player->GetDir() || SOUTH==player->GetDir() ) ?
 		abs(player->Y()-j) :
-		abs(player->X()-i);
-	return ( dist<10 ) ?
-		dist+'0' : '+';
+		abs(player->X()-i)) -1;
+	return ( dist>9 ) ?
+		'+' : ( dist>0 ) ?
+			dist+'0' : ' ';
+
 }
 
 char Screen::CharName(const int kind, const int sub) const {
@@ -411,9 +413,12 @@ const {
 }
 
 void Screen::Print() {
+	if ( !player ) {
+		return;
+	}
 	w->ReadLock();
 	PrintHUD();
-	if ( updated || !player ) {
+	if ( updated ) {
 		w->Unlock();
 		return;
 	}
@@ -457,7 +462,7 @@ void Screen::Print() {
 } //Screen::Print
 
 void Screen::PrintHUD() {
-	if ( updatedPlayer || !player ) {
+	if ( updatedPlayer ) {
 		return;
 	} else {
 		updatedPlayer=true;
