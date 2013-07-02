@@ -729,8 +729,8 @@
 	}
 
 	ushort Inventory::GetInvWeight(const ushort i) const {
-		return ( inventory[i].isEmpty() ) ? 0 :
-			inventory[i].top()->Weight()*Number(i);
+		return inventory[i].isEmpty() ?
+			0 : inventory[i].top()->Weight()*Number(i);
 	}
 
 	int Inventory::GetInvSub(const ushort i) const {
@@ -1161,6 +1161,8 @@
 	int  Grass::Kind() const { return GRASS; }
 	bool Grass::ShouldFall() const { return false; }
 	int  Grass::BeforePush(const int, Block * const) { return DESTROY; }
+
+	Block * Grass::DropAfterDamage() const { return 0; }
 
 	Grass::Grass(const int sub) :
 			Active(sub)

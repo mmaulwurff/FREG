@@ -499,7 +499,8 @@ void Screen::PrintHUD() {
 	}
 	if ( -1!=breath ) { //breath line
 		wstandend(hudWin);
-		const QString str=QString("%1").arg(breath, -10, 10, QChar('.'));
+		const QString str=
+			QString("%1").arg(breath, -10, 10, QChar('.'));
 		mvwaddstr(hudWin, 0, 15, "BR[..........]");
 		wcolor_set(hudWin, WHITE_BLUE, NULL);
 		mvwaddstr(hudWin, 0, 15+3,
@@ -891,6 +892,7 @@ Screen::Screen(World * const wor, Player * const pl) :
 	}
 	qsrand(getch());
 	erase();
+	refresh();
 	CleanFileToShow();
 	Notify("Game started. Press 'H' for help.");
 

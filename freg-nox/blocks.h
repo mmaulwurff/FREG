@@ -442,8 +442,8 @@ class Grass : public Active {
 	int  ShouldAct() const;
 	int  Kind() const;
 	bool ShouldFall() const;
-	int BeforePush(int dir, Block * who);
-
+	int  BeforePush(int dir, Block * who);
+	Block * DropAfterDamage() const;
 
 	Grass(int sub=GREENERY);
 	Grass(QDataStream & str, int sub);

@@ -184,8 +184,7 @@ class World : public QThread {
 
 	//interactions section
 	public:
-	void Damage(ushort x, ushort y, ushort z,
-			ushort level=1, int dmg_kind=CRUSH);
+	void Damage(ushort x, ushort y, ushort z, ushort level, int dmg_kind);
 	void DestroyAndReplace(ushort x, ushort y, ushort z);
 	bool Build(Block * thing,
 			ushort x, ushort y, ushort z,

@@ -391,8 +391,7 @@ void World::PhysEvents() {
 bool World::DirectlyVisible(float x_from, float y_from, float z_from,
 		const ushort x_to, const ushort y_to, const ushort z_to)
 const {
-	return ( x_from==x_to && y_from==y_to && z_from==z_to ) ?
-		true : (
+	return ( x_from==x_to && y_from==y_to && z_from==z_to ) || (
 		( x_to<x_from && y_to<y_from ) ||
 		( x_to>x_from && y_to<y_from && y_to>(2*x_from-x_to-3) ) ||
 		( x_to<x_from && y_to>y_from && y_to>(2*x_from-x_to-3) ) ) ?
