@@ -615,6 +615,15 @@ bool World::Damage(const ushort i, const ushort j, const ushort k,
 			NewBlock(temp->Kind(), temp->Sub()) ), i, j, k );
 	}
 	if ( temp->Damage(dmg, dmg_kind) > 0 ) {
+		if ( STONE==temp->Sub() && BLOCK==temp->Kind() &&
+				temp->Durability()!=MAX_DURABILITY )
+		{
+			DeleteBlock(temp);
+			SetBlock(block_manager.NewBlock(LADDER, STONE),
+				i, j, k);
+			emit Updated(i, j, k);
+			return false;
+		}
 		ReplaceWithNormal(i, j, k); //checks are inside
 		return false;
 	}

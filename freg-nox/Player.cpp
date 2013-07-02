@@ -265,6 +265,7 @@ bool Player::Wield(const ushort num) {
 		for (ushort i=0; i<=Dwarf::ON_LEGS; ++i ) {
 			InnerMove(num, i);
 		}
+		emit Updated();
 	}
 	world->Unlock();
 	return false;
@@ -387,6 +388,7 @@ void Player::ProcessCommand(QString & command) {
 				emit Notify(tr("No place for %1 things.").
 					arg(num));
 			}
+			emit Updated();
 		} else {
 			emit Notify(tr("No room."));
 		}

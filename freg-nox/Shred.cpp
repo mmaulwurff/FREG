@@ -105,7 +105,7 @@ const {
 		case SHRED_TESTSHRED:
 		case SHRED_PYRAMID:
 		case SHRED_FOREST:
-		case SHRED_NULMOUNTAIN:
+		case SHRED_NULLMOUNTAIN:
 		case SHRED_DESERT:
 		default:
 			*l = PLANE_LEVEL;
@@ -874,7 +874,7 @@ void Shred::Mountain() {
 		const ushort mount_top=3*HEIGHT/4;
 		for (i=0; i<SHRED_WIDTH/2; ++i)
 		for (j=0; j<SHRED_WIDTH/2; ++j)
-		for (ushort k=1; k<mount_top; ++k) {
+		for (ushort k=1; k<=mount_top; ++k) {
 			PutNormalBlock(STONE, i, j, k);
 		}
 		//south bridge

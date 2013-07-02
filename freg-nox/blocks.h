@@ -146,6 +146,7 @@ class Ladder : public Block {
 	int BeforePush(int dir, Block * who);
 	ushort Weight() const;
 	bool Catchable() const;
+	Block * DropAfterDamage() const;
 
 	Ladder(int sub);
 	Ladder(QDataStream & str, int sub);

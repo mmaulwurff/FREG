@@ -68,46 +68,40 @@
 	}
 
 	int Block::Damage(const ushort dmg, const int dmg_kind) {
+		ushort mult=1;
 		switch ( Sub() ) {
 			case DIFFERENT:
 				if ( TIME==dmg_kind ) {
 					return durability=0;
 				}
-				//no break, only time damages DIFFERENT
+				//no break
 			case NULLSTONE:
 			case STAR:
 			case AIR:
 			case SKY:
-			case SUN_MOON:
+			case SUN_MOON: mult=0; break;
 			case WATER:
-				return ( HEAT==dmg_kind || TIME==dmg_kind ) ?
-					durability-=dmg : durability;
+				mult=( HEAT==dmg_kind || TIME==dmg_kind );
+			break;
 			case MOSS_STONE:
 			case STONE:
-				return ( MINE==dmg_kind ) ?
-					durability-=2*dmg :
-					durability-=dmg;
+				switch ( dmg_kind ) {
+					case CRUSH: mult=0; break;
+					case MINE:  mult=2; break;
+				}
+				break;
 			case GREENERY:
 			case GLASS: return durability=0;
 			case ROSE:
 			case HAZELNUT:
-			case WOOD:
-				return (CUT==dmg_kind) ?
-					durability-=2*dmg :
-					durability-=dmg;
+			case WOOD: mult=1+(CUT==dmg_kind); break;
 			case SAND:
-			case SOIL:
-				return (DIG==dmg_kind) ?
-					durability-=2*dmg :
-					durability-=dmg;
+			case SOIL: mult=1+(DIG==dmg_kind); break;
 			case A_MEAT:
-			case H_MEAT:
-				return (THRUST==dmg_kind) ?
-					durability-=2*dmg :
-					durability-=dmg;
-			default: return durability-=dmg;
+			case H_MEAT: mult=1+(THRUST==dmg_kind); break;
 		}
-	}
+		return durability-=mult*dmg;
+	} //Block::Damage
 
 	Block * Block::DropAfterDamage() const {
 		return GLASS==Sub() ?
@@ -249,6 +243,12 @@
 	int  Ladder::BeforePush(const int, Block * const) { return MOVE_UP; }
 	bool Ladder::Catchable() const { return true; }
 	ushort Ladder::Weight() const { return Block::Weight()*3; }
+
+	Block * Ladder::DropAfterDamage() const {
+		return ( STONE==Sub() ) ?
+			block_manager.NormalBlock(STONE) :
+			block_manager.NewBlock(LADDER, Sub());
+	}
 
 	Ladder::Ladder(const int sub) :
 			Block(sub, NONSTANDARD)
