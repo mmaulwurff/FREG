@@ -158,7 +158,7 @@ class Player : public QObject {
 	bool GetCreativeMode() const;
 	void SetCreativeMode(bool turn);
 
-	void Turn(int dir);
+	void SetDir(int dir);
 	void Move(int dir);
 	void Jump();
 
@@ -197,7 +197,6 @@ class Player : public QObject {
 	ushort DamageLevel() const;
 	void Get(Block *);
 	Block * Drop(ushort);
-	void SetDir(int dir);
 
 	public:
 	void SetNumShreds(ushort num) const;

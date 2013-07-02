@@ -170,19 +170,13 @@ void Player::Jump() {
 
 void Player::Move(const int dir) {
 	if ( player ) {
-		Turn(dir);
-		usingType=USAGE_TYPE_NO;
+		SetDir(dir);
 		if ( GetCreativeMode() ) {
 			player->GetDeferredAction()->SetGhostMove();
 		} else {
 			player->GetDeferredAction()->SetMove();
 		}
 	}
-}
-
-void Player::Turn(const int dir) {
-	usingType=USAGE_TYPE_NO;
-	SetDir(dir);
 }
 
 void Player::StopUseAll() { usingType = usingSelfType = USAGE_TYPE_NO; }
@@ -447,10 +441,12 @@ Block * Player::UsingBlock() const {
 
 int  Player::GetDir() const { return dir; }
 void Player::SetDir(const int direction) {
+	usingType=USAGE_TYPE_NO;
 	if ( player ) {
 		player->SetDir(direction);
 	}
 	dir=direction;
+	emit Updated();
 }
 
 void Player::Damage(
@@ -498,6 +494,9 @@ void Player::CheckOverstep(const int dir) {
 		UpdateXYZ();
 	}
 	emit Moved(GlobalX(), GlobalY(), z);
+	//for curses screen to update itself in creative mode
+	//IDEA: make signal to tell srceen player coordinates in creative mode
+	emit Updated();
 }
 
 void Player::BlockDestroy() {

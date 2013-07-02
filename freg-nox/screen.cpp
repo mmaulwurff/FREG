@@ -63,7 +63,12 @@ void Screen::UpdateAll() {
 	updated=false;
 }
 
-void Screen::UpdatePlayer() { updatedPlayer=false; }
+void Screen::UpdatePlayer() {
+	if ( player && player->GetCreativeMode() ) {
+		updated=false;
+	}
+	updatedPlayer=false;
+}
 
 void Screen::UpdateAround(const ushort, const ushort, const ushort,
 		const ushort)
@@ -252,13 +257,13 @@ void Screen::ControlPlayer(const int ch) {
 		case ' ': player->Jump(); break;
 
 		case '>':
-			player->Turn(World::TurnRight(player->GetDir()));
+			player->SetDir(World::TurnRight(player->GetDir()));
 		break;
 		case '<':
-			player->Turn(World::TurnLeft(player->GetDir()));
+			player->SetDir(World::TurnLeft(player->GetDir()));
 		break;
-		case KEY_NPAGE: player->Turn(DOWN); break;
-		case KEY_PPAGE: player->Turn(UP); break;
+		case KEY_NPAGE: player->SetDir(DOWN); break;
+		case KEY_PPAGE: player->SetDir(UP);   break;
 
 		case KEY_HOME: player->Backpack(); break;
 		case 8:
