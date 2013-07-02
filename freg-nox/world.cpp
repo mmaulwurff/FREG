@@ -528,8 +528,8 @@ bool World::CanMove(
 			return false;
 		break;
 	}
-	return ( ENVIRONMENT==block_to->Movable() ) ?
-		true : Move(newi, newj, newk, dir);
+	return (( ENVIRONMENT==block_to->Movable() ) ||
+		Move(newi, newj, newk, dir));
 } //World::CanMove
 
 void World::NoCheckMove(
@@ -599,13 +599,7 @@ const {
 		GetBlock(i, j, k)->GetDir() );
 }
 
-///Makes damage to block at ijk.
-/**
- * Be careful: it can destroy blocks.
- * It can create piles if block drops something or has non-empty inventory.
- * Returns true if block is destroyed, otherwise false.
- */
-bool World::Damage(const ushort i, const ushort j, const ushort k,
+void World::Damage(const ushort i, const ushort j, const ushort k,
 		const ushort dmg, //see default in class declaration
 		const int dmg_kind) //see default in class declaration
 {
@@ -621,17 +615,23 @@ bool World::Damage(const ushort i, const ushort j, const ushort k,
 			DeleteBlock(temp);
 			SetBlock(block_manager.NewBlock(LADDER, STONE),
 				i, j, k);
-			emit Updated(i, j, k);
-			return false;
+			emit ReEnlighten(i, j, k);
+		} else {
+			ReplaceWithNormal(i, j, k); //checks are inside
 		}
-		ReplaceWithNormal(i, j, k); //checks are inside
-		return false;
+	}
+}
+
+void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
+	Block * const temp=GetBlock(x, y, z);
+	if ( temp->Durability() > 0 ) {
+		return;
 	}
 	Block * const dropped=temp->DropAfterDamage();
-	if ( TIME!=dmg_kind && (temp->HasInventory() || dropped) ) {
+	if ( PILE!=temp->Kind() && (temp->HasInventory() || dropped) ) {
 		Block * const new_pile=( PILE==dropped->Kind() ?
 			dropped : block_manager.NewBlock(PILE, DIFFERENT) );
-		SetBlock(new_pile, i, j, k);
+		SetBlock(new_pile, x, y, z);
 		Inventory * const inv=temp->HasInventory();
 		Inventory * const new_pile_inv=new_pile->HasInventory();
 		if ( inv ) {
@@ -641,13 +641,12 @@ bool World::Damage(const ushort i, const ushort j, const ushort k,
 			DeleteBlock(dropped);
 		}
 	} else {
-		PutNormalBlock(AIR, i, j, k);
+		PutNormalBlock(AIR, x, y, z);
 	}
 	DeleteBlock(temp);
-	GetShred(i, j)->AddFalling(i%SHRED_WIDTH, j%SHRED_WIDTH, k+1);
-	ReEnlighten(i, j, k);
-	return true;
-} //World::Damage
+	GetShred(x, y)->AddFalling(x%SHRED_WIDTH, y%SHRED_WIDTH, z+1);
+	ReEnlighten(x, y, z);
+}
 
 bool World::Build(Block * block,
 		const ushort i, const ushort j, const ushort k,
@@ -694,6 +693,7 @@ void World::Eat(
 	if ( GetBlock(i, j, k)->IsAnimal()->Eat(Sub(i_food, j_food, k_food)) )
 	{
 		Damage(i_food, j_food, k_food, MAX_DURABILITY, EATEN);
+		DestroyAndReplace(i_food, j_food, k_food);
 	}
 }
 

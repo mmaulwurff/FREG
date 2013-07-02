@@ -364,17 +364,15 @@
 		return deferredAction;
 	}
 
-	bool Active::FallDamage() {
+	void Active::FallDamage() {
 		if ( fall_height > SAFE_FALL_HEIGHT ) {
+			World * const world=GetWorld();
 			const ushort dmg=(fall_height - SAFE_FALL_HEIGHT)*10;
-			fall_height=0;
-			GetWorld()->Damage(X(), Y(), Z()-1, dmg, DAMAGE_FALL);
-			return GetWorld()->
-				Damage(X(), Y(), Z(), dmg, DAMAGE_FALL);
-		} else {
-			fall_height=0;
-			return false;
+			world->Damage(X(), Y(), Z()-1, dmg, DAMAGE_FALL);
+			world->DestroyAndReplace(X(), Y(), Z()-1);
+			world->Damage(X(), Y(), Z(), dmg, DAMAGE_FALL);
 		}
+		fall_height=0;
 	}
 
 	ushort Active::X() const { return x_self; }
@@ -554,10 +552,7 @@
 				AIR!=world->Sub(X(), Y()-1, Z()) )
 		{
 			if ( breath <= 0 ) {
-				if ( world->Damage(X(), Y(), Z(), 10, BREATH) )
-				{
-					return;
-				}
+				world->Damage(X(), Y(), Z(), 10, BREATH);
 			} else {
 				--breath;
 			}
@@ -565,9 +560,7 @@
 			++breath;
 		}
 		if ( satiation <= 0 ) {
-			if ( world->Damage(X(), Y(), Z(), 5, HUNGER) ) {
-				return;
-			}
+			world->Damage(X(), Y(), Z(), 5, HUNGER);
 		} else {
 			--satiation;
 		}
@@ -1025,8 +1018,8 @@
 	}
 
 	void Pile::ActRare() {
-		if ( ifToDestroy ) {
-			GetWorld()->Damage(X(), Y(), Z(), 0, TIME);
+		if ( IsEmpty() ) {
+			Damage(Durability(), TIME);
 		}
 	}
 
@@ -1036,6 +1029,7 @@
 	Inventory * Pile::HasInventory() { return Inventory::HasInventory(); }
 	usage_types Pile::Use(Block *) { return USAGE_TYPE_OPEN; }
 	ushort Pile::Weight() const { return Inventory::Weight(); }
+	Block * Pile::DropAfterDamage() const { return 0; }
 
 	void Pile::ReceiveSignal(const QString & str) {
 		Active::ReceiveSignal(str);
@@ -1052,36 +1046,19 @@
 		}
 	}
 
-	bool Pile::Drop(const ushort src, const ushort dest, const ushort num,
-			Inventory * const inv)
-	{
-		const bool ret=Inventory::Drop(src, dest, num, inv);
-		ifToDestroy=IsEmpty();
-		return ret;
-	}
-
-	void Pile::Pull(const ushort num) {
-		Inventory::Pull(num);
-		ifToDestroy=IsEmpty();
-	}
-
 	void Pile::SaveAttributes(QDataStream & out) const {
 		Active::SaveAttributes(out);
 		Inventory::SaveAttributes(out);
-		out << ifToDestroy;
 	}
 
 	Pile::Pile(const int sub) :
 			Active(sub, NONSTANDARD),
-			Inventory(INV_SIZE),
-			ifToDestroy(false)
+			Inventory(INV_SIZE)
 	{}
 	Pile::Pile(QDataStream & str, const int sub) :
 			Active(str, sub, NONSTANDARD),
 			Inventory(str, INV_SIZE)
-	{
-		str >> ifToDestroy;
-	}
+	{}
 //Liquid::
 	bool Liquid::CheckWater() const {
 		World * const world=GetWorld();
@@ -1101,10 +1078,8 @@
 	void Liquid::ActRare() {
 		World * const world=GetWorld();
 		//IDEA: turn off water drying up in ocean
-		if ( WATER==Sub() && !CheckWater() &&
-				world->Damage(X(), Y(), Z(), 1, HEAT) )
-		{
-			return;
+		if ( WATER==Sub() && !CheckWater() ) {
+			world->Damage(X(), Y(), Z(), 1, HEAT);
 		}
 		switch ( qrand()%20 ) {
 			case 0: world->Move(X(), Y(), Z(), NORTH); break;
@@ -1141,14 +1116,11 @@
 //Grass::
 	void Grass::ActRare() {
 		World * const world=GetWorld();
-		if (
-				SOIL!=GetShred()->Sub(
-					X()%SHRED_WIDTH,
-					Y()%SHRED_WIDTH, Z()-1) &&
-				world->Damage(X(), Y(), Z(),
-					durability, TIME) )
+		if ( SOIL!=GetShred()->Sub(
+				X()%SHRED_WIDTH,
+				Y()%SHRED_WIDTH, Z()-1) )
 		{
-			return;
+			world->Damage(X(), Y(), Z(), durability, TIME);
 		}
 		short i=X(), j=Y();
 		//increase this if grass grows too fast

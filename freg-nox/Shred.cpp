@@ -317,15 +317,20 @@ void Shred::PhysEventsFrequent() {
 				RemFalling(temp);
 				temp->FallDamage();
 			}
+			world->DestroyAndReplace(x, y, z);
 		}
 	}
 	for (int j=0; j<activeListFrequent.size(); ++j) {
-		activeListFrequent.at(j)->ActFrequent();
+		Active * const active=activeListFrequent.at(j);
+		active->ActFrequent();
+		world->DestroyAndReplace(active->X(),active->Y(), active->Z());
 	}
 }
 void Shred::PhysEventsRare() {
 	for (int j=0; j<activeListRare.size(); ++j) {
-		activeListRare.at(j)->ActRare();
+		Active * const active=activeListRare.at(j);
+		active->ActRare();
+		world->DestroyAndReplace(active->X(),active->Y(), active->Z());
 	}
 }
 

@@ -212,8 +212,7 @@ class Active : public QObject, public Block {
 	void Move(int direction);
 	void SetFalling(bool set);
 	bool IsFalling() const;
-	///Returns true if block is destroyed.
-	bool FallDamage();
+	void FallDamage();
 
 	ushort X() const;
 	ushort Y() const;
@@ -393,7 +392,6 @@ class Chest : public Block, public Inventory {
 
 class Pile : public Active, public Inventory {
 	Q_OBJECT
-	bool ifToDestroy;
 
 	public:
 	int  Kind() const;
@@ -402,8 +400,7 @@ class Pile : public Active, public Inventory {
 	void ActRare();
 	int  ShouldAct() const;
 	int  BeforePush(int, Block * who);
-	bool Drop(ushort src, ushort dest, ushort num, Inventory * inv);
-	void Pull(ushort num);
+	Block * DropAfterDamage() const;
 	QString FullName() const;
 	Inventory * HasInventory();
 	usage_types Use(Block * who=0);
