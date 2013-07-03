@@ -44,6 +44,9 @@ class Shred {
 	QList<Active *> fallList;
 	QList<Active *> shiningList;
 
+	///Lowest nullstone and sky are not in bounds.
+	bool InBounds(ushort x, ushort y, ushort z) const;
+
 	public:
 	///Returns y (line) shred coordinate on world map.
 	long Longitude() const;
@@ -128,6 +131,10 @@ class Shred {
 	void Desert();
 	//block combinations section (trees, buildings, etc):
 	bool Tree(ushort x, ushort y, ushort z, ushort height);
+	private:
+	void NormalCube(ushort x_start, ushort y_start, ushort z_start,
+			ushort x_end, ushort y_end, ushort z_end,
+			int sub);
 
 	//land generation
 	private:

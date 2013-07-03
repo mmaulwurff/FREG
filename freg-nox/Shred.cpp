@@ -506,10 +506,10 @@ ushort Shred::FlatUndeground(short depth) {
 	if ( level >= HEIGHT-2 ) {
 		level=HEIGHT-2;
 	}
-	for (ushort i = 0; i < SHRED_WIDTH; i++)
-	for (ushort j = 0; j < SHRED_WIDTH; j++) {
+	for (ushort i = 0; i < SHRED_WIDTH; ++i)
+	for (ushort j = 0; j < SHRED_WIDTH; ++j) {
 		ushort k;
-		for (k = 1; k <= level - depth - 6; k++) {
+		for (k = 1; k <= level - depth - 6; ++k) {
 			PutNormalBlock(STONE, i, j, k);
 		}
 		for (; k <= level; ++k) {
@@ -530,7 +530,7 @@ void Shred::NormalUnderground(const ushort depth, const int sub) {
 			for ( ; z<HEIGHT/2-depth-6; ++z) {
 				PutNormalBlock(STONE, x, y, z);
 			}
-			PutNormalBlock((qrand()%2 ? STONE : sub), x, y, z++);
+			PutNormalBlock((qrand()%2 ? STONE : sub), x, y, ++z);
 			for ( ; z<=HEIGHT/2-depth; ++z) {
 				PutNormalBlock(sub, x, y, z);
 			}
@@ -808,14 +808,14 @@ void Shred::Pyramid() {
 	}
 	ushort z, dz, x, y;
 	//пирамида
-	for (z=level+1, dz=0; dz<8; z+=2, dz++) {
-		for (x=dz; x<(16 - dz); x++) {
+	for (z=level+1, dz=0; dz<8; z+=2, ++dz) {
+		for (x=dz; x<(16 - dz); ++x) {
 			blocks[x][dz][z] =
 				blocks[x][15-dz][z]=
 				blocks[x][dz][z+1] =
 				blocks[x][15-dz][z+1]=Normal(STONE);
 		}
-		for (y=dz; y<(16-dz); y++) {
+		for (y=dz; y<(16-dz); ++y) {
 			blocks[dz][y][z] =
 				blocks[15-dz][y][z]=
 				blocks[dz][y][z+1] =
@@ -825,14 +825,14 @@ void Shred::Pyramid() {
 	//вход
 	blocks[SHRED_WIDTH/2][0][level+1]=Normal(AIR);
 	//камера внутри
-	for (z=HEIGHT/2-60, dz=0; dz<8; dz++, z++) {
-		for (x=1; x<SHRED_WIDTH-1; x++)
-		for (y=1; y<SHRED_WIDTH-1; y++) {
+	for (z=HEIGHT/2-60, dz=0; dz<8; ++dz, ++z) {
+		for (x=1; x<SHRED_WIDTH-1; ++x)
+		for (y=1; y<SHRED_WIDTH-1; ++y) {
 			blocks[x][y][z]=Normal(AIR);
 		}
 	}
 	//шахта
-	for (z=HEIGHT/2-52; z<=level; z++) {
+	for (z=HEIGHT/2-52; z<=level; ++z) {
 		blocks[SHRED_WIDTH/2][SHRED_WIDTH/2][z]=Normal(AIR);
 	}
 } //Shred::Pyramid
@@ -877,24 +877,17 @@ void Shred::Mountain() {
 		 * */
 		ushort i, j;
 		const ushort mount_top=3*HEIGHT/4;
-		for (i=0; i<SHRED_WIDTH/2; ++i)
-		for (j=0; j<SHRED_WIDTH/2; ++j)
-		for (ushort k=1; k<=mount_top; ++k) {
-			PutNormalBlock(STONE, i, j, k);
-		}
+		NormalCube(0, 0, 1,
+			SHRED_WIDTH/2, SHRED_WIDTH/2, mount_top, STONE);
 		//south bridge
 		if ( SHRED_MOUNTAIN==TypeOfShred(longitude+1, latitude) ) {
-			for (i=SHRED_WIDTH/4-1; i<SHRED_WIDTH/4+1; ++i)
-			for (j=SHRED_WIDTH/2; j<SHRED_WIDTH; ++j) {
-				PutNormalBlock(STONE, i, j, mount_top);
-			}
+			NormalCube(qrand()%(SHRED_WIDTH/2-1), SHRED_WIDTH/2,
+				mount_top, 2, SHRED_WIDTH/2, 1, STONE);
 		}
 		//east bridge
 		if ( SHRED_MOUNTAIN==TypeOfShred(longitude, latitude+1) ) {
-			for (i=SHRED_WIDTH/2; i<SHRED_WIDTH; ++i )
-			for (j=SHRED_WIDTH/4-1; j<SHRED_WIDTH/4+1; ++j) {
-				PutNormalBlock(STONE, i, j, mount_top);
-			}
+			NormalCube(SHRED_WIDTH/2, qrand()%(SHRED_WIDTH/2-1),
+				mount_top, SHRED_WIDTH/2, 2, 1, STONE);
 		}
 		//water pool
 		if ( !(qrand()%10) ) {
@@ -905,8 +898,48 @@ void Shred::Mountain() {
 				SetNewBlock(LIQUID, WATER, i, j, k);
 			}
 		}
+		//cavern
+		//if ( !(qrand()%10) ) {
+			NormalCube(SHRED_WIDTH/4-2, SHRED_WIDTH/4-2,
+				HEIGHT/2+1, 4, 4, 3, AIR);
+			const int entries=qrand()%15+1;
+			if ( entries & 1 ) { // north entry
+				NormalCube(SHRED_WIDTH/4-1, 0, HEIGHT/2+1,
+					2, 2, 2, AIR);
+			}
+			if ( entries & 2 ) { // east entry
+				NormalCube(SHRED_WIDTH/2-4, SHRED_WIDTH/4-1,
+					HEIGHT/2+1, 2, 2, 2, AIR);
+			}
+			if ( entries & 4 ) { // south entry
+				NormalCube(SHRED_WIDTH/4-1, SHRED_WIDTH/2-2,
+					HEIGHT/2+1, 2, 2, 2, AIR);
+			}
+			if ( entries & 8 ) { // west entry
+				NormalCube(0, SHRED_WIDTH/4-1, HEIGHT/2+1,
+					2, 2, 2, AIR);
+			}
+		//}
 	}
 	PlantGrass();
+} //Shred::Mountain
+
+void Shred::NormalCube(
+		const ushort x_start,
+		const ushort y_start,
+		const ushort z_start,
+		const ushort x_size,
+		const ushort y_size,
+		const ushort z_size,
+		const int sub)
+{
+	for (ushort i=x_start; i<x_start+x_size; ++i)
+	for (ushort j=y_start; j<y_start+y_size; ++j)
+	for (ushort k=z_start; k<z_start+z_size; ++k) {
+		if ( InBounds(i, j, k) ) {
+			PutNormalBlock(sub, i, j, k);
+		}
+	}
 }
 
 void Shred::Desert() {
@@ -960,3 +993,7 @@ bool Shred::Tree(const ushort x, const ushort y, const ushort z,
 	}
 	return true;
 } //Shred::Tree
+
+bool Shred::InBounds(const ushort x, const ushort y, const ushort z) const {
+	return ( x<SHRED_WIDTH && y<SHRED_WIDTH && z && z<HEIGHT-1 );
+}
