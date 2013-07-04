@@ -545,15 +545,15 @@ void World::NoCheckMove(
 	ReEnlighten(newi, newj, newk);
 	ReEnlighten(i, j, k);
 
-	block_to->Move( Anti(dir) );
-	block->Move(dir);
-
 	Shred * shred=GetShred(i, j);
 	shred->AddFalling(i%SHRED_WIDTH, j%SHRED_WIDTH, k+1);
 	shred->AddFalling(i%SHRED_WIDTH, j%SHRED_WIDTH, k);
 	shred=GetShred(newi, newj);
 	shred->AddFalling(newi%SHRED_WIDTH, newj%SHRED_WIDTH, newk+1);
 	shred->AddFalling(newi%SHRED_WIDTH, newj%SHRED_WIDTH, newk);
+
+	block_to->Move( Anti(dir) );
+	block->Move(dir);
 }
 
 void World::Jump(const ushort x, const ushort y, const ushort z,
