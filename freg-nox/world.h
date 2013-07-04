@@ -82,6 +82,7 @@ class World : public QThread {
 	///Puts normal block to coordinates.
 	void PutNormalBlock(subs sub, ushort x, ushort y, ushort z);
 	static Block * Normal(int sub, int dir=UP);
+	static Block * NewBlock(int kind, int sub);
 	static void DeleteBlock(Block * block);
 	void ReplaceWithNormal(ushort x, ushort y, ushort z);
 	Block * ReplaceWithNormal(Block * block);

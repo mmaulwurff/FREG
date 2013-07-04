@@ -199,6 +199,9 @@ void World::PutNormalBlock(const subs sub,
 Block * World::Normal(const int sub, const int dir) {
 	return block_manager.NormalBlock(sub, dir);
 }
+Block * World::NewBlock(const int kind, const int sub) {
+	return block_manager.NewBlock(kind, sub);
+}
 void World::DeleteBlock(Block * const block) {
 	block_manager.DeleteBlock(block);
 }
@@ -604,16 +607,14 @@ void World::Damage(const ushort i, const ushort j, const ushort k,
 {
 	Block * temp=GetBlock(i, j, k);
 	if ( temp==Normal(temp->Sub()) && AIR!=temp->Sub() ) {
-		SetBlock( (temp = block_manager.
-			NewBlock(temp->Kind(), temp->Sub()) ), i, j, k );
+		SetBlock((temp=NewBlock(temp->Kind(), temp->Sub())), i, j, k );
 	}
 	if ( temp->Damage(dmg, dmg_kind) > 0 ) {
 		if ( STONE==temp->Sub() && BLOCK==temp->Kind() &&
 				temp->Durability()!=MAX_DURABILITY )
 		{
 			DeleteBlock(temp);
-			SetBlock(block_manager.NewBlock(LADDER, STONE),
-				i, j, k);
+			SetBlock(NewBlock(LADDER, STONE), i, j, k);
 			emit ReEnlighten(i, j, k);
 		} else {
 			ReplaceWithNormal(i, j, k); //checks are inside
@@ -629,7 +630,7 @@ void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
 	Block * const dropped=temp->DropAfterDamage();
 	if ( PILE!=temp->Kind() && (temp->HasInventory() || dropped) ) {
 		Block * const new_pile=( PILE==dropped->Kind() ?
-			dropped : block_manager.NewBlock(PILE, DIFFERENT) );
+			dropped : NewBlock(PILE, DIFFERENT) );
 		SetBlock(new_pile, x, y, z);
 		Inventory * const inv=temp->HasInventory();
 		Inventory * const new_pile_inv=new_pile->HasInventory();
@@ -674,10 +675,11 @@ bool World::Build(Block * block,
 
 void World::Inscribe(const ushort i, const ushort j, const ushort k) {
 	Block * block=GetBlock(i, j, k);
+	if ( LIQUID==block->Kind() || AIR==block->Sub() ) {
+		return;
+	}
 	if ( block==Normal(block->Sub()) ) {
-		SetBlock(block=block_manager.
-				NewBlock(block->Kind(), block->Sub()),
-			i, j, k);
+		SetBlock(block=NewBlock(block->Kind(), block->Sub()), i, j, k);
 	}
 	QString str=tr("No note received.");
 	emit GetString(str);
@@ -703,9 +705,6 @@ void World::Exchange(
 		const ushort num)
 {
 	Block * const block_from=GetBlock(i_from, j_from, k_from);
-	if ( !block_from ) {
-		return;
-	}
 	Inventory * const inv_from=block_from->HasInventory();
 	if ( !inv_from ) {
 		block_from->ReceiveSignal(tr("No inventory."));
@@ -717,7 +716,7 @@ void World::Exchange(
 	}
 	Block * block_to;
 	if ( AIR==Sub(i_to, j_to, k_to) ) {
-		SetBlock((block_to=block_manager.NewBlock(PILE, DIFFERENT)),
+		SetBlock((block_to=NewBlock(PILE, DIFFERENT)),
 			i_to, j_to, k_to);
 	} else {
 		block_to=GetBlock(i_to, j_to, k_to);
