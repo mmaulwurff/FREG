@@ -290,15 +290,15 @@ void Screen::ControlPlayer(const int ch) {
 		} break;
 		case 27: /*esc*/ player->StopUseAll(); break;
 
-		case 'U': actionMode=USE; break;
-		case 'T': actionMode=THROW; break;
-		case 'O': actionMode=OBTAIN; break;
-		case 'W': actionMode=WIELD; break;
-		case 'I': actionMode=INSCRIBE; break;
-		case 'E': actionMode=EAT; break;
-		case 'B': actionMode=BUILD; break;
-		case 'C': actionMode=CRAFT; break;
-		case 'F': actionMode=TAKEOFF; break;
+		case 'U': SetActionMode(USE);      break;
+		case 'T': SetActionMode(THROW);    break;
+		case 'O': SetActionMode(OBTAIN);   break;
+		case 'W': SetActionMode(WIELD);    break;
+		case 'I': SetActionMode(INSCRIBE); break;
+		case 'E': SetActionMode(EAT);      break;
+		case 'B': SetActionMode(BUILD);    break;
+		case 'C': SetActionMode(CRAFT);    break;
+		case 'F': SetActionMode(TAKEOFF);  break;
 
 		case 'H':
 			wstandend(rightWin);
@@ -353,6 +353,11 @@ void Screen::ControlPlayer(const int ch) {
 	}
 	updated=false;
 } //Screen::ControlPlayer
+
+void Screen::SetActionMode(const int mode) {
+	actionMode=mode;
+	updatedPlayer=false;
+}
 
 void Screen::MouseAction() {
 	#ifdef Q_OS_LINUX //mouse events are in ncurses, but not in pdcurses

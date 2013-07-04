@@ -159,6 +159,7 @@ class Screen : public VirtScreen {
 
 	color_pairs Color(int kind, int sub) const;
 	char PrintBlock(const Block *, WINDOW *) const;
+	void SetActionMode(const int mode);
 
 	private slots:
 	void Print();

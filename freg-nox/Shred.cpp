@@ -530,7 +530,7 @@ void Shred::NormalUnderground(const ushort depth, const int sub) {
 			for ( ; z<HEIGHT/2-depth-6; ++z) {
 				PutNormalBlock(STONE, x, y, z);
 			}
-			PutNormalBlock((qrand()%2 ? STONE : sub), x, y, ++z);
+			PutNormalBlock((qrand()%2 ? STONE : sub), x, y, z++);
 			for ( ; z<=HEIGHT/2-depth; ++z) {
 				PutNormalBlock(sub, x, y, z);
 			}

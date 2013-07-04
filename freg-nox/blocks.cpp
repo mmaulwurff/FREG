@@ -1094,6 +1094,7 @@
 	int Liquid::Kind() const { return LIQUID; }
 	int Liquid::Temperature() const { return ( WATER==Sub() ) ? 0 : 1000; }
 	uchar Liquid::LightRadius() const { return ( WATER==Sub() ) ? 0 : 3; }
+	Block * Liquid::DropAfterDamage() const { return 0; }
 
 	QString Liquid::FullName() const {
 		switch ( Sub() ) {

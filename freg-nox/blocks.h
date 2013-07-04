@@ -428,6 +428,7 @@ class Liquid : public Active {
 	int  Temperature() const;
 	uchar LightRadius() const;
 	QString FullName() const;
+	Block * DropAfterDamage() const;
 
 	Liquid(int sub=WATER);
 	Liquid(QDataStream & str, int sub);
