@@ -39,8 +39,6 @@ const ushort END_OF_EVENING= 0*SECONDS_IN_HOUR;
 const ushort SECONDS_IN_NIGHT=END_OF_NIGHT;
 const ushort SECONDS_IN_DAYLIGHT=SECONDS_IN_DAY-END_OF_NIGHT;
 
-const uchar MAX_LIGHT_RADIUS=15;
-
 const ushort MAX_DURABILITY=100;
 const ushort MAX_BREATH=60;
 

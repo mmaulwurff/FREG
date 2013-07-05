@@ -35,18 +35,26 @@ const uchar FIRE_LIGHT_FACTOR=4;
 const uchar MOON_LIGHT_FACTOR=1;
 const uchar  SUN_LIGHT_FACTOR=8;
 
+const uchar MAX_LIGHT_RADIUS=15;
+
 //private. use Enlightened instead, which is smart wrapper of this.
 uchar World::LightMap(const ushort x, const ushort y, const ushort z)
 const {
 	return GetShred(x, y)->LightMap(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 
-//private
-bool World::SetLightMap(const uchar level,
+bool World::SetSunLightMap(const uchar level,
 		const ushort x, const ushort y, const ushort z)
 {
 	return GetShred(x, y)->
-		SetLightMap(level, x%SHRED_WIDTH, y%SHRED_WIDTH, z);
+		SetSunLightMap(level, x%SHRED_WIDTH, y%SHRED_WIDTH, z);
+}
+
+bool World::SetFireLightMap(const uchar level,
+		const ushort x, const ushort y, const ushort z)
+{
+	return GetShred(x, y)->
+		SetFireLightMap(level, x%SHRED_WIDTH, y%SHRED_WIDTH, z);
 }
 
 //private. make block emit shining
@@ -59,7 +67,7 @@ void World::Shine(const ushort i, const ushort j, const ushort k,
 		return;
 	}
 	if ( INVISIBLE!=Transparent(i, j, k) ) {
-		if ( SetLightMap(level << 4, i, j, k) ) {
+		if ( SetFireLightMap(level << 4, i, j, k) ) {
 			emit Updated(i, j, k);
 		}
 		if ( !init ) {
@@ -75,33 +83,35 @@ void World::Shine(const ushort i, const ushort j, const ushort k,
 }
 
 //private
-void World::SunShine(const ushort i, const ushort j) {
+void World::SunShine(const ushort x, const ushort y) {
+	/* 2 1 3
+	 *   *   First, light goes down, then divides to 4 branches
+	 * ^ | ^ to N-S-E-W, and goes up.
+	 * | | |
+	 * | | |
+	 * |<v>|
+	 *   #     */
 	ushort light_lev=MAX_LIGHT_RADIUS;
-	for (ushort k=HEIGHT-2; light_lev; --k) {
-		const ushort transparent=Transparent(i, j, k);
-		const xyz coords[]={
-			{i, j, k},
-			{i-1, j, k},
-			{i+1, j, k},
-			{i, j-1, k},
-			{i, j+1, k}
-		};
-		for (ushort i=0; i<sizeof(coords)/sizeof(xyz); ++i) {
-			if ( InBounds(coords[i].x, coords[i].y) &&
-					SetLightMap(light_lev,
-						coords[i].x,
-						coords[i].y,
-						coords[i].z) &&
-					INVISIBLE!=transparent )
-			{
-				emit Updated(coords[i].x, coords[i].y,
-					coords[i].z);
-			}
-		}
+	ushort z=HEIGHT-2;
+	for ( ; SetSunLightMap(light_lev, x, y, z); --z) {
+		emit Updated(x, y, z);
+		const ushort transparent=Transparent(x, y, z);
 		if ( BLOCK_TRANSPARENT==transparent ) {
 			--light_lev;
 		} else if ( BLOCK_OPAQUE==transparent ) {
 			break;
+		}
+	}
+	UpShine(x-1, y, z);
+	UpShine(x+1, y, z);
+	UpShine(x, y-1, z);
+	UpShine(x, y+1, z);
+}
+
+void World::UpShine(const ushort x, const ushort y, const ushort z_bottom) {
+	if ( InBounds(x, y) ) {
+		for (ushort z=z_bottom; SetSunLightMap(1, x, y, z); ++z ) {
+			emit Updated(x, y, z);
 		}
 	}
 }
@@ -227,25 +237,28 @@ const {
 	return lightMap[i][j][k];
 }
 
-//this receives level in format fire:sun
-bool Shred::SetLightMap(const uchar level,
-		const ushort i, const ushort j, const ushort k)
+//fire:sun
+bool Shred::SetSunLightMap(const uchar level,
+		const ushort x, const ushort y, const ushort z)
 {
-	bool change_flag=false;
-
-	uchar fire=lightMap[i][j][k] & 0xF0;
-	uchar sun= lightMap[i][j][k] & 0x0F;
-
-	if ( (level & 0xF0) > fire ) {
-		change_flag=true;
-		fire=(level & 0xF0);
+	if ( ( lightMap[x][y][z] & 0x0F ) < level ) {
+		lightMap[x][y][z]=(lightMap[x][y][z] & 0xF0) | level;
+		return true;
+	} else {
+		return false;
 	}
-	if ( (level & 0x0F) > sun ) {
-		change_flag=true;
-		sun=(level & 0x0F);
+}
+
+//fire:sun
+bool Shred::SetFireLightMap(const uchar level,
+		const ushort x, const ushort y, const ushort z)
+{
+	if ( ( lightMap[x][y][z] & 0xF0 ) < level ) {
+		lightMap[x][y][z]=(lightMap[x][y][z] & 0x0F) | level;
+		return true;
+	} else {
+		return false;
 	}
-	lightMap[i][j][k]=fire | sun;
-	return change_flag;
 }
 
 //set lightmap of all shred to level. default level is 0.

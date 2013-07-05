@@ -99,7 +99,8 @@ class World : public QThread {
 
 	private:
 	uchar LightMap(ushort x, ushort y, ushort z) const;
-	bool SetLightMap(uchar level, ushort x, ushort y, ushort z);
+	bool SetSunLightMap(uchar level, ushort x, ushort y, ushort z);
+	bool SetFireLightMap(uchar level, ushort x, ushort y, ushort z);
 
 	void ReEnlighten(ushort i, ushort j, ushort k);
 	void ReEnlightenAll();
@@ -107,7 +108,8 @@ class World : public QThread {
 	///Called from World::ReloadShreds(int), enlighens only need shreds.
 	void ReEnlightenMove(int direction);
 
-	void SunShine(ushort i, ushort j);
+	void SunShine(ushort x, ushort y);
+	void UpShine(ushort x, ushort y, ushort z_bottom);
 	public:
 	///If init is false, light will not spread from non-invisible blocks.
 	void Shine(ushort x, ushort y, ushort z, uchar level, bool init=false);

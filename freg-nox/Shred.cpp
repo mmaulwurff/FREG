@@ -192,7 +192,7 @@ bool Shred::LoadShred(QFile & file) {
 				 i, j, k);
 			lightMap[i][j][k]=0;
 		}
-		lightMap[i][j][HEIGHT-1]=MAX_LIGHT_RADIUS;
+		lightMap[i][j][HEIGHT-1]=1;
 	}
 	return true;
 }
@@ -223,7 +223,7 @@ Shred::Shred(World * const world_,
 			lightMap[i][j][k]=0;
 		}
 		PutNormalBlock(( (qrand()%5) ? SKY : STAR ), i, j, HEIGHT-1);
-		lightMap[i][j][HEIGHT-1]=MAX_LIGHT_RADIUS;
+		lightMap[i][j][HEIGHT-1]=1;
 	}
 	switch ( TypeOfShred(longi, lati) ) {
 		case SHRED_NULLMOUNTAIN: NullMountain(); break;

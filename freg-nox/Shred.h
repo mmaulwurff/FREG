@@ -82,7 +82,8 @@ class Shred {
 	static Block * Normal(int sub, int dir=UP);
 
 	uchar LightMap(ushort x, ushort y, ushort z) const;
-	bool SetLightMap(uchar level, ushort x, ushort y, ushort z);
+	bool SetSunLightMap(uchar level, ushort x, ushort y, ushort z);
+	bool SetFireLightMap(uchar level, ushort x, ushort y, ushort z);
 	void SetAllLightMap(uchar level);
 	void ShineAll();
 
