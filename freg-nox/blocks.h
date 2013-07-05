@@ -540,10 +540,7 @@ class Door : public Active {
 	Door(QDataStream & str, int sub);
 }; //class Door
 
-class QTextStream;
-
 class Clock : public Active {
-	QTextStream * txtStream;
 	short alarmTime;
 	short timerTime;
 

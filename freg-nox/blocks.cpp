@@ -118,7 +118,6 @@
 	int  Block::Kind() const { return BLOCK; }
 	bool Block::Catchable() const { return false; }
 	int  Block::BeforePush(const int, Block * const) { return NO_ACTION; }
-	void Block::Inscribe(const QString & str) { *note=str; }
 	void Block::Move(const int) {}
 	usage_types Block::Use(Block *) { return USAGE_TYPE_NO; }
 	int  Block::Wearable() const { return WEARABLE_NOWHERE; }
@@ -126,6 +125,14 @@
 	ushort Block::DamageLevel() const { return 1; }
 	uchar Block::LightRadius() const { return 0; }
 	void Block::ReceiveSignal(const QString &) {}
+
+	void Block::Inscribe(const QString & str) {
+		if ( note ) {
+			*note=str;
+		} else {
+			note=new QString(str);
+		}
+	}
 
 	Inventory * Block::HasInventory() { return 0; }
 	Animal * Block::IsAnimal() { return 0; }
@@ -137,7 +144,7 @@
 	int  Block::Sub() const { return sub; }
 	int  Block::Transparent() const { return transparent; }
 	short Block::Durability() const { return durability; }
-	QString Block::GetNote() const { return *note; }
+	QString Block::GetNote() const { return note ? *note : ""; }
 
 	int Block::Temperature() const {
 		switch (sub) {
@@ -174,7 +181,9 @@
 				block.Sub()==Sub() &&
 				block.GetDir()==GetDir() &&
 				block.Durability()==Durability() &&
-				*block.note==*note );
+				( (!note && !block.note) ||
+					(note && block.note &&
+					*block.note==*note)) );
 	}
 
 	void Block::SaveAttributes(QDataStream &) const {}
@@ -182,7 +191,12 @@
 		const bool normal=(this==block_manager.NormalBlock(Sub()));
 		out << (quint16)Kind() << sub << normal;
 		if ( !normal ) {
-			out << direction << durability << *note;
+			out << direction << durability;
+			if ( note ) {
+				out << true << *note;
+			} else {
+				out << false;
+			}
 			SaveAttributes(out);
 		}
 	}
@@ -191,15 +205,20 @@
 			transparent(Transparency(transp, subst)),
 			sub(subst),
 			direction(UP),
-			note(new QString("")),
+			note(0),
 			durability(MAX_DURABILITY)
 	{}
 	Block::Block(QDataStream & str, const int subst, const quint8 transp) :
 			transparent(Transparency(transp, subst)),
 			sub(subst),
-			note(new QString)
+			note(0)
 	{
-		str >> direction >> durability >> *note;
+		bool ifnote;
+		str >> direction >> durability >> ifnote;
+		if ( ifnote ) {
+			note=new QString();
+			str >> *note;
+		}
 	}
 	Block::~Block() { delete note; }
 //Plate::
@@ -959,7 +978,7 @@
 			activeHand(IN_RIGHT),
 			lightRadius(2)
 	{
-		*note="Urist";
+		note=new QString("Urist");
 	}
 	Dwarf::Dwarf(QDataStream & str, const int sub) :
 			Animal(str, sub),
@@ -1543,35 +1562,35 @@
 	void Clock::Inscribe(const QString & str) {
 		Block::Inscribe(str);
 		char c;
-		*txtStream >> c;
+		QTextStream txt_stream(note);
+		txt_stream >> c;
 		if ( 'a'==c ) {
 			ushort alarm_hour;
-			*txtStream >> alarm_hour;
-			*txtStream >> alarmTime;
+			txt_stream >> alarm_hour;
+			txt_stream >> alarmTime;
 			alarmTime+=alarm_hour*60;
 			timerTime=-1;
 		} else if ( 't'==c ) {
-			*txtStream >> timerTime;
+			txt_stream >> timerTime;
 			alarmTime=-1;
 		} else {
 			alarmTime=timerTime=-1;
 		}
-		txtStream->seek(0);
 	}
 
 	Clock::Clock(const int sub) :
 			Active(sub, NONSTANDARD),
-			txtStream(new QTextStream(note)),
 			alarmTime(-1),
 			timerTime(-1)
 	{}
 	Clock::Clock (QDataStream & str, const int sub) :
-			Active(str, sub, NONSTANDARD),
-			txtStream(new QTextStream(note))
+			Active(str, sub, NONSTANDARD)
 	{
-		Inscribe(*note);
+		if ( note ) {
+			Inscribe(*note);
+		}
 	}
-	Clock::~Clock() { delete txtStream; }
+	Clock::~Clock() {}
 //Creator::
 	int Creator::Kind() const { return CREATOR; }
 	int Creator::Sub() const { return Block::Sub(); }
