@@ -188,14 +188,18 @@
 
 	void Block::SaveAttributes(QDataStream &) const {}
 	void Block::SaveToFile(QDataStream & out) const {
-		const bool normal=(this==block_manager.NormalBlock(Sub()));
-		out << (quint16)Kind() << sub << normal;
+		const bool normal=(this==block_manager.NormalBlock(sub));
+		quint16 data=Kind();
+		out << ( ( ( ( data
+			<<= 1 ) |= normal )
+			<<= 7 ) |= sub);
 		if ( !normal ) {
-			out << direction << durability;
-			if ( note ) {
-				out << true << *note;
-			} else {
-				out << false;
+			quint16 data=direction;
+			out << ( ( ( ( data
+				<<= 7 ) |= durability )
+				<<= 1 ) |= !!note);
+			if ( Q_UNLIKELY(note) ) {
+				out << *note;
 			}
 			SaveAttributes(out);
 		}
@@ -213,12 +217,13 @@
 			sub(subst),
 			note(0)
 	{
-		bool ifnote;
-		str >> direction >> durability >> ifnote;
-		if ( ifnote ) {
-			note=new QString();
-			str >> *note;
+		quint16 data;
+		str >> data;
+		if ( Q_UNLIKELY(data & 1) ) {
+			str >> *(note = new QString);
 		}
+		durability = ( data >>=1 ) & 0x7F;
+		direction = (data >>= 7);
 	}
 	Block::~Block() { delete note; }
 //Plate::

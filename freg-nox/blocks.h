@@ -251,7 +251,7 @@ class Active : public QObject, public Block {
 class Animal : public Active {
 	Q_OBJECT
 
-	quint16 breath;
+	quint8 breath;
 	quint16 satiation;
 
 	virtual quint16 NutritionalValue(int sub) const=0;
