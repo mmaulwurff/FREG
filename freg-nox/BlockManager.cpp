@@ -115,7 +115,7 @@ Block * BlockManager::BlockFromFile(QDataStream & str) {
 }
 
 void BlockManager::DeleteBlock(Block * const block) {
-	if ( block && block!=NormalBlock(block->Sub(), block->GetDir()) ) {
+	if ( block!=NormalBlock(block->Sub(), block->GetDir()) ) {
 		delete block;
 	}
 }

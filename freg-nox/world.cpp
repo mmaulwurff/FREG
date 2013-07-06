@@ -629,7 +629,7 @@ void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
 	}
 	Block * const dropped=temp->DropAfterDamage();
 	if ( PILE!=temp->Kind() && (temp->HasInventory() || dropped) ) {
-		Block * const new_pile=( PILE==dropped->Kind() ?
+		Block * const new_pile=( ( dropped && PILE==dropped->Kind() ) ?
 			dropped : NewBlock(PILE, DIFFERENT) );
 		SetBlock(new_pile, x, y, z);
 		Inventory * const inv=temp->HasInventory();
@@ -637,7 +637,10 @@ void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
 		if ( inv ) {
 			new_pile_inv->GetAll(inv);
 		}
-		if ( PILE!=dropped->Kind() && !new_pile_inv->Get(dropped) ) {
+		if ( dropped &&
+				PILE!=dropped->Kind() &&
+				!new_pile_inv->Get(dropped) )
+		{
 			DeleteBlock(dropped);
 		}
 	} else {
