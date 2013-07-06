@@ -56,7 +56,7 @@ const float MOUNTAIN_AMPLITUDE=50.0f;
 */
 
 //Qt version in Debian stable that time.
-const int DATASTREAM_VERSION=QDataStream::Qt_4_6;
+const quint8 DATASTREAM_VERSION=QDataStream::Qt_4_6;
 
 float Noise2(const int x, const int y) { //range - [-1;1]
 	int n = x + y * 57;
@@ -171,12 +171,10 @@ ushort Shred::ShredY() const { return shredY; }
 World * Shred::GetWorld() const { return world; }
 
 bool Shred::LoadShred(QFile & file) {
-	const QByteArray read_data=file.readAll();
-	const QByteArray uncompressed=qUncompress(read_data);
-	QDataStream in(uncompressed);
+	QDataStream in(qUncompress(file.readAll()));
 	quint8 version;
 	in >> version;
-	if ( DATASTREAM_VERSION!=version ) {
+	if ( Q_UNLIKELY(DATASTREAM_VERSION!=version) ) {
 		fprintf(stderr,
 			"Wrong version: %d\nGenerating new shred.\n",
 			DATASTREAM_VERSION);
@@ -187,11 +185,11 @@ bool Shred::LoadShred(QFile & file) {
 	for (ushort j=0; j<SHRED_WIDTH; ++j) {
 		PutNormalBlock(NULLSTONE, i, j, 0);
 		lightMap[i][j][0] = 0;
-		for (ushort k=1; k<HEIGHT; ++k) {
-			SetBlock(block_manager.BlockFromFile(in),
-				 i, j, k);
+		for (ushort k=1; k<HEIGHT-1; ++k) {
+			SetBlock(block_manager.BlockFromFile(in), i, j, k);
 			lightMap[i][j][k]=0;
 		}
+		SetBlock(block_manager.BlockFromFile(in), i, j, HEIGHT-1);
 		lightMap[i][j][HEIGHT-1]=1;
 	}
 	return true;
@@ -253,23 +251,22 @@ Shred::~Shred() {
 			(latitude  < mapSize) && (latitude  >= 0) )
 	{
 		QFile file(FileName());
-		if ( !file.open(QIODevice::WriteOnly) ) {
+		if ( Q_UNLIKELY(!file.open(QIODevice::WriteOnly)) ) {
 			fputs("Shred::~Shred: Write Error\n", stderr);
 			return;
 		}
 		QByteArray shred_data;
-		shred_data.reserve(200000);
+		shred_data.reserve(150000);
 		QDataStream outstr(&shred_data, QIODevice::WriteOnly);
-		outstr << (quint8)DATASTREAM_VERSION;
+		outstr << DATASTREAM_VERSION;
 		outstr.setVersion(DATASTREAM_VERSION);
 		for (ushort i=0; i<SHRED_WIDTH; ++i)
 		for (ushort j=0; j<SHRED_WIDTH; ++j) {
-			ushort k=1;
-			for ( ; k<HEIGHT-1; ++k) {
+			for (ushort k=1; k<HEIGHT-1; ++k) {
 				blocks[i][j][k]->SaveToFile(outstr);
 				block_manager.DeleteBlock(blocks[i][j][k]);
 			}
-			blocks[i][j][k]->SaveToFile(outstr);
+			blocks[i][j][HEIGHT-1]->SaveToFile(outstr);
 		}
 		file.write(qCompress(shred_data));
 		return;
@@ -664,7 +661,6 @@ void Shred::RandomDrop(const ushort num,
 				}
 				break;
 			}
-
 		}
 	}
 }

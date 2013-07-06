@@ -110,7 +110,7 @@ void World::SunShine(const ushort x, const ushort y) {
 
 void World::UpShine(const ushort x, const ushort y, const ushort z_bottom) {
 	if ( InBounds(x, y) ) {
-		for (ushort z=z_bottom; SetSunLightMap(1, x, y, z); ++z ) {
+		for (ushort z=z_bottom; SetSunLightMap(1, x, y, z); ++z) {
 			emit Updated(x, y, z);
 		}
 	}

@@ -1589,7 +1589,9 @@
 			timerTime(-1)
 	{}
 	Clock::Clock (QDataStream & str, const int sub) :
-			Active(str, sub, NONSTANDARD)
+			Active(str, sub, NONSTANDARD),
+			alarmTime(-1),
+			timerTime(-1)
 	{
 		if ( note ) {
 			Inscribe(*note);
