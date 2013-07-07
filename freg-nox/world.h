@@ -44,6 +44,7 @@ class World : public QThread {
 	long spawnLongi, spawnLati;
 	const QString worldName;
 	ushort numShreds; //size of loaded zone
+	ushort maxXY; //for InBounds optimization
 	ushort numActiveShreds; //size of active zone
 	QReadWriteLock rwLock;
 

@@ -100,8 +100,7 @@ void World::Get(Block * const block_to,
 }
 
 bool World::InBounds(const ushort i, const ushort j, const ushort k) const {
-	const ushort max_x_y=SHRED_WIDTH*numShreds;
-	return (i<max_x_y && j<max_x_y && k<HEIGHT);
+	return ( i<maxXY && j<maxXY && k<HEIGHT );
 }
 
 void World::ReloadAllShreds(const long lati, const long longi,
@@ -117,6 +116,7 @@ void World::ReloadAllShreds(const long lati, const long longi,
 		numActiveShreds=new_num_shreds;
 	}
 	newNumShreds=new_num_shreds;
+	maxXY=SHRED_WIDTH*numShreds
 	toReSet=true;
 }
 
@@ -825,6 +825,7 @@ World::World(const QString & world_name) :
 {
 	numShreds =
 		game_settings.value("number_of_shreds", 5).toLongLong();
+	maxXY=SHRED_WIDTH*numShreds;
 	numActiveShreds=
 		game_settings.value("number_of_active_shreds", 5).toLongLong();
 
