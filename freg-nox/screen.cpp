@@ -381,13 +381,21 @@ void Screen::MouseAction() {
 void Screen::InventoryAction(const ushort num) const {
 	switch ( actionMode ) {
 		case USE:      player->Use(num); break;
-		case THROW:    player->Throw(num); break;
-		case OBTAIN:   player->Obtain(num); break;
 		case WIELD:    player->Wield(num); break;
 		case INSCRIBE: player->Inscribe(num); break;
 		case EAT:      player->Eat(num); break;
 		case CRAFT:    player->Craft(num); break;
 		case TAKEOFF:  player->TakeOff(num); break;
+		case OBTAIN: {
+			ushort x, y, z;
+			ActionXyz(x, y, z);
+			player->Obtain(x, y, z, num);
+		} break;
+		case THROW: {
+			ushort x, y, z;
+			ActionXyz(x, y, z);
+			player->Throw(x, y, z, num);
+		} break;
 		case BUILD: {
 			ushort x, y, z;
 			ActionXyz(x, y, z);
@@ -436,8 +444,11 @@ void Screen::Print() {
 	if ( !fileToShow ) { //right window
 		switch ( player->UsingType() ) {
 			case USAGE_TYPE_OPEN: {
-				Inventory * const inv=player->UsingBlock()->
-					HasInventory();
+				ushort x, y, z;
+				ActionXyz(x, y, z);
+				Inventory * const inv=
+					w->GetBlock(x, y, z)->
+						HasInventory();
 				if ( inv ) {
 					PrintInv(rightWin, inv);
 					break;

@@ -59,7 +59,8 @@ class DeferredAction {
 			Block * material,
 			ushort builder_slot);
 	void SetDamage(ushort x_targ, ushort y_targ, ushort z_targ);
-	void SetThrow(ushort src_slot, ushort dest_slot, ushort num);
+	void SetThrow(ushort x_targ, ushort y_targ, ushort z_targ,
+			ushort src_slot, ushort dest_slot, ushort num);
 
 	World * GetWorld() const;
 	int  GetActionType() const;

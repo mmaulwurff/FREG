@@ -202,14 +202,14 @@ class World : public QThread {
 	//inventory functions section
 	private:
 	void Exchange(
-			ushort i_from, ushort j_from, ushort k_from,
-			ushort i_to,   ushort j_to,   ushort k_to,
-			ushort src, ushort dest,
-			ushort num);
-	public:
-	void Drop(ushort x, ushort y, ushort z,
+			Block * block_from, Block * block_to,
 			ushort src, ushort dest, ushort num);
-	void Get(ushort x, ushort y, ushort z,
+	public:
+	void Drop(Block * from,
+			ushort x_to, ushort y_to, ushort z_to,
+			ushort src, ushort dest, ushort num);
+	void Get(Block * to,
+			ushort x_from, ushort y_from, ushort z_from,
 			ushort src, ushort dest, ushort num);
 	void GetAll(ushort x_to, ushort y_to, ushort z_to);
 

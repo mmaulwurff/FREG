@@ -139,8 +139,6 @@ class Player : public QObject {
 	bool Visible(ushort x, ushort y, ushort z) const;
 	void Focus(ushort & x, ushort & y, ushort & z) const;
 
-	///This returns block which is now used by player.
-	Block * UsingBlock() const;
 	///This returns how player is using something now.
 	/** See enum usage_types in header.h. */
 	int UsingType() const;
@@ -170,13 +168,15 @@ class Player : public QObject {
 	void Examine(short x, short y, short z) const;
 	void Damage(short x, short y, short z) const;
 	void Use(short x, short y, short z);
+	///Tries to throw (drop out) block number num from inventory.
+	void Throw (short x, short y, short z,
+			ushort src, ushort dest=0, ushort num=1);
 
 	///Tries to use block number num in inventory.
 	void Use(ushort num);
-	///Tries to throw (drop out) block number num from inventory.
-	void Throw (ushort src, ushort dest=0, ushort num=1);
 	///Tries to get block number num from outer inventory.
-	void Obtain(ushort src, ushort dest=0, ushort num=1);
+	void Obtain(short x, short y, short z,
+			ushort src, ushort dest=0, ushort num=1);
 	///Returns true if wielding successful.
 	bool Wield   (ushort num);
 	void Inscribe(ushort num);

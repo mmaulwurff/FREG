@@ -235,6 +235,8 @@ class Active : public QObject, public Block {
 	void ReloadToWest();
 	void ReloadToEast();
 
+	void EmitUpdated();
+
 	protected:
 	void SaveAttributes(QDataStream & out) const;
 

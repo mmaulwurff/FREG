@@ -95,10 +95,10 @@ void DeferredAction::Damage() const {
 
 void DeferredAction::Throw() const {
 	world->Drop(
-		attachedBlock->X(),
-		attachedBlock->Y(),
-		attachedBlock->Z(),
+		attachedBlock,
+		xTarg, yTarg, zTarg,
 		srcSlot, destSlot, num);
+	attachedBlock->EmitUpdated();
 }
 
 void DeferredAction::UnsetDeferredAction() {
@@ -149,10 +149,16 @@ void DeferredAction::SetDamage(
 	type=DEFERRED_DAMAGE;
 	world->AddDeferredAction(this);
 }
-void DeferredAction::SetThrow(const ushort src, const ushort dest,
-		const ushort n)
+void DeferredAction::SetThrow(
+		const ushort x_targ,
+		const ushort y_targ,
+		const ushort z_targ,
+		const ushort src, const ushort dest, const ushort n)
 {
 	UnsetDeferredAction();
+	xTarg=x_targ;
+	yTarg=y_targ;
+	zTarg=z_targ;
 	srcSlot=src;
 	destSlot=dest;
 	num=n;

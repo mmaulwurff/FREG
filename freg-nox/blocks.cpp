@@ -496,6 +496,8 @@
 	void Active::ReloadToWest()  { x_self+=SHRED_WIDTH; }
 	void Active::ReloadToEast()  { x_self-=SHRED_WIDTH; }
 
+	void Active::EmitUpdated() { emit Updated(); }
+
 	void Active::SaveAttributes(QDataStream & out) const {
 		out << fall_height;
 	}

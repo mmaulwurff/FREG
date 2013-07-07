@@ -75,27 +75,27 @@ int World::TimeOfDay() const { return time % SECONDS_IN_DAY; }
 ulong World::Time() const { return time; }
 ushort World::MiniTime() const { return timeStep; }
 
-void World::Drop(const ushort x, const ushort y,	const ushort z,
-		const ushort src, const ushort dest,
-		const ushort num)
+void World::Drop(Block * const block_from,
+		const ushort x_to, const ushort y_to, const ushort z_to,
+		const ushort src, const ushort dest, const ushort num)
 {
-	ushort x_to, y_to, z_to;
-	if ( !Focus(x, y, z, x_to, y_to, z_to) ) {
-		Exchange(x, y, z, x_to, y_to, z_to, src, dest, num);
+	Block * block_to=GetBlock(x_to, y_to, z_to);
+	if ( AIR==block_to->Sub() ) {
+		SetBlock((block_to=NewBlock(PILE, DIFFERENT)),
+			x_to, y_to, z_to);
 	}
+	Exchange(block_from, block_to, src, dest, num);
 }
 
-void World::Get(const ushort x, const ushort y, const ushort z,
-		const ushort src, const ushort dest,
-		const ushort num)
+void World::Get(Block * const block_to,
+		const ushort x_from, const ushort y_from, const ushort z_from,
+		const ushort src, const ushort dest, const ushort num)
 {
-	ushort x_from, y_from, z_from;
-	Inventory * inv;
-	if ( !Focus(x, y, z, x_from, y_from, z_from) &&
-			(inv=GetBlock(x_from, y_from, z_from)->HasInventory())
-			&& inv->Access() )
+	Block * const block_from=GetBlock(x_from, y_from, z_from);
+	Inventory * const inv=block_from->HasInventory();
+	if ( inv && inv->Access() )
 	{
-		Exchange(x_from, y_from, z_from, x, y, z, src, dest, num);
+		Exchange(block_from, block_to, src, dest, num);
 	}
 }
 
@@ -701,13 +701,9 @@ void World::Eat(
 	}
 }
 
-void World::Exchange(
-		const ushort i_from, const ushort j_from, const ushort k_from,
-		const ushort i_to,   const ushort j_to,   const ushort k_to,
-		const ushort src, const ushort dest,
-		const ushort num)
+void World::Exchange(Block * const block_from, Block * const block_to,
+		const ushort src, const ushort dest, const ushort num)
 {
-	Block * const block_from=GetBlock(i_from, j_from, k_from);
 	Inventory * const inv_from=block_from->HasInventory();
 	if ( !inv_from ) {
 		block_from->ReceiveSignal(tr("No inventory."));
@@ -715,14 +711,8 @@ void World::Exchange(
 	}
 	if ( !inv_from->Number(src) ) {
 		block_from->ReceiveSignal(tr("Nothing here."));
+		block_to  ->ReceiveSignal(tr("Nothing here."));
 		return;
-	}
-	Block * block_to;
-	if ( AIR==Sub(i_to, j_to, k_to) ) {
-		SetBlock((block_to=NewBlock(PILE, DIFFERENT)),
-			i_to, j_to, k_to);
-	} else {
-		block_to=GetBlock(i_to, j_to, k_to);
 	}
 	Inventory * const inv_to=block_to->HasInventory();
 	if ( !inv_to ) {
@@ -733,7 +723,7 @@ void World::Exchange(
 		block_from->ReceiveSignal(tr("Your bag is lighter now."));
 		block_to  ->ReceiveSignal(tr("Your bag is heavier now."));
 	}
-} //World::Exchange
+}
 
 void World::GetAll(const ushort x_to, const ushort y_to, const ushort z_to) {
 	ushort x_from, y_from, z_from;

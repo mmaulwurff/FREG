@@ -237,19 +237,24 @@ void Player::Use(const ushort num) {
 	world->Unlock();
 }
 
-void Player::Throw(const ushort src, const ushort dest, const ushort num) {
-	player->GetDeferredAction()->SetThrow(src, dest, num);
+void Player::Throw(const short x, const short y, const short z,
+		const ushort src, const ushort dest, const ushort num)
+{
+	player->GetDeferredAction()->SetThrow(x, y, z, src, dest, num);
 }
 
-void Player::Obtain(const ushort src, const ushort dest, const ushort num) {
+void Player::Obtain(const short x, const short y, const short z,
+		const ushort src, const ushort dest, const ushort num)
+{
 	world->WriteLock();
-	world->Get(x, y, z, src, dest, num);
-	Block * const using_block=UsingBlock();
+	world->Get(player, x, y, z, src, dest, num);
+	Block * const using_block=world->GetBlock(x, y, z);
 	if ( using_block->HasInventory()->IsEmpty() &&
 			PILE==using_block->Kind())
 	{
 		usingType=USAGE_TYPE_NO;
 	}
+	emit Updated();
 	world->Unlock();
 }
 
@@ -360,7 +365,7 @@ void Player::ProcessCommand(QString & command) {
 	QTextStream comm_stream(&command);
 	QString request;
 	comm_stream >> request;
-	if ( "give"==request ) {
+	if ( "give"==request || "get"==request ) {
 		world->WriteLock();
 		Inventory * const inv=PlayerInventory();
 		if ( !creativeMode ) {
@@ -431,12 +436,6 @@ void Player::Get(Block * const block) {
 bool Player::Visible(const ushort x_to, const ushort y_to, const ushort z_to)
 const {
 	return world->Visible(x, y, z, x_to, y_to, z_to);
-}
-
-Block * Player::UsingBlock() const {
-	ushort x, y, z;
-	Focus(x, y, z);
-	return world->GetBlock(x, y, z);
 }
 
 int  Player::GetDir() const { return dir; }
