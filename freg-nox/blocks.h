@@ -204,7 +204,6 @@ class Active : public QObject, public Block {
 	public:
 	Shred * GetShred() const;
 	World * GetWorld() const;
-	bool InBounds(ushort x, ushort y, ushort z=0) const;
 	QString FullName() const;
 	quint8 Kind() const;
 

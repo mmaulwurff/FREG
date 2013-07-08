@@ -436,7 +436,7 @@
 			{ X(), Y()+1 }
 		};
 		for (ushort i=0; i<sizeof(coords)/sizeof(xy); ++i) {
-			if ( InBounds(coords[i].x, coords[i].y) ) {
+			if ( world->InBounds(coords[i].x, coords[i].y) ) {
 				world->GetBlock(coords[i].x, coords[i].y,
 					Z())->ReceiveSignal(signal);
 			}
@@ -449,11 +449,6 @@
 	World * Active::GetWorld() const {
 		return whereShred ?
 			whereShred->GetWorld() : 0;
-	}
-
-	bool Active::InBounds(const ushort x, const ushort y, const ushort z)
-	const {
-		return GetWorld()->InBounds(x, y, z);
 	}
 
 	int Active::Damage(const ushort dmg, const int dmg_kind) {
@@ -570,13 +565,13 @@
 		if (
 				AIR!=world->Sub(X(), Y(), Z()+1) &&
 				AIR!=world->Sub(X(), Y(), Z()-1) &&
-			InBounds(X()+1, Y()) &&
+			world->InBounds(X()+1, Y()) &&
 				AIR!=world->Sub(X()+1, Y(), Z()) &&
-			InBounds(X()-1, Y()) &&
+			world->InBounds(X()-1, Y()) &&
 				AIR!=world->Sub(X()-1, Y(), Z()) &&
-			InBounds(X(), Y()+1) &&
+			world->InBounds(X(), Y()+1) &&
 				AIR!=world->Sub(X(), Y()+1, Z()) &&
-			InBounds(X(), Y()-1) &&
+			world->InBounds(X(), Y()-1) &&
 				AIR!=world->Sub(X(), Y()-1, Z()) )
 		{
 			if ( breath <= 0 ) {
@@ -883,16 +878,16 @@
 	ushort Dwarf::Weight() const {
 		World * const world=GetWorld();
 		return (
-				(InBounds(X()+1, Y()) &&
+				(world->InBounds(X()+1, Y()) &&
 					world->GetBlock(X()+1, Y(), Z())->
 						Catchable()) ||
-				(InBounds(X()-1, Y()) &&
+				(world->InBounds(X()-1, Y()) &&
 					world->GetBlock(X()-1, Y(), Z())->
 						Catchable()) ||
-				(InBounds(X(), Y()+1) &&
+				(world->InBounds(X(), Y()+1) &&
 					world->GetBlock(X(), Y()+1, Z())->
 						Catchable()) ||
-				(InBounds(X(), Y()-1) &&
+				(world->InBounds(X(), Y()-1) &&
 					world->GetBlock(X(), Y()-1, Z())->
 						Catchable()) ) ?
 			0 : Inventory::Weight()+Block::Weight();
@@ -1093,13 +1088,13 @@
 		return (
 			WATER==world->Sub(X(), Y(), Z()-1) ||
 			WATER==world->Sub(X(), Y(), Z()+1) ||
-			(InBounds(X()-1, Y()) &&
+			(world->InBounds(X()-1, Y()) &&
 				WATER==world->Sub(X()-1, Y(), Z())) ||
-			(InBounds(X()+1, Y()) &&
+			(world->InBounds(X()+1, Y()) &&
 				WATER==world->Sub(X()+1, Y(), Z())) ||
-			(InBounds(X(), Y()-1) &&
+			(world->InBounds(X(), Y()-1) &&
 				WATER==world->Sub(X(), Y()-1, Z())) ||
-			(InBounds(X(), Y()+1) &&
+			(world->InBounds(X(), Y()+1) &&
 				WATER==world->Sub(X(), Y()+1, Z())) );
 	}
 
@@ -1160,7 +1155,7 @@
 			case 3: --j; break;
 			default: return;
 		}
-		if ( InBounds(i, j) && world->Enlightened(i, j, Z()) ) {
+		if ( world->InBounds(i, j) && world->Enlightened(i, j, Z()) ) {
 			if ( AIR==world->Sub(i, j, Z()) &&
 					SOIL==world->Sub(i, j, Z()-1) )
 			{
@@ -1267,7 +1262,7 @@
 		for (ushort y=Y()-4; y<=Y()+4; ++y)
 		for (ushort z=Z()-1; z<=Z()+3; ++z) {
 			short attractive;
-			if ( InBounds(x, y, z) &&
+			if ( world->InBounds(x, y, z) &&
 					(attractive=Attractive(
 						world->Sub(x, y, z))) &&
 					world->DirectlyVisible(
@@ -1299,7 +1294,7 @@
 			for (ushort x=X()-1; x<=X()+1; ++x)
 			for (ushort y=Y()-1; y<=Y()+1; ++y)
 			for (ushort z=Z();   z<=Z()+1; ++z) {
-				if ( InBounds(x, y) &&
+				if ( world->InBounds(x, y) &&
 						GREENERY==world->Sub(x, y, z) )
 				{
 					world->Eat(X(), Y(), Z(), x, y, z);
