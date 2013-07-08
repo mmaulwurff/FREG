@@ -25,6 +25,10 @@
 	#include <windows.h>
 #endif
 
+#ifndef VER
+	#define VER "0.0"
+#endif
+
 const ushort SHRED_WIDTH=16;
 const ushort HEIGHT=128;
 
