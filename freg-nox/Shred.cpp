@@ -245,6 +245,9 @@ Shred::Shred(World * const world_,
 } //Shred::Shred
 
 Shred::~Shred() {
+	foreach(Active * const active, activeListAll) {
+		active->SetShredNull();
+	}
 	const long mapSize=world->MapSize();
 	if (
 			(longitude < mapSize) && (longitude >= 0) &&
@@ -256,7 +259,7 @@ Shred::~Shred() {
 			return;
 		}
 		QByteArray shred_data;
-		shred_data.reserve(150000);
+		shred_data.reserve(100000);
 		QDataStream outstr(&shred_data, QIODevice::WriteOnly);
 		outstr << DATASTREAM_VERSION;
 		outstr.setVersion(DATASTREAM_VERSION);
@@ -433,8 +436,7 @@ Block *Shred::GetBlock(const ushort x, const ushort y, const ushort z) const {
 void Shred::SetBlock(Block * const block,
 		const ushort x, const ushort y, const ushort z)
 {
-	blocks[x][y][z]=block;
-	RegisterBlock(block, x, y, z);
+	RegisterBlock((blocks[x][y][z]=block), x, y, z);
 }
 
 void Shred::PutBlock(Block * const block,

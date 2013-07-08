@@ -69,7 +69,7 @@ class Block { //blocks without special physics and attributes
 	quint8 Transparency(quint8 transp, int sub);
 
 	const quint8 transparent;
-	const quint16 sub;
+	const quint8 sub;
 	quint8 direction;
 
 	protected:
@@ -78,7 +78,7 @@ class Block { //blocks without special physics and attributes
 
 	public:
 	virtual QString FullName() const;
-	virtual int  Kind() const;
+	virtual quint8 Kind() const;
 	virtual bool Catchable() const;
 	virtual int  Movable() const;
 	virtual void Inscribe(const QString & str);
@@ -131,7 +131,7 @@ class Block { //blocks without special physics and attributes
 class Plate : public Block {
 	public:
 	QString FullName() const;
-	int Kind() const;
+	quint8 Kind() const;
 	int BeforePush(int dir, Block * who);
 	ushort Weight() const;
 
@@ -142,7 +142,7 @@ class Plate : public Block {
 class Ladder : public Block {
 	public:
 	QString FullName() const;
-	int Kind() const;
+	quint8 Kind() const;
 	int BeforePush(int dir, Block * who);
 	ushort Weight() const;
 	bool Catchable() const;
@@ -154,7 +154,7 @@ class Ladder : public Block {
 
 class Weapon : public Block {
 	public:
-	int Kind() const;
+	quint8 Kind() const;
 	int Wearable() const;
 	int BeforePush(int dir, Block * who);
 	int DamageKind() const;
@@ -168,7 +168,7 @@ class Weapon : public Block {
 
 class Pick : public Weapon {
 	public:
-	int Kind() const;
+	quint8 Kind() const;
 	int DamageKind() const;
 	ushort DamageLevel() const;
 	QString FullName() const;
@@ -206,7 +206,7 @@ class Active : public QObject, public Block {
 	World * GetWorld() const;
 	bool InBounds(ushort x, ushort y, ushort z=0) const;
 	QString FullName() const;
-	int Kind() const;
+	quint8 Kind() const;
 
 	Active * ActiveBlock();
 	void Move(int direction);
@@ -244,6 +244,7 @@ class Active : public QObject, public Block {
 	void SetXYZ(ushort x, ushort y, ushort z);
 	void Register(Shred *, ushort x, ushort y, ushort z);
 	void Unregister();
+	void SetShredNull();
 
 	Active(int sub, quint8 transp=UNDEF);
 	Active(QDataStream & str, int sub, quint8 transp=UNDEF);
@@ -284,7 +285,7 @@ class Inventory {
 	virtual void SaveAttributes(QDataStream & out) const;
 
 	public:
-	virtual int Kind() const=0;
+	virtual quint8 Kind() const=0;
 	virtual int Sub() const=0;
 	///Returns true on success.
 	virtual bool Drop(ushort src, ushort dest, ushort num, Inventory * to);
@@ -347,7 +348,7 @@ class Dwarf : public Animal, public Inventory {
 	uchar GetActiveHand() const;
 	void  SetActiveHand(bool right);
 
-	int Kind() const;
+	quint8 Kind() const;
 	int Sub() const;
 	int ShouldAct() const;
 	QString FullName() const;
@@ -375,7 +376,7 @@ class Dwarf : public Animal, public Inventory {
 
 class Chest : public Block, public Inventory {
 	public:
-	int  Kind() const;
+	quint8 Kind() const;
 	int  Sub() const;
 	int  BeforePush(int dir, Block * who);
 	void ReceiveSignal(const QString &);
@@ -396,7 +397,7 @@ class Pile : public Active, public Inventory {
 	Q_OBJECT
 
 	public:
-	int  Kind() const;
+	quint8 Kind() const;
 	int  Sub() const;
 	void ReceiveSignal(const QString &);
 	void ActRare();
@@ -425,7 +426,7 @@ class Liquid : public Active {
 	public:
 	void ActRare();
 	int  ShouldAct() const;
-	int  Kind() const;
+	quint8 Kind() const;
 	int  Movable() const;
 	int  Temperature() const;
 	uchar LightRadius() const;
@@ -443,7 +444,7 @@ class Grass : public Active {
 	QString FullName() const;
 	void ActRare();
 	int  ShouldAct() const;
-	int  Kind() const;
+	quint8 Kind() const;
 	bool ShouldFall() const;
 	int  BeforePush(int dir, Block * who);
 	Block * DropAfterDamage() const;
@@ -458,7 +459,7 @@ class Bush : public Active, public Inventory {
 	static const ushort BUSH_SIZE=3;
 
 	public:
-	int  Kind() const;
+	quint8 Kind() const;
 	int  Sub() const;
 	int  Movable() const;
 	bool ShouldFall() const;
@@ -488,7 +489,7 @@ class Rabbit : public Animal {
 	quint16 NutritionalValue(int sub) const;
 
 	public:
-	int  Kind() const;
+	quint8 Kind() const;
 	void ActFrequent();
 	void ActRare();
 	int  ShouldAct() const;
@@ -505,7 +506,7 @@ class Workbench : public Chest {
 	void Craft();
 
 	public:
-	int  Kind() const;
+	quint8 Kind() const;
 	bool Drop(ushort src, ushort dest, ushort num, Inventory * inv);
 	bool Get(Block * block, ushort start=0);
 	bool GetAll(Inventory * from);
@@ -527,7 +528,7 @@ class Door : public Active {
 	public:
 	void ActFrequent();
 	int  ShouldAct() const;
-	int  Kind() const;
+	quint8 Kind() const;
 	int  Movable() const;
 	int  BeforePush(int dir, Block * who);
 	bool ShouldFall() const;
@@ -549,7 +550,7 @@ class Clock : public Active {
 	public:
 	void ActRare();
 	int  ShouldAct() const;
-	int  Kind() const;
+	quint8 Kind() const;
 	int  Movable() const;
 	bool ShouldFall() const;
 	int  BeforePush(int dir, Block * who);
@@ -567,7 +568,7 @@ class Creator : public Active, public Inventory {
 	Q_OBJECT
 
 	public:
-	int  Kind() const;
+	quint8 Kind() const;
 	int  Sub() const;
 	void ReceiveSignal(const QString &);
 	int  DamageKind() const;

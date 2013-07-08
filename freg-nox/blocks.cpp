@@ -115,7 +115,7 @@
 		return ( AIR==Sub() ) ? ENVIRONMENT : NOT_MOVABLE;
 	}
 
-	int  Block::Kind() const { return BLOCK; }
+	quint8 Block::Kind() const { return BLOCK; }
 	bool Block::Catchable() const { return false; }
 	int  Block::BeforePush(const int, Block * const) { return NO_ACTION; }
 	void Block::Move(const int) {}
@@ -192,17 +192,11 @@
 
 	void Block::SaveAttributes(QDataStream &) const {}
 	void Block::SaveToFile(QDataStream & out) const {
-		const bool normal=(this==block_manager.NormalBlock(sub));
-		if ( normal ) {
-			quint16 data=true;
-			out << ( ( data <<=7 ) |= sub );
+		if ( this==block_manager.NormalBlock(sub) ) {
+			out << quint8( 0x80 | sub );
 		} else {
-			quint16 data = Kind();
-			out << ( ( ( ( data
-				<<= 1 ) |= false )
-				<<= 7 ) |= sub );
-			data=direction;
-			out << ( ( ( ( data
+			quint16 data=direction;
+			out << sub << Kind() << ( ( ( ( data
 				<<= 7 ) |= durability )
 				<<= 1 ) |= !!note );
 			if ( Q_UNLIKELY(note) ) {
@@ -247,7 +241,7 @@
 		}
 	}
 
-	int Plate::Kind() const { return PLATE; }
+	quint8 Plate::Kind() const { return PLATE; }
 	int Plate::BeforePush(const int, Block * const) { return JUMP; }
 	ushort Plate::Weight() const { return Block::Weight()/4; }
 
@@ -270,7 +264,7 @@
 		}
 	}
 
-	int  Ladder::Kind() const { return LADDER; }
+	quint8 Ladder::Kind() const { return LADDER; }
 	int  Ladder::BeforePush(const int, Block * const) { return MOVE_UP; }
 	bool Ladder::Catchable() const { return true; }
 	ushort Ladder::Weight() const { return Block::Weight()*3; }
@@ -301,7 +295,7 @@
 		}
 	}
 
-	int    Weapon::Kind() const { return WEAPON; }
+	quint8 Weapon::Kind() const { return WEAPON; }
 	ushort Weapon::Weight() const { return Block::Weight()/4; }
 	int    Weapon::Wearable() const { return WEARABLE_ARM; }
 
@@ -333,7 +327,7 @@
 			Block(str, sub, NONSTANDARD)
 	{}
 //Pick::
-	int Pick::Kind() const { return PICK; }
+	quint8 Pick::Kind() const { return PICK; }
 	int Pick::DamageKind() const { return MINE; }
 
 	ushort Pick::DamageLevel() const {
@@ -377,7 +371,7 @@
 		}
 	}
 
-	int Active::Kind() const { return ACTIVE; }
+	quint8 Active::Kind() const { return ACTIVE; }
 	Active * Active::ActiveBlock() { return this; }
 	void Active::ActRare() {}
 	int  Active::ShouldAct() const { return NEVER; }
@@ -542,6 +536,7 @@
 			whereShred=0;
 		}
 	}
+	void Active::SetShredNull() { whereShred=0; }
 
 	Active::Active(const int sub, const quint8 transp) :
 			Block(sub, transp),
@@ -907,7 +902,7 @@
 		return block_manager.NormalBlock(H_MEAT);
 	}
 
-	int  Dwarf::Kind() const { return DWARF; }
+	quint8 Dwarf::Kind() const { return DWARF; }
 	int  Dwarf::Sub() const { return Block::Sub(); }
 	int  Dwarf::ShouldAct() const { return RARE; }
 	bool Dwarf::Access() const { return false; }
@@ -1002,7 +997,7 @@
 		UpdateLightRadius();
 	}
 //Chest::
-	int Chest::Kind() const { return CHEST; }
+	quint8 Chest::Kind() const { return CHEST; }
 	int Chest::Sub() const { return Block::Sub(); }
 	Inventory * Chest::HasInventory() { return Inventory::HasInventory(); }
 	usage_types Chest::Use(Block *) { return USAGE_TYPE_OPEN; }
@@ -1057,7 +1052,7 @@
 	}
 
 	int Pile::ShouldAct() const { return RARE; }
-	int Pile::Kind() const { return PILE; }
+	quint8 Pile::Kind() const { return PILE; }
 	int Pile::Sub() const { return Block::Sub(); }
 	Inventory * Pile::HasInventory() { return Inventory::HasInventory(); }
 	usage_types Pile::Use(Block *) { return USAGE_TYPE_OPEN; }
@@ -1124,7 +1119,7 @@
 
 	int Liquid::ShouldAct() const  { return RARE; }
 	int Liquid::Movable() const { return ENVIRONMENT; }
-	int Liquid::Kind() const { return LIQUID; }
+	quint8 Liquid::Kind() const { return LIQUID; }
 	int Liquid::Temperature() const { return ( WATER==Sub() ) ? 0 : 1000; }
 	uchar Liquid::LightRadius() const { return ( WATER==Sub() ) ? 0 : 3; }
 	Block * Liquid::DropAfterDamage() const { return 0; }
@@ -1192,7 +1187,7 @@
 	}
 
 	int  Grass::ShouldAct() const  { return RARE; }
-	int  Grass::Kind() const { return GRASS; }
+	quint8 Grass::Kind() const { return GRASS; }
 	bool Grass::ShouldFall() const { return false; }
 	int  Grass::BeforePush(const int, Block * const) { return DESTROY; }
 
@@ -1206,7 +1201,7 @@
 	{}
 //Bush::
 	QString Bush::FullName() const { return tr("Bush"); }
-	int  Bush::Kind() const { return BUSH; }
+	quint8 Bush::Kind() const { return BUSH; }
 	int  Bush::Sub() const { return Block::Sub(); }
 	int  Bush::Movable() const { return NOT_MOVABLE; }
 	bool Bush::ShouldFall() const { return false; }
@@ -1329,7 +1324,7 @@
 
 	QString Rabbit::FullName() const { return tr("Herbivore"); }
 	int Rabbit::ShouldAct() const { return FREQUENT_AND_RARE; }
-	int Rabbit::Kind() const { return RABBIT; }
+	quint8 Rabbit::Kind() const { return RABBIT; }
 
 	quint16 Rabbit::NutritionalValue(const int sub) const {
 		return ( GREENERY==sub ) ? SECONDS_IN_HOUR*4 : 0;
@@ -1419,7 +1414,7 @@
 		}
 	}
 
-	int Workbench::Kind() const { return WORKBENCH; }
+	quint8 Workbench::Kind() const { return WORKBENCH; }
 	ushort Workbench::Start() const { return 1; }
 
 	void Workbench::ReceiveSignal(const QString & str) {
@@ -1480,7 +1475,7 @@
 	}
 
 	int  Door::ShouldAct() const  { return FREQUENT; }
-	int  Door::Kind() const { return locked ? LOCKED_DOOR : DOOR; }
+	quint8 Door::Kind() const { return locked ? LOCKED_DOOR : DOOR; }
 	int  Door::Movable() const { return movable; }
 	bool Door::ShouldFall() const { return false; }
 
@@ -1554,7 +1549,7 @@
 		return NO_ACTION;
 	}
 
-	int Clock::Kind() const { return CLOCK; }
+	quint8 Clock::Kind() const { return CLOCK; }
 	ushort Clock::Weight() const { return Block::Weight()/10; }
 	bool Clock::ShouldFall() const { return false; }
 	int Clock::Movable() const { return NOT_MOVABLE; }
@@ -1608,7 +1603,7 @@
 	}
 	Clock::~Clock() {}
 //Creator::
-	int Creator::Kind() const { return CREATOR; }
+	quint8 Creator::Kind() const { return CREATOR; }
 	int Creator::Sub() const { return Block::Sub(); }
 	QString Creator::FullName() const { return tr("Creative block"); }
 	int Creator::DamageKind() const { return TIME; }

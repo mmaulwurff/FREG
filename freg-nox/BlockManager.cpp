@@ -72,18 +72,19 @@ Block * BlockManager::NewBlock(const int kind, int sub) {
 }
 
 Block * BlockManager::BlockFromFile(QDataStream & str) {
-	quint16 data;
+	quint8 data;
 	str >> data;
 	const quint8 sub=(data & 0x7F);
 	if ( data & 0x80 ) {
 		return NormalBlock(sub);
 	}
-	data >>= 8; // kind remains
+	quint8 kind;
+	str >> kind;
 	//if some kind will not be listed here,
 	//blocks of this kind just will not load,
 	//unless kind is inherited from Inventory class or one
 	//of its derivatives - in this case this may cause something bad.
-	switch ( data /* kind */) {
+	switch ( kind ) {
 		case BLOCK:  return New<Block >(str, sub);
 		case PICK:   return New<Pick  >(str, sub);
 		case PLATE:  return New<Plate >(str, sub);
@@ -105,7 +106,7 @@ Block * BlockManager::BlockFromFile(QDataStream & str) {
 		default:
 			fprintf(stderr,
 				"BlockManager::BlockFromFile: kind (?): %d\n.",
-				data);
+				kind);
 			return New<Block>(str, sub);
 	}
 }

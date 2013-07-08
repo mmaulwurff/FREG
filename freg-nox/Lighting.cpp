@@ -242,7 +242,7 @@ bool Shred::SetSunLightMap(const uchar level,
 		const ushort x, const ushort y, const ushort z)
 {
 	if ( ( lightMap[x][y][z] & 0x0F ) < level ) {
-		lightMap[x][y][z]=(lightMap[x][y][z] & 0xF0) | level;
+		(lightMap[x][y][z] &= 0xF0) |= level;
 		return true;
 	} else {
 		return false;
@@ -254,7 +254,7 @@ bool Shred::SetFireLightMap(const uchar level,
 		const ushort x, const ushort y, const ushort z)
 {
 	if ( ( lightMap[x][y][z] & 0xF0 ) < level ) {
-		lightMap[x][y][z]=(lightMap[x][y][z] & 0x0F) | level;
+		(lightMap[x][y][z] &= 0x0F) |= level;
 		return true;
 	} else {
 		return false;
