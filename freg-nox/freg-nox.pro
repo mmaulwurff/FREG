@@ -10,6 +10,7 @@ TEMPLATE = app
 TARGET = freg-nox
 DEPENDPATH += .
 INCLUDEPATH += .
+VERSION = 0.1
 
 # Input
 HEADERS += BlockManager.h \
