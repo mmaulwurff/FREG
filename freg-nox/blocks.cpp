@@ -139,7 +139,6 @@
 	Active * Block::ActiveBlock() { return 0; }
 
 	void Block::Restore() { durability=MAX_DURABILITY; }
-	void Block::SetDir(const int dir) { direction=dir; }
 	int  Block::GetDir() const { return direction; }
 	int  Block::Sub() const { return sub; }
 	int  Block::Transparent() const { return transparent; }
@@ -176,14 +175,19 @@
 		}
 	}
 
+	void Block::SetDir(const int dir) {
+		if ( BLOCK!=Kind() || WOOD==Sub() ) {
+			direction=dir;
+		}
+	}
+
 	bool Block::operator==(const Block & block) const {
 		return ( block.Kind()==Kind() &&
-				block.Sub()==Sub() &&
-				block.GetDir()==GetDir() &&
-				block.Durability()==Durability() &&
-				( (!note && !block.note) ||
-					(note && block.note &&
-					*block.note==*note)) );
+			block.Sub()==Sub() &&
+			block.GetDir()==GetDir() &&
+			block.Durability()==Durability() &&
+			( (!note && !block.note) ||
+				(note && block.note && *block.note==*note) ) );
 	}
 
 	void Block::SaveAttributes(QDataStream &) const {}
