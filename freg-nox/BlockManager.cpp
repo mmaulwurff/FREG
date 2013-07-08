@@ -24,22 +24,18 @@
 BlockManager block_manager;
 
 BlockManager::BlockManager() {
-	for (ushort dir=0; dir<=WEST; ++dir) {
-		for (ushort sub=0; sub<=AIR; ++sub) {
-			(normals[dir][sub]=new Block(sub))->SetDir(dir);
-		}
+	for (ushort sub=0; sub<=AIR; ++sub) {
+		normals[sub]=new Block(sub);
 	}
 }
 BlockManager::~BlockManager() {
-	for (ushort dir=0; dir<=WEST; ++dir) {
-		for(ushort sub=0; sub<=AIR; ++sub) {
-			delete normals[dir][sub];
-		}
+	for(ushort sub=0; sub<=AIR; ++sub) {
+		delete normals[sub];
 	}
 }
 
-Block * BlockManager::NormalBlock(const int sub, const int dir) {
-	return normals[dir][sub];
+Block * BlockManager::NormalBlock(const int sub) {
+	return normals[sub];
 }
 
 Block * BlockManager::NewBlock(const int kind, int sub) {
@@ -115,7 +111,7 @@ Block * BlockManager::BlockFromFile(QDataStream & str) {
 }
 
 void BlockManager::DeleteBlock(Block * const block) {
-	if ( block!=NormalBlock(block->Sub(), block->GetDir()) ) {
+	if ( block!=NormalBlock(block->Sub()) ) {
 		delete block;
 	}
 }

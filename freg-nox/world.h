@@ -82,11 +82,10 @@ class World : public QThread {
 	void PutBlock(Block * block, ushort x, ushort y, ushort z);
 	///Puts normal block to coordinates.
 	void PutNormalBlock(subs sub, ushort x, ushort y, ushort z);
-	static Block * Normal(int sub, int dir=UP);
+	static Block * Normal(int sub);
 	static Block * NewBlock(int kind, int sub);
 	static void DeleteBlock(Block * block);
-	void ReplaceWithNormal(ushort x, ushort y, ushort z);
-	Block * ReplaceWithNormal(Block * block);
+	Block * ReplaceWithNormal(Block * block) const;
 
 	void MakeSun();
 	void RemSun();

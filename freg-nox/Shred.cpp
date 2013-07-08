@@ -279,10 +279,13 @@ Shred::~Shred() {
 } //Shred::~Shred
 
 void Shred::SetNewBlock(const int kind, const int sub,
-		const ushort x, const ushort y, const ushort z)
+		const ushort x, const ushort y, const ushort z,
+		const int dir)
 {
 	block_manager.DeleteBlock(blocks[x][y][z]);
-	SetBlock( block_manager.NewBlock(kind, sub), x, y, z );
+	Block * const block=block_manager.NewBlock(kind, sub);
+	block->SetDir(dir);
+	SetBlock(block, x, y, z);
 }
 
 void Shred::RegisterBlock(Block * const block,
@@ -441,14 +444,13 @@ void Shred::PutBlock(Block * const block,
 }
 
 void Shred::PutNormalBlock(const int sub,
-		const ushort x, const ushort y, const ushort z,
-		const int dir)
+		const ushort x, const ushort y, const ushort z)
 {
-	blocks[x][y][z]=Normal(sub, dir);
+	blocks[x][y][z]=Normal(sub);
 }
 
-Block * Shred::Normal(const int sub, const int dir) {
-	return block_manager.NormalBlock(sub, dir);
+Block * Shred::Normal(const int sub) {
+	return block_manager.NormalBlock(sub);
 }
 
 QString Shred::FileName() const {
@@ -975,10 +977,10 @@ bool Shred::Tree(const ushort x, const ushort y, const ushort z,
 		PutNormalBlock(WOOD, x+1, y+1, z-1);
 	}
 	//branches
-	if ( qrand()%2 ) PutNormalBlock(WOOD, x,   y+1, z+height/2, WEST);
-	if ( qrand()%2 ) PutNormalBlock(WOOD, x+2, y+1, z+height/2, EAST);
-	if ( qrand()%2 ) PutNormalBlock(WOOD, x+1, y,   z+height/2, NORTH);
-	if ( qrand()%2 ) PutNormalBlock(WOOD, x+1, y+2, z+height/2, SOUTH);
+	if ( qrand()%2 ) SetNewBlock(BLOCK, WOOD, x,   y+1, z+height/2, WEST);
+	if ( qrand()%2 ) SetNewBlock(BLOCK, WOOD, x+2, y+1, z+height/2, EAST);
+	if ( qrand()%2 ) SetNewBlock(BLOCK, WOOD, x+1, y,   z+height/2, NORTH);
+	if ( qrand()%2 ) SetNewBlock(BLOCK, WOOD, x+1, y+2, z+height/2, SOUTH);
 	//leaves
 	for (i=x; i<=x+2; ++i)
 	for (j=y; j<=y+2; ++j)

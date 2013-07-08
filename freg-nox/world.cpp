@@ -26,11 +26,6 @@
 #include <qmath.h>
 #include <DeferredAction.h>
 
-void World::ReplaceWithNormal(const ushort x, const ushort y, const ushort z)
-{
-	SetBlock(ReplaceWithNormal(GetBlock(x, y, z)), x, y, z);
-}
-
 Shred * World::GetShred(const ushort i, const ushort j) const {
 	return shreds[ j/SHRED_WIDTH*numShreds + i/SHRED_WIDTH ];
 }
@@ -116,7 +111,7 @@ void World::ReloadAllShreds(const long lati, const long longi,
 		numActiveShreds=new_num_shreds;
 	}
 	newNumShreds=new_num_shreds;
-	maxXY=SHRED_WIDTH*numShreds
+	maxXY=SHRED_WIDTH*numShreds;
 	toReSet=true;
 }
 
@@ -196,8 +191,8 @@ void World::PutNormalBlock(const subs sub,
 	PutBlock(Normal(sub), x, y, z);
 }
 
-Block * World::Normal(const int sub, const int dir) {
-	return block_manager.NormalBlock(sub, dir);
+Block * World::Normal(const int sub) {
+	return block_manager.NormalBlock(sub);
 }
 Block * World::NewBlock(const int kind, const int sub) {
 	return block_manager.NewBlock(kind, sub);
@@ -214,10 +209,8 @@ void World::RemDeferredAction(DeferredAction * const action) {
 	defActions.removeOne(action);
 }
 
-Block * World::ReplaceWithNormal(Block * const block) {
-	if ( block!=Normal(block->Sub()) &&
-			*block==*Normal(block->Sub(), block->GetDir()) )
-	{
+Block * World::ReplaceWithNormal(Block * const block) const {
+	if ( block!=Normal(block->Sub()) && *block==*Normal(block->Sub()) ) {
 		const int sub=block->Sub();
 		DeleteBlock(block);
 		return Normal(sub);
@@ -602,8 +595,7 @@ const {
 }
 
 void World::Damage(const ushort i, const ushort j, const ushort k,
-		const ushort dmg, //see default in class declaration
-		const int dmg_kind) //see default in class declaration
+		const ushort dmg, const int dmg_kind)
 {
 	Block * temp=GetBlock(i, j, k);
 	if ( temp==Normal(temp->Sub()) && AIR!=temp->Sub() ) {
@@ -614,11 +606,12 @@ void World::Damage(const ushort i, const ushort j, const ushort k,
 				temp->Durability()!=MAX_DURABILITY )
 		{
 			DeleteBlock(temp);
-			SetBlock(NewBlock(LADDER, STONE), i, j, k);
+			temp=NewBlock(LADDER, STONE);
 			emit ReEnlighten(i, j, k);
 		} else {
-			ReplaceWithNormal(i, j, k); //checks are inside
+			temp=ReplaceWithNormal(temp); //checks are inside
 		}
+		SetBlock(temp, i, j, k);
 	}
 }
 
@@ -655,7 +648,7 @@ bool World::Build(Block * block,
 		const ushort i, const ushort j, const ushort k,
 		const quint8 dir,
 		Block * const who,
-		const bool anyway) //defaults exist
+		const bool anyway)
 {
 	Block * const target_block=GetBlock(i, j, k);
 	if ( !(ENVIRONMENT==target_block->Movable() || anyway) ) {
@@ -666,28 +659,25 @@ bool World::Build(Block * block,
 	}
 	DeleteBlock(target_block);
 	block->Restore();
+	block->SetDir(dir);
+	block=ReplaceWithNormal(block);
 	SetBlock(block, i, j, k);
-	ReplaceWithNormal(i, j, k);
-	block=GetBlock(i, j, k);
-	if ( block!=Normal(block->Sub(), block->GetDir()) ) {
-		block->SetDir(dir);
-	}
 	ReEnlighten(i, j, k);
 	return true;
 }
 
-void World::Inscribe(const ushort i, const ushort j, const ushort k) {
-	Block * block=GetBlock(i, j, k);
+void World::Inscribe(const ushort x, const ushort y, const ushort z) {
+	Block * block=GetBlock(x, y, z);
 	if ( LIQUID==block->Kind() || AIR==block->Sub() ) {
 		return;
 	}
 	if ( block==Normal(block->Sub()) ) {
-		SetBlock(block=NewBlock(block->Kind(), block->Sub()), i, j, k);
+		SetBlock(block=NewBlock(block->Kind(), block->Sub()), x, y, z);
 	}
 	QString str=tr("No note received.");
 	emit GetString(str);
 	block->Inscribe(str);
-	ReplaceWithNormal(i, j, k);
+	SetBlock(ReplaceWithNormal(block), x, y, z);
 }
 
 void World::Eat(
