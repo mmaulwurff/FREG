@@ -818,7 +818,6 @@ bool Screen::PrintFile(WINDOW * const window, QString const & file_name) {
 		PrintText(window, str);
 		return true;
 	} else {
-		PrintText(window, tr("No such file."));
 		CleanFileToShow();
 		return false;
 	}
@@ -908,9 +907,9 @@ Screen::Screen(World * const wor, Player * const pl) :
 	if ( !PrintFile(stdscr, "splash.txt") ) {
 		addstr("Free-Roaming Elementary Game\n");
 		addstr("\nby mmaulwurff, with help of Panzerschrek\n");
-		printw("\nVersion %4.1f.\n\n", FREG_VERSION);
-		addstr("Press any key.");
 	}
+	printw("\nVersion %s.\n\n", VER);
+	addstr("Press any key.");
 	qsrand(getch());
 	erase();
 	refresh();

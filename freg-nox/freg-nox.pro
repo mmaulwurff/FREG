@@ -11,6 +11,8 @@ TARGET = freg-nox
 DEPENDPATH += .
 INCLUDEPATH += .
 VERSION = 0.1
+VERSTR = '\\"$${VERSION}\\"'
+DEFINES += VER=\"$${VERSTR}\"
 
 # Input
 HEADERS += BlockManager.h \

@@ -25,8 +25,6 @@
 	#include <windows.h>
 #endif
 
-const float FREG_VERSION=0.1;
-
 const ushort SHRED_WIDTH=16;
 const ushort HEIGHT=128;
 
