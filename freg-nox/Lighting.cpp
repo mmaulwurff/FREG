@@ -136,15 +136,10 @@ void World::ReEnlightenTime() {
 //private. called from ReEnlightenTime
 void World::ReEnlightenAll() {
 	disconnect(this, SIGNAL(Updated(
-		const ushort,
-		const ushort,
-		const ushort)), 0, 0);
+		const ushort, const ushort, const ushort)), 0, 0);
 	disconnect(this, SIGNAL(UpdatedAround(
-		const ushort,
-		const ushort,
-		const ushort,
+		const ushort, const ushort, const ushort,
 		const ushort)), 0, 0);
-
 	for (ushort i=0; i<NumShreds()*NumShreds(); ++i) {
 		shreds[i]->ShineAll();
 	}
@@ -261,7 +256,6 @@ bool Shred::SetFireLightMap(const uchar level,
 	}
 }
 
-//set lightmap of all shred to level. default level is 0.
 void Shred::SetAllLightMap(const uchar level) {
 	for (ushort i=0; i<SHRED_WIDTH; ++i)
 	for (ushort j=0; j<SHRED_WIDTH; ++j)

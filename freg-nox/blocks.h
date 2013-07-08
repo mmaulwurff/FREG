@@ -243,9 +243,11 @@ class Active : public QObject, public Block {
 	public:
 	void SetXYZ(ushort x, ushort y, ushort z);
 	void Register(Shred *, ushort x, ushort y, ushort z);
-	void Unregister();
 	void SetShredNull();
+	private:
+	void Unregister();
 
+	public:
 	Active(int sub, quint8 transp=UNDEF);
 	Active(QDataStream & str, int sub, quint8 transp=UNDEF);
 	~Active();
