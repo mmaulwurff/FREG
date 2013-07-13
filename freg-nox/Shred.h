@@ -21,7 +21,7 @@
 #include <QList>
 #include "blocks.h"
 
-const bool FLAT_GENERATION=true;
+const bool FLAT_GENERATION=false;
 
 class QFile;
 class World;

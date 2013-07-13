@@ -144,12 +144,12 @@ const {
 		TypeOfShred(longi - 1, lati + 1),
 		TypeOfShred(longi + 1, lati - 1)
 	};
-	float amplitude, level;
 	float a2;
 	ushort l2;
 
 	const char this_shred_type = TypeOfShred(longi, lati);
 	ShredNominalAmplitudeAndLevel(this_shred_type, &l2, &a2);
+	float amplitude, level;
 	const float this_shred_amplitude = amplitude = a2;
 	const float this_shred_level = level = float (l2);
 	for (int i = 0; i < 8; ++i) {
@@ -557,8 +557,8 @@ void Shred::NormalUnderground(const ushort depth, const int sub) {
 	for (int i=-1; i<=1; ++i)
 	for (int j=-1; j<=1; ++j) {
 		ShredLandAmplitudeAndLevel(i+longitude, j+latitude,
-			ampllev[(i+1)*3+j].lev,
-			ampllev[(i+1)*3+j].ampl);
+			ampllev[(i+1)*3+j+1].lev,
+			ampllev[(i+1)*3+j+1].ampl);
 	}
 	for (ushort i = 0; i < SHRED_WIDTH; ++i)
 	for (ushort j = 0; j < SHRED_WIDTH; ++j) {
