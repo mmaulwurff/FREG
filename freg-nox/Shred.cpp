@@ -307,13 +307,9 @@ void Shred::PhysEventsFrequent() {
 			const ushort x=temp->X();
 			const ushort y=temp->Y();
 			const ushort z=temp->Z();
-			if ( weight>Weight(x%SHRED_WIDTH, y%SHRED_WIDTH, z-1) )
+			if ( weight<=Weight(x%SHRED_WIDTH, y%SHRED_WIDTH, z-1)
+					|| !world->Move(x, y, z, DOWN) )
 			{
-				if ( !world->Move(x, y, z, DOWN) ) {
-					RemFalling(temp);
-					temp->FallDamage();
-				}
-			} else {
 				RemFalling(temp);
 				temp->FallDamage();
 			}

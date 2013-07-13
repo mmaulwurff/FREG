@@ -416,8 +416,6 @@
 			--z_self;
 			++fall_height;
 		} else if ( GetShred() ) {
-			whereShred->RemFalling(this);
-			FallDamage();
 			if ( GetWorld()->GetShred(X(), Y())!=GetShred() ) {
 				whereShred->RemActive(this);
 				( whereShred=GetWorld()->GetShred(X(), Y()) )->
@@ -763,7 +761,7 @@
 
 	int Inventory::GetInvKind(const ushort i) const {
 		return inventory[i].isEmpty() ?
-			BLOCK : inventory[i].top()->Kind();
+			BLOCK : int(inventory[i].top()->Kind());
 	}
 
 	QString Inventory::GetInvNote(const ushort num) const {

@@ -488,10 +488,6 @@ void Screen::PrintHUD() {
 	} else {
 		updatedPlayer=true;
 	}
-	const short dur=player->HP();
-	const short breath=player->Breath();
-	const short satiation=player->SatiationPercent();
-
 	werase(hudWin);
 	//quick inventory
 	Inventory * const inv=player->PlayerInventory();
@@ -509,23 +505,6 @@ void Screen::PrintHUD() {
 				}
 			}
 		}
-	}
-	if ( -1!=dur ) { //HitPoints line
-		wstandend(hudWin);
-		const QString str=QString("%1").arg(dur, -10, 10, QChar('.'));
-		mvwaddstr(hudWin, 0, 0, "HP[..........]");
-		wcolor_set(hudWin, WHITE_RED, NULL);
-		mvwaddstr(hudWin, 0, 3,
-			qPrintable(str.left(10*dur/MAX_DURABILITY+1)));
-	}
-	if ( -1!=breath ) { //breath line
-		wstandend(hudWin);
-		const QString str=
-			QString("%1").arg(breath, -10, 10, QChar('.'));
-		mvwaddstr(hudWin, 0, 15, "BR[..........]");
-		wcolor_set(hudWin, WHITE_BLUE, NULL);
-		mvwaddstr(hudWin, 0, 15+3,
-			qPrintable(str.left(10*breath/MAX_BREATH+1)));
 	}
 	//action mode
 	wstandend(hudWin);
@@ -545,19 +524,6 @@ void Screen::PrintHUD() {
 				"Screen::Print: Unlisted actionMode: %d\n",
 				actionMode);
 	}
-	if ( -1!=satiation ) { //satiation line
-		(void)wmove(hudWin, 2, 0);
-		if ( 100<satiation ) {
-			wcolor_set(hudWin, BLUE_BLACK, NULL);
-			waddstr(hudWin, "Gorged");
-		} else if ( 75<satiation ) {
-			wcolor_set(hudWin, GREEN_BLACK, NULL);
-			waddstr(hudWin, "Full");
-		} else if (25>satiation) {
-			wcolor_set(hudWin, RED_BLACK, NULL);
-			waddstr(hudWin, "Hungry");
-		}
-	}
 	if ( player->GetCreativeMode() ) {
 		wstandend(hudWin);
 		mvwaddstr(hudWin, 0, 0, "Creative Mode");
@@ -574,6 +540,41 @@ void Screen::PrintHUD() {
 			case WEST:  waddstr(hudWin, "<West   <"); break;
 			case DOWN:  waddstr(hudWin, "x DOWN  x"); break;
 			case UP:    waddstr(hudWin, ".   UP  ."); break;
+		}
+	} else {
+		const short dur=player->HP();
+		if ( -1!=dur ) { //HitPoints line
+			wstandend(hudWin);
+			const QString str=QString("%1").arg(dur, -10, 10,
+				QChar('.'));
+			mvwaddstr(hudWin, 0, 0, "HP[..........]");
+			wcolor_set(hudWin, WHITE_RED, NULL);
+			mvwaddstr(hudWin, 0, 3,
+				qPrintable(str.left(10*dur/MAX_DURABILITY+1)));
+		}
+		const short breath=player->Breath();
+		if ( -1!=breath ) { //breath line
+			wstandend(hudWin);
+			const QString str=
+				QString("%1").arg(breath, -10, 10, QChar('.'));
+			mvwaddstr(hudWin, 0, 15, "BR[..........]");
+			wcolor_set(hudWin, WHITE_BLUE, NULL);
+			mvwaddstr(hudWin, 0, 15+3,
+				qPrintable(str.left(10*breath/MAX_BREATH+1)));
+		}
+		const short satiation=player->SatiationPercent();
+		if ( -1!=satiation ) { //satiation line
+			(void)wmove(hudWin, 2, 0);
+			if ( 100<satiation ) {
+				wcolor_set(hudWin, BLUE_BLACK, NULL);
+				waddstr(hudWin, "Gorged");
+			} else if ( 75<satiation ) {
+				wcolor_set(hudWin, GREEN_BLACK, NULL);
+				waddstr(hudWin, "Full");
+			} else if (25>satiation) {
+				wcolor_set(hudWin, RED_BLACK, NULL);
+				waddstr(hudWin, "Hungry");
+			}
 		}
 	}
 	wnoutrefresh(hudWin);
@@ -693,10 +694,10 @@ void Screen::PrintFront(WINDOW * const window) const {
 				(int)dir);
 			return;
 	}
-	if ( pZ+SCREEN_SIZE/2>=HEIGHT ) {
+	if ( pZ+SCREEN_SIZE/2 >= HEIGHT ) {
 		k_start=HEIGHT-2;
 		arrow_Y=HEIGHT-pZ;
-	} else if ( pZ-SCREEN_SIZE/2<0 ) {
+	} else if ( pZ-SCREEN_SIZE/2 < 0 ) {
 		k_start=SCREEN_SIZE-1;
 		arrow_Y=SCREEN_SIZE-pZ;
 	} else {
@@ -704,7 +705,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 		arrow_Y=SCREEN_SIZE/2+1;
 	}
 	(void)wmove(window, 1, 1);
-	for (ushort k=k_start; k_start-k<SCREEN_SIZE;
+	for (short k=k_start; k>k_start-SCREEN_SIZE;
 			--k, waddstr(window, "\n_"))
 	{
 		for (*x=x_start; *x!=x_end; *x+=x_step) {
