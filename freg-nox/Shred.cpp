@@ -18,7 +18,6 @@
 #include <QFile>
 #include <QByteArray>
 #include <QDataStream>
-#include <QTextStream>
 #include "Shred.h"
 #include "world.h"
 #include "BlockManager.h"
@@ -460,18 +459,7 @@ QString Shred::FileName() const {
 }
 
 char Shred::TypeOfShred(const long longi, const long lati) const {
-	const long mapSize=world->MapSize();
-	if (
-			longi >= mapSize || longi < 0 ||
-			lati  >= mapSize || lati  < 0 )
-	{
-		return OUT_BORDER_SHRED;
-	} else if ( !world->MapStream()->seek((mapSize+1)*longi+lati) ) {
-		return DEFAULT_SHRED;
-	}
-	char c;
-	*world->MapStream() >> c;
-	return c;
+	return TypeOfShred(longi, lati);
 }
 
 void Shred::AddWater() {

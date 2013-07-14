@@ -42,7 +42,20 @@ long World::Latitude() const { return latitude; }
 ushort World::TimeStepsInSec() { return TIME_STEPS_IN_SEC; }
 
 long World::MapSize() const { return mapSize; }
-QTextStream * World::MapStream() { return worldMapStream; }
+
+char World::TypeOfShred(const long longi, const long lati) {
+	if (
+			longi >= mapSize || longi < 0 ||
+			lati  >= mapSize || lati  < 0 )
+	{
+		return OUT_BORDER_SHRED;
+	} else if ( !worldMapStream->seek((mapSize+1)*longi+lati) ) {
+		return DEFAULT_SHRED;
+	}
+	char c;
+	*worldMapStream >> c;
+	return c;
+}
 
 ushort World::SunMoonX() const {
 	return ( NIGHT==PartOfDay() ) ?

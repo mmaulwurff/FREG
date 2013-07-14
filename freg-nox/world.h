@@ -111,9 +111,9 @@ class World : public QThread {
 	///Called from World::ReloadShreds(int), enlighens only need shreds.
 	void ReEnlightenMove(int direction);
 
-	void SunShine(ushort x, ushort y);
 	void UpShine(ushort x, ushort y, ushort z_bottom);
 	public:
+	void SunShine(ushort x, ushort y);
 	///If init is false, light will not spread from non-invisible blocks.
 	void Shine(ushort x, ushort y, ushort z, uchar level, bool init=false);
 
@@ -141,9 +141,9 @@ class World : public QThread {
 	long Latitude() const;
 	static ushort TimeStepsInSec();
 
-	private:
+	char TypeOfShred(long longi, long lati);
 	long MapSize() const;
-	QTextStream * MapStream();
+	private:
 	ushort SunMoonX() const;
 
 	//visibility section
@@ -235,8 +235,6 @@ class World : public QThread {
 	void DeleteAllShreds();
 	void LoadAllShreds();
 	void run();
-
-	friend class Shred;
 
 	public:
 	void WriteLock();
