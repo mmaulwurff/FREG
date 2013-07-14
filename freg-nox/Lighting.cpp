@@ -32,9 +32,6 @@
 
 const uchar FIRE_LIGHT_FACTOR=4;
 
-const uchar MOON_LIGHT_FACTOR=1;
-const uchar  SUN_LIGHT_FACTOR=8;
-
 const uchar MAX_LIGHT_RADIUS=15;
 
 //private. use Enlightened instead, which is smart wrapper of this.

@@ -772,7 +772,9 @@ void World::LoadAllShreds() {
 		shreds[y*numShreds+x]=new Shred(this, x, y, j, i);
 	}
 	MakeSun();
-	ReEnlightenTime();
+	sunMoonFactor=( NIGHT==PartOfDay() ) ?
+		MOON_LIGHT_FACTOR : SUN_LIGHT_FACTOR;
+	ReEnlightenAll();
 }
 
 void World::DeleteAllShreds() {

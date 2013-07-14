@@ -184,8 +184,10 @@ bool Shred::LoadShred(QFile & file) {
 	for (ushort i=0; i<SHRED_WIDTH; ++i)
 	for (ushort j=0; j<SHRED_WIDTH; ++j) {
 		PutNormalBlock(NULLSTONE, i, j, 0);
+		lightMap[i][j][0]=0;
 		for (ushort k=1; k<HEIGHT-1; ++k) {
 			SetBlock(block_manager.BlockFromFile(in), i, j, k);
+			lightMap[i][j][k]=0;
 		}
 		SetBlock(block_manager.BlockFromFile(in), i, j, HEIGHT-1);
 		lightMap[i][j][HEIGHT-1]=1;
@@ -214,8 +216,10 @@ Shred::Shred(World * const world_,
 	for (ushort i=0; i<SHRED_WIDTH; ++i)
 	for (ushort j=0; j<SHRED_WIDTH; ++j) {
 		PutNormalBlock(NULLSTONE, i, j, 0);
+		lightMap[i][j][0]=0;
 		for (ushort k=1; k<HEIGHT-1; ++k) {
 			PutNormalBlock(AIR, i, j, k);
+			lightMap[i][j][k]=0;
 		}
 		PutNormalBlock(( (qrand()%5) ? SKY : STAR ), i, j, HEIGHT-1);
 		lightMap[i][j][HEIGHT-1]=1;
