@@ -263,7 +263,7 @@ void World::ReloadShreds(const int direction) {
 				for (y=numShreds-2; y>=0; --y) {
 					(shreds[(y+1)*numShreds+x]=
 						shreds[y*numShreds+x])->
-						ReloadToNorth();
+						ReloadToDir(NORTH);
 				}
 				shreds[x]=new Shred(this, x, 0,
 						longitude-numShreds/2,
@@ -277,7 +277,7 @@ void World::ReloadShreds(const int direction) {
 				for (y=1; y<numShreds; ++y) {
 					(shreds[(y-1)*numShreds+x]=
 						shreds[y*numShreds+x])->
-						ReloadToSouth();
+						ReloadToDir(SOUTH);
 				}
 				shreds[numShreds*(numShreds-1)+x]=new
 					Shred(this, x, numShreds-1,
@@ -292,7 +292,7 @@ void World::ReloadShreds(const int direction) {
 				for (x=1; x<numShreds; ++x) {
 					(shreds[(x-1)+y*numShreds]=
 						shreds[x+y*numShreds])->
-						ReloadToEast();
+						ReloadToDir(EAST);
 				}
 				shreds[numShreds-1+y*numShreds]=new
 					Shred(this, numShreds-1, y,
@@ -307,7 +307,7 @@ void World::ReloadShreds(const int direction) {
 				for (x=numShreds-2; x>=0; --x) {
 					(shreds[(x+1)+y*numShreds]=
 						shreds[x+y*numShreds])->
-						ReloadToWest();
+						ReloadToDir(WEST);
 				}
 				shreds[y*numShreds]=new Shred(this, 0, y,
 						longitude-numShreds/2+y,

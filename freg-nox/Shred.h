@@ -18,7 +18,7 @@
 #ifndef SHRED_H
 #define SHRED_H
 
-#include <QList>
+#include <QLinkedList>
 #include "blocks.h"
 
 const bool FLAT_GENERATION=false;
@@ -38,11 +38,11 @@ class Shred {
 
 	//needed in Shred::ReloadTo... for active blocks not to reload twice
 	//when they are registered both in frequent and rare lists.
-	QList<Active *> activeListAll;
-	QList<Active *> activeListFrequent;
-	QList<Active *> activeListRare;
-	QList<Active *> fallList;
-	QList<Active *> shiningList;
+	QLinkedList<Active *> activeListAll;
+	QLinkedList<Active *> activeListFrequent;
+	QLinkedList<Active *> activeListRare;
+	QLinkedList<Active *> fallList;
+	QLinkedList<Active *> shiningList;
 
 	///Lowest nullstone and sky are not in bounds.
 	bool InBounds(ushort x, ushort y, ushort z) const;
@@ -67,10 +67,7 @@ class Shred {
 
 	World * GetWorld() const;
 
-	void ReloadToNorth();
-	void ReloadToEast();
-	void ReloadToSouth();
-	void ReloadToWest();
+	void ReloadToDir(int dir);
 
 	Block * GetBlock(ushort x, ushort y, ushort z) const;
 	///Puts block to coordinates xyz and activates it
@@ -96,6 +93,7 @@ class Shred {
 	uchar LightRadius(ushort x, ushort y, ushort z) const;
 
 	bool LoadShred(QFile &);
+	void DeleteAllBlocks();
 
 	Shred(World *,
 			ushort shred_x, ushort shred_y,

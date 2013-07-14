@@ -14,6 +14,9 @@ VERSION = 0.1
 VERSTR = '\\"$${VERSION}\\"'
 DEFINES += VER=\"$${VERSTR}\"
 
+QMAKE_CXXFLAGS_DEBUG += -O3
+QMAKE_CFLAGS_DEBUG += -O3
+
 # Input
 HEADERS += BlockManager.h \
            blocks.h \
