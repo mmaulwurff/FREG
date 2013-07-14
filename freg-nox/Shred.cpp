@@ -459,7 +459,7 @@ QString Shred::FileName() const {
 }
 
 char Shred::TypeOfShred(const long longi, const long lati) const {
-	return TypeOfShred(longi, lati);
+	return world->TypeOfShred(longi, lati);
 }
 
 void Shred::AddWater() {
