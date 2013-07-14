@@ -263,11 +263,10 @@ void Shred::SetAllLightMap(const uchar level) {
 
 //make all shining blocks of shred shine.
 void Shred::ShineAll() {
-	for (QLinkedList<Active *>::const_iterator i=shiningList.constBegin();
-			i!=shiningList.constEnd(); ++i)
-	{
-		world->Shine((*i)->X(), (*i)->Y(), (*i)->Z(),
-			(*i)->LightRadius(), true);
+	for (ushort j=0; j<shiningList.size(); ++j) {
+		Active const * const temp=shiningList.at(j);
+		world->Shine(temp->X(), temp->Y(), temp->Z(),
+			temp->LightRadius(), true);
 	}
 	for (ushort i=shredX*SHRED_WIDTH; i<SHRED_WIDTH*(shredX+1); ++i)
 	for (ushort j=shredY*SHRED_WIDTH; j<SHRED_WIDTH*(shredY+1); ++j) {

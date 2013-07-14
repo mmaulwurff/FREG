@@ -204,6 +204,10 @@ Shred::Shred(World * const world_,
 		shredX(shred_x),
 		shredY(shred_y)
 {
+	activeListFrequent.reserve(100);
+	activeListRare.reserve(500);
+	activeListAll.reserve(600);
+	fallList.reserve(100);
 	QFile file(FileName());
 	if ( file.open(QIODevice::ReadOnly) && LoadShred(file) ) {
 		return;
@@ -268,18 +272,14 @@ Shred::~Shred() {
 			blocks[i][j][HEIGHT-1]->SaveToFile(outstr);
 		}
 		file.write(qCompress(shred_data));
-	} else {
-		DeleteAllBlocks();
+		return;
 	}
-} //Shred::~Shred
-
-void Shred::DeleteAllBlocks() {
 	for (ushort i=0; i<SHRED_WIDTH; ++i)
 	for (ushort j=0; j<SHRED_WIDTH; ++j)
 	for (ushort k=1; k<HEIGHT-1; ++k) {
 		block_manager.DeleteBlock(blocks[i][j][k]);
 	}
-}
+} //Shred::~Shred
 
 void Shred::SetNewBlock(const int kind, const int sub,
 		const ushort x, const ushort y, const ushort z,
@@ -303,39 +303,33 @@ void Shred::RegisterBlock(Block * const block,
 }
 
 void Shred::PhysEventsFrequent() {
-	QLinkedList<Active *>::iterator i=fallList.begin();
-	QLinkedList<Active *>::iterator prev;
-	while ( i!=fallList.end() ) {
-		prev=i++;
-		const ushort weight=(*prev)->Weight();
+	for (int j=0; j<fallList.size(); ++j) {
+		Active * const temp=fallList.at(j);
+		const ushort weight=temp->Weight();
 		if ( weight ) {
-			const ushort x=(*prev)->X();
-			const ushort y=(*prev)->Y();
-			const ushort z=(*prev)->Z();
+			const ushort x=temp->X();
+			const ushort y=temp->Y();
+			const ushort z=temp->Z();
 			if ( weight<=Weight(x%SHRED_WIDTH, y%SHRED_WIDTH, z-1)
 					|| !world->Move(x, y, z, DOWN) )
 			{
-				(*prev)->SetFalling(false);
-				(*prev)->FallDamage();
-				fallList.erase(prev);
-				world->DestroyAndReplace(x, y, z);
+				RemFalling(temp);
+				temp->FallDamage();
 			}
+			world->DestroyAndReplace(x, y, z);
 		}
 	}
-	for (i=activeListFrequent.begin(); i!=activeListFrequent.end(); ) {
-		prev=i++;
-		(*prev)->ActFrequent();
-		world->DestroyAndReplace((*prev)->X(), (*prev)->Y(),
-			(*prev)->Z());
+	for (int j=0; j<activeListFrequent.size(); ++j) {
+		Active * const active=activeListFrequent.at(j);
+		active->ActFrequent();
+		world->DestroyAndReplace(active->X(),active->Y(), active->Z());
 	}
 }
 void Shred::PhysEventsRare() {
-	QLinkedList<Active *>::iterator i=activeListRare.begin();
-	while ( i!=activeListRare.end() ) {
-		QLinkedList<Active *>::iterator prev=i++;
-		(*prev)->ActRare();
-		world->DestroyAndReplace((*prev)->X(), (*prev)->Y(),
-			(*prev)->Z());
+	for (int j=0; j<activeListRare.size(); ++j) {
+		Active * const active=activeListRare.at(j);
+		active->ActRare();
+		world->DestroyAndReplace(active->X(),active->Y(), active->Z());
 	}
 }
 
@@ -406,36 +400,29 @@ void Shred::RemShining(Active * const active) {
 	shiningList.removeOne(active);
 }
 
-void Shred::ReloadToDir(const int dir) {
-	void (Active::* funcp)();
-	switch ( dir ) {
-		case NORTH:
-			funcp=&Active::ReloadToNorth;
-			++shredY;
-		break;
-		case SOUTH:
-			funcp=&Active::ReloadToSouth;
-			--shredY;
-		break;
-		case EAST:
-			funcp=&Active::ReloadToEast;
-			--shredX;
-		break;
-		case WEST:
-			funcp=&Active::ReloadToWest;
-			++shredX;
-		break;
-		default:
-			fprintf(stderr,
-				"Shred::ReloadToDir:: unlisted dir ?: %d\n",
-				dir);
-			return;
+void Shred::ReloadToNorth() {
+	for (ushort i=0; i<activeListAll.size(); ++i) {
+		activeListAll.at(i)->ReloadToNorth();
 	}
-	for (QLinkedList<Active*>::const_iterator i=activeListAll.constBegin();
-			i!=activeListAll.constEnd(); ++i)
-	{
-		((*i)->*funcp)();
+	++shredY;
+}
+void Shred::ReloadToEast() {
+	for (ushort i=0; i<activeListAll.size(); ++i) {
+		activeListAll.at(i)->ReloadToEast();
 	}
+	--shredX;
+}
+void Shred::ReloadToSouth() {
+	for (ushort i=0; i<activeListAll.size(); ++i) {
+		activeListAll.at(i)->ReloadToSouth();
+	}
+	--shredY;
+}
+void Shred::ReloadToWest() {
+	for (ushort i=0; i<activeListAll.size(); ++i) {
+		activeListAll.at(i)->ReloadToWest();
+	}
+	++shredX;
 }
 
 Block *Shred::GetBlock(const ushort x, const ushort y, const ushort z) const {
@@ -472,7 +459,7 @@ QString Shred::FileName() const {
 }
 
 char Shred::TypeOfShred(const long longi, const long lati) const {
-	return world->TypeOfShred(longi, lati);
+	return TypeOfShred(longi, lati);
 }
 
 void Shred::AddWater() {
