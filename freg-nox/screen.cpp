@@ -279,6 +279,7 @@ void Screen::ControlPlayer(const int ch) {
 		break;
 		case KEY_END:   player->Move(DOWN); break;
 		case ' ': player->Jump(); break;
+		case '=': player->Move(); break;
 
 		case '>':
 			player->SetDir(World::TurnRight(player->GetDir()));
@@ -324,6 +325,7 @@ void Screen::ControlPlayer(const int ch) {
 		case 'C': SetActionMode(CRAFT);    break;
 		case 'F': SetActionMode(TAKEOFF);  break;
 
+		case KEY_HELP:
 		case 'H':
 			wstandend(rightWin);
 			PrintFile(rightWin, "help.txt");

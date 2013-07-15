@@ -19,6 +19,7 @@
 #define PLAYER_H
 
 #include <QObject>
+#include "header.h"
 
 class QString;
 class World;
@@ -157,7 +158,8 @@ class Player : public QObject {
 	void SetCreativeMode(bool turn);
 
 	void SetDir(int dir);
-	void Move(int dir);
+	/// Moves player to direction. If ==HERE, moves to Player::GetDir().
+	void Move(int direction=HERE);
 	void Jump();
 
 	///Closes backpack, chests, etc.
