@@ -1,6 +1,7 @@
 This is freg help file. Game commands:
 'Q'       - quit game
-arrows    - move in four directions
+arrows    - turn and move in four directions
+'='       - move to your current direction
 End       - move down
 '>', '<'  - turn right and left
 space     - jump
@@ -9,15 +10,14 @@ Page Down - loo down
 Home      - inventory
 Backspace - hit
 Enter     - use
+Esc       - stop using everything
 '?'       - examine
 '~'       - inscribe
-'!'       - enter creative mode
-':'       - enter command mode
+'!'       - enter/leave creative mode
+':'       - enter command mode (leave with enter)
 '.'       - repeat last command
 'L'       - redraw screen
-'{', '}'  - shift focus down and up
-'-', '+'  - decrease and increase active zone
-'_', '#'  - decrease and increase world size
+'-', '+'  - shift focus down and up
 Set inventory actions:
 'B' - build
 'C' - craft
