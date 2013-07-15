@@ -112,19 +112,13 @@ bool World::InBounds(const ushort i, const ushort j, const ushort k) const {
 }
 
 void World::ReloadAllShreds(const long lati, const long longi,
-	const ushort new_x, const ushort new_y, const ushort new_z,
-	const ushort new_num_shreds)
+	const ushort new_x, const ushort new_y, const ushort new_z)
 {
 	newLati=lati;
 	newLongi=longi;
 	newX=new_x;
 	newY=new_y;
 	newZ=new_z;
-	if ( numActiveShreds > new_num_shreds ) {
-		numActiveShreds=new_num_shreds;
-	}
-	newNumShreds=new_num_shreds;
-	maxXY=SHRED_WIDTH*numShreds;
 	toReSet=true;
 }
 
@@ -799,23 +793,24 @@ void World::DeleteAllShreds() {
 	delete [] shreds;
 }
 
-void World::SetNumActiveShreds(ushort num) {
+void World::SetNumActiveShreds(const ushort num) {
 	WriteLock();
-	if ( 1 != num%2 ) {
-		emit Notify(tr("Invalid shreds number:%1x%1.").arg(num));
-		++num;
+	numActiveShreds=num;
+	if ( 1 != numActiveShreds%2 ) {
+		++numActiveShreds;
+		emit Notify(tr(
+			"Invalid active shreds number. Set to %1.").
+			arg(numActiveShreds));
 	}
-	if ( num < 3 ) {
-		emit Notify(tr("Active shreds number too small: %1x%1.").
-			arg(num));
-	} else if ( num > numShreds ) {
-		emit Notify(tr("Active shreds number too big: %1x%1.").
-			arg(num));
-	} else {
-		numActiveShreds=num;
+	if ( numActiveShreds < 3 ) {
+		numActiveShreds=3;
+		emit Notify(tr("Active shreds number too small, set to 3."));
+	} else if ( numActiveShreds > numShreds ) {
+		numActiveShreds=numShreds;
+		emit Notify(tr("Active shreds number too big. Set to %1.").
+			arg(numActiveShreds));
 	}
-	emit Notify(tr("Active shreds number is %1x%1.").
-		arg(numActiveShreds));
+	emit Notify(tr("Active shreds number is %1x%1.").arg(numActiveShreds));
 	Unlock();
 }
 
@@ -831,9 +826,21 @@ World::World(const QString & world_name) :
 {
 	numShreds =
 		game_settings.value("number_of_shreds", 5).toLongLong();
+	if ( 1!=numShreds%2 ) {
+		++numShreds;
+		fprintf(stderr,
+			"Invalid number of shreds. Set to %hu.\n",
+			numShreds);
+	}
+	if ( numShreds<5  ) {
+		fprintf(stderr,
+			"Number of shreds: to small: %hu. Set to 5.\n",
+			numShreds);
+		numShreds=5;
+	}
 	maxXY=SHRED_WIDTH*numShreds;
-	numActiveShreds=
-		game_settings.value("number_of_active_shreds", 5).toLongLong();
+	SetNumActiveShreds(game_settings.value("number_of_active_shreds", 5).
+		toUInt());
 
 	QDir::current().mkdir(worldName);
 	QFile map(worldName+"/map.txt");
@@ -878,35 +885,6 @@ World::World(const QString & world_name) :
 	longitude =settings.value("longitude", int(spawnLongi)).toLongLong();
 	latitude  =settings.value("latitude",  int(spawnLati )).toLongLong();
 
-	if ( 1!=numShreds%2 ) {
-		++numShreds;
-		fprintf(stderr,
-			"Invalid number of shreds. Set to %hu.\n",
-			numShreds);
-	}
-	if ( numShreds<5  ) {
-		fprintf(stderr,
-			"Number of shreds: to small: %hu. Set to 5.\n",
-			numShreds);
-		numShreds=5;
-	}
-	if ( 1!=numActiveShreds%2 ) {
-		++numActiveShreds;
-		fprintf(stderr,
-			"Invalid number of active shreds. Set to %hu.\n",
-			numActiveShreds);
-	}
-	if ( numActiveShreds > numShreds ) {
-		fprintf(stderr,
-			"numActiveShreds (%hu) was more than numShreds\n",
-			numActiveShreds);
-		numActiveShreds=numShreds;
-	} else if ( numActiveShreds < 3 ) {
-		fprintf(stderr,
-			"Active shreds number (%hu) too small. Set to 3.\n",
-			numActiveShreds);
-		numActiveShreds=3;
-	}
 	LoadAllShreds();
 	emit UpdatedAll();
 } //World::World

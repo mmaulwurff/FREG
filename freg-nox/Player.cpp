@@ -508,13 +508,8 @@ void Player::BlockDestroy() {
 	usingSelfType=USAGE_TYPE_NO;
 
 	emit Destroyed();
-	world->ReloadAllShreds(
-		homeLati,
-		homeLongi,
-		homeX,
-		homeY,
-		homeZ,
-		world->NumShreds());
+	world->ReloadAllShreds(homeLati, homeLongi,
+		homeX, homeY, homeZ);
 }
 
 void Player::WorldSizeReloadStart() {
@@ -571,30 +566,6 @@ void Player::SetPlayer(
 		this, SIGNAL(Notify(const QString &)),
 		Qt::DirectConnection);
 } //Player::SetPlayer
-
-void Player::SetNumShreds(ushort num) const {
-	const ushort num_shreds=world->NumShreds();
-	if ( num < 5 ) {
-		emit Notify(tr("Shreds number too small: %1x%1.").arg(num));
-	} else if ( 1 != num%2 ) {
-		emit Notify(tr("Invalid shreds number: %1x%1.").arg(num));
-	} else {
-		const short shift=num/2 - num_shreds/2;
-		world->ReloadAllShreds(
-			//put loaded zone center to where player is
-			world->Latitude()  + x/SHRED_WIDTH - num_shreds/2,
-			world->Longitude() + y/SHRED_WIDTH - num_shreds/2,
-			//new x and y correspond to player stanging
-			//in loaded zone center
-			x - (x/SHRED_WIDTH)*SHRED_WIDTH +
-				(num_shreds/2+shift)*SHRED_WIDTH,
-			y - (y/SHRED_WIDTH)*SHRED_WIDTH +
-				(num_shreds/2+shift)*SHRED_WIDTH,
-			z,
-			num);
-	}
-	emit Notify(tr("Shreds number is %1x%1 now.").arg(num_shreds));
-}
 
 Player::Player(World * const w) :
 		dir(NORTH),

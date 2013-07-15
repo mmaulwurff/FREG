@@ -199,8 +199,6 @@ class Player : public QObject {
 	Block * Drop(ushort);
 
 	public:
-	void SetNumShreds(ushort num) const;
-
 	///Constructor creates or loads player.
 	/**It reads player_save file if it exists,
 	 * puts player block to the world if there is no player block,

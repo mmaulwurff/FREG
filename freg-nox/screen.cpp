@@ -312,16 +312,8 @@ void Screen::ControlPlayer(const int ch) {
 					inv->Start(), inv->Size()-1);
 			}
 		} break;
-		case '{': shiftFocus = -!shiftFocus; break; //move focus down
-		case '}': shiftFocus =  !shiftFocus; break; //move focus up
-
-		case '+': w->SetNumActiveShreds(w->NumActiveShreds()+2); break;
-		case '-': w->SetNumActiveShreds(w->NumActiveShreds()-2); break;
-		case '_': player->SetNumShreds(w->NumShreds()-2); break;
-		case '#':
-			Notify(tr("Don't make shreds number too big."));
-			player->SetNumShreds(w->NumShreds()+2);
-		break;
+		case '+': shiftFocus = -!shiftFocus; break; //move focus down
+		case '-': shiftFocus =  !shiftFocus; break; //move focus up
 
 		case '!':
 			player->SetCreativeMode( !player->GetCreativeMode() );
