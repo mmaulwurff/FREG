@@ -19,15 +19,16 @@
 #include <QTextStream>
 #include <QTimer>
 #include <QDir>
+#include <qmath.h>
 #include "blocks.h"
 #include "Shred.h"
 #include "world.h"
 #include "BlockManager.h"
-#include <qmath.h>
-#include <DeferredAction.h>
+#include "DeferredAction.h"
 
 Shred * World::GetShred(const ushort i, const ushort j) const {
-	return shreds[ j/SHRED_WIDTH*numShreds + i/SHRED_WIDTH ];
+	return shreds[ (j>>SHRED_WIDTH_SHIFT)*numShreds +
+	               (i>>SHRED_WIDTH_SHIFT) ];
 }
 
 QString World::WorldName() const { return worldName; }
@@ -108,7 +109,8 @@ void World::Get(Block * const block_to,
 }
 
 bool World::InBounds(const ushort i, const ushort j, const ushort k) const {
-	return ( i<maxXY && j<maxXY && k<HEIGHT );
+	static const ushort max_xy=SHRED_WIDTH*numShreds;
+	return ( i<max_xy && j<max_xy && k<HEIGHT );
 }
 
 void World::ReloadAllShreds(const long lati, const long longi,
@@ -330,7 +332,6 @@ void World::PhysEvents() {
 		DeleteAllShreds();
 		longitude=newLongi;
 		latitude=newLati;
-		numShreds=newNumShreds;
 		toReSet=false;
 		LoadAllShreds();
 		emit NeedPlayer(newX, newY, newZ);
@@ -820,10 +821,10 @@ World::World(const QString & world_name) :
 		cleaned(false),
 		toReSet(false),
 		settings(QDir::currentPath()+'/'+worldName+"/settings.ini",
-			QSettings::IniFormat),
-		game_settings(QDir::currentPath()+"/freg.ini",
 			QSettings::IniFormat)
 {
+	QSettings game_settings(QDir::currentPath()+"/freg.ini",
+		QSettings::IniFormat);
 	numShreds =
 		game_settings.value("number_of_shreds", 5).toLongLong();
 	if ( 1!=numShreds%2 ) {
@@ -838,9 +839,10 @@ World::World(const QString & world_name) :
 			numShreds);
 		numShreds=5;
 	}
-	maxXY=SHRED_WIDTH*numShreds;
 	SetNumActiveShreds(game_settings.value("number_of_active_shreds", 5).
 		toUInt());
+	game_settings.setValue("number_of_shreds", numShreds);
+	game_settings.setValue("number_of_active_shreds", numActiveShreds);
 
 	QDir::current().mkdir(worldName);
 	QFile map(worldName+"/map.txt");
@@ -882,6 +884,8 @@ World::World(const QString & world_name) :
 		int(qrand()%mapSize)).toLongLong();
 	spawnLati =settings.value("spawn_latitude",
 		int(qrand()%mapSize)).toLongLong();
+	settings.setValue("spawn_longitude", qlonglong(spawnLongi));
+	settings.setValue("spawn_latitude", qlonglong(spawnLati));
 	longitude =settings.value("longitude", int(spawnLongi)).toLongLong();
 	latitude  =settings.value("latitude",  int(spawnLati )).toLongLong();
 
@@ -908,8 +912,4 @@ void World::CleanAll() {
 	settings.setValue("time", qlonglong(time));
 	settings.setValue("longitude", qlonglong(longitude));
 	settings.setValue("latitude", qlonglong(latitude));
-	settings.setValue("spawn_longitude", qlonglong(spawnLongi));
-	settings.setValue("spawn_latitude", qlonglong(spawnLati));
-	game_settings.setValue("number_of_shreds", numShreds);
-	game_settings.setValue("number_of_active_shreds", numActiveShreds);
 }

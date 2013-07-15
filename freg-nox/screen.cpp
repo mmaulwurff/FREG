@@ -312,8 +312,8 @@ void Screen::ControlPlayer(const int ch) {
 					inv->Start(), inv->Size()-1);
 			}
 		} break;
-		case '+': shiftFocus = -!shiftFocus; break; //move focus down
-		case '-': shiftFocus =  !shiftFocus; break; //move focus up
+		case '-': shiftFocus = -!shiftFocus; break; //move focus down
+		case '+': shiftFocus =  !shiftFocus; break; //move focus up
 
 		case '!':
 			player->SetCreativeMode( !player->GetCreativeMode() );

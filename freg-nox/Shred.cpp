@@ -452,12 +452,11 @@ void Shred::AddWater() {
 	for (long longi=longitude-1; longi<=longitude+1; ++longi)
 	for (long lati =latitude -1; lati <=latitude +1; ++lati ) {
 		if ( SHRED_WATER==TypeOfShred(longi, lati) ) {
-			for (ushort i = 0; i < SHRED_WIDTH; i++)
-			for (ushort j = 0; j < SHRED_WIDTH; j++) {
-				for (ushort k = SEA_LEVEL; true; k--) {
-					if ( Sub(i, j, k)!=AIR ) {
-						break;
-					}
+			for (ushort i = 0; i < SHRED_WIDTH; ++i)
+			for (ushort j = 0; j < SHRED_WIDTH; ++j) {
+				for (ushort k=SEA_LEVEL;
+						AIR==Sub(i, j, k); --k)
+				{
 					SetNewBlock(LIQUID, WATER, i, j, k);
 				}
 			}

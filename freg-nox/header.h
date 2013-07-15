@@ -26,6 +26,7 @@
 #endif
 
 const ushort SHRED_WIDTH=16;
+const ushort SHRED_WIDTH_SHIFT=4;
 const ushort HEIGHT=128;
 
 const ushort SECONDS_IN_HOUR=60;

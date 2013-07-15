@@ -139,19 +139,14 @@ class Shred {
 	bool Tree(ushort x, ushort y, ushort z, ushort height);
 	private:
 	void NormalCube(ushort x_start, ushort y_start, ushort z_start,
-			ushort x_end, ushort y_end, ushort z_end,
-			int sub);
+			ushort x_end, ushort y_end, ushort z_end, int sub);
 
 	//land generation
 	private:
-	void ShredLandAmplitudeAndLevel(
-			long longi, long lati,
-			ushort* l,
-			float* a) const;
-	void ShredNominalAmplitudeAndLevel(
-			char shred_type,
-			ushort* l,
-			float* a) const;
+	void ShredLandAmplitudeAndLevel(long longi, long lati,
+			ushort * l, float * a) const;
+	void ShredNominalAmplitudeAndLevel(char shred_type,
+			ushort* l, float* a) const;
 	void AddWater();
 	ushort FlatUndeground(short depth=0);
 };//class Shred

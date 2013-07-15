@@ -47,7 +47,6 @@ class World : public QThread {
 	long spawnLongi, spawnLati;
 	const QString worldName;
 	ushort numShreds; //size of loaded zone
-	ushort maxXY; //for InBounds optimization
 	ushort numActiveShreds; //size of active zone
 	QReadWriteLock rwLock;
 
@@ -60,14 +59,12 @@ class World : public QThread {
 	QTextStream * worldMapStream;
 
 	long newLati, newLongi;
-	ushort newNumShreds, newNumActiveShreds;
 	ushort newX, newY, newZ;
 	volatile bool toReSet;
 
 	uchar sunMoonFactor;
 
 	QSettings settings;
-	QSettings game_settings;
 
 	QList<DeferredAction *> defActions;
 
@@ -153,19 +150,15 @@ class World : public QThread {
 
 	//visibility section
 	public:
-	bool DirectlyVisible(
-			float x_from, float y_from, float z_from,
-			ushort x_to,  ushort y_to,  ushort z_to) const;
-	bool Visible(
-			ushort x_from, ushort y_from, ushort z_from,
-			ushort x_to,   ushort y_to,   ushort z_to) const;
+	bool DirectlyVisible(float x_from, float y_from, float z_from,
+			ushort x_to, ushort y_to, ushort z_to) const;
+	bool Visible(ushort x_from, ushort y_from, ushort z_from,
+			ushort x_to, ushort y_to, ushort z_to) const;
 	private:
-	bool PositiveVisible(
-			float  x_from, float  y_from, float  z_from,
-			ushort x_to,   ushort y_to,   ushort z_to) const;
-	bool NegativeVisible(
-			float x_from, float y_from, float z_from,
-			short x_to,   short y_to,   short z_to) const;
+	bool PositiveVisible(float x_from, float y_from, float z_from,
+			ushort x_to, ushort y_to, ushort z_to) const;
+	bool NegativeVisible(float x_from, float y_from, float z_from,
+			short x_to, short y_to, short z_to) const;
 
 	//movement section
 	public:
@@ -209,8 +202,7 @@ class World : public QThread {
 
 	//inventory functions section
 	private:
-	void Exchange(
-			Block * block_from, Block * block_to,
+	void Exchange(Block * block_from, Block * block_to,
 			ushort src, ushort dest, ushort num);
 	public:
 	void Drop(Block * from,
