@@ -20,15 +20,15 @@
 #include "DeferredAction.h"
 
 void DeferredAction::GhostMove() const {
-	attachedBlock->Move(attachedBlock->GetDir());
+	attachedBlock->Move(( HERE==num ) ?
+		attachedBlock->GetDir() : num);
 }
 
 void DeferredAction::Move() const {
 	world->Move(
-		attachedBlock->X(),
-		attachedBlock->Y(),
-		attachedBlock->Z(),
-		attachedBlock->GetDir());
+		attachedBlock->X(), attachedBlock->Y(), attachedBlock->Z(),
+		( HERE==num ) ?
+			attachedBlock->GetDir() : num);
 }
 
 void DeferredAction::Jump() const {
@@ -107,15 +107,17 @@ void DeferredAction::UnsetDeferredAction() {
 	}
 }
 
-void DeferredAction::SetGhostMove() {
+void DeferredAction::SetGhostMove(const ushort dir) {
 	UnsetDeferredAction();
 	type=DEFERRED_GHOST_MOVE;
+	num=dir;
 	world->AddDeferredAction(this);
 }
 
-void DeferredAction::SetMove() {
+void DeferredAction::SetMove(const ushort dir) {
 	UnsetDeferredAction();
 	type=DEFERRED_MOVE;
+	num=dir;
 	world->AddDeferredAction(this);
 }
 void DeferredAction::SetJump() {

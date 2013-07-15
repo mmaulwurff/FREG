@@ -249,10 +249,34 @@ void Screen::ControlPlayer(const int ch) {
 		return;
 	}
 	switch ( ch ) { //interactions with world
-		case KEY_UP:    player->Move(NORTH); break;
-		case KEY_DOWN:  player->Move(SOUTH); break;
-		case KEY_RIGHT: player->Move(EAST); break;
-		case KEY_LEFT:  player->Move(WEST); break;
+		case KEY_UP:
+			if ( player->GetDir()==NORTH ) {
+				player->Move(NORTH);
+			} else {
+				player->SetDir(NORTH);
+			}
+		break;
+		case KEY_DOWN:
+			if ( player->GetDir()==SOUTH ) {
+				player->Move(SOUTH);
+			} else {
+				player->SetDir(SOUTH);
+			}
+		break;
+		case KEY_RIGHT:
+			if ( player->GetDir()==EAST ) {
+				player->Move(EAST);
+			} else {
+				player->SetDir(EAST);
+			}
+		break;
+		case KEY_LEFT:
+			if ( player->GetDir()==WEST ) {
+				player->Move(WEST);
+			} else {
+				player->SetDir(WEST);
+			}
+		break;
 		case KEY_END:   player->Move(DOWN); break;
 		case ' ': player->Jump(); break;
 

@@ -52,8 +52,8 @@ class DeferredAction {
 	void UnsetDeferredAction();
 
 	public:
-	void SetGhostMove();
-	void SetMove();
+	void SetGhostMove(ushort dir=HERE);
+	void SetMove(ushort dir=HERE);
 	void SetJump();
 	void SetBuild(ushort x_targ, ushort y_targ, ushort z_targ,
 			Block * material,

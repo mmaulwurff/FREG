@@ -170,11 +170,10 @@ void Player::Jump() {
 
 void Player::Move(const int dir) {
 	if ( player ) {
-		SetDir(dir);
 		if ( GetCreativeMode() ) {
-			player->GetDeferredAction()->SetGhostMove();
+			player->GetDeferredAction()->SetGhostMove(dir);
 		} else {
-			player->GetDeferredAction()->SetMove();
+			player->GetDeferredAction()->SetMove(dir);
 		}
 	}
 }
