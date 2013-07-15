@@ -93,43 +93,44 @@ class World : public QThread {
 	void MakeSun();
 	void RemSun();
 
-	//lighting section
-	public:
+	public:	// Lighting section
 	uchar Enlightened(ushort x, ushort y, ushort z) const;
 	uchar Enlightened(ushort x, ushort y, ushort z, int dir) const;
 	uchar SunLight(ushort x, ushort y, ushort z) const;
 	uchar FireLight(ushort x, ushort y, ushort z) const;
 
+	short ClampX(short x) const;
+	short ClampY(short y) const;
+	short ClampZ(short z) const;
+
+	void SunShineVertical(short x, short y, short z=HEIGHT-1);
+	///If init is false, light will not spread from non-invisible blocks.
+	void Shine(ushort x, ushort y, ushort z, uchar level, bool init=false);
+
 	private:
+	void SunShineHorizontal(short x, short y, short z);
 	uchar LightMap(ushort x, ushort y, ushort z) const;
 	bool SetSunLightMap(uchar level, ushort x, ushort y, ushort z);
 	bool SetFireLightMap(uchar level, ushort x, ushort y, ushort z);
+	void AddFireLight(short x, short y, short z, uchar level);
+	void RemoveFireLight(short x, short y, short z);
 
 	void ReEnlighten(ushort i, ushort j, ushort k);
 	void ReEnlightenAll();
 	void ReEnlightenTime();
-	///Called from World::ReloadShreds(int), enlighens only need shreds.
+	///Called from World::ReloadShreds(int), enlightens only needed shreds.
 	void ReEnlightenMove(int direction);
-
 	void UpShine(ushort x, ushort y, ushort z_bottom);
-	public:
-	void SunShine(ushort x, ushort y);
-	///If init is false, light will not spread from non-invisible blocks.
-	void Shine(ushort x, ushort y, ushort z, uchar level, bool init=false);
 
-	//information section
-	public:
+	void ReEnlightenBlockAdd();
+	void ReEnlightenBlockRemove();
+
+	public: // Information section
 	QString WorldName() const;
 	///True on error, false if focus is received to _targ successfully.
 	bool Focus(ushort x, ushort y, ushort z,
 			ushort & x_targ, ushort & y_targ, ushort & z_targ,
 			quint8 dir) const;
-	private:
-	bool Focus(ushort x, ushort y, ushort z,
-			ushort & x_targ,
-			ushort & y_targ,
-			ushort & z_targ) const;
-	public:
 	ushort NumShreds() const;
 	ushort NumActiveShreds() const;
 	static quint8 TurnRight(quint8 dir);
@@ -143,7 +144,11 @@ class World : public QThread {
 
 	char TypeOfShred(long longi, long lati);
 	long MapSize() const;
+
 	private:
+	bool Focus(ushort x, ushort y, ushort z,
+			ushort & x_targ, ushort & y_targ,
+			ushort & z_targ) const;
 	ushort SunMoonX() const;
 
 	//visibility section

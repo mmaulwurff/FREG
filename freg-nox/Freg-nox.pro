@@ -37,7 +37,7 @@ SOURCES += BlockManager.cpp \
            blocks.cpp \
            CraftManager.cpp \
            DeferredAction.cpp \
-           Lighting.cpp \
+           Lighting-inertia.cpp \
            main.cpp \
            Player.cpp \
            screen.cpp \

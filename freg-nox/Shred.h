@@ -81,24 +81,34 @@ class Shred {
 	void PutNormalBlock(int sub, ushort x, ushort y, ushort z);
 	static Block * Normal(int sub);
 
-	uchar LightMap(ushort x, ushort y, ushort z) const;
-	bool SetSunLightMap(uchar level, ushort x, ushort y, ushort z);
-	bool SetFireLightMap(uchar level, ushort x, ushort y, ushort z);
-	void SetAllLightMap(uchar level);
+	public: // Lighting section
+	uchar Lightmap(  short x, short y, short z) const;
+	uchar FireLight( short x, short y, short z) const;
+	uchar SunLight(  short x, short y, short z) const;
+	uchar LightLevel(short x, short y, short z) const;
+
+	bool SetSunLight( short x, short y, short z, uchar level);
+	bool SetFireLight(short x, short y, short z, uchar level);
+	void SetLightmap( short x, short y, short z, uchar level);
+
+	void SetAllLightMapNull();
 	void ShineAll();
 
+	private:
+	void RemoveAllSunLight();
+	void RemoveAllFireLight();
+	void RemoveAllLight();
+
+	public: // Information section
 	int Sub(ushort x, ushort y, ushort z) const;
 	int Kind(ushort x, ushort y, ushort z) const;
 	int Durability(ushort x, ushort y, ushort z) const;
 	int Movable(ushort x, ushort y, ushort z) const;
 	int Transparent(ushort x, ushort y, ushort z) const;
-	ushort Weight(ushort x, ushort y, ushort z) const;
-	uchar LightRadius(ushort x, ushort y, ushort z) const;
 
 	bool LoadShred(QFile &);
 
-	Shred(World *,
-			ushort shred_x, ushort shred_y,
+	Shred(World *, ushort shred_x, ushort shred_y,
 			long longi, long lati);
 	~Shred();
 

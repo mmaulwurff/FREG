@@ -310,7 +310,8 @@ void Shred::PhysEventsFrequent() {
 			const ushort x=temp->X();
 			const ushort y=temp->Y();
 			const ushort z=temp->Z();
-			if ( weight<=Weight(x%SHRED_WIDTH, y%SHRED_WIDTH, z-1)
+			if ( weight<=GetBlock(x%SHRED_WIDTH, y%SHRED_WIDTH,
+						z-1)->Weight()
 					|| !world->Move(x, y, z, DOWN) )
 			{
 				RemFalling(temp);
@@ -347,9 +348,6 @@ int Shred::Movable(const ushort x, const ushort y, const ushort z) const {
 }
 int Shred::Transparent(const ushort x, const ushort y, const ushort z) const {
 	return blocks[x][y][z]->Transparent();
-}
-ushort Shred::Weight(const ushort x, const ushort y, const ushort z) const {
-	return blocks[x][y][z]->Weight();
 }
 
 void Shred::AddActive(Active * const active) {
