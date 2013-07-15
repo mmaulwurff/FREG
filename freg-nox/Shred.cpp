@@ -337,18 +337,6 @@ void Shred::PhysEventsRare() {
 int Shred::Sub(const ushort x, const ushort y, const ushort z) const {
 	return blocks[x][y][z]->Sub();
 }
-int Shred::Kind(const ushort x, const ushort y, const ushort z) const {
-	return blocks[x][y][z]->Kind();
-}
-int Shred::Durability(const ushort x, const ushort y, const ushort z) const {
-	return blocks[x][y][z]->Durability();
-}
-int Shred::Movable(const ushort x, const ushort y, const ushort z) const {
-	return blocks[x][y][z]->Movable();
-}
-int Shred::Transparent(const ushort x, const ushort y, const ushort z) const {
-	return blocks[x][y][z]->Transparent();
-}
 
 void Shred::AddActive(Active * const active) {
 	activeListAll.append(active);
@@ -656,7 +644,7 @@ void Shred::PlantGrass() {
 	for (ushort i=0; i<SHRED_WIDTH; ++i)
 	for (ushort j=0; j<SHRED_WIDTH; ++j) {
 		ushort k;
-		for (k=HEIGHT-2; Transparent(i, j, k); --k);
+		for (k=HEIGHT-2; GetBlock(i, j, k)->Transparent(); --k);
 		if ( SOIL==Sub(i, j, k++) && AIR==Sub(i, j, k) ) {
 			SetNewBlock(GRASS, GREENERY, i, j, k);
 		}
@@ -957,7 +945,7 @@ bool Shred::Tree(const ushort x, const ushort y, const ushort z,
 	for (k=z; k < z + height - 1; ++k) { //trunk
 		PutNormalBlock(WOOD, x+1, y+1, k);
 	}
-	if ( ENVIRONMENT==Movable(x+1, y+1, z-1) ) {
+	if ( ENVIRONMENT==GetBlock(x+1, y+1, z-1)->Movable() ) {
 		block_manager.DeleteBlock(blocks[x+1][y+1][z-1]);
 		PutNormalBlock(WOOD, x+1, y+1, z-1);
 	}

@@ -741,7 +741,8 @@ void World::GetAll(const ushort x_to, const ushort y_to, const ushort z_to) {
 }
 
 int World::Transparent(const ushort x, const ushort y, const ushort z) const {
-	return GetShred(x, y)->Transparent(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
+	return GetShred(x, y)->GetBlock(x%SHRED_WIDTH, y%SHRED_WIDTH, z)->
+		Transparent();
 }
 int World::Sub(const ushort x, const ushort y, const ushort z) const {
 	return GetShred(x, y)->Sub(x%SHRED_WIDTH, y%SHRED_WIDTH, z);

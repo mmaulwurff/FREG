@@ -101,10 +101,6 @@ class Shred {
 
 	public: // Information section
 	int Sub(ushort x, ushort y, ushort z) const;
-	int Kind(ushort x, ushort y, ushort z) const;
-	int Durability(ushort x, ushort y, ushort z) const;
-	int Movable(ushort x, ushort y, ushort z) const;
-	int Transparent(ushort x, ushort y, ushort z) const;
 
 	bool LoadShred(QFile &);
 

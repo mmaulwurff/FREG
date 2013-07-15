@@ -510,8 +510,8 @@
 		}
 		SetXYZ(x, y, z);
 		(whereShred=sh)->AddActive(this);
-		if ( ENVIRONMENT==sh->Movable(
-				x%SHRED_WIDTH, y%SHRED_WIDTH, z-1) &&
+		if ( ENVIRONMENT==sh->GetBlock(x%SHRED_WIDTH, y%SHRED_WIDTH,
+					z-1)->Movable() &&
 				!(*this==*sh->GetBlock(
 					x%SHRED_WIDTH, y%SHRED_WIDTH, z-1)) )
 		{
