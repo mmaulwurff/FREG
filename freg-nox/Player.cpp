@@ -72,6 +72,7 @@ void Player::SetCreativeMode(const bool turn) {
 
 int Player::UsingSelfType() const { return usingSelfType; }
 int Player::UsingType() const { return usingType; }
+void Player::SetUsingTypeNo() { usingType=USAGE_TYPE_NO; }
 
 Active * Player::GetP() const { return player; }
 
@@ -247,12 +248,6 @@ void Player::Obtain(const short x, const short y, const short z,
 {
 	world->WriteLock();
 	world->Get(player, x, y, z, src, dest, num);
-	Block * const using_block=world->GetBlock(x, y, z);
-	if ( using_block->HasInventory()->IsEmpty() &&
-			PILE==using_block->Kind())
-	{
-		usingType=USAGE_TYPE_NO;
-	}
 	emit Updated();
 	world->Unlock();
 }

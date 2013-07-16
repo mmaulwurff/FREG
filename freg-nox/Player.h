@@ -143,6 +143,7 @@ class Player : public QObject {
 	///This returns how player is using something now.
 	/** See enum usage_types in header.h. */
 	int UsingType() const;
+	void SetUsingTypeNo();
 	///This returns how player is using himself.
 	/** For example, OPEN means he is looking in his backpack.
 	 *  See enum usage_types in header.h. */

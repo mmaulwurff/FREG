@@ -464,12 +464,13 @@ void Screen::Print() {
 			case USAGE_TYPE_OPEN: {
 				ushort x, y, z;
 				ActionXyz(x, y, z);
-				Inventory * const inv=
-					w->GetBlock(x, y, z)->
-						HasInventory();
+				const Inventory * const inv=
+					w->GetBlock(x, y, z)->HasInventory();
 				if ( inv ) {
 					PrintInv(rightWin, inv);
 					break;
+				} else {
+					player->SetUsingTypeNo();
 				}
 			} // no break;
 			default:
@@ -773,7 +774,8 @@ void Screen::PrintFront(WINDOW * const window) const {
 	wnoutrefresh(window);
 } //Screen::PrintFront
 
-void Screen::PrintInv(WINDOW * const window, Inventory * const inv) const {
+void Screen::PrintInv(WINDOW * const window, const Inventory * const inv)
+const {
 	werase(window);
 	wstandend(window);
 	switch ( inv->Kind() ) {
