@@ -21,13 +21,25 @@
 #include <QList>
 #include "blocks.h"
 
-const bool FLAT_GENERATION=false;
+enum shred_type {
+	SHRED_NULLMOUNTAIN='#',
+	SHRED_PLAIN='.',
+	SHRED_TESTSHRED='t',
+	SHRED_PYRAMID='p',
+	SHRED_HILL='+',
+	SHRED_DESERT=':',
+	SHRED_WATER='~',
+	SHRED_FOREST='%',
+	SHRED_MOUNTAIN='^',
+	SHRED_EMPTY='_',
+	SHRED_NORMAL_UNDERGROUND='-'
+};
+
+const char DEFAULT_SHRED=SHRED_PLAIN;
+const char OUT_BORDER_SHRED=SHRED_WATER;
 
 class QFile;
 class World;
-
-const char DEFAULT_SHRED='.';
-const char OUT_BORDER_SHRED='~';
 
 class Shred {
 	Block * blocks[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];

@@ -41,6 +41,7 @@ SOURCES += BlockManager.cpp \
            main.cpp \
            Player.cpp \
            screen.cpp \
+           Shred-gen-flat.cpp \
            Shred.cpp \
            VirtScreen.cpp \
            world.cpp
