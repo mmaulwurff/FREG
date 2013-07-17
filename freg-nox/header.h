@@ -100,7 +100,8 @@ enum kinds {//kind of atom
 	LADDER, ///<17
 	DOOR, ///< 18
 	LOCKED_DOOR, ///< 19
-	CREATOR      ///< 20
+	CREATOR,     ///< 20
+	TEXT         ///< 21
 }; //enum kinds
 enum subs {//substance block is made from
 	//do not change order, or rewrite craft recipes.
@@ -124,7 +125,10 @@ enum subs {//substance block is made from
 	HAZELNUT,   ///<16
 	ROSE,       ///<17
 	CLAY,       ///<18
-	AIR //keep it last in this list
+	AIR,        ///<19
+	PAPER,      ///<20
+	/// Nothing is made from LAST.
+	LAST_SUB // keep it last in this list
 }; //enum subs
 
 enum usage_types {

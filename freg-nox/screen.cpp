@@ -180,6 +180,7 @@ char Screen::CharName(const int kind, const int sub) const {
 			case SAND:  return '#';
 			case SOIL:  return '.';
 			case ROSE:  return ';';
+			case PAPER: return '~';
 			case A_MEAT: case H_MEAT:
 			case HAZELNUT: return ',';
 			case SKY:
@@ -225,6 +226,7 @@ color_pairs Screen::Color(const int kind, const int sub) const {
 			case IRON:       return WHITE_BLACK;
 			case ROSE:       return RED_GREEN;
 			case CLAY:       return WHITE_RED;
+			case PAPER:      return MAGENTA_WHITE;
 			case SUN_MOON:   return ( NIGHT==w->PartOfDay() ) ?
 				WHITE_WHITE : YELLOW_YELLOW;
 			case SKY: case STAR: switch ( w->PartOfDay() ) {
@@ -344,7 +346,7 @@ void Screen::ControlPlayer(const int ch) {
 		case '!':
 			player->SetCreativeMode( !player->GetCreativeMode() );
 		break;
-		case ':': //command mode
+		case '/': //command mode
 			PassString(command);
 		//no break
 		case '.':
@@ -461,6 +463,16 @@ void Screen::Print() {
 	updated=true;
 	if ( !fileToShow ) { //right window
 		switch ( player->UsingType() ) {
+			case USAGE_TYPE_READ: {
+				ushort x, y, z;
+				ActionXyz(x, y, z);
+				wstandend(rightWin);
+				PrintFile(rightWin, QString(
+						w->WorldName()+"/texts/"+
+						w->GetBlock(x, y, z)->
+							GetNote()));
+				player->SetUsingTypeNo();
+			} break;
 			case USAGE_TYPE_OPEN: {
 				ushort x, y, z;
 				ActionXyz(x, y, z);
@@ -931,7 +943,9 @@ Screen::Screen(World * const wor, Player * const pl) :
 	}
 	printw("\nVersion %s.\n\n", VER);
 	addstr("Press any key.");
-	qsrand(getch());
+	const int ch=getch();
+	qsrand(ch);
+	ungetch(ch);
 	erase();
 	refresh();
 	CleanFileToShow();

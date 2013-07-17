@@ -25,6 +25,8 @@
 const ushort INV_SIZE=26;
 const ushort MAX_STACK_SIZE=9;
 
+const ushort MAX_NOTE_LENGHT=144;
+
 enum before_push_action {
 	NO_ACTION,
 	MOVE_UP,
@@ -562,7 +564,6 @@ class Clock : public Active {
 
 	Clock(int sub);
 	Clock (QDataStream & str, int sub);
-	~Clock();
 }; //class Clock
 
 class Creator : public Active, public Inventory {
@@ -585,4 +586,14 @@ class Creator : public Active, public Inventory {
 	Creator(QDataStream & str, int sub);
 }; //class Creator
 
+class Text : public Block {
+	public:
+	quint8 Kind() const;
+	QString FullName() const;
+	usage_types Use(Block * who=0);
+	void Inscribe(const QString & str);
+
+	Text(int sub);
+	Text(QDataStream & str, int sub);
+}; //class Text
 #endif

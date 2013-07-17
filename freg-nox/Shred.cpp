@@ -353,40 +353,49 @@ void Shred::PlantGrass() {
 
 void Shred::TestShred() {
 	const ushort level=FlatUndeground()+1;
+	short row=1, column=-1;
 	//row 1
-	SetNewBlock(CLOCK, IRON, 1, 1, level);
-	SetNewBlock(CHEST, WOOD, 3, 1, level);
-	SetNewBlock(ACTIVE, SAND, 5, 1, level);
-	PutNormalBlock(GLASS, 7, 1, level);
-	SetNewBlock(PILE, DIFFERENT, 9, 1, level);
-	SetNewBlock(PLATE, STONE, 11, 1, level);
-	PutNormalBlock(NULLSTONE, 13, 1, level);
+	SetNewBlock(CLOCK, IRON, column+=2, row, level);
+	SetNewBlock(CHEST, WOOD, column+=2, row, level);
+	SetNewBlock(ACTIVE, SAND, column+=2, row, level);
+	PutNormalBlock(GLASS, column+=2, 1, level);
+	SetNewBlock(PILE, DIFFERENT, column+=2, row, level);
+	SetNewBlock(PLATE, STONE, column+=2, row, level);
+	PutNormalBlock(NULLSTONE, column+=2, row, level);
 	//row 2
-	SetNewBlock(LADDER, NULLSTONE, 1, 3, level);
+	column=-1;
+	row+=2;
+	SetNewBlock(LADDER, NULLSTONE, column+=2, row, level);
 	//tall ladder
 	for (ushort i=level+1; i<=level+5 && i<HEIGHT-1; ++i) {
-		SetNewBlock(LADDER, WOOD, 1, 3, i);
+		SetNewBlock(LADDER, WOOD, column, row, i);
 	}
-	SetNewBlock(DWARF, H_MEAT, 3, 3, level);
-	SetNewBlock(LIQUID, WATER, 5, 3, level - 3);
-	SetNewBlock(LIQUID, WATER, 5, 3, level - 3);
-	SetNewBlock(LIQUID, WATER, 5, 3, level - 2);
-	PutNormalBlock(AIR, 5, 3, level - 1);
-	SetNewBlock(BUSH, GREENERY, 7, 3, level);
-	SetNewBlock(RABBIT, A_MEAT, 9, 3, level - 2);
-	PutNormalBlock(AIR, 9, 3, level - 1);
-	SetNewBlock(WORKBENCH, IRON, 11, 3, level);
-	SetNewBlock(DOOR, GLASS, 13, 3, level);
-	blocks[13][3][level]->SetDir(NORTH);
+	SetNewBlock(DWARF, H_MEAT, column+=2, row, level);
+	SetNewBlock(LIQUID, WATER, column+=2, row, level - 3);
+	SetNewBlock(LIQUID, WATER, column, row, level - 3);
+	SetNewBlock(LIQUID, WATER, column, row, level - 2);
+	PutNormalBlock(AIR, column, row, level - 1);
+	SetNewBlock(BUSH, GREENERY, column+=2, row, level);
+	SetNewBlock(RABBIT, A_MEAT, column+=2, row, level - 2);
+	PutNormalBlock(AIR, column, row, level - 1);
+	SetNewBlock(WORKBENCH, IRON, column+=2, row, level);
+	SetNewBlock(DOOR, GLASS, column+=2, row, level);
+	blocks[column][row][level]->SetDir(NORTH);
 	//row 3
-	SetNewBlock(WEAPON, IRON, 1, 5, level);
-	SetNewBlock(BLOCK, SAND, 3, 5, level);
-	SetNewBlock(BLOCK, WATER, 5, 5, level);
-	SetNewBlock(ACTIVE, WATER, 7, 5, level);
-	SetNewBlock(DOOR, STONE, 9, 5, level);
+	column=-1;
+	row+=2;
+	SetNewBlock(WEAPON, IRON, column+=2, row, level);
+	SetNewBlock(BLOCK, SAND, column+=2, row, level);
+	SetNewBlock(BLOCK, WATER, column+=2, row, level);
+	SetNewBlock(ACTIVE, WATER, column+=2, row, level);
+	SetNewBlock(DOOR, STONE, column+=2, row, level);
 	blocks[9][5][level]->SetDir(NORTH);
-	SetNewBlock(BLOCK, CLAY, 11, 5, level);
-	SetNewBlock(LIQUID, STONE, 13, 5, level-1);
+	SetNewBlock(BLOCK, CLAY, column+=2, row, level);
+	SetNewBlock(LIQUID, STONE, column+=2, row, level-1);
+	// row 4
+	column=-1;
+	row+=2;
+	SetNewBlock(TEXT, PAPER, column+=2, row, level);
 	//suicide booth
 	/*for (ushort i=1; i<4; ++i)
 	for (ushort j=7; j<10; ++j)

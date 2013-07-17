@@ -136,7 +136,7 @@ class VirtScreen : public QObject {
 	 * 	Qt::DirectConnection);
 	 */
 	VirtScreen(World *, Player *);
-	///Only calls VirtScreen::CleanAll, not needed to be reimplemented.
+	///Only calls VirtScreen::CleanAll
 	virtual ~VirtScreen();
 }; //class VirtScreen
 

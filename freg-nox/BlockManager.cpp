@@ -24,12 +24,12 @@
 BlockManager block_manager;
 
 BlockManager::BlockManager() {
-	for (ushort sub=0; sub<=AIR; ++sub) {
+	for (ushort sub=0; sub<LAST_SUB; ++sub) {
 		normals[sub]=new Block(sub);
 	}
 }
 BlockManager::~BlockManager() {
-	for(ushort sub=0; sub<=AIR; ++sub) {
+	for(ushort sub=0; sub<LAST_SUB; ++sub) {
 		delete normals[sub];
 	}
 }
@@ -39,7 +39,7 @@ Block * BlockManager::NormalBlock(const int sub) {
 }
 
 Block * BlockManager::NewBlock(const int kind, int sub) {
-	if ( sub > AIR ) {
+	if ( sub >= LAST_SUB  ) {
 		fprintf(stderr,
 			"BlockManager::NewBlock: unknown substance: %d.\n",
 			sub);
@@ -61,6 +61,7 @@ Block * BlockManager::NewBlock(const int kind, int sub) {
 		case DOOR:   return New<Door  >(sub);
 		case LIQUID: return New<Liquid>(sub);
 		case CLOCK:  return New<Clock >(sub);
+		case TEXT:   return New<Text  >(sub);
 		case CREATOR: return New<Creator>(sub);
 		case WORKBENCH: return New<Workbench>(sub);
 		default:
@@ -98,6 +99,7 @@ Block * BlockManager::BlockFromFile(QDataStream & str) {
 		case GRASS:  return New<Grass >(str, sub);
 		case ACTIVE: return New<Active>(str, sub);
 		case LIQUID: return New<Liquid>(str, sub);
+		case TEXT:   return New<Text  >(str, sub);
 		case LOCKED_DOOR:
 		case DOOR:   return New<Door  >(str, sub);
 		case CLOCK:  return New<Clock >(str, sub);

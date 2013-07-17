@@ -52,7 +52,7 @@ class BlockManager {
 	void DeleteBlock(Block * block);
 
 	private:
-	Block * normals[AIR+1];
+	Block * normals[LAST_SUB];
 
 	template <typename Thing>
 	Thing * New(int sub);

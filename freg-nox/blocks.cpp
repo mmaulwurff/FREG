@@ -128,9 +128,13 @@
 
 	void Block::Inscribe(const QString & str) {
 		if ( note ) {
-			*note=str;
+			*note=str.left(MAX_NOTE_LENGHT);
 		} else {
-			note=new QString(str);
+			note=new QString(str.left(MAX_NOTE_LENGHT));
+		}
+		if ( ""==*note ) {
+			delete note;
+			note=0;
 		}
 	}
 
@@ -161,6 +165,7 @@
 			case WOOD:      return WEIGHT_WATER-1;
 			case IRON:      return WEIGHT_IRON;
 			case GREENERY:  return WEIGHT_GREENERY;
+			case PAPER:
 			case ROSE:
 			case HAZELNUT:  return WEIGHT_MINIMAL;
 			case MOSS_STONE:
@@ -1594,7 +1599,6 @@
 			Inscribe(*note);
 		}
 	}
-	Clock::~Clock() {}
 //Creator::
 	quint8 Creator::Kind() const { return CREATOR; }
 	int Creator::Sub() const { return Block::Sub(); }
@@ -1621,4 +1625,30 @@
 	Creator::Creator(QDataStream & str, const int sub) :
 			Active(str, sub, NONSTANDARD),
 			Inventory(str, INV_SIZE)
+	{}
+//Text:
+	quint8 Text::Kind() const { return TEXT; }
+	QString Text::FullName() const { return QObject::tr("Paper page"); }
+
+	usage_types Text::Use(Block * const who) {
+		if ( note ) {
+			return USAGE_TYPE_READ;
+		} else {
+			who->ReceiveSignal(QObject::tr(
+				"Nothing is written on this page"));
+			return USAGE_TYPE_NO;
+		}
+	}
+
+	void Text::Inscribe(const QString & str) {
+		if ( !note ) {
+			Block::Inscribe(str);
+		}
+	}
+
+	Text::Text(const int sub) :
+			Block(sub, NONSTANDARD)
+	{}
+	Text::Text(QDataStream & str, const int sub) :
+			Block(str, sub, NONSTANDARD)
 	{}

@@ -845,6 +845,7 @@ World::World(const QString & world_name) :
 	game_settings.setValue("number_of_active_shreds", numActiveShreds);
 
 	QDir::current().mkdir(worldName);
+	QDir::current().mkdir(worldName+"/texts");
 	QFile map(worldName+"/map.txt");
 	if ( map.open(QIODevice::ReadOnly | QIODevice::Text) ) {
 		mapSize=int(qSqrt(1+4*map.size())-1)/2;
