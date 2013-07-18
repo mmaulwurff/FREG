@@ -393,6 +393,9 @@ void Player::ProcessCommand(QString & command) {
 	} else if ( "what"==request ) {
 		ushort x_what, y_what, z_what;
 		comm_stream >> x_what >> y_what >> z_what;
+		if ( !world->InBounds(x_what, y_what, z_what) ) {
+			emit Notify(tr("Such block is out of loaded world."));
+		}
 		world->ReadLock();
 		if ( creativeMode ) {
 			Examine(x_what, y_what, z_what);
