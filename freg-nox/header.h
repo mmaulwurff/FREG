@@ -42,18 +42,14 @@ const ushort MAX_DURABILITY=100;
 const ushort MAX_BREATH=60;
 
 enum dirs {
-	UP, ///< 0
-	DOWN, ///< 1
+	UP,    ///< 0
+	DOWN,  ///< 1
 	NORTH, ///< 2
 	SOUTH, ///< 3
-	EAST, ///< 4
-	WEST, ///< 5
-	NORTH_EAST, ///< 6
-	SOUTH_EAST, ///< 7
-	SOUTH_WEST, ///< 8
-	NORTH_WEST, ///< 9
-	HERE ///< 10
-}; //enum dirs
+	EAST,  ///< 4
+	WEST,  ///< 5
+	HERE   ///< 6
+}; // enum dirs
 
 enum { NOT_MOVABLE, MOVABLE, ENVIRONMENT };
 
@@ -75,37 +71,41 @@ enum damage_kinds {
 	TIME,    ///< 12
 	NO_HARM, ///< 13
 	DAMAGE_FALL ///< 14
-}; //enum damage_kinds
+}; // enum damage_kinds
 
-enum kinds {//kind of atom
-	//do not change order, or rewrite craft recipes.
-	//add new kinds to bottom.
-	BLOCK, ///<0
-	BELL, ///<1
-	CHEST, ///<2
-	PILE, ///<3
-	DWARF, ///<4
-	ANIMAL, ///<5
-	PICK, ///<6
-	TELEGRAPH, ///<7
-	LIQUID, ///<8
-	GRASS, ///<9
-	BUSH, ///<10
-	RABBIT, ///<11
-	ACTIVE, ///<12
-	CLOCK, ///<13
-	PLATE, ///<14
-	WORKBENCH, ///<15
-	WEAPON, ///<16
-	LADDER, ///<17
-	DOOR, ///< 18
+/// Kinds of atom
+enum kinds {
+	// do not change order, or rewrite craft recipes.
+	// add new kinds to bottom.
+	// changind kind codes will break file compatibility.
+	BLOCK,       ///< 0
+	BELL,        ///< 1
+	CHEST,       ///< 2
+	PILE,        ///< 3
+	DWARF,       ///< 4
+	ANIMAL,      ///< 5
+	PICK,        ///< 6
+	TELEGRAPH,   ///< 7
+	LIQUID,      ///< 8
+	GRASS,       ///< 9
+	BUSH,        ///< 10
+	RABBIT,      ///< 11
+	ACTIVE,      ///< 12
+	CLOCK,       ///< 13
+	PLATE,       ///< 14
+	WORKBENCH,   ///< 15
+	WEAPON,      ///< 16
+	LADDER,      ///< 17
+	DOOR,        ///< 18
 	LOCKED_DOOR, ///< 19
 	CREATOR,     ///< 20
-	TEXT         ///< 21
-}; //enum kinds
-enum subs {//substance block is made from
-	//do not change order, or rewrite craft recipes.
-	//add new substances right before air.
+	TEXT,        ///< 21
+	MAP          ///< 22
+}; // enum kinds
+/// Substance block is made from.
+enum subs {
+	// do not change order, this will break file compatibility.
+	// add new substances right before LAST_SUB.
 	STONE,      ///<0
 	MOSS_STONE, ///<1
 	NULLSTONE,  ///<2
@@ -127,23 +127,23 @@ enum subs {//substance block is made from
 	CLAY,       ///<18
 	AIR,        ///<19
 	PAPER,      ///<20
-	/// Nothing is made from LAST.
+	/// Nothing is made from LAST_SUB.
 	LAST_SUB // keep it last in this list
-}; //enum subs
+}; // enum subs
 
 enum usage_types {
 	USAGE_TYPE_NO,
 	USAGE_TYPE_OPEN,
 	USAGE_TYPE_READ
-}; //enum usage_types
+}; // enum usage_types
 
 enum transparency {
 	BLOCK_OPAQUE,
 	BLOCK_TRANSPARENT,
 	INVISIBLE,
 	NONSTANDARD=6,
-	UNDEF
-}; //enum transparency
+	UNDEF // temporary, doesn't appear in world.
+}; // enum transparency
 
 typedef struct {
 	int x;

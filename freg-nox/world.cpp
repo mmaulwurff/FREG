@@ -234,12 +234,8 @@ quint8 World::Anti(const quint8 dir) {
 		case EAST:  return WEST;
 		case SOUTH: return NORTH;
 		case WEST:  return EAST;
-		case NORTH_EAST: return SOUTH_WEST;
-		case NORTH_WEST: return SOUTH_EAST;
-		case SOUTH_EAST: return NORTH_WEST;
-		case SOUTH_WEST: return NORTH_EAST;
-		case UP:   return DOWN;
-		case DOWN: return UP;
+		case UP:    return DOWN;
+		case DOWN:  return UP;
 		default:
 			fprintf(stderr,
 				"World::Anti(int): unlisted dir: %d\n",
