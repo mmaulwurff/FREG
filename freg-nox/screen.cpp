@@ -99,17 +99,17 @@ char Screen::CharNumber(const ushort x, const ushort y, const ushort z) const {
 	}
 	if ( player->X()==x && player->Y()==y && player->Z()==z ) {
 		switch ( player->GetDir() ) {
-			case NORTH: return '^';
-			case SOUTH: return 'v';
-			case EAST:  return '>';
-			case WEST:  return '<';
-			case UP:    return '.';
-			case DOWN:  return 'x';
-			default:
-				fprintf(stderr,
-					"Screen::CharNumber: (?) dir: %d\n",
-					player->GetDir());
-				return '*';
+		case NORTH: return '^';
+		case SOUTH: return 'v';
+		case EAST:  return '>';
+		case WEST:  return '<';
+		case UP:    return '.';
+		case DOWN:  return 'x';
+		default:
+			fprintf(stderr,
+				"Screen::CharNumber: (?) dir: %d\n",
+				player->GetDir());
+			return '*';
 		}
 	}
 	const short z_dif=( UP==player->GetDir() ) ?
@@ -137,107 +137,107 @@ char Screen::CharNumberFront(const ushort i, const ushort j) const {
 
 char Screen::CharName(const int kind, const int sub) const {
 	switch ( kind )  {
-		case BUSH:   return ';';
-		case CREATOR:
-		case DWARF:  return '@';
-		case LIQUID: return '~';
-		case GRASS:  return '.';
-		case RABBIT: return 'r';
-		case CLOCK:  return 'c';
-		case PLATE:  return '_';
-		case LADDER: return '^';
-		case PICK:   return '\\';
-		case CHEST:
-		case PILE:   return '&';
-		case WORKBENCH: return '*';
-		case TELEGRAPH: return 't';
-		case DOOR:        return ( STONE==sub ) ? '#' : '\'';
-		case LOCKED_DOOR: return ( STONE==sub ) ? '#' : '`';
-		case WEAPON: switch ( sub ) {
-			default:
-				fprintf(stderr,
-					"Screen::CharName: weapon sub ?: %d\n",
-					sub);
-			//no break;
-			case STONE: return '.';
-			case IRON:
-			case WOOD:  return '/';
-		} break;
-		case ACTIVE: switch ( sub ) {
-			case SAND:  return '.';
-			case WATER: return '*';
-			default:
-				fprintf(stderr,
-					"Screen::CharName: active sub ?: %d\n",
-					sub);
-		} //no break;
-		default: switch ( sub ) {
-			case NULLSTONE: case MOSS_STONE: case WOOD:
-			case IRON: case CLAY:
-			case STONE: return '#';
-			case GLASS: return 'g';
-			case AIR:   return ' ';
-			case STAR:  return '.';
-			case WATER: return '~';
-			case SAND:  return '#';
-			case SOIL:  return '.';
-			case ROSE:  return ';';
-			case PAPER: return '~';
-			case A_MEAT: case H_MEAT:
-			case HAZELNUT: return ',';
-			case SKY:
-			case SUN_MOON: return ' ';
-			case GREENERY: return '%';
-			default:
-				fprintf(stderr,
-					"Screen::CharName: unlisted sub: %d\n",
-					sub);
-				return '?';
+	case BUSH:   return ';';
+	case CREATOR:
+	case DWARF:  return '@';
+	case LIQUID: return '~';
+	case GRASS:  return '.';
+	case RABBIT: return 'r';
+	case CLOCK:  return 'c';
+	case PLATE:  return '_';
+	case LADDER: return '^';
+	case PICK:   return '\\';
+	case CHEST:
+	case PILE:   return '&';
+	case WORKBENCH: return '*';
+	case TELEGRAPH: return 't';
+	case DOOR:        return ( STONE==sub ) ? '#' : '\'';
+	case LOCKED_DOOR: return ( STONE==sub ) ? '#' : '`';
+	case WEAPON: switch ( sub ) {
+		default:
+			fprintf(stderr,
+				"Screen::CharName: weapon sub ?: %d\n",
+				sub);
+		//no break;
+		case STONE: return '.';
+		case IRON:
+		case WOOD:  return '/';
+	} break;
+	case ACTIVE: switch ( sub ) {
+		case SAND:  return '.';
+		case WATER: return '*';
+		default:
+			fprintf(stderr,
+				"Screen::CharName: active sub ?: %d\n",
+				sub);
+	} //no break;
+	default: switch ( sub ) {
+		case NULLSTONE: case MOSS_STONE: case WOOD:
+		case IRON: case CLAY:
+		case STONE: return '#';
+		case GLASS: return 'g';
+		case AIR:   return ' ';
+		case STAR:  return '.';
+		case WATER: return '~';
+		case SAND:  return '#';
+		case SOIL:  return '.';
+		case ROSE:  return ';';
+		case PAPER: return '~';
+		case A_MEAT: case H_MEAT:
+		case HAZELNUT: return ',';
+		case SKY:
+		case SUN_MOON: return ' ';
+		case GREENERY: return '%';
+		default:
+			fprintf(stderr,
+				"Screen::CharName: unlisted sub: %d\n",
+				sub);
+			return '?';
 		}
 	}
 } //Screen::CharName
 
 color_pairs Screen::Color(const int kind, const int sub) const {
 	switch ( kind ) { //foreground_background
-		case DWARF:     return WHITE_BLUE;
-		case TELEGRAPH: return CYAN_BLACK;
-		case RABBIT:    return RED_WHITE;
-		case BUSH:      return BLACK_GREEN;
-		case PILE:      return WHITE_BLACK;
-		case LIQUID: switch ( sub ) {
-			case WATER: return CYAN_BLUE;
-			default:    return RED_YELLOW;
+	case DWARF:     return WHITE_BLUE;
+	case TELEGRAPH: return CYAN_BLACK;
+	case RABBIT:    return RED_WHITE;
+	case BUSH:      return BLACK_GREEN;
+	case PILE:      return WHITE_BLACK;
+	case LIQUID: switch ( sub ) {
+		case WATER: return CYAN_BLUE;
+		default:    return RED_YELLOW;
+	}
+	case ACTIVE: switch ( sub ) {
+		case WATER: return CYAN_WHITE;
+		case SAND:  return YELLOW_WHITE;
+		default:    return WHITE_BLACK;
+	}
+	default: switch ( sub ) {
+		case WOOD: case HAZELNUT:
+		case SOIL:       return BLACK_YELLOW;
+		case GREENERY:   return BLACK_GREEN;
+		case STONE:      return BLACK_WHITE;
+		case SAND:       return YELLOW_WHITE;
+		case A_MEAT:     return WHITE_RED;
+		case H_MEAT:     return BLACK_RED;
+		case WATER:      return WHITE_CYAN;
+		case GLASS:      return BLUE_WHITE;
+		case NULLSTONE:  return WHITE_BLACK;
+		case MOSS_STONE: return GREEN_WHITE;
+		case IRON:       return WHITE_BLACK;
+		case ROSE:       return RED_GREEN;
+		case CLAY:       return WHITE_RED;
+		case PAPER:      return MAGENTA_WHITE;
+		case SUN_MOON:   return ( NIGHT==w->PartOfDay() ) ?
+			WHITE_WHITE : YELLOW_YELLOW;
+		case SKY: case STAR: switch ( w->PartOfDay() ) {
+			case NIGHT:   return WHITE_BLACK;
+			case MORNING: return WHITE_BLUE;
+			case NOON:    return WHITE_CYAN;
+			case EVENING: return WHITE_BLUE;
 		}
-		case ACTIVE: switch ( sub ) {
-			case WATER: return CYAN_WHITE;
-			case SAND:  return YELLOW_WHITE;
-			default:    return WHITE_BLACK;
-		}
-		default: switch ( sub ) {
-			case WOOD: case HAZELNUT:
-			case SOIL:       return BLACK_YELLOW;
-			case GREENERY:   return BLACK_GREEN;
-			case STONE:      return BLACK_WHITE;
-			case SAND:       return YELLOW_WHITE;
-			case A_MEAT:     return WHITE_RED;
-			case H_MEAT:     return BLACK_RED;
-			case WATER:      return WHITE_CYAN;
-			case GLASS:      return BLUE_WHITE;
-			case NULLSTONE:  return WHITE_BLACK;
-			case MOSS_STONE: return GREEN_WHITE;
-			case IRON:       return WHITE_BLACK;
-			case ROSE:       return RED_GREEN;
-			case CLAY:       return WHITE_RED;
-			case PAPER:      return MAGENTA_WHITE;
-			case SUN_MOON:   return ( NIGHT==w->PartOfDay() ) ?
-				WHITE_WHITE : YELLOW_YELLOW;
-			case SKY: case STAR: switch ( w->PartOfDay() ) {
-				case NIGHT:   return WHITE_BLACK;
-				case MORNING: return WHITE_BLUE;
-				case NOON:    return WHITE_CYAN;
-				case EVENING: return WHITE_BLUE;
-			}
-			default: return WHITE_BLACK;
+		default: return WHITE_BLACK;
 		}
 	}
 } //Screen::Color
@@ -253,125 +253,114 @@ void Screen::ControlPlayer(const int ch) {
 		return;
 	}
 	switch ( ch ) { //interactions with world
-		case KEY_UP:
-			if ( player->GetDir()==NORTH ) {
-				player->Move(NORTH);
-			} else {
-				player->SetDir(NORTH);
-			}
-		break;
-		case KEY_DOWN:
-			if ( player->GetDir()==SOUTH ) {
-				player->Move(SOUTH);
-			} else {
-				player->SetDir(SOUTH);
-			}
-		break;
-		case KEY_RIGHT:
-			if ( player->GetDir()==EAST ) {
-				player->Move(EAST);
-			} else {
-				player->SetDir(EAST);
-			}
-		break;
-		case KEY_LEFT:
-			if ( player->GetDir()==WEST ) {
-				player->Move(WEST);
-			} else {
-				player->SetDir(WEST);
-			}
-		break;
-		case KEY_END:   player->Move(DOWN); break;
-		case ' ': player->Jump(); break;
-		case '=': player->Move(); break;
+	case KEY_UP:
+		if ( player->GetDir()==NORTH ) {
+			player->Move(NORTH);
+		} else {
+			player->SetDir(NORTH);
+		}
+	break;
+	case KEY_DOWN:
+		if ( player->GetDir()==SOUTH ) {
+			player->Move(SOUTH);
+		} else {
+			player->SetDir(SOUTH);
+		}
+	break;
+	case KEY_RIGHT:
+		if ( player->GetDir()==EAST ) {
+			player->Move(EAST);
+		} else {
+			player->SetDir(EAST);
+		}
+	break;
+	case KEY_LEFT:
+		if ( player->GetDir()==WEST ) {
+			player->Move(WEST);
+		} else {
+			player->SetDir(WEST);
+		}
+	break;
+	case KEY_END:   player->Move(DOWN); break;
+	case ' ': player->Jump(); break;
+	case '=': player->Move(); break;
 
-		case '>':
-			player->SetDir(World::TurnRight(player->GetDir()));
+	case '>': player->SetDir(World::TurnRight(player->GetDir())); break;
+	case '<': player->SetDir(World::TurnLeft(player->GetDir()));  break;
+	case KEY_NPAGE: player->SetDir(DOWN); break;
+	case KEY_PPAGE: player->SetDir(UP);   break;
+
+	case KEY_HOME: player->Backpack(); break;
+	case 8:
+	case KEY_BACKSPACE: { //damage
+		ushort x, y, z;
+		ActionXyz(x, y, z);
+		player->Damage(x, y, z);
+	} break;
+	case 13:
+	case '\n': { //use
+		ushort x, y, z;
+		ActionXyz(x, y, z);
+		player->Use(x, y, z);
+	} break;
+	case  '?': { //examine
+		ushort x, y, z;
+		ActionXyz(x, y, z);
+		player->Examine(x, y, z);
+	} break;
+	case  '~': { //inscribe
+		ushort x, y, z;
+		ActionXyz(x, y, z);
+		player->Inscribe(x, y, z);
+	} break;
+	case 27: /*esc*/ player->StopUseAll(); break;
+
+	case 'U': SetActionMode(USE);      break;
+	case 'T': SetActionMode(THROW);    break;
+	case 'O': SetActionMode(OBTAIN);   break;
+	case 'W': SetActionMode(WIELD);    break;
+	case 'I': SetActionMode(INSCRIBE); break;
+	case 'E': SetActionMode(EAT);      break;
+	case 'B': SetActionMode(BUILD);    break;
+	case 'C': SetActionMode(CRAFT);    break;
+	case 'F': SetActionMode(TAKEOFF);  break;
+
+	case KEY_HELP:
+	case 'H':
+		wstandend(rightWin);
+		PrintFile(rightWin, "help.txt");
 		break;
-		case '<':
-			player->SetDir(World::TurnLeft(player->GetDir()));
-		break;
-		case KEY_NPAGE: player->SetDir(DOWN); break;
-		case KEY_PPAGE: player->SetDir(UP);   break;
 
-		case KEY_HOME: player->Backpack(); break;
-		case 8:
-		case KEY_BACKSPACE: { //damage
-			ushort x, y, z;
-			ActionXyz(x, y, z);
-			player->Damage(x, y, z);
-		} break;
-		case 13:
-		case '\n': { //use
-			ushort x, y, z;
-			ActionXyz(x, y, z);
-			player->Use(x, y, z);
-		} break;
-		case  '?': { //examine
-			ushort x, y, z;
-			ActionXyz(x, y, z);
-			player->Examine(x, y, z);
-		} break;
-		case  '~': { //inscribe
-			ushort x, y, z;
-			ActionXyz(x, y, z);
-			player->Inscribe(x, y, z);
-		} break;
-		case 27: /*esc*/ player->StopUseAll(); break;
+	case ';': {
+		Inventory * const inv=player->PlayerInventory();
+		if ( inv ) {
+			player->MoveInsideInventory(
+				inv->Start(), inv->Size()-1);
+		}
+	} break;
+	case '-': shiftFocus = -!shiftFocus; break; //move focus down
+	case '+': shiftFocus =  !shiftFocus; break; //move focus up
 
-		case 'U': SetActionMode(USE);      break;
-		case 'T': SetActionMode(THROW);    break;
-		case 'O': SetActionMode(OBTAIN);   break;
-		case 'W': SetActionMode(WIELD);    break;
-		case 'I': SetActionMode(INSCRIBE); break;
-		case 'E': SetActionMode(EAT);      break;
-		case 'B': SetActionMode(BUILD);    break;
-		case 'C': SetActionMode(CRAFT);    break;
-		case 'F': SetActionMode(TAKEOFF);  break;
+	case '!': player->SetCreativeMode( !player->GetCreativeMode() ); break;
+	case '/': PassString(command); //no break
+	case '.': player->ProcessCommand(command); break;
 
-		case KEY_HELP:
-		case 'H':
-			wstandend(rightWin);
-			PrintFile(rightWin, "help.txt");
+	case 'L': RePrint(); break;
+
+	case KEY_MOUSE: MouseAction(); break;
+	case 'R':
+		if ( player->GetCreativeMode() ) {
 			break;
-
-		case ';': {
-			Inventory * const inv=player->PlayerInventory();
-			if ( inv ) {
-				player->MoveInsideInventory(
-					inv->Start(), inv->Size()-1);
-			}
-		} break;
-		case '-': shiftFocus = -!shiftFocus; break; //move focus down
-		case '+': shiftFocus =  !shiftFocus; break; //move focus up
-
-		case '!':
-			player->SetCreativeMode( !player->GetCreativeMode() );
-		break;
-		case '/': //command mode
-			PassString(command);
-		//no break
-		case '.':
-			player->ProcessCommand(command);
-		break;
-
-		case 'L': RePrint(); break;
-
-		case KEY_MOUSE: MouseAction(); break;
-		case 'R':
-			if ( player->GetCreativeMode() ) {
-				break;
-			}
-			player->SetActiveHand(!player->IsRightActiveHand());
-			Notify(tr("Now %1 hand is active.").
-				arg(tr(player->IsRightActiveHand() ?
-					"right" : "left")));
-		break;
-		default:
-			Notify(tr(
-				"Don't know what such key means: %1 ('%2').").
-				arg(ch).
-				arg(char(ch)));
+		}
+		player->SetActiveHand(!player->IsRightActiveHand());
+		Notify(tr("Now %1 hand is active.").
+			arg(tr(player->IsRightActiveHand() ?
+				"right" : "left")));
+	break;
+	default: Notify(tr(
+		"Don't know what such key means: %1 ('%2').").
+			arg(ch).
+			arg(char(ch)));
 	}
 	updated=false;
 } //Screen::ControlPlayer
@@ -402,31 +391,30 @@ void Screen::MouseAction() {
 
 void Screen::InventoryAction(const ushort num) const {
 	switch ( actionMode ) {
-		case USE:      player->Use(num); break;
-		case WIELD:    player->Wield(num); break;
-		case INSCRIBE: player->Inscribe(num); break;
-		case EAT:      player->Eat(num); break;
-		case CRAFT:    player->Craft(num); break;
-		case TAKEOFF:  player->TakeOff(num); break;
-		case OBTAIN: {
-			ushort x, y, z;
-			ActionXyz(x, y, z);
-			player->Obtain(x, y, z, num);
-		} break;
-		case THROW: {
-			ushort x, y, z;
-			ActionXyz(x, y, z);
-			player->Throw(x, y, z, num);
-		} break;
-		case BUILD: {
-			ushort x, y, z;
-			ActionXyz(x, y, z);
-			player->Build(x, y, z, num);
-		} break;
-		default:
-			fprintf(stderr,
-				"Screen::InventoryActiov: action mode ?: %d\n",
-				actionMode);
+	case USE:      player->Use(num);      break;
+	case WIELD:    player->Wield(num);    break;
+	case INSCRIBE: player->Inscribe(num); break;
+	case EAT:      player->Eat(num);      break;
+	case CRAFT:    player->Craft(num);    break;
+	case TAKEOFF:  player->TakeOff(num);  break;
+	case OBTAIN: {
+		ushort x, y, z;
+		ActionXyz(x, y, z);
+		player->Obtain(x, y, z, num);
+	} break;
+	case THROW: {
+		ushort x, y, z;
+		ActionXyz(x, y, z);
+		player->Throw(x, y, z, num);
+	} break;
+	case BUILD: {
+		ushort x, y, z;
+		ActionXyz(x, y, z);
+		player->Build(x, y, z, num);
+	} break;
+	default: fprintf(stderr,
+		"Screen::InventoryActiov: action mode ?: %d\n",
+		actionMode);
 	}
 }
 
@@ -547,19 +535,19 @@ void Screen::PrintHUD() {
 	wstandend(hudWin);
 	mvwaddstr(hudWin, 1, 0, "Action: ");
 	switch ( actionMode ) {
-		case USE:      waddstr(hudWin, "Use in inventory"); break;
-		case THROW:    waddstr(hudWin, "Throw"); break;
-		case OBTAIN:   waddstr(hudWin, "Obtain"); break;
-		case WIELD:    waddstr(hudWin, "Wield"); break;
-		case INSCRIBE: waddstr(hudWin, "Inscribe in inventory"); break;
-		case EAT:      waddstr(hudWin, "Eat"); break;
-		case BUILD:    waddstr(hudWin, "Build"); break;
-		case CRAFT:    waddstr(hudWin, "Craft"); break;
-		case TAKEOFF:  waddstr(hudWin, "Take off"); break;
-		default:       waddstr(hudWin, "Unknown");
-			fprintf(stderr,
-				"Screen::Print: Unlisted actionMode: %d\n",
-				actionMode);
+	case USE:      waddstr(hudWin, "Use in inventory"); break;
+	case THROW:    waddstr(hudWin, "Throw"); break;
+	case OBTAIN:   waddstr(hudWin, "Obtain"); break;
+	case WIELD:    waddstr(hudWin, "Wield"); break;
+	case INSCRIBE: waddstr(hudWin, "Inscribe in inventory"); break;
+	case EAT:      waddstr(hudWin, "Eat"); break;
+	case BUILD:    waddstr(hudWin, "Build"); break;
+	case CRAFT:    waddstr(hudWin, "Craft"); break;
+	case TAKEOFF:  waddstr(hudWin, "Take off"); break;
+	default:       waddstr(hudWin, "Unknown");
+		fprintf(stderr,
+			"Screen::Print: Unlisted actionMode: %d\n",
+			actionMode);
 	}
 	if ( player->GetCreativeMode() ) {
 		wstandend(hudWin);
@@ -571,12 +559,12 @@ void Screen::PrintHUD() {
 		wcolor_set(hudWin, BLACK_WHITE, NULL);
 		(void)wmove(hudWin, 0, SCREEN_SIZE*2-8);
 		switch ( player->GetDir() ) {
-			case NORTH: waddstr(hudWin, "^ North ^"); break;
-			case SOUTH: waddstr(hudWin, "v South v"); break;
-			case EAST:  waddstr(hudWin, ">   East>"); break;
-			case WEST:  waddstr(hudWin, "<West   <"); break;
-			case DOWN:  waddstr(hudWin, "x DOWN  x"); break;
-			case UP:    waddstr(hudWin, ".   UP  ."); break;
+		case NORTH: waddstr(hudWin, "^ North ^"); break;
+		case SOUTH: waddstr(hudWin, "v South v"); break;
+		case EAST:  waddstr(hudWin, ">   East>"); break;
+		case WEST:  waddstr(hudWin, "<West   <"); break;
+		case DOWN:  waddstr(hudWin, "x DOWN  x"); break;
+		case UP:    waddstr(hudWin, ".   UP  ."); break;
 		}
 	} else {
 		const short dur=player->HP();
@@ -681,55 +669,55 @@ void Screen::PrintFront(WINDOW * const window) const {
 	ushort x_start, z_start, k_start;
 	ushort arrow_Y, arrow_X;
 	switch ( dir ) {
-		case NORTH:
-			x=&i;
-			x_step=1;
-			x_start=begin_x;
-			x_end=x_start+SCREEN_SIZE;
-			z=&j;
-			z_step=-1;
-			z_start=pY-1;
-			z_end=pY-SHRED_WIDTH-1;
-			arrow_X=(pX-begin_x)*2+1;
-		break;
-		case SOUTH:
-			x=&i;
-			x_step=-1;
-			x_start=SCREEN_SIZE-1+begin_x;
-			x_end=begin_x-1;
-			z=&j;
-			z_step=1;
-			z_start=pY+1;
-			z_end=pY+SHRED_WIDTH+1;
-			arrow_X=(SCREEN_SIZE-pX+begin_x)*2-1;
-		break;
-		case WEST:
-			x=&j;
-			x_step=-1;
-			x_start=SCREEN_SIZE-1+begin_y;
-			x_end=begin_y-1;
-			z=&i;
-			z_step=-1;
-			z_start=pX-1;
-			z_end=pX-SHRED_WIDTH-1;
-			arrow_X=(SCREEN_SIZE-pY+begin_y)*2-1;
-		break;
-		case EAST:
-			x=&j;
-			x_step=1;
-			x_start=begin_y;
-			x_end=SCREEN_SIZE+begin_y;
-			z=&i;
-			z_step=1;
-			z_start=pX+1;
-			z_end=pX+SHRED_WIDTH+1;
-			arrow_X=(pY-begin_y)*2+1;
-		break;
-		default:
-			fprintf(stderr,
-				"Screen::PrintFront(): unlisted dir: %d\n",
-				(int)dir);
-			return;
+	case NORTH:
+		x=&i;
+		x_step=1;
+		x_start=begin_x;
+		x_end=x_start+SCREEN_SIZE;
+		z=&j;
+		z_step=-1;
+		z_start=pY-1;
+		z_end=pY-SHRED_WIDTH-1;
+		arrow_X=(pX-begin_x)*2+1;
+	break;
+	case SOUTH:
+		x=&i;
+		x_step=-1;
+		x_start=SCREEN_SIZE-1+begin_x;
+		x_end=begin_x-1;
+		z=&j;
+		z_step=1;
+		z_start=pY+1;
+		z_end=pY+SHRED_WIDTH+1;
+		arrow_X=(SCREEN_SIZE-pX+begin_x)*2-1;
+	break;
+	case WEST:
+		x=&j;
+		x_step=-1;
+		x_start=SCREEN_SIZE-1+begin_y;
+		x_end=begin_y-1;
+		z=&i;
+		z_step=-1;
+		z_start=pX-1;
+		z_end=pX-SHRED_WIDTH-1;
+		arrow_X=(SCREEN_SIZE-pY+begin_y)*2-1;
+	break;
+	case EAST:
+		x=&j;
+		x_step=1;
+		x_start=begin_y;
+		x_end=SCREEN_SIZE+begin_y;
+		z=&i;
+		z_step=1;
+		z_start=pX+1;
+		z_end=pX+SHRED_WIDTH+1;
+		arrow_X=(pY-begin_y)*2+1;
+	break;
+	default:
+		fprintf(stderr,
+			"Screen::PrintFront(): unlisted dir: %d\n",
+			(int)dir);
+		return;
 	}
 	if ( pZ+SCREEN_SIZE/2 >= HEIGHT ) {
 		k_start=HEIGHT-2;
@@ -774,10 +762,10 @@ void Screen::PrintFront(WINDOW * const window) const {
 	wstandend(window);
 	box(window, 0, 0);
 	switch ( dir ) {
-		case NORTH: mvwaddstr(window, 0, 1, "North view"); break;
-		case SOUTH: mvwaddstr(window, 0, 1, "South view"); break;
-		case EAST:  mvwaddstr(window, 0, 1, "East view");  break;
-		case WEST:  mvwaddstr(window, 0, 1, "West view");  break;
+	case NORTH: mvwaddstr(window, 0, 1, "North view"); break;
+	case SOUTH: mvwaddstr(window, 0, 1, "South view"); break;
+	case EAST:  mvwaddstr(window, 0, 1, "East view");  break;
+	case WEST:  mvwaddstr(window, 0, 1, "West view");  break;
 	}
 	if ( shiftFocus ) {
 		HorizontalArrows(window, arrow_Y-shiftFocus, WHITE_BLUE);
@@ -797,11 +785,11 @@ const {
 	werase(window);
 	wstandend(window);
 	switch ( inv->Kind() ) {
-		case DWARF:
-			mvwaddstr(window, 2, 7, "Head\n Right hand\n  ");
-			waddstr(window, "Left hand\n       Body\n       Legs");
-		break;
-		case WORKBENCH: mvwaddstr(window, 2, 4, "Product"); break;
+	case DWARF:
+		mvwaddstr(window, 2, 7, "Head\n Right hand\n  ");
+		waddstr(window, "Left hand\n       Body\n       Legs");
+	break;
+	case WORKBENCH: mvwaddstr(window, 2, 4, "Product"); break;
 	}
 	mvwprintw(window, 2+inv->Size(), 40, "All weight: %6hu mz",
 		inv->Weight());
