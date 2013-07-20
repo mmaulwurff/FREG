@@ -194,6 +194,7 @@ class Player : public QObject {
 	void ProcessCommand(QString & command);
 
 	private:
+	void UseNoLock(ushort num);
 	void InnerMove(ushort num_from, ushort num_to, ushort num=1);
 	///Checks player existence, inventory existence, size limits,
 	///block existence.

@@ -119,7 +119,7 @@
 	quint8 Block::Kind() const { return BLOCK; }
 	bool Block::Catchable() const { return false; }
 	int  Block::BeforePush(const int, Block * const) { return NO_ACTION; }
-	void Block::Move(const int) {}
+	bool Block::Move(const int) { return false; }
 	usage_types Block::Use(Block *) { return USAGE_TYPE_NO; }
 	int  Block::Wearable() const { return WEARABLE_NOWHERE; }
 	int  Block::DamageKind() const { return CRUSH; }
@@ -410,7 +410,7 @@
 	ushort Active::Y() const { return y_self; }
 	ushort Active::Z() const { return z_self; }
 
-	void Active::Move(const int dir) {
+	bool Active::Move(const int dir) {
 		switch ( dir ) {
 			case NORTH: --y_self; break;
 			case SOUTH: ++y_self; break;
@@ -418,6 +418,7 @@
 			case WEST:  --x_self; break;
 			case UP:    ++z_self; break;
 		}
+		bool overstep=false;
 		if ( DOWN==dir ) {
 			--z_self;
 			++fall_height;
@@ -426,9 +427,11 @@
 				whereShred->RemActive(this);
 				( whereShred=GetWorld()->GetShred(X(), Y()) )->
 					AddActive(this);
+				overstep=true;
 			}
 		}
 		emit Moved(dir);
+		return overstep;
 	}
 
 	void Active::SendSignalAround(const QString & signal) const {
@@ -937,6 +940,19 @@
 			level+=ShowBlock(IN_LEFT)->DamageLevel();
 		}
 		return level;
+	}
+
+	bool Dwarf::Move(const int dir) {
+		const bool overstepped=Active::Move(dir);
+		if ( overstepped ) {
+			for (ushort i=0; i<ON_LEGS; ++i) {
+				Block * const block=ShowBlock(i);
+				if ( block && block->Kind()==MAP ) {
+					block->Use(this);
+				}
+			}
+		}
+		return overstepped;
 	}
 
 	quint16 Dwarf::NutritionalValue(const int sub) const {
@@ -1717,13 +1733,12 @@
 			{
 				return USAGE_TYPE_READ;
 			}
-			who->ReceiveSignal(QString("longi diff: %1, lati diff: %2").arg(abs(longi-longiStart)).arg(abs(lati-latiStart)));
 			map_file.seek((FILE_SIZE_CHARS+1)*(longi-longiStart+FILE_SIZE_CHARS/2)+
 				lati-latiStart+FILE_SIZE_CHARS/2);
 			map_file.putChar(world->TypeOfShred(longi, lati));
 		}
 		return USAGE_TYPE_READ;
-	}
+	} // Map::Use
 
 	void Map::SaveAttributes(QDataStream & out) const {
 		out << longiStart << latiStart;

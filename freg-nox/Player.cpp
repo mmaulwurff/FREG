@@ -230,6 +230,11 @@ Block * Player::ValidBlock(const ushort num) const {
 
 void Player::Use(const ushort num) {
 	world->WriteLock();
+	UseNoLock(num);
+	world->Unlock();
+}
+
+void Player::UseNoLock(const ushort num) {
 	Block * const block=ValidBlock(num);
 	if ( block ) {
 		if ( block->Use(player)==USAGE_TYPE_READ ) {
@@ -238,7 +243,6 @@ void Player::Use(const ushort num) {
 			emit Updated();
 		}
 	}
-	world->Unlock();
 }
 
 ushort Player::GetUsingInInventory() const { return usingInInventory; }
@@ -261,7 +265,6 @@ void Player::Obtain(const short x, const short y, const short z,
 bool Player::Wield(const ushort num) {
 	world->WriteLock();
 	if ( ValidBlock(num) ) {
-		Use(num);
 		for (ushort i=0; i<=Dwarf::ON_LEGS; ++i) {
 			InnerMove(num, i);
 		}

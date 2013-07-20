@@ -85,7 +85,7 @@ class Block { //blocks without special physics and attributes
 	virtual int  Movable() const;
 	virtual void Inscribe(const QString & str);
 	virtual int  BeforePush(int dir, Block * who);
-	virtual void Move(int direction);
+	virtual bool Move(int direction);
 	virtual int  Damage(ushort dmg, int dmg_kind);
 	virtual usage_types Use(Block * who=0);
 	/// Usually returns new block of the same kind and sub (except glass).
@@ -210,7 +210,8 @@ class Active : public QObject, public Block {
 	quint8 Kind() const;
 
 	Active * ActiveBlock();
-	void Move(int direction);
+	/// Returns true if shred border is overstepped.
+	bool Move(int direction);
 	void SetFalling(bool set);
 	bool IsFalling() const;
 	void FallDamage();
@@ -359,6 +360,7 @@ class Dwarf : public Animal, public Inventory {
 	ushort Start() const;
 	int DamageKind() const;
 	ushort DamageLevel() const;
+	bool Move(int direction);
 
 	Inventory * HasInventory();
 	bool Access() const;
