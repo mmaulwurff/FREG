@@ -1688,7 +1688,7 @@
 				WorldName() + "/texts/" + *note);
 			const long  lati=active->GetShred()->Latitude();
 			const long longi=active->GetShred()->Longitude();
-			map_file.open(QIODevice::ReadWrite);
+			map_file.open(QIODevice::ReadWrite | QIODevice::Text);
 			World * const world=active->GetWorld();
 			static const ushort FILE_SIZE_CHARS=31;
 			if ( 0==map_file.size() ) {
@@ -1711,7 +1711,6 @@
 					map_file.putChar('-');
 				}
 				map_file.putChar('+');
-				map_file.putChar('\n');
 
 				map_file.seek(FILE_SIZE_CHARS/2);
 				map_file.putChar('+');
@@ -1733,24 +1732,38 @@
 			{
 				return USAGE_TYPE_READ;
 			}
-			map_file.seek((FILE_SIZE_CHARS+1)*(longi-longiStart+FILE_SIZE_CHARS/2)+
-				lati-latiStart+FILE_SIZE_CHARS/2);
-			map_file.putChar(world->TypeOfShred(longi, lati));
+			if ( savedChar ) {
+				map_file.seek(savedShift);
+				map_file.putChar(savedChar);
+			}
+			map_file.seek(savedShift=(FILE_SIZE_CHARS+1)*
+				(longi-longiStart+FILE_SIZE_CHARS/2)+
+				 lati-latiStart+FILE_SIZE_CHARS/2);
+			map_file.putChar('@');
+			savedChar=world->TypeOfShred(longi, lati);
+			map_file.seek((FILE_SIZE_CHARS+1)*FILE_SIZE_CHARS-1);
+			map_file.putChar('\n');
+			map_file.putChar('@');
+			map_file.putChar('=');
+			map_file.putChar(savedChar);
+			map_file.putChar('\n');
 		}
 		return USAGE_TYPE_READ;
 	} // Map::Use
 
 	void Map::SaveAttributes(QDataStream & out) const {
-		out << longiStart << latiStart;
+		out << longiStart << latiStart << savedShift << savedChar;
 	}
 
 	Map::Map(const int sub) :
 			Text(sub),
 			longiStart(),
-			latiStart()
+			latiStart(),
+			savedShift(),
+			savedChar(0)
 	{}
 	Map::Map(QDataStream & str, const int sub) :
 			Text(str, sub)
 	{
-		str >> longiStart >> latiStart;
+		str >> longiStart >> latiStart >> savedShift >> savedChar;
 	}

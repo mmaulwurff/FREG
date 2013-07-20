@@ -606,6 +606,8 @@ class Text : public Block {
 class Map : public Text {
 	//coordinates map titled in. also ~center.
 	qint64 longiStart, latiStart;
+	quint16 savedShift;
+	qint8 savedChar;
 
 	protected:
 	void SaveAttributes(QDataStream & out) const;
