@@ -20,11 +20,10 @@
 
 #include <QReadWriteLock>
 #include <QThread>
-#include <QByteArray>
 #include <QSettings>
+#include <QFile>
 #include "header.h"
 
-class QTextStream;
 class Block;
 class Shred;
 class DeferredAction;
@@ -55,8 +54,7 @@ class World : public QThread {
 	bool ifStar;
 
 	long mapSize;
-	QByteArray worldMap;
-	QTextStream * worldMapStream;
+	QFile map;
 
 	long newLati, newLongi;
 	ushort newX, newY, newZ;

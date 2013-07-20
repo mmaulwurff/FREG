@@ -55,6 +55,7 @@ class Player : public QObject {
 	Active * player;
 	int usingType;
 	int usingSelfType;
+	ushort usingInInventory;
 
 	bool creativeMode;
 
@@ -143,6 +144,7 @@ class Player : public QObject {
 	///This returns how player is using something now.
 	/** See enum usage_types in header.h. */
 	int UsingType() const;
+	ushort GetUsingInInventory() const;
 	void SetUsingTypeNo();
 	///This returns how player is using himself.
 	/** For example, OPEN means he is looking in his backpack.

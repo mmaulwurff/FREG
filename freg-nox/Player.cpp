@@ -191,7 +191,7 @@ void Player::Backpack() {
 
 void Player::Use(const short x, const short y, const short z) {
 	world->WriteLock();
-	const int us_type=world->GetBlock(x, y, z)->Use();
+	const int us_type=world->GetBlock(x, y, z)->Use(player);
 	usingType=( us_type==usingType ) ? USAGE_TYPE_NO : us_type;
 	world->Unlock();
 }
@@ -232,10 +232,16 @@ void Player::Use(const ushort num) {
 	world->WriteLock();
 	Block * const block=ValidBlock(num);
 	if ( block ) {
-		block->Use(player);
+		if ( block->Use(player)==USAGE_TYPE_READ ) {
+			usingInInventory=num;
+			usingType=USAGE_TYPE_READ_IN_INVENTORY;
+			emit Updated();
+		}
 	}
 	world->Unlock();
 }
+
+ushort Player::GetUsingInInventory() const { return usingInInventory; }
 
 void Player::Throw(const short x, const short y, const short z,
 		const ushort src, const ushort dest, const ushort num)
@@ -255,7 +261,8 @@ void Player::Obtain(const short x, const short y, const short z,
 bool Player::Wield(const ushort num) {
 	world->WriteLock();
 	if ( ValidBlock(num) ) {
-		for (ushort i=0; i<=Dwarf::ON_LEGS; ++i ) {
+		Use(num);
+		for (ushort i=0; i<=Dwarf::ON_LEGS; ++i) {
 			InnerMove(num, i);
 		}
 		emit Updated();

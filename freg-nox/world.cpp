@@ -50,11 +50,11 @@ char World::TypeOfShred(const long longi, const long lati) {
 			lati  >= mapSize || lati  < 0 )
 	{
 		return OUT_BORDER_SHRED;
-	} else if ( !worldMapStream->seek((mapSize+1)*longi+lati) ) {
+	} else if ( !map.seek((mapSize+1)*longi+lati) ) {
 		return DEFAULT_SHRED;
 	}
 	char c;
-	*worldMapStream >> c;
+	map.getChar(&c);
 	return c;
 }
 
@@ -842,7 +842,7 @@ World::World(const QString & world_name) :
 
 	QDir::current().mkdir(worldName);
 	QDir::current().mkdir(worldName+"/texts");
-	QFile map(worldName+"/map.txt");
+	map.setFileName(worldName+"/map.txt");
 	if ( map.open(QIODevice::ReadOnly | QIODevice::Text) ) {
 		mapSize=int(qSqrt(1+4*map.size())-1)/2;
 	} else {
@@ -870,11 +870,8 @@ World::World(const QString & world_name) :
 			mapSize=map_size;
 		} else {
 			mapSize=1;
-			worldMap=".";
 		}
 	}
-	worldMap=map.readAll();
-	worldMapStream=new QTextStream(worldMap, QIODevice::ReadOnly);
 
 	time=settings.value("time", END_OF_NIGHT).toLongLong();
 	spawnLongi=settings.value("spawn_longitude",

@@ -64,7 +64,9 @@ void Screen::UpdateAll() {
 }
 
 void Screen::UpdatePlayer() {
-	if ( player && player->GetCreativeMode() ) {
+	if ( player && ( USAGE_TYPE_READ_IN_INVENTORY==player->UsingType() ||
+			player->GetCreativeMode() ) )
+	{
 		updated=false;
 	}
 	updatedPlayer=false;
@@ -461,53 +463,57 @@ void Screen::Print() {
 		return;
 	}
 	updated=true;
-	if ( !fileToShow ) { //right window
+	if ( !fileToShow ) { // right window
 		switch ( player->UsingType() ) {
-			case USAGE_TYPE_READ: {
-				ushort x, y, z;
-				ActionXyz(x, y, z);
-				wstandend(rightWin);
-				PrintFile(rightWin, QString(
-						w->WorldName()+"/texts/"+
-						w->GetBlock(x, y, z)->
-							GetNote()));
+		case USAGE_TYPE_READ_IN_INVENTORY:
+			wstandend(rightWin);
+			PrintFile(rightWin, QString(
+				w->WorldName()+"/texts/"+
+				player->PlayerInventory()->ShowBlock(
+					player->GetUsingInInventory())->
+						GetNote()));
+			player->SetUsingTypeNo();
+		break;
+		case USAGE_TYPE_READ: {
+			ushort x, y, z;
+			ActionXyz(x, y, z);
+			wstandend(rightWin);
+			PrintFile(rightWin, QString(
+				w->WorldName()+"/texts/"+
+				w->GetBlock(x, y, z)->GetNote()));
+			player->SetUsingTypeNo();
+		} break;
+		case USAGE_TYPE_OPEN: {
+			ushort x, y, z;
+			ActionXyz(x, y, z);
+			const Inventory * const inv=
+				w->GetBlock(x, y, z)->HasInventory();
+			if ( inv ) {
+				PrintInv(rightWin, inv);
+				break;
+			} else {
 				player->SetUsingTypeNo();
-			} break;
-			case USAGE_TYPE_OPEN: {
-				ushort x, y, z;
-				ActionXyz(x, y, z);
-				const Inventory * const inv=
-					w->GetBlock(x, y, z)->HasInventory();
-				if ( inv ) {
-					PrintInv(rightWin, inv);
-					break;
-				} else {
-					player->SetUsingTypeNo();
-				}
-			} // no break;
-			default:
-				if ( UP==player->GetDir() ||
-						DOWN==player->GetDir() )
-				{
-					PrintNormal(rightWin,
-						player->GetDir());
-				} else {
-					PrintFront(rightWin);
-				}
+			}
+		} // no break;
+		default:
+			if ( UP==player->GetDir() || DOWN==player->GetDir() ) {
+				PrintNormal(rightWin, player->GetDir());
+			} else {
+				PrintFront(rightWin);
+			}
 		}
 	}
-	switch ( player->UsingSelfType() ) { //left window
-		case USAGE_TYPE_OPEN:
-			if ( player->PlayerInventory() ) {
-				PrintInv(leftWin,
-					player->PlayerInventory());
-				break;
-			} //no break;
-		default:
-			PrintNormal(leftWin,
-					( UP==player->GetDir() ||
-					DOWN==player->GetDir() ) ?
-				NORTH : player->GetDir());
+	switch ( player->UsingSelfType() ) { // left window
+	case USAGE_TYPE_OPEN:
+		if ( player->PlayerInventory() ) {
+			PrintInv(leftWin, player->PlayerInventory());
+			break;
+		} //no break;
+	default:
+		PrintNormal(leftWin,
+				( UP==player->GetDir() ||
+				DOWN==player->GetDir() ) ?
+			NORTH : player->GetDir());
 	}
 	w->Unlock();
 	doupdate();

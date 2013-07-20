@@ -18,6 +18,7 @@
 #include <QDataStream>
 #include <QTextStream>
 #include <QString>
+#include <QFile>
 #include "blocks.h"
 #include "world.h"
 #include "Shred.h"
@@ -1626,7 +1627,7 @@
 			Active(str, sub, NONSTANDARD),
 			Inventory(str, INV_SIZE)
 	{}
-//Text:
+//Text::
 	quint8 Text::Kind() const { return TEXT; }
 	QString Text::FullName() const { return QObject::tr("Paper page"); }
 
@@ -1646,9 +1647,95 @@
 		}
 	}
 
+	void Text::SetHidden(const bool hid) { hidden=hid; }
+
 	Text::Text(const int sub) :
 			Block(sub, NONSTANDARD)
 	{}
 	Text::Text(QDataStream & str, const int sub) :
 			Block(str, sub, NONSTANDARD)
 	{}
+//Map::
+	quint8 Map::Kind() const { return MAP; }
+	QString Map::FullName() const { return QObject::tr("Map"); }
+
+	usage_types Map::Use(Block * const who) {
+		if ( !note ) {
+			if ( who ) {
+				who->ReceiveSignal(QObject::tr(
+					"Set title to this map first."));
+			}
+			return USAGE_TYPE_NO;
+		} else if ( who && who->ActiveBlock() ) {
+			const Active * const active=who->ActiveBlock();
+			QFile map_file(active->GetWorld()->
+				WorldName() + "/texts/" + *note);
+			const long  lati=active->GetShred()->Latitude();
+			const long longi=active->GetShred()->Longitude();
+			map_file.open(QIODevice::ReadWrite);
+			World * const world=active->GetWorld();
+			static const ushort FILE_SIZE_CHARS=31;
+			if ( 0==map_file.size() ) {
+				map_file.putChar('+');
+				for (ushort i=0; i<FILE_SIZE_CHARS-2; ++i) {
+					map_file.putChar('-');
+				}
+				map_file.putChar('+');
+				map_file.putChar('\n');
+				for (ushort i=0; i<FILE_SIZE_CHARS-2; ++i) {
+					map_file.putChar('|');
+					for (ushort j=0; j<FILE_SIZE_CHARS-2; ++j) {
+						map_file.putChar(' ');
+					}
+					map_file.putChar('|');
+					map_file.putChar('\n');
+				}
+				map_file.putChar('+');
+				for (ushort i=0; i<FILE_SIZE_CHARS-2; ++i) {
+					map_file.putChar('-');
+				}
+				map_file.putChar('+');
+				map_file.putChar('\n');
+
+				map_file.seek(FILE_SIZE_CHARS/2);
+				map_file.putChar('+');
+				map_file.seek(FILE_SIZE_CHARS/2*(FILE_SIZE_CHARS+1));
+				map_file.putChar('+');
+				map_file.seek(FILE_SIZE_CHARS/2*(FILE_SIZE_CHARS+1)+
+					FILE_SIZE_CHARS-1);
+				map_file.putChar('+');
+				map_file.seek((FILE_SIZE_CHARS-1)*(FILE_SIZE_CHARS+1)+
+					FILE_SIZE_CHARS/2);
+				map_file.putChar('+');
+
+				longiStart=longi;
+				latiStart=lati;
+			}
+			if (
+					abs( lati-latiStart )>FILE_SIZE_CHARS/2 ||
+					abs(longi-longiStart)>FILE_SIZE_CHARS/2 )
+			{
+				return USAGE_TYPE_READ;
+			}
+			who->ReceiveSignal(QString("longi diff: %1, lati diff: %2").arg(abs(longi-longiStart)).arg(abs(lati-latiStart)));
+			map_file.seek((FILE_SIZE_CHARS+1)*(longi-longiStart+FILE_SIZE_CHARS/2)+
+				lati-latiStart+FILE_SIZE_CHARS/2);
+			map_file.putChar(world->TypeOfShred(longi, lati));
+		}
+		return USAGE_TYPE_READ;
+	}
+
+	void Map::SaveAttributes(QDataStream & out) const {
+		out << longiStart << latiStart;
+	}
+
+	Map::Map(const int sub) :
+			Text(sub),
+			longiStart(),
+			latiStart()
+	{}
+	Map::Map(QDataStream & str, const int sub) :
+			Text(str, sub)
+	{
+		str >> longiStart >> latiStart;
+	}

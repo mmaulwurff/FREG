@@ -587,13 +587,33 @@ class Creator : public Active, public Inventory {
 }; //class Creator
 
 class Text : public Block {
+	bool hidden;
+
 	public:
 	quint8 Kind() const;
 	QString FullName() const;
 	usage_types Use(Block * who=0);
 	void Inscribe(const QString & str);
 
+	void SetHidden(bool hidden);
+
 	Text(int sub);
 	Text(QDataStream & str, int sub);
 }; //class Text
+
+class Map : public Text {
+	//coordinates map titled in. also ~center.
+	qint64 longiStart, latiStart;
+
+	protected:
+	void SaveAttributes(QDataStream & out) const;
+
+	public:
+	quint8 Kind() const;
+	QString FullName() const;
+	usage_types Use(Block * who=0);
+
+	Map(int sub);
+	Map(QDataStream & str, int sub);
+}; // class Map
 #endif

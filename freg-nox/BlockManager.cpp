@@ -62,6 +62,7 @@ Block * BlockManager::NewBlock(const int kind, int sub) {
 		case LIQUID: return New<Liquid>(sub);
 		case CLOCK:  return New<Clock >(sub);
 		case TEXT:   return New<Text  >(sub);
+		case MAP:    return New<Map   >(sub);
 		case CREATOR: return New<Creator>(sub);
 		case WORKBENCH: return New<Workbench>(sub);
 		default:
@@ -100,6 +101,7 @@ Block * BlockManager::BlockFromFile(QDataStream & str) {
 		case ACTIVE: return New<Active>(str, sub);
 		case LIQUID: return New<Liquid>(str, sub);
 		case TEXT:   return New<Text  >(str, sub);
+		case MAP:    return New<Map   >(str, sub);
 		case LOCKED_DOOR:
 		case DOOR:   return New<Door  >(str, sub);
 		case CLOCK:  return New<Clock >(str, sub);
