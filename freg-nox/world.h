@@ -193,7 +193,8 @@ class World : public QThread {
 			quint8 dir=UP,
 			Block * who=0,
 			bool anyway=false);
-	void Inscribe(ushort x, ushort y, ushort z);
+	/// Returns true on success. Gets a string and inscribes block.
+	bool Inscribe(ushort x, ushort y, ushort z);
 	///No bounds checks inside, use carefully.
 	void Eat(ushort i, ushort j, ushort k,
 			ushort i_food, ushort j_food, ushort k_food);

@@ -670,18 +670,22 @@ bool World::Build(Block * block,
 	return true;
 }
 
-void World::Inscribe(const ushort x, const ushort y, const ushort z) {
+bool World::Inscribe(const ushort x, const ushort y, const ushort z) {
 	Block * block=GetBlock(x, y, z);
 	if ( LIQUID==block->Kind() || AIR==block->Sub() ) {
-		return;
+		return false;
 	}
 	if ( block==Normal(block->Sub()) ) {
 		SetBlock(block=NewBlock(block->Kind(), block->Sub()), x, y, z);
 	}
 	QString str=tr("No note received.");
 	emit GetString(str);
-	block->Inscribe(str);
-	SetBlock(ReplaceWithNormal(block), x, y, z);
+	if ( block->Inscribe(str) ) {
+		return true;
+	} else {
+		SetBlock(ReplaceWithNormal(block), x, y, z);
+		return false;
+	}
 }
 
 void World::Eat(

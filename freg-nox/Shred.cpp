@@ -396,6 +396,7 @@ void Shred::TestShred() {
 	column=-1;
 	row+=2;
 	SetNewBlock(TEXT, PAPER, column+=2, row, level);
+	((Text*)GetBlock(column, row, level))->SetTitle(".hidden");
 	//suicide booth
 	/*for (ushort i=1; i<4; ++i)
 	for (ushort j=7; j<10; ++j)

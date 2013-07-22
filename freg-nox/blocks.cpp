@@ -127,7 +127,7 @@
 	uchar Block::LightRadius() const { return 0; }
 	void Block::ReceiveSignal(const QString &) {}
 
-	void Block::Inscribe(const QString & str) {
+	bool Block::Inscribe(const QString & str) {
 		if ( note ) {
 			*note=str.left(MAX_NOTE_LENGHT);
 		} else {
@@ -137,6 +137,7 @@
 			delete note;
 			note=0;
 		}
+		return true;
 	}
 
 	Inventory * Block::HasInventory() { return 0; }
@@ -730,11 +731,11 @@
 		}
 	}
 
-	void Inventory::InscribeInv(const ushort num, const QString & str) {
+	bool Inventory::InscribeInv(const ushort num, const QString & str) {
 		const int number=Number(num);
 		if ( !number ) {
 			ReceiveSignal(QObject::tr("Nothing here."));
-			return;
+			return false;
 		}
 		const int sub=inventory[num].top()->Sub();
 		if ( inventory[num].top()==block_manager.NormalBlock(sub) ) {
@@ -744,9 +745,14 @@
 			}
 		}
 		for (ushort i=0; i<number; ++i) {
-			inventory[num].at(i)->Inscribe(str);
+			if ( !inventory[num].at(i)->Inscribe(str) ) {
+				ReceiveSignal(QObject::tr(
+					"Cannot inscribe this."));
+				return false;
+			}
 		}
 		ReceiveSignal(QObject::tr("Inscribed."));
+		return true;
 	}
 
 	QString Inventory::InvFullName(const ushort num) const {
@@ -992,8 +998,9 @@
 		out << activeHand;
 	}
 
-	void Dwarf::Inscribe(const QString &) {
+	bool Dwarf::Inscribe(const QString &) {
 		SendSignalAround(tr("Don't touch me!"));
+		return false;
 	}
 
 	Dwarf::Dwarf(const int sub) :
@@ -1583,7 +1590,7 @@
 		}
 	}
 
-	void Clock::Inscribe(const QString & str) {
+	bool Clock::Inscribe(const QString & str) {
 		Block::Inscribe(str);
 		char c;
 		QTextStream txt_stream(note);
@@ -1600,6 +1607,7 @@
 		} else {
 			alarmTime=timerTime=-1;
 		}
+		return true;
 	}
 
 	Clock::Clock(const int sub) :
@@ -1657,13 +1665,22 @@
 		}
 	}
 
-	void Text::Inscribe(const QString & str) {
-		if ( !note ) {
+	bool Text::Inscribe(const QString & str) {
+		if ( '.'!=str.at(0) && !note ) {
 			Block::Inscribe(str);
+			return true;
+		} else {
+			return false;
 		}
 	}
 
-	void Text::SetHidden(const bool hid) { hidden=hid; }
+	void Text::SetTitle(const QString & str) {
+		if ( note ) {
+			delete note;
+			note=0;
+		}
+		Block::Inscribe(str);
+	}
 
 	Text::Text(const int sub) :
 			Block(sub, NONSTANDARD)
@@ -1688,7 +1705,11 @@
 				WorldName() + "/texts/" + *note);
 			const long  lati=active->GetShred()->Latitude();
 			const long longi=active->GetShred()->Longitude();
-			map_file.open(QIODevice::ReadWrite | QIODevice::Text);
+			if ( !map_file.open(QIODevice::ReadWrite |
+					QIODevice::Text) )
+			{
+				return USAGE_TYPE_READ;
+			}
 			World * const world=active->GetWorld();
 			static const ushort FILE_SIZE_CHARS=31;
 			if ( 0==map_file.size() ) {
