@@ -1700,7 +1700,9 @@
 				map_file.putChar('\n');
 				for (ushort i=0; i<FILE_SIZE_CHARS-2; ++i) {
 					map_file.putChar('|');
-					for (ushort j=0; j<FILE_SIZE_CHARS-2; ++j) {
+					for (ushort j=0; j<FILE_SIZE_CHARS-2;
+							++j)
+					{
 						map_file.putChar(' ');
 					}
 					map_file.putChar('|');
@@ -1714,21 +1716,24 @@
 
 				map_file.seek(FILE_SIZE_CHARS/2);
 				map_file.putChar('+');
-				map_file.seek(FILE_SIZE_CHARS/2*(FILE_SIZE_CHARS+1));
+				map_file.seek(FILE_SIZE_CHARS/2*
+					(FILE_SIZE_CHARS+1));
 				map_file.putChar('+');
-				map_file.seek(FILE_SIZE_CHARS/2*(FILE_SIZE_CHARS+1)+
-					FILE_SIZE_CHARS-1);
+				map_file.seek(FILE_SIZE_CHARS/2*
+					(FILE_SIZE_CHARS+1)+FILE_SIZE_CHARS-1);
 				map_file.putChar('+');
-				map_file.seek((FILE_SIZE_CHARS-1)*(FILE_SIZE_CHARS+1)+
-					FILE_SIZE_CHARS/2);
+				map_file.seek((FILE_SIZE_CHARS-1)*
+					(FILE_SIZE_CHARS+1)+FILE_SIZE_CHARS/2);
 				map_file.putChar('+');
 
 				longiStart=longi;
 				latiStart=lati;
 			}
 			if (
-					abs( lati-latiStart )>FILE_SIZE_CHARS/2 ||
-					abs(longi-longiStart)>FILE_SIZE_CHARS/2 )
+					abs( lati-latiStart )>
+						FILE_SIZE_CHARS/2 ||
+					abs(longi-longiStart)>
+						FILE_SIZE_CHARS/2 )
 			{
 				return USAGE_TYPE_READ;
 			}

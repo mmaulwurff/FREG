@@ -858,7 +858,7 @@ World::World(const QString & world_name) :
 				qPrintable(worldName+"/map.txt"));
 		#endif
 		#ifdef Q_OS_WIN32
-			snprintf(command,
+			sprintf_s(command,
 				max_command_length,
 				"mapgen.exe -s %hu -r %d -f %s",
 				map_size,
