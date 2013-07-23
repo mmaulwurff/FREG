@@ -100,7 +100,9 @@ enum kinds {
 	LOCKED_DOOR, ///< 19
 	CREATOR,     ///< 20
 	TEXT,        ///< 21
-	MAP          ///< 22
+	MAP,         ///< 22
+	/// Nothing is LAST_KIND.
+	LAST_KIND // keep it last in this list.
 }; // enum kinds
 /// Substance block is made from.
 enum subs {

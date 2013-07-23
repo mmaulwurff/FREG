@@ -21,6 +21,56 @@
 #include "blocks.h"
 #include "BlockManager.h"
 
+const QString BlockManager::kinds[LAST_KIND]={
+	"block",
+	"bell",
+	"chest",
+	"pile",
+	"intellectual",
+	"animal",
+	"pick",
+	"telegraph",
+	"liquid",
+	"grass",
+	"bush",
+	"rabbit",
+	"active",
+	"clock",
+	"plate",
+	"workbench",
+	"weapon",
+	"ladder",
+	"door",
+	"locked door",
+	"creator",
+	"text",
+	"map"
+};
+
+const QString BlockManager::subs[LAST_SUB]={
+	"stone",
+	"moss stone",
+	"nullstone",
+	"sky",
+	"star",
+	"sun or moon",
+	"soil",
+	"meat of intellectual",
+	"animal meat",
+	"glass",
+	"wood",
+	"different",
+	"iron",
+	"water",
+	"greenery",
+	"sand",
+	"hazelnut",
+	"rose",
+	"clay",
+	"air",
+	"paper"
+};
+
 BlockManager block_manager;
 
 BlockManager::BlockManager() {
@@ -119,6 +169,28 @@ void BlockManager::DeleteBlock(Block * const block) {
 	if ( block!=NormalBlock(block->Sub()) ) {
 		delete block;
 	}
+}
+
+QString BlockManager::KindToString(const quint8 kind) {
+	return ( kind<LAST_KIND ) ?
+		kinds[kind] : "unknown kind";
+}
+
+QString BlockManager::SubToString(const quint8 sub) {
+	return ( sub<LAST_SUB ) ?
+		subs[sub] : "unknown sub";
+}
+
+quint8 BlockManager::StringToKind(const QString & str) {
+	int i=0;
+	for ( ; i<LAST_KIND && kinds[i]!=str; ++i);
+	return i;
+}
+
+quint8 BlockManager::StringToSub(const QString & str) {
+	int i=0;
+	for ( ; i<LAST_SUB && subs[i]!=str; ++i);
+	return i;
 }
 
 template <typename Thing>

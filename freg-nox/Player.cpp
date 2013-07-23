@@ -431,6 +431,42 @@ void Player::ProcessCommand(QString & command) {
 		emit Notify("(__)\\       )\\/\\");
 		emit Notify("    ||----w |");
 		emit Notify("    ||     ||");
+	} else if ( "kindtostring"==request ) {
+		int kind;
+		comm_stream >> kind;
+		emit Notify(tr("Kind %1 is %2.").
+			arg(kind).
+			arg(block_manager.KindToString(kind)));
+	} else if ( "stringtokind"==request ) {
+		QString str;
+		comm_stream >> str;
+		const int kind=block_manager.StringToKind(str);
+		if ( kind==LAST_KIND ) {
+			emit Notify(tr("\"%1\" is unknown kind.").
+				arg(str));
+		} else {
+			emit Notify(tr("Code of kind %1 is %2.").
+				arg(str).
+				arg(kind));
+		}
+	} else if ( "subtostring"==request ) {
+		int sub;
+		comm_stream >> sub;
+		emit Notify(tr("Sub %1 is %2.").
+			arg(sub).
+			arg(BlockManager::SubToString(sub)));
+	} else if ( "stringtosub"==request ) {
+		QString str;
+		comm_stream >> str;
+		const int sub=BlockManager::StringToSub(str);
+		if ( sub==LAST_SUB ) {
+			emit Notify(tr("\"%1\" is unknown substance.").
+				arg(str));
+		} else {
+			emit Notify(tr("Code of substance %1 is %2.").
+				arg(str).
+				arg(sub));
+		}
 	} else {
 		emit Notify(tr("Don't know such command: \"%1\".").
 			arg(command));

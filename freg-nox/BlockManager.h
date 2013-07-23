@@ -51,8 +51,15 @@ class BlockManager {
 	///Use this to safely delete block.
 	void DeleteBlock(Block * block);
 
+	static QString KindToString(quint8 kind);
+	static QString SubToString(quint8 sub);
+	static quint8 StringToKind(const QString &);
+	static quint8 StringToSub(const QString &);
+
 	private:
 	Block * normals[LAST_SUB];
+	static const QString kinds[LAST_KIND];
+	static const QString subs[LAST_SUB];
 
 	template <typename Thing>
 	Thing * New(int sub);
