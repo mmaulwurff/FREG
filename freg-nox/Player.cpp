@@ -200,7 +200,7 @@ void Player::Inscribe(const short x, const short y, const short z) const {
 	world->WriteLock();
 	if ( player ) {
 		if ( world->Inscribe(x, y, z) ) {
-			emit Notify(tr("Insrcibed."));
+			emit Notify(tr("Inscribed."));
 		} else {
 			emit Notify(tr("Cannot inscribe this."));
 		}

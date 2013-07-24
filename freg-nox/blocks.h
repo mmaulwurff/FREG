@@ -620,4 +620,17 @@ class Map : public Text {
 	Map(int sub);
 	Map(QDataStream & str, int sub);
 }; // class Map
+
+class Bell: public Active {
+	static const char dingStr[];
+
+	public:
+	quint8 Kind() const;
+	QString FullName() const;
+	usage_types Use(Block * who=0);
+	void ReceiveSignal(const QString &);
+
+	Bell(int sub);
+	Bell(QDataStream & str, int sub);
+}; // class Bell
 #endif

@@ -149,6 +149,7 @@ char Screen::CharName(const int kind, const int sub) const {
 	case PICK:   return '\\';
 	case CHEST:
 	case PILE:   return '&';
+	case BELL:   return 'b';
 	case WORKBENCH: return '*';
 	case TELEGRAPH: return 't';
 	case DOOR:        return ( STONE==sub ) ? '#' : '\'';
@@ -853,6 +854,9 @@ bool Screen::PrintFile(WINDOW * const window, QString const & file_name) {
 void Screen::Notify(const QString & str) const {
 	waddstr(notifyWin, qPrintable(str));
 	waddch(notifyWin, '\n');
+	if ( str=="Ding!" ) {
+		beep();
+	}
 	wrefresh(notifyWin);
 	fputs(qPrintable(QString("%1: %2\n").arg(w->Time()).arg(str)),
 		notifyLog);

@@ -97,6 +97,7 @@ Block * BlockManager::NewBlock(const int kind, int sub) {
 	}
 	switch ( kind ) {
 		case BLOCK:  return New<Block >(sub);
+		case BELL:   return New<Bell  >(sub);
 		case GRASS:  return New<Grass >(sub);
 		case PICK:   return New<Pick  >(sub);
 		case PLATE:  return New<Plate >(sub);
@@ -138,6 +139,7 @@ Block * BlockManager::BlockFromFile(QDataStream & str) {
 	//of its derivatives - in this case this may cause something bad.
 	switch ( kind ) {
 		case BLOCK:  return New<Block >(str, sub);
+		case BELL:   return New<Bell  >(str, sub);
 		case PICK:   return New<Pick  >(str, sub);
 		case PLATE:  return New<Plate >(str, sub);
 		case LADDER: return New<Ladder>(str, sub);
