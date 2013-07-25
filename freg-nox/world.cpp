@@ -179,19 +179,22 @@ void World::MakeSun() {
 
 Block * World::GetBlock(const ushort x, const ushort y, const ushort z)
 const {
-	return GetShred(x, y)->GetBlock(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
+	return GetShred(x, y)->
+		GetBlock(x & SHRED_COORDS_BITS, y & SHRED_COORDS_BITS, z);
 }
 
 void World::SetBlock(Block * const block,
 		const ushort x, const ushort y, const ushort z)
 {
-	GetShred(x, y)->SetBlock(block, x%SHRED_WIDTH, y%SHRED_WIDTH, z);
+	GetShred(x, y)->SetBlock(block,
+		x & SHRED_COORDS_BITS, y & SHRED_COORDS_BITS, z);
 }
 
 void World::PutBlock(Block * const block,
 		const ushort x, const ushort y, const ushort z)
 {
-	GetShred(x, y)->PutBlock(block, x%SHRED_WIDTH, y%SHRED_WIDTH, z);
+	GetShred(x, y)->PutBlock(block,
+		x & SHRED_COORDS_BITS, y & SHRED_COORDS_BITS, z);
 }
 
 void World::PutNormalBlock(const subs sub,
@@ -644,7 +647,8 @@ void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
 		PutNormalBlock(AIR, x, y, z);
 	}
 	DeleteBlock(temp);
-	GetShred(x, y)->AddFalling(x%SHRED_WIDTH, y%SHRED_WIDTH, z+1);
+	GetShred(x, y)->
+		AddFalling(x & SHRED_COORDS_BITS, y & SHRED_COORDS_BITS, z+1);
 	ReEnlighten(x, y, z);
 }
 
@@ -736,11 +740,13 @@ void World::GetAll(const ushort x_to, const ushort y_to, const ushort z_to) {
 }
 
 int World::Transparent(const ushort x, const ushort y, const ushort z) const {
-	return GetShred(x, y)->GetBlock(x%SHRED_WIDTH, y%SHRED_WIDTH, z)->
-		Transparent();
+	return GetShred(x, y)->
+		GetBlock(x & SHRED_COORDS_BITS, y & SHRED_COORDS_BITS, z)->
+			Transparent();
 }
 int World::Sub(const ushort x, const ushort y, const ushort z) const {
-	return GetShred(x, y)->Sub(x%SHRED_WIDTH, y%SHRED_WIDTH, z);
+	return GetShred(x, y)->
+		Sub(x & SHRED_COORDS_BITS, y & SHRED_COORDS_BITS, z);
 }
 
 int World::Temperature(
