@@ -32,7 +32,8 @@ HEADERS += BlockManager.h \
            screen.h \
            Shred.h \
            VirtScreen.h \
-           world.h
+           world.h \
+           worldmap.h
 SOURCES += BlockManager.cpp \
            blocks.cpp \
            CraftManager.cpp \
@@ -44,4 +45,5 @@ SOURCES += BlockManager.cpp \
            Shred-gen-flat.cpp \
            Shred.cpp \
            VirtScreen.cpp \
-           world.cpp
+           world.cpp \
+           worldmap.cpp

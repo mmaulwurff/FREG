@@ -15,14 +15,13 @@
 	*along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-#include <QFile>
-#include <QTextStream>
 #include <QTimer>
 #include <QDir>
-#include <qmath.h>
+#include <QSettings>
 #include "blocks.h"
 #include "Shred.h"
 #include "world.h"
+#include "worldmap.h"
 #include "BlockManager.h"
 #include "DeferredAction.h"
 
@@ -42,20 +41,10 @@ long World::Longitude() const { return longitude; }
 long World::Latitude() const { return latitude; }
 ushort World::TimeStepsInSec() { return TIME_STEPS_IN_SEC; }
 
-long World::MapSize() const { return mapSize; }
+long World::MapSize() const { return map->MapSize(); }
 
 char World::TypeOfShred(const long longi, const long lati) {
-	if (
-			longi >= mapSize || longi < 0 ||
-			lati  >= mapSize || lati  < 0 )
-	{
-		return OUT_BORDER_SHRED;
-	} else if ( !map.seek((mapSize+1)*longi+lati) ) {
-		return DEFAULT_SHRED;
-	}
-	char c;
-	map.getChar(&c);
-	return c;
+	return map->TypeOfShred(longi, lati);
 }
 
 ushort World::SunMoonX() const {
@@ -66,7 +55,7 @@ ushort World::SunMoonX() const {
 			SECONDS_IN_DAYLIGHT;
 }
 
-times_of_day World::PartOfDay() const {
+int World::PartOfDay() const {
 	const ushort time_day=TimeOfDay();
 	if ( time_day < END_OF_NIGHT )   return NIGHT;
 	if ( time_day < END_OF_MORNING ) return MORNING;
@@ -197,7 +186,7 @@ void World::PutBlock(Block * const block,
 		x & SHRED_COORDS_BITS, y & SHRED_COORDS_BITS, z);
 }
 
-void World::PutNormalBlock(const subs sub,
+void World::PutNormalBlock(const int sub,
 		const ushort x, const ushort y, const ushort z)
 {
 	PutBlock(Normal(sub), x, y, z);
@@ -825,9 +814,8 @@ World::World(const QString & world_name) :
 		timeStep(0),
 		worldName(world_name),
 		cleaned(false),
-		toReSet(false),
-		settings(QDir::currentPath()+'/'+worldName+"/settings.ini",
-			QSettings::IniFormat)
+		map(new WorldMap(&world_name)),
+		toReSet(false)
 {
 	QSettings game_settings(QDir::currentPath()+"/freg.ini",
 		QSettings::IniFormat);
@@ -852,42 +840,14 @@ World::World(const QString & world_name) :
 
 	QDir::current().mkdir(worldName);
 	QDir::current().mkdir(worldName+"/texts");
-	map.setFileName(worldName+"/map.txt");
-	if ( map.open(QIODevice::ReadOnly | QIODevice::Text) ) {
-		mapSize=int(qSqrt(1+4*map.size())-1)/2;
-	} else {
-		const ushort max_command_length=50;
-		char command[max_command_length];
-		const ushort map_size=75;
-		#ifdef Q_OS_LINUX
-			snprintf(command,
-				max_command_length,
-				"./mapgen -s %hu -r %d -f %s",
-				map_size,
-				qrand(),
-				qPrintable(worldName+"/map.txt"));
-		#endif
-		#ifdef Q_OS_WIN32
-			sprintf_s(command,
-				max_command_length,
-				"mapgen.exe -s %hu -r %d -f %s",
-				map_size,
-				qrand(),
-				qPrintable(worldName+"/map.txt"));
-		#endif
-		system(command);
-		if ( map.open(QIODevice::ReadOnly | QIODevice::Text) ) {
-			mapSize=map_size;
-		} else {
-			mapSize=1;
-		}
-	}
 
+	QSettings settings(QDir::currentPath()+'/'+worldName+"/settings.ini",
+		QSettings::IniFormat);
 	time=settings.value("time", END_OF_NIGHT).toLongLong();
-	spawnLongi=settings.value("spawn_longitude",
-		int(qrand()%mapSize)).toLongLong();
-	spawnLati =settings.value("spawn_latitude",
-		int(qrand()%mapSize)).toLongLong();
+	spawnLongi=settings.value( "spawn_longitude",
+		int(qrand() % MapSize()) ).toLongLong();
+	spawnLati =settings.value( "spawn_latitude",
+		int(qrand() % MapSize()) ).toLongLong();
 	settings.setValue("spawn_longitude", qlonglong(spawnLongi));
 	settings.setValue("spawn_latitude", qlonglong(spawnLati));
 	longitude =settings.value("longitude", int(spawnLongi)).toLongLong();
@@ -912,7 +872,10 @@ void World::CleanAll() {
 	wait();
 
 	DeleteAllShreds();
+	delete map;
 
+	QSettings settings(QDir::currentPath()+'/'+worldName+"/settings.ini",
+		QSettings::IniFormat);
 	settings.setValue("time", qlonglong(time));
 	settings.setValue("longitude", qlonglong(longitude));
 	settings.setValue("latitude", qlonglong(latitude));

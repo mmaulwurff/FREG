@@ -20,10 +20,9 @@
 
 #include <QReadWriteLock>
 #include <QThread>
-#include <QSettings>
-#include <QFile>
 #include "header.h"
 
+class WorldMap;
 class Block;
 class Shred;
 class DeferredAction;
@@ -53,16 +52,13 @@ class World : public QThread {
 	ushort sun_moon_x;
 	bool ifStar;
 
-	long mapSize;
-	QFile map;
+	WorldMap * const map;
 
 	long newLati, newLongi;
 	ushort newX, newY, newZ;
 	volatile bool toReSet;
 
 	uchar sunMoonFactor;
-
-	QSettings settings;
 
 	QList<DeferredAction *> defActions;
 
@@ -79,7 +75,7 @@ class World : public QThread {
 	///Puts block to coordinates and not activates it.
 	void PutBlock(Block * block, ushort x, ushort y, ushort z);
 	///Puts normal block to coordinates.
-	void PutNormalBlock(subs sub, ushort x, ushort y, ushort z);
+	void PutNormalBlock(int sub, ushort x, ushort y, ushort z);
 	static Block * Normal(int sub);
 	static Block * NewBlock(int kind, int sub);
 	static void DeleteBlock(Block * block);
@@ -175,7 +171,7 @@ class World : public QThread {
 
 	//time section
 	public:
-	times_of_day PartOfDay() const;
+	int PartOfDay() const;
 	///This returns seconds from start of current day.
 	int TimeOfDay() const;
 	///Returns time in seconds since world creation.

@@ -42,6 +42,23 @@ const ushort SECONDS_IN_DAYLIGHT=SECONDS_IN_DAY-END_OF_NIGHT;
 const ushort MAX_DURABILITY=100;
 const ushort MAX_BREATH=60;
 
+enum shred_type {
+	SHRED_NULLMOUNTAIN='#',
+	SHRED_PLAIN='.',
+	SHRED_TESTSHRED='t',
+	SHRED_PYRAMID='p',
+	SHRED_HILL='+',
+	SHRED_DESERT=':',
+	SHRED_WATER='~',
+	SHRED_FOREST='%',
+	SHRED_MOUNTAIN='^',
+	SHRED_EMPTY='_',
+	SHRED_NORMAL_UNDERGROUND='-'
+};
+
+const char DEFAULT_SHRED=SHRED_PLAIN;
+const char OUT_BORDER_SHRED=SHRED_WATER;
+
 enum dirs {
 	UP,    ///< 0
 	DOWN,  ///< 1
