@@ -137,6 +137,8 @@ class Screen : public VirtScreen {
 	QString command; //save previous command for further execution
 	QFile * fileToShow;
 
+	bool beepOn;
+
 	char CharName(int, int) const;
 	char CharNumber(ushort x, ushort y, ushort z) const;
 	char CharNumberFront(ushort x, ushort y) const;

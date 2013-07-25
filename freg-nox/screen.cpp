@@ -854,7 +854,7 @@ bool Screen::PrintFile(WINDOW * const window, QString const & file_name) {
 void Screen::Notify(const QString & str) const {
 	waddstr(notifyWin, qPrintable(str));
 	waddch(notifyWin, '\n');
-	if ( str=="Ding!" ) {
+	if ( beepOn && str=="Ding!" ) {
 		beep();
 	}
 	wrefresh(notifyWin);
@@ -934,6 +934,7 @@ Screen::Screen(World * const wor, Player * const pl) :
 	shiftFocus=sett.value("focus_shift", 0).toInt();
 	actionMode=sett.value("action_mode", USE).toInt();
 	command   =sett.value("last_command", "hello").toString();
+	beepOn    =sett.value("beep_on", true).toBool();
 
 	if ( !PrintFile(stdscr, "splash.txt") ) {
 		addstr("Free-Roaming Elementary Game\n");
@@ -983,6 +984,7 @@ void Screen::CleanAll() {
 	sett.setValue("focus_shift", shiftFocus);
 	sett.setValue("action_mode", actionMode);
 	sett.setValue("last_command", command);
+	sett.setValue("beep_on", beepOn);
 }
 
 Screen::~Screen() { CleanAll(); }
