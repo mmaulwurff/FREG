@@ -854,7 +854,7 @@ bool Screen::PrintFile(WINDOW * const window, QString const & file_name) {
 void Screen::Notify(const QString & str) const {
 	waddstr(notifyWin, qPrintable(str));
 	waddch(notifyWin, '\n');
-	if ( beepOn && str=="Ding!" ) {
+	if ( beepOn && str==SOUND_STRINGS[0] ) {
 		beep();
 	}
 	wrefresh(notifyWin);

@@ -1794,19 +1794,17 @@
 		str >> longiStart >> latiStart >> savedShift >> savedChar;
 	}
 // Bell:
-	const char Bell::dingStr[]="Ding!";
-
 	quint8 Bell::Kind() const { return BELL; }
 	QString Bell::FullName() const { return tr("Bell."); }
 
 	usage_types Bell::Use(Block  * const) {
-		SendSignalAround(dingStr);
+		SendSignalAround(SOUND_STRINGS[0]);
 		return USAGE_TYPE_NO;
 	}
 
 	void Bell::ReceiveSignal(const QString & str) {
-		if ( dingStr!=str ) {
-			SendSignalAround(dingStr);
+		if ( SOUND_STRINGS[0]!=str ) {
+			SendSignalAround(SOUND_STRINGS[0]);
 		}
 	}
 

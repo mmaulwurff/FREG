@@ -62,6 +62,10 @@ enum WEARABLE {
 	const ushort WEIGHT_STONE=200;
 	const ushort WEIGHT_AIR=0;
 
+const QString SOUND_STRINGS[]={
+	"Ding!"
+};
+
 class QDataStream;
 class Inventory;
 class Active;
@@ -622,8 +626,6 @@ class Map : public Text {
 }; // class Map
 
 class Bell: public Active {
-	static const char dingStr[];
-
 	public:
 	quint8 Kind() const;
 	QString FullName() const;
