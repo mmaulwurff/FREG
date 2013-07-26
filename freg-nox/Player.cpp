@@ -89,6 +89,11 @@ short Player::Breath() const {
 	Animal const * const animal=player->IsAnimal();
 	return ( animal ? animal->Breath() : -1 );
 }
+ushort Player::BreathPercent() const {
+	const short breath=Breath();
+	return ( -1==breath ) ?
+		100 : breath*100/MAX_BREATH;
+}
 
 short Player::Satiation() const {
 	if ( !player || creativeMode ) {
@@ -100,8 +105,7 @@ short Player::Satiation() const {
 ushort Player::SatiationPercent() const {
 	const short satiation=Satiation();
 	return ( -1==satiation ) ?
-		50 :
-		satiation*100/SECONDS_IN_DAY;
+		50 : satiation*100/SECONDS_IN_DAY;
 }
 
 Inventory * Player::PlayerInventory() {

@@ -130,6 +130,7 @@ class Player : public QObject {
 	short HP() const;
 	///This returns player breath reserve.
 	short Breath() const;
+	ushort BreathPercent() const;
 	short Satiation() const;
 	///Can be > 100 if player is gorged. When player is not animal, 50.
 	ushort SatiationPercent() const;
