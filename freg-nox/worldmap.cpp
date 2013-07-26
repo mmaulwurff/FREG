@@ -21,6 +21,12 @@
 #include "worldmap.h"
 #include "header.h"
 
+#ifdef QT_OS_WIN23
+	const int END_OF_LINE_SHIFT=2;
+#else
+	const int END_OF_LINE_SHIFT=1;
+#endif
+
 WorldMap::WorldMap(const QString * const world_name) {
 	map = new QFile(*world_name+"/map.txt");
 	if ( map->open(QIODevice::ReadOnly | QIODevice::Text) ) {
