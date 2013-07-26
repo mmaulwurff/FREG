@@ -38,12 +38,21 @@ WorldMap::WorldMap(const QString * const world_name) {
 				qPrintable(*world_name+"/map.txt"));
 		#endif
 		#ifdef Q_OS_WIN32
+			#ifdef Q_CC_MSVC
 			sprintf_s(command,
 				max_command_length,
 				"mapgen.exe -s %hu -r %d -f %s",
 				map_size,
 				qrand(),
 				qPrintable(*world_name+"/map.txt"));
+			#else
+			snprintf(command,
+				max_command_length,
+				"mapgen.exe -s %hu -r %d -f %s",
+				map_size,
+				qrand(),
+				qPrintable(*world_name+"/map.txt"));
+			#endif
 		#endif
 		system(command);
 		if ( map->open(QIODevice::ReadOnly | QIODevice::Text) ) {

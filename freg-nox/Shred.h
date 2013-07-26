@@ -105,10 +105,10 @@ class Shred {
 
 	void SetNewBlock(int kind, int sub, ushort x, ushort y, ushort z,
 			int dir=UP);
+	char TypeOfShred(long longi, long lati) const;
 	private:
 	void RegisterBlock(Block *, ushort x, ushort y, ushort z);
 
-	char TypeOfShred(long longi, long lati) const;
 	private:
 	QString FileName() const;
 

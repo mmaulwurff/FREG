@@ -89,6 +89,7 @@ class World : public QThread {
 	uchar Enlightened(ushort x, ushort y, ushort z, int dir) const;
 	uchar SunLight(ushort x, ushort y, ushort z) const;
 	uchar FireLight(ushort x, ushort y, ushort z) const;
+	uchar LightMap(ushort x, ushort y, ushort z) const;
 
 	short ClampX(short x) const;
 	short ClampY(short y) const;
@@ -100,7 +101,6 @@ class World : public QThread {
 
 	private:
 	void SunShineHorizontal(short x, short y, short z);
-	uchar LightMap(ushort x, ushort y, ushort z) const;
 	bool SetSunLightMap(uchar level, ushort x, ushort y, ushort z);
 	bool SetFireLightMap(uchar level, ushort x, ushort y, ushort z);
 	void AddFireLight(short x, short y, short z, uchar level);
