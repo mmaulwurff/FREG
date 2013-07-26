@@ -24,8 +24,8 @@ const float pi=3.141592;
 
 int deg(const ushort x, const ushort y, const ushort size) {
 	float fi;
-	float x_cent=x-size/2;
-	float y_cent=y-size/2;
+	const float x_cent=x-size/2;
+	const float y_cent=y-size/2;
 	if ( x_cent>0 && y_cent>=0 ) {
 		fi=atan(y_cent/x_cent);
 	} else if ( x_cent>0 && y_cent<0 ) {
@@ -50,7 +50,7 @@ void circle(
 		const ushort min_rad, const ushort max_rad,
 	       	const char ch,
 		const ushort size,
-		char map[size][size])
+		char * map)
 {
 	if ( min_rad >= max_rad ) {
 		printf("%c: min_rad (%hu) >= max_rad (%hu)\n",
@@ -79,7 +79,7 @@ void circle(
 	for (y=0; y<size; ++y)
 	for (x=0; x<size; ++x) {
 		if ( r(x, y, size) < maxs[deg(x, y, size)] ) {
-			map[x][y]=ch;
+			map[x*size+y]=ch;
 		}
 	}
 }
@@ -110,11 +110,11 @@ int main(int argc, char * argv[]) {
 		size=10;
 	}
 
-	char map[size][size];
+	char * const map=malloc(size*size);
 	ushort x, y;
 	for (y=0; y<size; ++y)
 	for (x=0; x<size; ++x) {
-		map[x][y]=outer;
+		map[x*size+y]=outer;
 	}
 
 	const ushort min_rad=size/3;
@@ -133,19 +133,21 @@ int main(int argc, char * argv[]) {
 			for (j=i-river_width_deg; j<=i+river_width_deg; ++j) {
 				ushort r;
 				for (r=max_rad/3; r<max_rad; ++r) {
-					map[(int)(r*cos(j*2*pi/360))+size/2]
-						[(int)(r*sin(j*2*pi/360))+
+					map[((int)(r*cos(j*2*pi/360))+size/2)*size+
+						(int)(r*sin(j*2*pi/360))+
 							size/2]='~';
 				}
 			}
 		}
 	}
 		
-	FILE * const file=fopen(filename, "w");
+	FILE * const file=fopen(filename, "wb");
 	for (y=0; y<size; ++y, fputc('\n', file))
 	for (x=0; x<size; ++x) {
-		fputc(map[x][y], file);
+		fputc(map[x*size+y], file);
 	}
 
+	free(map);
 	fclose(file);
+	return 0;
 }
