@@ -106,15 +106,17 @@ class World : public QThread {
 	void AddFireLight(short x, short y, short z, uchar level);
 	void RemoveFireLight(short x, short y, short z);
 
-	void ReEnlighten(ushort i, ushort j, ushort k);
+	/// Called when block is moved.
+	void ReEnlighten(ushort x, ushort y, ushort z);
+	/// Called when block is built.
+	void ReEnlightenBlockAdd(ushort x, ushort y, ushort k);
+	/// Called when block is destroyed.
+	void ReEnlightenBlockRemove(ushort x, ushort y, ushort k);
 	void ReEnlightenAll();
 	void ReEnlightenTime();
 	///Called from World::ReloadShreds(int), enlightens only needed shreds.
 	void ReEnlightenMove(int direction);
 	void UpShine(ushort x, ushort y, ushort z_bottom);
-
-	void ReEnlightenBlockAdd();
-	void ReEnlightenBlockRemove();
 
 	public: // Information section
 	QString WorldName() const;

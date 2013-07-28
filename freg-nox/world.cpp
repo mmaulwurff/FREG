@@ -534,8 +534,10 @@ void World::NoCheckMove(
 	PutBlock(block_to, i, j, k);
 	PutBlock(block, newi, newj, newk);
 
-	ReEnlighten(newi, newj, newk);
-	ReEnlighten(i, j, k);
+	if ( block_to->Transparent() != block->Transparent() ) {
+		ReEnlighten(newi, newj, newk);
+		ReEnlighten(i, j, k);
+	}
 
 	Shred * shred=GetShred(i, j);
 	shred->AddFalling(i%SHRED_WIDTH, j%SHRED_WIDTH, k+1);
@@ -635,10 +637,13 @@ void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
 	} else {
 		PutNormalBlock(AIR, x, y, z);
 	}
+	const int old_transparency=temp->Transparent();
 	DeleteBlock(temp);
 	GetShred(x, y)->
 		AddFalling(x & SHRED_COORDS_BITS, y & SHRED_COORDS_BITS, z+1);
-	ReEnlighten(x, y, z);
+	if ( old_transparency!=INVISIBLE ) {
+		ReEnlightenBlockRemove(x, y, z);
+	}
 }
 
 bool World::Build(Block * block,
@@ -654,12 +659,15 @@ bool World::Build(Block * block,
 		}
 		return false;
 	}
+	const int old_transparency=target_block->Transparent();
 	DeleteBlock(target_block);
 	block->Restore();
 	block->SetDir(dir);
 	block=ReplaceWithNormal(block);
 	SetBlock(block, i, j, k);
-	ReEnlighten(i, j, k);
+	if ( old_transparency!=block->Transparent() ) {
+		ReEnlightenBlockAdd(i, j, k);
+	}
 	return true;
 }
 

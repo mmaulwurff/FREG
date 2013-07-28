@@ -121,10 +121,21 @@ void World::UpShine(const ushort x, const ushort y, const ushort z_bottom) {
 }
 
 //called when onet block is moved, built, or destroyed.
-void World::ReEnlighten(const ushort i, const ushort j, const ushort k) {
-	SunShineVertical(i, j);
-	Shine(i, j, k, GetBlock(i, j, k)->LightRadius(), true);
-	emit Updated(i, j, k);
+void World::ReEnlighten(const ushort x, const ushort y, const ushort z) {
+	SunShineVertical(x, y);
+	Shine(x, y, z, GetBlock(x, y, z)->LightRadius(), true);
+	emit Updated(x, y, z);
+}
+
+void World::ReEnlightenBlockAdd(const ushort x, const ushort y, const ushort z)
+{
+	ReEnlighten(x, y, z);
+}
+
+void World::ReEnlightenBlockRemove(
+		const ushort x, const ushort y, const ushort z)
+{
+	ReEnlighten(x, y, z);
 }
 
 void World::ReEnlightenTime() {
@@ -223,9 +234,6 @@ uchar World::FireLight(const ushort i, const ushort j, const ushort k)
 const {
 	return (LightMap(i, j, k) & 0xF0) * FIRE_LIGHT_FACTOR;
 }
-
-void World::ReEnlightenBlockAdd() {}
-void World::ReEnlightenBlockRemove() {}
 
 // Shred methods
 
