@@ -638,21 +638,25 @@ void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
 		PutNormalBlock(AIR, x, y, z);
 	}
 	const int old_transparency=temp->Transparent();
+	const uchar old_light=temp->LightRadius();
 	DeleteBlock(temp);
 	GetShred(x, y)->
 		AddFalling(x & SHRED_COORDS_BITS, y & SHRED_COORDS_BITS, z+1);
 	if ( old_transparency!=INVISIBLE ) {
 		ReEnlightenBlockRemove(x, y, z);
 	}
+	if ( old_light ) {
+		RemoveFireLight(x, y, z);
+	}
 }
 
 bool World::Build(Block * block,
-		const ushort i, const ushort j, const ushort k,
+		const ushort x, const ushort y, const ushort z,
 		const quint8 dir,
 		Block * const who,
 		const bool anyway)
 {
-	Block * const target_block=GetBlock(i, j, k);
+	Block * const target_block=GetBlock(x, y, z);
 	if ( !(ENVIRONMENT==target_block->Movable() || anyway) ) {
 		if ( who ) {
 			who->ReceiveSignal(tr("Cannot build here."));
@@ -664,9 +668,13 @@ bool World::Build(Block * block,
 	block->Restore();
 	block->SetDir(dir);
 	block=ReplaceWithNormal(block);
-	SetBlock(block, i, j, k);
+	SetBlock(block, x, y, z);
 	if ( old_transparency!=block->Transparent() ) {
-		ReEnlightenBlockAdd(i, j, k);
+		ReEnlightenBlockAdd(x, y, z);
+	}
+	const uchar block_light=block->LightRadius();
+	if ( block_light ) {
+		AddFireLight(x, y, z, block_light);
 	}
 	return true;
 }
