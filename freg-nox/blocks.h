@@ -343,6 +343,7 @@ class Inventory {
 class Dwarf : public Animal, public Inventory {
 	Q_OBJECT
 
+	static const uchar MIN_DWARF_LIGHT_RADIUS=2;
 	quint8 activeHand;
 	uchar lightRadius;
 	quint16 NutritionalValue(int sub) const;

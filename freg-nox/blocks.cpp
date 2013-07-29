@@ -924,7 +924,8 @@
 		Block * const in_right=ShowBlock(IN_RIGHT);
 		const uchar  left_rad=in_left  ? in_left ->LightRadius() : 0;
 		const uchar right_rad=in_right ? in_right->LightRadius() : 0;
-		lightRadius=qMax(uchar(2), qMax(left_rad, right_rad));
+		lightRadius=qMax(uchar(MIN_DWARF_LIGHT_RADIUS),
+			qMax(left_rad, right_rad));
 	}
 
 	void Dwarf::ReceiveSignal(const QString & str) {
@@ -1007,7 +1008,7 @@
 			Animal(sub),
 			Inventory(),
 			activeHand(IN_RIGHT),
-			lightRadius(2)
+			lightRadius(MIN_DWARF_LIGHT_RADIUS)
 	{
 		note=new QString("Urist");
 	}
