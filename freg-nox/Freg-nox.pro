@@ -10,7 +10,7 @@ TEMPLATE = app
 TARGET = freg-nox
 DEPENDPATH += .
 INCLUDEPATH += .
-VERSION = 0.1
+VERSION = 0.2
 VERSTR = '\\"$${VERSION}\\"'
 DEFINES += VER=\"$${VERSTR}\"
 
