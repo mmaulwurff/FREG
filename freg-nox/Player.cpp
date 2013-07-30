@@ -471,6 +471,10 @@ void Player::ProcessCommand(QString & command) {
 				arg(str).
 				arg(sub));
 		}
+	} else if ( "time"==request ) {
+		emit Notify( GetCreativeMode() ?
+			GetWorld()->TimeOfDayStr() :
+			tr("Not in Creative Mode.") );
 	} else {
 		emit Notify(tr("Don't know such command: \"%1\".").
 			arg(command));
