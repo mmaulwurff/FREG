@@ -859,7 +859,9 @@ void Screen::Notify(const QString & str) const {
 			beep();
 		}
 	} else if ( str==SOUND_STRINGS[1] ) {
-		flash();
+		if ( beepOn ) {
+			flash();
+		}
 	}
 	wrefresh(notifyWin);
 	fputs(qPrintable(QString("%1: %2\n").arg(w->Time()).arg(str)),
