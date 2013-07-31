@@ -854,8 +854,12 @@ bool Screen::PrintFile(WINDOW * const window, QString const & file_name) {
 void Screen::Notify(const QString & str) const {
 	waddstr(notifyWin, qPrintable(str));
 	waddch(notifyWin, '\n');
-	if ( beepOn && str==SOUND_STRINGS[0] ) {
-		beep();
+	if ( str==SOUND_STRINGS[0] ) {
+		if ( beepOn ) {
+			beep();
+		}
+	} else if ( str==SOUND_STRINGS[1] ) {
+		flash();
 	}
 	wrefresh(notifyWin);
 	fputs(qPrintable(QString("%1: %2\n").arg(w->Time()).arg(str)),

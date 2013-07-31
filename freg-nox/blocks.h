@@ -63,7 +63,8 @@ enum WEARABLE {
 	const ushort WEIGHT_AIR=0;
 
 const QString SOUND_STRINGS[]={
-	"Ding!"
+	"Ding!",
+	"Ouch!"
 };
 
 class QDataStream;

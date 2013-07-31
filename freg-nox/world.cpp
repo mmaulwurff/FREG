@@ -512,7 +512,6 @@ bool World::CanMove(
 			}
 		break;
 		case DAMAGE:
-			block->ReceiveSignal(tr("Ouch!"));
 			Damage(i, j, k,
 				block_to->DamageLevel(),
 				block_to->DamageKind());
@@ -600,6 +599,7 @@ void World::Damage(const ushort i, const ushort j, const ushort k,
 		SetBlock((temp=NewBlock(temp->Kind(), temp->Sub())), i, j, k );
 	}
 	if ( temp->Damage(dmg, dmg_kind) > 0 ) {
+		temp->ReceiveSignal(SOUND_STRINGS[1]); // "Ouch!"
 		if ( STONE==temp->Sub() && BLOCK==temp->Kind() &&
 				temp->Durability()!=MAX_DURABILITY )
 		{

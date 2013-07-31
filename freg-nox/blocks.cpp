@@ -1799,7 +1799,7 @@
 	QString Bell::FullName() const { return tr("Bell."); }
 
 	usage_types Bell::Use(Block  * const) {
-		SendSignalAround(SOUND_STRINGS[0]);
+		SendSignalAround(SOUND_STRINGS[0]); // "Ding!"
 		return USAGE_TYPE_NO;
 	}
 
