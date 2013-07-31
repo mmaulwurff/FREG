@@ -96,11 +96,11 @@ class World : public QThread {
 	short ClampZ(short z) const;
 
 	void SunShineVertical(short x, short y, short z=HEIGHT-1);
+	void SunShineHorizontal(short x, short y, short z);
 	///If init is false, light will not spread from non-invisible blocks.
 	void Shine(ushort x, ushort y, ushort z, uchar level, bool init=false);
 
 	private:
-	void SunShineHorizontal(short x, short y, short z);
 	bool SetSunLightMap(uchar level, ushort x, ushort y, ushort z);
 	bool SetFireLightMap(uchar level, ushort x, ushort y, ushort z);
 	void AddFireLight(short x, short y, short z, uchar level);
