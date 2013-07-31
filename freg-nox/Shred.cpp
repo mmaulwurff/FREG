@@ -173,9 +173,10 @@ void Shred::PhysEventsFrequent() {
 			const ushort x=temp->X();
 			const ushort y=temp->Y();
 			const ushort z=temp->Z();
-			if ( weight<=GetBlock(x%SHRED_WIDTH, y%SHRED_WIDTH,
-						z-1)->Weight()
-					|| !world->Move(x, y, z, DOWN) )
+			if (weight<=GetBlock(
+					x & SHRED_COORDS_BITS,
+					y & SHRED_COORDS_BITS, z-1)->Weight()
+						|| !world->Move(x, y, z, DOWN))
 			{
 				RemFalling(temp);
 				temp->FallDamage();
@@ -334,8 +335,8 @@ void Shred::RandomDrop(const ushort num, const int kind, const int sub,
 		const bool on_water)
 {
 	for (ushort i=0; i<num; ++i) {
-		ushort x=qrand()%SHRED_WIDTH;
-		ushort y=qrand()%SHRED_WIDTH;
+		ushort x=(qrand() & SHRED_COORDS_BITS);
+		ushort y=(qrand() & SHRED_COORDS_BITS);
 		for (ushort z=HEIGHT-2; z>0; --z) {
 			if ( Sub(x, y, z)!=AIR ) {
 				if( on_water || Sub(x, y, z)!=WATER ) {

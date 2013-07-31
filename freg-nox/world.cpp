@@ -539,11 +539,13 @@ void World::NoCheckMove(
 	}
 
 	Shred * shred=GetShred(i, j);
-	shred->AddFalling(i%SHRED_WIDTH, j%SHRED_WIDTH, k+1);
-	shred->AddFalling(i%SHRED_WIDTH, j%SHRED_WIDTH, k);
+	shred->AddFalling(i & SHRED_COORDS_BITS, j & SHRED_COORDS_BITS, k+1);
+	shred->AddFalling(i & SHRED_COORDS_BITS, j & SHRED_COORDS_BITS, k);
 	shred=GetShred(newi, newj);
-	shred->AddFalling(newi%SHRED_WIDTH, newj%SHRED_WIDTH, newk+1);
-	shred->AddFalling(newi%SHRED_WIDTH, newj%SHRED_WIDTH, newk);
+	shred->AddFalling(newi & SHRED_COORDS_BITS, newj & SHRED_COORDS_BITS,
+		newk+1);
+	shred->AddFalling(newi & SHRED_COORDS_BITS, newj & SHRED_COORDS_BITS,
+		newk);
 
 	block_to->Move( Anti(dir) );
 	block->Move(dir);

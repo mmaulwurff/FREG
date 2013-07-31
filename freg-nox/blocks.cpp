@@ -520,10 +520,13 @@
 		}
 		SetXYZ(x, y, z);
 		(whereShred=sh)->AddActive(this);
-		if ( ENVIRONMENT==sh->GetBlock(x%SHRED_WIDTH, y%SHRED_WIDTH,
+		if ( ENVIRONMENT==sh->GetBlock(
+					x & SHRED_COORDS_BITS,
+					y & SHRED_COORDS_BITS,
 					z-1)->Movable() &&
 				!(*this==*sh->GetBlock(
-					x%SHRED_WIDTH, y%SHRED_WIDTH, z-1)) )
+					x & SHRED_COORDS_BITS,
+					y & SHRED_COORDS_BITS, z-1)) )
 		{
 			whereShred->AddFalling(this);
 		}
@@ -1169,8 +1172,8 @@
 	void Grass::ActRare() {
 		World * const world=GetWorld();
 		if ( SOIL!=GetShred()->Sub(
-				X()%SHRED_WIDTH,
-				Y()%SHRED_WIDTH, Z()-1) )
+				X() & SHRED_COORDS_BITS,
+				Y() & SHRED_COORDS_BITS, Z()-1) )
 		{
 			world->Damage(X(), Y(), Z(), durability, TIME);
 		}

@@ -127,25 +127,23 @@ void Shred::Mountain() {
 	 *  ? south bridge
 	 *  ?
 	 * */
-	ushort i, j;
 	const ushort mount_top=3*HEIGHT/4;
 	NormalCube(0, 0, 1,
 		SHRED_WIDTH/2, SHRED_WIDTH/2, mount_top, STONE);
 	//south bridge
 	if ( SHRED_MOUNTAIN==TypeOfShred(longitude+1, latitude) ) {
-		NormalCube(qrand()%(SHRED_WIDTH/2-1), SHRED_WIDTH/2,
-			mount_top, 2, SHRED_WIDTH/2, 1, STONE);
+		NormalCube(qrand()%(SHRED_WIDTH/2-1), SHRED_WIDTH/2, mount_top,
+			2, SHRED_WIDTH/2, 1, STONE);
 	}
 	//east bridge
 	if ( SHRED_MOUNTAIN==TypeOfShred(longitude, latitude+1) ) {
-		NormalCube(SHRED_WIDTH/2, qrand()%(SHRED_WIDTH/2-1),
-			mount_top, SHRED_WIDTH/2, 2, 1, STONE);
+		NormalCube(SHRED_WIDTH/2, qrand()%(SHRED_WIDTH/2-1), mount_top,
+			SHRED_WIDTH/2, 2, 1, STONE);
 	}
 	//water pool
 	if ( !(qrand()%10) ) {
-		fprintf(stderr, "pool\n");
-		for (i=1; i<SHRED_WIDTH/2-1; ++i)
-		for (j=1; j<SHRED_WIDTH/2-1; ++j)
+		for (ushort i=1; i<SHRED_WIDTH/2-1; ++i)
+		for (ushort j=1; j<SHRED_WIDTH/2-1; ++j)
 		for (ushort k=mount_top-3; k<=mount_top; ++k) {
 			SetNewBlock(LIQUID, WATER, i, j, k);
 		}
