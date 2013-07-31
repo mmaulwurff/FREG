@@ -19,6 +19,7 @@
 #define SHRED_H
 
 #include <QList>
+#include <QLinkedList>
 #include "blocks.h"
 
 class QFile;
@@ -37,7 +38,7 @@ class Shred {
 	QList<Active *> activeListFrequent;
 	QList<Active *> activeListRare;
 	QList<Active *> fallList;
-	QList<Active *> shiningList;
+	QLinkedList<Active *> shiningList;
 
 	///Lowest nullstone and sky are not in bounds.
 	bool InBounds(ushort x, ushort y, ushort z) const;
@@ -59,6 +60,9 @@ class Shred {
 	void AddFalling(ushort x, ushort y, ushort z);
 	void AddShining(Active *);
 	void RemShining(Active *);
+
+	QLinkedList<Active *>::const_iterator ShiningBegin() const;
+	QLinkedList<Active *>::const_iterator ShiningEnd() const;
 
 	World * GetWorld() const;
 

@@ -249,6 +249,13 @@ void Shred::RemShining(Active * const active) {
 	shiningList.removeOne(active);
 }
 
+QLinkedList<Active *>::const_iterator Shred::ShiningBegin() const {
+	return shiningList.constBegin();
+}
+QLinkedList<Active *>::const_iterator Shred::ShiningEnd() const {
+	return shiningList.constEnd();
+}
+
 void Shred::ReloadToNorth() {
 	for (ushort i=0; i<activeListAll.size(); ++i) {
 		activeListAll.at(i)->ReloadToNorth();
