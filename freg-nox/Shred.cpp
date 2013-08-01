@@ -43,21 +43,30 @@ bool Shred::LoadShred(QFile & file) {
 		return false;
 	}
 	in.setVersion(DATASTREAM_VERSION);
-	for (ushort i=0; i<SHRED_WIDTH; ++i)
-	for (ushort j=0; j<SHRED_WIDTH; ++j) {
-		PutNormalBlock(NULLSTONE, i, j, 0);
-		lightMap[i][j][0]=0;
-		for (ushort k=1; k<HEIGHT-1; ++k) {
-			lightMap[i][j][k]=0;
+	for (ushort x=0; x<SHRED_WIDTH; ++x)
+	for (ushort y=0; y<SHRED_WIDTH; ++y) {
+		PutNormalBlock(NULLSTONE, x, y, 0);
+		lightMap[x][y][0]=0;
+		for (ushort z=1; ; ++z) {
+			lightMap[x][y][z]=0;
 			quint8 kind, sub;
-			SetBlock( ( block_manager.
-					KindSubFromFile(in, kind, sub)?
+			const bool normal=block_manager.
+				KindSubFromFile(in, kind, sub);
+			if ( sub==SKY || sub==STAR ) {
+				for ( ; z<HEIGHT-1; ++z) {
+					PutNormalBlock(AIR, x, y, z);
+					lightMap[x][y][z]=0;
+				}
+				PutNormalBlock(sub, x, y, HEIGHT-1);
+				lightMap[x][y][HEIGHT-1]=1;
+				break;
+			}
+			// else
+			SetBlock( normal ?
 				block_manager.NormalBlock(sub) :
-				block_manager.BlockFromFile(in, kind, sub) ),
-				i, j, k);
+				block_manager.BlockFromFile(in, kind, sub),
+				x, y, z);
 		}
-		SetBlock(block_manager.BlockFromFile(in), i, j, HEIGHT-1);
-		lightMap[i][j][HEIGHT-1]=1;
 	}
 	return true;
 }
@@ -127,25 +136,30 @@ Shred::~Shred() {
 			return;
 		}
 		QByteArray shred_data;
-		shred_data.reserve(100000);
+		shred_data.reserve(70000);
 		QDataStream outstr(&shred_data, QIODevice::WriteOnly);
 		outstr << DATASTREAM_VERSION;
 		outstr.setVersion(DATASTREAM_VERSION);
-		for (ushort i=0; i<SHRED_WIDTH; ++i)
-		for (ushort j=0; j<SHRED_WIDTH; ++j) {
-			for (ushort k=1; k<HEIGHT-1; ++k) {
-				blocks[i][j][k]->SaveToFile(outstr);
-				block_manager.DeleteBlock(blocks[i][j][k]);
+		for (ushort x=0; x<SHRED_WIDTH; ++x)
+		for (ushort y=0; y<SHRED_WIDTH; ++y) {
+			ushort height=HEIGHT-2;
+			for ( ; blocks[x][y][height]->Sub()==AIR; --height);
+			for (ushort z=1; z <= height; ++z) {
+				blocks[x][y][z]->SaveToFile(outstr);
+				block_manager.DeleteBlock(blocks[x][y][z]);
 			}
-			blocks[i][j][HEIGHT-1]->SaveToFile(outstr);
+			blocks[x][y][HEIGHT-1]->SaveToFile(outstr);
 		}
 		file.write(qCompress(shred_data));
 		return;
 	}
-	for (ushort i=0; i<SHRED_WIDTH; ++i)
-	for (ushort j=0; j<SHRED_WIDTH; ++j)
-	for (ushort k=1; k<HEIGHT-1; ++k) {
-		block_manager.DeleteBlock(blocks[i][j][k]);
+	for (ushort x=0; x<SHRED_WIDTH; ++x)
+	for (ushort y=0; y<SHRED_WIDTH; ++y) {
+		ushort height=HEIGHT-2;
+		for ( ; blocks[x][y][height]->Sub()==AIR; --height);
+		for (ushort z=1; z<height; ++z) {
+			block_manager.DeleteBlock(blocks[x][y][z]);
+		}
 	}
 } //Shred::~Shred
 
