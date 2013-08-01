@@ -987,10 +987,7 @@
 				( ON_LEGS==num_to &&
 					WEARABLE_LEGS==block->Wearable() )) )
 		{
-			for (ushort i=0; i<num; ++i) {
-				Inventory::MoveInside(num_from, num_to,
-					Number(num_from));
-			}
+			Inventory::MoveInside(num_from, num_to, num);
 		}
 		UpdateLightRadius();
 		GetWorld()->Shine(X(), Y(), Z(), lightRadius, true);
