@@ -893,7 +893,7 @@
 
 	ushort Dwarf::Weight() const {
 		World * const world=GetWorld();
-		return (
+		return ( world && (
 				(world->InBounds(X()+1, Y()) &&
 					world->GetBlock(X()+1, Y(), Z())->
 						Catchable()) ||
@@ -905,7 +905,7 @@
 						Catchable()) ||
 				(world->InBounds(X(), Y()-1) &&
 					world->GetBlock(X(), Y()-1, Z())->
-						Catchable()) ) ?
+						Catchable()) ) ) ?
 			0 : Inventory::Weight()+Block::Weight();
 	}
 
