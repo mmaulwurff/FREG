@@ -124,19 +124,9 @@ Block * BlockManager::NewBlock(const int kind, int sub) {
 	}
 }
 
-Block * BlockManager::BlockFromFile(QDataStream & str) {
-	quint8 data;
-	str >> data;
-	const quint8 sub=(data & 0x7F);
-	if ( data & 0x80 ) {
-		return NormalBlock(sub);
-	}
-	quint8 kind;
-	str >> kind;
-	//if some kind will not be listed here,
-	//blocks of this kind just will not load,
-	//unless kind is inherited from Inventory class or one
-	//of its derivatives - in this case this may cause something bad.
+Block * BlockManager::BlockFromFile(QDataStream & str,
+		const quint8 kind, const quint8 sub)
+{
 	switch ( kind ) {
 		case BLOCK:  return New<Block >(str, sub);
 		case BELL:   return New<Bell  >(str, sub);
@@ -165,6 +155,25 @@ Block * BlockManager::BlockFromFile(QDataStream & str) {
 				kind);
 			return New<Block>(str, sub);
 	}
+}
+
+Block * BlockManager::BlockFromFile(QDataStream & str) {
+	quint8 kind, sub;
+	return KindSubFromFile(str, kind, sub) ?
+		NormalBlock(sub) : BlockFromFile(str, kind, sub);
+}
+
+bool BlockManager::KindSubFromFile(QDataStream & str,
+		quint8 & kind, quint8 & sub)
+{
+	quint8 data;
+	str >> data;
+	sub=(data & 0x7F);
+	if ( data & 0x80 ) { // normal bit
+		return true;
+	}
+	str >> kind;
+	return false;
 }
 
 void BlockManager::DeleteBlock(Block * const block) {

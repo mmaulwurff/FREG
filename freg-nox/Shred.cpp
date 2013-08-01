@@ -48,8 +48,13 @@ bool Shred::LoadShred(QFile & file) {
 		PutNormalBlock(NULLSTONE, i, j, 0);
 		lightMap[i][j][0]=0;
 		for (ushort k=1; k<HEIGHT-1; ++k) {
-			SetBlock(block_manager.BlockFromFile(in), i, j, k);
 			lightMap[i][j][k]=0;
+			quint8 kind, sub;
+			SetBlock( ( block_manager.
+					KindSubFromFile(in, kind, sub)?
+				block_manager.NormalBlock(sub) :
+				block_manager.BlockFromFile(in, kind, sub) ),
+				i, j, k);
 		}
 		SetBlock(block_manager.BlockFromFile(in), i, j, HEIGHT-1);
 		lightMap[i][j][HEIGHT-1]=1;

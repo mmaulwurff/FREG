@@ -42,13 +42,16 @@ class BlockManager {
 	BlockManager();
 	~BlockManager();
 
-	///Use this to receive a pointer to normal block.
+	/// Use this to receive a pointer to normal block.
 	Block * NormalBlock(int sub);
-	///Use this to receive a pointer to new not-normal block.
+	/// Use this to receive a pointer to new not-normal block.
 	Block * NewBlock(int kind, int sub=STONE);
-	///Use this to load block from file.
+	/// Use this to load block from file.
+	Block * BlockFromFile(QDataStream &, quint8 kind, quint8 sub);
 	Block * BlockFromFile(QDataStream &);
-	///Use this to safely delete block.
+	/// Returns true if block is normal.
+	bool KindSubFromFile(QDataStream &, quint8 & kind, quint8 & sub);
+	/// Use this to safely delete block.
 	void DeleteBlock(Block * block);
 
 	static QString KindToString(quint8 kind);
