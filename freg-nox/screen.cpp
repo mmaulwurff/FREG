@@ -249,11 +249,11 @@ void Screen::ControlPlayer(const int ch) {
 		emit ExitReceived();
 		return;
 	}
-	if ( ch>='a' && ch<='z' ) { //actions with inventory
+	if ( ch>='a' && ch<='z' ) { // actions with inventory
 		InventoryAction(ch-'a');
 		return;
 	}
-	switch ( ch ) { //interactions with world
+	switch ( ch ) { // interactions with world
 	case KEY_UP:
 		if ( player->GetDir()==NORTH ) {
 			player->Move(NORTH);
@@ -287,36 +287,37 @@ void Screen::ControlPlayer(const int ch) {
 	case '=': player->Move(); break;
 
 	case '>': player->SetDir(World::TurnRight(player->GetDir())); break;
-	case '<': player->SetDir(World::TurnLeft(player->GetDir()));  break;
+	case '<': player->SetDir(World::TurnLeft (player->GetDir())); break;
 	case KEY_NPAGE: player->SetDir(DOWN); break;
 	case KEY_PPAGE: player->SetDir(UP);   break;
 
 	case KEY_HOME: player->Backpack(); break;
 	case 8:
-	case KEY_BACKSPACE: { //damage
+	case KEY_BACKSPACE: { // damage
 		ushort x, y, z;
 		ActionXyz(x, y, z);
 		player->Damage(x, y, z);
 	} break;
 	case 13:
-	case '\n': { //use
+	case '\n': { // use
 		ushort x, y, z;
 		ActionXyz(x, y, z);
 		player->Use(x, y, z);
 	} break;
-	case  '?': { //examine
+	case  '?': { // examine
 		ushort x, y, z;
 		ActionXyz(x, y, z);
 		player->Examine(x, y, z);
 	} break;
-	case  '~': { //inscribe
+	case  '~': { // inscribe
 		ushort x, y, z;
 		ActionXyz(x, y, z);
 		player->Inscribe(x, y, z);
 	} break;
-	case 27: /*esc*/ player->StopUseAll(); break;
+	case 27: /* esc */ player->StopUseAll(); break;
 
 	case 'U': SetActionMode(USE);      break;
+	case 'D':
 	case 'T': SetActionMode(THROW);    break;
 	case 'O': SetActionMode(OBTAIN);   break;
 	case 'W': SetActionMode(WIELD);    break;
@@ -330,7 +331,7 @@ void Screen::ControlPlayer(const int ch) {
 	case 'H':
 		wstandend(rightWin);
 		PrintFile(rightWin, "help.txt");
-		break;
+	break;
 
 	case ';': {
 		Inventory * const inv=player->PlayerInventory();
@@ -339,32 +340,32 @@ void Screen::ControlPlayer(const int ch) {
 				inv->Start(), inv->Size()-1);
 		}
 	} break;
-	case '-': shiftFocus = -!shiftFocus; break; //move focus down
-	case '+': shiftFocus =  !shiftFocus; break; //move focus up
+	case '-': shiftFocus = -!shiftFocus; break; // move focus down
+	case '+': shiftFocus =  !shiftFocus; break; // move focus up
 
 	case '!': player->SetCreativeMode( !player->GetCreativeMode() ); break;
-	case '/': PassString(command); //no break
+	case '/': PassString(command); // no break
 	case '.': player->ProcessCommand(command); break;
 
 	case 'L': RePrint(); break;
 
 	case KEY_MOUSE: MouseAction(); break;
 	case 'R':
-		if ( player->GetCreativeMode() ) {
-			break;
+		if ( !player->GetCreativeMode() ) {
+			player->SetActiveHand(!player->IsRightActiveHand());
+			Notify(tr("Now %1 hand is active.").
+				arg(tr(player->IsRightActiveHand() ?
+					"right" : "left")));
 		}
-		player->SetActiveHand(!player->IsRightActiveHand());
-		Notify(tr("Now %1 hand is active.").
-			arg(tr(player->IsRightActiveHand() ?
-				"right" : "left")));
 	break;
-	default: Notify(tr(
-		"Don't know what such key means: %1 ('%2').").
+	default:
+		Notify(tr("Don't know what such key means: %1 ('%2').").
 			arg(ch).
 			arg(char(ch)));
+		Notify(tr("Press 'H' for help."));
 	}
 	updated=false;
-} //Screen::ControlPlayer
+} // Screen::ControlPlayer
 
 void Screen::SetActionMode(const int mode) {
 	actionMode=mode;
