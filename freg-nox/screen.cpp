@@ -94,7 +94,7 @@ QString Screen::PassString(QString & str) const {
 }
 
 char Screen::CharNumber(const ushort x, const ushort y, const ushort z) const {
-	if ( HEIGHT-1==z ) { //sky
+	if ( HEIGHT-1==z ) { // sky
 		return ' ';
 	}
 	if ( player->X()==x && player->Y()==y && player->Z()==z ) {
@@ -159,7 +159,7 @@ char Screen::CharName(const int kind, const int sub) const {
 			fprintf(stderr,
 				"Screen::CharName: weapon sub ?: %d\n",
 				sub);
-		//no break;
+		// no break;
 		case STONE: return '.';
 		case IRON:
 		case WOOD:  return '/';
@@ -171,7 +171,7 @@ char Screen::CharName(const int kind, const int sub) const {
 			fprintf(stderr,
 				"Screen::CharName: active sub ?: %d\n",
 				sub);
-	} //no break;
+	} // no break;
 	default: switch ( sub ) {
 		case NULLSTONE: case MOSS_STONE: case WOOD:
 		case IRON: case CLAY:
@@ -196,10 +196,10 @@ char Screen::CharName(const int kind, const int sub) const {
 			return '?';
 		}
 	}
-} //Screen::CharName
+} // Screen::CharName
 
 color_pairs Screen::Color(const int kind, const int sub) const {
-	switch ( kind ) { //foreground_background
+	switch ( kind ) { // foreground_background
 	case DWARF:     return WHITE_BLUE;
 	case TELEGRAPH: return CYAN_BLACK;
 	case RABBIT:    return RED_WHITE;
@@ -241,7 +241,7 @@ color_pairs Screen::Color(const int kind, const int sub) const {
 		default: return WHITE_BLACK;
 		}
 	}
-} //Screen::Color
+} // Screen::Color
 
 void Screen::ControlPlayer(const int ch) {
 	CleanFileToShow();
@@ -373,7 +373,7 @@ void Screen::SetActionMode(const int mode) {
 }
 
 void Screen::MouseAction() {
-	#ifdef Q_OS_LINUX //mouse events are in ncurses, but not in pdcurses
+	#ifdef Q_OS_LINUX // mouse events are in ncurses, but not in pdcurses
 	MEVENT mouse_event;
 	getmouse(&mouse_event);
 	if ( !wenclose(hudWin, mouse_event.y, mouse_event.x) ) {
@@ -498,7 +498,7 @@ void Screen::Print() {
 		if ( player->PlayerInventory() ) {
 			PrintInv(leftWin, player->PlayerInventory());
 			break;
-		} //no break;
+		} // no break;
 	default:
 		PrintNormal(leftWin,
 				( UP==player->GetDir() ||
@@ -507,7 +507,7 @@ void Screen::Print() {
 	}
 	w->Unlock();
 	doupdate();
-} //Screen::Print
+} // Screen::Print
 
 void Screen::PrintHUD() {
 	if ( updatedPlayer ) {
@@ -516,7 +516,7 @@ void Screen::PrintHUD() {
 		updatedPlayer=true;
 	}
 	werase(hudWin);
-	//quick inventory
+	// quick inventory
 	Inventory * const inv=player->PlayerInventory();
 	if ( inv ) {
 		for (ushort i=0; i<inv->Size(); ++i) {
@@ -533,7 +533,7 @@ void Screen::PrintHUD() {
 			}
 		}
 	}
-	//action mode
+	// action mode
 	wstandend(hudWin);
 	mvwaddstr(hudWin, 1, 0, "Action: ");
 	switch ( actionMode ) {
@@ -554,7 +554,7 @@ void Screen::PrintHUD() {
 	if ( player->GetCreativeMode() ) {
 		wstandend(hudWin);
 		mvwaddstr(hudWin, 0, 0, "Creative Mode");
-		//coordinates
+		// coordinates
 		mvwprintw(hudWin, 2, 0, "xyz: %ld, %ld, %hu. XY: %ld, %ld",
 			player->GlobalX(), player->GlobalY(), player->Z(),
 			player->GetLatitude(), player->GetLongitude());
@@ -570,7 +570,7 @@ void Screen::PrintHUD() {
 		}
 	} else {
 		const short dur=player->HP();
-		if ( -1!=dur ) { //HitPoints line
+		if ( -1!=dur ) { // HitPoints line
 			wstandend(hudWin);
 			const QString str=QString("%1").arg(dur, -10, 10,
 				QChar('.'));
@@ -580,7 +580,7 @@ void Screen::PrintHUD() {
 				qPrintable(str.left(10*dur/MAX_DURABILITY+1)));
 		}
 		const short breath=player->Breath();
-		if ( -1!=breath ) { //breath line
+		if ( -1!=breath ) { // breath line
 			wstandend(hudWin);
 			const QString str=
 				QString("%1").arg(breath, -10, 10, QChar('.'));
@@ -590,7 +590,7 @@ void Screen::PrintHUD() {
 				qPrintable(str.left(10*breath/MAX_BREATH+1)));
 		}
 		const short satiation=player->SatiationPercent();
-		if ( -1!=satiation ) { //satiation line
+		if ( -1!=satiation ) { // satiation line
 			(void)wmove(hudWin, 2, 0);
 			if ( 100<satiation ) {
 				wcolor_set(hudWin, BLUE_BLACK, NULL);
@@ -605,7 +605,7 @@ void Screen::PrintHUD() {
 		}
 	}
 	wnoutrefresh(hudWin);
-} //Screen::PrintHUD
+} // Screen::PrintHUD
 
 void Screen::PrintNormal(WINDOW * const window, const int dir) const {
 	const ushort k_start=( UP!=dir ) ?
@@ -653,7 +653,7 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
 		}
 	}
 	wnoutrefresh(window);
-} //Screen::PrintNormal
+} // Screen::PrintNormal
 
 void Screen::PrintFront(WINDOW * const window) const {
 	const int dir=player->GetDir();
@@ -780,7 +780,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 	}
 	Arrows(window, arrow_X, arrow_Y);
 	wnoutrefresh(window);
-} //Screen::PrintFront
+} // Screen::PrintFront
 
 void Screen::PrintInv(WINDOW * const window, const Inventory * const inv)
 const {
@@ -824,7 +824,7 @@ const {
 			"Your inventory" :
 			qPrintable(inv->FullName()));
 	wnoutrefresh(window);
-} //Screen::PrintInv
+} // Screen::PrintInv
 
 void Screen::PrintText(WINDOW * const window, QString const & str) const {
 	werase(window);
@@ -833,10 +833,8 @@ void Screen::PrintText(WINDOW * const window, QString const & str) const {
 }
 
 void Screen::CleanFileToShow() {
-	if ( fileToShow ) {
-		delete fileToShow;
-		fileToShow=0;
-	}
+	delete fileToShow;
+	fileToShow=0;
 }
 
 bool Screen::PrintFile(WINDOW * const window, QString const & file_name) {
@@ -895,7 +893,8 @@ Screen::Screen(World * const wor, Player * const pl) :
 		notifyLog(fopen("messages.txt", "a")),
 		fileToShow(0)
 {
-	#ifdef Q_OS_WIN32 //by Panzerschrek
+	setlocale(LC_ALL, "");
+	#ifdef Q_OS_WIN32 // by Panzerschrek
 		AllocConsole();
 		freopen( "conout$", "w", stdout );
 		freopen( "conin$", "r", stdin );
@@ -905,12 +904,13 @@ Screen::Screen(World * const wor, Player * const pl) :
 	resize_term( SCREEN_SIZE+2 + 3 + 1 + 5, (SCREEN_SIZE*2 + 2)*2 );
 	initscr();
 	start_color();
-	raw(); //send typed keys directly
-	noecho(); //do not print typed symbols
-	keypad(stdscr, TRUE); //use arrows
-	curs_set(0); //invisible cursor
-	//all available color pairs (maybe some of them will not be used)
-	const short colors[]={ //do not change colors order!
+	raw(); // send typed keys directly
+	noecho(); // do not print typed symbols
+	nonl();
+	keypad(stdscr, TRUE); // use arrows
+	curs_set(0); // invisible cursor
+	// all available color pairs (maybe some of them will not be used)
+	const short colors[]={ // do not change colors order!
 		COLOR_BLACK,
 		COLOR_RED,
 		COLOR_GREEN,
@@ -960,20 +960,21 @@ Screen::Screen(World * const wor, Player * const pl) :
 	input->start();
 	connect(timer, SIGNAL(timeout()), this, SLOT(Print()));
 	timer->start(100);
-} //Screen::Screen
+} // Screen::Screen
 
 void Screen::CleanAll() {
-	//TODO: make own lock
+	// TODO: make own lock
 	w->WriteLock();
 	if ( cleaned ) {
 		w->Unlock();
 		return;
 	}
 
-	cleaned=true;//prevent double cleaning
+	cleaned=true; // prevent double cleaning
 	input->Stop();
 	input->wait();
 	delete input;
+	delete timer;
 	w->Unlock();
 
 	delwin(leftWin);
