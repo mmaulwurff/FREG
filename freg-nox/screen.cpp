@@ -623,10 +623,9 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
 	for (ushort i=start_x; i<SCREEN_SIZE+start_x; ++i ) {
 		ushort k=k_start;
 		const Block * block;
-		for ( ; INVISIBLE==(block=w->GetBlock(i, j, k))->
-			Transparent(); k+=k_step);
-		if ( (w->Enlightened(i, j, k) &&
-				player->Visible(i, j, k)) ||
+		for ( ; INVISIBLE==(block=w->GetBlock(i, j, k))->Transparent();
+				k+=k_step);
+		if ( (w->Enlightened(i, j, k) && player->Visible(i, j, k)) ||
 				player->GetCreativeMode() )
 		{
 			waddch(window, PrintBlock(block, window));
@@ -788,8 +787,8 @@ const {
 	wstandend(window);
 	switch ( inv->Kind() ) {
 	case DWARF:
-		mvwaddstr(window, 2, 7, "Head\n Right hand\n  ");
-		waddstr(window, "Left hand\n       Body\n       Legs");
+		mvwaddstr(window, 2, 7, "Head\n Right hand\n  Left hand\n");
+		waddstr(window, "       Body\n       Legs");
 	break;
 	case WORKBENCH: mvwaddstr(window, 2, 4, "Product"); break;
 	}
@@ -797,32 +796,35 @@ const {
 		inv->Weight());
 	for (ushort i=0; i<inv->Size(); ++i) {
 		mvwprintw(window, 2+i, 12, "%c)", 'a'+i);
-		if ( inv->Number(i) ) {
-			const Block * const block=inv->ShowBlock(i);
-			wprintw(window, "[%c]%s",
-				PrintBlock(block, window),
-				qPrintable(inv->InvFullName(i)) );
-			if ( 1<inv->Number(i) ) {
-				waddstr(window, qPrintable(inv->NumStr(i)));
-			}
-			QString str;
-			if ( ""!=(str=inv->GetInvNote(i)) ) {
-				waddstr(window,
-					qPrintable((" ~:"+(( str.size()<24 ) ?
-						str : str.left(13)+"..."))));
-			}
-			wstandend(window);
-			mvwprintw(window, 2+i, 53, "%5hu mz",
-				inv->GetInvWeight(i));
+		if ( !inv->Number(i) ) {
+			continue;
 		}
+		const Block * const block=inv->ShowBlock(i);
+		wprintw(window, "[%c]%s",
+			PrintBlock(block, window),
+			qPrintable(inv->InvFullName(i)) );
+		if ( 1<inv->Number(i) ) {
+			waddstr(window, qPrintable(inv->NumStr(i)));
+		}
+		const QString str=inv->GetInvNote(i);
+		if ( !str.isEmpty() ) {
+			waddstr(window, " ~:");
+			if ( str.size() < 24 ) {
+				waddstr(window, qPrintable(str));
+			} else {
+				waddstr(window, qPrintable(str.left(13)));
+				waddstr(window, "...");
+			}
+		}
+		wstandend(window);
+		mvwprintw(window, 2+i, 53, "%5hu mz", inv->GetInvWeight(i));
 	}
 	wcolor_set(window, Color(inv->Kind(), inv->Sub()), NULL);
 	box(window, 0, 0);
 	mvwprintw(window, 0, 1, "[%c]%s",
 		CharName(inv->Kind(), inv->Sub()),
 		( player->PlayerInventory()==inv ) ?
-			"Your inventory" :
-			qPrintable(inv->FullName()));
+			"Your inventory" : qPrintable(inv->FullName()));
 	wnoutrefresh(window);
 } // Screen::PrintInv
 
@@ -841,8 +843,7 @@ bool Screen::PrintFile(WINDOW * const window, QString const & file_name) {
 	CleanFileToShow();
 	fileToShow=new QFile(file_name);
 	if ( fileToShow->open(QIODevice::ReadOnly | QIODevice::Text) ) {
-		const QString str=fileToShow->readAll();
-		PrintText(window, str);
+		PrintText(window, fileToShow->readAll());
 		return true;
 	} else {
 		CleanFileToShow();
@@ -890,7 +891,7 @@ Screen::Screen(World * const wor, Player * const pl) :
 		updatedPlayer(false),
 		cleaned(false),
 		timer(new QTimer(this)),
-		notifyLog(fopen("messages.txt", "a")),
+		notifyLog(fopen("messages.txt", "at")),
 		fileToShow(0)
 {
 	setlocale(LC_ALL, "");
@@ -935,20 +936,19 @@ Screen::Screen(World * const wor, Player * const pl) :
 	mousemask(BUTTON1_PRESSED, NULL);
 	mouseinterval(0);
 
-	QSettings sett(QDir::currentPath()+"/freg.ini",
-		QSettings::IniFormat);
+	QSettings sett(QDir::currentPath()+"/freg.ini", QSettings::IniFormat);
 	sett.beginGroup("screen_curses");
 	shiftFocus=sett.value("focus_shift", 0).toInt();
 	actionMode=sett.value("action_mode", USE).toInt();
 	command   =sett.value("last_command", "hello").toString();
 	beepOn    =sett.value("beep_on", true).toBool();
+	sett.setValue("beep_on", beepOn);
 
 	if ( !PrintFile(stdscr, "splash.txt") ) {
 		addstr("Free-Roaming Elementary Game\n");
 		addstr("\nby mmaulwurff, with help of Panzerschrek\n");
 	}
-	printw("\nVersion %s.\n\n", VER);
-	addstr("Press any key.");
+	printw("\nVersion %s.\n\nPress any key.", VER);
 	const int ch=getch();
 	qsrand(ch);
 	ungetch(ch);
@@ -985,14 +985,12 @@ void Screen::CleanAll() {
 	if ( notifyLog ) {
 		fclose(notifyLog);
 	}
-	CleanFileToShow();
-	QSettings sett(QDir::currentPath()+"/freg.ini",
-		QSettings::IniFormat);
+	delete fileToShow;
+	QSettings sett(QDir::currentPath()+"/freg.ini", QSettings::IniFormat);
 	sett.beginGroup("screen_curses");
 	sett.setValue("focus_shift", shiftFocus);
 	sett.setValue("action_mode", actionMode);
 	sett.setValue("last_command", command);
-	sett.setValue("beep_on", beepOn);
 }
 
 Screen::~Screen() { CleanAll(); }

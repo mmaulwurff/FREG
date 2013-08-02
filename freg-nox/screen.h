@@ -125,7 +125,7 @@ class Screen : public VirtScreen {
 	WINDOW * rightWin;
 	WINDOW * notifyWin;
 	WINDOW * commandWin;
-	WINDOW * hudWin; //head-up display
+	WINDOW * hudWin; // head-up display
 	IThread * const input;
 	volatile bool updated;
 	volatile bool updatedPlayer;
@@ -133,8 +133,8 @@ class Screen : public VirtScreen {
 	QTimer * const timer;
 	FILE * const notifyLog;
 	int actionMode;
-	short shiftFocus; //can be -1, 0, 1 for low, normal, and high focus
-	QString command; //save previous command for further execution
+	short shiftFocus; // can be -1, 0, 1 for low, normal, and high focus
+	QString command; // save previous command for further execution
 	QFile * fileToShow;
 
 	bool beepOn;
@@ -150,7 +150,7 @@ class Screen : public VirtScreen {
 	void PrintFront(WINDOW *) const;
 	void PrintInv(WINDOW *, const Inventory *) const;
 	void PrintText(WINDOW *, QString const &) const;
-	///Returns false when file does not exist, otherwise true.
+	/// Returns false when file does not exist, otherwise true.
 	bool PrintFile(WINDOW *, QString const & file_name);
 	void PrintHUD();
 	void CleanFileToShow();
@@ -181,7 +181,7 @@ class Screen : public VirtScreen {
 	void ControlPlayer(int);
 	Screen(World *, Player *);
 	~Screen();
-}; //class screen
+}; // class screen
 
 /** \class IThread screen.h
  * \brief Keyboard input thread for curses screen for freg.
@@ -205,6 +205,6 @@ class IThread : public QThread {
 
 	private:
 	volatile bool stopped;
-}; //class IThread
+}; // class IThread
 
 #endif
