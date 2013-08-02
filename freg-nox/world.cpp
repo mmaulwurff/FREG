@@ -466,17 +466,17 @@ const {
 				x_to,   y_to,   z_to+temp)) );
 }
 
-bool World::Move(const ushort i, const ushort j, const ushort k,
+bool World::Move(const ushort x, const ushort y, const ushort z,
 		const quint8 dir)
 {
-	ushort newi, newj, newk;
-	if ( !Focus(i, j, k, newi, newj, newk, dir) &&
-			CanMove(i, j, k, newi, newj, newk, dir) &&
-			(DOWN==dir || !GetBlock(i, j, k)->Weight() || !(
-				AIR==Sub(i, j, k-1) &&
-				AIR==Sub(newi, newj, newk-1))) )
+	ushort newx, newy, newz;
+	if ( !Focus(x, y, z, newx, newy, newz, dir) &&
+			CanMove(x, y, z, newx, newy, newz, dir) &&
+			(DOWN==dir || !GetBlock(x, y, z)->Weight() || !(
+				AIR==Sub(x, y, z-1) &&
+				AIR==Sub(newx, newy, newz-1))) )
 	{
-		NoCheckMove(i, j, k, newi, newj, newk, dir);
+		NoCheckMove(x, y, z, newx, newy, newz, dir);
 		return true;
 	} else {
 		return false;
@@ -484,74 +484,76 @@ bool World::Move(const ushort i, const ushort j, const ushort k,
 }
 
 bool World::CanMove(
-		const ushort i,    const ushort j,    const ushort k,
-		const ushort newi, const ushort newj, const ushort newk,
+		const ushort x,    const ushort y,    const ushort z,
+		const ushort newx, const ushort newy, const ushort newz,
 		const quint8 dir)
 {
-	Block * const block=GetBlock(i, j, k);
+	Block * const block=GetBlock(x, y, z);
+	Block * block_to=GetBlock(newx, newy, newz);
 	if ( NOT_MOVABLE==block->Movable() ) {
 		return false;
 	}
-	Block * block_to=GetBlock(newi, newj, newk);
-	if ( ENVIRONMENT==block->Movable() && *block==*block_to ) {
-		return false;
+	if ( ENVIRONMENT==block->Movable() ) {
+		if ( *block==*block_to ) {
+			return false;
+		} else if ( MOVABLE==block_to->Movable() ) {
+			NoCheckMove(x, y, z, newx, newy, newz, dir);
+		}
 	}
 	switch ( block_to->BeforePush(dir, block) ) {
-		case DESTROY:
-			DeleteBlock(block_to);
-			//BeforePush could change block_to:
-			PutBlock((block_to=Normal(AIR)), newi, newj, newk);
-		break;
-		case MOVE_SELF:
-			block_to=GetBlock(newi, newj, newk);
-		break;
-		case JUMP:
-			if ( DOWN!=dir && UP!=dir ) {
-				Jump(i, j, k, dir);
-				return false;
-			}
-		break;
-		case MOVE_UP:
-			if ( DOWN!=dir ) {
-				Move(i, j, k, UP);
-				return false;
-			}
-		break;
-		case DAMAGE:
-			Damage(i, j, k,
-				block_to->DamageLevel(),
-				block_to->DamageKind());
+	case MOVE_SELF: block_to=GetBlock(newx, newy, newz); break;
+	case DESTROY:
+		DeleteBlock(block_to);
+		// BeforePush could change block_to:
+		PutBlock((block_to=Normal(AIR)), newx, newy, newz);
+	break;
+	case JUMP:
+		if ( DOWN!=dir && UP!=dir ) {
+			Jump(x, y, z, dir);
 			return false;
-		break;
+		}
+	break;
+	case MOVE_UP:
+		if ( DOWN!=dir ) {
+			Move(x, y, z, UP);
+			return false;
+		}
+	break;
+	case DAMAGE:
+		Damage(x, y, z,
+			block_to->DamageLevel(),
+			block_to->DamageKind());
+		return false;
+	break;
 	}
-	return (( ENVIRONMENT==block_to->Movable() ) ||
-		Move(newi, newj, newk, dir));
-} //World::CanMove
+	return ( ENVIRONMENT==block_to->Movable() ||
+		Move(newx, newy, newz, dir) );
+} // World::CanMove
 
 void World::NoCheckMove(
-		const ushort i,    const ushort j,    const ushort k,
-		const ushort newi, const ushort newj, const ushort newk,
+		const ushort x,    const ushort y,    const ushort z,
+		const ushort newx, const ushort newy, const ushort newz,
 		const quint8 dir)
 {
-	Block * const block=GetBlock(i, j, k);
-	Block * const block_to=GetBlock(newi, newj, newk);
+	Block * const block=GetBlock(x, y, z);
+	Block * const block_to=GetBlock(newx, newy, newz);
 
-	PutBlock(block_to, i, j, k);
-	PutBlock(block, newi, newj, newk);
+	PutBlock(block_to, x, y, z);
+	PutBlock(block, newx, newy, newz);
 
 	if ( block_to->Transparent() != block->Transparent() ) {
-		ReEnlighten(newi, newj, newk);
-		ReEnlighten(i, j, k);
+		ReEnlighten(newx, newy, newz);
+		ReEnlighten(x, y, z);
 	}
 
-	Shred * shred=GetShred(i, j);
-	shred->AddFalling(i & SHRED_COORDS_BITS, j & SHRED_COORDS_BITS, k+1);
-	shred->AddFalling(i & SHRED_COORDS_BITS, j & SHRED_COORDS_BITS, k);
-	shred=GetShred(newi, newj);
-	shred->AddFalling(newi & SHRED_COORDS_BITS, newj & SHRED_COORDS_BITS,
-		newk+1);
-	shred->AddFalling(newi & SHRED_COORDS_BITS, newj & SHRED_COORDS_BITS,
-		newk);
+	Shred * shred=GetShred(x, y);
+	shred->AddFalling(x & SHRED_COORDS_BITS, y & SHRED_COORDS_BITS, z+1);
+	shred->AddFalling(x & SHRED_COORDS_BITS, y & SHRED_COORDS_BITS, z);
+	shred=GetShred(newx, newy);
+	shred->AddFalling(newx & SHRED_COORDS_BITS, newy & SHRED_COORDS_BITS,
+		newz+1);
+	shred->AddFalling(newx & SHRED_COORDS_BITS, newy & SHRED_COORDS_BITS,
+		newz);
 
 	block_to->Move( Anti(dir) );
 	block->Move(dir);

@@ -382,11 +382,16 @@
 	Active * Active::ActiveBlock() { return this; }
 	void Active::ActRare() {}
 	int  Active::ShouldAct() const { return NEVER; }
-	void Active::SetFalling(const bool set) { falling=set; }
 	bool Active::IsFalling() const { return falling; }
 	int  Active::Movable() const { return MOVABLE; }
 	bool Active::ShouldFall() const { return true; }
 	void Active::ActFrequent() {}
+
+	void Active::SetFalling(const bool set) {
+		if ( !(falling=set) ) {
+			fall_height=0;
+		}
+	}
 
 	void Active::SetDeferredAction(DeferredAction * const action) {
 		delete deferredAction;

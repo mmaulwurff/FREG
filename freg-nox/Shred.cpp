@@ -183,33 +183,37 @@ void Shred::RegisterBlock(Block * const block,
 }
 
 void Shred::PhysEventsFrequent() {
-	for (int j=0; j<fallList.size(); ++j) {
-		Active * const temp=fallList.at(j);
+	for (int i=0; i<fallList.size(); ++i) {
+		Active * const temp=fallList.at(i);
 		const ushort weight=temp->Weight();
 		if ( weight ) {
 			const ushort x=temp->X();
 			const ushort y=temp->Y();
 			const ushort z=temp->Z();
-			if (weight<=GetBlock(
+			if ( world->GetBlock(x, y, z-1)->Kind()==LIQUID ) {
+				RemFalling(temp);
+			} else if (weight<=GetBlock(
 					x & SHRED_COORDS_BITS,
 					y & SHRED_COORDS_BITS, z-1)->Weight()
 						|| !world->Move(x, y, z, DOWN))
 			{
-				RemFalling(temp);
 				temp->FallDamage();
+				RemFalling(temp);
+				world->DestroyAndReplace(x, y, z);
 			}
-			world->DestroyAndReplace(x, y, z);
+		} else {
+			RemFalling(temp);
 		}
 	}
-	for (int j=0; j<activeListFrequent.size(); ++j) {
-		Active * const active=activeListFrequent.at(j);
+	for (int i=0; i<activeListFrequent.size(); ++i) {
+		Active * const active=activeListFrequent.at(i);
 		active->ActFrequent();
 		world->DestroyAndReplace(active->X(),active->Y(), active->Z());
 	}
 }
 void Shred::PhysEventsRare() {
-	for (int j=0; j<activeListRare.size(); ++j) {
-		Active * const active=activeListRare.at(j);
+	for (int i=0; i<activeListRare.size(); ++i) {
+		Active * const active=activeListRare.at(i);
 		active->ActRare();
 		world->DestroyAndReplace(active->X(),active->Y(), active->Z());
 	}
