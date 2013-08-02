@@ -81,8 +81,14 @@ void World::Drop(Block * const block_from,
 	if ( AIR==block_to->Sub() ) {
 		SetBlock((block_to=NewBlock(PILE, DIFFERENT)),
 			x_to, y_to, z_to);
+	} else if ( WATER==block_to->Sub() ) {
+		Pile * const pile=(Pile *)NewBlock(PILE, DIFFERENT);
+		SetBlock(pile, x_to, y_to, z_to);
+		pile->Get(block_to);
+		block_to=pile;
 	}
 	Exchange(block_from, block_to, src, dest, num);
+	emit Updated(x_to, y_to, z_to);
 }
 
 void World::Get(Block * const block_to,
