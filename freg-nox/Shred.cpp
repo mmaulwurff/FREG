@@ -22,7 +22,7 @@
 #include "world.h"
 #include "BlockManager.h"
 
-//Qt version in Debian stable that time.
+// Qt version in Debian stable that time.
 const quint8 DATASTREAM_VERSION=QDataStream::Qt_4_6;
 
 long Shred::Longitude() const { return longitude; }
@@ -71,8 +71,7 @@ bool Shred::LoadShred(QFile & file) {
 	return true;
 }
 
-Shred::Shred(World * const world_,
-		const ushort shred_x, const ushort shred_y,
+Shred::Shred(World * const world_, const ushort shred_x, const ushort shred_y,
 		const long longi, const long lati)
 	:
 		world(world_),
@@ -119,7 +118,7 @@ Shred::Shred(World * const world_,
 				TypeOfShred(longi, lati),
 				int(TypeOfShred(longi, lati)));
 	}
-} //Shred::Shred
+} // Shred::Shred
 
 Shred::~Shred() {
 	foreach(Active * const active, activeListAll) {
@@ -161,7 +160,7 @@ Shred::~Shred() {
 			block_manager.DeleteBlock(blocks[x][y][z]);
 		}
 	}
-} //Shred::~Shred
+} // Shred::~Shred
 
 void Shred::SetNewBlock(const int kind, const int sub,
 		const ushort x, const ushort y, const ushort z,
@@ -179,8 +178,7 @@ void Shred::RegisterBlock(Block * const block,
 	Active * const active=block->ActiveBlock();
 	if ( active ) {
 		active->Register(this,
-			SHRED_WIDTH*shredX+x,
-			SHRED_WIDTH*shredY+y, z);
+			SHRED_WIDTH*shredX+x, SHRED_WIDTH*shredY+y, z);
 	}
 }
 
@@ -229,7 +227,7 @@ void Shred::AddActive(Active * const active) {
 		break;
 		case FREQUENT_AND_RARE:
 			activeListFrequent.append(active);
-		//no break;
+		// no break;
 		case RARE:
 			activeListRare.append(active);
 		break;
@@ -338,9 +336,9 @@ char Shred::TypeOfShred(const long longi, const long lati) const {
 	return world->TypeOfShred(longi, lati);
 }
 
-//shred generators section
-//these functions fill space between the lowest nullstone layer and sky.
-//so use k from 1 to heigth-2.
+// shred generators section
+// these functions fill space between the lowest nullstone layer and sky.
+// so use k from 1 to heigth-2.
 void Shred::CoverWith(const int kind, const int sub) {
 	for (ushort i=0; i<SHRED_WIDTH; ++i)
 	for (ushort j=0; j<SHRED_WIDTH; ++j) {
@@ -381,7 +379,7 @@ void Shred::PlantGrass() {
 void Shred::TestShred() {
 	const ushort level=FlatUndeground()+1;
 	short row=1, column=-1;
-	//row 1
+	// row 1
 	SetNewBlock(CLOCK, IRON, column+=2, row, level);
 	SetNewBlock(CHEST, WOOD, column+=2, row, level);
 	SetNewBlock(ACTIVE, SAND, column+=2, row, level);
@@ -389,11 +387,11 @@ void Shred::TestShred() {
 	SetNewBlock(PILE, DIFFERENT, column+=2, row, level);
 	SetNewBlock(PLATE, STONE, column+=2, row, level);
 	PutNormalBlock(NULLSTONE, column+=2, row, level);
-	//row 2
+	// row 2
 	column=-1;
 	row+=2;
 	SetNewBlock(LADDER, NULLSTONE, column+=2, row, level);
-	//tall ladder
+	// tall ladder
 	for (ushort i=level+1; i<=level+5 && i<HEIGHT-1; ++i) {
 		SetNewBlock(LADDER, WOOD, column, row, i);
 	}
@@ -408,7 +406,7 @@ void Shred::TestShred() {
 	SetNewBlock(WORKBENCH, IRON, column+=2, row, level);
 	SetNewBlock(DOOR, GLASS, column+=2, row, level);
 	blocks[column][row][level]->SetDir(NORTH);
-	//row 3
+	// row 3
 	column=-1;
 	row+=2;
 	SetNewBlock(WEAPON, IRON, column+=2, row, level);
@@ -425,7 +423,7 @@ void Shred::TestShred() {
 	SetNewBlock(TEXT, PAPER, column+=2, row, level);
 	((Text*)GetBlock(column, row, level))->SetTitle(".hidden");
 	SetNewBlock(BELL, IRON, column+=2, row, level);
-	//suicide booth
+	// suicide booth
 	/*for (ushort i=1; i<4; ++i)
 	for (ushort j=7; j<10; ++j)
 	for (ushort k=level; k<level+5; ++k) {
@@ -434,7 +432,7 @@ void Shred::TestShred() {
 		}
 	}
 	SetNewBlock(RABBIT, A_MEAT, 2, 8, level);*/
-} //Shred::TestShred
+} // Shred::TestShred
 
 void Shred::NullMountain() {
 	for (ushort i=0; i<SHRED_WIDTH; ++i)
@@ -451,53 +449,42 @@ void Shred::NullMountain() {
 	}
 }
 
-void Shred::Pyramid() {
-	//pyramid by Panzerschrek
-	ushort level=FlatUndeground();
-	if ( level > HEIGHT-1-16 ) {
-		level=HEIGHT-1-16;
-	}
-	ushort z, dz, x, y;
-	//пирамида
-	for (z=level+1, dz=0; dz<8; z+=2, ++dz) {
-		for (x=dz; x<(16 - dz); ++x) {
+void Shred::Pyramid() { // pyramid by Panzerschrek
+	const ushort level=qMin(FlatUndeground(), ushort(HEIGHT-1-16));
+	for (ushort z=level+1, dz=0; dz<8; z+=2, ++dz) { // pyramid
+		for (ushort x=dz, y=dz; x<(16 - dz); ++x, ++y) {
 			blocks[x][dz][z] =
-				blocks[x][15-dz][z]=
-				blocks[x][dz][z+1] =
-				blocks[x][15-dz][z+1]=Normal(STONE);
-		}
-		for (y=dz; y<(16-dz); ++y) {
+				blocks[x][15-dz][z  ] =
+				blocks[x][   dz][z+1] =
+				blocks[x][15-dz][z+1] =
 			blocks[dz][y][z] =
-				blocks[15-dz][y][z]=
-				blocks[dz][y][z+1] =
-				blocks[15-dz][y][z+1]=Normal(STONE);
+				blocks[15-dz][y][z  ] =
+				blocks[   dz][y][z+1] =
+				blocks[15-dz][y][z+1] = Normal(STONE);
 		}
 	}
-	//вход
-	blocks[SHRED_WIDTH/2][0][level+1]=Normal(AIR);
-	//камера внутри
-	for (z=HEIGHT/2-60, dz=0; dz<8; ++dz, ++z) {
-		for (x=1; x<SHRED_WIDTH-1; ++x)
-		for (y=1; y<SHRED_WIDTH-1; ++y) {
+	blocks[SHRED_WIDTH/2][0][level+1]=Normal(AIR); // entrance
+	for (ushort z=HEIGHT/2-60, dz=0; dz<8; ++dz, ++z) { // room inside
+		for (ushort x=1; x<SHRED_WIDTH-1; ++x)
+		for (ushort y=1; y<SHRED_WIDTH-1; ++y) {
 			blocks[x][y][z]=Normal(AIR);
 		}
 	}
-	//шахта
-	for (z=HEIGHT/2-52; z<=level; ++z) {
+	for (ushort z=HEIGHT/2-52; z<=level; ++z) { // horizontal tunnel
 		blocks[SHRED_WIDTH/2][SHRED_WIDTH/2][z]=Normal(AIR);
 	}
-} //Shred::Pyramid
+}
 
 void Shred::NormalCube(const ushort x_start, const ushort y_start,
 		const ushort z_start,
 		const ushort x_size, const ushort y_size, const ushort z_size,
 		const int sub)
 {
-	for (ushort i=x_start; i<x_start+x_size; ++i)
-	for (ushort j=y_start; j<y_start+y_size; ++j)
-	for (ushort k=z_start; k<z_start+z_size; ++k) {
-		if ( InBounds(i, j, k) ) {
-			PutNormalBlock(sub, i, j, k);
+	for (ushort x=x_start; x < x_start+x_size; ++x)
+	for (ushort y=y_start; y < y_start+y_size; ++y)
+	for (ushort z=z_start; z < z_start+z_size; ++z) {
+		if ( InBounds(x, y, z) ) {
+			PutNormalBlock(sub, x, y, z);
 		}
 	}
 }
@@ -513,36 +500,35 @@ bool Shred::Tree(const ushort x, const ushort y, const ushort z,
 	{
 		return false;
 	}
-	ushort i, j, k;
-	for (i=x; i<=x+2; ++i)
-	for (j=y; j<=y+2; ++j)
-	for (k=z; k<z+height; ++k) {
+	for (ushort i=x; i<=x+2; ++i)
+	for (ushort j=y; j<=y+2; ++j)
+	for (ushort k=z; k<z+height; ++k) {
 		if ( AIR!=Sub(i, j, k) && WATER!=Sub(i, j, k) ) {
 			return false;
 		}
 	}
-	for (k=z; k < z + height - 1; ++k) { //trunk
+	for (ushort k=z; k < z + height - 1; ++k) { // trunk
 		PutNormalBlock(WOOD, x+1, y+1, k);
 	}
 	if ( ENVIRONMENT==GetBlock(x+1, y+1, z-1)->Movable() ) {
 		block_manager.DeleteBlock(blocks[x+1][y+1][z-1]);
 		PutNormalBlock(WOOD, x+1, y+1, z-1);
 	}
-	//branches
+	// branches
 	if ( qrand()%2 ) SetNewBlock(BLOCK, WOOD, x,   y+1, z+height/2, WEST);
 	if ( qrand()%2 ) SetNewBlock(BLOCK, WOOD, x+2, y+1, z+height/2, EAST);
 	if ( qrand()%2 ) SetNewBlock(BLOCK, WOOD, x+1, y,   z+height/2, NORTH);
 	if ( qrand()%2 ) SetNewBlock(BLOCK, WOOD, x+1, y+2, z+height/2, SOUTH);
-	//leaves
-	for (i=x; i<=x+2; ++i)
-	for (j=y; j<=y+2; ++j)
-	for (k=z+height/2; k<z+height; ++k) {
+	// leaves
+	for (ushort i=x; i<=x+2; ++i)
+	for (ushort j=y; j<=y+2; ++j)
+	for (ushort k=z+height/2; k<z+height; ++k) {
 		if ( AIR==Sub(i, j, k) ) {
 			PutNormalBlock(GREENERY, i, j, k);
 		}
 	}
 	return true;
-} //Shred::Tree
+} // Shred::Tree
 
 bool Shred::InBounds(const ushort x, const ushort y, const ushort z) const {
 	return ( x<SHRED_WIDTH && y<SHRED_WIDTH && z && z<HEIGHT-1 );
