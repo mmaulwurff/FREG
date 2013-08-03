@@ -1,5 +1,6 @@
 	/* freg, Free-Roaming Elementary Game with open and interactive world
 	*  Copyright (C) 2012-2013 Alexander 'mmaulwurff' Kromm
+	*  mmaulwurff@gmail.com
 	*
 	* This file is part of FREG.
 	*
