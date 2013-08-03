@@ -53,7 +53,7 @@ const {
 }
 
 CraftManager::CraftManager() {
-	QFile file("recipes.txt");
+	QFile file("texts/recipes.txt");
 	if ( !file.open(QIODevice::ReadOnly | QIODevice::Text) ) {
 		fputs("No recipes file found.\n", stderr);
 		return;

@@ -333,7 +333,7 @@ void Screen::ControlPlayer(const int ch) {
 	case KEY_HELP:
 	case 'H':
 		wstandend(rightWin);
-		PrintFile(rightWin, "help.txt");
+		PrintFile(rightWin, "texts/help.txt");
 	break;
 
 	case ';': {
@@ -351,7 +351,7 @@ void Screen::ControlPlayer(const int ch) {
 	case '.':
 		if ( "warranty"==command ) {
 			wstandend(rightWin);
-			PrintFile(rightWin, "warranty.txt");
+			PrintFile(rightWin, "texts/warranty.txt");
 		} else {
 			player->ProcessCommand(command);
 		}
@@ -883,7 +883,7 @@ void Screen::DeathScreen() {
 	werase(hudWin);
 	(void)wmove(leftWin, 1, 1);
 	wcolor_set(leftWin, WHITE_RED, NULL);
-	if ( !PrintFile(leftWin, "death.txt") ) {
+	if ( !PrintFile(leftWin, "texts/death.txt") ) {
 		waddstr(leftWin, "You die.\nWaiting for respawn...");
 	}
 	box(leftWin, 0, 0);
@@ -901,14 +901,14 @@ Screen::Screen(World * const wor, Player * const pl) :
 		updatedPlayer(false),
 		cleaned(false),
 		timer(new QTimer(this)),
-		notifyLog(fopen("messages.txt", "at")),
+		notifyLog(fopen("texts/messages.txt", "at")),
 		fileToShow(0)
 {
 	setlocale(LC_ALL, "");
-	#ifdef Q_OS_WIN32 // by Panzerschrek
+	#ifdef Q_OS_WIN32
 		AllocConsole();
-		freopen( "conout$", "w", stdout );
-		freopen( "conin$", "r", stdin );
+		freopen("conout$", "wt", stdout);
+		freopen("conin$",  "rt", stdin);
 	#else
 		set_escdelay(10);
 	#endif
@@ -954,7 +954,7 @@ Screen::Screen(World * const wor, Player * const pl) :
 	beepOn    =sett.value("beep_on", true).toBool();
 	sett.setValue("beep_on", beepOn);
 
-	if ( !PrintFile(stdscr, "splash.txt") ) {
+	if ( !PrintFile(stdscr, "texts/splash.txt") ) {
 		addstr("Free-Roaming Elementary Game\n");
 		addstr("\nby mmaulwurff, with help of Panzerschrek\n");
 	}

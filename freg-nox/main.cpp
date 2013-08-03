@@ -34,7 +34,8 @@
 #include "Player.h"
 
 int main(int argc, char *argv[]) {
-	freopen("errors.txt", "w", stderr);
+	QDir::current().mkdir("texts");
+	freopen("texts/errors.txt", "wt", stderr);
 	qsrand(QTime::currentTime().msec());
 	#ifdef NOX
 		QCoreApplication freg(argc, argv);
