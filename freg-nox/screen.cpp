@@ -348,7 +348,14 @@ void Screen::ControlPlayer(const int ch) {
 
 	case '!': player->SetCreativeMode( !player->GetCreativeMode() ); break;
 	case '/': PassString(command); // no break
-	case '.': player->ProcessCommand(command); break;
+	case '.':
+		if ( "warranty"==command ) {
+			wstandend(rightWin);
+			PrintFile(rightWin, "warranty.txt");
+		} else {
+			player->ProcessCommand(command);
+		}
+	break;
 
 	case 'L': RePrint(); break;
 
