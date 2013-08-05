@@ -359,7 +359,6 @@ void Screen::ControlPlayer(const int ch) {
 
 	case 'L': RePrint(); break;
 
-	case KEY_MOUSE: MouseAction(); break;
 	case 'R':
 		if ( !player->GetCreativeMode() ) {
 			player->SetActiveHand(!player->IsRightActiveHand());
@@ -380,25 +379,6 @@ void Screen::ControlPlayer(const int ch) {
 void Screen::SetActionMode(const int mode) {
 	actionMode=mode;
 	updatedPlayer=false;
-}
-
-void Screen::MouseAction() {
-	#ifdef Q_OS_LINUX // mouse events are in ncurses, but not in pdcurses
-	MEVENT mouse_event;
-	getmouse(&mouse_event);
-	if ( !wenclose(hudWin, mouse_event.y, mouse_event.x) ) {
-		return;
-	}
-	wmouse_trafo(hudWin, &mouse_event.y, &mouse_event.x, FALSE);
-	if ( mouse_event.x>=QUICK_INVENTORY_X_SHIFT
-			&& mouse_event.x < QUICK_INVENTORY_X_SHIFT+INV_SIZE*2)
-	{
-		Notify(QString("In place '%1':").
-			arg(char((mouse_event.x-QUICK_INVENTORY_X_SHIFT)/2+
-				'a')));
-		InventoryAction((mouse_event.x -QUICK_INVENTORY_X_SHIFT)/2);
-	}
-	#endif
 }
 
 void Screen::InventoryAction(const ushort num) const {
@@ -942,9 +922,6 @@ Screen::Screen(World * const wor, Player * const pl) :
 	commandWin=newwin(1, COLS, SCREEN_SIZE+2+4, 0);
 	notifyWin =newwin(0, COLS, SCREEN_SIZE+2+5, 0);
 	scrollok(notifyWin, TRUE);
-
-	mousemask(BUTTON1_PRESSED, NULL);
-	mouseinterval(0);
 
 	QSettings sett(QDir::currentPath()+"/freg.ini", QSettings::IniFormat);
 	sett.beginGroup("screen_curses");
