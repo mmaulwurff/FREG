@@ -18,7 +18,6 @@
 	* along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-#include <QFile>
 #include <QByteArray>
 #include <QDataStream>
 #include "Shred.h"
@@ -35,8 +34,12 @@ ushort Shred::ShredY() const { return shredY; }
 
 World * Shred::GetWorld() const { return world; }
 
-bool Shred::LoadShred(QFile & file) {
-	QDataStream in(qUncompress(file.readAll()));
+bool Shred::LoadShred() {
+	QByteArray * const data=world->GetShredData(longitude, latitude);
+	if ( !data ) {
+		return false;
+	}
+	QDataStream in(qUncompress(*data));
 	quint8 version;
 	in >> version;
 	if ( Q_UNLIKELY(DATASTREAM_VERSION!=version) ) {
@@ -64,7 +67,7 @@ bool Shred::LoadShred(QFile & file) {
 				lightMap[x][y][HEIGHT-1]=1;
 				break;
 			}
-			// else
+			// else:
 			SetBlock( normal ?
 				block_manager.NormalBlock(sub) :
 				block_manager.BlockFromFile(in, kind, sub),
@@ -87,10 +90,11 @@ Shred::Shred(World * const world_, const ushort shred_x, const ushort shred_y,
 	activeListRare.reserve(500);
 	activeListAll.reserve(600);
 	fallList.reserve(100);
-	QFile file(FileName());
-	if ( file.open(QIODevice::ReadOnly) && LoadShred(file) ) {
+	if ( LoadShred() ) {
+		// successfull loading
 		return;
 	}
+	// new shred generation:
 	for (ushort i=0; i<SHRED_WIDTH; ++i)
 	for (ushort j=0; j<SHRED_WIDTH; ++j) {
 		PutNormalBlock(NULLSTONE, i, j, 0);
@@ -103,23 +107,22 @@ Shred::Shred(World * const world_, const ushort shred_x, const ushort shred_y,
 		lightMap[i][j][HEIGHT-1]=1;
 	}
 	switch ( TypeOfShred(longi, lati) ) {
-		case SHRED_NULLMOUNTAIN: NullMountain(); break;
-		case SHRED_PLAIN: Plain(); break;
-		case SHRED_TESTSHRED: TestShred(); break;
-		case SHRED_PYRAMID: Pyramid(); break;
-		case SHRED_HILL: Hill(); break;
-		case SHRED_DESERT: Desert(); break;
-		case SHRED_WATER: Water(); break;
-		case SHRED_FOREST: Forest(); break;
-		case SHRED_MOUNTAIN: Mountain(); break;
-		case SHRED_EMPTY: /* empty shred */ break;
-		case SHRED_NORMAL_UNDERGROUND: NormalUnderground(); break;
-		default:
-			Plain();
-			fprintf(stderr,
+		default: fprintf(stderr,
 				"Shred::Shred: unlisted type: %c, code %d\n",
 				TypeOfShred(longi, lati),
 				int(TypeOfShred(longi, lati)));
+		// no break;
+		case SHRED_PLAIN:     Plain();     break;
+		case SHRED_TESTSHRED: TestShred(); break;
+		case SHRED_PYRAMID:   Pyramid();   break;
+		case SHRED_HILL:      Hill();      break;
+		case SHRED_DESERT:    Desert();    break;
+		case SHRED_WATER:     Water();     break;
+		case SHRED_FOREST:    Forest();    break;
+		case SHRED_MOUNTAIN:  Mountain();  break;
+		case SHRED_EMPTY: /* empty shred */ break;
+		case SHRED_NULLMOUNTAIN: NullMountain(); break;
+		case SHRED_NORMAL_UNDERGROUND: NormalUnderground(); break;
 	}
 } // Shred::Shred
 
@@ -132,11 +135,6 @@ Shred::~Shred() {
 			(longitude < mapSize) && (longitude >= 0) &&
 			(latitude  < mapSize) && (latitude  >= 0) )
 	{
-		QFile file(FileName());
-		if ( Q_UNLIKELY(!file.open(QIODevice::WriteOnly)) ) {
-			fputs("Shred::~Shred: Write Error\n", stderr);
-			return;
-		}
 		QByteArray shred_data;
 		shred_data.reserve(70000);
 		QDataStream outstr(&shred_data, QIODevice::WriteOnly);
@@ -152,15 +150,17 @@ Shred::~Shred() {
 			}
 			blocks[x][y][HEIGHT-1]->SaveToFile(outstr);
 		}
-		file.write(qCompress(shred_data));
-		return;
-	}
-	for (ushort x=0; x<SHRED_WIDTH; ++x)
-	for (ushort y=0; y<SHRED_WIDTH; ++y) {
-		ushort height=HEIGHT-2;
-		for ( ; blocks[x][y][height]->Sub()==AIR; --height);
-		for (ushort z=1; z<height; ++z) {
-			block_manager.DeleteBlock(blocks[x][y][z]);
+		QByteArray * const compressed =
+			new QByteArray(qCompress(shred_data));
+		world->SetShredData(compressed, longitude, latitude);
+	} else {
+		for (ushort x=0; x<SHRED_WIDTH; ++x)
+		for (ushort y=0; y<SHRED_WIDTH; ++y) {
+			ushort height=HEIGHT-2;
+			for ( ; blocks[x][y][height]->Sub()==AIR; --height);
+			for (ushort z=1; z<height; ++z) {
+				block_manager.DeleteBlock(blocks[x][y][z]);
+			}
 		}
 	}
 } // Shred::~Shred
@@ -333,10 +333,15 @@ Block * Shred::Normal(const int sub) {
 }
 
 QString Shred::FileName() const {
+	return FileName(world->WorldName(), longitude, latitude);
+}
+
+QString Shred::FileName(const QString world_name,
+		const long longi, const long lati)
+{
 	return QString("%1/y%2x%3").
-		arg(world->WorldName()).
-		arg(longitude).
-		arg(latitude);
+		arg(world_name).
+		arg(longi).arg(lati);
 }
 
 char Shred::TypeOfShred(const long longi, const long lati) const {
