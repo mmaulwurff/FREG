@@ -45,7 +45,12 @@ class World : public QThread {
 	ulong time;
 	ushort timeStep;
 	Shred ** shreds;
-	// center of active zone, longitude is y, latitude is x
+	//    N
+	//    |  E
+	// W--+--> latitude
+	//    |
+	//  S v longitude
+	// center of active zone:
 	long longitude, latitude;
 	long spawnLongi, spawnLati;
 	const QString worldName;

@@ -30,7 +30,10 @@ struct LongLat {
 	long latitude;
 
 	bool operator==(const LongLat &) const;
+	LongLat(long longitude, long latitude);
 };
+
+class PreloadThread;
 
 class ShredStorage {
 	public:
@@ -40,12 +43,37 @@ class ShredStorage {
 
 	QByteArray * GetShredData(long longi, long lati) const;
 	void SetShredData(QByteArray *, long longi, long lati);
-	void Shift(int direction);
+	void Shift(int direction, long longitude, long latitude);
+
+	void AddShredData(long longi, long lati);
+	void WriteToFileShredData(long longi, long lati) const;
 
 	private:
 	QHash<LongLat, QByteArray *> storage;
 	const ushort size;
 	const World * const world;
+	PreloadThread * preloadThread;
 }; // class ShredStorage
+
+#include <QThread>
+
+class PreloadThread : public QThread {
+	Q_OBJECT
+
+	public:
+	PreloadThread(ShredStorage *, int direction,
+			long longi_center, long lati_center,
+			ushort size);
+
+	protected:
+	void run();
+
+	private:
+	ShredStorage * const storage;
+	const int direction;
+	const long longi_center;
+	const long lati_center;
+	const ushort size;
+}; // class PreloadThread
 
 #endif

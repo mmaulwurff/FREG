@@ -29,9 +29,14 @@ bool LongLat::operator==(const LongLat & coords) const {
 	          latitude==coords.latitude );
 }
 
+LongLat::LongLat(const long longi, const long lati) :
+		longitude(longi),
+		latitude(lati)
+{}
+
 uint qHash(const LongLat coords) {
-	// there should not be collisions.
-	return ((coords.longitude & 0x3f) << 6) + (coords.latitude & 0x3f);
+	return ((coords.longitude & 0xffff) << 16) +
+	        (coords.latitude  & 0xffff);
 }
 
 ShredStorage::ShredStorage(const World * const world_,
@@ -39,44 +44,109 @@ ShredStorage::ShredStorage(const World * const world_,
 		const long longi_center, const long lati_center)
 	:
 		size(size_),
-		world(world_)
+		world(world_),
+		preloadThread(0)
 {
 	storage.reserve(size*size);
 	for (long i=longi_center-size/2; i<=longi_center+size/2; ++i)
 	for (long j= lati_center-size/2; j<= lati_center+size/2; ++j) {
-		QFile file(Shred::FileName(world->WorldName(), i, j));
-		const LongLat coords={i, j};
-		storage.insert(coords, ( file.open(QIODevice::ReadOnly) ?
-			new QByteArray(file.readAll()) : 0 ));
+		AddShredData(i, j);
 	}
 }
 
 ShredStorage::~ShredStorage() {
+	if ( preloadThread ) {
+		preloadThread->wait();
+		delete preloadThread;
+	}
 	QHash<LongLat, QByteArray *>::const_iterator i=storage.constBegin();
 	for ( ; i!=storage.constEnd(); ++i ) {
 		if ( i.value() ) {
-			QFile file(Shred::FileName(world->WorldName(),
-				i.key().longitude, i.key().latitude));
-			if ( file.open(QIODevice::WriteOnly) ) {
-				file.write(*i.value());
-			}
+			WriteToFileShredData(
+				i.key().longitude, i.key().latitude);
 			delete i.value();
 		}
 	}
 }
 
-void ShredStorage::Shift(const int /* direction */) {}
+void ShredStorage::Shift(const int direction,
+		const long longitude_center, const long latitude_center)
+{
+	if ( preloadThread ) {
+		preloadThread->wait();
+		delete preloadThread;
+	}
+	preloadThread = new PreloadThread(this, direction,
+		longitude_center, latitude_center, size);
+	preloadThread->start();
+}
 
 QByteArray * ShredStorage::GetShredData(const long longi, const long lati)
 const {
-	const LongLat coords={longi, lati};
-	return storage.value(coords);
+	return storage.value(LongLat(longi, lati));
 }
 
 void ShredStorage::SetShredData(QByteArray * const data,
 		const long longi, const long lati)
 {
-	const LongLat coords={longi, lati};
+	const LongLat coords(longi, lati);
 	delete storage.value(coords);
 	storage.insert(coords, data);
+}
+
+void ShredStorage::AddShredData(const long longitude, const long latitude) {
+	QFile file(Shred::FileName(world->WorldName(), longitude, latitude));
+	storage.insert(LongLat(longitude, latitude),
+		( file.open(QIODevice::ReadOnly) ?
+			new QByteArray(file.readAll()) : 0 ));
+}
+
+void ShredStorage::WriteToFileShredData(const long longi, const long lati)
+const {
+	QFile file(Shred::FileName(world->WorldName(), longi, lati));
+	const LongLat coords(longi, lati);
+	if ( storage.value(coords) && file.open(QIODevice::WriteOnly) ) {
+		file.write(*storage.value(coords));
+	}
+}
+
+PreloadThread::PreloadThread(ShredStorage * const stor, const int dir,
+		const long longi_c, const long lati_c, const ushort sz)
+	:
+		storage(stor),
+		direction(dir),
+		longi_center(longi_c),
+		lati_center(lati_c),
+		size(sz)
+{}
+
+void PreloadThread::run() {
+	switch (direction) {
+	case NORTH:
+		for (long i=lati_center-size/2; i<=lati_center+size/2; ++i) {
+			storage->WriteToFileShredData(longi_center+size/2, i);
+			storage->AddShredData(longi_center-size/2, i);
+		}
+	break;
+	case SOUTH:
+		for (long i=lati_center-size/2; i<=lati_center+size/2; ++i) {
+			storage->WriteToFileShredData(longi_center-size/2, i);
+			storage->AddShredData(longi_center+size/2, i);
+		}
+	break;
+	case EAST:
+		for (long i=longi_center-size/2; i<=longi_center+size/2; ++i) {
+			storage->WriteToFileShredData(i, lati_center-size/2);
+			storage->AddShredData(i, lati_center+size/2);
+		}
+	break;
+	case WEST:
+		for (long i=longi_center-size/2; i<=longi_center+size/2; ++i) {
+			storage->WriteToFileShredData(i, lati_center+size/2);
+			storage->AddShredData(i, lati_center-size/2);
+		}
+	break;
+	default: fprintf(stderr,
+		"PreloadThread::run: unknown direction: %d\n", direction);
+	}
 }
