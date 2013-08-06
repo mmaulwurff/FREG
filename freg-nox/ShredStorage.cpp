@@ -64,7 +64,6 @@ ShredStorage::~ShredStorage() {
 		if ( i.value() ) {
 			WriteToFileShredData(
 				i.key().longitude, i.key().latitude);
-			delete i.value();
 		}
 	}
 }
@@ -98,16 +97,22 @@ void ShredStorage::AddShredData(const long longitude, const long latitude) {
 	QFile file(Shred::FileName(world->WorldName(), longitude, latitude));
 	storage.insert(LongLat(longitude, latitude),
 		( file.open(QIODevice::ReadOnly) ?
-			new QByteArray(file.readAll()) : 0 ));
+			new QByteArray(qUncompress(file.readAll())) : 0 ));
 }
 
-void ShredStorage::WriteToFileShredData(const long longi, const long lati)
-const {
-	QFile file(Shred::FileName(world->WorldName(), longi, lati));
-	const LongLat coords(longi, lati);
-	if ( storage.value(coords) && file.open(QIODevice::WriteOnly) ) {
-		file.write(*storage.value(coords));
+void ShredStorage::WriteToFileShredData(const long longi, const long lati) {
+	const QByteArray * const data=storage.value(LongLat(longi, lati));
+	if ( data ) {
+		QFile file(Shred::FileName(world->WorldName(), longi, lati));
+		if ( file.open(QIODevice::WriteOnly) ) {
+			file.write(qCompress(*data));
+		}
+		delete data;
 	}
+}
+
+void ShredStorage::Remove(const long longi, const long lati) {
+	storage.remove(LongLat(longi, lati));
 }
 
 PreloadThread::PreloadThread(ShredStorage * const stor, const int dir,
@@ -125,24 +130,28 @@ void PreloadThread::run() {
 	case NORTH:
 		for (long i=lati_center-size/2; i<=lati_center+size/2; ++i) {
 			storage->WriteToFileShredData(longi_center+size/2, i);
+			storage->Remove(longi_center+size/2, i);
 			storage->AddShredData(longi_center-size/2, i);
 		}
 	break;
 	case SOUTH:
 		for (long i=lati_center-size/2; i<=lati_center+size/2; ++i) {
 			storage->WriteToFileShredData(longi_center-size/2, i);
+			storage->Remove(longi_center-size/2, i);
 			storage->AddShredData(longi_center+size/2, i);
 		}
 	break;
 	case EAST:
 		for (long i=longi_center-size/2; i<=longi_center+size/2; ++i) {
 			storage->WriteToFileShredData(i, lati_center-size/2);
+			storage->Remove(i, lati_center-size/2);
 			storage->AddShredData(i, lati_center+size/2);
 		}
 	break;
 	case WEST:
 		for (long i=longi_center-size/2; i<=longi_center+size/2; ++i) {
 			storage->WriteToFileShredData(i, lati_center+size/2);
+			storage->Remove(i, lati_center+size/2);
 			storage->AddShredData(i, lati_center-size/2);
 		}
 	break;

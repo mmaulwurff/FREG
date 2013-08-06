@@ -39,7 +39,7 @@ bool Shred::LoadShred() {
 	if ( !data ) {
 		return false;
 	}
-	QDataStream in(qUncompress(*data));
+	QDataStream in(*data);
 	quint8 version;
 	in >> version;
 	if ( Q_UNLIKELY(DATASTREAM_VERSION!=version) ) {
@@ -135,9 +135,9 @@ Shred::~Shred() {
 			(longitude < mapSize) && (longitude >= 0) &&
 			(latitude  < mapSize) && (latitude  >= 0) )
 	{
-		QByteArray shred_data;
-		shred_data.reserve(70000);
-		QDataStream outstr(&shred_data, QIODevice::WriteOnly);
+		QByteArray * shred_data = new QByteArray();
+		shred_data->reserve(70000);
+		QDataStream outstr(shred_data, QIODevice::WriteOnly);
 		outstr << DATASTREAM_VERSION;
 		outstr.setVersion(DATASTREAM_VERSION);
 		for (ushort x=0; x<SHRED_WIDTH; ++x)
@@ -150,9 +150,7 @@ Shred::~Shred() {
 			}
 			blocks[x][y][HEIGHT-1]->SaveToFile(outstr);
 		}
-		QByteArray * const compressed =
-			new QByteArray(qCompress(shred_data));
-		world->SetShredData(compressed, longitude, latitude);
+		world->SetShredData(shred_data, longitude, latitude);
 	} else {
 		for (ushort x=0; x<SHRED_WIDTH; ++x)
 		for (ushort y=0; y<SHRED_WIDTH; ++y) {

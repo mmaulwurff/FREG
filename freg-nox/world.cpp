@@ -271,7 +271,6 @@ void World::ReloadShreds(const int direction) {
 					longitude-numShreds/2,
 					latitude-numShreds/2+x);
 		}
-		shredStorage->Shift(NORTH, longitude, latitude);
 	break;
 	case SOUTH:
 		++longitude;
@@ -287,7 +286,6 @@ void World::ReloadShreds(const int direction) {
 					longitude+numShreds/2,
 					latitude-numShreds/2+x);
 		}
-		shredStorage->Shift(SOUTH, longitude, latitude);
 	break;
 	case EAST:
 		++latitude;
@@ -303,7 +301,6 @@ void World::ReloadShreds(const int direction) {
 					longitude-numShreds/2+y,
 					latitude+numShreds/2);
 		}
-		shredStorage->Shift(EAST, longitude, latitude);
 	break;
 	case WEST:
 		--latitude;
@@ -318,12 +315,12 @@ void World::ReloadShreds(const int direction) {
 					longitude-numShreds/2+y,
 					latitude-numShreds/2);
 		}
-		shredStorage->Shift(WEST, longitude, latitude);
 	break;
 	default: fprintf(stderr,
 		"World::ReloadShreds(int): invalid direction: %d\n",
 		direction);
 	}
+	shredStorage->Shift(direction, longitude, latitude);
 	MakeSun();
 	ReEnlightenMove(direction);
 	emit Moved(direction);

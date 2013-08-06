@@ -46,7 +46,9 @@ class ShredStorage {
 	void Shift(int direction, long longitude, long latitude);
 
 	void AddShredData(long longi, long lati);
-	void WriteToFileShredData(long longi, long lati) const;
+	void WriteToFileShredData(long longi, long lati);
+
+	void Remove(long longi, long lati);
 
 	private:
 	QHash<LongLat, QByteArray *> storage;
