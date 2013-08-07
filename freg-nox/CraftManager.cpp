@@ -70,11 +70,11 @@ CraftManager::CraftManager() {
 			craft_item * const item=new craft_item;
 			item->num=0;
 			in >> item->num >> item->kind >> item->sub;
-			if ( !item->num ) {
+			if ( item->num ) {
+				recipe->append(item);
+			} else {
 				delete item;
 				break;
-			} else {
-				recipe->append(item);
 			}
 		}
 		recipes.append(recipe);
