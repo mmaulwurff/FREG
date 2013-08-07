@@ -120,6 +120,7 @@ class Inventory;
 class QTimer;
 class QFile;
 class Block;
+class QMutex;
 
 class Screen : public VirtScreen {
 	Q_OBJECT
@@ -140,6 +141,8 @@ class Screen : public VirtScreen {
 	QFile * fileToShow;
 
 	bool beepOn;
+
+	QMutex * mutex;
 
 	char CharName(int, int) const;
 	char CharNumber(ushort x, ushort y, ushort z) const;
@@ -181,6 +184,7 @@ class Screen : public VirtScreen {
 
 	public:
 	void ControlPlayer(int);
+
 	Screen(World *, Player *);
 	~Screen();
 }; // class screen

@@ -26,6 +26,7 @@
 #include <QTimer>
 #include <QSettings>
 #include <QDir>
+#include <QMutex>
 #include "screen.h"
 #include "world.h"
 #include "blocks.h"
@@ -319,30 +320,31 @@ void Screen::ControlPlayer(const int ch) {
 	} break;
 	case 27: /* esc */ player->StopUseAll(); break;
 
-	case 'U': SetActionMode(USE);      break;
-	case 'D':
-	case 'T': SetActionMode(THROW);    break;
-	case 'O': SetActionMode(OBTAIN);   break;
-	case 'W': SetActionMode(WIELD);    break;
-	case 'I': SetActionMode(INSCRIBE); break;
-	case 'E': SetActionMode(EAT);      break;
 	case 'B': SetActionMode(BUILD);    break;
 	case 'C': SetActionMode(CRAFT);    break;
+	case 'D':
+	case 'T': SetActionMode(THROW);    break;
+	case 'E': SetActionMode(EAT);      break;
 	case 'F': SetActionMode(TAKEOFF);  break;
-
+	case 'I': SetActionMode(INSCRIBE); break;
+	case 'O': SetActionMode(OBTAIN);   break;
+	case 'U': SetActionMode(USE);      break;
+	case 'W': SetActionMode(WIELD);    break;
 	case KEY_HELP:
 	case 'H':
 		wstandend(rightWin);
 		PrintFile(rightWin, "texts/help.txt");
 	break;
-
-	case ';': {
-		Inventory * const inv=player->PlayerInventory();
-		if ( inv ) {
-			player->MoveInsideInventory(
-				inv->Start(), inv->Size()-1);
+	case 'L': RePrint(); break;
+	case 'R':
+		if ( !player->GetCreativeMode() ) {
+			player->SetActiveHand(!player->IsRightActiveHand());
+			Notify(tr("Now %1 hand is active.").
+				arg(tr(player->IsRightActiveHand() ?
+					"right" : "left")));
 		}
-	} break;
+	break;
+
 	case '-': shiftFocus = -!shiftFocus; break; // move focus down
 	case '+': shiftFocus =  !shiftFocus; break; // move focus up
 
@@ -357,23 +359,15 @@ void Screen::ControlPlayer(const int ch) {
 		}
 	break;
 
-	case 'L': RePrint(); break;
-
-	case 'R':
-		if ( !player->GetCreativeMode() ) {
-			player->SetActiveHand(!player->IsRightActiveHand());
-			Notify(tr("Now %1 hand is active.").
-				arg(tr(player->IsRightActiveHand() ?
-					"right" : "left")));
-		}
-	break;
 	default:
 		Notify(tr("Don't know what such key means: %1 ('%2').").
 			arg(ch).
 			arg(char(ch)));
 		Notify(tr("Press 'H' for help."));
 	}
+	mutex->lock();
 	updated=false;
+	mutex->unlock();
 } // Screen::ControlPlayer
 
 void Screen::SetActionMode(const int mode) {
@@ -438,11 +432,14 @@ void Screen::Print() {
 	}
 	w->ReadLock();
 	PrintHUD();
+	mutex->lock();
 	if ( updated ) {
 		w->Unlock();
+		mutex->unlock();
 		return;
 	}
 	updated=true;
+	mutex->unlock();
 	if ( !fileToShow ) { // right window
 		switch ( player->UsingType() ) {
 		case USAGE_TYPE_READ_IN_INVENTORY:
@@ -496,7 +493,9 @@ void Screen::Print() {
 			NORTH : player->GetDir());
 	}
 	w->Unlock();
+	mutex->lock();
 	doupdate();
+	mutex->unlock();
 } // Screen::Print
 
 void Screen::PrintHUD() {
@@ -881,7 +880,8 @@ Screen::Screen(World * const wor, Player * const pl) :
 		updatedPlayer(false),
 		timer(new QTimer(this)),
 		notifyLog(fopen("texts/messages.txt", "at")),
-		fileToShow(0)
+		fileToShow(0),
+		mutex(new QMutex())
 {
 	setlocale(LC_ALL, "");
 	#ifdef Q_OS_WIN32
@@ -968,6 +968,7 @@ void Screen::CleanAll() {
 		fclose(notifyLog);
 	}
 	delete fileToShow;
+	delete mutex;
 	QSettings sett(QDir::currentPath()+"/freg.ini", QSettings::IniFormat);
 	sett.beginGroup("screen_curses");
 	sett.setValue("focus_shift", shiftFocus);
