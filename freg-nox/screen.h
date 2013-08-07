@@ -132,7 +132,6 @@ class Screen : public VirtScreen {
 	IThread * const input;
 	volatile bool updated;
 	volatile bool updatedPlayer;
-	bool cleaned;
 	QTimer * const timer;
 	FILE * const notifyLog;
 	int actionMode;

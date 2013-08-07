@@ -676,9 +676,7 @@ Player::Player(World * const w) :
 } //Player::Player
 
 void Player::CleanAll() {
-	world->WriteLock();
 	if ( cleaned ) {
-		world->Unlock();
 		return;
 	}
 	cleaned=true;
@@ -701,8 +699,6 @@ void Player::CleanAll() {
 	sett.setValue("current_y", y-min);
 	sett.setValue("current_z", z);
 	sett.setValue("creative_mode", creativeMode);
-
-	world->Unlock();
 }
 
 Player::~Player() { CleanAll(); }

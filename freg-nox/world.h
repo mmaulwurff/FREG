@@ -21,7 +21,6 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-#include <QReadWriteLock>
 #include <QThread>
 #include "header.h"
 
@@ -29,6 +28,7 @@ class WorldMap;
 class Block;
 class Shred;
 class DeferredAction;
+class QReadWriteLock;
 
 const ushort SAFE_FALL_HEIGHT=5;
 
@@ -49,9 +49,8 @@ class World : public QThread {
 	const QString worldName;
 	ushort numShreds; // size of loaded zone
 	ushort numActiveShreds; // size of active zone
-	QReadWriteLock rwLock;
+	QReadWriteLock * rwLock;
 
-	bool cleaned;
 	ushort sun_moon_x;
 	bool ifStar;
 

@@ -21,6 +21,8 @@
 #include <QTimer>
 #include <QDir>
 #include <QSettings>
+#include <QWriteLocker>
+#include <QReadWriteLock>
 #include "blocks.h"
 #include "Shred.h"
 #include "world.h"
@@ -122,10 +124,10 @@ void World::ReloadAllShreds(const long lati, const long longi,
 	toReSet=true;
 }
 
-void World::WriteLock() { rwLock.lockForWrite(); }
-void World::ReadLock() { rwLock.lockForRead(); }
-bool World::TryReadLock() { return rwLock.tryLockForRead(); }
-void World::Unlock() { rwLock.unlock(); }
+void World::WriteLock() { rwLock->lockForWrite(); }
+void World::ReadLock()  { rwLock->lockForRead(); }
+bool World::TryReadLock() { return rwLock->tryLockForRead(); }
+void World::Unlock() { rwLock->unlock(); }
 
 void World::EmitNotify(const QString & str) const { emit Notify(str); }
 
@@ -315,7 +317,7 @@ void World::ReloadShreds(const int direction) {
 } // World::ReloadShreds
 
 void World::PhysEvents() {
-	WriteLock();
+	const QWriteLocker writeLock(rwLock);
 
 	for (int i=0; i<defActions.size(); ++i) {
 		defActions.at(i)->MakeAction();
@@ -347,7 +349,6 @@ void World::PhysEvents() {
 
 	if ( TIME_STEPS_IN_SEC > timeStep ) {
 		++timeStep;
-		Unlock();
 		return;
 	}
 	for (ushort i=start; i<end; ++i)
@@ -380,7 +381,6 @@ void World::PhysEvents() {
 	}
 	emit UpdatesEnded();
 	// emit ExitReceived(); // close all after 1 turn
-	Unlock();
 } // World::PhysEvents
 
 bool World::DirectlyVisible(float x_from, float y_from, float z_from,
@@ -811,7 +811,7 @@ void World::DeleteAllShreds() {
 }
 
 void World::SetNumActiveShreds(const ushort num) {
-	WriteLock();
+	const QWriteLocker writeLocker(rwLock);
 	numActiveShreds=num;
 	if ( 1 != numActiveShreds%2 ) {
 		++numActiveShreds;
@@ -828,13 +828,12 @@ void World::SetNumActiveShreds(const ushort num) {
 			arg(numActiveShreds));
 	}
 	emit Notify(tr("Active shreds number is %1x%1.").arg(numActiveShreds));
-	Unlock();
 }
 
 World::World(const QString & world_name) :
 		timeStep(0),
 		worldName(world_name),
-		cleaned(false),
+		rwLock(new QReadWriteLock()),
 		map(new WorldMap(&world_name)),
 		toReSet(false)
 {
@@ -881,19 +880,20 @@ World::World(const QString & world_name) :
 World::~World() { CleanAll(); }
 
 void World::CleanAll() {
-	WriteLock();
+	static bool cleaned=false;
 	if ( cleaned ) {
-		Unlock();
 		return;
 	}
 	cleaned=true;
 
+	WriteLock();
 	quit();
-	Unlock();
 	wait();
+	Unlock();
 
 	DeleteAllShreds();
 	delete map;
+	delete rwLock;
 
 	QSettings settings(QDir::currentPath()+'/'+worldName+"/settings.ini",
 		QSettings::IniFormat);

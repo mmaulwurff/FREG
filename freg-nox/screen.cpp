@@ -879,7 +879,6 @@ Screen::Screen(World * const wor, Player * const pl) :
 		input(new IThread(this)),
 		updated(false),
 		updatedPlayer(false),
-		cleaned(false),
 		timer(new QTimer(this)),
 		notifyLog(fopen("texts/messages.txt", "at")),
 		fileToShow(0)
@@ -950,19 +949,15 @@ Screen::Screen(World * const wor, Player * const pl) :
 } // Screen::Screen
 
 void Screen::CleanAll() {
-	// TODO: make own lock
-	w->WriteLock();
+	static bool cleaned=false;
 	if ( cleaned ) {
-		w->Unlock();
 		return;
 	}
-
 	cleaned=true; // prevent double cleaning
 	input->Stop();
 	input->wait();
 	delete input;
 	delete timer;
-	w->Unlock();
 
 	delwin(leftWin);
 	delwin(rightWin);
