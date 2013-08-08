@@ -72,6 +72,8 @@ class World : public QThread {
 	QList<DeferredAction *> defActions;
 	ShredStorage * shredStorage;
 
+	Shred * shredMemoryPool;
+
 	// Block work section
 	public:
 	Block * GetBlock(ushort x, ushort y, ushort z) const;

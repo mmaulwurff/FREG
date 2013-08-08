@@ -78,13 +78,15 @@ bool Shred::LoadShred() {
 }
 
 Shred::Shred(World * const world_, const ushort shred_x, const ushort shred_y,
-		const long longi, const long lati)
+		const long longi, const long lati,
+		Shred * const mem)
 	:
 		world(world_),
 		longitude(longi),
 		latitude(lati),
 		shredX(shred_x),
-		shredY(shred_y)
+		shredY(shred_y),
+		memory(mem)
 {
 	activeListFrequent.reserve(100);
 	activeListRare.reserve(500);
@@ -162,6 +164,8 @@ Shred::~Shred() {
 		}
 	}
 } // Shred::~Shred
+
+Shred * Shred::GetShredMemory() const { return memory; }
 
 void Shred::SetNewBlock(const int kind, const int sub,
 		const ushort x, const ushort y, const ushort z,

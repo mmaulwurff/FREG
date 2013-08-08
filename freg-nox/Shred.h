@@ -29,6 +29,13 @@ class World;
 class QByteArray;
 
 class Shred {
+	public:
+	Shred(World *, ushort shred_x, ushort shred_y,
+			long longi, long lati,
+			Shred * memory);
+	~Shred();
+
+	private:
 	Block * blocks[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
 	uchar lightMap[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
 	World * const world;
@@ -42,6 +49,9 @@ class Shred {
 	QList<Active *> activeListRare;
 	QList<Active *> fallList;
 	QLinkedList<Active *> shiningList;
+
+	// memory, allocated for this shred.
+	Shred * const memory;
 
 	/// Lowest nullstone and sky are not in bounds.
 	bool InBounds(ushort x, ushort y, ushort z) const;
@@ -104,19 +114,17 @@ class Shred {
 	public: // Information section
 	int Sub(ushort x, ushort y, ushort z) const;
 
-	Shred(World *, ushort shred_x, ushort shred_y,
-			long longi, long lati);
-	~Shred();
-
 	void SetNewBlock(int kind, int sub, ushort x, ushort y, ushort z,
 			int dir=UP);
 	char TypeOfShred(long longi, long lati) const;
+	
 	static QString FileName(QString world_name, long longi, long lati);
+	Shred * GetShredMemory() const;
+
 	private:
 	void RegisterBlock(Block *, ushort x, ushort y, ushort z);
 	bool LoadShred();
 
-	private:
 	QString FileName() const;
 
 	void NormalUnderground(ushort depth=0, int sub=SOIL);
@@ -143,8 +151,7 @@ class Shred {
 	void NormalCube(ushort x_start, ushort y_start, ushort z_start,
 			ushort x_end, ushort y_end, ushort z_end, int sub);
 
-	// Land generation
-	private:
+	private: // Land generation
 	void ShredLandAmplitudeAndLevel(long longi, long lati,
 			ushort * l, float * a) const;
 	void ShredNominalAmplitudeAndLevel(char shred_type,

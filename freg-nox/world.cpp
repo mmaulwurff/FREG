@@ -23,6 +23,7 @@
 #include <QSettings>
 #include <QWriteLocker>
 #include <QReadWriteLock>
+#include <memory>
 #include "blocks.h"
 #include "Shred.h"
 #include "world.h"
@@ -263,59 +264,71 @@ void World::ReloadShreds(const int direction) {
 	case NORTH:
 		--longitude;
 		for (x=0; x<numShreds; ++x) {
-			delete shreds[numShreds*(numShreds-1)+x];
+			const Shred * const shred =
+				shreds[numShreds*(numShreds-1)+x];
+			Shred * const memory = shred->GetShredMemory();
+			shred->~Shred();
 			for (y=numShreds-2; y>=0; --y) {
 				(shreds[(y+1)*numShreds+x]=
 					shreds[y*numShreds+x])->
 					ReloadToNorth();
 			}
-			shreds[x]=new Shred(this, x, 0,
+			shreds[x] = new(memory)
+				Shred(this, x, 0,
 					longitude-numShreds/2,
-					latitude-numShreds/2+x);
+					latitude-numShreds/2+x, memory);
 		}
 	break;
 	case SOUTH:
 		++longitude;
 		for (x=0; x<numShreds; ++x) {
-			delete shreds[x];
+			const Shred * const shred = shreds[x];
+			Shred * const memory = shred->GetShredMemory();
+			shred->~Shred();
 			for (y=1; y<numShreds; ++y) {
 				(shreds[(y-1)*numShreds+x]=
 					shreds[y*numShreds+x])->
 					ReloadToSouth();
 			}
-			shreds[numShreds*(numShreds-1)+x]=new
+			shreds[numShreds*(numShreds-1)+x] = new(memory)
 				Shred(this, x, numShreds-1,
 					longitude+numShreds/2,
-					latitude-numShreds/2+x);
+					latitude-numShreds/2+x, memory);
 		}
 	break;
 	case EAST:
 		++latitude;
 		for (y=0; y<numShreds; ++y) {
-			delete shreds[y*numShreds];
+			const Shred * const shred = shreds[y*numShreds];
+			Shred * const memory = shred->GetShredMemory();
+			shred->~Shred();
 			for (x=1; x<numShreds; ++x) {
 				(shreds[(x-1)+y*numShreds]=
 					shreds[x+y*numShreds])->
 					ReloadToEast();
 			}
-			shreds[numShreds-1+y*numShreds]=new
+			shreds[numShreds-1+y*numShreds] = new(memory)
 				Shred(this, numShreds-1, y,
 					longitude-numShreds/2+y,
-					latitude+numShreds/2);
+					latitude+numShreds/2, memory);
 		}
 	break;
 	case WEST:
 		--latitude;
 		for (y=0; y<numShreds; ++y) {
-			delete shreds[numShreds-1+y*numShreds];
+			const Shred * const shred =
+				shreds[numShreds-1+y*numShreds];
+			Shred * const memory = shred->GetShredMemory();
+			shred->~Shred();
 			for (x=numShreds-2; x>=0; --x) {
 				(shreds[(x+1)+y*numShreds]=
 					shreds[x+y*numShreds])->
 					ReloadToWest();
 			}
-			shreds[y*numShreds]=new Shred(this, 0, y,
+			shreds[y*numShreds] = new(memory)
+				Shred(this, 0, y,
 					longitude-numShreds/2+y,
-					latitude-numShreds/2);
+					latitude-numShreds/2, memory);
 		}
 	break;
 	default: fprintf(stderr,
@@ -804,9 +817,13 @@ void World::RemSun() {
 
 void World::LoadAllShreds() {
 	shreds=new Shred *[(ulong)numShreds*(ulong)numShreds];
+	shredMemoryPool = static_cast<Shred *>
+		(operator new (sizeof(Shred)*numShreds*numShreds));
 	for (long i=latitude -numShreds/2, x=0; x<numShreds; ++i, ++x)
 	for (long j=longitude-numShreds/2, y=0; y<numShreds; ++j, ++y) {
-		shreds[y*numShreds+x]=new Shred(this, x, y, j, i);
+		shreds[y*numShreds+x] = new(shredMemoryPool+y*numShreds+x)
+			Shred(this, x, y, j, i,
+				(shredMemoryPool+y*numShreds+x));
 	}
 	MakeSun();
 	sunMoonFactor=( NIGHT==PartOfDay() ) ?
@@ -817,7 +834,7 @@ void World::LoadAllShreds() {
 void World::DeleteAllShreds() {
 	RemSun();
 	for (ushort i=0; i<numShreds*numShreds; ++i) {
-		delete shreds[i];
+		shreds[i]->~Shred();
 	}
 	delete [] shreds;
 }
@@ -906,6 +923,7 @@ void World::CleanAll() {
 	Unlock();
 
 	DeleteAllShreds();
+	operator delete(shredMemoryPool);
 	delete map;
 	delete shredStorage;
 	delete rwLock;
