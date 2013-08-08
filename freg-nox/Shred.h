@@ -29,27 +29,37 @@ class QFile;
 class World;
 
 class Shred {
+	public:
+	Shred(World *, ushort shred_x, ushort shred_y,
+			long longi, long lati,
+			Shred * memory);
+	~Shred();
+
+	private:
 	Block * blocks[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
 	uchar lightMap[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
 	World * const world;
 	const long longitude, latitude;
 	ushort shredX, shredY;
 
-	//needed in Shred::ReloadTo... for active blocks not to reload twice
-	//when they are registered both in frequent and rare lists.
+	// needed in Shred::ReloadTo... for active blocks not to reload twice
+	// when they are registered both in frequent and rare lists.
 	QList<Active *> activeListAll;
 	QList<Active *> activeListFrequent;
 	QList<Active *> activeListRare;
 	QList<Active *> fallList;
 	QLinkedList<Active *> shiningList;
 
-	///Lowest nullstone and sky are not in bounds.
+	// memory, allocated for this shred.
+	Shred * const memory;
+
+	/// Lowest nullstone and sky are not in bounds.
 	bool InBounds(ushort x, ushort y, ushort z) const;
 
 	public:
-	///Returns y (line) shred coordinate on world map.
+	/// Returns y (line) shred coordinate on world map.
 	long Longitude() const;
-	///Returns x (column) shred coordinate on world map.
+	/// Returns x (column) shred coordinate on world map.
 	long Latitude()  const;
 	ushort ShredX() const;
 	ushort ShredY() const;
@@ -75,11 +85,11 @@ class Shred {
 	void ReloadToWest();
 
 	Block * GetBlock(ushort x, ushort y, ushort z) const;
-	///Puts block to coordinates xyz and activates it
+	/// Puts block to coordinates xyz and activates it
 	void SetBlock(Block * block, ushort x, ushort y, ushort z);
-	///Puts block to coordinates, not activates it (e.g. in World::Move)
+	/// Puts block to coordinates, not activates it (e.g. in World::Move)
 	void PutBlock(Block * block, ushort x, ushort y, ushort z);
-	///Puts normal block to coordinates
+	/// Puts normal block to coordinates
 	void PutNormalBlock(int sub, ushort x, ushort y, ushort z);
 	static Block * Normal(int sub);
 
@@ -106,24 +116,20 @@ class Shred {
 
 	bool LoadShred(QFile &);
 
-	Shred(World *, ushort shred_x, ushort shred_y,
-			long longi, long lati);
-	~Shred();
-
 	void SetNewBlock(int kind, int sub, ushort x, ushort y, ushort z,
 			int dir=UP);
 	char TypeOfShred(long longi, long lati) const;
+	Shred * GetShredMemory() const;
 	private:
 	void RegisterBlock(Block *, ushort x, ushort y, ushort z);
 
-	private:
 	QString FileName() const;
 
 	void NormalUnderground(ushort depth=0, int sub=SOIL);
 	void CoverWith(int kind, int sub);
-	///Puts num things(kind-sub) in random places on shred surface.
-	/**If on_water is false, this will not drop things on water,
-	 * otherwise on water too.
+	/// Puts num things(kind-sub) in random places on shred surface.
+	/** If on_water is false, this will not drop things on water,
+	 *  otherwise on water too.
 	 */
 	void RandomDrop(ushort num, int kind, int sub, bool on_water=false);
 
@@ -137,14 +143,13 @@ class Shred {
 	void Mountain();
 	void Hill();
 	void Desert();
-	//block combinations section (trees, buildings, etc):
+	// Block combinations section (trees, buildings, etc):
 	bool Tree(ushort x, ushort y, ushort z, ushort height);
 	private:
 	void NormalCube(ushort x_start, ushort y_start, ushort z_start,
 			ushort x_end, ushort y_end, ushort z_end, int sub);
 
-	//land generation
-	private:
+	private: // Land generation
 	void ShredLandAmplitudeAndLevel(long longi, long lati,
 			ushort * l, float * a) const;
 	void ShredNominalAmplitudeAndLevel(char shred_type,
