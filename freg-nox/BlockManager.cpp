@@ -78,7 +78,7 @@ BlockManager block_manager;
 
 BlockManager::BlockManager() {
 	for (ushort sub=0; sub<LAST_SUB; ++sub) {
-		normals[sub]=new Block(sub);
+		normals[sub]=new Block(sub, MakeId(BLOCK, sub));
 	}
 }
 BlockManager::~BlockManager() {
@@ -98,65 +98,67 @@ Block * BlockManager::NewBlock(const int kind, int sub) {
 			sub);
 		sub=STONE;
 	}
+	const quint16 id = MakeId(kind, sub);
 	switch ( kind ) {
-		case BLOCK:  return New<Block >(sub);
-		case BELL:   return New<Bell  >(sub);
-		case GRASS:  return New<Grass >(sub);
-		case PICK:   return New<Pick  >(sub);
-		case PLATE:  return New<Plate >(sub);
-		case ACTIVE: return New<Active>(sub);
-		case LADDER: return New<Ladder>(sub);
-		case WEAPON: return New<Weapon>(sub);
-		case BUSH:   return New<Bush  >(sub);
-		case CHEST:  return New<Chest >(sub);
-		case PILE:   return New<Pile  >(sub);
-		case DWARF:  return New<Dwarf >(sub);
-		case RABBIT: return New<Rabbit>(sub);
-		case DOOR:   return New<Door  >(sub);
-		case LIQUID: return New<Liquid>(sub);
-		case CLOCK:  return New<Clock >(sub);
-		case TEXT:   return New<Text  >(sub);
-		case MAP:    return New<Map   >(sub);
-		case CREATOR: return New<Creator>(sub);
-		case WORKBENCH: return New<Workbench>(sub);
-		default:
-			fprintf(stderr,
-				"BlockManager::NewBlock: unlisted kind: %d\n",
-				kind);
-			return New<Block>(sub);
+	case BLOCK:  return New<Block >(sub, id);
+	case BELL:   return New<Bell  >(sub, id);
+	case GRASS:  return New<Grass >(sub, id);
+	case PICK:   return New<Pick  >(sub, id);
+	case PLATE:  return New<Plate >(sub, id);
+	case ACTIVE: return New<Active>(sub, id);
+	case LADDER: return New<Ladder>(sub, id);
+	case WEAPON: return New<Weapon>(sub, id);
+	case BUSH:   return New<Bush  >(sub, id);
+	case CHEST:  return New<Chest >(sub, id);
+	case PILE:   return New<Pile  >(sub, id);
+	case DWARF:  return New<Dwarf >(sub, id);
+	case RABBIT: return New<Rabbit>(sub, id);
+	case DOOR:   return New<Door  >(sub, id);
+	case LIQUID: return New<Liquid>(sub, id);
+	case CLOCK:  return New<Clock >(sub, id);
+	case TEXT:   return New<Text  >(sub, id);
+	case MAP:    return New<Map   >(sub, id);
+	case CREATOR: return New<Creator>(sub, id);
+	case WORKBENCH: return New<Workbench>(sub, id);
+	default:
+		fprintf(stderr,
+			"BlockManager::NewBlock: unlisted kind: %d\n",
+			kind);
+		return New<Block>(sub, kind);
 	}
 }
 
 Block * BlockManager::BlockFromFile(QDataStream & str,
 		const quint8 kind, const quint8 sub)
 {
+	const quint16 id = MakeId(kind, sub);
 	switch ( kind ) {
-		case BLOCK:  return New<Block >(str, sub);
-		case BELL:   return New<Bell  >(str, sub);
-		case PICK:   return New<Pick  >(str, sub);
-		case PLATE:  return New<Plate >(str, sub);
-		case LADDER: return New<Ladder>(str, sub);
-		case WEAPON: return New<Weapon>(str, sub);
-		case BUSH:   return New<Bush  >(str, sub);
-		case CHEST:  return New<Chest >(str, sub);
-		case RABBIT: return New<Rabbit>(str, sub);
-		case DWARF:  return New<Dwarf >(str, sub);
-		case PILE:   return New<Pile  >(str, sub);
-		case GRASS:  return New<Grass >(str, sub);
-		case ACTIVE: return New<Active>(str, sub);
-		case LIQUID: return New<Liquid>(str, sub);
-		case TEXT:   return New<Text  >(str, sub);
-		case MAP:    return New<Map   >(str, sub);
-		case LOCKED_DOOR:
-		case DOOR:   return New<Door  >(str, sub);
-		case CLOCK:  return New<Clock >(str, sub);
-		case CREATOR: return New<Creator>(str, sub);
-		case WORKBENCH: return New<Workbench>(str, sub);
-		default:
-			fprintf(stderr,
-				"BlockManager::BlockFromFile: kind (?): %d\n.",
-				kind);
-			return New<Block>(str, sub);
+	case BLOCK:  return New<Block >(str, sub, id);
+	case BELL:   return New<Bell  >(str, sub, id);
+	case PICK:   return New<Pick  >(str, sub, id);
+	case PLATE:  return New<Plate >(str, sub, id);
+	case LADDER: return New<Ladder>(str, sub, id);
+	case WEAPON: return New<Weapon>(str, sub, id);
+	case BUSH:   return New<Bush  >(str, sub, id);
+	case CHEST:  return New<Chest >(str, sub, id);
+	case RABBIT: return New<Rabbit>(str, sub, id);
+	case DWARF:  return New<Dwarf >(str, sub, id);
+	case PILE:   return New<Pile  >(str, sub, id);
+	case GRASS:  return New<Grass >(str, sub, id);
+	case ACTIVE: return New<Active>(str, sub, id);
+	case LIQUID: return New<Liquid>(str, sub, id);
+	case TEXT:   return New<Text  >(str, sub, id);
+	case MAP:    return New<Map   >(str, sub, id);
+	case LOCKED_DOOR:
+	case DOOR:   return New<Door  >(str, sub, id);
+	case CLOCK:  return New<Clock >(str, sub, id);
+	case CREATOR: return New<Creator>(str, sub, id);
+	case WORKBENCH: return New<Workbench>(str, sub, id);
+	default:
+		fprintf(stderr,
+			"BlockManager::BlockFromFile: kind (?): %d\n.",
+			kind);
+		return New<Block>(str, sub, id);
 	}
 }
 
@@ -208,11 +210,17 @@ quint8 BlockManager::StringToSub(const QString & str) {
 }
 
 template <typename Thing>
-Thing * BlockManager::New(const int sub) {
-	return new Thing(sub);
+Thing * BlockManager::New(const int sub, const quint16 id) {
+	return new Thing(sub, id);
 }
 
 template <typename Thing>
-Thing * BlockManager::New(QDataStream & str, const int sub) {
-	return new Thing(str, sub);
+Thing * BlockManager::New(QDataStream & str, const int sub,
+		const quint16 id)
+{
+	return new Thing(str, sub, id);
+}
+
+quint16 BlockManager::MakeId(const quint8 kind, const quint8 sub) {
+	return (kind << 8) | sub;
 }
