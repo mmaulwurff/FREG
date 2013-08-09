@@ -156,9 +156,11 @@ void Player::Examine(const short i, const short j, const short k) const {
 	if ( ""!=(str=block->GetNote()) ) {
 		emit Notify(tr("Inscription: ")+str);
 	}
-	emit Notify(tr("Temperature: %1.").arg(world->Temperature(i, j, k)));
-	emit Notify(tr("Durability: %1.").arg(block->Durability()));
-	emit Notify(tr("Weight: %1.").arg(block->Weight()));
+	emit Notify(tr("Temperature: %1. Durability: %2. Weight: %3. Id: %4.").
+		arg(world->Temperature(i, j, k)).
+		arg(block->Durability()).
+		arg(block->Weight()).
+		arg(block->Id()));
 	world->Unlock();
 }
 

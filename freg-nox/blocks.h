@@ -80,6 +80,7 @@ class Block { //blocks without special physics and attributes
 
 	const quint8 transparent;
 	const quint8 sub;
+	const quint16 id;
 	quint8 direction;
 
 	protected:
@@ -121,6 +122,8 @@ class Block { //blocks without special physics and attributes
 	virtual void SaveAttributes(QDataStream &) const;
 
 	public:
+	/// Determines kind and sub, unique for every kind-sub pair.
+	quint16 Id() const;
 	void Restore();
 	void SetDir(int dir);
 
@@ -134,9 +137,12 @@ class Block { //blocks without special physics and attributes
 
 	void SaveToFile(QDataStream & out) const;
 
-	Block(int sb=STONE, quint8 transp=UNDEF);
-	Block(QDataStream &, int sub, quint8 transp=UNDEF);
+	Block(int sub, quint16 id, quint8 transp=UNDEF);
+	Block(QDataStream &, int sub, quint16 id, quint8 transp=UNDEF);
 	virtual ~Block();
+
+	protected:
+	static quint16 IdFromKindSub(quint16 id, quint8 sub);
 }; //class Block
 
 class Plate : public Block {
@@ -146,8 +152,8 @@ class Plate : public Block {
 	int BeforePush(int dir, Block * who);
 	ushort Weight() const;
 
-	Plate(int sub);
-	Plate(QDataStream & str, int sub);
+	Plate(int sub, quint16 id);
+	Plate(QDataStream & str, int sub, quint16 id);
 }; //class Plate
 
 class Ladder : public Block {
@@ -159,8 +165,8 @@ class Ladder : public Block {
 	bool Catchable() const;
 	Block * DropAfterDamage() const;
 
-	Ladder(int sub);
-	Ladder(QDataStream & str, int sub);
+	Ladder(int sub, quint16 id);
+	Ladder(QDataStream & str, int sub, quint16 id);
 }; //class Ladder
 
 class Weapon : public Block {
@@ -173,8 +179,8 @@ class Weapon : public Block {
 	ushort Weight() const;
 	QString FullName() const;
 
-	Weapon(int sub);
-	Weapon(QDataStream & str, int sub);
+	Weapon(int sub, quint16 id);
+	Weapon(QDataStream & str, int sub, quint16 id);
 }; //class Weapon
 
 class Pick : public Weapon {
@@ -184,8 +190,8 @@ class Pick : public Weapon {
 	ushort DamageLevel() const;
 	QString FullName() const;
 
-	Pick(int sub);
-	Pick(QDataStream & str, int sub);
+	Pick(int sub, quint16 id);
+	Pick(QDataStream & str, int sub, quint16 id);
 }; //class Pick
 
 class DeferredAction;
@@ -259,8 +265,8 @@ class Active : public QObject, public Block {
 	void Unregister();
 
 	public:
-	Active(int sub, quint8 transp=UNDEF);
-	Active(QDataStream & str, int sub, quint8 transp=UNDEF);
+	Active(int sub, quint16 id, quint8 transp=UNDEF);
+	Active(QDataStream & str, int sub, quint16 id, quint8 transp=UNDEF);
 	~Active();
 }; //class Active
 
@@ -286,8 +292,8 @@ class Animal : public Active {
 	void SaveAttributes(QDataStream & out) const;
 
 	public:
-	Animal(int sub);
-	Animal(QDataStream & str, int sub);
+	Animal(int sub, quint16 id);
+	Animal(QDataStream & str, int sub, quint16 id);
 }; //class Animal
 
 class Inventory {
@@ -386,8 +392,8 @@ class Dwarf : public Animal, public Inventory {
 	public:
 	uchar LightRadius() const;
 
-	Dwarf(int sub=H_MEAT);
-	Dwarf(QDataStream & str, int sub);
+	Dwarf(int sub, quint16 id);
+	Dwarf(QDataStream & str, int sub, quint16 id);
 }; //class Dwarf
 
 class Chest : public Block, public Inventory {
@@ -405,8 +411,8 @@ class Chest : public Block, public Inventory {
 	void SaveAttributes(QDataStream & out) const;
 
 	public:
-	Chest(int s, ushort size=INV_SIZE);
-	Chest(QDataStream & str, int sub, ushort size=INV_SIZE);
+	Chest(int sub, quint16 id, ushort size=INV_SIZE);
+	Chest(QDataStream & str, int sub, quint16 id, ushort size=INV_SIZE);
 }; //class Chest
 
 class Pile : public Active, public Inventory {
@@ -429,8 +435,8 @@ class Pile : public Active, public Inventory {
 	void SaveAttributes(QDataStream & out) const;
 
 	public:
-	Pile(int sub);
-	Pile(QDataStream & str, int sub);
+	Pile(int sub, quint16 id);
+	Pile(QDataStream & str, int sub, quint16 id);
 }; //class Pile
 
 class Liquid : public Active {
@@ -449,8 +455,8 @@ class Liquid : public Active {
 	QString FullName() const;
 	Block * DropAfterDamage() const;
 
-	Liquid(int sub);
-	Liquid(QDataStream & str, int sub);
+	Liquid(int sub, quint16 id);
+	Liquid(QDataStream & str, int sub, quint16 id);
 }; //class Liquid
 
 class Grass : public Active {
@@ -465,8 +471,8 @@ class Grass : public Active {
 	int  BeforePush(int dir, Block * who);
 	Block * DropAfterDamage() const;
 
-	Grass(int sub);
-	Grass(QDataStream & str, int sub);
+	Grass(int sub, quint16 id);
+	Grass(QDataStream & str, int sub, quint16 id);
 }; //class Grass
 
 class Bush : public Active, public Inventory {
@@ -494,8 +500,8 @@ class Bush : public Active, public Inventory {
 	void SaveAttributes(QDataStream & out) const;
 
 	public:
-	Bush(int sub);
-	Bush(QDataStream & str, int sub);
+	Bush(int sub, quint16 id);
+	Bush(QDataStream & str, int sub, quint16 id);
 }; //class Bush
 
 class Rabbit : public Animal {
@@ -512,8 +518,8 @@ class Rabbit : public Animal {
 	Block * DropAfterDamage() const;
 	QString FullName() const;
 
-	Rabbit(int sub=A_MEAT);
-	Rabbit(QDataStream & str, int sub);
+	Rabbit(int sub, quint16 id);
+	Rabbit(QDataStream & str, int sub, quint16 id);
 }; //class Rabbit
 
 class Workbench : public Chest {
@@ -530,8 +536,8 @@ class Workbench : public Chest {
 	ushort Start() const;
 	QString FullName() const;
 
-	Workbench(int sub);
-	Workbench(QDataStream & str, int sub);
+	Workbench(int sub, quint16 id);
+	Workbench(QDataStream & str, int sub, quint16 id);
 }; //class Workbench
 
 class Door : public Active {
@@ -555,8 +561,8 @@ class Door : public Active {
 	void SaveAttributes(QDataStream & out) const;
 
 	public:
-	Door(int sub);
-	Door(QDataStream & str, int sub);
+	Door(int sub, quint16 id);
+	Door(QDataStream & str, int sub, quint16 id);
 }; //class Door
 
 class Clock : public Active {
@@ -575,8 +581,8 @@ class Clock : public Active {
 	usage_types Use(Block * who=0);
 	QString FullName() const;
 
-	Clock(int sub);
-	Clock (QDataStream & str, int sub);
+	Clock(int sub, quint16 id);
+	Clock (QDataStream & str, int sub, quint16 id);
 }; //class Clock
 
 class Creator : public Active, public Inventory {
@@ -595,8 +601,8 @@ class Creator : public Active, public Inventory {
 	void SaveAttributes(QDataStream & out) const;
 
 	public:
-	Creator(int sub);
-	Creator(QDataStream & str, int sub);
+	Creator(int sub, quint16 id);
+	Creator(QDataStream & str, int sub, quint16 id);
 }; //class Creator
 
 class Text : public Block {
@@ -608,8 +614,8 @@ class Text : public Block {
 
 	void SetTitle(const QString & str);
 
-	Text(int sub);
-	Text(QDataStream & str, int sub);
+	Text(int sub, quint16 id);
+	Text(QDataStream & str, int sub, quint16 id);
 }; //class Text
 
 class Map : public Text {
@@ -626,8 +632,8 @@ class Map : public Text {
 	QString FullName() const;
 	usage_types Use(Block * who=0);
 
-	Map(int sub);
-	Map(QDataStream & str, int sub);
+	Map(int sub, quint16 id);
+	Map(QDataStream & str, int sub, quint16 id);
 }; // class Map
 
 class Bell: public Active {
@@ -637,7 +643,7 @@ class Bell: public Active {
 	usage_types Use(Block * who=0);
 	void ReceiveSignal(const QString &);
 
-	Bell(int sub);
-	Bell(QDataStream & str, int sub);
+	Bell(int sub, quint16 id);
+	Bell(QDataStream & str, int sub, quint16 id);
 }; // class Bell
 #endif

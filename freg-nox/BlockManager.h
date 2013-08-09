@@ -68,10 +68,11 @@ class BlockManager {
 	static const QString subs[LAST_SUB];
 
 	template <typename Thing>
-	Thing * New(int sub);
+	Thing * New(int sub, quint16 id);
 	template <typename Thing>
-	Thing * New(QDataStream & str, int sub);
-}; //class BlockManager
+	Thing * New(QDataStream & str, int sub, quint16 id);
+	static quint16 MakeId(quint8 kind, quint8 sub);
+}; // class BlockManager
 
 extern BlockManager block_manager;
 
