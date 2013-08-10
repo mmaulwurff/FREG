@@ -120,7 +120,7 @@
 	}
 
 	quint8 Block::Kind() const { return BLOCK; }
-	quint16 Block::Id() const { return id; }
+	quint16 Block::GetId() const { return id; }
 	bool Block::Catchable() const { return false; }
 	int  Block::BeforePush(const int, Block * const) { return NO_ACTION; }
 	bool Block::Move(const int) { return false; }
@@ -154,7 +154,6 @@
 	int  Block::Transparent() const { return transparent; }
 	short Block::Durability() const { return durability; }
 	QString Block::GetNote() const { return note ? *note : ""; }
-	//quint16 Block::Id() const { return id; }
 
 	int Block::Temperature() const {
 		switch (sub) {

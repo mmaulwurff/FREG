@@ -61,6 +61,7 @@ class BlockManager {
 	static QString SubToString(quint8 sub);
 	static quint8 StringToKind(const QString &);
 	static quint8 StringToSub(const QString &);
+	static quint16 MakeId(quint8 kind, quint8 sub);
 
 	private:
 	Block * normals[LAST_SUB];
@@ -71,7 +72,6 @@ class BlockManager {
 	Thing * New(int sub, quint16 id);
 	template <typename Thing>
 	Thing * New(QDataStream & str, int sub, quint16 id);
-	static quint16 MakeId(quint8 kind, quint8 sub);
 }; // class BlockManager
 
 extern BlockManager block_manager;

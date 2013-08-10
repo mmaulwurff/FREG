@@ -123,7 +123,7 @@ class Block { //blocks without special physics and attributes
 
 	public:
 	/// Determines kind and sub, unique for every kind-sub pair.
-	quint16 Id() const;
+	quint16 GetId() const;
 	void Restore();
 	void SetDir(int dir);
 
