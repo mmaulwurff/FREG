@@ -160,7 +160,7 @@ void Player::Examine(const short i, const short j, const short k) const {
 		arg(world->Temperature(i, j, k)).
 		arg(block->Durability()).
 		arg(block->Weight()).
-		arg(block->Id()));
+		arg(block->GetId()));
 	world->Unlock();
 }
 
