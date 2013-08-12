@@ -99,10 +99,12 @@ class World : public QThread {
 	short ClampY(short y) const;
 	short ClampZ(short z) const;
 
-	void SunShineVertical  (short x, short y, short z=HEIGHT-1);
+	void SunShineVertical  (short x, short y, short z=HEIGHT-2,
+			uchar level=MAX_LIGHT_RADIUS);
 	void SunShineHorizontal(short x, short y, short z);
 	/// If init is false, light will not spread from non-invisible blocks.
 	void Shine(ushort x, ushort y, ushort z, uchar level, bool init=false);
+	void RemoveSunLight(short x, short y, short z);
 
 	private:
 	bool SetSunLightMap (uchar level, ushort x, ushort y, ushort z);

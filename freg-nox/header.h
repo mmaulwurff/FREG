@@ -45,6 +45,8 @@ const ushort SECONDS_IN_DAYLIGHT=SECONDS_IN_DAY-END_OF_NIGHT;
 const ushort MAX_DURABILITY=100;
 const ushort MAX_BREATH=60;
 
+const uchar MAX_LIGHT_RADIUS=15;
+
 enum shred_type {
 	SHRED_NULLMOUNTAIN='#',
 	SHRED_PLAIN='.',
