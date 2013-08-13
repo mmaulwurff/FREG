@@ -23,6 +23,8 @@
 #include <QString>
 #include <QSettings>
 #include <QDir>
+#include <QWriteLocker>
+#include <QReadLocker>
 #include "blocks.h"
 #include "Player.h"
 #include "world.h"
@@ -132,7 +134,7 @@ const {
 }
 
 void Player::Examine(const short i, const short j, const short k) const {
-	world->ReadLock();
+	QReadLocker locker(world->GetLock());
 
 	emit Notify("------");
 	const Block * const block=world->GetBlock(i, j, k);
@@ -149,7 +151,6 @@ void Player::Examine(const short i, const short j, const short k) const {
 			arg(block->GetDir()));
 	}
 	if ( AIR==sub || SKY==sub || SUN_MOON==sub ) {
-		world->Unlock();
 		return;	
 	}
 	QString str;
@@ -161,7 +162,6 @@ void Player::Examine(const short i, const short j, const short k) const {
 		arg(block->Durability()).
 		arg(block->Weight()).
 		arg(block->GetId()));
-	world->Unlock();
 }
 
 void Player::Jump() {
@@ -199,24 +199,17 @@ void Player::Backpack() {
 }
 
 void Player::Use(const short x, const short y, const short z) {
-	world->WriteLock();
+	QWriteLocker locker(world->GetLock());
 	const int us_type=world->GetBlock(x, y, z)->Use(player);
 	usingType=( us_type==usingType ) ? USAGE_TYPE_NO : us_type;
-	world->Unlock();
 }
 
 void Player::Inscribe(const short x, const short y, const short z) const {
-	world->WriteLock();
-	if ( player ) {
-		if ( world->Inscribe(x, y, z) ) {
-			emit Notify(tr("Inscribed."));
-		} else {
-			emit Notify(tr("Cannot inscribe this."));
-		}
-	} else {
-		emit Notify(tr("No player."));
-	}
-	world->Unlock();
+	QWriteLocker locker(world->GetLock());
+	emit Notify(player ?
+		(world->Inscribe(x, y, z) ?
+			tr("Inscribed.") : tr("Cannot inscribe this.")) :
+		tr("No player."));
 }
 
 Block * Player::ValidBlock(const ushort num) const {
@@ -242,9 +235,8 @@ Block * Player::ValidBlock(const ushort num) const {
 }
 
 void Player::Use(const ushort num) {
-	world->WriteLock();
+	QWriteLocker locker(world->GetLock());
 	UseNoLock(num);
-	world->Unlock();
 }
 
 void Player::UseNoLock(const ushort num) {
@@ -269,32 +261,28 @@ void Player::Throw(const short x, const short y, const short z,
 void Player::Obtain(const short x, const short y, const short z,
 		const ushort src, const ushort dest, const ushort num)
 {
-	world->WriteLock();
+	QWriteLocker locker(world->GetLock());
 	world->Get(player, x, y, z, src, dest, num);
 	emit Updated();
-	world->Unlock();
 }
 
-bool Player::Wield(const ushort num) {
-	world->WriteLock();
+void Player::Wield(const ushort num) {
+	QWriteLocker locker(world->GetLock());
 	if ( ValidBlock(num) ) {
 		for (ushort i=0; i<=Dwarf::ON_LEGS; ++i) {
 			InnerMove(num, i);
 		}
 		emit Updated();
 	}
-	world->Unlock();
-	return false;
 }
 
 void Player::MoveInsideInventory(const ushort num_from, const ushort num_to,
 		const ushort num)
 {
-	world->WriteLock();
+	QWriteLocker locker(world->GetLock());
 	if ( ValidBlock(num_from) ) {
 		InnerMove(num_from, num_to, num);
 	}
-	world->Unlock();
 }
 
 void Player::InnerMove(const ushort num_from, const ushort num_to,
@@ -305,17 +293,16 @@ void Player::InnerMove(const ushort num_from, const ushort num_to,
 }
 
 void Player::Inscribe(const ushort num) {
-	world->WriteLock();
+	QWriteLocker locker(world->GetLock());
 	if ( ValidBlock(num) ) {
 		QString str;
 		emit GetString(str);
 		PlayerInventory()->InscribeInv(num, str);
 	}
-	world->Unlock();
 }
 
 void Player::Eat(const ushort num) {
-	world->WriteLock();
+	QWriteLocker locker(world->GetLock());
 	Block * const food=ValidBlock(num);
 	if ( food ) {
 		Animal * const animal=player->IsAnimal();
@@ -329,7 +316,6 @@ void Player::Eat(const ushort num) {
 			emit Notify(tr("You cannot eat."));
 		}
 	}
-	world->Unlock();
 }
 
 void Player::Build(
@@ -338,31 +324,28 @@ void Player::Build(
 		const short z_target,
 		const ushort slot)
 {
-	world->WriteLock();
+	QWriteLocker locker(world->GetLock());
 	Block * const block=ValidBlock(slot);
 	if ( block && (AIR!=world->Sub(x, y, z-1) || 0==player->Weight()) ) {
 		player->GetDeferredAction()->
 			SetBuild(x_target, y_target, z_target, block, slot);
 	}
-	world->Unlock();
 }
 
 void Player::Craft(const ushort num) {
-	world->WriteLock();
+	QWriteLocker locker(world->GetLock());
 	Inventory * const inv=PlayerInventory();
 	if ( inv ) {
-		const bool craft=inv->MiniCraft(num);
-		if ( craft ) {
+		if ( inv->MiniCraft(num) ) {
 			emit Updated();
 		}
 	} else {
 		Notify("Cannot craft.");
 	}
-	world->Unlock();
 }
 
 void Player::TakeOff(const ushort num) {
-	world->WriteLock();
+	QWriteLocker locker(world->GetLock());
 	if ( ValidBlock(num) ) {
 		for (ushort i=PlayerInventory()->Start();
 				i<PlayerInventory()->Size(); ++i)
@@ -370,20 +353,14 @@ void Player::TakeOff(const ushort num) {
 			InnerMove(num, i, PlayerInventory()->Number(num));
 		}
 	}
-	world->Unlock();
 }
 
 void Player::ProcessCommand(QString & command) {
-	//don't forget lock and unlock world mutex where needed:
-	//world->WriteLock();
-	//or
-	//world->ReadLock();
-	//world->Unlock();
+	QWriteLocker locker(world->GetLock());
 	QTextStream comm_stream(&command);
 	QString request;
 	comm_stream >> request;
 	if ( "give"==request || "get"==request ) {
-		world->WriteLock();
 		Inventory * const inv=PlayerInventory();
 		if ( !creativeMode ) {
 			emit Notify(tr("You are not in Creative Mode."));
@@ -408,7 +385,6 @@ void Player::ProcessCommand(QString & command) {
 		} else {
 			emit Notify(tr("No room."));
 		}
-		world->Unlock();
 	} else if ( "move"==request ) {
 		int dir;
 		comm_stream >> dir;
@@ -419,7 +395,6 @@ void Player::ProcessCommand(QString & command) {
 		if ( !world->InBounds(x_what, y_what, z_what) ) {
 			emit Notify(tr("Such block is out of loaded world."));
 		}
-		world->ReadLock();
 		if ( creativeMode ) {
 			Examine(x_what, y_what, z_what);
 		} else {
@@ -433,7 +408,6 @@ void Player::ProcessCommand(QString & command) {
 				Examine(x_what, y_what, z_what);
 			}
 		}
-		world->Unlock();
 	} else if ( "moo"==request ) {
 		emit Notify("^__^");
 		emit Notify("(oo)\\_______");

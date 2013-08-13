@@ -49,7 +49,7 @@ class World : public QThread {
 	const QString worldName;
 	ushort numShreds; // size of loaded zone
 	ushort numActiveShreds; // size of active zone
-	QReadWriteLock * rwLock;
+	QReadWriteLock * const rwLock;
 
 	ushort sun_moon_x;
 	bool ifStar;
@@ -236,6 +236,7 @@ class World : public QThread {
 	void run();
 
 	public:
+	QReadWriteLock * GetLock() const;
 	void WriteLock();
 	void ReadLock();
 	bool TryReadLock();

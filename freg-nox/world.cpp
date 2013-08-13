@@ -125,6 +125,7 @@ void World::ReloadAllShreds(const long lati, const long longi,
 	toReSet=true;
 }
 
+QReadWriteLock * World::GetLock() const { return rwLock; }
 void World::WriteLock() { rwLock->lockForWrite(); }
 void World::ReadLock()  { rwLock->lockForRead(); }
 bool World::TryReadLock() { return rwLock->tryLockForRead(); }
