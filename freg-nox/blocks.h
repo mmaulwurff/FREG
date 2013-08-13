@@ -28,7 +28,7 @@
 const ushort INV_SIZE=26;
 const ushort MAX_STACK_SIZE=9;
 
-const ushort MAX_NOTE_LENGHT=144;
+const ushort MAX_NOTE_LENGTH=144;
 
 enum before_push_action {
 	NO_ACTION,
