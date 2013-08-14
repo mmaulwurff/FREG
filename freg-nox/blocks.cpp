@@ -133,9 +133,9 @@
 
 	bool Block::Inscribe(const QString & str) {
 		if ( note ) {
-			*note=str.left(MAX_NOTE_LENGHT);
+			*note=str.left(MAX_NOTE_LENGTH);
 		} else {
-			note=new QString(str.left(MAX_NOTE_LENGHT));
+			note=new QString(str.left(MAX_NOTE_LENGTH));
 		}
 		if ( ""==*note ) {
 			delete note;

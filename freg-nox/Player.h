@@ -186,8 +186,7 @@ class Player : public QObject {
 	///Tries to get block number num from outer inventory.
 	void Obtain(short x, short y, short z,
 			ushort src, ushort dest=0, ushort num=1);
-	///Returns true if wielding successful.
-	bool Wield   (ushort num);
+	void Wield   (ushort num);
 	void Inscribe(ushort num);
 	void Eat     (ushort num);
 	void Craft   (ushort num);

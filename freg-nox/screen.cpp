@@ -351,7 +351,9 @@ void Screen::ControlPlayer(const int ch) {
 	case '!': player->SetCreativeMode( !player->GetCreativeMode() ); break;
 	case '/': PassString(command); // no break
 	case '.':
-		if ( "warranty"==command ) {
+		if ( command.length()==1 && "."!=command ) {
+			ControlPlayer(command.at(0).toAscii());
+		} else if ( "warranty"==command ) {
 			wstandend(rightWin);
 			PrintFile(rightWin, "texts/warranty.txt");
 		} else {
@@ -440,6 +442,7 @@ void Screen::Print() {
 	}
 	updated=true;
 	mutex->unlock();
+	const int dir=player->GetDir();
 	if ( !fileToShow ) { // right window
 		switch ( player->UsingType() ) {
 		case USAGE_TYPE_READ_IN_INVENTORY:
@@ -473,8 +476,8 @@ void Screen::Print() {
 			}
 		} // no break;
 		default:
-			if ( UP==player->GetDir() || DOWN==player->GetDir() ) {
-				PrintNormal(rightWin, player->GetDir());
+			if ( UP==dir || DOWN==dir ) {
+				PrintNormal(rightWin, dir);
 			} else {
 				PrintFront(rightWin);
 			}
@@ -487,10 +490,8 @@ void Screen::Print() {
 			break;
 		} // no break;
 	default:
-		PrintNormal(leftWin,
-				( UP==player->GetDir() ||
-				DOWN==player->GetDir() ) ?
-			NORTH : player->GetDir());
+		PrintNormal(leftWin, (UP==dir || DOWN==dir) ?
+			NORTH : dir);
 	}
 	w->Unlock();
 	mutex->lock();
@@ -511,13 +512,13 @@ void Screen::PrintHUD() {
 		for (ushort i=0; i<inv->Size(); ++i) {
 			wstandend(hudWin);
 			const int x=QUICK_INVENTORY_X_SHIFT+i*2;
-			mvwaddch(hudWin, 1, x, 'a'+i);
+			mvwaddch(hudWin, 0, x, 'a'+i);
 			const int number=inv->Number(i);
 			if ( number ) {
-				mvwaddch(hudWin, 2, x,
+				mvwaddch(hudWin, 1, x,
 					PrintBlock(inv->ShowBlock(i), hudWin));
 				if ( number > 1 ) {
-					mvwprintw(hudWin, 3, x, "%hu", number);
+					mvwprintw(hudWin, 2, x, "%hu", number);
 				}
 			}
 		}
@@ -526,15 +527,15 @@ void Screen::PrintHUD() {
 	wstandend(hudWin);
 	mvwaddstr(hudWin, 1, 0, "Action: ");
 	switch ( actionMode ) {
-	case USE:      waddstr(hudWin, "Use in inventory"); break;
-	case THROW:    waddstr(hudWin, "Throw"); break;
+	case THROW:    waddstr(hudWin, "Throw");  break;
 	case OBTAIN:   waddstr(hudWin, "Obtain"); break;
-	case WIELD:    waddstr(hudWin, "Wield"); break;
-	case INSCRIBE: waddstr(hudWin, "Inscribe in inventory"); break;
-	case EAT:      waddstr(hudWin, "Eat"); break;
-	case BUILD:    waddstr(hudWin, "Build"); break;
-	case CRAFT:    waddstr(hudWin, "Craft"); break;
+	case WIELD:    waddstr(hudWin, "Wield");  break;
+	case EAT:      waddstr(hudWin, "Eat");    break;
+	case BUILD:    waddstr(hudWin, "Build");  break;
+	case CRAFT:    waddstr(hudWin, "Craft");  break;
 	case TAKEOFF:  waddstr(hudWin, "Take off"); break;
+	case USE:      waddstr(hudWin, "Use in inventory"); break;
+	case INSCRIBE: waddstr(hudWin, "Inscribe in inventory"); break;
 	default:       waddstr(hudWin, "Unknown");
 		fprintf(stderr,
 			"Screen::Print: Unlisted actionMode: %d\n",
@@ -547,16 +548,6 @@ void Screen::PrintHUD() {
 		mvwprintw(hudWin, 2, 0, "xyz: %ld, %ld, %hu. XY: %ld, %ld",
 			player->GlobalX(), player->GlobalY(), player->Z(),
 			player->GetLatitude(), player->GetLongitude());
-		wcolor_set(hudWin, BLACK_WHITE, NULL);
-		(void)wmove(hudWin, 0, SCREEN_SIZE*2-8);
-		switch ( player->GetDir() ) {
-		case NORTH: waddstr(hudWin, "^ North ^"); break;
-		case SOUTH: waddstr(hudWin, "v South v"); break;
-		case EAST:  waddstr(hudWin, ">   East>"); break;
-		case WEST:  waddstr(hudWin, "<West   <"); break;
-		case DOWN:  waddstr(hudWin, "x DOWN  x"); break;
-		case UP:    waddstr(hudWin, ".   UP  ."); break;
-		}
 	} else {
 		const short dur=player->HP();
 		if ( -1!=dur ) { // HitPoints line
@@ -627,19 +618,10 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
 	}
 	wstandend(window);
 	box(window, 0, 0);
-	if ( UP==dir || DOWN==dir ) {
-		mvwaddstr(window, 0, 1, ( UP==dir ) ?
-			"Up view" : "Ground view");
-		Arrows(window,
-			(player->X()-start_x)*2+1, player->Y()-start_y+1);
-	} else {
-		mvwaddstr(window, 0, 1, "Down view");
-		if ( player->GetCreativeMode() ) {
-			Arrows(window,
-				(player->X()-start_x)*2+1,
-				player->Y()-start_y+1);
-		}
-	}
+	wcolor_set(window, BLACK_WHITE, NULL);
+	mvwaddstr(window, 0, 1, (UP==dir) ?
+		". Up view ." : "x Ground view x");
+	Arrows(window, (player->X()-start_x)*2+1, player->Y()-start_y+1);
 	wnoutrefresh(window);
 } // Screen::PrintNormal
 
@@ -751,11 +733,13 @@ void Screen::PrintFront(WINDOW * const window) const {
 	}
 	wstandend(window);
 	box(window, 0, 0);
+	wcolor_set(window, BLACK_WHITE, NULL);
+	(void)wmove(window, 0, 1);
 	switch ( dir ) {
-	case NORTH: mvwaddstr(window, 0, 1, "North view"); break;
-	case SOUTH: mvwaddstr(window, 0, 1, "South view"); break;
-	case EAST:  mvwaddstr(window, 0, 1, "East view");  break;
-	case WEST:  mvwaddstr(window, 0, 1, "West view");  break;
+	case NORTH: waddstr(window, "^ North view ^"); break;
+	case SOUTH: waddstr(window, "v South view v"); break;
+	case EAST:  waddstr(window, "> East view >");  break;
+	case WEST:  waddstr(window, "< West view <");  break;
 	}
 	if ( shiftFocus ) {
 		HorizontalArrows(window, arrow_Y-shiftFocus, WHITE_BLUE);
@@ -916,10 +900,10 @@ Screen::Screen(World * const wor, Player * const pl) :
 	rightWin=newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, COLS/2);
 	leftWin =newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0,
 		COLS/2-SCREEN_SIZE*2-2);
-	hudWin=newwin(4, (SCREEN_SIZE*2+2)*2, SCREEN_SIZE+2,
+	hudWin=newwin(3, (SCREEN_SIZE*2+2)*2, SCREEN_SIZE+2,
 		COLS/2-SCREEN_SIZE*2-2);
-	commandWin=newwin(1, COLS, SCREEN_SIZE+2+4, 0);
-	notifyWin =newwin(0, COLS, SCREEN_SIZE+2+5, 0);
+	commandWin=newwin(1, COLS, SCREEN_SIZE+2+3, 0);
+	notifyWin =newwin(0, COLS, SCREEN_SIZE+2+4, 0);
 	scrollok(notifyWin, TRUE);
 
 	QSettings sett(QDir::currentPath()+"/freg.ini", QSettings::IniFormat);
