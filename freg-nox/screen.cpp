@@ -207,7 +207,6 @@ color_pairs Screen::Color(const int kind, const int sub) const {
 	case DWARF:     return WHITE_BLUE;
 	case TELEGRAPH: return CYAN_BLACK;
 	case RABBIT:    return RED_WHITE;
-	case BUSH:      return BLACK_GREEN;
 	case PILE:      return WHITE_BLACK;
 	case LIQUID: switch ( sub ) {
 		case WATER: return CYAN_BLUE;

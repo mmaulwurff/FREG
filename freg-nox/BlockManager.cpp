@@ -100,6 +100,9 @@ Block * BlockManager::NewBlock(const int kind, int sub) {
 	}
 	const quint16 id = MakeId(kind, sub);
 	switch ( kind ) {
+	default: fprintf(stderr,
+		"BlockManager::NewBlock: unlisted kind: %d\n",
+		kind);
 	case BLOCK:  return New<Block >(sub, id);
 	case BELL:   return New<Bell  >(sub, id);
 	case GRASS:  return New<Grass >(sub, id);
@@ -113,6 +116,7 @@ Block * BlockManager::NewBlock(const int kind, int sub) {
 	case PILE:   return New<Pile  >(sub, id);
 	case DWARF:  return New<Dwarf >(sub, id);
 	case RABBIT: return New<Rabbit>(sub, id);
+	case LOCKED_DOOR:
 	case DOOR:   return New<Door  >(sub, id);
 	case LIQUID: return New<Liquid>(sub, id);
 	case CLOCK:  return New<Clock >(sub, id);
@@ -120,11 +124,6 @@ Block * BlockManager::NewBlock(const int kind, int sub) {
 	case MAP:    return New<Map   >(sub, id);
 	case CREATOR: return New<Creator>(sub, id);
 	case WORKBENCH: return New<Workbench>(sub, id);
-	default:
-		fprintf(stderr,
-			"BlockManager::NewBlock: unlisted kind: %d\n",
-			kind);
-		return New<Block>(sub, kind);
 	}
 }
 
@@ -133,6 +132,9 @@ Block * BlockManager::BlockFromFile(QDataStream & str,
 {
 	const quint16 id = MakeId(kind, sub);
 	switch ( kind ) {
+	default: fprintf(stderr,
+		"BlockManager::BlockFromFile: kind (?): %d\n.",
+		kind);
 	case BLOCK:  return New<Block >(str, sub, id);
 	case BELL:   return New<Bell  >(str, sub, id);
 	case PICK:   return New<Pick  >(str, sub, id);
@@ -154,11 +156,6 @@ Block * BlockManager::BlockFromFile(QDataStream & str,
 	case CLOCK:  return New<Clock >(str, sub, id);
 	case CREATOR: return New<Creator>(str, sub, id);
 	case WORKBENCH: return New<Workbench>(str, sub, id);
-	default:
-		fprintf(stderr,
-			"BlockManager::BlockFromFile: kind (?): %d\n.",
-			kind);
-		return New<Block>(str, sub, id);
 	}
 }
 
@@ -176,9 +173,10 @@ bool BlockManager::KindSubFromFile(QDataStream & str,
 	sub=(data & 0x7F);
 	if ( data & 0x80 ) { // normal bit
 		return true;
+	} else {
+		str >> kind;
+		return false;
 	}
-	str >> kind;
-	return false;
 }
 
 void BlockManager::DeleteBlock(Block * const block) {

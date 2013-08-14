@@ -143,6 +143,9 @@ class Shred {
 	void Mountain();
 	void Hill();
 	void Desert();
+	/// For testing purposes.
+	void ChaosShred();
+
 	// Block combinations section (trees, buildings, etc):
 	bool Tree(ushort x, ushort y, ushort z, ushort height);
 	private:

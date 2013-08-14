@@ -105,23 +105,21 @@ Shred::Shred(World * const world_, const ushort shred_x, const ushort shred_y,
 		lightMap[i][j][HEIGHT-1]=1;
 	}
 	switch ( TypeOfShred(longi, lati) ) {
-		case SHRED_NULLMOUNTAIN: NullMountain(); break;
-		case SHRED_PLAIN: Plain(); break;
-		case SHRED_TESTSHRED: TestShred(); break;
-		case SHRED_PYRAMID: Pyramid(); break;
-		case SHRED_HILL: Hill(); break;
-		case SHRED_DESERT: Desert(); break;
-		case SHRED_WATER: Water(); break;
-		case SHRED_FOREST: Forest(); break;
-		case SHRED_MOUNTAIN: Mountain(); break;
-		case SHRED_EMPTY: /* empty shred */ break;
-		case SHRED_NORMAL_UNDERGROUND: NormalUnderground(); break;
-		default:
-			Plain();
-			fprintf(stderr,
-				"Shred::Shred: unlisted type: %c, code %d\n",
-				TypeOfShred(longi, lati),
-				int(TypeOfShred(longi, lati)));
+	default: fprintf(stderr,
+		"Shred::Shred: unlisted type: %c, code %d\n",
+		TypeOfShred(longi, lati), int(TypeOfShred(longi, lati)));
+	case SHRED_PLAIN: Plain(); break;
+	case SHRED_NULLMOUNTAIN: NullMountain(); break;
+	case SHRED_TESTSHRED: TestShred(); break;
+	case SHRED_PYRAMID: Pyramid(); break;
+	case SHRED_HILL: Hill(); break;
+	case SHRED_DESERT: Desert(); break;
+	case SHRED_WATER: Water(); break;
+	case SHRED_FOREST: Forest(); break;
+	case SHRED_MOUNTAIN: Mountain(); break;
+	case SHRED_EMPTY: /* empty shred */ break;
+	case SHRED_NORMAL_UNDERGROUND: NormalUnderground(); break;
+	case SHRED_CHAOS: ChaosShred(); break;
 	}
 } // Shred::Shred
 
@@ -483,6 +481,22 @@ void Shred::Pyramid() { // pyramid by Panzerschrek
 	}
 	for (ushort z=HEIGHT/2-52; z<=level; ++z) { // horizontal tunnel
 		blocks[SHRED_WIDTH/2][SHRED_WIDTH/2][z]=Normal(AIR);
+	}
+}
+
+void Shred::ChaosShred() {
+	for (ushort i=0; i<SHRED_WIDTH; ++i)
+	for (ushort j=0; j<SHRED_WIDTH; ++j)
+	for (ushort k=1; k<HEIGHT/2; ++k) {
+		quint8 kind = qrand() % LAST_KIND;
+		quint8 sub  = qrand() % LAST_SUB;
+		if ( kind==TELEGRAPH || kind==ANIMAL ) {
+			kind = BLOCK;
+		}
+		if ( sub==AIR || sub==STAR || sub==SUN_MOON || sub==SKY ) {
+			sub = STONE;
+		}
+		SetNewBlock(kind, sub, i, j, k);
 	}
 }
 
