@@ -509,14 +509,15 @@ bool World::CanMove(
 			return false;
 		} else if ( MOVABLE==block_to->Movable() ) {
 			NoCheckMove(x, y, z, newx, newy, newz, dir);
+			return true;
 		}
 	}
 	switch ( block_to->BeforePush(dir, block) ) {
 	case MOVE_SELF: block_to=GetBlock(newx, newy, newz); break;
 	case DESTROY:
 		DeleteBlock(block_to);
-		// BeforePush could change block_to:
-		PutBlock((block_to=Normal(AIR)), newx, newy, newz);
+		PutNormalBlock(AIR, newx, newy, newz);
+		return true;
 	break;
 	case JUMP:
 		if ( DOWN!=dir && UP!=dir ) {
