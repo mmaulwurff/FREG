@@ -24,6 +24,8 @@
 #include "Shred.h"
 #include "world.h"
 #include "BlockManager.h"
+#include "Xyz.h"
+#include "blocks.h"
 
 // Qt version in Debian stable that time.
 const quint8 DATASTREAM_VERSION=QDataStream::Qt_4_6;
@@ -85,10 +87,6 @@ Shred::Shred(World * const world_, const ushort shred_x, const ushort shred_y,
 		shredY(shred_y),
 		memory(mem)
 {
-	activeListFrequent.reserve(100);
-	activeListRare.reserve(500);
-	activeListAll.reserve(600);
-	fallList.reserve(100);
 	QFile file(FileName());
 	if ( file.open(QIODevice::ReadOnly) && LoadShred(file) ) {
 		return;
@@ -124,8 +122,12 @@ Shred::Shred(World * const world_, const ushort shred_x, const ushort shred_y,
 } // Shred::Shred
 
 Shred::~Shred() {
-	foreach(Active * const active, activeListAll) {
-		active->SetShredNull();
+	for (QLinkedList<Active*>::const_iterator i=activeListAll.constBegin();
+			i != activeListAll.constEnd(); ++i)
+	{
+		if ( (*i)->GetShred()==this ) {
+			(*i)->SetShredNull();
+		}
 	}
 	const long mapSize=world->MapSize();
 	if (
@@ -188,39 +190,71 @@ void Shred::RegisterBlock(Block * const block,
 }
 
 void Shred::PhysEventsFrequent() {
-	for (int i=0; i<fallList.size(); ++i) {
-		Active * const temp=fallList.at(i);
-		const ushort weight=temp->Weight();
+	QLinkedList<Active *>::iterator i;
+	for (i=fallList.begin(); i != fallList.end();) {
+		if ( (*i)->GetShred()!=this ) {
+			activeListAll.removeOne(*i);
+			activeListRare.removeOne(*i);
+			activeListFrequent.removeOne(*i);
+			shiningList.removeOne(*i);
+			i=fallList.erase(i);
+			continue;
+		}
+		const ushort weight=(*i)->Weight();
 		if ( weight ) {
-			const ushort x=temp->X();
-			const ushort y=temp->Y();
-			const ushort z=temp->Z();
+			const ushort x=(*i)->X();
+			const ushort y=(*i)->Y();
+			const ushort z=(*i)->Z();
 			if ( world->GetBlock(x, y, z-1)->Kind()==LIQUID ) {
-				RemFalling(temp);
+				(*i)->SetFalling(false);
+				i=fallList.erase(i);
 			} else if (weight<=GetBlock(
 					x & SHRED_COORDS_BITS,
 					y & SHRED_COORDS_BITS, z-1)->Weight()
 						|| !world->Move(x, y, z, DOWN))
 			{
-				temp->FallDamage();
-				RemFalling(temp);
+				(*i)->FallDamage();
+				(*i)->SetFalling(false);
+				i=fallList.erase(i);
 				world->DestroyAndReplace(x, y, z);
+				world->DestroyAndReplace(x, y, z-1);
+			} else {
+				++i;
 			}
 		} else {
-			RemFalling(temp);
+			(*i)->SetFalling(false);
+			i=fallList.erase(i);
 		}
 	}
-	for (int i=0; i<activeListFrequent.size(); ++i) {
-		Active * const active=activeListFrequent.at(i);
-		active->ActFrequent();
-		world->DestroyAndReplace(active->X(),active->Y(), active->Z());
+	for (i=activeListFrequent.begin(); i != activeListFrequent.end();) {
+		if ( (*i)->GetShred()!=this ) {
+			activeListAll.removeOne(*i);
+			activeListRare.removeOne(*i);
+			fallList.removeOne(*i);
+			i=activeListFrequent.erase(i);
+		} else {
+			(*i)->ActFrequent();
+			world->DestroyAndReplace((*i)->X(), (*i)->Y(),
+				(*i)->Z());
+			++i;
+		}
 	}
-}
+	for (i=deleteList.begin(); i != deleteList.end();
+			i = deleteList.erase(i))
+	{
+		delete *i;
+	}
+} // void Shred::PhysEventsFrequent()
+
 void Shred::PhysEventsRare() {
-	for (int i=0; i<activeListRare.size(); ++i) {
-		Active * const active=activeListRare.at(i);
-		active->ActRare();
-		world->DestroyAndReplace(active->X(),active->Y(), active->Z());
+	for (QLinkedList<Active *>::const_iterator i =
+			activeListRare.constBegin();
+			i != activeListRare.constEnd(); ++i)
+	{
+		(*i)->ActRare();
+		if ( (*i)->Durability() <= 0 ) {
+			world->DestroyAndReplace((*i)->X(), (*i)->Y(), (*i)->Z());
+		}
 	}
 }
 
@@ -276,6 +310,10 @@ void Shred::RemShining(Active * const active) {
 	shiningList.removeOne(active);
 }
 
+void Shred::AddToDelete(Active * const active) {
+	deleteList.append(active);
+}
+
 QLinkedList<Active *>::const_iterator Shred::ShiningBegin() const {
 	return shiningList.constBegin();
 }
@@ -284,26 +322,34 @@ QLinkedList<Active *>::const_iterator Shred::ShiningEnd() const {
 }
 
 void Shred::ReloadToNorth() {
-	for (ushort i=0; i<activeListAll.size(); ++i) {
-		activeListAll.at(i)->ReloadToNorth();
+	for (QLinkedList<Active*>::const_iterator i=activeListAll.constBegin();
+			i != activeListAll.constEnd(); ++i)
+	{
+		(*i)->ReloadToNorth();
 	}
 	++shredY;
 }
 void Shred::ReloadToEast() {
-	for (ushort i=0; i<activeListAll.size(); ++i) {
-		activeListAll.at(i)->ReloadToEast();
+	for (QLinkedList<Active*>::const_iterator i=activeListAll.constBegin();
+			i != activeListAll.constEnd(); ++i)
+	{
+		(*i)->ReloadToEast();
 	}
 	--shredX;
 }
 void Shred::ReloadToSouth() {
-	for (ushort i=0; i<activeListAll.size(); ++i) {
-		activeListAll.at(i)->ReloadToSouth();
+	for (QLinkedList<Active*>::const_iterator i=activeListAll.constBegin();
+			i != activeListAll.constEnd(); ++i)
+	{
+		(*i)->ReloadToSouth();
 	}
 	--shredY;
 }
 void Shred::ReloadToWest() {
-	for (ushort i=0; i<activeListAll.size(); ++i) {
-		activeListAll.at(i)->ReloadToWest();
+	for (QLinkedList<Active*>::const_iterator i=activeListAll.constBegin();
+			i != activeListAll.constEnd(); ++i)
+	{
+		(*i)->ReloadToWest();
 	}
 	++shredX;
 }
@@ -409,7 +455,7 @@ void Shred::TestShred() {
 	SetNewBlock(LIQUID, WATER, column, row, level - 3);
 	SetNewBlock(LIQUID, WATER, column, row, level - 2);
 	PutNormalBlock(AIR, column, row, level - 1);
-	SetNewBlock(BUSH, GREENERY, column+=2, row, level);
+	SetNewBlock(BUSH, WOOD, column+=2, row, level);
 	SetNewBlock(RABBIT, A_MEAT, column+=2, row, level - 2);
 	PutNormalBlock(AIR, column, row, level - 1);
 	SetNewBlock(WORKBENCH, IRON, column+=2, row, level);
@@ -496,7 +542,7 @@ void Shred::ChaosShred() {
 		if ( sub==AIR || sub==STAR || sub==SUN_MOON || sub==SKY ) {
 			sub = STONE;
 		}
-		SetNewBlock(kind, sub, i, j, k);
+		SetNewBlock(RABBIT, sub, i, j, k);
 	}
 }
 

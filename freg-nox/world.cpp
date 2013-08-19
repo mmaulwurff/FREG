@@ -211,7 +211,12 @@ Block * World::NewBlock(const int kind, const int sub) {
 	return block_manager.NewBlock(kind, sub);
 }
 void World::DeleteBlock(Block * const block) {
-	block_manager.DeleteBlock(block);
+	Active * const active = block->ActiveBlock();
+	if ( active ) {
+		active->SetToDelete();
+	} else {
+		block_manager.DeleteBlock(block);
+	}
 }
 
 void World::AddDeferredAction(DeferredAction * const action) {
@@ -620,9 +625,9 @@ void World::Damage(const ushort x, const ushort y, const ushort z,
 	}
 	if ( temp->Damage(dmg, dmg_kind) > 0 ) {
 		temp->ReceiveSignal(SOUND_STRINGS[1]); // "Ouch!"
-		if ( STONE==temp->Sub() && BLOCK==temp->Kind() &&
+		if ( block_manager.MakeId(BLOCK, STONE)==temp->GetId() &&
 				temp->Durability()!=MAX_DURABILITY )
-		{
+		{ // convert stone into ladder
 			DeleteBlock(temp);
 			temp=NewBlock(LADDER, STONE);
 			emit ReEnlighten(x, y, z);
@@ -639,6 +644,7 @@ void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
 		return;
 	}
 	Block * const dropped=temp->DropAfterDamage();
+	Shred * const shred=GetShred(x, y);
 	if ( PILE!=temp->Kind() && (temp->HasInventory() || dropped) ) {
 		Block * const new_pile=( ( dropped && PILE==dropped->Kind() ) ?
 			dropped : NewBlock(PILE, DIFFERENT) );
@@ -648,20 +654,20 @@ void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
 		if ( inv ) {
 			new_pile_inv->GetAll(inv);
 		}
-		if ( dropped &&
-				PILE!=dropped->Kind() &&
+		if ( dropped && PILE!=dropped->Kind() &&
 				!new_pile_inv->Get(dropped) )
 		{
 			DeleteBlock(dropped);
 		}
+		shred->AddFalling(
+			x & SHRED_COORDS_BITS, y & SHRED_COORDS_BITS, z);
 	} else {
 		PutNormalBlock(AIR, x, y, z);
 	}
 	const int old_transparency=temp->Transparent();
 	const uchar old_light=temp->LightRadius();
 	DeleteBlock(temp);
-	GetShred(x, y)->
-		AddFalling(x & SHRED_COORDS_BITS, y & SHRED_COORDS_BITS, z+1);
+	shred->AddFalling(x & SHRED_COORDS_BITS, y & SHRED_COORDS_BITS, z+1);
 	if ( old_transparency!=INVISIBLE ) {
 		ReEnlightenBlockRemove(x, y, z);
 	}

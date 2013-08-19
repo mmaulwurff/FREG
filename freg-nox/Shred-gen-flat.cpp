@@ -19,6 +19,7 @@
 	*/
 
 #include "Shred.h"
+#include "header.h"
 
 void Shred::ShredNominalAmplitudeAndLevel(const char,
 		ushort * const, float * const)

@@ -203,6 +203,7 @@ class Active : public QObject, public Block {
 
 	quint8 fall_height;
 	bool falling;
+	bool toDelete;
 	DeferredAction * deferredAction;
 
 	///coordinates in loaded world zone
@@ -261,6 +262,8 @@ class Active : public QObject, public Block {
 	void SetXYZ(ushort x, ushort y, ushort z);
 	void Register(Shred *, ushort x, ushort y, ushort z);
 	void SetShredNull();
+	void SetToDelete();
+	bool IsToDelete() const;
 	private:
 	void Unregister();
 

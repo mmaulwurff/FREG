@@ -21,12 +21,13 @@
 #ifndef SHRED_H
 #define SHRED_H
 
-#include <QList>
 #include <QLinkedList>
-#include "blocks.h"
+#include "header.h"
 
 class QFile;
 class World;
+class Block;
+class Active;
 
 class Shred {
 	public:
@@ -44,11 +45,12 @@ class Shred {
 
 	// needed in Shred::ReloadTo... for active blocks not to reload twice
 	// when they are registered both in frequent and rare lists.
-	QList<Active *> activeListAll;
-	QList<Active *> activeListFrequent;
-	QList<Active *> activeListRare;
-	QList<Active *> fallList;
+	QLinkedList<Active *> activeListAll;
+	QLinkedList<Active *> activeListFrequent;
+	QLinkedList<Active *> activeListRare;
+	QLinkedList<Active *> fallList;
 	QLinkedList<Active *> shiningList;
+	QLinkedList<Active *> deleteList;
 
 	// memory, allocated for this shred.
 	Shred * const memory;
@@ -73,6 +75,7 @@ class Shred {
 	void AddFalling(ushort x, ushort y, ushort z);
 	void AddShining(Active *);
 	void RemShining(Active *);
+	void AddToDelete(Active *);
 
 	QLinkedList<Active *>::const_iterator ShiningBegin() const;
 	QLinkedList<Active *>::const_iterator ShiningEnd() const;

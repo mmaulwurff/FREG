@@ -176,15 +176,4 @@ enum transparency {
 	UNDEF // temporary, doesn't appear in world.
 }; // enum transparency
 
-typedef struct {
-	int x;
-	int y;
-} xy;
-
-typedef struct {
-	int x;
-	int y;
-	int z;
-} xyz;
-
 #endif

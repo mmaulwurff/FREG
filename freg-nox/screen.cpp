@@ -355,6 +355,10 @@ void Screen::ControlPlayer(const int ch) {
 		} else if ( "warranty"==command ) {
 			wstandend(rightWin);
 			PrintFile(rightWin, "texts/warranty.txt");
+		} else if ( "size"==command ) {
+			Notify(QString(
+				"Terminal height: %1 lines, width: %2 chars.").
+				arg(LINES).arg(COLS));
 		} else {
 			player->ProcessCommand(command);
 		}

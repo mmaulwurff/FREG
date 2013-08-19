@@ -32,6 +32,7 @@
 
 #include "world.h"
 #include "Shred.h"
+#include "blocks.h"
 
 const uchar FIRE_LIGHT_FACTOR=4;
 

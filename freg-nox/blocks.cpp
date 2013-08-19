@@ -28,6 +28,7 @@
 #include "CraftManager.h"
 #include "BlockManager.h"
 #include "DeferredAction.h"
+#include "Xyz.h"
 
 //Block::
 	QString Block::FullName() const {
@@ -390,11 +391,19 @@
 
 	quint8 Active::Kind() const { return ACTIVE; }
 	Active * Active::ActiveBlock() { return this; }
+	/** When reimplementing this method, add
+	 *  "if ( IsToDelete() ) return;" line, it is needed for blocks
+	 *  prepared to be deleted not to act.
+	*/
 	void Active::ActRare() {}
 	int  Active::ShouldAct() const { return NEVER; }
 	bool Active::IsFalling() const { return falling; }
 	int  Active::Movable() const { return MOVABLE; }
 	bool Active::ShouldFall() const { return true; }
+	/** When reimplementing this method, add
+	 *  "if ( IsToDelete() ) return;" line, it is needed for blocks
+	 *  prepared to be deleted not to act.
+	*/
 	void Active::ActFrequent() {}
 
 	void Active::SetFalling(const bool set) {
@@ -416,7 +425,6 @@
 			World * const world=GetWorld();
 			const ushort dmg=(fall_height - SAFE_FALL_HEIGHT)*10;
 			world->Damage(X(), Y(), Z()-1, dmg, DAMAGE_FALL);
-			world->DestroyAndReplace(X(), Y(), Z()-1);
 			world->Damage(X(), Y(), Z(), dmg, DAMAGE_FALL);
 		}
 		fall_height=0;
@@ -428,23 +436,29 @@
 
 	bool Active::Move(const int dir) {
 		switch ( dir ) {
-			case NORTH: --y_self; break;
-			case SOUTH: ++y_self; break;
-			case EAST:  ++x_self; break;
-			case WEST:  --x_self; break;
-			case UP:    ++z_self; break;
+		case NORTH: --y_self; break;
+		case SOUTH: ++y_self; break;
+		case EAST:  ++x_self; break;
+		case WEST:  --x_self; break;
+		case UP:    ++z_self; break;
 		}
 		bool overstep=false;
 		if ( DOWN==dir ) {
 			--z_self;
 			++fall_height;
-		} else if ( GetShred() ) {
-			if ( GetWorld()->GetShred(X(), Y())!=GetShred() ) {
-				whereShred->RemActive(this);
-				( whereShred=GetWorld()->GetShred(X(), Y()) )->
-					AddActive(this);
-				overstep=true;
+		} else if ( GetShred() &&
+			GetWorld()->GetShred(X(), Y())!=GetShred() )
+		{
+			const bool was_falling=IsFalling();
+			if ( was_falling ) {
+				whereShred->RemFalling(this);
 			}
+			( whereShred=GetWorld()->GetShred(X(), Y()) )->
+				AddActive(this);
+			if ( was_falling ) {
+				whereShred->AddFalling(this);
+			}
+			overstep=true;
 		}
 		emit Moved(dir);
 		return overstep;
@@ -452,16 +466,19 @@
 
 	void Active::SendSignalAround(const QString & signal) const {
 		World * const world=GetWorld();
-		const xy coords[]={
-			{ X()-1, Y() },
-			{ X()+1, Y() },
-			{ X(), Y()-1 },
-			{ X(), Y()+1 }
+		const Xy coords[]={
+			Xy( X()-1, Y()   ),
+			Xy( X()+1, Y()   ),
+			Xy( X(),   Y()-1 ),
+			Xy( X(),   Y()+1 )
 		};
-		for (ushort i=0; i<sizeof(coords)/sizeof(xy); ++i) {
-			if ( world->InBounds(coords[i].x, coords[i].y) ) {
-				world->GetBlock(coords[i].x, coords[i].y,
-					Z())->ReceiveSignal(signal);
+		for (ushort i=0; i<sizeof(coords)/sizeof(Xy); ++i) {
+			if ( world->InBounds(
+					coords[i].GetX(), coords[i].GetY()) )
+			{
+				world->GetBlock( coords[i].GetX(),
+					coords[i].GetY(), Z() )->
+						ReceiveSignal(signal);
 			}
 		}
 		world->GetBlock(X(), Y(), Z()-1)->ReceiveSignal(signal);
@@ -559,14 +576,19 @@
 	}
 	void Active::SetShredNull() { whereShred=0; }
 
+	void Active::SetToDelete() {
+		toDelete = true;
+		GetShred()->AddToDelete(this);
+	}
+	bool Active::IsToDelete() const { return toDelete; }
+
 	Active::Active(const int sub, const quint16 id, const quint8 transp) :
 			Block(sub, id, transp),
 			fall_height(0),
 			falling(false),
+			toDelete(false),
 			deferredAction(0),
-			x_self(),
-			y_self(),
-			z_self(),
+			x_self(), y_self(), z_self(),
 			whereShred(0)
 	{}
 	Active::Active(QDataStream & str, const int sub, const quint16 id,
@@ -574,10 +596,9 @@
 		:
 			Block(str, sub, id, transp),
 			falling(false),
+			toDelete(false),
 			deferredAction(0),
-			x_self(),
-			y_self(),
-			z_self(),
+			x_self(), y_self(), z_self(),
 			whereShred(0)
 	{
 		str >> fall_height;
@@ -589,6 +610,7 @@
 	}
 //Animal::
 	void Animal::ActRare() {
+		if ( IsToDelete() ) return;
 		World * const world=GetWorld();
 		if (
 				AIR!=world->Sub(X(), Y(), Z()+1) &&
@@ -1088,6 +1110,7 @@
 	}
 
 	void Pile::ActRare() {
+		if ( IsToDelete() ) return;
 		if ( IsEmpty() ) {
 			Damage(Durability(), TIME);
 		}
@@ -1146,6 +1169,7 @@
 	}
 
 	void Liquid::ActRare() {
+		if ( IsToDelete() ) return;
 		World * const world=GetWorld();
 		//IDEA: turn off water drying up in ocean
 		if ( WATER==Sub() && !CheckWater() ) {
@@ -1186,6 +1210,7 @@
 	{}
 //Grass::
 	void Grass::ActRare() {
+		if ( IsToDelete() ) return;
 		World * const world=GetWorld();
 		if ( SOIL!=GetShred()->Sub(
 				X() & SHRED_COORDS_BITS,
@@ -1260,6 +1285,7 @@
 	}
 
 	void Bush::ActRare() {
+		if ( IsToDelete() ) return;
 		if ( 0==qrand()%(SECONDS_IN_HOUR*4) ) {
 			Get(block_manager.NormalBlock(HAZELNUT));
 		}
@@ -1302,6 +1328,7 @@
 	}
 
 	void Rabbit::ActFrequent() {
+		if ( IsToDelete() ) return;
 		World * const world=GetWorld();
 		//analyse world around
 		short for_north=0, for_west=0;
@@ -1334,6 +1361,7 @@
 	} //Rabbit::ActFrequent
 
 	void Rabbit::ActRare() {
+		if ( IsToDelete() ) return;
 		Animal::ActRare();
 		//eat sometimes
 		World * const world=GetWorld();
@@ -1503,6 +1531,7 @@
 	}
 
 	void Door::ActFrequent() {
+		if ( IsToDelete() ) return;
 		if ( shifted ) {
 			World * const world=GetWorld();
 			ushort x, y, z;
@@ -1550,15 +1579,15 @@
 	}
 
 	Door::Door(const int sub, const quint16 id) :
-			Active(sub, id,
-				( STONE==sub ) ?
-					BLOCK_OPAQUE : NONSTANDARD),
+			Active(sub, id, ( STONE==sub ) ?
+				BLOCK_OPAQUE : NONSTANDARD),
 			shifted(false),
 			locked(false),
 			movable(NOT_MOVABLE)
 	{}
 	Door::Door(QDataStream & str, const int sub, const quint16 id) :
-			Active(str, sub, id, NONSTANDARD),
+			Active(str, sub, id, ( STONE==sub ) ?
+				BLOCK_OPAQUE : NONSTANDARD),
 			movable(NOT_MOVABLE)
 	{
 		str >> shifted >> locked;
@@ -1600,6 +1629,7 @@
 	int Clock::ShouldAct() const  { return RARE; }
 
 	void Clock::ActRare() {
+		if ( IsToDelete() ) return;
 		if ( alarmTime==GetWorld()->TimeOfDay() ) {
 			Use();
 		} else if ( timerTime > 0 ) {
