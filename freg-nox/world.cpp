@@ -252,6 +252,10 @@ quint8 World::Anti(const quint8 dir) {
 	}
 }
 
+Shred ** World::FindShred(const ushort x, const ushort y) const {
+	return &shreds[x+y*numShreds];
+}
+
 void World::ReloadShreds(const int direction) {
 	short x, y; // do not make unsigned, values <0 are needed for checks
 	RemSun();
@@ -259,71 +263,65 @@ void World::ReloadShreds(const int direction) {
 	case NORTH:
 		--longitude;
 		for (x=0; x<numShreds; ++x) {
-			const Shred * const shred =
-				shreds[numShreds*(numShreds-1)+x];
+			const Shred * const shred = *FindShred(x, numShreds-1);
 			Shred * const memory = shred->GetShredMemory();
 			shred->~Shred();
-			for (y=numShreds-2; y>=0; --y) {
-				(shreds[(y+1)*numShreds+x]=
-					shreds[y*numShreds+x])->
+			for (y=numShreds-1; y>0; --y) {
+				( *FindShred(x, y) = *FindShred(x, y-1) )->
 					ReloadToNorth();
 			}
-			shreds[x] = new(memory)
+			*FindShred(x, 0) = new(memory)
 				Shred(this, x, 0,
 					longitude-numShreds/2,
-					latitude-numShreds/2+x, memory);
+					latitude -numShreds/2+x, memory);
 		}
 	break;
 	case SOUTH:
 		++longitude;
 		for (x=0; x<numShreds; ++x) {
-			const Shred * const shred = shreds[x];
+			const Shred * const shred = *FindShred(x, 0);
 			Shred * const memory = shred->GetShredMemory();
 			shred->~Shred();
-			for (y=1; y<numShreds; ++y) {
-				(shreds[(y-1)*numShreds+x]=
-					shreds[y*numShreds+x])->
+			for (y=0; y<numShreds-1; ++y) {
+				( *FindShred(x, y) = *FindShred(x, y+1) )->
 					ReloadToSouth();
 			}
-			shreds[numShreds*(numShreds-1)+x] = new(memory)
+			*FindShred(x, numShreds-1) = new(memory)
 				Shred(this, x, numShreds-1,
 					longitude+numShreds/2,
-					latitude-numShreds/2+x, memory);
+					latitude -numShreds/2+x, memory);
 		}
 	break;
 	case EAST:
 		++latitude;
 		for (y=0; y<numShreds; ++y) {
-			const Shred * const shred = shreds[y*numShreds];
+			const Shred * const shred = *FindShred(0, y);
 			Shred * const memory = shred->GetShredMemory();
 			shred->~Shred();
-			for (x=1; x<numShreds; ++x) {
-				(shreds[(x-1)+y*numShreds]=
-					shreds[x+y*numShreds])->
+			for (x=0; x<numShreds-1; ++x) {
+				( *FindShred(x, y) = *FindShred(x+1, y) )->
 					ReloadToEast();
 			}
-			shreds[numShreds-1+y*numShreds] = new(memory)
+			*FindShred(numShreds-1, y) = new(memory)
 				Shred(this, numShreds-1, y,
 					longitude-numShreds/2+y,
-					latitude+numShreds/2, memory);
+					latitude +numShreds/2, memory);
 		}
 	break;
 	case WEST:
 		--latitude;
 		for (y=0; y<numShreds; ++y) {
-			const Shred * const shred =
-				shreds[numShreds-1+y*numShreds];
+			const Shred * const shred = *FindShred(numShreds-1, y);
 			Shred * const memory = shred->GetShredMemory();
 			shred->~Shred();
-			for (x=numShreds-2; x>=0; --x) {
-				(shreds[(x+1)+y*numShreds]=
-					shreds[x+y*numShreds])->
+			for (x=numShreds-1; x>0; --x) {
+				( *FindShred(x, y) = *FindShred(x-1, y) )->
 					ReloadToWest();
 			}
-			shreds[y*numShreds] = new(memory)
+			*FindShred(0, y) = new(memory)
 				Shred(this, 0, y,
 					longitude-numShreds/2+y,
-					latitude-numShreds/2, memory);
+					latitude -numShreds/2, memory);
 		}
 	break;
 	default: fprintf(stderr,

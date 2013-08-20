@@ -449,13 +449,9 @@
 		} else if ( GetShred() &&
 			GetWorld()->GetShred(X(), Y())!=GetShred() )
 		{
-			const bool was_falling=IsFalling();
-			if ( was_falling ) {
-				whereShred->RemFalling(this);
-			}
 			( whereShred=GetWorld()->GetShred(X(), Y()) )->
 				AddActive(this);
-			if ( was_falling ) {
+			if ( IsFalling() ) {
 				whereShred->AddFalling(this);
 			}
 			overstep=true;

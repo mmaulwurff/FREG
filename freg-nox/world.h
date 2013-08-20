@@ -234,6 +234,7 @@ class World : public QThread {
 	void DeleteAllShreds();
 	void LoadAllShreds();
 	void run();
+	Shred ** FindShred(ushort x, ushort y) const;
 
 	public:
 	QReadWriteLock * GetLock() const;

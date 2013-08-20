@@ -504,31 +504,31 @@ ushort Player::DamageLevel() const {
 
 void Player::CheckOverstep(const int dir) {
 	UpdateXYZ();
-	if (
+	if ( // leaving central zone
 			x <  (world->NumShreds()/2-1)*SHRED_WIDTH ||
 			y <  (world->NumShreds()/2-1)*SHRED_WIDTH ||
 			x >= (world->NumShreds()/2+2)*SHRED_WIDTH ||
 			y >= (world->NumShreds()/2+2)*SHRED_WIDTH )
 	{
+		GetWorld()->GetShred(x, y)->RemActive(player);
 		emit OverstepBorder(dir);
 		if ( GetCreativeMode() ) {
-			//coordinates of normal (non-creative) player are
-			//reloaded (shifted corresponding to world reload)
-			//automatically since such player is registered in
-			//his shred.
-			//This helps creative player shift his coordinates.
+			// coordinates of normal (non-creative) player are
+			// reloaded (shifted corresponding to world reload)
+			// automatically since such player is registered in
+			// his shred.
+			// This helps creative player shift his coordinates.
 			switch ( dir ) {
-				case NORTH: player->ReloadToNorth(); break;
-				case SOUTH: player->ReloadToSouth(); break;
-				case EAST:  player->ReloadToEast();  break;
-				case WEST:  player->ReloadToWest();  break;
+			case NORTH: player->ReloadToNorth(); break;
+			case SOUTH: player->ReloadToSouth(); break;
+			case EAST:  player->ReloadToEast();  break;
+			case WEST:  player->ReloadToWest();  break;
 			}
 		}
 		UpdateXYZ();
+		GetWorld()->GetShred(x, y)->AddActive(player);
 	}
 	emit Moved(GlobalX(), GlobalY(), z);
-	//for curses screen to update itself in creative mode
-	//IDEA: make signal to tell srceen player coordinates in creative mode
 	emit Updated();
 }
 
