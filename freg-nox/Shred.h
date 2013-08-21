@@ -123,6 +123,10 @@ class Shred {
 			int dir=UP);
 	char TypeOfShred(long longi, long lati) const;
 	Shred * GetShredMemory() const;
+
+	/// Make global coordinate from local (in loaded zone).
+	long GlobalX(ushort x) const;
+	long GlobalY(ushort y) const;
 	private:
 	void RegisterBlock(Block *, ushort x, ushort y, ushort z);
 
@@ -162,6 +166,6 @@ class Shred {
 			ushort* l, float* a) const;
 	void AddWater();
 	ushort FlatUndeground(short depth=0);
-};//class Shred
+}; // class Shred
 
 #endif

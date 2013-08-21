@@ -543,7 +543,7 @@
 	void Active::Register(Shred * const sh,
 			const ushort x, const ushort y, const ushort z)
 	{
-		if ( whereShred ) { //prevent duplicate registering
+		if ( whereShred ) { // prevent duplicate registering
 			return;
 		}
 		SetXYZ(x, y, z);

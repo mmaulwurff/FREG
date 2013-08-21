@@ -35,12 +35,8 @@
 short Player::X() const { return x; }
 short Player::Y() const { return y; }
 short Player::Z() const { return z; }
-long Player::GlobalX() const {
-	return (GetShred()->Latitude() -x/SHRED_WIDTH)*SHRED_WIDTH+x;
-}
-long Player::GlobalY() const {
-	return (GetShred()->Longitude()-y/SHRED_WIDTH)*SHRED_WIDTH+y;
-}
+long Player::GlobalX() const { return GetShred()->GlobalX(x); }
+long Player::GlobalY() const { return GetShred()->GlobalY(y); }
 
 bool Player::IsRightActiveHand() const {
 	return Dwarf::IN_RIGHT==GetActiveHand();
@@ -503,6 +499,7 @@ ushort Player::DamageLevel() const {
 }
 
 void Player::CheckOverstep(const int dir) {
+	short prev_x=x, prev_y=y;
 	UpdateXYZ();
 	if ( // leaving central zone
 			x <  (world->NumShreds()/2-1)*SHRED_WIDTH ||
@@ -510,9 +507,8 @@ void Player::CheckOverstep(const int dir) {
 			x >= (world->NumShreds()/2+2)*SHRED_WIDTH ||
 			y >= (world->NumShreds()/2+2)*SHRED_WIDTH )
 	{
-		GetWorld()->GetShred(x, y)->RemActive(player);
-		emit OverstepBorder(dir);
 		if ( GetCreativeMode() ) {
+			emit OverstepBorder(dir);
 			// coordinates of normal (non-creative) player are
 			// reloaded (shifted corresponding to world reload)
 			// automatically since such player is registered in
@@ -524,9 +520,12 @@ void Player::CheckOverstep(const int dir) {
 			case EAST:  player->ReloadToEast();  break;
 			case WEST:  player->ReloadToWest();  break;
 			}
+			UpdateXYZ();
+		} else {
+			GetWorld()->GetShred(prev_x, prev_y)->RemActive(player);
+			emit OverstepBorder(dir);
+			UpdateXYZ();
 		}
-		UpdateXYZ();
-		GetWorld()->GetShred(x, y)->AddActive(player);
 	}
 	emit Moved(GlobalX(), GlobalY(), z);
 	emit Updated();

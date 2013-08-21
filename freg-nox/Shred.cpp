@@ -30,6 +30,11 @@
 // Qt version in Debian stable that time.
 const quint8 DATASTREAM_VERSION=QDataStream::Qt_4_6;
 
+/// Get local coordinate.
+ushort CoordInShred(const ushort x) { return x & SHRED_COORDS_BITS; }
+/// Get shred coordinate in loaded zone (from 0 to numShreds).
+ushort CoordOfShred(const ushort x) { return x >> SHRED_WIDTH_SHIFT; }
+
 long Shred::Longitude() const { return longitude; }
 long Shred::Latitude()  const { return latitude; }
 ushort Shred::ShredX() const { return shredX; }
@@ -42,8 +47,7 @@ bool Shred::LoadShred(QFile & file) {
 	quint8 version;
 	in >> version;
 	if ( Q_UNLIKELY(DATASTREAM_VERSION!=version) ) {
-		fprintf(stderr,
-			"Wrong version: %d\nGenerating new shred.\n",
+		fprintf(stderr, "Wrong version: %d\nGenerating new shred.\n",
 			DATASTREAM_VERSION);
 		return false;
 	}
@@ -103,8 +107,7 @@ Shred::Shred(World * const world_, const ushort shred_x, const ushort shred_y,
 		lightMap[i][j][HEIGHT-1]=1;
 	}
 	switch ( TypeOfShred(longi, lati) ) {
-	default: fprintf(stderr,
-		"Shred::Shred: unlisted type: %c, code %d\n",
+	default: fprintf(stderr, "Shred::Shred: unlisted type: %c, code %d\n",
 		TypeOfShred(longi, lati), int(TypeOfShred(longi, lati)));
 	case SHRED_PLAIN: Plain(); break;
 	case SHRED_NULLMOUNTAIN: NullMountain(); break;
@@ -169,6 +172,13 @@ Shred::~Shred() {
 
 Shred * Shred::GetShredMemory() const { return memory; }
 
+long Shred::GlobalX(const ushort x) const {
+	return (Latitude() -CoordOfShred(x))*SHRED_WIDTH + x;
+}
+long Shred::GlobalY(const ushort y) const {
+	return (Longitude()-CoordOfShred(y))*SHRED_WIDTH + y;
+}
+
 void Shred::SetNewBlock(const int kind, const int sub,
 		const ushort x, const ushort y, const ushort z,
 		const int dir)
@@ -192,7 +202,9 @@ void Shred::RegisterBlock(Block * const block,
 void Shred::PhysEventsFrequent() {
 	QLinkedList<Active *>::iterator i;
 	for (i=fallList.begin(); i != fallList.end();) {
-		if ( (*i)->GetShred()!=this ) {
+		if ( CoordOfShred((*i)->X())!=shredX ||
+				CoordOfShred((*i)->Y())!=shredY )
+		{
 			activeListAll.removeOne(*i);
 			activeListRare.removeOne(*i);
 			activeListFrequent.removeOne(*i);
@@ -227,9 +239,12 @@ void Shred::PhysEventsFrequent() {
 		}
 	}
 	for (i=activeListFrequent.begin(); i != activeListFrequent.end();) {
-		if ( (*i)->GetShred()!=this ) {
+		if ( CoordOfShred((*i)->X())!=shredX ||
+				CoordOfShred((*i)->Y())!=shredY )
+		{
 			activeListAll.removeOne(*i);
 			activeListRare.removeOne(*i);
+			shiningList.removeOne(*i);
 			fallList.removeOne(*i);
 			i=activeListFrequent.erase(i);
 		} else {
@@ -247,13 +262,23 @@ void Shred::PhysEventsFrequent() {
 } // void Shred::PhysEventsFrequent()
 
 void Shred::PhysEventsRare() {
-	for (QLinkedList<Active *>::const_iterator i =
-			activeListRare.constBegin();
-			i != activeListRare.constEnd(); ++i)
+	for (QLinkedList<Active *>::iterator i = activeListRare.begin();
+			i != activeListRare.end(); ++i)
 	{
-		(*i)->ActRare();
-		if ( (*i)->Durability() <= 0 ) {
-			world->DestroyAndReplace((*i)->X(), (*i)->Y(), (*i)->Z());
+		if ( CoordOfShred((*i)->X())!=shredX ||
+				CoordOfShred((*i)->Y())!=shredY )
+		{
+			activeListAll.removeOne(*i);
+			activeListFrequent.removeOne(*i);
+			shiningList.removeOne(*i);
+			fallList.removeOne(*i);
+			i=activeListRare.erase(i);
+		} else {
+			(*i)->ActRare();
+			if ( (*i)->Durability() <= 0 ) {
+				world->DestroyAndReplace((*i)->X(), (*i)->Y(),
+					(*i)->Z());
+			}
 		}
 	}
 }
@@ -265,15 +290,9 @@ int Shred::Sub(const ushort x, const ushort y, const ushort z) const {
 void Shred::AddActive(Active * const active) {
 	activeListAll.append(active);
 	switch ( active->ShouldAct() ) {
-		case FREQUENT:
-			activeListFrequent.append(active);
-		break;
-		case FREQUENT_AND_RARE:
-			activeListFrequent.append(active);
-		// no break;
-		case RARE:
-			activeListRare.append(active);
-		break;
+	case FREQUENT:          activeListFrequent.append(active); break;
+	case FREQUENT_AND_RARE: activeListFrequent.append(active); // no break;
+	case RARE:              activeListRare.append(active); break;
 	}
 }
 
