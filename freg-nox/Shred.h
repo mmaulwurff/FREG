@@ -24,10 +24,10 @@
 #include <QLinkedList>
 #include "header.h"
 
-class QFile;
 class World;
 class Block;
 class Active;
+class QByteArray;
 
 class Shred {
 	public:
@@ -119,18 +119,19 @@ class Shred {
 	public: // Information section
 	int Sub(ushort x, ushort y, ushort z) const;
 
-	bool LoadShred(QFile &);
-
 	void SetNewBlock(int kind, int sub, ushort x, ushort y, ushort z,
 			int dir=UP);
 	char TypeOfShred(long longi, long lati) const;
+	
+	static QString FileName(QString world_name, long longi, long lati);
 	Shred * GetShredMemory() const;
-
 	/// Make global coordinate from local (in loaded zone).
 	long GlobalX(ushort x) const;
 	long GlobalY(ushort y) const;
+
 	private:
 	void RegisterBlock(Block *, ushort x, ushort y, ushort z);
+	bool LoadShred();
 
 	QString FileName() const;
 
@@ -165,7 +166,7 @@ class Shred {
 	void ShredLandAmplitudeAndLevel(long longi, long lati,
 			ushort * l, float * a) const;
 	void ShredNominalAmplitudeAndLevel(char shred_type,
-			ushort* l, float* a) const;
+			ushort * l, float * a) const;
 	void AddWater();
 	ushort FlatUndeground(short depth=0);
 }; // class Shred

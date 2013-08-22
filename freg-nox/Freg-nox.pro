@@ -28,29 +28,33 @@ QMAKE_CXXFLAGS_RELEASE += -O3 -s
 QMAKE_CFLAGS_RELEASE   += -O3 -s
 
 # Input
-HEADERS += BlockManager.h \
-           blocks.h \
-           CraftManager.h \
-           DeferredAction.h \
-           header.h \
-           Player.h \
-           screen.h \
-           Shred.h \
-           VirtScreen.h \
-           world.h \
-           worldmap.h \
-           Xyz.h
-SOURCES += BlockManager.cpp \
-           blocks.cpp \
-           CraftManager.cpp \
-           DeferredAction.cpp \
-           Lighting-inertia.cpp \
-           main.cpp \
-           Player.cpp \
-           screen.cpp \
-           Shred-gen-flat.cpp \
-           Shred.cpp \
-           VirtScreen.cpp \
-           world.cpp \
-           worldmap.cpp \
-           Xyz.cpp
+HEADERS += \
+	BlockManager.h \
+	blocks.h \
+	CraftManager.h \
+	DeferredAction.h \
+	header.h \
+	Player.h \
+	screen.h \
+	Shred.h \
+	VirtScreen.h \
+	world.h \
+	worldmap.h \
+	ShredStorage.h \
+	Xyz.h
+SOURCES += \
+	BlockManager.cpp \
+	blocks.cpp \
+	CraftManager.cpp \
+	DeferredAction.cpp \
+	Lighting-inertia.cpp \
+	main.cpp \
+	Player.cpp \
+	screen.cpp \
+	Shred-gen-flat.cpp \
+	Shred.cpp \
+	VirtScreen.cpp \
+	world.cpp \
+	worldmap.cpp \
+	ShredStorage.cpp \
+	Xyz.cpp

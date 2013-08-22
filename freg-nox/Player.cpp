@@ -498,7 +498,7 @@ ushort Player::DamageLevel() const {
 		player ? player->DamageLevel() : 0;
 }
 
-void Player::CheckOverstep(const int dir) {
+void Player::CheckOverstep(const int direction) {
 	UpdateXYZ();
 	if ( // leaving central zone
 			x <  (world->NumShreds()/2-1)*SHRED_WIDTH ||
@@ -506,7 +506,7 @@ void Player::CheckOverstep(const int dir) {
 			x >= (world->NumShreds()/2+2)*SHRED_WIDTH ||
 			y >= (world->NumShreds()/2+2)*SHRED_WIDTH )
 	{
-		emit OverstepBorder(dir);
+		emit OverstepBorder(direction);
 	}
 	emit Moved(GlobalX(), GlobalY(), z);
 	emit Updated();

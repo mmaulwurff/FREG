@@ -200,8 +200,6 @@ class Screen : public VirtScreen {
 class IThread : public QThread {
 	Q_OBJECT
 
-	Screen * const screen;
-
 	public:
 	IThread(Screen * const);
 	void Stop();
@@ -210,6 +208,7 @@ class IThread : public QThread {
 	void run();
 
 	private:
+	Screen * const screen;
 	volatile bool stopped;
 }; // class IThread
 

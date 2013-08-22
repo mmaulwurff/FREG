@@ -30,6 +30,7 @@
 #include "worldmap.h"
 #include "BlockManager.h"
 #include "DeferredAction.h"
+#include "ShredStorage.h"
 
 Shred * World::GetShred(const ushort x, const ushort y) const {
 	return shreds[ (y >> SHRED_WIDTH_SHIFT)*numShreds +
@@ -51,6 +52,16 @@ long World::MapSize() const { return map->MapSize(); }
 
 char World::TypeOfShred(const long longi, const long lati) {
 	return map->TypeOfShred(longi, lati);
+}
+
+QByteArray * World::GetShredData(long longi, long lati) {
+	return shredStorage->GetShredData(longi, lati);
+}
+
+void World::SetShredData(QByteArray * const data,
+		const long longi, const long lati)
+{
+	shredStorage->SetShredData(data, longi, lati);
 }
 
 ushort World::SunMoonX() const {
@@ -327,6 +338,7 @@ void World::ReloadShreds(const int direction) {
 		"World::ReloadShreds(int): invalid direction: %d\n",
 		direction);
 	}
+	shredStorage->Shift(direction, longitude, latitude);
 	MakeSun();
 	ReEnlightenMove(direction);
 	emit Moved(direction);
@@ -919,6 +931,8 @@ World::World(const QString & world_name) :
 	longitude =settings.value("longitude", int(spawnLongi)).toLongLong();
 	latitude  =settings.value("latitude",  int(spawnLati )).toLongLong();
 
+	shredStorage=new ShredStorage(this, numShreds+2, longitude, latitude);
+
 	LoadAllShreds();
 	emit UpdatedAll();
 } // World::World(const QString & world_name)
@@ -940,6 +954,7 @@ void World::CleanAll() {
 	DeleteAllShreds();
 	operator delete(shredMemoryPool);
 	delete map;
+	delete shredStorage;
 	delete rwLock;
 
 	QSettings settings(QDir::currentPath()+'/'+worldName+"/settings.ini",

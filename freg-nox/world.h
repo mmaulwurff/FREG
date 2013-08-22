@@ -28,6 +28,8 @@ class WorldMap;
 class Block;
 class Shred;
 class DeferredAction;
+class ShredStorage;
+class QByteArray;
 class QReadWriteLock;
 
 const ushort SAFE_FALL_HEIGHT=5;
@@ -43,7 +45,12 @@ class World : public QThread {
 	ulong time;
 	ushort timeStep;
 	Shred ** shreds;
-	// center of active zone, longitude is y, latitude is x
+	//    N
+	//    |  E
+	// W--+--> latitude
+	//    |
+	//  S v longitude
+	// center of active zone:
 	long longitude, latitude;
 	long spawnLongi, spawnLati;
 	const QString worldName;
@@ -64,6 +71,7 @@ class World : public QThread {
 	uchar sunMoonFactor;
 
 	QList<DeferredAction *> defActions;
+	ShredStorage * shredStorage;
 
 	Shred * shredMemoryPool;
 
@@ -144,6 +152,9 @@ class World : public QThread {
 
 	char TypeOfShred(long longi, long lati);
 	long MapSize() const;
+
+	QByteArray * GetShredData(long longi, long lati);
+	void SetShredData(QByteArray *, long longi, long lati);
 
 	private:
 	bool Focus(ushort x, ushort y, ushort z,
