@@ -67,6 +67,8 @@ class Shred {
 	ushort ShredY() const;
 	void PhysEventsFrequent();
 	void PhysEventsRare();
+	void Clean();
+	void CheckRemove();
 
 	void AddActive(Active *);
 	void RemActive(Active *);

@@ -229,6 +229,7 @@ class World : public QThread {
 	void ReloadAllShreds(long lati, long longi,
 		ushort new_x, ushort new_y, ushort new_z);
 	private:
+	void CheckRemoveActive();
 	void SetNumActiveShreds(ushort num);
 	/// Also saves all shreds.
 	void DeleteAllShreds();

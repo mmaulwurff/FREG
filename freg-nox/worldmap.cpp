@@ -63,7 +63,7 @@ WorldMap::WorldMap(const QString * const world_name) {
 				qPrintable(*world_name+"/map.txt"));
 			#endif
 		#endif
-		system(command);
+		//system(command);
 		if ( map->open(QIODevice::ReadOnly | QIODevice::Text) ) {
 			mapSize=map_size;
 		} else {

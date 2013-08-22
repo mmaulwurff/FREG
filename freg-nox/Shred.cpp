@@ -168,7 +168,7 @@ Shred::~Shred() {
 			block_manager.DeleteBlock(blocks[x][y][z]);
 		}
 	}
-} // Shred::~Shred
+} // Shred::~Shred()
 
 Shred * Shred::GetShredMemory() const { return memory; }
 
@@ -200,16 +200,11 @@ void Shred::RegisterBlock(Block * const block,
 }
 
 void Shred::PhysEventsFrequent() {
-	QLinkedList<Active *>::iterator i;
-	for (i=fallList.begin(); i != fallList.end();) {
-		if ( CoordOfShred((*i)->X())!=shredX ||
-				CoordOfShred((*i)->Y())!=shredY )
-		{
-			activeListAll.removeOne(*i);
-			activeListRare.removeOne(*i);
-			activeListFrequent.removeOne(*i);
-			shiningList.removeOne(*i);
-			i=fallList.erase(i);
+	for (QLinkedList<Active *>::iterator i=fallList.begin();
+			i != fallList.end();)
+	{
+		if ( (*i)->GetShred()!=this  ) {
+			++i;
 			continue;
 		}
 		const ushort weight=(*i)->Weight();
@@ -238,47 +233,57 @@ void Shred::PhysEventsFrequent() {
 			i=fallList.erase(i);
 		}
 	}
-	for (i=activeListFrequent.begin(); i != activeListFrequent.end();) {
-		if ( CoordOfShred((*i)->X())!=shredX ||
-				CoordOfShred((*i)->Y())!=shredY )
-		{
-			activeListAll.removeOne(*i);
-			activeListRare.removeOne(*i);
-			shiningList.removeOne(*i);
-			fallList.removeOne(*i);
-			i=activeListFrequent.erase(i);
-		} else {
+	for (QLinkedList<Active *>::const_iterator i=
+				activeListFrequent.constBegin();
+			i != activeListFrequent.constEnd(); ++i)
+	{
+		if ( (*i)->GetShred()==this  ) {
 			(*i)->ActFrequent();
 			world->DestroyAndReplace((*i)->X(), (*i)->Y(),
 				(*i)->Z());
-			++i;
 		}
-	}
-	for (i=deleteList.begin(); i != deleteList.end();
-			i = deleteList.erase(i))
-	{
-		delete *i;
 	}
 } // void Shred::PhysEventsFrequent()
 
-void Shred::PhysEventsRare() {
-	for (QLinkedList<Active *>::iterator i = activeListRare.begin();
-			i != activeListRare.end(); ++i)
+void Shred::Clean() {
+	for (QLinkedList<Active *>::iterator i=deleteList.begin();
+			i != deleteList.end();
+			i  = deleteList.erase(i))
 	{
-		if ( CoordOfShred((*i)->X())!=shredX ||
-				CoordOfShred((*i)->Y())!=shredY )
-		{
-			activeListAll.removeOne(*i);
-			activeListFrequent.removeOne(*i);
-			shiningList.removeOne(*i);
-			fallList.removeOne(*i);
-			i=activeListRare.erase(i);
+		activeListFrequent.removeAll(*i);
+		activeListRare.removeAll(*i);
+		shiningList.removeAll(*i);
+		fallList.removeAll(*i);
+		activeListAll.removeAll(*i);
+		delete *i;
+	}
+}
+
+void Shred::CheckRemove() {
+	for (QLinkedList<Active *>::iterator i=activeListAll.begin();
+			i != activeListAll.end();)
+	{
+		if ( (*i)->GetShred()!=this  ) {
+			activeListFrequent.removeAll(*i);
+			activeListRare.removeAll(*i);
+			shiningList.removeAll(*i);
+			fallList.removeAll(*i);
+			i=activeListAll.erase(i);
 		} else {
+			++i;
+		}
+	}
+}
+
+void Shred::PhysEventsRare() {
+	for (QLinkedList<Active *>::const_iterator i =
+				activeListRare.constBegin();
+			i != activeListRare.constEnd(); ++i)
+	{
+		if ( (*i)->GetShred()==this  ) {
 			(*i)->ActRare();
-			if ( (*i)->Durability() <= 0 ) {
-				world->DestroyAndReplace((*i)->X(), (*i)->Y(),
-					(*i)->Z());
-			}
+			world->DestroyAndReplace((*i)->X(), (*i)->Y(),
+				(*i)->Z());
 		}
 	}
 }

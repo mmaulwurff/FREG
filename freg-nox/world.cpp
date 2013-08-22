@@ -178,8 +178,7 @@ void World::MakeSun() {
 		sun_moon_x, SHRED_WIDTH*numShreds/2, HEIGHT-1);
 }
 
-Block * World::GetBlock(const ushort x, const ushort y, const ushort z)
-const {
+Block * World::GetBlock(const ushort x, const ushort y, const ushort z) const {
 	return GetShred(x, y)->
 		GetBlock(x & SHRED_COORDS_BITS, y & SHRED_COORDS_BITS, z);
 }
@@ -259,6 +258,7 @@ Shred ** World::FindShred(const ushort x, const ushort y) const {
 void World::ReloadShreds(const int direction) {
 	short x, y; // do not make unsigned, values <0 are needed for checks
 	RemSun();
+	CheckRemoveActive();
 	switch ( direction ) {
 	case NORTH:
 		--longitude;
@@ -331,7 +331,14 @@ void World::ReloadShreds(const int direction) {
 	MakeSun();
 	ReEnlightenMove(direction);
 	emit Moved(direction);
-} // World::ReloadShreds
+} // void World::ReloadShreds(int direction)
+
+void World::CheckRemoveActive() {
+	for (ushort i=0; i<NumShreds(); ++i)
+	for (ushort j=0; j<NumShreds(); ++j) {
+		shreds[i+j*NumShreds()]->CheckRemove();
+	}
+}
 
 void World::PhysEvents() {
 	const QWriteLocker writeLock(rwLock);
@@ -362,6 +369,11 @@ void World::PhysEvents() {
 	for (ushort i=start; i<end; ++i)
 	for (ushort j=start; j<end; ++j) {
 		shreds[i+j*NumShreds()]->PhysEventsFrequent();
+	}
+	CheckRemoveActive();
+	for (ushort i=start; i<end; ++i)
+	for (ushort j=start; j<end; ++j) {
+		shreds[i+j*NumShreds()]->Clean();
 	}
 
 	if ( TIME_STEPS_IN_SEC > timeStep ) {
@@ -502,6 +514,9 @@ bool World::CanMove(
 		const ushort newx, const ushort newy, const ushort newz,
 		const quint8 dir)
 {
+	if ( !InBounds(x, y, z) ) {
+		return false;
+	}
 	Block * const block=GetBlock(x, y, z);
 	Block * block_to=GetBlock(newx, newy, newz);
 	if ( NOT_MOVABLE==block->Movable() ) {
@@ -529,10 +544,10 @@ bool World::CanMove(
 		}
 	break;
 	case MOVE_UP:
-		if ( DOWN!=dir ) {
-			Move(x, y, z, UP);
+		//if ( DOWN!=dir ) {
+		//	Move(x, y, z, UP);
 			return false;
-		}
+		//}
 	break;
 	case DAMAGE:
 		Damage(x, y, z,

@@ -33,39 +33,38 @@
 //Block::
 	QString Block::FullName() const {
 		switch ( Sub() ) {
-			case STAR: case SUN_MOON: case SKY:
-			case AIR:        return QObject::tr("Air");
-			case WATER:      return QObject::tr("Ice");
-			case STONE:      return QObject::tr("Stone");
-			case MOSS_STONE: return QObject::tr("Moss stone");
-			case NULLSTONE:  return QObject::tr("Nullstone");
-			case GLASS:      return QObject::tr("Glass");
-			case SOIL:       return QObject::tr("Soil");
-			case HAZELNUT:   return QObject::tr("Hazelnut");
-			case WOOD:       return QObject::tr("Wood");
-			case GREENERY:   return QObject::tr("Leaves");
-			case ROSE:       return QObject::tr("Rose");
-			case A_MEAT:     return QObject::tr("Animal meat");
-			case H_MEAT:     return QObject::tr("Not animal meat");
-			case IRON:       return QObject::tr("Iron block");
-			case SAND:       return QObject::tr("Sandstone");
-			case CLAY:       return QObject::tr("Clay brick");
-			default:
-				fprintf(stderr,
-					"Block::FullName: unlisted sub: %d.\n",
-					Sub());
-				return "Unknown block";
+		case STAR: case SUN_MOON: case SKY:
+		case AIR:        return QObject::tr("Air");
+		case WATER:      return QObject::tr("Ice");
+		case STONE:      return QObject::tr("Stone");
+		case MOSS_STONE: return QObject::tr("Moss stone");
+		case NULLSTONE:  return QObject::tr("Nullstone");
+		case GLASS:      return QObject::tr("Glass");
+		case SOIL:       return QObject::tr("Soil");
+		case HAZELNUT:   return QObject::tr("Hazelnut");
+		case WOOD:       return QObject::tr("Wood");
+		case GREENERY:   return QObject::tr("Leaves");
+		case ROSE:       return QObject::tr("Rose");
+		case A_MEAT:     return QObject::tr("Animal meat");
+		case H_MEAT:     return QObject::tr("Not animal meat");
+		case IRON:       return QObject::tr("Iron block");
+		case SAND:       return QObject::tr("Sandstone");
+		case CLAY:       return QObject::tr("Clay brick");
+		default:
+			fprintf(stderr, "Block::FullName: unlisted sub: %d.\n",
+				Sub());
+			return "Unknown block";
 		}
 	}
 
 	quint8 Block::Transparency(const quint8 transp, const int sub) {
 		if ( UNDEF==transp ) {
 			switch ( sub ) {
-				case AIR:   return INVISIBLE;
-				case WATER:
-				case GREENERY:
-				case GLASS: return BLOCK_TRANSPARENT;
-				default:    return BLOCK_OPAQUE;
+			case AIR:   return INVISIBLE;
+			case WATER:
+			case GREENERY:
+			case GLASS: return BLOCK_TRANSPARENT;
+			default:    return BLOCK_OPAQUE;
 			}
 		} else {
 			return transp;
@@ -75,43 +74,40 @@
 	int Block::Damage(const ushort dmg, const int dmg_kind) {
 		ushort mult=1;
 		switch ( Sub() ) {
-			case DIFFERENT:
-				if ( TIME==dmg_kind ) {
-					return durability=0;
-				}
-				//no break
-			case NULLSTONE:
-			case STAR:
-			case AIR:
-			case SKY:
-			case SUN_MOON: mult=0; break;
-			case WATER:
-				mult=( HEAT==dmg_kind || TIME==dmg_kind );
+		case DIFFERENT:
+			if ( TIME==dmg_kind ) {
+				return durability=0;
+			}
+			// no break
+		case NULLSTONE:
+		case STAR:
+		case AIR:
+		case SKY:
+		case SUN_MOON: mult=0; break;
+		case WATER: mult=( HEAT==dmg_kind || TIME==dmg_kind ); break;
+		case MOSS_STONE:
+		case STONE:
+			switch ( dmg_kind ) {
+			case CRUSH: mult=0; break;
+			case MINE:  mult=2; break;
+			}
 			break;
-			case MOSS_STONE:
-			case STONE:
-				switch ( dmg_kind ) {
-					case CRUSH: mult=0; break;
-					case MINE:  mult=2; break;
-				}
-				break;
-			case GREENERY:
-			case GLASS: return durability=0;
-			case ROSE:
-			case HAZELNUT:
-			case WOOD: mult=1+(CUT==dmg_kind); break;
-			case SAND:
-			case SOIL: mult=1+(DIG==dmg_kind); break;
-			case A_MEAT:
-			case H_MEAT: mult=1+(THRUST==dmg_kind); break;
+		case GREENERY:
+		case GLASS: return durability=0;
+		case ROSE:
+		case HAZELNUT:
+		case WOOD: mult=1+(CUT==dmg_kind); break;
+		case SAND:
+		case SOIL: mult=1+(DIG==dmg_kind); break;
+		case A_MEAT:
+		case H_MEAT: mult=1+(THRUST==dmg_kind); break;
 		}
 		return durability-=mult*dmg;
-	} //Block::Damage
+	}
 
 	Block * Block::DropAfterDamage() const {
 		return GLASS==Sub() ?
-			0 :
-			BLOCK==Kind() ?
+			0 : BLOCK==Kind() ?
 				block_manager.NormalBlock(Sub()) :
 				block_manager.NewBlock(Kind(), Sub());
 	}
@@ -449,9 +445,13 @@
 		} else if ( GetShred() &&
 			GetWorld()->GetShred(X(), Y())!=GetShred() )
 		{
+			const bool was_falling=IsFalling();
+			if ( was_falling ) {
+				whereShred->RemFalling(this);
+			}
 			( whereShred=GetWorld()->GetShred(X(), Y()) )->
 				AddActive(this);
-			if ( IsFalling() ) {
+			if ( was_falling ) {
 				whereShred->AddFalling(this);
 			}
 			overstep=true;
@@ -1312,21 +1312,21 @@
 			Active(str, sub, id),
 			Inventory(str, BUSH_SIZE)
 	{}
-//Rabbit::
+// Rabbit::
 	short Rabbit::Attractive(const int sub) const {
 		switch ( sub ) {
-			case H_MEAT: return -8;
-			case A_MEAT: return -1;
-			case GREENERY: return 1;
-			case SAND: return -1;
-			default: return 0;
+		case H_MEAT:   return -8;
+		case A_MEAT:   return -1;
+		case GREENERY: return  1;
+		case SAND:     return -1;
+		default:       return  0;
 		}
 	}
 
 	void Rabbit::ActFrequent() {
 		if ( IsToDelete() ) return;
 		World * const world=GetWorld();
-		//analyse world around
+		// analyse world around
 		short for_north=0, for_west=0;
 		for (ushort x=X()-4; x<=X()+4; ++x)
 		for (ushort y=Y()-4; y<=Y()+4; ++y)
@@ -1342,8 +1342,8 @@
 				if ( x!=X() ) for_west +=attractive/(X()-x);
 			}
 		}
-		//make direction and move there
-		const ushort calmness=5;
+		// make direction and move there
+		static const ushort calmness=5;
 		if ( qAbs(for_north)>calmness || qAbs(for_west)>calmness ) {
 			SetDir( ( qAbs(for_north)>qAbs(for_west) ) ?
 				( ( for_north>0 ) ? NORTH : SOUTH ) :
@@ -1354,7 +1354,7 @@
 				world->Jump(X(), Y(), Z(), GetDir());
 			}
 		}
-	} //Rabbit::ActFrequent
+	} // void Rabbit::ActFrequent()
 
 	void Rabbit::ActRare() {
 		if ( IsToDelete() ) return;

@@ -25,7 +25,11 @@
 #include <QtGlobal>
 
 #ifdef Q_OS_WIN32
-	#include <windows.h>
+#include <windows.h>
+#endif
+
+#if ( QT_VERSION < QT_VERSION_CHECK(4, 8, 0) )
+#define Q_UNLIKELY
 #endif
 
 const ushort SHRED_WIDTH=16;
