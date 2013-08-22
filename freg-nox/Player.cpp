@@ -174,12 +174,12 @@ void Player::Jump() {
 	}
 }
 
-void Player::Move(const int dir) {
+void Player::Move(const int direction) {
 	if ( player ) {
 		if ( GetCreativeMode() ) {
-			player->GetDeferredAction()->SetGhostMove(dir);
+			player->GetDeferredAction()->SetGhostMove(direction);
 		} else {
-			player->GetDeferredAction()->SetMove(dir);
+			player->GetDeferredAction()->SetMove(direction);
 		}
 	}
 }
@@ -382,9 +382,9 @@ void Player::ProcessCommand(QString & command) {
 			emit Notify(tr("No room."));
 		}
 	} else if ( "move"==request ) {
-		int dir;
-		comm_stream >> dir;
-		Move(dir);
+		int direction;
+		comm_stream >> direction;
+		Move(direction);
 	} else if ( "what"==request ) {
 		ushort x_what, y_what, z_what;
 		comm_stream >> x_what >> y_what >> z_what;
@@ -499,7 +499,6 @@ ushort Player::DamageLevel() const {
 }
 
 void Player::CheckOverstep(const int dir) {
-	short prev_x=x, prev_y=y;
 	UpdateXYZ();
 	if ( // leaving central zone
 			x <  (world->NumShreds()/2-1)*SHRED_WIDTH ||
@@ -507,27 +506,28 @@ void Player::CheckOverstep(const int dir) {
 			x >= (world->NumShreds()/2+2)*SHRED_WIDTH ||
 			y >= (world->NumShreds()/2+2)*SHRED_WIDTH )
 	{
-		if ( GetCreativeMode() ) {
-			emit OverstepBorder(dir);
-			// coordinates of normal (non-creative) player are
-			// reloaded (shifted corresponding to world reload)
-			// automatically since such player is registered in
-			// his shred.
-			// This helps creative player shift his coordinates.
-			switch ( dir ) {
-			case NORTH: player->ReloadToNorth(); break;
-			case SOUTH: player->ReloadToSouth(); break;
-			case EAST:  player->ReloadToEast();  break;
-			case WEST:  player->ReloadToWest();  break;
-			}
-			UpdateXYZ();
-		} else {
-			GetWorld()->GetShred(prev_x, prev_y)->RemActive(player);
-			emit OverstepBorder(dir);
-			UpdateXYZ();
-		}
+		emit OverstepBorder(dir);
 	}
 	emit Moved(GlobalX(), GlobalY(), z);
+	emit Updated();
+}
+
+void Player::UpdateCoords(const int direction) {
+	fprintf(stderr, "updatecorrds\n");
+	if ( GetCreativeMode() ) {
+		// coordinates of normal (non-creative) player are
+		// reloaded (shifted corresponding to world reload)
+		// automatically since such player is registered in
+		// his shred.
+		// This helps creative player shift his coordinates.
+		switch ( direction ) {
+		case NORTH: player->ReloadToNorth(); break;
+		case SOUTH: player->ReloadToSouth(); break;
+		case EAST:  player->ReloadToEast();  break;
+		case WEST:  player->ReloadToWest();  break;
+		}
+	}
+	UpdateXYZ();
 	emit Updated();
 }
 
@@ -640,7 +640,10 @@ Player::Player(World * const w) :
 			const ushort)),
 		Qt::DirectConnection);
 	connect(this, SIGNAL(OverstepBorder(int)),
-		world, SLOT(ReloadShreds(int)),
+		world, SLOT(SetReloadShreds(int)),
+		Qt::DirectConnection);
+	connect(world, SIGNAL(Moved(int)),
+		this, SLOT(UpdateCoords(int)),
 		Qt::DirectConnection);
 	connect(world, SIGNAL(StartReloadAll()),
 		this, SLOT(WorldSizeReloadStart()),

@@ -69,7 +69,6 @@ class Player : public QObject {
 	World * GetWorld() const;
 
 	public slots:
-
 	/// For cleaning player-related data before exiting program.
 	/**This is connected to app's aboutToQuit() signal, also it
 	 * is called from destructor. There is a check for data deleting
@@ -92,6 +91,7 @@ class Player : public QObject {
 	void WorldSizeReloadFinish();
 
 	void SetPlayer(ushort set_x, ushort set_y, ushort set_z);
+	void UpdateCoords(int direction);
 
 	signals:
 	void Moved(long x, long y, ushort z) const;
@@ -215,8 +215,8 @@ class Player : public QObject {
 	 */
 	Player(World * const);
 
-	///Destructor calls Player::CleanAll().
+	/// Destructor calls Player::CleanAll().
 	~Player();
-}; //class Player
+}; // class Player
 
 #endif

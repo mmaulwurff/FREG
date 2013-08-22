@@ -122,7 +122,7 @@ void World::ReloadAllShreds(const long lati, const long longi,
 	newX=new_x;
 	newY=new_y;
 	newZ=new_z;
-	toReSet=true;
+	toResetDir=DOWN;
 }
 
 QReadWriteLock * World::GetLock() const { return rwLock; }
@@ -258,7 +258,6 @@ Shred ** World::FindShred(const ushort x, const ushort y) const {
 void World::ReloadShreds(const int direction) {
 	short x, y; // do not make unsigned, values <0 are needed for checks
 	RemSun();
-	CheckRemoveActive();
 	switch ( direction ) {
 	case NORTH:
 		--longitude;
@@ -333,6 +332,8 @@ void World::ReloadShreds(const int direction) {
 	emit Moved(direction);
 } // void World::ReloadShreds(int direction)
 
+void World::SetReloadShreds(const int direction) { toResetDir=direction; }
+
 void World::CheckRemoveActive() {
 	for (ushort i=0; i<NumShreds(); ++i)
 	for (ushort j=0; j<NumShreds(); ++j) {
@@ -343,22 +344,29 @@ void World::CheckRemoveActive() {
 void World::PhysEvents() {
 	const QWriteLocker writeLock(rwLock);
 
+	switch ( toResetDir ) {
+	case UP: break;
+	case DOWN:
+		emit StartReloadAll();
+		DeleteAllShreds();
+		longitude=newLongi;
+		latitude=newLati;
+		LoadAllShreds();
+		emit NeedPlayer(newX, newY, newZ);
+		emit UpdatedAll();
+		emit FinishReloadAll();
+		toResetDir=UP; // no reset
+	break;
+	default:
+		ReloadShreds(toResetDir);
+		toResetDir=UP; // no reset
+	}
+
 	for (int i=0; i<defActions.size(); ++i) {
 		defActions.at(i)->MakeAction();
 		RemDeferredAction(defActions.at(i));
 	}
 
-	if ( toReSet ) {
-		emit StartReloadAll();
-		DeleteAllShreds();
-		longitude=newLongi;
-		latitude=newLati;
-		toReSet=false;
-		LoadAllShreds();
-		emit NeedPlayer(newX, newY, newZ);
-		emit UpdatedAll();
-		emit FinishReloadAll();
-	}
 	/*static ulong global_step=0;
 	fprintf(stderr, "step: %lu\n", global_step);
 	++global_step;
@@ -873,7 +881,7 @@ World::World(const QString & world_name) :
 		worldName(world_name),
 		rwLock(new QReadWriteLock()),
 		map(new WorldMap(&world_name)),
-		toReSet(false)
+		toResetDir(UP)
 {
 	QSettings game_settings(QDir::currentPath()+"/freg.ini",
 		QSettings::IniFormat);
@@ -913,7 +921,7 @@ World::World(const QString & world_name) :
 
 	LoadAllShreds();
 	emit UpdatedAll();
-} // World::World
+} // World::World(const QString & world_name)
 
 World::~World() { CleanAll(); }
 

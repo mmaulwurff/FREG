@@ -58,7 +58,8 @@ class World : public QThread {
 
 	long newLati, newLongi;
 	ushort newX, newY, newZ;
-	volatile bool toReSet;
+	/// UP for no reset, DOWN for full reset, NSEW for side shift.
+	volatile int toResetDir;
 
 	uchar sunMoonFactor;
 
@@ -234,6 +235,7 @@ class World : public QThread {
 	/// Also saves all shreds.
 	void DeleteAllShreds();
 	void LoadAllShreds();
+	void ReloadShreds(int direction);
 	void run();
 	Shred ** FindShred(ushort x, ushort y) const;
 
@@ -252,8 +254,8 @@ class World : public QThread {
 
 	public slots:
 	void CleanAll();
-	void ReloadShreds(int);
 	void PhysEvents();
+	void SetReloadShreds(int direction);
 
 	signals:
 	void Notify(const QString &) const;
@@ -270,6 +272,6 @@ class World : public QThread {
 	void StartReloadAll();
 	void FinishReloadAll();
 	void ExitReceived();
-}; // class world
+}; // class World
 
 #endif
