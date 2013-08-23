@@ -575,6 +575,7 @@
 	void Active::SetToDelete() {
 		toDelete = true;
 		GetShred()->AddToDelete(this);
+		emit Destroyed();
 	}
 	bool Active::IsToDelete() const { return toDelete; }
 
@@ -602,7 +603,6 @@
 	Active::~Active() {
 		delete deferredAction;
 		Unregister();
-		emit Destroyed();
 	}
 //Animal::
 	void Animal::ActRare() {

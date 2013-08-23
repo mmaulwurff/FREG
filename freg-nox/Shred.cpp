@@ -248,11 +248,6 @@ void Shred::Clean() {
 			i != deleteList.end();
 			i  = deleteList.erase(i))
 	{
-		activeListFrequent.removeAll(*i);
-		activeListRare.removeAll(*i);
-		shiningList.removeAll(*i);
-		fallList.removeAll(*i);
-		activeListAll.removeAll(*i);
 		delete *i;
 	}
 }
@@ -300,9 +295,9 @@ void Shred::AddActive(Active * const active) {
 }
 
 void Shred::RemActive(Active * const active) {
-	activeListAll.removeOne(active);
-	activeListFrequent.removeOne(active);
-	activeListRare.removeOne(active);
+	activeListAll.removeAll(active);
+	activeListFrequent.removeAll(active);
+	activeListRare.removeAll(active);
 }
 
 void Shred::AddFalling(Active * const active) {
@@ -313,7 +308,7 @@ void Shred::AddFalling(Active * const active) {
 }
 
 void Shred::RemFalling(Active * const active) {
-	fallList.removeOne(active);
+	fallList.removeAll(active);
 	active->SetFalling(false);
 }
 
@@ -329,7 +324,7 @@ void Shred::AddShining(Active * const active) {
 }
 
 void Shred::RemShining(Active * const active) {
-	shiningList.removeOne(active);
+	shiningList.removeAll(active);
 }
 
 void Shred::AddToDelete(Active * const active) {

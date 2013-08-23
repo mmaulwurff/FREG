@@ -201,25 +201,11 @@ class World;
 class Active : public QObject, public Block {
 	Q_OBJECT
 
-	quint8 fall_height;
-	bool falling;
-	bool toDelete;
-	DeferredAction * deferredAction;
-
-	///coordinates in loaded world zone
-	ushort x_self, y_self, z_self;
-	Shred * whereShred;
-
-	protected:
-	void SendSignalAround(const QString &) const;
-
-	signals:
-	void Moved(int);
-	void Destroyed();
-	void Updated();
-	void ReceivedText(const QString &);
-
 	public:
+	Active(int sub, quint16 id, quint8 transp=UNDEF);
+	Active(QDataStream & str, int sub, quint16 id, quint8 transp=UNDEF);
+	~Active();
+
 	Shred * GetShred() const;
 	World * GetWorld() const;
 	QString FullName() const;
@@ -255,23 +241,33 @@ class Active : public QObject, public Block {
 
 	void EmitUpdated();
 
-	protected:
-	void SaveAttributes(QDataStream & out) const;
-
-	public:
 	void SetXYZ(ushort x, ushort y, ushort z);
 	void Register(Shred *, ushort x, ushort y, ushort z);
 	void SetShredNull();
 	void SetToDelete();
 	bool IsToDelete() const;
+
+	signals:
+	void Moved(int);
+	void Destroyed();
+	void Updated();
+	void ReceivedText(const QString &);
+
+	protected:
+	void SendSignalAround(const QString &) const;
+	void SaveAttributes(QDataStream & out) const;
+
 	private:
 	void Unregister();
 
-	public:
-	Active(int sub, quint16 id, quint8 transp=UNDEF);
-	Active(QDataStream & str, int sub, quint16 id, quint8 transp=UNDEF);
-	~Active();
-}; //class Active
+	quint8 fall_height;
+	bool falling;
+	bool toDelete;
+	DeferredAction * deferredAction;
+	/// Coordinates in loaded world zone.
+	ushort x_self, y_self, z_self;
+	Shred * whereShred;
+}; // class Active
 
 class Animal : public Active {
 	Q_OBJECT
