@@ -536,11 +536,11 @@ void Player::BlockDestroy() {
 		return;
 	}
 	emit Notify("You died.");
-	player=0;
 	usingType=USAGE_TYPE_NO;
 	usingSelfType=USAGE_TYPE_NO;
 
 	emit Destroyed();
+	player=0;
 	world->ReloadAllShreds(homeLati, homeLongi,
 		homeX, homeY, homeZ);
 }
