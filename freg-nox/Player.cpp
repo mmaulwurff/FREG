@@ -410,13 +410,13 @@ void Player::ProcessCommand(QString & command) {
 		emit Notify("(__)\\       )\\/\\");
 		emit Notify("    ||----w |");
 		emit Notify("    ||     ||");
-	} else if ( "kindtostring"==request ) {
+	} else if ( "kindtostring"==request || "k2str"==request ) {
 		int kind;
 		comm_stream >> kind;
 		emit Notify(tr("Kind %1 is %2.").
 			arg(kind).
 			arg(block_manager.KindToString(kind)));
-	} else if ( "stringtokind"==request ) {
+	} else if ( "stringtokind"==request || "str2k"==request ) {
 		QString str;
 		comm_stream >> str;
 		const int kind=block_manager.StringToKind(str);
@@ -428,13 +428,13 @@ void Player::ProcessCommand(QString & command) {
 				arg(str).
 				arg(kind));
 		}
-	} else if ( "subtostring"==request ) {
+	} else if ( "subtostring"==request || "s2str"==request ) {
 		int sub;
 		comm_stream >> sub;
 		emit Notify(tr("Sub %1 is %2.").
 			arg(sub).
 			arg(BlockManager::SubToString(sub)));
-	} else if ( "stringtosub"==request ) {
+	} else if ( "stringtosub"==request || "str2s" ) {
 		QString str;
 		comm_stream >> str;
 		const int sub=BlockManager::StringToSub(str);

@@ -564,10 +564,10 @@ bool World::CanMove(
 		}
 	break;
 	case MOVE_UP:
-		//if ( DOWN!=dir ) {
-		//	Move(x, y, z, UP);
+		if ( DOWN!=dir && UP!=dir ) {
+			Move(x, y, z, UP);
 			return false;
-		//}
+		}
 	break;
 	case DAMAGE:
 		Damage(x, y, z,
@@ -578,7 +578,7 @@ bool World::CanMove(
 	}
 	return ( ENVIRONMENT==block_to->Movable() ||
 		Move(newx, newy, newz, dir) );
-} // World::CanMove
+} // bool World::CanMove
 
 void World::NoCheckMove(
 		const ushort x,    const ushort y,    const ushort z,
