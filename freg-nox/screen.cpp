@@ -35,21 +35,33 @@
 const char OBSCURE_BLOCK=' ';
 const int QUICK_INVENTORY_X_SHIFT=36;
 
-void Screen::Arrows(WINDOW * const window, const ushort x, const ushort y)
+void Screen::Arrows(WINDOW * const window, const ushort x, const ushort y,
+		const bool show_dir)
 const {
+	wcolor_set(window, WHITE_BLACK, NULL);
+	if ( show_dir ) {
+		mvwaddstr(window, 0, x-2, "N    N");
+		mvwaddstr(window, SCREEN_SIZE+1, x-2, "S    S");
+	}
 	wcolor_set(window, WHITE_RED, NULL);
-	mvwaddstr(window, 0, x, "vv");
-	mvwaddstr(window, SCREEN_SIZE+1, x, "^^");
-	HorizontalArrows(window, y);
+	mvwaddstr(window, 0, x, "@@");
+	mvwaddstr(window, SCREEN_SIZE+1, x, "@@");
+	HorizontalArrows(window, y, WHITE_RED, show_dir);
 }
 
-void Screen::HorizontalArrows(WINDOW * const window,
-		const ushort y,
-		const short color)
+void Screen::HorizontalArrows(WINDOW * const window, const ushort y,
+		const short color, const bool show_dir)
 const {
+	wcolor_set(window, WHITE_BLACK, NULL);
+	if ( show_dir ) {
+		mvwaddch(window, y-1, 0, 'W');
+		mvwaddch(window, y+1, 0, 'W');
+		mvwaddch(window, y-1, SCREEN_SIZE*2+1, 'E');
+		mvwaddch(window, y+1, SCREEN_SIZE*2+1, 'E');
+	}
 	wcolor_set(window, color, NULL);
-	mvwaddch(window, y, 0, '>');
-	mvwaddch(window, y, SCREEN_SIZE*2+1, '<');
+	mvwaddch(window, y, 0, '@');
+	mvwaddch(window, y, SCREEN_SIZE*2+1, '@');
 }
 
 void Screen::RePrint() {
@@ -600,9 +612,9 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
 			++j, waddstr(window, "\n_"))
 	for (ushort i=start_x; i<SCREEN_SIZE+start_x; ++i ) {
 		ushort k=k_start;
-		const Block * block;
-		for ( ; INVISIBLE==(block=w->GetBlock(i, j, k))->Transparent();
+		for ( ; INVISIBLE==w->GetBlock(i, j, k)->Transparent();
 				k+=k_step);
+		const Block * const block = w->GetBlock(i, j, k);
 		if ( (w->Enlightened(i, j, k) && player->Visible(i, j, k)) ||
 				player->GetCreativeMode() )
 		{
@@ -619,7 +631,7 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
 	wcolor_set(window, BLACK_WHITE, NULL);
 	mvwaddstr(window, 0, 1, (UP==dir) ?
 		". Up view ." : "x Ground view x");
-	Arrows(window, (player->X()-start_x)*2+1, player->Y()-start_y+1);
+	Arrows(window, (player->X()-start_x)*2+1, player->Y()-start_y+1, true);
 	wnoutrefresh(window);
 } // void Screen::PrintNormal(WINDOW * window, int dir)
 
@@ -703,10 +715,10 @@ void Screen::PrintFront(WINDOW * const window) const {
 			--k, waddstr(window, "\n_"))
 	{
 		for (*x=x_start; *x!=x_end; *x+=x_step) {
-			const Block * block;
-			for (*z=z_start; *z!=z_end &&
-				(block=w->GetBlock(i, j, k))->
-					Transparent()==INVISIBLE; *z+=z_step);
+			for (*z=z_start; *z!=z_end && w->GetBlock(i, j, k)->
+					Transparent()==INVISIBLE;
+				*z+=z_step);
+			const Block * const block = w->GetBlock(i, j, k);
 			if ( (*z==z_end || (w->Enlightened(i, j, k) &&
 					player->Visible(i, j, k))) ||
 						player->GetCreativeMode() )

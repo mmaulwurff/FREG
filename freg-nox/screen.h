@@ -147,8 +147,9 @@ class Screen : public VirtScreen {
 	char CharName(int, int) const;
 	char CharNumber(ushort x, ushort y, ushort z) const;
 	char CharNumberFront(ushort x, ushort y) const;
-	void Arrows(WINDOW *, ushort x, ushort y) const;
-	void HorizontalArrows(WINDOW *, ushort y, short color=WHITE_RED) const;
+	void Arrows(WINDOW *, ushort x, ushort y, bool show_dir=false) const;
+	void HorizontalArrows(WINDOW *, ushort y, short color=WHITE_RED,
+			bool show_dir=false) const;
 	void ActionXyz(ushort & x, ushort & y, ushort & z) const;
 
 	void PrintNormal(WINDOW *, int dir) const;
@@ -187,7 +188,7 @@ class Screen : public VirtScreen {
 
 	Screen(World *, Player *);
 	~Screen();
-}; // class screen
+}; // class Screen
 
 /** \class IThread screen.h
  * \brief Keyboard input thread for curses screen for freg.
