@@ -32,6 +32,8 @@
 #include "DeferredAction.h"
 #include "ShredStorage.h"
 
+static const ushort MIN_WORLD_SIZE = 7;
+
 Shred * World::GetShred(const ushort x, const ushort y) const {
 	return shreds[ (y >> SHRED_WIDTH_SHIFT)*numShreds +
 	               (x >> SHRED_WIDTH_SHIFT) ];
@@ -895,32 +897,27 @@ World::World(const QString & world_name) :
 		map(new WorldMap(&world_name)),
 		toResetDir(UP)
 {
-	QSettings game_settings(QDir::currentPath()+"/freg.ini",
-		QSettings::IniFormat);
-	numShreds =
-		game_settings.value("number_of_shreds", 5).toLongLong();
-	if ( 1!=numShreds%2 ) {
+	QSettings game_settings("freg.ini", QSettings::IniFormat);
+	numShreds = game_settings.value("number_of_shreds", MIN_WORLD_SIZE).
+		toLongLong();
+	if ( 1 != numShreds%2 ) {
 		++numShreds;
-		fprintf(stderr,
-			"Invalid number of shreds. Set to %hu.\n",
+		fprintf(stderr, "Invalid number of shreds. Set to %hu.\n",
 			numShreds);
 	}
-	if ( numShreds<5  ) {
+	if ( numShreds < MIN_WORLD_SIZE ) {
 		fprintf(stderr,
-			"Number of shreds: to small: %hu. Set to 5.\n",
-			numShreds);
-		numShreds=5;
+			"Number of shreds: to small: %hu. Set to %hu.\n",
+			numShreds, MIN_WORLD_SIZE);
+		numShreds=MIN_WORLD_SIZE;
 	}
-	SetNumActiveShreds(game_settings.value("number_of_active_shreds", 5).
-		toUInt());
+	SetNumActiveShreds(game_settings.value("number_of_active_shreds",
+		numShreds).toUInt());
 	game_settings.setValue("number_of_shreds", numShreds);
 	game_settings.setValue("number_of_active_shreds", numActiveShreds);
 
-	QDir::current().mkdir(worldName);
-	QDir::current().mkdir(worldName+"/texts");
-
-	QSettings settings(QDir::currentPath()+'/'+worldName+"/settings.ini",
-		QSettings::IniFormat);
+	QDir::current().mkpath(worldName+"/texts");
+	QSettings settings(worldName+"/settings.ini", QSettings::IniFormat);
 	time=settings.value("time", END_OF_NIGHT).toLongLong();
 	spawnLongi=settings.value( "spawn_longitude",
 		int(qrand() % MapSize()) ).toLongLong();
@@ -957,8 +954,7 @@ void World::CleanAll() {
 	delete shredStorage;
 	delete rwLock;
 
-	QSettings settings(QDir::currentPath()+'/'+worldName+"/settings.ini",
-		QSettings::IniFormat);
+	QSettings settings(worldName+"/settings.ini", QSettings::IniFormat);
 	settings.setValue("time", qlonglong(time));
 	settings.setValue("longitude", qlonglong(longitude));
 	settings.setValue("latitude", qlonglong(latitude));
