@@ -36,27 +36,6 @@ class Shred {
 			Shred * memory);
 	~Shred();
 
-	private:
-	Block * blocks[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
-	uchar lightMap[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
-	World * const world;
-	const long longitude, latitude;
-	ushort shredX, shredY;
-
-	// needed in Shred::ReloadTo... for active blocks not to reload twice
-	// when they are registered both in frequent and rare lists.
-	QLinkedList<Active *> activeListAll;
-	QLinkedList<Active *> activeListFrequent;
-	QLinkedList<Active *> activeListRare;
-	QLinkedList<Active *> fallList;
-	QLinkedList<Active *> shiningList;
-	QLinkedList<Active *> deleteList;
-
-	// memory, allocated for this shred.
-	Shred * const memory;
-
-	/// Lowest nullstone and sky are not in bounds.
-	bool InBounds(ushort x, ushort y, ushort z) const;
 
 	public:
 	/// Returns y (line) shred coordinate on world map.
@@ -98,7 +77,7 @@ class Shred {
 	void PutNormalBlock(int sub, ushort x, ushort y, ushort z);
 	static Block * Normal(int sub);
 
-	public: // Lighting section
+	// Lighting section
 	uchar Lightmap(  short x, short y, short z) const;
 	uchar FireLight( short x, short y, short z) const;
 	uchar SunLight(  short x, short y, short z) const;
@@ -111,12 +90,7 @@ class Shred {
 	void SetAllLightMapNull();
 	void ShineAll();
 
-	private:
-	void RemoveAllSunLight();
-	void RemoveAllFireLight();
-	void RemoveAllLight();
-
-	public: // Information section
+	// Information section
 	int Sub(ushort x, ushort y, ushort z) const;
 
 	void SetNewBlock(int kind, int sub, ushort x, ushort y, ushort z,
@@ -128,8 +102,14 @@ class Shred {
 	/// Make global coordinate from local (in loaded zone).
 	long GlobalX(ushort x) const;
 	long GlobalY(ushort y) const;
+	static ushort CoordInShred(const ushort x);
+	static ushort CoordOfShred(const ushort x);
 
 	private:
+	void RemoveAllSunLight();
+	void RemoveAllFireLight();
+	void RemoveAllLight();
+
 	void RegisterBlock(Block *, ushort x, ushort y, ushort z);
 	bool LoadShred();
 
@@ -158,17 +138,38 @@ class Shred {
 
 	// Block combinations section (trees, buildings, etc):
 	bool Tree(ushort x, ushort y, ushort z, ushort height);
-	private:
-	void NormalCube(ushort x_start, ushort y_start, ushort z_start,
-			ushort x_end, ushort y_end, ushort z_end, int sub);
 
-	private: // Land generation
+	// Special land generation
 	void ShredLandAmplitudeAndLevel(long longi, long lati,
 			ushort * l, float * a) const;
 	void ShredNominalAmplitudeAndLevel(char shred_type,
 			ushort * l, float * a) const;
 	void AddWater();
 	ushort FlatUndeground(short depth=0);
+	void NormalCube(ushort x_start, ushort y_start, ushort z_start,
+			ushort x_end, ushort y_end, ushort z_end, int sub);
+
+	/// Lowest nullstone and sky are not in bounds.
+	bool InBounds(ushort x, ushort y, ushort z) const;
+
+	Block * blocks[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
+	uchar lightMap[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
+	World * const world;
+	const long longitude, latitude;
+	ushort shredX, shredY;
+
+	// needed in Shred::ReloadTo... for active blocks not to reload twice
+	// when they are registered both in frequent and rare lists.
+	QLinkedList<Active *> activeListAll;
+	QLinkedList<Active *> activeListFrequent;
+	QLinkedList<Active *> activeListRare;
+	QLinkedList<Active *> fallList;
+	QLinkedList<Active *> shiningList;
+	QLinkedList<Active *> deleteList;
+
+	// memory, allocated for this shred.
+	Shred * const memory;
+
 }; // class Shred
 
 #endif

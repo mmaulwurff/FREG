@@ -44,21 +44,21 @@ short World::ClampZ(const short) const { return 0; }
 uchar World::LightMap(const ushort x, const ushort y, const ushort z)
 const {
 	return GetShred(x, y)->
-		Lightmap(x & SHRED_COORDS_BITS, y & SHRED_COORDS_BITS, z);
+		Lightmap(Shred::CoordInShred(x), Shred::CoordInShred(y), z);
 }
 
 bool World::SetSunLightMap(const uchar level,
 		const ushort x, const ushort y, const ushort z)
 {
 	return GetShred(x, y)->SetSunLight(
-		x & SHRED_COORDS_BITS, y & SHRED_COORDS_BITS, z, level);
+		Shred::CoordInShred(x), Shred::CoordInShred(y), z, level);
 }
 
 bool World::SetFireLightMap(const uchar level,
 		const ushort x, const ushort y, const ushort z)
 {
 	return GetShred(x, y)->SetFireLight(
-		x & SHRED_COORDS_BITS, y & SHRED_COORDS_BITS, z, level);
+		Shred::CoordInShred(x), Shred::CoordInShred(y), z, level);
 }
 
 void World::AddFireLight(const short, const short, const short, const uchar) {}

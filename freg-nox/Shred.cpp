@@ -29,10 +29,12 @@
 // Qt version in Debian stable that time.
 const quint8 DATASTREAM_VERSION=QDataStream::Qt_4_6;
 
+const ushort SHRED_WIDTH_SHIFT=4;
+const ushort SHRED_COORDS_BITS=0xF;
 /// Get local coordinate.
-ushort CoordInShred(const ushort x) { return x & SHRED_COORDS_BITS; }
+ushort Shred::CoordInShred(const ushort x) { return x & SHRED_COORDS_BITS; }
 /// Get shred coordinate in loaded zone (from 0 to numShreds).
-ushort CoordOfShred(const ushort x) { return x >> SHRED_WIDTH_SHIFT; }
+ushort Shred::CoordOfShred(const ushort x) { return x >> SHRED_WIDTH_SHIFT; }
 
 long Shred::Longitude() const { return longitude; }
 long Shred::Latitude()  const { return latitude; }

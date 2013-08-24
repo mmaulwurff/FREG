@@ -32,11 +32,11 @@
 #include "DeferredAction.h"
 #include "ShredStorage.h"
 
-static const ushort MIN_WORLD_SIZE = 7;
+const ushort MIN_WORLD_SIZE = 7;
 
 Shred * World::GetShred(const ushort x, const ushort y) const {
-	return shreds[ (y >> SHRED_WIDTH_SHIFT)*numShreds +
-	               (x >> SHRED_WIDTH_SHIFT) ];
+	return shreds[ (Shred::CoordOfShred(y))*numShreds +
+	               (Shred::CoordOfShred(x)) ];
 }
 
 QString World::WorldName() const { return worldName; }
@@ -193,21 +193,21 @@ void World::MakeSun() {
 
 Block * World::GetBlock(const ushort x, const ushort y, const ushort z) const {
 	return GetShred(x, y)->
-		GetBlock(x & SHRED_COORDS_BITS, y & SHRED_COORDS_BITS, z);
+		GetBlock(Shred::CoordInShred(x), Shred::CoordInShred(y), z);
 }
 
 void World::SetBlock(Block * const block,
 		const ushort x, const ushort y, const ushort z)
 {
 	GetShred(x, y)->SetBlock(block,
-		x & SHRED_COORDS_BITS, y & SHRED_COORDS_BITS, z);
+		Shred::CoordInShred(x), Shred::CoordInShred(y), z);
 }
 
 void World::PutBlock(Block * const block,
 		const ushort x, const ushort y, const ushort z)
 {
 	GetShred(x, y)->PutBlock(block,
-		x & SHRED_COORDS_BITS, y & SHRED_COORDS_BITS, z);
+		Shred::CoordInShred(x), Shred::CoordInShred(y), z);
 }
 
 void World::PutNormalBlock(const int sub,
@@ -360,8 +360,9 @@ void World::PhysEvents() {
 
 	switch ( toResetDir ) {
 	case UP: break;
-	case DOWN:
+	case DOWN: // full reset
 		emit StartReloadAll();
+		CheckRemoveActive();
 		DeleteAllShreds();
 		longitude=newLongi;
 		latitude=newLati;
@@ -369,11 +370,12 @@ void World::PhysEvents() {
 		emit NeedPlayer(newX, newY, newZ);
 		emit UpdatedAll();
 		emit FinishReloadAll();
-		toResetDir=UP; // no reset
+		toResetDir=UP; // set no reset
 	break;
 	default:
+		CheckRemoveActive();
 		ReloadShreds(toResetDir);
-		toResetDir=UP; // no reset
+		toResetDir=UP; // set no reset
 	}
 
 	for (int i=0; i<defActions.size(); ++i) {
@@ -599,12 +601,12 @@ void World::NoCheckMove(
 	}
 
 	Shred * shred=GetShred(x, y);
-	shred->AddFalling(x & SHRED_COORDS_BITS, y & SHRED_COORDS_BITS, z+1);
-	shred->AddFalling(x & SHRED_COORDS_BITS, y & SHRED_COORDS_BITS, z);
+	shred->AddFalling(Shred::CoordInShred(x), Shred::CoordInShred(y), z+1);
+	shred->AddFalling(Shred::CoordInShred(x), Shred::CoordInShred(y), z);
 	shred=GetShred(newx, newy);
-	shred->AddFalling(newx & SHRED_COORDS_BITS, newy & SHRED_COORDS_BITS,
+	shred->AddFalling(Shred::CoordInShred(newx), Shred::CoordInShred(newy),
 		newz+1);
-	shred->AddFalling(newx & SHRED_COORDS_BITS, newy & SHRED_COORDS_BITS,
+	shred->AddFalling(Shred::CoordInShred(newx), Shred::CoordInShred(newy),
 		newz);
 
 	block_to->Move( Anti(dir) );
@@ -695,14 +697,14 @@ void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
 			DeleteBlock(dropped);
 		}
 		shred->AddFalling(
-			x & SHRED_COORDS_BITS, y & SHRED_COORDS_BITS, z);
+			Shred::CoordInShred(x), Shred::CoordInShred(y), z);
 	} else {
 		PutNormalBlock(AIR, x, y, z);
 	}
 	const int old_transparency=temp->Transparent();
 	const uchar old_light=temp->LightRadius();
 	DeleteBlock(temp);
-	shred->AddFalling(x & SHRED_COORDS_BITS, y & SHRED_COORDS_BITS, z+1);
+	shred->AddFalling(Shred::CoordInShred(x), Shred::CoordInShred(y), z+1);
 	if ( old_transparency!=INVISIBLE ) {
 		ReEnlightenBlockRemove(x, y, z);
 	}
@@ -807,12 +809,12 @@ void World::GetAll(const ushort x_to, const ushort y_to, const ushort z_to) {
 
 int World::Transparent(const ushort x, const ushort y, const ushort z) const {
 	return GetShred(x, y)->
-		GetBlock(x & SHRED_COORDS_BITS, y & SHRED_COORDS_BITS, z)->
+		GetBlock(Shred::CoordInShred(x), Shred::CoordInShred(y), z)->
 			Transparent();
 }
 int World::Sub(const ushort x, const ushort y, const ushort z) const {
 	return GetShred(x, y)->
-		Sub(x & SHRED_COORDS_BITS, y & SHRED_COORDS_BITS, z);
+		Sub(Shred::CoordInShred(x), Shred::CoordInShred(y), z);
 }
 
 int World::Temperature(

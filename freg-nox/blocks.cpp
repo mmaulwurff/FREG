@@ -537,12 +537,12 @@
 		SetXYZ(x, y, z);
 		(whereShred=sh)->AddActive(this);
 		if ( ENVIRONMENT==sh->GetBlock(
-					x & SHRED_COORDS_BITS,
-					y & SHRED_COORDS_BITS,
-					z-1)->Movable() &&
+					Shred::CoordInShred(x),
+					Shred::CoordInShred(y), z-1)->
+						Movable() &&
 				!(*this==*sh->GetBlock(
-					x & SHRED_COORDS_BITS,
-					y & SHRED_COORDS_BITS, z-1)) )
+					Shred::CoordInShred(x),
+					Shred::CoordInShred(y), z-1)) )
 		{
 			whereShred->AddFalling(this);
 		}
@@ -1194,8 +1194,8 @@
 		if ( IsToDelete() ) return;
 		World * const world=GetWorld();
 		if ( SOIL!=GetShred()->Sub(
-				X() & SHRED_COORDS_BITS,
-				Y() & SHRED_COORDS_BITS, Z()-1) )
+				Shred::CoordInShred(X()),
+				Shred::CoordInShred(Y()), Z()-1) )
 		{
 			world->Damage(X(), Y(), Z(), durability, TIME);
 		}
