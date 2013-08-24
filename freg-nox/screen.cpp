@@ -447,10 +447,11 @@ void Screen::Print() {
 		case USAGE_TYPE_READ_IN_INVENTORY:
 			wstandend(rightWin);
 			PrintFile(rightWin, QString(
-				w->WorldName()+"/texts/"+
+				w->WorldName() + "/texts/" +
 				player->PlayerInventory()->ShowBlock(
 					player->GetUsingInInventory())->
-						GetNote()));
+						GetNote())
+					+ ".txt");
 			player->SetUsingTypeNo();
 		break;
 		case USAGE_TYPE_READ: {

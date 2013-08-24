@@ -30,7 +30,7 @@
 #include "DeferredAction.h"
 #include "Xyz.h"
 
-//Block::
+// Block::
 	QString Block::FullName() const {
 		switch ( Sub() ) {
 		case STAR: case SUN_MOON: case SKY:
@@ -154,32 +154,32 @@
 
 	int Block::Temperature() const {
 		switch (sub) {
-			case WATER: return -100;
-			default: return 0;
+		case WATER: return -100;
+		default:    return 0;
 		}
 	}
 
 	ushort Block::Weight() const {
 		switch ( Sub() ) {
-			case NULLSTONE: return WEIGHT_NULLSTONE;
-			case SAND:      return WEIGHT_SAND;
-			case SOIL:      return WEIGHT_SAND+WEIGHT_WATER;
-			case GLASS:     return WEIGHT_GLASS;
-			case WOOD:      return WEIGHT_WATER-1;
-			case IRON:      return WEIGHT_IRON;
-			case GREENERY:  return WEIGHT_GREENERY;
-			case PAPER:
-			case ROSE:
-			case HAZELNUT:  return WEIGHT_MINIMAL;
-			case MOSS_STONE:
-			case STONE:     return WEIGHT_STONE;
-			case A_MEAT:
-			case H_MEAT:    return WEIGHT_WATER-10;
-			case SKY:
-			case STAR:
-			case SUN_MOON:
-			case AIR:       return WEIGHT_AIR;
-			default:        return WEIGHT_WATER;
+		case NULLSTONE: return WEIGHT_NULLSTONE;
+		case SAND:      return WEIGHT_SAND;
+		case SOIL:      return WEIGHT_SAND+WEIGHT_WATER;
+		case GLASS:     return WEIGHT_GLASS;
+		case WOOD:      return WEIGHT_WATER-1;
+		case IRON:      return WEIGHT_IRON;
+		case GREENERY:  return WEIGHT_GREENERY;
+		case PAPER:
+		case ROSE:
+		case HAZELNUT:  return WEIGHT_MINIMAL;
+		case MOSS_STONE:
+		case STONE:     return WEIGHT_STONE;
+		case A_MEAT:
+		case H_MEAT:    return WEIGHT_WATER-10;
+		case SKY:
+		case STAR:
+		case SUN_MOON:
+		case AIR:       return WEIGHT_AIR;
+		default:        return WEIGHT_WATER;
 		}
 	}
 
@@ -241,17 +241,16 @@
 		direction = (data >>= 7);
 	}
 	Block::~Block() { delete note; }
-//Plate::
+// Plate::
 	QString Plate::FullName() const {
 		switch ( Sub() ) {
-			case WOOD:  return QObject::tr("Wooden board");
-			case IRON:  return QObject::tr("Iron plate");
-			case STONE: return QObject::tr("Stone slab");
-			default:
-				fprintf(stderr,
-					"Plate::FullName: unlisted sub: %d",
-					Sub());
-				return "Strange plate";
+		case WOOD:  return QObject::tr("Wooden board");
+		case IRON:  return QObject::tr("Iron plate");
+		case STONE: return QObject::tr("Stone slab");
+		default:
+			fprintf(stderr, "Plate::FullName: unlisted sub: %d",
+				Sub());
+			return "Strange plate";
 		}
 	}
 
@@ -265,17 +264,16 @@
 	Plate::Plate(QDataStream & str, const int sub, const quint16 id) :
 			Block(str, sub, id, NONSTANDARD)
 	{}
-//Ladder::
+// Ladder::
 	QString Ladder::FullName() const {
 		switch ( Sub() ) {
-			case WOOD:  return QObject::tr("Ladder");
-			case STONE: return QObject::tr("Rock with ledges");
-			default:
-				fprintf(stderr,
-					"Ladder::FullName: unlisted sub: %d\n",
-					Sub());
-				return "Strange ladder";
-		}
+		case WOOD:  return QObject::tr("Ladder");
+		case STONE: return QObject::tr("Rock with ledges");
+		default:
+			fprintf(stderr, "Ladder::FullName: unlisted sub: %d\n",
+				Sub());
+			return "Strange ladder";
+	}
 	}
 
 	quint8 Ladder::Kind() const { return LADDER; }
@@ -295,17 +293,16 @@
 	Ladder::Ladder(QDataStream & str, const int sub, const quint16 id) :
 			Block(str, sub, id, NONSTANDARD)
 	{}
-//Weapon::
+// Weapon::
 	QString Weapon::FullName() const {
 		switch ( Sub() ) {
-			case STONE: return QObject::tr("Pebble");
-			case IRON:  return QObject::tr("Spike");
-			case WOOD:  return QObject::tr("Stick");
-			default:
-				fprintf(stderr,
-					"Weapon::FullName: unlisted sub: %d\n",
-					Sub());
-				return "Some weapon";
+		case STONE: return QObject::tr("Pebble");
+		case IRON:  return QObject::tr("Spike");
+		case WOOD:  return QObject::tr("Stick");
+		default:
+			fprintf(stderr, "Weapon::FullName: unlisted sub: %d\n",
+				Sub());
+			return "Some weapon";
 		}
 	}
 
@@ -315,14 +312,13 @@
 
 	ushort Weapon::DamageLevel() const {
 		switch ( Sub() ) {
-			case WOOD: return 4;
-			case IRON: return 6;
-			case STONE: return 5;
-			default:
-				fprintf(stderr,
-					"Weapon::DamageLevel: sub (?): %d\n.",
-					Sub());
-				return 1;
+		case WOOD: return 4;
+		case IRON: return 6;
+		case STONE: return 5;
+		default:
+			fprintf(stderr, "Weapon::DamageLevel: sub (?): %d\n.",
+				Sub());
+			return 1;
 		}
 	}
 
@@ -340,29 +336,27 @@
 	Weapon::Weapon(QDataStream & str, const int sub, const quint16 id) :
 			Block(str, sub, id, NONSTANDARD)
 	{}
-//Pick::
+// Pick::
 	quint8 Pick::Kind() const { return PICK; }
 	int Pick::DamageKind() const { return MINE; }
 
 	ushort Pick::DamageLevel() const {
 		switch ( Sub() ) {
-			case IRON: return 10;
-			default:
-				fprintf(stderr,
-					"Pick::DamageLevel: sub (?): %d\n.",
-					Sub());
-				return 1;
+		case IRON: return 10;
+		default:
+			fprintf(stderr, "Pick::DamageLevel: sub (?): %d\n.",
+				Sub());
+			return 1;
 		}
 	}
 
 	QString Pick::FullName() const {
 		switch ( Sub() ) {
-			case IRON: return QObject::tr("Iron pick");
-			default:
-				fprintf(stderr,
-					"Pick::FullName: unknown sub: %d\n",
-					Sub());
-				return "Strange pick";
+		case IRON: return QObject::tr("Iron pick");
+		default:
+			fprintf(stderr, "Pick::FullName: unknown sub: %d\n",
+				Sub());
+			return "Strange pick";
 		}
 	}
 
@@ -372,16 +366,15 @@
 	Pick::Pick(QDataStream & str, const int sub, const quint16 id) :
 			Weapon(str, sub, id)
 	{}
-//Active::
+// Active::
 	QString Active::FullName() const {
 		switch ( Sub() ) {
-			case SAND:  return tr("Sand");
-			case WATER: return tr("Snow");
-			default:
-				fprintf(stderr,
-					"Active::FullName: Unlisted sub: %d\n",
-					Sub());
-				return "Unkown active block";
+		case SAND:  return tr("Sand");
+		case WATER: return tr("Snow");
+		default:
+			fprintf(stderr, "Active::FullName: Unlisted sub: %d\n",
+				Sub());
+			return "Unkown active block";
 		}
 	}
 
@@ -492,27 +485,22 @@
 		Block::Damage(dmg, dmg_kind);
 		if ( last_dur != durability ) {
 			switch ( dmg_kind ) {
-				case HUNGER:
-					ReceiveSignal(tr(
-						"You faint from hunger!"));
-				break;
-				case HEAT:
-					ReceiveSignal(tr(
-						"You burn!"));
-				break;
-				case BREATH:
-					ReceiveSignal(tr(
-						"You choke withot air!"));
-				break;
-				case DAMAGE_FALL:
-					ReceiveSignal(tr(
-						"You fall, damage %1.").
-						arg(last_dur-durability));
-				break;
-				default:
-					ReceiveSignal(tr(
-						"Received %1 damage!").
-						arg(last_dur-durability));
+			case HUNGER:
+				ReceiveSignal(tr("You faint from hunger!"));
+			break;
+			case HEAT:
+				ReceiveSignal(tr("You burn!"));
+			break;
+			case BREATH:
+				ReceiveSignal(tr("You choke withot air!"));
+			break;
+			case DAMAGE_FALL:
+				ReceiveSignal(tr("You fall, damage %1.").
+					arg(last_dur-durability));
+			break;
+			default:
+				ReceiveSignal(tr("Received %1 damage!").
+					arg(last_dur-durability));
 			}
 			emit Updated();
 		}
@@ -604,7 +592,7 @@
 		delete deferredAction;
 		Unregister();
 	}
-//Animal::
+// Animal::
 	void Animal::ActRare() {
 		if ( IsToDelete() ) return;
 		World * const world=GetWorld();
@@ -675,7 +663,7 @@
 	{
 		str >> breath >> satiation;
 	}
-//Inventory::
+// Inventory::
 	bool   Inventory::Access() const { return true; }
 	ushort Inventory::Start() const { return 0; }
 	ushort Inventory::Size() const { return size; }
@@ -890,7 +878,7 @@
 		}
 		ReceiveSignal(QObject::tr(
 			"You don't know how to craft this."));
-		return false; //no such recipe
+		return false; // no such recipe
 	}
 
 	Inventory::Inventory(const ushort sz) :
@@ -920,7 +908,7 @@
 		}
 		delete [] inventory;
 	}
-//Dwarf::
+// Dwarf::
 	uchar Dwarf::GetActiveHand() const { return activeHand; }
 	void  Dwarf::SetActiveHand(const bool right) {
 		activeHand=(right ? quint8(IN_RIGHT) : IN_LEFT);
@@ -1002,9 +990,9 @@
 
 	quint16 Dwarf::NutritionalValue(const int sub) const {
 		switch ( sub ) {
-			case HAZELNUT: return SECONDS_IN_HOUR/2;
-			case H_MEAT:   return SECONDS_IN_HOUR*2.5;
-			case A_MEAT:   return SECONDS_IN_HOUR*2;
+		case HAZELNUT: return SECONDS_IN_HOUR/2;
+		case H_MEAT:   return SECONDS_IN_HOUR*2.5;
+		case A_MEAT:   return SECONDS_IN_HOUR*2;
 		}
 		return 0;
 	}
@@ -1054,7 +1042,7 @@
 		str >> activeHand;
 		UpdateLightRadius();
 	}
-//Chest::
+// Chest::
 	quint8 Chest::Kind() const { return CHEST; }
 	int Chest::Sub() const { return Block::Sub(); }
 	Inventory * Chest::HasInventory() { return Inventory::HasInventory(); }
@@ -1066,13 +1054,12 @@
 
 	QString Chest::FullName() const {
 		switch ( Sub() ) {
-			case WOOD:  return QObject::tr("Wooden chest");
-			case STONE: return QObject::tr("Stone chest");
-			default:
-				fprintf(stderr,
-					"Chest::FullName: unlisted sub: %d\n",
-					Sub());
-				return QObject::tr("Chest");
+		case WOOD:  return QObject::tr("Wooden chest");
+		case STONE: return QObject::tr("Stone chest");
+		default:
+			fprintf(stderr, "Chest::FullName: unlisted sub: %d\n",
+				Sub());
+			return QObject::tr("Chest");
 		}
 	}
 
@@ -1099,7 +1086,7 @@
 			Block(str, sub, id),
 			Inventory(str, size)
 	{}
-//Pile::
+// Pile::
 	int Pile::BeforePush(const int, Block * const who) {
 		Inventory::BeforePush(who);
 		return NO_ACTION;
@@ -1126,12 +1113,11 @@
 
 	QString Pile::FullName() const {
 		switch ( Sub() ) {
-			case DIFFERENT: return tr("Pile");
-			default:
-				fprintf(stderr,
-					"Pile::FullName: unlisted sub: %d\n",
-					Sub());
-				return tr("Unknown pile");
+		case DIFFERENT: return tr("Pile");
+		default:
+			fprintf(stderr, "Pile::FullName: unlisted sub: %d\n",
+				Sub());
+			return tr("Unknown pile");
 		}
 	}
 
@@ -1148,7 +1134,7 @@
 			Active(str, sub, id, NONSTANDARD),
 			Inventory(str, INV_SIZE)
 	{}
-//Liquid::
+// Liquid::
 	bool Liquid::CheckWater() const {
 		World * const world=GetWorld();
 		return (
@@ -1167,15 +1153,15 @@
 	void Liquid::ActRare() {
 		if ( IsToDelete() ) return;
 		World * const world=GetWorld();
-		//IDEA: turn off water drying up in ocean
+		// IDEA: turn off water drying up in ocean
 		if ( WATER==Sub() && !CheckWater() ) {
 			world->Damage(X(), Y(), Z(), 1, HEAT);
 		}
 		switch ( qrand()%20 ) {
-			case 0: world->Move(X(), Y(), Z(), NORTH); break;
-			case 1: world->Move(X(), Y(), Z(), EAST);  break;
-			case 2:	world->Move(X(), Y(), Z(), SOUTH); break;
-			case 3: world->Move(X(), Y(), Z(), WEST);  break;
+		case 0: world->Move(X(), Y(), Z(), NORTH); break;
+		case 1: world->Move(X(), Y(), Z(), EAST);  break;
+		case 2:	world->Move(X(), Y(), Z(), SOUTH); break;
+		case 3: world->Move(X(), Y(), Z(), WEST);  break;
 		}
 	}
 
@@ -1188,13 +1174,12 @@
 
 	QString Liquid::FullName() const {
 		switch ( Sub() ) {
-			case WATER: return tr("Water");
-			case STONE: return tr("Lava");
-			default:
-				fprintf(stderr,
-					"Liquid::FullName(): sub (?): %d\n",
-					Sub());
-				return "Unknown liquid";
+		case WATER: return tr("Water");
+		case STONE: return tr("Lava");
+		default:
+			fprintf(stderr, "Liquid::FullName(): sub (?): %d\n",
+				Sub());
+			return "Unknown liquid";
 		}
 	}
 
@@ -1204,7 +1189,7 @@
 	Liquid::Liquid(QDataStream & str, const int sub, const quint16 id) :
 			Active(str, sub, id)
 	{}
-//Grass::
+// Grass::
 	void Grass::ActRare() {
 		if ( IsToDelete() ) return;
 		World * const world=GetWorld();
@@ -1215,13 +1200,13 @@
 			world->Damage(X(), Y(), Z(), durability, TIME);
 		}
 		short i=X(), j=Y();
-		//increase this if grass grows too fast
+		// increase this if grass grows too fast
 		switch ( qrand()%(SECONDS_IN_HOUR*2) ) {
-			case 0: ++i; break;
-			case 1: --i; break;
-			case 2: ++j; break;
-			case 3: --j; break;
-			default: return;
+		case 0: ++i; break;
+		case 1: --i; break;
+		case 2: ++j; break;
+		case 3: --j; break;
+		default: return;
 		}
 		if ( world->InBounds(i, j) && world->Enlightened(i, j, Z()) ) {
 			if ( AIR==world->Sub(i, j, Z()) &&
@@ -1240,12 +1225,11 @@
 
 	QString Grass::FullName() const {
 		switch ( Sub() ) {
-			case GREENERY: return tr("Grass");
-			default:
-				fprintf(stderr,
-					"Grass::FullName(): sub (?): %d\n",
-					Sub());
-				return "Unknown plant";
+		case GREENERY: return tr("Grass");
+		default:
+			fprintf(stderr, "Grass::FullName(): sub (?): %d\n",
+				Sub());
+			return "Unknown plant";
 		}
 	}
 
@@ -1262,7 +1246,7 @@
 	Grass::Grass(QDataStream & str, const int sub, const quint16 id) :
 			Active(str, sub, id)
 	{}
-//Bush::
+// Bush::
 	QString Bush::FullName() const { return tr("Bush"); }
 	quint8 Bush::Kind() const { return BUSH; }
 	int  Bush::Sub() const { return Block::Sub(); }
@@ -1359,7 +1343,7 @@
 	void Rabbit::ActRare() {
 		if ( IsToDelete() ) return;
 		Animal::ActRare();
-		//eat sometimes
+		// eat sometimes
 		World * const world=GetWorld();
 		if ( SECONDS_IN_DAY/2 > Satiation() ) {
 			for (ushort x=X()-1; x<=X()+1; ++x)
@@ -1373,13 +1357,13 @@
 				}
 			}
 		}
-		//random movement
+		// random movement
 		switch ( qrand()%60 ) {
-			case 0: SetDir(NORTH); break;
-			case 1: SetDir(SOUTH); break;
-			case 2: SetDir(EAST);  break;
-			case 3: SetDir(WEST);  break;
-			default: return;
+		case 0: SetDir(NORTH); break;
+		case 1: SetDir(SOUTH); break;
+		case 2: SetDir(EAST);  break;
+		case 3: SetDir(WEST);  break;
+		default: return;
 		}
 		world->Move(X(), Y(), Z(), GetDir());
 	}
@@ -1402,9 +1386,9 @@
 	Rabbit::Rabbit(QDataStream & str, const int sub, const quint16 id) :
 			Animal(str, sub, id)
 	{}
-//Workbench::
+// Workbench::
 	void Workbench::Craft() {
-		while ( Number(0) ) { //remove previous product
+		while ( Number(0) ) { // remove previous product
 			Block * const to_push=ShowBlock(0);
 			Pull(0);
 			block_manager.DeleteBlock(to_push);
@@ -1470,13 +1454,12 @@
 
 	QString Workbench::FullName() const {
 		switch ( Sub() ) {
-			case WOOD: return QObject::tr("Workbench");
-			case IRON: return QObject::tr("Iron anvil");
-			default:
-				fprintf(stderr,
-					"Bench::FullName: unlisted sub: %d\n",
-					Sub());
-				return "Strange workbench";
+		case WOOD: return QObject::tr("Workbench");
+		case IRON: return QObject::tr("Iron anvil");
+		default:
+			fprintf(stderr, "Workbench::FullName: sub (?): %d\n",
+				Sub());
+			return "Strange workbench";
 		}
 	}
 
@@ -1513,7 +1496,7 @@
 		:
 			Chest(str, sub, id, WORKBENCH_SIZE)
 	{}
-//Door::
+// Door::
 	int Door::BeforePush(const int dir, Block * const) {
 		if ( locked || shifted || dir==World::Anti(GetDir()) ) {
 			return NO_ACTION;
@@ -1551,15 +1534,14 @@
 	QString Door::FullName() const {
 		QString sub_string;
 		switch ( Sub() ) {
-			case WOOD:  sub_string=tr(" of wood");  break;
-			case STONE: sub_string=tr(" of stone"); break;
-			case GLASS: sub_string=tr(" of glass"); break;
-			case IRON:  sub_string=tr(" of iron");  break;
-			default:
-				sub_string=tr(" of something");
-				fprintf(stderr,
-					"Door::FullName: unlisted sub: %d\n",
-					Sub());
+		case WOOD:  sub_string=tr(" of wood");  break;
+		case STONE: sub_string=tr(" of stone"); break;
+		case GLASS: sub_string=tr(" of glass"); break;
+		case IRON:  sub_string=tr(" of iron");  break;
+		default:
+			sub_string=tr(" of something");
+			fprintf(stderr, "Door::FullName: unlisted sub: %d\n",
+				Sub());
 		}
 		return tr(locked ? "Locked door" : "Door") + sub_string;
 	}
@@ -1588,7 +1570,7 @@
 	{
 		str >> shifted >> locked;
 	}
-//Clock::
+// Clock::
 	usage_types Clock::Use(Block * const who) {
 		World * world=GetWorld();
 		if ( world ) {
@@ -1604,12 +1586,11 @@
 
 	QString Clock::FullName() const {
 		switch ( Sub() ) {
-			case IRON: return tr("Iron clock");
-			default:
-				fprintf(stderr,
-					"Clock::FullName: unlisted sub: %d\n",
-					Sub());
-				return "Strange clock";
+		case IRON: return tr("Iron clock");
+		default:
+			fprintf(stderr, "Clock::FullName: unlisted sub: %d\n",
+				Sub());
+			return "Strange clock";
 		}
 	}
 
@@ -1672,7 +1653,7 @@
 			Inscribe(*note);
 		}
 	}
-//Creator::
+// Creator::
 	quint8 Creator::Kind() const { return CREATOR; }
 	int Creator::Sub() const { return Block::Sub(); }
 	QString Creator::FullName() const { return tr("Creative block"); }
@@ -1699,7 +1680,7 @@
 			Active(str, sub, id, NONSTANDARD),
 			Inventory(str, INV_SIZE)
 	{}
-//Text::
+// Text::
 	quint8 Text::Kind() const { return TEXT; }
 	QString Text::FullName() const { return QObject::tr("Paper page"); }
 
@@ -1736,7 +1717,7 @@
 	Text::Text(QDataStream & str, const int sub, const quint16 id) :
 			Block(str, sub, id, NONSTANDARD)
 	{}
-//Map::
+// Map::
 	quint8 Map::Kind() const { return MAP; }
 	QString Map::FullName() const { return QObject::tr("Map"); }
 
@@ -1750,7 +1731,7 @@
 		} else if ( who && who->ActiveBlock() ) {
 			const Active * const active=who->ActiveBlock();
 			QFile map_file(active->GetWorld()->
-				WorldName() + "/texts/" + *note);
+				WorldName() + "/texts/" + *note + ".txt");
 			const long  lati=active->GetShred()->Latitude();
 			const long longi=active->GetShred()->Longitude();
 			if ( !map_file.open(QIODevice::ReadWrite |
@@ -1760,7 +1741,7 @@
 			}
 			World * const world=active->GetWorld();
 			static const ushort FILE_SIZE_CHARS=31;
-			if ( 0==map_file.size() ) {
+			if ( 0==map_file.size() ) { // new map
 				map_file.putChar('+');
 				for (ushort i=0; i<FILE_SIZE_CHARS-2; ++i) {
 					map_file.putChar('-');
@@ -1799,10 +1780,10 @@
 				latiStart=lati;
 			}
 			if (
-					abs( lati-latiStart )>
-						FILE_SIZE_CHARS/2 ||
-					abs(longi-longiStart)>
-						FILE_SIZE_CHARS/2 )
+					( abs( lati-latiStart ) >
+						FILE_SIZE_CHARS/2 ) ||
+					( abs(longi-longiStart) >
+						FILE_SIZE_CHARS/2 ) )
 			{
 				return USAGE_TYPE_READ;
 			}
@@ -1823,7 +1804,7 @@
 			map_file.putChar('\n');
 		}
 		return USAGE_TYPE_READ;
-	} // Map::Use
+	} // usage_types Map::Use(Block * who)
 
 	void Map::SaveAttributes(QDataStream & out) const {
 		out << longiStart << latiStart << savedShift << savedChar;
