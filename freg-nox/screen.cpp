@@ -110,8 +110,7 @@ char Screen::CharNumber(const ushort x, const ushort y, const ushort z) const {
 		case UP:    return '.';
 		case DOWN:  return 'x';
 		default:
-			fprintf(stderr,
-				"Screen::CharNumber: (?) dir: %d\n",
+			fprintf(stderr, "Screen::CharNumber: (?) dir: %d\n",
 				player->GetDir());
 			return '*';
 		}
@@ -160,8 +159,7 @@ char Screen::CharName(const int kind, const int sub) const {
 	case LOCKED_DOOR: return ( STONE==sub ) ? '#' : '`';
 	case WEAPON: switch ( sub ) {
 		default:
-			fprintf(stderr,
-				"Screen::CharName: weapon sub ?: %d\n",
+			fprintf(stderr, "Screen::CharName: weapon sub ?: %d\n",
 				sub);
 		// no break;
 		case STONE: return '.';
@@ -172,8 +170,7 @@ char Screen::CharName(const int kind, const int sub) const {
 		case SAND:  return '.';
 		case WATER: return '*';
 		default:
-			fprintf(stderr,
-				"Screen::CharName: active sub ?: %d\n",
+			fprintf(stderr, "Screen::CharName: active sub ?: %d\n",
 				sub);
 	} // no break;
 	default: switch ( sub ) {
@@ -194,13 +191,12 @@ char Screen::CharName(const int kind, const int sub) const {
 		case SUN_MOON: return ' ';
 		case GREENERY: return '%';
 		default:
-			fprintf(stderr,
-				"Screen::CharName: unlisted sub: %d\n",
+			fprintf(stderr, "Screen::CharName: unlisted sub: %d\n",
 				sub);
 			return '?';
 		}
 	}
-} // Screen::CharName
+} // char Screen::CharName(int kind, int sub)
 
 color_pairs Screen::Color(const int kind, const int sub) const {
 	switch ( kind ) { // foreground_background
@@ -244,7 +240,7 @@ color_pairs Screen::Color(const int kind, const int sub) const {
 		default: return WHITE_BLACK;
 		}
 	}
-} // Screen::Color
+} // color_pairs Screen::Color(int kind, int sub)
 
 void Screen::ControlPlayer(const int ch) {
 	CleanFileToShow();
@@ -373,7 +369,7 @@ void Screen::ControlPlayer(const int ch) {
 	mutex->lock();
 	updated=false;
 	mutex->unlock();
-} // Screen::ControlPlayer
+} // void Screen::ControlPlayer(int ch)
 
 void Screen::SetActionMode(const int mode) {
 	actionMode=mode;
@@ -404,7 +400,7 @@ void Screen::InventoryAction(const ushort num) const {
 		player->Build(x, y, z, num);
 	} break;
 	default: fprintf(stderr,
-		"Screen::InventoryActiov: action mode ?: %d\n",
+		"Screen::InventoryAction: action mode ?: %d\n",
 		actionMode);
 	}
 }
@@ -500,14 +496,13 @@ void Screen::Print() {
 	mutex->lock();
 	doupdate();
 	mutex->unlock();
-} // Screen::Print
+} // void Screen::Print()
 
 void Screen::PrintHUD() {
 	if ( updatedPlayer ) {
 		return;
-	} else {
-		updatedPlayer=true;
 	}
+	updatedPlayer=true;
 	werase(hudWin);
 	// quick inventory
 	Inventory * const inv=player->PlayerInventory();
@@ -540,8 +535,7 @@ void Screen::PrintHUD() {
 	case USE:      waddstr(hudWin, "Use in inventory"); break;
 	case INSCRIBE: waddstr(hudWin, "Inscribe in inventory"); break;
 	default:       waddstr(hudWin, "Unknown");
-		fprintf(stderr,
-			"Screen::Print: Unlisted actionMode: %d\n",
+		fprintf(stderr, "Screen::Print: Unlisted actionMode: %d\n",
 			actionMode);
 	}
 	if ( player->GetCreativeMode() ) {
@@ -563,7 +557,7 @@ void Screen::PrintHUD() {
 				qPrintable(str.left(10*dur/MAX_DURABILITY+1)));
 		}
 		const short breath=player->Breath();
-		if ( -1!=breath ) { // breath line
+		if ( -1!=breath && breath!=MAX_BREATH ) { // breath line
 			wstandend(hudWin);
 			const QString str=
 				QString("%1").arg(breath, -10, 10, QChar('.'));
@@ -588,7 +582,7 @@ void Screen::PrintHUD() {
 		}
 	}
 	wnoutrefresh(hudWin);
-} // Screen::PrintHUD
+} // void Screen::PrintHUD()
 
 void Screen::PrintNormal(WINDOW * const window, const int dir) const {
 	const ushort k_start=( UP!=dir ) ?
@@ -626,7 +620,7 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
 		". Up view ." : "x Ground view x");
 	Arrows(window, (player->X()-start_x)*2+1, player->Y()-start_y+1);
 	wnoutrefresh(window);
-} // Screen::PrintNormal
+} // void Screen::PrintNormal(WINDOW * window, int dir)
 
 void Screen::PrintFront(WINDOW * const window) const {
 	const int dir=player->GetDir();
@@ -689,8 +683,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 		arrow_X=(pY-begin_y)*2+1;
 	break;
 	default:
-		fprintf(stderr,
-			"Screen::PrintFront(): unlisted dir: %d\n",
+		fprintf(stderr, "Screen::PrintFront(): unlisted dir: %d\n",
 			(int)dir);
 		return;
 	}
@@ -755,7 +748,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 	}
 	Arrows(window, arrow_X, arrow_Y);
 	wnoutrefresh(window);
-} // Screen::PrintFront
+} // void Screen::PrintFront(WINDOW * window)
 
 void Screen::PrintInv(WINDOW * const window, const Inventory * const inv)
 const {
@@ -802,7 +795,7 @@ const {
 		( player->PlayerInventory()==inv ) ?
 			"Your inventory" : qPrintable(inv->FullName()));
 	wnoutrefresh(window);
-} // Screen::PrintInv
+} // void Screen::PrintInv(WINDOW * window, const Inventory * inv)
 
 void Screen::PrintText(WINDOW * const window, QString const & str) const {
 	werase(window);
@@ -933,7 +926,7 @@ Screen::Screen(World * const wor, Player * const pl) :
 	input->start();
 	connect(timer, SIGNAL(timeout()), this, SLOT(Print()));
 	timer->start(100);
-} // Screen::Screen
+} // Screen::Screen(World * wor, Player * pl)
 
 void Screen::CleanAll() {
 	static bool cleaned=false;
