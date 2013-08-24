@@ -112,6 +112,7 @@ Shred::Shred(World * const world_, const ushort shred_x, const ushort shred_y,
 	switch ( TypeOfShred(longi, lati) ) {
 	default: fprintf(stderr, "Shred::Shred: unlisted type: %c, code %d\n",
 		TypeOfShred(longi, lati), int(TypeOfShred(longi, lati)));
+	// no break;
 	case SHRED_PLAIN: Plain(); break;
 	case SHRED_NULLMOUNTAIN: NullMountain(); break;
 	case SHRED_TESTSHRED: TestShred(); break;
@@ -509,7 +510,7 @@ void Shred::TestShred() {
 		}
 	}
 	SetNewBlock(RABBIT, A_MEAT, 2, 8, level);*/
-} // Shred::TestShred
+} // void Shred::TestShred()
 
 void Shred::NullMountain() {
 	for (ushort i=0; i<SHRED_WIDTH; ++i)
@@ -621,7 +622,7 @@ bool Shred::Tree(const ushort x, const ushort y, const ushort z,
 		}
 	}
 	return true;
-} // Shred::Tree
+} // bool Shred::Tree(ushort x, ushort y, ushort z, ushort height)
 
 bool Shred::InBounds(const ushort x, const ushort y, const ushort z) const {
 	return ( x<SHRED_WIDTH && y<SHRED_WIDTH && z && z<HEIGHT-1 );

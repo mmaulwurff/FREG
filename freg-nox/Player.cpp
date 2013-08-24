@@ -434,7 +434,7 @@ void Player::ProcessCommand(QString & command) {
 		emit Notify(tr("Sub %1 is %2.").
 			arg(sub).
 			arg(BlockManager::SubToString(sub)));
-	} else if ( "stringtosub"==request || "str2s" ) {
+	} else if ( "stringtosub"==request || "str2s"==request ) {
 		QString str;
 		comm_stream >> str;
 		const int sub=BlockManager::StringToSub(str);
@@ -454,7 +454,7 @@ void Player::ProcessCommand(QString & command) {
 		emit Notify(tr("Don't know such command: \"%1\".").
 			arg(command));
 	}
-} //Player::ProcessCommand
+} // void Player::ProcessCommand(QString & command)
 
 void Player::Get(Block * const block) {
 	Inventory * const inv=PlayerInventory();
@@ -598,7 +598,7 @@ void Player::SetPlayer(
 	connect(player, SIGNAL(ReceivedText(const QString &)),
 		this, SIGNAL(Notify(const QString &)),
 		Qt::DirectConnection);
-} //Player::SetPlayer
+} // void Player::SetPlayer(ushort player_x, ushort player_y, ushort player_z)
 
 Player::Player(World * const w) :
 		dir(NORTH),
@@ -651,7 +651,7 @@ Player::Player(World * const w) :
 	connect(world, SIGNAL(FinishReloadAll()),
 		this, SLOT(WorldSizeReloadFinish()),
 		Qt::DirectConnection);
-} //Player::Player
+} // Player::Player(World * w)
 
 void Player::CleanAll() {
 	if ( cleaned ) {
