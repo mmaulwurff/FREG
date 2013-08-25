@@ -37,14 +37,14 @@ enum before_push_action {
 	DAMAGE,
 	DESTROY,
 	MOVE_SELF
-}; //enum before_push_action
+}; // enum before_push_action
 
 enum ACTIVE_FREQUENCY {
 	NEVER,
 	FREQUENT,
 	FREQUENT_AND_RARE,
 	RARE
-}; //enum ACTIVE_FREQUENCY
+}; // enum ACTIVE_FREQUENCY
 
 enum WEARABLE {
 	WEARABLE_NOWHERE,
@@ -52,9 +52,9 @@ enum WEARABLE {
 	WEARABLE_ARM,
 	WEARABLE_BODY,
 	WEARABLE_LEGS
-}; //enum WEARABLE
+}; // enum WEARABLE
 
-//weights in measures - mz (mezuro)
+// weights in measures - mz (mezuro)
 	const ushort WEIGHT_NULLSTONE=1000;
 	const ushort WEIGHT_SAND=100;
 	const ushort WEIGHT_WATER=50;
@@ -75,7 +75,7 @@ class Inventory;
 class Active;
 class Animal;
 
-class Block { //blocks without special physics and attributes
+class Block { // blocks without special physics and attributes
 	quint8 Transparency(quint8 transp, int sub);
 
 	const quint8 transparent;
@@ -115,7 +115,7 @@ class Block { //blocks without special physics and attributes
 	virtual uchar LightRadius() const;
 	virtual int Temperature() const;
 	virtual ushort Weight() const;
-	///Receive text signal.
+	/// Receive text signal.
 	virtual void ReceiveSignal(const QString &);
 
 	protected:
@@ -143,7 +143,7 @@ class Block { //blocks without special physics and attributes
 
 	protected:
 	static quint16 IdFromKindSub(quint16 id, quint8 sub);
-}; //class Block
+}; // class Block
 
 class Plate : public Block {
 	public:
@@ -154,7 +154,7 @@ class Plate : public Block {
 
 	Plate(int sub, quint16 id);
 	Plate(QDataStream & str, int sub, quint16 id);
-}; //class Plate
+}; // class Plate
 
 class Ladder : public Block {
 	public:
@@ -167,7 +167,7 @@ class Ladder : public Block {
 
 	Ladder(int sub, quint16 id);
 	Ladder(QDataStream & str, int sub, quint16 id);
-}; //class Ladder
+}; // class Ladder
 
 class Weapon : public Block {
 	public:
@@ -181,7 +181,7 @@ class Weapon : public Block {
 
 	Weapon(int sub, quint16 id);
 	Weapon(QDataStream & str, int sub, quint16 id);
-}; //class Weapon
+}; // class Weapon
 
 class Pick : public Weapon {
 	public:
@@ -192,7 +192,7 @@ class Pick : public Weapon {
 
 	Pick(int sub, quint16 id);
 	Pick(QDataStream & str, int sub, quint16 id);
-}; //class Pick
+}; // class Pick
 
 class DeferredAction;
 class Shred;
@@ -293,7 +293,7 @@ class Animal : public Active {
 	public:
 	Animal(int sub, quint16 id);
 	Animal(QDataStream & str, int sub, quint16 id);
-}; //class Animal
+}; // class Animal
 
 class Inventory {
 	const ushort size;
@@ -305,12 +305,12 @@ class Inventory {
 	public:
 	virtual quint8 Kind() const=0;
 	virtual int Sub() const=0;
-	///Returns true on success.
+	/// Returns true on success.
 	virtual bool Drop(ushort src, ushort dest, ushort num, Inventory * to);
-	///Returns true on success.
+	/// Returns true on success.
 	virtual bool GetAll(Inventory * from);
 	virtual bool Access() const;
-	///Returns true on success.
+	/// Returns true on success.
 	virtual bool Get(Block * block, ushort start=0);
 	virtual void Pull(ushort num);
 	virtual void MoveInside(ushort num_from, ushort num_to, ushort num);
@@ -320,9 +320,9 @@ class Inventory {
 	virtual QString FullName() const=0;
 	virtual Inventory * HasInventory();
 
-	///Returns true if block found its place.
+	/// Returns true if block found its place.
 	bool GetExact(Block * block, ushort num);
-	///Returns true on success (something has been crafted).
+	/// Returns true on success (something has been crafted).
 	bool MiniCraft(ushort num);
 	/// Returns true on success.
 	bool InscribeInv(ushort num, const QString & str);
@@ -341,13 +341,13 @@ class Inventory {
 
 	void BeforePush(Block * who);
 
-	//it is not recommended to make inventory size more than 26,
-	//because it will not be convenient to deal with inventory
-	//in console version.
+	// it is not recommended to make inventory size more than 26,
+	// because it will not be convenient to deal with inventory
+	// in console version.
 	Inventory(ushort sz=INV_SIZE);
 	Inventory(QDataStream & str, ushort size=INV_SIZE);
 	~Inventory();
-}; //class Inventory
+}; // class Inventory
 
 class Dwarf : public Animal, public Inventory {
 	Q_OBJECT
@@ -393,7 +393,7 @@ class Dwarf : public Animal, public Inventory {
 
 	Dwarf(int sub, quint16 id);
 	Dwarf(QDataStream & str, int sub, quint16 id);
-}; //class Dwarf
+}; // class Dwarf
 
 class Chest : public Block, public Inventory {
 	public:
@@ -412,7 +412,7 @@ class Chest : public Block, public Inventory {
 	public:
 	Chest(int sub, quint16 id, ushort size=INV_SIZE);
 	Chest(QDataStream & str, int sub, quint16 id, ushort size=INV_SIZE);
-}; //class Chest
+}; // class Chest
 
 class Pile : public Active, public Inventory {
 	Q_OBJECT
@@ -436,12 +436,12 @@ class Pile : public Active, public Inventory {
 	public:
 	Pile(int sub, quint16 id);
 	Pile(QDataStream & str, int sub, quint16 id);
-}; //class Pile
+}; // class Pile
 
 class Liquid : public Active {
 	Q_OBJECT
 
-	///Return true if there is water near.
+	/// Return true if there is water near.
 	bool CheckWater() const;
 
 	public:
@@ -456,7 +456,7 @@ class Liquid : public Active {
 
 	Liquid(int sub, quint16 id);
 	Liquid(QDataStream & str, int sub, quint16 id);
-}; //class Liquid
+}; // class Liquid
 
 class Grass : public Active {
 	Q_OBJECT
@@ -472,7 +472,7 @@ class Grass : public Active {
 
 	Grass(int sub, quint16 id);
 	Grass(QDataStream & str, int sub, quint16 id);
-}; //class Grass
+}; // class Grass
 
 class Bush : public Active, public Inventory {
 	Q_OBJECT
@@ -501,7 +501,7 @@ class Bush : public Active, public Inventory {
 	public:
 	Bush(int sub, quint16 id);
 	Bush(QDataStream & str, int sub, quint16 id);
-}; //class Bush
+}; // class Bush
 
 class Rabbit : public Animal {
 	Q_OBJECT
@@ -519,7 +519,7 @@ class Rabbit : public Animal {
 
 	Rabbit(int sub, quint16 id);
 	Rabbit(QDataStream & str, int sub, quint16 id);
-}; //class Rabbit
+}; // class Rabbit
 
 class Workbench : public Chest {
 	static const ushort WORKBENCH_SIZE=10;
@@ -537,7 +537,7 @@ class Workbench : public Chest {
 
 	Workbench(int sub, quint16 id);
 	Workbench(QDataStream & str, int sub, quint16 id);
-}; //class Workbench
+}; // class Workbench
 
 class Door : public Active {
 	Q_OBJECT
@@ -562,7 +562,7 @@ class Door : public Active {
 	public:
 	Door(int sub, quint16 id);
 	Door(QDataStream & str, int sub, quint16 id);
-}; //class Door
+}; // class Door
 
 class Clock : public Active {
 	short alarmTime;
@@ -582,7 +582,7 @@ class Clock : public Active {
 
 	Clock(int sub, quint16 id);
 	Clock (QDataStream & str, int sub, quint16 id);
-}; //class Clock
+}; // class Clock
 
 class Creator : public Active, public Inventory {
 	Q_OBJECT
@@ -602,7 +602,7 @@ class Creator : public Active, public Inventory {
 	public:
 	Creator(int sub, quint16 id);
 	Creator(QDataStream & str, int sub, quint16 id);
-}; //class Creator
+}; // class Creator
 
 class Text : public Block {
 	public:
@@ -615,10 +615,10 @@ class Text : public Block {
 
 	Text(int sub, quint16 id);
 	Text(QDataStream & str, int sub, quint16 id);
-}; //class Text
+}; // class Text
 
 class Map : public Text {
-	//coordinates map titled in. also ~center.
+	// coordinates map titled in. also ~center.
 	qint64 longiStart, latiStart;
 	quint16 savedShift;
 	qint8 savedChar;

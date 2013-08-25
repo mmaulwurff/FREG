@@ -173,12 +173,12 @@ void DeferredAction::SetThrow(
 
 void DeferredAction::MakeAction() {
 	switch ( type ) {
-		case DEFERRED_MOVE:   Move();   break;
-		case DEFERRED_JUMP:   Jump();   break;
-		case DEFERRED_BUILD:  Build();  break;
-		case DEFERRED_DAMAGE: Damage(); break;
-		case DEFERRED_THROW:  Throw();  break;
-		case DEFERRED_GHOST_MOVE: GhostMove(); break;
+	case DEFERRED_MOVE:   Move();   break;
+	case DEFERRED_JUMP:   Jump();   break;
+	case DEFERRED_BUILD:  Build();  break;
+	case DEFERRED_DAMAGE: Damage(); break;
+	case DEFERRED_THROW:  Throw();  break;
+	case DEFERRED_GHOST_MOVE: GhostMove(); break;
 	}
 	type=DEFERRED_NOTHING;
 }

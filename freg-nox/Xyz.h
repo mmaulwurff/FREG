@@ -29,8 +29,7 @@ class Xy {
 	short GetY() const { return y; }
 
 	private:
-	short x;
-	short y;
+	short x, y;
 }; // class Xy
 
 class Xyz {
@@ -42,9 +41,7 @@ class Xyz {
 	short GetZ() const { return z; }
 
 	private:
-	short x;
-	short y;
-	short z;
+	short x, y, z;
 }; // class Xyz
 
 #endif

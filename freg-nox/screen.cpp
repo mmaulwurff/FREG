@@ -630,7 +630,7 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
 	box(window, 0, 0);
 	wcolor_set(window, BLACK_WHITE, NULL);
 	mvwaddstr(window, 0, 1, (UP==dir) ?
-		". Up view ." : "x Ground view x");
+		". Up ." : "x Ground x");
 	Arrows(window, (player->X()-start_x)*2+1, player->Y()-start_y+1, true);
 	wnoutrefresh(window);
 } // void Screen::PrintNormal(WINDOW * window, int dir)
@@ -745,10 +745,10 @@ void Screen::PrintFront(WINDOW * const window) const {
 	wcolor_set(window, BLACK_WHITE, NULL);
 	(void)wmove(window, 0, 1);
 	switch ( dir ) {
-	case NORTH: waddstr(window, "^ North view ^"); break;
-	case SOUTH: waddstr(window, "v South view v"); break;
-	case EAST:  waddstr(window, "> East view >");  break;
-	case WEST:  waddstr(window, "< West view <");  break;
+	case NORTH: waddstr(window, "^ North ^"); break;
+	case SOUTH: waddstr(window, "v South v"); break;
+	case EAST:  waddstr(window, "> East >");  break;
+	case WEST:  waddstr(window, "< West <");  break;
 	}
 	if ( shiftFocus ) {
 		HorizontalArrows(window, arrow_Y-shiftFocus, WHITE_BLUE);

@@ -18,17 +18,23 @@
 	* along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
+#ifndef WORLDMAP_H
+#define WORLDMAP_H
+
 class QFile;
 class QString;
 
 class WorldMap {
-	long mapSize;
-	QFile * map;
-
 	public:
+	WorldMap(const QString *);
+	~WorldMap();
+
 	long MapSize() const;
 	char TypeOfShred(long longi, long lati);
 
-	WorldMap(const QString *);
-	~WorldMap();
-}; // class Map
+	private:
+	long mapSize;
+	QFile * map;
+}; // class WorldMap
+
+#endif

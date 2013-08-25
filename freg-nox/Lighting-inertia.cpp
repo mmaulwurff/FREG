@@ -176,38 +176,32 @@ void World::ReEnlightenMove(const int dir) {
 		const ushort)), 0, 0);
 
 	switch ( dir ) {
-		case NORTH:
-			for (ushort i=0; i<NumShreds(); ++i) {
-				shreds[i]->ShineAll();
-				shreds[i+NumShreds()]->ShineAll();
-			}
-		break;
-		case SOUTH:
-			for (ushort i=0; i<NumShreds(); ++i) {
-				shreds[i+NumShreds()*(NumShreds()-1)]->
-					ShineAll();
-				shreds[i+NumShreds()*(NumShreds()-2)]->
-					ShineAll();
-			}
-		break;
-		case EAST:
-			for (ushort i=0; i<NumShreds(); ++i) {
-				shreds[NumShreds()*i+NumShreds()-1]->
-					ShineAll();
-				shreds[NumShreds()*i+NumShreds()-2]->
-					ShineAll();
-			}
-		break;
-		case WEST:
-			for (ushort i=0; i<NumShreds(); ++i) {
-				shreds[NumShreds()*i]->ShineAll();
-				shreds[NumShreds()*i+1]->ShineAll();
-			}
-		break;
-		default:
-			fprintf(stderr,
-				"World::ReEnlightenMove: direction (?): %d\n",
-				dir);
+	case NORTH:
+		for (ushort i=0; i<NumShreds(); ++i) {
+			shreds[i]->ShineAll();
+			shreds[i+NumShreds()]->ShineAll();
+		}
+	break;
+	case SOUTH:
+		for (ushort i=0; i<NumShreds(); ++i) {
+			shreds[i+NumShreds()*(NumShreds()-1)]->ShineAll();
+			shreds[i+NumShreds()*(NumShreds()-2)]->ShineAll();
+		}
+	break;
+	case EAST:
+		for (ushort i=0; i<NumShreds(); ++i) {
+			shreds[NumShreds()*i+NumShreds()-1]->ShineAll();
+			shreds[NumShreds()*i+NumShreds()-2]->ShineAll();
+		}
+	break;
+	case WEST:
+		for (ushort i=0; i<NumShreds(); ++i) {
+			shreds[NumShreds()*i]->ShineAll();
+			shreds[NumShreds()*i+1]->ShineAll();
+		}
+	break;
+	default: fprintf(stderr, "World::ReEnlightenMove: direction (?): %d\n",
+		dir);
 	}
 	emit ReConnect();
 }

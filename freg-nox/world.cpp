@@ -123,7 +123,7 @@ void World::Get(Block * const block_to,
 }
 
 bool World::InBounds(const ushort x, const ushort y, const ushort z) const {
-	static const ushort max_xy=SHRED_WIDTH*numShreds;
+	static const ushort max_xy = SHRED_WIDTH*NumShreds();
 	return ( x<max_xy && y<max_xy && z<HEIGHT );
 }
 
@@ -581,8 +581,9 @@ bool World::CanMove(
 	break;
 	}
 	return ( ENVIRONMENT==block_to->Movable() ||
-		Move(newx, newy, newz, dir) );
-} // bool World::CanMove
+		( (block->Weight() > block_to->Weight()) &&
+			Move(newx, newy, newz, dir) ) );
+} // bool World::CanMove(ushort x, y, z, newx, newy, newz, quint8 dir)
 
 void World::NoCheckMove(
 		const ushort x,    const ushort y,    const ushort z,
