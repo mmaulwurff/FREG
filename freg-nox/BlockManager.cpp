@@ -56,10 +56,10 @@ const QString BlockManager::subs[LAST_SUB]={
 	"nullstone",
 	"sky",
 	"star",
-	"sun or moon",
+	"sun_or_moon",
 	"soil",
-	"meat of intellectual",
-	"animal meat",
+	"meat_of_intellectual",
+	"animal_meat",
 	"glass",
 	"wood",
 	"different",
@@ -125,7 +125,7 @@ Block * BlockManager::NewBlock(const int kind, int sub) {
 	case CREATOR: return New<Creator>(sub, id);
 	case WORKBENCH: return New<Workbench>(sub, id);
 	}
-}
+} // Block * BlockManager::NewBlock(int kind, int sub)
 
 Block * BlockManager::BlockFromFile(QDataStream & str,
 		const quint8 kind, const quint8 sub)
