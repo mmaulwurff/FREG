@@ -271,6 +271,7 @@ Shred ** World::FindShred(const ushort x, const ushort y) const {
 void World::ReloadShreds(const int direction) {
 	short x, y; // do not make unsigned, values <0 are needed for checks
 	RemSun();
+	CheckRemoveActive();
 	switch ( direction ) {
 	case NORTH:
 		--longitude;
