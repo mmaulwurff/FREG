@@ -29,7 +29,8 @@
 #include <QMutex>
 #include "screen.h"
 #include "world.h"
-#include "blocks.h"
+#include "Block.h"
+#include "Inventory.h"
 #include "Player.h"
 
 const char OBSCURE_BLOCK=' ';

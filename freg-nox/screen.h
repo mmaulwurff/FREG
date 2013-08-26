@@ -18,17 +18,18 @@
 	* along with FREG. If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-//this file provides curses (text-based graphics interface) screen for freg.
-//screen.cpp provides definitions for methods.
+// this file provides curses (text-based graphics interface) screen for freg.
+// screen.cpp provides definitions for methods.
 
 #ifndef SCREEN_H
 #define SCREEN_H
 
 #define NOX
-#define SCREEN_SIZE 30
 
 #include <curses.h>
 #include "VirtScreen.h"
+
+const ushort SCREEN_SIZE = 30;
 
 enum actions {
 	USE,
@@ -40,8 +41,8 @@ enum actions {
 	BUILD,
 	CRAFT,
 	TAKEOFF
-}; //enum actions
-enum color_pairs { //do not change colors order! //foreground_background
+}; // enum actions
+enum color_pairs { // do not change colors order! // foreground_background
         BLACK_BLACK=1,
         BLACK_RED,
         BLACK_GREEN,
@@ -113,7 +114,7 @@ enum color_pairs { //do not change colors order! //foreground_background
         WHITE_MAGENTA,
         WHITE_CYAN,
         WHITE_WHITE
-}; //enum color_pairs
+}; // enum color_pairs
 
 class IThread;
 class Inventory;

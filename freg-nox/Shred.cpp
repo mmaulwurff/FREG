@@ -24,7 +24,7 @@
 #include "world.h"
 #include "BlockManager.h"
 #include "Xyz.h"
-#include "blocks.h"
+#include "Active.h"
 
 // Qt version in Debian stable that time.
 const quint8 DATASTREAM_VERSION=QDataStream::Qt_4_6;
@@ -501,7 +501,7 @@ void Shred::TestShred() {
 	column=-1;
 	row+=2;
 	SetNewBlock(TEXT, PAPER, column+=2, row, level);
-	((Text*)GetBlock(column, row, level))->SetTitle(".hidden");
+	GetBlock(column, row, level)->Inscribe(".hidden");
 	SetNewBlock(BELL, IRON, column+=2, row, level);
 	// suicide booth
 	/*for (ushort i=1; i<4; ++i)

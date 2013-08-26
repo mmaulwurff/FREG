@@ -19,7 +19,8 @@
 	*/
 
 #include "world.h"
-#include "blocks.h"
+#include "Active.h"
+#include "Inventory.h"
 #include "DeferredAction.h"
 
 void DeferredAction::GhostMove() const {

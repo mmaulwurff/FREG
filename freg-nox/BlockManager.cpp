@@ -22,6 +22,7 @@
 #include <memory>
 #include "header.h"
 #include "blocks.h"
+#include "Dwarf.h"
 #include "BlockManager.h"
 
 const QString BlockManager::kinds[LAST_KIND]={

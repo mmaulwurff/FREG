@@ -19,8 +19,10 @@ TARGET = freg-nox-'"$${VERSION}"'
 DEPENDPATH  += .
 INCLUDEPATH += .
 
-QMAKE_CXXFLAGS_DEBUG += -O -fno-inline
-QMAKE_CFLAGS_DEBUG   += -O -fno-inline
+#QMAKE_CXXFLAGS_DEBUG += -O -fno-inline
+#QMAKE_CFLAGS_DEBUG   += -O -fno-inline
+QMAKE_CXXFLAGS_DEBUG += -O3
+QMAKE_CFLAGS_DEBUG   += -O3
 
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CFLAGS_RELEASE   -= -O2
@@ -31,6 +33,11 @@ QMAKE_CFLAGS_RELEASE   += -O3 -s
 HEADERS += \
 	BlockManager.h \
 	blocks.h \
+	Block.h \
+	Active.h \
+	Inventory.h \
+	Animal.h \
+	Dwarf.h \
 	CraftManager.h \
 	DeferredAction.h \
 	header.h \

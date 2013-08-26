@@ -25,7 +25,7 @@
 #include <QDir>
 #include <QWriteLocker>
 #include <QReadLocker>
-#include "blocks.h"
+#include "Dwarf.h"
 #include "Player.h"
 #include "world.h"
 #include "Shred.h"

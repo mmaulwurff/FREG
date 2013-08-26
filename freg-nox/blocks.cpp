@@ -23,6 +23,7 @@
 #include <QString>
 #include <QFile>
 #include "blocks.h"
+#include "Dwarf.h"
 #include "world.h"
 #include "Shred.h"
 #include "CraftManager.h"
