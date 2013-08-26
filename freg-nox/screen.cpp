@@ -48,6 +48,9 @@ const {
 	mvwaddstr(window, 0, x, "@@");
 	mvwaddstr(window, SCREEN_SIZE+1, x, "@@");
 	HorizontalArrows(window, y, WHITE_RED, show_dir);
+	if ( show_dir ) {
+		wmove(window, y, x);
+	}
 }
 
 void Screen::HorizontalArrows(WINDOW * const window, const ushort y,
@@ -129,15 +132,11 @@ char Screen::CharNumber(const ushort x, const ushort y, const ushort z) const {
 		}
 	}
 	const short z_dif=( UP==player->GetDir() ) ?
-		z - player->Z() :
-		player->Z() - z;
+		z - player->Z() : player->Z() - z;
 	return ( !z_dif ) ?
-		' ' :
-		( z_dif<0 ) ?
-			'-' :
-			( z_dif<10 ) ?
-				z_dif+'0' :
-				'+';
+		' ' : ( z_dif<0 ) ?
+			'-' : ( z_dif<10 ) ?
+				z_dif+'0' : '+';
 }
 
 char Screen::CharNumberFront(const ushort i, const ushort j) const {
@@ -892,7 +891,6 @@ Screen::Screen(World * const wor, Player * const pl) :
 	noecho(); // do not print typed symbols
 	nonl();
 	keypad(stdscr, TRUE); // use arrows
-	curs_set(0); // invisible cursor
 	// all available color pairs (maybe some of them will not be used)
 	const short colors[]={ // do not change colors order!
 		COLOR_BLACK,
