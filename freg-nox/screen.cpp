@@ -48,9 +48,7 @@ const {
 	mvwaddstr(window, 0, x, "@@");
 	mvwaddstr(window, SCREEN_SIZE+1, x, "@@");
 	HorizontalArrows(window, y, WHITE_RED, show_dir);
-	if ( show_dir ) {
-		wmove(window, y, x);
-	}
+	wmove(window, y, x);
 }
 
 void Screen::HorizontalArrows(WINDOW * const window, const ushort y,
@@ -454,6 +452,16 @@ void Screen::Print() {
 	updated=true;
 	mutex->unlock();
 	const int dir=player->GetDir();
+	switch ( player->UsingSelfType() ) { // left window
+	case USAGE_TYPE_OPEN:
+		if ( player->PlayerInventory() ) {
+			PrintInv(leftWin, player->PlayerInventory());
+			break;
+		} // no break;
+	default:
+		PrintNormal(leftWin, (UP==dir || DOWN==dir) ?
+			NORTH : dir);
+	}
 	if ( !fileToShow ) { // right window
 		switch ( player->UsingType() ) {
 		case USAGE_TYPE_READ_IN_INVENTORY:
@@ -494,16 +502,6 @@ void Screen::Print() {
 				PrintFront(rightWin);
 			}
 		}
-	}
-	switch ( player->UsingSelfType() ) { // left window
-	case USAGE_TYPE_OPEN:
-		if ( player->PlayerInventory() ) {
-			PrintInv(leftWin, player->PlayerInventory());
-			break;
-		} // no break;
-	default:
-		PrintNormal(leftWin, (UP==dir || DOWN==dir) ?
-			NORTH : dir);
 	}
 	w->Unlock();
 	mutex->lock();
