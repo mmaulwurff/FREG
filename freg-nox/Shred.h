@@ -31,8 +31,7 @@ class QByteArray;
 
 class Shred {
 	public:
-	Shred(World *, ushort shred_x, ushort shred_y,
-			long longi, long lati,
+	Shred(ushort shred_x, ushort shred_y, long longi, long lati,
 			Shred * memory);
 	~Shred();
 
@@ -47,17 +46,21 @@ class Shred {
 	void PhysEventsFrequent();
 	void PhysEventsRare();
 	void Clean();
-	void CheckRemove();
 
+	void Register(Active *);
+	void AddShining(Active *);
+	void RemShining(Active *);
+	void AddToDelete(Active *);
+	void AddFalling(ushort x, ushort y, ushort z);
+
+	private:
 	void AddActive(Active *);
 	void RemActive(Active *);
 	void AddFalling(Active *);
 	void RemFalling(Active *);
-	void AddFalling(ushort x, ushort y, ushort z);
-	void AddShining(Active *);
-	void RemShining(Active *);
-	void AddToDelete(Active *);
+	void Unregister(Active *);
 
+	public:
 	QLinkedList<Active *>::const_iterator ShiningBegin() const;
 	QLinkedList<Active *>::const_iterator ShiningEnd() const;
 
@@ -154,7 +157,6 @@ class Shred {
 
 	Block * blocks[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
 	uchar lightMap[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
-	World * const world;
 	const long longitude, latitude;
 	ushort shredX, shredY;
 
@@ -169,7 +171,6 @@ class Shred {
 
 	// memory, allocated for this shred.
 	Shred * const memory;
-
 }; // class Shred
 
 #endif

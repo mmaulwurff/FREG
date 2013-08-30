@@ -140,7 +140,6 @@ class World : public QThread {
 			ushort & x_targ, ushort & y_targ, ushort & z_targ,
 			quint8 dir) const;
 	ushort NumShreds() const;
-	ushort NumActiveShreds() const;
 	static quint8 TurnRight(quint8 dir);
 	static quint8 TurnLeft (quint8 dir);
 	static quint8 Anti(quint8 dir);
@@ -241,7 +240,6 @@ class World : public QThread {
 	void ReloadAllShreds(long lati, long longi,
 		ushort new_x, ushort new_y, ushort new_z);
 	private:
-	void CheckRemoveActive();
 	void SetNumActiveShreds(ushort num);
 	/// Also saves all shreds.
 	void DeleteAllShreds();
@@ -256,8 +254,6 @@ class World : public QThread {
 	void ReadLock();
 	bool TryReadLock();
 	void Unlock();
-
-	void EmitNotify(const QString & str) const;
 
 	public:
 	World(const QString &);
@@ -284,5 +280,7 @@ class World : public QThread {
 	void FinishReloadAll();
 	void ExitReceived();
 }; // class World
+
+extern World * world;
 
 #endif

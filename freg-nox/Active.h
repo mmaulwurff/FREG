@@ -79,10 +79,10 @@ class Active : public QObject, public Block {
 	void EmitUpdated();
 
 	void SetXYZ(ushort x, ushort y, ushort z);
-	void Register(Shred *, ushort x, ushort y, ushort z);
-	void SetShredNull();
 	void SetToDelete();
 	bool IsToDelete() const;
+
+	void SetShred(Shred * const);
 
 	signals:
 	void Moved(int);
@@ -95,15 +95,15 @@ class Active : public QObject, public Block {
 	void SaveAttributes(QDataStream & out) const;
 
 	private:
-	void Unregister();
-
 	quint8 fall_height;
 	bool falling;
-	bool toDelete;
+	bool frozen; // don't do actions when frozen
 	DeferredAction * deferredAction;
 	/// Coordinates in loaded world zone.
 	ushort x_self, y_self, z_self;
-	Shred * whereShred;
+	Shred * shred;
+
+	void UpdateShred();
 }; // class Active
 
 #endif

@@ -51,7 +51,7 @@ bool Shred::LoadShred() {
 	QDataStream in(*data);
 	quint8 version;
 	in >> version;
-	if ( Q_UNLIKELY(DATASTREAM_VERSION!=version) ) {
+	if ( Q_UNLIKELY(DATASTREAM_VERSION != version) ) {
 		fprintf(stderr, "Wrong version: %d\nGenerating new shred.\n",
 			DATASTREAM_VERSION);
 		return false;
@@ -60,36 +60,36 @@ bool Shred::LoadShred() {
 	for (ushort x=0; x<SHRED_WIDTH; ++x)
 	for (ushort y=0; y<SHRED_WIDTH; ++y) {
 		PutNormalBlock(NULLSTONE, x, y, 0);
-		lightMap[x][y][0]=0;
+		lightMap[x][y][0] = 0;
 		for (ushort z=1; ; ++z) {
-			lightMap[x][y][z]=0;
 			quint8 kind, sub;
-			const bool normal=block_manager.
+			const bool normal = block_manager.
 				KindSubFromFile(in, kind, sub);
 			if ( sub==SKY || sub==STAR ) {
-				for ( ; z<HEIGHT-1; ++z) {
+				for ( ; z < HEIGHT-1; ++z) {
 					PutNormalBlock(AIR, x, y, z);
 					lightMap[x][y][z]=0;
 				}
 				PutNormalBlock(sub, x, y, HEIGHT-1);
-				lightMap[x][y][HEIGHT-1]=1;
+				lightMap[x][y][HEIGHT-1] = 1;
 				break;
+			} else if ( normal ) {
+				lightMap[x][y][z] = 0;
+				PutNormalBlock(sub, x, y, z);
+			} else {
+				lightMap[x][y][z] = 0;
+				SetBlock(block_manager.BlockFromFile(
+					in, kind, sub), x, y, z);
 			}
-			// else:
-			SetBlock( normal ?
-				block_manager.NormalBlock(sub) :
-				block_manager.BlockFromFile(in, kind, sub),
-				x, y, z);
 		}
 	}
 	return true;
 }
 
-Shred::Shred(World * const world_, const ushort shred_x, const ushort shred_y,
+Shred::Shred(const ushort shred_x, const ushort shred_y,
 		const long longi, const long lati,
 		Shred * const mem)
 	:
-		world(world_),
 		longitude(longi),
 		latitude(lati),
 		shredX(shred_x),
@@ -131,14 +131,7 @@ Shred::Shred(World * const world_, const ushort shred_x, const ushort shred_y,
 } // Shred::Shred
 
 Shred::~Shred() {
-	for (QLinkedList<Active*>::const_iterator i=activeListAll.constBegin();
-			i != activeListAll.constEnd(); ++i)
-	{
-		if ( (*i)->GetShred()==this ) {
-			(*i)->SetShredNull();
-		}
-	}
-	const long mapSize=world->MapSize();
+	const long mapSize=GetWorld()->MapSize();
 	if (
 			(longitude < mapSize) && (longitude >= 0) &&
 			(latitude  < mapSize) && (latitude  >= 0) )
@@ -158,7 +151,7 @@ Shred::~Shred() {
 			}
 			blocks[x][y][HEIGHT-1]->SaveToFile(outstr);
 		}
-		world->SetShredData(shred_data, longitude, latitude);
+		GetWorld()->SetShredData(shred_data, longitude, latitude);
 	} else {
 		for (ushort x=0; x<SHRED_WIDTH; ++x)
 		for (ushort y=0; y<SHRED_WIDTH; ++y) {
@@ -174,74 +167,53 @@ Shred::~Shred() {
 Shred * Shred::GetShredMemory() const { return memory; }
 
 long Shred::GlobalX(const ushort x) const {
-	return (Latitude() -CoordOfShred(x))*SHRED_WIDTH + x;
+	return (Latitude()  - CoordOfShred(x))*SHRED_WIDTH + x;
 }
 long Shred::GlobalY(const ushort y) const {
-	return (Longitude()-CoordOfShred(y))*SHRED_WIDTH + y;
-}
-
-void Shred::SetNewBlock(const int kind, const int sub,
-		const ushort x, const ushort y, const ushort z,
-		const int dir)
-{
-	block_manager.DeleteBlock(blocks[x][y][z]);
-	Block * const block=block_manager.NewBlock(kind, sub);
-	block->SetDir(dir);
-	SetBlock(block, x, y, z);
-}
-
-void Shred::RegisterBlock(Block * const block,
-		const ushort x, const ushort y, const ushort z)
-{
-	Active * const active=block->ActiveBlock();
-	if ( active ) {
-		active->Register(this,
-			SHRED_WIDTH*shredX+x, SHRED_WIDTH*shredY+y, z);
-	}
+	return (Longitude() - CoordOfShred(y))*SHRED_WIDTH + y;
 }
 
 void Shred::PhysEventsFrequent() {
-	for (QLinkedList<Active *>::iterator i=fallList.begin();
+	for (QLinkedList<Active *>::iterator i = fallList.begin();
 			i != fallList.end();)
 	{
-		if ( (*i)->GetShred()!=this  ) {
+		if ( (*i)->GetShred() != this  ) {
+			Active * const erase = *i;
 			++i;
+			RemFalling(erase);
 			continue;
-		}
+		} // else:
 		const ushort weight=(*i)->Weight();
 		if ( weight ) {
 			const ushort x=(*i)->X();
 			const ushort y=(*i)->Y();
 			const ushort z=(*i)->Z();
-			if ( world->GetBlock(x, y, z-1)->Kind()==LIQUID ) {
+			if ( GetWorld()->GetBlock(x,y, z-1)->Kind()==LIQUID ) {
 				(*i)->SetFalling(false);
-				i=fallList.erase(i);
-			} else if (weight<=GetBlock(
-					x & SHRED_COORDS_BITS,
-					y & SHRED_COORDS_BITS, z-1)->Weight()
-						|| !world->Move(x, y, z, DOWN))
+				i = fallList.erase(i);
+			} else if ( weight <= GetBlock(CoordInShred(x),
+						CoordInShred(y), z-1)->Weight()
+					|| !GetWorld()->Move(x, y, z, DOWN) )
 			{
 				(*i)->FallDamage();
 				(*i)->SetFalling(false);
-				i=fallList.erase(i);
-				world->DestroyAndReplace(x, y, z);
-				world->DestroyAndReplace(x, y, z-1);
+				i = fallList.erase(i);
+				GetWorld()->DestroyAndReplace(x, y, z);
+				GetWorld()->DestroyAndReplace(x, y, z-1);
 			} else {
 				++i;
 			}
 		} else {
 			(*i)->SetFalling(false);
-			i=fallList.erase(i);
+			i = fallList.erase(i);
 		}
 	}
-	for (QLinkedList<Active *>::const_iterator i=
+	for (QLinkedList<Active *>::const_iterator i =
 				activeListFrequent.constBegin();
 			i != activeListFrequent.constEnd(); ++i)
 	{
-		if ( (*i)->GetShred()==this  ) {
+		if ( (*i)->GetShred() == this  ) {
 			(*i)->ActFrequent();
-			world->DestroyAndReplace((*i)->X(), (*i)->Y(),
-				(*i)->Z());
 		}
 	}
 } // void Shred::PhysEventsFrequent()
@@ -255,22 +227,6 @@ void Shred::Clean() {
 	}
 }
 
-void Shred::CheckRemove() {
-	for (QLinkedList<Active *>::iterator i=activeListAll.begin();
-			i != activeListAll.end();)
-	{
-		if ( (*i)->GetShred()!=this  ) {
-			activeListFrequent.removeAll(*i);
-			activeListRare.removeAll(*i);
-			shiningList.removeAll(*i);
-			fallList.removeAll(*i);
-			i=activeListAll.erase(i);
-		} else {
-			++i;
-		}
-	}
-}
-
 void Shred::PhysEventsRare() {
 	for (QLinkedList<Active *>::const_iterator i =
 				activeListRare.constBegin();
@@ -278,14 +234,46 @@ void Shred::PhysEventsRare() {
 	{
 		if ( (*i)->GetShred()==this  ) {
 			(*i)->ActRare();
-			world->DestroyAndReplace((*i)->X(), (*i)->Y(),
+			GetWorld()->DestroyAndReplace((*i)->X(), (*i)->Y(),
 				(*i)->Z());
+		}
+	}
+	// clean list from blocks that are not in this shred
+	QLinkedList<Active *>::iterator i;
+	for (i = activeListRare.begin(); i != activeListRare.end();) {
+		if ( (*i)->GetShred()==this ) {
+			++i;
+		} else {
+			Active * const erase = *i;
+			++i;
+			Unregister(erase);
+		}
+	}
+	for (i = activeListFrequent.begin(); i != activeListFrequent.end(); ) {
+		if ( (*i)->GetShred()==this ) {
+			++i;
+		} else {
+			Active * const erase = *i;
+			++i;
+			Unregister(erase);
 		}
 	}
 }
 
 int Shred::Sub(const ushort x, const ushort y, const ushort z) const {
 	return blocks[x][y][z]->Sub();
+}
+
+void Shred::Register(Active * const active) {
+	active->SetShred(this);
+	AddActive(active);
+	AddFalling(active);
+	AddShining(active);
+}
+void Shred::Unregister(Active * const active) {
+	RemActive(active);
+	RemFalling(active);
+	RemShining(active);
 }
 
 void Shred::AddActive(Active * const active) {
@@ -298,22 +286,27 @@ void Shred::AddActive(Active * const active) {
 }
 
 void Shred::RemActive(Active * const active) {
-	activeListAll.removeAll(active);
-	activeListFrequent.removeAll(active);
-	activeListRare.removeAll(active);
+	activeListAll.removeOne(active);
+	activeListFrequent.removeOne(active);
+	activeListRare.removeOne(active);
 }
 
 void Shred::AddFalling(Active * const active) {
-	if ( !active->IsFalling() && active->ShouldFall() ) {
+	const Block * block;
+	if ( !active->IsFalling() &&
+			active->ShouldFall() &&
+			ENVIRONMENT==( block=GetBlock(
+				CoordInShred(active->X()),
+				CoordInShred(active->Y()), active->Z()-1) )->
+					Movable() &&
+			!(*active == *block) )
+	{
 		active->SetFalling(true);
 		fallList.append(active);
 	}
 }
 
-void Shred::RemFalling(Active * const active) {
-	fallList.removeAll(active);
-	active->SetFalling(false);
-}
+void Shred::RemFalling(Active * const active) { fallList.removeOne(active); }
 
 void Shred::AddFalling(const ushort x, const ushort y, const ushort z) {
 	Active * const active=blocks[x][y][z]->ActiveBlock();
@@ -323,16 +316,16 @@ void Shred::AddFalling(const ushort x, const ushort y, const ushort z) {
 }
 
 void Shred::AddShining(Active * const active) {
-	shiningList.append(active);
+	if ( active->LightRadius() ) {
+		shiningList.append(active);
+	}
 }
 
 void Shred::RemShining(Active * const active) {
-	shiningList.removeAll(active);
+	shiningList.removeOne(active);
 }
 
-void Shred::AddToDelete(Active * const active) {
-	deleteList.append(active);
-}
+void Shred::AddToDelete(Active * const active) { deleteList.append(active); }
 
 QLinkedList<Active *>::const_iterator Shred::ShiningBegin() const {
 	return shiningList.constBegin();
@@ -374,14 +367,31 @@ void Shred::ReloadToWest() {
 	++shredX;
 }
 
-Block *Shred::GetBlock(const ushort x, const ushort y, const ushort z) const {
+Block * Shred::GetBlock(const ushort x, const ushort y, const ushort z) const {
 	return blocks[x][y][z];
 }
 
 void Shred::SetBlock(Block * const block,
 		const ushort x, const ushort y, const ushort z)
 {
-	RegisterBlock((blocks[x][y][z]=block), x, y, z);
+	Active * const active=( blocks[x][y][z]=block )->ActiveBlock();
+	if ( active ) {
+		active->SetXYZ( (shredX << SHRED_WIDTH_SHIFT) + x,
+			(shredY << SHRED_WIDTH_SHIFT) + y, z );
+		Register(active);
+	}
+}
+
+void Shred::SetNewBlock(const int kind, const int sub,
+		const ushort x, const ushort y, const ushort z,
+		const int dir)
+{
+	fprintf(stderr, "setnewblock\n");
+	fflush(stderr);
+	block_manager.DeleteBlock(blocks[x][y][z]);
+	Block * const block = block_manager.NewBlock(kind, sub);
+	block->SetDir(dir);
+	SetBlock(block, x, y, z);
 }
 
 void Shred::PutBlock(Block * const block,
@@ -401,7 +411,7 @@ Block * Shred::Normal(const int sub) {
 }
 
 QString Shred::FileName() const {
-	return FileName(world->WorldName(), longitude, latitude);
+	return FileName(GetWorld()->WorldName(), longitude, latitude);
 }
 
 QString Shred::FileName(const QString world_name,
@@ -413,7 +423,7 @@ QString Shred::FileName(const QString world_name,
 }
 
 char Shred::TypeOfShred(const long longi, const long lati) const {
-	return world->TypeOfShred(longi, lati);
+	return GetWorld()->TypeOfShred(longi, lati);
 }
 
 // shred generators section
@@ -432,10 +442,14 @@ void Shred::RandomDrop(const ushort num, const int kind, const int sub,
 		const bool on_water)
 {
 	for (ushort i=0; i<num; ++i) {
-		ushort x=(qrand() & SHRED_COORDS_BITS);
-		ushort y=(qrand() & SHRED_COORDS_BITS);
+		const int rand = qrand();
+		const ushort x = (rand & SHRED_COORDS_BITS);
+		const ushort y = ((rand >> SHRED_WIDTH_SHIFT) &
+			SHRED_COORDS_BITS);
+		fprintf(stderr, "random in shred: %hu, %hu\n", x, y);
+		fflush(stderr);
 		for (ushort z=HEIGHT-2; z>0; --z) {
-			if ( Sub(x, y, z)!=AIR ) {
+			if ( Sub(x, y, z) != AIR ) {
 				if( on_water || Sub(x, y, z)!=WATER ) {
 					SetNewBlock(kind, sub, x, y, z+1);
 				}

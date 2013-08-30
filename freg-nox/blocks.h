@@ -343,4 +343,5 @@ class Bell: public Active {
 	Bell(int sub, quint16 id);
 	Bell(QDataStream & str, int sub, quint16 id);
 }; // class Bell
+
 #endif

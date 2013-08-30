@@ -51,10 +51,10 @@ int main(int argc, char *argv[]) {
 	const QString worldName=sett.value("current_world", "mu").toString();
 	sett.setValue("current_world", worldName);
 
-	World earth(worldName);
-	Player player(&earth);
-	const Screen screen(&earth, &player);
-	earth.start();
+	World world(worldName);
+	Player player(&world);
+	const Screen screen(&world, &player);
+	world.start();
 
 	QObject::connect(&player, SIGNAL(Destroyed()),
 		&screen, SLOT(DeathScreen()));
@@ -64,11 +64,11 @@ int main(int argc, char *argv[]) {
 	QObject::connect(&freg, SIGNAL(aboutToQuit()),
 		&player, SLOT(CleanAll()));
 	QObject::connect(&freg, SIGNAL(aboutToQuit()),
-		&earth, SLOT(CleanAll()));
+		&world, SLOT(CleanAll()));
 
 	QObject::connect(&screen, SIGNAL(ExitReceived()),
 		&freg, SLOT(quit()));
-	QObject::connect(&earth, SIGNAL(ExitReceived()),
+	QObject::connect(&world, SIGNAL(ExitReceived()),
 		&freg, SLOT(quit()));
 
 	return freg.exec();

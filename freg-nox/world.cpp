@@ -35,6 +35,8 @@
 
 const ushort MIN_WORLD_SIZE = 7;
 
+World * world;
+
 Shred * World::GetShred(const ushort x, const ushort y) const {
 	return shreds[ (Shred::CoordOfShred(y))*numShreds +
 	               (Shred::CoordOfShred(x)) ];
@@ -43,7 +45,6 @@ Shred * World::GetShred(const ushort x, const ushort y) const {
 QString World::WorldName() const { return worldName; }
 
 ushort World::NumShreds() const { return numShreds; }
-ushort World::NumActiveShreds() const { return numActiveShreds; }
 
 long World::GetSpawnLongi() const { return spawnLongi; }
 long World::GetSpawnLati()  const { return spawnLati; }
@@ -144,8 +145,6 @@ void World::WriteLock() { rwLock->lockForWrite(); }
 void World::ReadLock()  { rwLock->lockForRead(); }
 bool World::TryReadLock() { return rwLock->tryLockForRead(); }
 void World::Unlock() { rwLock->unlock(); }
-
-void World::EmitNotify(const QString & str) const { emit Notify(str); }
 
 void World::run() {
 	QTimer timer;
@@ -272,7 +271,6 @@ Shred ** World::FindShred(const ushort x, const ushort y) const {
 void World::ReloadShreds(const int direction) {
 	short x, y; // do not make unsigned, values <0 are needed for checks
 	RemSun();
-	CheckRemoveActive();
 	switch ( direction ) {
 	case NORTH:
 		--longitude;
@@ -285,7 +283,7 @@ void World::ReloadShreds(const int direction) {
 					ReloadToNorth();
 			}
 			*FindShred(x, 0) = new(memory)
-				Shred(this, x, 0,
+				Shred(x, 0,
 					longitude-numShreds/2,
 					latitude -numShreds/2+x, memory);
 		}
@@ -301,7 +299,7 @@ void World::ReloadShreds(const int direction) {
 					ReloadToSouth();
 			}
 			*FindShred(x, numShreds-1) = new(memory)
-				Shred(this, x, numShreds-1,
+				Shred(x, numShreds-1,
 					longitude+numShreds/2,
 					latitude -numShreds/2+x, memory);
 		}
@@ -317,7 +315,7 @@ void World::ReloadShreds(const int direction) {
 					ReloadToEast();
 			}
 			*FindShred(numShreds-1, y) = new(memory)
-				Shred(this, numShreds-1, y,
+				Shred(numShreds-1, y,
 					longitude-numShreds/2+y,
 					latitude +numShreds/2, memory);
 		}
@@ -333,7 +331,7 @@ void World::ReloadShreds(const int direction) {
 					ReloadToWest();
 			}
 			*FindShred(0, y) = new(memory)
-				Shred(this, 0, y,
+				Shred(0, y,
 					longitude-numShreds/2+y,
 					latitude -numShreds/2, memory);
 		}
@@ -350,13 +348,6 @@ void World::ReloadShreds(const int direction) {
 
 void World::SetReloadShreds(const int direction) { toResetDir=direction; }
 
-void World::CheckRemoveActive() {
-	for (ushort i=0; i<NumShreds(); ++i)
-	for (ushort j=0; j<NumShreds(); ++j) {
-		shreds[i+j*NumShreds()]->CheckRemove();
-	}
-}
-
 void World::PhysEvents() {
 	const QWriteLocker writeLock(rwLock);
 
@@ -364,7 +355,6 @@ void World::PhysEvents() {
 	case UP: break;
 	case DOWN: // full reset
 		emit StartReloadAll();
-		CheckRemoveActive();
 		DeleteAllShreds();
 		longitude=newLongi;
 		latitude=newLati;
@@ -375,7 +365,6 @@ void World::PhysEvents() {
 		toResetDir=UP; // set no reset
 	break;
 	default:
-		CheckRemoveActive();
 		ReloadShreds(toResetDir);
 		toResetDir=UP; // set no reset
 	}
@@ -396,7 +385,6 @@ void World::PhysEvents() {
 	for (ushort j=start; j<end; ++j) {
 		shreds[i+j*NumShreds()]->PhysEventsFrequent();
 	}
-	CheckRemoveActive();
 	for (ushort i=start; i<end; ++i)
 	for (ushort j=start; j<end; ++j) {
 		shreds[i+j*NumShreds()]->Clean();
@@ -722,23 +710,23 @@ bool World::Build(Block * block,
 		Block * const who,
 		const bool anyway)
 {
-	Block * const target_block=GetBlock(x, y, z);
+	Block * const target_block = GetBlock(x, y, z);
 	if ( !(ENVIRONMENT==target_block->Movable() || anyway) ) {
 		if ( who ) {
 			who->ReceiveSignal(tr("Cannot build here."));
 		}
 		return false;
-	}
-	const int old_transparency=target_block->Transparent();
+	} // else:
+	const int old_transparency = target_block->Transparent();
 	DeleteBlock(target_block);
 	block->Restore();
 	block->SetDir(dir);
-	block=ReplaceWithNormal(block);
+	block = ReplaceWithNormal(block);
 	SetBlock(block, x, y, z);
-	if ( old_transparency!=block->Transparent() ) {
+	if ( old_transparency != block->Transparent() ) {
 		ReEnlightenBlockAdd(x, y, z);
 	}
-	const uchar block_light=block->LightRadius();
+	const uchar block_light = block->LightRadius();
 	if ( block_light ) {
 		AddFireLight(x, y, z, block_light);
 	}
@@ -858,8 +846,7 @@ void World::LoadAllShreds() {
 	for (long i=latitude -numShreds/2, x=0; x<numShreds; ++i, ++x)
 	for (long j=longitude-numShreds/2, y=0; y<numShreds; ++j, ++y) {
 		shreds[y*numShreds+x] = new(shredMemoryPool+y*numShreds+x)
-			Shred(this, x, y, j, i,
-				(shredMemoryPool+y*numShreds+x));
+			Shred( x, y, j, i, (shredMemoryPool+y*numShreds+x) );
 	}
 	MakeSun();
 	sunMoonFactor=( NIGHT==PartOfDay() ) ?
@@ -902,6 +889,7 @@ World::World(const QString & world_name) :
 		map(new WorldMap(&world_name)),
 		toResetDir(UP)
 {
+	world = this;
 	QSettings game_settings("freg.ini", QSettings::IniFormat);
 	numShreds = game_settings.value("number_of_shreds", MIN_WORLD_SIZE).
 		toLongLong();
@@ -933,8 +921,7 @@ World::World(const QString & world_name) :
 	longitude =settings.value("longitude", int(spawnLongi)).toLongLong();
 	latitude  =settings.value("latitude",  int(spawnLati )).toLongLong();
 
-	shredStorage=new ShredStorage(this, numShreds+2, longitude, latitude);
-
+	shredStorage=new ShredStorage(numShreds+2, longitude, latitude);
 	LoadAllShreds();
 	emit UpdatedAll();
 } // World::World(const QString & world_name)

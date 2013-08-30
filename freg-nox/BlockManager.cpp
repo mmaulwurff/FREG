@@ -214,9 +214,7 @@ Thing * BlockManager::New(const int sub, const quint16 id) {
 }
 
 template <typename Thing>
-Thing * BlockManager::New(QDataStream & str, const int sub,
-		const quint16 id)
-{
+Thing * BlockManager::New(QDataStream & str, const int sub, const quint16 id) {
 	return new Thing(str, sub, id);
 }
 

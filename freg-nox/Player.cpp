@@ -558,9 +558,7 @@ void Player::WorldSizeReloadFinish() {
 	homeY+=world->NumShreds()/2*SHRED_WIDTH;
 }
 
-void Player::SetPlayer(
-		const ushort player_x,
-		const ushort player_y,
+void Player::SetPlayer(const ushort player_x, const ushort player_y,
 		const ushort player_z)
 {
 	x=player_x;
@@ -571,7 +569,7 @@ void Player::SetPlayer(
 			ActiveBlock() )->SetXYZ(x, y, z);
 	} else {
 		Block * const target_block=world->GetBlock(x, y, z);
-		if ( DWARF!=target_block->Kind() ) {
+		if ( DWARF != target_block->Kind() ) {
 			world->Build( (player=block_manager.
 					NewBlock(DWARF, H_MEAT)->
 						ActiveBlock()),

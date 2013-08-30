@@ -52,6 +52,7 @@ HEADERS += \
 SOURCES += \
 	BlockManager.cpp \
 	blocks.cpp \
+	Active.cpp \
 	CraftManager.cpp \
 	DeferredAction.cpp \
 	Lighting-inertia.cpp \

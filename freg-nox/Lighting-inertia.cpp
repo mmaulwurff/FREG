@@ -37,10 +37,10 @@
 
 const uchar FIRE_LIGHT_FACTOR=4;
 
-short World::ClampX(const short) const { return 0; }
+/*short World::ClampX(const short) const { return 0; }
 short World::ClampY(const short) const { return 0; }
 short World::ClampZ(const short) const { return 0; }
-
+*/
 // use Enlightened instead, which is smart wrapper of this.
 uchar World::LightMap(const ushort x, const ushort y, const ushort z)
 const {
