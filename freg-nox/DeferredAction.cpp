@@ -29,8 +29,7 @@ void DeferredAction::GhostMove() const {
 }
 
 void DeferredAction::Move() const {
-	world->Move(
-		attachedBlock->X(), attachedBlock->Y(), attachedBlock->Z(),
+	world->Move(attachedBlock->X(), attachedBlock->Y(), attachedBlock->Z(),
 		( HERE==num ) ?
 			attachedBlock->GetDir() : num);
 }

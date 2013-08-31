@@ -54,7 +54,6 @@ class Player : public QObject {
 	short homeX, homeY, homeZ;
 	short x, y, z; //current position
 	int dir;
-	World * const world;
 	Active * player;
 	int usingType;
 	int usingSelfType;
@@ -91,7 +90,6 @@ class Player : public QObject {
 	void WorldSizeReloadFinish();
 
 	void SetPlayer(ushort set_x, ushort set_y, ushort set_z);
-	void UpdateCoords(int direction);
 
 	signals:
 	void Moved(long x, long y, ushort z) const;
@@ -208,12 +206,11 @@ class Player : public QObject {
 	Block * Drop(ushort);
 
 	public:
-	///Constructor creates or loads player.
-	/**It reads player_save file if it exists,
-	 * puts player block to the world if there is no player block,
-	 * and makes necessary connections.
+	/// Constructor creates or loads player.
+	/** It puts player block to the world if there is no player block,
+	 *  and makes necessary connections.
 	 */
-	Player(World * const);
+	Player();
 
 	/// Destructor calls Player::CleanAll().
 	~Player();

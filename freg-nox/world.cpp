@@ -151,7 +151,7 @@ void World::run() {
 	connect(&timer, SIGNAL(timeout()),
 		this, SLOT(PhysEvents()),
 		Qt::DirectConnection);
-	timer.start(1000/TIME_STEPS_IN_SEC);
+	timer.start(1000/TimeStepsInSec());
 	exec();
 }
 
@@ -350,7 +350,6 @@ void World::SetReloadShreds(const int direction) { toResetDir=direction; }
 
 void World::PhysEvents() {
 	const QWriteLocker writeLock(rwLock);
-
 	switch ( toResetDir ) {
 	case UP: break;
 	case DOWN: // full reset
@@ -366,47 +365,47 @@ void World::PhysEvents() {
 	break;
 	default:
 		ReloadShreds(toResetDir);
-		toResetDir=UP; // set no reset
+		toResetDir = UP; // set no reset
 	}
-
+	// do deferred actions
 	for (int i=0; i<defActions.size(); ++i) {
 		defActions.at(i)->MakeAction();
 		RemDeferredAction(defActions.at(i));
 	}
-
+	// count and show global clock
 	/*static ulong global_step=0;
 	fprintf(stderr, "step: %lu\n", global_step);
 	++global_step;
 	emit Notify(QString("tic-tac: %1").arg(time));*/
 
-	const ushort start=numShreds/2-numActiveShreds/2;
-	const ushort end=start+numActiveShreds;
+	const ushort start = numShreds/2-numActiveShreds/2;
+	const ushort end   = start+numActiveShreds;
 	for (ushort i=start; i<end; ++i)
 	for (ushort j=start; j<end; ++j) {
 		shreds[i+j*NumShreds()]->PhysEventsFrequent();
+	}
+
+	if ( TimeStepsInSec() > timeStep ) {
+		++timeStep;
+		return;
+	} // else:
+	for (ushort i=start; i<end; ++i)
+	for (ushort j=start; j<end; ++j) {
+		shreds[i+j*NumShreds()]->PhysEventsRare();
 	}
 	for (ushort i=start; i<end; ++i)
 	for (ushort j=start; j<end; ++j) {
 		shreds[i+j*NumShreds()]->Clean();
 	}
-
-	if ( TIME_STEPS_IN_SEC > timeStep ) {
-		++timeStep;
-		return;
-	}
-	for (ushort i=start; i<end; ++i)
-	for (ushort j=start; j<end; ++j) {
-		shreds[i+j*NumShreds()]->PhysEventsRare();
-	}
-	timeStep=0;
+	timeStep = 0;
 	++time;
 	// sun/moon moving
-	if ( sun_moon_x!=SunMoonX() ) {
-		const ushort y=SHRED_WIDTH*numShreds/2;
+	if ( sun_moon_x != SunMoonX() ) {
+		const ushort y = SHRED_WIDTH*numShreds/2;
 		PutNormalBlock((ifStar ? STAR : SKY), sun_moon_x, y, HEIGHT-1);
 		emit Updated(sun_moon_x, y, HEIGHT-1);
-		sun_moon_x=SunMoonX();
-		ifStar=( STAR==Sub(sun_moon_x, y, HEIGHT-1) );
+		sun_moon_x = SunMoonX();
+		ifStar = ( STAR==Sub(sun_moon_x, y, HEIGHT-1) );
 		PutNormalBlock(SUN_MOON, sun_moon_x, y, HEIGHT-1);
 		emit Updated(sun_moon_x, y, HEIGHT-1);
 	}

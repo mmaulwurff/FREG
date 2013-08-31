@@ -185,7 +185,7 @@ Active::Active(const int sub, const quint16 id, const quint8 transp) :
 		frozen(false),
 		deferredAction(0),
 		x_self(), y_self(), z_self(),
-		shred()
+		shred(0)
 {}
 Active::Active(QDataStream & str, const int sub, const quint16 id,
 		const quint8 transp)
@@ -195,7 +195,7 @@ Active::Active(QDataStream & str, const int sub, const quint16 id,
 		frozen(false),
 		deferredAction(0),
 		x_self(), y_self(), z_self(),
-		shred()
+		shred(0)
 {
 	str >> fall_height;
 }

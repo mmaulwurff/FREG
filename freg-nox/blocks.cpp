@@ -1079,7 +1079,7 @@
 
 	void Rabbit::ActFrequent() {
 		if ( IsToDelete() ) return;
-		World * const world=GetWorld();
+		World * const world = GetWorld();
 		// analyse world around
 		short for_north=0, for_west=0;
 		for (ushort x=X()-4; x<=X()+4; ++x)
@@ -1087,17 +1087,17 @@
 		for (ushort z=Z()-1; z<=Z()+3; ++z) {
 			short attractive;
 			if ( world->InBounds(x, y, z) &&
-					(attractive=Attractive(
+					(attractive = Attractive(
 						world->Sub(x, y, z))) &&
 					world->DirectlyVisible(
 						X(), Y(), Z(), x, y, z) )
 			{
-				if ( y!=Y() ) for_north+=attractive/(Y()-y);
-				if ( x!=X() ) for_west +=attractive/(X()-x);
+				if ( y!=Y() ) for_north += attractive/(Y()-y);
+				if ( x!=X() ) for_west  += attractive/(X()-x);
 			}
 		}
 		// make direction and move there
-		static const ushort calmness=5;
+		static const ushort calmness = 5;
 		if ( qAbs(for_north)>calmness || qAbs(for_west)>calmness ) {
 			SetDir( ( qAbs(for_north)>qAbs(for_west) ) ?
 				( ( for_north>0 ) ? NORTH : SOUTH ) :
@@ -1471,14 +1471,6 @@
 		} else {
 			return false;
 		}
-	}
-
-	void Text::SetTitle(const QString & str) {
-		if ( note ) {
-			delete note;
-			note=0;
-		}
-		Block::Inscribe(str);
 	}
 
 	Text::Text(const int sub, const quint16 id) :

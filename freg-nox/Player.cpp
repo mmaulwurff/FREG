@@ -42,12 +42,14 @@ bool Player::IsRightActiveHand() const {
 	return Dwarf::IN_RIGHT==GetActiveHand();
 }
 ushort Player::GetActiveHand() const {
-	return ( DWARF==GetP()->Kind() ) ?
-		((Dwarf *)GetP())->GetActiveHand() : 0;
+	Dwarf * const dwarf = dynamic_cast<Dwarf *>(GetP());
+	return ( dwarf ) ?
+		dwarf->GetActiveHand() : 0;
 }
 void Player::SetActiveHand(const bool right) {
-	if ( DWARF==GetP()->Kind() ) {
-		((Dwarf *)GetP())->SetActiveHand(right);
+	Dwarf * const dwarf = dynamic_cast<Dwarf *>(GetP());
+	if ( dwarf ) {
+		dwarf->SetActiveHand(right);
 	}
 }
 
@@ -121,6 +123,7 @@ void Player::UpdateXYZ() {
 		x=player->X();
 		y=player->Y();
 		z=player->Z();
+		emit Updated();
 	}
 }
 
@@ -509,26 +512,6 @@ void Player::CheckOverstep(const int direction) {
 		emit OverstepBorder(direction);
 	}
 	emit Moved(GlobalX(), GlobalY(), z);
-	emit Updated();
-}
-
-void Player::UpdateCoords(const int direction) {
-	fprintf(stderr, "updatecorrds\n");
-	if ( GetCreativeMode() ) {
-		// coordinates of normal (non-creative) player are
-		// reloaded (shifted corresponding to world reload)
-		// automatically since such player is registered in
-		// his shred.
-		// This helps creative player shift his coordinates.
-		switch ( direction ) {
-		case NORTH: player->ReloadToNorth(); break;
-		case SOUTH: player->ReloadToSouth(); break;
-		case EAST:  player->ReloadToEast();  break;
-		case WEST:  player->ReloadToWest();  break;
-		}
-	}
-	UpdateXYZ();
-	emit Updated();
 }
 
 void Player::BlockDestroy() {
@@ -558,49 +541,40 @@ void Player::WorldSizeReloadFinish() {
 	homeY+=world->NumShreds()/2*SHRED_WIDTH;
 }
 
-void Player::SetPlayer(const ushort player_x, const ushort player_y,
-		const ushort player_z)
-{
-	x=player_x;
-	y=player_y;
-	z=player_z;
+void Player::SetPlayer(const ushort _x, const ushort _y, const ushort _z) {
+	x = _x;
+	y = _y;
+	z = _z;
 	if ( GetCreativeMode() ) {
-		( player=block_manager.NewBlock(CREATOR, DIFFERENT)->
+		( player = block_manager.NewBlock(CREATOR, DIFFERENT)->
 			ActiveBlock() )->SetXYZ(x, y, z);
+		GetWorld()->GetShred(x, y)->Register(player);
 	} else {
-		Block * const target_block=world->GetBlock(x, y, z);
-		if ( DWARF != target_block->Kind() ) {
-			world->Build( (player=block_manager.
-					NewBlock(DWARF, H_MEAT)->
-						ActiveBlock()),
-				x, y, z,
-				GetDir(),
-				0,
-				true /*force build*/ );
+		Block * const target_block = world->GetBlock(x, y, z);
+		if ( DWARF == target_block->Kind() ) {
+			player = target_block->ActiveBlock();
 		} else {
-			player=target_block->ActiveBlock();
+			world->Build( (player = block_manager.
+					NewBlock(DWARF,H_MEAT)->ActiveBlock()),
+				x, y, z, GetDir(), 0, true /*force build*/ );
 		}
 	}
 	player->SetDeferredAction(new DeferredAction(player, GetWorld()));
 	SetDir(player->GetDir());
 
-	connect(player, SIGNAL(Destroyed()),
-		this, SLOT(BlockDestroy()),
+	connect(player, SIGNAL(Destroyed()), this, SLOT(BlockDestroy()),
 		Qt::DirectConnection);
-	connect(player, SIGNAL(Moved(int)),
-		this, SLOT(CheckOverstep(int)),
+	connect(player, SIGNAL(Moved(int)), this, SLOT(CheckOverstep(int)),
 		Qt::DirectConnection);
-	connect(player, SIGNAL(Updated()),
-		this, SIGNAL(Updated()),
+	connect(player, SIGNAL(Updated()), this, SIGNAL(Updated()),
 		Qt::DirectConnection);
 	connect(player, SIGNAL(ReceivedText(const QString &)),
 		this, SIGNAL(Notify(const QString &)),
 		Qt::DirectConnection);
-} // void Player::SetPlayer(ushort player_x, ushort player_y, ushort player_z)
+} // void Player::SetPlayer(ushort _x, ushort _y, ushort _z)
 
-Player::Player(World * const w) :
+Player::Player() :
 		dir(NORTH),
-		world(w),
 		usingType(USAGE_TYPE_NO),
 		usingSelfType(USAGE_TYPE_NO),
 		cleaned(false)

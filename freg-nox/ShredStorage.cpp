@@ -34,7 +34,7 @@ LongLat::LongLat(const long longi, const long lati) :
 		latitude(lati)
 {}
 
-uint qHash(const LongLat coords) {
+uint qHash(const LongLat & coords) {
 	return ((coords.longitude & 0xffff) << 16) +
 	        (coords.latitude  & 0xffff);
 }

@@ -304,15 +304,13 @@ class Creator : public Active, public Inventory {
 
 class Text : public Block {
 	public:
+	Text(int sub, quint16 id);
+	Text(QDataStream & str, int sub, quint16 id);
+
 	quint8 Kind() const;
 	QString FullName() const;
 	usage_types Use(Block * who=0);
 	bool Inscribe(const QString & str);
-
-	void SetTitle(const QString & str);
-
-	Text(int sub, quint16 id);
-	Text(QDataStream & str, int sub, quint16 id);
 }; // class Text
 
 class Map : public Text {

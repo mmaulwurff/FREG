@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
 	sett.setValue("current_world", worldName);
 
 	World world(worldName);
-	Player player(&world);
+	Player player;
 	const Screen screen(&world, &player);
 	world.start();
 

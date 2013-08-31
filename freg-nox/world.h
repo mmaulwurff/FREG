@@ -38,6 +38,11 @@ const uchar MOON_LIGHT_FACTOR=1;
 const uchar  SUN_LIGHT_FACTOR=8;
 
 class World : public QThread {
+	/** \class World world.h
+	 * \brief World provides global physics and shred connection.
+	 *
+	 * Designed to be single.
+	 */
 	Q_OBJECT
 
 	static const ushort TIME_STEPS_IN_SEC=10;

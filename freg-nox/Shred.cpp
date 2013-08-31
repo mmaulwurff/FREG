@@ -174,13 +174,11 @@ long Shred::GlobalY(const ushort y) const {
 }
 
 void Shred::PhysEventsFrequent() {
-	for (QLinkedList<Active *>::iterator i = fallList.begin();
-			i != fallList.end();)
-	{
+	QLinkedList<Active *>::iterator i;
+	// falling
+	for (i = fallList.begin(); i != fallList.end();) {
 		if ( (*i)->GetShred() != this  ) {
-			Active * const erase = *i;
-			++i;
-			RemFalling(erase);
+			i = fallList.erase(i);
 			continue;
 		} // else:
 		const ushort weight=(*i)->Weight();
@@ -208,12 +206,23 @@ void Shred::PhysEventsFrequent() {
 			i = fallList.erase(i);
 		}
 	}
-	for (QLinkedList<Active *>::const_iterator i =
+	// frequent actions
+	for (QLinkedList<Active *>::const_iterator j =
 				activeListFrequent.constBegin();
-			i != activeListFrequent.constEnd(); ++i)
+			j != activeListFrequent.constEnd(); ++j)
 	{
-		if ( (*i)->GetShred() == this  ) {
-			(*i)->ActFrequent();
+		if ( (*j)->GetShred() == this  ) {
+			(*j)->ActFrequent();
+		}
+	}
+	// clean list from blocks that are not in this shred
+	for (i = activeListFrequent.begin(); i != activeListFrequent.end(); ) {
+		if ( (*i)->GetShred() == this ) {
+			++i;
+		} else {
+			Active * const erase = *i;
+			++i;
+			Unregister(erase);
 		}
 	}
 } // void Shred::PhysEventsFrequent()
@@ -239,17 +248,9 @@ void Shred::PhysEventsRare() {
 		}
 	}
 	// clean list from blocks that are not in this shred
-	QLinkedList<Active *>::iterator i;
-	for (i = activeListRare.begin(); i != activeListRare.end();) {
-		if ( (*i)->GetShred()==this ) {
-			++i;
-		} else {
-			Active * const erase = *i;
-			++i;
-			Unregister(erase);
-		}
-	}
-	for (i = activeListFrequent.begin(); i != activeListFrequent.end(); ) {
+	for (QLinkedList<Active *>::iterator i = activeListRare.begin();
+			i != activeListRare.end();)
+	{
 		if ( (*i)->GetShred()==this ) {
 			++i;
 		} else {
