@@ -68,21 +68,20 @@ void World::Shine(const ushort i, const ushort j, const ushort k,
 {
 	if ( !InBounds(i, j, k) || 0==level ) {
 		return;
+	} // else:
+	if ( SetFireLightMap(level << 4, i, j, k) &&
+			INVISIBLE != Transparent(i, j, k) )
+	{
+		emit Updated(i, j, k);
 	}
-	if ( INVISIBLE!=Transparent(i, j, k) ) {
-		if ( SetFireLightMap(level << 4, i, j, k) ) {
-			emit Updated(i, j, k);
-		}
-		if ( !init ) {
-			return;
-		}
+	if ( init ) {
+		Shine(i-1, j, k, level-1);
+		Shine(i+1, j, k, level-1);
+		Shine(i, j-1, k, level-1);
+		Shine(i, j+1, k, level-1);
+		Shine(i, j, k-1, level-1);
+		Shine(i, j, k+1, level-1);
 	}
-	Shine(i-1, j, k, level-1);
-	Shine(i+1, j, k, level-1);
-	Shine(i, j-1, k, level-1);
-	Shine(i, j+1, k, level-1);
-	Shine(i, j, k-1, level-1);
-	Shine(i, j, k+1, level-1);
 }
 
 void World::SunShineVertical(const short x, const short y, short z,
@@ -97,10 +96,10 @@ void World::SunShineVertical(const short x, const short y, short z,
 	 *   #     */
 	for ( ; SetSunLightMap(light_lev, x, y, z); --z) {
 		emit Updated(x, y, z);
-		const ushort transparent=Transparent(x, y, z);
-		if ( BLOCK_TRANSPARENT==transparent ) {
+		const ushort transparent = Transparent(x, y, z);
+		if ( BLOCK_TRANSPARENT == transparent ) {
 			--light_lev;
-		} else if ( BLOCK_OPAQUE==transparent ) {
+		} else if ( BLOCK_OPAQUE == transparent ) {
 			break;
 		}
 	}
@@ -110,8 +109,6 @@ void World::SunShineVertical(const short x, const short y, short z,
 	UpShine(x, y+1, z);
 }
 
-void World::SunShineHorizontal(const short, const short, const short) {}
-
 void World::UpShine(const ushort x, const ushort y, const ushort z_bottom) {
 	if ( InBounds(x, y) ) {
 		for (ushort z=z_bottom; SetSunLightMap(1, x, y, z); ++z) {
@@ -119,8 +116,6 @@ void World::UpShine(const ushort x, const ushort y, const ushort z_bottom) {
 		}
 	}
 }
-
-void World::RemoveSunLight(const short, const short, const short) {}
 
 // called when one block is moved, built, or destroyed.
 void World::ReEnlighten(const ushort x, const ushort y, const ushort z) {
@@ -150,11 +145,9 @@ void World::ReEnlightenTime() {
 }
 
 void World::ReEnlightenAll() {
-	disconnect(this, SIGNAL(Updated(
-		const ushort, const ushort, const ushort)), 0, 0);
-	disconnect(this, SIGNAL(UpdatedAround(
-		const ushort, const ushort, const ushort,
-		const ushort)), 0, 0);
+	disconnect(this, SIGNAL(Updated(ushort, ushort, ushort)), 0, 0);
+	disconnect(this, SIGNAL(UpdatedAround(ushort, ushort, ushort, ushort)),
+		0, 0);
 	for (ushort i=0; i<NumShreds()*NumShreds(); ++i) {
 		shreds[i]->ShineAll();
 	}
@@ -162,16 +155,9 @@ void World::ReEnlightenAll() {
 }
 
 void World::ReEnlightenMove(const int dir) {
-	disconnect(this, SIGNAL(Updated(
-		const ushort,
-		const ushort,
-		const ushort)), 0, 0);
-	disconnect(this, SIGNAL(UpdatedAround(
-		const ushort,
-		const ushort,
-		const ushort,
-		const ushort)), 0, 0);
-
+	disconnect(this, SIGNAL(Updated(ushort, ushort, ushort)), 0, 0);
+	disconnect(this, SIGNAL(UpdatedAround(ushort, ushort, ushort, ushort)),
+		0, 0);
 	switch ( dir ) {
 	case NORTH:
 		for (ushort i=0; i<NumShreds(); ++i) {
@@ -197,15 +183,14 @@ void World::ReEnlightenMove(const int dir) {
 			shreds[NumShreds()*i+1]->ShineAll();
 		}
 	break;
-	default: fprintf(stderr, "World::ReEnlightenMove: direction (?): %d\n",
-		dir);
+	default: fprintf(stderr, "World::ReEnlightenMove: dir (?): %d\n", dir);
 	}
 	emit ReConnect();
 }
 
 uchar World::Enlightened(const ushort x, const ushort y, const ushort z)
 const {
-	const uchar light=LightMap(x, y, z);
+	const uchar light = LightMap(x, y, z);
 	return (light & 0x0F) * sunMoonFactor +
 	       (light & 0xF0) * FIRE_LIGHT_FACTOR;
 }
@@ -281,7 +266,7 @@ void Shred::SetAllLightMapNull() {
 	for (ushort i=0; i<SHRED_WIDTH; ++i)
 	for (ushort j=0; j<SHRED_WIDTH; ++j)
 	for (ushort k=0; k<HEIGHT-1; ++k) {
-		lightMap[i][j][k]=0;
+		lightMap[i][j][k] = 0;
 	}
 }
 
@@ -297,7 +282,3 @@ void Shred::ShineAll() {
 		world->SunShineVertical(i, j);
 	}
 }
-
-void Shred::RemoveAllSunLight() {}
-void Shred::RemoveAllFireLight() {}
-void Shred::RemoveAllLight() {}
