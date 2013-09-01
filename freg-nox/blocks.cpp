@@ -399,7 +399,7 @@
 		}
 		emit Updated();
 	}
-	int Animal::ShouldAct() const { return RARE; }
+	int Animal::ShouldAct() const { return FREQUENT_AND_RARE; }
 
 	ushort Animal::Breath() const { return breath; }
 	ushort Animal::Satiation() const { return satiation; }
@@ -711,7 +711,6 @@
 
 	quint8 Dwarf::Kind() const { return DWARF; }
 	int  Dwarf::Sub() const { return Block::Sub(); }
-	int  Dwarf::ShouldAct() const { return RARE; }
 	bool Dwarf::Access() const { return false; }
 	ushort Dwarf::Start() const { return ON_LEGS+1; }
 	QString Dwarf::FullName() const { return "Rational"; }
@@ -1077,8 +1076,7 @@
 		}
 	}
 
-	void Rabbit::ActFrequent() {
-		if ( IsToDelete() ) return;
+	void Rabbit::DoFrequentAction() {
 		World * const world = GetWorld();
 		// analyse world around
 		short for_north=0, for_west=0;
@@ -1108,7 +1106,7 @@
 				world->Jump(X(), Y(), Z(), GetDir());
 			}
 		}
-	} // void Rabbit::ActFrequent()
+	} // void Rabbit::DoFrequentAction()
 
 	void Rabbit::ActRare() {
 		if ( IsToDelete() ) return;
@@ -1279,8 +1277,7 @@
 		return MOVE_SELF;
 	}
 
-	void Door::ActFrequent() {
-		if ( IsToDelete() ) return;
+	void Door::DoFrequentAction() {
 		if ( shifted ) {
 			World * const world=GetWorld();
 			ushort x, y, z;

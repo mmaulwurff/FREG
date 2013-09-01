@@ -27,7 +27,6 @@
 class World;
 class Block;
 class Active;
-class QByteArray;
 
 class Shred {
 	public:
@@ -35,8 +34,6 @@ class Shred {
 			Shred * memory);
 	~Shred();
 
-
-	public:
 	/// Returns y (line) shred coordinate on world map.
 	long Longitude() const;
 	/// Returns x (column) shred coordinate on world map.
@@ -53,14 +50,6 @@ class Shred {
 	void AddToDelete(Active *);
 	void AddFalling(ushort x, ushort y, ushort z);
 
-	private:
-	void AddActive(Active *);
-	void RemActive(Active *);
-	void AddFalling(Active *);
-	void RemFalling(Active *);
-	void Unregister(Active *);
-
-	public:
 	QLinkedList<Active *>::const_iterator ShiningBegin() const;
 	QLinkedList<Active *>::const_iterator ShiningEnd() const;
 
@@ -113,6 +102,9 @@ class Shred {
 	void RemoveAllFireLight();
 	void RemoveAllLight();
 
+	void AddFalling(Active *);
+	void Unregister(Active *);
+
 	void RegisterBlock(Block *, ushort x, ushort y, ushort z);
 	bool LoadShred();
 
@@ -163,8 +155,7 @@ class Shred {
 	// needed in Shred::ReloadTo... for active blocks not to reload twice
 	// when they are registered both in frequent and rare lists.
 	QLinkedList<Active *> activeListAll;
-	QLinkedList<Active *> activeListFrequent;
-	QLinkedList<Active *> activeListRare;
+	QLinkedList<Active *> activeListFrequent, activeListRare;
 	QLinkedList<Active *> fallList;
 	QLinkedList<Active *> shiningList;
 	QLinkedList<Active *> deleteList;

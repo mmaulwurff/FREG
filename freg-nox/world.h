@@ -27,7 +27,6 @@
 class WorldMap;
 class Block;
 class Shred;
-class DeferredAction;
 class ShredStorage;
 class QByteArray;
 class QReadWriteLock;
@@ -75,7 +74,6 @@ class World : public QThread {
 
 	uchar sunMoonFactor;
 
-	QList<DeferredAction *> defActions;
 	ShredStorage * shredStorage;
 
 	Shred * shredMemoryPool;
@@ -85,8 +83,6 @@ class World : public QThread {
 	Block * GetBlock(ushort x, ushort y, ushort z) const;
 	Shred * GetShred(ushort i, ushort j) const;
 
-	void AddDeferredAction(DeferredAction *);
-	void RemDeferredAction(DeferredAction *);
 	private:
 	/// Puts block to coordinates xyz and activates it.
 	void SetBlock(Block * block, ushort x, ushort y, ushort z);

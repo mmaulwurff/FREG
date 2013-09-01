@@ -118,11 +118,11 @@ Inventory * Player::PlayerInventory() {
 long Player::GetLongitude() const { return GetShred()->Longitude(); }
 long Player::GetLatitude()  const { return GetShred()->Latitude();  }
 
-void Player::UpdateXYZ() {
+void Player::UpdateXYZ(const int) {
 	if ( player ) {
-		x=player->X();
-		y=player->Y();
-		z=player->Z();
+		x = player->X();
+		y = player->Y();
+		z = player->Z();
 		emit Updated();
 	}
 }
@@ -518,27 +518,13 @@ void Player::BlockDestroy() {
 	if ( cleaned ) {
 		return;
 	}
-	emit Notify("You died.");
-	usingType=USAGE_TYPE_NO;
-	usingSelfType=USAGE_TYPE_NO;
+	emit Notify(tr("You died."));
+	usingType = USAGE_TYPE_NO;
+	usingSelfType = USAGE_TYPE_NO;
 
 	emit Destroyed();
-	player=0;
-	world->ReloadAllShreds(homeLati, homeLongi,
-		homeX, homeY, homeZ);
-}
-
-void Player::WorldSizeReloadStart() {
-	if ( player ) {
-		disconnect(player, SIGNAL(Destroyed()), 0, 0);
-	}
-	homeX-=world->NumShreds()/2*SHRED_WIDTH;
-	homeY-=world->NumShreds()/2*SHRED_WIDTH;
-}
-
-void Player::WorldSizeReloadFinish() {
-	homeX+=world->NumShreds()/2*SHRED_WIDTH;
-	homeY+=world->NumShreds()/2*SHRED_WIDTH;
+	player = 0;
+	world->ReloadAllShreds(homeLati, homeLongi, homeX, homeY, homeZ);
 }
 
 void Player::SetPlayer(const ushort _x, const ushort _y, const ushort _z) {
@@ -559,7 +545,7 @@ void Player::SetPlayer(const ushort _x, const ushort _y, const ushort _z) {
 				x, y, z, GetDir(), 0, true /*force build*/ );
 		}
 	}
-	player->SetDeferredAction(new DeferredAction(player, GetWorld()));
+	player->SetDeferredAction(new DeferredAction(player));
 	SetDir(player->GetDir());
 
 	connect(player, SIGNAL(Destroyed()), this, SLOT(BlockDestroy()),
@@ -579,51 +565,36 @@ Player::Player() :
 		usingSelfType(USAGE_TYPE_NO),
 		cleaned(false)
 {
-	QSettings sett(QDir::currentPath()+'/'+
-			world->WorldName()+"/settings.ini",
+	QSettings sett(QDir::currentPath() + '/' + world->WorldName() +
+			"/settings.ini",
 		QSettings::IniFormat);
 	sett.beginGroup("player");
-	homeLongi=sett.value("home_longitude",
+	homeLongi = sett.value("home_longitude",
 		qlonglong(world->GetSpawnLongi())).toLongLong();
-	homeLati =sett.value("home_latitude",
+	homeLati  = sett.value("home_latitude",
 		qlonglong(world->GetSpawnLati())).toLongLong();
-	homeX=sett.value("home_x", 0).toInt();
-	homeY=sett.value("home_y", 0).toInt();
-	homeZ=sett.value("home_z", HEIGHT/2).toInt();
-	x    =sett.value("current_x", 0).toInt();
-	y    =sett.value("current_y", 0).toInt();
-	z    =sett.value("current_z", HEIGHT/2+1).toInt();
-	creativeMode=sett.value("creative_mode", false).toBool();
+	homeX = sett.value("home_x", 0).toInt();
+	homeY = sett.value("home_y", 0).toInt();
+	homeZ = sett.value("home_z", HEIGHT/2).toInt();
+	x     = sett.value("current_x", 0).toInt();
+	y     = sett.value("current_y", 0).toInt();
+	z     = sett.value("current_z", HEIGHT/2+1).toInt();
+	creativeMode = sett.value("creative_mode", false).toBool();
 
-	const ushort plus=world->NumShreds()/2*SHRED_WIDTH;
-	homeX+=plus;
-	homeY+=plus;
-	x+=plus;
-	y+=plus;
-	SetPlayer(x, y, z);
+	const ushort plus = world->NumShreds()/2*SHRED_WIDTH;
+	homeX += plus;
+	homeY += plus;
+	SetPlayer(x+=plus, y+=plus, z);
 
-	connect(world, SIGNAL(NeedPlayer(
-			const ushort,
-			const ushort,
-			const ushort)),
-		this, SLOT(SetPlayer(
-			const ushort,
-			const ushort,
-			const ushort)),
+	connect(world, SIGNAL(NeedPlayer(ushort, ushort, ushort)),
+		this, SLOT(SetPlayer(ushort, ushort, ushort)),
 		Qt::DirectConnection);
 	connect(this, SIGNAL(OverstepBorder(int)),
 		world, SLOT(SetReloadShreds(int)),
 		Qt::DirectConnection);
-	connect(world, SIGNAL(Moved(int)),
-		this, SLOT(UpdateCoords(int)),
+	connect(world, SIGNAL(Moved(int)), this, SLOT(UpdateXYZ(int)),
 		Qt::DirectConnection);
-	connect(world, SIGNAL(StartReloadAll()),
-		this, SLOT(WorldSizeReloadStart()),
-		Qt::DirectConnection);
-	connect(world, SIGNAL(FinishReloadAll()),
-		this, SLOT(WorldSizeReloadFinish()),
-		Qt::DirectConnection);
-} // Player::Player(World * w)
+} // Player::Player()
 
 void Player::CleanAll() {
 	if ( cleaned ) {

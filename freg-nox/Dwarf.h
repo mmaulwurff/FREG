@@ -27,25 +27,24 @@
 class Dwarf : public Animal, public Inventory {
 	Q_OBJECT
 
-	static const uchar MIN_DWARF_LIGHT_RADIUS=2;
+	static const uchar MIN_DWARF_LIGHT_RADIUS = 2;
 	quint8 activeHand;
 	uchar lightRadius;
 	quint16 NutritionalValue(int sub) const;
 	void UpdateLightRadius();
 
 	public:
-	static const uchar ON_HEAD=0;
-	static const uchar IN_RIGHT=1;
-	static const uchar IN_LEFT=2;
-	static const uchar ON_BODY=3;
-	static const uchar ON_LEGS=4;
+	static const uchar ON_HEAD  = 0;
+	static const uchar IN_RIGHT = 1;
+	static const uchar IN_LEFT  = 2;
+	static const uchar ON_BODY  = 3;
+	static const uchar ON_LEGS  = 4;
 
 	uchar GetActiveHand() const;
 	void  SetActiveHand(bool right);
 
 	quint8 Kind() const;
 	int Sub() const;
-	int ShouldAct() const;
 	QString FullName() const;
 	ushort Weight() const;
 	ushort Start() const;

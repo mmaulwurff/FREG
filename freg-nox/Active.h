@@ -59,7 +59,8 @@ class Active : public QObject, public Block {
 	ushort Y() const;
 	ushort Z() const;
 
-	virtual void ActFrequent();
+	void ActFrequent();
+	virtual void DoFrequentAction();
 	virtual void ActRare();
 	virtual int ShouldAct() const;
 	virtual bool ShouldFall() const;

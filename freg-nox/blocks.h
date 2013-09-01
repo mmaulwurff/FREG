@@ -209,7 +209,7 @@ class Rabbit : public Animal {
 
 	public:
 	quint8 Kind() const;
-	void ActFrequent();
+	void DoFrequentAction();
 	void ActRare();
 	int  ShouldAct() const;
 	Block * DropAfterDamage() const;
@@ -245,7 +245,7 @@ class Door : public Active {
 	int movable;
 
 	public:
-	void ActFrequent();
+	void DoFrequentAction();
 	int  ShouldAct() const;
 	quint8 Kind() const;
 	int  Movable() const;

@@ -39,18 +39,21 @@ quint8 Active::Kind() const { return ACTIVE; }
 Active * Active::ActiveBlock() { return this; }
 /** When reimplementing this method, add
  *  "if ( IsToDelete() ) return;" line, it is needed for blocks
- *  prepared to be deleted not to act.
-*/
+ *  prepared to be deleted not to act. */
 void Active::ActRare() {}
 int  Active::ShouldAct() const { return NEVER; }
 bool Active::IsFalling() const { return falling; }
 int  Active::Movable() const { return MOVABLE; }
 bool Active::ShouldFall() const { return true; }
-/** When reimplementing this method, add
- *  "if ( IsToDelete() ) return;" line, it is needed for blocks
- *  prepared to be deleted not to act.
-*/
-void Active::ActFrequent() {}
+void Active::DoFrequentAction() {}
+void Active::ActFrequent() {
+	if ( !IsToDelete() ) {
+		if ( GetDeferredAction() ) {
+			GetDeferredAction()->MakeAction();
+		}
+		DoFrequentAction();
+	}
+}
 
 void Active::SetFalling(const bool set) {
 	if ( !(falling=set) ) {
@@ -60,11 +63,9 @@ void Active::SetFalling(const bool set) {
 
 void Active::SetDeferredAction(DeferredAction * const action) {
 	delete deferredAction;
-	deferredAction=action;
+	deferredAction = action;
 }
-DeferredAction * Active::GetDeferredAction() const {
-	return deferredAction;
-}
+DeferredAction * Active::GetDeferredAction() const { return deferredAction; }
 
 void Active::FallDamage() {
 	if ( fall_height > SAFE_FALL_HEIGHT ) {
@@ -153,19 +154,19 @@ int Active::Damage(const ushort dmg, const int dmg_kind) {
 
 void Active::ReceiveSignal(const QString & str) { emit ReceivedText(str); }
 
-void Active::ReloadToNorth() { y_self+=SHRED_WIDTH; }
-void Active::ReloadToSouth() { y_self-=SHRED_WIDTH; }
-void Active::ReloadToWest()  { x_self+=SHRED_WIDTH; }
-void Active::ReloadToEast()  { x_self-=SHRED_WIDTH; }
+void Active::ReloadToNorth() { y_self += SHRED_WIDTH; }
+void Active::ReloadToSouth() { y_self -= SHRED_WIDTH; }
+void Active::ReloadToWest()  { x_self += SHRED_WIDTH; }
+void Active::ReloadToEast()  { x_self -= SHRED_WIDTH; }
 
 void Active::EmitUpdated() { emit Updated(); }
 
 void Active::SaveAttributes(QDataStream & out) const { out << fall_height; }
 
 void Active::SetXYZ(const ushort x, const ushort y, const ushort z) {
-	x_self=x;
-	y_self=y;
-	z_self=z;
+	x_self = x;
+	y_self = y;
+	z_self = z;
 }
 
 void Active::SetToDelete() {
@@ -199,6 +200,4 @@ Active::Active(QDataStream & str, const int sub, const quint16 id,
 {
 	str >> fall_height;
 }
-Active::~Active() {
-	delete deferredAction;
-}
+Active::~Active() { delete deferredAction; }

@@ -30,7 +30,6 @@
 #include "world.h"
 #include "worldmap.h"
 #include "BlockManager.h"
-#include "DeferredAction.h"
 #include "ShredStorage.h"
 
 const ushort MIN_WORLD_SIZE = 7;
@@ -132,12 +131,12 @@ bool World::InBounds(const ushort x, const ushort y, const ushort z) const {
 void World::ReloadAllShreds(const long lati, const long longi,
 	const ushort new_x, const ushort new_y, const ushort new_z)
 {
-	newLati=lati;
-	newLongi=longi;
-	newX=new_x;
-	newY=new_y;
-	newZ=new_z;
-	toResetDir=DOWN;
+	newLati  = lati;
+	newLongi = longi;
+	newX = new_x;
+	newY = new_y;
+	newZ = new_z;
+	toResetDir = DOWN; // full reset
 }
 
 QReadWriteLock * World::GetLock() const { return rwLock; }
@@ -229,14 +228,6 @@ void World::DeleteBlock(Block * const block) {
 	} else {
 		block_manager.DeleteBlock(block);
 	}
-}
-
-void World::AddDeferredAction(DeferredAction * const action) {
-	defActions.append(action);
-}
-
-void World::RemDeferredAction(DeferredAction * const action) {
-	defActions.removeOne(action);
 }
 
 Block * World::ReplaceWithNormal(Block * const block) const {
@@ -367,16 +358,10 @@ void World::PhysEvents() {
 		ReloadShreds(toResetDir);
 		toResetDir = UP; // set no reset
 	}
-	// do deferred actions
-	for (int i=0; i<defActions.size(); ++i) {
-		defActions.at(i)->MakeAction();
-		RemDeferredAction(defActions.at(i));
-	}
 	// count and show global clock
 	/*static ulong global_step=0;
 	fprintf(stderr, "step: %lu\n", global_step);
-	++global_step;
-	emit Notify(QString("tic-tac: %1").arg(time));*/
+	++global_step;*/
 
 	const ushort start = numShreds/2-numActiveShreds/2;
 	const ushort end   = start+numActiveShreds;
@@ -389,6 +374,9 @@ void World::PhysEvents() {
 		++timeStep;
 		return;
 	} // else:
+
+	//emit Notify(QString("tic-tac: %1").arg(time));
+
 	for (ushort i=start; i<end; ++i)
 	for (ushort j=start; j<end; ++j) {
 		shreds[i+j*NumShreds()]->PhysEventsRare();
@@ -423,7 +411,7 @@ void World::PhysEvents() {
 	}
 	emit UpdatesEnded();
 	// emit ExitReceived(); // close all after 1 turn
-} // World::PhysEvents
+} // void World::PhysEvents()
 
 bool World::DirectlyVisible(float x_from, float y_from, float z_from,
 		const ushort x_to, const ushort y_to, const ushort z_to)
