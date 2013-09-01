@@ -226,9 +226,9 @@ void Shred::PhysEventsFrequent() {
 
 void Shred::Clean() {
 	for (QLinkedList<Active *>::iterator i=deleteList.begin();
-			i != deleteList.end();
-			i  = deleteList.erase(i))
+			i != deleteList.end(); i = deleteList.erase(i))
 	{
+		Unregister(*i);
 		delete *i;
 	}
 }

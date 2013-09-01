@@ -628,7 +628,7 @@ const {
 void World::Damage(const ushort x, const ushort y, const ushort z,
 		const ushort dmg, const int dmg_kind)
 {
-	Block * temp=GetBlock(x, y, z);
+	Block * temp = GetBlock(x, y, z);
 	if ( temp==Normal(temp->Sub()) && AIR!=temp->Sub() ) {
 		SetBlock((temp=NewBlock(temp->Kind(), temp->Sub())), x, y, z);
 	}
@@ -638,12 +638,11 @@ void World::Damage(const ushort x, const ushort y, const ushort z,
 				temp->Durability()!=MAX_DURABILITY )
 		{ // convert stone into ladder
 			DeleteBlock(temp);
-			temp=NewBlock(LADDER, STONE);
+			SetBlock(NewBlock(LADDER, STONE), x, y, z);
 			emit ReEnlighten(x, y, z);
 		} else {
-			temp=ReplaceWithNormal(temp); // checks are inside
+			SetBlock(ReplaceWithNormal(temp), x, y, z);
 		}
-		SetBlock(temp, x, y, z);
 	}
 }
 

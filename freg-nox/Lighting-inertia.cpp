@@ -35,12 +35,8 @@
 #include "Block.h"
 #include "Active.h"
 
-const uchar FIRE_LIGHT_FACTOR=4;
+const uchar FIRE_LIGHT_FACTOR = 4;
 
-/*short World::ClampX(const short) const { return 0; }
-short World::ClampY(const short) const { return 0; }
-short World::ClampZ(const short) const { return 0; }
-*/
 // use Enlightened instead, which is smart wrapper of this.
 uchar World::LightMap(const ushort x, const ushort y, const ushort z)
 const {
@@ -291,7 +287,7 @@ void Shred::SetAllLightMapNull() {
 
 // make all shining blocks of shred shine.
 void Shred::ShineAll() {
-	QLinkedList<Active *>::const_iterator i=shiningList.constBegin();
+	QLinkedList<Active *>::const_iterator i = shiningList.constBegin();
 	for ( ; i != shiningList.constEnd(); ++i) {
 		world->Shine((*i)->X(), (*i)->Y(), (*i)->Z(),
 			(*i)->LightRadius(), true);
