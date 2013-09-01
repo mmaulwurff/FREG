@@ -342,26 +342,22 @@ void World::SetReloadShreds(const int direction) { toResetDir=direction; }
 void World::PhysEvents() {
 	const QWriteLocker writeLock(rwLock);
 	switch ( toResetDir ) {
-	case UP: break;
+	case UP: break; // no reset
 	case DOWN: // full reset
 		emit StartReloadAll();
 		DeleteAllShreds();
-		longitude=newLongi;
-		latitude=newLati;
+		longitude = newLongi;
+		latitude  = newLati;
 		LoadAllShreds();
 		emit NeedPlayer(newX, newY, newZ);
 		emit UpdatedAll();
 		emit FinishReloadAll();
-		toResetDir=UP; // set no reset
+		toResetDir = UP; // set no reset
 	break;
 	default:
 		ReloadShreds(toResetDir);
 		toResetDir = UP; // set no reset
 	}
-	// count and show global clock
-	/*static ulong global_step=0;
-	fprintf(stderr, "step: %lu\n", global_step);
-	++global_step;*/
 
 	const ushort start = numShreds/2-numActiveShreds/2;
 	const ushort end   = start+numActiveShreds;
@@ -497,9 +493,13 @@ bool World::Move(const ushort x, const ushort y, const ushort z,
 		const quint8 dir)
 {
 	ushort newx, newy, newz;
+	Active * active;
+	Block * block;
 	if ( !Focus(x, y, z, newx, newy, newz, dir) &&
 			CanMove(x, y, z, newx, newy, newz, dir) &&
-			(DOWN==dir || !GetBlock(x, y, z)->Weight() || !(
+			(DOWN==dir || !(block=GetBlock(x, y, z))->Weight() ||
+			!( (active=block->ActiveBlock()) &&
+				active->IsFalling() &&
 				AIR==Sub(x, y, z-1) &&
 				AIR==Sub(newx, newy, newz-1))) )
 	{
@@ -510,29 +510,28 @@ bool World::Move(const ushort x, const ushort y, const ushort z,
 	}
 }
 
-bool World::CanMove(
-		const ushort x,    const ushort y,    const ushort z,
+bool World::CanMove(const ushort x, const ushort y, const ushort z,
 		const ushort newx, const ushort newy, const ushort newz,
 		const quint8 dir)
 {
 	if ( !InBounds(x, y, z) ) {
 		return false;
 	}
-	Block * const block=GetBlock(x, y, z);
-	Block * block_to=GetBlock(newx, newy, newz);
-	if ( NOT_MOVABLE==block->Movable() ) {
+	Block * const block = GetBlock(x, y, z);
+	Block * block_to = GetBlock(newx, newy, newz);
+	if ( NOT_MOVABLE == block->Movable() ) {
 		return false;
 	}
-	if ( ENVIRONMENT==block->Movable() ) {
-		if ( *block==*block_to ) {
+	if ( ENVIRONMENT == block->Movable() ) {
+		if ( *block == *block_to ) {
 			return false;
-		} else if ( MOVABLE==block_to->Movable() ) {
+		} else if ( MOVABLE == block_to->Movable() ) {
 			NoCheckMove(x, y, z, newx, newy, newz, dir);
 			return true;
 		}
 	}
 	switch ( block_to->BeforePush(dir, block) ) {
-	case MOVE_SELF: block_to=GetBlock(newx, newy, newz); break;
+	case MOVE_SELF: block_to = GetBlock(newx, newy, newz); break;
 	case DESTROY:
 		DeleteBlock(block_to);
 		PutNormalBlock(AIR, newx, newy, newz);
@@ -562,13 +561,12 @@ bool World::CanMove(
 			Move(newx, newy, newz, dir) ) );
 } // bool World::CanMove(ushort x, y, z, newx, newy, newz, quint8 dir)
 
-void World::NoCheckMove(
-		const ushort x,    const ushort y,    const ushort z,
+void World::NoCheckMove(const ushort x, const ushort y, const ushort z,
 		const ushort newx, const ushort newy, const ushort newz,
 		const quint8 dir)
 {
-	Block * const block=GetBlock(x, y, z);
-	Block * const block_to=GetBlock(newx, newy, newz);
+	Block * const block = GetBlock(x, y, z);
+	Block * const block_to = GetBlock(newx, newy, newz);
 
 	PutBlock(block_to, x, y, z);
 	PutBlock(block, newx, newy, newz);
@@ -578,29 +576,25 @@ void World::NoCheckMove(
 		ReEnlighten(x, y, z);
 	}
 
-	Shred * shred=GetShred(x, y);
+	block_to->Move( Anti(dir) );
+	block->Move(dir);
+
+	Shred * shred = GetShred(x, y);
 	shred->AddFalling(Shred::CoordInShred(x), Shred::CoordInShred(y), z+1);
 	shred->AddFalling(Shred::CoordInShred(x), Shred::CoordInShred(y), z);
-	shred=GetShred(newx, newy);
+	shred = GetShred(newx, newy);
 	shred->AddFalling(Shred::CoordInShred(newx), Shred::CoordInShred(newy),
 		newz+1);
 	shred->AddFalling(Shred::CoordInShred(newx), Shred::CoordInShred(newy),
 		newz);
-
-	block_to->Move( Anti(dir) );
-	block->Move(dir);
 }
 
 void World::Jump(const ushort x, const ushort y, const ushort z,
 		const quint8 dir)
 {
-	if ( !(AIR==Sub(x, y, z-1) && GetBlock(x, y, z)->Weight()) &&
-			Move(x, y, z, UP) &&
-			!Move(x, y, z+1, dir) )
-	{
-		NoCheckMove(x, y, z+1, x, y, z, DOWN);
-		Move(x, y, z, dir);
-	}
+	Move(x, y, (( !(AIR==Sub(x, y, z-1) && GetBlock(x, y, z)->Weight()) &&
+			Move(x, y, z, UP) ) ?
+				z+1 : z), dir);
 }
 
 bool World::Focus(const ushort x, const ushort y, const ushort z,

@@ -471,7 +471,6 @@ void Shred::TestShred() {
 	}
 	SetNewBlock(DWARF, H_MEAT, column+=2, row, level);
 	SetNewBlock(LIQUID, WATER, column+=2, row, level - 3);
-	SetNewBlock(LIQUID, WATER, column, row, level - 3);
 	SetNewBlock(LIQUID, WATER, column, row, level - 2);
 	PutNormalBlock(AIR, column, row, level - 1);
 	SetNewBlock(BUSH, WOOD, column+=2, row, level);

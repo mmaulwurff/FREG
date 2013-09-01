@@ -370,16 +370,16 @@
 		if ( IsToDelete() ) return;
 		World * const world=GetWorld();
 		if (
-				AIR!=world->Sub(X(), Y(), Z()+1) &&
-				AIR!=world->Sub(X(), Y(), Z()-1) &&
+				AIR != world->Sub(X(), Y(), Z()+1) &&
+				AIR != world->Sub(X(), Y(), Z()-1) &&
 			world->InBounds(X()+1, Y()) &&
-				AIR!=world->Sub(X()+1, Y(), Z()) &&
+				AIR != world->Sub(X()+1, Y(), Z()) &&
 			world->InBounds(X()-1, Y()) &&
-				AIR!=world->Sub(X()-1, Y(), Z()) &&
+				AIR != world->Sub(X()-1, Y(), Z()) &&
 			world->InBounds(X(), Y()+1) &&
-				AIR!=world->Sub(X(), Y()+1, Z()) &&
+				AIR != world->Sub(X(), Y()+1, Z()) &&
 			world->InBounds(X(), Y()-1) &&
-				AIR!=world->Sub(X(), Y()-1, Z()) )
+				AIR != world->Sub(X(), Y()-1, Z()) )
 		{
 			if ( breath <= 0 ) {
 				world->Damage(X(), Y(), Z(), 10, BREATH);
