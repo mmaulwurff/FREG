@@ -19,7 +19,6 @@
 	*/
 
 #include <QDataStream>
-#include <memory>
 #include "header.h"
 #include "blocks.h"
 #include "Dwarf.h"
@@ -88,21 +87,17 @@ BlockManager::~BlockManager() {
 	}
 }
 
-Block * BlockManager::NormalBlock(const int sub) {
-	return normals[sub];
-}
+Block * BlockManager::NormalBlock(const int sub) const { return normals[sub]; }
 
-Block * BlockManager::NewBlock(const int kind, int sub) {
+Block * BlockManager::NewBlock(const int kind, int sub) const {
 	if ( sub >= LAST_SUB  ) {
-		fprintf(stderr,
-			"BlockManager::NewBlock: unknown substance: %d.\n",
+		fprintf(stderr, "BlockManager::NewBlock: substance (?): %d.\n",
 			sub);
-		sub=STONE;
+		sub = STONE;
 	}
 	const quint16 id = MakeId(kind, sub);
 	switch ( kind ) {
-	default: fprintf(stderr,
-		"BlockManager::NewBlock: unlisted kind: %d\n",
+	default: fprintf(stderr, "BlockManager::NewBlock: unlisted kind: %d\n",
 		kind);
 	case BLOCK:  return New<Block >(sub, id);
 	case BELL:   return New<Bell  >(sub, id);
@@ -130,12 +125,11 @@ Block * BlockManager::NewBlock(const int kind, int sub) {
 
 Block * BlockManager::BlockFromFile(QDataStream & str,
 		const quint8 kind, const quint8 sub)
-{
+const {
 	const quint16 id = MakeId(kind, sub);
 	switch ( kind ) {
 	default: fprintf(stderr,
-		"BlockManager::BlockFromFile: kind (?): %d\n.",
-		kind);
+		"BlockManager::BlockFromFile: kind (?): %d\n.", kind);
 	case BLOCK:  return New<Block >(str, sub, id);
 	case BELL:   return New<Bell  >(str, sub, id);
 	case PICK:   return New<Pick  >(str, sub, id);
@@ -160,7 +154,7 @@ Block * BlockManager::BlockFromFile(QDataStream & str,
 	}
 }
 
-Block * BlockManager::BlockFromFile(QDataStream & str) {
+Block * BlockManager::BlockFromFile(QDataStream & str) const {
 	quint8 kind, sub;
 	return KindSubFromFile(str, kind, sub) ?
 		NormalBlock(sub) : BlockFromFile(str, kind, sub);
@@ -168,10 +162,10 @@ Block * BlockManager::BlockFromFile(QDataStream & str) {
 
 bool BlockManager::KindSubFromFile(QDataStream & str,
 		quint8 & kind, quint8 & sub)
-{
+const {
 	quint8 data;
 	str >> data;
-	sub=(data & 0x7F);
+	sub = (data & 0x7F);
 	if ( data & 0x80 ) { // normal bit
 		return true;
 	} else {
@@ -180,8 +174,8 @@ bool BlockManager::KindSubFromFile(QDataStream & str,
 	}
 }
 
-void BlockManager::DeleteBlock(Block * const block) {
-	if ( block!=NormalBlock(block->Sub()) ) {
+void BlockManager::DeleteBlock(Block * const block) const {
+	if ( block != NormalBlock(block->Sub()) ) {
 		delete block;
 	}
 }
@@ -197,24 +191,25 @@ QString BlockManager::SubToString(const quint8 sub) {
 }
 
 quint8 BlockManager::StringToKind(const QString & str) {
-	int i=0;
+	int i = 0;
 	for ( ; i<LAST_KIND && kinds[i]!=str; ++i);
 	return i;
 }
 
 quint8 BlockManager::StringToSub(const QString & str) {
-	int i=0;
+	int i = 0;
 	for ( ; i<LAST_SUB && subs[i]!=str; ++i);
 	return i;
 }
 
 template <typename Thing>
-Thing * BlockManager::New(const int sub, const quint16 id) {
+Thing * BlockManager::New(const int sub, const quint16 id) const {
 	return new Thing(sub, id);
 }
 
 template <typename Thing>
-Thing * BlockManager::New(QDataStream & str, const int sub, const quint16 id) {
+Thing * BlockManager::New(QDataStream & str, const int sub, const quint16 id)
+const {
 	return new Thing(str, sub, id);
 }
 

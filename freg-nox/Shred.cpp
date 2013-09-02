@@ -133,14 +133,14 @@ Shred::~Shred() {
 			(longitude < mapSize) && (longitude >= 0) &&
 			(latitude  < mapSize) && (latitude  >= 0) )
 	{
-		QByteArray * shred_data = new QByteArray();
+		QByteArray * const shred_data = new QByteArray();
 		shred_data->reserve(70000);
 		QDataStream outstr(shred_data, QIODevice::WriteOnly);
 		outstr << DATASTREAM_VERSION;
 		outstr.setVersion(DATASTREAM_VERSION);
 		for (ushort x=0; x<SHRED_WIDTH; ++x)
 		for (ushort y=0; y<SHRED_WIDTH; ++y) {
-			ushort height=HEIGHT-2;
+			ushort height = HEIGHT-2;
 			for ( ; blocks[x][y][height]->Sub()==AIR; --height);
 			for (ushort z=1; z <= height; ++z) {
 				blocks[x][y][z]->SaveToFile(outstr);
