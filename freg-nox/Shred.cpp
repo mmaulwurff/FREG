@@ -27,10 +27,10 @@
 #include "Active.h"
 
 // Qt version in Debian stable that time.
-const quint8 DATASTREAM_VERSION=QDataStream::Qt_4_6;
+const quint8 DATASTREAM_VERSION = QDataStream::Qt_4_6;
 
-const ushort SHRED_WIDTH_SHIFT=4;
-const ushort SHRED_COORDS_BITS=0xF;
+const ushort SHRED_WIDTH_SHIFT = 4;
+const ushort SHRED_COORDS_BITS = 0xF;
 /// Get local coordinate.
 ushort Shred::CoordInShred(const ushort x) { return x & SHRED_COORDS_BITS; }
 /// Get shred coordinate in loaded zone (from 0 to numShreds).
@@ -40,7 +40,6 @@ long Shred::Longitude() const { return longitude; }
 long Shred::Latitude()  const { return latitude; }
 ushort Shred::ShredX() const { return shredX; }
 ushort Shred::ShredY() const { return shredY; }
-
 World * Shred::GetWorld() const { return world; }
 
 bool Shred::LoadShred() {
@@ -213,7 +212,7 @@ void Shred::PhysEventsFrequent() {
 		}
 	}
 	// clean list from blocks that are not in this shred
-	for (i = activeListFrequent.begin(); i != activeListFrequent.end(); ) {
+	for (i = activeListAll.begin(); i != activeListAll.end(); ) {
 		if ( (*i)->GetShred() == this ) {
 			++i;
 		} else {
@@ -245,10 +244,10 @@ void Shred::PhysEventsRare() {
 		}
 	}
 	// clean list from blocks that are not in this shred
-	for (QLinkedList<Active *>::iterator i = activeListRare.begin();
-			i != activeListRare.end();)
+	for (QLinkedList<Active *>::iterator i = activeListAll.begin();
+			i != activeListAll.end();)
 	{
-		if ( (*i)->GetShred()==this ) {
+		if ( (*i)->GetShred() == this ) {
 			++i;
 		} else {
 			Active * const erase = *i;
@@ -263,7 +262,6 @@ int Shred::Sub(const ushort x, const ushort y, const ushort z) const {
 }
 
 void Shred::Register(Active * const active) {
-	active->SetShred(this);
 	activeListAll.append(active);
 	switch ( active->ShouldAct() ) {
 	case FREQUENT:          activeListFrequent.append(active); break;
@@ -364,8 +362,8 @@ void Shred::SetBlock(Block * const block,
 {
 	Active * const active=( blocks[x][y][z]=block )->ActiveBlock();
 	if ( active ) {
-		active->SetXYZ( (shredX << SHRED_WIDTH_SHIFT) + x,
-			(shredY << SHRED_WIDTH_SHIFT) + y, z );
+		active->SetXYZ( (ShredX() << SHRED_WIDTH_SHIFT) + x,
+			(ShredY() << SHRED_WIDTH_SHIFT) + y, z );
 		Register(active);
 	}
 }
@@ -383,13 +381,13 @@ void Shred::SetNewBlock(const int kind, const int sub,
 void Shred::PutBlock(Block * const block,
 		const ushort x, const ushort y, const ushort z)
 {
-	blocks[x][y][z]=block;
+	blocks[x][y][z] = block;
 }
 
 void Shred::PutNormalBlock(const int sub,
 		const ushort x, const ushort y, const ushort z)
 {
-	blocks[x][y][z]=Normal(sub);
+	blocks[x][y][z] = Normal(sub);
 }
 
 Block * Shred::Normal(const int sub) { return block_manager.NormalBlock(sub); }
@@ -580,19 +578,20 @@ bool Shred::Tree(const ushort x, const ushort y, const ushort z,
 	if (
 			SHRED_WIDTH<=x+2 ||
 			SHRED_WIDTH<=y+2 ||
-			HEIGHT-1<=z+height ||
-			height<2 )
+			HEIGHT-1<=z+height || height<2 )
 	{
 		return false;
-	}
+	} // else:
+	// check for room
 	for (ushort i=x; i<=x+2; ++i)
 	for (ushort j=y; j<=y+2; ++j)
 	for (ushort k=z; k<z+height; ++k) {
-		if ( AIR!=Sub(i, j, k) && WATER!=Sub(i, j, k) ) {
+		const quint8 sub = Sub(i, j, k);
+		if ( AIR!=sub && WATER!=sub ) {
 			return false;
 		}
 	}
-	for (ushort k=z; k < z + height - 1; ++k) { // trunk
+	for (ushort k=z; k < z+height-1; ++k) { // trunk
 		PutNormalBlock(WOOD, x+1, y+1, k);
 	}
 	if ( ENVIRONMENT==GetBlock(x+1, y+1, z-1)->Movable() ) {
@@ -600,15 +599,16 @@ bool Shred::Tree(const ushort x, const ushort y, const ushort z,
 		PutNormalBlock(WOOD, x+1, y+1, z-1);
 	}
 	// branches
-	if ( qrand()%2 ) SetNewBlock(BLOCK, WOOD, x,   y+1, z+height/2, WEST);
-	if ( qrand()%2 ) SetNewBlock(BLOCK, WOOD, x+2, y+1, z+height/2, EAST);
-	if ( qrand()%2 ) SetNewBlock(BLOCK, WOOD, x+1, y,   z+height/2, NORTH);
-	if ( qrand()%2 ) SetNewBlock(BLOCK, WOOD, x+1, y+2, z+height/2, SOUTH);
+	const int r = qrand();
+	if ( r & 0x1 ) SetNewBlock(BLOCK, WOOD, x,   y+1, z+height/2, WEST);
+	if ( r & 0x2 ) SetNewBlock(BLOCK, WOOD, x+2, y+1, z+height/2, EAST);
+	if ( r & 0x4 ) SetNewBlock(BLOCK, WOOD, x+1, y,   z+height/2, NORTH);
+	if ( r & 0x8 ) SetNewBlock(BLOCK, WOOD, x+1, y+2, z+height/2, SOUTH);
 	// leaves
 	for (ushort i=x; i<=x+2; ++i)
 	for (ushort j=y; j<=y+2; ++j)
 	for (ushort k=z+height/2; k<z+height; ++k) {
-		if ( AIR==Sub(i, j, k) ) {
+		if ( AIR == Sub(i, j, k) ) {
 			PutNormalBlock(GREENERY, i, j, k);
 		}
 	}

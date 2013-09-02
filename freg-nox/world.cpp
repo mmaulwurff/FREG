@@ -815,7 +815,7 @@ void World::RemSun() {
 }
 
 void World::LoadAllShreds() {
-	shreds=new Shred *[(ulong)numShreds*(ulong)numShreds];
+	shreds = new Shred *[(ulong)numShreds*(ulong)numShreds];
 	shredMemoryPool = static_cast<Shred *>
 		(operator new (sizeof(Shred)*numShreds*numShreds));
 	for (long i=latitude -numShreds/2, x=0; x<numShreds; ++i, ++x)
@@ -831,9 +831,10 @@ void World::LoadAllShreds() {
 
 void World::DeleteAllShreds() {
 	RemSun();
-	for (ushort i=0; i<numShreds*numShreds; ++i) {
+	for (ushort i=0; i<NumShreds()*NumShreds(); ++i) {
 		shreds[i]->~Shred();
 	}
+	operator delete(shredMemoryPool);
 	delete [] shreds;
 }
 
@@ -904,11 +905,11 @@ World::World(const QString & world_name) :
 World::~World() { CleanAll(); }
 
 void World::CleanAll() {
-	static bool cleaned=false;
+	static bool cleaned = false;
 	if ( cleaned ) {
 		return;
 	}
-	cleaned=true;
+	cleaned = true;
 
 	WriteLock();
 	quit();
@@ -916,7 +917,6 @@ void World::CleanAll() {
 	Unlock();
 
 	DeleteAllShreds();
-	operator delete(shredMemoryPool);
 	delete map;
 	delete shredStorage;
 	delete rwLock;
