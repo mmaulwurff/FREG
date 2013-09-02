@@ -23,14 +23,6 @@
 
 #include "Dwarf.h" // contains all includes
 
-enum WEARABLE {
-	WEARABLE_NOWHERE,
-	WEARABLE_HEAD,
-	WEARABLE_ARM,
-	WEARABLE_BODY,
-	WEARABLE_LEGS
-}; // enum WEARABLE
-
 // weights in measures - mz (mezuro)
 	const ushort WEIGHT_NULLSTONE=1000;
 	const ushort WEIGHT_SAND=100;

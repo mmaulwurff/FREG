@@ -53,6 +53,7 @@ SOURCES += \
 	BlockManager.cpp \
 	blocks.cpp \
 	Active.cpp \
+	Dwarf.cpp \
 	CraftManager.cpp \
 	DeferredAction.cpp \
 	Lighting-inertia.cpp \

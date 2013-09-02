@@ -24,49 +24,58 @@
 #include "Animal.h"
 #include "Inventory.h"
 
+enum WEARABLE {
+	WEARABLE_NOWHERE,
+	WEARABLE_HEAD,
+	WEARABLE_ARM,
+	WEARABLE_BODY,
+	WEARABLE_LEGS
+}; // enum WEARABLE
+
 class Dwarf : public Animal, public Inventory {
 	Q_OBJECT
 
-	static const uchar MIN_DWARF_LIGHT_RADIUS = 2;
-	quint8 activeHand;
-	uchar lightRadius;
-	quint16 NutritionalValue(int sub) const;
-	void UpdateLightRadius();
-
 	public:
+	Dwarf(int sub, quint16 id);
+	Dwarf(QDataStream & str, int sub, quint16 id);
+
+	uchar GetActiveHand() const;
+	void  SetActiveHand(bool right);
+
+	int Sub() const;
+	int DamageKind() const;
+	bool Move(int direction);
+	quint8 Kind() const;
+	ushort Start() const;
+	ushort Weight() const;
+	ushort DamageLevel() const;
+	QString FullName() const;
+
+	bool Access() const;
+	bool Inscribe(const QString & str);
+	void MoveInside(ushort num_from, ushort num_to, ushort num);
+	void ReceiveSignal(const QString &);
+	uchar LightRadius() const;
+	Block * DropAfterDamage() const;
+	Inventory * HasInventory();
+
 	static const uchar ON_HEAD  = 0;
 	static const uchar IN_RIGHT = 1;
 	static const uchar IN_LEFT  = 2;
 	static const uchar ON_BODY  = 3;
 	static const uchar ON_LEGS  = 4;
 
-	uchar GetActiveHand() const;
-	void  SetActiveHand(bool right);
-
-	quint8 Kind() const;
-	int Sub() const;
-	QString FullName() const;
-	ushort Weight() const;
-	ushort Start() const;
-	int DamageKind() const;
-	ushort DamageLevel() const;
-	bool Move(int direction);
-
-	Inventory * HasInventory();
-	bool Access() const;
-	Block * DropAfterDamage() const;
-	bool Inscribe(const QString & str);
-	void MoveInside(ushort num_from, ushort num_to, ushort num);
-	void ReceiveSignal(const QString &);
-
 	protected:
 	void SaveAttributes(QDataStream & out) const;
 
-	public:
-	uchar LightRadius() const;
+	private:
+	void UpdateLightRadius();
+	quint16 NutritionalValue(int sub) const;
 
-	Dwarf(int sub, quint16 id);
-	Dwarf(QDataStream & str, int sub, quint16 id);
+	static const uchar MIN_DWARF_LIGHT_RADIUS = 2;
+
+	quint8 activeHand;
+	uchar lightRadius;
 }; // class Dwarf
 
 #endif

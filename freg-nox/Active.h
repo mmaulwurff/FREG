@@ -96,6 +96,8 @@ class Active : public QObject, public Block {
 	void SaveAttributes(QDataStream & out) const;
 
 	private:
+	void UpdateShred();
+
 	quint8 fall_height;
 	bool falling;
 	bool frozen; // don't do actions when frozen
@@ -103,8 +105,6 @@ class Active : public QObject, public Block {
 	/// Coordinates in loaded world zone.
 	ushort x_self, y_self, z_self;
 	Shred * shred;
-
-	void UpdateShred();
 }; // class Active
 
 #endif
