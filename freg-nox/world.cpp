@@ -41,17 +41,17 @@ Shred * World::GetShred(const ushort x, const ushort y) const {
 	               (Shred::CoordOfShred(x)) ];
 }
 
-QString World::WorldName() const { return worldName; }
-
-ushort World::NumShreds() const { return numShreds; }
-
+int World::TimeOfDay() const { return time % SECONDS_IN_DAY; }
 long World::GetSpawnLongi() const { return spawnLongi; }
 long World::GetSpawnLati()  const { return spawnLati; }
 long World::Longitude() const { return longitude; }
-long World::Latitude() const { return latitude; }
-ushort World::TimeStepsInSec() { return TIME_STEPS_IN_SEC; }
-
+long World::Latitude()  const { return latitude; }
 long World::MapSize() const { return map->MapSize(); }
+ulong World::Time() const { return time; }
+ushort World::TimeStepsInSec() { return TIME_STEPS_IN_SEC; }
+ushort World::MiniTime() const { return timeStep; }
+ushort World::NumShreds() const { return numShreds; }
+QString World::WorldName() const { return worldName; }
 
 char World::TypeOfShred(const long longi, const long lati) {
 	return map->TypeOfShred(longi, lati);
@@ -88,10 +88,6 @@ QString World::TimeOfDayStr() const {
 		arg(TimeOfDay()/60).
 		arg(TimeOfDay()%60, 2, 10, QChar('0'));
 }
-
-int World::TimeOfDay() const { return time % SECONDS_IN_DAY; }
-ulong World::Time() const { return time; }
-ushort World::MiniTime() const { return timeStep; }
 
 void World::Drop(Block * const block_from,
 		const ushort x_to, const ushort y_to, const ushort z_to,
@@ -598,24 +594,23 @@ void World::Jump(const ushort x, const ushort y, const ushort z,
 }
 
 bool World::Focus(const ushort x, const ushort y, const ushort z,
-		ushort & x_target, ushort & y_target, ushort & z_target,
-		const quint8 dir)
+		ushort & x_to, ushort & y_to, ushort & z_to, const quint8 dir)
 const {
-	x_target=x;
-	y_target=y;
-	z_target=z;
+	x_to = x;
+	y_to = y;
+	z_to = z;
 	switch ( dir ) {
-	case NORTH: --y_target; break;
-	case SOUTH: ++y_target; break;
-	case EAST:  ++x_target; break;
-	case WEST:  --x_target; break;
-	case DOWN:  --z_target; break;
-	case UP:    ++z_target; break;
+	case NORTH: --y_to; break;
+	case SOUTH: ++y_to; break;
+	case EAST:  ++x_to; break;
+	case WEST:  --x_to; break;
+	case DOWN:  --z_to; break;
+	case UP:    ++z_to; break;
 	default:
 		fprintf(stderr, "World::Focus: unlisted dir: %d\n", dir);
 		return true;
 	}
-	return !InBounds(x_target, y_target, z_target);
+	return !InBounds(x_to, y_to, z_to);
 }
 
 bool World::Focus(const ushort x, const ushort y, const ushort z,

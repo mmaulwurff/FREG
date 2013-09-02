@@ -414,7 +414,7 @@ char Shred::TypeOfShred(const long longi, const long lati) const {
 void Shred::CoverWith(const int kind, const int sub) {
 	for (ushort i=0; i<SHRED_WIDTH; ++i)
 	for (ushort j=0; j<SHRED_WIDTH; ++j) {
-		ushort k=HEIGHT-2;
+		ushort k = HEIGHT-2;
 		for ( ; AIR==Sub(i, j, k); --k);
 		SetNewBlock(kind, sub, i, j, ++k);
 	}
@@ -425,16 +425,12 @@ void Shred::RandomDrop(const ushort num, const int kind, const int sub,
 {
 	for (ushort i=0; i<num; ++i) {
 		const int rand = qrand();
-		const ushort x = (rand & SHRED_COORDS_BITS);
-		const ushort y = ((rand >> SHRED_WIDTH_SHIFT) &
-			SHRED_COORDS_BITS);
-		for (ushort z=HEIGHT-2; z>0; --z) {
-			if ( Sub(x, y, z) != AIR ) {
-				if( on_water || Sub(x, y, z)!=WATER ) {
-					SetNewBlock(kind, sub, x, y, z+1);
-				}
-				break;
-			}
+		const ushort x = CoordInShred(rand);
+		const ushort y = CoordInShred(rand >> SHRED_WIDTH_SHIFT);
+		ushort z = HEIGHT-2;
+		for ( ; Sub(x, y, z)==AIR; --z);
+		if( on_water || Sub(x, y, z)!=WATER ) {
+			SetNewBlock(kind, sub, x, y, ++z);
 		}
 	}
 }
