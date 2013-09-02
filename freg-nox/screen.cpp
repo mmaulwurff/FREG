@@ -33,8 +33,8 @@
 #include "Inventory.h"
 #include "Player.h"
 
-const char OBSCURE_BLOCK=' ';
-const int QUICK_INVENTORY_X_SHIFT=36;
+const char OBSCURE_BLOCK = ' ';
+const int QUICK_INVENTORY_X_SHIFT = 36;
 
 void Screen::Arrows(WINDOW * const window, const ushort x, const ushort y,
 		const bool show_dir)
@@ -68,39 +68,39 @@ const {
 
 void Screen::RePrint() {
 	clear();
-	updated=false;
-	updatedPlayer=false;
+	updated = false;
+	updatedPlayer = false;
 }
 
 void Screen::Update(const ushort, const ushort, const ushort) {
-	updated=false;
+	updated = false;
 }
 
 void Screen::UpdateAll() {
 	CleanFileToShow();
-	updated=false;
+	updated = false;
 }
 
 void Screen::UpdatePlayer() {
 	if ( player && ( USAGE_TYPE_READ_IN_INVENTORY==player->UsingType() ||
 			player->GetCreativeMode() ) )
 	{
-		updated=false;
+		updated = false;
 	}
-	updatedPlayer=false;
+	updatedPlayer = false;
 }
 
 void Screen::UpdateAround(const ushort, const ushort, const ushort,
 		const ushort)
 {
-	updated=false;
+	updated = false;
 }
 
-void Screen::Move(const int) { updated=false; }
+void Screen::Move(const int) { updated = false; }
 
 QString Screen::PassString(QString & str) const {
 	mvwaddch(commandWin, 0, 0, ':');
-	static const ushort NOTE_LENGTH=144;
+	static const ushort NOTE_LENGTH = 144;
 	char temp_str[NOTE_LENGTH+1];
 	echo();
 	wgetnstr(commandWin, temp_str, NOTE_LENGTH);
@@ -108,7 +108,7 @@ QString Screen::PassString(QString & str) const {
 	werase(commandWin);
 	wrefresh(commandWin);
 	fprintf(notifyLog, "%lu: Command: %s\n", w->Time(), temp_str);
-	return str=temp_str;
+	return str = temp_str;
 }
 
 char Screen::CharNumber(const ushort x, const ushort y, const ushort z) const {
@@ -254,7 +254,7 @@ color_pairs Screen::Color(const int kind, const int sub) const {
 
 void Screen::ControlPlayer(const int ch) {
 	CleanFileToShow();
-	if ( 'Q'==ch ) {
+	if ( 'Q'==ch || 3==ch || 4==ch ) {
 		emit ExitReceived();
 		return;
 	}
@@ -358,10 +358,10 @@ void Screen::ControlPlayer(const int ch) {
 	case '.':
 		if ( command.length()==1 && "."!=command ) {
 			ControlPlayer(command.at(0).toAscii());
-		} else if ( "warranty"==command ) {
+		} else if ( "warranty" == command ) {
 			wstandend(rightWin);
 			PrintFile(rightWin, "texts/warranty.txt");
-		} else if ( "size"==command ) {
+		} else if ( "size" == command ) {
 			Notify(QString(
 				"Terminal height: %1 lines, width: %2 chars.").
 				arg(LINES).arg(COLS));
@@ -372,12 +372,11 @@ void Screen::ControlPlayer(const int ch) {
 
 	default:
 		Notify(tr("Don't know what such key means: %1 ('%2').").
-			arg(ch).
-			arg(char(ch)));
+			arg(ch).arg(char(ch)));
 		Notify(tr("Press 'H' for help."));
 	}
 	mutex->lock();
-	updated=false;
+	updated = false;
 	mutex->unlock();
 } // void Screen::ControlPlayer(int ch)
 
@@ -861,7 +860,7 @@ void Screen::DeathScreen() {
 	wnoutrefresh(rightWin);
 	wnoutrefresh(hudWin);
 	doupdate();
-	updated=true;
+	updated = true;
 }
 
 Screen::Screen(World * const wor, Player * const pl) :
@@ -882,7 +881,6 @@ Screen::Screen(World * const wor, Player * const pl) :
 	#else
 		set_escdelay(10);
 	#endif
-	resize_term( SCREEN_SIZE+2 + 3 + 1 + 5, (SCREEN_SIZE*2 + 2)*2 );
 	initscr();
 	start_color();
 	raw(); // send typed keys directly
@@ -903,21 +901,21 @@ Screen::Screen(World * const wor, Player * const pl) :
 	for (short i=BLACK_BLACK; i<=WHITE_WHITE; ++i) {
 		init_pair(i, colors[(i-1)/8], colors[(i-1)%8]);
 	}
-	rightWin=newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, COLS/2);
-	leftWin =newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0,
+	rightWin = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, COLS/2);
+	leftWin  = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0,
 		COLS/2-SCREEN_SIZE*2-2);
-	hudWin=newwin(3, (SCREEN_SIZE*2+2)*2, SCREEN_SIZE+2,
+	hudWin = newwin(3, (SCREEN_SIZE*2+2)*2, SCREEN_SIZE+2,
 		COLS/2-SCREEN_SIZE*2-2);
-	commandWin=newwin(1, COLS, SCREEN_SIZE+2+3, 0);
-	notifyWin =newwin(0, COLS, SCREEN_SIZE+2+4, 0);
+	commandWin = newwin(1, COLS, SCREEN_SIZE+2+3, 0);
+	notifyWin  = newwin(0, COLS, SCREEN_SIZE+2+4, 0);
 	scrollok(notifyWin, TRUE);
 
 	QSettings sett(QDir::currentPath()+"/freg.ini", QSettings::IniFormat);
 	sett.beginGroup("screen_curses");
-	shiftFocus=sett.value("focus_shift", 0).toInt();
-	actionMode=sett.value("action_mode", USE).toInt();
-	command   =sett.value("last_command", "hello").toString();
-	beepOn    =sett.value("beep_on", true).toBool();
+	shiftFocus = sett.value("focus_shift", 0).toInt();
+	actionMode = sett.value("action_mode", USE).toInt();
+	command    = sett.value("last_command", "hello").toString();
+	beepOn     = sett.value("beep_on", true).toBool();
 	sett.setValue("beep_on", beepOn);
 
 	if ( !PrintFile(stdscr, "texts/splash.txt") ) {
@@ -925,7 +923,7 @@ Screen::Screen(World * const wor, Player * const pl) :
 		addstr("\nby mmaulwurff, with help of Panzerschrek\n");
 	}
 	printw("\nVersion %s.\n\nPress any key.", VER);
-	const int ch=getch();
+	const int ch = getch();
 	qsrand(ch);
 	ungetch(ch);
 	erase();
@@ -939,11 +937,11 @@ Screen::Screen(World * const wor, Player * const pl) :
 } // Screen::Screen(World * wor, Player * pl)
 
 void Screen::CleanAll() {
-	static bool cleaned=false;
+	static bool cleaned = false;
 	if ( cleaned ) {
 		return;
 	}
-	cleaned=true; // prevent double cleaning
+	cleaned = true; // prevent double cleaning
 	input->Stop();
 	input->wait();
 	delete input;
@@ -954,6 +952,7 @@ void Screen::CleanAll() {
 	delwin(notifyWin);
 	delwin(hudWin);
 	endwin();
+	puts("Game finished successfully.");
 	if ( notifyLog ) {
 		fclose(notifyLog);
 	}
@@ -981,4 +980,4 @@ void IThread::run() {
 	}
 }
 
-void IThread::Stop() { stopped=true; }
+void IThread::Stop() { stopped = true; }
