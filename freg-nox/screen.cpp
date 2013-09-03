@@ -48,7 +48,7 @@ const {
 	mvwaddstr(window, 0, x, "@@");
 	mvwaddstr(window, SCREEN_SIZE+1, x, "@@");
 	HorizontalArrows(window, y, WHITE_RED, show_dir);
-	wmove(window, y, x);
+	(void)wmove(window, y, x);
 }
 
 void Screen::HorizontalArrows(WINDOW * const window, const ushort y,
@@ -112,7 +112,7 @@ QString Screen::PassString(QString & str) const {
 }
 
 char Screen::CharNumber(const ushort x, const ushort y, const ushort z) const {
-	if ( HEIGHT-1==z ) { // sky
+	if ( HEIGHT-1 == z ) { // sky
 		return ' ';
 	}
 	if ( player->X()==x && player->Y()==y && player->Z()==z ) {
@@ -129,7 +129,7 @@ char Screen::CharNumber(const ushort x, const ushort y, const ushort z) const {
 			return '*';
 		}
 	}
-	const short z_dif=( UP==player->GetDir() ) ?
+	const short z_dif = ( UP==player->GetDir() ) ?
 		z - player->Z() : player->Z() - z;
 	return ( !z_dif ) ?
 		' ' : ( z_dif<0 ) ?
@@ -138,7 +138,7 @@ char Screen::CharNumber(const ushort x, const ushort y, const ushort z) const {
 }
 
 char Screen::CharNumberFront(const ushort i, const ushort j) const {
-	const ushort dist=
+	const ushort dist =
 		(( NORTH==player->GetDir() || SOUTH==player->GetDir() ) ?
 		abs(player->Y()-j) :
 		abs(player->X()-i)) -1;
@@ -165,8 +165,8 @@ char Screen::CharName(const int kind, const int sub) const {
 	case BELL:   return 'b';
 	case WORKBENCH: return '*';
 	case TELEGRAPH: return 't';
-	case DOOR:        return ( STONE==sub ) ? '#' : '\'';
-	case LOCKED_DOOR: return ( STONE==sub ) ? '#' : '`';
+	case DOOR:        return ( STONE == sub ) ? '#' : '\'';
+	case LOCKED_DOOR: return ( STONE == sub ) ? '#' : '`';
 	case WEAPON: switch ( sub ) {
 		default:
 			fprintf(stderr, "Screen::CharName: weapon sub ?: %d\n",
@@ -239,7 +239,7 @@ color_pairs Screen::Color(const int kind, const int sub) const {
 		case ROSE:       return RED_GREEN;
 		case CLAY:       return WHITE_RED;
 		case PAPER:      return MAGENTA_WHITE;
-		case SUN_MOON:   return ( NIGHT==w->PartOfDay() ) ?
+		case SUN_MOON:   return ( NIGHT == w->PartOfDay() ) ?
 			WHITE_WHITE : YELLOW_YELLOW;
 		case SKY: case STAR: switch ( w->PartOfDay() ) {
 			case NIGHT:   return WHITE_BLACK;
@@ -254,7 +254,7 @@ color_pairs Screen::Color(const int kind, const int sub) const {
 
 void Screen::ControlPlayer(const int ch) {
 	CleanFileToShow();
-	if ( 'Q'==ch || 3==ch || 4==ch ) {
+	if ( 'Q'==ch || 3==ch || 4==ch ) { // Q, ctrl-c and ctrl-d
 		emit ExitReceived();
 		return;
 	}
@@ -264,28 +264,28 @@ void Screen::ControlPlayer(const int ch) {
 	}
 	switch ( ch ) { // interactions with world
 	case KEY_UP:
-		if ( player->GetDir()==NORTH ) {
+		if ( player->GetDir() == NORTH ) {
 			player->Move(NORTH);
 		} else {
 			player->SetDir(NORTH);
 		}
 	break;
 	case KEY_DOWN:
-		if ( player->GetDir()==SOUTH ) {
+		if ( player->GetDir() == SOUTH ) {
 			player->Move(SOUTH);
 		} else {
 			player->SetDir(SOUTH);
 		}
 	break;
 	case KEY_RIGHT:
-		if ( player->GetDir()==EAST ) {
+		if ( player->GetDir() == EAST ) {
 			player->Move(EAST);
 		} else {
 			player->SetDir(EAST);
 		}
 	break;
 	case KEY_LEFT:
-		if ( player->GetDir()==WEST ) {
+		if ( player->GetDir() == WEST ) {
 			player->Move(WEST);
 		} else {
 			player->SetDir(WEST);
@@ -381,8 +381,8 @@ void Screen::ControlPlayer(const int ch) {
 } // void Screen::ControlPlayer(int ch)
 
 void Screen::SetActionMode(const int mode) {
-	actionMode=mode;
-	updatedPlayer=false;
+	actionMode = mode;
+	updatedPlayer = false;
 }
 
 void Screen::InventoryAction(const ushort num) const {
@@ -424,14 +424,14 @@ void Screen::ActionXyz(ushort & x,ushort & y, ushort & z) const {
 				player->Y(),
 				player->Z()+shiftFocus) ))
 	{
-		z+=shiftFocus;
+		z += shiftFocus;
 	}
 }
 
 char Screen::PrintBlock(const Block * const block, WINDOW * const window)
 const {
-	const int kind=block->Kind();
-	const int sub =block->Sub();
+	const int kind = block->Kind();
+	const int sub  = block->Sub();
 	wcolor_set(window, Color(kind, sub), NULL);
 	return CharName(kind, sub);
 }
@@ -448,9 +448,9 @@ void Screen::Print() {
 		mutex->unlock();
 		return;
 	}
-	updated=true;
+	updated = true;
 	mutex->unlock();
-	const int dir=player->GetDir();
+	const int dir = player->GetDir();
 	switch ( player->UsingSelfType() ) { // left window
 	case USAGE_TYPE_OPEN:
 		if ( player->PlayerInventory() ) {
@@ -485,7 +485,7 @@ void Screen::Print() {
 		case USAGE_TYPE_OPEN: {
 			ushort x, y, z;
 			ActionXyz(x, y, z);
-			const Inventory * const inv=
+			const Inventory * const inv =
 				w->GetBlock(x, y, z)->HasInventory();
 			if ( inv ) {
 				PrintInv(rightWin, inv);
@@ -512,16 +512,16 @@ void Screen::PrintHUD() {
 	if ( updatedPlayer ) {
 		return;
 	}
-	updatedPlayer=true;
+	updatedPlayer = true;
 	werase(hudWin);
 	// quick inventory
-	Inventory * const inv=player->PlayerInventory();
+	Inventory * const inv = player->PlayerInventory();
 	if ( inv ) {
 		for (ushort i=0; i<inv->Size(); ++i) {
 			wstandend(hudWin);
-			const int x=QUICK_INVENTORY_X_SHIFT+i*2;
+			const int x = QUICK_INVENTORY_X_SHIFT+i*2;
 			mvwaddch(hudWin, 0, x, 'a'+i);
-			const int number=inv->Number(i);
+			const int number = inv->Number(i);
 			if ( number ) {
 				mvwaddch(hudWin, 1, x,
 					PrintBlock(inv->ShowBlock(i), hudWin));
@@ -556,28 +556,28 @@ void Screen::PrintHUD() {
 			player->GlobalX(), player->GlobalY(), player->Z(),
 			player->GetLatitude(), player->GetLongitude());
 	} else {
-		const short dur=player->HP();
-		if ( -1!=dur ) { // HitPoints line
+		const short dur = player->HP();
+		if ( -1 != dur ) { // HitPoints line
 			wstandend(hudWin);
-			const QString str=QString("%1").arg(dur, -10, 10,
+			const QString str = QString("%1").arg(dur, -10, 10,
 				QChar('.'));
 			mvwaddstr(hudWin, 0, 0, "HP[..........]");
 			wcolor_set(hudWin, WHITE_RED, NULL);
 			mvwaddstr(hudWin, 0, 3,
 				qPrintable(str.left(10*dur/MAX_DURABILITY+1)));
 		}
-		const short breath=player->Breath();
+		const short breath = player->Breath();
 		if ( -1!=breath && breath!=MAX_BREATH ) { // breath line
 			wstandend(hudWin);
-			const QString str=
+			const QString str =
 				QString("%1").arg(breath, -10, 10, QChar('.'));
 			mvwaddstr(hudWin, 0, 15, "BR[..........]");
 			wcolor_set(hudWin, WHITE_BLUE, NULL);
 			mvwaddstr(hudWin, 0, 15+3,
 				qPrintable(str.left(10*breath/MAX_BREATH+1)));
 		}
-		const short satiation=player->SatiationPercent();
-		if ( -1!=satiation ) { // satiation line
+		const short satiation = player->SatiationPercent();
+		if ( -1 != satiation ) { // satiation line
 			(void)wmove(hudWin, 2, 0);
 			if ( 100<satiation ) {
 				wcolor_set(hudWin, BLUE_BLACK, NULL);
@@ -595,20 +595,20 @@ void Screen::PrintHUD() {
 } // void Screen::PrintHUD()
 
 void Screen::PrintNormal(WINDOW * const window, const int dir) const {
-	const ushort k_start=( UP!=dir ) ?
+	const ushort k_start = ( UP!=dir ) ?
 		(( DOWN==dir ) ? player->Z()-1 : player->Z()) :
 		player->Z()+1;
-	const short k_step=( UP!=dir ) ? (-1) : 1;
+	const short k_step = ( UP!=dir ) ? (-1) : 1;
 
 	(void)wmove(window, 1, 1);
-	const ushort start_x=( player->X()/SHRED_WIDTH )*SHRED_WIDTH +
+	const ushort start_x = ( player->X()/SHRED_WIDTH )*SHRED_WIDTH +
 		( SHRED_WIDTH-SCREEN_SIZE )/2;
-	const ushort start_y=( player->Y()/SHRED_WIDTH )*SHRED_WIDTH +
+	const ushort start_y = ( player->Y()/SHRED_WIDTH )*SHRED_WIDTH +
 		( SHRED_WIDTH-SCREEN_SIZE )/2;
 	for (ushort j=start_y; j<SCREEN_SIZE+start_y;
 			++j, waddstr(window, "\n_"))
 	for (ushort i=start_x; i<SCREEN_SIZE+start_x; ++i ) {
-		ushort k=k_start;
+		ushort k = k_start;
 		for ( ; INVISIBLE==w->GetBlock(i, j, k)->Transparent();
 				k+=k_step);
 		const Block * const block = w->GetBlock(i, j, k);
@@ -633,14 +633,14 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
 } // void Screen::PrintNormal(WINDOW * window, int dir)
 
 void Screen::PrintFront(WINDOW * const window) const {
-	const int dir=player->GetDir();
+	const int dir = player->GetDir();
 	short x_step, z_step,
 	      x_end, z_end,
 	      * x, * z,
 	      i, j;
-	const ushort pX=player->X();
-	const ushort pY=player->Y();
-	const ushort pZ=player->Z();
+	const ushort pX = player->X();
+	const ushort pY = player->Y();
+	const ushort pZ = player->Z();
 	const ushort begin_x = ( pX/SHRED_WIDTH )*SHRED_WIDTH +
 		( SHRED_WIDTH-SCREEN_SIZE )/2;
 	const ushort begin_y = ( pY/SHRED_WIDTH )*SHRED_WIDTH +
@@ -649,48 +649,48 @@ void Screen::PrintFront(WINDOW * const window) const {
 	ushort arrow_Y, arrow_X;
 	switch ( dir ) {
 	case NORTH:
-		x=&i;
-		x_step=1;
-		x_start=begin_x;
-		x_end=x_start+SCREEN_SIZE;
-		z=&j;
-		z_step=-1;
-		z_start=pY-1;
-		z_end=pY-SHRED_WIDTH-1;
-		arrow_X=(pX-begin_x)*2+1;
+		x = &i;
+		x_step = 1;
+		x_start = begin_x;
+		x_end = x_start+SCREEN_SIZE;
+		z = &j;
+		z_step = -1;
+		z_start = pY-1;
+		z_end = pY-SHRED_WIDTH-1;
+		arrow_X = (pX-begin_x)*2+1;
 	break;
 	case SOUTH:
-		x=&i;
-		x_step=-1;
-		x_start=SCREEN_SIZE-1+begin_x;
-		x_end=begin_x-1;
-		z=&j;
-		z_step=1;
-		z_start=pY+1;
-		z_end=pY+SHRED_WIDTH+1;
-		arrow_X=(SCREEN_SIZE-pX+begin_x)*2-1;
+		x = &i;
+		x_step = -1;
+		x_start = SCREEN_SIZE-1+begin_x;
+		x_end = begin_x-1;
+		z = &j;
+		z_step = 1;
+		z_start = pY+1;
+		z_end = pY+SHRED_WIDTH+1;
+		arrow_X = (SCREEN_SIZE-pX+begin_x)*2-1;
 	break;
 	case WEST:
-		x=&j;
-		x_step=-1;
-		x_start=SCREEN_SIZE-1+begin_y;
-		x_end=begin_y-1;
-		z=&i;
-		z_step=-1;
-		z_start=pX-1;
-		z_end=pX-SHRED_WIDTH-1;
-		arrow_X=(SCREEN_SIZE-pY+begin_y)*2-1;
+		x = &j;
+		x_step = -1;
+		x_start = SCREEN_SIZE-1+begin_y;
+		x_end = begin_y-1;
+		z = &i;
+		z_step = -1;
+		z_start = pX-1;
+		z_end = pX-SHRED_WIDTH-1;
+		arrow_X = (SCREEN_SIZE-pY+begin_y)*2-1;
 	break;
 	case EAST:
-		x=&j;
-		x_step=1;
-		x_start=begin_y;
-		x_end=SCREEN_SIZE+begin_y;
-		z=&i;
-		z_step=1;
-		z_start=pX+1;
-		z_end=pX+SHRED_WIDTH+1;
-		arrow_X=(pY-begin_y)*2+1;
+		x = &j;
+		x_step = 1;
+		x_start = begin_y;
+		x_end = SCREEN_SIZE+begin_y;
+		z = &i;
+		z_step = 1;
+		z_start = pX+1;
+		z_end = pX+SHRED_WIDTH+1;
+		arrow_X = (pY-begin_y)*2+1;
 	break;
 	default:
 		fprintf(stderr, "Screen::PrintFront(): unlisted dir: %d\n",
@@ -698,14 +698,14 @@ void Screen::PrintFront(WINDOW * const window) const {
 		return;
 	}
 	if ( pZ+SCREEN_SIZE/2 >= HEIGHT ) {
-		k_start=HEIGHT-2;
-		arrow_Y=HEIGHT-pZ;
+		k_start = HEIGHT-2;
+		arrow_Y = HEIGHT-pZ;
 	} else if ( pZ-SCREEN_SIZE/2 < 0 ) {
-		k_start=SCREEN_SIZE-1;
-		arrow_Y=SCREEN_SIZE-pZ;
+		k_start = SCREEN_SIZE-1;
+		arrow_Y = SCREEN_SIZE-pZ;
 	} else {
-		k_start=pZ+SCREEN_SIZE/2;
-		arrow_Y=SCREEN_SIZE/2+1;
+		k_start = pZ+SCREEN_SIZE/2;
+		arrow_Y = SCREEN_SIZE/2+1;
 	}
 	(void)wmove(window, 1, 1);
 	for (short k=k_start; k>k_start-SCREEN_SIZE;
@@ -778,14 +778,14 @@ const {
 		if ( !inv->Number(i) ) {
 			continue;
 		}
-		const Block * const block=inv->ShowBlock(i);
+		const Block * const block = inv->ShowBlock(i);
 		wprintw(window, "[%c]%s",
 			PrintBlock(block, window),
 			qPrintable(inv->InvFullName(i)) );
 		if ( 1<inv->Number(i) ) {
 			waddstr(window, qPrintable(inv->NumStr(i)));
 		}
-		const QString str=inv->GetInvNote(i);
+		const QString str = inv->GetInvNote(i);
 		if ( !str.isEmpty() ) {
 			waddstr(window, " ~:");
 			if ( str.size() < 24 ) {
@@ -815,12 +815,12 @@ void Screen::PrintText(WINDOW * const window, QString const & str) const {
 
 void Screen::CleanFileToShow() {
 	delete fileToShow;
-	fileToShow=0;
+	fileToShow = 0;
 }
 
 bool Screen::PrintFile(WINDOW * const window, QString const & file_name) {
 	CleanFileToShow();
-	fileToShow=new QFile(file_name);
+	fileToShow = new QFile(file_name);
 	if ( fileToShow->open(QIODevice::ReadOnly | QIODevice::Text) ) {
 		PrintText(window, fileToShow->readAll());
 		return true;
@@ -888,7 +888,7 @@ Screen::Screen(World * const wor, Player * const pl) :
 	nonl();
 	keypad(stdscr, TRUE); // use arrows
 	// all available color pairs (maybe some of them will not be used)
-	const short colors[]={ // do not change colors order!
+	const short colors[] = { // do not change colors order!
 		COLOR_BLACK,
 		COLOR_RED,
 		COLOR_GREEN,
