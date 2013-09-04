@@ -405,9 +405,9 @@
 	Animal * Animal::IsAnimal() { return this; }
 
 	bool Animal::Eat(const int sub) {
-		const int value=NutritionalValue(sub);
+		const int value = NutritionalValue(sub);
 		if ( value ) {
-			satiation+=value;
+			satiation += value;
 			ReceiveSignal(tr("Yum!"));
 			if ( SECONDS_IN_DAY < satiation ) {
 				satiation=1.1*SECONDS_IN_DAY;
@@ -830,13 +830,13 @@
 // Grass::
 	void Grass::ActRare() {
 		if ( IsToDelete() ) return;
-		World * const world=GetWorld();
+		World * const world = GetWorld();
 		if ( SOIL != world->Sub(X(), Y(), Z()-1) ) {
 			world->Damage(X(), Y(), Z(), durability, TIME);
 		}
 		short i=X(), j=Y();
 		// increase this if grass grows too fast
-		switch ( qrand()%(SECONDS_IN_HOUR*2) ) {
+		switch ( qrand() % (SECONDS_IN_HOUR*2) ) {
 		case 0: ++i; break;
 		case 1: --i; break;
 		case 2: ++j; break;
@@ -869,10 +869,9 @@
 	}
 
 	int  Grass::ShouldAct() const  { return RARE; }
-	quint8 Grass::Kind() const { return GRASS; }
-	bool Grass::ShouldFall() const { return false; }
 	int  Grass::BeforePush(const int, Block * const) { return DESTROY; }
-
+	bool Grass::ShouldFall() const { return false; }
+	quint8 Grass::Kind() const { return GRASS; }
 	Block * Grass::DropAfterDamage() const { return 0; }
 
 	Grass::Grass(const int sub, const quint16 id) :
@@ -978,7 +977,7 @@
 		if ( IsToDelete() ) return;
 		Animal::ActRare();
 		// eat sometimes
-		World * const world=GetWorld();
+		World * const world = GetWorld();
 		if ( SECONDS_IN_DAY/2 > Satiation() ) {
 			for (ushort x=X()-1; x<=X()+1; ++x)
 			for (ushort y=Y()-1; y<=Y()+1; ++y)
@@ -986,7 +985,10 @@
 				if ( world->InBounds(x, y) &&
 						GREENERY==world->Sub(x, y, z) )
 				{
-					world->Eat(X(), Y(), Z(), x, y, z);
+					world->Damage(x, y, z, MAX_DURABILITY,
+						EATEN);
+					world->DestroyAndReplace(x, y, z);
+					Eat(GREENERY);
 					return;
 				}
 			}

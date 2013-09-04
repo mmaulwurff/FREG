@@ -75,7 +75,6 @@ class World : public QThread {
 	uchar sunMoonFactor;
 
 	ShredStorage * shredStorage;
-
 	Shred * shredMemoryPool;
 
 	// Block work section
@@ -88,8 +87,6 @@ class World : public QThread {
 	void SetBlock(Block * block, ushort x, ushort y, ushort z);
 	/// Puts block to coordinates and not activates it.
 	void PutBlock(Block * block, ushort x, ushort y, ushort z);
-	/// Puts normal block to coordinates.
-	void PutNormalBlock(int sub, ushort x, ushort y, ushort z);
 	static Block * Normal(int sub);
 	static Block * NewBlock(int kind, int sub);
 	static void DeleteBlock(Block * block);
@@ -179,14 +176,10 @@ class World : public QThread {
 	/// Check and move
 	bool Move(ushort x, ushort y, ushort z, quint8 dir);
 	/// This CAN move blocks, but not xyz block.
-	bool CanMove(
-			ushort x,    ushort y,    ushort z,
-			ushort x_to, ushort y_to, ushort z_to,
-			quint8 dir);
-	void NoCheckMove(
-			ushort x,    ushort y,    ushort z,
-			ushort x_to, ushort y_to, ushort z_to,
-			quint8 dir);
+	bool CanMove(ushort x, ushort y, ushort z,
+			ushort x_to, ushort y_to, ushort z_to, quint8 dir);
+	void NoCheckMove(ushort x, ushort y, ushort z,
+			ushort x_to, ushort y_to, ushort z_to, quint8 dir);
 	void Jump(ushort x, ushort y, ushort z, quint8 dir);
 
 	// Time section
@@ -211,9 +204,6 @@ class World : public QThread {
 			bool anyway=false);
 	/// Returns true on success. Gets a string and inscribes block.
 	bool Inscribe(ushort x, ushort y, ushort z);
-	/// No bounds checks inside, use carefully.
-	void Eat(ushort i, ushort j, ushort k,
-			ushort i_food, ushort j_food, ushort k_food);
 
 	// Inventory functions section
 	private:

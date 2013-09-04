@@ -37,7 +37,7 @@ const ushort MIN_WORLD_SIZE = 7;
 World * world;
 
 Shred * World::GetShred(const ushort x, const ushort y) const {
-	return shreds[ (Shred::CoordOfShred(y))*numShreds +
+	return shreds[ (Shred::CoordOfShred(y))*NumShreds() +
 	               (Shred::CoordOfShred(x)) ];
 }
 
@@ -180,9 +180,9 @@ quint8 World::TurnLeft(const quint8 dir) {
 }
 
 void World::MakeSun() {
-	ifStar=( STAR==Sub( (sun_moon_x=SunMoonX()), SHRED_WIDTH*numShreds/2,
+	ifStar = ( STAR==Sub( (sun_moon_x=SunMoonX()), SHRED_WIDTH*numShreds/2,
 		HEIGHT-1) );
-	PutNormalBlock(SUN_MOON,
+	PutBlock(Normal(SUN_MOON),
 		sun_moon_x, SHRED_WIDTH*numShreds/2, HEIGHT-1);
 }
 
@@ -203,12 +203,6 @@ void World::PutBlock(Block * const block,
 {
 	GetShred(x, y)->PutBlock(block,
 		Shred::CoordInShred(x), Shred::CoordInShred(y), z);
-}
-
-void World::PutNormalBlock(const int sub,
-		const ushort x, const ushort y, const ushort z)
-{
-	PutBlock(Normal(sub), x, y, z);
 }
 
 Block * World::Normal(const int sub) {
@@ -367,8 +361,6 @@ void World::PhysEvents() {
 		return;
 	} // else:
 
-	//emit Notify(QString("tic-tac: %1").arg(time));
-
 	for (ushort i=start; i<end; ++i)
 	for (ushort j=start; j<end; ++j) {
 		shreds[i+j*NumShreds()]->PhysEventsRare();
@@ -382,11 +374,11 @@ void World::PhysEvents() {
 	// sun/moon moving
 	if ( sun_moon_x != SunMoonX() ) {
 		const ushort y = SHRED_WIDTH*numShreds/2;
-		PutNormalBlock((ifStar ? STAR : SKY), sun_moon_x, y, HEIGHT-1);
+		PutBlock(Normal(ifStar ? STAR : SKY), sun_moon_x, y, HEIGHT-1);
 		emit Updated(sun_moon_x, y, HEIGHT-1);
 		sun_moon_x = SunMoonX();
 		ifStar = ( STAR==Sub(sun_moon_x, y, HEIGHT-1) );
-		PutNormalBlock(SUN_MOON, sun_moon_x, y, HEIGHT-1);
+		PutBlock(Normal(SUN_MOON), sun_moon_x, y, HEIGHT-1);
 		emit Updated(sun_moon_x, y, HEIGHT-1);
 	}
 	switch ( TimeOfDay() ) {
@@ -514,10 +506,10 @@ bool World::CanMove(const ushort x, const ushort y, const ushort z,
 		return false;
 	}
 	Block * const block = GetBlock(x, y, z);
-	Block * block_to = GetBlock(newx, newy, newz);
 	if ( NOT_MOVABLE == block->Movable() ) {
 		return false;
 	}
+	Block * block_to = GetBlock(newx, newy, newz);
 	if ( ENVIRONMENT == block->Movable() ) {
 		if ( *block == *block_to ) {
 			return false;
@@ -530,7 +522,7 @@ bool World::CanMove(const ushort x, const ushort y, const ushort z,
 	case MOVE_SELF: block_to = GetBlock(newx, newy, newz); break;
 	case DESTROY:
 		DeleteBlock(block_to);
-		PutNormalBlock(AIR, newx, newy, newz);
+		PutBlock(Normal(AIR), newx, newy, newz);
 		return true;
 	break;
 	case JUMP:
@@ -642,18 +634,20 @@ void World::Damage(const ushort x, const ushort y, const ushort z,
 }
 
 void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
-	Block * const temp=GetBlock(x, y, z);
+	Block * const temp = GetBlock(x, y, z);
 	if ( temp->Durability() > 0 ) {
 		return;
 	}
-	Block * const dropped=temp->DropAfterDamage();
-	Shred * const shred=GetShred(x, y);
+	Block * const dropped = temp->DropAfterDamage();
+	Shred * const shred = GetShred(x, y);
+	const ushort x_in_shred = Shred::CoordInShred(x);
+	const ushort y_in_shred = Shred::CoordInShred(y);
 	if ( PILE!=temp->Kind() && (temp->HasInventory() || dropped) ) {
 		Block * const new_pile=( ( dropped && PILE==dropped->Kind() ) ?
 			dropped : NewBlock(PILE, DIFFERENT) );
-		SetBlock(new_pile, x, y, z);
-		Inventory * const inv=temp->HasInventory();
-		Inventory * const new_pile_inv=new_pile->HasInventory();
+		shred->SetBlock(new_pile, x_in_shred, y_in_shred, z);
+		Inventory * const inv = temp->HasInventory();
+		Inventory * const new_pile_inv = new_pile->HasInventory();
 		if ( inv ) {
 			new_pile_inv->GetAll(inv);
 		}
@@ -662,22 +656,21 @@ void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
 		{
 			DeleteBlock(dropped);
 		}
-		shred->AddFalling(
-			Shred::CoordInShred(x), Shred::CoordInShred(y), z);
+		shred->AddFalling(x_in_shred, y_in_shred, z);
 	} else {
-		PutNormalBlock(AIR, x, y, z);
+		PutBlock(Normal(AIR), x, y, z);
 	}
-	const int old_transparency=temp->Transparent();
-	const uchar old_light=temp->LightRadius();
+	const int old_transparency = temp->Transparent();
+	const uchar old_light = temp->LightRadius();
 	DeleteBlock(temp);
-	shred->AddFalling(Shred::CoordInShred(x), Shred::CoordInShred(y), z+1);
-	if ( old_transparency!=INVISIBLE ) {
+	shred->AddFalling(x_in_shred, y_in_shred, z+1);
+	if ( old_transparency != INVISIBLE ) {
 		ReEnlightenBlockRemove(x, y, z);
 	}
 	if ( old_light ) {
 		RemoveFireLight(x, y, z);
 	}
-}
+} // void World::DestroyAndReplace(ushort x, y, z)
 
 bool World::Build(Block * block,
 		const ushort x, const ushort y, const ushort z,
@@ -723,17 +716,6 @@ bool World::Inscribe(const ushort x, const ushort y, const ushort z) {
 	} else {
 		SetBlock(ReplaceWithNormal(block), x, y, z);
 		return false;
-	}
-}
-
-void World::Eat(
-		const ushort x,      const ushort y,      const ushort z,
-		const ushort x_food, const ushort y_food, const ushort z_food)
-{
-	if ( GetBlock(x, y, z)->IsAnimal()->Eat(Sub(x_food, y_food, z_food)) )
-	{
-		Damage(x_food, y_food, z_food, MAX_DURABILITY, EATEN);
-		DestroyAndReplace(x_food, y_food, z_food);
 	}
 }
 

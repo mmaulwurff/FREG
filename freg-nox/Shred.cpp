@@ -372,7 +372,12 @@ void Shred::SetNewBlock(const int kind, const int sub,
 		const ushort x, const ushort y, const ushort z,
 		const int dir)
 {
-	block_manager.DeleteBlock(blocks[x][y][z]);
+	Block * const to_delete = GetBlock(x, y, z);
+	Active * const active = to_delete->ActiveBlock();
+	if ( active ) {
+		Unregister(active);
+	}
+	block_manager.DeleteBlock(to_delete);
 	Block * const block = block_manager.NewBlock(kind, sub);
 	block->SetDir(dir);
 	SetBlock(block, x, y, z);
