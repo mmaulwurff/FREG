@@ -46,6 +46,7 @@ class Dwarf : public Animal, public Inventory {
 	int DamageKind() const;
 	bool Move(int direction);
 	quint8 Kind() const;
+	void DoFrequentAction();
 	ushort Start() const;
 	ushort Weight() const;
 	ushort DamageLevel() const;

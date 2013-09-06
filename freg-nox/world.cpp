@@ -355,6 +355,10 @@ void World::PhysEvents() {
 	for (ushort j=start; j<end; ++j) {
 		shreds[i+j*NumShreds()]->PhysEventsFrequent();
 	}
+	for (ushort i=start; i<end; ++i)
+	for (ushort j=start; j<end; ++j) {
+		shreds[i+j*NumShreds()]->Clean();
+	}
 
 	if ( TimeStepsInSec() > timeStep ) {
 		++timeStep;
