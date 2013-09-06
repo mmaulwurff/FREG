@@ -765,24 +765,19 @@ int World::Sub(const ushort x, const ushort y, const ushort z) const {
 		Sub(Shred::CoordInShred(x), Shred::CoordInShred(y), z);
 }
 
-int World::Temperature(
-		const ushort i_center,
-		const ushort j_center,
-		const ushort k_center)
-const {
-	if ( HEIGHT-1==k_center ) {
+int World::Temperature(const ushort x, const ushort y, const ushort z) const {
+	if ( HEIGHT-1 == z ) {
 		return 0;
 	}
-	short temperature=GetBlock(i_center, j_center, k_center)->
-		Temperature();
+	short temperature = GetBlock(x, y, z)->Temperature();
 	if ( temperature ) {
 		return temperature;
 	}
-	for (short i=i_center-1; i<=i_center+1; ++i)
-	for (short j=j_center-1; j<=j_center+1; ++j)
-	for (short k=k_center-1; k<=k_center+1; ++k) {
+	for (short i=x-1; i<=x+1; ++i)
+	for (short j=y-1; j<=y+1; ++j)
+	for (short k=z-1; k<=z+1; ++k) {
 		if ( InBounds(i, j, k) ) {
-			temperature+=GetBlock(i, j, k)->Temperature();
+			temperature += GetBlock(i, j, k)->Temperature();
 		}
 	}
 	return temperature/2;

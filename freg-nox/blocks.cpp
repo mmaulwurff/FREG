@@ -944,7 +944,7 @@
 	void Rabbit::DoFrequentAction() {
 		World * const world = GetWorld();
 		// analyse world around
-		short for_north=0, for_west=0;
+		short for_north = 0, for_west = 0;
 		for (ushort x=X()-4; x<=X()+4; ++x)
 		for (ushort y=Y()-4; y<=Y()+4; ++y)
 		for (ushort z=Z()-1; z<=Z()+3; ++z) {
@@ -1013,7 +1013,7 @@
 	quint8 Rabbit::Kind() const { return RABBIT; }
 
 	quint16 Rabbit::NutritionalValue(const int sub) const {
-		return ( GREENERY==sub ) ? SECONDS_IN_HOUR*4 : 0;
+		return ( GREENERY == sub ) ? SECONDS_IN_HOUR*4 : 0;
 	}
 
 	Rabbit::Rabbit(const int sub, const quint16 id) :
