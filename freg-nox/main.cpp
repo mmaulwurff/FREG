@@ -34,6 +34,7 @@
 #include "Player.h"
 
 int main(int argc, char *argv[]) {
+	puts("Starting...");
 	QDir::current().mkdir("texts");
 	freopen("texts/errors.txt", "wt", stderr);
 	qsrand(QTime::currentTime().msec());

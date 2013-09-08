@@ -152,7 +152,3 @@ Dwarf::Dwarf(QDataStream & str, const int sub, const quint16 id) :
 	str >> activeHand;
 	UpdateLightRadius();
 }
-
-void Dwarf::DoFrequentAction() {
-	GetWorld()->Move(X(), Y(), Z(), EAST);
-}

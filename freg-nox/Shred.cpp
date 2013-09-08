@@ -30,9 +30,9 @@
 const quint8 DATASTREAM_VERSION = QDataStream::Qt_4_6;
 
 const ushort SHRED_WIDTH_SHIFT = 4;
-const ushort SHRED_COORDS_BITS = 0xF;
+
 /// Get local coordinate.
-ushort Shred::CoordInShred(const ushort x) { return x & SHRED_COORDS_BITS; }
+ushort Shred::CoordInShred(const ushort x) { return x & 0xF; }
 /// Get shred coordinate in loaded zone (from 0 to numShreds).
 ushort Shred::CoordOfShred(const ushort x) { return x >> SHRED_WIDTH_SHIFT; }
 
@@ -170,9 +170,10 @@ long Shred::GlobalY(const ushort y) const {
 }
 
 void Shred::PhysEventsFrequent() {
-	QLinkedList<Active *>::iterator i;
 	// falling
-	for (i = fallList.begin(); i != fallList.end();) {
+	for (QLinkedList<Active *>::iterator i = fallList.begin();
+			i != fallList.end();)
+	{
 		if ( (*i)->GetShred() != this  ) {
 			i = fallList.erase(i);
 			continue;
@@ -211,19 +212,10 @@ void Shred::PhysEventsFrequent() {
 			(*j)->ActFrequent();
 		}
 	}
-	// clean list from blocks that are not in this shred
-	for (i = activeListAll.begin(); i != activeListAll.end(); ) {
-		if ( (*i)->GetShred() == this ) {
-			++i;
-		} else {
-			Active * const erase = *i;
-			++i;
-			Unregister(erase);
-		}
-	}
+	UnregisterExternalActives();
 } // void Shred::PhysEventsFrequent()
 
-void Shred::Clean() {
+void Shred::DeleteDestroyedActives() {
 	for (QLinkedList<Active *>::iterator i=deleteList.begin();
 			i != deleteList.end(); i = deleteList.erase(i))
 	{
@@ -243,7 +235,10 @@ void Shred::PhysEventsRare() {
 				(*i)->Z());
 		}
 	}
-	// clean list from blocks that are not in this shred
+	UnregisterExternalActives();
+}
+
+void Shred::UnregisterExternalActives() {
 	for (QLinkedList<Active *>::iterator i = activeListAll.begin();
 			i != activeListAll.end();)
 	{
@@ -262,11 +257,15 @@ int Shred::Sub(const ushort x, const ushort y, const ushort z) const {
 }
 
 void Shred::Register(Active * const active) {
-	activeListAll.append(active);
-	switch ( active->ShouldAct() ) {
-	case FREQUENT:          activeListFrequent.append(active); break;
-	case FREQUENT_AND_RARE: activeListFrequent.append(active); // no break;
-	case RARE:              activeListRare    .append(active); break;
+	if ( !activeListAll.contains(active) ) {
+		activeListAll.append(active);
+		switch ( active->ShouldAct() ) {
+		case FREQUENT: activeListFrequent.append(active); break;
+		case FREQUENT_AND_RARE:
+			activeListFrequent.append(active);
+		// no break;
+		case RARE: activeListRare.append(active); break;
+		}
 	}
 	AddFalling(active);
 	AddShining(active);
@@ -281,7 +280,8 @@ void Shred::Unregister(Active * const active) {
 
 void Shred::AddFalling(Active * const active) {
 	const Block * block;
-	if ( !active->IsFalling() &&
+	if ( !fallList.contains(active) &&
+			!active->IsFalling() &&
 			active->ShouldFall() &&
 			ENVIRONMENT==( block=GetBlock(
 				CoordInShred(active->X()),
@@ -302,7 +302,7 @@ void Shred::AddFalling(const ushort x, const ushort y, const ushort z) {
 }
 
 void Shred::AddShining(Active * const active) {
-	if ( active->LightRadius() ) {
+	if ( !shiningList.contains(active) && active->LightRadius() ) {
 		shiningList.append(active);
 	}
 }

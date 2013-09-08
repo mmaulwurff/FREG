@@ -42,7 +42,7 @@ class Shred {
 	ushort ShredY() const;
 	void PhysEventsFrequent();
 	void PhysEventsRare();
-	void Clean();
+	void DeleteDestroyedActives();
 
 	void Register(Active *);
 	void AddShining(Active *);
@@ -104,6 +104,7 @@ class Shred {
 
 	void AddFalling(Active *);
 	void Unregister(Active *);
+	void UnregisterExternalActives();
 
 	void RegisterBlock(Block *, ushort x, ushort y, ushort z);
 	bool LoadShred();

@@ -36,7 +36,7 @@ const ushort MIN_WORLD_SIZE = 7;
 
 World * world;
 
-Shred * World::GetShred(const ushort x, const ushort y) const {
+Shred * World::GetShred(ushort x, ushort y) const {
 	return shreds[ (Shred::CoordOfShred(y))*NumShreds() +
 	               (Shred::CoordOfShred(x)) ];
 }
@@ -355,13 +355,13 @@ void World::PhysEvents() {
 	for (ushort j=start; j<end; ++j) {
 		shreds[i+j*NumShreds()]->PhysEventsFrequent();
 	}
-	for (ushort i=start; i<end; ++i)
-	for (ushort j=start; j<end; ++j) {
-		shreds[i+j*NumShreds()]->Clean();
-	}
 
 	if ( TimeStepsInSec() > timeStep ) {
 		++timeStep;
+		for (ushort i=start; i<end; ++i)
+		for (ushort j=start; j<end; ++j) {
+			shreds[i+j*NumShreds()]->DeleteDestroyedActives();
+		}
 		return;
 	} // else:
 
@@ -371,7 +371,7 @@ void World::PhysEvents() {
 	}
 	for (ushort i=start; i<end; ++i)
 	for (ushort j=start; j<end; ++j) {
-		shreds[i+j*NumShreds()]->Clean();
+		shreds[i+j*NumShreds()]->DeleteDestroyedActives();
 	}
 	timeStep = 0;
 	++time;
@@ -584,9 +584,11 @@ void World::NoCheckMove(const ushort x, const ushort y, const ushort z,
 void World::Jump(const ushort x, const ushort y, const ushort z,
 		const quint8 dir)
 {
-	Move(x, y, (( !(AIR==Sub(x, y, z-1) && GetBlock(x, y, z)->Weight()) &&
-			Move(x, y, z, UP) ) ?
-				z+1 : z), dir);
+	if ( !(AIR==Sub(x, y, z-1) && GetBlock(x, y, z)->Weight()) &&
+			Move(x, y, z, UP) )
+	{
+		Move(x, y, z+1, dir);
+	}
 }
 
 bool World::Focus(const ushort x, const ushort y, const ushort z,
@@ -846,6 +848,7 @@ World::World(const QString & world_name) :
 		map(new WorldMap(&world_name)),
 		toResetDir(UP)
 {
+	puts(qPrintable(tr("Loading world...")));
 	world = this;
 	QSettings game_settings("freg.ini", QSettings::IniFormat);
 	numShreds = game_settings.value("number_of_shreds", MIN_WORLD_SIZE).

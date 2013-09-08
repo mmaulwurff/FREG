@@ -565,6 +565,7 @@ Player::Player() :
 		usingSelfType(USAGE_TYPE_NO),
 		cleaned(false)
 {
+	puts(qPrintable(tr("Loading player...")));
 	QSettings sett(QDir::currentPath() + '/' + world->WorldName() +
 			"/settings.ini",
 		QSettings::IniFormat);
