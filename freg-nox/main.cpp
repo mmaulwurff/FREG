@@ -34,7 +34,7 @@
 #include "Player.h"
 
 int main(int argc, char *argv[]) {
-	puts("Starting...");
+	puts(qPrintable(QObject::tr("Starting...")));
 	QDir::current().mkdir("texts");
 	freopen("texts/errors.txt", "wt", stderr);
 	qsrand(QTime::currentTime().msec());
@@ -47,9 +47,8 @@ int main(int argc, char *argv[]) {
 	QCoreApplication::setApplicationName("freg");
 	QSettings::setDefaultFormat(QSettings::IniFormat);
 
-	QSettings sett(QDir::currentPath()+"/freg.ini",
-		QSettings::IniFormat);
-	const QString worldName=sett.value("current_world", "mu").toString();
+	QSettings sett(QDir::currentPath()+"/freg.ini", QSettings::IniFormat);
+	const QString worldName = sett.value("current_world", "mu").toString();
 	sett.setValue("current_world", worldName);
 
 	World world(worldName);
@@ -67,10 +66,8 @@ int main(int argc, char *argv[]) {
 	QObject::connect(&freg, SIGNAL(aboutToQuit()),
 		&world, SLOT(CleanAll()));
 
-	QObject::connect(&screen, SIGNAL(ExitReceived()),
-		&freg, SLOT(quit()));
-	QObject::connect(&world, SIGNAL(ExitReceived()),
-		&freg, SLOT(quit()));
+	QObject::connect(&screen, SIGNAL(ExitReceived()), &freg, SLOT(quit()));
+	QObject::connect(&world,  SIGNAL(ExitReceived()), &freg, SLOT(quit()));
 
 	return freg.exec();
 }

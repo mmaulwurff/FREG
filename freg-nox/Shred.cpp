@@ -153,7 +153,7 @@ Shred::~Shred() {
 		for (ushort y=0; y<SHRED_WIDTH; ++y) {
 			ushort height = HEIGHT-2;
 			for ( ; blocks[x][y][height]->Sub()==AIR; --height);
-			for (ushort z=1; z<height; ++z) {
+			for (ushort z=1; z<=height; ++z) {
 				block_manager.DeleteBlock(blocks[x][y][z]);
 			}
 		}
