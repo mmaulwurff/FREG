@@ -21,7 +21,10 @@
 #ifndef BLOCKS_H
 #define BLOCKS_H
 
-#include "Dwarf.h" // contains all includes
+#include "Block.h"
+#include "Inventory.h"
+#include "Active.h"
+#include "Animal.h"
 
 // weights in measures - mz (mezuro)
 	const ushort WEIGHT_NULLSTONE=1000;
@@ -111,7 +114,7 @@ class Pile : public Active, public Inventory {
 	quint8 Kind() const;
 	int  Sub() const;
 	void ReceiveSignal(const QString &);
-	void ActRare();
+	void DoRareAction();
 	int  ShouldAct() const;
 	int  BeforePush(int, Block * who);
 	Block * DropAfterDamage() const;
@@ -135,7 +138,7 @@ class Liquid : public Active {
 	bool CheckWater() const;
 
 	public:
-	void ActRare();
+	void DoRareAction();
 	int  ShouldAct() const;
 	quint8 Kind() const;
 	int  Movable() const;
@@ -153,7 +156,7 @@ class Grass : public Active {
 
 	public:
 	QString FullName() const;
-	void ActRare();
+	void DoRareAction();
 	int  ShouldAct() const;
 	quint8 Kind() const;
 	bool ShouldFall() const;
@@ -174,7 +177,7 @@ class Bush : public Active, public Inventory {
 	int  Sub() const;
 	int  Movable() const;
 	bool ShouldFall() const;
-	void ActRare();
+	void DoRareAction();
 	int  ShouldAct() const;
 	int  BeforePush(int dir, Block * who);
 	void ReceiveSignal(const QString &);
@@ -202,7 +205,7 @@ class Rabbit : public Animal {
 	public:
 	quint8 Kind() const;
 	void DoFrequentAction();
-	void ActRare();
+	void DoRareAction();
 	int  ShouldAct() const;
 	Block * DropAfterDamage() const;
 	QString FullName() const;
@@ -259,7 +262,7 @@ class Clock : public Active {
 	short timerTime;
 
 	public:
-	void ActRare();
+	void DoRareAction();
 	int  ShouldAct() const;
 	quint8 Kind() const;
 	int  Movable() const;

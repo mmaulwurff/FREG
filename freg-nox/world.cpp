@@ -349,8 +349,8 @@ void World::PhysEvents() {
 		toResetDir = UP; // set no reset
 	}
 
-	const ushort start = numShreds/2-numActiveShreds/2;
-	const ushort end   = start+numActiveShreds;
+	static const ushort start = numShreds/2-numActiveShreds/2;
+	static const ushort end   = start+numActiveShreds;
 	for (ushort i=start; i<end; ++i)
 	for (ushort j=start; j<end; ++j) {
 		shreds[i+j*NumShreds()]->PhysEventsFrequent();
@@ -680,12 +680,10 @@ void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
 
 bool World::Build(Block * block,
 		const ushort x, const ushort y, const ushort z,
-		const quint8 dir,
-		Block * const who,
-		const bool anyway)
+		const quint8 dir, Block * const who, const bool anyway)
 {
 	Block * const target_block = GetBlock(x, y, z);
-	if ( !(ENVIRONMENT==target_block->Movable() || anyway) ) {
+	if ( ENVIRONMENT!=target_block->Movable() && !anyway ) {
 		if ( who ) {
 			who->ReceiveSignal(tr("Cannot build here."));
 		}
@@ -823,15 +821,14 @@ void World::DeleteAllShreds() {
 
 void World::SetNumActiveShreds(const ushort num) {
 	const QWriteLocker writeLocker(rwLock);
-	numActiveShreds=num;
+	numActiveShreds = num;
 	if ( 1 != numActiveShreds%2 ) {
 		++numActiveShreds;
-		emit Notify(tr(
-			"Invalid active shreds number. Set to %1.").
+		emit Notify(tr("Invalid active shreds number. Set to %1.").
 			arg(numActiveShreds));
 	}
 	if ( numActiveShreds < 3 ) {
-		numActiveShreds=3;
+		numActiveShreds = 3;
 		emit Notify(tr("Active shreds number too small, set to 3."));
 	} else if ( numActiveShreds > numShreds ) {
 		numActiveShreds=numShreds;
@@ -848,7 +845,7 @@ World::World(const QString & world_name) :
 		map(new WorldMap(&world_name)),
 		toResetDir(UP)
 {
-	puts(qPrintable(tr("Loading world...")));
+	puts(qPrintable(tr("Loading world settings...")));
 	world = this;
 	QSettings game_settings("freg.ini", QSettings::IniFormat);
 	numShreds = game_settings.value("number_of_shreds", MIN_WORLD_SIZE).
@@ -862,7 +859,7 @@ World::World(const QString & world_name) :
 		fprintf(stderr,
 			"Number of shreds: to small: %hu. Set to %hu.\n",
 			numShreds, MIN_WORLD_SIZE);
-		numShreds=MIN_WORLD_SIZE;
+		numShreds = MIN_WORLD_SIZE;
 	}
 	SetNumActiveShreds(game_settings.value("number_of_active_shreds",
 		numShreds).toUInt());
@@ -871,17 +868,18 @@ World::World(const QString & world_name) :
 
 	QDir::current().mkpath(worldName+"/texts");
 	QSettings settings(worldName+"/settings.ini", QSettings::IniFormat);
-	time=settings.value("time", END_OF_NIGHT).toLongLong();
-	spawnLongi=settings.value( "spawn_longitude",
+	time = settings.value("time", END_OF_NIGHT).toLongLong();
+	spawnLongi = settings.value( "spawn_longitude",
 		int(qrand() % MapSize()) ).toLongLong();
-	spawnLati =settings.value( "spawn_latitude",
+	spawnLati  = settings.value( "spawn_latitude",
 		int(qrand() % MapSize()) ).toLongLong();
 	settings.setValue("spawn_longitude", qlonglong(spawnLongi));
 	settings.setValue("spawn_latitude", qlonglong(spawnLati));
-	longitude =settings.value("longitude", int(spawnLongi)).toLongLong();
-	latitude  =settings.value("latitude",  int(spawnLati )).toLongLong();
+	longitude = settings.value("longitude", int(spawnLongi)).toLongLong();
+	latitude  = settings.value("latitude",  int(spawnLati )).toLongLong();
 
-	shredStorage=new ShredStorage(numShreds+2, longitude, latitude);
+	shredStorage = new ShredStorage(numShreds+2, longitude, latitude);
+	puts(qPrintable(tr("Loading world...")));
 	LoadAllShreds();
 	emit UpdatedAll();
 } // World::World(const QString & world_name)

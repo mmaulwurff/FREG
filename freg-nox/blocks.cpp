@@ -365,8 +365,7 @@
 			Weapon(str, sub, id)
 	{}
 // Animal::
-	void Animal::ActRare() {
-		if ( IsToDelete() ) return;
+	void Animal::DoRareAction() {
 		World * const world = GetWorld();
 		if (
 				AIR != world->Sub(X(), Y(), Z()+1) &&
@@ -730,8 +729,7 @@
 		return NO_ACTION;
 	}
 
-	void Pile::ActRare() {
-		if ( IsToDelete() ) return;
+	void Pile::DoRareAction() {
 		if ( IsEmpty() ) {
 			Damage(Durability(), TIME);
 		}
@@ -788,8 +786,7 @@
 				WATER==world->Sub(X(), Y()+1, Z())) );
 	}
 
-	void Liquid::ActRare() {
-		if ( IsToDelete() ) return;
+	void Liquid::DoRareAction() {
 		World * const world=GetWorld();
 		// IDEA: turn off water drying up in ocean
 		if ( WATER==Sub() && !CheckWater() ) {
@@ -828,8 +825,7 @@
 			Active(str, sub, id)
 	{}
 // Grass::
-	void Grass::ActRare() {
-		if ( IsToDelete() ) return;
+	void Grass::DoRareAction() {
 		World * const world = GetWorld();
 		if ( SOIL != world->Sub(X(), Y(), Z()-1) ) {
 			world->Damage(X(), Y(), Z(), durability, TIME);
@@ -898,8 +894,7 @@
 		return Inventory::Weight()+Block::Weight();
 	}
 
-	void Bush::ActRare() {
-		if ( IsToDelete() ) return;
+	void Bush::DoRareAction() {
 		if ( 0==qrand()%(SECONDS_IN_HOUR*4) ) {
 			Get(block_manager.NormalBlock(HAZELNUT));
 		}
@@ -973,9 +968,8 @@
 		}
 	} // void Rabbit::DoFrequentAction()
 
-	void Rabbit::ActRare() {
-		if ( IsToDelete() ) return;
-		Animal::ActRare();
+	void Rabbit::DoRareAction() {
+		Animal::DoRareAction();
 		// eat sometimes
 		World * const world = GetWorld();
 		if ( SECONDS_IN_DAY/2 > Satiation() ) {
@@ -1240,8 +1234,7 @@
 	int Clock::Movable() const { return NOT_MOVABLE; }
 	int Clock::ShouldAct() const  { return RARE; }
 
-	void Clock::ActRare() {
-		if ( IsToDelete() ) return;
+	void Clock::DoRareAction() {
 		if ( alarmTime==GetWorld()->TimeOfDay() ) {
 			Use();
 		} else if ( timerTime > 0 ) {

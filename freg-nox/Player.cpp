@@ -534,7 +534,7 @@ void Player::SetPlayer(const ushort _x, const ushort _y, const ushort _z) {
 	if ( GetCreativeMode() ) {
 		( player = block_manager.NewBlock(CREATOR, DIFFERENT)->
 			ActiveBlock() )->SetXYZ(x, y, z);
-		GetWorld()->GetShred(x, y)->Register(player);
+		GetShred()->Register(player);
 	} else {
 		Block * const target_block = world->GetBlock(x, y, z);
 		if ( DWARF == target_block->Kind() ) {

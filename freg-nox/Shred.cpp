@@ -216,7 +216,7 @@ void Shred::PhysEventsFrequent() {
 } // void Shred::PhysEventsFrequent()
 
 void Shred::DeleteDestroyedActives() {
-	for (QLinkedList<Active *>::iterator i=deleteList.begin();
+	for (QLinkedList<Active *>::iterator i = deleteList.begin();
 			i != deleteList.end(); i = deleteList.erase(i))
 	{
 		Unregister(*i);
@@ -246,7 +246,7 @@ void Shred::UnregisterExternalActives() {
 			++i;
 		} else {
 			Active * const erase = *i;
-			++i;
+			--i;
 			Unregister(erase);
 		}
 	}
@@ -257,31 +257,26 @@ int Shred::Sub(const ushort x, const ushort y, const ushort z) const {
 }
 
 void Shred::Register(Active * const active) {
-	if ( !activeListAll.contains(active) ) {
-		activeListAll.append(active);
-		switch ( active->ShouldAct() ) {
-		case FREQUENT: activeListFrequent.append(active); break;
-		case FREQUENT_AND_RARE:
-			activeListFrequent.append(active);
-		// no break;
-		case RARE: activeListRare.append(active); break;
-		}
+	activeListAll.append(active);
+	switch ( active->ShouldAct() ) {
+	case FREQUENT:          activeListFrequent.append(active); break;
+	case FREQUENT_AND_RARE: activeListFrequent.append(active); // no break;
+	case RARE:              activeListRare.append(active); break;
 	}
 	AddFalling(active);
 	AddShining(active);
 }
 void Shred::Unregister(Active * const active) {
-	activeListAll     .removeOne(active);
-	activeListFrequent.removeOne(active);
-	activeListRare    .removeOne(active);
-	fallList          .removeOne(active);
+	activeListAll     .removeAll(active);
+	activeListFrequent.removeAll(active);
+	activeListRare    .removeAll(active);
+	fallList          .removeAll(active);
 	RemShining(active);
 }
 
 void Shred::AddFalling(Active * const active) {
 	const Block * block;
-	if ( !fallList.contains(active) &&
-			!active->IsFalling() &&
+	if ( !active->IsFalling() &&
 			active->ShouldFall() &&
 			ENVIRONMENT==( block=GetBlock(
 				CoordInShred(active->X()),
@@ -295,20 +290,20 @@ void Shred::AddFalling(Active * const active) {
 }
 
 void Shred::AddFalling(const ushort x, const ushort y, const ushort z) {
-	Active * const active=blocks[x][y][z]->ActiveBlock();
+	Active * const active = blocks[x][y][z]->ActiveBlock();
 	if ( active ) {
 		AddFalling(active);
 	}
 }
 
 void Shred::AddShining(Active * const active) {
-	if ( !shiningList.contains(active) && active->LightRadius() ) {
+	if ( active->LightRadius() ) {
 		shiningList.append(active);
 	}
 }
 
 void Shred::RemShining(Active * const active) {
-	shiningList.removeOne(active);
+	shiningList.removeAll(active);
 }
 
 void Shred::AddToDelete(Active * const active) { deleteList.append(active); }
@@ -360,7 +355,7 @@ Block * Shred::GetBlock(const ushort x, const ushort y, const ushort z) const {
 void Shred::SetBlock(Block * const block,
 		const ushort x, const ushort y, const ushort z)
 {
-	Active * const active=( blocks[x][y][z]=block )->ActiveBlock();
+	Active * const active = ( blocks[x][y][z]=block )->ActiveBlock();
 	if ( active ) {
 		active->SetXYZ( (ShredX() << SHRED_WIDTH_SHIFT) + x,
 			(ShredY() << SHRED_WIDTH_SHIFT) + y, z );
@@ -369,8 +364,7 @@ void Shred::SetBlock(Block * const block,
 }
 
 void Shred::SetNewBlock(const int kind, const int sub,
-		const ushort x, const ushort y, const ushort z,
-		const int dir)
+		const ushort x, const ushort y, const ushort z, const int dir)
 {
 	Block * const to_delete = GetBlock(x, y, z);
 	Active * const active = to_delete->ActiveBlock();

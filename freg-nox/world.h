@@ -51,9 +51,9 @@ class World : public QThread {
 	Shred ** shreds;
 	//    N
 	//    |  E
-	// W--+--> latitude
+	// W--+--> latitude ( x for shreds )
 	//    |
-	//  S v longitude
+	//  S v longitude ( y for shreds )
 	// center of active zone:
 	long longitude, latitude;
 	long spawnLongi, spawnLati;

@@ -22,8 +22,9 @@
 #define BLOCK_H
 
 #include "header.h"
+#include <QString>
 
-const QString SOUND_STRINGS[]={
+const QString SOUND_STRINGS[] = {
 	"Ding!",
 	"Ouch!"
 };
@@ -36,6 +37,14 @@ enum before_push_action {
 	DESTROY,
 	MOVE_SELF
 }; // enum before_push_action
+
+enum WEARABLE {
+	WEARABLE_NOWHERE,
+	WEARABLE_HEAD,
+	WEARABLE_ARM,
+	WEARABLE_BODY,
+	WEARABLE_LEGS
+}; // enum WEARABLE
 
 class Inventory;
 class Active;

@@ -24,14 +24,6 @@
 #include "Animal.h"
 #include "Inventory.h"
 
-enum WEARABLE {
-	WEARABLE_NOWHERE,
-	WEARABLE_HEAD,
-	WEARABLE_ARM,
-	WEARABLE_BODY,
-	WEARABLE_LEGS
-}; // enum WEARABLE
-
 class Dwarf : public Animal, public Inventory {
 	Q_OBJECT
 

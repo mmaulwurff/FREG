@@ -60,8 +60,7 @@ class Active : public QObject, public Block {
 	ushort Z() const;
 
 	void ActFrequent();
-	virtual void DoFrequentAction();
-	virtual void ActRare();
+	void ActRare();
 	virtual int ShouldAct() const;
 	virtual bool ShouldFall() const;
 
@@ -81,7 +80,6 @@ class Active : public QObject, public Block {
 
 	void SetXYZ(ushort x, ushort y, ushort z);
 	void SetToDelete();
-	bool IsToDelete() const;
 
 	signals:
 	void Moved(int);
@@ -93,8 +91,12 @@ class Active : public QObject, public Block {
 	void SendSignalAround(const QString &) const;
 	void SaveAttributes(QDataStream & out) const;
 
+	virtual void DoFrequentAction();
+	virtual void DoRareAction();
+
 	private:
 	void UpdateShred();
+	bool IsToDelete() const;
 
 	quint8 fall_height;
 	bool falling;

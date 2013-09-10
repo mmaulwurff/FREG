@@ -106,7 +106,6 @@ class Shred {
 	void Unregister(Active *);
 	void UnregisterExternalActives();
 
-	void RegisterBlock(Block *, ushort x, ushort y, ushort z);
 	bool LoadShred();
 
 	QString FileName() const;
@@ -115,8 +114,7 @@ class Shred {
 	void CoverWith(int kind, int sub);
 	/// Puts num things(kind-sub) in random places on shred surface.
 	/** If on_water is false, this will not drop things on water,
-	 *  otherwise on water too.
-	 */
+	 *  otherwise on water too. */
 	void RandomDrop(ushort num, int kind, int sub, bool on_water=false);
 
 	void PlantGrass();

@@ -40,11 +40,11 @@ Active * Active::ActiveBlock() { return this; }
 /** When reimplementing this method, add
  *  "if ( IsToDelete() ) return;" line, it is needed for blocks
  *  prepared to be deleted not to act. */
-void Active::ActRare() {}
 int  Active::ShouldAct() const { return NEVER; }
 bool Active::IsFalling() const { return falling; }
 int  Active::Movable() const { return MOVABLE; }
 bool Active::ShouldFall() const { return true; }
+void Active::DoRareAction() {}
 void Active::DoFrequentAction() {}
 void Active::ActFrequent() {
 	if ( !IsToDelete() ) {
@@ -52,6 +52,11 @@ void Active::ActFrequent() {
 			GetDeferredAction()->MakeAction();
 		}
 		DoFrequentAction();
+	}
+}
+void Active::ActRare() {
+	if ( !IsToDelete() ) {
+		DoRareAction();
 	}
 }
 

@@ -32,7 +32,7 @@ class Animal : public Active {
 	virtual quint16 NutritionalValue(int sub) const=0;
 
 	public:
-	void ActRare();
+	void DoRareAction();
 	int  ShouldAct() const;
 	QString FullName() const=0;
 	Animal * IsAnimal();
