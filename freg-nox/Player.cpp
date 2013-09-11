@@ -15,8 +15,7 @@
 	* GNU General Public License for more details.
 	*
 	* You should have received a copy of the GNU General Public License
-	* along with FREG. If not, see <http://www.gnu.org/licenses/>.
-	*/
+	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include <QFile>
 #include <QTextStream>
@@ -153,7 +152,7 @@ void Player::Examine(const short i, const short j, const short k) const {
 		return;	
 	}
 	QString str;
-	if ( ""!=(str=block->GetNote()) ) {
+	if ( "" != (str=block->GetNote()) ) {
 		emit Notify(tr("Inscription: ")+str);
 	}
 	emit Notify(tr("Temperature: %1. Durability: %2. Weight: %3. Id: %4.").
@@ -317,14 +316,11 @@ void Player::Eat(const ushort num) {
 	}
 }
 
-void Player::Build(
-		const short x_target,
-		const short y_target,
-		const short z_target,
-		const ushort slot)
+void Player::Build(const short x_target, const short y_target,
+		const short z_target, const ushort slot)
 {
 	QWriteLocker locker(world->GetLock());
-	Block * const block=ValidBlock(slot);
+	Block * const block = ValidBlock(slot);
 	if ( block && (AIR!=world->Sub(x, y, z-1) || 0==player->Weight()) ) {
 		player->GetDeferredAction()->
 			SetBuild(x_target, y_target, z_target, block, slot);
@@ -333,7 +329,7 @@ void Player::Build(
 
 void Player::Craft(const ushort num) {
 	QWriteLocker locker(world->GetLock());
-	Inventory * const inv=PlayerInventory();
+	Inventory * const inv = PlayerInventory();
 	if ( inv ) {
 		if ( inv->MiniCraft(num) ) {
 			emit Updated();
@@ -360,15 +356,13 @@ void Player::ProcessCommand(QString & command) {
 	QString request;
 	comm_stream >> request;
 	if ( "give"==request || "get"==request ) {
-		Inventory * const inv=PlayerInventory();
+		Inventory * const inv = PlayerInventory();
 		if ( !creativeMode ) {
 			emit Notify(tr("You are not in Creative Mode."));
 		} else if ( inv ) {
 			int kind, sub, num;
 			comm_stream >> kind >> sub >> num;
-			if ( num <= 0 ) {
-				num=1;
-			}
+			num = qMax(1, num);
 			while ( num && inv->HasRoom() ) {
 				for (ushort i=9; i && num; --i) {
 					inv->Get(block_manager.
@@ -384,11 +378,11 @@ void Player::ProcessCommand(QString & command) {
 		} else {
 			emit Notify(tr("No room."));
 		}
-	} else if ( "move"==request ) {
+	} else if ( "move" == request ) {
 		int direction;
 		comm_stream >> direction;
 		Move(direction);
-	} else if ( "what"==request ) {
+	} else if ( "what" == request ) {
 		ushort x_what, y_what, z_what;
 		comm_stream >> x_what >> y_what >> z_what;
 		if ( !world->InBounds(x_what, y_what, z_what) ) {
@@ -407,7 +401,7 @@ void Player::ProcessCommand(QString & command) {
 				Examine(x_what, y_what, z_what);
 			}
 		}
-	} else if ( "moo"==request ) {
+	} else if ( "moo" == request ) {
 		emit Notify("^__^");
 		emit Notify("(oo)\\_______");
 		emit Notify("(__)\\       )\\/\\");
@@ -417,39 +411,34 @@ void Player::ProcessCommand(QString & command) {
 		int kind;
 		comm_stream >> kind;
 		emit Notify(tr("Kind %1 is %2.").
-			arg(kind).
-			arg(block_manager.KindToString(kind)));
+			arg(kind).arg(block_manager.KindToString(kind)));
 	} else if ( "stringtokind"==request || "str2k"==request ) {
 		QString str;
 		comm_stream >> str;
-		const int kind=block_manager.StringToKind(str);
-		if ( kind==LAST_KIND ) {
-			emit Notify(tr("\"%1\" is unknown kind.").
-				arg(str));
+		const int kind = block_manager.StringToKind(str);
+		if ( kind == LAST_KIND ) {
+			emit Notify(tr("\"%1\" is unknown kind.").arg(str));
 		} else {
 			emit Notify(tr("Code of kind %1 is %2.").
-				arg(str).
-				arg(kind));
+				arg(str).arg(kind));
 		}
 	} else if ( "subtostring"==request || "s2str"==request ) {
 		int sub;
 		comm_stream >> sub;
 		emit Notify(tr("Sub %1 is %2.").
-			arg(sub).
-			arg(BlockManager::SubToString(sub)));
+			arg(sub).arg(BlockManager::SubToString(sub)));
 	} else if ( "stringtosub"==request || "str2s"==request ) {
 		QString str;
 		comm_stream >> str;
 		const int sub=BlockManager::StringToSub(str);
-		if ( sub==LAST_SUB ) {
+		if ( sub == LAST_SUB ) {
 			emit Notify(tr("\"%1\" is unknown substance.").
 				arg(str));
 		} else {
 			emit Notify(tr("Code of substance %1 is %2.").
-				arg(str).
-				arg(sub));
+				arg(str).arg(sub));
 		}
-	} else if ( "time"==request ) {
+	} else if ( "time" == request ) {
 		emit Notify( GetCreativeMode() ?
 			GetWorld()->TimeOfDayStr() :
 			tr("Not in Creative Mode.") );
