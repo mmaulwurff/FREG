@@ -138,27 +138,28 @@ enum kinds {
 enum subs {
 	// do not change order, this will break file compatibility.
 	// add new substances right before LAST_SUB.
-	STONE,      ///<0
-	MOSS_STONE, ///<1
-	NULLSTONE,  ///<2
-	SKY,        ///<3
-	STAR,       ///<4
-	SUN_MOON,   ///<5
-	SOIL,       ///<6
-	H_MEAT,     ///<7 (hominid meat)
-	A_MEAT,     ///<8 (animal meat)
-	GLASS,      ///<9
-	WOOD,       ///<10
-	DIFFERENT,  ///<11
-	IRON,       ///<12
-	WATER,      ///<13
-	GREENERY,   ///<14
-	SAND,       ///<15
-	HAZELNUT,   ///<16
-	ROSE,       ///<17
-	CLAY,       ///<18
-	AIR,        ///<19
-	PAPER,      ///<20
+	STONE,      ///<   0
+	MOSS_STONE, ///<   1
+	NULLSTONE,  ///<   2
+	SKY,        ///<   3
+	STAR,       ///<   4
+	SUN_MOON,   ///<   5
+	SOIL,       ///<   6
+	H_MEAT,     ///<   7 (hominid meat)
+	A_MEAT,     ///<   8 (animal meat)
+	GLASS,      ///<   9
+	WOOD,       ///<  10
+	DIFFERENT,  ///<  11
+	IRON,       ///<  12
+	WATER,      ///<  13
+	GREENERY,   ///<  14
+	SAND,       ///<  15
+	HAZELNUT,   ///<  16
+	ROSE,       ///<  17
+	CLAY,       ///<  18
+	AIR,        ///<  19
+	PAPER,      ///<  20
+	GOLD,       ///<  21
 	/// Nothing is made from LAST_SUB.
 	LAST_SUB // keep it last in this list
 }; // enum subs

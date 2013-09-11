@@ -56,7 +56,7 @@
 	}
 
 	quint8 Block::Transparency(const quint8 transp, const int sub) {
-		if ( UNDEF==transp ) {
+		if ( UNDEF == transp ) {
 			switch ( sub ) {
 			case AIR:   return INVISIBLE;
 			case WATER:
@@ -70,10 +70,10 @@
 	}
 
 	int Block::Damage(const ushort dmg, const int dmg_kind) {
-		ushort mult=1;
+		ushort mult = 1;
 		switch ( Sub() ) {
 		case DIFFERENT:
-			if ( TIME==dmg_kind ) {
+			if ( TIME == dmg_kind ) {
 				return durability=0;
 			}
 			// no break
@@ -86,21 +86,21 @@
 		case MOSS_STONE:
 		case STONE:
 			switch ( dmg_kind ) {
-			case CRUSH: mult=0; break;
-			case MINE:  mult=2; break;
+			case CRUSH: mult = 0; break;
+			case MINE:  mult = 2; break;
 			}
 			break;
 		case GREENERY:
-		case GLASS: return durability=0;
+		case GLASS: return durability = 0;
 		case ROSE:
 		case HAZELNUT:
-		case WOOD: mult=1+(CUT==dmg_kind); break;
+		case WOOD: mult = 1+(CUT==dmg_kind); break;
 		case SAND:
-		case SOIL: mult=1+(DIG==dmg_kind); break;
+		case SOIL: mult = 1+(DIG==dmg_kind); break;
 		case A_MEAT:
-		case H_MEAT: mult=1+(THRUST==dmg_kind); break;
+		case H_MEAT: mult = 1+(THRUST==dmg_kind); break;
 		}
-		return durability-=mult*dmg;
+		return durability -= mult*dmg;
 	}
 
 	Block * Block::DropAfterDamage() const {
@@ -128,13 +128,13 @@
 
 	bool Block::Inscribe(const QString & str) {
 		if ( note ) {
-			*note=str.left(MAX_NOTE_LENGTH);
+			*note = str.left(MAX_NOTE_LENGTH);
 		} else {
-			note=new QString(str.left(MAX_NOTE_LENGTH));
+			note = new QString(str.left(MAX_NOTE_LENGTH));
 		}
-		if ( ""==*note ) {
+		if ( "" == *note ) {
 			delete note;
-			note=0;
+			note = 0;
 		}
 		return true;
 	}
@@ -143,7 +143,7 @@
 	Animal * Block::IsAnimal() { return 0; }
 	Active * Block::ActiveBlock() { return 0; }
 
-	void Block::Restore() { durability=MAX_DURABILITY; }
+	void Block::Restore() { durability = MAX_DURABILITY; }
 	int  Block::GetDir() const { return direction; }
 	int  Block::Sub() const { return sub; }
 	int  Block::Transparent() const { return transparent; }
@@ -151,7 +151,7 @@
 	QString Block::GetNote() const { return note ? *note : ""; }
 
 	int Block::Temperature() const {
-		switch (sub) {
+		switch ( sub ) {
 		case WATER: return -100;
 		default:    return 0;
 		}
@@ -183,7 +183,7 @@
 
 	void Block::SetDir(const int dir) {
 		if ( BLOCK!=Kind() || WOOD==Sub() ) {
-			direction=dir;
+			direction = dir;
 		}
 	}
 
@@ -198,10 +198,10 @@
 
 	void Block::SaveAttributes(QDataStream &) const {}
 	void Block::SaveToFile(QDataStream & out) const {
-		if ( this==block_manager.NormalBlock(sub) ) {
+		if ( this == block_manager.NormalBlock(sub) ) {
 			out << quint8( 0x80 | sub );
 		} else {
-			quint16 data=direction;
+			quint16 data = direction;
 			out << sub << Kind() << ( ( ( ( data
 				<<= 7 ) |= durability )
 				<<= 1 ) |= !!note );
@@ -212,9 +212,7 @@
 		}
 	}
 
-	Block::Block(const int subst, const quint16 i,
-			const quint8 transp)
-		:
+	Block::Block(const int subst, const quint16 i, const quint8 transp) :
 			transparent(Transparency(transp, subst)),
 			sub(subst),
 			id(i),

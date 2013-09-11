@@ -277,12 +277,11 @@ void Shred::Unregister(Active * const active) {
 }
 
 void Shred::AddFalling(Active * const active) {
-	const Block * block;
 	if ( !active->IsFalling() &&
 			active->ShouldFall() &&
-			!(*active == *( block=GetBlock(
+			!(*active == *GetBlock(
 				CoordInShred(active->X()),
-				CoordInShred(active->Y()), active->Z()-1) )) )
+				CoordInShred(active->Y()), active->Z()-1)) )
 	{
 		active->SetFalling(true);
 		fallList.append(active);
