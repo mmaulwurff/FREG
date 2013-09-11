@@ -15,8 +15,7 @@
 	* GNU General Public License for more details.
 	*
 	* You should have received a copy of the GNU General Public License
-	* along with FREG. If not, see <http://www.gnu.org/licenses/>.
-	*/
+	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #ifndef SHRED_H
 #define SHRED_H
@@ -61,11 +60,11 @@ class Shred {
 	void ReloadToWest();
 
 	Block * GetBlock(ushort x, ushort y, ushort z) const;
-	/// Puts block to coordinates xyz and activates it
+	/// Puts block to coordinates xyz and activates it.
 	void SetBlock(Block * block, ushort x, ushort y, ushort z);
-	/// Puts block to coordinates, not activates it (e.g. in World::Move)
+	/// Puts block to coordinates, not activates it.
 	void PutBlock(Block * block, ushort x, ushort y, ushort z);
-	/// Puts normal block to coordinates
+	/// Puts normal block to coordinates.
 	void PutNormalBlock(int sub, ushort x, ushort y, ushort z);
 	static Block * Normal(int sub);
 
@@ -86,7 +85,7 @@ class Shred {
 	int Sub(ushort x, ushort y, ushort z) const;
 
 	void SetNewBlock(int kind, int sub, ushort x, ushort y, ushort z,
-			int dir=UP);
+			int dir = UP);
 	char TypeOfShred(long longi, long lati) const;
 	
 	static QString FileName(QString world_name, long longi, long lati);
@@ -110,12 +109,12 @@ class Shred {
 
 	QString FileName() const;
 
-	void NormalUnderground(ushort depth=0, int sub=SOIL);
+	void NormalUnderground(ushort depth = 0, int sub = SOIL);
 	void CoverWith(int kind, int sub);
 	/// Puts num things(kind-sub) in random places on shred surface.
 	/** If on_water is false, this will not drop things on water,
 	 *  otherwise on water too. */
-	void RandomDrop(ushort num, int kind, int sub, bool on_water=false);
+	void RandomDrop(ushort num, int kind, int sub, bool on_water = false);
 
 	void PlantGrass();
 	void TestShred();
@@ -139,9 +138,9 @@ class Shred {
 	void ShredNominalAmplitudeAndLevel(char shred_type,
 			ushort * l, float * a) const;
 	void AddWater();
-	ushort FlatUndeground(short depth=0);
+	ushort FlatUndeground(short depth = 0);
 	void NormalCube(ushort x_start, ushort y_start, ushort z_start,
-			ushort x_end, ushort y_end, ushort z_end, int sub);
+			ushort x_size, ushort y_size, ushort z_size, int sub);
 
 	/// Lowest nullstone and sky are not in bounds.
 	bool InBounds(ushort x, ushort y, ushort z) const;

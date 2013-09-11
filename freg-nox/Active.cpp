@@ -15,8 +15,7 @@
 	* GNU General Public License for more details.
 	*
 	* You should have received a copy of the GNU General Public License
-	* along with FREG. If not, see <http://www.gnu.org/licenses/>.
-	*/
+	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include <QDataStream>
 #include "Active.h"
@@ -37,9 +36,6 @@ QString Active::FullName() const {
 
 quint8 Active::Kind() const { return ACTIVE; }
 Active * Active::ActiveBlock() { return this; }
-/** When reimplementing this method, add
- *  "if ( IsToDelete() ) return;" line, it is needed for blocks
- *  prepared to be deleted not to act. */
 int  Active::ShouldAct() const { return NEVER; }
 bool Active::IsFalling() const { return falling; }
 int  Active::Movable() const { return MOVABLE; }
@@ -62,7 +58,7 @@ void Active::ActRare() {
 
 void Active::SetFalling(const bool set) {
 	if ( !(falling=set) ) {
-		fall_height=0;
+		fall_height = 0;
 	}
 }
 
@@ -96,13 +92,14 @@ bool Active::Move(const int dir) {
 	case UP:    ++z_self; break;
 	}
 	bool overstep;
-	if ( DOWN==dir ) {
+	if ( DOWN == dir ) {
 		--z_self;
 		++fall_height;
 		overstep = false;
 	} else {
 		Shred * const new_shred = GetShred();
 		if ( (overstep = ( last_shred != new_shred )) ) {
+			falling = false;
 			new_shred->Register(this);
 		}
 	}
@@ -111,8 +108,8 @@ bool Active::Move(const int dir) {
 }
 
 void Active::SendSignalAround(const QString & signal) const {
-	World * const world=GetWorld();
-	const Xy coords[]={
+	World * const world = GetWorld();
+	const Xy coords[] = {
 		Xy( X()-1, Y()   ),
 		Xy( X()+1, Y()   ),
 		Xy( X(),   Y()-1 ),
@@ -132,7 +129,7 @@ Shred * Active::GetShred() const { return GetWorld()->GetShred(X(), Y()); }
 World * Active::GetWorld() const { return world; }
 
 int Active::Damage(const ushort dmg, const int dmg_kind) {
-	const int last_dur=durability;
+	const int last_dur = durability;
 	Block::Damage(dmg, dmg_kind);
 	if ( last_dur != durability ) {
 		switch ( dmg_kind ) {

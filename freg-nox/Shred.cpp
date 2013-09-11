@@ -15,15 +15,13 @@
 	* GNU General Public License for more details.
 	*
 	* You should have received a copy of the GNU General Public License
-	* along with FREG. If not, see <http://www.gnu.org/licenses/>.
-	*/
+	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include <QByteArray>
 #include <QDataStream>
 #include "Shred.h"
 #include "world.h"
 #include "BlockManager.h"
-#include "Xyz.h"
 #include "Active.h"
 
 // Qt version in Debian stable that time.
@@ -99,13 +97,13 @@ Shred::Shred(const ushort shred_x, const ushort shred_y,
 	for (ushort i=0; i<SHRED_WIDTH; ++i)
 	for (ushort j=0; j<SHRED_WIDTH; ++j) {
 		PutNormalBlock(NULLSTONE, i, j, 0);
-		lightMap[i][j][0]=0;
+		lightMap[i][j][0] = 0;
 		for (ushort k=1; k<HEIGHT-1; ++k) {
 			PutNormalBlock(AIR, i, j, k);
-			lightMap[i][j][k]=0;
+			lightMap[i][j][k] = 0;
 		}
 		PutNormalBlock(( (qrand()%5) ? SKY : STAR ), i, j, HEIGHT-1);
-		lightMap[i][j][HEIGHT-1]=1;
+		lightMap[i][j][HEIGHT-1] = 1;
 	}
 	switch ( TypeOfShred(longi, lati) ) {
 	default: fprintf(stderr, "Shred::Shred: unlisted type: %c, code %d\n",
@@ -178,12 +176,12 @@ void Shred::PhysEventsFrequent() {
 			i = fallList.erase(i);
 			continue;
 		} // else:
-		const ushort weight=(*i)->Weight();
+		const ushort weight = (*i)->Weight();
 		if ( weight ) {
-			const ushort x=(*i)->X();
-			const ushort y=(*i)->Y();
-			const ushort z=(*i)->Z();
-			if ( GetWorld()->GetBlock(x,y, z-1)->Kind()==LIQUID ) {
+			const ushort x = (*i)->X();
+			const ushort y = (*i)->Y();
+			const ushort z = (*i)->Z();
+			if ( LIQUID==GetWorld()->GetBlock(x,y, z-1)->Kind() ) {
 				(*i)->SetFalling(false);
 				i = fallList.erase(i);
 			} else if ( weight <= GetBlock(CoordInShred(x),
@@ -516,7 +514,7 @@ void Shred::NullMountain() {
 }
 
 void Shred::Pyramid() { // pyramid by Panzerschrek
-	const ushort level=qMin(FlatUndeground(), ushort(HEIGHT-1-16));
+	const ushort level = qMin(FlatUndeground(), ushort(HEIGHT-1-16));
 	for (ushort z=level+1, dz=0; dz<8; z+=2, ++dz) { // pyramid
 		for (ushort x=dz, y=dz; x<(16 - dz); ++x, ++y) {
 			blocks[x][dz][z] =
@@ -529,15 +527,11 @@ void Shred::Pyramid() { // pyramid by Panzerschrek
 				blocks[15-dz][y][z+1] = Normal(STONE);
 		}
 	}
-	blocks[SHRED_WIDTH/2][0][level+1]=Normal(AIR); // entrance
-	for (ushort z=HEIGHT/2-60, dz=0; dz<8; ++dz, ++z) { // room inside
-		for (ushort x=1; x<SHRED_WIDTH-1; ++x)
-		for (ushort y=1; y<SHRED_WIDTH-1; ++y) {
-			blocks[x][y][z]=Normal(AIR);
-		}
-	}
+	PutBlock(Normal(AIR), SHRED_WIDTH/2, 0, level+1); // entrance
+	// room below
+	NormalCube(1, 1, HEIGHT/2-60, SHRED_WIDTH-2, SHRED_WIDTH-2, 8, AIR);
 	for (ushort z=HEIGHT/2-52; z<=level; ++z) { // horizontal tunnel
-		blocks[SHRED_WIDTH/2][SHRED_WIDTH/2][z]=Normal(AIR);
+		PutBlock(Normal(AIR), SHRED_WIDTH/2, SHRED_WIDTH/2, z);
 	}
 }
 
