@@ -31,6 +31,8 @@
 #include "BlockManager.h"
 #include "DeferredAction.h"
 
+const bool COMMANDS_ALWAYS_ON = true;
+
 short Player::X() const { return x; }
 short Player::Y() const { return y; }
 short Player::Z() const { return z; }
@@ -357,7 +359,7 @@ void Player::ProcessCommand(QString & command) {
 	comm_stream >> request;
 	if ( "give"==request || "get"==request ) {
 		Inventory * const inv = PlayerInventory();
-		if ( !creativeMode ) {
+		if ( !(GetCreativeMode() || COMMANDS_ALWAYS_ON) ) {
 			emit Notify(tr("You are not in Creative Mode."));
 		} else if ( inv ) {
 			int kind, sub, num;
@@ -388,7 +390,7 @@ void Player::ProcessCommand(QString & command) {
 		if ( !world->InBounds(x_what, y_what, z_what) ) {
 			emit Notify(tr("Such block is out of loaded world."));
 		}
-		if ( creativeMode ) {
+		if ( GetCreativeMode() || COMMANDS_ALWAYS_ON) {
 			Examine(x_what, y_what, z_what);
 		} else {
 			if (
@@ -439,7 +441,7 @@ void Player::ProcessCommand(QString & command) {
 				arg(str).arg(sub));
 		}
 	} else if ( "time" == request ) {
-		emit Notify( GetCreativeMode() ?
+		emit Notify( (GetCreativeMode() || COMMANDS_ALWAYS_ON) ?
 			GetWorld()->TimeOfDayStr() :
 			tr("Not in Creative Mode.") );
 	} else {
