@@ -276,11 +276,9 @@ void Shred::AddFalling(Active * const active) {
 	const Block * block;
 	if ( !active->IsFalling() &&
 			active->ShouldFall() &&
-			ENVIRONMENT==( block=GetBlock(
+			!(*active == *( block=GetBlock(
 				CoordInShred(active->X()),
-				CoordInShred(active->Y()), active->Z()-1) )->
-					Movable() &&
-			!(*active == *block) )
+				CoordInShred(active->Y()), active->Z()-1) )) )
 	{
 		active->SetFalling(true);
 		fallList.append(active);
@@ -442,8 +440,8 @@ void Shred::PlantGrass() {
 }
 
 void Shred::TestShred() {
-	const ushort level=FlatUndeground()+1;
-	short row=1, column=-1;
+	const ushort level = FlatUndeground()+1;
+	short row = 1, column = -1;
 	// row 1
 	SetNewBlock(CLOCK, IRON, column+=2, row, level);
 	SetNewBlock(CHEST, WOOD, column+=2, row, level);
@@ -453,8 +451,8 @@ void Shred::TestShred() {
 	SetNewBlock(PLATE, STONE, column+=2, row, level);
 	PutNormalBlock(NULLSTONE, column+=2, row, level);
 	// row 2
-	column=-1;
-	row+=2;
+	--column;
+	row += 2;
 	SetNewBlock(LADDER, NULLSTONE, column+=2, row, level);
 	// tall ladder
 	for (ushort i=level+1; i<=level+5 && i<HEIGHT-1; ++i) {
@@ -471,8 +469,8 @@ void Shred::TestShred() {
 	SetNewBlock(DOOR, GLASS, column+=2, row, level);
 	blocks[column][row][level]->SetDir(NORTH);
 	// row 3
-	column=-1;
-	row+=2;
+	--column;
+	row += 2;
 	SetNewBlock(WEAPON, IRON, column+=2, row, level);
 	SetNewBlock(BLOCK, SAND, column+=2, row, level);
 	SetNewBlock(BLOCK, WATER, column+=2, row, level);
@@ -482,8 +480,8 @@ void Shred::TestShred() {
 	SetNewBlock(BLOCK, CLAY, column+=2, row, level);
 	SetNewBlock(LIQUID, STONE, column+=2, row, level-1);
 	// row 4
-	column=-1;
-	row+=2;
+	--column;
+	row += 2;
 	SetNewBlock(TEXT, PAPER, column+=2, row, level);
 	GetBlock(column, row, level)->Inscribe(".hidden");
 	SetNewBlock(BELL, IRON, column+=2, row, level);

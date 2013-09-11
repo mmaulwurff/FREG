@@ -151,7 +151,7 @@ void Player::Examine(const short i, const short j, const short k) const {
 			arg(block->GetDir()));
 	}
 	if ( AIR==sub || SKY==sub || SUN_MOON==sub ) {
-		return;	
+		return;
 	}
 	QString str;
 	if ( "" != (str=block->GetNote()) ) {
@@ -529,7 +529,8 @@ void Player::SetPlayer(const ushort _x, const ushort _y, const ushort _z) {
 	} else {
 		World * const world = GetWorld();
 		for ( ; AIR != world->Sub(x, y, z) &&
-				DWARF!=world->GetBlock(x, y, z)->Kind(); ++z);
+				DWARF!=world->GetBlock(x, y, z)->Kind() &&
+				z<HEIGHT-1; ++z);
 		Block * const target_block = world->GetBlock(x, y, z);
 		if ( DWARF == target_block->Kind() ) {
 			player = target_block->ActiveBlock();
