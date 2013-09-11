@@ -15,8 +15,7 @@
 	* GNU General Public License for more details.
 	*
 	* You should have received a copy of the GNU General Public License
-	* along with FREG. If not, see <http://www.gnu.org/licenses/>.
-	*/
+	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #ifndef PLAYER_H
 #define PLAYER_H
@@ -46,8 +45,7 @@ class Player : public QObject {
 	 * coordinates where player is, his home coordinates and world
 	 * player belongs to.
 	 *
-	 * Also it does checks for player walking over the shred border.
-	 */
+	 * Also it does checks for player walking over the shred border. */
 	Q_OBJECT
 
 	long homeLongi, homeLati;
@@ -166,7 +164,8 @@ class Player : public QObject {
 	void Backpack();
 	void Inscribe(short x, short y, short z) const;
 	void Examine(short x, short y, short z) const;
-	void Damage(short x, short y, short z) const;
+	/// Returns true if xyz are in world bounds.
+	bool Damage(short x, short y, short z) const;
 	void Use(short x, short y, short z);
 	/// Tries to throw (drop out) block number num from inventory.
 	void Throw (short x, short y, short z,

@@ -472,12 +472,16 @@ void Player::SetDir(const int direction) {
 	emit Updated();
 }
 
-void Player::Damage(
-		const short x_target,
-		const short y_target,
+bool Player::Damage(const short x_target, const short y_target,
 		const short z_target)
 const {
-	player->GetDeferredAction()->SetDamage(x_target, y_target, z_target);
+	if ( GetWorld()->InBounds(x_target, y_target, z_target) ) {
+		player->GetDeferredAction()->SetDamage(
+			x_target, y_target, z_target);
+		return true;
+	} else {
+		return false;
+	}
 }
 
 int Player::DamageKind() const {

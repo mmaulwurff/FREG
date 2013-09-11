@@ -93,6 +93,9 @@ class Active : public QObject, public Block {
 
 	virtual void DoFrequentAction();
 	virtual void DoRareAction();
+	void Gravitate(ushort range, ushort down, ushort up, ushort calmness,
+			bool can_jump);
+	virtual short Attractive(int sub) const;
 
 	private:
 	void UpdateShred();

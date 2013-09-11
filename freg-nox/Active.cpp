@@ -199,3 +199,36 @@ Active::Active(QDataStream & str, const int sub, const quint16 id,
 	str >> fall_height;
 }
 Active::~Active() { delete deferredAction; }
+
+void Active::Gravitate(const ushort range, const ushort down, const ushort up,
+		const ushort calmness, const bool can_jump)
+{
+	World * const world = GetWorld();
+	// analyse world around
+	short for_north = 0, for_west = 0;
+	for (ushort x=X()-range; x<=X()+range; ++x)
+	for (ushort y=Y()-range; y<=Y()+range; ++y)
+	for (ushort z=Z()-down;  z<=Z()+up; ++z) {
+		short attractive;
+		if (world->InBounds(x, y, z) &&
+				(attractive=Attractive(world->Sub(x, y, z))) &&
+				world->DirectlyVisible(X(), Y(), Z(), x, y, z))
+		{
+			if ( y!=Y() ) for_north += attractive/(Y()-y);
+			if ( x!=X() ) for_west  += attractive/(X()-x);
+		}
+	}
+	// make direction and move there
+	if ( qAbs(for_north)>calmness || qAbs(for_west)>calmness ) {
+		SetDir( ( qAbs(for_north)>qAbs(for_west) ) ?
+			( ( for_north>0 ) ? NORTH : SOUTH ) :
+			( ( for_west >0 ) ? WEST  : EAST  ) );
+		if ( can_jump && qrand()%2 ) {
+			world->Jump(X(), Y(), Z(), GetDir());
+		} else {
+			world->Move(X(), Y(), Z(), GetDir());
+		}
+	}
+}
+
+short Active::Attractive(const int) const { return 0; }

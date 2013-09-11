@@ -926,45 +926,13 @@
 // Rabbit::
 	short Rabbit::Attractive(const int sub) const {
 		switch ( sub ) {
-		case H_MEAT:   return -8;
+		case H_MEAT:   return -16;
 		case A_MEAT:   return -1;
 		case GREENERY: return  1;
 		case SAND:     return -1;
 		default:       return  0;
 		}
 	}
-
-	void Rabbit::DoFrequentAction() {
-		World * const world = GetWorld();
-		// analyse world around
-		short for_north = 0, for_west = 0;
-		for (ushort x=X()-4; x<=X()+4; ++x)
-		for (ushort y=Y()-4; y<=Y()+4; ++y)
-		for (ushort z=Z()-1; z<=Z()+3; ++z) {
-			short attractive;
-			if ( world->InBounds(x, y, z) &&
-					(attractive = Attractive(
-						world->Sub(x, y, z))) &&
-					world->DirectlyVisible(
-						X(), Y(), Z(), x, y, z) )
-			{
-				if ( y!=Y() ) for_north += attractive/(Y()-y);
-				if ( x!=X() ) for_west  += attractive/(X()-x);
-			}
-		}
-		// make direction and move there
-		static const ushort calmness = 5;
-		if ( qAbs(for_north)>calmness || qAbs(for_west)>calmness ) {
-			SetDir( ( qAbs(for_north)>qAbs(for_west) ) ?
-				( ( for_north>0 ) ? NORTH : SOUTH ) :
-				( ( for_west >0 ) ? WEST  : EAST  ) );
-			if ( qrand()%2 ) {
-				world->Move(X(), Y(), Z(), GetDir());
-			} else {
-				world->Jump(X(), Y(), Z(), GetDir());
-			}
-		}
-	} // void Rabbit::DoFrequentAction()
 
 	void Rabbit::DoRareAction() {
 		Animal::DoRareAction();
@@ -1003,6 +971,7 @@
 	QString Rabbit::FullName() const { return tr("Herbivore"); }
 	int Rabbit::ShouldAct() const { return FREQUENT_AND_RARE; }
 	quint8 Rabbit::Kind() const { return RABBIT; }
+	void Rabbit::DoFrequentAction() { Gravitate(4, 1, 3, 4, true); }
 
 	quint16 Rabbit::NutritionalValue(const int sub) const {
 		return ( GREENERY == sub ) ? SECONDS_IN_HOUR*4 : 0;

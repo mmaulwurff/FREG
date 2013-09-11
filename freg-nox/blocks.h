@@ -199,19 +199,20 @@ class Bush : public Active, public Inventory {
 class Rabbit : public Animal {
 	Q_OBJECT
 
-	short Attractive(int sub) const;
-	quint16 NutritionalValue(int sub) const;
-
 	public:
-	quint8 Kind() const;
-	void DoFrequentAction();
-	void DoRareAction();
-	int  ShouldAct() const;
-	Block * DropAfterDamage() const;
-	QString FullName() const;
-
 	Rabbit(int sub, quint16 id);
 	Rabbit(QDataStream & str, int sub, quint16 id);
+
+	int  ShouldAct() const;
+	void DoFrequentAction();
+	void DoRareAction();
+	Block * DropAfterDamage() const;
+	quint8 Kind() const;
+	QString FullName() const;
+
+	protected:
+	short Attractive(int sub) const;
+	quint16 NutritionalValue(int sub) const;
 }; // class Rabbit
 
 class Workbench : public Chest {
