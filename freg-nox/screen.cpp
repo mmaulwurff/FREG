@@ -843,7 +843,7 @@ void Screen::Notify(const QString & str) const {
 		}
 	}
 	wrefresh(notifyWin);
-	fputs(qPrintable(QString("%1: %2\n").arg(w->Time()).arg(str)),
+	fputs(qPrintable(QString("%1 %2\n").arg(w->TimeOfDayStr()).arg(str)),
 		notifyLog);
 }
 
@@ -929,6 +929,7 @@ Screen::Screen(World * const wor, Player * const pl) :
 	erase();
 	refresh();
 	CleanFileToShow();
+	Notify("------------------------------------------------------------");
 	Notify("Game started. Press 'H' for help.");
 
 	input->start();
