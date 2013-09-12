@@ -83,7 +83,6 @@ ushort Active::Y() const { return y_self; }
 ushort Active::Z() const { return z_self; }
 
 bool Active::Move(const int dir) {
-	const Shred * const last_shred = GetShred();
 	switch ( dir ) {
 	case NORTH: --y_self; break;
 	case SOUTH: ++y_self; break;
@@ -97,8 +96,8 @@ bool Active::Move(const int dir) {
 		++fall_height;
 		overstep = false;
 	} else {
-		Shred * const new_shred = GetShred();
-		if ( (overstep = ( last_shred != new_shred )) ) {
+		Shred * const new_shred = GetWorld()->GetShred(X(), Y());
+		if ( (overstep = ( shred != new_shred )) ) {
 			falling = false;
 			new_shred->Register(this);
 		}
@@ -125,7 +124,8 @@ void Active::SendSignalAround(const QString & signal) const {
 	world->GetBlock(X(), Y(), Z()+1)->ReceiveSignal(signal);
 }
 
-Shred * Active::GetShred() const { return GetWorld()->GetShred(X(), Y()); }
+void Active::SetShred(Shred * const new_shred) { shred = new_shred; }
+Shred * Active::GetShred() const { return shred; }
 World * Active::GetWorld() const { return world; }
 
 int Active::Damage(const ushort dmg, const int dmg_kind) {
@@ -185,7 +185,8 @@ Active::Active(const int sub, const quint16 id, const quint8 transp) :
 		falling(false),
 		frozen(false),
 		deferredAction(0),
-		x_self(), y_self(), z_self()
+		x_self(), y_self(), z_self(),
+		shred()
 {}
 Active::Active(QDataStream & str, const int sub, const quint16 id,
 		const quint8 transp)
@@ -194,7 +195,8 @@ Active::Active(QDataStream & str, const int sub, const quint16 id,
 		falling(false),
 		frozen(false),
 		deferredAction(0),
-		x_self(), y_self(), z_self()
+		x_self(), y_self(), z_self(),
+		shred()
 {
 	str >> fall_height;
 }

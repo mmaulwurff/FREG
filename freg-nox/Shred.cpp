@@ -259,6 +259,7 @@ int Shred::Sub(const ushort x, const ushort y, const ushort z) const {
 }
 
 void Shred::Register(Active * const active) {
+	active->SetShred(this);
 	activeListAll.append(active);
 	switch ( active->ShouldAct() ) {
 	case FREQUENT:          activeListFrequent.append(active); break;

@@ -1320,14 +1320,14 @@
 			const Active * const active=who->ActiveBlock();
 			QFile map_file(active->GetWorld()->
 				WorldName() + "/texts/" + *note + ".txt");
-			const long  lati=active->GetShred()->Latitude();
-			const long longi=active->GetShred()->Longitude();
+			const Shred * shred = active->GetShred();
+			const long  lati = shred->Latitude();
+			const long longi = shred->Longitude();
 			if ( !map_file.open(QIODevice::ReadWrite |
 					QIODevice::Text) )
 			{
 				return USAGE_TYPE_READ;
 			}
-			World * const world=active->GetWorld();
 			static const ushort FILE_SIZE_CHARS=31;
 			if ( 0==map_file.size() ) { // new map
 				map_file.putChar('+');
@@ -1383,7 +1383,7 @@
 				(longi-longiStart+FILE_SIZE_CHARS/2)+
 				 lati-latiStart+FILE_SIZE_CHARS/2);
 			map_file.putChar('@');
-			savedChar=world->TypeOfShred(longi, lati);
+			savedChar=active->GetWorld()->TypeOfShred(longi, lati);
 			map_file.seek((FILE_SIZE_CHARS+1)*FILE_SIZE_CHARS-1);
 			map_file.putChar('\n');
 			map_file.putChar('@');

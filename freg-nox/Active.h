@@ -80,6 +80,7 @@ class Active : public QObject, public Block {
 
 	void SetXYZ(ushort x, ushort y, ushort z);
 	void SetToDelete();
+	void SetShred(Shred *);
 
 	signals:
 	void Moved(int);
@@ -107,6 +108,7 @@ class Active : public QObject, public Block {
 	DeferredAction * deferredAction;
 	/// Coordinates in loaded world zone.
 	ushort x_self, y_self, z_self;
+	Shred * shred;
 }; // class Active
 
 #endif
