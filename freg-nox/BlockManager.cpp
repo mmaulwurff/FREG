@@ -203,12 +203,13 @@ quint8 BlockManager::StringToSub(const QString & str) {
 }
 
 template <typename Thing>
-Thing * BlockManager::New(const int sub, const quint16 id) const {
+Thing * BlockManager::New(const quint8 sub, const quint16 id) const {
 	return new Thing(sub, id);
 }
 
 template <typename Thing>
-Thing * BlockManager::New(QDataStream & str, const int sub, const quint16 id)
+Thing * BlockManager::New(QDataStream & str, const quint8 sub,
+		const quint16 id)
 const {
 	return new Thing(str, sub, id);
 }
@@ -216,3 +217,5 @@ const {
 quint16 BlockManager::MakeId(const quint8 kind, const quint8 sub) {
 	return (kind << 8) | sub;
 }
+
+quint8 BlockManager::KindFromId(const quint16 id) { return (id >> 8); }

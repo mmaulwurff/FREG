@@ -60,7 +60,9 @@ class BlockManager {
 	static QString SubToString(quint8 sub);
 	static quint8 StringToKind(const QString &);
 	static quint8 StringToSub(const QString &);
+
 	static quint16 MakeId(quint8 kind, quint8 sub);
+	static quint8 KindFromId(quint16 id);
 
 	private:
 	Block * normals[LAST_SUB];
@@ -68,9 +70,9 @@ class BlockManager {
 	static const QString subs[LAST_SUB];
 
 	template <typename Thing>
-	Thing * New(int sub, quint16 id) const;
+	Thing * New(quint8 sub, quint16 id) const;
 	template <typename Thing>
-	Thing * New(QDataStream & str, int sub, quint16 id) const;
+	Thing * New(QDataStream & str, quint8 sub, quint16 id) const;
 }; // class BlockManager
 
 extern BlockManager block_manager;

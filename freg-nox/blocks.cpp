@@ -202,7 +202,8 @@
 			out << quint8( 0x80 | sub );
 		} else {
 			quint16 data = direction;
-			out << sub << Kind() << ( ( ( ( data
+			out << sub << BlockManager::KindFromId(GetId()) <<
+				( ( ( ( data
 				<<= 7 ) |= durability )
 				<<= 1 ) |= !!note );
 			if ( Q_UNLIKELY(note) ) {
