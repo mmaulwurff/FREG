@@ -417,22 +417,21 @@ const {
 bool World::NegativeVisible(float x_from, float y_from, float z_from,
 		short x_to, short y_to, const short z_to)
 const {
-	// this function is like World::PositiveVisible,
-	// except those 4 lines:
-	x_from=-x_from;
-	y_from=-y_from;
-	x_to=-x_to;
-	y_to=-y_to;
-	const ushort max=qMax(qAbs(x_to-(short)x_from),
+	// this function is like World::PositiveVisible
+	x_from = -x_from;
+	y_from = -y_from;
+	x_to = -x_to;
+	y_to = -y_to;
+	const ushort max = qMax(qAbs(x_to-(short)x_from),
 		qMax(qAbs(z_to-(short)z_from), qAbs(y_to-(short)y_from)));
-	const float x_step=(x_to-x_from)/max;
-	const float y_step=(y_to-y_from)/max;
-	const float z_step=(z_to-z_from)/max;
+	const float x_step = (x_to-x_from)/max;
+	const float y_step = (y_to-y_from)/max;
+	const float z_step = (z_to-z_from)/max;
 	for (ushort i=1; i<max; ++i) {
-		if ( BLOCK_OPAQUE==Transparent(
+		if ( BLOCK_OPAQUE == GetBlock(
 				-qRound(x_from+=x_step),
 				-qRound(y_from+=y_step),
-				qRound(z_from+=z_step)) )
+				 qRound(z_from+=z_step))->Transparent() )
 		{
 			return false;
 		}
@@ -443,16 +442,16 @@ const {
 bool World::PositiveVisible(float x_from, float y_from, float z_from,
 		const ushort x_to, const ushort y_to, const ushort z_to)
 const {
-	const ushort max=qMax(qAbs(x_to-(short)x_from),
+	const ushort max = qMax(qAbs(x_to-(short)x_from),
 		qMax(qAbs(z_to-(short)z_from), qAbs(y_to-(short)y_from)));
-	const float x_step=(x_to-x_from)/max;
-	const float y_step=(y_to-y_from)/max;
-	const float z_step=(z_to-z_from)/max;
+	const float x_step = (x_to-x_from)/max;
+	const float y_step = (y_to-y_from)/max;
+	const float z_step = (z_to-z_from)/max;
 	for (ushort i=1; i<max; ++i) {
-		if ( BLOCK_OPAQUE==Transparent(
+		if ( BLOCK_OPAQUE == GetBlock(
 				qRound(x_from+=x_step),
 				qRound(y_from+=y_step),
-				qRound(z_from+=z_step)) )
+				qRound(z_from+=z_step))->Transparent() )
 		{
 		   	return false;
 		}
@@ -467,15 +466,18 @@ const {
 	short temp;
 	return (
 		(DirectlyVisible(x_from, y_from, z_from, x_to, y_to, z_to)) ||
-		(Transparent(x_to+(temp=(x_to>x_from) ? (-1) : 1), y_to, z_to)
+		(GetBlock(x_to+(temp=(x_to>x_from) ? (-1) : 1), y_to, z_to)->
+				Transparent()
 			&& DirectlyVisible(
 				x_from,    y_from, z_from,
 				x_to+temp, y_to,   z_to)) ||
-		(Transparent(x_to, y_to+(temp=(y_to>y_from) ? (-1) : 1), z_to)
+		(GetBlock(x_to, y_to+(temp=(y_to>y_from) ? (-1) : 1), z_to)->
+				Transparent()
 			&& DirectlyVisible(
 				x_from, y_from,    z_from,
 				x_to,   y_to+temp, z_to)) ||
-		(Transparent(x_to, y_to, z_to+(temp=(z_to>z_from) ? (-1) : 1))
+		(GetBlock(x_to, y_to, z_to+(temp=(z_to>z_from) ? (-1) : 1))->
+				Transparent()
 			&& DirectlyVisible(
 				x_from, y_from, z_from,
 				x_to,   y_to,   z_to+temp)) );
@@ -759,11 +761,6 @@ void World::GetAll(const ushort x_to, const ushort y_to, const ushort z_to) {
 	}
 }
 
-int World::Transparent(const ushort x, const ushort y, const ushort z) const {
-	return GetShred(x, y)->
-		GetBlock(Shred::CoordInShred(x), Shred::CoordInShred(y), z)->
-			Transparent();
-}
 int World::Sub(const ushort x, const ushort y, const ushort z) const {
 	return GetShred(x, y)->
 		Sub(Shred::CoordInShred(x), Shred::CoordInShred(y), z);

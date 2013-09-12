@@ -222,7 +222,6 @@ class World : public QThread {
 	public:
 	// For more information, use World::GetBlock(x, y, z) and ->.
 	bool InBounds   (ushort x, ushort y, ushort z=0) const;
-	int  Transparent(ushort x, ushort y, ushort z) const;
 	int  Sub        (ushort x, ushort y, ushort z) const;
 	int  Temperature(ushort x, ushort y, ushort z) const;
 

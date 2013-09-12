@@ -70,7 +70,7 @@ void World::Shine(const ushort i, const ushort j, const ushort k,
 		return;
 	} // else:
 	if ( SetFireLightMap(level << 4, i, j, k) &&
-			INVISIBLE != Transparent(i, j, k) )
+			INVISIBLE != GetBlock(i, j, k)->Transparent() )
 	{
 		emit Updated(i, j, k);
 	}
@@ -96,7 +96,7 @@ void World::SunShineVertical(const short x, const short y, short z,
 	 *   #     */
 	for ( ; SetSunLightMap(light_lev, x, y, z); --z) {
 		emit Updated(x, y, z);
-		const ushort transparent = Transparent(x, y, z);
+		const ushort transparent = GetBlock(x, y, z)->Transparent();
 		if ( BLOCK_TRANSPARENT == transparent ) {
 			--light_lev;
 		} else if ( BLOCK_OPAQUE == transparent ) {
