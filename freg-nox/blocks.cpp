@@ -956,7 +956,7 @@
 	quint8 Rabbit::Kind() const { return RABBIT; }
 	void Rabbit::DoFrequentAction() { Gravitate(4, 1, 3, 4, true); }
 
-	quint16 Rabbit::NutritionalValue(const int sub) const {
+	quint16 Rabbit::NutritionalValue(const quint8 sub) const {
 		return ( GREENERY == sub ) ? SECONDS_IN_HOUR*4 : 0;
 	}
 

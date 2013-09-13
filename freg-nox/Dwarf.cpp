@@ -98,7 +98,7 @@ bool Dwarf::Move(const int dir) {
 	return overstepped;
 }
 
-quint16 Dwarf::NutritionalValue(const int sub) const {
+quint16 Dwarf::NutritionalValue(const quint8 sub) const {
 	switch ( sub ) {
 	case HAZELNUT: return SECONDS_IN_HOUR/2;
 	case H_MEAT:   return SECONDS_IN_HOUR*2.5;

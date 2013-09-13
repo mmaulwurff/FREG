@@ -205,11 +205,11 @@ class Rabbit : public Animal {
 	void DoRareAction();
 	Block * DropAfterDamage() const;
 	quint8 Kind() const;
+	quint16 NutritionalValue(quint8 sub) const;
 	QString FullName() const;
 
 	protected:
 	short Attractive(int sub) const;
-	quint16 NutritionalValue(int sub) const;
 }; // class Rabbit
 
 class Workbench : public Chest {

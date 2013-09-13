@@ -90,9 +90,7 @@ void DeferredAction::Damage() const {
 }
 
 void DeferredAction::Throw() const {
-	world->Drop(
-		attachedBlock,
-		xTarg, yTarg, zTarg,
+	world->Drop(attachedBlock, xTarg, yTarg, zTarg,
 		srcSlot, destSlot, num);
 	attachedBlock->EmitUpdated();
 }

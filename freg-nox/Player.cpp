@@ -240,13 +240,23 @@ void Player::Use(const ushort num) {
 }
 
 void Player::UseNoLock(const ushort num) {
-	Block * const block=ValidBlock(num);
-	if ( block ) {
-		if ( block->Use(player)==USAGE_TYPE_READ ) {
-			usingInInventory=num;
-			usingType=USAGE_TYPE_READ_IN_INVENTORY;
-			emit Updated();
-		}
+	Block * const block = ValidBlock(num);
+	if ( !block ) {
+		return;
+	} // else:
+	Animal * const animal = player->IsAnimal();
+	if ( animal && animal->NutritionalValue(block->Sub()) ) {
+		animal->Eat(block->Sub());
+		Inventory * const inv = PlayerInventory();
+		Block * const eaten = inv->ShowBlock(num);
+		inv->Pull(num);
+		block_manager.DeleteBlock(eaten);
+		return;
+	} // else:
+	if ( block->Use(player) == USAGE_TYPE_READ ) {
+		usingInInventory = num;
+		usingType = USAGE_TYPE_READ_IN_INVENTORY;
+		emit Updated();
 	}
 }
 

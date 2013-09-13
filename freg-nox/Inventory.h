@@ -43,6 +43,7 @@ class Inventory {
 	virtual bool Access() const;
 	/// Returns true on success.
 	virtual bool Get(Block * block, ushort start=0);
+	/// Removes block from inventory. Does not delete block.
 	virtual void Pull(ushort num);
 	virtual void MoveInside(ushort num_from, ushort num_to, ushort num);
 	virtual void ReceiveSignal(const QString &)=0;

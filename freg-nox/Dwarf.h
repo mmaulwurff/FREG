@@ -49,6 +49,7 @@ class Dwarf : public Animal, public Inventory {
 	void ReceiveSignal(const QString &);
 	uchar LightRadius() const;
 	Block * DropAfterDamage() const;
+	quint16 NutritionalValue(quint8 sub) const;
 	Inventory * HasInventory();
 
 	static const uchar ON_HEAD  = 0;
@@ -62,7 +63,6 @@ class Dwarf : public Animal, public Inventory {
 
 	private:
 	void UpdateLightRadius();
-	quint16 NutritionalValue(int sub) const;
 
 	static const uchar MIN_DWARF_LIGHT_RADIUS = 2;
 

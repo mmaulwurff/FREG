@@ -29,8 +29,6 @@ class Animal : public Active {
 	quint8 breath;
 	quint16 satiation;
 
-	virtual quint16 NutritionalValue(int sub) const=0;
-
 	public:
 	void DoRareAction();
 	int  ShouldAct() const;
@@ -40,6 +38,7 @@ class Animal : public Active {
 	ushort Breath() const;
 	ushort Satiation() const;
 	bool Eat(int sub);
+	virtual quint16 NutritionalValue(quint8 sub) const = 0;
 
 	protected:
 	void SaveAttributes(QDataStream & out) const;
