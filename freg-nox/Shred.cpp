@@ -514,7 +514,7 @@ void Shred::NullMountain() {
 	}
 }
 
-void Shred::Pyramid() { // pyramid by Panzerschrek
+void Shred::Pyramid() { // by Panzerschrek
 	const ushort level = qMin(FlatUndeground(), ushort(HEIGHT-1-16));
 	for (ushort z=level+1, dz=0; dz<8; z+=2, ++dz) { // pyramid
 		for (ushort x=dz, y=dz; x<(16 - dz); ++x, ++y) {
@@ -538,6 +538,7 @@ void Shred::Pyramid() { // pyramid by Panzerschrek
 	Inventory * const inv =
 		GetBlock(SHRED_WIDTH-2,SHRED_WIDTH-2, level+1)->HasInventory();
 	inv->Get(Normal(GOLD));
+	SetNewBlock(PREDATOR, A_MEAT, SHRED_WIDTH-3, SHRED_WIDTH-2, level+1);
 }
 
 void Shred::ChaosShred() {

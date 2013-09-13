@@ -15,8 +15,7 @@
 	* GNU General Public License for more details.
 	*
 	* You should have received a copy of the GNU General Public License
-	* along with FREG. If not, see <http://www.gnu.org/licenses/>.
-	*/
+	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #ifndef BLOCKS_H
 #define BLOCKS_H
@@ -324,7 +323,7 @@ class Map : public Text {
 	Map(QDataStream & str, int sub, quint16 id);
 }; // class Map
 
-class Bell: public Active {
+class Bell : public Active {
 	public:
 	quint8 Kind() const;
 	QString FullName() const;
@@ -335,4 +334,19 @@ class Bell: public Active {
 	Bell(QDataStream & str, int sub, quint16 id);
 }; // class Bell
 
-#endif
+class Predator : public Animal {
+	Q_OBJECT
+	public:
+	Predator(int sub, quint16 id);
+	Predator(QDataStream & str, int sub, quint16 id);
+
+	quint8 Kind() const;
+	QString FullName() const;
+	quint16 NutritionalValue(quint8 sub) const;
+
+	protected:
+	void DoFrequentAction();
+	short Attractive(int sub) const;
+};
+
+#endif // BLOCKS_H

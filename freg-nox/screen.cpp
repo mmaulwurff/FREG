@@ -18,8 +18,7 @@
 	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 /**\file screen.cpp
- * This file is related to curses screen for freg.
- */
+ * This file is related to curses screen for freg. */
 
 #include <QString>
 #include <QTimer>
@@ -144,7 +143,6 @@ char Screen::CharNumberFront(const ushort i, const ushort j) const {
 	return ( dist>9 ) ?
 		'+' : ( dist>0 ) ?
 			dist+'0' : ' ';
-
 }
 
 char Screen::CharName(const int kind, const int sub) const {
@@ -162,6 +160,7 @@ char Screen::CharName(const int kind, const int sub) const {
 	case CHEST:
 	case PILE:   return '&';
 	case BELL:   return 'b';
+	case PREDATOR: return '!';
 	case WORKBENCH: return '*';
 	case TELEGRAPH: return 't';
 	case DOOR:        return ( STONE == sub ) ? '#' : '\'';
@@ -207,10 +206,11 @@ char Screen::CharName(const int kind, const int sub) const {
 
 color_pairs Screen::Color(const int kind, const int sub) const {
 	switch ( kind ) { // foreground_background
-	case DWARF:     return WHITE_BLUE;
-	case TELEGRAPH: return CYAN_BLACK;
-	case RABBIT:    return RED_WHITE;
 	case PILE:      return WHITE_BLACK;
+	case DWARF:     return WHITE_BLUE;
+	case RABBIT:    return RED_WHITE;
+	case PREDATOR:  return RED_BLACK;
+	case TELEGRAPH: return CYAN_BLACK;
 	case LIQUID: switch ( sub ) {
 		case WATER: return CYAN_BLUE;
 		default:    return RED_YELLOW;

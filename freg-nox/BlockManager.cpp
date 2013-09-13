@@ -119,6 +119,7 @@ Block * BlockManager::NewBlock(const int kind, int sub) const {
 	case TEXT:   return New<Text  >(sub, id);
 	case MAP:    return New<Map   >(sub, id);
 	case CREATOR: return New<Creator>(sub, id);
+	case PREDATOR: return New<Predator>(sub, id);
 	case WORKBENCH: return New<Workbench>(sub, id);
 	}
 } // Block * BlockManager::NewBlock(int kind, int sub)
@@ -150,6 +151,7 @@ const {
 	case DOOR:   return New<Door  >(str, sub, id);
 	case CLOCK:  return New<Clock >(str, sub, id);
 	case CREATOR: return New<Creator>(str, sub, id);
+	case PREDATOR: return New<Predator>(str, sub, id);
 	case WORKBENCH: return New<Workbench>(str, sub, id);
 	}
 }

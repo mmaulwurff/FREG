@@ -1413,3 +1413,22 @@
 	Bell::Bell(QDataStream & str, const int sub, const quint16 id) :
 			Active(str, sub, id)
 	{}
+// Predator:
+	Predator::Predator(const int sub, const quint16 id) :
+			Animal(sub, id)
+	{}
+	Predator::Predator(QDataStream & str, const int sub, const quint16 id)
+			: Animal(str, sub, id)
+	{}
+
+	quint8 Predator::Kind() const { return PREDATOR; }
+	QString Predator::FullName() const { return "Predator"; }
+	quint16 Predator::NutritionalValue(quint8 sub) const {
+		return Attractive(sub)*SECONDS_IN_HOUR;
+	}
+
+	void Predator::DoFrequentAction() { Gravitate(5, 1, 1, 0, false); }
+
+	short Predator::Attractive(int sub) const {
+		return ( ( H_MEAT==sub || A_MEAT==sub) ? 10 : 0 );
+	}

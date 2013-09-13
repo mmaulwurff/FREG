@@ -15,8 +15,7 @@
 	* GNU General Public License for more details.
 	*
 	* You should have received a copy of the GNU General Public License
-	* along with FREG. If not, see <http://www.gnu.org/licenses/>.
-	*/
+	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #ifndef HEADER_H
 #define HEADER_H
@@ -127,14 +126,15 @@ enum kinds {
 	CREATOR,     ///< 20
 	TEXT,        ///< 21
 	MAP,         ///< 22
+	PREDATOR,    ///< 23
 	/// Nothing is LAST_KIND.
 	LAST_KIND // keep it last in this list.
 }; // enum kinds
+
 /// Substance block is made from.
 /** Don't make blocks from SKY and STAR, they are special for shred loading
  *  and saving.
- *  Don't make non-BLOCK blocks from air, otherwise leaks are possible.
- */
+ *  Don't make non-BLOCK blocks from air, otherwise leaks are possible. */
 enum subs {
 	// do not change order, this will break file compatibility.
 	// add new substances right before LAST_SUB.
@@ -179,4 +179,4 @@ enum transparency {
 	UNDEF // temporary, doesn't appear in world.
 }; // enum transparency
 
-#endif
+#endif // HEADER_H
