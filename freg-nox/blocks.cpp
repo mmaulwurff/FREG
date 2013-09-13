@@ -1427,7 +1427,7 @@
 		return Attractive(sub)*SECONDS_IN_HOUR;
 	}
 
-	void Predator::DoFrequentAction() { Gravitate(5, 1, 1, 0, false); }
+	void Predator::DoFrequentAction() { Gravitate(5, 1, 2, 0, false); }
 
 	short Predator::Attractive(int sub) const {
 		return ( ( H_MEAT==sub || A_MEAT==sub) ? 10 : 0 );
