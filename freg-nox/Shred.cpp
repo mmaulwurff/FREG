@@ -23,6 +23,7 @@
 #include "world.h"
 #include "BlockManager.h"
 #include "Active.h"
+#include "Inventory.h"
 
 // Qt version in Debian stable that time.
 const quint8 DATASTREAM_VERSION = QDataStream::Qt_4_6;
@@ -77,7 +78,7 @@ bool Shred::LoadShred() {
 				PutBlock(Normal(sub), x, y, z);
 			} else {
 				lightMap[x][y][z] = 0;
-				SetBlock(block_manager.BlockFromFile(
+				SetBlockNoCheck(block_manager.BlockFromFile(
 					in, kind, sub), x, y, z);
 			}
 		}
@@ -355,6 +356,18 @@ Block * Shred::GetBlock(const ushort x, const ushort y, const ushort z) const {
 void Shred::SetBlock(Block * const block,
 		const ushort x, const ushort y, const ushort z)
 {
+	Block * const to_delete = GetBlock(x, y, z);
+	Active * const active = to_delete->ActiveBlock();
+	if ( active ) {
+		Unregister(active);
+	}
+	block_manager.DeleteBlock(to_delete);
+	SetBlockNoCheck(block, x, y, z);
+}
+
+void Shred::SetBlockNoCheck(Block * const block,
+		const ushort x, const ushort y, const ushort z)
+{
 	Active * const active = ( blocks[x][y][z]=block )->ActiveBlock();
 	if ( active ) {
 		active->SetXYZ( (ShredX() << SHRED_WIDTH_SHIFT) + x,
@@ -366,12 +379,6 @@ void Shred::SetBlock(Block * const block,
 void Shred::SetNewBlock(const int kind, const int sub,
 		const ushort x, const ushort y, const ushort z, const int dir)
 {
-	Block * const to_delete = GetBlock(x, y, z);
-	Active * const active = to_delete->ActiveBlock();
-	if ( active ) {
-		Unregister(active);
-	}
-	block_manager.DeleteBlock(to_delete);
 	Block * const block = block_manager.NewBlock(kind, sub);
 	block->SetDir(dir);
 	SetBlock(block, x, y, z);
@@ -527,6 +534,10 @@ void Shred::Pyramid() { // pyramid by Panzerschrek
 	for (ushort z=HEIGHT/2-52; z<=level; ++z) { // horizontal tunnel
 		PutBlock(Normal(AIR), SHRED_WIDTH/2, SHRED_WIDTH/2, z);
 	}
+	SetNewBlock(CHEST, STONE, SHRED_WIDTH-2, SHRED_WIDTH-2, level+1);
+	Inventory * const inv =
+		GetBlock(SHRED_WIDTH-2,SHRED_WIDTH-2, level+1)->HasInventory();
+	inv->Get(Normal(GOLD));
 }
 
 void Shred::ChaosShred() {

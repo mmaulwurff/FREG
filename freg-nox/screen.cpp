@@ -15,8 +15,7 @@
 	* GNU General Public License for more details.
 	*
 	* You should have received a copy of the GNU General Public License
-	* along with FREG. If not, see <http://www.gnu.org/licenses/>.
-	*/
+	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 /**\file screen.cpp
  * This file is related to curses screen for freg.
@@ -184,8 +183,10 @@ char Screen::CharName(const int kind, const int sub) const {
 				sub);
 	} // no break;
 	default: switch ( sub ) {
-		case NULLSTONE: case MOSS_STONE: case WOOD:
-		case IRON: case CLAY:
+		default: fprintf(stderr,
+			"Screen::CharName: sub (?): %d\n", sub);
+		case NULLSTONE:  case IRON: case CLAY:
+		case MOSS_STONE: case WOOD: case GOLD:
 		case STONE: return '#';
 		case GLASS: return 'g';
 		case AIR:   return ' ';
@@ -200,10 +201,6 @@ char Screen::CharName(const int kind, const int sub) const {
 		case SKY:
 		case SUN_MOON: return ' ';
 		case GREENERY: return '%';
-		default:
-			fprintf(stderr, "Screen::CharName: unlisted sub: %d\n",
-				sub);
-			return '?';
 		}
 	}
 } // char Screen::CharName(int kind, int sub)
@@ -239,6 +236,7 @@ color_pairs Screen::Color(const int kind, const int sub) const {
 		case ROSE:       return RED_GREEN;
 		case CLAY:       return WHITE_RED;
 		case PAPER:      return MAGENTA_WHITE;
+		case GOLD:       return WHITE_YELLOW;
 		case SUN_MOON:   return ( NIGHT == w->PartOfDay() ) ?
 			WHITE_WHITE : YELLOW_YELLOW;
 		case SKY: case STAR: switch ( w->PartOfDay() ) {

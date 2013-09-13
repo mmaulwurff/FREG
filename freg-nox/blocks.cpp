@@ -15,8 +15,7 @@
 	* GNU General Public License for more details.
 	*
 	* You should have received a copy of the GNU General Public License
-	* along with FREG. If not, see <http://www.gnu.org/licenses/>.
-	*/
+	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include <QDataStream>
 #include <QTextStream>
@@ -48,6 +47,7 @@
 		case IRON:       return QObject::tr("Iron block");
 		case SAND:       return QObject::tr("Sandstone");
 		case CLAY:       return QObject::tr("Clay brick");
+		case GOLD:       return QObject::tr("Block of gold.");
 		default:
 			fprintf(stderr, "Block::FullName: unlisted sub: %d.\n",
 				Sub());

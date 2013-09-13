@@ -106,6 +106,7 @@ class Shred {
 	void UnregisterExternalActives();
 
 	bool LoadShred();
+	void SetBlockNoCheck(Block * block, ushort x, ushort y, ushort z);
 
 	QString FileName() const;
 
