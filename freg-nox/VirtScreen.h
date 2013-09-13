@@ -42,7 +42,7 @@ class VirtScreen : public QObject {
 	 * 	player, SLOT(Act(int, int)),
 	 * 	Qt::DirectConnection); */
 	VirtScreen(World *, Player *);
-	/// Only calls VirtScreen::CleanAll
+	/// Only calls VirtScreen::CleanAll.
 	virtual ~VirtScreen();
 
 	signals:
@@ -52,7 +52,7 @@ class VirtScreen : public QObject {
 
 	public slots:
 	/// This is called for a notification to be displayed.
-	virtual void Notify(const QString &) const=0;
+	virtual void Notify(const QString &) const = 0;
 
 	/// This is called when program is stopped and from destructor.
 	/** When implemented, this should contain check to prevent
@@ -61,27 +61,27 @@ class VirtScreen : public QObject {
 
 	/// This is called when string is needed to be received from input.
 	/** It is connected to world in constructor. */
-	virtual QString PassString(QString &) const=0;
+	virtual QString PassString(QString &) const = 0;
 
 	/// This is called when block at (x, y, z) should be updated in screen.
 	/** When implemented, this should work fast.
 	 *  It is connected to world in constructor. */
-	virtual void Update(ushort x, ushort y, ushort z)=0;
+	virtual void Update(ushort x, ushort y, ushort z) = 0;
 
 	/// This is called when all world should be updated in sceen.
 	/** When implemented, this should work fast.
 	 *  It is connected to world in constructor. */
-	virtual void UpdateAll()=0;
+	virtual void UpdateAll() = 0;
 
 	/// Called when world loaded zone is moved to update world in screen.
 	/** When implemented, this should work fast.
 	 *  It is connected to world in constructor. */
-	virtual void Move(int)=0;
+	virtual void Move(int) = 0;
 
 	/// Called when some player property needs to be updated in screen.
 	/** When implemented, this should work fast.
 	 *  It is connected to world in constructor. */
-	virtual void UpdatePlayer()=0;
+	virtual void UpdatePlayer() = 0;
 
 	/// Called when area around xyz with range needs to be updated.
 	/** When implemented, this should work fast.
@@ -90,8 +90,8 @@ class VirtScreen : public QObject {
 
 	/// This is called to restore some connections.
 	/** This restores connections to VirtScreen::Update and
-	 * VirtScreen::UpdateAround which can be temporarily
-	 * disconnected. */
+	 *  VirtScreen::UpdateAround which can be temporarily
+	 *  disconnected. */
 	void ConnectWorld();
 
 	/// This is called when current group of updates is ended.
@@ -103,7 +103,7 @@ class VirtScreen : public QObject {
 
 	private slots:
 	/// Prints world. Should not be called not within screen.
-	virtual void Print()=0;
+	virtual void Print() = 0;
 
 	protected:
 	World * const w;
