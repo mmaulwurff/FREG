@@ -323,7 +323,9 @@ void Player::Build(const short x_target, const short y_target,
 {
 	QWriteLocker locker(world->GetLock());
 	Block * const block = ValidBlock(slot);
-	if ( block && (AIR!=world->Sub(x, y, z-1) || 0==player->Weight()) ) {
+	if ( block && (AIR!=world->GetBlock(x, y, z-1)->Sub() ||
+			0==player->Weight()) )
+	{
 		player->GetDeferredAction()->
 			SetBuild(x_target, y_target, z_target, block, slot);
 	}
@@ -532,9 +534,14 @@ void Player::SetPlayer(const ushort _x, const ushort _y, const ushort _z) {
 		GetShred()->Register(player);
 	} else {
 		World * const world = GetWorld();
-		for ( ; AIR != world->Sub(x, y, z) &&
-				DWARF!=world->GetBlock(x, y, z)->Kind() &&
-				z<HEIGHT-1; ++z);
+		for ( ; z < HEIGHT-1; ++z) {
+			Block * const target_block = world->GetBlock(x, y, z);
+			if ( AIR==target_block->Sub() ||
+					DWARF==target_block->Kind() )
+			{
+				break;
+			}
+		}
 		Block * const target_block = world->GetBlock(x, y, z);
 		if ( DWARF == target_block->Kind() ) {
 			player = target_block->ActiveBlock();

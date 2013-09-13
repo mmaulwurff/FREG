@@ -419,10 +419,10 @@ void Screen::ActionXyz(ushort & x,ushort & y, ushort & z) const {
 	if (
 			DOWN!=player->GetDir() &&
 			UP  !=player->GetDir() &&
-			( AIR==w->Sub(x, y, z) || AIR==w->Sub(
+			( AIR==w->GetBlock(x, y, z)->Sub() || AIR==w->GetBlock(
 				player->X(),
 				player->Y(),
-				player->Z()+shiftFocus) ))
+				player->Z()+shiftFocus)->Sub() ))
 	{
 		z += shiftFocus;
 	}

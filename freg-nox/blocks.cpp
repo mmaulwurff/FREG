@@ -366,18 +366,7 @@
 // Animal::
 	void Animal::DoRareAction() {
 		World * const world = GetWorld();
-		if (
-				AIR != world->Sub(X(), Y(), Z()+1) &&
-				AIR != world->Sub(X(), Y(), Z()-1) &&
-					world->InBounds(X()+1, Y()) &&
-				AIR != world->Sub(X()+1, Y(), Z()) &&
-					world->InBounds(X()-1, Y()) &&
-				AIR != world->Sub(X()-1, Y(), Z()) &&
-					world->InBounds(X(), Y()+1) &&
-				AIR != world->Sub(X(), Y()+1, Z()) &&
-					world->InBounds(X(), Y()-1) &&
-				AIR != world->Sub(X(), Y()-1, Z()) )
-		{
+		if ( !IsSubAround(AIR) ) {
 			if ( breath <= 0 ) {
 				world->Damage(X(), Y(), Z(), 10, BREATH);
 			} else {
@@ -770,25 +759,10 @@
 			Inventory(str, INV_SIZE)
 	{}
 // Liquid::
-	bool Liquid::CheckWater() const {
-		World * const world=GetWorld();
-		return (
-			WATER==world->Sub(X(), Y(), Z()-1) ||
-			WATER==world->Sub(X(), Y(), Z()+1) ||
-			(world->InBounds(X()-1, Y()) &&
-				WATER==world->Sub(X()-1, Y(), Z())) ||
-			(world->InBounds(X()+1, Y()) &&
-				WATER==world->Sub(X()+1, Y(), Z())) ||
-			(world->InBounds(X(), Y()-1) &&
-				WATER==world->Sub(X(), Y()-1, Z())) ||
-			(world->InBounds(X(), Y()+1) &&
-				WATER==world->Sub(X(), Y()+1, Z())) );
-	}
-
 	void Liquid::DoRareAction() {
 		World * const world=GetWorld();
 		// IDEA: turn off water drying up in ocean
-		if ( WATER==Sub() && !CheckWater() ) {
+		if ( WATER==Sub() && !IsSubAround(WATER) ) {
 			world->Damage(X(), Y(), Z(), 1, HEAT);
 		}
 		switch ( qrand()%20 ) {
@@ -826,7 +800,7 @@
 // Grass::
 	void Grass::DoRareAction() {
 		World * const world = GetWorld();
-		if ( SOIL != world->Sub(X(), Y(), Z()-1) ) {
+		if ( SOIL != world->GetBlock(X(), Y(), Z()-1)->Sub() ) {
 			world->Damage(X(), Y(), Z(), durability, TIME);
 		}
 		short i=X(), j=Y();
@@ -838,14 +812,21 @@
 		case 3: --j; break;
 		default: return;
 		}
-		if ( world->InBounds(i, j) && world->Enlightened(i, j, Z()) ) {
-			if ( AIR==world->Sub(i, j, Z()) &&
-					SOIL==world->Sub(i, j, Z()-1) )
+		if ( !world->InBounds(i, j) ) {
+			return;
+		} // else:
+		const quint8 sub_of_near_block =
+			world->GetBlock(i, j, Z())->Sub();
+		if ( world->Enlightened(i, j, Z()) ) {
+			if ( AIR==sub_of_near_block &&
+					SOIL==world->GetBlock(i, j, Z()-1)->
+						Sub() )
 			{
 				world->Build(block_manager.NewBlock(GRASS,
 						Sub()), i, j, Z());
-			} else if ( SOIL==world->Sub(i, j, Z()) &&
-					AIR==world->Sub(i, j, Z()+1) )
+			} else if ( SOIL==sub_of_near_block &&
+					AIR==world->GetBlock(i, j, Z()+1)->
+						Sub() )
 			{
 				world->Build(block_manager.NewBlock(GRASS,
 						Sub()), i, j, Z()+1);
@@ -944,7 +925,8 @@
 			for (ushort y=Y()-1; y<=Y()+1; ++y)
 			for (ushort z=Z();   z<=Z()+1; ++z) {
 				if ( world->InBounds(x, y) &&
-						GREENERY==world->Sub(x, y, z) )
+						GREENERY==world->
+						GetBlock(x, y, z)->Sub() )
 				{
 					world->Damage(x, y, z, MAX_DURABILITY,
 						EATEN);
@@ -1109,16 +1091,16 @@
 
 	void Door::DoFrequentAction() {
 		if ( shifted ) {
-			World * const world=GetWorld();
+			World * const world = GetWorld();
 			ushort x, y, z;
 			world->Focus(X(), Y(), Z(), x, y, z,
 				World::Anti(GetDir()));
-			if ( AIR==world->Sub(x, y, z) ) {
-				movable=MOVABLE;
+			if ( AIR == world->GetBlock(x, y, z)->Sub() ) {
+				movable = MOVABLE;
 				world->Move(X(), Y(), Z(),
 					World::Anti(GetDir()));
-				shifted=false;
-				movable=NOT_MOVABLE;
+				shifted = false;
+				movable = NOT_MOVABLE;
 			}
 		}
 	}

@@ -91,6 +91,8 @@ class Active : public QObject, public Block {
 	protected:
 	void SendSignalAround(const QString &) const;
 	void SaveAttributes(QDataStream & out) const;
+	/// Returns true if there is at least 1 block of substance sub around.
+	bool IsSubAround(quint8 sub) const;
 
 	virtual void DoFrequentAction();
 	virtual void DoRareAction();

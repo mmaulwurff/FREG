@@ -180,8 +180,8 @@ quint8 World::TurnLeft(const quint8 dir) {
 }
 
 void World::MakeSun() {
-	ifStar = ( STAR==Sub( (sun_moon_x=SunMoonX()), SHRED_WIDTH*numShreds/2,
-		HEIGHT-1) );
+	ifStar = ( STAR==GetBlock( (sun_moon_x=SunMoonX()),
+		SHRED_WIDTH*numShreds/2, HEIGHT-1)->Sub() );
 	PutBlock(Normal(SUN_MOON),
 		sun_moon_x, SHRED_WIDTH*numShreds/2, HEIGHT-1);
 }
@@ -205,7 +205,7 @@ void World::PutBlock(Block * const block,
 		Shred::CoordInShred(x), Shred::CoordInShred(y), z);
 }
 
-Block * World::Normal(const int sub) {
+Block * World::Normal(const quint8 sub) {
 	return block_manager.NormalBlock(sub);
 }
 Block * World::NewBlock(const int kind, const int sub) {
@@ -381,7 +381,7 @@ void World::PhysEvents() {
 		PutBlock(Normal(ifStar ? STAR : SKY), sun_moon_x, y, HEIGHT-1);
 		emit Updated(sun_moon_x, y, HEIGHT-1);
 		sun_moon_x = SunMoonX();
-		ifStar = ( STAR==Sub(sun_moon_x, y, HEIGHT-1) );
+		ifStar = ( STAR==GetBlock(sun_moon_x, y, HEIGHT-1)->Sub() );
 		PutBlock(Normal(SUN_MOON), sun_moon_x, y, HEIGHT-1);
 		emit Updated(sun_moon_x, y, HEIGHT-1);
 	}
@@ -494,8 +494,8 @@ bool World::Move(const ushort x, const ushort y, const ushort z,
 			(DOWN==dir || !(block=GetBlock(x, y, z))->Weight() ||
 			!( (active=block->ActiveBlock()) &&
 				active->IsFalling() &&
-				AIR==Sub(x, y, z-1) &&
-				AIR==Sub(newx, newy, newz-1))) )
+				AIR==GetBlock(x, y, z-1)->Sub() &&
+				AIR==GetBlock(newx, newy, newz-1)->Sub() )) )
 	{
 		NoCheckMove(x, y, z, newx, newy, newz, dir);
 		return true;
@@ -586,7 +586,8 @@ void World::NoCheckMove(const ushort x, const ushort y, const ushort z,
 void World::Jump(const ushort x, const ushort y, const ushort z,
 		const quint8 dir)
 {
-	if ( !(AIR==Sub(x, y, z-1) && GetBlock(x, y, z)->Weight()) &&
+	if ( !(AIR==GetBlock(x, y, z-1)->Sub() &&
+			GetBlock(x, y, z)->Weight()) &&
 			Move(x, y, z, UP) )
 	{
 		Move(x, y, z+1, dir);
@@ -759,11 +760,6 @@ void World::GetAll(const ushort x_to, const ushort y_to, const ushort z_to) {
 		inv_to->GetAll(GetBlock(x_from, y_from, z_from)->
 			HasInventory());
 	}
-}
-
-int World::Sub(const ushort x, const ushort y, const ushort z) const {
-	return GetShred(x, y)->
-		Sub(Shred::CoordInShred(x), Shred::CoordInShred(y), z);
 }
 
 int World::Temperature(const ushort x, const ushort y, const ushort z) const {

@@ -213,7 +213,8 @@ void Active::Gravitate(const ushort range, const ushort down, const ushort up,
 	for (ushort z=Z()-down;  z<=Z()+up; ++z) {
 		short attractive;
 		if (world->InBounds(x, y, z) &&
-				(attractive=Attractive(world->Sub(x, y, z))) &&
+				( attractive = Attractive(world->
+					GetBlock(x, y, z)->Sub()) ) &&
 				world->DirectlyVisible(X(), Y(), Z(), x, y, z))
 		{
 			if ( y!=Y() ) for_north += attractive/(Y()-y);
@@ -234,3 +235,18 @@ void Active::Gravitate(const ushort range, const ushort down, const ushort up,
 }
 
 short Active::Attractive(const int) const { return 0; }
+
+bool Active::IsSubAround(const quint8 sub) const {
+	const World * const world = GetWorld();
+	return (
+			sub == world->GetBlock(X(), Y(), Z()-1)->Sub() ||
+			sub == world->GetBlock(X(), Y(), Z()+1)->Sub() ||
+			(world->InBounds(X()-1, Y()) &&
+			sub == world->GetBlock(X()-1, Y(), Z())->Sub()) ||
+			(world->InBounds(X()+1, Y()) &&
+			WATER==world->GetBlock(X()+1, Y(), Z())->Sub()) ||
+			(world->InBounds(X(), Y()-1) &&
+			WATER==world->GetBlock(X(), Y()-1, Z())->Sub()) ||
+			(world->InBounds(X(), Y()+1) &&
+			WATER==world->GetBlock(X(), Y()+1, Z())->Sub()) );
+}

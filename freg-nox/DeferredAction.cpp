@@ -42,7 +42,7 @@ void DeferredAction::Jump() const {
 
 void DeferredAction::Build() {
 	if ( DOWN==attachedBlock->GetDir() &&
-			AIR!=GetWorld()->Sub(xTarg, yTarg, zTarg) )
+			AIR!=GetWorld()->GetBlock(xTarg, yTarg, zTarg)->Sub() )
 	{
 		if ( world->Move(attachedBlock->X(), attachedBlock->Y(),
 				attachedBlock->Z(), UP) )
@@ -60,7 +60,7 @@ void DeferredAction::Build() {
 	{ // build not successful
 		return;
 	} // else:
-	Inventory * const inv=attachedBlock->HasInventory();
+	Inventory * const inv = attachedBlock->HasInventory();
 	if ( !inv ) {
 		return;
 	} // else:
@@ -72,7 +72,7 @@ void DeferredAction::Build() {
 	for (ushort i=srcSlot+1; i<inv->Size() &&
 		inv->Number(srcSlot)<MAX_STACK_SIZE; ++i)
 	{
-		const Block * const block_i=inv->ShowBlock(i);
+		const Block * const block_i = inv->ShowBlock(i);
 		if ( block_i &&
 				kind==block_i->Kind() &&
 				sub ==block_i->Sub() )

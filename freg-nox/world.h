@@ -87,7 +87,7 @@ class World : public QThread {
 	void SetBlock(Block * block, ushort x, ushort y, ushort z);
 	/// Puts block to coordinates and not activates it.
 	void PutBlock(Block * block, ushort x, ushort y, ushort z);
-	static Block * Normal(int sub);
+	static Block * Normal(quint8 sub);
 	static Block * NewBlock(int kind, int sub);
 	static void DeleteBlock(Block * block);
 	Block * ReplaceWithNormal(Block * block) const;
@@ -222,7 +222,6 @@ class World : public QThread {
 	public:
 	// For more information, use World::GetBlock(x, y, z) and ->.
 	bool InBounds   (ushort x, ushort y, ushort z=0) const;
-	int  Sub        (ushort x, ushort y, ushort z) const;
 	int  Temperature(ushort x, ushort y, ushort z) const;
 
 	// World section
