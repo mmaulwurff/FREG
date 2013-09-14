@@ -59,42 +59,41 @@ World * Player::GetWorld() const { return world; }
 
 bool Player::GetCreativeMode() const { return creativeMode; }
 void Player::SetCreativeMode(const bool turn) {
-	creativeMode=turn;
+	creativeMode = turn;
 	disconnect(player, 0, 0, 0);
-	Active * const prev_player=player;
+	Active * const prev_player = player;
 	SetPlayer(x, y, z);
 	player->SetDir(prev_player->GetDir());
-	Inventory * const inv=PlayerInventory();
+	Inventory * const inv = PlayerInventory();
 	if ( inv ) {
 		inv->GetAll(prev_player->HasInventory());
 	}
 	if ( !creativeMode ) {
-		block_manager.DeleteBlock(prev_player);
+		prev_player->SetToDelete();
 	}
 	emit Updated();
 }
 
 int Player::UsingSelfType() const { return usingSelfType; }
 int Player::UsingType() const { return usingType; }
-void Player::SetUsingTypeNo() { usingType=USAGE_TYPE_NO; }
+void Player::SetUsingTypeNo() { usingType = USAGE_TYPE_NO; }
 
 Active * Player::GetP() const { return player; }
 
 short Player::HP() const {
 	return ( !player || creativeMode ) ?
-		-1 :
-		player ? player->Durability() : 0;
+		-1 : player ? player->Durability() : 0;
 }
 
 short Player::Breath() const {
 	if ( !player || creativeMode ) {
 		return -1;
 	}
-	Animal const * const animal=player->IsAnimal();
+	Animal const * const animal = player->IsAnimal();
 	return ( animal ? animal->Breath() : -1 );
 }
 ushort Player::BreathPercent() const {
-	const short breath=Breath();
+	const short breath = Breath();
 	return ( -1==breath ) ?
 		100 : breath*100/MAX_BREATH;
 }
@@ -103,11 +102,11 @@ short Player::Satiation() const {
 	if ( !player || creativeMode ) {
 		return -1;
 	}
-	Animal const * const animal=player->IsAnimal();
+	Animal const * const animal = player->IsAnimal();
 	return ( animal ? animal->Satiation() : -1 );
 }
 ushort Player::SatiationPercent() const {
-	const short satiation=Satiation();
+	const short satiation = Satiation();
 	return ( -1==satiation ) ?
 		50 : satiation*100/SECONDS_IN_DAY;
 }
@@ -137,8 +136,8 @@ void Player::Examine(const short i, const short j, const short k) const {
 	QReadLocker locker(world->GetLock());
 
 	emit Notify("------");
-	const Block * const block=world->GetBlock(i, j, k);
-	const int sub=block->Sub();
+	const Block * const block = world->GetBlock(i, j, k);
+	const int sub = block->Sub();
 	emit Notify( block->FullName() );
 	if ( creativeMode ) { //know more
 		emit Notify(tr(
@@ -152,7 +151,7 @@ void Player::Examine(const short i, const short j, const short k) const {
 	}
 	if ( AIR==sub || SKY==sub || SUN_MOON==sub ) {
 		return;
-	}
+	} // else:
 	QString str;
 	if ( "" != (str=block->GetNote()) ) {
 		emit Notify(tr("Inscription: ")+str);
@@ -168,7 +167,7 @@ void Player::Jump() {
 	if ( !player ) {
 		return;
 	}
-	usingType=USAGE_TYPE_NO;
+	usingType = USAGE_TYPE_NO;
 	if ( GetCreativeMode() ) {
 		if ( (UP==dir && z<HEIGHT-2) || (DOWN==dir && z>1) ) {
 			player->GetDeferredAction()->SetGhostMove();
@@ -192,16 +191,15 @@ void Player::StopUseAll() { usingType = usingSelfType = USAGE_TYPE_NO; }
 
 void Player::Backpack() {
 	if ( PlayerInventory() ) {
-		usingSelfType=( USAGE_TYPE_OPEN==usingSelfType ) ?
-			USAGE_TYPE_NO :
-			USAGE_TYPE_OPEN;
+		usingSelfType = ( USAGE_TYPE_OPEN==usingSelfType ) ?
+			USAGE_TYPE_NO : USAGE_TYPE_OPEN;
 	}
 }
 
 void Player::Use(const short x, const short y, const short z) {
 	QWriteLocker locker(world->GetLock());
-	const int us_type=world->GetBlock(x, y, z)->Use(player);
-	usingType=( us_type==usingType ) ? USAGE_TYPE_NO : us_type;
+	const int us_type = world->GetBlock(x, y, z)->Use(player);
+	usingType = ( us_type==usingType ) ? USAGE_TYPE_NO : us_type;
 }
 
 void Player::Inscribe(const short x, const short y, const short z) const {
@@ -216,22 +214,23 @@ Block * Player::ValidBlock(const ushort num) const {
 	if ( !player ) {
 		emit Notify("Player does not exist.");
 		return 0;
-	}
-	Inventory * const inv=player->HasInventory();
+	} // else:
+	Inventory * const inv = player->HasInventory();
 	if ( !inv ) {
 		emit Notify("Player has no inventory.");
 		return 0;
-	}
+	} // else:
 	if ( num>=inv->Size() ) {
 		emit Notify("No such place.");
 		return 0;
-	}
-	Block * const block=inv->ShowBlock(num);
+	} // else:
+	Block * const block = inv->ShowBlock(num);
 	if ( !block ) {
 		emit Notify("Nothing here.");
 		return 0;
+	} else {
+		return block;
 	}
-	return block;
 }
 
 void Player::Use(const ushort num) {
@@ -313,9 +312,9 @@ void Player::Inscribe(const ushort num) {
 
 void Player::Eat(const ushort num) {
 	QWriteLocker locker(world->GetLock());
-	Block * const food=ValidBlock(num);
+	Block * const food = ValidBlock(num);
 	if ( food ) {
-		Animal * const animal=player->IsAnimal();
+		Animal * const animal = player->IsAnimal();
 		if ( animal ) {
 			if ( animal->Eat(food->Sub()) ) {
 				PlayerInventory()->Pull(num);
@@ -476,7 +475,7 @@ const {
 
 int  Player::GetDir() const { return dir; }
 void Player::SetDir(const int direction) {
-	usingType=USAGE_TYPE_NO;
+	usingType = USAGE_TYPE_NO;
 	if ( player ) {
 		player->SetDir(direction);
 	}
@@ -498,14 +497,13 @@ const {
 
 int Player::DamageKind() const {
 	return creativeMode ?
-		TIME :
-		player ? player->DamageKind() : NO_HARM;
+		TIME : player ?
+			player->DamageKind() : NO_HARM;
 }
 
 ushort Player::DamageLevel() const {
 	return creativeMode ?
-		MAX_DURABILITY :
-		player ? player->DamageLevel() : 0;
+		MAX_DURABILITY : player ? player->DamageLevel() : 0;
 }
 
 void Player::CheckOverstep(const int direction) {
@@ -524,7 +522,7 @@ void Player::CheckOverstep(const int direction) {
 void Player::BlockDestroy() {
 	if ( cleaned ) {
 		return;
-	}
+	} // else:
 	emit Notify(tr("You died."));
 	usingType = USAGE_TYPE_NO;
 	usingSelfType = USAGE_TYPE_NO;
@@ -617,7 +615,7 @@ void Player::CleanAll() {
 	if ( cleaned ) {
 		return;
 	}
-	cleaned=true;
+	cleaned = true;
 
 	if ( creativeMode ) {
 		block_manager.DeleteBlock(player);
@@ -629,7 +627,7 @@ void Player::CleanAll() {
 	sett.beginGroup("player");
 	sett.setValue("home_longitude", qlonglong(homeLongi));
 	sett.setValue("home_latitude", qlonglong(homeLati));
-	const ushort min=world->NumShreds()/2*SHRED_WIDTH;
+	const ushort min = world->NumShreds()/2*SHRED_WIDTH;
 	sett.setValue("home_x", homeX-min);
 	sett.setValue("home_y", homeY-min);
 	sett.setValue("home_z", homeZ);
