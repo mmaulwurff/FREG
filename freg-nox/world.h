@@ -15,8 +15,7 @@
 	* GNU General Public License for more details.
 	*
 	* You should have received a copy of the GNU General Public License
-	* along with FREG. If not, see <http://www.gnu.org/licenses/>.
-	*/
+	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #ifndef WORLD_H
 #define WORLD_H
@@ -31,17 +30,16 @@ class ShredStorage;
 class QByteArray;
 class QReadWriteLock;
 
-const ushort SAFE_FALL_HEIGHT=5;
+const ushort SAFE_FALL_HEIGHT = 5;
 
-const uchar MOON_LIGHT_FACTOR=1;
-const uchar  SUN_LIGHT_FACTOR=8;
+const uchar MOON_LIGHT_FACTOR = 1;
+const uchar  SUN_LIGHT_FACTOR = 8;
 
 class World : public QThread {
 	/** \class World world.h
 	 * \brief World provides global physics and shred connection.
 	 *
-	 * Designed to be single.
-	 */
+	 * Designed to be single. */
 	Q_OBJECT
 
 	static const ushort TIME_STEPS_IN_SEC=10;
@@ -81,6 +79,7 @@ class World : public QThread {
 	public:
 	Block * GetBlock(ushort x, ushort y, ushort z) const;
 	Shred * GetShred(ushort i, ushort j) const;
+	static void DeleteBlock(Block * block);
 
 	private:
 	/// Puts block to coordinates xyz and activates it.
@@ -89,7 +88,6 @@ class World : public QThread {
 	void PutBlock(Block * block, ushort x, ushort y, ushort z);
 	static Block * Normal(quint8 sub);
 	static Block * NewBlock(int kind, int sub);
-	static void DeleteBlock(Block * block);
 	Block * ReplaceWithNormal(Block * block) const;
 
 	void MakeSun();
@@ -272,4 +270,4 @@ class World : public QThread {
 
 extern World * world;
 
-#endif
+#endif // WORLD_H

@@ -173,9 +173,11 @@ void Active::SetXYZ(const ushort x, const ushort y, const ushort z) {
 }
 
 void Active::SetToDelete() {
-	frozen = true;
-	GetShred()->AddToDelete(this);
-	emit Destroyed();
+	if ( !frozen ) {
+		frozen = true;
+		GetShred()->AddToDelete(this);
+		emit Destroyed();
+	}
 }
 bool Active::IsToDelete() const { return frozen; }
 

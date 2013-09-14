@@ -222,7 +222,7 @@ void World::DeleteBlock(Block * const block) {
 
 Block * World::ReplaceWithNormal(Block * const block) const {
 	if ( block!=Normal(block->Sub()) && *block==*Normal(block->Sub()) ) {
-		const int sub=block->Sub();
+		const int sub = block->Sub();
 		DeleteBlock(block);
 		return Normal(sub);
 	} else {

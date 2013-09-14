@@ -106,7 +106,7 @@ class Shred {
 	void UnregisterExternalActives();
 
 	bool LoadShred();
-	void SetBlockNoCheck(Block * block, ushort x, ushort y, ushort z);
+	void SetBlockNoCheck(Block *, ushort x, ushort y, ushort z);
 
 	QString FileName() const;
 
@@ -163,4 +163,4 @@ class Shred {
 	Shred * const memory;
 }; // class Shred
 
-#endif
+#endif // SHRED_H

@@ -26,6 +26,7 @@
 #include "Shred.h"
 #include "CraftManager.h"
 #include "BlockManager.h"
+#include "Xyz.h"
 
 // Block::
 	QString Block::FullName() const {
@@ -929,7 +930,7 @@
 						GetBlock(x, y, z)->Sub() )
 				{
 					world->Damage(x, y, z, MAX_DURABILITY,
-						EATEN);
+						BITE);
 					world->DestroyAndReplace(x, y, z);
 					Eat(GREENERY);
 					return;
@@ -1421,6 +1422,8 @@
 			: Animal(str, sub, id)
 	{}
 
+	int Predator::DamageKind() const { return BITE; }
+	ushort Predator::DamageLevel() const { return 10; }
 	quint8 Predator::Kind() const { return PREDATOR; }
 	QString Predator::FullName() const { return "Predator"; }
 	quint16 Predator::NutritionalValue(quint8 sub) const {
@@ -1428,6 +1431,28 @@
 	}
 
 	void Predator::DoFrequentAction() { Gravitate(5, 1, 2, 0, false); }
+	void Predator::DoRareAction() {
+		const Xyz coords[] = {
+			Xyz(X()-1, Y(), Z()),
+			Xyz(X()+1, Y(), Z()),
+			Xyz(X(), Y()-1, Z()),
+			Xyz(X(), Y()+1, Z()),
+			Xyz(X(), Y(), Z()-1),
+			Xyz(X(), Y(), Z()+1)
+		};
+		World * const world = GetWorld();
+		for (ushort i=0; i<6; ++i) {
+			if ( Attractive(world->GetBlock(
+					coords[i].GetX(), coords[i].GetY(),
+					coords[i].GetZ())->Sub()) )
+			{
+				world->Damage(coords[i].GetX(),
+					coords[i].GetY(), coords[i].GetZ(),
+					DamageLevel(), DamageKind());
+			}
+		}
+		Animal::DoRareAction();
+	}
 
 	short Predator::Attractive(int sub) const {
 		return ( ( H_MEAT==sub || A_MEAT==sub) ? 10 : 0 );

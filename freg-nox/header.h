@@ -92,7 +92,7 @@ enum damage_kinds {
 	ELECTRO, ///< 8
 	HUNGER,  ///< 9
 	BREATH,  ///< 10
-	EATEN,   ///< 11
+	BITE,    ///< 11
 	TIME,    ///< 12
 	NO_HARM, ///< 13
 	DAMAGE_FALL ///< 14

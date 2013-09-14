@@ -340,12 +340,15 @@ class Predator : public Animal {
 	Predator(int sub, quint16 id);
 	Predator(QDataStream & str, int sub, quint16 id);
 
+	int DamageKind() const;
+	ushort DamageLevel() const;
 	quint8 Kind() const;
 	QString FullName() const;
 	quint16 NutritionalValue(quint8 sub) const;
 
 	protected:
 	void DoFrequentAction();
+	void DoRareAction();
 	short Attractive(int sub) const;
 };
 

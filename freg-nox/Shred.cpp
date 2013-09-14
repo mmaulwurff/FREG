@@ -223,7 +223,7 @@ void Shred::DeleteDestroyedActives() {
 			i != deleteList.end(); i = deleteList.erase(i))
 	{
 		Unregister(*i);
-		delete *i;
+		block_manager.DeleteBlock(*i);
 	}
 }
 
@@ -232,7 +232,7 @@ void Shred::PhysEventsRare() {
 				activeListRare.constBegin();
 			i != activeListRare.constEnd(); ++i)
 	{
-		if ( (*i)->GetShred()==this  ) {
+		if ( (*i)->GetShred() == this  ) {
 			(*i)->ActRare();
 			GetWorld()->DestroyAndReplace((*i)->X(), (*i)->Y(),
 				(*i)->Z());
@@ -357,12 +357,10 @@ void Shred::SetBlock(Block * const block,
 		const ushort x, const ushort y, const ushort z)
 {
 	Block * const to_delete = GetBlock(x, y, z);
-	Active * const active = to_delete->ActiveBlock();
-	if ( active ) {
-		Unregister(active);
+	if ( to_delete != block ) {
+		World::DeleteBlock(to_delete);
+		SetBlockNoCheck(block, x, y, z);
 	}
-	block_manager.DeleteBlock(to_delete);
-	SetBlockNoCheck(block, x, y, z);
 }
 
 void Shred::SetBlockNoCheck(Block * const block,
@@ -595,7 +593,7 @@ bool Shred::Tree(const ushort x, const ushort y, const ushort z,
 		PutBlock(Normal(WOOD), x+1, y+1, k);
 	}
 	if ( ENVIRONMENT==GetBlock(x+1, y+1, z-1)->Movable() ) {
-		block_manager.DeleteBlock(blocks[x+1][y+1][z-1]);
+		World::DeleteBlock(blocks[x+1][y+1][z-1]);
 		PutBlock(Normal(WOOD), x+1, y+1, z-1);
 	}
 	// branches
