@@ -242,7 +242,7 @@ color_pairs Screen::Color(const int kind, const int sub) const {
 		case SKY: case STAR: switch ( w->PartOfDay() ) {
 			case NIGHT:   return WHITE_BLACK;
 			case MORNING: return WHITE_BLUE;
-			case NOON:    return  CYAN_CYAN;
+			case NOON:    return BLACK_CYAN;
 			case EVENING: return WHITE_CYAN;
 			}
 		default: return WHITE_BLACK;
@@ -435,7 +435,7 @@ const {
 }
 
 void Screen::Print() {
-	if ( !player ) {
+	if ( !player->GetP() ) {
 		return;
 	}
 	w->ReadLock();
