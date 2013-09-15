@@ -831,11 +831,11 @@ bool Screen::PrintFile(WINDOW * const window, QString const & file_name) {
 void Screen::Notify(const QString & str) const {
 	fputs(qPrintable(QString("%1 %2\n").arg(w->TimeOfDayStr()).arg(str)),
 		notifyLog);
-	if ( str == SOUND_STRINGS[0] ) {
+	if ( str == DING ) {
 		if ( beepOn ) {
 			beep();
 		}
-	} else if ( str == SOUND_STRINGS[1] /* "Ouch!" */ ) {
+	} else if ( str == OUCH ) {
 		if ( beepOn ) {
 			flash();
 		}

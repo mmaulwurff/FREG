@@ -15,8 +15,7 @@
 	* GNU General Public License for more details.
 	*
 	* You should have received a copy of the GNU General Public License
-	* along with FREG. If not, see <http://www.gnu.org/licenses/>.
-	*/
+	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #ifndef BLOCK_H
 #define BLOCK_H
@@ -28,6 +27,8 @@ const QString SOUND_STRINGS[] = {
 	"Ding!",
 	"Ouch!"
 };
+const QString DING = SOUND_STRINGS[0];
+const QString OUCH = SOUND_STRINGS[1];
 
 enum before_push_action {
 	NO_ACTION,
@@ -76,8 +77,7 @@ class Block { // blocks without special physics and attributes
 	virtual usage_types Use(Block * who=0);
 	/// Usually returns new block of the same kind and sub (except glass).
 	/** When reimplemented in derivatives, inside it you can create a pile,
-	 *  put several blocks in it, and return pile.
-	 */
+	 *  put several blocks in it, and return pile. */
 	virtual Block * DropAfterDamage() const;
 
 	virtual Inventory * HasInventory();
@@ -121,4 +121,4 @@ class Block { // blocks without special physics and attributes
 	static quint16 IdFromKindSub(quint16 id, quint8 sub);
 }; // class Block
 
-#endif
+#endif // BLOCK_H
