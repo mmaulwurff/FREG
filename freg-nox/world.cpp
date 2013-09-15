@@ -629,7 +629,6 @@ void World::Damage(const ushort x, const ushort y, const ushort z,
 		SetBlock((temp=NewBlock(temp->Kind(), temp->Sub())), x, y, z);
 	}
 	if ( temp->Damage(dmg, dmg_kind) > 0 ) {
-		temp->ReceiveSignal(SOUND_STRINGS[1]); // "Ouch!"
 		if ( block_manager.MakeId(BLOCK, STONE)==temp->GetId() &&
 				temp->Durability()!=MAX_DURABILITY )
 		{ // convert stone into ladder

@@ -1393,7 +1393,7 @@
 	{
 		str >> longiStart >> latiStart >> savedShift >> savedChar;
 	}
-// Bell:
+// Bell::
 	quint8 Bell::Kind() const { return BELL; }
 	QString Bell::FullName() const { return tr("Bell."); }
 
@@ -1414,7 +1414,7 @@
 	Bell::Bell(QDataStream & str, const int sub, const quint16 id) :
 			Active(str, sub, id)
 	{}
-// Predator:
+// Predator::
 	Predator::Predator(const int sub, const quint16 id) :
 			Animal(sub, id)
 	{}
@@ -1442,12 +1442,13 @@
 		};
 		World * const world = GetWorld();
 		for (ushort i=0; i<6; ++i) {
-			if ( Attractive(world->GetBlock(
-					coords[i].GetX(), coords[i].GetY(),
-					coords[i].GetZ())->Sub()) )
-			{
-				world->Damage(coords[i].GetX(),
-					coords[i].GetY(), coords[i].GetZ(),
+			const ushort x = coords[i].GetX();
+			const ushort y = coords[i].GetY();
+			const ushort z = coords[i].GetZ();
+			if ( Attractive(world->GetBlock(x, y, z)->Sub()) ) {
+				world->GetBlock(x, y, z)->ReceiveSignal(
+					tr("Predator bites you!"));
+				world->Damage(x, y, z,
 					DamageLevel(), DamageKind());
 			}
 		}

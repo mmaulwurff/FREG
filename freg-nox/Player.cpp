@@ -520,16 +520,12 @@ void Player::CheckOverstep(const int direction) {
 }
 
 void Player::BlockDestroy() {
-	if ( cleaned ) {
-		return;
-	} // else:
-	emit Notify(tr("You died."));
-	usingType = USAGE_TYPE_NO;
-	usingSelfType = USAGE_TYPE_NO;
-
-	emit Destroyed();
-	player = 0;
-	world->ReloadAllShreds(homeLati, homeLongi, homeX, homeY, homeZ);
+	if ( !cleaned ) {
+		usingType = usingSelfType = USAGE_TYPE_NO;
+		emit Destroyed();
+		player = 0;
+		world->ReloadAllShreds(homeLati, homeLongi, homeX,homeY,homeZ);
+	}
 }
 
 void Player::SetPlayer(const ushort _x, const ushort _y, const ushort _z) {

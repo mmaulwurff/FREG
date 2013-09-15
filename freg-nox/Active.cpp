@@ -131,6 +131,7 @@ World * Active::GetWorld() const { return world; }
 int Active::Damage(const ushort dmg, const int dmg_kind) {
 	const int last_dur = durability;
 	Block::Damage(dmg, dmg_kind);
+	ReceiveSignal(SOUND_STRINGS[1]); // "Ouch!"
 	if ( last_dur != durability ) {
 		switch ( dmg_kind ) {
 		case HUNGER:
@@ -176,6 +177,7 @@ void Active::SetToDelete() {
 	if ( !frozen ) {
 		frozen = true;
 		GetShred()->AddToDelete(this);
+		ReceiveSignal(tr("You die."));
 		emit Destroyed();
 	}
 }
