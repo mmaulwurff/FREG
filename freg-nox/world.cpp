@@ -220,16 +220,6 @@ void World::DeleteBlock(Block * const block) {
 	}
 }
 
-Block * World::ReplaceWithNormal(Block * const block) const {
-	if ( block!=Normal(block->Sub()) && *block==*Normal(block->Sub()) ) {
-		const int sub = block->Sub();
-		DeleteBlock(block);
-		return Normal(sub);
-	} else {
-		return block;
-	}
-}
-
 quint8 World::Anti(const quint8 dir) {
 	switch ( dir ) {
 	case NORTH: return SOUTH;
@@ -626,24 +616,24 @@ void World::Damage(const ushort x, const ushort y, const ushort z,
 {
 	Block * temp = GetBlock(x, y, z);
 	if ( temp==Normal(temp->Sub()) && AIR!=temp->Sub() ) {
-		SetBlock((temp=NewBlock(temp->Kind(), temp->Sub())), x, y, z);
+		temp = NewBlock(temp->Kind(), temp->Sub());
 	}
-	if ( temp->Damage(dmg, dmg_kind) > 0 ) {
+	temp->Damage(dmg, dmg_kind);
+	if ( temp->GetDurability() > 0 ) {
 		if ( block_manager.MakeId(BLOCK, STONE)==temp->GetId() &&
-				temp->Durability()!=MAX_DURABILITY )
+				temp->GetDurability()!=MAX_DURABILITY )
 		{ // convert stone into ladder
 			DeleteBlock(temp);
-			SetBlock(NewBlock(LADDER, STONE), x, y, z);
+			temp = NewBlock(LADDER, STONE);
 			emit ReEnlighten(x, y, z);
-		} else {
-			SetBlock(ReplaceWithNormal(temp), x, y, z);
 		}
 	}
+	SetBlock(temp, x, y, z);
 }
 
 void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
 	Block * const temp = GetBlock(x, y, z);
-	if ( temp->Durability() > 0 ) {
+	if ( temp->GetDurability() > 0 ) {
 		return;
 	}
 	Block * const dropped = temp->DropAfterDamage();
@@ -695,7 +685,6 @@ bool World::Build(Block * block,
 	DeleteBlock(target_block);
 	block->Restore();
 	block->SetDir(dir);
-	block = ReplaceWithNormal(block);
 	SetBlock(block, x, y, z);
 	if ( old_transparency != block->Transparent() ) {
 		ReEnlightenBlockAdd(x, y, z);
@@ -720,7 +709,7 @@ bool World::Inscribe(const ushort x, const ushort y, const ushort z) {
 	if ( block->Inscribe(str) ) {
 		return true;
 	} else {
-		SetBlock(ReplaceWithNormal(block), x, y, z);
+		SetBlock(block, x, y, z);
 		return false;
 	}
 }

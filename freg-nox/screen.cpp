@@ -501,9 +501,6 @@ void Screen::Print() {
 		}
 	}
 	w->Unlock();
-	mutex->lock();
-	doupdate();
-	mutex->unlock();
 } // void Screen::Print()
 
 void Screen::PrintHUD() {
@@ -589,7 +586,7 @@ void Screen::PrintHUD() {
 			}
 		}
 	}
-	wnoutrefresh(hudWin);
+	wrefresh(hudWin);
 } // void Screen::PrintHUD()
 
 void Screen::PrintNormal(WINDOW * const window, const int dir) const {
@@ -627,7 +624,7 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
 	mvwaddstr(window, 0, 1, (UP==dir) ?
 		". Up ." : "x Ground x");
 	Arrows(window, (player->X()-start_x)*2+1, player->Y()-start_y+1, true);
-	wnoutrefresh(window);
+	wrefresh(window);
 } // void Screen::PrintNormal(WINDOW * window, int dir)
 
 void Screen::PrintFront(WINDOW * const window) const {
@@ -755,7 +752,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 		}
 	}
 	Arrows(window, arrow_X, arrow_Y);
-	wnoutrefresh(window);
+	wrefresh(window);
 } // void Screen::PrintFront(WINDOW * window)
 
 void Screen::PrintInv(WINDOW * const window, const Inventory * const inv)
@@ -802,7 +799,7 @@ const {
 		CharName(inv->Kind(), inv->Sub()),
 		( player->PlayerInventory()==inv ) ?
 			"Your inventory" : qPrintable(inv->FullName()));
-	wnoutrefresh(window);
+	wrefresh(window);
 } // void Screen::PrintInv(WINDOW * window, const Inventory * inv)
 
 void Screen::PrintText(WINDOW * const window, QString const & str) const {

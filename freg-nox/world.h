@@ -88,7 +88,6 @@ class World : public QThread {
 	void PutBlock(Block * block, ushort x, ushort y, ushort z);
 	static Block * Normal(quint8 sub);
 	static Block * NewBlock(int kind, int sub);
-	Block * ReplaceWithNormal(Block * block) const;
 
 	void MakeSun();
 	void RemSun();

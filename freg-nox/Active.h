@@ -15,8 +15,7 @@
 	* GNU General Public License for more details.
 	*
 	* You should have received a copy of the GNU General Public License
-	* along with FREG. If not, see <http://www.gnu.org/licenses/>.
-	*/
+	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #ifndef ACTIVE_H
 #define ACTIVE_H
@@ -68,7 +67,7 @@ class Active : public QObject, public Block {
 	DeferredAction * GetDeferredAction() const;
 
 	int Movable() const;
-	int Damage(ushort dmg, int dmg_kind);
+	void Damage(ushort dmg, int dmg_kind);
 	void ReceiveSignal(const QString &);
 
 	void ReloadToNorth();
@@ -113,4 +112,4 @@ class Active : public QObject, public Block {
 	Shred * shred;
 }; // class Active
 
-#endif
+#endif // ACTIVE_H

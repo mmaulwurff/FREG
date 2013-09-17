@@ -128,11 +128,11 @@ void Active::SetShred(Shred * const new_shred) { shred = new_shred; }
 Shred * Active::GetShred() const { return shred; }
 World * Active::GetWorld() const { return world; }
 
-int Active::Damage(const ushort dmg, const int dmg_kind) {
+void Active::Damage(const ushort dmg, const int dmg_kind) {
 	const int last_dur = durability;
 	Block::Damage(dmg, dmg_kind);
-	ReceiveSignal(OUCH);
 	if ( last_dur != durability ) {
+		ReceiveSignal(OUCH);
 		switch ( dmg_kind ) {
 		case HUNGER:
 			ReceiveSignal(tr("You faint from hunger!"));
@@ -153,7 +153,6 @@ int Active::Damage(const ushort dmg, const int dmg_kind) {
 		}
 		emit Updated();
 	}
-	return durability;
 }
 
 void Active::ReceiveSignal(const QString & str) { emit ReceivedText(str); }

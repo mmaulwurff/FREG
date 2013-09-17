@@ -353,12 +353,13 @@ Block * Shred::GetBlock(const ushort x, const ushort y, const ushort z) const {
 	return blocks[x][y][z];
 }
 
-void Shred::SetBlock(Block * const block,
+void Shred::SetBlock(Block * block,
 		const ushort x, const ushort y, const ushort z)
 {
 	Block * const to_delete = GetBlock(x, y, z);
 	if ( to_delete != block ) {
 		World::DeleteBlock(to_delete);
+		block = block_manager.ReplaceWithNormal(block);
 		SetBlockNoCheck(block, x, y, z);
 	}
 }

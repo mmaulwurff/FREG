@@ -15,8 +15,7 @@
 	* GNU General Public License for more details.
 	*
 	* You should have received a copy of the GNU General Public License
-	* along with FREG. If not, see <http://www.gnu.org/licenses/>.
-	*/
+	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #ifndef BLOCKMANAGER_H
 #define BLOCKMANAGER_H
@@ -55,6 +54,10 @@ class BlockManager {
 	bool KindSubFromFile(QDataStream &, quint8 & kind, quint8 & sub) const;
 	/// Use this to safely delete block.
 	void DeleteBlock(Block * block) const;
+	/// For memory economy.
+	/** Checks and replaces block with corresponding normal block.
+	 *  Can delete block, use carefully. */
+	Block * ReplaceWithNormal(Block * block) const;
 
 	static QString KindToString(quint8 kind);
 	static QString SubToString(quint8 sub);
@@ -77,4 +80,4 @@ class BlockManager {
 
 extern BlockManager block_manager;
 
-#endif
+#endif // BLOCKMANAGER_H

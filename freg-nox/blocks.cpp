@@ -70,19 +70,20 @@
 		}
 	}
 
-	int Block::Damage(const ushort dmg, const int dmg_kind) {
+	void Block::Damage(const ushort dmg, const int dmg_kind) {
 		ushort mult = 1;
 		switch ( Sub() ) {
 		case DIFFERENT:
 			if ( TIME == dmg_kind ) {
-				return durability=0;
+				durability = 0;
+				return;
 			}
 			// no break
 		case NULLSTONE:
 		case STAR:
 		case AIR:
 		case SKY:
-		case SUN_MOON: mult=0; break;
+		case SUN_MOON: return;
 		case WATER: mult=( HEAT==dmg_kind || TIME==dmg_kind ); break;
 		case MOSS_STONE:
 		case STONE:
@@ -92,16 +93,16 @@
 			}
 			break;
 		case GREENERY:
-		case GLASS: return durability = 0;
+		case GLASS: durability = 0; return;
 		case ROSE:
 		case HAZELNUT:
-		case WOOD: mult = 1+(CUT==dmg_kind); break;
+		case WOOD: ++(mult = (CUT==dmg_kind)); break;
 		case SAND:
-		case SOIL: mult = 1+(DIG==dmg_kind); break;
+		case SOIL: ++(mult = (DIG==dmg_kind)); break;
 		case A_MEAT:
-		case H_MEAT: mult = 1+(THRUST==dmg_kind); break;
+		case H_MEAT: ++(mult = (THRUST==dmg_kind)); break;
 		}
-		return durability -= mult*dmg;
+		durability -= mult*dmg;
 	}
 
 	Block * Block::DropAfterDamage() const {
@@ -148,7 +149,7 @@
 	int  Block::GetDir() const { return direction; }
 	int  Block::Sub() const { return sub; }
 	int  Block::Transparent() const { return transparent; }
-	short Block::Durability() const { return durability; }
+	short Block::GetDurability() const { return durability; }
 	QString Block::GetNote() const { return note ? *note : ""; }
 
 	int Block::Temperature() const {
@@ -189,10 +190,9 @@
 	}
 
 	bool Block::operator==(const Block & block) const {
-		return ( block.Kind()==Kind() &&
-			block.Sub()==Sub() &&
+		return ( block.GetId()==GetId() &&
 			block.GetDir()==GetDir() &&
-			block.Durability()==Durability() &&
+			block.GetDurability()==GetDurability() &&
 			( (!note && !block.note) ||
 				(note && block.note && *block.note==*note) ) );
 	}
@@ -274,10 +274,10 @@
 	}
 	}
 
-	quint8 Ladder::Kind() const { return LADDER; }
 	int  Ladder::BeforePush(const int, Block * const) { return MOVE_UP; }
 	bool Ladder::Catchable() const { return true; }
 	ushort Ladder::Weight() const { return Block::Weight()*3; }
+	quint8 Ladder::Kind() const { return LADDER; }
 
 	Block * Ladder::DropAfterDamage() const {
 		return ( STONE==Sub() ) ?
@@ -720,7 +720,7 @@
 
 	void Pile::DoRareAction() {
 		if ( IsEmpty() ) {
-			Damage(Durability(), TIME);
+			Damage(GetDurability(), TIME);
 		}
 	}
 

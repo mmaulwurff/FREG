@@ -73,7 +73,7 @@ class Block { // blocks without special physics and attributes
 	virtual bool Inscribe(const QString & str);
 	virtual int  BeforePush(int dir, Block * who);
 	virtual bool Move(int direction);
-	virtual int  Damage(ushort dmg, int dmg_kind);
+	virtual void  Damage(ushort dmg, int dmg_kind);
 	virtual usage_types Use(Block * who=0);
 	/// Usually returns new block of the same kind and sub (except glass).
 	/** When reimplemented in derivatives, inside it you can create a pile,
@@ -105,7 +105,7 @@ class Block { // blocks without special physics and attributes
 
 	int GetDir() const;
 	int Sub() const;
-	short Durability() const;
+	short GetDurability() const;
 	QString GetNote() const;
 	int Transparent() const;
 

@@ -204,6 +204,17 @@ quint8 BlockManager::StringToSub(const QString & str) {
 	return i;
 }
 
+Block * BlockManager::ReplaceWithNormal(Block * const block) const {
+	const int sub = block->Sub();
+	Block * const normal = block_manager.NormalBlock(sub);
+	if ( block!=normal && *block==*normal ) {
+		DeleteBlock(block);
+		return normal;
+	} else {
+		return block;
+	}
+}
+
 template <typename Thing>
 Thing * BlockManager::New(const quint8 sub, const quint16 id) const {
 	return new Thing(sub, id);

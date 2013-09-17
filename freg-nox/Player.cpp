@@ -82,7 +82,7 @@ Active * Player::GetP() const { return player; }
 
 short Player::HP() const {
 	return ( !player || creativeMode ) ?
-		-1 : player ? player->Durability() : 0;
+		-1 : player ? player->GetDurability() : 0;
 }
 
 short Player::Breath() const {
@@ -158,7 +158,7 @@ void Player::Examine(const short i, const short j, const short k) const {
 	}
 	emit Notify(tr("Temperature: %1. Durability: %2. Weight: %3. Id: %4.").
 		arg(world->Temperature(i, j, k)).
-		arg(block->Durability()).
+		arg(block->GetDurability()).
 		arg(block->Weight()).
 		arg(block->GetId()));
 }
@@ -483,12 +483,9 @@ void Player::SetDir(const int direction) {
 	emit Updated();
 }
 
-bool Player::Damage(const short x_target, const short y_target,
-		const short z_target)
-const {
-	if ( GetWorld()->InBounds(x_target, y_target, z_target) ) {
-		player->GetDeferredAction()->SetDamage(
-			x_target, y_target, z_target);
+bool Player::Damage(const short x, const short y, const short z) const {
+	if ( GetWorld()->InBounds(x, y, z) ) {
+		player->GetDeferredAction()->SetDamage(x, y, z);
 		return true;
 	} else {
 		return false;
