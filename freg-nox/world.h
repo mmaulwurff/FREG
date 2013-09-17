@@ -194,11 +194,10 @@ class World : public QThread {
 	public:
 	void Damage(ushort x, ushort y, ushort z, ushort level, int dmg_kind);
 	void DestroyAndReplace(ushort x, ushort y, ushort z);
-	bool Build(Block * thing,
-			ushort x, ushort y, ushort z,
-			quint8 dir=UP,
-			Block * who=0,
-			bool anyway=false);
+	bool Build(Block * thing, ushort x, ushort y, ushort z,
+			quint8 dir = UP,
+			Block * who = 0,
+			bool anyway = false);
 	/// Returns true on success. Gets a string and inscribes block.
 	bool Inscribe(ushort x, ushort y, ushort z);
 

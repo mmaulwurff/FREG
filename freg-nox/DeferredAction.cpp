@@ -15,8 +15,7 @@
 	* GNU General Public License for more details.
 	*
 	* You should have received a copy of the GNU General Public License
-	* along with FREG. If not, see <http://www.gnu.org/licenses/>.
-	*/
+	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "world.h"
 #include "Active.h"
@@ -52,8 +51,7 @@ void DeferredAction::Build() {
 			return;
 		}
 	}
-	const int kind = material->Kind();
-	const int sub  = material->Sub();
+	const quint16 id = material->GetId();
 	if ( !world->Build(material, xTarg, yTarg, zTarg,
 			World::TurnRight(attachedBlock->GetDir()),
 			attachedBlock) )
@@ -73,10 +71,7 @@ void DeferredAction::Build() {
 		inv->Number(srcSlot)<MAX_STACK_SIZE; ++i)
 	{
 		const Block * const block_i = inv->ShowBlock(i);
-		if ( block_i &&
-				kind==block_i->Kind() &&
-				sub ==block_i->Sub() )
-		{
+		if ( block_i && id==block_i->GetId() ) {
 			inv->MoveInside(i, srcSlot, inv->Number(i));
 		}
 	}

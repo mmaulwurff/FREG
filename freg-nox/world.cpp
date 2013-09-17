@@ -15,8 +15,7 @@
 	* GNU General Public License for more details.
 	*
 	* You should have received a copy of the GNU General Public License
-	* along with FREG. If not, see <http://www.gnu.org/licenses/>.
-	*/
+	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include <QTimer>
 #include <QDir>
@@ -94,10 +93,10 @@ void World::Drop(Block * const block_from,
 		const ushort src, const ushort dest, const ushort num)
 {
 	Block * block_to=GetBlock(x_to, y_to, z_to);
-	if ( AIR==block_to->Sub() ) {
+	if ( AIR == block_to->Sub() ) {
 		SetBlock((block_to=NewBlock(PILE, DIFFERENT)),
 			x_to, y_to, z_to);
-	} else if ( WATER==block_to->Sub() ) {
+	} else if ( WATER == block_to->Sub() ) {
 		Block * const pile = NewBlock(PILE, DIFFERENT);
 		SetBlock(pile, x_to, y_to, z_to);
 		pile->HasInventory()->Get(block_to);
@@ -685,11 +684,12 @@ bool World::Build(Block * block,
 	DeleteBlock(target_block);
 	block->Restore();
 	block->SetDir(dir);
+	const int new_transparency = block->Transparent();
+	const uchar block_light = block->LightRadius();
 	SetBlock(block, x, y, z);
-	if ( old_transparency != block->Transparent() ) {
+	if ( old_transparency != new_transparency ) {
 		ReEnlightenBlockAdd(x, y, z);
 	}
-	const uchar block_light = block->LightRadius();
 	if ( block_light ) {
 		AddFireLight(x, y, z, block_light);
 	}
@@ -697,21 +697,18 @@ bool World::Build(Block * block,
 }
 
 bool World::Inscribe(const ushort x, const ushort y, const ushort z) {
-	Block * block=GetBlock(x, y, z);
+	Block * block = GetBlock(x, y, z);
 	if ( LIQUID==block->Kind() || AIR==block->Sub() ) {
 		return false;
-	}
+	} // else:
 	if ( block==Normal(block->Sub()) ) {
-		SetBlock(block=NewBlock(block->Kind(), block->Sub()), x, y, z);
+		block = NewBlock(block->Kind(), block->Sub());
 	}
-	QString str=tr("No note received.");
+	QString str = tr("No note received.");
 	emit GetString(str);
-	if ( block->Inscribe(str) ) {
-		return true;
-	} else {
-		SetBlock(block, x, y, z);
-		return false;
-	}
+	const bool ok_flag = block->Inscribe(str);
+	SetBlock(block, x, y, z);
+	return ok_flag;
 }
 
 void World::Exchange(Block * const block_from, Block * const block_to,
@@ -769,11 +766,8 @@ int World::Temperature(const ushort x, const ushort y, const ushort z) const {
 }
 
 void World::RemSun() {
-	SetBlock(
-		Normal(ifStar ? STAR : SKY),
-		sun_moon_x,
-		SHRED_WIDTH*numShreds/2,
-		HEIGHT-1);
+	PutBlock(Normal(ifStar ? STAR : SKY),
+		sun_moon_x, SHRED_WIDTH*numShreds/2, HEIGHT-1);
 }
 
 void World::LoadAllShreds() {
