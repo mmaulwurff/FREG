@@ -391,6 +391,7 @@
 	ushort Animal::Breath() const { return breath; }
 	ushort Animal::Satiation() const { return satiation; }
 	Animal * Animal::IsAnimal() { return this; }
+	int Animal::DamageKind() const { return BITE; }
 
 	bool Animal::Eat(const int sub) {
 		const int value = NutritionalValue(sub);
@@ -411,6 +412,22 @@
 	void Animal::SaveAttributes(QDataStream & out) const {
 		Active::SaveAttributes(out);
 		out << breath << satiation;
+	}
+
+	void Animal::EatGrass() {
+		for (ushort x=X()-1; x<=X()+1; ++x)
+		for (ushort y=Y()-1; y<=Y()+1; ++y) {
+			if ( world->InBounds(x, y) &&
+					GREENERY==world->
+						GetBlock(x, y, Z())->Sub() )
+			{
+				world->Damage(x, y, Z(), DamageLevel(),
+					DamageKind());
+				world->DestroyAndReplace(x, y, Z());
+				Eat(GREENERY);
+				return;
+			}
+		}
 	}
 
 	Animal::Animal(const int sub, const quint16 id) :
@@ -928,20 +945,7 @@
 		// eat sometimes
 		World * const world = GetWorld();
 		if ( SECONDS_IN_DAY/2 > Satiation() ) {
-			for (ushort x=X()-1; x<=X()+1; ++x)
-			for (ushort y=Y()-1; y<=Y()+1; ++y)
-			for (ushort z=Z();   z<=Z()+1; ++z) {
-				if ( world->InBounds(x, y) &&
-						GREENERY==world->
-						GetBlock(x, y, z)->Sub() )
-				{
-					world->Damage(x, y, z, MAX_DURABILITY,
-						BITE);
-					world->DestroyAndReplace(x, y, z);
-					Eat(GREENERY);
-					return;
-				}
-			}
+			EatGrass();
 		}
 		// random movement
 		switch ( qrand()%60 ) {
@@ -1428,7 +1432,6 @@
 			: Animal(str, sub, id)
 	{}
 
-	int Predator::DamageKind() const { return BITE; }
 	ushort Predator::DamageLevel() const { return 10; }
 	quint8 Predator::Kind() const { return PREDATOR; }
 	QString Predator::FullName() const { return "Predator"; }
@@ -1451,16 +1454,26 @@
 			const ushort x = coords[i].GetX();
 			const ushort y = coords[i].GetY();
 			const ushort z = coords[i].GetZ();
-			if ( Attractive(world->GetBlock(x, y, z)->Sub()) ) {
+			Block * const block = world->GetBlock(x, y, z);
+			if ( Attractive(block->Sub()) ) {
 				world->GetBlock(x, y, z)->ReceiveSignal(
 					tr("Predator bites you!"));
 				world->Damage(x, y, z,
 					DamageLevel(), DamageKind());
+				Eat(block->Sub());
 			}
+		}
+		if ( SECONDS_IN_DAY/4 > Satiation() ) {
+			EatGrass();
 		}
 		Animal::DoRareAction();
 	}
 
 	short Predator::Attractive(int sub) const {
-		return ( ( H_MEAT==sub || A_MEAT==sub) ? 10 : 0 );
+		switch ( sub ) {
+		default: return 0;
+		case A_MEAT:
+		case H_MEAT: return 10;
+		case GRASS:  return  1;
+		}
 	}

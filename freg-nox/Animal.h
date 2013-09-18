@@ -15,8 +15,7 @@
 	* GNU General Public License for more details.
 	*
 	* You should have received a copy of the GNU General Public License
-	* along with FREG. If not, see <http://www.gnu.org/licenses/>.
-	*/
+	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #ifndef ANIMAL_H
 #define ANIMAL_H
@@ -26,15 +25,16 @@
 class Animal : public Active {
 	Q_OBJECT
 
-	quint8 breath;
-	quint16 satiation;
-
 	public:
+	Animal(int sub, quint16 id);
+	Animal(QDataStream & str, int sub, quint16 id);
+
 	void DoRareAction();
 	int  ShouldAct() const;
 	QString FullName() const=0;
 	Animal * IsAnimal();
 
+	int DamageKind() const;
 	ushort Breath() const;
 	ushort Satiation() const;
 	bool Eat(int sub);
@@ -42,10 +42,11 @@ class Animal : public Active {
 
 	protected:
 	void SaveAttributes(QDataStream & out) const;
+	void EatGrass();
 
-	public:
-	Animal(int sub, quint16 id);
-	Animal(QDataStream & str, int sub, quint16 id);
+	private:
+	quint8 breath;
+	quint16 satiation;
 }; // class Animal
 
-#endif
+#endif // ANIMAL_H
