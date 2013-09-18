@@ -15,60 +15,39 @@
 	* GNU General Public License for more details.
 	*
 	* You should have received a copy of the GNU General Public License
-	* along with FREG. If not, see <http://www.gnu.org/licenses/>.
-	*/
+	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include <QFile>
 #include <QString>
 #include <qmath.h>
+#include <QProcess>
+#include <QStringList>
 #include "worldmap.h"
 #include "header.h"
-
-#ifdef QT_OS_WIN23
-	const int END_OF_LINE_SHIFT=2;
-#else
-	const int END_OF_LINE_SHIFT=1;
-#endif
 
 WorldMap::WorldMap(const QString * const world_name) {
 	map = new QFile(*world_name+"/map.txt");
 	if ( map->open(QIODevice::ReadOnly | QIODevice::Text) ) {
-		mapSize=int(qSqrt(1+4*map->size())-1)/2;
+		mapSize = int(qSqrt(1+4*map->size())-1)/2;
 	} else {
-		const ushort max_command_length=50;
-		char command[max_command_length];
-		const ushort map_size=75;
 		#ifdef Q_OS_LINUX
-			snprintf(command,
-				max_command_length,
-				"./mapgen -s %hu -r %d -f %s",
-				map_size,
-				qrand(),
-				qPrintable(*world_name+"/map.txt"));
+		QString program = "./mapgen";
+		#else
+		QString program = "mapgen.exe";
 		#endif
-		#ifdef Q_OS_WIN32
-			#ifdef Q_CC_MSVC
-			sprintf_s(command,
-				max_command_length,
-				"mapgen.exe -s %hu -r %d -f %s",
-				map_size,
-				qrand(),
-				qPrintable(*world_name+"/map.txt"));
-			#else
-			snprintf(command,
-				max_command_length,
-				"mapgen.exe -s %hu -r %d -f %s",
-				map_size,
-				qrand(),
-				qPrintable(*world_name+"/map.txt"));
-			#endif
-		#endif
-		system(command);
-		if ( map->open(QIODevice::ReadOnly | QIODevice::Text) ) {
-			mapSize=map_size;
-		} else {
-			mapSize=1;
+		const ushort map_size = 75;
+		QStringList arguments;
+		arguments << QString("-s") << QString::number(map_size) <<
+			QString("-r") << QString::number(qrand()) <<
+			QString("-f") << *world_name+"/map.txt";
+		QProcess map_generation;
+		map_generation.start(program, arguments);
+		if ( map_generation.waitForStarted() ) {
+			fprintf(stderr, "hello map\n");
+			map_generation.waitForFinished();
 		}
+		mapSize = ( map->open(QIODevice::ReadOnly | QIODevice::Text) ) ?
+			map_size : 1;
 	}
 }
 

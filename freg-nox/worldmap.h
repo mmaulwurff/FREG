@@ -15,8 +15,7 @@
 	* GNU General Public License for more details.
 	*
 	* You should have received a copy of the GNU General Public License
-	* along with FREG. If not, see <http://www.gnu.org/licenses/>.
-	*/
+	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #ifndef WORLDMAP_H
 #define WORLDMAP_H
@@ -37,4 +36,4 @@ class WorldMap {
 	QFile * map;
 }; // class WorldMap
 
-#endif
+#endif // WORLDMAP_H
