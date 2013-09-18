@@ -31,22 +31,22 @@
 #define Q_UNLIKELY
 #endif
 
-const ushort SHRED_WIDTH=16;
-const ushort HEIGHT=128;
+const ushort SHRED_WIDTH = 16;
+const ushort HEIGHT = 128;
 
-const ushort SECONDS_IN_HOUR=60;
-const ushort SECONDS_IN_DAY=24*SECONDS_IN_HOUR;
-const ushort END_OF_NIGHT  = 6*SECONDS_IN_HOUR;
-const ushort END_OF_MORNING=12*SECONDS_IN_HOUR;
-const ushort END_OF_NOON   =18*SECONDS_IN_HOUR;
-const ushort END_OF_EVENING= 0*SECONDS_IN_HOUR;
-const ushort SECONDS_IN_NIGHT=END_OF_NIGHT;
-const ushort SECONDS_IN_DAYLIGHT=SECONDS_IN_DAY-END_OF_NIGHT;
+const ushort SECONDS_IN_HOUR = 60;
+const ushort SECONDS_IN_DAY = 24*SECONDS_IN_HOUR;
+const ushort END_OF_NIGHT   =  6*SECONDS_IN_HOUR;
+const ushort END_OF_MORNING = 12*SECONDS_IN_HOUR;
+const ushort END_OF_NOON    = 18*SECONDS_IN_HOUR;
+const ushort END_OF_EVENING =  0*SECONDS_IN_HOUR;
+const ushort SECONDS_IN_NIGHT = END_OF_NIGHT;
+const ushort SECONDS_IN_DAYLIGHT = SECONDS_IN_DAY-END_OF_NIGHT;
 
-const ushort MAX_DURABILITY=100;
-const ushort MAX_BREATH=60;
+const ushort MAX_DURABILITY = 100;
+const ushort MAX_BREATH = 60;
 
-const uchar MAX_LIGHT_RADIUS=15;
+const uchar MAX_LIGHT_RADIUS = 15;
 
 enum shred_type {
 	SHRED_NULLMOUNTAIN = '#',
@@ -63,8 +63,8 @@ enum shred_type {
 	SHRED_CHAOS = '!'
 };
 
-const char DEFAULT_SHRED=SHRED_PLAIN;
-const char OUT_BORDER_SHRED=SHRED_WATER;
+const char DEFAULT_SHRED = SHRED_PLAIN;
+const char OUT_BORDER_SHRED = SHRED_WATER;
 
 enum dirs {
 	UP,    ///< 0

@@ -247,9 +247,9 @@ bool Active::IsSubAround(const quint8 sub) const {
 			(world->InBounds(X()-1, Y()) &&
 			sub == world->GetBlock(X()-1, Y(), Z())->Sub()) ||
 			(world->InBounds(X()+1, Y()) &&
-			WATER==world->GetBlock(X()+1, Y(), Z())->Sub()) ||
+			sub==world->GetBlock(X()+1, Y(), Z())->Sub()) ||
 			(world->InBounds(X(), Y()-1) &&
-			WATER==world->GetBlock(X(), Y()-1, Z())->Sub()) ||
+			sub==world->GetBlock(X(), Y()-1, Z())->Sub()) ||
 			(world->InBounds(X(), Y()+1) &&
-			WATER==world->GetBlock(X(), Y()+1, Z())->Sub()) );
+			sub==world->GetBlock(X(), Y()+1, Z())->Sub()) );
 }

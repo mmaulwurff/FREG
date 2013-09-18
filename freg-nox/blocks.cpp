@@ -715,10 +715,16 @@
 // Pile::
 	int Pile::BeforePush(const int, Block * const who) {
 		Inventory::BeforePush(who);
-		return NO_ACTION;
+		return IsEmpty() ?
+			DESTROY : NO_ACTION;
 	}
 
 	void Pile::DoRareAction() {
+		Inventory * const inv = GetWorld()->GetBlock(X(), Y(), Z()-1)->
+			HasInventory();
+		if ( inv ) {
+			inv->GetAll(this);
+		}
 		if ( IsEmpty() ) {
 			Damage(GetDurability(), TIME);
 		}
