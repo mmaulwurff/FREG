@@ -122,9 +122,6 @@ class World : public QThread {
 	void SetShredData(QByteArray *, long longi, long lati);
 
 	private:
-	bool Focus(ushort x, ushort y, ushort z,
-			ushort & x_targ, ushort & y_targ,
-			ushort & z_targ) const;
 	ushort SunMoonX() const;
 	int ShredPos(int x, int y) const;
 
@@ -180,7 +177,6 @@ class World : public QThread {
 	void Get(Block * to,
 			ushort x_from, ushort y_from, ushort z_from,
 			ushort src, ushort dest, ushort num);
-	void GetAll(ushort x_to, ushort y_to, ushort z_to);
 
 	// Block information section
 	public:

@@ -70,7 +70,7 @@ void World::SetShredData(QByteArray * const data,
 }
 
 ushort World::SunMoonX() const {
-	return ( NIGHT==PartOfDay() ) ?
+	return ( NIGHT == PartOfDay() ) ?
 		TimeOfDay()*SHRED_WIDTH*NumShreds()/
 			SECONDS_IN_NIGHT :
 		(TimeOfDay()-SECONDS_IN_NIGHT)*SHRED_WIDTH*NumShreds()/
@@ -78,7 +78,7 @@ ushort World::SunMoonX() const {
 }
 
 int World::PartOfDay() const {
-	const ushort time_day=TimeOfDay();
+	const ushort time_day = TimeOfDay();
 	if ( time_day < END_OF_NIGHT )   return NIGHT;
 	if ( time_day < END_OF_MORNING ) return MORNING;
 	if ( time_day < END_OF_NOON )    return NOON;
@@ -519,8 +519,7 @@ bool World::CanMove(const ushort x, const ushort y, const ushort z,
 	switch ( block_to->BeforePush(dir, block) ) {
 	case MOVE_SELF: block_to = GetBlock(newx, newy, newz); break;
 	case DESTROY:
-		DeleteBlock(block_to);
-		PutBlock(Normal(AIR), newx, newy, newz);
+		SetBlock(Normal(AIR), newx, newy, newz);
 		return true;
 	break;
 	case JUMP:
@@ -606,13 +605,6 @@ const {
 	return !InBounds(x_to, y_to, z_to);
 }
 
-bool World::Focus(const ushort x, const ushort y, const ushort z,
-		ushort & x_target, ushort & y_target, ushort & z_target)
-const {
-	return Focus( x, y, z, x_target, y_target, z_target,
-		GetBlock(x, y, z)->GetDir() );
-}
-
 void World::Damage(const ushort x, const ushort y, const ushort z,
 		const ushort dmg, const int dmg_kind)
 {
@@ -625,7 +617,6 @@ void World::Damage(const ushort x, const ushort y, const ushort z,
 		if ( block_manager.MakeId(BLOCK, STONE)==temp->GetId() &&
 				temp->GetDurability()!=MAX_DURABILITY )
 		{ // convert stone into ladder
-			DeleteBlock(temp);
 			temp = NewBlock(LADDER, STONE);
 			emit ReEnlighten(x, y, z);
 		}
@@ -642,12 +633,14 @@ void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
 	Shred * const shred = GetShred(x, y);
 	const ushort x_in_shred = Shred::CoordInShred(x);
 	const ushort y_in_shred = Shred::CoordInShred(y);
+	const int old_transparency = temp->Transparent();
+	const uchar old_light = temp->LightRadius();
+	Block * new_block;
 	if ( PILE!=temp->Kind() && (temp->HasInventory() || dropped) ) {
-		Block * const new_pile=( ( dropped && PILE==dropped->Kind() ) ?
+		new_block = ( ( dropped && PILE==dropped->Kind() ) ?
 			dropped : NewBlock(PILE, DIFFERENT) );
-		shred->SetBlock(new_pile, x_in_shred, y_in_shred, z);
 		Inventory * const inv = temp->HasInventory();
-		Inventory * const new_pile_inv = new_pile->HasInventory();
+		Inventory * const new_pile_inv = new_block->HasInventory();
 		if ( inv ) {
 			new_pile_inv->GetAll(inv);
 		}
@@ -658,11 +651,9 @@ void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
 		}
 		shred->AddFalling(x_in_shred, y_in_shred, z);
 	} else {
-		PutBlock(Normal(AIR), x, y, z);
+		new_block = Normal(AIR);
 	}
-	const int old_transparency = temp->Transparent();
-	const uchar old_light = temp->LightRadius();
-	DeleteBlock(temp);
+	shred->SetBlock(new_block, x_in_shred, y_in_shred, z);
 	shred->AddFalling(x_in_shred, y_in_shred, z+1);
 	if ( old_transparency != INVISIBLE ) {
 		ReEnlightenBlockRemove(x, y, z);
@@ -683,10 +674,9 @@ bool World::Build(Block * block,
 		}
 		return false;
 	} // else:
-	const int old_transparency = target_block->Transparent();
-	DeleteBlock(target_block);
 	block->Restore();
 	block->SetDir(dir);
+	const int old_transparency = target_block->Transparent();
 	const int new_transparency = block->Transparent();
 	const uchar block_light = block->LightRadius();
 	SetBlock(block, x, y, z);
@@ -735,18 +725,6 @@ void World::Exchange(Block * const block_from, Block * const block_to,
 	if ( inv_from->Drop(src, dest, num, inv_to) ) {
 		block_from->ReceiveSignal(tr("Your bag is lighter now."));
 		block_to  ->ReceiveSignal(tr("Your bag is heavier now."));
-	}
-}
-
-void World::GetAll(const ushort x_to, const ushort y_to, const ushort z_to) {
-	ushort x_from, y_from, z_from;
-	if ( Focus(x_to, y_to, z_to, x_from, y_from, z_from) ) {
-		return;
-	}
-	Inventory * const inv_to = GetBlock(x_to, y_to, z_to)->HasInventory();
-	if ( inv_to ) {
-		inv_to->GetAll(GetBlock(x_from, y_from, z_from)->
-			HasInventory());
 	}
 }
 
