@@ -356,6 +356,8 @@ void Screen::ControlPlayer(const int ch) {
 	case '.':
 		if ( command.length()==1 && "."!=command ) {
 			ControlPlayer(command.at(0).toAscii());
+		} else if ( command.length==0 ) {
+			break;
 		} else if ( "warranty" == command ) {
 			wstandend(rightWin);
 			PrintFile(rightWin, "texts/warranty.txt");

@@ -200,6 +200,7 @@ void Player::Use(const short x, const short y, const short z) {
 	QWriteLocker locker(world->GetLock());
 	const int us_type = world->GetBlock(x, y, z)->Use(player);
 	usingType = ( us_type==usingType ) ? USAGE_TYPE_NO : us_type;
+	emit Updated();
 }
 
 void Player::Inscribe(const short x, const short y, const short z) const {
