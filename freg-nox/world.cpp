@@ -21,9 +21,8 @@
 #include <QDir>
 #include <QSettings>
 #include <QWriteLocker>
-#include <QReadWriteLock>
 #include <memory>
-#include "Animal.h"
+#include "Active.h"
 #include "Inventory.h"
 #include "Shred.h"
 #include "world.h"
@@ -35,9 +34,13 @@ const ushort MIN_WORLD_SIZE = 7;
 
 World * world;
 
+int World::ShredPos(const int x, const int y) const {
+	return y*NumShreds() + x;
+}
+
 Shred * World::GetShred(ushort x, ushort y) const {
-	return shreds[ (Shred::CoordOfShred(y))*NumShreds() +
-	               (Shred::CoordOfShred(x)) ];
+	return shreds[ShredPos(Shred::CoordOfShred(x),
+		Shred::CoordOfShred(y))];
 }
 
 int World::TimeOfDay() const { return time % SECONDS_IN_DAY; }
@@ -56,7 +59,7 @@ char World::TypeOfShred(const long longi, const long lati) {
 	return map->TypeOfShred(longi, lati);
 }
 
-QByteArray * World::GetShredData(long longi, long lati) {
+QByteArray * World::GetShredData(long longi, long lati) const {
 	return shredStorage->GetShredData(longi, lati);
 }
 
@@ -68,9 +71,9 @@ void World::SetShredData(QByteArray * const data,
 
 ushort World::SunMoonX() const {
 	return ( NIGHT==PartOfDay() ) ?
-		TimeOfDay()*SHRED_WIDTH*numShreds/
+		TimeOfDay()*SHRED_WIDTH*NumShreds()/
 			SECONDS_IN_NIGHT :
-		(TimeOfDay()-SECONDS_IN_NIGHT)*SHRED_WIDTH*numShreds/
+		(TimeOfDay()-SECONDS_IN_NIGHT)*SHRED_WIDTH*NumShreds()/
 			SECONDS_IN_DAYLIGHT;
 }
 
@@ -110,8 +113,8 @@ void World::Get(Block * const block_to,
 		const ushort x_from, const ushort y_from, const ushort z_from,
 		const ushort src, const ushort dest, const ushort num)
 {
-	Block * const block_from=GetBlock(x_from, y_from, z_from);
-	Inventory * const inv=block_from->HasInventory();
+	Block * const block_from = GetBlock(x_from, y_from, z_from);
+	Inventory * const inv = block_from->HasInventory();
 	if ( inv && inv->Access() )
 	{
 		Exchange(block_from, block_to, src, dest, num);
@@ -180,9 +183,9 @@ quint8 World::TurnLeft(const quint8 dir) {
 
 void World::MakeSun() {
 	ifStar = ( STAR==GetBlock( (sun_moon_x=SunMoonX()),
-		SHRED_WIDTH*numShreds/2, HEIGHT-1)->Sub() );
+		SHRED_WIDTH*NumShreds()/2, HEIGHT-1)->Sub() );
 	PutBlock(Normal(SUN_MOON),
-		sun_moon_x, SHRED_WIDTH*numShreds/2, HEIGHT-1);
+		sun_moon_x, SHRED_WIDTH*NumShreds()/2, HEIGHT-1);
 }
 
 Block * World::GetBlock(const ushort x, const ushort y, const ushort z) const {
@@ -235,7 +238,7 @@ quint8 World::Anti(const quint8 dir) {
 }
 
 Shred ** World::FindShred(const ushort x, const ushort y) const {
-	return &shreds[x+y*numShreds];
+	return &shreds[ShredPos(x, y)];
 }
 
 void World::ReloadShreds(const int direction) {
@@ -244,66 +247,66 @@ void World::ReloadShreds(const int direction) {
 	switch ( direction ) {
 	case NORTH:
 		--longitude;
-		for (x=0; x<numShreds; ++x) {
-			const Shred * const shred = *FindShred(x, numShreds-1);
+		for (x=0; x<NumShreds(); ++x) {
+			const Shred * const shred=*FindShred(x, NumShreds()-1);
 			Shred * const memory = shred->GetShredMemory();
 			shred->~Shred();
-			for (y=numShreds-1; y>0; --y) {
+			for (y=NumShreds()-1; y>0; --y) {
 				( *FindShred(x, y) = *FindShred(x, y-1) )->
 					ReloadToNorth();
 			}
 			*FindShred(x, 0) = new(memory)
 				Shred(x, 0,
-					longitude-numShreds/2,
-					latitude -numShreds/2+x, memory);
+					longitude-NumShreds()/2,
+					latitude -NumShreds()/2+x, memory);
 		}
 	break;
 	case SOUTH:
 		++longitude;
-		for (x=0; x<numShreds; ++x) {
+		for (x=0; x<NumShreds(); ++x) {
 			const Shred * const shred = *FindShred(x, 0);
 			Shred * const memory = shred->GetShredMemory();
 			shred->~Shred();
-			for (y=0; y<numShreds-1; ++y) {
+			for (y=0; y<NumShreds()-1; ++y) {
 				( *FindShred(x, y) = *FindShred(x, y+1) )->
 					ReloadToSouth();
 			}
-			*FindShred(x, numShreds-1) = new(memory)
-				Shred(x, numShreds-1,
-					longitude+numShreds/2,
-					latitude -numShreds/2+x, memory);
+			*FindShred(x, NumShreds()-1) = new(memory)
+				Shred(x, NumShreds()-1,
+					longitude+NumShreds()/2,
+					latitude -NumShreds()/2+x, memory);
 		}
 	break;
 	case EAST:
 		++latitude;
-		for (y=0; y<numShreds; ++y) {
+		for (y=0; y<NumShreds(); ++y) {
 			const Shred * const shred = *FindShred(0, y);
 			Shred * const memory = shred->GetShredMemory();
 			shred->~Shred();
-			for (x=0; x<numShreds-1; ++x) {
+			for (x=0; x<NumShreds()-1; ++x) {
 				( *FindShred(x, y) = *FindShred(x+1, y) )->
 					ReloadToEast();
 			}
-			*FindShred(numShreds-1, y) = new(memory)
-				Shred(numShreds-1, y,
-					longitude-numShreds/2+y,
-					latitude +numShreds/2, memory);
+			*FindShred(NumShreds()-1, y) = new(memory)
+				Shred(NumShreds()-1, y,
+					longitude-NumShreds()/2+y,
+					latitude +NumShreds()/2, memory);
 		}
 	break;
 	case WEST:
 		--latitude;
-		for (y=0; y<numShreds; ++y) {
-			const Shred * const shred = *FindShred(numShreds-1, y);
+		for (y=0; y<NumShreds(); ++y) {
+			const Shred * const shred=*FindShred(NumShreds()-1, y);
 			Shred * const memory = shred->GetShredMemory();
 			shred->~Shred();
-			for (x=numShreds-1; x>0; --x) {
+			for (x=NumShreds()-1; x>0; --x) {
 				( *FindShred(x, y) = *FindShred(x-1, y) )->
 					ReloadToWest();
 			}
 			*FindShred(0, y) = new(memory)
 				Shred(0, y,
-					longitude-numShreds/2+y,
-					latitude -numShreds/2, memory);
+					longitude-NumShreds()/2+y,
+					latitude -NumShreds()/2, memory);
 		}
 	break;
 	default: fprintf(stderr,
@@ -338,11 +341,11 @@ void World::PhysEvents() {
 		toResetDir = UP; // set no reset
 	}
 
-	static const ushort start = numShreds/2-numActiveShreds/2;
+	static const ushort start = NumShreds()/2-numActiveShreds/2;
 	static const ushort end   = start+numActiveShreds;
 	for (ushort i=start; i<end; ++i)
 	for (ushort j=start; j<end; ++j) {
-		shreds[i+j*NumShreds()]->PhysEventsFrequent();
+		shreds[ShredPos(i, j)]->PhysEventsFrequent();
 	}
 
 	if ( TimeStepsInSec() > timeStep ) {
@@ -356,17 +359,17 @@ void World::PhysEvents() {
 
 	for (ushort i=start; i<end; ++i)
 	for (ushort j=start; j<end; ++j) {
-		shreds[i+j*NumShreds()]->PhysEventsRare();
+		shreds[ShredPos(i, j)]->PhysEventsRare();
 	}
 	for (ushort i=start; i<end; ++i)
 	for (ushort j=start; j<end; ++j) {
-		shreds[i+j*NumShreds()]->DeleteDestroyedActives();
+		shreds[ShredPos(i, j)]->DeleteDestroyedActives();
 	}
 	timeStep = 0;
 	++time;
 	// sun/moon moving
 	if ( sun_moon_x != SunMoonX() ) {
-		const ushort y = SHRED_WIDTH*numShreds/2;
+		const ushort y = SHRED_WIDTH*NumShreds()/2;
 		PutBlock(Normal(ifStar ? STAR : SKY), sun_moon_x, y, HEIGHT-1);
 		emit Updated(sun_moon_x, y, HEIGHT-1);
 		sun_moon_x = SunMoonX();
@@ -714,7 +717,7 @@ bool World::Inscribe(const ushort x, const ushort y, const ushort z) {
 void World::Exchange(Block * const block_from, Block * const block_to,
 		const ushort src, const ushort dest, const ushort num)
 {
-	Inventory * const inv_from=block_from->HasInventory();
+	Inventory * const inv_from = block_from->HasInventory();
 	if ( !inv_from ) {
 		block_from->ReceiveSignal(tr("No inventory."));
 		return;
@@ -724,7 +727,7 @@ void World::Exchange(Block * const block_from, Block * const block_to,
 		block_to  ->ReceiveSignal(tr("Nothing here."));
 		return;
 	}
-	Inventory * const inv_to=block_to->HasInventory();
+	Inventory * const inv_to = block_to->HasInventory();
 	if ( !inv_to ) {
 		block_from->ReceiveSignal(tr("No room there."));
 		return;
@@ -740,7 +743,7 @@ void World::GetAll(const ushort x_to, const ushort y_to, const ushort z_to) {
 	if ( Focus(x_to, y_to, z_to, x_from, y_from, z_from) ) {
 		return;
 	}
-	Inventory * const inv_to=GetBlock(x_to, y_to, z_to)->HasInventory();
+	Inventory * const inv_to = GetBlock(x_to, y_to, z_to)->HasInventory();
 	if ( inv_to ) {
 		inv_to->GetAll(GetBlock(x_from, y_from, z_from)->
 			HasInventory());
@@ -767,17 +770,17 @@ int World::Temperature(const ushort x, const ushort y, const ushort z) const {
 
 void World::RemSun() {
 	PutBlock(Normal(ifStar ? STAR : SKY),
-		sun_moon_x, SHRED_WIDTH*numShreds/2, HEIGHT-1);
+		sun_moon_x, SHRED_WIDTH*NumShreds()/2, HEIGHT-1);
 }
 
 void World::LoadAllShreds() {
-	shreds = new Shred *[(ulong)numShreds*(ulong)numShreds];
+	shreds = new Shred *[(ulong)NumShreds()*NumShreds()];
 	shredMemoryPool = static_cast<Shred *>
-		(operator new (sizeof(Shred)*numShreds*numShreds));
-	for (long i=latitude -numShreds/2, x=0; x<numShreds; ++i, ++x)
-	for (long j=longitude-numShreds/2, y=0; y<numShreds; ++j, ++y) {
-		shreds[y*numShreds+x] = new(shredMemoryPool+y*numShreds+x)
-			Shred( x, y, j, i, (shredMemoryPool+y*numShreds+x) );
+		(operator new (sizeof(Shred)*NumShreds()*NumShreds()));
+	for (long i=latitude -NumShreds()/2, x=0; x<NumShreds(); ++i, ++x)
+	for (long j=longitude-NumShreds()/2, y=0; y<NumShreds(); ++j, ++y) {
+		shreds[ShredPos(x, y)] = new(shredMemoryPool+ShredPos(x, y))
+			Shred( x, y, j, i, (shredMemoryPool+ShredPos(x, y)) );
 	}
 	MakeSun();
 	sunMoonFactor=( NIGHT==PartOfDay() ) ?
@@ -805,8 +808,8 @@ void World::SetNumActiveShreds(const ushort num) {
 	if ( numActiveShreds < 3 ) {
 		numActiveShreds = 3;
 		emit Notify(tr("Active shreds number too small, set to 3."));
-	} else if ( numActiveShreds > numShreds ) {
-		numActiveShreds=numShreds;
+	} else if ( numActiveShreds > NumShreds() ) {
+		numActiveShreds = NumShreds();
 		emit Notify(tr("Active shreds number too big. Set to %1.").
 			arg(numActiveShreds));
 	}

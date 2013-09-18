@@ -42,38 +42,9 @@ class World : public QThread {
 	 * Designed to be single. */
 	Q_OBJECT
 
-	static const ushort TIME_STEPS_IN_SEC=10;
-
-	ulong time;
-	ushort timeStep;
-	Shred ** shreds;
-	//    N
-	//    |  E
-	// W--+--> latitude ( x for shreds )
-	//    |
-	//  S v longitude ( y for shreds )
-	// center of active zone:
-	long longitude, latitude;
-	long spawnLongi, spawnLati;
-	const QString worldName;
-	ushort numShreds; // size of loaded zone
-	ushort numActiveShreds; // size of active zone
-	QReadWriteLock * const rwLock;
-
-	ushort sun_moon_x;
-	bool ifStar;
-
-	WorldMap * const map;
-
-	long newLati, newLongi;
-	ushort newX, newY, newZ;
-	/// UP for no reset, DOWN for full reset, NSEW for side shift.
-	volatile int toResetDir;
-
-	uchar sunMoonFactor;
-
-	ShredStorage * shredStorage;
-	Shred * shredMemoryPool;
+	public:
+	World(const QString &);
+	~World();
 
 	// Block work section
 	public:
@@ -103,7 +74,7 @@ class World : public QThread {
 	short ClampY(short y) const;
 	short ClampZ(short z) const;
 
-	void SunShineVertical  (short x, short y, short z=HEIGHT-2,
+	void SunShineVertical  (short x, short y, short z = HEIGHT-2,
 			uchar level=MAX_LIGHT_RADIUS);
 	void SunShineHorizontal(short x, short y, short z);
 	/// If init is false, light will not spread from non-invisible blocks.
@@ -147,7 +118,7 @@ class World : public QThread {
 	char TypeOfShred(long longi, long lati);
 	long MapSize() const;
 
-	QByteArray * GetShredData(long longi, long lati);
+	QByteArray * GetShredData(long longi, long lati) const;
 	void SetShredData(QByteArray *, long longi, long lati);
 
 	private:
@@ -155,9 +126,9 @@ class World : public QThread {
 			ushort & x_targ, ushort & y_targ,
 			ushort & z_targ) const;
 	ushort SunMoonX() const;
+	int ShredPos(int x, int y) const;
 
-	// Visibility section
-	public:
+	public: // Visibility section
 	bool DirectlyVisible(float x_from, float y_from, float z_from,
 			ushort x_to, ushort y_to, ushort z_to) const;
 	bool Visible(ushort x_from, ushort y_from, ushort z_from,
@@ -168,19 +139,18 @@ class World : public QThread {
 	bool NegativeVisible(float x_from, float y_from, float z_from,
 			short x_to, short y_to, short z_to) const;
 
-	// Movement section
-	public:
+	public: // Movement section
 	/// Check and move
 	bool Move(ushort x, ushort y, ushort z, quint8 dir);
 	/// This CAN move blocks, but not xyz block.
 	bool CanMove(ushort x, ushort y, ushort z,
 			ushort x_to, ushort y_to, ushort z_to, quint8 dir);
+	void Jump(ushort x, ushort y, ushort z, quint8 dir);
+	private:
 	void NoCheckMove(ushort x, ushort y, ushort z,
 			ushort x_to, ushort y_to, ushort z_to, quint8 dir);
-	void Jump(ushort x, ushort y, ushort z, quint8 dir);
 
-	// Time section
-	public:
+	public: // Time section
 	int PartOfDay() const;
 	/// This returns seconds from start of current day.
 	int TimeOfDay() const;
@@ -190,8 +160,7 @@ class World : public QThread {
 	/// Returns number of physics steps since second start.
 	ushort MiniTime() const;
 
-	// Interactions section
-	public:
+	public: // Interactions section
 	void Damage(ushort x, ushort y, ushort z, ushort level, int dmg_kind);
 	void DestroyAndReplace(ushort x, ushort y, ushort z);
 	bool Build(Block * thing, ushort x, ushort y, ushort z,
@@ -201,8 +170,7 @@ class World : public QThread {
 	/// Returns true on success. Gets a string and inscribes block.
 	bool Inscribe(ushort x, ushort y, ushort z);
 
-	// Inventory functions section
-	private:
+	private: // Inventory functions section
 	void Exchange(Block * block_from, Block * block_to,
 			ushort src, ushort dest, ushort num);
 	public:
@@ -217,11 +185,10 @@ class World : public QThread {
 	// Block information section
 	public:
 	// For more information, use World::GetBlock(x, y, z) and ->.
-	bool InBounds   (ushort x, ushort y, ushort z=0) const;
+	bool InBounds   (ushort x, ushort y, ushort z = 0) const;
 	int  Temperature(ushort x, ushort y, ushort z) const;
 
-	// World section
-	public:
+	public: // World section
 	void ReloadAllShreds(long lati, long longi,
 		ushort new_x, ushort new_y, ushort new_z);
 	private:
@@ -239,10 +206,6 @@ class World : public QThread {
 	void ReadLock();
 	bool TryReadLock();
 	void Unlock();
-
-	public:
-	World(const QString &);
-	~World();
 
 	public slots:
 	void CleanAll();
@@ -264,6 +227,40 @@ class World : public QThread {
 	void StartReloadAll();
 	void FinishReloadAll();
 	void ExitReceived();
+
+	private:
+	static const ushort TIME_STEPS_IN_SEC = 10;
+
+	ulong time;
+	ushort timeStep;
+	Shred ** shreds;
+	//    N
+	//    |  E
+	// W--+--> latitude ( x for shreds )
+	//    |
+	//  S v longitude ( y for shreds )
+	// center of active zone:
+	long longitude, latitude;
+	long spawnLongi, spawnLati;
+	const QString worldName;
+	ushort numShreds; // size of loaded zone
+	ushort numActiveShreds; // size of active zone
+	QReadWriteLock * const rwLock;
+
+	ushort sun_moon_x;
+	bool ifStar;
+
+	WorldMap * const map;
+
+	long newLati, newLongi;
+	ushort newX, newY, newZ;
+	/// UP for no reset, DOWN for full reset, NSEW for side shift.
+	volatile int toResetDir;
+
+	uchar sunMoonFactor;
+
+	ShredStorage * shredStorage;
+	Shred * shredMemoryPool;
 }; // class World
 
 extern World * world;
