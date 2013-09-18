@@ -352,11 +352,12 @@ void Screen::ControlPlayer(const int ch) {
 	case '+': shiftFocus =  !shiftFocus; break; // move focus up
 
 	case '!': player->SetCreativeMode( !player->GetCreativeMode() ); break;
+	case ':':
 	case '/': PassString(command); // no break
 	case '.':
 		if ( command.length()==1 && "."!=command ) {
 			ControlPlayer(command.at(0).toAscii());
-		} else if ( command.length==0 ) {
+		} else if ( command.length() == 0 ) {
 			break;
 		} else if ( "warranty" == command ) {
 			wstandend(rightWin);
@@ -848,7 +849,6 @@ void Screen::Notify(const QString & str) const {
 void Screen::DeathScreen() {
 	werase(rightWin);
 	werase(hudWin);
-	(void)wmove(leftWin, 1, 1);
 	wcolor_set(leftWin, WHITE_RED, NULL);
 	if ( !PrintFile(leftWin, "texts/death.txt") ) {
 		waddstr(leftWin, "You die.\nWaiting for respawn...");
