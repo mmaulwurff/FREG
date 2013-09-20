@@ -42,7 +42,7 @@ class Plate : public Block {
 	public:
 	QString FullName() const;
 	quint8 Kind() const;
-	int BeforePush(int dir, Block * who);
+	int PushResult(int dir) const;
 	ushort Weight() const;
 
 	Plate(int sub, quint16 id);
@@ -53,7 +53,7 @@ class Ladder : public Block {
 	public:
 	QString FullName() const;
 	quint8 Kind() const;
-	int BeforePush(int dir, Block * who);
+	int PushResult(int dir) const;
 	ushort Weight() const;
 	bool Catchable() const;
 	Block * DropAfterDamage() const;
@@ -66,7 +66,7 @@ class Weapon : public Block {
 	public:
 	quint8 Kind() const;
 	int Wearable() const;
-	int BeforePush(int dir, Block * who);
+	int PushResult(int dir) const;
 	int DamageKind() const;
 	ushort DamageLevel() const;
 	ushort Weight() const;
@@ -91,18 +91,18 @@ class Chest : public Block, public Inventory {
 	public:
 	quint8 Kind() const;
 	int  Sub() const;
-	int  BeforePush(int dir, Block * who);
+	void Push(int dir, Block * who);
 	void ReceiveSignal(const QString &);
 	QString FullName() const;
 	Inventory * HasInventory();
-	usage_types Use(Block * who=0);
+	usage_types Use(Block * who = 0);
 	ushort Weight() const;
 
 	protected:
 	void SaveAttributes(QDataStream & out) const;
 
 	public:
-	Chest(int sub, quint16 id, ushort size=INV_SIZE);
+	Chest(int sub, quint16 id, ushort size = INV_SIZE);
 	Chest(QDataStream & str, int sub, quint16 id, ushort size=INV_SIZE);
 }; // class Chest
 
@@ -115,7 +115,8 @@ class Pile : public Active, public Inventory {
 	void ReceiveSignal(const QString &);
 	void DoRareAction();
 	int  ShouldAct() const;
-	int  BeforePush(int, Block * who);
+	void Push(int, Block * who);
+	int  PushResult(int) const;
 	Block * DropAfterDamage() const;
 	QString FullName() const;
 	Inventory * HasInventory();
@@ -156,7 +157,7 @@ class Grass : public Active {
 	int  ShouldAct() const;
 	quint8 Kind() const;
 	bool ShouldFall() const;
-	int  BeforePush(int dir, Block * who);
+	int  PushResult(int dir) const;
 	Block * DropAfterDamage() const;
 
 	Grass(int sub, quint16 id);
@@ -175,7 +176,7 @@ class Bush : public Active, public Inventory {
 	bool ShouldFall() const;
 	void DoRareAction();
 	int  ShouldAct() const;
-	int  BeforePush(int dir, Block * who);
+	void Push(int dir, Block * who);
 	void ReceiveSignal(const QString &);
 	ushort Weight() const;
 
@@ -241,10 +242,11 @@ class Door : public Active {
 	int  ShouldAct() const;
 	quint8 Kind() const;
 	int  Movable() const;
-	int  BeforePush(int dir, Block * who);
+	int  PushResult(int dir) const;
+	void Push(int dir, Block * const);
 	bool ShouldFall() const;
 	QString FullName() const;
-	usage_types Use(Block * who=0);
+	usage_types Use(Block * who = 0);
 
 	protected:
 	void SaveAttributes(QDataStream & out) const;
@@ -264,7 +266,7 @@ class Clock : public Active {
 	quint8 Kind() const;
 	int  Movable() const;
 	bool ShouldFall() const;
-	int  BeforePush(int dir, Block * who);
+	void Push(int dir, Block * who);
 	bool Inscribe(const QString & str);
 	ushort Weight() const;
 	usage_types Use(Block * who=0);

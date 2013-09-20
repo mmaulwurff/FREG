@@ -121,9 +121,15 @@ void World::Get(Block * const block_to,
 	}
 }
 
-bool World::InBounds(const ushort x, const ushort y, const ushort z) const {
+bool World::InBounds(const ushort x, const ushort y) const {
 	static const ushort max_xy = SHRED_WIDTH*NumShreds();
-	return ( x<max_xy && y<max_xy && z<HEIGHT );
+	return ( x<max_xy && y<max_xy );
+}
+bool World::InVertBounds(const ushort z) {
+	return ( z < HEIGHT );
+}
+bool World::InBounds(const ushort x, const ushort y, const ushort z) const {
+	return ( InBounds(x, y) && InVertBounds(z) );
 }
 
 void World::ReloadAllShreds(const long lati, const long longi,
@@ -516,7 +522,8 @@ bool World::CanMove(const ushort x, const ushort y, const ushort z,
 			return true;
 		}
 	}
-	switch ( block_to->BeforePush(dir, block) ) {
+	block_to->Push(dir, block);
+	switch ( block_to->PushResult(dir) ) {
 	case MOVE_SELF: block_to = GetBlock(newx, newy, newz); break;
 	case DESTROY:
 		SetBlock(Normal(AIR), newx, newy, newz);

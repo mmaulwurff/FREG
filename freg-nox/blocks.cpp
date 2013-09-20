@@ -119,7 +119,8 @@
 	quint8 Block::Kind() const { return BLOCK; }
 	quint16 Block::GetId() const { return id; }
 	bool Block::Catchable() const { return false; }
-	int  Block::BeforePush(const int, Block * const) { return NO_ACTION; }
+	int  Block::PushResult(const int) const { return NO_ACTION; }
+	void Block::Push(const int, Block * const) {}
 	bool Block::Move(const int) { return false; }
 	usage_types Block::Use(Block *) { return USAGE_TYPE_NO; }
 	int  Block::Wearable() const { return WEARABLE_NOWHERE; }
@@ -253,7 +254,7 @@
 	}
 
 	quint8 Plate::Kind() const { return PLATE; }
-	int Plate::BeforePush(const int, Block * const) { return JUMP; }
+	int Plate::PushResult(const int) const { return JUMP; }
 	ushort Plate::Weight() const { return Block::Weight()/4; }
 
 	Plate::Plate(const int sub, const quint16 id) :
@@ -274,7 +275,7 @@
 	}
 	}
 
-	int  Ladder::BeforePush(const int, Block * const) { return MOVE_UP; }
+	int  Ladder::PushResult(const int) const { return MOVE_UP; }
 	bool Ladder::Catchable() const { return true; }
 	ushort Ladder::Weight() const { return Block::Weight()*3; }
 	quint8 Ladder::Kind() const { return LADDER; }
@@ -324,7 +325,7 @@
 		return ( IRON==Sub() ) ? THRUST : CRUSH;
 	}
 
-	int Weapon::BeforePush(const int, Block * const) {
+	int Weapon::PushResult(const int) const {
 		return ( IRON==Sub() ) ? DAMAGE : NO_ACTION;
 	}
 
@@ -616,7 +617,7 @@
 		return false;
 	}
 
-	void Inventory::BeforePush(Block * const who) {
+	void Inventory::Push(Block * const who) {
 		Inventory * const inv = who->HasInventory();
 		if ( inv ) {
 			inv->GetAll(this);
@@ -706,9 +707,8 @@
 		}
 	}
 
-	int Chest::BeforePush(const int, Block * const who) {
-		Inventory::BeforePush(who);
-		return NO_ACTION;
+	void Chest::Push(const int, Block * const who) {
+		Inventory::Push(who);
 	}
 
 	ushort Chest::Weight() const {
@@ -730,15 +730,18 @@
 			Inventory(str, size)
 	{}
 // Pile::
-	int Pile::BeforePush(const int, Block * const who) {
-		Inventory::BeforePush(who);
+	void Pile::Push(const int, Block * const who) {
+		Inventory::Push(who);
+	}
+	int Pile::PushResult(const int) const {
 		return IsEmpty() ?
 			DESTROY : NO_ACTION;
 	}
 
 	void Pile::DoRareAction() {
-		Inventory * const inv = GetWorld()->GetBlock(X(), Y(), Z()-1)->
-			HasInventory();
+		Inventory * const inv = GetShred()->GetBlock(
+			Shred::CoordInShred(X()), Shred::CoordInShred(Y()),
+				Z()-1)->HasInventory();
 		if ( inv ) {
 			inv->GetAll(this);
 		}
@@ -824,7 +827,9 @@
 // Grass::
 	void Grass::DoRareAction() {
 		World * const world = GetWorld();
-		if ( SOIL != world->GetBlock(X(), Y(), Z()-1)->Sub() ) {
+		if ( SOIL != GetShred()->GetBlock(Shred::CoordInShred(X()),
+				Shred::CoordInShred(Y()), Z()-1)->Sub() )
+		{
 			world->Damage(X(), Y(), Z(), durability, TIME);
 		}
 		short i=X(), j=Y();
@@ -839,16 +844,15 @@
 		if ( !world->InBounds(i, j) ) {
 			return;
 		} // else:
-		const quint8 sub_of_near_block =
-			world->GetBlock(i, j, Z())->Sub();
+		const quint8 sub_near = world->GetBlock(i, j, Z())->Sub();
 		if ( world->Enlightened(i, j, Z()) ) {
-			if ( AIR==sub_of_near_block &&
+			if ( AIR==sub_near &&
 					SOIL==world->GetBlock(i, j, Z()-1)->
 						Sub() )
 			{
 				world->Build(block_manager.NewBlock(GRASS,
 						Sub()), i, j, Z());
-			} else if ( SOIL==sub_of_near_block &&
+			} else if ( SOIL==sub_near &&
 					AIR==world->GetBlock(i, j, Z()+1)->
 						Sub() )
 			{
@@ -869,7 +873,7 @@
 	}
 
 	int  Grass::ShouldAct() const  { return RARE; }
-	int  Grass::BeforePush(const int, Block * const) { return DESTROY; }
+	int  Grass::PushResult(const int) const { return DESTROY; }
 	bool Grass::ShouldFall() const { return false; }
 	quint8 Grass::Kind() const { return GRASS; }
 	Block * Grass::DropAfterDamage() const { return 0; }
@@ -904,9 +908,8 @@
 		}
 	}
 
-	int Bush::BeforePush(const int, Block * const who) {
-		Inventory::BeforePush(who);
-		return NO_ACTION;
+	void Bush::Push(const int, Block * const who) {
+		Inventory::Push(who);
 	}
 
 	Block * Bush::DropAfterDamage() const {
@@ -1088,16 +1091,16 @@
 			Chest(str, sub, id, WORKBENCH_SIZE)
 	{}
 // Door::
-	int Door::BeforePush(const int dir, Block * const) {
-		if ( locked || shifted || dir==World::Anti(GetDir()) ) {
-			return NO_ACTION;
-		}
-		movable=MOVABLE;
+	int Door::PushResult(const int dir) const {
+		return ( locked || shifted || dir==World::Anti(GetDir()) ) ?
+			NO_ACTION : MOVE_SELF;
+	}
+	void Door::Push(const int, Block * const) {
+		movable = MOVABLE;
 		if ( GetWorld()->Move(X(), Y(), Z(), GetDir()) ) {
-			shifted=true;
+			shifted = true;
 		}
-		movable=NOT_MOVABLE;
-		return MOVE_SELF;
+		movable = NOT_MOVABLE;
 	}
 
 	void Door::DoFrequentAction() {
@@ -1184,14 +1187,10 @@
 		}
 	}
 
-	int Clock::BeforePush(const int, Block * const) {
-		Use();
-		return NO_ACTION;
-	}
-
 	quint8 Clock::Kind() const { return CLOCK; }
 	ushort Clock::Weight() const { return Block::Weight()/10; }
 	bool Clock::ShouldFall() const { return false; }
+	void Clock::Push(const int, Block * const) { Use(); }
 	int Clock::Movable() const { return NOT_MOVABLE; }
 	int Clock::ShouldAct() const  { return RARE; }
 

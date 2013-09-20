@@ -68,10 +68,12 @@ class Block { // blocks without special physics and attributes
 	virtual QString FullName() const;
 	virtual quint8 Kind() const;
 	virtual bool Catchable() const;
+	/// returns NOT_MOVABLE or MOVABLE or ENVIRONMENT
 	virtual int  Movable() const;
 	/// Returns true on success.
 	virtual bool Inscribe(const QString & str);
-	virtual int  BeforePush(int dir, Block * who);
+	virtual int PushResult(int dir) const;
+	virtual void Push(int dir, Block * who);
 	virtual bool Move(int direction);
 	virtual void  Damage(ushort dmg, int dmg_kind);
 	virtual usage_types Use(Block * who=0);

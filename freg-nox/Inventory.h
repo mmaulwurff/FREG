@@ -71,7 +71,7 @@ class Inventory {
 	bool IsEmpty() const;
 	bool HasRoom() const;
 
-	void BeforePush(Block * who);
+	void Push(Block * who);
 
 	// it is not recommended to make inventory size more than 26,
 	// because it will not be convenient to deal with inventory

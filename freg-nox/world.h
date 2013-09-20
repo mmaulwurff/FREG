@@ -178,10 +178,10 @@ class World : public QThread {
 			ushort x_from, ushort y_from, ushort z_from,
 			ushort src, ushort dest, ushort num);
 
-	// Block information section
-	public:
-	// For more information, use World::GetBlock(x, y, z) and ->.
-	bool InBounds   (ushort x, ushort y, ushort z = 0) const;
+	public: // Block information section
+	static bool InVertBounds(ushort z);
+	bool InBounds(ushort x, ushort y) const;
+	bool InBounds(ushort x, ushort y, ushort z) const;
 	int  Temperature(ushort x, ushort y, ushort z) const;
 
 	public: // World section
