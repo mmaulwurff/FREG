@@ -386,7 +386,7 @@
 		}
 		emit Updated();
 	}
-	int Animal::ShouldAct() const { return FREQUENT_AND_RARE; }
+	int Animal::ShouldAct() const { return FREQUENT_ANIMAL | RARE; }
 
 	ushort Animal::Breath() const { return breath; }
 	ushort Animal::Satiation() const { return satiation; }
@@ -969,7 +969,6 @@
 	}
 
 	QString Rabbit::FullName() const { return tr("Herbivore"); }
-	int Rabbit::ShouldAct() const { return FREQUENT_AND_RARE; }
 	quint8 Rabbit::Kind() const { return RABBIT; }
 	void Rabbit::DoFrequentAction() { Gravitate(4, 1, 3, 4, true); }
 
@@ -1113,7 +1112,7 @@
 		}
 	}
 
-	int  Door::ShouldAct() const  { return FREQUENT; }
+	int  Door::ShouldAct() const  { return FREQUENT_MECH; }
 	quint8 Door::Kind() const { return locked ? LOCKED_DOOR : DOOR; }
 	bool Door::ShouldFall() const { return false; }
 

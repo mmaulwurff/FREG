@@ -91,7 +91,8 @@ Shred::Shred(const ushort shred_x, const ushort shred_y,
 	:
 		longitude(longi), latitude(lati),
 		shredX(shred_x), shredY(shred_y),
-		memory(mem)
+		memory(mem),
+		animalLayer(activeListFrequent.end())
 {
 	if ( LoadShred() ) { // successfull loading
 		return;
@@ -262,10 +263,18 @@ int Shred::Sub(const ushort x, const ushort y, const ushort z) const {
 void Shred::Register(Active * const active) {
 	active->SetShred(this);
 	activeListAll.append(active);
-	switch ( active->ShouldAct() ) {
-	case FREQUENT:          activeListFrequent.append(active); break;
-	case FREQUENT_AND_RARE: activeListFrequent.append(active); // no break;
-	case RARE:              activeListRare.append(active); break;
+	int should_act = active->ShouldAct();
+	if ( should_act & 1 ) {
+		activeListRare.append(active);
+	}
+	should_act &= 0xE;
+	switch ( should_act ) {
+	case FREQUENT_MECH:         activeListFrequent.append(active);  break;
+	case FREQUENT_INTELLECTUAL: activeListFrequent.prepend(active); break;
+	case FREQUENT_ANIMAL:
+		activeListFrequent.insert(animalLayer, active);
+		--animalLayer;
+	break;
 	}
 	AddFalling(active);
 	AddShining(active);
@@ -387,12 +396,6 @@ void Shred::PutBlock(Block * const block,
 		const ushort x, const ushort y, const ushort z)
 {
 	blocks[x][y][z] = block;
-}
-
-void Shred::PutNormalBlock(const int sub,
-		const ushort x, const ushort y, const ushort z)
-{
-	blocks[x][y][z] = Normal(sub);
 }
 
 Block * Shred::Normal(const int sub) { return block_manager.NormalBlock(sub); }

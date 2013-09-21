@@ -199,7 +199,6 @@ class Rabbit : public Animal {
 	Rabbit(int sub, quint16 id);
 	Rabbit(QDataStream & str, int sub, quint16 id);
 
-	int  ShouldAct() const;
 	void DoFrequentAction();
 	void DoRareAction();
 	Block * DropAfterDamage() const;
