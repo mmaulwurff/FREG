@@ -485,15 +485,8 @@ bool World::Move(const ushort x, const ushort y, const ushort z,
 		const quint8 dir)
 {
 	ushort newx, newy, newz;
-	Active * active;
-	Block * block;
 	if ( !Focus(x, y, z, newx, newy, newz, dir) &&
-			CanMove(x, y, z, newx, newy, newz, dir) &&
-			(DOWN==dir || !(block=GetBlock(x, y, z))->Weight() ||
-			!( (active=block->ActiveBlock()) &&
-				active->IsFalling() &&
-				AIR==GetBlock(x, y, z-1)->Sub() &&
-				AIR==GetBlock(newx, newy, newz-1)->Sub() )) )
+			CanMove(x, y, z, newx, newy, newz, dir) )
 	{
 		NoCheckMove(x, y, z, newx, newy, newz, dir);
 		return true;
@@ -506,38 +499,46 @@ bool World::CanMove(const ushort x, const ushort y, const ushort z,
 		const ushort newx, const ushort newy, const ushort newz,
 		const quint8 dir)
 {
+	bool move_flag;
 	Block * const block = GetBlock(x, y, z);
 	Block * block_to = GetBlock(newx, newy, newz);
 	if ( ENVIRONMENT == block->PushResult(NOWHERE) ) {
-		if ( *block == *block_to ) {
-			return false;
-		} else if ( MOVABLE == block_to->PushResult(NOWHERE) ) {
+		if ( (move_flag = !(*block == *block_to)) &&
+				MOVABLE == block_to->PushResult(NOWHERE) )
+		{
 			NoCheckMove(x, y, z, newx, newy, newz, dir);
-			return true;
+		}
+	} else {
+		block_to->Push(dir, block);
+		block_to = GetBlock(newx, newy, newz);
+		switch ( block_to->PushResult(dir) ) {
+		default:
+		case NOT_MOVABLE: move_flag = false; break;
+		case JUMP:
+			if ( DOWN!=dir && UP!=dir ) {
+				Jump(x, y, z, dir);
+			}
+			move_flag = false;
+		break;
+		case MOVE_UP:
+			if ( DOWN!=dir && UP!=dir ) {
+				Move(x, y, z, UP);
+			}
+			move_flag = false;
+		break;
+		case ENVIRONMENT: move_flag = true; break;
+		case MOVABLE:
+			move_flag = ( (block->Weight() > block_to->Weight()) &&
+				Move(newx, newy, newz, dir) );
 		}
 	}
-	block_to->Push(dir, block);
-	block_to = GetBlock(newx, newy, newz);
-	switch ( block_to->PushResult(dir) ) {
-	default:
-	case NOT_MOVABLE: return false;
-	case JUMP:
-		if ( DOWN!=dir && UP!=dir ) {
-			Jump(x, y, z, dir);
-		}
-		return false;
-	break;
-	case MOVE_UP:
-		if ( DOWN!=dir && UP!=dir ) {
-			Move(x, y, z, UP);
-		}
-		return false;
-	break;
-	case ENVIRONMENT: return true;
-	case MOVABLE:
-		return ( (block->Weight() > block_to->Weight()) &&
-			Move(newx, newy, newz, dir) );
-	}
+	Active * active;
+	return ( move_flag &&
+		(DOWN==dir || !block->Weight() ||
+		!( (active=block->ActiveBlock()) &&
+			active->IsFalling() &&
+			AIR==GetBlock(x, y, z-1)->Sub() &&
+			AIR==GetBlock(newx, newy, newz-1)->Sub() )) );
 } // bool World::CanMove(ushort x, y, z, newx, newy, newz, quint8 dir)
 
 void World::NoCheckMove(const ushort x, const ushort y, const ushort z,

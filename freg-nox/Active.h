@@ -50,6 +50,7 @@ class Active : public QObject, public Block {
 	Active * ActiveBlock();
 	/// Returns true if shred border is overstepped.
 	void SetFalling(bool set);
+	bool Move(int dir);
 	bool IsFalling() const;
 	void FallDamage();
 
@@ -65,7 +66,6 @@ class Active : public QObject, public Block {
 	void SetDeferredAction(DeferredAction *);
 	DeferredAction * GetDeferredAction() const;
 
-	int Movable() const;
 	void Damage(ushort dmg, int dmg_kind);
 	void ReceiveSignal(const QString &);
 
