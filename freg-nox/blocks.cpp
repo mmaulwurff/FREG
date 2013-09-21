@@ -112,14 +112,13 @@
 				block_manager.NewBlock(Kind(), Sub());
 	}
 
-	int  Block::Movable() const {
+	int  Block::PushResult(const int) const {
 		return ( AIR==Sub() ) ? ENVIRONMENT : NOT_MOVABLE;
 	}
 
 	quint8 Block::Kind() const { return BLOCK; }
 	quint16 Block::GetId() const { return id; }
 	bool Block::Catchable() const { return false; }
-	int  Block::PushResult(const int) const { return NO_ACTION; }
 	void Block::Push(const int, Block * const) {}
 	bool Block::Move(const int) { return false; }
 	usage_types Block::Use(Block *) { return USAGE_TYPE_NO; }
@@ -325,8 +324,8 @@
 		return ( IRON==Sub() ) ? THRUST : CRUSH;
 	}
 
-	int Weapon::PushResult(const int) const {
-		return ( IRON==Sub() ) ? DAMAGE : NO_ACTION;
+	void Weapon::Push(const int, Block * const who) {
+		who->Damage(DamageLevel(), DamageKind());
 	}
 
 	Weapon::Weapon(const int sub, const quint16 id) :
@@ -732,10 +731,10 @@
 // Pile::
 	void Pile::Push(const int, Block * const who) {
 		Inventory::Push(who);
-	}
-	int Pile::PushResult(const int) const {
-		return IsEmpty() ?
-			DESTROY : NO_ACTION;
+		if ( IsEmpty() ) {
+			GetWorld()->Damage(X(),Y(),Z(), GetDurability(), TIME);
+			GetWorld()->DestroyAndReplace(X(), Y(), Z());
+		}
 	}
 
 	void Pile::DoRareAction() {
@@ -801,7 +800,7 @@
 	}
 
 	int Liquid::ShouldAct() const  { return RARE; }
-	int Liquid::Movable() const { return ENVIRONMENT; }
+	int Liquid::PushResult(const int) const { return ENVIRONMENT; }
 	quint8 Liquid::Kind() const { return LIQUID; }
 	int Liquid::Temperature() const { return ( WATER==Sub() ) ? 0 : 1000; }
 	uchar Liquid::LightRadius() const { return ( WATER==Sub() ) ? 0 : 3; }
@@ -831,6 +830,7 @@
 				Shred::CoordInShred(Y()), Z()-1)->Sub() )
 		{
 			world->Damage(X(), Y(), Z(), durability, TIME);
+			world->DestroyAndReplace(X(), Y(), Z());
 		}
 		short i=X(), j=Y();
 		// increase this if grass grows too fast
@@ -873,7 +873,10 @@
 	}
 
 	int  Grass::ShouldAct() const  { return RARE; }
-	int  Grass::PushResult(const int) const { return DESTROY; }
+	void Grass::Push(const int, Block * const) {
+		GetWorld()->Damage(X(), Y(), Z(), GetDurability(), TIME);
+		GetWorld()->DestroyAndReplace(X(), Y(), Z());
+	}
 	bool Grass::ShouldFall() const { return false; }
 	quint8 Grass::Kind() const { return GRASS; }
 	Block * Grass::DropAfterDamage() const { return 0; }
@@ -888,7 +891,6 @@
 	QString Bush::FullName() const { return tr("Bush"); }
 	quint8 Bush::Kind() const { return BUSH; }
 	int  Bush::Sub() const { return Block::Sub(); }
-	int  Bush::Movable() const { return NOT_MOVABLE; }
 	bool Bush::ShouldFall() const { return false; }
 	int  Bush::ShouldAct() const  { return RARE; }
 	usage_types Bush::Use(Block *) { return USAGE_TYPE_OPEN; }
@@ -908,6 +910,7 @@
 		}
 	}
 
+	int Bush::PushResult(int const) const { return NOT_MOVABLE; }
 	void Bush::Push(const int, Block * const who) {
 		Inventory::Push(who);
 	}
@@ -1091,37 +1094,27 @@
 			Chest(str, sub, id, WORKBENCH_SIZE)
 	{}
 // Door::
-	int Door::PushResult(const int dir) const {
-		return ( locked || shifted || dir==World::Anti(GetDir()) ) ?
-			NO_ACTION : MOVE_SELF;
-	}
-	void Door::Push(const int, Block * const) {
-		movable = MOVABLE;
-		if ( GetWorld()->Move(X(), Y(), Z(), GetDir()) ) {
-			shifted = true;
+	void Door::Push(const int, Block * const who) {
+		if ( !shifted && !locked &&
+				World::Anti(GetDir())!=who->GetDir() )
+		{
+			movable = true;
+			shifted = GetWorld()->Move(X(), Y(), Z(), GetDir());
+			movable = false;
 		}
-		movable = NOT_MOVABLE;
 	}
 
 	void Door::DoFrequentAction() {
 		if ( shifted ) {
-			World * const world = GetWorld();
-			ushort x, y, z;
-			world->Focus(X(), Y(), Z(), x, y, z,
+			movable = true;
+			shifted = !GetWorld()->Move(X(), Y(), Z(),
 				World::Anti(GetDir()));
-			if ( AIR == world->GetBlock(x, y, z)->Sub() ) {
-				movable = MOVABLE;
-				world->Move(X(), Y(), Z(),
-					World::Anti(GetDir()));
-				shifted = false;
-				movable = NOT_MOVABLE;
-			}
+			movable = false;
 		}
 	}
 
 	int  Door::ShouldAct() const  { return FREQUENT; }
 	quint8 Door::Kind() const { return locked ? LOCKED_DOOR : DOOR; }
-	int  Door::Movable() const { return movable; }
 	bool Door::ShouldFall() const { return false; }
 
 	QString Door::FullName() const {
@@ -1140,7 +1133,7 @@
 	}
 
 	usage_types Door::Use(Block *) {
-		locked=!locked;
+		locked = !locked;
 		return USAGE_TYPE_NO;
 	}
 
@@ -1154,12 +1147,12 @@
 				BLOCK_OPAQUE : NONSTANDARD),
 			shifted(false),
 			locked(false),
-			movable(NOT_MOVABLE)
+			movable(false)
 	{}
 	Door::Door(QDataStream & str, const int sub, const quint16 id) :
 			Active(str, sub, id, ( STONE==sub ) ?
 				BLOCK_OPAQUE : NONSTANDARD),
-			movable(NOT_MOVABLE)
+			movable(false)
 	{
 		str >> shifted >> locked;
 	}
@@ -1191,7 +1184,7 @@
 	ushort Clock::Weight() const { return Block::Weight()/10; }
 	bool Clock::ShouldFall() const { return false; }
 	void Clock::Push(const int, Block * const) { Use(); }
-	int Clock::Movable() const { return NOT_MOVABLE; }
+	int Clock::PushResult(const int) const { return NOT_MOVABLE; }
 	int Clock::ShouldAct() const  { return RARE; }
 
 	void Clock::DoRareAction() {

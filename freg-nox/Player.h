@@ -80,7 +80,7 @@ class Player : public QObject {
 
 	void SetPlayer(ushort set_x, ushort set_y, ushort set_z);
 	/// Dir is not used, for slot signature compatibility only.
-	void UpdateXYZ(int dir = HERE);
+	void UpdateXYZ(int dir = NOWHERE);
 
 	signals:
 	void Moved(long x, long y, ushort z) const;
@@ -154,8 +154,8 @@ class Player : public QObject {
 	void SetCreativeMode(bool turn);
 
 	void SetDir(int dir);
-	/// Moves player to direction. If ==HERE, moves to Player::GetDir().
-	void Move(int direction=HERE);
+	/// Moves player to direction. If ==NOWHERE, moves to Player::GetDir().
+	void Move(int direction = NOWHERE);
 	void Jump();
 
 	/// Closes backpack, chests, etc.
@@ -207,4 +207,4 @@ class Player : public QObject {
 	~Player();
 }; // class Player
 
-#endif
+#endif // PLAYER_H

@@ -49,7 +49,6 @@ class Active : public QObject, public Block {
 
 	Active * ActiveBlock();
 	/// Returns true if shred border is overstepped.
-	bool Move(int direction);
 	void SetFalling(bool set);
 	bool IsFalling() const;
 	void FallDamage();

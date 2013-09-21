@@ -46,7 +46,7 @@ WorldMap::WorldMap(const QString * const world_name) {
 			fprintf(stderr, "hello map\n");
 			map_generation.waitForFinished();
 		}
-		mapSize = ( map->open(QIODevice::ReadOnly | QIODevice::Text) ) ?
+		mapSize=( map->open(QIODevice::ReadOnly | QIODevice::Text) ) ?
 			map_size : 1;
 	}
 }

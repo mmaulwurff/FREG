@@ -593,7 +593,7 @@ bool Shred::Tree(const ushort x, const ushort y, const ushort z,
 	for (ushort k=z; k < z+height-1; ++k) { // trunk
 		PutBlock(Normal(WOOD), x+1, y+1, k);
 	}
-	if ( ENVIRONMENT==GetBlock(x+1, y+1, z-1)->Movable() ) {
+	if ( ENVIRONMENT==GetBlock(x+1, y+1, z-1)->PushResult(NOWHERE) ) {
 		World::DeleteBlock(blocks[x+1][y+1][z-1]);
 		PutBlock(Normal(WOOD), x+1, y+1, z-1);
 	}

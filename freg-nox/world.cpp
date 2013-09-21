@@ -239,7 +239,7 @@ quint8 World::Anti(const quint8 dir) {
 	default:
 		fprintf(stderr, "World::Anti(int): unlisted dir: %d\n",
 			(int)dir);
-		return HERE;
+		return NOWHERE;
 	}
 }
 
@@ -506,51 +506,38 @@ bool World::CanMove(const ushort x, const ushort y, const ushort z,
 		const ushort newx, const ushort newy, const ushort newz,
 		const quint8 dir)
 {
-	if ( !InBounds(x, y, z) ) {
-		return false;
-	}
 	Block * const block = GetBlock(x, y, z);
-	if ( NOT_MOVABLE == block->Movable() ) {
-		return false;
-	}
 	Block * block_to = GetBlock(newx, newy, newz);
-	if ( ENVIRONMENT == block->Movable() ) {
+	if ( ENVIRONMENT == block->PushResult(NOWHERE) ) {
 		if ( *block == *block_to ) {
 			return false;
-		} else if ( MOVABLE == block_to->Movable() ) {
+		} else if ( MOVABLE == block_to->PushResult(NOWHERE) ) {
 			NoCheckMove(x, y, z, newx, newy, newz, dir);
 			return true;
 		}
 	}
 	block_to->Push(dir, block);
+	block_to = GetBlock(newx, newy, newz);
 	switch ( block_to->PushResult(dir) ) {
-	case MOVE_SELF: block_to = GetBlock(newx, newy, newz); break;
-	case DESTROY:
-		SetBlock(Normal(AIR), newx, newy, newz);
-		return true;
-	break;
+	default:
+	case NOT_MOVABLE: return false;
 	case JUMP:
 		if ( DOWN!=dir && UP!=dir ) {
 			Jump(x, y, z, dir);
-			return false;
 		}
+		return false;
 	break;
 	case MOVE_UP:
 		if ( DOWN!=dir && UP!=dir ) {
 			Move(x, y, z, UP);
-			return false;
 		}
-	break;
-	case DAMAGE:
-		Damage(x, y, z,
-			block_to->DamageLevel(),
-			block_to->DamageKind());
 		return false;
 	break;
+	case ENVIRONMENT: return true;
+	case MOVABLE:
+		return ( (block->Weight() > block_to->Weight()) &&
+			Move(newx, newy, newz, dir) );
 	}
-	return ( ENVIRONMENT==block_to->Movable() ||
-		( (block->Weight() > block_to->Weight()) &&
-			Move(newx, newy, newz, dir) ) );
 } // bool World::CanMove(ushort x, y, z, newx, newy, newz, quint8 dir)
 
 void World::NoCheckMove(const ushort x, const ushort y, const ushort z,
@@ -675,7 +662,7 @@ bool World::Build(Block * block,
 		const quint8 dir, Block * const who, const bool anyway)
 {
 	Block * const target_block = GetBlock(x, y, z);
-	if ( ENVIRONMENT!=target_block->Movable() && !anyway ) {
+	if ( ENVIRONMENT!=target_block->PushResult(NOWHERE) && !anyway ) {
 		if ( who ) {
 			who->ReceiveSignal(tr("Cannot build here."));
 		}

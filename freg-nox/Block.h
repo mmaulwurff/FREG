@@ -30,15 +30,6 @@ const QString SOUND_STRINGS[] = {
 const QString DING = SOUND_STRINGS[0];
 const QString OUCH = SOUND_STRINGS[1];
 
-enum before_push_action {
-	NO_ACTION,
-	MOVE_UP,
-	JUMP,
-	DAMAGE,
-	DESTROY,
-	MOVE_SELF
-}; // enum before_push_action
-
 enum WEARABLE {
 	WEARABLE_NOWHERE,
 	WEARABLE_HEAD,
@@ -68,8 +59,6 @@ class Block { // blocks without special physics and attributes
 	virtual QString FullName() const;
 	virtual quint8 Kind() const;
 	virtual bool Catchable() const;
-	/// returns NOT_MOVABLE or MOVABLE or ENVIRONMENT
-	virtual int  Movable() const;
 	/// Returns true on success.
 	virtual bool Inscribe(const QString & str);
 	virtual int PushResult(int dir) const;

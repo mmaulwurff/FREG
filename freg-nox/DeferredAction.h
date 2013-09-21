@@ -15,8 +15,7 @@
 	* GNU General Public License for more details.
 	*
 	* You should have received a copy of the GNU General Public License
-	* along with FREG. If not, see <http://www.gnu.org/licenses/>.
-	*/
+	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #ifndef DEFERRED_ACTION_H
 #define DEFERRED_ACTION_H
@@ -52,12 +51,11 @@ class DeferredAction {
 	void Throw() const;
 
 	public:
-	void SetGhostMove(ushort dir=HERE);
-	void SetMove(ushort dir=HERE);
+	void SetGhostMove(ushort dir = NOWHERE);
+	void SetMove(ushort dir = NOWHERE);
 	void SetJump();
 	void SetBuild(ushort x_targ, ushort y_targ, ushort z_targ,
-			Block * material,
-			ushort builder_slot);
+			Block * material, ushort builder_slot);
 	void SetDamage(ushort x_targ, ushort y_targ, ushort z_targ);
 	void SetThrow(ushort x_targ, ushort y_targ, ushort z_targ,
 			ushort src_slot, ushort dest_slot, ushort num);
@@ -69,4 +67,4 @@ class DeferredAction {
 	DeferredAction(Active * attached);
 }; //class DeferredAction
 
-#endif
+#endif // DEFERRED_ACTION_H

@@ -73,10 +73,16 @@ enum dirs {
 	SOUTH, ///< 3
 	EAST,  ///< 4
 	WEST,  ///< 5
-	HERE   ///< 6
+	NOWHERE ///< 6
 }; // enum dirs
 
-enum { NOT_MOVABLE, MOVABLE, ENVIRONMENT };
+enum push_reaction {
+	MOVABLE,
+	ENVIRONMENT,
+	NOT_MOVABLE,
+	MOVE_UP,
+	JUMP
+}; // enum push_reaction
 
 enum times_of_day { MORNING, NOON, EVENING, NIGHT };
 

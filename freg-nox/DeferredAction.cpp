@@ -23,13 +23,13 @@
 #include "DeferredAction.h"
 
 void DeferredAction::GhostMove() const {
-	attachedBlock->Move(( HERE==num ) ?
+	attachedBlock->Move(( NOWHERE==num ) ?
 		attachedBlock->GetDir() : num);
 }
 
 void DeferredAction::Move() const {
 	GetWorld()->Move(attachedBlock->X(), attachedBlock->Y(),
-		attachedBlock->Z(), ( HERE==num ) ?
+		attachedBlock->Z(), ( NOWHERE==num ) ?
 			attachedBlock->GetDir() : num);
 }
 

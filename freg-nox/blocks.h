@@ -66,8 +66,8 @@ class Weapon : public Block {
 	public:
 	quint8 Kind() const;
 	int Wearable() const;
-	int PushResult(int dir) const;
 	int DamageKind() const;
+	void Push(int dir, Block * who);
 	ushort DamageLevel() const;
 	ushort Weight() const;
 	QString FullName() const;
@@ -116,7 +116,6 @@ class Pile : public Active, public Inventory {
 	void DoRareAction();
 	int  ShouldAct() const;
 	void Push(int, Block * who);
-	int  PushResult(int) const;
 	Block * DropAfterDamage() const;
 	QString FullName() const;
 	Inventory * HasInventory();
@@ -138,7 +137,7 @@ class Liquid : public Active {
 	void DoRareAction();
 	int  ShouldAct() const;
 	quint8 Kind() const;
-	int  Movable() const;
+	int PushResult(int dir) const;
 	int  Temperature() const;
 	uchar LightRadius() const;
 	QString FullName() const;
@@ -157,7 +156,7 @@ class Grass : public Active {
 	int  ShouldAct() const;
 	quint8 Kind() const;
 	bool ShouldFall() const;
-	int  PushResult(int dir) const;
+	void Push(int dir, Block * who);
 	Block * DropAfterDamage() const;
 
 	Grass(int sub, quint16 id);
@@ -172,7 +171,7 @@ class Bush : public Active, public Inventory {
 	public:
 	quint8 Kind() const;
 	int  Sub() const;
-	int  Movable() const;
+	int PushResult(int dir) const;
 	bool ShouldFall() const;
 	void DoRareAction();
 	int  ShouldAct() const;
@@ -233,47 +232,46 @@ class Workbench : public Chest {
 class Door : public Active {
 	Q_OBJECT
 
-	bool shifted;
-	bool locked;
-	int movable;
-
 	public:
-	void DoFrequentAction();
-	int  ShouldAct() const;
-	quint8 Kind() const;
-	int  Movable() const;
-	int  PushResult(int dir) const;
+	Door(int sub, quint16 id);
+	Door(QDataStream & str, int sub, quint16 id);
+
+	int ShouldAct() const;
 	void Push(int dir, Block * const);
+	void DoFrequentAction();
 	bool ShouldFall() const;
+	quint8 Kind() const;
 	QString FullName() const;
 	usage_types Use(Block * who = 0);
 
 	protected:
 	void SaveAttributes(QDataStream & out) const;
 
-	public:
-	Door(int sub, quint16 id);
-	Door(QDataStream & str, int sub, quint16 id);
+	private:
+	bool shifted;
+	bool locked;
+	bool movable;
 }; // class Door
 
 class Clock : public Active {
-	short alarmTime;
-	short timerTime;
-
 	public:
+	Clock(int sub, quint16 id);
+	Clock (QDataStream & str, int sub, quint16 id);
+
+	int ShouldAct() const;
+	int PushResult(const int) const;
 	void DoRareAction();
-	int  ShouldAct() const;
-	quint8 Kind() const;
-	int  Movable() const;
 	bool ShouldFall() const;
 	void Push(int dir, Block * who);
 	bool Inscribe(const QString & str);
+	quint8 Kind() const;
 	ushort Weight() const;
-	usage_types Use(Block * who=0);
 	QString FullName() const;
+	usage_types Use(Block * who = 0);
 
-	Clock(int sub, quint16 id);
-	Clock (QDataStream & str, int sub, quint16 id);
+	private:
+	short alarmTime;
+	short timerTime;
 }; // class Clock
 
 class Creator : public Active, public Inventory {

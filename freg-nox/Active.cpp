@@ -38,7 +38,6 @@ quint8 Active::Kind() const { return ACTIVE; }
 Active * Active::ActiveBlock() { return this; }
 int  Active::ShouldAct() const { return NEVER; }
 bool Active::IsFalling() const { return falling; }
-int  Active::Movable() const { return MOVABLE; }
 bool Active::ShouldFall() const { return true; }
 void Active::DoRareAction() {}
 void Active::DoFrequentAction() {}
