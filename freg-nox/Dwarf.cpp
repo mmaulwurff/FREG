@@ -15,8 +15,7 @@
 	* GNU General Public License for more details.
 	*
 	* You should have received a copy of the GNU General Public License
-	* along with FREG. If not, see <http://www.gnu.org/licenses/>.
-	*/
+	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "Dwarf.h"
 #include "world.h"
@@ -25,7 +24,7 @@
 
 uchar Dwarf::GetActiveHand() const { return activeHand; }
 void  Dwarf::SetActiveHand(const bool right) {
-	activeHand=(right ? quint8(IN_RIGHT) : IN_LEFT);
+	activeHand = (right ? quint8(IN_RIGHT) : IN_LEFT);
 }
 
 ushort Dwarf::Weight() const {
@@ -50,10 +49,11 @@ Block * Dwarf::DropAfterDamage() const {
 	return block_manager.NormalBlock(H_MEAT);
 }
 
-quint8 Dwarf::Kind() const { return DWARF; }
-int  Dwarf::Sub() const { return Block::Sub(); }
+int Dwarf::Sub() const { return Block::Sub(); }
+int Dwarf::ShouldAct() const { return FREQUENT_INTELLECTUAL | RARE; }
 bool Dwarf::Access() const { return false; }
 ushort Dwarf::Start() const { return ON_LEGS+1; }
+quint8 Dwarf::Kind() const { return DWARF; }
 QString Dwarf::FullName() const { return "Rational"; }
 Inventory * Dwarf::HasInventory() { return Inventory::HasInventory(); }
 uchar Dwarf::LightRadius() const { return lightRadius; }

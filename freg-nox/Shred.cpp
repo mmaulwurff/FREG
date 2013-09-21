@@ -91,8 +91,7 @@ Shred::Shred(const ushort shred_x, const ushort shred_y,
 	:
 		longitude(longi), latitude(lati),
 		shredX(shred_x), shredY(shred_y),
-		memory(mem),
-		animalLayer(activeListFrequent.end())
+		memory(mem)
 {
 	if ( LoadShred() ) { // successfull loading
 		return;
@@ -267,14 +266,10 @@ void Shred::Register(Active * const active) {
 	if ( should_act & 1 ) {
 		activeListRare.append(active);
 	}
-	should_act &= 0xE;
-	switch ( should_act ) {
-	case FREQUENT_MECH:         activeListFrequent.append(active);  break;
-	case FREQUENT_INTELLECTUAL: activeListFrequent.prepend(active); break;
-	case FREQUENT_ANIMAL:
-		activeListFrequent.insert(animalLayer, active);
-		--animalLayer;
-	break;
+	if ( (should_act & 0xE) == FREQUENT_INTELLECTUAL ) {
+		activeListFrequent.prepend(active);
+	} else {
+		activeListFrequent.append(active);
 	}
 	AddFalling(active);
 	AddShining(active);

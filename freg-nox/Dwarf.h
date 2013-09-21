@@ -15,8 +15,7 @@
 	* GNU General Public License for more details.
 	*
 	* You should have received a copy of the GNU General Public License
-	* along with FREG. If not, see <http://www.gnu.org/licenses/>.
-	*/
+	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #ifndef DWARF_H
 #define DWARF_H
@@ -35,6 +34,7 @@ class Dwarf : public Animal, public Inventory {
 	void  SetActiveHand(bool right);
 
 	int Sub() const;
+	int ShouldAct() const;
 	int DamageKind() const;
 	bool Move(int direction);
 	quint8 Kind() const;
@@ -70,4 +70,4 @@ class Dwarf : public Animal, public Inventory {
 	uchar lightRadius;
 }; // class Dwarf
 
-#endif
+#endif // DWARF_H

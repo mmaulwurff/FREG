@@ -159,17 +159,6 @@ class Shred {
 
 	// memory, allocated for this shred.
 	Shred * const memory;
-
-	/// positions for activeListFrequent (the most important list)
-	/** Idea is to divide activeListFrequent in three parts:
-	 *  intelligent part, animal part and remaining part (mech part).
-	 *  Intelligent is in the beginning of the list,
-	 *  animal is in the middle, and other in the tail.
-	 *  So, in Shred::PhysEventsFrequent intelligent blocks will act
-	 *  first, then animals, then remaining blocks.
-	 *  Only one pointer (iterator) is needed: intelligent will prepend
-	 *  in list, mech blocks will append in list. */
-	QLinkedList<Active *>::iterator animalLayer;
 }; // class Shred
 
 #endif // SHRED_H
