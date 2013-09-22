@@ -196,6 +196,9 @@
 			( (!note && !block.note) ||
 				(note && block.note && *block.note==*note) ) );
 	}
+	bool Block::operator!=(const Block & block) const {
+		return !(*this == block);
+	}
 
 	void Block::SaveAttributes(QDataStream &) const {}
 	void Block::SaveToFile(QDataStream & out) const {

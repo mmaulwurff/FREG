@@ -101,6 +101,7 @@ class Block { // blocks without special physics and attributes
 	int Transparent() const;
 
 	bool operator==(const Block &) const;
+	bool operator!=(const Block &) const;
 
 	void SaveToFile(QDataStream & out) const;
 
