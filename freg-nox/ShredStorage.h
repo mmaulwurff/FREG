@@ -15,8 +15,7 @@
 	* GNU General Public License for more details.
 	*
 	* You should have received a copy of the GNU General Public License
-	* along with FREG. If not, see <http://www.gnu.org/licenses/>.
-	*/
+	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #ifndef SHRED_STORAGE_H
 #define SHRED_STORAGE_H
@@ -25,19 +24,18 @@
 class QByteArray;
 
 struct LongLat {
+	LongLat(long longitude, long latitude);
+	bool operator==(const LongLat &) const;
+
 	long longitude;
 	long latitude;
-
-	bool operator==(const LongLat &) const;
-	LongLat(long longitude, long latitude);
 };
 
 class PreloadThread;
 
 class ShredStorage {
 	public:
-	ShredStorage(ushort size,
-			long longi_center, long lati_center);
+	ShredStorage(ushort size, long longi_center, long lati_center);
 	~ShredStorage();
 
 	QByteArray * GetShredData(long longi, long lati) const;
@@ -59,11 +57,9 @@ class ShredStorage {
 
 class PreloadThread : public QThread {
 	Q_OBJECT
-
 	public:
 	PreloadThread(ShredStorage *, int direction,
-			long longi_center, long lati_center,
-			ushort size);
+			long longi_center, long lati_center, ushort size);
 
 	protected:
 	void run();
@@ -76,4 +72,4 @@ class PreloadThread : public QThread {
 	const ushort size;
 }; // class PreloadThread
 
-#endif
+#endif // SHRED_STORAGE_H

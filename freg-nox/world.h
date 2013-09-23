@@ -30,10 +30,10 @@ class ShredStorage;
 class QByteArray;
 class QReadWriteLock;
 
-const ushort SAFE_FALL_HEIGHT = 5;
+const ushort SAFE_FALL_HEIGHT = 5U;
 
-const uchar MOON_LIGHT_FACTOR = 1;
-const uchar  SUN_LIGHT_FACTOR = 8;
+const uchar MOON_LIGHT_FACTOR = 1U;
+const uchar  SUN_LIGHT_FACTOR = 8U;
 
 class World : public QThread {
 	/** \class World world.h
@@ -43,7 +43,7 @@ class World : public QThread {
 	Q_OBJECT
 
 	public:
-	World(const QString &);
+	explicit World(const QString &);
 	~World();
 
 	// Block work section
@@ -225,7 +225,7 @@ class World : public QThread {
 	void ExitReceived();
 
 	private:
-	static const ushort TIME_STEPS_IN_SEC = 10;
+	static const ushort TIME_STEPS_IN_SEC = 10U;
 
 	ulong time;
 	ushort timeStep;

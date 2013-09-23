@@ -28,13 +28,29 @@ enum deferred_actions {
 	DEFERRED_BUILD,
 	DEFERRED_DAMAGE,
 	DEFERRED_THROW
-}; //enum deferred_actions
+}; // enum deferred_actions
 
 class Block;
 class Active;
 class World;
 
 class DeferredAction {
+	public:
+	explicit DeferredAction(Active * attached);
+
+	void SetGhostMove(ushort dir = NOWHERE);
+	void SetMove(ushort dir = NOWHERE);
+	void SetJump();
+	void SetBuild(ushort x_targ, ushort y_targ, ushort z_targ,
+			Block * material, ushort builder_slot);
+	void SetDamage(ushort x_targ, ushort y_targ, ushort z_targ);
+	void SetThrow(ushort x_targ, ushort y_targ, ushort z_targ,
+			ushort src_slot, ushort dest_slot, ushort num);
+
+	World * GetWorld() const;
+	int  GetActionType() const;
+	void MakeAction();
+
 	private:
 	int type;
 	Active * const attachedBlock;
@@ -49,22 +65,6 @@ class DeferredAction {
 	void Build();
 	void Damage() const;
 	void Throw() const;
-
-	public:
-	void SetGhostMove(ushort dir = NOWHERE);
-	void SetMove(ushort dir = NOWHERE);
-	void SetJump();
-	void SetBuild(ushort x_targ, ushort y_targ, ushort z_targ,
-			Block * material, ushort builder_slot);
-	void SetDamage(ushort x_targ, ushort y_targ, ushort z_targ);
-	void SetThrow(ushort x_targ, ushort y_targ, ushort z_targ,
-			ushort src_slot, ushort dest_slot, ushort num);
-
-	World * GetWorld() const;
-	int  GetActionType() const;
-	void MakeAction();
-
-	DeferredAction(Active * attached);
 }; //class DeferredAction
 
 #endif // DEFERRED_ACTION_H

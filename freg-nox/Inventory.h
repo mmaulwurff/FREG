@@ -15,24 +15,17 @@
 	* GNU General Public License for more details.
 	*
 	* You should have received a copy of the GNU General Public License
-	* along with FREG. If not, see <http://www.gnu.org/licenses/>.
-	*/
+	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #ifndef INVENTORY_H
 #define INVENTORY_H
 
 #include <QStack>
 
-const ushort INV_SIZE = 26;
-const ushort MAX_STACK_SIZE = 9;
+const ushort INV_SIZE = 26U;
+const ushort MAX_STACK_SIZE = 9U;
 
 class Inventory {
-	const ushort size;
-	QStack<Block *> * inventory;
-
-	protected:
-	virtual void SaveAttributes(QDataStream & out) const;
-
 	public:
 	virtual quint8 Kind() const=0;
 	virtual int Sub() const=0;
@@ -73,12 +66,18 @@ class Inventory {
 
 	void Push(Block * who);
 
-	// it is not recommended to make inventory size more than 26,
-	// because it will not be convenient to deal with inventory
-	// in console version.
-	Inventory(ushort sz=INV_SIZE);
-	Inventory(QDataStream & str, ushort size=INV_SIZE);
-	~Inventory();
+	protected:
+	virtual void SaveAttributes(QDataStream & out) const;
+	/// It is not recommended to make inventory size more than 26.
+	/** Because it will not be convenient to deal with inventory
+	 *  in console version. */
+	explicit Inventory(ushort sz = INV_SIZE);
+	Inventory(QDataStream & str, ushort size = INV_SIZE);
+	virtual ~Inventory();
+
+	private:
+	const ushort size;
+	QStack<Block *> * inventory;
 }; // class Inventory
 
-#endif
+#endif // INVENTORY_H

@@ -24,14 +24,10 @@
 
 class Animal : public Active {
 	Q_OBJECT
-
 	public:
-	Animal(int sub, quint16 id);
-	Animal(QDataStream & str, int sub, quint16 id);
-
 	void DoRareAction();
 	int  ShouldAct() const;
-	QString FullName() const=0;
+	QString FullName() const = 0;
 	Animal * IsAnimal();
 
 	int DamageKind() const;
@@ -41,6 +37,9 @@ class Animal : public Active {
 	virtual quint16 NutritionalValue(quint8 sub) const = 0;
 
 	protected:
+	Animal(int sub, quint16 id);
+	Animal(QDataStream & str, int sub, quint16 id);
+
 	void SaveAttributes(QDataStream & out) const;
 	void EatGrass();
 

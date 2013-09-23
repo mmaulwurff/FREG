@@ -25,7 +25,7 @@ class QString;
 
 class WorldMap {
 	public:
-	WorldMap(const QString *);
+	explicit WorldMap(const QString *);
 	~WorldMap();
 
 	long MapSize() const;
