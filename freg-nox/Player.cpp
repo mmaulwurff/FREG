@@ -365,6 +365,9 @@ void Player::TakeOff(const ushort num) {
 }
 
 void Player::ProcessCommand(QString & command) {
+	if ( 0 == command.length() ) {
+		return;
+	} // else:
 	QWriteLocker locker(world->GetLock());
 	QTextStream comm_stream(&command);
 	QString request;
@@ -415,12 +418,6 @@ void Player::ProcessCommand(QString & command) {
 				Examine(x_what, y_what, z_what);
 			}
 		}
-	} else if ( "moo" == request ) {
-		emit Notify("^__^");
-		emit Notify("(oo)\\_______");
-		emit Notify("(__)\\       )\\/\\");
-		emit Notify("    ||----w |");
-		emit Notify("    ||     ||");
 	} else if ( "kindtostring"==request || "k2str"==request ) {
 		int kind;
 		comm_stream >> kind;
@@ -430,12 +427,9 @@ void Player::ProcessCommand(QString & command) {
 		QString str;
 		comm_stream >> str;
 		const int kind = block_manager.StringToKind(str);
-		if ( kind == LAST_KIND ) {
-			emit Notify(tr("\"%1\" is unknown kind.").arg(str));
-		} else {
-			emit Notify(tr("Code of kind %1 is %2.").
-				arg(str).arg(kind));
-		}
+		emit Notify( ( kind == LAST_KIND ) ?
+			tr("\"%1\" is unknown kind.").arg(str) :
+			tr("Code of kind %1 is %2.").arg(str).arg(kind) );
 	} else if ( "subtostring"==request || "s2str"==request ) {
 		int sub;
 		comm_stream >> sub;
@@ -444,18 +438,17 @@ void Player::ProcessCommand(QString & command) {
 	} else if ( "stringtosub"==request || "str2s"==request ) {
 		QString str;
 		comm_stream >> str;
-		const int sub=BlockManager::StringToSub(str);
-		if ( sub == LAST_SUB ) {
-			emit Notify(tr("\"%1\" is unknown substance.").
-				arg(str));
-		} else {
-			emit Notify(tr("Code of substance %1 is %2.").
-				arg(str).arg(sub));
-		}
+		const int sub = BlockManager::StringToSub(str);
+		emit Notify( ( sub == LAST_SUB ) ?
+			tr("\"%1\" is unknown substance.").arg(str) :
+			tr("Code of substance %1 is %2.").arg(str).arg(sub) );
 	} else if ( "time" == request ) {
 		emit Notify( (GetCreativeMode() || COMMANDS_ALWAYS_ON) ?
 			GetWorld()->TimeOfDayStr() :
 			tr("Not in Creative Mode.") );
+	} else if ( "version" == request ) {
+		Notify(QString("freg version: %1. Compiled on %2 at %3.").
+			arg(VER).arg(__DATE__).arg(__TIME__));
 	} else {
 		emit Notify(tr("Don't know such command: \"%1\".").
 			arg(command));
@@ -480,7 +473,7 @@ void Player::SetDir(const int direction) {
 	if ( player ) {
 		player->SetDir(direction);
 	}
-	dir=direction;
+	dir = direction;
 	emit Updated();
 }
 

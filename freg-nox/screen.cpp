@@ -357,8 +357,6 @@ void Screen::ControlPlayer(const int ch) {
 	case '.':
 		if ( command.length()==1 && "."!=command ) {
 			ControlPlayer(command.at(0).toAscii());
-		} else if ( command.length() == 0 ) {
-			break;
 		} else if ( "warranty" == command ) {
 			wstandend(rightWin);
 			PrintFile(rightWin, "texts/warranty.txt");
@@ -366,6 +364,12 @@ void Screen::ControlPlayer(const int ch) {
 			Notify(QString(
 				"Terminal height: %1 lines, width: %2 chars.").
 				arg(LINES).arg(COLS));
+		} else if ( "moo" == command ) {
+			Notify("^__^");
+			Notify("(oo)\\_______");
+			Notify("(__)\\       )\\/\\");
+			Notify("    ||----w |");
+			Notify("    ||     ||");
 		} else {
 			player->ProcessCommand(command);
 		}
