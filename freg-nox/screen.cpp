@@ -438,7 +438,7 @@ const {
 }
 
 void Screen::Print() {
-	if ( !player->GetP() ) {
+	if ( !player->IfPlayerExists() ) {
 		return;
 	}
 	w->ReadLock();

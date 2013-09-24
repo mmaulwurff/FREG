@@ -47,58 +47,14 @@ class Player : public QObject {
 	 *
 	 * Also it does checks for player walking over the shred border. */
 	Q_OBJECT
+public:
+	/// Constructor creates or loads player.
+	/** It puts player block to the world if there is no player block,
+	 *  and makes necessary connections. */
+	Player();
+	/// Destructor calls Player::CleanAll().
+	~Player();
 
-	long homeLongi, homeLati;
-	short homeX, homeY, homeZ;
-	short x, y, z; // current position
-	int dir;
-	Active * player;
-	int usingType, usingSelfType;
-	ushort usingInInventory;
-	bool creativeMode;
-	volatile bool cleaned;
-
-	Shred * GetShred() const;
-	World * GetWorld() const;
-
-	private slots:
-	/// For cleaning player-related data before exiting program.
-	/** This is connected to app's aboutToQuit() signal, also it
-	 *  is called from destructor. There is a check for data deleting
-	 *  not to be called twice.
-	 *  Also this saves player to file player_save. */
-	void CleanAll();
-
-	/// Checks if player walked over the shred border.
-	/** This is connected to player's block signal Moved(int).
-	 *  It emits OverstepBorder(int) signal when player walks
-	 *  over the shred border. */
-	void CheckOverstep(int dir);
-
-	/// This is called when player block is destroyed.
-	void BlockDestroy();
-
-	void SetPlayer(ushort set_x, ushort set_y, ushort set_z);
-	/// Dir is not used, for slot signature compatibility only.
-	void UpdateXYZ(int dir = NOWHERE);
-
-	signals:
-	void Moved(long x, long y, ushort z) const;
-	/// This is emitted when a notification is needed to be displayed.
-	/** It should be connected to screen::Notify(const QString &). */
-	void Notify(const QString &) const;
-
-	/// This is emitted when player walks over shred border.
-	/** It should be connected to World::ReloadShreds(int) signal. */
-	void OverstepBorder(int);
-
-	/// This is emitted when some player property is updated.
-	/** It shoul be connected to screen::UpdatePlayer() signal. */
-	void Updated();
-	void GetString(QString &);
-	void Destroyed();
-
-	public:
 	/// This returns current player block X (coordinates in loaded zone)
 	short X() const;
 	/// This returns current player block Y (coordinates in loaded zone)
@@ -127,8 +83,7 @@ class Player : public QObject {
 	/// Can be > 100 if player is gorged. When player is not animal, 50.
 	ushort SatiationPercent() const;
 
-	/// This returns player block itself.
-	Active * GetP() const;
+	bool IfPlayerExists() const;
 
 	/// This returns true if block at (x, y, z) is visible to player.
 	bool Visible(ushort x, ushort y, ushort z) const;
@@ -185,8 +140,43 @@ class Player : public QObject {
 	/// Can also wield appropriate things.
 	void MoveInsideInventory(ushort num_from, ushort num_to, ushort num=1);
 	void ProcessCommand(QString & command);
+signals:
+	void Moved(long x, long y, ushort z) const;
+	/// This is emitted when a notification is needed to be displayed.
+	/** It should be connected to screen::Notify(const QString &). */
+	void Notify(const QString &) const;
 
-	private:
+	/// This is emitted when player walks over shred border.
+	/** It should be connected to World::ReloadShreds(int) signal. */
+	void OverstepBorder(int);
+
+	/// This is emitted when some player property is updated.
+	/** It shoul be connected to screen::UpdatePlayer() signal. */
+	void Updated();
+	void GetString(QString &);
+	void Destroyed();
+private slots:
+	/// For cleaning player-related data before exiting program.
+	/** This is connected to app's aboutToQuit() signal, also it
+	 *  is called from destructor. There is a check for data deleting
+	 *  not to be called twice.
+	 *  Also this saves player to file player_save. */
+	void CleanAll();
+
+	/// Checks if player walked over the shred border.
+	/** This is connected to player's block signal Moved(int).
+	 *  It emits OverstepBorder(int) signal when player walks
+	 *  over the shred border. */
+	void CheckOverstep(int dir);
+
+	/// This is called when player block is destroyed.
+	void BlockDestroy();
+
+	void SetPlayer(ushort set_x, ushort set_y, ushort set_z);
+	/// Dir is not used, for slot signature compatibility only.
+	void UpdateXYZ(int dir = NOWHERE);
+
+private:
 	void UseNoLock(ushort num);
 	void InnerMove(ushort num_from, ushort num_to, ushort num=1);
 	/// Checks player existence, inventory existence, size limits,
@@ -197,14 +187,18 @@ class Player : public QObject {
 	void Get(Block *);
 	Block * Drop(ushort);
 
-	public:
-	/// Constructor creates or loads player.
-	/** It puts player block to the world if there is no player block,
-	 *  and makes necessary connections. */
-	Player();
+	long homeLongi, homeLati;
+	short homeX, homeY, homeZ;
+	short x, y, z; // current position
+	int dir;
+	Active * player;
+	int usingType, usingSelfType;
+	ushort usingInInventory;
+	bool creativeMode;
+	volatile bool cleaned;
 
-	/// Destructor calls Player::CleanAll().
-	~Player();
+	Shred * GetShred() const;
+	World * GetWorld() const;
 }; // class Player
 
 #endif // PLAYER_H

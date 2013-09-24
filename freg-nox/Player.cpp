@@ -43,12 +43,12 @@ bool Player::IsRightActiveHand() const {
 	return Dwarf::IN_RIGHT==GetActiveHand();
 }
 ushort Player::GetActiveHand() const {
-	Dwarf * const dwarf = dynamic_cast<Dwarf *>(GetP());
+	Dwarf * const dwarf = dynamic_cast<Dwarf *>(player);
 	return ( dwarf ) ?
 		dwarf->GetActiveHand() : 0;
 }
 void Player::SetActiveHand(const bool right) {
-	Dwarf * const dwarf = dynamic_cast<Dwarf *>(GetP());
+	Dwarf * const dwarf = dynamic_cast<Dwarf *>(player);
 	if ( dwarf ) {
 		dwarf->SetActiveHand(right);
 	}
@@ -78,7 +78,7 @@ int Player::UsingSelfType() const { return usingSelfType; }
 int Player::UsingType() const { return usingType; }
 void Player::SetUsingTypeNo() { usingType = USAGE_TYPE_NO; }
 
-Active * Player::GetP() const { return player; }
+bool Player::IfPlayerExists() const { return !!player; }
 
 short Player::HP() const {
 	return ( !player || creativeMode ) ?
@@ -463,7 +463,7 @@ void Player::ProcessCommand(QString & command) {
 } // void Player::ProcessCommand(QString & command)
 
 void Player::Get(Block * const block) {
-	Inventory * const inv=PlayerInventory();
+	Inventory * const inv = PlayerInventory();
 	if ( inv ) {
 		inv->Get(block);
 	}
@@ -485,7 +485,7 @@ void Player::SetDir(const int direction) {
 }
 
 bool Player::Damage(const short x, const short y, const short z) const {
-	if ( GetWorld()->InBounds(x, y, z) ) {
+	if ( player && GetWorld()->InBounds(x, y, z) ) {
 		player->GetDeferredAction()->SetDamage(x, y, z);
 		return true;
 	} else {
