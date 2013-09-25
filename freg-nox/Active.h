@@ -37,8 +37,7 @@ class DeferredAction;
 
 class Active : public QObject, public Block {
 	Q_OBJECT
-
-	public:
+public:
 	Active(int sub, quint16 id, quint8 transp=UNDEF);
 	Active(QDataStream & str, int sub, quint16 id, quint8 transp=UNDEF);
 	~Active();
@@ -47,6 +46,7 @@ class Active : public QObject, public Block {
 	World * GetWorld() const;
 	QString FullName() const;
 	quint8 Kind() const;
+	int PushResult(int dir) const;
 
 	Active * ActiveBlock();
 	/// Returns true if shred border is overstepped.
@@ -80,14 +80,12 @@ class Active : public QObject, public Block {
 	void SetXYZ(ushort x, ushort y, ushort z);
 	void SetToDelete();
 	void SetShred(Shred *);
-
-	signals:
+signals:
 	void Moved(int);
 	void Destroyed();
 	void Updated();
 	void ReceivedText(const QString &);
-
-	protected:
+protected:
 	void SendSignalAround(const QString &) const;
 	void SaveAttributes(QDataStream & out) const;
 	/// Returns true if there is at least 1 block of substance sub around.
@@ -98,8 +96,7 @@ class Active : public QObject, public Block {
 	void Gravitate(ushort range, ushort down, ushort up, ushort calmness,
 			bool can_jump);
 	virtual short Attractive(int sub) const;
-
-	private:
+private:
 	void UpdateShred();
 	bool IsToDelete() const;
 

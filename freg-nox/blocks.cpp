@@ -449,33 +449,30 @@
 	ushort Inventory::Size() const { return size; }
 	Inventory * Inventory::HasInventory() { return this; }
 
-	bool Inventory::Drop(const ushort src, ushort dest,
-			const ushort num,
+	bool Inventory::Drop(const ushort src, ushort dest, ushort num,
 			Inventory * const inv_to)
 	{
-		if ( dest<inv_to->Start() ) {
-			dest=inv_to->Start();
-		}
-		bool ok_flag=false;
-		for (ushort i=0; i<num; ++i) {
-			if ( src<Size() &&
-					dest<inv_to->Size() &&
-					!inventory[src].isEmpty() &&
-					inv_to->Get(inventory[src].top(),
+		dest = qMax(inv_to->Start(), dest);
+		bool ok_flag = false;
+		for ( ; num; --num) {
+			if ( src < Size()
+					&& dest < inv_to->Size()
+					&& !inventory[src].isEmpty()
+					&& inv_to->Get(inventory[src].top(),
 						dest) )
 			{
-				ok_flag=true;
+				ok_flag = true;
+				Pull(src);
 			}
-			Pull(src);
 		}
 		return ok_flag;
 	}
 
 	bool Inventory::GetAll(Inventory * const from) {
-		bool flag=false;
+		bool flag = false;
 		for (ushort i=0; i<from->Size(); ++i) {
 			if ( from->Drop(i, 0, from->Number(i), this) ) {
-				flag=true;
+				flag = true;
 			}
 		}
 		return flag;

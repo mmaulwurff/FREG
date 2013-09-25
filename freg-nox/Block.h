@@ -92,14 +92,12 @@ public:
 	bool operator!=(const Block &) const;
 
 	void SaveToFile(QDataStream & out) const;
-
 protected:
 	virtual void SaveAttributes(QDataStream &) const;
 	static quint16 IdFromKindSub(quint16 id, quint8 sub);
 
 	QString * note;
 	qint16 durability;
-
 private:
 	static const ushort MAX_NOTE_LENGTH = 144;
 	quint8 Transparency(quint8 transp, int sub);
