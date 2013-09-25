@@ -142,7 +142,7 @@ class Shred {
 			ushort x_size, ushort y_size, ushort z_size, int sub);
 
 	/// Lowest nullstone and sky are not in bounds.
-	bool InBounds(ushort x, ushort y, ushort z) const;
+	static bool InBounds(ushort x, ushort y, ushort z);
 
 	Block * blocks[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
 	uchar lightMap[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];

@@ -572,46 +572,39 @@ void Shred::NormalCube(const ushort x_start, const ushort y_start,
 bool Shred::Tree(const ushort x, const ushort y, const ushort z,
 		const ushort height)
 {
-	if (
-			SHRED_WIDTH<=x+2 ||
-			SHRED_WIDTH<=y+2 ||
-			HEIGHT-1<=z+height || height<2 )
-	{
+	if ( !InBounds(x+2, y+2, height+z) ) {
 		return false;
 	} // else:
 	// check for room
+	const ushort leaves_level = z+height/2;
 	for (ushort i=x; i<=x+2; ++i)
-	for (ushort j=y; j<=y+2; ++j)
-	for (ushort k=z; k<z+height; ++k) {
-		const quint8 sub = Sub(i, j, k);
-		if ( AIR!=sub && WATER!=sub ) {
-			return false;
+	for (ushort j=y; j<=y+2; ++j) {
+		ushort k = z;
+		for ( ; k<leaves_level; ++k) {
+			if ( AIR != Sub(i, j, k) ) {
+				return false;
+			}
+		}
+		for ( ; k<z+height; ++k ) {
+			if ( AIR != Sub(i, j, k) ) {
+				return false;
+			} else {
+				SetBlock(Normal(GREENERY), i, j, k);
+			}
 		}
 	}
-	for (ushort k=z; k < z+height-1; ++k) { // trunk
-		PutBlock(Normal(WOOD), x+1, y+1, k);
-	}
-	if ( ENVIRONMENT==GetBlock(x+1, y+1, z-1)->PushResult(NOWHERE) ) {
-		World::DeleteBlock(blocks[x+1][y+1][z-1]);
-		PutBlock(Normal(WOOD), x+1, y+1, z-1);
+	for (ushort k=z-1; k < z+height-1; ++k) { // trunk
+		SetBlock(Normal(WOOD), x+1, y+1, k);
 	}
 	// branches
 	const int r = qrand();
-	if ( r & 0x1 ) SetNewBlock(BLOCK, WOOD, x,   y+1, z+height/2, WEST);
-	if ( r & 0x2 ) SetNewBlock(BLOCK, WOOD, x+2, y+1, z+height/2, EAST);
-	if ( r & 0x4 ) SetNewBlock(BLOCK, WOOD, x+1, y,   z+height/2, NORTH);
-	if ( r & 0x8 ) SetNewBlock(BLOCK, WOOD, x+1, y+2, z+height/2, SOUTH);
-	// leaves
-	for (ushort i=x; i<=x+2; ++i)
-	for (ushort j=y; j<=y+2; ++j)
-	for (ushort k=z+height/2; k<z+height; ++k) {
-		if ( AIR == Sub(i, j, k) ) {
-			PutBlock(Normal(GREENERY), i, j, k);
-		}
-	}
+	if ( r & 0x1 ) SetNewBlock(BLOCK, WOOD, x,   y+1, leaves_level, WEST);
+	if ( r & 0x2 ) SetNewBlock(BLOCK, WOOD, x+2, y+1, leaves_level, EAST);
+	if ( r & 0x4 ) SetNewBlock(BLOCK, WOOD, x+1, y,   leaves_level, NORTH);
+	if ( r & 0x8 ) SetNewBlock(BLOCK, WOOD, x+1, y+2, leaves_level, SOUTH);
 	return true;
 } // bool Shred::Tree(ushort x, ushort y, ushort z, ushort height)
 
-bool Shred::InBounds(const ushort x, const ushort y, const ushort z) const {
+bool Shred::InBounds(const ushort x, const ushort y, const ushort z) {
 	return ( x<SHRED_WIDTH && y<SHRED_WIDTH && z && z<HEIGHT-1 );
 }

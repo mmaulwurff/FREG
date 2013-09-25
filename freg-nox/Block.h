@@ -43,19 +43,11 @@ class Active;
 class Animal;
 
 class Block { // blocks without special physics and attributes
-	static const ushort MAX_NOTE_LENGTH = 144;
-	quint8 Transparency(quint8 transp, int sub);
+public:
+	Block(int sub, quint16 id, quint8 transp = UNDEF);
+	Block(QDataStream &, int sub, quint16 id, quint8 transp = UNDEF);
+	virtual ~Block();
 
-	const quint8 transparent;
-	const quint8 sub;
-	const quint16 id;
-	quint8 direction;
-
-	protected:
-	QString * note;
-	qint16 durability;
-
-	public:
 	virtual QString FullName() const;
 	virtual quint8 Kind() const;
 	virtual bool Catchable() const;
@@ -65,7 +57,7 @@ class Block { // blocks without special physics and attributes
 	virtual void Push(int dir, Block * who);
 	virtual bool Move(int direction);
 	virtual void  Damage(ushort dmg, int dmg_kind);
-	virtual usage_types Use(Block * who=0);
+	virtual usage_types Use(Block * who = 0);
 	/// Usually returns new block of the same kind and sub (except glass).
 	/** When reimplemented in derivatives, inside it you can create a pile,
 	 *  put several blocks in it, and return pile. */
@@ -85,10 +77,6 @@ class Block { // blocks without special physics and attributes
 	/// Receive text signal.
 	virtual void ReceiveSignal(const QString &);
 
-	protected:
-	virtual void SaveAttributes(QDataStream &) const;
-
-	public:
 	/// Determines kind and sub, unique for every kind-sub pair.
 	quint16 GetId() const;
 	void Restore();
@@ -105,12 +93,21 @@ class Block { // blocks without special physics and attributes
 
 	void SaveToFile(QDataStream & out) const;
 
-	Block(int sub, quint16 id, quint8 transp=UNDEF);
-	Block(QDataStream &, int sub, quint16 id, quint8 transp=UNDEF);
-	virtual ~Block();
-
-	protected:
+protected:
+	virtual void SaveAttributes(QDataStream &) const;
 	static quint16 IdFromKindSub(quint16 id, quint8 sub);
+
+	QString * note;
+	qint16 durability;
+
+private:
+	static const ushort MAX_NOTE_LENGTH = 144;
+	quint8 Transparency(quint8 transp, int sub);
+
+	const quint8 transparent;
+	const quint8 sub;
+	const quint16 id;
+	quint8 direction;
 }; // class Block
 
 #endif // BLOCK_H

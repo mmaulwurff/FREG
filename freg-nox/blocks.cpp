@@ -1468,6 +1468,6 @@
 		default: return 0;
 		case A_MEAT:
 		case H_MEAT: return 10;
-		case GRASS:  return  1;
+		case GREENERY: return 1;
 		}
 	}
