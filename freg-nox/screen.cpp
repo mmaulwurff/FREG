@@ -255,11 +255,11 @@ void Screen::ControlPlayer(const int ch) {
 	if ( 'Q'==ch || 3==ch || 4==ch ) { // Q, ctrl-c and ctrl-d
 		emit ExitReceived();
 		return;
-	}
+	} // else:
 	if ( ch>='a' && ch<='z' ) { // actions with inventory
 		InventoryAction(ch-'a');
 		return;
-	}
+	} // else:
 	switch ( ch ) { // interactions with world
 	case KEY_UP:
 		if ( player->GetDir() == NORTH ) {
@@ -289,7 +289,7 @@ void Screen::ControlPlayer(const int ch) {
 			player->SetDir(WEST);
 		}
 	break;
-	case KEY_END:   player->Move(DOWN); break;
+	case KEY_END: player->Move(DOWN); break;
 	case ' ': player->Jump(); break;
 	case '=': player->Move(); break;
 
@@ -354,26 +354,7 @@ void Screen::ControlPlayer(const int ch) {
 	case '!': player->SetCreativeMode( !player->GetCreativeMode() ); break;
 	case ':':
 	case '/': PassString(command); // no break
-	case '.':
-		if ( command.length()==1 && "."!=command ) {
-			ControlPlayer(command.at(0).toAscii());
-		} else if ( "warranty" == command ) {
-			wstandend(rightWin);
-			PrintFile(rightWin, "texts/warranty.txt");
-		} else if ( "size" == command ) {
-			Notify(QString(
-				"Terminal height: %1 lines, width: %2 chars.").
-				arg(LINES).arg(COLS));
-		} else if ( "moo" == command ) {
-			Notify("^__^");
-			Notify("(oo)\\_______");
-			Notify("(__)\\       )\\/\\");
-			Notify("    ||----w |");
-			Notify("    ||     ||");
-		} else {
-			player->ProcessCommand(command);
-		}
-	break;
+	case '.': ProcessCommand(command); break;
 
 	default:
 		Notify(tr("Don't know what such key means: %1 ('%2').").
@@ -384,6 +365,26 @@ void Screen::ControlPlayer(const int ch) {
 	updated = false;
 	mutex->unlock();
 } // void Screen::ControlPlayer(int ch)
+
+void Screen::ProcessCommand(QString & command) {
+	if ( command.length()==1 && "."!=command ) {
+		ControlPlayer(command.at(0).toAscii());
+	} else if ( "warranty" == command ) {
+		wstandend(rightWin);
+		PrintFile(rightWin, "texts/warranty.txt");
+	} else if ( "size" == command ) {
+		Notify(QString("Terminal height: %1 lines, width: %2 chars.").
+			arg(LINES).arg(COLS));
+	} else if ( "moo" == command ) {
+		Notify("^__^");
+		Notify("(oo)\\_______");
+		Notify("(__)\\       )\\/\\");
+		Notify("    ||----w |");
+		Notify("    ||     ||");
+	} else {
+		player->ProcessCommand(command);
+	}
+}
 
 void Screen::SetActionMode(const int mode) {
 	actionMode = mode;

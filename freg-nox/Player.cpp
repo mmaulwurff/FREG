@@ -114,9 +114,9 @@ ushort Player::SatiationPercent() const {
 Inventory * Player::PlayerInventory() const {
 	Inventory * inv;
 	if ( player && (inv=player->HasInventory()) ) {
-		emit Notify(tr("You have no inventory."));
 		return inv;
 	} else {
+		emit Notify(tr("You have no inventory."));
 		return 0;
 	}
 }

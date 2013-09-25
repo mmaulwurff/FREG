@@ -15,8 +15,7 @@
 	* GNU General Public License for more details.
 	*
 	* You should have received a copy of the GNU General Public License
-	* along with FREG. If not, see <http://www.gnu.org/licenses/>.
-	*/
+	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 // this file provides curses (text-based graphics interface) screen for freg.
 // screen.cpp provides definitions for methods.
@@ -125,6 +124,46 @@ class QMutex;
 
 class Screen : public VirtScreen {
 	Q_OBJECT
+public:
+	Screen(World *, Player *);
+	~Screen();
+
+	void ControlPlayer(int);
+public slots:
+	void Notify(const QString &) const;
+	void CleanAll();
+	QString PassString(QString &) const;
+	void Update(ushort, ushort, ushort);
+	void UpdateAll();
+	void UpdatePlayer();
+	void UpdateAround(ushort, ushort, ushort, ushort);
+	void Move(int);
+	void DeathScreen();
+private slots:
+	void Print();
+private:
+	char CharName(int, int) const;
+	char CharNumber(ushort x, ushort y, ushort z) const;
+	char CharNumberFront(ushort x, ushort y) const;
+	void Arrows(WINDOW *, ushort x, ushort y, bool show_dir = false) const;
+	void HorizontalArrows(WINDOW *, ushort y, short color = WHITE_RED,
+			bool show_dir = false) const;
+	void ActionXyz(ushort & x, ushort & y, ushort & z) const;
+	void PrintNormal(WINDOW *, int dir) const;
+	void PrintFront(WINDOW *) const;
+	void PrintInv(WINDOW *, const Inventory *) const;
+	void PrintText(WINDOW *, QString const &) const;
+	/// Returns false when file does not exist, otherwise true.
+	bool PrintFile(WINDOW *, QString const & file_name);
+	void PrintHUD();
+	void CleanFileToShow();
+	void RePrint();
+	void MouseAction();
+	void InventoryAction(ushort num) const;
+	color_pairs Color(int kind, int sub) const;
+	char PrintBlock(const Block *, WINDOW *) const;
+	void SetActionMode(const int mode);
+	void ProcessCommand(QString & command);
 
 	WINDOW * leftWin;
 	WINDOW * rightWin;
@@ -140,78 +179,27 @@ class Screen : public VirtScreen {
 	short shiftFocus; // can be -1, 0, 1 for low, normal, and high focus
 	QString command; // save previous command for further execution
 	QFile * fileToShow;
-
 	bool beepOn;
-
 	QMutex * mutex;
-
-	char CharName(int, int) const;
-	char CharNumber(ushort x, ushort y, ushort z) const;
-	char CharNumberFront(ushort x, ushort y) const;
-	void Arrows(WINDOW *, ushort x, ushort y, bool show_dir=false) const;
-	void HorizontalArrows(WINDOW *, ushort y, short color=WHITE_RED,
-			bool show_dir=false) const;
-	void ActionXyz(ushort & x, ushort & y, ushort & z) const;
-
-	void PrintNormal(WINDOW *, int dir) const;
-	void PrintFront(WINDOW *) const;
-	void PrintInv(WINDOW *, const Inventory *) const;
-	void PrintText(WINDOW *, QString const &) const;
-	/// Returns false when file does not exist, otherwise true.
-	bool PrintFile(WINDOW *, QString const & file_name);
-	void PrintHUD();
-	void CleanFileToShow();
-	void RePrint();
-	void MouseAction();
-
-	void InventoryAction(ushort num) const;
-
-	color_pairs Color(int kind, int sub) const;
-	char PrintBlock(const Block *, WINDOW *) const;
-	void SetActionMode(const int mode);
-
-	private slots:
-	void Print();
-
-	public slots:
-	void Notify(const QString &) const;
-	void CleanAll();
-	QString PassString(QString &) const;
-	void Update(ushort, ushort, ushort);
-	void UpdateAll();
-	void UpdatePlayer();
-	void UpdateAround(ushort, ushort, ushort, ushort);
-	void Move(int);
-	void DeathScreen();
-
-	public:
-	void ControlPlayer(int);
-
-	Screen(World *, Player *);
-	~Screen();
 }; // class Screen
 
 /** \class IThread screen.h
  * \brief Keyboard input thread for curses screen for freg.
  *
- * This class is thread, with IThread::run containing input loop.
- */
+ * This class is thread, with IThread::run containing input loop. */
 
 #include <QThread>
 
 class IThread : public QThread {
 	Q_OBJECT
-
-	public:
+public:
 	IThread(Screen * const);
 	void Stop();
-
-	protected:
+protected:
 	void run();
-
-	private:
+private:
 	Screen * const screen;
 	volatile bool stopped;
 }; // class IThread
 
-#endif
+#endif // SCREEN_H
