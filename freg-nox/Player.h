@@ -100,7 +100,7 @@ public:
 	int UsingSelfType() const;
 
 	/// Returns 0 if there is no inventory, otherwise returns inventory.
-	Inventory * PlayerInventory();
+	Inventory * PlayerInventory() const;
 
 	long GetLongitude() const;
 	long GetLatitude() const;
@@ -124,13 +124,13 @@ public:
 	void Use(short x, short y, short z);
 	/// Tries to throw (drop out) block number num from inventory.
 	void Throw (short x, short y, short z,
-			ushort src, ushort dest=0, ushort num=1);
+			ushort src, ushort dest = 0, ushort num = 1);
 
 	/// Tries to use block number num in inventory.
 	void Use(ushort num);
 	/// Tries to get block number num from outer inventory.
 	void Obtain(short x, short y, short z,
-			ushort src, ushort dest=0, ushort num=1);
+			ushort src, ushort dest = 0, ushort num = 1);
 	void Wield   (ushort num);
 	void Inscribe(ushort num);
 	void Eat     (ushort num);
@@ -175,17 +175,14 @@ private slots:
 	void SetPlayer(ushort set_x, ushort set_y, ushort set_z);
 	/// Dir is not used, for slot signature compatibility only.
 	void UpdateXYZ(int dir = NOWHERE);
-
 private:
 	void UseNoLock(ushort num);
-	void InnerMove(ushort num_from, ushort num_to, ushort num=1);
+	void InnerMove(ushort num_from, ushort num_to, ushort num = 1);
 	/// Checks player existence, inventory existence, size limits,
 	/// block existence.
 	Block * ValidBlock(ushort num) const;
-	int DamageKind() const;
-	ushort DamageLevel() const;
-	void Get(Block *);
-	Block * Drop(ushort);
+	Shred * GetShred() const;
+	World * GetWorld() const;
 
 	long homeLongi, homeLati;
 	short homeX, homeY, homeZ;
@@ -196,9 +193,6 @@ private:
 	ushort usingInInventory;
 	bool creativeMode;
 	volatile bool cleaned;
-
-	Shred * GetShred() const;
-	World * GetWorld() const;
 }; // class Player
 
 #endif // PLAYER_H

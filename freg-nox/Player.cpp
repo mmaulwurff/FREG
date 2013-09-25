@@ -40,7 +40,7 @@ long Player::GlobalX() const { return GetShred()->GlobalX(x); }
 long Player::GlobalY() const { return GetShred()->GlobalY(y); }
 
 bool Player::IsRightActiveHand() const {
-	return Dwarf::IN_RIGHT==GetActiveHand();
+	return Dwarf::IN_RIGHT == GetActiveHand();
 }
 ushort Player::GetActiveHand() const {
 	Dwarf * const dwarf = dynamic_cast<Dwarf *>(player);
@@ -111,8 +111,14 @@ ushort Player::SatiationPercent() const {
 		50 : satiation*100/SECONDS_IN_DAY;
 }
 
-Inventory * Player::PlayerInventory() {
-	return ( player ? player->HasInventory() : 0 );
+Inventory * Player::PlayerInventory() const {
+	Inventory * inv;
+	if ( player && (inv=player->HasInventory()) ) {
+		emit Notify(tr("You have no inventory."));
+		return inv;
+	} else {
+		return 0;
+	}
 }
 
 long Player::GetLongitude() const { return GetShred()->Longitude(); }
@@ -344,12 +350,8 @@ void Player::Build(const short x_target, const short y_target,
 void Player::Craft(const ushort num) {
 	QWriteLocker locker(world->GetLock());
 	Inventory * const inv = PlayerInventory();
-	if ( inv ) {
-		if ( inv->MiniCraft(num) ) {
-			emit Updated();
-		}
-	} else {
-		Notify("Cannot craft.");
+	if ( inv && inv->MiniCraft(num) ) {
+		emit Updated();
 	}
 }
 
@@ -373,28 +375,26 @@ void Player::ProcessCommand(QString & command) {
 	QString request;
 	comm_stream >> request;
 	if ( "give"==request || "get"==request ) {
-		Inventory * const inv = PlayerInventory();
 		if ( !(GetCreativeMode() || COMMANDS_ALWAYS_ON) ) {
 			emit Notify(tr("You are not in Creative Mode."));
-		} else if ( inv ) {
-			int kind, sub, num;
-			comm_stream >> kind >> sub >> num;
-			num = qMax(1, num);
-			while ( num && inv->HasRoom() ) {
-				for (ushort i=9; i && num; --i) {
-					inv->Get(block_manager.
-						NewBlock(kind, sub));
-					--num;
-				}
-			}
-			if ( num > 0 ) {
+			return;
+		} // else:
+		Inventory * const inv = PlayerInventory();
+		if ( !inv ) {
+			return;
+		} // else:
+		int kind, sub, num;
+		comm_stream >> kind >> sub >> num;
+		for (num = qBound(1, num, 9); num; --num) {
+			Block* const block = block_manager.NewBlock(kind, sub);
+			if ( !inv->Get(block) ) {
 				emit Notify(tr("No place for %1 things.").
 					arg(num));
+				block_manager.DeleteBlock(block);
+				break;
 			}
-			emit Updated();
-		} else {
-			emit Notify(tr("No room."));
 		}
+		emit Updated();
 	} else if ( "move" == request ) {
 		int direction;
 		comm_stream >> direction;
@@ -404,19 +404,14 @@ void Player::ProcessCommand(QString & command) {
 		comm_stream >> x_what >> y_what >> z_what;
 		if ( !world->InBounds(x_what, y_what, z_what) ) {
 			emit Notify(tr("Such block is out of loaded world."));
-		}
-		if ( GetCreativeMode() || COMMANDS_ALWAYS_ON) {
+		} else if ( GetCreativeMode() || COMMANDS_ALWAYS_ON
+				|| qAbs(x-x_what) > 1
+				|| qAbs(y-y_what) > 1
+				|| qAbs(z-z_what) > 1 )
+		{
 			Examine(x_what, y_what, z_what);
 		} else {
-			if (
-					qAbs(x-x_what) > 1 ||
-					qAbs(y-y_what) > 1 ||
-					qAbs(z-z_what) > 1)
-			{
-				emit Notify(tr("Too far."));
-			} else {
-				Examine(x_what, y_what, z_what);
-			}
+			emit Notify(tr("Too far."));
 		}
 	} else if ( "kindtostring"==request || "k2str"==request ) {
 		int kind;
@@ -424,43 +419,35 @@ void Player::ProcessCommand(QString & command) {
 		emit Notify(tr("Kind %1 is %2.").
 			arg(kind).arg(block_manager.KindToString(kind)));
 	} else if ( "stringtokind"==request || "str2k"==request ) {
-		QString str;
-		comm_stream >> str;
-		const int kind = block_manager.StringToKind(str);
+		comm_stream >> request;
+		const int kind = block_manager.StringToKind(request);
 		emit Notify( ( kind == LAST_KIND ) ?
-			tr("\"%1\" is unknown kind.").arg(str) :
-			tr("Code of kind %1 is %2.").arg(str).arg(kind) );
+			tr("\"%1\" is unknown kind.").arg(request) :
+			tr("Code of kind %1 is %2.").arg(request).arg(kind) );
 	} else if ( "subtostring"==request || "s2str"==request ) {
 		int sub;
 		comm_stream >> sub;
 		emit Notify(tr("Sub %1 is %2.").
 			arg(sub).arg(BlockManager::SubToString(sub)));
 	} else if ( "stringtosub"==request || "str2s"==request ) {
-		QString str;
-		comm_stream >> str;
-		const int sub = BlockManager::StringToSub(str);
+		comm_stream >> request;
+		const int sub = BlockManager::StringToSub(request);
 		emit Notify( ( sub == LAST_SUB ) ?
-			tr("\"%1\" is unknown substance.").arg(str) :
-			tr("Code of substance %1 is %2.").arg(str).arg(sub) );
+			tr("\"%1\" is unknown substance.").arg(request) :
+			tr("Code of substance %1 is %2.").
+				arg(request).arg(sub) );
 	} else if ( "time" == request ) {
 		emit Notify( (GetCreativeMode() || COMMANDS_ALWAYS_ON) ?
 			GetWorld()->TimeOfDayStr() :
 			tr("Not in Creative Mode.") );
 	} else if ( "version" == request ) {
-		Notify(QString("freg version: %1. Compiled on %2 at %3.").
+		emit Notify(QString("freg version: %1. Compiled on %2 at %3.").
 			arg(VER).arg(__DATE__).arg(__TIME__));
 	} else {
 		emit Notify(tr("Don't know such command: \"%1\".").
 			arg(command));
 	}
 } // void Player::ProcessCommand(QString & command)
-
-void Player::Get(Block * const block) {
-	Inventory * const inv = PlayerInventory();
-	if ( inv ) {
-		inv->Get(block);
-	}
-}
 
 bool Player::Visible(const ushort x_to, const ushort y_to, const ushort z_to)
 const {
@@ -484,17 +471,6 @@ bool Player::Damage(const short x, const short y, const short z) const {
 	} else {
 		return false;
 	}
-}
-
-int Player::DamageKind() const {
-	return creativeMode ?
-		TIME : player ?
-			player->DamageKind() : NO_HARM;
-}
-
-ushort Player::DamageLevel() const {
-	return creativeMode ?
-		MAX_DURABILITY : player ? player->DamageLevel() : 0;
 }
 
 void Player::CheckOverstep(const int direction) {

@@ -218,20 +218,20 @@
 	}
 
 	Block::Block(const int subst, const quint16 i, const quint8 transp) :
+			note(0),
+			durability(MAX_DURABILITY),
 			transparent(Transparency(transp, subst)),
 			sub(subst),
 			id(i),
-			direction(UP),
-			note(0),
-			durability(MAX_DURABILITY)
+			direction(UP)
 	{}
 	Block::Block(QDataStream & str, const int subst, const quint16 i,
 			const quint8 transp)
 		:
+			note(0),
 			transparent(Transparency(transp, subst)),
 			sub(subst),
-			id(i),
-			note(0)
+			id(i)
 	{
 		quint16 data;
 		str >> data;
@@ -497,10 +497,8 @@
 	}
 
 	bool Inventory::Get(Block * const block, ushort start) {
-		if ( start<Start() ) {
-			start=Start();
-		}
 		if ( block ) {
+			start = qMax(Start(), start);
 			for (ushort i=start; i<Size(); ++i) {
 				if ( GetExact(block, i) ) {
 					return true;

@@ -26,23 +26,30 @@ const ushort INV_SIZE = 26U;
 const ushort MAX_STACK_SIZE = 9U;
 
 class Inventory {
-	public:
-	virtual quint8 Kind() const=0;
-	virtual int Sub() const=0;
+protected:
+	/// It is not recommended to make inventory size more than 26.
+	/** Because it will not be convenient to deal with inventory
+	 *  in console version. */
+	explicit Inventory(ushort sz = INV_SIZE);
+	Inventory(QDataStream & str, ushort size = INV_SIZE);
+	virtual ~Inventory();
+public:
+	virtual quint8 Kind() const = 0;
+	virtual int Sub() const = 0;
 	/// Returns true on success.
 	virtual bool Drop(ushort src, ushort dest, ushort num, Inventory * to);
 	/// Returns true on success.
 	virtual bool GetAll(Inventory * from);
 	virtual bool Access() const;
 	/// Returns true on success.
-	virtual bool Get(Block * block, ushort start=0);
+	virtual bool Get(Block * block, ushort start = 0);
 	/// Removes block from inventory. Does not delete block.
 	virtual void Pull(ushort num);
 	virtual void MoveInside(ushort num_from, ushort num_to, ushort num);
-	virtual void ReceiveSignal(const QString &)=0;
+	virtual void ReceiveSignal(const QString &) = 0;
 	virtual ushort Start() const;
 	virtual ushort Weight() const;
-	virtual QString FullName() const=0;
+	virtual QString FullName() const = 0;
 	virtual Inventory * HasInventory();
 
 	/// Returns true if block found its place.
@@ -65,17 +72,9 @@ class Inventory {
 	bool HasRoom() const;
 
 	void Push(Block * who);
-
-	protected:
+protected:
 	virtual void SaveAttributes(QDataStream & out) const;
-	/// It is not recommended to make inventory size more than 26.
-	/** Because it will not be convenient to deal with inventory
-	 *  in console version. */
-	explicit Inventory(ushort sz = INV_SIZE);
-	Inventory(QDataStream & str, ushort size = INV_SIZE);
-	virtual ~Inventory();
-
-	private:
+private:
 	const ushort size;
 	QStack<Block *> * inventory;
 }; // class Inventory
