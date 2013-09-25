@@ -38,8 +38,8 @@ class DeferredAction;
 class Active : public QObject, public Block {
 	Q_OBJECT
 public:
-	Active(int sub, quint16 id, quint8 transp=UNDEF);
-	Active(QDataStream & str, int sub, quint16 id, quint8 transp=UNDEF);
+	Active(int sub, quint16 id, quint8 transp = UNDEF);
+	Active(QDataStream & str, int sub, quint16 id, quint8 transp = UNDEF);
 	~Active();
 
 	Shred * GetShred() const;
@@ -90,11 +90,10 @@ protected:
 	void SaveAttributes(QDataStream & out) const;
 	/// Returns true if there is at least 1 block of substance sub around.
 	bool IsSubAround(quint8 sub) const;
+	bool Gravitate(ushort range, ushort down, ushort up, ushort calmness);
 
 	virtual void DoFrequentAction();
 	virtual void DoRareAction();
-	void Gravitate(ushort range, ushort down, ushort up, ushort calmness,
-			bool can_jump);
 	virtual short Attractive(int sub) const;
 private:
 	void UpdateShred();

@@ -205,8 +205,8 @@ Active::Active(QDataStream & str, const int sub, const quint16 id,
 }
 Active::~Active() { delete deferredAction; }
 
-void Active::Gravitate(const ushort range, const ushort down, const ushort up,
-		const ushort calmness, const bool can_jump)
+bool Active::Gravitate(const ushort range, const ushort down, const ushort up,
+		const ushort calmness)
 {
 	World * const world = GetWorld();
 	// analyse world around
@@ -238,11 +238,9 @@ void Active::Gravitate(const ushort range, const ushort down, const ushort up,
 		SetDir( ( qAbs(for_north)>qAbs(for_west) ) ?
 			( ( for_north>0 ) ? NORTH : SOUTH ) :
 			( ( for_west >0 ) ? WEST  : EAST  ) );
-		if ( can_jump && qrand()%2 ) {
-			world->Jump(X(), Y(), Z(), GetDir());
-		} else {
-			world->Move(X(), Y(), Z(), GetDir());
-		}
+		return true;
+	} else {
+		return false;
 	}
 }
 

@@ -968,7 +968,15 @@
 
 	QString Rabbit::FullName() const { return tr("Herbivore"); }
 	quint8 Rabbit::Kind() const { return RABBIT; }
-	void Rabbit::DoFrequentAction() { Gravitate(4, 1, 3, 4, true); }
+	void Rabbit::DoFrequentAction() {
+		if ( Gravitate(4, 1, 3, 4) ) {
+			if ( qrand()%2 ) {
+				world->Jump(X(), Y(), Z(), GetDir());
+			} else {
+				world->Move(X(), Y(), Z(), GetDir());
+			}
+		}
+	}
 
 	quint16 Rabbit::NutritionalValue(const quint8 sub) const {
 		return ( GREENERY == sub ) ? SECONDS_IN_HOUR*4 : 0;
@@ -1428,7 +1436,11 @@
 		return Attractive(sub)*SECONDS_IN_HOUR;
 	}
 
-	void Predator::DoFrequentAction() { Gravitate(5, 1, 2, 0, false); }
+	void Predator::DoFrequentAction() {
+		if ( Gravitate(5, 1, 2, 0) ) {
+			world->Move(X(), Y(), Z(), GetDir());
+		}
+	}
 	void Predator::DoRareAction() {
 		const Xyz coords[] = {
 			Xyz(X()-1, Y(), Z()),
