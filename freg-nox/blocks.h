@@ -305,21 +305,20 @@ class Text : public Block {
 }; // class Text
 
 class Map : public Text {
+public:
+	Map(int sub, quint16 id);
+	Map(QDataStream & str, int sub, quint16 id);
+
+	quint8 Kind() const;
+	QString FullName() const;
+	usage_types Use(Block * who = 0);
+protected:
+	void SaveAttributes(QDataStream & out) const;
+private:
 	// coordinates map titled in. also ~center.
 	qint64 longiStart, latiStart;
 	quint16 savedShift;
 	qint8 savedChar;
-
-	protected:
-	void SaveAttributes(QDataStream & out) const;
-
-	public:
-	quint8 Kind() const;
-	QString FullName() const;
-	usage_types Use(Block * who=0);
-
-	Map(int sub, quint16 id);
-	Map(QDataStream & str, int sub, quint16 id);
 }; // class Map
 
 class Bell : public Active {

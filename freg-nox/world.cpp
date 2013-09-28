@@ -375,7 +375,7 @@ void World::PhysEvents() {
 	++time;
 	// sun/moon moving
 	if ( sun_moon_x != SunMoonX() ) {
-		const ushort y = SHRED_WIDTH*NumShreds()/2;
+		static const ushort y = SHRED_WIDTH*NumShreds()/2;
 		PutBlock(Normal(ifStar ? STAR : SKY), sun_moon_x, y, HEIGHT-1);
 		emit Updated(sun_moon_x, y, HEIGHT-1);
 		sun_moon_x = SunMoonX();
@@ -504,7 +504,7 @@ bool World::CanMove(const ushort x, const ushort y, const ushort z,
 	Block * block_to = GetBlock(newx, newy, newz);
 	if ( ENVIRONMENT == block->PushResult(NOWHERE) ) {
 		move_flag = (*block != *block_to) &&
-				MOVABLE == block_to->PushResult(NOWHERE);
+			MOVABLE == block_to->PushResult(NOWHERE);
 	} else {
 		block_to->Push(dir, block);
 		block_to = GetBlock(newx, newy, newz);
@@ -513,13 +513,13 @@ bool World::CanMove(const ushort x, const ushort y, const ushort z,
 		case NOT_MOVABLE: move_flag = false; break;
 		case ENVIRONMENT: move_flag = true; break;
 		case JUMP:
-			if ( DOWN!=dir && UP!=dir ) {
+			if ( dir > DOWN ) { // not UP and not DOWN
 				Jump(x, y, z, dir);
 			}
 			move_flag = false;
 		break;
 		case MOVE_UP:
-			if ( DOWN!=dir && UP!=dir ) {
+			if ( dir > DOWN ) { // not UP and not DOWN
 				Move(x, y, z, UP);
 			}
 			move_flag = false;
@@ -530,7 +530,7 @@ bool World::CanMove(const ushort x, const ushort y, const ushort z,
 		break;
 		}
 	}
-	Active * active;
+	const Active * active;
 	return ( move_flag &&
 		(DOWN==dir || !block->Weight() ||
 		!( (active=block->ActiveBlock()) &&

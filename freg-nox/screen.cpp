@@ -485,7 +485,7 @@ void Screen::Print() {
 			wstandend(rightWin);
 			PrintFile(rightWin, QString(
 				w->WorldName()+"/texts/"+
-				w->GetBlock(x, y, z)->GetNote()));
+				w->GetBlock(x, y, z)->GetNote()+".txt"));
 			player->SetUsingTypeNo();
 		} break;
 		case USAGE_TYPE_OPEN: {
@@ -552,7 +552,6 @@ void Screen::PrintHUD() {
 			actionMode);
 	}
 	if ( player->GetCreativeMode() ) {
-		wstandend(hudWin);
 		mvwaddstr(hudWin, 0, 0, "Creative Mode");
 		// coordinates
 		mvwprintw(hudWin, 2, 0, "xyz: %ld, %ld, %hu. XY: %ld, %ld",
@@ -582,7 +581,7 @@ void Screen::PrintHUD() {
 		const short satiation = player->SatiationPercent();
 		if ( -1 != satiation ) { // satiation line
 			(void)wmove(hudWin, 2, 0);
-			if ( 100<satiation ) {
+			if ( 100 < satiation ) {
 				wcolor_set(hudWin, BLUE_BLACK, NULL);
 				waddstr(hudWin, "Gorged");
 			} else if ( 75<satiation ) {
@@ -638,7 +637,7 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
 void Screen::PrintFront(WINDOW * const window) const {
 	const int dir = player->GetDir();
 	short x_step, z_step,
-	      x_end, z_end,
+	      x_end,  z_end,
 	      * x, * z,
 	      i, j;
 	const ushort pX = player->X();
@@ -651,6 +650,9 @@ void Screen::PrintFront(WINDOW * const window) const {
 	ushort x_start, z_start, k_start;
 	ushort arrow_Y, arrow_X;
 	switch ( dir ) {
+	default: fprintf(stderr, "Screen::PrintFront(): unlisted dir: %d\n",
+		(int)dir);
+	// no break;
 	case NORTH:
 		x = &i;
 		x_step = 1;
@@ -695,10 +697,6 @@ void Screen::PrintFront(WINDOW * const window) const {
 		z_end = pX+SHRED_WIDTH+1;
 		arrow_X = (pY-begin_y)*2+1;
 	break;
-	default:
-		fprintf(stderr, "Screen::PrintFront(): unlisted dir: %d\n",
-			(int)dir);
-		return;
 	}
 	if ( pZ+SCREEN_SIZE/2 >= HEIGHT ) {
 		k_start = HEIGHT-2;
@@ -710,6 +708,8 @@ void Screen::PrintFront(WINDOW * const window) const {
 		k_start = pZ+SCREEN_SIZE/2;
 		arrow_Y = SCREEN_SIZE/2+1;
 	}
+	const int sky_colour = Color(BLOCK, SKY);
+	const char sky_char = CharName(BLOCK, SKY);
 	(void)wmove(window, 1, 1);
 	for (short k=k_start; k>k_start-SCREEN_SIZE;
 			--k, waddstr(window, "\n_"))
@@ -717,27 +717,26 @@ void Screen::PrintFront(WINDOW * const window) const {
 		for (*x=x_start; *x!=x_end; *x+=x_step) {
 			for (*z=z_start; *z!=z_end && w->GetBlock(i, j, k)->
 					Transparent()==INVISIBLE;
-				*z+=z_step);
+					*z += z_step);
 			const Block * const block = w->GetBlock(i, j, k);
-			if ( (*z==z_end || (w->Enlightened(i, j, k) &&
-					player->Visible(i, j, k))) ||
-						player->GetCreativeMode() )
+			if ( (*z==z_end || (w->Enlightened(i, j, k)
+					&& player->Visible(i, j, k)))
+						|| player->GetCreativeMode() )
 			{
-				if ( *z!=z_end ) {
+				if ( *z != z_end ) {
 					waddch(window,
 						PrintBlock(block, window));
 					waddch(window, CharNumberFront(i, j));
+					continue;
 				} else {
-					wcolor_set(window, Color(BLOCK, SKY),
-						NULL);
-					waddch(window, CharName(BLOCK, SKY));
-					waddch(window, ' ');
+					wcolor_set(window, sky_colour, NULL);
+					waddch(window, sky_char);
 				}
 			} else {
 				wstandend(window);
 				waddch(window, OBSCURE_BLOCK);
-				waddch(window, ' ');
 			}
+			waddch(window, ' ');
 		}
 	}
 	wstandend(window);

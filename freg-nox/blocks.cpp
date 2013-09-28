@@ -21,6 +21,7 @@
 #include <QTextStream>
 #include <QString>
 #include <QFile>
+#include <string.h>
 #include "blocks.h"
 #include "world.h"
 #include "Shred.h"
@@ -1307,77 +1308,61 @@
 			}
 			return USAGE_TYPE_NO;
 		} else if ( who && who->ActiveBlock() ) {
-			const Active * const active=who->ActiveBlock();
+			const Active * const active = who->ActiveBlock();
 			QFile map_file(active->GetWorld()->
 				WorldName() + "/texts/" + *note + ".txt");
-			const Shred * shred = active->GetShred();
-			const long  lati = shred->Latitude();
-			const long longi = shred->Longitude();
 			if ( !map_file.open(QIODevice::ReadWrite |
 					QIODevice::Text) )
 			{
 				return USAGE_TYPE_READ;
-			}
-			static const ushort FILE_SIZE_CHARS=31;
-			if ( 0==map_file.size() ) { // new map
-				map_file.putChar('+');
+			} // else:
+			const Shred * shred = active->GetShred();
+			const long  lati = shred->Latitude();
+			const long longi = shred->Longitude();
+			static const ushort FILE_SIZE_CHARS = 31;
+			if ( 0 == map_file.size() ) { // new map
+				char header[FILE_SIZE_CHARS+1];
+				memset(header, '-', FILE_SIZE_CHARS);
+				header[0] = header[FILE_SIZE_CHARS/2] =
+					header[FILE_SIZE_CHARS-1] = '+';
+				char body[FILE_SIZE_CHARS+1];
+				memset(body, ' ', FILE_SIZE_CHARS);
+				body[0] = body[FILE_SIZE_CHARS-1] = '|';
+				body[FILE_SIZE_CHARS] =
+					header[FILE_SIZE_CHARS] = '\n';
+				map_file.write(header, FILE_SIZE_CHARS+1);
 				for (ushort i=0; i<FILE_SIZE_CHARS-2; ++i) {
-					map_file.putChar('-');
+					map_file.write(body,FILE_SIZE_CHARS+1);
 				}
-				map_file.putChar('+');
-				map_file.putChar('\n');
-				for (ushort i=0; i<FILE_SIZE_CHARS-2; ++i) {
-					map_file.putChar('|');
-					for (ushort j=0; j<FILE_SIZE_CHARS-2;
-							++j)
-					{
-						map_file.putChar(' ');
-					}
-					map_file.putChar('|');
-					map_file.putChar('\n');
-				}
-				map_file.putChar('+');
-				for (ushort i=0; i<FILE_SIZE_CHARS-2; ++i) {
-					map_file.putChar('-');
-				}
-				map_file.putChar('+');
+				map_file.write(header, FILE_SIZE_CHARS+1);
 
-				map_file.seek(FILE_SIZE_CHARS/2);
-				map_file.putChar('+');
 				map_file.seek(FILE_SIZE_CHARS/2*
 					(FILE_SIZE_CHARS+1));
 				map_file.putChar('+');
 				map_file.seek(FILE_SIZE_CHARS/2*
 					(FILE_SIZE_CHARS+1)+FILE_SIZE_CHARS-1);
 				map_file.putChar('+');
-				map_file.seek((FILE_SIZE_CHARS-1)*
-					(FILE_SIZE_CHARS+1)+FILE_SIZE_CHARS/2);
-				map_file.putChar('+');
 
-				longiStart=longi;
-				latiStart=lati;
+				longiStart = longi;
+				latiStart  = lati;
 			}
-			if (
-					( abs( lati-latiStart ) >
-						FILE_SIZE_CHARS/2 ) ||
-					( abs(longi-longiStart) >
+			if ( ( qAbs(lati-latiStart) > FILE_SIZE_CHARS/2 )
+					|| ( qAbs(longi-longiStart) >
 						FILE_SIZE_CHARS/2 ) )
 			{
 				return USAGE_TYPE_READ;
-			}
+			} // else:
 			if ( savedChar ) {
 				map_file.seek(savedShift);
 				map_file.putChar(savedChar);
 			}
 			map_file.seek(savedShift=(FILE_SIZE_CHARS+1)*
 				(longi-longiStart+FILE_SIZE_CHARS/2)+
-				 lati-latiStart+FILE_SIZE_CHARS/2);
+				 lati -latiStart +FILE_SIZE_CHARS/2);
 			map_file.putChar('@');
 			savedChar=active->GetWorld()->TypeOfShred(longi, lati);
 			map_file.seek((FILE_SIZE_CHARS+1)*FILE_SIZE_CHARS-1);
-			map_file.putChar('\n');
-			map_file.putChar('@');
-			map_file.putChar('=');
+			map_file.write("\n @ = ");
 			map_file.putChar(savedChar);
 			map_file.putChar('\n');
 		}
