@@ -39,7 +39,7 @@ Active * Active::ActiveBlock() { return this; }
 int  Active::ShouldAct() const { return NEVER; }
 bool Active::IsFalling() const { return falling; }
 bool Active::ShouldFall() const { return true; }
-int  Active::PushResult(int dir) const { return MOVABLE; }
+int  Active::PushResult(const int) const { return MOVABLE; }
 void Active::DoRareAction() {}
 void Active::DoFrequentAction() {}
 void Active::ActFrequent() {

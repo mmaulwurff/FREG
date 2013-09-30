@@ -152,16 +152,20 @@ Shred::~Shred() {
 		}
 		GetWorld()->SetShredData(shred_data, longitude, latitude);
 	} else {
-		for (ushort x=0; x<SHRED_WIDTH; ++x)
-		for (ushort y=0; y<SHRED_WIDTH; ++y) {
-			ushort height = HEIGHT-2;
-			for ( ; blocks[x][y][height]->Sub()==AIR; --height);
-			for (ushort z=1; z<=height; ++z) {
-				block_manager.DeleteBlock(blocks[x][y][z]);
-			}
-		}
+		Clean();
 	}
 } // Shred::~Shred()
+
+void Shred::Clean() {
+	for (ushort x=0; x<SHRED_WIDTH; ++x)
+	for (ushort y=0; y<SHRED_WIDTH; ++y) {
+		ushort height = HEIGHT-2;
+		for ( ; blocks[x][y][height]->Sub()==AIR; --height);
+		for (ushort z=1; z<=height; ++z) {
+			block_manager.DeleteBlock(blocks[x][y][z]);
+		}
+	}
+}
 
 Shred * Shred::GetShredMemory() const { return memory; }
 

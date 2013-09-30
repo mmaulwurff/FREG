@@ -28,7 +28,7 @@ class Block;
 class Active;
 
 class Shred {
-	public:
+public:
 	Shred(ushort shred_x, ushort shred_y, long longi, long lati,
 			Shred * memory);
 	~Shred();
@@ -93,8 +93,7 @@ class Shred {
 	long GlobalY(ushort y) const;
 	static ushort CoordInShred(const ushort x);
 	static ushort CoordOfShred(const ushort x);
-
-	private:
+private:
 	void RemoveAllSunLight();
 	void RemoveAllFireLight();
 	void RemoveAllLight();
@@ -103,6 +102,7 @@ class Shred {
 	void Unregister(Active *);
 	void UnregisterExternalActives();
 
+	void Clean();
 	bool LoadShred();
 	void SetBlockNoCheck(Block *, ushort x, ushort y, ushort z);
 

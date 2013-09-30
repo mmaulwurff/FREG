@@ -626,8 +626,6 @@ void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
 	Shred * const shred = GetShred(x, y);
 	const ushort x_in_shred = Shred::CoordInShred(x);
 	const ushort y_in_shred = Shred::CoordInShred(y);
-	const int old_transparency = temp->Transparent();
-	const uchar old_light = temp->LightRadius();
 	Block * new_block;
 	if ( PILE!=temp->Kind() && (temp->HasInventory() || dropped) ) {
 		new_block = ( ( dropped && PILE==dropped->Kind() ) ?
@@ -646,9 +644,11 @@ void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
 	} else {
 		new_block = Normal(AIR);
 	}
+	const bool was_not_invisible = ( temp->Transparent() != INVISIBLE );
+	const uchar old_light = temp->LightRadius();
 	shred->SetBlock(new_block, x_in_shred, y_in_shred, z);
 	shred->AddFalling(x_in_shred, y_in_shred, z+1);
-	if ( old_transparency != INVISIBLE ) {
+	if ( was_not_invisible ) {
 		ReEnlightenBlockRemove(x, y, z);
 	}
 	if ( old_light ) {

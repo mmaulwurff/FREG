@@ -661,7 +661,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 		z = &j;
 		z_step = -1;
 		z_start = pY-1;
-		z_end = pY-SHRED_WIDTH-1;
+		z_end = pY-SHRED_WIDTH*2+1;
 		arrow_X = (pX-begin_x)*2+1;
 	break;
 	case SOUTH:
@@ -672,7 +672,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 		z = &j;
 		z_step = 1;
 		z_start = pY+1;
-		z_end = pY+SHRED_WIDTH+1;
+		z_end = pY+SHRED_WIDTH*2-1;
 		arrow_X = (SCREEN_SIZE-pX+begin_x)*2-1;
 	break;
 	case WEST:
@@ -683,7 +683,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 		z = &i;
 		z_step = -1;
 		z_start = pX-1;
-		z_end = pX-SHRED_WIDTH-1;
+		z_end = pX-SHRED_WIDTH*2+1;
 		arrow_X = (SCREEN_SIZE-pY+begin_y)*2-1;
 	break;
 	case EAST:
@@ -694,7 +694,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 		z = &i;
 		z_step = 1;
 		z_start = pX+1;
-		z_end = pX+SHRED_WIDTH+1;
+		z_end = pX+SHRED_WIDTH*2-1;
 		arrow_X = (pY-begin_y)*2+1;
 	break;
 	}
