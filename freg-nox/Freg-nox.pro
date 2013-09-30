@@ -19,7 +19,7 @@ TARGET = freg-nox-'"$${VERSION}"'
 
 QMAKE_CXXFLAGS += -Wextra
 
-#QMAKE_CXXFLAGS_DEBUG += -Og -fno-inline
+#QMAKE_CXXFLAGS_DEBUG += -fno-inline
 QMAKE_CXXFLAGS_DEBUG += -O3
 
 QMAKE_CXXFLAGS_RELEASE -= -O2

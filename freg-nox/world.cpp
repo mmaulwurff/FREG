@@ -151,8 +151,7 @@ void World::Unlock() { rwLock->unlock(); }
 
 void World::run() {
 	QTimer timer;
-	connect(&timer, SIGNAL(timeout()),
-		this, SLOT(PhysEvents()),
+	connect(&timer, SIGNAL(timeout()), SLOT(PhysEvents()),
 		Qt::DirectConnection);
 	timer.start(1000/TimeStepsInSec());
 	exec();
@@ -325,7 +324,7 @@ void World::ReloadShreds(const int direction) {
 	emit Moved(direction);
 } // void World::ReloadShreds(int direction)
 
-void World::SetReloadShreds(const int direction) { toResetDir=direction; }
+void World::SetReloadShreds(const int direction) { toResetDir = direction; }
 
 void World::PhysEvents() {
 	const QWriteLocker writeLock(rwLock);

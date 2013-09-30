@@ -68,7 +68,7 @@ void Player::SetCreativeMode(const bool turn) {
 	if ( inv ) {
 		inv->GetAll(prev_player->HasInventory());
 	}
-	if ( !creativeMode ) {
+	if ( !GetCreativeMode() ) {
 		prev_player->SetToDelete();
 	}
 	emit Updated();
@@ -81,12 +81,12 @@ void Player::SetUsingTypeNo() { usingType = USAGE_TYPE_NO; }
 bool Player::IfPlayerExists() const { return !!player; }
 
 short Player::HP() const {
-	return ( !player || creativeMode ) ?
+	return ( !player || GetCreativeMode() ) ?
 		-1 : player ? player->GetDurability() : 0;
 }
 
 short Player::Breath() const {
-	if ( !player || creativeMode ) {
+	if ( !player || GetCreativeMode() ) {
 		return -1;
 	}
 	Animal const * const animal = player->IsAnimal();
@@ -99,7 +99,7 @@ ushort Player::BreathPercent() const {
 }
 
 short Player::Satiation() const {
-	if ( !player || creativeMode ) {
+	if ( !player || GetCreativeMode() ) {
 		return -1;
 	}
 	Animal const * const animal = player->IsAnimal();
@@ -145,7 +145,7 @@ void Player::Examine(const short i, const short j, const short k) const {
 	const Block * const block = world->GetBlock(i, j, k);
 	const int sub = block->Sub();
 	emit Notify( block->FullName() );
-	if ( creativeMode ) { //know more
+	if ( GetCreativeMode() || COMMANDS_ALWAYS_ON ) { //know more
 		emit Notify(tr(
 		"Light:%1, fire:%2, sun:%3. Transp:%4. Norm:%5. Dir:%6.").
 			arg(world->Enlightened(i, j, k)).
@@ -475,11 +475,12 @@ bool Player::Damage(const short x, const short y, const short z) const {
 
 void Player::CheckOverstep(const int direction) {
 	UpdateXYZ();
-	if ( // leaving central zone
-			x <  (world->NumShreds()/2-1)*SHRED_WIDTH ||
-			y <  (world->NumShreds()/2-1)*SHRED_WIDTH ||
-			x >= (world->NumShreds()/2+2)*SHRED_WIDTH ||
-			y >= (world->NumShreds()/2+2)*SHRED_WIDTH )
+	static const ushort half_num_shreds = GetWorld()->NumShreds()/2;
+	if ( DOWN!=direction && UP!=direction && ( // leaving central zone
+			x <  (half_num_shreds-1)*SHRED_WIDTH ||
+			y <  (half_num_shreds-1)*SHRED_WIDTH ||
+			x >= (half_num_shreds+2)*SHRED_WIDTH ||
+			y >= (half_num_shreds+2)*SHRED_WIDTH ) )
 	{
 		emit OverstepBorder(direction);
 	}
@@ -525,14 +526,14 @@ void Player::SetPlayer(const ushort _x, const ushort _y, const ushort _z) {
 	player->SetDeferredAction(new DeferredAction(player));
 	SetDir(player->GetDir());
 
-	connect(player, SIGNAL(Destroyed()), this, SLOT(BlockDestroy()),
+	connect(player, SIGNAL(Destroyed()), SLOT(BlockDestroy()),
 		Qt::DirectConnection);
-	connect(player, SIGNAL(Moved(int)), this, SLOT(CheckOverstep(int)),
+	connect(player, SIGNAL(Moved(int)), SLOT(CheckOverstep(int)),
 		Qt::DirectConnection);
-	connect(player, SIGNAL(Updated()), this, SIGNAL(Updated()),
+	connect(player, SIGNAL(Updated()), SIGNAL(Updated()),
 		Qt::DirectConnection);
 	connect(player, SIGNAL(ReceivedText(const QString &)),
-		this, SIGNAL(Notify(const QString &)),
+		SIGNAL(Notify(const QString &)),
 		Qt::DirectConnection);
 } // void Player::SetPlayer(ushort _x, ushort _y, ushort _z)
 
@@ -565,12 +566,12 @@ Player::Player() :
 	SetPlayer(x+=plus, y+=plus, z);
 
 	connect(world, SIGNAL(NeedPlayer(ushort, ushort, ushort)),
-		this, SLOT(SetPlayer(ushort, ushort, ushort)),
+		SLOT(SetPlayer(ushort, ushort, ushort)),
 		Qt::DirectConnection);
 	connect(this, SIGNAL(OverstepBorder(int)),
 		world, SLOT(SetReloadShreds(int)),
 		Qt::DirectConnection);
-	connect(world, SIGNAL(Moved(int)), this, SLOT(UpdateXYZ(int)),
+	connect(world, SIGNAL(Moved(int)), SLOT(UpdateXYZ(int)),
 		Qt::DirectConnection);
 } // Player::Player()
 
@@ -580,7 +581,7 @@ void Player::CleanAll() {
 	}
 	cleaned = true;
 
-	if ( creativeMode ) {
+	if ( GetCreativeMode() ) {
 		block_manager.DeleteBlock(player);
 	}
 
@@ -597,7 +598,7 @@ void Player::CleanAll() {
 	sett.setValue("current_x", x-min);
 	sett.setValue("current_y", y-min);
 	sett.setValue("current_z", z);
-	sett.setValue("creative_mode", creativeMode);
+	sett.setValue("creative_mode", GetCreativeMode());
 }
 
 Player::~Player() { CleanAll(); }
