@@ -18,7 +18,7 @@
 	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 /**\file screen.cpp
- * This file is related to curses screen for freg. */
+ * \brief This file is related to curses screen for freg. */
 
 #include <QString>
 #include <QTimer>
@@ -935,7 +935,7 @@ Screen::Screen(World * const wor, Player * const pl) :
 	Notify("Game started. Press 'H' for help.");
 
 	input->start();
-	connect(timer, SIGNAL(timeout()), this, SLOT(Print()));
+	connect(timer, SIGNAL(timeout()), SLOT(Print()));
 	timer->start(100);
 } // Screen::Screen(World * wor, Player * pl)
 

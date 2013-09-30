@@ -17,16 +17,19 @@
 	* You should have received a copy of the GNU General Public License
 	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
+/**\file VirtScreen.cpp
+ * \brief This file provides definitions of code common to all freg screens. */
+
 #include "VirtScreen.h"
 #include "Player.h"
 #include "world.h"
 
 void VirtScreen::ConnectWorld() {
 	connect(w, SIGNAL(Updated(ushort, ushort, ushort)),
-		this, SLOT(Update(ushort, ushort, ushort)),
+		SLOT(Update(ushort, ushort, ushort)),
 		Qt::DirectConnection);
 	connect(w, SIGNAL(UpdatedAround(ushort, ushort, ushort, ushort)),
-		this, SLOT(UpdateAround(ushort,	ushort, ushort, ushort)),
+		SLOT(UpdateAround(ushort, ushort, ushort, ushort)),
 		Qt::DirectConnection);
 }
 
@@ -38,28 +41,28 @@ VirtScreen::VirtScreen(World * const world_, Player * const player_) :
 		player(player_)
 {
 	connect(w, SIGNAL(Notify(const QString &)),
-		this, SLOT(Notify(const QString &)));
+		SLOT(Notify(const QString &)));
 	connect(player, SIGNAL(Notify(const QString &)),
-		this, SLOT(Notify(const QString &)));
+		SLOT(Notify(const QString &)));
 
 	connect(w, SIGNAL(GetString(QString &)),
-		this, SLOT(PassString(QString &)), Qt::DirectConnection);
+		SLOT(PassString(QString &)), Qt::DirectConnection);
 	connect(player, SIGNAL(GetString(QString &)),
-		this, SLOT(PassString(QString &)), Qt::DirectConnection);
+		SLOT(PassString(QString &)), Qt::DirectConnection);
 
-	connect(player, SIGNAL(Updated()), this, SLOT(UpdatePlayer()),
+	connect(player, SIGNAL(Updated()), SLOT(UpdatePlayer()),
 		Qt::DirectConnection);
-	connect(w, SIGNAL(ReConnect()), this, SLOT(ConnectWorld()),
+	connect(w, SIGNAL(ReConnect()), SLOT(ConnectWorld()),
 		Qt::DirectConnection);
-	connect(w, SIGNAL(UpdatedAll()), this, SLOT(UpdateAll()),
+	connect(w, SIGNAL(UpdatedAll()), SLOT(UpdateAll()),
 		Qt::DirectConnection);
-	connect(w, SIGNAL(Moved(const int)), this, SLOT(Move(const int)),
+	connect(w, SIGNAL(Moved(const int)), SLOT(Move(const int)),
 		Qt::DirectConnection);
 	ConnectWorld();
-	connect(w, SIGNAL(UpdatesEnded()), this, SLOT(UpdatesEnd()),
+	connect(w, SIGNAL(UpdatesEnded()), SLOT(UpdatesEnd()),
 		Qt::DirectConnection);
 
-	connect(player, SIGNAL(Destroyed()), this, SLOT(DeathScreen()),
+	connect(player, SIGNAL(Destroyed()), SLOT(DeathScreen()),
 		Qt::DirectConnection );
 }
 
