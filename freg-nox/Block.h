@@ -17,6 +17,9 @@
 	* You should have received a copy of the GNU General Public License
 	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
+/**\file Block.h
+ * \brief Provides definition for class Block. */
+
 #ifndef BLOCK_H
 #define BLOCK_H
 
@@ -42,7 +45,9 @@ class Inventory;
 class Active;
 class Animal;
 
-class Block { // blocks without special physics and attributes
+class Block {
+	/**\class Block Block.h
+	 * \brief Block without special physics and attributes. */
 public:
 	Block(int sub, quint16 id, quint8 transp = UNDEF);
 	Block(QDataStream &, int sub, quint16 id, quint8 transp = UNDEF);
@@ -79,6 +84,7 @@ public:
 
 	/// Determines kind and sub, unique for every kind-sub pair.
 	quint16 GetId() const;
+	/// Set maximum durability.
 	void Restore();
 	void SetDir(int dir);
 

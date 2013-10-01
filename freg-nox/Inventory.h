@@ -17,6 +17,9 @@
 	* You should have received a copy of the GNU General Public License
 	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
+/**\file Inventory.h
+ * \brief Provides declaration for class Inventory for freg. */
+
 #ifndef INVENTORY_H
 #define INVENTORY_H
 
@@ -26,6 +29,8 @@ const ushort INV_SIZE = 26U;
 const ushort MAX_STACK_SIZE = 9U;
 
 class Inventory {
+	/**\class Inventory Inventory.h
+	 * \brief Provides block ability to contain other blocks inside. */
 protected:
 	/// It is not recommended to make inventory size more than 26.
 	/** Because it will not be convenient to deal with inventory
@@ -69,7 +74,6 @@ public:
 	QString NumStr(ushort num) const;
 
 	bool IsEmpty() const;
-	bool HasRoom() const;
 
 	void Push(Block * who);
 protected:

@@ -606,14 +606,6 @@
 		}
 		return true;
 	}
-	bool Inventory::HasRoom() const {
-		for (ushort i=Start(); i<Size(); ++i) {
-			if ( inventory[i].isEmpty() ) {
-				return true;
-			}
-		}
-		return false;
-	}
 
 	void Inventory::Push(Block * const who) {
 		Inventory * const inv = who->HasInventory();
