@@ -7,13 +7,9 @@ CONFIG += debug
 QT -= gui
 LIBS += -lcurses
 
-MOC_DIR = moc
-OBJECTS_DIR = obj
-
 VERSION = 0.2
 VERSTR = '\\"$${VERSION}\\"'
 DEFINES += VER=\"$${VERSTR}\"
-
 TEMPLATE = app
 TARGET = freg-nox-'"$${VERSION}"'
 
@@ -24,6 +20,17 @@ QMAKE_CXXFLAGS_DEBUG += -O3
 
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -O3 -s
+
+#QMAKE_CXX  = clang++
+#QMAKE_LINK = clang++
+
+target.path += /usr/bin
+INSTALLS += target
+
+DISTFILES += texts/*.txt
+
+MOC_DIR = moc
+OBJECTS_DIR = obj
 
 # Input
 HEADERS += \
