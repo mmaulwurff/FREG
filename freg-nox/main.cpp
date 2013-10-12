@@ -53,7 +53,11 @@ int main(int argc, char *argv[]) {
 
 	World world(worldName);
 	Player player;
-	const Screen screen(&world, &player);
+	int error = NO_ERROR;
+	const Screen screen(&world, &player, error);
+	if ( error ) {
+		return 1;
+	} // else:
 	world.start();
 
 	QObject::connect(&player, SIGNAL(Destroyed()),

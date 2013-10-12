@@ -519,7 +519,7 @@ void Screen::PrintHUD() {
 	werase(hudWin);
 	// quick inventory
 	Inventory * const inv = player->PlayerInventory();
-	if ( inv ) {
+	if ( inv && COLS>=(SCREEN_SIZE*2+2)*2 ) {
 		for (ushort i=0; i<inv->Size(); ++i) {
 			wstandend(hudWin);
 			const int x = QUICK_INVENTORY_X_SHIFT+i*2;
@@ -529,7 +529,7 @@ void Screen::PrintHUD() {
 				mvwaddch(hudWin, 1, x,
 					PrintBlock(inv->ShowBlock(i), hudWin));
 				if ( number > 1 ) {
-					mvwprintw(hudWin, 2, x, "%hu", number);
+					mvwaddch(hudWin, 2, x, number+'0');
 				}
 			}
 		}
@@ -635,6 +635,9 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
 } // void Screen::PrintNormal(WINDOW * window, int dir)
 
 void Screen::PrintFront(WINDOW * const window) const {
+	if ( !window ) {
+		return;
+	} // else:
 	const int dir = player->GetDir();
 	short x_step, z_step,
 	      x_end,  z_end,
@@ -865,8 +868,13 @@ void Screen::DeathScreen() {
 	updated = true;
 }
 
-Screen::Screen(World * const wor, Player * const pl) :
+Screen::Screen(World * const wor, Player * const pl, int & error) :
 		VirtScreen(wor, pl),
+		leftWin(0),
+		rightWin(0),
+		notifyWin(0),
+		commandWin(0),
+		hudWin(0),
 		input(new IThread(this)),
 		updated(false),
 		updatedPlayer(false),
@@ -889,6 +897,13 @@ Screen::Screen(World * const wor, Player * const pl) :
 	noecho(); // do not print typed symbols
 	nonl();
 	keypad(stdscr, TRUE); // use arrows
+	if ( LINES < 41 ) {
+		world->CleanAll();
+		CleanAll();
+		printf("Make your terminal height to be at least 41 lines.\n");
+		error = HEIGHT_NOT_ENOUGH;
+		return;
+	}
 	// all available color pairs (maybe some of them will not be used)
 	const short colors[] = { // do not change colors order!
 		COLOR_BLACK,
@@ -903,11 +918,28 @@ Screen::Screen(World * const wor, Player * const pl) :
 	for (short i=BLACK_BLACK; i<=WHITE_WHITE; ++i) {
 		init_pair(i, colors[(i-1)/8], colors[(i-1)%8]);
 	}
-	rightWin = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, COLS/2);
-	leftWin  = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0,
-		COLS/2-SCREEN_SIZE*2-2);
-	hudWin = newwin(3, (SCREEN_SIZE*2+2)*2, SCREEN_SIZE+2,
-		COLS/2-SCREEN_SIZE*2-2);
+	const ushort preferred_width = (SCREEN_SIZE*2+2)*2;
+	if ( COLS >= preferred_width ) {
+		rightWin = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, COLS/2);
+		leftWin  = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2,
+			0, COLS/2-SCREEN_SIZE*2-2);
+		hudWin = newwin(3, preferred_width,
+			SCREEN_SIZE+2, COLS/2-SCREEN_SIZE*2-2);
+	} else if ( COLS >= preferred_width/2 ) {
+		rightWin = 0;
+		leftWin  = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2,
+			0, COLS/2-SCREEN_SIZE-1);
+		hudWin = newwin(3, SCREEN_SIZE*2+2,
+			SCREEN_SIZE+2, COLS/2-SCREEN_SIZE-1);
+	} else {
+		world->CleanAll();
+		CleanAll();
+		puts(qPrintable(
+			QString("Set your terminal width at least %1 chars").
+				arg(SCREEN_SIZE*2+2)));
+		error = WIDTH_NOT_ENOUGH;
+		return;
+	}
 	commandWin = newwin(1, COLS, SCREEN_SIZE+2+3, 0);
 	notifyWin  = newwin(0, COLS, SCREEN_SIZE+2+4, 0);
 	scrollok(notifyWin, TRUE);
@@ -931,8 +963,12 @@ Screen::Screen(World * const wor, Player * const pl) :
 	erase();
 	refresh();
 	CleanFileToShow();
-	Notify("------------------------------------------------------------");
-	Notify("Game started. Press 'H' for help.");
+	Notify("+-------------Game started. Press 'H' for help.-------------+");
+	if ( COLS < preferred_width ) {
+		Notify("For better gameplay ");
+		Notify(QString("set your terminal width at least %1 chars.").
+			arg(preferred_width));
+	}
 
 	input->start();
 	connect(timer, SIGNAL(timeout()), SLOT(Print()));
@@ -950,12 +986,11 @@ void Screen::CleanAll() {
 	delete input;
 	delete timer;
 
-	delwin(leftWin);
-	delwin(rightWin);
-	delwin(notifyWin);
-	delwin(hudWin);
+	if ( leftWin   ) delwin(leftWin);
+	if ( rightWin  ) delwin(rightWin);
+	if ( notifyWin ) delwin(notifyWin);
+	if ( hudWin    ) delwin(hudWin);
 	endwin();
-	puts("Game finished successfully.");
 	if ( notifyLog ) {
 		fclose(notifyLog);
 	}

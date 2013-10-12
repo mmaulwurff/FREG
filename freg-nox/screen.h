@@ -17,8 +17,8 @@
 	* You should have received a copy of the GNU General Public License
 	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-// this file provides curses (text-based graphics interface) screen for freg.
-// screen.cpp provides definitions for methods.
+/**\file screen.h
+ * \brief Provides curses (text-based graphics interface) screen for freg.*/
 
 #ifndef SCREEN_H
 #define SCREEN_H
@@ -40,7 +40,8 @@ enum actions {
 	BUILD,
 	CRAFT,
 	TAKEOFF
-}; // enum actions
+};
+
 enum color_pairs { // do not change colors order! // foreground_background
         BLACK_BLACK=1,
         BLACK_RED,
@@ -115,6 +116,12 @@ enum color_pairs { // do not change colors order! // foreground_background
         WHITE_WHITE
 }; // enum color_pairs
 
+enum screen_errors {
+	NO_ERROR = 0,
+	HEIGHT_NOT_ENOUGH,
+	WIDTH_NOT_ENOUGH
+};
+
 class IThread;
 class Inventory;
 class QTimer;
@@ -125,7 +132,7 @@ class QMutex;
 class Screen : public VirtScreen {
 	Q_OBJECT
 public:
-	Screen(World *, Player *);
+	Screen(World *, Player *, int & error);
 	~Screen();
 
 	void ControlPlayer(int);
