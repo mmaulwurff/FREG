@@ -13,7 +13,7 @@ DEFINES += VER=\"$${VERSTR}\"
 TEMPLATE = app
 TARGET = freg-nox-'"$${VERSION}"'
 
-QMAKE_CXXFLAGS += -Wextra
+QMAKE_CXXFLAGS += -Wextra -std=c++11 -pedantic
 
 #QMAKE_CXXFLAGS_DEBUG += -fno-inline
 QMAKE_CXXFLAGS_DEBUG += -O3
