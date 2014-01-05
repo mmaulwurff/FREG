@@ -25,21 +25,22 @@
 
 #define NOX
 
-#include <curses.h>
+#define _X_OPEN_SOURCE_EXTENDED
+#include <ncursesw/ncurses.h>
 #include "VirtScreen.h"
 
 const ushort SCREEN_SIZE = 30;
 
 enum actions {
-	USE,
-	THROW,
-	OBTAIN,
-	WIELD,
-	INSCRIBE,
-	EAT,
-	BUILD,
-	CRAFT,
-	TAKEOFF
+	ACTION_USE,
+	ACTION_THROW,
+	ACTION_OBTAIN,
+	ACTION_WIELD,
+	ACTION_INSCRIBE,
+	ACTION_EAT,
+	ACTION_BUILD,
+	ACTION_CRAFT,
+	ACTION_TAKEOFF
 };
 
 enum color_pairs { // do not change colors order! // foreground_background

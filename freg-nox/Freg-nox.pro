@@ -5,7 +5,7 @@
 CONFIG += thread warn_on console
 CONFIG += debug
 QT -= gui
-LIBS += -lcurses
+LIBS += -lncursesw
 
 VERSION = 0.2
 VERSTR = '\\"$${VERSION}\\"'
@@ -13,7 +13,8 @@ DEFINES += VER=\"$${VERSTR}\"
 TEMPLATE = app
 TARGET = freg-nox
 
-QMAKE_CXXFLAGS += -Wextra -std=c++11 -pedantic -Werror
+QMAKE_CXXFLAGS += -Wextra -std=c++11 -pedantic
+QMAKE_CXXFLAGS += -Werror
 
 #QMAKE_CXXFLAGS_DEBUG += -fno-inline
 QMAKE_CXXFLAGS_DEBUG += -O3

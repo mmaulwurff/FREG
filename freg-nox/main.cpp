@@ -34,6 +34,7 @@
 #include "Player.h"
 
 int main(int argc, char *argv[]) {
+    setlocale(LC_CTYPE, "C-UTF-8");
     puts(qPrintable(QObject::tr("Starting...")));
     QDir::current().mkdir("texts");
     freopen("texts/errors.txt", "wt", stderr);

@@ -323,16 +323,16 @@ void Screen::ControlPlayer(const int ch) {
     } break;
     case 27: /* esc */ player->StopUseAll(); break;
 
-    case 'B': SetActionMode(BUILD);    break;
-    case 'C': SetActionMode(CRAFT);    break;
+    case 'B': SetActionMode(ACTION_BUILD);    break;
+    case 'C': SetActionMode(ACTION_CRAFT);    break;
     case 'D':
-    case 'T': SetActionMode(THROW);    break;
-    case 'E': SetActionMode(EAT);      break;
-    case 'F': SetActionMode(TAKEOFF);  break;
-    case 'I': SetActionMode(INSCRIBE); break;
-    case 'O': SetActionMode(OBTAIN);   break;
-    case 'U': SetActionMode(USE);      break;
-    case 'W': SetActionMode(WIELD);    break;
+    case 'T': SetActionMode(ACTION_THROW);    break;
+    case 'E': SetActionMode(ACTION_EAT);      break;
+    case 'F': SetActionMode(ACTION_TAKEOFF);  break;
+    case 'I': SetActionMode(ACTION_INSCRIBE); break;
+    case 'O': SetActionMode(ACTION_OBTAIN);   break;
+    case 'U': SetActionMode(ACTION_USE);      break;
+    case 'W': SetActionMode(ACTION_WIELD);    break;
     case KEY_HELP:
     case 'H':
         wstandend(rightWin);
@@ -393,23 +393,23 @@ void Screen::SetActionMode(const int mode) {
 
 void Screen::InventoryAction(const ushort num) const {
     switch ( actionMode ) {
-    case USE:      player->Use(num);      break;
-    case WIELD:    player->Wield(num);    break;
-    case INSCRIBE: player->Inscribe(num); break;
-    case EAT:      player->Eat(num);      break;
-    case CRAFT:    player->Craft(num);    break;
-    case TAKEOFF:  player->TakeOff(num);  break;
-    case OBTAIN: {
+    case ACTION_USE:      player->Use(num);      break;
+    case ACTION_WIELD:    player->Wield(num);    break;
+    case ACTION_INSCRIBE: player->Inscribe(num); break;
+    case ACTION_EAT:      player->Eat(num);      break;
+    case ACTION_CRAFT:    player->Craft(num);    break;
+    case ACTION_TAKEOFF:  player->TakeOff(num);  break;
+    case ACTION_OBTAIN: {
         ushort x, y, z;
         ActionXyz(x, y, z);
         player->Obtain(x, y, z, num);
     } break;
-    case THROW: {
+    case ACTION_THROW: {
         ushort x, y, z;
         ActionXyz(x, y, z);
         player->Throw(x, y, z, num);
     } break;
-    case BUILD: {
+    case ACTION_BUILD: {
         ushort x, y, z;
         ActionXyz(x, y, z);
         player->Build(x, y, z, num);
@@ -447,7 +447,6 @@ void Screen::Print() {
         return;
     }
     w->ReadLock();
-    PrintHUD();
     mutex->lock();
     if ( updated ) {
         w->Unlock();
@@ -456,6 +455,7 @@ void Screen::Print() {
     }
     updated = true;
     mutex->unlock();
+    PrintHUD();
     const int dir = player->GetDir();
     switch ( player->UsingSelfType() ) { // left window
     case USAGE_TYPE_OPEN:
@@ -536,21 +536,25 @@ void Screen::PrintHUD() {
     }
     // action mode
     wstandend(hudWin);
-    mvwaddstr(hudWin, 1, 0, "Action: ");
+    QString actionString(tr("Action: "));
     switch ( actionMode ) {
-    case THROW:    waddstr(hudWin, "Throw");  break;
-    case OBTAIN:   waddstr(hudWin, "Obtain"); break;
-    case WIELD:    waddstr(hudWin, "Wield");  break;
-    case EAT:      waddstr(hudWin, "Eat");    break;
-    case BUILD:    waddstr(hudWin, "Build");  break;
-    case CRAFT:    waddstr(hudWin, "Craft");  break;
-    case TAKEOFF:  waddstr(hudWin, "Take off"); break;
-    case USE:      waddstr(hudWin, "Use in inventory"); break;
-    case INSCRIBE: waddstr(hudWin, "Inscribe in inventory"); break;
-    default:       waddstr(hudWin, "Unknown");
+    case ACTION_THROW:    actionString.append(tr("Throw"));  break;
+    case ACTION_OBTAIN:   actionString.append(tr("Obtain")); break;
+    case ACTION_WIELD:    actionString.append(tr("Wield"));  break;
+    case ACTION_EAT:      actionString.append(tr("Eat"));    break;
+    case ACTION_BUILD:    actionString.append(tr("Build"));  break;
+    case ACTION_CRAFT:    actionString.append(tr("Craft"));  break;
+    case ACTION_TAKEOFF:  actionString.append(tr("Take off")); break;
+    case ACTION_USE:      actionString.append(tr("Use in inventory")); break;
+    case ACTION_INSCRIBE:
+        actionString.append(tr("Inscribe in inventory"));
+    break;
+    default:
+        actionString.append(tr("Unknown"));
         fprintf(stderr, "Screen::Print: Unlisted actionMode: %d\n",
             actionMode);
     }
+    mvwaddstr(hudWin, 1, 0, qPrintable(actionString));
     if ( player->GetCreativeMode() ) {
         mvwaddstr(hudWin, 0, 0, "Creative Mode");
         // coordinates
@@ -571,8 +575,7 @@ void Screen::PrintHUD() {
         const short breath = player->Breath();
         if ( -1!=breath && breath!=MAX_BREATH ) { // breath line
             wstandend(hudWin);
-            const QString str =
-                QString("%1").arg(breath, -10, 10, QChar('.'));
+            const QString str = QString("%1").arg(breath, -10, 10, QChar('.'));
             mvwaddstr(hudWin, 0, 15, "BR[..........]");
             wcolor_set(hudWin, WHITE_BLUE, NULL);
             mvwaddstr(hudWin, 0, 15+3,
@@ -580,19 +583,24 @@ void Screen::PrintHUD() {
         }
         const short satiation = player->SatiationPercent();
         if ( -1 != satiation ) { // satiation line
-            (void)wmove(hudWin, 2, 0);
             if ( 100 < satiation ) {
                 wcolor_set(hudWin, BLUE_BLACK, NULL);
-                waddstr(hudWin, "Gorged");
+                mvwaddstr(hudWin, 2, 0, ("Gorged"));
             } else if ( 75<satiation ) {
                 wcolor_set(hudWin, GREEN_BLACK, NULL);
-                waddstr(hudWin, "Full");
-            } else if (25>satiation) {
+                mvwaddstr(hudWin, 2, 0, "Full");
+            } else if ( 25>satiation ) {
                 wcolor_set(hudWin, RED_BLACK, NULL);
-                waddstr(hudWin, "Hungry");
+                mvwaddstr(hudWin, 2, 0, "Hungry");
             }
         }
     }
+
+    // unicode symbol example output code
+    wcolor_set(hudWin, WHITE_BLUE, NULL);
+    const cchar_t ch = { 0, L"\u263a" };
+    mvwadd_wch(hudWin, 0, 20, &ch);
+
     wrefresh(hudWin);
 } // void Screen::PrintHUD()
 
@@ -792,12 +800,10 @@ const {
         }
         const QString str = inv->GetInvNote(i);
         if ( !str.isEmpty() ) {
-            waddstr(window, " ~:");
             if ( str.size() < 24 ) {
-                waddstr(window, qPrintable(str));
+                wprintw(window, " ~:%s", qPrintable(str));
             } else {
-                waddstr(window, qPrintable(str.left(13)));
-                waddstr(window, "...");
+                wprintw(window, " ~:%s...", qPrintable(str.left(13)));
             }
         }
         wstandend(window);
@@ -883,7 +889,6 @@ Screen::Screen(World * const wor, Player * const pl, int & error) :
         fileToShow(0),
         mutex(new QMutex())
 {
-    setlocale(LC_ALL, "");
     #ifdef Q_OS_WIN32
         AllocConsole();
         freopen("conout$", "wt", stdout);
@@ -947,7 +952,7 @@ Screen::Screen(World * const wor, Player * const pl, int & error) :
     QSettings sett(QDir::currentPath()+"/freg.ini", QSettings::IniFormat);
     sett.beginGroup("screen_curses");
     shiftFocus = sett.value("focus_shift", 0).toInt();
-    actionMode = sett.value("action_mode", USE).toInt();
+    actionMode = sett.value("action_mode", ACTION_USE).toInt();
     command    = sett.value("last_command", "hello").toString();
     beepOn     = sett.value("beep_on", true).toBool();
     sett.setValue("beep_on", beepOn);
