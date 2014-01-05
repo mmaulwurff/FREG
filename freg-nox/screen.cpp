@@ -25,6 +25,7 @@
 #include <QSettings>
 #include <QDir>
 #include <QMutex>
+#include <QTextStream>
 #include "screen.h"
 #include "world.h"
 #include "Block.h"
@@ -833,7 +834,7 @@ bool Screen::PrintFile(WINDOW * const window, QString const & file_name) {
     CleanFileToShow();
     fileToShow = new QFile(file_name);
     if ( fileToShow->open(QIODevice::ReadOnly | QIODevice::Text) ) {
-        PrintText(window, fileToShow->readAll());
+        PrintText(window, QTextStream(fileToShow).readAll());
         return true;
     } else {
         CleanFileToShow();
