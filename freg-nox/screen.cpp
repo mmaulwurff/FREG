@@ -20,6 +20,8 @@
 /**\file screen.cpp
  * \brief This file is related to curses screen for freg. */
 
+///TODO \todo make unicode input
+
 #include <QString>
 #include <QTimer>
 #include <QSettings>
@@ -455,8 +457,8 @@ void Screen::Print() {
         return;
     }
     updated = true;
-    mutex->unlock();
     PrintHUD();
+    mutex->unlock();
     const int dir = player->GetDir();
     switch ( player->UsingSelfType() ) { // left window
     case USAGE_TYPE_OPEN:
@@ -472,28 +474,23 @@ void Screen::Print() {
         switch ( player->UsingType() ) {
         case USAGE_TYPE_READ_IN_INVENTORY:
             wstandend(rightWin);
-            PrintFile(rightWin, QString(
-                w->WorldName() + "/texts/" +
-                player->PlayerInventory()->ShowBlock(
-                    player->GetUsingInInventory())->
-                        GetNote())
-                    + ".txt");
+            PrintFile(rightWin, QString(w->WorldName() + "/texts/"
+                + player->PlayerInventory()->ShowBlock(
+                    player->GetUsingInInventory())->GetNote()));
             player->SetUsingTypeNo();
         break;
         case USAGE_TYPE_READ: {
             ushort x, y, z;
             ActionXyz(x, y, z);
             wstandend(rightWin);
-            PrintFile(rightWin, QString(
-                w->WorldName()+"/texts/"+
-                w->GetBlock(x, y, z)->GetNote()+".txt"));
+            PrintFile(rightWin, QString(w->WorldName() + "/texts/"
+                + w->GetBlock(x, y, z)->GetNote()));
             player->SetUsingTypeNo();
         } break;
         case USAGE_TYPE_OPEN: {
             ushort x, y, z;
             ActionXyz(x, y, z);
-            const Inventory * const inv =
-                w->GetBlock(x, y, z)->HasInventory();
+            const Inventory * const inv = w->GetBlock(x, y, z)->HasInventory();
             if ( inv ) {
                 PrintInv(rightWin, inv);
                 break;
@@ -527,8 +524,7 @@ void Screen::PrintHUD() {
             mvwaddch(hudWin, 0, x, 'a'+i);
             const int number = inv->Number(i);
             if ( number ) {
-                mvwaddch(hudWin, 1, x,
-                    PrintBlock(inv->ShowBlock(i), hudWin));
+                mvwaddch(hudWin, 1, x, PrintBlock(inv->ShowBlock(i), hudWin));
                 if ( number > 1 ) {
                     mvwaddch(hudWin, 2, x, number+'0');
                 }
@@ -557,7 +553,7 @@ void Screen::PrintHUD() {
     }
     mvwaddstr(hudWin, 1, 0, qPrintable(actionString));
     if ( player->GetCreativeMode() ) {
-        mvwaddstr(hudWin, 0, 0, "Creative Mode");
+        mvwaddstr(hudWin, 0, 0, qPrintable(tr("Creative Mode")));
         // coordinates
         mvwprintw(hudWin, 2, 0, "xyz: %ld, %ld, %hu. XY: %ld, %ld",
             player->GlobalX(), player->GlobalY(), player->Z(),
@@ -566,8 +562,7 @@ void Screen::PrintHUD() {
         const short dur = player->HP();
         if ( -1 != dur ) { // HitPoints line
             wstandend(hudWin);
-            const QString str = QString("%1").arg(dur, -10, 10,
-                QChar('.'));
+            const QString str = QString("%1").arg(dur, -10, 10, QChar('.'));
             mvwaddstr(hudWin, 0, 0, "HP[..........]");
             wcolor_set(hudWin, WHITE_RED, NULL);
             mvwaddstr(hudWin, 0, 3,
@@ -586,13 +581,13 @@ void Screen::PrintHUD() {
         if ( -1 != satiation ) { // satiation line
             if ( 100 < satiation ) {
                 wcolor_set(hudWin, BLUE_BLACK, NULL);
-                mvwaddstr(hudWin, 2, 0, ("Gorged"));
-            } else if ( 75<satiation ) {
+                mvwaddstr(hudWin, 2, 0, qPrintable(tr("Gorged")));
+            } else if ( 75 < satiation ) {
                 wcolor_set(hudWin, GREEN_BLACK, NULL);
-                mvwaddstr(hudWin, 2, 0, "Full");
-            } else if ( 25>satiation ) {
+                mvwaddstr(hudWin, 2, 0, qPrintable(tr("Full")));
+            } else if ( 25 > satiation ) {
                 wcolor_set(hudWin, RED_BLACK, NULL);
-                mvwaddstr(hudWin, 2, 0, "Hungry");
+                mvwaddstr(hudWin, 2, 0, qPrintable(tr("Hungry")));
             }
         }
     }
@@ -601,6 +596,8 @@ void Screen::PrintHUD() {
     wcolor_set(hudWin, WHITE_BLUE, NULL);
     const cchar_t ch = { 0, L"\u263a" };
     mvwadd_wch(hudWin, 0, 20, &ch);
+    QChar chars[] = { 0x263a, 0x263a };
+    waddstr(hudWin, qPrintable(QString(chars)));
 
     wrefresh(hudWin);
 } // void Screen::PrintHUD()
@@ -620,8 +617,7 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
             ++j, waddstr(window, "\n_"))
     for (ushort i=start_x; i<SCREEN_SIZE+start_x; ++i ) {
         ushort k = k_start;
-        for ( ; INVISIBLE==w->GetBlock(i, j, k)->Transparent();
-                k+=k_step);
+        for ( ; INVISIBLE==w->GetBlock(i, j, k)->Transparent(); k+=k_step);
         const Block * const block = w->GetBlock(i, j, k);
         if ( (w->Enlightened(i, j, k) && player->Visible(i, j, k)) ||
                 player->GetCreativeMode() )
@@ -728,7 +724,7 @@ void Screen::PrintFront(WINDOW * const window) const {
     {
         for (*x=x_start; *x!=x_end; *x+=x_step) {
             for (*z=z_start; *z!=z_end && w->GetBlock(i, j, k)->
-                    Transparent()==INVISIBLE;
+                        Transparent()==INVISIBLE;
                     *z += z_step);
             const Block * const block = w->GetBlock(i, j, k);
             if ( (*z==z_end || (w->Enlightened(i, j, k)
@@ -736,8 +732,7 @@ void Screen::PrintFront(WINDOW * const window) const {
                         || player->GetCreativeMode() )
             {
                 if ( *z != z_end ) {
-                    waddch(window,
-                        PrintBlock(block, window));
+                    waddch(window, PrintBlock(block, window));
                     waddch(window, CharNumberFront(i, j));
                     continue;
                 } else {
@@ -855,8 +850,7 @@ void Screen::Notify(const QString & str) const {
         }
         return;
     }
-    waddstr(notifyWin, qPrintable(str));
-    waddch(notifyWin, '\n');
+    wprintw(notifyWin, "%s\n", qPrintable(str));
     wrefresh(notifyWin);
 }
 
@@ -865,7 +859,7 @@ void Screen::DeathScreen() {
     werase(hudWin);
     wcolor_set(leftWin, WHITE_RED, NULL);
     if ( !PrintFile(leftWin, "texts/death.txt") ) {
-        waddstr(leftWin, "You die.\nWaiting for respawn...");
+        waddstr(leftWin, qPrintable(tr("You die.\nWaiting for respawn...")));
     }
     box(leftWin, 0, 0);
     wnoutrefresh(leftWin);
@@ -1012,8 +1006,8 @@ void Screen::CleanAll() {
 Screen::~Screen() { CleanAll(); }
 
 IThread::IThread(Screen * const scr) :
-    screen(scr),
-    stopped(false)
+        screen(scr),
+        stopped(false)
 {}
 
 void IThread::run() {
