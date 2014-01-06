@@ -27,6 +27,7 @@
 
 // Qt version in Debian stable that time.
 const quint8 DATASTREAM_VERSION = QDataStream::Qt_4_6;
+const quint8 CURRENT_SHRED_FORMAT_VERSION = 1;
 
 const ushort SHRED_WIDTH_SHIFT = 4;
 
@@ -42,16 +43,24 @@ ushort Shred::ShredY() const { return shredY; }
 World * Shred::GetWorld() const { return world; }
 
 bool Shred::LoadShred() {
-    QByteArray * const data=GetWorld()->GetShredData(longitude, latitude);
+    QByteArray * const data = GetWorld()->GetShredData(longitude, latitude);
     if ( !data ) {
         return false;
     } // else:
     QDataStream in(*data);
-    quint8 version;
-    in >> version;
-    if ( Q_UNLIKELY(DATASTREAM_VERSION != version) ) {
-        fprintf(stderr, "Wrong version: %d\nGenerating new shred.\n",
-            DATASTREAM_VERSION);
+    quint8  dataStreamVersion;
+    quint8 shredFormatVersion;
+    in >> dataStreamVersion >> shredFormatVersion;
+    if ( Q_UNLIKELY(DATASTREAM_VERSION != dataStreamVersion) ) {
+        fprintf(stderr,
+            "QDataStream version: %d (must be %d). Generating new shred.\n",
+            dataStreamVersion, DATASTREAM_VERSION);
+        return false;
+    } // else:
+    if ( Q_UNLIKELY(CURRENT_SHRED_FORMAT_VERSION != shredFormatVersion) ) {
+        fprintf(stderr,
+            "Shred format version: %d (must be %d).\nGenerating new shred.\n",
+            shredFormatVersion, CURRENT_SHRED_FORMAT_VERSION);
         return false;
     } // else:
     in.setVersion(DATASTREAM_VERSION);
@@ -138,7 +147,7 @@ Shred::~Shred() {
         QByteArray * const shred_data = new QByteArray();
         shred_data->reserve(70000);
         QDataStream outstr(shred_data, QIODevice::WriteOnly);
-        outstr << DATASTREAM_VERSION;
+        outstr << DATASTREAM_VERSION << CURRENT_SHRED_FORMAT_VERSION;
         outstr.setVersion(DATASTREAM_VERSION);
         for (ushort x=0; x<SHRED_WIDTH; ++x)
         for (ushort y=0; y<SHRED_WIDTH; ++y) {
