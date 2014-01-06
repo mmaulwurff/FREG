@@ -51,6 +51,7 @@ class Block {
 public:
 	Block(int sub, quint16 id, quint8 transp = UNDEF);
 	Block(QDataStream &, int sub, quint16 id, quint8 transp = UNDEF);
+    Block(Block const &);
 	virtual ~Block();
 
 	virtual QString FullName() const;

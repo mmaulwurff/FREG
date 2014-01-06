@@ -242,6 +242,17 @@
         durability = ( data >>=1 ) & 0x7F;
         direction = (data >>= 7);
     }
+    Block::Block(Block const & block) :
+            durability(block.durability),
+            transparent(block.transparent),
+            sub(block.sub),
+            id(block.id),
+            direction(block.direction)
+    {
+        if ( block.note ) {
+            note = new QString(*block.note);
+        }
+    }
     Block::~Block() { delete note; }
 // Plate::
     QString Plate::FullName() const {
@@ -652,12 +663,12 @@
     Inventory::Inventory(const ushort sz) :
             size(sz)
     {
-        inventory=new QStack<Block *>[Size()];
+        inventory = new QStack<Block *>[Size()];
     }
     Inventory::Inventory(QDataStream & str, const ushort sz) :
             size(sz)
     {
-        inventory=new QStack<Block *>[Size()];
+        inventory = new QStack<Block *>[Size()];
         for (ushort i=0; i<Size(); ++i) {
             quint8 num;
             str >> num;
@@ -666,6 +677,11 @@
                     BlockFromFile(str));
             }
         }
+    }
+    Inventory::Inventory(Inventory const & inv) :
+            size(inv.Size())
+    {
+        inventory = new QStack<Block *>[Size()];
     }
     Inventory::~Inventory() {
         for (ushort i=0; i<Size(); ++i) {
