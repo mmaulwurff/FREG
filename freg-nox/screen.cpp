@@ -920,28 +920,28 @@ Screen::Screen(World * const wor, Player * const pl, int & error) :
     }
     const ushort preferred_width = (SCREEN_SIZE*2+2)*2;
     if ( COLS >= preferred_width ) {
+        const ushort left_border = COLS/2-SCREEN_SIZE*2-2;
         rightWin = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, COLS/2);
-        leftWin  = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2,
-            0, COLS/2-SCREEN_SIZE*2-2);
-        hudWin = newwin(3, preferred_width,
-            SCREEN_SIZE+2, COLS/2-SCREEN_SIZE*2-2);
+        leftWin  = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, left_border);
+        hudWin   = newwin(3, preferred_width, SCREEN_SIZE+2, left_border);
+        commandWin = newwin(1, preferred_width, SCREEN_SIZE+2+3, left_border);
+        notifyWin  = newwin(0, preferred_width, SCREEN_SIZE+2+4, left_border);
     } else if ( COLS >= preferred_width/2 ) {
+        const ushort left_border = COLS/2-SCREEN_SIZE-1;
         rightWin = 0;
-        leftWin  = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2,
-            0, COLS/2-SCREEN_SIZE-1);
-        hudWin = newwin(3, SCREEN_SIZE*2+2,
-            SCREEN_SIZE+2, COLS/2-SCREEN_SIZE-1);
+        leftWin  = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, left_border);
+        hudWin   = newwin(3, SCREEN_SIZE*2+2, SCREEN_SIZE+2, left_border);
+        commandWin = newwin(1, SCREEN_SIZE*2+2, SCREEN_SIZE+2+3, left_border);
+        notifyWin  = newwin(0, SCREEN_SIZE*2+2, SCREEN_SIZE+2+4, left_border);
     } else {
         world->CleanAll();
         CleanAll();
         puts(qPrintable(
-            QString("Set your terminal width at least %1 chars").
+            tr("Set your terminal width at least %1 chars.").
                 arg(SCREEN_SIZE*2+2)));
         error = WIDTH_NOT_ENOUGH;
         return;
     }
-    commandWin = newwin(1, COLS, SCREEN_SIZE+2+3, 0);
-    notifyWin  = newwin(0, COLS, SCREEN_SIZE+2+4, 0);
     scrollok(notifyWin, TRUE);
 
     QSettings sett(QDir::currentPath()+"/freg.ini", QSettings::IniFormat);
