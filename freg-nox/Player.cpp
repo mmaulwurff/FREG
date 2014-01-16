@@ -141,10 +141,9 @@ const {
 void Player::Examine(const short i, const short j, const short k) const {
     QReadLocker locker(world->GetLock());
 
-    emit Notify("------");
     const Block * const block = world->GetBlock(i, j, k);
+    emit Notify( QString("*----- %1 -----*").arg(block->FullName()) );
     const int sub = block->Sub();
-    emit Notify( block->FullName() );
     if ( GetCreativeMode() || COMMANDS_ALWAYS_ON ) { //know more
         emit Notify(tr(
         "Light:%1, fire:%2, sun:%3. Transp:%4. Norm:%5. Dir:%6.").
