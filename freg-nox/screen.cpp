@@ -109,7 +109,7 @@ QString Screen::PassString(QString & str) const {
     werase(commandWin);
     wrefresh(commandWin);
     fprintf(notifyLog, "%lu: Command: %s\n", w->Time(), temp_str);
-    return str = temp_str;
+    return str = QString::fromUtf8(temp_str);
 }
 
 char Screen::CharNumber(const ushort x, const ushort y, const ushort z) const {
@@ -517,7 +517,7 @@ void Screen::PrintHUD() {
     werase(hudWin);
     // quick inventory
     Inventory * const inv = player->PlayerInventory();
-    if ( inv && COLS>=(SCREEN_SIZE*2+2)*2 ) {
+    if ( inv && !inv->IsEmpty() && COLS>=(SCREEN_SIZE*2+2)*2 ) {
         for (ushort i=0; i<inv->Size(); ++i) {
             wstandend(hudWin);
             const int x = QUICK_INVENTORY_X_SHIFT+i*2;
