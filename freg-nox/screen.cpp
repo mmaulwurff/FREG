@@ -837,7 +837,7 @@ bool Screen::PrintFile(WINDOW * const window, QString const & file_name) {
     }
 }
 
-void Screen::Notify(const QString & str) const {
+void Screen::Notify(const QString & str) {
     fputs(qPrintable(QString("%1 %2\n").arg(w->TimeOfDayStr()).arg(str)),
         notifyLog);
     if ( str == DING ) {
@@ -850,7 +850,18 @@ void Screen::Notify(const QString & str) const {
         }
         return;
     }
-    wprintw(notifyWin, "%s\n", qPrintable(str));
+    if ( ++notificationRepeatCount && str == lastNotification ) {
+        int x, y;
+        getyx(notifyWin, y, x);
+        wmove(notifyWin, y-1, 0);
+        wclrtoeol(notifyWin);
+        wprintw(notifyWin, "%s (%dx)\n",
+            qPrintable(str), notificationRepeatCount);
+    } else {
+        notificationRepeatCount = 1;
+        wprintw(notifyWin, "%s\n", qPrintable(str));
+        lastNotification = str;
+    }
     wrefresh(notifyWin);
 }
 
@@ -881,6 +892,7 @@ Screen::Screen(World * const wor, Player * const pl, int & error) :
         updatedPlayer(false),
         timer(new QTimer(this)),
         notifyLog(fopen("texts/messages.txt", "at")),
+        notificationRepeatCount(1),
         fileToShow(0),
         mutex(new QMutex())
 {
