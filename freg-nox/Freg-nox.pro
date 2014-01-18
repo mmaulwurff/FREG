@@ -72,4 +72,6 @@ SOURCES += \
 	ShredStorage.cpp \
 	Xyz.cpp
 
-TRANSLATIONS = freg_ru.ts
+TRANSLATIONS = \
+    freg_ru.ts \
+    freg_zh.ts
