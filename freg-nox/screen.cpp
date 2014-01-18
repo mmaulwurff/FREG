@@ -255,7 +255,9 @@ color_pairs Screen::Color(const int kind, const int sub) const {
 
 void Screen::ControlPlayer(const int ch) {
     CleanFileToShow();
-    if ( 'Q'==ch || 3==ch || 4==ch ) { // Q, ctrl-c and ctrl-d
+    // Q, ctrl-c, ctrl-d, ctrl-q, ctrl-x
+    // TODO: ctrl-z (to background) support
+    if ( 'Q'==ch || 3==ch || 4==ch || 17==ch || 24==ch ) {
         emit ExitReceived();
         return;
     } // else:
