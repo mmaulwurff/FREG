@@ -1,5 +1,5 @@
     /* freg, Free-Roaming Elementary Game with open and interactive world
-    *  Copyright (C) 2012-2013 Alexander 'mmaulwurff' Kromm
+    *  Copyright (C) 2012-2014 Alexander 'mmaulwurff' Kromm
     *  mmaulwurff@gmail.com
     *
     * This file is part of FREG.
@@ -15,10 +15,12 @@
     * GNU General Public License for more details.
     *
     * You should have received a copy of the GNU General Public License
-    * along with FREG. If not, see <http://www.gnu.org/licenses/>.
-    */
+    * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "screen.h" //NOX, if needed, is defined in screen.h
+
+#include <QTranslator>
+#include <QLocale>
 
 #ifdef NOX //no need for X server
     #include <QCoreApplication>
@@ -46,8 +48,12 @@ int main(int argc, char *argv[]) {
     #endif
     QCoreApplication::setOrganizationName("freg-team");
     QCoreApplication::setApplicationName("freg");
-    QSettings::setDefaultFormat(QSettings::IniFormat);
+    const QString locale = QLocale::system().name();
+    QTranslator translator;
+    translator.load(QString("freg_") + locale);
+    freg.installTranslator(&translator);
 
+    QSettings::setDefaultFormat(QSettings::IniFormat);
     QSettings sett(QDir::currentPath()+"/freg.ini", QSettings::IniFormat);
     const QString worldName = sett.value("current_world", "mu").toString();
     sett.setValue("current_world", worldName);

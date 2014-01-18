@@ -71,3 +71,5 @@ SOURCES += \
 	worldmap.cpp \
 	ShredStorage.cpp \
 	Xyz.cpp
+
+TRANSLATIONS = freg_ru.ts

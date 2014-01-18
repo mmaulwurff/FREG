@@ -1,5 +1,5 @@
     /* freg, Free-Roaming Elementary Game with open and interactive world
-    *  Copyright (C) 2012-2013 Alexander 'mmaulwurff' Kromm
+    *  Copyright (C) 2012-2014 Alexander 'mmaulwurff' Kromm
     *  mmaulwurff@gmail.com
     *
     * This file is part of FREG.
@@ -1186,7 +1186,7 @@
 
     QString Clock::FullName() const {
         switch ( Sub() ) {
-        case IRON: return tr("Iron clock");
+        case IRON: return QObject::tr("Iron clock");
         default:
             fprintf(stderr, "Clock::FullName: unlisted sub: %d\n",
                 Sub());
@@ -1202,15 +1202,15 @@
     int Clock::ShouldAct() const  { return RARE; }
 
     void Clock::DoRareAction() {
-        if ( alarmTime==GetWorld()->TimeOfDay() ) {
+        if ( alarmTime == GetWorld()->TimeOfDay() ) {
             Use();
         } else if ( timerTime > 0 ) {
             --timerTime;
             note->setNum(timerTime);
-        } else if ( timerTime==0 ) {
+        } else if ( timerTime == 0 ) {
             Use();
-            *note=tr("Timer fired.");
-            timerTime=-1;
+            *note=QObject::tr("Timer fired.");
+            timerTime = -1;
         }
     }
 
@@ -1395,7 +1395,7 @@
     }
 // Bell::
     quint8 Bell::Kind() const { return BELL; }
-    QString Bell::FullName() const { return tr("Bell."); }
+    QString Bell::FullName() const { return QObject::tr("Bell."); }
 
     usage_types Bell::Use(Block  * const) {
         SendSignalAround(DING);
