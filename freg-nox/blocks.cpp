@@ -49,7 +49,7 @@
         case IRON:       return QObject::tr("Iron block");
         case SAND:       return QObject::tr("Sandstone");
         case CLAY:       return QObject::tr("Clay brick");
-        case GOLD:       return QObject::tr("Block of gold.");
+        case GOLD:       return QObject::tr("Block of gold");
         default:
             fprintf(stderr, "Block::FullName: unlisted sub: %d.\n",
                 Sub());
@@ -632,7 +632,7 @@
     bool Inventory::MiniCraft(const ushort num) {
         const ushort size=inventory[num].size();
         if ( !size ) {
-            ReceiveSignal(QObject::tr("Nothing here"));
+            ReceiveSignal(QObject::tr("Nothing here."));
             return false;
         }
         craft_item item={
@@ -815,7 +815,7 @@
 
     QString Liquid::FullName() const {
         switch ( Sub() ) {
-        case WATER: return tr("Water");
+        case WATER: return tr("Liquid");
         case STONE: return tr("Lava");
         default:
             fprintf(stderr, "Liquid::FullName(): sub (?): %d\n",
@@ -1284,7 +1284,7 @@
             return USAGE_TYPE_READ;
         } else {
             who->ReceiveSignal(QObject::tr(
-                "Nothing is written on this page"));
+                "Nothing is written on this page."));
             return USAGE_TYPE_NO;
         }
     }
@@ -1395,7 +1395,7 @@
     }
 // Bell::
     quint8 Bell::Kind() const { return BELL; }
-    QString Bell::FullName() const { return QObject::tr("Bell."); }
+    QString Bell::FullName() const { return QObject::tr("Bell"); }
 
     usage_types Bell::Use(Block  * const) {
         SendSignalAround(DING);

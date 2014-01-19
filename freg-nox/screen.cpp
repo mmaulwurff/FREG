@@ -349,7 +349,7 @@ void Screen::ControlPlayer(const int ch) {
             player->SetActiveHand(!player->IsRightActiveHand());
             Notify(tr("Now %1 hand is active.").
                 arg(tr(player->IsRightActiveHand() ?
-                    "right" : "left")));
+                    tr("right") : tr("left"))));
         }
     break;
 

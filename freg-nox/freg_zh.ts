@@ -6,7 +6,7 @@
     <message>
         <location filename="Active.cpp" line="29"/>
         <source>Sand</source>
-        <translation type="finished">沙</translation>
+        <translation>沙</translation>
     </message>
     <message>
         <location filename="Active.cpp" line="30"/>
@@ -126,7 +126,7 @@
     <name>Liquid</name>
     <message>
         <location filename="blocks.cpp" line="818"/>
-        <source>Water</source>
+        <source>Liquid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -348,7 +348,8 @@
     </message>
     <message>
         <location filename="blocks.cpp" line="52"/>
-        <source>Block of gold.</source>
+        <source>Block of gold</source>
+        <oldsource>Block of gold.</oldsource>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -398,6 +399,7 @@
     </message>
     <message>
         <location filename="blocks.cpp" line="550"/>
+        <location filename="blocks.cpp" line="635"/>
         <source>Nothing here.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -409,11 +411,6 @@
     <message>
         <location filename="blocks.cpp" line="567"/>
         <source>Inscribed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="blocks.cpp" line="635"/>
-        <source>Nothing here</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -468,7 +465,8 @@
     </message>
     <message>
         <location filename="blocks.cpp" line="1286"/>
-        <source>Nothing is written on this page</source>
+        <source>Nothing is written on this page.</source>
+        <oldsource>Nothing is written on this page</oldsource>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -483,7 +481,8 @@
     </message>
     <message>
         <location filename="blocks.cpp" line="1398"/>
-        <source>Bell.</source>
+        <source>Bell</source>
+        <oldsource>Bell.</oldsource>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -505,6 +504,16 @@
     <message>
         <location filename="screen.cpp" line="350"/>
         <source>Now %1 hand is active.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="352"/>
+        <source>right</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="352"/>
+        <source>left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
