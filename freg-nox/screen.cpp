@@ -1,5 +1,5 @@
     /* freg, Free-Roaming Elementary Game with open and interactive world
-    *  Copyright (C) 2012-2013 Alexander 'mmaulwurff' Kromm
+    *  Copyright (C) 2012-2014 Alexander 'mmaulwurff' Kromm
     *  mmaulwurff@gmail.com
     *
     * This file is part of FREG.
@@ -42,8 +42,8 @@ void Screen::Arrows(WINDOW * const window, const ushort x, const ushort y,
 const {
     wcolor_set(window, WHITE_BLACK, NULL);
     if ( show_dir ) {
-        mvwaddstr(window, 0, x-2, "N    N");
-        mvwaddstr(window, SCREEN_SIZE+1, x-2, "S    S");
+        mvwaddstr(window, 0, x-2, qPrintable(tr("N    N")));
+        mvwaddstr(window, SCREEN_SIZE+1, x-2, qPrintable(tr("S    S")));
     }
     wcolor_set(window, WHITE_RED, NULL);
     mvwaddstr(window, 0, x, "@@");
@@ -57,10 +57,10 @@ void Screen::HorizontalArrows(WINDOW * const window, const ushort y,
 const {
     wcolor_set(window, WHITE_BLACK, NULL);
     if ( show_dir ) {
-        mvwaddch(window, y-1, 0, 'W');
-        mvwaddch(window, y+1, 0, 'W');
-        mvwaddch(window, y-1, SCREEN_SIZE*2+1, 'E');
-        mvwaddch(window, y+1, SCREEN_SIZE*2+1, 'E');
+        mvwaddstr(window, y-1, 0, qPrintable(tr("W")));
+        mvwaddstr(window, y+1, 0, qPrintable(tr("W")));
+        mvwaddstr(window, y-1, SCREEN_SIZE*2+1, qPrintable(tr("E")));
+        mvwaddstr(window, y+1, SCREEN_SIZE*2+1, qPrintable(tr("E")));
     }
     wcolor_set(window, color, NULL);
     mvwaddch(window, y, 0, '@');
@@ -348,8 +348,8 @@ void Screen::ControlPlayer(const int ch) {
         if ( !player->GetCreativeMode() ) {
             player->SetActiveHand(!player->IsRightActiveHand());
             Notify(tr("Now %1 hand is active.").
-                arg(tr(player->IsRightActiveHand() ?
-                    tr("right") : tr("left"))));
+                arg(player->IsRightActiveHand() ?
+                    tr("right") : tr("left")));
         }
     break;
 
@@ -635,8 +635,8 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
     wstandend(window);
     box(window, 0, 0);
     wcolor_set(window, BLACK_WHITE, NULL);
-    mvwaddstr(window, 0, 1, (UP==dir) ?
-        ". Up ." : "x Ground x");
+    mvwaddstr(window, 0, 1, qPrintable((UP==dir) ?
+        tr("(. Up .") : tr("x Down x")));
     Arrows(window, (player->X()-start_x)*2+1, player->Y()-start_y+1, true);
     wrefresh(window);
 } // void Screen::PrintNormal(WINDOW * window, int dir)
@@ -752,12 +752,14 @@ void Screen::PrintFront(WINDOW * const window) const {
     box(window, 0, 0);
     wcolor_set(window, BLACK_WHITE, NULL);
     (void)wmove(window, 0, 1);
+    QString dir_string;
     switch ( dir ) {
-    case NORTH: waddstr(window, "^ North ^"); break;
-    case SOUTH: waddstr(window, "v South v"); break;
-    case EAST:  waddstr(window, "> East >");  break;
-    case WEST:  waddstr(window, "< West <");  break;
+    case NORTH: dir_string = tr("^ North ^"); break;
+    case SOUTH: dir_string = tr("v South v"); break;
+    case EAST:  dir_string = tr("> East >");  break;
+    case WEST:  dir_string = tr("< West <");  break;
     }
+    waddstr(window, qPrintable(dir_string));
     if ( shiftFocus ) {
         HorizontalArrows(window, arrow_Y-shiftFocus, WHITE_BLUE);
         for (ushort i=arrow_Y-shiftFocus; i<SCREEN_SIZE+1 && i>0;
@@ -777,13 +779,16 @@ const {
     wstandend(window);
     switch ( inv->Kind() ) {
     case DWARF:
-        mvwaddstr(window, 2, 7, "Head\n Right hand\n  Left hand\n");
-        waddstr(window, "       Body\n       Legs");
+        mvwaddstr(window, 2, 1, qPrintable(tr("      Head")));
+        mvwaddstr(window, 3, 1, qPrintable(tr("Right hand")));
+        mvwaddstr(window, 4, 1, qPrintable(tr(" Left hand")));
+        mvwaddstr(window, 5, 1, qPrintable(tr("      Body")));
+        mvwaddstr(window, 6, 1, qPrintable(tr("      Legs")));
     break;
-    case WORKBENCH: mvwaddstr(window, 2, 4, "Product"); break;
+    case WORKBENCH: mvwaddstr(window, 2, 4, qPrintable(tr("Product"))); break;
     }
-    mvwprintw(window, 2+inv->Size(), 40, "All weight: %6hu mz",
-        inv->Weight());
+    mvwprintw(window, 2+inv->Size(), 40,
+        qPrintable(tr("All weight: %1 mz").arg(inv->Weight())));
     for (ushort i=0; i<inv->Size(); ++i) {
         mvwprintw(window, 2+i, 12, "%c)", 'a'+i);
         if ( !inv->Number(i) ) {
@@ -810,9 +815,9 @@ const {
     wcolor_set(window, Color(inv->Kind(), inv->Sub()), NULL);
     box(window, 0, 0);
     mvwprintw(window, 0, 1, "[%c]%s",
-        CharName(inv->Kind(), inv->Sub()),
+        CharName(inv->Kind(), inv->Sub()), qPrintable(
         ( player->PlayerInventory()==inv ) ?
-            "Your inventory" : qPrintable(inv->FullName()));
+            tr("Your inventory") : inv->FullName()));
     wrefresh(window);
 } // void Screen::PrintInv(WINDOW * window, const Inventory * inv)
 
@@ -970,14 +975,14 @@ Screen::Screen(World * const wor, Player * const pl, int & error) :
         addstr("Free-Roaming Elementary Game\n");
         addstr("\nby mmaulwurff, with help of Panzerschrek\n");
     }
-    printw("\nVersion %s.\n\nPress any key.", VER);
+    printw(qPrintable(tr("\nVersion %1.\n\nPress any key.").arg(VER)));
     const int ch = getch();
     qsrand(ch);
     ungetch(ch);
     erase();
     refresh();
     CleanFileToShow();
-    Notify("+-------------Game started. Press 'H' for help.-------------+");
+    Notify(tr("*--- Game started. Press 'H' for help. ---*"));
     if ( COLS < preferred_width ) {
         Notify("For better gameplay ");
         Notify(QString("set your terminal width at least %1 chars.").

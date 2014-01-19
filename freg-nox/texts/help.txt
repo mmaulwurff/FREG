@@ -1,32 +1,32 @@
-This is freg help file. Game commands:
-'Q'       - quit game
-arrows    - turn and move in four directions
-'='       - move to your current direction
-End       - move down
-'>', '<'  - turn right and left
-space     - jump
-Page Up   - look up
-Page Down - loo down
-Home      - inventory
-Backspace - hit
-Enter     - use
-Esc       - stop using everything
-'?'       - examine
-'~'       - inscribe
-'!'       - enter/leave creative mode
-':'       - enter command mode (leave with enter)
-'.'       - repeat last command
-'L'       - redraw screen
-'-', '+'  - shift focus down and up
-Set inventory actions:
-'B' - build
-'C' - craft
-'E' - eat
-'F' - takeoff (unwield)
-'H' - show this help
-'I' - inscribe
-'U' - use
-'O' - obtain from outer inventory (e.g. chest)
-'T' - throw away
-'W' - wield
-'a'-'z' - make inventory action with this inventory slot
+ This is freg help file. Game commands:
+ 'Q'       - quit game
+ arrows    - turn and move in four directions
+ '='       - move to your current direction
+ End       - move down
+ '>', '<'  - turn right and left
+ space     - jump
+ Page Up   - look up
+ Page Down - loo down
+ Home      - inventory
+ Backspace - hit
+ Enter     - use
+ Esc       - stop using everything
+ '?'       - examine
+ '~'       - inscribe
+ '!'       - enter/leave creative mode
+ ':'       - enter command mode (leave with enter)
+ '.'       - repeat last command
+ 'L'       - redraw screen
+ '-', '+'  - shift focus down and up
+ Set inventory actions:
+ 'B' - build
+ 'C' - craft
+ 'E' - eat
+ 'F' - takeoff (unwield)
+ 'H' - show this help
+ 'I' - inscribe
+ 'U' - use
+ 'O' - obtain from outer inventory (e.g. chest)
+ 'T' - throw away
+ 'W' - wield
+ 'a'-'z' - make inventory action with this inventory slot

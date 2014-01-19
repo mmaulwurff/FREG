@@ -502,6 +502,28 @@
 <context>
     <name>Screen</name>
     <message>
+        <location filename="screen.cpp" line="45"/>
+        <source>N    N</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="46"/>
+        <source>S    S</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="60"/>
+        <location filename="screen.cpp" line="61"/>
+        <source>W</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="62"/>
+        <location filename="screen.cpp" line="63"/>
+        <source>E</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="screen.cpp" line="350"/>
         <source>Now %1 hand is active.</source>
         <translation type="unfinished"></translation>
@@ -602,14 +624,97 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="875"/>
+        <location filename="screen.cpp" line="639"/>
+        <source>(. Up .</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="639"/>
+        <source>x Down x</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="757"/>
+        <source>^ North ^</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="758"/>
+        <source>v South v</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="759"/>
+        <source>&gt; East &gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="760"/>
+        <source>&lt; West &lt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="782"/>
+        <source>      Head</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="783"/>
+        <source>Right hand</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="784"/>
+        <source> Left hand</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="785"/>
+        <source>      Body</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="786"/>
+        <source>      Legs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="788"/>
+        <source>Product</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="791"/>
+        <source>All weight: %1 mz</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="820"/>
+        <source>Your inventory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="880"/>
         <source>You die.
 Waiting for respawn...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="954"/>
+        <location filename="screen.cpp" line="959"/>
         <source>Set your terminal width at least %1 chars.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="978"/>
+        <source>
+Version %1.
+
+Press any key.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="985"/>
+        <source>*--- Game started. Press &apos;H&apos; for help. ---*</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

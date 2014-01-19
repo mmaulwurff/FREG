@@ -502,6 +502,28 @@
 <context>
     <name>Screen</name>
     <message>
+        <location filename="screen.cpp" line="45"/>
+        <source>N    N</source>
+        <translation>C    C</translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="46"/>
+        <source>S    S</source>
+        <translation>Ю    Ю</translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="60"/>
+        <location filename="screen.cpp" line="61"/>
+        <source>W</source>
+        <translation>З</translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="62"/>
+        <location filename="screen.cpp" line="63"/>
+        <source>E</source>
+        <translation>В</translation>
+    </message>
+    <message>
         <location filename="screen.cpp" line="350"/>
         <source>Now %1 hand is active.</source>
         <translation>Теперь активна %1 рука.</translation>
@@ -574,7 +596,7 @@
     <message>
         <location filename="screen.cpp" line="549"/>
         <source>Inscribe in inventory</source>
-        <translation type="unfinished">Надписать в инвентаре</translation>
+        <translation>Надписать в инвентаре</translation>
     </message>
     <message>
         <location filename="screen.cpp" line="552"/>
@@ -602,16 +624,102 @@
         <translation>Голодный</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="875"/>
+        <location filename="screen.cpp" line="639"/>
+        <source>(. Up .</source>
+        <translation>. Верх .</translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="639"/>
+        <source>x Down x</source>
+        <translation>х Низ х</translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="757"/>
+        <source>^ North ^</source>
+        <translation>^ Север ^</translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="758"/>
+        <source>v South v</source>
+        <translation>v Юг v</translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="759"/>
+        <source>&gt; East &gt;</source>
+        <translation>&gt; Восток &gt;</translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="760"/>
+        <source>&lt; West &lt;</source>
+        <translation>&lt; Запад &lt;</translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="782"/>
+        <source>      Head</source>
+        <translation>    Голова</translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="783"/>
+        <source>Right hand</source>
+        <translation>Прав. рука</translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="784"/>
+        <source> Left hand</source>
+        <translation> Лев. рука</translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="785"/>
+        <source>      Body</source>
+        <translation>      Тело</translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="786"/>
+        <source>      Legs</source>
+        <translation>      Ноги</translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="788"/>
+        <source>Product</source>
+        <translation>Изделие</translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="791"/>
+        <source>All weight: %1 mz</source>
+        <translation>Полный вес: %1 mz</translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="820"/>
+        <source>Your inventory</source>
+        <translation>Ваш инвентарь</translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="880"/>
         <source>You die.
 Waiting for respawn...</source>
         <translation>Вы умерли.
 Ожидание возрождения...</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="954"/>
+        <location filename="screen.cpp" line="959"/>
         <source>Set your terminal width at least %1 chars.</source>
         <translation>Установите ширину терминала не менее %1 символов.</translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="978"/>
+        <source>
+Version %1.
+
+Press any key.</source>
+        <translation>
+Версия %1.
+
+Нажмите любую клавишу.</translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="985"/>
+        <source>*--- Game started. Press &apos;H&apos; for help. ---*</source>
+        <translation>*--- Игра запущена. Нажмите &apos;H&apos; для вызова справки. ---*</translation>
     </message>
 </context>
 <context>
