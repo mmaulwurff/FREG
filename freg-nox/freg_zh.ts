@@ -105,6 +105,16 @@
         <source> of something</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="blocks.cpp" line="1146"/>
+        <source>Locked door</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="blocks.cpp" line="1146"/>
+        <source>Door</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Dwarf</name>

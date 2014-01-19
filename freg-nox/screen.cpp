@@ -595,11 +595,11 @@ void Screen::PrintHUD() {
     }
 
     // unicode symbol example output code
-    wcolor_set(hudWin, WHITE_BLUE, NULL);
+    /*wcolor_set(hudWin, WHITE_BLUE, NULL);
     const cchar_t ch = { 0, L"\u263a" };
     mvwadd_wch(hudWin, 0, 20, &ch);
     QChar chars[] = { 0x263a, 0x263a };
-    waddstr(hudWin, qPrintable(QString(chars)));
+    waddstr(hudWin, qPrintable(QString(chars)));*/
 
     wrefresh(hudWin);
 } // void Screen::PrintHUD()

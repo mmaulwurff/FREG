@@ -1143,7 +1143,7 @@
             fprintf(stderr, "Door::FullName: unlisted sub: %d\n",
                 Sub());
         }
-        return tr(locked ? "Locked door" : "Door") + sub_string;
+        return locked ? tr("Locked door") : tr("Door") + sub_string;
     }
 
     usage_types Door::Use(Block *) {

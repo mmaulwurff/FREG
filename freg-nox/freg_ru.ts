@@ -105,6 +105,16 @@
         <source> of something</source>
         <translation> из чего-то</translation>
     </message>
+    <message>
+        <location filename="blocks.cpp" line="1146"/>
+        <source>Locked door</source>
+        <translation>Запертая дверь</translation>
+    </message>
+    <message>
+        <location filename="blocks.cpp" line="1146"/>
+        <source>Door</source>
+        <translation>Дверь</translation>
+    </message>
 </context>
 <context>
     <name>Dwarf</name>
@@ -421,7 +431,7 @@
     <message>
         <location filename="blocks.cpp" line="658"/>
         <source>You don&apos;t know how to craft this.</source>
-        <translation>Вы не знаете как  собрать это.</translation>
+        <translation>Вы не знаете как собрать это.</translation>
     </message>
     <message>
         <location filename="blocks.cpp" line="707"/>
