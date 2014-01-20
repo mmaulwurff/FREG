@@ -14,32 +14,41 @@
         <translation>Снег</translation>
     </message>
     <message>
-        <location filename="Active.cpp" line="138"/>
+        <location filename="Active.cpp" line="137"/>
         <source>You faint from hunger!</source>
         <translation>Вы слабеете от голода!</translation>
     </message>
     <message>
-        <location filename="Active.cpp" line="141"/>
+        <location filename="Active.cpp" line="138"/>
         <source>You burn!</source>
         <translation>Вы горите!</translation>
     </message>
     <message>
-        <location filename="Active.cpp" line="144"/>
+        <location filename="Active.cpp" line="139"/>
         <source>You choke withot air!</source>
         <translation>Вы задыхаетесь!</translation>
     </message>
     <message>
-        <location filename="Active.cpp" line="147"/>
+        <location filename="Active.cpp" line="140"/>
+        <source>You fall!</source>
+        <oldsource>You fall.</oldsource>
+        <translation>Вы упали!</translation>
+    </message>
+    <message>
+        <location filename="Active.cpp" line="141"/>
+        <source>Received damage!</source>
+        <translation>Получено повреждение!</translation>
+    </message>
+    <message>
         <source>You fall, damage %1.</source>
-        <translation>Вы падаете, повреждение %1.</translation>
+        <translation type="obsolete">Вы падаете, повреждение %1.</translation>
     </message>
     <message>
-        <location filename="Active.cpp" line="151"/>
         <source>Received %1 damage!</source>
-        <translation>Получено повреждение: %1!</translation>
+        <translation type="obsolete">Получено повреждение: %1!</translation>
     </message>
     <message>
-        <location filename="Active.cpp" line="179"/>
+        <location filename="Active.cpp" line="168"/>
         <source>You die.</source>
         <translation>Вы умерли.</translation>
     </message>
@@ -206,62 +215,76 @@
         <translation>Вы не в режиме Творца.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="390"/>
         <source>No place for %1 things.</source>
-        <translation>Не хватает места для вещей: %1.</translation>
+        <translation type="obsolete">Не хватает места для вещей: %1.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="405"/>
+        <location filename="Player.cpp" line="391"/>
+        <source>No place for one thing.</source>
+        <translation>Не хватает места для одной вещи.</translation>
+    </message>
+    <message numerus="yes">
+        <location filename="Player.cpp" line="392"/>
+        <source>No place for %n things.</source>
+        <translatorcomment>Комментарий.</translatorcomment>
+        <translation>
+            <numerusform>Не хватает места для %n вещей.</numerusform>
+            <numerusform>Не хватает места для %n вещей.</numerusform>
+            <numerusform>Не хватает места для %n вещей.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="Player.cpp" line="406"/>
         <source>Such block is out of loaded world.</source>
         <translation>Этот блок находится вне загруженного мира.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="413"/>
+        <location filename="Player.cpp" line="414"/>
         <source>Too far.</source>
         <translation>Слишком далеко.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="418"/>
+        <location filename="Player.cpp" line="419"/>
         <source>Kind %1 is %2.</source>
         <translation>Тип %1 — %2.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="424"/>
+        <location filename="Player.cpp" line="425"/>
         <source>&quot;%1&quot; is unknown kind.</source>
         <translation>&quot;%1&quot; — неизвестный тип.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="425"/>
+        <location filename="Player.cpp" line="426"/>
         <source>Code of kind %1 is %2.</source>
         <translation>Код типа %1 — %2.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="429"/>
+        <location filename="Player.cpp" line="430"/>
         <source>Sub %1 is %2.</source>
         <translation>Вещество %1 — %2.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="435"/>
+        <location filename="Player.cpp" line="436"/>
         <source>&quot;%1&quot; is unknown substance.</source>
         <translation>&quot;%1&quot; — неизвестное вещество.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="436"/>
+        <location filename="Player.cpp" line="437"/>
         <source>Code of substance %1 is %2.</source>
         <translation>Код вещества %1 — %2.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="441"/>
+        <location filename="Player.cpp" line="442"/>
         <source>Not in Creative Mode.</source>
         <translation>Не в режиме Творца.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="446"/>
+        <location filename="Player.cpp" line="447"/>
         <source>Don&apos;t know such command: &quot;%1&quot;.</source>
-        <translation>Неизвестная команда.</translation>
+        <translation>Неизвестная команда: &quot;%1&quot;.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="545"/>
+        <location filename="Player.cpp" line="546"/>
         <source>Loading player...</source>
         <translation>Загрузка игрока...</translation>
     </message>
@@ -549,174 +572,177 @@
         <translation>левая</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="365"/>
         <source>Don&apos;t know what such key means: %1 (&apos;%2&apos;).</source>
-        <translation>Неизвестно, что значит клавиша: %1 (&apos;%2&apos;).</translation>
+        <translation type="obsolete">Неизвестно, что значит клавиша: %1 (&apos;%2&apos;).</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="367"/>
         <source>Press &apos;H&apos; for help.</source>
-        <translation>Нажмите &apos;H&apos; для вызова справки.</translation>
+        <translation type="obsolete">Нажмите &apos;H&apos; для вызова справки.</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="538"/>
+        <location filename="screen.cpp" line="364"/>
+        <source>Unknown key. Press &apos;H&apos; for help.</source>
+        <translation>Неизвестная клавиша. Нажмите &apos;H&apos; для вызова справки.</translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="535"/>
         <source>Action: </source>
         <translation>Действие: </translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="540"/>
+        <location filename="screen.cpp" line="537"/>
         <source>Throw</source>
         <translation>Бросить</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="541"/>
+        <location filename="screen.cpp" line="538"/>
         <source>Obtain</source>
         <translation>Получить</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="542"/>
+        <location filename="screen.cpp" line="539"/>
         <source>Wield</source>
         <translation>Взять(надеть)</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="543"/>
+        <location filename="screen.cpp" line="540"/>
         <source>Eat</source>
         <translation>Съесть</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="544"/>
+        <location filename="screen.cpp" line="541"/>
         <source>Build</source>
         <translation>Построить</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="545"/>
+        <location filename="screen.cpp" line="542"/>
         <source>Craft</source>
         <translation>Собрать</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="546"/>
+        <location filename="screen.cpp" line="543"/>
         <source>Take off</source>
         <translation>Снять</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="547"/>
+        <location filename="screen.cpp" line="544"/>
         <source>Use in inventory</source>
         <translation>Использовать в инвентаре</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="549"/>
+        <location filename="screen.cpp" line="546"/>
         <source>Inscribe in inventory</source>
         <translation>Надписать в инвентаре</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="552"/>
+        <location filename="screen.cpp" line="549"/>
         <source>Unknown</source>
         <translation>Неизвестно</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="558"/>
+        <location filename="screen.cpp" line="555"/>
         <source>Creative Mode</source>
         <translation>Режим Творца</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="586"/>
+        <location filename="screen.cpp" line="583"/>
         <source>Gorged</source>
         <translation>Объелся</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="589"/>
+        <location filename="screen.cpp" line="586"/>
         <source>Full</source>
         <translation>Сытый</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="592"/>
+        <location filename="screen.cpp" line="589"/>
         <source>Hungry</source>
         <translation>Голодный</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="639"/>
+        <location filename="screen.cpp" line="636"/>
         <source>(. Up .</source>
         <translation>. Верх .</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="639"/>
+        <location filename="screen.cpp" line="636"/>
         <source>x Down x</source>
         <translation>х Низ х</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="757"/>
+        <location filename="screen.cpp" line="754"/>
         <source>^ North ^</source>
         <translation>^ Север ^</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="758"/>
+        <location filename="screen.cpp" line="755"/>
         <source>v South v</source>
         <translation>v Юг v</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="759"/>
+        <location filename="screen.cpp" line="756"/>
         <source>&gt; East &gt;</source>
         <translation>&gt; Восток &gt;</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="760"/>
+        <location filename="screen.cpp" line="757"/>
         <source>&lt; West &lt;</source>
         <translation>&lt; Запад &lt;</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="782"/>
+        <location filename="screen.cpp" line="779"/>
         <source>      Head</source>
         <translation>    Голова</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="783"/>
+        <location filename="screen.cpp" line="780"/>
         <source>Right hand</source>
         <translation>Прав. рука</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="784"/>
+        <location filename="screen.cpp" line="781"/>
         <source> Left hand</source>
         <translation> Лев. рука</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="785"/>
+        <location filename="screen.cpp" line="782"/>
         <source>      Body</source>
         <translation>      Тело</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="786"/>
+        <location filename="screen.cpp" line="783"/>
         <source>      Legs</source>
         <translation>      Ноги</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="788"/>
+        <location filename="screen.cpp" line="785"/>
         <source>Product</source>
         <translation>Изделие</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="791"/>
+        <location filename="screen.cpp" line="788"/>
         <source>All weight: %1 mz</source>
         <translation>Полный вес: %1 mz</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="820"/>
+        <location filename="screen.cpp" line="817"/>
         <source>Your inventory</source>
         <translation>Ваш инвентарь</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="880"/>
+        <location filename="screen.cpp" line="877"/>
         <source>You die.
 Waiting for respawn...</source>
         <translation>Вы умерли.
 Ожидание возрождения...</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="959"/>
+        <location filename="screen.cpp" line="956"/>
         <source>Set your terminal width at least %1 chars.</source>
         <translation>Установите ширину терминала не менее %1 символов.</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="978"/>
+        <location filename="screen.cpp" line="975"/>
         <source>
 Version %1.
 
@@ -727,7 +753,7 @@ Press any key.</source>
 Нажмите любую клавишу.</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="985"/>
+        <location filename="screen.cpp" line="982"/>
         <source>*--- Game started. Press &apos;H&apos; for help. ---*</source>
         <translation>*--- Игра запущена. Нажмите &apos;H&apos; для вызова справки. ---*</translation>
     </message>

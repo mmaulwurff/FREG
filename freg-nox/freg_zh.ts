@@ -14,32 +14,33 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="Active.cpp" line="138"/>
+        <location filename="Active.cpp" line="137"/>
         <source>You faint from hunger!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="Active.cpp" line="141"/>
+        <location filename="Active.cpp" line="138"/>
         <source>You burn!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="Active.cpp" line="144"/>
+        <location filename="Active.cpp" line="139"/>
         <source>You choke withot air!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="Active.cpp" line="147"/>
-        <source>You fall, damage %1.</source>
+        <location filename="Active.cpp" line="140"/>
+        <source>You fall!</source>
+        <oldsource>You fall.</oldsource>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="Active.cpp" line="151"/>
-        <source>Received %1 damage!</source>
+        <location filename="Active.cpp" line="141"/>
+        <source>Received damage!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="Active.cpp" line="179"/>
+        <location filename="Active.cpp" line="168"/>
         <source>You die.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -206,62 +207,69 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="390"/>
-        <source>No place for %1 things.</source>
+        <location filename="Player.cpp" line="391"/>
+        <source>No place for one thing.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message numerus="yes">
+        <location filename="Player.cpp" line="392"/>
+        <source>No place for %n things.</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
     <message>
-        <location filename="Player.cpp" line="405"/>
+        <location filename="Player.cpp" line="406"/>
         <source>Such block is out of loaded world.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="413"/>
+        <location filename="Player.cpp" line="414"/>
         <source>Too far.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="418"/>
+        <location filename="Player.cpp" line="419"/>
         <source>Kind %1 is %2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="424"/>
+        <location filename="Player.cpp" line="425"/>
         <source>&quot;%1&quot; is unknown kind.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="425"/>
+        <location filename="Player.cpp" line="426"/>
         <source>Code of kind %1 is %2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="429"/>
+        <location filename="Player.cpp" line="430"/>
         <source>Sub %1 is %2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="435"/>
+        <location filename="Player.cpp" line="436"/>
         <source>&quot;%1&quot; is unknown substance.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="436"/>
+        <location filename="Player.cpp" line="437"/>
         <source>Code of substance %1 is %2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="441"/>
+        <location filename="Player.cpp" line="442"/>
         <source>Not in Creative Mode.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="446"/>
+        <location filename="Player.cpp" line="447"/>
         <source>Don&apos;t know such command: &quot;%1&quot;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="545"/>
+        <location filename="Player.cpp" line="546"/>
         <source>Loading player...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -549,173 +557,168 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="365"/>
-        <source>Don&apos;t know what such key means: %1 (&apos;%2&apos;).</source>
+        <location filename="screen.cpp" line="364"/>
+        <source>Unknown key. Press &apos;H&apos; for help.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="367"/>
-        <source>Press &apos;H&apos; for help.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="screen.cpp" line="538"/>
+        <location filename="screen.cpp" line="535"/>
         <source>Action: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="540"/>
+        <location filename="screen.cpp" line="537"/>
         <source>Throw</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="541"/>
+        <location filename="screen.cpp" line="538"/>
         <source>Obtain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="542"/>
+        <location filename="screen.cpp" line="539"/>
         <source>Wield</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="543"/>
+        <location filename="screen.cpp" line="540"/>
         <source>Eat</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="544"/>
+        <location filename="screen.cpp" line="541"/>
         <source>Build</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="545"/>
+        <location filename="screen.cpp" line="542"/>
         <source>Craft</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="546"/>
+        <location filename="screen.cpp" line="543"/>
         <source>Take off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="547"/>
+        <location filename="screen.cpp" line="544"/>
         <source>Use in inventory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="549"/>
+        <location filename="screen.cpp" line="546"/>
         <source>Inscribe in inventory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="552"/>
+        <location filename="screen.cpp" line="549"/>
         <source>Unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="558"/>
+        <location filename="screen.cpp" line="555"/>
         <source>Creative Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="586"/>
+        <location filename="screen.cpp" line="583"/>
         <source>Gorged</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="589"/>
+        <location filename="screen.cpp" line="586"/>
         <source>Full</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="592"/>
+        <location filename="screen.cpp" line="589"/>
         <source>Hungry</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="639"/>
+        <location filename="screen.cpp" line="636"/>
         <source>(. Up .</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="639"/>
+        <location filename="screen.cpp" line="636"/>
         <source>x Down x</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="757"/>
+        <location filename="screen.cpp" line="754"/>
         <source>^ North ^</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="758"/>
+        <location filename="screen.cpp" line="755"/>
         <source>v South v</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="759"/>
+        <location filename="screen.cpp" line="756"/>
         <source>&gt; East &gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="760"/>
+        <location filename="screen.cpp" line="757"/>
         <source>&lt; West &lt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="782"/>
+        <location filename="screen.cpp" line="779"/>
         <source>      Head</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="783"/>
+        <location filename="screen.cpp" line="780"/>
         <source>Right hand</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="784"/>
+        <location filename="screen.cpp" line="781"/>
         <source> Left hand</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="785"/>
+        <location filename="screen.cpp" line="782"/>
         <source>      Body</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="786"/>
+        <location filename="screen.cpp" line="783"/>
         <source>      Legs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="788"/>
+        <location filename="screen.cpp" line="785"/>
         <source>Product</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="791"/>
+        <location filename="screen.cpp" line="788"/>
         <source>All weight: %1 mz</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="820"/>
+        <location filename="screen.cpp" line="817"/>
         <source>Your inventory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="880"/>
+        <location filename="screen.cpp" line="877"/>
         <source>You die.
 Waiting for respawn...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="959"/>
+        <location filename="screen.cpp" line="956"/>
         <source>Set your terminal width at least %1 chars.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="978"/>
+        <location filename="screen.cpp" line="975"/>
         <source>
 Version %1.
 
@@ -723,7 +726,7 @@ Press any key.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="985"/>
+        <location filename="screen.cpp" line="982"/>
         <source>*--- Game started. Press &apos;H&apos; for help. ---*</source>
         <translation type="unfinished"></translation>
     </message>

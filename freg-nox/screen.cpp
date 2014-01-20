@@ -361,10 +361,7 @@ void Screen::ControlPlayer(const int ch) {
     case '/': PassString(command); // no break
     case '.': ProcessCommand(command); break;
 
-    default:
-        Notify(tr("Don't know what such key means: %1 ('%2').").
-            arg(ch).arg(char(ch)));
-        Notify(tr("Press 'H' for help."));
+    default: Notify(tr("Unknown key. Press 'H' for help."));
     }
     mutex->lock();
     updated = false;

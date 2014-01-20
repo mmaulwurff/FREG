@@ -1,5 +1,5 @@
     /* freg, Free-Roaming Elementary Game with open and interactive world
-    *  Copyright (C) 2012-2013 Alexander 'mmaulwurff' Kromm
+    *  Copyright (C) 2012-2014 Alexander 'mmaulwurff' Kromm
     *  mmaulwurff@gmail.com
     *
     * This file is part of FREG.
@@ -134,22 +134,11 @@ void Active::Damage(const ushort dmg, const int dmg_kind) {
     if ( last_dur != durability ) {
         ReceiveSignal(OUCH);
         switch ( dmg_kind ) {
-        case HUNGER:
-            ReceiveSignal(tr("You faint from hunger!"));
-        break;
-        case HEAT:
-            ReceiveSignal(tr("You burn!"));
-        break;
-        case BREATH:
-            ReceiveSignal(tr("You choke withot air!"));
-        break;
-        case DAMAGE_FALL:
-            ReceiveSignal(tr("You fall, damage %1.").
-                arg(last_dur-durability));
-        break;
-        default:
-            ReceiveSignal(tr("Received %1 damage!").
-                arg(last_dur-durability));
+        case HUNGER:      ReceiveSignal(tr("You faint from hunger!")); break;
+        case HEAT:        ReceiveSignal(tr("You burn!"));              break;
+        case BREATH:      ReceiveSignal(tr("You choke withot air!"));  break;
+        case DAMAGE_FALL: ReceiveSignal(tr("You fall!"));              break;
+        default:          ReceiveSignal(tr("Received damage!"));
         }
         emit Updated();
     }

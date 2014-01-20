@@ -1,5 +1,5 @@
     /* freg, Free-Roaming Elementary Game with open and interactive world
-    *  Copyright (C) 2012-2013 Alexander 'mmaulwurff' Kromm
+    *  Copyright (C) 2012-2014 Alexander 'mmaulwurff' Kromm
     *  mmaulwurff@gmail.com
     *
     * This file is part of FREG.
@@ -387,8 +387,9 @@ void Player::ProcessCommand(QString & command) {
         for (num = qBound(1, num, 9); num; --num) {
             Block* const block = block_manager.NewBlock(kind, sub);
             if ( !inv->Get(block) ) {
-                emit Notify(tr("No place for %1 things.").
-                    arg(num));
+                emit Notify( (num==1) ?
+                        tr("No place for one thing.") :
+                        tr("No place for %n things.", "", num) );
                 block_manager.DeleteBlock(block);
                 break;
             }
