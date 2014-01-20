@@ -86,7 +86,7 @@ public slots:
     /// Called when area around xyz with range needs to be updated.
     /** When implemented, this should work fast.
      *  It is connected to world in constructor. */
-    virtual void UpdateAround(ushort x, ushort y, ushort z, ushort rng)=0;
+    virtual void UpdateAround(ushort x, ushort y, ushort z, ushort rng) = 0;
 
     /// This is called to restore some connections.
     /** This restores connections to VirtScreen::Update and
@@ -99,7 +99,12 @@ public slots:
      *  ( Can be used in screen optimization. ) */
     virtual void UpdatesEnd();
 
-    void DeathScreen();
+    /// This is called when player is dead, and displayed until respawn.
+    void DeathScreen(); // virtual ?
+
+    /// This shows a file by path.
+    /** Standard (non-reimpemented) version does nothing. */
+    virtual void DisplayFile(QString path);
 
 private slots:
     /// Prints world. Should not be called not within screen.

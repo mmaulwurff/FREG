@@ -340,8 +340,8 @@ void Screen::ControlPlayer(const int ch) {
     case 'W': SetActionMode(ACTION_WIELD);    break;
     case KEY_HELP:
     case 'H':
-        wstandend(rightWin);
-        PrintFile(rightWin, "texts/help.txt");
+        DisplayFile(QString("help_%1/help.txt")
+            .arg(QLocale::system().name().left(2)));
     break;
     case 'L': RePrint(); break;
     case 'R':
@@ -839,6 +839,14 @@ bool Screen::PrintFile(WINDOW * const window, QString const & file_name) {
         CleanFileToShow();
         return false;
     }
+}
+
+void Screen::DisplayFile(QString path) {
+    wstandend(rightWin);
+    Notify( PrintFile(rightWin, path) ?
+        tr("File path: %1/%2").arg(QDir::currentPath()).arg(path) :
+        tr("There is no such help file: %1/%2.")
+            .arg(QDir::currentPath()).arg(path) );
 }
 
 void Screen::Notify(const QString & str) {

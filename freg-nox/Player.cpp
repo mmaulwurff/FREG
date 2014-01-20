@@ -443,6 +443,10 @@ void Player::ProcessCommand(QString & command) {
     } else if ( "version" == request ) {
         emit Notify(tr("freg version: %1. Compiled on %2 at %3.").
             arg(VER).arg(__DATE__).arg(__TIME__));
+    } else if ( "help" == request ) {
+        comm_stream >> request;
+        emit ShowFile( QString("help_%1/%2.txt")
+            .arg(QLocale::system().name().left(2)).arg(request));
     } else {
         emit Notify(tr("Don't know such command: \"%1\".").arg(command));
     }

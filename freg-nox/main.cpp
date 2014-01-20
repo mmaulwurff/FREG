@@ -48,9 +48,8 @@ int main(int argc, char *argv[]) {
     #endif
     QCoreApplication::setOrganizationName("freg-team");
     QCoreApplication::setApplicationName("freg");
-    const QString locale = QLocale::system().name();
     QTranslator translator;
-    translator.load(QString("freg_") + locale);
+    translator.load(QString("freg_") + QLocale::system().name());
     freg.installTranslator(&translator);
 
     QSettings::setDefaultFormat(QSettings::IniFormat);

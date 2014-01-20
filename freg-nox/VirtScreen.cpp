@@ -1,5 +1,5 @@
     /* freg, Free-Roaming Elementary Game with open and interactive world
-    *  Copyright (C) 2012-2013 Alexander 'mmaulwurff' Kromm
+    *  Copyright (C) 2012-2014 Alexander 'mmaulwurff' Kromm
     *  mmaulwurff@gmail.com
     *
     * This file is part of FREG.
@@ -44,6 +44,7 @@ VirtScreen::VirtScreen(World * const world_, Player * const player_) :
         SLOT(Notify(const QString &)));
     connect(player, SIGNAL(Notify(const QString &)),
         SLOT(Notify(const QString &)));
+    connect(player, SIGNAL(ShowFile(QString)), SLOT(DisplayFile(QString)));
 
     connect(w, SIGNAL(GetString(QString &)),
         SLOT(PassString(QString &)), Qt::DirectConnection);
@@ -68,3 +69,5 @@ VirtScreen::VirtScreen(World * const world_, Player * const player_) :
 
 void VirtScreen::CleanAll() {}
 VirtScreen::~VirtScreen() { CleanAll(); }
+
+void VirtScreen::DisplayFile(QString /* path */) {}
