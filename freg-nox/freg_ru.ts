@@ -279,12 +279,17 @@
         <translation>Не в режиме Творца.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="447"/>
+        <location filename="Player.cpp" line="444"/>
+        <source>freg version: %1. Compiled on %2 at %3.</source>
+        <translation>Версия freg: %1. Собрано %2 в %3.</translation>
+    </message>
+    <message>
+        <location filename="Player.cpp" line="451"/>
         <source>Don&apos;t know such command: &quot;%1&quot;.</source>
         <translation>Неизвестная команда: &quot;%1&quot;.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="546"/>
+        <location filename="Player.cpp" line="549"/>
         <source>Loading player...</source>
         <translation>Загрузка игрока...</translation>
     </message>
@@ -730,19 +735,29 @@
         <translation>Ваш инвентарь</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="877"/>
+        <location filename="screen.cpp" line="847"/>
+        <source>File path: %1/%2</source>
+        <translation>Путь к файлу: %1/%2</translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="848"/>
+        <source>There is no such help file: %1/%2.</source>
+        <translation>Нет такого файла справки: %1/%2.</translation>
+    </message>
+    <message>
+        <location filename="screen.cpp" line="885"/>
         <source>You die.
 Waiting for respawn...</source>
         <translation>Вы умерли.
 Ожидание возрождения...</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="956"/>
+        <location filename="screen.cpp" line="964"/>
         <source>Set your terminal width at least %1 chars.</source>
         <translation>Установите ширину терминала не менее %1 символов.</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="975"/>
+        <location filename="screen.cpp" line="983"/>
         <source>
 Version %1.
 
@@ -753,7 +768,7 @@ Press any key.</source>
 Нажмите любую клавишу.</translation>
     </message>
     <message>
-        <location filename="screen.cpp" line="982"/>
+        <location filename="screen.cpp" line="990"/>
         <source>*--- Game started. Press &apos;H&apos; for help. ---*</source>
         <translation>*--- Игра запущена. Нажмите &apos;H&apos; для вызова справки. ---*</translation>
     </message>
