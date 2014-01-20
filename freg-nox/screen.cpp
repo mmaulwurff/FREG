@@ -20,8 +20,6 @@
 /**\file screen.cpp
  * \brief This file is related to curses screen for freg. */
 
-///TODO \todo make unicode input
-
 #include <QString>
 #include <QTimer>
 #include <QSettings>
@@ -46,8 +44,10 @@ const {
         mvwaddstr(window, SCREEN_SIZE+1, x-2, qPrintable(tr("S    S")));
     }
     wcolor_set(window, WHITE_RED, NULL);
-    mvwaddstr(window, 0, x, "@@");
-    mvwaddstr(window, SCREEN_SIZE+1, x, "@@");
+    static const QString arrows_down(2, QChar(0x2193));
+    static const QString arrows_up  (2, QChar(0x2191));
+    mvwaddstr(window, 0, x, qPrintable(arrows_down));
+    mvwaddstr(window, SCREEN_SIZE+1, x, qPrintable(arrows_up));
     HorizontalArrows(window, y, WHITE_RED, show_dir);
     (void)wmove(window, y, x);
 }
@@ -63,8 +63,10 @@ const {
         mvwaddstr(window, y+1, SCREEN_SIZE*2+1, qPrintable(tr("E")));
     }
     wcolor_set(window, color, NULL);
-    mvwaddch(window, y, 0, '@');
-    mvwaddch(window, y, SCREEN_SIZE*2+1, '@');
+    static const QString arrow_right(QChar(0x2192));
+    static const QString arrow_left (QChar(0x2190));
+    mvwaddstr(window, y, 0, qPrintable(arrow_right));
+    mvwaddstr(window, y, SCREEN_SIZE*2+1, qPrintable(arrow_left));
 }
 
 void Screen::RePrint() {
