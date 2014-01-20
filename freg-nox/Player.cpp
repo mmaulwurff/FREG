@@ -441,11 +441,10 @@ void Player::ProcessCommand(QString & command) {
             GetWorld()->TimeOfDayStr() :
             tr("Not in Creative Mode.") );
     } else if ( "version" == request ) {
-        emit Notify(QString("freg version: %1. Compiled on %2 at %3.").
+        emit Notify(tr("freg version: %1. Compiled on %2 at %3.").
             arg(VER).arg(__DATE__).arg(__TIME__));
     } else {
-        emit Notify(tr("Don't know such command: \"%1\".").
-            arg(command));
+        emit Notify(tr("Don't know such command: \"%1\".").arg(command));
     }
 } // void Player::ProcessCommand(QString & command)
 
