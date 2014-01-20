@@ -450,13 +450,13 @@ void Screen::Print() {
     }
     w->ReadLock();
     mutex->lock();
+    PrintHUD();
     if ( updated ) {
         w->Unlock();
         mutex->unlock();
         return;
     }
     updated = true;
-    PrintHUD();
     mutex->unlock();
     const int dir = player->GetDir();
     switch ( player->UsingSelfType() ) { // left window
@@ -512,6 +512,10 @@ void Screen::PrintHUD() {
     if ( updatedPlayer ) {
         return;
     }
+
+    int y_save, x_save;
+    getyx(rightWin, y_save, x_save);
+
     updatedPlayer = true;
     werase(hudWin);
     // quick inventory
@@ -561,20 +565,20 @@ void Screen::PrintHUD() {
         const short dur = player->HP();
         if ( -1 != dur ) { // HitPoints line
             wstandend(hudWin);
-            const QString str = QString("%1").arg(dur, -10, 10, QChar('.'));
-            mvwaddstr(hudWin, 0, 0, "HP[..........]");
+            mvwprintw(hudWin, 0, 0, "[..........]%hd", dur);
             wcolor_set(hudWin, WHITE_RED, NULL);
-            mvwaddstr(hudWin, 0, 3,
+            const QString str(10, QChar(0x2665));
+            mvwaddstr(hudWin, 0, 1,
                 qPrintable(str.left(10*dur/MAX_DURABILITY+1)));
         }
         const short breath = player->Breath();
         if ( -1!=breath && breath!=MAX_BREATH ) { // breath line
             wstandend(hudWin);
-            const QString str = QString("%1").arg(breath, -10, 10, QChar('.'));
-            mvwaddstr(hudWin, 0, 15, "BR[..........]");
+            const QString str(10, QChar(0x00b0));
+            mvwprintw(hudWin, 0, 16, "[..........]%hd", breath);
             wcolor_set(hudWin, WHITE_BLUE, NULL);
-            mvwaddstr(hudWin, 0, 15+3,
-                qPrintable(str.left(10*breath/MAX_BREATH+1)));
+            mvwaddstr(hudWin, 0, 14+3,
+                qPrintable(str.left(10*breath/MAX_BREATH)));
         }
         const short satiation = player->SatiationPercent();
         if ( -1 != satiation ) { // satiation line
@@ -598,6 +602,7 @@ void Screen::PrintHUD() {
     QChar chars[] = { 0x263a, 0x263a };
     waddstr(hudWin, qPrintable(QString(chars)));*/
 
+    (void)wmove(rightWin, y_save, x_save);
     wrefresh(hudWin);
 } // void Screen::PrintHUD()
 
