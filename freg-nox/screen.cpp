@@ -114,23 +114,9 @@ QString Screen::PassString(QString & str) const {
     return str = QString::fromUtf8(temp_str);
 }
 
-char Screen::CharNumber(const ushort x, const ushort y, const ushort z) const {
+char Screen::CharNumber(const ushort z) const {
     if ( HEIGHT-1 == z ) { // sky
         return ' ';
-    }
-    if ( player->X()==x && player->Y()==y && player->Z()==z ) {
-        switch ( player->GetDir() ) {
-        case NORTH: return '^';
-        case SOUTH: return 'v';
-        case EAST:  return '>';
-        case WEST:  return '<';
-        case UP:    return '.';
-        case DOWN:  return 'x';
-        default:
-            fprintf(stderr, "Screen::CharNumber: (?) dir: %d\n",
-                player->GetDir());
-            return '*';
-        }
     }
     const short z_dif = ( UP==player->GetDir() ) ?
         z - player->Z() : player->Z() - z;
@@ -619,8 +605,7 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
         ( SHRED_WIDTH-SCREEN_SIZE )/2;
     const ushort start_y = ( player->Y()/SHRED_WIDTH )*SHRED_WIDTH +
         ( SHRED_WIDTH-SCREEN_SIZE )/2;
-    for (ushort j=start_y; j<SCREEN_SIZE+start_y;
-            ++j, waddstr(window, "\n_"))
+    for (ushort j=start_y; j<SCREEN_SIZE+start_y; ++j, waddstr(window, "\n_"))
     for (ushort i=start_x; i<SCREEN_SIZE+start_x; ++i ) {
         ushort k = k_start;
         for ( ; INVISIBLE==w->GetBlock(i, j, k)->Transparent(); k+=k_step);
@@ -629,7 +614,7 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
                 player->GetCreativeMode() )
         {
             waddch(window, PrintBlock(block, window));
-            waddch(window, CharNumber(i, j, k));
+            waddch(window, CharNumber(k));
         } else {
             wstandend(window);
             waddch(window, OBSCURE_BLOCK);
@@ -637,11 +622,35 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
         }
     }
     wstandend(window);
+    mvwaddch(window, player->Y(), player->X()*2+3, '!');
     box(window, 0, 0);
+    if ( player->IfPlayerExists() ) {
+        const Block * const block = w->GetBlock(player->X(), player->Y(),
+            player->Z());
+        static const QString arrow_left (QChar(0x2190));
+        static const QString arrow_up   (QChar(0x2191));
+        static const QString arrow_right(QChar(0x2192));
+        static const QString arrow_down (QChar(0x2193));
+        wcolor_set(window, Color(block->Kind(), block->Sub()), NULL);
+        (void)wmove(window, player->Y()-start_y+1, (player->X()-start_x)*2+2);
+        switch ( block->GetDir() ) {
+        case NORTH: waddstr(window, qPrintable(arrow_up));    break;
+        case SOUTH: waddstr(window, qPrintable(arrow_down));  break;
+        case EAST:  waddstr(window, qPrintable(arrow_right)); break;
+        case WEST:  waddstr(window, qPrintable(arrow_left));  break;
+        case UP:    waddch(window, '.'); break;
+        case DOWN:  waddch(window, 'x'); break;
+        default:
+            fprintf(stderr, "Screen::PrintNormal: (?) dir: %d\n",
+                player->GetDir());
+            waddch(window, '*');
+        }
+    }
     wcolor_set(window, BLACK_WHITE, NULL);
     mvwaddstr(window, 0, 1, qPrintable((UP==dir) ?
         tr("(. Up .") : tr("x Down x")));
     Arrows(window, (player->X()-start_x)*2+1, player->Y()-start_y+1, true);
+
     wrefresh(window);
 } // void Screen::PrintNormal(WINDOW * window, int dir)
 
@@ -725,9 +734,7 @@ void Screen::PrintFront(WINDOW * const window) const {
     const int sky_colour = Color(BLOCK, SKY);
     const char sky_char = CharName(BLOCK, SKY);
     (void)wmove(window, 1, 1);
-    for (short k=k_start; k>k_start-SCREEN_SIZE;
-            --k, waddstr(window, "\n_"))
-    {
+    for (short k=k_start; k>k_start-SCREEN_SIZE; --k, waddstr(window, "\n_")) {
         for (*x=x_start; *x!=x_end; *x+=x_step) {
             for (*z=z_start; *z!=z_end && w->GetBlock(i, j, k)->
                         Transparent()==INVISIBLE;

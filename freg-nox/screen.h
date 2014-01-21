@@ -152,7 +152,7 @@ private slots:
     void Print();
 private:
     char CharName(int, int) const;
-    char CharNumber(ushort x, ushort y, ushort z) const;
+    char CharNumber(ushort z) const;
     char CharNumberFront(ushort x, ushort y) const;
     void Arrows(WINDOW *, ushort x, ushort y, bool show_dir = false) const;
     void HorizontalArrows(WINDOW *, ushort y, short color = WHITE_RED,
