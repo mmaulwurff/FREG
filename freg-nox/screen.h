@@ -161,7 +161,6 @@ private:
     void PrintNormal(WINDOW *, int dir) const;
     void PrintFront(WINDOW *) const;
     void PrintInv(WINDOW *, const Inventory *) const;
-    void PrintText(WINDOW *, QString const &) const;
     /// Returns false when file does not exist, otherwise true.
     bool PrintFile(WINDOW *, QString const & file_name);
     void PrintHUD();

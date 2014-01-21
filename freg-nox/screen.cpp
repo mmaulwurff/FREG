@@ -551,7 +551,7 @@ void Screen::PrintHUD() {
             player->GetLatitude(), player->GetLongitude());
     } else {
         const short dur = player->HP();
-        if ( -1 != dur ) { // HitPoints line
+        if ( dur > 0 ) { // HitPoints line
             wstandend(hudWin);
             mvwprintw(hudWin, 0, 0, "[..........]%hd", dur);
             wcolor_set(hudWin, WHITE_RED, NULL);
@@ -582,13 +582,6 @@ void Screen::PrintHUD() {
             }
         }
     }
-
-    // unicode symbol example output code
-    /*wcolor_set(hudWin, WHITE_BLUE, NULL);
-    const cchar_t ch = { 0, L"\u263a" };
-    mvwadd_wch(hudWin, 0, 20, &ch);
-    QChar chars[] = { 0x263a, 0x263a };
-    waddstr(hudWin, qPrintable(QString(chars)));*/
 
     (void)wmove(rightWin, y_save, x_save);
     wrefresh(hudWin);
@@ -624,7 +617,7 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
     wstandend(window);
     mvwaddch(window, player->Y(), player->X()*2+3, '!');
     box(window, 0, 0);
-    if ( player->IfPlayerExists() ) {
+    if ( player->IfPlayerExists() && dir!=UP ) {
         const Block * const block = w->GetBlock(player->X(), player->Y(),
             player->Z());
         static const QString arrow_left (QChar(0x2190));
@@ -832,12 +825,6 @@ const {
     wrefresh(window);
 } // void Screen::PrintInv(WINDOW * window, const Inventory * inv)
 
-void Screen::PrintText(WINDOW * const window, QString const & str) const {
-    werase(window);
-    waddstr(window, qPrintable(str));
-    wrefresh(window);
-}
-
 void Screen::CleanFileToShow() {
     delete fileToShow;
     fileToShow = 0;
@@ -847,7 +834,9 @@ bool Screen::PrintFile(WINDOW * const window, QString const & file_name) {
     CleanFileToShow();
     fileToShow = new QFile(file_name);
     if ( fileToShow->open(QIODevice::ReadOnly | QIODevice::Text) ) {
-        PrintText(window, QTextStream(fileToShow).readAll());
+        werase(window);
+        waddstr(window, qPrintable(QTextStream(fileToShow).readAll()));
+        wrefresh(window);
         return true;
     } else {
         CleanFileToShow();
