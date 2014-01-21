@@ -1,21 +1,21 @@
-	/* freg, Free-Roaming Elementary Game with open and interactive world
-	*  Copyright (C) 2012-2013 Alexander 'mmaulwurff' Kromm
-	*  mmaulwurff@gmail.com
-	*
-	* This file is part of FREG.
-	*
-	* FREG is free software: you can redistribute it and/or modify
-	* it under the terms of the GNU General Public License as published by
-	* the Free Software Foundation, either version 3 of the License, or
-	* (at your option) any later version.
-	*
-	* FREG is distributed in the hope that it will be useful,
-	* but WITHOUT ANY WARRANTY; without even the implied warranty of
-	* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	* GNU General Public License for more details.
-	*
-	* You should have received a copy of the GNU General Public License
-	* along with FREG. If not, see <http://www.gnu.org/licenses/>. */
+    /* freg, Free-Roaming Elementary Game with open and interactive world
+    *  Copyright (C) 2012-2014 Alexander 'mmaulwurff' Kromm
+    *  mmaulwurff@gmail.com
+    *
+    * This file is part of FREG.
+    *
+    * FREG is free software: you can redistribute it and/or modify
+    * it under the terms of the GNU General Public License as published by
+    * the Free Software Foundation, either version 3 of the License, or
+    * (at your option) any later version.
+    *
+    * FREG is distributed in the hope that it will be useful,
+    * but WITHOUT ANY WARRANTY; without even the implied warranty of
+    * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    * GNU General Public License for more details.
+    *
+    * You should have received a copy of the GNU General Public License
+    * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #ifndef BLOCKMANAGER_H
 #define BLOCKMANAGER_H
@@ -39,43 +39,43 @@ class QDataStream;
  * block that will be changed (damaged, inscribed, etc). */
 
 class BlockManager {
-	public:
-	BlockManager();
-	~BlockManager();
+public:
+    BlockManager();
+    ~BlockManager();
 
-	/// Use this to receive a pointer to normal block.
-	Block * NormalBlock(int sub) const;
-	/// Use this to receive a pointer to new not-normal block.
-	Block * NewBlock(int kind, int sub) const;
-	/// Use this to load block from file.
-	Block * BlockFromFile(QDataStream &, quint8 kind, quint8 sub) const;
-	Block * BlockFromFile(QDataStream &) const;
-	/// Returns true if block is normal.
-	bool KindSubFromFile(QDataStream &, quint8 & kind, quint8 & sub) const;
-	/// Use this to safely delete block.
-	void DeleteBlock(Block * block) const;
-	/// For memory economy.
-	/** Checks and replaces block with corresponding normal block.
-	 *  Can delete block, use carefully. */
-	Block * ReplaceWithNormal(Block * block) const;
+    /// Use this to receive a pointer to normal block.
+    Block * NormalBlock(int sub) const;
+    /// Use this to receive a pointer to new not-normal block.
+    Block * NewBlock(int kind, int sub) const;
+    /// Use this to load block from file.
+    Block * BlockFromFile(QDataStream &, quint8 kind, quint8 sub) const;
+    Block * BlockFromFile(QDataStream &) const;
+    /// Returns true if block is normal.
+    bool KindSubFromFile(QDataStream &, quint8 & kind, quint8 & sub) const;
+    /// Use this to safely delete block.
+    void DeleteBlock(Block * block) const;
+    /// For memory economy.
+    /** Checks and replaces block with corresponding normal block.
+     *  Can delete block, use carefully. */
+    Block * ReplaceWithNormal(Block * block) const;
 
-	static QString KindToString(quint8 kind);
-	static QString SubToString(quint8 sub);
-	static quint8 StringToKind(const QString &);
-	static quint8 StringToSub(const QString &);
+    static QString KindToString(quint8 kind);
+    static QString SubToString(quint8 sub);
+    static quint8 StringToKind(const QString &);
+    static quint8 StringToSub(const QString &);
 
-	static quint16 MakeId(quint8 kind, quint8 sub);
-	static quint8 KindFromId(quint16 id);
+    static quint16 MakeId(quint8 kind, quint8 sub);
+    static quint8 KindFromId(quint16 id);
 
-	private:
-	Block * normals[LAST_SUB];
-	static const QString kinds[LAST_KIND];
-	static const QString subs[LAST_SUB];
+private:
+    Block * normals[LAST_SUB];
+    static const QString kinds[LAST_KIND];
+    static const QString subs[LAST_SUB];
 
-	template <typename Thing>
-	Thing * New(quint8 sub, quint16 id) const;
-	template <typename Thing>
-	Thing * New(QDataStream & str, quint8 sub, quint16 id) const;
+    template <typename Thing>
+    Thing * New(quint8 sub, quint16 id) const;
+    template <typename Thing>
+    Thing * New(QDataStream & str, quint8 sub, quint16 id) const;
 }; // class BlockManager
 
 extern BlockManager block_manager;
