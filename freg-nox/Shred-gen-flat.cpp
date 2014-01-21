@@ -1,5 +1,5 @@
     /* freg, Free-Roaming Elementary Game with open and interactive world
-    *  Copyright (C) 2012-2013 Alexander 'mmaulwurff' Kromm
+    *  Copyright (C) 2012-2014 Alexander 'mmaulwurff' Kromm
     *  mmaulwurff@gmail.com
     *
     * This file is part of FREG.
@@ -74,7 +74,7 @@ void Shred::Forest() {
 }
 
 void Shred::Water() {
-    ushort depth=0;
+    ushort depth = 0;
     for (long longi=longitude-1; longi<=longitude+1; ++longi)
     for (long lati =latitude -1; lati <=latitude +1; ++lati ) {
         if ( SHRED_WATER == TypeOfShred(longi, lati) ) {
@@ -121,8 +121,7 @@ void Shred::Mountain() {
      * ###
      *  ?
      *  ? south bridge
-     *  ?
-     * */
+     *  ?  */
     const ushort mount_top = 3*HEIGHT/4;
     NormalCube(0, 0, 1, SHRED_WIDTH/2, SHRED_WIDTH/2, mount_top, STONE);
     // south bridge

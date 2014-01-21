@@ -1,5 +1,5 @@
     /* freg, Free-Roaming Elementary Game with open and interactive world
-    *  Copyright (C) 2012-2013 Alexander 'mmaulwurff' Kromm
+    *  Copyright (C) 2012-2014 Alexander 'mmaulwurff' Kromm
     *  mmaulwurff@gmail.com
     *
     * This file is part of FREG.
@@ -91,17 +91,17 @@ void DeferredAction::Throw() const {
 }
 
 void DeferredAction::SetGhostMove(const ushort dir) {
-    type=DEFERRED_GHOST_MOVE;
-    num=dir;
+    type = DEFERRED_GHOST_MOVE;
+    num  = dir;
 }
 
 void DeferredAction::SetMove(const ushort dir) {
-    type=DEFERRED_MOVE;
-    num=dir;
+    type = DEFERRED_MOVE;
+    num  = dir;
 }
-void DeferredAction::SetJump() {
-    type=DEFERRED_JUMP;
-}
+
+void DeferredAction::SetJump() { type = DEFERRED_JUMP; }
+
 void DeferredAction::SetBuild(const ushort x, const ushort y, const ushort z,
         Block * const mat, const ushort builder_slot)
 {
@@ -109,25 +109,27 @@ void DeferredAction::SetBuild(const ushort x, const ushort y, const ushort z,
     yTarg = y;
     zTarg = z;
     material = mat;
-    srcSlot = builder_slot;
-    type = DEFERRED_BUILD;
+    srcSlot  = builder_slot;
+    type     = DEFERRED_BUILD;
 }
+
 void DeferredAction::SetDamage(const ushort x, const ushort y, const ushort z)
 {
     xTarg = x;
     yTarg = y;
     zTarg = z;
-    type = DEFERRED_DAMAGE;
+    type  = DEFERRED_DAMAGE;
 }
+
 void DeferredAction::SetThrow(const ushort x, const ushort y, const ushort z,
         const ushort src, const ushort dest, const ushort n)
 {
     xTarg = x;
     yTarg = y;
     zTarg = z;
-    srcSlot = src;
+    srcSlot  = src;
     destSlot = dest;
-    num = n;
+    num  = n;
     type = DEFERRED_THROW;
 }
 

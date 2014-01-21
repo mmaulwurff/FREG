@@ -1,5 +1,5 @@
     /* freg, Free-Roaming Elementary Game with open and interactive world
-    *  Copyright (C) 2012-2013 Alexander 'mmaulwurff' Kromm
+    *  Copyright (C) 2012-2014 Alexander 'mmaulwurff' Kromm
     *  mmaulwurff@gmail.com
     *
     * This file is part of FREG.
@@ -15,8 +15,7 @@
     * GNU General Public License for more details.
     *
     * You should have received a copy of the GNU General Public License
-    * along with FREG. If not, see <http://www.gnu.org/licenses/>.
-    */
+    * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include <QFile>
 #include <QByteArray>
@@ -33,16 +32,17 @@ bool CraftManager::MiniCraft(craft_item & item, craft_item & result) const {
 
 bool CraftManager::Craft(const craft_recipe & recipe, craft_item & result)
 const {
-    const ushort size=recipe.size();
+    const ushort size = recipe.size();
     for (ushort i=0; i<recipes.size(); ++i) {
-        if ( recipes.at(i)->size()!=size+1 ) {
+        if ( recipes.at(i)->size() != size+1 ) {
             continue;
         }
-        ushort j=0;
-        for ( ; j<size && recipes.at(i)->at(j)->num==recipe.at(j)->num
-            && recipes.at(i)->at(j)->kind==recipe.at(j)->kind
-            && recipes.at(i)->at(j)->sub==recipe.at(j)->sub; ++j);
-        if ( j==size ) {
+        ushort j = 0;
+        for ( ; j < size
+                && recipes.at(i)->at(j)->num  == recipe.at(j)->num
+                && recipes.at(i)->at(j)->kind == recipe.at(j)->kind
+                && recipes.at(i)->at(j)->sub  == recipe.at(j)->sub; ++j);
+        if ( j == size ) {
             result.num =recipes.at(i)->at(j)->num;
             result.kind=recipes.at(i)->at(j)->kind;
             result.sub =recipes.at(i)->at(j)->sub;
@@ -59,16 +59,16 @@ CraftManager::CraftManager() {
         return;
     }
     while ( !file.atEnd() ) {
-        const QByteArray rec_arr=file.readLine();
+        const QByteArray rec_arr = file.readLine();
         if ( rec_arr.isEmpty() ) {
-            fputs("recipes read error.\n", stderr);
+            fputs("Recipes read error.\n", stderr);
             break;
         }
         QTextStream in(rec_arr, QIODevice::ReadOnly | QIODevice::Text);
-        craft_recipe * const recipe=new craft_recipe;
+        craft_recipe * const recipe = new craft_recipe;
         for (;;) {
-            craft_item * const item=new craft_item;
-            item->num=0;
+            craft_item * const item = new craft_item;
+            item->num = 0;
             in >> item->num >> item->kind >> item->sub;
             if ( item->num ) {
                 recipe->append(item);

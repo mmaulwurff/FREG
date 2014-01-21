@@ -1,5 +1,5 @@
     /* freg, Free-Roaming Elementary Game with open and interactive world
-    *  Copyright (C) 2012-2013 Alexander 'mmaulwurff' Kromm
+    *  Copyright (C) 2012-2014 Alexander 'mmaulwurff' Kromm
     *  mmaulwurff@gmail.com
     *
     * This file is part of FREG.
@@ -15,8 +15,7 @@
     * GNU General Public License for more details.
     *
     * You should have received a copy of the GNU General Public License
-    * along with FREG. If not, see <http://www.gnu.org/licenses/>.
-    */
+    * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include <QDataStream>
 #include "header.h"
@@ -24,7 +23,7 @@
 #include "Dwarf.h"
 #include "BlockManager.h"
 
-const QString BlockManager::kinds[LAST_KIND]={
+const QString BlockManager::kinds[LAST_KIND] = {
     "block",
     "bell",
     "chest",
@@ -50,7 +49,7 @@ const QString BlockManager::kinds[LAST_KIND]={
     "map"
 };
 
-const QString BlockManager::subs[LAST_SUB]={
+const QString BlockManager::subs[LAST_SUB] = {
     "stone",
     "moss stone",
     "nullstone",
@@ -78,7 +77,7 @@ BlockManager block_manager;
 
 BlockManager::BlockManager() {
     for (ushort sub=0; sub<LAST_SUB; ++sub) {
-        normals[sub]=new Block(sub, MakeId(BLOCK, sub));
+        normals[sub] = new Block(sub, MakeId(BLOCK, sub));
     }
 }
 BlockManager::~BlockManager() {

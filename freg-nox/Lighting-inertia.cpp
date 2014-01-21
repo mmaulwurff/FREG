@@ -1,5 +1,5 @@
     /* freg, Free-Roaming Elementary Game with open and interactive world
-    *  Copyright (C) 2012-2013 Alexander 'mmaulwurff' Kromm
+    *  Copyright (C) 2012-2014 Alexander 'mmaulwurff' Kromm
     *  mmaulwurff@gmail.com
     *
     * This file is part of FREG.
@@ -15,8 +15,7 @@
     * GNU General Public License for more details.
     *
     * You should have received a copy of the GNU General Public License
-    * along with FREG. If not, see <http://www.gnu.org/licenses/>.
-    */
+    * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 /**\file Lighting-inertia.cpp
  * \brief This file provides simple (also mad) lighting for freg.
@@ -27,8 +26,7 @@
  * changing over the day.
  * LightMap is uchar:
  * & 0xF0 bits are for non-sun light,
- * & 0x0F bits for sun.
- */
+ * & 0x0F bits for sun. */
 
 #include "world.h"
 #include "Shred.h"
@@ -139,7 +137,7 @@ void World::ReEnlightenTime() {
     for (ushort i=0; i<NumShreds()*NumShreds(); ++i) {
         shreds[i]->SetAllLightMapNull();
     }
-    sunMoonFactor=( NIGHT==PartOfDay() ) ?
+    sunMoonFactor = ( NIGHT==PartOfDay() ) ?
         MOON_LIGHT_FACTOR : SUN_LIGHT_FACTOR;
     ReEnlightenAll();
 }
@@ -229,7 +227,7 @@ uchar Shred::SunLight(const short x, const short y, const short z) const {
 }
 
 uchar Shred::LightLevel(const short x, const short y, const short z) const {
-    const uchar light=lightMap[x][y][z];
+    const uchar light = lightMap[x][y][z];
     return (light & 0x0F) +
            (light & 0xF0) * FIRE_LIGHT_FACTOR;
 }
@@ -259,7 +257,7 @@ bool Shred::SetFireLight(const short x, const short y, const short z,
 void Shred::SetLightmap(const short x, const short y, const short z,
         const uchar level)
 {
-    lightMap[x][y][z]=level;
+    lightMap[x][y][z] = level;
 }
 
 void Shred::SetAllLightMapNull() {

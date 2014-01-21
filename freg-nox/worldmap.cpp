@@ -1,5 +1,5 @@
     /* freg, Free-Roaming Elementary Game with open and interactive world
-    *  Copyright (C) 2012-2013 Alexander 'mmaulwurff' Kromm
+    *  Copyright (C) 2012-2014 Alexander 'mmaulwurff' Kromm
     *  mmaulwurff@gmail.com
     *
     * This file is part of FREG.
@@ -46,7 +46,7 @@ WorldMap::WorldMap(const QString * const world_name) {
             fprintf(stderr, "hello map\n");
             map_generation.waitForFinished();
         }
-        mapSize=( map->open(QIODevice::ReadOnly | QIODevice::Text) ) ?
+        mapSize = ( map->open(QIODevice::ReadOnly | QIODevice::Text) ) ?
             map_size : 1;
     }
 }
