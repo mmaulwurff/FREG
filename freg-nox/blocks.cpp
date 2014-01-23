@@ -1108,9 +1108,14 @@
             Chest(str, sub, id, WORKBENCH_SIZE)
     {}
 // Door::
+    int Door::PushResult(const int) const {
+        return movable ? MOVABLE : NOT_MOVABLE;
+    }
+
     void Door::Push(const int, Block * const who) {
-        if ( !shifted && !locked &&
-                World::Anti(GetDir())!=who->GetDir() )
+        if ( !shifted
+                && !locked
+                && World::Anti(GetDir())!=who->GetDir() )
         {
             movable = true;
             shifted = GetWorld()->Move(X(), Y(), Z(), GetDir());
@@ -1121,27 +1126,32 @@
     void Door::DoFrequentAction() {
         if ( shifted ) {
             movable = true;
-            shifted = !GetWorld()->Move(X(), Y(), Z(),
-                World::Anti(GetDir()));
+            ushort x, y, z;
+            GetWorld()->Focus(X(), Y(), Z(), x, y, z, World::Anti(GetDir()));
+            if ( ENVIRONMENT == GetWorld()->GetBlock(x, y, z)->
+                    PushResult(NOWHERE) )
+            {
+                shifted = !GetWorld()->Move(X(), Y(), Z(),
+                    World::Anti(GetDir()));
+            }
             movable = false;
         }
     }
 
-    int  Door::ShouldAct() const  { return FREQUENT_MECH; }
+    int  Door::ShouldAct() const { return FREQUENT_MECH; }
     quint8 Door::Kind() const { return locked ? LOCKED_DOOR : DOOR; }
     bool Door::ShouldFall() const { return false; }
 
     QString Door::FullName() const {
         QString sub_string;
         switch ( Sub() ) {
-        case WOOD:  sub_string=tr(" of wood");  break;
-        case STONE: sub_string=tr(" of stone"); break;
-        case GLASS: sub_string=tr(" of glass"); break;
-        case IRON:  sub_string=tr(" of iron");  break;
+        case WOOD:  sub_string = tr(" of wood");  break;
+        case STONE: sub_string = tr(" of stone"); break;
+        case GLASS: sub_string = tr(" of glass"); break;
+        case IRON:  sub_string = tr(" of iron");  break;
         default:
-            sub_string=tr(" of something");
-            fprintf(stderr, "Door::FullName: unlisted sub: %d\n",
-                Sub());
+            sub_string = tr(" of something");
+            fprintf(stderr, "Door::FullName: unlisted sub: %d\n", Sub());
         }
         return locked ? tr("Locked door") : tr("Door") + sub_string;
     }

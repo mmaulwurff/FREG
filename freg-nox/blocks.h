@@ -225,6 +225,7 @@ public:
 
     int ShouldAct() const;
     void Push(int dir, Block * const);
+    int  PushResult(int dir /* not used */) const;
     void DoFrequentAction();
     bool ShouldFall() const;
     quint8 Kind() const;

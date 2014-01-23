@@ -626,7 +626,7 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
         static const QString arrow_down (QChar(0x2193));
         wcolor_set(window, Color(block->Kind(), block->Sub()), NULL);
         (void)wmove(window, player->Y()-start_y+1, (player->X()-start_x)*2+2);
-        switch ( block->GetDir() ) {
+        switch ( player->GetDir() ) {
         case NORTH: waddstr(window, qPrintable(arrow_up));    break;
         case SOUTH: waddstr(window, qPrintable(arrow_down));  break;
         case EAST:  waddstr(window, qPrintable(arrow_right)); break;
@@ -984,9 +984,7 @@ Screen::Screen(World * const wor, Player * const pl, int & error) :
         addstr("\nby mmaulwurff, with help of Panzerschrek\n");
     }
     printw(qPrintable(tr("\nVersion %1.\n\nPress any key.").arg(VER)));
-    const int ch = getch();
-    qsrand(ch);
-    ungetch(ch);
+    qsrand(getch());
     erase();
     refresh();
     CleanFileToShow();

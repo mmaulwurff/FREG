@@ -502,8 +502,8 @@ bool World::CanMove(const ushort x, const ushort y, const ushort z,
     Block * const block = GetBlock(x, y, z);
     Block * block_to = GetBlock(newx, newy, newz);
     if ( ENVIRONMENT == block->PushResult(NOWHERE) ) {
-        move_flag = (*block != *block_to) &&
-            MOVABLE == block_to->PushResult(NOWHERE);
+        move_flag = (*block != *block_to)
+            && (MOVABLE == block_to->PushResult(NOWHERE));
     } else {
         block_to->Push(dir, block);
         block_to = GetBlock(newx, newy, newz);

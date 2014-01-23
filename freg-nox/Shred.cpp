@@ -497,7 +497,7 @@ void Shred::TestShred() {
     SetNewBlock(BLOCK, WATER, column+=2, row, level);
     SetNewBlock(ACTIVE, WATER, column+=2, row, level);
     SetNewBlock(DOOR, STONE, column+=2, row, level);
-    blocks[9][5][level]->SetDir(NORTH);
+    blocks[column][row][level]->SetDir(NORTH);
     SetNewBlock(BLOCK, CLAY, column+=2, row, level);
     SetNewBlock(LIQUID, STONE, column+=2, row, level-1);
     // row 4
