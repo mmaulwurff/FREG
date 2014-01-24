@@ -120,7 +120,7 @@ char Screen::CharNumber(const ushort z) const {
     }
     const short z_dif = ( UP==player->GetDir() ) ?
         z - player->Z() : player->Z() - z;
-    return ( !z_dif ) ?
+    return ( z_dif == 0 ) ?
         ' ' : ( z_dif<0 ) ?
             '-' : ( z_dif<10 ) ?
                 z_dif+'0' : '+';
@@ -332,9 +332,9 @@ void Screen::ControlPlayer(const int ch) {
             .arg(QLocale::system().name().left(2)));
     break;
     case 'L': RePrint(); break;
-    case 'R':
-        if ( !player->GetCreativeMode() ) {
-            player->SetActiveHand(!player->IsRightActiveHand());
+    case 'R': // switch active hand
+        if ( not player->GetCreativeMode() ) {
+            player->SetActiveHand(not player->IsRightActiveHand());
             Notify(tr("Now %1 hand is active.").
                 arg(player->IsRightActiveHand() ?
                     tr("right") : tr("left")));
@@ -344,7 +344,7 @@ void Screen::ControlPlayer(const int ch) {
     case '-': shiftFocus = -!shiftFocus; break; // move focus down
     case '+': shiftFocus =  !shiftFocus; break; // move focus up
 
-    case '!': player->SetCreativeMode( !player->GetCreativeMode() ); break;
+    case '!': player->SetCreativeMode( not player->GetCreativeMode() ); break;
     case ':':
     case '/': PassString(command); // no break
     case '.': ProcessCommand(command); break;
@@ -413,8 +413,8 @@ void Screen::InventoryAction(const ushort num) const {
 void Screen::ActionXyz(ushort & x,ushort & y, ushort & z) const {
     player->Focus(x, y, z);
     if (
-            DOWN!=player->GetDir() &&
-            UP  !=player->GetDir() &&
+            DOWN != player->GetDir() &&
+            UP   != player->GetDir() &&
             ( AIR==w->GetBlock(x, y, z)->Sub() || AIR==w->GetBlock(
                 player->X(),
                 player->Y(),
@@ -433,7 +433,7 @@ const {
 }
 
 void Screen::Print() {
-    if ( !player->IfPlayerExists() ) {
+    if ( not player->IfPlayerExists() ) {
         return;
     }
     w->ReadLock();
@@ -457,7 +457,7 @@ void Screen::Print() {
         PrintNormal(leftWin, (UP==dir || DOWN==dir) ?
             NORTH : dir);
     }
-    if ( !fileToShow ) { // right window
+    if ( not fileToShow ) { // right window
         switch ( player->UsingType() ) {
         case USAGE_TYPE_READ_IN_INVENTORY:
             wstandend(rightWin);
@@ -508,7 +508,7 @@ void Screen::PrintHUD() {
     werase(hudWin);
     // quick inventory
     Inventory * const inv = player->PlayerInventory();
-    if ( inv && !inv->IsEmpty() && COLS>=(SCREEN_SIZE*2+2)*2 ) {
+    if ( inv && not inv->IsEmpty() && COLS>=(SCREEN_SIZE*2+2)*2 ) {
         for (ushort i=0; i<inv->Size(); ++i) {
             wstandend(hudWin);
             const int x = QUICK_INVENTORY_X_SHIFT+i*2;
@@ -648,7 +648,7 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
 } // void Screen::PrintNormal(WINDOW * window, int dir)
 
 void Screen::PrintFront(WINDOW * const window) const {
-    if ( !window ) {
+    if ( not window ) {
         return;
     } // else:
     const int dir = player->GetDir();
@@ -793,20 +793,26 @@ const {
     }
     mvwprintw(window, 2+inv->Size(), 40,
         qPrintable(tr("All weight: %1 mz").arg(inv->Weight())));
+    const int start = inv->Start();
+    int shift = 0; // to divide inventory sections
     for (ushort i=0; i<inv->Size(); ++i) {
-        mvwprintw(window, 2+i, 12, "%c)", 'a'+i);
-        if ( !inv->Number(i) ) {
+        mvwprintw(window, 2+i+shift, 12, "%c)", 'a'+i);
+        if ( start-1 == i ) {
+            ++shift;
+            mvwhline(window, 3+i, 0, ACS_HLINE, SCREEN_SIZE*2+2);
+        }
+        if ( not inv->Number(i) ) {
             continue;
         }
         const Block * const block = inv->ShowBlock(i);
         wprintw(window, "[%c]%s",
             PrintBlock(block, window),
             qPrintable(inv->InvFullName(i)) );
-        if ( 1<inv->Number(i) ) {
+        if ( 1 < inv->Number(i) ) {
             waddstr(window, qPrintable(inv->NumStr(i)));
         }
         const QString str = inv->GetInvNote(i);
-        if ( !str.isEmpty() ) {
+        if ( not str.isEmpty() ) {
             if ( str.size() < 24 ) {
                 wprintw(window, " ~:%s", qPrintable(str));
             } else {
@@ -814,7 +820,7 @@ const {
             }
         }
         wstandend(window);
-        mvwprintw(window, 2+i, 53, "%5hu mz", inv->GetInvWeight(i));
+        mvwprintw(window, 2+i+shift, 53, "%5hu mz", inv->GetInvWeight(i));
     }
     wcolor_set(window, Color(inv->Kind(), inv->Sub()), NULL);
     box(window, 0, 0);
@@ -884,7 +890,7 @@ void Screen::DeathScreen() {
     werase(rightWin);
     werase(hudWin);
     wcolor_set(leftWin, WHITE_RED, NULL);
-    if ( !PrintFile(leftWin, "texts/death.txt") ) {
+    if ( not PrintFile(leftWin, "texts/death.txt") ) {
         waddstr(leftWin, qPrintable(tr("You die.\nWaiting for respawn...")));
     }
     box(leftWin, 0, 0);
@@ -979,7 +985,7 @@ Screen::Screen(World * const wor, Player * const pl, int & error) :
     beepOn     = sett.value("beep_on", true).toBool();
     sett.setValue("beep_on", beepOn);
 
-    if ( !PrintFile(stdscr, "texts/splash.txt") ) {
+    if ( not PrintFile(stdscr, "texts/splash.txt") ) {
         addstr("Free-Roaming Elementary Game\n");
         addstr("\nby mmaulwurff, with help of Panzerschrek\n");
     }
@@ -1036,7 +1042,7 @@ IThread::IThread(Screen * const scr) :
 {}
 
 void IThread::run() {
-    while ( !stopped ) {
+    while ( not stopped ) {
         screen->ControlPlayer(getch());
         msleep(90);
         flushinp();
