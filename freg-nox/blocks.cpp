@@ -249,9 +249,8 @@
             id(block.id),
             direction(block.direction)
     {
-        if ( block.note ) {
-            note = new QString(*block.note);
-        }
+        note = ( block.note ) ?
+            new QString(*block.note) : 0;
     }
     Block::~Block() { delete note; }
 // Plate::
@@ -1000,24 +999,21 @@
 // Workbench::
     void Workbench::Craft() {
         while ( Number(0) ) { // remove previous product
-            Block * const to_push=ShowBlock(0);
+            Block * const to_pull = ShowBlock(0);
             Pull(0);
-            block_manager.DeleteBlock(to_push);
+            block_manager.DeleteBlock(to_pull);
         }
         craft_recipe recipe;
-        for (ushort i=Start(); i<Size(); ++i)
+        for (ushort i=Start(); i<Size(); ++i) {
             if ( Number(i) ) {
-                craft_item * item=new craft_item;
-                item->num=Number(i);
-                item->kind=GetInvKind(i);
-                item->sub=GetInvSub(i);
-                recipe.append(item);
+                recipe.append(
+                    new craft_item({Number(i), GetInvKind(i), GetInvSub(i)}) );
             }
+        }
         craft_item result;
         if ( craft_manager.Craft(recipe, result) ) {
             for (ushort i=0; i<result.num; ++i) {
-                GetExact(block_manager.
-                    NewBlock(result.kind, result.sub), 0);
+                GetExact(block_manager.NewBlock(result.kind, result.sub), 0);
             }
         }
         for (ushort i=0; i<recipe.size(); ++i) {
@@ -1026,16 +1022,16 @@
     }
 
     bool Workbench::Drop(const ushort src, const ushort dest,
-            const ushort num,
-            Inventory * const inv_to)
+            const ushort num, Inventory * const inv_to)
     {
-        if ( !inv_to ||
-                src>=Size() || dest>=inv_to->Size() ||
-                !Number(src) )
+        if ( !inv_to
+                || src  >= Size()
+                || dest >= inv_to->Size()
+                || !Number(src) )
         {
             return false;
         }
-        if ( src==0 ) {
+        if ( src == 0 ) {
             while ( Number(0) ) {
                 if ( !inv_to->Get(ShowBlock(0)) ) {
                     return false;
@@ -1044,17 +1040,17 @@
             }
             for (ushort i=Start(); i<Size(); ++i) {
                 while ( Number(i) ) {
-                    Block * const to_pull=ShowBlock(i);
+                    Block * const to_pull = ShowBlock(i);
                     Pull(i);
                     block_manager.DeleteBlock(to_pull);
                 }
             }
             return true;
         } else {
-            bool ok_flag=false;
+            bool ok_flag = false;
             for (ushort i=0; i<num; ++i) {
                 if ( inv_to->Get(ShowBlock(src), dest) ) {
-                    ok_flag=true;
+                    ok_flag = true;
                 }
                 Pull(src);
                 Craft();

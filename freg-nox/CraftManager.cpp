@@ -43,9 +43,9 @@ const {
                 && recipes.at(i)->at(j)->kind == recipe.at(j)->kind
                 && recipes.at(i)->at(j)->sub  == recipe.at(j)->sub; ++j);
         if ( j == size ) {
-            result.num =recipes.at(i)->at(j)->num;
-            result.kind=recipes.at(i)->at(j)->kind;
-            result.sub =recipes.at(i)->at(j)->sub;
+            result.num  = recipes.at(i)->at(j)->num;
+            result.kind = recipes.at(i)->at(j)->kind;
+            result.sub  = recipes.at(i)->at(j)->sub;
             return true;
         }
     }

@@ -868,7 +868,7 @@ void Screen::Notify(const QString & str) {
     if ( ++notificationRepeatCount && str == lastNotification ) {
         int x, y;
         getyx(notifyWin, y, x);
-        wmove(notifyWin, y-1, 0);
+        (void)wmove(notifyWin, y-1, 0);
         wclrtoeol(notifyWin);
         wprintw(notifyWin, "%s (%dx)\n",
             qPrintable(str), notificationRepeatCount);
