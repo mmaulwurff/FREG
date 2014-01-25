@@ -28,6 +28,8 @@
 const ushort INV_SIZE = 26U;
 const ushort MAX_STACK_SIZE = 9U;
 
+class Block;
+
 class Inventory {
     /**\class Inventory Inventory.h
      * \brief Provides block ability to contain other blocks inside. */

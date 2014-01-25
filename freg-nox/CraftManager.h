@@ -20,25 +20,43 @@
 #ifndef CRAFTMANAGER_H
 #define CRAFTMANAGER_H
 
-#include <QList>
+#include "Inventory.h"
 
-typedef struct {
-    ushort num;
-    int kind;
-    int sub;
-} craft_item;
-typedef QList<craft_item *> craft_recipe;
+class CraftItem {
+public:
+    CraftItem(int kind, int sub, int num);
+
+    quint8 GetKind() const;
+    quint8 GetSub() const;
+    quint8 GetNum() const;
+private:
+    const quint8 kind;
+    const quint8 sub;
+    const ushort num;
+};
+
+class CraftList {
+public:
+     CraftList();
+    ~CraftList();
+
+    CraftList & operator<<(const CraftItem *);
+private:
+    quint8 size;
+    const CraftItem * materials[INV_SIZE-2]; // array size: 
+};
 
 class CraftManager {
 public:
      CraftManager();
     ~CraftManager();
 
-    bool MiniCraft(  craft_item   & item,   craft_item & result) const;
-    bool Craft(const craft_recipe & recipe, craft_item & result) const;
+    bool MiniCraft(CraftItem * item,  CraftItem * result) const;
+    bool     Craft(CraftList * items, CraftList * result, int sub) const;
 private:
-    QList<craft_recipe *> recipes;
-}; // class CraftManager
+    CraftList ** recipesList;
+    int * recipesSubsList; // list of substances of workbench 
+};
 
 extern CraftManager craft_manager;
 

@@ -629,17 +629,13 @@
     }
 
     bool Inventory::MiniCraft(const ushort num) {
-        const ushort size=inventory[num].size();
-        if ( !size ) {
+        const quint8 size = Number(num);
+        if ( size == 0 ) {
             ReceiveSignal(QObject::tr("Nothing here."));
             return false;
         }
-        craft_item item={
-            size,
-            GetInvKind(num),
-            GetInvSub(num)
-        };
-        craft_item result;
+        /*CraftItem item({ size, GetInvKind(num), GetInvSub(num) });
+        CraftItem result;
 
         if ( craft_manager.MiniCraft(item, result) ) {
             while ( !inventory[num].isEmpty() ) {
@@ -653,7 +649,7 @@
             }
             ReceiveSignal(QObject::tr("Craft successful."));
             return true;
-        }
+        }*/
         ReceiveSignal(QObject::tr(
             "You don't know how to craft this."));
         return false; // no such recipe
@@ -998,7 +994,7 @@
     {}
 // Workbench::
     void Workbench::Craft() {
-        while ( Number(0) ) { // remove previous product
+        /*while ( Number(0) ) { // remove previous product
             Block * const to_pull = ShowBlock(0);
             Pull(0);
             block_manager.DeleteBlock(to_pull);
@@ -1007,10 +1003,10 @@
         for (ushort i=Start(); i<Size(); ++i) {
             if ( Number(i) ) {
                 recipe.append(
-                    new craft_item({Number(i), GetInvKind(i), GetInvSub(i)}) );
+                    new CraftItem({Number(i), GetInvKind(i), GetInvSub(i)}) );
             }
         }
-        craft_item result;
+        CraftItem result;
         if ( craft_manager.Craft(recipe, result) ) {
             for (ushort i=0; i<result.num; ++i) {
                 GetExact(block_manager.NewBlock(result.kind, result.sub), 0);
@@ -1018,7 +1014,7 @@
         }
         for (ushort i=0; i<recipe.size(); ++i) {
             delete recipe.at(i);
-        }
+        }*/
     }
 
     bool Workbench::Drop(const ushort src, const ushort dest,
@@ -1071,7 +1067,7 @@
     }
 
     quint8 Workbench::Kind() const { return WORKBENCH; }
-    ushort Workbench::Start() const { return 1; }
+    ushort Workbench::Start() const { return 2; }
 
     void Workbench::ReceiveSignal(const QString & str) {
         Block::ReceiveSignal(str);
