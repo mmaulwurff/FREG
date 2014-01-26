@@ -72,6 +72,7 @@ public:
 
     static quint16 MakeId(quint8 kind, quint8 sub);
     static quint8 KindFromId(quint16 id);
+    static quint8  SubFromId(quint16 id);
 private:
     Block * normals[LAST_SUB];
     static const QString kinds[LAST_KIND];

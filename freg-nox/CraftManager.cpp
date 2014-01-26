@@ -58,10 +58,11 @@ CraftList & CraftList::operator<<(CraftItem * const new_item) {
 }
 
 bool CraftList::CraftList::operator==(const CraftList & compared) const {
-    if ( items.size() != compared.items.size() ) {
+    const int materials_number=compared.GetSize()-compared.GetProductsNumber();
+    if ( GetSize()-GetProductsNumber() != materials_number ) {
         return false;
     } // else:
-    for (int i=0; i<items.size(); ++i) {
+    for (int i=0; i<materials_number; ++i) {
         if ( *items.at(i) != *compared.items.at(i) ) {
             return  false;
         }
@@ -163,11 +164,16 @@ CraftManager::~CraftManager() {
 }
 
 CraftItem * CraftManager::MiniCraft(const ushort num, const quint16 id) const {
-    CraftList recipe(1, 1);
+    CraftList recipe(1, 0);
     recipe << new CraftItem({num, id});
     const CraftList * const result = Craft(&recipe, DIFFERENT);
-    return result ?
-        result->GetItem(0) : 0;
+    if ( result ) {
+        CraftItem * const ret = new CraftItem(*result->GetItem(0));
+        delete result;
+        return ret;
+    } else {
+        return 0;
+    }
 }
 
 CraftList * CraftManager::Craft(const CraftList * const recipe, const int sub)

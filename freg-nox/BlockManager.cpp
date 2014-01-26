@@ -89,11 +89,6 @@ BlockManager::~BlockManager() {
 Block * BlockManager::NormalBlock(const int sub) const { return normals[sub]; }
 
 Block * BlockManager::NewBlock(const int kind, int sub) const {
-    if ( sub >= LAST_SUB  ) {
-        fprintf(stderr, "BlockManager::NewBlock: substance (?): %d.\n",
-            sub);
-        sub = STONE;
-    }
     const quint16 id = MakeId(kind, sub);
     switch ( kind ) {
     default: fprintf(stderr, "BlockManager::NewBlock: unlisted kind: %d\n",
@@ -231,3 +226,4 @@ quint16 BlockManager::MakeId(const quint8 kind, const quint8 sub) {
 }
 
 quint8 BlockManager::KindFromId(const quint16 id) { return (id >> 8); }
+quint8 BlockManager:: SubFromId(const quint16 id) { return (id & 0xFF); }

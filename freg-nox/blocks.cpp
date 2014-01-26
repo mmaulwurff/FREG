@@ -629,30 +629,29 @@
     }
 
     bool Inventory::MiniCraft(const ushort num) {
-        const quint8 size = Number(num);
-        if ( size == 0 ) {
+        if ( Number(num) == 0 ) {
             ReceiveSignal(QObject::tr("Nothing here."));
             return false;
-        }
-        /*CraftItem item({ size, GetInvKind(num), GetInvSub(num) });
-        CraftItem result;
-
-        if ( craft_manager.MiniCraft(item, result) ) {
+        } // else:
+        const CraftItem * const crafted = craft_manager.MiniCraft(
+            Number(num), BlockManager::MakeId(GetInvKind(num),GetInvSub(num)));
+        if ( crafted ) {
             while ( !inventory[num].isEmpty() ) {
-                Block * const to_drop=ShowBlock(num);
+                Block * const to_delete = ShowBlock(num);
                 Pull(num);
-                block_manager.DeleteBlock(to_drop);
+                block_manager.DeleteBlock(to_delete);
             }
-            for (ushort i=0; i<result.num; ++i) {
-                Get(block_manager.
-                    NewBlock(result.kind, result.sub));
+            for (int i=0; i<crafted->num; ++i) {
+                GetExact(block_manager.NewBlock(
+                    BlockManager::KindFromId(crafted->id),
+                    BlockManager:: SubFromId(crafted->id) ), num);
             }
             ReceiveSignal(QObject::tr("Craft successful."));
             return true;
-        }*/
-        ReceiveSignal(QObject::tr(
-            "You don't know how to craft this."));
-        return false; // no such recipe
+        } else {
+            ReceiveSignal(QObject::tr("You don't know how to craft this."));
+            return false;
+        }
     }
 
     Inventory::Inventory(const ushort sz) :
