@@ -22,83 +22,124 @@
 #include <QByteArray>
 #include <QTextStream>
 #include <QStringList>
+#include "BlockManager.h"
 #include "CraftManager.h"
+#include "header.h"
 
 CraftManager craft_manager;
 
 // CraftItem section
-    CraftItem::CraftItem(const int _kind, const int _sub, const int _num) :
-            kind(_kind),
-            sub (_sub),
-            num (_num)
-    {}
+bool CraftItem::operator>(const CraftItem & item) const {
+    return item.id > id;
+}
 
-    quint8 CraftItem::GetKind() const { return kind; }
-    quint8 CraftItem::GetSub () const { return sub;  }
-    quint8 CraftItem::GetNum () const { return num;  }
+bool CraftItem::operator!=(const CraftItem & item) const {
+    return num!=item.num || id!=item.id;
+}
 
 // CraftList section
-    CraftList:: CraftList() : size(0) {}
-    CraftList::~CraftList() {
-        for (quint8 i=0; i<size; ++i) {
-            delete materials[i];
+CraftList:: CraftList(
+        const quint8 materials_number,
+        const quint8  products_number)
+    :
+        productsNumber(products_number)
+{
+    items.reserve(materials_number + productsNumber);
+}
+CraftList::~CraftList() {
+    for (auto & item : items) {
+        delete item;
+    }
+}
+
+CraftList & CraftList::operator<<(CraftItem * const new_item) {
+    items.append(new_item);
+    return *this;
+}
+
+bool CraftList::CraftList::operator!=(const CraftList & compared) const {
+    if ( items.size() != compared.items.size() ) {
+        return true;
+    } // else:
+    for (int i=0; i<items.size(); ++i) {
+        if ( *items.at(i) != *compared.items.at(i) ) {
+            return  true;
         }
     }
-    CraftList & CraftList::operator<<(const CraftItem * const new_item) {
-        if ( size < INV_SIZE-2 ) {
-            materials[size++] = new_item;
-        }
-        return *this;
-    }
+    return false;
+}
+
+void CraftList::Sort() { qSort(items); }
+
+bool CraftList::LoadItem(QTextStream & stream) {
+    ushort    number;
+    stream >> number;
+    if ( number==0 ) {
+        return false;
+    } // else:
+    QString   kind_string,   sub_string;
+    stream >> kind_string >> sub_string;
+    const quint8 kind = BlockManager::StringToKind(kind_string);
+    const quint8 sub  = BlockManager::StringToSub ( sub_string);
+    if ( LAST_KIND==kind || LAST_SUB==sub ) {
+        return false;
+    } // else;
+    items.append(new CraftItem({number, BlockManager::MakeId(kind, sub)}));
+    return true;
+}
+
 // CraftManager section
-CraftManager::CraftManager() {
-    QDir dir("recipes");
-    QStringList recipesNames = dir.entryList();
+CraftManager::CraftManager() : size(0) {
+    const QStringList recipesNames = QDir("recipes").entryList();
     if ( recipesNames.isEmpty() ) {
-        recipesList = 0;
-        recipesSubsList = 0;
         return;
     } // else:
-    for (auto & recipeName : recipesNames) {
-        fprintf(stderr, "found recipes: %s\n", qPrintable(recipeName));
-    }
-    /*
-    QFile file("texts/recipes.txt");
-    if ( !file.open(QIODevice::ReadOnly | QIODevice::Text) ) {
-        fputs("No recipes file found.\n", stderr);
-        return;
-    }
-    while ( !file.atEnd() ) {
-        const QByteArray rec_arr = file.readLine();
-        if ( rec_arr.isEmpty() ) {
-            fputs("Recipes read error.\n", stderr);
-            break;
-        }
-        QTextStream in(rec_arr, QIODevice::ReadOnly | QIODevice::Text);
-        CraftRecipe * const recipe = new CraftRecipe;
-        for (;;) {
-            CraftItem * const item = new CraftItem;
-            item->num = 0;
-            in >> item->num >> item->kind >> item->sub;
-            if ( item->num ) {
-                recipe->append(item);
-            } else {
-                delete item;
-                break;
+    recipesList = new QList<CraftList *>[recipesNames.size()];
+    recipesSubsList = new int[recipesNames.size()];
+    for (auto & recipeName : recipesNames) { // file level
+        const quint8 sub = BlockManager::StringToSub(recipeName);
+        if ( sub == LAST_SUB ) {
+            continue;
+        } // else:
+        recipesSubsList[size] = sub;
+        QFile file(QString("recipes/" + recipeName));
+        int line = 0;
+        while ( not file.atEnd() ) { // line(recipe) level
+            QTextStream in(file.readLine(),
+                QIODevice::ReadOnly | QIODevice::Text);
+            ++line;
+            int   materials_number,   products_number;
+            in >> materials_number >> products_number;
+            if ( materials_number==0 || products_number==0 ) {
+                continue;
             }
+            CraftList * const recipe =
+                new CraftList(materials_number, products_number);
+            while ( materials_number-- ) {
+                if ( not recipe->LoadItem(in) ) {
+                    fprintf(stderr, "Recipe read error: %s::%d.\n",
+                        qPrintable(recipeName), line);
+                    continue;
+                }
+            }
+            recipe->Sort();
+            while ( products_number-- ) {
+                if ( not recipe->LoadItem(in) ) {
+                    fprintf(stderr, "Recipe read error: %s::%d.\n",
+                        qPrintable(recipeName), line);
+                    continue;
+                }
+            }
+            recipesList[size].append(recipe);
         }
-        recipes.append(recipe);
+        ++size;
     }
-*/}
+}
 
-CraftManager::~CraftManager() {/*
-    for (ushort j=0; j<recipes.size(); ++j) {
-        for (ushort i=0; i<recipes.at(j)->size(); ++i) {
-            delete recipes.at(j)->at(i);
-        }
-        delete recipes.at(j);
-    }
-*/}
+CraftManager::~CraftManager() {
+    delete [] recipesList;
+    delete [] recipesSubsList;
+}
 
 bool CraftManager::MiniCraft(CraftItem * /*item*/, CraftItem * /*result*/) const {/*
     CraftRecipe recipe;

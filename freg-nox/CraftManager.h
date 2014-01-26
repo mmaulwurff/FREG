@@ -20,30 +20,36 @@
 #ifndef CRAFTMANAGER_H
 #define CRAFTMANAGER_H
 
-#include "Inventory.h"
+class QTextStream;
 
-class CraftItem {
-public:
-    CraftItem(int kind, int sub, int num);
-
-    quint8 GetKind() const;
-    quint8 GetSub() const;
-    quint8 GetNum() const;
-private:
-    const quint8 kind;
-    const quint8 sub;
+struct CraftItem {
     const ushort num;
+    const quint16 id;
+
+    bool operator> (const CraftItem & item) const;
+    bool operator!=(const CraftItem & item) const;
 };
 
+/** \class CraftList CraftManager.h
+    * \brief This class represent craft recipe.
+    *
+    * It stores recipe like this:
+    * (QList::size()-products_number) materials (sorted)
+    * (products_number) products.
+    * Comparison (==) of CraftLists is done by materials. */
 class CraftList {
 public:
-     CraftList();
+     CraftList(quint8 materials_number, quint8 products_number);
     ~CraftList();
 
-    CraftList & operator<<(const CraftItem *);
+    void Sort();
+    bool LoadItem(QTextStream &);
+
+    CraftList & operator<<(CraftItem *);
+    bool operator!=(const CraftList &) const;
 private:
-    quint8 size;
-    const CraftItem * materials[INV_SIZE-2]; // array size: 
+    const quint8 productsNumber;
+    QList<CraftItem *> items;
 };
 
 class CraftManager {
@@ -54,7 +60,8 @@ public:
     bool MiniCraft(CraftItem * item,  CraftItem * result) const;
     bool     Craft(CraftList * items, CraftList * result, int sub) const;
 private:
-    CraftList ** recipesList;
+    int size;
+    QList<CraftList *> * recipesList;
     int * recipesSubsList; // list of substances of workbench 
 };
 

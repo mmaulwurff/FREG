@@ -20,27 +20,29 @@
 #ifndef BLOCKMANAGER_H
 #define BLOCKMANAGER_H
 
+#include "header.h"
+
 class Block;
 class QDataStream;
 
 /** \class BlockManager BlockManager.h
- * \brief This class is used for creating and deleting blocks,
- * also for loading them from file.
- *
- * Memory management, if any, should be implemented in this class.
- * At the current moment no special memory management is used.
- *
- * Normal blocks: blocks that are not special, e.g. usual stone, air, soil
- * are actually one block (for each substance).
- * One can receive a pointer to such block with
- * Block * NormalBlock(int sub).
- * Normal blocks are not needed to be deleted.
- * Use Block * NewBlock(int kind, int sub) to receive a pointer to
- * block that will be changed (damaged, inscribed, etc). */
+     * \brief This class is used for creating and deleting blocks,
+     * also for loading them from file.
+     *
+     * Memory management, if any, should be implemented in this class.
+     * At the current moment no special memory management is used.
+     *
+     * Normal blocks: blocks that are not special, e.g. usual stone, air, soil
+     * are actually one block (for each substance).
+     * One can receive a pointer to such block with
+     * Block * NormalBlock(int sub).
+     * Normal blocks are not needed to be deleted.
+     * Use Block * NewBlock(int kind, int sub) to receive a pointer to
+     * block that will be changed (damaged, inscribed, etc). */
 
 class BlockManager {
 public:
-    BlockManager();
+     BlockManager();
     ~BlockManager();
 
     /// Use this to receive a pointer to normal block.
@@ -59,14 +61,17 @@ public:
      *  Can delete block, use carefully. */
     Block * ReplaceWithNormal(Block * block) const;
 
+    /// If kind is unknown, returns "unknown_kind".
     static QString KindToString(quint8 kind);
+    /// If substance is unknown, returns "unknown_sub".
     static QString SubToString(quint8 sub);
+    /// If string is not convertible to kind, returns LAST_KIND.
     static quint8 StringToKind(const QString &);
+    /// If string is not convertible to substance, returns LAST_SUB.
     static quint8 StringToSub(const QString &);
 
     static quint16 MakeId(quint8 kind, quint8 sub);
     static quint8 KindFromId(quint16 id);
-
 private:
     Block * normals[LAST_SUB];
     static const QString kinds[LAST_KIND];

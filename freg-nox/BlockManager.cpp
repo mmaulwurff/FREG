@@ -182,13 +182,13 @@ void BlockManager::DeleteBlock(Block * const block) const {
 }
 
 QString BlockManager::KindToString(const quint8 kind) {
-    return ( kind<LAST_KIND ) ?
-        kinds[kind] : "unknown kind";
+    return ( kind < LAST_KIND ) ?
+        kinds[kind] : "unknown_kind";
 }
 
 QString BlockManager::SubToString(const quint8 sub) {
-    return ( sub<LAST_SUB ) ?
-        subs[sub] : "unknown sub";
+    return ( sub < LAST_SUB ) ?
+        subs[sub] : "unknown_sub";
 }
 
 quint8 BlockManager::StringToKind(const QString & str) {
