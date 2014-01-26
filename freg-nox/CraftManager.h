@@ -44,9 +44,12 @@ public:
 
     void Sort();
     bool LoadItem(QTextStream &);
+    int  GetSize() const;
+    int  GetProductsNumber() const;
+    CraftItem * GetItem(int item_position) const;
 
     CraftList & operator<<(CraftItem *);
-    bool operator!=(const CraftList &) const;
+    bool        operator==(const CraftList &) const;
 private:
     const quint8 productsNumber;
     QList<CraftItem *> items;
@@ -57,8 +60,8 @@ public:
      CraftManager();
     ~CraftManager();
 
-    bool MiniCraft(CraftItem * item,  CraftItem * result) const;
-    bool     Craft(CraftList * items, CraftList * result, int sub) const;
+    CraftItem * MiniCraft(ushort num, quint16 id) const;
+    CraftList * Craft(const CraftList * items, int sub) const;
 private:
     int size;
     QList<CraftList *> * recipesList;

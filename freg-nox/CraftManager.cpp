@@ -57,16 +57,16 @@ CraftList & CraftList::operator<<(CraftItem * const new_item) {
     return *this;
 }
 
-bool CraftList::CraftList::operator!=(const CraftList & compared) const {
+bool CraftList::CraftList::operator==(const CraftList & compared) const {
     if ( items.size() != compared.items.size() ) {
-        return true;
+        return false;
     } // else:
     for (int i=0; i<items.size(); ++i) {
         if ( *items.at(i) != *compared.items.at(i) ) {
-            return  true;
+            return  false;
         }
     }
-    return false;
+    return true;
 }
 
 void CraftList::Sort() { qSort(items); }
@@ -88,6 +88,10 @@ bool CraftList::LoadItem(QTextStream & stream) {
     return true;
 }
 
+int CraftList::GetSize() const { return items.size(); }
+int CraftList::GetProductsNumber() const { return productsNumber; }
+CraftItem * CraftList::GetItem(const int i) const { return items.at(i); }
+
 // CraftManager section
 CraftManager::CraftManager() : size(0) {
     const QStringList recipesNames = QDir("recipes").entryList();
@@ -103,6 +107,7 @@ CraftManager::CraftManager() : size(0) {
         } // else:
         recipesSubsList[size] = sub;
         QFile file(QString("recipes/" + recipeName));
+        file.open(QIODevice::ReadOnly | QIODevice::Text);
         int line = 0;
         while ( not file.atEnd() ) { // line(recipe) level
             QTextStream in(file.readLine(),
@@ -115,21 +120,32 @@ CraftManager::CraftManager() : size(0) {
             }
             CraftList * const recipe =
                 new CraftList(materials_number, products_number);
+            bool ok = true;
             while ( materials_number-- ) {
                 if ( not recipe->LoadItem(in) ) {
                     fprintf(stderr, "Recipe read error: %s::%d.\n",
                         qPrintable(recipeName), line);
-                    continue;
+                    ok = false;
+                    break;
                 }
             }
+            if ( not ok ) {
+                delete recipe;
+                continue;
+            } // else:
             recipe->Sort();
             while ( products_number-- ) {
                 if ( not recipe->LoadItem(in) ) {
                     fprintf(stderr, "Recipe read error: %s::%d.\n",
                         qPrintable(recipeName), line);
-                    continue;
+                    ok = false;
+                    break;
                 }
             }
+            if ( not ok ) {
+                delete recipe;
+                continue;
+            } // else:
             recipesList[size].append(recipe);
         }
         ++size;
@@ -137,34 +153,39 @@ CraftManager::CraftManager() : size(0) {
 }
 
 CraftManager::~CraftManager() {
+    for (int i=0; i<size; ++i) {
+        for (int j=0; j<recipesList[i].size(); ++j) {
+            delete recipesList[i].at(j);
+        }
+    }
     delete [] recipesList;
     delete [] recipesSubsList;
 }
 
-bool CraftManager::MiniCraft(CraftItem * /*item*/, CraftItem * /*result*/) const {/*
-    CraftRecipe recipe;
-    recipe.append(&item);
-    return Craft(recipe, result);*/
-    return false;
+CraftItem * CraftManager::MiniCraft(const ushort num, const quint16 id) const {
+    CraftList recipe(1, 1);
+    recipe << new CraftItem({num, id});
+    const CraftList * const result = Craft(&recipe, DIFFERENT);
+    return result ?
+        result->GetItem(0) : 0;
 }
 
-bool CraftManager::Craft(CraftList * /*recipe*/, CraftList * /*result*/, const int /*sub*/) const {/*
-    const ushort size = recipe.size();
-    for (ushort i=0; i<recipes.size(); ++i) {
-        if ( recipes.at(i)->size() != size+1 ) {
-            continue;
+CraftList * CraftManager::Craft(const CraftList * const recipe, const int sub)
+const {
+    // find needed recipes list
+    int point = -1;
+    while ( recipesSubsList[++point] != sub );
+    // find recipe and copy products from it
+    for (int i=0; i<recipesList[point].size(); ++i) {
+        const CraftList & tried = *recipesList[point].at(i);
+        if ( tried == *recipe ) {
+            int size = tried.GetProductsNumber();
+            CraftList * result = new CraftList(size, 0);
+            for (; size; --size) {
+                *result << new CraftItem(*tried.GetItem(tried.GetSize()-size));
+            }
+            return result;
         }
-        ushort j = 0;
-        for ( ; j < size
-                && recipes.at(i)->at(j)->num  == recipe.at(j)->num
-                && recipes.at(i)->at(j)->kind == recipe.at(j)->kind
-                && recipes.at(i)->at(j)->sub  == recipe.at(j)->sub; ++j);
-        if ( j == size ) {
-            result.num  = recipes.at(i)->at(j)->num;
-            result.kind = recipes.at(i)->at(j)->kind;
-            result.sub  = recipes.at(i)->at(j)->sub;
-            return true;
-        }
-    }*/
-    return false;
+    }
+    return 0; // suitable recipe not found
 }
