@@ -178,6 +178,14 @@ CraftItem * CraftManager::MiniCraft(const ushort num, const quint16 id) const {
 
 CraftList * CraftManager::Craft(const CraftList * const recipe, const int sub)
 const {
+    CraftList * ret;
+    return ( sub==DIFFERENT || not (ret=CraftSub(recipe, sub)) ) ?
+        CraftSub(recipe, DIFFERENT) : ret;
+}
+
+CraftList * CraftManager::CraftSub(const CraftList * const recipe,
+        const int sub)
+const {
     // find needed recipes list
     int point = -1;
     while ( recipesSubsList[++point] != sub );

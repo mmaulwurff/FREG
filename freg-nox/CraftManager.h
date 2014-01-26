@@ -63,6 +63,7 @@ public:
     CraftItem * MiniCraft(ushort num, quint16 id) const;
     CraftList * Craft(const CraftList * items, int sub) const;
 private:
+    CraftList * CraftSub(const CraftList * items, int sub) const;
     int size;
     QList<CraftList *> * recipesList;
     int * recipesSubsList; // list of substances of workbench 
