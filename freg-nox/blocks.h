@@ -201,10 +201,10 @@ protected:
 }; // class Rabbit
 
 class Workbench : public Chest {
-    static const ushort WORKBENCH_SIZE = 10;
-
-    void Craft();
 public:
+    Workbench(int sub, quint16 id);
+    Workbench(QDataStream & str, int sub, quint16 id);
+
     quint8 Kind() const;
     bool Drop(ushort src, ushort dest, ushort num, Inventory * inv);
     bool Get(Block * block, ushort start = 0);
@@ -212,9 +212,10 @@ public:
     void ReceiveSignal(const QString &);
     ushort Start() const;
     QString FullName() const;
+private:
+    void Craft();
 
-    Workbench(int sub, quint16 id);
-    Workbench(QDataStream & str, int sub, quint16 id);
+    static const ushort WORKBENCH_SIZE = 10;
 }; // class Workbench
 
 class Door : public Active {

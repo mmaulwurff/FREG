@@ -993,27 +993,37 @@
     {}
 // Workbench::
     void Workbench::Craft() {
-        /*while ( Number(0) ) { // remove previous product
-            Block * const to_pull = ShowBlock(0);
-            Pull(0);
-            block_manager.DeleteBlock(to_pull);
+        for (int i=0; i<Start(); ++i) { // remove previous products
+            while ( Number(i) ) {
+                Block * const to_pull = ShowBlock(i);
+                Pull(i);
+                block_manager.DeleteBlock(to_pull);
+            }
         }
-        craft_recipe recipe;
-        for (ushort i=Start(); i<Size(); ++i) {
+        int materials_number = 0;
+        for (int i=Start(); i<Size(); ++i) {
             if ( Number(i) ) {
-                recipe.append(
-                    new CraftItem({Number(i), GetInvKind(i), GetInvSub(i)}) );
+                ++materials_number;
             }
         }
-        CraftItem result;
-        if ( craft_manager.Craft(recipe, result) ) {
-            for (ushort i=0; i<result.num; ++i) {
-                GetExact(block_manager.NewBlock(result.kind, result.sub), 0);
+        CraftList list(materials_number, 0);
+        for (int i=Start(); i<Size(); ++i) {
+            if ( Number(i) ) {
+                list << new CraftItem({Number(i), ShowBlock(i)->GetId()});
             }
         }
-        for (ushort i=0; i<recipe.size(); ++i) {
-            delete recipe.at(i);
-        }*/
+        CraftList * products = craft_manager.Craft(&list, Sub());
+        if ( products ) {
+            for (int i=0; i<products->GetSize(); ++i) {
+                for (int n=0; n<products->GetItem(i)->num; ++n) {
+                    quint16 id = products->GetItem(i)->id;
+                    GetExact(block_manager.NewBlock(
+                        block_manager.KindFromId(id),
+                        block_manager. SubFromId(id)), i);
+                }
+            }
+            delete products;
+        }
     }
 
     bool Workbench::Drop(const ushort src, const ushort dest,
@@ -1025,33 +1035,26 @@
                 || !Number(src) )
         {
             return false;
-        }
-        if ( src == 0 ) {
-            while ( Number(0) ) {
-                if ( !inv_to->Get(ShowBlock(0)) ) {
-                    return false;
+        } // else:
+        for (ushort i=0; i<num; ++i) {
+            if ( !inv_to->Get(ShowBlock(src), dest) ) {
+                return false;
+            } // else:
+            Pull(src);
+            if ( src < Start() ) {
+                // remove materials:
+                for (ushort i=Start(); i<Size(); ++i) {
+                    while ( Number(i) ) {
+                        Block * const to_pull = ShowBlock(i);
+                        Pull(i);
+                        block_manager.DeleteBlock(to_pull);
+                    }
                 }
-                Pull(0);
-            }
-            for (ushort i=Start(); i<Size(); ++i) {
-                while ( Number(i) ) {
-                    Block * const to_pull = ShowBlock(i);
-                    Pull(i);
-                    block_manager.DeleteBlock(to_pull);
-                }
-            }
-            return true;
-        } else {
-            bool ok_flag = false;
-            for (ushort i=0; i<num; ++i) {
-                if ( inv_to->Get(ShowBlock(src), dest) ) {
-                    ok_flag = true;
-                }
-                Pull(src);
+            } else {
                 Craft();
             }
-            return ok_flag;
         }
+        return true;
     }
 
     QString Workbench::FullName() const {
@@ -1093,9 +1096,7 @@
     Workbench::Workbench(const int sub, const quint16 id) :
             Chest(sub, id, WORKBENCH_SIZE)
     {}
-    Workbench::Workbench(QDataStream & str, const int sub,
-            const quint16 id)
-        :
+    Workbench::Workbench(QDataStream & str, const int sub, const quint16 id) :
             Chest(str, sub, id, WORKBENCH_SIZE)
     {}
 // Door::
