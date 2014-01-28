@@ -323,6 +323,7 @@ void Screen::ControlPlayer(const int ch) {
     case 'E': SetActionMode(ACTION_EAT);      break;
     case 'F': SetActionMode(ACTION_TAKEOFF);  break;
     case 'I': SetActionMode(ACTION_INSCRIBE); break;
+    case 'G':
     case 'O': SetActionMode(ACTION_OBTAIN);   break;
     case 'U': SetActionMode(ACTION_USE);      break;
     case 'W': SetActionMode(ACTION_WIELD);    break;
