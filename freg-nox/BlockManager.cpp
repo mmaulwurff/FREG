@@ -18,7 +18,6 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include <QDataStream>
-#include "header.h"
 #include "blocks.h"
 #include "Dwarf.h"
 #include "BlockManager.h"

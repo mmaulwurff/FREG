@@ -18,10 +18,8 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include <QFile>
-#include <QString>
 #include <qmath.h>
 #include <QProcess>
-#include <QStringList>
 #include "worldmap.h"
 #include "header.h"
 

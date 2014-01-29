@@ -20,12 +20,11 @@
 /**\file screen.cpp
  * \brief This file is related to curses screen for freg. */
 
-#include <QString>
 #include <QTimer>
 #include <QSettings>
 #include <QDir>
 #include <QMutex>
-#include <QTextStream>
+#include <QLocale>
 #include "screen.h"
 #include "world.h"
 #include "Block.h"
@@ -842,7 +841,8 @@ bool Screen::PrintFile(WINDOW * const window, QString const & file_name) {
     fileToShow = new QFile(file_name);
     if ( fileToShow->open(QIODevice::ReadOnly | QIODevice::Text) ) {
         werase(window);
-        waddstr(window, qPrintable(QTextStream(fileToShow).readAll()));
+        waddstr(window, qPrintable(
+            QString::fromLocal8Bit(fileToShow->readAll().constData())) );
         wrefresh(window);
         return true;
     } else {

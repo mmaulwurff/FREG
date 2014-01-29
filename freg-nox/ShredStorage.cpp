@@ -1,5 +1,5 @@
     /* freg, Free-Roaming Elementary Game with open and interactive world
-    *  Copyright (C) 2012-2013 Alexander 'mmaulwurff' Kromm
+    *  Copyright (C) 2012-2014 Alexander 'mmaulwurff' Kromm
     *  mmaulwurff@gmail.com
     *
     * This file is part of FREG.
@@ -15,10 +15,8 @@
     * GNU General Public License for more details.
     *
     * You should have received a copy of the GNU General Public License
-    * along with FREG. If not, see <http://www.gnu.org/licenses/>.
-    */
+    * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include <QByteArray>
 #include <QFile>
 #include "ShredStorage.h"
 #include "world.h"

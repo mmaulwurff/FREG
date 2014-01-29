@@ -28,7 +28,6 @@
     #include <QApplication>
 #endif
 
-#include <QString>
 #include <QSettings>
 #include <QDir>
 #include <QTime>

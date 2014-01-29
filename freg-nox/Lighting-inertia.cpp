@@ -18,15 +18,15 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 /**\file Lighting-inertia.cpp
- * \brief This file provides simple (also mad) lighting for freg.
- *
- * It has light inertia, meaning that block, enlightened by outer
- * source, will remain enlightened when light source is removed.
- * Light is divided to sunlight and other light. Sunlight is
- * changing over the day.
- * LightMap is uchar:
- * & 0xF0 bits are for non-sun light,
- * & 0x0F bits for sun. */
+    * \brief This file provides simple (also mad) lighting for freg.
+    *
+    * It has light inertia, meaning that block, enlightened by outer
+    * source, will remain enlightened when light source is removed.
+    * Light is divided to sunlight and other light. Sunlight is
+    * changing over the day.
+    * LightMap is uchar:
+    * & 0xF0 bits are for non-sun light,
+    * & 0x0F bits for sun. */
 
 #include "world.h"
 #include "Shred.h"

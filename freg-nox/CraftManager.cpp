@@ -18,13 +18,9 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include <QDir>
-#include <QFile>
-#include <QByteArray>
 #include <QTextStream>
-#include <QStringList>
 #include "BlockManager.h"
 #include "CraftManager.h"
-#include "header.h"
 
 CraftManager craft_manager;
 
@@ -190,12 +186,12 @@ const {
 CraftList * CraftManager::CraftSub(const CraftList * const recipe,
         const int sub)
 const {
-    if ( size == 0 ) {
+    // find needed recipes list
+    int point = 0;
+    for ( ; recipesSubsList[point] != sub && point < size; ++point);
+    if ( point == size ) { //recipes list for workbench sub not found
         return 0;
     } // else:
-    // find needed recipes list
-    int point = -1;
-    while ( recipesSubsList[++point] != sub );
     // find recipe and copy products from it
     for (int i=0; i<recipesList[point].size(); ++i) {
         const CraftList & tried = *recipesList[point].at(i);

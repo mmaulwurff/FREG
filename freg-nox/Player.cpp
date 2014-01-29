@@ -17,12 +17,9 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include <QFile>
 #include <QTextStream>
-#include <QString>
 #include <QSettings>
 #include <QDir>
-#include <QWriteLocker>
 #include <QReadLocker>
 #include "Dwarf.h"
 #include "Player.h"
