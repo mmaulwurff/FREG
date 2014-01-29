@@ -647,6 +647,7 @@
                     BlockManager:: SubFromId(crafted->id) ), num);
             }
             ReceiveSignal(QObject::tr("Craft successful."));
+            delete crafted;
             return true;
         } else {
             ReceiveSignal(QObject::tr("You don't know how to craft this."));

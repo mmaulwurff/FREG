@@ -95,10 +95,14 @@ CraftItem * CraftList::GetItem(const int i) const { return items.at(i); }
 
 // CraftManager section
 CraftManager::CraftManager() : size(0) {
+    QDir::current().mkdir("recipes");
     const QStringList recipesNames = QDir("recipes").entryList();
     if ( recipesNames.isEmpty() ) {
+        recipesList = 0;
+        recipesSubsList = 0;
         return;
     } // else:
+    // array sizes are a bit more than needed, this is ok
     recipesList = new QList<CraftList *>[recipesNames.size()];
     recipesSubsList = new int[recipesNames.size()];
     for (auto & recipeName : recipesNames) { // file level
@@ -186,6 +190,9 @@ const {
 CraftList * CraftManager::CraftSub(const CraftList * const recipe,
         const int sub)
 const {
+    if ( size == 0 ) {
+        return 0;
+    } // else:
     // find needed recipes list
     int point = -1;
     while ( recipesSubsList[++point] != sub );
