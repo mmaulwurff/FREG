@@ -122,7 +122,7 @@ void World::Get(Block * const block_to,
             if ( inv_to && inv_to->Get(tried, dest) ) {
                 SetBlock(Normal(AIR), x_from, y_from, z_from);
             } else {
-                DeleteBlock(tried);
+                delete tried;
             }
         }
     } else if ( inv->Access() ) {

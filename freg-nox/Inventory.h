@@ -58,7 +58,9 @@ public:
     bool MiniCraft(ushort num);
     /// Returns true on success.
     bool InscribeInv(ushort num, const QString & str);
+    /// Returns AIR if slot number i is empty.
     int  GetInvSub(ushort i) const;
+    /// Returns BLOCK if slot number i is empty.
     int  GetInvKind(ushort i) const;
     ushort Size() const;
     ushort GetInvWeight(ushort i) const;

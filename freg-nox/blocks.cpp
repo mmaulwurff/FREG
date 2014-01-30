@@ -501,18 +501,27 @@
         }
     }
 
-    bool Inventory::Get(Block * const block, ushort start) {
-        if ( block ) {
-            start = qMax(Start(), start);
-            for (ushort i=start; i<Size(); ++i) {
-                if ( GetExact(block, i) ) {
-                    return true;
+    bool Inventory::Get(Block * const block, const ushort start) {
+        if ( not block ) {
+            return true;
+        } // else:
+        if ( block->Kind() == LIQUID ) {
+            for (int i=qMax(Start(), start); i<Size(); ++i) {
+                if ( ShowBlock(i) ) {
+                    Inventory * const inner = ShowBlock(i)->HasInventory();
+                    if ( inner && inner->Get(block) ) {
+                        return true;
+                    }
                 }
             }
             return false;
-        } else {
-            return true;
+        } // else:
+        for (ushort i=qMax(Start(), start); i<Size(); ++i) {
+            if ( GetExact(block, i) ) {
+                return true;
+            }
         }
+        return false;
     }
 
     bool Inventory::GetExact(Block * const block, const ushort num) {
