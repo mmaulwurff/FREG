@@ -617,7 +617,7 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
     wstandend(window);
     mvwaddch(window, player->Y(), player->X()*2+3, '!');
     box(window, 0, 0);
-    if ( player->IfPlayerExists() && dir!=UP ) {
+    if ( player->IfPlayerExists() && dir!=UP && dir!=DOWN ) {
         const Block * const block = w->GetBlock(player->X(), player->Y(),
             player->Z());
         static const QString arrow_left (QChar(0x2190));
