@@ -48,30 +48,30 @@ const ushort MAX_BREATH = 60;
 const uchar MAX_LIGHT_RADIUS = 15;
 
 enum shred_type {
-    SHRED_NULLMOUNTAIN = '#',
-    SHRED_PLAIN = '.',
+    SHRED_PLAIN     = '.',
     SHRED_TESTSHRED = 't',
-    SHRED_PYRAMID = 'p',
-    SHRED_HILL = '+',
-    SHRED_DESERT = ':',
-    SHRED_WATER = '~',
-    SHRED_FOREST = '%',
-    SHRED_MOUNTAIN = '^',
-    SHRED_EMPTY = '_',
-    SHRED_NORMAL_UNDERGROUND = '-',
-    SHRED_CHAOS = '!'
+    SHRED_PYRAMID   = 'p',
+    SHRED_HILL      = '+',
+    SHRED_DESERT    = ':',
+    SHRED_WATER     = '~',
+    SHRED_FOREST    = '%',
+    SHRED_MOUNTAIN  = '^',
+    SHRED_EMPTY     = '_',
+    SHRED_CHAOS     = '!',
+    SHRED_NULLMOUNTAIN = '#',
+    SHRED_NORMAL_UNDERGROUND = '-'
 };
 
 const char DEFAULT_SHRED = SHRED_PLAIN;
 const char OUT_BORDER_SHRED = SHRED_WATER;
 
 enum dirs {
-    UP,    ///< 0
-    DOWN,  ///< 1
-    NORTH, ///< 2
-    SOUTH, ///< 3
-    EAST,  ///< 4
-    WEST,  ///< 5
+    UP,     ///< 0
+    DOWN,   ///< 1
+    NORTH,  ///< 2
+    SOUTH,  ///< 3
+    EAST,   ///< 4
+    WEST,   ///< 5
     NOWHERE ///< 6
 }; // enum dirs
 
@@ -86,16 +86,16 @@ enum push_reaction {
 enum times_of_day { MORNING, NOON, EVENING, NIGHT };
 
 enum damage_kinds {
-    MINE,    ///< 0
-    DIG,     ///< 1
-    CUT,     ///< 2
-    THRUST,  ///< 3
-    CRUSH,   ///< 4
-    HEAT,    ///< 5
-    FREEZE,  ///< 6
-    MELT,    ///< 7
-    ELECTRO, ///< 8
-    HUNGER,  ///< 9
+    MINE,    ///<  0
+    DIG,     ///<  1
+    CUT,     ///<  2
+    THRUST,  ///<  3
+    CRUSH,   ///<  4
+    HEAT,    ///<  5
+    FREEZE,  ///<  6
+    MELT,    ///<  7
+    ELECTRO, ///<  8
+    HUNGER,  ///<  9
     BREATH,  ///< 10
     BITE,    ///< 11
     TIME,    ///< 12
@@ -108,16 +108,16 @@ enum kinds {
     // do not change order, or rewrite craft recipes.
     // add new kinds to bottom.
     // changind kind codes will break file compatibility.
-    BLOCK,       ///< 0
-    BELL,        ///< 1
-    CHEST,       ///< 2
-    PILE,        ///< 3
-    DWARF,       ///< 4
-    ANIMAL,      ///< 5
-    PICK,        ///< 6
-    TELEGRAPH,   ///< 7
-    LIQUID,      ///< 8
-    GRASS,       ///< 9
+    BLOCK,       ///<  0
+    BELL,        ///<  1
+    CHEST,       ///<  2
+    PILE,        ///<  3
+    DWARF,       ///<  4
+    ANIMAL,      ///<  5
+    PICK,        ///<  6
+    TELEGRAPH,   ///<  7
+    LIQUID,      ///<  8
+    GRASS,       ///<  9
     BUSH,        ///< 10
     RABBIT,      ///< 11
     ACTIVE,      ///< 12
@@ -180,7 +180,7 @@ enum transparency {
     BLOCK_OPAQUE,
     BLOCK_TRANSPARENT,
     INVISIBLE,
-    NONSTANDARD=6,
+    NONSTANDARD = 6,
     UNDEF // temporary, doesn't appear in world.
 }; // enum transparency
 
