@@ -105,19 +105,18 @@ enum damage_kinds {
 
 /// Kinds of atom
 enum kinds {
-    // do not change order, or rewrite craft recipes.
-    // add new kinds to bottom.
+    // add new kinds to bottom (before LAST_KIND).
     // changind kind codes will break file compatibility.
-    BLOCK,       ///< 0
-    BELL,        ///< 1
-    CHEST,       ///< 2
-    PILE,        ///< 3
-    DWARF,       ///< 4
-    ANIMAL,      ///< 5
-    PICK,        ///< 6
-    TELEGRAPH,   ///< 7
-    LIQUID,      ///< 8
-    GRASS,       ///< 9
+    BLOCK,       ///<  0
+    BELL,        ///<  1
+    CHEST,       ///<  2
+    PILE,        ///<  3
+    DWARF,       ///<  4
+    ANIMAL,      ///<  5
+    PICK,        ///<  6
+    TELEGRAPH,   ///<  7
+    LIQUID,      ///<  8
+    GRASS,       ///<  9
     BUSH,        ///< 10
     RABBIT,      ///< 11
     ACTIVE,      ///< 12
@@ -132,6 +131,7 @@ enum kinds {
     TEXT,        ///< 21
     MAP,         ///< 22
     PREDATOR,    ///< 23
+    BUCKET,      ///< 24
     /// Nothing is LAST_KIND.
     LAST_KIND // keep it last in this list.
 }; // enum kinds

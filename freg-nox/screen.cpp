@@ -150,6 +150,7 @@ char Screen::CharName(const int kind, const int sub) const {
     case CHEST:
     case PILE:   return '&';
     case BELL:   return 'b';
+    case BUCKET: return 'u';
     case PREDATOR: return '!';
     case WORKBENCH: return '*';
     case TELEGRAPH: return 't';

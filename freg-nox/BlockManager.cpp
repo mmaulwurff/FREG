@@ -21,6 +21,7 @@
 #include "blocks.h"
 #include "Dwarf.h"
 #include "BlockManager.h"
+#include "blocks/Bucket.h"
 
 const QString BlockManager::kinds[LAST_KIND] = {
     "block",
@@ -45,7 +46,9 @@ const QString BlockManager::kinds[LAST_KIND] = {
     "locked door",
     "creator",
     "text",
-    "map"
+    "map",
+    "predator",
+    "bucket"
 };
 
 const QString BlockManager::subs[LAST_SUB] = {
@@ -69,7 +72,8 @@ const QString BlockManager::subs[LAST_SUB] = {
     "rose",
     "clay",
     "air",
-    "paper"
+    "paper",
+    "gold"
 };
 
 BlockManager block_manager;
@@ -111,6 +115,7 @@ Block * BlockManager::NewBlock(const int kind, int sub) const {
     case CLOCK:  return New<Clock >(sub, id);
     case TEXT:   return New<Text  >(sub, id);
     case MAP:    return New<Map   >(sub, id);
+    case BUCKET: return New<Bucket>(sub, id);
     case CREATOR: return New<Creator>(sub, id);
     case PREDATOR: return New<Predator>(sub, id);
     case WORKBENCH: return New<Workbench>(sub, id);
@@ -140,6 +145,7 @@ const {
     case LIQUID: return New<Liquid>(str, sub, id);
     case TEXT:   return New<Text  >(str, sub, id);
     case MAP:    return New<Map   >(str, sub, id);
+    case BUCKET: return New<Bucket>(str, sub, id);
     case LOCKED_DOOR:
     case DOOR:   return New<Door  >(str, sub, id);
     case CLOCK:  return New<Clock >(str, sub, id);

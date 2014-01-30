@@ -115,8 +115,17 @@ void World::Get(Block * const block_to,
 {
     Block * const block_from = GetBlock(x_from, y_from, z_from);
     Inventory * const inv = block_from->HasInventory();
-    if ( inv && inv->Access() )
-    {
+    if ( not inv ) { // for vessel
+        if ( block_from->Kind() == LIQUID ) {
+            Block * const tried = NewBlock(LIQUID, block_from->Sub());
+            Inventory * const inv_to = block_to->HasInventory();
+            if ( inv_to && inv_to->Get(tried, dest) ) {
+                SetBlock(Normal(AIR), x_from, y_from, z_from);
+            } else {
+                DeleteBlock(tried);
+            }
+        }
+    } else if ( inv->Access() ) {
         Exchange(block_from, block_to, src, dest, num);
     }
 }
