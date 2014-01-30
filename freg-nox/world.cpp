@@ -121,6 +121,11 @@ void World::Get(Block * const block_to,
             Inventory * const inv_to = block_to->HasInventory();
             if ( inv_to && inv_to->Get(tried, dest) ) {
                 SetBlock(Normal(AIR), x_from, y_from, z_from);
+                GetShred(x_from, y_from)->
+                    AddFalling(
+                        Shred::CoordInShred(x_from),
+                        Shred::CoordInShred(y_from), z_from+1);
+                emit Updated(x_from, y_from, z_from);
             } else {
                 delete tried;
             }
@@ -641,6 +646,19 @@ void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
         Inventory * const inv = temp->HasInventory();
         Inventory * const new_pile_inv = new_block->HasInventory();
         if ( inv ) {
+            for (int i=0; i<inv->Size(); ++i) {
+                if ( inv->ShowBlock(i)->Kind() == LIQUID ) {
+                    for (int n=0; inv->Number(i); ++n) {
+                        if ( Build(inv->ShowBlock(i),
+                                x, y, z+i*(MAX_STACK_SIZE+1)+1+n) )
+                        {
+                            inv->Pull(i);
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
             new_pile_inv->GetAll(inv);
         }
         if ( dropped && PILE!=dropped->Kind() &&
