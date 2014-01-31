@@ -21,8 +21,8 @@
 #include "Shred.h"
 #include "world.h"
 #include "BlockManager.h"
-#include "Active.h"
-#include "Inventory.h"
+#include "blocks/Active.h"
+#include "blocks/Inventory.h"
 
 // Qt version in Debian stable that time.
 const quint8 DATASTREAM_VERSION = QDataStream::Qt_4_6;

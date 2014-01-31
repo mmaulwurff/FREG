@@ -36,12 +36,12 @@ OBJECTS_DIR = obj
 # Input
 HEADERS += \
     BlockManager.h \
-    blocks.h \
-    Block.h \
-    Active.h \
-    Inventory.h \
-    Animal.h \
-    Dwarf.h \
+    blocks/blocks.h \
+    blocks/Block.h \
+    blocks/Active.h \
+    blocks/Inventory.h \
+    blocks/Animal.h \
+    blocks/Dwarf.h \
     CraftManager.h \
     DeferredAction.h \
     header.h \
@@ -56,9 +56,9 @@ HEADERS += \
     blocks/Bucket.h
 SOURCES += \
     BlockManager.cpp \
-    blocks.cpp \
-    Active.cpp \
-    Dwarf.cpp \
+    blocks/blocks.cpp \
+    blocks/Active.cpp \
+    blocks/Dwarf.cpp \
     CraftManager.cpp \
     DeferredAction.cpp \
     Lighting-inertia.cpp \

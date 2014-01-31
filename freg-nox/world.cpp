@@ -22,8 +22,8 @@
 #include <QSettings>
 #include <QWriteLocker>
 #include <memory>
-#include "Active.h"
-#include "Inventory.h"
+#include "blocks/Active.h"
+#include "blocks/Inventory.h"
 #include "Shred.h"
 #include "world.h"
 #include "worldmap.h"

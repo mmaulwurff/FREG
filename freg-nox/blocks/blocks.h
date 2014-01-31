@@ -20,10 +20,10 @@
 #ifndef BLOCKS_H
 #define BLOCKS_H
 
-#include "Block.h"
+#include "blocks/Block.h"
 #include "Inventory.h"
-#include "Active.h"
-#include "Animal.h"
+#include "blocks/Active.h"
+#include "blocks/Animal.h"
 
 // weights in measures - mz (mezuro)
     const ushort WEIGHT_NULLSTONE = 1000;

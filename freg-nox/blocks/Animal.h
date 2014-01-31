@@ -20,7 +20,7 @@
 #ifndef ANIMAL_H
 #define ANIMAL_H
 
-#include "Active.h"
+#include "blocks/Active.h"
 
 class Animal : public Active {
     Q_OBJECT

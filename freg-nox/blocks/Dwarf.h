@@ -20,7 +20,7 @@
 #ifndef DWARF_H
 #define DWARF_H
 
-#include "Animal.h"
+#include "blocks/Animal.h"
 #include "Inventory.h"
 
 class Dwarf : public Animal, public Inventory {

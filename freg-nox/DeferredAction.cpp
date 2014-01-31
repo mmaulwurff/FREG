@@ -18,8 +18,8 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "world.h"
-#include "Active.h"
-#include "Inventory.h"
+#include "blocks/Active.h"
+#include "blocks/Inventory.h"
 #include "DeferredAction.h"
 
 void DeferredAction::GhostMove() const {

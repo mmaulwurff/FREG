@@ -27,8 +27,8 @@
 #include <QLocale>
 #include "screen.h"
 #include "world.h"
-#include "Block.h"
-#include "Inventory.h"
+#include "blocks/Block.h"
+#include "blocks/Inventory.h"
 #include "Player.h"
 
 const char OBSCURE_BLOCK = ' ';

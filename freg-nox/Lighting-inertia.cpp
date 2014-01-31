@@ -30,8 +30,8 @@
 
 #include "world.h"
 #include "Shred.h"
-#include "Block.h"
-#include "Active.h"
+#include "blocks/Block.h"
+#include "blocks/Active.h"
 
 const uchar FIRE_LIGHT_FACTOR = 4;
 
