@@ -173,7 +173,8 @@ enum usage_types {
     USAGE_TYPE_NO,
     USAGE_TYPE_OPEN,
     USAGE_TYPE_READ,
-    USAGE_TYPE_READ_IN_INVENTORY
+    USAGE_TYPE_READ_IN_INVENTORY,
+    USAGE_TYPE_POUR
 }; // enum usage_types
 
 enum transparency {

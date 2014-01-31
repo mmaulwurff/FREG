@@ -16,7 +16,7 @@ int     Bucket::Sub()  const { return Block::Sub(); }
 Inventory * Bucket::HasInventory() { return Inventory::HasInventory(); }
 void    Bucket::Damage(ushort /*dmg*/, int /*dmg_kind*/) { durability = 0; }
 void    Bucket::ReceiveSignal(const QString & str) { Block::ReceiveSignal(str); }
-usage_types Bucket::Use(Block *) { return USAGE_TYPE_OPEN; }
+usage_types Bucket::Use(Block *) { return USAGE_TYPE_POUR; }
 
 QString Bucket::FullName() const {
     QString name;

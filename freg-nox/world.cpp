@@ -647,7 +647,8 @@ void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
         Inventory * const new_pile_inv = new_block->HasInventory();
         if ( inv ) {
             for (int i=0; i<inv->Size(); ++i) {
-                if ( inv->ShowBlock(i)->Kind() == LIQUID ) {
+                Block * const inner = inv->ShowBlock(i);
+                if ( inner && inner->Kind() == LIQUID ) {
                     for (int n=0; inv->Number(i); ++n) {
                         if ( Build(inv->ShowBlock(i),
                                 x, y, z+i*(MAX_STACK_SIZE+1)+1+n) )

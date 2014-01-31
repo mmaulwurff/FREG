@@ -27,7 +27,8 @@ enum deferred_actions {
     DEFERRED_JUMP,
     DEFERRED_BUILD,
     DEFERRED_DAMAGE,
-    DEFERRED_THROW
+    DEFERRED_THROW,
+    DEFERRED_POUR
 }; // enum deferred_actions
 
 class Block;
@@ -46,6 +47,7 @@ public:
     void SetDamage(ushort x_targ, ushort y_targ, ushort z_targ);
     void SetThrow(ushort x_targ, ushort y_targ, ushort z_targ,
             ushort src_slot, ushort dest_slot, ushort num);
+    void SetPour(ushort x_targ, ushort y_targ, ushort z_targ, ushort slot);
 
     World * GetWorld() const;
     int  GetActionType() const;
@@ -64,6 +66,7 @@ private:
     void Build();
     void Damage() const;
     void Throw() const;
-}; //class DeferredAction
+    void Pour() const;
+};
 
 #endif // DEFERRED_ACTION_H
