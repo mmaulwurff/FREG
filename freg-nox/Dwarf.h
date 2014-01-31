@@ -43,9 +43,9 @@ public:
     QString FullName() const;
 
     bool Access() const;
-    bool Inscribe(const QString & str);
+    bool Inscribe(const QString str);
     void MoveInside(ushort num_from, ushort num_to, ushort num);
-    void ReceiveSignal(const QString &);
+    void ReceiveSignal(const QString);
     uchar LightRadius() const;
     Block * DropAfterDamage() const;
     quint16 NutritionalValue(quint8 sub) const;

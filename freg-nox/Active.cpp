@@ -106,7 +106,7 @@ bool Active::Move(const int dir) {
     return overstep;
 }
 
-void Active::SendSignalAround(const QString & signal) const {
+void Active::SendSignalAround(const QString signal) const {
     World * const world = GetWorld();
     const Xy coords[] = {
         Xy( X()-1, Y()   ),
@@ -144,7 +144,7 @@ void Active::Damage(const ushort dmg, const int dmg_kind) {
     }
 }
 
-void Active::ReceiveSignal(const QString & str) { emit ReceivedText(str); }
+void Active::ReceiveSignal(const QString str) { emit ReceivedText(str); }
 
 void Active::ReloadToNorth() { y_self += SHRED_WIDTH; }
 void Active::ReloadToSouth() { y_self -= SHRED_WIDTH; }

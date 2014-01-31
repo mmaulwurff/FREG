@@ -46,7 +46,7 @@ public:
     /// Removes block from inventory. Does not delete block.
     virtual void Pull(ushort num);
     virtual void MoveInside(ushort num_from, ushort num_to, ushort num);
-    virtual void ReceiveSignal(const QString &) = 0;
+    virtual void ReceiveSignal(const QString) = 0;
     virtual ushort Start() const;
     virtual ushort Weight() const;
     virtual QString FullName() const = 0;
@@ -57,7 +57,7 @@ public:
     /// Returns true on success (something has been crafted).
     bool MiniCraft(ushort num);
     /// Returns true on success.
-    bool InscribeInv(ushort num, const QString & str);
+    bool InscribeInv(ushort num, const QString str);
     int  GetInvSub(ushort i) const;
     int  GetInvKind(ushort i) const;
     ushort Size() const;

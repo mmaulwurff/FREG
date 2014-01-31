@@ -67,7 +67,7 @@ void Dwarf::UpdateLightRadius() {
         qMax(left_rad, right_rad));
 }
 
-void Dwarf::ReceiveSignal(const QString & str) { Active::ReceiveSignal(str); }
+void Dwarf::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
 
 int Dwarf::DamageKind() const {
     return ( Number(GetActiveHand()) ) ?
@@ -132,7 +132,7 @@ void Dwarf::SaveAttributes(QDataStream & out) const {
     out << activeHand;
 }
 
-bool Dwarf::Inscribe(const QString &) {
+bool Dwarf::Inscribe(const QString) {
     SendSignalAround(tr("Don't touch me!"));
     return false;
 }

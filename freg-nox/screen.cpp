@@ -100,7 +100,7 @@ void Screen::UpdateAround(const ushort, const ushort, const ushort,
 
 void Screen::Move(const int) { updated = false; }
 
-QString Screen::PassString(QString & str) const {
+QString Screen::PassString(QString str) const {
     mvwaddch(commandWin, 0, 0, ':');
     static const ushort NOTE_LENGTH = 144;
     char temp_str[NOTE_LENGTH+1];
@@ -356,7 +356,7 @@ void Screen::ControlPlayer(const int ch) {
     mutex->unlock();
 } // void Screen::ControlPlayer(int ch)
 
-void Screen::ProcessCommand(QString & command) {
+void Screen::ProcessCommand(QString command) {
     if ( command.length()==1 && "."!=command ) {
         ControlPlayer(command.at(0).toAscii());
     } else if ( "warranty" == command ) {
@@ -859,7 +859,7 @@ void Screen::DisplayFile(QString path) {
             .arg(QDir::currentPath()).arg(path) );
 }
 
-void Screen::Notify(const QString & str) {
+void Screen::Notify(const QString str) {
     fputs(qPrintable(QString("%1 %2\n").arg(w->TimeOfDayStr()).arg(str)),
         notifyLog);
     if ( str == DING ) {

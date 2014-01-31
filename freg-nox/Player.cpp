@@ -362,7 +362,7 @@ void Player::TakeOff(const ushort num) {
     }
 }
 
-void Player::ProcessCommand(QString & command) {
+void Player::ProcessCommand(QString command) {
     if ( 0 == command.length() ) {
         return;
     } // else:
@@ -447,7 +447,7 @@ void Player::ProcessCommand(QString & command) {
     } else {
         emit Notify(tr("Don't know such command: \"%1\".").arg(command));
     }
-} // void Player::ProcessCommand(QString & command)
+} // void Player::ProcessCommand(QString command)
 
 bool Player::Visible(const ushort x_to, const ushort y_to, const ushort z_to)
 const {
@@ -532,8 +532,8 @@ void Player::SetPlayer(const ushort _x, const ushort _y, const ushort _z) {
         Qt::DirectConnection);
     connect(player, SIGNAL(Updated()), SIGNAL(Updated()),
         Qt::DirectConnection);
-    connect(player, SIGNAL(ReceivedText(const QString &)),
-        SIGNAL(Notify(const QString &)),
+    connect(player, SIGNAL(ReceivedText(const QString)),
+        SIGNAL(Notify(const QString)),
         Qt::DirectConnection);
 } // void Player::SetPlayer(ushort _x, ushort _y, ushort _z)
 

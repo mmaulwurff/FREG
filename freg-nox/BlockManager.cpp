@@ -185,13 +185,13 @@ QString BlockManager::SubToString(const quint8 sub) {
         subs[sub] : "unknown_sub";
 }
 
-quint8 BlockManager::StringToKind(const QString & str) {
+quint8 BlockManager::StringToKind(const QString str) {
     int i = 0;
     for ( ; i<LAST_KIND && kinds[i]!=str; ++i);
     return i;
 }
 
-quint8 BlockManager::StringToSub(const QString & str) {
+quint8 BlockManager::StringToSub(const QString str) {
     int i = 0;
     for ( ; i<LAST_SUB && subs[i]!=str; ++i);
     return i;

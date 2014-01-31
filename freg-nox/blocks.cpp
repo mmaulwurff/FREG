@@ -124,9 +124,9 @@
     int  Block::DamageKind() const { return CRUSH; }
     ushort Block::DamageLevel() const { return 1; }
     uchar Block::LightRadius() const { return 0; }
-    void Block::ReceiveSignal(const QString &) {}
+    void Block::ReceiveSignal(const QString) {}
 
-    bool Block::Inscribe(const QString & str) {
+    bool Block::Inscribe(const QString str) {
         if ( note ) {
             *note = str.left(MAX_NOTE_LENGTH);
         } else {
@@ -540,7 +540,7 @@
         }
     }
 
-    bool Inventory::InscribeInv(const ushort num, const QString & str) {
+    bool Inventory::InscribeInv(const ushort num, const QString str) {
         const int number=Number(num);
         if ( !number ) {
             ReceiveSignal(QObject::tr("Nothing here."));
@@ -689,10 +689,7 @@
     int Chest::Sub() const { return Block::Sub(); }
     Inventory * Chest::HasInventory() { return Inventory::HasInventory(); }
     usage_types Chest::Use(Block *) { return USAGE_TYPE_OPEN; }
-
-    void Chest::ReceiveSignal(const QString & str) {
-        Block::ReceiveSignal(str);
-    }
+    void Chest::ReceiveSignal(const QString str) { Block::ReceiveSignal(str); }
 
     QString Chest::FullName() const {
         switch ( Sub() ) {
@@ -756,9 +753,7 @@
     ushort Pile::Weight() const { return Inventory::Weight(); }
     Block * Pile::DropAfterDamage() const { return 0; }
 
-    void Pile::ReceiveSignal(const QString & str) {
-        Active::ReceiveSignal(str);
-    }
+    void Pile::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
 
     QString Pile::FullName() const {
         switch ( Sub() ) {
@@ -895,9 +890,7 @@
     usage_types Bush::Use(Block *) { return USAGE_TYPE_OPEN; }
     Inventory * Bush::HasInventory() { return Inventory::HasInventory(); }
 
-    void Bush::ReceiveSignal(const QString & str) {
-        Active::ReceiveSignal(str);
-    }
+    void Bush::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
 
     ushort Bush::Weight() const {
         return Inventory::Weight()+Block::Weight();
@@ -1069,7 +1062,7 @@
     quint8 Workbench::Kind() const { return WORKBENCH; }
     ushort Workbench::Start() const { return 2; }
 
-    void Workbench::ReceiveSignal(const QString & str) {
+    void Workbench::ReceiveSignal(const QString str) {
         Block::ReceiveSignal(str);
     }
 
@@ -1214,7 +1207,7 @@
         }
     }
 
-    bool Clock::Inscribe(const QString & str) {
+    bool Clock::Inscribe(const QString str) {
         Block::Inscribe(str);
         char c;
         QTextStream txt_stream(note);
@@ -1258,7 +1251,7 @@
         return Inventory::HasInventory();
     }
 
-    void Creator::ReceiveSignal(const QString & str) {
+    void Creator::ReceiveSignal(const QString str) {
         Active::ReceiveSignal(str);
     }
 
@@ -1289,7 +1282,7 @@
         }
     }
 
-    bool Text::Inscribe(const QString & str) {
+    bool Text::Inscribe(const QString str) {
         if ( '.'!=str.at(0) && !note ) {
             Block::Inscribe(str);
             return true;
@@ -1402,7 +1395,7 @@
         return USAGE_TYPE_NO;
     }
 
-    void Bell::ReceiveSignal(const QString & str) {
+    void Bell::ReceiveSignal(const QString str) {
         if ( DING != str ) {
             SendSignalAround(DING);
         }

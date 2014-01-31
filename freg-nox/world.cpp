@@ -786,7 +786,7 @@ void World::SetNumActiveShreds(const ushort num) {
     emit Notify(tr("Active shreds number is %1x%1.").arg(numActiveShreds));
 }
 
-World::World(const QString & world_name) :
+World::World(const QString world_name) :
         timeStep(0),
         worldName(world_name),
         rwLock(new QReadWriteLock()),
@@ -830,7 +830,7 @@ World::World(const QString & world_name) :
     puts(qPrintable(tr("Loading world...")));
     LoadAllShreds();
     emit UpdatedAll();
-} // World::World(const QString & world_name)
+} // World::World(const QString world_name)
 
 World::~World() { CleanAll(); }
 

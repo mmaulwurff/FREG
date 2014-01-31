@@ -66,9 +66,9 @@ public:
     /// If substance is unknown, returns "unknown_sub".
     static QString SubToString(quint8 sub);
     /// If string is not convertible to kind, returns LAST_KIND.
-    static quint8 StringToKind(const QString &);
+    static quint8 StringToKind(const QString);
     /// If string is not convertible to substance, returns LAST_SUB.
-    static quint8 StringToSub(const QString &);
+    static quint8 StringToSub(const QString);
 
     static quint16 MakeId(quint8 kind, quint8 sub);
     static quint8 KindFromId(quint16 id);

@@ -68,7 +68,7 @@ public:
     DeferredAction * GetDeferredAction() const;
 
     void Damage(ushort dmg, int dmg_kind);
-    void ReceiveSignal(const QString &);
+    void ReceiveSignal(const QString);
 
     void ReloadToNorth();
     void ReloadToSouth();
@@ -84,9 +84,9 @@ signals:
     void Moved(int);
     void Destroyed();
     void Updated();
-    void ReceivedText(const QString &);
+    void ReceivedText(const QString);
 protected:
-    void SendSignalAround(const QString &) const;
+    void SendSignalAround(const QString) const;
     void SaveAttributes(QDataStream & out) const;
     /// Returns true if there is at least 1 block of substance sub around.
     bool IsSubAround(quint8 sub) const;

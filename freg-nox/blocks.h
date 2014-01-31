@@ -95,7 +95,7 @@ public:
     quint8 Kind() const;
     int  Sub() const;
     void Push(int dir, Block * who);
-    void ReceiveSignal(const QString &);
+    void ReceiveSignal(const QString);
     QString FullName() const;
     Inventory * HasInventory();
     usage_types Use(Block * who = 0);
@@ -113,7 +113,7 @@ public:
 
     quint8 Kind() const;
     int  Sub() const;
-    void ReceiveSignal(const QString &);
+    void ReceiveSignal(const QString);
     void DoRareAction();
     int  ShouldAct() const;
     void Push(int, Block * who);
@@ -172,7 +172,7 @@ public:
     void DoRareAction();
     int  ShouldAct() const;
     void Push(int dir, Block * who);
-    void ReceiveSignal(const QString &);
+    void ReceiveSignal(const QString);
     ushort Weight() const;
 
     QString FullName() const;
@@ -209,7 +209,7 @@ public:
     bool Drop(ushort src, ushort dest, ushort num, Inventory * inv);
     bool Get(Block * block, ushort start = 0);
     bool GetAll(Inventory * from);
-    void ReceiveSignal(const QString &);
+    void ReceiveSignal(const QString);
     ushort Start() const;
     QString FullName() const;
 private:
@@ -250,7 +250,7 @@ public:
     void DoRareAction();
     bool ShouldFall() const;
     void Push(int dir, Block * who);
-    bool Inscribe(const QString & str);
+    bool Inscribe(const QString);
     quint8 Kind() const;
     ushort Weight() const;
     QString FullName() const;
@@ -269,7 +269,7 @@ public:
 
     quint8 Kind() const;
     int  Sub() const;
-    void ReceiveSignal(const QString &);
+    void ReceiveSignal(const QString);
     int  DamageKind() const;
     ushort DamageLevel() const;
     QString FullName() const;
@@ -286,7 +286,7 @@ public:
     quint8 Kind() const;
     QString FullName() const;
     usage_types Use(Block * who = 0);
-    bool Inscribe(const QString & str);
+    bool Inscribe(const QString);
 }; // class Text
 
 class Map : public Text {
@@ -311,7 +311,7 @@ public:
     quint8 Kind() const;
     QString FullName() const;
     usage_types Use(Block * who = 0);
-    void ReceiveSignal(const QString &);
+    void ReceiveSignal(const QString);
 
     Bell(int sub, quint16 id);
     Bell(QDataStream & str, int sub, quint16 id);

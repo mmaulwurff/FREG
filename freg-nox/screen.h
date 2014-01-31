@@ -138,9 +138,9 @@ public:
 
     void ControlPlayer(int);
 public slots:
-    void Notify(const QString &);
+    void Notify(const QString);
     void CleanAll();
-    QString PassString(QString &) const;
+    QString PassString(QString) const;
     void Update(ushort, ushort, ushort);
     void UpdateAll();
     void UpdatePlayer();
@@ -171,7 +171,7 @@ private:
     color_pairs Color(int kind, int sub) const;
     char PrintBlock(const Block *, WINDOW *) const;
     void SetActionMode(const int mode);
-    void ProcessCommand(QString & command);
+    void ProcessCommand(QString command);
 
     WINDOW * leftWin;
     WINDOW * rightWin;

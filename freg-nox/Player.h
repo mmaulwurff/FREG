@@ -139,12 +139,12 @@ public:
     void Build(short x, short y, short z, ushort num);
     /// Can also wield appropriate things.
     void MoveInsideInventory(ushort num_from, ushort num_to, ushort num=1);
-    void ProcessCommand(QString & command);
+    void ProcessCommand(QString command);
 signals:
     void Moved(long x, long y, ushort z) const;
     /// This is emitted when a notification is needed to be displayed.
-    /** It should be connected to screen::Notify(const QString &). */
-    void Notify(const QString &) const;
+    /** It should be connected to screen::Notify(const QString). */
+    void Notify(const QString) const;
 
     /// This is emitted when player walks over shred border.
     /** It should be connected to World::ReloadShreds(int) signal. */
@@ -153,7 +153,7 @@ signals:
     /// This is emitted when some player property is updated.
     /** It shoul be connected to screen::UpdatePlayer() signal. */
     void Updated();
-    void GetString(QString &);
+    void GetString(QString);
     void Destroyed();
     void ShowFile(QString path);
 private slots:

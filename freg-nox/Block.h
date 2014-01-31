@@ -58,7 +58,7 @@ public:
     virtual quint8 Kind() const;
     virtual bool Catchable() const;
     /// Returns true on success.
-    virtual bool Inscribe(const QString & str);
+    virtual bool Inscribe(const QString str);
     virtual int PushResult(int dir) const;
     virtual void Push(int dir, Block * who);
     virtual bool Move(int direction);
@@ -81,7 +81,7 @@ public:
     virtual int Temperature() const;
     virtual ushort Weight() const;
     /// Receive text signal.
-    virtual void ReceiveSignal(const QString &);
+    virtual void ReceiveSignal(const QString);
 
     /// Determines kind and sub, unique for every kind-sub pair.
     quint16 GetId() const;
