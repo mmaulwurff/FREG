@@ -105,8 +105,7 @@ enum damage_kinds {
 
 /// Kinds of atom
 enum kinds {
-    // do not change order, or rewrite craft recipes.
-    // add new kinds to bottom.
+    // add new kinds to bottom (before LAST_KIND).
     // changind kind codes will break file compatibility.
     BLOCK,       ///<  0
     BELL,        ///<  1
@@ -132,6 +131,7 @@ enum kinds {
     TEXT,        ///< 21
     MAP,         ///< 22
     PREDATOR,    ///< 23
+    BUCKET,      ///< 24
     /// Nothing is LAST_KIND.
     LAST_KIND // keep it last in this list.
 }; // enum kinds
@@ -173,7 +173,8 @@ enum usage_types {
     USAGE_TYPE_NO,
     USAGE_TYPE_OPEN,
     USAGE_TYPE_READ,
-    USAGE_TYPE_READ_IN_INVENTORY
+    USAGE_TYPE_READ_IN_INVENTORY,
+    USAGE_TYPE_POUR
 }; // enum usage_types
 
 enum transparency {

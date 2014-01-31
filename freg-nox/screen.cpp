@@ -150,6 +150,7 @@ char Screen::CharName(const int kind, const int sub) const {
     case CHEST:
     case PILE:   return '&';
     case BELL:   return 'b';
+    case BUCKET: return 'u';
     case PREDATOR: return '!';
     case WORKBENCH: return '*';
     case TELEGRAPH: return 't';
@@ -383,7 +384,13 @@ void Screen::SetActionMode(const int mode) {
 
 void Screen::InventoryAction(const ushort num) const {
     switch ( actionMode ) {
-    case ACTION_USE:      player->Use(num);      break;
+    case ACTION_USE:
+        if ( player->Use(num) == USAGE_TYPE_POUR ) {
+            ushort x, y, z;
+            ActionXyz(x, y, z);
+            player->Pour(x, y, z, num);
+        }
+    break;
     case ACTION_WIELD:    player->Wield(num);    break;
     case ACTION_INSCRIBE: player->Inscribe(num); break;
     case ACTION_EAT:      player->Eat(num);      break;

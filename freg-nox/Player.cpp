@@ -236,15 +236,15 @@ Block * Player::ValidBlock(const ushort num) const {
     }
 }
 
-void Player::Use(const ushort num) {
+usage_types Player::Use(const ushort num) {
     QWriteLocker locker(world->GetLock());
-    UseNoLock(num);
+    return UseNoLock(num);
 }
 
-void Player::UseNoLock(const ushort num) {
+usage_types Player::UseNoLock(const ushort num) {
     Block * const block = ValidBlock(num);
     if ( !block ) {
-        return;
+        return USAGE_TYPE_NO;
     } // else:
     Animal * const animal = player->IsAnimal();
     if ( animal && animal->NutritionalValue(block->Sub()) ) {
@@ -253,13 +253,15 @@ void Player::UseNoLock(const ushort num) {
         Block * const eaten = inv->ShowBlock(num);
         inv->Pull(num);
         block_manager.DeleteBlock(eaten);
-        return;
+        return USAGE_TYPE_NO;
     } // else:
-    if ( block->Use(player) == USAGE_TYPE_READ ) {
+    const usage_types result = block->Use(player);
+    if ( result == USAGE_TYPE_READ ) {
         usingInInventory = num;
         usingType = USAGE_TYPE_READ_IN_INVENTORY;
         emit Updated();
     }
+    return result;
 }
 
 ushort Player::GetUsingInInventory() const { return usingInInventory; }
@@ -328,6 +330,13 @@ void Player::Eat(const ushort num) {
             emit Notify(tr("You cannot eat."));
         }
     }
+}
+
+void Player::Pour(const short x_targ, const short y_targ, const short z_targ,
+        const ushort slot)
+{
+    player->GetDeferredAction()->
+        SetPour(x_targ, y_targ, z_targ, slot);
 }
 
 void Player::Build(const short x_target, const short y_target,

@@ -127,7 +127,7 @@ public:
             ushort src, ushort dest = 0, ushort num = 1);
 
     /// Tries to use block number num in inventory.
-    void Use(ushort num);
+    usage_types Use(ushort num);
     /// Tries to get block number num from outer inventory.
     void Obtain(short x, short y, short z,
             ushort src, ushort dest = 0, ushort num = 1);
@@ -136,6 +136,7 @@ public:
     void Eat     (ushort num);
     void Craft   (ushort num);
     void TakeOff (ushort num);
+    void Pour(short x, short y, short z, ushort num);
     void Build(short x, short y, short z, ushort num);
     /// Can also wield appropriate things.
     void MoveInsideInventory(ushort num_from, ushort num_to, ushort num=1);
@@ -177,7 +178,7 @@ private slots:
     /// Dir is not used, for slot signature compatibility only.
     void UpdateXYZ(int dir = NOWHERE);
 private:
-    void UseNoLock(ushort num);
+    usage_types UseNoLock(ushort num);
     void InnerMove(ushort num_from, ushort num_to, ushort num = 1);
     /// Checks player existence, inventory existence, size limits,
     /// block existence.

@@ -35,42 +35,44 @@ OBJECTS_DIR = obj
 
 # Input
 HEADERS += \
-	BlockManager.h \
-	blocks.h \
-	Block.h \
-	Active.h \
-	Inventory.h \
-	Animal.h \
-	Dwarf.h \
-	CraftManager.h \
-	DeferredAction.h \
-	header.h \
-	Player.h \
-	screen.h \
-	Shred.h \
-	VirtScreen.h \
-	world.h \
-	worldmap.h \
-	ShredStorage.h \
-	Xyz.h
+    BlockManager.h \
+    blocks.h \
+    Block.h \
+    Active.h \
+    Inventory.h \
+    Animal.h \
+    Dwarf.h \
+    CraftManager.h \
+    DeferredAction.h \
+    header.h \
+    Player.h \
+    screen.h \
+    Shred.h \
+    VirtScreen.h \
+    world.h \
+    worldmap.h \
+    ShredStorage.h \
+    Xyz.h \
+    blocks/Bucket.h
 SOURCES += \
-	BlockManager.cpp \
-	blocks.cpp \
-	Active.cpp \
-	Dwarf.cpp \
-	CraftManager.cpp \
-	DeferredAction.cpp \
-	Lighting-inertia.cpp \
-	main.cpp \
-	Player.cpp \
-	screen.cpp \
-	Shred-gen-flat.cpp \
-	Shred.cpp \
-	VirtScreen.cpp \
-	world.cpp \
-	worldmap.cpp \
-	ShredStorage.cpp \
-	Xyz.cpp
+    BlockManager.cpp \
+    blocks.cpp \
+    Active.cpp \
+    Dwarf.cpp \
+    CraftManager.cpp \
+    DeferredAction.cpp \
+    Lighting-inertia.cpp \
+    main.cpp \
+    Player.cpp \
+    screen.cpp \
+    Shred-gen-flat.cpp \
+    Shred.cpp \
+    VirtScreen.cpp \
+    world.cpp \
+    worldmap.cpp \
+    ShredStorage.cpp \
+    Xyz.cpp \
+    blocks/Bucket.cpp
 
 TRANSLATIONS = \
     freg_ru.ts \

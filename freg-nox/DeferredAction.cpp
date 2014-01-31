@@ -90,6 +90,24 @@ void DeferredAction::Throw() const {
     attachedBlock->EmitUpdated();
 }
 
+void DeferredAction::Pour() const {
+    Inventory * const attached_inv = attachedBlock->HasInventory();
+    if ( attached_inv == nullptr ) return;
+
+    Block * const vessel = attached_inv->ShowBlock(srcSlot);
+    if ( vessel == nullptr ) return;
+
+    Inventory * const vessel_inv = vessel->HasInventory();
+    if ( vessel_inv == nullptr ) return;
+
+    Block * const liquid = vessel_inv->ShowBlock(0);
+    if ( liquid == nullptr ) return;
+
+    if ( world->Build(liquid, xTarg, yTarg, zTarg) ) {
+        vessel_inv->Pull(0);
+    }
+}
+
 void DeferredAction::SetGhostMove(const ushort dir) {
     type = DEFERRED_GHOST_MOVE;
     num  = dir;
@@ -133,6 +151,16 @@ void DeferredAction::SetThrow(const ushort x, const ushort y, const ushort z,
     type = DEFERRED_THROW;
 }
 
+void DeferredAction::SetPour(const ushort x, const ushort y, const ushort z,
+        const ushort src)
+{
+    xTarg = x;
+    yTarg = y;
+    zTarg = z;
+    srcSlot = src;
+    type = DEFERRED_POUR;
+}
+
 void DeferredAction::MakeAction() {
     switch ( type ) {
     case DEFERRED_MOVE:   Move();   break;
@@ -140,6 +168,7 @@ void DeferredAction::MakeAction() {
     case DEFERRED_BUILD:  Build();  break;
     case DEFERRED_DAMAGE: Damage(); break;
     case DEFERRED_THROW:  Throw();  break;
+    case DEFERRED_POUR:   Pour();   break;
     case DEFERRED_GHOST_MOVE: GhostMove(); break;
     }
     type = DEFERRED_NOTHING;

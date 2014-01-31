@@ -505,6 +505,7 @@ void Shred::TestShred() {
     SetNewBlock(TEXT, PAPER, column+=2, row, level);
     GetBlock(column, row, level)->Inscribe(".hidden");
     SetNewBlock(BELL, IRON, column+=2, row, level);
+    SetNewBlock(BUCKET, IRON, column+=2, row, level);
 } // void Shred::TestShred()
 
 void Shred::NullMountain() {
