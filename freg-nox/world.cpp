@@ -119,12 +119,11 @@ void World::Get(Block * const block_to,
         if ( block_from->Kind() == LIQUID ) {
             Block * const tried = NewBlock(LIQUID, block_from->Sub());
             Inventory * const inv_to = block_to->HasInventory();
-            if ( inv_to && inv_to->Get(tried, dest) ) {
+            if ( inv_to && inv_to->Get(tried, src) ) {
                 SetBlock(Normal(AIR), x_from, y_from, z_from);
-                GetShred(x_from, y_from)->
-                    AddFalling(
-                        Shred::CoordInShred(x_from),
-                        Shred::CoordInShred(y_from), z_from+1);
+                GetShred(x_from, y_from) -> AddFalling(
+                    Shred::CoordInShred(x_from),
+                    Shred::CoordInShred(y_from), z_from+1);
                 emit Updated(x_from, y_from, z_from);
             } else {
                 delete tried;
@@ -139,9 +138,7 @@ bool World::InBounds(const ushort x, const ushort y) const {
     static const ushort max_xy = SHRED_WIDTH*NumShreds();
     return ( x<max_xy && y<max_xy );
 }
-bool World::InVertBounds(const ushort z) {
-    return ( z < HEIGHT );
-}
+bool World::InVertBounds(const ushort z) { return ( z < HEIGHT ); }
 bool World::InBounds(const ushort x, const ushort y, const ushort z) const {
     return ( InBounds(x, y) && InVertBounds(z) );
 }
@@ -516,8 +513,9 @@ bool World::CanMove(const ushort x, const ushort y, const ushort z,
     Block * const block = GetBlock(x, y, z);
     Block * block_to = GetBlock(newx, newy, newz);
     if ( ENVIRONMENT == block->PushResult(NOWHERE) ) {
+        const int target_push = block_to->PushResult(NOWHERE);
         move_flag = (*block != *block_to)
-            && (MOVABLE == block_to->PushResult(NOWHERE));
+            && ( MOVABLE == target_push || ENVIRONMENT == target_push );
     } else {
         block_to->Push(dir, block);
         block_to = GetBlock(newx, newy, newz);

@@ -502,12 +502,10 @@
     }
 
     bool Inventory::Get(Block * const block, const ushort start) {
-        if ( not block ) {
-            return true;
-        } // else:
+        if ( not block ) return true;
         if ( block->Kind() == LIQUID ) {
             for (int i=qMax(Start(), start); i<Size(); ++i) {
-                if ( ShowBlock(i) ) {
+                if ( Number(i)==1 && ShowBlock(i) ) {
                     Inventory * const inner = ShowBlock(i)->HasInventory();
                     if ( inner && inner->Get(block) ) {
                         return true;
@@ -526,17 +524,22 @@
 
     bool Inventory::GetExact(Block * const block, const ushort num) {
         if ( block ) {
-            if ( inventory[num].isEmpty() ||
-                    ( *block==*inventory[num].top() &&
-                    Number(num)<MAX_STACK_SIZE ) )
-            {
+            if ( inventory[num].isEmpty() ) {
                 inventory[num].push(block);
-                return true;
+            } else if ( *block==*inventory[num].top()
+                    && Number(num) < MAX_STACK_SIZE )
+            {
+                Inventory * const inner = inventory[num].top()->HasInventory();
+                if ( inner==nullptr || inner->IsEmpty() ) {
+                    inventory[num].push(block);
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
             }
-            return false;
-        } else {
-            return true;
         }
+        return true;
     }
 
     void Inventory::MoveInside(const ushort num_from, const ushort num_to,
