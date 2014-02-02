@@ -95,10 +95,9 @@ void World::Drop(Block * const block_from,
         const ushort x_to, const ushort y_to, const ushort z_to,
         const ushort src, const ushort dest, const ushort num)
 {
-    Block * block_to=GetBlock(x_to, y_to, z_to);
+    Block * block_to = GetBlock(x_to, y_to, z_to);
     if ( AIR == block_to->Sub() ) {
-        SetBlock((block_to=NewBlock(PILE, DIFFERENT)),
-            x_to, y_to, z_to);
+        SetBlock(( block_to = NewBlock(PILE, DIFFERENT) ), x_to, y_to, z_to);
     } else if ( WATER == block_to->Sub() ) {
         Block * const pile = NewBlock(PILE, DIFFERENT);
         SetBlock(pile, x_to, y_to, z_to);
@@ -637,8 +636,9 @@ void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
     const ushort y_in_shred = Shred::CoordInShred(y);
     Block * new_block;
     if ( PILE!=temp->Kind() && (temp->HasInventory() || dropped) ) {
-        new_block = ( ( dropped && PILE==dropped->Kind() ) ?
-            dropped : NewBlock(PILE, DIFFERENT) );
+        const bool dropped_pile = ( dropped && dropped->Kind()==PILE );
+        new_block = dropped_pile ?
+            dropped : NewBlock(PILE, DIFFERENT);
         Inventory * const inv = temp->HasInventory();
         Inventory * const new_pile_inv = new_block->HasInventory();
         if ( inv ) {
@@ -658,8 +658,8 @@ void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
             }
             new_pile_inv->GetAll(inv);
         }
-        if ( dropped && PILE!=dropped->Kind() &&
-                !new_pile_inv->Get(dropped) )
+        if ( dropped && not dropped_pile
+                && not new_pile_inv->Get(dropped) )
         {
             DeleteBlock(dropped);
         }
