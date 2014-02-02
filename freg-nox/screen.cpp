@@ -147,6 +147,9 @@ char Screen::CharName(const int kind, const int sub) const {
     case PLATE:  return '_';
     case LADDER: return '^';
     case PICK:   return '\\';
+    case SHOVEL: return '|';
+    case HAMMER: return 'T';
+    case AXE:    return '/';
     case CHEST:
     case PILE:   return '&';
     case BELL:   return 'b';

@@ -27,23 +27,57 @@ public:
     Weapon(int sub, quint16 id);
     Weapon(QDataStream & str, int sub, quint16 id);
 
-    quint8 Kind() const;
-    int Wearable() const;
-    int DamageKind() const;
-    void Push(int dir, Block * who);
-    ushort DamageLevel() const;
-    ushort Weight() const;
+    quint8  Kind() const;
+    int     Wearable() const;
+    int     DamageKind() const;
+    void    Push(int dir, Block * who);
+    void    Damage(ushort dmg, int kind);
+    ushort  DamageLevel() const;
+    ushort  Weight() const;
     QString FullName() const;
-}
+};
 
 class Pick : public Weapon {
 public:
     Pick(int sub, quint16 id);
     Pick(QDataStream & str, int sub, quint16 id);
 
-    quint8 Kind() const;
-    int DamageKind() const;
-    ushort DamageLevel() const;
+    quint8  Kind() const;
+    int     DamageKind() const;
+    ushort  DamageLevel() const;
+    QString FullName() const;
+};
+
+class Shovel : public Weapon {
+public:
+    Shovel(int sub, quint16 id);
+    Shovel(QDataStream & str, int sub, quint16 id);
+
+    quint8  Kind() const;
+    int     DamageKind() const;
+    ushort  DamageLevel() const;
+    QString FullName() const;
+};
+
+class Hammer : public Weapon {
+public:
+    Hammer(int sub, quint16 id);
+    Hammer(QDataStream & str, int sub, quint16 id);
+
+    quint8  Kind() const;
+    int     DamageKind() const;
+    ushort  DamageLevel() const;
+    QString FullName() const;
+};
+
+class Axe : public Weapon {
+public:
+    Axe(int sub, quint16 id);
+    Axe(QDataStream & str, int sub, quint16 id);
+
+    quint8  Kind() const;
+    int     DamageKind() const;
+    ushort  DamageLevel() const;
     QString FullName() const;
 };
 

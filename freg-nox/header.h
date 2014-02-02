@@ -134,6 +134,9 @@ enum kinds {
     MAP,         ///< 22
     PREDATOR,    ///< 23
     BUCKET,      ///< 24
+    SHOVEL,      ///< 25
+    AXE,         ///< 26
+    HAMMER,      ///< 27
     /// Nothing is LAST_KIND.
     LAST_KIND // keep it last in this list.
 }; // enum kinds

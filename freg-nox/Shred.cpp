@@ -506,6 +506,11 @@ void Shred::TestShred() {
     GetBlock(column, row, level)->Inscribe(".hidden");
     SetNewBlock(BELL, IRON, column+=2, row, level);
     SetNewBlock(BUCKET, IRON, column+=2, row, level);
+    SetNewBlock(PICK,   IRON, column+=2, row, level);
+    SetNewBlock(SHOVEL, IRON, column+=2, row, level);
+    SetNewBlock(HAMMER, IRON, column+=2, row, level);
+    SetNewBlock(AXE,    IRON, column+=2, row, level);
+    // row 5
 } // void Shred::TestShred()
 
 void Shred::NullMountain() {

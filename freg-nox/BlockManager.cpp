@@ -50,7 +50,10 @@ const QString BlockManager::kinds[LAST_KIND] = {
     "text",
     "map",
     "predator",
-    "bucket"
+    "bucket",
+    "shovel",
+    "axe",
+    "hammer"
 };
 
 const QString BlockManager::subs[LAST_SUB] = {
@@ -96,11 +99,11 @@ BlockManager::~BlockManager() {
 
 Block * BlockManager::NormalBlock(const int sub) const { return normals[sub]; }
 
-Block * BlockManager::NewBlock(const int kind, int sub) {
+Block * BlockManager::NewBlock(const int kind, const int sub) {
     const quint16 id = MakeId(kind, sub);
     switch ( kind ) {
-    default: fprintf(stderr, "BlockManager::NewBlock: unlisted kind: %d\n",
-        kind);
+    default: fprintf(stderr, "BlockManager::NewBlock: kind?: %d\n", kind);
+    // no break;
     case BLOCK:  return New<Block >(sub, id);
     case BELL:   return New<Bell  >(sub, id);
     case GRASS:  return New<Grass >(sub, id);
@@ -121,6 +124,9 @@ Block * BlockManager::NewBlock(const int kind, int sub) {
     case TEXT:   return New<Text  >(sub, id);
     case MAP:    return New<Map   >(sub, id);
     case BUCKET: return New<Bucket>(sub, id);
+    case SHOVEL: return New<Shovel>(sub, id);
+    case HAMMER: return New<Hammer>(sub, id);
+    case AXE:    return New<Axe   >(sub, id);
     case CREATOR: return New<Creator>(sub, id);
     case PREDATOR: return New<Predator>(sub, id);
     case WORKBENCH: return New<Workbench>(sub, id);
@@ -151,6 +157,9 @@ Block * BlockManager::BlockFromFile(QDataStream & str,
     case TEXT:   return New<Text  >(str, sub, id);
     case MAP:    return New<Map   >(str, sub, id);
     case BUCKET: return New<Bucket>(str, sub, id);
+    case SHOVEL: return New<Shovel>(str, sub, id);
+    case HAMMER: return New<Hammer>(str, sub, id);
+    case AXE:    return New<Axe   >(str, sub, id);
     case LOCKED_DOOR:
     case DOOR:   return New<Door  >(str, sub, id);
     case CLOCK:  return New<Clock >(str, sub, id);
