@@ -46,7 +46,12 @@ ushort Dwarf::Weight() const {
 }
 
 Block * Dwarf::DropAfterDamage() const {
-    return block_manager.NormalBlock(H_MEAT);
+    Block * const pile = block_manager.NewBlock(PILE, DIFFERENT);
+    Inventory * const pile_inv = pile->HasInventory();
+    pile_inv->Get(block_manager.NormalBlock(H_MEAT));
+    pile_inv->Get(Animal::DropAfterDamage());
+    pile_inv->Get(block_manager.NewBlock(WEAPON, BONE));
+    return pile;
 }
 
 int Dwarf::Sub() const { return Block::Sub(); }

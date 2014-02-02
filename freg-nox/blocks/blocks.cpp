@@ -368,6 +368,10 @@
         }
     }
 
+    Block * Animal::DropAfterDamage() const {
+        return block_manager.NewBlock(WEAPON, BONE);
+    }
+
     Animal::Animal(const int sub, const quint16 id) :
             Active(sub, id, NONSTANDARD),
             breath(MAX_BREATH),
@@ -847,7 +851,7 @@
     }
 
     Block * Bush::DropAfterDamage() const {
-        Block * const pile=block_manager.NewBlock(PILE, DIFFERENT);
+        Block * const pile = block_manager.NewBlock(PILE, DIFFERENT);
         pile->HasInventory()->Get(block_manager.NormalBlock(WOOD));
         pile->HasInventory()->Get(block_manager.NormalBlock(HAZELNUT));
         return pile;
@@ -896,7 +900,11 @@
     }
 
     Block * Rabbit::DropAfterDamage() const {
-        return block_manager.NormalBlock(A_MEAT);
+        Block * const pile = block_manager.NewBlock(PILE, DIFFERENT);
+        Inventory * const pile_inv = pile->HasInventory();
+        pile_inv->Get(block_manager.NormalBlock(A_MEAT));
+        pile_inv->Get(Animal::DropAfterDamage());
+        return pile;
     }
 
     QString Rabbit::FullName() const { return tr("Herbivore"); }

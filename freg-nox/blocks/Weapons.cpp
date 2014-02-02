@@ -25,9 +25,9 @@
         case STONE: return QObject::tr("Pebble");
         case IRON:  return QObject::tr("Spike");
         case WOOD:  return QObject::tr("Stick");
+        case BONE:  return QObject::tr("Bone");
         default:
-            fprintf(stderr, "Weapon::FullName: unlisted sub: %d\n",
-                Sub());
+            fprintf(stderr, "Weapon::FullName: unlisted sub: %d\n", Sub());
             return "Some weapon";
         }
     }

@@ -25,27 +25,26 @@
 class Animal : public Active {
     Q_OBJECT
 public:
-    void DoRareAction();
-    int  ShouldAct() const;
-    QString FullName() const = 0;
-    Animal * IsAnimal();
-
-    int DamageKind() const;
-    ushort Breath() const;
-    ushort Satiation() const;
-    bool Eat(int sub);
-    virtual quint16 NutritionalValue(quint8 sub) const = 0;
-
-protected:
     Animal(int sub, quint16 id);
     Animal(QDataStream & str, int sub, quint16 id);
 
+    int     DamageKind() const;
+    int     ShouldAct() const;
+    void    DoRareAction();
+    bool    Eat(int sub);
+    ushort  Breath() const;
+    ushort  Satiation() const;
+    QString FullName() const = 0;
+    Animal * IsAnimal();
+    Block  * DropAfterDamage() const;
+
+    virtual quint16 NutritionalValue(quint8 sub) const = 0;
+protected:
     void SaveAttributes(QDataStream & out) const;
     void EatGrass();
-
 private:
-    quint8 breath;
+    quint8  breath;
     quint16 satiation;
-}; // class Animal
+};
 
 #endif // ANIMAL_H

@@ -165,7 +165,7 @@ char Screen::CharName(const int kind, const int sub) const {
                 sub);
         // no break;
         case STONE: return '.';
-        case IRON:
+        case IRON: case BONE:
         case WOOD:  return '/';
     } break;
     case ACTIVE: switch ( sub ) {
@@ -231,6 +231,7 @@ color_pairs Screen::Color(const int kind, const int sub) const {
         case CLAY:       return WHITE_RED;
         case PAPER:      return MAGENTA_WHITE;
         case GOLD:       return WHITE_YELLOW;
+        case BONE:       return MAGENTA_WHITE;
         case SUN_MOON:   return ( NIGHT == w->PartOfDay() ) ?
             WHITE_WHITE : YELLOW_YELLOW;
         case SKY: case STAR: switch ( w->PartOfDay() ) {
@@ -515,7 +516,7 @@ void Screen::PrintHUD() {
     werase(hudWin);
     // quick inventory
     Inventory * const inv = player->PlayerInventory();
-    if ( inv && not inv->IsEmpty() && COLS>=(SCREEN_SIZE*2+2)*2 ) {
+    if ( inv && COLS>=(SCREEN_SIZE*2+2)*2 ) {
         for (ushort i=0; i<inv->Size(); ++i) {
             wstandend(hudWin);
             const int x = QUICK_INVENTORY_X_SHIFT+i*2;
@@ -892,6 +893,7 @@ void Screen::Notify(const QString str) {
 void Screen::DeathScreen() {
     werase(rightWin);
     werase(hudWin);
+    Notify(DING);
     wcolor_set(leftWin, WHITE_RED, NULL);
     if ( not PrintFile(leftWin, "texts/death.txt") ) {
         waddstr(leftWin, qPrintable(tr("You die.\nWaiting for respawn...")));
