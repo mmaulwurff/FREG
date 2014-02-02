@@ -36,56 +36,29 @@
     const ushort WEIGHT_STONE = 200;
     const ushort WEIGHT_AIR = 0;
 
-class QDataStream;
-
 class Plate : public Block {
 public:
+    Plate(int sub, quint16 id);
+    Plate(QDataStream & str, int sub, quint16 id);
+
     QString FullName() const;
     quint8 Kind() const;
     int PushResult(int dir) const;
     ushort Weight() const;
-
-    Plate(int sub, quint16 id);
-    Plate(QDataStream & str, int sub, quint16 id);
-}; // class Plate
+};
 
 class Ladder : public Block {
 public:
+    Ladder(int sub, quint16 id);
+    Ladder(QDataStream & str, int sub, quint16 id);
+
     QString FullName() const;
     quint8 Kind() const;
     int PushResult(int dir) const;
     ushort Weight() const;
     bool Catchable() const;
     Block * DropAfterDamage() const;
-
-    Ladder(int sub, quint16 id);
-    Ladder(QDataStream & str, int sub, quint16 id);
-}; // class Ladder
-
-class Weapon : public Block {
-public:
-    quint8 Kind() const;
-    int Wearable() const;
-    int DamageKind() const;
-    void Push(int dir, Block * who);
-    ushort DamageLevel() const;
-    ushort Weight() const;
-    QString FullName() const;
-
-    Weapon(int sub, quint16 id);
-    Weapon(QDataStream & str, int sub, quint16 id);
-}; // class Weapon
-
-class Pick : public Weapon {
-public:
-    quint8 Kind() const;
-    int DamageKind() const;
-    ushort DamageLevel() const;
-    QString FullName() const;
-
-    Pick(int sub, quint16 id);
-    Pick(QDataStream & str, int sub, quint16 id);
-}; // class Pick
+};
 
 class Chest : public Block, public Inventory {
 public:
@@ -100,10 +73,9 @@ public:
     Inventory * HasInventory();
     usage_types Use(Block * who = 0);
     ushort Weight() const;
-
 protected:
     void SaveAttributes(QDataStream & out) const;
-}; // class Chest
+};
 
 class Pile : public Active, public Inventory {
     Q_OBJECT
@@ -124,11 +96,14 @@ public:
     ushort Weight() const;
 protected:
     void SaveAttributes(QDataStream & out) const;
-}; // class Pile
+};
 
 class Liquid : public Active {
     Q_OBJECT
 public:
+    Liquid(int sub, quint16 id);
+    Liquid(QDataStream & str, int sub, quint16 id);
+
     void DoRareAction();
     int  ShouldAct() const;
     quint8 Kind() const;
@@ -137,14 +112,14 @@ public:
     uchar LightRadius() const;
     QString FullName() const;
     Block * DropAfterDamage() const;
-
-    Liquid(int sub, quint16 id);
-    Liquid(QDataStream & str, int sub, quint16 id);
-}; // class Liquid
+};
 
 class Grass : public Active {
     Q_OBJECT
 public:
+    Grass(int sub, quint16 id);
+    Grass(QDataStream & str, int sub, quint16 id);
+
     QString FullName() const;
     void DoRareAction();
     int  ShouldAct() const;
@@ -152,10 +127,7 @@ public:
     bool ShouldFall() const;
     void Push(int dir, Block * who);
     Block * DropAfterDamage() const;
-
-    Grass(int sub, quint16 id);
-    Grass(QDataStream & str, int sub, quint16 id);
-}; // class Grass
+};
 
 class Bush : public Active, public Inventory {
     Q_OBJECT
@@ -181,7 +153,7 @@ public:
     Block * DropAfterDamage() const;
 protected:
     void SaveAttributes(QDataStream & out) const;
-}; // class Bush
+};
 
 class Rabbit : public Animal {
     Q_OBJECT
@@ -195,10 +167,9 @@ public:
     quint8 Kind() const;
     quint16 NutritionalValue(quint8 sub) const;
     QString FullName() const;
-
 protected:
     short Attractive(int sub) const;
-}; // class Rabbit
+};
 
 class Workbench : public Chest {
 public:
@@ -216,7 +187,7 @@ private:
     void Craft();
 
     static const ushort WORKBENCH_SIZE = 10;
-}; // class Workbench
+};
 
 class Door : public Active {
     Q_OBJECT
@@ -238,7 +209,7 @@ private:
     bool shifted;
     bool locked;
     bool movable;
-}; // class Door
+};
 
 class Clock : public Active {
 public:
@@ -255,11 +226,10 @@ public:
     ushort Weight() const;
     QString FullName() const;
     usage_types Use(Block * who = 0);
-
 private:
     short alarmTime;
     short timerTime;
-}; // class Clock
+};
 
 class Creator : public Active, public Inventory {
     Q_OBJECT
@@ -276,7 +246,7 @@ public:
     Inventory * HasInventory();
 protected:
     void SaveAttributes(QDataStream & out) const;
-}; // class Creator
+};
 
 class Text : public Block {
 public:
@@ -287,7 +257,7 @@ public:
     QString FullName() const;
     usage_types Use(Block * who = 0);
     bool Inscribe(const QString);
-}; // class Text
+};
 
 class Map : public Text {
 public:
@@ -304,18 +274,18 @@ private:
     qint64 longiStart, latiStart;
     quint16 savedShift;
     qint8 savedChar;
-}; // class Map
+};
 
 class Bell : public Active {
 public:
+    Bell(int sub, quint16 id);
+    Bell(QDataStream & str, int sub, quint16 id);
+
     quint8 Kind() const;
     QString FullName() const;
     usage_types Use(Block * who = 0);
     void ReceiveSignal(const QString);
-
-    Bell(int sub, quint16 id);
-    Bell(QDataStream & str, int sub, quint16 id);
-}; // class Bell
+};
 
 class Predator : public Animal {
     Q_OBJECT
@@ -327,11 +297,10 @@ public:
     quint8 Kind() const;
     QString FullName() const;
     quint16 NutritionalValue(quint8 sub) const;
-
 protected:
     void DoFrequentAction();
     void DoRareAction();
     short Attractive(int sub) const;
-}; // class Predator
+};
 
 #endif // BLOCKS_H

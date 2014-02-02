@@ -36,12 +36,6 @@ OBJECTS_DIR = obj
 # Input
 HEADERS += \
     BlockManager.h \
-    blocks/blocks.h \
-    blocks/Block.h \
-    blocks/Active.h \
-    blocks/Inventory.h \
-    blocks/Animal.h \
-    blocks/Dwarf.h \
     CraftManager.h \
     DeferredAction.h \
     header.h \
@@ -53,12 +47,16 @@ HEADERS += \
     worldmap.h \
     ShredStorage.h \
     Xyz.h \
-    blocks/Bucket.h
+    blocks/blocks.h \
+    blocks/Block.h \
+    blocks/Active.h \
+    blocks/Inventory.h \
+    blocks/Animal.h \
+    blocks/Dwarf.h \
+    blocks/Bucket.h \
+    blocks/Weapons.h
 SOURCES += \
     BlockManager.cpp \
-    blocks/blocks.cpp \
-    blocks/Active.cpp \
-    blocks/Dwarf.cpp \
     CraftManager.cpp \
     DeferredAction.cpp \
     Lighting-inertia.cpp \
@@ -72,6 +70,10 @@ SOURCES += \
     worldmap.cpp \
     ShredStorage.cpp \
     Xyz.cpp \
+    blocks/blocks.cpp \
+    blocks/Active.cpp \
+    blocks/Dwarf.cpp \
+    blocks/Weapons.cpp \
     blocks/Bucket.cpp
 
 TRANSLATIONS = \

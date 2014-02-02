@@ -18,10 +18,12 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include <QDataStream>
+#include "BlockManager.h"
+
 #include "blocks/blocks.h"
 #include "blocks/Dwarf.h"
-#include "BlockManager.h"
 #include "blocks/Bucket.h"
+#include "blocks/Weapons.h"
 
 const QString BlockManager::kinds[LAST_KIND] = {
     "block",
