@@ -73,7 +73,10 @@ const QString BlockManager::subs[LAST_SUB] = {
     "clay",
     "air",
     "paper",
-    "gold"
+    "gold",
+    "bone",
+    "steel",
+    "adamantine"
 };
 
 BlockManager block_manager;

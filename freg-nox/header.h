@@ -167,6 +167,9 @@ enum subs {
     AIR,        ///<  19
     PAPER,      ///<  20
     GOLD,       ///<  21
+    BONE,       ///<  22
+    STEEL,      ///<  23
+    ADAMANTINE, ///<  24
     /// Nothing is made from LAST_SUB.
     LAST_SUB // keep it last in this list
 }; // enum subs
