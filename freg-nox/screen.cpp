@@ -799,11 +799,11 @@ const {
     const int start = inv->Start();
     int shift = 0; // to divide inventory sections
     for (ushort i=0; i<inv->Size(); ++i) {
-        mvwprintw(window, 2+i+shift, 12, "%c)", 'a'+i);
-        if ( start-1 == i ) {
+        if ( start == i ) {
             ++shift;
-            mvwhline(window, 3+i, 0, ACS_HLINE, SCREEN_SIZE*2+2);
+            mvwhline(window, 2+i, 0, ACS_HLINE, SCREEN_SIZE*2+2);
         }
+        mvwprintw(window, 2+i+shift, 12, "%c)", 'a'+i);
         if ( not inv->Number(i) ) {
             continue;
         }

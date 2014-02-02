@@ -25,9 +25,7 @@
 CraftManager craft_manager;
 
 // CraftItem section
-bool CraftItem::operator>(const CraftItem & item) const {
-    return item.id > id;
-}
+bool CraftItem::operator<(const CraftItem &item) const { return item.id < id; }
 
 bool CraftItem::operator!=(const CraftItem & item) const {
     return num!=item.num || id!=item.id;
@@ -55,32 +53,28 @@ CraftList & CraftList::operator<<(CraftItem * const new_item) {
 
 bool CraftList::CraftList::operator==(const CraftList & compared) const {
     const int materials_number=compared.GetSize()-compared.GetProductsNumber();
-    if ( GetSize()-GetProductsNumber() != materials_number ) {
-        return false;
-    } // else:
+    if ( GetSize()-GetProductsNumber() != materials_number ) return false;
     for (int i=0; i<materials_number; ++i) {
-        if ( *items.at(i) != *compared.items.at(i) ) {
-            return  false;
-        }
+        if ( *items.at(i) != *compared.items.at(i) ) return false;
     }
     return true;
 }
 
-void CraftList::Sort() { qSort(items); }
+bool ItemsLess(const CraftItem * item1, const CraftItem * item2) {
+    return *item1 < *item2;
+}
+
+void CraftList::Sort() { qSort(items.begin(), items.end(), ItemsLess); }
 
 bool CraftList::LoadItem(QTextStream & stream) {
     ushort    number;
     stream >> number;
-    if ( number==0 ) {
-        return false;
-    } // else:
+    if ( number == 0 ) return false;
     QString   kind_string,   sub_string;
     stream >> kind_string >> sub_string;
     const quint8 kind = BlockManager::StringToKind(kind_string);
     const quint8 sub  = BlockManager::StringToSub ( sub_string);
-    if ( LAST_KIND==kind || LAST_SUB==sub ) {
-        return false;
-    } // else;
+    if ( LAST_KIND==kind || LAST_SUB==sub ) return false;
     items.append(new CraftItem({number, BlockManager::MakeId(kind, sub)}));
     return true;
 }
@@ -172,26 +166,24 @@ CraftItem * CraftManager::MiniCraft(const ushort num, const quint16 id) const {
         delete result;
         return ret;
     } else {
-        return 0;
+        return nullptr;
     }
 }
 
-CraftList * CraftManager::Craft(const CraftList * const recipe, const int sub)
+CraftList * CraftManager::Craft(CraftList * const recipe, const int sub)
 const {
     CraftList * ret;
     return ( sub==DIFFERENT || not (ret=CraftSub(recipe, sub)) ) ?
         CraftSub(recipe, DIFFERENT) : ret;
 }
 
-CraftList * CraftManager::CraftSub(const CraftList * const recipe,
-        const int sub)
+CraftList * CraftManager::CraftSub(CraftList * const recipe, const int sub)
 const {
+    recipe->Sort();
     // find needed recipes list
     int point = 0;
     for ( ; point < size && recipesSubsList[point] != sub; ++point);
-    if ( point == size ) { //recipes list for workbench sub not found
-        return 0;
-    } // else:
+    if ( point == size ) return nullptr; //recipes list for sub not found
     // find recipe and copy products from it
     for (int i=0; i<recipesList[point].size(); ++i) {
         const CraftList & tried = *recipesList[point].at(i);
@@ -204,5 +196,5 @@ const {
             return result;
         }
     }
-    return 0; // suitable recipe not found
+    return nullptr; // suitable recipe not found
 }

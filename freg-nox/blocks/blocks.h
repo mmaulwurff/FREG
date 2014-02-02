@@ -137,14 +137,15 @@ public:
     Bush(int sub, quint16 id);
     Bush(QDataStream & str, int sub, quint16 id);
 
-    quint8 Kind() const;
     int  Sub() const;
-    int PushResult(int dir) const;
+    int  PushResult(int dir) const;
+    int  ShouldAct() const;
     bool ShouldFall() const;
     void DoRareAction();
-    int  ShouldAct() const;
     void Push(int dir, Block * who);
     void ReceiveSignal(const QString);
+    void Damage(ushort dmg, int dmg_kind);
+    quint8 Kind() const;
     ushort Weight() const;
 
     QString FullName() const;

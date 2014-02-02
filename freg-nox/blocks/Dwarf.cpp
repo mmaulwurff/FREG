@@ -76,7 +76,7 @@ void Dwarf::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
 
 int Dwarf::DamageKind() const {
     return ( Number(GetActiveHand()) ) ?
-        ShowBlock(GetActiveHand())->DamageKind() : CRUSH;
+        ShowBlock(GetActiveHand())->DamageKind() : DAMAGE_HANDS;
 }
 
 ushort Dwarf::DamageLevel() const {

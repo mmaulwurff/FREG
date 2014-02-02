@@ -26,7 +26,7 @@ struct CraftItem {
     const ushort num;
     const quint16 id;
 
-    bool operator> (const CraftItem & item) const;
+    bool operator< (const CraftItem & item) const;
     bool operator!=(const CraftItem & item) const;
 };
 
@@ -61,9 +61,10 @@ public:
     ~CraftManager();
 
     CraftItem * MiniCraft(ushort num, quint16 id) const;
-    CraftList * Craft(const CraftList * items, int sub) const;
+    CraftList * Craft(CraftList * items, int sub) const;
 private:
-    CraftList * CraftSub(const CraftList * items, int sub) const;
+    CraftList * CraftSub(CraftList * items, int sub) const;
+
     int size;
     QList<CraftList *> * recipesList;
     int * recipesSubsList; // list of substances of workbench 

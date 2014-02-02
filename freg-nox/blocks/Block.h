@@ -62,7 +62,7 @@ public:
     virtual int PushResult(int dir) const;
     virtual void Push(int dir, Block * who);
     virtual bool Move(int direction);
-    virtual void  Damage(ushort dmg, int dmg_kind);
+    virtual void Damage(ushort dmg, int dmg_kind);
     virtual usage_types Use(Block * who = 0);
     /// Usually returns new block of the same kind and sub (except glass).
     /** When reimplemented in derivatives, inside it you can create a pile,

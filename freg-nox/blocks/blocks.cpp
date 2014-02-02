@@ -69,6 +69,7 @@
     }
 
     void Block::Damage(const ushort dmg, const int dmg_kind) {
+        if ( dmg_kind == DAMAGE_HANDS || dmg_kind == NO_HARM ) return;
         ushort mult = 1;
         switch ( Sub() ) {
         case DIFFERENT:
@@ -832,8 +833,11 @@
     int  Bush::ShouldAct() const  { return RARE; }
     usage_types Bush::Use(Block *) { return USAGE_TYPE_OPEN; }
     Inventory * Bush::HasInventory() { return Inventory::HasInventory(); }
-
     void Bush::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
+
+    void Bush::Damage(const ushort dmg, const int dmg_kind) {
+        durability -= ( CUT==dmg_kind ? dmg*2 : dmg );
+    }
 
     ushort Bush::Weight() const {
         return Inventory::Weight()+Block::Weight();
@@ -852,7 +856,7 @@
 
     Block * Bush::DropAfterDamage() const {
         Block * const pile = block_manager.NewBlock(PILE, DIFFERENT);
-        pile->HasInventory()->Get(block_manager.NormalBlock(WOOD));
+        pile->HasInventory()->Get(block_manager.NewBlock(WEAPON, WOOD));
         pile->HasInventory()->Get(block_manager.NormalBlock(HAZELNUT));
         return pile;
     }
