@@ -30,6 +30,6 @@ public:
 private:
     long mapSize;
     QFile * map;
-}; // class WorldMap
+};
 
 #endif // WORLDMAP_H

@@ -26,7 +26,6 @@
 WorldMap::WorldMap(const QString world_name) : 
         map(new QFile(world_name+"/map.txt"))
 {
-    //map = new QFile(world_name+"/map.txt");
     if ( map->open(QIODevice::ReadOnly | QIODevice::Text) ) {
         mapSize = int(qSqrt(1+4*map->size())-1)/2;
     } else {
@@ -43,7 +42,6 @@ WorldMap::WorldMap(const QString world_name) :
         QProcess map_generation;
         map_generation.start(program, arguments);
         if ( map_generation.waitForStarted() ) {
-            fprintf(stderr, "hello map\n");
             map_generation.waitForFinished();
         }
         mapSize = ( map->open(QIODevice::ReadOnly | QIODevice::Text) ) ?
@@ -57,7 +55,7 @@ char WorldMap::TypeOfShred(const long longi, const long lati) {
             lati  >= mapSize || lati  < 0 )
     {
         return OUT_BORDER_SHRED;
-    } else if ( !map->seek((mapSize+1)*longi+lati) ) {
+    } else if ( not map->seek((mapSize+1)*longi+lati) ) {
         return DEFAULT_SHRED;
     }
     char c;

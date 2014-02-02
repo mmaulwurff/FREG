@@ -75,5 +75,4 @@ SOURCES += \
     blocks/Bucket.cpp
 
 TRANSLATIONS = \
-    freg_ru.ts \
-    freg_zh.ts
+    freg_ru.ts
