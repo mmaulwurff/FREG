@@ -138,9 +138,9 @@ public:
 
     void ControlPlayer(int);
 public slots:
-    void Notify(const QString);
+    void Notify(QString);
     void CleanAll();
-    QString PassString(QString) const;
+    void PassString(QString &) const;
     void Update(ushort, ushort, ushort);
     void UpdateAll();
     void UpdatePlayer();

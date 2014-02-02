@@ -23,8 +23,10 @@
 #include "worldmap.h"
 #include "header.h"
 
-WorldMap::WorldMap(const QString * const world_name) {
-    map = new QFile(*world_name+"/map.txt");
+WorldMap::WorldMap(const QString world_name) : 
+        map(new QFile(world_name+"/map.txt"))
+{
+    //map = new QFile(world_name+"/map.txt");
     if ( map->open(QIODevice::ReadOnly | QIODevice::Text) ) {
         mapSize = int(qSqrt(1+4*map->size())-1)/2;
     } else {
@@ -37,7 +39,7 @@ WorldMap::WorldMap(const QString * const world_name) {
         QStringList arguments;
         arguments << QString("-s") << QString::number(map_size) <<
             QString("-r") << QString::number(qrand()) <<
-            QString("-f") << *world_name+"/map.txt";
+            QString("-f") << world_name+"/map.txt";
         QProcess map_generation;
         map_generation.start(program, arguments);
         if ( map_generation.waitForStarted() ) {

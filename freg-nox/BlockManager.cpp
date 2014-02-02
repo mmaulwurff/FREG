@@ -91,7 +91,7 @@ BlockManager::~BlockManager() {
 
 Block * BlockManager::NormalBlock(const int sub) const { return normals[sub]; }
 
-Block * BlockManager::NewBlock(const int kind, int sub) const {
+Block * BlockManager::NewBlock(const int kind, int sub) {
     const quint16 id = MakeId(kind, sub);
     switch ( kind ) {
     default: fprintf(stderr, "BlockManager::NewBlock: unlisted kind: %d\n",
@@ -124,7 +124,7 @@ Block * BlockManager::NewBlock(const int kind, int sub) const {
 
 Block * BlockManager::BlockFromFile(QDataStream & str,
         const quint8 kind, const quint8 sub)
-const {
+{
     const quint16 id = MakeId(kind, sub);
     switch ( kind ) {
     default: fprintf(stderr,
@@ -163,7 +163,7 @@ Block * BlockManager::BlockFromFile(QDataStream & str) const {
 
 bool BlockManager::KindSubFromFile(QDataStream & str,
         quint8 & kind, quint8 & sub)
-const {
+{
     quint8 data;
     str >> data;
     sub = (data & 0x7F);
@@ -215,14 +215,14 @@ Block * BlockManager::ReplaceWithNormal(Block * const block) const {
 }
 
 template <typename Thing>
-Thing * BlockManager::New(const quint8 sub, const quint16 id) const {
+Thing * BlockManager::New(const quint8 sub, const quint16 id) {
     return new Thing(sub, id);
 }
 
 template <typename Thing>
 Thing * BlockManager::New(QDataStream & str, const quint8 sub,
         const quint16 id)
-const {
+{
     return new Thing(str, sub, id);
 }
 

@@ -202,7 +202,7 @@ bool Active::Gravitate(const ushort range, const ushort down, const ushort up,
     short for_north = 0, for_west = 0;
     for (ushort x=X()-range; x<=X()+range; ++x)
     for (ushort y=Y()-range; y<=Y()+range; ++y) {
-        if ( !world->InBounds(x, y) ) {
+        if ( not world->InBounds(x, y) ) {
             continue;
         }
         Shred * const shred = world->GetShred(x, y);
@@ -210,17 +210,15 @@ bool Active::Gravitate(const ushort range, const ushort down, const ushort up,
         const ushort y_in = Shred::CoordInShred(y);
         for (ushort z=Z()-down;  z<=Z()+up; ++z) {
             short attractive;
-            if (World::InVertBounds(z) &&
-                    ( attractive = Attractive(shred->
-                        GetBlock(x_in, y_in, z)->
-                            Sub()) ) &&
-                    world->DirectlyVisible(X(), Y(), Z(),
-                        x, y, z))
+            if ( World::InVertBounds(z)
+                    && ( attractive = Attractive(shred->
+                        GetBlock(x_in, y_in, z)->Sub()) )
+                    && world->DirectlyVisible(X(), Y(), Z(), x, y, z) )
             {
                 if ( y!=Y() ) for_north += attractive/(Y()-y);
                 if ( x!=X() ) for_west  += attractive/(X()-x);
             }
-    }
+        }
     }
     // make direction and move there
     if ( qAbs(for_north)>calmness || qAbs(for_west)>calmness ) {

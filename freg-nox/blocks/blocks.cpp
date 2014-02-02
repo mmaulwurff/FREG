@@ -54,7 +54,7 @@
         }
     }
 
-    quint8 Block::Transparency(const quint8 transp, const int sub) {
+    quint8 Block::Transparency(const quint8 transp, const int sub) const {
         if ( UNDEF == transp ) {
             switch ( sub ) {
             case AIR:   return INVISIBLE;
@@ -682,7 +682,7 @@
             }
         }
     }
-    Inventory::Inventory(Inventory const & inv) :
+    Inventory::Inventory(const Inventory & inv) :
             size(inv.Size())
     {
         inventory = new QStack<Block *>[Size()];
@@ -1328,7 +1328,7 @@
                     QIODevice::Text) )
             {
                 return USAGE_TYPE_READ;
-            } // else:
+            }
             const Shred * shred = active->GetShred();
             const long  lati = shred->Latitude();
             const long longi = shred->Longitude();
@@ -1341,16 +1341,14 @@
                 char body[FILE_SIZE_CHARS+1];
                 memset(body, ' ', FILE_SIZE_CHARS);
                 body[0] = body[FILE_SIZE_CHARS-1] = '|';
-                body[FILE_SIZE_CHARS] =
-                    header[FILE_SIZE_CHARS] = '\n';
+                body[FILE_SIZE_CHARS] = header[FILE_SIZE_CHARS] = '\n';
                 map_file.write(header, FILE_SIZE_CHARS+1);
                 for (ushort i=0; i<FILE_SIZE_CHARS-2; ++i) {
                     map_file.write(body,FILE_SIZE_CHARS+1);
                 }
                 map_file.write(header, FILE_SIZE_CHARS+1);
 
-                map_file.seek(FILE_SIZE_CHARS/2*
-                    (FILE_SIZE_CHARS+1));
+                map_file.seek( FILE_SIZE_CHARS/2 * (FILE_SIZE_CHARS+1) );
                 map_file.putChar('+');
                 map_file.seek(FILE_SIZE_CHARS/2*
                     (FILE_SIZE_CHARS+1)+FILE_SIZE_CHARS-1);
@@ -1360,11 +1358,10 @@
                 latiStart  = lati;
             }
             if ( ( qAbs(lati-latiStart) > FILE_SIZE_CHARS/2 )
-                    || ( qAbs(longi-longiStart) >
-                        FILE_SIZE_CHARS/2 ) )
+                    || ( qAbs(longi-longiStart) > FILE_SIZE_CHARS/2 ) )
             {
                 return USAGE_TYPE_READ;
-            } // else:
+            }
             if ( savedChar ) {
                 map_file.seek(savedShift);
                 map_file.putChar(savedChar);

@@ -630,9 +630,7 @@ void World::Damage(const ushort x, const ushort y, const ushort z,
 
 void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
     Block * const temp = GetBlock(x, y, z);
-    if ( temp->GetDurability() > 0 ) {
-        return;
-    }
+    if ( temp->GetDurability() > 0 ) return;
     Block * const dropped = temp->DropAfterDamage();
     Shred * const shred = GetShred(x, y);
     const ushort x_in_shred = Shred::CoordInShred(x);
@@ -816,7 +814,7 @@ World::World(const QString world_name) :
         timeStep(0),
         worldName(world_name),
         rwLock(new QReadWriteLock()),
-        map(new WorldMap(&world_name)),
+        map(new WorldMap(world_name)),
         toResetDir(UP)
 {
     puts(qPrintable(tr("Loading world settings...")));

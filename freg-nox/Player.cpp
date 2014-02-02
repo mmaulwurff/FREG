@@ -136,7 +136,7 @@ const {
 }
 
 void Player::Examine(const short i, const short j, const short k) const {
-    QReadLocker locker(world->GetLock());
+    const QReadLocker locker(world->GetLock());
 
     const Block * const block = world->GetBlock(i, j, k);
     emit Notify( QString("*----- %1 -----*").arg(block->FullName()) );
@@ -199,14 +199,14 @@ void Player::Backpack() {
 }
 
 void Player::Use(const short x, const short y, const short z) {
-    QWriteLocker locker(world->GetLock());
+    const QWriteLocker locker(world->GetLock());
     const int us_type = world->GetBlock(x, y, z)->Use(player);
     usingType = ( us_type==usingType ) ? USAGE_TYPE_NO : us_type;
     emit Updated();
 }
 
 void Player::Inscribe(const short x, const short y, const short z) const {
-    QWriteLocker locker(world->GetLock());
+    const QWriteLocker locker(world->GetLock());
     emit Notify(player ?
         (world->Inscribe(x, y, z) ?
             tr("Inscribed.") : tr("Cannot inscribe this.")) :
@@ -237,7 +237,7 @@ Block * Player::ValidBlock(const ushort num) const {
 }
 
 usage_types Player::Use(const ushort num) {
-    QWriteLocker locker(world->GetLock());
+    const QWriteLocker locker(world->GetLock());
     return UseNoLock(num);
 }
 
@@ -275,13 +275,13 @@ void Player::Throw(const short x, const short y, const short z,
 void Player::Obtain(const short x, const short y, const short z,
         const ushort src, const ushort dest, const ushort num)
 {
-    QWriteLocker locker(world->GetLock());
+    const QWriteLocker locker(world->GetLock());
     world->Get(player, x, y, z, src, dest, num);
     emit Updated();
 }
 
 void Player::Wield(const ushort num) {
-    QWriteLocker locker(world->GetLock());
+    const QWriteLocker locker(world->GetLock());
     if ( ValidBlock(num) ) {
         for (ushort i=0; i<=Dwarf::ON_LEGS; ++i) {
             InnerMove(num, i);
@@ -293,7 +293,7 @@ void Player::Wield(const ushort num) {
 void Player::MoveInsideInventory(const ushort num_from, const ushort num_to,
         const ushort num)
 {
-    QWriteLocker locker(world->GetLock());
+    const QWriteLocker locker(world->GetLock());
     if ( ValidBlock(num_from) ) {
         InnerMove(num_from, num_to, num);
     }
@@ -307,7 +307,7 @@ void Player::InnerMove(const ushort num_from, const ushort num_to,
 }
 
 void Player::Inscribe(const ushort num) {
-    QWriteLocker locker(world->GetLock());
+    const QWriteLocker locker(world->GetLock());
     if ( ValidBlock(num) ) {
         QString str;
         emit GetString(str);
@@ -316,7 +316,7 @@ void Player::Inscribe(const ushort num) {
 }
 
 void Player::Eat(const ushort num) {
-    QWriteLocker locker(world->GetLock());
+    const QWriteLocker locker(world->GetLock());
     Block * const food = ValidBlock(num);
     if ( food ) {
         Animal * const animal = player->IsAnimal();
@@ -342,7 +342,7 @@ void Player::Pour(const short x_targ, const short y_targ, const short z_targ,
 void Player::Build(const short x_target, const short y_target,
         const short z_target, const ushort slot)
 {
-    QWriteLocker locker(world->GetLock());
+    const QWriteLocker locker(world->GetLock());
     Block * const block = ValidBlock(slot);
     if ( block && (AIR!=world->GetBlock(x, y, z-1)->Sub() ||
             0==player->Weight()) )
@@ -353,7 +353,7 @@ void Player::Build(const short x_target, const short y_target,
 }
 
 void Player::Craft(const ushort num) {
-    QWriteLocker locker(world->GetLock());
+    const QWriteLocker locker(world->GetLock());
     Inventory * const inv = PlayerInventory();
     if ( inv && inv->MiniCraft(num) ) {
         emit Updated();
@@ -361,7 +361,7 @@ void Player::Craft(const ushort num) {
 }
 
 void Player::TakeOff(const ushort num) {
-    QWriteLocker locker(world->GetLock());
+    const QWriteLocker locker(world->GetLock());
     if ( ValidBlock(num) ) {
         for (ushort i=PlayerInventory()->Start();
                 i<PlayerInventory()->Size(); ++i)
@@ -372,10 +372,8 @@ void Player::TakeOff(const ushort num) {
 }
 
 void Player::ProcessCommand(QString command) {
-    if ( 0 == command.length() ) {
-        return;
-    } // else:
-    QWriteLocker locker(world->GetLock());
+    if ( command.isEmpty() ) return;
+    const QWriteLocker locker(world->GetLock());
     QTextStream comm_stream(&command);
     QString request;
     comm_stream >> request;
@@ -385,17 +383,15 @@ void Player::ProcessCommand(QString command) {
             return;
         } // else:
         Inventory * const inv = PlayerInventory();
-        if ( !inv ) {
-            return;
-        } // else:
+        if ( inv == nullptr ) return;
         int kind, sub, num;
         comm_stream >> kind >> sub >> num;
         for (num = qBound(1, num, 9); num; --num) {
             Block* const block = block_manager.NewBlock(kind, sub);
-            if ( !inv->Get(block) ) {
+            if ( not inv->Get(block) ) {
                 emit Notify( (num==1) ?
-                        tr("No place for one thing.") :
-                        tr("No place for %n things.", "", num) );
+                    tr("No place for one thing.") :
+                    tr("No place for %n things.", "", num) );
                 block_manager.DeleteBlock(block);
                 break;
             }
@@ -408,7 +404,7 @@ void Player::ProcessCommand(QString command) {
     } else if ( "what" == request ) {
         ushort x_what, y_what, z_what;
         comm_stream >> x_what >> y_what >> z_what;
-        if ( !world->InBounds(x_what, y_what, z_what) ) {
+        if ( not world->InBounds(x_what, y_what, z_what) ) {
             emit Notify(tr("Such block is out of loaded world."));
         } else if ( GetCreativeMode() || COMMANDS_ALWAYS_ON
                 || qAbs(x-x_what) > 1
@@ -452,7 +448,7 @@ void Player::ProcessCommand(QString command) {
     } else if ( "help" == request ) {
         comm_stream >> request;
         emit ShowFile( QString("help_%1/%2.txt")
-            .arg(QLocale::system().name().left(2)).arg(request));
+            .arg(locale.left(2)).arg(request));
     } else {
         emit Notify(tr("Don't know such command: \"%1\".").arg(command));
     }

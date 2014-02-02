@@ -107,7 +107,7 @@ protected:
     qint16 durability;
 private:
     static const ushort MAX_NOTE_LENGTH = 144;
-    quint8 Transparency(quint8 transp, int sub);
+    quint8 Transparency(quint8 transp, int sub) const;
 
     const quint8 transparent;
     const quint8 sub;

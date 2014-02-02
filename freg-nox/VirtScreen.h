@@ -49,7 +49,7 @@ signals:
     void ExitReceived();
 public slots:
     /// This is called for a notification to be displayed.
-    virtual void Notify(const QString) = 0;
+    virtual void Notify(QString) = 0;
 
     /// This is called when program is stopped and from destructor.
     /** When implemented, this should contain check to prevent
@@ -58,7 +58,7 @@ public slots:
 
     /// This is called when string is needed to be received from input.
     /** It is connected to world in constructor. */
-    virtual QString PassString(QString) const = 0;
+    virtual void PassString(QString &) const = 0;
 
     /// This is called when block at (x, y, z) should be updated in screen.
     /** When implemented, this should work fast.

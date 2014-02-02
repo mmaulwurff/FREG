@@ -20,12 +20,9 @@
 #ifndef WORLDMAP_H
 #define WORLDMAP_H
 
-class QFile;
-class QString;
-
 class WorldMap {
 public:
-    explicit WorldMap(const QString *);
+    explicit WorldMap(QString);
     ~WorldMap();
 
     long MapSize() const;

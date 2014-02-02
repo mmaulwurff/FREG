@@ -100,7 +100,7 @@ void Screen::UpdateAround(const ushort, const ushort, const ushort,
 
 void Screen::Move(const int) { updated = false; }
 
-QString Screen::PassString(QString str) const {
+void Screen::PassString(QString & str) const {
     mvwaddch(commandWin, 0, 0, ':');
     static const ushort NOTE_LENGTH = 144;
     char temp_str[NOTE_LENGTH+1];
@@ -110,7 +110,7 @@ QString Screen::PassString(QString str) const {
     werase(commandWin);
     wrefresh(commandWin);
     fprintf(notifyLog, "%lu: Command: %s\n", w->Time(), temp_str);
-    return str = QString::fromUtf8(temp_str);
+    str = QString::fromUtf8(temp_str);
 }
 
 char Screen::CharNumber(const ushort z) const {
@@ -330,7 +330,7 @@ void Screen::ControlPlayer(const int ch) {
     case KEY_HELP:
     case 'H':
         DisplayFile(QString("help_%1/help.txt")
-            .arg(QLocale::system().name().left(2)));
+            .arg(locale.left(2)));
     break;
     case 'L': RePrint(); break;
     case 'R': // switch active hand
@@ -504,10 +504,7 @@ void Screen::Print() {
 } // void Screen::Print()
 
 void Screen::PrintHUD() {
-    if ( updatedPlayer ) {
-        return;
-    }
-
+    if ( updatedPlayer ) return;
     int y_save, x_save;
     getyx(rightWin, y_save, x_save);
 
@@ -589,7 +586,6 @@ void Screen::PrintHUD() {
             }
         }
     }
-
     (void)wmove(rightWin, y_save, x_save);
     wrefresh(hudWin);
 } // void Screen::PrintHUD()
@@ -624,7 +620,7 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
     wstandend(window);
     mvwaddch(window, player->Y(), player->X()*2+3, '!');
     box(window, 0, 0);
-    if ( player->IfPlayerExists() && dir!=UP && dir!=DOWN ) {
+    if ( player->IfPlayerExists() && dir > DOWN ) {
         const Block * const block = w->GetBlock(player->X(), player->Y(),
             player->Z());
         static const QString arrow_left (QChar(0x2190));
@@ -655,9 +651,7 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
 } // void Screen::PrintNormal(WINDOW * window, int dir)
 
 void Screen::PrintFront(WINDOW * const window) const {
-    if ( not window ) {
-        return;
-    } // else:
+    if ( window == nullptr ) return;
     const int dir = player->GetDir();
     short x_step, z_step,
           x_end,  z_end,
@@ -773,9 +767,7 @@ void Screen::PrintFront(WINDOW * const window) const {
     waddstr(window, qPrintable(dir_string));
     if ( shiftFocus ) {
         HorizontalArrows(window, arrow_Y-shiftFocus, WHITE_BLUE);
-        for (ushort i=arrow_Y-shiftFocus; i<SCREEN_SIZE+1 && i>0;
-                i-=shiftFocus)
-        {
+        for (int i=arrow_Y-shiftFocus; i<SCREEN_SIZE+1 && i>0; i-=shiftFocus) {
             mvwaddch(window, i, 0, '|');
             mvwaddch(window, i, SCREEN_SIZE*2+1, '|');
         }

@@ -144,8 +144,8 @@ public:
 signals:
     void Moved(long x, long y, ushort z) const;
     /// This is emitted when a notification is needed to be displayed.
-    /** It should be connected to screen::Notify(const QString). */
-    void Notify(const QString) const;
+    /** It should be connected to screen::Notify(QString). */
+    void Notify(QString) const;
 
     /// This is emitted when player walks over shred border.
     /** It should be connected to World::ReloadShreds(int) signal. */

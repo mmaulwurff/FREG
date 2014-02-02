@@ -42,7 +42,7 @@ class World : public QThread {
      * Designed to be single. */
     Q_OBJECT
 public:
-    explicit World(const QString);
+    explicit World(QString);
     ~World();
 
 public: // Block work section
@@ -202,7 +202,7 @@ public slots:
     void PhysEvents();
     void SetReloadShreds(int direction);
 signals:
-    void Notify(const QString) const;
+    void Notify(QString) const;
     void GetString(QString) const;
     void Updated(ushort, ushort, ushort);
     void UpdatedAll();

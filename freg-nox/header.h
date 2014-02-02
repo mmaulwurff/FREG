@@ -20,7 +20,7 @@
 #ifndef HEADER_H
 #define HEADER_H
 
-#include <QtGlobal>
+#include <QLocale>
 
 #ifdef Q_OS_WIN32
 #include <windows.h>
@@ -46,6 +46,8 @@ const ushort MAX_DURABILITY = 100;
 const ushort MAX_BREATH = 60;
 
 const uchar MAX_LIGHT_RADIUS = 15;
+
+const QString locale = QLocale::system().name();
 
 enum shred_type {
     SHRED_PLAIN     = '.',

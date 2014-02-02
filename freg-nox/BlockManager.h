@@ -48,12 +48,12 @@ public:
     /// Use this to receive a pointer to normal block.
     Block * NormalBlock(int sub) const;
     /// Use this to receive a pointer to new not-normal block.
-    Block * NewBlock(int kind, int sub) const;
+    static Block * NewBlock(int kind, int sub);
     /// Use this to load block from file.
-    Block * BlockFromFile(QDataStream &, quint8 kind, quint8 sub) const;
+    static Block * BlockFromFile(QDataStream &, quint8 kind, quint8 sub);
     Block * BlockFromFile(QDataStream &) const;
     /// Returns true if block is normal.
-    bool KindSubFromFile(QDataStream &, quint8 & kind, quint8 & sub) const;
+    static bool KindSubFromFile(QDataStream &, quint8 & kind, quint8 & sub);
     /// Use this to safely delete block.
     void DeleteBlock(Block * block) const;
     /// For memory economy.
@@ -66,9 +66,9 @@ public:
     /// If substance is unknown, returns "unknown_sub".
     static QString SubToString(quint8 sub);
     /// If string is not convertible to kind, returns LAST_KIND.
-    static quint8 StringToKind(const QString);
+    static quint8 StringToKind(QString);
     /// If string is not convertible to substance, returns LAST_SUB.
-    static quint8 StringToSub(const QString);
+    static quint8 StringToSub(QString);
 
     static quint16 MakeId(quint8 kind, quint8 sub);
     static quint8 KindFromId(quint16 id);
@@ -79,9 +79,9 @@ private:
     static const QString subs[LAST_SUB];
 
     template <typename Thing>
-    Thing * New(quint8 sub, quint16 id) const;
+    static Thing * New(quint8 sub, quint16 id);
     template <typename Thing>
-    Thing * New(QDataStream & str, quint8 sub, quint16 id) const;
+    static Thing * New(QDataStream & str, quint8 sub, quint16 id);
 }; // class BlockManager
 
 extern BlockManager block_manager;

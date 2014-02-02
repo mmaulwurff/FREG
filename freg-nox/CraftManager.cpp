@@ -151,7 +151,7 @@ CraftManager::CraftManager() : size(0) {
         }
         ++size;
     }
-}
+} // CraftManager::CraftManager()
 
 CraftManager::~CraftManager() {
     for (int i=0; i<size; ++i) {
@@ -188,7 +188,7 @@ CraftList * CraftManager::CraftSub(const CraftList * const recipe,
 const {
     // find needed recipes list
     int point = 0;
-    for ( ; recipesSubsList[point] != sub && point < size; ++point);
+    for ( ; point < size && recipesSubsList[point] != sub; ++point);
     if ( point == size ) { //recipes list for workbench sub not found
         return 0;
     } // else:
