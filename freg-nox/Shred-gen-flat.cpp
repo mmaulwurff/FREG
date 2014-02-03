@@ -111,6 +111,7 @@ void Shred::Hill() {
             }
         }
     }
+    RandomDrop(qrand()%4, WEAPON, STONE);
     PlantGrass();
 }
 
@@ -135,7 +136,7 @@ void Shred::Mountain() {
             SHRED_WIDTH/2, 2, 1, STONE);
     }
     // water pool
-    if ( !(qrand()%10) ) {
+    if ( qrand()%10 == 0 ) {
         for (ushort i=1; i<SHRED_WIDTH/2-1; ++i)
         for (ushort j=1; j<SHRED_WIDTH/2-1; ++j)
         for (ushort k=mount_top-3; k<=mount_top; ++k) {
@@ -143,13 +144,11 @@ void Shred::Mountain() {
         }
     }
     // cavern
-    if ( !(qrand()%10) ) {
-        NormalCube(SHRED_WIDTH/4-2, SHRED_WIDTH/4-2,
-            HEIGHT/2+1, 4, 4, 3, AIR);
+    if ( qrand()%10 == 0 ) {
+        NormalCube(SHRED_WIDTH/4-2, SHRED_WIDTH/4-2, HEIGHT/2+1, 4, 4, 3, AIR);
         const int entries = qrand()%15+1;
         if ( entries & 1 ) { // north entry
-            NormalCube(SHRED_WIDTH/4-1, 0, HEIGHT/2+1,
-                2, 2, 2, AIR);
+            NormalCube(SHRED_WIDTH/4-1, 0, HEIGHT/2+1, 2, 2, 2, AIR);
         }
         if ( entries & 2 ) { // east entry
             NormalCube(SHRED_WIDTH/2-4, SHRED_WIDTH/4-1,
@@ -160,10 +159,10 @@ void Shred::Mountain() {
                 HEIGHT/2+1, 2, 2, 2, AIR);
         }
         if ( entries & 8 ) { // west entry
-            NormalCube(0, SHRED_WIDTH/4-1, HEIGHT/2+1,
-                2, 2, 2, AIR);
+            NormalCube(0, SHRED_WIDTH/4-1, HEIGHT/2+1, 2, 2, 2, AIR);
         }
     }
+    RandomDrop(qrand()%8, WEAPON, STONE);
     PlantGrass();
 } // Shred::Mountain()
 

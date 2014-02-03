@@ -28,6 +28,7 @@ QString Active::FullName() const {
     switch ( Sub() ) {
     case SAND:  return tr("Sand");
     case WATER: return tr("Snow");
+    case STONE: return tr("Masonry");
     default:
         fprintf(stderr, "Active::FullName: Unlisted sub: %d\n", Sub());
         return "Unkown active block";

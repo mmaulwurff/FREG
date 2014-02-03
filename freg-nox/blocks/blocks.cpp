@@ -87,8 +87,9 @@
         case MOSS_STONE:
         case STONE:
             switch ( dmg_kind ) {
-            case CRUSH: mult = 0; break;
-            case MINE:  mult = 2; break;
+            case CRUSH:
+            case CUT:   mult = 0;   break;
+            case MINE:  mult = 2;   break;
             }
             break;
         case GREENERY:

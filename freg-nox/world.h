@@ -203,7 +203,7 @@ public slots:
     void SetReloadShreds(int direction);
 signals:
     void Notify(QString) const;
-    void GetString(QString) const;
+    void GetString(QString &) const;
     void Updated(ushort, ushort, ushort);
     void UpdatedAll();
     void UpdatedAround(ushort x, ushort y, ushort z, ushort level);

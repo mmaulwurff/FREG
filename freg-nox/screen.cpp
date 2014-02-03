@@ -171,9 +171,9 @@ char Screen::CharName(const int kind, const int sub) const {
     case ACTIVE: switch ( sub ) {
         case SAND:  return '.';
         case WATER: return '*';
+        case STONE: return ':';
         default:
-            fprintf(stderr, "Screen::CharName: active sub ?: %d\n",
-                sub);
+            fprintf(stderr, "Screen::CharName: active sub ?: %d\n", sub);
     } // no break;
     default: switch ( sub ) {
         default: fprintf(stderr,
@@ -212,7 +212,6 @@ color_pairs Screen::Color(const int kind, const int sub) const {
     case ACTIVE: switch ( sub ) {
         case WATER: return CYAN_WHITE;
         case SAND:  return YELLOW_WHITE;
-        default:    return WHITE_BLACK;
     }
     default: switch ( sub ) {
         case WOOD: case HAZELNUT:
