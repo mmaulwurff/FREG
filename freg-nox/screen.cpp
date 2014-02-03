@@ -236,7 +236,7 @@ color_pairs Screen::Color(const int kind, const int sub) const {
         case SKY: case STAR: switch ( w->PartOfDay() ) {
             case NIGHT:   return WHITE_BLACK;
             case MORNING: return WHITE_BLUE;
-            case NOON:    return BLACK_CYAN;
+            case NOON:    return CYAN_CYAN;
             case EVENING: return WHITE_CYAN;
             }
         default: return WHITE_BLACK;
@@ -798,7 +798,7 @@ const {
     const int start = inv->Start();
     int shift = 0; // to divide inventory sections
     for (ushort i=0; i<inv->Size(); ++i) {
-        if ( start == i ) {
+        if ( start == i && i != 0) {
             ++shift;
             mvwhline(window, 2+i, 0, ACS_HLINE, SCREEN_SIZE*2+2);
         }

@@ -69,7 +69,7 @@
     }
 
     void Block::Damage(const ushort dmg, const int dmg_kind) {
-        if ( dmg_kind == DAMAGE_HANDS || dmg_kind == NO_HARM ) return;
+        if ( dmg_kind == NO_HARM ) return;
         ushort mult = 1;
         switch ( Sub() ) {
         case DIFFERENT:
@@ -87,8 +87,8 @@
         case MOSS_STONE:
         case STONE:
             switch ( dmg_kind ) {
-            case CRUSH:
-            case CUT:   mult = 0;   break;
+            case CRUSH: case DAMAGE_HANDS:
+            case CUT:   return;
             case MINE:  mult = 2;   break;
             }
             break;
@@ -280,6 +280,7 @@
         switch ( Sub() ) {
         case WOOD:  return QObject::tr("Ladder");
         case STONE: return QObject::tr("Rock with ledges");
+        case GREENERY: return QObject::tr("Liana");
         default:
             fprintf(stderr, "Ladder::FullName: unlisted sub: %d\n",
                 Sub());
