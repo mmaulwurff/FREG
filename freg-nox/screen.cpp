@@ -160,9 +160,7 @@ char Screen::CharName(const int kind, const int sub) const {
     case DOOR:        return ( STONE == sub ) ? '#' : '\'';
     case LOCKED_DOOR: return ( STONE == sub ) ? '#' : '`';
     case WEAPON: switch ( sub ) {
-        default:
-            fprintf(stderr, "Screen::CharName: weapon sub ?: %d\n",
-                sub);
+        default: fprintf(stderr, "Screen::CharName: weapon sub ?: %d\n", sub);
         // no break;
         case STONE: return '.';
         case IRON: case BONE:
@@ -172,12 +170,11 @@ char Screen::CharName(const int kind, const int sub) const {
         case SAND:  return '.';
         case WATER: return '*';
         case STONE: return ':';
-        default:
-            fprintf(stderr, "Screen::CharName: active sub ?: %d\n", sub);
+        case FIRE:  return 'f';
+        default: fprintf(stderr, "Screen::CharName: active sub ?: %d\n", sub);
     } // no break;
     default: switch ( sub ) {
-        default: fprintf(stderr,
-            "Screen::CharName: sub (?): %d\n", sub);
+        default: fprintf(stderr, "Screen::CharName: sub (?): %d\n", sub);
         case NULLSTONE:  case IRON: case CLAY:
         case MOSS_STONE: case WOOD: case GOLD:
         case STONE: return '#';
@@ -208,11 +205,11 @@ color_pairs Screen::Color(const int kind, const int sub) const {
     case LIQUID: switch ( sub ) {
         case WATER: return CYAN_BLUE;
         default:    return RED_YELLOW;
-    }
+    } // no break;
     case ACTIVE: switch ( sub ) {
         case WATER: return CYAN_WHITE;
         case SAND:  return YELLOW_WHITE;
-    }
+    } // no break;
     default: switch ( sub ) {
         case WOOD: case HAZELNUT:
         case SOIL:       return BLACK_YELLOW;
@@ -231,6 +228,7 @@ color_pairs Screen::Color(const int kind, const int sub) const {
         case PAPER:      return MAGENTA_WHITE;
         case GOLD:       return WHITE_YELLOW;
         case BONE:       return MAGENTA_WHITE;
+        case FIRE:       return RED_YELLOW;
         case SUN_MOON:   return ( NIGHT == w->PartOfDay() ) ?
             WHITE_WHITE : YELLOW_YELLOW;
         case SKY: case STAR: switch ( w->PartOfDay() ) {

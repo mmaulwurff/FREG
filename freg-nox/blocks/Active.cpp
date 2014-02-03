@@ -29,6 +29,7 @@ QString Active::FullName() const {
     case SAND:  return tr("Sand");
     case WATER: return tr("Snow");
     case STONE: return tr("Masonry");
+    case FIRE:  return tr("Fire");
     default:
         fprintf(stderr, "Active::FullName: Unlisted sub: %d\n", Sub());
         return "Unkown active block";
@@ -37,28 +38,49 @@ QString Active::FullName() const {
 
 quint8 Active::Kind() const { return ACTIVE; }
 Active * Active::ActiveBlock() { return this; }
-int  Active::ShouldAct() const { return NEVER; }
 bool Active::IsFalling() const { return falling; }
 bool Active::ShouldFall() const { return true; }
+int  Active::ShouldAct() const { return (FIRE == Sub()) ? RARE : NEVER; }
 int  Active::PushResult(const int) const { return MOVABLE; }
-void Active::DoRareAction() {}
 void Active::DoFrequentAction() {}
+
 void Active::ActFrequent() {
-    if ( !IsToDelete() ) {
+    if ( not IsToDelete() ) {
         if ( GetDeferredAction() ) {
             GetDeferredAction()->MakeAction();
         }
         DoFrequentAction();
     }
 }
+
+
 void Active::ActRare() {
-    if ( !IsToDelete() ) {
+    if ( not IsToDelete() ) {
         DoRareAction();
     }
 }
 
+void Active::DoRareAction() {
+    if ( FIRE == Sub() ) {
+        World * const world = GetWorld();
+        const Xyz coords[] = {
+            Xyz( X()-1, Y(),   Z()   ),
+            Xyz( X()+1, Y(),   Z()   ),
+            Xyz( X(),   Y()-1, Z()   ),
+            Xyz( X(),   Y()+1, Z()   ),
+            Xyz( X(),   Y(),   Z()-1 ),
+            Xyz( X(),   Y(),   Z()+1 ) };
+        for (const Xyz xyz : coords) {
+            world->Damage(xyz.GetX(), xyz.GetY(), xyz.GetZ(), 5, HEAT);
+        }
+        if ( qrand()%10 || IsSubAround(WATER) ) {
+            world->Damage(X(), Y(), Z(), 2, FREEZE);
+        }
+    }
+}
+
 void Active::SetFalling(const bool set) {
-    if ( !(falling=set) ) {
+    if ( not (falling=set) ) {
         fall_height = 0;
     }
 }
@@ -71,12 +93,12 @@ DeferredAction * Active::GetDeferredAction() const { return deferredAction; }
 
 void Active::FallDamage() {
     if ( fall_height > SAFE_FALL_HEIGHT ) {
-        World * const world=GetWorld();
-        const ushort dmg=(fall_height - SAFE_FALL_HEIGHT)*10;
+        World * const world = GetWorld();
+        const ushort dmg = (fall_height - SAFE_FALL_HEIGHT)*10;
         world->Damage(X(), Y(), Z()-1, dmg, DAMAGE_FALL);
         world->Damage(X(), Y(), Z(), dmg, DAMAGE_FALL);
     }
-    fall_height=0;
+    fall_height = 0;
 }
 
 ushort Active::X() const { return x_self; }
@@ -113,12 +135,10 @@ void Active::SendSignalAround(const QString signal) const {
         Xy( X()-1, Y()   ),
         Xy( X()+1, Y()   ),
         Xy( X(),   Y()-1 ),
-        Xy( X(),   Y()+1 )
-    };
-    for (ushort i=0; i<sizeof(coords)/sizeof(Xy); ++i) {
-        if ( world->InBounds(coords[i].GetX(), coords[i].GetY()) ) {
-            world->GetBlock( coords[i].GetX(), coords[i].GetY(),
-                Z() )->ReceiveSignal(signal);
+        Xy( X(),   Y()+1 ) };
+    for (const Xy xy : coords) {
+        if ( world->InBounds(xy.GetX(), xy.GetY()) ) {
+             world->GetBlock(xy.GetX(), xy.GetY(), Z())->ReceiveSignal(signal);
         }
     }
     world->GetBlock(X(), Y(), Z()-1)->ReceiveSignal(signal);
@@ -163,7 +183,7 @@ void Active::SetXYZ(const ushort x, const ushort y, const ushort z) {
 }
 
 void Active::SetToDelete() {
-    if ( !frozen ) {
+    if ( not frozen ) {
         frozen = true;
         GetShred()->AddToDelete(this);
         ReceiveSignal(tr("You die."));

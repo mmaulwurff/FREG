@@ -68,7 +68,7 @@ public:
     quint8 Kind() const;
     int  Sub() const;
     void Push(int dir, Block * who);
-    void ReceiveSignal(const QString);
+    void ReceiveSignal(QString);
     QString FullName() const;
     Inventory * HasInventory();
     usage_types Use(Block * who = 0);
@@ -85,7 +85,7 @@ public:
 
     quint8 Kind() const;
     int  Sub() const;
-    void ReceiveSignal(const QString);
+    void ReceiveSignal(QString);
     void DoRareAction();
     int  ShouldAct() const;
     void Push(int, Block * who);
@@ -143,7 +143,7 @@ public:
     bool ShouldFall() const;
     void DoRareAction();
     void Push(int dir, Block * who);
-    void ReceiveSignal(const QString);
+    void ReceiveSignal(QString);
     void Damage(ushort dmg, int dmg_kind);
     quint8 Kind() const;
     ushort Weight() const;
@@ -181,7 +181,7 @@ public:
     bool Drop(ushort src, ushort dest, ushort num, Inventory * inv);
     bool Get(Block * block, ushort start = 0);
     bool GetAll(Inventory * from);
-    void ReceiveSignal(const QString);
+    void ReceiveSignal(QString);
     ushort Start() const;
     QString FullName() const;
 private:
@@ -222,7 +222,7 @@ public:
     void DoRareAction();
     bool ShouldFall() const;
     void Push(int dir, Block * who);
-    bool Inscribe(const QString);
+    bool Inscribe(QString);
     quint8 Kind() const;
     ushort Weight() const;
     QString FullName() const;
@@ -240,7 +240,7 @@ public:
 
     quint8 Kind() const;
     int  Sub() const;
-    void ReceiveSignal(const QString);
+    void ReceiveSignal(QString);
     int  DamageKind() const;
     ushort DamageLevel() const;
     QString FullName() const;
@@ -257,7 +257,7 @@ public:
     quint8 Kind() const;
     QString FullName() const;
     usage_types Use(Block * who = 0);
-    bool Inscribe(const QString);
+    bool Inscribe(QString);
 };
 
 class Map : public Text {
@@ -285,7 +285,7 @@ public:
     quint8 Kind() const;
     QString FullName() const;
     usage_types Use(Block * who = 0);
-    void ReceiveSignal(const QString);
+    void ReceiveSignal(QString);
 };
 
 class Predator : public Animal {

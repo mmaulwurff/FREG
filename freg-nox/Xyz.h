@@ -28,7 +28,7 @@ public:
     short GetY() const { return y; }
 private:
     short x, y;
-}; // class Xy
+};
 
 class Xyz {
 public:
@@ -39,6 +39,6 @@ public:
     short GetZ() const { return z; }
 private:
     short x, y, z;
-}; // class Xyz
+};
 
 #endif

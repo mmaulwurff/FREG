@@ -15,7 +15,7 @@ public:
     QString FullName() const;
     bool    Get(Block * block, ushort start);
     void    Damage(ushort dmg, int dmg_kind);
-    void    ReceiveSignal(const QString str);
+    void    ReceiveSignal(QString str);
     void    SaveAttributes(QDataStream & out) const;
     usage_types Use(Block *);
     Inventory * HasInventory();

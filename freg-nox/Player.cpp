@@ -141,9 +141,9 @@ void Player::Examine(const short i, const short j, const short k) const {
     const Block * const block = world->GetBlock(i, j, k);
     emit Notify( QString("*----- %1 -----*").arg(block->FullName()) );
     const int sub = block->Sub();
-    if ( GetCreativeMode() || COMMANDS_ALWAYS_ON ) { //know more
+    if ( GetCreativeMode() || COMMANDS_ALWAYS_ON ) { // know more
         emit Notify(tr(
-        "Light:%1, fire:%2, sun:%3. Transp:%4. Norm:%5. Dir:%6.").
+            "Light:%1, fire:%2, sun:%3. Transp:%4. Norm:%5. Dir:%6.").
             arg(world->Enlightened(i, j, k)).
             arg(world->FireLight(i, j, k)/16).
             arg(world->SunLight(i, j, k)).
@@ -151,11 +151,9 @@ void Player::Examine(const short i, const short j, const short k) const {
             arg(block==block_manager.NormalBlock(sub)).
             arg(block->GetDir()));
     }
-    if ( AIR==sub || SKY==sub || SUN_MOON==sub ) {
-        return;
-    } // else:
-    QString str;
-    if ( "" != (str=block->GetNote()) ) {
+    if ( AIR==sub || SKY==sub || SUN_MOON==sub || STAR==sub ) return;
+    const QString str = block->GetNote();
+    if ( not str.isEmpty() ) {
         emit Notify(tr("Inscription: ")+str);
     }
     emit Notify(tr("Temperature: %1. Durability: %2. Weight: %3. Id: %4.").

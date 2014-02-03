@@ -47,9 +47,7 @@
         case SAND:       return QObject::tr("Sandstone");
         case CLAY:       return QObject::tr("Clay brick");
         case GOLD:       return QObject::tr("Block of gold");
-        default:
-            fprintf(stderr, "Block::FullName: unlisted sub: %d.\n",
-                Sub());
+        default: fprintf(stderr, "Block::FullName: sub ?: %d.\n", Sub());
             return "Unknown block";
         }
     }
@@ -101,6 +99,7 @@
         case SOIL: ++(mult = (DIG==dmg_kind)); break;
         case A_MEAT:
         case H_MEAT: ++(mult = (THRUST==dmg_kind)); break;
+        case FIRE: mult = (FREEZE==dmg_kind); break;
         }
         durability -= mult*dmg;
     }
@@ -125,7 +124,7 @@
     int  Block::Wearable() const { return WEARABLE_NOWHERE; }
     int  Block::DamageKind() const { return CRUSH; }
     ushort Block::DamageLevel() const { return 1; }
-    uchar Block::LightRadius() const { return 0; }
+    uchar Block::LightRadius() const { return (FIRE == Sub()) ? 5 : 0; }
     void Block::ReceiveSignal(const QString) {}
 
     bool Block::Inscribe(const QString str) {
@@ -153,9 +152,10 @@
     QString Block::GetNote() const { return note ? *note : ""; }
 
     int Block::Temperature() const {
-        switch ( sub ) {
+        switch ( Sub() ) {
         case WATER: return -100;
-        default:    return 0;
+        case FIRE:  return   50;
+        default:    return    0;
         }
     }
 
@@ -178,6 +178,7 @@
         case SKY:
         case STAR:
         case SUN_MOON:
+        case FIRE:
         case AIR:       return WEIGHT_AIR;
         default:        return WEIGHT_WATER;
         }
