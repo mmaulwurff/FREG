@@ -98,7 +98,7 @@
 
     ushort Shovel::DamageLevel() const {
         switch ( Sub() ) {
-        case IRON: return 10;
+        case IRON: return 3;
         default:
             fprintf(stderr, "Shovel::DamageLevel: sub (?): %d\n.", Sub());
             return 1;
@@ -138,7 +138,7 @@
 
     QString Hammer::FullName() const {
         switch ( Sub() ) {
-        case WOOD:  return QObject::tr("Wooden hammer");
+        case WOOD:  return QObject::tr("Club");
         case STONE: return QObject::tr("Stone hammer");
         case IRON:  return QObject::tr("Iron hammer");
         case STEEL: return QObject::tr("Steel hammer");
