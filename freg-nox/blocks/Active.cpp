@@ -17,7 +17,6 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include <QDataStream>
 #include "Active.h"
 #include "Shred.h"
 #include "world.h"
@@ -29,7 +28,6 @@ QString Active::FullName() const {
     case SAND:  return tr("Sand");
     case WATER: return tr("Snow");
     case STONE: return tr("Masonry");
-    case FIRE:  return tr("Fire");
     default:
         fprintf(stderr, "Active::FullName: Unlisted sub: %d\n", Sub());
         return "Unkown active block";
@@ -40,9 +38,10 @@ quint8 Active::Kind() const { return ACTIVE; }
 Active * Active::ActiveBlock() { return this; }
 bool Active::IsFalling() const { return falling; }
 bool Active::ShouldFall() const { return true; }
-int  Active::ShouldAct() const { return (FIRE == Sub()) ? RARE : NEVER; }
+int  Active::ShouldAct() const { return NEVER; }
 int  Active::PushResult(const int) const { return MOVABLE; }
 void Active::DoFrequentAction() {}
+void Active::DoRareAction() {}
 
 void Active::ActFrequent() {
     if ( not IsToDelete() ) {
@@ -53,29 +52,9 @@ void Active::ActFrequent() {
     }
 }
 
-
 void Active::ActRare() {
     if ( not IsToDelete() ) {
         DoRareAction();
-    }
-}
-
-void Active::DoRareAction() {
-    if ( FIRE == Sub() ) {
-        World * const world = GetWorld();
-        const Xyz coords[] = {
-            Xyz( X()-1, Y(),   Z()   ),
-            Xyz( X()+1, Y(),   Z()   ),
-            Xyz( X(),   Y()-1, Z()   ),
-            Xyz( X(),   Y()+1, Z()   ),
-            Xyz( X(),   Y(),   Z()-1 ),
-            Xyz( X(),   Y(),   Z()+1 ) };
-        for (const Xyz xyz : coords) {
-            world->Damage(xyz.GetX(), xyz.GetY(), xyz.GetZ(), 5, HEAT);
-        }
-        if ( qrand()%10 || IsSubAround(WATER) ) {
-            world->Damage(X(), Y(), Z(), 2, FREEZE);
-        }
     }
 }
 

@@ -127,6 +127,8 @@ public:
     bool ShouldFall() const;
     void Push(int dir, Block * who);
     Block * DropAfterDamage() const;
+private:
+    static bool IsBase(quint8 ownsub, quint8 ground);
 };
 
 class Bush : public Active, public Inventory {

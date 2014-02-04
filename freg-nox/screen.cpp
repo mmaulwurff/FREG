@@ -141,7 +141,7 @@ char Screen::CharName(const int kind, const int sub) const {
     case CREATOR:
     case DWARF:  return '@';
     case LIQUID: return '~';
-    case GRASS:  return '.';
+    case GRASS:  return ( FIRE == sub ) ? 'f' : '.';
     case RABBIT: return 'r';
     case CLOCK:  return 'c';
     case PLATE:  return '_';
@@ -170,7 +170,6 @@ char Screen::CharName(const int kind, const int sub) const {
         case SAND:  return '.';
         case WATER: return '*';
         case STONE: return ':';
-        case FIRE:  return 'f';
         default: fprintf(stderr, "Screen::CharName: active sub ?: %d\n", sub);
     } // no break;
     default: switch ( sub ) {

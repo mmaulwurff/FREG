@@ -497,7 +497,8 @@ void Shred::TestShred() {
     row += 2;
     SetNewBlock(ACTIVE, STONE, column+=2, row, level);
     SetNewBlock(WEAPON, STONE, column+=2, row, level);
-    SetNewBlock(ACTIVE, FIRE, column+=2, row, level);
+    SetNewBlock(GRASS,  FIRE,  column+=2, row, level);
+    SetNewBlock(BLOCK,  WOOD,  column, row, level-1);
 } // void Shred::TestShred()
 
 void Shred::NullMountain() {

@@ -68,7 +68,7 @@
 
     void Block::Damage(const ushort dmg, const int dmg_kind) {
         if ( dmg_kind == NO_HARM ) return;
-        ushort mult = 1;
+        ushort mult = 1; // default
         switch ( Sub() ) {
         case DIFFERENT:
             if ( TIME == dmg_kind ) {
@@ -81,25 +81,25 @@
         case AIR:
         case SKY:
         case SUN_MOON: return;
-        case WATER: mult=( HEAT==dmg_kind || TIME==dmg_kind ); break;
+        case WATER: mult = ( HEAT==dmg_kind || TIME==dmg_kind ); break;
         case MOSS_STONE:
-        case STONE:
-            switch ( dmg_kind ) {
+        case STONE: switch ( dmg_kind ) {
             case CRUSH: case DAMAGE_HANDS:
             case CUT:   return;
-            case MINE:  mult = 2;   break;
-            }
-            break;
+            case MINE:  mult = 2; break;
+        } break;
         case GREENERY:
         case GLASS: durability = 0; return;
-        case ROSE:
-        case HAZELNUT:
-        case WOOD: ++(mult = (CUT==dmg_kind)); break;
+        case WOOD: switch ( dmg_kind ) {
+            default:  mult = 1; break;
+            case CUT: mult = 2; break;
+            case DAMAGE_HANDS: return;
+        } break;
         case SAND:
-        case SOIL: ++(mult = (DIG==dmg_kind)); break;
         case A_MEAT:
         case H_MEAT: ++(mult = (THRUST==dmg_kind)); break;
-        case FIRE: mult = (FREEZE==dmg_kind); break;
+        case SOIL:   ++(mult = (DIG   ==dmg_kind)); break;
+        case FIRE: mult = (FREEZE==dmg_kind || TIME==dmg_kind); break;
         }
         durability -= mult*dmg;
     }
@@ -360,11 +360,9 @@
         for (ushort x=X()-1; x<=X()+1; ++x)
         for (ushort y=Y()-1; y<=Y()+1; ++y) {
             if ( world->InBounds(x, y) &&
-                    GREENERY==world->
-                        GetBlock(x, y, Z())->Sub() )
+                    GREENERY==world->GetBlock(x, y, Z())->Sub() )
             {
-                world->Damage(x, y, Z(), DamageLevel(),
-                    DamageKind());
+                world->Damage(x, y, Z(), DamageLevel(), DamageKind());
                 world->DestroyAndReplace(x, y, Z());
                 Eat(GREENERY);
                 return;
@@ -767,48 +765,68 @@
 // Grass::
     void Grass::DoRareAction() {
         World * const world = GetWorld();
-        if ( SOIL != GetShred()->GetBlock(Shred::CoordInShred(X()),
-                Shred::CoordInShred(Y()), Z()-1)->Sub() )
-        {
+        if ( FIRE == Sub() ) {
+            const Xyz coords[] = {
+                Xyz( X()-1, Y(),   Z()   ),
+                Xyz( X()+1, Y(),   Z()   ),
+                Xyz( X(),   Y()-1, Z()   ),
+                Xyz( X(),   Y()+1, Z()   ),
+                Xyz( X(),   Y(),   Z()-1 ),
+                Xyz( X(),   Y(),   Z()+1 ) };
+            for (const Xyz xyz : coords) {
+                world->Damage(xyz.GetX(), xyz.GetY(), xyz.GetZ(), 5, HEAT);
+                world->DestroyAndReplace(xyz.GetX(), xyz.GetY(), xyz.GetZ());
+            }
+            if ( qrand()%10 || IsSubAround(WATER) ) {
+                world->Damage(X(), Y(), Z(), 2, FREEZE);
+            }
+        }
+        if ( not IsBase(Sub(), world->GetBlock(X(), Y(), Z()-1)->Sub()) ) {
             world->Damage(X(), Y(), Z(), durability, TIME);
             world->DestroyAndReplace(X(), Y(), Z());
         }
         short i=X(), j=Y();
         // increase this if grass grows too fast
-        switch ( qrand() % (SECONDS_IN_HOUR*2) ) {
+        switch ( qrand() % (FIRE==Sub() ? 4 : SECONDS_IN_HOUR*2) ) {
         case 0: ++i; break;
         case 1: --i; break;
         case 2: ++j; break;
         case 3: --j; break;
         default: return;
         }
-        if ( !world->InBounds(i, j) ) {
-            return;
-        } // else:
+        if ( not world->InBounds(i, j) ) return;
         const quint8 sub_near = world->GetBlock(i, j, Z())->Sub();
-        if ( world->Enlightened(i, j, Z()) ) {
-            if ( AIR==sub_near &&
-                    SOIL==world->GetBlock(i, j, Z()-1)->
-                        Sub() )
+        if ( world->Enlightened(i, j, Z()) || FIRE == Sub() ) {
+            if ( AIR == sub_near
+                    && IsBase(Sub(), world->GetBlock(i, j, Z()-1)->Sub() ) )
             {
-                world->Build(block_manager.NewBlock(GRASS,
-                        Sub()), i, j, Z());
-            } else if ( SOIL==sub_near &&
-                    AIR==world->GetBlock(i, j, Z()+1)->
-                        Sub() )
+                world->Build(block_manager.NewBlock(GRASS, Sub()), i, j, Z());
+            } else if ( IsBase(Sub(), sub_near)
+                    && AIR == world->GetBlock(i, j, Z()+1)->Sub() )
             {
-                world->Build(block_manager.NewBlock(GRASS,
-                        Sub()), i, j, Z()+1);
+                world->Build(block_manager.NewBlock(GRASS, Sub()), i,j, Z()+1);
             }
         }
+    }
+
+    bool Grass::IsBase(const quint8 own_sub, const quint8 ground) {
+        return ( GREENERY==own_sub && SOIL==ground )
+            || ( FIRE==own_sub && (
+                WOOD==ground
+                || GREENERY==ground
+                || H_MEAT==ground
+                || A_MEAT==ground
+                || HAZELNUT==ground
+                || ROSE==ground
+                || PAPER==ground ) );
     }
 
     QString Grass::FullName() const {
         switch ( Sub() ) {
         case GREENERY: return tr("Grass");
+        case FIRE:     return tr("Fire");
         default:
-            fprintf(stderr, "Grass::FullName(): sub (?): %d\n",
-                Sub());
+            fprintf(stderr, "Grass::FullName(): sub (?): %d\n", Sub());
             return "Unknown plant";
         }
     }

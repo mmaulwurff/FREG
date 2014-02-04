@@ -29,7 +29,7 @@ enum ACTIVE_FREQUENCY {
     FREQUENT_INTELLECTUAL = 2,
     FREQUENT_ANIMAL = 4,
     FREQUENT_MECH = 6
-}; // enum ACTIVE_FREQUENCY
+};
 
 class Shred;
 class World;
@@ -106,6 +106,6 @@ private:
     /// Coordinates in loaded world zone.
     ushort x_self, y_self, z_self;
     Shred * shred;
-}; // class Active
+};
 
 #endif // ACTIVE_H
