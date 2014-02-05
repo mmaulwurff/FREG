@@ -24,6 +24,7 @@
 #include "blocks/Dwarf.h"
 #include "blocks/Bucket.h"
 #include "blocks/Weapons.h"
+#include "blocks/Illuminator.h"
 
 const QString BlockManager::kinds[LAST_KIND] = {
     "block",
@@ -53,7 +54,8 @@ const QString BlockManager::kinds[LAST_KIND] = {
     "bucket",
     "shovel",
     "axe",
-    "hammer"
+    "hammer",
+    "illuminator"
 };
 
 const QString BlockManager::subs[LAST_SUB] = {
@@ -130,6 +132,7 @@ Block * BlockManager::NewBlock(const int kind, const int sub) {
     case CREATOR: return New<Creator>(sub, id);
     case PREDATOR: return New<Predator>(sub, id);
     case WORKBENCH: return New<Workbench>(sub, id);
+    case ILLUMINATOR: return New<Illuminator>(sub, id);
     }
 } // Block * BlockManager::NewBlock(int kind, int sub)
 
@@ -166,6 +169,7 @@ Block * BlockManager::BlockFromFile(QDataStream & str,
     case CREATOR: return New<Creator>(str, sub, id);
     case PREDATOR: return New<Predator>(str, sub, id);
     case WORKBENCH: return New<Workbench>(str, sub, id);
+    case ILLUMINATOR: return New<Illuminator>(str, sub, id);
     }
 }
 

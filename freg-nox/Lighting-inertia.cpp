@@ -197,7 +197,7 @@ const {
 uchar World::Enlightened(const ushort i, const ushort j, const ushort k,
         const int dir)
 const {
-    ushort x, y, z;
+    short x, y, z;
     Focus(i, j, k, x, y, z, dir);
     return qMin(Enlightened(i, j, k), Enlightened(x, y, z));
 }

@@ -99,6 +99,10 @@ public slots:
     /// This is called when player is dead, and displayed until respawn.
     void DeathScreen(); // virtual ?
 
+    /// Used to get player focus coordinates from screen.
+    /** x, y, z are coordinates where player will make action. */
+    virtual void ActionXyz(short & x, short & y, short & z) const;
+
     /// This shows a file by path.
     /** Standard (non-reimpemented) version does nothing. */
     virtual void DisplayFile(QString path);
@@ -108,6 +112,6 @@ private slots:
 protected:
     World * const w;
     Player * const player;
-}; // class VirtScreen
+};
 
 #endif // VIRTSCREEN_H

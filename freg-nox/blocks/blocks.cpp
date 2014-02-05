@@ -106,7 +106,7 @@
 
     Block * Block::DropAfterDamage() const {
         return GLASS==Sub() ?
-            0 : BLOCK==Kind() ?
+            nullptr : BLOCK==Kind() ?
                 block_manager.NormalBlock(Sub()) :
                 block_manager.NewBlock(Kind(), Sub());
     }
@@ -1053,7 +1053,7 @@
     void Door::DoFrequentAction() {
         if ( shifted ) {
             movable = true;
-            ushort x, y, z;
+            short x, y, z;
             GetWorld()->Focus(X(), Y(), Z(), x, y, z, World::Anti(GetDir()));
             if ( ENVIRONMENT == GetWorld()->GetBlock(x, y, z)->
                     PushResult(NOWHERE) )

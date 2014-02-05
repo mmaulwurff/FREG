@@ -98,9 +98,8 @@ private:
 public: // Information section
     QString WorldName() const;
     /// True on error, false if focus is received to _targ successfully.
-    bool Focus(ushort x, ushort y, ushort z,
-            ushort & x_targ, ushort & y_targ, ushort & z_targ,
-            quint8 dir) const;
+    bool Focus(short x, short y, short z,
+            short & x_targ, short & y_targ, short & z_targ, quint8 dir) const;
     ushort NumShreds() const;
     static quint8 TurnRight(quint8 dir);
     static quint8 TurnLeft (quint8 dir);

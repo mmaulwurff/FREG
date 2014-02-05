@@ -138,6 +138,7 @@ enum kinds {
     SHOVEL,      ///< 25
     AXE,         ///< 26
     HAMMER,      ///< 27
+    ILLUMINATOR, ///< 28
     /// Nothing is LAST_KIND.
     LAST_KIND // keep it last in this list.
 }; // enum kinds

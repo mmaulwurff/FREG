@@ -130,11 +130,6 @@ void Player::UpdateXYZ(const int) {
     }
 }
 
-void Player::Focus(ushort & i_target, ushort & j_target, ushort & k_target)
-const {
-    world->Focus(x, y, z, i_target, j_target, k_target, GetDir());
-}
-
 void Player::Examine(const short i, const short j, const short k) const {
     const QReadLocker locker(world->GetLock());
 
@@ -331,11 +326,10 @@ void Player::Eat(const ushort num) {
     }
 }
 
-void Player::Pour(const short x_targ, const short y_targ, const short z_targ,
-        const ushort slot)
-{
-    player->GetDeferredAction()->
-        SetPour(x_targ, y_targ, z_targ, slot);
+void Player::Pour(const ushort slot) {
+    short x_targ, y_targ, z_targ;
+    emit GetFocus(x_targ, y_targ, z_targ);
+    player->GetDeferredAction()->SetPour(x_targ, y_targ, z_targ, slot);
 }
 
 void Player::Build(const short x_target, const short y_target,

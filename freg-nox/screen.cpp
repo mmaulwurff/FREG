@@ -160,6 +160,7 @@ char Screen::CharName(const int kind, const int sub) const {
     case TELEGRAPH: return 't';
     case DOOR:        return ( STONE == sub ) ? '#' : '\'';
     case LOCKED_DOOR: return ( STONE == sub ) ? '#' : '`';
+    case ILLUMINATOR: return 'i';
     case WEAPON: switch ( sub ) {
         default: fprintf(stderr, "Screen::CharName: weapon sub ?: %d\n", sub);
         // no break;
@@ -294,23 +295,23 @@ void Screen::ControlPlayer(const int ch) {
     case KEY_HOME: player->Backpack(); break;
     case 8:
     case KEY_BACKSPACE: { // damage
-        ushort x, y, z;
+        short x, y, z;
         ActionXyz(x, y, z);
         player->Damage(x, y, z);
     } break;
     case 13:
     case '\n': { // use
-        ushort x, y, z;
+        short x, y, z;
         ActionXyz(x, y, z);
         player->Use(x, y, z);
     } break;
     case  '?': { // examine
-        ushort x, y, z;
+        short x, y, z;
         ActionXyz(x, y, z);
         player->Examine(x, y, z);
     } break;
     case  '~': { // inscribe
-        ushort x, y, z;
+        short x, y, z;
         ActionXyz(x, y, z);
         player->Inscribe(x, y, z);
     } break;
@@ -386,9 +387,7 @@ void Screen::InventoryAction(const ushort num) const {
     switch ( actionMode ) {
     case ACTION_USE:
         if ( player->Use(num) == USAGE_TYPE_POUR ) {
-            ushort x, y, z;
-            ActionXyz(x, y, z);
-            player->Pour(x, y, z, num);
+            player->Pour(num);
         }
     break;
     case ACTION_WIELD:    player->Wield(num);    break;
@@ -397,28 +396,27 @@ void Screen::InventoryAction(const ushort num) const {
     case ACTION_CRAFT:    player->Craft(num);    break;
     case ACTION_TAKEOFF:  player->TakeOff(num);  break;
     case ACTION_OBTAIN: {
-        ushort x, y, z;
+        short x, y, z;
         ActionXyz(x, y, z);
         player->Obtain(x, y, z, num);
     } break;
     case ACTION_THROW: {
-        ushort x, y, z;
+        short x, y, z;
         ActionXyz(x, y, z);
         player->Throw(x, y, z, num);
     } break;
     case ACTION_BUILD: {
-        ushort x, y, z;
+        short x, y, z;
         ActionXyz(x, y, z);
         player->Build(x, y, z, num);
     } break;
     default: fprintf(stderr,
-        "Screen::InventoryAction: action mode ?: %d\n",
-        actionMode);
+        "Screen::InventoryAction: action mode ?: %d\n", actionMode);
     }
 }
 
-void Screen::ActionXyz(ushort & x,ushort & y, ushort & z) const {
-    player->Focus(x, y, z);
+void Screen::ActionXyz(short & x, short & y, short & z) const {
+    VirtScreen::ActionXyz(x, y, z);
     if (
             DOWN != player->GetDir() &&
             UP   != player->GetDir() &&
@@ -467,7 +465,7 @@ void Screen::Print() {
             player->SetUsingTypeNo();
         break;
         case USAGE_TYPE_READ: {
-            ushort x, y, z;
+            short x, y, z;
             ActionXyz(x, y, z);
             wstandend(rightWin);
             PrintFile(rightWin, QString(w->WorldName() + "/texts/"
@@ -475,7 +473,7 @@ void Screen::Print() {
             player->SetUsingTypeNo();
         } break;
         case USAGE_TYPE_OPEN: {
-            ushort x, y, z;
+            short x, y, z;
             ActionXyz(x, y, z);
             const Inventory * const inv = w->GetBlock(x, y, z)->HasInventory();
             if ( inv ) {
@@ -791,8 +789,6 @@ const {
     break;
     case WORKBENCH: mvwaddstr(window, 2, 4, qPrintable(tr("Product"))); break;
     }
-    mvwprintw(window, 2+inv->Size(), 40,
-        qPrintable(tr("All weight: %1 mz").arg(inv->Weight())));
     const int start = inv->Start();
     int shift = 0; // to divide inventory sections
     for (ushort i=0; i<inv->Size(); ++i) {
@@ -822,6 +818,9 @@ const {
         wstandend(window);
         mvwprintw(window, 2+i+shift, 53, "%5hu mz", inv->GetInvWeight(i));
     }
+    mvwprintw(window, 2+inv->Size()+shift, 40,
+        qPrintable(tr("All weight: %1 mz").
+            arg(inv->Weight(), 6, 10, QChar(' '))));
     wcolor_set(window, Color(inv->Kind(), inv->Sub()), NULL);
     box(window, 0, 0);
     mvwprintw(window, 0, 1, "[%c]%s",

@@ -87,7 +87,6 @@ public:
 
     /// This returns true if block at (x, y, z) is visible to player.
     bool Visible(ushort x, ushort y, ushort z) const;
-    void Focus(ushort & x, ushort & y, ushort & z) const;
 
     /// This returns how player is using something now.
     /** See enum usage_types in header.h. */
@@ -136,7 +135,7 @@ public:
     void Eat     (ushort num);
     void Craft   (ushort num);
     void TakeOff (ushort num);
-    void Pour(short x, short y, short z, ushort num);
+    void Pour(ushort num);
     void Build(short x, short y, short z, ushort num);
     /// Can also wield appropriate things.
     void MoveInsideInventory(ushort num_from, ushort num_to, ushort num=1);
@@ -157,6 +156,7 @@ signals:
     void GetString(QString &);
     void Destroyed();
     void ShowFile(QString path);
+    void GetFocus(short & x, short & y, short & z);
 private slots:
     /// For cleaning player-related data before exiting program.
     /** This is connected to app's aboutToQuit() signal, also it

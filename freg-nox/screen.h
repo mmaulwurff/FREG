@@ -148,6 +148,7 @@ public slots:
     void Move(int);
     void DeathScreen();
     void DisplayFile(QString path);
+    void ActionXyz(short & x, short & y, short & z) const;
 private slots:
     void Print();
 private:
@@ -157,7 +158,6 @@ private:
     void Arrows(WINDOW *, ushort x, ushort y, bool show_dir = false) const;
     void HorizontalArrows(WINDOW *, ushort y, short color = WHITE_RED,
             bool show_dir = false) const;
-    void ActionXyz(ushort & x, ushort & y, ushort & z) const;
     void PrintNormal(WINDOW *, int dir) const;
     void PrintFront(WINDOW *) const;
     void PrintInv(WINDOW *, const Inventory *) const;
