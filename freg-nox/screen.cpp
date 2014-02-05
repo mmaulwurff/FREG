@@ -154,6 +154,7 @@ char Screen::CharName(const int kind, const int sub) const {
     case PILE:   return '&';
     case BELL:   return 'b';
     case BUCKET: return 'u';
+    case TEXT:   return '?';
     case PREDATOR: return '!';
     case WORKBENCH: return '*';
     case TELEGRAPH: return 't';
@@ -184,7 +185,6 @@ char Screen::CharName(const int kind, const int sub) const {
         case SAND:  return '#';
         case SOIL:  return '.';
         case ROSE:  return ';';
-        case PAPER: return '~';
         case A_MEAT: case H_MEAT:
         case HAZELNUT: return ',';
         case SKY:
