@@ -31,6 +31,7 @@ public:
     quint8  Kind() const;
     Block * DropAfterDamage() const;
     QString FullName() const;
+    usage_types Use(Block *);
 private:
 };
 

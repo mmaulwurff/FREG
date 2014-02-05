@@ -28,6 +28,7 @@ Illuminator::Illuminator(QDataStream & str, const int sub, const quint16 id) :
         Active(str, sub, id)
 {}
 
+void Illuminator::Damage(ushort /*dmg*/, int /*dmg_kind*/) { durability = 0; }
 quint8 Illuminator::Kind() const { return ILLUMINATOR; }
 
 QString Illuminator::FullName() const {
@@ -41,8 +42,11 @@ QString Illuminator::FullName() const {
     }
 }
 
-void Illuminator::Damage(ushort /*dmg*/, int /*dmg_kind*/) { durability = 0; }
-
 Block * Illuminator::DropAfterDamage() const {
     return BlockManager::NewBlock(ILLUMINATOR, Sub());
+}
+
+usage_types Illuminator::Use(Block *) {
+    return ( WOOD==Sub() || STONE==Sub() || IRON==Sub() ) ?
+        USAGE_TYPE_SET_FIRE : USAGE_TYPE_NO;
 }
