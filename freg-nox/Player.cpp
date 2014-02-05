@@ -251,9 +251,7 @@ usage_types Player::Use(const ushort num) {
 
 usage_types Player::UseNoLock(const ushort num) {
     Block * const block = ValidBlock(num);
-    if ( !block ) {
-        return USAGE_TYPE_NO;
-    } // else:
+    if ( block == nullptr ) return USAGE_TYPE_NO;
     Animal * const animal = player->IsAnimal();
     if ( animal && animal->NutritionalValue(block->Sub()) ) {
         animal->Eat(block->Sub());
@@ -264,10 +262,23 @@ usage_types Player::UseNoLock(const ushort num) {
         return USAGE_TYPE_NO;
     } // else:
     const usage_types result = block->Use(player);
-    if ( result == USAGE_TYPE_READ ) {
+    switch ( result ) {
+    case USAGE_TYPE_READ:
         usingInInventory = num;
         usingType = USAGE_TYPE_READ_IN_INVENTORY;
         emit Updated();
+    break;
+    case USAGE_TYPE_POUR: {
+        short x_targ, y_targ, z_targ;
+        emit GetFocus(x_targ, y_targ, z_targ);
+        player->GetDeferredAction()->SetPour(x_targ, y_targ, z_targ, num);
+    } break;
+    case USAGE_TYPE_SET_FIRE: {
+        short x_targ, y_targ, z_targ;
+        emit GetFocus(x_targ, y_targ, z_targ);
+        player->GetDeferredAction()->SetSetFire(x_targ, y_targ, z_targ);
+    } break;
+    default: break;
     }
     return result;
 }
@@ -338,12 +349,6 @@ void Player::Eat(const ushort num) {
             emit Notify(tr("You cannot eat."));
         }
     }
-}
-
-void Player::Pour(const ushort slot) {
-    short x_targ, y_targ, z_targ;
-    emit GetFocus(x_targ, y_targ, z_targ);
-    player->GetDeferredAction()->SetPour(x_targ, y_targ, z_targ, slot);
 }
 
 void Player::Build(const short x_target, const short y_target,
@@ -476,7 +481,9 @@ void Player::SetDir(const int direction) {
     emit Updated();
 }
 
-bool Player::Damage(const short, const short, const short) const { Damage(); }
+bool Player::Damage(const short, const short, const short) const {
+    return Damage();
+}
 
 bool Player::Damage() const {
     short x, y, z;

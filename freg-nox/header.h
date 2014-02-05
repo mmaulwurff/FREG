@@ -75,7 +75,7 @@ enum dirs {
     EAST,   ///< 4
     WEST,   ///< 5
     NOWHERE ///< 6
-}; // enum dirs
+};
 
 enum push_reaction {
     MOVABLE,
@@ -83,7 +83,7 @@ enum push_reaction {
     NOT_MOVABLE,
     MOVE_UP,
     JUMP
-}; // enum push_reaction
+};
 
 enum times_of_day { MORNING, NOON, EVENING, NIGHT };
 
@@ -185,8 +185,9 @@ enum usage_types {
     USAGE_TYPE_OPEN,
     USAGE_TYPE_READ,
     USAGE_TYPE_READ_IN_INVENTORY,
-    USAGE_TYPE_POUR
-}; // enum usage_types
+    USAGE_TYPE_POUR,
+    USAGE_TYPE_SET_FIRE
+};
 
 enum transparency {
     BLOCK_OPAQUE,
@@ -194,6 +195,6 @@ enum transparency {
     INVISIBLE,
     NONSTANDARD = 6,
     UNDEF // temporary, doesn't appear in world.
-}; // enum transparency
+};
 
 #endif // HEADER_H

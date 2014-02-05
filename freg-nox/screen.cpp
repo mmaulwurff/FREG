@@ -294,7 +294,7 @@ void Screen::ControlPlayer(const int ch) {
 
     case KEY_HOME: player->Backpack(); break;
     case 8:
-    case KEY_BACKSPACE: player->Damage(x, y, z); break;
+    case KEY_BACKSPACE: player->Damage(); break;
     case 13:
     case '\n': player->Use();      break;
     case  '?': player->Examine();  break;
@@ -368,16 +368,12 @@ void Screen::SetActionMode(const int mode) {
 
 void Screen::InventoryAction(const ushort num) const {
     switch ( actionMode ) {
-    case ACTION_USE:
-        if ( player->Use(num) == USAGE_TYPE_POUR ) {
-            player->Pour(num);
-        }
-    break;
-    case ACTION_WIELD:    player->Wield(num);    break;
+    case ACTION_USE:      player->Use     (num); break;
+    case ACTION_WIELD:    player->Wield   (num); break;
     case ACTION_INSCRIBE: player->Inscribe(num); break;
-    case ACTION_EAT:      player->Eat(num);      break;
-    case ACTION_CRAFT:    player->Craft(num);    break;
-    case ACTION_TAKEOFF:  player->TakeOff(num);  break;
+    case ACTION_EAT:      player->Eat     (num); break;
+    case ACTION_CRAFT:    player->Craft   (num); break;
+    case ACTION_TAKEOFF:  player->TakeOff (num); break;
     case ACTION_OBTAIN: {
         short x, y, z;
         ActionXyz(x, y, z);

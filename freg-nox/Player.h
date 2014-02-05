@@ -143,7 +143,6 @@ public:
     void Eat     (ushort num);
     void Craft   (ushort num);
     void TakeOff (ushort num);
-    void Pour(ushort num);
     void Build(short x, short y, short z, ushort num);
     /// Can also wield appropriate things.
     void MoveInsideInventory(ushort num_from, ushort num_to, ushort num=1);
@@ -164,7 +163,7 @@ signals:
     void GetString(QString &);
     void Destroyed();
     void ShowFile(QString path);
-    void GetFocus(short & x, short & y, short & z);
+    void GetFocus(short & x, short & y, short & z) const;
 private slots:
     /// For cleaning player-related data before exiting program.
     /** This is connected to app's aboutToQuit() signal, also it

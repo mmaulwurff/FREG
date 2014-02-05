@@ -28,8 +28,9 @@ enum deferred_actions {
     DEFERRED_BUILD,
     DEFERRED_DAMAGE,
     DEFERRED_THROW,
-    DEFERRED_POUR
-}; // enum deferred_actions
+    DEFERRED_POUR,
+    DEFERRED_SET_FIRE
+};
 
 class Block;
 class Active;
@@ -42,20 +43,21 @@ public:
     void SetGhostMove(ushort dir = NOWHERE);
     void SetMove(ushort dir = NOWHERE);
     void SetJump();
-    void SetBuild(ushort x_targ, ushort y_targ, ushort z_targ,
+    void SetDamage (short x, short y, short z);
+    void SetPour   (short x, short y, short z, ushort slot);
+    void SetSetFire(short x, short y, short z);
+    void SetBuild  (short x, short y, short z,
             Block * material, ushort builder_slot);
-    void SetDamage(ushort x_targ, ushort y_targ, ushort z_targ);
-    void SetThrow(ushort x_targ, ushort y_targ, ushort z_targ,
-            ushort src_slot, ushort dest_slot, ushort num);
-    void SetPour(ushort x_targ, ushort y_targ, ushort z_targ, ushort slot);
+    void SetThrow  (short x, short y, short z,
+            ushort src_slot, ushort dest_slot, ushort unum);
 
     World * GetWorld() const;
     int  GetActionType() const;
     void MakeAction();
 private:
-    int type;
+    deferred_actions type;
     Active * const attachedBlock;
-    ushort xTarg, yTarg, zTarg;
+    short xTarg, yTarg, zTarg;
     Block * material;
     ushort srcSlot, destSlot;
     ushort num;
@@ -63,10 +65,12 @@ private:
     void GhostMove() const;
     void Move() const;
     void Jump() const;
-    void Build();
+    void Build() const;
     void Damage() const;
     void Throw() const;
     void Pour() const;
+    void SetFire() const;
+    void SetXyz(short x, short y, short z);
 };
 
 #endif // DEFERRED_ACTION_H
