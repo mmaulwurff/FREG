@@ -100,7 +100,9 @@ public slots:
     void DeathScreen(); // virtual ?
 
     /// Used to get player focus coordinates from screen.
-    /** x, y, z are coordinates where player will make action. */
+    /** x, y, z are coordinates where player will make action.
+     *  May be reimplemented in derivative class to get xyz other than
+     *  world direction-based focus. */
     virtual void ActionXyz(short & x, short & y, short & z) const;
 
     /// This shows a file by path.

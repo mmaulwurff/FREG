@@ -294,27 +294,11 @@ void Screen::ControlPlayer(const int ch) {
 
     case KEY_HOME: player->Backpack(); break;
     case 8:
-    case KEY_BACKSPACE: { // damage
-        short x, y, z;
-        ActionXyz(x, y, z);
-        player->Damage(x, y, z);
-    } break;
+    case KEY_BACKSPACE: player->Damage(x, y, z); break;
     case 13:
-    case '\n': { // use
-        short x, y, z;
-        ActionXyz(x, y, z);
-        player->Use(x, y, z);
-    } break;
-    case  '?': { // examine
-        short x, y, z;
-        ActionXyz(x, y, z);
-        player->Examine(x, y, z);
-    } break;
-    case  '~': { // inscribe
-        short x, y, z;
-        ActionXyz(x, y, z);
-        player->Inscribe(x, y, z);
-    } break;
+    case '\n': player->Use();      break;
+    case  '?': player->Examine();  break;
+    case  '~': player->Inscribe(); break;
     case 27: /* esc */ player->StopUseAll(); break;
 
     case 'B': SetActionMode(ACTION_BUILD);    break;
@@ -330,8 +314,7 @@ void Screen::ControlPlayer(const int ch) {
     case 'W': SetActionMode(ACTION_WIELD);    break;
     case KEY_HELP:
     case 'H':
-        DisplayFile(QString("help_%1/help.txt")
-            .arg(locale.left(2)));
+        DisplayFile(QString("help_%1/help.txt").arg(locale.left(2)));
     break;
     case 'L': RePrint(); break;
     case 'R': // switch active hand

@@ -116,11 +116,19 @@ public:
     void StopUseAll();
     /// Tries to switch usingSelfType from NO to OPEN.
     void Backpack();
+    /// \deprecated Use Inscribe() instead, player will get xyz from screen.
     void Inscribe(short x, short y, short z) const;
+    void Inscribe() const;
+    /// \deprecated Use Examine() instead, player will get xyz from screen.
     void Examine(short x, short y, short z) const;
+    void Examine() const;
     /// Returns true if xyz are in world bounds.
+    /** \deprecated Use Damage() instead, player will get xyz from screen. */
     bool Damage(short x, short y, short z) const;
+    bool Damage() const;
+    /// \deprecated use Use() instead, player will get xyz from screen.
     void Use(short x, short y, short z);
+    void Use();
     /// Tries to throw (drop out) block number num from inventory.
     void Throw (short x, short y, short z,
             ushort src, ushort dest = 0, ushort num = 1);

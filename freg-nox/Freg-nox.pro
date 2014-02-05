@@ -14,7 +14,7 @@ TEMPLATE = app
 TARGET = freg-nox
 
 QMAKE_CXXFLAGS += -Wextra -std=c++11 -pedantic
-QMAKE_CXXFLAGS += -Werror
+QMAKE_CXXFLAGS += -Werror -Wno-error=attributes
 
 #QMAKE_CXXFLAGS_DEBUG += -fno-inline
 QMAKE_CXXFLAGS_DEBUG += -O3

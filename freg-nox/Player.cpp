@@ -130,9 +130,13 @@ void Player::UpdateXYZ(const int) {
     }
 }
 
-void Player::Examine(const short i, const short j, const short k) const {
+void Player::Examine(const short,const short,const short) const { Examine(); }
+
+void Player::Examine() const {
     const QReadLocker locker(world->GetLock());
 
+    short i, j, k;
+    emit GetFocus(i, j, k);
     const Block * const block = world->GetBlock(i, j, k);
     emit Notify( QString("*----- %1 -----*").arg(block->FullName()) );
     const int sub = block->Sub();
@@ -192,15 +196,25 @@ void Player::Backpack() {
     emit Updated();
 }
 
-void Player::Use(const short x, const short y, const short z) {
+void Player::Use(const short, const short, const short) { Use(); }
+
+void Player::Use() {
     const QWriteLocker locker(world->GetLock());
+    short x, y, z;
+    emit GetFocus(x, y, z);
     const int us_type = world->GetBlock(x, y, z)->Use(player);
     usingType = ( us_type==usingType ) ? USAGE_TYPE_NO : us_type;
     emit Updated();
 }
 
-void Player::Inscribe(const short x, const short y, const short z) const {
+void Player::Inscribe(const short, const short, const short) const {
+    Inscribe();
+}
+
+void Player::Inscribe() const {
     const QWriteLocker locker(world->GetLock());
+    short x, y, z;
+    emit GetFocus(x, y, z);
     emit Notify(player ?
         (world->Inscribe(x, y, z) ?
             tr("Inscribed.") : tr("Cannot inscribe this.")) :
@@ -462,7 +476,11 @@ void Player::SetDir(const int direction) {
     emit Updated();
 }
 
-bool Player::Damage(const short x, const short y, const short z) const {
+bool Player::Damage(const short, const short, const short) const { Damage(); }
+
+bool Player::Damage() const {
+    short x, y, z;
+    emit GetFocus(x, y, z);
     if ( player && GetWorld()->InBounds(x, y, z) ) {
         player->GetDeferredAction()->SetDamage(x, y, z);
         return true;
