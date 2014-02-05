@@ -130,20 +130,27 @@ public:
     void Use(short x, short y, short z);
     void Use();
     /// Tries to throw (drop out) block number num from inventory.
-    void Throw (short x, short y, short z,
+    /** \deprecated Use Damage() instead, player will get xyz from screen. */
+    void Throw(short x, short y, short z,
             ushort src, ushort dest = 0, ushort num = 1);
+    void Throw(ushort src, ushort dest = 0, ushort num = 1);
 
     /// Tries to use block number num in inventory.
     usage_types Use(ushort num);
     /// Tries to get block number num from outer inventory.
+    /** \deprecated use Obtain(ushort src, ushort dest, ushort num) instead,
+     * player will get xyz from screen. */
     void Obtain(short x, short y, short z,
             ushort src, ushort dest = 0, ushort num = 1);
+    void Obtain(ushort src, ushort dest = 0, ushort num = 1);
     void Wield   (ushort num);
     void Inscribe(ushort num);
     void Eat     (ushort num);
     void Craft   (ushort num);
     void TakeOff (ushort num);
+    /// \deprecated use Build(num) instead, player will get xyz from screen.
     void Build(short x, short y, short z, ushort num);
+    void Build(ushort num);
     /// Can also wield appropriate things.
     void MoveInsideInventory(ushort num_from, ushort num_to, ushort num=1);
     void ProcessCommand(QString command);

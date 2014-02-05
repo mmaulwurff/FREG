@@ -130,7 +130,7 @@ void Player::UpdateXYZ(const int) {
     }
 }
 
-void Player::Examine(const short,const short,const short) const { Examine(); }
+void Player::Examine(short, short, short) const { Examine(); }
 
 void Player::Examine() const {
     const QReadLocker locker(world->GetLock());
@@ -196,7 +196,7 @@ void Player::Backpack() {
     emit Updated();
 }
 
-void Player::Use(const short, const short, const short) { Use(); }
+void Player::Use(short, short, short) { Use(); }
 
 void Player::Use() {
     const QWriteLocker locker(world->GetLock());
@@ -207,9 +207,7 @@ void Player::Use() {
     emit Updated();
 }
 
-void Player::Inscribe(const short, const short, const short) const {
-    Inscribe();
-}
+void Player::Inscribe(short, short, short) const { Inscribe(); }
 
 void Player::Inscribe() const {
     const QWriteLocker locker(world->GetLock());
@@ -285,16 +283,28 @@ usage_types Player::UseNoLock(const ushort num) {
 
 ushort Player::GetUsingInInventory() const { return usingInInventory; }
 
-void Player::Throw(const short x, const short y, const short z,
+void Player::Throw(short, short, short,
         const ushort src, const ushort dest, const ushort num)
 {
+    Throw(src, dest, num);
+}
+
+void Player::Throw(const ushort src, const ushort dest, const ushort num) {
+    short x, y, z;
+    emit GetFocus(x, y, z);
     player->GetDeferredAction()->SetThrow(x, y, z, src, dest, num);
 }
 
-void Player::Obtain(const short x, const short y, const short z,
+void Player::Obtain(short, short, short,
         const ushort src, const ushort dest, const ushort num)
 {
+    Obtain(src, dest, num);
+}
+
+void Player::Obtain(const ushort src, const ushort dest, const ushort num) {
     const QWriteLocker locker(world->GetLock());
+    short x, y, z;
+    emit GetFocus(x, y, z);
     world->Get(player, x, y, z, src, dest, num);
     emit Updated();
 }
@@ -351,16 +361,18 @@ void Player::Eat(const ushort num) {
     }
 }
 
-void Player::Build(const short x_target, const short y_target,
-        const short z_target, const ushort slot)
-{
+void Player::Build(short, short, short, const ushort slot) { Build(slot); }
+
+void Player::Build(const ushort slot) {
     const QWriteLocker locker(world->GetLock());
+    short x_targ, y_targ, z_targ;
+    emit GetFocus(x_targ, y_targ, z_targ);
     Block * const block = ValidBlock(slot);
-    if ( block && (AIR!=world->GetBlock(x, y, z-1)->Sub() ||
-            0==player->Weight()) )
+    if ( block && (AIR != world->GetBlock(x, y, z-1)->Sub()
+            || 0 == player->Weight()) )
     {
         player->GetDeferredAction()->
-            SetBuild(x_target, y_target, z_target, block, slot);
+            SetBuild(x_targ, y_targ, z_targ, block, slot);
     }
 }
 
@@ -481,9 +493,7 @@ void Player::SetDir(const int direction) {
     emit Updated();
 }
 
-bool Player::Damage(const short, const short, const short) const {
-    return Damage();
-}
+bool Player::Damage(short, short, short) const { return Damage(); }
 
 bool Player::Damage() const {
     short x, y, z;

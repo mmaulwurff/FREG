@@ -361,7 +361,7 @@ void Screen::ProcessCommand(QString command) {
     }
 }
 
-void Screen::SetActionMode(const int mode) {
+void Screen::SetActionMode(const actions mode) {
     actionMode = mode;
     updatedPlayer = false;
 }
@@ -374,21 +374,9 @@ void Screen::InventoryAction(const ushort num) const {
     case ACTION_EAT:      player->Eat     (num); break;
     case ACTION_CRAFT:    player->Craft   (num); break;
     case ACTION_TAKEOFF:  player->TakeOff (num); break;
-    case ACTION_OBTAIN: {
-        short x, y, z;
-        ActionXyz(x, y, z);
-        player->Obtain(x, y, z, num);
-    } break;
-    case ACTION_THROW: {
-        short x, y, z;
-        ActionXyz(x, y, z);
-        player->Throw(x, y, z, num);
-    } break;
-    case ACTION_BUILD: {
-        short x, y, z;
-        ActionXyz(x, y, z);
-        player->Build(x, y, z, num);
-    } break;
+    case ACTION_OBTAIN:   player->Obtain  (num); break;
+    case ACTION_THROW:    player->Throw   (num); break;
+    case ACTION_BUILD:    player->Build   (num); break;
     default: fprintf(stderr,
         "Screen::InventoryAction: action mode ?: %d\n", actionMode);
     }
@@ -959,7 +947,8 @@ Screen::Screen(World * const wor, Player * const pl, int & error) :
     QSettings sett(QDir::currentPath()+"/freg.ini", QSettings::IniFormat);
     sett.beginGroup("screen_curses");
     shiftFocus = sett.value("focus_shift", 0).toInt();
-    actionMode = sett.value("action_mode", ACTION_USE).toInt();
+    actionMode = static_cast<actions>
+        (sett.value("action_mode", ACTION_USE).toInt());
     command    = sett.value("last_command", "hello").toString();
     beepOn     = sett.value("beep_on", true).toBool();
     sett.setValue("beep_on", beepOn);
