@@ -440,19 +440,11 @@ const {
 }
 
 void Screen::Print() {
-    if ( not player->IfPlayerExists() ) {
-        return;
-    }
+    if ( not player->IfPlayerExists() ) return;
     w->ReadLock();
     mutex->lock();
     PrintHUD();
-    if ( updated ) {
-        w->Unlock();
-        mutex->unlock();
-        return;
-    }
-    updated = true;
-    mutex->unlock();
+    bool world_reprinted = false;
     const int dir = player->GetDir();
     switch ( player->UsingSelfType() ) { // left window
     case USAGE_TYPE_OPEN:
@@ -463,6 +455,7 @@ void Screen::Print() {
     default:
         PrintNormal(leftWin, (UP==dir || DOWN==dir) ?
             NORTH : dir);
+        world_reprinted = true;
     }
     if ( not fileToShow ) { // right window
         switch ( player->UsingType() ) {
@@ -498,9 +491,13 @@ void Screen::Print() {
             } else {
                 PrintFront(rightWin);
             }
+            world_reprinted = true;
         }
     }
+    updatedPlayer = true;
+    updated = world_reprinted;
     w->Unlock();
+    mutex->unlock();
 } // void Screen::Print()
 
 void Screen::PrintHUD() {
@@ -508,7 +505,6 @@ void Screen::PrintHUD() {
     int y_save, x_save;
     getyx(rightWin, y_save, x_save);
 
-    updatedPlayer = true;
     werase(hudWin);
     // quick inventory
     Inventory * const inv = player->PlayerInventory();
@@ -591,6 +587,7 @@ void Screen::PrintHUD() {
 } // void Screen::PrintHUD()
 
 void Screen::PrintNormal(WINDOW * const window, const int dir) const {
+    if ( updated ) return;
     const ushort k_start = ( UP!=dir ) ?
         (( DOWN==dir ) ? player->Z()-1 : player->Z()) :
         player->Z()+1;
@@ -651,7 +648,7 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
 } // void Screen::PrintNormal(WINDOW * window, int dir)
 
 void Screen::PrintFront(WINDOW * const window) const {
-    if ( window == nullptr ) return;
+    if ( window == nullptr || updated ) return;
     const int dir = player->GetDir();
     short x_step, z_step,
           x_end,  z_end,
@@ -778,6 +775,10 @@ void Screen::PrintFront(WINDOW * const window) const {
 
 void Screen::PrintInv(WINDOW * const window, const Inventory * const inv)
 const {
+    const bool is_player_inv = ( player->PlayerInventory()==inv );
+    if ( is_player_inv ) {
+        if ( updatedPlayer ) return;
+    } else if ( updated ) return;
     werase(window);
     wstandend(window);
     switch ( inv->Kind() ) {
@@ -824,8 +825,7 @@ const {
     wcolor_set(window, Color(inv->Kind(), inv->Sub()), NULL);
     box(window, 0, 0);
     mvwprintw(window, 0, 1, "[%c]%s",
-        CharName(inv->Kind(), inv->Sub()), qPrintable(
-        ( player->PlayerInventory()==inv ) ?
+        CharName(inv->Kind(), inv->Sub()), qPrintable(is_player_inv ?
             tr("Your inventory") : inv->FullName()));
     wrefresh(window);
 } // void Screen::PrintInv(WINDOW * window, const Inventory * inv)

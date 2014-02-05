@@ -194,6 +194,7 @@ void Player::Backpack() {
         usingSelfType = ( USAGE_TYPE_OPEN==usingSelfType ) ?
             USAGE_TYPE_NO : USAGE_TYPE_OPEN;
     }
+    emit Updated();
 }
 
 void Player::Use(const short x, const short y, const short z) {
