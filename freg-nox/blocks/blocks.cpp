@@ -243,15 +243,8 @@
         direction = (data >>= 7);
     }
     Block::Block(Block const & block) :
-            durability(block.durability),
-            transparent(block.transparent),
-            sub(block.sub),
-            id(block.id),
-            direction(block.direction)
-    {
-        note = ( block.note ) ?
-            new QString(*block.note) : 0;
-    }
+            Block(block.sub, block.id, block.transparent)
+    {}
     Block::~Block() { delete note; }
 // Plate::
     QString Plate::FullName() const {
@@ -309,7 +302,7 @@
 // Animal::
     void Animal::DoRareAction() {
         World * const world = GetWorld();
-        if ( !IsSubAround(AIR) ) {
+        if ( not IsSubAround(AIR) ) {
             if ( breath <= 0 ) {
                 world->Damage(X(), Y(), Z(), 10, BREATH);
             } else {
@@ -360,7 +353,7 @@
         for (ushort x=X()-1; x<=X()+1; ++x)
         for (ushort y=Y()-1; y<=Y()+1; ++y) {
             if ( world->InBounds(x, y) &&
-                    GREENERY==world->GetBlock(x, y, Z())->Sub() )
+                    GREENERY == world->GetBlock(x, y, Z())->Sub() )
             {
                 world->Damage(x, y, Z(), DamageLevel(), DamageKind());
                 world->DestroyAndReplace(x, y, Z());
@@ -420,7 +413,7 @@
     }
 
     void Inventory::Pull(const ushort num) {
-        if ( !inventory[num].isEmpty() ) {
+        if ( not inventory[num].isEmpty() ) {
             inventory[num].pop();
         }
     }
@@ -435,7 +428,7 @@
     }
 
     bool Inventory::Get(Block * const block, const ushort start) {
-        if ( not block ) return true;
+        if ( block == nullptr ) return true;
         if ( block->Kind() == LIQUID ) {
             for (int i=qMax(Start(), start); i<Size(); ++i) {
                 if ( Number(i)==1 && ShowBlock(i) ) {
@@ -459,7 +452,7 @@
         if ( block ) {
             if ( inventory[num].isEmpty() ) {
                 inventory[num].push(block);
-            } else if ( *block==*inventory[num].top()
+            } else if ( *block == *inventory[num].top()
                     && Number(num) < MAX_STACK_SIZE )
             {
                 Inventory * const inner = inventory[num].top()->HasInventory();
@@ -486,22 +479,20 @@
     }
 
     bool Inventory::InscribeInv(const ushort num, const QString str) {
-        const int number=Number(num);
-        if ( !number ) {
+        const int number = Number(num);
+        if ( number == 0 ) {
             ReceiveSignal(QObject::tr("Nothing here."));
             return false;
         }
-        const int sub=inventory[num].top()->Sub();
-        if ( inventory[num].top()==block_manager.NormalBlock(sub) ) {
+        const int sub = inventory[num].top()->Sub();
+        if ( inventory[num].top() == block_manager.NormalBlock(sub) ) {
             for (ushort i=0; i<number; ++i) {
-                inventory[num].replace(i,
-                    block_manager.NormalBlock(sub));
+                inventory[num].replace(i, block_manager.NormalBlock(sub));
             }
         }
         for (ushort i=0; i<number; ++i) {
             if ( !inventory[num].at(i)->Inscribe(str) ) {
-                ReceiveSignal(QObject::tr(
-                    "Cannot inscribe this."));
+                ReceiveSignal(QObject::tr("Cannot inscribe this."));
                 return false;
             }
         }
@@ -538,9 +529,9 @@
     }
 
     ushort Inventory::Weight() const {
-        ushort sum=0;
+        ushort sum = 0;
         for (ushort i=0; i<Size(); ++i) {
-            sum+=GetInvWeight(i);
+            sum += GetInvWeight(i);
         }
         return sum;
     }
@@ -552,7 +543,7 @@
 
     bool Inventory::IsEmpty() const {
         for (ushort i=Start(); i<Size(); ++i) {
-            if ( !inventory[i].isEmpty() ) {
+            if ( not inventory[i].isEmpty() ) {
                 return false;
             }
         }
@@ -578,7 +569,7 @@
         const CraftItem * const crafted = craft_manager.MiniCraft(
             Number(num), BlockManager::MakeId(GetInvKind(num),GetInvSub(num)));
         if ( crafted ) {
-            while ( !inventory[num].isEmpty() ) {
+            while ( not inventory[num].isEmpty() ) {
                 Block * const to_delete = ShowBlock(num);
                 Pull(num);
                 block_manager.DeleteBlock(to_delete);
@@ -598,14 +589,12 @@
     }
 
     Inventory::Inventory(const ushort sz) :
-            size(sz)
-    {
-        inventory = new QStack<Block *>[Size()];
-    }
+            size(sz),
+            inventory(new QStack<Block *>[sz])
+    {}
     Inventory::Inventory(QDataStream & str, const ushort sz) :
-            size(sz)
+            Inventory(sz)
     {
-        inventory = new QStack<Block *>[Size()];
         for (ushort i=0; i<Size(); ++i) {
             quint8 num;
             str >> num;
@@ -616,15 +605,12 @@
         }
     }
     Inventory::Inventory(const Inventory & inv) :
-            size(inv.Size())
-    {
-        inventory = new QStack<Block *>[Size()];
-    }
+            Inventory(inv.Size())
+    {}
     Inventory::~Inventory() {
         for (ushort i=0; i<Size(); ++i) {
             while ( !inventory[i].isEmpty() ) {
-                Block * const block=inventory[i].pop();
-                block_manager.DeleteBlock(block);
+                block_manager.DeleteBlock(inventory[i].pop());
             }
         }
         delete [] inventory;
@@ -641,18 +627,15 @@
         case WOOD:  return QObject::tr("Wooden chest");
         case STONE: return QObject::tr("Stone chest");
         default:
-            fprintf(stderr, "Chest::FullName: unlisted sub: %d\n",
-                Sub());
+            fprintf(stderr, "Chest::FullName: unlisted sub: %d\n", Sub());
             return QObject::tr("Chest");
         }
     }
 
-    void Chest::Push(const int, Block * const who) {
-        Inventory::Push(who);
-    }
+    void Chest::Push(const int, Block * const who) { Inventory::Push(who); }
 
     ushort Chest::Weight() const {
-        return Block::Weight()*4+Inventory::Weight();
+        return Block::Weight()*4 + Inventory::Weight();
     }
 
     void Chest::SaveAttributes(QDataStream & out) const {
@@ -679,9 +662,8 @@
     }
 
     void Pile::DoRareAction() {
-        Inventory * const inv = GetShred()->GetBlock(
-            Shred::CoordInShred(X()), Shred::CoordInShred(Y()),
-                Z()-1)->HasInventory();
+        Inventory * const inv =
+            GetWorld()->GetBlock(X(), Y(), Z()-1)->HasInventory();
         if ( inv ) {
             inv->GetAll(this);
         }
@@ -704,8 +686,7 @@
         switch ( Sub() ) {
         case DIFFERENT: return tr("Pile");
         default:
-            fprintf(stderr, "Pile::FullName: unlisted sub: %d\n",
-                Sub());
+            fprintf(stderr, "Pile::FullName: unlisted sub: %d\n", Sub());
             return tr("Unknown pile");
         }
     }
@@ -725,15 +706,15 @@
     {}
 // Liquid::
     void Liquid::DoRareAction() {
-        World * const world=GetWorld();
+        World * const world = GetWorld();
         // IDEA: turn off water drying up in ocean
-        if ( WATER==Sub() && !IsSubAround(WATER) ) {
+        if ( WATER == Sub() && not IsSubAround(WATER) ) {
             world->Damage(X(), Y(), Z(), 1, HEAT);
         }
         switch ( qrand()%20 ) {
         case 0: world->Move(X(), Y(), Z(), NORTH); break;
         case 1: world->Move(X(), Y(), Z(), EAST);  break;
-        case 2:    world->Move(X(), Y(), Z(), SOUTH); break;
+        case 2: world->Move(X(), Y(), Z(), SOUTH); break;
         case 3: world->Move(X(), Y(), Z(), WEST);  break;
         }
     }
@@ -750,8 +731,7 @@
         case WATER: return tr("Liquid");
         case STONE: return tr("Lava");
         default:
-            fprintf(stderr, "Liquid::FullName(): sub (?): %d\n",
-                Sub());
+            fprintf(stderr, "Liquid::FullName(): sub (?): %d\n", Sub());
             return "Unknown liquid";
         }
     }
@@ -847,33 +827,28 @@
             Active(str, sub, id)
     {}
 // Bush::
-    QString Bush::FullName() const { return tr("Bush"); }
-    quint8 Bush::Kind() const { return BUSH; }
     int  Bush::Sub() const { return Block::Sub(); }
     bool Bush::ShouldFall() const { return false; }
     int  Bush::ShouldAct() const  { return RARE; }
+    void Bush::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
+    QString Bush::FullName() const { return tr("Bush"); }
+    quint8  Bush::Kind() const { return BUSH; }
+    ushort  Bush::Weight() const { return Inventory::Weight()+Block::Weight(); }
     usage_types Bush::Use(Block *) { return USAGE_TYPE_OPEN; }
     Inventory * Bush::HasInventory() { return Inventory::HasInventory(); }
-    void Bush::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
 
     void Bush::Damage(const ushort dmg, const int dmg_kind) {
         durability -= ( CUT==dmg_kind ? dmg*2 : dmg );
     }
 
-    ushort Bush::Weight() const {
-        return Inventory::Weight()+Block::Weight();
-    }
-
     void Bush::DoRareAction() {
-        if ( 0==qrand()%(SECONDS_IN_HOUR*4) ) {
+        if ( 0 == qrand()%(SECONDS_IN_HOUR*4) ) {
             Get(block_manager.NormalBlock(HAZELNUT));
         }
     }
 
     int Bush::PushResult(int const) const { return NOT_MOVABLE; }
-    void Bush::Push(const int, Block * const who) {
-        Inventory::Push(who);
-    }
+    void Bush::Push(const int, Block * const who) { Inventory::Push(who); }
 
     Block * Bush::DropAfterDamage() const {
         Block * const pile = block_manager.NewBlock(PILE, DIFFERENT);
@@ -992,17 +967,15 @@
     bool Workbench::Drop(const ushort src, const ushort dest,
             const ushort num, Inventory * const inv_to)
     {
-        if ( !inv_to
+        if ( inv_to == nullptr
                 || src  >= Size()
                 || dest >= inv_to->Size()
-                || !Number(src) )
+                || Number(src) == 0 )
         {
             return false;
-        } // else:
+        }
         for (ushort i=0; i<num; ++i) {
-            if ( !inv_to->Get(ShowBlock(src), dest) ) {
-                return false;
-            } // else:
+            if ( not inv_to->Get(ShowBlock(src), dest) ) return false;
             Pull(src);
             if ( src < Start() ) {
                 // remove materials:
@@ -1025,8 +998,7 @@
         case WOOD: return QObject::tr("Workbench");
         case IRON: return QObject::tr("Iron anvil");
         default:
-            fprintf(stderr, "Workbench::FullName: sub (?): %d\n",
-                Sub());
+            fprintf(stderr, "Workbench::FullName: sub (?): %d\n", Sub());
             return "Strange workbench";
         }
     }
@@ -1068,8 +1040,8 @@
     }
 
     void Door::Push(const int, Block * const who) {
-        if ( !shifted
-                && !locked
+        if ( not shifted
+                && not locked
                 && World::Anti(GetDir())!=who->GetDir() )
         {
             movable = true;
@@ -1094,8 +1066,8 @@
     }
 
     int  Door::ShouldAct() const { return FREQUENT_MECH; }
-    quint8 Door::Kind() const { return locked ? LOCKED_DOOR : DOOR; }
     bool Door::ShouldFall() const { return false; }
+    quint8 Door::Kind() const { return locked ? LOCKED_DOOR : DOOR; }
 
     QString Door::FullName() const {
         QString sub_string;
@@ -1137,12 +1109,12 @@
     }
 // Clock::
     usage_types Clock::Use(Block * const who) {
-        World * world=GetWorld();
+        World * world = GetWorld();
         if ( world ) {
             SendSignalAround(world->TimeOfDayStr());
         } else if ( who ) {
-            const Active * const active=who->ActiveBlock();
-            if ( active && (world=active->GetWorld()) ) {
+            const Active * const active = who->ActiveBlock();
+            if ( active && (world = active->GetWorld()) ) {
                 who->ReceiveSignal(world->TimeOfDayStr());
             }
         }
@@ -1153,8 +1125,7 @@
         switch ( Sub() ) {
         case IRON: return QObject::tr("Iron clock");
         default:
-            fprintf(stderr, "Clock::FullName: unlisted sub: %d\n",
-                Sub());
+            fprintf(stderr, "Clock::FullName: unlisted sub: %d\n", Sub());
             return "Strange clock";
         }
     }
@@ -1219,9 +1190,7 @@
     QString Creator::FullName() const { return tr("Creative block"); }
     int Creator::DamageKind() const { return TIME; }
     ushort Creator::DamageLevel() const { return MAX_DURABILITY; }
-    Inventory * Creator::HasInventory() {
-        return Inventory::HasInventory();
-    }
+    Inventory * Creator::HasInventory() { return Inventory::HasInventory(); }
 
     void Creator::ReceiveSignal(const QString str) {
         Active::ReceiveSignal(str);
@@ -1242,7 +1211,15 @@
     {}
 // Text::
     quint8 Text::Kind() const { return TEXT; }
-    QString Text::FullName() const { return QObject::tr("Paper page"); }
+    QString Text::FullName() const {
+        switch ( Sub() ) {
+        case PAPER: return QObject::tr("Paper page");
+        case GLASS: return QObject::tr("Screen");
+        default:
+            fprintf(stderr, "Text::FullName: sub ?: %d\n", Sub());
+            return QObject::tr("Strange text");
+        }
+    }
 
     usage_types Text::Use(Block * const who) {
         if ( note ) {
@@ -1255,7 +1232,7 @@
     }
 
     bool Text::Inscribe(const QString str) {
-        if ( '.'!=str.at(0) && !note ) {
+        if ( '.' != str.at(0) && (note == nullptr || GLASS == Sub()) ) {
             Block::Inscribe(str);
             return true;
         } else {
@@ -1274,7 +1251,7 @@
     QString Map::FullName() const { return QObject::tr("Map"); }
 
     usage_types Map::Use(Block * const who) {
-        if ( !note ) {
+        if ( note == nullptr ) {
             if ( who ) {
                 who->ReceiveSignal(QObject::tr(
                     "Set title to this map first."));
@@ -1284,12 +1261,10 @@
             const Active * const active = who->ActiveBlock();
             QFile map_file(active->GetWorld()->
                 WorldName() + "/texts/" + *note + ".txt");
-            if ( !map_file.open(QIODevice::ReadWrite |
-                    QIODevice::Text) )
-            {
+            if ( not map_file.open(QIODevice::ReadWrite | QIODevice::Text) ) {
                 return USAGE_TYPE_READ;
             }
-            const Shred * shred = active->GetShred();
+            const Shred * const shred = active->GetShred();
             const long  lati = shred->Latitude();
             const long longi = shred->Longitude();
             static const ushort FILE_SIZE_CHARS = 31;
@@ -1403,19 +1378,17 @@
             Xyz(X(), Y()-1, Z()),
             Xyz(X(), Y()+1, Z()),
             Xyz(X(), Y(), Z()-1),
-            Xyz(X(), Y(), Z()+1)
-        };
+            Xyz(X(), Y(), Z()+1) };
         World * const world = GetWorld();
-        for (ushort i=0; i<6; ++i) {
-            const ushort x = coords[i].GetX();
-            const ushort y = coords[i].GetY();
-            const ushort z = coords[i].GetZ();
+        for (const Xyz xyz : coords) {
+            const ushort x = xyz.GetX();
+            const ushort y = xyz.GetY();
+            const ushort z = xyz.GetZ();
             Block * const block = world->GetBlock(x, y, z);
             if ( Attractive(block->Sub()) ) {
                 world->GetBlock(x, y, z)->ReceiveSignal(
                     tr("Predator bites you!"));
-                world->Damage(x, y, z,
-                    DamageLevel(), DamageKind());
+                world->Damage(x, y, z, DamageLevel(), DamageKind());
                 Eat(block->Sub());
             }
         }
@@ -1425,7 +1398,7 @@
         Animal::DoRareAction();
     }
 
-    short Predator::Attractive(int sub) const {
+    short Predator::Attractive(const int sub) const {
         switch ( sub ) {
         default: return 0;
         case A_MEAT:

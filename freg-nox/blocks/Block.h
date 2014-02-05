@@ -24,7 +24,6 @@
 #define BLOCK_H
 
 #include "header.h"
-#include <QString>
 
 const QString SOUND_STRINGS[] = {
     "Ding!",
@@ -51,7 +50,6 @@ class Block {
 public:
     Block(int sub, quint16 id, quint8 transp = UNDEF);
     Block(QDataStream &, int sub, quint16 id, quint8 transp = UNDEF);
-    Block(Block const &);
     virtual ~Block();
 
     virtual QString FullName() const;
@@ -106,6 +104,8 @@ protected:
     QString * note;
     qint16 durability;
 private:
+    Block(Block const &);
+
     static const ushort MAX_NOTE_LENGTH = 144;
     quint8 Transparency(quint8 transp, int sub) const;
 
@@ -113,6 +113,6 @@ private:
     const quint8 sub;
     const quint16 id;
     quint8 direction;
-}; // class Block
+};
 
 #endif // BLOCK_H

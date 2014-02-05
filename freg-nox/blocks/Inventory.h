@@ -79,13 +79,14 @@ protected:
      *  in console version. */
     explicit Inventory(ushort sz = INV_SIZE);
     Inventory(QDataStream & str, ushort size = INV_SIZE);
-    Inventory(const Inventory & inv);
     virtual ~Inventory();
 
     virtual void SaveAttributes(QDataStream & out) const;
 private:
+    Inventory(const Inventory & inv);
+
     const ushort size;
-    QStack<Block *> * inventory;
-}; // class Inventory
+    QStack<Block *> * const inventory;
+};
 
 #endif // INVENTORY_H
