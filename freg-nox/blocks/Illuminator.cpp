@@ -50,3 +50,13 @@ usage_types Illuminator::Use(Block *) {
     return ( WOOD==Sub() || STONE==Sub() || IRON==Sub() ) ?
         USAGE_TYPE_SET_FIRE : USAGE_TYPE_NO;
 }
+
+uchar Illuminator::LightRadius() const {
+    switch ( Sub() ) {
+    default:
+    case STONE: return 0;
+    case WOOD:  return 3;
+    case IRON:  return 4;
+    case GLASS: return 5;
+    }
+}

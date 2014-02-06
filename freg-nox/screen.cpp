@@ -312,6 +312,11 @@ void Screen::ControlPlayer(const int ch) {
     case 'O': SetActionMode(ACTION_OBTAIN);   break;
     case 'U': SetActionMode(ACTION_USE);      break;
     case 'W': SetActionMode(ACTION_WIELD);    break;
+    case 'S':
+        if ( player && player->PlayerInventory() ) {
+              player->PlayerInventory()->Shake();
+        }
+    break;
     case KEY_HELP:
     case 'H':
         DisplayFile(QString("help_%1/help.txt").arg(locale.left(2)));

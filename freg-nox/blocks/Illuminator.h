@@ -28,6 +28,7 @@ public:
     Illuminator(QDataStream & str, int sub, quint16 id);
 
     void    Damage(ushort dmg, int dmg_kind);
+    uchar   LightRadius() const;
     quint8  Kind() const;
     Block * DropAfterDamage() const;
     QString FullName() const;

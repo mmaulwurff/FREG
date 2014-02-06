@@ -73,6 +73,8 @@ public:
     bool IsEmpty() const;
 
     void Push(Block * who);
+    /// Stacks items in inventory if possible.
+    void Shake();
 protected:
     /// It is not recommended to make inventory size more than 26.
     /** Because it will not be convenient to deal with inventory

@@ -222,10 +222,11 @@ public:
 
     int ShouldAct() const;
     int PushResult(const int) const;
-    void DoRareAction();
     bool ShouldFall() const;
-    void Push(int dir, Block * who);
     bool Inscribe(QString);
+    void DoRareAction();
+    void Push(int dir, Block * who);
+    void Damage(ushort dmg, int dmg_kind);
     quint8 Kind() const;
     ushort Weight() const;
     QString FullName() const;
@@ -285,10 +286,11 @@ public:
     Bell(int sub, quint16 id);
     Bell(QDataStream & str, int sub, quint16 id);
 
-    quint8 Kind() const;
+    void    ReceiveSignal(QString);
+    void    Damage(ushort dmg, int dmg_kind);
+    quint8  Kind() const;
     QString FullName() const;
     usage_types Use(Block * who = 0);
-    void ReceiveSignal(QString);
 };
 
 class Predator : public Animal {

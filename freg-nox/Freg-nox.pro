@@ -76,6 +76,7 @@ SOURCES += \
     blocks/Dwarf.cpp \
     blocks/Weapons.cpp \
     blocks/Illuminator.cpp \
+    blocks/Inventory.cpp \
     blocks/Bucket.cpp
 
 TRANSLATIONS = \
