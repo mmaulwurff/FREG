@@ -189,7 +189,7 @@ const {
            ((light & 0xF0) >> 4 ) * FIRE_LIGHT_FACTOR;
 }
 
-// provides lighting of block side, not all block
+/// Provides lighting of block side, not all block.
 uchar World::Enlightened(const ushort i, const ushort j, const ushort k,
         const int dir)
 const {
