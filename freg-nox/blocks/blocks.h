@@ -126,6 +126,7 @@ public:
     quint8 Kind() const;
     bool ShouldFall() const;
     void Push(int dir, Block * who);
+    uchar LightRadius() const;
     Block * DropAfterDamage() const;
 private:
     static bool IsBase(quint8 ownsub, quint8 ground);

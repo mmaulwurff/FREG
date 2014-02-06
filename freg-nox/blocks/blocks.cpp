@@ -124,7 +124,7 @@
     int  Block::Wearable() const { return WEARABLE_NOWHERE; }
     int  Block::DamageKind() const { return CRUSH; }
     ushort Block::DamageLevel() const { return 1; }
-    uchar Block::LightRadius() const { return (FIRE == Sub()) ? 5 : 0; }
+    uchar Block::LightRadius() const { return 0; }
     void Block::ReceiveSignal(const QString) {}
 
     bool Block::Inscribe(const QString str) {
@@ -817,6 +817,7 @@
         GetWorld()->DestroyAndReplace(X(), Y(), Z());
     }
     bool Grass::ShouldFall() const { return false; }
+    uchar Grass::LightRadius() const { return (FIRE == Sub()) ? 5 : 0; }
     quint8 Grass::Kind() const { return GRASS; }
     Block * Grass::DropAfterDamage() const { return 0; }
 

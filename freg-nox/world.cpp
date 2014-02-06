@@ -684,7 +684,7 @@ bool World::Build(Block * block,
         const quint8 dir, Block * const who, const bool anyway)
 {
     Block * const target_block = GetBlock(x, y, z);
-    if ( ENVIRONMENT!=target_block->PushResult(NOWHERE) && !anyway ) {
+    if ( ENVIRONMENT!=target_block->PushResult(NOWHERE) && not anyway ) {
         if ( who ) {
             who->ReceiveSignal(tr("Cannot build here."));
         }
