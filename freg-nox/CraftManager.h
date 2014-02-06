@@ -63,6 +63,7 @@ public:
     CraftItem * MiniCraft(ushort num, quint16 id) const;
     CraftList * Craft(CraftList * items, int sub) const;
 private:
+    CraftManager(const CraftManager &);
     CraftList * CraftSub(CraftList * items, int sub) const;
 
     int size;

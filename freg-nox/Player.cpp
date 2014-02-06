@@ -402,7 +402,7 @@ void Player::ProcessCommand(QString command) {
     QString request;
     comm_stream >> request;
     if ( "give"==request || "get"==request ) {
-        if ( !(GetCreativeMode() || COMMANDS_ALWAYS_ON) ) {
+        if ( not (GetCreativeMode() || COMMANDS_ALWAYS_ON) ) {
             emit Notify(tr("You are not in Creative Mode."));
             return;
         } // else:
@@ -411,7 +411,7 @@ void Player::ProcessCommand(QString command) {
         int kind, sub, num;
         comm_stream >> kind >> sub >> num;
         for (num = qBound(1, num, 9); num; --num) {
-            Block* const block = block_manager.NewBlock(kind, sub);
+            Block * const block = block_manager.NewBlock(kind, sub);
             if ( not inv->Get(block) ) {
                 emit Notify( (num==1) ?
                     tr("No place for one thing.") :
@@ -460,19 +460,17 @@ void Player::ProcessCommand(QString command) {
         const int sub = BlockManager::StringToSub(request);
         emit Notify( ( sub == LAST_SUB ) ?
             tr("\"%1\" is unknown substance.").arg(request) :
-            tr("Code of substance %1 is %2.").
-                arg(request).arg(sub) );
+            tr("Code of substance %1 is %2.").arg(request).arg(sub) );
     } else if ( "time" == request ) {
         emit Notify( (GetCreativeMode() || COMMANDS_ALWAYS_ON) ?
-            GetWorld()->TimeOfDayStr() :
-            tr("Not in Creative Mode.") );
+            GetWorld()->TimeOfDayStr() : tr("Not in Creative Mode.") );
     } else if ( "version" == request ) {
         emit Notify(tr("freg version: %1. Compiled on %2 at %3.").
             arg(VER).arg(__DATE__).arg(__TIME__));
     } else if ( "help" == request ) {
         comm_stream >> request;
         emit ShowFile( QString("help_%1/%2.txt")
-            .arg(locale.left(2)).arg(request));
+            .arg(locale.left(2)).arg(request) );
     } else {
         emit Notify(tr("Don't know such command: \"%1\".").arg(command));
     }

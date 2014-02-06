@@ -36,7 +36,7 @@ bool Inventory::Drop(const ushort src, ushort dest, ushort num,
     for ( ; num; --num) {
         if ( src < Size()
                 && dest < inv_to->Size()
-                && !inventory[src].isEmpty()
+                && not inventory[src].isEmpty()
                 && inv_to->Get(inventory[src].top(), dest) )
         {
             ok_flag = true;
@@ -135,7 +135,7 @@ bool Inventory::InscribeInv(const ushort num, const QString str) {
         }
     }
     for (ushort i=0; i<number; ++i) {
-        if ( !inventory[num].at(i)->Inscribe(str) ) {
+        if ( not inventory[num].at(i)->Inscribe(str) ) {
             ReceiveSignal(QObject::tr("Cannot inscribe this."));
             return false;
         }
@@ -240,8 +240,7 @@ Inventory::Inventory(QDataStream & str, const ushort sz) :
         quint8 num;
         str >> num;
         while ( num-- ) {
-            inventory[i].push(block_manager.
-                BlockFromFile(str));
+            inventory[i].push(block_manager.BlockFromFile(str));
         }
     }
 }
@@ -252,7 +251,7 @@ Inventory::Inventory(const Inventory & inv) :
 
 Inventory::~Inventory() {
     for (ushort i=0; i<Size(); ++i) {
-        while ( !inventory[i].isEmpty() ) {
+        while ( not inventory[i].isEmpty() ) {
             block_manager.DeleteBlock(inventory[i].pop());
         }
     }
@@ -261,6 +260,9 @@ Inventory::~Inventory() {
 
 void Inventory::Shake() {
     for (int i=Start(); i<Size()-1; ++i) {
+        if ( Number(i) == MAX_STACK_SIZE ) {
+            continue;
+        }
         for (int j=i; j<Size(); ++j) {
             MoveInside(j, i, Number(j));
         }

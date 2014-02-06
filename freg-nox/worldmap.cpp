@@ -66,3 +66,7 @@ char WorldMap::TypeOfShred(const long longi, const long lati) {
 long WorldMap::MapSize() const { return mapSize; }
 
 WorldMap::~WorldMap() { delete map; }
+
+WorldMap::WorldMap(const WorldMap &) :
+        map(nullptr)
+{}

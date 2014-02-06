@@ -646,8 +646,8 @@ void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
                 Block * const inner = inv->ShowBlock(i);
                 if ( inner && inner->Kind() == LIQUID ) {
                     for (int n=0; inv->Number(i); ++n) {
-                        if ( Build(inv->ShowBlock(i),
-                                x, y, z+i*(MAX_STACK_SIZE+1)+1+n) )
+                        if ( Build( inv->ShowBlock(i),
+                                x, y, z+i*(MAX_STACK_SIZE+1)+1+n ) )
                         {
                             inv->Pull(i);
                         } else {
@@ -658,7 +658,8 @@ void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
             }
             new_pile_inv->GetAll(inv);
         }
-        if ( dropped && not dropped_pile
+        if ( dropped
+                && not dropped_pile
                 && not new_pile_inv->Get(dropped) )
         {
             DeleteBlock(dropped);

@@ -595,9 +595,9 @@
     bool Bush::ShouldFall() const { return false; }
     int  Bush::ShouldAct() const  { return RARE; }
     void Bush::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
+    quint8 Bush::Kind() const { return BUSH; }
+    ushort Bush::Weight() const { return Inventory::Weight()+Block::Weight(); }
     QString Bush::FullName() const { return tr("Bush"); }
-    quint8  Bush::Kind() const { return BUSH; }
-    ushort  Bush::Weight() const { return Inventory::Weight()+Block::Weight(); }
     usage_types Bush::Use(Block *) { return USAGE_TYPE_OPEN; }
     Inventory * Bush::HasInventory() { return Inventory::HasInventory(); }
 

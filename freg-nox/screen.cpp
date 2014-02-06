@@ -84,8 +84,8 @@ void Screen::UpdateAll() {
 }
 
 void Screen::UpdatePlayer() {
-    if ( player && ( USAGE_TYPE_READ_IN_INVENTORY==player->UsingType() ||
-            player->GetCreativeMode() ) )
+    if ( USAGE_TYPE_READ_IN_INVENTORY==player->UsingType()
+            || player->GetCreativeMode() )
     {
         updated = false;
     }
@@ -242,6 +242,14 @@ color_pairs Screen::Color(const int kind, const int sub) const {
     }
 } // color_pairs Screen::Color(int kind, int sub)
 
+void Screen::MovePlayer(const int dir) const {
+    if ( player->GetDir() == dir ) {
+        player->Move(dir);
+    } else {
+        player->SetDir(dir);
+    }
+}
+
 void Screen::ControlPlayer(const int ch) {
     CleanFileToShow();
     // Q, ctrl-c, ctrl-d, ctrl-q, ctrl-x
@@ -255,35 +263,12 @@ void Screen::ControlPlayer(const int ch) {
         return;
     } // else:
     switch ( ch ) { // interactions with world
-    case KEY_UP:
-        if ( player->GetDir() == NORTH ) {
-            player->Move(NORTH);
-        } else {
-            player->SetDir(NORTH);
-        }
-    break;
-    case KEY_DOWN:
-        if ( player->GetDir() == SOUTH ) {
-            player->Move(SOUTH);
-        } else {
-            player->SetDir(SOUTH);
-        }
-    break;
-    case KEY_RIGHT:
-        if ( player->GetDir() == EAST ) {
-            player->Move(EAST);
-        } else {
-            player->SetDir(EAST);
-        }
-    break;
-    case KEY_LEFT:
-        if ( player->GetDir() == WEST ) {
-            player->Move(WEST);
-        } else {
-            player->SetDir(WEST);
-        }
-    break;
-    case KEY_END: player->Move(DOWN); break;
+    case KEY_UP:    MovePlayer(NORTH); break;
+    case KEY_DOWN:  MovePlayer(SOUTH); break;
+    case KEY_RIGHT: MovePlayer(EAST);  break;
+    case KEY_LEFT:  MovePlayer(WEST);  break;
+
+    case KEY_END: player->Move(DOWN);  break;
     case ' ': player->Jump(); break;
     case '=': player->Move(); break;
 
@@ -313,7 +298,7 @@ void Screen::ControlPlayer(const int ch) {
     case 'U': SetActionMode(ACTION_USE);      break;
     case 'W': SetActionMode(ACTION_WIELD);    break;
     case 'S':
-        if ( player && player->PlayerInventory() ) {
+        if ( player->PlayerInventory() ) {
               player->PlayerInventory()->Shake();
         }
     break;
@@ -559,7 +544,8 @@ void Screen::PrintHUD() {
 void Screen::PrintNormal(WINDOW * const window, const int dir) const {
     if ( updated ) return;
     const ushort k_start = ( UP!=dir ) ?
-        (( DOWN==dir ) ? player->Z()-1 : player->Z()) :
+        ( DOWN==dir ?
+            player->Z()-1 : player->Z() ) :
         player->Z()+1;
     const short k_step = ( UP!=dir ) ? (-1) : 1;
 
@@ -584,9 +570,6 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
             waddch(window, ' ');
         }
     }
-    wstandend(window);
-    mvwaddch(window, player->Y(), player->X()*2+3, '!');
-    box(window, 0, 0);
     if ( player->IfPlayerExists() && dir > DOWN ) {
         const Block * const block = w->GetBlock(player->X(), player->Y(),
             player->Z());
@@ -603,17 +586,13 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
         case WEST:  waddstr(window, qPrintable(arrow_left));  break;
         case UP:    waddch(window, '.'); break;
         case DOWN:  waddch(window, 'x'); break;
-        default:
+        default:    waddch(window, '*');
             fprintf(stderr, "Screen::PrintNormal: (?) dir: %d\n",
                 player->GetDir());
-            waddch(window, '*');
         }
     }
-    wcolor_set(window, BLACK_WHITE, NULL);
-    mvwaddstr(window, 0, 1, qPrintable((UP==dir) ?
-        tr("(. Up .") : tr("x Down x")));
+    PrintTitle(window, UP==dir ? UP : DOWN);
     Arrows(window, (player->X()-start_x)*2+1, player->Y()-start_y+1, true);
-
     wrefresh(window);
 } // void Screen::PrintNormal(WINDOW * window, int dir)
 
@@ -720,18 +699,7 @@ void Screen::PrintFront(WINDOW * const window) const {
             waddch(window, ' ');
         }
     }
-    wstandend(window);
-    box(window, 0, 0);
-    wcolor_set(window, BLACK_WHITE, NULL);
-    (void)wmove(window, 0, 1);
-    QString dir_string;
-    switch ( dir ) {
-    case NORTH: dir_string = tr("^ North ^"); break;
-    case SOUTH: dir_string = tr("v South v"); break;
-    case EAST:  dir_string = tr("> East >");  break;
-    case WEST:  dir_string = tr("< West <");  break;
-    }
-    waddstr(window, qPrintable(dir_string));
+    PrintTitle(window, dir);
     if ( shiftFocus ) {
         HorizontalArrows(window, arrow_Y-shiftFocus, WHITE_BLUE);
         for (int i=arrow_Y-shiftFocus; i<SCREEN_SIZE+1 && i>0; i-=shiftFocus) {
@@ -742,6 +710,22 @@ void Screen::PrintFront(WINDOW * const window) const {
     Arrows(window, arrow_X, arrow_Y);
     wrefresh(window);
 } // void Screen::PrintFront(WINDOW * window)
+
+void Screen::PrintTitle(WINDOW * const window, const int dir) const {
+    wstandend(window);
+    box(window, 0, 0);
+    wcolor_set(window, BLACK_WHITE, NULL);
+    QString dir_string;
+    switch ( dir ) {
+    case NORTH: dir_string = tr("^ North ^"); break;
+    case SOUTH: dir_string = tr("v South v"); break;
+    case EAST:  dir_string = tr("> East >");  break;
+    case WEST:  dir_string = tr("< West <");  break;
+    case DOWN:  dir_string = tr("x Down x");  break;
+    case UP:    dir_string = tr(".  Up  .");  break;
+    }
+    mvwaddstr(window, 0, 1, qPrintable(dir_string));
+}
 
 void Screen::PrintInv(WINDOW * const window, const Inventory * const inv)
 const {

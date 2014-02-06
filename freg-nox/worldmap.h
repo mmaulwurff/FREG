@@ -28,6 +28,7 @@ public:
     long MapSize() const;
     char TypeOfShred(long longi, long lati);
 private:
+    WorldMap(const WorldMap &);
     long mapSize;
     QFile * map;
 };
