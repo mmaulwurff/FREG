@@ -65,7 +65,7 @@ void Player::SetCreativeMode(const bool turn) {
     if ( inv ) {
         inv->GetAll(prev_player->HasInventory());
     }
-    if ( !GetCreativeMode() ) {
+    if ( not GetCreativeMode() ) {
         prev_player->SetToDelete();
     }
     emit Updated();
@@ -74,21 +74,19 @@ void Player::SetCreativeMode(const bool turn) {
 int Player::UsingSelfType() const { return usingSelfType; }
 int Player::UsingType() const { return usingType; }
 void Player::SetUsingTypeNo() { usingType = USAGE_TYPE_NO; }
-
-bool Player::IfPlayerExists() const { return !!player; }
+bool Player::IfPlayerExists() const { return player != nullptr; }
 
 short Player::HP() const {
-    return ( !player || GetCreativeMode() ) ?
+    return ( not IfPlayerExists() || GetCreativeMode() ) ?
         -1 : player ? player->GetDurability() : 0;
 }
 
 short Player::Breath() const {
-    if ( !player || GetCreativeMode() ) {
-        return -1;
-    }
+    if ( not IfPlayerExists() || GetCreativeMode() ) return -1;
     Animal const * const animal = player->IsAnimal();
     return ( animal ? animal->Breath() : -1 );
 }
+
 ushort Player::BreathPercent() const {
     const short breath = Breath();
     return ( -1==breath ) ?
@@ -96,12 +94,11 @@ ushort Player::BreathPercent() const {
 }
 
 short Player::Satiation() const {
-    if ( !player || GetCreativeMode() ) {
-        return -1;
-    }
+    if ( not IfPlayerExists() || GetCreativeMode() ) return -1;
     Animal const * const animal = player->IsAnimal();
     return ( animal ? animal->Satiation() : -1 );
 }
+
 ushort Player::SatiationPercent() const {
     const short satiation = Satiation();
     return ( -1==satiation ) ?
@@ -164,7 +161,7 @@ void Player::Examine(const short i, const short j, const short k) const {
 }
 
 void Player::Jump() {
-    if ( !player ) {
+    if ( not IfPlayerExists() ) {
         return;
     }
     usingType = USAGE_TYPE_NO;
@@ -213,21 +210,21 @@ void Player::Inscribe(const short x, const short y, const short z) const {
 }
 
 Block * Player::ValidBlock(const ushort num) const {
-    if ( !player ) {
+    if ( not IfPlayerExists() ) {
         emit Notify("Player does not exist.");
         return 0;
     } // else:
     Inventory * const inv = player->HasInventory();
-    if ( !inv ) {
+    if ( inv == nullptr ) {
         emit Notify("Player has no inventory.");
         return 0;
     } // else:
-    if ( num>=inv->Size() ) {
+    if ( num >= inv->Size() ) {
         emit Notify("No such place.");
         return 0;
     } // else:
     Block * const block = inv->ShowBlock(num);
-    if ( !block ) {
+    if ( block == nullptr ) {
         emit Notify("Nothing here.");
         return 0;
     } else {
@@ -242,7 +239,7 @@ usage_types Player::Use(const ushort num) {
 
 usage_types Player::UseNoLock(const ushort num) {
     Block * const block = ValidBlock(num);
-    if ( !block ) {
+    if ( block == nullptr ) {
         return USAGE_TYPE_NO;
     } // else:
     Animal * const animal = player->IsAnimal();
@@ -377,25 +374,33 @@ void Player::ProcessCommand(QString command) {
     QString request;
     comm_stream >> request;
     if ( "give"==request || "get"==request ) {
-        if ( !(GetCreativeMode() || COMMANDS_ALWAYS_ON) ) {
+        if ( not (GetCreativeMode() || COMMANDS_ALWAYS_ON) ) {
             emit Notify(tr("You are not in Creative Mode."));
             return;
         } // else:
         Inventory * const inv = PlayerInventory();
         if ( inv == nullptr ) return;
-        int kind, sub, num;
-        comm_stream >> kind >> sub >> num;
-        for (num = qBound(1, num, 9); num; --num) {
-            Block* const block = block_manager.NewBlock(kind, sub);
-            if ( not inv->Get(block) ) {
-                emit Notify( (num==1) ?
-                    tr("No place for one thing.") :
-                    tr("No place for %n things.", "", num) );
-                block_manager.DeleteBlock(block);
-                break;
-            }
+        QString kind, sub;
+        comm_stream >> kind >> sub;
+        const quint8 kind_code = BlockManager::StringToKind(kind);
+        if ( kind_code == LAST_KIND ) {
+            emit Notify(tr("%1 command: invalid kind!").arg(request));
+            return;
+        } // else:
+        const quint8 sub_code = sub.isEmpty() ?
+            static_cast<quint8>(STONE) : BlockManager::StringToSub(sub);
+        if ( sub_code == LAST_SUB ) {
+            emit Notify(tr("%1 command: invalid substance!").arg(request));
+            return;
+        } // else:
+        emit Notify(QString("sub: %1").arg(sub_code));
+        Block * const block = block_manager.NewBlock(kind_code, sub_code);
+        if ( not inv->Get(block) ) {
+            emit Notify(tr("No place for requested thing."));
+            block_manager.DeleteBlock(block);
+        } else {
+            emit Updated();
         }
-        emit Updated();
     } else if ( "move" == request ) {
         int direction;
         comm_stream >> direction;
@@ -414,29 +419,6 @@ void Player::ProcessCommand(QString command) {
         } else {
             emit Notify(tr("Too far."));
         }
-    } else if ( "kindtostring"==request || "k2str"==request ) {
-        int kind;
-        comm_stream >> kind;
-        emit Notify(tr("Kind %1 is %2.").
-            arg(kind).arg(block_manager.KindToString(kind)));
-    } else if ( "stringtokind"==request || "str2k"==request ) {
-        comm_stream >> request;
-        const int kind = block_manager.StringToKind(request);
-        emit Notify( ( kind == LAST_KIND ) ?
-            tr("\"%1\" is unknown kind.").arg(request) :
-            tr("Code of kind %1 is %2.").arg(request).arg(kind) );
-    } else if ( "subtostring"==request || "s2str"==request ) {
-        int sub;
-        comm_stream >> sub;
-        emit Notify(tr("Sub %1 is %2.").
-            arg(sub).arg(BlockManager::SubToString(sub)));
-    } else if ( "stringtosub"==request || "str2s"==request ) {
-        comm_stream >> request;
-        const int sub = BlockManager::StringToSub(request);
-        emit Notify( ( sub == LAST_SUB ) ?
-            tr("\"%1\" is unknown substance.").arg(request) :
-            tr("Code of substance %1 is %2.").
-                arg(request).arg(sub) );
     } else if ( "time" == request ) {
         emit Notify( (GetCreativeMode() || COMMANDS_ALWAYS_ON) ?
             GetWorld()->TimeOfDayStr() :
@@ -492,7 +474,7 @@ void Player::CheckOverstep(const int direction) {
 }
 
 void Player::BlockDestroy() {
-    if ( !cleaned ) {
+    if ( not cleaned ) {
         usingType = usingSelfType = USAGE_TYPE_NO;
         emit Destroyed();
         player = 0;
