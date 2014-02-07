@@ -26,7 +26,9 @@
 #include "blocks/Weapons.h"
 #include "blocks/Illuminator.h"
 
-const QString BlockManager::kinds[LAST_KIND] = {
+#define sizeof_array(ARRAY) (sizeof(ARRAY)/sizeof(ARRAY[0]))
+
+const QString BlockManager::kinds[] = {
     "block",
     "bell",
     "chest",
@@ -55,10 +57,10 @@ const QString BlockManager::kinds[LAST_KIND] = {
     "shovel",
     "axe",
     "hammer",
-    "illuminator"
+    "illuminator",
 };
 
-const QString BlockManager::subs[LAST_SUB] = {
+const QString BlockManager::subs[] = {
     "stone",
     "moss stone",
     "nullstone",
@@ -83,7 +85,8 @@ const QString BlockManager::subs[LAST_SUB] = {
     "gold",
     "bone",
     "steel",
-    "adamantine"
+    "adamantine",
+    "fire",
 };
 
 BlockManager block_manager;
@@ -92,7 +95,12 @@ BlockManager::BlockManager() {
     for (ushort sub=0; sub<LAST_SUB; ++sub) {
         normals[sub] = new Block(sub, MakeId(BLOCK, sub));
     }
+    static_assert((sizeof_array(BlockManager::kinds) == LAST_KIND),
+        "invalid number of strings in BlockManager::kinds[]");
+    static_assert((sizeof_array(BlockManager::subs) == LAST_SUB),
+        "invalid number of strings in BlockManager::subs[]");
 }
+
 BlockManager::~BlockManager() {
     for(ushort sub=0; sub<LAST_SUB; ++sub) {
         delete normals[sub];

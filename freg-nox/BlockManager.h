@@ -75,14 +75,14 @@ public:
     static quint8  SubFromId(quint16 id);
 private:
     Block * normals[LAST_SUB];
-    static const QString kinds[LAST_KIND];
-    static const QString subs[LAST_SUB];
+    static const QString kinds[];
+    static const QString subs[];
 
     template <typename Thing>
     static Thing * New(quint8 sub, quint16 id);
     template <typename Thing>
     static Thing * New(QDataStream & str, quint8 sub, quint16 id);
-}; // class BlockManager
+};
 
 extern BlockManager block_manager;
 
