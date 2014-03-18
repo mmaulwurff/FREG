@@ -1,0 +1,17 @@
+*
+!.gitignore
+!freg-nox
+freg-nox/*
+!freg-nox/*.cpp
+!freg-nox/*.h
+!freg-nox/*.ts
+!freg-nox/*.pro
+
+!freg-nox/blocks
+freg-nox/blocks/*
+!freg-nox/blocks/*cpp
+!freg-nox/blocks/*.h
+
+!freg-nox/help_*
+freg-nox/help_*/*
+!freg-nox/help_*/*.txt
