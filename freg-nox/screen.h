@@ -25,8 +25,12 @@
 
 #define NOX
 
+#ifdef __MINGW32__
+#include "pdcurses/curses.h"
+#else
 #define _X_OPEN_SOURCE_EXTENDED
 #include <ncursesw/ncurses.h>
+#endif
 #include "VirtScreen.h"
 
 const ushort SCREEN_SIZE = 30;

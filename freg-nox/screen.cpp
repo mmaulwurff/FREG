@@ -359,7 +359,7 @@ void Screen::ControlPlayer(const int ch) {
 
 void Screen::ProcessCommand(QString command) {
     if ( command.length()==1 && "."!=command ) {
-        ControlPlayer(command.at(0).toAscii());
+        ControlPlayer(command.at(0).toLatin1());
     } else if ( "warranty" == command ) {
         wstandend(rightWin);
         PrintFile(rightWin, "texts/warranty.txt");

@@ -5,7 +5,14 @@
 CONFIG += thread warn_on console
 CONFIG += debug
 QT -= gui
-LIBS += -lncursesw
+
+win32 {
+    LIBS += -LC:\Users\Alexander\src\FREG\freg-nox\pdcurses -l pdcurses.lib
+}
+
+unix {
+    LIBS += -lncursesw
+}
 
 VERSION = 0.2
 VERSTR = '\\"$${VERSION}\\"'
