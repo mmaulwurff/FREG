@@ -918,11 +918,7 @@ Screen::Screen(World * const wor, Player * const pl, int & error) :
         fileToShow(0),
         mutex(new QMutex())
 {
-    #ifdef Q_OS_WIN32
-        AllocConsole();
-        freopen("conout$", "wt", stdout);
-        freopen("conin$",  "rt", stdin);
-    #else
+    #ifndef Q_OS_WIN32
         set_escdelay(10);
     #endif
     initscr();

@@ -87,7 +87,7 @@ CraftItem * CraftList::GetItem(const int i) const { return items.at(i); }
 CraftManager::CraftManager() : size(0) {
     QDir::current().mkdir("recipes");
     const QStringList recipesNames = QDir("recipes").entryList();
-    if ( recipesNames.isEmpty() ) {
+    if ( recipesNames.size() < 3 ) { // minimum: . and ..
         recipesList = 0;
         recipesSubsList = 0;
         return;

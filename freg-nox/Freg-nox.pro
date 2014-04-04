@@ -7,7 +7,7 @@ CONFIG += debug
 QT -= gui
 
 win32 {
-    LIBS += -LC:\Users\Alexander\src\FREG\freg-nox\pdcurses -l pdcurses.lib
+    LIBS += -LC:\Users\Alexander\src\FREG\freg-nox\pdcurses -lpdcurses
 }
 
 unix {
@@ -22,6 +22,7 @@ TARGET = freg-nox
 
 QMAKE_CXXFLAGS += -Wextra -std=c++11 -pedantic
 QMAKE_CXXFLAGS += -Werror
+QMAKE_CXXFLAGS += -Wno-error=strict-overflow
 
 #QMAKE_CXXFLAGS_DEBUG += -fno-inline
 QMAKE_CXXFLAGS_DEBUG += -O3
