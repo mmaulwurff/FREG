@@ -17,26 +17,25 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include "screen.h" //NOX, if needed, is defined in screen.h
+#include "screen.h" // NOX, if needed, is defined in screen.h
 
 #include <QTranslator>
 #include <QLocale>
+#include <QSettings>
+#include <QDir>
+#include <QTime>
+#include <QCommandLineParser>
+#include "world.h"
+#include "Player.h"
 
-#ifdef NOX //no need for X server
+#ifdef NOX // no need for X server
     #include <QCoreApplication>
 #else
     #include <QApplication>
 #endif
 
-#include <QSettings>
-#include <QDir>
-#include <QTime>
-#include "world.h"
-#include "Player.h"
-
 int main(int argc, char *argv[]) {
     setlocale(LC_CTYPE, "C-UTF-8");
-    puts(qPrintable(QObject::tr("Starting...")));
     QDir::current().mkdir("texts");
     freopen("texts/errors.txt", "wt", stderr);
     qsrand(QTime::currentTime().msec());
@@ -47,18 +46,21 @@ int main(int argc, char *argv[]) {
     #endif
     QCoreApplication::setOrganizationName("freg-team");
     QCoreApplication::setApplicationName("freg");
+    QCoreApplication::setApplicationVersion(VER);
+
     QTranslator translator;
     translator.load(QString("freg_") + locale);
     freg.installTranslator(&translator);
 
     // parse arguments
-    bool ascii_flag = false;
-    for (int i = 1; i<argc; ++i) {
-        if ( not ascii_flag ) {
-            ascii_flag = strncmp(argv[i], "-a", 2) ||
-                strncmp(argv[i], "--ascii", strlen("--ascii"));
-        }
-    }
+    QCommandLineParser parser;
+    parser.setApplicationDescription(QObject::tr("freg - 3d open world game"));
+    parser.addHelpOption();
+    parser.addVersionOption();
+    QCommandLineOption ascii(QStringList() << "a" <<"ascii",
+        QObject::tr("Use ASCII-characters only."));
+    parser.addOption(ascii);
+    parser.process(freg);
 
     QSettings::setDefaultFormat(QSettings::IniFormat);
     QSettings sett(QDir::currentPath()+"/freg.ini", QSettings::IniFormat);
@@ -68,7 +70,7 @@ int main(int argc, char *argv[]) {
     World world(worldName);
     Player player;
     int error = NO_ERROR;
-    const Screen screen(&world, &player, error, ascii_flag);
+    const Screen screen(&world, &player, error, parser.isSet(ascii));
     if ( error ) {
         return 1;
     } // else:
