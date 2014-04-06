@@ -137,7 +137,7 @@ class QMutex;
 class Screen : public VirtScreen {
     Q_OBJECT
 public:
-     Screen(World *, Player *, int & error);
+     Screen(World *, Player *, int & error, bool ascii);
     ~Screen();
 
     void ControlPlayer(int);
@@ -195,6 +195,7 @@ private:
     QFile * fileToShow;
     bool beepOn;
     QMutex * mutex;
+    const bool ascii;
 }; // class Screen
 
 /** \class IThread screen.h

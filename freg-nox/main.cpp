@@ -51,6 +51,15 @@ int main(int argc, char *argv[]) {
     translator.load(QString("freg_") + locale);
     freg.installTranslator(&translator);
 
+    // parse arguments
+    bool ascii_flag = false;
+    for (int i = 1; i<argc; ++i) {
+        if ( not ascii_flag ) {
+            ascii_flag = strncmp(argv[i], "-a", 2) ||
+                strncmp(argv[i], "--ascii", strlen("--ascii"));
+        }
+    }
+
     QSettings::setDefaultFormat(QSettings::IniFormat);
     QSettings sett(QDir::currentPath()+"/freg.ini", QSettings::IniFormat);
     const QString worldName = sett.value("current_world", "mu").toString();
@@ -59,7 +68,7 @@ int main(int argc, char *argv[]) {
     World world(worldName);
     Player player;
     int error = NO_ERROR;
-    const Screen screen(&world, &player, error);
+    const Screen screen(&world, &player, error, ascii_flag);
     if ( error ) {
         return 1;
     } // else:

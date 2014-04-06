@@ -43,8 +43,8 @@ const {
         mvwaddstr(window, SCREEN_SIZE+1, x-2, qPrintable(tr("S    S")));
     }
     wcolor_set(window, WHITE_RED, NULL);
-    static const QString arrows_down(2, QChar(0x2193));
-    static const QString arrows_up  (2, QChar(0x2191));
+    static const QString arrows_down(2, QChar(ascii ? 'v' : 0x2193));
+    static const QString arrows_up  (2, QChar(ascii ? '^' : 0x2191));
     mvwaddstr(window, 0, x, qPrintable(arrows_down));
     mvwaddstr(window, SCREEN_SIZE+1, x, qPrintable(arrows_up));
     HorizontalArrows(window, y, WHITE_RED, show_dir);
@@ -62,8 +62,8 @@ const {
         mvwaddstr(window, y+1, SCREEN_SIZE*2+1, qPrintable(tr("E")));
     }
     wcolor_set(window, color, NULL);
-    static const QString arrow_right(QChar(0x2192));
-    static const QString arrow_left (QChar(0x2190));
+    static const QString arrow_right(QChar(ascii ? '>' : 0x2192));
+    static const QString arrow_left (QChar(ascii ? '<' : 0x2190));
     mvwaddstr(window, y, 0, qPrintable(arrow_right));
     mvwaddstr(window, y, SCREEN_SIZE*2+1, qPrintable(arrow_left));
 }
@@ -555,14 +555,14 @@ void Screen::PrintHUD() {
             wstandend(hudWin);
             mvwprintw(hudWin, 0, 0, "[..........]%hd", dur);
             wcolor_set(hudWin, WHITE_RED, NULL);
-            const QString str(10, QChar(0x2665));
+            const QString str(10, QChar(ascii ? '@' : 0x2665));
             mvwaddstr(hudWin, 0, 1,
                 qPrintable(str.left(10*dur/MAX_DURABILITY+1)));
         }
         const short breath = player->Breath();
         if ( -1!=breath && breath!=MAX_BREATH ) { // breath line
             wstandend(hudWin);
-            const QString str(10, QChar(0x00b0));
+            const QString str(10, QChar(ascii ? 'o' : 0x00b0));
             mvwprintw(hudWin, 0, 16, "[..........]%hd", breath);
             wcolor_set(hudWin, WHITE_BLUE, NULL);
             mvwaddstr(hudWin, 0, 14+3,
@@ -620,10 +620,10 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
     if ( player->IfPlayerExists() && dir > DOWN ) {
         const Block * const block = w->GetBlock(player->X(), player->Y(),
             player->Z());
-        static const QString arrow_left (QChar(0x2190));
-        static const QString arrow_up   (QChar(0x2191));
-        static const QString arrow_right(QChar(0x2192));
-        static const QString arrow_down (QChar(0x2193));
+        static const QString arrow_left (QChar(ascii ? '<' : 0x2190));
+        static const QString arrow_up   (QChar(ascii ? '^' : 0x2191));
+        static const QString arrow_right(QChar(ascii ? '>' : 0x2192));
+        static const QString arrow_down (QChar(ascii ? 'v' : 0x2193));
         wcolor_set(window, Color(block->Kind(), block->Sub()), NULL);
         (void)wmove(window, player->Y()-start_y+1, (player->X()-start_x)*2+2);
         switch ( player->GetDir() ) {
@@ -902,7 +902,12 @@ void Screen::DeathScreen() {
     updated = true;
 }
 
-Screen::Screen(World * const wor, Player * const pl, int & error) :
+Screen::Screen(
+        World  * const wor,
+        Player * const pl,
+        int & error,
+        bool _ascii)
+    :
         VirtScreen(wor, pl),
         leftWin(0),
         rightWin(0),
@@ -916,7 +921,8 @@ Screen::Screen(World * const wor, Player * const pl, int & error) :
         notifyLog(fopen("texts/messages.txt", "at")),
         notificationRepeatCount(1),
         fileToShow(0),
-        mutex(new QMutex())
+        mutex(new QMutex()),
+        ascii(_ascii)
 {
     #ifndef Q_OS_WIN32
         set_escdelay(10);
