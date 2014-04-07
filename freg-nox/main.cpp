@@ -17,33 +17,30 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include "screen.h" // NOX, if needed, is defined in screen.h
-
 #include <QTranslator>
-#include <QLocale>
 #include <QSettings>
 #include <QDir>
 #include <QTime>
 #include <QCommandLineParser>
+#include "screen.h" // NOX, if needed, is defined in screen.h
 #include "world.h"
 #include "Player.h"
 
 #ifdef NOX // no need for X server
     #include <QCoreApplication>
+    typedef QCoreApplication Application;
 #else
     #include <QApplication>
+    typedef QApplication Application;
 #endif
 
-int main(int argc, char *argv[]) {
+int main(int argc, char ** argv) {
     setlocale(LC_CTYPE, "C-UTF-8");
     QDir::current().mkdir("texts");
     freopen("texts/errors.txt", "wt", stderr);
     qsrand(QTime::currentTime().msec());
-    #ifdef NOX
-        QCoreApplication freg(argc, argv);
-    #else
-        QApplication freg(argc, argv);
-    #endif
+
+    Application freg(argc, argv);
     QCoreApplication::setOrganizationName("freg-team");
     QCoreApplication::setApplicationName("freg");
     QCoreApplication::setApplicationVersion(VER);
@@ -72,7 +69,7 @@ int main(int argc, char *argv[]) {
     int error = NO_ERROR;
     const Screen screen(&world, &player, error, parser.isSet(ascii));
     if ( error ) {
-        return 1;
+        return EXIT_FAILURE;
     } // else:
     world.start();
 

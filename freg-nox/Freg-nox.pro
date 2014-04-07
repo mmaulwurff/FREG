@@ -7,7 +7,7 @@ CONFIG += debug
 QT -= gui
 
 win32 {
-    LIBS += -LC:\Users\Alexander\src\FREG\freg-nox\pdcurses -lpdcurses
+    LIBS += -LC:/Users/Alexander/src/FREG/freg-nox/pdcurses -lpdcurses
 }
 
 unix {
