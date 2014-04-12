@@ -616,20 +616,17 @@ void World::Damage(const ushort x, const ushort y, const ushort z,
         temp = NewBlock(temp->Kind(), temp->Sub());
     }
     temp->Damage(dmg, dmg_kind);
-    if ( temp->GetDurability() > 0 ) {
-        if ( block_manager.MakeId(BLOCK, STONE)==temp->GetId() &&
-                temp->GetDurability()!=MAX_DURABILITY )
-        { // convert stone into ladder
-            temp = NewBlock(LADDER, STONE);
-            emit ReEnlighten(x, y, z);
-        }
+    if ( temp->GetDurability() > 0
+            && temp->GetDurability() != MAX_DURABILITY
+            && block_manager.MakeId(BLOCK, STONE) == temp->GetId() )
+    { // convert stone into ladder
+        SetBlock(NewBlock(LADDER, STONE), x, y, z);
+        emit ReEnlighten(x, y, z);
     }
-    SetBlock(temp, x, y, z);
 }
 
 void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
     Block * const temp = GetBlock(x, y, z);
-    if ( temp->GetDurability() > 0 ) return;
     Block * const dropped = temp->DropAfterDamage();
     Shred * const shred = GetShred(x, y);
     const ushort x_in_shred = Shred::CoordInShred(x);

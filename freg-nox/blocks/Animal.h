@@ -37,6 +37,7 @@ public:
     QString FullName() const = 0;
     Animal * IsAnimal();
     Block  * DropAfterDamage() const;
+    INNER_ACTIONS ActInner();
 
     virtual quint16 NutritionalValue(quint8 sub) const = 0;
 protected:

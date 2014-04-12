@@ -33,7 +33,6 @@ QString Active::FullName() const {
         return "Unkown active block";
     }
 }
-
 quint8 Active::Kind() const { return ACTIVE; }
 Active * Active::ActiveBlock() { return this; }
 bool Active::IsFalling() const { return falling; }
@@ -42,6 +41,7 @@ int  Active::ShouldAct() const { return NEVER; }
 int  Active::PushResult(const int) const { return MOVABLE; }
 void Active::DoFrequentAction() {}
 void Active::DoRareAction() {}
+INNER_ACTIONS Active::ActInner() { return INNER_ACTION_NONE; }
 
 void Active::ActFrequent() {
     if ( not IsToDelete() ) {

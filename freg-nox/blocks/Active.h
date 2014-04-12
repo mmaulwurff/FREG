@@ -31,6 +31,11 @@ enum ACTIVE_FREQUENCY {
     FREQUENT_MECH = 6
 };
 
+enum INNER_ACTIONS {
+    INNER_ACTION_NONE,
+    INNER_ACTION_EXPLODE // like in Fallout
+};
+
 class Shred;
 class World;
 class DeferredAction;
@@ -61,6 +66,7 @@ public:
 
     void ActFrequent();
     void ActRare();
+    virtual INNER_ACTIONS ActInner();
     virtual int ShouldAct() const;
     virtual bool ShouldFall() const;
 

@@ -81,7 +81,9 @@ void DeferredAction::Damage() const {
     world->Damage(xTarg, yTarg, zTarg,
         attachedBlock->DamageLevel(),
         attachedBlock->DamageKind());
-    world->DestroyAndReplace(xTarg, yTarg, zTarg);
+    if ( world->GetBlock(xTarg, yTarg, zTarg)->GetDurability() <= 0 ) {
+        world->DestroyAndReplace(xTarg, yTarg, zTarg);
+    }
 }
 
 void DeferredAction::Throw() const {

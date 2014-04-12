@@ -201,9 +201,14 @@ void Shred::PhysEventsFrequent() {
             {
                 (*i)->FallDamage();
                 (*i)->SetFalling(false);
+                const short durability = (*i)->GetDurability();
                 i = fallList.erase(i);
-                GetWorld()->DestroyAndReplace(x, y, z);
-                GetWorld()->DestroyAndReplace(x, y, z-1);
+                if ( durability <= 0 ) {
+                    GetWorld()->DestroyAndReplace(x, y, z);
+                }
+                if ( GetWorld()->GetBlock(x, y, z-1)->GetDurability() <= 0 ) {
+                    GetWorld()->DestroyAndReplace(x, y, z-1);
+                }
             } else {
                 ++i;
             }
@@ -236,8 +241,9 @@ void Shred::PhysEventsRare() {
     {
         if ( (*i)->GetShred() == this  ) {
             (*i)->ActRare();
-            GetWorld()->DestroyAndReplace((*i)->X(), (*i)->Y(),
-                (*i)->Z());
+            if ( (*i)->GetDurability() <= 0 ) {
+                GetWorld()->DestroyAndReplace((*i)->X(), (*i)->Y(), (*i)->Z());
+            }
         }
     }
     UnregisterExternalActives();

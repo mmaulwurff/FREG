@@ -301,10 +301,9 @@
     {}
 // Animal::
     void Animal::DoRareAction() {
-        World * const world = GetWorld();
         if ( not IsSubAround(AIR) ) {
             if ( breath <= 0 ) {
-                world->Damage(X(), Y(), Z(), 10, BREATH);
+                Damage(10, BREATH);
             } else {
                 --breath;
             }
@@ -312,7 +311,7 @@
             ++breath;
         }
         if ( satiation <= 0 ) {
-            world->Damage(X(), Y(), Z(), 5, HUNGER);
+            Damage(5, HUNGER);
         } else {
             --satiation;
         }
@@ -322,6 +321,8 @@
         emit Updated();
     }
     int Animal::ShouldAct() const { return FREQUENT_ANIMAL | RARE; }
+
+    INNER_ACTIONS Animal::ActInner() { return INNER_ACTION_NONE; }
 
     ushort Animal::Breath() const { return breath; }
     ushort Animal::Satiation() const { return satiation; }
@@ -356,7 +357,9 @@
                     GREENERY == world->GetBlock(x, y, Z())->Sub() )
             {
                 world->Damage(x, y, Z(), DamageLevel(), DamageKind());
-                world->DestroyAndReplace(x, y, Z());
+                if ( world->GetBlock(x, y, Z())->GetDurability() <= 0 ) {
+                    world->DestroyAndReplace(x, y, Z());
+                }
                 Eat(GREENERY);
                 return;
             }
@@ -656,7 +659,6 @@
     void Pile::Push(const int, Block * const who) {
         Inventory::Push(who);
         if ( IsEmpty() ) {
-            GetWorld()->Damage(X(),Y(),Z(), GetDurability(), TIME);
             GetWorld()->DestroyAndReplace(X(), Y(), Z());
         }
     }
@@ -709,7 +711,7 @@
         World * const world = GetWorld();
         // IDEA: turn off water drying up in ocean
         if ( WATER == Sub() && not IsSubAround(WATER) ) {
-            world->Damage(X(), Y(), Z(), 1, HEAT);
+            Damage(1, HEAT);
         }
         switch ( qrand()%20 ) {
         case 0: world->Move(X(), Y(), Z(), NORTH); break;
@@ -754,15 +756,22 @@
                 Xyz( X(),   Y(),   Z()-1 ),
                 Xyz( X(),   Y(),   Z()+1 ) };
             for (const Xyz xyz : coords) {
+                if ( not world->InBounds(xyz.GetX(), xyz.GetY()) ) {
+                    continue;
+                }
                 world->Damage(xyz.GetX(), xyz.GetY(), xyz.GetZ(), 5, HEAT);
-                world->DestroyAndReplace(xyz.GetX(), xyz.GetY(), xyz.GetZ());
+                if ( world->GetBlock(xyz.GetX(), xyz.GetY(), xyz.GetZ())->
+                        GetDurability() <= 0 )
+                {
+                    world->DestroyAndReplace(
+                        xyz.GetX(), xyz.GetY(), xyz.GetZ());
+                }
             }
             if ( qrand()%10 || IsSubAround(WATER) ) {
-                world->Damage(X(), Y(), Z(), 2, FREEZE);
+                Damage(2, FREEZE);
             }
         }
         if ( not IsBase(Sub(), world->GetBlock(X(), Y(), Z()-1)->Sub()) ) {
-            world->Damage(X(), Y(), Z(), durability, TIME);
             world->DestroyAndReplace(X(), Y(), Z());
         }
         short i=X(), j=Y();
@@ -813,7 +822,6 @@
 
     int  Grass::ShouldAct() const  { return RARE; }
     void Grass::Push(const int, Block * const) {
-        GetWorld()->Damage(X(), Y(), Z(), GetDurability(), TIME);
         GetWorld()->DestroyAndReplace(X(), Y(), Z());
     }
     bool Grass::ShouldFall() const { return false; }
