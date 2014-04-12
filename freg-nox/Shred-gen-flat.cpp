@@ -82,8 +82,10 @@ void Shred::Water() {
         }
     }
     NormalUnderground(depth);
-    for (ushort i=HEIGHT/2-depth; i<HEIGHT/2; ++i) {
-        CoverWith(LIQUID, WATER);
+    for (ushort i=0; i<SHRED_WIDTH; ++i)
+    for (ushort j=0; j<SHRED_WIDTH; ++j)
+    for (ushort k=HEIGHT/2-depth; k<=HEIGHT/2; ++k) {
+        SetNewBlock(LIQUID, WATER, i, j, k);
     }
 }
 

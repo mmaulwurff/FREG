@@ -6,14 +6,6 @@ CONFIG += thread warn_on console
 CONFIG += debug
 QT -= gui
 
-win32 {
-    LIBS += -LC:/Users/Alexander/src/FREG/freg-nox/pdcurses -lpdcurses
-}
-
-unix {
-    LIBS += -lncursesw
-}
-
 VERSION = 0.2
 VERSTR = '\\"$${VERSION}\\"'
 DEFINES += VER=\"$${VERSTR}\"
@@ -22,16 +14,26 @@ TARGET = freg-nox
 
 QMAKE_CXXFLAGS += -Wextra -std=c++11 -pedantic
 QMAKE_CXXFLAGS += -Werror
-QMAKE_CXXFLAGS += -Wno-error=strict-overflow
+QMAKE_CXXFLAGS += -Wno-error=strict-overflow # Qt 5.2 has some problem
 
 #QMAKE_CXXFLAGS_DEBUG += -fno-inline
 QMAKE_CXXFLAGS_DEBUG += -O3
 
 QMAKE_CXXFLAGS_RELEASE -= -O2
-QMAKE_CXXFLAGS_RELEASE += -O3 -s
+QMAKE_CXXFLAGS_RELEASE += -O3
+QMAKE_CXXFLAGS_RELEASE += -s
 
 #QMAKE_CXX  = clang++
 #QMAKE_LINK = clang++
+
+win32 {
+    # path =(
+    LIBS += -LC:/Users/Alexander/src/FREG/freg-nox/pdcurses -lpdcurses
+}
+
+unix {
+    LIBS += -lncursesw
+}
 
 target.path += /usr/bin
 INSTALLS += target
