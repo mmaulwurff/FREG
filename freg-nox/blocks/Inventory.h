@@ -65,7 +65,7 @@ public:
     ushort Size() const;
     ushort GetInvWeight(ushort i) const;
     quint8 Number(ushort i) const;
-    Block * ShowBlock(ushort num) const;
+    Block * ShowBlock(ushort slot, ushort num = 0) const;
     QString GetInvNote(ushort num) const;
     QString InvFullName(ushort num) const;
     QString NumStr(ushort num) const;

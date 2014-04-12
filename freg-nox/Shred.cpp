@@ -241,6 +241,11 @@ void Shred::PhysEventsRare() {
     {
         if ( (*i)->GetShred() == this  ) {
             (*i)->ActRare();
+            switch ((*i)->ActInner() ) {
+                case INNER_ACTION_MESSAGE:
+                case INNER_ACTION_EXPLODE:
+                case INNER_ACTION_NONE: break;
+            }
             if ( (*i)->GetDurability() <= 0 ) {
                 GetWorld()->DestroyAndReplace((*i)->X(), (*i)->Y(), (*i)->Z());
             }

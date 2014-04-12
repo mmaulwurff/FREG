@@ -33,7 +33,8 @@ enum ACTIVE_FREQUENCY {
 
 enum INNER_ACTIONS {
     INNER_ACTION_NONE,
-    INNER_ACTION_EXPLODE // like in Fallout
+    INNER_ACTION_EXPLODE, // like in Fallout
+    INNER_ACTION_MESSAGE
 };
 
 class Shred;

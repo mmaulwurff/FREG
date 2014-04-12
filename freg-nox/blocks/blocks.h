@@ -229,6 +229,7 @@ public:
     ushort Weight() const;
     QString FullName() const;
     usage_types Use(Block * who = 0);
+    INNER_ACTIONS ActInner() override;
 private:
     short alarmTime;
     short timerTime;

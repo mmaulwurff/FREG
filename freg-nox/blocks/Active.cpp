@@ -22,6 +22,7 @@
 #include "world.h"
 #include "DeferredAction.h"
 #include "Xyz.h"
+#include "blocks/Inventory.h"
 
 QString Active::FullName() const {
     switch ( Sub() ) {
@@ -55,6 +56,20 @@ void Active::ActFrequent() {
 void Active::ActRare() {
     if ( not IsToDelete() ) {
         DoRareAction();
+    }
+    Inventory * const inv = HasInventory();
+    if ( inv != nullptr ) {
+        for (int i=0; i<inv->Size(); ++i)
+        for (int j=0; j<inv->Number(i); ++j) {
+            Active * const active = inv->ShowBlock(i, j)->ActiveBlock();
+            if ( active != nullptr
+                    && active->ActInner()==INNER_ACTION_MESSAGE )
+            {
+                ReceiveSignal(QString("Item in slot '%1' changed status.").
+                    arg(char('a'+i)));
+                ReceiveSignal(inv->ShowBlock(i, j)->GetNote());
+            }
+        }
     }
 }
 

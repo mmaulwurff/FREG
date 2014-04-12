@@ -300,6 +300,19 @@
             Block(str, sub, id, NONSTANDARD)
     {}
 // Animal::
+    INNER_ACTIONS Animal::ActInner() {
+        if ( satiation <= 0 ) {
+            Damage(5, HUNGER);
+        } else {
+            --satiation;
+        }
+        if ( durability < MAX_DURABILITY ) {
+            ++durability;
+        }
+        emit Updated();
+        return INNER_ACTION_NONE;
+    }
+
     void Animal::DoRareAction() {
         if ( not IsSubAround(AIR) ) {
             if ( breath <= 0 ) {
@@ -310,19 +323,9 @@
         } else if ( breath < MAX_BREATH ) {
             ++breath;
         }
-        if ( satiation <= 0 ) {
-            Damage(5, HUNGER);
-        } else {
-            --satiation;
-        }
-        if ( durability < MAX_DURABILITY ) {
-            ++durability;
-        }
         emit Updated();
     }
     int Animal::ShouldAct() const { return FREQUENT_ANIMAL | RARE; }
-
-    INNER_ACTIONS Animal::ActInner() { return INNER_ACTION_NONE; }
 
     ushort Animal::Breath() const { return breath; }
     ushort Animal::Satiation() const { return satiation; }
@@ -539,9 +542,9 @@
         return sum;
     }
 
-    Block * Inventory::ShowBlock(const ushort num) const {
-        return ( num>Size() || inventory[num].isEmpty() ) ?
-            0 : inventory[num].top();
+    Block * Inventory::ShowBlock(const ushort slot, const ushort num) const {
+        return ( slot>Size() || Number(slot) <= num ) ?
+            nullptr : inventory[slot].at(num);
     }
 
     bool Inventory::IsEmpty() const {
@@ -1117,14 +1120,13 @@
     }
 // Clock::
     usage_types Clock::Use(Block * const who) {
-        World * world = GetWorld();
-        if ( world ) {
-            SendSignalAround(world->TimeOfDayStr());
-        } else if ( who ) {
+        if ( who ) {
             const Active * const active = who->ActiveBlock();
-            if ( active && (world = active->GetWorld()) ) {
-                who->ReceiveSignal(world->TimeOfDayStr());
+            if ( active ) {
+                who->ReceiveSignal(GetWorld()->TimeOfDayStr());
             }
+        } else {
+            SendSignalAround(world->TimeOfDayStr());
         }
         return USAGE_TYPE_NO;
     }
@@ -1146,16 +1148,24 @@
     int Clock::ShouldAct() const  { return RARE; }
 
     void Clock::DoRareAction() {
-        if ( alarmTime == GetWorld()->TimeOfDay() ) {
+        if ( alarmTime == GetWorld()->TimeOfDay()
+                || ActInner() == INNER_ACTION_MESSAGE )
+        {
             Use();
-        } else if ( timerTime > 0 ) {
+        }
+    }
+
+    INNER_ACTIONS Clock::ActInner() {
+        if ( timerTime > 0 )  {
             --timerTime;
             note->setNum(timerTime);
         } else if ( timerTime == 0 ) {
-            Use();
-            *note=QObject::tr("Timer fired.");
+            *note = QObject::tr("Timer fired. %1").
+                arg(GetWorld()->TimeOfDayStr());
             timerTime = -1;
+            return INNER_ACTION_MESSAGE;
         }
+        return INNER_ACTION_NONE;
     }
 
     bool Clock::Inscribe(const QString str) {
