@@ -255,6 +255,7 @@ void Screen::ControlPlayer(const int ch) {
     } // else:
     switch ( ch ) { // interactions with world
     case KEY_UP:
+    case '8':
         if ( player->GetDir() == NORTH ) {
             player->Move(NORTH);
         } else {
@@ -262,6 +263,7 @@ void Screen::ControlPlayer(const int ch) {
         }
     break;
     case KEY_DOWN:
+    case '2':
         if ( player->GetDir() == SOUTH ) {
             player->Move(SOUTH);
         } else {
@@ -269,12 +271,14 @@ void Screen::ControlPlayer(const int ch) {
         }
     break;
     case KEY_RIGHT:
+    case '6':
         if ( player->GetDir() == EAST ) {
             player->Move(EAST);
         } else {
             player->SetDir(EAST);
         }
     break;
+    case '4':
     case KEY_LEFT:
         if ( player->GetDir() == WEST ) {
             player->Move(WEST);
@@ -282,6 +286,7 @@ void Screen::ControlPlayer(const int ch) {
             player->SetDir(WEST);
         }
     break;
+    case '5':
     case KEY_END: player->Move(DOWN); break;
     case ' ': player->Jump(); break;
     case '=': player->Move(); break;
