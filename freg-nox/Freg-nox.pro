@@ -12,7 +12,7 @@ DEFINES += VER=\"$${VERSTR}\"
 TEMPLATE = app
 TARGET = freg-nox
 
-QMAKE_CXXFLAGS += -Wextra -std=c++11 -pedantic
+QMAKE_CXXFLAGS += -Wall -Wextra -std=c++11 -pedantic
 QMAKE_CXXFLAGS += -Werror
 QMAKE_CXXFLAGS += -Wno-error=strict-overflow # Qt 5.2 has some problem
 

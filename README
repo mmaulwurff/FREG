@@ -6,7 +6,7 @@ This is a version of FREG with text graphics.
 
 Development stage: implementing basics.
 
-Language: C++, Qt
+Language: C++11, Qt (version >=5.2)
 
 Non-standard libraries: libncurses5
 
@@ -14,15 +14,14 @@ Compile:
 qmake freg-nox.pro;
 make;
 
-(do not forget include -lncurses in Makefile)
-
 Or open freg-nox with QtCreator.
 
-Development is run on GNU/Linux, but on MS Windows should work too with PDCurses ( http://pdcurses.sourceforge.net/ ).
+Development is run on GNU/Linux, but on MS Windows should work too with
+PDCurses ( http://pdcurses.sourceforge.net/ ).
 
 Now only singleplayer is developed, multiplayer is planned.
 
-Copyright (C) 2013 Alexander Kromm (mmaulwurff@gmail.com) and Artjom Kunz.
+Copyright (C) 2014 Alexander Kromm (mmaulwurff@gmail.com).
 
 Source code is available at GitHub: https://github.com/mmaulwurff/FREG
 
