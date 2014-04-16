@@ -134,7 +134,7 @@ class QFile;
 class Block;
 class QMutex;
 
-class Screen : public VirtScreen {
+class Screen final : public VirtScreen {
     Q_OBJECT
 public:
      Screen(World *, Player *, int & error, bool ascii);

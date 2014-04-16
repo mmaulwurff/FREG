@@ -542,12 +542,12 @@
         return sum;
     }
 
-    Block * Inventory::ShowBlock(const ushort slot) {
+    Block * Inventory::ShowBlock(const ushort slot) const {
         return ( slot > Size() || Number(slot)==0 ) ?
             nullptr : inventory[slot].top();
     }
 
-    Block * Inventory::ShowBlock(const ushort slot, const short num) const {
+    Block * Inventory::ShowBlock(const ushort slot, const ushort num) const {
         return ( slot > Size() || num+1 > Number(slot) ) ?
             nullptr : inventory[slot].at(num);
     }

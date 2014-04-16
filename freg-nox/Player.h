@@ -30,7 +30,7 @@ class Active;
 class Inventory;
 class Shred;
 
-class Player : public QObject {
+class Player final : public QObject {
     /** \class Player Player.h
      * \brief This class contains information specific to player
      * and interface for manipulating him.

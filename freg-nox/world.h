@@ -35,7 +35,7 @@ const ushort SAFE_FALL_HEIGHT = 5U;
 const uchar MOON_LIGHT_FACTOR = 1U;
 const uchar  SUN_LIGHT_FACTOR = 8U;
 
-class World : public QThread {
+class World final : public QThread {
     /** \class World world.h
      * \brief World provides global physics and shred connection.
      *

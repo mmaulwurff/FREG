@@ -21,21 +21,23 @@
 #define SHRED_STORAGE_H
 
 #include <QHash>
+#include <QThread>
+
 class QByteArray;
 
-struct LongLat {
+struct LongLat final {
     LongLat(long longitude, long latitude);
     bool operator==(const LongLat &) const;
 
-    long longitude;
-    long latitude;
+    const long longitude;
+    const long latitude;
 };
 
 class PreloadThread;
 
-class ShredStorage {
-    public:
-    ShredStorage(ushort size, long longi_center, long lati_center);
+class ShredStorage final {
+public:
+     ShredStorage(ushort size, long longi_center, long lati_center);
     ~ShredStorage();
 
     QByteArray * GetShredData(long longi, long lati) const;
@@ -47,15 +49,13 @@ class ShredStorage {
 
     void Remove(long longi, long lati);
 
-    private:
+private:
     QHash<LongLat, QByteArray *> storage;
     const ushort size;
     PreloadThread * preloadThread;
 }; // class ShredStorage
 
-#include <QThread>
-
-class PreloadThread : public QThread {
+class PreloadThread final : public QThread {
     Q_OBJECT
 public:
     PreloadThread(ShredStorage *, int direction,

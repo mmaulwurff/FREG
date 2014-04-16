@@ -35,7 +35,7 @@ class Block;
 class Active;
 class World;
 
-class DeferredAction {
+class DeferredAction final {
 public:
     explicit DeferredAction(Active * attached);
 

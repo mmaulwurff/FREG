@@ -24,5 +24,5 @@ Xy::Xy(const short i, const short j) :
 {}
 
 Xyz::Xyz(const short i, const short j, const short k) :
-        x(i), y(j), z(k)
+        Xy(i, j), z(k)
 {}

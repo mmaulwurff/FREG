@@ -20,7 +20,7 @@
 #ifndef WORLDMAP_H
 #define WORLDMAP_H
 
-class WorldMap {
+class WorldMap final {
 public:
     explicit WorldMap(QString);
     ~WorldMap();

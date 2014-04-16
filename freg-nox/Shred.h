@@ -27,7 +27,7 @@ class World;
 class Block;
 class Active;
 
-class Shred {
+class Shred final {
 public:
     Shred(ushort shred_x, ushort shred_y, long longi, long lati,
             Shred * memory);

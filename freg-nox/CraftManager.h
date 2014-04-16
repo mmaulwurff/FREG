@@ -37,7 +37,7 @@ struct CraftItem {
     * (QList::size()-products_number) materials (sorted)
     * (products_number) products.
     * Comparison (==) of CraftLists is done by materials. */
-class CraftList {
+class CraftList final {
 public:
      CraftList(quint8 materials_number, quint8 products_number);
     ~CraftList();

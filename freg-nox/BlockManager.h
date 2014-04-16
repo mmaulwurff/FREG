@@ -40,7 +40,7 @@ class QDataStream;
      * Use Block * NewBlock(int kind, int sub) to receive a pointer to
      * block that will be changed (damaged, inscribed, etc). */
 
-class BlockManager {
+class BlockManager final {
 public:
      BlockManager();
     ~BlockManager();

@@ -30,15 +30,13 @@ private:
     short x, y;
 };
 
-class Xyz {
+class Xyz final : public Xy {
 public:
     Xyz(short x, short y, short z);
 
-    short GetX() const { return x; }
-    short GetY() const { return y; }
     short GetZ() const { return z; }
 private:
-    short x, y, z;
+    short z;
 };
 
 #endif
