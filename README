@@ -10,18 +10,27 @@ Language: C++11, Qt (version >=5.2)
 
 Non-standard libraries: libncurses5
 
-Compile:
-qmake freg-nox.pro;
-make;
-
-Or open freg-nox with QtCreator.
-
 Development is run on GNU/Linux, but on MS Windows should work too with
 PDCurses ( http://pdcurses.sourceforge.net/ ).
 
 Now only singleplayer is developed, multiplayer is planned.
 
-Copyright (C) 2014 Alexander Kromm (mmaulwurff@gmail.com).
+Compiling ----------------------------------------------------------------------
+
+qmake freg-nox.pro;
+make;
+
+Or open freg-nox with QtCreator.
+
+Map editing --------------------------------------------------------------------
+
+You can edit map.txt files in your text editor.
+map.txt should be square, with CR line endings only.
+There is Vim highlight file fregMap.vim. You can copy it in ~/.vim/syntax and
+set file type with command:
+:set filetype=fregMap
+
+Copyright (C) 2014 Alexander Kromm (mmaulwurff@gmail.com). --------------------
 
 Source code is available at GitHub: https://github.com/mmaulwurff/FREG
 
