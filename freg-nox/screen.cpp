@@ -241,6 +241,14 @@ color_pairs Screen::Color(const int kind, const int sub) const {
     }
 } // color_pairs Screen::Color(int kind, int sub)
 
+void Screen::MovePlayer(const int dir) const {
+    if ( player->GetDir() == dir ) {
+        player->Move(dir);
+    } else {
+        player->SetDir(dir);
+    }
+}
+
 void Screen::ControlPlayer(const int ch) {
     CleanFileToShow();
     // Q, ctrl-c, ctrl-d, ctrl-q, ctrl-x
@@ -253,41 +261,38 @@ void Screen::ControlPlayer(const int ch) {
         InventoryAction(ch-'a');
         return;
     } // else:
+    static bool step_trigger = true;
     switch ( ch ) { // interactions with world
     case KEY_UP:
-    case '8':
-        if ( player->GetDir() == NORTH ) {
-            player->Move(NORTH);
-        } else {
-            player->SetDir(NORTH);
-        }
-    break;
+    case '8': MovePlayer(NORTH); break;
     case KEY_DOWN:
-    case '2':
-        if ( player->GetDir() == SOUTH ) {
-            player->Move(SOUTH);
-        } else {
-            player->SetDir(SOUTH);
-        }
-    break;
+    case '2': MovePlayer(SOUTH); break;
     case KEY_RIGHT:
-    case '6':
-        if ( player->GetDir() == EAST ) {
-            player->Move(EAST);
-        } else {
-            player->SetDir(EAST);
-        }
-    break;
-    case '4':
+    case '6': MovePlayer(EAST); break;
     case KEY_LEFT:
-        if ( player->GetDir() == WEST ) {
-            player->Move(WEST);
-        } else {
-            player->SetDir(WEST);
-        }
+    case '4': MovePlayer(WEST); break;
+    case KEY_END:
+    case '5': player->Move(DOWN); break;
+    case '7':
+        player->SetDir(NORTH);
+        player->Move(step_trigger ? NORTH : WEST);
+        step_trigger = !step_trigger;
     break;
-    case '5':
-    case KEY_END: player->Move(DOWN); break;
+    case '9':
+        player->SetDir(NORTH);
+        player->Move(step_trigger ? NORTH : EAST);
+        step_trigger = !step_trigger;
+    break;
+    case '1':
+        player->SetDir(SOUTH);
+        player->Move(step_trigger ? SOUTH : WEST);
+        step_trigger = !step_trigger;
+    break;
+    case '3':
+        player->SetDir(SOUTH);
+        player->Move(step_trigger ? SOUTH : EAST);
+        step_trigger = !step_trigger;
+    break;
     case ' ': player->Jump(); break;
     case '=': player->Move(); break;
 

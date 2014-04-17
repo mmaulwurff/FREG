@@ -176,6 +176,7 @@ private:
     char PrintBlock(const Block *, WINDOW *) const;
     void SetActionMode(const int mode);
     void ProcessCommand(QString command);
+    void MovePlayer(int dir) const;
 
     WINDOW * leftWin;
     WINDOW * rightWin;
