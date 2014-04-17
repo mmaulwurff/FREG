@@ -20,6 +20,8 @@
 #ifndef WORLDMAP_H
 #define WORLDMAP_H
 
+const uint DEFAULT_MAP_SIZE = 75;
+
 class WorldMap final {
 public:
     explicit WorldMap(QString);
@@ -27,7 +29,21 @@ public:
 
     long MapSize() const;
     char TypeOfShred(long longi, long lati);
+
 private:
+    static int Deg(ushort x, ushort y, ushort size);
+    static int R(ushort x, ushort y, ushort size);
+    static void Circle(
+            ushort min_rad,
+            ushort max_rad,
+            char ch,
+            ushort size,
+            char * map);
+    static void GenerateMap(const char * filename,
+            uint size = DEFAULT_MAP_SIZE,
+            char outer = '~',
+            int seed = 0);
+
     long mapSize;
     QFile * map;
 };
