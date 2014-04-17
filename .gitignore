@@ -6,6 +6,7 @@ freg-nox/*
 !freg-nox/*.h
 !freg-nox/*.ts
 !freg-nox/*.pro
+!freg-nox/*.vim
 
 !freg-nox/blocks
 freg-nox/blocks/*
