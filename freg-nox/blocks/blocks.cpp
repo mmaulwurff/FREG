@@ -781,7 +781,8 @@
         }
         if ( not IsBase(Sub(), world->GetBlock(X(), Y(), Z()-1)->Sub()) ) {
             world->DestroyAndReplace(X(), Y(), Z());
-        }
+            return;
+        } // else:
         short i=X(), j=Y();
         // increase this if grass grows too fast
         switch ( qrand() % (FIRE==Sub() ? 4 : SECONDS_IN_HOUR*2) ) {
@@ -1409,8 +1410,7 @@
             const ushort z = xyz.GetZ();
             Block * const block = world->GetBlock(x, y, z);
             if ( Attractive(block->Sub()) ) {
-                world->GetBlock(x, y, z)->ReceiveSignal(
-                    tr("Predator bites you!"));
+                block->ReceiveSignal(tr("Predator bites you!"));
                 world->Damage(x, y, z, DamageLevel(), DamageKind());
                 Eat(block->Sub());
             }

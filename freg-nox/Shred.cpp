@@ -169,10 +169,15 @@ void Shred::PhysEventsFrequent() {
         } // else:
         const ushort weight = (*i)->Weight();
         if ( weight ) {
+            // PhysEventsFrequent is the first function in physics turn,
+            // so *i always belongs to this shred,
+            // so CoordInShred will return correct coordinates in this shred.
             const ushort x = (*i)->X();
             const ushort y = (*i)->Y();
             const ushort z = (*i)->Z();
-            if ( LIQUID==GetWorld()->GetBlock(x,y, z-1)->Kind() ) {
+            if ( LIQUID == GetBlock(CoordInShred(x),
+                    CoordInShred(y), z-1)->Kind() )
+            {
                 (*i)->SetFalling(false);
                 i = fallList.erase(i);
             } else if ( weight <= GetBlock(CoordInShred(x),
@@ -186,7 +191,9 @@ void Shred::PhysEventsFrequent() {
                 if ( durability <= 0 ) {
                     GetWorld()->DestroyAndReplace(x, y, z);
                 }
-                if ( GetWorld()->GetBlock(x, y, z-1)->GetDurability() <= 0 ) {
+                if ( GetBlock(CoordInShred(x),
+                    CoordInShred(y), z-1)->GetDurability() <= 0 )
+                {
                     GetWorld()->DestroyAndReplace(x, y, z-1);
                 }
             } else {

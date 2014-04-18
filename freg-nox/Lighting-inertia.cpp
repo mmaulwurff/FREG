@@ -92,9 +92,13 @@ void World::SunShineVertical(const short x, const short y, short z,
      * | | |
      * |<v>|
      *   #     */
+    const Shred * const shred = GetShred(x, y);
+    const ushort x_in = Shred::CoordInShred(x);
+    const ushort y_in = Shred::CoordInShred(y);
     for ( ; SetSunLightMap(light_lev, x, y, z); --z) {
         emit Updated(x, y, z);
-        const ushort transparent = GetBlock(x, y, z)->Transparent();
+        const ushort transparent =
+            shred->GetBlock(x_in, y_in, z)->Transparent();
         if ( BLOCK_TRANSPARENT == transparent ) {
             --light_lev;
         } else if ( BLOCK_OPAQUE == transparent ) {
