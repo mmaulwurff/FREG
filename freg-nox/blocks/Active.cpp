@@ -38,7 +38,7 @@ quint8 Active::Kind() const { return ACTIVE; }
 Active * Active::ActiveBlock() { return this; }
 bool Active::IsFalling() const { return falling; }
 bool Active::ShouldFall() const { return true; }
-int  Active::ShouldAct() const { return NEVER; }
+int  Active::ShouldAct() const { return FREQUENT_NEVER; }
 int  Active::PushResult(const int) const { return MOVABLE; }
 void Active::DoFrequentAction() {}
 void Active::DoRareAction() {}
@@ -116,6 +116,7 @@ bool Active::Move(const int dir) {
         Shred * const new_shred = GetWorld()->GetShred(X(), Y());
         if ( (overstep = ( shred != new_shred )) ) {
             falling = false;
+            shred->UnregisterLater(this);
             new_shred->Register(this);
         }
     }
@@ -191,7 +192,7 @@ Active::Active(const int sub, const quint16 id, const quint8 transp) :
         fall_height(0),
         falling(false),
         frozen(false),
-        deferredAction(0),
+        deferredAction(nullptr),
         x_self(), y_self(), z_self(),
         shred()
 {}
@@ -201,7 +202,7 @@ Active::Active(QDataStream & str, const int sub, const quint16 id,
         Block(str, sub, id, transp),
         falling(false),
         frozen(false),
-        deferredAction(0),
+        deferredAction(nullptr),
         x_self(), y_self(), z_self(),
         shred()
 {

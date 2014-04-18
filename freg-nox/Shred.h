@@ -48,6 +48,7 @@ public:
     void DeleteDestroyedActives();
 
     void Register(Active *);
+    void UnregisterLater(Active *);
     void AddShining(Active *);
     void RemShining(Active *);
     void AddToDelete(Active *);
@@ -160,6 +161,7 @@ private:
     QLinkedList<Active *> fallList;
     QLinkedList<Active *> shiningList;
     QLinkedList<Active *> deleteList;
+    QLinkedList<Active *> unregisterList;
 
     /// memory, allocated for this shred.
     Shred * const memory;

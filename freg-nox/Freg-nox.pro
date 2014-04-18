@@ -3,7 +3,7 @@
 ######################################################################
 
 CONFIG += thread warn_on console
-CONFIG += debug
+#CONFIG += debug
 QT -= gui
 
 VERSION = 0.2

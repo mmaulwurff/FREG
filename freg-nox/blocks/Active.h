@@ -23,12 +23,12 @@
 #include <QObject>
 #include "Block.h"
 
+/// Frequency can be "never", "rare", "rare & first", "rare & second".
 enum ACTIVE_FREQUENCY {
-    NEVER = 0,
-    RARE = 1,
-    FREQUENT_INTELLECTUAL = 2,
-    FREQUENT_ANIMAL = 4,
-    FREQUENT_MECH = 6
+    FREQUENT_NEVER  = 0,
+    FREQUENT_RARE   = 1,
+    FREQUENT_FIRST  = 2,
+    FREQUENT_SECOND = 4,
 };
 
 enum INNER_ACTIONS {
@@ -44,8 +44,8 @@ class DeferredAction;
 class Active : public QObject, public Block {
     Q_OBJECT
 public:
-    Active(int sub, quint16 id, quint8 transp = UNDEF);
-    Active(QDataStream & str, int sub, quint16 id, quint8 transp = UNDEF);
+     Active(int sub, quint16 id, quint8 transp = UNDEF);
+     Active(QDataStream & str, int sub, quint16 id, quint8 transp = UNDEF);
     ~Active();
 
     Shred * GetShred() const;

@@ -325,7 +325,7 @@
         }
         emit Updated();
     }
-    int Animal::ShouldAct() const { return FREQUENT_ANIMAL | RARE; }
+    int Animal::ShouldAct() const { return FREQUENT_SECOND | FREQUENT_RARE; }
 
     ushort Animal::Breath() const { return breath; }
     ushort Animal::Satiation() const { return satiation; }
@@ -682,7 +682,7 @@
         }
     }
 
-    int Pile::ShouldAct() const { return RARE; }
+    int Pile::ShouldAct() const { return FREQUENT_RARE; }
     quint8 Pile::Kind() const { return PILE; }
     int Pile::Sub() const { return Block::Sub(); }
     Inventory * Pile::HasInventory() { return Inventory::HasInventory(); }
@@ -729,7 +729,7 @@
         }
     }
 
-    int Liquid::ShouldAct() const  { return RARE; }
+    int Liquid::ShouldAct() const  { return FREQUENT_RARE; }
     int Liquid::PushResult(const int) const { return ENVIRONMENT; }
     quint8 Liquid::Kind() const { return LIQUID; }
     int Liquid::Temperature() const { return ( WATER==Sub() ) ? 0 : 1000; }
@@ -828,7 +828,7 @@
         }
     }
 
-    int  Grass::ShouldAct() const  { return RARE; }
+    int  Grass::ShouldAct() const  { return FREQUENT_RARE; }
     void Grass::Push(const int, Block * const) {
         GetWorld()->DestroyAndReplace(X(), Y(), Z());
     }
@@ -845,7 +845,7 @@
 // Bush::
     int  Bush::Sub() const { return Block::Sub(); }
     bool Bush::ShouldFall() const { return false; }
-    int  Bush::ShouldAct() const  { return RARE; }
+    int  Bush::ShouldAct() const  { return FREQUENT_RARE; }
     void Bush::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
     QString Bush::FullName() const { return tr("Bush"); }
     quint8  Bush::Kind() const { return BUSH; }
@@ -1081,7 +1081,7 @@
         }
     }
 
-    int  Door::ShouldAct() const { return FREQUENT_MECH; }
+    int  Door::ShouldAct() const { return FREQUENT_SECOND; }
     bool Door::ShouldFall() const { return false; }
     quint8 Door::Kind() const { return locked ? LOCKED_DOOR : DOOR; }
 
@@ -1150,7 +1150,7 @@
     bool Clock::ShouldFall() const { return false; }
     void Clock::Push(const int, Block * const) { Use(); }
     int Clock::PushResult(const int) const { return NOT_MOVABLE; }
-    int Clock::ShouldAct() const  { return RARE; }
+    int Clock::ShouldAct() const  { return FREQUENT_RARE; }
 
     void Clock::DoRareAction() {
         if ( alarmTime == GetWorld()->TimeOfDay()

@@ -55,7 +55,7 @@ Block * Dwarf::DropAfterDamage() const {
 }
 
 int Dwarf::Sub() const { return Block::Sub(); }
-int Dwarf::ShouldAct() const { return FREQUENT_INTELLECTUAL | RARE; }
+int Dwarf::ShouldAct() const { return FREQUENT_FIRST | FREQUENT_RARE; }
 bool Dwarf::Access() const { return false; }
 ushort Dwarf::Start() const { return ON_LEGS+1; }
 quint8 Dwarf::Kind() const { return DWARF; }

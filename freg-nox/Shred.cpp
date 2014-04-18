@@ -69,24 +69,23 @@ bool Shred::LoadShred() {
         lightMap[x][y][0] = 0;
         for (ushort z=1; ; ++z) {
             quint8 kind, sub;
-            const bool normal = block_manager.
-                KindSubFromFile(in, kind, sub);
+            const bool normal = block_manager.KindSubFromFile(in, kind, sub);
             if ( sub==SKY || sub==STAR ) {
                 for ( ; z < HEIGHT-1; ++z) {
                     PutBlock(air, x, y, z);
-                    lightMap[x][y][z]=0;
+                    // TODO: possible: memset
+                    lightMap[x][y][z] = 0;
                 }
                 PutBlock(Normal(sub), x, y, HEIGHT-1);
                 lightMap[x][y][HEIGHT-1] = 1;
                 break;
             } else if ( normal ) {
-                lightMap[x][y][z] = 0;
                 PutBlock(Normal(sub), x, y, z);
             } else {
-                lightMap[x][y][z] = 0;
                 SetBlockNoCheck(block_manager.BlockFromFile(
                     in, kind, sub), x, y, z);
             }
+            lightMap[x][y][z] = 0;
         }
     }
     return true;
@@ -199,8 +198,8 @@ void Shred::PhysEventsFrequent() {
         }
     }
     // frequent actions
-    for (auto j = activeListFrequent.constBegin();
-            j != activeListFrequent.constEnd(); ++j)
+    for (auto j  = activeListFrequent.constBegin();
+              j != activeListFrequent.constEnd(); ++j)
     {
         if ( (*j)->GetShred() == this  ) {
             (*j)->ActFrequent();
@@ -236,15 +235,12 @@ void Shred::PhysEventsRare() {
 }
 
 void Shred::UnregisterExternalActives() {
-    for (auto i = activeListAll.begin(); i != activeListAll.end(); ) {
-        if ( (*i)->GetShred() == this ) {
-            ++i;
-        } else {
-            Active * const erase = *i;
-            --i;
-            Unregister(erase);
-        }
+    for (auto i  = unregisterList.constBegin();
+              i != unregisterList.constEnd(); ++i)
+    {
+        Unregister(*i);
     }
+    unregisterList.clear();
 }
 
 int Shred::Sub(const ushort x, const ushort y, const ushort z) const {
@@ -254,18 +250,24 @@ int Shred::Sub(const ushort x, const ushort y, const ushort z) const {
 void Shred::Register(Active * const active) {
     active->SetShred(this);
     activeListAll.append(active);
-    int should_act = active->ShouldAct();
-    if ( should_act & 1 ) {
+    unregisterList.removeAll(active);
+    const int should_act = active->ShouldAct();
+    if ( should_act & FREQUENT_RARE ) {
         activeListRare.append(active);
     }
-    if ( (should_act & 0xE) == FREQUENT_INTELLECTUAL ) {
+    if ( should_act & FREQUENT_FIRST ) {
         activeListFrequent.prepend(active);
-    } else {
+    } else if ( should_act & FREQUENT_SECOND ) {
         activeListFrequent.append(active);
     }
     AddFalling(active);
     AddShining(active);
 }
+
+void Shred::UnregisterLater(Active * const active) {
+    unregisterList.append(active);
+}
+
 void Shred::Unregister(Active * const active) {
     activeListAll     .removeAll(active);
     activeListFrequent.removeAll(active);
@@ -357,7 +359,8 @@ void Shred::SetBlockNoCheck(Block * const block,
 {
     Active * const active = ( blocks[x][y][z]=block )->ActiveBlock();
     if ( active ) {
-        active->SetXYZ( (ShredX() << SHRED_WIDTH_SHIFT) + x,
+        active->SetXYZ(
+            (ShredX() << SHRED_WIDTH_SHIFT) + x,
             (ShredY() << SHRED_WIDTH_SHIFT) + y, z );
         Register(active);
     }
