@@ -814,7 +814,6 @@ World::World(const QString world_name) :
         map(new WorldMap(world_name)),
         toResetDir(UP)
 {
-    puts(qPrintable(tr("Loading world settings...")));
     world = this;
     QSettings game_settings("freg.ini", QSettings::IniFormat);
     numShreds = game_settings.value("number_of_shreds", MIN_WORLD_SIZE).
@@ -843,7 +842,7 @@ World::World(const QString world_name) :
     spawnLati  = settings.value( "spawn_latitude",
         int(qrand() % MapSize()) ).toLongLong();
     settings.setValue("spawn_longitude", qlonglong(spawnLongi));
-    settings.setValue("spawn_latitude", qlonglong(spawnLati));
+    settings.setValue("spawn_latitude",  qlonglong(spawnLati));
     longitude = settings.value("longitude", int(spawnLongi)).toLongLong();
     latitude  = settings.value("latitude",  int(spawnLati )).toLongLong();
 
@@ -851,7 +850,7 @@ World::World(const QString world_name) :
     puts(qPrintable(tr("Loading world...")));
     LoadAllShreds();
     emit UpdatedAll();
-} // World::World(const QString world_name)
+}
 
 World::~World() { CleanAll(); }
 

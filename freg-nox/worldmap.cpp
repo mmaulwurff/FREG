@@ -18,15 +18,17 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include <QFile>
+#include <QDir>
 #include <qmath.h>
 #include "worldmap.h"
 #include "header.h"
 
-const float PI = 3.141592;
+const float PI = 3.141592f;
 
 WorldMap::WorldMap(const QString world_name) :
         map(new QFile(world_name+"/map.txt"))
 {
+    QDir::current().mkdir(world_name);
     if ( map->open(QIODevice::ReadOnly | QIODevice::Text) ) {
         mapSize = int(qSqrt(1+4*map->size())-1)/2;
     } else {

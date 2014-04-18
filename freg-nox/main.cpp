@@ -54,15 +54,45 @@ int main(int argc, char ** argv) {
     parser.setApplicationDescription(QObject::tr("freg - 3d open world game"));
     parser.addHelpOption();
     parser.addVersionOption();
-    QCommandLineOption ascii(QStringList() << "a" <<"ascii",
+    QCommandLineOption ascii(QStringList() << "a" << "ascii",
         QObject::tr("Use ASCII-characters only."));
     parser.addOption(ascii);
+    QCommandLineOption world_argument(QStringList() << "w" << "world",
+        QObject::tr("Specify world."),
+        QObject::tr("world_name"));
+    parser.addOption(world_argument);
     parser.process(freg);
+
+    bool isValidWorldName = false;
+    if ( parser.isSet(world_argument) ) {
+        isValidWorldName = true;
+        const QStringList invalid_world_names(QStringList()
+                << "blocks"
+                << "moc"
+                << "obj"
+                << "recipes"
+                << "texts");
+        for (auto i = invalid_world_names.constBegin();
+                i < invalid_world_names.constEnd(); ++i)
+        {
+            if ( *i == parser.value(world_argument)
+                    || parser.value(world_argument).left(5)=="help_" )
+            {
+                isValidWorldName = false;
+                printf("Invalid world name: %s.\n",
+                    qPrintable(parser.value(world_argument)));
+                return EXIT_FAILURE;
+            }
+        }
+    }
 
     QSettings::setDefaultFormat(QSettings::IniFormat);
     QSettings sett(QDir::currentPath()+"/freg.ini", QSettings::IniFormat);
-    const QString worldName = sett.value("current_world", "mu").toString();
+    const QString worldName = isValidWorldName ?
+        parser.value(world_argument) :
+        sett.value("current_world", "mu").toString();
     sett.setValue("current_world", worldName);
+    //QDir::current().mkdir(worldName);
 
     World world(worldName);
     Player player;
@@ -71,8 +101,6 @@ int main(int argc, char ** argv) {
     if ( error ) {
         return EXIT_FAILURE;
     } // else:
-    world.start();
-
     QObject::connect(&player, SIGNAL(Destroyed()),
         &screen, SLOT(DeathScreen()));
 
@@ -86,5 +114,6 @@ int main(int argc, char ** argv) {
     QObject::connect(&screen, SIGNAL(ExitReceived()), &freg, SLOT(quit()));
     QObject::connect(&world,  SIGNAL(ExitReceived()), &freg, SLOT(quit()));
 
+    world.start();
     return freg.exec();
 }
