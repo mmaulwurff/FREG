@@ -1,6 +1,8 @@
 *
 !.gitignore
 !freg-nox
+!README
+!COPYING
 freg-nox/*
 !freg-nox/*.cpp
 !freg-nox/*.h
@@ -10,9 +12,15 @@ freg-nox/*
 
 !freg-nox/blocks
 freg-nox/blocks/*
-!freg-nox/blocks/*cpp
+!freg-nox/blocks/*.cpp
 !freg-nox/blocks/*.h
 
 !freg-nox/help_*
 freg-nox/help_*/*
 !freg-nox/help_*/*.txt
+
+!freg-nox/texts
+freg-nox/texts/*
+!freg-nox/texts/*.txt
+freg-nox/texts/errors.txt
+freg-nox/texts/messages.txt
