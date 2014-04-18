@@ -564,7 +564,7 @@ void Screen::PrintHUD() {
         if ( dur > 0 ) { // HitPoints line
             wstandend(hudWin);
             mvwprintw(hudWin, 0, 0, "[..........]%hd", dur);
-            wcolor_set(hudWin, WHITE_RED, NULL);
+            wcolor_set(hudWin, RED_BLACK, NULL);
             const QString str(10, QChar(ascii ? '@' : 0x2665));
             mvwaddstr(hudWin, 0, 1,
                 qPrintable(str.left(10*dur/MAX_DURABILITY+1)));
@@ -574,7 +574,7 @@ void Screen::PrintHUD() {
             wstandend(hudWin);
             const QString str(10, QChar(ascii ? 'o' : 0x00b0));
             mvwprintw(hudWin, 0, 16, "[..........]%hd", breath);
-            wcolor_set(hudWin, WHITE_BLUE, NULL);
+            wcolor_set(hudWin, BLUE_BLACK, NULL);
             mvwaddstr(hudWin, 0, 14+3,
                 qPrintable(str.left(10*breath/MAX_BREATH)));
         }
