@@ -64,6 +64,7 @@ enum shred_type {
     SHRED_NORMAL_UNDERGROUND = '-'
 };
 
+const ushort DEFAULT_MAP_SIZE = 75U;
 const char DEFAULT_SHRED = SHRED_PLAIN;
 const char OUT_BORDER_SHRED = SHRED_WATER;
 

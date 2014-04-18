@@ -18,7 +18,6 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include <QFile>
-#include <QDir>
 #include <qmath.h>
 #include "worldmap.h"
 #include "header.h"
@@ -28,11 +27,9 @@ const float PI = 3.141592f;
 WorldMap::WorldMap(const QString world_name) :
         map(new QFile(world_name+"/map.txt"))
 {
-    QDir::current().mkdir(world_name);
     if ( map->open(QIODevice::ReadOnly | QIODevice::Text) ) {
         mapSize = int(qSqrt(1+4*map->size())-1)/2;
     } else {
-        GenerateMap(qPrintable(world_name + "/map.txt"));
         mapSize = ( map->open(QIODevice::ReadOnly | QIODevice::Text) ) ?
             DEFAULT_MAP_SIZE : 1;
     }
@@ -56,7 +53,7 @@ long WorldMap::MapSize() const { return mapSize; }
 
 WorldMap::~WorldMap() { delete map; }
 
-int WorldMap::Deg(const ushort x, const ushort y, const ushort size) {
+float WorldMap::Deg(const float x, const float y, const ushort size) {
     const float x_cent = x-size/2;
     const float y_cent = y-size/2;
     float fi;
@@ -76,25 +73,25 @@ int WorldMap::Deg(const ushort x, const ushort y, const ushort size) {
     return 360*fi / 2 / PI;
 }
 
-int WorldMap::R(const ushort x, const ushort y, const ushort size) {
+float WorldMap::R(const float x, const float y, const ushort size) {
     return sqrt((x-size/2)*(x-size/2)+(y-size/2)*(y-size/2));
 }
 
 void WorldMap::Circle(
-        const ushort min_rad,
-        const ushort max_rad,
+        const float min_rad,
+        const float max_rad,
         const char ch,
         const ushort size,
         char * const map)
 {
     if ( min_rad >= max_rad ) {
         fprintf(stderr,
-            "WorldMap::Circle: %c: min_rad (%hu) >= max_rad (%hu)\n",
+            "WorldMap::Circle: %c: min_rad (%f) >= max_rad (%f).\n",
             ch, min_rad, max_rad);
     }
-    float maxs[360] = { (float)qMax((int)min_rad, qrand()%max_rad) };
+    float maxs[360] = { (float)qMax(min_rad, float(qrand()%qRound(max_rad))) };
     for (ushort x=1; x<360; ++x) {
-        float rad_change = (rand()%400-200.0)/200.0;
+        float rad_change = (qrand()%400-200.0)/200.0;
         maxs[x] = maxs[x-1] + rad_change;
         if ( maxs[x] > max_rad ) {
             maxs[x] = max_rad;
@@ -109,7 +106,7 @@ void WorldMap::Circle(
     }
     for (ushort y=0; y<size; ++y)
     for (ushort x=0; x<size; ++x) {
-        if ( R(x, y, size) < maxs[Deg(x, y, size)] ) {
+        if ( R(x, y, size) < maxs[qRound(Deg(x, y, size))] ) {
             map[x*size+y] = ch;
         }
     }
@@ -117,37 +114,37 @@ void WorldMap::Circle(
 
 void WorldMap::GenerateMap(
         const char * const filename,
-        uint size,
+        ushort size,
         const char outer,
         const int seed)
 {
     qsrand(seed);
-    size = qMax(10, (int)size);
+    size = qMax(ushort(10U), size);
 
     char * const map = new char[size*size];
     for (ushort y=0; y<size; ++y)
     for (ushort x=0; x<size; ++x) {
-        map[x*size+y]=outer;
+        map[x*size+y] = outer;
     }
 
-    const ushort min_rad=size/3;
-    const ushort max_rad=size/2;
+    const float min_rad = (float)size/3;
+    const float max_rad = (float)size/2;
     Circle(min_rad, max_rad, '.', size, map);
-    Circle(min_rad/2, max_rad/2, '%', size, map);
-    Circle(min_rad/3, max_rad/3+1, '+', size, map);
-    Circle(min_rad/4, max_rad/4+1, '^', size, map);
+    Circle(min_rad/2, max_rad/2,   SHRED_FOREST, size, map);
+    Circle(min_rad/3, max_rad/3+1, SHRED_HILL, size, map);
+    Circle(min_rad/4, max_rad/4+1, SHRED_MOUNTAIN, size, map);
 
-    //rivers
-    const ushort river_width = 4;
-    const ushort river_width_deg = river_width*80/size;
-    for (ushort i=river_width_deg; i<360-river_width_deg; ++i) {
-        if ( !(rand()%(60*80/size)) ) {
-            ushort j;
-            for (j=i-river_width_deg; j<=i+river_width_deg; ++j) {
-                ushort r;
-                for (r=max_rad/3; r<max_rad; ++r) {
-                    map[((int)(r*cos(j*2*PI/360))+size/2)*size+
-                        (int)(r*sin(j*2*PI/360))+ size/2] = '~';
+    // rivers
+    // on large maps rivers behave badly, bug is known.
+    // TODO: another river algorythm
+    const float river_width = 4;
+    const float river_width_deg = river_width*80/size;
+    for (float deg=river_width_deg; deg<360-river_width_deg; ++deg) {
+        if ( qrand()%(60*80/size) == 0 ) {
+            for (float j=deg-river_width_deg; j<=deg+river_width_deg; ++j) {
+                for (float r=max_rad/3; r<max_rad; r+=0.5f) {
+                    map[int((r*cos(j*2*PI/360))+size/2)*size+
+                        int((r*sin(j*2*PI/360))+size/2)] = SHRED_WATER;
                 }
             }
         }
@@ -158,7 +155,6 @@ void WorldMap::GenerateMap(
     for (ushort x=0; x<size; ++x) {
         fputc(map[x*size+y], file);
     }
-
     delete [] map;
     fclose(file);
 }

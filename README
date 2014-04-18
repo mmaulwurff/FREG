@@ -29,6 +29,9 @@ map.txt should be square, with CR line endings only.
 There is Vim highlight file fregMap.vim. You can copy it in ~/.vim/syntax and
 set file type with command:
 :set filetype=fregMap
+Also on large maps try option
+:set nowrap
+Extra fun: block copy (Ctrl-v, then select, then p) and block paste (1vp).
 
 Copyright (C) 2014 Alexander Kromm (mmaulwurff@gmail.com). --------------------
 

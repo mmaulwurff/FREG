@@ -25,6 +25,7 @@
 #include "screen.h" // NOX, if needed, is defined in screen.h
 #include "world.h"
 #include "Player.h"
+#include "worldmap.h"
 
 #ifdef NOX // no need for X server
     #include <QCoreApplication>
@@ -34,11 +35,34 @@
     typedef QApplication Application;
 #endif
 
+bool IsValidWorldName(const QString world_name) {
+    const QStringList invalid_world_names(QStringList()
+            << "blocks"
+            << "moc"
+            << "obj"
+            << "recipes"
+            << "texts");
+    if ( world_name.left(5)=="help_" ) {
+        printf("Invalid world name: %s.\n",
+            qPrintable(world_name));
+        return false;
+    }
+    for (auto i = invalid_world_names.constBegin();
+            i < invalid_world_names.constEnd(); ++i)
+    {
+        if ( *i == world_name ) {
+            printf("Invalid world name: %s.\n",
+                qPrintable(world_name));
+            return false;
+        }
+    }
+    return true;
+}
+
 int main(int argc, char ** argv) {
     setlocale(LC_CTYPE, "C-UTF-8");
     QDir::current().mkdir("texts");
     freopen("texts/errors.txt", "wt", stderr);
-    qsrand(QTime::currentTime().msec());
 
     Application freg(argc, argv);
     QCoreApplication::setOrganizationName("freg-team");
@@ -54,53 +78,57 @@ int main(int argc, char ** argv) {
     parser.setApplicationDescription(QObject::tr("freg - 3d open world game"));
     parser.addHelpOption();
     parser.addVersionOption();
-    QCommandLineOption ascii(QStringList() << "a" << "ascii",
+    const QCommandLineOption ascii(QStringList() << "a" << "ascii",
         QObject::tr("Use ASCII-characters only."));
     parser.addOption(ascii);
-    QCommandLineOption world_argument(QStringList() << "w" << "world",
+    const QCommandLineOption world_argument(QStringList() << "w" << "world",
         QObject::tr("Specify world."),
         QObject::tr("world_name"));
     parser.addOption(world_argument);
+    const QCommandLineOption generate(QStringList() << "g" << "generate",
+        QObject::tr("Generate new map."));
+    parser.addOption(generate);
+    const QCommandLineOption map_size(QStringList() << "s" << "size",
+        QObject::tr("Generated map size. Works only with -g."),
+        QObject::tr("map_size"), QString::number(DEFAULT_MAP_SIZE));
+    parser.addOption(map_size);
+    const QCommandLineOption map_outer(QStringList() << "o" << "outer",
+        QObject::tr("Generated map outer shred. Works only with -g."),
+        QObject::tr("map_outer"), QString(QChar(OUT_BORDER_SHRED)));
+    parser.addOption(map_outer);
+    const QCommandLineOption map_seed(QStringList() << "d" << "seed",
+        QObject::tr("Seed to generate map. Works only with -g."),
+        QObject::tr("map_seed"), QString::number(0));
+    parser.addOption(map_seed);
     parser.process(freg);
-
-    bool isValidWorldName = false;
-    if ( parser.isSet(world_argument) ) {
-        isValidWorldName = true;
-        const QStringList invalid_world_names(QStringList()
-                << "blocks"
-                << "moc"
-                << "obj"
-                << "recipes"
-                << "texts");
-        for (auto i = invalid_world_names.constBegin();
-                i < invalid_world_names.constEnd(); ++i)
-        {
-            if ( *i == parser.value(world_argument)
-                    || parser.value(world_argument).left(5)=="help_" )
-            {
-                isValidWorldName = false;
-                printf("Invalid world name: %s.\n",
-                    qPrintable(parser.value(world_argument)));
-                return EXIT_FAILURE;
-            }
-        }
-    }
 
     QSettings::setDefaultFormat(QSettings::IniFormat);
     QSettings sett(QDir::currentPath()+"/freg.ini", QSettings::IniFormat);
-    const QString worldName = isValidWorldName ?
+    const QString worldName =
+        ( parser.isSet(world_argument)
+            && IsValidWorldName(parser.value(world_argument)) ) ?
         parser.value(world_argument) :
         sett.value("current_world", "mu").toString();
     sett.setValue("current_world", worldName);
-    //QDir::current().mkdir(worldName);
 
+    if ( parser.isSet(generate) ) {
+        QDir::current().mkdir(worldName);
+        WorldMap::GenerateMap(
+            qPrintable(worldName + "/map.txt"),
+            parser.value(map_size).toUShort(),
+            parser.value(map_outer).at(0).toLatin1(),
+            parser.value(map_seed).toInt());
+        puts(qPrintable(QObject::tr("Map generated successfully.")));
+        return EXIT_SUCCESS;
+    }
+
+    qsrand(QTime::currentTime().msec());
     World world(worldName);
     Player player;
     int error = NO_ERROR;
     const Screen screen(&world, &player, error, parser.isSet(ascii));
-    if ( error ) {
-        return EXIT_FAILURE;
-    } // else:
+    if ( error ) return EXIT_FAILURE;
+
     QObject::connect(&player, SIGNAL(Destroyed()),
         &screen, SLOT(DeathScreen()));
 
