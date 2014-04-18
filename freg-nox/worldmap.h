@@ -45,7 +45,7 @@ private:
             int seed = 0);
 
     long mapSize;
-    QFile * map;
+    QFile * const map;
 };
 
 #endif // WORLDMAP_H

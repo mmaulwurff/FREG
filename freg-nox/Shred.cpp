@@ -134,41 +134,22 @@ Shred::Shred(const ushort shred_x, const ushort shred_y,
 } // Shred::Shred(ushort shred_x, shred_y, long longi, lati, Shred * mem)
 
 Shred::~Shred() {
-    const long mapSize = GetWorld()->MapSize();
-    if (
-            (longitude < mapSize) && (longitude >= 0) &&
-            (latitude  < mapSize) && (latitude  >= 0) )
-    {
-        QByteArray * const shred_data = new QByteArray();
-        shred_data->reserve(70000);
-        QDataStream outstr(shred_data, QIODevice::WriteOnly);
-        outstr << DATASTREAM_VERSION << CURRENT_SHRED_FORMAT_VERSION;
-        outstr.setVersion(DATASTREAM_VERSION);
-        for (ushort x=0; x<SHRED_WIDTH; ++x)
-        for (ushort y=0; y<SHRED_WIDTH; ++y) {
-            ushort height = HEIGHT-2;
-            for ( ; blocks[x][y][height]->Sub()==AIR; --height);
-            for (ushort z=1; z <= height; ++z) {
-                blocks[x][y][z]->SaveToFile(outstr);
-                block_manager.DeleteBlock(blocks[x][y][z]);
-            }
-            blocks[x][y][HEIGHT-1]->SaveToFile(outstr);
-        }
-        GetWorld()->SetShredData(shred_data, longitude, latitude);
-    } else {
-        Clean();
-    }
-}
-
-void Shred::Clean() {
+    QByteArray * const shred_data = new QByteArray();
+    shred_data->reserve(70000);
+    QDataStream outstr(shred_data, QIODevice::WriteOnly);
+    outstr << DATASTREAM_VERSION << CURRENT_SHRED_FORMAT_VERSION;
+    outstr.setVersion(DATASTREAM_VERSION);
     for (ushort x=0; x<SHRED_WIDTH; ++x)
     for (ushort y=0; y<SHRED_WIDTH; ++y) {
         ushort height = HEIGHT-2;
         for ( ; blocks[x][y][height]->Sub()==AIR; --height);
-        for (ushort z=1; z<=height; ++z) {
+        for (ushort z=1; z <= height; ++z) {
+            blocks[x][y][z]->SaveToFile(outstr);
             block_manager.DeleteBlock(blocks[x][y][z]);
         }
+        blocks[x][y][HEIGHT-1]->SaveToFile(outstr);
     }
+    GetWorld()->SetShredData(shred_data, longitude, latitude);
 }
 
 Shred * Shred::GetShredMemory() const { return memory; }

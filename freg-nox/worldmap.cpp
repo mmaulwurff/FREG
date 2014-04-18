@@ -18,16 +18,13 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include <QFile>
-#include <QProcess>
 #include <qmath.h>
-#include <cstdio>
-#include <cstdlib>
 #include "worldmap.h"
 #include "header.h"
 
 const float PI = 3.141592;
 
-WorldMap::WorldMap(const QString world_name) : 
+WorldMap::WorldMap(const QString world_name) :
         map(new QFile(world_name+"/map.txt"))
 {
     if ( map->open(QIODevice::ReadOnly | QIODevice::Text) ) {
@@ -58,9 +55,9 @@ long WorldMap::MapSize() const { return mapSize; }
 WorldMap::~WorldMap() { delete map; }
 
 int WorldMap::Deg(const ushort x, const ushort y, const ushort size) {
-    float fi;
     const float x_cent = x-size/2;
     const float y_cent = y-size/2;
+    float fi;
     if ( x_cent > 0 && y_cent >= 0 ) {
         fi = atan(y_cent/x_cent);
     } else if ( x_cent>0 && y_cent<0 ) {
@@ -86,7 +83,7 @@ void WorldMap::Circle(
         const ushort max_rad,
         const char ch,
         const ushort size,
-        char * map)
+        char * const map)
 {
     if ( min_rad >= max_rad ) {
         fprintf(stderr,
@@ -104,7 +101,7 @@ void WorldMap::Circle(
             maxs[x] = min_rad;
             rad_change += 0.01;
         }
-        if ( x>315 ) {
+        if ( x > 315 ) {
             maxs[x] += (maxs[0]-maxs[x-1])/90;
         }
     }
@@ -153,8 +150,8 @@ void WorldMap::GenerateMap(
             }
         }
     }
-        
-    FILE * const file=fopen(filename, "wb");
+
+    FILE * const file = fopen(filename, "wb");
     for (ushort y=0; y<size; ++y, fputc('\n', file))
     for (ushort x=0; x<size; ++x) {
         fputc(map[x*size+y], file);

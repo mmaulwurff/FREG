@@ -29,7 +29,11 @@ class Active;
 
 class Shred final {
 public:
-    Shred(ushort shred_x, ushort shred_y, long longi, long lati,
+    Shred(
+            ushort shred_x,
+            ushort shred_y,
+            long longi,
+            long lati,
             Shred * memory);
     ~Shred();
 
@@ -93,6 +97,7 @@ public:
     long GlobalY(ushort y) const;
     static ushort CoordInShred(const ushort x);
     static ushort CoordOfShred(const ushort x);
+
 private:
     void RemoveAllSunLight();
     void RemoveAllFireLight();
@@ -102,7 +107,6 @@ private:
     void Unregister(Active *);
     void UnregisterExternalActives();
 
-    void Clean();
     bool LoadShred();
     void SetBlockNoCheck(Block *, ushort x, ushort y, ushort z);
 
@@ -128,10 +132,10 @@ private:
     /// For testing purposes.
     void ChaosShred();
 
-    // Block combinations section (trees, buildings, etc):
+    /// Block combinations section (trees, buildings, etc):
     bool Tree(ushort x, ushort y, ushort z, ushort height);
 
-    // Special land generation
+    /// Special land generation
     void ShredLandAmplitudeAndLevel(long longi, long lati,
             ushort * l, float * a) const;
     void ShredNominalAmplitudeAndLevel(char shred_type,
@@ -149,16 +153,16 @@ private:
     const long longitude, latitude;
     ushort shredX, shredY;
 
-    // needed in Shred::ReloadTo... for active blocks not to reload twice
-    // when they are registered both in frequent and rare lists.
+    /// needed in Shred::ReloadTo... for active blocks not to reload twice
+    /// when they are registered both in frequent and rare lists.
     QLinkedList<Active *> activeListAll;
     QLinkedList<Active *> activeListFrequent, activeListRare;
     QLinkedList<Active *> fallList;
     QLinkedList<Active *> shiningList;
     QLinkedList<Active *> deleteList;
 
-    // memory, allocated for this shred.
+    /// memory, allocated for this shred.
     Shred * const memory;
-}; // class Shred
+};
 
 #endif // SHRED_H
