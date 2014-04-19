@@ -185,6 +185,7 @@ void Active::SetToDelete() {
         emit Destroyed();
     }
 }
+
 bool Active::IsToDelete() const { return frozen; }
 
 Active::Active(const int sub, const quint16 id, const quint8 transp) :

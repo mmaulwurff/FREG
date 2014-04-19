@@ -30,6 +30,8 @@ WorldMap::WorldMap(const QString world_name) :
     if ( map->open(QIODevice::ReadOnly | QIODevice::Text) ) {
         mapSize = int(qSqrt(1+4*map->size())-1)/2;
     } else {
+        GenerateMap(qPrintable(world_name+"/map.txt"),
+            DEFAULT_MAP_SIZE, SHRED_WATER, 0);
         mapSize = ( map->open(QIODevice::ReadOnly | QIODevice::Text) ) ?
             DEFAULT_MAP_SIZE : 1;
     }
@@ -121,7 +123,7 @@ void WorldMap::GenerateMap(
     qsrand(seed);
     size = qMax(ushort(10U), size);
 
-    char * const map = new char[size*size];
+    char * const map = new char[(ulong)size*size];
     for (ushort y=0; y<size; ++y)
     for (ushort x=0; x<size; ++x) {
         map[x*size+y] = outer;
@@ -129,9 +131,9 @@ void WorldMap::GenerateMap(
 
     const float min_rad = (float)size/3;
     const float max_rad = (float)size/2;
-    Circle(min_rad, max_rad, '.', size, map);
-    Circle(min_rad/2, max_rad/2,   SHRED_FOREST, size, map);
-    Circle(min_rad/3, max_rad/3+1, SHRED_HILL, size, map);
+    Circle(min_rad,   max_rad,     SHRED_PLAIN,    size, map);
+    Circle(min_rad/2, max_rad/2,   SHRED_FOREST,   size, map);
+    Circle(min_rad/3, max_rad/3+1, SHRED_HILL,     size, map);
     Circle(min_rad/4, max_rad/4+1, SHRED_MOUNTAIN, size, map);
 
     // rivers

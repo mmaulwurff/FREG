@@ -20,6 +20,7 @@
 #ifndef HEADER_H
 #define HEADER_H
 
+#include <QtGlobal>
 #include <QLocale>
 
 #ifdef Q_OS_WIN32

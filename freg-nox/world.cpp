@@ -38,9 +38,8 @@ int World::ShredPos(const int x, const int y) const {
     return y*NumShreds() + x;
 }
 
-Shred * World::GetShred(ushort x, ushort y) const {
-    return shreds[ShredPos(Shred::CoordOfShred(x),
-        Shred::CoordOfShred(y))];
+Shred * World::GetShred(const ushort x, const ushort y) const {
+    return shreds[ShredPos(Shred::CoordOfShred(x), Shred::CoordOfShred(y))];
 }
 
 int World::TimeOfDay() const { return time % SECONDS_IN_DAY; }

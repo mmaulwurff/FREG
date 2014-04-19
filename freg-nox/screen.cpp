@@ -919,18 +919,19 @@ Screen::Screen(
         bool _ascii)
     :
         VirtScreen(wor, pl),
-        leftWin(0),
-        rightWin(0),
-        notifyWin(0),
-        commandWin(0),
-        hudWin(0),
+        leftWin(nullptr),
+        rightWin(nullptr),
+        notifyWin(nullptr),
+        commandWin(nullptr),
+        hudWin(nullptr),
         input(new IThread(this)),
         updated(false),
         updatedPlayer(false),
         timer(new QTimer(this)),
         notifyLog(fopen("texts/messages.txt", "at")),
         notificationRepeatCount(1),
-        fileToShow(0),
+        fileToShow(nullptr),
+        beepOn(false),
         mutex(new QMutex()),
         ascii(_ascii)
 {
@@ -995,7 +996,7 @@ Screen::Screen(
     shiftFocus = sett.value("focus_shift", 0).toInt();
     actionMode = sett.value("action_mode", ACTION_USE).toInt();
     command    = sett.value("last_command", "hello").toString();
-    beepOn     = sett.value("beep_on", true).toBool();
+    beepOn     = sett.value("beep_on", false).toBool();
     sett.setValue("beep_on", beepOn);
 
     if ( not PrintFile(stdscr, "texts/splash.txt") ) {
