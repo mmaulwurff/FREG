@@ -217,15 +217,20 @@ bool Active::Gravitate(const ushort range, const ushort down, const ushort up,
     World * const world = GetWorld();
     // analyse world around
     short for_north = 0, for_west = 0;
-    for (ushort x=X()-range; x<=X()+range; ++x)
-    for (ushort y=Y()-range; y<=Y()+range; ++y) {
+    const ushort y_start = Y()-range;
+    const ushort z_start = Z()-down;
+    const ushort x_end = X()+range;
+    const ushort y_end = Y()+range;
+    const ushort z_end = Z()+up;
+    for (ushort x=X()-range; x<=x_end; ++x)
+    for (ushort y=y_start;   y<=y_end; ++y) {
         if ( not world->InBounds(x, y) ) {
             continue;
         }
         Shred * const shred = world->GetShred(x, y);
         const ushort x_in = Shred::CoordInShred(x);
         const ushort y_in = Shred::CoordInShred(y);
-        for (ushort z=Z()-down;  z<=Z()+up; ++z) {
+        for (ushort z=z_start; z<=z_end; ++z) {
             short attractive;
             if ( World::InVertBounds(z)
                     && ( attractive = Attractive(shred->
