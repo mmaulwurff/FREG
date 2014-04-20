@@ -120,13 +120,13 @@ public:
     Grass(int sub, quint16 id);
     Grass(QDataStream & str, int sub, quint16 id);
 
-    QString FullName() const;
-    void DoRareAction();
-    int  ShouldAct() const;
-    quint8 Kind() const;
-    bool ShouldFall() const;
-    void Push(int dir, Block * who);
-    Block * DropAfterDamage() const;
+    QString FullName() const override;
+    void DoRareAction() override;
+    int  ShouldAct() const override;
+    quint8 Kind() const override;
+    bool ShouldFall() const override;
+    void Push(int dir, Block * who) override;
+    Block * DropAfterDamage() const override;
 private:
     static bool IsBase(quint8 ownsub, quint8 ground);
 };
