@@ -78,10 +78,10 @@ void DeferredAction::Build() {
 } // void DeferredAction::Build()
 
 void DeferredAction::Damage() const {
-    world->Damage(xTarg, yTarg, zTarg,
-        attachedBlock->DamageLevel(),
-        attachedBlock->DamageKind());
-    if ( world->GetBlock(xTarg, yTarg, zTarg)->GetDurability() <= 0 ) {
+    if ( world->Damage(xTarg, yTarg, zTarg,
+            attachedBlock->DamageLevel(),
+            attachedBlock->DamageKind()) <= 0 ) // durability
+    {
         world->DestroyAndReplace(xTarg, yTarg, zTarg);
     }
 }

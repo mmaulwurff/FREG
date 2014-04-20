@@ -50,7 +50,7 @@ public:
 
     Shred * GetShred() const;
     World * GetWorld() const;
-    QString FullName() const;
+    QString FullName() const override;
     quint8 Kind() const;
     int PushResult(int dir) const;
 

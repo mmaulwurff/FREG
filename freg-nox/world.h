@@ -153,7 +153,9 @@ public: // Time section
     ushort MiniTime() const;
 
 public: // Interactions section
-    void Damage(ushort x, ushort y, ushort z, ushort level, int dmg_kind);
+    /// Returns damaged block result durability.
+    short Damage(ushort x, ushort y, ushort z, ushort level, int dmg_kind);
+    /// Does not check target block durability.
     void DestroyAndReplace(ushort x, ushort y, ushort z);
     bool Build(Block * thing, ushort x, ushort y, ushort z,
             quint8 dir = UP,

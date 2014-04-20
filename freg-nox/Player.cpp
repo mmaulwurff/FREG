@@ -451,7 +451,7 @@ void Player::SetDir(const int direction) {
 }
 
 bool Player::Damage(const short x, const short y, const short z) const {
-    if ( player && GetWorld()->InBounds(x, y, z) ) {
+    if ( player!=nullptr && GetWorld()->InBounds(x, y, z) ) {
         player->GetDeferredAction()->SetDamage(x, y, z);
         return true;
     } else {

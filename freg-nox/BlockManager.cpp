@@ -226,8 +226,7 @@ quint8 BlockManager::StringToSub(const QString str) {
 }
 
 Block * BlockManager::ReplaceWithNormal(Block * const block) const {
-    const int sub = block->Sub();
-    Block * const normal = block_manager.NormalBlock(sub);
+    Block * const normal = NormalBlock(block->Sub());
     if ( block!=normal && *block==*normal ) {
         DeleteBlock(block);
         return normal;

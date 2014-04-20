@@ -225,9 +225,11 @@ void World::PutBlock(Block * const block,
 Block * World::Normal(const quint8 sub) {
     return block_manager.NormalBlock(sub);
 }
+
 Block * World::NewBlock(const int kind, const int sub) {
     return block_manager.NewBlock(kind, sub);
 }
+
 void World::DeleteBlock(Block * const block) {
     Active * const active = block->ActiveBlock();
     if ( active ) {
@@ -608,31 +610,36 @@ const {
     return !InBounds(x_to, y_to, z_to);
 }
 
-void World::Damage(const ushort x, const ushort y, const ushort z,
+short World::Damage(const ushort x, const ushort y, const ushort z,
         const ushort dmg, const int dmg_kind)
 {
     Block * temp = GetBlock(x, y, z);
     if ( temp==Normal(temp->Sub()) && AIR!=temp->Sub() ) {
-        temp = NewBlock(temp->Kind(), temp->Sub());
+        SetBlock(NewBlock(temp->Kind(), temp->Sub()), x, y, z);
+        // SetBlock can change block it sets. GetBlock(...) to cover all cases.
+        temp = GetBlock(x, y, z);
     }
     temp->Damage(dmg, dmg_kind);
-    if ( temp->GetDurability() > 0
-            && temp->GetDurability() != MAX_DURABILITY
+    const short durability = temp->GetDurability();
+    if ( durability > 0
+            && durability != MAX_DURABILITY
             && block_manager.MakeId(BLOCK, STONE) == temp->GetId() )
     { // convert stone into ladder
         SetBlock(NewBlock(LADDER, STONE), x, y, z);
         emit ReEnlighten(x, y, z);
+        return MAX_DURABILITY;
     }
+    return durability;
 }
 
 void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
-    Block * const temp = GetBlock(x, y, z);
-    Block * const dropped = temp->DropAfterDamage();
     Shred * const shred = GetShred(x, y);
     const ushort x_in_shred = Shred::CoordInShred(x);
     const ushort y_in_shred = Shred::CoordInShred(y);
+    Block * const temp = shred->GetBlock(x_in_shred, y_in_shred, z);
+    Block * const dropped = temp->DropAfterDamage();
     Block * new_block;
-    if ( PILE!=temp->Kind() && (temp->HasInventory() || dropped) ) {
+    if ( PILE!=temp->Kind() && (temp->HasInventory() || dropped!=nullptr) ) {
         const bool dropped_pile = ( dropped && dropped->Kind()==PILE );
         new_block = dropped_pile ?
             dropped : NewBlock(PILE, DIFFERENT);
@@ -655,7 +662,8 @@ void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
             }
             new_pile_inv->GetAll(inv);
         }
-        if ( dropped && not dropped_pile
+        if ( dropped
+                && not dropped_pile
                 && not new_pile_inv->Get(dropped) )
         {
             DeleteBlock(dropped);
@@ -721,17 +729,17 @@ void World::Exchange(Block * const block_from, Block * const block_to,
         const ushort src, const ushort dest, const ushort num)
 {
     Inventory * const inv_from = block_from->HasInventory();
-    if ( !inv_from ) {
+    if ( inv_from == nullptr ) {
         block_from->ReceiveSignal(tr("No inventory."));
         return;
     }
-    if ( !inv_from->Number(src) ) {
+    if ( inv_from->Number(src) == 0 ) {
         block_from->ReceiveSignal(tr("Nothing here."));
         block_to  ->ReceiveSignal(tr("Nothing here."));
         return;
     }
     Inventory * const inv_to = block_to->HasInventory();
-    if ( !inv_to ) {
+    if ( inv_to == nullptr ) {
         block_from->ReceiveSignal(tr("No room there."));
         return;
     }

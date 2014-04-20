@@ -359,8 +359,7 @@
             if ( world->InBounds(x, y) &&
                     GREENERY == world->GetBlock(x, y, Z())->Sub() )
             {
-                world->Damage(x, y, Z(), DamageLevel(), DamageKind());
-                if ( world->GetBlock(x, y, Z())->GetDurability() <= 0 ) {
+                if (world->Damage(x, y, Z(), DamageLevel(), DamageKind())<=0) {
                     world->DestroyAndReplace(x, y, Z());
                 }
                 Eat(GREENERY);
@@ -688,7 +687,7 @@
     Inventory * Pile::HasInventory() { return Inventory::HasInventory(); }
     usage_types Pile::Use(Block *) { return USAGE_TYPE_OPEN; }
     ushort Pile::Weight() const { return Inventory::Weight(); }
-    Block * Pile::DropAfterDamage() const { return 0; }
+    Block * Pile::DropAfterDamage() const { return nullptr; }
 
     void Pile::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
 
@@ -734,7 +733,7 @@
     quint8 Liquid::Kind() const { return LIQUID; }
     int Liquid::Temperature() const { return ( WATER==Sub() ) ? 0 : 1000; }
     uchar Liquid::LightRadius() const { return ( WATER==Sub() ) ? 0 : 3; }
-    Block * Liquid::DropAfterDamage() const { return 0; }
+    Block * Liquid::DropAfterDamage() const { return nullptr; }
 
     QString Liquid::FullName() const {
         switch ( Sub() ) {
@@ -767,9 +766,8 @@
                 if ( not world->InBounds(xyz.GetX(), xyz.GetY()) ) {
                     continue;
                 }
-                world->Damage(xyz.GetX(), xyz.GetY(), xyz.GetZ(), 5, HEAT);
-                if ( world->GetBlock(xyz.GetX(), xyz.GetY(), xyz.GetZ())->
-                        GetDurability() <= 0 )
+                if ( world->Damage(xyz.GetX(), xyz.GetY(), xyz.GetZ(), 5, HEAT)
+                        <= 0 )
                 {
                     world->DestroyAndReplace(
                         xyz.GetX(), xyz.GetY(), xyz.GetZ());
@@ -834,7 +832,7 @@
     }
     bool Grass::ShouldFall() const { return false; }
     quint8 Grass::Kind() const { return GRASS; }
-    Block * Grass::DropAfterDamage() const { return 0; }
+    Block * Grass::DropAfterDamage() const { return nullptr; }
 
     Grass::Grass(const int sub, const quint16 id) :
             Active(sub, id)
