@@ -19,10 +19,12 @@
 
 #include "Xyz.h"
 
-Xy::Xy(const short i, const short j) :
-        x(i), y(j)
-{}
+Xy::Xy(const short i, const short j) : x_self(i), y_self(j) {}
+Xy::Xy()                             : x_self(),  y_self()  {}
 
-Xyz::Xyz(const short i, const short j, const short k) :
-        Xy(i, j), z(k)
-{}
+Xyz::Xyz(const short i, const short j, const short k) : Xy(i, j), z_self(k) {}
+Xyz::Xyz()                                            : Xy(),     z_self()  {}
+
+short Xy ::X() const { return x_self; }
+short Xy ::Y() const { return y_self; }
+short Xyz::Z() const { return z_self; }

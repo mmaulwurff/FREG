@@ -23,20 +23,24 @@
 class Xy {
 public:
     Xy(short x, short y);
+    Xy();
 
-    short GetX() const { return x; }
-    short GetY() const { return y; }
-private:
-    short x, y;
+    short X() const;
+    short Y() const;
+
+protected:
+    short x_self, y_self;
 };
 
-class Xyz final : public Xy {
+class Xyz : public Xy {
 public:
     Xyz(short x, short y, short z);
+    Xyz();
 
-    short GetZ() const { return z; }
-private:
-    short z;
+    short Z() const;
+
+protected:
+    short z_self;
 };
 
 #endif

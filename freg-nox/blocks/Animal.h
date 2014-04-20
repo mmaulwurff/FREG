@@ -28,20 +28,20 @@ public:
     Animal(int sub, quint16 id);
     Animal(QDataStream & str, int sub, quint16 id);
 
-    int     DamageKind() const;
-    int     ShouldAct() const;
-    void    DoRareAction();
+    int     DamageKind() const override;
+    int     ShouldAct() const override;
+    void    DoRareAction() override;
     bool    Eat(int sub);
     ushort  Breath() const;
     ushort  Satiation() const;
-    QString FullName() const = 0;
-    Animal * IsAnimal();
-    Block  * DropAfterDamage() const;
-    INNER_ACTIONS ActInner();
+    QString FullName() const override = 0;
+    Animal * IsAnimal() override;
+    Block  * DropAfterDamage() const override;
+    INNER_ACTIONS ActInner() override;
 
     virtual quint16 NutritionalValue(quint8 sub) const = 0;
 protected:
-    void SaveAttributes(QDataStream & out) const;
+    void SaveAttributes(QDataStream & out) const override;
     void EatGrass();
 private:
     quint8  breath;

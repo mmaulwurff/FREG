@@ -22,6 +22,7 @@
 
 #include <QObject>
 #include "Block.h"
+#include "Xyz.h"
 
 /// Frequency can be "never", "rare", "rare & first", "rare & second".
 enum ACTIVE_FREQUENCY {
@@ -41,41 +42,38 @@ class Shred;
 class World;
 class DeferredAction;
 
-class Active : public QObject, public Block {
+class Active : public QObject, public Block, public Xyz {
     Q_OBJECT
 public:
      Active(int sub, quint16 id, quint8 transp = UNDEF);
      Active(QDataStream & str, int sub, quint16 id, quint8 transp = UNDEF);
     ~Active();
 
-    Shred * GetShred() const;
-    World * GetWorld() const;
-    QString FullName() const override;
-    quint8 Kind() const;
-    int PushResult(int dir) const;
+    bool Move(int dir)                    override;
+    void Damage(ushort dmg, int dmg_kind) override;
+    void ReceiveSignal(QString)           override;
+    int  PushResult(int dir)        const override;
+    quint8   Kind()                 const override;
+    QString  FullName()             const override;
+    Active * ActiveBlock()                override;
 
-    Active * ActiveBlock();
+    void FallDamage();
+    bool IsFalling() const;
     /// Returns true if shred border is overstepped.
     void SetFalling(bool set);
-    bool Move(int dir);
-    bool IsFalling() const;
-    void FallDamage();
 
-    ushort X() const;
-    ushort Y() const;
-    ushort Z() const;
+    Shred * GetShred() const;
+    World * GetWorld() const;
 
     void ActFrequent();
     void ActRare();
+
     virtual INNER_ACTIONS ActInner();
-    virtual int ShouldAct() const;
+    virtual int  ShouldAct()  const;
     virtual bool ShouldFall() const;
 
     void SetDeferredAction(DeferredAction *);
     DeferredAction * GetDeferredAction() const;
-
-    void Damage(ushort dmg, int dmg_kind);
-    void ReceiveSignal(QString);
 
     void ReloadToNorth();
     void ReloadToSouth();
@@ -87,31 +85,34 @@ public:
     void SetXYZ(ushort x, ushort y, ushort z);
     void SetToDelete();
     void SetShred(Shred *);
+
 signals:
     void Moved(int);
     void Destroyed();
     void Updated();
     void ReceivedText(const QString);
+
 protected:
+    void SaveAttributes(QDataStream & out) const override;
+
     void SendSignalAround(QString) const;
-    void SaveAttributes(QDataStream & out) const;
     /// Returns true if there is at least 1 block of substance sub around.
     bool IsSubAround(quint8 sub) const;
     bool Gravitate(ushort range, ushort down, ushort up, ushort calmness);
 
-    virtual void DoFrequentAction();
-    virtual void DoRareAction();
+    virtual void  DoFrequentAction();
+    virtual void  DoRareAction();
     virtual short Attractive(int sub) const;
+
 private:
     void UpdateShred();
     bool IsToDelete() const;
 
     quint8 fall_height;
     bool falling;
-    bool frozen; // don't do actions when frozen
+    /// Don't do actions when frozen.
+    bool frozen;
     DeferredAction * deferredAction;
-    /// Coordinates in loaded world zone.
-    ushort x_self, y_self, z_self;
     Shred * shred;
 };
 

@@ -614,20 +614,18 @@ short World::Damage(const ushort x, const ushort y, const ushort z,
 {
     Block * temp = GetBlock(x, y, z);
     if ( temp==Normal(temp->Sub()) && AIR!=temp->Sub() ) {
-        SetBlock(NewBlock(temp->Kind(), temp->Sub()), x, y, z);
-        // SetBlock can change block it sets. GetBlock(...) to cover all cases.
-        temp = GetBlock(x, y, z);
+        temp = NewBlock(temp->Kind(), temp->Sub());
     }
     temp->Damage(dmg, dmg_kind);
-    const short durability = temp->GetDurability();
-    if ( durability > 0
-            && durability != MAX_DURABILITY
+    short durability = temp->GetDurability();
+    if ( 0 < durability && durability < MAX_DURABILITY
             && block_manager.MakeId(BLOCK, STONE) == temp->GetId() )
     { // convert stone into ladder
-        SetBlock(NewBlock(LADDER, STONE), x, y, z);
+        temp = NewBlock(LADDER, STONE);
         emit ReEnlighten(x, y, z);
-        return MAX_DURABILITY;
+        durability = MAX_DURABILITY;
     }
+    SetBlock(temp, x, y, z);
     return durability;
 }
 

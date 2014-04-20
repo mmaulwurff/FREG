@@ -761,16 +761,14 @@
                 Xyz( X(),   Y()-1, Z()   ),
                 Xyz( X(),   Y()+1, Z()   ),
                 Xyz( X(),   Y(),   Z()-1 ),
-                Xyz( X(),   Y(),   Z()+1 ) };
+                Xyz( X(),   Y(),   Z()+1 )
+            };
             for (const Xyz xyz : coords) {
-                if ( not world->InBounds(xyz.GetX(), xyz.GetY()) ) {
+                if ( not world->InBounds(xyz.X(), xyz.Y()) ) {
                     continue;
                 }
-                if ( world->Damage(xyz.GetX(), xyz.GetY(), xyz.GetZ(), 5, HEAT)
-                        <= 0 )
-                {
-                    world->DestroyAndReplace(
-                        xyz.GetX(), xyz.GetY(), xyz.GetZ());
+                if ( world->Damage(xyz.X(), xyz.Y(), xyz.Z(), 5, HEAT) <= 0 ) {
+                    world->DestroyAndReplace(xyz.X(), xyz.Y(), xyz.Z());
                 }
             }
             if ( qrand()%10 || IsSubAround(WATER) ) {
@@ -1403,9 +1401,9 @@
             Xyz(X(), Y(), Z()+1) };
         World * const world = GetWorld();
         for (const Xyz xyz : coords) {
-            const ushort x = xyz.GetX();
-            const ushort y = xyz.GetY();
-            const ushort z = xyz.GetZ();
+            const ushort x = xyz.X();
+            const ushort y = xyz.Y();
+            const ushort z = xyz.Z();
             Block * const block = world->GetBlock(x, y, z);
             if ( Attractive(block->Sub()) ) {
                 block->ReceiveSignal(tr("Predator bites you!"));

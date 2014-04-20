@@ -95,10 +95,6 @@ void Active::FallDamage() {
     fall_height = 0;
 }
 
-ushort Active::X() const { return x_self; }
-ushort Active::Y() const { return y_self; }
-ushort Active::Z() const { return z_self; }
-
 bool Active::Move(const int dir) {
     switch ( dir ) {
     case NORTH: --y_self; break;
@@ -132,8 +128,8 @@ void Active::SendSignalAround(const QString signal) const {
         Xy( X(),   Y()-1 ),
         Xy( X(),   Y()+1 ) };
     for (const Xy xy : coords) {
-        if ( world->InBounds(xy.GetX(), xy.GetY()) ) {
-             world->GetBlock(xy.GetX(), xy.GetY(), Z())->ReceiveSignal(signal);
+        if ( world->InBounds(xy.X(), xy.Y()) ) {
+             world->GetBlock(xy.X(), xy.Y(), Z())->ReceiveSignal(signal);
         }
     }
     world->GetBlock(X(), Y(), Z()-1)->ReceiveSignal(signal);
@@ -190,21 +186,21 @@ bool Active::IsToDelete() const { return frozen; }
 
 Active::Active(const int sub, const quint16 id, const quint8 transp) :
         Block(sub, id, transp),
+        Xyz(),
         fall_height(0),
         falling(false),
         frozen(false),
         deferredAction(nullptr),
-        x_self(), y_self(), z_self(),
         shred()
 {}
 Active::Active(QDataStream & str, const int sub, const quint16 id,
         const quint8 transp)
     :
         Block(str, sub, id, transp),
+        Xyz(),
         falling(false),
         frozen(false),
         deferredAction(nullptr),
-        x_self(), y_self(), z_self(),
         shred()
 {
     str >> fall_height;
