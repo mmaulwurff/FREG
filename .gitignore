@@ -4,6 +4,7 @@
 !COPYING
 !Freg.pro
 !Doxyfile
+!freg-logo.png
 !*.cpp
 !*.h
 !*.ts
@@ -34,3 +35,4 @@ texts/messages.txt
 
 !html
 !html/*
+!html/search/*

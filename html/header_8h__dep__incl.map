@@ -18,7 +18,7 @@
 <area shape="rect" id="node40" href="$Lighting-inertia_8cpp.html" title="This file provides simple (also mad) lighting for freg. " alt="" coords="1207,254,1337,287"/>
 <area shape="rect" id="node44" href="$Bucket_8h.html" title="blocks/Bucket.h" alt="" coords="160,171,275,205"/>
 <area shape="rect" id="node49" href="$Weapons_8h.html" title="blocks/Weapons.h" alt="" coords="5,171,136,205"/>
-<area shape="rect" id="node55" href="$CursedScreen_8cpp.html" title="screens/CursedScreen.cpp" alt="" coords="2223,254,2401,287"/>
+<area shape="rect" id="node55" href="$CursedScreen_8cpp.html" title="This file is related to curses screen for freg. " alt="" coords="2223,254,2401,287"/>
 <area shape="rect" id="node28" href="$Animal_8h.html" title="blocks/Animal.h" alt="" coords="607,254,721,287"/>
 <area shape="rect" id="node36" href="$Active_8cpp.html" title="blocks/Active.cpp" alt="" coords="1463,254,1588,287"/>
 <area shape="rect" id="node38" href="$DeferredAction_8cpp.html" title="DeferredAction.cpp" alt="" coords="1612,254,1745,287"/>

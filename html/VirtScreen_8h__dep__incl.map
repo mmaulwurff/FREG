@@ -1,5 +1,5 @@
 <map id="VirtScreen.h" name="VirtScreen.h">
 <area shape="rect" id="node3" href="$CursedScreen_8h.html" title="screens/CursedScreen.h" alt="" coords="12,89,177,122"/>
 <area shape="rect" id="node7" href="$VirtScreen_8cpp.html" title="This file provides definitions of code common to all freg screens. " alt="" coords="201,89,308,122"/>
-<area shape="rect" id="node5" href="$CursedScreen_8cpp.html" title="screens/CursedScreen.cpp" alt="" coords="5,171,184,205"/>
+<area shape="rect" id="node5" href="$CursedScreen_8cpp.html" title="This file is related to curses screen for freg. " alt="" coords="5,171,184,205"/>
 </map>

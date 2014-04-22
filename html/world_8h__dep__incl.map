@@ -7,7 +7,7 @@
 <area shape="rect" id="node13" href="$Lighting-inertia_8cpp.html" title="This file provides simple (also mad) lighting for freg. " alt="" coords="763,89,893,122"/>
 <area shape="rect" id="node15" href="$main_8cpp.html" title="main.cpp" alt="" coords="917,89,992,122"/>
 <area shape="rect" id="node17" href="$Player_8cpp.html" title="Player.cpp" alt="" coords="1016,89,1099,122"/>
-<area shape="rect" id="node19" href="$CursedScreen_8cpp.html" title="screens/CursedScreen.cpp" alt="" coords="1123,89,1301,122"/>
+<area shape="rect" id="node19" href="$CursedScreen_8cpp.html" title="This file is related to curses screen for freg. " alt="" coords="1123,89,1301,122"/>
 <area shape="rect" id="node21" href="$Shred_8cpp.html" title="Shred.cpp" alt="" coords="1325,89,1405,122"/>
 <area shape="rect" id="node23" href="$ShredStorage_8cpp.html" title="ShredStorage.cpp" alt="" coords="1429,89,1555,122"/>
 <area shape="rect" id="node25" href="$VirtScreen_8cpp.html" title="This file provides definitions of code common to all freg screens. " alt="" coords="1579,89,1685,122"/>
