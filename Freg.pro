@@ -3,28 +3,31 @@
 ######################################################################
 
 CONFIG += thread warn_on console
-#CONFIG += debug
-#screen can be: cursed_screen, stub_screen
+CONFIG += debug
+# screen can be: cursed_screen, stub_screen
 CONFIG += cursed_screen
+# compile with clang:
+#CONFIG += clang
 
 VERSION = 0.2
 VERSTR = '\\"$${VERSION}\\"'
 DEFINES += VER=\"$${VERSTR}\"
 TEMPLATE = app
 
-QMAKE_CXXFLAGS += -Wall -Wextra -std=c++11 -pedantic
-QMAKE_CXXFLAGS += -Werror
+QMAKE_CXXFLAGS += -Wall -Wextra -Werror -std=c++11 -pedantic
 QMAKE_CXXFLAGS += -Wno-error=strict-overflow # Qt 5.2 has some problem
 
 #QMAKE_CXXFLAGS_DEBUG += -fno-inline
-QMAKE_CXXFLAGS_DEBUG += -O3
-
 QMAKE_CXXFLAGS_RELEASE -= -O2
-QMAKE_CXXFLAGS_RELEASE += -O3
-#QMAKE_CXXFLAGS_RELEASE += -s
+QMAKE_CXXFLAGS += -O3
 
-#QMAKE_CXX  = clang++
-#QMAKE_LINK = clang++
+
+clang {
+    #QMAKE_CXX  = clang++
+    #QMAKE_LINK = clang++
+} else {
+    QMAKE_CXXFLAGS_RELEASE += -s
+}
 
 win32:cursed_screen {
     # path =(
