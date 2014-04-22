@@ -8,6 +8,7 @@ var searchData=
   ['firelight',['FireLight',['../classShred.html#a38e058a3f88da5e4b7b9555d5bac8ddd',1,'Shred::FireLight()'],['../classWorld.html#a09401211c1edb823d4498c2b97cbd8cb',1,'World::FireLight()']]],
   ['focus',['Focus',['../classPlayer.html#a165d5abdaecbdd14f4bbc7b08d618ead',1,'Player::Focus()'],['../classWorld.html#a0cc8eba95ab31da1554870dcd85d9014',1,'World::Focus()']]],
   ['freeze',['FREEZE',['../header_8h.html#a5adfb93f736d9aa263cea4b7b74da15ea9eef21e5904236b7a6c4e6c3bde2e917',1,'header.h']]],
+  ['freg_2epro',['Freg.pro',['../Freg_8pro.html',1,'']]],
   ['fregmap_2evim',['fregMap.vim',['../fregMap_8vim.html',1,'']]],
   ['frequent_5ffirst',['FREQUENT_FIRST',['../Active_8h.html#a9d1cc7e289373f5c0b6d6e988c1cdcdca9b96b457aab083cabcc744e4acaea25d',1,'Active.h']]],
   ['frequent_5fnever',['FREQUENT_NEVER',['../Active_8h.html#a9d1cc7e289373f5c0b6d6e988c1cdcdcafbba69f974c6355678b3e29af9104d62',1,'Active.h']]],
