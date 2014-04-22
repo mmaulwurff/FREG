@@ -3,6 +3,7 @@
 !README
 !COPYING
 !Freg.pro
+!Doxyfile
 !*.cpp
 !*.h
 !*.ts
