@@ -22,8 +22,6 @@
 #include "BlockManager.h"
 #include "CraftManager.h"
 
-CraftManager craft_manager;
-
 // CraftItem section
 bool CraftItem::operator<(const CraftItem &item) const { return item.id < id; }
 
@@ -161,7 +159,7 @@ CraftItem * CraftManager::MiniCraft(const ushort num, const quint16 id) const {
     CraftList recipe(1, 0);
     recipe << new CraftItem({num, id});
     const CraftList * const result = Craft(&recipe, DIFFERENT);
-    if ( result ) {
+    if ( result != nullptr ) {
         CraftItem * const ret = new CraftItem(*result->GetItem(0));
         delete result;
         return ret;
@@ -198,5 +196,3 @@ const {
     }
     return nullptr; // suitable recipe not found
 }
-
-CraftManager::CraftManager(const CraftManager &) : size(0) {}

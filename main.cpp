@@ -131,7 +131,7 @@ int main(int argc, char ** argv) {
     qsrand(QTime::currentTime().msec());
     World world(worldName);
     Player player;
-    int error = NO_ERROR;
+    int error = SCREEN_NO_ERROR;
     const Screen screen(&world, &player, error, parser.isSet(ascii));
     if ( error ) return EXIT_FAILURE;
 

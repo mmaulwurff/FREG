@@ -122,7 +122,7 @@ enum color_pairs { // do not change colors order! // foreground_background
 }; // enum color_pairs
 
 enum screen_errors {
-    NO_ERROR = 0,
+    SCREEN_NO_ERROR = 0,
     HEIGHT_NOT_ENOUGH,
     WIDTH_NOT_ENOUGH
 };

@@ -21,6 +21,7 @@
 #include "Inventory.h"
 #include "CraftManager.h"
 #include "BlockManager.h"
+#include "world.h"
 
 bool   Inventory::Access() const { return true; }
 ushort Inventory::Start() const { return 0; }
@@ -214,9 +215,9 @@ bool Inventory::MiniCraft(const ushort num) {
         ReceiveSignal(QObject::tr("Nothing here."));
         return false;
     } // else:
-    const CraftItem * const crafted = craft_manager.MiniCraft(
+    const CraftItem * const crafted = world->GetCraftManager()->MiniCraft(
         Number(num), BlockManager::MakeId(GetInvKind(num),GetInvSub(num)));
-    if ( crafted ) {
+    if ( crafted != nullptr ) {
         while ( not inventory[num].isEmpty() ) {
             Block * const to_delete = ShowBlock(num);
             Pull(num);
@@ -264,10 +265,6 @@ Inventory::Inventory(QDataStream & str, const ushort sz) :
         }
     }
 }
-
-Inventory::Inventory(const Inventory & inv) :
-        Inventory(inv.Size())
-{}
 
 Inventory::~Inventory() {
     for (ushort i=0; i<Size(); ++i) {

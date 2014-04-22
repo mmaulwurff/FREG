@@ -721,8 +721,8 @@
                 list << new CraftItem({Number(i), ShowBlock(i)->GetId()});
             }
         }
-        CraftList * products = craft_manager.Craft(&list, Sub());
-        if ( products ) {
+        CraftList * products = world->GetCraftManager()->Craft(&list, Sub());
+        if ( products != nullptr ) {
             for (int i=0; i<products->GetSize(); ++i) {
                 for (int n=0; n<products->GetItem(i)->num; ++n) {
                     quint16 id = products->GetItem(i)->id;

@@ -29,6 +29,7 @@ class Shred;
 class ShredStorage;
 class QByteArray;
 class QReadWriteLock;
+class CraftManager;
 
 const ushort SAFE_FALL_HEIGHT = 5U;
 
@@ -164,6 +165,7 @@ public: // Interactions section
             bool anyway = false);
     /// Returns true on success. Gets a string and inscribes block.
     bool Inscribe(ushort x, ushort y, ushort z);
+    CraftManager * GetCraftManager() const;
 
 private: // Inventory functions section
     void Exchange(Block * block_from, Block * block_to,
@@ -184,7 +186,7 @@ public: // Block information section
 
 public: // World section
     void ReloadAllShreds(long lati, long longi,
-        ushort new_x, ushort new_y, ushort new_z);
+            ushort new_x, ushort new_y, ushort new_z);
 private:
     void SetNumActiveShreds(ushort num);
     /// Also saves all shreds.
@@ -253,7 +255,8 @@ private:
 
     ShredStorage * shredStorage;
     Shred * shredMemoryPool;
-}; // class World
+    CraftManager * const craftManager;
+};
 
 extern World * world;
 

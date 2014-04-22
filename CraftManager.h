@@ -22,13 +22,13 @@
 
 class QTextStream;
 
-struct CraftItem {
+struct CraftItem final {
     const ushort num;
     const quint16 id;
 
     bool operator< (const CraftItem & item) const;
     bool operator!=(const CraftItem & item) const;
-};
+}; // CraftItem
 
 /** \class CraftList CraftManager.h
     * \brief This class represent craft recipe.
@@ -53,7 +53,7 @@ public:
 private:
     const quint8 productsNumber;
     QList<CraftItem *> items;
-};
+}; // CraftList
 
 class CraftManager {
 public:
@@ -69,8 +69,6 @@ private:
     int size;
     QList<CraftList *> * recipesList;
     int * recipesSubsList; // list of substances of workbench 
-};
-
-extern CraftManager craft_manager;
+}; // CraftManager
 
 #endif // CRAFTMANAGER_H

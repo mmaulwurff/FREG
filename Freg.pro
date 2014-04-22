@@ -29,11 +29,6 @@ clang {
     QMAKE_CXXFLAGS_RELEASE += -s
 }
 
-win32:cursed_screen {
-    # path =(
-    LIBS += -LC:/Users/Alexander/src/FREG/freg-nox/pdcurses -lpdcurses
-}
-
 cursed_screen {
     TARGET = freg-nox
     QT -= gui
@@ -54,7 +49,11 @@ unix:cursed_screen {
     LIBS += -lncursesw
     target.path += /usr/bin
     INSTALLS += target
+} else:win32 {
+    # path =(
+    LIBS += -LC:/Users/Alexander/src/FREG/pdcurses -lpdcurses
 }
+
 
 HEADERS += \
     BlockManager.h \

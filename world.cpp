@@ -29,10 +29,13 @@
 #include "worldmap.h"
 #include "BlockManager.h"
 #include "ShredStorage.h"
+#include "CraftManager.h"
 
 const ushort MIN_WORLD_SIZE = 7U;
 
 World * world;
+
+CraftManager * World::GetCraftManager() const { return craftManager; }
 
 int World::ShredPos(const int x, const int y) const {
     return y*NumShreds() + x;
@@ -822,7 +825,8 @@ World::World(const QString world_name) :
         worldName(world_name),
         rwLock(new QReadWriteLock()),
         map(new WorldMap(world_name)),
-        toResetDir(UP)
+        toResetDir(UP),
+        craftManager(new CraftManager)
 {
     world = this;
     QSettings game_settings("freg.ini", QSettings::IniFormat);
