@@ -494,8 +494,8 @@ const {
 bool World::Move(const ushort x, const ushort y, const ushort z,
         const quint8 dir)
 {
-    ushort newx, newy, newz;
-    if ( !Focus(x, y, z, newx, newy, newz, dir) &&
+    short newx, newy, newz;
+    if ( not Focus(x, y, z, newx, newy, newz, dir) &&
             CanMove(x, y, z, newx, newy, newz, dir) )
     {
         NoCheckMove(x, y, z, newx, newy, newz, dir);
@@ -589,8 +589,8 @@ void World::Jump(const ushort x, const ushort y, const ushort z,
     }
 }
 
-bool World::Focus(const ushort x, const ushort y, const ushort z,
-        ushort & x_to, ushort & y_to, ushort & z_to, const quint8 dir)
+bool World::Focus(const short x, const short y, const short z,
+        short & x_to, short & y_to, short & z_to, const quint8 dir)
 const {
     x_to = x;
     y_to = y;
@@ -606,7 +606,7 @@ const {
         fprintf(stderr, "World::Focus: unlisted dir: %d\n", dir);
         return true;
     }
-    return !InBounds(x_to, y_to, z_to);
+    return not InBounds(x_to, y_to, z_to);
 }
 
 short World::Damage(const ushort x, const ushort y, const ushort z,
@@ -647,8 +647,8 @@ void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
                 Block * const inner = inv->ShowBlock(i);
                 if ( inner && inner->Kind() == LIQUID ) {
                     for (int n=0; inv->Number(i); ++n) {
-                        if ( Build(inv->ShowBlock(i),
-                                x, y, z+i*(MAX_STACK_SIZE+1)+1+n) )
+                        if ( Build( inv->ShowBlock(i),
+                                x, y, z+i*(MAX_STACK_SIZE+1)+1+n ) )
                         {
                             inv->Pull(i);
                         } else {
@@ -686,7 +686,7 @@ bool World::Build(Block * block,
         const quint8 dir, Block * const who, const bool anyway)
 {
     Block * const target_block = GetBlock(x, y, z);
-    if ( ENVIRONMENT!=target_block->PushResult(NOWHERE) && !anyway ) {
+    if ( ENVIRONMENT!=target_block->PushResult(NOWHERE) && not anyway ) {
         if ( who ) {
             who->ReceiveSignal(tr("Cannot build here."));
         }

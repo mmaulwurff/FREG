@@ -127,14 +127,13 @@ void Player::UpdateXYZ(const int) {
     }
 }
 
-void Player::Focus(ushort & i_target, ushort & j_target, ushort & k_target)
-const {
-    world->Focus(x, y, z, i_target, j_target, k_target, GetDir());
-}
+void Player::Examine(short, short, short) const { Examine(); }
 
-void Player::Examine(const short i, const short j, const short k) const {
+void Player::Examine() const {
     const QReadLocker locker(world->GetLock());
 
+    short i, j, k;
+    emit GetFocus(i, j, k);
     const Block * const block = world->GetBlock(i, j, k);
     emit Notify( QString("*----- %1 -----*").arg(block->FullName()) );
     const int sub = block->Sub();
@@ -194,15 +193,23 @@ void Player::Backpack() {
     emit Updated();
 }
 
-void Player::Use(const short x, const short y, const short z) {
+void Player::Use(short, short, short) { Use(); }
+
+void Player::Use() {
     const QWriteLocker locker(world->GetLock());
+    short x, y, z;
+    emit GetFocus(x, y, z);
     const int us_type = world->GetBlock(x, y, z)->Use(player);
     usingType = ( us_type==usingType ) ? USAGE_TYPE_NO : us_type;
     emit Updated();
 }
 
-void Player::Inscribe(const short x, const short y, const short z) const {
+void Player::Inscribe(short, short, short) const { Inscribe(); }
+
+void Player::Inscribe() const {
     const QWriteLocker locker(world->GetLock());
+    short x, y, z;
+    emit GetFocus(x, y, z);
     emit Notify(player ?
         (world->Inscribe(x, y, z) ?
             tr("Inscribed.") : tr("Cannot inscribe this.")) :
@@ -239,9 +246,7 @@ usage_types Player::Use(const ushort num) {
 
 usage_types Player::UseNoLock(const ushort num) {
     Block * const block = ValidBlock(num);
-    if ( block == nullptr ) {
-        return USAGE_TYPE_NO;
-    } // else:
+    if ( block == nullptr ) return USAGE_TYPE_NO;
     Animal * const animal = player->IsAnimal();
     if ( animal && animal->NutritionalValue(block->Sub()) ) {
         animal->Eat(block->Sub());
@@ -252,26 +257,51 @@ usage_types Player::UseNoLock(const ushort num) {
         return USAGE_TYPE_NO;
     } // else:
     const usage_types result = block->Use(player);
-    if ( result == USAGE_TYPE_READ ) {
+    switch ( result ) {
+    case USAGE_TYPE_READ:
         usingInInventory = num;
         usingType = USAGE_TYPE_READ_IN_INVENTORY;
         emit Updated();
+    break;
+    case USAGE_TYPE_POUR: {
+        short x_targ, y_targ, z_targ;
+        emit GetFocus(x_targ, y_targ, z_targ);
+        player->GetDeferredAction()->SetPour(x_targ, y_targ, z_targ, num);
+    } break;
+    case USAGE_TYPE_SET_FIRE: {
+        short x_targ, y_targ, z_targ;
+        emit GetFocus(x_targ, y_targ, z_targ);
+        player->GetDeferredAction()->SetSetFire(x_targ, y_targ, z_targ);
+    } break;
+    default: break;
     }
     return result;
 }
 
 ushort Player::GetUsingInInventory() const { return usingInInventory; }
 
-void Player::Throw(const short x, const short y, const short z,
+void Player::Throw(short, short, short,
         const ushort src, const ushort dest, const ushort num)
 {
+    Throw(src, dest, num);
+}
+
+void Player::Throw(const ushort src, const ushort dest, const ushort num) {
+    short x, y, z;
+    emit GetFocus(x, y, z);
     player->GetDeferredAction()->SetThrow(x, y, z, src, dest, num);
 }
 
-void Player::Obtain(const short x, const short y, const short z,
+void Player::Obtain(short, short, short,
         const ushort src, const ushort dest, const ushort num)
 {
+    Obtain(src, dest, num);
+}
+
+void Player::Obtain(const ushort src, const ushort dest, const ushort num) {
     const QWriteLocker locker(world->GetLock());
+    short x, y, z;
+    emit GetFocus(x, y, z);
     world->Get(player, x, y, z, src, dest, num);
     emit Updated();
 }
@@ -328,23 +358,18 @@ void Player::Eat(const ushort num) {
     }
 }
 
-void Player::Pour(const short x_targ, const short y_targ, const short z_targ,
-        const ushort slot)
-{
-    player->GetDeferredAction()->
-        SetPour(x_targ, y_targ, z_targ, slot);
-}
+void Player::Build(short, short, short, const ushort slot) { Build(slot); }
 
-void Player::Build(const short x_target, const short y_target,
-        const short z_target, const ushort slot)
-{
+void Player::Build(const ushort slot) {
     const QWriteLocker locker(world->GetLock());
+    short x_targ, y_targ, z_targ;
+    emit GetFocus(x_targ, y_targ, z_targ);
     Block * const block = ValidBlock(slot);
-    if ( block && (AIR!=world->GetBlock(x, y, z-1)->Sub() ||
-            0==player->Weight()) )
+    if ( block && (AIR != world->GetBlock(x, y, z-1)->Sub()
+            || 0 == player->Weight()) )
     {
         player->GetDeferredAction()->
-            SetBuild(x_target, y_target, z_target, block, slot);
+            SetBuild(x_targ, y_targ, z_targ, block, slot);
     }
 }
 
@@ -421,15 +446,14 @@ void Player::ProcessCommand(QString command) {
         }
     } else if ( "time" == request ) {
         emit Notify( (GetCreativeMode() || COMMANDS_ALWAYS_ON) ?
-            GetWorld()->TimeOfDayStr() :
-            tr("Not in Creative Mode.") );
+            GetWorld()->TimeOfDayStr() : tr("Not in Creative Mode.") );
     } else if ( "version" == request ) {
         emit Notify(tr("freg version: %1. Compiled on %2 at %3.").
             arg(VER).arg(__DATE__).arg(__TIME__));
     } else if ( "help" == request ) {
         comm_stream >> request;
         emit ShowFile( QString("help_%1/%2.txt")
-            .arg(locale.left(2)).arg(request));
+            .arg(locale.left(2)).arg(request) );
     } else {
         emit Notify(tr("Don't know such command: \"%1\".").arg(command));
     }
@@ -450,8 +474,12 @@ void Player::SetDir(const int direction) {
     emit Updated();
 }
 
-bool Player::Damage(const short x, const short y, const short z) const {
-    if ( player!=nullptr && GetWorld()->InBounds(x, y, z) ) {
+bool Player::Damage(short, short, short) const { return Damage(); }
+
+bool Player::Damage() const {
+    short x, y, z;
+    emit GetFocus(x, y, z);
+    if ( player && GetWorld()->InBounds(x, y, z) ) {
         player->GetDeferredAction()->SetDamage(x, y, z);
         return true;
     } else {

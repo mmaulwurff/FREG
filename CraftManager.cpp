@@ -198,3 +198,5 @@ const {
     }
     return nullptr; // suitable recipe not found
 }
+
+CraftManager::CraftManager(const CraftManager &) : size(0) {}

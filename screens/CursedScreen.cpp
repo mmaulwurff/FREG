@@ -84,8 +84,8 @@ void Screen::UpdateAll() {
 }
 
 void Screen::UpdatePlayer() {
-    if ( player && ( USAGE_TYPE_READ_IN_INVENTORY==player->UsingType() ||
-            player->GetCreativeMode() ) )
+    if ( USAGE_TYPE_READ_IN_INVENTORY==player->UsingType()
+            || player->GetCreativeMode() )
     {
         updated = false;
     }
@@ -160,6 +160,7 @@ char Screen::CharName(const int kind, const int sub) const {
     case TELEGRAPH: return 't';
     case DOOR:        return ( STONE == sub ) ? '#' : '\'';
     case LOCKED_DOOR: return ( STONE == sub ) ? '#' : '`';
+    case ILLUMINATOR: return 'i';
     case WEAPON: switch ( sub ) {
         default: fprintf(stderr, "Screen::CharName: weapon sub ?: %d\n", sub);
         // no break;
@@ -249,6 +250,13 @@ void Screen::MovePlayer(const int dir) const {
     }
 }
 
+void Screen::MovePlayerDiag(const int dir1, const int dir2) const {
+    player->SetDir(dir1);
+    static bool step_trigger = true;
+    player->Move(step_trigger ? dir1 : dir2);
+    step_trigger = !step_trigger;
+}
+
 void Screen::ControlPlayer(const int ch) {
     CleanFileToShow();
     // Q, ctrl-c, ctrl-d, ctrl-q, ctrl-x
@@ -261,38 +269,16 @@ void Screen::ControlPlayer(const int ch) {
         InventoryAction(ch-'a');
         return;
     } // else:
-    static bool step_trigger = true;
     switch ( ch ) { // interactions with world
-    case KEY_UP:
-    case '8': MovePlayer(NORTH); break;
-    case KEY_DOWN:
-    case '2': MovePlayer(SOUTH); break;
-    case KEY_RIGHT:
-    case '6': MovePlayer(EAST); break;
-    case KEY_LEFT:
-    case '4': MovePlayer(WEST); break;
-    case KEY_END:
-    case '5': player->Move(DOWN); break;
-    case '7':
-        player->SetDir(NORTH);
-        player->Move(step_trigger ? NORTH : WEST);
-        step_trigger = !step_trigger;
-    break;
-    case '9':
-        player->SetDir(NORTH);
-        player->Move(step_trigger ? NORTH : EAST);
-        step_trigger = !step_trigger;
-    break;
-    case '1':
-        player->SetDir(SOUTH);
-        player->Move(step_trigger ? SOUTH : WEST);
-        step_trigger = !step_trigger;
-    break;
-    case '3':
-        player->SetDir(SOUTH);
-        player->Move(step_trigger ? SOUTH : EAST);
-        step_trigger = !step_trigger;
-    break;
+    case KEY_UP:    case '8': MovePlayer(NORTH);  break;
+    case KEY_DOWN:  case '2': MovePlayer(SOUTH);  break;
+    case KEY_RIGHT: case '6': MovePlayer(EAST);   break;
+    case KEY_LEFT:  case '4': MovePlayer(WEST);   break;
+    case KEY_END:   case '5': player->Move(DOWN); break;
+    case '7': MovePlayerDiag(NORTH, WEST); break;
+    case '9': MovePlayerDiag(NORTH, EAST); break;
+    case '1': MovePlayerDiag(SOUTH, WEST); break;
+    case '3': MovePlayerDiag(SOUTH, EAST); break;
     case ' ': player->Jump(); break;
     case '=': player->Move(); break;
 
@@ -303,27 +289,11 @@ void Screen::ControlPlayer(const int ch) {
 
     case KEY_HOME: player->Backpack(); break;
     case 8:
-    case KEY_BACKSPACE: { // damage
-        ushort x, y, z;
-        ActionXyz(x, y, z);
-        player->Damage(x, y, z);
-    } break;
+    case KEY_BACKSPACE: player->Damage(); break;
     case 13:
-    case '\n': { // use
-        ushort x, y, z;
-        ActionXyz(x, y, z);
-        player->Use(x, y, z);
-    } break;
-    case  '?': { // examine
-        ushort x, y, z;
-        ActionXyz(x, y, z);
-        player->Examine(x, y, z);
-    } break;
-    case  '~': { // inscribe
-        ushort x, y, z;
-        ActionXyz(x, y, z);
-        player->Inscribe(x, y, z);
-    } break;
+    case '\n': player->Use();      break;
+    case  '?': player->Examine();  break;
+    case  '~': player->Inscribe(); break;
     case 27: /* esc */ player->StopUseAll(); break;
 
     case 'B': SetActionMode(ACTION_BUILD);    break;
@@ -337,10 +307,14 @@ void Screen::ControlPlayer(const int ch) {
     case 'O': SetActionMode(ACTION_OBTAIN);   break;
     case 'U': SetActionMode(ACTION_USE);      break;
     case 'W': SetActionMode(ACTION_WIELD);    break;
+    case 'S':
+        if ( player->PlayerInventory() ) {
+              player->PlayerInventory()->Shake();
+        }
+    break;
     case KEY_HELP:
     case 'H':
-        DisplayFile(QString("help_%1/help.txt")
-            .arg(locale.left(2)));
+        DisplayFile(QString("help_%1/help.txt").arg(locale.left(2)));
     break;
     case 'L': RePrint(); break;
     case 'R': // switch active hand
@@ -387,48 +361,29 @@ void Screen::ProcessCommand(QString command) {
     }
 }
 
-void Screen::SetActionMode(const int mode) {
+void Screen::SetActionMode(const actions mode) {
     actionMode = mode;
     updatedPlayer = false;
 }
 
 void Screen::InventoryAction(const ushort num) const {
     switch ( actionMode ) {
-    case ACTION_USE:
-        if ( player->Use(num) == USAGE_TYPE_POUR ) {
-            ushort x, y, z;
-            ActionXyz(x, y, z);
-            player->Pour(x, y, z, num);
-        }
-    break;
-    case ACTION_WIELD:    player->Wield(num);    break;
+    case ACTION_USE:      player->Use     (num); break;
+    case ACTION_WIELD:    player->Wield   (num); break;
     case ACTION_INSCRIBE: player->Inscribe(num); break;
-    case ACTION_EAT:      player->Eat(num);      break;
-    case ACTION_CRAFT:    player->Craft(num);    break;
-    case ACTION_TAKEOFF:  player->TakeOff(num);  break;
-    case ACTION_OBTAIN: {
-        ushort x, y, z;
-        ActionXyz(x, y, z);
-        player->Obtain(x, y, z, num);
-    } break;
-    case ACTION_THROW: {
-        ushort x, y, z;
-        ActionXyz(x, y, z);
-        player->Throw(x, y, z, num);
-    } break;
-    case ACTION_BUILD: {
-        ushort x, y, z;
-        ActionXyz(x, y, z);
-        player->Build(x, y, z, num);
-    } break;
+    case ACTION_EAT:      player->Eat     (num); break;
+    case ACTION_CRAFT:    player->Craft   (num); break;
+    case ACTION_TAKEOFF:  player->TakeOff (num); break;
+    case ACTION_OBTAIN:   player->Obtain  (num); break;
+    case ACTION_THROW:    player->Throw   (num); break;
+    case ACTION_BUILD:    player->Build   (num); break;
     default: fprintf(stderr,
-        "Screen::InventoryAction: action mode ?: %d\n",
-        actionMode);
+        "Screen::InventoryAction: action mode ?: %d\n", actionMode);
     }
 }
 
-void Screen::ActionXyz(ushort & x,ushort & y, ushort & z) const {
-    player->Focus(x, y, z);
+void Screen::ActionXyz(short & x, short & y, short & z) const {
+    VirtScreen::ActionXyz(x, y, z);
     if (
             DOWN != player->GetDir() &&
             UP   != player->GetDir() &&
@@ -477,7 +432,7 @@ void Screen::Print() {
             player->SetUsingTypeNo();
         break;
         case USAGE_TYPE_READ: {
-            ushort x, y, z;
+            short x, y, z;
             ActionXyz(x, y, z);
             wstandend(rightWin);
             PrintFile(rightWin, QString(w->WorldName() + "/texts/"
@@ -485,7 +440,7 @@ void Screen::Print() {
             player->SetUsingTypeNo();
         } break;
         case USAGE_TYPE_OPEN: {
-            ushort x, y, z;
+            short x, y, z;
             ActionXyz(x, y, z);
             const Inventory * const inv = w->GetBlock(x, y, z)->HasInventory();
             if ( inv ) {
@@ -599,7 +554,8 @@ void Screen::PrintHUD() {
 void Screen::PrintNormal(WINDOW * const window, const int dir) const {
     if ( updated ) return;
     const ushort k_start = ( UP!=dir ) ?
-        (( DOWN==dir ) ? player->Z()-1 : player->Z()) :
+        ( DOWN==dir ?
+            player->Z()-1 : player->Z() ) :
         player->Z()+1;
     const short k_step = ( UP!=dir ) ? (-1) : 1;
 
@@ -624,9 +580,6 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
             waddch(window, ' ');
         }
     }
-    wstandend(window);
-    mvwaddch(window, player->Y(), player->X()*2+3, '!');
-    box(window, 0, 0);
     if ( player->IfPlayerExists() && dir > DOWN ) {
         const Block * const block = w->GetBlock(player->X(), player->Y(),
             player->Z());
@@ -643,17 +596,13 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
         case WEST:  waddstr(window, qPrintable(arrow_left));  break;
         case UP:    waddch(window, '.'); break;
         case DOWN:  waddch(window, 'x'); break;
-        default:
+        default:    waddch(window, '*');
             fprintf(stderr, "Screen::PrintNormal: (?) dir: %d\n",
                 player->GetDir());
-            waddch(window, '*');
         }
     }
-    wcolor_set(window, BLACK_WHITE, NULL);
-    mvwaddstr(window, 0, 1, qPrintable((UP==dir) ?
-        tr("(. Up .") : tr("x Down x")));
+    PrintTitle(window, UP==dir ? UP : DOWN);
     Arrows(window, (player->X()-start_x)*2+1, player->Y()-start_y+1, true);
-
     wrefresh(window);
 } // void Screen::PrintNormal(WINDOW * window, int dir)
 
@@ -760,18 +709,7 @@ void Screen::PrintFront(WINDOW * const window) const {
             waddch(window, ' ');
         }
     }
-    wstandend(window);
-    box(window, 0, 0);
-    wcolor_set(window, BLACK_WHITE, NULL);
-    (void)wmove(window, 0, 1);
-    QString dir_string;
-    switch ( dir ) {
-    case NORTH: dir_string = tr("^ North ^"); break;
-    case SOUTH: dir_string = tr("v South v"); break;
-    case EAST:  dir_string = tr("> East >");  break;
-    case WEST:  dir_string = tr("< West <");  break;
-    }
-    waddstr(window, qPrintable(dir_string));
+    PrintTitle(window, dir);
     if ( shiftFocus ) {
         HorizontalArrows(window, arrow_Y-shiftFocus, WHITE_BLUE);
         for (int i=arrow_Y-shiftFocus; i<SCREEN_SIZE+1 && i>0; i-=shiftFocus) {
@@ -782,6 +720,22 @@ void Screen::PrintFront(WINDOW * const window) const {
     Arrows(window, arrow_X, arrow_Y);
     wrefresh(window);
 } // void Screen::PrintFront(WINDOW * window)
+
+void Screen::PrintTitle(WINDOW * const window, const int dir) const {
+    wstandend(window);
+    box(window, 0, 0);
+    wcolor_set(window, BLACK_WHITE, NULL);
+    QString dir_string;
+    switch ( dir ) {
+    case NORTH: dir_string = tr("^ North ^"); break;
+    case SOUTH: dir_string = tr("v South v"); break;
+    case EAST:  dir_string = tr("> East >");  break;
+    case WEST:  dir_string = tr("< West <");  break;
+    case DOWN:  dir_string = tr("x Down x");  break;
+    case UP:    dir_string = tr(".  Up  .");  break;
+    }
+    mvwaddstr(window, 0, 1, qPrintable(dir_string));
+}
 
 void Screen::PrintInv(WINDOW * const window, const Inventory * const inv)
 const {
@@ -801,8 +755,6 @@ const {
     break;
     case WORKBENCH: mvwaddstr(window, 2, 4, qPrintable(tr("Product"))); break;
     }
-    mvwprintw(window, 2+inv->Size(), 40,
-        qPrintable(tr("All weight: %1 mz").arg(inv->Weight())));
     const int start = inv->Start();
     int shift = 0; // to divide inventory sections
     for (ushort i=0; i<inv->Size(); ++i) {
@@ -832,6 +784,9 @@ const {
         wstandend(window);
         mvwprintw(window, 2+i+shift, 53, "%5hu mz", inv->GetInvWeight(i));
     }
+    mvwprintw(window, 2+inv->Size()+shift, 40,
+        qPrintable(tr("All weight: %1 mz").
+            arg(inv->Weight(), 6, 10, QChar(' '))));
     wcolor_set(window, Color(inv->Kind(), inv->Sub()), NULL);
     box(window, 0, 0);
     mvwprintw(window, 0, 1, "[%c]%s",
@@ -994,7 +949,8 @@ Screen::Screen(
     QSettings sett(QDir::currentPath()+"/freg.ini", QSettings::IniFormat);
     sett.beginGroup("screen_curses");
     shiftFocus = sett.value("focus_shift", 0).toInt();
-    actionMode = sett.value("action_mode", ACTION_USE).toInt();
+    actionMode = static_cast<actions>
+        (sett.value("action_mode", ACTION_USE).toInt());
     command    = sett.value("last_command", "hello").toString();
     beepOn     = sett.value("beep_on", false).toBool();
     sett.setValue("beep_on", beepOn);

@@ -21,6 +21,7 @@
 #include "blocks/Active.h"
 #include "blocks/Inventory.h"
 #include "DeferredAction.h"
+#include "BlockManager.h"
 
 void DeferredAction::GhostMove() const {
     attachedBlock->Move(( NOWHERE==num ) ?
@@ -39,27 +40,27 @@ void DeferredAction::Jump() const {
         attachedBlock->GetDir());
 }
 
-void DeferredAction::Build() {
+void DeferredAction::Build() const {
+    short z = zTarg;
     if ( DOWN==attachedBlock->GetDir() &&
             AIR!=GetWorld()->GetBlock(xTarg, yTarg, zTarg)->Sub() )
     {
         if ( world->Move(attachedBlock->X(), attachedBlock->Y(),
                 attachedBlock->Z(), UP) )
         {
-            ++zTarg;
+            ++z;
         } else {
             return;
         }
     }
     const quint16 id = material->GetId();
-    if ( !world->Build(material, xTarg, yTarg, zTarg,
-            World::TurnRight(attachedBlock->GetDir()),
-            attachedBlock) )
+    if ( not world->Build(material, xTarg, yTarg, z,
+            World::TurnRight(attachedBlock->GetDir()), attachedBlock) )
     { // build not successful
         return;
     } // else:
     Inventory * const inv = attachedBlock->HasInventory();
-    if ( !inv ) {
+    if ( inv == nullptr ) {
         return;
     } // else:
     inv->Pull(srcSlot);
@@ -110,6 +111,12 @@ void DeferredAction::Pour() const {
     }
 }
 
+void DeferredAction::SetFire() const {
+    if ( world->GetBlock(xTarg, yTarg, zTarg)->Sub() == AIR ) {
+        world->Build(BlockManager::NewBlock(GRASS, FIRE), xTarg, yTarg, zTarg);
+    }
+}
+
 void DeferredAction::SetGhostMove(const ushort dir) {
     type = DEFERRED_GHOST_MOVE;
     num  = dir;
@@ -122,45 +129,47 @@ void DeferredAction::SetMove(const ushort dir) {
 
 void DeferredAction::SetJump() { type = DEFERRED_JUMP; }
 
-void DeferredAction::SetBuild(const ushort x, const ushort y, const ushort z,
+void DeferredAction::SetBuild(const short x, const short y, const short z,
         Block * const mat, const ushort builder_slot)
 {
-    xTarg = x;
-    yTarg = y;
-    zTarg = z;
+    SetXyz(x, y, z);
     material = mat;
     srcSlot  = builder_slot;
     type     = DEFERRED_BUILD;
 }
 
-void DeferredAction::SetDamage(const ushort x, const ushort y, const ushort z)
-{
-    xTarg = x;
-    yTarg = y;
-    zTarg = z;
+void DeferredAction::SetDamage(const short x, const short y, const short z) {
+    SetXyz(x, y, z);
     type  = DEFERRED_DAMAGE;
 }
 
-void DeferredAction::SetThrow(const ushort x, const ushort y, const ushort z,
+void DeferredAction::SetThrow(const short x, const short y, const short z,
         const ushort src, const ushort dest, const ushort n)
 {
-    xTarg = x;
-    yTarg = y;
-    zTarg = z;
+    SetXyz(x, y, z);
     srcSlot  = src;
     destSlot = dest;
     num  = n;
     type = DEFERRED_THROW;
 }
 
-void DeferredAction::SetPour(const ushort x, const ushort y, const ushort z,
+void DeferredAction::SetPour(const short x, const short y, const short z,
         const ushort src)
 {
+    SetXyz(x, y, z);
+    srcSlot = src;
+    type = DEFERRED_POUR;
+}
+
+void DeferredAction::SetSetFire(const short x, short y, short z) {
+    SetXyz(x, y, z);
+    type  = DEFERRED_SET_FIRE;
+}
+
+void DeferredAction::SetXyz(const short x, const short y, const short z) {
     xTarg = x;
     yTarg = y;
     zTarg = z;
-    srcSlot = src;
-    type = DEFERRED_POUR;
 }
 
 void DeferredAction::MakeAction() {
@@ -168,10 +177,12 @@ void DeferredAction::MakeAction() {
     case DEFERRED_MOVE:   Move();   break;
     case DEFERRED_JUMP:   Jump();   break;
     case DEFERRED_BUILD:  Build();  break;
-    case DEFERRED_DAMAGE: Damage(); break;
     case DEFERRED_THROW:  Throw();  break;
     case DEFERRED_POUR:   Pour();   break;
+    case DEFERRED_DAMAGE: Damage(); break;
+    case DEFERRED_SET_FIRE: SetFire(); break;
     case DEFERRED_GHOST_MOVE: GhostMove(); break;
+    case DEFERRED_NOTHING: break;
     }
     type = DEFERRED_NOTHING;
 }

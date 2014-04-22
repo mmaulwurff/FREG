@@ -17,38 +17,23 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#ifndef WORLDMAP_H
-#define WORLDMAP_H
+#ifndef ILLUMINATOR_H
+#define ILLUMINATOR_H
 
-class QFile;
+#include "blocks/Active.h"
 
-class WorldMap final {
+class Illuminator : public Active {
 public:
-    explicit WorldMap(QString);
-    ~WorldMap();
+    Illuminator(int sub, quint16 id);
+    Illuminator(QDataStream & str, int sub, quint16 id);
 
-    long MapSize() const;
-    char TypeOfShred(long longi, long lati);
-    static void GenerateMap(
-            const char * filename,
-            ushort size,
-            char outer,
-            int seed);
-
+    void    Damage(ushort dmg, int dmg_kind);
+    uchar   LightRadius() const;
+    quint8  Kind() const;
+    Block * DropAfterDamage() const;
+    QString FullName() const;
+    usage_types Use(Block *);
 private:
-    static float Deg(float x, float y, ushort size);
-    static float R  (float x, float y, ushort size);
-    static void Circle(
-            float min_rad,
-            float max_rad,
-            char ch,
-            ushort size,
-            char * map);
-
-    WorldMap(const WorldMap &);
-
-    long mapSize;
-    QFile * const map;
 };
 
-#endif // WORLDMAP_H
+#endif

@@ -152,16 +152,16 @@ public slots:
     void Move(int);
     void DeathScreen();
     void DisplayFile(QString path);
+    void ActionXyz(short & x, short & y, short & z) const;
 private slots:
     void Print();
 private:
-    char CharName(int, int) const;
+    char CharName(int kind, int sub) const;
     char CharNumber(ushort z) const;
     char CharNumberFront(ushort x, ushort y) const;
     void Arrows(WINDOW *, ushort x, ushort y, bool show_dir = false) const;
     void HorizontalArrows(WINDOW *, ushort y, short color = WHITE_RED,
             bool show_dir = false) const;
-    void ActionXyz(ushort & x, ushort & y, ushort & z) const;
     void PrintNormal(WINDOW *, int dir) const;
     void PrintFront(WINDOW *) const;
     void PrintInv(WINDOW *, const Inventory *) const;
@@ -174,9 +174,11 @@ private:
     void InventoryAction(ushort num) const;
     color_pairs Color(int kind, int sub) const;
     char PrintBlock(const Block *, WINDOW *) const;
-    void SetActionMode(const int mode);
+    void SetActionMode(actions mode);
     void ProcessCommand(QString command);
+    void PrintTitle(WINDOW *, int dir) const;
     void MovePlayer(int dir) const;
+    void MovePlayerDiag(int dir1, int dir2) const;
 
     WINDOW * leftWin;
     WINDOW * rightWin;
@@ -188,7 +190,7 @@ private:
     volatile bool updatedPlayer;
     QTimer * const timer;
     FILE * const notifyLog;
-    int actionMode;
+    actions actionMode;
     short shiftFocus; // can be -1, 0, 1 for low, normal, and high focus
     QString command; // save previous command for further execution
     QString lastNotification;

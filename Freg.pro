@@ -72,6 +72,7 @@ HEADERS += \
     blocks/Animal.h \
     blocks/Dwarf.h \
     blocks/Bucket.h \
+    blocks/Illuminator.h \
     blocks/Weapons.h
 SOURCES += \
     BlockManager.cpp \
@@ -91,6 +92,8 @@ SOURCES += \
     blocks/Active.cpp \
     blocks/Dwarf.cpp \
     blocks/Weapons.cpp \
+    blocks/Illuminator.cpp \
+    blocks/Inventory.cpp \
     blocks/Bucket.cpp
 
 TRANSLATIONS = \

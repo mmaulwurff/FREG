@@ -24,6 +24,7 @@
 #include "blocks/Dwarf.h"
 #include "blocks/Bucket.h"
 #include "blocks/Weapons.h"
+#include "blocks/Illuminator.h"
 
 #define sizeof_array(ARRAY) (sizeof(ARRAY)/sizeof(ARRAY[0]))
 
@@ -56,6 +57,7 @@ const QString BlockManager::kinds[] = {
     "shovel",
     "axe",
     "hammer",
+    "illuminator",
 };
 
 const QString BlockManager::subs[] = {
@@ -109,9 +111,14 @@ Block * BlockManager::NormalBlock(const int sub) const { return normals[sub]; }
 
 Block * BlockManager::NewBlock(const int kind, const int sub) {
     const quint16 id = MakeId(kind, sub);
-    switch ( kind ) {
-    default: fprintf(stderr, "BlockManager::NewBlock: kind?: %d\n", kind);
+    switch ( static_cast<enum kinds>(kind) ) {
+    // invalid kinds:
+    case ANIMAL:
+    case TELEGRAPH:
+    case LAST_KIND: fprintf(stderr,
+        "BlockManager::NewBlock: kind ?: %d.\n", kind);
     // no break;
+    // valid kinds:
     case BLOCK:  return New<Block >(sub, id);
     case BELL:   return New<Bell  >(sub, id);
     case GRASS:  return New<Grass >(sub, id);
@@ -138,16 +145,23 @@ Block * BlockManager::NewBlock(const int kind, const int sub) {
     case CREATOR: return New<Creator>(sub, id);
     case PREDATOR: return New<Predator>(sub, id);
     case WORKBENCH: return New<Workbench>(sub, id);
+    case ILLUMINATOR: return New<Illuminator>(sub, id);
     }
+    return nullptr; // should never be returned, everything is in switch.
 } // Block * BlockManager::NewBlock(int kind, int sub)
 
 Block * BlockManager::BlockFromFile(QDataStream & str,
         const quint8 kind, const quint8 sub)
 {
     const quint16 id = MakeId(kind, sub);
-    switch ( kind ) {
-    default: fprintf(stderr,
-        "BlockManager::BlockFromFile: kind (?): %d\n.", kind);
+    switch ( static_cast<enum kinds>(kind) ) {
+    // invalid kinds:
+    case ANIMAL:
+    case TELEGRAPH:
+    case LAST_KIND: fprintf(stderr,
+        "BlockManager::BlockFromFile: kind ?: %d.\n", kind);
+    // no break;
+    // valid kinds:
     case BLOCK:  return New<Block >(str, sub, id);
     case BELL:   return New<Bell  >(str, sub, id);
     case PICK:   return New<Pick  >(str, sub, id);
@@ -174,7 +188,9 @@ Block * BlockManager::BlockFromFile(QDataStream & str,
     case CREATOR: return New<Creator>(str, sub, id);
     case PREDATOR: return New<Predator>(str, sub, id);
     case WORKBENCH: return New<Workbench>(str, sub, id);
+    case ILLUMINATOR: return New<Illuminator>(str, sub, id);
     }
+    return nullptr; // should never be returned, everything is in switch.
 }
 
 Block * BlockManager::BlockFromFile(QDataStream & str) const {
