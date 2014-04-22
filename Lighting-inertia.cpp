@@ -81,6 +81,7 @@ void World::Shine(const ushort i, const ushort j, const ushort k,
 void World::SunShineVertical(const short x, const short y, short z,
         uchar light_lev)
 {
+    if ( GetEvernight() ) return;
     /* 2 1 3
      *   *   First, light goes down, then divides to 4 branches
      * ^ | ^ to N-S-E-W, and goes up.
@@ -137,9 +138,11 @@ void World::ReEnlightenTime() {
     for (ushort i=0; i<NumShreds()*NumShreds(); ++i) {
         shreds[i]->SetAllLightMapNull();
     }
-    sunMoonFactor = ( NIGHT==PartOfDay() ) ?
-        MOON_LIGHT_FACTOR : SUN_LIGHT_FACTOR;
-    ReEnlightenAll();
+    if ( not GetEvernight() ) {
+        sunMoonFactor = ( NIGHT==PartOfDay() ) ?
+            MOON_LIGHT_FACTOR : SUN_LIGHT_FACTOR;
+        ReEnlightenAll();
+    }
 }
 
 void World::ReEnlightenAll() {
@@ -270,8 +273,10 @@ void Shred::ShineAll() {
         world->Shine((*i)->X(), (*i)->Y(), (*i)->Z(),
             (*i)->LightRadius(), true);
     }
-    for (ushort i=shredX*SHRED_WIDTH; i<SHRED_WIDTH*(shredX+1); ++i)
-    for (ushort j=shredY*SHRED_WIDTH; j<SHRED_WIDTH*(shredY+1); ++j) {
-        world->SunShineVertical(i, j);
+    if ( not world->GetEvernight() ) {
+        for (ushort i=shredX*SHRED_WIDTH; i<SHRED_WIDTH*(shredX+1); ++i)
+        for (ushort j=shredY*SHRED_WIDTH; j<SHRED_WIDTH*(shredY+1); ++j) {
+            world->SunShineVertical(i, j);
+        }
     }
 }

@@ -30,7 +30,7 @@
 #include "BlockManager.h"
 #include "ShredStorage.h"
 
-const ushort MIN_WORLD_SIZE = 7;
+const ushort MIN_WORLD_SIZE = 7U;
 
 World * world;
 
@@ -48,6 +48,7 @@ long World::GetSpawnLati()  const { return spawnLati; }
 long World::Longitude() const { return longitude; }
 long World::Latitude()  const { return latitude; }
 long World::MapSize() const { return map->MapSize(); }
+bool World::GetEvernight() const { return evernight; }
 ulong World::Time() const { return time; }
 ushort World::TimeStepsInSec() { return TIME_STEPS_IN_SEC; }
 ushort World::MiniTime() const { return timeStep; }
@@ -778,9 +779,13 @@ void World::LoadAllShreds() {
         shreds[ShredPos(x, y)] = new(shredMemoryPool+ShredPos(x, y))
             Shred( x, y, j, i, (shredMemoryPool+ShredPos(x, y)) );
     }
-    MakeSun();
-    sunMoonFactor=( NIGHT==PartOfDay() ) ?
-        MOON_LIGHT_FACTOR : SUN_LIGHT_FACTOR;
+    if ( evernight ) {
+        sunMoonFactor = 0;
+    } else {
+        MakeSun();
+        sunMoonFactor = ( NIGHT==PartOfDay() ) ?
+            MOON_LIGHT_FACTOR : SUN_LIGHT_FACTOR;
+    }
     ReEnlightenAll();
 }
 
@@ -850,6 +855,9 @@ World::World(const QString world_name) :
     settings.setValue("spawn_latitude",  qlonglong(spawnLati));
     longitude = settings.value("longitude", int(spawnLongi)).toLongLong();
     latitude  = settings.value("latitude",  int(spawnLati )).toLongLong();
+
+    evernight = settings.value("evernight", false).toBool();
+    settings.setValue("evernight", evernight); // save if not present
 
     shredStorage = new ShredStorage(numShreds+2, longitude, latitude);
     puts(qPrintable(tr("Loading world...")));

@@ -75,8 +75,10 @@ public: // Lighting section
             uchar level=MAX_LIGHT_RADIUS);
     void SunShineHorizontal(short x, short y, short z);
     /// If init is false, light will not spread from non-invisible blocks.
-    void Shine(ushort x, ushort y, ushort z, uchar level, bool init=false);
+    void Shine(ushort x, ushort y, ushort z, uchar level, bool init = false);
     void RemoveSunLight(short x, short y, short z);
+
+    bool GetEvernight() const;
 private:
     bool SetSunLightMap (uchar level, ushort x, ushort y, ushort z);
     bool SetFireLightMap(uchar level, ushort x, ushort y, ushort z);
@@ -238,6 +240,7 @@ private:
 
     ushort sun_moon_x;
     bool ifStar;
+    bool evernight;
 
     WorldMap * const map;
 
