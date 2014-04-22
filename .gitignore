@@ -22,6 +22,9 @@ screens/*
 help_*/*
 !help_*/*.txt
 
+!recipes
+!recipes/*
+
 !texts
 texts/*
 !texts/*.txt
