@@ -1,0 +1,14 @@
+<map id="Player.cpp" name="Player.cpp">
+<area shape="rect" id="node11" href="$Dwarf_8h.html" title="blocks/Dwarf.h" alt="" coords="429,89,539,122"/>
+<area shape="rect" id="node33" href="$Player_8h.html" title="Player.h" alt="" coords="531,254,600,287"/>
+<area shape="rect" id="node37" href="$world_8h.html" title="world.h" alt="" coords="613,89,677,122"/>
+<area shape="rect" id="node42" href="$Shred_8h.html" title="Shred.h" alt="" coords="740,89,807,122"/>
+<area shape="rect" id="node47" href="$BlockManager_8h.html" title="BlockManager.h" alt="" coords="845,254,960,287"/>
+<area shape="rect" id="node50" href="$DeferredAction_8h.html" title="DeferredAction.h" alt="" coords="976,89,1096,122"/>
+<area shape="rect" id="node13" href="$Animal_8h.html" title="blocks/Animal.h" alt="" coords="303,171,417,205"/>
+<area shape="rect" id="node29" href="$Inventory_8h.html" title="Provides declaration for class Inventory for freg. " alt="" coords="441,171,527,205"/>
+<area shape="rect" id="node15" href="$Active_8h.html" title="blocks/Active.h" alt="" coords="304,254,416,287"/>
+<area shape="rect" id="node19" href="$Block_8h.html" title="Provides definition for class Block. " alt="" coords="312,337,379,370"/>
+<area shape="rect" id="node27" href="$Xyz_8h.html" title="Xyz.h" alt="" coords="403,337,456,370"/>
+<area shape="rect" id="node21" href="$header_8h.html" title="header.h" alt="" coords="603,419,672,453"/>
+</map>

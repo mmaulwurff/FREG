@@ -1,0 +1,27 @@
+<map id="Block" name="Block">
+<area shape="rect" id="node3" href="$classActive.html" title="Active" alt="" coords="439,89,497,122"/>
+<area shape="rect" id="node29" href="$classBucket.html" title="Bucket" alt="" coords="679,89,740,122"/>
+<area shape="rect" id="node31" href="$classChest.html" title="Chest" alt="" coords="764,89,820,122"/>
+<area shape="rect" id="node35" href="$classLadder.html" title="Ladder" alt="" coords="844,89,905,122"/>
+<area shape="rect" id="node37" href="$classPlate.html" title="Plate" alt="" coords="929,89,980,122"/>
+<area shape="rect" id="node39" href="$classText.html" title="Text" alt="" coords="1004,89,1049,122"/>
+<area shape="rect" id="node43" href="$classWeapon.html" title="Weapon" alt="" coords="1109,89,1179,122"/>
+<area shape="rect" id="node5" href="$classAnimal.html" title="Animal" alt="" coords="89,171,151,205"/>
+<area shape="rect" id="node13" href="$classBell.html" title="Bell" alt="" coords="175,171,217,205"/>
+<area shape="rect" id="node15" href="$classBush.html" title="Bush" alt="" coords="241,171,292,205"/>
+<area shape="rect" id="node17" href="$classClock.html" title="Clock" alt="" coords="316,171,372,205"/>
+<area shape="rect" id="node19" href="$classCreator.html" title="Creator" alt="" coords="396,171,460,205"/>
+<area shape="rect" id="node21" href="$classDoor.html" title="Door" alt="" coords="484,171,535,205"/>
+<area shape="rect" id="node23" href="$classGrass.html" title="Grass" alt="" coords="559,171,615,205"/>
+<area shape="rect" id="node25" href="$classLiquid.html" title="Liquid" alt="" coords="639,171,695,205"/>
+<area shape="rect" id="node27" href="$classPile.html" title="Pile" alt="" coords="719,171,761,205"/>
+<area shape="rect" id="node7" href="$classDwarf.html" title="Dwarf" alt="" coords="5,254,61,287"/>
+<area shape="rect" id="node9" href="$classPredator.html" title="Predator" alt="" coords="85,254,155,287"/>
+<area shape="rect" id="node11" href="$classRabbit.html" title="Rabbit" alt="" coords="179,254,237,287"/>
+<area shape="rect" id="node33" href="$classWorkbench.html" title="Workbench" alt="" coords="785,171,873,205"/>
+<area shape="rect" id="node41" href="$classMap.html" title="Map" alt="" coords="969,171,1015,205"/>
+<area shape="rect" id="node45" href="$classAxe.html" title="Axe" alt="" coords="1039,171,1084,205"/>
+<area shape="rect" id="node47" href="$classHammer.html" title="Hammer" alt="" coords="1108,171,1180,205"/>
+<area shape="rect" id="node49" href="$classPick.html" title="Pick" alt="" coords="1204,171,1252,205"/>
+<area shape="rect" id="node51" href="$classShovel.html" title="Shovel" alt="" coords="1276,171,1337,205"/>
+</map>

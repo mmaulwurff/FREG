@@ -1,0 +1,9 @@
+<map id="screens/CursedScreen.cpp" name="screens/CursedScreen.cpp">
+<area shape="rect" id="node13" href="$CursedScreen_8h.html" title="screens/CursedScreen.h" alt="" coords="723,89,888,122"/>
+<area shape="rect" id="node23" href="$world_8h.html" title="world.h" alt="" coords="635,89,699,122"/>
+<area shape="rect" id="node31" href="$Block_8h.html" title="Provides definition for class Block. " alt="" coords="411,89,517,122"/>
+<area shape="rect" id="node34" href="$Inventory_8h.html" title="Provides declaration for class Inventory for freg. " alt="" coords="941,89,1069,122"/>
+<area shape="rect" id="node38" href="$Player_8h.html" title="Player.h" alt="" coords="541,89,611,122"/>
+<area shape="rect" id="node17" href="$VirtScreen_8h.html" title="VirtScreen.h" alt="" coords="721,171,815,205"/>
+<area shape="rect" id="node26" href="$header_8h.html" title="header.h" alt="" coords="456,171,525,205"/>
+</map>

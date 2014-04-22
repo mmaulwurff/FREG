@@ -1,0 +1,5 @@
+<map id="Chest" name="Chest">
+<area shape="rect" id="node7" href="$classWorkbench.html" title="Workbench" alt="" coords="32,171,120,205"/>
+<area shape="rect" id="node2" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="5,6,59,39"/>
+<area shape="rect" id="node4" href="$classInventory.html" title="Provides block ability to contain other blocks inside. " alt="" coords="83,6,157,39"/>
+</map>

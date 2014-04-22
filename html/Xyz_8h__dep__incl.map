@@ -1,0 +1,16 @@
+<map id="Xyz.h" name="Xyz.h">
+<area shape="rect" id="node3" href="$Active_8h.html" title="blocks/Active.h" alt="" coords="464,89,576,122"/>
+<area shape="rect" id="node9" href="$blocks_8cpp.html" title="blocks/blocks.cpp" alt="" coords="797,337,923,370"/>
+<area shape="rect" id="node21" href="$Active_8cpp.html" title="blocks/Active.cpp" alt="" coords="712,171,837,205"/>
+<area shape="rect" id="node33" href="$Xyz_8cpp.html" title="Xyz.cpp" alt="" coords="912,89,981,122"/>
+<area shape="rect" id="node5" href="$blocks_8h.html" title="blocks/blocks.h" alt="" coords="631,254,743,287"/>
+<area shape="rect" id="node11" href="$Animal_8h.html" title="blocks/Animal.h" alt="" coords="523,171,637,205"/>
+<area shape="rect" id="node23" href="$DeferredAction_8cpp.html" title="DeferredAction.cpp" alt="" coords="5,171,139,205"/>
+<area shape="rect" id="node25" href="$Lighting-inertia_8cpp.html" title="This file provides simple (also mad) lighting for freg. " alt="" coords="163,171,293,205"/>
+<area shape="rect" id="node27" href="$Shred_8cpp.html" title="Shred.cpp" alt="" coords="317,171,397,205"/>
+<area shape="rect" id="node29" href="$world_8cpp.html" title="world.cpp" alt="" coords="421,171,499,205"/>
+<area shape="rect" id="node7" href="$BlockManager_8cpp.html" title="BlockManager.cpp" alt="" coords="621,337,749,370"/>
+<area shape="rect" id="node14" href="$Dwarf_8h.html" title="blocks/Dwarf.h" alt="" coords="497,254,607,287"/>
+<area shape="rect" id="node17" href="$Dwarf_8cpp.html" title="blocks/Dwarf.cpp" alt="" coords="365,337,488,370"/>
+<area shape="rect" id="node19" href="$Player_8cpp.html" title="Player.cpp" alt="" coords="512,337,595,370"/>
+</map>

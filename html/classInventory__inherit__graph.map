@@ -1,0 +1,9 @@
+<map id="Inventory" name="Inventory">
+<area shape="rect" id="node3" href="$classBucket.html" title="Bucket" alt="" coords="5,89,67,122"/>
+<area shape="rect" id="node5" href="$classBush.html" title="Bush" alt="" coords="91,89,141,122"/>
+<area shape="rect" id="node7" href="$classChest.html" title="Chest" alt="" coords="165,89,221,122"/>
+<area shape="rect" id="node11" href="$classCreator.html" title="Creator" alt="" coords="245,89,309,122"/>
+<area shape="rect" id="node13" href="$classDwarf.html" title="Dwarf" alt="" coords="333,89,389,122"/>
+<area shape="rect" id="node15" href="$classPile.html" title="Pile" alt="" coords="413,89,456,122"/>
+<area shape="rect" id="node9" href="$classWorkbench.html" title="Workbench" alt="" coords="149,171,237,205"/>
+</map>

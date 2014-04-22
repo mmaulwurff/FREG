@@ -1,0 +1,7 @@
+<map id="Pile" name="Pile">
+<area shape="rect" id="node2" href="$classActive.html" title="Active" alt="" coords="96,171,155,205"/>
+<area shape="rect" id="node6" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="99,89,152,122"/>
+<area shape="rect" id="node8" href="$classXyz.html" title="Xyz" alt="" coords="176,89,219,122"/>
+<area shape="rect" id="node10" href="$classXy.html" title="Xy" alt="" coords="179,6,216,39"/>
+<area shape="rect" id="node12" href="$classInventory.html" title="Provides block ability to contain other blocks inside. " alt="" coords="179,171,253,205"/>
+</map>

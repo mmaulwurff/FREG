@@ -1,0 +1,7 @@
+<map id="Weapon" name="Weapon">
+<area shape="rect" id="node5" href="$classAxe.html" title="Axe" alt="" coords="5,171,51,205"/>
+<area shape="rect" id="node7" href="$classHammer.html" title="Hammer" alt="" coords="75,171,147,205"/>
+<area shape="rect" id="node9" href="$classPick.html" title="Pick" alt="" coords="171,171,219,205"/>
+<area shape="rect" id="node11" href="$classShovel.html" title="Shovel" alt="" coords="243,171,304,205"/>
+<area shape="rect" id="node2" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="125,6,179,39"/>
+</map>

@@ -1,0 +1,12 @@
+<map id="world.cpp" name="world.cpp">
+<area shape="rect" id="node13" href="$Active_8h.html" title="blocks/Active.h" alt="" coords="488,89,600,122"/>
+<area shape="rect" id="node27" href="$Inventory_8h.html" title="Provides declaration for class Inventory for freg. " alt="" coords="624,89,752,122"/>
+<area shape="rect" id="node31" href="$Shred_8h.html" title="Shred.h" alt="" coords="1163,89,1229,122"/>
+<area shape="rect" id="node36" href="$world_8h.html" title="world.h" alt="" coords="827,89,891,122"/>
+<area shape="rect" id="node41" href="$worldmap_8h.html" title="worldmap.h" alt="" coords="915,89,1003,122"/>
+<area shape="rect" id="node43" href="$BlockManager_8h.html" title="BlockManager.h" alt="" coords="745,171,860,205"/>
+<area shape="rect" id="node46" href="$ShredStorage_8h.html" title="ShredStorage.h" alt="" coords="1027,89,1139,122"/>
+<area shape="rect" id="node17" href="$Block_8h.html" title="Provides definition for class Block. " alt="" coords="564,171,631,205"/>
+<area shape="rect" id="node25" href="$Xyz_8h.html" title="Xyz.h" alt="" coords="393,171,447,205"/>
+<area shape="rect" id="node19" href="$header_8h.html" title="header.h" alt="" coords="815,254,884,287"/>
+</map>

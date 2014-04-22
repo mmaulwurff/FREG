@@ -1,0 +1,9 @@
+<map id="Animal" name="Animal">
+<area shape="rect" id="node13" href="$classDwarf.html" title="Dwarf" alt="" coords="11,337,67,370"/>
+<area shape="rect" id="node15" href="$classPredator.html" title="Predator" alt="" coords="91,337,160,370"/>
+<area shape="rect" id="node17" href="$classRabbit.html" title="Rabbit" alt="" coords="184,337,243,370"/>
+<area shape="rect" id="node2" href="$classActive.html" title="Active" alt="" coords="96,171,155,205"/>
+<area shape="rect" id="node6" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="99,89,152,122"/>
+<area shape="rect" id="node8" href="$classXyz.html" title="Xyz" alt="" coords="176,89,219,122"/>
+<area shape="rect" id="node10" href="$classXy.html" title="Xy" alt="" coords="179,6,216,39"/>
+</map>

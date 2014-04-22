@@ -1,0 +1,4 @@
+<map id="Shovel" name="Shovel">
+<area shape="rect" id="node2" href="$classWeapon.html" title="Weapon" alt="" coords="5,89,75,122"/>
+<area shape="rect" id="node4" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="13,6,67,39"/>
+</map>

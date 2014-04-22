@@ -1,0 +1,4 @@
+<map id="VirtScreen" name="VirtScreen">
+<area shape="rect" id="node4" href="$classPlayer.html" title="This class contains information specific to player and interface for manipulating him..." alt="" coords="37,91,96,125"/>
+<area shape="rect" id="node7" href="$classWorld.html" title="World provides global physics and shred connection. " alt="" coords="120,91,176,125"/>
+</map>

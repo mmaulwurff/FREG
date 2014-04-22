@@ -1,0 +1,16 @@
+<map id="Xy" name="Xy">
+<area shape="rect" id="node3" href="$classXyz.html" title="Xyz" alt="" coords="407,89,449,122"/>
+<area shape="rect" id="node5" href="$classActive.html" title="Active" alt="" coords="399,171,457,205"/>
+<area shape="rect" id="node7" href="$classAnimal.html" title="Animal" alt="" coords="89,254,151,287"/>
+<area shape="rect" id="node15" href="$classBell.html" title="Bell" alt="" coords="175,254,217,287"/>
+<area shape="rect" id="node17" href="$classBush.html" title="Bush" alt="" coords="241,254,292,287"/>
+<area shape="rect" id="node19" href="$classClock.html" title="Clock" alt="" coords="316,254,372,287"/>
+<area shape="rect" id="node21" href="$classCreator.html" title="Creator" alt="" coords="396,254,460,287"/>
+<area shape="rect" id="node23" href="$classDoor.html" title="Door" alt="" coords="484,254,535,287"/>
+<area shape="rect" id="node25" href="$classGrass.html" title="Grass" alt="" coords="559,254,615,287"/>
+<area shape="rect" id="node27" href="$classLiquid.html" title="Liquid" alt="" coords="639,254,695,287"/>
+<area shape="rect" id="node29" href="$classPile.html" title="Pile" alt="" coords="719,254,761,287"/>
+<area shape="rect" id="node9" href="$classDwarf.html" title="Dwarf" alt="" coords="5,337,61,370"/>
+<area shape="rect" id="node11" href="$classPredator.html" title="Predator" alt="" coords="85,337,155,370"/>
+<area shape="rect" id="node13" href="$classRabbit.html" title="Rabbit" alt="" coords="179,337,237,370"/>
+</map>
