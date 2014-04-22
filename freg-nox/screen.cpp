@@ -1000,8 +1000,7 @@ Screen::Screen(
     sett.setValue("beep_on", beepOn);
 
     if ( not PrintFile(stdscr, "texts/splash.txt") ) {
-        addstr("Free-Roaming Elementary Game\n");
-        addstr("\nby mmaulwurff, with help of Panzerschrek\n");
+        addstr("Free-Roaming Elementary Game\nby mmaulwurff\n");
     }
     printw(qPrintable(tr("\nVersion %1.\n\nPress any key.").arg(VER)));
     qsrand(getch());

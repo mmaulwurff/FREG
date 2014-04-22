@@ -520,11 +520,11 @@ void Shred::NullMountain() {
     }
 }
 
-void Shred::Pyramid() { // by Panzerschrek
+void Shred::Pyramid() {
     const ushort level = qMin(FlatUndeground(), ushort(HEIGHT-1-16));
     Block * const stone = Normal(STONE);
-    for (ushort z=level+1, dz=0; dz<8; z+=2, ++dz) { // pyramid
-        for (ushort x=dz, y=dz; x<(16 - dz); ++x, ++y) {
+    for (ushort z=level+1, dz=0; dz<SHRED_WIDTH/2; z+=2, ++dz) { // pyramid
+        for (ushort x=dz, y=dz; x<(SHRED_WIDTH - dz); ++x, ++y) {
             blocks[x][dz][z] =
                 blocks[x][SHRED_WIDTH-1-dz][z  ] =
                 blocks[x][              dz][z+1] =
