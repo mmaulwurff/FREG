@@ -25,7 +25,7 @@
 #include <QDir>
 #include <QMutex>
 #include <QLocale>
-#include "screen.h"
+#include "screens/CursedScreen.h"
 #include "world.h"
 #include "blocks/Block.h"
 #include "blocks/Inventory.h"

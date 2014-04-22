@@ -4,13 +4,13 @@
 
 CONFIG += thread warn_on console
 #CONFIG += debug
-QT -= gui
+#screen can be: cursed_screen, stub_screen
+CONFIG += cursed_screen
 
 VERSION = 0.2
 VERSTR = '\\"$${VERSION}\\"'
 DEFINES += VER=\"$${VERSTR}\"
 TEMPLATE = app
-TARGET = freg-nox
 
 QMAKE_CXXFLAGS += -Wall -Wextra -std=c++11 -pedantic
 QMAKE_CXXFLAGS += -Werror
@@ -26,31 +26,39 @@ QMAKE_CXXFLAGS_RELEASE += -O3
 #QMAKE_CXX  = clang++
 #QMAKE_LINK = clang++
 
-win32 {
+win32:cursed_screen {
     # path =(
     LIBS += -LC:/Users/Alexander/src/FREG/freg-nox/pdcurses -lpdcurses
 }
 
-unix {
-    LIBS += -lncursesw
+cursed_screen {
+    TARGET = freg-nox
+    QT -= gui
+    DEFINES += CURSED_SCREEN
+    HEADERS += screens/CursedScreen.h
+    SOURCES += screens/CursedScreen.cpp
+} else:stub_screen {
+    TARGET = freg-stub
+    QT -= gui
+    DEFINES += STUB_SCREEN
+    HEADERS += screens/StubScreen.h
+    SOURCES += screens/StubScreen.cpp
+} else {
+    error("define screen type in CONFIG!")
 }
 
-target.path += /usr/bin
-INSTALLS += target
+unix:cursed_screen {
+    LIBS += -lncursesw
+    target.path += /usr/bin
+    INSTALLS += target
+}
 
-DISTFILES += texts/*.txt
-
-MOC_DIR = moc
-OBJECTS_DIR = obj
-
-# Input
 HEADERS += \
     BlockManager.h \
     CraftManager.h \
     DeferredAction.h \
     header.h \
     Player.h \
-    screen.h \
     Shred.h \
     VirtScreen.h \
     world.h \
@@ -72,7 +80,6 @@ SOURCES += \
     Lighting-inertia.cpp \
     main.cpp \
     Player.cpp \
-    screen.cpp \
     Shred-gen-flat.cpp \
     Shred.cpp \
     VirtScreen.cpp \
@@ -88,3 +95,9 @@ SOURCES += \
 
 TRANSLATIONS = \
     freg_ru.ts
+
+DISTFILES += texts/*.txt
+
+MOC_DIR = moc
+OBJECTS_DIR = obj
+

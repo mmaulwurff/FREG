@@ -22,17 +22,23 @@
 #include <QDir>
 #include <QTime>
 #include <QCommandLineParser>
-#include "screen.h" // NOX, if needed, is defined in screen.h
 #include "world.h"
 #include "Player.h"
 #include "worldmap.h"
 
-#ifdef NOX // no need for X server
+#ifdef CURSED_SCREEN
+    #include "screens/CursedScreen.h"
     #include <QCoreApplication>
     typedef QCoreApplication Application;
 #else
-    #include <QApplication>
-    typedef QApplication Application;
+    #ifdef STUB_SCREEN
+        #include "screens/StubScreen.h"
+        #include <QCoreApplication>
+        typedef QCoreApplication Application;
+    #else
+        #include <QApplication>
+        typedef QApplication Application;
+    #endif
 #endif
 
 bool IsValidWorldName(const QString world_name) {
