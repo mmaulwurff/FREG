@@ -200,10 +200,9 @@ quint8 World::TurnLeft(const quint8 dir) {
 }
 
 void World::MakeSun() {
-    ifStar = ( STAR==GetBlock( (sun_moon_x=SunMoonX()),
-        SHRED_WIDTH*NumShreds()/2, HEIGHT-1)->Sub() );
-    PutBlock(Normal(SUN_MOON),
-        sun_moon_x, SHRED_WIDTH*NumShreds()/2, HEIGHT-1);
+    behindSun =
+        GetBlock( (sunMoonX=SunMoonX()), SHRED_WIDTH*NumShreds()/2, HEIGHT-1);
+    PutBlock(Normal(SUN_MOON), sunMoonX, SHRED_WIDTH*NumShreds()/2, HEIGHT-1);
 }
 
 Block * World::GetBlock(const ushort x, const ushort y, const ushort z) const {
@@ -388,14 +387,13 @@ void World::PhysEvents() {
     timeStep = 0;
     ++time;
     // sun/moon moving
-    if ( sun_moon_x != SunMoonX() ) {
+    if ( not GetEvernight() && sunMoonX != SunMoonX() ) {
         static const ushort y = SHRED_WIDTH*NumShreds()/2;
-        PutBlock(Normal(ifStar ? STAR : SKY), sun_moon_x, y, HEIGHT-1);
-        emit Updated(sun_moon_x, y, HEIGHT-1);
-        sun_moon_x = SunMoonX();
-        ifStar = ( STAR==GetBlock(sun_moon_x, y, HEIGHT-1)->Sub() );
-        PutBlock(Normal(SUN_MOON), sun_moon_x, y, HEIGHT-1);
-        emit Updated(sun_moon_x, y, HEIGHT-1);
+        PutBlock(behindSun, sunMoonX, y, HEIGHT-1);
+        emit Updated(sunMoonX, y, HEIGHT-1);
+        behindSun = GetBlock(( sunMoonX=SunMoonX() ), y, HEIGHT-1);
+        PutBlock(Normal(SUN_MOON), sunMoonX, y, HEIGHT-1);
+        emit Updated(sunMoonX, y, HEIGHT-1);
     }
     switch ( TimeOfDay() ) {
     case END_OF_NIGHT:
@@ -769,8 +767,9 @@ int World::Temperature(const ushort x, const ushort y, const ushort z) const {
 }
 
 void World::RemSun() {
-    PutBlock(Normal(ifStar ? STAR : SKY),
-        sun_moon_x, SHRED_WIDTH*NumShreds()/2, HEIGHT-1);
+    if ( not GetEvernight() ) {
+        PutBlock(behindSun, sunMoonX, SHRED_WIDTH*NumShreds()/2, HEIGHT-1);
+    }
 }
 
 void World::LoadAllShreds() {

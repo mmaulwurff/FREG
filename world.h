@@ -240,8 +240,9 @@ private:
     ushort numActiveShreds; // size of active zone
     QReadWriteLock * const rwLock;
 
-    ushort sun_moon_x;
-    bool ifStar;
+    ushort sunMoonX;
+    /// stores block behind sun or moon (normal with sub STAR or SKY)
+    Block * behindSun;
     bool evernight;
 
     WorldMap * const map;
