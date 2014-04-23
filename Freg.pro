@@ -7,7 +7,7 @@ CONFIG += debug
 # screen can be: cursed_screen, stub_screen
 CONFIG += cursed_screen
 # compile with clang:
-#CONFIG += clang
+CONFIG += clang
 
 VERSION = 0.2
 VERSTR = '\\"$${VERSION}\\"'
@@ -23,8 +23,8 @@ QMAKE_CXXFLAGS += -O3
 
 
 clang {
-    #QMAKE_CXX  = clang++
-    #QMAKE_LINK = clang++
+    QMAKE_CXX  = clang++
+    QMAKE_LINK = clang++
 } else {
     QMAKE_CXXFLAGS_RELEASE += -s
 }
