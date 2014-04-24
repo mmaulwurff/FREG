@@ -22,17 +22,17 @@
 
 #include <QObject>
 
-class QString;
 class World;
 class Player;
 
 class VirtScreen : public QObject {
     /** \class VirtScreen VirtScreen.h
-    * \brief This class provides base for all screens for freg.
-    *
-    * It provides interface for world-screen and player-screen
-    * communications by its slots and signals. */
+     *  \brief This class provides base for all screens for freg.
+     *
+     * It provides interface for world-screen and player-screen
+     * communications by its slots and signals. */
     Q_OBJECT
+
 public:
     /// Constructor makes player and world connections.
     /** Constructor of non-virtual screen should contain this code
@@ -43,10 +43,12 @@ public:
     VirtScreen(World *, Player *);
     /// Only calls VirtScreen::CleanAll.
     virtual ~VirtScreen();
+
 signals:
     /// This is emitted when input receives exit key.
     /** This is connected to application exit. */
     void ExitReceived();
+
 public slots:
     /// This is called for a notification to be displayed.
     virtual void Notify(QString) = 0;
@@ -108,11 +110,13 @@ public slots:
     /// This shows a file by path.
     /** Standard (non-reimpemented) version does nothing. */
     virtual void DisplayFile(QString path);
+
 private slots:
     /// Prints world. Should not be called not within screen.
     virtual void Print() = 0;
+
 protected:
-    World * const w;
+    World  * const w;
     Player * const player;
 };
 

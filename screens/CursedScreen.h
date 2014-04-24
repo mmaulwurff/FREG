@@ -31,7 +31,7 @@
 #define _X_OPEN_SOURCE_EXTENDED
 #include <ncursesw/ncurses.h>
 #endif
-#include "VirtScreen.h"
+#include "screens/VirtScreen.h"
 
 const ushort SCREEN_SIZE = 30;
 
@@ -138,23 +138,26 @@ class Screen final : public VirtScreen {
     Q_OBJECT
 public:
      Screen(World *, Player *, int & error, bool ascii);
-    ~Screen();
+    ~Screen() override;
 
     void ControlPlayer(int);
+
 public slots:
-    void Notify(QString);
-    void CleanAll();
-    void PassString(QString &) const;
-    void Update(ushort, ushort, ushort);
-    void UpdateAll();
-    void UpdatePlayer();
-    void UpdateAround(ushort, ushort, ushort, ushort);
-    void Move(int);
+    void Notify(QString) override;
+    void CleanAll() override;
+    void PassString(QString &) const override;
+    void Update(ushort, ushort, ushort) override;
+    void UpdateAll() override;
+    void UpdatePlayer() override;
+    void UpdateAround(ushort, ushort, ushort, ushort) override;
+    void Move(int) override;
     void DeathScreen();
-    void DisplayFile(QString path);
-    void ActionXyz(short & x, short & y, short & z) const;
+    void DisplayFile(QString path) override;
+    void ActionXyz(short & x, short & y, short & z) const override;
+
 private slots:
-    void Print();
+    void Print() override;
+
 private:
     char CharName(int kind, int sub) const;
     char CharNumber(ushort z) const;
@@ -191,33 +194,16 @@ private:
     QTimer * const timer;
     FILE * const notifyLog;
     actions actionMode;
-    short shiftFocus; // can be -1, 0, 1 for low, normal, and high focus
-    QString command; // save previous command for further execution
+    /// Can be -1, 0, 1 for low, normal, and high focus.
+    short shiftFocus;
+    /// Save previous command for further execution.
+    QString command;
     QString lastNotification;
     quint8 notificationRepeatCount;
     QFile * fileToShow;
     bool beepOn;
     QMutex * mutex;
     const bool ascii;
-}; // class Screen
-
-/** \class IThread screen.h
- * \brief Keyboard input thread for curses screen for freg.
- *
- * This class is thread, with IThread::run containing input loop. */
-
-#include <QThread>
-
-class IThread : public QThread {
-    Q_OBJECT
-public:
-    IThread(Screen * const);
-    void Stop();
-protected:
-    void run();
-private:
-    Screen * const screen;
-    volatile bool stopped;
-}; // class IThread
+};
 
 #endif // SCREEN_H
