@@ -260,10 +260,11 @@ void Shred::SetLightmap(const short x, const short y, const short z,
 }
 
 void Shred::SetAllLightMapNull() {
+    memset(lightMap, 0,
+        sizeof(lightMap[0][0][0]) * SHRED_WIDTH * SHRED_WIDTH * HEIGHT);
     for (ushort i=0; i<SHRED_WIDTH; ++i)
-    for (ushort j=0; j<SHRED_WIDTH; ++j)
-    for (ushort k=0; k<HEIGHT-1; ++k) {
-        lightMap[i][j][k] = 0;
+    for (ushort j=0; j<SHRED_WIDTH; ++j) {
+        lightMap[i][j][HEIGHT-1] = 0;
     }
 }
 

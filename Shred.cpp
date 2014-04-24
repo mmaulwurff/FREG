@@ -63,18 +63,17 @@ bool Shred::LoadShred() {
     in.setVersion(DATASTREAM_VERSION);
     Block * const null_stone = Normal(NULLSTONE);
     Block * const air = Normal(AIR);
+    memset(lightMap, 0,
+        sizeof(lightMap[0][0][0]) * SHRED_WIDTH * SHRED_WIDTH * HEIGHT);
     for (ushort x=0; x<SHRED_WIDTH; ++x)
     for (ushort y=0; y<SHRED_WIDTH; ++y) {
         PutBlock(null_stone, x, y, 0);
-        lightMap[x][y][0] = 0;
         for (ushort z=1; ; ++z) {
             quint8 kind, sub;
             const bool normal = block_manager.KindSubFromFile(in, kind, sub);
             if ( sub==SKY || sub==STAR ) {
                 for ( ; z < HEIGHT-1; ++z) {
                     PutBlock(air, x, y, z);
-                    // TODO: possible: memset
-                    lightMap[x][y][z] = 0;
                 }
                 PutBlock(Normal(sub), x, y, HEIGHT-1);
                 lightMap[x][y][HEIGHT-1] = 1;
@@ -85,7 +84,6 @@ bool Shred::LoadShred() {
                 SetBlockNoCheck(block_manager.BlockFromFile(
                     in, kind, sub), x, y, z);
             }
-            lightMap[x][y][z] = 0;
         }
     }
     return true;

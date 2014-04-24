@@ -7,7 +7,7 @@ CONFIG += debug
 # screen can be: cursed_screen, stub_screen
 CONFIG += cursed_screen
 # compile with clang:
-CONFIG += clang
+# CONFIG += clang
 
 VERSION = 0.2
 VERSTR = '\\"$${VERSION}\\"'
