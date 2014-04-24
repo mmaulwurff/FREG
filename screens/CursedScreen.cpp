@@ -30,6 +30,7 @@
 #include "blocks/Block.h"
 #include "blocks/Inventory.h"
 #include "Player.h"
+#include "screens/IThread.h"
 
 const char OBSCURE_BLOCK = ' ';
 const int QUICK_INVENTORY_X_SHIFT = 36;
@@ -1004,18 +1005,3 @@ void Screen::CleanAll() {
 }
 
 Screen::~Screen() { CleanAll(); }
-
-IThread::IThread(Screen * const scr) :
-        screen(scr),
-        stopped(false)
-{}
-
-void IThread::run() {
-    while ( not stopped ) {
-        screen->ControlPlayer(getch());
-        msleep(90);
-        flushinp();
-    }
-}
-
-void IThread::Stop() { stopped = true; }

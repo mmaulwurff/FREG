@@ -62,7 +62,7 @@ HEADERS += \
     header.h \
     Player.h \
     Shred.h \
-    VirtScreen.h \
+    screens/VirtScreen.h \
     world.h \
     worldmap.h \
     ShredStorage.h \
@@ -75,7 +75,8 @@ HEADERS += \
     blocks/Dwarf.h \
     blocks/Bucket.h \
     blocks/Illuminator.h \
-    blocks/Weapons.h
+    blocks/Weapons.h \
+    screens/IThread.h
 SOURCES += \
     BlockManager.cpp \
     CraftManager.cpp \
@@ -85,7 +86,7 @@ SOURCES += \
     Player.cpp \
     Shred-gen-flat.cpp \
     Shred.cpp \
-    VirtScreen.cpp \
+    screens/VirtScreen.cpp \
     world.cpp \
     worldmap.cpp \
     ShredStorage.cpp \
@@ -96,7 +97,8 @@ SOURCES += \
     blocks/Weapons.cpp \
     blocks/Illuminator.cpp \
     blocks/Inventory.cpp \
-    blocks/Bucket.cpp
+    blocks/Bucket.cpp \
+    screens/IThread.cpp
 
 TRANSLATIONS = \
     freg_ru.ts
