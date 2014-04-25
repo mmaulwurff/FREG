@@ -168,6 +168,9 @@ private:
     void PrintNormal(WINDOW *, int dir) const;
     void PrintFront(WINDOW *) const;
     void PrintInv(WINDOW *, const Inventory *) const;
+    /// Can print health, breath and other bars on hudWin.
+    void PrintBar(short x, short color, int ch, ushort value, short filled,
+            bool value_position_right = true);
     /// Returns false when file does not exist, otherwise true.
     bool PrintFile(WINDOW *, QString const & file_name);
     void PrintHUD();
@@ -182,6 +185,7 @@ private:
     void PrintTitle(WINDOW *, int dir) const;
     void MovePlayer(int dir) const;
     void MovePlayerDiag(int dir1, int dir2) const;
+    static bool IsScreenWide();
 
     WINDOW * leftWin;
     WINDOW * rightWin;

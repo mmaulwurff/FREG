@@ -77,3 +77,5 @@ void VirtScreen::DisplayFile(QString /* path */) {}
 void VirtScreen::ActionXyz(short & x, short & y, short & z) const {
     w->Focus(player->X(), player->Y(), player->Z(), x, y, z, player->GetDir());
 }
+
+World * VirtScreen::GetWorld() const { return w; }

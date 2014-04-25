@@ -474,7 +474,7 @@ void Screen::PrintHUD() {
     werase(hudWin);
     // quick inventory
     Inventory * const inv = player->PlayerInventory();
-    if ( inv && COLS>=(SCREEN_SIZE*2+2)*2 ) {
+    if ( inv && IsScreenWide() ) {
         for (ushort i=0; i<inv->Size(); ++i) {
             wstandend(hudWin);
             const int x = QUICK_INVENTORY_X_SHIFT+i*2;
@@ -488,6 +488,18 @@ void Screen::PrintHUD() {
             }
         }
     }
+    // focused block
+    wstandend(hudWin);
+    short x, y, z;
+    ActionXyz(x, y, z);
+    Block * const focused = GetWorld()->GetBlock(x, y, z);
+    const bool not_animal = focused->IsAnimal() == nullptr;
+    PrintBar(((SCREEN_SIZE*2+2) * (IsScreenWide() ? 2 : 1)) - 15,
+        not_animal ? GREEN_BLACK : RED_BLACK,
+        not_animal ? '+' : '*',
+        focused->GetDurability(),
+        10*focused->GetDurability()/MAX_DURABILITY+1,
+        false);
     // action mode
     wstandend(hudWin);
     QString actionString(tr("Action: "));
@@ -518,21 +530,13 @@ void Screen::PrintHUD() {
     } else {
         const short dur = player->HP();
         if ( dur > 0 ) { // HitPoints line
-            wstandend(hudWin);
-            mvwprintw(hudWin, 0, 0, "[..........]%hd", dur);
-            wcolor_set(hudWin, RED_BLACK, NULL);
-            const QString str(10, QChar(ascii ? '@' : 0x2665));
-            mvwaddstr(hudWin, 0, 1,
-                qPrintable(str.left(10*dur/MAX_DURABILITY+1)));
+            PrintBar(0, (dur > MAX_DURABILITY/5) ? RED_BLACK : BLACK_RED,
+                ascii ? '@' : 0x2665, dur, 10*dur/MAX_DURABILITY+1);
         }
         const short breath = player->Breath();
         if ( -1!=breath && breath!=MAX_BREATH ) { // breath line
-            wstandend(hudWin);
-            const QString str(10, QChar(ascii ? 'o' : 0x00b0));
-            mvwprintw(hudWin, 0, 16, "[..........]%hd", breath);
-            wcolor_set(hudWin, BLUE_BLACK, NULL);
-            mvwaddstr(hudWin, 0, 14+3,
-                qPrintable(str.left(10*breath/MAX_BREATH)));
+            PrintBar(16, BLUE_BLACK, ascii ? 'o' : 0x00b0, breath,
+                10*breath/MAX_BREATH);
         }
         const short satiation = player->SatiationPercent();
         if ( -1 != satiation ) { // satiation line
@@ -1005,3 +1009,18 @@ void Screen::CleanAll() {
 }
 
 Screen::~Screen() { CleanAll(); }
+
+bool Screen::IsScreenWide() { return COLS >= (SCREEN_SIZE*2+2)*2; }
+
+void Screen::PrintBar(const short x, const short color, const int ch,
+        const ushort value, const short filled,
+        const bool value_position_right)
+{
+    wstandend(hudWin);
+    mvwprintw(hudWin, 0, x,
+        value_position_right ? "[..........]%hd" : "%3hd[..........]", value);
+    wcolor_set(hudWin, color, NULL);
+    const QString str(10, QChar(ch));
+    mvwaddstr(hudWin, 0, x + (not value_position_right ? 4 : 1),
+        qPrintable(str.left(filled)));
+}

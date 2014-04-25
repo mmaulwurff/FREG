@@ -116,6 +116,8 @@ private slots:
     virtual void Print() = 0;
 
 protected:
+    World * GetWorld() const;
+
     World  * const w;
     Player * const player;
 };
