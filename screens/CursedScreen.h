@@ -194,7 +194,6 @@ private:
     WINDOW * hudWin; // head-up display
     IThread * const input;
     volatile bool updated;
-    volatile bool updatedPlayer;
     QTimer * const timer;
     FILE * const notifyLog;
     actions actionMode;

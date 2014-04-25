@@ -72,25 +72,14 @@ const {
 void Screen::RePrint() {
     clear();
     updated = false;
-    updatedPlayer = false;
 }
 
-void Screen::Update(const ushort, const ushort, const ushort) {
-    updated = false;
-}
+void Screen::Update(ushort, ushort, ushort) { updated = false; }
+void Screen::UpdatePlayer() { updated = false; }
 
 void Screen::UpdateAll() {
     CleanFileToShow();
     updated = false;
-}
-
-void Screen::UpdatePlayer() {
-    if ( USAGE_TYPE_READ_IN_INVENTORY==player->UsingType()
-            || player->GetCreativeMode() )
-    {
-        updated = false;
-    }
-    updatedPlayer = false;
 }
 
 void Screen::UpdateAround(const ushort, const ushort, const ushort,
@@ -232,7 +221,9 @@ color_pairs Screen::Color(const int kind, const int sub) const {
         case FIRE:       return RED_YELLOW;
         case SUN_MOON:   return ( NIGHT == w->PartOfDay() ) ?
             WHITE_WHITE : YELLOW_YELLOW;
-        case SKY: case STAR: switch ( w->PartOfDay() ) {
+        case SKY: case STAR:
+            if ( w->GetEvernight() ) return BLACK_BLACK;
+            switch ( w->PartOfDay() ) {
             case NIGHT:   return WHITE_BLACK;
             case MORNING: return WHITE_BLUE;
             case NOON:    return CYAN_CYAN;
@@ -364,7 +355,7 @@ void Screen::ProcessCommand(QString command) {
 
 void Screen::SetActionMode(const actions mode) {
     actionMode = mode;
-    updatedPlayer = false;
+    updated = false;
 }
 
 void Screen::InventoryAction(const ushort num) const {
@@ -410,7 +401,6 @@ void Screen::Print() {
     w->ReadLock();
     mutex->lock();
     PrintHUD();
-    bool world_reprinted = false;
     const int dir = player->GetDir();
     switch ( player->UsingSelfType() ) { // left window
     case USAGE_TYPE_OPEN:
@@ -421,7 +411,6 @@ void Screen::Print() {
     default:
         PrintNormal(leftWin, (UP==dir || DOWN==dir) ?
             NORTH : dir);
-        world_reprinted = true;
     }
     if ( not fileToShow ) { // right window
         switch ( player->UsingType() ) {
@@ -457,17 +446,15 @@ void Screen::Print() {
             } else {
                 PrintFront(rightWin);
             }
-            world_reprinted = true;
         }
     }
-    updatedPlayer = true;
-    updated = world_reprinted;
+    updated = true;
     w->Unlock();
     mutex->unlock();
 } // void Screen::Print()
 
 void Screen::PrintHUD() {
-    if ( updatedPlayer ) return;
+    if ( updated ) return;
     int y_save, x_save;
     getyx(rightWin, y_save, x_save);
 
@@ -493,13 +480,14 @@ void Screen::PrintHUD() {
     short x, y, z;
     ActionXyz(x, y, z);
     Block * const focused = GetWorld()->GetBlock(x, y, z);
-    const bool not_animal = focused->IsAnimal() == nullptr;
-    PrintBar(((SCREEN_SIZE*2+2) * (IsScreenWide() ? 2 : 1)) - 15,
-        not_animal ? GREEN_BLACK : RED_BLACK,
-        not_animal ? '+' : '*',
-        focused->GetDurability(),
-        10*focused->GetDurability()/MAX_DURABILITY+1,
-        false);
+    if ( focused->Sub() != AIR ) {
+        PrintBar(((SCREEN_SIZE*2+2) * (IsScreenWide() ? 2 : 1)) - 15,
+            Color(focused->Kind(), focused->Sub()),
+            (focused->IsAnimal() == nullptr) ? '+' : '*',
+            focused->GetDurability(),
+            10*focused->GetDurability()/MAX_DURABILITY+1,
+            false);
+    }
     // action mode
     wstandend(hudWin);
     QString actionString(tr("Action: "));
@@ -744,10 +732,7 @@ void Screen::PrintTitle(WINDOW * const window, const int dir) const {
 
 void Screen::PrintInv(WINDOW * const window, const Inventory * const inv)
 const {
-    const bool is_player_inv = ( player->PlayerInventory()==inv );
-    if ( is_player_inv ) {
-        if ( updatedPlayer ) return;
-    } else if ( updated ) return;
+    if ( updated ) return;
     werase(window);
     wstandend(window);
     switch ( inv->Kind() ) {
@@ -794,9 +779,9 @@ const {
             arg(inv->Weight(), 6, 10, QChar(' '))));
     wcolor_set(window, Color(inv->Kind(), inv->Sub()), NULL);
     box(window, 0, 0);
-    mvwprintw(window, 0, 1, "[%c]%s",
-        CharName(inv->Kind(), inv->Sub()), qPrintable(is_player_inv ?
-            tr("Your inventory") : inv->FullName()));
+    mvwprintw(window, 0, 1, "[%c]%s", CharName( inv->Kind(), inv->Sub()),
+        qPrintable((player->PlayerInventory()==inv) ?
+            tr("Your inventory") : inv->FullName()) );
     wrefresh(window);
 } // void Screen::PrintInv(WINDOW * window, const Inventory * inv)
 
@@ -886,7 +871,6 @@ Screen::Screen(
         hudWin(nullptr),
         input(new IThread(this)),
         updated(false),
-        updatedPlayer(false),
         timer(new QTimer(this)),
         notifyLog(fopen("texts/messages.txt", "at")),
         notificationRepeatCount(1),
@@ -935,7 +919,7 @@ Screen::Screen(
         notifyWin  = newwin(0, preferred_width, SCREEN_SIZE+2+4, left_border);
     } else if ( COLS >= preferred_width/2 ) {
         const ushort left_border = COLS/2-SCREEN_SIZE-1;
-        rightWin = 0;
+        rightWin = nullptr;
         leftWin  = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, left_border);
         hudWin   = newwin(3, SCREEN_SIZE*2+2, SCREEN_SIZE+2, left_border);
         commandWin = newwin(1, SCREEN_SIZE*2+2, SCREEN_SIZE+2+3, left_border);
