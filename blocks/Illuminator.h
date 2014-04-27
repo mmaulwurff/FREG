@@ -27,12 +27,12 @@ public:
     Illuminator(int sub, quint16 id);
     Illuminator(QDataStream & str, int sub, quint16 id);
 
-    void    Damage(ushort dmg, int dmg_kind);
-    uchar   LightRadius() const;
-    quint8  Kind() const;
-    Block * DropAfterDamage() const;
-    QString FullName() const;
-    usage_types Use(Block *);
+    void    Damage(ushort dmg, int dmg_kind) override;
+    uchar   LightRadius() const override;
+    quint8  Kind() const override;
+    Block * DropAfterDamage() const override;
+    QString FullName() const override;
+    usage_types Use(Block *) override;
 private:
 };
 

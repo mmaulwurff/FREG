@@ -79,3 +79,63 @@ void VirtScreen::ActionXyz(short & x, short & y, short & z) const {
 }
 
 World * VirtScreen::GetWorld() const { return w; }
+
+char VirtScreen::CharName(const int kind, const int sub) const {
+    switch ( kind )  {
+    case BUSH:   return ';';
+    case CREATOR:
+    case DWARF:  return '@';
+    case LIQUID: return '~';
+    case GRASS:  return ( FIRE == sub ) ? 'f' : '.';
+    case RABBIT: return 'r';
+    case CLOCK:  return 'c';
+    case PLATE:  return '_';
+    case LADDER: return '^';
+    case PICK:   return '\\';
+    case SHOVEL: return '|';
+    case HAMMER: return 'T';
+    case AXE:    return '/';
+    case CHEST:
+    case PILE:   return '&';
+    case BELL:   return 'b';
+    case BUCKET: return 'u';
+    case TEXT:   return '?';
+    case PREDATOR: return '!';
+    case WORKBENCH: return '*';
+    case TELEGRAPH: return 't';
+    case DOOR:        return ( STONE == sub ) ? '#' : '\'';
+    case LOCKED_DOOR: return ( STONE == sub ) ? '#' : '`';
+    case ILLUMINATOR: return 'i';
+    case WEAPON: switch ( sub ) {
+        default: fprintf(stderr, "Screen::CharName: weapon sub ?: %d\n", sub);
+        // no break;
+        case STONE: return '.';
+        case IRON: case BONE:
+        case WOOD:  return '/';
+    } break;
+    case ACTIVE: switch ( sub ) {
+        case SAND:  return '.';
+        case WATER: return '*';
+        case STONE: return ':';
+        default: fprintf(stderr, "Screen::CharName: active sub ?: %d\n", sub);
+    } // no break;
+    default: switch ( sub ) {
+        default: fprintf(stderr, "Screen::CharName: sub (?): %d\n", sub);
+        case NULLSTONE:  case IRON: case CLAY:
+        case MOSS_STONE: case WOOD: case GOLD:
+        case STONE: return '#';
+        case GLASS: return 'g';
+        case AIR:   return ' ';
+        case STAR:  return '.';
+        case WATER: return '~';
+        case SAND:  return '#';
+        case SOIL:  return '.';
+        case ROSE:  return ';';
+        case A_MEAT: case H_MEAT:
+        case HAZELNUT: return ',';
+        case SKY:
+        case SUN_MOON: return ' ';
+        case GREENERY: return '%';
+        }
+    }
+} // char VirtScreen::CharName(int kind, int sub)

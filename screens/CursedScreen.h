@@ -159,7 +159,6 @@ private slots:
     void Print() override;
 
 private:
-    char CharName(int kind, int sub) const;
     char CharNumber(ushort z) const;
     char CharNumberFront(ushort x, ushort y) const;
     void Arrows(WINDOW *, ushort x, ushort y, bool show_dir = false) const;
@@ -169,7 +168,7 @@ private:
     void PrintFront(WINDOW *) const;
     void PrintInv(WINDOW *, const Inventory *) const;
     /// Can print health, breath and other bars on hudWin.
-    void PrintBar(short x, short color, int ch, ushort value, short filled,
+    void PrintBar(short x, short color, int ch, ushort value, short max_value,
             bool value_position_right = true);
     /// Returns false when file does not exist, otherwise true.
     bool PrintFile(WINDOW *, QString const & file_name);

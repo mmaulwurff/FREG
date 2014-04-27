@@ -125,66 +125,6 @@ char Screen::CharNumberFront(const ushort i, const ushort j) const {
             dist+'0' : ' ';
 }
 
-char Screen::CharName(const int kind, const int sub) const {
-    switch ( kind )  {
-    case BUSH:   return ';';
-    case CREATOR:
-    case DWARF:  return '@';
-    case LIQUID: return '~';
-    case GRASS:  return ( FIRE == sub ) ? 'f' : '.';
-    case RABBIT: return 'r';
-    case CLOCK:  return 'c';
-    case PLATE:  return '_';
-    case LADDER: return '^';
-    case PICK:   return '\\';
-    case SHOVEL: return '|';
-    case HAMMER: return 'T';
-    case AXE:    return '/';
-    case CHEST:
-    case PILE:   return '&';
-    case BELL:   return 'b';
-    case BUCKET: return 'u';
-    case TEXT:   return '?';
-    case PREDATOR: return '!';
-    case WORKBENCH: return '*';
-    case TELEGRAPH: return 't';
-    case DOOR:        return ( STONE == sub ) ? '#' : '\'';
-    case LOCKED_DOOR: return ( STONE == sub ) ? '#' : '`';
-    case ILLUMINATOR: return 'i';
-    case WEAPON: switch ( sub ) {
-        default: fprintf(stderr, "Screen::CharName: weapon sub ?: %d\n", sub);
-        // no break;
-        case STONE: return '.';
-        case IRON: case BONE:
-        case WOOD:  return '/';
-    } break;
-    case ACTIVE: switch ( sub ) {
-        case SAND:  return '.';
-        case WATER: return '*';
-        case STONE: return ':';
-        default: fprintf(stderr, "Screen::CharName: active sub ?: %d\n", sub);
-    } // no break;
-    default: switch ( sub ) {
-        default: fprintf(stderr, "Screen::CharName: sub (?): %d\n", sub);
-        case NULLSTONE:  case IRON: case CLAY:
-        case MOSS_STONE: case WOOD: case GOLD:
-        case STONE: return '#';
-        case GLASS: return 'g';
-        case AIR:   return ' ';
-        case STAR:  return '.';
-        case WATER: return '~';
-        case SAND:  return '#';
-        case SOIL:  return '.';
-        case ROSE:  return ';';
-        case A_MEAT: case H_MEAT:
-        case HAZELNUT: return ',';
-        case SKY:
-        case SUN_MOON: return ' ';
-        case GREENERY: return '%';
-        }
-    }
-} // char Screen::CharName(int kind, int sub)
-
 color_pairs Screen::Color(const int kind, const int sub) const {
     switch ( kind ) { // foreground_background
     case PILE:      return WHITE_BLACK;
@@ -485,7 +425,7 @@ void Screen::PrintHUD() {
             Color(focused->Kind(), focused->Sub()),
             (focused->IsAnimal() == nullptr) ? '+' : '*',
             focused->GetDurability(),
-            10*focused->GetDurability()/MAX_DURABILITY+1,
+            MAX_DURABILITY,
             false);
     }
     // action mode
@@ -519,12 +459,11 @@ void Screen::PrintHUD() {
         const short dur = player->HP();
         if ( dur > 0 ) { // HitPoints line
             PrintBar(0, (dur > MAX_DURABILITY/5) ? RED_BLACK : BLACK_RED,
-                ascii ? '@' : 0x2665, dur, 10*dur/MAX_DURABILITY+1);
+                ascii ? '@' : 0x2665, dur, MAX_DURABILITY);
         }
         const short breath = player->Breath();
         if ( -1!=breath && breath!=MAX_BREATH ) { // breath line
-            PrintBar(16, BLUE_BLACK, ascii ? 'o' : 0x00b0, breath,
-                10*breath/MAX_BREATH);
+            PrintBar(16, BLUE_BLACK, ascii ? 'o' : 0x00b0, breath, MAX_BREATH);
         }
         const short satiation = player->SatiationPercent();
         if ( -1 != satiation ) { // satiation line
@@ -997,7 +936,7 @@ Screen::~Screen() { CleanAll(); }
 bool Screen::IsScreenWide() { return COLS >= (SCREEN_SIZE*2+2)*2; }
 
 void Screen::PrintBar(const short x, const short color, const int ch,
-        const ushort value, const short filled,
+        const ushort value, const short max_value,
         const bool value_position_right)
 {
     wstandend(hudWin);
@@ -1006,5 +945,5 @@ void Screen::PrintBar(const short x, const short color, const int ch,
     wcolor_set(hudWin, color, NULL);
     const QString str(10, QChar(ch));
     mvwaddstr(hudWin, 0, x + (not value_position_right ? 4 : 1),
-        qPrintable(str.left(filled)));
+        qPrintable(str.left(10*value/max_value+1)));
 }

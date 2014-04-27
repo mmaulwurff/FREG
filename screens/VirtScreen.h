@@ -117,6 +117,7 @@ private slots:
 
 protected:
     World * GetWorld() const;
+    char CharName(int kind, int sub) const;
 
     World  * const w;
     Player * const player;
