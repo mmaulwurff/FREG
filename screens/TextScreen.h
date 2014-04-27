@@ -17,23 +17,23 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-/**\file CursedScreen.h
- * \brief Provides curses (text-based graphics interface) screen for freg.*/
+/**\file TextScreen.h
+ * \brief Provides minimal text screen for freg.
+ * Not suitable for playing. Can be used for testing and porting game to other
+ * platforms. */
 
-#ifndef CURSEDSCREEN_H
-#define CURSEDSCREEN_H
+#ifndef TEXTSCREEN_H
+#define TEXTSCREEN_H
 
 #define NOX
 
-#ifdef __MINGW32__
-#include "pdcurses/curses.h"
-#else
-#define _X_OPEN_SOURCE_EXTENDED
-#include <ncursesw/ncurses.h>
-#endif
 #include "screens/VirtScreen.h"
 
-const ushort SCREEN_SIZE = 30;
+enum screen_errors {
+    SCREEN_NO_ERROR = 0,
+    HEIGHT_NOT_ENOUGH,
+    WIDTH_NOT_ENOUGH
+};
 
 enum actions {
     ACTION_USE,
@@ -45,86 +45,6 @@ enum actions {
     ACTION_BUILD,
     ACTION_CRAFT,
     ACTION_TAKEOFF
-};
-
-enum color_pairs { // do not change colors order! // foreground_background
-    BLACK_BLACK = 1,
-    BLACK_RED,
-    BLACK_GREEN,
-    BLACK_YELLOW,
-    BLACK_BLUE,
-    BLACK_MAGENTA,
-    BLACK_CYAN,
-    BLACK_WHITE,
-    //
-    RED_BLACK,
-    RED_RED,
-    RED_GREEN,
-    RED_YELLOW,
-    RED_BLUE,
-    RED_MAGENTA,
-    RED_CYAN,
-    RED_WHITE,
-    //
-    GREEN_BLACK,
-    GREEN_RED,
-    GREEN_GREEN,
-    GREEN_YELLOW,
-    GREEN_BLUE,
-    GREEN_MAGENTA,
-    GREEN_CYAN,
-    GREEN_WHITE,
-    //
-    YELLOW_BLACK,
-    YELLOW_RED,
-    YELLOW_GREEN,
-    YELLOW_YELLOW,
-    YELLOW_BLUE,
-    YELLOW_MAGENTA,
-    YELLOW_CYAN,
-    YELLOW_WHITE,
-    //
-    BLUE_BLACK,
-    BLUE_RED,
-    BLUE_GREEN,
-    BLUE_YELLOW,
-    BLUE_BLUE,
-    BLUE_MAGENTA,
-    BLUE_CYAN,
-    BLUE_WHITE,
-    //
-    MAGENTA_BLACK,
-    MAGENTA_RED,
-    MAGENTA_GREEN,
-    MAGENTA_YELLOW,
-    MAGENTA_BLUE,
-    MAGENTA_MAGENTA,
-    MAGENTA_CYAN,
-    MAGENTA_WHITE,
-    //
-    CYAN_BLACK,
-    CYAN_RED,
-    CYAN_GREEN,
-    CYAN_YELLOW,
-    CYAN_BLUE,
-    CYAN_MAGENTA,
-    CYAN_CYAN,
-    CYAN_WHITE,
-    //
-    WHITE_BLACK,
-    WHITE_RED,
-    WHITE_GREEN,
-    WHITE_YELLOW,
-    WHITE_BLUE,
-    WHITE_MAGENTA,
-    WHITE_CYAN,
-    WHITE_WHITE
-}; // enum color_pairs
-
-enum screen_errors {
-    SCREEN_NO_ERROR = 0,
-    HEIGHT_NOT_ENOUGH,
-    WIDTH_NOT_ENOUGH
 };
 
 class IThread;
@@ -141,8 +61,8 @@ public:
     ~Screen() override;
 
     int  GetChar() const override;
-    void FlushInput() const;
     void ControlPlayer(int command) override;
+    void FlushInput() const override;
 
 public slots:
     void Notify(QString) override;
@@ -163,35 +83,15 @@ private slots:
 private:
     char CharNumber(ushort z) const;
     char CharNumberFront(ushort x, ushort y) const;
-    void Arrows(WINDOW *, ushort x, ushort y, bool show_dir = false) const;
-    void HorizontalArrows(WINDOW *, ushort y, short color = WHITE_RED,
-            bool show_dir = false) const;
-    void PrintNormal(WINDOW *, int dir) const;
-    void PrintFront(WINDOW *) const;
-    void PrintInv(WINDOW *, const Inventory *) const;
-    /// Can print health, breath and other bars on hudWin.
-    void PrintBar(short x, short color, int ch, ushort value, short max_value,
-            bool value_position_right = true);
     /// Returns false when file does not exist, otherwise true.
-    bool PrintFile(WINDOW *, QString const & file_name);
-    void PrintHUD();
+    bool PrintFile(QString const & file_name);
     void CleanFileToShow();
-    void RePrint();
     void InventoryAction(ushort num) const;
-    color_pairs Color(int kind, int sub) const;
-    char PrintBlock(const Block *, WINDOW *) const;
     void SetActionMode(actions mode);
     void ProcessCommand(QString command);
-    void PrintTitle(WINDOW *, int dir) const;
     void MovePlayer(int dir) const;
     void MovePlayerDiag(int dir1, int dir2) const;
-    static bool IsScreenWide();
 
-    WINDOW * leftWin;
-    WINDOW * rightWin;
-    WINDOW * notifyWin;
-    WINDOW * commandWin;
-    WINDOW * hudWin; // head-up display
     IThread * const input;
     volatile bool updated;
     QTimer * const timer;
@@ -204,9 +104,7 @@ private:
     QString lastNotification;
     quint8 notificationRepeatCount;
     QFile * fileToShow;
-    bool beepOn;
-    QMutex * mutex;
     const bool ascii;
 };
 
-#endif // CURSEDSCREEN_H
+#endif // TEXTSCREEN_H

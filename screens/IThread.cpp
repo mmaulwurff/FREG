@@ -18,27 +18,18 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "screens/IThread.h"
+#include "screens/VirtScreen.h"
 
-#ifdef CURSED_SCREEN
-    #include "screens/CursedScreen.h"
-#else
-    #ifdef STUB_SCREEN
-        #include "screens/StubScreen.h"
-    #else
-        #error "Unknown screen for IThread."
-    #endif
-#endif
-
-IThread::IThread(Screen * const scr) :
+IThread::IThread(VirtScreen * const scr) :
         screen(scr),
         stopped(false)
 {}
 
 void IThread::run() {
     while ( not stopped ) {
-        screen->ControlPlayer(getch());
+        screen->ControlPlayer(screen->GetChar());
         msleep(90);
-        flushinp();
+        screen->FlushInput();
     }
 }
 

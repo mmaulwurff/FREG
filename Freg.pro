@@ -4,7 +4,7 @@
 
 CONFIG += thread warn_on console
 CONFIG += debug
-# screen can be: cursed_screen, stub_screen
+# screen can be: cursed_screen, text_screen
 CONFIG += cursed_screen
 # compile with clang:
 # CONFIG += clang
@@ -35,12 +35,12 @@ cursed_screen {
     DEFINES += CURSED_SCREEN
     HEADERS += screens/CursedScreen.h
     SOURCES += screens/CursedScreen.cpp
-} else:stub_screen {
-    TARGET = freg-stub
+} else:text_screen {
+    TARGET = freg-text
     QT -= gui
-    DEFINES += STUB_SCREEN
-    HEADERS += screens/StubScreen.h
-    SOURCES += screens/StubScreen.cpp
+    DEFINES += TEXT_SCREEN
+    HEADERS += screens/TextScreen.h
+    SOURCES += screens/TextScreen.cpp
 } else {
     error("define screen type in CONFIG!")
 }
@@ -107,4 +107,3 @@ DISTFILES += texts/*.txt
 
 MOC_DIR = moc
 OBJECTS_DIR = obj
-

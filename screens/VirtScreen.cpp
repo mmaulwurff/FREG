@@ -72,6 +72,9 @@ VirtScreen::VirtScreen(World * const world_, Player * const player_) :
 void VirtScreen::CleanAll() {}
 VirtScreen::~VirtScreen() { CleanAll(); }
 
+int  VirtScreen::GetChar() const { return 0; }
+void VirtScreen::FlushInput() const {}
+void VirtScreen::ControlPlayer(int) {}
 void VirtScreen::DisplayFile(QString /* path */) {}
 
 void VirtScreen::ActionXyz(short & x, short & y, short & z) const {

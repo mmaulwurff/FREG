@@ -117,7 +117,7 @@ void World::Get(Block * const block_to,
 {
     Block * const block_from = GetBlock(x_from, y_from, z_from);
     Inventory * const inv = block_from->HasInventory();
-    if ( not inv ) { // for vessel
+    if ( inv == nullptr ) { // for vessel
         if ( block_from->Kind() == LIQUID ) {
             Block * const tried = NewBlock(LIQUID, block_from->Sub());
             Inventory * const inv_to = block_to->HasInventory();
@@ -173,8 +173,7 @@ void World::run() {
 quint8 World::TurnRight(const quint8 dir) {
     switch ( dir ) {
     default:
-        fprintf(stderr, "World::TurnRight:Unlisted dir: %d\n",
-            (int)dir);
+        fprintf(stderr, "World::TurnRight:Unlisted dir: %d\n", (int)dir);
     // no break;
     case WEST:  return NORTH;
     case NORTH: return EAST;
@@ -187,8 +186,7 @@ quint8 World::TurnRight(const quint8 dir) {
 quint8 World::TurnLeft(const quint8 dir) {
     switch ( dir ) {
     default:
-        fprintf(stderr, "TurnLeft:Unlisted dir: %d\n",
-            (int)dir);
+        fprintf(stderr, "TurnLeft:Unlisted dir: %d\n", (int)dir);
     // no break;
     case EAST:  return NORTH;
     case NORTH: return WEST;
@@ -234,7 +232,7 @@ Block * World::NewBlock(const int kind, const int sub) {
 
 void World::DeleteBlock(Block * const block) {
     Active * const active = block->ActiveBlock();
-    if ( active ) {
+    if ( active != nullptr ) {
         active->SetToDelete();
     } else {
         block_manager.DeleteBlock(block);
@@ -250,8 +248,7 @@ quint8 World::Anti(const quint8 dir) {
     case UP:    return DOWN;
     case DOWN:  return UP;
     default:
-        fprintf(stderr, "World::Anti(int): unlisted dir: %d\n",
-            (int)dir);
+        fprintf(stderr, "World::Anti(int): unlisted dir: %d\n", (int)dir);
         return NOWHERE;
     }
 }
@@ -271,8 +268,7 @@ void World::ReloadShreds(const int direction) {
             Shred * const memory = shred->GetShredMemory();
             shred->~Shred();
             for (y=NumShreds()-1; y>0; --y) {
-                ( *FindShred(x, y) = *FindShred(x, y-1) )->
-                    ReloadToNorth();
+                ( *FindShred(x, y) = *FindShred(x, y-1) )->ReloadToNorth();
             }
             *FindShred(x, 0) = new(memory)
                 Shred(x, 0,
@@ -287,8 +283,7 @@ void World::ReloadShreds(const int direction) {
             Shred * const memory = shred->GetShredMemory();
             shred->~Shred();
             for (y=0; y<NumShreds()-1; ++y) {
-                ( *FindShred(x, y) = *FindShred(x, y+1) )->
-                    ReloadToSouth();
+                ( *FindShred(x, y) = *FindShred(x, y+1) )->ReloadToSouth();
             }
             *FindShred(x, NumShreds()-1) = new(memory)
                 Shred(x, NumShreds()-1,
@@ -303,8 +298,7 @@ void World::ReloadShreds(const int direction) {
             Shred * const memory = shred->GetShredMemory();
             shred->~Shred();
             for (x=0; x<NumShreds()-1; ++x) {
-                ( *FindShred(x, y) = *FindShred(x+1, y) )->
-                    ReloadToEast();
+                ( *FindShred(x, y) = *FindShred(x+1, y) )->ReloadToEast();
             }
             *FindShred(NumShreds()-1, y) = new(memory)
                 Shred(NumShreds()-1, y,
@@ -319,8 +313,7 @@ void World::ReloadShreds(const int direction) {
             Shred * const memory = shred->GetShredMemory();
             shred->~Shred();
             for (x=NumShreds()-1; x>0; --x) {
-                ( *FindShred(x, y) = *FindShred(x-1, y) )->
-                    ReloadToWest();
+                ( *FindShred(x, y) = *FindShred(x-1, y) )->ReloadToWest();
             }
             *FindShred(0, y) = new(memory)
                 Shred(0, y,

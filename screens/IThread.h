@@ -28,19 +28,19 @@
 
 #include <QThread>
 
-class Screen;
+class VirtScreen;
 
 class IThread final : public QThread {
     Q_OBJECT
 public:
-    IThread(Screen * const);
+    IThread(VirtScreen * const);
     void Stop();
 
 protected:
     void run() override;
 
 private:
-    Screen * const screen;
+    VirtScreen * const screen;
     volatile bool stopped;
 };
 

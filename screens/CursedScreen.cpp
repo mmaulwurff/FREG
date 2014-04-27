@@ -26,11 +26,11 @@
 #include <QMutex>
 #include <QLocale>
 #include "screens/CursedScreen.h"
+#include "screens/IThread.h"
 #include "world.h"
 #include "blocks/Block.h"
 #include "blocks/Inventory.h"
 #include "Player.h"
-#include "screens/IThread.h"
 
 const char OBSCURE_BLOCK = ' ';
 const int QUICK_INVENTORY_X_SHIFT = 36;
@@ -76,19 +76,13 @@ void Screen::RePrint() {
 
 void Screen::Update(ushort, ushort, ushort) { updated = false; }
 void Screen::UpdatePlayer() { updated = false; }
+void Screen::UpdateAround(ushort, ushort, ushort, ushort) { updated = false; }
+void Screen::Move(int) { updated = false; }
 
 void Screen::UpdateAll() {
     CleanFileToShow();
     updated = false;
 }
-
-void Screen::UpdateAround(const ushort, const ushort, const ushort,
-        const ushort)
-{
-    updated = false;
-}
-
-void Screen::Move(const int) { updated = false; }
 
 void Screen::PassString(QString & str) const {
     mvwaddch(commandWin, 0, 0, ':');
@@ -189,6 +183,9 @@ void Screen::MovePlayerDiag(const int dir1, const int dir2) const {
     step_trigger = !step_trigger;
 }
 
+int Screen::GetChar() const { return getch(); }
+void Screen::FlushInput() const { flushinp(); }
+
 void Screen::ControlPlayer(const int ch) {
     CleanFileToShow();
     // Q, ctrl-c, ctrl-d, ctrl-q, ctrl-x
@@ -219,6 +216,7 @@ void Screen::ControlPlayer(const int ch) {
     case KEY_NPAGE: player->SetDir(DOWN); break;
     case KEY_PPAGE: player->SetDir(UP);   break;
 
+    case 'I':
     case KEY_HOME: player->Backpack(); break;
     case 8:
     case KEY_BACKSPACE: player->Damage(); break;
@@ -234,7 +232,7 @@ void Screen::ControlPlayer(const int ch) {
     case 'T': SetActionMode(ACTION_THROW);    break;
     case 'E': SetActionMode(ACTION_EAT);      break;
     case 'F': SetActionMode(ACTION_TAKEOFF);  break;
-    case 'I': SetActionMode(ACTION_INSCRIBE); break;
+    case 'N': SetActionMode(ACTION_INSCRIBE); break;
     case 'G':
     case 'O': SetActionMode(ACTION_OBTAIN);   break;
     case 'U': SetActionMode(ACTION_USE);      break;
@@ -886,7 +884,7 @@ Screen::Screen(
     if ( not PrintFile(stdscr, "texts/splash.txt") ) {
         addstr("Free-Roaming Elementary Game\nby mmaulwurff\n");
     }
-    printw(qPrintable(tr("\nVersion %1.\n\nPress any key.").arg(VER)));
+    addstr(qPrintable(tr("\nVersion %1.\n\nPress any key.").arg(VER)));
     qsrand(getch());
     erase();
     refresh();
@@ -905,9 +903,7 @@ Screen::Screen(
 
 void Screen::CleanAll() {
     static bool cleaned = false;
-    if ( cleaned ) {
-        return;
-    }
+    if ( cleaned ) return;
     cleaned = true; // prevent double cleaning
     input->Stop();
     input->wait();

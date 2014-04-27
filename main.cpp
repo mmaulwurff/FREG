@@ -31,8 +31,8 @@
     #include <QCoreApplication>
     typedef QCoreApplication Application;
 #else
-    #ifdef STUB_SCREEN
-        #include "screens/StubScreen.h"
+    #ifdef TEXT_SCREEN
+        #include "screens/TextScreen.h"
         #include <QCoreApplication>
         typedef QCoreApplication Application;
     #else

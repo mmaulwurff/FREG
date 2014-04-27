@@ -41,8 +41,14 @@ public:
      *     player, SLOT(Act(int, int)),
      *     Qt::DirectConnection); */
     VirtScreen(World *, Player *);
+    VirtScreen(VirtScreen &) = delete;
     /// Only calls VirtScreen::CleanAll.
     virtual ~VirtScreen();
+
+    // Functions for text screens:
+    virtual int  GetChar() const;
+    virtual void FlushInput() const;
+    virtual void ControlPlayer(int command);
 
 signals:
     /// This is emitted when input receives exit key.
