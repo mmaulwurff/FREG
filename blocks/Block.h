@@ -52,6 +52,8 @@ public:
     Block(QDataStream &, int sub, quint16 id, quint8 transp = UNDEF);
     virtual ~Block();
 
+    Block & operator=(const Block &) = delete;
+
     virtual QString FullName() const;
     virtual quint8 Kind() const;
     virtual bool Catchable() const;

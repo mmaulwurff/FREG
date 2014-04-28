@@ -23,6 +23,11 @@
 #include "CraftManager.h"
 
 // CraftItem section
+CraftItem::CraftItem(const ushort num_, const quint16 id_) :
+        num(num_),
+        id(id_)
+{}
+
 bool CraftItem::operator<(const CraftItem &item) const { return item.id < id; }
 
 bool CraftItem::operator!=(const CraftItem & item) const {
@@ -49,7 +54,7 @@ CraftList & CraftList::operator<<(CraftItem * const new_item) {
     return *this;
 }
 
-bool CraftList::CraftList::operator==(const CraftList & compared) const {
+bool CraftList::operator==(const CraftList & compared) const {
     const int materials_number=compared.GetSize()-compared.GetProductsNumber();
     if ( GetSize()-GetProductsNumber() != materials_number ) return false;
     for (int i=0; i<materials_number; ++i) {
@@ -73,7 +78,7 @@ bool CraftList::LoadItem(QTextStream & stream) {
     const quint8 kind = BlockManager::StringToKind(kind_string);
     const quint8 sub  = BlockManager::StringToSub ( sub_string);
     if ( LAST_KIND==kind || LAST_SUB==sub ) return false;
-    items.append(new CraftItem({number, BlockManager::MakeId(kind, sub)}));
+    items.append(new CraftItem(number, BlockManager::MakeId(kind, sub)));
     return true;
 }
 
@@ -157,7 +162,7 @@ CraftManager::~CraftManager() {
 
 CraftItem * CraftManager::MiniCraft(const ushort num, const quint16 id) const {
     CraftList recipe(1, 0);
-    recipe << new CraftItem({num, id});
+    recipe << new CraftItem(num, id);
     const CraftList * const result = Craft(&recipe, DIFFERENT);
     if ( result != nullptr ) {
         CraftItem * const ret = new CraftItem(*result->GetItem(0));

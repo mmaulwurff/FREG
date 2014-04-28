@@ -21,6 +21,7 @@
 #define VIRTSCREEN_H
 
 #include <QObject>
+#include "header.h"
 
 class World;
 class Player;

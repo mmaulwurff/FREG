@@ -23,11 +23,16 @@
 class QTextStream;
 
 struct CraftItem final {
-    const ushort num;
-    const quint16 id;
+    CraftItem() = delete;
+    CraftItem(ushort num, quint16 id);
+
+    CraftItem & operator=(const CraftItem &) = delete;
 
     bool operator< (const CraftItem & item) const;
     bool operator!=(const CraftItem & item) const;
+
+    const ushort num;
+    const quint16 id;
 }; // CraftItem
 
 /** \class CraftList CraftManager.h
@@ -42,6 +47,8 @@ public:
      CraftList(quint8 materials_number, quint8 products_number);
     ~CraftList();
 
+    CraftList & operator=(const CraftList &) = delete;
+
     void Sort();
     bool LoadItem(QTextStream &);
     int  GetSize() const;
@@ -50,6 +57,7 @@ public:
 
     CraftList & operator<<(CraftItem *);
     bool        operator==(const CraftList &) const;
+
 private:
     const quint8 productsNumber;
     QList<CraftItem *> items;
@@ -62,6 +70,7 @@ public:
 
     CraftItem * MiniCraft(ushort num, quint16 id) const;
     CraftList * Craft(CraftList * items, int sub) const;
+
 private:
     CraftManager(const CraftManager &);
     CraftList * CraftSub(CraftList * items, int sub) const;

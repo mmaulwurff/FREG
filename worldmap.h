@@ -27,6 +27,9 @@ public:
     explicit WorldMap(QString);
     ~WorldMap();
 
+    WorldMap & operator=(const WorldMap &) = delete;
+    WorldMap(const WorldMap &) = delete;
+
     long MapSize() const;
     char TypeOfShred(long longi, long lati);
     static void GenerateMap(
@@ -44,8 +47,6 @@ private:
             char ch,
             ushort size,
             char * map);
-
-    WorldMap(const WorldMap &);
 
     long mapSize;
     QFile * const map;

@@ -39,6 +39,7 @@ class World;
 class DeferredAction final {
 public:
     explicit DeferredAction(Active * attached);
+    DeferredAction & operator=(const DeferredAction &) = delete;
 
     void SetGhostMove(ushort dir = NOWHERE);
     void SetMove(ushort dir = NOWHERE);
@@ -54,6 +55,7 @@ public:
     World * GetWorld() const;
     int  GetActionType() const;
     void MakeAction();
+
 private:
     deferred_actions type;
     Active * const attachedBlock;

@@ -22,7 +22,7 @@
 #include "worldmap.h"
 #include "header.h"
 
-const float PI = 3.141592;
+const float PI = 3.141592f;
 
 WorldMap::WorldMap(const QString world_name) :
         map(new QFile(world_name+"/map.txt"))

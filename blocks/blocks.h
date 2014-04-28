@@ -200,7 +200,7 @@ public:
     Door(QDataStream & str, int sub, quint16 id);
 
     int ShouldAct() const;
-    void Push(int dir, Block * const);
+    void Push(int dir, Block *);
     int  PushResult(int dir /* not used */) const;
     void DoFrequentAction();
     bool ShouldFall() const;
@@ -221,7 +221,7 @@ public:
     Clock (QDataStream & str, int sub, quint16 id);
 
     int ShouldAct() const;
-    int PushResult(const int) const;
+    int PushResult(int) const;
     bool ShouldFall() const;
     bool Inscribe(QString);
     void DoRareAction();

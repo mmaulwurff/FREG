@@ -29,6 +29,8 @@ struct LongLat final {
     LongLat(long longitude, long latitude);
     bool operator==(const LongLat &) const;
 
+    LongLat & operator=(const LongLat &) = delete;
+
     const long longitude;
     const long latitude;
 };
@@ -39,6 +41,8 @@ class ShredStorage final {
 public:
      ShredStorage(ushort size, long longi_center, long lati_center);
     ~ShredStorage();
+
+    ShredStorage & operator=(const ShredStorage &) = delete;
 
     QByteArray * GetShredData(long longi, long lati) const;
     void SetShredData(QByteArray *, long longi, long lati);
@@ -60,8 +64,10 @@ class PreloadThread final : public QThread {
 public:
     PreloadThread(ShredStorage *, int direction,
             long longi_center, long lati_center, ushort size);
+
 protected:
     void run();
+
 private:
     ShredStorage * const storage;
     const int direction;

@@ -34,6 +34,9 @@ class Inventory {
     /**\class Inventory Inventory.h
      * \brief Provides block ability to contain other blocks inside. */
 public:
+    Inventory & operator=(const Inventory &) = delete;
+    Inventory(const Inventory & inv) = delete;
+
     virtual quint8 Kind() const = 0;
     virtual int Sub() const = 0;
     /// Returns true on success.
@@ -76,6 +79,7 @@ public:
     void Push(Block * who);
     /// Stacks items in inventory if possible.
     void Shake();
+
 protected:
     /// It is not recommended to make inventory size more than 26.
     /** Because it will not be convenient to deal with inventory
@@ -85,9 +89,8 @@ protected:
     virtual ~Inventory();
 
     virtual void SaveAttributes(QDataStream & out) const;
-private:
-    Inventory(const Inventory & inv);
 
+private:
     const ushort size;
     QStack<Block *> * const inventory;
 };
