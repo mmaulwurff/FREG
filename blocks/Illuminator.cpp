@@ -21,22 +21,25 @@
 #include "BlockManager.h"
 
 Illuminator::Illuminator(const int sub, const quint16 id) :
-        Active(sub, id)
+        Active(sub, id),
+        fuel_level(MAX_FUEL)
 {}
 
 Illuminator::Illuminator(QDataStream & str, const int sub, const quint16 id) :
         Active(str, sub, id)
-{}
+{
+    str >> fuel_level;
+}
 
 void Illuminator::Damage(ushort /*dmg*/, int /*dmg_kind*/) { durability = 0; }
 quint8 Illuminator::Kind() const { return ILLUMINATOR; }
 
 QString Illuminator::FullName() const {
     switch ( Sub() ) {
-    case WOOD:  return tr("Torch");
-    case STONE: return tr("Flint");
-    case IRON:  return tr("Lantern");
-    case GLASS: return tr("Flashlight");
+    case WOOD:  return tr("Torch, fuel: %1"        ).arg(fuel_level);
+    case STONE: return tr("Flint, charges: %1"     ).arg(fuel_level);
+    case IRON:  return tr("Lantern, fuel: %1"      ).arg(fuel_level);
+    case GLASS: return tr("Flashlight, battery: %1").arg(fuel_level);
     default: fprintf(stderr, "Illuminator::FullName: sub ?: %d\n", Sub());
         return tr("Strange illuminator");
     }
@@ -47,11 +50,17 @@ Block * Illuminator::DropAfterDamage() const {
 }
 
 usage_types Illuminator::Use(Block *) {
-    return ( WOOD==Sub() || STONE==Sub() || IRON==Sub() ) ?
-        USAGE_TYPE_SET_FIRE : USAGE_TYPE_NO;
+    if ( Sub() == GLASS ) { // flashlight
+        return USAGE_TYPE_NO;
+    } else {
+        fuel_level = ( fuel_level >= 10 ) ?
+            fuel_level - 10 : 0;
+        return USAGE_TYPE_SET_FIRE;
+    }
 }
 
 uchar Illuminator::LightRadius() const {
+    if ( fuel_level == 0 ) return 0;
     switch ( Sub() ) {
     default:
     case STONE: return 0;
@@ -59,4 +68,25 @@ uchar Illuminator::LightRadius() const {
     case IRON:  return 4;
     case GLASS: return 5;
     }
+}
+
+int  Illuminator::ShouldAct() const { return FREQUENT_RARE; }
+void Illuminator::DoRareAction() { ActInner(); }
+
+INNER_ACTIONS Illuminator::ActInner() {
+    if ( fuel_level == 0 ) {
+        if ( Sub() == WOOD ) {
+            durability = 0;
+        }
+    } else {
+        if ( Sub() != STONE ) {
+            --fuel_level;
+        }
+    }
+    return INNER_ACTION_NONE;
+}
+
+void Illuminator::SaveAttributes(QDataStream & out) const {
+    Active::SaveAttributes(out);
+    out << fuel_level;
 }

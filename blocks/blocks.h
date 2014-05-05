@@ -216,6 +216,7 @@ private:
 };
 
 class Clock : public Active {
+    Q_OBJECT
 public:
     Clock(int sub, quint16 id);
     Clock (QDataStream & str, int sub, quint16 id);
@@ -232,6 +233,7 @@ public:
     QString FullName() const;
     usage_types Use(Block * who = 0);
     INNER_ACTIONS ActInner() override;
+
 private:
     short alarmTime;
     short timerTime;
@@ -250,6 +252,7 @@ public:
     ushort DamageLevel() const;
     QString FullName() const;
     Inventory * HasInventory();
+
 protected:
     void SaveAttributes(QDataStream & out) const;
 };
@@ -273,8 +276,10 @@ public:
     quint8 Kind() const;
     QString FullName() const;
     usage_types Use(Block * who = 0);
+
 protected:
     void SaveAttributes(QDataStream & out) const;
+
 private:
     // coordinates map titled in. also ~center.
     qint64 longiStart, latiStart;
@@ -283,6 +288,7 @@ private:
 };
 
 class Bell : public Active {
+    Q_OBJECT
 public:
     Bell(int sub, quint16 id);
     Bell(QDataStream & str, int sub, quint16 id);
@@ -304,6 +310,7 @@ public:
     quint8 Kind() const;
     QString FullName() const;
     quint16 NutritionalValue(quint8 sub) const;
+
 protected:
     void DoFrequentAction();
     void DoRareAction();

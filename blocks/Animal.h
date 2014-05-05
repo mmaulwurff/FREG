@@ -40,9 +40,11 @@ public:
     INNER_ACTIONS ActInner() override;
 
     virtual quint16 NutritionalValue(quint8 sub) const = 0;
+
 protected:
     void SaveAttributes(QDataStream & out) const override;
     void EatGrass();
+
 private:
     quint8  breath;
     quint16 satiation;
