@@ -45,9 +45,7 @@ QString Illuminator::FullName() const {
     }
 }
 
-Block * Illuminator::DropAfterDamage() const {
-    return BlockManager::NewBlock(ILLUMINATOR, Sub());
-}
+Block * Illuminator::DropAfterDamage() { return this; }
 
 usage_types Illuminator::Use(Block *) {
     if ( Sub() == GLASS ) { // flashlight

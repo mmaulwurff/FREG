@@ -35,7 +35,7 @@ public:
     void    Damage(ushort dmg, int dmg_kind) override;
     uchar   LightRadius() const override;
     quint8  Kind() const override;
-    Block * DropAfterDamage() const override;
+    Block * DropAfterDamage() override;
     QString FullName() const override;
     usage_types Use(Block *) override;
     INNER_ACTIONS ActInner() override;

@@ -637,10 +637,10 @@ void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
             dropped : NewBlock(PILE, DIFFERENT);
         Inventory * const inv = temp->HasInventory();
         Inventory * const new_pile_inv = new_block->HasInventory();
-        if ( inv ) {
+        if ( inv != nullptr ) {
             for (int i=0; i<inv->Size(); ++i) {
                 Block * const inner = inv->ShowBlock(i);
-                if ( inner && inner->Kind() == LIQUID ) {
+                if ( inner && inner->Kind() == LIQUID ) { // pouring liquid out
                     for (int n=0; inv->Number(i); ++n) {
                         if ( Build( inv->ShowBlock(i),
                                 x, y, z+i*(MAX_STACK_SIZE+1)+1+n ) )
@@ -654,7 +654,7 @@ void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
             }
             new_pile_inv->GetAll(inv);
         }
-        if ( dropped
+        if ( dropped != nullptr
                 && not dropped_pile
                 && not new_pile_inv->Get(dropped) )
         {
@@ -666,7 +666,17 @@ void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
     }
     const bool was_not_invisible = ( temp->Transparent() != INVISIBLE );
     const uchar old_light = temp->LightRadius();
-    shred->SetBlock(new_block, x_in_shred, y_in_shred, z);
+    if ( dropped == temp ) {
+        // do not delete block and do not replace it with normal
+        Active * const active = temp->ActiveBlock();
+        if ( active != nullptr ) {
+            shred->UnregisterLater(active);
+        }
+        temp->Restore();
+        shred->SetBlockNoCheck(new_block, x_in_shred, y_in_shred, z);
+    } else {
+        shred->SetBlock(new_block, x_in_shred, y_in_shred, z);
+    }
     shred->AddFalling(x_in_shred, y_in_shred, z+1);
     if ( was_not_invisible ) {
         ReEnlightenBlockRemove(x, y, z);

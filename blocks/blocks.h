@@ -125,7 +125,7 @@ public:
     bool  ShouldFall() const override;
     void  Push(int dir, Block * who) override;
     uchar LightRadius()       const override;
-    Block * DropAfterDamage() const override;
+    Block * DropAfterDamage() override;
     quint8  Kind()     const override;
     QString FullName() const override;
 private:
@@ -154,7 +154,7 @@ public:
     QString FullName() const;
     usage_types Use(Block * who = 0);
     Inventory * HasInventory();
-    Block * DropAfterDamage() const;
+    Block * DropAfterDamage();
 protected:
     void SaveAttributes(QDataStream & out) const;
 };
@@ -167,7 +167,7 @@ public:
 
     void DoFrequentAction();
     void DoRareAction();
-    Block * DropAfterDamage() const;
+    Block * DropAfterDamage();
     quint8 Kind() const;
     quint16 NutritionalValue(quint8 sub) const;
     QString FullName() const;

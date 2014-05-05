@@ -105,14 +105,9 @@
         durability -= mult*dmg;
     }
 
-    Block * Block::DropAfterDamage() const {
-        return GLASS==Sub() ?
-            nullptr : BLOCK==Kind() ?
-                block_manager.NormalBlock(Sub()) :
-                block_manager.NewBlock(Kind(), Sub());
-    }
+    Block * Block::DropAfterDamage() { return GLASS==Sub() ? nullptr : this; }
 
-    int  Block::PushResult(const int) const {
+    int  Block::PushResult(int) const {
         return ( AIR==Sub() ) ? ENVIRONMENT : NOT_MOVABLE;
     }
 
@@ -369,7 +364,7 @@
         }
     }
 
-    Block * Animal::DropAfterDamage() const {
+    Block * Animal::DropAfterDamage() {
         return block_manager.NewBlock(WEAPON, BONE);
     }
 
@@ -590,7 +585,7 @@
     bool Grass::ShouldFall() const { return false; }
     uchar Grass::LightRadius() const { return (FIRE == Sub()) ? 5 : 0; }
     quint8 Grass::Kind() const { return GRASS; }
-    Block * Grass::DropAfterDamage() const { return nullptr; }
+    Block * Grass::DropAfterDamage() { return nullptr; }
 
     Grass::Grass(const int sub, const quint16 id) :
             Active(sub, id)
@@ -622,7 +617,7 @@
     int Bush::PushResult(int const) const { return NOT_MOVABLE; }
     void Bush::Push(const int, Block * const who) { Inventory::Push(who); }
 
-    Block * Bush::DropAfterDamage() const {
+    Block * Bush::DropAfterDamage() {
         Block * const pile = block_manager.NewBlock(PILE, DIFFERENT);
         pile->HasInventory()->Get(block_manager.NewBlock(WEAPON, WOOD));
         pile->HasInventory()->Get(block_manager.NormalBlock(HAZELNUT));
@@ -630,7 +625,7 @@
     }
 
     void Bush::SaveAttributes(QDataStream & out) const {
-        Active::SaveAttributes(out);
+        Active   ::SaveAttributes(out);
         Inventory::SaveAttributes(out);
     }
 
@@ -671,7 +666,7 @@
         world->Move(X(), Y(), Z(), GetDir());
     }
 
-    Block * Rabbit::DropAfterDamage() const {
+    Block * Rabbit::DropAfterDamage() {
         Block * const pile = block_manager.NewBlock(PILE, DIFFERENT);
         Inventory * const pile_inv = pile->HasInventory();
         pile_inv->Get(block_manager.NormalBlock(A_MEAT));

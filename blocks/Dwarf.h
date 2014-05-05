@@ -47,7 +47,7 @@ public:
     void MoveInside(ushort num_from, ushort num_to, ushort num);
     void ReceiveSignal(QString);
     uchar LightRadius() const;
-    Block * DropAfterDamage() const;
+    Block * DropAfterDamage();
     quint16 NutritionalValue(quint8 sub) const;
     Inventory * HasInventory();
 
@@ -56,8 +56,10 @@ public:
     static const uchar IN_LEFT  = 2;
     static const uchar ON_BODY  = 3;
     static const uchar ON_LEGS  = 4;
+
 protected:
     void SaveAttributes(QDataStream & out) const;
+
 private:
     void UpdateLightRadius();
 
@@ -65,6 +67,6 @@ private:
 
     quint8 activeHand;
     uchar lightRadius;
-}; // class Dwarf
+};
 
 #endif // DWARF_H
