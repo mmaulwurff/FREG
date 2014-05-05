@@ -19,6 +19,7 @@
 
 #include <QTextStream>
 #include <QFile>
+#include <QTime>
 #include "blocks.h"
 #include "world.h"
 #include "Shred.h"
@@ -880,13 +881,16 @@
     }
 // Clock::
     usage_types Clock::Use(Block * const who) {
+        const QString time_str = (GetNote() == "real") ?
+            tr("Time is %1.").arg(QTime::currentTime().toString()) :
+            GetWorld()->TimeOfDayStr();
         if ( who ) {
             const Active * const active = who->ActiveBlock();
             if ( active ) {
-                who->ReceiveSignal(GetWorld()->TimeOfDayStr());
+                who->ReceiveSignal(time_str);
             }
         } else {
-            SendSignalAround(world->TimeOfDayStr());
+            SendSignalAround(time_str);
         }
         return USAGE_TYPE_NO;
     }
