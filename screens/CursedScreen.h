@@ -194,15 +194,12 @@ private:
     WINDOW * hudWin; // head-up display
     IThread * const input;
     volatile bool updated;
-    QTimer * const timer;
     FILE * const notifyLog;
     actions actionMode;
     /// Can be -1, 0, 1 for low, normal, and high focus.
     short shiftFocus;
     /// Save previous command for further execution.
     QString command;
-    QString lastNotification;
-    quint8 notificationRepeatCount;
     QFile * fileToShow;
     bool beepOn;
     QMutex * mutex;

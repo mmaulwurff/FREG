@@ -751,30 +751,32 @@ void Screen::DisplayFile(QString path) {
 }
 
 void Screen::Notify(const QString str) {
-    fputs(qPrintable(QString("%1 %2\n").arg(w->TimeOfDayStr()).arg(str)),
-        notifyLog);
-    if ( str == DING ) {
-        if ( beepOn ) {
+    fprintf(notifyLog, "%s %s\n",
+        qPrintable(w->TimeOfDayStr()), qPrintable(str));
+    if ( beepOn ) {
+        if ( str == DING ) {
             beep();
-        }
-    } else if ( str == OUCH ) {
-        if ( beepOn ) {
+        } else if ( str == OUCH ) {
             flash();
         }
-        return;
     }
-    if ( ++notificationRepeatCount && str == lastNotification ) {
+    if ( str.at(str.size()-1) == '!' ) {
+        wcolor_set(notifyWin, RED_BLACK, NULL);
+    }
+    static ushort notification_repeat_count = 1;
+    static QString last_notification;
+    if ( str == last_notification ) {
+        ++notification_repeat_count;
         int x, y;
         getyx(notifyWin, y, x);
-        (void)wmove(notifyWin, y-1, 0);
-        wclrtoeol(notifyWin);
-        wprintw(notifyWin, "%s (%dx)\n",
-            qPrintable(str), notificationRepeatCount);
+        mvwprintw(notifyWin, y-1, 0, "%s (%dx)\n",
+            qPrintable(str), notification_repeat_count);
     } else {
-        notificationRepeatCount = 1;
+        notification_repeat_count = 1;
         wprintw(notifyWin, "%s\n", qPrintable(str));
-        lastNotification = str;
+        last_notification = str;
     }
+    wstandend(notifyWin);
     wrefresh(notifyWin);
 }
 
@@ -808,9 +810,7 @@ Screen::Screen(
         hudWin(nullptr),
         input(new IThread(this)),
         updated(false),
-        timer(new QTimer(this)),
         notifyLog(fopen("texts/messages.txt", "at")),
-        notificationRepeatCount(1),
         fileToShow(nullptr),
         beepOn(false),
         mutex(new QMutex()),
@@ -864,9 +864,8 @@ Screen::Screen(
     } else {
         world->CleanAll();
         CleanAll();
-        puts(qPrintable(
-            tr("Set your terminal width at least %1 chars.").
-                arg(SCREEN_SIZE*2+2)));
+        puts(qPrintable(tr("Set your terminal width at least %1 chars.").
+            arg(SCREEN_SIZE*2+2)));
         error = WIDTH_NOT_ENOUGH;
         return;
     }
@@ -897,8 +896,9 @@ Screen::Screen(
     }
 
     input->start();
-    connect(timer, SIGNAL(timeout()), SLOT(Print()));
-    timer->start(100);
+    static QTimer timer;
+    connect(&timer, SIGNAL(timeout()), SLOT(Print()));
+    timer.start(50);
 } // Screen::Screen(World * wor, Player * pl)
 
 void Screen::CleanAll() {
@@ -908,7 +908,6 @@ void Screen::CleanAll() {
     input->Stop();
     input->wait();
     delete input;
-    delete timer;
 
     if ( leftWin   ) delwin(leftWin);
     if ( rightWin  ) delwin(rightWin);
