@@ -26,19 +26,14 @@ ushort Shred::FlatUndeground(short) {
 }
 
 void Shred::NormalUnderground(const ushort depth, const int sub) {
+    NormalCube(0,0,1, SHRED_WIDTH,SHRED_WIDTH,HEIGHT/2-depth-5, STONE);
     Block * const block = Normal(sub);
     Block * const stone = Normal(STONE);
     for (ushort x=0; x<SHRED_WIDTH; ++x)
     for (ushort y=0; y<SHRED_WIDTH; ++y) {
-        ushort z = 1;
-        for ( ; z<HEIGHT/2-depth-6; ++z) {
-            PutBlock(stone, x, y, z);
-        }
-        PutBlock( ((qrand()%2) ? stone : block), x, y, z++ );
-        for ( ; z<=HEIGHT/2-depth; ++z) {
-            PutBlock(block, x, y, z);
-        }
+        PutBlock( ((qrand()%2) ? stone : block), x, y, HEIGHT/2-depth-6);
     }
+    NormalCube(0,0,HEIGHT/2-depth-5, SHRED_WIDTH,SHRED_WIDTH,depth+6, sub);
 }
 
 void Shred::Plain() {

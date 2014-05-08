@@ -514,16 +514,13 @@ void Shred::TestShred() { // 7 items in a row
 
 void Shred::NullMountain() {
     NormalUnderground();
+    const ushort border_level = HEIGHT/2-2;
+    NormalCube(0,SHRED_WIDTH/2-1,1, SHRED_WIDTH,2,border_level, NULLSTONE);
+    NormalCube(SHRED_WIDTH/2-1,0,1, 2,SHRED_WIDTH,border_level, NULLSTONE);
     Block * const null_stone = Normal(NULLSTONE);
     for (short i=0; i<SHRED_WIDTH; ++i)
     for (short j=0; j<SHRED_WIDTH; ++j) {
-        ushort k = 1;
-        for ( ; k < HEIGHT/2; ++k) {
-            if ( i==7 || i==8 || j==7 || j==8 ) {
-                PutBlock(null_stone, i, j, k);
-            }
-        }
-        for ( ; k < HEIGHT-2; ++k) {
+        for (ushort k=border_level; k < HEIGHT-2; ++k) {
             const short surface =
                 HEIGHT/2 * (pow(1./(i-7.5), 2) * pow(1./(j-7.5), 2)+1);
             if ( HEIGHT/2+1 < surface && surface >= k ) {
@@ -532,30 +529,20 @@ void Shred::NullMountain() {
         }
     }
     if ( SHRED_NULLMOUNTAIN == TypeOfShred(longitude-1, latitude) ) { // north
-        for (short j=0; j<SHRED_WIDTH/2-1; ++j)
-        for (short k=HEIGHT/2; k<HEIGHT-2; ++k) {
-            blocks[7][j][k] = blocks[8][j][k] = null_stone;
-        }
+        NormalCube(7,0,HEIGHT/2, 2,SHRED_WIDTH/2-1,HEIGHT/2-2, NULLSTONE);
     }
     if ( SHRED_NULLMOUNTAIN == TypeOfShred(longitude+1, latitude) ) { // south
-        for (short j=SHRED_WIDTH/2+1; j<SHRED_WIDTH; ++j)
-        for (short k=HEIGHT/2; k<HEIGHT-2; ++k) {
-            blocks[7][j][k] = blocks[8][j][k] = null_stone;
-        }
+        NormalCube(7,SHRED_WIDTH/2+1,HEIGHT/2, 2,SHRED_WIDTH/2-1,HEIGHT/2-2,
+            NULLSTONE);
     }
     if ( SHRED_NULLMOUNTAIN == TypeOfShred(longitude, latitude+1) ) { // east
-        for (short i=SHRED_WIDTH/2+1; i<SHRED_WIDTH; ++i)
-        for (short k=HEIGHT/2; k<HEIGHT-2; ++k) {
-            blocks[i][7][k] = blocks[i][8][k] = null_stone;
-        }
+        NormalCube(SHRED_WIDTH/2+1,7,HEIGHT/2, SHRED_WIDTH/2-1,2,HEIGHT/2-2,
+            NULLSTONE);
     }
     if ( SHRED_NULLMOUNTAIN == TypeOfShred(longitude, latitude-1) ) { // west
-        for (short i=0; i<SHRED_WIDTH/2-1; ++i)
-        for (short k=HEIGHT/2; k<HEIGHT-2; ++k) {
-            blocks[i][7][k] = blocks[i][8][k] = null_stone;
-        }
+        NormalCube(0,7,HEIGHT/2, SHRED_WIDTH/2-1,2,HEIGHT/2-2, NULLSTONE);
     }
-} // Shred::NullMountain()
+}
 
 void Shred::Pyramid() {
     const ushort level = qMin(FlatUndeground(), ushort(HEIGHT-1-16));
@@ -602,9 +589,9 @@ void Shred::ChaosShred() {
     }
 }
 
-void Shred::NormalCube(const ushort x_start, const ushort y_start,
-        const ushort z_start,
-        const ushort x_size, const ushort y_size, const ushort z_size,
+void Shred::NormalCube(
+        const ushort x_start, const ushort y_start, const ushort z_start,
+        const ushort x_size,  const ushort y_size,  const ushort z_size,
         const int sub)
 {
     Block * const block = Normal(sub);
