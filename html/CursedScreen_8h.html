@@ -96,15 +96,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">CursedScreen.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Provides curses (text-based graphics interface) screen for freg.  
+<a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;ncursesw/ncurses.h&gt;</code><br/>
-<code>#include &quot;<a class="el" href="VirtScreen_8h_source.html">VirtScreen.h</a>&quot;</code><br/>
-<code>#include &lt;QThread&gt;</code><br/>
+<code>#include &quot;<a class="el" href="VirtScreen_8h_source.html">screens/VirtScreen.h</a>&quot;</code><br/>
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for CursedScreen.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="CursedScreen_8h__incl.png" border="0" usemap="#screens_2CursedScreen_8h" alt=""/></div>
 <map name="screens_2CursedScreen_8h" id="screens_2CursedScreen_8h">
-<area shape="rect" id="node5" href="VirtScreen_8h.html" title="VirtScreen.h" alt="" coords="168,89,261,122"/></map>
+<area shape="rect" id="node5" href="VirtScreen_8h.html" title="screens/VirtScreen.h" alt="" coords="168,89,312,122"/><area shape="rect" id="node9" href="header_8h.html" title="header.h" alt="" coords="252,171,321,205"/></map>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
@@ -119,9 +121,6 @@ This graph shows which files directly or indirectly include this file:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScreen.html">Screen</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIThread.html">IThread</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Keyboard input thread for curses screen for freg.  <a href="classIThread.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
@@ -144,7 +143,18 @@ Enumerations</h2></td></tr>
 <a class="el" href="CursedScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a5d97b2a463c30e1033322e898c796d9a">ACTION_BUILD</a>, 
 <a class="el" href="CursedScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a099861b259d988ce46b10ff4410229a9">ACTION_CRAFT</a>, 
 <br/>
-&#160;&#160;<a class="el" href="CursedScreen_8h.html#af806efc6052edbc741683ec893bb2fe1aebf1536c9fd2032a492d601cd1d46d61">ACTION_TAKEOFF</a>
+&#160;&#160;<a class="el" href="CursedScreen_8h.html#af806efc6052edbc741683ec893bb2fe1aebf1536c9fd2032a492d601cd1d46d61">ACTION_TAKEOFF</a>, 
+<a class="el" href="TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a21be300b59358a6caddeea191d2b282d">ACTION_USE</a>, 
+<a class="el" href="TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a4f339f0f5388d44b7d11efcaadf004de">ACTION_THROW</a>, 
+<a class="el" href="TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a0eaa96d5138b8349b4b531bc373eb202">ACTION_OBTAIN</a>, 
+<br/>
+&#160;&#160;<a class="el" href="TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a4a7c2ce37e72c10b3cc2f79a30e7e5f0">ACTION_WIELD</a>, 
+<a class="el" href="TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1ad9b1f52840791a48e010d5ac98b129e2">ACTION_INSCRIBE</a>, 
+<a class="el" href="TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a0d3f7eb11e6f79192bfa276507f8c31a">ACTION_EAT</a>, 
+<a class="el" href="TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a5d97b2a463c30e1033322e898c796d9a">ACTION_BUILD</a>, 
+<br/>
+&#160;&#160;<a class="el" href="TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a099861b259d988ce46b10ff4410229a9">ACTION_CRAFT</a>, 
+<a class="el" href="TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1aebf1536c9fd2032a492d601cd1d46d61">ACTION_TAKEOFF</a>
 <br/>
  }</td></tr>
 <tr class="separator:af806efc6052edbc741683ec893bb2fe1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -231,9 +241,15 @@ Enumerations</h2></td></tr>
 <br/>
  }</td></tr>
 <tr class="separator:a92b9b42632766b6a6f2173546ce16072"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae6468bd5894ef69f1df5fca80d2550d3"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CursedScreen_8h.html#ae6468bd5894ef69f1df5fca80d2550d3">screen_errors</a> { <a class="el" href="CursedScreen_8h.html#ae6468bd5894ef69f1df5fca80d2550d3abf350750d0d4fabd8954c0f1e9bbae94">NO_ERROR</a> = 0, 
+<tr class="memitem:ae6468bd5894ef69f1df5fca80d2550d3"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CursedScreen_8h.html#ae6468bd5894ef69f1df5fca80d2550d3">screen_errors</a> { <br/>
+&#160;&#160;<a class="el" href="CursedScreen_8h.html#ae6468bd5894ef69f1df5fca80d2550d3ac4da796070e3424323e9826d5ae5ae79">SCREEN_NO_ERROR</a> = 0, 
 <a class="el" href="CursedScreen_8h.html#ae6468bd5894ef69f1df5fca80d2550d3a0d9082f472eeed9d87b8976d34db17a9">HEIGHT_NOT_ENOUGH</a>, 
-<a class="el" href="CursedScreen_8h.html#ae6468bd5894ef69f1df5fca80d2550d3a68529a3255b62e2c883a1c38ae179c36">WIDTH_NOT_ENOUGH</a>
+<a class="el" href="CursedScreen_8h.html#ae6468bd5894ef69f1df5fca80d2550d3a68529a3255b62e2c883a1c38ae179c36">WIDTH_NOT_ENOUGH</a>, 
+<a class="el" href="TextScreen_8h.html#ae6468bd5894ef69f1df5fca80d2550d3ac4da796070e3424323e9826d5ae5ae79">SCREEN_NO_ERROR</a> = 0, 
+<br/>
+&#160;&#160;<a class="el" href="TextScreen_8h.html#ae6468bd5894ef69f1df5fca80d2550d3a0d9082f472eeed9d87b8976d34db17a9">HEIGHT_NOT_ENOUGH</a>, 
+<a class="el" href="TextScreen_8h.html#ae6468bd5894ef69f1df5fca80d2550d3a68529a3255b62e2c883a1c38ae179c36">WIDTH_NOT_ENOUGH</a>
+<br/>
  }</td></tr>
 <tr class="separator:ae6468bd5894ef69f1df5fca80d2550d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -242,7 +258,11 @@ Variables</h2></td></tr>
 <tr class="memitem:ac39f1f86bc6a0ccd9b90e1f2daa9daf4"><td class="memItemLeft" align="right" valign="top">const ushort&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CursedScreen_8h.html#ac39f1f86bc6a0ccd9b90e1f2daa9daf4">SCREEN_SIZE</a> = 30</td></tr>
 <tr class="separator:ac39f1f86bc6a0ccd9b90e1f2daa9daf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Macro Definition Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Provides curses (text-based graphics interface) screen for freg. </p>
+
+<p>Definition in file <a class="el" href="CursedScreen_8h_source.html">CursedScreen.h</a>.</p>
+</div><h2 class="groupheader">Macro Definition Documentation</h2>
 <a class="anchor" id="a354abfc4ba66707cf9242949fefb5e5c"></a>
 <div class="memitem">
 <div class="memproto">
@@ -283,6 +303,24 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><em><a class="anchor" id="af806efc6052edbc741683ec893bb2fe1a21be300b59358a6caddeea191d2b282d"></a>ACTION_USE</em>&#160;</td><td class="fielddoc">
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="af806efc6052edbc741683ec893bb2fe1a4f339f0f5388d44b7d11efcaadf004de"></a>ACTION_THROW</em>&#160;</td><td class="fielddoc">
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="af806efc6052edbc741683ec893bb2fe1a0eaa96d5138b8349b4b531bc373eb202"></a>ACTION_OBTAIN</em>&#160;</td><td class="fielddoc">
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="af806efc6052edbc741683ec893bb2fe1a4a7c2ce37e72c10b3cc2f79a30e7e5f0"></a>ACTION_WIELD</em>&#160;</td><td class="fielddoc">
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="af806efc6052edbc741683ec893bb2fe1ad9b1f52840791a48e010d5ac98b129e2"></a>ACTION_INSCRIBE</em>&#160;</td><td class="fielddoc">
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="af806efc6052edbc741683ec893bb2fe1a0d3f7eb11e6f79192bfa276507f8c31a"></a>ACTION_EAT</em>&#160;</td><td class="fielddoc">
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="af806efc6052edbc741683ec893bb2fe1a5d97b2a463c30e1033322e898c796d9a"></a>ACTION_BUILD</em>&#160;</td><td class="fielddoc">
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="af806efc6052edbc741683ec893bb2fe1a099861b259d988ce46b10ff4410229a9"></a>ACTION_CRAFT</em>&#160;</td><td class="fielddoc">
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="af806efc6052edbc741683ec893bb2fe1aebf1536c9fd2032a492d601cd1d46d61"></a>ACTION_TAKEOFF</em>&#160;</td><td class="fielddoc">
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="af806efc6052edbc741683ec893bb2fe1a21be300b59358a6caddeea191d2b282d"></a>ACTION_USE</em>&#160;</td><td class="fielddoc">
 </td></tr>
 <tr><td class="fieldname"><em><a class="anchor" id="af806efc6052edbc741683ec893bb2fe1a4f339f0f5388d44b7d11efcaadf004de"></a>ACTION_THROW</em>&#160;</td><td class="fielddoc">
 </td></tr>
@@ -460,7 +498,13 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><em><a class="anchor" id="ae6468bd5894ef69f1df5fca80d2550d3abf350750d0d4fabd8954c0f1e9bbae94"></a>NO_ERROR</em>&#160;</td><td class="fielddoc">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><em><a class="anchor" id="ae6468bd5894ef69f1df5fca80d2550d3ac4da796070e3424323e9826d5ae5ae79"></a>SCREEN_NO_ERROR</em>&#160;</td><td class="fielddoc">
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="ae6468bd5894ef69f1df5fca80d2550d3a0d9082f472eeed9d87b8976d34db17a9"></a>HEIGHT_NOT_ENOUGH</em>&#160;</td><td class="fielddoc">
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="ae6468bd5894ef69f1df5fca80d2550d3a68529a3255b62e2c883a1c38ae179c36"></a>WIDTH_NOT_ENOUGH</em>&#160;</td><td class="fielddoc">
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="ae6468bd5894ef69f1df5fca80d2550d3ac4da796070e3424323e9826d5ae5ae79"></a>SCREEN_NO_ERROR</em>&#160;</td><td class="fielddoc">
 </td></tr>
 <tr><td class="fieldname"><em><a class="anchor" id="ae6468bd5894ef69f1df5fca80d2550d3a0d9082f472eeed9d87b8976d34db17a9"></a>HEIGHT_NOT_ENOUGH</em>&#160;</td><td class="fielddoc">
 </td></tr>
@@ -490,7 +534,7 @@ Variables</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 22 2014 10:33:03 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu May 8 2014 21:33:01 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

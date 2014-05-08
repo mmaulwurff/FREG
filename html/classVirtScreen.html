@@ -89,6 +89,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#pub-slots">Public Slots</a> &#124;
 <a href="#signals">Signals</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classVirtScreen-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -112,14 +113,14 @@ Collaboration diagram for VirtScreen:</div>
 <div class="dyncontent">
 <div class="center"><img src="classVirtScreen__coll__graph.png" border="0" usemap="#VirtScreen_coll__map" alt="Collaboration graph"/></div>
 <map name="VirtScreen_coll__map" id="VirtScreen_coll__map">
-<area shape="rect" id="node4" href="classPlayer.html" title="This class contains information specific to player and interface for manipulating him..." alt="" coords="37,91,96,125"/><area shape="rect" id="node7" href="classWorld.html" title="World provides global physics and shred connection. " alt="" coords="120,91,176,125"/></map>
+<area shape="rect" id="node4" href="classPlayer.html" title="This class contains information specific to player and interface for manipulating him..." alt="" coords="83,177,141,210"/><area shape="rect" id="node7" href="classXyz.html" title="Xyz" alt="" coords="99,91,141,125"/><area shape="rect" id="node9" href="classXy.html" title="Xy" alt="" coords="101,6,139,39"/><area shape="rect" id="node11" href="classWorld.html" title="World provides global physics and shred connection. " alt="" coords="169,177,225,210"/></map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-slots"></a>
 Public Slots</h2></td></tr>
-<tr class="memitem:a880fcafcbaf604a7209734235466371a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVirtScreen.html#a880fcafcbaf604a7209734235466371a">Notify</a> (QString)=0</td></tr>
-<tr class="memdesc:a880fcafcbaf604a7209734235466371a"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is called for a notification to be displayed.  <a href="#a880fcafcbaf604a7209734235466371a">More...</a><br/></td></tr>
-<tr class="separator:a880fcafcbaf604a7209734235466371a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5658982ce13c9731eb71d06cc472599"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVirtScreen.html#ae5658982ce13c9731eb71d06cc472599">Notify</a> (QString) const =0</td></tr>
+<tr class="memdesc:ae5658982ce13c9731eb71d06cc472599"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is called for a notification to be displayed.  <a href="#ae5658982ce13c9731eb71d06cc472599">More...</a><br/></td></tr>
+<tr class="separator:ae5658982ce13c9731eb71d06cc472599"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9d80adfbf509a50bc6ad05ac6f7d8fa2"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVirtScreen.html#a9d80adfbf509a50bc6ad05ac6f7d8fa2">CleanAll</a> ()</td></tr>
 <tr class="memdesc:a9d80adfbf509a50bc6ad05ac6f7d8fa2"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is called when program is stopped and from destructor.  <a href="#a9d80adfbf509a50bc6ad05ac6f7d8fa2">More...</a><br/></td></tr>
 <tr class="separator:a9d80adfbf509a50bc6ad05ac6f7d8fa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -150,6 +151,9 @@ Public Slots</h2></td></tr>
 <tr class="memitem:af4b841b03471d9a19ae1175a3dea4edd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVirtScreen.html#af4b841b03471d9a19ae1175a3dea4edd">DeathScreen</a> ()</td></tr>
 <tr class="memdesc:af4b841b03471d9a19ae1175a3dea4edd"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is called when player is dead, and displayed until respawn.  <a href="#af4b841b03471d9a19ae1175a3dea4edd">More...</a><br/></td></tr>
 <tr class="separator:af4b841b03471d9a19ae1175a3dea4edd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25f3b3d00c6fa7c1c23664c65fc82716"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVirtScreen.html#a25f3b3d00c6fa7c1c23664c65fc82716">ActionXyz</a> (short &amp;x, short &amp;y, short &amp;z) const </td></tr>
+<tr class="memdesc:a25f3b3d00c6fa7c1c23664c65fc82716"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used to get player focus coordinates from screen.  <a href="#a25f3b3d00c6fa7c1c23664c65fc82716">More...</a><br/></td></tr>
+<tr class="separator:a25f3b3d00c6fa7c1c23664c65fc82716"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a15ad5ab115d887ac455b49db1e5679c3"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVirtScreen.html#a15ad5ab115d887ac455b49db1e5679c3">DisplayFile</a> (QString path)</td></tr>
 <tr class="memdesc:a15ad5ab115d887ac455b49db1e5679c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">This shows a file by path.  <a href="#a15ad5ab115d887ac455b49db1e5679c3">More...</a><br/></td></tr>
 <tr class="separator:a15ad5ab115d887ac455b49db1e5679c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -165,9 +169,24 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a038d31b20e33cd3683dfce2c41d7dfed"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVirtScreen.html#a038d31b20e33cd3683dfce2c41d7dfed">VirtScreen</a> (<a class="el" href="classWorld.html">World</a> *, <a class="el" href="classPlayer.html">Player</a> *)</td></tr>
 <tr class="memdesc:a038d31b20e33cd3683dfce2c41d7dfed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor makes player and world connections.  <a href="#a038d31b20e33cd3683dfce2c41d7dfed">More...</a><br/></td></tr>
 <tr class="separator:a038d31b20e33cd3683dfce2c41d7dfed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8aeb0b6a1bec852aa0a60b5db845986"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVirtScreen.html#af8aeb0b6a1bec852aa0a60b5db845986">VirtScreen</a> (<a class="el" href="classVirtScreen.html">VirtScreen</a> &amp;)=delete</td></tr>
+<tr class="separator:af8aeb0b6a1bec852aa0a60b5db845986"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a95211d3030daf852e37ca3bf5a552f9f"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVirtScreen.html#a95211d3030daf852e37ca3bf5a552f9f">~VirtScreen</a> ()</td></tr>
 <tr class="memdesc:a95211d3030daf852e37ca3bf5a552f9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Only calls <a class="el" href="classVirtScreen.html#a9d80adfbf509a50bc6ad05ac6f7d8fa2" title="This is called when program is stopped and from destructor. ">VirtScreen::CleanAll</a>.  <a href="#a95211d3030daf852e37ca3bf5a552f9f">More...</a><br/></td></tr>
 <tr class="separator:a95211d3030daf852e37ca3bf5a552f9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3ad74efc0d44ae54a2c27900d3bb631"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVirtScreen.html#af3ad74efc0d44ae54a2c27900d3bb631">GetChar</a> () const </td></tr>
+<tr class="separator:af3ad74efc0d44ae54a2c27900d3bb631"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6136fa032244875ed3fd91554e3f9ad4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVirtScreen.html#a6136fa032244875ed3fd91554e3f9ad4">FlushInput</a> () const </td></tr>
+<tr class="separator:a6136fa032244875ed3fd91554e3f9ad4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8c0cccd74d52f7df3626eb32890cca1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVirtScreen.html#aa8c0cccd74d52f7df3626eb32890cca1">ControlPlayer</a> (int command)</td></tr>
+<tr class="separator:aa8c0cccd74d52f7df3626eb32890cca1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:ad956ae35701caa43ca075f155d3ee41d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classWorld.html">World</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVirtScreen.html#ad956ae35701caa43ca075f155d3ee41d">GetWorld</a> () const </td></tr>
+<tr class="separator:ad956ae35701caa43ca075f155d3ee41d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82173d1d2feac382758b201e7ff7e812"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVirtScreen.html#a82173d1d2feac382758b201e7ff7e812">CharName</a> (int kind, int sub) const </td></tr>
+<tr class="separator:a82173d1d2feac382758b201e7ff7e812"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -213,6 +232,30 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="af8aeb0b6a1bec852aa0a60b5db845986"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">VirtScreen::VirtScreen </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classVirtScreen.html">VirtScreen</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="a95211d3030daf852e37ca3bf5a552f9f"></a>
 <div class="memitem">
 <div class="memproto">
@@ -236,11 +279,92 @@ Protected Attributes</h2></td></tr>
 
 <p>Only calls <a class="el" href="classVirtScreen.html#a9d80adfbf509a50bc6ad05ac6f7d8fa2" title="This is called when program is stopped and from destructor. ">VirtScreen::CleanAll</a>. </p>
 
-<p>Definition at line <a class="el" href="VirtScreen_8cpp_source.html#l00071">71</a> of file <a class="el" href="VirtScreen_8cpp_source.html">VirtScreen.cpp</a>.</p>
+<p>Definition at line <a class="el" href="VirtScreen_8cpp_source.html#l00073">73</a> of file <a class="el" href="VirtScreen_8cpp_source.html">VirtScreen.cpp</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a25f3b3d00c6fa7c1c23664c65fc82716"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void VirtScreen::ActionXyz </td>
+          <td>(</td>
+          <td class="paramtype">short &amp;&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">short &amp;&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">short &amp;&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Used to get player focus coordinates from screen. </p>
+<p>x, y, z are coordinates where player will make action. May be reimplemented in derivative class to get xyz other than world direction-based focus. </p>
+
+<p>Definition at line <a class="el" href="VirtScreen_8cpp_source.html#l00080">80</a> of file <a class="el" href="VirtScreen_8cpp_source.html">VirtScreen.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a82173d1d2feac382758b201e7ff7e812"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">char VirtScreen::CharName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>kind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>sub</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="VirtScreen_8cpp_source.html#l00086">86</a> of file <a class="el" href="VirtScreen_8cpp_source.html">VirtScreen.cpp</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a9d80adfbf509a50bc6ad05ac6f7d8fa2"></a>
 <div class="memitem">
 <div class="memproto">
@@ -265,7 +389,7 @@ Protected Attributes</h2></td></tr>
 <p>This is called when program is stopped and from destructor. </p>
 <p>When implemented, this should contain check to prevent double cleaning. </p>
 
-<p>Definition at line <a class="el" href="VirtScreen_8cpp_source.html#l00070">70</a> of file <a class="el" href="VirtScreen_8cpp_source.html">VirtScreen.cpp</a>.</p>
+<p>Definition at line <a class="el" href="VirtScreen_8cpp_source.html#l00072">72</a> of file <a class="el" href="VirtScreen_8cpp_source.html">VirtScreen.cpp</a>.</p>
 
 </div>
 </div>
@@ -294,6 +418,34 @@ Protected Attributes</h2></td></tr>
 <p>This restores connections to <a class="el" href="classVirtScreen.html#a9066f7fcbc8752ab92cc143ed0a38458" title="This is called when block at (x, y, z) should be updated in screen. ">VirtScreen::Update</a> and <a class="el" href="classVirtScreen.html#a143d5ecd482e2e5d709029455a9967e2" title="Called when area around xyz with range needs to be updated. ">VirtScreen::UpdateAround</a> which can be temporarily disconnected. </p>
 
 <p>Definition at line <a class="el" href="VirtScreen_8cpp_source.html#l00027">27</a> of file <a class="el" href="VirtScreen_8cpp_source.html">VirtScreen.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa8c0cccd74d52f7df3626eb32890cca1"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void VirtScreen::ControlPlayer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>command</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="classScreen.html#a793f77cb399ee400f734a9ad29be03cb">Screen</a>, and <a class="el" href="classScreen.html#a793f77cb399ee400f734a9ad29be03cb">Screen</a>.</p>
+
+<p>Definition at line <a class="el" href="VirtScreen_8cpp_source.html#l00077">77</a> of file <a class="el" href="VirtScreen_8cpp_source.html">VirtScreen.cpp</a>.</p>
 
 </div>
 </div>
@@ -349,7 +501,7 @@ Protected Attributes</h2></td></tr>
 <p>This shows a file by path. </p>
 <p>Standard (non-reimpemented) version does nothing. </p>
 
-<p>Definition at line <a class="el" href="VirtScreen_8cpp_source.html#l00073">73</a> of file <a class="el" href="VirtScreen_8cpp_source.html">VirtScreen.cpp</a>.</p>
+<p>Definition at line <a class="el" href="VirtScreen_8cpp_source.html#l00078">78</a> of file <a class="el" href="VirtScreen_8cpp_source.html">VirtScreen.cpp</a>.</p>
 
 </div>
 </div>
@@ -376,6 +528,85 @@ Protected Attributes</h2></td></tr>
 
 <p>This is emitted when input receives exit key. </p>
 <p>This is connected to application exit. </p>
+
+</div>
+</div>
+<a class="anchor" id="a6136fa032244875ed3fd91554e3f9ad4"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void VirtScreen::FlushInput </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="classScreen.html#a74c53c81a8085d0f0ac1cd088549e746">Screen</a>, and <a class="el" href="classScreen.html#a74c53c81a8085d0f0ac1cd088549e746">Screen</a>.</p>
+
+<p>Definition at line <a class="el" href="VirtScreen_8cpp_source.html#l00076">76</a> of file <a class="el" href="VirtScreen_8cpp_source.html">VirtScreen.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="af3ad74efc0d44ae54a2c27900d3bb631"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int VirtScreen::GetChar </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="classScreen.html#a9406442ed0bf4f6b9e04a6937bd2fe41">Screen</a>, and <a class="el" href="classScreen.html#a9406442ed0bf4f6b9e04a6937bd2fe41">Screen</a>.</p>
+
+<p>Definition at line <a class="el" href="VirtScreen_8cpp_source.html#l00075">75</a> of file <a class="el" href="VirtScreen_8cpp_source.html">VirtScreen.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ad956ae35701caa43ca075f155d3ee41d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classWorld.html">World</a> * VirtScreen::GetWorld </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="VirtScreen_8cpp_source.html#l00084">84</a> of file <a class="el" href="VirtScreen_8cpp_source.html">VirtScreen.cpp</a>.</p>
 
 </div>
 </div>
@@ -406,7 +637,7 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a880fcafcbaf604a7209734235466371a"></a>
+<a class="anchor" id="ae5658982ce13c9731eb71d06cc472599"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -418,7 +649,7 @@ Protected Attributes</h2></td></tr>
           <td>(</td>
           <td class="paramtype">QString&#160;</td>
           <td class="paramname"></td><td>)</td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
   </td>
@@ -650,7 +881,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="VirtScreen_8h_source.html#l00110">110</a> of file <a class="el" href="VirtScreen_8h_source.html">VirtScreen.h</a>.</p>
+<p>Definition at line <a class="el" href="VirtScreen_8h_source.html#l00130">130</a> of file <a class="el" href="VirtScreen_8h_source.html">VirtScreen.h</a>.</p>
 
 </div>
 </div>
@@ -672,18 +903,18 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="VirtScreen_8h_source.html#l00109">109</a> of file <a class="el" href="VirtScreen_8h_source.html">VirtScreen.h</a>.</p>
+<p>Definition at line <a class="el" href="VirtScreen_8h_source.html#l00129">129</a> of file <a class="el" href="VirtScreen_8h_source.html">VirtScreen.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li><a class="el" href="VirtScreen_8h_source.html">VirtScreen.h</a></li>
-<li><a class="el" href="VirtScreen_8cpp_source.html">VirtScreen.cpp</a></li>
+<li>screens/<a class="el" href="VirtScreen_8h_source.html">VirtScreen.h</a></li>
+<li>screens/<a class="el" href="VirtScreen_8cpp_source.html">VirtScreen.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 22 2014 10:33:04 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu May 8 2014 21:33:01 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

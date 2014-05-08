@@ -8,6 +8,6 @@ var searchData=
   ['breath',['Breath',['../classAnimal.html#af4254ecf8d9cf3525bd7c09d7162e23a',1,'Animal::Breath()'],['../classPlayer.html#a09d88a3502ec0f3feaa9cb83a7721ea3',1,'Player::Breath()']]],
   ['breathpercent',['BreathPercent',['../classPlayer.html#a089da55605b2fb4e39a7e2af7b4b03df',1,'Player']]],
   ['bucket',['Bucket',['../classBucket.html#aae537adce85170fe92573d8c4ca25177',1,'Bucket::Bucket(int sub, quint16 id)'],['../classBucket.html#ac3c466fdcd200a90f6082e599b042e92',1,'Bucket::Bucket(QDataStream &amp;str, int sub, quint16 id)']]],
-  ['build',['Build',['../classPlayer.html#a2209bda757d7b5234395f242fdd3bf7e',1,'Player::Build()'],['../classWorld.html#a63ece76b5e505baa40c1153f6acd5f11',1,'World::Build()']]],
+  ['build',['Build',['../classPlayer.html#a2209bda757d7b5234395f242fdd3bf7e',1,'Player::Build(short x, short y, short z, ushort num)'],['../classPlayer.html#ad41d8b10e1e39df37bab41b706732321',1,'Player::Build(ushort num)'],['../classWorld.html#a63ece76b5e505baa40c1153f6acd5f11',1,'World::Build()']]],
   ['bush',['Bush',['../classBush.html#ade5526208b2ae9923de7b2ec554dcc9b',1,'Bush::Bush(int sub, quint16 id)'],['../classBush.html#a8c467a811560d88ae273e5d86c917e83',1,'Bush::Bush(QDataStream &amp;str, int sub, quint16 id)']]]
 ];

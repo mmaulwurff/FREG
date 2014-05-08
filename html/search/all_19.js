@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['y',['Y',['../classPlayer.html#a645ec36c3778e1b047def702b561c4c7',1,'Player::Y()'],['../classXy.html#a0e049ad1b559014e46e3a9516c0a4d58',1,'Xy::Y()']]],
+  ['y',['Y',['../classXy.html#a0e049ad1b559014e46e3a9516c0a4d58',1,'Xy']]],
   ['y_5fself',['y_self',['../classXy.html#aa50394806d126295fb81da5701e44830',1,'Xy']]],
   ['yellow_5fblack',['YELLOW_BLACK',['../CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a07aa836826cf14afc4e9af0c7df630eb',1,'CursedScreen.h']]],
   ['yellow_5fblue',['YELLOW_BLUE',['../CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072afb6a71246a687f34ba4a4253533d9a61',1,'CursedScreen.h']]],

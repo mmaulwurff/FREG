@@ -16,6 +16,7 @@ var searchData=
   ['mapsize',['MapSize',['../classWorld.html#af19c6d4f193e10e31b52a5caad5d0448',1,'World::MapSize()'],['../classWorldMap.html#a215fe4401ff033af88091e5291bd7895',1,'WorldMap::MapSize()']]],
   ['max_5fbreath',['MAX_BREATH',['../header_8h.html#ac250c57cd35174251af45e3a64a3c8d5',1,'header.h']]],
   ['max_5fdurability',['MAX_DURABILITY',['../header_8h.html#add60a85de4cfd9e279f70e078e598810',1,'header.h']]],
+  ['max_5ffuel',['MAX_FUEL',['../Illuminator_8h.html#a0d026a7543a019969b2aeb3b66f8daa6',1,'Illuminator.h']]],
   ['max_5flight_5fradius',['MAX_LIGHT_RADIUS',['../header_8h.html#aa84fc59bd7fa1a6e398ddd7312e1d19b',1,'header.h']]],
   ['max_5fstack_5fsize',['MAX_STACK_SIZE',['../Inventory_8h.html#a3ed7307144348e53da1942b0f91811ab',1,'Inventory.h']]],
   ['melt',['MELT',['../header_8h.html#a5adfb93f736d9aa263cea4b7b74da15ead6239d150b4e0f1beac89f3dcb9d8519',1,'header.h']]],
@@ -27,9 +28,9 @@ var searchData=
   ['morning',['MORNING',['../header_8h.html#ac436fd4b0170b47e8e2d8b63e556a9c9aa9e1de47cb212ef4d7dc18335921eef8',1,'header.h']]],
   ['moss_5fstone',['MOSS_STONE',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a5356cc54f18b01905b3955c4c7d87c99',1,'header.h']]],
   ['movable',['MOVABLE',['../header_8h.html#a4b1e949f8e745e1bab6b99b32b34c544a9d86737eb7a3c269abe82f3024c407eb',1,'header.h']]],
-  ['move',['Move',['../classActive.html#a904d8eccfb2bd2ba4ed0ceff43a176c2',1,'Active::Move()'],['../classBlock.html#aa4cdb0a064681a8db9cce0221e99e160',1,'Block::Move()'],['../classDwarf.html#ab9cc68bbf90b0a6b2a882c90cf9a3d4a',1,'Dwarf::Move()'],['../classPlayer.html#ad21e4b33a60bb866778710fcd6cd2481',1,'Player::Move()'],['../classScreen.html#a38db64818ebd87ae38d09f50ebfa688b',1,'Screen::Move()'],['../classVirtScreen.html#abb486dd9de153955b30a83554d9ff951',1,'VirtScreen::Move()'],['../classWorld.html#a651515a9613a5276793b879de1a4b000',1,'World::Move()']]],
+  ['move',['Move',['../classActive.html#a904d8eccfb2bd2ba4ed0ceff43a176c2',1,'Active::Move()'],['../classBlock.html#aa4cdb0a064681a8db9cce0221e99e160',1,'Block::Move()'],['../classDwarf.html#aa142e031b38999ca01e42ae737dd6ed0',1,'Dwarf::Move()'],['../classPlayer.html#ad21e4b33a60bb866778710fcd6cd2481',1,'Player::Move()'],['../classScreen.html#a581cf350dc2d6ea1552cc9741c81c100',1,'Screen::Move(int) override'],['../classScreen.html#a581cf350dc2d6ea1552cc9741c81c100',1,'Screen::Move(int) override'],['../classVirtScreen.html#abb486dd9de153955b30a83554d9ff951',1,'VirtScreen::Move()'],['../classWorld.html#a651515a9613a5276793b879de1a4b000',1,'World::Move()']]],
   ['move_5fup',['MOVE_UP',['../header_8h.html#a4b1e949f8e745e1bab6b99b32b34c544ad1c2df17d4a2cdc3b734e4554ebbced6',1,'header.h']]],
   ['moved',['Moved',['../classActive.html#a05769b0afa87193e72adcd991aac6815',1,'Active::Moved()'],['../classPlayer.html#a6283454f1b8a6468009dd538e64fd35c',1,'Player::Moved()'],['../classWorld.html#a5719414f65ee220f9bfa96564932c385',1,'World::Moved()']]],
-  ['moveinside',['MoveInside',['../classDwarf.html#a4fa78d89ab4eac80cea19e41bae35bf8',1,'Dwarf::MoveInside()'],['../classInventory.html#a91c17bee854e34b3bb0f813cd699a52d',1,'Inventory::MoveInside()']]],
+  ['moveinside',['MoveInside',['../classDwarf.html#a8de6aea639c73615c18d7f4765764b9d',1,'Dwarf::MoveInside()'],['../classInventory.html#a91c17bee854e34b3bb0f813cd699a52d',1,'Inventory::MoveInside()']]],
   ['moveinsideinventory',['MoveInsideInventory',['../classPlayer.html#a9216e8dd257816e431aadf57b37fa1bc',1,'Player']]]
 ];

@@ -36,6 +36,6 @@ var searchData=
   ['bucket',['Bucket',['../classBucket.html',1,'Bucket'],['../classBucket.html#aae537adce85170fe92573d8c4ca25177',1,'Bucket::Bucket(int sub, quint16 id)'],['../classBucket.html#ac3c466fdcd200a90f6082e599b042e92',1,'Bucket::Bucket(QDataStream &amp;str, int sub, quint16 id)'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a6562baa14d39f302094c545623c5ae14',1,'BUCKET():&#160;header.h']]],
   ['bucket_2ecpp',['Bucket.cpp',['../Bucket_8cpp.html',1,'']]],
   ['bucket_2eh',['Bucket.h',['../Bucket_8h.html',1,'']]],
-  ['build',['Build',['../classPlayer.html#a2209bda757d7b5234395f242fdd3bf7e',1,'Player::Build()'],['../classWorld.html#a63ece76b5e505baa40c1153f6acd5f11',1,'World::Build()']]],
+  ['build',['Build',['../classPlayer.html#a2209bda757d7b5234395f242fdd3bf7e',1,'Player::Build(short x, short y, short z, ushort num)'],['../classPlayer.html#ad41d8b10e1e39df37bab41b706732321',1,'Player::Build(ushort num)'],['../classWorld.html#a63ece76b5e505baa40c1153f6acd5f11',1,'World::Build()']]],
   ['bush',['Bush',['../classBush.html',1,'Bush'],['../classBush.html#ade5526208b2ae9923de7b2ec554dcc9b',1,'Bush::Bush(int sub, quint16 id)'],['../classBush.html#a8c467a811560d88ae273e5d86c917e83',1,'Bush::Bush(QDataStream &amp;str, int sub, quint16 id)'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285ab2e062d1d8146bf8e158300e5930fff4',1,'BUSH():&#160;header.h']]]
 ];

@@ -90,14 +90,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="classIThread-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">IThread Class Reference</div>  </div>
+<div class="title">IThread Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
 
 <p>Keyboard input thread for curses screen for freg.  
  <a href="classIThread.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="CursedScreen_8h_source.html">CursedScreen.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="IThread_8h_source.html">IThread.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for IThread:</div>
 <div class="dyncontent">
@@ -111,42 +111,42 @@ Collaboration diagram for IThread:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a40df467e56a891a1690952a369efc848"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIThread.html#a40df467e56a891a1690952a369efc848">IThread</a> (<a class="el" href="classScreen.html">Screen</a> *const)</td></tr>
-<tr class="separator:a40df467e56a891a1690952a369efc848"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5979c548a621d4f53a9c553db2999b44"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIThread.html#a5979c548a621d4f53a9c553db2999b44">IThread</a> (<a class="el" href="classVirtScreen.html">VirtScreen</a> *const)</td></tr>
+<tr class="separator:a5979c548a621d4f53a9c553db2999b44"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a86371f622248963cdba951693f2fa905"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIThread.html#a86371f622248963cdba951693f2fa905">Stop</a> ()</td></tr>
 <tr class="separator:a86371f622248963cdba951693f2fa905"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a9629e48839c3bc9a88d2dab7fd4e3675"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIThread.html#a9629e48839c3bc9a88d2dab7fd4e3675">run</a> ()</td></tr>
-<tr class="separator:a9629e48839c3bc9a88d2dab7fd4e3675"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab008d4881339e9441b11598d3df9e1a3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIThread.html#ab008d4881339e9441b11598d3df9e1a3">run</a> () override</td></tr>
+<tr class="separator:ab008d4881339e9441b11598d3df9e1a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Keyboard input thread for curses screen for freg. </p>
-<p>This class is thread, with <a class="el" href="classIThread.html#a9629e48839c3bc9a88d2dab7fd4e3675">IThread::run</a> containing input loop. </p>
+<p>This class is thread, with <a class="el" href="classIThread.html#ab008d4881339e9441b11598d3df9e1a3">IThread::run</a> containing input loop. Can be used in console-based freg screens. </p>
 
-<p>Definition at line <a class="el" href="CursedScreen_8h_source.html#l00209">209</a> of file <a class="el" href="CursedScreen_8h_source.html">CursedScreen.h</a>.</p>
+<p>Definition at line <a class="el" href="IThread_8h_source.html#l00033">33</a> of file <a class="el" href="IThread_8h_source.html">IThread.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a40df467e56a891a1690952a369efc848"></a>
+<a class="anchor" id="a5979c548a621d4f53a9c553db2999b44"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">IThread::IThread </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classScreen.html">Screen</a> * const&#160;</td>
+          <td class="paramtype"><a class="el" href="classVirtScreen.html">VirtScreen</a> * const&#160;</td>
           <td class="paramname"><em>scr</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="CursedScreen_8cpp_source.html#l01052">1052</a> of file <a class="el" href="CursedScreen_8cpp_source.html">CursedScreen.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IThread_8cpp_source.html#l00023">23</a> of file <a class="el" href="IThread_8cpp_source.html">IThread.cpp</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a9629e48839c3bc9a88d2dab7fd4e3675"></a>
+<a class="anchor" id="ab008d4881339e9441b11598d3df9e1a3"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -162,12 +162,12 @@ Protected Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="CursedScreen_8cpp_source.html#l01057">1057</a> of file <a class="el" href="CursedScreen_8cpp_source.html">CursedScreen.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IThread_8cpp_source.html#l00028">28</a> of file <a class="el" href="IThread_8cpp_source.html">IThread.cpp</a>.</p>
 
 </div>
 </div>
@@ -184,18 +184,18 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="CursedScreen_8cpp_source.html#l01065">1065</a> of file <a class="el" href="CursedScreen_8cpp_source.html">CursedScreen.cpp</a>.</p>
+<p>Definition at line <a class="el" href="IThread_8cpp_source.html#l00036">36</a> of file <a class="el" href="IThread_8cpp_source.html">IThread.cpp</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>screens/<a class="el" href="CursedScreen_8h_source.html">CursedScreen.h</a></li>
-<li>screens/<a class="el" href="CursedScreen_8cpp_source.html">CursedScreen.cpp</a></li>
+<li>screens/<a class="el" href="IThread_8h_source.html">IThread.h</a></li>
+<li>screens/<a class="el" href="IThread_8cpp_source.html">IThread.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 22 2014 10:33:04 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu May 8 2014 21:33:01 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

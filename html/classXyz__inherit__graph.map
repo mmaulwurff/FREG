@@ -1,16 +1,19 @@
 <map id="Xyz" name="Xyz">
-<area shape="rect" id="node5" href="$classActive.html" title="Active" alt="" coords="399,171,457,205"/>
-<area shape="rect" id="node2" href="$classXy.html" title="Xy" alt="" coords="409,6,447,39"/>
+<area shape="rect" id="node5" href="$classActive.html" title="Active" alt="" coords="452,171,511,205"/>
+<area shape="rect" id="node35" href="$classPlayer.html" title="This class contains information specific to player and interface for manipulating him..." alt="" coords="535,171,593,205"/>
+<area shape="rect" id="node2" href="$classXy.html" title="Xy" alt="" coords="504,6,541,39"/>
 <area shape="rect" id="node7" href="$classAnimal.html" title="Animal" alt="" coords="89,254,151,287"/>
 <area shape="rect" id="node15" href="$classBell.html" title="Bell" alt="" coords="175,254,217,287"/>
 <area shape="rect" id="node17" href="$classBush.html" title="Bush" alt="" coords="241,254,292,287"/>
 <area shape="rect" id="node19" href="$classClock.html" title="Clock" alt="" coords="316,254,372,287"/>
-<area shape="rect" id="node21" href="$classCreator.html" title="Creator" alt="" coords="396,254,460,287"/>
-<area shape="rect" id="node23" href="$classDoor.html" title="Door" alt="" coords="484,254,535,287"/>
-<area shape="rect" id="node25" href="$classGrass.html" title="Grass" alt="" coords="559,254,615,287"/>
-<area shape="rect" id="node27" href="$classLiquid.html" title="Liquid" alt="" coords="639,254,695,287"/>
-<area shape="rect" id="node29" href="$classPile.html" title="Pile" alt="" coords="719,254,761,287"/>
+<area shape="rect" id="node21" href="$classContainer.html" title="Container is multi&#45;purpose container for blocks. " alt="" coords="396,254,473,287"/>
+<area shape="rect" id="node25" href="$classCreator.html" title="Creator" alt="" coords="497,254,561,287"/>
+<area shape="rect" id="node27" href="$classDoor.html" title="Door" alt="" coords="585,254,636,287"/>
+<area shape="rect" id="node29" href="$classGrass.html" title="Grass" alt="" coords="660,254,716,287"/>
+<area shape="rect" id="node31" href="$classIlluminator.html" title="Illuminator" alt="" coords="740,254,823,287"/>
+<area shape="rect" id="node33" href="$classLiquid.html" title="Liquid" alt="" coords="847,254,903,287"/>
 <area shape="rect" id="node9" href="$classDwarf.html" title="Dwarf" alt="" coords="5,337,61,370"/>
 <area shape="rect" id="node11" href="$classPredator.html" title="Predator" alt="" coords="85,337,155,370"/>
 <area shape="rect" id="node13" href="$classRabbit.html" title="Rabbit" alt="" coords="179,337,237,370"/>
+<area shape="rect" id="node23" href="$classWorkbench.html" title="Workbench allows craft from multiple sources. There can be up to 2 products. Also can be used as cont..." alt="" coords="391,337,479,370"/>
 </map>

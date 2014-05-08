@@ -7,7 +7,7 @@ var searchData=
   ['_7ecraftmanager',['~CraftManager',['../classCraftManager.html#a156c9ebb9f1612463b3061a05182d179',1,'CraftManager']]],
   ['_7einventory',['~Inventory',['../classInventory.html#a6c6dfcb6d977c74a7abf46809e892e3d',1,'Inventory']]],
   ['_7eplayer',['~Player',['../classPlayer.html#a749d2c00e1fe0f5c2746f7505a58c062',1,'Player']]],
-  ['_7escreen',['~Screen',['../classScreen.html#a4243bc17596af96415b09ac48205676d',1,'Screen']]],
+  ['_7escreen',['~Screen',['../classScreen.html#aaad3afc556ce834f049514a0f7bd6386',1,'Screen::~Screen() override'],['../classScreen.html#aaad3afc556ce834f049514a0f7bd6386',1,'Screen::~Screen() override']]],
   ['_7eshred',['~Shred',['../classShred.html#a3af250706a727a4aefda66e3460e61d8',1,'Shred']]],
   ['_7eshredstorage',['~ShredStorage',['../classShredStorage.html#a6e1d27899a24f171c8e673a14b56dd78',1,'ShredStorage']]],
   ['_7evirtscreen',['~VirtScreen',['../classVirtScreen.html#a95211d3030daf852e37ca3bf5a552f9f',1,'VirtScreen']]],

@@ -1,4 +1,6 @@
 <map id="VirtScreen" name="VirtScreen">
-<area shape="rect" id="node4" href="$classPlayer.html" title="This class contains information specific to player and interface for manipulating him..." alt="" coords="37,91,96,125"/>
-<area shape="rect" id="node7" href="$classWorld.html" title="World provides global physics and shred connection. " alt="" coords="120,91,176,125"/>
+<area shape="rect" id="node4" href="$classPlayer.html" title="This class contains information specific to player and interface for manipulating him..." alt="" coords="83,177,141,210"/>
+<area shape="rect" id="node7" href="$classXyz.html" title="Xyz" alt="" coords="99,91,141,125"/>
+<area shape="rect" id="node9" href="$classXy.html" title="Xy" alt="" coords="101,6,139,39"/>
+<area shape="rect" id="node11" href="$classWorld.html" title="World provides global physics and shred connection. " alt="" coords="169,177,225,210"/>
 </map>

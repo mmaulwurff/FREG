@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['virtscreen',['VirtScreen',['../classVirtScreen.html#a038d31b20e33cd3683dfce2c41d7dfed',1,'VirtScreen']]],
+  ['virtscreen',['VirtScreen',['../classVirtScreen.html#a038d31b20e33cd3683dfce2c41d7dfed',1,'VirtScreen::VirtScreen(World *, Player *)'],['../classVirtScreen.html#af8aeb0b6a1bec852aa0a60b5db845986',1,'VirtScreen::VirtScreen(VirtScreen &amp;)=delete']]],
   ['visible',['Visible',['../classPlayer.html#a6f3b3aca11c8e9388cd996d49a5e7f47',1,'Player::Visible()'],['../classWorld.html#af2c5c41c16ae2b6dcb77a539a691e15b',1,'World::Visible()']]]
 ];

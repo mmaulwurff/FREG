@@ -6,5 +6,6 @@ var searchData=
   ['usage_5ftype_5fopen',['USAGE_TYPE_OPEN',['../header_8h.html#a305c682db7e7cdce78096178c0c9ef4aae11dbd02806d8a5876b0710c429801ad',1,'header.h']]],
   ['usage_5ftype_5fpour',['USAGE_TYPE_POUR',['../header_8h.html#a305c682db7e7cdce78096178c0c9ef4aa51153cf429079db725b7a0f8d7393780',1,'header.h']]],
   ['usage_5ftype_5fread',['USAGE_TYPE_READ',['../header_8h.html#a305c682db7e7cdce78096178c0c9ef4aa0487118596702fe8ed6b3cda8c6cff03',1,'header.h']]],
-  ['usage_5ftype_5fread_5fin_5finventory',['USAGE_TYPE_READ_IN_INVENTORY',['../header_8h.html#a305c682db7e7cdce78096178c0c9ef4aae596b62617d3fc28edb98a2166af14c7',1,'header.h']]]
+  ['usage_5ftype_5fread_5fin_5finventory',['USAGE_TYPE_READ_IN_INVENTORY',['../header_8h.html#a305c682db7e7cdce78096178c0c9ef4aae596b62617d3fc28edb98a2166af14c7',1,'header.h']]],
+  ['usage_5ftype_5fset_5ffire',['USAGE_TYPE_SET_FIRE',['../header_8h.html#a305c682db7e7cdce78096178c0c9ef4aab6947a5daf67e3fc7009f2ae1806bbf4',1,'header.h']]]
 ];

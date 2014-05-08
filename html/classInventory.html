@@ -103,11 +103,15 @@ Inheritance diagram for Inventory:</div>
 <div class="dyncontent">
 <div class="center"><img src="classInventory__inherit__graph.png" border="0" usemap="#Inventory_inherit__map" alt="Inheritance graph"/></div>
 <map name="Inventory_inherit__map" id="Inventory_inherit__map">
-<area shape="rect" id="node3" href="classBucket.html" title="Bucket" alt="" coords="5,89,67,122"/><area shape="rect" id="node5" href="classBush.html" title="Bush" alt="" coords="91,89,141,122"/><area shape="rect" id="node7" href="classChest.html" title="Chest" alt="" coords="165,89,221,122"/><area shape="rect" id="node11" href="classCreator.html" title="Creator" alt="" coords="245,89,309,122"/><area shape="rect" id="node13" href="classDwarf.html" title="Dwarf" alt="" coords="333,89,389,122"/><area shape="rect" id="node15" href="classPile.html" title="Pile" alt="" coords="413,89,456,122"/><area shape="rect" id="node9" href="classWorkbench.html" title="Workbench" alt="" coords="149,171,237,205"/></map>
+<area shape="rect" id="node3" href="classBucket.html" title="Bucket" alt="" coords="5,89,67,122"/><area shape="rect" id="node5" href="classBush.html" title="Bush" alt="" coords="91,89,141,122"/><area shape="rect" id="node7" href="classContainer.html" title="Container is multi&#45;purpose container for blocks. " alt="" coords="165,89,243,122"/><area shape="rect" id="node11" href="classCreator.html" title="Creator" alt="" coords="267,89,331,122"/><area shape="rect" id="node13" href="classDwarf.html" title="Dwarf" alt="" coords="355,89,411,122"/><area shape="rect" id="node9" href="classWorkbench.html" title="Workbench allows craft from multiple sources. There can be up to 2 products. Also can be used as cont..." alt="" coords="160,171,248,205"/></map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:ad8776430cd16065ecbc09e61dd13fd63"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classInventory.html">Inventory</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInventory.html#ad8776430cd16065ecbc09e61dd13fd63">operator=</a> (const <a class="el" href="classInventory.html">Inventory</a> &amp;)=delete</td></tr>
+<tr class="separator:ad8776430cd16065ecbc09e61dd13fd63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76f6a8b946a8898a08f597431e0e272d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInventory.html#a76f6a8b946a8898a08f597431e0e272d">Inventory</a> (const <a class="el" href="classInventory.html">Inventory</a> &amp;inv)=delete</td></tr>
+<tr class="separator:a76f6a8b946a8898a08f597431e0e272d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae663a54c745e992dcd551e6702ba89e0"><td class="memItemLeft" align="right" valign="top">virtual quint8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInventory.html#ae663a54c745e992dcd551e6702ba89e0">Kind</a> () const =0</td></tr>
 <tr class="separator:ae663a54c745e992dcd551e6702ba89e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a45051f14e2fd247e267915471c452b0d"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInventory.html#a45051f14e2fd247e267915471c452b0d">Sub</a> () const =0</td></tr>
@@ -173,6 +177,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa494b4db63fd11b4eddbf862db1fb5ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0a1e07439671e115645a638353459f2a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInventory.html#a0a1e07439671e115645a638353459f2a">Push</a> (<a class="el" href="classBlock.html">Block</a> *who)</td></tr>
 <tr class="separator:a0a1e07439671e115645a638353459f2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a3784f2ea806de14bd6ebd1f8e46613"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInventory.html#a7a3784f2ea806de14bd6ebd1f8e46613">Shake</a> ()</td></tr>
+<tr class="memdesc:a7a3784f2ea806de14bd6ebd1f8e46613"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stacks items in inventory if possible.  <a href="#a7a3784f2ea806de14bd6ebd1f8e46613">More...</a><br/></td></tr>
+<tr class="separator:a7a3784f2ea806de14bd6ebd1f8e46613"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -191,6 +198,30 @@ Protected Member Functions</h2></td></tr>
 
 <p>Definition at line <a class="el" href="Inventory_8h_source.html#l00033">33</a> of file <a class="el" href="Inventory_8h_source.html">Inventory.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="a76f6a8b946a8898a08f597431e0e272d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Inventory::Inventory </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classInventory.html">Inventory</a> &amp;&#160;</td>
+          <td class="paramname"><em>inv</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="a4de9f6eb6382161d9e3c86162ad8ba3b"></a>
 <div class="memitem">
 <div class="memproto">
@@ -216,7 +247,7 @@ Protected Member Functions</h2></td></tr>
 <p>It is not recommended to make inventory size more than 26. </p>
 <p>Because it will not be convenient to deal with inventory in console version. </p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00601">601</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00251">251</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
 
 </div>
 </div>
@@ -252,7 +283,7 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00605">605</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00256">256</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
 
 </div>
 </div>
@@ -277,7 +308,7 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00620">620</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00269">269</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
 
 </div>
 </div>
@@ -303,9 +334,9 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classDwarf.html#adb137bb0da6e844be2c508d4a69bc92c">Dwarf</a>.</p>
+<p>Reimplemented in <a class="el" href="classDwarf.html#aa1f8a47b08a8608886726bdbed14504f">Dwarf</a>.</p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00386">386</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00026">26</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
 
 </div>
 </div>
@@ -355,9 +386,9 @@ Protected Member Functions</h2></td></tr>
 
 <p>Returns true on success. </p>
 
-<p>Reimplemented in <a class="el" href="classWorkbench.html#a5420e28d729371f904fb390ded7a635f">Workbench</a>.</p>
+<p>Reimplemented in <a class="el" href="classWorkbench.html#a5686e4add2de67e0bed9e24af2d646c9">Workbench</a>.</p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00391">391</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00031">31</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
 
 </div>
 </div>
@@ -382,7 +413,7 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classCreator.html#ad20b74f17d1e212d5a6bcb13bcc80bda">Creator</a>, <a class="el" href="classWorkbench.html#abaf0f034c96a9939fcad129c0a0616b8">Workbench</a>, <a class="el" href="classBush.html#af0aaf00f8cbbcb594c2ba5fb092e2bc8">Bush</a>, <a class="el" href="classPile.html#aed67de22f25120ee1d96ab8119065aaa">Pile</a>, <a class="el" href="classChest.html#afc0b4586703932cc9cdbba7679067bce">Chest</a>, <a class="el" href="classDwarf.html#a92e3f8784bb170305af529d31a3b9912">Dwarf</a>, and <a class="el" href="classBucket.html#a116a2ed54b565b8fe9a5d50abaad0ac5">Bucket</a>.</p>
+<p>Implemented in <a class="el" href="classCreator.html#a15b5ac622022e17fb0166c58f42a354d">Creator</a>, <a class="el" href="classBush.html#af65738dbcd37d9b0ca7630de9dc00fac">Bush</a>, <a class="el" href="classWorkbench.html#a098ccff69f737900527831ccd78980c1">Workbench</a>, <a class="el" href="classContainer.html#aee19489b79a4523498c1409c3e47d4cf">Container</a>, <a class="el" href="classDwarf.html#a3d77978b4b19cc7e09fd11cb1c1734da">Dwarf</a>, and <a class="el" href="classBucket.html#ae3a940ddca8defd7e03c7d1e0585cebb">Bucket</a>.</p>
 
 </div>
 </div>
@@ -420,9 +451,9 @@ Protected Member Functions</h2></td></tr>
 
 <p>Returns true on success. </p>
 
-<p>Reimplemented in <a class="el" href="classWorkbench.html#a7ec162cce9dc2e7fc434efc77d1db116">Workbench</a>, and <a class="el" href="classBucket.html#adc10ecbc9b0a680c9b0e763355267ede">Bucket</a>.</p>
+<p>Reimplemented in <a class="el" href="classWorkbench.html#af8414a8b5bd531b7e02afd116278c3c3">Workbench</a>, and <a class="el" href="classBucket.html#ae29ad436a12e966430e3fc0838ecfa5a">Bucket</a>.</p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00435">435</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00074">74</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
 
 </div>
 </div>
@@ -450,9 +481,9 @@ Protected Member Functions</h2></td></tr>
 
 <p>Returns true on success. </p>
 
-<p>Reimplemented in <a class="el" href="classWorkbench.html#a1f10d4c9c0df3856265227d581de4c55">Workbench</a>.</p>
+<p>Reimplemented in <a class="el" href="classWorkbench.html#a97daa6d2678a4a1f8d0516bce0b362a8">Workbench</a>.</p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00410">410</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00049">49</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
 
 </div>
 </div>
@@ -482,7 +513,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Returns true if block found its place. </p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00456">456</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00095">95</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
 
 </div>
 </div>
@@ -502,7 +533,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Returns BLOCK if slot number i is empty. </p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00527">527</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00166">166</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
 
 </div>
 </div>
@@ -520,7 +551,7 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00532">532</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00171">171</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
 
 </div>
 </div>
@@ -540,7 +571,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Returns AIR if slot number i is empty. </p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00522">522</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00161">161</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
 
 </div>
 </div>
@@ -558,7 +589,7 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00517">517</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00156">156</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
 
 </div>
 </div>
@@ -583,9 +614,9 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classCreator.html#aeba2b0e124278e0df9fc219d21c80abf">Creator</a>, <a class="el" href="classBush.html#a30bb71855fd05b3adfc50c1283e5eb3a">Bush</a>, <a class="el" href="classPile.html#a9896992e675228908f448c64ea117c09">Pile</a>, <a class="el" href="classChest.html#aed90089d7fe4ea4cff6bc2fab59d1b4b">Chest</a>, <a class="el" href="classDwarf.html#a7e6c837a560057e168b7a32a7071f156">Dwarf</a>, and <a class="el" href="classBucket.html#a509dfe1740520d941ea28a18fa026efe">Bucket</a>.</p>
+<p>Reimplemented in <a class="el" href="classCreator.html#a131cd6e10928c61c923bad6c1d1bcd7a">Creator</a>, <a class="el" href="classBush.html#a56e38a3e102f87a2c5c21c14246d67c8">Bush</a>, <a class="el" href="classDwarf.html#afe4fb3df9d077a08ad1d59f6714f5d20">Dwarf</a>, <a class="el" href="classContainer.html#a1c026fe951bdd12bf6e9691e7b105e4c">Container</a>, and <a class="el" href="classBucket.html#aef0234ec1a0d72596f8a866f3299fad8">Bucket</a>.</p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00389">389</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00029">29</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
 
 </div>
 </div>
@@ -615,7 +646,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Returns true on success. </p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00486">486</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00125">125</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
 
 </div>
 </div>
@@ -633,7 +664,7 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00508">508</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00147">147</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
 
 </div>
 </div>
@@ -650,7 +681,7 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00554">554</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00193">193</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
 
 </div>
 </div>
@@ -675,7 +706,7 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classCreator.html#a55cc6a546d0b7a4ba35a0a4c79880e04">Creator</a>, <a class="el" href="classWorkbench.html#a734168116a8751ab28fead5a36465698">Workbench</a>, <a class="el" href="classBush.html#ae0c2926a788a20a512a6a81763c30460">Bush</a>, <a class="el" href="classPile.html#ade7501eeb3dd491a9023d3d329164f46">Pile</a>, <a class="el" href="classChest.html#a3908eede5cec5698098bccc44e5003d7">Chest</a>, <a class="el" href="classDwarf.html#ab7b6d351a501ba4055fdaa89edc4fbac">Dwarf</a>, and <a class="el" href="classBucket.html#af75b6ff698fc580c3706344dcbd7f967">Bucket</a>.</p>
+<p>Implemented in <a class="el" href="classCreator.html#a0a4eb669372eefcec114ce83a453d835">Creator</a>, <a class="el" href="classBush.html#a98556aa38151cf07bbda1dd3f8d11c3a">Bush</a>, <a class="el" href="classWorkbench.html#a899232ff9592acff8f97f6c0cab60f4b">Workbench</a>, <a class="el" href="classContainer.html#aaa15e1d26b9cb75a9c11faf962324e77">Container</a>, <a class="el" href="classDwarf.html#a5f8f4f762263db51fcfc2b7ea388308a">Dwarf</a>, and <a class="el" href="classBucket.html#af216d01eb55f3699b2d6b498881d75a7">Bucket</a>.</p>
 
 </div>
 </div>
@@ -695,7 +726,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Returns true on success (something has been crafted). </p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00574">574</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00213">213</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
 
 </div>
 </div>
@@ -737,9 +768,9 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classDwarf.html#a4fa78d89ab4eac80cea19e41bae35bf8">Dwarf</a>.</p>
+<p>Reimplemented in <a class="el" href="classDwarf.html#a8de6aea639c73615c18d7f4765764b9d">Dwarf</a>.</p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00476">476</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00115">115</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
 
 </div>
 </div>
@@ -757,7 +788,7 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00570">570</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00209">209</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
 
 </div>
 </div>
@@ -775,7 +806,31 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00513">513</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00152">152</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ad8776430cd16065ecbc09e61dd13fd63"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classInventory.html">Inventory</a>&amp; Inventory::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classInventory.html">Inventory</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -803,7 +858,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Removes block from inventory. Does not delete block. </p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00420">420</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00059">59</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
 
 </div>
 </div>
@@ -821,7 +876,7 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00563">563</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00202">202</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
 
 </div>
 </div>
@@ -847,7 +902,7 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classCreator.html#a505de9ed395ffca4cabae3adfbf9b2da">Creator</a>, <a class="el" href="classWorkbench.html#aa9716649ffacf83349cd37a84a6e69af">Workbench</a>, <a class="el" href="classBush.html#a5626681cc65b2f86aa3aa890716e6f63">Bush</a>, <a class="el" href="classPile.html#a6cc45e5922df5a8f42d6c9142a4e3c35">Pile</a>, <a class="el" href="classChest.html#a8461ed65ae1e4b317a2199fd5cb1d382">Chest</a>, <a class="el" href="classDwarf.html#a6673ccc2bff375490207a794036a683e">Dwarf</a>, and <a class="el" href="classBucket.html#ae2dd5e5e837b35f12fece9c62a3c1e73">Bucket</a>.</p>
+<p>Implemented in <a class="el" href="classCreator.html#ad954c68e8dda2689bc61eb4ac3763f04">Creator</a>, <a class="el" href="classBush.html#a7d94fb68cbe9fd7ebff713caa1e5d70c">Bush</a>, <a class="el" href="classWorkbench.html#a2ce2df3b6fb71730d57c4f33769892e5">Workbench</a>, <a class="el" href="classDwarf.html#ad9bd7739339e8b8c6540a0b3bd4f3b74">Dwarf</a>, <a class="el" href="classContainer.html#a7f6191d2c5838d1acdf23c09bb2fa16e">Container</a>, and <a class="el" href="classBucket.html#a7b0a94b5d9b75a57077e77e747a7c58d">Bucket</a>.</p>
 
 </div>
 </div>
@@ -873,9 +928,28 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classCreator.html#ad6c66606720e9a4ece3c40dbf361ef9c">Creator</a>, <a class="el" href="classBush.html#a7e0419a5fd220ffdf40b0baf6b551ad0">Bush</a>, <a class="el" href="classPile.html#a668978538b228bc8afacc83f31053d52">Pile</a>, <a class="el" href="classChest.html#a1cf85f43dc763b7ae9f9550bd2dd9cf5">Chest</a>, <a class="el" href="classDwarf.html#a91fae3b07b1260235d5188fa5edf9b2f">Dwarf</a>, and <a class="el" href="classBucket.html#a3efd61f38417994440344702025f6268">Bucket</a>.</p>
+<p>Reimplemented in <a class="el" href="classCreator.html#ac87bd4c1bddc3908576c40a0b86e86e9">Creator</a>, <a class="el" href="classBush.html#ad939d1fd4763984d2db0dad9d005357b">Bush</a>, <a class="el" href="classDwarf.html#a939bc24656b6c9e7979291b7110c502a">Dwarf</a>, <a class="el" href="classContainer.html#a4f8c715af103d8e16fadc1071fa0573f">Container</a>, and <a class="el" href="classBucket.html#a701286c6ee2b0acc65547946e192c545">Bucket</a>.</p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00426">426</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00065">65</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7a3784f2ea806de14bd6ebd1f8e46613"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Inventory::Shake </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stacks items in inventory if possible. </p>
+
+<p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00240">240</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
 
 </div>
 </div>
@@ -893,7 +967,7 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00544">544</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00183">183</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
 
 </div>
 </div>
@@ -921,7 +995,7 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00549">549</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00188">188</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
 
 </div>
 </div>
@@ -938,7 +1012,7 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00388">388</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00028">28</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
 
 </div>
 </div>
@@ -963,9 +1037,9 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classWorkbench.html#a6a5bc6c27f461d55257073947fcbd4d9">Workbench</a>, and <a class="el" href="classDwarf.html#a464083c1f423b8cde5e64d215d7b371a">Dwarf</a>.</p>
+<p>Reimplemented in <a class="el" href="classWorkbench.html#a25fcd82d6ee19832a3540b518d5b8823">Workbench</a>, and <a class="el" href="classDwarf.html#a231256bd02661df7e5567d6c9b0f958b">Dwarf</a>.</p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00387">387</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00027">27</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
 
 </div>
 </div>
@@ -990,7 +1064,7 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classCreator.html#aa37c70109ef3312d85bafed70ac113ed">Creator</a>, <a class="el" href="classBush.html#a86851a805dcb3e6e566bd2d0f6c54bd5">Bush</a>, <a class="el" href="classPile.html#a2021f5b6fd0be4873b8ebd71dded9522">Pile</a>, <a class="el" href="classChest.html#a1c91ef205066287691d98bfda09b5153">Chest</a>, <a class="el" href="classDwarf.html#adfb05a4196cc1e02b61e1a80ad132d25">Dwarf</a>, and <a class="el" href="classBucket.html#a86bb0afc01b62567c0e16627ae8327e5">Bucket</a>.</p>
+<p>Implemented in <a class="el" href="classCreator.html#a7b2b03d67f137550f1bd1b48aacc997c">Creator</a>, <a class="el" href="classBush.html#a4c10fb29e0a955bbc89027cec969e4cf">Bush</a>, <a class="el" href="classContainer.html#a701c1851cc62c5b95f561702540df451">Container</a>, <a class="el" href="classDwarf.html#a5757a041df88dcca3a8ddb2aa8e4658b">Dwarf</a>, and <a class="el" href="classBucket.html#a80f3956bf64d5718701f1444d86e675b">Bucket</a>.</p>
 
 </div>
 </div>
@@ -1015,20 +1089,20 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classBush.html#ab3929ab8bfd7f01c35cee9f55aa34213">Bush</a>, <a class="el" href="classPile.html#abcb6c3b71bc4f61746746067dd445749">Pile</a>, <a class="el" href="classChest.html#ac55058b3d2fde0b0a87868736ba9ee53">Chest</a>, <a class="el" href="classDwarf.html#a40a6c17493a5674216d08fa28ab467ce">Dwarf</a>, and <a class="el" href="classBucket.html#a73856ec751a052eb1ab4f7f57cf29a27">Bucket</a>.</p>
+<p>Reimplemented in <a class="el" href="classBush.html#a91773998d3420bf61918e9734ab77de5">Bush</a>, <a class="el" href="classContainer.html#a32c11a204de064572c9dfc25b985566a">Container</a>, <a class="el" href="classDwarf.html#a792cbf586d8969fe4ffb1c9388f0ef53">Dwarf</a>, and <a class="el" href="classBucket.html#a30bf2230c9989173995e472e94e2f3ba">Bucket</a>.</p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00536">536</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00175">175</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>blocks/<a class="el" href="Inventory_8h_source.html">Inventory.h</a></li>
-<li>blocks/<a class="el" href="blocks_8cpp_source.html">blocks.cpp</a></li>
+<li>blocks/<a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 22 2014 10:33:04 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu May 8 2014 21:33:01 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

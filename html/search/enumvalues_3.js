@@ -9,6 +9,7 @@ var searchData=
   ['deferred_5fmove',['DEFERRED_MOVE',['../DeferredAction_8h.html#a9c85a475666355ed2ba754fb11de9b82a8531d15dcc27faa47fe42bd999a91762',1,'DeferredAction.h']]],
   ['deferred_5fnothing',['DEFERRED_NOTHING',['../DeferredAction_8h.html#a9c85a475666355ed2ba754fb11de9b82a98e5bc786baeb8da1aa43b9545289f94',1,'DeferredAction.h']]],
   ['deferred_5fpour',['DEFERRED_POUR',['../DeferredAction_8h.html#a9c85a475666355ed2ba754fb11de9b82a88712d13fdc1fa946ae3ff3fde1ef359',1,'DeferredAction.h']]],
+  ['deferred_5fset_5ffire',['DEFERRED_SET_FIRE',['../DeferredAction_8h.html#a9c85a475666355ed2ba754fb11de9b82a5fdb87476627f2af3e22eac7b751311c',1,'DeferredAction.h']]],
   ['deferred_5fthrow',['DEFERRED_THROW',['../DeferredAction_8h.html#a9c85a475666355ed2ba754fb11de9b82ae627c0a7ff225af69082eb3edec5e331',1,'DeferredAction.h']]],
   ['different',['DIFFERENT',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706acaed8cb8391938eee3d1222a6b5fd73d',1,'header.h']]],
   ['dig',['DIG',['../header_8h.html#a5adfb93f736d9aa263cea4b7b74da15eaa9e938224d4c8cffefe371a8c71e2853',1,'header.h']]],
