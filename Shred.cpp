@@ -227,7 +227,7 @@ void Shred::PhysEventsRare() {
             (*i)->ActRare();
             switch ((*i)->ActInner() ) {
                 case INNER_ACTION_MESSAGE:
-                case INNER_ACTION_EXPLODE:
+                case INNER_ACTION_EXPLODE: // TODO: add explosion
                 case INNER_ACTION_NONE: break;
             }
             if ( (*i)->GetDurability() <= 0 ) {
@@ -499,6 +499,7 @@ void Shred::TestShred() { // 7 items in a row
     SetNewBlock(GRASS,  FIRE,  column+=2, row, level);
     SetNewBlock(BLOCK,  WOOD,  column, row, level-1);
     SetNewBlock(TEXT,   GLASS, column+=2, row, level);
+    PutBlock(Normal(COAL), column+=2, row, level);
     // row 6
     column = -1;
     row += 2;
@@ -506,6 +507,8 @@ void Shred::TestShred() { // 7 items in a row
     SetNewBlock(ILLUMINATOR, WOOD,  column+=2, row, level);
     SetNewBlock(ILLUMINATOR, IRON,  column+=2, row, level);
     SetNewBlock(ILLUMINATOR, GLASS, column+=2, row, level);
+    SetNewBlock(CONTAINER,   IRON,  column+=2, row, level);
+    // row 7
 } // void Shred::TestShred()
 
 void Shred::NullMountain() {

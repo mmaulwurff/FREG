@@ -24,6 +24,14 @@
 #include "blocks/Inventory.h"
 
 class Container : public Active, public Inventory {
+    /** \class Container Container.h
+     *  \brief Container is multi-purpose container for blocks.
+     *
+     *  Behaviour depends on substance:
+     *  - container from DIFFERENT is a pile, and will dissapear if empty;
+     *  - container from IRON (locker) and WATER (fridge) prevents all activity
+     *    inside;
+     *  - container from other substances are different chests. */
     Q_OBJECT
 public:
     Container(int sub, quint16 id, ushort size = INV_SIZE);
@@ -47,6 +55,9 @@ protected:
 }; // Container
 
 class Workbench : public Container {
+    /** \class Workbench Container.h
+     *  \brief Workbench allows craft from multiple sources. There can be up to
+     *  2 products. Also can be used as container of smaller size. */
     Q_OBJECT
 public:
     Workbench(int sub, quint16 id);

@@ -31,18 +31,21 @@
     }
 
     void Container::DoRareAction() {
-        Inventory * const inv =
-            GetWorld()->GetBlock(X(), Y(), Z()-1)->HasInventory();
-        if ( inv ) {
-            inv->GetAll(this);
-        }
-        if ( IsEmpty() ) {
-            Damage(GetDurability(), TIME);
+        if ( Sub() == DIFFERENT ) {
+            Inventory * const inv =
+                GetWorld()->GetBlock(X(), Y(), Z()-1)->HasInventory();
+            if ( inv ) {
+                inv->GetAll(this);
+            }
+            if ( IsEmpty() ) {
+                Damage(GetDurability(), TIME);
+            }
         }
     }
 
     int Container::ShouldAct() const {
-        return ( Sub() == DIFFERENT ) ? FREQUENT_RARE : FREQUENT_NEVER;
+        return ( Sub() == IRON || Sub() == WATER ) ?
+            FREQUENT_NEVER : FREQUENT_RARE;
     }
 
     quint8 Container::Kind() const { return CONTAINER; }

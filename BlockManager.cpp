@@ -87,6 +87,7 @@ const QString BlockManager::subs[] = {
     "steel",
     "adamantine",
     "fire",
+    "coal",
 };
 
 BlockManager block_manager;

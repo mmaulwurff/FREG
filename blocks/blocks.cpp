@@ -46,6 +46,7 @@
         case SAND:       return QObject::tr("Sandstone");
         case CLAY:       return QObject::tr("Clay brick");
         case GOLD:       return QObject::tr("Block of gold");
+        case COAL:       return QObject::tr("Block of coal");
         default: fprintf(stderr, "Block::FullName: sub ?: %d.\n", Sub());
             return "Unknown block";
         }

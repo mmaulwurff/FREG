@@ -144,7 +144,7 @@ color_pairs Screen::Color(const int kind, const int sub) const {
         case H_MEAT:     return BLACK_RED;
         case WATER:      return WHITE_CYAN;
         case GLASS:      return BLUE_WHITE;
-        case NULLSTONE:  return WHITE_BLACK;
+        case NULLSTONE:  return MAGENTA_BLACK;
         case MOSS_STONE: return GREEN_WHITE;
         case IRON:       return WHITE_BLACK;
         case ROSE:       return RED_GREEN;

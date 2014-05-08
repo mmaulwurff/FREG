@@ -181,6 +181,7 @@ enum subs {
     STEEL,      ///<  23
     ADAMANTINE, ///<  24
     FIRE,       ///<  25
+    COAL,       ///<  26
     /// Nothing is made from LAST_SUB.
     LAST_SUB // keep it last in this list
 }; // enum subs
