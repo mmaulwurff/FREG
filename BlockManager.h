@@ -55,7 +55,7 @@ public:
     /// Returns true if block is normal.
     static bool KindSubFromFile(QDataStream &, quint8 & kind, quint8 & sub);
     /// Use this to safely delete block.
-    void DeleteBlock(Block * block) const;
+    void DeleteBlock(Block *) const;
     /// For memory economy.
     /** Checks and replaces block with corresponding normal block.
      *  Can delete block, use carefully. */
@@ -77,11 +77,6 @@ private:
     Block * normals[LAST_SUB];
     static const QString kinds[];
     static const QString subs[];
-
-    template <typename Thing>
-    static Thing * New(quint8 sub, quint16 id);
-    template <typename Thing>
-    static Thing * New(QDataStream & str, quint8 sub, quint16 id);
 };
 
 extern BlockManager block_manager;

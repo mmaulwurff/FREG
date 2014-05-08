@@ -17,39 +17,31 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#ifndef WORLDMAP_H
-#define WORLDMAP_H
+#ifndef ITHREAD_H
+#define ITHREAD_H
 
-class QFile;
+/** \class IThread IThread.h
+ *  \brief Keyboard input thread for curses screen for freg.
+ *
+ * This class is thread, with IThread::run containing input loop.
+ * Can be used in console-based freg screens. */
 
-class WorldMap final {
+#include <QThread>
+
+class VirtScreen;
+
+class IThread final : public QThread {
+    Q_OBJECT
 public:
-    explicit WorldMap(QString);
-    ~WorldMap();
+    IThread(VirtScreen * const);
+    void Stop();
 
-    WorldMap & operator=(const WorldMap &) = delete;
-    WorldMap(const WorldMap &) = delete;
-
-    long MapSize() const;
-    char TypeOfShred(long longi, long lati);
-    static void GenerateMap(
-            const char * filename,
-            ushort size,
-            char outer,
-            int seed);
+protected:
+    void run() override;
 
 private:
-    static float Deg(float x, float y, ushort size);
-    static float R  (float x, float y, ushort size);
-    static void Circle(
-            float min_rad,
-            float max_rad,
-            char ch,
-            ushort size,
-            char * map);
-
-    long mapSize;
-    QFile * const map;
+    VirtScreen * const screen;
+    volatile bool stopped;
 };
 
-#endif // WORLDMAP_H
+#endif // ITHREAD_H

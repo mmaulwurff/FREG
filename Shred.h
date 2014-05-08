@@ -37,6 +37,8 @@ public:
             Shred * memory);
     ~Shred();
 
+    Shred & operator=(const Shred &) = delete;
+
     /// Returns y (line) shred coordinate on world map.
     long Longitude() const;
     /// Returns x (column) shred coordinate on world map.
@@ -65,8 +67,10 @@ public:
     void ReloadToWest();
 
     Block * GetBlock(ushort x, ushort y, ushort z) const;
-    /// Puts block to coordinates xyz and activates it.
+    /// Removes last block at xyz, then SetBlock, then makes block normal.
     void SetBlock(Block * block, ushort x, ushort y, ushort z);
+    /// Puts block to coordinates xyz and activates it.
+    void SetBlockNoCheck(Block *, ushort x, ushort y, ushort z);
     /// Puts block to coordinates, not activates it.
     void PutBlock(Block * block, ushort x, ushort y, ushort z);
     static Block * Normal(int sub);
@@ -109,7 +113,6 @@ private:
     void UnregisterExternalActives();
 
     bool LoadShred();
-    void SetBlockNoCheck(Block *, ushort x, ushort y, ushort z);
 
     QString FileName() const;
 

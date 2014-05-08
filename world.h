@@ -29,6 +29,7 @@ class Shred;
 class ShredStorage;
 class QByteArray;
 class QReadWriteLock;
+class CraftManager;
 
 const ushort SAFE_FALL_HEIGHT = 5U;
 
@@ -75,8 +76,10 @@ public: // Lighting section
             uchar level=MAX_LIGHT_RADIUS);
     void SunShineHorizontal(short x, short y, short z);
     /// If init is false, light will not spread from non-invisible blocks.
-    void Shine(ushort x, ushort y, ushort z, uchar level, bool init=false);
+    void Shine(ushort x, ushort y, ushort z, uchar level, bool init = false);
     void RemoveSunLight(short x, short y, short z);
+
+    bool GetEvernight() const;
 private:
     bool SetSunLightMap (uchar level, ushort x, ushort y, ushort z);
     bool SetFireLightMap(uchar level, ushort x, ushort y, ushort z);
@@ -98,9 +101,8 @@ private:
 public: // Information section
     QString WorldName() const;
     /// True on error, false if focus is received to _targ successfully.
-    bool Focus(ushort x, ushort y, ushort z,
-            ushort & x_targ, ushort & y_targ, ushort & z_targ,
-            quint8 dir) const;
+    bool Focus(short x, short y, short z,
+            short & x_targ, short & y_targ, short & z_targ, quint8 dir) const;
     ushort NumShreds() const;
     static quint8 TurnRight(quint8 dir);
     static quint8 TurnLeft (quint8 dir);
@@ -163,6 +165,7 @@ public: // Interactions section
             bool anyway = false);
     /// Returns true on success. Gets a string and inscribes block.
     bool Inscribe(ushort x, ushort y, ushort z);
+    CraftManager * GetCraftManager() const;
 
 private: // Inventory functions section
     void Exchange(Block * block_from, Block * block_to,
@@ -180,10 +183,12 @@ public: // Block information section
     bool InBounds(ushort x, ushort y) const;
     bool InBounds(ushort x, ushort y, ushort z) const;
     int  Temperature(ushort x, ushort y, ushort z) const;
+private:
+    static bool IsPile(const Block *);
 
 public: // World section
     void ReloadAllShreds(long lati, long longi,
-        ushort new_x, ushort new_y, ushort new_z);
+            ushort new_x, ushort new_y, ushort new_z);
 private:
     void SetNumActiveShreds(ushort num);
     /// Also saves all shreds.
@@ -199,10 +204,12 @@ public:
     void ReadLock();
     bool TryReadLock();
     void Unlock();
+
 public slots:
     void CleanAll();
     void PhysEvents();
     void SetReloadShreds(int direction);
+
 signals:
     void Notify(QString) const;
     void GetString(QString &) const;
@@ -218,6 +225,7 @@ signals:
     void StartReloadAll();
     void FinishReloadAll();
     void ExitReceived();
+
 private:
     static const ushort TIME_STEPS_IN_SEC = 10U;
 
@@ -237,8 +245,10 @@ private:
     ushort numActiveShreds; // size of active zone
     QReadWriteLock * const rwLock;
 
-    ushort sun_moon_x;
-    bool ifStar;
+    ushort sunMoonX;
+    /// stores block behind sun or moon (normal with sub STAR or SKY)
+    Block * behindSun;
+    bool evernight;
 
     WorldMap * const map;
 
@@ -251,7 +261,8 @@ private:
 
     ShredStorage * shredStorage;
     Shred * shredMemoryPool;
-}; // class World
+    CraftManager * const craftManager;
+};
 
 extern World * world;
 

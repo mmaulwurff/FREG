@@ -22,13 +22,18 @@
 
 class QTextStream;
 
-struct CraftItem {
-    const ushort num;
-    const quint16 id;
+struct CraftItem final {
+    CraftItem() = delete;
+    CraftItem(ushort num, quint16 id);
+
+    CraftItem & operator=(const CraftItem &) = delete;
 
     bool operator< (const CraftItem & item) const;
     bool operator!=(const CraftItem & item) const;
-};
+
+    const ushort num;
+    const quint16 id;
+}; // CraftItem
 
 /** \class CraftList CraftManager.h
     * \brief This class represent craft recipe.
@@ -42,6 +47,8 @@ public:
      CraftList(quint8 materials_number, quint8 products_number);
     ~CraftList();
 
+    CraftList & operator=(const CraftList &) = delete;
+
     void Sort();
     bool LoadItem(QTextStream &);
     int  GetSize() const;
@@ -50,10 +57,11 @@ public:
 
     CraftList & operator<<(CraftItem *);
     bool        operator==(const CraftList &) const;
+
 private:
     const quint8 productsNumber;
     QList<CraftItem *> items;
-};
+}; // CraftList
 
 class CraftManager {
 public:
@@ -62,14 +70,14 @@ public:
 
     CraftItem * MiniCraft(ushort num, quint16 id) const;
     CraftList * Craft(CraftList * items, int sub) const;
+
 private:
+    CraftManager(const CraftManager &);
     CraftList * CraftSub(CraftList * items, int sub) const;
 
     int size;
     QList<CraftList *> * recipesList;
     int * recipesSubsList; // list of substances of workbench 
-};
-
-extern CraftManager craft_manager;
+}; // CraftManager
 
 #endif // CRAFTMANAGER_H

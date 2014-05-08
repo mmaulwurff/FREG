@@ -17,39 +17,34 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#ifndef WORLDMAP_H
-#define WORLDMAP_H
+#ifndef ILLUMINATOR_H
+#define ILLUMINATOR_H
 
-class QFile;
+#include "blocks/Active.h"
 
-class WorldMap final {
+const ushort MAX_FUEL = SECONDS_IN_DAY;
+
+class Illuminator : public Active {
+    Q_OBJECT
 public:
-    explicit WorldMap(QString);
-    ~WorldMap();
+    Illuminator(int sub, quint16 id);
+    Illuminator(QDataStream & str, int sub, quint16 id);
 
-    WorldMap & operator=(const WorldMap &) = delete;
-    WorldMap(const WorldMap &) = delete;
+    int     ShouldAct() const override;
+    void    Damage(ushort dmg, int dmg_kind) override;
+    uchar   LightRadius() const override;
+    quint8  Kind() const override;
+    Block * DropAfterDamage() override;
+    QString FullName() const override;
+    usage_types Use(Block *) override;
+    INNER_ACTIONS ActInner() override;
 
-    long MapSize() const;
-    char TypeOfShred(long longi, long lati);
-    static void GenerateMap(
-            const char * filename,
-            ushort size,
-            char outer,
-            int seed);
+protected:
+    void DoRareAction() override;
+    void SaveAttributes(QDataStream & out) const override;
 
 private:
-    static float Deg(float x, float y, ushort size);
-    static float R  (float x, float y, ushort size);
-    static void Circle(
-            float min_rad,
-            float max_rad,
-            char ch,
-            ushort size,
-            char * map);
-
-    long mapSize;
-    QFile * const map;
+    quint16 fuel_level;
 };
 
-#endif // WORLDMAP_H
+#endif

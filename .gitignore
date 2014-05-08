@@ -9,6 +9,7 @@
 !*.h
 !*.ts
 !*.vim
+!*.sln
 
 !blocks
 blocks/*

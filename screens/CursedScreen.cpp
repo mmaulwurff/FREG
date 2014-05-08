@@ -26,7 +26,9 @@
 #include <QMutex>
 #include <QLocale>
 #include "screens/CursedScreen.h"
+#include "screens/IThread.h"
 #include "world.h"
+#include "Shred.h"
 #include "blocks/Block.h"
 #include "blocks/Inventory.h"
 #include "Player.h"
@@ -71,34 +73,17 @@ const {
 void Screen::RePrint() {
     clear();
     updated = false;
-    updatedPlayer = false;
 }
 
-void Screen::Update(const ushort, const ushort, const ushort) {
-    updated = false;
-}
+void Screen::Update(ushort, ushort, ushort) { updated = false; }
+void Screen::UpdatePlayer() { updated = false; }
+void Screen::UpdateAround(ushort, ushort, ushort, ushort) { updated = false; }
+void Screen::Move(int) { updated = false; }
 
 void Screen::UpdateAll() {
     CleanFileToShow();
     updated = false;
 }
-
-void Screen::UpdatePlayer() {
-    if ( player && ( USAGE_TYPE_READ_IN_INVENTORY==player->UsingType() ||
-            player->GetCreativeMode() ) )
-    {
-        updated = false;
-    }
-    updatedPlayer = false;
-}
-
-void Screen::UpdateAround(const ushort, const ushort, const ushort,
-        const ushort)
-{
-    updated = false;
-}
-
-void Screen::Move(const int) { updated = false; }
 
 void Screen::PassString(QString & str) const {
     mvwaddch(commandWin, 0, 0, ':');
@@ -135,68 +120,8 @@ char Screen::CharNumberFront(const ushort i, const ushort j) const {
             dist+'0' : ' ';
 }
 
-char Screen::CharName(const int kind, const int sub) const {
-    switch ( kind )  {
-    case BUSH:   return ';';
-    case CREATOR:
-    case DWARF:  return '@';
-    case LIQUID: return '~';
-    case GRASS:  return ( FIRE == sub ) ? 'f' : '.';
-    case RABBIT: return 'r';
-    case CLOCK:  return 'c';
-    case PLATE:  return '_';
-    case LADDER: return '^';
-    case PICK:   return '\\';
-    case SHOVEL: return '|';
-    case HAMMER: return 'T';
-    case AXE:    return '/';
-    case CHEST:
-    case PILE:   return '&';
-    case BELL:   return 'b';
-    case BUCKET: return 'u';
-    case TEXT:   return '?';
-    case PREDATOR: return '!';
-    case WORKBENCH: return '*';
-    case TELEGRAPH: return 't';
-    case DOOR:        return ( STONE == sub ) ? '#' : '\'';
-    case LOCKED_DOOR: return ( STONE == sub ) ? '#' : '`';
-    case WEAPON: switch ( sub ) {
-        default: fprintf(stderr, "Screen::CharName: weapon sub ?: %d\n", sub);
-        // no break;
-        case STONE: return '.';
-        case IRON: case BONE:
-        case WOOD:  return '/';
-    } break;
-    case ACTIVE: switch ( sub ) {
-        case SAND:  return '.';
-        case WATER: return '*';
-        case STONE: return ':';
-        default: fprintf(stderr, "Screen::CharName: active sub ?: %d\n", sub);
-    } // no break;
-    default: switch ( sub ) {
-        default: fprintf(stderr, "Screen::CharName: sub (?): %d\n", sub);
-        case NULLSTONE:  case IRON: case CLAY:
-        case MOSS_STONE: case WOOD: case GOLD:
-        case STONE: return '#';
-        case GLASS: return 'g';
-        case AIR:   return ' ';
-        case STAR:  return '.';
-        case WATER: return '~';
-        case SAND:  return '#';
-        case SOIL:  return '.';
-        case ROSE:  return ';';
-        case A_MEAT: case H_MEAT:
-        case HAZELNUT: return ',';
-        case SKY:
-        case SUN_MOON: return ' ';
-        case GREENERY: return '%';
-        }
-    }
-} // char Screen::CharName(int kind, int sub)
-
 color_pairs Screen::Color(const int kind, const int sub) const {
     switch ( kind ) { // foreground_background
-    case PILE:      return WHITE_BLACK;
     case DWARF:     return WHITE_BLUE;
     case RABBIT:    return RED_WHITE;
     case PREDATOR:  return RED_BLACK;
@@ -210,7 +135,8 @@ color_pairs Screen::Color(const int kind, const int sub) const {
         case SAND:  return YELLOW_WHITE;
     } // no break;
     default: switch ( sub ) {
-        case WOOD: case HAZELNUT:
+        case WOOD:
+        case HAZELNUT:
         case SOIL:       return BLACK_YELLOW;
         case GREENERY:   return BLACK_GREEN;
         case STONE:      return BLACK_WHITE;
@@ -219,7 +145,7 @@ color_pairs Screen::Color(const int kind, const int sub) const {
         case H_MEAT:     return BLACK_RED;
         case WATER:      return WHITE_CYAN;
         case GLASS:      return BLUE_WHITE;
-        case NULLSTONE:  return WHITE_BLACK;
+        case NULLSTONE:  return MAGENTA_BLACK;
         case MOSS_STONE: return GREEN_WHITE;
         case IRON:       return WHITE_BLACK;
         case ROSE:       return RED_GREEN;
@@ -230,7 +156,10 @@ color_pairs Screen::Color(const int kind, const int sub) const {
         case FIRE:       return RED_YELLOW;
         case SUN_MOON:   return ( NIGHT == w->PartOfDay() ) ?
             WHITE_WHITE : YELLOW_YELLOW;
-        case SKY: case STAR: switch ( w->PartOfDay() ) {
+        case SKY:
+        case STAR:
+            if ( w->GetEvernight() ) return BLACK_BLACK;
+            switch ( w->PartOfDay() ) {
             case NIGHT:   return WHITE_BLACK;
             case MORNING: return WHITE_BLUE;
             case NOON:    return CYAN_CYAN;
@@ -249,6 +178,16 @@ void Screen::MovePlayer(const int dir) const {
     }
 }
 
+void Screen::MovePlayerDiag(const int dir1, const int dir2) const {
+    player->SetDir(dir1);
+    static bool step_trigger = true;
+    player->Move(step_trigger ? dir1 : dir2);
+    step_trigger = !step_trigger;
+}
+
+int Screen::GetChar() const { return getch(); }
+void Screen::FlushInput() const { flushinp(); }
+
 void Screen::ControlPlayer(const int ch) {
     CleanFileToShow();
     // Q, ctrl-c, ctrl-d, ctrl-q, ctrl-x
@@ -261,38 +200,16 @@ void Screen::ControlPlayer(const int ch) {
         InventoryAction(ch-'a');
         return;
     } // else:
-    static bool step_trigger = true;
     switch ( ch ) { // interactions with world
-    case KEY_UP:
-    case '8': MovePlayer(NORTH); break;
-    case KEY_DOWN:
-    case '2': MovePlayer(SOUTH); break;
-    case KEY_RIGHT:
-    case '6': MovePlayer(EAST); break;
-    case KEY_LEFT:
-    case '4': MovePlayer(WEST); break;
-    case KEY_END:
-    case '5': player->Move(DOWN); break;
-    case '7':
-        player->SetDir(NORTH);
-        player->Move(step_trigger ? NORTH : WEST);
-        step_trigger = !step_trigger;
-    break;
-    case '9':
-        player->SetDir(NORTH);
-        player->Move(step_trigger ? NORTH : EAST);
-        step_trigger = !step_trigger;
-    break;
-    case '1':
-        player->SetDir(SOUTH);
-        player->Move(step_trigger ? SOUTH : WEST);
-        step_trigger = !step_trigger;
-    break;
-    case '3':
-        player->SetDir(SOUTH);
-        player->Move(step_trigger ? SOUTH : EAST);
-        step_trigger = !step_trigger;
-    break;
+    case KEY_UP:    case '8': MovePlayer(NORTH);  break;
+    case KEY_DOWN:  case '2': MovePlayer(SOUTH);  break;
+    case KEY_RIGHT: case '6': MovePlayer(EAST);   break;
+    case KEY_LEFT:  case '4': MovePlayer(WEST);   break;
+    case KEY_END:   case '5': player->Move(DOWN); break;
+    case '7': MovePlayerDiag(NORTH, WEST); break;
+    case '9': MovePlayerDiag(NORTH, EAST); break;
+    case '1': MovePlayerDiag(SOUTH, WEST); break;
+    case '3': MovePlayerDiag(SOUTH, EAST); break;
     case ' ': player->Jump(); break;
     case '=': player->Move(); break;
 
@@ -301,29 +218,14 @@ void Screen::ControlPlayer(const int ch) {
     case KEY_NPAGE: player->SetDir(DOWN); break;
     case KEY_PPAGE: player->SetDir(UP);   break;
 
+    case 'I':
     case KEY_HOME: player->Backpack(); break;
     case 8:
-    case KEY_BACKSPACE: { // damage
-        ushort x, y, z;
-        ActionXyz(x, y, z);
-        player->Damage(x, y, z);
-    } break;
+    case KEY_BACKSPACE: player->Damage(); break;
     case 13:
-    case '\n': { // use
-        ushort x, y, z;
-        ActionXyz(x, y, z);
-        player->Use(x, y, z);
-    } break;
-    case  '?': { // examine
-        ushort x, y, z;
-        ActionXyz(x, y, z);
-        player->Examine(x, y, z);
-    } break;
-    case  '~': { // inscribe
-        ushort x, y, z;
-        ActionXyz(x, y, z);
-        player->Inscribe(x, y, z);
-    } break;
+    case '\n': player->Use();      break;
+    case  '?': player->Examine();  break;
+    case  '~': player->Inscribe(); break;
     case 27: /* esc */ player->StopUseAll(); break;
 
     case 'B': SetActionMode(ACTION_BUILD);    break;
@@ -332,15 +234,19 @@ void Screen::ControlPlayer(const int ch) {
     case 'T': SetActionMode(ACTION_THROW);    break;
     case 'E': SetActionMode(ACTION_EAT);      break;
     case 'F': SetActionMode(ACTION_TAKEOFF);  break;
-    case 'I': SetActionMode(ACTION_INSCRIBE); break;
+    case 'N': SetActionMode(ACTION_INSCRIBE); break;
     case 'G':
     case 'O': SetActionMode(ACTION_OBTAIN);   break;
     case 'U': SetActionMode(ACTION_USE);      break;
     case 'W': SetActionMode(ACTION_WIELD);    break;
+    case 'S':
+        if ( player->PlayerInventory() ) {
+              player->PlayerInventory()->Shake();
+        }
+    break;
     case KEY_HELP:
     case 'H':
-        DisplayFile(QString("help_%1/help.txt")
-            .arg(locale.left(2)));
+        DisplayFile(QString("help_%1/help.txt").arg(locale.left(2)));
     break;
     case 'L': RePrint(); break;
     case 'R': // switch active hand
@@ -387,48 +293,29 @@ void Screen::ProcessCommand(QString command) {
     }
 }
 
-void Screen::SetActionMode(const int mode) {
+void Screen::SetActionMode(const actions mode) {
     actionMode = mode;
-    updatedPlayer = false;
+    updated = false;
 }
 
 void Screen::InventoryAction(const ushort num) const {
     switch ( actionMode ) {
-    case ACTION_USE:
-        if ( player->Use(num) == USAGE_TYPE_POUR ) {
-            ushort x, y, z;
-            ActionXyz(x, y, z);
-            player->Pour(x, y, z, num);
-        }
-    break;
-    case ACTION_WIELD:    player->Wield(num);    break;
+    case ACTION_USE:      player->Use     (num); break;
+    case ACTION_WIELD:    player->Wield   (num); break;
     case ACTION_INSCRIBE: player->Inscribe(num); break;
-    case ACTION_EAT:      player->Eat(num);      break;
-    case ACTION_CRAFT:    player->Craft(num);    break;
-    case ACTION_TAKEOFF:  player->TakeOff(num);  break;
-    case ACTION_OBTAIN: {
-        ushort x, y, z;
-        ActionXyz(x, y, z);
-        player->Obtain(x, y, z, num);
-    } break;
-    case ACTION_THROW: {
-        ushort x, y, z;
-        ActionXyz(x, y, z);
-        player->Throw(x, y, z, num);
-    } break;
-    case ACTION_BUILD: {
-        ushort x, y, z;
-        ActionXyz(x, y, z);
-        player->Build(x, y, z, num);
-    } break;
+    case ACTION_EAT:      player->Eat     (num); break;
+    case ACTION_CRAFT:    player->Craft   (num); break;
+    case ACTION_TAKEOFF:  player->TakeOff (num); break;
+    case ACTION_OBTAIN:   player->Obtain  (num); break;
+    case ACTION_THROW:    player->Throw   (num); break;
+    case ACTION_BUILD:    player->Build   (num); break;
     default: fprintf(stderr,
-        "Screen::InventoryAction: action mode ?: %d\n",
-        actionMode);
+        "Screen::InventoryAction: action mode ?: %d\n", actionMode);
     }
 }
 
-void Screen::ActionXyz(ushort & x,ushort & y, ushort & z) const {
-    player->Focus(x, y, z);
+void Screen::ActionXyz(short & x, short & y, short & z) const {
+    VirtScreen::ActionXyz(x, y, z);
     if (
             DOWN != player->GetDir() &&
             UP   != player->GetDir() &&
@@ -454,7 +341,6 @@ void Screen::Print() {
     w->ReadLock();
     mutex->lock();
     PrintHUD();
-    bool world_reprinted = false;
     const int dir = player->GetDir();
     switch ( player->UsingSelfType() ) { // left window
     case USAGE_TYPE_OPEN:
@@ -465,7 +351,6 @@ void Screen::Print() {
     default:
         PrintNormal(leftWin, (UP==dir || DOWN==dir) ?
             NORTH : dir);
-        world_reprinted = true;
     }
     if ( not fileToShow ) { // right window
         switch ( player->UsingType() ) {
@@ -477,7 +362,7 @@ void Screen::Print() {
             player->SetUsingTypeNo();
         break;
         case USAGE_TYPE_READ: {
-            ushort x, y, z;
+            short x, y, z;
             ActionXyz(x, y, z);
             wstandend(rightWin);
             PrintFile(rightWin, QString(w->WorldName() + "/texts/"
@@ -485,7 +370,7 @@ void Screen::Print() {
             player->SetUsingTypeNo();
         } break;
         case USAGE_TYPE_OPEN: {
-            ushort x, y, z;
+            short x, y, z;
             ActionXyz(x, y, z);
             const Inventory * const inv = w->GetBlock(x, y, z)->HasInventory();
             if ( inv ) {
@@ -501,24 +386,22 @@ void Screen::Print() {
             } else {
                 PrintFront(rightWin);
             }
-            world_reprinted = true;
         }
     }
-    updatedPlayer = true;
-    updated = world_reprinted;
+    updated = true;
     w->Unlock();
     mutex->unlock();
 } // void Screen::Print()
 
 void Screen::PrintHUD() {
-    if ( updatedPlayer ) return;
+    if ( updated ) return;
     int y_save, x_save;
     getyx(rightWin, y_save, x_save);
 
     werase(hudWin);
     // quick inventory
     Inventory * const inv = player->PlayerInventory();
-    if ( inv && COLS>=(SCREEN_SIZE*2+2)*2 ) {
+    if ( inv && IsScreenWide() ) {
         for (ushort i=0; i<inv->Size(); ++i) {
             wstandend(hudWin);
             const int x = QUICK_INVENTORY_X_SHIFT+i*2;
@@ -531,6 +414,19 @@ void Screen::PrintHUD() {
                 }
             }
         }
+    }
+    // focused block
+    wstandend(hudWin);
+    short x, y, z;
+    ActionXyz(x, y, z);
+    Block * const focused = GetWorld()->GetBlock(x, y, z);
+    if ( focused->Sub() != AIR && z < HEIGHT-1 ) {
+        PrintBar(((SCREEN_SIZE*2+2) * (IsScreenWide() ? 2 : 1)) - 15,
+            Color(focused->Kind(), focused->Sub()),
+            (focused->IsAnimal() == nullptr) ? '+' : '*',
+            focused->GetDurability(),
+            MAX_DURABILITY,
+            false);
     }
     // action mode
     wstandend(hudWin);
@@ -562,21 +458,12 @@ void Screen::PrintHUD() {
     } else {
         const short dur = player->HP();
         if ( dur > 0 ) { // HitPoints line
-            wstandend(hudWin);
-            mvwprintw(hudWin, 0, 0, "[..........]%hd", dur);
-            wcolor_set(hudWin, RED_BLACK, NULL);
-            const QString str(10, QChar(ascii ? '@' : 0x2665));
-            mvwaddstr(hudWin, 0, 1,
-                qPrintable(str.left(10*dur/MAX_DURABILITY+1)));
+            PrintBar(0, (dur > MAX_DURABILITY/5) ? RED_BLACK : BLACK_RED,
+                ascii ? '@' : 0x2665, dur, MAX_DURABILITY);
         }
         const short breath = player->Breath();
         if ( -1!=breath && breath!=MAX_BREATH ) { // breath line
-            wstandend(hudWin);
-            const QString str(10, QChar(ascii ? 'o' : 0x00b0));
-            mvwprintw(hudWin, 0, 16, "[..........]%hd", breath);
-            wcolor_set(hudWin, BLUE_BLACK, NULL);
-            mvwaddstr(hudWin, 0, 14+3,
-                qPrintable(str.left(10*breath/MAX_BREATH)));
+            PrintBar(16, BLUE_BLACK, ascii ? 'o' : 0x00b0, breath, MAX_BREATH);
         }
         const short satiation = player->SatiationPercent();
         if ( -1 != satiation ) { // satiation line
@@ -599,7 +486,8 @@ void Screen::PrintHUD() {
 void Screen::PrintNormal(WINDOW * const window, const int dir) const {
     if ( updated ) return;
     const ushort k_start = ( UP!=dir ) ?
-        (( DOWN==dir ) ? player->Z()-1 : player->Z()) :
+        ( DOWN==dir ?
+            player->Z()-1 : player->Z() ) :
         player->Z()+1;
     const short k_step = ( UP!=dir ) ? (-1) : 1;
 
@@ -610,13 +498,16 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
         ( SHRED_WIDTH-SCREEN_SIZE )/2;
     for (ushort j=start_y; j<SCREEN_SIZE+start_y; ++j, waddstr(window, "\n_"))
     for (ushort i=start_x; i<SCREEN_SIZE+start_x; ++i ) {
+        Shred * const shred = w->GetShred(i, j);
+        const ushort i_in = Shred::CoordInShred(i);
+        const ushort j_in = Shred::CoordInShred(j);
         ushort k = k_start;
-        for ( ; INVISIBLE==w->GetBlock(i, j, k)->Transparent(); k+=k_step);
-        const Block * const block = w->GetBlock(i, j, k);
+        for ( ; INVISIBLE == shred->GetBlock(i_in, j_in, k)->Transparent();
+            k += k_step);
         if ( (w->Enlightened(i, j, k) && player->Visible(i, j, k)) ||
                 player->GetCreativeMode() )
         {
-            waddch(window, PrintBlock(block, window));
+            waddch(window, PrintBlock(shred->GetBlock(i_in, j_in, k), window));
             waddch(window, CharNumber(k));
         } else {
             wstandend(window);
@@ -624,12 +515,9 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
             waddch(window, ' ');
         }
     }
-    wstandend(window);
-    mvwaddch(window, player->Y(), player->X()*2+3, '!');
-    box(window, 0, 0);
     if ( player->IfPlayerExists() && dir > DOWN ) {
-        const Block * const block = w->GetBlock(player->X(), player->Y(),
-            player->Z());
+        const Block * const block =
+            w->GetBlock(player->X(), player->Y(), player->Z());
         static const QString arrow_left (QChar(ascii ? '<' : 0x2190));
         static const QString arrow_up   (QChar(ascii ? '^' : 0x2191));
         static const QString arrow_right(QChar(ascii ? '>' : 0x2192));
@@ -643,17 +531,13 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
         case WEST:  waddstr(window, qPrintable(arrow_left));  break;
         case UP:    waddch(window, '.'); break;
         case DOWN:  waddch(window, 'x'); break;
-        default:
+        default:    waddch(window, '*');
             fprintf(stderr, "Screen::PrintNormal: (?) dir: %d\n",
                 player->GetDir());
-            waddch(window, '*');
         }
     }
-    wcolor_set(window, BLACK_WHITE, NULL);
-    mvwaddstr(window, 0, 1, qPrintable((UP==dir) ?
-        tr("(. Up .") : tr("x Down x")));
+    PrintTitle(window, UP==dir ? UP : DOWN);
     Arrows(window, (player->X()-start_x)*2+1, player->Y()-start_y+1, true);
-
     wrefresh(window);
 } // void Screen::PrintNormal(WINDOW * window, int dir)
 
@@ -722,13 +606,13 @@ void Screen::PrintFront(WINDOW * const window) const {
         arrow_X = (pY-begin_y)*2+1;
     break;
     }
-    if ( pZ+SCREEN_SIZE/2 >= HEIGHT ) {
+    if ( pZ+SCREEN_SIZE/2 >= HEIGHT-1 ) { // near top of the world
         k_start = HEIGHT-2;
         arrow_Y = HEIGHT-pZ;
-    } else if ( pZ-SCREEN_SIZE/2 < 0 ) {
+    } else if ( pZ-SCREEN_SIZE/2 < 0 ) { // middle of the world
         k_start = SCREEN_SIZE-1;
         arrow_Y = SCREEN_SIZE-pZ;
-    } else {
+    } else { // near bottom of the world
         k_start = pZ+SCREEN_SIZE/2;
         arrow_Y = SCREEN_SIZE/2+1;
     }
@@ -760,18 +644,7 @@ void Screen::PrintFront(WINDOW * const window) const {
             waddch(window, ' ');
         }
     }
-    wstandend(window);
-    box(window, 0, 0);
-    wcolor_set(window, BLACK_WHITE, NULL);
-    (void)wmove(window, 0, 1);
-    QString dir_string;
-    switch ( dir ) {
-    case NORTH: dir_string = tr("^ North ^"); break;
-    case SOUTH: dir_string = tr("v South v"); break;
-    case EAST:  dir_string = tr("> East >");  break;
-    case WEST:  dir_string = tr("< West <");  break;
-    }
-    waddstr(window, qPrintable(dir_string));
+    PrintTitle(window, dir);
     if ( shiftFocus ) {
         HorizontalArrows(window, arrow_Y-shiftFocus, WHITE_BLUE);
         for (int i=arrow_Y-shiftFocus; i<SCREEN_SIZE+1 && i>0; i-=shiftFocus) {
@@ -783,12 +656,25 @@ void Screen::PrintFront(WINDOW * const window) const {
     wrefresh(window);
 } // void Screen::PrintFront(WINDOW * window)
 
+void Screen::PrintTitle(WINDOW * const window, const int dir) const {
+    wstandend(window);
+    box(window, 0, 0);
+    wcolor_set(window, BLACK_WHITE, NULL);
+    QString dir_string;
+    switch ( dir ) {
+    case NORTH: dir_string = tr("^ North ^"); break;
+    case SOUTH: dir_string = tr("v South v"); break;
+    case EAST:  dir_string = tr("> East >");  break;
+    case WEST:  dir_string = tr("< West <");  break;
+    case DOWN:  dir_string = tr("x Down x");  break;
+    case UP:    dir_string = tr(".  Up  .");  break;
+    }
+    mvwaddstr(window, 0, 1, qPrintable(dir_string));
+}
+
 void Screen::PrintInv(WINDOW * const window, const Inventory * const inv)
 const {
-    const bool is_player_inv = ( player->PlayerInventory()==inv );
-    if ( is_player_inv ) {
-        if ( updatedPlayer ) return;
-    } else if ( updated ) return;
+    if ( updated ) return;
     werase(window);
     wstandend(window);
     switch ( inv->Kind() ) {
@@ -801,8 +687,6 @@ const {
     break;
     case WORKBENCH: mvwaddstr(window, 2, 4, qPrintable(tr("Product"))); break;
     }
-    mvwprintw(window, 2+inv->Size(), 40,
-        qPrintable(tr("All weight: %1 mz").arg(inv->Weight())));
     const int start = inv->Start();
     int shift = 0; // to divide inventory sections
     for (ushort i=0; i<inv->Size(); ++i) {
@@ -832,11 +716,14 @@ const {
         wstandend(window);
         mvwprintw(window, 2+i+shift, 53, "%5hu mz", inv->GetInvWeight(i));
     }
+    mvwprintw(window, 2+inv->Size()+shift, 40,
+        qPrintable(tr("All weight: %1 mz").
+            arg(inv->Weight(), 6, 10, QChar(' '))));
     wcolor_set(window, Color(inv->Kind(), inv->Sub()), NULL);
     box(window, 0, 0);
-    mvwprintw(window, 0, 1, "[%c]%s",
-        CharName(inv->Kind(), inv->Sub()), qPrintable(is_player_inv ?
-            tr("Your inventory") : inv->FullName()));
+    mvwprintw(window, 0, 1, "[%c]%s", CharName( inv->Kind(), inv->Sub()),
+        qPrintable((player->PlayerInventory()==inv) ?
+            tr("Your inventory") : inv->FullName()) );
     wrefresh(window);
 } // void Screen::PrintInv(WINDOW * window, const Inventory * inv)
 
@@ -868,31 +755,33 @@ void Screen::DisplayFile(QString path) {
             .arg(QDir::currentPath()).arg(path) );
 }
 
-void Screen::Notify(const QString str) {
-    fputs(qPrintable(QString("%1 %2\n").arg(w->TimeOfDayStr()).arg(str)),
-        notifyLog);
-    if ( str == DING ) {
-        if ( beepOn ) {
+void Screen::Notify(const QString str) const {
+    fprintf(notifyLog, "%s %s\n",
+        qPrintable(w->TimeOfDayStr()), qPrintable(str));
+    if ( beepOn ) {
+        if ( str == DING ) {
             beep();
-        }
-    } else if ( str == OUCH ) {
-        if ( beepOn ) {
+        } else if ( str == OUCH ) {
             flash();
         }
-        return;
     }
-    if ( ++notificationRepeatCount && str == lastNotification ) {
+    if ( str.at(str.size()-1) == '!' ) {
+        wcolor_set(notifyWin, RED_BLACK, NULL);
+    }
+    static ushort notification_repeat_count = 1;
+    static QString last_notification;
+    if ( str == last_notification ) {
+        ++notification_repeat_count;
         int x, y;
         getyx(notifyWin, y, x);
-        (void)wmove(notifyWin, y-1, 0);
-        wclrtoeol(notifyWin);
-        wprintw(notifyWin, "%s (%dx)\n",
-            qPrintable(str), notificationRepeatCount);
+        mvwprintw(notifyWin, y-1, 0, "%s (%dx)\n",
+            qPrintable(str), notification_repeat_count);
     } else {
-        notificationRepeatCount = 1;
+        notification_repeat_count = 1;
         wprintw(notifyWin, "%s\n", qPrintable(str));
-        lastNotification = str;
+        last_notification = str;
     }
+    wstandend(notifyWin);
     wrefresh(notifyWin);
 }
 
@@ -926,10 +815,7 @@ Screen::Screen(
         hudWin(nullptr),
         input(new IThread(this)),
         updated(false),
-        updatedPlayer(false),
-        timer(new QTimer(this)),
         notifyLog(fopen("texts/messages.txt", "at")),
-        notificationRepeatCount(1),
         fileToShow(nullptr),
         beepOn(false),
         mutex(new QMutex()),
@@ -975,7 +861,7 @@ Screen::Screen(
         notifyWin  = newwin(0, preferred_width, SCREEN_SIZE+2+4, left_border);
     } else if ( COLS >= preferred_width/2 ) {
         const ushort left_border = COLS/2-SCREEN_SIZE-1;
-        rightWin = 0;
+        rightWin = nullptr;
         leftWin  = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, left_border);
         hudWin   = newwin(3, SCREEN_SIZE*2+2, SCREEN_SIZE+2, left_border);
         commandWin = newwin(1, SCREEN_SIZE*2+2, SCREEN_SIZE+2+3, left_border);
@@ -983,9 +869,8 @@ Screen::Screen(
     } else {
         world->CleanAll();
         CleanAll();
-        puts(qPrintable(
-            tr("Set your terminal width at least %1 chars.").
-                arg(SCREEN_SIZE*2+2)));
+        puts(qPrintable(tr("Set your terminal width at least %1 chars.").
+            arg(SCREEN_SIZE*2+2)));
         error = WIDTH_NOT_ENOUGH;
         return;
     }
@@ -994,7 +879,8 @@ Screen::Screen(
     QSettings sett(QDir::currentPath()+"/freg.ini", QSettings::IniFormat);
     sett.beginGroup("screen_curses");
     shiftFocus = sett.value("focus_shift", 0).toInt();
-    actionMode = sett.value("action_mode", ACTION_USE).toInt();
+    actionMode = static_cast<actions>
+        (sett.value("action_mode", ACTION_USE).toInt());
     command    = sett.value("last_command", "hello").toString();
     beepOn     = sett.value("beep_on", false).toBool();
     sett.setValue("beep_on", beepOn);
@@ -1002,7 +888,7 @@ Screen::Screen(
     if ( not PrintFile(stdscr, "texts/splash.txt") ) {
         addstr("Free-Roaming Elementary Game\nby mmaulwurff\n");
     }
-    printw(qPrintable(tr("\nVersion %1.\n\nPress any key.").arg(VER)));
+    addstr(qPrintable(tr("\nVersion %1.\n\nPress any key.").arg(VER)));
     qsrand(getch());
     erase();
     refresh();
@@ -1015,20 +901,18 @@ Screen::Screen(
     }
 
     input->start();
-    connect(timer, SIGNAL(timeout()), SLOT(Print()));
-    timer->start(100);
+    static QTimer timer;
+    connect(&timer, SIGNAL(timeout()), SLOT(Print()));
+    timer.start(50);
 } // Screen::Screen(World * wor, Player * pl)
 
 void Screen::CleanAll() {
     static bool cleaned = false;
-    if ( cleaned ) {
-        return;
-    }
+    if ( cleaned ) return;
     cleaned = true; // prevent double cleaning
     input->Stop();
     input->wait();
     delete input;
-    delete timer;
 
     if ( leftWin   ) delwin(leftWin);
     if ( rightWin  ) delwin(rightWin);
@@ -1049,17 +933,17 @@ void Screen::CleanAll() {
 
 Screen::~Screen() { CleanAll(); }
 
-IThread::IThread(Screen * const scr) :
-        screen(scr),
-        stopped(false)
-{}
+bool Screen::IsScreenWide() { return COLS >= (SCREEN_SIZE*2+2)*2; }
 
-void IThread::run() {
-    while ( not stopped ) {
-        screen->ControlPlayer(getch());
-        msleep(90);
-        flushinp();
-    }
+void Screen::PrintBar(const short x, const short color, const int ch,
+        const ushort value, const short max_value,
+        const bool value_position_right)
+{
+    wstandend(hudWin);
+    mvwprintw(hudWin, 0, x,
+        value_position_right ? "[..........]%hd" : "%3hd[..........]", value);
+    wcolor_set(hudWin, color, NULL);
+    const QString str(10, QChar(ch));
+    mvwaddstr(hudWin, 0, x + (not value_position_right ? 4 : 1),
+        qPrintable(str.left(10*value/max_value+1)));
 }
-
-void IThread::Stop() { stopped = true; }

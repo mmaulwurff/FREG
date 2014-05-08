@@ -3,32 +3,30 @@
 ######################################################################
 
 CONFIG += thread warn_on console
-#CONFIG += debug
-#screen can be: cursed_screen, stub_screen
+CONFIG += debug
+# screen can be: cursed_screen, text_screen
 CONFIG += cursed_screen
+# compile with clang:
+# CONFIG += clang
 
 VERSION = 0.2
 VERSTR = '\\"$${VERSION}\\"'
 DEFINES += VER=\"$${VERSTR}\"
 TEMPLATE = app
 
-QMAKE_CXXFLAGS += -Wall -Wextra -std=c++11 -pedantic
-QMAKE_CXXFLAGS += -Werror
+QMAKE_CXXFLAGS += -Wall -Wextra -Werror -std=c++11 -pedantic
 QMAKE_CXXFLAGS += -Wno-error=strict-overflow # Qt 5.2 has some problem
 
 #QMAKE_CXXFLAGS_DEBUG += -fno-inline
-QMAKE_CXXFLAGS_DEBUG += -O3
-
 QMAKE_CXXFLAGS_RELEASE -= -O2
-QMAKE_CXXFLAGS_RELEASE += -O3
-#QMAKE_CXXFLAGS_RELEASE += -s
+QMAKE_CXXFLAGS += -O3
 
-#QMAKE_CXX  = clang++
-#QMAKE_LINK = clang++
 
-win32:cursed_screen {
-    # path =(
-    LIBS += -LC:/Users/Alexander/src/FREG/freg-nox/pdcurses -lpdcurses
+clang {
+    QMAKE_CXX  = clang++
+    QMAKE_LINK = clang++
+} else {
+    QMAKE_CXXFLAGS_RELEASE += -s
 }
 
 cursed_screen {
@@ -37,12 +35,12 @@ cursed_screen {
     DEFINES += CURSED_SCREEN
     HEADERS += screens/CursedScreen.h
     SOURCES += screens/CursedScreen.cpp
-} else:stub_screen {
-    TARGET = freg-stub
+} else:text_screen {
+    TARGET = freg-text
     QT -= gui
-    DEFINES += STUB_SCREEN
-    HEADERS += screens/StubScreen.h
-    SOURCES += screens/StubScreen.cpp
+    DEFINES += TEXT_SCREEN
+    HEADERS += screens/TextScreen.h
+    SOURCES += screens/TextScreen.cpp
 } else {
     error("define screen type in CONFIG!")
 }
@@ -51,7 +49,11 @@ unix:cursed_screen {
     LIBS += -lncursesw
     target.path += /usr/bin
     INSTALLS += target
+} else:win32 {
+    # path =(
+    LIBS += -LC:/Users/Alexander/src/FREG/pdcurses -lpdcurses
 }
+
 
 HEADERS += \
     BlockManager.h \
@@ -60,7 +62,7 @@ HEADERS += \
     header.h \
     Player.h \
     Shred.h \
-    VirtScreen.h \
+    screens/VirtScreen.h \
     world.h \
     worldmap.h \
     ShredStorage.h \
@@ -72,7 +74,10 @@ HEADERS += \
     blocks/Animal.h \
     blocks/Dwarf.h \
     blocks/Bucket.h \
-    blocks/Weapons.h
+    blocks/Illuminator.h \
+    blocks/Weapons.h \
+    blocks/Container.h \
+    screens/IThread.h
 SOURCES += \
     BlockManager.cpp \
     CraftManager.cpp \
@@ -82,7 +87,7 @@ SOURCES += \
     Player.cpp \
     Shred-gen-flat.cpp \
     Shred.cpp \
-    VirtScreen.cpp \
+    screens/VirtScreen.cpp \
     world.cpp \
     worldmap.cpp \
     ShredStorage.cpp \
@@ -91,7 +96,11 @@ SOURCES += \
     blocks/Active.cpp \
     blocks/Dwarf.cpp \
     blocks/Weapons.cpp \
-    blocks/Bucket.cpp
+    blocks/Illuminator.cpp \
+    blocks/Inventory.cpp \
+    blocks/Bucket.cpp \
+    blocks/Container.cpp \
+    screens/IThread.cpp
 
 TRANSLATIONS = \
     freg_ru.ts
@@ -100,4 +109,3 @@ DISTFILES += texts/*.txt
 
 MOC_DIR = moc
 OBJECTS_DIR = obj
-

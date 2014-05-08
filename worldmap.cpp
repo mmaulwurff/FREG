@@ -93,16 +93,9 @@ void WorldMap::Circle(
     }
     float maxs[360] = { (float)qMax(min_rad, float(qrand()%qRound(max_rad))) };
     for (ushort x=1; x<360; ++x) {
-        float rad_change = (qrand()%400-200.0)/200.0;
-        maxs[x] = maxs[x-1] + rad_change;
-        if ( maxs[x] > max_rad ) {
-            maxs[x] = max_rad;
-            rad_change -= 0.01;
-        } else if ( maxs[x] < min_rad ) {
-            maxs[x] = min_rad;
-            rad_change += 0.01;
-        }
-        if ( x > 315 ) {
+        maxs[x]= qBound(
+            min_rad, float(maxs[x-1]+(qrand()%400-200.0)/200.0),max_rad);
+        if ( x > 315 ) { // connect beginning and end of circle
             maxs[x] += (maxs[0]-maxs[x-1])/90;
         }
     }

@@ -22,6 +22,7 @@
 
 #include <QObject>
 #include "header.h"
+#include "Xyz.h"
 
 class QString;
 class World;
@@ -30,7 +31,7 @@ class Active;
 class Inventory;
 class Shred;
 
-class Player final : public QObject {
+class Player final : public QObject, public Xyz {
     /** \class Player Player.h
      * \brief This class contains information specific to player
      * and interface for manipulating him.
@@ -55,12 +56,6 @@ public:
     /// Destructor calls Player::CleanAll().
     ~Player();
 
-    /// This returns current player block X (coordinates in loaded zone)
-    short X() const;
-    /// This returns current player block Y (coordinates in loaded zone)
-    short Y() const;
-    /// This returns current player block Z (coordinates in loaded zone)
-    short Z() const;
     long GlobalX() const;
     long GlobalY() const;
 
@@ -87,7 +82,6 @@ public:
 
     /// This returns true if block at (x, y, z) is visible to player.
     bool Visible(ushort x, ushort y, ushort z) const;
-    void Focus(ushort & x, ushort & y, ushort & z) const;
 
     /// This returns how player is using something now.
     /** See enum usage_types in header.h. */
@@ -117,30 +111,45 @@ public:
     void StopUseAll();
     /// Tries to switch usingSelfType from NO to OPEN.
     void Backpack();
+    /// \deprecated Use Inscribe() instead, player will get xyz from screen.
     void Inscribe(short x, short y, short z) const;
+    void Inscribe() const;
+    /// \deprecated Use Examine() instead, player will get xyz from screen.
     void Examine(short x, short y, short z) const;
+    void Examine() const;
     /// Returns true if xyz are in world bounds.
+    /** \deprecated Use Damage() instead, player will get xyz from screen. */
     bool Damage(short x, short y, short z) const;
+    bool Damage() const;
+    /// \deprecated use Use() instead, player will get xyz from screen.
     void Use(short x, short y, short z);
+    void Use();
     /// Tries to throw (drop out) block number num from inventory.
-    void Throw (short x, short y, short z,
+    /** \deprecated Use Damage() instead, player will get xyz from screen. */
+    void Throw(short x, short y, short z,
             ushort src, ushort dest = 0, ushort num = 1);
+    void Throw(ushort src, ushort dest = 0, ushort num = 1);
 
     /// Tries to use block number num in inventory.
     usage_types Use(ushort num);
     /// Tries to get block number num from outer inventory.
+    /** \deprecated use Obtain(ushort src, ushort dest, ushort num) instead,
+     * player will get xyz from screen. */
     void Obtain(short x, short y, short z,
             ushort src, ushort dest = 0, ushort num = 1);
+    void Obtain(ushort src, ushort dest = 0, ushort num = 1);
     void Wield   (ushort num);
     void Inscribe(ushort num);
     void Eat     (ushort num);
     void Craft   (ushort num);
     void TakeOff (ushort num);
-    void Pour(short x, short y, short z, ushort num);
+    /// \deprecated use Build(num) instead, player will get xyz from screen.
     void Build(short x, short y, short z, ushort num);
+    void Build(ushort num);
     /// Can also wield appropriate things.
     void MoveInsideInventory(ushort num_from, ushort num_to, ushort num=1);
     void ProcessCommand(QString command);
+
 signals:
     void Moved(long x, long y, ushort z) const;
     /// This is emitted when a notification is needed to be displayed.
@@ -157,6 +166,8 @@ signals:
     void GetString(QString &);
     void Destroyed();
     void ShowFile(QString path);
+    void GetFocus(short & x, short & y, short & z) const;
+
 private slots:
     /// For cleaning player-related data before exiting program.
     /** This is connected to app's aboutToQuit() signal, also it
@@ -177,6 +188,7 @@ private slots:
     void SetPlayer(ushort set_x, ushort set_y, ushort set_z);
     /// Dir is not used, for slot signature compatibility only.
     void UpdateXYZ(int dir = NOWHERE);
+
 private:
     usage_types UseNoLock(ushort num);
     void InnerMove(ushort num_from, ushort num_to, ushort num = 1);
@@ -188,7 +200,6 @@ private:
 
     long homeLongi, homeLati;
     short homeX, homeY, homeZ;
-    short x, y, z; // current position
     int dir;
     Active * player;
     int usingType, usingSelfType;

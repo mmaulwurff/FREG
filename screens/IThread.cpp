@@ -17,39 +17,20 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#ifndef WORLDMAP_H
-#define WORLDMAP_H
+#include "screens/IThread.h"
+#include "screens/VirtScreen.h"
 
-class QFile;
+IThread::IThread(VirtScreen * const scr) :
+        screen(scr),
+        stopped(false)
+{}
 
-class WorldMap final {
-public:
-    explicit WorldMap(QString);
-    ~WorldMap();
+void IThread::run() {
+    while ( not stopped ) {
+        screen->ControlPlayer(screen->GetChar());
+        msleep(90);
+        screen->FlushInput();
+    }
+}
 
-    WorldMap & operator=(const WorldMap &) = delete;
-    WorldMap(const WorldMap &) = delete;
-
-    long MapSize() const;
-    char TypeOfShred(long longi, long lati);
-    static void GenerateMap(
-            const char * filename,
-            ushort size,
-            char outer,
-            int seed);
-
-private:
-    static float Deg(float x, float y, ushort size);
-    static float R  (float x, float y, ushort size);
-    static void Circle(
-            float min_rad,
-            float max_rad,
-            char ch,
-            ushort size,
-            char * map);
-
-    long mapSize;
-    QFile * const map;
-};
-
-#endif // WORLDMAP_H
+void IThread::Stop() { stopped = true; }

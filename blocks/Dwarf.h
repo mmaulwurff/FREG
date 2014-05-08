@@ -32,32 +32,34 @@ public:
     uchar GetActiveHand() const;
     void  SetActiveHand(bool right);
 
-    int Sub() const;
-    int ShouldAct() const;
-    int DamageKind() const;
-    bool Move(int direction);
-    quint8 Kind() const;
-    ushort Start() const;
-    ushort Weight() const;
-    ushort DamageLevel() const;
-    QString FullName() const;
+    int Sub() const override;
+    int ShouldAct() const override;
+    int DamageKind() const override;
+    bool Move(int direction) override;
+    quint8 Kind() const override;
+    ushort Start() const override;
+    ushort Weight() const override;
+    ushort DamageLevel() const override;
+    QString FullName() const override;
 
-    bool Access() const;
-    bool Inscribe(QString str);
-    void MoveInside(ushort num_from, ushort num_to, ushort num);
-    void ReceiveSignal(QString);
-    uchar LightRadius() const;
-    Block * DropAfterDamage() const;
-    quint16 NutritionalValue(quint8 sub) const;
-    Inventory * HasInventory();
+    bool Access() const override;
+    bool Inscribe(QString str) override;
+    void MoveInside(ushort num_from, ushort num_to, ushort num) override;
+    void ReceiveSignal(QString) override;
+    uchar LightRadius() const override;
+    Block * DropAfterDamage() override;
+    quint16 NutritionalValue(quint8 sub) const override;
+    Inventory * HasInventory() override;
 
     static const uchar ON_HEAD  = 0;
     static const uchar IN_RIGHT = 1;
     static const uchar IN_LEFT  = 2;
     static const uchar ON_BODY  = 3;
     static const uchar ON_LEGS  = 4;
+
 protected:
-    void SaveAttributes(QDataStream & out) const;
+    void SaveAttributes(QDataStream & out) const override;
+
 private:
     void UpdateLightRadius();
 
@@ -65,6 +67,6 @@ private:
 
     quint8 activeHand;
     uchar lightRadius;
-}; // class Dwarf
+};
 
 #endif // DWARF_H

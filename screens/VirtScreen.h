@@ -21,18 +21,19 @@
 #define VIRTSCREEN_H
 
 #include <QObject>
+#include "header.h"
 
-class QString;
 class World;
 class Player;
 
 class VirtScreen : public QObject {
     /** \class VirtScreen VirtScreen.h
-    * \brief This class provides base for all screens for freg.
-    *
-    * It provides interface for world-screen and player-screen
-    * communications by its slots and signals. */
+     *  \brief This class provides base for all screens for freg.
+     *
+     * It provides interface for world-screen and player-screen
+     * communications by its slots and signals. */
     Q_OBJECT
+
 public:
     /// Constructor makes player and world connections.
     /** Constructor of non-virtual screen should contain this code
@@ -41,15 +42,23 @@ public:
      *     player, SLOT(Act(int, int)),
      *     Qt::DirectConnection); */
     VirtScreen(World *, Player *);
+    VirtScreen(VirtScreen &) = delete;
     /// Only calls VirtScreen::CleanAll.
     virtual ~VirtScreen();
+
+    // Functions for text screens:
+    virtual int  GetChar() const;
+    virtual void FlushInput() const;
+    virtual void ControlPlayer(int command);
+
 signals:
     /// This is emitted when input receives exit key.
     /** This is connected to application exit. */
     void ExitReceived();
+
 public slots:
     /// This is called for a notification to be displayed.
-    virtual void Notify(QString) = 0;
+    virtual void Notify(QString) const = 0;
 
     /// This is called when program is stopped and from destructor.
     /** When implemented, this should contain check to prevent
@@ -99,15 +108,26 @@ public slots:
     /// This is called when player is dead, and displayed until respawn.
     void DeathScreen(); // virtual ?
 
+    /// Used to get player focus coordinates from screen.
+    /** x, y, z are coordinates where player will make action.
+     *  May be reimplemented in derivative class to get xyz other than
+     *  world direction-based focus. */
+    virtual void ActionXyz(short & x, short & y, short & z) const;
+
     /// This shows a file by path.
     /** Standard (non-reimpemented) version does nothing. */
     virtual void DisplayFile(QString path);
+
 private slots:
     /// Prints world. Should not be called not within screen.
     virtual void Print() = 0;
+
 protected:
-    World * const w;
+    World * GetWorld() const;
+    char CharName(int kind, int sub) const;
+
+    World  * const w;
     Player * const player;
-}; // class VirtScreen
+};
 
 #endif // VIRTSCREEN_H

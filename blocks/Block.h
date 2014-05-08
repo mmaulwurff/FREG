@@ -52,6 +52,8 @@ public:
     Block(QDataStream &, int sub, quint16 id, quint8 transp = UNDEF);
     virtual ~Block();
 
+    Block & operator=(const Block &) = delete;
+
     virtual QString FullName() const;
     virtual quint8 Kind() const;
     virtual bool Catchable() const;
@@ -65,7 +67,7 @@ public:
     /// Usually returns new block of the same kind and sub (except glass).
     /** When reimplemented in derivatives, inside it you can create a pile,
      *  put several blocks in it, and return pile. */
-    virtual Block * DropAfterDamage() const;
+    virtual Block * DropAfterDamage();
 
     virtual Inventory * HasInventory();
     virtual Animal * IsAnimal();

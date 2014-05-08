@@ -55,11 +55,9 @@ ShredStorage::~ShredStorage() {
         preloadThread->wait();
         delete preloadThread;
     }
-    QHash<LongLat, QByteArray *>::const_iterator i=storage.constBegin();
-    for ( ; i!=storage.constEnd(); ++i ) {
+    for (auto i=storage.constBegin(); i!=storage.constEnd(); ++i) {
         if ( i.value() ) {
-            WriteToFileShredData(
-                i.key().longitude, i.key().latitude);
+            WriteToFileShredData(i.key().longitude, i.key().latitude);
         }
     }
 }
@@ -97,8 +95,8 @@ void ShredStorage::AddShredData(const long longitude, const long latitude) {
 }
 
 void ShredStorage::WriteToFileShredData(const long longi, const long lati) {
-    const QByteArray * const data=storage.value(LongLat(longi, lati));
-    if ( data ) {
+    const QByteArray * const data = storage.value(LongLat(longi, lati));
+    if ( data != nullptr ) {
         QFile file(Shred::FileName(world->WorldName(), longi, lati));
         if ( file.open(QIODevice::WriteOnly) ) {
             file.write(qCompress(*data));

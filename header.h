@@ -23,6 +23,10 @@
 #include <QtGlobal>
 #include <QLocale>
 
+#ifdef Q_CC_MSVC
+#define not !
+#endif
+
 #ifdef Q_OS_WIN32
 #include <windows.h>
 #endif
@@ -77,7 +81,7 @@ enum dirs {
     EAST,   ///< 4
     WEST,   ///< 5
     NOWHERE ///< 6
-}; // enum dirs
+};
 
 enum push_reaction {
     MOVABLE,
@@ -85,7 +89,7 @@ enum push_reaction {
     NOT_MOVABLE,
     MOVE_UP,
     JUMP
-}; // enum push_reaction
+};
 
 enum times_of_day { MORNING, NOON, EVENING, NIGHT };
 
@@ -114,32 +118,32 @@ enum kinds {
     // changind kind codes will break file compatibility.
     BLOCK,       ///<  0
     BELL,        ///<  1
-    CHEST,       ///<  2
-    PILE,        ///<  3
-    DWARF,       ///<  4
-    ANIMAL,      ///<  5
-    PICK,        ///<  6
-    TELEGRAPH,   ///<  7
-    LIQUID,      ///<  8
-    GRASS,       ///<  9
-    BUSH,        ///< 10
-    RABBIT,      ///< 11
-    ACTIVE,      ///< 12
-    CLOCK,       ///< 13
-    PLATE,       ///< 14
-    WORKBENCH,   ///< 15
-    WEAPON,      ///< 16
-    LADDER,      ///< 17
-    DOOR,        ///< 18
-    LOCKED_DOOR, ///< 19
-    CREATOR,     ///< 20
-    TEXT,        ///< 21
-    MAP,         ///< 22
-    PREDATOR,    ///< 23
-    BUCKET,      ///< 24
-    SHOVEL,      ///< 25
-    AXE,         ///< 26
-    HAMMER,      ///< 27
+    CONTAINER,   ///<  2
+    DWARF,       ///<  3
+    ANIMAL,      ///<  4
+    PICK,        ///<  5
+    TELEGRAPH,   ///<  6
+    LIQUID,      ///<  7
+    GRASS,       ///<  8
+    BUSH,        ///<  9
+    RABBIT,      ///< 10
+    ACTIVE,      ///< 11
+    CLOCK,       ///< 12
+    PLATE,       ///< 13
+    WORKBENCH,   ///< 14
+    WEAPON,      ///< 15
+    LADDER,      ///< 16
+    DOOR,        ///< 17
+    LOCKED_DOOR, ///< 18
+    CREATOR,     ///< 19
+    TEXT,        ///< 20
+    MAP,         ///< 21
+    PREDATOR,    ///< 22
+    BUCKET,      ///< 23
+    SHOVEL,      ///< 24
+    AXE,         ///< 25
+    HAMMER,      ///< 26
+    ILLUMINATOR, ///< 27
     /// Nothing is LAST_KIND.
     LAST_KIND // keep it last in this list.
 }; // enum kinds
@@ -177,6 +181,7 @@ enum subs {
     STEEL,      ///<  23
     ADAMANTINE, ///<  24
     FIRE,       ///<  25
+    COAL,       ///<  26
     /// Nothing is made from LAST_SUB.
     LAST_SUB // keep it last in this list
 }; // enum subs
@@ -186,8 +191,9 @@ enum usage_types {
     USAGE_TYPE_OPEN,
     USAGE_TYPE_READ,
     USAGE_TYPE_READ_IN_INVENTORY,
-    USAGE_TYPE_POUR
-}; // enum usage_types
+    USAGE_TYPE_POUR,
+    USAGE_TYPE_SET_FIRE
+};
 
 enum transparency {
     BLOCK_OPAQUE,
@@ -195,6 +201,6 @@ enum transparency {
     INVISIBLE,
     NONSTANDARD = 6,
     UNDEF // temporary, doesn't appear in world.
-}; // enum transparency
+};
 
 #endif // HEADER_H

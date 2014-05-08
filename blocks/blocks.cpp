@@ -19,12 +19,11 @@
 
 #include <QTextStream>
 #include <QFile>
+#include <QTime>
 #include "blocks.h"
 #include "world.h"
 #include "Shred.h"
-#include "CraftManager.h"
 #include "BlockManager.h"
-#include "Xyz.h"
 
 // Block::
     QString Block::FullName() const {
@@ -47,6 +46,7 @@
         case SAND:       return QObject::tr("Sandstone");
         case CLAY:       return QObject::tr("Clay brick");
         case GOLD:       return QObject::tr("Block of gold");
+        case COAL:       return QObject::tr("Block of coal");
         default: fprintf(stderr, "Block::FullName: sub ?: %d.\n", Sub());
             return "Unknown block";
         }
@@ -104,14 +104,9 @@
         durability -= mult*dmg;
     }
 
-    Block * Block::DropAfterDamage() const {
-        return GLASS==Sub() ?
-            0 : BLOCK==Kind() ?
-                block_manager.NormalBlock(Sub()) :
-                block_manager.NewBlock(Kind(), Sub());
-    }
+    Block * Block::DropAfterDamage() { return GLASS==Sub() ? nullptr : this; }
 
-    int  Block::PushResult(const int) const {
+    int  Block::PushResult(int) const {
         return ( AIR==Sub() ) ? ENVIRONMENT : NOT_MOVABLE;
     }
 
@@ -124,7 +119,7 @@
     int  Block::Wearable() const { return WEARABLE_NOWHERE; }
     int  Block::DamageKind() const { return CRUSH; }
     ushort Block::DamageLevel() const { return 1; }
-    uchar Block::LightRadius() const { return (FIRE == Sub()) ? 5 : 0; }
+    uchar Block::LightRadius() const { return 0; }
     void Block::ReceiveSignal(const QString) {}
 
     bool Block::Inscribe(const QString str) {
@@ -179,6 +174,7 @@
         case STAR:
         case SUN_MOON:
         case FIRE:
+        case DIFFERENT:
         case AIR:       return WEIGHT_AIR;
         default:        return WEIGHT_WATER;
         }
@@ -287,7 +283,7 @@
     ushort Ladder::Weight() const { return Block::Weight()*3; }
     quint8 Ladder::Kind() const { return LADDER; }
 
-    Block * Ladder::DropAfterDamage() const {
+    Block * Ladder::DropAfterDamage() {
         return ( STONE==Sub() ) ?
             block_manager.NormalBlock(STONE) :
             block_manager.NewBlock(LADDER, Sub());
@@ -368,7 +364,7 @@
         }
     }
 
-    Block * Animal::DropAfterDamage() const {
+    Block * Animal::DropAfterDamage() {
         return block_manager.NewBlock(WEAPON, BONE);
     }
 
@@ -382,337 +378,6 @@
     {
         str >> breath >> satiation;
     }
-// Inventory::
-    bool   Inventory::Access() const { return true; }
-    ushort Inventory::Start() const { return 0; }
-    ushort Inventory::Size() const { return size; }
-    Inventory * Inventory::HasInventory() { return this; }
-
-    bool Inventory::Drop(const ushort src, ushort dest, ushort num,
-            Inventory * const inv_to)
-    {
-        dest = qMax(inv_to->Start(), dest);
-        bool ok_flag = false;
-        for ( ; num; --num) {
-            if ( src < Size()
-                    && dest < inv_to->Size()
-                    && !inventory[src].isEmpty()
-                    && inv_to->Get(inventory[src].top(),
-                        dest) )
-            {
-                ok_flag = true;
-                Pull(src);
-            }
-        }
-        return ok_flag;
-    }
-
-    bool Inventory::GetAll(Inventory * const from) {
-        bool flag = false;
-        for (ushort i=0; i<from->Size(); ++i) {
-            if ( from->Drop(i, 0, from->Number(i), this) ) {
-                flag = true;
-            }
-        }
-        return flag;
-    }
-
-    void Inventory::Pull(const ushort num) {
-        if ( not inventory[num].isEmpty() ) {
-            inventory[num].pop();
-        }
-    }
-
-    void Inventory::SaveAttributes(QDataStream & out) const {
-        for (ushort i=0; i<Size(); ++i) {
-            out << Number(i);
-            for (ushort j=0; j<Number(i); ++j) {
-                inventory[i].top()->SaveToFile(out);
-            }
-        }
-    }
-
-    bool Inventory::Get(Block * const block, const ushort start) {
-        if ( block == nullptr ) return true;
-        if ( block->Kind() == LIQUID ) {
-            for (int i=qMax(Start(), start); i<Size(); ++i) {
-                if ( Number(i)==1 && ShowBlock(i) ) {
-                    Inventory * const inner = ShowBlock(i)->HasInventory();
-                    if ( inner && inner->Get(block) ) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        } // else:
-        for (ushort i=qMax(Start(), start); i<Size(); ++i) {
-            if ( GetExact(block, i) ) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    bool Inventory::GetExact(Block * const block, const ushort num) {
-        if ( block ) {
-            if ( inventory[num].isEmpty() ) {
-                inventory[num].push(block);
-            } else if ( *block == *inventory[num].top()
-                    && Number(num) < MAX_STACK_SIZE )
-            {
-                Inventory * const inner = inventory[num].top()->HasInventory();
-                if ( inner==nullptr || inner->IsEmpty() ) {
-                    inventory[num].push(block);
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    void Inventory::MoveInside(const ushort num_from, const ushort num_to,
-            const ushort num)
-    {
-        for (ushort i=0; i<num; ++i) {
-            if ( GetExact(ShowBlock(num_from), num_to) ) {
-                Pull(num_from);
-            }
-        }
-    }
-
-    bool Inventory::InscribeInv(const ushort num, const QString str) {
-        const int number = Number(num);
-        if ( number == 0 ) {
-            ReceiveSignal(QObject::tr("Nothing here."));
-            return false;
-        }
-        const int sub = inventory[num].top()->Sub();
-        if ( inventory[num].top() == block_manager.NormalBlock(sub) ) {
-            for (ushort i=0; i<number; ++i) {
-                inventory[num].replace(i, block_manager.NormalBlock(sub));
-            }
-        }
-        for (ushort i=0; i<number; ++i) {
-            if ( !inventory[num].at(i)->Inscribe(str) ) {
-                ReceiveSignal(QObject::tr("Cannot inscribe this."));
-                return false;
-            }
-        }
-        ReceiveSignal(QObject::tr("Inscribed."));
-        return true;
-    }
-
-    QString Inventory::InvFullName(const ushort num) const {
-        return inventory[num].isEmpty() ?
-            "" : inventory[num].top()->FullName();
-    }
-
-    QString Inventory::NumStr(const ushort num) const {
-        return QString(" (%1x)").arg(Number(num));
-    }
-
-    ushort Inventory::GetInvWeight(const ushort i) const {
-        return inventory[i].isEmpty() ?
-            0 : inventory[i].top()->Weight()*Number(i);
-    }
-
-    int Inventory::GetInvSub(const ushort i) const {
-        return inventory[i].isEmpty() ?
-            AIR : inventory[i].top()->Sub();
-    }
-
-    int Inventory::GetInvKind(const ushort i) const {
-        return inventory[i].isEmpty() ?
-            BLOCK : int(inventory[i].top()->Kind());
-    }
-
-    QString Inventory::GetInvNote(const ushort num) const {
-        return inventory[num].top()->GetNote();
-    }
-
-    ushort Inventory::Weight() const {
-        ushort sum = 0;
-        for (ushort i=0; i<Size(); ++i) {
-            sum += GetInvWeight(i);
-        }
-        return sum;
-    }
-
-    Block * Inventory::ShowBlock(const ushort slot) const {
-        return ( slot > Size() || Number(slot)==0 ) ?
-            nullptr : inventory[slot].top();
-    }
-
-    Block * Inventory::ShowBlock(const ushort slot, const ushort num) const {
-        return ( slot > Size() || num+1 > Number(slot) ) ?
-            nullptr : inventory[slot].at(num);
-    }
-
-    bool Inventory::IsEmpty() const {
-        for (ushort i=Start(); i<Size(); ++i) {
-            if ( not inventory[i].isEmpty() ) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    void Inventory::Push(Block * const who) {
-        Inventory * const inv = who->HasInventory();
-        if ( inv ) {
-            inv->GetAll(this);
-        }
-    }
-
-    quint8 Inventory::Number(const ushort i) const {
-        return inventory[i].size();
-    }
-
-    bool Inventory::MiniCraft(const ushort num) {
-        if ( Number(num) == 0 ) {
-            ReceiveSignal(QObject::tr("Nothing here."));
-            return false;
-        } // else:
-        const CraftItem * const crafted = craft_manager.MiniCraft(
-            Number(num), BlockManager::MakeId(GetInvKind(num),GetInvSub(num)));
-        if ( crafted ) {
-            while ( not inventory[num].isEmpty() ) {
-                Block * const to_delete = ShowBlock(num);
-                Pull(num);
-                block_manager.DeleteBlock(to_delete);
-            }
-            for (int i=0; i<crafted->num; ++i) {
-                GetExact(block_manager.NewBlock(
-                    BlockManager::KindFromId(crafted->id),
-                    BlockManager:: SubFromId(crafted->id) ), num);
-            }
-            ReceiveSignal(QObject::tr("Craft successful."));
-            delete crafted;
-            return true;
-        } else {
-            ReceiveSignal(QObject::tr("You don't know how to craft this."));
-            return false;
-        }
-    }
-
-    Inventory::Inventory(const ushort sz) :
-            size(sz),
-            inventory(new QStack<Block *>[sz])
-    {}
-    Inventory::Inventory(QDataStream & str, const ushort sz) :
-            Inventory(sz)
-    {
-        for (ushort i=0; i<Size(); ++i) {
-            quint8 num;
-            str >> num;
-            while ( num-- ) {
-                inventory[i].push(block_manager.
-                    BlockFromFile(str));
-            }
-        }
-    }
-    Inventory::Inventory(const Inventory & inv) :
-            Inventory(inv.Size())
-    {}
-    Inventory::~Inventory() {
-        for (ushort i=0; i<Size(); ++i) {
-            while ( !inventory[i].isEmpty() ) {
-                block_manager.DeleteBlock(inventory[i].pop());
-            }
-        }
-        delete [] inventory;
-    }
-// Chest::
-    quint8 Chest::Kind() const { return CHEST; }
-    int Chest::Sub() const { return Block::Sub(); }
-    Inventory * Chest::HasInventory() { return Inventory::HasInventory(); }
-    usage_types Chest::Use(Block *) { return USAGE_TYPE_OPEN; }
-    void Chest::ReceiveSignal(const QString str) { Block::ReceiveSignal(str); }
-
-    QString Chest::FullName() const {
-        switch ( Sub() ) {
-        case WOOD:  return QObject::tr("Wooden chest");
-        case STONE: return QObject::tr("Stone chest");
-        default:
-            fprintf(stderr, "Chest::FullName: unlisted sub: %d\n", Sub());
-            return QObject::tr("Chest");
-        }
-    }
-
-    void Chest::Push(const int, Block * const who) { Inventory::Push(who); }
-
-    ushort Chest::Weight() const {
-        return Block::Weight()*4 + Inventory::Weight();
-    }
-
-    void Chest::SaveAttributes(QDataStream & out) const {
-        Inventory::SaveAttributes(out);
-    }
-
-    Chest::Chest(const int sub, const quint16 id, const ushort size) :
-            Block(sub, id),
-            Inventory(size)
-    {}
-    Chest::Chest(QDataStream & str, const int sub, const quint16 id,
-            const ushort size)
-        :
-            Block(str, sub, id),
-            Inventory(str, size)
-    {}
-// Pile::
-    void Pile::Push(const int, Block * const who) {
-        Inventory::Push(who);
-        if ( IsEmpty() ) {
-            GetWorld()->DestroyAndReplace(X(), Y(), Z());
-        }
-    }
-
-    void Pile::DoRareAction() {
-        Inventory * const inv =
-            GetWorld()->GetBlock(X(), Y(), Z()-1)->HasInventory();
-        if ( inv ) {
-            inv->GetAll(this);
-        }
-        if ( IsEmpty() ) {
-            Damage(GetDurability(), TIME);
-        }
-    }
-
-    int Pile::ShouldAct() const { return FREQUENT_RARE; }
-    quint8 Pile::Kind() const { return PILE; }
-    int Pile::Sub() const { return Block::Sub(); }
-    Inventory * Pile::HasInventory() { return Inventory::HasInventory(); }
-    usage_types Pile::Use(Block *) { return USAGE_TYPE_OPEN; }
-    ushort Pile::Weight() const { return Inventory::Weight(); }
-    Block * Pile::DropAfterDamage() const { return nullptr; }
-
-    void Pile::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
-
-    QString Pile::FullName() const {
-        switch ( Sub() ) {
-        case DIFFERENT: return tr("Pile");
-        default:
-            fprintf(stderr, "Pile::FullName: unlisted sub: %d\n", Sub());
-            return tr("Unknown pile");
-        }
-    }
-
-    void Pile::SaveAttributes(QDataStream & out) const {
-        Active::SaveAttributes(out);
-        Inventory::SaveAttributes(out);
-    }
-
-    Pile::Pile(const int sub, const quint16 id) :
-            Active(sub, id, NONSTANDARD),
-            Inventory(INV_SIZE)
-    {}
-    Pile::Pile(QDataStream & str, const int sub, const quint16 id) :
-            Active(str, sub, id, NONSTANDARD),
-            Inventory(str, INV_SIZE)
-    {}
 // Liquid::
     void Liquid::DoRareAction() {
         World * const world = GetWorld();
@@ -733,7 +398,7 @@
     quint8 Liquid::Kind() const { return LIQUID; }
     int Liquid::Temperature() const { return ( WATER==Sub() ) ? 0 : 1000; }
     uchar Liquid::LightRadius() const { return ( WATER==Sub() ) ? 0 : 3; }
-    Block * Liquid::DropAfterDamage() const { return nullptr; }
+    Block * Liquid::DropAfterDamage() { return nullptr; }
 
     QString Liquid::FullName() const {
         switch ( Sub() ) {
@@ -830,8 +495,9 @@
         GetWorld()->DestroyAndReplace(X(), Y(), Z());
     }
     bool Grass::ShouldFall() const { return false; }
+    uchar Grass::LightRadius() const { return (FIRE == Sub()) ? 5 : 0; }
     quint8 Grass::Kind() const { return GRASS; }
-    Block * Grass::DropAfterDamage() const { return nullptr; }
+    Block * Grass::DropAfterDamage() { return nullptr; }
 
     Grass::Grass(const int sub, const quint16 id) :
             Active(sub, id)
@@ -844,9 +510,9 @@
     bool Bush::ShouldFall() const { return false; }
     int  Bush::ShouldAct() const  { return FREQUENT_RARE; }
     void Bush::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
+    quint8 Bush::Kind() const { return BUSH; }
+    ushort Bush::Weight() const { return Inventory::Weight()+Block::Weight(); }
     QString Bush::FullName() const { return tr("Bush"); }
-    quint8  Bush::Kind() const { return BUSH; }
-    ushort  Bush::Weight() const { return Inventory::Weight()+Block::Weight(); }
     usage_types Bush::Use(Block *) { return USAGE_TYPE_OPEN; }
     Inventory * Bush::HasInventory() { return Inventory::HasInventory(); }
 
@@ -863,15 +529,15 @@
     int Bush::PushResult(int const) const { return NOT_MOVABLE; }
     void Bush::Push(const int, Block * const who) { Inventory::Push(who); }
 
-    Block * Bush::DropAfterDamage() const {
-        Block * const pile = block_manager.NewBlock(PILE, DIFFERENT);
+    Block * Bush::DropAfterDamage() {
+        Block * const pile = block_manager.NewBlock(CONTAINER, DIFFERENT);
         pile->HasInventory()->Get(block_manager.NewBlock(WEAPON, WOOD));
         pile->HasInventory()->Get(block_manager.NormalBlock(HAZELNUT));
         return pile;
     }
 
     void Bush::SaveAttributes(QDataStream & out) const {
-        Active::SaveAttributes(out);
+        Active   ::SaveAttributes(out);
         Inventory::SaveAttributes(out);
     }
 
@@ -912,8 +578,8 @@
         world->Move(X(), Y(), Z(), GetDir());
     }
 
-    Block * Rabbit::DropAfterDamage() const {
-        Block * const pile = block_manager.NewBlock(PILE, DIFFERENT);
+    Block * Rabbit::DropAfterDamage() {
+        Block * const pile = block_manager.NewBlock(CONTAINER, DIFFERENT);
         Inventory * const pile_inv = pile->HasInventory();
         pile_inv->Get(block_manager.NormalBlock(A_MEAT));
         pile_inv->Get(Animal::DropAfterDamage());
@@ -942,111 +608,6 @@
     Rabbit::Rabbit(QDataStream & str, const int sub, const quint16 id) :
             Animal(str, sub, id)
     {}
-// Workbench::
-    void Workbench::Craft() {
-        for (int i=0; i<Start(); ++i) { // remove previous products
-            while ( Number(i) ) {
-                Block * const to_pull = ShowBlock(i);
-                Pull(i);
-                block_manager.DeleteBlock(to_pull);
-            }
-        }
-        int materials_number = 0;
-        for (int i=Start(); i<Size(); ++i) {
-            if ( Number(i) ) {
-                ++materials_number;
-            }
-        }
-        CraftList list(materials_number, 0);
-        for (int i=Start(); i<Size(); ++i) {
-            if ( Number(i) ) {
-                list << new CraftItem({Number(i), ShowBlock(i)->GetId()});
-            }
-        }
-        CraftList * products = craft_manager.Craft(&list, Sub());
-        if ( products ) {
-            for (int i=0; i<products->GetSize(); ++i) {
-                for (int n=0; n<products->GetItem(i)->num; ++n) {
-                    quint16 id = products->GetItem(i)->id;
-                    GetExact(block_manager.NewBlock(
-                        block_manager.KindFromId(id),
-                        block_manager. SubFromId(id)), i);
-                }
-            }
-            delete products;
-        }
-    }
-
-    bool Workbench::Drop(const ushort src, const ushort dest,
-            const ushort num, Inventory * const inv_to)
-    {
-        if ( inv_to == nullptr
-                || src  >= Size()
-                || dest >= inv_to->Size()
-                || Number(src) == 0 )
-        {
-            return false;
-        }
-        for (ushort i=0; i<num; ++i) {
-            if ( not inv_to->Get(ShowBlock(src), dest) ) return false;
-            Pull(src);
-            if ( src < Start() ) {
-                // remove materials:
-                for (ushort i=Start(); i<Size(); ++i) {
-                    while ( Number(i) ) {
-                        Block * const to_pull = ShowBlock(i);
-                        Pull(i);
-                        block_manager.DeleteBlock(to_pull);
-                    }
-                }
-            } else {
-                Craft();
-            }
-        }
-        return true;
-    }
-
-    QString Workbench::FullName() const {
-        switch ( Sub() ) {
-        case WOOD: return QObject::tr("Workbench");
-        case IRON: return QObject::tr("Iron anvil");
-        default:
-            fprintf(stderr, "Workbench::FullName: sub (?): %d\n", Sub());
-            return "Strange workbench";
-        }
-    }
-
-    quint8 Workbench::Kind() const { return WORKBENCH; }
-    ushort Workbench::Start() const { return 2; }
-
-    void Workbench::ReceiveSignal(const QString str) {
-        Block::ReceiveSignal(str);
-    }
-
-    bool Workbench::Get(Block * const block, const ushort start) {
-        if ( Inventory::Get(block, start) ) {
-            Craft();
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    bool Workbench::GetAll(Inventory * const from) {
-        if ( Inventory::GetAll(from) ) {
-            Craft();
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    Workbench::Workbench(const int sub, const quint16 id) :
-            Chest(sub, id, WORKBENCH_SIZE)
-    {}
-    Workbench::Workbench(QDataStream & str, const int sub, const quint16 id) :
-            Chest(str, sub, id, WORKBENCH_SIZE)
-    {}
 // Door::
     int Door::PushResult(const int) const {
         return movable ? MOVABLE : NOT_MOVABLE;
@@ -1066,7 +627,7 @@
     void Door::DoFrequentAction() {
         if ( shifted ) {
             movable = true;
-            ushort x, y, z;
+            short x, y, z;
             GetWorld()->Focus(X(), Y(), Z(), x, y, z, World::Anti(GetDir()));
             if ( ENVIRONMENT == GetWorld()->GetBlock(x, y, z)->
                     PushResult(NOWHERE) )
@@ -1122,13 +683,16 @@
     }
 // Clock::
     usage_types Clock::Use(Block * const who) {
+        const QString time_str = (GetNote() == "real") ?
+            tr("Time is %1.").arg(QTime::currentTime().toString()) :
+            GetWorld()->TimeOfDayStr();
         if ( who ) {
             const Active * const active = who->ActiveBlock();
             if ( active ) {
-                who->ReceiveSignal(GetWorld()->TimeOfDayStr());
+                who->ReceiveSignal(time_str);
             }
         } else {
-            SendSignalAround(world->TimeOfDayStr());
+            SendSignalAround(time_str);
         }
         return USAGE_TYPE_NO;
     }
@@ -1142,12 +706,13 @@
         }
     }
 
+    int    Clock::PushResult(const int) const { return NOT_MOVABLE; }
+    int    Clock::ShouldAct() const  { return FREQUENT_RARE; }
+    bool   Clock::ShouldFall() const { return false; }
+    void   Clock::Damage(ushort /*dmg*/, int /*dmg_kind*/) { durability = 0; }
+    void   Clock::Push(const int, Block * const) { Use(); }
     quint8 Clock::Kind() const { return CLOCK; }
     ushort Clock::Weight() const { return Block::Weight()/10; }
-    bool Clock::ShouldFall() const { return false; }
-    void Clock::Push(const int, Block * const) { Use(); }
-    int Clock::PushResult(const int) const { return NOT_MOVABLE; }
-    int Clock::ShouldAct() const  { return FREQUENT_RARE; }
 
     void Clock::DoRareAction() {
         if ( alarmTime == GetWorld()->TimeOfDay()
@@ -1162,6 +727,7 @@
             --timerTime;
             note->setNum(timerTime);
         } else if ( timerTime == 0 ) {
+            Use();
             *note = QObject::tr("Timer fired. %1").
                 arg(GetWorld()->TimeOfDayStr());
             timerTime = -1;
@@ -1175,17 +741,17 @@
         char c;
         QTextStream txt_stream(note);
         txt_stream >> c;
-        if ( 'a'==c ) {
+        if ( 'a' == c ) {
             ushort alarm_hour;
             txt_stream >> alarm_hour;
             txt_stream >> alarmTime;
-            alarmTime+=alarm_hour*60;
-            timerTime=-1;
+            alarmTime += alarm_hour*60;
+            timerTime = -1;
         } else if ( 't'==c ) {
             txt_stream >> timerTime;
-            alarmTime=-1;
+            alarmTime = -1;
         } else {
-            alarmTime=timerTime=-1;
+            alarmTime = timerTime = -1;
         }
         return true;
     }
@@ -1211,6 +777,7 @@
     int Creator::DamageKind() const { return TIME; }
     ushort Creator::DamageLevel() const { return MAX_DURABILITY; }
     Inventory * Creator::HasInventory() { return Inventory::HasInventory(); }
+    int Creator::ShouldAct() const { return FREQUENT_FIRST; }
 
     void Creator::ReceiveSignal(const QString str) {
         Active::ReceiveSignal(str);
@@ -1351,7 +918,8 @@
         str >> longiStart >> latiStart >> savedShift >> savedChar;
     }
 // Bell::
-    quint8 Bell::Kind() const { return BELL; }
+    void    Bell::Damage(ushort /*dmg*/, int /*dmg_kind*/) { durability = 0; }
+    quint8  Bell::Kind() const { return BELL; }
     QString Bell::FullName() const { return QObject::tr("Bell"); }
 
     usage_types Bell::Use(Block  * const) {

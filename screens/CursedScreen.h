@@ -17,11 +17,11 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-/**\file screen.h
+/**\file CursedScreen.h
  * \brief Provides curses (text-based graphics interface) screen for freg.*/
 
-#ifndef SCREEN_H
-#define SCREEN_H
+#ifndef CURSEDSCREEN_H
+#define CURSEDSCREEN_H
 
 #define NOX
 
@@ -31,7 +31,7 @@
 #define _X_OPEN_SOURCE_EXTENDED
 #include <ncursesw/ncurses.h>
 #endif
-#include "VirtScreen.h"
+#include "screens/VirtScreen.h"
 
 const ushort SCREEN_SIZE = 30;
 
@@ -122,14 +122,13 @@ enum color_pairs { // do not change colors order! // foreground_background
 }; // enum color_pairs
 
 enum screen_errors {
-    NO_ERROR = 0,
+    SCREEN_NO_ERROR = 0,
     HEIGHT_NOT_ENOUGH,
     WIDTH_NOT_ENOUGH
 };
 
 class IThread;
 class Inventory;
-class QTimer;
 class QFile;
 class Block;
 class QMutex;
@@ -138,45 +137,54 @@ class Screen final : public VirtScreen {
     Q_OBJECT
 public:
      Screen(World *, Player *, int & error, bool ascii);
-    ~Screen();
+    ~Screen() override;
 
-    void ControlPlayer(int);
+    int  GetChar() const override;
+    void FlushInput() const override;
+    void ControlPlayer(int command) override;
+
 public slots:
-    void Notify(QString);
-    void CleanAll();
-    void PassString(QString &) const;
-    void Update(ushort, ushort, ushort);
-    void UpdateAll();
-    void UpdatePlayer();
-    void UpdateAround(ushort, ushort, ushort, ushort);
-    void Move(int);
+    void Notify(QString) const override;
+    void CleanAll() override;
+    void PassString(QString &) const override;
+    void Update(ushort, ushort, ushort) override;
+    void UpdateAll() override;
+    void UpdatePlayer() override;
+    void UpdateAround(ushort, ushort, ushort, ushort) override;
+    void Move(int) override;
     void DeathScreen();
-    void DisplayFile(QString path);
+    void DisplayFile(QString path) override;
+    void ActionXyz(short & x, short & y, short & z) const override;
+
 private slots:
-    void Print();
+    void Print() override;
+
 private:
-    char CharName(int, int) const;
     char CharNumber(ushort z) const;
     char CharNumberFront(ushort x, ushort y) const;
     void Arrows(WINDOW *, ushort x, ushort y, bool show_dir = false) const;
     void HorizontalArrows(WINDOW *, ushort y, short color = WHITE_RED,
             bool show_dir = false) const;
-    void ActionXyz(ushort & x, ushort & y, ushort & z) const;
     void PrintNormal(WINDOW *, int dir) const;
     void PrintFront(WINDOW *) const;
     void PrintInv(WINDOW *, const Inventory *) const;
+    /// Can print health, breath and other bars on hudWin.
+    void PrintBar(short x, short color, int ch, ushort value, short max_value,
+            bool value_position_right = true);
     /// Returns false when file does not exist, otherwise true.
     bool PrintFile(WINDOW *, QString const & file_name);
     void PrintHUD();
     void CleanFileToShow();
     void RePrint();
-    void MouseAction();
     void InventoryAction(ushort num) const;
     color_pairs Color(int kind, int sub) const;
     char PrintBlock(const Block *, WINDOW *) const;
-    void SetActionMode(const int mode);
+    void SetActionMode(actions mode);
     void ProcessCommand(QString command);
+    void PrintTitle(WINDOW *, int dir) const;
     void MovePlayer(int dir) const;
+    void MovePlayerDiag(int dir1, int dir2) const;
+    static bool IsScreenWide();
 
     WINDOW * leftWin;
     WINDOW * rightWin;
@@ -185,37 +193,16 @@ private:
     WINDOW * hudWin; // head-up display
     IThread * const input;
     volatile bool updated;
-    volatile bool updatedPlayer;
-    QTimer * const timer;
     FILE * const notifyLog;
-    int actionMode;
-    short shiftFocus; // can be -1, 0, 1 for low, normal, and high focus
-    QString command; // save previous command for further execution
-    QString lastNotification;
-    quint8 notificationRepeatCount;
+    actions actionMode;
+    /// Can be -1, 0, 1 for low, normal, and high focus.
+    short shiftFocus;
+    /// Save previous command for further execution.
+    QString command;
     QFile * fileToShow;
     bool beepOn;
     QMutex * mutex;
     const bool ascii;
-}; // class Screen
+};
 
-/** \class IThread screen.h
- * \brief Keyboard input thread for curses screen for freg.
- *
- * This class is thread, with IThread::run containing input loop. */
-
-#include <QThread>
-
-class IThread : public QThread {
-    Q_OBJECT
-public:
-    IThread(Screen * const);
-    void Stop();
-protected:
-    void run();
-private:
-    Screen * const screen;
-    volatile bool stopped;
-}; // class IThread
-
-#endif // SCREEN_H
+#endif // CURSEDSCREEN_H
