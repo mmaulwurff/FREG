@@ -500,6 +500,7 @@ void Shred::TestShred() { // 7 items in a row
     SetNewBlock(BLOCK,  WOOD,  column, row, level-1);
     SetNewBlock(TEXT,   GLASS, column+=2, row, level);
     PutBlock(Normal(COAL), column+=2, row, level);
+    SetNewBlock(CLOCK, EXPLOSIVE, column+=2, row, level);
     // row 6
     column = -1;
     row += 2;

@@ -154,6 +154,7 @@ color_pairs Screen::Color(const int kind, const int sub) const {
         case GOLD:       return WHITE_YELLOW;
         case BONE:       return MAGENTA_WHITE;
         case FIRE:       return RED_YELLOW;
+        case EXPLOSIVE:  return WHITE_RED;
         case SUN_MOON:   return ( NIGHT == w->PartOfDay() ) ?
             WHITE_WHITE : YELLOW_YELLOW;
         case SKY:

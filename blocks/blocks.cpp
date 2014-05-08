@@ -686,9 +686,9 @@
         const QString time_str = (GetNote() == "real") ?
             tr("Time is %1.").arg(QTime::currentTime().toString()) :
             GetWorld()->TimeOfDayStr();
-        if ( who ) {
+        if ( who != nullptr ) {
             const Active * const active = who->ActiveBlock();
-            if ( active ) {
+            if ( active != nullptr ) {
                 who->ReceiveSignal(time_str);
             }
         } else {
@@ -700,6 +700,7 @@
     QString Clock::FullName() const {
         switch ( Sub() ) {
         case IRON: return QObject::tr("Iron clock");
+        case EXPLOSIVE: return QObject::tr("Bomb");
         default:
             fprintf(stderr, "Clock::FullName: unlisted sub: %d\n", Sub());
             return "Strange clock";
@@ -761,6 +762,7 @@
             alarmTime(-1),
             timerTime(-1)
     {}
+
     Clock::Clock (QDataStream & str, const int sub, const quint16 id) :
             Active(str, sub, id, NONSTANDARD),
             alarmTime(-1),

@@ -31,10 +31,6 @@
 #include <windows.h>
 #endif
 
-#if ( QT_VERSION < QT_VERSION_CHECK(4, 8, 0) )
-#define Q_UNLIKELY
-#endif
-
 const ushort SHRED_WIDTH = 16;
 const ushort HEIGHT = 128;
 
@@ -66,7 +62,7 @@ enum shred_type {
     SHRED_EMPTY     = '_',
     SHRED_CHAOS     = '!',
     SHRED_NULLMOUNTAIN = '#',
-    SHRED_NORMAL_UNDERGROUND = '-'
+    SHRED_NORMAL_UNDERGROUND = '-',
 };
 
 const ushort DEFAULT_MAP_SIZE = 75U;
@@ -109,7 +105,7 @@ enum damage_kinds {
     TIME,    ///< 12
     NO_HARM, ///< 13
     DAMAGE_FALL,  ///< 14
-    DAMAGE_HANDS  ///< 15
+    DAMAGE_HANDS, ///< 15
 }; // enum damage_kinds
 
 /// Kinds of atom
@@ -182,6 +178,7 @@ enum subs {
     ADAMANTINE, ///<  24
     FIRE,       ///<  25
     COAL,       ///<  26
+    EXPLOSIVE,  ///<  27
     /// Nothing is made from LAST_SUB.
     LAST_SUB // keep it last in this list
 }; // enum subs
