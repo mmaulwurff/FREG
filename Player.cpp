@@ -30,11 +30,8 @@
 
 const bool COMMANDS_ALWAYS_ON = true;
 
-short Player::X() const { return x; }
-short Player::Y() const { return y; }
-short Player::Z() const { return z; }
-long Player::GlobalX() const { return GetShred()->GlobalX(x); }
-long Player::GlobalY() const { return GetShred()->GlobalY(y); }
+long Player::GlobalX() const { return GetShred()->GlobalX(X()); }
+long Player::GlobalY() const { return GetShred()->GlobalY(Y()); }
 
 bool Player::IsRightActiveHand() const {
     return Dwarf::IN_RIGHT == GetActiveHand();
@@ -51,7 +48,7 @@ void Player::SetActiveHand(const bool right) {
     }
 }
 
-Shred * Player::GetShred() const { return world->GetShred(x, y); }
+Shred * Player::GetShred() const { return world->GetShred(X(), Y()); }
 World * Player::GetWorld() const { return world; }
 
 bool Player::GetCreativeMode() const { return creativeMode; }
@@ -59,10 +56,10 @@ void Player::SetCreativeMode(const bool turn) {
     creativeMode = turn;
     disconnect(player, 0, 0, 0);
     Active * const prev_player = player;
-    SetPlayer(x, y, z);
+    SetPlayer(X(), Y(), Z());
     player->SetDir(prev_player->GetDir());
     Inventory * const inv = PlayerInventory();
-    if ( inv ) {
+    if ( inv != nullptr ) {
         inv->GetAll(prev_player->HasInventory());
     }
     if ( not GetCreativeMode() ) {
@@ -118,11 +115,11 @@ Inventory * Player::PlayerInventory() const {
 long Player::GetLongitude() const { return GetShred()->Longitude(); }
 long Player::GetLatitude()  const { return GetShred()->Latitude();  }
 
-void Player::UpdateXYZ(const int) {
+void Player::UpdateXYZ(int) {
     if ( player ) {
-        x = player->X();
-        y = player->Y();
-        z = player->Z();
+        x_self = player->X();
+        y_self = player->Y();
+        z_self = player->Z();
         emit Updated();
     }
 }
@@ -160,12 +157,10 @@ void Player::Examine() const {
 }
 
 void Player::Jump() {
-    if ( not IfPlayerExists() ) {
-        return;
-    }
+    if ( not IfPlayerExists() ) return;
     usingType = USAGE_TYPE_NO;
     if ( GetCreativeMode() ) {
-        if ( (UP==dir && z<HEIGHT-2) || (DOWN==dir && z>1) ) {
+        if ( (UP==dir && z_self<HEIGHT-2) || (DOWN==dir && z_self>1) ) {
             player->GetDeferredAction()->SetGhostMove();
         }
     } else {
@@ -365,7 +360,7 @@ void Player::Build(const ushort slot) {
     short x_targ, y_targ, z_targ;
     emit GetFocus(x_targ, y_targ, z_targ);
     Block * const block = ValidBlock(slot);
-    if ( block && (AIR != world->GetBlock(x, y, z-1)->Sub()
+    if ( block && (AIR != world->GetBlock(X(), Y(), Z()-1)->Sub()
             || 0 == player->Weight()) )
     {
         player->GetDeferredAction()->
@@ -436,9 +431,9 @@ void Player::ProcessCommand(QString command) {
         if ( not world->InBounds(x_what, y_what, z_what) ) {
             emit Notify(tr("Such block is out of loaded world."));
         } else if ( GetCreativeMode() || COMMANDS_ALWAYS_ON
-                || qAbs(x-x_what) > 1
-                || qAbs(y-y_what) > 1
-                || qAbs(z-z_what) > 1 )
+                || qAbs(X()-x_what) > 1
+                || qAbs(Y()-y_what) > 1
+                || qAbs(Z()-z_what) > 1 )
         {
             Examine(x_what, y_what, z_what);
         } else {
@@ -461,7 +456,7 @@ void Player::ProcessCommand(QString command) {
 
 bool Player::Visible(const ushort x_to, const ushort y_to, const ushort z_to)
 const {
-    return world->Visible(x, y, z, x_to, y_to, z_to);
+    return world->Visible(X(), Y(), Z(), x_to, y_to, z_to);
 }
 
 int  Player::GetDir() const { return dir; }
@@ -491,14 +486,14 @@ void Player::CheckOverstep(const int direction) {
     UpdateXYZ();
     static const ushort half_num_shreds = GetWorld()->NumShreds()/2;
     if ( DOWN!=direction && UP!=direction && ( // leaving central zone
-            x <  (half_num_shreds-1)*SHRED_WIDTH ||
-            y <  (half_num_shreds-1)*SHRED_WIDTH ||
-            x >= (half_num_shreds+2)*SHRED_WIDTH ||
-            y >= (half_num_shreds+2)*SHRED_WIDTH ) )
+            X() <  (half_num_shreds-1)*SHRED_WIDTH ||
+            Y() <  (half_num_shreds-1)*SHRED_WIDTH ||
+            X() >= (half_num_shreds+2)*SHRED_WIDTH ||
+            Y() >= (half_num_shreds+2)*SHRED_WIDTH ) )
     {
         emit OverstepBorder(direction);
     }
-    emit Moved(GlobalX(), GlobalY(), z);
+    emit Moved(GlobalX(), GlobalY(), Z());
 }
 
 void Player::BlockDestroy() {
@@ -511,30 +506,28 @@ void Player::BlockDestroy() {
 }
 
 void Player::SetPlayer(const ushort _x, const ushort _y, const ushort _z) {
-    x = _x;
-    y = _y;
-    z = _z;
+    x_self = _x;
+    y_self = _y;
+    z_self = _z;
     if ( GetCreativeMode() ) {
         ( player = block_manager.NewBlock(CREATOR, DIFFERENT)->
-            ActiveBlock() )->SetXYZ(x, y, z);
+            ActiveBlock() )->SetXYZ(X(), Y(), Z());
         GetShred()->Register(player);
     } else {
         World * const world = GetWorld();
-        for ( ; z < HEIGHT-1; ++z) {
-            Block * const target_block = world->GetBlock(x, y, z);
-            if ( AIR==target_block->Sub() ||
-                    DWARF==target_block->Kind() )
-            {
+        for ( ; z_self < HEIGHT-1; ++z_self) {
+            const Block * const target_block = world->GetBlock(X(), Y(), Z());
+            if ( AIR==target_block->Sub() || DWARF==target_block->Kind() ) {
                 break;
             }
         }
-        Block * const target_block = world->GetBlock(x, y, z);
+        Block * const target_block = world->GetBlock(X(), Y(), Z());
         if ( DWARF == target_block->Kind() ) {
             player = target_block->ActiveBlock();
         } else {
             world->Build( (player = block_manager.
-                    NewBlock(DWARF,H_MEAT)->ActiveBlock()),
-                x, y, z, GetDir(), 0, true /*force build*/ );
+                    NewBlock(DWARF, H_MEAT)->ActiveBlock()),
+                X(), Y(), Z(), GetDir(), 0, true /*force build*/ );
         }
     }
     player->SetDeferredAction(new DeferredAction(player));
@@ -557,26 +550,25 @@ Player::Player() :
         usingSelfType(USAGE_TYPE_NO),
         cleaned(false)
 {
-    QSettings sett(QDir::currentPath() + '/' + world->WorldName() +
-            "/settings.ini",
-        QSettings::IniFormat);
+    QSettings sett(QDir::currentPath() + '/' + world->WorldName()
+        + "/settings.ini", QSettings::IniFormat);
     sett.beginGroup("player");
     homeLongi = sett.value("home_longitude",
         qlonglong(world->GetSpawnLongi())).toLongLong();
     homeLati  = sett.value("home_latitude",
         qlonglong(world->GetSpawnLati())).toLongLong();
-    homeX = sett.value("home_x", 0).toInt();
-    homeY = sett.value("home_y", 0).toInt();
-    homeZ = sett.value("home_z", HEIGHT/2).toInt();
-    x     = sett.value("current_x", 0).toInt();
-    y     = sett.value("current_y", 0).toInt();
-    z     = sett.value("current_z", HEIGHT/2+1).toInt();
+    homeX  = sett.value("home_x", 0).toInt();
+    homeY  = sett.value("home_y", 0).toInt();
+    homeZ  = sett.value("home_z", HEIGHT/2).toInt();
+    x_self = sett.value("current_x", 0).toInt();
+    y_self = sett.value("current_y", 0).toInt();
+    z_self = sett.value("current_z", HEIGHT/2+1).toInt();
     creativeMode = sett.value("creative_mode", false).toBool();
 
     const ushort plus = world->NumShreds()/2*SHRED_WIDTH;
     homeX += plus;
     homeY += plus;
-    SetPlayer(x+=plus, y+=plus, z);
+    SetPlayer(x_self+=plus, y_self+=plus, z_self);
 
     connect(world, SIGNAL(NeedPlayer(ushort, ushort, ushort)),
         SLOT(SetPlayer(ushort, ushort, ushort)),
@@ -589,17 +581,14 @@ Player::Player() :
 } // Player::Player()
 
 void Player::CleanAll() {
-    if ( cleaned ) {
-        return;
-    }
+    if ( cleaned ) return;
     cleaned = true;
 
     if ( GetCreativeMode() ) {
         block_manager.DeleteBlock(player);
     }
 
-    QSettings sett(QDir::currentPath()+'/'+
-            world->WorldName()+"/settings.ini",
+    QSettings sett(QDir::currentPath()+'/'+world->WorldName()+"/settings.ini",
         QSettings::IniFormat);
     sett.beginGroup("player");
     sett.setValue("home_longitude", qlonglong(homeLongi));
@@ -608,9 +597,9 @@ void Player::CleanAll() {
     sett.setValue("home_x", homeX-min);
     sett.setValue("home_y", homeY-min);
     sett.setValue("home_z", homeZ);
-    sett.setValue("current_x", x-min);
-    sett.setValue("current_y", y-min);
-    sett.setValue("current_z", z);
+    sett.setValue("current_x", X()-min);
+    sett.setValue("current_y", Y()-min);
+    sett.setValue("current_z", Z());
     sett.setValue("creative_mode", GetCreativeMode());
 }
 

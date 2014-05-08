@@ -22,6 +22,7 @@
 
 #include <QObject>
 #include "header.h"
+#include "Xyz.h"
 
 class QString;
 class World;
@@ -30,7 +31,7 @@ class Active;
 class Inventory;
 class Shred;
 
-class Player final : public QObject {
+class Player final : public QObject, public Xyz {
     /** \class Player Player.h
      * \brief This class contains information specific to player
      * and interface for manipulating him.
@@ -55,12 +56,6 @@ public:
     /// Destructor calls Player::CleanAll().
     ~Player();
 
-    /// This returns current player block X (coordinates in loaded zone)
-    short X() const;
-    /// This returns current player block Y (coordinates in loaded zone)
-    short Y() const;
-    /// This returns current player block Z (coordinates in loaded zone)
-    short Z() const;
     long GlobalX() const;
     long GlobalY() const;
 
@@ -154,6 +149,7 @@ public:
     /// Can also wield appropriate things.
     void MoveInsideInventory(ushort num_from, ushort num_to, ushort num=1);
     void ProcessCommand(QString command);
+
 signals:
     void Moved(long x, long y, ushort z) const;
     /// This is emitted when a notification is needed to be displayed.
@@ -171,6 +167,7 @@ signals:
     void Destroyed();
     void ShowFile(QString path);
     void GetFocus(short & x, short & y, short & z) const;
+
 private slots:
     /// For cleaning player-related data before exiting program.
     /** This is connected to app's aboutToQuit() signal, also it
@@ -191,6 +188,7 @@ private slots:
     void SetPlayer(ushort set_x, ushort set_y, ushort set_z);
     /// Dir is not used, for slot signature compatibility only.
     void UpdateXYZ(int dir = NOWHERE);
+
 private:
     usage_types UseNoLock(ushort num);
     void InnerMove(ushort num_from, ushort num_to, ushort num = 1);
@@ -202,7 +200,6 @@ private:
 
     long homeLongi, homeLati;
     short homeX, homeY, homeZ;
-    short x, y, z; // current position
     int dir;
     Active * player;
     int usingType, usingSelfType;

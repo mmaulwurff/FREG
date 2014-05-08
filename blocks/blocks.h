@@ -39,10 +39,10 @@ public:
     Plate(int sub, quint16 id);
     Plate(QDataStream & str, int sub, quint16 id);
 
-    QString FullName() const;
-    quint8 Kind() const;
-    int PushResult(int dir) const;
-    ushort Weight() const;
+    int     PushResult(int dir) const override;
+    quint8  Kind() const override;
+    ushort  Weight() const override;
+    QString FullName() const override;
 };
 
 class Ladder : public Block {
@@ -50,11 +50,11 @@ public:
     Ladder(int sub, quint16 id);
     Ladder(QDataStream & str, int sub, quint16 id);
 
-    QString FullName() const;
-    quint8 Kind() const;
-    int PushResult(int dir) const;
-    ushort Weight() const;
-    bool Catchable() const;
+    int     PushResult(int dir) const override;
+    bool    Catchable() const override;
+    quint8  Kind() const override;
+    ushort  Weight() const override;
+    QString FullName() const override;
     Block * DropAfterDamage() override;
 };
 
@@ -64,14 +64,16 @@ public:
     Liquid(int sub, quint16 id);
     Liquid(QDataStream & str, int sub, quint16 id);
 
-    void DoRareAction();
-    int  ShouldAct() const;
-    quint8 Kind() const;
-    int PushResult(int dir) const;
-    int  Temperature() const;
-    uchar LightRadius() const;
-    QString FullName() const;
+    int     ShouldAct() const override;
+    int     Temperature() const override;
+    int     PushResult(int dir) const override;
+    uchar   LightRadius() const override;
+    quint8  Kind() const override;
+    QString FullName() const override;
     Block * DropAfterDamage() override;
+
+protected:
+    void DoRareAction() override;
 };
 
 class Grass : public Active {
@@ -80,7 +82,6 @@ public:
     Grass(int sub, quint16 id);
     Grass(QDataStream & str, int sub, quint16 id);
 
-    void  DoRareAction()     override;
     int   ShouldAct()  const override;
     bool  ShouldFall() const override;
     void  Push(int dir, Block * who) override;
@@ -88,6 +89,10 @@ public:
     Block * DropAfterDamage() override;
     quint8  Kind()     const override;
     QString FullName() const override;
+
+protected:
+    void DoRareAction() override;
+
 private:
     static bool IsBase(quint8 ownsub, quint8 ground);
 };
@@ -100,23 +105,24 @@ public:
     Bush(int sub, quint16 id);
     Bush(QDataStream & str, int sub, quint16 id);
 
-    int  Sub() const;
-    int  PushResult(int dir) const;
-    int  ShouldAct() const;
-    bool ShouldFall() const;
-    void DoRareAction();
-    void Push(int dir, Block * who);
-    void ReceiveSignal(QString);
-    void Damage(ushort dmg, int dmg_kind);
-    quint8 Kind() const;
-    ushort Weight() const;
+    int  Sub() const override;
+    int  PushResult(int dir) const override;
+    int  ShouldAct() const override;
+    bool ShouldFall() const override;
+    void Push(int dir, Block * who) override;
+    void ReceiveSignal(QString) override;
+    void Damage(ushort dmg, int dmg_kind) override;
+    quint8 Kind() const override;
+    ushort Weight() const override;
 
-    QString FullName() const;
-    usage_types Use(Block * who = 0);
-    Inventory * HasInventory();
+    QString FullName() const override;
+    usage_types Use(Block * who = 0) override;
+    Inventory * HasInventory() override;
     Block * DropAfterDamage() override;
+
 protected:
-    void SaveAttributes(QDataStream & out) const;
+    void DoRareAction() override;
+    void SaveAttributes(QDataStream & out) const override;
 };
 
 class Rabbit : public Animal {
@@ -125,14 +131,15 @@ public:
     Rabbit(int sub, quint16 id);
     Rabbit(QDataStream & str, int sub, quint16 id);
 
-    void DoFrequentAction();
-    void DoRareAction();
     Block * DropAfterDamage() override;
-    quint8 Kind() const;
-    quint16 NutritionalValue(quint8 sub) const;
-    QString FullName() const;
+    quint8 Kind() const override;
+    quint16 NutritionalValue(quint8 sub) const override;
+    QString FullName() const override;
+
 protected:
-    short Attractive(int sub) const;
+    void  DoFrequentAction() override;
+    void  DoRareAction() override;
+    short Attractive(int sub) const override;
 };
 
 class Door : public Active {
@@ -141,16 +148,18 @@ public:
     Door(int sub, quint16 id);
     Door(QDataStream & str, int sub, quint16 id);
 
-    int ShouldAct() const;
-    void Push(int dir, Block *);
-    int  PushResult(int dir /* not used */) const;
-    void DoFrequentAction();
-    bool ShouldFall() const;
-    quint8 Kind() const;
-    QString FullName() const;
-    usage_types Use(Block * who = 0);
+    int ShouldAct() const override;
+    void Push(int dir, Block *) override;
+    int  PushResult(int dir /* not used */) const override;
+    bool ShouldFall() const override;
+    quint8 Kind() const override;
+    QString FullName() const override;
+    usage_types Use(Block * who = 0) override;
+
 protected:
-    void SaveAttributes(QDataStream & out) const;
+    void DoFrequentAction() override;
+    void SaveAttributes(QDataStream & out) const override;
+
 private:
     bool shifted;
     bool locked;
@@ -163,18 +172,20 @@ public:
     Clock(int sub, quint16 id);
     Clock (QDataStream & str, int sub, quint16 id);
 
-    int ShouldAct() const;
-    int PushResult(int) const;
-    bool ShouldFall() const;
-    bool Inscribe(QString);
-    void DoRareAction();
-    void Push(int dir, Block * who);
-    void Damage(ushort dmg, int dmg_kind);
-    quint8 Kind() const;
-    ushort Weight() const;
-    QString FullName() const;
-    usage_types Use(Block * who = 0);
+    int ShouldAct() const override;
+    int PushResult(int) const override;
+    bool ShouldFall() const override;
+    bool Inscribe(QString) override;
+    void Push(int dir, Block * who) override;
+    void Damage(ushort dmg, int dmg_kind) override;
+    quint8 Kind() const override;
+    ushort Weight() const override;
+    QString FullName() const override;
+    usage_types Use(Block * who = 0) override;
     INNER_ACTIONS ActInner() override;
+
+protected:
+    void DoRareAction() override;
 
 private:
     short alarmTime;
@@ -187,16 +198,16 @@ public:
     Creator(int sub, quint16 id);
     Creator(QDataStream & str, int sub, quint16 id);
 
-    quint8 Kind() const;
-    int  Sub() const;
-    void ReceiveSignal(QString);
-    int  DamageKind() const;
-    ushort DamageLevel() const;
-    QString FullName() const;
-    Inventory * HasInventory();
+    quint8 Kind() const override;
+    int  Sub() const override;
+    void ReceiveSignal(QString) override;
+    int  DamageKind() const override;
+    ushort DamageLevel() const override;
+    QString FullName() const override;
+    Inventory * HasInventory() override;
 
 protected:
-    void SaveAttributes(QDataStream & out) const;
+    void SaveAttributes(QDataStream & out) const override;
 };
 
 class Text : public Block {
@@ -204,10 +215,10 @@ public:
     Text(int sub, quint16 id);
     Text(QDataStream & str, int sub, quint16 id);
 
-    quint8 Kind() const;
-    QString FullName() const;
-    usage_types Use(Block * who = 0);
-    bool Inscribe(QString);
+    quint8 Kind() const override;
+    QString FullName() const override;
+    usage_types Use(Block * who = 0) override;
+    bool Inscribe(QString) override;
 };
 
 class Map : public Text {
@@ -215,12 +226,12 @@ public:
     Map(int sub, quint16 id);
     Map(QDataStream & str, int sub, quint16 id);
 
-    quint8 Kind() const;
-    QString FullName() const;
-    usage_types Use(Block * who = 0);
+    quint8 Kind() const override;
+    QString FullName() const override;
+    usage_types Use(Block * who = 0) override;
 
 protected:
-    void SaveAttributes(QDataStream & out) const;
+    void SaveAttributes(QDataStream & out) const override;
 
 private:
     // coordinates map titled in. also ~center.
@@ -235,11 +246,11 @@ public:
     Bell(int sub, quint16 id);
     Bell(QDataStream & str, int sub, quint16 id);
 
-    void    ReceiveSignal(QString);
-    void    Damage(ushort dmg, int dmg_kind);
-    quint8  Kind() const;
-    QString FullName() const;
-    usage_types Use(Block * who = 0);
+    void    ReceiveSignal(QString) override;
+    void    Damage(ushort dmg, int dmg_kind) override;
+    quint8  Kind() const override;
+    QString FullName() const override;
+    usage_types Use(Block * who = 0) override;
 };
 
 class Predator : public Animal {
@@ -248,15 +259,15 @@ public:
     Predator(int sub, quint16 id);
     Predator(QDataStream & str, int sub, quint16 id);
 
-    ushort DamageLevel() const;
-    quint8 Kind() const;
-    QString FullName() const;
-    quint16 NutritionalValue(quint8 sub) const;
+    ushort DamageLevel() const override;
+    quint8 Kind() const override;
+    QString FullName() const override;
+    quint16 NutritionalValue(quint8 sub) const override;
 
 protected:
-    void DoFrequentAction();
-    void DoRareAction();
-    short Attractive(int sub) const;
+    void DoFrequentAction() override;
+    void DoRareAction() override;
+    short Attractive(int sub) const override;
 };
 
 #endif // BLOCKS_H

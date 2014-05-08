@@ -31,7 +31,6 @@ public:
     Illuminator(QDataStream & str, int sub, quint16 id);
 
     int     ShouldAct() const override;
-    void    DoRareAction() override;
     void    Damage(ushort dmg, int dmg_kind) override;
     uchar   LightRadius() const override;
     quint8  Kind() const override;
@@ -41,6 +40,7 @@ public:
     INNER_ACTIONS ActInner() override;
 
 protected:
+    void DoRareAction() override;
     void SaveAttributes(QDataStream & out) const override;
 
 private:

@@ -9,16 +9,18 @@ public:
     Bucket(int sub, quint16 id);
     Bucket(QDataStream & str, int sub, quint16 id);
 
-    quint8  Kind() const;
-    int     Sub() const;
-    ushort  Weight() const;
-    QString FullName() const;
-    bool    Get(Block * block, ushort start);
-    void    Damage(ushort dmg, int dmg_kind);
-    void    ReceiveSignal(QString str);
-    void    SaveAttributes(QDataStream & out) const;
-    usage_types Use(Block *);
-    Inventory * HasInventory();
+    quint8  Kind() const override;
+    int     Sub() const override;
+    ushort  Weight() const override;
+    QString FullName() const override;
+    bool    Get(Block * block, ushort start) override;
+    void    Damage(ushort dmg, int dmg_kind) override;
+    void    ReceiveSignal(QString str) override;
+    usage_types Use(Block *) override;
+    Inventory * HasInventory() override;
+
+protected:
+    void SaveAttributes(QDataStream & out) const override;
 };
 
 #endif // BUCKET_H
