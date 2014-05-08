@@ -512,20 +512,49 @@ void Shred::TestShred() { // 7 items in a row
 } // void Shred::TestShred()
 
 void Shred::NullMountain() {
+    NormalUnderground();
     Block * const null_stone = Normal(NULLSTONE);
-    for (ushort i=0; i<SHRED_WIDTH; ++i)
-    for (ushort j=0; j<SHRED_WIDTH; ++j) {
-        ushort k;
-        for (k=1; k<HEIGHT/2; ++k) {
-            PutBlock(null_stone, i, j, k);
+    for (short i=0; i<SHRED_WIDTH; ++i)
+    for (short j=0; j<SHRED_WIDTH; ++j) {
+        ushort k = 1;
+        for ( ; k < HEIGHT/2; ++k) {
+            if ( i==7 || i==8 || j==7 || j==8 ) {
+                PutBlock(null_stone, i, j, k);
+            }
         }
-        for ( ; k<HEIGHT-1; ++k) {
-            if ( i==4 || i==5 || j==4 || j==5 ) {
+        for ( ; k < HEIGHT-2; ++k) {
+            const short surface =
+                HEIGHT/2 * (pow(1./(i-7.5), 2) * pow(1./(j-7.5), 2)+1);
+            if ( HEIGHT/2+1 < surface && surface >= k ) {
                 PutBlock(null_stone, i, j, k);
             }
         }
     }
-}
+    if ( SHRED_NULLMOUNTAIN == TypeOfShred(longitude-1, latitude) ) { // north
+        for (short j=0; j<SHRED_WIDTH/2-1; ++j)
+        for (short k=HEIGHT/2; k<HEIGHT-2; ++k) {
+            blocks[7][j][k] = blocks[8][j][k] = null_stone;
+        }
+    }
+    if ( SHRED_NULLMOUNTAIN == TypeOfShred(longitude+1, latitude) ) { // south
+        for (short j=SHRED_WIDTH/2+1; j<SHRED_WIDTH; ++j)
+        for (short k=HEIGHT/2; k<HEIGHT-2; ++k) {
+            blocks[7][j][k] = blocks[8][j][k] = null_stone;
+        }
+    }
+    if ( SHRED_NULLMOUNTAIN == TypeOfShred(longitude, latitude+1) ) { // east
+        for (short i=SHRED_WIDTH/2+1; i<SHRED_WIDTH; ++i)
+        for (short k=HEIGHT/2; k<HEIGHT-2; ++k) {
+            blocks[i][7][k] = blocks[i][8][k] = null_stone;
+        }
+    }
+    if ( SHRED_NULLMOUNTAIN == TypeOfShred(longitude, latitude-1) ) { // west
+        for (short i=0; i<SHRED_WIDTH/2-1; ++i)
+        for (short k=HEIGHT/2; k<HEIGHT-2; ++k) {
+            blocks[i][7][k] = blocks[i][8][k] = null_stone;
+        }
+    }
+} // Shred::NullMountain()
 
 void Shred::Pyramid() {
     const ushort level = qMin(FlatUndeground(), ushort(HEIGHT-1-16));

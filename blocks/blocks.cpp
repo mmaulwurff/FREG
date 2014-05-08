@@ -777,6 +777,7 @@
     int Creator::DamageKind() const { return TIME; }
     ushort Creator::DamageLevel() const { return MAX_DURABILITY; }
     Inventory * Creator::HasInventory() { return Inventory::HasInventory(); }
+    int Creator::ShouldAct() const { return FREQUENT_FIRST; }
 
     void Creator::ReceiveSignal(const QString str) {
         Active::ReceiveSignal(str);

@@ -28,6 +28,7 @@
 #include "screens/CursedScreen.h"
 #include "screens/IThread.h"
 #include "world.h"
+#include "Shred.h"
 #include "blocks/Block.h"
 #include "blocks/Inventory.h"
 #include "Player.h"
@@ -419,7 +420,7 @@ void Screen::PrintHUD() {
     short x, y, z;
     ActionXyz(x, y, z);
     Block * const focused = GetWorld()->GetBlock(x, y, z);
-    if ( focused->Sub() != AIR ) {
+    if ( focused->Sub() != AIR && z < HEIGHT-1 ) {
         PrintBar(((SCREEN_SIZE*2+2) * (IsScreenWide() ? 2 : 1)) - 15,
             Color(focused->Kind(), focused->Sub()),
             (focused->IsAnimal() == nullptr) ? '+' : '*',
@@ -497,13 +498,16 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
         ( SHRED_WIDTH-SCREEN_SIZE )/2;
     for (ushort j=start_y; j<SCREEN_SIZE+start_y; ++j, waddstr(window, "\n_"))
     for (ushort i=start_x; i<SCREEN_SIZE+start_x; ++i ) {
+        Shred * const shred = w->GetShred(i, j);
+        const ushort i_in = Shred::CoordInShred(i);
+        const ushort j_in = Shred::CoordInShred(j);
         ushort k = k_start;
-        for ( ; INVISIBLE==w->GetBlock(i, j, k)->Transparent(); k+=k_step);
-        const Block * const block = w->GetBlock(i, j, k);
+        for ( ; INVISIBLE == shred->GetBlock(i_in, j_in, k)->Transparent();
+            k += k_step);
         if ( (w->Enlightened(i, j, k) && player->Visible(i, j, k)) ||
                 player->GetCreativeMode() )
         {
-            waddch(window, PrintBlock(block, window));
+            waddch(window, PrintBlock(shred->GetBlock(i_in, j_in, k), window));
             waddch(window, CharNumber(k));
         } else {
             wstandend(window);
@@ -512,8 +516,8 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
         }
     }
     if ( player->IfPlayerExists() && dir > DOWN ) {
-        const Block * const block = w->GetBlock(player->X(), player->Y(),
-            player->Z());
+        const Block * const block =
+            w->GetBlock(player->X(), player->Y(), player->Z());
         static const QString arrow_left (QChar(ascii ? '<' : 0x2190));
         static const QString arrow_up   (QChar(ascii ? '^' : 0x2191));
         static const QString arrow_right(QChar(ascii ? '>' : 0x2192));
@@ -602,13 +606,13 @@ void Screen::PrintFront(WINDOW * const window) const {
         arrow_X = (pY-begin_y)*2+1;
     break;
     }
-    if ( pZ+SCREEN_SIZE/2 >= HEIGHT ) {
+    if ( pZ+SCREEN_SIZE/2 >= HEIGHT-1 ) { // near top of the world
         k_start = HEIGHT-2;
         arrow_Y = HEIGHT-pZ;
-    } else if ( pZ-SCREEN_SIZE/2 < 0 ) {
+    } else if ( pZ-SCREEN_SIZE/2 < 0 ) { // middle of the world
         k_start = SCREEN_SIZE-1;
         arrow_Y = SCREEN_SIZE-pZ;
-    } else {
+    } else { // near bottom of the world
         k_start = pZ+SCREEN_SIZE/2;
         arrow_Y = SCREEN_SIZE/2+1;
     }
@@ -751,7 +755,7 @@ void Screen::DisplayFile(QString path) {
             .arg(QDir::currentPath()).arg(path) );
 }
 
-void Screen::Notify(const QString str) {
+void Screen::Notify(const QString str) const {
     fprintf(notifyLog, "%s %s\n",
         qPrintable(w->TimeOfDayStr()), qPrintable(str));
     if ( beepOn ) {

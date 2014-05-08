@@ -199,6 +199,7 @@ public:
     Creator(QDataStream & str, int sub, quint16 id);
 
     quint8 Kind() const override;
+    int  ShouldAct() const override;
     int  Sub() const override;
     void ReceiveSignal(QString) override;
     int  DamageKind() const override;

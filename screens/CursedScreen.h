@@ -144,7 +144,7 @@ public:
     void ControlPlayer(int command) override;
 
 public slots:
-    void Notify(QString) override;
+    void Notify(QString) const override;
     void CleanAll() override;
     void PassString(QString &) const override;
     void Update(ushort, ushort, ushort) override;

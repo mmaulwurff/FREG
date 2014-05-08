@@ -58,7 +58,7 @@ signals:
 
 public slots:
     /// This is called for a notification to be displayed.
-    virtual void Notify(QString) = 0;
+    virtual void Notify(QString) const = 0;
 
     /// This is called when program is stopped and from destructor.
     /** When implemented, this should contain check to prevent
