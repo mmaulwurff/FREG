@@ -25,14 +25,14 @@
 #include "blocks/Bucket.h"
 #include "blocks/Weapons.h"
 #include "blocks/Illuminator.h"
+#include "blocks/Container.h"
 
 #define sizeof_array(ARRAY) (sizeof(ARRAY)/sizeof(ARRAY[0]))
 
 const QString BlockManager::kinds[] = {
     "block",
     "bell",
-    "chest",
-    "pile",
+    "container",
     "intellectual",
     "animal",
     "pick",
@@ -119,33 +119,32 @@ Block * BlockManager::NewBlock(const int kind, const int sub) {
         "BlockManager::NewBlock: kind ?: %d.\n", kind);
     // no break;
     // valid kinds:
-    case BLOCK:  return New<Block >(sub, id);
-    case BELL:   return New<Bell  >(sub, id);
-    case GRASS:  return New<Grass >(sub, id);
-    case PICK:   return New<Pick  >(sub, id);
-    case PLATE:  return New<Plate >(sub, id);
-    case ACTIVE: return New<Active>(sub, id);
-    case LADDER: return New<Ladder>(sub, id);
-    case WEAPON: return New<Weapon>(sub, id);
-    case BUSH:   return New<Bush  >(sub, id);
-    case CHEST:  return New<Chest >(sub, id);
-    case PILE:   return New<Pile  >(sub, id);
-    case DWARF:  return New<Dwarf >(sub, id);
-    case RABBIT: return New<Rabbit>(sub, id);
+    case BLOCK:  return new Block (sub, id);
+    case BELL:   return new Bell  (sub, id);
+    case GRASS:  return new Grass (sub, id);
+    case PICK:   return new Pick  (sub, id);
+    case PLATE:  return new Plate (sub, id);
+    case ACTIVE: return new Active(sub, id);
+    case LADDER: return new Ladder(sub, id);
+    case WEAPON: return new Weapon(sub, id);
+    case BUSH:   return new Bush  (sub, id);
+    case DWARF:  return new Dwarf (sub, id);
+    case RABBIT: return new Rabbit(sub, id);
     case LOCKED_DOOR:
-    case DOOR:   return New<Door  >(sub, id);
-    case LIQUID: return New<Liquid>(sub, id);
-    case CLOCK:  return New<Clock >(sub, id);
-    case TEXT:   return New<Text  >(sub, id);
-    case MAP:    return New<Map   >(sub, id);
-    case BUCKET: return New<Bucket>(sub, id);
-    case SHOVEL: return New<Shovel>(sub, id);
-    case HAMMER: return New<Hammer>(sub, id);
-    case AXE:    return New<Axe   >(sub, id);
-    case CREATOR: return New<Creator>(sub, id);
-    case PREDATOR: return New<Predator>(sub, id);
-    case WORKBENCH: return New<Workbench>(sub, id);
-    case ILLUMINATOR: return New<Illuminator>(sub, id);
+    case DOOR:   return new Door  (sub, id);
+    case LIQUID: return new Liquid(sub, id);
+    case CLOCK:  return new Clock (sub, id);
+    case TEXT:   return new Text  (sub, id);
+    case MAP:    return new Map   (sub, id);
+    case BUCKET: return new Bucket(sub, id);
+    case SHOVEL: return new Shovel(sub, id);
+    case HAMMER: return new Hammer(sub, id);
+    case AXE:    return new Axe   (sub, id);
+    case CREATOR: return new Creator(sub, id);
+    case PREDATOR: return new Predator(sub, id);
+    case WORKBENCH: return new Workbench(sub, id);
+    case CONTAINER: return new Container(sub, id);
+    case ILLUMINATOR: return new Illuminator(sub, id);
     }
     return nullptr; // should never be returned, everything is in switch.
 } // Block * BlockManager::NewBlock(int kind, int sub)
@@ -162,33 +161,32 @@ Block * BlockManager::BlockFromFile(QDataStream & str,
         "BlockManager::BlockFromFile: kind ?: %d.\n", kind);
     // no break;
     // valid kinds:
-    case BLOCK:  return New<Block >(str, sub, id);
-    case BELL:   return New<Bell  >(str, sub, id);
-    case PICK:   return New<Pick  >(str, sub, id);
-    case PLATE:  return New<Plate >(str, sub, id);
-    case LADDER: return New<Ladder>(str, sub, id);
-    case WEAPON: return New<Weapon>(str, sub, id);
-    case BUSH:   return New<Bush  >(str, sub, id);
-    case CHEST:  return New<Chest >(str, sub, id);
-    case RABBIT: return New<Rabbit>(str, sub, id);
-    case DWARF:  return New<Dwarf >(str, sub, id);
-    case PILE:   return New<Pile  >(str, sub, id);
-    case GRASS:  return New<Grass >(str, sub, id);
-    case ACTIVE: return New<Active>(str, sub, id);
-    case LIQUID: return New<Liquid>(str, sub, id);
-    case TEXT:   return New<Text  >(str, sub, id);
-    case MAP:    return New<Map   >(str, sub, id);
-    case BUCKET: return New<Bucket>(str, sub, id);
-    case SHOVEL: return New<Shovel>(str, sub, id);
-    case HAMMER: return New<Hammer>(str, sub, id);
-    case AXE:    return New<Axe   >(str, sub, id);
+    case BLOCK:  return new Block (str, sub, id);
+    case BELL:   return new Bell  (str, sub, id);
+    case PICK:   return new Pick  (str, sub, id);
+    case PLATE:  return new Plate (str, sub, id);
+    case LADDER: return new Ladder(str, sub, id);
+    case WEAPON: return new Weapon(str, sub, id);
+    case BUSH:   return new Bush  (str, sub, id);
+    case RABBIT: return new Rabbit(str, sub, id);
+    case DWARF:  return new Dwarf (str, sub, id);
+    case GRASS:  return new Grass (str, sub, id);
+    case ACTIVE: return new Active(str, sub, id);
+    case LIQUID: return new Liquid(str, sub, id);
+    case TEXT:   return new Text  (str, sub, id);
+    case MAP:    return new Map   (str, sub, id);
+    case BUCKET: return new Bucket(str, sub, id);
+    case SHOVEL: return new Shovel(str, sub, id);
+    case HAMMER: return new Hammer(str, sub, id);
+    case AXE:    return new Axe   (str, sub, id);
     case LOCKED_DOOR:
-    case DOOR:   return New<Door  >(str, sub, id);
-    case CLOCK:  return New<Clock >(str, sub, id);
-    case CREATOR: return New<Creator>(str, sub, id);
-    case PREDATOR: return New<Predator>(str, sub, id);
-    case WORKBENCH: return New<Workbench>(str, sub, id);
-    case ILLUMINATOR: return New<Illuminator>(str, sub, id);
+    case DOOR:   return new Door  (str, sub, id);
+    case CLOCK:  return new Clock (str, sub, id);
+    case CREATOR: return new Creator(str, sub, id);
+    case PREDATOR: return new Predator(str, sub, id);
+    case WORKBENCH: return new Workbench(str, sub, id);
+    case CONTAINER: return new Container(str, sub, id);
+    case ILLUMINATOR: return new Illuminator(str, sub, id);
     }
     return nullptr; // should never be returned, everything is in switch.
 }
@@ -249,18 +247,6 @@ Block * BlockManager::ReplaceWithNormal(Block * const block) const {
     } else {
         return block;
     }
-}
-
-template <typename Thing>
-Thing * BlockManager::New(const quint8 sub, const quint16 id) {
-    return new Thing(sub, id);
-}
-
-template <typename Thing>
-Thing * BlockManager::New(QDataStream & str, const quint8 sub,
-        const quint16 id)
-{
-    return new Thing(str, sub, id);
 }
 
 quint16 BlockManager::MakeId(const quint8 kind, const quint8 sub) {

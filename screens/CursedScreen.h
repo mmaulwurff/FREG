@@ -129,7 +129,6 @@ enum screen_errors {
 
 class IThread;
 class Inventory;
-class QTimer;
 class QFile;
 class Block;
 class QMutex;
@@ -141,7 +140,7 @@ public:
     ~Screen() override;
 
     int  GetChar() const override;
-    void FlushInput() const;
+    void FlushInput() const override;
     void ControlPlayer(int command) override;
 
 public slots:

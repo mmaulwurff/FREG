@@ -183,6 +183,8 @@ public: // Block information section
     bool InBounds(ushort x, ushort y) const;
     bool InBounds(ushort x, ushort y, ushort z) const;
     int  Temperature(ushort x, ushort y, ushort z) const;
+private:
+    static bool IsPile(const Block *);
 
 public: // World section
     void ReloadAllShreds(long lati, long longi,
@@ -202,10 +204,12 @@ public:
     void ReadLock();
     bool TryReadLock();
     void Unlock();
+
 public slots:
     void CleanAll();
     void PhysEvents();
     void SetReloadShreds(int direction);
+
 signals:
     void Notify(QString) const;
     void GetString(QString &) const;
@@ -221,6 +225,7 @@ signals:
     void StartReloadAll();
     void FinishReloadAll();
     void ExitReceived();
+
 private:
     static const ushort TIME_STEPS_IN_SEC = 10U;
 

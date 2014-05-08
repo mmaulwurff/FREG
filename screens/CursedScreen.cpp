@@ -121,7 +121,6 @@ char Screen::CharNumberFront(const ushort i, const ushort j) const {
 
 color_pairs Screen::Color(const int kind, const int sub) const {
     switch ( kind ) { // foreground_background
-    case PILE:      return WHITE_BLACK;
     case DWARF:     return WHITE_BLUE;
     case RABBIT:    return RED_WHITE;
     case PREDATOR:  return RED_BLACK;
@@ -135,7 +134,8 @@ color_pairs Screen::Color(const int kind, const int sub) const {
         case SAND:  return YELLOW_WHITE;
     } // no break;
     default: switch ( sub ) {
-        case WOOD: case HAZELNUT:
+        case WOOD:
+        case HAZELNUT:
         case SOIL:       return BLACK_YELLOW;
         case GREENERY:   return BLACK_GREEN;
         case STONE:      return BLACK_WHITE;
@@ -155,7 +155,8 @@ color_pairs Screen::Color(const int kind, const int sub) const {
         case FIRE:       return RED_YELLOW;
         case SUN_MOON:   return ( NIGHT == w->PartOfDay() ) ?
             WHITE_WHITE : YELLOW_YELLOW;
-        case SKY: case STAR:
+        case SKY:
+        case STAR:
             if ( w->GetEvernight() ) return BLACK_BLACK;
             switch ( w->PartOfDay() ) {
             case NIGHT:   return WHITE_BLACK;

@@ -98,13 +98,12 @@ char VirtScreen::CharName(const int kind, const int sub) const {
     case SHOVEL: return '|';
     case HAMMER: return 'T';
     case AXE:    return '/';
-    case CHEST:
-    case PILE:   return '&';
     case BELL:   return 'b';
     case BUCKET: return 'u';
     case TEXT:   return '?';
     case PREDATOR: return '!';
     case WORKBENCH: return '*';
+    case CONTAINER: return '&';
     case TELEGRAPH: return 't';
     case DOOR:        return ( STONE == sub ) ? '#' : '\'';
     case LOCKED_DOOR: return ( STONE == sub ) ? '#' : '`';

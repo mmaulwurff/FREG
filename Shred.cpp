@@ -24,9 +24,8 @@
 #include "blocks/Active.h"
 #include "blocks/Inventory.h"
 
-// Qt version in Debian stable that time.
-const quint8 DATASTREAM_VERSION = QDataStream::Qt_4_6;
-const quint8 CURRENT_SHRED_FORMAT_VERSION = 1;
+const quint8 DATASTREAM_VERSION = QDataStream::Qt_5_2;
+const quint8 CURRENT_SHRED_FORMAT_VERSION = 2;
 
 const ushort SHRED_WIDTH_SHIFT = 4;
 
@@ -409,7 +408,7 @@ void Shred::CoverWith(const int kind, const int sub) {
     for (ushort j=0; j<SHRED_WIDTH; ++j) {
         ushort k = HEIGHT-2;
         for ( ; AIR==Sub(i, j, k); --k);
-        SetNewBlock(kind, sub, i, j, ++k);
+        SetBlock(block_manager.NewBlock(kind, sub), i, j, ++k);
     }
 }
 
@@ -423,7 +422,7 @@ void Shred::RandomDrop(const ushort num, const int kind, const int sub,
         ushort z = HEIGHT-2;
         for ( ; Sub(x, y, z)==AIR; --z);
         if( on_water || Sub(x, y, z)!=WATER ) {
-            SetNewBlock(kind, sub, x, y, ++z);
+            SetBlock(block_manager.NewBlock(kind, sub), x, y, ++z);
         }
     }
 }
@@ -434,7 +433,7 @@ void Shred::PlantGrass() {
         ushort k;
         for (k=HEIGHT-2; GetBlock(i, j, k)->Transparent(); --k);
         if ( SOIL==Sub(i, j, k++) && AIR==Sub(i, j, k) ) {
-            SetNewBlock(GRASS, GREENERY, i, j, k);
+            SetBlock(block_manager.NewBlock(GRASS, GREENERY), i, j, k);
         }
     }
 }
@@ -443,11 +442,11 @@ void Shred::TestShred() { // 7 items in a row
     const ushort level = FlatUndeground()+1;
     short row = 1, column = -1;
     // row 1
-    SetNewBlock(CLOCK, IRON, column+=2, row, level);
-    SetNewBlock(CHEST, WOOD, column+=2, row, level);
-    SetNewBlock(ACTIVE, SAND, column+=2, row, level);
-    PutBlock(Normal(GLASS), column+=2, 1, level);
-    SetNewBlock(PILE, DIFFERENT, column+=2, row, level);
+    SetNewBlock(CLOCK,     IRON, column+=2, row, level);
+    SetNewBlock(CONTAINER, WOOD, column+=2, row, level);
+    SetNewBlock(ACTIVE,    SAND, column+=2, row, level);
+    PutBlock(Normal(GLASS),      column+=2, row, level);
+    SetNewBlock(CONTAINER, DIFFERENT, column+=2, row, level);
     SetNewBlock(PLATE, STONE, column+=2, row, level);
     PutBlock(Normal(NULLSTONE), column+=2, row, level);
     // row 2
@@ -464,29 +463,29 @@ void Shred::TestShred() { // 7 items in a row
     SetNewBlock(LIQUID, WATER, column+=2, row, level - 3);
     SetNewBlock(LIQUID, WATER, column, row, level - 2);
     PutBlock(Normal(AIR), column, row, level - 1);
-    SetNewBlock(BUSH, WOOD, column+=2, row, level);
+    SetNewBlock(BUSH,   WOOD,   column+=2, row, level);
     SetNewBlock(RABBIT, A_MEAT, column+=2, row, level - 2);
     PutBlock(Normal(AIR), column, row, level - 1);
-    SetNewBlock(WORKBENCH, IRON, column+=2, row, level);
-    SetNewBlock(DOOR, GLASS, column+=2, row, level);
+    SetNewBlock(WORKBENCH, IRON,  column+=2, row, level);
+    SetNewBlock(DOOR,      GLASS, column+=2, row, level);
     blocks[column][row][level]->SetDir(NORTH);
     // row 3
     column = -1;
     row += 2;
-    SetNewBlock(WEAPON, IRON, column+=2, row, level);
-    SetNewBlock(BLOCK, SAND, column+=2, row, level);
-    SetNewBlock(BLOCK, WATER, column+=2, row, level);
+    SetNewBlock(WEAPON, IRON,  column+=2, row, level);
+    SetNewBlock(BLOCK,  SAND,  column+=2, row, level);
+    SetNewBlock(BLOCK,  WATER, column+=2, row, level);
     SetNewBlock(ACTIVE, WATER, column+=2, row, level);
-    SetNewBlock(DOOR, STONE, column+=2, row, level);
+    SetNewBlock(DOOR,   STONE, column+=2, row, level);
     blocks[column][row][level]->SetDir(NORTH);
-    SetNewBlock(BLOCK, CLAY, column+=2, row, level);
+    SetNewBlock(BLOCK,  CLAY,  column+=2, row, level);
     SetNewBlock(LIQUID, STONE, column+=2, row, level-1);
     // row 4
     column = -1;
     row += 2;
     SetNewBlock(TEXT, PAPER, column+=2, row, level);
     GetBlock(column, row, level)->Inscribe(".hidden");
-    SetNewBlock(BELL, IRON, column+=2, row, level);
+    SetNewBlock(BELL,   IRON, column+=2, row, level);
     SetNewBlock(BUCKET, IRON, column+=2, row, level);
     SetNewBlock(PICK,   IRON, column+=2, row, level);
     SetNewBlock(SHOVEL, IRON, column+=2, row, level);
@@ -547,7 +546,7 @@ void Shred::Pyramid() {
     for (ushort z=HEIGHT/2-52; z<=level; ++z) { // horizontal tunnel
         PutBlock(air, SHRED_WIDTH/2, SHRED_WIDTH/2, z);
     }
-    SetNewBlock(CHEST, STONE, SHRED_WIDTH-2, SHRED_WIDTH-2, level+1);
+    SetNewBlock(CONTAINER, STONE, SHRED_WIDTH-2, SHRED_WIDTH-2, level+1);
     Inventory * const inv =
         GetBlock(SHRED_WIDTH-2,SHRED_WIDTH-2, level+1)->HasInventory();
     inv->Get(Normal(GOLD));
@@ -590,25 +589,26 @@ bool Shred::Tree(const ushort x, const ushort y, const ushort z,
 {
     if ( not InBounds(x+2, y+2, height+z) ) return false;
     // check for room
-    const ushort leaves_level = z+height/2;
     for (ushort i=x; i<=x+2; ++i)
-    for (ushort j=y; j<=y+2; ++j) {
-        ushort k = z;
-        for ( ; k<leaves_level; ++k) {
-            if ( AIR != Sub(i, j, k) ) {
-                return false;
-            }
-        }
-        for ( ; k<z+height; ++k ) {
-            if ( AIR != Sub(i, j, k) ) {
-                return false;
-            } else {
-                SetBlock(Normal(GREENERY), i, j, k);
-            }
+    for (ushort j=y; j<=y+2; ++j)
+    for (ushort k=z; k<z+height; ++k) {
+        if ( AIR != Sub(i, j, k) ) {
+            return false;
         }
     }
-    for (ushort k=z-1; k < z+height-1; ++k) { // trunk
-        SetBlock(Normal(WOOD), x+1, y+1, k);
+    const ushort leaves_level = z+height/2;
+    Block * const leaves = Normal(GREENERY);
+    for (ushort i=x; i<=x+2; ++i)
+    for (ushort j=y; j<=y+2; ++j) {
+        for (ushort k=leaves_level; k<z+height; ++k ) {
+            PutBlock(leaves, i, j, k);
+        }
+    }
+    if ( z > 1 ) { // root, do not plant trees in nullstone
+        SetBlock(Normal(WOOD), x+1, y+1, z-1);
+    }
+    for (ushort k=z; k < z+height-1; ++k) { // trunk
+        PutBlock(Normal(WOOD), x+1, y+1, k);
     }
     // branches
     const int r = qrand();

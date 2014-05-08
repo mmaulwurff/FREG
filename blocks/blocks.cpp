@@ -23,9 +23,7 @@
 #include "blocks.h"
 #include "world.h"
 #include "Shred.h"
-#include "CraftManager.h"
 #include "BlockManager.h"
-#include "Xyz.h"
 
 // Block::
     QString Block::FullName() const {
@@ -175,6 +173,7 @@
         case STAR:
         case SUN_MOON:
         case FIRE:
+        case DIFFERENT:
         case AIR:       return WEIGHT_AIR;
         default:        return WEIGHT_WATER;
         }
@@ -283,7 +282,7 @@
     ushort Ladder::Weight() const { return Block::Weight()*3; }
     quint8 Ladder::Kind() const { return LADDER; }
 
-    Block * Ladder::DropAfterDamage() const {
+    Block * Ladder::DropAfterDamage() {
         return ( STONE==Sub() ) ?
             block_manager.NormalBlock(STONE) :
             block_manager.NewBlock(LADDER, Sub());
@@ -378,94 +377,6 @@
     {
         str >> breath >> satiation;
     }
-// Chest::
-    quint8 Chest::Kind() const { return CHEST; }
-    int Chest::Sub() const { return Block::Sub(); }
-    Inventory * Chest::HasInventory() { return Inventory::HasInventory(); }
-    usage_types Chest::Use(Block *) { return USAGE_TYPE_OPEN; }
-    void Chest::ReceiveSignal(const QString str) { Block::ReceiveSignal(str); }
-
-    QString Chest::FullName() const {
-        switch ( Sub() ) {
-        case WOOD:  return QObject::tr("Wooden chest");
-        case STONE: return QObject::tr("Stone chest");
-        default:
-            fprintf(stderr, "Chest::FullName: unlisted sub: %d\n", Sub());
-            return QObject::tr("Chest");
-        }
-    }
-
-    void Chest::Push(const int, Block * const who) { Inventory::Push(who); }
-
-    ushort Chest::Weight() const {
-        return Block::Weight()*4 + Inventory::Weight();
-    }
-
-    void Chest::SaveAttributes(QDataStream & out) const {
-        Inventory::SaveAttributes(out);
-    }
-
-    Chest::Chest(const int sub, const quint16 id, const ushort size) :
-            Block(sub, id),
-            Inventory(size)
-    {}
-    Chest::Chest(QDataStream & str, const int sub, const quint16 id,
-            const ushort size)
-        :
-            Block(str, sub, id),
-            Inventory(str, size)
-    {}
-// Pile::
-    void Pile::Push(const int, Block * const who) {
-        Inventory::Push(who);
-        if ( IsEmpty() ) {
-            GetWorld()->DestroyAndReplace(X(), Y(), Z());
-        }
-    }
-
-    void Pile::DoRareAction() {
-        Inventory * const inv =
-            GetWorld()->GetBlock(X(), Y(), Z()-1)->HasInventory();
-        if ( inv ) {
-            inv->GetAll(this);
-        }
-        if ( IsEmpty() ) {
-            Damage(GetDurability(), TIME);
-        }
-    }
-
-    int Pile::ShouldAct() const { return FREQUENT_RARE; }
-    quint8 Pile::Kind() const { return PILE; }
-    int Pile::Sub() const { return Block::Sub(); }
-    Inventory * Pile::HasInventory() { return Inventory::HasInventory(); }
-    usage_types Pile::Use(Block *) { return USAGE_TYPE_OPEN; }
-    ushort Pile::Weight() const { return Inventory::Weight(); }
-    Block * Pile::DropAfterDamage() const { return nullptr; }
-
-    void Pile::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
-
-    QString Pile::FullName() const {
-        switch ( Sub() ) {
-        case DIFFERENT: return tr("Pile");
-        default:
-            fprintf(stderr, "Pile::FullName: unlisted sub: %d\n", Sub());
-            return tr("Unknown pile");
-        }
-    }
-
-    void Pile::SaveAttributes(QDataStream & out) const {
-        Active::SaveAttributes(out);
-        Inventory::SaveAttributes(out);
-    }
-
-    Pile::Pile(const int sub, const quint16 id) :
-            Active(sub, id, NONSTANDARD),
-            Inventory(INV_SIZE)
-    {}
-    Pile::Pile(QDataStream & str, const int sub, const quint16 id) :
-            Active(str, sub, id, NONSTANDARD),
-            Inventory(str, INV_SIZE)
-    {}
 // Liquid::
     void Liquid::DoRareAction() {
         World * const world = GetWorld();
@@ -486,7 +397,7 @@
     quint8 Liquid::Kind() const { return LIQUID; }
     int Liquid::Temperature() const { return ( WATER==Sub() ) ? 0 : 1000; }
     uchar Liquid::LightRadius() const { return ( WATER==Sub() ) ? 0 : 3; }
-    Block * Liquid::DropAfterDamage() const { return nullptr; }
+    Block * Liquid::DropAfterDamage() { return nullptr; }
 
     QString Liquid::FullName() const {
         switch ( Sub() ) {
@@ -618,7 +529,7 @@
     void Bush::Push(const int, Block * const who) { Inventory::Push(who); }
 
     Block * Bush::DropAfterDamage() {
-        Block * const pile = block_manager.NewBlock(PILE, DIFFERENT);
+        Block * const pile = block_manager.NewBlock(CONTAINER, DIFFERENT);
         pile->HasInventory()->Get(block_manager.NewBlock(WEAPON, WOOD));
         pile->HasInventory()->Get(block_manager.NormalBlock(HAZELNUT));
         return pile;
@@ -667,7 +578,7 @@
     }
 
     Block * Rabbit::DropAfterDamage() {
-        Block * const pile = block_manager.NewBlock(PILE, DIFFERENT);
+        Block * const pile = block_manager.NewBlock(CONTAINER, DIFFERENT);
         Inventory * const pile_inv = pile->HasInventory();
         pile_inv->Get(block_manager.NormalBlock(A_MEAT));
         pile_inv->Get(Animal::DropAfterDamage());
@@ -695,111 +606,6 @@
     {}
     Rabbit::Rabbit(QDataStream & str, const int sub, const quint16 id) :
             Animal(str, sub, id)
-    {}
-// Workbench::
-    void Workbench::Craft() {
-        for (int i=0; i<Start(); ++i) { // remove previous products
-            while ( Number(i) ) {
-                Block * const to_pull = ShowBlock(i);
-                Pull(i);
-                block_manager.DeleteBlock(to_pull);
-            }
-        }
-        int materials_number = 0;
-        for (int i=Start(); i<Size(); ++i) {
-            if ( Number(i) ) {
-                ++materials_number;
-            }
-        }
-        CraftList list(materials_number, 0);
-        for (int i=Start(); i<Size(); ++i) {
-            if ( Number(i) ) {
-                list << new CraftItem({Number(i), ShowBlock(i)->GetId()});
-            }
-        }
-        CraftList * products = world->GetCraftManager()->Craft(&list, Sub());
-        if ( products != nullptr ) {
-            for (int i=0; i<products->GetSize(); ++i) {
-                for (int n=0; n<products->GetItem(i)->num; ++n) {
-                    quint16 id = products->GetItem(i)->id;
-                    GetExact(block_manager.NewBlock(
-                        block_manager.KindFromId(id),
-                        block_manager. SubFromId(id)), i);
-                }
-            }
-            delete products;
-        }
-    }
-
-    bool Workbench::Drop(const ushort src, const ushort dest,
-            const ushort num, Inventory * const inv_to)
-    {
-        if ( inv_to == nullptr
-                || src  >= Size()
-                || dest >= inv_to->Size()
-                || Number(src) == 0 )
-        {
-            return false;
-        }
-        for (ushort i=0; i<num; ++i) {
-            if ( not inv_to->Get(ShowBlock(src), dest) ) return false;
-            Pull(src);
-            if ( src < Start() ) {
-                // remove materials:
-                for (ushort i=Start(); i<Size(); ++i) {
-                    while ( Number(i) ) {
-                        Block * const to_pull = ShowBlock(i);
-                        Pull(i);
-                        block_manager.DeleteBlock(to_pull);
-                    }
-                }
-            } else {
-                Craft();
-            }
-        }
-        return true;
-    }
-
-    QString Workbench::FullName() const {
-        switch ( Sub() ) {
-        case WOOD: return QObject::tr("Workbench");
-        case IRON: return QObject::tr("Iron anvil");
-        default:
-            fprintf(stderr, "Workbench::FullName: sub (?): %d\n", Sub());
-            return "Strange workbench";
-        }
-    }
-
-    quint8 Workbench::Kind() const { return WORKBENCH; }
-    ushort Workbench::Start() const { return 2; }
-
-    void Workbench::ReceiveSignal(const QString str) {
-        Block::ReceiveSignal(str);
-    }
-
-    bool Workbench::Get(Block * const block, const ushort start) {
-        if ( Inventory::Get(block, start) ) {
-            Craft();
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    bool Workbench::GetAll(Inventory * const from) {
-        if ( Inventory::GetAll(from) ) {
-            Craft();
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    Workbench::Workbench(const int sub, const quint16 id) :
-            Chest(sub, id, WORKBENCH_SIZE)
-    {}
-    Workbench::Workbench(QDataStream & str, const int sub, const quint16 id) :
-            Chest(str, sub, id, WORKBENCH_SIZE)
     {}
 // Door::
     int Door::PushResult(const int) const {

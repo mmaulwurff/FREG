@@ -76,6 +76,7 @@ HEADERS += \
     blocks/Bucket.h \
     blocks/Illuminator.h \
     blocks/Weapons.h \
+    blocks/Container.h \
     screens/IThread.h
 SOURCES += \
     BlockManager.cpp \
@@ -98,6 +99,7 @@ SOURCES += \
     blocks/Illuminator.cpp \
     blocks/Inventory.cpp \
     blocks/Bucket.cpp \
+    blocks/Container.cpp \
     screens/IThread.cpp
 
 TRANSLATIONS = \

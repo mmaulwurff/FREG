@@ -100,9 +100,9 @@ void World::Drop(Block * const block_from,
 {
     Block * block_to = GetBlock(x_to, y_to, z_to);
     if ( AIR == block_to->Sub() ) {
-        SetBlock(( block_to = NewBlock(PILE, DIFFERENT) ), x_to, y_to, z_to);
+        SetBlock((block_to=NewBlock(CONTAINER, DIFFERENT)), x_to, y_to, z_to);
     } else if ( WATER == block_to->Sub() ) {
-        Block * const pile = NewBlock(PILE, DIFFERENT);
+        Block * const pile = NewBlock(CONTAINER, DIFFERENT);
         SetBlock(pile, x_to, y_to, z_to);
         pile->HasInventory()->Get(block_to);
         block_to = pile;
@@ -624,6 +624,10 @@ short World::Damage(const ushort x, const ushort y, const ushort z,
     return durability;
 }
 
+bool World::IsPile(const Block * const test) {
+    return ( test->Kind()== CONTAINER && test->Sub() == DIFFERENT );
+}
+
 void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
     Shred * const shred = GetShred(x, y);
     const ushort x_in_shred = Shred::CoordInShred(x);
@@ -631,10 +635,10 @@ void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
     Block * const temp = shred->GetBlock(x_in_shred, y_in_shred, z);
     Block * const dropped = temp->DropAfterDamage();
     Block * new_block;
-    if ( PILE!=temp->Kind() && (temp->HasInventory() || dropped!=nullptr) ) {
-        const bool dropped_pile = ( dropped && dropped->Kind()==PILE );
+    if ( not IsPile(temp) && (temp->HasInventory() || dropped!=nullptr) ) {
+        const bool dropped_pile = ( dropped && IsPile(dropped) );
         new_block = dropped_pile ?
-            dropped : NewBlock(PILE, DIFFERENT);
+            dropped : NewBlock(CONTAINER, DIFFERENT);
         Inventory * const inv = temp->HasInventory();
         Inventory * const new_pile_inv = new_block->HasInventory();
         if ( inv != nullptr ) {

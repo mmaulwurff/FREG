@@ -20,9 +20,7 @@
 #ifndef BLOCKS_H
 #define BLOCKS_H
 
-#include "blocks/Block.h"
 #include "Inventory.h"
-#include "blocks/Active.h"
 #include "blocks/Animal.h"
 
 // weights in measures - mz (mezuro)
@@ -57,45 +55,7 @@ public:
     int PushResult(int dir) const;
     ushort Weight() const;
     bool Catchable() const;
-    Block * DropAfterDamage() const;
-};
-
-class Chest : public Block, public Inventory {
-public:
-    Chest(int sub, quint16 id, ushort size = INV_SIZE);
-    Chest(QDataStream & str, int sub, quint16 id, ushort size = INV_SIZE);
-
-    quint8 Kind() const;
-    int  Sub() const;
-    void Push(int dir, Block * who);
-    void ReceiveSignal(QString);
-    QString FullName() const;
-    Inventory * HasInventory();
-    usage_types Use(Block * who = 0);
-    ushort Weight() const;
-protected:
-    void SaveAttributes(QDataStream & out) const;
-};
-
-class Pile : public Active, public Inventory {
-    Q_OBJECT
-public:
-    Pile(int sub, quint16 id);
-    Pile(QDataStream & str, int sub, quint16 id);
-
-    quint8 Kind() const;
-    int  Sub() const;
-    void ReceiveSignal(QString);
-    void DoRareAction();
-    int  ShouldAct() const;
-    void Push(int, Block * who);
-    Block * DropAfterDamage() const;
-    QString FullName() const;
-    Inventory * HasInventory();
-    usage_types Use(Block * who = 0);
-    ushort Weight() const;
-protected:
-    void SaveAttributes(QDataStream & out) const;
+    Block * DropAfterDamage() override;
 };
 
 class Liquid : public Active {
@@ -111,7 +71,7 @@ public:
     int  Temperature() const;
     uchar LightRadius() const;
     QString FullName() const;
-    Block * DropAfterDamage() const;
+    Block * DropAfterDamage() override;
 };
 
 class Grass : public Active {
@@ -154,7 +114,7 @@ public:
     QString FullName() const;
     usage_types Use(Block * who = 0);
     Inventory * HasInventory();
-    Block * DropAfterDamage();
+    Block * DropAfterDamage() override;
 protected:
     void SaveAttributes(QDataStream & out) const;
 };
@@ -167,30 +127,12 @@ public:
 
     void DoFrequentAction();
     void DoRareAction();
-    Block * DropAfterDamage();
+    Block * DropAfterDamage() override;
     quint8 Kind() const;
     quint16 NutritionalValue(quint8 sub) const;
     QString FullName() const;
 protected:
     short Attractive(int sub) const;
-};
-
-class Workbench : public Chest {
-public:
-    Workbench(int sub, quint16 id);
-    Workbench(QDataStream & str, int sub, quint16 id);
-
-    quint8 Kind() const;
-    bool Drop(ushort src, ushort dest, ushort num, Inventory * inv);
-    bool Get(Block * block, ushort start = 0);
-    bool GetAll(Inventory * from);
-    void ReceiveSignal(QString);
-    ushort Start() const;
-    QString FullName() const;
-private:
-    void Craft();
-
-    static const ushort WORKBENCH_SIZE = 10;
 };
 
 class Door : public Active {
