@@ -117,9 +117,7 @@ long Player::GetLatitude()  const { return GetShred()->Latitude();  }
 
 void Player::UpdateXYZ(int) {
     if ( player ) {
-        x_self = player->X();
-        y_self = player->Y();
-        z_self = player->Z();
+        SetXyz(player->X(), player->Y(), player->Z());
         emit Updated();
     }
 }
@@ -506,12 +504,10 @@ void Player::BlockDestroy() {
 }
 
 void Player::SetPlayer(const ushort _x, const ushort _y, const ushort _z) {
-    x_self = _x;
-    y_self = _y;
-    z_self = _z;
+    SetXyz(_x, _y, _z);
     if ( GetCreativeMode() ) {
         ( player = block_manager.NewBlock(CREATOR, DIFFERENT)->
-            ActiveBlock() )->SetXYZ(X(), Y(), Z());
+            ActiveBlock() )->SetXyz(X(), Y(), Z());
         GetShred()->Register(player);
     } else {
         World * const world = GetWorld();
@@ -560,9 +556,9 @@ Player::Player() :
     homeX  = sett.value("home_x", 0).toInt();
     homeY  = sett.value("home_y", 0).toInt();
     homeZ  = sett.value("home_z", HEIGHT/2).toInt();
-    x_self = sett.value("current_x", 0).toInt();
-    y_self = sett.value("current_y", 0).toInt();
-    z_self = sett.value("current_z", HEIGHT/2+1).toInt();
+    SetXyz(sett.value("current_x", 0).toInt(),
+           sett.value("current_y", 0).toInt(),
+           sett.value("current_z", HEIGHT/2+1).toInt());
     creativeMode = sett.value("creative_mode", false).toBool();
 
     const ushort plus = world->NumShreds()/2*SHRED_WIDTH;

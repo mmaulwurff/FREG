@@ -82,7 +82,6 @@ public:
 
     void EmitUpdated();
 
-    void SetXYZ(ushort x, ushort y, ushort z);
     void SetToDelete();
     void SetShred(Shred *);
 

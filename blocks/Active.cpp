@@ -167,12 +167,6 @@ void Active::EmitUpdated() { emit Updated(); }
 
 void Active::SaveAttributes(QDataStream & out) const { out << fall_height; }
 
-void Active::SetXYZ(const ushort x, const ushort y, const ushort z) {
-    x_self = x;
-    y_self = y;
-    z_self = z;
-}
-
 void Active::SetToDelete() {
     if ( not frozen ) {
         frozen = true;

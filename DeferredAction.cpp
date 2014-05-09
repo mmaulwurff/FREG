@@ -41,9 +41,9 @@ void DeferredAction::Jump() const {
 }
 
 void DeferredAction::Build() const {
-    short z = zTarg;
+    short z = z_self;
     if ( DOWN==attachedBlock->GetDir() &&
-            AIR!=GetWorld()->GetBlock(xTarg, yTarg, zTarg)->Sub() )
+            AIR!=GetWorld()->GetBlock(x_self, y_self, z_self)->Sub() )
     {
         if ( world->Move(attachedBlock->X(), attachedBlock->Y(),
                 attachedBlock->Z(), UP) )
@@ -54,7 +54,7 @@ void DeferredAction::Build() const {
         }
     }
     const quint16 id = material->GetId();
-    if ( not world->Build(material, xTarg, yTarg, z,
+    if ( not world->Build(material, x_self, y_self, z,
             World::TurnRight(attachedBlock->GetDir()), attachedBlock) )
     { // build not successful
         return;
@@ -79,16 +79,16 @@ void DeferredAction::Build() const {
 } // void DeferredAction::Build()
 
 void DeferredAction::Damage() const {
-    if ( world->Damage(xTarg, yTarg, zTarg,
+    if ( world->Damage(x_self, y_self, z_self,
             attachedBlock->DamageLevel(),
             attachedBlock->DamageKind()) <= 0 ) // durability
     {
-        world->DestroyAndReplace(xTarg, yTarg, zTarg);
+        world->DestroyAndReplace(x_self, y_self, z_self);
     }
 }
 
 void DeferredAction::Throw() const {
-    world->Drop(attachedBlock, xTarg, yTarg, zTarg,
+    world->Drop(attachedBlock, x_self, y_self, z_self,
         srcSlot, destSlot, num);
     attachedBlock->EmitUpdated();
 }
@@ -106,14 +106,15 @@ void DeferredAction::Pour() const {
     Block * const liquid = vessel_inv->ShowBlock(0);
     if ( liquid == nullptr ) return;
 
-    if ( world->Build(liquid, xTarg, yTarg, zTarg) ) {
+    if ( world->Build(liquid, x_self, y_self, z_self) ) {
         vessel_inv->Pull(0);
     }
 }
 
 void DeferredAction::SetFire() const {
-    if ( world->GetBlock(xTarg, yTarg, zTarg)->Sub() == AIR ) {
-        world->Build(BlockManager::NewBlock(GRASS, FIRE), xTarg, yTarg, zTarg);
+    if ( world->GetBlock(x_self, y_self, z_self)->Sub() == AIR ) {
+        world->Build(BlockManager::NewBlock(GRASS, FIRE),
+            x_self, y_self, z_self);
     }
 }
 
@@ -166,12 +167,6 @@ void DeferredAction::SetSetFire(const short x, short y, short z) {
     type  = DEFERRED_SET_FIRE;
 }
 
-void DeferredAction::SetXyz(const short x, const short y, const short z) {
-    xTarg = x;
-    yTarg = y;
-    zTarg = z;
-}
-
 void DeferredAction::MakeAction() {
     switch ( type ) {
     case DEFERRED_MOVE:   Move();   break;
@@ -190,10 +185,11 @@ void DeferredAction::MakeAction() {
 World * DeferredAction::GetWorld() const { return world; }
 
 DeferredAction::DeferredAction(Active * const attached) :
+        Xyz(),
         type(DEFERRED_NOTHING),
         attachedBlock(attached),
-        xTarg(), yTarg(), zTarg(),
         material(),
-        srcSlot(), destSlot(),
+        srcSlot(),
+        destSlot(),
         num()
 {}

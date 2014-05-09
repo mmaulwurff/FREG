@@ -20,6 +20,8 @@
 #ifndef DEFERRED_ACTION_H
 #define DEFERRED_ACTION_H
 
+#include "Xyz.h"
+
 enum deferred_actions {
     DEFERRED_NOTHING,
     DEFERRED_GHOST_MOVE,
@@ -36,7 +38,12 @@ class Block;
 class Active;
 class World;
 
-class DeferredAction final {
+class DeferredAction final : private Xyz {
+    /** \class DeferredAction DeferredAction.h
+     *  \brief Deferred Action is used when some action needs to be done at
+     *  next physics turn.
+     *
+     *  Xyz is action target coordinates. */
 public:
     explicit DeferredAction(Active * attached);
     DeferredAction & operator=(const DeferredAction &) = delete;
@@ -59,7 +66,6 @@ public:
 private:
     deferred_actions type;
     Active * const attachedBlock;
-    short xTarg, yTarg, zTarg;
     Block * material;
     ushort srcSlot, destSlot;
     ushort num;
@@ -72,7 +78,6 @@ private:
     void Throw() const;
     void Pour() const;
     void SetFire() const;
-    void SetXyz(short x, short y, short z);
 };
 
 #endif // DEFERRED_ACTION_H

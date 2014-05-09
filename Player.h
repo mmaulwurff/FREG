@@ -206,6 +206,6 @@ private:
     ushort usingInInventory;
     bool creativeMode;
     volatile bool cleaned;
-}; // class Player
+};
 
 #endif // PLAYER_H

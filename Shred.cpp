@@ -363,7 +363,7 @@ void Shred::SetBlockNoCheck(Block * const block,
 {
     Active * const active = ( blocks[x][y][z]=block )->ActiveBlock();
     if ( active ) {
-        active->SetXYZ(
+        active->SetXyz(
             (ShredX() << SHRED_WIDTH_SHIFT) + x,
             (ShredY() << SHRED_WIDTH_SHIFT) + y, z );
         Register(active);
