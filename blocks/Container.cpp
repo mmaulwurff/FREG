@@ -38,7 +38,7 @@
                 inv->GetAll(this);
             }
             if ( IsEmpty() ) {
-                Damage(GetDurability(), TIME);
+                GetWorld()->DestroyAndReplace(X(), Y(), Z());
             }
         }
     }
@@ -67,7 +67,7 @@
     }
 
     void Container::ReceiveSignal(const QString str) {
-        Active::ReceiveSignal(str);
+        Block::ReceiveSignal(str);
     }
 
     QString Container::FullName() const {
@@ -179,10 +179,6 @@
 
     quint8 Workbench::Kind() const { return WORKBENCH; }
     ushort Workbench::Start() const { return 2; }
-
-    void Workbench::ReceiveSignal(const QString str) {
-        Block::ReceiveSignal(str);
-    }
 
     bool Workbench::Get(Block * const block, const ushort start) {
         if ( Inventory::Get(block, start) ) {

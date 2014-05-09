@@ -84,11 +84,13 @@
         case WATER: mult = ( HEAT==dmg_kind || TIME==dmg_kind ); break;
         case MOSS_STONE:
         case STONE: switch ( dmg_kind ) {
-            case CRUSH: case DAMAGE_HANDS:
+            case CRUSH:
+            case DAMAGE_HANDS:
             case CUT:   return;
             case MINE:  mult = 2; break;
         } break;
         case GREENERY:
+        case HAZELNUT:
         case GLASS: durability = 0; return;
         case WOOD: switch ( dmg_kind ) {
             default:  mult = 1; break;
@@ -98,7 +100,10 @@
         case SAND:
         case A_MEAT:
         case H_MEAT: ++(mult = (THRUST==dmg_kind)); break;
-        case SOIL:   ++(mult = (DIG   ==dmg_kind)); break;
+        case SOIL: switch ( dmg_kind ) {
+            case DIG: mult = 2;
+            case DAMAGE_FALL: return;
+        } break;
         case FIRE: mult = (FREEZE==dmg_kind || TIME==dmg_kind); break;
         }
         durability -= mult*dmg;
@@ -140,11 +145,18 @@
     Active * Block::ActiveBlock() { return 0; }
 
     void Block::Restore() { durability = MAX_DURABILITY; }
+    void Block::Break() { durability = 0; }
     int  Block::GetDir() const { return direction; }
     int  Block::Sub() const { return sub; }
     int  Block::Transparent() const { return transparent; }
     short Block::GetDurability() const { return durability; }
     QString Block::GetNote() const { return note ? *note : ""; }
+
+    void Block::Mend() {
+        if ( GetDurability() < MAX_DURABILITY ) {
+            ++durability;
+        }
+    }
 
     int Block::Temperature() const {
         switch ( Sub() ) {
@@ -301,9 +313,7 @@
             Damage(5, HUNGER);
         } else {
             --satiation;
-        }
-        if ( durability < MAX_DURABILITY ) {
-            ++durability;
+            Mend();
         }
         emit Updated();
         return INNER_ACTION_NONE;
@@ -318,6 +328,9 @@
             }
         } else if ( breath < MAX_BREATH ) {
             ++breath;
+        }
+        if ( GetDurability() <= 0 ) {
+            GetWorld()->DestroyAndReplace(X(), Y(), Z());
         }
         emit Updated();
     }
@@ -491,7 +504,7 @@
     }
 
     int  Grass::ShouldAct() const  { return FREQUENT_RARE; }
-    void Grass::Push(const int, Block * const) {
+    void Grass::Push(int, Block *) {
         GetWorld()->DestroyAndReplace(X(), Y(), Z());
     }
     bool Grass::ShouldFall() const { return false; }
@@ -502,6 +515,7 @@
     Grass::Grass(const int sub, const quint16 id) :
             Active(sub, id)
     {}
+
     Grass::Grass(QDataStream & str, const int sub, const quint16 id) :
             Active(str, sub, id)
     {}
@@ -515,10 +529,6 @@
     QString Bush::FullName() const { return tr("Bush"); }
     usage_types Bush::Use(Block *) { return USAGE_TYPE_OPEN; }
     Inventory * Bush::HasInventory() { return Inventory::HasInventory(); }
-
-    void Bush::Damage(const ushort dmg, const int dmg_kind) {
-        durability -= ( CUT==dmg_kind ? dmg*2 : dmg );
-    }
 
     void Bush::DoRareAction() {
         if ( 0 == qrand()%(SECONDS_IN_HOUR*4) ) {
@@ -710,7 +720,7 @@
     int    Clock::PushResult(const int) const { return NOT_MOVABLE; }
     int    Clock::ShouldAct() const  { return FREQUENT_RARE; }
     bool   Clock::ShouldFall() const { return false; }
-    void   Clock::Damage(ushort /*dmg*/, int /*dmg_kind*/) { durability = 0; }
+    void   Clock::Damage(ushort, int) { Break(); }
     void   Clock::Push(const int, Block * const) { Use(); }
     quint8 Clock::Kind() const { return CLOCK; }
     ushort Clock::Weight() const { return Block::Weight()/10; }
@@ -920,7 +930,7 @@
         str >> longiStart >> latiStart >> savedShift >> savedChar;
     }
 // Bell::
-    void    Bell::Damage(ushort /*dmg*/, int /*dmg_kind*/) { durability = 0; }
+    void    Bell::Damage(ushort, int) { Break(); }
     quint8  Bell::Kind() const { return BELL; }
     QString Bell::FullName() const { return QObject::tr("Bell"); }
 
@@ -967,17 +977,15 @@
             Xyz(X()+1, Y(), Z()),
             Xyz(X(), Y()-1, Z()),
             Xyz(X(), Y()+1, Z()),
-            Xyz(X(), Y(), Z()-1),
-            Xyz(X(), Y(), Z()+1) };
+            Xyz(X(), Y(), Z()-1)
+        };
         World * const world = GetWorld();
         for (const Xyz xyz : coords) {
-            const ushort x = xyz.X();
-            const ushort y = xyz.Y();
-            const ushort z = xyz.Z();
-            Block * const block = world->GetBlock(x, y, z);
+            Block * const block = world->GetBlock(xyz.X(), xyz.Y(), xyz.Z());
             if ( Attractive(block->Sub()) ) {
                 block->ReceiveSignal(tr("Predator bites you!"));
-                world->Damage(x, y, z, DamageLevel(), DamageKind());
+                world->Damage(xyz.X(), xyz.Y(), xyz.Z(),
+                    DamageLevel(), DamageKind());
                 Eat(block->Sub());
             }
         }

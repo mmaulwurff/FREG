@@ -353,8 +353,8 @@ void World::PhysEvents() {
         toResetDir = UP; // set no reset
     }
 
-    static const ushort start = NumShreds()/2-numActiveShreds/2;
-    static const ushort end   = start+numActiveShreds;
+    static const ushort start = NumShreds()/2 - numActiveShreds/2;
+    static const ushort end   = start + numActiveShreds;
     for (ushort i=start; i<end; ++i)
     for (ushort j=start; j<end; ++j) {
         shreds[ShredPos(i, j)]->PhysEventsFrequent();
@@ -364,7 +364,7 @@ void World::PhysEvents() {
         ++timeStep;
         for (ushort i=start; i<end; ++i)
         for (ushort j=start; j<end; ++j) {
-            shreds[i+j*NumShreds()]->DeleteDestroyedActives();
+            shreds[ShredPos(i, j)]->DeleteDestroyedActives();
         }
         return;
     } // else:
@@ -620,6 +620,7 @@ short World::Damage(const ushort x, const ushort y, const ushort z,
         emit ReEnlighten(x, y, z);
         durability = MAX_DURABILITY;
     }
+    // SetBlock can alter temp (by ReplaceWithNormal) so put in last place.
     SetBlock(temp, x, y, z);
     return durability;
 }

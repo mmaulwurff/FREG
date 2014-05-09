@@ -35,7 +35,7 @@
     quint8 Weapon::Kind() const { return WEAPON; }
     ushort Weapon::Weight() const { return Block::Weight()/4; }
     int    Weapon::Wearable() const { return WEARABLE_ARM; }
-    void   Weapon::Damage(ushort /*dmg*/, int /*dmg_kind*/) { durability = 0; }
+    void   Weapon::Damage(ushort, int) { Break(); }
 
     ushort Weapon::DamageLevel() const {
         switch ( Sub() ) {
@@ -59,6 +59,7 @@
     Weapon::Weapon(const int sub, const quint16 id) :
             Block(sub, id, NONSTANDARD)
     {}
+
     Weapon::Weapon(QDataStream & str, const int sub, const quint16 id) :
             Block(str, sub, id, NONSTANDARD)
     {}

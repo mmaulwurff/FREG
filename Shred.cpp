@@ -230,9 +230,6 @@ void Shred::PhysEventsRare() {
                 case INNER_ACTION_EXPLODE: // TODO: add explosion
                 case INNER_ACTION_NONE: break;
             }
-            if ( (*i)->GetDurability() <= 0 ) {
-                GetWorld()->DestroyAndReplace((*i)->X(), (*i)->Y(), (*i)->Z());
-            }
         }
     }
     UnregisterExternalActives();
@@ -294,7 +291,7 @@ void Shred::AddFalling(Active * const active) {
 
 void Shred::AddFalling(const ushort x, const ushort y, const ushort z) {
     Active * const active = blocks[x][y][z]->ActiveBlock();
-    if ( active ) {
+    if ( active != nullptr ) {
         AddFalling(active);
     }
 }
@@ -305,10 +302,7 @@ void Shred::AddShining(Active * const active) {
     }
 }
 
-void Shred::RemShining(Active * const active) {
-    shiningList.removeAll(active);
-}
-
+void Shred::RemShining (Active * const active) {shiningList.removeAll(active);}
 void Shred::AddToDelete(Active * const active) { deleteList.append(active); }
 
 QLinkedList<Active *>::const_iterator Shred::ShiningBegin() const {
@@ -324,18 +318,21 @@ void Shred::ReloadToNorth() {
     }
     ++shredY;
 }
+
 void Shred::ReloadToEast() {
     for (auto i=activeListAll.constBegin(); i!=activeListAll.constEnd(); ++i) {
         (*i)->ReloadToEast();
     }
     --shredX;
 }
+
 void Shred::ReloadToSouth() {
     for (auto i=activeListAll.constBegin(); i!=activeListAll.constEnd(); ++i) {
         (*i)->ReloadToSouth();
     }
     --shredY;
 }
+
 void Shred::ReloadToWest() {
     for (auto i=activeListAll.constBegin(); i!=activeListAll.constEnd(); ++i) {
         (*i)->ReloadToWest();

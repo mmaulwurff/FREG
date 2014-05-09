@@ -111,7 +111,6 @@ public:
     bool ShouldFall() const override;
     void Push(int dir, Block * who) override;
     void ReceiveSignal(QString) override;
-    void Damage(ushort dmg, int dmg_kind) override;
     quint8 Kind() const override;
     ushort Weight() const override;
 

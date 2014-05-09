@@ -25,6 +25,7 @@ help_*/*
 
 !recipes
 !recipes/*
+recipes/*~
 
 !texts
 texts/*

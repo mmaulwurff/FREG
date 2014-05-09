@@ -31,7 +31,7 @@ Illuminator::Illuminator(QDataStream & str, const int sub, const quint16 id) :
     str >> fuel_level;
 }
 
-void Illuminator::Damage(ushort /*dmg*/, int /*dmg_kind*/) { durability = 0; }
+void Illuminator::Damage(ushort /*dmg*/, int /*dmg_kind*/) { Break(); }
 quint8 Illuminator::Kind() const { return ILLUMINATOR; }
 
 QString Illuminator::FullName() const {
@@ -74,7 +74,7 @@ void Illuminator::DoRareAction() { ActInner(); }
 INNER_ACTIONS Illuminator::ActInner() {
     if ( fuel_level == 0 ) {
         if ( Sub() == WOOD ) {
-            durability = 0;
+            Break();
         }
     } else {
         if ( Sub() != STONE ) {

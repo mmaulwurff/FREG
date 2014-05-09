@@ -1,0 +1,4 @@
+# format: number_of_materials number_of_products material[s] product[s]
+# material/product format: blocks_number blocks_kind_string blocks_sub_string
+# there can be up to 2 products
+1 1     9 weapon stone      1 illuminator stone

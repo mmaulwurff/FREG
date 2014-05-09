@@ -87,6 +87,10 @@ public:
     quint16 GetId() const;
     /// Set maximum durability.
     void Restore();
+    /// Set durability to null.
+    void Break();
+    /// Increments durability, no more than MAX_DURABILITY.
+    void Mend();
     void SetDir(int dir);
 
     int GetDir() const;
@@ -99,18 +103,19 @@ public:
     bool operator!=(const Block &) const;
 
     void SaveToFile(QDataStream & out) const;
+
 protected:
     virtual void SaveAttributes(QDataStream &) const;
-    static quint16 IdFromKindSub(quint16 id, quint8 sub);
 
     QString * note;
-    qint16 durability;
+
 private:
     Block(Block const &);
 
     static const ushort MAX_NOTE_LENGTH = 144;
     quint8 Transparency(quint8 transp, int sub) const;
 
+    qint16 durability;
     const quint8 transparent;
     const quint8 sub;
     const quint16 id;

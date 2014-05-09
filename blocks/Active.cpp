@@ -39,14 +39,14 @@ Active * Active::ActiveBlock() { return this; }
 bool Active::IsFalling() const { return falling; }
 bool Active::ShouldFall() const { return true; }
 int  Active::ShouldAct() const { return FREQUENT_NEVER; }
-int  Active::PushResult(const int) const { return MOVABLE; }
+int  Active::PushResult(int) const { return MOVABLE; }
 void Active::DoFrequentAction() {}
 void Active::DoRareAction() {}
 INNER_ACTIONS Active::ActInner() { return INNER_ACTION_NONE; }
 
 void Active::ActFrequent() {
     if ( not IsToDelete() ) {
-        if ( GetDeferredAction() ) {
+        if ( GetDeferredAction() != nullptr ) {
             GetDeferredAction()->MakeAction();
         }
         DoFrequentAction();
@@ -54,9 +54,8 @@ void Active::ActFrequent() {
 }
 
 void Active::ActRare() {
-    if ( not IsToDelete() ) {
-        DoRareAction();
-    }
+    if ( IsToDelete() ) return;
+    DoRareAction();
     Inventory * const inv = HasInventory();
     if ( inv != nullptr ) {
         for (int i=0; i<inv->Size(); ++i)
@@ -83,14 +82,14 @@ void Active::SetDeferredAction(DeferredAction * const action) {
     delete deferredAction;
     deferredAction = action;
 }
+
 DeferredAction * Active::GetDeferredAction() const { return deferredAction; }
 
 void Active::FallDamage() {
     if ( fall_height > SAFE_FALL_HEIGHT ) {
-        World * const world = GetWorld();
         const ushort dmg = (fall_height - SAFE_FALL_HEIGHT)*10;
-        world->Damage(X(), Y(), Z()-1, dmg, DAMAGE_FALL);
-        world->Damage(X(), Y(), Z(), dmg, DAMAGE_FALL);
+        GetWorld()->Damage(X(), Y(), Z()-1, dmg, DAMAGE_FALL);
+        Damage(dmg, DAMAGE_FALL);
     }
     fall_height = 0;
 }
@@ -141,9 +140,9 @@ Shred * Active::GetShred() const { return shred; }
 World * Active::GetWorld() const { return world; }
 
 void Active::Damage(const ushort dmg, const int dmg_kind) {
-    const int last_dur = durability;
+    const int last_dur = GetDurability();
     Block::Damage(dmg, dmg_kind);
-    if ( last_dur != durability ) {
+    if ( last_dur != GetDurability() ) {
         ReceiveSignal(OUCH);
         switch ( dmg_kind ) {
         case HUNGER:      ReceiveSignal(tr("You faint from hunger!")); break;
@@ -187,6 +186,7 @@ Active::Active(const int sub, const quint16 id, const quint8 transp) :
         deferredAction(nullptr),
         shred()
 {}
+
 Active::Active(QDataStream & str, const int sub, const quint16 id,
         const quint8 transp)
     :
@@ -243,7 +243,7 @@ bool Active::Gravitate(const ushort range, const ushort down, const ushort up,
     }
 }
 
-short Active::Attractive(const int) const { return 0; }
+short Active::Attractive(int) const { return 0; }
 
 bool Active::IsSubAround(const quint8 sub) const {
     const World * const world = GetWorld();

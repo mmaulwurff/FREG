@@ -79,11 +79,11 @@ void DeferredAction::Build() const {
 } // void DeferredAction::Build()
 
 void DeferredAction::Damage() const {
-    if ( world->Damage(x_self, y_self, z_self,
+    if ( world->Damage(X(), Y(), Z(),
             attachedBlock->DamageLevel(),
             attachedBlock->DamageKind()) <= 0 ) // durability
     {
-        world->DestroyAndReplace(x_self, y_self, z_self);
+        world->DestroyAndReplace(X(), Y(), Z());
     }
 }
 
@@ -141,7 +141,7 @@ void DeferredAction::SetBuild(const short x, const short y, const short z,
 
 void DeferredAction::SetDamage(const short x, const short y, const short z) {
     SetXyz(x, y, z);
-    type  = DEFERRED_DAMAGE;
+    type = DEFERRED_DAMAGE;
 }
 
 void DeferredAction::SetThrow(const short x, const short y, const short z,
@@ -164,7 +164,7 @@ void DeferredAction::SetPour(const short x, const short y, const short z,
 
 void DeferredAction::SetSetFire(const short x, short y, short z) {
     SetXyz(x, y, z);
-    type  = DEFERRED_SET_FIRE;
+    type = DEFERRED_SET_FIRE;
 }
 
 void DeferredAction::MakeAction() {

@@ -48,7 +48,7 @@ void Shred::Forest() {
     ushort number_of_trees = 0;
     for (long i=longitude-1; i<=longitude+1; ++i)
     for (long j=latitude -1; j<=latitude +1; ++j) {
-        if ( SHRED_FOREST==TypeOfShred(i, j) ) {
+        if ( SHRED_FOREST == TypeOfShred(i, j) ) {
             ++number_of_trees;
         }
     }
@@ -65,6 +65,7 @@ void Shred::Forest() {
             }
         }
     }
+    RandomDrop(qrand()%4, WEAPON, WOOD);
     PlantGrass();
 }
 

@@ -67,7 +67,6 @@ public:
     bool Drop(ushort src, ushort dest, ushort num, Inventory * inv) override;
     bool Get(Block * block, ushort start = 0) override;
     bool GetAll(Inventory * from) override;
-    void ReceiveSignal(QString) override;
     ushort Start() const override;
     QString FullName() const override;
 

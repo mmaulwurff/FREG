@@ -63,7 +63,7 @@ private:
     QList<CraftItem *> items;
 }; // CraftList
 
-class CraftManager {
+class CraftManager final {
 public:
      CraftManager();
     ~CraftManager();
@@ -77,7 +77,7 @@ private:
 
     int size;
     QList<CraftList *> * recipesList;
-    int * recipesSubsList; // list of substances of workbench 
+    int * recipesSubsList; // list of substances of workbench
 }; // CraftManager
 
 #endif // CRAFTMANAGER_H
