@@ -101,7 +101,7 @@ void World::Drop(Block * const block_from,
     Block * block_to = GetBlock(x_to, y_to, z_to);
     if ( AIR == block_to->Sub() ) {
         SetBlock((block_to=NewBlock(CONTAINER, DIFFERENT)), x_to, y_to, z_to);
-    } else if ( WATER == block_to->Sub() ) {
+    } else if ( WATER == block_to->Sub() && LIQUID == block_to->Kind() ) {
         Block * const pile = NewBlock(CONTAINER, DIFFERENT);
         SetBlock(pile, x_to, y_to, z_to);
         pile->HasInventory()->Get(block_to);

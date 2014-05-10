@@ -506,6 +506,7 @@ void Shred::TestShred() { // 7 items in a row
     SetNewBlock(ILLUMINATOR, IRON,  column+=2, row, level);
     SetNewBlock(ILLUMINATOR, GLASS, column+=2, row, level);
     SetNewBlock(CONTAINER,   IRON,  column+=2, row, level);
+    SetNewBlock(CONTAINER,   WATER, column+=2, row, level);
     // row 7
 } // void Shred::TestShred()
 
