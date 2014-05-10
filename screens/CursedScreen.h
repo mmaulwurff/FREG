@@ -131,7 +131,6 @@ class IThread;
 class Inventory;
 class QFile;
 class Block;
-class QMutex;
 
 class Screen final : public VirtScreen {
     Q_OBJECT
@@ -185,6 +184,7 @@ private:
     void MovePlayer(int dir) const;
     void MovePlayerDiag(int dir1, int dir2) const;
     static bool IsScreenWide();
+    void SetUpdated(bool);
 
     WINDOW * leftWin;
     WINDOW * rightWin;
@@ -201,7 +201,6 @@ private:
     QString command;
     QFile * fileToShow;
     bool beepOn;
-    QMutex * mutex;
     const bool ascii;
 };
 

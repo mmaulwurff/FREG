@@ -72,17 +72,17 @@ const {
 
 void Screen::RePrint() {
     clear();
-    updated = false;
+    SetUpdated(false);
 }
 
-void Screen::Update(ushort, ushort, ushort) { updated = false; }
-void Screen::UpdatePlayer() { updated = false; }
-void Screen::UpdateAround(ushort, ushort, ushort, ushort) { updated = false; }
-void Screen::Move(int) { updated = false; }
+void Screen::Update(ushort, ushort, ushort) { SetUpdated(false); }
+void Screen::UpdatePlayer() { SetUpdated(false); }
+void Screen::UpdateAround(ushort, ushort, ushort, ushort) { SetUpdated(false); }
+void Screen::Move(int) { SetUpdated(false); }
 
 void Screen::UpdateAll() {
     CleanFileToShow();
-    updated = false;
+    SetUpdated(false);
 }
 
 void Screen::PassString(QString & str) const {
@@ -269,9 +269,7 @@ void Screen::ControlPlayer(const int ch) {
 
     default: Notify(tr("Unknown key. Press 'H' for help."));
     }
-    mutex->lock();
-    updated = false;
-    mutex->unlock();
+    SetUpdated(false);
 } // void Screen::ControlPlayer(int ch)
 
 void Screen::ProcessCommand(QString command) {
@@ -296,7 +294,7 @@ void Screen::ProcessCommand(QString command) {
 
 void Screen::SetActionMode(const actions mode) {
     actionMode = mode;
-    updated = false;
+    SetUpdated(false);
 }
 
 void Screen::InventoryAction(const ushort num) const {
@@ -337,10 +335,17 @@ const {
     return CharName(kind, sub);
 }
 
+void Screen::SetUpdated(const bool upd) {
+    static QMutex mutex;
+    mutex.lock();
+    updated = upd;
+    mutex.unlock();
+}
+
 void Screen::Print() {
-    if ( not player->IfPlayerExists() ) return;
+    if ( not player->IfPlayerExists() || updated ) return;
+    SetUpdated(true);
     w->ReadLock();
-    mutex->lock();
     PrintHUD();
     const int dir = player->GetDir();
     switch ( player->UsingSelfType() ) { // left window
@@ -389,13 +394,10 @@ void Screen::Print() {
             }
         }
     }
-    updated = true;
     w->Unlock();
-    mutex->unlock();
 } // void Screen::Print()
 
 void Screen::PrintHUD() {
-    if ( updated ) return;
     int y_save, x_save;
     getyx(rightWin, y_save, x_save);
 
@@ -485,7 +487,6 @@ void Screen::PrintHUD() {
 } // void Screen::PrintHUD()
 
 void Screen::PrintNormal(WINDOW * const window, const int dir) const {
-    if ( updated ) return;
     const ushort k_start = ( UP!=dir ) ?
         ( DOWN==dir ?
             player->Z()-1 : player->Z() ) :
@@ -543,7 +544,7 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
 } // void Screen::PrintNormal(WINDOW * window, int dir)
 
 void Screen::PrintFront(WINDOW * const window) const {
-    if ( window == nullptr || updated ) return;
+    if ( window == nullptr ) return;
     const int dir = player->GetDir();
     short x_step, z_step,
           x_end,  z_end,
@@ -675,7 +676,6 @@ void Screen::PrintTitle(WINDOW * const window, const int dir) const {
 
 void Screen::PrintInv(WINDOW * const window, const Inventory * const inv)
 const {
-    if ( updated ) return;
     werase(window);
     wstandend(window);
     switch ( inv->Kind() ) {
@@ -799,7 +799,7 @@ void Screen::DeathScreen() {
     wnoutrefresh(rightWin);
     wnoutrefresh(hudWin);
     doupdate();
-    updated = true;
+    SetUpdated(true);
 }
 
 Screen::Screen(
@@ -819,7 +819,6 @@ Screen::Screen(
         notifyLog(fopen("texts/messages.txt", "at")),
         fileToShow(nullptr),
         beepOn(false),
-        mutex(new QMutex()),
         ascii(_ascii)
 {
     #ifndef Q_OS_WIN32
@@ -924,7 +923,6 @@ void Screen::CleanAll() {
         fclose(notifyLog);
     }
     delete fileToShow;
-    delete mutex;
     QSettings sett(QDir::currentPath()+"/freg.ini", QSettings::IniFormat);
     sett.beginGroup("screen_curses");
     sett.setValue("focus_shift", shiftFocus);

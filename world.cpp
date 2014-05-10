@@ -689,6 +689,7 @@ void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
     if ( old_light ) {
         RemoveFireLight(x, y, z);
     }
+    emit Updated(x, y, z);
 } // void World::DestroyAndReplace(ushort x, y, z)
 
 bool World::Build(Block * block,
