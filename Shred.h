@@ -122,6 +122,7 @@ private:
     /** If on_water is false, this will not drop things on water,
      *  otherwise on water too. */
     void RandomDrop(ushort num, int kind, int sub, bool on_water = false);
+    ushort CountShredTypeAround(int type) const;
 
     void PlantGrass();
     void TestShred();
@@ -133,6 +134,7 @@ private:
     void Mountain();
     void Hill();
     void Desert();
+    void Castle();
     /// For testing purposes.
     void ChaosShred();
 

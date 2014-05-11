@@ -45,14 +45,9 @@ void Shred::Plain() {
 
 void Shred::Forest() {
     NormalUnderground();
-    ushort number_of_trees = 0;
-    for (long i=longitude-1; i<=longitude+1; ++i)
-    for (long j=latitude -1; j<=latitude +1; ++j) {
-        if ( SHRED_FOREST == TypeOfShred(i, j) ) {
-            ++number_of_trees;
-        }
-    }
-    for (ushort i=0; i<number_of_trees; ++i) {
+    for (ushort number_of_trees = CountShredTypeAround(SHRED_FOREST);
+            number_of_trees != 0; --number_of_trees)
+    {
         const ushort x=qrand()%(SHRED_WIDTH-2);
         const ushort y=qrand()%(SHRED_WIDTH-2);
         for (ushort k=HEIGHT-2; ; --k) {
@@ -70,13 +65,7 @@ void Shred::Forest() {
 }
 
 void Shred::Water() {
-    ushort depth = 0;
-    for (long longi=longitude-1; longi<=longitude+1; ++longi)
-    for (long lati =latitude -1; lati <=latitude +1; ++lati ) {
-        if ( SHRED_WATER == TypeOfShred(longi, lati) ) {
-            depth += 2;
-        }
-    }
+    const ushort depth = CountShredTypeAround(SHRED_WATER);
     NormalUnderground(depth);
     for (ushort i=0; i<SHRED_WIDTH; ++i)
     for (ushort j=0; j<SHRED_WIDTH; ++j)

@@ -61,6 +61,7 @@ enum shred_type {
     SHRED_MOUNTAIN  = '^',
     SHRED_EMPTY     = '_',
     SHRED_CHAOS     = '!',
+    SHRED_CASTLE    = 'c',
     SHRED_NULLMOUNTAIN = '#',
     SHRED_NORMAL_UNDERGROUND = '-',
 };

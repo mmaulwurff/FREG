@@ -101,7 +101,7 @@ void World::Drop(Block * const block_from,
     Block * block_to = GetBlock(x_to, y_to, z_to);
     if ( AIR == block_to->Sub() ) {
         SetBlock((block_to=NewBlock(CONTAINER, DIFFERENT)), x_to, y_to, z_to);
-    } else if ( WATER == block_to->Sub() && LIQUID == block_to->Kind() ) {
+    } else if ( LIQUID == block_to->Kind() ) {
         Block * const pile = NewBlock(CONTAINER, DIFFERENT);
         SetBlock(pile, x_to, y_to, z_to);
         pile->HasInventory()->Get(block_to);
@@ -608,15 +608,17 @@ short World::Damage(const ushort x, const ushort y, const ushort z,
         const ushort dmg, const int dmg_kind)
 {
     Block * temp = GetBlock(x, y, z);
-    if ( temp==Normal(temp->Sub()) && AIR!=temp->Sub() ) {
-        temp = NewBlock(temp->Kind(), temp->Sub());
+    const quint8 sub = temp->Sub();
+    const quint8 kind = temp->Kind();
+    if ( temp==Normal(sub) && AIR!=sub ) {
+        temp = NewBlock(kind, sub);
     }
     temp->Damage(dmg, dmg_kind);
     short durability = temp->GetDurability();
     if ( 0 < durability && durability < MAX_DURABILITY
-            && block_manager.MakeId(BLOCK, STONE) == temp->GetId() )
+            && kind==BLOCK && (sub==STONE || sub==MOSS_STONE) )
     { // convert stone into ladder
-        temp = NewBlock(LADDER, STONE);
+        temp = NewBlock(LADDER, sub);
         emit ReEnlighten(x, y, z);
         durability = MAX_DURABILITY;
     }

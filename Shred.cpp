@@ -498,6 +498,7 @@ void Shred::TestShred() { // 7 items in a row
     SetNewBlock(TEXT,   GLASS, column+=2, row, level);
     PutBlock(Normal(COAL), column+=2, row, level);
     SetNewBlock(CLOCK, EXPLOSIVE, column+=2, row, level);
+    PutBlock(Normal(MOSS_STONE),  column+=2, row, level);
     // row 6
     column = -1;
     row += 2;
@@ -571,6 +572,10 @@ void Shred::Pyramid() {
     SetNewBlock(PREDATOR, A_MEAT, SHRED_WIDTH-3, SHRED_WIDTH-2, level+1);
 }
 
+void Shred::Castle() {
+    NormalUnderground();
+}
+
 void Shred::ChaosShred() {
     for (ushort i=0; i<SHRED_WIDTH; ++i)
     for (ushort j=0; j<SHRED_WIDTH; ++j)
@@ -635,6 +640,17 @@ bool Shred::Tree(const ushort x, const ushort y, const ushort z,
     if ( r & 0x4 ) SetNewBlock(BLOCK, WOOD, x+1, y,   leaves_level, NORTH);
     if ( r & 0x8 ) SetNewBlock(BLOCK, WOOD, x+1, y+2, leaves_level, SOUTH);
     return true;
+}
+
+ushort Shred::CountShredTypeAround(const int type) const {
+    ushort result = 0;
+    for (long i=longitude-1; i<=longitude+1; ++i)
+    for (long j=latitude -1; j<=latitude +1; ++j) {
+        if ( type == TypeOfShred(i, j) ) {
+            ++result;
+        }
+    }
+    return result;
 }
 
 bool Shred::InBounds(const ushort x, const ushort y, const ushort z) {

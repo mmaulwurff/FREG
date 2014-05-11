@@ -259,6 +259,7 @@
         switch ( Sub() ) {
         case WOOD:  return QObject::tr("Wooden board");
         case IRON:  return QObject::tr("Iron plate");
+        case MOSS_STONE:
         case STONE: return QObject::tr("Stone slab");
         default:
             fprintf(stderr, "Plate::FullName: unlisted sub: %d",
@@ -281,6 +282,7 @@
     QString Ladder::FullName() const {
         switch ( Sub() ) {
         case WOOD:  return QObject::tr("Ladder");
+        case MOSS_STONE:
         case STONE: return QObject::tr("Rock with ledges");
         case GREENERY: return QObject::tr("Liana");
         default:
@@ -296,8 +298,8 @@
     quint8 Ladder::Kind() const { return LADDER; }
 
     Block * Ladder::DropAfterDamage() {
-        return ( STONE==Sub() ) ?
-            block_manager.NormalBlock(STONE) :
+        return ( STONE==Sub() || MOSS_STONE==Sub() ) ?
+            block_manager.NormalBlock(Sub()) :
             block_manager.NewBlock(LADDER, Sub());
     }
 
@@ -657,6 +659,7 @@
         QString sub_string;
         switch ( Sub() ) {
         case WOOD:  sub_string = tr(" of wood");  break;
+        case MOSS_STONE:
         case STONE: sub_string = tr(" of stone"); break;
         case GLASS: sub_string = tr(" of glass"); break;
         case IRON:  sub_string = tr(" of iron");  break;
@@ -678,14 +681,14 @@
     }
 
     Door::Door(const int sub, const quint16 id) :
-            Active(sub, id, ( STONE==sub ) ?
+            Active(sub, id, ( STONE==sub || MOSS_STONE==sub ) ?
                 BLOCK_OPAQUE : NONSTANDARD),
             shifted(false),
             locked(false),
             movable(false)
     {}
     Door::Door(QDataStream & str, const int sub, const quint16 id) :
-            Active(str, sub, id, ( STONE==sub ) ?
+            Active(str, sub, id, ( STONE==sub || MOSS_STONE==sub ) ?
                 BLOCK_OPAQUE : NONSTANDARD),
             movable(false)
     {
