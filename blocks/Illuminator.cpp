@@ -62,12 +62,13 @@ uchar Illuminator::LightRadius() const {
     switch ( Sub() ) {
     default:
     case STONE: return 0;
-    case WOOD:  return 3;
+    case WOOD:  return 6;
     case IRON:  return 4;
     case GLASS: return 5;
     }
 }
 
+bool Illuminator::ShouldFall() const { return false; }
 int  Illuminator::ShouldAct() const { return FREQUENT_RARE; }
 void Illuminator::DoRareAction() { ActInner(); }
 

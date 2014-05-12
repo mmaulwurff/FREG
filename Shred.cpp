@@ -99,13 +99,13 @@ Shred::Shred(const ushort shred_x, const ushort shred_y,
     // new shred generation:
     Block * const null_stone = Normal(NULLSTONE);
     Block * const air = Normal(AIR);
+    memset(lightMap, 0,
+        sizeof(lightMap[0][0][0]) * SHRED_WIDTH * SHRED_WIDTH * HEIGHT);
     for (ushort i=0; i<SHRED_WIDTH; ++i)
     for (ushort j=0; j<SHRED_WIDTH; ++j) {
         PutBlock(null_stone, i, j, 0);
-        lightMap[i][j][0] = 0;
         for (ushort k=1; k<HEIGHT-1; ++k) {
             PutBlock(air, i, j, k);
-            lightMap[i][j][k] = 0;
         }
         PutBlock(Normal( (qrand()%5) ? SKY : STAR ), i, j, HEIGHT-1);
         lightMap[i][j][HEIGHT-1] = 1;
@@ -114,18 +114,19 @@ Shred::Shred(const ushort shred_x, const ushort shred_y,
     default: fprintf(stderr, "Shred::Shred: unlisted type: %c, code %d\n",
         TypeOfShred(longi, lati), int(TypeOfShred(longi, lati)));
     // no break;
-    case SHRED_PLAIN:     Plain(); break;
+    case SHRED_PLAIN:     Plain();     break;
     case SHRED_TESTSHRED: TestShred(); break;
-    case SHRED_PYRAMID:   Pyramid(); break;
-    case SHRED_HILL:      Hill(); break;
-    case SHRED_DESERT:    Desert(); break;
-    case SHRED_WATER:     Water(); break;
-    case SHRED_FOREST:    Forest(); break;
-    case SHRED_MOUNTAIN:  Mountain(); break;
-    case SHRED_EMPTY:     /* empty shred */ break;
+    case SHRED_PYRAMID:   Pyramid();   break;
+    case SHRED_HILL:      Hill();      break;
+    case SHRED_DESERT:    Desert();    break;
+    case SHRED_WATER:     Water();     break;
+    case SHRED_FOREST:    Forest();    break;
+    case SHRED_MOUNTAIN:  Mountain();  break;
+    case SHRED_CASTLE:    Castle();    break;
     case SHRED_CHAOS:     ChaosShred(); break;
     case SHRED_NULLMOUNTAIN: NullMountain(); break;
     case SHRED_NORMAL_UNDERGROUND: NormalUnderground(); break;
+    case SHRED_EMPTY: break;
     }
 } // Shred::Shred(ushort shred_x, shred_y, long longi, lati, Shred * mem)
 
@@ -574,6 +575,18 @@ void Shred::Pyramid() {
 
 void Shred::Castle() {
     NormalUnderground();
+    const ushort floors = CountShredTypeAround(SHRED_CASTLE);
+    for (ushort i = 0; i<floors; ++i) {
+        NormalCube(0,0,HEIGHT/2+i*5-1, SHRED_WIDTH,  SHRED_WIDTH,  1, STONE);
+        NormalCube(2,2,HEIGHT/2+i*5,   SHRED_WIDTH-4,SHRED_WIDTH-4,1, WOOD );
+        for (ushort l=3; l<SHRED_WIDTH-3; l+=3) {
+            SetNewBlock(ILLUMINATOR, WOOD, l,             2, HEIGHT/2+i*5+2);
+            SetNewBlock(ILLUMINATOR, WOOD, l, SHRED_WIDTH-3, HEIGHT/2+i*5+2);
+        }
+        if ( TypeOfShred(longitude-1, latitude) != SHRED_CASTLE ) {
+            NormalCube(0,0,HEIGHT/2+i*5, SHRED_WIDTH,2,4, STONE);
+        }
+    }
 }
 
 void Shred::ChaosShred() {

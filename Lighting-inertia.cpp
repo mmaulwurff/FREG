@@ -60,22 +60,23 @@ void World::AddFireLight(short, short, short, uchar) {}
 void World::RemoveFireLight(short, short, short) {}
 
 /// Makes block emit shining.
-/** Receives only non-sun light, from 0 to F. */
+/** Receives only non-sun light as level, from 1 to F. */
 void World::Shine(const ushort i, const ushort j, const ushort k,
-        const uchar level, bool)
+        uchar level, const bool init)
 {
-    if ( not InBounds(i, j, k) || 0==level ) return;
-    if ( SetFireLightMap(level << 4, i, j, k) &&
-            INVISIBLE != GetBlock(i, j, k)->Transparent() )
-    {
+    if ( not InBounds(i, j) ) return;
+    const int transparent = GetBlock(i, j, k)->Transparent();
+    if ( SetFireLightMap(level << 4, i, j, k) && INVISIBLE != transparent ) {
         emit Updated(i, j, k);
     }
-    Shine(i-1, j, k, level-1);
-    Shine(i+1, j, k, level-1);
-    Shine(i, j-1, k, level-1);
-    Shine(i, j+1, k, level-1);
-    Shine(i, j, k-1, level-1);
-    Shine(i, j, k+1, level-1);
+    if ( (transparent != BLOCK_OPAQUE && --level != 0) || init ) {
+        Shine(i-1, j,   k,   level, false);
+        Shine(i+1, j,   k,   level, false);
+        Shine(i,   j-1, k,   level, false);
+        Shine(i,   j+1, k,   level, false);
+        Shine(i,   j,   k-1, level, false);
+        Shine(i,   j,   k+1, level, false);
+    }
 }
 
 void World::SunShineVertical(const short x, const short y, short z,
@@ -93,19 +94,21 @@ void World::SunShineVertical(const short x, const short y, short z,
     const ushort x_in = Shred::CoordInShred(x);
     const ushort y_in = Shred::CoordInShred(y);
     for ( ; SetSunLightMap(light_lev, x, y, z); --z) {
-        emit Updated(x, y, z);
         const ushort transparent =
             shred->GetBlock(x_in, y_in, z)->Transparent();
-        if ( BLOCK_TRANSPARENT == transparent ) {
-            --light_lev;
-        } else if ( BLOCK_OPAQUE == transparent ) {
-            break;
+        if ( transparent != INVISIBLE ) {
+            emit Updated(x, y, z);
+            if ( BLOCK_TRANSPARENT == transparent ) {
+                --light_lev;
+            } else if ( BLOCK_OPAQUE == transparent ) {
+                break;
+            }
         }
     }
-    UpShine(x-1, y, z);
-    UpShine(x+1, y, z);
-    UpShine(x, y-1, z);
-    UpShine(x, y+1, z);
+    UpShine(x-1, y,   z);
+    UpShine(x+1, y,   z);
+    UpShine(x,   y-1, z);
+    UpShine(x,   y+1, z);
 }
 
 void World::UpShine(const ushort x, const ushort y, const ushort z_bottom) {
@@ -119,8 +122,10 @@ void World::UpShine(const ushort x, const ushort y, const ushort z_bottom) {
 /// Called when one block is moved, built or destroyed.
 void World::ReEnlighten(const ushort x, const ushort y, const ushort z) {
     SunShineVertical(x, y);
-    Shine(x, y, z, GetBlock(x, y, z)->LightRadius(), true);
-    emit Updated(x, y, z);
+    const uchar radius = GetBlock(x, y, z)->LightRadius();
+    if ( radius != 0 ) {
+        Shine(x, y, z, radius, true);
+    }
 }
 
 void World::ReEnlightenBlockAdd(const ushort x, const ushort y, const ushort z)
@@ -147,8 +152,7 @@ void World::ReEnlightenTime() {
 
 void World::ReEnlightenAll() {
     disconnect(this, SIGNAL(Updated(ushort, ushort, ushort)), 0, 0);
-    disconnect(this, SIGNAL(UpdatedAround(ushort, ushort, ushort, ushort)),
-        0, 0);
+    disconnect(this, SIGNAL(UpdatedAround(ushort,ushort,ushort, ushort)), 0,0);
     for (ushort i=0; i<NumShreds()*NumShreds(); ++i) {
         shreds[i]->ShineAll();
     }
@@ -271,8 +275,10 @@ void Shred::SetAllLightMapNull() {
 /// Makes all shining blocks of shred shine.
 void Shred::ShineAll() {
     for (auto i=shiningList.constBegin(); i!=shiningList.constEnd(); ++i) {
-        world->Shine((*i)->X(), (*i)->Y(), (*i)->Z(),
-            (*i)->LightRadius(), true);
+        const uchar radius = (*i)->LightRadius();
+        if ( radius != 0 ) {
+            world->Shine((*i)->X(), (*i)->Y(), (*i)->Z(), radius, true);
+        }
     }
     if ( not world->GetEvernight() ) {
         for (ushort i=shredX*SHRED_WIDTH; i<SHRED_WIDTH*(shredX+1); ++i)
