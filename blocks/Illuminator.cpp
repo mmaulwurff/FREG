@@ -62,9 +62,9 @@ uchar Illuminator::LightRadius() const {
     switch ( Sub() ) {
     default:
     case STONE: return 0;
-    case WOOD:  return 6;
-    case IRON:  return 4;
-    case GLASS: return 5;
+    case WOOD:  return 4;
+    case IRON:  return 5;
+    case GLASS: return 7;
     }
 }
 

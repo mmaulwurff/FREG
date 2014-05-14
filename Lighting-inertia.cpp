@@ -69,7 +69,8 @@ void World::Shine(const ushort i, const ushort j, const ushort k,
     if ( SetFireLightMap(level << 4, i, j, k) && INVISIBLE != transparent ) {
         emit Updated(i, j, k);
     }
-    if ( (transparent != BLOCK_OPAQUE && --level != 0) || init ) {
+    if ( (transparent != BLOCK_OPAQUE && level > 1) || init ) {
+        --level;
         Shine(i-1, j,   k,   level, false);
         Shine(i+1, j,   k,   level, false);
         Shine(i,   j-1, k,   level, false);
@@ -143,11 +144,9 @@ void World::ReEnlightenTime() {
     for (ushort i=0; i<NumShreds()*NumShreds(); ++i) {
         shreds[i]->SetAllLightMapNull();
     }
-    if ( not GetEvernight() ) {
-        sunMoonFactor = ( NIGHT==PartOfDay() ) ?
-            MOON_LIGHT_FACTOR : SUN_LIGHT_FACTOR;
-        ReEnlightenAll();
-    }
+    sunMoonFactor = ( NIGHT==PartOfDay() ) ?
+        MOON_LIGHT_FACTOR : SUN_LIGHT_FACTOR;
+    ReEnlightenAll();
 }
 
 void World::ReEnlightenAll() {
@@ -266,10 +265,6 @@ void Shred::SetLightmap(const short x, const short y, const short z,
 void Shred::SetAllLightMapNull() {
     memset(lightMap, 0,
         sizeof(lightMap[0][0][0]) * SHRED_WIDTH * SHRED_WIDTH * HEIGHT);
-    for (ushort i=0; i<SHRED_WIDTH; ++i)
-    for (ushort j=0; j<SHRED_WIDTH; ++j) {
-        lightMap[i][j][HEIGHT-1] = 0;
-    }
 }
 
 /// Makes all shining blocks of shred shine.
@@ -284,6 +279,10 @@ void Shred::ShineAll() {
         for (ushort i=shredX*SHRED_WIDTH; i<SHRED_WIDTH*(shredX+1); ++i)
         for (ushort j=shredY*SHRED_WIDTH; j<SHRED_WIDTH*(shredY+1); ++j) {
             world->SunShineVertical(i, j);
+        }
+        for (ushort i=0; i<SHRED_WIDTH; ++i)
+        for (ushort j=0; j<SHRED_WIDTH; ++j) {
+            lightMap[i][j][HEIGHT-1] = 0xFF;
         }
     }
 }

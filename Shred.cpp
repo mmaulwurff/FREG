@@ -62,8 +62,7 @@ bool Shred::LoadShred() {
     in.setVersion(DATASTREAM_VERSION);
     Block * const null_stone = Normal(NULLSTONE);
     Block * const air = Normal(AIR);
-    memset(lightMap, 0,
-        sizeof(lightMap[0][0][0]) * SHRED_WIDTH * SHRED_WIDTH * HEIGHT);
+    SetAllLightMapNull();
     for (ushort x=0; x<SHRED_WIDTH; ++x)
     for (ushort y=0; y<SHRED_WIDTH; ++y) {
         PutBlock(null_stone, x, y, 0);
@@ -99,8 +98,7 @@ Shred::Shred(const ushort shred_x, const ushort shred_y,
     // new shred generation:
     Block * const null_stone = Normal(NULLSTONE);
     Block * const air = Normal(AIR);
-    memset(lightMap, 0,
-        sizeof(lightMap[0][0][0]) * SHRED_WIDTH * SHRED_WIDTH * HEIGHT);
+    SetAllLightMapNull();
     for (ushort i=0; i<SHRED_WIDTH; ++i)
     for (ushort j=0; j<SHRED_WIDTH; ++j) {
         PutBlock(null_stone, i, j, 0);
@@ -577,14 +575,51 @@ void Shred::Castle() {
     NormalUnderground();
     const ushort floors = CountShredTypeAround(SHRED_CASTLE);
     for (ushort i = 0; i<floors; ++i) {
-        NormalCube(0,0,HEIGHT/2+i*5-1, SHRED_WIDTH,  SHRED_WIDTH,  1, STONE);
-        NormalCube(2,2,HEIGHT/2+i*5,   SHRED_WIDTH-4,SHRED_WIDTH-4,1, WOOD );
-        for (ushort l=3; l<SHRED_WIDTH-3; l+=3) {
-            SetNewBlock(ILLUMINATOR, WOOD, l,             2, HEIGHT/2+i*5+2);
-            SetNewBlock(ILLUMINATOR, WOOD, l, SHRED_WIDTH-3, HEIGHT/2+i*5+2);
+        const int level = HEIGHT/2+i*5;
+        NormalCube(0,0,level-1, SHRED_WIDTH,SHRED_WIDTH,1, STONE);
+        NormalCube(0,0,level,   SHRED_WIDTH,SHRED_WIDTH,1, WOOD );
+        if ( i > 0 ) { // stairs down
+            NormalCube(4,2,level-1, 5,2,2, AIR);
+            for (ushort y=2; y<=3; ++y) {
+                for (ushort step=0; step<5; ++step) {
+                    SetNewBlock(PLATE, STONE, 4+step, y, level-4+step);
+                }
+            }
         }
+        if ( i != floors-1 ) { // lamps
+            for (ushort x=3; x<SHRED_WIDTH-3; x+=3)
+            for (ushort y=3; y<SHRED_WIDTH-3; y+=3) {
+                SetNewBlock(ILLUMINATOR, GLASS, x, y, level+3);
+            }
+        }
+        NormalCube(0,0,level, 2,2,4, STONE);
+        NormalCube(0,SHRED_WIDTH-2,level, 2,2,4, STONE);
+        NormalCube(SHRED_WIDTH-2,0,level, 2,2,4, STONE);
+        NormalCube(SHRED_WIDTH-2,SHRED_WIDTH-2,level, 2,2,4, STONE);
+        const int wall_h = ( i == floors-1 ) ? 2 : 4;
+        // north wall or lamps
         if ( TypeOfShred(longitude-1, latitude) != SHRED_CASTLE ) {
-            NormalCube(0,0,HEIGHT/2+i*5, SHRED_WIDTH,2,4, STONE);
+            NormalCube(2,0,level, SHRED_WIDTH-4,2,wall_h, STONE);
+        } else if ( i != floors-1 ) {
+            for (ushort x=3; x<SHRED_WIDTH-3; x+=3) {
+                SetNewBlock(ILLUMINATOR, GLASS, x, 0, level+3);
+            }
+        }
+        // south wall
+        if ( TypeOfShred(longitude+1, latitude) != SHRED_CASTLE ) {
+            NormalCube(2,SHRED_WIDTH-2,level, SHRED_WIDTH-4,2,wall_h, STONE);
+        }
+        // west wall or lamps
+        if ( TypeOfShred(longitude, latitude-1) != SHRED_CASTLE ) {
+            NormalCube(0,2,level, 2,SHRED_WIDTH,wall_h, STONE);
+        } else if ( i!= floors-1 ) {
+            for (ushort y=3; y<SHRED_WIDTH-3; y+=3) {
+                SetNewBlock(ILLUMINATOR, GLASS, 0, y, level+3);
+            }
+        }
+        // east wall
+        if ( TypeOfShred(longitude, latitude+1) != SHRED_CASTLE ) {
+            NormalCube(SHRED_WIDTH-2,2,level, 2,SHRED_WIDTH,wall_h, STONE);
         }
     }
 }
