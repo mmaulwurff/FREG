@@ -573,54 +573,51 @@ void Shred::Pyramid() {
 
 void Shred::Castle() {
     NormalUnderground();
-    const ushort floors = CountShredTypeAround(SHRED_CASTLE);
-    for (ushort i = 0; i<floors; ++i) {
-        const int level = HEIGHT/2+i*5;
-        NormalCube(0,0,level-1, SHRED_WIDTH,SHRED_WIDTH,1, STONE);
-        NormalCube(0,0,level,   SHRED_WIDTH,SHRED_WIDTH,1, WOOD );
-        if ( i > 0 ) { // stairs down
-            NormalCube(4,2,level-1, 5,2,2, AIR);
-            for (ushort y=2; y<=3; ++y) {
-                for (ushort step=0; step<5; ++step) {
-                    SetNewBlock(PLATE, STONE, 4+step, y, level-4+step);
-                }
+    // basement
+    NormalCube(0,0,HEIGHT/2-6, SHRED_WIDTH,  SHRED_WIDTH,  9, IRON);
+    NormalCube(2,2,HEIGHT/2-4, SHRED_WIDTH-4,SHRED_WIDTH-4,5, AIR );
+    // floors
+    int level = HEIGHT/2-1;
+    for (ushort floors=CountShredTypeAround(SHRED_CASTLE); floors; --floors) {
+        NormalCube(0,0,level,   SHRED_WIDTH,  SHRED_WIDTH,  6, STONE);
+        NormalCube(2,2,level+1, SHRED_WIDTH-4,SHRED_WIDTH-4,1, WOOD );
+        NormalCube(2,2,level+2, SHRED_WIDTH-4,SHRED_WIDTH-4,5, AIR  );
+        // stairs down
+        NormalCube(4,2,level, 5,2,2, AIR);
+        for (ushort y=2; y<=3; ++y) {
+            for (ushort step=0; step<5; ++step) {
+                SetNewBlock(PLATE, STONE, 4+step, y, level-3+step);
             }
         }
-        if ( i != floors-1 ) { // lamps
+        if ( floors != 1 ) { // lamps
             for (ushort x=3; x<SHRED_WIDTH-3; x+=3)
             for (ushort y=3; y<SHRED_WIDTH-3; y+=3) {
-                SetNewBlock(ILLUMINATOR, GLASS, x, y, level+3);
+                SetNewBlock(ILLUMINATOR, GLASS, x, y, level+4);
             }
         }
-        NormalCube(0,0,level, 2,2,4, STONE);
-        NormalCube(0,SHRED_WIDTH-2,level, 2,2,4, STONE);
-        NormalCube(SHRED_WIDTH-2,0,level, 2,2,4, STONE);
-        NormalCube(SHRED_WIDTH-2,SHRED_WIDTH-2,level, 2,2,4, STONE);
-        const int wall_h = ( i == floors-1 ) ? 2 : 4;
-        // north wall or lamps
-        if ( TypeOfShred(longitude-1, latitude) != SHRED_CASTLE ) {
-            NormalCube(2,0,level, SHRED_WIDTH-4,2,wall_h, STONE);
-        } else if ( i != floors-1 ) {
+        // north pass and lamps
+        if ( TypeOfShred(longitude-1, latitude)==SHRED_CASTLE && floors!=1 ) {
+            NormalCube(2,0,level+2, SHRED_WIDTH-4,2,4, AIR);
             for (ushort x=3; x<SHRED_WIDTH-3; x+=3) {
-                SetNewBlock(ILLUMINATOR, GLASS, x, 0, level+3);
+                SetNewBlock(ILLUMINATOR, GLASS, x, 0, level+4);
             }
         }
-        // south wall
-        if ( TypeOfShred(longitude+1, latitude) != SHRED_CASTLE ) {
-            NormalCube(2,SHRED_WIDTH-2,level, SHRED_WIDTH-4,2,wall_h, STONE);
+        // south pass
+        if ( TypeOfShred(longitude+1, latitude) == SHRED_CASTLE && floors!=1) {
+            NormalCube(2,SHRED_WIDTH-2,level+2, SHRED_WIDTH-4,2,4, AIR);
         }
-        // west wall or lamps
-        if ( TypeOfShred(longitude, latitude-1) != SHRED_CASTLE ) {
-            NormalCube(0,2,level, 2,SHRED_WIDTH,wall_h, STONE);
-        } else if ( i!= floors-1 ) {
+        // west pass and lamps
+        if ( TypeOfShred(longitude, latitude-1)==SHRED_CASTLE && floors!=1 ) {
+            NormalCube(0,2,level+2, 2,SHRED_WIDTH,4, AIR);
             for (ushort y=3; y<SHRED_WIDTH-3; y+=3) {
-                SetNewBlock(ILLUMINATOR, GLASS, 0, y, level+3);
+                SetNewBlock(ILLUMINATOR, GLASS, 0, y, level+4);
             }
         }
-        // east wall
-        if ( TypeOfShred(longitude, latitude+1) != SHRED_CASTLE ) {
-            NormalCube(SHRED_WIDTH-2,2,level, 2,SHRED_WIDTH,wall_h, STONE);
+        // east pass
+        if ( TypeOfShred(longitude, latitude+1) == SHRED_CASTLE && floors!=1) {
+            NormalCube(SHRED_WIDTH-2,2,level+2, 2,SHRED_WIDTH,4, AIR);
         }
+        level += 5;
     }
 }
 
