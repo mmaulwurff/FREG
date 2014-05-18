@@ -100,6 +100,7 @@ SOURCES += \
     blocks/Inventory.cpp \
     blocks/Bucket.cpp \
     blocks/Container.cpp \
+    blocks/Block.cpp \
     screens/IThread.cpp
 
 TRANSLATIONS = \

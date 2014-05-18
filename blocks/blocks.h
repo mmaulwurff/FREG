@@ -23,17 +23,6 @@
 #include "Inventory.h"
 #include "blocks/Animal.h"
 
-// weights in measures - mz (mezuro)
-    const ushort WEIGHT_NULLSTONE = 1000;
-    const ushort WEIGHT_SAND = 100;
-    const ushort WEIGHT_WATER = 50;
-    const ushort WEIGHT_GLASS = 150;
-    const ushort WEIGHT_IRON = 300;
-    const ushort WEIGHT_GREENERY = 3;
-    const ushort WEIGHT_MINIMAL = 1;
-    const ushort WEIGHT_STONE = 200;
-    const ushort WEIGHT_AIR = 0;
-
 class Plate : public Block {
 public:
     Plate(int sub, quint16 id);
