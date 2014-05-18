@@ -201,4 +201,6 @@ enum transparency {
     UNDEF // temporary, doesn't appear in world.
 };
 
+bool IsLikeAir(int sub);
+
 #endif // HEADER_H

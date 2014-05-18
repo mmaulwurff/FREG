@@ -92,6 +92,7 @@ SOURCES += \
     worldmap.cpp \
     ShredStorage.cpp \
     Xyz.cpp \
+    Global.cpp \
     blocks/blocks.cpp \
     blocks/Active.cpp \
     blocks/Dwarf.cpp \

@@ -22,7 +22,14 @@
 
 #include "blocks/Block.h"
 
+
 class Weapon : public Block {
+    /** \class Weapon Weapons.h
+     *  \brief Weapon class represents simple weapons as sticks, pebbles and
+     *  so on.
+     *  Also is used as base class for more special weapons.
+     *  Weapon of SKY substance is abyss block, everything that touches abyss
+     *  will be destroyed. */
 public:
     Weapon(int sub, quint16 id);
     Weapon(QDataStream & str, int sub, quint16 id);

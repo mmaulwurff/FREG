@@ -69,18 +69,20 @@ bool Shred::LoadShred() {
         for (ushort z=1; ; ++z) {
             quint8 kind, sub;
             const bool normal = block_manager.KindSubFromFile(in, kind, sub);
-            if ( sub==SKY || sub==STAR ) {
-                for ( ; z < HEIGHT-1; ++z) {
-                    PutBlock(air, x, y, z);
+            if ( normal ) {
+                if ( sub==SKY || sub==STAR ) {
+                    for ( ; z < HEIGHT-1; ++z) {
+                        PutBlock(air, x, y, z);
+                    }
+                    PutBlock(Normal(sub), x, y, HEIGHT-1);
+                    lightMap[x][y][HEIGHT-1] = 1;
+                    break;
+                } else {
+                    PutBlock(Normal(sub), x, y, z);
                 }
-                PutBlock(Normal(sub), x, y, HEIGHT-1);
-                lightMap[x][y][HEIGHT-1] = 1;
-                break;
-            } else if ( normal ) {
-                PutBlock(Normal(sub), x, y, z);
             } else {
-                SetBlockNoCheck(block_manager.BlockFromFile(
-                    in, kind, sub), x, y, z);
+                SetBlockNoCheck(block_manager.BlockFromFile(in, kind, sub),
+                    x, y, z);
             }
         }
     }
@@ -508,6 +510,9 @@ void Shred::TestShred() { // 7 items in a row
     SetNewBlock(CONTAINER,   IRON,  column+=2, row, level);
     SetNewBlock(CONTAINER,   WATER, column+=2, row, level);
     // row 7
+    column = -1;
+    row += 2;
+    SetNewBlock(WEAPON, SKY, column+=2, row, level);
 } // void Shred::TestShred()
 
 void Shred::NullMountain() {

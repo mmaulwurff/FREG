@@ -22,7 +22,9 @@
 
 QString Block::FullName() const {
     switch ( Sub() ) {
-    case STAR: case SUN_MOON: case SKY:
+    case STAR:
+    case SUN_MOON:
+    case SKY:
     case AIR:        return QObject::tr("Air");
     case WATER:      return QObject::tr("Ice");
     case STONE:      return QObject::tr("Stone");

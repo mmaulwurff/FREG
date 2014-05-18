@@ -423,7 +423,7 @@ void Screen::PrintHUD() {
     short x, y, z;
     ActionXyz(x, y, z);
     Block * const focused = GetWorld()->GetBlock(x, y, z);
-    if ( focused->Sub() != AIR && z < HEIGHT-1 ) {
+    if ( not IsLikeAir(focused->Sub()) && z < HEIGHT-1 ) {
         PrintBar(((SCREEN_SIZE*2+2) * (IsScreenWide() ? 2 : 1)) - 15,
             Color(focused->Kind(), focused->Sub()),
             (focused->IsAnimal() == nullptr) ? '+' : '*',

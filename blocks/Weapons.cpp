@@ -26,6 +26,7 @@
         case IRON:  return QObject::tr("Spike");
         case WOOD:  return QObject::tr("Stick");
         case BONE:  return QObject::tr("Bone");
+        case SKY:   return QObject::tr("Air");
         default:
             fprintf(stderr, "Weapon::FullName: unlisted sub: %d\n", Sub());
             return "Some weapon";
@@ -39,9 +40,10 @@
 
     ushort Weapon::DamageLevel() const {
         switch ( Sub() ) {
-        case WOOD: return 4;
-        case IRON: return 6;
+        case WOOD:  return 4;
+        case IRON:  return 6;
         case STONE: return 5;
+        case SKY:   return MAX_DURABILITY;
         default:
             fprintf(stderr, "Weapon::DamageLevel: sub (?): %d\n.", Sub());
             return 1;
@@ -49,10 +51,14 @@
     }
 
     int  Weapon::DamageKind() const {
-        return ( IRON==Sub() ) ? THRUST : CRUSH;
+        switch ( Sub() ) {
+        case IRON: return THRUST;
+        case SKY:  return TIME;
+        default:   return CRUSH;
+        }
     }
 
-    void Weapon::Push(const int, Block * const who) {
+    void Weapon::Push(int, Block * const who) {
         who->Damage(DamageLevel(), DamageKind());
     }
 

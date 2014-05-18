@@ -142,7 +142,7 @@ void Player::Examine() const {
             arg(block==block_manager.NormalBlock(sub)).
             arg(block->GetDir()));
     }
-    if ( AIR==sub || SKY==sub || SUN_MOON==sub || STAR==sub ) return;
+    if ( IsLikeAir(sub) ) return;
     const QString str = block->GetNote();
     if ( not str.isEmpty() ) {
         emit Notify(tr("Inscription: ")+str);
