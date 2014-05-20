@@ -157,25 +157,25 @@ void World::ReEnlightenMove(const int dir) {
         0, 0);
     switch ( dir ) {
     case NORTH:
-        for (ushort i=0; i<NumShreds(); ++i) {
+        for (int i=0; i<NumShreds(); ++i) {
             shreds[i]->ShineAll();
             shreds[i+NumShreds()]->ShineAll();
         }
     break;
     case SOUTH:
-        for (ushort i=0; i<NumShreds(); ++i) {
+        for (int i=0; i<NumShreds(); ++i) {
             shreds[i+NumShreds()*(NumShreds()-1)]->ShineAll();
             shreds[i+NumShreds()*(NumShreds()-2)]->ShineAll();
         }
     break;
     case EAST:
-        for (ushort i=0; i<NumShreds(); ++i) {
+        for (int i=0; i<NumShreds(); ++i) {
             shreds[NumShreds()*i+NumShreds()-1]->ShineAll();
             shreds[NumShreds()*i+NumShreds()-2]->ShineAll();
         }
     break;
     case WEST:
-        for (ushort i=0; i<NumShreds(); ++i) {
+        for (int i=0; i<NumShreds(); ++i) {
             shreds[NumShreds()*i]->ShineAll();
             shreds[NumShreds()*i+1]->ShineAll();
         }
@@ -263,12 +263,12 @@ void Shred::ShineAll() {
         }
     }
     if ( not world->GetEvernight() ) {
-        for (ushort i=shredX*SHRED_WIDTH; i<SHRED_WIDTH*(shredX+1); ++i)
-        for (ushort j=shredY*SHRED_WIDTH; j<SHRED_WIDTH*(shredY+1); ++j) {
+        for (int i=shredX*SHRED_WIDTH; i<SHRED_WIDTH*(shredX+1); ++i)
+        for (int j=shredY*SHRED_WIDTH; j<SHRED_WIDTH*(shredY+1); ++j) {
             world->SunShineVertical(i, j);
         }
-        for (ushort i=0; i<SHRED_WIDTH; ++i)
-        for (ushort j=0; j<SHRED_WIDTH; ++j) {
+        for (int i=0; i<SHRED_WIDTH; ++i)
+        for (int j=0; j<SHRED_WIDTH; ++j) {
             lightMap[i][j][HEIGHT-1] = 0xFF;
         }
     }

@@ -31,7 +31,7 @@ class QByteArray;
 class QReadWriteLock;
 class CraftManager;
 
-const ushort SAFE_FALL_HEIGHT = 5U;
+const int SAFE_FALL_HEIGHT = 5;
 
 const uchar MOON_LIGHT_FACTOR = 1U;
 const uchar  SUN_LIGHT_FACTOR = 8U;

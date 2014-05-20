@@ -94,7 +94,7 @@ const QString BlockManager::subs[] = {
 BlockManager block_manager;
 
 BlockManager::BlockManager() {
-    for (ushort sub=0; sub<LAST_SUB; ++sub) {
+    for (int sub=0; sub<LAST_SUB; ++sub) {
         normals[sub] = new Block(sub, MakeId(BLOCK, sub));
     }
     static_assert((sizeof_array(BlockManager::kinds) == LAST_KIND),

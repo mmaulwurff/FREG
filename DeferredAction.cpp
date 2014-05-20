@@ -68,7 +68,7 @@ void DeferredAction::Build() const {
     if ( inv->Number(srcSlot) ) {
         return;
     } // else:
-    for (ushort i=srcSlot+1; i<inv->Size() &&
+    for (int i=srcSlot+1; i<inv->Size() &&
         inv->Number(srcSlot)<MAX_STACK_SIZE; ++i)
     {
         const Block * const block_i = inv->ShowBlock(i);

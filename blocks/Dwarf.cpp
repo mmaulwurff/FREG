@@ -93,7 +93,7 @@ ushort Dwarf::DamageLevel() const {
 bool Dwarf::Move(const int dir) {
     const bool overstepped = Active::Move(dir);
     if ( overstepped ) {
-        for (ushort i=0; i<ON_LEGS; ++i) {
+        for (int i=0; i<ON_LEGS; ++i) {
             Block * const block = ShowBlock(i);
             if ( block && block->Kind()==MAP ) {
                 block->Use(this);

@@ -136,8 +136,8 @@
     }
 
     void Animal::EatGrass() {
-        for (ushort x=X()-1; x<=X()+1; ++x)
-        for (ushort y=Y()-1; y<=Y()+1; ++y) {
+        for (int x=X()-1; x<=X()+1; ++x)
+        for (int y=Y()-1; y<=Y()+1; ++y) {
             if ( world->InBounds(x, y) &&
                     GREENERY == world->GetBlock(x, y, Z())->Sub() )
             {
@@ -649,7 +649,7 @@
                 body[0] = body[FILE_SIZE_CHARS-1] = '|';
                 body[FILE_SIZE_CHARS] = header[FILE_SIZE_CHARS] = '\n';
                 map_file.write(header, FILE_SIZE_CHARS+1);
-                for (ushort i=0; i<FILE_SIZE_CHARS-2; ++i) {
+                for (int i=0; i<FILE_SIZE_CHARS-2; ++i) {
                     map_file.write(body,FILE_SIZE_CHARS+1);
                 }
                 map_file.write(header, FILE_SIZE_CHARS+1);

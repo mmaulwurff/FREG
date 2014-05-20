@@ -405,7 +405,7 @@ void Screen::PrintHUD() {
     // quick inventory
     Inventory * const inv = player->PlayerInventory();
     if ( inv && IsScreenWide() ) {
-        for (ushort i=0; i<inv->Size(); ++i) {
+        for (int i=0; i<inv->Size(); ++i) {
             wstandend(hudWin);
             const int x = QUICK_INVENTORY_X_SHIFT+i*2;
             mvwaddch(hudWin, 0, x, 'a'+i);
@@ -487,23 +487,23 @@ void Screen::PrintHUD() {
 } // void Screen::PrintHUD()
 
 void Screen::PrintNormal(WINDOW * const window, const int dir) const {
-    const ushort k_start = ( UP!=dir ) ?
+    const int k_start = ( UP!=dir ) ?
         ( DOWN==dir ?
             player->Z()-1 : player->Z() ) :
         player->Z()+1;
-    const short k_step = ( UP!=dir ) ? (-1) : 1;
+    const int k_step = ( UP!=dir ) ? (-1) : 1;
 
     (void)wmove(window, 1, 1);
-    const ushort start_x = ( player->X()/SHRED_WIDTH )*SHRED_WIDTH +
+    const int start_x = ( player->X()/SHRED_WIDTH )*SHRED_WIDTH +
         ( SHRED_WIDTH-SCREEN_SIZE )/2;
-    const ushort start_y = ( player->Y()/SHRED_WIDTH )*SHRED_WIDTH +
+    const int start_y = ( player->Y()/SHRED_WIDTH )*SHRED_WIDTH +
         ( SHRED_WIDTH-SCREEN_SIZE )/2;
-    for (ushort j=start_y; j<SCREEN_SIZE+start_y; ++j, waddstr(window, "\n_"))
-    for (ushort i=start_x; i<SCREEN_SIZE+start_x; ++i ) {
+    for (int j=start_y; j<SCREEN_SIZE+start_y; ++j, waddstr(window, "\n_"))
+    for (int i=start_x; i<SCREEN_SIZE+start_x; ++i ) {
         Shred * const shred = w->GetShred(i, j);
-        const ushort i_in = Shred::CoordInShred(i);
-        const ushort j_in = Shred::CoordInShred(j);
-        ushort k = k_start;
+        const int i_in = Shred::CoordInShred(i);
+        const int j_in = Shred::CoordInShred(j);
+        int k = k_start;
         for ( ; INVISIBLE == shred->GetBlock(i_in, j_in, k)->Transparent();
             k += k_step);
         if ( (w->Enlightened(i, j, k) && player->Visible(i, j, k)) ||
@@ -546,19 +546,19 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
 void Screen::PrintFront(WINDOW * const window) const {
     if ( window == nullptr ) return;
     const int dir = player->GetDir();
-    short x_step, z_step,
-          x_end,  z_end,
-          * x, * z,
-          i, j;
-    const ushort pX = player->X();
-    const ushort pY = player->Y();
-    const ushort pZ = player->Z();
-    const ushort begin_x = ( pX/SHRED_WIDTH )*SHRED_WIDTH +
+    int x_step, z_step,
+        x_end,  z_end;
+    int * x, * z;
+    int i, j;
+    const int pX = player->X();
+    const int pY = player->Y();
+    const int pZ = player->Z();
+    const int begin_x = ( pX/SHRED_WIDTH )*SHRED_WIDTH +
         ( SHRED_WIDTH-SCREEN_SIZE )/2;
-    const ushort begin_y = ( pY/SHRED_WIDTH )*SHRED_WIDTH +
+    const int begin_y = ( pY/SHRED_WIDTH )*SHRED_WIDTH +
         ( SHRED_WIDTH-SCREEN_SIZE )/2;
-    ushort x_start, z_start, k_start;
-    ushort arrow_Y, arrow_X;
+    int x_start, z_start, k_start;
+    int arrow_Y, arrow_X;
     switch ( dir ) {
     case NORTH:
         x = &i;
@@ -621,7 +621,7 @@ void Screen::PrintFront(WINDOW * const window) const {
     const int sky_colour = Color(BLOCK, SKY);
     const char sky_char = CharName(BLOCK, SKY);
     (void)wmove(window, 1, 1);
-    for (short k=k_start; k>k_start-SCREEN_SIZE; --k, waddstr(window, "\n_")) {
+    for (int k=k_start; k>k_start-SCREEN_SIZE; --k, waddstr(window, "\n_")) {
         for (*x=x_start; *x!=x_end; *x+=x_step) {
             for (*z=z_start; *z!=z_end && w->GetBlock(i, j, k)->
                         Transparent()==INVISIBLE;
@@ -689,7 +689,7 @@ void Screen::PrintInv(WINDOW * const window, const Inventory & inv) const {
     }
     const int start = inv.Start();
     int shift = 0; // to divide inventory sections
-    for (ushort i=0; i<inv.Size(); ++i) {
+    for (int i=0; i<inv.Size(); ++i) {
         if ( start == i && i != 0) {
             ++shift;
             mvwhline(window, 2+i, 0, ACS_HLINE, SCREEN_SIZE*2+2);

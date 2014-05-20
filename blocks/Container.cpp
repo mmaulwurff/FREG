@@ -148,12 +148,12 @@
         {
             return false;
         }
-        for (ushort i=0; i<num; ++i) {
+        for (int i=0; i<num; ++i) {
             if ( not inv_to->Get(ShowBlock(src), dest) ) return false;
             Pull(src);
             if ( src < Start() ) {
                 // remove materials:
-                for (ushort i=Start(); i<Size(); ++i) {
+                for (int i=Start(); i<Size(); ++i) {
                     while ( Number(i) ) {
                         Block * const to_pull = ShowBlock(i);
                         Pull(i);

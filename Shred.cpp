@@ -66,7 +66,7 @@ bool Shred::LoadShred() {
     for (int x=0; x<SHRED_WIDTH; ++x)
     for (int y=0; y<SHRED_WIDTH; ++y) {
         PutBlock(null_stone, x, y, 0);
-        for (ushort z=1; ; ++z) {
+        for (int z=1; ; ++z) {
             quint8 kind, sub;
             const bool normal = block_manager.KindSubFromFile(in, kind, sub);
             if ( normal ) {
@@ -452,7 +452,7 @@ void Shred::TestShred() { // 7 items in a row
     SetNewBlock(LADDER, GREENERY,  column,    row, level+1);
     SetNewBlock(LADDER, STONE,     column,    row, level+2);
     // tall ladder
-    for (ushort i=level+3; i<=level+20 && i<HEIGHT-1; ++i) {
+    for (int i=level+3; i<=level+20 && i<HEIGHT-1; ++i) {
         SetNewBlock(LADDER, WOOD, column, row, i);
     }
     SetNewBlock(DWARF, H_MEAT, column+=2, row, level);
@@ -549,7 +549,7 @@ void Shred::Pyramid() {
     const int level = qMin(FlatUndeground(), HEIGHT-1-16);
     Block * const stone = Normal(STONE);
     for (int z=level+1, dz=0; dz<SHRED_WIDTH/2; z+=2, ++dz) { // pyramid
-        for (ushort x=dz, y=dz; x<(SHRED_WIDTH - dz); ++x, ++y) {
+        for (int x=dz, y=dz; x<(SHRED_WIDTH - dz); ++x, ++y) {
             blocks[x][dz][z] =
                 blocks[x][SHRED_WIDTH-1-dz][z  ] =
                 blocks[x][              dz][z+1] =
@@ -588,20 +588,20 @@ void Shred::Castle() {
         // stairs down
         NormalCube(4,2,level, 5,2,2, AIR);
         for (int y=2; y<=3; ++y) {
-            for (ushort step=0; step<5; ++step) {
+            for (int step=0; step<5; ++step) {
                 SetNewBlock(PLATE, STONE, 4+step, y, level-3+step);
             }
         }
         if ( floors != 1 ) { // lamps
-            for (ushort x=3; x<SHRED_WIDTH-3; x+=3)
-            for (ushort y=3; y<SHRED_WIDTH-3; y+=3) {
+            for (int x=3; x<SHRED_WIDTH-3; x+=3)
+            for (int y=3; y<SHRED_WIDTH-3; y+=3) {
                 SetNewBlock(ILLUMINATOR, GLASS, x, y, level+4);
             }
         }
         // north pass and lamps
         if ( TypeOfShred(longitude-1, latitude)==SHRED_CASTLE && floors!=1 ) {
             NormalCube(2,0,level+2, SHRED_WIDTH-4,2,4, AIR);
-            for (ushort x=3; x<SHRED_WIDTH-3; x+=3) {
+            for (int x=3; x<SHRED_WIDTH-3; x+=3) {
                 SetNewBlock(ILLUMINATOR, GLASS, x, 0, level+4);
             }
         }
@@ -612,7 +612,7 @@ void Shred::Castle() {
         // west pass and lamps
         if ( TypeOfShred(longitude, latitude-1)==SHRED_CASTLE && floors!=1 ) {
             NormalCube(0,2,level+2, 2,SHRED_WIDTH,4, AIR);
-            for (ushort y=3; y<SHRED_WIDTH-3; y+=3) {
+            for (int y=3; y<SHRED_WIDTH-3; y+=3) {
                 SetNewBlock(ILLUMINATOR, GLASS, 0, y, level+4);
             }
         }

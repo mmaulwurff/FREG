@@ -302,7 +302,7 @@ void Player::Obtain(const ushort src, const ushort dest, const ushort num) {
 void Player::Wield(const ushort num) {
     const QWriteLocker locker(world->GetLock());
     if ( ValidBlock(num) ) {
-        for (ushort i=0; i<=Dwarf::ON_LEGS; ++i) {
+        for (int i=0; i<=Dwarf::ON_LEGS; ++i) {
             InnerMove(num, i);
         }
         emit Updated();
@@ -377,7 +377,7 @@ void Player::Craft(const ushort num) {
 void Player::TakeOff(const ushort num) {
     const QWriteLocker locker(world->GetLock());
     if ( ValidBlock(num) ) {
-        for (ushort i=PlayerInventory()->Start();
+        for (int i=PlayerInventory()->Start();
                 i<PlayerInventory()->Size(); ++i)
         {
             InnerMove(num, i, PlayerInventory()->Number(num));
