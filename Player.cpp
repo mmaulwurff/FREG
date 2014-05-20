@@ -127,8 +127,8 @@ void Player::Examine(short, short, short) const { Examine(); }
 void Player::Examine() const {
     const QReadLocker locker(world->GetLock());
 
-    short i, j, k;
-    emit GetFocus(i, j, k);
+    int i, j, k;
+    emit GetFocus(&i, &j, &k);
     const Block * const block = world->GetBlock(i, j, k);
     emit Notify( QString("*----- %1 -----*").arg(block->FullName()) );
     const int sub = block->Sub();
@@ -190,8 +190,8 @@ void Player::Use(short, short, short) { Use(); }
 
 void Player::Use() {
     const QWriteLocker locker(world->GetLock());
-    short x, y, z;
-    emit GetFocus(x, y, z);
+    int x, y, z;
+    emit GetFocus(&x, &y, &z);
     const int us_type = world->GetBlock(x, y, z)->Use(player);
     usingType = ( us_type==usingType ) ? USAGE_TYPE_NO : us_type;
     emit Updated();
@@ -201,8 +201,8 @@ void Player::Inscribe(short, short, short) const { Inscribe(); }
 
 void Player::Inscribe() const {
     const QWriteLocker locker(world->GetLock());
-    short x, y, z;
-    emit GetFocus(x, y, z);
+    int x, y, z;
+    emit GetFocus(&x, &y, &z);
     emit Notify(player ?
         (world->Inscribe(x, y, z) ?
             tr("Inscribed.") : tr("Cannot inscribe this.")) :
@@ -257,13 +257,13 @@ usage_types Player::UseNoLock(const ushort num) {
         emit Updated();
     break;
     case USAGE_TYPE_POUR: {
-        short x_targ, y_targ, z_targ;
-        emit GetFocus(x_targ, y_targ, z_targ);
+        int x_targ, y_targ, z_targ;
+        emit GetFocus(&x_targ, &y_targ, &z_targ);
         player->GetDeferredAction()->SetPour(x_targ, y_targ, z_targ, num);
     } break;
     case USAGE_TYPE_SET_FIRE: {
-        short x_targ, y_targ, z_targ;
-        emit GetFocus(x_targ, y_targ, z_targ);
+        int x_targ, y_targ, z_targ;
+        emit GetFocus(&x_targ, &y_targ, &z_targ);
         player->GetDeferredAction()->SetSetFire(x_targ, y_targ, z_targ);
     } break;
     default: break;
@@ -280,8 +280,8 @@ void Player::Throw(short, short, short,
 }
 
 void Player::Throw(const ushort src, const ushort dest, const ushort num) {
-    short x, y, z;
-    emit GetFocus(x, y, z);
+    int x, y, z;
+    emit GetFocus(&x, &y, &z);
     player->GetDeferredAction()->SetThrow(x, y, z, src, dest, num);
 }
 
@@ -293,8 +293,8 @@ void Player::Obtain(short, short, short,
 
 void Player::Obtain(const ushort src, const ushort dest, const ushort num) {
     const QWriteLocker locker(world->GetLock());
-    short x, y, z;
-    emit GetFocus(x, y, z);
+    int x, y, z;
+    emit GetFocus(&x, &y, &z);
     world->Get(player, x, y, z, src, dest, num);
     emit Updated();
 }
@@ -355,8 +355,8 @@ void Player::Build(short, short, short, const ushort slot) { Build(slot); }
 
 void Player::Build(const ushort slot) {
     const QWriteLocker locker(world->GetLock());
-    short x_targ, y_targ, z_targ;
-    emit GetFocus(x_targ, y_targ, z_targ);
+    int x_targ, y_targ, z_targ;
+    emit GetFocus(&x_targ, &y_targ, &z_targ);
     Block * const block = ValidBlock(slot);
     if ( block && (AIR != world->GetBlock(X(), Y(), Z()-1)->Sub()
             || 0 == player->Weight()) )
@@ -470,8 +470,8 @@ void Player::SetDir(const int direction) {
 bool Player::Damage(short, short, short) const { return Damage(); }
 
 bool Player::Damage() const {
-    short x, y, z;
-    emit GetFocus(x, y, z);
+    int x, y, z;
+    emit GetFocus(&x, &y, &z);
     if ( player && GetWorld()->InBounds(x, y, z) ) {
         player->GetDeferredAction()->SetDamage(x, y, z);
         return true;

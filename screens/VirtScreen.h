@@ -72,7 +72,7 @@ public slots:
     /// This is called when block at (x, y, z) should be updated in screen.
     /** When implemented, this should work fast.
      *  It is connected to world in constructor. */
-    virtual void Update(ushort x, ushort y, ushort z) = 0;
+    virtual void Update(int x, int y, int z) = 0;
 
     /// This is called when all world should be updated in sceen.
     /** When implemented, this should work fast.
@@ -92,7 +92,7 @@ public slots:
     /// Called when area around xyz with range needs to be updated.
     /** When implemented, this should work fast.
      *  It is connected to world in constructor. */
-    virtual void UpdateAround(ushort x, ushort y, ushort z, ushort rng) = 0;
+    virtual void UpdateAround(int x, int y, int z, ushort rng) = 0;
 
     /// This is called to restore some connections.
     /** This restores connections to VirtScreen::Update and
@@ -112,7 +112,7 @@ public slots:
     /** x, y, z are coordinates where player will make action.
      *  May be reimplemented in derivative class to get xyz other than
      *  world direction-based focus. */
-    virtual void ActionXyz(short & x, short & y, short & z) const;
+    virtual void ActionXyz(int * x, int * y, int * z) const;
 
     /// This shows a file by path.
     /** Standard (non-reimpemented) version does nothing. */

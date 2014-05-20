@@ -410,13 +410,11 @@
     void Door::DoFrequentAction() {
         if ( shifted ) {
             movable = true;
-            short x, y, z;
-            GetWorld()->Focus(X(), Y(), Z(), x, y, z, World::Anti(GetDir()));
-            if ( ENVIRONMENT == GetWorld()->GetBlock(x, y, z)->
-                    PushResult(NOWHERE) )
-            {
-                shifted = !GetWorld()->Move(X(), Y(), Z(),
-                    World::Anti(GetDir()));
+            World * const world = GetWorld();
+            int x, y, z;
+            world->Focus(X(), Y(), Z(), &x, &y, &z, World::Anti(GetDir()));
+            if (ENVIRONMENT == world->GetBlock(x, y, z)->PushResult(NOWHERE)) {
+                shifted = !world->Move(X(), Y(), Z(), World::Anti(GetDir()));
             }
             movable = false;
         }

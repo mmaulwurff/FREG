@@ -47,8 +47,8 @@ public:
     ~World();
 
 public: // Block work section
-    Block * GetBlock(ushort x, ushort y, ushort z) const;
-    Shred * GetShred(ushort i, ushort j) const;
+    Block * GetBlock(int x, int y, int z) const;
+    Shred * GetShred(int i, int j) const;
     static void DeleteBlock(Block * block);
 private:
     /// Puts block to coordinates xyz and activates it.
@@ -62,8 +62,8 @@ private:
     void RemSun();
 
 public: // Lighting section
-    uchar Enlightened(ushort x, ushort y, ushort z) const;
-    uchar Enlightened(ushort x, ushort y, ushort z, int dir) const;
+    uchar Enlightened(int x, int y, int z) const;
+    uchar Enlightened(int x, int y, int z, int dir) const;
     uchar SunLight   (ushort x, ushort y, ushort z) const;
     uchar FireLight  (ushort x, ushort y, ushort z) const;
     uchar LightMap   (ushort x, ushort y, ushort z) const;
@@ -76,13 +76,13 @@ public: // Lighting section
             uchar level=MAX_LIGHT_RADIUS);
     void SunShineHorizontal(short x, short y, short z);
     /// If init is false, light will not spread from non-invisible blocks.
-    void Shine(ushort x, ushort y, ushort z, uchar level, bool init);
+    void Shine(int x, int y, int z, uchar level, bool init);
     void RemoveSunLight(short x, short y, short z);
 
     bool GetEvernight() const;
 private:
     bool SetSunLightMap (uchar level, ushort x, ushort y, ushort z);
-    bool SetFireLightMap(uchar level, ushort x, ushort y, ushort z);
+    bool SetFireLightMap(uchar level, int x, int y, int z);
     void AddFireLight   (short x, short y, short z, uchar level);
     void RemoveFireLight(short x, short y, short z);
 
@@ -101,9 +101,9 @@ private:
 public: // Information section
     QString WorldName() const;
     /// True on error, false if focus is received to _targ successfully.
-    bool Focus(short x, short y, short z,
-            short & x_targ, short & y_targ, short & z_targ, quint8 dir) const;
-    ushort NumShreds() const;
+    bool Focus(int x, int y, int z,
+            int * x_targ, int * y_targ, int * z_targ, quint8 dir) const;
+    int NumShreds() const;
     static quint8 TurnRight(quint8 dir);
     static quint8 TurnLeft (quint8 dir);
     static quint8 Anti(quint8 dir);
@@ -135,14 +135,14 @@ private:
 
 public: // Movement section
     /// Check and move
-    bool Move(ushort x, ushort y, ushort z, quint8 dir);
+    bool Move(int x, int y, int z, quint8 dir);
     /// This CAN move blocks, but not xyz block.
-    bool CanMove(ushort x, ushort y, ushort z,
-            ushort x_to, ushort y_to, ushort z_to, quint8 dir);
+    bool CanMove(int x,    int y,    int z,
+                 int x_to, int y_to, int z_to, quint8 dir);
     void Jump(ushort x, ushort y, ushort z, quint8 dir);
 private:
-    void NoCheckMove(ushort x, ushort y, ushort z,
-            ushort x_to, ushort y_to, ushort z_to, quint8 dir);
+    void NoCheckMove(int x,    int y,    int z,
+                     int x_to, int y_to, int z_to, quint8 dir);
 
 public: // Time section
     int PartOfDay() const;
@@ -179,9 +179,9 @@ public:
             ushort src, ushort dest, ushort num);
 
 public: // Block information section
-    static bool InVertBounds(ushort z);
-    bool InBounds(ushort x, ushort y) const;
-    bool InBounds(ushort x, ushort y, ushort z) const;
+    static bool InVertBounds(int z);
+    bool InBounds(int x, int y) const;
+    bool InBounds(int x, int y, int z) const;
     int  Temperature(ushort x, ushort y, ushort z) const;
 private:
     static bool IsPile(const Block *);
@@ -213,9 +213,9 @@ public slots:
 signals:
     void Notify(QString) const;
     void GetString(QString &) const;
-    void Updated(ushort, ushort, ushort);
+    void Updated(int, int, int);
     void UpdatedAll();
-    void UpdatedAround(ushort x, ushort y, ushort z, ushort level);
+    void UpdatedAround(int x, int y, int z, ushort range);
     /// Emitted when world active zone moved to int direction.
     void Moved(int);
     void ReConnect();
@@ -232,17 +232,17 @@ private:
     ulong time;
     ushort timeStep;
     Shred ** shreds;
-    //    N
-    //    |  E
-    // W--+--> latitude ( x for shreds )
-    //    |
-    //  S v longitude ( y for shreds )
-    // center of active zone:
+    /**   N
+     *    |  E
+     * W--+--> latitude ( x for shreds )
+     *    |
+     *  S v longitude ( y for shreds )
+     * center of active zone: */
     long longitude, latitude;
     long spawnLongi, spawnLati;
     const QString worldName;
-    ushort numShreds; // size of loaded zone
-    ushort numActiveShreds; // size of active zone
+    int numShreds; ///< size of loaded zone
+    ushort numActiveShreds; ///< size of active zone
     QReadWriteLock * const rwLock;
 
     ushort sunMoonX;

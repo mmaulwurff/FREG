@@ -25,11 +25,10 @@
 #include "world.h"
 
 void VirtScreen::ConnectWorld() {
-    connect(w, SIGNAL(Updated(ushort, ushort, ushort)),
-        SLOT(Update(ushort, ushort, ushort)),
+    connect(w, SIGNAL(Updated(int, int, int)), SLOT(Update(int, int, int)),
         Qt::DirectConnection);
-    connect(w, SIGNAL(UpdatedAround(ushort, ushort, ushort, ushort)),
-        SLOT(UpdateAround(ushort, ushort, ushort, ushort)),
+    connect(w, SIGNAL(UpdatedAround(int, int, int, ushort)),
+        SLOT(UpdateAround(int, int, int, ushort)),
         Qt::DirectConnection);
 }
 
@@ -45,8 +44,8 @@ VirtScreen::VirtScreen(World * const world_, Player * const player_) :
     connect(player, SIGNAL(Notify(const QString)),
         SLOT(Notify(const QString)));
     connect(player, SIGNAL(ShowFile(QString)), SLOT(DisplayFile(QString)));
-    connect(player, SIGNAL(GetFocus(short &, short &, short &)),
-        SLOT(ActionXyz(short &, short &, short &)), Qt::DirectConnection);
+    connect(player, SIGNAL(GetFocus(int *, int *, int *)),
+        SLOT(ActionXyz(int *, int *, int *)), Qt::DirectConnection);
 
     connect(w, SIGNAL(GetString(QString &)),
         SLOT(PassString(QString &)), Qt::DirectConnection);
@@ -77,7 +76,7 @@ void VirtScreen::FlushInput() const {}
 void VirtScreen::ControlPlayer(int) {}
 void VirtScreen::DisplayFile(QString /* path */) {}
 
-void VirtScreen::ActionXyz(short & x, short & y, short & z) const {
+void VirtScreen::ActionXyz(int * x, int * y, int * z) const {
     w->Focus(player->X(), player->Y(), player->Z(), x, y, z, player->GetDir());
 }
 

@@ -97,7 +97,7 @@ void Block::Damage(const ushort dmg, const int dmg_kind) {
     case A_MEAT:
     case H_MEAT: ++(mult = (THRUST==dmg_kind)); break;
     case SOIL: switch ( dmg_kind ) {
-        case DIG: mult = 2;
+        case DIG: mult = 2; break;
         case DAMAGE_FALL: return;
     } break;
     case FIRE: mult = (FREEZE==dmg_kind || TIME==dmg_kind); break;
@@ -247,9 +247,5 @@ Block::Block(QDataStream & str, const int subst, const quint16 i,
     durability = ( data >>=1 ) & 0x7F;
     direction = (data >>= 7);
 }
-
-Block::Block(Block const & block) :
-        Block(block.sub, block.id, block.transparent)
-{}
 
 Block::~Block() { delete note; }

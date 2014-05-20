@@ -66,7 +66,7 @@ public:
     void ReloadToSouth();
     void ReloadToWest();
 
-    Block * GetBlock(ushort x, ushort y, ushort z) const;
+    Block * GetBlock(int x, int y, int z) const;
     /// Removes last block at xyz, then SetBlock, then makes block normal.
     void SetBlock(Block * block, ushort x, ushort y, ushort z);
     /// Puts block to coordinates xyz and activates it.
@@ -100,8 +100,8 @@ public:
     /// Make global coordinate from local (in loaded zone).
     long GlobalX(ushort x) const;
     long GlobalY(ushort y) const;
-    static ushort CoordInShred(const ushort x);
-    static ushort CoordOfShred(const ushort x);
+    static int CoordInShred(const int x);
+    static int CoordOfShred(const int x);
 
 private:
     void RemoveAllSunLight();

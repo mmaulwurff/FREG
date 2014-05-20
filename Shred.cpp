@@ -30,9 +30,9 @@ const quint8 CURRENT_SHRED_FORMAT_VERSION = 2;
 const ushort SHRED_WIDTH_SHIFT = 4;
 
 /// Get local coordinate.
-ushort Shred::CoordInShred(const ushort x) { return x & 0xF; }
+int Shred::CoordInShred(const int x) { return x & 0xF; }
 /// Get shred coordinate in loaded zone (from 0 to numShreds).
-ushort Shred::CoordOfShred(const ushort x) { return x >> SHRED_WIDTH_SHIFT; }
+int Shred::CoordOfShred(const int x) { return x >> SHRED_WIDTH_SHIFT; }
 
 long Shred::Longitude() const { return longitude; }
 long Shred::Latitude()  const { return latitude; }
@@ -341,7 +341,7 @@ void Shred::ReloadToWest() {
     ++shredX;
 }
 
-Block * Shred::GetBlock(const ushort x, const ushort y, const ushort z) const {
+Block * Shred::GetBlock(const int x, const int y, const int z) const {
     return blocks[x][y][z];
 }
 

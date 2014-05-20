@@ -146,14 +146,14 @@ public slots:
     void Notify(QString) const override;
     void CleanAll() override;
     void PassString(QString &) const override;
-    void Update(ushort, ushort, ushort) override;
+    void Update(int, int, int) override;
     void UpdateAll() override;
     void UpdatePlayer() override;
-    void UpdateAround(ushort, ushort, ushort, ushort) override;
+    void UpdateAround(int, int, int, ushort) override;
     void Move(int) override;
     void DeathScreen();
     void DisplayFile(QString path) override;
-    void ActionXyz(short & x, short & y, short & z) const override;
+    void ActionXyz(int * x, int * y, int * z) const override;
 
 private slots:
     void Print() override;
@@ -166,7 +166,7 @@ private:
             bool show_dir = false) const;
     void PrintNormal(WINDOW *, int dir) const;
     void PrintFront(WINDOW *) const;
-    void PrintInv(WINDOW *, const Inventory *) const;
+    void PrintInv(WINDOW *, const Inventory &) const;
     /// Can print health, breath and other bars on hudWin.
     void PrintBar(short x, short color, int ch, ushort value, short max_value,
             bool value_position_right = true);
@@ -177,7 +177,7 @@ private:
     void RePrint();
     void InventoryAction(ushort num) const;
     color_pairs Color(int kind, int sub) const;
-    char PrintBlock(const Block *, WINDOW *) const;
+    char PrintBlock(const Block &, WINDOW *) const;
     void SetActionMode(actions mode);
     void ProcessCommand(QString command);
     void PrintTitle(WINDOW *, int dir) const;

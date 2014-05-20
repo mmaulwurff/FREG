@@ -50,7 +50,7 @@ bool World::SetSunLightMap(const uchar level,
 }
 
 bool World::SetFireLightMap(const uchar level,
-        const ushort x, const ushort y, const ushort z)
+        const int x, const int y, const int z)
 {
     return GetShred(x, y)->SetFireLight(
         Shred::CoordInShred(x), Shred::CoordInShred(y), z, level);
@@ -61,7 +61,7 @@ void World::RemoveFireLight(short, short, short) {}
 
 /// Makes block emit shining.
 /** Receives only non-sun light as level, from 1 to F. */
-void World::Shine(const ushort i, const ushort j, const ushort k,
+void World::Shine(const int i, const int j, const int k,
         uchar level, const bool init)
 {
     if ( not InBounds(i, j) ) return;
@@ -192,19 +192,17 @@ void World::ReEnlightenMove(const int dir) {
     emit ReConnect();
 }
 
-uchar World::Enlightened(const ushort x, const ushort y, const ushort z)
-const {
+uchar World::Enlightened(const int x, const int y, const int z) const {
     const uchar light = LightMap(x, y, z);
     return (light & 0x0F) * sunMoonFactor +
            ((light & 0xF0) >> 4 ) * FIRE_LIGHT_FACTOR;
 }
 
 /// Provides lighting of block side, not all block.
-uchar World::Enlightened(const ushort i, const ushort j, const ushort k,
-        const int dir)
+uchar World::Enlightened(const int i, const int j, const int k, const int dir)
 const {
-    short x, y, z;
-    Focus(i, j, k, x, y, z, dir);
+    int x, y, z;
+    Focus(i, j, k, &x, &y, &z, dir);
     return qMin(Enlightened(i, j, k), Enlightened(x, y, z));
 }
 

@@ -166,7 +166,7 @@ signals:
     void GetString(QString &);
     void Destroyed();
     void ShowFile(QString path);
-    void GetFocus(short & x, short & y, short & z) const;
+    void GetFocus(int * x, int * y, int * z) const;
 
 private slots:
     /// For cleaning player-related data before exiting program.

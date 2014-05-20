@@ -64,6 +64,7 @@ public:
     virtual ~Block();
 
     Block & operator=(const Block &) = delete;
+    Block(const Block &) = delete;
 
     virtual QString FullName() const;
     virtual quint8 Kind() const;
@@ -121,8 +122,6 @@ protected:
     QString * note;
 
 private:
-    Block(Block const &);
-
     static const ushort MAX_NOTE_LENGTH = 144;
     quint8 Transparency(quint8 transp, int sub) const;
 

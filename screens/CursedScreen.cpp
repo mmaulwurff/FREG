@@ -75,9 +75,9 @@ void Screen::RePrint() {
     SetUpdated(false);
 }
 
-void Screen::Update(ushort, ushort, ushort) { SetUpdated(false); }
+void Screen::Update(int, int, int) { SetUpdated(false); }
 void Screen::UpdatePlayer() { SetUpdated(false); }
-void Screen::UpdateAround(ushort, ushort, ushort, ushort) { SetUpdated(false); }
+void Screen::UpdateAround(int, int, int, ushort) { SetUpdated(false); }
 void Screen::Move(int) { SetUpdated(false); }
 
 void Screen::UpdateAll() {
@@ -313,24 +313,23 @@ void Screen::InventoryAction(const ushort num) const {
     }
 }
 
-void Screen::ActionXyz(short & x, short & y, short & z) const {
+void Screen::ActionXyz(int * x, int * y, int * z) const {
     VirtScreen::ActionXyz(x, y, z);
     if (
             DOWN != player->GetDir() &&
             UP   != player->GetDir() &&
-            ( AIR==w->GetBlock(x, y, z)->Sub() || AIR==w->GetBlock(
+            ( AIR==w->GetBlock(*x, *y, *z)->Sub() || AIR==w->GetBlock(
                 player->X(),
                 player->Y(),
                 player->Z()+shiftFocus)->Sub() ))
     {
-        z += shiftFocus;
+        *z += shiftFocus;
     }
 }
 
-char Screen::PrintBlock(const Block * const block, WINDOW * const window)
-const {
-    const int kind = block->Kind();
-    const int sub  = block->Sub();
+char Screen::PrintBlock(const Block & block, WINDOW * const window) const {
+    const int kind = block.Kind();
+    const int sub  = block.Sub();
     wcolor_set(window, Color(kind, sub), NULL);
     return CharName(kind, sub);
 }
@@ -351,7 +350,7 @@ void Screen::Print() {
     switch ( player->UsingSelfType() ) { // left window
     case USAGE_TYPE_OPEN:
         if ( player->PlayerInventory() ) {
-            PrintInv(leftWin, player->PlayerInventory());
+            PrintInv(leftWin, *player->PlayerInventory());
             break;
         } // no break;
     default:
@@ -368,19 +367,19 @@ void Screen::Print() {
             player->SetUsingTypeNo();
         break;
         case USAGE_TYPE_READ: {
-            short x, y, z;
-            ActionXyz(x, y, z);
+            int x, y, z;
+            ActionXyz(&x, &y, &z);
             wstandend(rightWin);
             PrintFile(rightWin, QString(w->WorldName() + "/texts/"
                 + w->GetBlock(x, y, z)->GetNote()));
             player->SetUsingTypeNo();
         } break;
         case USAGE_TYPE_OPEN: {
-            short x, y, z;
-            ActionXyz(x, y, z);
+            int x, y, z;
+            ActionXyz(&x, &y, &z);
             const Inventory * const inv = w->GetBlock(x, y, z)->HasInventory();
             if ( inv ) {
-                PrintInv(rightWin, inv);
+                PrintInv(rightWin, *inv);
                 break;
             } else {
                 player->SetUsingTypeNo();
@@ -411,7 +410,7 @@ void Screen::PrintHUD() {
             mvwaddch(hudWin, 0, x, 'a'+i);
             const int number = inv->Number(i);
             if ( number ) {
-                mvwaddch(hudWin, 1, x, PrintBlock(inv->ShowBlock(i), hudWin));
+                mvwaddch(hudWin, 1, x, PrintBlock(*inv->ShowBlock(i), hudWin));
                 if ( number > 1 ) {
                     mvwaddch(hudWin, 2, x, number+'0');
                 }
@@ -420,8 +419,8 @@ void Screen::PrintHUD() {
     }
     // focused block
     wstandend(hudWin);
-    short x, y, z;
-    ActionXyz(x, y, z);
+    int x, y, z;
+    ActionXyz(&x, &y, &z);
     Block * const focused = GetWorld()->GetBlock(x, y, z);
     if ( not IsLikeAir(focused->Sub()) && z < HEIGHT-1 ) {
         PrintBar(((SCREEN_SIZE*2+2) * (IsScreenWide() ? 2 : 1)) - 15,
@@ -509,7 +508,7 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
         if ( (w->Enlightened(i, j, k) && player->Visible(i, j, k)) ||
                 player->GetCreativeMode() )
         {
-            waddch(window, PrintBlock(shred->GetBlock(i_in, j_in, k), window));
+            waddch(window, PrintBlock(*shred->GetBlock(i_in,j_in,k), window));
             waddch(window, CharNumber(k));
         } else {
             wstandend(window);
@@ -632,7 +631,7 @@ void Screen::PrintFront(WINDOW * const window) const {
                         || player->GetCreativeMode() )
             {
                 if ( *z != z_end ) {
-                    waddch(window, PrintBlock(block, window));
+                    waddch(window, PrintBlock(*block, window));
                     waddch(window, CharNumberFront(i, j));
                     continue;
                 } else {
@@ -674,11 +673,10 @@ void Screen::PrintTitle(WINDOW * const window, const int dir) const {
     mvwaddstr(window, 0, 1, qPrintable(dir_string));
 }
 
-void Screen::PrintInv(WINDOW * const window, const Inventory * const inv)
-const {
+void Screen::PrintInv(WINDOW * const window, const Inventory & inv) const {
     werase(window);
     wstandend(window);
-    switch ( inv->Kind() ) {
+    switch ( inv.Kind() ) {
     case DWARF:
         mvwaddstr(window, 2, 1, qPrintable(tr("      Head")));
         mvwaddstr(window, 3, 1, qPrintable(tr("Right hand")));
@@ -688,25 +686,25 @@ const {
     break;
     case WORKBENCH: mvwaddstr(window, 2, 4, qPrintable(tr("Product"))); break;
     }
-    const int start = inv->Start();
+    const int start = inv.Start();
     int shift = 0; // to divide inventory sections
-    for (ushort i=0; i<inv->Size(); ++i) {
+    for (ushort i=0; i<inv.Size(); ++i) {
         if ( start == i && i != 0) {
             ++shift;
             mvwhline(window, 2+i, 0, ACS_HLINE, SCREEN_SIZE*2+2);
         }
         mvwprintw(window, 2+i+shift, 12, "%c)", 'a'+i);
-        if ( not inv->Number(i) ) {
+        if ( not inv.Number(i) ) {
             continue;
         }
-        const Block * const block = inv->ShowBlock(i);
+        const Block * const block = inv.ShowBlock(i);
         wprintw(window, "[%c]%s",
-            PrintBlock(block, window),
-            qPrintable(inv->InvFullName(i)) );
-        if ( 1 < inv->Number(i) ) {
-            waddstr(window, qPrintable(inv->NumStr(i)));
+            PrintBlock(*block, window),
+            qPrintable(inv.InvFullName(i)) );
+        if ( 1 < inv.Number(i) ) {
+            waddstr(window, qPrintable(inv.NumStr(i)));
         }
-        const QString str = inv->GetInvNote(i);
+        const QString str = inv.GetInvNote(i);
         if ( not str.isEmpty() ) {
             if ( str.size() < 24 ) {
                 wprintw(window, " ~:%s", qPrintable(str));
@@ -715,16 +713,16 @@ const {
             }
         }
         wstandend(window);
-        mvwprintw(window, 2+i+shift, 53, "%5hu mz", inv->GetInvWeight(i));
+        mvwprintw(window, 2+i+shift, 53, "%5hu mz", inv.GetInvWeight(i));
     }
-    mvwprintw(window, 2+inv->Size()+shift, 40,
+    mvwprintw(window, 2+inv.Size()+shift, 40,
         qPrintable(tr("All weight: %1 mz").
-            arg(inv->Weight(), 6, 10, QChar(' '))));
-    wcolor_set(window, Color(inv->Kind(), inv->Sub()), NULL);
+            arg(inv.Weight(), 6, 10, QChar(' '))));
+    wcolor_set(window, Color(inv.Kind(), inv.Sub()), NULL);
     box(window, 0, 0);
-    mvwprintw(window, 0, 1, "[%c]%s", CharName( inv->Kind(), inv->Sub()),
-        qPrintable((player->PlayerInventory()==inv) ?
-            tr("Your inventory") : inv->FullName()) );
+    mvwprintw(window, 0, 1, "[%c]%s", CharName( inv.Kind(), inv.Sub()),
+        qPrintable((player->PlayerInventory()==&inv) ?
+            tr("Your inventory") : inv.FullName()) );
     wrefresh(window);
 } // void Screen::PrintInv(WINDOW * window, const Inventory * inv)
 

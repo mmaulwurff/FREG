@@ -41,10 +41,11 @@ int World::ShredPos(const int x, const int y) const {
     return y*NumShreds() + x;
 }
 
-Shred * World::GetShred(const ushort x, const ushort y) const {
+Shred * World::GetShred(const int x, const int y) const {
     return shreds[ShredPos(Shred::CoordOfShred(x), Shred::CoordOfShred(y))];
 }
 
+int World::NumShreds() const { return numShreds; }
 int World::TimeOfDay() const { return time % SECONDS_IN_DAY; }
 long World::GetSpawnLongi() const { return spawnLongi; }
 long World::GetSpawnLati()  const { return spawnLati; }
@@ -55,7 +56,6 @@ bool World::GetEvernight() const { return evernight; }
 ulong World::Time() const { return time; }
 ushort World::TimeStepsInSec() { return TIME_STEPS_IN_SEC; }
 ushort World::MiniTime() const { return timeStep; }
-ushort World::NumShreds() const { return numShreds; }
 QString World::WorldName() const { return worldName; }
 
 char World::TypeOfShred(const long longi, const long lati) {
@@ -136,12 +136,14 @@ void World::Get(Block * const block_to,
     }
 }
 
-bool World::InBounds(const ushort x, const ushort y) const {
-    static const ushort max_xy = SHRED_WIDTH*NumShreds();
-    return ( x<max_xy && y<max_xy );
+bool World::InBounds(const int x, const int y) const {
+    static const int max_xy = SHRED_WIDTH*NumShreds();
+    return ( (0 <= x && x < max_xy) && (0 <= y && y < max_xy) );
 }
-bool World::InVertBounds(const ushort z) { return ( z < HEIGHT ); }
-bool World::InBounds(const ushort x, const ushort y, const ushort z) const {
+
+bool World::InVertBounds(const int z) { return ( 0 <= z && z < HEIGHT ); }
+
+bool World::InBounds(const int x, const int y, const int z) const {
     return ( InBounds(x, y) && InVertBounds(z) );
 }
 
@@ -203,7 +205,7 @@ void World::MakeSun() {
     PutBlock(Normal(SUN_MOON), sunMoonX, SHRED_WIDTH*NumShreds()/2, HEIGHT-1);
 }
 
-Block * World::GetBlock(const ushort x, const ushort y, const ushort z) const {
+Block * World::GetBlock(const int x, const int y, const int z) const {
     return GetShred(x, y)->
         GetBlock(Shred::CoordInShred(x), Shred::CoordInShred(y), z);
 }
@@ -486,11 +488,9 @@ const {
                 x_to,   y_to,   z_to+temp)) );
 }
 
-bool World::Move(const ushort x, const ushort y, const ushort z,
-        const quint8 dir)
-{
-    short newx, newy, newz;
-    if ( not Focus(x, y, z, newx, newy, newz, dir) &&
+bool World::Move(const int x, const int y, const int z, const quint8 dir) {
+    int newx, newy, newz;
+    if ( not Focus(x, y, z, &newx, &newy, &newz, dir) &&
             CanMove(x, y, z, newx, newy, newz, dir) )
     {
         NoCheckMove(x, y, z, newx, newy, newz, dir);
@@ -500,9 +500,8 @@ bool World::Move(const ushort x, const ushort y, const ushort z,
     }
 }
 
-bool World::CanMove(const ushort x, const ushort y, const ushort z,
-        const ushort newx, const ushort newy, const ushort newz,
-        const quint8 dir)
+bool World::CanMove(const int x, const int y, const int z,
+        const int newx, const int newy, const int newz, const quint8 dir)
 {
     bool move_flag;
     Block * const block = GetBlock(x, y, z);
@@ -543,11 +542,10 @@ bool World::CanMove(const ushort x, const ushort y, const ushort z,
             active->IsFalling() &&
             AIR==GetBlock(x, y, z-1)->Sub() &&
             AIR==GetBlock(newx, newy, newz-1)->Sub() )) );
-} // bool World::CanMove(ushort x, y, z, newx, newy, newz, quint8 dir)
+} // bool World::CanMove(const int x, y, z, newx, newy, newz, quint8 dir)
 
-void World::NoCheckMove(const ushort x, const ushort y, const ushort z,
-        const ushort newx, const ushort newy, const ushort newz,
-        const quint8 dir)
+void World::NoCheckMove(const int x, const int y, const int z,
+        const int newx, const int newy, const int newz, const quint8 dir)
 {
     Block * const block = GetBlock(x, y, z);
     Block * const block_to = GetBlock(newx, newy, newz);
@@ -584,24 +582,24 @@ void World::Jump(const ushort x, const ushort y, const ushort z,
     }
 }
 
-bool World::Focus(const short x, const short y, const short z,
-        short & x_to, short & y_to, short & z_to, const quint8 dir)
+bool World::Focus(const int x, const int y, const int z,
+        int * x_to, int * y_to, int * z_to, const quint8 dir)
 const {
-    x_to = x;
-    y_to = y;
-    z_to = z;
+    *x_to = x;
+    *y_to = y;
+    *z_to = z;
     switch ( dir ) {
-    case NORTH: --y_to; break;
-    case SOUTH: ++y_to; break;
-    case EAST:  ++x_to; break;
-    case WEST:  --x_to; break;
-    case DOWN:  --z_to; break;
-    case UP:    ++z_to; break;
+    case NORTH: --*y_to; break;
+    case SOUTH: ++*y_to; break;
+    case EAST:  ++*x_to; break;
+    case WEST:  --*x_to; break;
+    case DOWN:  --*z_to; break;
+    case UP:    ++*z_to; break;
     default:
         fprintf(stderr, "World::Focus: unlisted dir: %d\n", dir);
         return true;
     }
-    return not InBounds(x_to, y_to, z_to);
+    return not InBounds(*x_to, *y_to, *z_to);
 }
 
 short World::Damage(const ushort x, const ushort y, const ushort z,
