@@ -107,7 +107,7 @@ public:
 
     int GetDir() const;
     int Sub() const;
-    short GetDurability() const;
+    int GetDurability() const;
     QString GetNote() const;
     int Transparent() const;
 

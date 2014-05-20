@@ -26,12 +26,12 @@ QString Block::FullName() const {
     case SUN_MOON:
     case SKY:
     case AIR:        return QObject::tr("Air");
-    case WATER:      return QObject::tr("Ice");
     case STONE:      return QObject::tr("Stone");
+    case SOIL:       return QObject::tr("Soil");
+    case WATER:      return QObject::tr("Ice");
     case MOSS_STONE: return QObject::tr("Moss stone");
     case NULLSTONE:  return QObject::tr("Nullstone");
     case GLASS:      return QObject::tr("Glass");
-    case SOIL:       return QObject::tr("Soil");
     case HAZELNUT:   return QObject::tr("Hazelnut");
     case WOOD:       return QObject::tr("Wood");
     case GREENERY:   return QObject::tr("Leaves");
@@ -51,11 +51,11 @@ QString Block::FullName() const {
 quint8 Block::Transparency(const quint8 transp, const int sub) const {
     if ( UNDEF == transp ) {
         switch ( sub ) {
+        default:    return BLOCK_OPAQUE;
         case AIR:   return INVISIBLE;
         case WATER:
         case GREENERY:
         case GLASS: return BLOCK_TRANSPARENT;
-        default:    return BLOCK_OPAQUE;
         }
     } else {
         return transp;
@@ -145,7 +145,7 @@ void Block::Break() { durability = 0; }
 int  Block::GetDir() const { return direction; }
 int  Block::Sub() const { return sub; }
 int  Block::Transparent() const { return transparent; }
-short Block::GetDurability() const { return durability; }
+int  Block::GetDurability() const { return durability; }
 QString Block::GetNote() const { return note ? *note : ""; }
 
 void Block::Mend() {
@@ -164,27 +164,27 @@ int Block::Temperature() const {
 
 ushort Block::Weight() const {
     switch ( Sub() ) {
+    default:        return WEIGHT_WATER;
+    case AIR:       return WEIGHT_AIR;
+    case STONE:     return WEIGHT_STONE;
+    case SOIL:      return WEIGHT_SAND+WEIGHT_WATER;
+    case GREENERY:  return WEIGHT_GREENERY;
     case NULLSTONE: return WEIGHT_NULLSTONE;
     case SAND:      return WEIGHT_SAND;
-    case SOIL:      return WEIGHT_SAND+WEIGHT_WATER;
     case GLASS:     return WEIGHT_GLASS;
     case WOOD:      return WEIGHT_WATER-1;
     case IRON:      return WEIGHT_IRON;
-    case GREENERY:  return WEIGHT_GREENERY;
     case PAPER:
     case ROSE:
     case HAZELNUT:  return WEIGHT_MINIMAL;
     case MOSS_STONE:
-    case STONE:     return WEIGHT_STONE;
     case A_MEAT:
     case H_MEAT:    return WEIGHT_WATER-10;
     case SKY:
     case STAR:
     case SUN_MOON:
     case FIRE:
-    case DIFFERENT:
-    case AIR:       return WEIGHT_AIR;
-    default:        return WEIGHT_WATER;
+    case DIFFERENT: return WEIGHT_WATER;
     }
 }
 

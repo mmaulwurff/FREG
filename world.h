@@ -52,9 +52,9 @@ public: // Block work section
     static void DeleteBlock(Block * block);
 private:
     /// Puts block to coordinates xyz and activates it.
-    void SetBlock(Block * block, ushort x, ushort y, ushort z);
+    void SetBlock(Block * block, int x, int y, int z);
     /// Puts block to coordinates and not activates it.
-    void PutBlock(Block * block, ushort x, ushort y, ushort z);
+    void PutBlock(Block * block, int x, int y, int z);
     static Block * Normal(quint8 sub);
     static Block * NewBlock(int kind, int sub);
 
@@ -87,11 +87,11 @@ private:
     void RemoveFireLight(short x, short y, short z);
 
     /// Called when block is moved.
-    void ReEnlighten(ushort x, ushort y, ushort z);
+    void ReEnlighten(int x, int y, int z);
     /// Called when block is built.
-    void ReEnlightenBlockAdd(ushort x, ushort y, ushort k);
+    void ReEnlightenBlockAdd(int x, int y, int k);
     /// Called when block is destroyed.
-    void ReEnlightenBlockRemove(ushort x, ushort y, ushort k);
+    void ReEnlightenBlockRemove(int x, int y, int k);
     void ReEnlightenAll();
     void ReEnlightenTime();
     /// Called from ReloadShreds(int), enlightens only needed shreds.
@@ -156,15 +156,15 @@ public: // Time section
 
 public: // Interactions section
     /// Returns damaged block result durability.
-    short Damage(ushort x, ushort y, ushort z, ushort level, int dmg_kind);
+    short Damage(int x, int y, int z, ushort level, int dmg_kind);
     /// Does not check target block durability.
-    void DestroyAndReplace(ushort x, ushort y, ushort z);
-    bool Build(Block * thing, ushort x, ushort y, ushort z,
+    void DestroyAndReplace(int x, int y, int z);
+    bool Build(Block * thing, int x, int y, int z,
             quint8 dir = UP,
-            Block * who = 0,
+            Block * who = nullptr,
             bool anyway = false);
     /// Returns true on success. Gets a string and inscribes block.
-    bool Inscribe(ushort x, ushort y, ushort z);
+    bool Inscribe(int x, int y, int z);
     CraftManager * GetCraftManager() const;
 
 private: // Inventory functions section
@@ -227,7 +227,7 @@ signals:
     void ExitReceived();
 
 private:
-    static const ushort TIME_STEPS_IN_SEC = 10U;
+    static const int TIME_STEPS_IN_SEC = 10;
 
     ulong time;
     ushort timeStep;

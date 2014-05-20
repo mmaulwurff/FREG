@@ -6,6 +6,8 @@ CONFIG += thread warn_on console
 CONFIG += debug
 # screen can be: cursed_screen, text_screen
 CONFIG += cursed_screen
+#CONFIG += text_screen
+
 # compile with clang:
 # CONFIG += clang
 

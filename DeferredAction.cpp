@@ -169,6 +169,7 @@ void DeferredAction::SetSetFire(const short x, short y, short z) {
 
 void DeferredAction::MakeAction() {
     switch ( type ) {
+    case DEFERRED_NOTHING: break;
     case DEFERRED_MOVE:   Move();   break;
     case DEFERRED_JUMP:   Jump();   break;
     case DEFERRED_BUILD:  Build();  break;
@@ -177,7 +178,6 @@ void DeferredAction::MakeAction() {
     case DEFERRED_DAMAGE: Damage(); break;
     case DEFERRED_SET_FIRE: SetFire(); break;
     case DEFERRED_GHOST_MOVE: GhostMove(); break;
-    case DEFERRED_NOTHING: break;
     }
     type = DEFERRED_NOTHING;
 }

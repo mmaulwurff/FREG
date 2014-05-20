@@ -81,7 +81,7 @@ ushort World::SunMoonX() const {
 }
 
 int World::PartOfDay() const {
-    const ushort time_day = TimeOfDay();
+    const int time_day = TimeOfDay();
     if ( time_day < END_OF_NIGHT )   return NIGHT;
     if ( time_day < END_OF_MORNING ) return MORNING;
     if ( time_day < END_OF_NOON )    return NOON;
@@ -174,28 +174,28 @@ void World::run() {
 
 quint8 World::TurnRight(const quint8 dir) {
     switch ( dir ) {
-    default:
-        fprintf(stderr, "World::TurnRight:Unlisted dir: %d\n", (int)dir);
-    // no break;
     case WEST:  return NORTH;
     case NORTH: return EAST;
     case EAST:  return SOUTH;
     case SOUTH: return WEST;
     case UP:
     case DOWN:  return dir;
+    default:
+        fprintf(stderr, "World::TurnRight:Unlisted dir: %d\n", (int)dir);
+        return NORTH;
     }
 }
 quint8 World::TurnLeft(const quint8 dir) {
     switch ( dir ) {
-    default:
-        fprintf(stderr, "TurnLeft:Unlisted dir: %d\n", (int)dir);
-    // no break;
     case EAST:  return NORTH;
     case NORTH: return WEST;
     case WEST:  return SOUTH;
     case SOUTH: return EAST;
     case UP:
     case DOWN:  return dir;
+    default:
+        fprintf(stderr, "TurnLeft:Unlisted dir: %d\n", (int)dir);
+        return NORTH;
     }
 }
 
@@ -211,14 +211,14 @@ Block * World::GetBlock(const int x, const int y, const int z) const {
 }
 
 void World::SetBlock(Block * const block,
-        const ushort x, const ushort y, const ushort z)
+        const int x, const int y, const int z)
 {
     GetShred(x, y)->SetBlock(block,
         Shred::CoordInShred(x), Shred::CoordInShred(y), z);
 }
 
 void World::PutBlock(Block * const block,
-        const ushort x, const ushort y, const ushort z)
+        const int x, const int y, const int z)
 {
     GetShred(x, y)->PutBlock(block,
         Shred::CoordInShred(x), Shred::CoordInShred(y), z);
@@ -260,7 +260,7 @@ Shred ** World::FindShred(const ushort x, const ushort y) const {
 }
 
 void World::ReloadShreds(const int direction) {
-    short x, y; // do not make unsigned, values <0 are needed for checks
+    int x, y; // do not make unsigned, values <0 are needed for checks
     RemSun();
     switch ( direction ) {
     case NORTH:
@@ -339,6 +339,10 @@ void World::PhysEvents() {
     const QWriteLocker writeLock(rwLock);
     switch ( toResetDir ) {
     case UP: break; // no reset
+    default:
+        ReloadShreds(toResetDir);
+        toResetDir = UP; // set no reset
+    break;
     case DOWN: // full reset
         emit StartReloadAll();
         DeleteAllShreds();
@@ -350,40 +354,37 @@ void World::PhysEvents() {
         emit FinishReloadAll();
         toResetDir = UP; // set no reset
     break;
-    default:
-        ReloadShreds(toResetDir);
-        toResetDir = UP; // set no reset
     }
 
-    static const ushort start = NumShreds()/2 - numActiveShreds/2;
-    static const ushort end   = start + numActiveShreds;
-    for (ushort i=start; i<end; ++i)
-    for (ushort j=start; j<end; ++j) {
+    static const int start = NumShreds()/2 - numActiveShreds/2;
+    static const int end   = start + numActiveShreds;
+    for (int i=start; i<end; ++i)
+    for (int j=start; j<end; ++j) {
         shreds[ShredPos(i, j)]->PhysEventsFrequent();
     }
 
     if ( TimeStepsInSec() > timeStep ) {
         ++timeStep;
-        for (ushort i=start; i<end; ++i)
-        for (ushort j=start; j<end; ++j) {
+        for (int i=start; i<end; ++i)
+        for (int j=start; j<end; ++j) {
             shreds[ShredPos(i, j)]->DeleteDestroyedActives();
         }
         return;
     } // else:
 
-    for (ushort i=start; i<end; ++i)
-    for (ushort j=start; j<end; ++j) {
+    for (int i=start; i<end; ++i)
+    for (int j=start; j<end; ++j) {
         shreds[ShredPos(i, j)]->PhysEventsRare();
     }
-    for (ushort i=start; i<end; ++i)
-    for (ushort j=start; j<end; ++j) {
+    for (int i=start; i<end; ++i)
+    for (int j=start; j<end; ++j) {
         shreds[ShredPos(i, j)]->DeleteDestroyedActives();
     }
     timeStep = 0;
     ++time;
     // sun/moon moving
     if ( not GetEvernight() && sunMoonX != SunMoonX() ) {
-        static const ushort y = SHRED_WIDTH*NumShreds()/2;
+        static const int y = SHRED_WIDTH*NumShreds()/2;
         PutBlock(behindSun, sunMoonX, y, HEIGHT-1);
         emit Updated(sunMoonX, y, HEIGHT-1);
         behindSun = GetBlock(( sunMoonX=SunMoonX() ), y, HEIGHT-1);
@@ -517,6 +518,10 @@ bool World::CanMove(const int x, const int y, const int z,
         default:
         case NOT_MOVABLE: move_flag = false; break;
         case ENVIRONMENT: move_flag = true; break;
+        case MOVABLE:
+            move_flag = ( (block->Weight() > block_to->Weight()) &&
+                Move(newx, newy, newz, dir) );
+        break;
         case JUMP:
             if ( dir > DOWN ) { // not UP and not DOWN
                 Jump(x, y, z, dir);
@@ -528,10 +533,6 @@ bool World::CanMove(const int x, const int y, const int z,
                 Move(x, y, z, UP);
             }
             move_flag = false;
-        break;
-        case MOVABLE:
-            move_flag = ( (block->Weight() > block_to->Weight()) &&
-                Move(newx, newy, newz, dir) );
         break;
         }
     }
@@ -602,7 +603,7 @@ const {
     return not InBounds(*x_to, *y_to, *z_to);
 }
 
-short World::Damage(const ushort x, const ushort y, const ushort z,
+short World::Damage(const int x, const int y, const int z,
         const ushort dmg, const int dmg_kind)
 {
     Block * temp = GetBlock(x, y, z);
@@ -612,7 +613,7 @@ short World::Damage(const ushort x, const ushort y, const ushort z,
         temp = NewBlock(kind, sub);
     }
     temp->Damage(dmg, dmg_kind);
-    short durability = temp->GetDurability();
+    int durability = temp->GetDurability();
     if ( 0 < durability && durability < MAX_DURABILITY
             && kind==BLOCK && (sub==STONE || sub==MOSS_STONE) )
     { // convert stone into ladder
@@ -629,10 +630,10 @@ bool World::IsPile(const Block * const test) {
     return ( test->Kind()== CONTAINER && test->Sub() == DIFFERENT );
 }
 
-void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
+void World::DestroyAndReplace(const int x, const int y, const int z) {
     Shred * const shred = GetShred(x, y);
-    const ushort x_in_shred = Shred::CoordInShred(x);
-    const ushort y_in_shred = Shred::CoordInShred(y);
+    const int x_in_shred = Shred::CoordInShred(x);
+    const int y_in_shred = Shred::CoordInShred(y);
     Block * const temp = shred->GetBlock(x_in_shred, y_in_shred, z);
     Block * const dropped = temp->DropAfterDamage();
     Block * new_block;
@@ -692,8 +693,7 @@ void World::DestroyAndReplace(const ushort x, const ushort y, const ushort z) {
     emit Updated(x, y, z);
 } // void World::DestroyAndReplace(ushort x, y, z)
 
-bool World::Build(Block * block,
-        const ushort x, const ushort y, const ushort z,
+bool World::Build(Block * block, const int x, const int y, const int z,
         const quint8 dir, Block * const who, const bool anyway)
 {
     Block * const target_block = GetBlock(x, y, z);
@@ -718,7 +718,7 @@ bool World::Build(Block * block,
     return true;
 }
 
-bool World::Inscribe(const ushort x, const ushort y, const ushort z) {
+bool World::Inscribe(const int x, const int y, const int z) {
     Block * block = GetBlock(x, y, z);
     if ( LIQUID==block->Kind() || AIR==block->Sub() ) {
         return false;
@@ -802,7 +802,7 @@ void World::LoadAllShreds() {
 
 void World::DeleteAllShreds() {
     RemSun();
-    for (ushort i=0; i<NumShreds()*NumShreds(); ++i) {
+    for (int i=0; i<NumShreds()*NumShreds(); ++i) {
         shreds[i]->~Shred();
     }
     operator delete(shredMemoryPool);

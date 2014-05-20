@@ -31,20 +31,20 @@
 #include <windows.h>
 #endif
 
-const ushort SHRED_WIDTH = 16;
-const ushort HEIGHT = 128;
+const int SHRED_WIDTH = 16;
+const int HEIGHT = 128;
 
-const ushort SECONDS_IN_HOUR = 60;
-const ushort SECONDS_IN_DAY = 24*SECONDS_IN_HOUR;
-const ushort END_OF_NIGHT   =  6*SECONDS_IN_HOUR;
-const ushort END_OF_MORNING = 12*SECONDS_IN_HOUR;
-const ushort END_OF_NOON    = 18*SECONDS_IN_HOUR;
-const ushort END_OF_EVENING =  0*SECONDS_IN_HOUR;
-const ushort SECONDS_IN_NIGHT = END_OF_NIGHT;
-const ushort SECONDS_IN_DAYLIGHT = SECONDS_IN_DAY-END_OF_NIGHT;
+const int SECONDS_IN_HOUR = 60;
+const int SECONDS_IN_DAY = 24*SECONDS_IN_HOUR;
+const int END_OF_NIGHT   =  6*SECONDS_IN_HOUR;
+const int END_OF_MORNING = 12*SECONDS_IN_HOUR;
+const int END_OF_NOON    = 18*SECONDS_IN_HOUR;
+const int END_OF_EVENING =  0*SECONDS_IN_HOUR;
+const int SECONDS_IN_NIGHT = END_OF_NIGHT;
+const int SECONDS_IN_DAYLIGHT = SECONDS_IN_DAY-END_OF_NIGHT;
 
-const ushort MAX_DURABILITY = 100;
-const ushort MAX_BREATH = 60;
+const int MAX_DURABILITY = 100;
+const int MAX_BREATH = 60;
 
 const uchar MAX_LIGHT_RADIUS = 15;
 
@@ -66,7 +66,7 @@ enum shred_type {
     SHRED_NORMAL_UNDERGROUND = '-',
 };
 
-const ushort DEFAULT_MAP_SIZE = 75U;
+const int DEFAULT_MAP_SIZE = 75U;
 const char DEFAULT_SHRED = SHRED_PLAIN;
 const char OUT_BORDER_SHRED = SHRED_WATER;
 

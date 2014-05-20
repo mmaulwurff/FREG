@@ -108,16 +108,16 @@ void World::SunShineVertical(const int x, const int y, int z, uchar light_lev){
     UpShine(x,   y+1, z);
 }
 
-void World::UpShine(const int x, const int y, const int z_bottom) {
+void World::UpShine(const int x, const int y, int z_bottom) {
     if ( InBounds(x, y) ) {
-        for (int z=z_bottom; SetSunLightMap(1, x, y, z); ++z) {
-            emit Updated(x, y, z);
+        for ( ; SetSunLightMap(1, x, y, z_bottom); ++z_bottom) {
+            emit Updated(x, y, z_bottom);
         }
     }
 }
 
 /// Called when one block is moved, built or destroyed.
-void World::ReEnlighten(const ushort x, const ushort y, const ushort z) {
+void World::ReEnlighten(const int x, const int y, const int z) {
     SunShineVertical(x, y);
     const uchar radius = GetBlock(x, y, z)->LightRadius();
     if ( radius != 0 ) {
@@ -125,19 +125,16 @@ void World::ReEnlighten(const ushort x, const ushort y, const ushort z) {
     }
 }
 
-void World::ReEnlightenBlockAdd(const ushort x, const ushort y, const ushort z)
-{
+void World::ReEnlightenBlockAdd(const int x, const int y, const int z) {
     ReEnlighten(x, y, z);
 }
 
-void World::ReEnlightenBlockRemove(
-        const ushort x, const ushort y, const ushort z)
-{
+void World::ReEnlightenBlockRemove(const int x, const int y, const int z) {
     ReEnlighten(x, y, z);
 }
 
 void World::ReEnlightenTime() {
-    for (ushort i=0; i<NumShreds()*NumShreds(); ++i) {
+    for (int i=0; i<NumShreds()*NumShreds(); ++i) {
         shreds[i]->SetAllLightMapNull();
     }
     sunMoonFactor = ( NIGHT==PartOfDay() ) ?
@@ -148,7 +145,7 @@ void World::ReEnlightenTime() {
 void World::ReEnlightenAll() {
     disconnect(this, SIGNAL(Updated(ushort, ushort, ushort)), 0, 0);
     disconnect(this, SIGNAL(UpdatedAround(ushort,ushort,ushort, ushort)), 0,0);
-    for (ushort i=0; i<NumShreds()*NumShreds(); ++i) {
+    for (int i=0; i<NumShreds()*NumShreds(); ++i) {
         shreds[i]->ShineAll();
     }
     emit ReConnect();

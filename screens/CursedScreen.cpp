@@ -122,10 +122,6 @@ char Screen::CharNumberFront(const ushort i, const ushort j) const {
 
 color_pairs Screen::Color(const int kind, const int sub) const {
     switch ( kind ) { // foreground_background
-    case DWARF:     return WHITE_BLUE;
-    case RABBIT:    return RED_WHITE;
-    case PREDATOR:  return RED_BLACK;
-    case TELEGRAPH: return CYAN_BLACK;
     case LIQUID: switch ( sub ) {
         case WATER: return CYAN_BLUE;
         default:    return RED_YELLOW;
@@ -135,19 +131,20 @@ color_pairs Screen::Color(const int kind, const int sub) const {
         case SAND:  return YELLOW_WHITE;
     } // no break;
     default: switch ( sub ) {
-        case WOOD:
-        case HAZELNUT:
+        default: return WHITE_BLACK;
+        case STONE:      return BLACK_WHITE;
         case SOIL:       return BLACK_YELLOW;
         case GREENERY:   return BLACK_GREEN;
-        case STONE:      return BLACK_WHITE;
+        case WOOD:
+        case HAZELNUT:
         case SAND:       return YELLOW_WHITE;
+        case IRON:       return WHITE_BLACK;
         case A_MEAT:     return WHITE_RED;
         case H_MEAT:     return BLACK_RED;
         case WATER:      return WHITE_CYAN;
         case GLASS:      return BLUE_WHITE;
         case NULLSTONE:  return MAGENTA_BLACK;
         case MOSS_STONE: return GREEN_WHITE;
-        case IRON:       return WHITE_BLACK;
         case ROSE:       return RED_GREEN;
         case CLAY:       return WHITE_RED;
         case PAPER:      return MAGENTA_WHITE;
@@ -166,8 +163,11 @@ color_pairs Screen::Color(const int kind, const int sub) const {
             case NOON:    return CYAN_CYAN;
             case EVENING: return WHITE_CYAN;
             }
-        default: return WHITE_BLACK;
         }
+    case DWARF:     return WHITE_BLUE;
+    case RABBIT:    return RED_WHITE;
+    case PREDATOR:  return RED_BLACK;
+    case TELEGRAPH: return CYAN_BLACK;
     }
 } // color_pairs Screen::Color(int kind, int sub)
 
@@ -202,6 +202,7 @@ void Screen::ControlPlayer(const int ch) {
         return;
     } // else:
     switch ( ch ) { // interactions with world
+    default: Notify(tr("Unknown key. Press 'H' for help.")); break;
     case KEY_UP:    case '8': MovePlayer(NORTH);  break;
     case KEY_DOWN:  case '2': MovePlayer(SOUTH);  break;
     case KEY_RIGHT: case '6': MovePlayer(EAST);   break;
@@ -266,8 +267,6 @@ void Screen::ControlPlayer(const int ch) {
     case ':':
     case '/': PassString(command); // no break
     case '.': ProcessCommand(command); break;
-
-    default: Notify(tr("Unknown key. Press 'H' for help."));
     }
     SetUpdated(false);
 } // void Screen::ControlPlayer(int ch)
@@ -348,17 +347,25 @@ void Screen::Print() {
     PrintHUD();
     const int dir = player->GetDir();
     switch ( player->UsingSelfType() ) { // left window
+    default:
+        PrintNormal(leftWin, (UP==dir || DOWN==dir) ?
+            NORTH : dir);
+        break;
     case USAGE_TYPE_OPEN:
         if ( player->PlayerInventory() ) {
             PrintInv(leftWin, *player->PlayerInventory());
             break;
         } // no break;
-    default:
-        PrintNormal(leftWin, (UP==dir || DOWN==dir) ?
-            NORTH : dir);
     }
     if ( not fileToShow ) { // right window
         switch ( player->UsingType() ) {
+        default:
+            if ( UP==dir || DOWN==dir ) {
+                PrintNormal(rightWin, dir);
+            } else {
+                PrintFront(rightWin);
+            }
+        break;
         case USAGE_TYPE_READ_IN_INVENTORY:
             wstandend(rightWin);
             PrintFile(rightWin, QString(w->WorldName() + "/texts/"
@@ -384,13 +391,7 @@ void Screen::Print() {
             } else {
                 player->SetUsingTypeNo();
             }
-        } // no break;
-        default:
-            if ( UP==dir || DOWN==dir ) {
-                PrintNormal(rightWin, dir);
-            } else {
-                PrintFront(rightWin);
-            }
+        } break;
         }
     }
     w->Unlock();
@@ -559,9 +560,6 @@ void Screen::PrintFront(WINDOW * const window) const {
     ushort x_start, z_start, k_start;
     ushort arrow_Y, arrow_X;
     switch ( dir ) {
-    default: fprintf(stderr, "Screen::PrintFront(): unlisted dir: %d\n",
-        (int)dir);
-    // no break;
     case NORTH:
         x = &i;
         x_step = 1;
@@ -606,6 +604,9 @@ void Screen::PrintFront(WINDOW * const window) const {
         z_end = pX+SHRED_WIDTH*2-1;
         arrow_X = (pY-begin_y)*2+1;
     break;
+    default:
+        fprintf(stderr, "Screen::PrintFront(): unlisted dir: %d\n", (int)dir);
+        return;
     }
     if ( pZ+SCREEN_SIZE/2 >= HEIGHT-1 ) { // near top of the world
         k_start = HEIGHT-2;
