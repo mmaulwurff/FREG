@@ -133,10 +133,10 @@ color_pairs Screen::Color(const int kind, const int sub) const {
     default: switch ( sub ) {
         default: return WHITE_BLACK;
         case STONE:      return BLACK_WHITE;
-        case SOIL:       return BLACK_YELLOW;
         case GREENERY:   return BLACK_GREEN;
         case WOOD:
         case HAZELNUT:
+        case SOIL:       return BLACK_YELLOW;
         case SAND:       return YELLOW_WHITE;
         case IRON:       return WHITE_BLACK;
         case A_MEAT:     return WHITE_RED;

@@ -205,26 +205,23 @@ bool Active::Gravitate(const int range, const int down, const int up,
         const int calmness)
 {
     World * const world = GetWorld();
+    static int bound = SHRED_WIDTH * world->NumShreds();
     // analyse world around
     int for_north = 0, for_west = 0;
-    const int y_start = Y()-range;
-    const int z_start = Z()-down;
-    const int x_end = X()+range;
-    const int y_end = Y()+range;
-    const int z_end = Z()+up;
-    for (int x=X()-range; x<=x_end; ++x)
+    const int y_start = qMax(Y()-range, 0);
+    const int z_start = qMax(Z()-down,  0);
+    const int x_end = qMin(X()+range, bound);
+    const int y_end = qMin(Y()+range, bound);
+    const int z_end = qMin(Z()+up, HEIGHT-1);
+    for (int x=qMax(X()-range, 0); x<=x_end; ++x)
     for (int y=y_start;   y<=y_end; ++y) {
-        if ( not world->InBounds(x, y) ) {
-            continue;
-        }
         Shred * const shred = world->GetShred(x, y);
         const int x_in = Shred::CoordInShred(x);
         const int y_in = Shred::CoordInShred(y);
         for (int z=z_start; z<=z_end; ++z) {
-            short attractive;
-            if ( World::InVertBounds(z)
-                    && ( attractive = Attractive(shred->
-                        GetBlock(x_in, y_in, z)->Sub()) )
+            const int attractive =
+                Attractive(shred->GetBlock(x_in, y_in, z)->Sub());
+            if ( attractive != 0
                     && world->DirectlyVisible(X(), Y(), Z(), x, y, z) )
             {
                 if ( y!=Y() ) for_north += attractive/(Y()-y);

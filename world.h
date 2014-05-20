@@ -180,6 +180,7 @@ public:
 
 public: // Block information section
     static bool InVertBounds(int z);
+    bool InBounds(int x) const;
     bool InBounds(int x, int y) const;
     bool InBounds(int x, int y, int z) const;
     int  Temperature(ushort x, ushort y, ushort z) const;
