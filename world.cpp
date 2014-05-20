@@ -407,7 +407,7 @@ void World::PhysEvents() {
 } // void World::PhysEvents()
 
 bool World::DirectlyVisible(float x_from, float y_from, float z_from,
-        const ushort x_to, const ushort y_to, const ushort z_to)
+        const int x_to, const int y_to, const int z_to)
 const {
     return ( x_from==x_to && y_from==y_to && z_from==z_to ) || (
         ( x_to<x_from && y_to<y_from ) ||
@@ -420,19 +420,19 @@ const {
 }
 
 bool World::NegativeVisible(float x_from, float y_from, float z_from,
-        short x_to, short y_to, const short z_to)
+        int x_to, int y_to, int z_to)
 const {
     // this function is like World::PositiveVisible
     x_from = -x_from;
     y_from = -y_from;
-    x_to = -x_to;
-    y_to = -y_to;
-    const ushort max = qMax(qAbs(x_to-(short)x_from),
-        qMax(qAbs(z_to-(short)z_from), qAbs(y_to-(short)y_from)));
+    x_to   = -x_to;
+    y_to   = -y_to;
+    const int max = qMax(qAbs(x_to-(int)x_from),
+        qMax(qAbs(z_to-(int)z_from), qAbs(y_to-(int)y_from)));
     const float x_step = (x_to-x_from)/max;
     const float y_step = (y_to-y_from)/max;
     const float z_step = (z_to-z_from)/max;
-    for (ushort i=1; i<max; ++i) {
+    for (int i=1; i<max; ++i) {
         if ( BLOCK_OPAQUE == GetBlock(
                 -qRound(x_from+=x_step),
                 -qRound(y_from+=y_step),
@@ -445,14 +445,14 @@ const {
 }
 
 bool World::PositiveVisible(float x_from, float y_from, float z_from,
-        const ushort x_to, const ushort y_to, const ushort z_to)
+        const int x_to, const int y_to, const int z_to)
 const {
-    const ushort max = qMax(qAbs(x_to-(short)x_from),
-        qMax(qAbs(z_to-(short)z_from), qAbs(y_to-(short)y_from)));
+    const int max = qMax(qAbs(x_to-(int)x_from),
+        qMax(qAbs(z_to-(int)z_from), qAbs(y_to-(int)y_from)));
     const float x_step = (x_to-x_from)/max;
     const float y_step = (y_to-y_from)/max;
     const float z_step = (z_to-z_from)/max;
-    for (ushort i=1; i<max; ++i) {
+    for (int i=1; i<max; ++i) {
         if ( BLOCK_OPAQUE == GetBlock(
                 qRound(x_from+=x_step),
                 qRound(y_from+=y_step),
@@ -465,10 +465,10 @@ const {
 }
 
 bool World::Visible(
-        const ushort x_from, const ushort y_from, const ushort z_from,
-        const ushort x_to,   const ushort y_to,   const ushort z_to)
+        const int x_from, const int y_from, const int z_from,
+        const int x_to,   const int y_to,   const int z_to)
 const {
-    short temp;
+    int temp;
     return (
         (DirectlyVisible(x_from, y_from, z_from, x_to, y_to, z_to)) ||
         (GetBlock(x_to+(temp=(x_to>x_from) ? (-1) : 1), y_to, z_to)->

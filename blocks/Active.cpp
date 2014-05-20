@@ -201,26 +201,26 @@ Active::Active(QDataStream & str, const int sub, const quint16 id,
 }
 Active::~Active() { delete deferredAction; }
 
-bool Active::Gravitate(const ushort range, const ushort down, const ushort up,
-        const ushort calmness)
+bool Active::Gravitate(const int range, const int down, const int up,
+        const int calmness)
 {
     World * const world = GetWorld();
     // analyse world around
-    short for_north = 0, for_west = 0;
-    const ushort y_start = Y()-range;
-    const ushort z_start = Z()-down;
-    const ushort x_end = X()+range;
-    const ushort y_end = Y()+range;
-    const ushort z_end = Z()+up;
-    for (ushort x=X()-range; x<=x_end; ++x)
-    for (ushort y=y_start;   y<=y_end; ++y) {
+    int for_north = 0, for_west = 0;
+    const int y_start = Y()-range;
+    const int z_start = Z()-down;
+    const int x_end = X()+range;
+    const int y_end = Y()+range;
+    const int z_end = Z()+up;
+    for (int x=X()-range; x<=x_end; ++x)
+    for (int y=y_start;   y<=y_end; ++y) {
         if ( not world->InBounds(x, y) ) {
             continue;
         }
         Shred * const shred = world->GetShred(x, y);
-        const ushort x_in = Shred::CoordInShred(x);
-        const ushort y_in = Shred::CoordInShred(y);
-        for (ushort z=z_start; z<=z_end; ++z) {
+        const int x_in = Shred::CoordInShred(x);
+        const int y_in = Shred::CoordInShred(y);
+        for (int z=z_start; z<=z_end; ++z) {
             short attractive;
             if ( World::InVertBounds(z)
                     && ( attractive = Attractive(shred->

@@ -97,7 +97,7 @@ protected:
     void SendSignalAround(QString) const;
     /// Returns true if there is at least 1 block of substance sub around.
     bool IsSubAround(quint8 sub) const;
-    bool Gravitate(ushort range, ushort down, ushort up, ushort calmness);
+    bool Gravitate(int range, int down, int up, int calmness);
 
     virtual void  DoFrequentAction();
     virtual void  DoRareAction();

@@ -36,14 +36,13 @@
 const uchar FIRE_LIGHT_FACTOR = 4;
 
 /// Use Enlightened instead, which is smart wrapper of this.
-uchar World::LightMap(const ushort x, const ushort y, const ushort z)
-const {
+uchar World::LightMap(const int x, const int y, const int z) const {
     return GetShred(x, y)->
         Lightmap(Shred::CoordInShred(x), Shred::CoordInShred(y), z);
 }
 
 bool World::SetSunLightMap(const uchar level,
-        const ushort x, const ushort y, const ushort z)
+        const int x, const int y, const int z)
 {
     return GetShred(x, y)->SetSunLight(
         Shred::CoordInShred(x), Shred::CoordInShred(y), z, level);
@@ -61,8 +60,8 @@ void World::RemoveFireLight(short, short, short) {}
 
 /// Makes block emit shining.
 /** Receives only non-sun light as level, from 1 to F. */
-void World::Shine(const int i, const int j, const int k,
-        uchar level, const bool init)
+void World::Shine(const int i, const int j, const int k, uchar level,
+        const bool init)
 {
     if ( not InBounds(i, j) ) return;
     const int transparent = GetBlock(i, j, k)->Transparent();
@@ -80,9 +79,7 @@ void World::Shine(const int i, const int j, const int k,
     }
 }
 
-void World::SunShineVertical(const short x, const short y, short z,
-        uchar light_lev)
-{
+void World::SunShineVertical(const int x, const int y, int z, uchar light_lev){
     if ( GetEvernight() ) return;
     /* 2 1 3
      *   *   First, light goes down, then divides to 4 branches
@@ -92,11 +89,10 @@ void World::SunShineVertical(const short x, const short y, short z,
      * |<v>|
      *   #     */
     const Shred * const shred = GetShred(x, y);
-    const ushort x_in = Shred::CoordInShred(x);
-    const ushort y_in = Shred::CoordInShred(y);
+    const int x_in = Shred::CoordInShred(x);
+    const int y_in = Shred::CoordInShred(y);
     for ( ; SetSunLightMap(light_lev, x, y, z); --z) {
-        const ushort transparent =
-            shred->GetBlock(x_in, y_in, z)->Transparent();
+        const int transparent = shred->GetBlock(x_in, y_in, z)->Transparent();
         if ( transparent != INVISIBLE ) {
             emit Updated(x, y, z);
             if ( BLOCK_TRANSPARENT == transparent ) {
@@ -112,9 +108,9 @@ void World::SunShineVertical(const short x, const short y, short z,
     UpShine(x,   y+1, z);
 }
 
-void World::UpShine(const ushort x, const ushort y, const ushort z_bottom) {
+void World::UpShine(const int x, const int y, const int z_bottom) {
     if ( InBounds(x, y) ) {
-        for (ushort z=z_bottom; SetSunLightMap(1, x, y, z); ++z) {
+        for (int z=z_bottom; SetSunLightMap(1, x, y, z); ++z) {
             emit Updated(x, y, z);
         }
     }
@@ -206,33 +202,29 @@ const {
     return qMin(Enlightened(i, j, k), Enlightened(x, y, z));
 }
 
-uchar World::SunLight(const ushort i, const ushort j, const ushort k)
-const {
+uchar World::SunLight(const int i, const int j, const int k) const {
     return (LightMap(i, j, k) & 0x0F) * sunMoonFactor;
 }
 
-uchar World::FireLight(const ushort i, const ushort j, const ushort k)
-const {
-    return (LightMap(i, j, k) & 0xF0) * FIRE_LIGHT_FACTOR;
+uchar World::FireLight(const int x, const int y, const int z) const {
+    return (LightMap(x, y, z) & 0xF0) * FIRE_LIGHT_FACTOR;
 }
 
 // Shred methods
 
-uchar Shred::Lightmap(const short x, const short y, const short z) const {
+uchar Shred::Lightmap(const int x, const int y, const int z) const {
     return lightMap[x][y][z];
 }
 
-uchar Shred::FireLight(const short x, const short y, const short z) const {
+uchar Shred::FireLight(const int x, const int y, const int z) const {
     return ((lightMap[x][y][z] & 0xF0) >> 4) * FIRE_LIGHT_FACTOR;
 }
 
-uchar Shred::SunLight(const short x, const short y, const short z) const {
+uchar Shred::SunLight(const int x, const int y, const int z) const {
     return (lightMap[x][y][z] & 0x0F);
 }
 
-uchar Shred::LightLevel(short, short, short) const { return 0; }
-
-bool Shred::SetSunLight(const short x, const short y, const short z,
+bool Shred::SetSunLight(const int x, const int y, const int z,
         const uchar level)
 {
     if ( ( lightMap[x][y][z] & 0x0F ) < level ) {
@@ -243,7 +235,7 @@ bool Shred::SetSunLight(const short x, const short y, const short z,
     }
 }
 
-bool Shred::SetFireLight(const short x, const short y, const short z,
+bool Shred::SetFireLight(const int x, const int y, const int z,
         const uchar level)
 {
     if ( ( lightMap[x][y][z] & 0xF0 ) < level ) {
@@ -254,7 +246,7 @@ bool Shred::SetFireLight(const short x, const short y, const short z,
     }
 }
 
-void Shred::SetLightmap(const short x, const short y, const short z,
+void Shred::SetLightmap(const int x, const int y, const int z,
         const uchar level)
 {
     lightMap[x][y][z] = level;

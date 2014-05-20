@@ -68,38 +68,35 @@ public:
 
     Block * GetBlock(int x, int y, int z) const;
     /// Removes last block at xyz, then SetBlock, then makes block normal.
-    void SetBlock(Block * block, ushort x, ushort y, ushort z);
+    void SetBlock(Block * block, int x, int y, int z);
     /// Puts block to coordinates xyz and activates it.
-    void SetBlockNoCheck(Block *, ushort x, ushort y, ushort z);
+    void SetBlockNoCheck(Block *, int x, int y, int z);
     /// Puts block to coordinates, not activates it.
-    void PutBlock(Block * block, ushort x, ushort y, ushort z);
+    void PutBlock(Block * block, int x, int y, int z);
     static Block * Normal(int sub);
 
     // Lighting section
-    uchar Lightmap(  short x, short y, short z) const;
-    uchar FireLight( short x, short y, short z) const;
-    uchar SunLight(  short x, short y, short z) const;
-    uchar LightLevel(short x, short y, short z) const;
+    uchar Lightmap(  int x, int y, int z) const;
+    uchar FireLight( int x, int y, int z) const;
+    uchar SunLight(  int x, int y, int z) const;
+    uchar LightLevel(int x, int y, int z) const;
 
-    bool SetSunLight( short x, short y, short z, uchar level);
-    bool SetFireLight(short x, short y, short z, uchar level);
-    void SetLightmap( short x, short y, short z, uchar level);
+    bool SetSunLight( int x, int y, int z, uchar level);
+    bool SetFireLight(int x, int y, int z, uchar level);
+    void SetLightmap( int x, int y, int z, uchar level);
 
     void SetAllLightMapNull();
     void ShineAll();
 
     // Information section
-    int Sub(ushort x, ushort y, ushort z) const;
-
-    void SetNewBlock(int kind, int sub, ushort x, ushort y, ushort z,
-            int dir = UP);
+    void SetNewBlock(int kind, int sub, int x, int y, int z, int dir = UP);
     char TypeOfShred(long longi, long lati) const;
 
     static QString FileName(QString world_name, long longi, long lati);
     Shred * GetShredMemory() const;
     /// Make global coordinate from local (in loaded zone).
-    long GlobalX(ushort x) const;
-    long GlobalY(ushort y) const;
+    long GlobalX(int x) const;
+    long GlobalY(int y) const;
     static int CoordInShred(const int x);
     static int CoordOfShred(const int x);
 
@@ -116,13 +113,13 @@ private:
 
     QString FileName() const;
 
-    void NormalUnderground(ushort depth = 0, int sub = SOIL);
+    void NormalUnderground(int depth = 0, int sub = SOIL);
     void CoverWith(int kind, int sub);
     /// Puts num things(kind-sub) in random places on shred surface.
     /** If on_water is false, this will not drop things on water,
      *  otherwise on water too. */
-    void RandomDrop(ushort num, int kind, int sub, bool on_water = false);
-    ushort CountShredTypeAround(int type) const;
+    void RandomDrop(int num, int kind, int sub, bool on_water = false);
+    int CountShredTypeAround(int type) const;
 
     void PlantGrass();
     void TestShred();
@@ -139,7 +136,7 @@ private:
     void ChaosShred();
 
     /// Block combinations section (trees, buildings, etc):
-    bool Tree(ushort x, ushort y, ushort z, ushort height);
+    bool Tree(int x, int y, int z, int height);
 
     /// Special land generation
     void ShredLandAmplitudeAndLevel(long longi, long lati,
@@ -147,12 +144,12 @@ private:
     void ShredNominalAmplitudeAndLevel(char shred_type,
             ushort * l, float * a) const;
     void AddWater();
-    ushort FlatUndeground(short depth = 0);
-    void NormalCube(ushort x_start, ushort y_start, ushort z_start,
-            ushort x_size, ushort y_size, ushort z_size, int sub);
+    int FlatUndeground(int depth = 0);
+    void NormalCube(int x_start, int y_start, int z_start,
+            int x_size, int y_size, int z_size, int sub);
 
     /// Lowest nullstone and sky are not in bounds.
-    static bool InBounds(ushort x, ushort y, ushort z);
+    static bool InBounds(int x, int y, int z);
 
     Block * blocks[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
     uchar lightMap[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];

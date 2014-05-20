@@ -19,18 +19,19 @@
 
 #include "Shred.h"
 #include "header.h"
+#include "blocks/Block.h"
 
-ushort Shred::FlatUndeground(short) {
+int Shred::FlatUndeground(int) {
     NormalUnderground();
     return HEIGHT/2;
 }
 
-void Shred::NormalUnderground(const ushort depth, const int sub) {
+void Shred::NormalUnderground(const int depth, const int sub) {
     NormalCube(0,0,1, SHRED_WIDTH,SHRED_WIDTH,HEIGHT/2-depth-5, STONE);
     Block * const block = Normal(sub);
     Block * const stone = Normal(STONE);
-    for (ushort x=0; x<SHRED_WIDTH; ++x)
-    for (ushort y=0; y<SHRED_WIDTH; ++y) {
+    for (int x=0; x<SHRED_WIDTH; ++x)
+    for (int y=0; y<SHRED_WIDTH; ++y) {
         PutBlock( ((qrand()%2) ? stone : block), x, y, HEIGHT/2-depth-6);
     }
     NormalCube(0,0,HEIGHT/2-depth-5, SHRED_WIDTH,SHRED_WIDTH,depth+6, sub);
@@ -51,7 +52,7 @@ void Shred::Forest() {
         const ushort x=qrand()%(SHRED_WIDTH-2);
         const ushort y=qrand()%(SHRED_WIDTH-2);
         for (ushort k=HEIGHT-2; ; --k) {
-            const int sub = Sub(x, y, k);
+            const int sub = GetBlock(x, y, k)->Sub();
             if ( sub!=AIR && sub!=WATER ) {
                 if ( sub!=GREENERY && sub!=WOOD ) {
                     Tree(x, y, k+1, 4+qrand()%5);

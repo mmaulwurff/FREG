@@ -64,24 +64,24 @@ private:
 public: // Lighting section
     uchar Enlightened(int x, int y, int z) const;
     uchar Enlightened(int x, int y, int z, int dir) const;
-    uchar SunLight   (ushort x, ushort y, ushort z) const;
-    uchar FireLight  (ushort x, ushort y, ushort z) const;
-    uchar LightMap   (ushort x, ushort y, ushort z) const;
+    uchar SunLight   (int x, int y, int z) const;
+    uchar FireLight  (int x, int y, int z) const;
+    uchar LightMap   (int x, int y, int z) const;
 
     short ClampX(short x) const;
     short ClampY(short y) const;
     short ClampZ(short z) const;
 
-    void SunShineVertical  (short x, short y, short z = HEIGHT-2,
-            uchar level=MAX_LIGHT_RADIUS);
-    void SunShineHorizontal(short x, short y, short z);
+    void SunShineVertical  (int x, int y, int z = HEIGHT-2,
+            uchar level = MAX_LIGHT_RADIUS);
+    void SunShineHorizontal(int x, int y, int z);
     /// If init is false, light will not spread from non-invisible blocks.
     void Shine(int x, int y, int z, uchar level, bool init);
     void RemoveSunLight(short x, short y, short z);
 
     bool GetEvernight() const;
 private:
-    bool SetSunLightMap (uchar level, ushort x, ushort y, ushort z);
+    bool SetSunLightMap (uchar level, int x, int y, int z);
     bool SetFireLightMap(uchar level, int x, int y, int z);
     void AddFireLight   (short x, short y, short z, uchar level);
     void RemoveFireLight(short x, short y, short z);
@@ -96,7 +96,7 @@ private:
     void ReEnlightenTime();
     /// Called from ReloadShreds(int), enlightens only needed shreds.
     void ReEnlightenMove(int direction);
-    void UpShine(ushort x, ushort y, ushort z_bottom);
+    void UpShine(int x, int y, int z_bottom);
 
 public: // Information section
     QString WorldName() const;
@@ -124,14 +124,14 @@ private:
 
 public: // Visibility section
     bool DirectlyVisible(float x_from, float y_from, float z_from,
-            ushort x_to, ushort y_to, ushort z_to) const;
-    bool Visible(ushort x_from, ushort y_from, ushort z_from,
-            ushort x_to, ushort y_to, ushort z_to) const;
+                         int   x_to,   int   y_to,     int   z_to) const;
+    bool Visible(int x_from, int y_from, int z_from,
+                 int x_to,   int y_to,   int z_to) const;
 private:
     bool PositiveVisible(float x_from, float y_from, float z_from,
-            ushort x_to, ushort y_to, ushort z_to) const;
+                         int   x_to,   int   y_to,   int   z_to) const;
     bool NegativeVisible(float x_from, float y_from, float z_from,
-            short x_to, short y_to, short z_to) const;
+                         int   x_to,   int   y_to,   int   z_to) const;
 
 public: // Movement section
     /// Check and move
