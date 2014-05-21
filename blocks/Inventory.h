@@ -46,8 +46,6 @@ public:
     virtual bool Access() const;
     /// Returns true on success.
     virtual bool Get(Block * block, ushort start = 0);
-    /// Removes block from inventory. Does not delete block.
-    virtual void Pull(ushort num);
     virtual void MoveInside(ushort num_from, ushort num_to, ushort num);
     virtual void ReceiveSignal(QString) = 0;
     virtual ushort Start() const;
@@ -55,6 +53,8 @@ public:
     virtual QString FullName() const = 0;
     virtual Inventory * HasInventory();
 
+    /// Removes block from inventory. Does not delete block.
+    void Pull(ushort num);
     /// Returns true if block found its place.
     bool GetExact(Block * block, ushort num);
     /// Returns true on success (something has been crafted).

@@ -230,7 +230,7 @@
             world->DestroyAndReplace(X(), Y(), Z());
             return;
         } // else:
-        short i=X(), j=Y();
+        int i=X(), j=Y();
         // increase this if grass grows too fast
         switch ( qrand() % (FIRE==Sub() ? 4 : SECONDS_IN_HOUR*2) ) {
         case 0: ++i; break;
@@ -239,22 +239,23 @@
         case 3: --j; break;
         default: return;
         }
+        int k = Z();
         if ( not world->InBounds(i, j) ) return;
-        const quint8 sub_near = world->GetBlock(i, j, Z())->Sub();
-        if ( world->Enlightened(i, j, Z()) || FIRE == Sub() ) {
+        const int sub_near = world->GetBlock(i, j, k)->Sub();
+        if ( world->Enlightened(i, j, k) || FIRE == Sub() ) {
             if ( AIR == sub_near
-                    && IsBase(Sub(), world->GetBlock(i, j, Z()-1)->Sub() ) )
+                    && IsBase(Sub(), world->GetBlock(i, j, k-1)->Sub() ) )
             {
-                world->Build(block_manager.NewBlock(GRASS, Sub()), i, j, Z());
+                world->Build(block_manager.NewBlock(GRASS, Sub()), i, j, k);
             } else if ( IsBase(Sub(), sub_near)
-                    && AIR == world->GetBlock(i, j, Z()+1)->Sub() )
+                    && AIR == world->GetBlock(i, j, ++k)->Sub() )
             {
-                world->Build(block_manager.NewBlock(GRASS, Sub()), i,j, Z()+1);
+                world->Build(block_manager.NewBlock(GRASS, Sub()), i, j, k);
             }
         }
     }
 
-    bool Grass::IsBase(const quint8 own_sub, const quint8 ground) {
+    bool Grass::IsBase(const int own_sub, const int ground) {
         return ( GREENERY==own_sub && SOIL==ground )
             || ( FIRE==own_sub && (
                 WOOD==ground
@@ -333,13 +334,13 @@
             Inventory(str, BUSH_SIZE)
     {}
 // Rabbit::
-    short Rabbit::Attractive(const int sub) const {
+    int Rabbit::Attractive(const int sub) const {
         switch ( sub ) {
+        case GREENERY: return   1;
         case H_MEAT:   return -16;
-        case A_MEAT:   return -1;
-        case GREENERY: return  1;
-        case SAND:     return -1;
-        default:       return  0;
+        case A_MEAT:   return - 1;
+        case SAND:     return - 1;
+        default:       return   0;
         }
     }
 
@@ -767,11 +768,11 @@
         Animal::DoRareAction();
     }
 
-    short Predator::Attractive(const int sub) const {
+    int Predator::Attractive(const int sub) const {
         switch ( sub ) {
-        default: return 0;
+        default:       return  0;
+        case GREENERY: return  1;
         case A_MEAT:
-        case H_MEAT: return 10;
-        case GREENERY: return 1;
+        case H_MEAT:   return 10;
         }
     }

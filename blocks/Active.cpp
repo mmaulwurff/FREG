@@ -205,7 +205,7 @@ bool Active::Gravitate(const int range, const int down, const int up,
         const int calmness)
 {
     World * const world = GetWorld();
-    static int bound = SHRED_WIDTH * world->NumShreds();
+    static const int bound = SHRED_WIDTH * world->NumShreds() - 1;
     // analyse world around
     int for_north = 0, for_west = 0;
     const int y_start = qMax(Y()-range, 0);
@@ -214,7 +214,7 @@ bool Active::Gravitate(const int range, const int down, const int up,
     const int y_end = qMin(Y()+range, bound);
     const int z_end = qMin(Z()+up, HEIGHT-1);
     for (int x=qMax(X()-range, 0); x<=x_end; ++x)
-    for (int y=y_start;   y<=y_end; ++y) {
+    for (int y=y_start; y<=y_end; ++y) {
         Shred * const shred = world->GetShred(x, y);
         const int x_in = Shred::CoordInShred(x);
         const int y_in = Shred::CoordInShred(y);
@@ -240,7 +240,7 @@ bool Active::Gravitate(const int range, const int down, const int up,
     }
 }
 
-short Active::Attractive(int) const { return 0; }
+int Active::Attractive(int) const { return 0; }
 
 bool Active::IsSubAround(const quint8 sub) const {
     const World * const world = GetWorld();

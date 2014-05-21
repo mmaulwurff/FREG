@@ -435,9 +435,9 @@ const {
     const float z_step = (z_to-z_from)/max;
     for (int i=1; i<max; ++i) {
         if ( BLOCK_OPAQUE == GetBlock(
-                -qRound(x_from+=x_step),
-                -qRound(y_from+=y_step),
-                 qRound(z_from+=z_step))->Transparent() )
+                -Round(x_from+=x_step),
+                -Round(y_from+=y_step),
+                 Round(z_from+=z_step))->Transparent() )
         {
             return false;
         }
@@ -455,9 +455,9 @@ const {
     const float z_step = (z_to-z_from)/max;
     for (int i=1; i<max; ++i) {
         if ( BLOCK_OPAQUE == GetBlock(
-                qRound(x_from+=x_step),
-                qRound(y_from+=y_step),
-                qRound(z_from+=z_step))->Transparent() )
+                Round(x_from+=x_step),
+                Round(y_from+=y_step),
+                Round(z_from+=z_step))->Transparent() )
         {
                return false;
         }

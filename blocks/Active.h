@@ -99,9 +99,9 @@ protected:
     bool IsSubAround(quint8 sub) const;
     bool Gravitate(int range, int down, int up, int calmness);
 
-    virtual void  DoFrequentAction();
-    virtual void  DoRareAction();
-    virtual short Attractive(int sub) const;
+    virtual void DoFrequentAction();
+    virtual void DoRareAction();
+    virtual int  Attractive(int sub) const;
 
 private:
     void UpdateShred();

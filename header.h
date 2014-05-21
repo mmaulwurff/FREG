@@ -203,4 +203,7 @@ enum transparency {
 
 bool IsLikeAir(int sub);
 
+/// For positive numbers only.
+inline int Round(const float x) { return int(x + 0.5f); }
+
 #endif // HEADER_H

@@ -91,7 +91,7 @@ void WorldMap::Circle(
             "WorldMap::Circle: %c: min_rad (%f) >= max_rad (%f).\n",
             ch, min_rad, max_rad);
     }
-    float maxs[360] = { (float)qMax(min_rad, float(qrand()%qRound(max_rad))) };
+    float maxs[360] = { (float)qMax(min_rad, float(qrand()%Round(max_rad))) };
     for (int x=1; x<360; ++x) {
         maxs[x]= qBound(
             min_rad, float(maxs[x-1]+(qrand()%400-200.0)/200.0),max_rad);
@@ -101,7 +101,7 @@ void WorldMap::Circle(
     }
     for (int y=0; y<size; ++y)
     for (int x=0; x<size; ++x) {
-        if ( R(x, y, size) < maxs[qRound(Deg(x, y, size))] ) {
+        if ( R(x, y, size) < maxs[Round(Deg(x, y, size))] ) {
             map[x*size+y] = ch;
         }
     }

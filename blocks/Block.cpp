@@ -143,8 +143,6 @@ Active * Block::ActiveBlock() { return 0; }
 void Block::Restore() { durability = MAX_DURABILITY; }
 void Block::Break() { durability = 0; }
 int  Block::GetDir() const { return direction; }
-int  Block::Sub() const { return sub; }
-int  Block::Transparent() const { return transparent; }
 int  Block::GetDurability() const { return durability; }
 QString Block::GetNote() const { return note ? *note : ""; }
 

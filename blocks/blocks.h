@@ -83,7 +83,7 @@ protected:
     void DoRareAction() override;
 
 private:
-    static bool IsBase(quint8 ownsub, quint8 ground);
+    static bool IsBase(int ownsub, int ground);
 };
 
 class Bush : public Active, public Inventory {
@@ -125,9 +125,9 @@ public:
     QString FullName() const override;
 
 protected:
-    void  DoFrequentAction() override;
-    void  DoRareAction() override;
-    short Attractive(int sub) const override;
+    void DoFrequentAction() override;
+    void DoRareAction() override;
+    int  Attractive(int sub) const override;
 };
 
 class Door : public Active {
@@ -256,7 +256,7 @@ public:
 protected:
     void DoFrequentAction() override;
     void DoRareAction() override;
-    short Attractive(int sub) const override;
+    int  Attractive(int sub) const override;
 };
 
 #endif // BLOCKS_H

@@ -106,10 +106,10 @@ public:
     void SetDir(int dir);
 
     int GetDir() const;
-    int Sub() const;
     int GetDurability() const;
     QString GetNote() const;
-    int Transparent() const;
+    inline int Transparent() const { return transparent; }
+    inline int Sub() const { return sub; }
 
     bool operator==(const Block &) const;
     bool operator!=(const Block &) const;
