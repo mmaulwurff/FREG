@@ -68,23 +68,23 @@ public: // Lighting section
     uchar FireLight  (int x, int y, int z) const;
     uchar LightMap   (int x, int y, int z) const;
 
-    short ClampX(short x) const;
-    short ClampY(short y) const;
-    short ClampZ(short z) const;
+    int ClampX(int x) const;
+    int ClampY(int y) const;
+    int ClampZ(int z) const;
 
     void SunShineVertical  (int x, int y, int z = HEIGHT-2,
             uchar level = MAX_LIGHT_RADIUS);
     void SunShineHorizontal(int x, int y, int z);
     /// If init is false, light will not spread from non-invisible blocks.
     void Shine(int x, int y, int z, uchar level, bool init);
-    void RemoveSunLight(short x, short y, short z);
+    void RemoveSunLight(int x, int y, int z);
 
     bool GetEvernight() const;
 private:
-    bool SetSunLightMap (uchar level, int x, int y, int z);
-    bool SetFireLightMap(uchar level, int x, int y, int z);
-    void AddFireLight   (short x, short y, short z, uchar level);
-    void RemoveFireLight(short x, short y, short z);
+    bool SetSunLightMap (int level, int x, int y, int z);
+    bool SetFireLightMap(int level, int x, int y, int z);
+    void AddFireLight   (int x, int y, int z, int level);
+    void RemoveFireLight(int x, int y, int z);
 
     /// Called when block is moved.
     void ReEnlighten(int x, int y, int z);
@@ -97,6 +97,7 @@ private:
     /// Called from ReloadShreds(int), enlightens only needed shreds.
     void ReEnlightenMove(int direction);
     void UpShine(int x, int y, int z_bottom);
+    void CrossUpShine(int x, int y, int z_bottom);
 
 public: // Information section
     QString WorldName() const;
@@ -111,7 +112,7 @@ public: // Information section
     long GetSpawnLati()  const;
     long Longitude() const;
     long Latitude() const;
-    static ushort TimeStepsInSec();
+    static int TimeStepsInSec();
 
     char TypeOfShred(long longi, long lati);
     long MapSize() const;
@@ -119,7 +120,7 @@ public: // Information section
     QByteArray * GetShredData(long longi, long lati) const;
     void SetShredData(QByteArray *, long longi, long lati);
 private:
-    ushort SunMoonX() const;
+    int SunMoonX() const;
     int ShredPos(int x, int y) const;
 
 public: // Visibility section
@@ -139,7 +140,7 @@ public: // Movement section
     /// This CAN move blocks, but not xyz block.
     bool CanMove(int x,    int y,    int z,
                  int x_to, int y_to, int z_to, quint8 dir);
-    void Jump(ushort x, ushort y, ushort z, quint8 dir);
+    void Jump(int x, int y, int z, quint8 dir);
 private:
     void NoCheckMove(int x,    int y,    int z,
                      int x_to, int y_to, int z_to, quint8 dir);
@@ -152,11 +153,11 @@ public: // Time section
     ulong Time() const;
     QString TimeOfDayStr() const;
     /// Returns number of physics steps since second start.
-    ushort MiniTime() const;
+    int MiniTime() const;
 
 public: // Interactions section
     /// Returns damaged block result durability.
-    short Damage(int x, int y, int z, ushort level, int dmg_kind);
+    int Damage(int x, int y, int z, int level, int dmg_kind);
     /// Does not check target block durability.
     void DestroyAndReplace(int x, int y, int z);
     bool Build(Block * thing, int x, int y, int z,
@@ -169,35 +170,33 @@ public: // Interactions section
 
 private: // Inventory functions section
     void Exchange(Block * block_from, Block * block_to,
-            ushort src, ushort dest, ushort num);
+            int src, int dest, int num);
 public:
-    void Drop(Block * from,
-            ushort x_to, ushort y_to, ushort z_to,
-            ushort src, ushort dest, ushort num);
-    void Get(Block * to,
-            ushort x_from, ushort y_from, ushort z_from,
-            ushort src, ushort dest, ushort num);
+    void Drop(Block * from, int x_to, int y_to, int z_to,
+            int src, int dest, int num);
+    void Get(Block * to, int x_from, int y_from, int z_from,
+            int src, int dest, int num);
 
 public: // Block information section
     static bool InVertBounds(int z);
     bool InBounds(int x) const;
     bool InBounds(int x, int y) const;
     bool InBounds(int x, int y, int z) const;
-    int  Temperature(ushort x, ushort y, ushort z) const;
+    int  Temperature(int x, int y, int z) const;
 private:
     static bool IsPile(const Block *);
 
 public: // World section
     void ReloadAllShreds(long lati, long longi,
-            ushort new_x, ushort new_y, ushort new_z);
+            int new_x, int new_y, int new_z);
 private:
-    void SetNumActiveShreds(ushort num);
+    void SetNumActiveShreds(int num);
     /// Also saves all shreds.
     void DeleteAllShreds();
     void LoadAllShreds();
     void ReloadShreds(int direction);
     void run();
-    Shred ** FindShred(ushort x, ushort y) const;
+    Shred ** FindShred(int x, int y) const;
 
 public:
     QReadWriteLock * GetLock() const;
@@ -216,13 +215,13 @@ signals:
     void GetString(QString &) const;
     void Updated(int, int, int);
     void UpdatedAll();
-    void UpdatedAround(int x, int y, int z, ushort range);
+    void UpdatedAround(int x, int y, int z, int range);
     /// Emitted when world active zone moved to int direction.
     void Moved(int);
     void ReConnect();
     /// This is emitted when a pack of updates is complete.
     void UpdatesEnded();
-    void NeedPlayer(ushort, ushort, ushort);
+    void NeedPlayer(int, int, int);
     void StartReloadAll();
     void FinishReloadAll();
     void ExitReceived();
@@ -231,7 +230,7 @@ private:
     static const int TIME_STEPS_IN_SEC = 10;
 
     ulong time;
-    ushort timeStep;
+    int timeStep;
     Shred ** shreds;
     /**   N
      *    |  E
@@ -243,10 +242,10 @@ private:
     long spawnLongi, spawnLati;
     const QString worldName;
     int numShreds; ///< size of loaded zone
-    ushort numActiveShreds; ///< size of active zone
+    int numActiveShreds; ///< size of active zone
     QReadWriteLock * const rwLock;
 
-    ushort sunMoonX;
+    int sunMoonX;
     /// stores block behind sun or moon (normal with sub STAR or SKY)
     Block * behindSun;
     bool evernight;
@@ -254,7 +253,7 @@ private:
     WorldMap * const map;
 
     long newLati, newLongi;
-    ushort newX, newY, newZ;
+    int newX, newY, newZ;
     /// UP for no reset, DOWN for full reset, NSEW for side shift.
     volatile int toResetDir;
 

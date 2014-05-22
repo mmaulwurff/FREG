@@ -31,7 +31,7 @@
 #include "ShredStorage.h"
 #include "CraftManager.h"
 
-const ushort MIN_WORLD_SIZE = 7U;
+const int MIN_WORLD_SIZE = 7;
 
 World * world;
 
@@ -47,15 +47,15 @@ Shred * World::GetShred(const int x, const int y) const {
 
 int World::NumShreds() const { return numShreds; }
 int World::TimeOfDay() const { return time % SECONDS_IN_DAY; }
+int World::TimeStepsInSec() { return TIME_STEPS_IN_SEC; }
+int World::MiniTime() const { return timeStep; }
+ulong World::Time() const { return time; }
 long World::GetSpawnLongi() const { return spawnLongi; }
 long World::GetSpawnLati()  const { return spawnLati; }
 long World::Longitude() const { return longitude; }
 long World::Latitude()  const { return latitude; }
 long World::MapSize() const { return map->MapSize(); }
 bool World::GetEvernight() const { return evernight; }
-ulong World::Time() const { return time; }
-ushort World::TimeStepsInSec() { return TIME_STEPS_IN_SEC; }
-ushort World::MiniTime() const { return timeStep; }
 QString World::WorldName() const { return worldName; }
 
 char World::TypeOfShred(const long longi, const long lati) {
@@ -72,7 +72,7 @@ void World::SetShredData(QByteArray * const data,
     shredStorage->SetShredData(data, longi, lati);
 }
 
-ushort World::SunMoonX() const {
+int World::SunMoonX() const {
     return ( NIGHT == PartOfDay() ) ?
         TimeOfDay()*SHRED_WIDTH*NumShreds()/
             SECONDS_IN_NIGHT :
@@ -95,8 +95,8 @@ QString World::TimeOfDayStr() const {
 }
 
 void World::Drop(Block * const block_from,
-        const ushort x_to, const ushort y_to, const ushort z_to,
-        const ushort src, const ushort dest, const ushort num)
+        const int x_to, const int y_to, const int z_to,
+        const int src, const int dest, const int num)
 {
     Block * block_to = GetBlock(x_to, y_to, z_to);
     if ( AIR == block_to->Sub() ) {
@@ -112,8 +112,8 @@ void World::Drop(Block * const block_from,
 }
 
 void World::Get(Block * const block_to,
-        const ushort x_from, const ushort y_from, const ushort z_from,
-        const ushort src, const ushort dest, const ushort num)
+        const int x_from, const int y_from, const int z_from,
+        const int src, const int dest, const int num)
 {
     Block * const block_from = GetBlock(x_from, y_from, z_from);
     Inventory * const inv = block_from->HasInventory();
@@ -148,7 +148,7 @@ bool World::InBounds(const int x, const int y, const int z) const {
 }
 
 void World::ReloadAllShreds(const long lati, const long longi,
-    const ushort new_x, const ushort new_y, const ushort new_z)
+    const int new_x, const int new_y, const int new_z)
 {
     newLati  = lati;
     newLongi = longi;
@@ -255,7 +255,7 @@ quint8 World::Anti(const quint8 dir) {
     }
 }
 
-Shred ** World::FindShred(const ushort x, const ushort y) const {
+Shred ** World::FindShred(const int x, const int y) const {
     return &shreds[ShredPos(x, y)];
 }
 
@@ -572,9 +572,7 @@ void World::NoCheckMove(const int x, const int y, const int z,
         newz);
 }
 
-void World::Jump(const ushort x, const ushort y, const ushort z,
-        const quint8 dir)
-{
+void World::Jump(const int x, const int y, const int z, const quint8 dir) {
     if ( !(AIR==GetBlock(x, y, z-1)->Sub() &&
             GetBlock(x, y, z)->Weight()) &&
             Move(x, y, z, UP) )
@@ -603,8 +601,8 @@ const {
     return not InBounds(*x_to, *y_to, *z_to);
 }
 
-short World::Damage(const int x, const int y, const int z,
-        const ushort dmg, const int dmg_kind)
+int World::Damage(const int x, const int y, const int z,
+        const int dmg, const int dmg_kind)
 {
     Block * temp = GetBlock(x, y, z);
     const quint8 sub = temp->Sub();
@@ -691,7 +689,7 @@ void World::DestroyAndReplace(const int x, const int y, const int z) {
         RemoveFireLight(x, y, z);
     }
     emit Updated(x, y, z);
-} // void World::DestroyAndReplace(ushort x, y, z)
+} // void World::DestroyAndReplace(int x, y, z)
 
 bool World::Build(Block * block, const int x, const int y, const int z,
         const quint8 dir, Block * const who, const bool anyway)
@@ -734,7 +732,7 @@ bool World::Inscribe(const int x, const int y, const int z) {
 }
 
 void World::Exchange(Block * const block_from, Block * const block_to,
-        const ushort src, const ushort dest, const ushort num)
+        const int src, const int dest, const int num)
 {
     Inventory * const inv_from = block_from->HasInventory();
     if ( inv_from == nullptr ) {
@@ -757,18 +755,16 @@ void World::Exchange(Block * const block_from, Block * const block_to,
     }
 }
 
-int World::Temperature(const ushort x, const ushort y, const ushort z) const {
-    if ( HEIGHT-1 == z ) {
-        return 0;
-    }
-    short temperature = GetBlock(x, y, z)->Temperature();
-    if ( temperature ) {
+int World::Temperature(const int x, const int y, const int z) const {
+    if ( HEIGHT-1 == z || z == 0 ) return 0;
+    int temperature = GetBlock(x, y, z)->Temperature();
+    if ( temperature != 0 ) {
         return temperature;
     }
-    for (short i=x-1; i<=x+1; ++i)
-    for (short j=y-1; j<=y+1; ++j)
-    for (short k=z-1; k<=z+1; ++k) {
-        if ( InBounds(i, j, k) ) {
+    for (int i=x-1; i<=x+1; ++i)
+    for (int j=y-1; j<=y+1; ++j)
+    for (int k=z-1; k<=z+1; ++k) {
+        if ( InBounds(i, j) ) {
             temperature += GetBlock(i, j, k)->Temperature();
         }
     }
@@ -809,7 +805,7 @@ void World::DeleteAllShreds() {
     delete [] shreds;
 }
 
-void World::SetNumActiveShreds(const ushort num) {
+void World::SetNumActiveShreds(const int num) {
     const QWriteLocker writeLocker(rwLock);
     numActiveShreds = num;
     if ( 1 != numActiveShreds%2 ) {

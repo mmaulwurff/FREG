@@ -27,7 +27,7 @@
 const quint8 DATASTREAM_VERSION = QDataStream::Qt_5_2;
 const quint8 CURRENT_SHRED_FORMAT_VERSION = 2;
 
-const ushort SHRED_WIDTH_SHIFT = 4;
+const int SHRED_WIDTH_SHIFT = 4;
 
 /// Get local coordinate.
 int Shred::CoordInShred(const int x) { return x & 0xF; }
@@ -36,8 +36,8 @@ int Shred::CoordOfShred(const int x) { return x >> SHRED_WIDTH_SHIFT; }
 
 long Shred::Longitude() const { return longitude; }
 long Shred::Latitude()  const { return latitude; }
-ushort Shred::ShredX() const { return shredX; }
-ushort Shred::ShredY() const { return shredY; }
+int Shred::ShredX() const { return shredX; }
+int Shred::ShredY() const { return shredY; }
 World * Shred::GetWorld() const { return world; }
 
 bool Shred::LoadShred() {
@@ -89,7 +89,7 @@ bool Shred::LoadShred() {
     return true;
 } // bool Shred::LoadShred()
 
-Shred::Shred(const ushort shred_x, const ushort shred_y,
+Shred::Shred(const int shred_x, const int shred_y,
         const long longi, const long lati, Shred * const mem)
     :
         longitude(longi), latitude(lati),
@@ -129,7 +129,7 @@ Shred::Shred(const ushort shred_x, const ushort shred_y,
             TypeOfShred(longi, lati), int(TypeOfShred(longi, lati)));
         Plain();
     }
-} // Shred::Shred(ushort shred_x, shred_y, long longi, lati, Shred * mem)
+} // Shred::Shred(int shred_x, shred_y, long longi, lati, Shred * mem)
 
 Shred::~Shred() {
     QByteArray * const shred_data = new QByteArray();
@@ -288,7 +288,7 @@ void Shred::AddFalling(Active * const active) {
     }
 }
 
-void Shred::AddFalling(const ushort x, const ushort y, const ushort z) {
+void Shred::AddFalling(const int x, const int y, const int z) {
     Active * const active = blocks[x][y][z]->ActiveBlock();
     if ( active != nullptr ) {
         AddFalling(active);

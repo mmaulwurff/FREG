@@ -205,7 +205,7 @@ bool Active::Gravitate(const int range, const int down, const int up,
         const int calmness)
 {
     World * const world = GetWorld();
-    static int bound = SHRED_WIDTH * world->NumShreds();
+    static int bound = SHRED_WIDTH * world->NumShreds() - 1;
     // analyse world around
     int for_north = 0, for_west = 0;
     const int y_start = qMax(Y()-range, 0);
