@@ -28,7 +28,7 @@ void VirtScreen::ConnectWorld() {
     connect(w, SIGNAL(Updated(int, int, int)), SLOT(Update(int, int, int)),
         Qt::DirectConnection);
     connect(w, SIGNAL(UpdatedAround(int, int, int, ushort)),
-        SLOT(UpdateAround(int, int, int, ushort)),
+        SLOT(UpdateAround(int, int, int, int)),
         Qt::DirectConnection);
 }
 

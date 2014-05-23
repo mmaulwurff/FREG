@@ -149,7 +149,7 @@ public slots:
     void Update(int, int, int) override;
     void UpdateAll() override;
     void UpdatePlayer() override;
-    void UpdateAround(int, int, int, ushort) override;
+    void UpdateAround(int, int, int, int) override;
     void Move(int) override;
     void DeathScreen();
     void DisplayFile(QString path) override;

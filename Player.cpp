@@ -503,7 +503,7 @@ void Player::BlockDestroy() {
     }
 }
 
-void Player::SetPlayer(const ushort _x, const ushort _y, const ushort _z) {
+void Player::SetPlayer(const int _x, const int _y, const int _z) {
     SetXyz(_x, _y, _z);
     if ( GetCreativeMode() ) {
         ( player = block_manager.NewBlock(CREATOR, DIFFERENT)->
@@ -566,8 +566,8 @@ Player::Player() :
     homeY += plus;
     SetPlayer(x_self+=plus, y_self+=plus, z_self);
 
-    connect(world, SIGNAL(NeedPlayer(ushort, ushort, ushort)),
-        SLOT(SetPlayer(ushort, ushort, ushort)),
+    connect(world, SIGNAL(NeedPlayer(int, int, int)),
+        SLOT(SetPlayer(int, int, int)),
         Qt::DirectConnection);
     connect(this, SIGNAL(OverstepBorder(int)),
         world, SLOT(SetReloadShreds(int)),

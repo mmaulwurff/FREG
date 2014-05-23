@@ -77,7 +77,7 @@ void Screen::RePrint() {
 
 void Screen::Update(int, int, int) { SetUpdated(false); }
 void Screen::UpdatePlayer() { SetUpdated(false); }
-void Screen::UpdateAround(int, int, int, ushort) { SetUpdated(false); }
+void Screen::UpdateAround(int, int, int, int) { SetUpdated(false); }
 void Screen::Move(int) { SetUpdated(false); }
 
 void Screen::UpdateAll() {

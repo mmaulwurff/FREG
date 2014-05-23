@@ -29,11 +29,8 @@ class Active;
 
 class Shred final {
 public:
-    Shred(
-            ushort shred_x,
-            ushort shred_y,
-            long longi,
-            long lati,
+    Shred(int shred_x, int shred_y,
+            long longi, long lati,
             Shred * memory);
     ~Shred();
 
@@ -43,8 +40,8 @@ public:
     long Longitude() const;
     /// Returns x (column) shred coordinate on world map.
     long Latitude()  const;
-    ushort ShredX() const;
-    ushort ShredY() const;
+    int ShredX() const;
+    int ShredY() const;
     void PhysEventsFrequent();
     void PhysEventsRare();
     void DeleteDestroyedActives();
@@ -54,7 +51,7 @@ public:
     void AddShining(Active *);
     void RemShining(Active *);
     void AddToDelete(Active *);
-    void AddFalling(ushort x, ushort y, ushort z);
+    void AddFalling(int x, int y, int z);
 
     QLinkedList<Active *>::const_iterator ShiningBegin() const;
     QLinkedList<Active *>::const_iterator ShiningEnd() const;
@@ -81,9 +78,9 @@ public:
     uchar SunLight(  int x, int y, int z) const;
     uchar LightLevel(int x, int y, int z) const;
 
-    bool SetSunLight( int x, int y, int z, uchar level);
-    bool SetFireLight(int x, int y, int z, uchar level);
-    void SetLightmap( int x, int y, int z, uchar level);
+    bool SetSunLight( int x, int y, int z, int level);
+    bool SetFireLight(int x, int y, int z, int level);
+    void SetLightmap( int x, int y, int z, int level);
 
     void SetAllLightMapNull();
     void ShineAll();
@@ -154,7 +151,7 @@ private:
     Block * blocks[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
     uchar lightMap[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
     const long longitude, latitude;
-    ushort shredX, shredY;
+    int shredX, shredY;
 
     /// needed in Shred::ReloadTo... for active blocks not to reload twice
     /// when they are registered both in frequent and rare lists.

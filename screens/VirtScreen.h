@@ -92,7 +92,7 @@ public slots:
     /// Called when area around xyz with range needs to be updated.
     /** When implemented, this should work fast.
      *  It is connected to world in constructor. */
-    virtual void UpdateAround(int x, int y, int z, ushort rng) = 0;
+    virtual void UpdateAround(int x, int y, int z, int rng) = 0;
 
     /// This is called to restore some connections.
     /** This restores connections to VirtScreen::Update and

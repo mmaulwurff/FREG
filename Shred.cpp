@@ -27,7 +27,7 @@
 const quint8 DATASTREAM_VERSION = QDataStream::Qt_5_2;
 const quint8 CURRENT_SHRED_FORMAT_VERSION = 2;
 
-const ushort SHRED_WIDTH_SHIFT = 4;
+const int SHRED_WIDTH_SHIFT = 4;
 
 /// Get local coordinate.
 int Shred::CoordInShred(const int x) { return x & 0xF; }
@@ -36,8 +36,8 @@ int Shred::CoordOfShred(const int x) { return x >> SHRED_WIDTH_SHIFT; }
 
 long Shred::Longitude() const { return longitude; }
 long Shred::Latitude()  const { return latitude; }
-ushort Shred::ShredX() const { return shredX; }
-ushort Shred::ShredY() const { return shredY; }
+int Shred::ShredX() const { return shredX; }
+int Shred::ShredY() const { return shredY; }
 World * Shred::GetWorld() const { return world; }
 
 bool Shred::LoadShred() {
@@ -89,7 +89,7 @@ bool Shred::LoadShred() {
     return true;
 } // bool Shred::LoadShred()
 
-Shred::Shred(const ushort shred_x, const ushort shred_y,
+Shred::Shred(const int shred_x, const int shred_y,
         const long longi, const long lati, Shred * const mem)
     :
         longitude(longi), latitude(lati),
@@ -100,6 +100,8 @@ Shred::Shred(const ushort shred_x, const ushort shred_y,
     // new shred generation:
     Block * const null_stone = Normal(NULLSTONE);
     Block * const air = Normal(AIR);
+    Block * const sky = Normal(SKY);
+    Block * const star = Normal(STAR);
     SetAllLightMapNull();
     for (int i=0; i<SHRED_WIDTH; ++i)
     for (int j=0; j<SHRED_WIDTH; ++j) {
@@ -107,7 +109,7 @@ Shred::Shred(const ushort shred_x, const ushort shred_y,
         for (int k=1; k<HEIGHT-1; ++k) {
             PutBlock(air, i, j, k);
         }
-        PutBlock(Normal( (qrand()%5) ? SKY : STAR ), i, j, HEIGHT-1);
+        PutBlock(((qrand()%5) ? sky : star), i, j, HEIGHT-1);
         lightMap[i][j][HEIGHT-1] = 1;
     }
     switch ( TypeOfShred(longi, lati) ) {
@@ -129,11 +131,11 @@ Shred::Shred(const ushort shred_x, const ushort shred_y,
             TypeOfShred(longi, lati), int(TypeOfShred(longi, lati)));
         Plain();
     }
-} // Shred::Shred(ushort shred_x, shred_y, long longi, lati, Shred * mem)
+} // Shred::Shred(int shred_x, shred_y, long longi, lati, Shred * mem)
 
 Shred::~Shred() {
     QByteArray * const shred_data = new QByteArray();
-    shred_data->reserve(70000);
+    shred_data->reserve(30000);
     QDataStream outstr(shred_data, QIODevice::WriteOnly);
     outstr << DATASTREAM_VERSION << CURRENT_SHRED_FORMAT_VERSION;
     outstr.setVersion(DATASTREAM_VERSION);
@@ -288,7 +290,7 @@ void Shred::AddFalling(Active * const active) {
     }
 }
 
-void Shred::AddFalling(const ushort x, const ushort y, const ushort z) {
+void Shred::AddFalling(const int x, const int y, const int z) {
     Active * const active = blocks[x][y][z]->ActiveBlock();
     if ( active != nullptr ) {
         AddFalling(active);
@@ -406,10 +408,10 @@ void Shred::CoverWith(const int kind, const int sub) {
     }
 }
 
-void Shred::RandomDrop(const int num, const int kind, const int sub,
+void Shred::RandomDrop(int num, const int kind, const int sub,
         const bool on_water)
 {
-    for (int i=0; i<num; ++i) {
+    for ( ; num!=0; --num) {
         const int rand = qrand();
         const int x = CoordInShred(rand);
         const int y = CoordInShred(rand >> SHRED_WIDTH_SHIFT);
