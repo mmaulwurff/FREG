@@ -20,7 +20,6 @@
 /**\file screen.cpp
  * \brief This file is related to curses screen for freg. */
 
-#include <QTimer>
 #include <QSettings>
 #include <QDir>
 #include <QMutex>
@@ -900,9 +899,7 @@ Screen::Screen(
     }
 
     input->start();
-    static QTimer timer;
-    connect(&timer, SIGNAL(timeout()), SLOT(Print()));
-    timer.start(50);
+    connect(wor, SIGNAL(UpdatesEnded()), SLOT(Print()));
 } // Screen::Screen(World * wor, Player * pl)
 
 void Screen::CleanAll() {

@@ -369,6 +369,7 @@ void World::PhysEvents() {
         for (int j=start; j<end; ++j) {
             shreds[ShredPos(i, j)]->DeleteDestroyedActives();
         }
+        emit UpdatesEnded();
         return;
     } // else:
 
