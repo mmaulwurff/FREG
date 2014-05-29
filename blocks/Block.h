@@ -89,7 +89,7 @@ public:
     virtual int DamageKind() const;
     virtual ushort DamageLevel() const;
 
-    virtual uchar LightRadius() const;
+    virtual int LightRadius() const;
     virtual int Temperature() const;
     virtual ushort Weight() const;
     /// Receive text signal.

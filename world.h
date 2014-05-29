@@ -33,8 +33,8 @@ class CraftManager;
 
 const int SAFE_FALL_HEIGHT = 5;
 
-const uchar MOON_LIGHT_FACTOR = 1U;
-const uchar  SUN_LIGHT_FACTOR = 8U;
+const int MOON_LIGHT_FACTOR = 1;
+const int  SUN_LIGHT_FACTOR = 8;
 
 class World final : public QThread {
     /** \class World world.h
@@ -62,21 +62,21 @@ private:
     void RemSun();
 
 public: // Lighting section
-    uchar Enlightened(int x, int y, int z) const;
-    uchar Enlightened(int x, int y, int z, int dir) const;
-    uchar SunLight   (int x, int y, int z) const;
-    uchar FireLight  (int x, int y, int z) const;
-    uchar LightMap   (int x, int y, int z) const;
+    int Enlightened(int x, int y, int z) const;
+    int Enlightened(int x, int y, int z, int dir) const;
+    int SunLight   (int x, int y, int z) const;
+    int FireLight  (int x, int y, int z) const;
+    int LightMap   (int x, int y, int z) const;
 
     int ClampX(int x) const;
     int ClampY(int y) const;
     int ClampZ(int z) const;
 
     void SunShineVertical  (int x, int y, int z = HEIGHT-2,
-            uchar level = MAX_LIGHT_RADIUS);
+            int level = MAX_LIGHT_RADIUS);
     void SunShineHorizontal(int x, int y, int z);
     /// If init is false, light will not spread from non-invisible blocks.
-    void Shine(int x, int y, int z, uchar level, bool init);
+    void Shine(int x, int y, int z, int level, bool init);
     void RemoveSunLight(int x, int y, int z);
 
     bool GetEvernight() const;
@@ -179,7 +179,6 @@ public:
 
 public: // Block information section
     static bool InVertBounds(int z);
-    bool InBounds(int x) const;
     bool InBounds(int x, int y) const;
     bool InBounds(int x, int y, int z) const;
     int  Temperature(int x, int y, int z) const;
@@ -257,7 +256,7 @@ private:
     /// UP for no reset, DOWN for full reset, NSEW for side shift.
     volatile int toResetDir;
 
-    uchar sunMoonFactor;
+    int sunMoonFactor;
 
     ShredStorage * shredStorage;
     Shred * shredMemoryPool;

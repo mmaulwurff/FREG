@@ -56,7 +56,7 @@ public:
     int     ShouldAct() const override;
     int     Temperature() const override;
     int     PushResult(int dir) const override;
-    uchar   LightRadius() const override;
+    int     LightRadius() const override;
     quint8  Kind() const override;
     QString FullName() const override;
     Block * DropAfterDamage() override;
@@ -72,9 +72,9 @@ public:
     Grass(QDataStream & str, int sub, quint16 id);
 
     int   ShouldAct()  const override;
+    int   LightRadius() const override;
     bool  ShouldFall() const override;
     void  Push(int dir, Block * who) override;
-    uchar LightRadius()       const override;
     Block * DropAfterDamage() override;
     quint8  Kind()     const override;
     QString FullName() const override;

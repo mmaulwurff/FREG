@@ -31,9 +31,9 @@ public:
     Illuminator(QDataStream & str, int sub, quint16 id);
 
     int     ShouldAct() const override;
+    int     LightRadius() const override;
     bool    ShouldFall() const override;
     void    Damage(ushort dmg, int dmg_kind) override;
-    uchar   LightRadius() const override;
     quint8  Kind() const override;
     Block * DropAfterDamage() override;
     QString FullName() const override;

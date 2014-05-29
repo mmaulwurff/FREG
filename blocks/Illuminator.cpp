@@ -57,7 +57,7 @@ usage_types Illuminator::Use(Block *) {
     }
 }
 
-uchar Illuminator::LightRadius() const {
+int Illuminator::LightRadius() const {
     if ( fuel_level == 0 ) return 0;
     switch ( Sub() ) {
     default:

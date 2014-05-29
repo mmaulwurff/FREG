@@ -73,10 +73,10 @@ public:
     static Block * Normal(int sub);
 
     // Lighting section
-    uchar Lightmap(  int x, int y, int z) const;
-    uchar FireLight( int x, int y, int z) const;
-    uchar SunLight(  int x, int y, int z) const;
-    uchar LightLevel(int x, int y, int z) const;
+    int Lightmap(  int x, int y, int z) const;
+    int FireLight( int x, int y, int z) const;
+    int SunLight(  int x, int y, int z) const;
+    int LightLevel(int x, int y, int z) const;
 
     bool SetSunLight( int x, int y, int z, int level);
     bool SetFireLight(int x, int y, int z, int level);

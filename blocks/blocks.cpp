@@ -183,8 +183,12 @@
     int Liquid::PushResult(const int) const { return ENVIRONMENT; }
     quint8 Liquid::Kind() const { return LIQUID; }
     int Liquid::Temperature() const { return ( WATER==Sub() ) ? 0 : 1000; }
-    uchar Liquid::LightRadius() const { return ( WATER==Sub() ) ? 0 : 3; }
     Block * Liquid::DropAfterDamage() { return nullptr; }
+
+    int Liquid::LightRadius() const {
+        static const int radius = ( WATER==Sub() ) ? 0 : 3;
+        return radius;
+    }
 
     QString Liquid::FullName() const {
         switch ( Sub() ) {
@@ -278,13 +282,18 @@
     }
 
     int  Grass::ShouldAct() const  { return FREQUENT_RARE; }
+    bool Grass::ShouldFall() const { return false; }
+    quint8 Grass::Kind() const { return GRASS; }
+    Block * Grass::DropAfterDamage() { return nullptr; }
+
     void Grass::Push(int, Block *) {
         GetWorld()->DestroyAndReplace(X(), Y(), Z());
     }
-    bool Grass::ShouldFall() const { return false; }
-    uchar Grass::LightRadius() const { return (FIRE == Sub()) ? 5 : 0; }
-    quint8 Grass::Kind() const { return GRASS; }
-    Block * Grass::DropAfterDamage() { return nullptr; }
+
+    int  Grass::LightRadius() const {
+        static const int radius = (FIRE == Sub()) ? 5 : 0;
+        return radius;
+    }
 
     Grass::Grass(const int sub, const quint16 id) :
             Active(sub, id)

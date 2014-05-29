@@ -670,7 +670,7 @@ void World::DestroyAndReplace(const int x, const int y, const int z) {
         new_block = Normal(AIR);
     }
     const bool was_not_invisible = ( temp->Transparent() != INVISIBLE );
-    const uchar old_light = temp->LightRadius();
+    const int old_light = temp->LightRadius();
     if ( dropped == temp ) {
         // do not delete block and do not replace it with normal
         Active * const active = temp->ActiveBlock();
@@ -706,7 +706,7 @@ bool World::Build(Block * block, const int x, const int y, const int z,
     block->SetDir(dir);
     const int old_transparency = target_block->Transparent();
     const int new_transparency = block->Transparent();
-    const uchar block_light = block->LightRadius();
+    const int block_light = block->LightRadius();
     SetBlock(block, x, y, z);
     if ( old_transparency != new_transparency ) {
         ReEnlightenBlockAdd(x, y, z);

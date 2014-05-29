@@ -91,7 +91,7 @@ void ShredStorage::AddShredData(const long longitude, const long latitude) {
     QFile file(Shred::FileName(world->WorldName(), longitude, latitude));
     storage.insert(LongLat(longitude, latitude),
         ( file.open(QIODevice::ReadOnly) ?
-            new QByteArray(qUncompress(file.readAll())) : 0 ));
+            new QByteArray(qUncompress(file.readAll())) : nullptr ));
 }
 
 void ShredStorage::WriteToFileShredData(const long longi, const long lati) {

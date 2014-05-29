@@ -41,7 +41,8 @@ int Shred::ShredY() const { return shredY; }
 World * Shred::GetWorld() const { return world; }
 
 bool Shred::LoadShred() {
-    QByteArray * const data = GetWorld()->GetShredData(longitude, latitude);
+    const QByteArray * const data =
+        GetWorld()->GetShredData(longitude, latitude);
     if ( data == nullptr ) return false;
     QDataStream in(*data);
     quint8  dataStreamVersion;
@@ -177,25 +178,23 @@ void Shred::PhysEventsFrequent() {
             const int x = (*i)->X();
             const int y = (*i)->Y();
             const int z = (*i)->Z();
-            if ( LIQUID == GetBlock(CoordInShred(x),
-                    CoordInShred(y), z-1)->Kind() )
-            {
+            const int x_in = CoordInShred(x);
+            const int y_in = CoordInShred(y);
+            static World * const world = GetWorld();
+            if ( LIQUID == GetBlock(x_in, y_in, z-1)->Kind() ) {
                 (*i)->SetFalling(false);
                 i = fallList.erase(i);
-            } else if ( weight <= GetBlock(CoordInShred(x),
-                        CoordInShred(y), z-1)->Weight()
-                    || !GetWorld()->Move(x, y, z, DOWN) )
+            } else if ( weight <= GetBlock(x_in, y_in, z-1)->Weight()
+                    || !world->Move(x, y, z, DOWN) )
             {
                 (*i)->FallDamage();
                 (*i)->SetFalling(false);
                 const int durability = (*i)->GetDurability();
                 i = fallList.erase(i);
                 if ( durability <= 0 ) {
-                    GetWorld()->DestroyAndReplace(x, y, z);
+                    world->DestroyAndReplace(x, y, z);
                 }
-                if ( GetBlock(CoordInShred(x),
-                    CoordInShred(y), z-1)->GetDurability() <= 0 )
-                {
+                if ( GetBlock(x_in, y_in, z-1)->GetDurability() <= 0 ) {
                     GetWorld()->DestroyAndReplace(x, y, z-1);
                 }
             } else {

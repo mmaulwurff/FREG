@@ -120,7 +120,7 @@ usage_types Block::Use(Block *) { return USAGE_TYPE_NO; }
 int  Block::Wearable() const { return WEARABLE_NOWHERE; }
 int  Block::DamageKind() const { return CRUSH; }
 ushort Block::DamageLevel() const { return 1; }
-uchar Block::LightRadius() const { return 0; }
+int  Block::LightRadius() const { return 0; }
 void Block::ReceiveSignal(const QString) {}
 
 bool Block::Inscribe(const QString str) {
@@ -196,8 +196,8 @@ bool Block::operator!=(const Block & block) const { return !(*this == block); }
 
 bool Block::operator==(const Block & block) const {
     return ( block.GetId()==GetId() &&
-        block.GetDir()==GetDir() &&
         block.GetDurability()==GetDurability() &&
+        block.GetDir()==GetDir() &&
         ( (!note && !block.note) ||
             (note && block.note && *block.note==*note) ) );
 }

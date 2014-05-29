@@ -22,8 +22,8 @@
 #include "BlockManager.h"
 #include <QDataStream>
 
-uchar Dwarf::GetActiveHand() const { return activeHand; }
-void  Dwarf::SetActiveHand(const bool right) {
+int  Dwarf::GetActiveHand() const { return activeHand; }
+void Dwarf::SetActiveHand(const bool right) {
     activeHand = (right ? quint8(IN_RIGHT) : IN_LEFT);
 }
 
@@ -61,15 +61,14 @@ ushort Dwarf::Start() const { return ON_LEGS+1; }
 quint8 Dwarf::Kind() const { return DWARF; }
 QString Dwarf::FullName() const { return "Rational"; }
 Inventory * Dwarf::HasInventory() { return Inventory::HasInventory(); }
-uchar Dwarf::LightRadius() const { return lightRadius; }
+int Dwarf::LightRadius() const { return lightRadius; }
 
 void Dwarf::UpdateLightRadius() {
     Block * const in_left  = ShowBlock(IN_LEFT);
     Block * const in_right = ShowBlock(IN_RIGHT);
-    const uchar  left_rad = in_left  ? in_left ->LightRadius() : 0;
-    const uchar right_rad = in_right ? in_right->LightRadius() : 0;
-    lightRadius = qMax(uchar(MIN_DWARF_LIGHT_RADIUS),
-        qMax(left_rad, right_rad));
+    const int left_rad  = in_left  ? in_left ->LightRadius() : 0;
+    const int right_rad = in_right ? in_right->LightRadius() : 0;
+    lightRadius = qMax(MIN_DWARF_LIGHT_RADIUS, qMax(left_rad, right_rad));
 }
 
 void Dwarf::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
