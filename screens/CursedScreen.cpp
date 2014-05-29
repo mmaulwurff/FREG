@@ -137,6 +137,7 @@ color_pairs Screen::Color(const int kind, const int sub) const {
         case HAZELNUT:
         case SOIL:       return BLACK_YELLOW;
         case SAND:       return YELLOW_WHITE;
+        case COAL:       return BLACK_WHITE;
         case IRON:       return WHITE_BLACK;
         case A_MEAT:     return WHITE_RED;
         case H_MEAT:     return BLACK_RED;
@@ -170,11 +171,12 @@ color_pairs Screen::Color(const int kind, const int sub) const {
     }
 } // color_pairs Screen::Color(int kind, int sub)
 
-void Screen::MovePlayer(const int dir) const {
+void Screen::MovePlayer(const int dir) {
     if ( player->GetDir() == dir ) {
         player->Move(dir);
     } else {
         player->SetDir(dir);
+        SetUpdated(false);
     }
 }
 

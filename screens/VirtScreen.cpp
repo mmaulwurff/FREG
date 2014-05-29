@@ -27,7 +27,7 @@
 void VirtScreen::ConnectWorld() {
     connect(w, SIGNAL(Updated(int, int, int)), SLOT(Update(int, int, int)),
         Qt::DirectConnection);
-    connect(w, SIGNAL(UpdatedAround(int, int, int, ushort)),
+    connect(w, SIGNAL(UpdatedAround(int, int, int, int)),
         SLOT(UpdateAround(int, int, int, int)),
         Qt::DirectConnection);
 }
@@ -124,6 +124,7 @@ char VirtScreen::CharName(const int kind, const int sub) const {
     } // no break;
     default: switch ( sub ) {
         default: fprintf(stderr, "Screen::CharName: sub (?): %d\n", sub);
+        case GREENERY: return '%';
         case NULLSTONE:
         case IRON:
         case CLAY:
@@ -132,18 +133,18 @@ char VirtScreen::CharName(const int kind, const int sub) const {
         case MOSS_STONE:
         case SAND:
         case STONE: return '#';
-        case GLASS: return 'g';
-        case AIR:   return ' ';
-        case STAR:  return '.';
-        case WATER: return '~';
         case SOIL:  return '.';
-        case ROSE:  return ';';
+        case WATER: return '~';
         case A_MEAT:
         case H_MEAT:
         case HAZELNUT: return ',';
+        case GLASS: return 'g';
+        case ROSE:  return ';';
+        case COAL:  return '*';
+        case STAR:  return '.';
         case SKY:
-        case SUN_MOON: return ' ';
-        case GREENERY: return '%';
+        case SUN_MOON:
+        case AIR:   return ' ';
         }
     }
 } // char VirtScreen::CharName(int kind, int sub)
