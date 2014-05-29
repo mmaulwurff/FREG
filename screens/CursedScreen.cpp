@@ -38,12 +38,12 @@ const int QUICK_INVENTORY_X_SHIFT = 36;
 void Screen::Arrows(WINDOW * const window, const ushort x, const ushort y,
         const bool show_dir)
 const {
-    wcolor_set(window, WHITE_BLACK, NULL);
+    wcolor_set(window, WHITE_BLACK, nullptr);
     if ( show_dir ) {
         mvwaddstr(window, 0, x-2, qPrintable(tr("N    N")));
         mvwaddstr(window, SCREEN_SIZE+1, x-2, qPrintable(tr("S    S")));
     }
-    wcolor_set(window, WHITE_RED, NULL);
+    wcolor_set(window, WHITE_RED, nullptr);
     static const QString arrows_down(2, QChar(ascii ? 'v' : 0x2193));
     static const QString arrows_up  (2, QChar(ascii ? '^' : 0x2191));
     mvwaddstr(window, 0, x, qPrintable(arrows_down));
@@ -55,14 +55,14 @@ const {
 void Screen::HorizontalArrows(WINDOW * const window, const ushort y,
         const short color, const bool show_dir)
 const {
-    wcolor_set(window, WHITE_BLACK, NULL);
+    wcolor_set(window, WHITE_BLACK, nullptr);
     if ( show_dir ) {
         mvwaddstr(window, y-1, 0, qPrintable(tr("W")));
         mvwaddstr(window, y+1, 0, qPrintable(tr("W")));
         mvwaddstr(window, y-1, SCREEN_SIZE*2+1, qPrintable(tr("E")));
         mvwaddstr(window, y+1, SCREEN_SIZE*2+1, qPrintable(tr("E")));
     }
-    wcolor_set(window, color, NULL);
+    wcolor_set(window, color, nullptr);
     static const QString arrow_right(QChar(ascii ? '>' : 0x2192));
     static const QString arrow_left (QChar(ascii ? '<' : 0x2190));
     mvwaddstr(window, y, 0, qPrintable(arrow_right));
@@ -328,7 +328,7 @@ void Screen::ActionXyz(int * x, int * y, int * z) const {
 char Screen::PrintBlock(const Block & block, WINDOW * const window) const {
     const int kind = block.Kind();
     const int sub  = block.Sub();
-    wcolor_set(window, Color(kind, sub), NULL);
+    wcolor_set(window, Color(kind, sub), nullptr);
     return CharName(kind, sub);
 }
 
@@ -470,13 +470,13 @@ void Screen::PrintHUD() {
         const short satiation = player->SatiationPercent();
         if ( -1 != satiation ) { // satiation line
             if ( 100 < satiation ) {
-                wcolor_set(hudWin, BLUE_BLACK, NULL);
+                wcolor_set(hudWin, BLUE_BLACK, nullptr);
                 mvwaddstr(hudWin, 2, 0, qPrintable(tr("Gorged")));
             } else if ( 75 < satiation ) {
-                wcolor_set(hudWin, GREEN_BLACK, NULL);
+                wcolor_set(hudWin, GREEN_BLACK, nullptr);
                 mvwaddstr(hudWin, 2, 0, qPrintable(tr("Full")));
             } else if ( 25 > satiation ) {
-                wcolor_set(hudWin, RED_BLACK, NULL);
+                wcolor_set(hudWin, RED_BLACK, nullptr);
                 mvwaddstr(hudWin, 2, 0, qPrintable(tr("Hungry")));
             }
         }
@@ -523,7 +523,7 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
         static const QString arrow_up   (QChar(ascii ? '^' : 0x2191));
         static const QString arrow_right(QChar(ascii ? '>' : 0x2192));
         static const QString arrow_down (QChar(ascii ? 'v' : 0x2193));
-        wcolor_set(window, Color(block->Kind(), block->Sub()), NULL);
+        wcolor_set(window, Color(block->Kind(), block->Sub()), nullptr);
         (void)wmove(window, player->Y()-start_y+1, (player->X()-start_x)*2+2);
         switch ( player->GetDir() ) {
         case NORTH: waddstr(window, qPrintable(arrow_up));    break;
@@ -635,7 +635,7 @@ void Screen::PrintFront(WINDOW * const window) const {
                     waddch(window, CharNumberFront(i, j));
                     continue;
                 } else {
-                    wcolor_set(window, sky_colour, NULL);
+                    wcolor_set(window, sky_colour, nullptr);
                     waddch(window, sky_char);
                 }
             } else {
@@ -660,7 +660,7 @@ void Screen::PrintFront(WINDOW * const window) const {
 void Screen::PrintTitle(WINDOW * const window, const int dir) const {
     wstandend(window);
     box(window, 0, 0);
-    wcolor_set(window, BLACK_WHITE, NULL);
+    wcolor_set(window, BLACK_WHITE, nullptr);
     QString dir_string;
     switch ( dir ) {
     case NORTH: dir_string = tr("^ North ^"); break;
@@ -718,7 +718,7 @@ void Screen::PrintInv(WINDOW * const window, const Inventory & inv) const {
     mvwprintw(window, 2+inv.Size()+shift, 40,
         qPrintable(tr("All weight: %1 mz").
             arg(inv.Weight(), 6, 10, QChar(' '))));
-    wcolor_set(window, Color(inv.Kind(), inv.Sub()), NULL);
+    wcolor_set(window, Color(inv.Kind(), inv.Sub()), nullptr);
     box(window, 0, 0);
     mvwprintw(window, 0, 1, "[%c]%s", CharName( inv.Kind(), inv.Sub()),
         qPrintable((player->PlayerInventory()==&inv) ?
@@ -765,7 +765,7 @@ void Screen::Notify(const QString str) const {
         }
     }
     if ( str.at(str.size()-1) == '!' ) {
-        wcolor_set(notifyWin, RED_BLACK, NULL);
+        wcolor_set(notifyWin, RED_BLACK, nullptr);
     }
     static ushort notification_repeat_count = 1;
     static QString last_notification;
@@ -788,7 +788,7 @@ void Screen::DeathScreen() {
     werase(rightWin);
     werase(hudWin);
     Notify(DING);
-    wcolor_set(leftWin, WHITE_RED, NULL);
+    wcolor_set(leftWin, WHITE_RED, nullptr);
     if ( not PrintFile(leftWin, "texts/death.txt") ) {
         waddstr(leftWin, qPrintable(tr("You die.\nWaiting for respawn...")));
     }
@@ -846,7 +846,7 @@ Screen::Screen(
         COLOR_CYAN,
         COLOR_WHITE
     };
-    for (short i=BLACK_BLACK; i<=WHITE_WHITE; ++i) {
+    for (int i=BLACK_BLACK; i<=WHITE_WHITE; ++i) {
         init_pair(i, colors[(i-1)/8], colors[(i-1)%8]);
     }
     const ushort preferred_width = (SCREEN_SIZE*2+2)*2;
@@ -937,7 +937,7 @@ void Screen::PrintBar(const short x, const short color, const int ch,
     wstandend(hudWin);
     mvwprintw(hudWin, 0, x,
         value_position_right ? "[..........]%hd" : "%3hd[..........]", value);
-    wcolor_set(hudWin, color, NULL);
+    wcolor_set(hudWin, color, nullptr);
     const QString str(10, QChar(ch));
     mvwaddstr(hudWin, 0, x + (not value_position_right ? 4 : 1),
         qPrintable(str.left(10*value/max_value+1)));
