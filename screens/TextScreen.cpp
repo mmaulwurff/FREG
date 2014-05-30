@@ -186,7 +186,7 @@ void Screen::ActionXyz(int * x, int * y, int * z) const {
                 player->Y(),
                 player->Z()+shiftFocus)->Sub() ))
     {
-        z += shiftFocus;
+        *z += shiftFocus;
     }
 }
 

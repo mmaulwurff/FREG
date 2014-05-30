@@ -839,12 +839,11 @@ World::World(const QString world_name) :
         toLongLong();
     if ( 1 != numShreds%2 ) {
         ++numShreds;
-        fprintf(stderr, "Invalid number of shreds. Set to %hu.\n",
-            numShreds);
+        fprintf(stderr, "Invalid number of shreds. Set to %d.\n", numShreds);
     }
     if ( numShreds < MIN_WORLD_SIZE ) {
         fprintf(stderr,
-            "Number of shreds: to small: %hu. Set to %hu.\n",
+            "Number of shreds: to small: %d. Set to %d.\n",
             numShreds, MIN_WORLD_SIZE);
         numShreds = MIN_WORLD_SIZE;
     }
