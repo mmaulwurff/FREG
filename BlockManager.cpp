@@ -101,10 +101,11 @@ BlockManager::BlockManager() {
         "invalid number of strings in BlockManager::kinds[]");
     static_assert((sizeof_array(BlockManager::subs) == LAST_SUB),
         "invalid number of strings in BlockManager::subs[]");
+    static_assert((LAST_SUB <= 128), "too many substances, should be < 127.");
 }
 
 BlockManager::~BlockManager() {
-    for(ushort sub=0; sub<LAST_SUB; ++sub) {
+    for(int sub=0; sub<LAST_SUB; ++sub) {
         delete normals[sub];
     }
 }

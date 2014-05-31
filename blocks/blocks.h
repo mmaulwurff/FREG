@@ -30,7 +30,7 @@ public:
 
     int     PushResult(int dir) const override;
     quint8  Kind() const override;
-    ushort  Weight() const override;
+    int     Weight() const override;
     QString FullName() const override;
 };
 
@@ -42,7 +42,7 @@ public:
     int     PushResult(int dir) const override;
     bool    Catchable() const override;
     quint8  Kind() const override;
-    ushort  Weight() const override;
+    int     Weight() const override;
     QString FullName() const override;
     Block * DropAfterDamage() override;
 };
@@ -89,7 +89,7 @@ private:
 class Bush : public Active, public Inventory {
     Q_OBJECT
 
-    static const ushort BUSH_SIZE = 3;
+    static const int BUSH_SIZE = 3;
 public:
     Bush(int sub, quint16 id);
     Bush(QDataStream & str, int sub, quint16 id);
@@ -101,7 +101,7 @@ public:
     void Push(int dir, Block * who) override;
     void ReceiveSignal(QString) override;
     quint8 Kind() const override;
-    ushort Weight() const override;
+    int Weight() const override;
 
     QString FullName() const override;
     usage_types Use(Block * who = 0) override;
@@ -162,12 +162,12 @@ public:
 
     int ShouldAct() const override;
     int PushResult(int) const override;
+    int Weight() const override;
     bool ShouldFall() const override;
     bool Inscribe(QString) override;
     void Push(int dir, Block * who) override;
-    void Damage(ushort dmg, int dmg_kind) override;
+    void Damage(int dmg, int dmg_kind) override;
     quint8 Kind() const override;
-    ushort Weight() const override;
     QString FullName() const override;
     usage_types Use(Block * who = 0) override;
     INNER_ACTIONS ActInner() override;
@@ -176,8 +176,8 @@ protected:
     void DoRareAction() override;
 
 private:
-    short alarmTime;
-    short timerTime;
+    int alarmTime;
+    int timerTime;
 };
 
 class Creator : public Active, public Inventory {
@@ -191,7 +191,7 @@ public:
     int  Sub() const override;
     void ReceiveSignal(QString) override;
     int  DamageKind() const override;
-    ushort DamageLevel() const override;
+    int  DamageLevel() const override;
     QString FullName() const override;
     Inventory * HasInventory() override;
 
@@ -236,7 +236,7 @@ public:
     Bell(QDataStream & str, int sub, quint16 id);
 
     void    ReceiveSignal(QString) override;
-    void    Damage(ushort dmg, int dmg_kind) override;
+    void    Damage(int dmg, int dmg_kind) override;
     quint8  Kind() const override;
     QString FullName() const override;
     usage_types Use(Block * who = 0) override;
@@ -248,7 +248,7 @@ public:
     Predator(int sub, quint16 id);
     Predator(QDataStream & str, int sub, quint16 id);
 
-    ushort DamageLevel() const override;
+    int DamageLevel() const override;
     quint8 Kind() const override;
     QString FullName() const override;
     quint16 NutritionalValue(quint8 sub) const override;

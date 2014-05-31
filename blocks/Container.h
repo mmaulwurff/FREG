@@ -34,15 +34,15 @@ class Container : public Active, public Inventory {
      *  - container from other substances are different chests. */
     Q_OBJECT
 public:
-    Container(int sub, quint16 id, ushort size = INV_SIZE);
-    Container(QDataStream & str, int sub, quint16 id, ushort size = INV_SIZE);
+    Container(int sub, quint16 id, int size = INV_SIZE);
+    Container(QDataStream & str, int sub, quint16 id, int size = INV_SIZE);
 
     int  Sub() const override;
     void ReceiveSignal(QString) override;
     void DoRareAction() override;
     int  ShouldAct() const override;
     void Push(int, Block * who) override;
-    ushort  Weight() const override;
+    int  Weight() const override;
     quint8  Kind() const override;
     Block * DropAfterDamage() override;
     QString FullName() const override;
@@ -64,16 +64,16 @@ public:
     Workbench(QDataStream & str, int sub, quint16 id);
 
     quint8 Kind() const override;
-    bool Drop(ushort src, ushort dest, ushort num, Inventory * inv) override;
-    bool Get(Block * block, ushort start = 0) override;
+    bool Drop(int src, int dest, int num, Inventory * inv) override;
+    bool Get(Block * block, int start = 0) override;
     bool GetAll(Inventory * from) override;
-    ushort Start() const override;
+    int Start() const override;
     QString FullName() const override;
 
 private:
     void Craft();
 
-    static const ushort WORKBENCH_SIZE = 10;
+    static const int WORKBENCH_SIZE = 10;
 }; // Workbench
 
 #endif // CONTAINER_H

@@ -39,9 +39,8 @@ void Screen::UpdateAround(int, int, int, ushort) {}
 void Screen::Move(int) {}
 
 void Screen::PassString(QString & str) const {
-    static const ushort NOTE_LENGTH = 144;
-    char temp_str[NOTE_LENGTH+1];
-    fgets(temp_str, NOTE_LENGTH, stdin);
+    char temp_str[MAX_NOTE_LENGTH+1];
+    fgets(temp_str, MAX_NOTE_LENGTH, stdin);
     fprintf(notifyLog, "%lu: Command: %s\n", w->Time(), temp_str);
     str = QString::fromUtf8(temp_str);
 }

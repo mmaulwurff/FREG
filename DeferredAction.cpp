@@ -41,7 +41,7 @@ void DeferredAction::Jump() const {
 }
 
 void DeferredAction::Build() const {
-    short z = z_self;
+    int z = z_self;
     if ( DOWN==attachedBlock->GetDir() &&
             AIR!=GetWorld()->GetBlock(x_self, y_self, z_self)->Sub() )
     {
@@ -118,20 +118,20 @@ void DeferredAction::SetFire() const {
     }
 }
 
-void DeferredAction::SetGhostMove(const ushort dir) {
+void DeferredAction::SetGhostMove(const int dir) {
     type = DEFERRED_GHOST_MOVE;
     num  = dir;
 }
 
-void DeferredAction::SetMove(const ushort dir) {
+void DeferredAction::SetMove(const int dir) {
     type = DEFERRED_MOVE;
     num  = dir;
 }
 
 void DeferredAction::SetJump() { type = DEFERRED_JUMP; }
 
-void DeferredAction::SetBuild(const short x, const short y, const short z,
-        Block * const mat, const ushort builder_slot)
+void DeferredAction::SetBuild(const int x, const int y, const int z,
+        Block * const mat, const int builder_slot)
 {
     SetXyz(x, y, z);
     material = mat;
@@ -139,13 +139,13 @@ void DeferredAction::SetBuild(const short x, const short y, const short z,
     type     = DEFERRED_BUILD;
 }
 
-void DeferredAction::SetDamage(const short x, const short y, const short z) {
+void DeferredAction::SetDamage(const int x, const int y, const int z) {
     SetXyz(x, y, z);
     type = DEFERRED_DAMAGE;
 }
 
-void DeferredAction::SetThrow(const short x, const short y, const short z,
-        const ushort src, const ushort dest, const ushort n)
+void DeferredAction::SetThrow(const int x, const int y, const int z,
+        const int src, const int dest, const int n)
 {
     SetXyz(x, y, z);
     srcSlot  = src;
@@ -154,15 +154,15 @@ void DeferredAction::SetThrow(const short x, const short y, const short z,
     type = DEFERRED_THROW;
 }
 
-void DeferredAction::SetPour(const short x, const short y, const short z,
-        const ushort src)
+void DeferredAction::SetPour(const int x, const int y, const int z,
+        const int src)
 {
     SetXyz(x, y, z);
     srcSlot = src;
     type = DEFERRED_POUR;
 }
 
-void DeferredAction::SetSetFire(const short x, short y, short z) {
+void DeferredAction::SetSetFire(const int x, int y, int z) {
     SetXyz(x, y, z);
     type = DEFERRED_SET_FIRE;
 }

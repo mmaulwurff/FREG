@@ -11,10 +11,10 @@ public:
 
     quint8  Kind() const override;
     int     Sub() const override;
-    ushort  Weight() const override;
+    int     Weight() const override;
     QString FullName() const override;
-    bool    Get(Block * block, ushort start) override;
-    void    Damage(ushort dmg, int dmg_kind) override;
+    bool    Get(Block * block, int start) override;
+    void    Damage(int dmg, int dmg_kind) override;
     void    ReceiveSignal(QString str) override;
     usage_types Use(Block *) override;
     Inventory * HasInventory() override;

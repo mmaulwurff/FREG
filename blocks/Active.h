@@ -49,13 +49,13 @@ public:
      Active(QDataStream & str, int sub, quint16 id, quint8 transp = UNDEF);
     ~Active();
 
-    bool Move(int dir)                    override;
-    void Damage(ushort dmg, int dmg_kind) override;
-    void ReceiveSignal(QString)           override;
-    int  PushResult(int dir)        const override;
-    quint8   Kind()                 const override;
-    QString  FullName()             const override;
-    Active * ActiveBlock()                override;
+    bool Move(int dir) override;
+    void Damage(int dmg, int dmg_kind) override;
+    void ReceiveSignal(QString) override;
+    int  PushResult(int dir) const override;
+    quint8   Kind() const override;
+    QString  FullName() const override;
+    Active * ActiveBlock() override;
 
     void FallDamage();
     bool IsFalling() const;

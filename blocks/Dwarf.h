@@ -37,14 +37,14 @@ public:
     int DamageKind() const override;
     bool Move(int direction) override;
     quint8 Kind() const override;
-    ushort Start() const override;
-    ushort Weight() const override;
-    ushort DamageLevel() const override;
+    int Start() const override;
+    int Weight() const override;
+    int DamageLevel() const override;
     QString FullName() const override;
 
     bool Access() const override;
     bool Inscribe(QString str) override;
-    void MoveInside(ushort num_from, ushort num_to, ushort num) override;
+    void MoveInside(int num_from, int num_to, int num) override;
     void ReceiveSignal(QString) override;
     int  LightRadius() const override;
     Block * DropAfterDamage() override;

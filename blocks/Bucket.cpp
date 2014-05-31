@@ -14,7 +14,7 @@ Bucket::Bucket(QDataStream & str, const int sub, const quint16 id) :
 quint8  Bucket::Kind() const { return BUCKET; }
 int     Bucket::Sub()  const { return Block::Sub(); }
 Inventory * Bucket::HasInventory() { return Inventory::HasInventory(); }
-void    Bucket::Damage(ushort /*dmg*/, int /*dmg_kind*/) { Break(); }
+void    Bucket::Damage(int /*dmg*/, int /*dmg_kind*/) { Break(); }
 void    Bucket::ReceiveSignal(const QString str) { Block::ReceiveSignal(str); }
 usage_types Bucket::Use(Block *) { return USAGE_TYPE_POUR; }
 
@@ -34,7 +34,7 @@ QString Bucket::FullName() const {
     return name; 
 }
 
-bool Bucket::Get(Block * const block, const ushort start = 0) {
+bool Bucket::Get(Block * const block, const int start = 0) {
     if ( block->Kind() != LIQUID ) {
         return false;
     }
@@ -50,6 +50,6 @@ void Bucket::SaveAttributes(QDataStream & out) const {
     Inventory::SaveAttributes(out);
 }
 
-ushort Bucket::Weight() const {
+int Bucket::Weight() const {
     return Block::Weight()/6+Inventory::Weight();
 }

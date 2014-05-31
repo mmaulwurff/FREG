@@ -48,16 +48,15 @@ public:
     explicit DeferredAction(Active * attached);
     DeferredAction & operator=(const DeferredAction &) = delete;
 
-    void SetGhostMove(ushort dir = NOWHERE);
-    void SetMove(ushort dir = NOWHERE);
+    void SetGhostMove(int dir = NOWHERE);
+    void SetMove(int dir = NOWHERE);
     void SetJump();
-    void SetDamage (short x, short y, short z);
-    void SetPour   (short x, short y, short z, ushort slot);
-    void SetSetFire(short x, short y, short z);
-    void SetBuild  (short x, short y, short z,
-            Block * material, ushort builder_slot);
-    void SetThrow  (short x, short y, short z,
-            ushort src_slot, ushort dest_slot, ushort unum);
+    void SetDamage (int x, int y, int z);
+    void SetPour   (int x, int y, int z, int slot);
+    void SetSetFire(int x, int y, int z);
+    void SetBuild  (int x, int y, int z, Block * material, int builder_slot);
+    void SetThrow  (int x, int y, int z,
+            int src_slot, int dest_slot, int unum);
 
     World * GetWorld() const;
     int  GetActionType() const;
@@ -67,8 +66,8 @@ private:
     deferred_actions type;
     Active * const attachedBlock;
     Block * material;
-    ushort srcSlot, destSlot;
-    ushort num;
+    int srcSlot, destSlot;
+    int num;
 
     void GhostMove() const;
     void Move() const;

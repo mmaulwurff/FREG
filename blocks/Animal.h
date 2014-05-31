@@ -28,12 +28,12 @@ public:
     Animal(int sub, quint16 id);
     Animal(QDataStream & str, int sub, quint16 id);
 
-    int     DamageKind() const override;
-    int     ShouldAct() const override;
-    void    DoRareAction() override;
-    bool    Eat(int sub);
-    ushort  Breath() const;
-    ushort  Satiation() const;
+    int  DamageKind() const override;
+    int  ShouldAct() const override;
+    void DoRareAction() override;
+    bool Eat(int sub);
+    int  Breath() const;
+    int  Satiation() const;
     QString FullName() const override = 0;
     Animal * IsAnimal() override;
     Block  * DropAfterDamage() override;

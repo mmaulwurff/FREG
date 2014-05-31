@@ -87,7 +87,7 @@ DeferredAction * Active::GetDeferredAction() const { return deferredAction; }
 
 void Active::FallDamage() {
     if ( fall_height > SAFE_FALL_HEIGHT ) {
-        const ushort dmg = (fall_height - SAFE_FALL_HEIGHT)*10;
+        const int dmg = (fall_height - SAFE_FALL_HEIGHT)*10;
         GetWorld()->Damage(X(), Y(), Z()-1, dmg, DAMAGE_FALL);
         Damage(dmg, DAMAGE_FALL);
     }
@@ -139,7 +139,7 @@ void Active::SetShred(Shred * const new_shred) { shred = new_shred; }
 Shred * Active::GetShred() const { return shred; }
 World * Active::GetWorld() const { return world; }
 
-void Active::Damage(const ushort dmg, const int dmg_kind) {
+void Active::Damage(const int dmg, const int dmg_kind) {
     const int last_dur = GetDurability();
     Block::Damage(dmg, dmg_kind);
     if ( last_dur != GetDurability() ) {

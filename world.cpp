@@ -549,28 +549,30 @@ bool World::CanMove(const int x, const int y, const int z,
 void World::NoCheckMove(const int x, const int y, const int z,
         const int newx, const int newy, const int newz, const quint8 dir)
 {
-    Block * const block = GetBlock(x, y, z);
-    Block * const block_to = GetBlock(newx, newy, newz);
+    Shred * const shred_from = GetShred(x, y);
+    Shred * const shred_to   = GetShred(newx, newy);
+    const int x_in = Shred::CoordInShred(x);
+    const int y_in = Shred::CoordInShred(y);
+    const int newx_in = Shred::CoordInShred(newx);
+    const int newy_in = Shred::CoordInShred(newy);
+    Block * const block    = shred_from->GetBlock(   x_in,    y_in,    z);
+    Block * const block_to = shred_to  ->GetBlock(newx_in, newy_in, newz);
 
-    PutBlock(block_to, x, y, z);
-    PutBlock(block, newx, newy, newz);
+    shred_from->PutBlock(block_to,    x_in,    y_in,    z);
+    shred_to  ->PutBlock(block,    newx_in, newy_in, newz);
 
     if ( block_to->Transparent() != block->Transparent() ) {
         ReEnlighten(newx, newy, newz);
         ReEnlighten(x, y, z);
     }
 
-    block_to->Move( Anti(dir) );
-    block->Move(dir);
+    block_to->Move(Anti(dir));
+    block   ->Move(dir);
 
-    Shred * shred = GetShred(x, y);
-    shred->AddFalling(Shred::CoordInShred(x), Shred::CoordInShred(y), z+1);
-    shred->AddFalling(Shred::CoordInShred(x), Shred::CoordInShred(y), z);
-    shred = GetShred(newx, newy);
-    shred->AddFalling(Shred::CoordInShred(newx), Shred::CoordInShred(newy),
-        newz+1);
-    shred->AddFalling(Shred::CoordInShred(newx), Shred::CoordInShred(newy),
-        newz);
+    shred_from->AddFalling(x_in, y_in, z+1);
+    shred_from->AddFalling(x_in, y_in, z);
+    shred_to  ->AddFalling(newx_in, newy_in, newz+1);
+    shred_to  ->AddFalling(newx_in, newy_in, newz);
 }
 
 void World::Jump(const int x, const int y, const int z, const quint8 dir) {

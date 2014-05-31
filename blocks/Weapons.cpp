@@ -34,11 +34,11 @@
     }
 
     quint8 Weapon::Kind() const { return WEAPON; }
-    ushort Weapon::Weight() const { return Block::Weight()/4; }
+    int    Weapon::Weight() const { return Block::Weight()/4; }
     int    Weapon::Wearable() const { return WEARABLE_ARM; }
-    void   Weapon::Damage(ushort, int) { Break(); }
+    void   Weapon::Damage(int, int) { Break(); }
 
-    ushort Weapon::DamageLevel() const {
+    int Weapon::DamageLevel() const {
         switch ( Sub() ) {
         case WOOD:  return 4;
         case IRON:  return 6;
@@ -73,7 +73,7 @@
     quint8 Pick::Kind() const { return PICK; }
     int Pick::DamageKind() const { return MINE; }
 
-    ushort Pick::DamageLevel() const {
+    int Pick::DamageLevel() const {
         switch ( Sub() ) {
         case IRON: return 10;
         default:
@@ -103,7 +103,7 @@
     quint8 Shovel::Kind() const { return SHOVEL; }
     int Shovel::DamageKind() const { return DIG; }
 
-    ushort Shovel::DamageLevel() const {
+    int Shovel::DamageLevel() const {
         switch ( Sub() ) {
         case IRON: return 3;
         default:
@@ -134,7 +134,7 @@
     quint8 Hammer::Kind() const { return HAMMER; }
     int Hammer::DamageKind() const { return CRUSH; }
 
-    ushort Hammer::DamageLevel() const {
+    int Hammer::DamageLevel() const {
         switch ( Sub() ) {
         case IRON: return 10;
         default:
@@ -166,7 +166,7 @@
     quint8 Axe::Kind() const { return AXE; }
     int Axe::DamageKind() const { return CUT; }
 
-    ushort Axe::DamageLevel() const {
+    int Axe::DamageLevel() const {
         switch ( Sub() ) {
         case IRON: return 10;
         default:

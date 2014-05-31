@@ -41,7 +41,7 @@
 
     quint8 Plate::Kind() const { return PLATE; }
     int Plate::PushResult(const int) const { return JUMP; }
-    ushort Plate::Weight() const { return Block::Weight()/4; }
+    int Plate::Weight() const { return Block::Weight()/4; }
 
     Plate::Plate(const int sub, const quint16 id) :
             Block(sub, id, NONSTANDARD)
@@ -65,7 +65,7 @@
 
     int  Ladder::PushResult(const int) const { return MOVE_UP; }
     bool Ladder::Catchable() const { return true; }
-    ushort Ladder::Weight() const { return Block::Weight()*3; }
+    int  Ladder::Weight() const { return Block::Weight()*3; }
     quint8 Ladder::Kind() const { return LADDER; }
 
     Block * Ladder::DropAfterDamage() {
@@ -109,8 +109,8 @@
     }
     int Animal::ShouldAct() const { return FREQUENT_SECOND | FREQUENT_RARE; }
 
-    ushort Animal::Breath() const { return breath; }
-    ushort Animal::Satiation() const { return satiation; }
+    int Animal::Breath() const { return breath; }
+    int Animal::Satiation() const { return satiation; }
     Animal * Animal::IsAnimal() { return this; }
     int Animal::DamageKind() const { return BITE; }
 
@@ -308,7 +308,7 @@
     int  Bush::ShouldAct() const  { return FREQUENT_RARE; }
     void Bush::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
     quint8 Bush::Kind() const { return BUSH; }
-    ushort Bush::Weight() const { return Inventory::Weight()+Block::Weight(); }
+    int  Bush::Weight() const { return Inventory::Weight()+Block::Weight(); }
     QString Bush::FullName() const { return tr("Bush"); }
     usage_types Bush::Use(Block *) { return USAGE_TYPE_OPEN; }
     Inventory * Bush::HasInventory() { return Inventory::HasInventory(); }
@@ -502,10 +502,10 @@
     int    Clock::PushResult(const int) const { return NOT_MOVABLE; }
     int    Clock::ShouldAct() const  { return FREQUENT_RARE; }
     bool   Clock::ShouldFall() const { return false; }
-    void   Clock::Damage(ushort, int) { Break(); }
+    void   Clock::Damage(int, int) { Break(); }
     void   Clock::Push(const int, Block * const) { Use(); }
     quint8 Clock::Kind() const { return CLOCK; }
-    ushort Clock::Weight() const { return Block::Weight()/10; }
+    int    Clock::Weight() const { return Block::Weight()/10; }
 
     void Clock::DoRareAction() {
         if ( alarmTime == GetWorld()->TimeOfDay()
@@ -535,7 +535,7 @@
         QTextStream txt_stream(note);
         txt_stream >> c;
         if ( 'a' == c ) {
-            ushort alarm_hour;
+            int alarm_hour;
             txt_stream >> alarm_hour;
             txt_stream >> alarmTime;
             alarmTime += alarm_hour*60;
@@ -569,7 +569,7 @@
     int Creator::Sub() const { return Block::Sub(); }
     QString Creator::FullName() const { return tr("Creative block"); }
     int Creator::DamageKind() const { return TIME; }
-    ushort Creator::DamageLevel() const { return MAX_DURABILITY; }
+    int Creator::DamageLevel() const { return MAX_DURABILITY; }
     Inventory * Creator::HasInventory() { return Inventory::HasInventory(); }
     int Creator::ShouldAct() const { return FREQUENT_FIRST; }
 
@@ -648,7 +648,7 @@
             const Shred * const shred = active->GetShred();
             const long  lati = shred->Latitude();
             const long longi = shred->Longitude();
-            static const ushort FILE_SIZE_CHARS = 31;
+            static const int FILE_SIZE_CHARS = 31;
             if ( 0 == map_file.size() ) { // new map
                 char header[FILE_SIZE_CHARS+1];
                 memset(header, '-', FILE_SIZE_CHARS);
@@ -712,7 +712,7 @@
         str >> longiStart >> latiStart >> savedShift >> savedChar;
     }
 // Bell::
-    void    Bell::Damage(ushort, int) { Break(); }
+    void    Bell::Damage(int, int) { Break(); }
     quint8  Bell::Kind() const { return BELL; }
     QString Bell::FullName() const { return QObject::tr("Bell"); }
 
@@ -741,7 +741,7 @@
             : Animal(str, sub, id)
     {}
 
-    ushort Predator::DamageLevel() const { return 10; }
+    int Predator::DamageLevel() const { return 10; }
     quint8 Predator::Kind() const { return PREDATOR; }
     QString Predator::FullName() const { return "Predator"; }
     quint16 Predator::NutritionalValue(quint8 sub) const {

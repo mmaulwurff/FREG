@@ -35,7 +35,7 @@
 const char OBSCURE_BLOCK = ' ';
 const int QUICK_INVENTORY_X_SHIFT = 36;
 
-void Screen::Arrows(WINDOW * const window, const ushort x, const ushort y,
+void Screen::Arrows(WINDOW * const window, const int x, const int y,
         const bool show_dir)
 const {
     wcolor_set(window, WHITE_BLACK, nullptr);
@@ -52,8 +52,8 @@ const {
     (void)wmove(window, y, x);
 }
 
-void Screen::HorizontalArrows(WINDOW * const window, const ushort y,
-        const short color, const bool show_dir)
+void Screen::HorizontalArrows(WINDOW * const window, const int y,
+        const int color, const bool show_dir)
 const {
     wcolor_set(window, WHITE_BLACK, nullptr);
     if ( show_dir ) {
@@ -86,10 +86,9 @@ void Screen::UpdateAll() {
 
 void Screen::PassString(QString & str) const {
     mvwaddch(commandWin, 0, 0, ':');
-    static const ushort NOTE_LENGTH = 144;
-    char temp_str[NOTE_LENGTH+1];
+    char temp_str[MAX_NOTE_LENGTH+1];
     echo();
-    wgetnstr(commandWin, temp_str, NOTE_LENGTH);
+    wgetnstr(commandWin, temp_str, MAX_NOTE_LENGTH);
     noecho();
     werase(commandWin);
     wrefresh(commandWin);
@@ -97,11 +96,11 @@ void Screen::PassString(QString & str) const {
     str = QString::fromUtf8(temp_str);
 }
 
-char Screen::CharNumber(const ushort z) const {
+char Screen::CharNumber(const int z) const {
     if ( HEIGHT-1 == z ) { // sky
         return ' ';
     }
-    const short z_dif = ( UP==player->GetDir() ) ?
+    const int z_dif = ( UP==player->GetDir() ) ?
         z - player->Z() : player->Z() - z;
     return ( z_dif == 0 ) ?
         ' ' : ( z_dif<0 ) ?
@@ -109,9 +108,8 @@ char Screen::CharNumber(const ushort z) const {
                 z_dif+'0' : '+';
 }
 
-char Screen::CharNumberFront(const ushort i, const ushort j) const {
-    const ushort dist =
-        (( NORTH==player->GetDir() || SOUTH==player->GetDir() ) ?
+char Screen::CharNumberFront(const int i, const int j) const {
+    const int dist = (( NORTH==player->GetDir() || SOUTH==player->GetDir() ) ?
         abs(player->Y()-j) :
         abs(player->X()-i)) -1;
     return ( dist>9 ) ?
@@ -297,7 +295,7 @@ void Screen::SetActionMode(const actions mode) {
     SetUpdated(false);
 }
 
-void Screen::InventoryAction(const ushort num) const {
+void Screen::InventoryAction(const int num) const {
     switch ( actionMode ) {
     case ACTION_USE:      player->Use     (num); break;
     case ACTION_WIELD:    player->Wield   (num); break;
@@ -460,16 +458,16 @@ void Screen::PrintHUD() {
             player->GlobalX(), player->GlobalY(), player->Z(),
             player->GetLatitude(), player->GetLongitude());
     } else {
-        const short dur = player->HP();
+        const int dur = player->HP();
         if ( dur > 0 ) { // HitPoints line
             PrintBar(0, (dur > MAX_DURABILITY/5) ? RED_BLACK : BLACK_RED,
                 ascii ? '@' : 0x2665, dur, MAX_DURABILITY);
         }
-        const short breath = player->Breath();
+        const int breath = player->Breath();
         if ( -1!=breath && breath!=MAX_BREATH ) { // breath line
             PrintBar(16, BLUE_BLACK, ascii ? 'o' : 0x00b0, breath, MAX_BREATH);
         }
-        const short satiation = player->SatiationPercent();
+        const int satiation = player->SatiationPercent();
         if ( -1 != satiation ) { // satiation line
             if ( 100 < satiation ) {
                 wcolor_set(hudWin, BLUE_BLACK, nullptr);
@@ -769,7 +767,7 @@ void Screen::Notify(const QString str) const {
     if ( str.at(str.size()-1) == '!' ) {
         wcolor_set(notifyWin, RED_BLACK, nullptr);
     }
-    static ushort notification_repeat_count = 1;
+    static int notification_repeat_count = 1;
     static QString last_notification;
     if ( str == last_notification ) {
         ++notification_repeat_count;
@@ -838,7 +836,7 @@ Screen::Screen(
         return;
     }
     // all available color pairs (maybe some of them will not be used)
-    const short colors[] = { // do not change colors order!
+    const int colors[] = { // do not change colors order!
         COLOR_BLACK,
         COLOR_RED,
         COLOR_GREEN,
@@ -851,16 +849,16 @@ Screen::Screen(
     for (int i=BLACK_BLACK; i<=WHITE_WHITE; ++i) {
         init_pair(i, colors[(i-1)/8], colors[(i-1)%8]);
     }
-    const ushort preferred_width = (SCREEN_SIZE*2+2)*2;
+    const int preferred_width = (SCREEN_SIZE*2+2)*2;
     if ( COLS >= preferred_width ) {
-        const ushort left_border = COLS/2-SCREEN_SIZE*2-2;
+        const int left_border = COLS/2-SCREEN_SIZE*2-2;
         rightWin = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, COLS/2);
         leftWin  = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, left_border);
         hudWin   = newwin(3, preferred_width, SCREEN_SIZE+2, left_border);
         commandWin = newwin(1, preferred_width, SCREEN_SIZE+2+3, left_border);
         notifyWin  = newwin(0, preferred_width, SCREEN_SIZE+2+4, left_border);
     } else if ( COLS >= preferred_width/2 ) {
-        const ushort left_border = COLS/2-SCREEN_SIZE-1;
+        const int left_border = COLS/2-SCREEN_SIZE-1;
         rightWin = nullptr;
         leftWin  = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, left_border);
         hudWin   = newwin(3, SCREEN_SIZE*2+2, SCREEN_SIZE+2, left_border);
@@ -932,9 +930,8 @@ Screen::~Screen() { CleanAll(); }
 
 bool Screen::IsScreenWide() { return COLS >= (SCREEN_SIZE*2+2)*2; }
 
-void Screen::PrintBar(const short x, const short color, const int ch,
-        const ushort value, const short max_value,
-        const bool value_position_right)
+void Screen::PrintBar(const int x, const int color, const int ch,
+        const int value, const int max_value, const bool value_position_right)
 {
     wstandend(hudWin);
     mvwprintw(hudWin, 0, x,

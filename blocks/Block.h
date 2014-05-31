@@ -41,15 +41,15 @@ enum WEARABLE {
 }; // enum WEARABLE
 
 // weights in measures - mz (mezuro)
-    const ushort WEIGHT_NULLSTONE = 1000;
-    const ushort WEIGHT_SAND = 100;
-    const ushort WEIGHT_WATER = 50;
-    const ushort WEIGHT_GLASS = 150;
-    const ushort WEIGHT_IRON = 300;
-    const ushort WEIGHT_GREENERY = 3;
-    const ushort WEIGHT_MINIMAL = 1;
-    const ushort WEIGHT_STONE = 200;
-    const ushort WEIGHT_AIR = 0;
+    const int WEIGHT_NULLSTONE = 1000;
+    const int WEIGHT_SAND = 100;
+    const int WEIGHT_WATER = 50;
+    const int WEIGHT_GLASS = 150;
+    const int WEIGHT_IRON = 300;
+    const int WEIGHT_GREENERY = 3;
+    const int WEIGHT_MINIMAL = 1;
+    const int WEIGHT_STONE = 200;
+    const int WEIGHT_AIR = 0;
 
 class Inventory;
 class Active;
@@ -74,7 +74,7 @@ public:
     virtual int PushResult(int dir) const;
     virtual void Push(int dir, Block * who);
     virtual bool Move(int direction);
-    virtual void Damage(ushort dmg, int dmg_kind);
+    virtual void Damage(int dmg, int dmg_kind);
     virtual usage_types Use(Block * who = 0);
     /// Usually returns new block of the same kind and sub (except glass).
     /** When reimplemented in derivatives, inside it you can create a pile,
@@ -87,11 +87,11 @@ public:
 
     virtual int Wearable() const;
     virtual int DamageKind() const;
-    virtual ushort DamageLevel() const;
+    virtual int DamageLevel() const;
 
     virtual int LightRadius() const;
     virtual int Temperature() const;
-    virtual ushort Weight() const;
+    virtual int Weight() const;
     /// Receive text signal.
     virtual void ReceiveSignal(QString);
 
@@ -122,7 +122,6 @@ protected:
     QString * note;
 
 private:
-    static const ushort MAX_NOTE_LENGTH = 144;
     quint8 Transparency(quint8 transp, int sub) const;
 
     qint16 durability;

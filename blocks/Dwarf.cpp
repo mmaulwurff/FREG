@@ -27,7 +27,7 @@ void Dwarf::SetActiveHand(const bool right) {
     activeHand = (right ? quint8(IN_RIGHT) : IN_LEFT);
 }
 
-ushort Dwarf::Weight() const {
+int Dwarf::Weight() const {
     World * const world = GetWorld();
     return ( world && (
             (world->InBounds(X()+1, Y()) &&
@@ -57,7 +57,7 @@ Block * Dwarf::DropAfterDamage() {
 int Dwarf::Sub() const { return Block::Sub(); }
 int Dwarf::ShouldAct() const { return FREQUENT_FIRST | FREQUENT_RARE; }
 bool Dwarf::Access() const { return false; }
-ushort Dwarf::Start() const { return ON_LEGS+1; }
+int Dwarf::Start() const { return ON_LEGS+1; }
 quint8 Dwarf::Kind() const { return DWARF; }
 QString Dwarf::FullName() const { return "Rational"; }
 Inventory * Dwarf::HasInventory() { return Inventory::HasInventory(); }
@@ -78,8 +78,8 @@ int Dwarf::DamageKind() const {
         ShowBlock(GetActiveHand())->DamageKind() : DAMAGE_HANDS;
 }
 
-ushort Dwarf::DamageLevel() const {
-    ushort level = 1;
+int Dwarf::DamageLevel() const {
+    int level = 1;
     if ( Number(IN_RIGHT) ) {
         level += ShowBlock(IN_RIGHT)->DamageLevel();
     }
@@ -111,9 +111,7 @@ quint16 Dwarf::NutritionalValue(const quint8 sub) const {
     return 0;
 }
 
-void Dwarf::MoveInside(const ushort num_from, const ushort num_to,
-        const ushort num)
-{
+void Dwarf::MoveInside(const int num_from, const int num_to, const int num) {
     Block * const block = ShowBlock(num_from);
     if ( block && (num_to > ON_LEGS ||
             IN_RIGHT==num_to || IN_LEFT==num_to ||

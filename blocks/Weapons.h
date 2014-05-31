@@ -38,9 +38,9 @@ public:
     int     Wearable() const override;
     int     DamageKind() const override;
     void    Push(int dir, Block * who) override;
-    void    Damage(ushort dmg, int kind) override;
-    ushort  DamageLevel() const override;
-    ushort  Weight() const override;
+    void    Damage(int dmg, int kind) override;
+    int     DamageLevel() const override;
+    int     Weight() const override;
     QString FullName() const override;
 };
 
@@ -51,7 +51,7 @@ public:
 
     quint8  Kind() const override;
     int     DamageKind() const override;
-    ushort  DamageLevel() const override;
+    int     DamageLevel() const override;
     QString FullName() const override;
 };
 
@@ -62,7 +62,7 @@ public:
 
     quint8  Kind() const override;
     int     DamageKind() const override;
-    ushort  DamageLevel() const override;
+    int     DamageLevel() const override;
     QString FullName() const override;
 };
 
@@ -73,7 +73,7 @@ public:
 
     quint8  Kind() const override;
     int     DamageKind() const override;
-    ushort  DamageLevel() const override;
+    int     DamageLevel() const override;
     QString FullName() const override;
 };
 
@@ -84,7 +84,7 @@ public:
 
     quint8  Kind() const override;
     int     DamageKind() const override;
-    ushort  DamageLevel() const override;
+    int     DamageLevel() const override;
     QString FullName() const override;
 };
 

@@ -31,7 +31,7 @@ Illuminator::Illuminator(QDataStream & str, const int sub, const quint16 id) :
     str >> fuel_level;
 }
 
-void Illuminator::Damage(ushort /*dmg*/, int /*dmg_kind*/) { Break(); }
+void Illuminator::Damage(int /*dmg*/, int /*dmg_kind*/) { Break(); }
 quint8 Illuminator::Kind() const { return ILLUMINATOR; }
 
 QString Illuminator::FullName() const {

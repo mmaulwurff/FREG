@@ -62,7 +62,7 @@
             nullptr : this;
     }
 
-    ushort Container::Weight() const {
+    int Container::Weight() const {
         return Block::Weight()*4 + Inventory::Weight();
     }
 
@@ -88,7 +88,7 @@
         Inventory::SaveAttributes(out);
     }
 
-    Container::Container(const int sub, const quint16 id, const ushort size) :
+    Container::Container(const int sub, const quint16 id, const int size) :
             Active(sub, id, NONSTANDARD),
             Inventory(size)
     {}
@@ -97,7 +97,7 @@
             QDataStream & str,
             const int     sub,
             const quint16 id,
-            const ushort  size)
+            const int size)
         :
             Active(str, sub, id, NONSTANDARD),
             Inventory(str, size)
@@ -138,8 +138,8 @@
         }
     }
 
-    bool Workbench::Drop(const ushort src, const ushort dest,
-            const ushort num, Inventory * const inv_to)
+    bool Workbench::Drop(const int src, const int dest,
+            const int num, Inventory * const inv_to)
     {
         if ( inv_to == nullptr
                 || src  >= Size()
@@ -178,9 +178,9 @@
     }
 
     quint8 Workbench::Kind() const { return WORKBENCH; }
-    ushort Workbench::Start() const { return 2; }
+    int Workbench::Start() const { return 2; }
 
-    bool Workbench::Get(Block * const block, const ushort start) {
+    bool Workbench::Get(Block * const block, const int start) {
         if ( Inventory::Get(block, start) ) {
             Craft();
             return true;

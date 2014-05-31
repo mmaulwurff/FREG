@@ -33,7 +33,7 @@
 #endif
 #include "screens/VirtScreen.h"
 
-const ushort SCREEN_SIZE = 30;
+const int SCREEN_SIZE = 30;
 
 enum actions {
     ACTION_USE,
@@ -159,23 +159,23 @@ private slots:
     void Print() override;
 
 private:
-    char CharNumber(ushort z) const;
-    char CharNumberFront(ushort x, ushort y) const;
-    void Arrows(WINDOW *, ushort x, ushort y, bool show_dir = false) const;
-    void HorizontalArrows(WINDOW *, ushort y, short color = WHITE_RED,
+    char CharNumber(int z) const;
+    char CharNumberFront(int x, int y) const;
+    void Arrows(WINDOW *, int x, int y, bool show_dir = false) const;
+    void HorizontalArrows(WINDOW *, int y, int color = WHITE_RED,
             bool show_dir = false) const;
     void PrintNormal(WINDOW *, int dir) const;
     void PrintFront(WINDOW *) const;
     void PrintInv(WINDOW *, const Inventory &) const;
     /// Can print health, breath and other bars on hudWin.
-    void PrintBar(short x, short color, int ch, ushort value, short max_value,
+    void PrintBar(int x, int color, int ch, int value, int max_value,
             bool value_position_right = true);
     /// Returns false when file does not exist, otherwise true.
     bool PrintFile(WINDOW *, QString const & file_name);
     void PrintHUD();
     void CleanFileToShow();
     void RePrint();
-    void InventoryAction(ushort num) const;
+    void InventoryAction(int num) const;
     color_pairs Color(int kind, int sub) const;
     char PrintBlock(const Block &, WINDOW *) const;
     void SetActionMode(actions mode);
@@ -196,7 +196,7 @@ private:
     FILE * const notifyLog;
     actions actionMode;
     /// Can be -1, 0, 1 for low, normal, and high focus.
-    short shiftFocus;
+    int shiftFocus;
     /// Save previous command for further execution.
     QString command;
     QFile * fileToShow;

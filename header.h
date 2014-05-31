@@ -46,7 +46,9 @@ const int SECONDS_IN_DAYLIGHT = SECONDS_IN_DAY-END_OF_NIGHT;
 const int MAX_DURABILITY = 100;
 const int MAX_BREATH = 60;
 
-const uchar MAX_LIGHT_RADIUS = 15;
+const int MAX_LIGHT_RADIUS = 15;
+
+const int MAX_NOTE_LENGTH = 144;
 
 const QString locale = QLocale::system().name();
 

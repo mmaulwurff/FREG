@@ -62,9 +62,9 @@ quint8 Block::Transparency(const quint8 transp, const int sub) const {
     }
 }
 
-void Block::Damage(const ushort dmg, const int dmg_kind) {
+void Block::Damage(const int dmg, const int dmg_kind) {
     if ( dmg_kind == NO_HARM ) return;
-    ushort mult = 1; // default
+    int mult = 1; // default
     switch ( Sub() ) {
     case DIFFERENT:
         if ( TIME == dmg_kind ) {
@@ -119,7 +119,7 @@ bool Block::Move(const int) { return false; }
 usage_types Block::Use(Block *) { return USAGE_TYPE_NO; }
 int  Block::Wearable() const { return WEARABLE_NOWHERE; }
 int  Block::DamageKind() const { return CRUSH; }
-ushort Block::DamageLevel() const { return 1; }
+int  Block::DamageLevel() const { return 1; }
 int  Block::LightRadius() const { return 0; }
 void Block::ReceiveSignal(const QString) {}
 
@@ -160,7 +160,7 @@ int Block::Temperature() const {
     }
 }
 
-ushort Block::Weight() const {
+int Block::Weight() const {
     switch ( Sub() ) {
     default:        return WEIGHT_WATER;
     case AIR:       return WEIGHT_AIR;
