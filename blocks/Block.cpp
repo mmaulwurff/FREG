@@ -208,8 +208,8 @@ void Block::SaveToFile(QDataStream & out) {
     if ( this == block_manager.NormalBlock(sub) ) {
         out << quint8( 0x80 | sub );
     } else {
-        out << sub << BlockManager::KindFromId(id) <<
-            ( ( ( ( durability
+        out << sub << quint8(BlockManager::KindFromId(id)) <<
+            (quint16)( ( ( ( durability
             <<= 3 ) |= direction )
             <<= 1 ) |= !!note );
         if ( Q_UNLIKELY(note) ) {
@@ -221,7 +221,7 @@ void Block::SaveToFile(QDataStream & out) {
 
 void Block::RestoreDurabilityAfterSave() { durability >>= 4; }
 
-Block::Block(const int subst, const quint16 i, const quint8 transp) :
+Block::Block(const int subst, const int i, const quint8 transp) :
         note(nullptr),
         durability(MAX_DURABILITY),
         transparent(Transparency(transp, subst)),
@@ -230,7 +230,7 @@ Block::Block(const int subst, const quint16 i, const quint8 transp) :
         direction(UP)
 {}
 
-Block::Block(QDataStream & str, const int subst, const quint16 i,
+Block::Block(QDataStream & str, const int subst, const int i,
         const quint8 transp)
     :
         transparent(Transparency(transp, subst)),

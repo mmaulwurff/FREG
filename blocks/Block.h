@@ -59,8 +59,8 @@ class Block {
     /**\class Block Block.h
      * \brief Block without special physics and attributes. */
 public:
-    Block(int sub, quint16 id, quint8 transp = UNDEF);
-    Block(QDataStream &, int sub, quint16 id, quint8 transp = UNDEF);
+    Block(int sub, int id, quint8 transp = UNDEF);
+    Block(QDataStream &, int sub, int id, quint8 transp = UNDEF);
     virtual ~Block();
 
     Block & operator=(const Block &) = delete;
@@ -114,6 +114,7 @@ public:
     bool operator==(const Block &) const;
     bool operator!=(const Block &) const;
 
+    /// Important! If block should be used after save, call RestoreDurability.
     void SaveToFile(QDataStream & out);
     /// Importart! Use it if block won't be deleted after SaveToFile.
     void RestoreDurabilityAfterSave();

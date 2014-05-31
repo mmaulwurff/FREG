@@ -50,10 +50,10 @@ public:
     /// Use this to receive a pointer to new not-normal block.
     static Block * NewBlock(int kind, int sub);
     /// Use this to load block from file.
-    static Block * BlockFromFile(QDataStream &, quint8 kind, quint8 sub);
+    static Block * BlockFromFile(QDataStream &, int kind, int sub);
     Block * BlockFromFile(QDataStream &) const;
     /// Returns true if block is normal.
-    static bool KindSubFromFile(QDataStream &, quint8 & kind, quint8 & sub);
+    static bool KindSubFromFile(QDataStream &, int * kind, int * sub);
     /// Use this to safely delete block.
     void DeleteBlock(Block *) const;
     /// For memory economy.
@@ -62,17 +62,18 @@ public:
     Block * ReplaceWithNormal(Block * block) const;
 
     /// If kind is unknown, returns "unknown_kind".
-    static QString KindToString(quint8 kind);
+    static QString KindToString(int kind);
     /// If substance is unknown, returns "unknown_sub".
-    static QString SubToString(quint8 sub);
+    static QString SubToString(int sub);
     /// If string is not convertible to kind, returns LAST_KIND.
-    static quint8 StringToKind(QString);
+    static int StringToKind(QString);
     /// If string is not convertible to substance, returns LAST_SUB.
-    static quint8 StringToSub(QString);
+    static int StringToSub(QString);
 
-    static quint16 MakeId(quint8 kind, quint8 sub);
-    static quint8 KindFromId(quint16 id);
-    static quint8  SubFromId(quint16 id);
+    static int MakeId(int kind, int sub);
+    static int KindFromId(int id);
+    static int SubFromId(int id);
+
 private:
     Block * normals[LAST_SUB];
     static const QString kinds[];

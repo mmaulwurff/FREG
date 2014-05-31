@@ -113,7 +113,7 @@ BlockManager::~BlockManager() {
 Block * BlockManager::NormalBlock(const int sub) const { return normals[sub]; }
 
 Block * BlockManager::NewBlock(const int kind, const int sub) {
-    const quint16 id = MakeId(kind, sub);
+    const int id = MakeId(kind, sub);
     switch ( static_cast<enum kinds>(kind) ) {
     // valid kinds:
     case BLOCK:  return new Block (sub, id);
@@ -153,9 +153,9 @@ Block * BlockManager::NewBlock(const int kind, const int sub) {
 } // Block * BlockManager::NewBlock(int kind, int sub)
 
 Block * BlockManager::BlockFromFile(QDataStream & str,
-        const quint8 kind, const quint8 sub)
+        const int kind, const int sub)
 {
-    const quint16 id = MakeId(kind, sub);
+    const int id = MakeId(kind, sub);
     switch ( static_cast<enum kinds>(kind) ) {
     // valid kinds:
     case BLOCK:  return new Block (str, sub, id);
@@ -195,21 +195,20 @@ Block * BlockManager::BlockFromFile(QDataStream & str,
 }
 
 Block * BlockManager::BlockFromFile(QDataStream & str) const {
-    quint8 kind, sub;
-    return KindSubFromFile(str, kind, sub) ?
+    int kind, sub;
+    return KindSubFromFile(str, &kind, &sub) ?
         NormalBlock(sub) : BlockFromFile(str, kind, sub);
 }
 
-bool BlockManager::KindSubFromFile(QDataStream & str,
-        quint8 & kind, quint8 & sub)
-{
+bool BlockManager::KindSubFromFile(QDataStream & str, int * kind, int * sub) {
     quint8 data;
     str >> data;
-    sub = (data & 0x7F);
+    *sub = (data & 0x7F);
     if ( data & 0x80 ) { // normal bit
         return true;
     } else {
-        str >> kind;
+        str >> data; // read quint8, not int
+        *kind = data;
         return false;
     }
 }
@@ -220,23 +219,16 @@ void BlockManager::DeleteBlock(Block * const block) const {
     }
 }
 
-QString BlockManager::KindToString(const quint8 kind) {
-    return ( kind < LAST_KIND ) ?
-        kinds[kind] : "unknown_kind";
-}
+QString BlockManager::KindToString(const int kind) { return kinds[kind]; }
+QString BlockManager:: SubToString(const int sub ) { return  subs[sub ]; }
 
-QString BlockManager::SubToString(const quint8 sub) {
-    return ( sub < LAST_SUB ) ?
-        subs[sub] : "unknown_sub";
-}
-
-quint8 BlockManager::StringToKind(const QString str) {
+int BlockManager::StringToKind(const QString str) {
     int i = 0;
     for ( ; i<LAST_KIND && kinds[i]!=str; ++i);
     return i;
 }
 
-quint8 BlockManager::StringToSub(const QString str) {
+int BlockManager::StringToSub(const QString str) {
     int i = 0;
     for ( ; i<LAST_SUB && subs[i]!=str; ++i);
     return i;
@@ -252,9 +244,9 @@ Block * BlockManager::ReplaceWithNormal(Block * const block) const {
     }
 }
 
-quint16 BlockManager::MakeId(const quint8 kind, const quint8 sub) {
+int BlockManager::MakeId(const int kind, const int sub) {
     return (kind << 8) | sub;
 }
 
-quint8 BlockManager::KindFromId(const quint16 id) { return (id >> 8); }
-quint8 BlockManager:: SubFromId(const quint16 id) { return (id & 0xFF); }
+int BlockManager::KindFromId(const int id) { return (id >> 8); }
+int BlockManager:: SubFromId(const int id) { return (id & 0xFF); }

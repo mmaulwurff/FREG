@@ -68,8 +68,8 @@ bool Shred::LoadShred() {
     for (int y=0; y<SHRED_WIDTH; ++y) {
         PutBlock(null_stone, x, y, 0);
         for (int z=1; ; ++z) {
-            quint8 kind, sub;
-            const bool normal = block_manager.KindSubFromFile(in, kind, sub);
+            int kind, sub;
+            const bool normal = block_manager.KindSubFromFile(in, &kind, &sub);
             if ( normal ) {
                 if ( sub==SKY || sub==STAR ) {
                     for ( ; z < HEIGHT-1; ++z) {
