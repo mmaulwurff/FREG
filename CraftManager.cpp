@@ -23,7 +23,7 @@
 #include "CraftManager.h"
 
 // CraftItem section
-CraftItem::CraftItem(const ushort num_, const quint16 id_) :
+CraftItem::CraftItem(const int num_, const int id_) :
         num(num_),
         id(id_)
 {}

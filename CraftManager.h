@@ -24,15 +24,15 @@ class QTextStream;
 
 struct CraftItem final {
     CraftItem() = delete;
-    CraftItem(ushort num, quint16 id);
+    CraftItem(int num, int id);
 
     CraftItem & operator=(const CraftItem &) = delete;
 
     bool operator< (const CraftItem & item) const;
     bool operator!=(const CraftItem & item) const;
 
-    const ushort num;
-    const quint16 id;
+    const int num;
+    const int id;
 }; // CraftItem
 
 /** \class CraftList CraftManager.h

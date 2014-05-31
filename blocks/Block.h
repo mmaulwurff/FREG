@@ -96,7 +96,7 @@ public:
     virtual void ReceiveSignal(QString);
 
     /// Determines kind and sub, unique for every kind-sub pair.
-    quint16 GetId() const;
+    int GetId() const;
     /// Set maximum durability.
     void Restore();
     /// Set durability to null.
@@ -114,7 +114,9 @@ public:
     bool operator==(const Block &) const;
     bool operator!=(const Block &) const;
 
-    void SaveToFile(QDataStream & out) const;
+    void SaveToFile(QDataStream & out);
+    /// Importart! Use it if block won't be deleted after SaveToFile.
+    void RestoreDurabilityAfterSave();
 
 protected:
     virtual void SaveAttributes(QDataStream &) const;

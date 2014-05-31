@@ -25,7 +25,7 @@
 #include "blocks/Inventory.h"
 
 const quint8 DATASTREAM_VERSION = QDataStream::Qt_5_2;
-const quint8 CURRENT_SHRED_FORMAT_VERSION = 2;
+const quint8 CURRENT_SHRED_FORMAT_VERSION = 3;
 
 const int SHRED_WIDTH_SHIFT = 4;
 

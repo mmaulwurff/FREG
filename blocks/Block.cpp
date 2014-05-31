@@ -112,7 +112,7 @@ int  Block::PushResult(int) const {
 }
 
 quint8 Block::Kind() const { return BLOCK; }
-quint16 Block::GetId() const { return id; }
+int  Block::GetId() const { return id; }
 bool Block::Catchable() const { return false; }
 void Block::Push(const int, Block * const) {}
 bool Block::Move(const int) { return false; }
@@ -204,14 +204,13 @@ bool Block::operator==(const Block & block) const {
 
 void Block::SaveAttributes(QDataStream &) const {}
 
-void Block::SaveToFile(QDataStream & out) const {
+void Block::SaveToFile(QDataStream & out) {
     if ( this == block_manager.NormalBlock(sub) ) {
         out << quint8( 0x80 | sub );
     } else {
-        quint16 data = direction;
-        out << sub << BlockManager::KindFromId(GetId()) <<
-            ( ( ( ( data
-            <<= 7 ) |= durability )
+        out << sub << BlockManager::KindFromId(id) <<
+            ( ( ( ( durability
+            <<= 3 ) |= direction )
             <<= 1 ) |= !!note );
         if ( Q_UNLIKELY(note) ) {
             out << *note;
@@ -220,8 +219,10 @@ void Block::SaveToFile(QDataStream & out) const {
     }
 }
 
+void Block::RestoreDurabilityAfterSave() { durability >>= 4; }
+
 Block::Block(const int subst, const quint16 i, const quint8 transp) :
-        note(0),
+        note(nullptr),
         durability(MAX_DURABILITY),
         transparent(Transparency(transp, subst)),
         sub(subst),
@@ -232,18 +233,18 @@ Block::Block(const int subst, const quint16 i, const quint8 transp) :
 Block::Block(QDataStream & str, const int subst, const quint16 i,
         const quint8 transp)
     :
-        note(0),
         transparent(Transparency(transp, subst)),
         sub(subst),
         id(i)
 {
-    quint16 data;
-    str >> data;
-    if ( Q_UNLIKELY(data & 1) ) {
+    str >> durability; // use durability as buffer, set actual value in the end.
+    if ( Q_UNLIKELY(durability & 1) ) {
         str >> *(note = new QString);
+    } else {
+        note = nullptr;
     }
-    durability = ( data >>=1 ) & 0x7F;
-    direction = (data >>= 7);
+    direction = ( durability >>=1 ) & 0x7;
+    durability >>= 3;
 }
 
 Block::~Block() { delete note; }
