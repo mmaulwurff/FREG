@@ -24,14 +24,6 @@
 #include "Player.h"
 #include "world.h"
 
-void VirtScreen::ConnectWorld() {
-    connect(w, SIGNAL(Updated(int, int, int)), SLOT(Update(int, int, int)),
-        Qt::DirectConnection);
-    connect(w, SIGNAL(UpdatedAround(int, int, int, int)),
-        SLOT(UpdateAround(int, int, int, int)),
-        Qt::DirectConnection);
-}
-
 void VirtScreen::UpdatesEnd() {}
 void VirtScreen::DeathScreen() {}
 
@@ -60,7 +52,11 @@ VirtScreen::VirtScreen(World * const world_, Player * const player_) :
         Qt::DirectConnection);
     connect(w, SIGNAL(Moved(const int)), SLOT(Move(const int)),
         Qt::DirectConnection);
-    ConnectWorld();
+    connect(w, SIGNAL(Updated(int, int, int)), SLOT(Update(int, int, int)),
+        Qt::DirectConnection);
+    connect(w, SIGNAL(UpdatedAround(int, int, int, int)),
+        SLOT(UpdateAround(int, int, int, int)),
+        Qt::DirectConnection);
     connect(w, SIGNAL(UpdatesEnded()), SLOT(UpdatesEnd()),
         Qt::DirectConnection);
 

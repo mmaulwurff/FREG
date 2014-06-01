@@ -196,6 +196,9 @@ private:
     void ReloadShreds(int direction);
     void run();
     Shred ** FindShred(int x, int y) const;
+    /// Emits signal Updated if not initial lighting.
+    void EmitUpdated(int x, int y, int z);
+    void EmitUpdatedAround(int x, int y, int z, int range);
 
 public:
     QReadWriteLock * GetLock() const;
@@ -217,7 +220,6 @@ signals:
     void UpdatedAround(int x, int y, int z, int range);
     /// Emitted when world active zone moved to int direction.
     void Moved(int);
-    void ReConnect();
     /// This is emitted when a pack of updates is complete.
     void UpdatesEnded();
     void NeedPlayer(int, int, int);
@@ -261,6 +263,7 @@ private:
     ShredStorage * shredStorage;
     Shred * shredMemoryPool;
     CraftManager * const craftManager;
+    bool not_initial_lighting;
 };
 
 extern World * world;

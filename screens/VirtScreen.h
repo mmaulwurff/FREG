@@ -94,12 +94,6 @@ public slots:
      *  It is connected to world in constructor. */
     virtual void UpdateAround(int x, int y, int z, int rng) = 0;
 
-    /// This is called to restore some connections.
-    /** This restores connections to VirtScreen::Update and
-     *  VirtScreen::UpdateAround which can be temporarily
-     *  disconnected. */
-    void ConnectWorld();
-
     /// This is called when current group of updates is ended.
     /** This is called from world when pack of world changing is ended.
      *  ( Can be used in screen optimization. ) */

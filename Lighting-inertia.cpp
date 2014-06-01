@@ -65,7 +65,7 @@ void World::Shine(const int x, const int y, const int z, int level,
 {
     const int transparent = GetBlock(x, y, z)->Transparent();
     if ( SetFireLightMap(level << 4, x, y, z) && INVISIBLE != transparent ) {
-        emit Updated(x, y, z);
+        EmitUpdated(x, y, z);
     }
     if ( (transparent != BLOCK_OPAQUE && level > 1) || init ) {
         --level;
@@ -95,11 +95,11 @@ void World::SunShineVertical(const int x, const int y, int z, int light_lev) {
         case INVISIBLE: break;
         case BLOCK_TRANSPARENT:
             --light_lev;
-            emit Updated(x, y, z);
+            EmitUpdated(x, y, z);
         break;
         case BLOCK_OPAQUE:
             CrossUpShine(x, y, z);
-            emit Updated(x, y, z);
+            EmitUpdated(x, y, z);
         return;
         }
     }
@@ -118,7 +118,7 @@ void World::UpShine(const int x, const int y, int z_bottom) {
     const int x_in = Shred::CoordInShred(x);
     const int y_in = Shred::CoordInShred(y);
     for ( ; shred->SetSunLight(x_in, y_in, z_bottom, 1); ++z_bottom) {
-        emit Updated(x, y, z_bottom);
+        EmitUpdated(x, y, z_bottom);
     }
 }
 
@@ -151,17 +151,15 @@ void World::ReEnlightenTime() {
 }
 
 void World::ReEnlightenAll() {
-    disconnect(this, SIGNAL(Updated(int, int, int)), 0, 0);
-    disconnect(this, SIGNAL(UpdatedAround(int, int, int, int)), 0, 0);
+    not_initial_lighting = false;
     for (int i=0; i<NumShreds()*NumShreds(); ++i) {
         shreds[i]->ShineAll();
     }
-    emit ReConnect();
+    not_initial_lighting = true;
 }
 
 void World::ReEnlightenMove(const int dir) {
-    disconnect(this, SIGNAL(Updated(int, int, int)), 0, 0);
-    disconnect(this, SIGNAL(UpdatedAround(int, int, int, int)), 0, 0);
+    not_initial_lighting = false;
     switch ( dir ) {
     case NORTH:
         for (int i=0; i<NumShreds(); ++i) {
@@ -189,7 +187,7 @@ void World::ReEnlightenMove(const int dir) {
     break;
     default: fprintf(stderr, "World::ReEnlightenMove: dir (?): %d\n", dir);
     }
-    emit ReConnect();
+    not_initial_lighting = true;
 }
 
 int World::Enlightened(const int x, const int y, const int z) const {
