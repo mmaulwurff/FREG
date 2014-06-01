@@ -34,8 +34,8 @@ class Container : public Active, public Inventory {
      *  - container from other substances are different chests. */
     Q_OBJECT
 public:
-    Container(int sub, quint16 id, int size = INV_SIZE);
-    Container(QDataStream & str, int sub, quint16 id, int size = INV_SIZE);
+    Container(int sub, int id, int size = INV_SIZE);
+    Container(QDataStream & str, int sub, int id, int size = INV_SIZE);
 
     int  Sub() const override;
     void ReceiveSignal(QString) override;
@@ -43,7 +43,7 @@ public:
     int  ShouldAct() const override;
     void Push(int, Block * who) override;
     int  Weight() const override;
-    quint8  Kind() const override;
+    int  Kind() const override;
     Block * DropAfterDamage() override;
     QString FullName() const override;
     Active * ActiveBlock() override;
@@ -60,10 +60,10 @@ class Workbench : public Container {
      *  2 products. Also can be used as container of smaller size. */
     Q_OBJECT
 public:
-    Workbench(int sub, quint16 id);
-    Workbench(QDataStream & str, int sub, quint16 id);
+    Workbench(int sub, int id);
+    Workbench(QDataStream & str, int sub, int id);
 
-    quint8 Kind() const override;
+    int  Kind() const override;
     bool Drop(int src, int dest, int num, Inventory * inv) override;
     bool Get(Block * block, int start = 0) override;
     bool GetAll(Inventory * from) override;

@@ -24,24 +24,16 @@
 
 int  Dwarf::GetActiveHand() const { return activeHand; }
 void Dwarf::SetActiveHand(const bool right) {
-    activeHand = (right ? quint8(IN_RIGHT) : IN_LEFT);
+    activeHand = (right ? IN_RIGHT : IN_LEFT);
 }
 
 int Dwarf::Weight() const {
     World * const world = GetWorld();
-    return ( world && (
-            (world->InBounds(X()+1, Y()) &&
-                world->GetBlock(X()+1, Y(), Z())->
-                    Catchable()) ||
-            (world->InBounds(X()-1, Y()) &&
-                world->GetBlock(X()-1, Y(), Z())->
-                    Catchable()) ||
-            (world->InBounds(X(), Y()+1) &&
-                world->GetBlock(X(), Y()+1, Z())->
-                    Catchable()) ||
-            (world->InBounds(X(), Y()-1) &&
-                world->GetBlock(X(), Y()-1, Z())->
-                    Catchable()) ) ) ?
+    static const int bound = world->NumShreds() * SHRED_WIDTH - 1;
+    return ( (X() < bound && world->GetBlock(X()+1, Y(), Z())->Catchable()) ||
+            ( X() > 0     && world->GetBlock(X()-1, Y(), Z())->Catchable()) ||
+            ( Y() < bound && world->GetBlock(X(), Y()+1, Z())->Catchable()) ||
+            ( Y() > 0     && world->GetBlock(X(), Y()-1, Z())->Catchable()) ) ?
         0 : Inventory::Weight()+Block::Weight();
 }
 
@@ -58,7 +50,7 @@ int Dwarf::Sub() const { return Block::Sub(); }
 int Dwarf::ShouldAct() const { return FREQUENT_FIRST | FREQUENT_RARE; }
 bool Dwarf::Access() const { return false; }
 int Dwarf::Start() const { return ON_LEGS+1; }
-quint8 Dwarf::Kind() const { return DWARF; }
+int Dwarf::Kind() const { return DWARF; }
 QString Dwarf::FullName() const { return "Rational"; }
 Inventory * Dwarf::HasInventory() { return Inventory::HasInventory(); }
 int Dwarf::LightRadius() const { return lightRadius; }
@@ -102,7 +94,7 @@ bool Dwarf::Move(const int dir) {
     return overstepped;
 }
 
-quint16 Dwarf::NutritionalValue(const quint8 sub) const {
+int Dwarf::NutritionalValue(const int sub) const {
     switch ( sub ) {
     case HAZELNUT: return SECONDS_IN_HOUR/2;
     case H_MEAT:   return SECONDS_IN_HOUR*2.5;
@@ -139,7 +131,7 @@ bool Dwarf::Inscribe(const QString) {
     return false;
 }
 
-Dwarf::Dwarf(const int sub, const quint16 id) :
+Dwarf::Dwarf(const int sub, const int id) :
         Animal(sub, id),
         Inventory(),
         activeHand(IN_RIGHT),
@@ -147,7 +139,7 @@ Dwarf::Dwarf(const int sub, const quint16 id) :
 {
     note = new QString("Urist");
 }
-Dwarf::Dwarf(QDataStream & str, const int sub, const quint16 id) :
+Dwarf::Dwarf(QDataStream & str, const int sub, const int id) :
         Animal(str, sub, id),
         Inventory(str)
 {

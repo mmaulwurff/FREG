@@ -25,8 +25,8 @@
 class Animal : public Active {
     Q_OBJECT
 public:
-    Animal(int sub, quint16 id);
-    Animal(QDataStream & str, int sub, quint16 id);
+    Animal(int sub, int id);
+    Animal(QDataStream & str, int sub, int id);
 
     int  DamageKind() const override;
     int  ShouldAct() const override;
@@ -39,7 +39,7 @@ public:
     Block  * DropAfterDamage() override;
     INNER_ACTIONS ActInner() override;
 
-    virtual quint16 NutritionalValue(quint8 sub) const = 0;
+    virtual int NutritionalValue(int sub) const = 0;
 
 protected:
     void SaveAttributes(QDataStream & out) const override;

@@ -26,8 +26,8 @@
 class Dwarf : public Animal, public Inventory {
     Q_OBJECT
 public:
-    Dwarf(int sub, quint16 id);
-    Dwarf(QDataStream & str, int sub, quint16 id);
+    Dwarf(int sub, int id);
+    Dwarf(QDataStream & str, int sub, int id);
 
     int  GetActiveHand() const;
     void SetActiveHand(bool right);
@@ -36,7 +36,7 @@ public:
     int ShouldAct() const override;
     int DamageKind() const override;
     bool Move(int direction) override;
-    quint8 Kind() const override;
+    int Kind() const override;
     int Start() const override;
     int Weight() const override;
     int DamageLevel() const override;
@@ -48,7 +48,7 @@ public:
     void ReceiveSignal(QString) override;
     int  LightRadius() const override;
     Block * DropAfterDamage() override;
-    quint16 NutritionalValue(quint8 sub) const override;
+    int  NutritionalValue(int sub) const override;
     Inventory * HasInventory() override;
 
     static const int ON_HEAD  = 0;

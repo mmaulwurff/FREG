@@ -20,19 +20,19 @@
 #include "blocks/Illuminator.h"
 #include "BlockManager.h"
 
-Illuminator::Illuminator(const int sub, const quint16 id) :
+Illuminator::Illuminator(const int sub, const int id) :
         Active(sub, id),
         fuel_level(MAX_FUEL)
 {}
 
-Illuminator::Illuminator(QDataStream & str, const int sub, const quint16 id) :
+Illuminator::Illuminator(QDataStream & str, const int sub, const int id) :
         Active(str, sub, id)
 {
     str >> fuel_level;
 }
 
 void Illuminator::Damage(int /*dmg*/, int /*dmg_kind*/) { Break(); }
-quint8 Illuminator::Kind() const { return ILLUMINATOR; }
+int Illuminator::Kind() const { return ILLUMINATOR; }
 
 QString Illuminator::FullName() const {
     switch ( Sub() ) {

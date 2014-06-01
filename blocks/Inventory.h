@@ -37,7 +37,7 @@ public:
     Inventory & operator=(const Inventory &) = delete;
     Inventory(const Inventory & inv) = delete;
 
-    virtual quint8 Kind() const = 0;
+    virtual int Kind() const = 0;
     virtual int Sub() const = 0;
     /// Returns true on success.
     virtual bool Drop(int src, int dest, int num, Inventory * to);
@@ -67,7 +67,7 @@ public:
     int  GetInvKind(int i) const;
     int Size() const;
     int GetInvWeight(int i) const;
-    quint8 Number(int i) const;
+    int Number(int i) const;
     Block * ShowBlock(int slot) const;
     Block * ShowBlock(int slot, int num) const;
     QString GetInvNote(int num) const;

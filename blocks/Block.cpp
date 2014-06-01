@@ -48,7 +48,7 @@ QString Block::FullName() const {
     }
 }
 
-quint8 Block::Transparency(const quint8 transp, const int sub) const {
+int Block::Transparency(const int transp, const int sub) const {
     if ( UNDEF == transp ) {
         switch ( sub ) {
         default:    return BLOCK_OPAQUE;
@@ -111,7 +111,7 @@ int  Block::PushResult(int) const {
     return ( AIR==Sub() ) ? ENVIRONMENT : NOT_MOVABLE;
 }
 
-quint8 Block::Kind() const { return BLOCK; }
+int  Block::Kind() const { return BLOCK; }
 int  Block::GetId() const { return id; }
 bool Block::Catchable() const { return false; }
 void Block::Push(const int, Block * const) {}
@@ -221,7 +221,7 @@ void Block::SaveToFile(QDataStream & out) {
 
 void Block::RestoreDurabilityAfterSave() { durability >>= 4; }
 
-Block::Block(const int subst, const int i, const quint8 transp) :
+Block::Block(const int subst, const int i, const int transp) :
         note(nullptr),
         durability(MAX_DURABILITY),
         transparent(Transparency(transp, subst)),
@@ -230,8 +230,7 @@ Block::Block(const int subst, const int i, const quint8 transp) :
         direction(UP)
 {}
 
-Block::Block(QDataStream & str, const int subst, const int i,
-        const quint8 transp)
+Block::Block(QDataStream & str, const int subst, const int i, const int transp)
     :
         transparent(Transparency(transp, subst)),
         sub(subst),

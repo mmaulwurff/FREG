@@ -45,15 +45,15 @@ class DeferredAction;
 class Active : public QObject, public Block, public Xyz {
     Q_OBJECT
 public:
-     Active(int sub, quint16 id, quint8 transp = UNDEF);
-     Active(QDataStream & str, int sub, quint16 id, quint8 transp = UNDEF);
+     Active(int sub, int id, int transp = UNDEF);
+     Active(QDataStream & str, int sub, int id, int transp = UNDEF);
     ~Active();
 
     bool Move(int dir) override;
     void Damage(int dmg, int dmg_kind) override;
     void ReceiveSignal(QString) override;
     int  PushResult(int dir) const override;
-    quint8   Kind() const override;
+    int  Kind() const override;
     QString  FullName() const override;
     Active * ActiveBlock() override;
 
@@ -96,7 +96,7 @@ protected:
 
     void SendSignalAround(QString) const;
     /// Returns true if there is at least 1 block of substance sub around.
-    bool IsSubAround(quint8 sub) const;
+    bool IsSubAround(int sub) const;
     bool Gravitate(int range, int down, int up, int calmness);
 
     virtual void DoFrequentAction();

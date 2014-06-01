@@ -33,10 +33,10 @@
         }
     }
 
-    quint8 Weapon::Kind() const { return WEAPON; }
-    int    Weapon::Weight() const { return Block::Weight()/4; }
-    int    Weapon::Wearable() const { return WEARABLE_ARM; }
-    void   Weapon::Damage(int, int) { Break(); }
+    int  Weapon::Kind() const { return WEAPON; }
+    int  Weapon::Weight() const { return Block::Weight()/4; }
+    int  Weapon::Wearable() const { return WEARABLE_ARM; }
+    void Weapon::Damage(int, int) { Break(); }
 
     int Weapon::DamageLevel() const {
         switch ( Sub() ) {
@@ -62,15 +62,15 @@
         who->Damage(DamageLevel(), DamageKind());
     }
 
-    Weapon::Weapon(const int sub, const quint16 id) :
+    Weapon::Weapon(const int sub, const int id) :
             Block(sub, id, NONSTANDARD)
     {}
 
-    Weapon::Weapon(QDataStream & str, const int sub, const quint16 id) :
+    Weapon::Weapon(QDataStream & str, const int sub, const int id) :
             Block(str, sub, id, NONSTANDARD)
     {}
 // Pick::
-    quint8 Pick::Kind() const { return PICK; }
+    int Pick::Kind() const { return PICK; }
     int Pick::DamageKind() const { return MINE; }
 
     int Pick::DamageLevel() const {
@@ -93,14 +93,14 @@
         }
     }
 
-    Pick::Pick(const int sub, const quint16 id) :
+    Pick::Pick(const int sub, const int id) :
             Weapon(sub, id)
     {}
-    Pick::Pick(QDataStream & str, const int sub, const quint16 id) :
+    Pick::Pick(QDataStream & str, const int sub, const int id) :
             Weapon(str, sub, id)
     {}
 // Shovel::
-    quint8 Shovel::Kind() const { return SHOVEL; }
+    int Shovel::Kind() const { return SHOVEL; }
     int Shovel::DamageKind() const { return DIG; }
 
     int Shovel::DamageLevel() const {
@@ -124,14 +124,14 @@
         }
     }
 
-    Shovel::Shovel(const int sub, const quint16 id) :
+    Shovel::Shovel(const int sub, const int id) :
             Weapon(sub, id)
     {}
-    Shovel::Shovel(QDataStream & str, const int sub, const quint16 id) :
+    Shovel::Shovel(QDataStream & str, const int sub, const int id) :
             Weapon(str, sub, id)
     {}
 // Hammer::
-    quint8 Hammer::Kind() const { return HAMMER; }
+    int Hammer::Kind() const { return HAMMER; }
     int Hammer::DamageKind() const { return CRUSH; }
 
     int Hammer::DamageLevel() const {
@@ -156,14 +156,14 @@
         }
     }
 
-    Hammer::Hammer(const int sub, const quint16 id) :
+    Hammer::Hammer(const int sub, const int id) :
             Weapon(sub, id)
     {}
-    Hammer::Hammer(QDataStream & str, const int sub, const quint16 id) :
+    Hammer::Hammer(QDataStream & str, const int sub, const int id) :
             Weapon(str, sub, id)
     {}
 // Axe::
-    quint8 Axe::Kind() const { return AXE; }
+    int Axe::Kind() const { return AXE; }
     int Axe::DamageKind() const { return CUT; }
 
     int Axe::DamageLevel() const {
@@ -188,9 +188,9 @@
         }
     }
 
-    Axe::Axe(const int sub, const quint16 id) :
+    Axe::Axe(const int sub, const int id) :
             Weapon(sub, id)
     {}
-    Axe::Axe(QDataStream & str, const int sub, const quint16 id) :
+    Axe::Axe(QDataStream & str, const int sub, const int id) :
             Weapon(str, sub, id)
     {}

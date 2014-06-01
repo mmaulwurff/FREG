@@ -59,15 +59,15 @@ class Block {
     /**\class Block Block.h
      * \brief Block without special physics and attributes. */
 public:
-    Block(int sub, int id, quint8 transp = UNDEF);
-    Block(QDataStream &, int sub, int id, quint8 transp = UNDEF);
+    Block(int sub, int id, int transp = UNDEF);
+    Block(QDataStream &, int sub, int id, int transp = UNDEF);
     virtual ~Block();
 
     Block & operator=(const Block &) = delete;
     Block(const Block &) = delete;
 
     virtual QString FullName() const;
-    virtual quint8 Kind() const;
+    virtual int  Kind() const;
     virtual bool Catchable() const;
     /// Returns true on success.
     virtual bool Inscribe(QString str);
@@ -125,7 +125,7 @@ protected:
     QString * note;
 
 private:
-    quint8 Transparency(quint8 transp, int sub) const;
+    int Transparency(int transp, int sub) const;
 
     qint16 durability;
     const quint8 transparent;

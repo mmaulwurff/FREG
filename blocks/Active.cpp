@@ -34,7 +34,7 @@ QString Active::FullName() const {
         return "Unkown active block";
     }
 }
-quint8 Active::Kind() const { return ACTIVE; }
+int  Active::Kind() const { return ACTIVE; }
 Active * Active::ActiveBlock() { return this; }
 bool Active::IsFalling() const { return falling; }
 bool Active::ShouldFall() const { return true; }
@@ -177,7 +177,7 @@ void Active::SetToDelete() {
 
 bool Active::IsToDelete() const { return frozen; }
 
-Active::Active(const int sub, const quint16 id, const quint8 transp) :
+Active::Active(const int sub, const int id, const int transp) :
         Block(sub, id, transp),
         Xyz(),
         fall_height(0),
@@ -187,8 +187,8 @@ Active::Active(const int sub, const quint16 id, const quint8 transp) :
         shred()
 {}
 
-Active::Active(QDataStream & str, const int sub, const quint16 id,
-        const quint8 transp)
+Active::Active(QDataStream & str, const int sub, const int id,
+        const int transp)
     :
         Block(str, sub, id, transp),
         Xyz(),
@@ -242,17 +242,13 @@ bool Active::Gravitate(const int range, const int down, const int up,
 
 int Active::Attractive(int) const { return 0; }
 
-bool Active::IsSubAround(const quint8 sub) const {
+bool Active::IsSubAround(const int sub) const {
     const World * const world = GetWorld();
-    return (
-            sub == world->GetBlock(X(), Y(), Z()-1)->Sub() ||
+    static const int bound = world->NumShreds() * SHRED_WIDTH - 1;
+    return (sub == world->GetBlock(X(), Y(), Z()-1)->Sub() ||
             sub == world->GetBlock(X(), Y(), Z()+1)->Sub() ||
-            (world->InBounds(X()-1, Y()) &&
-            sub == world->GetBlock(X()-1, Y(), Z())->Sub()) ||
-            (world->InBounds(X()+1, Y()) &&
-            sub==world->GetBlock(X()+1, Y(), Z())->Sub()) ||
-            (world->InBounds(X(), Y()-1) &&
-            sub==world->GetBlock(X(), Y()-1, Z())->Sub()) ||
-            (world->InBounds(X(), Y()+1) &&
-            sub==world->GetBlock(X(), Y()+1, Z())->Sub()) );
+            (X() > 0     && sub == world->GetBlock(X()-1, Y(), Z())->Sub()) ||
+            (X() < bound && sub == world->GetBlock(X()+1, Y(), Z())->Sub()) ||
+            (Y() > 0     && sub == world->GetBlock(X(), Y()-1, Z())->Sub()) ||
+            (Y() < bound && sub == world->GetBlock(X(), Y()+1, Z())->Sub()) );
 }

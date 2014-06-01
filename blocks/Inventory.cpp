@@ -26,6 +26,7 @@
 bool   Inventory::Access() const { return true; }
 int Inventory::Start() const { return 0; }
 int Inventory::Size() const { return size; }
+int Inventory::Number(const int i) const { return inventory[i].size(); }
 Inventory * Inventory::HasInventory() { return this; }
 
 bool Inventory::Drop(const int src, int dest, int num,
@@ -33,10 +34,10 @@ bool Inventory::Drop(const int src, int dest, int num,
 {
     dest = qMax(inv_to->Start(), dest);
     bool ok_flag = false;
-    for ( ; num; --num) {
+    while ( num-- ) {
         if ( src < Size()
                 && dest < inv_to->Size()
-                && !inventory[src].isEmpty()
+                && not inventory[src].isEmpty()
                 && inv_to->Get(inventory[src].top(), dest) )
         {
             ok_flag = true;
@@ -64,7 +65,7 @@ void Inventory::Pull(const int num) {
 
 void Inventory::SaveAttributes(QDataStream & out) const {
     for (int i=0; i<Size(); ++i) {
-        out << Number(i);
+        out << quint8(Number(i));
         for (int j=0; j<Number(i); ++j) {
             inventory[i].top()->SaveToFile(out);
         }
@@ -135,7 +136,7 @@ bool Inventory::InscribeInv(const int num, const QString str) {
         }
     }
     for (int i=0; i<number; ++i) {
-        if ( !inventory[num].at(i)->Inscribe(str) ) {
+        if ( not inventory[num].at(i)->Inscribe(str) ) {
             ReceiveSignal(QObject::tr("Cannot inscribe this."));
             return false;
         }
@@ -201,13 +202,9 @@ bool Inventory::IsEmpty() const {
 
 void Inventory::Push(Block * const who) {
     Inventory * const inv = who->HasInventory();
-    if ( inv ) {
+    if ( inv != nullptr ) {
         inv->GetAll(this);
     }
-}
-
-quint8 Inventory::Number(const int i) const {
-    return inventory[i].size();
 }
 
 bool Inventory::MiniCraft(const int num) {
@@ -216,7 +213,7 @@ bool Inventory::MiniCraft(const int num) {
         return false;
     } // else:
     const CraftItem * const crafted = world->GetCraftManager()->MiniCraft(
-        Number(num), BlockManager::MakeId(GetInvKind(num),GetInvSub(num)));
+        Number(num), BlockManager::MakeId(GetInvKind(num), GetInvSub(num)));
     if ( crafted != nullptr ) {
         while ( not inventory[num].isEmpty() ) {
             Block * const to_delete = ShowBlock(num);
@@ -260,15 +257,14 @@ Inventory::Inventory(QDataStream & str, const int sz) :
         quint8 num;
         str >> num;
         while ( num-- ) {
-            inventory[i].push(block_manager.
-                BlockFromFile(str));
+            inventory[i].push(block_manager.BlockFromFile(str));
         }
     }
 }
 
 Inventory::~Inventory() {
     for (int i=0; i<Size(); ++i) {
-        while ( !inventory[i].isEmpty() ) {
+        while ( not inventory[i].isEmpty() ) {
             block_manager.DeleteBlock(inventory[i].pop());
         }
     }
