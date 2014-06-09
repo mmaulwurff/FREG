@@ -168,6 +168,19 @@ color_pairs Screen::Color(const int kind, const int sub) const {
     }
 } // color_pairs Screen::Color(int kind, int sub)
 
+color_pairs Screen::ColorShred(const int type) {
+    switch ( type ) { // foreground_background
+    case 'c':
+    case '^': return BLACK_WHITE;
+    case '.': return BLACK_GREEN;
+    case '~': return CYAN_BLUE;
+    case '#': return MAGENTA_BLACK;
+    case '%': return YELLOW_GREEN;
+    case '+': return WHITE_GREEN;
+    default:  return WHITE_BLACK;
+    }
+}
+
 void Screen::MovePlayer(const int dir) {
     if ( player->GetDir() == dir ) {
         player->Move(dir);
@@ -341,7 +354,7 @@ void Screen::SetUpdated(const bool upd) {
 void Screen::Print() {
     if ( not player->IfPlayerExists() || updated ) return;
     SetUpdated(true);
-    w->ReadLock();
+    w->Lock();
     PrintHUD();
     const int dir = player->GetDir();
     switch ( player->UsingSelfType() ) { // left window
@@ -481,16 +494,24 @@ void Screen::PrintHUD() {
         }
     }
     wrefresh(hudWin);
-    // miniMap
     wmove(miniMapWin, 1, 1);
     const int x_center = Shred::CoordOfShred(player->X());
     const int y_center = Shred::CoordOfShred(player->Y());
-    for (long i=y_center-2; i<=y_center+2; ++i, waddstr(miniMapWin, "\n_"))
-    for (long j=x_center-2; j<=x_center+2; ++j) {
+    const int j_start = qMax(x_center-2, 0);
+    const int j_end = qMin(x_center+2, world->NumShreds()-1);
+    const int i_end = qMin(y_center+2, world->NumShreds()-1);
+    for (int i=qMax(y_center-2, 0); i<=i_end; ++i, waddstr(miniMapWin, "\n_"))
+    for (int j=j_start;             j<=j_end; ++j) {
         Shred * const shred = world->GetShredByPos(j, i);
-        wprintw(miniMapWin, "%c ", (shred==nullptr) ?
-            ' ' : shred->GetTypeOfShred());
+        if ( shred == nullptr ) {
+            wstandend(miniMapWin);
+            waddstr(miniMapWin, "  ");
+        } else {
+            wcolor_set(miniMapWin,ColorShred(shred->GetTypeOfShred()),nullptr);
+            wprintw(miniMapWin, "%c ", shred->GetTypeOfShred());
+        }
     }
+    wstandend(miniMapWin);
     box(miniMapWin, 0, 0);
     wrefresh(miniMapWin);
     (void)wmove(rightWin, y_save, x_save);

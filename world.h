@@ -21,6 +21,7 @@
 #define WORLD_H
 
 #include <QThread>
+#include <QMutex>
 #include "header.h"
 
 class WorldMap;
@@ -203,10 +204,9 @@ private:
     void EmitUpdatedAround(int x, int y, int z, int range);
 
 public:
-    QReadWriteLock * GetLock() const;
-    void WriteLock();
-    void ReadLock();
-    bool TryReadLock();
+    QMutex * GetLock();
+    void Lock();
+    bool TryLock();
     void Unlock();
 
 public slots:
@@ -220,6 +220,7 @@ signals:
     void Updated(int, int, int);
     void UpdatedAll();
     void UpdatedAround(int x, int y, int z, int range);
+    void StartMove(int);
     /// Emitted when world active zone moved to int direction.
     void Moved(int);
     /// This is emitted when a pack of updates is complete.
@@ -246,7 +247,7 @@ private:
     const QString worldName;
     int numShreds; ///< size of loaded zone
     int numActiveShreds; ///< size of active zone
-    QReadWriteLock * const rwLock;
+    QMutex mutex;
 
     int sunMoonX;
     /// stores block behind sun or moon (normal with sub STAR or SKY)

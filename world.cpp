@@ -20,7 +20,7 @@
 #include <QTimer>
 #include <QDir>
 #include <QSettings>
-#include <QWriteLocker>
+#include <QMutexLocker>
 #include <memory>
 #include "blocks/Active.h"
 #include "blocks/Inventory.h"
@@ -37,18 +37,14 @@ World * world;
 
 CraftManager * World::GetCraftManager() const { return craftManager; }
 
-int World::ShredPos(const int x, const int y) const {
-    return y*NumShreds() + x;
-}
+int World::ShredPos(const int x, const int y) const { return y*NumShreds()+x; }
 
 Shred * World::GetShred(const int x, const int y) const {
     return shreds[ShredPos(Shred::CoordOfShred(x), Shred::CoordOfShred(y))];
 }
 
 Shred * World::GetShredByPos(const int x, const int y) const {
-    const int pos = ShredPos(x, y);
-    return ( 0 <= pos && pos < NumShreds()*NumShreds() ) ?
-        shreds[pos] : nullptr;
+    return shreds[ShredPos(x, y)];
 }
 
 int World::NumShreds() const { return numShreds; }
@@ -166,11 +162,10 @@ void World::ReloadAllShreds(const long lati, const long longi,
     toResetDir = DOWN; // full reset
 }
 
-QReadWriteLock * World::GetLock() const { return rwLock; }
-void World::WriteLock() { rwLock->lockForWrite(); }
-void World::ReadLock()  { rwLock->lockForRead(); }
-bool World::TryReadLock() { return rwLock->tryLockForRead(); }
-void World::Unlock() { rwLock->unlock(); }
+QMutex * World::GetLock() { return &mutex; }
+void World::Lock() { mutex.lock(); }
+bool World::TryLock() { return mutex.tryLock(); }
+void World::Unlock() { mutex.unlock(); }
 
 void World::run() {
     QTimer timer;
@@ -268,21 +263,21 @@ Shred ** World::FindShred(const int x, const int y) const {
 }
 
 void World::ReloadShreds(const int direction) {
+    emit StartMove(direction);
     RemSun();
     switch ( direction ) {
     case NORTH:
         --longitude;
         for (int x=0; x<NumShreds(); ++x) {
-            const Shred * const shred=*FindShred(x, NumShreds()-1);
+            const Shred * const shred = *FindShred(x, NumShreds()-1);
             Shred * const memory = shred->GetShredMemory();
             shred->~Shred();
             for (int y=NumShreds()-1; y>0; --y) {
                 ( *FindShred(x, y) = *FindShred(x, y-1) )->ReloadToNorth();
             }
-            *FindShred(x, 0) = new(memory)
-                Shred(x, 0,
-                    longitude-NumShreds()/2,
-                    latitude -NumShreds()/2+x, memory);
+            *FindShred(x, 0) = new(memory) Shred(x, 0,
+                longitude - NumShreds()/2,
+                latitude  - NumShreds()/2+x, memory);
         }
     break;
     case SOUTH:
@@ -294,10 +289,9 @@ void World::ReloadShreds(const int direction) {
             for (int y=0; y<NumShreds()-1; ++y) {
                 ( *FindShred(x, y) = *FindShred(x, y+1) )->ReloadToSouth();
             }
-            *FindShred(x, NumShreds()-1) = new(memory)
-                Shred(x, NumShreds()-1,
-                    longitude+NumShreds()/2,
-                    latitude -NumShreds()/2+x, memory);
+            *FindShred(x, NumShreds()-1) = new(memory) Shred(x, NumShreds()-1,
+                longitude + NumShreds()/2,
+                latitude  - NumShreds()/2+x, memory);
         }
     break;
     case EAST:
@@ -309,30 +303,27 @@ void World::ReloadShreds(const int direction) {
             for (int x=0; x<NumShreds()-1; ++x) {
                 ( *FindShred(x, y) = *FindShred(x+1, y) )->ReloadToEast();
             }
-            *FindShred(NumShreds()-1, y) = new(memory)
-                Shred(NumShreds()-1, y,
-                    longitude-NumShreds()/2+y,
-                    latitude +NumShreds()/2, memory);
+            *FindShred(NumShreds()-1, y) = new(memory) Shred(NumShreds()-1, y,
+                longitude - NumShreds()/2+y,
+                latitude  + NumShreds()/2, memory);
         }
     break;
     case WEST:
         --latitude;
         for (int y=0; y<NumShreds(); ++y) {
-            const Shred * const shred=*FindShred(NumShreds()-1, y);
+            const Shred * const shred = *FindShred(NumShreds()-1, y);
             Shred * const memory = shred->GetShredMemory();
             shred->~Shred();
             for (int x=NumShreds()-1; x>0; --x) {
                 ( *FindShred(x, y) = *FindShred(x-1, y) )->ReloadToWest();
             }
-            *FindShred(0, y) = new(memory)
-                Shred(0, y,
-                    longitude-NumShreds()/2+y,
-                    latitude -NumShreds()/2, memory);
+            *FindShred(0, y) = new(memory) Shred(0, y,
+                longitude - NumShreds()/2+y,
+                latitude  - NumShreds()/2, memory);
         }
     break;
     default: fprintf(stderr,
-        "World::ReloadShreds(int): invalid direction: %d\n",
-        direction);
+        "World::ReloadShreds(int): invalid direction: %d\n", direction);
     }
     shredStorage->Shift(direction, longitude, latitude);
     MakeSun();
@@ -343,7 +334,7 @@ void World::ReloadShreds(const int direction) {
 void World::SetReloadShreds(const int direction) { toResetDir = direction; }
 
 void World::PhysEvents() {
-    const QWriteLocker writeLock(rwLock);
+    const QMutexLocker locker(&mutex);
     switch ( toResetDir ) {
     case UP: break; // no reset
     default:
@@ -816,7 +807,7 @@ void World::DeleteAllShreds() {
 }
 
 void World::SetNumActiveShreds(const int num) {
-    const QWriteLocker writeLocker(rwLock);
+    const QMutexLocker locker(&mutex);
     numActiveShreds = num;
     if ( 1 != numActiveShreds%2 ) {
         ++numActiveShreds;
@@ -837,7 +828,6 @@ void World::SetNumActiveShreds(const int num) {
 World::World(const QString world_name) :
         timeStep(0),
         worldName(world_name),
-        rwLock(new QReadWriteLock()),
         map(new WorldMap(world_name)),
         toResetDir(UP),
         craftManager(new CraftManager),
@@ -892,7 +882,7 @@ void World::CleanAll() {
     }
     cleaned = true;
 
-    WriteLock();
+    Lock();
     quit();
     wait();
     Unlock();
@@ -900,7 +890,6 @@ void World::CleanAll() {
     DeleteAllShreds();
     delete map;
     delete shredStorage;
-    delete rwLock;
 
     QSettings settings(worldName+"/settings.ini", QSettings::IniFormat);
     settings.setValue("time", qlonglong(time));

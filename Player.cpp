@@ -20,7 +20,7 @@
 #include <QTextStream>
 #include <QSettings>
 #include <QDir>
-#include <QReadLocker>
+#include <QMutexLocker>
 #include "blocks/Dwarf.h"
 #include "Player.h"
 #include "world.h"
@@ -123,7 +123,7 @@ void Player::UpdateXYZ(int) {
 }
 
 void Player::Examine() const {
-    const QReadLocker locker(world->GetLock());
+    const QMutexLocker locker(world->GetLock());
 
     int i, j, k;
     emit GetFocus(&i, &j, &k);
@@ -185,7 +185,7 @@ void Player::Backpack() {
 }
 
 void Player::Use() {
-    const QWriteLocker locker(world->GetLock());
+    const QMutexLocker locker(world->GetLock());
     int x, y, z;
     emit GetFocus(&x, &y, &z);
     const int us_type = world->GetBlock(x, y, z)->Use(player);
@@ -194,7 +194,7 @@ void Player::Use() {
 }
 
 void Player::Inscribe() const {
-    const QWriteLocker locker(world->GetLock());
+    const QMutexLocker locker(world->GetLock());
     int x, y, z;
     emit GetFocus(&x, &y, &z);
     emit Notify(player ?
@@ -227,7 +227,7 @@ Block * Player::ValidBlock(const int num) const {
 }
 
 usage_types Player::Use(const int num) {
-    const QWriteLocker locker(world->GetLock());
+    const QMutexLocker locker(world->GetLock());
     return UseNoLock(num);
 }
 
@@ -274,7 +274,7 @@ void Player::Throw(const int src, const int dest, const int num) {
 }
 
 void Player::Obtain(const int src, const int dest, const int num) {
-    const QWriteLocker locker(world->GetLock());
+    const QMutexLocker locker(world->GetLock());
     int x, y, z;
     emit GetFocus(&x, &y, &z);
     world->Get(player, x, y, z, src, dest, num);
@@ -282,7 +282,7 @@ void Player::Obtain(const int src, const int dest, const int num) {
 }
 
 void Player::Wield(const int num) {
-    const QWriteLocker locker(world->GetLock());
+    const QMutexLocker locker(world->GetLock());
     if ( ValidBlock(num) ) {
         for (int i=0; i<=Dwarf::ON_LEGS; ++i) {
             InnerMove(num, i);
@@ -294,7 +294,7 @@ void Player::Wield(const int num) {
 void Player::MoveInsideInventory(const int num_from, const int num_to,
         const int num)
 {
-    const QWriteLocker locker(world->GetLock());
+    const QMutexLocker locker(world->GetLock());
     if ( ValidBlock(num_from) ) {
         InnerMove(num_from, num_to, num);
     }
@@ -306,7 +306,7 @@ void Player::InnerMove(const int num_from, const int num_to, const int num) {
 }
 
 void Player::Inscribe(const int num) {
-    const QWriteLocker locker(world->GetLock());
+    const QMutexLocker locker(world->GetLock());
     if ( ValidBlock(num) ) {
         QString str;
         emit GetString(str);
@@ -315,7 +315,7 @@ void Player::Inscribe(const int num) {
 }
 
 void Player::Eat(const int num) {
-    const QWriteLocker locker(world->GetLock());
+    const QMutexLocker locker(world->GetLock());
     Block * const food = ValidBlock(num);
     if ( food ) {
         Animal * const animal = player->IsAnimal();
@@ -332,7 +332,7 @@ void Player::Eat(const int num) {
 }
 
 void Player::Build(const int slot) {
-    const QWriteLocker locker(world->GetLock());
+    const QMutexLocker locker(world->GetLock());
     int x_targ, y_targ, z_targ;
     emit GetFocus(&x_targ, &y_targ, &z_targ);
     Block * const block = ValidBlock(slot);
@@ -345,7 +345,7 @@ void Player::Build(const int slot) {
 }
 
 void Player::Craft(const int num) {
-    const QWriteLocker locker(world->GetLock());
+    const QMutexLocker locker(world->GetLock());
     Inventory * const inv = PlayerInventory();
     if ( inv && inv->MiniCraft(num) ) {
         emit Updated();
@@ -353,7 +353,7 @@ void Player::Craft(const int num) {
 }
 
 void Player::TakeOff(const int num) {
-    const QWriteLocker locker(world->GetLock());
+    const QMutexLocker locker(world->GetLock());
     if ( ValidBlock(num) ) {
         for (int i=PlayerInventory()->Start();
                 i<PlayerInventory()->Size(); ++i)
@@ -365,7 +365,7 @@ void Player::TakeOff(const int num) {
 
 void Player::ProcessCommand(QString command) {
     if ( command.isEmpty() ) return;
-    const QWriteLocker locker(world->GetLock());
+    const QMutexLocker locker(world->GetLock());
     QTextStream comm_stream(&command);
     QString request;
     comm_stream >> request;
