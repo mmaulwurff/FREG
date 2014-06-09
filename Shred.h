@@ -88,6 +88,7 @@ public:
     // Information section
     void SetNewBlock(int kind, int sub, int x, int y, int z, int dir = UP);
     char TypeOfShred(long longi, long lati) const;
+    char GetTypeOfShred() const;
 
     static QString FileName(QString world_name, long longi, long lati);
     Shred * GetShredMemory() const;
@@ -152,6 +153,7 @@ private:
     uchar lightMap[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
     const long longitude, latitude;
     int shredX, shredY;
+    char type;
 
     /// needed in Shred::ReloadTo... for active blocks not to reload twice
     /// when they are registered both in frequent and rare lists.

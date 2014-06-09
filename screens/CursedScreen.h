@@ -189,8 +189,9 @@ private:
     WINDOW * leftWin;
     WINDOW * rightWin;
     WINDOW * notifyWin;
-    WINDOW * commandWin;
     WINDOW * hudWin; // head-up display
+    WINDOW * miniMapWin;
+    mutable QString lastNotification;
     IThread * const input;
     volatile bool updated;
     FILE * const notifyLog;

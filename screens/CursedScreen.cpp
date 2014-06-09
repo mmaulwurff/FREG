@@ -85,13 +85,12 @@ void Screen::UpdateAll() {
 }
 
 void Screen::PassString(QString & str) const {
-    mvwaddch(commandWin, 0, 0, ':');
+    waddch(notifyWin, ':');
     char temp_str[MAX_NOTE_LENGTH+1];
     echo();
-    wgetnstr(commandWin, temp_str, MAX_NOTE_LENGTH);
+    wgetnstr(notifyWin, temp_str, MAX_NOTE_LENGTH);
     noecho();
-    werase(commandWin);
-    wrefresh(commandWin);
+    lastNotification = str;
     fprintf(notifyLog, "%lu: Command: %s\n", w->Time(), temp_str);
     str = QString::fromUtf8(temp_str);
 }
@@ -481,8 +480,20 @@ void Screen::PrintHUD() {
             }
         }
     }
-    (void)wmove(rightWin, y_save, x_save);
     wrefresh(hudWin);
+    // miniMap
+    wmove(miniMapWin, 1, 1);
+    const int x_center = Shred::CoordOfShred(player->X());
+    const int y_center = Shred::CoordOfShred(player->Y());
+    for (long i=y_center-2; i<=y_center+2; ++i, waddstr(miniMapWin, "\n_"))
+    for (long j=x_center-2; j<=x_center+2; ++j) {
+        Shred * const shred = world->GetShredByPos(j, i);
+        wprintw(miniMapWin, "%c ", (shred==nullptr) ?
+            ' ' : shred->GetTypeOfShred());
+    }
+    box(miniMapWin, 0, 0);
+    wrefresh(miniMapWin);
+    (void)wmove(rightWin, y_save, x_save);
 } // void Screen::PrintHUD()
 
 void Screen::PrintNormal(WINDOW * const window, const int dir) const {
@@ -768,8 +779,7 @@ void Screen::Notify(const QString str) const {
         wcolor_set(notifyWin, RED_BLACK, nullptr);
     }
     static int notification_repeat_count = 1;
-    static QString last_notification;
-    if ( str == last_notification ) {
+    if ( str == lastNotification ) {
         ++notification_repeat_count;
         int x, y;
         getyx(notifyWin, y, x);
@@ -778,7 +788,7 @@ void Screen::Notify(const QString str) const {
     } else {
         notification_repeat_count = 1;
         wprintw(notifyWin, "%s\n", qPrintable(str));
-        last_notification = str;
+        lastNotification = str;
     }
     wstandend(notifyWin);
     wrefresh(notifyWin);
@@ -810,8 +820,9 @@ Screen::Screen(
         leftWin(nullptr),
         rightWin(nullptr),
         notifyWin(nullptr),
-        commandWin(nullptr),
         hudWin(nullptr),
+        miniMapWin(nullptr),
+        lastNotification(),
         input(new IThread(this)),
         updated(false),
         notifyLog(fopen("texts/messages.txt", "at")),
@@ -855,15 +866,15 @@ Screen::Screen(
         rightWin = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, COLS/2);
         leftWin  = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, left_border);
         hudWin   = newwin(3, preferred_width, SCREEN_SIZE+2, left_border);
-        commandWin = newwin(1, preferred_width, SCREEN_SIZE+2+3, left_border);
-        notifyWin  = newwin(0, preferred_width, SCREEN_SIZE+2+4, left_border);
+        notifyWin = newwin(0,preferred_width-13, SCREEN_SIZE+5,left_border+13);
+        miniMapWin = newwin(7, 12, SCREEN_SIZE+5, left_border);
     } else if ( COLS >= preferred_width/2 ) {
         const int left_border = COLS/2-SCREEN_SIZE-1;
-        rightWin = nullptr;
+        rightWin   = nullptr;
+        miniMapWin = nullptr;
         leftWin  = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, left_border);
         hudWin   = newwin(3, SCREEN_SIZE*2+2, SCREEN_SIZE+2, left_border);
-        commandWin = newwin(1, SCREEN_SIZE*2+2, SCREEN_SIZE+2+3, left_border);
-        notifyWin  = newwin(0, SCREEN_SIZE*2+2, SCREEN_SIZE+2+4, left_border);
+        notifyWin  = newwin(0, SCREEN_SIZE*2+2, SCREEN_SIZE+2+3, left_border);
     } else {
         world->CleanAll();
         CleanAll();

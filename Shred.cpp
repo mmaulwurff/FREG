@@ -25,7 +25,7 @@
 #include "blocks/Inventory.h"
 
 const quint8 DATASTREAM_VERSION = QDataStream::Qt_5_2;
-const quint8 CURRENT_SHRED_FORMAT_VERSION = 3;
+const quint8 CURRENT_SHRED_FORMAT_VERSION = 4;
 
 const int SHRED_WIDTH_SHIFT = 4;
 
@@ -61,6 +61,7 @@ bool Shred::LoadShred() {
         return false;
     } // else:
     in.setVersion(DATASTREAM_VERSION);
+    in >> (quint8 &)(type);
     Block * const null_stone = Normal(NULLSTONE);
     Block * const air = Normal(AIR);
     SetAllLightMapNull();
@@ -113,7 +114,7 @@ Shred::Shred(const int shred_x, const int shred_y,
         PutBlock(((qrand()%5) ? sky : star), i, j, HEIGHT-1);
         lightMap[i][j][HEIGHT-1] = 1;
     }
-    switch ( TypeOfShred(longi, lati) ) {
+    switch ( type=TypeOfShred(longi, lati) ) {
     case SHRED_WATER:     Water();     break;
     case SHRED_PLAIN:     Plain();     break;
     case SHRED_FOREST:    Forest();    break;
@@ -128,8 +129,7 @@ Shred::Shred(const int shred_x, const int shred_y,
     case SHRED_NORMAL_UNDERGROUND: NormalUnderground(); break;
     case SHRED_EMPTY: break;
     default:
-        fprintf(stderr, "Shred::Shred: unlisted type: %c, code %d\n",
-            TypeOfShred(longi, lati), int(TypeOfShred(longi, lati)));
+        fprintf(stderr, "Shred::Shred: type: %c, code %d?\n", type, type);
         Plain();
     }
 } // Shred::Shred(int shred_x, shred_y, long longi, lati, Shred * mem)
@@ -140,6 +140,7 @@ Shred::~Shred() {
     QDataStream outstr(shred_data, QIODevice::WriteOnly);
     outstr << DATASTREAM_VERSION << CURRENT_SHRED_FORMAT_VERSION;
     outstr.setVersion(DATASTREAM_VERSION);
+    outstr << (quint8)GetTypeOfShred();
     for (int x=0; x<SHRED_WIDTH; ++x)
     for (int y=0; y<SHRED_WIDTH; ++y) {
         int height = HEIGHT-2;
@@ -394,6 +395,8 @@ QString Shred::FileName(const QString world_name,
 char Shred::TypeOfShred(const long longi, const long lati) const {
     return GetWorld()->TypeOfShred(longi, lati);
 }
+
+char Shred::GetTypeOfShred() const { return type; }
 
 // shred generators section
 // these functions fill space between the lowest nullstone layer and sky.

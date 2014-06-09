@@ -49,6 +49,7 @@ public:
 public: // Block work section
     Block * GetBlock(int x, int y, int z) const;
     Shred * GetShred(int i, int j) const;
+    Shred * GetShredByPos(int x, int y) const;
     static void DeleteBlock(Block * block);
 private:
     /// Puts block to coordinates xyz and activates it.

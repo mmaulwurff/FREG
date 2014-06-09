@@ -45,6 +45,12 @@ Shred * World::GetShred(const int x, const int y) const {
     return shreds[ShredPos(Shred::CoordOfShred(x), Shred::CoordOfShred(y))];
 }
 
+Shred * World::GetShredByPos(const int x, const int y) const {
+    const int pos = ShredPos(x, y);
+    return ( 0 <= pos && pos < NumShreds()*NumShreds() ) ?
+        shreds[pos] : nullptr;
+}
+
 int World::NumShreds() const { return numShreds; }
 int World::TimeOfDay() const { return time % SECONDS_IN_DAY; }
 int World::TimeStepsInSec() { return TIME_STEPS_IN_SEC; }
