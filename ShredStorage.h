@@ -66,7 +66,7 @@ public:
             long longi_center, long lati_center, ushort size);
 
 protected:
-    void run();
+    void run() override;
 
 private:
     ShredStorage * const storage;

@@ -404,7 +404,7 @@ void Screen::PrintHUD() {
     // quick inventory
     Inventory * const inv = player->PlayerInventory();
     if ( inv && IsScreenWide() ) {
-        for (int i=0; i<inv->Size(); ++i) {
+        for (int i=inv->Size()-1; i>=0; --i) {
             wstandend(hudWin);
             const int x = QUICK_INVENTORY_X_SHIFT+i*2;
             mvwaddch(hudWin, 0, x, 'a'+i);

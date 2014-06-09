@@ -142,7 +142,7 @@ void World::ReEnlightenBlockRemove(const int x, const int y, const int z) {
 }
 
 void World::ReEnlightenTime() {
-    for (int i=0; i<NumShreds()*NumShreds(); ++i) {
+    for (int i=NumShreds()*NumShreds()-1; i>=0; --i) {
         shreds[i]->SetAllLightMapNull();
     }
     sunMoonFactor = ( NIGHT==PartOfDay() ) ?
@@ -152,7 +152,7 @@ void World::ReEnlightenTime() {
 
 void World::ReEnlightenAll() {
     not_initial_lighting = false;
-    for (int i=0; i<NumShreds()*NumShreds(); ++i) {
+    for (int i=NumShreds()*NumShreds()-1; i>=0; --i) {
         shreds[i]->ShineAll();
     }
     not_initial_lighting = true;

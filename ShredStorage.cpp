@@ -33,7 +33,7 @@ LongLat::LongLat(const long longi, const long lati) :
 {}
 
 uint qHash(const LongLat & coords) {
-    return ((coords.longitude & 0xffff) << 16) +
+    return ((coords.longitude & 0xffff) << 16) |
             (coords.latitude  & 0xffff);
 }
 
@@ -41,7 +41,7 @@ ShredStorage::ShredStorage(const ushort size_,
         const long longi_center, const long lati_center)
     :
         size(size_),
-        preloadThread(0)
+        preloadThread(nullptr)
 {
     storage.reserve(size*size);
     for (long i=longi_center-size/2; i<=longi_center+size/2; ++i)
@@ -51,7 +51,7 @@ ShredStorage::ShredStorage(const ushort size_,
 }
 
 ShredStorage::~ShredStorage() {
-    if ( preloadThread ) {
+    if ( preloadThread != nullptr ) {
         preloadThread->wait();
         delete preloadThread;
     }
@@ -65,7 +65,7 @@ ShredStorage::~ShredStorage() {
 void ShredStorage::Shift(const int direction,
         const long longitude_center, const long latitude_center)
 {
-    if ( preloadThread ) {
+    if ( preloadThread != nullptr ) {
         preloadThread->wait();
         delete preloadThread;
     }

@@ -195,7 +195,7 @@ private:
     void DeleteAllShreds();
     void LoadAllShreds();
     void ReloadShreds(int direction);
-    void run();
+    void run() override;
     Shred ** FindShred(int x, int y) const;
     /// Emits signal Updated if not initial lighting.
     void EmitUpdated(int x, int y, int z);
