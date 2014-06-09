@@ -137,8 +137,8 @@ void World::Get(Block * const block_to,
 }
 
 bool World::InBounds(const int x, const int y) const {
-    static const int max_xy = SHRED_WIDTH*NumShreds();
-    return ( (0 <= x && x < max_xy) && (0 <= y && y < max_xy) );
+    static const int max_xy = GetBound();
+    return ( (0 <= x && x <= max_xy) && (0 <= y && y <= max_xy) );
 }
 
 bool World::InVertBounds(const int z) { return ( 0 <= z && z < HEIGHT ); }
@@ -146,6 +146,8 @@ bool World::InVertBounds(const int z) { return ( 0 <= z && z < HEIGHT ); }
 bool World::InBounds(const int x, const int y, const int z) const {
     return ( InBounds(x, y) && InVertBounds(z) );
 }
+
+int World::GetBound() const { return NumShreds() * SHRED_WIDTH - 1; }
 
 void World::ReloadAllShreds(const long lati, const long longi,
     const int new_x, const int new_y, const int new_z)
@@ -260,16 +262,15 @@ Shred ** World::FindShred(const int x, const int y) const {
 }
 
 void World::ReloadShreds(const int direction) {
-    int x, y; // do not make unsigned, values <0 are needed for checks
     RemSun();
     switch ( direction ) {
     case NORTH:
         --longitude;
-        for (x=0; x<NumShreds(); ++x) {
+        for (int x=0; x<NumShreds(); ++x) {
             const Shred * const shred=*FindShred(x, NumShreds()-1);
             Shred * const memory = shred->GetShredMemory();
             shred->~Shred();
-            for (y=NumShreds()-1; y>0; --y) {
+            for (int y=NumShreds()-1; y>0; --y) {
                 ( *FindShred(x, y) = *FindShred(x, y-1) )->ReloadToNorth();
             }
             *FindShred(x, 0) = new(memory)
@@ -280,11 +281,11 @@ void World::ReloadShreds(const int direction) {
     break;
     case SOUTH:
         ++longitude;
-        for (x=0; x<NumShreds(); ++x) {
+        for (int x=0; x<NumShreds(); ++x) {
             const Shred * const shred = *FindShred(x, 0);
             Shred * const memory = shred->GetShredMemory();
             shred->~Shred();
-            for (y=0; y<NumShreds()-1; ++y) {
+            for (int y=0; y<NumShreds()-1; ++y) {
                 ( *FindShred(x, y) = *FindShred(x, y+1) )->ReloadToSouth();
             }
             *FindShred(x, NumShreds()-1) = new(memory)
@@ -295,11 +296,11 @@ void World::ReloadShreds(const int direction) {
     break;
     case EAST:
         ++latitude;
-        for (y=0; y<NumShreds(); ++y) {
+        for (int y=0; y<NumShreds(); ++y) {
             const Shred * const shred = *FindShred(0, y);
             Shred * const memory = shred->GetShredMemory();
             shred->~Shred();
-            for (x=0; x<NumShreds()-1; ++x) {
+            for (int x=0; x<NumShreds()-1; ++x) {
                 ( *FindShred(x, y) = *FindShred(x+1, y) )->ReloadToEast();
             }
             *FindShred(NumShreds()-1, y) = new(memory)
@@ -310,11 +311,11 @@ void World::ReloadShreds(const int direction) {
     break;
     case WEST:
         --latitude;
-        for (y=0; y<NumShreds(); ++y) {
+        for (int y=0; y<NumShreds(); ++y) {
             const Shred * const shred=*FindShred(NumShreds()-1, y);
             Shred * const memory = shred->GetShredMemory();
             shred->~Shred();
-            for (x=NumShreds()-1; x>0; --x) {
+            for (int x=NumShreds()-1; x>0; --x) {
                 ( *FindShred(x, y) = *FindShred(x-1, y) )->ReloadToWest();
             }
             *FindShred(0, y) = new(memory)
@@ -429,12 +430,12 @@ const {
     y_from = -y_from;
     x_to   = -x_to;
     y_to   = -y_to;
-    const int max = qMax(qAbs(x_to-(int)x_from),
+    int max = qMax(qAbs(x_to-(int)x_from),
         qMax(qAbs(z_to-(int)z_from), qAbs(y_to-(int)y_from)));
     const float x_step = (x_to-x_from)/max;
     const float y_step = (y_to-y_from)/max;
     const float z_step = (z_to-z_from)/max;
-    for (int i=1; i<max; ++i) {
+    for ( ; max>1; --max) {
         if ( BLOCK_OPAQUE == GetBlock(
                 -Round(x_from+=x_step),
                 -Round(y_from+=y_step),
@@ -449,12 +450,12 @@ const {
 bool World::PositiveVisible(float x_from, float y_from, float z_from,
         const int x_to, const int y_to, const int z_to)
 const {
-    const int max = qMax(qAbs(x_to-(int)x_from),
+    int max = qMax(qAbs(x_to-(int)x_from),
         qMax(qAbs(z_to-(int)z_from), qAbs(y_to-(int)y_from)));
     const float x_step = (x_to-x_from)/max;
     const float y_step = (y_to-y_from)/max;
     const float z_step = (z_to-z_from)/max;
-    for (int i=1; i<max; ++i) {
+    for ( ; max>1; --max) {
         if ( BLOCK_OPAQUE == GetBlock(
                 Round(x_from+=x_step),
                 Round(y_from+=y_step),

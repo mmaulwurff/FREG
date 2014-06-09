@@ -58,7 +58,7 @@ void Active::ActRare() {
     DoRareAction();
     Inventory * const inv = HasInventory();
     if ( inv != nullptr ) {
-        for (int i=0; i<inv->Size(); ++i)
+        for (int i=inv->Size()-1; i; --i)
         for (int j=0; j<inv->Number(i); ++j) {
             Active * const active = inv->ShowBlock(i, j)->ActiveBlock();
             if ( active != nullptr
@@ -121,16 +121,11 @@ bool Active::Move(const int dir) {
 
 void Active::SendSignalAround(const QString signal) const {
     World * const world = GetWorld();
-    const Xy coords[] = {
-        Xy( X()-1, Y()   ),
-        Xy( X()+1, Y()   ),
-        Xy( X(),   Y()-1 ),
-        Xy( X(),   Y()+1 ) };
-    for (const Xy xy : coords) {
-        if ( world->InBounds(xy.X(), xy.Y()) ) {
-             world->GetBlock(xy.X(), xy.Y(), Z())->ReceiveSignal(signal);
-        }
-    }
+    static const int bound = world->GetBound();
+    if ( X() > 0 )     world->GetBlock(X()-1, Y(), Z())->ReceiveSignal(signal);
+    if ( X() < bound ) world->GetBlock(X()+1, Y(), Z())->ReceiveSignal(signal);
+    if ( Y() > 0 )     world->GetBlock(X(), Y()-1, Z())->ReceiveSignal(signal);
+    if ( Y() < bound ) world->GetBlock(X(), Y()+1, Z())->ReceiveSignal(signal);
     world->GetBlock(X(), Y(), Z()-1)->ReceiveSignal(signal);
     world->GetBlock(X(), Y(), Z()+1)->ReceiveSignal(signal);
 }
@@ -201,24 +196,24 @@ Active::Active(QDataStream & str, const int sub, const int id,
 }
 Active::~Active() { delete deferredAction; }
 
-bool Active::Gravitate(const int range, const int down, const int up,
+bool Active::Gravitate(const int range, int bottom, int top,
         const int calmness)
 {
-    World * const world = GetWorld();
-    static const int bound = SHRED_WIDTH * world->NumShreds() - 1;
+    static World * const world = GetWorld();
+    static const int bound = world->GetBound();
     // analyse world around
     int for_north = 0, for_west = 0;
     const int y_start = qMax(Y()-range, 0);
-    const int z_start = qMax(Z()-down,  0);
-    const int x_end = qMin(X()+range, bound);
-    const int y_end = qMin(Y()+range, bound);
-    const int z_end = qMin(Z()+up, HEIGHT-1);
+    const int y_end   = qMin(Y()+range, bound);
+    const int x_end   = qMin(X()+range, bound);
+    bottom = qMax(Z()-bottom,  0);
+    top    = qMin(Z()+top, HEIGHT-1);
     for (int x=qMax(X()-range, 0); x<=x_end; ++x)
     for (int y=y_start; y<=y_end; ++y) {
         Shred * const shred = world->GetShred(x, y);
         const int x_in = Shred::CoordInShred(x);
         const int y_in = Shred::CoordInShred(y);
-        for (int z=z_start; z<=z_end; ++z) {
+        for (int z=bottom; z<=top; ++z) {
             const int attractive =
                 Attractive(shred->GetBlock(x_in, y_in, z)->Sub());
             if ( attractive != 0
@@ -244,7 +239,7 @@ int Active::Attractive(int) const { return 0; }
 
 bool Active::IsSubAround(const int sub) const {
     const World * const world = GetWorld();
-    static const int bound = world->NumShreds() * SHRED_WIDTH - 1;
+    static const int bound = world->GetBound();
     return (sub == world->GetBlock(X(), Y(), Z()-1)->Sub() ||
             sub == world->GetBlock(X(), Y(), Z()+1)->Sub() ||
             (X() > 0     && sub == world->GetBlock(X()-1, Y(), Z())->Sub()) ||

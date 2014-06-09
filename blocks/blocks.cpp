@@ -219,10 +219,9 @@
                 Xyz( X(),   Y(),   Z()+1 )
             };
             for (const Xyz xyz : coords) {
-                if ( not world->InBounds(xyz.X(), xyz.Y()) ) {
-                    continue;
-                }
-                if ( world->Damage(xyz.X(), xyz.Y(), xyz.Z(), 5, HEAT) <= 0 ) {
+                if ( world->InBounds(xyz.X(), xyz.Y()) &&
+                        world->Damage(xyz.X(), xyz.Y(), xyz.Z(), 5,HEAT) <= 0 )
+                {
                     world->DestroyAndReplace(xyz.X(), xyz.Y(), xyz.Z());
                 }
             }

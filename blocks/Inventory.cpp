@@ -236,11 +236,10 @@ bool Inventory::MiniCraft(const int num) {
 
 void Inventory::Shake() {
     for (int i=Start(); i<Size()-1; ++i) {
-        if ( Number(i) == MAX_STACK_SIZE ) {
-            continue;
-        }
-        for (int j=i; j<Size(); ++j) {
-            MoveInside(j, i, Number(j));
+        if ( Number(i) != MAX_STACK_SIZE ) {
+            for (int j=i; j<Size(); ++j) {
+                MoveInside(j, i, Number(j));
+            }
         }
     }
 }
