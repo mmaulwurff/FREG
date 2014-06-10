@@ -31,6 +31,12 @@
 #include <windows.h>
 #endif
 
+#ifdef QT_NO_DEBUG
+const bool DEBUG = false;
+#else
+const bool DEBUG = true;
+#endif
+
 const int SHRED_WIDTH = 16;
 const int HEIGHT = 128;
 

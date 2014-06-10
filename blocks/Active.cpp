@@ -34,6 +34,7 @@ QString Active::FullName() const {
         return "Unkown active block";
     }
 }
+
 int  Active::Kind() const { return ACTIVE; }
 Active * Active::ActiveBlock() { return this; }
 bool Active::IsFalling() const { return falling; }
@@ -215,6 +216,7 @@ Active::Active(QDataStream & str, const int sub, const int id,
 {
     str >> fall_height;
 }
+
 Active::~Active() { delete deferredAction; }
 
 bool Active::Gravitate(const int range, int bottom, int top,
