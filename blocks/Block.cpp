@@ -236,7 +236,7 @@ Block::Block(QDataStream & str, const int subst, const int i, const int transp)
         sub(subst),
         id(i)
 {
-    str >> durability; // use durability as buffer, set actual value in the end.
+    str >> durability;// use durability as buffer, set actual value in the end.
     if ( Q_UNLIKELY(durability & 1) ) {
         str >> *(note = new QString);
     } else {

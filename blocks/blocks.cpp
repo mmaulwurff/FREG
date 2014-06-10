@@ -736,15 +736,16 @@
     Predator::Predator(const int sub, const int id) :
             Animal(sub, id)
     {}
-    Predator::Predator(QDataStream & str, const int sub, const int id)
-            : Animal(str, sub, id)
+    Predator::Predator(QDataStream & str, const int sub, const int id) :
+            Animal(str, sub, id)
     {}
 
     int Predator::DamageLevel() const { return 10; }
     int Predator::Kind() const { return PREDATOR; }
     QString Predator::FullName() const { return "Predator"; }
-    int Predator::NutritionalValue(int sub) const {
-        return Attractive(sub)*SECONDS_IN_HOUR;
+
+    int Predator::NutritionalValue(const int sub) const {
+        return Attractive(sub) * SECONDS_IN_HOUR;
     }
 
     void Predator::DoFrequentAction() {
@@ -752,6 +753,7 @@
             world->Move(X(), Y(), Z(), GetDir());
         }
     }
+
     void Predator::DoRareAction() {
         const Xyz coords[] = {
             Xyz(X()-1, Y(), Z()),
@@ -762,6 +764,9 @@
         };
         World * const world = GetWorld();
         for (const Xyz xyz : coords) {
+            if ( not world->InBounds(xyz.X(), xyz.Y()) ) {
+                continue;
+            }
             Block * const block = world->GetBlock(xyz.X(), xyz.Y(), xyz.Z());
             if ( Attractive(block->Sub()) ) {
                 block->ReceiveSignal(tr("Predator bites you!"));
