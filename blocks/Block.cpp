@@ -63,7 +63,25 @@ int Block::Transparency(const int transp, const int sub) const {
 }
 
 void Block::Damage(const int dmg, const int dmg_kind) {
-    if ( dmg_kind == NO_HARM ) return;
+    switch ( Sub() ) {
+    case GREENERY:
+    case HAZELNUT: durability = 0; return;
+    case NULLSTONE:
+    case STAR:
+    case AIR:
+    case SKY:
+    case SUN_MOON: return;
+    }
+    switch ( dmg_kind ) {
+    case NO_HARM: return;
+    case DAMAGE_ACID:
+        switch ( Sub() ) {
+        default: durability -= 2 * dmg; return;
+        case DIFFERENT: durability = 0; return;
+        case IRON:
+        case GLASS: return;
+        }
+    }
     int mult = 1; // default
     switch ( Sub() ) {
     case DIFFERENT:
@@ -71,12 +89,7 @@ void Block::Damage(const int dmg, const int dmg_kind) {
             durability = 0;
             return;
         }
-        // no break
-    case NULLSTONE:
-    case STAR:
-    case AIR:
-    case SKY:
-    case SUN_MOON: return;
+    return;
     case WATER: mult = ( HEAT==dmg_kind || TIME==dmg_kind ); break;
     case MOSS_STONE:
     case STONE: switch ( dmg_kind ) {
@@ -85,9 +98,7 @@ void Block::Damage(const int dmg, const int dmg_kind) {
         case CUT:   return;
         case MINE:  mult = 2; break;
     } break;
-    case GREENERY:
-    case HAZELNUT:
-    case GLASS: durability = 0; return;
+    case GLASS: durability = (HEAT==dmg_kind) ? durability : 0; return;
     case WOOD: switch ( dmg_kind ) {
         default:  mult = 1; break;
         case CUT: mult = 2; break;
@@ -105,7 +116,9 @@ void Block::Damage(const int dmg, const int dmg_kind) {
     durability -= mult*dmg;
 }
 
-Block * Block::DropAfterDamage() { return GLASS==Sub() ? nullptr : this; }
+Block * Block::DropAfterDamage() {
+    return (GLASS==Sub() || AIR==Sub()) ? nullptr : this;
+}
 
 int  Block::PushResult(int) const {
     return ( AIR==Sub() ) ? ENVIRONMENT : NOT_MOVABLE;
@@ -149,14 +162,6 @@ QString Block::GetNote() const { return note ? *note : ""; }
 void Block::Mend() {
     if ( GetDurability() < MAX_DURABILITY ) {
         ++durability;
-    }
-}
-
-int Block::Temperature() const {
-    switch ( Sub() ) {
-    case WATER: return -100;
-    case FIRE:  return   50;
-    default:    return    0;
     }
 }
 

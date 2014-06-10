@@ -109,6 +109,7 @@ enum damage_kinds {
     NO_HARM, ///< 13
     DAMAGE_FALL,  ///< 14
     DAMAGE_HANDS, ///< 15
+    DAMAGE_ACID,  ///< 16
 }; // enum damage_kinds
 
 /// Kinds of atom
@@ -182,6 +183,7 @@ enum subs {
     FIRE,       ///<  25
     COAL,       ///<  26
     EXPLOSIVE,  ///<  27
+    ACID,       ///<  28
     /// Nothing is made from LAST_SUB.
     LAST_SUB // keep it last in this list
 }; // enum subs

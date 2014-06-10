@@ -54,10 +54,10 @@ public:
     Liquid(QDataStream & str, int sub, int id);
 
     int ShouldAct() const override;
-    int Temperature() const override;
     int PushResult(int dir) const override;
     int LightRadius() const override;
     int Kind() const override;
+    int DamageKind() const override;
     QString FullName() const override;
     Block * DropAfterDamage() override;
 

@@ -120,6 +120,7 @@ color_pairs Screen::Color(const int kind, const int sub) const {
     switch ( kind ) { // foreground_background
     case LIQUID: switch ( sub ) {
         case WATER: return CYAN_BLUE;
+        case ACID:  return MAGENTA_GREEN;
         default:    return RED_YELLOW;
     } // no break;
     case ACTIVE: switch ( sub ) {

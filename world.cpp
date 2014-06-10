@@ -606,9 +606,10 @@ int World::Damage(const int x, const int y, const int z,
         const int dmg, const int dmg_kind)
 {
     Block * temp = GetBlock(x, y, z);
-    const quint8 sub = temp->Sub();
+    const quint8 sub  = temp->Sub();
+    if ( AIR==sub ) return 0;
     const quint8 kind = temp->Kind();
-    if ( temp==Normal(sub) && AIR!=sub ) {
+    if ( temp==Normal(sub) ) {
         temp = NewBlock(kind, sub);
     }
     temp->Damage(dmg, dmg_kind);
@@ -754,22 +755,6 @@ void World::Exchange(Block * const block_from, Block * const block_to,
         block_from->ReceiveSignal(tr("Your bag is lighter now."));
         block_to  ->ReceiveSignal(tr("Your bag is heavier now."));
     }
-}
-
-int World::Temperature(const int x, const int y, const int z) const {
-    if ( HEIGHT-1 == z || z == 0 ) return 0;
-    int temperature = GetBlock(x, y, z)->Temperature();
-    if ( temperature != 0 ) {
-        return temperature;
-    }
-    for (int i=x-1; i<=x+1; ++i)
-    for (int j=y-1; j<=y+1; ++j)
-    for (int k=z-1; k<=z+1; ++k) {
-        if ( InBounds(i, j) ) {
-            temperature += GetBlock(i, j, k)->Temperature();
-        }
-    }
-    return temperature/2;
 }
 
 void World::RemSun() {

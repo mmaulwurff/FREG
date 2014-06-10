@@ -145,8 +145,7 @@ void Player::Examine() const {
     if ( not str.isEmpty() ) {
         emit Notify(tr("Inscription: ")+str);
     }
-    emit Notify(tr("Temperature: %1. Durability: %2. Weight: %3. Id: %4.").
-        arg(world->Temperature(i, j, k)).
+    emit Notify(tr("Durability: %2. Weight: %3. Id: %4.").
         arg(block->GetDurability()).
         arg(block->Weight()).
         arg(block->GetId()));

@@ -479,7 +479,8 @@ void Shred::TestShred() { // 7 items in a row
     SetNewBlock(DOOR,   STONE, column+=2, row, level);
     blocks[column][row][level]->SetDir(NORTH);
     SetNewBlock(BLOCK,  CLAY,  column+=2, row, level);
-    SetNewBlock(LIQUID, STONE, column+=2, row, level-1);
+    NormalCube(++column, row-1, level, 3, 3, 3, GLASS);
+    SetNewBlock(LIQUID, STONE, ++column, row, level+1);
     // row 4
     column = -1;
     row += 2;
@@ -515,6 +516,8 @@ void Shred::TestShred() { // 7 items in a row
     column = -1;
     row += 2;
     SetNewBlock(WEAPON, SKY, column+=2, row, level);
+    NormalCube(++column, row-1, level, 3, 3, 3, GLASS);
+    SetNewBlock(LIQUID, ACID, ++column, row, level+1);
 } // void Shred::TestShred()
 
 void Shred::NullMountain() {

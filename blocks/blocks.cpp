@@ -166,23 +166,32 @@
     }
 // Liquid::
     void Liquid::DoRareAction() {
-        World * const world = GetWorld();
-        // IDEA: turn off water drying up in ocean
-        if ( WATER == Sub() && not IsSubAround(WATER) ) {
-            Damage(1, HEAT);
+        if ( not IsSubAround(Sub()) ) {
+            Damage(1, TIME);
         }
+        if ( Sub() == ACID || Sub() == STONE ) {
+            DamageAround();
+        }
+        World * const world = GetWorld();
         switch ( qrand()%20 ) {
         case 0: world->Move(X(), Y(), Z(), NORTH); break;
-        case 1: world->Move(X(), Y(), Z(), EAST);  break;
+        case 1: world->Move(X(), Y(), Z(), EAST ); break;
         case 2: world->Move(X(), Y(), Z(), SOUTH); break;
-        case 3: world->Move(X(), Y(), Z(), WEST);  break;
+        case 3: world->Move(X(), Y(), Z(), WEST ); break;
+        }
+    }
+
+    int Liquid::DamageKind() const {
+        switch ( Sub() ) {
+            default:    return NO_HARM;
+            case ACID:  return DAMAGE_ACID;
+            case STONE: return HEAT;
         }
     }
 
     int Liquid::ShouldAct() const  { return FREQUENT_RARE; }
     int Liquid::PushResult(const int) const { return ENVIRONMENT; }
     int Liquid::Kind() const { return LIQUID; }
-    int Liquid::Temperature() const { return ( WATER==Sub() ) ? 0 : 1000; }
     Block * Liquid::DropAfterDamage() { return nullptr; }
 
     int Liquid::LightRadius() const {
@@ -194,6 +203,7 @@
         switch ( Sub() ) {
         case WATER: return tr("Liquid");
         case STONE: return tr("Lava");
+        case ACID:  return tr("Acid");
         default:
             fprintf(stderr, "Liquid::FullName(): sub (?): %d\n", Sub());
             return "Unknown liquid";

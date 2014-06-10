@@ -184,7 +184,6 @@ public: // Block information section
     bool InBounds(int x, int y) const;
     bool InBounds(int x, int y, int z) const;
     int  GetBound() const;
-    int  Temperature(int x, int y, int z) const;
 private:
     static bool IsPile(const Block *);
 

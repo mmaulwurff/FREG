@@ -90,7 +90,6 @@ public:
     virtual int DamageLevel() const;
 
     virtual int LightRadius() const;
-    virtual int Temperature() const;
     virtual int Weight() const;
     /// Receive text signal.
     virtual void ReceiveSignal(QString);
