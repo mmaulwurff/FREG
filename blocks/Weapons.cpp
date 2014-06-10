@@ -26,22 +26,24 @@
         case IRON:  return QObject::tr("Spike");
         case WOOD:  return QObject::tr("Stick");
         case BONE:  return QObject::tr("Bone");
+        case SKY:   return QObject::tr("Air");
         default:
             fprintf(stderr, "Weapon::FullName: unlisted sub: %d\n", Sub());
             return "Some weapon";
         }
     }
 
-    quint8 Weapon::Kind() const { return WEAPON; }
-    ushort Weapon::Weight() const { return Block::Weight()/4; }
-    int    Weapon::Wearable() const { return WEARABLE_ARM; }
-    void   Weapon::Damage(ushort /*dmg*/, int /*dmg_kind*/) { durability = 0; }
+    int  Weapon::Kind() const { return WEAPON; }
+    int  Weapon::Weight() const { return Block::Weight()/4; }
+    int  Weapon::Wearable() const { return WEARABLE_ARM; }
+    void Weapon::Damage(int, int) { Break(); }
 
-    ushort Weapon::DamageLevel() const {
+    int Weapon::DamageLevel() const {
         switch ( Sub() ) {
-        case WOOD: return 4;
-        case IRON: return 6;
+        case WOOD:  return 4;
+        case IRON:  return 6;
         case STONE: return 5;
+        case SKY:   return MAX_DURABILITY;
         default:
             fprintf(stderr, "Weapon::DamageLevel: sub (?): %d\n.", Sub());
             return 1;
@@ -49,24 +51,29 @@
     }
 
     int  Weapon::DamageKind() const {
-        return ( IRON==Sub() ) ? THRUST : CRUSH;
+        switch ( Sub() ) {
+        case IRON: return THRUST;
+        case SKY:  return TIME;
+        default:   return CRUSH;
+        }
     }
 
-    void Weapon::Push(const int, Block * const who) {
+    void Weapon::Push(int, Block * const who) {
         who->Damage(DamageLevel(), DamageKind());
     }
 
-    Weapon::Weapon(const int sub, const quint16 id) :
+    Weapon::Weapon(const int sub, const int id) :
             Block(sub, id, NONSTANDARD)
     {}
-    Weapon::Weapon(QDataStream & str, const int sub, const quint16 id) :
+
+    Weapon::Weapon(QDataStream & str, const int sub, const int id) :
             Block(str, sub, id, NONSTANDARD)
     {}
 // Pick::
-    quint8 Pick::Kind() const { return PICK; }
+    int Pick::Kind() const { return PICK; }
     int Pick::DamageKind() const { return MINE; }
 
-    ushort Pick::DamageLevel() const {
+    int Pick::DamageLevel() const {
         switch ( Sub() ) {
         case IRON: return 10;
         default:
@@ -86,17 +93,17 @@
         }
     }
 
-    Pick::Pick(const int sub, const quint16 id) :
+    Pick::Pick(const int sub, const int id) :
             Weapon(sub, id)
     {}
-    Pick::Pick(QDataStream & str, const int sub, const quint16 id) :
+    Pick::Pick(QDataStream & str, const int sub, const int id) :
             Weapon(str, sub, id)
     {}
 // Shovel::
-    quint8 Shovel::Kind() const { return SHOVEL; }
+    int Shovel::Kind() const { return SHOVEL; }
     int Shovel::DamageKind() const { return DIG; }
 
-    ushort Shovel::DamageLevel() const {
+    int Shovel::DamageLevel() const {
         switch ( Sub() ) {
         case IRON: return 3;
         default:
@@ -117,17 +124,17 @@
         }
     }
 
-    Shovel::Shovel(const int sub, const quint16 id) :
+    Shovel::Shovel(const int sub, const int id) :
             Weapon(sub, id)
     {}
-    Shovel::Shovel(QDataStream & str, const int sub, const quint16 id) :
+    Shovel::Shovel(QDataStream & str, const int sub, const int id) :
             Weapon(str, sub, id)
     {}
 // Hammer::
-    quint8 Hammer::Kind() const { return HAMMER; }
+    int Hammer::Kind() const { return HAMMER; }
     int Hammer::DamageKind() const { return CRUSH; }
 
-    ushort Hammer::DamageLevel() const {
+    int Hammer::DamageLevel() const {
         switch ( Sub() ) {
         case IRON: return 10;
         default:
@@ -149,17 +156,17 @@
         }
     }
 
-    Hammer::Hammer(const int sub, const quint16 id) :
+    Hammer::Hammer(const int sub, const int id) :
             Weapon(sub, id)
     {}
-    Hammer::Hammer(QDataStream & str, const int sub, const quint16 id) :
+    Hammer::Hammer(QDataStream & str, const int sub, const int id) :
             Weapon(str, sub, id)
     {}
 // Axe::
-    quint8 Axe::Kind() const { return AXE; }
+    int Axe::Kind() const { return AXE; }
     int Axe::DamageKind() const { return CUT; }
 
-    ushort Axe::DamageLevel() const {
+    int Axe::DamageLevel() const {
         switch ( Sub() ) {
         case IRON: return 10;
         default:
@@ -181,9 +188,9 @@
         }
     }
 
-    Axe::Axe(const int sub, const quint16 id) :
+    Axe::Axe(const int sub, const int id) :
             Weapon(sub, id)
     {}
-    Axe::Axe(QDataStream & str, const int sub, const quint16 id) :
+    Axe::Axe(QDataStream & str, const int sub, const int id) :
             Weapon(str, sub, id)
     {}

@@ -17,37 +17,8 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#ifndef ANIMAL_H
-#define ANIMAL_H
+#include "header.h"
 
-#include "blocks/Active.h"
-
-class Animal : public Active {
-    Q_OBJECT
-public:
-    Animal(int sub, int id);
-    Animal(QDataStream & str, int sub, int id);
-
-    int  DamageKind() const override;
-    int  ShouldAct() const override;
-    void DoRareAction() override;
-    bool Eat(int sub);
-    int  Breath() const;
-    int  Satiation() const;
-    QString FullName() const override = 0;
-    Animal * IsAnimal() override;
-    Block  * DropAfterDamage() override;
-    INNER_ACTIONS ActInner() override;
-
-    virtual int NutritionalValue(int sub) const = 0;
-
-protected:
-    void SaveAttributes(QDataStream & out) const override;
-    void EatGrass();
-
-private:
-    quint8  breath;
-    quint16 satiation;
-};
-
-#endif // ANIMAL_H
+bool IsLikeAir(const int sub) {
+    return ( sub==AIR || sub==SKY || sub==STAR || sub==SUN_MOON );
+}

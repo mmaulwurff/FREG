@@ -41,9 +41,9 @@ void DeferredAction::Jump() const {
 }
 
 void DeferredAction::Build() const {
-    short z = zTarg;
+    int z = z_self;
     if ( DOWN==attachedBlock->GetDir() &&
-            AIR!=GetWorld()->GetBlock(xTarg, yTarg, zTarg)->Sub() )
+            AIR!=GetWorld()->GetBlock(x_self, y_self, z_self)->Sub() )
     {
         if ( world->Move(attachedBlock->X(), attachedBlock->Y(),
                 attachedBlock->Z(), UP) )
@@ -54,7 +54,7 @@ void DeferredAction::Build() const {
         }
     }
     const quint16 id = material->GetId();
-    if ( not world->Build(material, xTarg, yTarg, z,
+    if ( not world->Build(material, x_self, y_self, z,
             World::TurnRight(attachedBlock->GetDir()), attachedBlock) )
     { // build not successful
         return;
@@ -68,7 +68,7 @@ void DeferredAction::Build() const {
     if ( inv->Number(srcSlot) ) {
         return;
     } // else:
-    for (ushort i=srcSlot+1; i<inv->Size() &&
+    for (int i=srcSlot+1; i<inv->Size() &&
         inv->Number(srcSlot)<MAX_STACK_SIZE; ++i)
     {
         const Block * const block_i = inv->ShowBlock(i);
@@ -79,16 +79,16 @@ void DeferredAction::Build() const {
 } // void DeferredAction::Build()
 
 void DeferredAction::Damage() const {
-    if ( world->Damage(xTarg, yTarg, zTarg,
+    if ( world->Damage(X(), Y(), Z(),
             attachedBlock->DamageLevel(),
             attachedBlock->DamageKind()) <= 0 ) // durability
     {
-        world->DestroyAndReplace(xTarg, yTarg, zTarg);
+        world->DestroyAndReplace(X(), Y(), Z());
     }
 }
 
 void DeferredAction::Throw() const {
-    world->Drop(attachedBlock, xTarg, yTarg, zTarg,
+    world->Drop(attachedBlock, x_self, y_self, z_self,
         srcSlot, destSlot, num);
     attachedBlock->EmitUpdated();
 }
@@ -106,31 +106,32 @@ void DeferredAction::Pour() const {
     Block * const liquid = vessel_inv->ShowBlock(0);
     if ( liquid == nullptr ) return;
 
-    if ( world->Build(liquid, xTarg, yTarg, zTarg) ) {
+    if ( world->Build(liquid, x_self, y_self, z_self) ) {
         vessel_inv->Pull(0);
     }
 }
 
 void DeferredAction::SetFire() const {
-    if ( world->GetBlock(xTarg, yTarg, zTarg)->Sub() == AIR ) {
-        world->Build(BlockManager::NewBlock(GRASS, FIRE), xTarg, yTarg, zTarg);
+    if ( world->GetBlock(x_self, y_self, z_self)->Sub() == AIR ) {
+        world->Build(BlockManager::NewBlock(GRASS, FIRE),
+            x_self, y_self, z_self);
     }
 }
 
-void DeferredAction::SetGhostMove(const ushort dir) {
+void DeferredAction::SetGhostMove(const int dir) {
     type = DEFERRED_GHOST_MOVE;
     num  = dir;
 }
 
-void DeferredAction::SetMove(const ushort dir) {
+void DeferredAction::SetMove(const int dir) {
     type = DEFERRED_MOVE;
     num  = dir;
 }
 
 void DeferredAction::SetJump() { type = DEFERRED_JUMP; }
 
-void DeferredAction::SetBuild(const short x, const short y, const short z,
-        Block * const mat, const ushort builder_slot)
+void DeferredAction::SetBuild(const int x, const int y, const int z,
+        Block * const mat, const int builder_slot)
 {
     SetXyz(x, y, z);
     material = mat;
@@ -138,13 +139,13 @@ void DeferredAction::SetBuild(const short x, const short y, const short z,
     type     = DEFERRED_BUILD;
 }
 
-void DeferredAction::SetDamage(const short x, const short y, const short z) {
+void DeferredAction::SetDamage(const int x, const int y, const int z) {
     SetXyz(x, y, z);
-    type  = DEFERRED_DAMAGE;
+    type = DEFERRED_DAMAGE;
 }
 
-void DeferredAction::SetThrow(const short x, const short y, const short z,
-        const ushort src, const ushort dest, const ushort n)
+void DeferredAction::SetThrow(const int x, const int y, const int z,
+        const int src, const int dest, const int n)
 {
     SetXyz(x, y, z);
     srcSlot  = src;
@@ -153,27 +154,22 @@ void DeferredAction::SetThrow(const short x, const short y, const short z,
     type = DEFERRED_THROW;
 }
 
-void DeferredAction::SetPour(const short x, const short y, const short z,
-        const ushort src)
+void DeferredAction::SetPour(const int x, const int y, const int z,
+        const int src)
 {
     SetXyz(x, y, z);
     srcSlot = src;
     type = DEFERRED_POUR;
 }
 
-void DeferredAction::SetSetFire(const short x, short y, short z) {
+void DeferredAction::SetSetFire(const int x, int y, int z) {
     SetXyz(x, y, z);
-    type  = DEFERRED_SET_FIRE;
-}
-
-void DeferredAction::SetXyz(const short x, const short y, const short z) {
-    xTarg = x;
-    yTarg = y;
-    zTarg = z;
+    type = DEFERRED_SET_FIRE;
 }
 
 void DeferredAction::MakeAction() {
     switch ( type ) {
+    case DEFERRED_NOTHING: break;
     case DEFERRED_MOVE:   Move();   break;
     case DEFERRED_JUMP:   Jump();   break;
     case DEFERRED_BUILD:  Build();  break;
@@ -182,7 +178,6 @@ void DeferredAction::MakeAction() {
     case DEFERRED_DAMAGE: Damage(); break;
     case DEFERRED_SET_FIRE: SetFire(); break;
     case DEFERRED_GHOST_MOVE: GhostMove(); break;
-    case DEFERRED_NOTHING: break;
     }
     type = DEFERRED_NOTHING;
 }
@@ -190,10 +185,11 @@ void DeferredAction::MakeAction() {
 World * DeferredAction::GetWorld() const { return world; }
 
 DeferredAction::DeferredAction(Active * const attached) :
+        Xyz(),
         type(DEFERRED_NOTHING),
         attachedBlock(attached),
-        xTarg(), yTarg(), zTarg(),
         material(),
-        srcSlot(), destSlot(),
+        srcSlot(),
+        destSlot(),
         num()
 {}

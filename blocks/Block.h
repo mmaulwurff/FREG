@@ -40,6 +40,17 @@ enum WEARABLE {
     WEARABLE_LEGS
 }; // enum WEARABLE
 
+// weights in measures - mz (mezuro)
+    const int WEIGHT_NULLSTONE = 1000;
+    const int WEIGHT_SAND = 100;
+    const int WEIGHT_WATER = 50;
+    const int WEIGHT_GLASS = 150;
+    const int WEIGHT_IRON = 300;
+    const int WEIGHT_GREENERY = 3;
+    const int WEIGHT_MINIMAL = 1;
+    const int WEIGHT_STONE = 200;
+    const int WEIGHT_AIR = 0;
+
 class Inventory;
 class Active;
 class Animal;
@@ -48,21 +59,22 @@ class Block {
     /**\class Block Block.h
      * \brief Block without special physics and attributes. */
 public:
-    Block(int sub, quint16 id, quint8 transp = UNDEF);
-    Block(QDataStream &, int sub, quint16 id, quint8 transp = UNDEF);
+    Block(int sub, int id, int transp = UNDEF);
+    Block(QDataStream &, int sub, int id, int transp = UNDEF);
     virtual ~Block();
 
     Block & operator=(const Block &) = delete;
+    Block(const Block &) = delete;
 
     virtual QString FullName() const;
-    virtual quint8 Kind() const;
+    virtual int  Kind() const;
     virtual bool Catchable() const;
     /// Returns true on success.
     virtual bool Inscribe(QString str);
     virtual int PushResult(int dir) const;
     virtual void Push(int dir, Block * who);
     virtual bool Move(int direction);
-    virtual void Damage(ushort dmg, int dmg_kind);
+    virtual void Damage(int dmg, int dmg_kind);
     virtual usage_types Use(Block * who = 0);
     /// Usually returns new block of the same kind and sub (except glass).
     /** When reimplemented in derivatives, inside it you can create a pile,
@@ -75,42 +87,47 @@ public:
 
     virtual int Wearable() const;
     virtual int DamageKind() const;
-    virtual ushort DamageLevel() const;
+    virtual int DamageLevel() const;
 
-    virtual uchar LightRadius() const;
+    virtual int LightRadius() const;
     virtual int Temperature() const;
-    virtual ushort Weight() const;
+    virtual int Weight() const;
     /// Receive text signal.
     virtual void ReceiveSignal(QString);
 
     /// Determines kind and sub, unique for every kind-sub pair.
-    quint16 GetId() const;
+    int GetId() const;
     /// Set maximum durability.
     void Restore();
+    /// Set durability to null.
+    void Break();
+    /// Increments durability, no more than MAX_DURABILITY.
+    void Mend();
     void SetDir(int dir);
 
     int GetDir() const;
-    int Sub() const;
-    short GetDurability() const;
+    int GetDurability() const;
     QString GetNote() const;
-    int Transparent() const;
+    inline int Transparent() const { return transparent; }
+    inline int Sub() const { return sub; }
 
     bool operator==(const Block &) const;
     bool operator!=(const Block &) const;
 
-    void SaveToFile(QDataStream & out) const;
+    /// Important! If block should be used after save, call RestoreDurability.
+    void SaveToFile(QDataStream & out);
+    /// Importart! Use it if block won't be deleted after SaveToFile.
+    void RestoreDurabilityAfterSave();
+
 protected:
     virtual void SaveAttributes(QDataStream &) const;
-    static quint16 IdFromKindSub(quint16 id, quint8 sub);
 
     QString * note;
-    qint16 durability;
+
 private:
-    Block(Block const &);
+    int Transparency(int transp, int sub) const;
 
-    static const ushort MAX_NOTE_LENGTH = 144;
-    quint8 Transparency(quint8 transp, int sub) const;
-
+    qint16 durability;
     const quint8 transparent;
     const quint8 sub;
     const quint16 id;

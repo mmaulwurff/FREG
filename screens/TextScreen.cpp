@@ -32,16 +32,15 @@
 #include "blocks/Inventory.h"
 #include "Player.h"
 
-void Screen::Update(ushort, ushort, ushort) {}
+void Screen::Update(int, int, int) {}
 void Screen::UpdatePlayer() {}
 void Screen::UpdateAll() {}
-void Screen::UpdateAround(ushort, ushort, ushort, ushort) {}
+void Screen::UpdateAround(int, int, int, ushort) {}
 void Screen::Move(int) {}
 
 void Screen::PassString(QString & str) const {
-    static const ushort NOTE_LENGTH = 144;
-    char temp_str[NOTE_LENGTH+1];
-    fgets(temp_str, NOTE_LENGTH, stdin);
+    char temp_str[MAX_NOTE_LENGTH+1];
+    fgets(temp_str, MAX_NOTE_LENGTH, stdin);
     fprintf(notifyLog, "%lu: Command: %s\n", w->Time(), temp_str);
     str = QString::fromUtf8(temp_str);
 }
@@ -176,17 +175,17 @@ void Screen::InventoryAction(const ushort num) const {
     }
 }
 
-void Screen::ActionXyz(short & x, short & y, short & z) const {
+void Screen::ActionXyz(int * x, int * y, int * z) const {
     VirtScreen::ActionXyz(x, y, z);
     if (
             DOWN != player->GetDir() &&
             UP   != player->GetDir() &&
-            ( AIR==w->GetBlock(x, y, z)->Sub() || AIR==w->GetBlock(
+            ( AIR==w->GetBlock(*x, *y, *z)->Sub() || AIR==w->GetBlock(
                 player->X(),
                 player->Y(),
                 player->Z()+shiftFocus)->Sub() ))
     {
-        z += shiftFocus;
+        *z += shiftFocus;
     }
 }
 
@@ -217,15 +216,17 @@ void Screen::DisplayFile(QString path) {
             .arg(QDir::currentPath()).arg(path) );
 }
 
-void Screen::Notify(const QString str) {
+void Screen::Notify(const QString str) const {
     fputs(qPrintable(QString("%1 %2\n").arg(w->TimeOfDayStr()).arg(str)),
         notifyLog);
-    if ( ++notificationRepeatCount && str == lastNotification ) {
-        printf("%s (%dx)\n", qPrintable(str), notificationRepeatCount);
+    static int notification_repeat_count = 1;
+    static QString last_notification;
+    if ( ++notification_repeat_count && str == last_notification ) {
+        printf("%s (%dx)\n", qPrintable(str), notification_repeat_count);
     } else {
-        notificationRepeatCount = 1;
+        notification_repeat_count = 1;
         printf("%s\n", qPrintable(str));
-        lastNotification = str;
+        last_notification = str;
     }
 }
 
@@ -246,7 +247,6 @@ Screen::Screen(
         input(new IThread(this)),
         timer(new QTimer(this)),
         notifyLog(fopen("texts/messages.txt", "at")),
-        notificationRepeatCount(1),
         fileToShow(nullptr),
         ascii(_ascii)
 {

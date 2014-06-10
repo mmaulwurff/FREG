@@ -60,33 +60,33 @@ public:
     long GlobalY() const;
 
     /// If player is not dwarf, false is always returned.
-    bool   IsRightActiveHand() const;
+    bool IsRightActiveHand() const;
     /// If player is not dwarf, 0 is returned.
-    ushort GetActiveHand() const;
+    int  GetActiveHand() const;
     /// If player is not dwarf, does nothing.
-    void   SetActiveHand(bool right);
+    void SetActiveHand(bool right);
 
     /// This returns current player direction (see enum dirs in header.h)
     int GetDir() const;
 
     /// This returns player hitpoints, also known as durability.
-    short HP() const;
+    int HP() const;
     /// This returns player breath reserve.
-    short Breath() const;
-    ushort BreathPercent() const;
-    short Satiation() const;
+    int Breath() const;
+    int BreathPercent() const;
+    int Satiation() const;
     /// Can be > 100 if player is gorged. When player is not animal, 50.
-    ushort SatiationPercent() const;
+    int SatiationPercent() const;
 
     bool IfPlayerExists() const;
 
     /// This returns true if block at (x, y, z) is visible to player.
-    bool Visible(ushort x, ushort y, ushort z) const;
+    bool Visible(int x, int y, int z) const;
 
     /// This returns how player is using something now.
     /** See enum usage_types in header.h. */
     int UsingType() const;
-    ushort GetUsingInInventory() const;
+    int GetUsingInInventory() const;
     void SetUsingTypeNo();
     /// This returns how player is using himself.
     /** For example, OPEN means he is looking in his backpack.
@@ -111,47 +111,30 @@ public:
     void StopUseAll();
     /// Tries to switch usingSelfType from NO to OPEN.
     void Backpack();
-    /// \deprecated Use Inscribe() instead, player will get xyz from screen.
-    void Inscribe(short x, short y, short z) const;
     void Inscribe() const;
-    /// \deprecated Use Examine() instead, player will get xyz from screen.
-    void Examine(short x, short y, short z) const;
     void Examine() const;
     /// Returns true if xyz are in world bounds.
-    /** \deprecated Use Damage() instead, player will get xyz from screen. */
-    bool Damage(short x, short y, short z) const;
     bool Damage() const;
-    /// \deprecated use Use() instead, player will get xyz from screen.
-    void Use(short x, short y, short z);
     void Use();
     /// Tries to throw (drop out) block number num from inventory.
-    /** \deprecated Use Damage() instead, player will get xyz from screen. */
-    void Throw(short x, short y, short z,
-            ushort src, ushort dest = 0, ushort num = 1);
-    void Throw(ushort src, ushort dest = 0, ushort num = 1);
+    void Throw(int src, int dest = 0, int num = 1);
 
     /// Tries to use block number num in inventory.
-    usage_types Use(ushort num);
+    usage_types Use(int num);
     /// Tries to get block number num from outer inventory.
-    /** \deprecated use Obtain(ushort src, ushort dest, ushort num) instead,
-     * player will get xyz from screen. */
-    void Obtain(short x, short y, short z,
-            ushort src, ushort dest = 0, ushort num = 1);
-    void Obtain(ushort src, ushort dest = 0, ushort num = 1);
-    void Wield   (ushort num);
-    void Inscribe(ushort num);
-    void Eat     (ushort num);
-    void Craft   (ushort num);
-    void TakeOff (ushort num);
-    /// \deprecated use Build(num) instead, player will get xyz from screen.
-    void Build(short x, short y, short z, ushort num);
-    void Build(ushort num);
+    void Obtain(int src, int dest = 0, int num = 1);
+    void Wield   (int num);
+    void Inscribe(int num);
+    void Eat     (int num);
+    void Craft   (int num);
+    void TakeOff (int num);
+    void Build(int num);
     /// Can also wield appropriate things.
-    void MoveInsideInventory(ushort num_from, ushort num_to, ushort num=1);
+    void MoveInsideInventory(int num_from, int num_to, int num=1);
     void ProcessCommand(QString command);
 
 signals:
-    void Moved(long x, long y, ushort z) const;
+    void Moved(long x, long y, int z) const;
     /// This is emitted when a notification is needed to be displayed.
     /** It should be connected to screen::Notify(QString). */
     void Notify(QString) const;
@@ -166,7 +149,7 @@ signals:
     void GetString(QString &);
     void Destroyed();
     void ShowFile(QString path);
-    void GetFocus(short & x, short & y, short & z) const;
+    void GetFocus(int * x, int * y, int * z) const;
 
 private slots:
     /// For cleaning player-related data before exiting program.
@@ -185,27 +168,27 @@ private slots:
     /// This is called when player block is destroyed.
     void BlockDestroy();
 
-    void SetPlayer(ushort set_x, ushort set_y, ushort set_z);
+    void SetPlayer(int set_x, int set_y, int set_z);
     /// Dir is not used, for slot signature compatibility only.
     void UpdateXYZ(int dir = NOWHERE);
 
 private:
-    usage_types UseNoLock(ushort num);
-    void InnerMove(ushort num_from, ushort num_to, ushort num = 1);
+    usage_types UseNoLock(int num);
+    void InnerMove(int num_from, int num_to, int num = 1);
     /// Checks player existence, inventory existence, size limits,
     /// block existence.
-    Block * ValidBlock(ushort num) const;
+    Block * ValidBlock(int num) const;
     Shred * GetShred() const;
     World * GetWorld() const;
 
     long homeLongi, homeLati;
-    short homeX, homeY, homeZ;
+    int homeX, homeY, homeZ;
     int dir;
     Active * player;
     int usingType, usingSelfType;
-    ushort usingInInventory;
+    int usingInInventory;
     bool creativeMode;
     volatile bool cleaned;
-}; // class Player
+};
 
 #endif // PLAYER_H

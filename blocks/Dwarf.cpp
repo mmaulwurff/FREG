@@ -22,26 +22,18 @@
 #include "BlockManager.h"
 #include <QDataStream>
 
-uchar Dwarf::GetActiveHand() const { return activeHand; }
-void  Dwarf::SetActiveHand(const bool right) {
-    activeHand = (right ? quint8(IN_RIGHT) : IN_LEFT);
+int  Dwarf::GetActiveHand() const { return activeHand; }
+void Dwarf::SetActiveHand(const bool right) {
+    activeHand = (right ? IN_RIGHT : IN_LEFT);
 }
 
-ushort Dwarf::Weight() const {
+int Dwarf::Weight() const {
     World * const world = GetWorld();
-    return ( world && (
-            (world->InBounds(X()+1, Y()) &&
-                world->GetBlock(X()+1, Y(), Z())->
-                    Catchable()) ||
-            (world->InBounds(X()-1, Y()) &&
-                world->GetBlock(X()-1, Y(), Z())->
-                    Catchable()) ||
-            (world->InBounds(X(), Y()+1) &&
-                world->GetBlock(X(), Y()+1, Z())->
-                    Catchable()) ||
-            (world->InBounds(X(), Y()-1) &&
-                world->GetBlock(X(), Y()-1, Z())->
-                    Catchable()) ) ) ?
+    static const int bound = world->NumShreds() * SHRED_WIDTH - 1;
+    return ( (X() < bound && world->GetBlock(X()+1, Y(), Z())->Catchable()) ||
+            ( X() > 0     && world->GetBlock(X()-1, Y(), Z())->Catchable()) ||
+            ( Y() < bound && world->GetBlock(X(), Y()+1, Z())->Catchable()) ||
+            ( Y() > 0     && world->GetBlock(X(), Y()-1, Z())->Catchable()) ) ?
         0 : Inventory::Weight()+Block::Weight();
 }
 
@@ -57,19 +49,18 @@ Block * Dwarf::DropAfterDamage() {
 int Dwarf::Sub() const { return Block::Sub(); }
 int Dwarf::ShouldAct() const { return FREQUENT_FIRST | FREQUENT_RARE; }
 bool Dwarf::Access() const { return false; }
-ushort Dwarf::Start() const { return ON_LEGS+1; }
-quint8 Dwarf::Kind() const { return DWARF; }
+int Dwarf::Start() const { return ON_LEGS+1; }
+int Dwarf::Kind() const { return DWARF; }
 QString Dwarf::FullName() const { return "Rational"; }
 Inventory * Dwarf::HasInventory() { return Inventory::HasInventory(); }
-uchar Dwarf::LightRadius() const { return lightRadius; }
+int Dwarf::LightRadius() const { return lightRadius; }
 
 void Dwarf::UpdateLightRadius() {
     Block * const in_left  = ShowBlock(IN_LEFT);
     Block * const in_right = ShowBlock(IN_RIGHT);
-    const uchar  left_rad = in_left  ? in_left ->LightRadius() : 0;
-    const uchar right_rad = in_right ? in_right->LightRadius() : 0;
-    lightRadius = qMax(uchar(MIN_DWARF_LIGHT_RADIUS),
-        qMax(left_rad, right_rad));
+    const int left_rad  = in_left  ? in_left ->LightRadius() : 0;
+    const int right_rad = in_right ? in_right->LightRadius() : 0;
+    lightRadius = qMax(MIN_DWARF_LIGHT_RADIUS, qMax(left_rad, right_rad));
 }
 
 void Dwarf::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
@@ -79,8 +70,8 @@ int Dwarf::DamageKind() const {
         ShowBlock(GetActiveHand())->DamageKind() : DAMAGE_HANDS;
 }
 
-ushort Dwarf::DamageLevel() const {
-    ushort level = 1;
+int Dwarf::DamageLevel() const {
+    int level = 1;
     if ( Number(IN_RIGHT) ) {
         level += ShowBlock(IN_RIGHT)->DamageLevel();
     }
@@ -93,7 +84,7 @@ ushort Dwarf::DamageLevel() const {
 bool Dwarf::Move(const int dir) {
     const bool overstepped = Active::Move(dir);
     if ( overstepped ) {
-        for (ushort i=0; i<ON_LEGS; ++i) {
+        for (int i=0; i<ON_LEGS; ++i) {
             Block * const block = ShowBlock(i);
             if ( block && block->Kind()==MAP ) {
                 block->Use(this);
@@ -103,7 +94,7 @@ bool Dwarf::Move(const int dir) {
     return overstepped;
 }
 
-quint16 Dwarf::NutritionalValue(const quint8 sub) const {
+int Dwarf::NutritionalValue(const int sub) const {
     switch ( sub ) {
     case HAZELNUT: return SECONDS_IN_HOUR/2;
     case H_MEAT:   return SECONDS_IN_HOUR*2.5;
@@ -112,9 +103,7 @@ quint16 Dwarf::NutritionalValue(const quint8 sub) const {
     return 0;
 }
 
-void Dwarf::MoveInside(const ushort num_from, const ushort num_to,
-        const ushort num)
-{
+void Dwarf::MoveInside(const int num_from, const int num_to, const int num) {
     Block * const block = ShowBlock(num_from);
     if ( block && (num_to > ON_LEGS ||
             IN_RIGHT==num_to || IN_LEFT==num_to ||
@@ -142,7 +131,7 @@ bool Dwarf::Inscribe(const QString) {
     return false;
 }
 
-Dwarf::Dwarf(const int sub, const quint16 id) :
+Dwarf::Dwarf(const int sub, const int id) :
         Animal(sub, id),
         Inventory(),
         activeHand(IN_RIGHT),
@@ -150,7 +139,7 @@ Dwarf::Dwarf(const int sub, const quint16 id) :
 {
     note = new QString("Urist");
 }
-Dwarf::Dwarf(QDataStream & str, const int sub, const quint16 id) :
+Dwarf::Dwarf(QDataStream & str, const int sub, const int id) :
         Animal(str, sub, id),
         Inventory(str)
 {

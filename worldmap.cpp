@@ -91,17 +91,17 @@ void WorldMap::Circle(
             "WorldMap::Circle: %c: min_rad (%f) >= max_rad (%f).\n",
             ch, min_rad, max_rad);
     }
-    float maxs[360] = { (float)qMax(min_rad, float(qrand()%qRound(max_rad))) };
-    for (ushort x=1; x<360; ++x) {
+    float maxs[360] = { (float)qMax(min_rad, float(qrand()%Round(max_rad))) };
+    for (int x=1; x<360; ++x) {
         maxs[x]= qBound(
             min_rad, float(maxs[x-1]+(qrand()%400-200.0)/200.0),max_rad);
         if ( x > 315 ) { // connect beginning and end of circle
             maxs[x] += (maxs[0]-maxs[x-1])/90;
         }
     }
-    for (ushort y=0; y<size; ++y)
-    for (ushort x=0; x<size; ++x) {
-        if ( R(x, y, size) < maxs[qRound(Deg(x, y, size))] ) {
+    for (int y=0; y<size; ++y)
+    for (int x=0; x<size; ++x) {
+        if ( R(x, y, size) < maxs[Round(Deg(x, y, size))] ) {
             map[x*size+y] = ch;
         }
     }
@@ -117,8 +117,8 @@ void WorldMap::GenerateMap(
     size = qMax(ushort(10U), size);
 
     char * const map = new char[(ulong)size*size];
-    for (ushort y=0; y<size; ++y)
-    for (ushort x=0; x<size; ++x) {
+    for (int y=0; y<size; ++y)
+    for (int x=0; x<size; ++x) {
         map[x*size+y] = outer;
     }
 
@@ -146,8 +146,8 @@ void WorldMap::GenerateMap(
     }
 
     FILE * const file = fopen(filename, "wb");
-    for (ushort y=0; y<size; ++y, fputc('\n', file))
-    for (ushort x=0; x<size; ++x) {
+    for (int y=0; y<size; ++y, fputc('\n', file))
+    for (int x=0; x<size; ++x) {
         fputc(map[x*size+y], file);
     }
     delete [] map;

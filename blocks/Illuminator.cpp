@@ -20,19 +20,19 @@
 #include "blocks/Illuminator.h"
 #include "BlockManager.h"
 
-Illuminator::Illuminator(const int sub, const quint16 id) :
+Illuminator::Illuminator(const int sub, const int id) :
         Active(sub, id),
         fuel_level(MAX_FUEL)
 {}
 
-Illuminator::Illuminator(QDataStream & str, const int sub, const quint16 id) :
+Illuminator::Illuminator(QDataStream & str, const int sub, const int id) :
         Active(str, sub, id)
 {
     str >> fuel_level;
 }
 
-void Illuminator::Damage(ushort /*dmg*/, int /*dmg_kind*/) { durability = 0; }
-quint8 Illuminator::Kind() const { return ILLUMINATOR; }
+void Illuminator::Damage(int /*dmg*/, int /*dmg_kind*/) { Break(); }
+int Illuminator::Kind() const { return ILLUMINATOR; }
 
 QString Illuminator::FullName() const {
     switch ( Sub() ) {
@@ -57,24 +57,25 @@ usage_types Illuminator::Use(Block *) {
     }
 }
 
-uchar Illuminator::LightRadius() const {
+int Illuminator::LightRadius() const {
     if ( fuel_level == 0 ) return 0;
     switch ( Sub() ) {
     default:
     case STONE: return 0;
-    case WOOD:  return 3;
-    case IRON:  return 4;
-    case GLASS: return 5;
+    case WOOD:  return 4;
+    case IRON:  return 5;
+    case GLASS: return 7;
     }
 }
 
+bool Illuminator::ShouldFall() const { return false; }
 int  Illuminator::ShouldAct() const { return FREQUENT_RARE; }
 void Illuminator::DoRareAction() { ActInner(); }
 
 INNER_ACTIONS Illuminator::ActInner() {
     if ( fuel_level == 0 ) {
         if ( Sub() == WOOD ) {
-            durability = 0;
+            Break();
         }
     } else {
         if ( Sub() != STONE ) {

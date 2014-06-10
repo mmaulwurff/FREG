@@ -26,36 +26,36 @@
 class Dwarf : public Animal, public Inventory {
     Q_OBJECT
 public:
-    Dwarf(int sub, quint16 id);
-    Dwarf(QDataStream & str, int sub, quint16 id);
+    Dwarf(int sub, int id);
+    Dwarf(QDataStream & str, int sub, int id);
 
-    uchar GetActiveHand() const;
-    void  SetActiveHand(bool right);
+    int  GetActiveHand() const;
+    void SetActiveHand(bool right);
 
     int Sub() const override;
     int ShouldAct() const override;
     int DamageKind() const override;
     bool Move(int direction) override;
-    quint8 Kind() const override;
-    ushort Start() const override;
-    ushort Weight() const override;
-    ushort DamageLevel() const override;
+    int Kind() const override;
+    int Start() const override;
+    int Weight() const override;
+    int DamageLevel() const override;
     QString FullName() const override;
 
     bool Access() const override;
     bool Inscribe(QString str) override;
-    void MoveInside(ushort num_from, ushort num_to, ushort num) override;
+    void MoveInside(int num_from, int num_to, int num) override;
     void ReceiveSignal(QString) override;
-    uchar LightRadius() const override;
+    int  LightRadius() const override;
     Block * DropAfterDamage() override;
-    quint16 NutritionalValue(quint8 sub) const override;
+    int  NutritionalValue(int sub) const override;
     Inventory * HasInventory() override;
 
-    static const uchar ON_HEAD  = 0;
-    static const uchar IN_RIGHT = 1;
-    static const uchar IN_LEFT  = 2;
-    static const uchar ON_BODY  = 3;
-    static const uchar ON_LEGS  = 4;
+    static const int ON_HEAD  = 0;
+    static const int IN_RIGHT = 1;
+    static const int IN_LEFT  = 2;
+    static const int ON_BODY  = 3;
+    static const int ON_LEGS  = 4;
 
 protected:
     void SaveAttributes(QDataStream & out) const override;
@@ -63,10 +63,10 @@ protected:
 private:
     void UpdateLightRadius();
 
-    static const uchar MIN_DWARF_LIGHT_RADIUS = 2;
+    static const int MIN_DWARF_LIGHT_RADIUS = 2;
 
     quint8 activeHand;
-    uchar lightRadius;
+    int lightRadius;
 };
 
 #endif // DWARF_H

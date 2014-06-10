@@ -34,19 +34,19 @@ QString Active::FullName() const {
         return "Unkown active block";
     }
 }
-quint8 Active::Kind() const { return ACTIVE; }
+int  Active::Kind() const { return ACTIVE; }
 Active * Active::ActiveBlock() { return this; }
 bool Active::IsFalling() const { return falling; }
 bool Active::ShouldFall() const { return true; }
 int  Active::ShouldAct() const { return FREQUENT_NEVER; }
-int  Active::PushResult(const int) const { return MOVABLE; }
+int  Active::PushResult(int) const { return MOVABLE; }
 void Active::DoFrequentAction() {}
 void Active::DoRareAction() {}
 INNER_ACTIONS Active::ActInner() { return INNER_ACTION_NONE; }
 
 void Active::ActFrequent() {
     if ( not IsToDelete() ) {
-        if ( GetDeferredAction() ) {
+        if ( GetDeferredAction() != nullptr ) {
             GetDeferredAction()->MakeAction();
         }
         DoFrequentAction();
@@ -54,12 +54,11 @@ void Active::ActFrequent() {
 }
 
 void Active::ActRare() {
-    if ( not IsToDelete() ) {
-        DoRareAction();
-    }
+    if ( IsToDelete() ) return;
+    DoRareAction();
     Inventory * const inv = HasInventory();
     if ( inv != nullptr ) {
-        for (int i=0; i<inv->Size(); ++i)
+        for (int i=inv->Size()-1; i; --i)
         for (int j=0; j<inv->Number(i); ++j) {
             Active * const active = inv->ShowBlock(i, j)->ActiveBlock();
             if ( active != nullptr
@@ -83,14 +82,14 @@ void Active::SetDeferredAction(DeferredAction * const action) {
     delete deferredAction;
     deferredAction = action;
 }
+
 DeferredAction * Active::GetDeferredAction() const { return deferredAction; }
 
 void Active::FallDamage() {
     if ( fall_height > SAFE_FALL_HEIGHT ) {
-        World * const world = GetWorld();
-        const ushort dmg = (fall_height - SAFE_FALL_HEIGHT)*10;
-        world->Damage(X(), Y(), Z()-1, dmg, DAMAGE_FALL);
-        world->Damage(X(), Y(), Z(), dmg, DAMAGE_FALL);
+        const int dmg = (fall_height - SAFE_FALL_HEIGHT)*10;
+        GetWorld()->Damage(X(), Y(), Z()-1, dmg, DAMAGE_FALL);
+        Damage(dmg, DAMAGE_FALL);
     }
     fall_height = 0;
 }
@@ -122,16 +121,11 @@ bool Active::Move(const int dir) {
 
 void Active::SendSignalAround(const QString signal) const {
     World * const world = GetWorld();
-    const Xy coords[] = {
-        Xy( X()-1, Y()   ),
-        Xy( X()+1, Y()   ),
-        Xy( X(),   Y()-1 ),
-        Xy( X(),   Y()+1 ) };
-    for (const Xy xy : coords) {
-        if ( world->InBounds(xy.X(), xy.Y()) ) {
-             world->GetBlock(xy.X(), xy.Y(), Z())->ReceiveSignal(signal);
-        }
-    }
+    static const int bound = world->GetBound();
+    if ( X() > 0 )     world->GetBlock(X()-1, Y(), Z())->ReceiveSignal(signal);
+    if ( X() < bound ) world->GetBlock(X()+1, Y(), Z())->ReceiveSignal(signal);
+    if ( Y() > 0 )     world->GetBlock(X(), Y()-1, Z())->ReceiveSignal(signal);
+    if ( Y() < bound ) world->GetBlock(X(), Y()+1, Z())->ReceiveSignal(signal);
     world->GetBlock(X(), Y(), Z()-1)->ReceiveSignal(signal);
     world->GetBlock(X(), Y(), Z()+1)->ReceiveSignal(signal);
 }
@@ -140,10 +134,10 @@ void Active::SetShred(Shred * const new_shred) { shred = new_shred; }
 Shred * Active::GetShred() const { return shred; }
 World * Active::GetWorld() const { return world; }
 
-void Active::Damage(const ushort dmg, const int dmg_kind) {
-    const int last_dur = durability;
+void Active::Damage(const int dmg, const int dmg_kind) {
+    const int last_dur = GetDurability();
     Block::Damage(dmg, dmg_kind);
-    if ( last_dur != durability ) {
+    if ( last_dur != GetDurability() ) {
         ReceiveSignal(OUCH);
         switch ( dmg_kind ) {
         case HUNGER:      ReceiveSignal(tr("You faint from hunger!")); break;
@@ -167,12 +161,6 @@ void Active::EmitUpdated() { emit Updated(); }
 
 void Active::SaveAttributes(QDataStream & out) const { out << fall_height; }
 
-void Active::SetXYZ(const ushort x, const ushort y, const ushort z) {
-    x_self = x;
-    y_self = y;
-    z_self = z;
-}
-
 void Active::SetToDelete() {
     if ( not frozen ) {
         frozen = true;
@@ -184,7 +172,7 @@ void Active::SetToDelete() {
 
 bool Active::IsToDelete() const { return frozen; }
 
-Active::Active(const int sub, const quint16 id, const quint8 transp) :
+Active::Active(const int sub, const int id, const int transp) :
         Block(sub, id, transp),
         Xyz(),
         fall_height(0),
@@ -193,8 +181,9 @@ Active::Active(const int sub, const quint16 id, const quint8 transp) :
         deferredAction(nullptr),
         shred()
 {}
-Active::Active(QDataStream & str, const int sub, const quint16 id,
-        const quint8 transp)
+
+Active::Active(QDataStream & str, const int sub, const int id,
+        const int transp)
     :
         Block(str, sub, id, transp),
         Xyz(),
@@ -207,30 +196,27 @@ Active::Active(QDataStream & str, const int sub, const quint16 id,
 }
 Active::~Active() { delete deferredAction; }
 
-bool Active::Gravitate(const ushort range, const ushort down, const ushort up,
-        const ushort calmness)
+bool Active::Gravitate(const int range, int bottom, int top,
+        const int calmness)
 {
-    World * const world = GetWorld();
+    static World * const world = GetWorld();
+    static const int bound = world->GetBound();
     // analyse world around
-    short for_north = 0, for_west = 0;
-    const ushort y_start = Y()-range;
-    const ushort z_start = Z()-down;
-    const ushort x_end = X()+range;
-    const ushort y_end = Y()+range;
-    const ushort z_end = Z()+up;
-    for (ushort x=X()-range; x<=x_end; ++x)
-    for (ushort y=y_start;   y<=y_end; ++y) {
-        if ( not world->InBounds(x, y) ) {
-            continue;
-        }
+    int for_north = 0, for_west = 0;
+    const int y_start = qMax(Y()-range, 0);
+    const int y_end   = qMin(Y()+range, bound);
+    const int x_end   = qMin(X()+range, bound);
+    bottom = qMax(Z()-bottom,  0);
+    top    = qMin(Z()+top, HEIGHT-1);
+    for (int x=qMax(X()-range, 0); x<=x_end; ++x)
+    for (int y=y_start; y<=y_end; ++y) {
         Shred * const shred = world->GetShred(x, y);
-        const ushort x_in = Shred::CoordInShred(x);
-        const ushort y_in = Shred::CoordInShred(y);
-        for (ushort z=z_start; z<=z_end; ++z) {
-            short attractive;
-            if ( World::InVertBounds(z)
-                    && ( attractive = Attractive(shred->
-                        GetBlock(x_in, y_in, z)->Sub()) )
+        const int x_in = Shred::CoordInShred(x);
+        const int y_in = Shred::CoordInShred(y);
+        for (int z=bottom; z<=top; ++z) {
+            const int attractive =
+                Attractive(shred->GetBlock(x_in, y_in, z)->Sub());
+            if ( attractive != 0
                     && world->DirectlyVisible(X(), Y(), Z(), x, y, z) )
             {
                 if ( y!=Y() ) for_north += attractive/(Y()-y);
@@ -249,19 +235,15 @@ bool Active::Gravitate(const ushort range, const ushort down, const ushort up,
     }
 }
 
-short Active::Attractive(const int) const { return 0; }
+int Active::Attractive(int) const { return 0; }
 
-bool Active::IsSubAround(const quint8 sub) const {
+bool Active::IsSubAround(const int sub) const {
     const World * const world = GetWorld();
-    return (
-            sub == world->GetBlock(X(), Y(), Z()-1)->Sub() ||
+    static const int bound = world->GetBound();
+    return (sub == world->GetBlock(X(), Y(), Z()-1)->Sub() ||
             sub == world->GetBlock(X(), Y(), Z()+1)->Sub() ||
-            (world->InBounds(X()-1, Y()) &&
-            sub == world->GetBlock(X()-1, Y(), Z())->Sub()) ||
-            (world->InBounds(X()+1, Y()) &&
-            sub==world->GetBlock(X()+1, Y(), Z())->Sub()) ||
-            (world->InBounds(X(), Y()-1) &&
-            sub==world->GetBlock(X(), Y()-1, Z())->Sub()) ||
-            (world->InBounds(X(), Y()+1) &&
-            sub==world->GetBlock(X(), Y()+1, Z())->Sub()) );
+            (X() > 0     && sub == world->GetBlock(X()-1, Y(), Z())->Sub()) ||
+            (X() < bound && sub == world->GetBlock(X()+1, Y(), Z())->Sub()) ||
+            (Y() > 0     && sub == world->GetBlock(X(), Y()-1, Z())->Sub()) ||
+            (Y() < bound && sub == world->GetBlock(X(), Y()+1, Z())->Sub()) );
 }

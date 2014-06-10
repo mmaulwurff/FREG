@@ -38,7 +38,7 @@
                 inv->GetAll(this);
             }
             if ( IsEmpty() ) {
-                Damage(GetDurability(), TIME);
+                GetWorld()->DestroyAndReplace(X(), Y(), Z());
             }
         }
     }
@@ -48,7 +48,7 @@
             FREQUENT_NEVER : FREQUENT_RARE;
     }
 
-    quint8 Container::Kind() const { return CONTAINER; }
+    int Container::Kind() const { return CONTAINER; }
     int Container::Sub() const { return Block::Sub(); }
     Inventory * Container::HasInventory() { return Inventory::HasInventory(); }
     usage_types Container::Use(Block *) { return USAGE_TYPE_OPEN; }
@@ -62,12 +62,12 @@
             nullptr : this;
     }
 
-    ushort Container::Weight() const {
+    int Container::Weight() const {
         return Block::Weight()*4 + Inventory::Weight();
     }
 
     void Container::ReceiveSignal(const QString str) {
-        Active::ReceiveSignal(str);
+        Block::ReceiveSignal(str);
     }
 
     QString Container::FullName() const {
@@ -88,16 +88,13 @@
         Inventory::SaveAttributes(out);
     }
 
-    Container::Container(const int sub, const quint16 id, const ushort size) :
+    Container::Container(const int sub, const int id, const int size) :
             Active(sub, id, NONSTANDARD),
             Inventory(size)
     {}
 
-    Container::Container(
-            QDataStream & str,
-            const int     sub,
-            const quint16 id,
-            const ushort  size)
+    Container::Container(QDataStream & str, const int sub, const int id,
+            const int size)
         :
             Active(str, sub, id, NONSTANDARD),
             Inventory(str, size)
@@ -128,7 +125,7 @@
         if ( products != nullptr ) {
             for (int i=0; i<products->GetSize(); ++i) {
                 for (int n=0; n<products->GetItem(i)->num; ++n) {
-                    quint16 id = products->GetItem(i)->id;
+                    int id = products->GetItem(i)->id;
                     GetExact(block_manager.NewBlock(
                         block_manager.KindFromId(id),
                         block_manager. SubFromId(id)), i);
@@ -138,8 +135,8 @@
         }
     }
 
-    bool Workbench::Drop(const ushort src, const ushort dest,
-            const ushort num, Inventory * const inv_to)
+    bool Workbench::Drop(const int src, const int dest,
+            const int num, Inventory * const inv_to)
     {
         if ( inv_to == nullptr
                 || src  >= Size()
@@ -148,12 +145,12 @@
         {
             return false;
         }
-        for (ushort i=0; i<num; ++i) {
+        for (int i=0; i<num; ++i) {
             if ( not inv_to->Get(ShowBlock(src), dest) ) return false;
             Pull(src);
             if ( src < Start() ) {
                 // remove materials:
-                for (ushort i=Start(); i<Size(); ++i) {
+                for (int i=Start(); i<Size(); ++i) {
                     while ( Number(i) ) {
                         Block * const to_pull = ShowBlock(i);
                         Pull(i);
@@ -177,14 +174,10 @@
         }
     }
 
-    quint8 Workbench::Kind() const { return WORKBENCH; }
-    ushort Workbench::Start() const { return 2; }
+    int Workbench::Kind() const { return WORKBENCH; }
+    int Workbench::Start() const { return 2; }
 
-    void Workbench::ReceiveSignal(const QString str) {
-        Block::ReceiveSignal(str);
-    }
-
-    bool Workbench::Get(Block * const block, const ushort start) {
+    bool Workbench::Get(Block * const block, const int start) {
         if ( Inventory::Get(block, start) ) {
             Craft();
             return true;
@@ -202,9 +195,9 @@
         }
     }
 
-    Workbench::Workbench(const int sub, const quint16 id) :
+    Workbench::Workbench(const int sub, const int id) :
             Container(sub, id, WORKBENCH_SIZE)
     {}
-    Workbench::Workbench(QDataStream & str, const int sub, const quint16 id) :
+    Workbench::Workbench(QDataStream & str, const int sub, const int id) :
             Container(str, sub, id, WORKBENCH_SIZE)
     {}

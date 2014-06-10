@@ -22,62 +22,69 @@
 
 #include "blocks/Block.h"
 
-class Weapon : public Block {
-public:
-    Weapon(int sub, quint16 id);
-    Weapon(QDataStream & str, int sub, quint16 id);
 
-    quint8  Kind() const override;
-    int     Wearable() const override;
-    int     DamageKind() const override;
-    void    Push(int dir, Block * who) override;
-    void    Damage(ushort dmg, int kind) override;
-    ushort  DamageLevel() const override;
-    ushort  Weight() const override;
+class Weapon : public Block {
+    /** \class Weapon Weapons.h
+     *  \brief Weapon class represents simple weapons as sticks, pebbles and
+     *  so on.
+     *  Also is used as base class for more special weapons.
+     *  Weapon of SKY substance is abyss block, everything that touches abyss
+     *  will be destroyed. */
+public:
+    Weapon(int sub, int id);
+    Weapon(QDataStream & str, int sub, int id);
+
+    int  Kind() const override;
+    int  Wearable() const override;
+    int  DamageKind() const override;
+    void Push(int dir, Block * who) override;
+    void Damage(int dmg, int kind) override;
+    int  DamageLevel() const override;
+    int  Weight() const override;
     QString FullName() const override;
 };
 
 class Pick : public Weapon {
 public:
-    Pick(int sub, quint16 id);
-    Pick(QDataStream & str, int sub, quint16 id);
+    Pick(int sub, int id);
+    Pick(QDataStream & str, int sub, int id);
 
-    quint8  Kind() const override;
-    int     DamageKind() const override;
-    ushort  DamageLevel() const override;
+    int  Kind() const override;
+    int  DamageKind() const override;
+    int  DamageLevel() const override;
     QString FullName() const override;
 };
 
 class Shovel : public Weapon {
 public:
-    Shovel(int sub, quint16 id);
-    Shovel(QDataStream & str, int sub, quint16 id);
+    Shovel(int sub, int id);
+    Shovel(QDataStream & str, int sub, int id);
 
-    quint8  Kind() const override;
-    int     DamageKind() const override;
-    ushort  DamageLevel() const override;
+    int  Kind() const override;
+    int  DamageKind() const override;
+    int  DamageLevel() const override;
     QString FullName() const override;
 };
 
 class Hammer : public Weapon {
 public:
-    Hammer(int sub, quint16 id);
-    Hammer(QDataStream & str, int sub, quint16 id);
+    Hammer(int sub, int id);
+    Hammer(QDataStream & str, int sub, int id);
 
-    quint8  Kind() const override;
-    int     DamageKind() const override;
-    ushort  DamageLevel() const override;
+    int  Kind() const override;
+    int  DamageKind() const override;
+    int  DamageLevel() const override;
     QString FullName() const override;
 };
 
 class Axe : public Weapon {
 public:
-    Axe(int sub, quint16 id);
-    Axe(QDataStream & str, int sub, quint16 id);
+    Axe(int sub, int id);
+    Axe(QDataStream & str, int sub, int id);
 
-    quint8  Kind() const override;
-    int     DamageKind() const override;
-    ushort  DamageLevel() const override;
+    int  Kind() const override;
+    int  DamageKind() const override;
+    int  DamageLevel() const override;
     QString FullName() const override;
 };
 

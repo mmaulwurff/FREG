@@ -38,6 +38,7 @@ public:
     Xyz();
 
     short Z() const;
+    void SetXyz(short x, short y, short z);
 
 protected:
     short z_self;

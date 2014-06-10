@@ -24,15 +24,15 @@ class QTextStream;
 
 struct CraftItem final {
     CraftItem() = delete;
-    CraftItem(ushort num, quint16 id);
+    CraftItem(int num, int id);
 
     CraftItem & operator=(const CraftItem &) = delete;
 
     bool operator< (const CraftItem & item) const;
     bool operator!=(const CraftItem & item) const;
 
-    const ushort num;
-    const quint16 id;
+    const int num;
+    const int id;
 }; // CraftItem
 
 /** \class CraftList CraftManager.h
@@ -63,7 +63,7 @@ private:
     QList<CraftItem *> items;
 }; // CraftList
 
-class CraftManager {
+class CraftManager final {
 public:
      CraftManager();
     ~CraftManager();
@@ -77,7 +77,7 @@ private:
 
     int size;
     QList<CraftList *> * recipesList;
-    int * recipesSubsList; // list of substances of workbench 
+    int * recipesSubsList; // list of substances of workbench
 }; // CraftManager
 
 #endif // CRAFTMANAGER_H

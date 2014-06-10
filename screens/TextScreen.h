@@ -65,17 +65,17 @@ public:
     void FlushInput() const override;
 
 public slots:
-    void Notify(QString) override;
+    void Notify(QString) const override;
     void CleanAll() override;
     void PassString(QString &) const override;
-    void Update(ushort, ushort, ushort) override;
+    void Update(int, int, int) override;
     void UpdateAll() override;
     void UpdatePlayer() override;
-    void UpdateAround(ushort, ushort, ushort, ushort) override;
+    void UpdateAround(int, int, int, ushort) override;
     void Move(int) override;
     void DeathScreen();
     void DisplayFile(QString path) override;
-    void ActionXyz(short & x, short & y, short & z) const override;
+    void ActionXyz(int * x, int * y, int * z) const override;
 
 private slots:
     void Print() override;
@@ -101,8 +101,6 @@ private:
     short shiftFocus;
     /// Save previous command for further execution.
     QString command;
-    QString lastNotification;
-    quint8 notificationRepeatCount;
     QFile * fileToShow;
     const bool ascii;
 };

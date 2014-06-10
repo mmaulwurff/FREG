@@ -24,15 +24,6 @@
 #include "Player.h"
 #include "world.h"
 
-void VirtScreen::ConnectWorld() {
-    connect(w, SIGNAL(Updated(ushort, ushort, ushort)),
-        SLOT(Update(ushort, ushort, ushort)),
-        Qt::DirectConnection);
-    connect(w, SIGNAL(UpdatedAround(ushort, ushort, ushort, ushort)),
-        SLOT(UpdateAround(ushort, ushort, ushort, ushort)),
-        Qt::DirectConnection);
-}
-
 void VirtScreen::UpdatesEnd() {}
 void VirtScreen::DeathScreen() {}
 
@@ -40,13 +31,11 @@ VirtScreen::VirtScreen(World * const world_, Player * const player_) :
         w(world_),
         player(player_)
 {
-    connect(w, SIGNAL(Notify(const QString)),
-        SLOT(Notify(const QString)));
-    connect(player, SIGNAL(Notify(const QString)),
-        SLOT(Notify(const QString)));
+    connect(w, SIGNAL(Notify(QString)), SLOT(Notify(QString)));
+    connect(player, SIGNAL(Notify(QString)), SLOT(Notify(QString)));
     connect(player, SIGNAL(ShowFile(QString)), SLOT(DisplayFile(QString)));
-    connect(player, SIGNAL(GetFocus(short &, short &, short &)),
-        SLOT(ActionXyz(short &, short &, short &)), Qt::DirectConnection);
+    connect(player, SIGNAL(GetFocus(int *, int *, int *)),
+        SLOT(ActionXyz(int *, int *, int *)), Qt::DirectConnection);
 
     connect(w, SIGNAL(GetString(QString &)),
         SLOT(PassString(QString &)), Qt::DirectConnection);
@@ -55,13 +44,15 @@ VirtScreen::VirtScreen(World * const world_, Player * const player_) :
 
     connect(player, SIGNAL(Updated()), SLOT(UpdatePlayer()),
         Qt::DirectConnection);
-    connect(w, SIGNAL(ReConnect()), SLOT(ConnectWorld()),
-        Qt::DirectConnection);
     connect(w, SIGNAL(UpdatedAll()), SLOT(UpdateAll()),
         Qt::DirectConnection);
-    connect(w, SIGNAL(Moved(const int)), SLOT(Move(const int)),
+    connect(w, SIGNAL(Moved(int)), SLOT(Move(int)),
         Qt::DirectConnection);
-    ConnectWorld();
+    connect(w, SIGNAL(Updated(int, int, int)), SLOT(Update(int, int, int)),
+        Qt::DirectConnection);
+    connect(w, SIGNAL(UpdatedAround(int, int, int, int)),
+        SLOT(UpdateAround(int, int, int, int)),
+        Qt::DirectConnection);
     connect(w, SIGNAL(UpdatesEnded()), SLOT(UpdatesEnd()),
         Qt::DirectConnection);
 
@@ -77,7 +68,7 @@ void VirtScreen::FlushInput() const {}
 void VirtScreen::ControlPlayer(int) {}
 void VirtScreen::DisplayFile(QString /* path */) {}
 
-void VirtScreen::ActionXyz(short & x, short & y, short & z) const {
+void VirtScreen::ActionXyz(int * x, int * y, int * z) const {
     w->Focus(player->X(), player->Y(), player->Z(), x, y, z, player->GetDir());
 }
 
@@ -111,8 +102,10 @@ char VirtScreen::CharName(const int kind, const int sub) const {
     case WEAPON: switch ( sub ) {
         default: fprintf(stderr, "Screen::CharName: weapon sub ?: %d\n", sub);
         // no break;
+        case SKY:   return ' ';
         case STONE: return '.';
-        case IRON: case BONE:
+        case IRON:
+        case BONE:
         case WOOD:  return '/';
     } break;
     case ACTIVE: switch ( sub ) {
@@ -123,21 +116,27 @@ char VirtScreen::CharName(const int kind, const int sub) const {
     } // no break;
     default: switch ( sub ) {
         default: fprintf(stderr, "Screen::CharName: sub (?): %d\n", sub);
-        case NULLSTONE:  case IRON: case CLAY:
-        case MOSS_STONE: case WOOD: case GOLD:
-        case STONE: return '#';
-        case GLASS: return 'g';
-        case AIR:   return ' ';
-        case STAR:  return '.';
-        case WATER: return '~';
-        case SAND:  return '#';
-        case SOIL:  return '.';
-        case ROSE:  return ';';
-        case A_MEAT: case H_MEAT:
-        case HAZELNUT: return ',';
-        case SKY:
-        case SUN_MOON: return ' ';
         case GREENERY: return '%';
+        case NULLSTONE:
+        case IRON:
+        case CLAY:
+        case WOOD:
+        case GOLD:
+        case MOSS_STONE:
+        case SAND:
+        case STONE: return '#';
+        case SOIL:  return '.';
+        case WATER: return '~';
+        case A_MEAT:
+        case H_MEAT:
+        case HAZELNUT: return ',';
+        case GLASS: return 'g';
+        case ROSE:  return ';';
+        case COAL:  return '*';
+        case STAR:  return '.';
+        case SKY:
+        case SUN_MOON:
+        case AIR:   return ' ';
         }
     }
 } // char VirtScreen::CharName(int kind, int sub)

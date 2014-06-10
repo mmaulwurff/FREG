@@ -19,26 +19,22 @@
 
 #include "Shred.h"
 #include "header.h"
+#include "blocks/Block.h"
 
-ushort Shred::FlatUndeground(short) {
+int Shred::FlatUndeground(int) {
     NormalUnderground();
     return HEIGHT/2;
 }
 
-void Shred::NormalUnderground(const ushort depth, const int sub) {
+void Shred::NormalUnderground(const int depth, const int sub) {
+    NormalCube(0,0,1, SHRED_WIDTH,SHRED_WIDTH,HEIGHT/2-depth-5, STONE);
     Block * const block = Normal(sub);
     Block * const stone = Normal(STONE);
-    for (ushort x=0; x<SHRED_WIDTH; ++x)
-    for (ushort y=0; y<SHRED_WIDTH; ++y) {
-        ushort z = 1;
-        for ( ; z<HEIGHT/2-depth-6; ++z) {
-            PutBlock(stone, x, y, z);
-        }
-        PutBlock( ((qrand()%2) ? stone : block), x, y, z++ );
-        for ( ; z<=HEIGHT/2-depth; ++z) {
-            PutBlock(block, x, y, z);
-        }
+    for (int x=0; x<SHRED_WIDTH; ++x)
+    for (int y=0; y<SHRED_WIDTH; ++y) {
+        PutBlock( ((qrand()%2) ? stone : block), x, y, HEIGHT/2-depth-6);
     }
+    NormalCube(0,0,HEIGHT/2-depth-5, SHRED_WIDTH,SHRED_WIDTH,depth+6, sub);
 }
 
 void Shred::Plain() {
@@ -50,18 +46,13 @@ void Shred::Plain() {
 
 void Shred::Forest() {
     NormalUnderground();
-    ushort number_of_trees = 0;
-    for (long i=longitude-1; i<=longitude+1; ++i)
-    for (long j=latitude -1; j<=latitude +1; ++j) {
-        if ( SHRED_FOREST==TypeOfShred(i, j) ) {
-            ++number_of_trees;
-        }
-    }
-    for (ushort i=0; i<number_of_trees; ++i) {
+    for (int number_of_trees = CountShredTypeAround(SHRED_FOREST);
+            number_of_trees != 0; --number_of_trees)
+    {
         const ushort x=qrand()%(SHRED_WIDTH-2);
         const ushort y=qrand()%(SHRED_WIDTH-2);
-        for (ushort k=HEIGHT-2; ; --k) {
-            const int sub = Sub(x, y, k);
+        for (int k=HEIGHT-2; ; --k) {
+            const int sub = GetBlock(x, y, k)->Sub();
             if ( sub!=AIR && sub!=WATER ) {
                 if ( sub!=GREENERY && sub!=WOOD ) {
                     Tree(x, y, k+1, 4+qrand()%5);
@@ -70,21 +61,16 @@ void Shred::Forest() {
             }
         }
     }
+    RandomDrop(qrand()%4, WEAPON, WOOD);
     PlantGrass();
 }
 
 void Shred::Water() {
-    ushort depth = 0;
-    for (long longi=longitude-1; longi<=longitude+1; ++longi)
-    for (long lati =latitude -1; lati <=latitude +1; ++lati ) {
-        if ( SHRED_WATER == TypeOfShred(longi, lati) ) {
-            depth += 2;
-        }
-    }
+    const ushort depth = CountShredTypeAround(SHRED_WATER);
     NormalUnderground(depth);
-    for (ushort i=0; i<SHRED_WIDTH; ++i)
-    for (ushort j=0; j<SHRED_WIDTH; ++j)
-    for (ushort k=HEIGHT/2-depth; k<=HEIGHT/2; ++k) {
+    for (int i=0; i<SHRED_WIDTH; ++i)
+    for (int j=0; j<SHRED_WIDTH; ++j)
+    for (int k=HEIGHT/2-depth; k<=HEIGHT/2; ++k) {
         SetNewBlock(LIQUID, WATER, i, j, k);
     }
 }
@@ -139,9 +125,9 @@ void Shred::Mountain() {
     }
     // water pool
     if ( qrand()%10 == 0 ) {
-        for (ushort i=1; i<SHRED_WIDTH/2-1; ++i)
-        for (ushort j=1; j<SHRED_WIDTH/2-1; ++j)
-        for (ushort k=mount_top-3; k<=mount_top; ++k) {
+        for (int i=1; i<SHRED_WIDTH/2-1; ++i)
+        for (int j=1; j<SHRED_WIDTH/2-1; ++j)
+        for (int k=mount_top-3; k<=mount_top; ++k) {
             SetNewBlock(LIQUID, WATER, i, j, k);
         }
     }
@@ -170,7 +156,7 @@ void Shred::Mountain() {
 
 void Shred::Desert() {
     NormalUnderground(4, SAND);
-    for (ushort i=0; i<4; ++i) {
+    for (int i=0; i<4; ++i) {
         CoverWith(ACTIVE, SAND);
     }
 }

@@ -28,3 +28,9 @@ Xyz::Xyz()                                            : Xy(),     z_self()  {}
 short Xy ::X() const { return x_self; }
 short Xy ::Y() const { return y_self; }
 short Xyz::Z() const { return z_self; }
+
+void Xyz::SetXyz(const short x, const short y, const short z) {
+    x_self = x;
+    y_self = y;
+    z_self = z;
+}

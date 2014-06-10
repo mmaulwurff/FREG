@@ -20,6 +20,8 @@
 #ifndef DEFERRED_ACTION_H
 #define DEFERRED_ACTION_H
 
+#include "Xyz.h"
+
 enum deferred_actions {
     DEFERRED_NOTHING,
     DEFERRED_GHOST_MOVE,
@@ -36,21 +38,25 @@ class Block;
 class Active;
 class World;
 
-class DeferredAction final {
+class DeferredAction final : private Xyz {
+    /** \class DeferredAction DeferredAction.h
+     *  \brief Deferred Action is used when some action needs to be done at
+     *  next physics turn.
+     *
+     *  Xyz is action target coordinates. */
 public:
     explicit DeferredAction(Active * attached);
     DeferredAction & operator=(const DeferredAction &) = delete;
 
-    void SetGhostMove(ushort dir = NOWHERE);
-    void SetMove(ushort dir = NOWHERE);
+    void SetGhostMove(int dir = NOWHERE);
+    void SetMove(int dir = NOWHERE);
     void SetJump();
-    void SetDamage (short x, short y, short z);
-    void SetPour   (short x, short y, short z, ushort slot);
-    void SetSetFire(short x, short y, short z);
-    void SetBuild  (short x, short y, short z,
-            Block * material, ushort builder_slot);
-    void SetThrow  (short x, short y, short z,
-            ushort src_slot, ushort dest_slot, ushort unum);
+    void SetDamage (int x, int y, int z);
+    void SetPour   (int x, int y, int z, int slot);
+    void SetSetFire(int x, int y, int z);
+    void SetBuild  (int x, int y, int z, Block * material, int builder_slot);
+    void SetThrow  (int x, int y, int z,
+            int src_slot, int dest_slot, int unum);
 
     World * GetWorld() const;
     int  GetActionType() const;
@@ -59,10 +65,9 @@ public:
 private:
     deferred_actions type;
     Active * const attachedBlock;
-    short xTarg, yTarg, zTarg;
     Block * material;
-    ushort srcSlot, destSlot;
-    ushort num;
+    int srcSlot, destSlot;
+    int num;
 
     void GhostMove() const;
     void Move() const;
@@ -72,7 +77,6 @@ private:
     void Throw() const;
     void Pour() const;
     void SetFire() const;
-    void SetXyz(short x, short y, short z);
 };
 
 #endif // DEFERRED_ACTION_H

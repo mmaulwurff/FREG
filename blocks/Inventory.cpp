@@ -24,19 +24,20 @@
 #include "world.h"
 
 bool   Inventory::Access() const { return true; }
-ushort Inventory::Start() const { return 0; }
-ushort Inventory::Size() const { return size; }
+int Inventory::Start() const { return 0; }
+int Inventory::Size() const { return size; }
+int Inventory::Number(const int i) const { return inventory[i].size(); }
 Inventory * Inventory::HasInventory() { return this; }
 
-bool Inventory::Drop(const ushort src, ushort dest, ushort num,
+bool Inventory::Drop(const int src, int dest, int num,
         Inventory * const inv_to)
 {
     dest = qMax(inv_to->Start(), dest);
     bool ok_flag = false;
-    for ( ; num; --num) {
+    while ( num-- ) {
         if ( src < Size()
                 && dest < inv_to->Size()
-                && !inventory[src].isEmpty()
+                && not inventory[src].isEmpty()
                 && inv_to->Get(inventory[src].top(), dest) )
         {
             ok_flag = true;
@@ -48,7 +49,7 @@ bool Inventory::Drop(const ushort src, ushort dest, ushort num,
 
 bool Inventory::GetAll(Inventory * const from) {
     bool flag = false;
-    for (ushort i=0; i<from->Size(); ++i) {
+    for (int i=0; i<from->Size(); ++i) {
         if ( from->Drop(i, 0, from->Number(i), this) ) {
             flag = true;
         }
@@ -56,22 +57,22 @@ bool Inventory::GetAll(Inventory * const from) {
     return flag;
 }
 
-void Inventory::Pull(const ushort num) {
+void Inventory::Pull(const int num) {
     if ( not inventory[num].isEmpty() ) {
         inventory[num].pop();
     }
 }
 
 void Inventory::SaveAttributes(QDataStream & out) const {
-    for (ushort i=0; i<Size(); ++i) {
-        out << Number(i);
-        for (ushort j=0; j<Number(i); ++j) {
+    for (int i=0; i<Size(); ++i) {
+        out << quint8(Number(i));
+        for (int j=0; j<Number(i); ++j) {
             inventory[i].top()->SaveToFile(out);
         }
     }
 }
 
-bool Inventory::Get(Block * const block, const ushort start) {
+bool Inventory::Get(Block * const block, const int start) {
     if ( block == nullptr ) return true;
     if ( block->Kind() == LIQUID ) {
         for (int i=qMax(Start(), start); i<Size(); ++i) {
@@ -84,7 +85,7 @@ bool Inventory::Get(Block * const block, const ushort start) {
         }
         return false;
     } // else:
-    for (ushort i=qMax(Start(), start); i<Size(); ++i) {
+    for (int i=qMax(Start(), start); i<Size(); ++i) {
         if ( GetExact(block, i) ) {
             return true;
         }
@@ -92,7 +93,7 @@ bool Inventory::Get(Block * const block, const ushort start) {
     return false;
 }
 
-bool Inventory::GetExact(Block * const block, const ushort num) {
+bool Inventory::GetExact(Block * const block, const int num) {
     if ( block ) {
         if ( inventory[num].isEmpty() ) {
             inventory[num].push(block);
@@ -112,17 +113,17 @@ bool Inventory::GetExact(Block * const block, const ushort num) {
     return true;
 }
 
-void Inventory::MoveInside(const ushort num_from, const ushort num_to,
-        const ushort num)
+void Inventory::MoveInside(const int num_from, const int num_to,
+        const int num)
 {
-    for (ushort i=0; i<num; ++i) {
+    for (int i=0; i<num; ++i) {
         if ( GetExact(ShowBlock(num_from), num_to) ) {
             Pull(num_from);
         }
     }
 }
 
-bool Inventory::InscribeInv(const ushort num, const QString str) {
+bool Inventory::InscribeInv(const int num, const QString str) {
     const int number = Number(num);
     if ( number == 0 ) {
         ReceiveSignal(QObject::tr("Nothing here."));
@@ -130,12 +131,12 @@ bool Inventory::InscribeInv(const ushort num, const QString str) {
     }
     const int sub = inventory[num].top()->Sub();
     if ( inventory[num].top() == block_manager.NormalBlock(sub) ) {
-        for (ushort i=0; i<number; ++i) {
+        for (int i=0; i<number; ++i) {
             inventory[num].replace(i, block_manager.NormalBlock(sub));
         }
     }
-    for (ushort i=0; i<number; ++i) {
-        if ( !inventory[num].at(i)->Inscribe(str) ) {
+    for (int i=0; i<number; ++i) {
+        if ( not inventory[num].at(i)->Inscribe(str) ) {
             ReceiveSignal(QObject::tr("Cannot inscribe this."));
             return false;
         }
@@ -144,54 +145,54 @@ bool Inventory::InscribeInv(const ushort num, const QString str) {
     return true;
 }
 
-QString Inventory::InvFullName(const ushort num) const {
+QString Inventory::InvFullName(const int num) const {
     return inventory[num].isEmpty() ?
         "" : inventory[num].top()->FullName();
 }
 
-QString Inventory::NumStr(const ushort num) const {
+QString Inventory::NumStr(const int num) const {
     return QString(" (%1x)").arg(Number(num));
 }
 
-ushort Inventory::GetInvWeight(const ushort i) const {
+int Inventory::GetInvWeight(const int i) const {
     return inventory[i].isEmpty() ?
         0 : inventory[i].top()->Weight()*Number(i);
 }
 
-int Inventory::GetInvSub(const ushort i) const {
+int Inventory::GetInvSub(const int i) const {
     return inventory[i].isEmpty() ?
         AIR : inventory[i].top()->Sub();
 }
 
-int Inventory::GetInvKind(const ushort i) const {
+int Inventory::GetInvKind(const int i) const {
     return inventory[i].isEmpty() ?
         BLOCK : int(inventory[i].top()->Kind());
 }
 
-QString Inventory::GetInvNote(const ushort num) const {
+QString Inventory::GetInvNote(const int num) const {
     return inventory[num].top()->GetNote();
 }
 
-ushort Inventory::Weight() const {
-    ushort sum = 0;
-    for (ushort i=0; i<Size(); ++i) {
+int Inventory::Weight() const {
+    int sum = 0;
+    for (int i=0; i<Size(); ++i) {
         sum += GetInvWeight(i);
     }
     return sum;
 }
 
-Block * Inventory::ShowBlock(const ushort slot) const {
+Block * Inventory::ShowBlock(const int slot) const {
     return ( slot > Size() || Number(slot)==0 ) ?
         nullptr : inventory[slot].top();
 }
 
-Block * Inventory::ShowBlock(const ushort slot, const ushort num) const {
+Block * Inventory::ShowBlock(const int slot, const int num) const {
     return ( slot > Size() || num+1 > Number(slot) ) ?
         nullptr : inventory[slot].at(num);
 }
 
 bool Inventory::IsEmpty() const {
-    for (ushort i=Start(); i<Size(); ++i) {
+    for (int i=Start(); i<Size(); ++i) {
         if ( not inventory[i].isEmpty() ) {
             return false;
         }
@@ -201,22 +202,18 @@ bool Inventory::IsEmpty() const {
 
 void Inventory::Push(Block * const who) {
     Inventory * const inv = who->HasInventory();
-    if ( inv ) {
+    if ( inv != nullptr ) {
         inv->GetAll(this);
     }
 }
 
-quint8 Inventory::Number(const ushort i) const {
-    return inventory[i].size();
-}
-
-bool Inventory::MiniCraft(const ushort num) {
+bool Inventory::MiniCraft(const int num) {
     if ( Number(num) == 0 ) {
         ReceiveSignal(QObject::tr("Nothing here."));
         return false;
     } // else:
     const CraftItem * const crafted = world->GetCraftManager()->MiniCraft(
-        Number(num), BlockManager::MakeId(GetInvKind(num),GetInvSub(num)));
+        Number(num), BlockManager::MakeId(GetInvKind(num), GetInvSub(num)));
     if ( crafted != nullptr ) {
         while ( not inventory[num].isEmpty() ) {
             Block * const to_delete = ShowBlock(num);
@@ -239,36 +236,34 @@ bool Inventory::MiniCraft(const ushort num) {
 
 void Inventory::Shake() {
     for (int i=Start(); i<Size()-1; ++i) {
-        if ( Number(i) == MAX_STACK_SIZE ) {
-            continue;
-        }
-        for (int j=i; j<Size(); ++j) {
-            MoveInside(j, i, Number(j));
+        if ( Number(i) != MAX_STACK_SIZE ) {
+            for (int j=i; j<Size(); ++j) {
+                MoveInside(j, i, Number(j));
+            }
         }
     }
 }
 
-Inventory::Inventory(const ushort sz) :
+Inventory::Inventory(const int sz) :
         size(sz),
         inventory(new QStack<Block *>[sz])
 {}
 
-Inventory::Inventory(QDataStream & str, const ushort sz) :
+Inventory::Inventory(QDataStream & str, const int sz) :
         Inventory(sz)
 {
-    for (ushort i=0; i<Size(); ++i) {
+    for (int i=0; i<Size(); ++i) {
         quint8 num;
         str >> num;
         while ( num-- ) {
-            inventory[i].push(block_manager.
-                BlockFromFile(str));
+            inventory[i].push(block_manager.BlockFromFile(str));
         }
     }
 }
 
 Inventory::~Inventory() {
-    for (ushort i=0; i<Size(); ++i) {
-        while ( !inventory[i].isEmpty() ) {
+    for (int i=0; i<Size(); ++i) {
+        while ( not inventory[i].isEmpty() ) {
             block_manager.DeleteBlock(inventory[i].pop());
         }
     }

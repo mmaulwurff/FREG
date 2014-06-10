@@ -23,7 +23,7 @@
 #include "CraftManager.h"
 
 // CraftItem section
-CraftItem::CraftItem(const ushort num_, const quint16 id_) :
+CraftItem::CraftItem(const int num_, const int id_) :
         num(num_),
         id(id_)
 {}
@@ -91,8 +91,8 @@ CraftManager::CraftManager() : size(0) {
     QDir::current().mkdir("recipes");
     const QStringList recipesNames = QDir("recipes").entryList();
     if ( recipesNames.size() < 3 ) { // minimum: . and ..
-        recipesList = 0;
-        recipesSubsList = 0;
+        recipesList = nullptr;
+        recipesSubsList = nullptr;
         return;
     } // else:
     // array sizes are a bit more than needed, this is ok
@@ -102,7 +102,7 @@ CraftManager::CraftManager() : size(0) {
         const quint8 sub = BlockManager::StringToSub(recipeName);
         if ( sub == LAST_SUB ) {
             continue;
-        } // else:
+        }
         recipesSubsList[size] = sub;
         QFile file(QString("recipes/" + recipeName));
         file.open(QIODevice::ReadOnly | QIODevice::Text);

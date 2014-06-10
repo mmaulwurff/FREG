@@ -22,18 +22,19 @@
 
 #include "blocks/Active.h"
 
-const ushort MAX_FUEL = SECONDS_IN_DAY;
+const int MAX_FUEL = SECONDS_IN_DAY;
 
 class Illuminator : public Active {
     Q_OBJECT
 public:
-    Illuminator(int sub, quint16 id);
-    Illuminator(QDataStream & str, int sub, quint16 id);
+    Illuminator(int sub, int id);
+    Illuminator(QDataStream & str, int sub, int id);
 
-    int     ShouldAct() const override;
-    void    Damage(ushort dmg, int dmg_kind) override;
-    uchar   LightRadius() const override;
-    quint8  Kind() const override;
+    int   ShouldAct() const override;
+    int   LightRadius() const override;
+    bool  ShouldFall() const override;
+    void  Damage(int dmg, int dmg_kind) override;
+    int   Kind() const override;
     Block * DropAfterDamage() override;
     QString FullName() const override;
     usage_types Use(Block *) override;

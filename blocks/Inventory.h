@@ -25,8 +25,8 @@
 
 #include <QStack>
 
-const ushort INV_SIZE = 26U;
-const ushort MAX_STACK_SIZE = 9U;
+const int INV_SIZE = 26;
+const int MAX_STACK_SIZE = 9;
 
 class Block;
 
@@ -37,42 +37,42 @@ public:
     Inventory & operator=(const Inventory &) = delete;
     Inventory(const Inventory & inv) = delete;
 
-    virtual quint8 Kind() const = 0;
+    virtual int Kind() const = 0;
     virtual int Sub() const = 0;
     /// Returns true on success.
-    virtual bool Drop(ushort src, ushort dest, ushort num, Inventory * to);
+    virtual bool Drop(int src, int dest, int num, Inventory * to);
     /// Returns true on success.
     virtual bool GetAll(Inventory * from);
     virtual bool Access() const;
     /// Returns true on success.
-    virtual bool Get(Block * block, ushort start = 0);
-    /// Removes block from inventory. Does not delete block.
-    virtual void Pull(ushort num);
-    virtual void MoveInside(ushort num_from, ushort num_to, ushort num);
+    virtual bool Get(Block * block, int start = 0);
+    virtual void MoveInside(int num_from, int num_to, int num);
     virtual void ReceiveSignal(QString) = 0;
-    virtual ushort Start() const;
-    virtual ushort Weight() const;
+    virtual int Start() const;
+    virtual int Weight() const;
     virtual QString FullName() const = 0;
     virtual Inventory * HasInventory();
 
+    /// Removes block from inventory. Does not delete block.
+    void Pull(int num);
     /// Returns true if block found its place.
-    bool GetExact(Block * block, ushort num);
+    bool GetExact(Block * block, int num);
     /// Returns true on success (something has been crafted).
-    bool MiniCraft(ushort num);
+    bool MiniCraft(int num);
     /// Returns true on success.
-    bool InscribeInv(ushort num, QString str);
+    bool InscribeInv(int num, QString str);
     /// Returns AIR if slot number i is empty.
-    int  GetInvSub(ushort i) const;
+    int  GetInvSub(int i) const;
     /// Returns BLOCK if slot number i is empty.
-    int  GetInvKind(ushort i) const;
-    ushort Size() const;
-    ushort GetInvWeight(ushort i) const;
-    quint8 Number(ushort i) const;
-    Block * ShowBlock(ushort slot) const;
-    Block * ShowBlock(ushort slot, ushort num) const;
-    QString GetInvNote(ushort num) const;
-    QString InvFullName(ushort num) const;
-    QString NumStr(ushort num) const;
+    int  GetInvKind(int i) const;
+    int Size() const;
+    int GetInvWeight(int i) const;
+    int Number(int i) const;
+    Block * ShowBlock(int slot) const;
+    Block * ShowBlock(int slot, int num) const;
+    QString GetInvNote(int num) const;
+    QString InvFullName(int num) const;
+    QString NumStr(int num) const;
 
     bool IsEmpty() const;
 
@@ -84,14 +84,14 @@ protected:
     /// It is not recommended to make inventory size more than 26.
     /** Because it will not be convenient to deal with inventory
      *  in console version. */
-    explicit Inventory(ushort sz = INV_SIZE);
-    Inventory(QDataStream & str, ushort size = INV_SIZE);
+    explicit Inventory(int sz = INV_SIZE);
+    Inventory(QDataStream & str, int size = INV_SIZE);
     virtual ~Inventory();
 
     virtual void SaveAttributes(QDataStream & out) const;
 
 private:
-    const ushort size;
+    const quint8 size;
     QStack<Block *> * const inventory;
 };
 

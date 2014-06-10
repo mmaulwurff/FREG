@@ -31,26 +31,24 @@
 #include <windows.h>
 #endif
 
-#if ( QT_VERSION < QT_VERSION_CHECK(4, 8, 0) )
-#define Q_UNLIKELY
-#endif
+const int SHRED_WIDTH = 16;
+const int HEIGHT = 128;
 
-const ushort SHRED_WIDTH = 16;
-const ushort HEIGHT = 128;
+const int SECONDS_IN_HOUR = 60;
+const int SECONDS_IN_DAY = 24*SECONDS_IN_HOUR;
+const int END_OF_NIGHT   =  6*SECONDS_IN_HOUR;
+const int END_OF_MORNING = 12*SECONDS_IN_HOUR;
+const int END_OF_NOON    = 18*SECONDS_IN_HOUR;
+const int END_OF_EVENING =  0*SECONDS_IN_HOUR;
+const int SECONDS_IN_NIGHT = END_OF_NIGHT;
+const int SECONDS_IN_DAYLIGHT = SECONDS_IN_DAY-END_OF_NIGHT;
 
-const ushort SECONDS_IN_HOUR = 60;
-const ushort SECONDS_IN_DAY = 24*SECONDS_IN_HOUR;
-const ushort END_OF_NIGHT   =  6*SECONDS_IN_HOUR;
-const ushort END_OF_MORNING = 12*SECONDS_IN_HOUR;
-const ushort END_OF_NOON    = 18*SECONDS_IN_HOUR;
-const ushort END_OF_EVENING =  0*SECONDS_IN_HOUR;
-const ushort SECONDS_IN_NIGHT = END_OF_NIGHT;
-const ushort SECONDS_IN_DAYLIGHT = SECONDS_IN_DAY-END_OF_NIGHT;
+const int MAX_DURABILITY = 100;
+const int MAX_BREATH = 60;
 
-const ushort MAX_DURABILITY = 100;
-const ushort MAX_BREATH = 60;
+const int MAX_LIGHT_RADIUS = 15;
 
-const uchar MAX_LIGHT_RADIUS = 15;
+const int MAX_NOTE_LENGTH = 144;
 
 const QString locale = QLocale::system().name();
 
@@ -65,11 +63,12 @@ enum shred_type {
     SHRED_MOUNTAIN  = '^',
     SHRED_EMPTY     = '_',
     SHRED_CHAOS     = '!',
+    SHRED_CASTLE    = 'c',
     SHRED_NULLMOUNTAIN = '#',
-    SHRED_NORMAL_UNDERGROUND = '-'
+    SHRED_NORMAL_UNDERGROUND = '-',
 };
 
-const ushort DEFAULT_MAP_SIZE = 75U;
+const int DEFAULT_MAP_SIZE = 75U;
 const char DEFAULT_SHRED = SHRED_PLAIN;
 const char OUT_BORDER_SHRED = SHRED_WATER;
 
@@ -109,7 +108,7 @@ enum damage_kinds {
     TIME,    ///< 12
     NO_HARM, ///< 13
     DAMAGE_FALL,  ///< 14
-    DAMAGE_HANDS  ///< 15
+    DAMAGE_HANDS, ///< 15
 }; // enum damage_kinds
 
 /// Kinds of atom
@@ -182,6 +181,7 @@ enum subs {
     ADAMANTINE, ///<  24
     FIRE,       ///<  25
     COAL,       ///<  26
+    EXPLOSIVE,  ///<  27
     /// Nothing is made from LAST_SUB.
     LAST_SUB // keep it last in this list
 }; // enum subs
@@ -202,5 +202,10 @@ enum transparency {
     NONSTANDARD = 6,
     UNDEF // temporary, doesn't appear in world.
 };
+
+bool IsLikeAir(int sub);
+
+/// For positive numbers only.
+inline int Round(const float x) { return int(x + 0.5f); }
 
 #endif // HEADER_H

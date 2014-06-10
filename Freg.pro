@@ -6,6 +6,8 @@ CONFIG += thread warn_on console
 CONFIG += debug
 # screen can be: cursed_screen, text_screen
 CONFIG += cursed_screen
+#CONFIG += text_screen
+
 # compile with clang:
 # CONFIG += clang
 
@@ -92,6 +94,7 @@ SOURCES += \
     worldmap.cpp \
     ShredStorage.cpp \
     Xyz.cpp \
+    Global.cpp \
     blocks/blocks.cpp \
     blocks/Active.cpp \
     blocks/Dwarf.cpp \
@@ -100,6 +103,7 @@ SOURCES += \
     blocks/Inventory.cpp \
     blocks/Bucket.cpp \
     blocks/Container.cpp \
+    blocks/Block.cpp \
     screens/IThread.cpp
 
 TRANSLATIONS = \

@@ -33,55 +33,53 @@
 #include "blocks/Block.h"
 #include "blocks/Active.h"
 
-const uchar FIRE_LIGHT_FACTOR = 4;
+const int FIRE_LIGHT_FACTOR = 4;
 
 /// Use Enlightened instead, which is smart wrapper of this.
-uchar World::LightMap(const ushort x, const ushort y, const ushort z)
-const {
+int World::LightMap(const int x, const int y, const int z) const {
     return GetShred(x, y)->
         Lightmap(Shred::CoordInShred(x), Shred::CoordInShred(y), z);
 }
 
-bool World::SetSunLightMap(const uchar level,
-        const ushort x, const ushort y, const ushort z)
+bool World::SetSunLightMap(const int level,
+        const int x, const int y, const int z)
 {
     return GetShred(x, y)->SetSunLight(
         Shred::CoordInShred(x), Shred::CoordInShred(y), z, level);
 }
 
-bool World::SetFireLightMap(const uchar level,
-        const ushort x, const ushort y, const ushort z)
+bool World::SetFireLightMap(const int level,
+        const int x, const int y, const int z)
 {
     return GetShred(x, y)->SetFireLight(
         Shred::CoordInShred(x), Shred::CoordInShred(y), z, level);
 }
 
-void World::AddFireLight(short, short, short, uchar) {}
-void World::RemoveFireLight(short, short, short) {}
+void World::AddFireLight(int, int, int, int) {}
+void World::RemoveFireLight(int, int, int) {}
 
 /// Makes block emit shining.
-/** Receives only non-sun light, from 0 to F. */
-void World::Shine(const ushort i, const ushort j, const ushort k,
-        const uchar level, bool)
+/** Receives only non-sun light as level, from 1 to F. */
+void World::Shine(const int x, const int y, const int z, int level,
+        const bool init)
 {
-    if ( not InBounds(i, j, k) || 0==level ) return;
-    if ( SetFireLightMap(level << 4, i, j, k) &&
-            INVISIBLE != GetBlock(i, j, k)->Transparent() )
-    {
-        emit Updated(i, j, k);
+    const int transparent = GetBlock(x, y, z)->Transparent();
+    if ( SetFireLightMap(level << 4, x, y, z) && INVISIBLE != transparent ) {
+        EmitUpdated(x, y, z);
     }
-    Shine(i-1, j, k, level-1);
-    Shine(i+1, j, k, level-1);
-    Shine(i, j-1, k, level-1);
-    Shine(i, j+1, k, level-1);
-    Shine(i, j, k-1, level-1);
-    Shine(i, j, k+1, level-1);
+    if ( (transparent != BLOCK_OPAQUE && level > 1) || init ) {
+        --level;
+        static const int border = SHRED_WIDTH * NumShreds() - 1;
+        if ( x > 0 )      Shine(x-1, y,   z, level, false);
+        if ( x < border ) Shine(x+1, y,   z, level, false);
+        if ( y > 0 )      Shine(x,   y-1, z, level, false);
+        if ( y < border ) Shine(x,   y+1, z, level, false);
+        Shine(x, y, z-1, level, false);
+        Shine(x, y, z+1, level, false);
+    }
 }
 
-void World::SunShineVertical(const short x, const short y, short z,
-        uchar light_lev)
-{
-    if ( GetEvernight() ) return;
+void World::SunShineVertical(const int x, const int y, int z, int light_lev) {
     /* 2 1 3
      *   *   First, light goes down, then divides to 4 branches
      * ^ | ^ to N-S-E-W, and goes up.
@@ -89,150 +87,146 @@ void World::SunShineVertical(const short x, const short y, short z,
      * | | |
      * |<v>|
      *   #     */
-    const Shred * const shred = GetShred(x, y);
-    const ushort x_in = Shred::CoordInShred(x);
-    const ushort y_in = Shred::CoordInShred(y);
-    for ( ; SetSunLightMap(light_lev, x, y, z); --z) {
-        emit Updated(x, y, z);
-        const ushort transparent =
-            shred->GetBlock(x_in, y_in, z)->Transparent();
-        if ( BLOCK_TRANSPARENT == transparent ) {
+    Shred * const shred = GetShred(x, y);
+    const int x_in = Shred::CoordInShred(x);
+    const int y_in = Shred::CoordInShred(y);
+    for ( ; shred->SetSunLight(x_in, y_in, z, light_lev); --z) {
+        switch ( shred->GetBlock(x_in, y_in, z)->Transparent() ) {
+        case INVISIBLE: break;
+        case BLOCK_TRANSPARENT:
             --light_lev;
-        } else if ( BLOCK_OPAQUE == transparent ) {
-            break;
+            EmitUpdated(x, y, z);
+        break;
+        case BLOCK_OPAQUE:
+            CrossUpShine(x, y, z);
+            EmitUpdated(x, y, z);
+        return;
         }
     }
-    UpShine(x-1, y, z);
-    UpShine(x+1, y, z);
-    UpShine(x, y-1, z);
-    UpShine(x, y+1, z);
 }
 
-void World::UpShine(const ushort x, const ushort y, const ushort z_bottom) {
-    if ( InBounds(x, y) ) {
-        for (ushort z=z_bottom; SetSunLightMap(1, x, y, z); ++z) {
-            emit Updated(x, y, z);
-        }
+void World::CrossUpShine(const int x, const int y, const int z_bottom) {
+    static const int bound = SHRED_WIDTH * NumShreds() - 1;
+    if ( x > 0     ) UpShine(x-1, y,   z_bottom);
+    if ( x < bound ) UpShine(x+1, y,   z_bottom);
+    if ( y > 0     ) UpShine(x,   y-1, z_bottom);
+    if ( y < bound ) UpShine(x,   y+1, z_bottom);
+}
+
+void World::UpShine(const int x, const int y, int z_bottom) {
+    Shred * const shred = GetShred(x, y);
+    const int x_in = Shred::CoordInShred(x);
+    const int y_in = Shred::CoordInShred(y);
+    for ( ; shred->SetSunLight(x_in, y_in, z_bottom, 1); ++z_bottom) {
+        EmitUpdated(x, y, z_bottom);
     }
 }
 
 /// Called when one block is moved, built or destroyed.
-void World::ReEnlighten(const ushort x, const ushort y, const ushort z) {
-    SunShineVertical(x, y);
-    Shine(x, y, z, GetBlock(x, y, z)->LightRadius(), true);
-    emit Updated(x, y, z);
+void World::ReEnlighten(const int x, const int y, const int z) {
+    if ( not GetEvernight() ) {
+        SunShineVertical(x, y);
+    }
+    const int radius = GetBlock(x, y, z)->LightRadius();
+    if ( radius != 0 ) {
+        Shine(x, y, z, radius, true);
+    }
 }
 
-void World::ReEnlightenBlockAdd(const ushort x, const ushort y, const ushort z)
-{
+void World::ReEnlightenBlockAdd(const int x, const int y, const int z) {
     ReEnlighten(x, y, z);
 }
 
-void World::ReEnlightenBlockRemove(
-        const ushort x, const ushort y, const ushort z)
-{
+void World::ReEnlightenBlockRemove(const int x, const int y, const int z) {
     ReEnlighten(x, y, z);
 }
 
 void World::ReEnlightenTime() {
-    for (ushort i=0; i<NumShreds()*NumShreds(); ++i) {
+    for (int i=NumShreds()*NumShreds()-1; i>=0; --i) {
         shreds[i]->SetAllLightMapNull();
     }
-    if ( not GetEvernight() ) {
-        sunMoonFactor = ( NIGHT==PartOfDay() ) ?
-            MOON_LIGHT_FACTOR : SUN_LIGHT_FACTOR;
-        ReEnlightenAll();
-    }
+    sunMoonFactor = ( NIGHT==PartOfDay() ) ?
+        MOON_LIGHT_FACTOR : SUN_LIGHT_FACTOR;
+    ReEnlightenAll();
 }
 
 void World::ReEnlightenAll() {
-    disconnect(this, SIGNAL(Updated(ushort, ushort, ushort)), 0, 0);
-    disconnect(this, SIGNAL(UpdatedAround(ushort, ushort, ushort, ushort)),
-        0, 0);
-    for (ushort i=0; i<NumShreds()*NumShreds(); ++i) {
+    not_initial_lighting = false;
+    for (int i=NumShreds()*NumShreds()-1; i>=0; --i) {
         shreds[i]->ShineAll();
     }
-    emit ReConnect();
+    not_initial_lighting = true;
 }
 
 void World::ReEnlightenMove(const int dir) {
-    disconnect(this, SIGNAL(Updated(ushort, ushort, ushort)), 0, 0);
-    disconnect(this, SIGNAL(UpdatedAround(ushort, ushort, ushort, ushort)),
-        0, 0);
+    not_initial_lighting = false;
     switch ( dir ) {
     case NORTH:
-        for (ushort i=0; i<NumShreds(); ++i) {
+        for (int i=0; i<NumShreds(); ++i) {
             shreds[i]->ShineAll();
             shreds[i+NumShreds()]->ShineAll();
         }
     break;
     case SOUTH:
-        for (ushort i=0; i<NumShreds(); ++i) {
+        for (int i=0; i<NumShreds(); ++i) {
             shreds[i+NumShreds()*(NumShreds()-1)]->ShineAll();
             shreds[i+NumShreds()*(NumShreds()-2)]->ShineAll();
         }
     break;
     case EAST:
-        for (ushort i=0; i<NumShreds(); ++i) {
+        for (int i=0; i<NumShreds(); ++i) {
             shreds[NumShreds()*i+NumShreds()-1]->ShineAll();
             shreds[NumShreds()*i+NumShreds()-2]->ShineAll();
         }
     break;
     case WEST:
-        for (ushort i=0; i<NumShreds(); ++i) {
+        for (int i=0; i<NumShreds(); ++i) {
             shreds[NumShreds()*i]->ShineAll();
             shreds[NumShreds()*i+1]->ShineAll();
         }
     break;
     default: fprintf(stderr, "World::ReEnlightenMove: dir (?): %d\n", dir);
     }
-    emit ReConnect();
+    not_initial_lighting = true;
 }
 
-uchar World::Enlightened(const ushort x, const ushort y, const ushort z)
-const {
-    const uchar light = LightMap(x, y, z);
-    return (light & 0x0F) * sunMoonFactor +
-           ((light & 0xF0) >> 4 ) * FIRE_LIGHT_FACTOR;
+int World::Enlightened(const int x, const int y, const int z) const {
+    const int light = LightMap(x, y, z);
+    return   (light & 0x0F) * sunMoonFactor +
+           ( (light & 0xF0) >> 4 ) * FIRE_LIGHT_FACTOR;
 }
 
 /// Provides lighting of block side, not all block.
-uchar World::Enlightened(const ushort i, const ushort j, const ushort k,
-        const int dir)
+int World::Enlightened(const int i, const int j, const int k, const int dir)
 const {
-    short x, y, z;
-    Focus(i, j, k, x, y, z, dir);
+    int x, y, z;
+    Focus(i, j, k, &x, &y, &z, dir);
     return qMin(Enlightened(i, j, k), Enlightened(x, y, z));
 }
 
-uchar World::SunLight(const ushort i, const ushort j, const ushort k)
-const {
+int World::SunLight(const int i, const int j, const int k) const {
     return (LightMap(i, j, k) & 0x0F) * sunMoonFactor;
 }
 
-uchar World::FireLight(const ushort i, const ushort j, const ushort k)
-const {
-    return (LightMap(i, j, k) & 0xF0) * FIRE_LIGHT_FACTOR;
+int World::FireLight(const int x, const int y, const int z) const {
+    return (LightMap(x, y, z) & 0xF0) * FIRE_LIGHT_FACTOR;
 }
 
 // Shred methods
 
-uchar Shred::Lightmap(const short x, const short y, const short z) const {
+int Shred::Lightmap(const int x, const int y, const int z) const {
     return lightMap[x][y][z];
 }
 
-uchar Shred::FireLight(const short x, const short y, const short z) const {
+int Shred::FireLight(const int x, const int y, const int z) const {
     return ((lightMap[x][y][z] & 0xF0) >> 4) * FIRE_LIGHT_FACTOR;
 }
 
-uchar Shred::SunLight(const short x, const short y, const short z) const {
+int Shred::SunLight(const int x, const int y, const int z) const {
     return (lightMap[x][y][z] & 0x0F);
 }
 
-uchar Shred::LightLevel(short, short, short) const { return 0; }
-
-bool Shred::SetSunLight(const short x, const short y, const short z,
-        const uchar level)
+bool Shred::SetSunLight(const int x, const int y, const int z, const int level)
 {
     if ( ( lightMap[x][y][z] & 0x0F ) < level ) {
         (lightMap[x][y][z] &= 0xF0) |= level;
@@ -242,8 +236,8 @@ bool Shred::SetSunLight(const short x, const short y, const short z,
     }
 }
 
-bool Shred::SetFireLight(const short x, const short y, const short z,
-        const uchar level)
+bool Shred::SetFireLight(const int x, const int y, const int z,
+        const int level)
 {
     if ( ( lightMap[x][y][z] & 0xF0 ) < level ) {
         (lightMap[x][y][z] &= 0x0F) |= level;
@@ -253,8 +247,7 @@ bool Shred::SetFireLight(const short x, const short y, const short z,
     }
 }
 
-void Shred::SetLightmap(const short x, const short y, const short z,
-        const uchar level)
+void Shred::SetLightmap(const int x, const int y, const int z, const int level)
 {
     lightMap[x][y][z] = level;
 }
@@ -262,22 +255,24 @@ void Shred::SetLightmap(const short x, const short y, const short z,
 void Shred::SetAllLightMapNull() {
     memset(lightMap, 0,
         sizeof(lightMap[0][0][0]) * SHRED_WIDTH * SHRED_WIDTH * HEIGHT);
-    for (ushort i=0; i<SHRED_WIDTH; ++i)
-    for (ushort j=0; j<SHRED_WIDTH; ++j) {
-        lightMap[i][j][HEIGHT-1] = 0;
-    }
 }
 
 /// Makes all shining blocks of shred shine.
 void Shred::ShineAll() {
     for (auto i=shiningList.constBegin(); i!=shiningList.constEnd(); ++i) {
-        world->Shine((*i)->X(), (*i)->Y(), (*i)->Z(),
-            (*i)->LightRadius(), true);
+        const int radius = (*i)->LightRadius();
+        if ( radius != 0 ) {
+            world->Shine((*i)->X(), (*i)->Y(), (*i)->Z(), radius, true);
+        }
     }
     if ( not world->GetEvernight() ) {
-        for (ushort i=shredX*SHRED_WIDTH; i<SHRED_WIDTH*(shredX+1); ++i)
-        for (ushort j=shredY*SHRED_WIDTH; j<SHRED_WIDTH*(shredY+1); ++j) {
+        for (int i=shredX*SHRED_WIDTH; i<SHRED_WIDTH*(shredX+1); ++i)
+        for (int j=shredY*SHRED_WIDTH; j<SHRED_WIDTH*(shredY+1); ++j) {
             world->SunShineVertical(i, j);
+        }
+        for (int i=0; i<SHRED_WIDTH; ++i)
+        for (int j=0; j<SHRED_WIDTH; ++j) {
+            lightMap[i][j][HEIGHT-1] = 0xFF;
         }
     }
 }
