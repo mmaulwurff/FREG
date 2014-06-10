@@ -3,9 +3,11 @@
 <area shape="rect" id="node34" href="$Lighting-inertia_8cpp.html" title="This file provides simple (also mad) lighting for freg. " alt="" coords="968,171,1099,205"/>
 <area shape="rect" id="node40" href="$Bucket_8h.html" title="blocks/Bucket.h" alt="" coords="1108,89,1223,122"/>
 <area shape="rect" id="node45" href="$Weapons_8h.html" title="blocks/Weapons.h" alt="" coords="1247,89,1377,122"/>
-<area shape="rect" id="node50" href="$Inventory_8cpp.html" title="blocks/Inventory.cpp" alt="" coords="1401,89,1543,122"/>
-<area shape="rect" id="node53" href="$CursedScreen_8cpp.html" title="This file is related to curses screen for freg. " alt="" coords="1567,89,1745,122"/>
-<area shape="rect" id="node55" href="$TextScreen_8cpp.html" title="This file is related to text screen for freg. " alt="" coords="1769,89,1932,122"/>
+<area shape="rect" id="node50" href="$Block_8cpp.html" title="blocks/Block.cpp" alt="" coords="1401,89,1524,122"/>
+<area shape="rect" id="node52" href="$Inventory_8cpp.html" title="blocks/Inventory.cpp" alt="" coords="1548,89,1689,122"/>
+<area shape="rect" id="node55" href="$CursedScreen_8cpp.html" title="This file is related to curses screen for freg. " alt="" coords="1713,89,1892,122"/>
+<area shape="rect" id="node57" href="$TextScreen_8cpp.html" title="This file is related to text screen for freg. " alt="" coords="1916,89,2079,122"/>
+<area shape="rect" id="node59" href="$Shred-gen-flat_8cpp.html" title="Shred&#45;gen&#45;flat.cpp" alt="" coords="2103,89,2231,122"/>
 <area shape="rect" id="node5" href="$Animal_8h.html" title="blocks/Animal.h" alt="" coords="517,171,632,205"/>
 <area shape="rect" id="node20" href="$Illuminator_8h.html" title="blocks/Illuminator.h" alt="" coords="656,171,789,205"/>
 <area shape="rect" id="node25" href="$Container_8h.html" title="blocks/Container.h" alt="" coords="813,171,944,205"/>

@@ -1,7 +1,8 @@
 <map id="Xy" name="Xy">
-<area shape="rect" id="node3" href="$classXyz.html" title="Xyz" alt="" coords="501,89,544,122"/>
+<area shape="rect" id="node3" href="$classXyz.html" title="Xyz" alt="" coords="568,89,611,122"/>
 <area shape="rect" id="node5" href="$classActive.html" title="Active" alt="" coords="452,171,511,205"/>
-<area shape="rect" id="node35" href="$classPlayer.html" title="This class contains information specific to player and interface for manipulating him..." alt="" coords="535,171,593,205"/>
+<area shape="rect" id="node35" href="$classDeferredAction.html" title="Deferred Action is used when some action needs to be done at next physics turn. " alt="" coords="535,171,644,205"/>
+<area shape="rect" id="node37" href="$classPlayer.html" title="This class contains information specific to player and interface for manipulating him..." alt="" coords="668,171,727,205"/>
 <area shape="rect" id="node7" href="$classAnimal.html" title="Animal" alt="" coords="89,254,151,287"/>
 <area shape="rect" id="node15" href="$classBell.html" title="Bell" alt="" coords="175,254,217,287"/>
 <area shape="rect" id="node17" href="$classBush.html" title="Bush" alt="" coords="241,254,292,287"/>

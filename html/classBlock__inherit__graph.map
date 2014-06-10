@@ -4,7 +4,7 @@
 <area shape="rect" id="node35" href="$classLadder.html" title="Ladder" alt="" coords="115,509,176,542"/>
 <area shape="rect" id="node37" href="$classPlate.html" title="Plate" alt="" coords="120,565,171,598"/>
 <area shape="rect" id="node39" href="$classText.html" title="Text" alt="" coords="123,621,168,654"/>
-<area shape="rect" id="node43" href="$classWeapon.html" title="Weapon" alt="" coords="111,733,180,766"/>
+<area shape="rect" id="node43" href="$classWeapon.html" title="Weapon class represents simple weapons as sticks, pebbles and so on. Also is used as base class for m..." alt="" coords="111,733,180,766"/>
 <area shape="rect" id="node5" href="$classAnimal.html" title="Animal" alt="" coords="240,61,301,94"/>
 <area shape="rect" id="node13" href="$classBell.html" title="Bell" alt="" coords="249,117,292,150"/>
 <area shape="rect" id="node15" href="$classBush.html" title="Bush" alt="" coords="245,173,296,206"/>

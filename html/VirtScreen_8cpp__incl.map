@@ -1,7 +1,7 @@
 <map id="screens/VirtScreen.cpp" name="screens/VirtScreen.cpp">
-<area shape="rect" id="node3" href="$VirtScreen_8h.html" title="VirtScreen.h" alt="" coords="160,89,253,122"/>
-<area shape="rect" id="node13" href="$Player_8h.html" title="Player.h" alt="" coords="67,89,136,122"/>
-<area shape="rect" id="node19" href="$world_8h.html" title="world.h" alt="" coords="277,89,341,122"/>
+<area shape="rect" id="node3" href="$VirtScreen_8h.html" title="VirtScreen.h" alt="" coords="161,89,255,122"/>
+<area shape="rect" id="node13" href="$Player_8h.html" title="Player.h" alt="" coords="68,89,137,122"/>
+<area shape="rect" id="node19" href="$world_8h.html" title="world.h" alt="" coords="279,89,343,122"/>
 <area shape="rect" id="node7" href="$header_8h.html" title="header.h" alt="" coords="176,171,245,205"/>
 <area shape="rect" id="node17" href="$Xyz_8h.html" title="Xyz.h" alt="" coords="5,171,59,205"/>
 </map>

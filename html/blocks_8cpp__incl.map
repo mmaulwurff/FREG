@@ -1,12 +1,12 @@
 <map id="blocks/blocks.cpp" name="blocks/blocks.cpp">
 <area shape="rect" id="node9" href="$blocks_8h.html" title="blocks.h" alt="" coords="291,89,360,122"/>
 <area shape="rect" id="node31" href="$world_8h.html" title="world.h" alt="" coords="384,89,448,122"/>
-<area shape="rect" id="node36" href="$Shred_8h.html" title="Shred.h" alt="" coords="500,89,567,122"/>
-<area shape="rect" id="node41" href="$BlockManager_8h.html" title="BlockManager.h" alt="" coords="605,254,720,287"/>
-<area shape="rect" id="node11" href="$Inventory_8h.html" title="Provides declaration for class Inventory for freg. " alt="" coords="125,171,211,205"/>
-<area shape="rect" id="node15" href="$Animal_8h.html" title="blocks/Animal.h" alt="" coords="235,171,349,205"/>
-<area shape="rect" id="node17" href="$Active_8h.html" title="blocks/Active.h" alt="" coords="231,254,343,287"/>
-<area shape="rect" id="node21" href="$Block_8h.html" title="Provides definition for class Block. " alt="" coords="205,337,272,370"/>
-<area shape="rect" id="node29" href="$Xyz_8h.html" title="Xyz.h" alt="" coords="296,337,349,370"/>
-<area shape="rect" id="node23" href="$header_8h.html" title="header.h" alt="" coords="425,419,495,453"/>
+<area shape="rect" id="node38" href="$Shred_8h.html" title="Shred.h" alt="" coords="547,89,613,122"/>
+<area shape="rect" id="node43" href="$BlockManager_8h.html" title="BlockManager.h" alt="" coords="652,254,767,287"/>
+<area shape="rect" id="node11" href="$Inventory_8h.html" title="Provides declaration for class Inventory for freg. " alt="" coords="81,171,167,205"/>
+<area shape="rect" id="node15" href="$Animal_8h.html" title="blocks/Animal.h" alt="" coords="191,171,305,205"/>
+<area shape="rect" id="node17" href="$Active_8h.html" title="blocks/Active.h" alt="" coords="187,254,299,287"/>
+<area shape="rect" id="node21" href="$Block_8h.html" title="Provides definition for class Block. " alt="" coords="161,337,228,370"/>
+<area shape="rect" id="node29" href="$Xyz_8h.html" title="Xyz.h" alt="" coords="252,337,305,370"/>
+<area shape="rect" id="node23" href="$header_8h.html" title="header.h" alt="" coords="427,419,496,453"/>
 </map>

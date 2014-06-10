@@ -1,7 +1,7 @@
 var searchData=
 [
   ['backpack',['Backpack',['../classPlayer.html#a0aed24881e8f2558dfe42976d1b9700d',1,'Player']]],
-  ['bell',['Bell',['../classBell.html',1,'Bell'],['../classBell.html#aee2f7839457832eac65a4a14acc9f6d8',1,'Bell::Bell(int sub, quint16 id)'],['../classBell.html#a89841d884fe6bce20bce142f2e182018',1,'Bell::Bell(QDataStream &amp;str, int sub, quint16 id)'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a9b1ed7d9244144b7a44adfa64333a630',1,'BELL():&#160;header.h']]],
+  ['bell',['Bell',['../classBell.html',1,'Bell'],['../classBell.html#abe55427d8e7883393ba2c8204c03d5ea',1,'Bell::Bell(int sub, int id)'],['../classBell.html#aa97007ce77afd26207a84882782b886f',1,'Bell::Bell(QDataStream &amp;str, int sub, int id)'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a9b1ed7d9244144b7a44adfa64333a630',1,'BELL():&#160;header.h']]],
   ['bite',['BITE',['../header_8h.html#a5adfb93f736d9aa263cea4b7b74da15eaeefffe28464a015dfb1063783a8493b1',1,'header.h']]],
   ['black_5fblack',['BLACK_BLACK',['../CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072afcd76b34514669761bd5cc5807b47cc7',1,'CursedScreen.h']]],
   ['black_5fblue',['BLACK_BLUE',['../CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a7ea9008e5111c16cd317d8daffe21f0a',1,'CursedScreen.h']]],
@@ -11,12 +11,13 @@ var searchData=
   ['black_5fred',['BLACK_RED',['../CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072ad4d53b59914a536f06a87a7a8a694231',1,'CursedScreen.h']]],
   ['black_5fwhite',['BLACK_WHITE',['../CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a2879550cb7b282e89baaddb83f921d73',1,'CursedScreen.h']]],
   ['black_5fyellow',['BLACK_YELLOW',['../CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a69c6d074dde26482b93bc29242d2044c',1,'CursedScreen.h']]],
-  ['block',['Block',['../classBlock.html',1,'Block'],['../classBlock.html#ae45a2e5d8cd3cce1a57a0d1fd501e703',1,'Block::Block(int sub, quint16 id, quint8 transp=UNDEF)'],['../classBlock.html#ae068519093cf2a8d8e5078f4750105d5',1,'Block::Block(QDataStream &amp;, int sub, quint16 id, quint8 transp=UNDEF)'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a02fc27068fe9a3c151ffcc08ec5bb65d',1,'BLOCK():&#160;header.h']]],
+  ['block',['Block',['../classBlock.html',1,'Block'],['../classBlock.html#ac54c22c472d32b25702b29358857f437',1,'Block::Block(int sub, int id, int transp=UNDEF)'],['../classBlock.html#a7cd811c785b5ac494371d430e2a2a34d',1,'Block::Block(QDataStream &amp;, int sub, int id, int transp=UNDEF)'],['../classBlock.html#a0b82be82678747aaf1dc304df9edc1be',1,'Block::Block(const Block &amp;)=delete'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a02fc27068fe9a3c151ffcc08ec5bb65d',1,'BLOCK():&#160;header.h']]],
+  ['block_2ecpp',['Block.cpp',['../Block_8cpp.html',1,'']]],
   ['block_2eh',['Block.h',['../Block_8h.html',1,'']]],
   ['block_5fmanager',['block_manager',['../BlockManager_8cpp.html#a25664f6404016a6c1fb61a0a1cf371ab',1,'block_manager():&#160;BlockManager.cpp'],['../BlockManager_8h.html#a25664f6404016a6c1fb61a0a1cf371ab',1,'block_manager():&#160;BlockManager.cpp']]],
   ['block_5fopaque',['BLOCK_OPAQUE',['../header_8h.html#a48a539666409f8c99365fc6d8a58f708a6f3369e7a0cbefeea43c4e9c35b345c9',1,'header.h']]],
   ['block_5ftransparent',['BLOCK_TRANSPARENT',['../header_8h.html#a48a539666409f8c99365fc6d8a58f708ae72d7a9ac5db4110222e69339723b6ab',1,'header.h']]],
-  ['blockfromfile',['BlockFromFile',['../classBlockManager.html#a5e76a2c99ec53700a04afda95c3e743d',1,'BlockManager::BlockFromFile(QDataStream &amp;, quint8 kind, quint8 sub)'],['../classBlockManager.html#aee85760edd3eba2f6efb8e79a58c833b',1,'BlockManager::BlockFromFile(QDataStream &amp;) const ']]],
+  ['blockfromfile',['BlockFromFile',['../classBlockManager.html#a49efb21a554754d0552a6e01220a26df',1,'BlockManager::BlockFromFile(QDataStream &amp;, int kind, int sub)'],['../classBlockManager.html#aee85760edd3eba2f6efb8e79a58c833b',1,'BlockManager::BlockFromFile(QDataStream &amp;) const ']]],
   ['blockmanager',['BlockManager',['../classBlockManager.html',1,'BlockManager'],['../classBlockManager.html#a93282216d97540def52c1fa4029eb693',1,'BlockManager::BlockManager()']]],
   ['blockmanager_2ecpp',['BlockManager.cpp',['../BlockManager_8cpp.html',1,'']]],
   ['blockmanager_2eh',['BlockManager.h',['../BlockManager_8h.html',1,'']]],
@@ -31,11 +32,12 @@ var searchData=
   ['blue_5fwhite',['BLUE_WHITE',['../CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072af3e0cc40aaf150a398fea27e4ea9afcf',1,'CursedScreen.h']]],
   ['blue_5fyellow',['BLUE_YELLOW',['../CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a74397d6ab3cfc162bd5e676092ae9569',1,'CursedScreen.h']]],
   ['bone',['BONE',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a618bf303fb58b4eb006b58c15ca0f7ab',1,'header.h']]],
-  ['breath',['Breath',['../classAnimal.html#af4254ecf8d9cf3525bd7c09d7162e23a',1,'Animal::Breath()'],['../classPlayer.html#a09d88a3502ec0f3feaa9cb83a7721ea3',1,'Player::Breath()'],['../header_8h.html#a5adfb93f736d9aa263cea4b7b74da15eac19a68bcd93ab97d42557ecfb59a6cd2',1,'BREATH():&#160;header.h']]],
-  ['breathpercent',['BreathPercent',['../classPlayer.html#a089da55605b2fb4e39a7e2af7b4b03df',1,'Player']]],
-  ['bucket',['Bucket',['../classBucket.html',1,'Bucket'],['../classBucket.html#aae537adce85170fe92573d8c4ca25177',1,'Bucket::Bucket(int sub, quint16 id)'],['../classBucket.html#ac3c466fdcd200a90f6082e599b042e92',1,'Bucket::Bucket(QDataStream &amp;str, int sub, quint16 id)'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a6562baa14d39f302094c545623c5ae14',1,'BUCKET():&#160;header.h']]],
+  ['break',['Break',['../classBlock.html#a8dae7cf589a4775d4c01866569500720',1,'Block']]],
+  ['breath',['Breath',['../classAnimal.html#a02f9e5c7701daf0c758a35ea25577a5a',1,'Animal::Breath()'],['../classPlayer.html#a879d3c2f6876c506e8fe0b6ee6619def',1,'Player::Breath()'],['../header_8h.html#a5adfb93f736d9aa263cea4b7b74da15eac19a68bcd93ab97d42557ecfb59a6cd2',1,'BREATH():&#160;header.h']]],
+  ['breathpercent',['BreathPercent',['../classPlayer.html#a527554ff84f509163261f65f9e8a2e35',1,'Player']]],
+  ['bucket',['Bucket',['../classBucket.html',1,'Bucket'],['../classBucket.html#a060ae224d575e424b4da0bac661bf2c8',1,'Bucket::Bucket(int sub, int id)'],['../classBucket.html#aed7242e1f0d9cb7a74c464073f2d96ef',1,'Bucket::Bucket(QDataStream &amp;str, int sub, int id)'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a6562baa14d39f302094c545623c5ae14',1,'BUCKET():&#160;header.h']]],
   ['bucket_2ecpp',['Bucket.cpp',['../Bucket_8cpp.html',1,'']]],
   ['bucket_2eh',['Bucket.h',['../Bucket_8h.html',1,'']]],
-  ['build',['Build',['../classPlayer.html#a2209bda757d7b5234395f242fdd3bf7e',1,'Player::Build(short x, short y, short z, ushort num)'],['../classPlayer.html#ad41d8b10e1e39df37bab41b706732321',1,'Player::Build(ushort num)'],['../classWorld.html#a63ece76b5e505baa40c1153f6acd5f11',1,'World::Build()']]],
-  ['bush',['Bush',['../classBush.html',1,'Bush'],['../classBush.html#ade5526208b2ae9923de7b2ec554dcc9b',1,'Bush::Bush(int sub, quint16 id)'],['../classBush.html#a8c467a811560d88ae273e5d86c917e83',1,'Bush::Bush(QDataStream &amp;str, int sub, quint16 id)'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285ab2e062d1d8146bf8e158300e5930fff4',1,'BUSH():&#160;header.h']]]
+  ['build',['Build',['../classPlayer.html#a07fdac0e20ff80ce72f1efcd04d03022',1,'Player::Build()'],['../classWorld.html#af2622a9c54911a6470bc42f6c8bbdc5c',1,'World::Build()']]],
+  ['bush',['Bush',['../classBush.html',1,'Bush'],['../classBush.html#a629a95949ce4da475a58d9bb2d2f9c63',1,'Bush::Bush(int sub, int id)'],['../classBush.html#ad2eee0df96df47199d4ddf1977d0db92',1,'Bush::Bush(QDataStream &amp;str, int sub, int id)'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285ab2e062d1d8146bf8e158300e5930fff4',1,'BUSH():&#160;header.h']]]
 ];

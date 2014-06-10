@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['obtain',['Obtain',['../classPlayer.html#ac5cb92275ad1cbe150506500b3b86b10',1,'Player::Obtain(short x, short y, short z, ushort src, ushort dest=0, ushort num=1)'],['../classPlayer.html#a4c02e63d849208ac3e0ba5342ded4c82',1,'Player::Obtain(ushort src, ushort dest=0, ushort num=1)']]],
+  ['obtain',['Obtain',['../classPlayer.html#aca906db7adf93b6d50b7f88245c83137',1,'Player']]],
   ['operator_21_3d',['operator!=',['../classBlock.html#a3e7b5d7b7ffe9a9667a30df94fa7855c',1,'Block::operator!=()'],['../structCraftItem.html#a0ad472420cc7e3ca2b6d32d83dff893f',1,'CraftItem::operator!=()']]],
   ['operator_3c',['operator&lt;',['../structCraftItem.html#a6a173992e6b7bd0d2d24c7394a6cd8f2',1,'CraftItem']]],
   ['operator_3c_3c',['operator&lt;&lt;',['../classCraftList.html#aff26b0ea1d5291c976fbcaccae195a10',1,'CraftList']]],

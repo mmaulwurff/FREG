@@ -1,4 +1,4 @@
 <map id="Hammer" name="Hammer">
-<area shape="rect" id="node2" href="$classWeapon.html" title="Weapon" alt="" coords="7,89,76,122"/>
+<area shape="rect" id="node2" href="$classWeapon.html" title="Weapon class represents simple weapons as sticks, pebbles and so on. Also is used as base class for m..." alt="" coords="7,89,76,122"/>
 <area shape="rect" id="node4" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="15,6,68,39"/>
 </map>

@@ -1,10 +1,10 @@
 var searchData=
 [
   ['obscure_5fblock',['OBSCURE_BLOCK',['../CursedScreen_8cpp.html#ac081627c3bc05a7b3fe8044422473a35',1,'CursedScreen.cpp']]],
-  ['obtain',['Obtain',['../classPlayer.html#ac5cb92275ad1cbe150506500b3b86b10',1,'Player::Obtain(short x, short y, short z, ushort src, ushort dest=0, ushort num=1)'],['../classPlayer.html#a4c02e63d849208ac3e0ba5342ded4c82',1,'Player::Obtain(ushort src, ushort dest=0, ushort num=1)']]],
-  ['on_5fbody',['ON_BODY',['../classDwarf.html#a92b3dcca72f068f24ecf30cb11668027',1,'Dwarf']]],
-  ['on_5fhead',['ON_HEAD',['../classDwarf.html#ae3dd83fd3e46ac6c5b86996b9021899e',1,'Dwarf']]],
-  ['on_5flegs',['ON_LEGS',['../classDwarf.html#aaa41fd5dbb15e224e84e8ac1c3dae07d',1,'Dwarf']]],
+  ['obtain',['Obtain',['../classPlayer.html#aca906db7adf93b6d50b7f88245c83137',1,'Player']]],
+  ['on_5fbody',['ON_BODY',['../classDwarf.html#a6f6b36214de6839baca5f0691f035f41',1,'Dwarf']]],
+  ['on_5fhead',['ON_HEAD',['../classDwarf.html#abe069e485cd9e74a0e7fe660112c54f2',1,'Dwarf']]],
+  ['on_5flegs',['ON_LEGS',['../classDwarf.html#a5fa7273fdfc3fad6c82e10dd1886d255',1,'Dwarf']]],
   ['operator_21_3d',['operator!=',['../classBlock.html#a3e7b5d7b7ffe9a9667a30df94fa7855c',1,'Block::operator!=()'],['../structCraftItem.html#a0ad472420cc7e3ca2b6d32d83dff893f',1,'CraftItem::operator!=()']]],
   ['operator_3c',['operator&lt;',['../structCraftItem.html#a6a173992e6b7bd0d2d24c7394a6cd8f2',1,'CraftItem']]],
   ['operator_3c_3c',['operator&lt;&lt;',['../classCraftList.html#aff26b0ea1d5291c976fbcaccae195a10',1,'CraftList']]],

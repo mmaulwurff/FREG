@@ -1,10 +1,10 @@
 <map id="blocks/Active.cpp" name="blocks/Active.cpp">
-<area shape="rect" id="node3" href="$Active_8h.html" title="Active.h" alt="" coords="103,89,172,122"/>
+<area shape="rect" id="node3" href="$Active_8h.html" title="Active.h" alt="" coords="97,89,167,122"/>
 <area shape="rect" id="node15" href="$Xyz_8h.html" title="Xyz.h" alt="" coords="189,171,243,205"/>
-<area shape="rect" id="node17" href="$Shred_8h.html" title="Shred.h" alt="" coords="305,89,372,122"/>
-<area shape="rect" id="node22" href="$world_8h.html" title="world.h" alt="" coords="396,89,460,122"/>
-<area shape="rect" id="node27" href="$DeferredAction_8h.html" title="DeferredAction.h" alt="" coords="484,89,604,122"/>
-<area shape="rect" id="node30" href="$Inventory_8h.html" title="Provides declaration for class Inventory for freg. " alt="" coords="628,89,756,122"/>
+<area shape="rect" id="node17" href="$Shred_8h.html" title="Shred.h" alt="" coords="385,89,452,122"/>
+<area shape="rect" id="node22" href="$world_8h.html" title="world.h" alt="" coords="481,89,545,122"/>
+<area shape="rect" id="node29" href="$DeferredAction_8h.html" title="DeferredAction.h" alt="" coords="241,89,361,122"/>
+<area shape="rect" id="node33" href="$Inventory_8h.html" title="Provides declaration for class Inventory for freg. " alt="" coords="607,89,735,122"/>
 <area shape="rect" id="node7" href="$Block_8h.html" title="Provides definition for class Block. " alt="" coords="99,171,165,205"/>
 <area shape="rect" id="node9" href="$header_8h.html" title="header.h" alt="" coords="245,254,315,287"/>
 </map>
