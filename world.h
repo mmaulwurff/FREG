@@ -23,6 +23,7 @@
 #include <QThread>
 #include <QMutex>
 #include "header.h"
+#include "worldmap.h"
 
 class WorldMap;
 class Block;
@@ -57,7 +58,7 @@ private:
     void SetBlock(Block * block, int x, int y, int z);
     /// Puts block to coordinates and not activates it.
     void PutBlock(Block * block, int x, int y, int z);
-    static Block * Normal(quint8 sub);
+    static Block * Normal(int sub);
     static Block * NewBlock(int kind, int sub);
 
     void MakeSun();
@@ -101,18 +102,18 @@ public: // Information section
     QString WorldName() const;
     /// True on error, false if focus is received to _targ successfully.
     bool Focus(int x, int y, int z,
-            int * x_targ, int * y_targ, int * z_targ, quint8 dir) const;
+            int * x_targ, int * y_targ, int * z_targ, int dir) const;
     int NumShreds() const;
-    static quint8 TurnRight(quint8 dir);
-    static quint8 TurnLeft (quint8 dir);
-    static quint8 Anti(quint8 dir);
+    static int TurnRight(int dir);
+    static int TurnLeft (int dir);
+    static int Anti(int dir);
     long GetSpawnLongi() const;
     long GetSpawnLati()  const;
     long Longitude() const;
     long Latitude() const;
     static int TimeStepsInSec();
 
-    char TypeOfShred(long longi, long lati);
+    char TypeOfShred(long longi, long lati) const;
     long MapSize() const;
 
     QByteArray * GetShredData(long longi, long lati) const;
@@ -123,7 +124,7 @@ private:
 
 public: // Visibility section
     bool DirectlyVisible(float x_from, float y_from, float z_from,
-                         int   x_to,   int   y_to,     int   z_to) const;
+                         int   x_to,   int   y_to,   int   z_to) const;
     bool Visible(int x_from, int y_from, int z_from,
                  int x_to,   int y_to,   int z_to) const;
 private:
@@ -134,14 +135,14 @@ private:
 
 public: // Movement section
     /// Check and move
-    bool Move(int x, int y, int z, quint8 dir);
+    bool Move(int x, int y, int z, int dir);
     /// This CAN move blocks, but not xyz block.
     bool CanMove(int x,    int y,    int z,
-                 int x_to, int y_to, int z_to, quint8 dir);
-    void Jump(int x, int y, int z, quint8 dir);
+                 int x_to, int y_to, int z_to, int dir);
+    void Jump(int x, int y, int z, int dir);
 private:
     void NoCheckMove(int x,    int y,    int z,
-                     int x_to, int y_to, int z_to, quint8 dir);
+                     int x_to, int y_to, int z_to, int dir);
 
 public: // Time section
     int PartOfDay() const;
@@ -159,7 +160,7 @@ public: // Interactions section
     /// Does not check target block durability.
     void DestroyAndReplace(int x, int y, int z);
     bool Build(Block * thing, int x, int y, int z,
-            quint8 dir = UP,
+            int dir = UP,
             Block * who = nullptr,
             bool anyway = false);
     /// Returns true on success. Gets a string and inscribes block.
@@ -247,7 +248,7 @@ private:
     Block * behindSun;
     bool evernight;
 
-    WorldMap * const map;
+    const WorldMap map;
 
     long newLati, newLongi;
     int newX, newY, newZ;

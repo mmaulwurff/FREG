@@ -72,7 +72,7 @@ public:
     CraftList * Craft(CraftList * items, int sub) const;
 
 private:
-    CraftManager(const CraftManager &);
+    CraftManager(const CraftManager &) = delete;
     CraftList * CraftSub(CraftList * items, int sub) const;
 
     int size;
