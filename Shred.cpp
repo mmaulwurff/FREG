@@ -636,8 +636,8 @@ void Shred::ChaosShred() {
     for (int i=0; i<SHRED_WIDTH; ++i)
     for (int j=0; j<SHRED_WIDTH; ++j)
     for (int k=1; k<HEIGHT/2; ++k) {
-        quint8 kind = qrand() % LAST_KIND;
-        quint8 sub  = qrand() % LAST_SUB;
+        int kind = qrand() % LAST_KIND;
+        int sub  = qrand() % LAST_SUB;
         if ( kind==TELEGRAPH || kind==ANIMAL ) {
             kind = BLOCK;
         }

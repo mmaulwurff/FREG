@@ -35,14 +35,12 @@ bool CraftItem::operator!=(const CraftItem & item) const {
 }
 
 // CraftList section
-CraftList:: CraftList(
-        const quint8 materials_number,
-        const quint8  products_number)
-    :
+CraftList:: CraftList(const int materials_number, const int  products_number) :
         productsNumber(products_number)
 {
     items.reserve(materials_number + productsNumber);
 }
+
 CraftList::~CraftList() {
     for (auto & item : items) {
         delete item;
@@ -70,13 +68,13 @@ bool ItemsLess(const CraftItem * item1, const CraftItem * item2) {
 void CraftList::Sort() { qSort(items.begin(), items.end(), ItemsLess); }
 
 bool CraftList::LoadItem(QTextStream & stream) {
-    ushort    number;
+    int number;
     stream >> number;
     if ( number == 0 ) return false;
     QString   kind_string,   sub_string;
     stream >> kind_string >> sub_string;
-    const quint8 kind = BlockManager::StringToKind(kind_string);
-    const quint8 sub  = BlockManager::StringToSub ( sub_string);
+    const int kind = BlockManager::StringToKind(kind_string);
+    const int sub  = BlockManager::StringToSub ( sub_string);
     if ( LAST_KIND==kind || LAST_SUB==sub ) return false;
     items.append(new CraftItem(number, BlockManager::MakeId(kind, sub)));
     return true;
@@ -99,7 +97,7 @@ CraftManager::CraftManager() : size(0) {
     recipesList = new QList<CraftList *>[recipesNames.size()];
     recipesSubsList = new int[recipesNames.size()];
     for (auto & recipeName : recipesNames) { // file level
-        const quint8 sub = BlockManager::StringToSub(recipeName);
+        const int sub = BlockManager::StringToSub(recipeName);
         if ( sub == LAST_SUB ) {
             continue;
         }
@@ -160,7 +158,7 @@ CraftManager::~CraftManager() {
     delete [] recipesSubsList;
 }
 
-CraftItem * CraftManager::MiniCraft(const ushort num, const quint16 id) const {
+CraftItem * CraftManager::MiniCraft(const int num, const int id) const {
     CraftList recipe(1, 0);
     recipe << new CraftItem(num, id);
     const CraftList * const result = Craft(&recipe, DIFFERENT);
