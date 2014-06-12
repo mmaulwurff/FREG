@@ -512,6 +512,7 @@ void Shred::TestShred() { // 7 items in a row
     SetNewBlock(ILLUMINATOR, GLASS, column+=2, row, level);
     SetNewBlock(CONTAINER,   IRON,  column+=2, row, level);
     SetNewBlock(CONTAINER,   WATER, column+=2, row, level);
+    PutBlock(Normal(STONE), column+=2, row, level);
     // row 7
     column = -1;
     row += 2;

@@ -90,10 +90,6 @@ private:
 
     /// Called when block is moved.
     void ReEnlighten(int x, int y, int z);
-    /// Called when block is built.
-    void ReEnlightenBlockAdd(int x, int y, int k);
-    /// Called when block is destroyed.
-    void ReEnlightenBlockRemove(int x, int y, int k);
     void ReEnlightenAll();
     void ReEnlightenTime();
     /// Called from ReloadShreds(int), enlightens only needed shreds.
@@ -184,8 +180,6 @@ public: // Block information section
     bool InBounds(int x, int y) const;
     bool InBounds(int x, int y, int z) const;
     int  GetBound() const;
-private:
-    static bool IsPile(const Block *);
 
 public: // World section
     void ReloadAllShreds(long lati, long longi,

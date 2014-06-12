@@ -19,6 +19,7 @@
 
 #include "blocks/Block.h"
 #include "BlockManager.h"
+#include "Inventory.h"
 
 QString Block::FullName() const {
     switch ( Sub() ) {
@@ -106,7 +107,7 @@ void Block::Damage(const int dmg, const int dmg_kind) {
     } break;
     case SAND:
     case A_MEAT:
-    case H_MEAT: ++(mult = (THRUST==dmg_kind)); break;
+    case H_MEAT: ++(mult = (THRUST==dmg_kind || HEAT==dmg_kind)); break;
     case SOIL: switch ( dmg_kind ) {
         case DIG: mult = 2; break;
         case DAMAGE_FALL: return;
@@ -116,8 +117,18 @@ void Block::Damage(const int dmg, const int dmg_kind) {
     durability -= mult*dmg;
 }
 
-Block * Block::DropAfterDamage() {
-    return (GLASS==Sub() || AIR==Sub()) ? nullptr : this;
+Block * Block::DropAfterDamage(bool * const delete_block) {
+    switch ( Sub() ) {
+    case STONE: return block_manager.NewBlock(LADDER, STONE);
+    case GLASS:
+    case AIR: return nullptr;
+    default: {
+        Block * const pile = block_manager.NewBlock(CONTAINER, DIFFERENT);
+        pile->HasInventory()->Get(this);
+        *delete_block = false;
+        return pile;
+    }
+    }
 }
 
 int  Block::PushResult(int) const {

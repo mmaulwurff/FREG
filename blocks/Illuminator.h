@@ -35,7 +35,7 @@ public:
     bool  ShouldFall() const override;
     void  Damage(int dmg, int dmg_kind) override;
     int   Kind() const override;
-    Block * DropAfterDamage() override;
+    Block * DropAfterDamage(bool * delete_block) override;
     QString FullName() const override;
     usage_types Use(Block *) override;
     INNER_ACTIONS ActInner() override;

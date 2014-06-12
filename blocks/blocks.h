@@ -44,7 +44,7 @@ public:
     int  Kind() const override;
     int  Weight() const override;
     QString FullName() const override;
-    Block * DropAfterDamage() override;
+    Block * DropAfterDamage(bool * delete_block) override;
 };
 
 class Liquid : public Active {
@@ -59,7 +59,7 @@ public:
     int Kind() const override;
     int DamageKind() const override;
     QString FullName() const override;
-    Block * DropAfterDamage() override;
+    Block * DropAfterDamage(bool * delete_block) override;
 
 protected:
     void DoRareAction() override;
@@ -76,7 +76,7 @@ public:
     int  Kind()     const override;
     bool ShouldFall() const override;
     void Push(int dir, Block * who) override;
-    Block * DropAfterDamage() override;
+    Block * DropAfterDamage(bool * delete_block) override;
     QString FullName() const override;
 
 protected:
@@ -106,7 +106,7 @@ public:
     QString FullName() const override;
     usage_types Use(Block * who = 0) override;
     Inventory * HasInventory() override;
-    Block * DropAfterDamage() override;
+    Block * DropAfterDamage(bool * delete_block) override;
 
 protected:
     void DoRareAction() override;
@@ -120,7 +120,7 @@ public:
     Rabbit(QDataStream & str, int sub, int id);
 
     int Kind() const override;
-    Block * DropAfterDamage() override;
+    Block * DropAfterDamage(bool * delete_block) override;
     int NutritionalValue(int sub) const override;
     QString FullName() const override;
 

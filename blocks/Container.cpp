@@ -52,9 +52,17 @@
     int Container::Sub() const { return Block::Sub(); }
     Inventory * Container::HasInventory() { return Inventory::HasInventory(); }
     usage_types Container::Use(Block *) { return USAGE_TYPE_OPEN; }
-    Block * Container::DropAfterDamage() {
-        return ( Sub() == DIFFERENT ) ?
-            nullptr : Block::DropAfterDamage();
+
+    Block * Container::DropAfterDamage(bool * const delete_block) {
+        if ( DIFFERENT == Sub() ) {
+            *delete_block = true;
+            return nullptr;
+        } // else:
+        Block * const pile = block_manager.NewBlock(CONTAINER, DIFFERENT);
+        Inventory * const pile_inv = pile->HasInventory();
+        GetAll(pile_inv);
+        *delete_block = not pile_inv->Get(this);
+        return pile;
     }
 
     Active * Container::ActiveBlock() {

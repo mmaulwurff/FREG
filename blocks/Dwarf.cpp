@@ -37,11 +37,11 @@ int Dwarf::Weight() const {
         0 : Inventory::Weight()+Block::Weight();
 }
 
-Block * Dwarf::DropAfterDamage() {
+Block * Dwarf::DropAfterDamage(bool * const delete_block) {
     Block * const pile = block_manager.NewBlock(CONTAINER, DIFFERENT);
     Inventory * const pile_inv = pile->HasInventory();
     pile_inv->Get(block_manager.NormalBlock(H_MEAT));
-    pile_inv->Get(Animal::DropAfterDamage());
+    pile_inv->Get(Animal::DropAfterDamage(delete_block));
     pile_inv->Get(block_manager.NewBlock(WEAPON, BONE));
     return pile;
 }

@@ -614,84 +614,39 @@ int World::Damage(const int x, const int y, const int z,
     }
     temp->Damage(dmg, dmg_kind);
     int durability = temp->GetDurability();
-    if ( 0 < durability && durability < MAX_DURABILITY
-            && kind==BLOCK && (sub==STONE || sub==MOSS_STONE) )
-    { // convert stone into ladder
-        temp = NewBlock(LADDER, sub);
-        emit ReEnlighten(x, y, z);
-        durability = MAX_DURABILITY;
-    }
     // SetBlock can alter temp (by ReplaceWithNormal) so put in last place.
     SetBlock(temp, x, y, z);
     return durability;
-}
-
-bool World::IsPile(const Block * const test) {
-    return ( test->Kind()== CONTAINER && test->Sub() == DIFFERENT );
 }
 
 void World::DestroyAndReplace(const int x, const int y, const int z) {
     Shred * const shred = GetShred(x, y);
     const int x_in_shred = Shred::CoordInShred(x);
     const int y_in_shred = Shred::CoordInShred(y);
-    Block * const temp = shred->GetBlock(x_in_shred, y_in_shred, z);
-    Block * const dropped = temp->DropAfterDamage();
-    Block * new_block;
-    if ( not IsPile(temp) && (temp->HasInventory() || dropped!=nullptr) ) {
-        const bool dropped_pile = ( dropped && IsPile(dropped) );
-        new_block = dropped_pile ?
-            dropped : NewBlock(CONTAINER, DIFFERENT);
-        Inventory * const inv = temp->HasInventory();
-        Inventory * const new_pile_inv = new_block->HasInventory();
-        if ( inv != nullptr ) {
-            for (int i=0; i<inv->Size(); ++i) {
-                Block * const inner = inv->ShowBlock(i);
-                if ( inner && inner->Kind() == LIQUID ) { // pouring liquid out
-                    for (int n=0; inv->Number(i); ++n) {
-                        if ( Build( inv->ShowBlock(i),
-                                x, y, z+i*(MAX_STACK_SIZE+1)+1+n ) )
-                        {
-                            inv->Pull(i);
-                        } else {
-                            break;
-                        }
-                    }
-                }
-            }
-            new_pile_inv->GetAll(inv);
-        }
-        if ( dropped != nullptr
-                && not dropped_pile
-                && not new_pile_inv->Get(dropped) )
-        {
-            DeleteBlock(dropped);
-        }
-        shred->AddFalling(x_in_shred, y_in_shred, z);
+    Block * const block = shred->GetBlock(x_in_shred, y_in_shred, z);
+    bool delete_block = true;
+    Block * const new_block = block->DropAfterDamage(&delete_block);
+    if ( new_block == nullptr ) {
+        shred->SetBlockNoCheck(Normal(AIR), x_in_shred, y_in_shred, z);
     } else {
-        new_block = Normal(AIR);
+        shred->SetBlockNoCheck(new_block, x_in_shred, y_in_shred, z);
+        if (    block->LightRadius() != new_block->LightRadius() ||
+                block->Transparent() != new_block->Transparent() )
+        {
+            ReEnlighten(x, y, z);
+        }
     }
-    const bool was_not_invisible = ( temp->Transparent() != INVISIBLE );
-    const int old_light = temp->LightRadius();
-    if ( dropped == temp ) {
-        // do not delete block and do not replace it with normal
-        Active * const active = temp->ActiveBlock();
+    if ( delete_block ) {
+        DeleteBlock(block);
+    } else {
+        Active * const active = block->ActiveBlock();
         if ( active != nullptr ) {
             shred->UnregisterLater(active);
         }
-        temp->Restore();
-        shred->SetBlockNoCheck(new_block, x_in_shred, y_in_shred, z);
-    } else {
-        shred->SetBlock(new_block, x_in_shred, y_in_shred, z);
     }
     shred->AddFalling(x_in_shred, y_in_shred, z+1);
-    if ( was_not_invisible ) {
-        ReEnlightenBlockRemove(x, y, z);
-    }
-    if ( old_light ) {
-        RemoveFireLight(x, y, z);
-    }
     emit Updated(x, y, z);
-} // void World::DestroyAndReplace(int x, y, z)
+}
 
 bool World::Build(Block * block, const int x, const int y, const int z,
         const quint8 dir, Block * const who, const bool anyway)
@@ -710,7 +665,7 @@ bool World::Build(Block * block, const int x, const int y, const int z,
     const int block_light = block->LightRadius();
     SetBlock(block, x, y, z);
     if ( old_transparency != new_transparency ) {
-        ReEnlightenBlockAdd(x, y, z);
+        ReEnlighten(x, y, z);
     }
     if ( block_light ) {
         AddFireLight(x, y, z, block_light);

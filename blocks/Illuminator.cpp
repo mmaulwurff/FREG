@@ -19,6 +19,7 @@
 
 #include "blocks/Illuminator.h"
 #include "BlockManager.h"
+#include "Inventory.h"
 
 Illuminator::Illuminator(const int sub, const int id) :
         Active(sub, id),
@@ -45,7 +46,12 @@ QString Illuminator::FullName() const {
     }
 }
 
-Block * Illuminator::DropAfterDamage() { return this; }
+Block * Illuminator::DropAfterDamage(bool * const delete_block) {
+    *delete_block = false;
+    Block * const pile = block_manager.NewBlock(CONTAINER, DIFFERENT);
+    pile->HasInventory()->Get(this);
+    return pile;
+}
 
 usage_types Illuminator::Use(Block *) {
     if ( Sub() == GLASS ) { // flashlight

@@ -66,10 +66,15 @@
     int  Ladder::Weight() const { return Block::Weight()*3; }
     int  Ladder::Kind() const { return LADDER; }
 
-    Block * Ladder::DropAfterDamage() {
-        return ( STONE==Sub() || MOSS_STONE==Sub() ) ?
-            block_manager.NormalBlock(Sub()) :
-            block_manager.NewBlock(LADDER, Sub());
+    Block * Ladder::DropAfterDamage(bool * const delete_block) {
+        Block * const pile = block_manager.NewBlock(CONTAINER, DIFFERENT);
+        if ( STONE==Sub() || MOSS_STONE==Sub() ) {
+            pile->HasInventory()->Get(block_manager.NormalBlock(Sub()));
+        } else {
+            pile->HasInventory()->Get(this);
+            *delete_block = false;
+        }
+        return pile;
     }
 
     Ladder::Ladder(const int sub, const int id) :
@@ -147,7 +152,7 @@
         }
     }
 
-    Block * Animal::DropAfterDamage() {
+    Block * Animal::DropAfterDamage(bool *) {
         return block_manager.NewBlock(WEAPON, BONE);
     }
 
@@ -163,8 +168,11 @@
     }
 // Liquid::
     void Liquid::DoRareAction() {
-        if ( STONE!=Sub() && not IsSubAround(Sub()) ) {
+        if ( not IsSubAround(Sub()) ) {
             Damage(1, TIME);
+            if ( GetDurability() <= 0 ) {
+                GetWorld()->DestroyAndReplace(X(), Y(), Z());
+            }
         }
         if ( Sub() == ACID || Sub() == STONE ) {
             DamageAround();
@@ -189,10 +197,14 @@
     int Liquid::ShouldAct() const  { return FREQUENT_RARE; }
     int Liquid::PushResult(const int) const { return ENVIRONMENT; }
     int Liquid::Kind() const { return LIQUID; }
-    Block * Liquid::DropAfterDamage() { return nullptr; }
+
+    Block * Liquid::DropAfterDamage(bool *) {
+        return ( Sub() == STONE ) ?
+            block_manager.NormalBlock(STONE) : nullptr;
+    }
 
     int Liquid::LightRadius() const {
-        static const int radius = ( WATER==Sub() ) ? 0 : 3;
+        static const int radius = ( STONE==Sub() ) ? 3 : 0;
         return radius;
     }
 
@@ -288,7 +300,7 @@
     int  Grass::ShouldAct() const  { return FREQUENT_RARE; }
     bool Grass::ShouldFall() const { return false; }
     int  Grass::Kind() const { return GRASS; }
-    Block * Grass::DropAfterDamage() { return nullptr; }
+    Block * Grass::DropAfterDamage(bool *) { return nullptr; }
 
     void Grass::Push(int, Block *) {
         GetWorld()->DestroyAndReplace(X(), Y(), Z());
@@ -326,10 +338,11 @@
     int Bush::PushResult(int const) const { return NOT_MOVABLE; }
     void Bush::Push(const int, Block * const who) { Inventory::Push(who); }
 
-    Block * Bush::DropAfterDamage() {
+    Block * Bush::DropAfterDamage(bool *) {
         Block * const pile = block_manager.NewBlock(CONTAINER, DIFFERENT);
-        pile->HasInventory()->Get(block_manager.NewBlock(WEAPON, WOOD));
-        pile->HasInventory()->Get(block_manager.NormalBlock(HAZELNUT));
+        Inventory * const pile_inv = pile->HasInventory();
+        pile_inv->Get(block_manager.NewBlock(WEAPON, WOOD));
+        pile_inv->Get(block_manager.NormalBlock(HAZELNUT));
         return pile;
     }
 
@@ -376,11 +389,11 @@
         world->Move(X(), Y(), Z(), GetDir());
     }
 
-    Block * Rabbit::DropAfterDamage() {
+    Block * Rabbit::DropAfterDamage(bool * delete_block) {
         Block * const pile = block_manager.NewBlock(CONTAINER, DIFFERENT);
         Inventory * const pile_inv = pile->HasInventory();
         pile_inv->Get(block_manager.NormalBlock(A_MEAT));
-        pile_inv->Get(Animal::DropAfterDamage());
+        pile_inv->Get(Animal::DropAfterDamage(delete_block));
         return pile;
     }
 

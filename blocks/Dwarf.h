@@ -47,7 +47,7 @@ public:
     void MoveInside(int num_from, int num_to, int num) override;
     void ReceiveSignal(QString) override;
     int  LightRadius() const override;
-    Block * DropAfterDamage() override;
+    Block * DropAfterDamage(bool * delete_block) override;
     int  NutritionalValue(int sub) const override;
     Inventory * HasInventory() override;
 
