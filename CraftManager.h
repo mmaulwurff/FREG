@@ -68,7 +68,7 @@ public:
      CraftManager();
     ~CraftManager();
 
-    CraftItem * MiniCraft(ushort num, int id) const;
+    CraftItem * MiniCraft(int num, int id) const;
     CraftList * Craft(CraftList * items, int sub) const;
 
 private:
