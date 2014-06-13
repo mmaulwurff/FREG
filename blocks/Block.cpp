@@ -56,6 +56,7 @@ int Block::Transparency(const int transp, const int sub) const {
         case AIR:   return INVISIBLE;
         case WATER:
         case GREENERY:
+        case ACID:
         case GLASS: return BLOCK_TRANSPARENT;
         }
     } else {
