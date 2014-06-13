@@ -20,18 +20,17 @@
 #ifndef WORLDMAP_H
 #define WORLDMAP_H
 
-class QFile;
+#include <QFile>
 
 class WorldMap final {
 public:
     explicit WorldMap(QString);
-    ~WorldMap();
 
     WorldMap & operator=(const WorldMap &) = delete;
     WorldMap(const WorldMap &) = delete;
 
     long MapSize() const;
-    char TypeOfShred(long longi, long lati);
+    char TypeOfShred(long longi, long lati) const;
     static void GenerateMap(
             const char * filename,
             ushort size,
@@ -49,7 +48,7 @@ private:
             char * map);
 
     long mapSize;
-    QFile * const map;
+    mutable QFile map;
 };
 
 #endif // WORLDMAP_H

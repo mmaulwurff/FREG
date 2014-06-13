@@ -36,7 +36,7 @@ public:
     int  Satiation() const;
     QString FullName() const override = 0;
     Animal * IsAnimal() override;
-    Block  * DropAfterDamage() override;
+    Block  * DropAfterDamage(bool * delete_block) override;
     INNER_ACTIONS ActInner() override;
 
     virtual int NutritionalValue(int sub) const = 0;

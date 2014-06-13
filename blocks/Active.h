@@ -95,6 +95,9 @@ protected:
     void SaveAttributes(QDataStream & out) const override;
 
     void SendSignalAround(QString) const;
+    void DamageAround() const;
+    /// Damages block and destroys it if it is broken.
+    void TryDestroy(int x, int y, int z) const;
     /// Returns true if there is at least 1 block of substance sub around.
     bool IsSubAround(int sub) const;
     bool Gravitate(int range, int down, int up, int calmness);

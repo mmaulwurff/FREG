@@ -33,8 +33,7 @@
         case MOSS_STONE:
         case STONE: return QObject::tr("Stone slab");
         default:
-            fprintf(stderr, "Plate::FullName: unlisted sub: %d",
-                Sub());
+            fprintf(stderr, "Plate::FullName: unlisted sub: %d.\n", Sub());
             return "Strange plate";
         }
     }
@@ -57,8 +56,7 @@
         case STONE: return QObject::tr("Rock with ledges");
         case GREENERY: return QObject::tr("Liana");
         default:
-            fprintf(stderr, "Ladder::FullName: unlisted sub: %d\n",
-                Sub());
+            fprintf(stderr, "Ladder::FullName: unlisted sub: %d\n", Sub());
             return "Strange ladder";
     }
     }
@@ -68,15 +66,21 @@
     int  Ladder::Weight() const { return Block::Weight()*3; }
     int  Ladder::Kind() const { return LADDER; }
 
-    Block * Ladder::DropAfterDamage() {
-        return ( STONE==Sub() || MOSS_STONE==Sub() ) ?
-            block_manager.NormalBlock(Sub()) :
-            block_manager.NewBlock(LADDER, Sub());
+    Block * Ladder::DropAfterDamage(bool * const delete_block) {
+        Block * const pile = block_manager.NewBlock(CONTAINER, DIFFERENT);
+        if ( STONE==Sub() || MOSS_STONE==Sub() ) {
+            pile->HasInventory()->Get(block_manager.NormalBlock(Sub()));
+        } else {
+            pile->HasInventory()->Get(this);
+            *delete_block = false;
+        }
+        return pile;
     }
 
     Ladder::Ladder(const int sub, const int id) :
             Block(sub, id, NONSTANDARD)
     {}
+
     Ladder::Ladder(QDataStream & str, const int sub, const int id) :
             Block(str, sub, id, NONSTANDARD)
     {}
@@ -96,19 +100,19 @@
         if ( not IsSubAround(AIR) ) {
             if ( breath <= 0 ) {
                 Damage(10, BREATH);
+                if ( GetDurability() <= 0 ) {
+                    GetWorld()->DestroyAndReplace(X(), Y(), Z());
+                }
             } else {
                 --breath;
             }
         } else if ( breath < MAX_BREATH ) {
             ++breath;
         }
-        if ( GetDurability() <= 0 ) {
-            GetWorld()->DestroyAndReplace(X(), Y(), Z());
-        }
         emit Updated();
     }
-    int Animal::ShouldAct() const { return FREQUENT_SECOND | FREQUENT_RARE; }
 
+    int Animal::ShouldAct() const { return FREQUENT_SECOND | FREQUENT_RARE; }
     int Animal::Breath() const { return breath; }
     int Animal::Satiation() const { return satiation; }
     Animal * Animal::IsAnimal() { return this; }
@@ -120,7 +124,7 @@
             satiation += value;
             ReceiveSignal(tr("Yum!"));
             if ( SECONDS_IN_DAY < satiation ) {
-                satiation=1.1*SECONDS_IN_DAY;
+                satiation = 1.1 * SECONDS_IN_DAY;
                 ReceiveSignal(tr("You have gorged yourself!"));
             }
             return true;
@@ -141,16 +145,14 @@
             if ( world->InBounds(x, y) &&
                     GREENERY == world->GetBlock(x, y, Z())->Sub() )
             {
-                if (world->Damage(x, y, Z(), DamageLevel(), DamageKind())<=0) {
-                    world->DestroyAndReplace(x, y, Z());
-                }
+                TryDestroy(x, y, Z());
                 Eat(GREENERY);
                 return;
             }
         }
     }
 
-    Block * Animal::DropAfterDamage() {
+    Block * Animal::DropAfterDamage(bool *) {
         return block_manager.NewBlock(WEAPON, BONE);
     }
 
@@ -166,27 +168,43 @@
     }
 // Liquid::
     void Liquid::DoRareAction() {
-        World * const world = GetWorld();
-        // IDEA: turn off water drying up in ocean
-        if ( WATER == Sub() && not IsSubAround(WATER) ) {
-            Damage(1, HEAT);
+        if ( not IsSubAround(Sub()) ) {
+            Damage(1, TIME);
+            if ( GetDurability() <= 0 ) {
+                GetWorld()->DestroyAndReplace(X(), Y(), Z());
+            }
         }
+        if ( Sub() == ACID || Sub() == STONE ) {
+            DamageAround();
+        }
+        World * const world = GetWorld();
         switch ( qrand()%20 ) {
         case 0: world->Move(X(), Y(), Z(), NORTH); break;
-        case 1: world->Move(X(), Y(), Z(), EAST);  break;
+        case 1: world->Move(X(), Y(), Z(), EAST ); break;
         case 2: world->Move(X(), Y(), Z(), SOUTH); break;
-        case 3: world->Move(X(), Y(), Z(), WEST);  break;
+        case 3: world->Move(X(), Y(), Z(), WEST ); break;
+        }
+    }
+
+    int Liquid::DamageKind() const {
+        switch ( Sub() ) {
+            default:    return NO_HARM;
+            case ACID:  return DAMAGE_ACID;
+            case STONE: return HEAT;
         }
     }
 
     int Liquid::ShouldAct() const  { return FREQUENT_RARE; }
     int Liquid::PushResult(const int) const { return ENVIRONMENT; }
     int Liquid::Kind() const { return LIQUID; }
-    int Liquid::Temperature() const { return ( WATER==Sub() ) ? 0 : 1000; }
-    Block * Liquid::DropAfterDamage() { return nullptr; }
+
+    Block * Liquid::DropAfterDamage(bool *) {
+        return ( Sub() == STONE ) ?
+            block_manager.NormalBlock(STONE) : nullptr;
+    }
 
     int Liquid::LightRadius() const {
-        static const int radius = ( WATER==Sub() ) ? 0 : 3;
+        static const int radius = ( STONE==Sub() ) ? 3 : 0;
         return radius;
     }
 
@@ -194,6 +212,7 @@
         switch ( Sub() ) {
         case WATER: return tr("Liquid");
         case STONE: return tr("Lava");
+        case ACID:  return tr("Acid");
         default:
             fprintf(stderr, "Liquid::FullName(): sub (?): %d\n", Sub());
             return "Unknown liquid";
@@ -219,10 +238,8 @@
                 Xyz( X(),   Y(),   Z()+1 )
             };
             for (const Xyz xyz : coords) {
-                if ( world->InBounds(xyz.X(), xyz.Y()) &&
-                        world->Damage(xyz.X(), xyz.Y(), xyz.Z(), 5,HEAT) <= 0 )
-                {
-                    world->DestroyAndReplace(xyz.X(), xyz.Y(), xyz.Z());
+                if ( world->InBounds(xyz.X(), xyz.Y()) ) {
+                    TryDestroy(xyz.X(), xyz.Y(), xyz.Z());
                 }
             }
             if ( qrand()%10 || IsSubAround(WATER) ) {
@@ -283,7 +300,7 @@
     int  Grass::ShouldAct() const  { return FREQUENT_RARE; }
     bool Grass::ShouldFall() const { return false; }
     int  Grass::Kind() const { return GRASS; }
-    Block * Grass::DropAfterDamage() { return nullptr; }
+    Block * Grass::DropAfterDamage(bool *) { return nullptr; }
 
     void Grass::Push(int, Block *) {
         GetWorld()->DestroyAndReplace(X(), Y(), Z());
@@ -321,10 +338,11 @@
     int Bush::PushResult(int const) const { return NOT_MOVABLE; }
     void Bush::Push(const int, Block * const who) { Inventory::Push(who); }
 
-    Block * Bush::DropAfterDamage() {
+    Block * Bush::DropAfterDamage(bool *) {
         Block * const pile = block_manager.NewBlock(CONTAINER, DIFFERENT);
-        pile->HasInventory()->Get(block_manager.NewBlock(WEAPON, WOOD));
-        pile->HasInventory()->Get(block_manager.NormalBlock(HAZELNUT));
+        Inventory * const pile_inv = pile->HasInventory();
+        pile_inv->Get(block_manager.NewBlock(WEAPON, WOOD));
+        pile_inv->Get(block_manager.NormalBlock(HAZELNUT));
         return pile;
     }
 
@@ -337,6 +355,7 @@
             Active(sub, id),
             Inventory(BUSH_SIZE)
     {}
+
     Bush::Bush(QDataStream & str, const int sub, const int id) :
             Active(str, sub, id),
             Inventory(str, BUSH_SIZE)
@@ -370,11 +389,11 @@
         world->Move(X(), Y(), Z(), GetDir());
     }
 
-    Block * Rabbit::DropAfterDamage() {
+    Block * Rabbit::DropAfterDamage(bool * delete_block) {
         Block * const pile = block_manager.NewBlock(CONTAINER, DIFFERENT);
         Inventory * const pile_inv = pile->HasInventory();
         pile_inv->Get(block_manager.NormalBlock(A_MEAT));
-        pile_inv->Get(Animal::DropAfterDamage());
+        pile_inv->Get(Animal::DropAfterDamage(delete_block));
         return pile;
     }
 
@@ -397,15 +416,14 @@
     Rabbit::Rabbit(const int sub, const int id) :
             Animal(sub, id)
     {}
+
     Rabbit::Rabbit(QDataStream & str, const int sub, const int id) :
             Animal(str, sub, id)
     {}
 // Door::
-    int Door::PushResult(const int) const {
-        return movable ? MOVABLE : NOT_MOVABLE;
-    }
+    int Door::PushResult(int) const { return movable ? MOVABLE : NOT_MOVABLE; }
 
-    void Door::Push(const int, Block * const who) {
+    void Door::Push(int, Block * const who) {
         if ( not shifted
                 && not locked
                 && World::Anti(GetDir())!=who->GetDir() )
@@ -465,6 +483,7 @@
             locked(false),
             movable(false)
     {}
+
     Door::Door(QDataStream & str, const int sub, const int id) :
             Active(str, sub, id, ( STONE==sub || MOSS_STONE==sub ) ?
                 BLOCK_OPAQUE : NONSTANDARD),
@@ -498,11 +517,11 @@
         }
     }
 
-    int  Clock::PushResult(const int) const { return NOT_MOVABLE; }
+    int  Clock::PushResult(int) const { return NOT_MOVABLE; }
     int  Clock::ShouldAct() const  { return FREQUENT_RARE; }
     bool Clock::ShouldFall() const { return false; }
     void Clock::Damage(int, int) { Break(); }
-    void Clock::Push(const int, Block * const) { Use(); }
+    void Clock::Push(int, Block *) { Use(); }
     int  Clock::Kind() const { return CLOCK; }
     int  Clock::Weight() const { return Block::Weight()/10; }
 
@@ -623,6 +642,7 @@
     Text::Text(const int sub, const int id) :
             Block(sub, id, NONSTANDARD)
     {}
+
     Text::Text(QDataStream & str, const int sub, const int id) :
             Block(str, sub, id, NONSTANDARD)
     {}
@@ -705,6 +725,7 @@
             savedShift(),
             savedChar(0)
     {}
+
     Map::Map(QDataStream & str, const int sub, const int id) :
             Text(str, sub, id)
     {
@@ -729,6 +750,7 @@
     Bell::Bell(const int sub, const int id) :
             Active(sub, id)
     {}
+
     Bell::Bell(QDataStream & str, const int sub, const int id) :
             Active(str, sub, id)
     {}
@@ -736,6 +758,7 @@
     Predator::Predator(const int sub, const int id) :
             Animal(sub, id)
     {}
+
     Predator::Predator(QDataStream & str, const int sub, const int id) :
             Animal(str, sub, id)
     {}

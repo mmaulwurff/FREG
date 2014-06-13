@@ -145,8 +145,7 @@ void Player::Examine() const {
     if ( not str.isEmpty() ) {
         emit Notify(tr("Inscription: ")+str);
     }
-    emit Notify(tr("Temperature: %1. Durability: %2. Weight: %3. Id: %4.").
-        arg(world->Temperature(i, j, k)).
+    emit Notify(tr("Durability: %2. Weight: %3. Id: %4.").
         arg(block->GetDurability()).
         arg(block->Weight()).
         arg(block->GetId()));
@@ -378,13 +377,13 @@ void Player::ProcessCommand(QString command) {
         if ( inv == nullptr ) return;
         QString kind, sub;
         comm_stream >> kind >> sub;
-        const quint8 kind_code = BlockManager::StringToKind(kind);
+        const int kind_code = BlockManager::StringToKind(kind);
         if ( kind_code == LAST_KIND ) {
             emit Notify(tr("%1 command: invalid kind!").arg(request));
             return;
         } // else:
-        const quint8 sub_code = sub.isEmpty() ?
-            static_cast<quint8>(STONE) : BlockManager::StringToSub(sub);
+        const int sub_code = sub.isEmpty() ?
+            static_cast<int>(STONE) : BlockManager::StringToSub(sub);
         if ( sub_code == LAST_SUB ) {
             emit Notify(tr("%1 command: invalid substance!").arg(request));
             return;
@@ -405,8 +404,10 @@ void Player::ProcessCommand(QString command) {
         emit Notify( (GetCreativeMode() || COMMANDS_ALWAYS_ON) ?
             GetWorld()->TimeOfDayStr() : tr("Not in Creative Mode.") );
     } else if ( "version" == request ) {
-        emit Notify(tr("freg version: %1. Compiled on %2 at %3.").
-            arg(VER).arg(__DATE__).arg(__TIME__));
+        emit Notify(tr("freg version: %1. Compiled on %2 at %3 with Qt %4.\n\
+Current Qt version: %5. Build type: %6.").
+            arg(VER).arg(__DATE__).arg(__TIME__).arg(QT_VERSION_STR).
+            arg(qVersion()).arg(DEBUG ? tr("debug") : tr("release")));
     } else if ( "help" == request ) {
         comm_stream >> request;
         emit ShowFile( QString("help_%1/%2.txt")

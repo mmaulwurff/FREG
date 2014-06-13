@@ -44,7 +44,7 @@ public:
     void Push(int, Block * who) override;
     int  Weight() const override;
     int  Kind() const override;
-    Block * DropAfterDamage() override;
+    Block * DropAfterDamage(bool * delete_block) override;
     QString FullName() const override;
     Active * ActiveBlock() override;
     Inventory * HasInventory() override;

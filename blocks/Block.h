@@ -76,10 +76,12 @@ public:
     virtual bool Move(int direction);
     virtual void Damage(int dmg, int dmg_kind);
     virtual usage_types Use(Block * who = 0);
-    /// Usually returns new block of the same kind and sub (except glass).
-    /** When reimplemented in derivatives, inside it you can create a pile,
-     *  put several blocks in it, and return pile. */
-    virtual Block * DropAfterDamage();
+    /// Should return dropped block.
+    /** It can be pile(CONTAINER, DIFFERENT) containing all dropped blocks, or
+     *  block itself.
+     *  Set delete_self false if this block itself should not be deleted.
+     *  (by default block is deleted, beware). */
+    virtual Block * DropAfterDamage(bool * delete_self);
 
     virtual Inventory * HasInventory();
     virtual Animal * IsAnimal();
@@ -90,7 +92,6 @@ public:
     virtual int DamageLevel() const;
 
     virtual int LightRadius() const;
-    virtual int Temperature() const;
     virtual int Weight() const;
     /// Receive text signal.
     virtual void ReceiveSignal(QString);

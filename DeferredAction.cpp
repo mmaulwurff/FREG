@@ -53,7 +53,7 @@ void DeferredAction::Build() const {
             return;
         }
     }
-    const quint16 id = material->GetId();
+    const int id = material->GetId();
     if ( not world->Build(material, x_self, y_self, z,
             World::TurnRight(attachedBlock->GetDir()), attachedBlock) )
     { // build not successful

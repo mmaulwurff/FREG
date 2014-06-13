@@ -34,6 +34,7 @@ QString Active::FullName() const {
         return "Unkown active block";
     }
 }
+
 int  Active::Kind() const { return ACTIVE; }
 Active * Active::ActiveBlock() { return this; }
 bool Active::IsFalling() const { return falling; }
@@ -130,6 +131,27 @@ void Active::SendSignalAround(const QString signal) const {
     world->GetBlock(X(), Y(), Z()+1)->ReceiveSignal(signal);
 }
 
+void Active::DamageAround() const {
+    World * const world = GetWorld();
+    static const int bound = world->GetBound();
+    int x_temp = X()-1;
+    int y_temp = Y();
+    int z_temp = Z();
+    if (   x_temp     >= 0 )     TryDestroy(  x_temp, y_temp, z_temp);
+    if (  (x_temp+=2) <= bound ) TryDestroy(  x_temp, y_temp, z_temp);
+    if ( --y_temp     >= 0 )     TryDestroy(--x_temp, y_temp, z_temp);
+    if (  (y_temp+=2) <= bound ) TryDestroy(  x_temp, y_temp, z_temp);
+    TryDestroy(x_temp, --y_temp, --z_temp);
+    TryDestroy(x_temp,   y_temp,   z_temp+=2);
+}
+
+void Active::TryDestroy(const int x, const int y, const int z) const {
+    World * const world = GetWorld();
+    if ( world->Damage(x, y, z, DamageLevel(), DamageKind()) <= 0 ) {
+        world->DestroyAndReplace(x, y, z);
+    }
+}
+
 void Active::SetShred(Shred * const new_shred) { shred = new_shred; }
 Shred * Active::GetShred() const { return shred; }
 World * Active::GetWorld() const { return world; }
@@ -194,6 +216,7 @@ Active::Active(QDataStream & str, const int sub, const int id,
 {
     str >> fall_height;
 }
+
 Active::~Active() { delete deferredAction; }
 
 bool Active::Gravitate(const int range, int bottom, int top,

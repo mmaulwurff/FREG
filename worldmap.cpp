@@ -17,7 +17,6 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include <QFile>
 #include <qmath.h>
 #include "worldmap.h"
 #include "header.h"
@@ -25,35 +24,33 @@
 const float PI = 3.141592f;
 
 WorldMap::WorldMap(const QString world_name) :
-        map(new QFile(world_name+"/map.txt"))
+        map(world_name+"/map.txt")
 {
-    if ( map->open(QIODevice::ReadOnly | QIODevice::Text) ) {
-        mapSize = int(qSqrt(1+4*map->size())-1)/2;
+    if ( map.open(QIODevice::ReadOnly | QIODevice::Text) ) {
+        mapSize = int(qSqrt(1+4*map.size())-1)/2;
     } else {
         GenerateMap(qPrintable(world_name+"/map.txt"),
             DEFAULT_MAP_SIZE, SHRED_WATER, 0);
-        mapSize = ( map->open(QIODevice::ReadOnly | QIODevice::Text) ) ?
+        mapSize = ( map.open(QIODevice::ReadOnly | QIODevice::Text) ) ?
             DEFAULT_MAP_SIZE : 1;
     }
 }
 
-char WorldMap::TypeOfShred(const long longi, const long lati) {
+char WorldMap::TypeOfShred(const long longi, const long lati) const {
     if (
             longi >= mapSize || longi < 0 ||
             lati  >= mapSize || lati  < 0 )
     {
         return OUT_BORDER_SHRED;
-    } else if ( not map->seek((mapSize+1)*longi+lati) ) {
+    } else if ( not map.seek((mapSize+1)*longi+lati) ) {
         return DEFAULT_SHRED;
     }
     char c;
-    map->getChar(&c);
+    map.getChar(&c);
     return c;
 }
 
 long WorldMap::MapSize() const { return mapSize; }
-
-WorldMap::~WorldMap() { delete map; }
 
 float WorldMap::Deg(const float x, const float y, const ushort size) {
     const float x_cent = x-size/2;

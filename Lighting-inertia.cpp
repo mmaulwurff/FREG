@@ -133,14 +133,6 @@ void World::ReEnlighten(const int x, const int y, const int z) {
     }
 }
 
-void World::ReEnlightenBlockAdd(const int x, const int y, const int z) {
-    ReEnlighten(x, y, z);
-}
-
-void World::ReEnlightenBlockRemove(const int x, const int y, const int z) {
-    ReEnlighten(x, y, z);
-}
-
 void World::ReEnlightenTime() {
     for (int i=NumShreds()*NumShreds()-1; i>=0; --i) {
         shreds[i]->SetAllLightMapNull();

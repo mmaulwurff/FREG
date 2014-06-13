@@ -19,6 +19,7 @@
 
 #include "blocks/Block.h"
 #include "BlockManager.h"
+#include "Inventory.h"
 
 QString Block::FullName() const {
     switch ( Sub() ) {
@@ -55,6 +56,7 @@ int Block::Transparency(const int transp, const int sub) const {
         case AIR:   return INVISIBLE;
         case WATER:
         case GREENERY:
+        case ACID:
         case GLASS: return BLOCK_TRANSPARENT;
         }
     } else {
@@ -63,7 +65,25 @@ int Block::Transparency(const int transp, const int sub) const {
 }
 
 void Block::Damage(const int dmg, const int dmg_kind) {
-    if ( dmg_kind == NO_HARM ) return;
+    switch ( Sub() ) {
+    case GREENERY:
+    case HAZELNUT: durability = 0; return;
+    case NULLSTONE:
+    case STAR:
+    case AIR:
+    case SKY:
+    case SUN_MOON: return;
+    }
+    switch ( dmg_kind ) {
+    case NO_HARM: return;
+    case DAMAGE_ACID:
+        switch ( Sub() ) {
+        default: durability -= 2 * dmg; return;
+        case DIFFERENT: durability = 0; return;
+        case IRON:
+        case GLASS: return;
+        }
+    }
     int mult = 1; // default
     switch ( Sub() ) {
     case DIFFERENT:
@@ -71,12 +91,7 @@ void Block::Damage(const int dmg, const int dmg_kind) {
             durability = 0;
             return;
         }
-        // no break
-    case NULLSTONE:
-    case STAR:
-    case AIR:
-    case SKY:
-    case SUN_MOON: return;
+    return;
     case WATER: mult = ( HEAT==dmg_kind || TIME==dmg_kind ); break;
     case MOSS_STONE:
     case STONE: switch ( dmg_kind ) {
@@ -85,9 +100,7 @@ void Block::Damage(const int dmg, const int dmg_kind) {
         case CUT:   return;
         case MINE:  mult = 2; break;
     } break;
-    case GREENERY:
-    case HAZELNUT:
-    case GLASS: durability = 0; return;
+    case GLASS: durability = (HEAT==dmg_kind) ? durability : 0; return;
     case WOOD: switch ( dmg_kind ) {
         default:  mult = 1; break;
         case CUT: mult = 2; break;
@@ -95,7 +108,7 @@ void Block::Damage(const int dmg, const int dmg_kind) {
     } break;
     case SAND:
     case A_MEAT:
-    case H_MEAT: ++(mult = (THRUST==dmg_kind)); break;
+    case H_MEAT: ++(mult = (THRUST==dmg_kind || HEAT==dmg_kind)); break;
     case SOIL: switch ( dmg_kind ) {
         case DIG: mult = 2; break;
         case DAMAGE_FALL: return;
@@ -105,7 +118,19 @@ void Block::Damage(const int dmg, const int dmg_kind) {
     durability -= mult*dmg;
 }
 
-Block * Block::DropAfterDamage() { return GLASS==Sub() ? nullptr : this; }
+Block * Block::DropAfterDamage(bool * const delete_block) {
+    switch ( Sub() ) {
+    case STONE: return block_manager.NewBlock(LADDER, STONE);
+    case GLASS:
+    case AIR: return nullptr;
+    default: {
+        Block * const pile = block_manager.NewBlock(CONTAINER, DIFFERENT);
+        pile->HasInventory()->Get(this);
+        *delete_block = false;
+        return pile;
+    }
+    }
+}
 
 int  Block::PushResult(int) const {
     return ( AIR==Sub() ) ? ENVIRONMENT : NOT_MOVABLE;
@@ -149,14 +174,6 @@ QString Block::GetNote() const { return note ? *note : ""; }
 void Block::Mend() {
     if ( GetDurability() < MAX_DURABILITY ) {
         ++durability;
-    }
-}
-
-int Block::Temperature() const {
-    switch ( Sub() ) {
-    case WATER: return -100;
-    case FIRE:  return   50;
-    default:    return    0;
     }
 }
 

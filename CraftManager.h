@@ -44,7 +44,7 @@ struct CraftItem final {
     * Comparison (==) of CraftLists is done by materials. */
 class CraftList final {
 public:
-     CraftList(quint8 materials_number, quint8 products_number);
+     CraftList(int materials_number, int products_number);
     ~CraftList();
 
     CraftList & operator=(const CraftList &) = delete;
@@ -59,7 +59,7 @@ public:
     bool        operator==(const CraftList &) const;
 
 private:
-    const quint8 productsNumber;
+    const int productsNumber;
     QList<CraftItem *> items;
 }; // CraftList
 
@@ -68,11 +68,11 @@ public:
      CraftManager();
     ~CraftManager();
 
-    CraftItem * MiniCraft(ushort num, quint16 id) const;
+    CraftItem * MiniCraft(int num, int id) const;
     CraftList * Craft(CraftList * items, int sub) const;
 
 private:
-    CraftManager(const CraftManager &);
+    CraftManager(const CraftManager &) = delete;
     CraftList * CraftSub(CraftList * items, int sub) const;
 
     int size;
