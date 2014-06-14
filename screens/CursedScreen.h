@@ -168,7 +168,7 @@ private:
     void PrintFront(WINDOW *) const;
     void PrintInv(WINDOW *, const Inventory &) const;
     /// Can print health, breath and other bars on hudWin.
-    void PrintBar(int x, int color, int ch, int value, int max_value,
+    void PrintBar(int x, int color, int ch, int percent,
             bool value_position_right = true);
     /// Returns false when file does not exist, otherwise true.
     bool PrintFile(WINDOW *, QString const & file_name);

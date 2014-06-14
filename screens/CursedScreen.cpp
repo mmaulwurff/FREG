@@ -119,9 +119,10 @@ char Screen::CharNumberFront(const int i, const int j) const {
 color_pairs Screen::Color(const int kind, const int sub) const {
     switch ( kind ) { // foreground_background
     case LIQUID: switch ( sub ) {
-        case WATER: return CYAN_BLUE;
-        case ACID:  return GREEN_MAGENTA;
-        default:    return RED_YELLOW;
+        case WATER:     return CYAN_BLUE;
+        case ACID:      return GREEN_MAGENTA;
+        case SUB_CLOUD: return WHITE_WHITE;
+        default:        return RED_YELLOW;
     } // no break;
     case ACTIVE: switch ( sub ) {
         case WATER: return CYAN_WHITE;
@@ -439,8 +440,7 @@ void Screen::PrintHUD() {
         PrintBar(((SCREEN_SIZE*2+2) * (IsScreenWide() ? 2 : 1)) - 15,
             Color(focused->Kind(), focused->Sub()),
             (focused->IsAnimal() == nullptr) ? '+' : '*',
-            focused->GetDurability(),
-            MAX_DURABILITY,
+            focused->GetDurability()*100/MAX_DURABILITY,
             false);
     }
     // action mode
@@ -474,11 +474,11 @@ void Screen::PrintHUD() {
         const int dur = player->HP();
         if ( dur > 0 ) { // HitPoints line
             PrintBar(0, (dur > MAX_DURABILITY/5) ? RED_BLACK : BLACK_RED,
-                ascii ? '@' : 0x2665, dur, MAX_DURABILITY);
+                ascii ? '@' : 0x2665, dur*100/MAX_DURABILITY);
         }
-        const int breath = player->Breath();
-        if ( -1!=breath && breath!=MAX_BREATH ) { // breath line
-            PrintBar(16, BLUE_BLACK, ascii ? 'o' : 0x00b0, breath, MAX_BREATH);
+        const int breath = player->BreathPercent();
+        if ( -1!=breath && breath!=100 ) { // breath line
+            PrintBar(16, BLUE_BLACK, ascii ? 'o' : 0x00b0, breath);
         }
         const int satiation = player->SatiationPercent();
         if ( -1 != satiation ) { // satiation line
@@ -964,13 +964,13 @@ Screen::~Screen() { CleanAll(); }
 bool Screen::IsScreenWide() { return COLS >= (SCREEN_SIZE*2+2)*2; }
 
 void Screen::PrintBar(const int x, const int color, const int ch,
-        const int value, const int max_value, const bool value_position_right)
+        const int percent, const bool value_position_right)
 {
     wstandend(hudWin);
     mvwprintw(hudWin, 0, x,
-        value_position_right ? "[..........]%hd" : "%3hd[..........]", value);
+        value_position_right ? "[..........]%hd" : "%3hd[..........]",percent);
     wcolor_set(hudWin, color, nullptr);
     const QString str(10, QChar(ch));
     mvwaddstr(hudWin, 0, x + (not value_position_right ? 4 : 1),
-        qPrintable(str.left(10*value/max_value+1)));
+        qPrintable(str.left(percent/10 + 1)));
 }

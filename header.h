@@ -49,7 +49,8 @@ const int END_OF_EVENING =  0*SECONDS_IN_HOUR;
 const int SECONDS_IN_NIGHT = END_OF_NIGHT;
 const int SECONDS_IN_DAYLIGHT = SECONDS_IN_DAY-END_OF_NIGHT;
 
-const int MAX_DURABILITY = 100;
+/// 10 bits to store durability in file, signed.
+const int MAX_DURABILITY = pow(2, 10);
 const int MAX_BREATH = 60;
 
 const int MAX_LIGHT_RADIUS = 15;
@@ -70,6 +71,7 @@ enum shred_type {
     SHRED_EMPTY     = '_',
     SHRED_CHAOS     = '!',
     SHRED_CASTLE    = 'c',
+    SHRED_WASTE     = '=',
     SHRED_NULLMOUNTAIN = '#',
     SHRED_NORMAL_UNDERGROUND = '-',
 };
@@ -190,6 +192,7 @@ enum subs {
     COAL,       ///<  26
     EXPLOSIVE,  ///<  27
     ACID,       ///<  28
+    SUB_CLOUD,  ///<  29
     /// Nothing is made from LAST_SUB.
     LAST_SUB // keep it last in this list
 }; // enum subs

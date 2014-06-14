@@ -168,21 +168,24 @@
     }
 // Liquid::
     void Liquid::DoRareAction() {
-        if ( not IsSubAround(Sub()) ) {
+        if ( not IsSubAround(Sub()) || Sub()==SUB_CLOUD ) {
             Damage(1, TIME);
             if ( GetDurability() <= 0 ) {
                 GetWorld()->DestroyAndReplace(X(), Y(), Z());
             }
         }
-        if ( Sub() == ACID || Sub() == STONE ) {
-            DamageAround();
-        }
-        World * const world = GetWorld();
-        switch ( qrand()%20 ) {
-        case 0: world->Move(X(), Y(), Z(), NORTH); break;
-        case 1: world->Move(X(), Y(), Z(), EAST ); break;
-        case 2: world->Move(X(), Y(), Z(), SOUTH); break;
-        case 3: world->Move(X(), Y(), Z(), WEST ); break;
+        static World * const world = GetWorld();
+        switch ( Sub() ) {
+        case SUB_CLOUD: return;
+        case ACID:
+        case STONE: DamageAround(); // no break;
+        default:
+            switch ( qrand()%20 ) {
+            case 0: world->Move(X(), Y(), Z(), NORTH); break;
+            case 1: world->Move(X(), Y(), Z(), EAST ); break;
+            case 2: world->Move(X(), Y(), Z(), SOUTH); break;
+            case 3: world->Move(X(), Y(), Z(), WEST ); break;
+            }
         }
     }
 
@@ -213,6 +216,7 @@
         case WATER: return tr("Liquid");
         case STONE: return tr("Lava");
         case ACID:  return tr("Acid");
+        case SUB_CLOUD: return tr("Cloud");
         default:
             fprintf(stderr, "Liquid::FullName(): sub (?): %d\n", Sub());
             return "Unknown liquid";
@@ -222,6 +226,7 @@
     Liquid::Liquid(const int sub, const int id) :
             Active(sub, id)
     {}
+
     Liquid::Liquid(QDataStream & str, const int sub, const int id) :
             Active(str, sub, id)
     {}

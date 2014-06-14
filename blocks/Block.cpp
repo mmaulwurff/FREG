@@ -120,9 +120,11 @@ void Block::Damage(const int dmg, const int dmg_kind) {
 
 Block * Block::DropAfterDamage(bool * const delete_block) {
     switch ( Sub() ) {
-    case STONE: return block_manager.NewBlock(LADDER, STONE);
     case GLASS:
     case AIR: return nullptr;
+    case STONE: if ( BLOCK==Kind() ) {
+        return block_manager.NewBlock(LADDER, STONE);
+    } // no break;
     default: {
         Block * const pile = block_manager.NewBlock(CONTAINER, DIFFERENT);
         pile->HasInventory()->Get(this);
@@ -180,6 +182,7 @@ void Block::Mend() {
 int Block::Weight() const {
     switch ( Sub() ) {
     default:        return WEIGHT_WATER;
+    case SUB_CLOUD:
     case AIR:       return WEIGHT_AIR;
     case STONE:     return WEIGHT_STONE;
     case SOIL:      return WEIGHT_SAND+WEIGHT_WATER;
@@ -253,13 +256,14 @@ Block::Block(QDataStream & str, const int subst, const int i, const int transp)
         sub(subst),
         id(i)
 {
-    str >> durability;// use durability as buffer, set actual value in the end.
+    // use durability as buffer, set actual value in the end:
+    str >> (quint16 &)durability;
     if ( Q_UNLIKELY(durability & 1) ) {
         str >> *(note = new QString);
     } else {
         note = nullptr;
     }
-    direction = ( durability >>=1 ) & 0x7;
+    direction = ( durability >>= 1 ) & 0x7;
     durability >>= 3;
 }
 

@@ -25,7 +25,7 @@
 #include "blocks/Inventory.h"
 
 const quint8 DATASTREAM_VERSION = QDataStream::Qt_5_2;
-const quint8 CURRENT_SHRED_FORMAT_VERSION = 4;
+const quint8 CURRENT_SHRED_FORMAT_VERSION = 5;
 
 const int SHRED_WIDTH_SHIFT = 4;
 
@@ -62,6 +62,9 @@ bool Shred::LoadShred() {
     } // else:
     in.setVersion(DATASTREAM_VERSION);
     in >> (quint8 &)(type);
+    for (int i=0; i<4; ++i) {
+        in >> (quint8 &)weather[i];
+    }
     Block * const null_stone = Normal(NULLSTONE);
     Block * const air = Normal(AIR);
     SetAllLightMapNull();
@@ -100,9 +103,10 @@ Shred::Shred(const int shred_x, const int shred_y,
 {
     if ( LoadShred() ) return; // successfull loading
     // new shred generation:
+    SetWeathers();
     Block * const null_stone = Normal(NULLSTONE);
-    Block * const air = Normal(AIR);
-    Block * const sky = Normal(SKY);
+    Block * const air  = Normal(AIR);
+    Block * const sky  = Normal(SKY);
     Block * const star = Normal(STAR);
     SetAllLightMapNull();
     for (int i=0; i<SHRED_WIDTH; ++i)
@@ -141,6 +145,9 @@ Shred::~Shred() {
     outstr << DATASTREAM_VERSION << CURRENT_SHRED_FORMAT_VERSION;
     outstr.setVersion(DATASTREAM_VERSION);
     outstr << (quint8)GetTypeOfShred();
+    for (int i=0; i<4; ++i) {
+        outstr << (quint8 &)weather[i];
+    }
     for (int x=0; x<SHRED_WIDTH; ++x)
     for (int y=0; y<SHRED_WIDTH; ++y) {
         int height = HEIGHT-2;
@@ -182,11 +189,12 @@ void Shred::PhysEventsFrequent() {
             const int x_in = CoordInShred(x);
             const int y_in = CoordInShred(y);
             static World * const world = GetWorld();
-            if ( LIQUID == GetBlock(x_in, y_in, z-1)->Kind() ) {
+            Block * const block_under = GetBlock(x_in, y_in, z-1);
+            if (LIQUID==block_under->Kind() && SUB_CLOUD!=block_under->Sub()) {
                 (*i)->SetFalling(false);
                 i = fallList.erase(i);
-            } else if ( weight <= GetBlock(x_in, y_in, z-1)->Weight()
-                    || !world->Move(x, y, z, DOWN) )
+            } else if ( weight <= block_under->Weight()
+                    || not world->Move(x, y, z, DOWN) )
             {
                 (*i)->FallDamage();
                 (*i)->SetFalling(false);
@@ -195,7 +203,7 @@ void Shred::PhysEventsFrequent() {
                 if ( durability <= 0 ) {
                     world->DestroyAndReplace(x, y, z);
                 }
-                if ( GetBlock(x_in, y_in, z-1)->GetDurability() <= 0 ) {
+                if ( block_under->GetDurability() <= 0 ) {
                     GetWorld()->DestroyAndReplace(x, y, z-1);
                 }
             } else {
@@ -309,6 +317,7 @@ void Shred::AddToDelete(Active * const active) { deleteList.append(active); }
 QLinkedList<Active *>::const_iterator Shred::ShiningBegin() const {
     return shiningList.constBegin();
 }
+
 QLinkedList<Active *>::const_iterator Shred::ShiningEnd() const {
     return shiningList.constEnd();
 }
@@ -519,6 +528,7 @@ void Shred::TestShred() { // 7 items in a row
     SetNewBlock(WEAPON, SKY, column+=2, row, level);
     NormalCube(++column, row-1, level, 3, 3, 3, GLASS);
     SetNewBlock(LIQUID, ACID, ++column, row, level+1);
+    SetNewBlock(LIQUID, SUB_CLOUD, column+=2, row, level);
 } // void Shred::TestShred()
 
 void Shred::NullMountain() {
@@ -709,4 +719,13 @@ int Shred::CountShredTypeAround(const int type) const {
 bool Shred::InBounds(const int x, const int y, const int z) {
     return ( (0 <= x && x < SHRED_WIDTH) && (0 <= y && y < SHRED_WIDTH)
         && 0 <=z && z < HEIGHT-1 );
+}
+
+weathers Shred::GetWeather(const times_of_day time) const {
+    return weather[time];
+}
+
+void Shred::SetWeathers() {
+    // TODO: add weather generation
+    weather[0] = weather[1] = weather[2] = weather[3] = WEATHER_CLEAR;
 }

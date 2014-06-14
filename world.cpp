@@ -390,6 +390,7 @@ void World::PhysEvents() {
         emit Updated(sunMoonX, y, HEIGHT-1);
     }
     switch ( TimeOfDay() ) {
+    default: break;
     case END_OF_NIGHT:
         ReEnlightenTime();
         emit Notify(tr("It's morning now."));
@@ -397,6 +398,9 @@ void World::PhysEvents() {
     case END_OF_MORNING: emit Notify(tr("It's day now.")); break;
     case END_OF_NOON:    emit Notify(tr("It's evening now.")); break;
     case END_OF_EVENING:
+        for (int i=NumShreds()*NumShreds(); i>0; --i) {
+            shreds[i]->SetWeathers();
+        }
         ReEnlightenTime();
         emit Notify(tr("It's night now."));
     break;
@@ -573,9 +577,8 @@ void World::NoCheckMove(const int x, const int y, const int z,
 }
 
 void World::Jump(const int x, const int y, const int z, const int dir) {
-    if ( !(AIR==GetBlock(x, y, z-1)->Sub() &&
-            GetBlock(x, y, z)->Weight()) &&
-            Move(x, y, z, UP) )
+    if ( not (AIR == GetBlock(x, y, z-1)->Sub() && GetBlock(x, y, z)->Weight())
+            && Move(x, y, z, UP) )
     {
         Move(x, y, z+1, dir);
     }

@@ -27,6 +27,13 @@ class World;
 class Block;
 class Active;
 
+enum weathers {
+    WEATHER_CLEAR,
+    WEATHER_RAIN,
+    WEATHER_DEW,
+    WEATHER_CLOUDS
+};
+
 class Shred final {
 public:
     Shred(int shred_x, int shred_y,
@@ -98,6 +105,12 @@ public:
     static int CoordInShred(const int x);
     static int CoordOfShred(const int x);
 
+    // Weather
+    void SetWeathers();
+    weathers GetWeather(times_of_day time) const;
+    void Rain();
+    void Dew();
+
 private:
     void RemoveAllSunLight();
     void RemoveAllFireLight();
@@ -166,6 +179,8 @@ private:
 
     /// memory, allocated for this shred.
     Shred * const memory;
+
+    weathers weather[NIGHT+1]; // NIGHT is the last time of day.
 };
 
 #endif // SHRED_H
