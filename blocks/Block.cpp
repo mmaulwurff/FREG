@@ -158,14 +158,14 @@ bool Block::Inscribe(const QString str) {
     }
     if ( "" == *note ) {
         delete note;
-        note = 0;
+        note = nullptr;
     }
     return true;
 }
 
-Inventory * Block::HasInventory() { return 0; }
-Animal * Block::IsAnimal() { return 0; }
-Active * Block::ActiveBlock() { return 0; }
+Inventory * Block::HasInventory() { return nullptr; }
+Animal * Block::IsAnimal() { return nullptr; }
+Active * Block::ActiveBlock() { return nullptr; }
 
 void Block::Restore() { durability = MAX_DURABILITY; }
 void Block::Break() { durability = 0; }
