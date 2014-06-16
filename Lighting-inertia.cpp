@@ -251,7 +251,7 @@ void Shred::SetAllLightMapNull() {
 
 /// Makes all shining blocks of shred shine.
 void Shred::ShineAll() {
-    for (auto i=shiningList.constBegin(); i!=shiningList.constEnd(); ++i) {
+    for (auto i=ShiningBegin(); i!=ShiningEnd(); ++i) {
         const int radius = (*i)->LightRadius();
         if ( radius != 0 ) {
             world->Shine((*i)->X(), (*i)->Y(), (*i)->Z(), radius, true);

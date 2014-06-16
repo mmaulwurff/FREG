@@ -60,8 +60,8 @@ public:
     void AddToDelete(Active *);
     void AddFalling(int x, int y, int z);
 
-    QLinkedList<Active *>::const_iterator ShiningBegin() const;
-    QLinkedList<Active *>::const_iterator ShiningEnd() const;
+    QLinkedList<Active * const>::const_iterator ShiningBegin() const;
+    QLinkedList<Active * const>::const_iterator ShiningEnd() const;
 
     World * GetWorld() const;
 
@@ -168,14 +168,13 @@ private:
     int shredX, shredY;
     char type;
 
-    /// needed in Shred::ReloadTo... for active blocks not to reload twice
-    /// when they are registered both in frequent and rare lists.
-    QLinkedList<Active *> activeListAll;
-    QLinkedList<Active *> activeListFrequent, activeListRare;
-    QLinkedList<Active *> fallList;
-    QLinkedList<Active *> shiningList;
-    QLinkedList<Active *> deleteList;
-    QLinkedList<Active *> unregisterList;
+    /// Contains all active blocks.
+    QLinkedList<Active * const> activeListAll;
+    QLinkedList<Active * const> activeListFrequent;
+    QLinkedList<Active * const> fallList;
+    QLinkedList<Active * const> shiningList;
+    QLinkedList<Active * const> deleteList;
+    QLinkedList<Active * const> unregisterList;
 
     /// memory, allocated for this shred.
     Shred * const memory;

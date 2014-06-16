@@ -234,8 +234,7 @@ void Shred::DeleteDestroyedActives() {
 }
 
 void Shred::PhysEventsRare() {
-    for (auto i=activeListRare.constBegin(); i!=activeListRare.constEnd(); ++i)
-    {
+    for (auto i=activeListAll.constBegin(); i!=activeListAll.constEnd(); ++i) {
         if ( (*i)->GetShred() == this  ) {
             (*i)->ActRare();
             switch ((*i)->ActInner() ) {
@@ -262,9 +261,6 @@ void Shred::Register(Active * const active) {
     activeListAll.append(active);
     unregisterList.removeAll(active);
     const int should_act = active->ShouldAct();
-    if ( should_act & FREQUENT_RARE ) {
-        activeListRare.append(active);
-    }
     if ( should_act & FREQUENT_FIRST ) {
         activeListFrequent.prepend(active);
     } else if ( should_act & FREQUENT_SECOND ) {
@@ -281,7 +277,6 @@ void Shred::UnregisterLater(Active * const active) {
 void Shred::Unregister(Active * const active) {
     activeListAll     .removeAll(active);
     activeListFrequent.removeAll(active);
-    activeListRare    .removeAll(active);
     fallList          .removeAll(active);
     RemShining(active);
 }
@@ -314,11 +309,11 @@ void Shred::AddShining(Active * const active) {
 void Shred::RemShining (Active * const active) {shiningList.removeAll(active);}
 void Shred::AddToDelete(Active * const active) { deleteList.append(active); }
 
-QLinkedList<Active *>::const_iterator Shred::ShiningBegin() const {
+QLinkedList<Active * const>::const_iterator Shred::ShiningBegin() const {
     return shiningList.constBegin();
 }
 
-QLinkedList<Active *>::const_iterator Shred::ShiningEnd() const {
+QLinkedList<Active * const>::const_iterator Shred::ShiningEnd() const {
     return shiningList.constEnd();
 }
 
