@@ -724,3 +724,12 @@ void Shred::SetWeathers() {
     // TODO: add weather generation
     weather[0] = weather[1] = weather[2] = weather[3] = WEATHER_CLEAR;
 }
+
+void Shred::Rain() {
+    if ( RAIN_IS_DEW == 1 ) { // RAIN_IS_DEW is defined in Freg.pro
+        Dew();
+        return;
+    } // else:
+}
+
+void Shred::Dew() {}
