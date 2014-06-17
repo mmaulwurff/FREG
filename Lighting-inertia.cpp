@@ -64,8 +64,13 @@ void World::Shine(const int x, const int y, const int z, int level,
         const bool init)
 {
     const int transparent = GetBlock(x, y, z)->Transparent();
-    if ( SetFireLightMap(level << 4, x, y, z) && INVISIBLE != transparent ) {
-        EmitUpdated(x, y, z);
+    if ( SetFireLightMap(level << 4, x, y, z) ) {
+        if ( INVISIBLE != transparent ) {
+            EmitUpdated(x, y, z);
+        }
+        if ( not init ) {
+            return;
+        }
     }
     if ( (transparent != BLOCK_OPAQUE && level > 1) || init ) {
         --level;
@@ -252,10 +257,8 @@ void Shred::SetAllLightMapNull() {
 /// Makes all shining blocks of shred shine.
 void Shred::ShineAll() {
     for (auto i=shiningList.constBegin(); i!=shiningList.constEnd(); ++i) {
-        const int radius = (*i)->LightRadius();
-        if ( radius != 0 ) {
-            world->Shine((*i)->X(), (*i)->Y(), (*i)->Z(), radius, true);
-        }
+        world->Shine((*i)->X(), (*i)->Y(), (*i)->Z(),
+            (*i)->LightRadius(), true);
     }
     if ( not world->GetEvernight() ) {
         for (int i=shredX*SHRED_WIDTH; i<SHRED_WIDTH*(shredX+1); ++i)
