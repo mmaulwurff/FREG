@@ -77,7 +77,6 @@ bool Shred::LoadShred() {
                         PutBlock(air, x, y, z);
                     }
                     PutBlock(Normal(sub), x, y, HEIGHT-1);
-                    lightMap[x][y][HEIGHT-1] = 1;
                     break;
                 } else {
                     PutBlock(Normal(sub), x, y, z);
@@ -112,7 +111,6 @@ Shred::Shred(const int shred_x, const int shred_y,
             PutBlock(air, i, j, k);
         }
         PutBlock(((qrand()%5) ? sky : star), i, j, HEIGHT-1);
-        lightMap[i][j][HEIGHT-1] = 1;
     }
     switch ( type=TypeOfShred(longi, lati) ) {
     case SHRED_WATER:     Water();     break;

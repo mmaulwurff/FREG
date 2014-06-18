@@ -24,6 +24,10 @@
     * source, will remain enlightened when light source is removed.
     * Light is divided to sunlight and other light. Sunlight is
     * changing over the day.
+    *
+    * This lighting can be used to develop more intelligent one.
+    * Intended to be fast (and is!).
+    *
     * LightMap is uchar:
     * & 0xF0 bits are for non-sun light,
     * & 0x0F bits for sun. */
@@ -64,8 +68,13 @@ void World::Shine(const int x, const int y, const int z, int level,
         const bool init)
 {
     const int transparent = GetBlock(x, y, z)->Transparent();
-    if ( SetFireLightMap(level << 4, x, y, z) && INVISIBLE != transparent ) {
-        EmitUpdated(x, y, z);
+    if ( SetFireLightMap(level << 4, x, y, z) ) {
+        if ( INVISIBLE != transparent ) {
+            EmitUpdated(x, y, z);
+        }
+        if ( not init ) {
+            return;
+        }
     }
     if ( (transparent != BLOCK_OPAQUE && level > 1) || init ) {
         --level;
@@ -90,6 +99,7 @@ void World::SunShineVertical(const int x, const int y, int z, int light_lev) {
     Shred * const shred = GetShred(x, y);
     const int x_in = Shred::CoordInShred(x);
     const int y_in = Shred::CoordInShred(y);
+    shred->SetLightmap(x_in, y_in, HEIGHT-1, 0xFF);
     for ( ; shred->SetSunLight(x_in, y_in, z, light_lev); --z) {
         switch ( shred->GetBlock(x_in, y_in, z)->Transparent() ) {
         case INVISIBLE: break;
@@ -173,7 +183,7 @@ void World::ReEnlightenMove(const int dir) {
     break;
     case WEST:
         for (int i=0; i<NumShreds(); ++i) {
-            shreds[NumShreds()*i]->ShineAll();
+            shreds[NumShreds()*i  ]->ShineAll();
             shreds[NumShreds()*i+1]->ShineAll();
         }
     break;
@@ -252,19 +262,13 @@ void Shred::SetAllLightMapNull() {
 /// Makes all shining blocks of shred shine.
 void Shred::ShineAll() {
     for (auto i=shiningList.constBegin(); i!=shiningList.constEnd(); ++i) {
-        const int radius = (*i)->LightRadius();
-        if ( radius != 0 ) {
-            world->Shine((*i)->X(), (*i)->Y(), (*i)->Z(), radius, true);
-        }
+        world->Shine((*i)->X(), (*i)->Y(), (*i)->Z(),
+            (*i)->LightRadius(), true);
     }
     if ( not world->GetEvernight() ) {
         for (int i=shredX*SHRED_WIDTH; i<SHRED_WIDTH*(shredX+1); ++i)
         for (int j=shredY*SHRED_WIDTH; j<SHRED_WIDTH*(shredY+1); ++j) {
             world->SunShineVertical(i, j);
-        }
-        for (int i=0; i<SHRED_WIDTH; ++i)
-        for (int j=0; j<SHRED_WIDTH; ++j) {
-            lightMap[i][j][HEIGHT-1] = 0xFF;
         }
     }
 }
