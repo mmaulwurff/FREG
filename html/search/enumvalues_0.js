@@ -1,6 +1,7 @@
 var searchData=
 [
   ['a_5fmeat',['A_MEAT',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a8c8b29db7ece3eff1fc9218b59d6dc31',1,'header.h']]],
+  ['acid',['ACID',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a9115260fa6c16f6f5aa5e77ec4d327f7',1,'header.h']]],
   ['action_5fbuild',['ACTION_BUILD',['../CursedScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a5d97b2a463c30e1033322e898c796d9a',1,'ACTION_BUILD():&#160;CursedScreen.h'],['../TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a5d97b2a463c30e1033322e898c796d9a',1,'ACTION_BUILD():&#160;TextScreen.h']]],
   ['action_5fcraft',['ACTION_CRAFT',['../CursedScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a099861b259d988ce46b10ff4410229a9',1,'ACTION_CRAFT():&#160;CursedScreen.h'],['../TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a099861b259d988ce46b10ff4410229a9',1,'ACTION_CRAFT():&#160;TextScreen.h']]],
   ['action_5feat',['ACTION_EAT',['../CursedScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a0d3f7eb11e6f79192bfa276507f8c31a',1,'ACTION_EAT():&#160;CursedScreen.h'],['../TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a0d3f7eb11e6f79192bfa276507f8c31a',1,'ACTION_EAT():&#160;TextScreen.h']]],

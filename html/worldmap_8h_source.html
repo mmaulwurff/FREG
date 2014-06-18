@@ -109,50 +109,48 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#ifndef WORLDMAP_H</span></div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#define WORLDMAP_H</span></div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">class </span>QFile;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &lt;QFile&gt;</span></div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
 <div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="classWorldMap.html">   25</a></span>&#160;<span class="keyword">class </span><a class="code" href="classWorldMap.html">WorldMap</a> final {</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">public</span>:</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keyword">explicit</span> <a class="code" href="classWorldMap.html#a5561d374f63002c47469fa156f7a9f05">WorldMap</a>(QString);</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <a class="code" href="classWorldMap.html#ae9cf3ee707e53755952d440b747e35e1">~WorldMap</a>();</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <a class="code" href="classWorldMap.html">WorldMap</a> &amp; <a class="code" href="classWorldMap.html#a64c10bb6b97e2d274e75b025523fe791">operator=</a>(<span class="keyword">const</span> <a class="code" href="classWorldMap.html">WorldMap</a> &amp;) = <span class="keyword">delete</span>;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <a class="code" href="classWorldMap.html#a5561d374f63002c47469fa156f7a9f05">WorldMap</a>(<span class="keyword">const</span> <a class="code" href="classWorldMap.html">WorldMap</a> &amp;) = <span class="keyword">delete</span>;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keywordtype">long</span> <a class="code" href="classWorldMap.html#a215fe4401ff033af88091e5291bd7895">MapSize</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keywordtype">char</span> <a class="code" href="classWorldMap.html#a7de55bce611512038f2f2cf9282c9a7c">TypeOfShred</a>(<span class="keywordtype">long</span> longi, <span class="keywordtype">long</span> lati);</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classWorldMap.html#a13483441aa098ddaec8f529832f3b30d">GenerateMap</a>(</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;            <span class="keyword">const</span> <span class="keywordtype">char</span> * filename,</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;            ushort size,</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;            <span class="keywordtype">char</span> outer,</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;            <span class="keywordtype">int</span> seed);</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">float</span> Deg(<span class="keywordtype">float</span> x, <span class="keywordtype">float</span> y, ushort size);</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">float</span> R  (<span class="keywordtype">float</span> x, <span class="keywordtype">float</span> y, ushort size);</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> Circle(</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;            <span class="keywordtype">float</span> min_rad,</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;            <span class="keywordtype">float</span> max_rad,</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            <span class="keywordtype">char</span> ch,</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            ushort size,</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;            <span class="keywordtype">char</span> * map);</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordtype">long</span> mapSize;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    QFile * <span class="keyword">const</span> map;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;};</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="preprocessor">#endif // WORLDMAP_H</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <a class="code" href="classWorldMap.html">WorldMap</a> &amp; <a class="code" href="classWorldMap.html#a64c10bb6b97e2d274e75b025523fe791">operator=</a>(<span class="keyword">const</span> <a class="code" href="classWorldMap.html">WorldMap</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <a class="code" href="classWorldMap.html#a5561d374f63002c47469fa156f7a9f05">WorldMap</a>(<span class="keyword">const</span> <a class="code" href="classWorldMap.html">WorldMap</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keywordtype">long</span> <a class="code" href="classWorldMap.html#a215fe4401ff033af88091e5291bd7895">MapSize</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keywordtype">char</span> <a class="code" href="classWorldMap.html#a83cd692581de5db72039cbd1e43f7806">TypeOfShred</a>(<span class="keywordtype">long</span> longi, <span class="keywordtype">long</span> lati) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classWorldMap.html#a13483441aa098ddaec8f529832f3b30d">GenerateMap</a>(</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;            <span class="keyword">const</span> <span class="keywordtype">char</span> * filename,</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;            ushort size,</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;            <span class="keywordtype">char</span> outer,</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;            <span class="keywordtype">int</span> seed);</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">float</span> Deg(<span class="keywordtype">float</span> x, <span class="keywordtype">float</span> y, ushort size);</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">float</span> R  (<span class="keywordtype">float</span> x, <span class="keywordtype">float</span> y, ushort size);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> Circle(</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;            <span class="keywordtype">float</span> min_rad,</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;            <span class="keywordtype">float</span> max_rad,</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;            <span class="keywordtype">char</span> ch,</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            ushort size,</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            <span class="keywordtype">char</span> * map);</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordtype">long</span> mapSize;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keyword">mutable</span> QFile map;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;};</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="preprocessor">#endif // WORLDMAP_H</span></div>
 <div class="ttc" id="classWorldMap_html"><div class="ttname"><a href="classWorldMap.html">WorldMap</a></div><div class="ttdef"><b>Definition:</b> <a href="worldmap_8h_source.html#l00025">worldmap.h:25</a></div></div>
-<div class="ttc" id="classWorldMap_html_a7de55bce611512038f2f2cf9282c9a7c"><div class="ttname"><a href="classWorldMap.html#a7de55bce611512038f2f2cf9282c9a7c">WorldMap::TypeOfShred</a></div><div class="ttdeci">char TypeOfShred(long longi, long lati)</div><div class="ttdef"><b>Definition:</b> <a href="worldmap_8cpp_source.html#l00040">worldmap.cpp:40</a></div></div>
-<div class="ttc" id="classWorldMap_html_a13483441aa098ddaec8f529832f3b30d"><div class="ttname"><a href="classWorldMap.html#a13483441aa098ddaec8f529832f3b30d">WorldMap::GenerateMap</a></div><div class="ttdeci">static void GenerateMap(const char *filename, ushort size, char outer, int seed)</div><div class="ttdef"><b>Definition:</b> <a href="worldmap_8cpp_source.html#l00110">worldmap.cpp:110</a></div></div>
+<div class="ttc" id="classWorldMap_html_a13483441aa098ddaec8f529832f3b30d"><div class="ttname"><a href="classWorldMap.html#a13483441aa098ddaec8f529832f3b30d">WorldMap::GenerateMap</a></div><div class="ttdeci">static void GenerateMap(const char *filename, ushort size, char outer, int seed)</div><div class="ttdef"><b>Definition:</b> <a href="worldmap_8cpp_source.html#l00107">worldmap.cpp:107</a></div></div>
 <div class="ttc" id="classWorldMap_html_a64c10bb6b97e2d274e75b025523fe791"><div class="ttname"><a href="classWorldMap.html#a64c10bb6b97e2d274e75b025523fe791">WorldMap::operator=</a></div><div class="ttdeci">WorldMap &amp; operator=(const WorldMap &amp;)=delete</div></div>
-<div class="ttc" id="classWorldMap_html_ae9cf3ee707e53755952d440b747e35e1"><div class="ttname"><a href="classWorldMap.html#ae9cf3ee707e53755952d440b747e35e1">WorldMap::~WorldMap</a></div><div class="ttdeci">~WorldMap()</div><div class="ttdef"><b>Definition:</b> <a href="worldmap_8cpp_source.html#l00056">worldmap.cpp:56</a></div></div>
-<div class="ttc" id="classWorldMap_html_a215fe4401ff033af88091e5291bd7895"><div class="ttname"><a href="classWorldMap.html#a215fe4401ff033af88091e5291bd7895">WorldMap::MapSize</a></div><div class="ttdeci">long MapSize() const </div><div class="ttdef"><b>Definition:</b> <a href="worldmap_8cpp_source.html#l00054">worldmap.cpp:54</a></div></div>
-<div class="ttc" id="classWorldMap_html_a5561d374f63002c47469fa156f7a9f05"><div class="ttname"><a href="classWorldMap.html#a5561d374f63002c47469fa156f7a9f05">WorldMap::WorldMap</a></div><div class="ttdeci">WorldMap(QString)</div><div class="ttdef"><b>Definition:</b> <a href="worldmap_8cpp_source.html#l00027">worldmap.cpp:27</a></div></div>
+<div class="ttc" id="classWorldMap_html_a215fe4401ff033af88091e5291bd7895"><div class="ttname"><a href="classWorldMap.html#a215fe4401ff033af88091e5291bd7895">WorldMap::MapSize</a></div><div class="ttdeci">long MapSize() const </div><div class="ttdef"><b>Definition:</b> <a href="worldmap_8cpp_source.html#l00053">worldmap.cpp:53</a></div></div>
+<div class="ttc" id="classWorldMap_html_a83cd692581de5db72039cbd1e43f7806"><div class="ttname"><a href="classWorldMap.html#a83cd692581de5db72039cbd1e43f7806">WorldMap::TypeOfShred</a></div><div class="ttdeci">char TypeOfShred(long longi, long lati) const </div><div class="ttdef"><b>Definition:</b> <a href="worldmap_8cpp_source.html#l00039">worldmap.cpp:39</a></div></div>
+<div class="ttc" id="classWorldMap_html_a5561d374f63002c47469fa156f7a9f05"><div class="ttname"><a href="classWorldMap.html#a5561d374f63002c47469fa156f7a9f05">WorldMap::WorldMap</a></div><div class="ttdeci">WorldMap(QString)</div><div class="ttdef"><b>Definition:</b> <a href="worldmap_8cpp_source.html#l00026">worldmap.cpp:26</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jun 10 2014 09:12:19 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jun 18 2014 22:54:35 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

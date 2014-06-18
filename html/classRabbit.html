@@ -118,9 +118,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a8281f882baf4fa9d89eb489f5acef144"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ab831b5e7000110422b9b1d0c6977b1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRabbit.html#a9ab831b5e7000110422b9b1d0c6977b1">Kind</a> () const override</td></tr>
 <tr class="separator:a9ab831b5e7000110422b9b1d0c6977b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2914c9b9415a2a8d566fd9a744f42938"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBlock.html">Block</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRabbit.html#a2914c9b9415a2a8d566fd9a744f42938">DropAfterDamage</a> () override</td></tr>
-<tr class="memdesc:a2914c9b9415a2a8d566fd9a744f42938"><td class="mdescLeft">&#160;</td><td class="mdescRight">Usually returns new block of the same kind and sub (except glass).  <a href="#a2914c9b9415a2a8d566fd9a744f42938">More...</a><br /></td></tr>
-<tr class="separator:a2914c9b9415a2a8d566fd9a744f42938"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09ff47fcaea6be4685504e4c3c71cf21"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBlock.html">Block</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRabbit.html#a09ff47fcaea6be4685504e4c3c71cf21">DropAfterDamage</a> (bool *delete_block) override</td></tr>
+<tr class="memdesc:a09ff47fcaea6be4685504e4c3c71cf21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Should return dropped block.  <a href="#a09ff47fcaea6be4685504e4c3c71cf21">More...</a><br /></td></tr>
+<tr class="separator:a09ff47fcaea6be4685504e4c3c71cf21"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d423548d6536a58427e30feab830c1b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRabbit.html#a8d423548d6536a58427e30feab830c1b">NutritionalValue</a> (int sub) const override</td></tr>
 <tr class="separator:a8d423548d6536a58427e30feab830c1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a59c2d39d06e83a9d1f5f800df79540ca"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRabbit.html#a59c2d39d06e83a9d1f5f800df79540ca">FullName</a> () const override</td></tr>
@@ -225,8 +225,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a5efc76c08d665eee50e8f00c3c0a3960 inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4ef904547fb1917efe905f176727825d inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#a4ef904547fb1917efe905f176727825d">LightRadius</a> () const </td></tr>
 <tr class="separator:a4ef904547fb1917efe905f176727825d inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae40a58add972910bda9058cb29f5acf3 inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#ae40a58add972910bda9058cb29f5acf3">Temperature</a> () const </td></tr>
-<tr class="separator:ae40a58add972910bda9058cb29f5acf3 inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aca2c7aa20619782ea51d446aa47beeea inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#aca2c7aa20619782ea51d446aa47beeea">Weight</a> () const </td></tr>
 <tr class="separator:aca2c7aa20619782ea51d446aa47beeea inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae8778fd8d0014c0bc6aca9767af7ff05 inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#ae8778fd8d0014c0bc6aca9767af7ff05">GetId</a> () const </td></tr>
@@ -298,6 +296,11 @@ Protected Member Functions</h2></td></tr>
 <tr class="inherit_header pro_methods_classActive"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classActive')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classActive.html">Active</a></td></tr>
 <tr class="memitem:a6c04759d6981a097d5169753787d37f4 inherit pro_methods_classActive"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#a6c04759d6981a097d5169753787d37f4">SendSignalAround</a> (QString) const </td></tr>
 <tr class="separator:a6c04759d6981a097d5169753787d37f4 inherit pro_methods_classActive"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26092d32498d80b94954de8d995deae2 inherit pro_methods_classActive"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#a26092d32498d80b94954de8d995deae2">DamageAround</a> () const </td></tr>
+<tr class="separator:a26092d32498d80b94954de8d995deae2 inherit pro_methods_classActive"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76d2cb795e55910dc1249c033e44894b inherit pro_methods_classActive"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#a76d2cb795e55910dc1249c033e44894b">TryDestroy</a> (int x, int y, int z) const </td></tr>
+<tr class="memdesc:a76d2cb795e55910dc1249c033e44894b inherit pro_methods_classActive"><td class="mdescLeft">&#160;</td><td class="mdescRight">Damages block and destroys it if it is broken.  <a href="#a76d2cb795e55910dc1249c033e44894b">More...</a><br /></td></tr>
+<tr class="separator:a76d2cb795e55910dc1249c033e44894b inherit pro_methods_classActive"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af6229f8297154481383e855de3931ac4 inherit pro_methods_classActive"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#af6229f8297154481383e855de3931ac4">IsSubAround</a> (int sub) const </td></tr>
 <tr class="memdesc:af6229f8297154481383e855de3931ac4 inherit pro_methods_classActive"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if there is at least 1 block of substance sub around.  <a href="#af6229f8297154481383e855de3931ac4">More...</a><br /></td></tr>
 <tr class="separator:af6229f8297154481383e855de3931ac4 inherit pro_methods_classActive"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -355,7 +358,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00397">397</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00416">416</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
 
 </div>
 </div>
@@ -389,7 +392,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00400">400</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00420">420</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
 
 </div>
 </div>
@@ -418,7 +421,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classActive.html#a94c0685815a73b5585be25d7c649816f">Active</a>.</p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00345">345</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00364">364</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
 
 </div>
 </div>
@@ -445,7 +448,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classActive.html#a73368b3e9fc13d1a739d662a70833fed">Active</a>.</p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00383">383</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00402">402</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
 
 </div>
 </div>
@@ -472,11 +475,11 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classAnimal.html#aea85583538d6b29a0973815a5ef01c38">Animal</a>.</p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00355">355</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00374">374</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a2914c9b9415a2a8d566fd9a744f42938"></a>
+<a class="anchor" id="a09ff47fcaea6be4685504e4c3c71cf21"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -486,7 +489,8 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="classBlock.html">Block</a> * Rabbit::DropAfterDamage </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">bool *&#160;</td>
+          <td class="paramname"><em>delete_self</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -497,12 +501,12 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Usually returns new block of the same kind and sub (except glass). </p>
-<p>When reimplemented in derivatives, inside it you can create a pile, put several blocks in it, and return pile. </p>
+<p>Should return dropped block. </p>
+<p>It can be pile(CONTAINER, DIFFERENT) containing all dropped blocks, or block itself. Set delete_self false if this block itself should not be deleted. (by default block is deleted, beware). </p>
 
-<p>Reimplemented from <a class="el" href="classAnimal.html#aee7570001bf976826b8aa2dc383f00bf">Animal</a>.</p>
+<p>Reimplemented from <a class="el" href="classAnimal.html#a12a217dc4ce2eeebb292ae44171c5c3d">Animal</a>.</p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00373">373</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00392">392</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
 
 </div>
 </div>
@@ -529,7 +533,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classAnimal.html#a9e6852a48df38ff4b338740f0d05b596">Animal</a>.</p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00381">381</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00400">400</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
 
 </div>
 </div>
@@ -556,7 +560,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classActive.html#a56b3cd0a2e9d23280e78e583d8a93c06">Active</a>.</p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00382">382</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00401">401</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
 
 </div>
 </div>
@@ -584,7 +588,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classAnimal.html#a753447bd5c4cacdb50d7ef888a0db64f">Animal</a>.</p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00393">393</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00412">412</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
 
 </div>
 </div>
@@ -595,7 +599,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jun 10 2014 09:12:20 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jun 18 2014 22:54:35 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

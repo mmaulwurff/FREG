@@ -158,9 +158,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a15d51445a4a71a900d95518291d53251 inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa4cdb0a064681a8db9cce0221e99e160 inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#aa4cdb0a064681a8db9cce0221e99e160">Move</a> (int direction)</td></tr>
 <tr class="separator:aa4cdb0a064681a8db9cce0221e99e160 inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae2496a6147c3d3544c7b6035cef4e4b1 inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classBlock.html">Block</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#ae2496a6147c3d3544c7b6035cef4e4b1">DropAfterDamage</a> ()</td></tr>
-<tr class="memdesc:ae2496a6147c3d3544c7b6035cef4e4b1 inherit pub_methods_classBlock"><td class="mdescLeft">&#160;</td><td class="mdescRight">Usually returns new block of the same kind and sub (except glass).  <a href="#ae2496a6147c3d3544c7b6035cef4e4b1">More...</a><br /></td></tr>
-<tr class="separator:ae2496a6147c3d3544c7b6035cef4e4b1 inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4b8f3e882c8af7a92d537bb1dd30f68 inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classBlock.html">Block</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#ae4b8f3e882c8af7a92d537bb1dd30f68">DropAfterDamage</a> (bool *delete_self)</td></tr>
+<tr class="memdesc:ae4b8f3e882c8af7a92d537bb1dd30f68 inherit pub_methods_classBlock"><td class="mdescLeft">&#160;</td><td class="mdescRight">Should return dropped block.  <a href="#ae4b8f3e882c8af7a92d537bb1dd30f68">More...</a><br /></td></tr>
+<tr class="separator:ae4b8f3e882c8af7a92d537bb1dd30f68 inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac35702513c4f975787b9679103ce678 inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classAnimal.html">Animal</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#aac35702513c4f975787b9679103ce678">IsAnimal</a> ()</td></tr>
 <tr class="separator:aac35702513c4f975787b9679103ce678 inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad87ce2451d8b68cf319e499eae9d8170 inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classActive.html">Active</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#ad87ce2451d8b68cf319e499eae9d8170">ActiveBlock</a> ()</td></tr>
@@ -173,8 +173,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a5efc76c08d665eee50e8f00c3c0a3960 inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4ef904547fb1917efe905f176727825d inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#a4ef904547fb1917efe905f176727825d">LightRadius</a> () const </td></tr>
 <tr class="separator:a4ef904547fb1917efe905f176727825d inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae40a58add972910bda9058cb29f5acf3 inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#ae40a58add972910bda9058cb29f5acf3">Temperature</a> () const </td></tr>
-<tr class="separator:ae40a58add972910bda9058cb29f5acf3 inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae8778fd8d0014c0bc6aca9767af7ff05 inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#ae8778fd8d0014c0bc6aca9767af7ff05">GetId</a> () const </td></tr>
 <tr class="memdesc:ae8778fd8d0014c0bc6aca9767af7ff05 inherit pub_methods_classBlock"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines kind and sub, unique for every kind-sub pair.  <a href="#ae8778fd8d0014c0bc6aca9767af7ff05">More...</a><br /></td></tr>
 <tr class="separator:ae8778fd8d0014c0bc6aca9767af7ff05 inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -660,7 +658,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jun 10 2014 09:12:19 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jun 18 2014 22:54:35 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

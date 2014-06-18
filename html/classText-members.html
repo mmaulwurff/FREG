@@ -101,7 +101,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr class="even"><td class="entry"><a class="el" href="classBlock.html#a77d9f883e2566fa391344ce9d358bd6d">Damage</a>(int dmg, int dmg_kind)</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
   <tr><td class="entry"><a class="el" href="classBlock.html#aa2bb9530fe8167ba1bb66761e9a45628">DamageKind</a>() const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classBlock.html#a5efc76c08d665eee50e8f00c3c0a3960">DamageLevel</a>() const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
-  <tr><td class="entry"><a class="el" href="classBlock.html#ae2496a6147c3d3544c7b6035cef4e4b1">DropAfterDamage</a>()</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr><td class="entry"><a class="el" href="classBlock.html#ae4b8f3e882c8af7a92d537bb1dd30f68">DropAfterDamage</a>(bool *delete_self)</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classText.html#a4e399ffca94986ff50514a170a341840">FullName</a>() const override</td><td class="entry"><a class="el" href="classText.html">Text</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
   <tr><td class="entry"><a class="el" href="classBlock.html#a1dc5809c3d5e63060fe6a7c74a228ea5">GetDir</a>() const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classBlock.html#ab6c31dc3056aee946b3acc092f5e8ad2">GetDurability</a>() const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
@@ -127,18 +127,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr class="even"><td class="entry"><a class="el" href="classBlock.html#adde63e2ded7f013bad5e702e67a6ab20">SaveToFile</a>(QDataStream &amp;out)</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="classBlock.html#a4d2df39d959374d0501a6671174646ad">SetDir</a>(int dir)</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classBlock.html#a9cd24fc3e124dcd96ef3af63500f3f83">Sub</a>() const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="classBlock.html#ae40a58add972910bda9058cb29f5acf3">Temperature</a>() const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classText.html#a2aea3af7f32e5ab4fb7bb0de961b1115">Text</a>(int sub, int id)</td><td class="entry"><a class="el" href="classText.html">Text</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="classText.html#a019825db9fc849b6e9ea8c561d6b8b42">Text</a>(QDataStream &amp;str, int sub, int id)</td><td class="entry"><a class="el" href="classText.html">Text</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classBlock.html#a8ef3abd6e851ae31883f6b8cc423ef56">Transparent</a>() const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="classText.html#a6e25a5b0250c2b404f81841d57bb30ee">Use</a>(Block *who=0) override</td><td class="entry"><a class="el" href="classText.html">Text</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classBlock.html#a4ee69ab3394914c1411f1279c5e4bc0a">Wearable</a>() const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
-  <tr><td class="entry"><a class="el" href="classBlock.html#aca2c7aa20619782ea51d446aa47beeea">Weight</a>() const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classBlock.html#a19d1bd0e1cef6a865ed2745a2e648405">~Block</a>()</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr><td class="entry"><a class="el" href="classText.html#a2aea3af7f32e5ab4fb7bb0de961b1115">Text</a>(int sub, int id)</td><td class="entry"><a class="el" href="classText.html">Text</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classText.html#a019825db9fc849b6e9ea8c561d6b8b42">Text</a>(QDataStream &amp;str, int sub, int id)</td><td class="entry"><a class="el" href="classText.html">Text</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="classBlock.html#a8ef3abd6e851ae31883f6b8cc423ef56">Transparent</a>() const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classText.html#a6e25a5b0250c2b404f81841d57bb30ee">Use</a>(Block *who=0) override</td><td class="entry"><a class="el" href="classText.html">Text</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr><td class="entry"><a class="el" href="classBlock.html#a4ee69ab3394914c1411f1279c5e4bc0a">Wearable</a>() const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classBlock.html#aca2c7aa20619782ea51d446aa47beeea">Weight</a>() const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr><td class="entry"><a class="el" href="classBlock.html#a19d1bd0e1cef6a865ed2745a2e648405">~Block</a>()</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
 </table></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jun 10 2014 09:12:20 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jun 18 2014 22:54:35 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

@@ -1,13 +1,13 @@
 <map id="world.cpp" name="world.cpp">
-<area shape="rect" id="node13" href="$Active_8h.html" title="blocks/Active.h" alt="" coords="493,89,605,122"/>
+<area shape="rect" id="node13" href="$Active_8h.html" title="blocks/Active.h" alt="" coords="544,89,656,122"/>
 <area shape="rect" id="node27" href="$Inventory_8h.html" title="Provides declaration for class Inventory for freg. " alt="" coords="680,89,808,122"/>
 <area shape="rect" id="node31" href="$Shred_8h.html" title="Shred.h" alt="" coords="832,89,899,122"/>
-<area shape="rect" id="node36" href="$world_8h.html" title="world.h" alt="" coords="1035,89,1099,122"/>
-<area shape="rect" id="node43" href="$worldmap_8h.html" title="worldmap.h" alt="" coords="923,89,1011,122"/>
-<area shape="rect" id="node45" href="$BlockManager_8h.html" title="BlockManager.h" alt="" coords="588,171,703,205"/>
-<area shape="rect" id="node48" href="$ShredStorage_8h.html" title="ShredStorage.h" alt="" coords="1123,89,1235,122"/>
-<area shape="rect" id="node53" href="$CraftManager_8h.html" title="CraftManager.h" alt="" coords="1259,89,1368,122"/>
-<area shape="rect" id="node17" href="$Block_8h.html" title="Provides definition for class Block. " alt="" coords="497,171,564,205"/>
-<area shape="rect" id="node25" href="$Xyz_8h.html" title="Xyz.h" alt="" coords="327,171,380,205"/>
-<area shape="rect" id="node19" href="$header_8h.html" title="header.h" alt="" coords="760,254,829,287"/>
+<area shape="rect" id="node36" href="$world_8h.html" title="world.h" alt="" coords="1003,89,1067,122"/>
+<area shape="rect" id="node47" href="$BlockManager_8h.html" title="BlockManager.h" alt="" coords="295,171,409,205"/>
+<area shape="rect" id="node50" href="$ShredStorage_8h.html" title="ShredStorage.h" alt="" coords="1137,89,1249,122"/>
+<area shape="rect" id="node55" href="$CraftManager_8h.html" title="CraftManager.h" alt="" coords="1273,89,1383,122"/>
+<area shape="rect" id="node17" href="$Block_8h.html" title="Provides definition for class Block. " alt="" coords="604,171,671,205"/>
+<area shape="rect" id="node25" href="$Xyz_8h.html" title="Xyz.h" alt="" coords="527,171,580,205"/>
+<area shape="rect" id="node19" href="$header_8h.html" title="header.h" alt="" coords="683,254,752,287"/>
+<area shape="rect" id="node43" href="$worldmap_8h.html" title="worldmap.h" alt="" coords="1092,171,1180,205"/>
 </map>

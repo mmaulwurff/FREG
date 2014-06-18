@@ -1,8 +1,9 @@
 <map id="Lighting&#45;inertia.cpp" name="Lighting&#45;inertia.cpp">
-<area shape="rect" id="node3" href="$world_8h.html" title="world.h" alt="" coords="139,89,203,122"/>
-<area shape="rect" id="node15" href="$Shred_8h.html" title="Shred.h" alt="" coords="305,89,372,122"/>
-<area shape="rect" id="node20" href="$Block_8h.html" title="Provides definition for class Block. " alt="" coords="408,171,515,205"/>
-<area shape="rect" id="node23" href="$Active_8h.html" title="blocks/Active.h" alt="" coords="495,89,607,122"/>
-<area shape="rect" id="node9" href="$header_8h.html" title="header.h" alt="" coords="221,254,291,287"/>
-<area shape="rect" id="node28" href="$Xyz_8h.html" title="Xyz.h" alt="" coords="632,171,685,205"/>
+<area shape="rect" id="node3" href="$world_8h.html" title="world.h" alt="" coords="204,89,268,122"/>
+<area shape="rect" id="node19" href="$Shred_8h.html" title="Shred.h" alt="" coords="417,89,484,122"/>
+<area shape="rect" id="node24" href="$Block_8h.html" title="Provides definition for class Block. " alt="" coords="520,171,627,205"/>
+<area shape="rect" id="node27" href="$Active_8h.html" title="blocks/Active.h" alt="" coords="611,89,723,122"/>
+<area shape="rect" id="node9" href="$header_8h.html" title="header.h" alt="" coords="333,254,403,287"/>
+<area shape="rect" id="node15" href="$worldmap_8h.html" title="worldmap.h" alt="" coords="192,171,280,205"/>
+<area shape="rect" id="node32" href="$Xyz_8h.html" title="Xyz.h" alt="" coords="744,171,797,205"/>
 </map>

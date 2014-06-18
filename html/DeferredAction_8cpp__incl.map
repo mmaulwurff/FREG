@@ -1,10 +1,11 @@
 <map id="DeferredAction.cpp" name="DeferredAction.cpp">
-<area shape="rect" id="node3" href="$world_8h.html" title="world.h" alt="" coords="117,89,181,122"/>
-<area shape="rect" id="node15" href="$Active_8h.html" title="blocks/Active.h" alt="" coords="239,89,351,122"/>
-<area shape="rect" id="node24" href="$Inventory_8h.html" title="Provides declaration for class Inventory for freg. " alt="" coords="519,89,647,122"/>
-<area shape="rect" id="node28" href="$DeferredAction_8h.html" title="DeferredAction.h" alt="" coords="375,89,495,122"/>
-<area shape="rect" id="node31" href="$BlockManager_8h.html" title="BlockManager.h" alt="" coords="671,89,785,122"/>
-<area shape="rect" id="node9" href="$header_8h.html" title="header.h" alt="" coords="335,254,404,287"/>
-<area shape="rect" id="node19" href="$Block_8h.html" title="Provides definition for class Block. " alt="" coords="336,171,403,205"/>
-<area shape="rect" id="node22" href="$Xyz_8h.html" title="Xyz.h" alt="" coords="427,171,480,205"/>
+<area shape="rect" id="node3" href="$world_8h.html" title="world.h" alt="" coords="204,89,268,122"/>
+<area shape="rect" id="node19" href="$Active_8h.html" title="blocks/Active.h" alt="" coords="351,89,463,122"/>
+<area shape="rect" id="node28" href="$Inventory_8h.html" title="Provides declaration for class Inventory for freg. " alt="" coords="631,89,759,122"/>
+<area shape="rect" id="node32" href="$DeferredAction_8h.html" title="DeferredAction.h" alt="" coords="487,89,607,122"/>
+<area shape="rect" id="node35" href="$BlockManager_8h.html" title="BlockManager.h" alt="" coords="783,89,897,122"/>
+<area shape="rect" id="node9" href="$header_8h.html" title="header.h" alt="" coords="447,254,516,287"/>
+<area shape="rect" id="node15" href="$worldmap_8h.html" title="worldmap.h" alt="" coords="192,171,280,205"/>
+<area shape="rect" id="node23" href="$Block_8h.html" title="Provides definition for class Block. " alt="" coords="448,171,515,205"/>
+<area shape="rect" id="node26" href="$Xyz_8h.html" title="Xyz.h" alt="" coords="539,171,592,205"/>
 </map>

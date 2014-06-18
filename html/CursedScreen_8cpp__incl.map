@@ -1,12 +1,13 @@
 <map id="screens/CursedScreen.cpp" name="screens/CursedScreen.cpp">
-<area shape="rect" id="node11" href="$CursedScreen_8h.html" title="Provides curses (text&#45;based graphics interface) screen for freg. " alt="" coords="792,89,957,122"/>
-<area shape="rect" id="node24" href="$IThread_8h.html" title="screens/IThread.h" alt="" coords="643,89,768,122"/>
-<area shape="rect" id="node28" href="$world_8h.html" title="world.h" alt="" coords="555,89,619,122"/>
-<area shape="rect" id="node33" href="$Shred_8h.html" title="Shred.h" alt="" coords="413,89,480,122"/>
-<area shape="rect" id="node38" href="$Block_8h.html" title="Provides definition for class Block. " alt="" coords="232,171,339,205"/>
-<area shape="rect" id="node41" href="$Inventory_8h.html" title="Provides declaration for class Inventory for freg. " alt="" coords="1127,89,1255,122"/>
-<area shape="rect" id="node45" href="$Player_8h.html" title="Player.h" alt="" coords="1096,171,1165,205"/>
-<area shape="rect" id="node15" href="$VirtScreen_8h.html" title="screens/VirtScreen.h" alt="" coords="928,171,1072,205"/>
-<area shape="rect" id="node19" href="$header_8h.html" title="header.h" alt="" coords="527,254,596,287"/>
-<area shape="rect" id="node49" href="$Xyz_8h.html" title="Xyz.h" alt="" coords="1104,254,1157,287"/>
+<area shape="rect" id="node11" href="$CursedScreen_8h.html" title="Provides curses (text&#45;based graphics interface) screen for freg. " alt="" coords="785,89,951,122"/>
+<area shape="rect" id="node24" href="$IThread_8h.html" title="screens/IThread.h" alt="" coords="415,89,540,122"/>
+<area shape="rect" id="node28" href="$world_8h.html" title="world.h" alt="" coords="327,89,391,122"/>
+<area shape="rect" id="node37" href="$Shred_8h.html" title="Shred.h" alt="" coords="695,89,761,122"/>
+<area shape="rect" id="node42" href="$Block_8h.html" title="Provides definition for class Block. " alt="" coords="564,89,671,122"/>
+<area shape="rect" id="node45" href="$Inventory_8h.html" title="Provides declaration for class Inventory for freg. " alt="" coords="1149,89,1277,122"/>
+<area shape="rect" id="node49" href="$Player_8h.html" title="Player.h" alt="" coords="1128,171,1197,205"/>
+<area shape="rect" id="node15" href="$VirtScreen_8h.html" title="screens/VirtScreen.h" alt="" coords="960,171,1104,205"/>
+<area shape="rect" id="node19" href="$header_8h.html" title="header.h" alt="" coords="585,254,655,287"/>
+<area shape="rect" id="node33" href="$worldmap_8h.html" title="worldmap.h" alt="" coords="323,171,411,205"/>
+<area shape="rect" id="node53" href="$Xyz_8h.html" title="Xyz.h" alt="" coords="1136,254,1189,287"/>
 </map>

@@ -7,7 +7,7 @@ var searchData=
   ['fire_5flight_5ffactor',['FIRE_LIGHT_FACTOR',['../Lighting-inertia_8cpp.html#a9238de6c319d1f60a3ac023a2fb1b1dd',1,'Lighting-inertia.cpp']]],
   ['firelight',['FireLight',['../classShred.html#afa7700c8e27ef28c082cc299d34ec841',1,'Shred::FireLight()'],['../classWorld.html#acc1c1fab9e5a810e660dc6fb0f28c9ba',1,'World::FireLight()']]],
   ['flushinput',['FlushInput',['../classScreen.html#a74c53c81a8085d0f0ac1cd088549e746',1,'Screen::FlushInput() const override'],['../classScreen.html#a74c53c81a8085d0f0ac1cd088549e746',1,'Screen::FlushInput() const override'],['../classVirtScreen.html#a6136fa032244875ed3fd91554e3f9ad4',1,'VirtScreen::FlushInput()']]],
-  ['focus',['Focus',['../classWorld.html#a7034c414204de5f1402101b6e2b9eaae',1,'World']]],
+  ['focus',['Focus',['../classWorld.html#a59a189d55670059991a43b35c9e48927',1,'World']]],
   ['freeze',['FREEZE',['../header_8h.html#a5adfb93f736d9aa263cea4b7b74da15ea9eef21e5904236b7a6c4e6c3bde2e917',1,'header.h']]],
   ['freg_2epro',['Freg.pro',['../Freg_8pro.html',1,'']]],
   ['fregmap_2evim',['fregMap.vim',['../fregMap_8vim.html',1,'']]],

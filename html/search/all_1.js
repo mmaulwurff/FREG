@@ -2,6 +2,7 @@ var searchData=
 [
   ['a_5fmeat',['A_MEAT',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a8c8b29db7ece3eff1fc9218b59d6dc31',1,'header.h']]],
   ['access',['Access',['../classDwarf.html#aa1f8a47b08a8608886726bdbed14504f',1,'Dwarf::Access()'],['../classInventory.html#aa1c67d1a4c1cac38cc68313634143563',1,'Inventory::Access()']]],
+  ['acid',['ACID',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a9115260fa6c16f6f5aa5e77ec4d327f7',1,'header.h']]],
   ['actfrequent',['ActFrequent',['../classActive.html#aebbfa0341ef4b0839448641f50f313b9',1,'Active']]],
   ['actinner',['ActInner',['../classActive.html#a2df9b38348525db5f2641ac12ac7b033',1,'Active::ActInner()'],['../classAnimal.html#ac992687684c7da2840803ebf080f5676',1,'Animal::ActInner()'],['../classClock.html#a40a1751a002141dfa112090b31a8dbbb',1,'Clock::ActInner()'],['../classIlluminator.html#ab7d6214d12fc02870e5818640ecaeca2',1,'Illuminator::ActInner()']]],
   ['action_5fbuild',['ACTION_BUILD',['../CursedScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a5d97b2a463c30e1033322e898c796d9a',1,'ACTION_BUILD():&#160;CursedScreen.h'],['../TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a5d97b2a463c30e1033322e898c796d9a',1,'ACTION_BUILD():&#160;TextScreen.h']]],
@@ -29,7 +30,7 @@ var searchData=
   ['air',['AIR',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a2b284adc15b412cbd260beb887f2df87',1,'header.h']]],
   ['animal',['Animal',['../classAnimal.html',1,'Animal'],['../classAnimal.html#aa74a02ac68a7d494cadefe3eda959cbb',1,'Animal::Animal(int sub, int id)'],['../classAnimal.html#a15ca10e8600921af2f55a17cc5457bf4',1,'Animal::Animal(QDataStream &amp;str, int sub, int id)'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a670864ae4db1466215efeed036defafb',1,'ANIMAL():&#160;header.h']]],
   ['animal_2eh',['Animal.h',['../Animal_8h.html',1,'']]],
-  ['anti',['Anti',['../classWorld.html#ab9ba914dca0e7cc0c13b1d0ff0ab45a1',1,'World']]],
+  ['anti',['Anti',['../classWorld.html#ad88cd6db57a20bc715a7f2714488a70a',1,'World']]],
   ['application',['Application',['../main_8cpp.html#ac40d64c4a951967c089b786f36d13c3e',1,'main.cpp']]],
   ['attractive',['Attractive',['../classActive.html#a94c0685815a73b5585be25d7c649816f',1,'Active::Attractive()'],['../classRabbit.html#acad45f176b8319deb0e80e69c3e06aa1',1,'Rabbit::Attractive()'],['../classPredator.html#adc6a150a359e37e0dfa5ae58d68d9a86',1,'Predator::Attractive()']]],
   ['axe',['Axe',['../classAxe.html',1,'Axe'],['../classAxe.html#a42e65f4f4bb97040c200c25fdf04388c',1,'Axe::Axe(int sub, int id)'],['../classAxe.html#ae3bef8bbd2c7f0a7de59e8b80637ebf7',1,'Axe::Axe(QDataStream &amp;str, int sub, int id)'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a7fc7bc2b5c24575b5cd0fcec2c37db09',1,'AXE():&#160;header.h']]],

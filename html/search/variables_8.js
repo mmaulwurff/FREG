@@ -6,6 +6,7 @@ var searchData=
   ['max_5flight_5fradius',['MAX_LIGHT_RADIUS',['../header_8h.html#ab2a8ddd0431475af1f856a04314f958b',1,'header.h']]],
   ['max_5fnote_5flength',['MAX_NOTE_LENGTH',['../header_8h.html#aff1ba36d8531f2bbaa167ed5424dea16',1,'header.h']]],
   ['max_5fstack_5fsize',['MAX_STACK_SIZE',['../Inventory_8h.html#a76cb87e7ea8b6d0ffb94d32046b2e698',1,'Inventory.h']]],
+  ['min_5fdwarf_5flight_5fradius',['MIN_DWARF_LIGHT_RADIUS',['../Dwarf_8h.html#a9c3301f7fce89f54f832c020da04081f',1,'Dwarf.h']]],
   ['min_5fworld_5fsize',['MIN_WORLD_SIZE',['../world_8cpp.html#a7354add5f63f24ddd6f64adffa1dc2bb',1,'world.cpp']]],
   ['moon_5flight_5ffactor',['MOON_LIGHT_FACTOR',['../world_8h.html#af25f372e0a0974d80c6484725f1c3f49',1,'world.h']]]
 ];

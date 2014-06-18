@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['canmove',['CanMove',['../classWorld.html#a14bb09cc54c252a324fd049205f5c0c7',1,'World']]],
+  ['canmove',['CanMove',['../classWorld.html#a176af51d44b5423c62133bc797601d66',1,'World']]],
   ['catchable',['Catchable',['../classBlock.html#ac97fd6a91473431393a401475ec73fe7',1,'Block::Catchable()'],['../classLadder.html#a9c70440e21b70aae3e36a92a1fd9ef03',1,'Ladder::Catchable()']]],
   ['charname',['CharName',['../classVirtScreen.html#a82173d1d2feac382758b201e7ff7e812',1,'VirtScreen']]],
   ['clampx',['ClampX',['../classWorld.html#acd0f4e904a6f96623be5f79c000e4eed',1,'World']]],
@@ -21,7 +21,7 @@ var searchData=
   ['copying',['COPYING',['../COPYING.html',1,'']]],
   ['craft',['Craft',['../classCraftManager.html#aae91b909190d3e3cf521e2d8b0f28a17',1,'CraftManager::Craft()'],['../classPlayer.html#a296203015c064fac1f9023426a36e3e9',1,'Player::Craft()']]],
   ['craftitem',['CraftItem',['../structCraftItem.html',1,'CraftItem'],['../structCraftItem.html#a331ffa3e89fced3389e5959507daf6da',1,'CraftItem::CraftItem()=delete'],['../structCraftItem.html#adc56369fab684aaa18b8e71d6652a3f5',1,'CraftItem::CraftItem(int num, int id)']]],
-  ['craftlist',['CraftList',['../classCraftList.html',1,'CraftList'],['../classCraftList.html#a9761eab7de35010a2bd3eee242756847',1,'CraftList::CraftList()']]],
+  ['craftlist',['CraftList',['../classCraftList.html',1,'CraftList'],['../classCraftList.html#a73ea1a709a182a3d937e3158dee8c3bb',1,'CraftList::CraftList()']]],
   ['craftmanager',['CraftManager',['../classCraftManager.html',1,'CraftManager'],['../classCraftManager.html#a3b9cca325a7c01c615c65e0f6db71c09',1,'CraftManager::CraftManager()']]],
   ['craftmanager_2ecpp',['CraftManager.cpp',['../CraftManager_8cpp.html',1,'']]],
   ['craftmanager_2eh',['CraftManager.h',['../CraftManager_8h.html',1,'']]],

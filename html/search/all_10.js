@@ -9,7 +9,7 @@ var searchData=
   ['pi',['PI',['../worldmap_8cpp.html#aa08a577393243b86dfd2a97e61443673',1,'worldmap.cpp']]],
   ['pick',['Pick',['../classPick.html',1,'Pick'],['../classPick.html#af9f0a4708bbd65b08f9e2ceba439014a',1,'Pick::Pick(int sub, int id)'],['../classPick.html#ab5f18e5baee61066f82fe690ded3fbd9',1,'Pick::Pick(QDataStream &amp;str, int sub, int id)'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285aea7ca0b8e1db4da5be02642b79cc64fc',1,'PICK():&#160;header.h']]],
   ['plate',['Plate',['../classPlate.html',1,'Plate'],['../classPlate.html#a29a25841554e6f789e9e5b28e5173cd2',1,'Plate::Plate(int sub, int id)'],['../classPlate.html#aa900c914e8c18aa1b834cec5e6aeb2b6',1,'Plate::Plate(QDataStream &amp;str, int sub, int id)'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a10398030fb63d46f4d8d42495caf6ee9',1,'PLATE():&#160;header.h']]],
-  ['player',['Player',['../classPlayer.html',1,'Player'],['../classVirtScreen.html#aaed763dcb848640a199dcc6af3ac9453',1,'VirtScreen::player()'],['../classPlayer.html#affe0cc3cb714f6deb4e62f0c0d3f1fd8',1,'Player::Player()']]],
+  ['player',['Player',['../classPlayer.html',1,'Player'],['../classPlayer.html#affe0cc3cb714f6deb4e62f0c0d3f1fd8',1,'Player::Player()'],['../classVirtScreen.html#aaed763dcb848640a199dcc6af3ac9453',1,'VirtScreen::player()']]],
   ['player_2ecpp',['Player.cpp',['../Player_8cpp.html',1,'']]],
   ['player_2eh',['Player.h',['../Player_8h.html',1,'']]],
   ['playerinventory',['PlayerInventory',['../classPlayer.html#a25708f721e1fb1f823ef7afe234f8c60',1,'Player']]],
