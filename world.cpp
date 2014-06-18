@@ -718,13 +718,14 @@ void World::RemSun() {
 }
 
 void World::LoadAllShreds() {
-    shreds = new Shred *[(ulong)NumShreds()*NumShreds()];
+    shreds = new Shred *[NumShreds()*NumShreds()];
     shredMemoryPool = static_cast<Shred *>
         (operator new (sizeof(Shred)*NumShreds()*NumShreds()));
     for (long i=latitude -NumShreds()/2, x=0; x<NumShreds(); ++i, ++x)
     for (long j=longitude-NumShreds()/2, y=0; y<NumShreds(); ++j, ++y) {
-        shreds[ShredPos(x, y)] = new(shredMemoryPool+ShredPos(x, y))
-            Shred( x, y, j, i, (shredMemoryPool+ShredPos(x, y)) );
+        const int pos = ShredPos(x, y);
+        shreds[pos] = new(shredMemoryPool + pos)
+            Shred( x, y, j, i, (shredMemoryPool + pos) );
     }
     if ( evernight ) {
         sunMoonFactor = 0;
@@ -770,7 +771,7 @@ World::World(const QString world_name) :
         map(world_name),
         toResetDir(UP),
         craftManager(new CraftManager),
-        not_initial_lighting()
+        initial_lighting()
 {
     world = this;
     QSettings game_settings("freg.ini", QSettings::IniFormat);
@@ -831,18 +832,4 @@ void World::CleanAll() {
     settings.setValue("time", qlonglong(time));
     settings.setValue("longitude", qlonglong(longitude));
     settings.setValue("latitude", qlonglong(latitude));
-}
-
-void World::EmitUpdated(const int x, const int y, const int z) {
-    if ( not_initial_lighting ) {
-        emit Updated(x, y, z);
-    }
-}
-
-void World::EmitUpdatedAround(const int x, const int y, const int z,
-        const int range)
-{
-    if ( not_initial_lighting ) {
-        emit UpdatedAround(x, y, z, range);
-    }
 }

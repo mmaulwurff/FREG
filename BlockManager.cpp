@@ -214,7 +214,7 @@ bool BlockManager::KindSubFromFile(QDataStream & str, int * kind, int * sub) {
     }
 }
 
-void BlockManager::DeleteBlock(Block * const block) const {
+void BlockManager::DeleteBlock(const Block * const block) const {
     if ( block != NormalBlock(block->Sub()) ) {
         delete block;
     }

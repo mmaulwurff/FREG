@@ -374,19 +374,26 @@
     void Rabbit::DoRareAction() {
         Animal::DoRareAction();
         // eat sometimes
-        World * const world = GetWorld();
         if ( SECONDS_IN_DAY/2 > Satiation() ) {
             EatGrass();
         }
-        // random movement
-        switch ( qrand()%60 ) {
-        case 0: SetDir(NORTH); break;
-        case 1: SetDir(SOUTH); break;
-        case 2: SetDir(EAST);  break;
-        case 3: SetDir(WEST);  break;
-        default: return;
+        if ( not moved_in_this_turn ) {
+            switch ( qrand()%60 ) {
+            case 0: SetDir(NORTH); break;
+            case 1: SetDir(SOUTH); break;
+            case 2: SetDir(EAST);  break;
+            case 3: SetDir(WEST);  break;
+            default: if ( Gravitate(4, 1, 3, 4) ) {
+                if ( qrand()%2 ) {
+                    GetWorld()->Jump(X(), Y(), Z(), GetDir());
+                } else {
+                    GetWorld()->Move(X(), Y(), Z(), GetDir());
+                }
+            } return;
+            }
+            GetWorld()->Move(X(), Y(), Z(), GetDir());
         }
-        world->Move(X(), Y(), Z(), GetDir());
+        moved_in_this_turn = false; // for next turn
     }
 
     Block * Rabbit::DropAfterDamage(bool * delete_block) {
@@ -400,12 +407,13 @@
     QString Rabbit::FullName() const { return tr("Herbivore"); }
     int  Rabbit::Kind() const { return RABBIT; }
     void Rabbit::DoFrequentAction() {
-        if ( Gravitate(4, 1, 3, 4) ) {
+        if ( Gravitate(2, 1, 2, 4) ) {
             if ( qrand()%2 ) {
                 world->Jump(X(), Y(), Z(), GetDir());
             } else {
                 world->Move(X(), Y(), Z(), GetDir());
             }
+            moved_in_this_turn = true;
         }
     }
 
@@ -414,11 +422,13 @@
     }
 
     Rabbit::Rabbit(const int sub, const int id) :
-            Animal(sub, id)
+            Animal(sub, id),
+            moved_in_this_turn(false)
     {}
 
     Rabbit::Rabbit(QDataStream & str, const int sub, const int id) :
-            Animal(str, sub, id)
+            Animal(str, sub, id),
+            moved_in_this_turn(false)
     {}
 // Door::
     int Door::PushResult(int) const { return movable ? MOVABLE : NOT_MOVABLE; }

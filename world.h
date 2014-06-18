@@ -96,6 +96,7 @@ private:
     /// Called from ReloadShreds(int), enlightens only needed shreds.
     void ReEnlightenMove(int direction);
     void UpShine(int x, int y, int z_bottom);
+    void UpShineInit(int x, int y, int z_bottom);
     void CrossUpShine(int x, int y, int z_bottom);
 
 public: // Information section
@@ -193,9 +194,6 @@ private:
     void ReloadShreds(int direction);
     void run() override;
     Shred ** FindShred(int x, int y) const;
-    /// Emits signal Updated if not initial lighting.
-    void EmitUpdated(int x, int y, int z);
-    void EmitUpdatedAround(int x, int y, int z, int range);
 
 public:
     QMutex * GetLock();
@@ -260,7 +258,7 @@ private:
     ShredStorage * shredStorage;
     Shred * shredMemoryPool;
     CraftManager * const craftManager;
-    bool not_initial_lighting;
+    bool initial_lighting;
 };
 
 extern World * world;

@@ -223,7 +223,7 @@ void Block::SaveAttributes(QDataStream &) const {}
 
 void Block::SaveToFile(QDataStream & out) {
     if ( this == block_manager.NormalBlock(sub) ) {
-        out << quint8( 0x80 | sub );
+        SaveNormalToFile(out);
     } else {
         out << sub << quint8(BlockManager::KindFromId(id)) <<
             (quint16)( ( ( ( durability
@@ -234,6 +234,10 @@ void Block::SaveToFile(QDataStream & out) {
         }
         SaveAttributes(out);
     }
+}
+
+void Block::SaveNormalToFile(QDataStream & out) const {
+    out << quint8( 0x80 | sub );
 }
 
 void Block::RestoreDurabilityAfterSave() { durability >>= 4; }

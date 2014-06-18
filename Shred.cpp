@@ -144,10 +144,15 @@ Shred::~Shred() {
         int height = HEIGHT-2;
         for ( ; blocks[x][y][height]->Sub()==AIR; --height);
         for (int z=1; z <= height; ++z) {
-            blocks[x][y][z]->SaveToFile(outstr);
-            block_manager.DeleteBlock(blocks[x][y][z]);
+            Block * const block = blocks[x][y][z];
+            if ( block == block_manager.NormalBlock(block->Sub()) ) {
+                block->SaveNormalToFile(outstr);
+            } else {
+                block->SaveToFile(outstr);
+                delete block;
+            }
         }
-        blocks[x][y][HEIGHT-1]->SaveToFile(outstr);
+        blocks[x][y][HEIGHT-1]->SaveNormalToFile(outstr);
     }
     GetWorld()->SetShredData(shred_data, longitude, latitude);
 }
@@ -296,7 +301,7 @@ void Shred::AddFalling(const int x, const int y, const int z) {
 }
 
 void Shred::AddShining(Active * const active) {
-    if ( active->LightRadius() ) {
+    if ( active->LightRadius() != 0 ) {
         shiningList.append(active);
     }
 }

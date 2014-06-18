@@ -128,6 +128,9 @@ protected:
     void DoFrequentAction() override;
     void DoRareAction() override;
     int  Attractive(int sub) const override;
+
+private:
+    bool moved_in_this_turn;
 };
 
 class Door : public Active {
