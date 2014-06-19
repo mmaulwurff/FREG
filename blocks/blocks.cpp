@@ -177,12 +177,11 @@
         if ( Sub() == ACID || Sub() == STONE ) {
             DamageAround();
         }
-        World * const world = GetWorld();
         switch ( qrand()%20 ) {
-        case 0: world->Move(X(), Y(), Z(), NORTH); break;
-        case 1: world->Move(X(), Y(), Z(), EAST ); break;
-        case 2: world->Move(X(), Y(), Z(), SOUTH); break;
-        case 3: world->Move(X(), Y(), Z(), WEST ); break;
+        case 0: GetWorld()->Move(X(), Y(), Z(), NORTH); break;
+        case 1: GetWorld()->Move(X(), Y(), Z(), EAST ); break;
+        case 2: GetWorld()->Move(X(), Y(), Z(), SOUTH); break;
+        case 3: GetWorld()->Move(X(), Y(), Z(), WEST ); break;
         }
     }
 

@@ -405,9 +405,10 @@ void Player::ProcessCommand(QString command) {
             GetWorld()->TimeOfDayStr() : tr("Not in Creative Mode.") );
     } else if ( "version" == request ) {
         emit Notify(tr("freg version: %1. Compiled on %2 at %3 with Qt %4.\n\
-Current Qt version: %5. Build type: %6.").
+Current Qt version: %5. Build type: %6. Compiler: %7.").
             arg(VER).arg(__DATE__).arg(__TIME__).arg(QT_VERSION_STR).
-            arg(qVersion()).arg(DEBUG ? tr("debug") : tr("release")));
+            arg(qVersion()).arg(DEBUG ? tr("debug") : tr("release")).
+            arg(COMPILER));
     } else if ( "help" == request ) {
         comm_stream >> request;
         emit ShowFile( QString("help_%1/%2.txt")
