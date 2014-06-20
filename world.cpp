@@ -408,6 +408,7 @@ void World::PhysEvents() {
 bool World::DirectlyVisible(int x_from, int y_from, int z_from,
         int x, int y, int z)
 const {
+    /// optimized DDA line with integers only.
     int max = Abs(Abs(z-=z_from) > Abs(y-=y_from) ? z : y);
     if ( Abs(x-=x_from) > max) {
         max = Abs(x);

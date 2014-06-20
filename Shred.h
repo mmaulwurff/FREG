@@ -63,7 +63,10 @@ public:
     void ReloadToSouth();
     void ReloadToWest();
 
-    Block * GetBlock(int x, int y, int z) const;
+    inline Block * GetBlock(const int x, const int y, const int z) const {
+        return blocks[x][y][z];
+    }
+
     /// Removes last block at xyz, then SetBlock, then makes block normal.
     void SetBlock(Block * block, int x, int y, int z);
     /// Puts block to coordinates xyz and activates it.
@@ -97,7 +100,11 @@ public:
     long GlobalY(int y) const;
     /// Get local coordinate.
     inline static int CoordInShred(const int x) { return x & 0xF; }
-    static int CoordOfShred(const int x);
+
+    /// Get shred coordinate in loaded zone (from 0 to numShreds).
+    inline static int CoordOfShred(const int x) {
+       return x >> SHRED_WIDTH_SHIFT;
+    }
 
 private:
     void RemoveAllSunLight();
@@ -149,6 +156,8 @@ private:
 
     /// Lowest nullstone and sky are not in bounds.
     static bool InBounds(int x, int y, int z);
+
+    static const int SHRED_WIDTH_SHIFT = 4;
 
     Block * blocks[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
     uchar lightMap[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];

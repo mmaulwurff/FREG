@@ -27,11 +27,6 @@
 const quint8 DATASTREAM_VERSION = QDataStream::Qt_5_2;
 const quint8 CURRENT_SHRED_FORMAT_VERSION = 4;
 
-const int SHRED_WIDTH_SHIFT = 4;
-
-/// Get shred coordinate in loaded zone (from 0 to numShreds).
-int Shred::CoordOfShred(const int x) { return x >> SHRED_WIDTH_SHIFT; }
-
 long Shred::Longitude() const { return longitude; }
 long Shred::Latitude()  const { return latitude; }
 int Shred::ShredX() const { return shredX; }
@@ -340,10 +335,6 @@ void Shred::ReloadToWest() {
         (*i)->ReloadToWest();
     }
     ++shredX;
-}
-
-Block * Shred::GetBlock(const int x, const int y, const int z) const {
-    return blocks[x][y][z];
 }
 
 void Shred::SetBlock(Block * block, const int x, const int y, const int z) {
