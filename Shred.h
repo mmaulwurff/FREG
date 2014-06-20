@@ -95,7 +95,8 @@ public:
     /// Make global coordinate from local (in loaded zone).
     long GlobalX(int x) const;
     long GlobalY(int y) const;
-    static int CoordInShred(const int x);
+    /// Get local coordinate.
+    inline static int CoordInShred(const int x) { return x & 0xF; }
     static int CoordOfShred(const int x);
 
 private:

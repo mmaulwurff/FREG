@@ -29,8 +29,6 @@ const quint8 CURRENT_SHRED_FORMAT_VERSION = 4;
 
 const int SHRED_WIDTH_SHIFT = 4;
 
-/// Get local coordinate.
-int Shred::CoordInShred(const int x) { return x & 0xF; }
 /// Get shred coordinate in loaded zone (from 0 to numShreds).
 int Shred::CoordOfShred(const int x) { return x >> SHRED_WIDTH_SHIFT; }
 

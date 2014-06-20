@@ -124,15 +124,11 @@ private:
     int ShredPos(int x, int y) const;
 
 public: // Visibility section
-    bool DirectlyVisible(float x_from, float y_from, float z_from,
-                         int   x_to,   int   y_to,   int   z_to) const;
+    bool DirectlyVisible(int x_from, int y_from, int z_from,
+                         int x_to,   int y_to,   int z_to) const;
+    /// At least one side of block is visible.
     bool Visible(int x_from, int y_from, int z_from,
                  int x_to,   int y_to,   int z_to) const;
-private:
-    bool PositiveVisible(float x_from, float y_from, float z_from,
-                         int   x_to,   int   y_to,   int   z_to) const;
-    bool NegativeVisible(float x_from, float y_from, float z_from,
-                         int   x_to,   int   y_to,   int   z_to) const;
 
 public: // Movement section
     /// Check and move

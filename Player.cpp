@@ -420,7 +420,9 @@ Current Qt version: %5. Build type: %6. Compiler: %7.").
 
 bool Player::Visible(const int x_to, const int y_to, const int z_to)
 const {
-    return world->Visible(X(), Y(), Z(), x_to, y_to, z_to);
+    return (X()==x_to && Y()==y_to && Z()==z_to) ?
+        true :
+        world->Visible(X(), Y(), Z(), x_to, y_to, z_to);
 }
 
 int  Player::GetDir() const { return dir; }

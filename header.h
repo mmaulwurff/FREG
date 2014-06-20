@@ -204,7 +204,7 @@ enum usage_types {
 };
 
 enum transparency {
-    BLOCK_OPAQUE,
+    BLOCK_OPAQUE = 0,
     BLOCK_TRANSPARENT,
     INVISIBLE,
     NONSTANDARD = 6,
@@ -215,5 +215,10 @@ bool IsLikeAir(int sub);
 
 /// For positive numbers only.
 inline int Round(const float x) { return int(x + 0.5f); }
+
+inline int Abs(const int x) {
+    const int mask = x >> (sizeof(int)*8 - 1);
+    return (x ^ mask) - mask;
+}
 
 #endif // HEADER_H

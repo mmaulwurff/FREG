@@ -405,57 +405,21 @@ void World::PhysEvents() {
     // emit ExitReceived(); // close all after 1 turn
 } // void World::PhysEvents()
 
-bool World::DirectlyVisible(float x_from, float y_from, float z_from,
-        const int x_to, const int y_to, const int z_to)
+bool World::DirectlyVisible(int x_from, int y_from, int z_from,
+        int x, int y, int z)
 const {
-    return ( x_from==x_to && y_from==y_to && z_from==z_to ) || (
-        ( x_to<x_from && y_to<y_from ) ||
-        ( x_to>x_from && y_to<y_from && y_to>(2*x_from-x_to-3) ) ||
-        ( x_to<x_from && y_to>y_from && y_to>(2*x_from-x_to-3) ) ) ?
-            NegativeVisible(x_from, y_from, z_from,
-                x_to, y_to, z_to) :
-            PositiveVisible(x_from, y_from, z_from,
-                x_to, y_to, z_to);
-}
-
-bool World::NegativeVisible(float x_from, float y_from, float z_from,
-        int x_to, int y_to, int z_to)
-const {
-    // this function is like World::PositiveVisible
-    x_from = -x_from;
-    y_from = -y_from;
-    x_to   = -x_to;
-    y_to   = -y_to;
-    int max = qMax(qAbs(x_to-(int)x_from),
-        qMax(qAbs(z_to-(int)z_from), qAbs(y_to-(int)y_from)));
-    const float x_step = (x_to-x_from)/max;
-    const float y_step = (y_to-y_from)/max;
-    const float z_step = (z_to-z_from)/max;
-    for ( ; max>1; --max) {
-        if ( BLOCK_OPAQUE == GetBlock(
-                -Round(x_from+=x_step),
-                -Round(y_from+=y_step),
-                 Round(z_from+=z_step))->Transparent() )
-        {
-            return false;
-        }
+    int max = Abs(Abs(z-=z_from) > Abs(y-=y_from) ? z : y);
+    if ( Abs(x-=x_from) > max) {
+        max = Abs(x);
     }
-    return true;
-}
-
-bool World::PositiveVisible(float x_from, float y_from, float z_from,
-        const int x_to, const int y_to, const int z_to)
-const {
-    int max = qMax(qAbs(x_to-(int)x_from),
-        qMax(qAbs(z_to-(int)z_from), qAbs(y_to-(int)y_from)));
-    const float x_step = (x_to-x_from)/max;
-    const float y_step = (y_to-y_from)/max;
-    const float z_step = (z_to-z_from)/max;
-    for ( ; max>1; --max) {
-        if ( BLOCK_OPAQUE == GetBlock(
-                Round(x_from+=x_step),
-                Round(y_from+=y_step),
-                Round(z_from+=z_step))->Transparent() )
+    x_from *= max;
+    y_from *= max;
+    z_from *= max;
+    for (int i=1; i<max; ++i) {
+        if ( not (GetBlock((x_from+=x)/max, (y_from+=y)/max, (z_from+=z)/max)->
+                    Transparent()
+                || GetBlock( (x_from+max-1)/max, (y_from+max-1)/max,
+                    (z_from+max-1)/max )->Transparent()) )
         {
                return false;
         }
@@ -468,23 +432,20 @@ bool World::Visible(
         const int x_to,   const int y_to,   const int z_to)
 const {
     int temp;
-    return (
-        (DirectlyVisible(x_from, y_from, z_from, x_to, y_to, z_to)) ||
-        (GetBlock(x_to+(temp=(x_to>x_from) ? (-1) : 1), y_to, z_to)->
+    return ( DirectlyVisible(x_from, y_from, z_from, x_to, y_to, z_to)
+        || (x_to!=x_from &&
+            GetBlock(x_to+(temp=(x_to>x_from) ? (-1) : 1), y_to, z_to)->
                 Transparent()
-            && DirectlyVisible(
-                x_from,    y_from, z_from,
-                x_to+temp, y_to,   z_to)) ||
-        (GetBlock(x_to, y_to+(temp=(y_to>y_from) ? (-1) : 1), z_to)->
+            && DirectlyVisible(x_from, y_from, z_from, x_to+temp, y_to, z_to))
+        || (y_to!=y_from &&
+            GetBlock(x_to, y_to+(temp=(y_to>y_from) ? (-1) : 1), z_to)->
                 Transparent()
-            && DirectlyVisible(
-                x_from, y_from,    z_from,
-                x_to,   y_to+temp, z_to)) ||
-        (GetBlock(x_to, y_to, z_to+(temp=(z_to>z_from) ? (-1) : 1))->
+            && DirectlyVisible(x_from, y_from, z_from, x_to, y_to+temp, z_to))
+        || (z_to!=z_from &&
+            GetBlock(x_to, y_to, z_to+(temp=(z_to>z_from) ? (-1) : 1))->
                 Transparent()
-            && DirectlyVisible(
-                x_from, y_from, z_from,
-                x_to,   y_to,   z_to+temp)) );
+            && DirectlyVisible(x_from, y_from, z_from, x_to, y_to, z_to+temp))
+        );
 }
 
 bool World::Move(const int x, const int y, const int z, const int dir) {
@@ -595,7 +556,7 @@ const {
     case DOWN:  --*z_to; break;
     case UP:    ++*z_to; break;
     default:
-        fprintf(stderr, "World::Focus: unlisted dir: %d\n", dir);
+        fprintf(stderr, "%s: unlisted dir: %d.\n", Q_FUNC_INFO, dir);
         return true;
     }
     return not InBounds(*x_to, *y_to, *z_to);
