@@ -53,6 +53,7 @@ enum WEARABLE {
 
 class Inventory;
 class Active;
+class Falling;
 class Animal;
 
 class Block {
@@ -86,6 +87,7 @@ public:
     virtual Inventory * HasInventory();
     virtual Animal * IsAnimal();
     virtual Active * ActiveBlock();
+    virtual Falling * ShouldFall();
 
     virtual int Wearable() const;
     virtual int DamageKind() const;

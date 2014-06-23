@@ -24,21 +24,9 @@
 #include "Xyz.h"
 #include "blocks/Inventory.h"
 
-QString Active::FullName() const {
-    switch ( Sub() ) {
-    case SAND:  return tr("Sand");
-    case WATER: return tr("Snow");
-    case STONE: return tr("Masonry");
-    default:
-        fprintf(stderr, "Active::FullName: Unlisted sub: %d\n", Sub());
-        return "Unkown active block";
-    }
-}
+// Active section
 
-int  Active::Kind() const { return ACTIVE; }
 Active * Active::ActiveBlock() { return this; }
-bool Active::IsFalling() const { return falling; }
-bool Active::ShouldFall() const { return true; }
 int  Active::ShouldAct() const { return FREQUENT_NEVER; }
 int  Active::PushResult(int) const { return MOVABLE; }
 void Active::DoFrequentAction() {}
@@ -73,27 +61,12 @@ void Active::ActRare() {
     }
 }
 
-void Active::SetFalling(const bool set) {
-    if ( not (falling=set) ) {
-        fall_height = 0;
-    }
-}
-
 void Active::SetDeferredAction(DeferredAction * const action) {
     delete deferredAction;
     deferredAction = action;
 }
 
 DeferredAction * Active::GetDeferredAction() const { return deferredAction; }
-
-void Active::FallDamage() {
-    if ( fall_height > SAFE_FALL_HEIGHT ) {
-        const int dmg = (fall_height - SAFE_FALL_HEIGHT)*10;
-        GetWorld()->Damage(X(), Y(), Z()-1, dmg, DAMAGE_FALL);
-        Damage(dmg, DAMAGE_FALL);
-    }
-    fall_height = 0;
-}
 
 bool Active::Move(const int dir) {
     switch ( dir ) {
@@ -106,12 +79,18 @@ bool Active::Move(const int dir) {
     bool overstep;
     if ( DOWN == dir ) {
         --z_self;
-        ++fall_height;
+        Falling * const falling = ShouldFall();
+        if ( falling != nullptr ) {
+            falling->IncreaseFallHeight();
+        }
         overstep = false;
     } else {
         Shred * const new_shred = GetWorld()->GetShred(X(), Y());
         if ( (overstep = ( shred != new_shred )) ) {
-            falling = false;
+            Falling * const falling = ShouldFall();
+            if ( falling != nullptr ) {
+                falling->SetNotFalling();
+            }
             shred->UnregisterLater(this);
             new_shred->Register(this);
         }
@@ -181,8 +160,6 @@ void Active::ReloadToEast()  { x_self -= SHRED_WIDTH; }
 
 void Active::EmitUpdated() { emit Updated(); }
 
-void Active::SaveAttributes(QDataStream & out) const { out << fall_height; }
-
 void Active::SetToDelete() {
     if ( not frozen ) {
         frozen = true;
@@ -197,8 +174,6 @@ bool Active::IsToDelete() const { return frozen; }
 Active::Active(const int sub, const int id, const int transp) :
         Block(sub, id, transp),
         Xyz(),
-        fall_height(0),
-        falling(false),
         frozen(false),
         deferredAction(nullptr),
         shred()
@@ -209,13 +184,10 @@ Active::Active(QDataStream & str, const int sub, const int id,
     :
         Block(str, sub, id, transp),
         Xyz(),
-        falling(false),
         frozen(false),
         deferredAction(nullptr),
         shred()
-{
-    str >> fall_height;
-}
+{}
 
 Active::~Active() { delete deferredAction; }
 
@@ -269,4 +241,54 @@ bool Active::IsSubAround(const int sub) const {
             (X() < bound && sub == world->GetBlock(X()+1, Y(), Z())->Sub()) ||
             (Y() > 0     && sub == world->GetBlock(X(), Y()-1, Z())->Sub()) ||
             (Y() < bound && sub == world->GetBlock(X(), Y()+1, Z())->Sub()) );
+}
+
+// Falling section
+
+Falling::Falling(const int sub, const int id, const int transp) :
+        Active(sub, id, transp),
+        fallHeight(0),
+        falling(false)
+{}
+
+Falling::Falling(QDataStream & str, const int sub, const int id,
+        const int transp)
+    :
+        Active(str, sub, id, transp),
+        falling(false)
+{
+    str >> fallHeight;
+}
+
+QString Falling::FullName() const {
+    switch ( Sub() ) {
+    case SAND:  return tr("Sand");
+    case WATER: return tr("Snow");
+    case STONE: return tr("Masonry");
+    default:
+        fprintf(stderr, "Active::FullName: Unlisted sub: %d\n", Sub());
+        return "Unkown active block";
+    }
+}
+
+int  Falling::Kind() const { return FALLING; }
+void Falling::SaveAttributes(QDataStream & out) const { out << fallHeight; }
+bool Falling::IsFalling() const { return falling; }
+void Falling::IncreaseFallHeight() { ++fallHeight; }
+void Falling::SetNotFalling() { falling = false; }
+Falling * Falling::ShouldFall() { return this; }
+
+void Falling::FallDamage() {
+    if ( fallHeight > SAFE_FALL_HEIGHT ) {
+        const int dmg = (fallHeight - SAFE_FALL_HEIGHT)*10;
+        GetWorld()->Damage(X(), Y(), Z()-1, dmg, DAMAGE_FALL);
+        Damage(dmg, DAMAGE_FALL);
+    }
+    fallHeight = 0;
+}
+
+void Falling::SetFalling(const bool set) {
+    if ( not (falling=set) ) {
+        fallHeight = 0;
+    }
 }

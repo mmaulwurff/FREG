@@ -297,7 +297,6 @@
     }
 
     int  Grass::ShouldAct() const  { return FREQUENT_RARE; }
-    bool Grass::ShouldFall() const { return false; }
     int  Grass::Kind() const { return GRASS; }
     Block * Grass::DropAfterDamage(bool *) { return nullptr; }
 
@@ -319,7 +318,6 @@
     {}
 // Bush::
     int  Bush::Sub() const { return Block::Sub(); }
-    bool Bush::ShouldFall() const { return false; }
     int  Bush::ShouldAct() const  { return FREQUENT_RARE; }
     void Bush::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
     int  Bush::Kind() const { return BUSH; }
@@ -457,7 +455,6 @@
     }
 
     int  Door::ShouldAct() const { return FREQUENT_SECOND; }
-    bool Door::ShouldFall() const { return false; }
     int  Door::Kind() const { return locked ? LOCKED_DOOR : DOOR; }
 
     QString Door::FullName() const {
@@ -528,7 +525,6 @@
 
     int  Clock::PushResult(int) const { return NOT_MOVABLE; }
     int  Clock::ShouldAct() const  { return FREQUENT_RARE; }
-    bool Clock::ShouldFall() const { return false; }
     void Clock::Damage(int, int) { Break(); }
     void Clock::Push(int, Block *) { Use(); }
     int  Clock::Kind() const { return CLOCK; }

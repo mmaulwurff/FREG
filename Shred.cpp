@@ -25,7 +25,7 @@
 #include "blocks/Inventory.h"
 
 const quint8 DATASTREAM_VERSION = QDataStream::Qt_5_2;
-const quint8 CURRENT_SHRED_FORMAT_VERSION = 4;
+const quint8 CURRENT_SHRED_FORMAT_VERSION = 5;
 
 long Shred::Longitude() const { return longitude; }
 long Shred::Latitude()  const { return latitude; }
@@ -270,26 +270,27 @@ void Shred::Unregister(Active * const active) {
     activeListAll     .removeAll(active);
     activeListFrequent.removeAll(active);
     activeListRare    .removeAll(active);
-    fallList          .removeAll(active);
+    fallList          .removeAll(active->ShouldFall());
     RemShining(active);
 }
 
 void Shred::AddFalling(Active * const active) {
-    if ( not active->IsFalling() &&
-            active->ShouldFall() &&
-            not (*active == *GetBlock(
+    Falling * const falling = active->ShouldFall();
+    if ( falling != nullptr &&
+            not falling->IsFalling() &&
+            not (*falling == *GetBlock(
                 CoordInShred(active->X()),
                 CoordInShred(active->Y()), active->Z()-1)) )
     {
-        active->SetFalling(true);
-        fallList.append(active);
+        falling->SetFalling(true);
+        fallList.append(falling);
     }
 }
 
 void Shred::AddFalling(const int x, const int y, const int z) {
-    Active * const active = blocks[x][y][z]->ActiveBlock();
-    if ( active != nullptr ) {
-        AddFalling(active);
+    Falling * const falling = blocks[x][y][z]->ShouldFall();
+    if ( falling != nullptr ) {
+        AddFalling(falling);
     }
 }
 
@@ -436,7 +437,7 @@ void Shred::TestShred() { // 7 items in a row
     // row 1
     SetNewBlock(CLOCK,     IRON, column+=2, row, level);
     SetNewBlock(CONTAINER, WOOD, column+=2, row, level);
-    SetNewBlock(ACTIVE,    SAND, column+=2, row, level);
+    SetNewBlock(FALLING,   SAND, column+=2, row, level);
     PutBlock(Normal(GLASS),      column+=2, row, level);
     SetNewBlock(CONTAINER, DIFFERENT, column+=2, row, level);
     SetNewBlock(PLATE, STONE, column+=2, row, level);
@@ -464,10 +465,10 @@ void Shred::TestShred() { // 7 items in a row
     // row 3
     column = -1;
     row += 2;
-    SetNewBlock(WEAPON, IRON,  column+=2, row, level);
-    SetNewBlock(BLOCK,  SAND,  column+=2, row, level);
-    SetNewBlock(BLOCK,  WATER, column+=2, row, level);
-    SetNewBlock(ACTIVE, WATER, column+=2, row, level);
+    SetNewBlock(WEAPON,  IRON,  column+=2, row, level);
+    SetNewBlock(BLOCK,   SAND,  column+=2, row, level);
+    SetNewBlock(BLOCK,   WATER, column+=2, row, level);
+    SetNewBlock(FALLING, WATER, column+=2, row, level);
     SetNewBlock(DOOR,   STONE, column+=2, row, level);
     blocks[column][row][level]->SetDir(NORTH);
     SetNewBlock(BLOCK,  CLAY,  column+=2, row, level);
@@ -487,11 +488,11 @@ void Shred::TestShred() { // 7 items in a row
     // row 5
     column = -1;
     row += 2;
-    SetNewBlock(ACTIVE, STONE, column+=2, row, level);
-    SetNewBlock(WEAPON, STONE, column+=2, row, level);
-    SetNewBlock(GRASS,  FIRE,  column+=2, row, level);
-    SetNewBlock(BLOCK,  WOOD,  column, row, level-1);
-    SetNewBlock(TEXT,   GLASS, column+=2, row, level);
+    SetNewBlock(FALLING, STONE, column+=2, row, level);
+    SetNewBlock(WEAPON,  STONE, column+=2, row, level);
+    SetNewBlock(GRASS,   FIRE,  column+=2, row, level);
+    SetNewBlock(BLOCK,   WOOD,  column, row, level-1);
+    SetNewBlock(TEXT,    GLASS, column+=2, row, level);
     PutBlock(Normal(COAL), column+=2, row, level);
     SetNewBlock(CLOCK, EXPLOSIVE, column+=2, row, level);
     PutBlock(Normal(MOSS_STONE),  column+=2, row, level);

@@ -123,7 +123,7 @@ color_pairs Screen::Color(const int kind, const int sub) const {
         case ACID:  return GREEN_MAGENTA;
         default:    return RED_YELLOW;
     } // no break;
-    case ACTIVE: switch ( sub ) {
+    case FALLING: switch ( sub ) {
         case WATER: return CYAN_WHITE;
         case SAND:  return YELLOW_WHITE;
     } // no break;

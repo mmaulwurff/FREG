@@ -108,7 +108,7 @@ char VirtScreen::CharName(const int kind, const int sub) const {
         case BONE:
         case WOOD:  return '/';
     } break;
-    case ACTIVE: switch ( sub ) {
+    case FALLING: switch ( sub ) {
         case SAND:  return '.';
         case WATER: return '*';
         case STONE: return ':';

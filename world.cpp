@@ -496,13 +496,13 @@ bool World::CanMove(const int x, const int y, const int z,
         break;
         }
     }
-    const Active * active;
+    Falling * falling;
     return ( move_flag &&
         (DOWN==dir || !block->Weight() ||
-        !( (active=block->ActiveBlock()) &&
-            active->IsFalling() &&
-            AIR==GetBlock(x, y, z-1)->Sub() &&
-            AIR==GetBlock(newx, newy, newz-1)->Sub() )) );
+        !( (falling=block->ShouldFall())
+            && falling->IsFalling()
+            && AIR==GetBlock(x, y, z-1)->Sub()
+            && AIR==GetBlock(newx, newy, newz-1)->Sub() )) );
 } // bool World::CanMove(const int x, y, z, newx, newy, newz, int dir)
 
 void World::NoCheckMove(const int x, const int y, const int z,

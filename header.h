@@ -133,7 +133,7 @@ enum kinds {
     GRASS,       ///<  8
     BUSH,        ///<  9
     RABBIT,      ///< 10
-    ACTIVE,      ///< 11
+    FALLING,     ///< 11
     CLOCK,       ///< 12
     PLATE,       ///< 13
     WORKBENCH,   ///< 14

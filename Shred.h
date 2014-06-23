@@ -26,6 +26,7 @@
 class World;
 class Block;
 class Active;
+class Falling;
 
 class Shred final {
 public:
@@ -169,7 +170,7 @@ private:
     /// when they are registered both in frequent and rare lists.
     QLinkedList<Active *> activeListAll;
     QLinkedList<Active *> activeListFrequent, activeListRare;
-    QLinkedList<Active *> fallList;
+    QLinkedList<Falling *> fallList;
     QLinkedList<Active *> shiningList;
     QLinkedList<Active *> deleteList;
     QLinkedList<Active *> unregisterList;

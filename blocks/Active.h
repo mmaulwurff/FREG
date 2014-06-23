@@ -53,14 +53,9 @@ public:
     void Damage(int dmg, int dmg_kind) override;
     void ReceiveSignal(QString) override;
     int  PushResult(int dir) const override;
-    int  Kind() const override;
-    QString  FullName() const override;
+    int  Kind() const override = 0;
+    QString  FullName() const override = 0;
     Active * ActiveBlock() override;
-
-    void FallDamage();
-    bool IsFalling() const;
-    /// Returns true if shred border is overstepped.
-    void SetFalling(bool set);
 
     Shred * GetShred() const;
     World * GetWorld() const;
@@ -70,7 +65,6 @@ public:
 
     virtual INNER_ACTIONS ActInner();
     virtual int  ShouldAct()  const;
-    virtual bool ShouldFall() const;
 
     void SetDeferredAction(DeferredAction *);
     DeferredAction * GetDeferredAction() const;
@@ -92,8 +86,6 @@ signals:
     void ReceivedText(const QString);
 
 protected:
-    void SaveAttributes(QDataStream & out) const override;
-
     void SendSignalAround(QString) const;
     void DamageAround() const;
     /// Damages block and destroys it if it is broken.
@@ -110,12 +102,35 @@ private:
     void UpdateShred();
     bool IsToDelete() const;
 
-    quint8 fall_height;
-    bool falling;
     /// Don't do actions when frozen.
     bool frozen;
     DeferredAction * deferredAction;
     Shred * shred;
+};
+
+class Falling : public Active {
+    Q_OBJECT
+public:
+    Falling(int sub, int id, int transp = UNDEF);
+    Falling(QDataStream & str, int sub, int id, int transp = UNDEF);
+
+    int  Kind() const override;
+    QString FullName() const override;
+    Falling * ShouldFall() override;
+
+    void FallDamage();
+    bool IsFalling() const;
+    /// Returns true if shred border is overstepped.
+    void SetFalling(bool set);
+    void IncreaseFallHeight();
+    void SetNotFalling();
+
+protected:
+    void SaveAttributes(QDataStream & out) const override;
+
+private:
+    quint8 fallHeight;
+    bool falling;
 };
 
 #endif // ACTIVE_H

@@ -74,7 +74,6 @@ public:
     int  ShouldAct()  const override;
     int  LightRadius() const override;
     int  Kind()     const override;
-    bool ShouldFall() const override;
     void Push(int dir, Block * who) override;
     Block * DropAfterDamage(bool * delete_block) override;
     QString FullName() const override;
@@ -97,7 +96,6 @@ public:
     int  Sub() const override;
     int  PushResult(int dir) const override;
     int  ShouldAct() const override;
-    bool ShouldFall() const override;
     void Push(int dir, Block * who) override;
     void ReceiveSignal(QString) override;
     int  Kind() const override;
@@ -142,7 +140,6 @@ public:
     int ShouldAct() const override;
     void Push(int dir, Block *) override;
     int  PushResult(int dir /* not used */) const override;
-    bool ShouldFall() const override;
     int  Kind() const override;
     QString FullName() const override;
     usage_types Use(Block * who = 0) override;
@@ -166,7 +163,6 @@ public:
     int ShouldAct() const override;
     int PushResult(int) const override;
     int Weight() const override;
-    bool ShouldFall() const override;
     bool Inscribe(QString) override;
     void Push(int dir, Block * who) override;
     void Damage(int dmg, int dmg_kind) override;
