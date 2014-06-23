@@ -74,7 +74,6 @@ int Illuminator::LightRadius() const {
     }
 }
 
-bool Illuminator::ShouldFall() const { return false; }
 int  Illuminator::ShouldAct() const { return FREQUENT_RARE; }
 void Illuminator::DoRareAction() { ActInner(); }
 

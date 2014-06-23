@@ -53,6 +53,7 @@ enum WEARABLE {
 
 class Inventory;
 class Active;
+class Falling;
 class Animal;
 
 class Block {
@@ -86,6 +87,7 @@ public:
     virtual Inventory * HasInventory();
     virtual Animal * IsAnimal();
     virtual Active * ActiveBlock();
+    virtual Falling * ShouldFall();
 
     virtual int Wearable() const;
     virtual int DamageKind() const;
@@ -117,6 +119,7 @@ public:
 
     /// Important! If block should be used after save, call RestoreDurability.
     void SaveToFile(QDataStream & out);
+    void SaveNormalToFile(QDataStream & out) const;
     /// Importart! Use it if block won't be deleted after SaveToFile.
     void RestoreDurabilityAfterSave();
 

@@ -22,7 +22,7 @@
 
 #include "blocks/Active.h"
 
-class Animal : public Active {
+class Animal : public Falling {
     Q_OBJECT
 public:
     Animal(int sub, int id);

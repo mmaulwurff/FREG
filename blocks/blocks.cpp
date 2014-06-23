@@ -135,7 +135,7 @@
     }
 
     void Animal::SaveAttributes(QDataStream & out) const {
-        Active::SaveAttributes(out);
+        Falling::SaveAttributes(out);
         out << breath << satiation;
     }
 
@@ -157,12 +157,13 @@
     }
 
     Animal::Animal(const int sub, const int id) :
-            Active(sub, id, NONSTANDARD),
+            Falling(sub, id, NONSTANDARD),
             breath(MAX_BREATH),
             satiation(SECONDS_IN_DAY)
     {}
+
     Animal::Animal(QDataStream & str, const int sub, const int id) :
-            Active(str, sub, id, NONSTANDARD)
+            Falling(str, sub, id, NONSTANDARD)
     {
         str >> breath >> satiation;
     }
@@ -177,12 +178,11 @@
         if ( Sub() == ACID || Sub() == STONE ) {
             DamageAround();
         }
-        World * const world = GetWorld();
         switch ( qrand()%20 ) {
-        case 0: world->Move(X(), Y(), Z(), NORTH); break;
-        case 1: world->Move(X(), Y(), Z(), EAST ); break;
-        case 2: world->Move(X(), Y(), Z(), SOUTH); break;
-        case 3: world->Move(X(), Y(), Z(), WEST ); break;
+        case 0: GetWorld()->Move(X(), Y(), Z(), NORTH); break;
+        case 1: GetWorld()->Move(X(), Y(), Z(), EAST ); break;
+        case 2: GetWorld()->Move(X(), Y(), Z(), SOUTH); break;
+        case 3: GetWorld()->Move(X(), Y(), Z(), WEST ); break;
         }
     }
 
@@ -298,7 +298,6 @@
     }
 
     int  Grass::ShouldAct() const  { return FREQUENT_RARE; }
-    bool Grass::ShouldFall() const { return false; }
     int  Grass::Kind() const { return GRASS; }
     Block * Grass::DropAfterDamage(bool *) { return nullptr; }
 
@@ -320,7 +319,6 @@
     {}
 // Bush::
     int  Bush::Sub() const { return Block::Sub(); }
-    bool Bush::ShouldFall() const { return false; }
     int  Bush::ShouldAct() const  { return FREQUENT_RARE; }
     void Bush::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
     int  Bush::Kind() const { return BUSH; }
@@ -374,19 +372,26 @@
     void Rabbit::DoRareAction() {
         Animal::DoRareAction();
         // eat sometimes
-        World * const world = GetWorld();
         if ( SECONDS_IN_DAY/2 > Satiation() ) {
             EatGrass();
         }
-        // random movement
-        switch ( qrand()%60 ) {
-        case 0: SetDir(NORTH); break;
-        case 1: SetDir(SOUTH); break;
-        case 2: SetDir(EAST);  break;
-        case 3: SetDir(WEST);  break;
-        default: return;
+        if ( not moved_in_this_turn ) {
+            switch ( qrand()%60 ) {
+            case 0: SetDir(NORTH); break;
+            case 1: SetDir(SOUTH); break;
+            case 2: SetDir(EAST);  break;
+            case 3: SetDir(WEST);  break;
+            default: if ( Gravitate(4, 1, 3, 4) ) {
+                if ( qrand()%2 ) {
+                    GetWorld()->Jump(X(), Y(), Z(), GetDir());
+                } else {
+                    GetWorld()->Move(X(), Y(), Z(), GetDir());
+                }
+            } return;
+            }
+            GetWorld()->Move(X(), Y(), Z(), GetDir());
         }
-        world->Move(X(), Y(), Z(), GetDir());
+        moved_in_this_turn = false; // for next turn
     }
 
     Block * Rabbit::DropAfterDamage(bool * delete_block) {
@@ -400,12 +405,13 @@
     QString Rabbit::FullName() const { return tr("Herbivore"); }
     int  Rabbit::Kind() const { return RABBIT; }
     void Rabbit::DoFrequentAction() {
-        if ( Gravitate(4, 1, 3, 4) ) {
+        if ( Gravitate(2, 1, 2, 4) ) {
             if ( qrand()%2 ) {
                 world->Jump(X(), Y(), Z(), GetDir());
             } else {
                 world->Move(X(), Y(), Z(), GetDir());
             }
+            moved_in_this_turn = true;
         }
     }
 
@@ -414,11 +420,13 @@
     }
 
     Rabbit::Rabbit(const int sub, const int id) :
-            Animal(sub, id)
+            Animal(sub, id),
+            moved_in_this_turn(false)
     {}
 
     Rabbit::Rabbit(QDataStream & str, const int sub, const int id) :
-            Animal(str, sub, id)
+            Animal(str, sub, id),
+            moved_in_this_turn(false)
     {}
 // Door::
     int Door::PushResult(int) const { return movable ? MOVABLE : NOT_MOVABLE; }
@@ -448,7 +456,6 @@
     }
 
     int  Door::ShouldAct() const { return FREQUENT_SECOND; }
-    bool Door::ShouldFall() const { return false; }
     int  Door::Kind() const { return locked ? LOCKED_DOOR : DOOR; }
 
     QString Door::FullName() const {
@@ -519,7 +526,6 @@
 
     int  Clock::PushResult(int) const { return NOT_MOVABLE; }
     int  Clock::ShouldAct() const  { return FREQUENT_RARE; }
-    bool Clock::ShouldFall() const { return false; }
     void Clock::Damage(int, int) { Break(); }
     void Clock::Push(int, Block *) { Use(); }
     int  Clock::Kind() const { return CLOCK; }

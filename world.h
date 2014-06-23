@@ -96,6 +96,7 @@ private:
     /// Called from ReloadShreds(int), enlightens only needed shreds.
     void ReEnlightenMove(int direction);
     void UpShine(int x, int y, int z_bottom);
+    void UpShineInit(int x, int y, int z_bottom);
     void CrossUpShine(int x, int y, int z_bottom);
 
 public: // Information section
@@ -123,15 +124,11 @@ private:
     int ShredPos(int x, int y) const;
 
 public: // Visibility section
-    bool DirectlyVisible(float x_from, float y_from, float z_from,
-                         int   x_to,   int   y_to,   int   z_to) const;
+    bool DirectlyVisible(int x_from, int y_from, int z_from,
+                         int x_to,   int y_to,   int z_to) const;
+    /// At least one side of block is visible.
     bool Visible(int x_from, int y_from, int z_from,
                  int x_to,   int y_to,   int z_to) const;
-private:
-    bool PositiveVisible(float x_from, float y_from, float z_from,
-                         int   x_to,   int   y_to,   int   z_to) const;
-    bool NegativeVisible(float x_from, float y_from, float z_from,
-                         int   x_to,   int   y_to,   int   z_to) const;
 
 public: // Movement section
     /// Check and move
@@ -193,9 +190,6 @@ private:
     void ReloadShreds(int direction);
     void run() override;
     Shred ** FindShred(int x, int y) const;
-    /// Emits signal Updated if not initial lighting.
-    void EmitUpdated(int x, int y, int z);
-    void EmitUpdatedAround(int x, int y, int z, int range);
 
 public:
     QMutex * GetLock();
@@ -260,7 +254,7 @@ private:
     ShredStorage * shredStorage;
     Shred * shredMemoryPool;
     CraftManager * const craftManager;
-    bool not_initial_lighting;
+    bool initial_lighting;
 };
 
 extern World * world;

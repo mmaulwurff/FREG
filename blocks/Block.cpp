@@ -161,9 +161,10 @@ bool Block::Inscribe(const QString str) {
     return true;
 }
 
-Inventory * Block::HasInventory() { return 0; }
-Animal * Block::IsAnimal() { return 0; }
-Active * Block::ActiveBlock() { return 0; }
+Inventory * Block::HasInventory() { return nullptr; }
+Animal * Block::IsAnimal() { return nullptr; }
+Active * Block::ActiveBlock() { return nullptr; }
+Falling * Block::ShouldFall() { return nullptr; }
 
 void Block::Restore() { durability = MAX_DURABILITY; }
 void Block::Break() { durability = 0; }
@@ -223,7 +224,7 @@ void Block::SaveAttributes(QDataStream &) const {}
 
 void Block::SaveToFile(QDataStream & out) {
     if ( this == block_manager.NormalBlock(sub) ) {
-        out << quint8( 0x80 | sub );
+        SaveNormalToFile(out);
     } else {
         out << sub << quint8(BlockManager::KindFromId(id)) <<
             (quint16)( ( ( ( durability
@@ -234,6 +235,10 @@ void Block::SaveToFile(QDataStream & out) {
         }
         SaveAttributes(out);
     }
+}
+
+void Block::SaveNormalToFile(QDataStream & out) const {
+    out << quint8( 0x80 | sub );
 }
 
 void Block::RestoreDurabilityAfterSave() { durability >>= 4; }
