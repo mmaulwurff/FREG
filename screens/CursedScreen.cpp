@@ -124,7 +124,7 @@ color_pairs Screen::Color(const int kind, const int sub) const {
         case SUB_CLOUD: return WHITE_WHITE;
         default:        return RED_YELLOW;
     } // no break;
-    case ACTIVE: switch ( sub ) {
+    case FALLING: switch ( sub ) {
         case WATER: return CYAN_WHITE;
         case SAND:  return YELLOW_WHITE;
     } // no break;
@@ -495,13 +495,13 @@ void Screen::PrintHUD() {
         }
     }
     wrefresh(hudWin);
-    wmove(miniMapWin, 1, 1);
+    wmove(miniMapWin, 1, 0);
     const int x_center = Shred::CoordOfShred(player->X());
     const int y_center = Shred::CoordOfShred(player->Y());
     const int j_start = qMax(x_center-2, 0);
     const int j_end = qMin(x_center+2, world->NumShreds()-1);
     const int i_end = qMin(y_center+2, world->NumShreds()-1);
-    for (int i=qMax(y_center-2, 0); i<=i_end; ++i, waddstr(miniMapWin, "\n_"))
+    for (int i=qMax(y_center-2, 0); i<=i_end; ++i, waddch(miniMapWin, '\n'))
     for (int j=j_start;             j<=j_end; ++j) {
         Shred * const shred = world->GetShredByPos(j, i);
         if ( shred == nullptr ) {
@@ -509,7 +509,7 @@ void Screen::PrintHUD() {
             waddstr(miniMapWin, "  ");
         } else {
             wcolor_set(miniMapWin,ColorShred(shred->GetTypeOfShred()),nullptr);
-            wprintw(miniMapWin, "%c ", shred->GetTypeOfShred());
+            wprintw(miniMapWin, " %c", shred->GetTypeOfShred());
         }
     }
     wstandend(miniMapWin);
@@ -889,7 +889,7 @@ Screen::Screen(
         leftWin  = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, left_border);
         hudWin   = newwin(3, preferred_width, SCREEN_SIZE+2, left_border);
         notifyWin = newwin(0,preferred_width-13, SCREEN_SIZE+5,left_border+13);
-        miniMapWin = newwin(7, 12, SCREEN_SIZE+5, left_border);
+        miniMapWin = newwin(7, 11, SCREEN_SIZE+5, left_border);
     } else if ( COLS >= preferred_width/2 ) {
         const int left_border = COLS/2-SCREEN_SIZE-1;
         rightWin   = nullptr;

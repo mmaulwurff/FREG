@@ -15,7 +15,7 @@ CONFIG += thread warn_on console
 CONFIG += debug
 
 # compile with clang:
-# CONFIG += clang
+#CONFIG += clang
 
 VERSION = 0.2
 VERSTR = '\\"$${VERSION}\\"'
@@ -23,7 +23,7 @@ DEFINES += VER=\"$${VERSTR}\"
 TEMPLATE = app
 
 QMAKE_CXXFLAGS += -Wall -Wextra -Werror -std=c++11 -pedantic
-QMAKE_CXXFLAGS += -Wno-error=strict-overflow # Qt 5.2 has some problem
+#QMAKE_CXXFLAGS += -Wno-error=strict-overflow # Qt 5.2 has some problem
 
 #QMAKE_CXXFLAGS_DEBUG += -fno-inline
 QMAKE_CXXFLAGS_RELEASE -= -O2
@@ -36,6 +36,7 @@ clang {
 } else {
     QMAKE_CXXFLAGS_RELEASE += -s
 }
+DEFINES += COMPILER=\"\\\"$${QMAKE_CXX}\"\\\"
 
 cursed_screen {
     TARGET = freg-nox

@@ -157,7 +157,7 @@ void Shred::Mountain() {
 void Shred::Desert() {
     NormalUnderground(4, SAND);
     for (int i=0; i<4; ++i) {
-        CoverWith(ACTIVE, SAND);
+        CoverWith(FALLING, SAND);
     }
 }
 

@@ -41,7 +41,7 @@ const QString BlockManager::kinds[] = {
     "grass",
     "bush",
     "rabbit",
-    "active",
+    "falling",
     "clock",
     "plate",
     "workbench",
@@ -121,7 +121,7 @@ Block * BlockManager::NewBlock(const int kind, const int sub) {
     case BLOCK:  return new Block (sub, id);
     case LIQUID: return new Liquid(sub, id);
     case GRASS:  return new Grass (sub, id);
-    case ACTIVE: return new Active(sub, id);
+    case FALLING: return new Falling(sub, id);
     case CONTAINER: return new Container(sub, id);
     case PLATE:  return new Plate (sub, id);
     case LADDER: return new Ladder(sub, id);
@@ -164,7 +164,7 @@ Block * BlockManager::BlockFromFile(QDataStream & str,
     case LIQUID: return new Liquid(str, sub, id);
     case GRASS:  return new Grass (str, sub, id);
     case CONTAINER: return new Container(str, sub, id);
-    case ACTIVE: return new Active(str, sub, id);
+    case FALLING: return new Falling(str, sub, id);
     case PLATE:  return new Plate (str, sub, id);
     case LADDER: return new Ladder(str, sub, id);
     case WEAPON: return new Weapon(str, sub, id);
@@ -215,7 +215,7 @@ bool BlockManager::KindSubFromFile(QDataStream & str, int * kind, int * sub) {
     }
 }
 
-void BlockManager::DeleteBlock(Block * const block) const {
+void BlockManager::DeleteBlock(const Block * const block) const {
     if ( block != NormalBlock(block->Sub()) ) {
         delete block;
     }

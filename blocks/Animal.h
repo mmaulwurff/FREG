@@ -22,7 +22,7 @@
 
 #include "blocks/Active.h"
 
-class Animal : public Active {
+class Animal : public Falling {
     Q_OBJECT
 public:
     Animal(int sub, int id);
@@ -44,6 +44,8 @@ public:
 protected:
     void SaveAttributes(QDataStream & out) const override;
     void EatGrass();
+
+    bool moved_in_this_turn;
 
 private:
     quint8  breath;

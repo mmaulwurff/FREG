@@ -52,7 +52,7 @@ bool Dwarf::Access() const { return false; }
 int Dwarf::Start() const { return ON_LEGS+1; }
 int Dwarf::Kind() const { return DWARF; }
 QString Dwarf::FullName() const { return "Rational"; }
-Inventory * Dwarf::HasInventory() { return Inventory::HasInventory(); }
+Inventory * Dwarf::HasInventory() { return this; }
 int Dwarf::LightRadius() const { return lightRadius; }
 
 void Dwarf::UpdateLightRadius() {

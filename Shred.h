@@ -26,6 +26,7 @@
 class World;
 class Block;
 class Active;
+class Falling;
 
 enum weathers {
     WEATHER_CLEAR,
@@ -70,7 +71,10 @@ public:
     void ReloadToSouth();
     void ReloadToWest();
 
-    Block * GetBlock(int x, int y, int z) const;
+    inline Block * GetBlock(const int x, const int y, const int z) const {
+        return blocks[x][y][z];
+    }
+
     /// Removes last block at xyz, then SetBlock, then makes block normal.
     void SetBlock(Block * block, int x, int y, int z);
     /// Puts block to coordinates xyz and activates it.
@@ -102,8 +106,13 @@ public:
     /// Make global coordinate from local (in loaded zone).
     long GlobalX(int x) const;
     long GlobalY(int y) const;
-    static int CoordInShred(const int x);
-    static int CoordOfShred(const int x);
+    /// Get local coordinate.
+    inline static int CoordInShred(const int x) { return x & 0xF; }
+
+    /// Get shred coordinate in loaded zone (from 0 to numShreds).
+    inline static int CoordOfShred(const int x) {
+       return x >> SHRED_WIDTH_SHIFT;
+    }
 
     // Weather
     void SetWeathers();
@@ -162,6 +171,8 @@ private:
     /// Lowest nullstone and sky are not in bounds.
     static bool InBounds(int x, int y, int z);
 
+    static const int SHRED_WIDTH_SHIFT = 4;
+
     Block * blocks[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
     uchar lightMap[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
     const long longitude, latitude;
@@ -171,7 +182,7 @@ private:
     /// Contains all active blocks.
     QLinkedList<Active * const> activeListAll;
     QLinkedList<Active * const> activeListFrequent;
-    QLinkedList<Active * const> fallList;
+    QLinkedList<Falling * const> fallList;
     QLinkedList<Active * const> shiningList;
     QLinkedList<Active * const> deleteList;
     QLinkedList<Active * const> unregisterList;

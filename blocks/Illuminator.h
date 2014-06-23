@@ -32,7 +32,6 @@ public:
 
     int   ShouldAct() const override;
     int   LightRadius() const override;
-    bool  ShouldFall() const override;
     void  Damage(int dmg, int dmg_kind) override;
     int   Kind() const override;
     Block * DropAfterDamage(bool * delete_block) override;
