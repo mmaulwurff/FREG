@@ -47,7 +47,7 @@ public:
     Block * DropAfterDamage(bool * delete_block) override;
     QString FullName() const override;
     Active * ActiveBlock() override;
-    Inventory * HasInventory() override;
+    Inventory * HasInventory() override final;
     usage_types Use(Block * who = 0) override;
 
 protected:

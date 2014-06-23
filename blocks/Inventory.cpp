@@ -27,7 +27,6 @@ bool   Inventory::Access() const { return true; }
 int Inventory::Start() const { return 0; }
 int Inventory::Size() const { return size; }
 int Inventory::Number(const int i) const { return inventory[i].size(); }
-Inventory * Inventory::HasInventory() { return this; }
 
 bool Inventory::Drop(const int src, int dest, int num,
         Inventory * const inv_to)

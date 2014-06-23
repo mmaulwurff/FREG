@@ -34,7 +34,7 @@ int  Bucket::Kind() const { return BUCKET; }
 int  Bucket::Sub()  const { return Block::Sub(); }
 void Bucket::Damage(int /*dmg*/, int /*dmg_kind*/) { Break(); }
 void Bucket::ReceiveSignal(const QString str) { Block::ReceiveSignal(str); }
-Inventory * Bucket::HasInventory() { return Inventory::HasInventory(); }
+Inventory * Bucket::HasInventory() { return this; }
 usage_types Bucket::Use(Block *) { return USAGE_TYPE_POUR; }
 
 QString Bucket::FullName() const {

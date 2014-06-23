@@ -116,7 +116,7 @@ public:
 
     int  Kind() const override;
     QString FullName() const override;
-    Falling * ShouldFall() override;
+    Falling * ShouldFall() override final;
 
     void FallDamage();
     bool IsFalling() const;

@@ -36,7 +36,7 @@ public:
     void ReceiveSignal(QString str) override;
     QString FullName() const override;
     usage_types Use(Block *) override;
-    Inventory * HasInventory() override;
+    Inventory * HasInventory() override final;
 
 protected:
     void SaveAttributes(QDataStream & out) const override;

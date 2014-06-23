@@ -31,8 +31,7 @@ class Weapon : public Block {
      *  Weapon of SKY substance is abyss block, everything that touches abyss
      *  will be destroyed. */
 public:
-    Weapon(int sub, int id);
-    Weapon(QDataStream & str, int sub, int id);
+    using Block::Block;
 
     int  Kind() const override;
     int  Wearable() const override;
@@ -46,8 +45,7 @@ public:
 
 class Pick : public Weapon {
 public:
-    Pick(int sub, int id);
-    Pick(QDataStream & str, int sub, int id);
+    using Weapon::Weapon;
 
     int  Kind() const override;
     int  DamageKind() const override;
@@ -57,8 +55,7 @@ public:
 
 class Shovel : public Weapon {
 public:
-    Shovel(int sub, int id);
-    Shovel(QDataStream & str, int sub, int id);
+    using Weapon::Weapon;
 
     int  Kind() const override;
     int  DamageKind() const override;
@@ -68,8 +65,7 @@ public:
 
 class Hammer : public Weapon {
 public:
-    Hammer(int sub, int id);
-    Hammer(QDataStream & str, int sub, int id);
+    using Weapon::Weapon;
 
     int  Kind() const override;
     int  DamageKind() const override;
@@ -79,8 +75,7 @@ public:
 
 class Axe : public Weapon {
 public:
-    Axe(int sub, int id);
-    Axe(QDataStream & str, int sub, int id);
+    using Weapon::Weapon;
 
     int  Kind() const override;
     int  DamageKind() const override;

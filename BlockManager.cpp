@@ -41,7 +41,7 @@ const QString BlockManager::kinds[] = {
     "grass",
     "bush",
     "rabbit",
-    "active",
+    "falling",
     "clock",
     "plate",
     "workbench",

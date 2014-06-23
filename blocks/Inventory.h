@@ -51,7 +51,6 @@ public:
     virtual int Start() const;
     virtual int Weight() const;
     virtual QString FullName() const = 0;
-    virtual Inventory * HasInventory();
 
     /// Removes block from inventory. Does not delete block.
     void Pull(int num);
