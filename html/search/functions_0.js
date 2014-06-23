@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['abs',['Abs',['../header_8h.html#a3e1cd3a3f00a9b6bf8cf933cf5efb935',1,'header.h']]],
   ['access',['Access',['../classDwarf.html#aa1f8a47b08a8608886726bdbed14504f',1,'Dwarf::Access()'],['../classInventory.html#aa1c67d1a4c1cac38cc68313634143563',1,'Inventory::Access()']]],
   ['actfrequent',['ActFrequent',['../classActive.html#aebbfa0341ef4b0839448641f50f313b9',1,'Active']]],
   ['actinner',['ActInner',['../classActive.html#a2df9b38348525db5f2641ac12ac7b033',1,'Active::ActInner()'],['../classAnimal.html#ac992687684c7da2840803ebf080f5676',1,'Animal::ActInner()'],['../classClock.html#a40a1751a002141dfa112090b31a8dbbb',1,'Clock::ActInner()'],['../classIlluminator.html#ab7d6214d12fc02870e5818640ecaeca2',1,'Illuminator::ActInner()']]],

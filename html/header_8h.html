@@ -197,7 +197,7 @@ Enumerations</h2></td></tr>
 &#160;&#160;<a class="el" href="header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285adbed8401e35adba25dab2e1729ee55fa">GRASS</a>, 
 <a class="el" href="header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285ab2e062d1d8146bf8e158300e5930fff4">BUSH</a>, 
 <a class="el" href="header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285aa6ec8c6d343f4a4e758ae7b4105c62e8">RABBIT</a>, 
-<a class="el" href="header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a33cf1d8ef1d06ee698a7fabf40eb3a7f">ACTIVE</a>, 
+<a class="el" href="header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285ad24712a6a30c1d431b927d1ba2f84b66">FALLING</a>, 
 <br />
 &#160;&#160;<a class="el" href="header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a4bd5179222344db99fe845d6d039f4a3">CLOCK</a>, 
 <a class="el" href="header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a10398030fb63d46f4d8d42495caf6ee9">PLATE</a>, 
@@ -278,7 +278,7 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="separator:a305c682db7e7cdce78096178c0c9ef4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a48a539666409f8c99365fc6d8a58f708"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="header_8h.html#a48a539666409f8c99365fc6d8a58f708">transparency</a> { <br />
-&#160;&#160;<a class="el" href="header_8h.html#a48a539666409f8c99365fc6d8a58f708a6f3369e7a0cbefeea43c4e9c35b345c9">BLOCK_OPAQUE</a>, 
+&#160;&#160;<a class="el" href="header_8h.html#a48a539666409f8c99365fc6d8a58f708a6f3369e7a0cbefeea43c4e9c35b345c9">BLOCK_OPAQUE</a> = 0, 
 <a class="el" href="header_8h.html#a48a539666409f8c99365fc6d8a58f708ae72d7a9ac5db4110222e69339723b6ab">BLOCK_TRANSPARENT</a>, 
 <a class="el" href="header_8h.html#a48a539666409f8c99365fc6d8a58f708a59810d2438e63be8bce699880cb6dfad">INVISIBLE</a>, 
 <a class="el" href="header_8h.html#a48a539666409f8c99365fc6d8a58f708aad30f681b2f3fd80f6c69c9874a2273b">NONSTANDARD</a> = 6, 
@@ -295,6 +295,8 @@ Functions</h2></td></tr>
 <tr class="memitem:a04b9f3371012a3d6e9ec87596b381d99"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="header_8h.html#a04b9f3371012a3d6e9ec87596b381d99">Round</a> (const float x)</td></tr>
 <tr class="memdesc:a04b9f3371012a3d6e9ec87596b381d99"><td class="mdescLeft">&#160;</td><td class="mdescRight">For positive numbers only.  <a href="#a04b9f3371012a3d6e9ec87596b381d99">More...</a><br /></td></tr>
 <tr class="separator:a04b9f3371012a3d6e9ec87596b381d99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e1cd3a3f00a9b6bf8cf933cf5efb935"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="header_8h.html#a3e1cd3a3f00a9b6bf8cf933cf5efb935">Abs</a> (const int x)</td></tr>
+<tr class="separator:a3e1cd3a3f00a9b6bf8cf933cf5efb935"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -487,7 +489,7 @@ Variables</h2></td></tr>
 <tr><td class="fieldname"><a class="anchor" id="afcdf47c5cf0d9cddfd98749f134ad285aa6ec8c6d343f4a4e758ae7b4105c62e8"></a>RABBIT&#160;</td><td class="fielddoc">
 <p>10 </p>
 </td></tr>
-<tr><td class="fieldname"><a class="anchor" id="afcdf47c5cf0d9cddfd98749f134ad285a33cf1d8ef1d06ee698a7fabf40eb3a7f"></a>ACTIVE&#160;</td><td class="fielddoc">
+<tr><td class="fieldname"><a class="anchor" id="afcdf47c5cf0d9cddfd98749f134ad285ad24712a6a30c1d431b927d1ba2f84b66"></a>FALLING&#160;</td><td class="fielddoc">
 <p>11 </p>
 </td></tr>
 <tr><td class="fieldname"><a class="anchor" id="afcdf47c5cf0d9cddfd98749f134ad285a4bd5179222344db99fe845d6d039f4a3"></a>CLOCK&#160;</td><td class="fielddoc">
@@ -803,6 +805,32 @@ Variables</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="a3e1cd3a3f00a9b6bf8cf933cf5efb935"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Abs </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>x</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="header_8h_source.html#l00219">219</a> of file <a class="el" href="header_8h_source.html">header.h</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a5031863b564b19336ad6c88a4ea15545"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1119,7 +1147,7 @@ Variables</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jun 18 2014 22:54:35 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jun 23 2014 08:25:32 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

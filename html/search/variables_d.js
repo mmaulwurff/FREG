@@ -7,7 +7,6 @@ var searchData=
   ['seconds_5fin_5fhour',['SECONDS_IN_HOUR',['../header_8h.html#a783cd37c928f6ed101059c585e8eb61f',1,'header.h']]],
   ['seconds_5fin_5fnight',['SECONDS_IN_NIGHT',['../header_8h.html#a7f228aed9dbb67d39a7a49cbdcb9037c',1,'header.h']]],
   ['shred_5fwidth',['SHRED_WIDTH',['../header_8h.html#aafd122473982b0312dbad3f7720eb762',1,'header.h']]],
-  ['shred_5fwidth_5fshift',['SHRED_WIDTH_SHIFT',['../Shred_8cpp.html#ae64d616a159f6fe4f8b6c7ce51298f99',1,'Shred.cpp']]],
   ['sound_5fstrings',['SOUND_STRINGS',['../Block_8h.html#a34d1f7669235dd5a5f51d7cc681be418',1,'Block.h']]],
   ['sun_5flight_5ffactor',['SUN_LIGHT_FACTOR',['../world_8h.html#a9c2d04dab224c787ecdebfe0370d59f0',1,'world.h']]]
 ];

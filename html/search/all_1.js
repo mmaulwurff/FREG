@@ -1,6 +1,7 @@
 var searchData=
 [
   ['a_5fmeat',['A_MEAT',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a8c8b29db7ece3eff1fc9218b59d6dc31',1,'header.h']]],
+  ['abs',['Abs',['../header_8h.html#a3e1cd3a3f00a9b6bf8cf933cf5efb935',1,'header.h']]],
   ['access',['Access',['../classDwarf.html#aa1f8a47b08a8608886726bdbed14504f',1,'Dwarf::Access()'],['../classInventory.html#aa1c67d1a4c1cac38cc68313634143563',1,'Inventory::Access()']]],
   ['acid',['ACID',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a9115260fa6c16f6f5aa5e77ec4d327f7',1,'header.h']]],
   ['actfrequent',['ActFrequent',['../classActive.html#aebbfa0341ef4b0839448641f50f313b9',1,'Active']]],
@@ -16,7 +17,7 @@ var searchData=
   ['action_5fwield',['ACTION_WIELD',['../CursedScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a4a7c2ce37e72c10b3cc2f79a30e7e5f0',1,'ACTION_WIELD():&#160;CursedScreen.h'],['../TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a4a7c2ce37e72c10b3cc2f79a30e7e5f0',1,'ACTION_WIELD():&#160;TextScreen.h']]],
   ['actions',['actions',['../CursedScreen_8h.html#af806efc6052edbc741683ec893bb2fe1',1,'actions():&#160;CursedScreen.h'],['../TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1',1,'actions():&#160;TextScreen.h']]],
   ['actionxyz',['ActionXyz',['../classScreen.html#a3a6d7c5788ad73e218c4e73b3979fc1d',1,'Screen::ActionXyz(int *x, int *y, int *z) const override'],['../classScreen.html#a3a6d7c5788ad73e218c4e73b3979fc1d',1,'Screen::ActionXyz(int *x, int *y, int *z) const override'],['../classVirtScreen.html#a235e958b714022d9191ca8f0789820a3',1,'VirtScreen::ActionXyz()']]],
-  ['active',['Active',['../classActive.html',1,'Active'],['../classActive.html#a62cdff852ee3506c60b988e7f2646627',1,'Active::Active(int sub, int id, int transp=UNDEF)'],['../classActive.html#aa0b6a4fafa16bab124cef7d1fbdfc4d5',1,'Active::Active(QDataStream &amp;str, int sub, int id, int transp=UNDEF)'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a33cf1d8ef1d06ee698a7fabf40eb3a7f',1,'ACTIVE():&#160;header.h']]],
+  ['active',['Active',['../classActive.html',1,'Active'],['../classActive.html#a62cdff852ee3506c60b988e7f2646627',1,'Active::Active(int sub, int id, int transp=UNDEF)'],['../classActive.html#aa0b6a4fafa16bab124cef7d1fbdfc4d5',1,'Active::Active(QDataStream &amp;str, int sub, int id, int transp=UNDEF)']]],
   ['active_2ecpp',['Active.cpp',['../Active_8cpp.html',1,'']]],
   ['active_2eh',['Active.h',['../Active_8h.html',1,'']]],
   ['active_5ffrequency',['ACTIVE_FREQUENCY',['../Active_8h.html#a9d1cc7e289373f5c0b6d6e988c1cdcdc',1,'Active.h']]],

@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['xy',['Xy',['../classXy.html',1,'']]],
-  ['xyz',['Xyz',['../classXyz.html',1,'']]]
+  ['weapon',['Weapon',['../classWeapon.html',1,'']]],
+  ['workbench',['Workbench',['../classWorkbench.html',1,'']]],
+  ['world',['World',['../classWorld.html',1,'']]],
+  ['worldmap',['WorldMap',['../classWorldMap.html',1,'']]]
 ];

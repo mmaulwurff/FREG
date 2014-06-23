@@ -5,7 +5,7 @@ var searchData=
   ['getactiontype',['GetActionType',['../classDeferredAction.html#a457f421bf5e4573d5693f79a7a6610ac',1,'DeferredAction']]],
   ['getactivehand',['GetActiveHand',['../classDwarf.html#a151d599337d745ef681829867d06f090',1,'Dwarf::GetActiveHand()'],['../classPlayer.html#a8421c0f5d9ed963c56544c3bf82b266c',1,'Player::GetActiveHand()']]],
   ['getall',['GetAll',['../classWorkbench.html#a97daa6d2678a4a1f8d0516bce0b362a8',1,'Workbench::GetAll()'],['../classInventory.html#ac9390556471adc043bf60da5b38e1291',1,'Inventory::GetAll()']]],
-  ['getblock',['GetBlock',['../classShred.html#ac4bddde65ac1c3fc8514996e7496b333',1,'Shred::GetBlock()'],['../classWorld.html#a40d77ceb6c6ff6c37348f0c36f7af047',1,'World::GetBlock()']]],
+  ['getblock',['GetBlock',['../classShred.html#a805aa0c4af560b6c32f02065d353f655',1,'Shred::GetBlock()'],['../classWorld.html#a40d77ceb6c6ff6c37348f0c36f7af047',1,'World::GetBlock()']]],
   ['getbound',['GetBound',['../classWorld.html#aeafc761549406277d4878a1029adce76',1,'World']]],
   ['getchar',['GetChar',['../classScreen.html#a9406442ed0bf4f6b9e04a6937bd2fe41',1,'Screen::GetChar() const override'],['../classScreen.html#a9406442ed0bf4f6b9e04a6937bd2fe41',1,'Screen::GetChar() const override'],['../classVirtScreen.html#af3ad74efc0d44ae54a2c27900d3bb631',1,'VirtScreen::GetChar()']]],
   ['getcraftmanager',['GetCraftManager',['../classWorld.html#aa39c108d883e9bb44c58c8bfc3b6479c',1,'World']]],
