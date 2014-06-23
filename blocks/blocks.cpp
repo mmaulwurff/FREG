@@ -135,7 +135,7 @@
     }
 
     void Animal::SaveAttributes(QDataStream & out) const {
-        Active::SaveAttributes(out);
+        Falling::SaveAttributes(out);
         out << breath << satiation;
     }
 
@@ -157,12 +157,13 @@
     }
 
     Animal::Animal(const int sub, const int id) :
-            Active(sub, id, NONSTANDARD),
+            Falling(sub, id, NONSTANDARD),
             breath(MAX_BREATH),
             satiation(SECONDS_IN_DAY)
     {}
+
     Animal::Animal(QDataStream & str, const int sub, const int id) :
-            Active(str, sub, id, NONSTANDARD)
+            Falling(str, sub, id, NONSTANDARD)
     {
         str >> breath >> satiation;
     }
