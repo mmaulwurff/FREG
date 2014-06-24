@@ -57,6 +57,7 @@ int Block::Transparency(const int transp, const int sub) const {
         case WATER:
         case GREENERY:
         case ACID:
+        case SUB_CLOUD:
         case GLASS: return BLOCK_TRANSPARENT;
         }
     } else {
@@ -134,23 +135,23 @@ Block * Block::DropAfterDamage(bool * const delete_block) {
     }
 }
 
-int  Block::PushResult(int) const {
+push_reaction Block::PushResult(dirs) const {
     return ( AIR==Sub() ) ? ENVIRONMENT : NOT_MOVABLE;
 }
 
 int  Block::Kind() const { return BLOCK; }
 int  Block::GetId() const { return id; }
 bool Block::Catchable() const { return false; }
-void Block::Push(const int, Block * const) {}
-bool Block::Move(const int) { return false; }
+void Block::Push(dirs, Block *) {}
+bool Block::Move(dirs) { return false; }
 usage_types Block::Use(Block *) { return USAGE_TYPE_NO; }
 int  Block::Wearable() const { return WEARABLE_NOWHERE; }
 int  Block::DamageKind() const { return CRUSH; }
 int  Block::DamageLevel() const { return 1; }
 int  Block::LightRadius() const { return 0; }
-void Block::ReceiveSignal(const QString) {}
+void Block::ReceiveSignal(QString) {}
 
-bool Block::Inscribe(const QString str) {
+bool Block::Inscribe(QString str) {
     if ( note ) {
         *note = str.left(MAX_NOTE_LENGTH);
     } else {
@@ -170,7 +171,7 @@ Falling * Block::ShouldFall() { return nullptr; }
 
 void Block::Restore() { durability = MAX_DURABILITY; }
 void Block::Break() { durability = 0; }
-int  Block::GetDir() const { return direction; }
+dirs Block::GetDir() const { return static_cast<dirs>(direction); }
 int  Block::GetDurability() const { return durability; }
 QString Block::GetNote() const { return note ? *note : ""; }
 

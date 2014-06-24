@@ -27,22 +27,22 @@ class Plate : public Block {
 public:
     using Block::Block;
 
-    int PushResult(int dir) const override;
     int Kind() const override;
     int Weight() const override;
     QString FullName() const override;
+    push_reaction PushResult(dirs) const override;
 };
 
 class Ladder : public Block {
 public:
     using Block::Block;
 
-    int  PushResult(int dir) const override;
     bool Catchable() const override;
     int  Kind() const override;
     int  Weight() const override;
     QString FullName() const override;
     Block * DropAfterDamage(bool * delete_block) override;
+    push_reaction PushResult(dirs) const override;
 };
 
 class Liquid : public Falling {
@@ -51,12 +51,12 @@ public:
     using Falling::Falling;
 
     int ShouldAct() const override;
-    int PushResult(int dir) const override;
     int LightRadius() const override;
     int Kind() const override;
     int DamageKind() const override;
     QString FullName() const override;
     Block * DropAfterDamage(bool * delete_block) override;
+    push_reaction PushResult(dirs) const override;
 
 protected:
     void DoRareAction() override;
@@ -70,9 +70,10 @@ public:
     int  ShouldAct()  const override;
     int  LightRadius() const override;
     int  Kind()     const override;
-    void Push(int dir, Block * who) override;
+    void Push(dirs, Block * who) override;
     Block * DropAfterDamage(bool * delete_block) override;
     QString FullName() const override;
+    push_reaction PushResult(dirs) const override;
 
 protected:
     void DoRareAction() override;
@@ -90,9 +91,8 @@ public:
     Bush(QDataStream & str, int sub, int id);
 
     int  Sub() const override;
-    int  PushResult(int dir) const override;
     int  ShouldAct() const override;
-    void Push(int dir, Block * who) override;
+    void Push(dirs, Block * who) override;
     void ReceiveSignal(QString) override;
     int  Kind() const override;
     int Weight() const override;
@@ -130,11 +130,11 @@ public:
     Door(QDataStream & str, int sub, int id);
 
     int ShouldAct() const override;
-    void Push(int dir, Block *) override;
-    int  PushResult(int dir /* not used */) const override;
+    void Push(dirs, Block *) override;
     int  Kind() const override;
     QString FullName() const override;
-    usage_types Use(Block * who = 0) override;
+    usage_types Use(Block * who) override;
+    push_reaction PushResult(dirs) const override;
 
 protected:
     void DoFrequentAction() override;
@@ -153,10 +153,9 @@ public:
     Clock (QDataStream & str, int sub, int id);
 
     int ShouldAct() const override;
-    int PushResult(int) const override;
     int Weight() const override;
     bool Inscribe(QString) override;
-    void Push(int dir, Block * who) override;
+    void Push(dirs dir, Block * who) override;
     void Damage(int dmg, int dmg_kind) override;
     int  Kind() const override;
     QString FullName() const override;

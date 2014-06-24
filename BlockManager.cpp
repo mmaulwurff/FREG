@@ -148,10 +148,11 @@ Block * BlockManager::NewBlock(const int kind, const int sub) {
     case ANIMAL:
     case TELEGRAPH:
     case LAST_KIND:
-        fprintf(stderr, "BlockManager::NewBlock: kind ?: %d.\n", kind);
+        fprintf(stderr, "%s: kind ?: %d.\n", Q_FUNC_INFO, kind);
         return new Block(sub, id);
     }
-    return nullptr; // should never be returned, everything is in switch.
+    Q_UNREACHABLE();
+    return nullptr;
 } // Block * BlockManager::NewBlock(int kind, int sub)
 
 Block * BlockManager::BlockFromFile(QDataStream & str,
@@ -190,10 +191,11 @@ Block * BlockManager::BlockFromFile(QDataStream & str,
     case ANIMAL:
     case TELEGRAPH:
     case LAST_KIND:
-        fprintf(stderr, "BlockManager::BlockFromFile: kind ?: %d.\n", kind);
+        fprintf(stderr, "%s: kind ?: %d.\n", Q_FUNC_INFO, kind);
         return new Block(str, sub, id);
     }
-    return nullptr; // should never be returned, everything is in switch.
+    Q_UNREACHABLE();
+    return nullptr;
 }
 
 Block * BlockManager::BlockFromFile(QDataStream & str) const {
@@ -215,8 +217,12 @@ bool BlockManager::KindSubFromFile(QDataStream & str, int * kind, int * sub) {
     }
 }
 
-void BlockManager::DeleteBlock(const Block * const block) const {
+void BlockManager::DeleteBlock(Block * const block) const {
     if ( block != NormalBlock(block->Sub()) ) {
+        Active * const active = block->ActiveBlock();
+        if ( active != nullptr ) {
+            active->Unregister();
+        }
         delete block;
     }
 }

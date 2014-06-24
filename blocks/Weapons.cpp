@@ -58,7 +58,7 @@
         }
     }
 
-    void Weapon::Push(int, Block * const who) {
+    void Weapon::Push(dirs, Block * const who) {
         who->Damage(DamageLevel(), DamageKind());
     }
 

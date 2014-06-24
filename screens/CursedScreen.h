@@ -182,10 +182,9 @@ private:
     void SetActionMode(actions mode);
     void ProcessCommand(QString command);
     void PrintTitle(WINDOW *, int dir) const;
-    void MovePlayer(int dir);
-    void MovePlayerDiag(int dir1, int dir2) const;
+    void MovePlayer(dirs dir);
+    void MovePlayerDiag(dirs dir1, dirs dir2) const;
     static bool IsScreenWide();
-    void SetUpdated(bool);
 
     WINDOW * leftWin;
     WINDOW * rightWin;

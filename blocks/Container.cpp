@@ -23,7 +23,7 @@
 #include "CraftManager.h"
 
 // Container::
-    void Container::Push(const int, Block * const who) {
+    void Container::Push(dirs, Block * const who) {
         Inventory::Push(who);
         if ( Sub()==DIFFERENT && IsEmpty() ) {
             GetWorld()->DestroyAndReplace(X(), Y(), Z());

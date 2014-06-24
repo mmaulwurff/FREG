@@ -33,14 +33,14 @@
         case MOSS_STONE:
         case STONE: return QObject::tr("Stone slab");
         default:
-            fprintf(stderr, "Plate::FullName: unlisted sub: %d.\n", Sub());
+            fprintf(stderr, "%s: unlisted sub: %d.\n", Q_FUNC_INFO, Sub());
             return "Strange plate";
         }
     }
 
     int Plate::Kind() const { return PLATE; }
-    int Plate::PushResult(const int) const { return JUMP; }
     int Plate::Weight() const { return Block::Weight()/4; }
+    push_reaction Plate::PushResult(dirs) const { return JUMP; }
 
 // Ladder::
     QString Ladder::FullName() const {
@@ -50,15 +50,15 @@
         case STONE: return QObject::tr("Rock with ledges");
         case GREENERY: return QObject::tr("Liana");
         default:
-            fprintf(stderr, "Ladder::FullName: unlisted sub: %d\n", Sub());
+            fprintf(stderr, "%s: unlisted sub: %d\n", Q_FUNC_INFO, Sub());
             return "Strange ladder";
     }
     }
 
-    int  Ladder::PushResult(const int) const { return MOVE_UP; }
     bool Ladder::Catchable() const { return true; }
     int  Ladder::Weight() const { return Block::Weight()*3; }
     int  Ladder::Kind() const { return LADDER; }
+    push_reaction Ladder::PushResult(dirs) const { return MOVE_UP; }
 
     Block * Ladder::DropAfterDamage(bool * const delete_block) {
         Block * const pile = block_manager.NewBlock(CONTAINER, DIFFERENT);
@@ -87,14 +87,14 @@
         if ( not IsSubAround(AIR) ) {
             if ( breath <= 0 ) {
                 Damage(10, BREATH);
-                if ( GetDurability() <= 0 ) {
-                    GetWorld()->DestroyAndReplace(X(), Y(), Z());
-                }
             } else {
                 --breath;
             }
         } else if ( breath < MAX_BREATH ) {
             ++breath;
+        }
+        if ( GetDurability() <= 0 ) {
+            GetWorld()->DestroyAndReplace(X(), Y(), Z());
         }
         emit Updated();
     }
@@ -160,7 +160,7 @@
 // Liquid::
     void Liquid::DoRareAction() {
         if ( not IsSubAround(Sub()) || Sub()==SUB_CLOUD ) {
-            Damage(1, TIME);
+            Damage(MAX_DURABILITY/SECONDS_IN_NIGHT, TIME);
             if ( GetDurability() <= 0 ) {
                 GetWorld()->DestroyAndReplace(X(), Y(), Z());
             }
@@ -181,15 +181,15 @@
 
     int Liquid::DamageKind() const {
         switch ( Sub() ) {
-            default:    return NO_HARM;
-            case ACID:  return DAMAGE_ACID;
-            case STONE: return HEAT;
+        default:    return NO_HARM;
+        case ACID:  return DAMAGE_ACID;
+        case STONE: return HEAT;
         }
     }
 
     int Liquid::ShouldAct() const  { return FREQUENT_RARE; }
-    int Liquid::PushResult(const int) const { return ENVIRONMENT; }
     int Liquid::Kind() const { return LIQUID; }
+    push_reaction Liquid::PushResult(dirs) const { return ENVIRONMENT; }
 
     Block * Liquid::DropAfterDamage(bool *) {
         return ( Sub() == STONE ) ?
@@ -208,7 +208,7 @@
         case ACID:  return tr("Acid");
         case SUB_CLOUD: return tr("Cloud");
         default:
-            fprintf(stderr, "Liquid::FullName(): sub (?): %d\n", Sub());
+            fprintf(stderr, "%s: sub (?): %d\n", Q_FUNC_INFO, Sub());
             return "Unknown liquid";
         }
     }
@@ -280,7 +280,7 @@
         case GREENERY: return tr("Grass");
         case FIRE:     return tr("Fire");
         default:
-            fprintf(stderr, "Grass::FullName(): sub (?): %d\n", Sub());
+            fprintf(stderr, "%s: sub (?): %d\n", Q_FUNC_INFO, Sub());
             return "Unknown plant";
         }
     }
@@ -288,8 +288,9 @@
     int  Grass::ShouldAct() const  { return FREQUENT_RARE; }
     int  Grass::Kind() const { return GRASS; }
     Block * Grass::DropAfterDamage(bool *) { return nullptr; }
+    push_reaction Grass::PushResult(dirs) const { return MOVABLE; }
 
-    void Grass::Push(int, Block *) {
+    void Grass::Push(dirs, Block *) {
         GetWorld()->DestroyAndReplace(X(), Y(), Z());
     }
 
@@ -314,8 +315,7 @@
         }
     }
 
-    int Bush::PushResult(int const) const { return NOT_MOVABLE; }
-    void Bush::Push(const int, Block * const who) { Inventory::Push(who); }
+    void Bush::Push(dirs, Block * const who) { Inventory::Push(who); }
 
     Block * Bush::DropAfterDamage(bool *) {
         Block * const pile = block_manager.NewBlock(CONTAINER, DIFFERENT);
@@ -352,7 +352,6 @@
     }
 
     void Rabbit::DoRareAction() {
-        Animal::DoRareAction();
         // eat sometimes
         if ( SECONDS_IN_DAY/2 > Satiation() ) {
             EatGrass();
@@ -374,6 +373,7 @@
             GetWorld()->Move(X(), Y(), Z(), GetDir());
         }
         moved_in_this_turn = false; // for next turn
+        Animal::DoRareAction();
     }
 
     Block * Rabbit::DropAfterDamage(bool * delete_block) {
@@ -402,9 +402,11 @@
     }
 
 // Door::
-    int Door::PushResult(int) const { return movable ? MOVABLE : NOT_MOVABLE; }
+    push_reaction Door::PushResult(dirs) const {
+        return movable ? MOVABLE : NOT_MOVABLE;
+    }
 
-    void Door::Push(int, Block * const who) {
+    void Door::Push(dirs, Block * const who) {
         if ( not shifted
                 && not locked
                 && World::Anti(GetDir())!=who->GetDir() )
@@ -441,7 +443,7 @@
         case IRON:  sub_string = tr(" of iron");  break;
         default:
             sub_string = tr(" of something");
-            fprintf(stderr, "Door::FullName: unlisted sub: %d\n", Sub());
+            fprintf(stderr, "%s: unlisted sub: %d\n", Q_FUNC_INFO, Sub());
         }
         return locked ? tr("Locked door") : tr("Door") + sub_string;
     }
@@ -493,15 +495,14 @@
         case IRON: return QObject::tr("Iron clock");
         case EXPLOSIVE: return QObject::tr("Bomb");
         default:
-            fprintf(stderr, "Clock::FullName: unlisted sub: %d\n", Sub());
+            fprintf(stderr, "%s: unlisted sub: %d\n", Q_FUNC_INFO, Sub());
             return "Strange clock";
         }
     }
 
-    int  Clock::PushResult(int) const { return NOT_MOVABLE; }
     int  Clock::ShouldAct() const  { return FREQUENT_RARE; }
     void Clock::Damage(int, int) { Break(); }
-    void Clock::Push(int, Block *) { Use(); }
+    void Clock::Push(dirs, Block *) { Use(); }
     int  Clock::Kind() const { return CLOCK; }
     int  Clock::Weight() const { return Block::Weight()/10; }
 
@@ -597,7 +598,7 @@
         case PAPER: return QObject::tr("Paper page");
         case GLASS: return QObject::tr("Screen");
         default:
-            fprintf(stderr, "Text::FullName: sub ?: %d\n", Sub());
+            fprintf(stderr, "%s: sub ?: %d\n", Q_FUNC_INFO, Sub());
             return QObject::tr("Strange text");
         }
     }

@@ -28,37 +28,33 @@
 
 Active * Active::ActiveBlock() { return this; }
 int  Active::ShouldAct() const { return FREQUENT_NEVER; }
-int  Active::PushResult(int) const { return MOVABLE; }
 void Active::DoFrequentAction() {}
 void Active::DoRareAction() {}
 INNER_ACTIONS Active::ActInner() { return INNER_ACTION_NONE; }
+push_reaction Active::PushResult(dirs) const { return NOT_MOVABLE; }
 
 void Active::ActFrequent() {
-    if ( not IsToDelete() ) {
-        if ( GetDeferredAction() != nullptr ) {
-            GetDeferredAction()->MakeAction();
-        }
-        DoFrequentAction();
+    if ( GetDeferredAction() != nullptr ) {
+        GetDeferredAction()->MakeAction();
     }
+    DoFrequentAction();
 }
 
 void Active::ActRare() {
-    if ( IsToDelete() ) return;
-    DoRareAction();
     Inventory * const inv = HasInventory();
     if ( inv != nullptr ) {
         for (int i=inv->Size()-1; i; --i)
         for (int j=0; j<inv->Number(i); ++j) {
             Active * const active = inv->ShowBlock(i, j)->ActiveBlock();
-            if ( active != nullptr
-                    && active->ActInner()==INNER_ACTION_MESSAGE )
+            if ( active!=nullptr && active->ActInner()==INNER_ACTION_MESSAGE )
             {
-                ReceiveSignal(QString("Item in slot '%1' changed status.").
+                ReceiveSignal(tr("Item in slot '%1' changed status.").
                     arg(char('a'+i)));
                 ReceiveSignal(inv->ShowBlock(i, j)->GetNote());
             }
         }
     }
+    DoRareAction();
 }
 
 void Active::SetDeferredAction(DeferredAction * const action) {
@@ -68,13 +64,22 @@ void Active::SetDeferredAction(DeferredAction * const action) {
 
 DeferredAction * Active::GetDeferredAction() const { return deferredAction; }
 
-bool Active::Move(const int dir) {
+void Active::Unregister() {
+    if ( shred != nullptr ) {
+        shred->Unregister(this);
+        shred = nullptr;
+    }
+}
+
+bool Active::Move(const dirs dir) {
     switch ( dir ) {
+    case UP:    ++z_self; break;
+    case DOWN: break;
     case NORTH: --y_self; break;
     case SOUTH: ++y_self; break;
     case EAST:  ++x_self; break;
     case WEST:  --x_self; break;
-    case UP:    ++z_self; break;
+    case NOWHERE: break;
     }
     bool overstep;
     if ( DOWN == dir ) {
@@ -89,9 +94,9 @@ bool Active::Move(const int dir) {
         if ( (overstep = ( shred != new_shred )) ) {
             Falling * const falling = ShouldFall();
             if ( falling != nullptr ) {
-                falling->SetNotFalling();
+                falling->SetFalling(false);
             }
-            shred->UnregisterLater(this);
+            shred->Unregister(this);
             new_shred->Register(this);
         }
     }
@@ -158,25 +163,16 @@ void Active::ReloadToSouth() { y_self -= SHRED_WIDTH; }
 void Active::ReloadToWest()  { x_self += SHRED_WIDTH; }
 void Active::ReloadToEast()  { x_self -= SHRED_WIDTH; }
 
-void Active::EmitUpdated() { emit Updated(); }
-
-void Active::SetToDelete() {
-    if ( not frozen ) {
-        frozen = true;
-        GetShred()->AddToDelete(this);
-        ReceiveSignal(tr("You die."));
-        emit Destroyed();
-    }
+void Active::Farewell() {
+    ReceiveSignal(tr("You die."));
+    emit Destroyed();
 }
-
-bool Active::IsToDelete() const { return frozen; }
 
 Active::Active(const int sub, const int id, const int transp) :
         Block(sub, id, transp),
         Xyz(),
-        frozen(false),
         deferredAction(nullptr),
-        shred()
+        shred(nullptr)
 {}
 
 Active::Active(QDataStream & str, const int sub, const int id,
@@ -184,9 +180,8 @@ Active::Active(QDataStream & str, const int sub, const int id,
     :
         Block(str, sub, id, transp),
         Xyz(),
-        frozen(false),
         deferredAction(nullptr),
-        shred()
+        shred(nullptr)
 {}
 
 Active::~Active() { delete deferredAction; }
@@ -266,7 +261,7 @@ QString Falling::FullName() const {
     case WATER: return tr("Snow");
     case STONE: return tr("Masonry");
     default:
-        fprintf(stderr, "Active::FullName: Unlisted sub: %d\n", Sub());
+        fprintf(stderr, "%s: Unlisted sub: %d.\n", Q_FUNC_INFO, Sub());
         return "Unkown active block";
     }
 }
@@ -275,15 +270,17 @@ int  Falling::Kind() const { return FALLING; }
 void Falling::SaveAttributes(QDataStream & out) const { out << fallHeight; }
 bool Falling::IsFalling() const { return falling; }
 void Falling::IncreaseFallHeight() { ++fallHeight; }
-void Falling::SetNotFalling() { falling = false; }
 Falling * Falling::ShouldFall() { return this; }
+push_reaction Falling::PushResult(dirs) const { return MOVABLE; }
 
 void Falling::FallDamage() {
+    static const int SAFE_FALL_HEIGHT = 5;
     if ( fallHeight > SAFE_FALL_HEIGHT ) {
         const int dmg = (fallHeight - SAFE_FALL_HEIGHT)*10;
         GetWorld()->Damage(X(), Y(), Z()-1, dmg, DAMAGE_FALL);
         Damage(dmg, DAMAGE_FALL);
     }
+    falling = false;
     fallHeight = 0;
 }
 

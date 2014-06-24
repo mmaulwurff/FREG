@@ -36,7 +36,7 @@ public:
     int  Kind() const override;
     int  Wearable() const override;
     int  DamageKind() const override;
-    void Push(int dir, Block * who) override;
+    void Push(dirs, Block * who) override;
     void Damage(int dmg, int kind) override;
     int  DamageLevel() const override;
     int  Weight() const override;

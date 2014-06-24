@@ -37,7 +37,7 @@ public:
     int Sub() const override;
     int ShouldAct() const override;
     int DamageKind() const override;
-    bool Move(int direction) override;
+    bool Move(dirs direction) override;
     int Kind() const override;
     int Start() const override;
     int Weight() const override;

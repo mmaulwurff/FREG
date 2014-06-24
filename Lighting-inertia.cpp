@@ -163,7 +163,7 @@ void World::ReEnlightenTime() {
     for (int i=NumShreds()*NumShreds()-1; i>=0; --i) {
         shreds[i]->SetAllLightMapNull();
     }
-    sunMoonFactor = ( NIGHT==PartOfDay() ) ?
+    sunMoonFactor = ( TIME_NIGHT==PartOfDay() ) ?
         MOON_LIGHT_FACTOR : SUN_LIGHT_FACTOR;
     ReEnlightenAll();
 }
@@ -215,7 +215,7 @@ int World::Enlightened(const int x, const int y, const int z) const {
 }
 
 /// Provides lighting of block side, not all block.
-int World::Enlightened(const int i, const int j, const int k, const int dir)
+int World::Enlightened(const int i, const int j, const int k, const dirs dir)
 const {
     int x, y, z;
     Focus(i, j, k, &x, &y, &z, dir);

@@ -98,7 +98,12 @@ enum push_reaction {
     JUMP
 };
 
-enum times_of_day { MORNING, NOON, EVENING, NIGHT };
+enum times_of_day {
+    TIME_MORNING,
+    TIME_NOON,
+    TIME_EVENING,
+    TIME_NIGHT
+};
 
 enum damage_kinds {
     MINE,    ///<  0

@@ -71,17 +71,17 @@ const {
 
 void Screen::RePrint() {
     clear();
-    SetUpdated(false);
+    updated = false;
 }
 
-void Screen::Update(int, int, int) { SetUpdated(false); }
-void Screen::UpdatePlayer() { SetUpdated(false); }
-void Screen::UpdateAround(int, int, int, int) { SetUpdated(false); }
-void Screen::Move(int) { SetUpdated(false); }
+void Screen::Update(int, int, int) { updated = false; }
+void Screen::UpdatePlayer() { updated = false; }
+void Screen::UpdateAround(int, int, int, int) { updated = false; }
+void Screen::Move(int) { updated = false; }
 
 void Screen::UpdateAll() {
     CleanFileToShow();
-    SetUpdated(false);
+    updated = false;
 }
 
 void Screen::PassString(QString & str) const {
@@ -151,16 +151,16 @@ color_pairs Screen::Color(const int kind, const int sub) const {
         case BONE:       return MAGENTA_WHITE;
         case FIRE:       return RED_YELLOW;
         case EXPLOSIVE:  return WHITE_RED;
-        case SUN_MOON:   return ( NIGHT == w->PartOfDay() ) ?
+        case SUN_MOON:   return ( TIME_NIGHT == w->PartOfDay() ) ?
             WHITE_WHITE : YELLOW_YELLOW;
         case SKY:
         case STAR:
             if ( w->GetEvernight() ) return BLACK_BLACK;
             switch ( w->PartOfDay() ) {
-            case NIGHT:   return WHITE_BLACK;
-            case MORNING: return WHITE_BLUE;
-            case NOON:    return CYAN_CYAN;
-            case EVENING: return WHITE_CYAN;
+            case TIME_NIGHT:   return WHITE_BLACK;
+            case TIME_MORNING: return WHITE_BLUE;
+            case TIME_NOON:    return CYAN_CYAN;
+            case TIME_EVENING: return WHITE_CYAN;
             }
         }
     case DWARF:     return WHITE_BLUE;
@@ -183,16 +183,15 @@ color_pairs Screen::ColorShred(const int type) {
     }
 }
 
-void Screen::MovePlayer(const int dir) {
+void Screen::MovePlayer(const dirs dir) {
     if ( player->GetDir() == dir ) {
         player->Move(dir);
     } else {
         player->SetDir(dir);
-        SetUpdated(false);
     }
 }
 
-void Screen::MovePlayerDiag(const int dir1, const int dir2) const {
+void Screen::MovePlayerDiag(const dirs dir1, const dirs dir2) const {
     player->SetDir(dir1);
     static bool step_trigger = true;
     player->Move(step_trigger ? dir1 : dir2);
@@ -226,7 +225,6 @@ void Screen::ControlPlayer(const int ch) {
     case '1': MovePlayerDiag(SOUTH, WEST); break;
     case '3': MovePlayerDiag(SOUTH, EAST); break;
     case ' ': player->Jump(); break;
-    case '=': player->Move(); break;
 
     case '>': player->SetDir(World::TurnRight(player->GetDir())); break;
     case '<': player->SetDir(World::TurnLeft (player->GetDir())); break;
@@ -281,7 +279,7 @@ void Screen::ControlPlayer(const int ch) {
     case '/': PassString(command); // no break
     case '.': ProcessCommand(command); break;
     }
-    SetUpdated(false);
+    updated = false;
 } // void Screen::ControlPlayer(int ch)
 
 void Screen::ProcessCommand(QString command) {
@@ -306,7 +304,7 @@ void Screen::ProcessCommand(QString command) {
 
 void Screen::SetActionMode(const actions mode) {
     actionMode = mode;
-    SetUpdated(false);
+    updated = false;
 }
 
 void Screen::InventoryAction(const int num) const {
@@ -346,16 +344,9 @@ char Screen::PrintBlock(const Block & block, WINDOW * const window) const {
     return CharName(kind, sub);
 }
 
-void Screen::SetUpdated(const bool upd) {
-    static QMutex mutex;
-    mutex.lock();
-    updated = upd;
-    mutex.unlock();
-}
-
 void Screen::Print() {
     if ( not player->IfPlayerExists() || updated ) return;
-    SetUpdated(true);
+    updated = true;
     w->Lock();
     PrintHUD();
     const int dir = player->GetDir();
@@ -829,7 +820,7 @@ void Screen::DeathScreen() {
     wnoutrefresh(rightWin);
     wnoutrefresh(hudWin);
     doupdate();
-    SetUpdated(true);
+    updated = true;
 }
 
 Screen::Screen(
@@ -932,7 +923,7 @@ Screen::Screen(
     }
 
     input->start();
-    connect(wor, SIGNAL(UpdatesEnded()), SLOT(Print()));
+    connect(wor, SIGNAL(UpdatesEnded()), SLOT(Print()), Qt::DirectConnection);
 } // Screen::Screen(World * wor, Player * pl)
 
 void Screen::CleanAll() {

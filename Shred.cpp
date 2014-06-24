@@ -42,15 +42,14 @@ bool Shred::LoadShred() {
     quint8 shredFormatVersion;
     in >> dataStreamVersion >> shredFormatVersion;
     if ( Q_UNLIKELY(DATASTREAM_VERSION != dataStreamVersion) ) {
-        fprintf(stderr,
-            "QDataStream version: %d (must be %d). Generating new shred.\n",
-            dataStreamVersion, DATASTREAM_VERSION);
+        fprintf(stderr, "%s: %d (must be %d). Generating new shred.\n",
+            Q_FUNC_INFO, dataStreamVersion, DATASTREAM_VERSION);
         return false;
     } // else:
     if ( Q_UNLIKELY(CURRENT_SHRED_FORMAT_VERSION != shredFormatVersion) ) {
         fprintf(stderr,
-            "Shred format version: %d (must be %d).\nGenerating new shred.\n",
-            shredFormatVersion, CURRENT_SHRED_FORMAT_VERSION);
+            "%s: Shred format: %d (must be %d). Generating new shred.\n",
+            Q_FUNC_INFO, shredFormatVersion, CURRENT_SHRED_FORMAT_VERSION);
         return false;
     } // else:
     in.setVersion(DATASTREAM_VERSION);
@@ -124,7 +123,7 @@ Shred::Shred(const int shred_x, const int shred_y,
     case SHRED_NORMAL_UNDERGROUND: NormalUnderground(); break;
     case SHRED_EMPTY: break;
     default:
-        fprintf(stderr, "Shred::Shred: type: %c, code %d?\n", type, type);
+        fprintf(stderr, "%s: type: %c, code %d?\n", Q_FUNC_INFO, type, type);
         Plain();
     }
 } // Shred::Shred(int shred_x, shred_y, long longi, lati, Shred * mem)
@@ -168,94 +167,66 @@ long Shred::GlobalY(const int y) const {
 }
 
 void Shred::PhysEventsFrequent() {
-    // falling
-    for (auto i = fallList.begin(); i != fallList.end(); ) {
-        if ( (*i)->GetShred() != this  ) {
-            i = fallList.erase(i);
+    for (auto i = fallList.begin(); i != fallList.end(); ++i) {
+        if ( *i == nullptr ) {
             continue;
-        } // else:
-        const int weight = (*i)->Weight();
-        if ( weight ) {
-            // PhysEventsFrequent is the first function in physics turn,
-            // so *i always belongs to this shred,
-            // so CoordInShred will return correct coordinates in this shred.
+        } else if ( (*i)->Weight() <= 0 ) {
+            (*i)->SetFalling(false);
+            *i = nullptr;
+        } else {
             const int x = (*i)->X();
             const int y = (*i)->Y();
             const int z = (*i)->Z();
-            const int x_in = CoordInShred(x);
-            const int y_in = CoordInShred(y);
-            static World * const world = GetWorld();
-            Block * const block_under = GetBlock(x_in, y_in, z-1);
+            Block * const block_under =
+                GetBlock(CoordInShred(x), CoordInShred(y), z-1);
             if (LIQUID==block_under->Kind() && SUB_CLOUD!=block_under->Sub()) {
                 (*i)->SetFalling(false);
-                i = fallList.erase(i);
-            } else if ( weight <= block_under->Weight()
-                    || not world->Move(x, y, z, DOWN) )
-            {
+                *i = nullptr;
+            } else if ( not world->Move(x, y, z, DOWN) ) {
                 (*i)->FallDamage();
-                (*i)->SetFalling(false);
-                const int durability = (*i)->GetDurability();
-                i = fallList.erase(i);
-                if ( durability <= 0 ) {
+                if ( (*i)->GetDurability() <= 0 ) {
                     world->DestroyAndReplace(x, y, z);
                 }
                 if ( block_under->GetDurability() <= 0 ) {
-                    GetWorld()->DestroyAndReplace(x, y, z-1);
+                    world->DestroyAndReplace(x, y, z-1);
                 }
-            } else {
-                ++i;
+                *i = nullptr;
             }
-        } else {
-            (*i)->SetFalling(false);
-            i = fallList.erase(i);
         }
     }
-    // frequent actions
-    for (auto j  = activeListFrequent.constBegin();
-              j != activeListFrequent.constEnd(); ++j)
+    for (auto i  = activeListFrequent.constBegin();
+              i != activeListFrequent.constEnd(); ++i)
     {
-        if ( (*j)->GetShred() == this  ) {
-            (*j)->ActFrequent();
+        if ( *i != nullptr ) {
+            (*i)->ActFrequent();
         }
-    }
-    UnregisterExternalActives();
-} // void Shred::PhysEventsFrequent()
-
-void Shred::DeleteDestroyedActives() {
-    for (auto i=deleteList.begin(); i!=deleteList.end(); i=deleteList.erase(i))
-    {
-        Unregister(*i);
-        block_manager.DeleteBlock(*i);
     }
 }
 
 void Shred::PhysEventsRare() {
     for (auto i=activeListAll.constBegin(); i!=activeListAll.constEnd(); ++i) {
-        if ( (*i)->GetShred() == this  ) {
-            (*i)->ActRare();
-            switch ((*i)->ActInner() ) {
-                case INNER_ACTION_MESSAGE:
-                case INNER_ACTION_EXPLODE: // TODO: add explosion
-                case INNER_ACTION_NONE: break;
+        if ( *i != nullptr ) {
+            switch ( (*i)->ActInner() ) {
+            case INNER_ACTION_MESSAGE:
+            case INNER_ACTION_EXPLODE: // TODO: add explosion
+            case INNER_ACTION_NONE: (*i)->ActRare(); break;
             }
         }
     }
-    UnregisterExternalActives();
-}
-
-void Shred::UnregisterExternalActives() {
-    for (auto i  = unregisterList.constBegin();
-              i != unregisterList.constEnd(); ++i)
-    {
-        Unregister(*i);
+    switch ( GetCurrentWeather() ) {
+    case WEATHER_CLEAR: break;
+    case WEATHER_RAIN: if ( qrand()%20 ) break;
+    case WEATHER_CLOUDS: Rain(); break;
+    case WEATHER_DEW: Dew(); break;
     }
-    unregisterList.clear();
+    activeListAll.removeAll(nullptr);
+    activeListFrequent.removeAll(nullptr);
+    fallList.removeAll(nullptr);
 }
 
 void Shred::Register(Active * const active) {
     active->SetShred(this);
     activeListAll.append(active);
-    unregisterList.removeAll(active);
     const int should_act = active->ShouldAct();
     if ( should_act & FREQUENT_FIRST ) {
         activeListFrequent.prepend(active);
@@ -266,14 +237,14 @@ void Shred::Register(Active * const active) {
     AddShining(active);
 }
 
-void Shred::UnregisterLater(Active * const active) {
-    unregisterList.append(active);
-}
-
 void Shred::Unregister(Active * const active) {
-    activeListAll     .removeAll(active);
-    activeListFrequent.removeAll(active);
-    fallList          .removeAll(active->ShouldFall());
+    *qFind(activeListAll.begin(), activeListAll.end(), active) = nullptr;
+    *qFind(activeListFrequent.begin(), activeListFrequent.end(), active) =
+        nullptr;
+    Falling * const falling = active->ShouldFall();
+    if ( falling != nullptr ) {
+        *qFind(fallList.begin(), fallList.end(), falling) = nullptr;
+    }
     RemShining(active);
 }
 
@@ -303,8 +274,7 @@ void Shred::AddShining(Active * const active) {
     }
 }
 
-void Shred::RemShining (Active * const active) {shiningList.removeAll(active);}
-void Shred::AddToDelete(Active * const active) { deleteList.append(active); }
+void Shred::RemShining (Active * const active) {shiningList.removeOne(active);}
 
 QLinkedList<Active * const>::const_iterator Shred::ShiningBegin() const {
     return shiningList.constBegin();
@@ -314,38 +284,26 @@ QLinkedList<Active * const>::const_iterator Shred::ShiningEnd() const {
     return shiningList.constEnd();
 }
 
-void Shred::ReloadToNorth() {
-    for (auto i=activeListAll.constBegin(); i!=activeListAll.constEnd(); ++i) {
-        (*i)->ReloadToNorth();
+void Shred::ReloadTo(const dirs direction) {
+    void (Active::* reload)() = nullptr;
+    switch ( direction ) {
+    case NORTH: reload = &Active::ReloadToNorth; ++shredY; break;
+    case SOUTH: reload = &Active::ReloadToSouth; --shredY; break;
+    case EAST:  reload = &Active::ReloadToEast;  --shredX; break;
+    case WEST:  reload = &Active::ReloadToWest;  ++shredX; break;
+    default: Q_UNREACHABLE();
+        fprintf(stderr, "%s: unlisted dir: %d,\n", Q_FUNC_INFO, direction);
     }
-    ++shredY;
-}
-
-void Shred::ReloadToEast() {
+    activeListAll.removeAll(nullptr);
     for (auto i=activeListAll.constBegin(); i!=activeListAll.constEnd(); ++i) {
-        (*i)->ReloadToEast();
+        ((*i)->*reload)();
     }
-    --shredX;
-}
-
-void Shred::ReloadToSouth() {
-    for (auto i=activeListAll.constBegin(); i!=activeListAll.constEnd(); ++i) {
-        (*i)->ReloadToSouth();
-    }
-    --shredY;
-}
-
-void Shred::ReloadToWest() {
-    for (auto i=activeListAll.constBegin(); i!=activeListAll.constEnd(); ++i) {
-        (*i)->ReloadToWest();
-    }
-    ++shredX;
 }
 
 void Shred::SetBlock(Block * block, const int x, const int y, const int z) {
     Block * const to_delete = GetBlock(x, y, z);
     if ( to_delete != block ) {
-        World::DeleteBlock(to_delete);
+        block_manager.DeleteBlock(to_delete);
         block = block_manager.ReplaceWithNormal(block);
         SetBlockNoCheck(block, x, y, z);
     }
@@ -355,10 +313,10 @@ void Shred::SetBlockNoCheck(Block * const block,
         const int x, const int y, const int z)
 {
     Active * const active = ( blocks[x][y][z]=block )->ActiveBlock();
-    if ( active ) {
+    if ( active != nullptr ) {
         active->SetXyz(
-            (ShredX() << SHRED_WIDTH_SHIFT) + x,
-            (ShredY() << SHRED_WIDTH_SHIFT) + y, z );
+            (ShredX() << SHRED_WIDTH_SHIFT) | x,
+            (ShredY() << SHRED_WIDTH_SHIFT) | y, z );
         Register(active);
     }
 }
@@ -411,14 +369,18 @@ void Shred::RandomDrop(int num, const int kind, const int sub,
         const bool on_water)
 {
     for ( ; num!=0; --num) {
-        const int rand = qrand();
-        const int x = CoordInShred(rand);
-        const int y = CoordInShred(rand >> SHRED_WIDTH_SHIFT);
-        int z = HEIGHT-2;
-        for ( ; GetBlock(x, y, z)->Sub()==AIR; --z);
-        if( on_water || GetBlock(x, y, z)->Sub()!=WATER ) {
-            SetBlock(block_manager.NewBlock(kind, sub), x, y, ++z);
-        }
+        DropBlock(block_manager.NewBlock(kind, sub), on_water);
+    }
+}
+
+void Shred::DropBlock(Block * const block, const bool on_water) {
+    int y = qrand();
+    const int x = CoordInShred(y);
+    y = CoordInShred(unsigned(y) >> SHRED_WIDTH_SHIFT);
+    int z = HEIGHT-2;
+    for ( ; GetBlock(x, y, z)->Sub()==AIR; --z);
+    if( on_water || GetBlock(x, y, z)->Sub()!=WATER ) {
+        SetBlock(block, x, y, ++z);
     }
 }
 
@@ -713,9 +675,16 @@ weathers Shred::GetWeather(const times_of_day time) const {
     return weather[time];
 }
 
+weathers Shred::GetCurrentWeather() const {
+    return GetWeather(GetWorld()->PartOfDay());
+}
+
 void Shred::SetWeathers() {
     // TODO: add weather generation
-    weather[0] = weather[1] = weather[2] = weather[3] = WEATHER_CLEAR;
+    weather[TIME_NIGHT]   = WEATHER_RAIN;
+    weather[TIME_MORNING] = WEATHER_CLOUDS;
+    weather[TIME_NOON]    = WEATHER_CLEAR;
+    weather[TIME_EVENING] = WEATHER_CLEAR;
 }
 
 void Shred::Rain() {
@@ -723,6 +692,24 @@ void Shred::Rain() {
         Dew();
         return;
     } // else:
+    static const int CLOUD_HEIGHT = HEIGHT*3/4;
+    int y = qrand();
+    const int x = CoordInShred(y);
+    y = CoordInShred(unsigned(y) >> SHRED_WIDTH_SHIFT);
+    const int to_replace_sub = GetBlock(x, y, CLOUD_HEIGHT)->Sub();
+    if ( to_replace_sub == AIR || to_replace_sub == SUB_CLOUD ) {
+        SetBlock(RainBlock(), x, y, CLOUD_HEIGHT);
+    }
 }
 
-void Shred::Dew() {}
+void Shred::Dew() { DropBlock(RainBlock(), true); }
+
+Block * Shred::RainBlock() const {
+    if ( GetCurrentWeather() == WEATHER_CLOUDS ) {
+        return block_manager.NewBlock(LIQUID, SUB_CLOUD);
+    }
+    switch ( GetTypeOfShred() ) {
+    default: return block_manager.NewBlock(LIQUID, WATER);
+    case SHRED_MOUNTAIN: return block_manager.NewBlock(FALLING, WATER);
+    }
+}

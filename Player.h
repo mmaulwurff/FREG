@@ -67,7 +67,7 @@ public:
     void SetActiveHand(bool right);
 
     /// This returns current player direction (see enum dirs in header.h)
-    int GetDir() const;
+    dirs GetDir() const;
 
     /// This returns player hitpoints, also known as durability.
     int HP() const;
@@ -102,9 +102,8 @@ public:
     bool GetCreativeMode() const;
     void SetCreativeMode(bool turn);
 
-    void SetDir(int dir);
-    /// Moves player to direction. If ==NOWHERE, moves to Player::GetDir().
-    void Move(int direction = NOWHERE);
+    void SetDir(dirs);
+    void Move(dirs);
     void Jump();
 
     /// Closes backpack, chests, etc.
@@ -183,7 +182,7 @@ private:
 
     long homeLongi, homeLati;
     int homeX, homeY, homeZ;
-    int dir;
+    dirs dir;
     Active * player;
     int usingType, usingSelfType;
     int usingInInventory;

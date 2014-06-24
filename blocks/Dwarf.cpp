@@ -81,7 +81,7 @@ int Dwarf::DamageLevel() const {
     return level;
 }
 
-bool Dwarf::Move(const int dir) {
+bool Dwarf::Move(const dirs dir) {
     const bool overstepped = Active::Move(dir);
     if ( overstepped ) {
         for (int i=0; i<ON_LEGS; ++i) {
