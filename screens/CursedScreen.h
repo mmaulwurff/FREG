@@ -176,7 +176,7 @@ private:
     void CleanFileToShow();
     void RePrint();
     void InventoryAction(int num) const;
-    color_pairs Color(int kind, int sub) const;
+    int  Color(int kind, int sub) const;
     static color_pairs ColorShred(int type);
     char PrintBlock(const Block &, WINDOW *) const;
     void SetActionMode(actions mode);

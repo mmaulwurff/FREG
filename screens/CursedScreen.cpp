@@ -116,57 +116,57 @@ char Screen::CharNumberFront(const int i, const int j) const {
             dist+'0' : ' ';
 }
 
-color_pairs Screen::Color(const int kind, const int sub) const {
+int Screen::Color(const int kind, const int sub) const {
     switch ( kind ) { // foreground_background
     case LIQUID: switch ( sub ) {
-        case WATER:     return CYAN_BLUE;
-        case ACID:      return GREEN_MAGENTA;
-        case SUB_CLOUD: return WHITE_WHITE;
-        default:        return RED_YELLOW;
-    } // no break;
+        case WATER:     return COLOR_PAIR(CYAN_BLUE);
+        case ACID:      return COLOR_PAIR(GREEN_GREEN) | A_BOLD | A_REVERSE;
+        case SUB_CLOUD: return COLOR_PAIR(WHITE_WHITE);
+        default:        return COLOR_PAIR(RED_YELLOW);
+    } // no break);
     case FALLING: switch ( sub ) {
-        case WATER: return CYAN_WHITE;
-        case SAND:  return YELLOW_WHITE;
-    } // no break;
+        case WATER: return COLOR_PAIR(CYAN_WHITE);
+        case SAND:  return COLOR_PAIR(YELLOW_WHITE);
+    } // no break);
     default: switch ( sub ) {
-        default: return WHITE_BLACK;
-        case STONE:      return BLACK_WHITE;
-        case GREENERY:   return BLACK_GREEN;
+        default: return COLOR_PAIR(WHITE_BLACK);
+        case STONE:      return COLOR_PAIR(BLACK_WHITE);
+        case GREENERY:   return COLOR_PAIR(BLACK_GREEN);
         case WOOD:
         case HAZELNUT:
-        case SOIL:       return BLACK_YELLOW;
-        case SAND:       return YELLOW_WHITE;
-        case COAL:       return BLACK_WHITE;
-        case IRON:       return WHITE_BLACK;
-        case A_MEAT:     return WHITE_RED;
-        case H_MEAT:     return BLACK_RED;
-        case WATER:      return WHITE_CYAN;
-        case GLASS:      return BLUE_WHITE;
-        case NULLSTONE:  return MAGENTA_BLACK;
-        case MOSS_STONE: return GREEN_WHITE;
-        case ROSE:       return RED_GREEN;
-        case CLAY:       return WHITE_RED;
-        case PAPER:      return MAGENTA_WHITE;
-        case GOLD:       return WHITE_YELLOW;
-        case BONE:       return MAGENTA_WHITE;
-        case FIRE:       return RED_YELLOW;
-        case EXPLOSIVE:  return WHITE_RED;
-        case SUN_MOON:   return ( TIME_NIGHT == w->PartOfDay() ) ?
-            WHITE_WHITE : YELLOW_YELLOW;
+        case SOIL:       return COLOR_PAIR(BLACK_YELLOW);
+        case SAND:       return COLOR_PAIR(YELLOW_WHITE);
+        case COAL:       return COLOR_PAIR(BLACK_WHITE);
+        case IRON:       return COLOR_PAIR(BLACK_BLACK) | A_BOLD;
+        case A_MEAT:     return COLOR_PAIR(WHITE_RED);
+        case H_MEAT:     return COLOR_PAIR(BLACK_RED);
+        case WATER:      return COLOR_PAIR(WHITE_CYAN);
+        case GLASS:      return COLOR_PAIR(BLUE_WHITE);
+        case NULLSTONE:  return COLOR_PAIR(MAGENTA_BLACK) | A_BOLD;
+        case MOSS_STONE: return COLOR_PAIR(GREEN_WHITE);
+        case ROSE:       return COLOR_PAIR(RED_GREEN);
+        case CLAY:       return COLOR_PAIR(WHITE_RED);
+        case PAPER:      return COLOR_PAIR(MAGENTA_WHITE);
+        case GOLD:       return COLOR_PAIR(WHITE_YELLOW);
+        case BONE:       return COLOR_PAIR(MAGENTA_WHITE);
+        case FIRE:       return COLOR_PAIR(RED_YELLOW) | A_BLINK;
+        case EXPLOSIVE:  return COLOR_PAIR(WHITE_RED) | A_ALTCHARSET;
+        case SUN_MOON:   return COLOR_PAIR(( TIME_NIGHT == w->PartOfDay() ) ?
+            WHITE_WHITE : YELLOW_YELLOW);
         case SKY:
         case STAR:
-            if ( w->GetEvernight() ) return BLACK_BLACK;
+            if ( w->GetEvernight() ) return COLOR_PAIR(BLACK_BLACK);
             switch ( w->PartOfDay() ) {
-            case TIME_NIGHT:   return WHITE_BLACK;
-            case TIME_MORNING: return WHITE_BLUE;
-            case TIME_NOON:    return CYAN_CYAN;
-            case TIME_EVENING: return WHITE_CYAN;
+            case TIME_NIGHT:   return COLOR_PAIR(WHITE_BLACK) | A_BOLD;
+            case TIME_MORNING: return COLOR_PAIR(WHITE_BLUE);
+            case TIME_NOON:    return COLOR_PAIR(CYAN_CYAN);
+            case TIME_EVENING: return COLOR_PAIR(WHITE_CYAN);
             }
         }
-    case DWARF:     return WHITE_BLUE;
-    case RABBIT:    return RED_WHITE;
-    case PREDATOR:  return RED_BLACK;
-    case TELEGRAPH: return CYAN_BLACK;
+    case DWARF:     return COLOR_PAIR(WHITE_BLUE);
+    case RABBIT:    return COLOR_PAIR(RED_WHITE);
+    case PREDATOR:  return COLOR_PAIR(RED_BLACK);
+    case TELEGRAPH: return COLOR_PAIR(CYAN_BLACK);
     }
 } // color_pairs Screen::Color(int kind, int sub)
 
@@ -340,7 +340,7 @@ void Screen::ActionXyz(int * x, int * y, int * z) const {
 char Screen::PrintBlock(const Block & block, WINDOW * const window) const {
     const int kind = block.Kind();
     const int sub  = block.Sub();
-    wcolor_set(window, Color(kind, sub), nullptr);
+    wattrset(window, Color(kind, sub));
     return CharName(kind, sub);
 }
 
@@ -464,12 +464,14 @@ void Screen::PrintHUD() {
     } else {
         const int dur = player->HP();
         if ( dur > 0 ) { // HitPoints line
-            PrintBar(0, (dur > MAX_DURABILITY/5) ? RED_BLACK : BLACK_RED,
+            PrintBar(0,
+                (dur > MAX_DURABILITY/5) ?
+                    COLOR_PAIR(RED_BLACK) : (COLOR_PAIR(BLACK_RED) | A_BLINK),
                 ascii ? '@' : 0x2665, dur*100/MAX_DURABILITY);
         }
         const int breath = player->BreathPercent();
         if ( -1!=breath && breath!=100 ) { // breath line
-            PrintBar(16, BLUE_BLACK, ascii ? 'o' : 0x00b0, breath);
+            PrintBar(16, COLOR_PAIR(BLUE_BLACK), ascii ? 'o' : 0x00b0, breath);
         }
         const int satiation = player->SatiationPercent();
         if ( -1 != satiation ) { // satiation line
@@ -547,7 +549,7 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
         static const QString arrow_up   (QChar(ascii ? '^' : 0x2191));
         static const QString arrow_right(QChar(ascii ? '>' : 0x2192));
         static const QString arrow_down (QChar(ascii ? 'v' : 0x2193));
-        wcolor_set(window, Color(block->Kind(), block->Sub()), nullptr);
+        wattrset(window, Color(block->Kind(), block->Sub()));
         (void)wmove(window, player->Y()-start_y+1, (player->X()-start_x)*2+2);
         switch ( player->GetDir() ) {
         case NORTH: waddstr(window, qPrintable(arrow_up));    break;
@@ -659,7 +661,7 @@ void Screen::PrintFront(WINDOW * const window) const {
                     waddch(window, CharNumberFront(i, j));
                     continue;
                 } else {
-                    wcolor_set(window, sky_colour, nullptr);
+                    wattrset(window, sky_colour);
                     waddch(window, sky_char);
                 }
             } else {
@@ -742,7 +744,7 @@ void Screen::PrintInv(WINDOW * const window, const Inventory & inv) const {
     mvwprintw(window, 2+inv.Size()+shift, 40,
         qPrintable(tr("All weight: %1 mz").
             arg(inv.Weight(), 6, 10, QChar(' '))));
-    wcolor_set(window, Color(inv.Kind(), inv.Sub()), nullptr);
+    wattrset(window, Color(inv.Kind(), inv.Sub()));
     box(window, 0, 0);
     mvwprintw(window, 0, 1, "[%c]%s", CharName( inv.Kind(), inv.Sub()),
         qPrintable((player->PlayerInventory()==&inv) ?
@@ -954,13 +956,13 @@ Screen::~Screen() { CleanAll(); }
 
 bool Screen::IsScreenWide() { return COLS >= (SCREEN_SIZE*2+2)*2; }
 
-void Screen::PrintBar(const int x, const int color, const int ch,
+void Screen::PrintBar(const int x, const int attr, const int ch,
         const int percent, const bool value_position_right)
 {
     wstandend(hudWin);
     mvwprintw(hudWin, 0, x,
         value_position_right ? "[..........]%hd" : "%3hd[..........]",percent);
-    wcolor_set(hudWin, color, nullptr);
+    wattrset(hudWin, attr);
     const QString str(10, QChar(ch));
     mvwaddstr(hudWin, 0, x + (not value_position_right ? 4 : 1),
         qPrintable(str.left(percent/10 + 1)));
