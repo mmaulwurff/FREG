@@ -100,8 +100,8 @@ protected:
 private:
     void UpdateShred();
 
-    DeferredAction * deferredAction;
-    Shred * shred;
+    DeferredAction * deferredAction = nullptr;
+    Shred * shred = nullptr;
 };
 
 class Falling : public Active {
@@ -126,7 +126,7 @@ protected:
 
 private:
     quint8 fallHeight;
-    bool falling;
+    bool falling = false;
 };
 
 #endif // ACTIVE_H

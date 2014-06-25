@@ -56,7 +56,7 @@ public:
 private:
     QHash<LongLat, QByteArray *> storage;
     const ushort size;
-    PreloadThread * preloadThread;
+    PreloadThread * preloadThread = nullptr;
 }; // class ShredStorage
 
 class PreloadThread final : public QThread {

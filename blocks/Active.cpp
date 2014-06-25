@@ -170,18 +170,14 @@ void Active::Farewell() {
 
 Active::Active(const int sub, const int id, const int transp) :
         Block(sub, id, transp),
-        Xyz(),
-        deferredAction(nullptr),
-        shred(nullptr)
+        Xyz()
 {}
 
 Active::Active(QDataStream & str, const int sub, const int id,
         const int transp)
     :
         Block(str, sub, id, transp),
-        Xyz(),
-        deferredAction(nullptr),
-        shred(nullptr)
+        Xyz()
 {}
 
 Active::~Active() { delete deferredAction; }
@@ -242,15 +238,13 @@ bool Active::IsSubAround(const int sub) const {
 
 Falling::Falling(const int sub, const int id, const int transp) :
         Active(sub, id, transp),
-        fallHeight(0),
-        falling(false)
+        fallHeight(0)
 {}
 
 Falling::Falling(QDataStream & str, const int sub, const int id,
         const int transp)
     :
-        Active(str, sub, id, transp),
-        falling(false)
+        Active(str, sub, id, transp)
 {
     str >> fallHeight;
 }

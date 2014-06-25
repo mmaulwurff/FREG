@@ -507,12 +507,7 @@ void Player::SetPlayer(const int _x, const int _y, const int _z) {
         Qt::DirectConnection);
 } // void Player::SetPlayer(int _x, int _y, int _z)
 
-Player::Player() :
-        dir(NORTH),
-        usingType(USAGE_TYPE_NO),
-        usingSelfType(USAGE_TYPE_NO),
-        cleaned(false)
-{
+Player::Player() {
     QSettings sett(QDir::currentPath() + '/' + world->WorldName()
         + "/settings.ini", QSettings::IniFormat);
     sett.beginGroup("player");

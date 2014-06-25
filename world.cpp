@@ -715,7 +715,6 @@ void World::SetNumActiveShreds(const int num) {
 }
 
 World::World(const QString world_name) :
-        timeStep(0),
         worldName(world_name),
         map(world_name),
         toResetDir(UP),
@@ -744,6 +743,7 @@ World::World(const QString world_name) :
     QDir::current().mkpath(worldName+"/texts");
     QSettings settings(worldName+"/settings.ini", QSettings::IniFormat);
     time = settings.value("time", END_OF_NIGHT).toLongLong();
+    timeStep = settings.value("time_step", 0).toInt();
     spawnLongi = settings.value( "spawn_longitude",
         int(qrand() % MapSize()) ).toLongLong();
     spawnLati  = settings.value( "spawn_latitude",
@@ -779,6 +779,7 @@ void World::CleanAll() {
 
     QSettings settings(worldName+"/settings.ini", QSettings::IniFormat);
     settings.setValue("time", qlonglong(time));
+    settings.setValue("time_step", timeStep);
     settings.setValue("longitude", qlonglong(longitude));
     settings.setValue("latitude", qlonglong(latitude));
 }

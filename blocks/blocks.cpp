@@ -145,14 +145,12 @@
 
     Animal::Animal(const int sub, const int id) :
             Falling(sub, id, NONSTANDARD),
-            moved_in_this_turn(false),
             breath(MAX_BREATH),
             satiation(SECONDS_IN_DAY)
     {}
 
     Animal::Animal(QDataStream & str, const int sub, const int id) :
-            Falling(str, sub, id, NONSTANDARD),
-            moved_in_this_turn(false)
+            Falling(str, sub, id, NONSTANDARD)
     {
         str >> breath >> satiation;
     }
@@ -462,14 +460,12 @@
             Active(sub, id, ( STONE==sub || MOSS_STONE==sub ) ?
                 BLOCK_OPAQUE : NONSTANDARD),
             shifted(false),
-            locked(false),
-            movable(false)
+            locked(false)
     {}
 
     Door::Door(QDataStream & str, const int sub, const int id) :
             Active(str, sub, id, ( STONE==sub || MOSS_STONE==sub ) ?
-                BLOCK_OPAQUE : NONSTANDARD),
-            movable(false)
+                BLOCK_OPAQUE : NONSTANDARD)
     {
         str >> shifted >> locked;
     }
@@ -549,15 +545,11 @@
     }
 
     Clock::Clock(const int sub, const int id) :
-            Active(sub, id, NONSTANDARD),
-            alarmTime(-1),
-            timerTime(-1)
+            Active(sub, id, NONSTANDARD)
     {}
 
     Clock::Clock (QDataStream & str, const int sub, const int id) :
-            Active(str, sub, id, NONSTANDARD),
-            alarmTime(-1),
-            timerTime(-1)
+            Active(str, sub, id, NONSTANDARD)
     {
         if ( note ) {
             Inscribe(*note);

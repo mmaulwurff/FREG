@@ -45,7 +45,7 @@ protected:
     void SaveAttributes(QDataStream & out) const override;
     void EatGrass();
 
-    bool moved_in_this_turn;
+    bool moved_in_this_turn = false;
 
 private:
     quint8  breath;

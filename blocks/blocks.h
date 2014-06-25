@@ -143,7 +143,7 @@ protected:
 private:
     bool shifted;
     bool locked;
-    bool movable;
+    bool movable = false;
 };
 
 class Clock : public Active {
@@ -166,8 +166,8 @@ protected:
     void DoRareAction() override;
 
 private:
-    int alarmTime;
-    int timerTime;
+    int alarmTime = -1;
+    int timerTime = -1;
 };
 
 class Creator : public Active, public Inventory {

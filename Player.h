@@ -182,12 +182,13 @@ private:
 
     long homeLongi, homeLati;
     int homeX, homeY, homeZ;
-    dirs dir;
+    dirs dir = NORTH;
     Active * player;
-    int usingType, usingSelfType;
+    int usingType     = USAGE_TYPE_NO;
+    int usingSelfType = USAGE_TYPE_NO;
     int usingInInventory;
     bool creativeMode;
-    volatile bool cleaned;
+    bool cleaned = false;
 };
 
 #endif // PLAYER_H
