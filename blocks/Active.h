@@ -49,7 +49,7 @@ public:
      Active(QDataStream & str, int sub, int id, int transp = UNDEF);
     ~Active();
 
-    bool Move(dirs dir) override;
+    void Move(dirs dir) override;
     void Damage(int dmg, int dmg_kind) override;
     void ReceiveSignal(QString) override;
     int  Kind() const override = 0;
@@ -110,16 +110,15 @@ public:
     Falling(int sub, int id, int transp = UNDEF);
     Falling(QDataStream & str, int sub, int id, int transp = UNDEF);
 
-    int Kind() const override;
+    int  Kind() const override;
+    void Move(dirs dir) override;
     QString FullName() const override;
     Falling * ShouldFall() override final;
     push_reaction PushResult(dirs) const override;
 
     void FallDamage();
     bool IsFalling() const;
-    /// Returns true if shred border is overstepped.
     void SetFalling(bool set);
-    void IncreaseFallHeight();
 
 protected:
     void SaveAttributes(QDataStream & out) const override;

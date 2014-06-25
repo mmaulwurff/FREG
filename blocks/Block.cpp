@@ -143,7 +143,7 @@ int  Block::Kind() const { return BLOCK; }
 int  Block::GetId() const { return id; }
 bool Block::Catchable() const { return false; }
 void Block::Push(dirs, Block *) {}
-bool Block::Move(dirs) { return false; }
+void Block::Move(dirs) {}
 usage_types Block::Use(Block *) { return USAGE_TYPE_NO; }
 int  Block::Wearable() const { return WEARABLE_NOWHERE; }
 int  Block::DamageKind() const { return CRUSH; }

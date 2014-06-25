@@ -58,7 +58,6 @@ public:
     void AddShining(Active *);
     void RemShining(Active *);
     void AddToDelete(Active *);
-    void AddFalling(int x, int y, int z);
     void ReloadTo(dirs);
 
     QLinkedList<Active * const>::const_iterator ShiningBegin() const;
@@ -77,6 +76,7 @@ public:
     /// Puts block to coordinates, not activates it.
     void PutBlock(Block * block, int x, int y, int z);
     static Block * Normal(int sub);
+    void AddFalling(Block *);
 
     // Lighting section
     int Lightmap(  int x, int y, int z) const;
@@ -120,8 +120,6 @@ private:
     void RemoveAllSunLight();
     void RemoveAllFireLight();
     void RemoveAllLight();
-
-    void AddFalling(Active *);
 
     bool LoadShred();
 

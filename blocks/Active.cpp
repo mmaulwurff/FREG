@@ -71,37 +71,25 @@ void Active::Unregister() {
     }
 }
 
-bool Active::Move(const dirs dir) {
+void Active::Move(const dirs dir) {
     switch ( dir ) {
     case UP:    ++z_self; break;
-    case DOWN: break;
+    case DOWN:  --z_self; break;
     case NORTH: --y_self; break;
     case SOUTH: ++y_self; break;
     case EAST:  ++x_self; break;
     case WEST:  --x_self; break;
-    case NOWHERE: break;
+    case NOWHERE: Q_UNREACHABLE(); return;
     }
-    bool overstep;
-    if ( DOWN == dir ) {
-        --z_self;
-        Falling * const falling = ShouldFall();
-        if ( falling != nullptr ) {
-            falling->IncreaseFallHeight();
-        }
-        overstep = false;
-    } else {
+    emit Moved(dir);
+    if ( dir > DOWN ) {
         Shred * const new_shred = GetWorld()->GetShred(X(), Y());
-        if ( (overstep = ( shred != new_shred )) ) {
-            Falling * const falling = ShouldFall();
-            if ( falling != nullptr ) {
-                falling->SetFalling(false);
-            }
+        const bool overstep = ( shred != new_shred );
+        if ( overstep ) {
             shred->Unregister(this);
             new_shred->Register(this);
         }
     }
-    emit Moved(dir);
-    return overstep;
 }
 
 void Active::SendSignalAround(const QString signal) const {
@@ -263,7 +251,6 @@ QString Falling::FullName() const {
 int  Falling::Kind() const { return FALLING; }
 void Falling::SaveAttributes(QDataStream & out) const { out << fallHeight; }
 bool Falling::IsFalling() const { return falling; }
-void Falling::IncreaseFallHeight() { ++fallHeight; }
 Falling * Falling::ShouldFall() { return this; }
 push_reaction Falling::PushResult(dirs) const { return MOVABLE; }
 
@@ -276,6 +263,13 @@ void Falling::FallDamage() {
     }
     falling = false;
     fallHeight = 0;
+}
+
+void Falling::Move(const dirs dir) {
+    Active::Move(dir);
+    if ( DOWN == dir ) {
+        ++fallHeight;
+    }
 }
 
 void Falling::SetFalling(const bool set) {

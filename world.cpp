@@ -124,12 +124,13 @@ void World::Get(Block * const block_to,
             Inventory * const inv_to = block_to->HasInventory();
             if ( inv_to && inv_to->Get(tried, src) ) {
                 SetBlock(Normal(AIR), x_from, y_from, z_from);
-                GetShred(x_from, y_from) -> AddFalling(
+                Shred * const shred = GetShred(x_from, y_from);
+                shred->AddFalling(shred->GetBlock(
                     Shred::CoordInShred(x_from),
-                    Shred::CoordInShred(y_from), z_from+1);
+                    Shred::CoordInShred(y_from), z_from+1));
                 emit Updated(x_from, y_from, z_from);
             } else {
-                delete tried;
+                block_manager.DeleteBlock(tried);
             }
         }
     } else if ( inv->Access() ) {
@@ -142,13 +143,12 @@ bool World::InBounds(const int x, const int y) const {
     return ( (0 <= x && x <= max_xy) && (0 <= y && y <= max_xy) );
 }
 
-bool World::InVertBounds(const int z) { return ( 0 <= z && z < HEIGHT ); }
-
 bool World::InBounds(const int x, const int y, const int z) const {
     return ( InBounds(x, y) && InVertBounds(z) );
 }
 
-int World::GetBound() const { return NumShreds() * SHRED_WIDTH - 1; }
+int  World::GetBound() const { return NumShreds() * SHRED_WIDTH - 1; }
+bool World::InVertBounds(const int z) { return ( 0 <= z && z < HEIGHT ); }
 
 void World::ReloadAllShreds(const long lati, const long longi,
     const int new_x, const int new_y, const int new_z)
@@ -439,7 +439,7 @@ const {
 
 bool World::Move(const int x, const int y, const int z, const dirs dir) {
     int newx, newy, newz;
-    if ( not  Focus(x, y, z, &newx, &newy, &newz, dir) &&
+    if (      Focus(x, y, z, &newx, &newy, &newz, dir) &&
             CanMove(x, y, z,  newx,  newy,  newz, dir) )
     {
         NoCheckMove(x, y, z,  newx,  newy,  newz, dir);
@@ -514,16 +514,18 @@ void World::NoCheckMove(const int x, const int y, const int z,
         ReEnlighten(x, y, z);
     }
 
-    block_to->Move(Anti(dir));
-    block   ->Move(dir);
-
-    emit Updated(x, y, z);
+    block->Move(dir);
     emit Updated(newx, newy, newz);
 
-    shred_from->AddFalling(x_in, y_in, z+1);
-    shred_from->AddFalling(x_in, y_in, z);
-    shred_to  ->AddFalling(newx_in, newy_in, newz+1);
-    shred_to  ->AddFalling(newx_in, newy_in, newz);
+    shred_from->AddFalling(shred_from->GetBlock(x_in, y_in, z+1));
+    shred_to  ->AddFalling(shred_from->GetBlock(newx_in, newy_in, newz+1));
+    shred_to  ->AddFalling(block);
+
+    if ( block_to->Sub() != AIR ) {
+        emit Updated(x, y, z);
+        block_to->Move(Anti(dir));
+        shred_from->AddFalling(block_to);
+    }
 }
 
 void World::Jump(const int x, const int y, const int z, const dirs dir) {
@@ -549,7 +551,7 @@ const {
     case WEST:  --*x_to; break;
     case NOWHERE: break;
     }
-    return not InBounds(*x_to, *y_to, *z_to);
+    return InBounds(*x_to, *y_to, *z_to);
 }
 
 int World::Damage(const int x, const int y, const int z,
@@ -592,7 +594,7 @@ void World::DestroyAndReplace(const int x, const int y, const int z) {
         }
         block_manager.DeleteBlock(block);
     }
-    shred->AddFalling(x_in_shred, y_in_shred, z+1);
+    shred->AddFalling(shred->GetBlock(x_in_shred, y_in_shred, z+1));
     emit Updated(x, y, z);
 }
 

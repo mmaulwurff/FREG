@@ -73,7 +73,7 @@ public:
     /// Returns true on success.
     virtual bool Inscribe(QString str);
     virtual void Push(dirs, Block * who);
-    virtual bool Move(dirs direction);
+    virtual void Move(dirs direction);
     virtual void Damage(int dmg, int dmg_kind);
     virtual usage_types Use(Block * who);
     virtual push_reaction PushResult(dirs) const;

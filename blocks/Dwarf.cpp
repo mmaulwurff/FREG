@@ -81,9 +81,10 @@ int Dwarf::DamageLevel() const {
     return level;
 }
 
-bool Dwarf::Move(const dirs dir) {
-    const bool overstepped = Active::Move(dir);
-    if ( overstepped ) {
+void Dwarf::Move(const dirs dir) {
+    Shred * const last_shred = GetShred();
+    Falling::Move(dir);
+    if ( last_shred != GetShred() ) {
         for (int i=0; i<ON_LEGS; ++i) {
             Block * const block = ShowBlock(i);
             if ( block && block->Kind()==MAP ) {
@@ -91,7 +92,6 @@ bool Dwarf::Move(const dirs dir) {
             }
         }
     }
-    return overstepped;
 }
 
 int Dwarf::NutritionalValue(const int sub) const {
