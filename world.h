@@ -33,8 +33,6 @@ class QByteArray;
 class QReadWriteLock;
 class CraftManager;
 
-const int SAFE_FALL_HEIGHT = 5;
-
 const int MOON_LIGHT_FACTOR = 1;
 const int  SUN_LIGHT_FACTOR = 8;
 
@@ -52,7 +50,6 @@ public: // Block work section
     Block * GetBlock(int x, int y, int z) const;
     Shred * GetShred(int i, int j) const;
     Shred * GetShredByPos(int x, int y) const;
-    static void DeleteBlock(Block * block);
 private:
     /// Puts block to coordinates xyz and activates it.
     void SetBlock(Block * block, int x, int y, int z);
@@ -66,7 +63,7 @@ private:
 
 public: // Lighting section
     int Enlightened(int x, int y, int z) const;
-    int Enlightened(int x, int y, int z, int dir) const;
+    int Enlightened(int x, int y, int z, dirs dir) const;
     int SunLight   (int x, int y, int z) const;
     int FireLight  (int x, int y, int z) const;
     int LightMap   (int x, int y, int z) const;
@@ -101,13 +98,13 @@ private:
 
 public: // Information section
     QString WorldName() const;
-    /// True on error, false if focus is received to _targ successfully.
+    /// False on error, true if focus is received to _targ successfully.
     bool Focus(int x, int y, int z,
-            int * x_targ, int * y_targ, int * z_targ, int dir) const;
+            int * x_targ, int * y_targ, int * z_targ, dirs dir) const;
     int NumShreds() const;
-    static int TurnRight(int dir);
-    static int TurnLeft (int dir);
-    static int Anti(int dir);
+    static dirs TurnRight(dirs dir);
+    static dirs TurnLeft (dirs dir);
+    static dirs Anti(dirs dir);
     long GetSpawnLongi() const;
     long GetSpawnLati()  const;
     long Longitude() const;
@@ -132,17 +129,17 @@ public: // Visibility section
 
 public: // Movement section
     /// Check and move
-    bool Move(int x, int y, int z, int dir);
+    bool Move(int x, int y, int z, dirs dir);
     /// This CAN move blocks, but not xyz block.
     bool CanMove(int x,    int y,    int z,
-                 int x_to, int y_to, int z_to, int dir);
-    void Jump(int x, int y, int z, int dir);
+                 int x_to, int y_to, int z_to, dirs dir);
+    void Jump(int x, int y, int z, dirs dir);
 private:
     void NoCheckMove(int x,    int y,    int z,
-                     int x_to, int y_to, int z_to, int dir);
+                     int x_to, int y_to, int z_to, dirs dir);
 
 public: // Time section
-    int PartOfDay() const;
+    times_of_day PartOfDay() const;
     /// This returns seconds from start of current day.
     int TimeOfDay() const;
     /// Returns time in seconds since world creation.
@@ -198,7 +195,6 @@ public:
     void Unlock();
 
 public slots:
-    void CleanAll();
     void PhysEvents();
     void SetReloadShreds(int direction);
 

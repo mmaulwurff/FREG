@@ -25,13 +25,13 @@
 
 void DeferredAction::GhostMove() const {
     attachedBlock->Move(( NOWHERE==num ) ?
-        attachedBlock->GetDir() : num);
+        attachedBlock->GetDir() : static_cast<dirs>(num));
 }
 
 void DeferredAction::Move() const {
     GetWorld()->Move(attachedBlock->X(), attachedBlock->Y(),
         attachedBlock->Z(), ( NOWHERE==num ) ?
-            attachedBlock->GetDir() : num);
+            attachedBlock->GetDir() : static_cast<dirs>(num));
 }
 
 void DeferredAction::Jump() const {
@@ -90,7 +90,6 @@ void DeferredAction::Damage() const {
 void DeferredAction::Throw() const {
     world->Drop(attachedBlock, x_self, y_self, z_self,
         srcSlot, destSlot, num);
-    attachedBlock->EmitUpdated();
 }
 
 void DeferredAction::Pour() const {

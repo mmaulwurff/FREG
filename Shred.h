@@ -28,6 +28,13 @@ class Block;
 class Active;
 class Falling;
 
+enum weathers {
+    WEATHER_CLEAR,
+    WEATHER_RAIN,
+    WEATHER_DEW,
+    WEATHER_CLOUDS
+};
+
 class Shred final {
 public:
     Shred(int shred_x, int shred_y,
@@ -45,24 +52,18 @@ public:
     int ShredY() const;
     void PhysEventsFrequent();
     void PhysEventsRare();
-    void DeleteDestroyedActives();
 
     void Register(Active *);
-    void UnregisterLater(Active *);
+    void Unregister(Active *);
     void AddShining(Active *);
     void RemShining(Active *);
     void AddToDelete(Active *);
-    void AddFalling(int x, int y, int z);
+    void ReloadTo(dirs);
 
-    QLinkedList<Active *>::const_iterator ShiningBegin() const;
-    QLinkedList<Active *>::const_iterator ShiningEnd() const;
+    QLinkedList<Active * const>::const_iterator ShiningBegin() const;
+    QLinkedList<Active * const>::const_iterator ShiningEnd() const;
 
     World * GetWorld() const;
-
-    void ReloadToNorth();
-    void ReloadToEast();
-    void ReloadToSouth();
-    void ReloadToWest();
 
     inline Block * GetBlock(const int x, const int y, const int z) const {
         return blocks[x][y][z];
@@ -75,6 +76,7 @@ public:
     /// Puts block to coordinates, not activates it.
     void PutBlock(Block * block, int x, int y, int z);
     static Block * Normal(int sub);
+    void AddFalling(Block *);
 
     // Lighting section
     int Lightmap(  int x, int y, int z) const;
@@ -107,14 +109,17 @@ public:
        return x >> SHRED_WIDTH_SHIFT;
     }
 
+    // Weather
+    void SetWeathers();
+    weathers GetWeather(times_of_day time) const;
+    weathers GetCurrentWeather() const;
+    void Rain();
+    void Dew();
+
 private:
     void RemoveAllSunLight();
     void RemoveAllFireLight();
     void RemoveAllLight();
-
-    void AddFalling(Active *);
-    void Unregister(Active *);
-    void UnregisterExternalActives();
 
     bool LoadShred();
 
@@ -126,6 +131,7 @@ private:
     /** If on_water is false, this will not drop things on water,
      *  otherwise on water too. */
     void RandomDrop(int num, int kind, int sub, bool on_water = false);
+    void DropBlock(Block * bloc, bool on_water);
     int CountShredTypeAround(int type) const;
 
     void PlantGrass();
@@ -153,7 +159,9 @@ private:
     void AddWater();
     int FlatUndeground(int depth = 0);
     void NormalCube(int x_start, int y_start, int z_start,
-            int x_size, int y_size, int z_size, int sub);
+                    int x_size,  int y_size,  int z_size, int sub);
+
+    Block * RainBlock() const;
 
     /// Lowest nullstone and sky are not in bounds.
     static bool InBounds(int x, int y, int z);
@@ -166,17 +174,17 @@ private:
     int shredX, shredY;
     char type;
 
-    /// needed in Shred::ReloadTo... for active blocks not to reload twice
-    /// when they are registered both in frequent and rare lists.
+    /// Contains all active blocks.
     QLinkedList<Active *> activeListAll;
-    QLinkedList<Active *> activeListFrequent, activeListRare;
+    QLinkedList<Active *> activeListFrequent;
+    QLinkedList<Active * const> shiningList;
     QLinkedList<Falling *> fallList;
-    QLinkedList<Active *> shiningList;
-    QLinkedList<Active *> deleteList;
-    QLinkedList<Active *> unregisterList;
 
     /// memory, allocated for this shred.
     Shred * const memory;
+
+    /// Weather for this day. (TIME_EVENING is the last time of day.)
+    weathers weather[TIME_EVENING+1];
 };
 
 #endif // SHRED_H

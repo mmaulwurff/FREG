@@ -25,41 +25,38 @@
 
 class Plate : public Block {
 public:
-    Plate(int sub, int id);
-    Plate(QDataStream & str, int sub, int id);
+    using Block::Block;
 
-    int PushResult(int dir) const override;
     int Kind() const override;
     int Weight() const override;
     QString FullName() const override;
+    push_reaction PushResult(dirs) const override;
 };
 
 class Ladder : public Block {
 public:
-    Ladder(int sub, int id);
-    Ladder(QDataStream & str, int sub, int id);
+    using Block::Block;
 
-    int  PushResult(int dir) const override;
     bool Catchable() const override;
     int  Kind() const override;
     int  Weight() const override;
     QString FullName() const override;
     Block * DropAfterDamage(bool * delete_block) override;
+    push_reaction PushResult(dirs) const override;
 };
 
-class Liquid : public Active {
+class Liquid : public Falling {
     Q_OBJECT
 public:
-    Liquid(int sub, int id);
-    Liquid(QDataStream & str, int sub, int id);
+    using Falling::Falling;
 
     int ShouldAct() const override;
-    int PushResult(int dir) const override;
     int LightRadius() const override;
     int Kind() const override;
     int DamageKind() const override;
     QString FullName() const override;
     Block * DropAfterDamage(bool * delete_block) override;
+    push_reaction PushResult(dirs) const override;
 
 protected:
     void DoRareAction() override;
@@ -68,15 +65,15 @@ protected:
 class Grass : public Active {
     Q_OBJECT
 public:
-    Grass(int sub, int id);
-    Grass(QDataStream & str, int sub, int id);
+    using Active::Active;
 
     int  ShouldAct()  const override;
     int  LightRadius() const override;
     int  Kind()     const override;
-    void Push(int dir, Block * who) override;
+    void Push(dirs, Block * who) override;
     Block * DropAfterDamage(bool * delete_block) override;
     QString FullName() const override;
+    push_reaction PushResult(dirs) const override;
 
 protected:
     void DoRareAction() override;
@@ -94,9 +91,8 @@ public:
     Bush(QDataStream & str, int sub, int id);
 
     int  Sub() const override;
-    int  PushResult(int dir) const override;
     int  ShouldAct() const override;
-    void Push(int dir, Block * who) override;
+    void Push(dirs, Block * who) override;
     void ReceiveSignal(QString) override;
     int  Kind() const override;
     int Weight() const override;
@@ -114,8 +110,7 @@ protected:
 class Rabbit : public Animal {
     Q_OBJECT
 public:
-    Rabbit(int sub, int id);
-    Rabbit(QDataStream & str, int sub, int id);
+    using Animal::Animal;
 
     int Kind() const override;
     Block * DropAfterDamage(bool * delete_block) override;
@@ -126,9 +121,6 @@ protected:
     void DoFrequentAction() override;
     void DoRareAction() override;
     int  Attractive(int sub) const override;
-
-private:
-    bool moved_in_this_turn;
 };
 
 class Door : public Active {
@@ -138,11 +130,11 @@ public:
     Door(QDataStream & str, int sub, int id);
 
     int ShouldAct() const override;
-    void Push(int dir, Block *) override;
-    int  PushResult(int dir /* not used */) const override;
+    void Push(dirs, Block *) override;
     int  Kind() const override;
     QString FullName() const override;
-    usage_types Use(Block * who = 0) override;
+    usage_types Use(Block * who) override;
+    push_reaction PushResult(dirs) const override;
 
 protected:
     void DoFrequentAction() override;
@@ -151,7 +143,7 @@ protected:
 private:
     bool shifted;
     bool locked;
-    bool movable;
+    bool movable = false;
 };
 
 class Clock : public Active {
@@ -161,10 +153,9 @@ public:
     Clock (QDataStream & str, int sub, int id);
 
     int ShouldAct() const override;
-    int PushResult(int) const override;
     int Weight() const override;
     bool Inscribe(QString) override;
-    void Push(int dir, Block * who) override;
+    void Push(dirs dir, Block * who) override;
     void Damage(int dmg, int dmg_kind) override;
     int  Kind() const override;
     QString FullName() const override;
@@ -175,8 +166,8 @@ protected:
     void DoRareAction() override;
 
 private:
-    int alarmTime;
-    int timerTime;
+    int alarmTime = -1;
+    int timerTime = -1;
 };
 
 class Creator : public Active, public Inventory {
@@ -200,8 +191,7 @@ protected:
 
 class Text : public Block {
 public:
-    Text(int sub, int id);
-    Text(QDataStream & str, int sub, int id);
+    using Block::Block;
 
     int  Kind() const override;
     bool Inscribe(QString) override;
@@ -231,8 +221,7 @@ private:
 class Bell : public Active {
     Q_OBJECT
 public:
-    Bell(int sub, int id);
-    Bell(QDataStream & str, int sub, int id);
+    using Active::Active;
 
     void ReceiveSignal(QString) override;
     void Damage(int dmg, int dmg_kind) override;
@@ -244,8 +233,7 @@ public:
 class Predator : public Animal {
     Q_OBJECT
 public:
-    Predator(int sub, int id);
-    Predator(QDataStream & str, int sub, int id);
+    using Animal::Animal;
 
     int DamageLevel() const override;
     int Kind() const override;

@@ -41,13 +41,13 @@ public:
     void ReceiveSignal(QString) override;
     void DoRareAction() override;
     int  ShouldAct() const override;
-    void Push(int, Block * who) override;
+    void Push(dirs, Block * who) override;
     int  Weight() const override;
     int  Kind() const override;
     Block * DropAfterDamage(bool * delete_block) override;
     QString FullName() const override;
     Active * ActiveBlock() override;
-    Inventory * HasInventory() override;
+    Inventory * HasInventory() override final;
     usage_types Use(Block * who = 0) override;
 
 protected:

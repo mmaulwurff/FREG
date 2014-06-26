@@ -25,6 +25,8 @@
 
 #define NOX
 
+#include <QMutex>
+
 #ifdef __MINGW32__
 #include "pdcurses/curses.h"
 #else
@@ -144,7 +146,6 @@ public:
 
 public slots:
     void Notify(QString) const override;
-    void CleanAll() override;
     void PassString(QString &) const override;
     void Update(int, int, int) override;
     void UpdateAll() override;
@@ -168,7 +169,7 @@ private:
     void PrintFront(WINDOW *) const;
     void PrintInv(WINDOW *, const Inventory &) const;
     /// Can print health, breath and other bars on hudWin.
-    void PrintBar(int x, int color, int ch, int value, int max_value,
+    void PrintBar(int x, int color, int ch, int percent,
             bool value_position_right = true);
     /// Returns false when file does not exist, otherwise true.
     bool PrintFile(WINDOW *, QString const & file_name);
@@ -176,16 +177,15 @@ private:
     void CleanFileToShow();
     void RePrint();
     void InventoryAction(int num) const;
-    color_pairs Color(int kind, int sub) const;
+    int  Color(int kind, int sub) const;
     static color_pairs ColorShred(int type);
     char PrintBlock(const Block &, WINDOW *) const;
     void SetActionMode(actions mode);
     void ProcessCommand(QString command);
     void PrintTitle(WINDOW *, int dir) const;
-    void MovePlayer(int dir);
-    void MovePlayerDiag(int dir1, int dir2) const;
+    void MovePlayer(dirs dir);
+    void MovePlayerDiag(dirs dir1, dirs dir2) const;
     static bool IsScreenWide();
-    void SetUpdated(bool);
 
     WINDOW * leftWin;
     WINDOW * rightWin;

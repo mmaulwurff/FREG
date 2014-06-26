@@ -52,7 +52,7 @@ bool Dwarf::Access() const { return false; }
 int Dwarf::Start() const { return ON_LEGS+1; }
 int Dwarf::Kind() const { return DWARF; }
 QString Dwarf::FullName() const { return "Rational"; }
-Inventory * Dwarf::HasInventory() { return Inventory::HasInventory(); }
+Inventory * Dwarf::HasInventory() { return this; }
 int Dwarf::LightRadius() const { return lightRadius; }
 
 void Dwarf::UpdateLightRadius() {
@@ -81,9 +81,10 @@ int Dwarf::DamageLevel() const {
     return level;
 }
 
-bool Dwarf::Move(const int dir) {
-    const bool overstepped = Active::Move(dir);
-    if ( overstepped ) {
+void Dwarf::Move(const dirs dir) {
+    Shred * const last_shred = GetShred();
+    Falling::Move(dir);
+    if ( last_shred != GetShred() ) {
         for (int i=0; i<ON_LEGS; ++i) {
             Block * const block = ShowBlock(i);
             if ( block && block->Kind()==MAP ) {
@@ -91,7 +92,6 @@ bool Dwarf::Move(const int dir) {
             }
         }
     }
-    return overstepped;
 }
 
 int Dwarf::NutritionalValue(const int sub) const {

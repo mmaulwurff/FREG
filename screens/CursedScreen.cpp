@@ -22,8 +22,8 @@
 
 #include <QSettings>
 #include <QDir>
-#include <QMutex>
 #include <QLocale>
+#include <QMutexLocker>
 #include "screens/CursedScreen.h"
 #include "screens/IThread.h"
 #include "world.h"
@@ -71,17 +71,17 @@ const {
 
 void Screen::RePrint() {
     clear();
-    SetUpdated(false);
+    updated = false;
 }
 
-void Screen::Update(int, int, int) { SetUpdated(false); }
-void Screen::UpdatePlayer() { SetUpdated(false); }
-void Screen::UpdateAround(int, int, int, int) { SetUpdated(false); }
-void Screen::Move(int) { SetUpdated(false); }
+void Screen::Update(int, int, int) { updated = false; }
+void Screen::UpdatePlayer() { updated = false; }
+void Screen::UpdateAround(int, int, int, int) { updated = false; }
+void Screen::Move(int) { updated = false; }
 
 void Screen::UpdateAll() {
     CleanFileToShow();
-    SetUpdated(false);
+    updated = false;
 }
 
 void Screen::PassString(QString & str) const {
@@ -116,56 +116,57 @@ char Screen::CharNumberFront(const int i, const int j) const {
             dist+'0' : ' ';
 }
 
-color_pairs Screen::Color(const int kind, const int sub) const {
+int Screen::Color(const int kind, const int sub) const {
     switch ( kind ) { // foreground_background
     case LIQUID: switch ( sub ) {
-        case WATER: return CYAN_BLUE;
-        case ACID:  return GREEN_MAGENTA;
-        default:    return RED_YELLOW;
-    } // no break;
+        case WATER:     return COLOR_PAIR(CYAN_BLUE);
+        case ACID:      return COLOR_PAIR(GREEN_GREEN) | A_BOLD | A_REVERSE;
+        case SUB_CLOUD: return COLOR_PAIR(WHITE_WHITE);
+        default:        return COLOR_PAIR(RED_YELLOW);
+    } // no break);
     case FALLING: switch ( sub ) {
-        case WATER: return CYAN_WHITE;
-        case SAND:  return YELLOW_WHITE;
-    } // no break;
+        case WATER: return COLOR_PAIR(CYAN_WHITE);
+        case SAND:  return COLOR_PAIR(YELLOW_WHITE);
+    } // no break);
     default: switch ( sub ) {
-        default: return WHITE_BLACK;
-        case STONE:      return BLACK_WHITE;
-        case GREENERY:   return BLACK_GREEN;
+        default: return COLOR_PAIR(WHITE_BLACK);
+        case STONE:      return COLOR_PAIR(BLACK_WHITE);
+        case GREENERY:   return COLOR_PAIR(BLACK_GREEN);
         case WOOD:
         case HAZELNUT:
-        case SOIL:       return BLACK_YELLOW;
-        case SAND:       return YELLOW_WHITE;
-        case COAL:       return BLACK_WHITE;
-        case IRON:       return WHITE_BLACK;
-        case A_MEAT:     return WHITE_RED;
-        case H_MEAT:     return BLACK_RED;
-        case WATER:      return WHITE_CYAN;
-        case GLASS:      return BLUE_WHITE;
-        case NULLSTONE:  return MAGENTA_BLACK;
-        case MOSS_STONE: return GREEN_WHITE;
-        case ROSE:       return RED_GREEN;
-        case CLAY:       return WHITE_RED;
-        case PAPER:      return MAGENTA_WHITE;
-        case GOLD:       return WHITE_YELLOW;
-        case BONE:       return MAGENTA_WHITE;
-        case FIRE:       return RED_YELLOW;
-        case EXPLOSIVE:  return WHITE_RED;
-        case SUN_MOON:   return ( NIGHT == w->PartOfDay() ) ?
-            WHITE_WHITE : YELLOW_YELLOW;
+        case SOIL:       return COLOR_PAIR(BLACK_YELLOW);
+        case SAND:       return COLOR_PAIR(YELLOW_WHITE);
+        case COAL:       return COLOR_PAIR(BLACK_WHITE);
+        case IRON:       return COLOR_PAIR(BLACK_BLACK) | A_BOLD;
+        case A_MEAT:     return COLOR_PAIR(WHITE_RED);
+        case H_MEAT:     return COLOR_PAIR(BLACK_RED);
+        case WATER:      return COLOR_PAIR(WHITE_CYAN);
+        case GLASS:      return COLOR_PAIR(BLUE_WHITE);
+        case NULLSTONE:  return COLOR_PAIR(MAGENTA_BLACK) | A_BOLD;
+        case MOSS_STONE: return COLOR_PAIR(GREEN_WHITE);
+        case ROSE:       return COLOR_PAIR(RED_GREEN);
+        case CLAY:       return COLOR_PAIR(WHITE_RED);
+        case PAPER:      return COLOR_PAIR(MAGENTA_WHITE);
+        case GOLD:       return COLOR_PAIR(WHITE_YELLOW);
+        case BONE:       return COLOR_PAIR(MAGENTA_WHITE);
+        case FIRE:       return COLOR_PAIR(RED_YELLOW) | A_BLINK;
+        case EXPLOSIVE:  return COLOR_PAIR(WHITE_RED) | A_ALTCHARSET;
+        case SUN_MOON:   return COLOR_PAIR(( TIME_NIGHT == w->PartOfDay() ) ?
+            WHITE_WHITE : YELLOW_YELLOW);
         case SKY:
         case STAR:
-            if ( w->GetEvernight() ) return BLACK_BLACK;
+            if ( w->GetEvernight() ) return COLOR_PAIR(BLACK_BLACK);
             switch ( w->PartOfDay() ) {
-            case NIGHT:   return WHITE_BLACK;
-            case MORNING: return WHITE_BLUE;
-            case NOON:    return CYAN_CYAN;
-            case EVENING: return WHITE_CYAN;
+            case TIME_NIGHT:   return COLOR_PAIR(WHITE_BLACK) | A_BOLD;
+            case TIME_MORNING: return COLOR_PAIR(WHITE_BLUE);
+            case TIME_NOON:    return COLOR_PAIR(CYAN_CYAN);
+            case TIME_EVENING: return COLOR_PAIR(WHITE_CYAN);
             }
         }
-    case DWARF:     return WHITE_BLUE;
-    case RABBIT:    return RED_WHITE;
-    case PREDATOR:  return RED_BLACK;
-    case TELEGRAPH: return CYAN_BLACK;
+    case DWARF:     return COLOR_PAIR(WHITE_BLUE);
+    case RABBIT:    return COLOR_PAIR(RED_WHITE);
+    case PREDATOR:  return COLOR_PAIR(RED_BLACK);
+    case TELEGRAPH: return COLOR_PAIR(CYAN_BLACK);
     }
 } // color_pairs Screen::Color(int kind, int sub)
 
@@ -182,16 +183,15 @@ color_pairs Screen::ColorShred(const int type) {
     }
 }
 
-void Screen::MovePlayer(const int dir) {
+void Screen::MovePlayer(const dirs dir) {
     if ( player->GetDir() == dir ) {
         player->Move(dir);
     } else {
         player->SetDir(dir);
-        SetUpdated(false);
     }
 }
 
-void Screen::MovePlayerDiag(const int dir1, const int dir2) const {
+void Screen::MovePlayerDiag(const dirs dir1, const dirs dir2) const {
     player->SetDir(dir1);
     static bool step_trigger = true;
     player->Move(step_trigger ? dir1 : dir2);
@@ -225,7 +225,6 @@ void Screen::ControlPlayer(const int ch) {
     case '1': MovePlayerDiag(SOUTH, WEST); break;
     case '3': MovePlayerDiag(SOUTH, EAST); break;
     case ' ': player->Jump(); break;
-    case '=': player->Move(); break;
 
     case '>': player->SetDir(World::TurnRight(player->GetDir())); break;
     case '<': player->SetDir(World::TurnLeft (player->GetDir())); break;
@@ -280,7 +279,7 @@ void Screen::ControlPlayer(const int ch) {
     case '/': PassString(command); // no break
     case '.': ProcessCommand(command); break;
     }
-    SetUpdated(false);
+    updated = false;
 } // void Screen::ControlPlayer(int ch)
 
 void Screen::ProcessCommand(QString command) {
@@ -305,7 +304,7 @@ void Screen::ProcessCommand(QString command) {
 
 void Screen::SetActionMode(const actions mode) {
     actionMode = mode;
-    SetUpdated(false);
+    updated = false;
 }
 
 void Screen::InventoryAction(const int num) const {
@@ -341,20 +340,13 @@ void Screen::ActionXyz(int * x, int * y, int * z) const {
 char Screen::PrintBlock(const Block & block, WINDOW * const window) const {
     const int kind = block.Kind();
     const int sub  = block.Sub();
-    wcolor_set(window, Color(kind, sub), nullptr);
+    wattrset(window, Color(kind, sub));
     return CharName(kind, sub);
-}
-
-void Screen::SetUpdated(const bool upd) {
-    static QMutex mutex;
-    mutex.lock();
-    updated = upd;
-    mutex.unlock();
 }
 
 void Screen::Print() {
     if ( not player->IfPlayerExists() || updated ) return;
-    SetUpdated(true);
+    updated = true;
     w->Lock();
     PrintHUD();
     const int dir = player->GetDir();
@@ -439,8 +431,7 @@ void Screen::PrintHUD() {
         PrintBar(((SCREEN_SIZE*2+2) * (IsScreenWide() ? 2 : 1)) - 15,
             Color(focused->Kind(), focused->Sub()),
             (focused->IsAnimal() == nullptr) ? '+' : '*',
-            focused->GetDurability(),
-            MAX_DURABILITY,
+            focused->GetDurability()*100/MAX_DURABILITY,
             false);
     }
     // action mode
@@ -473,12 +464,14 @@ void Screen::PrintHUD() {
     } else {
         const int dur = player->HP();
         if ( dur > 0 ) { // HitPoints line
-            PrintBar(0, (dur > MAX_DURABILITY/5) ? RED_BLACK : BLACK_RED,
-                ascii ? '@' : 0x2665, dur, MAX_DURABILITY);
+            PrintBar(0,
+                (dur > MAX_DURABILITY/5) ?
+                    COLOR_PAIR(RED_BLACK) : (COLOR_PAIR(BLACK_RED) | A_BLINK),
+                ascii ? '@' : 0x2665, dur*100/MAX_DURABILITY);
         }
-        const int breath = player->Breath();
-        if ( -1!=breath && breath!=MAX_BREATH ) { // breath line
-            PrintBar(16, BLUE_BLACK, ascii ? 'o' : 0x00b0, breath, MAX_BREATH);
+        const int breath = player->BreathPercent();
+        if ( -1!=breath && breath!=100 ) { // breath line
+            PrintBar(16, COLOR_PAIR(BLUE_BLACK), ascii ? 'o' : 0x00b0, breath);
         }
         const int satiation = player->SatiationPercent();
         if ( -1 != satiation ) { // satiation line
@@ -556,7 +549,7 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
         static const QString arrow_up   (QChar(ascii ? '^' : 0x2191));
         static const QString arrow_right(QChar(ascii ? '>' : 0x2192));
         static const QString arrow_down (QChar(ascii ? 'v' : 0x2193));
-        wcolor_set(window, Color(block->Kind(), block->Sub()), nullptr);
+        wattrset(window, Color(block->Kind(), block->Sub()));
         (void)wmove(window, player->Y()-start_y+1, (player->X()-start_x)*2+2);
         switch ( player->GetDir() ) {
         case NORTH: waddstr(window, qPrintable(arrow_up));    break;
@@ -668,7 +661,7 @@ void Screen::PrintFront(WINDOW * const window) const {
                     waddch(window, CharNumberFront(i, j));
                     continue;
                 } else {
-                    wcolor_set(window, sky_colour, nullptr);
+                    wattrset(window, sky_colour);
                     waddch(window, sky_char);
                 }
             } else {
@@ -751,7 +744,7 @@ void Screen::PrintInv(WINDOW * const window, const Inventory & inv) const {
     mvwprintw(window, 2+inv.Size()+shift, 40,
         qPrintable(tr("All weight: %1 mz").
             arg(inv.Weight(), 6, 10, QChar(' '))));
-    wcolor_set(window, Color(inv.Kind(), inv.Sub()), nullptr);
+    wattrset(window, Color(inv.Kind(), inv.Sub()));
     box(window, 0, 0);
     mvwprintw(window, 0, 1, "[%c]%s", CharName( inv.Kind(), inv.Sub()),
         qPrintable((player->PlayerInventory()==&inv) ?
@@ -799,7 +792,10 @@ void Screen::Notify(const QString str) const {
     }
     if ( str.at(str.size()-1) == '!' ) {
         wcolor_set(notifyWin, RED_BLACK, nullptr);
+    } else {
+        wstandend(notifyWin);
     }
+
     static int notification_repeat_count = 1;
     if ( str == lastNotification ) {
         ++notification_repeat_count;
@@ -812,7 +808,6 @@ void Screen::Notify(const QString str) const {
         wprintw(notifyWin, "%s\n", qPrintable(str));
         lastNotification = str;
     }
-    wstandend(notifyWin);
     wrefresh(notifyWin);
 }
 
@@ -829,7 +824,7 @@ void Screen::DeathScreen() {
     wnoutrefresh(rightWin);
     wnoutrefresh(hudWin);
     doupdate();
-    SetUpdated(true);
+    updated = true;
 }
 
 Screen::Screen(
@@ -862,8 +857,6 @@ Screen::Screen(
     nonl();
     keypad(stdscr, TRUE); // use arrows
     if ( LINES < 41 ) {
-        world->CleanAll();
-        CleanAll();
         printf("Make your terminal height to be at least 41 lines.\n");
         error = HEIGHT_NOT_ENOUGH;
         return;
@@ -898,8 +891,6 @@ Screen::Screen(
         hudWin   = newwin(3, SCREEN_SIZE*2+2, SCREEN_SIZE+2, left_border);
         notifyWin  = newwin(0, SCREEN_SIZE*2+2, SCREEN_SIZE+2+3, left_border);
     } else {
-        world->CleanAll();
-        CleanAll();
         puts(qPrintable(tr("Set your terminal width at least %1 chars.").
             arg(SCREEN_SIZE*2+2)));
         error = WIDTH_NOT_ENOUGH;
@@ -932,13 +923,14 @@ Screen::Screen(
     }
 
     input->start();
-    connect(wor, SIGNAL(UpdatesEnded()), SLOT(Print()));
+    connect(wor, SIGNAL(UpdatesEnded()), SLOT(Print()), Qt::DirectConnection);
 } // Screen::Screen(World * wor, Player * pl)
 
-void Screen::CleanAll() {
-    static bool cleaned = false;
-    if ( cleaned ) return;
-    cleaned = true; // prevent double cleaning
+Screen::~Screen() {
+    w->Lock();
+    disconnect(w, SIGNAL(UpdatesEnded()), this, SLOT(Print()));
+    w->Unlock();
+
     input->Stop();
     input->wait();
     delete input;
@@ -947,6 +939,7 @@ void Screen::CleanAll() {
     if ( rightWin  ) delwin(rightWin);
     if ( notifyWin ) delwin(notifyWin);
     if ( hudWin    ) delwin(hudWin);
+    if ( miniMapWin ) delwin(miniMapWin);
     endwin();
     if ( notifyLog ) {
         fclose(notifyLog);
@@ -959,18 +952,16 @@ void Screen::CleanAll() {
     sett.setValue("last_command", command);
 }
 
-Screen::~Screen() { CleanAll(); }
-
 bool Screen::IsScreenWide() { return COLS >= (SCREEN_SIZE*2+2)*2; }
 
-void Screen::PrintBar(const int x, const int color, const int ch,
-        const int value, const int max_value, const bool value_position_right)
+void Screen::PrintBar(const int x, const int attr, const int ch,
+        const int percent, const bool value_position_right)
 {
     wstandend(hudWin);
     mvwprintw(hudWin, 0, x,
-        value_position_right ? "[..........]%hd" : "%3hd[..........]", value);
-    wcolor_set(hudWin, color, nullptr);
+        value_position_right ? "[..........]%hd" : "%3hd[..........]",percent);
+    wattrset(hudWin, attr);
     const QString str(10, QChar(ch));
     mvwaddstr(hudWin, 0, x + (not value_position_right ? 4 : 1),
-        qPrintable(str.left(10*value/max_value+1)));
+        qPrintable(str.left(percent/10 + 1)));
 }

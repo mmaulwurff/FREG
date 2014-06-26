@@ -57,6 +57,7 @@ int Block::Transparency(const int transp, const int sub) const {
         case WATER:
         case GREENERY:
         case ACID:
+        case SUB_CLOUD:
         case GLASS: return BLOCK_TRANSPARENT;
         }
     } else {
@@ -120,9 +121,11 @@ void Block::Damage(const int dmg, const int dmg_kind) {
 
 Block * Block::DropAfterDamage(bool * const delete_block) {
     switch ( Sub() ) {
-    case STONE: return block_manager.NewBlock(LADDER, STONE);
     case GLASS:
     case AIR: return nullptr;
+    case STONE: if ( BLOCK==Kind() ) {
+        return block_manager.NewBlock(LADDER, STONE);
+    } // no break;
     default: {
         Block * const pile = block_manager.NewBlock(CONTAINER, DIFFERENT);
         pile->HasInventory()->Get(this);
@@ -132,23 +135,23 @@ Block * Block::DropAfterDamage(bool * const delete_block) {
     }
 }
 
-int  Block::PushResult(int) const {
+push_reaction Block::PushResult(dirs) const {
     return ( AIR==Sub() ) ? ENVIRONMENT : NOT_MOVABLE;
 }
 
 int  Block::Kind() const { return BLOCK; }
 int  Block::GetId() const { return id; }
 bool Block::Catchable() const { return false; }
-void Block::Push(const int, Block * const) {}
-bool Block::Move(const int) { return false; }
+void Block::Push(dirs, Block *) {}
+void Block::Move(dirs) {}
 usage_types Block::Use(Block *) { return USAGE_TYPE_NO; }
 int  Block::Wearable() const { return WEARABLE_NOWHERE; }
 int  Block::DamageKind() const { return CRUSH; }
 int  Block::DamageLevel() const { return 1; }
 int  Block::LightRadius() const { return 0; }
-void Block::ReceiveSignal(const QString) {}
+void Block::ReceiveSignal(QString) {}
 
-bool Block::Inscribe(const QString str) {
+bool Block::Inscribe(QString str) {
     if ( note ) {
         *note = str.left(MAX_NOTE_LENGTH);
     } else {
@@ -156,7 +159,7 @@ bool Block::Inscribe(const QString str) {
     }
     if ( "" == *note ) {
         delete note;
-        note = 0;
+        note = nullptr;
     }
     return true;
 }
@@ -168,7 +171,7 @@ Falling * Block::ShouldFall() { return nullptr; }
 
 void Block::Restore() { durability = MAX_DURABILITY; }
 void Block::Break() { durability = 0; }
-int  Block::GetDir() const { return direction; }
+dirs Block::GetDir() const { return static_cast<dirs>(direction); }
 int  Block::GetDurability() const { return durability; }
 QString Block::GetNote() const { return note ? *note : ""; }
 
@@ -181,6 +184,7 @@ void Block::Mend() {
 int Block::Weight() const {
     switch ( Sub() ) {
     default:        return WEIGHT_WATER;
+    case SUB_CLOUD:
     case AIR:       return WEIGHT_AIR;
     case STONE:     return WEIGHT_STONE;
     case SOIL:      return WEIGHT_SAND+WEIGHT_WATER;
@@ -258,13 +262,14 @@ Block::Block(QDataStream & str, const int subst, const int i, const int transp)
         sub(subst),
         id(i)
 {
-    str >> durability;// use durability as buffer, set actual value in the end.
+    // use durability as buffer, set actual value in the end:
+    str >> (quint16 &)durability;
     if ( Q_UNLIKELY(durability & 1) ) {
         str >> *(note = new QString);
     } else {
         note = nullptr;
     }
-    direction = ( durability >>=1 ) & 0x7;
+    direction = ( durability >>= 1 ) & 0x7;
     durability >>= 3;
 }
 

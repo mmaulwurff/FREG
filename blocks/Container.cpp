@@ -23,7 +23,7 @@
 #include "CraftManager.h"
 
 // Container::
-    void Container::Push(const int, Block * const who) {
+    void Container::Push(dirs, Block * const who) {
         Inventory::Push(who);
         if ( Sub()==DIFFERENT && IsEmpty() ) {
             GetWorld()->DestroyAndReplace(X(), Y(), Z());
@@ -50,7 +50,7 @@
 
     int Container::Kind() const { return CONTAINER; }
     int Container::Sub() const { return Block::Sub(); }
-    Inventory * Container::HasInventory() { return Inventory::HasInventory(); }
+    Inventory * Container::HasInventory() { return this; }
     usage_types Container::Use(Block *) { return USAGE_TYPE_OPEN; }
 
     Block * Container::DropAfterDamage(bool * const delete_block) {

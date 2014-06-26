@@ -52,9 +52,9 @@ Shred * Player::GetShred() const { return world->GetShred(X(), Y()); }
 World * Player::GetWorld() const { return world; }
 
 bool Player::GetCreativeMode() const { return creativeMode; }
-void Player::SetCreativeMode(const bool turn) {
-    creativeMode = turn;
-    disconnect(player, 0, 0, 0);
+void Player::SetCreativeMode(const bool creative_on) {
+    creativeMode = creative_on;
+    player->disconnect();
     Active * const prev_player = player;
     SetPlayer(X(), Y(), Z());
     player->SetDir(prev_player->GetDir());
@@ -62,8 +62,8 @@ void Player::SetCreativeMode(const bool turn) {
     if ( inv != nullptr ) {
         inv->GetAll(prev_player->HasInventory());
     }
-    if ( not GetCreativeMode() ) {
-        prev_player->SetToDelete();
+    if ( not creative_on ) {
+        delete prev_player;
     }
     emit Updated();
 }
@@ -163,7 +163,7 @@ void Player::Jump() {
     }
 }
 
-void Player::Move(const int direction) {
+void Player::Move(const dirs direction) {
     if ( player ) {
         if ( GetCreativeMode() ) {
             player->GetDeferredAction()->SetGhostMove(direction);
@@ -399,7 +399,7 @@ void Player::ProcessCommand(QString command) {
     } else if ( "move" == request ) {
         int direction;
         comm_stream >> direction;
-        Move(direction);
+        Move(static_cast<dirs>(direction));
     } else if ( "time" == request ) {
         emit Notify( (GetCreativeMode() || COMMANDS_ALWAYS_ON) ?
             GetWorld()->TimeOfDayStr() : tr("Not in Creative Mode.") );
@@ -425,8 +425,9 @@ const {
         world->Visible(X(), Y(), Z(), x_to, y_to, z_to);
 }
 
-int  Player::GetDir() const { return dir; }
-void Player::SetDir(const int direction) {
+dirs Player::GetDir() const { return dir; }
+
+void Player::SetDir(const dirs direction) {
     usingType = USAGE_TYPE_NO;
     if ( player ) {
         player->SetDir(direction);
@@ -506,12 +507,7 @@ void Player::SetPlayer(const int _x, const int _y, const int _z) {
         Qt::DirectConnection);
 } // void Player::SetPlayer(int _x, int _y, int _z)
 
-Player::Player() :
-        dir(NORTH),
-        usingType(USAGE_TYPE_NO),
-        usingSelfType(USAGE_TYPE_NO),
-        cleaned(false)
-{
+Player::Player() {
     QSettings sett(QDir::currentPath() + '/' + world->WorldName()
         + "/settings.ini", QSettings::IniFormat);
     sett.beginGroup("player");

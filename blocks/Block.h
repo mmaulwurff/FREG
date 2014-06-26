@@ -72,11 +72,11 @@ public:
     virtual bool Catchable() const;
     /// Returns true on success.
     virtual bool Inscribe(QString str);
-    virtual int PushResult(int dir) const;
-    virtual void Push(int dir, Block * who);
-    virtual bool Move(int direction);
+    virtual void Push(dirs, Block * who);
+    virtual void Move(dirs direction);
     virtual void Damage(int dmg, int dmg_kind);
-    virtual usage_types Use(Block * who = 0);
+    virtual usage_types Use(Block * who);
+    virtual push_reaction PushResult(dirs) const;
     /// Should return dropped block.
     /** It can be pile(CONTAINER, DIFFERENT) containing all dropped blocks, or
      *  block itself.
@@ -108,7 +108,7 @@ public:
     void Mend();
     void SetDir(int dir);
 
-    int GetDir() const;
+    dirs GetDir() const;
     int GetDurability() const;
     QString GetNote() const;
     inline int Transparent() const { return transparent; }

@@ -42,19 +42,23 @@ bool Shred::LoadShred() {
     quint8 shredFormatVersion;
     in >> dataStreamVersion >> shredFormatVersion;
     if ( Q_UNLIKELY(DATASTREAM_VERSION != dataStreamVersion) ) {
-        fprintf(stderr,
-            "QDataStream version: %d (must be %d). Generating new shred.\n",
-            dataStreamVersion, DATASTREAM_VERSION);
+        fprintf(stderr, "%s: %d (must be %d). Generating new shred.\n",
+            Q_FUNC_INFO, dataStreamVersion, DATASTREAM_VERSION);
         return false;
     } // else:
     if ( Q_UNLIKELY(CURRENT_SHRED_FORMAT_VERSION != shredFormatVersion) ) {
         fprintf(stderr,
-            "Shred format version: %d (must be %d).\nGenerating new shred.\n",
-            shredFormatVersion, CURRENT_SHRED_FORMAT_VERSION);
+            "%s: Shred format: %d (must be %d). Generating new shred.\n",
+            Q_FUNC_INFO, shredFormatVersion, CURRENT_SHRED_FORMAT_VERSION);
         return false;
     } // else:
     in.setVersion(DATASTREAM_VERSION);
     in >> (quint8 &)(type);
+    for (int i=0; i<=TIME_EVENING; ++i) {
+        quint8 new_weather;
+        in >> new_weather;
+        weather[i] = static_cast<weathers>(new_weather);
+    }
     Block * const null_stone = Normal(NULLSTONE);
     Block * const air = Normal(AIR);
     SetAllLightMapNull();
@@ -92,9 +96,10 @@ Shred::Shred(const int shred_x, const int shred_y,
 {
     if ( LoadShred() ) return; // successfull loading
     // new shred generation:
+    SetWeathers();
     Block * const null_stone = Normal(NULLSTONE);
-    Block * const air = Normal(AIR);
-    Block * const sky = Normal(SKY);
+    Block * const air  = Normal(AIR);
+    Block * const sky  = Normal(SKY);
     Block * const star = Normal(STAR);
     SetAllLightMapNull();
     for (int i=0; i<SHRED_WIDTH; ++i)
@@ -120,7 +125,7 @@ Shred::Shred(const int shred_x, const int shred_y,
     case SHRED_NORMAL_UNDERGROUND: NormalUnderground(); break;
     case SHRED_EMPTY: break;
     default:
-        fprintf(stderr, "Shred::Shred: type: %c, code %d?\n", type, type);
+        fprintf(stderr, "%s: type: %c, code %d?\n", Q_FUNC_INFO, type, type);
         Plain();
     }
 } // Shred::Shred(int shred_x, shred_y, long longi, lati, Shred * mem)
@@ -132,6 +137,9 @@ Shred::~Shred() {
     outstr << DATASTREAM_VERSION << CURRENT_SHRED_FORMAT_VERSION;
     outstr.setVersion(DATASTREAM_VERSION);
     outstr << (quint8)GetTypeOfShred();
+    for (int i=0; i<=TIME_EVENING; ++i) {
+        outstr << (quint8)weather[i];
+    }
     for (int x=0; x<SHRED_WIDTH; ++x)
     for (int y=0; y<SHRED_WIDTH; ++y) {
         int height = HEIGHT-2;
@@ -161,98 +169,67 @@ long Shred::GlobalY(const int y) const {
 }
 
 void Shred::PhysEventsFrequent() {
-    // falling
-    for (auto i = fallList.begin(); i != fallList.end(); ) {
-        if ( (*i)->GetShred() != this  ) {
-            i = fallList.erase(i);
+    for (auto i = fallList.begin(); i != fallList.end(); ++i) {
+        if ( *i == nullptr ) {
             continue;
-        } // else:
-        const int weight = (*i)->Weight();
-        if ( weight ) {
-            // PhysEventsFrequent is the first function in physics turn,
-            // so *i always belongs to this shred,
-            // so CoordInShred will return correct coordinates in this shred.
+        } else if ( (*i)->Weight() <= 0 ) {
+            (*i)->SetFalling(false);
+            *i = nullptr;
+        } else {
             const int x = (*i)->X();
             const int y = (*i)->Y();
             const int z = (*i)->Z();
-            const int x_in = CoordInShred(x);
-            const int y_in = CoordInShred(y);
-            static World * const world = GetWorld();
-            if ( LIQUID == GetBlock(x_in, y_in, z-1)->Kind() ) {
+            Block * const block_under =
+                GetBlock(CoordInShred(x), CoordInShred(y), z-1);
+            if (LIQUID==block_under->Kind() && SUB_CLOUD!=block_under->Sub()) {
                 (*i)->SetFalling(false);
-                i = fallList.erase(i);
-            } else if ( weight <= GetBlock(x_in, y_in, z-1)->Weight()
-                    || !world->Move(x, y, z, DOWN) )
-            {
+                *i = nullptr;
+            } else if ( not world->Move(x, y, z, DOWN) ) {
                 (*i)->FallDamage();
-                (*i)->SetFalling(false);
-                const int durability = (*i)->GetDurability();
-                i = fallList.erase(i);
-                if ( durability <= 0 ) {
+                if ( (*i)->GetDurability() <= 0 ) {
                     world->DestroyAndReplace(x, y, z);
                 }
-                if ( GetBlock(x_in, y_in, z-1)->GetDurability() <= 0 ) {
-                    GetWorld()->DestroyAndReplace(x, y, z-1);
+                if ( block_under->GetDurability() <= 0 ) {
+                    world->DestroyAndReplace(x, y, z-1);
                 }
-            } else {
-                ++i;
+                *i = nullptr;
             }
-        } else {
-            (*i)->SetFalling(false);
-            i = fallList.erase(i);
         }
     }
-    // frequent actions
-    for (auto j  = activeListFrequent.constBegin();
-              j != activeListFrequent.constEnd(); ++j)
+    for (auto i  = activeListFrequent.constBegin();
+              i != activeListFrequent.constEnd(); ++i)
     {
-        if ( (*j)->GetShred() == this  ) {
-            (*j)->ActFrequent();
+        if ( *i != nullptr ) {
+            (*i)->ActFrequent();
         }
-    }
-    UnregisterExternalActives();
-} // void Shred::PhysEventsFrequent()
-
-void Shred::DeleteDestroyedActives() {
-    for (auto i=deleteList.begin(); i!=deleteList.end(); i=deleteList.erase(i))
-    {
-        Unregister(*i);
-        block_manager.DeleteBlock(*i);
     }
 }
 
 void Shred::PhysEventsRare() {
-    for (auto i=activeListRare.constBegin(); i!=activeListRare.constEnd(); ++i)
-    {
-        if ( (*i)->GetShred() == this  ) {
-            (*i)->ActRare();
-            switch ((*i)->ActInner() ) {
-                case INNER_ACTION_MESSAGE:
-                case INNER_ACTION_EXPLODE: // TODO: add explosion
-                case INNER_ACTION_NONE: break;
+    for (auto i=activeListAll.constBegin(); i!=activeListAll.constEnd(); ++i) {
+        if ( *i != nullptr ) {
+            switch ( (*i)->ActInner() ) {
+            case INNER_ACTION_MESSAGE:
+            case INNER_ACTION_EXPLODE: // TODO: add explosion
+            case INNER_ACTION_NONE: (*i)->ActRare(); break;
             }
         }
     }
-    UnregisterExternalActives();
-}
-
-void Shred::UnregisterExternalActives() {
-    for (auto i  = unregisterList.constBegin();
-              i != unregisterList.constEnd(); ++i)
-    {
-        Unregister(*i);
+    switch ( GetCurrentWeather() ) {
+    case WEATHER_CLEAR: break;
+    case WEATHER_RAIN: if ( qrand()%20 ) break;
+    case WEATHER_CLOUDS: Rain(); break;
+    case WEATHER_DEW: Dew(); break;
     }
-    unregisterList.clear();
+    activeListAll.removeAll(nullptr);
+    activeListFrequent.removeAll(nullptr);
+    fallList.removeAll(nullptr);
 }
 
 void Shred::Register(Active * const active) {
     active->SetShred(this);
     activeListAll.append(active);
-    unregisterList.removeAll(active);
     const int should_act = active->ShouldAct();
-    if ( should_act & FREQUENT_RARE ) {
-        activeListRare.append(active);
-    }
     if ( should_act & FREQUENT_FIRST ) {
         activeListFrequent.prepend(active);
     } else if ( should_act & FREQUENT_SECOND ) {
@@ -262,35 +239,27 @@ void Shred::Register(Active * const active) {
     AddShining(active);
 }
 
-void Shred::UnregisterLater(Active * const active) {
-    unregisterList.append(active);
-}
-
 void Shred::Unregister(Active * const active) {
-    activeListAll     .removeAll(active);
-    activeListFrequent.removeAll(active);
-    activeListRare    .removeAll(active);
-    fallList          .removeAll(active->ShouldFall());
+    *qFind(activeListAll.begin(), activeListAll.end(), active) = nullptr;
+    *qFind(activeListFrequent.begin(), activeListFrequent.end(), active) =
+        nullptr;
+    Falling * const falling = active->ShouldFall();
+    if ( falling != nullptr ) {
+        *qFind(fallList.begin(), fallList.end(), falling) = nullptr;
+    }
     RemShining(active);
 }
 
-void Shred::AddFalling(Active * const active) {
-    Falling * const falling = active->ShouldFall();
+void Shred::AddFalling(Block * const block) {
+    Falling * const falling = block->ShouldFall();
     if ( falling != nullptr &&
             not falling->IsFalling() &&
             not (*falling == *GetBlock(
-                CoordInShred(active->X()),
-                CoordInShred(active->Y()), active->Z()-1)) )
+                CoordInShred(falling->X()),
+                CoordInShred(falling->Y()), falling->Z()-1)) )
     {
         falling->SetFalling(true);
         fallList.append(falling);
-    }
-}
-
-void Shred::AddFalling(const int x, const int y, const int z) {
-    Falling * const falling = blocks[x][y][z]->ShouldFall();
-    if ( falling != nullptr ) {
-        AddFalling(falling);
     }
 }
 
@@ -300,48 +269,36 @@ void Shred::AddShining(Active * const active) {
     }
 }
 
-void Shred::RemShining (Active * const active) {shiningList.removeAll(active);}
-void Shred::AddToDelete(Active * const active) { deleteList.append(active); }
+void Shred::RemShining (Active * const active) {shiningList.removeOne(active);}
 
-QLinkedList<Active *>::const_iterator Shred::ShiningBegin() const {
+QLinkedList<Active * const>::const_iterator Shred::ShiningBegin() const {
     return shiningList.constBegin();
 }
-QLinkedList<Active *>::const_iterator Shred::ShiningEnd() const {
+
+QLinkedList<Active * const>::const_iterator Shred::ShiningEnd() const {
     return shiningList.constEnd();
 }
 
-void Shred::ReloadToNorth() {
-    for (auto i=activeListAll.constBegin(); i!=activeListAll.constEnd(); ++i) {
-        (*i)->ReloadToNorth();
+void Shred::ReloadTo(const dirs direction) {
+    void (Active::* reload)() = nullptr;
+    switch ( direction ) {
+    case NORTH: reload = &Active::ReloadToNorth; ++shredY; break;
+    case SOUTH: reload = &Active::ReloadToSouth; --shredY; break;
+    case EAST:  reload = &Active::ReloadToEast;  --shredX; break;
+    case WEST:  reload = &Active::ReloadToWest;  ++shredX; break;
+    default: Q_UNREACHABLE();
+        fprintf(stderr, "%s: unlisted dir: %d,\n", Q_FUNC_INFO, direction);
     }
-    ++shredY;
-}
-
-void Shred::ReloadToEast() {
+    activeListAll.removeAll(nullptr);
     for (auto i=activeListAll.constBegin(); i!=activeListAll.constEnd(); ++i) {
-        (*i)->ReloadToEast();
+        ((*i)->*reload)();
     }
-    --shredX;
-}
-
-void Shred::ReloadToSouth() {
-    for (auto i=activeListAll.constBegin(); i!=activeListAll.constEnd(); ++i) {
-        (*i)->ReloadToSouth();
-    }
-    --shredY;
-}
-
-void Shred::ReloadToWest() {
-    for (auto i=activeListAll.constBegin(); i!=activeListAll.constEnd(); ++i) {
-        (*i)->ReloadToWest();
-    }
-    ++shredX;
 }
 
 void Shred::SetBlock(Block * block, const int x, const int y, const int z) {
     Block * const to_delete = GetBlock(x, y, z);
     if ( to_delete != block ) {
-        World::DeleteBlock(to_delete);
+        block_manager.DeleteBlock(to_delete);
         block = block_manager.ReplaceWithNormal(block);
         SetBlockNoCheck(block, x, y, z);
     }
@@ -351,10 +308,10 @@ void Shred::SetBlockNoCheck(Block * const block,
         const int x, const int y, const int z)
 {
     Active * const active = ( blocks[x][y][z]=block )->ActiveBlock();
-    if ( active ) {
+    if ( active != nullptr ) {
         active->SetXyz(
-            (ShredX() << SHRED_WIDTH_SHIFT) + x,
-            (ShredY() << SHRED_WIDTH_SHIFT) + y, z );
+            (ShredX() << SHRED_WIDTH_SHIFT) | x,
+            (ShredY() << SHRED_WIDTH_SHIFT) | y, z );
         Register(active);
     }
 }
@@ -407,14 +364,18 @@ void Shred::RandomDrop(int num, const int kind, const int sub,
         const bool on_water)
 {
     for ( ; num!=0; --num) {
-        const int rand = qrand();
-        const int x = CoordInShred(rand);
-        const int y = CoordInShred(rand >> SHRED_WIDTH_SHIFT);
-        int z = HEIGHT-2;
-        for ( ; GetBlock(x, y, z)->Sub()==AIR; --z);
-        if( on_water || GetBlock(x, y, z)->Sub()!=WATER ) {
-            SetBlock(block_manager.NewBlock(kind, sub), x, y, ++z);
-        }
+        DropBlock(block_manager.NewBlock(kind, sub), on_water);
+    }
+}
+
+void Shred::DropBlock(Block * const block, const bool on_water) {
+    int y = qrand();
+    const int x = CoordInShred(y);
+    y = CoordInShred(unsigned(y) >> SHRED_WIDTH_SHIFT);
+    int z = HEIGHT-2;
+    for ( ; GetBlock(x, y, z)->Sub()==AIR; --z);
+    if( on_water || GetBlock(x, y, z)->Sub()!=WATER ) {
+        SetBlock(block, x, y, ++z);
     }
 }
 
@@ -512,6 +473,7 @@ void Shred::TestShred() { // 7 items in a row
     SetNewBlock(WEAPON, SKY, column+=2, row, level);
     NormalCube(++column, row-1, level, 3, 3, 3, GLASS);
     SetNewBlock(LIQUID, ACID, ++column, row, level+1);
+    SetNewBlock(LIQUID, SUB_CLOUD, column+=2, row, level);
 } // void Shred::TestShred()
 
 void Shred::NullMountain() {
@@ -702,4 +664,47 @@ int Shred::CountShredTypeAround(const int type) const {
 bool Shred::InBounds(const int x, const int y, const int z) {
     return ( (0 <= x && x < SHRED_WIDTH) && (0 <= y && y < SHRED_WIDTH)
         && 0 <=z && z < HEIGHT-1 );
+}
+
+weathers Shred::GetWeather(const times_of_day time) const {
+    return weather[time];
+}
+
+weathers Shred::GetCurrentWeather() const {
+    return GetWeather(GetWorld()->PartOfDay());
+}
+
+void Shred::SetWeathers() {
+    // TODO: add weather generation
+    weather[TIME_NIGHT]   = WEATHER_RAIN;
+    weather[TIME_MORNING] = WEATHER_CLOUDS;
+    weather[TIME_NOON]    = WEATHER_CLEAR;
+    weather[TIME_EVENING] = WEATHER_CLOUDS;
+}
+
+void Shred::Rain() {
+    if ( RAIN_IS_DEW == 1 ) { // RAIN_IS_DEW is defined in Freg.pro
+        Dew();
+        return;
+    } // else:
+    static const int CLOUD_HEIGHT = HEIGHT*3/4;
+    int y = qrand();
+    const int x = CoordInShred(y);
+    y = CoordInShred(unsigned(y) >> SHRED_WIDTH_SHIFT);
+    const int to_replace_sub = GetBlock(x, y, CLOUD_HEIGHT)->Sub();
+    if ( to_replace_sub == AIR || to_replace_sub == SUB_CLOUD ) {
+        SetBlock(RainBlock(), x, y, CLOUD_HEIGHT);
+    }
+}
+
+void Shred::Dew() { DropBlock(RainBlock(), true); }
+
+Block * Shred::RainBlock() const {
+    if ( GetCurrentWeather() == WEATHER_CLOUDS ) {
+        return block_manager.NewBlock(LIQUID, SUB_CLOUD);
+    }
+    switch ( GetTypeOfShred() ) {
+    default: return block_manager.NewBlock(LIQUID, WATER);
+    case SHRED_MOUNTAIN: return block_manager.NewBlock(FALLING, WATER);
+    }
 }
