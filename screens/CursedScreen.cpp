@@ -22,8 +22,8 @@
 
 #include <QSettings>
 #include <QDir>
-#include <QMutex>
 #include <QLocale>
+#include <QMutexLocker>
 #include "screens/CursedScreen.h"
 #include "screens/IThread.h"
 #include "world.h"
@@ -345,6 +345,7 @@ char Screen::PrintBlock(const Block & block, WINDOW * const window) const {
 }
 
 void Screen::Print() {
+    QMutexLocker locker(&mutex);
     if ( not player->IfPlayerExists() || updated ) return;
     updated = true;
     w->Lock();
@@ -931,10 +932,10 @@ Screen::Screen(
 } // Screen::Screen(World * wor, Player * pl)
 
 void Screen::CleanAll() {
+    QMutexLocker locker(&mutex);
     static bool cleaned = false;
     if ( cleaned ) return;
     cleaned = true; // prevent double cleaning
-    disconnect(w, SIGNAL(UpdatesEnded()), this, nullptr);
     input->Stop();
     input->wait();
     delete input;

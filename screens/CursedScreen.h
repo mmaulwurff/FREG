@@ -25,6 +25,8 @@
 
 #define NOX
 
+#include <QMutex>
+
 #ifdef __MINGW32__
 #include "pdcurses/curses.h"
 #else
@@ -203,6 +205,7 @@ private:
     QFile * fileToShow;
     bool beepOn;
     const bool ascii;
+    QMutex mutex;
 };
 
 #endif // CURSEDSCREEN_H

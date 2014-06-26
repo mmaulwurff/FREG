@@ -54,7 +54,7 @@ bool Shred::LoadShred() {
     } // else:
     in.setVersion(DATASTREAM_VERSION);
     in >> (quint8 &)(type);
-    for (int i=0; i<TIME_EVENING; ++i) {
+    for (int i=0; i<=TIME_EVENING; ++i) {
         in >> (quint8 &)weather[i];
     }
     Block * const null_stone = Normal(NULLSTONE);
@@ -135,7 +135,7 @@ Shred::~Shred() {
     outstr << DATASTREAM_VERSION << CURRENT_SHRED_FORMAT_VERSION;
     outstr.setVersion(DATASTREAM_VERSION);
     outstr << (quint8)GetTypeOfShred();
-    for (int i=0; i<TIME_EVENING; ++i) {
+    for (int i=0; i<=TIME_EVENING; ++i) {
         outstr << (quint8)weather[i];
     }
     for (int x=0; x<SHRED_WIDTH; ++x)

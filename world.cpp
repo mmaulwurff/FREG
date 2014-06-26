@@ -454,7 +454,9 @@ bool World::CanMove(const int x, const int y, const int z,
     block_to->Push(dir, block);
     bool move_flag = false;
     if ( ENVIRONMENT == block->PushResult(NOWHERE) ) {
-        move_flag = ( target_push <= ENVIRONMENT && *block != *block_to );
+        move_flag = ( (target_push <= ENVIRONMENT
+                || target_push == PUSH_DELETE_SELF)
+            && *block != *block_to );
     } else {
         switch ( target_push ) {
         case MOVABLE:
