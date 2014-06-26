@@ -221,6 +221,7 @@ void BlockManager::DeleteBlock(Block * const block) const {
     if ( block != NormalBlock(block->Sub()) ) {
         Active * const active = block->ActiveBlock();
         if ( active != nullptr ) {
+            active->Farewell();
             active->Unregister();
         }
         delete block;

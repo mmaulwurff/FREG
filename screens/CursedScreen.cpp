@@ -792,7 +792,10 @@ void Screen::Notify(const QString str) const {
     }
     if ( str.at(str.size()-1) == '!' ) {
         wcolor_set(notifyWin, RED_BLACK, nullptr);
+    } else {
+        wstandend(notifyWin);
     }
+
     static int notification_repeat_count = 1;
     if ( str == lastNotification ) {
         ++notification_repeat_count;
@@ -805,7 +808,6 @@ void Screen::Notify(const QString str) const {
         wprintw(notifyWin, "%s\n", qPrintable(str));
         lastNotification = str;
     }
-    wstandend(notifyWin);
     wrefresh(notifyWin);
 }
 
@@ -932,6 +934,7 @@ void Screen::CleanAll() {
     static bool cleaned = false;
     if ( cleaned ) return;
     cleaned = true; // prevent double cleaning
+    disconnect(w, SIGNAL(UpdatesEnded()), this, nullptr);
     input->Stop();
     input->wait();
     delete input;

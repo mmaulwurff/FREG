@@ -95,14 +95,15 @@ enum push_reaction {
     ENVIRONMENT,
     NOT_MOVABLE,
     MOVE_UP,
-    JUMP
+    JUMP,
+    PUSH_DELETE_SELF
 };
 
 enum times_of_day {
+    TIME_NIGHT,
     TIME_MORNING,
     TIME_NOON,
-    TIME_EVENING,
-    TIME_NIGHT
+    TIME_EVENING
 };
 
 enum damage_kinds {

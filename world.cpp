@@ -82,11 +82,7 @@ int World::SunMoonX() const {
 }
 
 times_of_day World::PartOfDay() const {
-    const int time_day = TimeOfDay();
-    if ( time_day < END_OF_NIGHT )   return TIME_NIGHT;
-    if ( time_day < END_OF_MORNING ) return TIME_MORNING;
-    if ( time_day < END_OF_NOON )    return TIME_NOON;
-    return TIME_EVENING;
+    return static_cast<times_of_day>(TimeOfDay() / SECONDS_IN_NIGHT);
 }
 
 QString World::TimeOfDayStr() const {
@@ -130,7 +126,7 @@ void World::Get(Block * const block_to,
                     Shred::CoordInShred(y_from), z_from+1));
                 emit Updated(x_from, y_from, z_from);
             } else {
-                block_manager.DeleteBlock(tried);
+                delete tried;
             }
         }
     } else if ( inv->Access() ) {
@@ -375,15 +371,15 @@ void World::PhysEvents() {
     switch ( TimeOfDay() ) {
     default: break;
     case END_OF_NIGHT:
+        for (int i=NumShreds()*NumShreds()-1; i>=0; --i) {
+            shreds[i]->SetWeathers();
+        }
         ReEnlightenTime();
         emit Notify(tr("It's morning now."));
     break;
     case END_OF_MORNING: emit Notify(tr("It's day now.")); break;
     case END_OF_NOON:    emit Notify(tr("It's evening now.")); break;
     case END_OF_EVENING:
-        for (int i=NumShreds()*NumShreds()-1; i>=0; --i) {
-            shreds[i]->SetWeathers();
-        }
         ReEnlightenTime();
         emit Notify(tr("It's night now."));
     break;
@@ -452,43 +448,38 @@ bool World::Move(const int x, const int y, const int z, const dirs dir) {
 bool World::CanMove(const int x, const int y, const int z,
         const int newx, const int newy, const int newz, const dirs dir)
 {
-    bool move_flag;
-    Block * const block = GetBlock(x, y, z);
-    Block * block_to = GetBlock(newx, newy, newz);
+    Block * const block    = GetBlock(x, y, z);
+    Block * const block_to = GetBlock(newx, newy, newz);
+    const push_reaction target_push = block_to->PushResult(dir);
+    block_to->Push(dir, block);
+    bool move_flag = false;
     if ( ENVIRONMENT == block->PushResult(NOWHERE) ) {
-        const int target_push = block_to->PushResult(NOWHERE);
-        block_to->Push(dir, block);
-        move_flag = (*block != *block_to)
-            && ( MOVABLE == target_push || ENVIRONMENT == target_push );
+        move_flag = ( target_push <= ENVIRONMENT && *block != *block_to );
     } else {
-        block_to->Push(dir, block);
-        block_to = GetBlock(newx, newy, newz);
-        switch ( block_to->PushResult(dir) ) {
-        default:
-        case NOT_MOVABLE: move_flag = false; break;
-        case ENVIRONMENT: move_flag = true; break;
+        switch ( target_push ) {
         case MOVABLE:
             move_flag = ( (block->Weight() > block_to->Weight()) &&
                 Move(newx, newy, newz, dir) );
+        break;
+        case ENVIRONMENT: move_flag = true; break;
+        case NOT_MOVABLE: break;
+        case MOVE_UP:
+            if ( dir > DOWN ) { // not UP and not DOWN
+                Move(x, y, z, UP);
+            }
         break;
         case JUMP:
             if ( dir > DOWN ) { // not UP and not DOWN
                 Jump(x, y, z, dir);
             }
-            move_flag = false;
         break;
-        case MOVE_UP:
-            if ( dir > DOWN ) { // not UP and not DOWN
-                Move(x, y, z, UP);
-            }
-            move_flag = false;
-        break;
+        case PUSH_DELETE_SELF: move_flag = true; break;
         }
     }
     Falling * falling;
     return ( move_flag &&
         (DOWN==dir || !block->Weight() ||
-        !( (falling=block->ShouldFall())
+        not ( (falling=block->ShouldFall())
             && falling->IsFalling()
             && AIR==GetBlock(x, y, z-1)->Sub()
             && AIR==GetBlock(newx, newy, newz-1)->Sub() )) );
@@ -588,10 +579,6 @@ void World::DestroyAndReplace(const int x, const int y, const int z) {
         ReEnlighten(x, y, z);
     }
     if ( delete_block ) {
-        Active * const active = block->ActiveBlock();
-        if ( active != nullptr ) {
-            active->Farewell();
-        }
         block_manager.DeleteBlock(block);
     }
     shred->AddFalling(shred->GetBlock(x_in_shred, y_in_shred, z+1));

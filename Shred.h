@@ -183,8 +183,8 @@ private:
     /// memory, allocated for this shred.
     Shred * const memory;
 
-    /// Weather for this day. (TIME_NIGHT is the last time of day.)
-    weathers weather[TIME_NIGHT+1];
+    /// Weather for this day. (TIME_EVENING is the last time of day.)
+    weathers weather[TIME_EVENING+1];
 };
 
 #endif // SHRED_H

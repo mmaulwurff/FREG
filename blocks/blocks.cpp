@@ -95,8 +95,9 @@
         }
         if ( GetDurability() <= 0 ) {
             GetWorld()->DestroyAndReplace(X(), Y(), Z());
+        } else {
+            emit Updated();
         }
-        emit Updated();
     }
 
     int Animal::ShouldAct() const { return FREQUENT_SECOND | FREQUENT_RARE; }
@@ -158,9 +159,10 @@
 // Liquid::
     void Liquid::DoRareAction() {
         if ( not IsSubAround(Sub()) || Sub()==SUB_CLOUD ) {
-            Damage(MAX_DURABILITY/SECONDS_IN_NIGHT, TIME);
+            Damage(MAX_DURABILITY*2/SECONDS_IN_NIGHT, TIME);
             if ( GetDurability() <= 0 ) {
                 GetWorld()->DestroyAndReplace(X(), Y(), Z());
+                return;
             }
         }
         switch ( Sub() ) {
@@ -286,7 +288,7 @@
     int  Grass::ShouldAct() const  { return FREQUENT_RARE; }
     int  Grass::Kind() const { return GRASS; }
     Block * Grass::DropAfterDamage(bool *) { return nullptr; }
-    push_reaction Grass::PushResult(dirs) const { return MOVABLE; }
+    push_reaction Grass::PushResult(dirs) const { return PUSH_DELETE_SELF; }
 
     void Grass::Push(dirs, Block *) {
         GetWorld()->DestroyAndReplace(X(), Y(), Z());

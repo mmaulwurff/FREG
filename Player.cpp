@@ -54,7 +54,7 @@ World * Player::GetWorld() const { return world; }
 bool Player::GetCreativeMode() const { return creativeMode; }
 void Player::SetCreativeMode(const bool creative_on) {
     creativeMode = creative_on;
-    disconnect(player, 0, 0, 0);
+    player->disconnect();
     Active * const prev_player = player;
     SetPlayer(X(), Y(), Z());
     player->SetDir(prev_player->GetDir());
