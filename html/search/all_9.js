@@ -8,7 +8,6 @@ var searchData=
   ['in_5fleft',['IN_LEFT',['../classDwarf.html#a258e38b5614675c239d12a6b925356ef',1,'Dwarf']]],
   ['in_5fright',['IN_RIGHT',['../classDwarf.html#a2e5d88f7aba306f1cbbb8cbb40878ab4',1,'Dwarf']]],
   ['inbounds',['InBounds',['../classWorld.html#a0c62689b7f66d36c03d3492d41f8dada',1,'World::InBounds(int x, int y) const '],['../classWorld.html#abfd23b3bb2466b935a35f96fc693d6b8',1,'World::InBounds(int x, int y, int z) const ']]],
-  ['increasefallheight',['IncreaseFallHeight',['../classFalling.html#a8623ab21d884eab7963bccbd1430e56d',1,'Falling']]],
   ['inner_5faction_5fexplode',['INNER_ACTION_EXPLODE',['../Active_8h.html#a3ac24c9d33c4b9290b701ef1b5eff482a3d95022f7a658138797dffd1dbebf62f',1,'Active.h']]],
   ['inner_5faction_5fmessage',['INNER_ACTION_MESSAGE',['../Active_8h.html#a3ac24c9d33c4b9290b701ef1b5eff482a5d88b6d0b74110e24b2603bfeeea4d83',1,'Active.h']]],
   ['inner_5faction_5fnone',['INNER_ACTION_NONE',['../Active_8h.html#a3ac24c9d33c4b9290b701ef1b5eff482a73dfa75a3d4817eeca3cd22476cc62ea',1,'Active.h']]],

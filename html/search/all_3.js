@@ -1,13 +1,12 @@
 var searchData=
 [
-  ['canmove',['CanMove',['../classWorld.html#a176af51d44b5423c62133bc797601d66',1,'World']]],
+  ['canmove',['CanMove',['../classWorld.html#a24c2aab907cdac763478037794f27b0b',1,'World']]],
   ['catchable',['Catchable',['../classBlock.html#ac97fd6a91473431393a401475ec73fe7',1,'Block::Catchable()'],['../classLadder.html#a9c70440e21b70aae3e36a92a1fd9ef03',1,'Ladder::Catchable()']]],
   ['charname',['CharName',['../classVirtScreen.html#a82173d1d2feac382758b201e7ff7e812',1,'VirtScreen']]],
   ['clampx',['ClampX',['../classWorld.html#acd0f4e904a6f96623be5f79c000e4eed',1,'World']]],
   ['clampy',['ClampY',['../classWorld.html#a249368424cf26c17276874b47eacf525',1,'World']]],
   ['clampz',['ClampZ',['../classWorld.html#a1cf93262b26cb337200cfe872ab21660',1,'World']]],
   ['clay',['CLAY',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a4597daacea9d47291980a82c916b6a8a',1,'header.h']]],
-  ['cleanall',['CleanAll',['../classScreen.html#a89d6e59d503571cf35b9d7bcd36ea5c2',1,'Screen::CleanAll() override'],['../classScreen.html#a89d6e59d503571cf35b9d7bcd36ea5c2',1,'Screen::CleanAll() override'],['../classVirtScreen.html#a9d80adfbf509a50bc6ad05ac6f7d8fa2',1,'VirtScreen::CleanAll()'],['../classWorld.html#a62856415c8a8cffb37a6a9ed85cfcfac',1,'World::CleanAll()']]],
   ['clock',['Clock',['../classClock.html',1,'Clock'],['../classClock.html#a768e1d56df49ed930361fb3b0094843b',1,'Clock::Clock(int sub, int id)'],['../classClock.html#a8c3821011eea3dc34338ce06cbc79d08',1,'Clock::Clock(QDataStream &amp;str, int sub, int id)'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a4bd5179222344db99fe845d6d039f4a3',1,'CLOCK():&#160;header.h']]],
   ['coal',['COAL',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a7b33cec24386ace3dac71e0b351677ac',1,'header.h']]],
   ['color_5fpairs',['color_pairs',['../CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072',1,'CursedScreen.h']]],

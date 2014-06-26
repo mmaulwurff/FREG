@@ -1,7 +1,7 @@
 var searchData=
 [
   ['backpack',['Backpack',['../classPlayer.html#a0aed24881e8f2558dfe42976d1b9700d',1,'Player']]],
-  ['bell',['Bell',['../classBell.html',1,'Bell'],['../classBell.html#abe55427d8e7883393ba2c8204c03d5ea',1,'Bell::Bell(int sub, int id)'],['../classBell.html#aa97007ce77afd26207a84882782b886f',1,'Bell::Bell(QDataStream &amp;str, int sub, int id)'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a9b1ed7d9244144b7a44adfa64333a630',1,'BELL():&#160;header.h']]],
+  ['bell',['Bell',['../classBell.html',1,'Bell'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a9b1ed7d9244144b7a44adfa64333a630',1,'BELL():&#160;header.h']]],
   ['bite',['BITE',['../header_8h.html#a5adfb93f736d9aa263cea4b7b74da15eaeefffe28464a015dfb1063783a8493b1',1,'header.h']]],
   ['black_5fblack',['BLACK_BLACK',['../CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072afcd76b34514669761bd5cc5807b47cc7',1,'CursedScreen.h']]],
   ['black_5fblue',['BLACK_BLUE',['../CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a7ea9008e5111c16cd317d8daffe21f0a',1,'CursedScreen.h']]],

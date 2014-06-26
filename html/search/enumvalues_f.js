@@ -15,6 +15,7 @@ var searchData=
   ['shred_5fplain',['SHRED_PLAIN',['../header_8h.html#a67902c112e090330b7c684c88cca3c32af0c429bfa8d52f17a1d70904444cf4e0',1,'header.h']]],
   ['shred_5fpyramid',['SHRED_PYRAMID',['../header_8h.html#a67902c112e090330b7c684c88cca3c32a8d76fe56c5796198b3f365e9ccdfbf2d',1,'header.h']]],
   ['shred_5ftestshred',['SHRED_TESTSHRED',['../header_8h.html#a67902c112e090330b7c684c88cca3c32a9a774a503cd9e10c745850178e4cad79',1,'header.h']]],
+  ['shred_5fwaste',['SHRED_WASTE',['../header_8h.html#a67902c112e090330b7c684c88cca3c32a00f83bd23f24d32cc3ad13d1f862495c',1,'header.h']]],
   ['shred_5fwater',['SHRED_WATER',['../header_8h.html#a67902c112e090330b7c684c88cca3c32acc515328dba6ecc409102f64c4aa72fa',1,'header.h']]],
   ['sky',['SKY',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a7a44abebaba8f43f7e0bfbb68643772a',1,'header.h']]],
   ['soil',['SOIL',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a39f9e88f052fcebe53e1adf4130d88d8',1,'header.h']]],
@@ -22,5 +23,6 @@ var searchData=
   ['star',['STAR',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a9d398750ed310ae69cd070016810e4dc',1,'header.h']]],
   ['steel',['STEEL',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706aeae9afd0826522c275dfacc9daed5b30',1,'header.h']]],
   ['stone',['STONE',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a0fca859752b1db047acd56aca4021d2d',1,'header.h']]],
+  ['sub_5fcloud',['SUB_CLOUD',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a01d6321edbb1180683797c037e5f5f5d',1,'header.h']]],
   ['sun_5fmoon',['SUN_MOON',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a4c77c12e4eec4870f0c5550da6f87981',1,'header.h']]]
 ];

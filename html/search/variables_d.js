@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['safe_5ffall_5fheight',['SAFE_FALL_HEIGHT',['../world_8h.html#a66f854c2ce398e9b058e1b014c261121',1,'world.h']]],
   ['screen_5fsize',['SCREEN_SIZE',['../CursedScreen_8h.html#a62bead7f96452cb837e1dba3d0678faa',1,'CursedScreen.h']]],
   ['seconds_5fin_5fday',['SECONDS_IN_DAY',['../header_8h.html#aff10c03bcf66f89bed6708c35fb5ada3',1,'header.h']]],
   ['seconds_5fin_5fdaylight',['SECONDS_IN_DAYLIGHT',['../header_8h.html#a3075305f41a0ae0081d785fdc49b89fe',1,'header.h']]],

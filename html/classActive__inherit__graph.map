@@ -6,15 +6,15 @@
 <area shape="rect" id="node21" href="$classCreator.html" title="Creator" alt="" coords="328,254,392,287"/>
 <area shape="rect" id="node23" href="$classDoor.html" title="Door" alt="" coords="416,254,467,287"/>
 <area shape="rect" id="node25" href="$classFalling.html" title="Falling" alt="" coords="491,254,549,287"/>
-<area shape="rect" id="node35" href="$classGrass.html" title="Grass" alt="" coords="573,254,629,287"/>
-<area shape="rect" id="node37" href="$classIlluminator.html" title="Illuminator" alt="" coords="653,254,736,287"/>
-<area shape="rect" id="node39" href="$classLiquid.html" title="Liquid" alt="" coords="760,254,816,287"/>
-<area shape="rect" id="node4" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="373,89,427,122"/>
-<area shape="rect" id="node6" href="$classXyz.html" title="Xyz" alt="" coords="451,89,493,122"/>
-<area shape="rect" id="node8" href="$classXy.html" title="Xy" alt="" coords="453,6,491,39"/>
+<area shape="rect" id="node37" href="$classGrass.html" title="Grass" alt="" coords="573,254,629,287"/>
+<area shape="rect" id="node39" href="$classIlluminator.html" title="Illuminator" alt="" coords="653,254,736,287"/>
+<area shape="rect" id="node4" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="333,89,387,122"/>
+<area shape="rect" id="node6" href="$classXyz.html" title="Xyz" alt="" coords="411,89,453,122"/>
+<area shape="rect" id="node8" href="$classXy.html" title="Xy" alt="" coords="413,6,451,39"/>
 <area shape="rect" id="node19" href="$classWorkbench.html" title="Workbench allows craft from multiple sources. There can be up to 2 products. Also can be used as cont..." alt="" coords="221,337,309,370"/>
-<area shape="rect" id="node27" href="$classAnimal.html" title="Animal" alt="" coords="489,337,551,370"/>
-<area shape="rect" id="node29" href="$classDwarf.html" title="Dwarf" alt="" coords="405,419,461,453"/>
-<area shape="rect" id="node31" href="$classPredator.html" title="Predator" alt="" coords="485,419,555,453"/>
-<area shape="rect" id="node33" href="$classRabbit.html" title="Rabbit" alt="" coords="579,419,637,453"/>
+<area shape="rect" id="node27" href="$classAnimal.html" title="Animal" alt="" coords="448,337,509,370"/>
+<area shape="rect" id="node35" href="$classLiquid.html" title="Liquid" alt="" coords="533,337,589,370"/>
+<area shape="rect" id="node29" href="$classDwarf.html" title="Dwarf" alt="" coords="364,419,420,453"/>
+<area shape="rect" id="node31" href="$classPredator.html" title="Predator" alt="" coords="444,419,513,453"/>
+<area shape="rect" id="node33" href="$classRabbit.html" title="Rabbit" alt="" coords="537,419,596,453"/>
 </map>

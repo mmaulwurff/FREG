@@ -1,28 +1,28 @@
 <map id="Block" name="Block">
-<area shape="rect" id="node3" href="$classActive.html" title="Active" alt="" coords="116,285,175,318"/>
-<area shape="rect" id="node35" href="$classBucket.html" title="Bucket" alt="" coords="115,397,176,430"/>
-<area shape="rect" id="node37" href="$classLadder.html" title="Ladder" alt="" coords="115,453,176,486"/>
-<area shape="rect" id="node39" href="$classPlate.html" title="Plate" alt="" coords="120,509,171,542"/>
-<area shape="rect" id="node41" href="$classText.html" title="Text" alt="" coords="123,565,168,598"/>
-<area shape="rect" id="node45" href="$classWeapon.html" title="Weapon class represents simple weapons as sticks, pebbles and so on. Also is used as base class for m..." alt="" coords="111,677,180,710"/>
-<area shape="rect" id="node5" href="$classBell.html" title="Bell" alt="" coords="249,5,292,38"/>
-<area shape="rect" id="node7" href="$classBush.html" title="Bush" alt="" coords="245,61,296,94"/>
-<area shape="rect" id="node9" href="$classClock.html" title="Clock" alt="" coords="243,117,299,150"/>
-<area shape="rect" id="node11" href="$classContainer.html" title="Container is multi&#45;purpose container for blocks. " alt="" coords="232,173,309,206"/>
-<area shape="rect" id="node15" href="$classCreator.html" title="Creator" alt="" coords="239,229,303,262"/>
-<area shape="rect" id="node17" href="$classDoor.html" title="Door" alt="" coords="245,285,296,318"/>
-<area shape="rect" id="node19" href="$classFalling.html" title="Falling" alt="" coords="241,341,300,374"/>
-<area shape="rect" id="node29" href="$classGrass.html" title="Grass" alt="" coords="243,397,299,430"/>
-<area shape="rect" id="node31" href="$classIlluminator.html" title="Illuminator" alt="" coords="229,453,312,486"/>
-<area shape="rect" id="node33" href="$classLiquid.html" title="Liquid" alt="" coords="243,509,299,542"/>
-<area shape="rect" id="node13" href="$classWorkbench.html" title="Workbench allows craft from multiple sources. There can be up to 2 products. Also can be used as cont..." alt="" coords="360,173,448,206"/>
-<area shape="rect" id="node21" href="$classAnimal.html" title="Animal" alt="" coords="373,341,435,374"/>
-<area shape="rect" id="node23" href="$classDwarf.html" title="Dwarf" alt="" coords="504,285,560,318"/>
-<area shape="rect" id="node25" href="$classPredator.html" title="Predator" alt="" coords="497,341,567,374"/>
-<area shape="rect" id="node27" href="$classRabbit.html" title="Rabbit" alt="" coords="503,397,561,430"/>
-<area shape="rect" id="node43" href="$classMap.html" title="Map" alt="" coords="248,565,293,598"/>
-<area shape="rect" id="node47" href="$classAxe.html" title="Axe" alt="" coords="248,621,293,654"/>
-<area shape="rect" id="node49" href="$classHammer.html" title="Hammer" alt="" coords="235,677,307,710"/>
-<area shape="rect" id="node51" href="$classPick.html" title="Pick" alt="" coords="247,733,295,766"/>
-<area shape="rect" id="node53" href="$classShovel.html" title="Shovel" alt="" coords="240,789,301,822"/>
+<area shape="rect" id="node3" href="$classActive.html" title="Active" alt="" coords="371,89,429,122"/>
+<area shape="rect" id="node35" href="$classBucket.html" title="Bucket" alt="" coords="515,89,576,122"/>
+<area shape="rect" id="node37" href="$classLadder.html" title="Ladder" alt="" coords="600,89,661,122"/>
+<area shape="rect" id="node39" href="$classPlate.html" title="Plate" alt="" coords="685,89,736,122"/>
+<area shape="rect" id="node41" href="$classText.html" title="Text" alt="" coords="760,89,805,122"/>
+<area shape="rect" id="node45" href="$classWeapon.html" title="Weapon class represents simple weapons as sticks, pebbles and so on. Also is used as base class for m..." alt="" coords="900,89,969,122"/>
+<area shape="rect" id="node5" href="$classBell.html" title="Bell" alt="" coords="5,171,48,205"/>
+<area shape="rect" id="node7" href="$classBush.html" title="Bush" alt="" coords="72,171,123,205"/>
+<area shape="rect" id="node9" href="$classClock.html" title="Clock" alt="" coords="147,171,203,205"/>
+<area shape="rect" id="node11" href="$classContainer.html" title="Container is multi&#45;purpose container for blocks. " alt="" coords="227,171,304,205"/>
+<area shape="rect" id="node15" href="$classCreator.html" title="Creator" alt="" coords="328,171,392,205"/>
+<area shape="rect" id="node17" href="$classDoor.html" title="Door" alt="" coords="416,171,467,205"/>
+<area shape="rect" id="node19" href="$classFalling.html" title="Falling" alt="" coords="491,171,549,205"/>
+<area shape="rect" id="node31" href="$classGrass.html" title="Grass" alt="" coords="573,171,629,205"/>
+<area shape="rect" id="node33" href="$classIlluminator.html" title="Illuminator" alt="" coords="653,171,736,205"/>
+<area shape="rect" id="node13" href="$classWorkbench.html" title="Workbench allows craft from multiple sources. There can be up to 2 products. Also can be used as cont..." alt="" coords="221,254,309,287"/>
+<area shape="rect" id="node21" href="$classAnimal.html" title="Animal" alt="" coords="448,254,509,287"/>
+<area shape="rect" id="node29" href="$classLiquid.html" title="Liquid" alt="" coords="533,254,589,287"/>
+<area shape="rect" id="node23" href="$classDwarf.html" title="Dwarf" alt="" coords="364,337,420,370"/>
+<area shape="rect" id="node25" href="$classPredator.html" title="Predator" alt="" coords="444,337,513,370"/>
+<area shape="rect" id="node27" href="$classRabbit.html" title="Rabbit" alt="" coords="537,337,596,370"/>
+<area shape="rect" id="node43" href="$classMap.html" title="Map" alt="" coords="760,171,805,205"/>
+<area shape="rect" id="node47" href="$classAxe.html" title="Axe" alt="" coords="829,171,875,205"/>
+<area shape="rect" id="node49" href="$classHammer.html" title="Hammer" alt="" coords="899,171,971,205"/>
+<area shape="rect" id="node51" href="$classPick.html" title="Pick" alt="" coords="995,171,1043,205"/>
+<area shape="rect" id="node53" href="$classShovel.html" title="Shovel" alt="" coords="1067,171,1128,205"/>
 </map>

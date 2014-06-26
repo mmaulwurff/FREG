@@ -10,8 +10,9 @@ var searchData=
   ['getchar',['GetChar',['../classScreen.html#a9406442ed0bf4f6b9e04a6937bd2fe41',1,'Screen::GetChar() const override'],['../classScreen.html#a9406442ed0bf4f6b9e04a6937bd2fe41',1,'Screen::GetChar() const override'],['../classVirtScreen.html#af3ad74efc0d44ae54a2c27900d3bb631',1,'VirtScreen::GetChar()']]],
   ['getcraftmanager',['GetCraftManager',['../classWorld.html#aa39c108d883e9bb44c58c8bfc3b6479c',1,'World']]],
   ['getcreativemode',['GetCreativeMode',['../classPlayer.html#aea71d4dbf140e8aa4d370c28862adc74',1,'Player']]],
+  ['getcurrentweather',['GetCurrentWeather',['../classShred.html#aeda801691a29792fdbc743e065aaf9ce',1,'Shred']]],
   ['getdeferredaction',['GetDeferredAction',['../classActive.html#a6569df5ebe2f46597fb4165faabe0166',1,'Active']]],
-  ['getdir',['GetDir',['../classBlock.html#a1dc5809c3d5e63060fe6a7c74a228ea5',1,'Block::GetDir()'],['../classPlayer.html#ac1bfeac422ba0f8ca578c010102d546f',1,'Player::GetDir()']]],
+  ['getdir',['GetDir',['../classBlock.html#a5151310c8eda7622118f271947089e89',1,'Block::GetDir()'],['../classPlayer.html#a2d09fcc0bf7a3a959f2123ce4c7163c1',1,'Player::GetDir()']]],
   ['getdurability',['GetDurability',['../classBlock.html#ab6c31dc3056aee946b3acc092f5e8ad2',1,'Block']]],
   ['getevernight',['GetEvernight',['../classWorld.html#ad2af8f0fd758fb4f61389741988f7cf7',1,'World']]],
   ['getexact',['GetExact',['../classInventory.html#a5adbf10fd46b25d49ae9aa3bb2954a1f',1,'Inventory']]],
@@ -37,9 +38,9 @@ var searchData=
   ['getstring',['GetString',['../classPlayer.html#a54abfb37017831118b8f5637ea8847f3',1,'Player::GetString()'],['../classWorld.html#a58f7e66ad1ce8c22a81cd6e1a5b1975d',1,'World::GetString()']]],
   ['gettypeofshred',['GetTypeOfShred',['../classShred.html#ac218c2410b1b5ab4beba034a47d4518b',1,'Shred']]],
   ['getusingininventory',['GetUsingInInventory',['../classPlayer.html#a6b12100aa3480572813c5116158a52b1',1,'Player']]],
+  ['getweather',['GetWeather',['../classShred.html#ae674bf5bd1579242b3d77017a9d3c1c2',1,'Shred']]],
   ['getworld',['GetWorld',['../classActive.html#aaa8a15599e6ee605105dfc3b2ea13a29',1,'Active::GetWorld()'],['../classDeferredAction.html#ac2a1ddcc758352321503189034cc67e8',1,'DeferredAction::GetWorld()'],['../classVirtScreen.html#ad956ae35701caa43ca075f155d3ee41d',1,'VirtScreen::GetWorld()'],['../classShred.html#ae2e311d65d9322895a3715471b237aee',1,'Shred::GetWorld()']]],
   ['globalx',['GlobalX',['../classPlayer.html#a8f543ad1b7e3227ca670ac9aade7c66b',1,'Player::GlobalX()'],['../classShred.html#a5647e65d64eb1b454bde08e6ccf912a1',1,'Shred::GlobalX()']]],
   ['globaly',['GlobalY',['../classPlayer.html#a9aafa9acefc76f34560155b5bac4cea3',1,'Player::GlobalY()'],['../classShred.html#ab4c118162d56206c742e219ef950f30c',1,'Shred::GlobalY()']]],
-  ['grass',['Grass',['../classGrass.html#ae3829de62810e1e9f9fa8c6b940e2035',1,'Grass::Grass(int sub, int id)'],['../classGrass.html#a4fa1f5db0005bb331fb966c10cf8dbcd',1,'Grass::Grass(QDataStream &amp;str, int sub, int id)']]],
   ['gravitate',['Gravitate',['../classActive.html#aa3d19053485aa1b7636312beac6e3fd7',1,'Active']]]
 ];

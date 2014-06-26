@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['ladder',['Ladder',['../classLadder.html',1,'Ladder'],['../classLadder.html#aaf0f8cd61e58703e1d4ae176ba568a04',1,'Ladder::Ladder(int sub, int id)'],['../classLadder.html#a12e2acb480ea44490d9ee85325e3d84c',1,'Ladder::Ladder(QDataStream &amp;str, int sub, int id)'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285accbaaacafc0cf36b5e9a48ca2a8955f0',1,'LADDER():&#160;header.h']]],
+  ['ladder',['Ladder',['../classLadder.html',1,'Ladder'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285accbaaacafc0cf36b5e9a48ca2a8955f0',1,'LADDER():&#160;header.h']]],
   ['last_5fkind',['LAST_KIND',['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285ac8e823433db1723711ac5685ba2e7f60',1,'header.h']]],
   ['last_5fsub',['LAST_SUB',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a5d2285dc7607a44e19df60f05fe740c8',1,'header.h']]],
   ['latitude',['latitude',['../structLongLat.html#a9772b6aa5cafbf475116bebcf3a5b35b',1,'LongLat::latitude()'],['../classShred.html#ae021ca4570d3c8121ac72e6b9ced20aa',1,'Shred::Latitude()'],['../classWorld.html#a9d64b52a83eee2291c549dc682544c76',1,'World::Latitude()']]],
@@ -8,7 +8,7 @@ var searchData=
   ['lightlevel',['LightLevel',['../classShred.html#a1ca804e740896b8ae57d47bdd311c284',1,'Shred']]],
   ['lightmap',['Lightmap',['../classShred.html#a8496203177e164a3d221923c0930cbf7',1,'Shred::Lightmap()'],['../classWorld.html#a0c5c47dd687a888773aa1489b8f9a0fb',1,'World::LightMap()']]],
   ['lightradius',['LightRadius',['../classBlock.html#a4ef904547fb1917efe905f176727825d',1,'Block::LightRadius()'],['../classLiquid.html#aa701c3cf9df791c542c27966b912d02b',1,'Liquid::LightRadius()'],['../classGrass.html#a460347aab9c293dbd474c2f87158bbba',1,'Grass::LightRadius()'],['../classDwarf.html#ad4429aa19536c45553fbd1a95897b7ad',1,'Dwarf::LightRadius()'],['../classIlluminator.html#a2b9a49c5466ed3c5cb7bbc6af704c3a0',1,'Illuminator::LightRadius()']]],
-  ['liquid',['Liquid',['../classLiquid.html',1,'Liquid'],['../classLiquid.html#afa6ac835d1b04691f78ae2f215a88fe1',1,'Liquid::Liquid(int sub, int id)'],['../classLiquid.html#a9ad0517442e4682a709961db6ed2c103',1,'Liquid::Liquid(QDataStream &amp;str, int sub, int id)'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285aa87f9501ff2b390be1ea7d261b0d7cce',1,'LIQUID():&#160;header.h']]],
+  ['liquid',['Liquid',['../classLiquid.html',1,'Liquid'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285aa87f9501ff2b390be1ea7d261b0d7cce',1,'LIQUID():&#160;header.h']]],
   ['loaditem',['LoadItem',['../classCraftList.html#a9caa042ece503492a511c27ba8768eae',1,'CraftList']]],
   ['locale',['locale',['../header_8h.html#a732a695ec07d1876d0d6d6cd6d3b733a',1,'header.h']]],
   ['lock',['Lock',['../classWorld.html#a1d0168988c685ab80752498a795f4469',1,'World']]],
