@@ -60,8 +60,7 @@ VirtScreen::VirtScreen(World * const world_, Player * const player_) :
         Qt::DirectConnection );
 }
 
-void VirtScreen::CleanAll() {}
-VirtScreen::~VirtScreen() { CleanAll(); }
+VirtScreen::~VirtScreen() {}
 
 int  VirtScreen::GetChar() const { return 0; }
 void VirtScreen::FlushInput() const {}

@@ -146,7 +146,6 @@ public:
 
 public slots:
     void Notify(QString) const override;
-    void CleanAll() override;
     void PassString(QString &) const override;
     void Update(int, int, int) override;
     void UpdateAll() override;
@@ -205,7 +204,6 @@ private:
     QFile * fileToShow;
     bool beepOn;
     const bool ascii;
-    QMutex mutex;
 };
 
 #endif // CURSEDSCREEN_H

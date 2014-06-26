@@ -138,13 +138,6 @@ int main(int argc, char ** argv) {
     QObject::connect(&player, SIGNAL(Destroyed()),
         &screen, SLOT(DeathScreen()));
 
-    QObject::connect(&freg, SIGNAL(aboutToQuit()),
-        &screen, SLOT(CleanAll()));
-    QObject::connect(&freg, SIGNAL(aboutToQuit()),
-        &player, SLOT(CleanAll()));
-    QObject::connect(&freg, SIGNAL(aboutToQuit()),
-        &world, SLOT(CleanAll()));
-
     QObject::connect(&screen, SIGNAL(ExitReceived()), &freg, SLOT(quit()));
     QObject::connect(&world,  SIGNAL(ExitReceived()), &freg, SLOT(quit()));
 

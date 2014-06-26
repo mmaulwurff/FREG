@@ -195,7 +195,6 @@ public:
     void Unlock();
 
 public slots:
-    void CleanAll();
     void PhysEvents();
     void SetReloadShreds(int direction);
 

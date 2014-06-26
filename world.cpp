@@ -753,13 +753,7 @@ World::World(const QString world_name) :
     emit UpdatedAll();
 }
 
-World::~World() { CleanAll(); }
-
-void World::CleanAll() {
-    static bool cleaned = false;
-    if ( cleaned ) return;
-    cleaned = true;
-
+World::~World() {
     Lock();
     quit();
     wait();
@@ -767,6 +761,7 @@ void World::CleanAll() {
 
     DeleteAllShreds();
     delete shredStorage;
+    delete craftManager;
 
     QSettings settings(worldName+"/settings.ini", QSettings::IniFormat);
     settings.setValue("time", qlonglong(time));

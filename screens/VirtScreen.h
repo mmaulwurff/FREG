@@ -43,7 +43,6 @@ public:
      *     Qt::DirectConnection); */
     VirtScreen(World *, Player *);
     VirtScreen(VirtScreen &) = delete;
-    /// Only calls VirtScreen::CleanAll.
     virtual ~VirtScreen();
 
     // Functions for text screens:
@@ -59,11 +58,6 @@ signals:
 public slots:
     /// This is called for a notification to be displayed.
     virtual void Notify(QString) const = 0;
-
-    /// This is called when program is stopped and from destructor.
-    /** When implemented, this should contain check to prevent
-     *  double cleaning. */
-    virtual void CleanAll();
 
     /// This is called when string is needed to be received from input.
     /** It is connected to world in constructor. */

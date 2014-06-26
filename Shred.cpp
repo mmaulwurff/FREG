@@ -55,7 +55,9 @@ bool Shred::LoadShred() {
     in.setVersion(DATASTREAM_VERSION);
     in >> (quint8 &)(type);
     for (int i=0; i<=TIME_EVENING; ++i) {
-        in >> (quint8 &)weather[i];
+        quint8 new_weather;
+        in >> new_weather;
+        weather[i] = static_cast<weathers>(new_weather);
     }
     Block * const null_stone = Normal(NULLSTONE);
     Block * const air = Normal(AIR);

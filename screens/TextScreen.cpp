@@ -270,10 +270,7 @@ Screen::Screen(
     timer->start(100);
 }
 
-void Screen::CleanAll() {
-    static bool cleaned = false;
-    if ( cleaned ) return;
-    cleaned = true; // prevent double cleaning
+Screen::~Screen() {
     input->Stop();
     input->wait();
     delete input;
@@ -289,5 +286,3 @@ void Screen::CleanAll() {
     sett.setValue("action_mode", actionMode);
     sett.setValue("last_command", command);
 }
-
-Screen::~Screen() { CleanAll(); }

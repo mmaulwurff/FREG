@@ -345,7 +345,6 @@ char Screen::PrintBlock(const Block & block, WINDOW * const window) const {
 }
 
 void Screen::Print() {
-    QMutexLocker locker(&mutex);
     if ( not player->IfPlayerExists() || updated ) return;
     updated = true;
     w->Lock();
@@ -858,8 +857,6 @@ Screen::Screen(
     nonl();
     keypad(stdscr, TRUE); // use arrows
     if ( LINES < 41 ) {
-        world->CleanAll();
-        CleanAll();
         printf("Make your terminal height to be at least 41 lines.\n");
         error = HEIGHT_NOT_ENOUGH;
         return;
@@ -894,8 +891,6 @@ Screen::Screen(
         hudWin   = newwin(3, SCREEN_SIZE*2+2, SCREEN_SIZE+2, left_border);
         notifyWin  = newwin(0, SCREEN_SIZE*2+2, SCREEN_SIZE+2+3, left_border);
     } else {
-        world->CleanAll();
-        CleanAll();
         puts(qPrintable(tr("Set your terminal width at least %1 chars.").
             arg(SCREEN_SIZE*2+2)));
         error = WIDTH_NOT_ENOUGH;
@@ -931,11 +926,11 @@ Screen::Screen(
     connect(wor, SIGNAL(UpdatesEnded()), SLOT(Print()), Qt::DirectConnection);
 } // Screen::Screen(World * wor, Player * pl)
 
-void Screen::CleanAll() {
-    QMutexLocker locker(&mutex);
-    static bool cleaned = false;
-    if ( cleaned ) return;
-    cleaned = true; // prevent double cleaning
+Screen::~Screen() {
+    w->Lock();
+    disconnect(w, SIGNAL(UpdatesEnded()), this, SLOT(Print()));
+    w->Unlock();
+
     input->Stop();
     input->wait();
     delete input;
@@ -944,6 +939,7 @@ void Screen::CleanAll() {
     if ( rightWin  ) delwin(rightWin);
     if ( notifyWin ) delwin(notifyWin);
     if ( hudWin    ) delwin(hudWin);
+    if ( miniMapWin ) delwin(miniMapWin);
     endwin();
     if ( notifyLog ) {
         fclose(notifyLog);
@@ -955,8 +951,6 @@ void Screen::CleanAll() {
     sett.setValue("action_mode", actionMode);
     sett.setValue("last_command", command);
 }
-
-Screen::~Screen() { CleanAll(); }
 
 bool Screen::IsScreenWide() { return COLS >= (SCREEN_SIZE*2+2)*2; }
 
