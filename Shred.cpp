@@ -683,6 +683,18 @@ void Shred::SetWeathers() {
 }
 
 void Shred::Rain() {
+    int kind, sub;
+    RainBlock(&kind, &sub);
+    Rain(kind, sub);
+}
+
+void Shred::Dew() {
+    int kind, sub;
+    RainBlock(&kind, &sub);
+    DropBlock(block_manager.NewBlock(kind, sub), true);
+}
+
+void Shred::Rain(const int kind, const int sub) {
     if ( RAIN_IS_DEW == 1 ) { // RAIN_IS_DEW is defined in Freg.pro
         Dew();
         return;
@@ -693,18 +705,17 @@ void Shred::Rain() {
     y = CoordInShred(unsigned(y) >> SHRED_WIDTH_SHIFT);
     const int to_replace_sub = GetBlock(x, y, CLOUD_HEIGHT)->Sub();
     if ( to_replace_sub == AIR || to_replace_sub == SUB_CLOUD ) {
-        SetBlock(RainBlock(), x, y, CLOUD_HEIGHT);
+        SetBlock(block_manager.NewBlock(kind, sub), x, y, CLOUD_HEIGHT);
     }
 }
 
-void Shred::Dew() { DropBlock(RainBlock(), true); }
-
-Block * Shred::RainBlock() const {
+void Shred::RainBlock(int * const kind, int * const sub) const {
     if ( GetCurrentWeather() == WEATHER_CLOUDS ) {
-        return block_manager.NewBlock(LIQUID, SUB_CLOUD);
+        *kind = LIQUID;
+        *sub  = SUB_CLOUD;
     }
     switch ( GetTypeOfShred() ) {
-    default: return block_manager.NewBlock(LIQUID, WATER);
-    case SHRED_MOUNTAIN: return block_manager.NewBlock(FALLING, WATER);
+    default: *kind = LIQUID; *sub = WATER; break;
+    case SHRED_MOUNTAIN: *kind = FALLING, *sub = WATER; break;
     }
 }

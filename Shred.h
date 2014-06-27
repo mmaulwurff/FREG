@@ -113,6 +113,7 @@ public:
     void SetWeathers();
     weathers GetWeather(times_of_day time) const;
     weathers GetCurrentWeather() const;
+    void Rain(int kind, int sub);
     void Rain();
     void Dew();
 
@@ -161,7 +162,7 @@ private:
     void NormalCube(int x_start, int y_start, int z_start,
                     int x_size,  int y_size,  int z_size, int sub);
 
-    Block * RainBlock() const;
+    void RainBlock(int * kind, int * sub) const;
 
     /// Lowest nullstone and sky are not in bounds.
     static bool InBounds(int x, int y, int z);
