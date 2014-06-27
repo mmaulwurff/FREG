@@ -276,8 +276,8 @@ void Screen::ControlPlayer(const int ch) {
 
     case '!': player->SetCreativeMode( not player->GetCreativeMode() ); break;
     case ':':
-    case '/': PassString(command); // no break
-    case '.': ProcessCommand(command); break;
+    case '/': PassString(previousCommand); // no break
+    case '.': ProcessCommand(previousCommand); break;
     }
     updated = false;
 } // void Screen::ControlPlayer(int ch)
@@ -492,11 +492,11 @@ void Screen::PrintHUD() {
     const int x_center = Shred::CoordOfShred(player->X());
     const int y_center = Shred::CoordOfShred(player->Y());
     const int j_start = qMax(x_center-2, 0);
-    const int j_end = qMin(x_center+2, world->NumShreds()-1);
-    const int i_end = qMin(y_center+2, world->NumShreds()-1);
+    const int j_end = qMin(x_center+2, w->NumShreds()-1);
+    const int i_end = qMin(y_center+2, w->NumShreds()-1);
     for (int i=qMax(y_center-2, 0); i<=i_end; ++i, waddch(miniMapWin, '\n'))
     for (int j=j_start;             j<=j_end; ++j) {
-        Shred * const shred = world->GetShredByPos(j, i);
+        Shred * const shred = w->GetShredByPos(j, i);
         if ( shred == nullptr ) {
             wstandend(miniMapWin);
             waddstr(miniMapWin, "  ");
@@ -630,7 +630,7 @@ void Screen::PrintFront(WINDOW * const window) const {
         arrow_X = (pY-begin_y)*2+1;
     break;
     default:
-        fprintf(stderr, "Screen::PrintFront(): unlisted dir: %d\n", (int)dir);
+        fprintf(stderr, "%s: unlisted dir: %d.\n", Q_FUNC_INFO, int(dir));
         return;
     }
     if ( pZ+SCREEN_SIZE/2 >= HEIGHT-1 ) { // near top of the world
@@ -674,9 +674,9 @@ void Screen::PrintFront(WINDOW * const window) const {
     PrintTitle(window, dir);
     if ( shiftFocus ) {
         HorizontalArrows(window, arrow_Y-shiftFocus, WHITE_BLUE);
-        for (int i=arrow_Y-shiftFocus; i<SCREEN_SIZE+1 && i>0; i-=shiftFocus) {
-            mvwaddch(window, i, 0, '|');
-            mvwaddch(window, i, SCREEN_SIZE*2+1, '|');
+        for (int q=arrow_Y-shiftFocus; q<SCREEN_SIZE+1 && q>0; q-=shiftFocus) {
+            mvwaddch(window, q, 0, '|');
+            mvwaddch(window, q, SCREEN_SIZE*2+1, '|');
         }
     }
     Arrows(window, arrow_X, arrow_Y);
@@ -903,7 +903,7 @@ Screen::Screen(
     shiftFocus = sett.value("focus_shift", 0).toInt();
     actionMode = static_cast<actions>
         (sett.value("action_mode", ACTION_USE).toInt());
-    command    = sett.value("last_command", "hello").toString();
+    previousCommand = sett.value("last_command", "hello").toString();
     beepOn     = sett.value("beep_on", false).toBool();
     sett.setValue("beep_on", beepOn);
 
@@ -949,7 +949,7 @@ Screen::~Screen() {
     sett.beginGroup("screen_curses");
     sett.setValue("focus_shift", shiftFocus);
     sett.setValue("action_mode", actionMode);
-    sett.setValue("last_command", command);
+    sett.setValue("last_command", previousCommand);
 }
 
 bool Screen::IsScreenWide() { return COLS >= (SCREEN_SIZE*2+2)*2; }

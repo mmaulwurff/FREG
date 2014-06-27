@@ -231,9 +231,9 @@ void Block::SaveToFile(QDataStream & out) {
         SaveNormalToFile(out);
     } else {
         out << sub << quint8(BlockManager::KindFromId(id)) <<
-            (quint16)( ( ( ( durability
+            ( ( ( ( durability
             <<= 3 ) |= direction )
-            <<= 1 ) |= !!note );
+            <<= 1 ) |= bool(note) );
         if ( Q_UNLIKELY(note) ) {
             out << *note;
         }
@@ -263,7 +263,7 @@ Block::Block(QDataStream & str, const int subst, const int i, const int transp)
         id(i)
 {
     // use durability as buffer, set actual value in the end:
-    str >> (quint16 &)durability;
+    str >> durability;
     if ( Q_UNLIKELY(durability & 1) ) {
         str >> *(note = new QString);
     } else {

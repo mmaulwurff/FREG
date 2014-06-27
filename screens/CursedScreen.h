@@ -200,7 +200,7 @@ private:
     /// Can be -1, 0, 1 for low, normal, and high focus.
     int shiftFocus;
     /// Save previous command for further execution.
-    QString command;
+    QString previousCommand;
     QFile * fileToShow;
     bool beepOn;
     const bool ascii;

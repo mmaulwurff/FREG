@@ -53,7 +53,9 @@ bool Shred::LoadShred() {
         return false;
     } // else:
     in.setVersion(DATASTREAM_VERSION);
-    in >> (quint8 &)(type);
+    quint8 read_type;
+    in >> read_type;
+    type = read_type;
     for (int i=0; i<=TIME_EVENING; ++i) {
         quint8 new_weather;
         in >> new_weather;
@@ -136,9 +138,9 @@ Shred::~Shred() {
     QDataStream outstr(shred_data, QIODevice::WriteOnly);
     outstr << DATASTREAM_VERSION << CURRENT_SHRED_FORMAT_VERSION;
     outstr.setVersion(DATASTREAM_VERSION);
-    outstr << (quint8)GetTypeOfShred();
+    outstr << quint8(GetTypeOfShred());
     for (int i=0; i<=TIME_EVENING; ++i) {
-        outstr << (quint8)weather[i];
+        outstr << quint8(weather[i]);
     }
     for (int x=0; x<SHRED_WIDTH; ++x)
     for (int y=0; y<SHRED_WIDTH; ++y) {

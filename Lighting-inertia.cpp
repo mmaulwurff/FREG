@@ -278,13 +278,13 @@ void Shred::SetAllLightMapNull() {
 /// Makes all shining blocks of shred shine.
 void Shred::ShineAll() {
     for (auto i=ShiningBegin(); i!=ShiningEnd(); ++i) {
-        world->Shine((*i)->X(), (*i)->Y(), (*i)->Z(),
+        GetWorld()->Shine((*i)->X(), (*i)->Y(), (*i)->Z(),
             (*i)->LightRadius(), true);
     }
-    if ( not world->GetEvernight() ) {
+    if ( not GetWorld()->GetEvernight() ) {
         for (int i=shredX*SHRED_WIDTH; i<SHRED_WIDTH*(shredX+1); ++i)
         for (int j=shredY*SHRED_WIDTH; j<SHRED_WIDTH*(shredY+1); ++j) {
-            world->SunShineVertical(i, j);
+            GetWorld()->SunShineVertical(i, j);
         }
     }
 }

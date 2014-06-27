@@ -33,19 +33,14 @@ public:
     char TypeOfShred(long longi, long lati) const;
     static void GenerateMap(
             const char * filename,
-            ushort size,
+            int size,
             char outer,
             int seed);
 
 private:
-    static float Deg(float x, float y, ushort size);
-    static float R  (float x, float y, ushort size);
-    static void Circle(
-            float min_rad,
-            float max_rad,
-            char ch,
-            ushort size,
-            char * map);
+    static float Deg(int x, int y, int size);
+    static float R  (int x, int y, int size);
+    static void Circle(int min_rad, int max_rad, char ch, int size, char* map);
 
     long mapSize;
     mutable QFile map;

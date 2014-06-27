@@ -189,10 +189,11 @@ const {
     for (int i=0; i<recipesList[point].size(); ++i) {
         const CraftList & tried = *recipesList[point].at(i);
         if ( tried == *recipe ) {
-            int size = tried.GetProductsNumber();
-            CraftList * result = new CraftList(size, 0);
-            for (; size; --size) {
-                *result << new CraftItem(*tried.GetItem(tried.GetSize()-size));
+            int number = tried.GetProductsNumber();
+            CraftList * const result = new CraftList(number, 0);
+            for (; number; --number) {
+                *result <<
+                    new CraftItem(*tried.GetItem(tried.GetSize()-number));
             }
             return result;
         }

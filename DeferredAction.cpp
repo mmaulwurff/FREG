@@ -29,24 +29,25 @@ void DeferredAction::GhostMove() const {
 }
 
 void DeferredAction::Move() const {
-    GetWorld()->Move(attachedBlock->X(), attachedBlock->Y(),
+    attachedBlock->GetWorld()->Move(attachedBlock->X(), attachedBlock->Y(),
         attachedBlock->Z(), ( NOWHERE==num ) ?
             attachedBlock->GetDir() : static_cast<dirs>(num));
 }
 
 void DeferredAction::Jump() const {
-    GetWorld()->Jump(
+    attachedBlock->GetWorld()->Jump(
         attachedBlock->X(), attachedBlock->Y(), attachedBlock->Z(),
         attachedBlock->GetDir());
 }
 
 void DeferredAction::Build() const {
     int z = z_self;
+    World * const world = attachedBlock->GetWorld();
     if ( DOWN==attachedBlock->GetDir() &&
-            AIR!=GetWorld()->GetBlock(x_self, y_self, z_self)->Sub() )
+            AIR!=world->GetBlock(x_self, y_self, z_self)->Sub() )
     {
-        if ( world->Move(attachedBlock->X(), attachedBlock->Y(),
-                attachedBlock->Z(), UP) )
+        if ( world->Move(attachedBlock->X(),
+                attachedBlock->Y(), attachedBlock->Z(), UP) )
         {
             ++z;
         } else {
@@ -79,16 +80,16 @@ void DeferredAction::Build() const {
 } // void DeferredAction::Build()
 
 void DeferredAction::Damage() const {
-    if ( world->Damage(X(), Y(), Z(),
+    if ( attachedBlock->GetWorld()->Damage(X(), Y(), Z(),
             attachedBlock->DamageLevel(),
             attachedBlock->DamageKind()) <= 0 ) // durability
     {
-        world->DestroyAndReplace(X(), Y(), Z());
+        attachedBlock->GetWorld()->DestroyAndReplace(X(), Y(), Z());
     }
 }
 
 void DeferredAction::Throw() const {
-    world->Drop(attachedBlock, x_self, y_self, z_self,
+    attachedBlock->GetWorld()->Drop(attachedBlock, x_self, y_self, z_self,
         srcSlot, destSlot, num);
 }
 
@@ -105,12 +106,13 @@ void DeferredAction::Pour() const {
     Block * const liquid = vessel_inv->ShowBlock(0);
     if ( liquid == nullptr ) return;
 
-    if ( world->Build(liquid, x_self, y_self, z_self) ) {
+    if ( attachedBlock->GetWorld()->Build(liquid, x_self, y_self, z_self) ) {
         vessel_inv->Pull(0);
     }
 }
 
 void DeferredAction::SetFire() const {
+    World * const world = attachedBlock->GetWorld();
     if ( world->GetBlock(x_self, y_self, z_self)->Sub() == AIR ) {
         world->Build(BlockManager::NewBlock(GRASS, FIRE),
             x_self, y_self, z_self);
@@ -180,8 +182,6 @@ void DeferredAction::MakeAction() {
     }
     type = DEFERRED_NOTHING;
 }
-
-World * DeferredAction::GetWorld() const { return world; }
 
 DeferredAction::DeferredAction(Active * const attached) :
         Xyz(),
