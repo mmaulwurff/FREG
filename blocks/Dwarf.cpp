@@ -22,11 +22,6 @@
 #include "BlockManager.h"
 #include <QDataStream>
 
-int  Dwarf::GetActiveHand() const { return activeHand; }
-void Dwarf::SetActiveHand(const bool right) {
-    activeHand = (right ? IN_RIGHT : IN_LEFT);
-}
-
 int Dwarf::Weight() const {
     World * const world = GetWorld();
     static const int bound = world->NumShreds() * SHRED_WIDTH - 1;
@@ -66,8 +61,8 @@ void Dwarf::UpdateLightRadius() {
 void Dwarf::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
 
 int Dwarf::DamageKind() const {
-    return ( Number(GetActiveHand()) ) ?
-        ShowBlock(GetActiveHand())->DamageKind() : DAMAGE_HANDS;
+    return ( Number(IN_RIGHT) ) ?
+        ShowBlock(IN_RIGHT)->DamageKind() : DAMAGE_HANDS;
 }
 
 int Dwarf::DamageLevel() const {
@@ -123,7 +118,6 @@ void Dwarf::MoveInside(const int num_from, const int num_to, const int num) {
 void Dwarf::SaveAttributes(QDataStream & out) const {
     Animal::SaveAttributes(out);
     Inventory::SaveAttributes(out);
-    out << activeHand;
 }
 
 bool Dwarf::Inscribe(const QString) {
@@ -134,7 +128,6 @@ bool Dwarf::Inscribe(const QString) {
 Dwarf::Dwarf(const int sub, const int id) :
         Animal(sub, id),
         Inventory(),
-        activeHand(IN_RIGHT),
         lightRadius(MIN_DWARF_LIGHT_RADIUS)
 {
     note = new QString("Urist");
@@ -143,6 +136,5 @@ Dwarf::Dwarf(QDataStream & str, const int sub, const int id) :
         Animal(str, sub, id),
         Inventory(str)
 {
-    str >> activeHand;
     UpdateLightRadius();
 }

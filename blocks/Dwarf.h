@@ -31,9 +31,6 @@ public:
     Dwarf(int sub, int id);
     Dwarf(QDataStream & str, int sub, int id);
 
-    int  GetActiveHand() const;
-    void SetActiveHand(bool right);
-
     int Sub() const override;
     int ShouldAct() const override;
     int DamageKind() const override;
@@ -65,7 +62,6 @@ protected:
 private:
     void UpdateLightRadius();
 
-    quint8 activeHand;
     int lightRadius;
 };
 

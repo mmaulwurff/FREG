@@ -33,21 +33,6 @@ const bool COMMANDS_ALWAYS_ON = true;
 long Player::GlobalX() const { return GetShred()->GlobalX(X()); }
 long Player::GlobalY() const { return GetShred()->GlobalY(Y()); }
 
-bool Player::IsRightActiveHand() const {
-    return Dwarf::IN_RIGHT == GetActiveHand();
-}
-int Player::GetActiveHand() const {
-    Dwarf * const dwarf = dynamic_cast<Dwarf *>(player);
-    return ( dwarf ) ?
-        dwarf->GetActiveHand() : 0;
-}
-void Player::SetActiveHand(const bool right) {
-    Dwarf * const dwarf = dynamic_cast<Dwarf *>(player);
-    if ( dwarf ) {
-        dwarf->SetActiveHand(right);
-    }
-}
-
 Shred * Player::GetShred() const { return world->GetShred(X(), Y()); }
 World * Player::GetWorld() const { return world; }
 

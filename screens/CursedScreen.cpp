@@ -261,15 +261,8 @@ void Screen::ControlPlayer(const int ch) {
     case 'H':
         DisplayFile(QString("help_%1/help.txt").arg(locale.left(2)));
     break;
+    case 'R':
     case 'L': RePrint(); break;
-    case 'R': // switch active hand
-        if ( not player->GetCreativeMode() ) {
-            player->SetActiveHand(not player->IsRightActiveHand());
-            Notify(tr("Now %1 hand is active.").
-                arg(player->IsRightActiveHand() ?
-                    tr("right") : tr("left")));
-        }
-    break;
 
     case '-': shiftFocus = -!shiftFocus; break; // move focus down
     case '+': shiftFocus =  !shiftFocus; break; // move focus up

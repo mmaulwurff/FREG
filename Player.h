@@ -59,13 +59,6 @@ public:
     long GlobalX() const;
     long GlobalY() const;
 
-    /// If player is not dwarf, false is always returned.
-    bool IsRightActiveHand() const;
-    /// If player is not dwarf, 0 is returned.
-    int  GetActiveHand() const;
-    /// If player is not dwarf, does nothing.
-    void SetActiveHand(bool right);
-
     /// This returns current player direction (see enum dirs in header.h)
     dirs GetDir() const;
 

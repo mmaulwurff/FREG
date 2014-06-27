@@ -715,6 +715,7 @@ void Shred::RainBlock(int * const kind, int * const sub) const {
     if ( GetCurrentWeather() == WEATHER_CLOUDS ) {
         *kind = LIQUID;
         *sub  = SUB_CLOUD;
+        return;
     }
     switch ( GetTypeOfShred() ) {
     default: *kind = LIQUID; *sub = WATER; break;

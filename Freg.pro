@@ -24,11 +24,11 @@ TEMPLATE = app
 
 QMAKE_CXXFLAGS += -Wall -Wextra -Werror -std=c++11 -pedantic
 QMAKE_CXXFLAGS += -Wold-style-cast -Wfloat-equal -Woverloaded-virtual -Wundef
-QMAKE_CXXFLAGS += -Wdouble-promotion
 
 #QMAKE_CXXFLAGS_DEBUG += -fno-inline
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS += -O3
+QMAKE_CXXFLAGS += -fstrict-enums -fno-rtti
 
 
 clang {
@@ -36,6 +36,7 @@ clang {
     QMAKE_LINK = clang++
 } else {
     QMAKE_CXXFLAGS_RELEASE += -s
+    QMAKE_CXXFLAGS += -Wdouble-promotion
 }
 DEFINES += COMPILER=\"\\\"$${QMAKE_CXX}\"\\\"
 
