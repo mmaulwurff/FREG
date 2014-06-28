@@ -25,7 +25,7 @@
 #include "Xyz.h"
 
 /// Frequency can be "never", "rare", "rare & first", "rare & second".
-enum ACTIVE_FREQUENCY {
+enum active_frequency {
     FREQUENT_NEVER  = 0,
     FREQUENT_RARE   = 1,
     FREQUENT_FIRST  = 2,

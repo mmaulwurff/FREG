@@ -96,7 +96,6 @@ enum push_reaction {
     NOT_MOVABLE,
     MOVE_UP,
     JUMP,
-    PUSH_DELETE_SELF
 };
 
 enum times_of_day {
@@ -158,6 +157,7 @@ enum kinds {
     AXE,         ///< 25
     HAMMER,      ///< 26
     ILLUMINATOR, ///< 27
+    RAIN_MACHINE, ///< 28
     /// Nothing is LAST_KIND.
     LAST_KIND // keep it last in this list.
 }; // enum kinds

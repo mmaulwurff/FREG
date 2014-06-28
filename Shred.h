@@ -109,13 +109,8 @@ public:
        return x >> SHRED_WIDTH_SHIFT;
     }
 
-    // Weather
-    void SetWeathers();
-    weathers GetWeather(times_of_day time) const;
-    weathers GetCurrentWeather() const;
     void Rain(int kind, int sub);
-    void Rain();
-    void Dew();
+    void Dew (int kind, int sub);
 
 private:
     void RemoveAllSunLight();
@@ -183,9 +178,6 @@ private:
 
     /// memory, allocated for this shred.
     Shred * const memory;
-
-    /// Weather for this day. (TIME_EVENING is the last time of day.)
-    weathers weather[TIME_EVENING+1];
 };
 
 #endif // SHRED_H

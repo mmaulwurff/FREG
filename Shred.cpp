@@ -25,7 +25,7 @@
 #include "blocks/Inventory.h"
 
 const quint8 DATASTREAM_VERSION = QDataStream::Qt_5_2;
-const quint8 CURRENT_SHRED_FORMAT_VERSION = 5;
+const quint8 CURRENT_SHRED_FORMAT_VERSION = 6;
 
 long Shred::Longitude() const { return longitude; }
 long Shred::Latitude()  const { return latitude; }
@@ -56,11 +56,6 @@ bool Shred::LoadShred() {
     quint8 read_type;
     in >> read_type;
     type = read_type;
-    for (int i=0; i<=TIME_EVENING; ++i) {
-        quint8 new_weather;
-        in >> new_weather;
-        weather[i] = static_cast<weathers>(new_weather);
-    }
     Block * const null_stone = Normal(NULLSTONE);
     Block * const air = Normal(AIR);
     SetAllLightMapNull();
@@ -98,7 +93,6 @@ Shred::Shred(const int shred_x, const int shred_y,
 {
     if ( LoadShred() ) return; // successfull loading
     // new shred generation:
-    SetWeathers();
     Block * const null_stone = Normal(NULLSTONE);
     Block * const air  = Normal(AIR);
     Block * const sky  = Normal(SKY);
@@ -139,9 +133,6 @@ Shred::~Shred() {
     outstr << DATASTREAM_VERSION << CURRENT_SHRED_FORMAT_VERSION;
     outstr.setVersion(DATASTREAM_VERSION);
     outstr << quint8(GetTypeOfShred());
-    for (int i=0; i<=TIME_EVENING; ++i) {
-        outstr << quint8(weather[i]);
-    }
     for (int x=0; x<SHRED_WIDTH; ++x)
     for (int y=0; y<SHRED_WIDTH; ++y) {
         int height = HEIGHT-2;
@@ -181,6 +172,7 @@ void Shred::PhysEventsFrequent() {
             const int x = (*i)->X();
             const int y = (*i)->Y();
             const int z = (*i)->Z();
+            fprintf(stderr, "xyz: %d %d %d sub: %d\n", x, y, z, (*i)->Sub());
             Block * const block_under =
                 GetBlock(CoordInShred(x), CoordInShred(y), z-1);
             if (LIQUID==block_under->Kind() && SUB_CLOUD!=block_under->Sub()) {
@@ -216,12 +208,6 @@ void Shred::PhysEventsRare() {
             case INNER_ACTION_NONE: (*i)->ActRare(); break;
             }
         }
-    }
-    switch ( GetCurrentWeather() ) {
-    case WEATHER_CLEAR: break;
-    case WEATHER_RAIN: if ( qrand()%20 ) break;
-    case WEATHER_CLOUDS: Rain(); break;
-    case WEATHER_DEW: Dew(); break;
     }
     activeListAll.removeAll(nullptr);
     activeListFrequent.removeAll(nullptr);
@@ -476,6 +462,7 @@ void Shred::TestShred() { // 7 items in a row
     NormalCube(++column, row-1, level, 3, 3, 3, GLASS);
     SetNewBlock(LIQUID, ACID, ++column, row, level+1);
     SetNewBlock(LIQUID, SUB_CLOUD, column+=2, row, level);
+    SetNewBlock(RAIN_MACHINE, IRON, column+=2, row, level);
 } // void Shred::TestShred()
 
 void Shred::NullMountain() {
@@ -668,37 +655,13 @@ bool Shred::InBounds(const int x, const int y, const int z) {
         && 0 <=z && z < HEIGHT-1 );
 }
 
-weathers Shred::GetWeather(const times_of_day time) const {
-    return weather[time];
-}
-
-weathers Shred::GetCurrentWeather() const {
-    return GetWeather(GetWorld()->PartOfDay());
-}
-
-void Shred::SetWeathers() {
-    // TODO: add weather generation
-    weather[TIME_NIGHT]   = WEATHER_RAIN;
-    weather[TIME_MORNING] = WEATHER_CLOUDS;
-    weather[TIME_NOON]    = WEATHER_CLEAR;
-    weather[TIME_EVENING] = WEATHER_CLOUDS;
-}
-
-void Shred::Rain() {
-    int kind, sub;
-    RainBlock(&kind, &sub);
-    Rain(kind, sub);
-}
-
-void Shred::Dew() {
-    int kind, sub;
-    RainBlock(&kind, &sub);
+void Shred::Dew(const int kind, const int sub) {
     DropBlock(block_manager.NewBlock(kind, sub), true);
 }
 
 void Shred::Rain(const int kind, const int sub) {
     if ( RAIN_IS_DEW == 1 ) { // RAIN_IS_DEW is defined in Freg.pro
-        Dew();
+        Dew(kind, sub);
         return;
     } // else:
     static const int CLOUD_HEIGHT = HEIGHT*3/4;
@@ -711,14 +674,3 @@ void Shred::Rain(const int kind, const int sub) {
     }
 }
 
-void Shred::RainBlock(int * const kind, int * const sub) const {
-    if ( GetCurrentWeather() == WEATHER_CLOUDS ) {
-        *kind = LIQUID;
-        *sub  = SUB_CLOUD;
-        return;
-    }
-    switch ( GetTypeOfShred() ) {
-    default: *kind = LIQUID; *sub = WATER; break;
-    case SHRED_MOUNTAIN: *kind = FALLING, *sub = WATER; break;
-    }
-}

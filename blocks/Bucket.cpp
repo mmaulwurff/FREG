@@ -44,8 +44,8 @@ QString Bucket::FullName() const {
         case WATER: name = QObject::tr("Bucket with water"); break;
         case STONE: name = QObject::tr("Bucket with lava"); break;
         default:
-            fprintf(stderr, "Bucket::FullName: unlisted sub: %d\n.",
-                GetInvSub(0));
+            fprintf(stderr, "%s: unlisted sub: %d\n.",
+                Q_FUNC_INFO, GetInvSub(0));
             name = QObject::tr("Bucket with something");
     }
     name.append(QObject::tr(" (%1/%2 full)").

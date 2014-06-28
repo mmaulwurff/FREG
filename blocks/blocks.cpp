@@ -288,7 +288,7 @@
     int  Grass::ShouldAct() const  { return FREQUENT_RARE; }
     int  Grass::Kind() const { return GRASS; }
     Block * Grass::DropAfterDamage(bool *) { return nullptr; }
-    push_reaction Grass::PushResult(dirs) const { return PUSH_DELETE_SELF; }
+    push_reaction Grass::PushResult(dirs) const { return MOVABLE; }
 
     void Grass::Push(dirs, Block *) {
         GetWorld()->DestroyAndReplace(X(), Y(), Z());

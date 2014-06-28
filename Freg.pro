@@ -30,7 +30,6 @@ QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS += -O3
 QMAKE_CXXFLAGS += -fstrict-enums -fno-rtti
 
-
 clang {
     QMAKE_CXX  = clang++
     QMAKE_LINK = clang++
@@ -65,7 +64,6 @@ unix:cursed_screen {
     LIBS += -LC:/Users/Alexander/src/FREG/pdcurses -lpdcurses
 }
 
-
 HEADERS += \
     BlockManager.h \
     CraftManager.h \
@@ -88,6 +86,7 @@ HEADERS += \
     blocks/Illuminator.h \
     blocks/Weapons.h \
     blocks/Container.h \
+    blocks/RainMachine.h \
     screens/IThread.h
 SOURCES += \
     BlockManager.cpp \
@@ -113,6 +112,7 @@ SOURCES += \
     blocks/Bucket.cpp \
     blocks/Container.cpp \
     blocks/Block.cpp \
+    blocks/RainMachine.cpp \
     screens/IThread.cpp
 
 TRANSLATIONS = \

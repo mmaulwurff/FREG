@@ -20,10 +20,10 @@
 #ifndef WEAPONS_H
 #define WEAPONS_H
 
-#include "blocks/Block.h"
+#include "blocks/Active.h"
 
 
-class Weapon : public Block {
+class Weapon : public Falling {
     /** \class Weapon Weapons.h
      *  \brief Weapon class represents simple weapons as sticks, pebbles and
      *  so on.
@@ -31,7 +31,7 @@ class Weapon : public Block {
      *  Weapon of SKY substance is abyss block, everything that touches abyss
      *  will be destroyed. */
 public:
-    using Block::Block;
+    using Falling::Falling;
 
     int  Kind() const override;
     int  Wearable() const override;

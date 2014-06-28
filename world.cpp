@@ -371,9 +371,6 @@ void World::PhysEvents() {
     switch ( TimeOfDay() ) {
     default: break;
     case END_OF_NIGHT:
-        for (int i=NumShreds()*NumShreds()-1; i>=0; --i) {
-            shreds[i]->SetWeathers();
-        }
         ReEnlightenTime();
         emit Notify(tr("It's morning now."));
     break;
@@ -454,13 +451,15 @@ bool World::CanMove(const int x, const int y, const int z,
     block_to->Push(dir, block);
     bool move_flag = false;
     if ( ENVIRONMENT == block->PushResult(NOWHERE) ) {
-        move_flag = ( target_push <= ENVIRONMENT
-            && (target_push == PUSH_DELETE_SELF || *block != *block_to) );
+        move_flag = target_push <= ENVIRONMENT
+            && (GetBlock(newx, newy, newz)->Sub() == AIR
+                || *block != *block_to);
     } else {
         switch ( target_push ) {
         case MOVABLE:
-            move_flag = ( (block->Weight() > block_to->Weight()) &&
-                Move(newx, newy, newz, dir) );
+            move_flag = GetBlock(newx, newy, newz)->Sub() == AIR ||
+                ( (block->Weight() > block_to->Weight()) &&
+                    Move(newx, newy, newz, dir) );
         break;
         case ENVIRONMENT: move_flag = true; break;
         case NOT_MOVABLE: break;
@@ -474,7 +473,6 @@ bool World::CanMove(const int x, const int y, const int z,
                 Jump(x, y, z, dir);
             }
         break;
-        case PUSH_DELETE_SELF: move_flag = true; break;
         }
     }
     Falling * falling;

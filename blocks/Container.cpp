@@ -52,6 +52,7 @@
     int Container::Sub() const { return Block::Sub(); }
     Inventory * Container::HasInventory() { return this; }
     usage_types Container::Use(Block *) { return USAGE_TYPE_OPEN; }
+    push_reaction Container::PushResult(dirs) const { return MOVABLE; }
 
     Block * Container::DropAfterDamage(bool * const delete_block) {
         if ( DIFFERENT == Sub() ) {

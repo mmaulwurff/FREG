@@ -37,6 +37,7 @@ Shred * Player::GetShred() const { return world->GetShred(X(), Y()); }
 World * Player::GetWorld() const { return world; }
 
 bool Player::GetCreativeMode() const { return creativeMode; }
+
 void Player::SetCreativeMode(const bool creative_on) {
     creativeMode = creative_on;
     player->disconnect();
@@ -48,7 +49,7 @@ void Player::SetCreativeMode(const bool creative_on) {
         inv->GetAll(prev_player->HasInventory());
     }
     if ( not creative_on ) {
-        delete prev_player;
+        block_manager.DeleteBlock(prev_player);
     }
     emit Updated();
 }
