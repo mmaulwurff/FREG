@@ -50,7 +50,7 @@ const int SECONDS_IN_NIGHT = END_OF_NIGHT;
 const int SECONDS_IN_DAYLIGHT = SECONDS_IN_DAY-END_OF_NIGHT;
 
 /// 10 bits to store durability in file, signed.
-const int MAX_DURABILITY = pow(2, 10);
+const int MAX_DURABILITY = 1024;
 const int MAX_BREATH = 60;
 
 const int MAX_LIGHT_RADIUS = 15;

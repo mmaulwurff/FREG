@@ -204,6 +204,7 @@ private:
     QFile * fileToShow;
     bool beepOn;
     const bool ascii;
+    SCREEN * const screen;
 };
 
 #endif // CURSEDSCREEN_H

@@ -160,7 +160,7 @@ void World::ReEnlighten(const int x, const int y, const int z) {
 }
 
 void World::ReEnlightenTime() {
-    for (int i=NumShreds()*NumShreds()-1; i>=0; --i) {
+    for (int i=0; i<NumShreds()*NumShreds(); ++i) {
         shreds[i]->SetAllLightMapNull();
     }
     sunMoonFactor = ( TIME_NIGHT==PartOfDay() ) ?
@@ -170,7 +170,7 @@ void World::ReEnlightenTime() {
 
 void World::ReEnlightenAll() {
     initial_lighting = true;
-    for (int i=NumShreds()*NumShreds()-1; i>=0; --i) {
+    for (int i=0; i<NumShreds()*NumShreds(); ++i) {
         shreds[i]->ShineAll();
     }
     initial_lighting = false;
@@ -270,10 +270,7 @@ void Shred::SetLightmap(const int x, const int y, const int z, const int level)
     lightMap[x][y][z] = level;
 }
 
-void Shred::SetAllLightMapNull() {
-    memset(lightMap, 0,
-        sizeof(lightMap[0][0][0]) * SHRED_WIDTH * SHRED_WIDTH * HEIGHT);
-}
+void Shred::SetAllLightMapNull() { memset(lightMap, 0, sizeof(lightMap)); }
 
 /// Makes all shining blocks of shred shine.
 void Shred::ShineAll() {

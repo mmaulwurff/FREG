@@ -15,7 +15,7 @@ CONFIG += thread warn_on console
 CONFIG += debug
 
 # compile with clang:
-CONFIG += clang
+#CONFIG += clang
 
 VERSION = 0.2
 VERSTR = '\\"$${VERSION}\\"'
@@ -33,7 +33,7 @@ QMAKE_CXXFLAGS += -fstrict-enums -fno-rtti
 clang {
     QMAKE_CXX  = clang++
     QMAKE_LINK = clang++
-    #QMake_LINK += -fsanitize=address
+    #QMAKE_LINK += -fsanitize=address
     #QMAKE_CXXFLAGS_DEBUG += -fsanitize=address
 } else {
     QMAKE_CXXFLAGS_RELEASE += -s

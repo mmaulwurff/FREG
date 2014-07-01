@@ -371,15 +371,15 @@ void World::PhysEvents() {
     switch ( TimeOfDay() ) {
     default: break;
     case END_OF_NIGHT:
-        ReEnlightenTime();
         emit Notify(tr("It's morning now."));
-    break;
+        ReEnlightenTime();
+        break;
     case END_OF_MORNING: emit Notify(tr("It's day now.")); break;
     case END_OF_NOON:    emit Notify(tr("It's evening now.")); break;
     case END_OF_EVENING:
-        ReEnlightenTime();
         emit Notify(tr("It's night now."));
-    break;
+        ReEnlightenTime();
+        break;
     }
     Unlock();
     emit UpdatesEnded();
@@ -486,6 +486,8 @@ bool World::CanMove(const int x, const int y, const int z,
         }
         return false;
     }
+    Q_UNREACHABLE();
+    return false;
 } // bool World::CanMove(const int x, y, z, newx, newy, newz, int dir)
 
 void World::NoCheckMove(const int x, const int y, const int z,

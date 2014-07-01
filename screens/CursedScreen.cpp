@@ -798,8 +798,8 @@ void Screen::Notify(const QString str) const {
             qPrintable(str), notification_repeat_count);
     } else {
         notification_repeat_count = 1;
-        wprintw(notifyWin, "%s\n", qPrintable(str));
-        lastNotification = str;
+        waddstr(notifyWin, qPrintable(lastNotification = str));
+        waddch(notifyWin, '\n');
     }
     wrefresh(notifyWin);
 }
@@ -838,12 +838,12 @@ Screen::Screen(
         notifyLog(fopen("texts/messages.txt", "at")),
         fileToShow(nullptr),
         beepOn(false),
-        ascii(_ascii)
+        ascii(_ascii),
+        screen(newterm(nullptr, stdout, stdin))
 {
     #ifndef Q_OS_WIN32
         set_escdelay(10);
     #endif
-    initscr();
     start_color();
     raw(); // send typed keys directly
     noecho(); // do not print typed symbols
@@ -934,6 +934,7 @@ Screen::~Screen() {
     if ( hudWin    ) delwin(hudWin);
     if ( miniMapWin ) delwin(miniMapWin);
     endwin();
+    delscreen(screen);
     if ( notifyLog ) {
         fclose(notifyLog);
     }

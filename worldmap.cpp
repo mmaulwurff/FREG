@@ -37,6 +37,7 @@ WorldMap::WorldMap(const QString world_name) :
 }
 
 char WorldMap::TypeOfShred(const long longi, const long lati) const {
+    //return '-'; // for testing purposes
     if (
             longi >= mapSize || longi < 0 ||
             lati  >= mapSize || lati  < 0 )
