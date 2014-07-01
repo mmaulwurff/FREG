@@ -55,7 +55,6 @@ public:
     int  Kind() const override = 0;
     QString  FullName() const override = 0;
     Active * ActiveBlock() override;
-    push_reaction PushResult(dirs) const override;
 
     Shred * GetShred() const;
     World * GetWorld() const;

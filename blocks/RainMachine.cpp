@@ -22,7 +22,7 @@
 RainMachine::RainMachine(const int sub, const int id) :
     Active(sub, id),
     Inventory(1),
-    isOn(true)
+    isOn(false)
 {}
 
 RainMachine::RainMachine(QDataStream & stream, const int sub, const int id) :
@@ -40,11 +40,11 @@ void RainMachine::SaveAttributes(QDataStream & stream) const {
 
 void RainMachine::DoRareAction() {
     const int number = Number(0);
+    // TODO: make cloud generation
     if ( isOn
-            && number > 0
             && (qrand() % (20-number*2)) == 0 )
     {
-        GetShred()->Rain(LIQUID, ShowBlock(0)->Sub());
+        GetShred()->Rain(LIQUID, GetInvSub(0)==AIR ? SUB_CLOUD : GetInvSub(0));
     }
 }
 

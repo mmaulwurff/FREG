@@ -120,10 +120,9 @@ enum damage_kinds {
     BITE,    ///< 11
     TIME,    ///< 12
     NO_HARM, ///< 13
-    DAMAGE_FALL,  ///< 14
-    DAMAGE_HANDS, ///< 15
-    DAMAGE_ACID,  ///< 16
-}; // enum damage_kinds
+    DAMAGE_HANDS, ///< 14
+    DAMAGE_ACID,  ///< 15
+};
 
 /// Kinds of atom
 enum kinds {

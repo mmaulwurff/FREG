@@ -168,26 +168,9 @@ void Shred::PhysEventsFrequent() {
         } else if ( (*i)->Weight() <= 0 ) {
             (*i)->SetFalling(false);
             *i = nullptr;
-        } else {
-            const int x = (*i)->X();
-            const int y = (*i)->Y();
-            const int z = (*i)->Z();
-            fprintf(stderr, "xyz: %d %d %d sub: %d\n", x, y, z, (*i)->Sub());
-            Block * const block_under =
-                GetBlock(CoordInShred(x), CoordInShred(y), z-1);
-            if (LIQUID==block_under->Kind() && SUB_CLOUD!=block_under->Sub()) {
-                (*i)->SetFalling(false);
-                *i = nullptr;
-            } else if ( not world->Move(x, y, z, DOWN) ) {
-                (*i)->FallDamage();
-                if ( (*i)->GetDurability() <= 0 ) {
-                    world->DestroyAndReplace(x, y, z);
-                }
-                if ( block_under->GetDurability() <= 0 ) {
-                    world->DestroyAndReplace(x, y, z-1);
-                }
-                *i = nullptr;
-            }
+        } else if ( not world->Move((*i)->X(), (*i)->Y(), (*i)->Z(), DOWN) ) {
+            (*i)->FallDamage();
+            *i = nullptr;
         }
     }
     for (auto i  = activeListFrequent.constBegin();

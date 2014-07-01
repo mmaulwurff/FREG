@@ -31,7 +31,6 @@ int  Active::ShouldAct() const { return FREQUENT_NEVER; }
 void Active::DoFrequentAction() {}
 void Active::DoRareAction() {}
 INNER_ACTIONS Active::ActInner() { return INNER_ACTION_NONE; }
-push_reaction Active::PushResult(dirs) const { return NOT_MOVABLE; }
 
 void Active::ActFrequent() {
     if ( GetDeferredAction() != nullptr ) {
@@ -137,7 +136,6 @@ void Active::Damage(const int dmg, const int dmg_kind) {
         case HUNGER:      ReceiveSignal(tr("You faint from hunger!")); break;
         case HEAT:        ReceiveSignal(tr("You burn!"));              break;
         case BREATH:      ReceiveSignal(tr("You choke withot air!"));  break;
-        case DAMAGE_FALL: ReceiveSignal(tr("You fall!"));              break;
         default:          ReceiveSignal(tr("Received damage!"));
         }
         emit Updated();
@@ -258,8 +256,17 @@ void Falling::FallDamage() {
     static const int SAFE_FALL_HEIGHT = 5;
     if ( fallHeight > SAFE_FALL_HEIGHT ) {
         const int dmg = (fallHeight - SAFE_FALL_HEIGHT)*10;
-        GetWorld()->Damage(X(), Y(), Z()-1, dmg, DAMAGE_FALL);
-        Damage(dmg, DAMAGE_FALL);
+        static World * const world = GetWorld();
+        Block * const block_under = world->GetBlock(X(), Y(), Z()-1);
+        world->Damage(X(), Y(), Z()-1, dmg, DamageKind());
+        if ( block_under->GetDurability() <= 0 ) {
+            world->DestroyAndReplace(X(), Y(), Z()-1);
+        }
+        Damage(dmg, block_under->DamageKind());
+        if ( GetDurability() <= 0 ) {
+            world->DestroyAndReplace(X(), Y(), Z());
+            return;
+        }
     }
     falling = false;
     fallHeight = 0;

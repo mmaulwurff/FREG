@@ -447,41 +447,45 @@ bool World::CanMove(const int x, const int y, const int z,
 {
     Block * const block    = GetBlock(x, y, z);
     Block * const block_to = GetBlock(newx, newy, newz);
-    const push_reaction target_push = block_to->PushResult(dir);
-    block_to->Push(dir, block);
-    bool move_flag = false;
-    if ( ENVIRONMENT == block->PushResult(NOWHERE) ) {
-        move_flag = target_push <= ENVIRONMENT
-            && (GetBlock(newx, newy, newz)->Sub() == AIR
-                || *block != *block_to);
-    } else {
-        switch ( target_push ) {
-        case MOVABLE:
-            move_flag = GetBlock(newx, newy, newz)->Sub() == AIR ||
-                ( (block->Weight() > block_to->Weight()) &&
-                    Move(newx, newy, newz, dir) );
-        break;
-        case ENVIRONMENT: move_flag = true; break;
-        case NOT_MOVABLE: break;
-        case MOVE_UP:
-            if ( dir > DOWN ) { // not UP and not DOWN
-                Move(x, y, z, UP);
-            }
-        break;
-        case JUMP:
-            if ( dir > DOWN ) { // not UP and not DOWN
-                Jump(x, y, z, dir);
-            }
-        break;
+    if ( DOWN != dir && block->Weight() != 0 ) {
+        Falling * const falling = block->ShouldFall();
+        if ( falling != nullptr
+                && falling->IsFalling()
+                && AIR==GetBlock(x, y, z-1)->Sub()
+                && AIR==GetBlock(newx, newy, newz-1)->Sub() )
+        {
+            return false;
         }
     }
-    Falling * falling;
-    return ( move_flag &&
-        (DOWN==dir || !block->Weight() ||
-        not ( (falling=block->ShouldFall())
-            && falling->IsFalling()
-            && AIR==GetBlock(x, y, z-1)->Sub()
-            && AIR==GetBlock(newx, newy, newz-1)->Sub() )) );
+    switch ( block->PushResult(dir) ) {
+    case MOVABLE: break;
+    case ENVIRONMENT:
+        if ( *block == *block_to ) { // prevent useless flow
+            return false;
+        }
+        break;
+    default:
+    case NOT_MOVABLE: return false;
+    }
+    const push_reaction target_push = block_to->PushResult(dir);
+    block_to->Push(dir, block);
+    switch ( target_push ) {
+    case MOVABLE:
+        return ( (block->Weight() > block_to->Weight()) &&
+                Move(newx, newy, newz, dir) );
+    case ENVIRONMENT: return true;
+    case NOT_MOVABLE: return false;
+    case MOVE_UP:
+        if ( dir > DOWN ) { // not UP and not DOWN
+            Move(x, y, z, UP);
+        }
+        return false;
+    case JUMP:
+        if ( dir > DOWN ) { // not UP and not DOWN
+            Jump(x, y, z, dir);
+        }
+        return false;
+    }
 } // bool World::CanMove(const int x, y, z, newx, newy, newz, int dir)
 
 void World::NoCheckMove(const int x, const int y, const int z,
@@ -567,10 +571,7 @@ void World::DestroyAndReplace(const int x, const int y, const int z) {
     const int y_in_shred = Shred::CoordInShred(y);
     Block * const block = shred->GetBlock(x_in_shred, y_in_shred, z);
     bool delete_block = true;
-    Block * new_block = block->DropAfterDamage(&delete_block);
-    if ( new_block == nullptr ) {
-        new_block = Normal(AIR);
-    }
+    Block * const new_block = block->DropAfterDamage(&delete_block);
     shred->SetBlockNoCheck(new_block, x_in_shred, y_in_shred, z);
     if (    block->Transparent() != new_block->Transparent() ||
             block->LightRadius() != new_block->LightRadius() )

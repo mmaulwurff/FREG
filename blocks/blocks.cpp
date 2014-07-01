@@ -192,8 +192,8 @@
     push_reaction Liquid::PushResult(dirs) const { return ENVIRONMENT; }
 
     Block * Liquid::DropAfterDamage(bool *) {
-        return ( Sub() == STONE ) ?
-            block_manager.NormalBlock(STONE) : nullptr;
+        return block_manager.NormalBlock( ( Sub() == STONE ) ?
+            STONE : AIR);
     }
 
     int Liquid::LightRadius() const {
@@ -287,8 +287,11 @@
 
     int  Grass::ShouldAct() const  { return FREQUENT_RARE; }
     int  Grass::Kind() const { return GRASS; }
-    Block * Grass::DropAfterDamage(bool *) { return nullptr; }
     push_reaction Grass::PushResult(dirs) const { return MOVABLE; }
+
+    Block * Grass::DropAfterDamage(bool *) {
+        return block_manager.NormalBlock(AIR);
+    }
 
     void Grass::Push(dirs, Block *) {
         GetWorld()->DestroyAndReplace(X(), Y(), Z());

@@ -112,7 +112,6 @@ void Block::Damage(const int dmg, const int dmg_kind) {
     case H_MEAT: ++(mult = (THRUST==dmg_kind || HEAT==dmg_kind)); break;
     case SOIL: switch ( dmg_kind ) {
         case DIG: mult = 2; break;
-        case DAMAGE_FALL: return;
     } break;
     case FIRE: mult = (FREEZE==dmg_kind || TIME==dmg_kind); break;
     }
@@ -122,7 +121,7 @@ void Block::Damage(const int dmg, const int dmg_kind) {
 Block * Block::DropAfterDamage(bool * const delete_block) {
     switch ( Sub() ) {
     case GLASS:
-    case AIR: return nullptr;
+    case AIR: return block_manager.NormalBlock(AIR);
     case STONE: if ( BLOCK==Kind() ) {
         return block_manager.NewBlock(LADDER, STONE);
     } // no break;

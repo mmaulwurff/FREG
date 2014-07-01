@@ -57,7 +57,7 @@
     Block * Container::DropAfterDamage(bool * const delete_block) {
         if ( DIFFERENT == Sub() ) {
             *delete_block = true;
-            return nullptr;
+            return block_manager.NormalBlock(AIR);
         } // else:
         Block * const pile = block_manager.NewBlock(CONTAINER, DIFFERENT);
         Inventory * const pile_inv = pile->HasInventory();
