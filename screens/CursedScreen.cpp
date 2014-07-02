@@ -71,6 +71,15 @@ const {
 
 void Screen::RePrint() {
     clear();
+    mvwaddstr(actionWin, 0, 0, qPrintable(tr("Use/Eat")));
+    mvwaddstr(actionWin, 1, 0, qPrintable(tr("Throw")));
+    mvwaddstr(actionWin, 2, 0, qPrintable(tr("Obtain")));
+    mvwaddstr(actionWin, 3, 0, qPrintable(tr("Wield/take oFF")));
+    mvwaddstr(actionWin, 4, 0, qPrintable(tr("iNscribe")));
+    mvwaddstr(actionWin, 5, 0, qPrintable(tr("Build")));
+    mvwaddstr(actionWin, 6, 0, qPrintable(tr("Craft")));
+    refresh();
+    wrefresh(actionWin);
     updated = false;
 }
 
@@ -85,7 +94,7 @@ void Screen::UpdateAll() {
 }
 
 void Screen::PassString(QString & str) const {
-    waddch(notifyWin, ':');
+    waddstr(notifyWin, "\n:");
     char temp_str[MAX_NOTE_LENGTH+1];
     echo();
     wgetnstr(notifyWin, temp_str, MAX_NOTE_LENGTH);
@@ -296,7 +305,9 @@ void Screen::ProcessCommand(QString command) {
 }
 
 void Screen::SetActionMode(const actions mode) {
-    actionMode = mode;
+    mvwchgat(actionWin, actionMode,      0, 20, A_NORMAL, WHITE_BLACK, nullptr);
+    mvwchgat(actionWin, actionMode=mode, 0, 20, A_NORMAL, BLACK_WHITE, nullptr);
+    wrefresh(actionWin);
     updated = false;
 }
 
@@ -423,32 +434,7 @@ void Screen::PrintHUD() {
             focused->GetDurability()*100/MAX_DURABILITY,
             false);
     }
-    // action mode
     wstandend(hudWin);
-    mvwaddstr(hudWin, 1, 0, qPrintable(tr("Action: ")));
-    switch ( actionMode ) {
-    case ACTION_USE:
-        waddstr(hudWin, qPrintable(tr("Use/Eat")));
-        break;
-    case ACTION_THROW:
-        waddstr(hudWin, qPrintable(tr("Throw")));
-        break;
-    case ACTION_OBTAIN:
-        waddstr(hudWin, qPrintable(tr("Obtain")));
-        break;
-    case ACTION_WIELD:
-        waddstr(hudWin, qPrintable(tr("Wield/Take off")));
-        break;
-    case ACTION_INSCRIBE:
-        waddstr(hudWin, qPrintable(tr("Inscribe in inventory")));
-        break;
-    case ACTION_BUILD:
-        waddstr(hudWin, qPrintable(tr("Build")));
-        break;
-    case ACTION_CRAFT:
-        waddstr(hudWin, qPrintable(tr("Craft")));
-        break;
-    }
     if ( player->GetCreativeMode() ) {
         mvwaddstr(hudWin, 0, 0, qPrintable(tr("Creative Mode")));
         // coordinates
@@ -471,13 +457,13 @@ void Screen::PrintHUD() {
         if ( -1 != satiation ) { // satiation line
             if ( 100 < satiation ) {
                 wcolor_set(hudWin, BLUE_BLACK, nullptr);
-                mvwaddstr(hudWin, 2, 0, qPrintable(tr("Gorged")));
+                mvwaddstr(hudWin, 1, 1, qPrintable(tr("Gorged")));
             } else if ( 75 < satiation ) {
                 wcolor_set(hudWin, GREEN_BLACK, nullptr);
-                mvwaddstr(hudWin, 2, 0, qPrintable(tr("Full")));
+                mvwaddstr(hudWin, 1, 1, qPrintable(tr("Full")));
             } else if ( 25 > satiation ) {
                 wcolor_set(hudWin, RED_BLACK, nullptr);
-                mvwaddstr(hudWin, 2, 0, qPrintable(tr("Hungry")));
+                mvwaddstr(hudWin, 1, 1, qPrintable(tr("Hungry")));
             }
         }
     }
@@ -795,12 +781,12 @@ void Screen::Notify(const QString str) const {
         ++notification_repeat_count;
         int x, y;
         getyx(notifyWin, y, x);
-        mvwprintw(notifyWin, y-1, 0, "%s (%dx)\n",
+        mvwprintw(notifyWin, y-1, 0, "\n%s (%dx)",
             qPrintable(str), notification_repeat_count);
     } else {
         notification_repeat_count = 1;
-        waddstr(notifyWin, qPrintable(lastNotification = str));
         waddch(notifyWin, '\n');
+        waddstr(notifyWin, qPrintable(lastNotification = str));
     }
     wrefresh(notifyWin);
 }
@@ -828,14 +814,8 @@ Screen::Screen(
         bool _ascii)
     :
         VirtScreen(wor, pl),
-        leftWin(nullptr),
-        rightWin(nullptr),
-        notifyWin(nullptr),
-        hudWin(nullptr),
-        miniMapWin(nullptr),
         lastNotification(),
         input(new IThread(this)),
-        updated(false),
         notifyLog(fopen("texts/messages.txt", "at")),
         fileToShow(nullptr),
         beepOn(false),
@@ -850,6 +830,7 @@ Screen::Screen(
     noecho(); // do not print typed symbols
     nonl();
     keypad(stdscr, TRUE); // use arrows
+    memset(windows, 0, sizeof(windows));
     if ( LINES < 41 ) {
         printf("Make your terminal height to be at least 41 lines.\n");
         error = HEIGHT_NOT_ENOUGH;
@@ -872,18 +853,18 @@ Screen::Screen(
     const int preferred_width = (SCREEN_SIZE*2+2)*2;
     if ( COLS >= preferred_width ) {
         const int left_border = COLS/2-SCREEN_SIZE*2-2;
-        rightWin = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, COLS/2);
-        leftWin  = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, left_border);
-        hudWin   = newwin(3, preferred_width, SCREEN_SIZE+2, left_border);
-        notifyWin = newwin(0,preferred_width-13, SCREEN_SIZE+5,left_border+13);
-        miniMapWin = newwin(7, 11, SCREEN_SIZE+5, left_border);
+        rightWin  = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, COLS/2);
+        leftWin   = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, left_border);
+        hudWin    = newwin(3, preferred_width, SCREEN_SIZE+2, left_border);
+        notifyWin = newwin(0,preferred_width-13, SCREEN_SIZE+5,left_border+33);
+        miniMapWin = newwin(7, 11, SCREEN_SIZE+5, left_border  );
+        actionWin  = newwin(7, 20, SCREEN_SIZE+5, left_border+12);
     } else if ( COLS >= preferred_width/2 ) {
         const int left_border = COLS/2-SCREEN_SIZE-1;
-        rightWin   = nullptr;
-        miniMapWin = nullptr;
-        leftWin  = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, left_border);
-        hudWin   = newwin(3, SCREEN_SIZE*2+2, SCREEN_SIZE+2, left_border);
-        notifyWin  = newwin(0, SCREEN_SIZE*2+2, SCREEN_SIZE+2+3, left_border);
+        leftWin   = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, left_border);
+        hudWin    = newwin(3, SCREEN_SIZE*2+2, SCREEN_SIZE+2, left_border);
+        notifyWin = newwin(21,SCREEN_SIZE*2+2, SCREEN_SIZE+2+3,left_border+20);
+        actionWin = newwin(0, 20, SCREEN_SIZE+2+3, left_border);
     } else {
         puts(qPrintable(tr("Set your terminal width at least %1 chars.").
             arg(SCREEN_SIZE*2+2)));
@@ -895,8 +876,6 @@ Screen::Screen(
     QSettings sett(QDir::currentPath()+"/freg.ini", QSettings::IniFormat);
     sett.beginGroup("screen_curses");
     shiftFocus = sett.value("focus_shift", 0).toInt();
-    actionMode = static_cast<actions>
-        (sett.value("action_mode", ACTION_USE).toInt());
     previousCommand = sett.value("last_command", "hello").toString();
     beepOn     = sett.value("beep_on", false).toBool();
     sett.setValue("beep_on", beepOn);
@@ -906,9 +885,11 @@ Screen::Screen(
     }
     addstr(qPrintable(tr("\nVersion %1.\n\nPress any key.").arg(VER)));
     qsrand(getch());
-    erase();
-    refresh();
     CleanFileToShow();
+    RePrint();
+    SetActionMode(static_cast<actions>
+        (sett.value("action_mode", ACTION_USE).toInt()));
+    Print();
     Notify(tr("*--- Game started. Press 'H' for help. ---*"));
     if ( COLS < preferred_width ) {
         Notify("For better gameplay ");
@@ -929,11 +910,9 @@ Screen::~Screen() {
     input->wait();
     delete input;
 
-    if ( leftWin   ) delwin(leftWin);
-    if ( rightWin  ) delwin(rightWin);
-    if ( notifyWin ) delwin(notifyWin);
-    if ( hudWin    ) delwin(hudWin);
-    if ( miniMapWin ) delwin(miniMapWin);
+    for (ulong i=0; i<sizeof(windows)/sizeof(windows[0]); ++i) {
+        delwin(windows[i]);
+    }
     endwin();
     delscreen(screen);
     if ( notifyLog ) {

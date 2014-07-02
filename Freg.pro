@@ -15,7 +15,7 @@ CONFIG += thread warn_on console
 CONFIG += debug
 
 # compile with clang:
-CONFIG += clang
+#CONFIG += clang
 
 VERSION = 0.2
 VERSTR = '\\"$${VERSION}\\"'

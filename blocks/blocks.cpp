@@ -287,7 +287,7 @@
 
     int  Grass::ShouldAct() const  { return FREQUENT_RARE; }
     int  Grass::Kind() const { return GRASS; }
-    push_reaction Grass::PushResult(dirs) const { return MOVABLE; }
+    push_reaction Grass::PushResult(dirs) const { return ENVIRONMENT; }
 
     Block * Grass::DropAfterDamage(bool *) {
         return block_manager.NormalBlock(AIR);
