@@ -116,9 +116,14 @@ void World::Get(Block * const block_to,
     Inventory * const inv = block_from->HasInventory();
     if ( inv == nullptr ) { // for vessel
         if ( block_from->Kind() == LIQUID ) {
-            Block * const tried = NewBlock(LIQUID, block_from->Sub());
             Inventory * const inv_to = block_to->HasInventory();
-            if ( inv_to && inv_to->Get(tried, src) ) {
+            if ( inv_to == nullptr ) return;
+            Block * const vessel = inv_to->ShowBlock(src);
+            if ( vessel == nullptr ) return;
+            Inventory * const vessel_inv = vessel->HasInventory();
+            if ( vessel_inv == nullptr ) return;
+            Block * const tried = NewBlock(LIQUID, block_from->Sub());
+            if ( vessel_inv->Get(tried, 0) ) {
                 SetBlock(Normal(AIR), x_from, y_from, z_from);
                 Shred * const shred = GetShred(x_from, y_from);
                 shred->AddFalling(shred->GetBlock(

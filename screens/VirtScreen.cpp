@@ -114,8 +114,7 @@ char VirtScreen::CharName(const int kind, const int sub) const {
         default: fprintf(stderr, "Screen::CharName: active sub ?: %d\n", sub);
     } // no break;
     default: switch ( sub ) {
-        default: fprintf(stderr, "Screen::CharName: sub (?): %d\n", sub);
-        case GREENERY: return '%';
+        default: fprintf(stderr, "%s: sub (?): %d.\n", Q_FUNC_INFO,sub);
         case NULLSTONE:
         case IRON:
         case CLAY:
@@ -126,6 +125,7 @@ char VirtScreen::CharName(const int kind, const int sub) const {
         case STONE: return '#';
         case SOIL:  return '.';
         case WATER: return '~';
+        case GREENERY: return '%';
         case A_MEAT:
         case H_MEAT:
         case HAZELNUT: return ',';

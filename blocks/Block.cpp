@@ -44,7 +44,8 @@ QString Block::FullName() const {
     case CLAY:       return QObject::tr("Clay brick");
     case GOLD:       return QObject::tr("Block of gold");
     case COAL:       return QObject::tr("Block of coal");
-    default: fprintf(stderr, "Block::FullName: sub ?: %d.\n", Sub());
+    case ACID:       return QObject::tr("Acid concentrate");
+    default: fprintf(stderr, "%s: sub ?: %d.\n", Q_FUNC_INFO, Sub());
         return "Unknown block";
     }
 }

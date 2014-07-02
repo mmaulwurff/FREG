@@ -203,7 +203,7 @@
 
     QString Liquid::FullName() const {
         switch ( Sub() ) {
-        case WATER: return tr("Liquid");
+        case WATER: return tr("Water");
         case STONE: return tr("Lava");
         case ACID:  return tr("Acid");
         case SUB_CLOUD: return tr("Cloud");

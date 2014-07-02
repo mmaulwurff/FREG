@@ -126,10 +126,12 @@ char Screen::CharNumberFront(const int i, const int j) const {
 }
 
 int Screen::Color(const int kind, const int sub) const {
+    switch ( sub ) {
+    case ACID: return COLOR_PAIR(GREEN_GREEN) | A_BOLD | A_REVERSE;
+    }
     switch ( kind ) { // foreground_background
     case LIQUID: switch ( sub ) {
         case WATER:     return COLOR_PAIR(CYAN_BLUE);
-        case ACID:      return COLOR_PAIR(GREEN_GREEN) | A_BOLD | A_REVERSE;
         case SUB_CLOUD: return COLOR_PAIR(WHITE_WHITE);
         default:        return COLOR_PAIR(RED_YELLOW);
     } // no break);
@@ -817,6 +819,7 @@ Screen::Screen(
         lastNotification(),
         input(new IThread(this)),
         notifyLog(fopen("texts/messages.txt", "at")),
+        actionMode(ACTION_USE),
         fileToShow(nullptr),
         beepOn(false),
         ascii(_ascii),
@@ -937,5 +940,5 @@ void Screen::PrintBar(const int x, const int attr, const int ch,
     wattrset(hudWin, attr);
     const QString str(10, QChar(ch));
     mvwaddstr(hudWin, 0, x + (not value_position_right ? 4 : 1),
-        qPrintable(str.left(percent/10 + 1)));
+        qPrintable(str.left(percent/10)));
 }

@@ -38,19 +38,12 @@ Inventory * Bucket::HasInventory() { return this; }
 usage_types Bucket::Use(Block *) { return USAGE_TYPE_POUR; }
 
 QString Bucket::FullName() const {
-    QString name;
-    switch (GetInvSub(0)) {
-        case AIR:   return QObject::tr("Empty bucket"); break;
-        case WATER: name = QObject::tr("Bucket with water"); break;
-        case STONE: name = QObject::tr("Bucket with lava"); break;
-        default:
-            fprintf(stderr, "%s: unlisted sub: %d\n.",
-                Q_FUNC_INFO, GetInvSub(0));
-            name = QObject::tr("Bucket with something");
-    }
-    name.append(QObject::tr(" (%1/%2 full)").
-        arg(Number(0)).arg(MAX_STACK_SIZE));
-    return name;
+    return ( GetInvSub(0) == AIR ) ?
+        QObject::tr("Empty bucket") :
+        QObject::tr("Bucket with %1 (%2/%3 full)")
+            .arg(ShowBlock(0)->FullName())
+            .arg(Number(0))
+            .arg(MAX_STACK_SIZE);
 }
 
 bool Bucket::Get(Block * const block, const int start = 0) {

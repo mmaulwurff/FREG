@@ -203,7 +203,7 @@ void World::ReEnlightenMove(const int dir) {
             shreds[NumShreds()*i+1]->ShineAll();
         }
     break;
-    default: fprintf(stderr, "World::ReEnlightenMove: dir (?): %d\n", dir);
+    default: fprintf(stderr, "%s: dir (?): %d\n", Q_FUNC_INFO, dir);
     }
     initial_lighting = false;
 }
