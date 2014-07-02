@@ -50,16 +50,18 @@ public:
     int  NutritionalValue(int sub) const override;
     Inventory * HasInventory() override;
 
-    static const int ON_HEAD  = 0;
-    static const int IN_RIGHT = 1;
-    static const int IN_LEFT  = 2;
-    static const int ON_BODY  = 3;
-    static const int ON_LEGS  = 4;
-
 protected:
     void SaveAttributes(QDataStream & out) const override;
 
 private:
+    enum {
+        ON_HEAD,
+        IN_RIGHT,
+        IN_LEFT,
+        ON_BODY,
+        ON_LEGS
+    };
+
     void UpdateLightRadius();
 
     int lightRadius;

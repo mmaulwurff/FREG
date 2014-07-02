@@ -245,12 +245,12 @@ void Screen::ControlPlayer(const int ch) {
     case 'C': SetActionMode(ACTION_CRAFT);    break;
     case 'D':
     case 'T': SetActionMode(ACTION_THROW);    break;
-    case 'E': SetActionMode(ACTION_EAT);      break;
-    case 'F': SetActionMode(ACTION_TAKEOFF);  break;
     case 'N': SetActionMode(ACTION_INSCRIBE); break;
     case 'G':
     case 'O': SetActionMode(ACTION_OBTAIN);   break;
+    case 'E':
     case 'U': SetActionMode(ACTION_USE);      break;
+    case 'F':
     case 'W': SetActionMode(ACTION_WIELD);    break;
     case 'S':
         if ( player->PlayerInventory() ) {
@@ -303,16 +303,12 @@ void Screen::SetActionMode(const actions mode) {
 void Screen::InventoryAction(const int num) const {
     switch ( actionMode ) {
     case ACTION_USE:      player->Use     (num); break;
+    case ACTION_THROW:    player->Throw   (num); break;
+    case ACTION_OBTAIN:   player->Obtain  (num); break;
     case ACTION_WIELD:    player->Wield   (num); break;
     case ACTION_INSCRIBE: player->Inscribe(num); break;
-    case ACTION_EAT:      player->Eat     (num); break;
-    case ACTION_CRAFT:    player->Craft   (num); break;
-    case ACTION_TAKEOFF:  player->TakeOff (num); break;
-    case ACTION_OBTAIN:   player->Obtain  (num); break;
-    case ACTION_THROW:    player->Throw   (num); break;
     case ACTION_BUILD:    player->Build   (num); break;
-    default: fprintf(stderr,
-        "Screen::InventoryAction: action mode ?: %d\n", actionMode);
+    case ACTION_CRAFT:    player->Craft   (num); break;
     }
 }
 
@@ -429,25 +425,30 @@ void Screen::PrintHUD() {
     }
     // action mode
     wstandend(hudWin);
-    QString actionString(tr("Action: "));
+    mvwaddstr(hudWin, 1, 0, qPrintable(tr("Action: ")));
     switch ( actionMode ) {
-    case ACTION_THROW:    actionString.append(tr("Throw"));  break;
-    case ACTION_OBTAIN:   actionString.append(tr("Obtain")); break;
-    case ACTION_WIELD:    actionString.append(tr("Wield"));  break;
-    case ACTION_EAT:      actionString.append(tr("Eat"));    break;
-    case ACTION_BUILD:    actionString.append(tr("Build"));  break;
-    case ACTION_CRAFT:    actionString.append(tr("Craft"));  break;
-    case ACTION_TAKEOFF:  actionString.append(tr("Take off")); break;
-    case ACTION_USE:      actionString.append(tr("Use in inventory")); break;
+    case ACTION_USE:
+        waddstr(hudWin, qPrintable(tr("Use/Eat")));
+        break;
+    case ACTION_THROW:
+        waddstr(hudWin, qPrintable(tr("Throw")));
+        break;
+    case ACTION_OBTAIN:
+        waddstr(hudWin, qPrintable(tr("Obtain")));
+        break;
+    case ACTION_WIELD:
+        waddstr(hudWin, qPrintable(tr("Wield/Take off")));
+        break;
     case ACTION_INSCRIBE:
-        actionString.append(tr("Inscribe in inventory"));
-    break;
-    default:
-        actionString.append(tr("Unknown"));
-        fprintf(stderr, "Screen::Print: Unlisted actionMode: %d\n",
-            actionMode);
+        waddstr(hudWin, qPrintable(tr("Inscribe in inventory")));
+        break;
+    case ACTION_BUILD:
+        waddstr(hudWin, qPrintable(tr("Build")));
+        break;
+    case ACTION_CRAFT:
+        waddstr(hudWin, qPrintable(tr("Craft")));
+        break;
     }
-    mvwaddstr(hudWin, 1, 0, qPrintable(actionString));
     if ( player->GetCreativeMode() ) {
         mvwaddstr(hudWin, 0, 0, qPrintable(tr("Creative Mode")));
         // coordinates

@@ -21,7 +21,8 @@
 #include <QSettings>
 #include <QDir>
 #include <QMutexLocker>
-#include "blocks/Dwarf.h"
+#include "blocks/Animal.h"
+#include "blocks/Inventory.h"
 #include "Player.h"
 #include "world.h"
 #include "Shred.h"
@@ -221,11 +222,11 @@ usage_types Player::UseNoLock(const int num) {
     if ( block == nullptr ) return USAGE_TYPE_NO;
     Animal * const animal = player->IsAnimal();
     if ( animal && animal->NutritionalValue(block->Sub()) ) {
-        animal->Eat(block->Sub());
-        Inventory * const inv = PlayerInventory();
-        Block * const eaten = inv->ShowBlock(num);
-        inv->Pull(num);
-        block_manager.DeleteBlock(eaten);
+        if ( animal->Eat(block->Sub()) ) {
+            PlayerInventory()->Pull(num);
+            block_manager.DeleteBlock(block);
+            emit Updated();
+        }
         return USAGE_TYPE_NO;
     } // else:
     const usage_types result = block->Use(player);
@@ -269,8 +270,15 @@ void Player::Obtain(const int src, const int dest, const int num) {
 void Player::Wield(const int num) {
     const QMutexLocker locker(world->GetLock());
     if ( ValidBlock(num) ) {
-        for (int i=0; i<=Dwarf::ON_LEGS; ++i) {
-            InnerMove(num, i);
+        Inventory * const inv = PlayerInventory();
+        if ( num >= inv->Start() ) { // wield
+            for (int i=0; i<inv->Start(); ++i) {
+                PlayerInventory()->MoveInside(num, i, 1);
+            }
+        } else { // take off
+            for (int i=inv->Start(); i<inv->Size(); ++i) {
+                PlayerInventory()->MoveInside(num, i, inv->Number(num));
+            }
         }
         emit Updated();
     }
@@ -281,13 +289,9 @@ void Player::MoveInsideInventory(const int num_from, const int num_to,
 {
     const QMutexLocker locker(world->GetLock());
     if ( ValidBlock(num_from) ) {
-        InnerMove(num_from, num_to, num);
+        PlayerInventory()->MoveInside(num_from, num_to, num);
+        emit Updated();
     }
-}
-
-void Player::InnerMove(const int num_from, const int num_to, const int num) {
-    PlayerInventory()->MoveInside(num_from, num_to, num);
-    emit Updated();
 }
 
 void Player::Inscribe(const int num) {
@@ -296,23 +300,6 @@ void Player::Inscribe(const int num) {
         QString str;
         emit GetString(str);
         PlayerInventory()->InscribeInv(num, str);
-    }
-}
-
-void Player::Eat(const int num) {
-    const QMutexLocker locker(world->GetLock());
-    Block * const food = ValidBlock(num);
-    if ( food ) {
-        Animal * const animal = player->IsAnimal();
-        if ( animal ) {
-            if ( animal->Eat(food->Sub()) ) {
-                PlayerInventory()->Pull(num);
-                block_manager.DeleteBlock(food);
-                emit Updated();
-            }
-        } else {
-            emit Notify(tr("You cannot eat."));
-        }
     }
 }
 
@@ -334,17 +321,6 @@ void Player::Craft(const int num) {
     Inventory * const inv = PlayerInventory();
     if ( inv && inv->MiniCraft(num) ) {
         emit Updated();
-    }
-}
-
-void Player::TakeOff(const int num) {
-    const QMutexLocker locker(world->GetLock());
-    if ( ValidBlock(num) ) {
-        for (int i=PlayerInventory()->Start();
-                i<PlayerInventory()->Size(); ++i)
-        {
-            InnerMove(num, i, PlayerInventory()->Number(num));
-        }
     }
 }
 
@@ -522,12 +498,9 @@ Player::Player() {
         Qt::DirectConnection);
     connect(world, SIGNAL(Moved(int)), SLOT(UpdateXYZ(int)),
         Qt::DirectConnection);
-} // Player::Player()
+}
 
-void Player::CleanAll() {
-    if ( cleaned ) return;
-    cleaned = true;
-
+Player::~Player() {
     if ( GetCreativeMode() ) {
         block_manager.DeleteBlock(player);
     }
@@ -546,5 +519,3 @@ void Player::CleanAll() {
     sett.setValue("current_z", Z());
     sett.setValue("creative_mode", GetCreativeMode());
 }
-
-Player::~Player() { CleanAll(); }

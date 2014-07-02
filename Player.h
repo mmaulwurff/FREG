@@ -52,8 +52,7 @@ public:
     /// Constructor creates or loads player.
     /** It puts player block to the world if there is no player block,
      *  and makes necessary connections. */
-    Player();
-    /// Destructor calls Player::CleanAll().
+     Player();
     ~Player();
 
     long GlobalX() const;
@@ -117,12 +116,10 @@ public:
     void Obtain(int src, int dest = 0, int num = 1);
     void Wield   (int num);
     void Inscribe(int num);
-    void Eat     (int num);
     void Craft   (int num);
-    void TakeOff (int num);
-    void Build(int num);
+    void Build   (int num);
     /// Can also wield appropriate things.
-    void MoveInsideInventory(int num_from, int num_to, int num=1);
+    void MoveInsideInventory(int num_from, int num_to, int num = 1);
     void ProcessCommand(QString command);
 
 signals:
@@ -144,13 +141,6 @@ signals:
     void GetFocus(int * x, int * y, int * z) const;
 
 private slots:
-    /// For cleaning player-related data before exiting program.
-    /** This is connected to app's aboutToQuit() signal, also it
-     *  is called from destructor. There is a check for data deleting
-     *  not to be called twice.
-     *  Also this saves player to file player_save. */
-    void CleanAll();
-
     /// Checks if player walked over the shred border.
     /** This is connected to player's block signal Moved(int).
      *  It emits OverstepBorder(int) signal when player walks
@@ -166,9 +156,7 @@ private slots:
 
 private:
     usage_types UseNoLock(int num);
-    void InnerMove(int num_from, int num_to, int num = 1);
-    /// Checks player existence, inventory existence, size limits,
-    /// block existence.
+    /// Checks player/inventory/block existence, size limits.
     Block * ValidBlock(int num) const;
     Shred * GetShred() const;
     World * GetWorld() const;
