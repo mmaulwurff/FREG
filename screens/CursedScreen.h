@@ -205,6 +205,7 @@ private:
     bool beepOn;
     const bool ascii;
     SCREEN * const screen;
+    mutable bool inputActive = false;
 };
 
 #endif // CURSEDSCREEN_H

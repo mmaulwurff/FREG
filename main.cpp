@@ -22,6 +22,7 @@
 #include <QDir>
 #include <QTime>
 #include <QCommandLineParser>
+#include <QLockFile>
 #include "world.h"
 #include "Player.h"
 #include "worldmap.h"
@@ -130,6 +131,13 @@ int main(int argc, char ** argv) {
 
     qsrand(QTime::currentTime().msec());
     World world(worldName);
+    QLockFile lock_file(worldName + "/lock");
+    if ( not lock_file.tryLock() ) {
+        puts(qPrintable(
+            QObject::tr("World \"%1\" is used by another instance of freg.")
+                .arg(worldName)));
+        return EXIT_FAILURE;
+    }
     Player player;
     int error = SCREEN_NO_ERROR;
     const Screen screen(&world, &player, error, parser.isSet(ascii));

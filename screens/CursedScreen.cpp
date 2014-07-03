@@ -94,10 +94,13 @@ void Screen::UpdateAll() {
 }
 
 void Screen::PassString(QString & str) const {
+    inputActive = true;
+    wstandend(notifyWin);
     waddstr(notifyWin, "\n:");
-    char temp_str[MAX_NOTE_LENGTH+1];
+    char temp_str[MAX_NOTE_LENGTH + 1];
     echo();
     wgetnstr(notifyWin, temp_str, MAX_NOTE_LENGTH);
+    inputActive = false;
     noecho();
     lastNotification = str;
     fprintf(notifyLog, "%lu: Command: %s\n", w->Time(), temp_str);
@@ -765,6 +768,7 @@ void Screen::DisplayFile(QString path) {
 void Screen::Notify(const QString str) const {
     fprintf(notifyLog, "%s %s\n",
         qPrintable(w->TimeOfDayStr()), qPrintable(str));
+    if ( inputActive ) return;
     if ( beepOn ) {
         if ( str == DING ) {
             beep();
