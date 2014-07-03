@@ -63,11 +63,9 @@ public:
 
     /// This returns player hitpoints, also known as durability.
     int HP() const;
-    /// This returns player breath reserve.
-    int Breath() const;
+    /// This returns player breath reserve. On error returns -100.
     int BreathPercent() const;
-    int Satiation() const;
-    /// Can be > 100 if player is gorged. When player is not animal, 50.
+    /// Can be > 100 if player is gorged. On error returns -100.
     int SatiationPercent() const;
 
     bool IfPlayerExists() const;

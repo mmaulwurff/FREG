@@ -607,11 +607,8 @@ bool Shred::Tree(const int x, const int y, const int z, const int height) {
             PutBlock(leaves, i, j, k);
         }
     }
-    if ( z > 1 ) { // root, do not plant trees in nullstone
-        SetBlock(Normal(WOOD), x+1, y+1, z-1);
-    }
-    for (int k=z; k < z+height-1; ++k) { // trunk
-        PutBlock(Normal(WOOD), x+1, y+1, k);
+    for (int k=qMax(z-1, 1); k < z+height-1; ++k) { // trunk
+        SetBlock(Normal(WOOD), x+1, y+1, k);
     }
     // branches
     const int r = qrand();
@@ -626,9 +623,7 @@ int Shred::CountShredTypeAround(const int type) const {
     int result = 0;
     for (long i=longitude-1; i<=longitude+1; ++i)
     for (long j=latitude -1; j<=latitude +1; ++j) {
-        if ( type == TypeOfShred(i, j) ) {
-            ++result;
-        }
+        result += ( type == TypeOfShred(i, j) );
     }
     return result;
 }

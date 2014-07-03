@@ -355,18 +355,12 @@ void Screen::Print() {
     w->Lock();
     PrintHUD();
     const int dir = player->GetDir();
-    switch ( player->UsingSelfType() ) { // left window
-    default:
-        PrintNormal(leftWin, (UP==dir || DOWN==dir) ?
-            NORTH : dir);
-        break;
-    case USAGE_TYPE_OPEN:
-        if ( player->PlayerInventory() ) {
-            PrintInv(leftWin, *player->PlayerInventory());
-            break;
-        } // no break;
+    if ( player->UsingSelfType() != USAGE_TYPE_OPEN ) { // left window
+        PrintNormal(leftWin, (UP==dir || DOWN==dir) ? NORTH : dir);
+    } else if ( player->PlayerInventory() != nullptr ) {
+        PrintInv(leftWin, *player->PlayerInventory());
     }
-    if ( not fileToShow ) { // right window
+    if ( fileToShow == nullptr ) { // right window
         switch ( player->UsingType() ) {
         default:
             if ( UP==dir || DOWN==dir ) {
@@ -374,78 +368,49 @@ void Screen::Print() {
             } else {
                 PrintFront(rightWin);
             }
-        break;
+            break;
         case USAGE_TYPE_READ_IN_INVENTORY:
             wstandend(rightWin);
             PrintFile(rightWin, QString(w->WorldName() + "/texts/"
                 + player->PlayerInventory()->ShowBlock(
                     player->GetUsingInInventory())->GetNote()));
             player->SetUsingTypeNo();
-        break;
-        case USAGE_TYPE_READ: {
-            int x, y, z;
-            ActionXyz(&x, &y, &z);
-            wstandend(rightWin);
-            PrintFile(rightWin, QString(w->WorldName() + "/texts/"
-                + w->GetBlock(x, y, z)->GetNote()));
-            player->SetUsingTypeNo();
-        } break;
-        case USAGE_TYPE_OPEN: {
-            int x, y, z;
-            ActionXyz(&x, &y, &z);
-            const Inventory * const inv = w->GetBlock(x, y, z)->HasInventory();
-            if ( inv ) {
-                PrintInv(rightWin, *inv);
-                break;
-            } else {
+            break;
+        case USAGE_TYPE_READ:
+            {
+                int x, y, z;
+                ActionXyz(&x, &y, &z);
+                wstandend(rightWin);
+                PrintFile(rightWin, QString(w->WorldName() + "/texts/"
+                    + w->GetBlock(x, y, z)->GetNote()));
                 player->SetUsingTypeNo();
             }
-        } break;
+            break;
+        case USAGE_TYPE_OPEN:
+            {
+                int x, y, z;
+                ActionXyz(&x, &y, &z);
+                const Inventory * const inv = w->GetBlock(x, y, z)->HasInventory();
+                if ( inv ) {
+                    PrintInv(rightWin, *inv);
+                    break;
+                } else {
+                    player->SetUsingTypeNo();
+                }
+            }
+            break;
         }
     }
     w->Unlock();
 } // void Screen::Print()
 
 void Screen::PrintHUD() {
-    int y_save, x_save;
-    getyx(rightWin, y_save, x_save);
-
     werase(hudWin);
-    // quick inventory
-    Inventory * const inv = player->PlayerInventory();
-    if ( inv && IsScreenWide() ) {
-        for (int i=inv->Size()-1; i>=0; --i) {
-            wstandend(hudWin);
-            const int x = QUICK_INVENTORY_X_SHIFT+i*2;
-            mvwaddch(hudWin, 0, x, 'a'+i);
-            const int number = inv->Number(i);
-            if ( number ) {
-                mvwaddch(hudWin, 1, x, PrintBlock(*inv->ShowBlock(i), hudWin));
-                if ( number > 1 ) {
-                    mvwaddch(hudWin, 2, x, number+'0');
-                }
-            }
-        }
-    }
-    // focused block
-    wstandend(hudWin);
-    int x, y, z;
-    ActionXyz(&x, &y, &z);
-    Block * const focused = GetWorld()->GetBlock(x, y, z);
-    if ( not IsLikeAir(focused->Sub()) && z < HEIGHT-1 ) {
-        PrintBar(((SCREEN_SIZE*2+2) * (IsScreenWide() ? 2 : 1)) - 15,
-            Color(focused->Kind(), focused->Sub()),
-            (focused->IsAnimal() == nullptr) ? '+' : '*',
-            focused->GetDurability()*100/MAX_DURABILITY,
-            false);
-    }
-    wstandend(hudWin);
     if ( player->GetCreativeMode() ) {
-        mvwaddstr(hudWin, 0, 0, qPrintable(tr("Creative Mode")));
-        // coordinates
-        mvwprintw(hudWin, 2, 0, "xyz: %ld, %ld, %hu. XY: %ld, %ld",
-            player->GlobalX(), player->GlobalY(), player->Z(),
-            player->GetLatitude(), player->GetLongitude());
+        mvwaddstr (hudWin, 0, 0,
+            qPrintable(tr("Creative Mode\nxyz: %1, %2, %3. XY: %4, %5.")
+            .arg(player->GlobalX()).arg(player->GlobalY()).arg(player->Z())
+            .arg(player->GetLatitude()).arg(player->GetLongitude())) );
     } else {
         const int dur = player->HP();
         if ( dur > 0 ) { // HitPoints line
@@ -455,20 +420,52 @@ void Screen::PrintHUD() {
                 ascii ? '@' : 0x2665, dur*100/MAX_DURABILITY);
         }
         const int breath = player->BreathPercent();
-        if ( -1!=breath && breath!=100 ) { // breath line
+        if ( -100!=breath && breath!=100 ) { // breath line
             PrintBar(16, COLOR_PAIR(BLUE_BLACK), ascii ? 'o' : 0x00b0, breath);
         }
-        const int satiation = player->SatiationPercent();
-        if ( -1 != satiation ) { // satiation line
-            if ( 100 < satiation ) {
-                wcolor_set(hudWin, BLUE_BLACK, nullptr);
-                mvwaddstr(hudWin, 1, 1, qPrintable(tr("Gorged")));
-            } else if ( 75 < satiation ) {
-                wcolor_set(hudWin, GREEN_BLACK, nullptr);
-                mvwaddstr(hudWin, 1, 1, qPrintable(tr("Full")));
-            } else if ( 25 > satiation ) {
-                wcolor_set(hudWin, RED_BLACK, nullptr);
-                mvwaddstr(hudWin, 1, 1, qPrintable(tr("Hungry")));
+        switch ( player->SatiationPercent()/25 ) { // satiation status
+        case  1:
+        case  2:
+        default: break;
+        case  0:
+            wcolor_set(hudWin, RED_BLACK, nullptr);
+            mvwaddstr(hudWin, 1, 1, qPrintable(tr("Hungry")));
+            break;
+        case  3:
+            wcolor_set(hudWin, GREEN_BLACK, nullptr);
+            mvwaddstr(hudWin, 1, 1, qPrintable(tr("Full")));
+            break;
+        case  4:
+            wcolor_set(hudWin, BLUE_BLACK, nullptr);
+            mvwaddstr(hudWin, 1, 1, qPrintable(tr("Gorged")));
+            break;
+        }
+    }
+    // focused block
+    int x, y, z;
+    ActionXyz(&x, &y, &z);
+    Block * const focused = GetWorld()->GetBlock(x, y, z);
+    if ( not IsLikeAir(focused->Sub()) ) {
+        PrintBar(((SCREEN_SIZE*2+2) * (IsScreenWide() ? 2 : 1)) - 15,
+            Color(focused->Kind(), focused->Sub()),
+            (focused->IsAnimal() == nullptr) ? '+' : '*',
+            focused->GetDurability()*100/MAX_DURABILITY,
+            false);
+    }
+    wstandend(hudWin);
+    // quick inventory
+    Inventory * const inv = player->PlayerInventory();
+    if ( inv!=nullptr && IsScreenWide() ) {
+        for (int i=inv->Size()-1; i>=0; --i) {
+            wstandend(hudWin);
+            const int x = QUICK_INVENTORY_X_SHIFT+i*2;
+            mvwaddch(hudWin, 0, x, 'a'+i);
+            switch ( inv->Number(i) ) {
+            case  0: break;
+            default: mvwaddch(hudWin, 2, x, inv->Number(i)+'0'); // no break;
+            case  1: mvwaddch(hudWin, 1, x,
+                    PrintBlock(*inv->ShowBlock(i), hudWin));
+                break;
             }
         }
     }
@@ -493,7 +490,6 @@ void Screen::PrintHUD() {
     wstandend(miniMapWin);
     box(miniMapWin, 0, 0);
     wrefresh(miniMapWin);
-    (void)wmove(rightWin, y_save, x_save);
 } // void Screen::PrintHUD()
 
 void Screen::PrintNormal(WINDOW * const window, const int dir) const {

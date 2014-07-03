@@ -65,28 +65,18 @@ int Player::HP() const {
         -1 : player ? player->GetDurability() : 0;
 }
 
-int Player::Breath() const {
-    if ( not IfPlayerExists() || GetCreativeMode() ) return -1;
-    Animal const * const animal = player->IsAnimal();
-    return ( animal ? animal->Breath() : -1 );
-}
-
 int Player::BreathPercent() const {
-    const int breath = Breath();
-    return ( -1==breath ) ?
-        100 : breath*100/MAX_BREATH;
-}
-
-int Player::Satiation() const {
-    if ( not IfPlayerExists() || GetCreativeMode() ) return -1;
+    if ( not IfPlayerExists() || GetCreativeMode() ) return -100;
     Animal const * const animal = player->IsAnimal();
-    return ( animal ? animal->Satiation() : -1 );
+    if ( animal == nullptr ) return -100;
+    return animal->Breath()*100/MAX_BREATH;
 }
 
 int Player::SatiationPercent() const {
-    const int satiation = Satiation();
-    return ( -1==satiation ) ?
-        50 : satiation*100/SECONDS_IN_DAY;
+    if ( not IfPlayerExists() || GetCreativeMode() ) return -100;
+    Animal const * const animal = player->IsAnimal();
+    if ( animal == nullptr ) return -100;
+    return animal->Satiation()*100/SECONDS_IN_DAY;
 }
 
 Inventory * Player::PlayerInventory() const {
