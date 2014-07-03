@@ -310,8 +310,8 @@ void Screen::ProcessCommand(QString command) {
 }
 
 void Screen::SetActionMode(const actions mode) {
-    mvwchgat(actionWin, actionMode,      0, 20, A_NORMAL, WHITE_BLACK, nullptr);
-    mvwchgat(actionWin, actionMode=mode, 0, 20, A_NORMAL, BLACK_WHITE, nullptr);
+    mvwchgat(actionWin, actionMode,      0,20, A_NORMAL, WHITE_BLACK, nullptr);
+    mvwchgat(actionWin, actionMode=mode, 0,20, A_NORMAL, BLACK_WHITE, nullptr);
     wrefresh(actionWin);
     updated = false;
 }
@@ -390,8 +390,9 @@ void Screen::Print() {
             {
                 int x, y, z;
                 ActionXyz(&x, &y, &z);
-                const Inventory * const inv = w->GetBlock(x, y, z)->HasInventory();
-                if ( inv ) {
+                const Inventory * const inv =
+                    w->GetBlock(x, y, z)->HasInventory();
+                if ( inv != nullptr ) {
                     PrintInv(rightWin, *inv);
                     break;
                 } else {
@@ -512,9 +513,7 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
         int k = k_start;
         for ( ; INVISIBLE == shred->GetBlock(i_in, j_in, k)->Transparent();
             k += k_step);
-        if ( (w->Enlightened(i, j, k) && player->Visible(i, j, k)) ||
-                player->GetCreativeMode() )
-        {
+        if ( (w->Enlightened(i, j, k) && player->Visible(i, j, k)) ) {
             waddch(window, PrintBlock(*shred->GetBlock(i_in,j_in,k), window));
             waddch(window, CharNumber(k));
         } else {
@@ -632,24 +631,19 @@ void Screen::PrintFront(WINDOW * const window) const {
             for (*z=z_start; *z!=z_end && w->GetBlock(i, j, k)->
                         Transparent()==INVISIBLE;
                     *z += z_step);
-            const Block * const block = w->GetBlock(i, j, k);
-            if ( (*z==z_end || (w->Enlightened(i, j, k)
-                    && player->Visible(i, j, k)))
-                        || player->GetCreativeMode() )
-            {
-                if ( *z != z_end ) {
-                    waddch(window, PrintBlock(*block, window));
-                    waddch(window, CharNumberFront(i, j));
-                    continue;
-                } else {
-                    wattrset(window, sky_colour);
-                    waddch(window, sky_char);
-                }
+            if ( *z == z_end ) {
+                wattrset(window, sky_colour);
+                waddch(window, sky_char);
+                waddch(window, ' ');
+            } else if ( w->Enlightened(i, j, k) && player->Visible(i, j, k) ) {
+                const Block * const block = w->GetBlock(i, j, k);
+                waddch(window, PrintBlock(*block, window));
+                waddch(window, CharNumberFront(i, j));
             } else {
                 wstandend(window);
                 waddch(window, OBSCURE_BLOCK);
+                waddch(window, ' ');
             }
-            waddch(window, ' ');
         }
     }
     PrintTitle(window, dir);

@@ -16,6 +16,7 @@ CONFIG += debug
 
 # compile with clang:
 #CONFIG += clang
+#CONFIG += g++-old
 
 VERSION = 0.2
 VERSTR = '\\"$${VERSION}\\"'
@@ -36,6 +37,10 @@ clang {
 } else {
     QMAKE_CXXFLAGS_RELEASE += -s
     QMAKE_CXXFLAGS += -Wdouble-promotion
+    g++-old {
+        QMAKE_CXX  = g++-4.8
+        QMAKE_LINK = g++-4.8
+    }
 }
 DEFINES += COMPILER=\"\\\"$${QMAKE_CXX}\"\\\"
 
@@ -118,7 +123,13 @@ SOURCES += \
 TRANSLATIONS = \
     freg_ru.ts
 
-DISTFILES += texts/*.txt
+DISTFILES += \
+    texts/*.txt \
+    recipes/* \
+    help_*/* \
+    fregMap.vim \
+    COPYING \
+    README
 
 MOC_DIR = moc
 OBJECTS_DIR = obj

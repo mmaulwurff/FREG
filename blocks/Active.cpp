@@ -103,14 +103,13 @@ void Active::SendSignalAround(const QString signal) const {
 }
 
 void Active::DamageAround() const {
-    World * const world = GetWorld();
-    static const int bound = world->GetBound();
+    static const int bound = GetWorld()->GetBound();
     int x_temp = X()-1;
     int y_temp = Y();
     int z_temp = Z();
-    if (   x_temp     >= 0 )     TryDestroy(  x_temp, y_temp, z_temp);
+    if (   x_temp     >= 0     ) TryDestroy(  x_temp, y_temp, z_temp);
     if (  (x_temp+=2) <= bound ) TryDestroy(  x_temp, y_temp, z_temp);
-    if ( --y_temp     >= 0 )     TryDestroy(--x_temp, y_temp, z_temp);
+    if ( --y_temp     >= 0     ) TryDestroy(--x_temp, y_temp, z_temp);
     if (  (y_temp+=2) <= bound ) TryDestroy(  x_temp, y_temp, z_temp);
     TryDestroy(x_temp, --y_temp, --z_temp);
     TryDestroy(x_temp,   y_temp,   z_temp+=2);
