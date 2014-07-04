@@ -375,7 +375,7 @@ void Player::ProcessCommand(QString command) {
             .arg(__DATE__)
             .arg(__TIME__)
             .arg(QT_VERSION_STR));
-        emit Notify(tr("Current Qt version: %5. Build type: %6. Compiler: %7.")
+        emit Notify(tr("Current Qt version: %1. Build type: %2. Compiler: %3.")
             .arg(qVersion())
             .arg(DEBUG ? tr("debug") : tr("release"))
             .arg(COMPILER));

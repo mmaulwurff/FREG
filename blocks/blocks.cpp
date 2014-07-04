@@ -110,7 +110,7 @@
         const int value = NutritionalValue(sub);
         if ( value ) {
             satiation += value;
-            ReceiveSignal(tr("Yum."));
+            ReceiveSignal(tr("Ate."));
             if ( SECONDS_IN_DAY < satiation ) {
                 satiation = 1.1 * SECONDS_IN_DAY;
                 ReceiveSignal(tr("You have gorged yourself!"));

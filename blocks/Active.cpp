@@ -45,9 +45,8 @@ void Active::ActRare() {
         for (int i=inv->Size()-1; i; --i)
         for (int j=0; j<inv->Number(i); ++j) {
             Active * const active = inv->ShowBlock(i, j)->ActiveBlock();
-            if ( active!=nullptr && active->ActInner()==INNER_ACTION_MESSAGE )
-            {
-                ReceiveSignal(tr("Item in slot '%1' changed status.").
+            if (active!=nullptr && active->ActInner()==INNER_ACTION_MESSAGE) {
+                ReceiveSignal(tr("Item in slot '%1' changed.").
                     arg(char('a'+i)));
                 ReceiveSignal(inv->ShowBlock(i, j)->GetNote());
             }

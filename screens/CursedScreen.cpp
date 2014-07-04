@@ -682,24 +682,13 @@ void Screen::PrintTitle(WINDOW * const window, const dirs dir) const {
 void Screen::PrintInv(WINDOW * const window, const Inventory & inv) const {
     werase(window);
     wstandend(window);
-    switch ( inv.Kind() ) {
-    case DWARF:
-        mvwaddstr(window, 2, 1, qPrintable(tr("      Head")));
-        mvwaddstr(window, 3, 1, qPrintable(tr("Right hand")));
-        mvwaddstr(window, 4, 1, qPrintable(tr(" Left hand")));
-        mvwaddstr(window, 5, 1, qPrintable(tr("      Body")));
-        mvwaddstr(window, 6, 1, qPrintable(tr("      Legs")));
-    break;
-    case WORKBENCH: mvwaddstr(window, 2, 4, qPrintable(tr("Product"))); break;
-    }
     const int start = inv.Start();
     int shift = 0; // to divide inventory sections
     for (int i=0; i<inv.Size(); ++i) {
-        if ( start == i && i != 0) {
+        if ( start == i && i != 0 ) {
             ++shift;
-            mvwhline(window, 2+i, 0, ACS_HLINE, SCREEN_SIZE*2+2);
         }
-        mvwprintw(window, 2+i+shift, 12, "%c)", 'a'+i);
+        mvwprintw(window, 2+i+shift, 2, "%c) ", 'a'+i);
         if ( not inv.Number(i) ) {
             continue;
         }
@@ -712,7 +701,7 @@ void Screen::PrintInv(WINDOW * const window, const Inventory & inv) const {
         }
         const QString str = inv.GetInvNote(i);
         if ( not str.isEmpty() ) {
-            if ( str.size() < 24 ) {
+            if ( str.size() < 33 ) {
                 wprintw(window, " ~:%s", qPrintable(str));
             } else {
                 wprintw(window, " ~:%s...", qPrintable(str.left(13)));
@@ -726,6 +715,9 @@ void Screen::PrintInv(WINDOW * const window, const Inventory & inv) const {
             arg(inv.Weight(), 6, 10, QChar(' '))));
     wattrset(window, Color(inv.Kind(), inv.Sub()));
     box(window, 0, 0);
+    if ( start != 0 ) {
+        mvwhline(window, 2+start, 1, ACS_HLINE, SCREEN_SIZE*2);
+    }
     mvwprintw(window, 0, 1, "[%c]%s", CharName( inv.Kind(), inv.Sub()),
         qPrintable((player->PlayerInventory()==&inv) ?
             tr("Your inventory") : inv.FullName()) );
