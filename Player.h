@@ -158,6 +158,7 @@ private:
     Block * ValidBlock(int num) const;
     Shred * GetShred() const;
     World * GetWorld() const;
+    bool ForbiddenAdminCommands() const;
 
     long homeLongi, homeLati;
     int homeX, homeY, homeZ;

@@ -22,7 +22,6 @@
 
 #include "blocks/Active.h"
 
-
 class Weapon : public Falling {
     /** \class Weapon Weapons.h
      *  \brief Weapon class represents simple weapons as sticks, pebbles and

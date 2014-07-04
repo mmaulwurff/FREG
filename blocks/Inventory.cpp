@@ -82,13 +82,14 @@ bool Inventory::Get(Block * const block, const int start) {
                 }
             }
         }
-        return false;
-    } // else:
-    for (int i=qMax(Start(), start); i<Size(); ++i) {
-        if ( GetExact(block, i) ) {
-            return true;
+    } else {
+        for (int i=qMax(Start(), start); i<Size(); ++i) {
+            if ( GetExact(block, i) ) {
+                return true;
+            }
         }
     }
+    ReceiveSignal(QObject::tr("No room."));
     return false;
 }
 

@@ -354,7 +354,7 @@ void Screen::Print() {
     updated = true;
     w->Lock();
     PrintHUD();
-    const int dir = player->GetDir();
+    const dirs dir = player->GetDir();
     if ( player->UsingSelfType() != USAGE_TYPE_OPEN ) { // left window
         PrintNormal(leftWin, (UP==dir || DOWN==dir) ? NORTH : dir);
     } else if ( player->PlayerInventory() != nullptr ) {
@@ -365,8 +365,8 @@ void Screen::Print() {
         default:
             if ( UP==dir || DOWN==dir ) {
                 PrintNormal(rightWin, dir);
-            } else {
-                PrintFront(rightWin);
+            } else if ( rightWin != nullptr ) {
+                PrintFront(rightWin, dir);
             }
             break;
         case USAGE_TYPE_READ_IN_INVENTORY:
@@ -453,8 +453,12 @@ void Screen::PrintHUD() {
             focused->GetDurability()*100/MAX_DURABILITY,
             false);
     }
-    wstandend(hudWin);
-    // quick inventory
+    PrintQuickInventory();
+    wrefresh(hudWin);
+    PrintMiniMap();
+} // void Screen::PrintHUD()
+
+void Screen::PrintQuickInventory() {
     Inventory * const inv = player->PlayerInventory();
     if ( inv!=nullptr && IsScreenWide() ) {
         for (int i=inv->Size()-1; i>=0; --i) {
@@ -470,7 +474,9 @@ void Screen::PrintHUD() {
             }
         }
     }
-    wrefresh(hudWin);
+}
+
+void Screen::PrintMiniMap() {
     wmove(miniMapWin, 1, 0);
     const int x_center = Shred::CoordOfShred(player->X());
     const int y_center = Shred::CoordOfShred(player->Y());
@@ -491,15 +497,17 @@ void Screen::PrintHUD() {
     wstandend(miniMapWin);
     box(miniMapWin, 0, 0);
     wrefresh(miniMapWin);
-} // void Screen::PrintHUD()
+}
 
-void Screen::PrintNormal(WINDOW * const window, const int dir) const {
-    const int k_start = ( UP!=dir ) ?
-        ( DOWN==dir ?
-            player->Z()-1 : player->Z() ) :
-        player->Z()+1;
-    const int k_step = ( UP!=dir ) ? (-1) : 1;
-
+void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
+    int k_start, k_step;
+    if ( UP == dir ) {
+        k_start = player->Z()+1;
+        k_step  = 1;
+    } else {
+        k_start = player->Z() - ( DOWN==dir );
+        k_step  = -1;
+    }
     (void)wmove(window, 1, 1);
     const int start_x = ( player->X()/SHRED_WIDTH )*SHRED_WIDTH +
         ( SHRED_WIDTH-SCREEN_SIZE )/2;
@@ -523,24 +531,22 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
         }
     }
     if ( player->IfPlayerExists() && dir > DOWN ) {
-        const Block * const block =
-            w->GetBlock(player->X(), player->Y(), player->Z());
         static const QString arrow_left (QChar(ascii ? '<' : 0x2190));
         static const QString arrow_up   (QChar(ascii ? '^' : 0x2191));
         static const QString arrow_right(QChar(ascii ? '>' : 0x2192));
         static const QString arrow_down (QChar(ascii ? 'v' : 0x2193));
+        const Block * const block =
+            w->GetBlock(player->X(), player->Y(), player->Z());
         wattrset(window, Color(block->Kind(), block->Sub()));
         (void)wmove(window, player->Y()-start_y+1, (player->X()-start_x)*2+2);
         switch ( player->GetDir() ) {
+        case UP:    waddch(window, '.'); break;
+        case DOWN:  waddch(window, 'x'); break;
         case NORTH: waddstr(window, qPrintable(arrow_up));    break;
         case SOUTH: waddstr(window, qPrintable(arrow_down));  break;
         case EAST:  waddstr(window, qPrintable(arrow_right)); break;
         case WEST:  waddstr(window, qPrintable(arrow_left));  break;
-        case UP:    waddch(window, '.'); break;
-        case DOWN:  waddch(window, 'x'); break;
-        default:    waddch(window, '*');
-            fprintf(stderr, "Screen::PrintNormal: (?) dir: %d\n",
-                player->GetDir());
+        case NOWHERE: waddch(window, '*'); break;
         }
     }
     PrintTitle(window, UP==dir ? UP : DOWN);
@@ -548,9 +554,7 @@ void Screen::PrintNormal(WINDOW * const window, const int dir) const {
     wrefresh(window);
 } // void Screen::PrintNormal(WINDOW * window, int dir)
 
-void Screen::PrintFront(WINDOW * const window) const {
-    if ( window == nullptr ) return;
-    const int dir = player->GetDir();
+void Screen::PrintFront(WINDOW * const window, const dirs dir) const {
     int x_step, z_step,
         x_end,  z_end;
     int * x, * z;

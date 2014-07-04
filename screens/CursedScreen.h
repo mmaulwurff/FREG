@@ -163,8 +163,8 @@ private:
     void Arrows(WINDOW *, int x, int y, bool show_dir = false) const;
     void HorizontalArrows(WINDOW *, int y, int color = WHITE_RED,
             bool show_dir = false) const;
-    void PrintNormal(WINDOW *, int dir) const;
-    void PrintFront(WINDOW *) const;
+    void PrintNormal(WINDOW *, dirs) const;
+    void PrintFront(WINDOW *, dirs) const;
     void PrintInv(WINDOW *, const Inventory &) const;
     /// Can print health, breath and other bars on hudWin.
     void PrintBar(int x, int color, int ch, int percent,
@@ -172,6 +172,8 @@ private:
     /// Returns false when file does not exist, otherwise true.
     bool PrintFile(WINDOW *, QString const & file_name);
     void PrintHUD();
+    void PrintMiniMap();
+    void PrintQuickInventory();
     void CleanFileToShow();
     void RePrint();
     void InventoryAction(int num) const;

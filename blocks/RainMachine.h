@@ -17,6 +17,9 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
+#ifndef RAINMACHINE_H
+#define RAINMACHINE_H
+
 #include "blocks/Inventory.h"
 #include "blocks/Active.h"
 #include "Shred.h"
@@ -41,3 +44,5 @@ public:
 private:
     bool isOn;
 };
+
+#endif // RAINMACHINE_H

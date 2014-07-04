@@ -314,17 +314,23 @@ void Player::Craft(const int num) {
     }
 }
 
+bool Player::ForbiddenAdminCommands() const {
+    if ( GetCreativeMode() || COMMANDS_ALWAYS_ON ) {
+        return false;
+    } else {
+        emit Notify(tr("You are not in Creative Mode."));
+        return true;
+    }
+}
+
 void Player::ProcessCommand(QString command) {
     if ( command.isEmpty() ) return;
-    const QMutexLocker locker(world->GetLock());
     QTextStream comm_stream(&command);
     QString request;
     comm_stream >> request;
+    const QMutexLocker locker(world->GetLock());
     if ( "give"==request || "get"==request ) {
-        if ( not (GetCreativeMode() || COMMANDS_ALWAYS_ON) ) {
-            emit Notify(tr("You are not in Creative Mode."));
-            return;
-        } // else:
+        if ( ForbiddenAdminCommands() ) return;
         Inventory * const inv = PlayerInventory();
         if ( inv == nullptr ) return;
         QString kind, sub;
@@ -340,21 +346,19 @@ void Player::ProcessCommand(QString command) {
             emit Notify(tr("%1 command: invalid substance!").arg(request));
             return;
         } // else:
-        emit Notify(QString("sub: %1").arg(sub_code));
         Block * const block = block_manager.NewBlock(kind_code, sub_code);
-        if ( not inv->Get(block) ) {
-            emit Notify(tr("No place for requested thing."));
-            block_manager.DeleteBlock(block);
-        } else {
+        if ( inv->Get(block) ) {
             emit Updated();
+        } else {
+            block_manager.DeleteBlock(block);
         }
     } else if ( "move" == request ) {
         int direction;
         comm_stream >> direction;
         Move(static_cast<dirs>(direction));
     } else if ( "time" == request ) {
-        emit Notify( (GetCreativeMode() || COMMANDS_ALWAYS_ON) ?
-            GetWorld()->TimeOfDayStr() : tr("Not in Creative Mode.") );
+        if ( ForbiddenAdminCommands() ) return;
+        emit Notify(GetWorld()->TimeOfDayStr());
     } else if ( "version" == request ) {
         emit Notify(tr("freg version: %1. Compiled on %2 at %3 with Qt %4.\n\
 Current Qt version: %5. Build type: %6. Compiler: %7.").
