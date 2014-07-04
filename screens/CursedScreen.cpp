@@ -499,7 +499,7 @@ void Screen::PrintMiniMap() {
     wrefresh(miniMapWin);
 }
 
-void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
+void Screen::PrintNormal(WINDOW * const window, dirs dir) const {
     int k_start, k_step;
     if ( UP == dir ) {
         k_start = player->Z()+1;
@@ -662,19 +662,20 @@ void Screen::PrintFront(WINDOW * const window, const dirs dir) const {
     wrefresh(window);
 } // void Screen::PrintFront(WINDOW * window)
 
-void Screen::PrintTitle(WINDOW * const window, const int dir) const {
-    wstandend(window);
-    box(window, 0, 0);
-    wcolor_set(window, BLACK_WHITE, nullptr);
+void Screen::PrintTitle(WINDOW * const window, const dirs dir) const {
     QString dir_string;
     switch ( dir ) {
+    case UP:    dir_string = tr(".  Up  .");  break;
+    case DOWN:  dir_string = tr("x Down x");  break;
     case NORTH: dir_string = tr("^ North ^"); break;
     case SOUTH: dir_string = tr("v South v"); break;
     case EAST:  dir_string = tr("> East >");  break;
     case WEST:  dir_string = tr("< West <");  break;
-    case DOWN:  dir_string = tr("x Down x");  break;
-    case UP:    dir_string = tr(".  Up  .");  break;
+    case NOWHERE: dir_string =  "Nowhere";    break;
     }
+    wstandend(window);
+    box(window, 0, 0);
+    wcolor_set(window, BLACK_WHITE, nullptr);
     mvwaddstr(window, 0, 1, qPrintable(dir_string));
 }
 

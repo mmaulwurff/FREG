@@ -148,7 +148,11 @@ bool World::InBounds(const int x, const int y, const int z) const {
     return ( InBounds(x, y) && InVertBounds(z) );
 }
 
-int  World::GetBound() const { return NumShreds() * SHRED_WIDTH - 1; }
+int World::GetBound() const {
+    static const int bound = NumShreds() * SHRED_WIDTH - 1;
+    return bound;
+}
+
 bool World::InVertBounds(const int z) { return ( 0 <= z && z < HEIGHT ); }
 
 void World::ReloadAllShreds(const long lati, const long longi,

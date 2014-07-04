@@ -217,19 +217,7 @@
     void Grass::DoRareAction() {
         World * const world = GetWorld();
         if ( FIRE == Sub() ) {
-            const Xyz coords[] = {
-                Xyz( X()-1, Y(),   Z()   ),
-                Xyz( X()+1, Y(),   Z()   ),
-                Xyz( X(),   Y()-1, Z()   ),
-                Xyz( X(),   Y()+1, Z()   ),
-                Xyz( X(),   Y(),   Z()-1 ),
-                Xyz( X(),   Y(),   Z()+1 )
-            };
-            for (const Xyz xyz : coords) {
-                if ( world->InBounds(xyz.X(), xyz.Y()) ) {
-                    TryDestroy(xyz.X(), xyz.Y(), xyz.Z());
-                }
-            }
+            DamageAround();
             if ( qrand()%10 || IsSubAround(WATER) ) {
                 Damage(2, FREEZE);
             }
@@ -238,7 +226,7 @@
             world->DestroyAndReplace(X(), Y(), Z());
             return;
         } // else:
-        int i=X(), j=Y();
+        int i=X(), j=Y(), k=Z();
         // increase this if grass grows too fast
         switch ( qrand() % (FIRE==Sub() ? 4 : SECONDS_IN_HOUR*2) ) {
         case 0: ++i; break;
@@ -247,7 +235,6 @@
         case 3: --j; break;
         default: return;
         }
-        int k = Z();
         if ( not world->InBounds(i, j) ) return;
         const int sub_near = world->GetBlock(i, j, k)->Sub();
         if ( world->Enlightened(i, j, k) || FIRE == Sub() ) {

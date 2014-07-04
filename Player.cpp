@@ -323,13 +323,19 @@ bool Player::ForbiddenAdminCommands() const {
     }
 }
 
+constexpr quint64 Player::UniqueIntFromString(const char * const chars) {
+    return chars[0] == '\0' ?
+        0 : (UniqueIntFromString(chars + 1) << 5) | chars[0]-'a';
+}
+
 void Player::ProcessCommand(QString command) {
-    if ( command.isEmpty() ) return;
     QTextStream comm_stream(&command);
-    QString request;
+    QByteArray request;
     comm_stream >> request;
     const QMutexLocker locker(world->GetLock());
-    if ( "give"==request || "get"==request ) {
+    switch ( UniqueIntFromString(request.constData()) ) {
+    case UniqueIntFromString("give"):
+    case UniqueIntFromString("get" ): {
         if ( ForbiddenAdminCommands() ) return;
         Inventory * const inv = PlayerInventory();
         if ( inv == nullptr ) return;
@@ -337,13 +343,14 @@ void Player::ProcessCommand(QString command) {
         comm_stream >> kind >> sub;
         const int kind_code = BlockManager::StringToKind(kind);
         if ( kind_code == LAST_KIND ) {
-            emit Notify(tr("%1 command: invalid kind!").arg(request));
+            emit Notify(tr("%1 command: invalid kind!").arg(QString(request)));
             return;
         } // else:
         const int sub_code = sub.isEmpty() ?
             static_cast<int>(STONE) : BlockManager::StringToSub(sub);
         if ( sub_code == LAST_SUB ) {
-            emit Notify(tr("%1 command: invalid substance!").arg(request));
+            emit Notify(tr("%1 command: invalid substance!")
+                .arg(QString(request)));
             return;
         } // else:
         Block * const block = block_manager.NewBlock(kind_code, sub_code);
@@ -352,25 +359,38 @@ void Player::ProcessCommand(QString command) {
         } else {
             block_manager.DeleteBlock(block);
         }
-    } else if ( "move" == request ) {
+        } break;
+    case UniqueIntFromString("move"): {
         int direction;
         comm_stream >> direction;
         Move(static_cast<dirs>(direction));
-    } else if ( "time" == request ) {
+        } break;
+    case UniqueIntFromString("time"):
         if ( ForbiddenAdminCommands() ) return;
         emit Notify(GetWorld()->TimeOfDayStr());
-    } else if ( "version" == request ) {
-        emit Notify(tr("freg version: %1. Compiled on %2 at %3 with Qt %4.\n\
-Current Qt version: %5. Build type: %6. Compiler: %7.").
-            arg(VER).arg(__DATE__).arg(__TIME__).arg(QT_VERSION_STR).
-            arg(qVersion()).arg(DEBUG ? tr("debug") : tr("release")).
-            arg(COMPILER));
-    } else if ( "help" == request ) {
+        break;
+    case UniqueIntFromString("version"):
+        emit Notify(tr("freg version: %1. Compiled on %2 at %3 with Qt %4.")
+            .arg(VER)
+            .arg(__DATE__)
+            .arg(__TIME__)
+            .arg(QT_VERSION_STR));
+        emit Notify(tr("Current Qt version: %5. Build type: %6. Compiler: %7.")
+            .arg(qVersion())
+            .arg(DEBUG ? tr("debug") : tr("release"))
+            .arg(COMPILER));
+        break;
+    case UniqueIntFromString("help"):
         comm_stream >> request;
+        if ( request.isEmpty() ) {
+            request = "help";
+        }
         emit ShowFile( QString("help_%1/%2.txt")
-            .arg(locale.left(2)).arg(request) );
-    } else {
+            .arg(locale.left(2)).arg(QString(request)) );
+        break;
+    default:
         emit Notify(tr("Don't know such command: \"%1\".").arg(command));
+        break;
     }
 } // void Player::ProcessCommand(QString command)
 

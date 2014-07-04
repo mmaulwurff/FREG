@@ -516,7 +516,7 @@ void Shred::Castle() {
     NormalCube(2,2,HEIGHT/2-4, SHRED_WIDTH-4,SHRED_WIDTH-4,5, AIR );
     // floors
     int level = HEIGHT/2-1;
-    for (int floors=CountShredTypeAround(SHRED_CASTLE); floors; --floors) {
+    for (int floors=CountShredTypeAround(SHRED_CASTLE); ; --floors) {
         NormalCube(0,0,level,   SHRED_WIDTH,  SHRED_WIDTH,  6, STONE);
         NormalCube(2,2,level+1, SHRED_WIDTH-4,SHRED_WIDTH-4,1, WOOD );
         NormalCube(2,2,level+2, SHRED_WIDTH-4,SHRED_WIDTH-4,5, AIR  );
@@ -527,32 +527,34 @@ void Shred::Castle() {
                 SetNewBlock(PLATE, STONE, 4+step, y, level-3+step);
             }
         }
-        if ( floors != 1 ) { // lamps
+        if ( floors != 1 ) { // not roof, lamps
             for (int x=3; x<SHRED_WIDTH-3; x+=3)
             for (int y=3; y<SHRED_WIDTH-3; y+=3) {
                 SetNewBlock(ILLUMINATOR, GLASS, x, y, level+4);
             }
+        } else {
+            return;
         }
         // north pass and lamps
-        if ( TypeOfShred(longitude-1, latitude)==SHRED_CASTLE && floors!=1 ) {
+        if ( TypeOfShred(longitude-1, latitude) == SHRED_CASTLE ) {
             NormalCube(2,0,level+2, SHRED_WIDTH-4,2,4, AIR);
             for (int x=3; x<SHRED_WIDTH-3; x+=3) {
                 SetNewBlock(ILLUMINATOR, GLASS, x, 0, level+4);
             }
         }
         // south pass
-        if ( TypeOfShred(longitude+1, latitude) == SHRED_CASTLE && floors!=1) {
+        if ( TypeOfShred(longitude+1, latitude) == SHRED_CASTLE ) {
             NormalCube(2,SHRED_WIDTH-2,level+2, SHRED_WIDTH-4,2,4, AIR);
         }
         // west pass and lamps
-        if ( TypeOfShred(longitude, latitude-1)==SHRED_CASTLE && floors!=1 ) {
+        if ( TypeOfShred(longitude, latitude-1) == SHRED_CASTLE ) {
             NormalCube(0,2,level+2, 2,SHRED_WIDTH,4, AIR);
             for (int y=3; y<SHRED_WIDTH-3; y+=3) {
                 SetNewBlock(ILLUMINATOR, GLASS, 0, y, level+4);
             }
         }
         // east pass
-        if ( TypeOfShred(longitude, latitude+1) == SHRED_CASTLE && floors!=1) {
+        if ( TypeOfShred(longitude, latitude+1) == SHRED_CASTLE ) {
             NormalCube(SHRED_WIDTH-2,2,level+2, 2,SHRED_WIDTH,4, AIR);
         }
         level += 5;

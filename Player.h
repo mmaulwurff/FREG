@@ -24,7 +24,6 @@
 #include "header.h"
 #include "Xyz.h"
 
-class QString;
 class World;
 class Block;
 class Active;
@@ -119,6 +118,9 @@ public:
     /// Can also wield appropriate things.
     void MoveInsideInventory(int num_from, int num_to, int num = 1);
     void ProcessCommand(QString command);
+
+    /// Turns low-case ASCII chars array (length <= 12) into unique quint64.
+    constexpr static quint64 UniqueIntFromString(const char *);
 
 signals:
     void Moved(long x, long y, int z) const;
