@@ -376,18 +376,15 @@ void Screen::Print() {
                     player->GetUsingInInventory())->GetNote()));
             player->SetUsingTypeNo();
             break;
-        case USAGE_TYPE_READ:
-            {
+        case USAGE_TYPE_READ: {
                 int x, y, z;
                 ActionXyz(&x, &y, &z);
                 wstandend(rightWin);
                 PrintFile(rightWin, QString(w->WorldName() + "/texts/"
                     + w->GetBlock(x, y, z)->GetNote()));
                 player->SetUsingTypeNo();
-            }
-            break;
-        case USAGE_TYPE_OPEN:
-            {
+            } break;
+        case USAGE_TYPE_OPEN: {
                 int x, y, z;
                 ActionXyz(&x, &y, &z);
                 const Inventory * const inv =
@@ -398,8 +395,7 @@ void Screen::Print() {
                 } else {
                     player->SetUsingTypeNo();
                 }
-            }
-            break;
+            } break;
         }
     }
     w->Unlock();

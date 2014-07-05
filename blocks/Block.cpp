@@ -78,6 +78,7 @@ void Block::Damage(const int dmg, const int dmg_kind) {
     }
     switch ( dmg_kind ) {
     case NO_HARM: return;
+    case TIME: durability -= dmg; return;
     case DAMAGE_ACID:
         switch ( Sub() ) {
         default: durability -= 2 * dmg; return;
@@ -88,33 +89,25 @@ void Block::Damage(const int dmg, const int dmg_kind) {
     }
     int mult = 1; // default
     switch ( Sub() ) {
-    case DIFFERENT:
-        if ( TIME == dmg_kind ) {
-            durability = 0;
-            return;
-        }
-    return;
-    case WATER: mult = ( HEAT==dmg_kind || TIME==dmg_kind ); break;
+    case DIFFERENT: return;
     case MOSS_STONE:
     case STONE: switch ( dmg_kind ) {
         case CRUSH:
         case DAMAGE_HANDS:
         case CUT:   return;
         case MINE:  mult = 2; break;
-    } break;
-    case GLASS: durability = (HEAT==dmg_kind) ? durability : 0; return;
+        } break;
     case WOOD: switch ( dmg_kind ) {
-        default:  mult = 1; break;
         case CUT: mult = 2; break;
         case DAMAGE_HANDS: return;
-    } break;
-    case SAND:
+        } break;
     case A_MEAT:
-    case H_MEAT: ++(mult = (THRUST==dmg_kind || HEAT==dmg_kind)); break;
-    case SOIL: switch ( dmg_kind ) {
-        case DIG: mult = 2; break;
-    } break;
-    case FIRE: mult = (FREEZE==dmg_kind || TIME==dmg_kind); break;
+    case H_MEAT:    mult += (THRUST==dmg_kind || HEAT==dmg_kind); break;
+    case SAND:
+    case SOIL:      mult += ( DIG    == dmg_kind ); break;
+    case FIRE:      mult  = ( FREEZE == dmg_kind ); break;
+    case WATER:     mult  = ( HEAT   == dmg_kind ); break;
+    case GLASS:     mult  = ( HEAT   != dmg_kind ); break;
     }
     durability -= mult*dmg;
 }
