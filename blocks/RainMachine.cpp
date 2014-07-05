@@ -39,12 +39,13 @@ void RainMachine::SaveAttributes(QDataStream & stream) const {
 }
 
 void RainMachine::DoRareAction() {
-    const int number = Number(0);
-    // TODO: make cloud generation
-    if ( isOn
-            && (qrand() % (20-number*2)) == 0 )
-    {
-        GetShred()->Rain(LIQUID, GetInvSub(0)==AIR ? SUB_CLOUD : GetInvSub(0));
+    if ( not isOn ) return;
+    if ( AIR == GetInvSub(0) ) {
+        if ( qrand() % 5 ) {
+            GetShred()->Rain(LIQUID, SUB_CLOUD);
+        }
+    } else if ( qrand() % (20 - Number(0)*2) ) {
+        GetShred()->Rain(LIQUID, GetInvSub(0));
     }
 }
 
