@@ -679,26 +679,30 @@ void Screen::PrintInv(WINDOW * const window, const Inventory & inv) const {
     const int start = inv.Start();
     int shift = 0; // to divide inventory sections
     for (int i=0; i<inv.Size(); ++i) {
-        if ( start == i && i != 0 ) {
-            ++shift;
-        }
-        mvwprintw(window, 2+i+shift, 2, "%c) ", 'a'+i);
-        if ( not inv.Number(i) ) {
+        shift += ( start == i && i != 0 );
+        mvwprintw(window, 2+i+shift, 1, "%c) ", 'a'+i);
+        const int number = inv.Number(i);
+        if ( 0 == number ) {
             continue;
         }
         const Block * const block = inv.ShowBlock(i);
         wprintw(window, "[%c]%s",
-            PrintBlock(*block, window),
-            qPrintable(inv.InvFullName(i)) );
-        if ( 1 < inv.Number(i) ) {
-            waddstr(window, qPrintable(inv.NumStr(i)));
+            PrintBlock(*block, window), qPrintable(inv.InvFullName(i)) );
+        if ( 1 < number ) {
+            waddstr(window, qPrintable(Inventory::NumStr(number)));
         }
-        const QString str = inv.GetInvNote(i);
+        if ( MAX_DURABILITY != block->GetDurability() ) {
+            wprintw(window, "{%d}", block->GetDurability()*100/MAX_DURABILITY);
+        }
+        const QString str = block->GetNote();
         if ( not str.isEmpty() ) {
-            if ( str.size() < 31 ) {
+            int x, y;
+            getyx(window, y, x);
+            const int width = SCREEN_SIZE*2+2 - x - 10;
+            if ( str.size() < width ) {
                 wprintw(window, " ~:%s", qPrintable(str));
             } else {
-                wprintw(window, " ~:%s...", qPrintable(str.left(29)));
+                wprintw(window, " ~:%s...", qPrintable(str.left(width-6)));
             }
         }
         wstandend(window);

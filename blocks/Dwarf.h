@@ -43,7 +43,7 @@ public:
 
     bool Access() const override;
     bool Inscribe(QString str) override;
-    void MoveInside(int num_from, int num_to, int num) override;
+    bool GetExact(Block *, int to) override;
     void ReceiveSignal(QString) override;
     int  LightRadius() const override;
     Block * DropAfterDamage(bool * delete_block) override;

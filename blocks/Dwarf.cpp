@@ -98,19 +98,22 @@ int Dwarf::NutritionalValue(const int sub) const {
     return 0;
 }
 
-void Dwarf::MoveInside(const int num_from, const int num_to, const int num) {
-    Block * const block = ShowBlock(num_from);
-    if ( block!=nullptr && (num_to > ON_LEGS
-            ||   IN_RIGHT==num_to
-            ||   IN_LEFT ==num_to
-            || ( ON_HEAD ==num_to && WEARABLE_HEAD==block->Wearable() )
-            || ( ON_BODY ==num_to && WEARABLE_BODY==block->Wearable() )
-            || ( ON_LEGS ==num_to && WEARABLE_LEGS==block->Wearable() )) )
+bool Dwarf::GetExact(Block * const block, const int to) {
+    if ( block==nullptr ) return true;
+    if ( (to > ON_LEGS
+                ||   IN_RIGHT==to
+                ||   IN_LEFT ==to
+                || ( ON_HEAD ==to && WEARABLE_HEAD==block->Wearable() )
+                || ( ON_BODY ==to && WEARABLE_BODY==block->Wearable() )
+                || ( ON_LEGS ==to && WEARABLE_LEGS==block->Wearable() ))
+            && Inventory::GetExact(block, to) )
     {
-        Inventory::MoveInside(num_from, num_to, num);
+        UpdateLightRadius();
+        GetWorld()->Shine(X(), Y(), Z(), lightRadius, true);
+        return true;
+    } else {
+        return false;
     }
-    UpdateLightRadius();
-    GetWorld()->Shine(X(), Y(), Z(), lightRadius, true);
 }
 
 void Dwarf::SaveAttributes(QDataStream & out) const {

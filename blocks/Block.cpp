@@ -92,7 +92,6 @@ void Block::Damage(const int dmg, const int dmg_kind) {
     case DIFFERENT: return;
     case MOSS_STONE:
     case STONE: switch ( dmg_kind ) {
-        case CRUSH:
         case DAMAGE_HANDS:
         case CUT:   return;
         case MINE:  mult = 2; break;
@@ -108,6 +107,7 @@ void Block::Damage(const int dmg, const int dmg_kind) {
     case FIRE:      mult  = ( FREEZE == dmg_kind ); break;
     case WATER:     mult  = ( HEAT   == dmg_kind ); break;
     case GLASS:     mult  = ( HEAT   != dmg_kind ); break;
+    case IRON:      mult  = ( DAMAGE_HANDS != dmg_kind ); break;
     }
     durability -= mult*dmg;
 }
@@ -163,7 +163,7 @@ Active * Block::ActiveBlock() { return nullptr; }
 Falling * Block::ShouldFall() { return nullptr; }
 
 void Block::Restore() { durability = MAX_DURABILITY; }
-void Block::Break() { durability = 0; }
+void Block::Break()   { durability = 0; }
 dirs Block::GetDir() const { return static_cast<dirs>(direction); }
 int  Block::GetDurability() const { return durability; }
 QString Block::GetNote() const { return note ? *note : ""; }

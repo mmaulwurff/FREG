@@ -23,10 +23,11 @@
 #include "BlockManager.h"
 #include "world.h"
 
-bool   Inventory::Access() const { return true; }
-int Inventory::Start() const { return 0; }
-int Inventory::Size() const { return size; }
-int Inventory::Number(const int i) const { return inventory[i].size(); }
+int  Inventory::Start() const { return 0; }
+int  Inventory::Size() const { return size; }
+int  Inventory::Number(const int i) const { return inventory[i].size(); }
+bool Inventory::Access() const { return true; }
+QString Inventory::NumStr(const int num) { return QString(" (%1x)").arg(num); }
 
 bool Inventory::Drop(const int src, int dest, int num,
         Inventory * const inv_to)
@@ -83,7 +84,7 @@ bool Inventory::Get(Block * const block, const int start) {
             }
         }
     } else {
-        for (int i=qMax(Start(), start); i<Size(); ++i) {
+        for (int i=start; i<Size(); ++i) {
             if ( GetExact(block, i) ) {
                 return true;
             }
@@ -140,10 +141,6 @@ QString Inventory::InvFullName(const int num) const {
         "" : inventory[num].top()->FullName();
 }
 
-QString Inventory::NumStr(const int num) const {
-    return QString(" (%1x)").arg(Number(num));
-}
-
 int Inventory::GetInvWeight(const int i) const {
     return inventory[i].isEmpty() ?
         0 : inventory[i].top()->Weight()*Number(i);
@@ -157,10 +154,6 @@ int Inventory::GetInvSub(const int i) const {
 int Inventory::GetInvKind(const int i) const {
     return inventory[i].isEmpty() ?
         BLOCK : int(inventory[i].top()->Kind());
-}
-
-QString Inventory::GetInvNote(const int num) const {
-    return inventory[num].top()->GetNote();
 }
 
 int Inventory::Weight() const {

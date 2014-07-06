@@ -592,6 +592,7 @@ void World::DestroyAndReplace(const int x, const int y, const int z) {
     if ( delete_block ) {
         block_manager.DeleteBlock(block);
     } else {
+        block->Restore();
         Active * const active = block->ActiveBlock();
         if ( active != nullptr ) {
             active->Unregister();
