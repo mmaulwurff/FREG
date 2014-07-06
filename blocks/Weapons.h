@@ -40,6 +40,7 @@ public:
     int  DamageLevel() const override;
     int  Weight() const override;
     QString FullName() const override;
+    usage_types Use(Block * who) override;
 };
 
 class Pick : public Weapon {

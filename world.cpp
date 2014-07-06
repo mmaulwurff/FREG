@@ -591,6 +591,11 @@ void World::DestroyAndReplace(const int x, const int y, const int z) {
     }
     if ( delete_block ) {
         block_manager.DeleteBlock(block);
+    } else {
+        Active * const active = block->ActiveBlock();
+        if ( active != nullptr ) {
+            active->Unregister();
+        }
     }
     shred->AddFalling(shred->GetBlock(x_in_shred, y_in_shred, z+1));
     emit Updated(x, y, z);

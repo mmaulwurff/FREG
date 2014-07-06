@@ -195,7 +195,7 @@ Block * Player::ValidBlock(const int num) const {
     } // else:
     Block * const block = inv->ShowBlock(num);
     if ( block == nullptr ) {
-        emit Notify("Nothing here.");
+        emit Notify(tr("Nothing here."));
         return 0;
     } else {
         return block;
@@ -204,10 +204,6 @@ Block * Player::ValidBlock(const int num) const {
 
 usage_types Player::Use(const int num) {
     const QMutexLocker locker(world->GetLock());
-    return UseNoLock(num);
-}
-
-usage_types Player::UseNoLock(const int num) {
     Block * const block = ValidBlock(num);
     if ( block == nullptr ) return USAGE_TYPE_NO;
     Animal * const animal = player->IsAnimal();
@@ -225,17 +221,18 @@ usage_types Player::UseNoLock(const int num) {
         usingInInventory = num;
         usingType = USAGE_TYPE_READ_IN_INVENTORY;
         emit Updated();
-    break;
+        break;
     case USAGE_TYPE_POUR: {
         int x_targ, y_targ, z_targ;
         emit GetFocus(&x_targ, &y_targ, &z_targ);
         player->GetDeferredAction()->SetPour(x_targ, y_targ, z_targ, num);
-    } break;
+        } break;
     case USAGE_TYPE_SET_FIRE: {
         int x_targ, y_targ, z_targ;
         emit GetFocus(&x_targ, &y_targ, &z_targ);
         player->GetDeferredAction()->SetSetFire(x_targ, y_targ, z_targ);
-    } break;
+        } break;
+    case USAGE_TYPE_WEAR: Wield(num); break;
     default: break;
     }
     return result;
@@ -257,29 +254,21 @@ void Player::Obtain(const int src, const int dest, const int num) {
     emit Updated();
 }
 
-void Player::Wield(const int num) {
-    const QMutexLocker locker(world->GetLock());
-    if ( ValidBlock(num) ) {
+void Player::Wield(const int from) {
+    if ( ValidBlock(from) ) {
         Inventory * const inv = PlayerInventory();
-        if ( num >= inv->Start() ) { // wield
-            for (int i=0; i<inv->Start(); ++i) {
-                PlayerInventory()->MoveInside(num, i, 1);
-            }
-        } else { // take off
-            for (int i=inv->Start(); i<inv->Size(); ++i) {
-                PlayerInventory()->MoveInside(num, i, inv->Number(num));
-            }
+        const int start = (from >= inv->Start()) ? 0 : inv->Start();
+        for (int i=start; i<inv->Size(); ++i) {
+            PlayerInventory()->MoveInside(from, i, 1);
         }
         emit Updated();
     }
 }
 
-void Player::MoveInsideInventory(const int num_from, const int num_to,
-        const int num)
-{
+void Player::MoveInsideInventory(const int from, const int to, const int num) {
     const QMutexLocker locker(world->GetLock());
-    if ( ValidBlock(num_from) ) {
-        PlayerInventory()->MoveInside(num_from, num_to, num);
+    if ( ValidBlock(from) ) {
+        PlayerInventory()->MoveInside(from, to, num);
         emit Updated();
     }
 }

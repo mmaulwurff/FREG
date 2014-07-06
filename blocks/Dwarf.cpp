@@ -41,14 +41,14 @@ Block * Dwarf::DropAfterDamage(bool * const delete_block) {
     return pile;
 }
 
-int Dwarf::Sub() const { return Block::Sub(); }
-int Dwarf::ShouldAct() const { return FREQUENT_FIRST | FREQUENT_RARE; }
+int  Dwarf::Sub() const { return Block::Sub(); }
+int  Dwarf::ShouldAct() const { return FREQUENT_FIRST | FREQUENT_RARE; }
+int  Dwarf::Start() const { return ON_LEGS + 1; }
+int  Dwarf::Kind() const { return DWARF; }
+int  Dwarf::LightRadius() const { return lightRadius; }
 bool Dwarf::Access() const { return false; }
-int Dwarf::Start() const { return ON_LEGS+1; }
-int Dwarf::Kind() const { return DWARF; }
-QString Dwarf::FullName() const { return "Rational"; }
+QString Dwarf::FullName() const { return tr("Rational creature"); }
 Inventory * Dwarf::HasInventory() { return this; }
-int Dwarf::LightRadius() const { return lightRadius; }
 
 void Dwarf::UpdateLightRadius() {
     Block * const in_left  = ShowBlock(IN_LEFT);
@@ -100,14 +100,12 @@ int Dwarf::NutritionalValue(const int sub) const {
 
 void Dwarf::MoveInside(const int num_from, const int num_to, const int num) {
     Block * const block = ShowBlock(num_from);
-    if ( block && (num_to > ON_LEGS ||
-            IN_RIGHT==num_to || IN_LEFT==num_to ||
-            ( ON_HEAD==num_to &&
-                WEARABLE_HEAD==block->Wearable() ) ||
-            ( ON_BODY==num_to &&
-                WEARABLE_BODY==block->Wearable() ) ||
-            ( ON_LEGS==num_to &&
-                WEARABLE_LEGS==block->Wearable() )) )
+    if ( block!=nullptr && (num_to > ON_LEGS
+            ||   IN_RIGHT==num_to
+            ||   IN_LEFT ==num_to
+            || ( ON_HEAD ==num_to && WEARABLE_HEAD==block->Wearable() )
+            || ( ON_BODY ==num_to && WEARABLE_BODY==block->Wearable() )
+            || ( ON_LEGS ==num_to && WEARABLE_LEGS==block->Wearable() )) )
     {
         Inventory::MoveInside(num_from, num_to, num);
     }
@@ -132,6 +130,7 @@ Dwarf::Dwarf(const int sub, const int id) :
 {
     note = new QString("Urist");
 }
+
 Dwarf::Dwarf(QDataStream & str, const int sub, const int id) :
         Animal(str, sub, id),
         Inventory(str)

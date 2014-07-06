@@ -260,6 +260,11 @@
         <translation>Прочность: %2. Вес: %3. Id: %4.</translation>
     </message>
     <message>
+        <location filename="Player.cpp" line="198"/>
+        <source>Nothing here.</source>
+        <translation>Здесь ничего нет.</translation>
+    </message>
+    <message>
         <location filename="Player.cpp" line="373"/>
         <source>freg version: %1. Compiled on %2 at %3 with Qt %4.</source>
         <translation>Версия freg: %1. Скомпилировано %2 в %3 с Qt %4.</translation>
@@ -734,17 +739,17 @@
 <context>
     <name>RainMachine</name>
     <message>
-        <location filename="blocks/RainMachine.cpp" line="52"/>
+        <location filename="blocks/RainMachine.cpp" line="53"/>
         <source>Rain Machine</source>
         <translation>Машина дождя</translation>
     </message>
     <message>
-        <location filename="blocks/RainMachine.cpp" line="53"/>
+        <location filename="blocks/RainMachine.cpp" line="54"/>
         <source>: on</source>
         <translation>: включена</translation>
     </message>
     <message>
-        <location filename="blocks/RainMachine.cpp" line="53"/>
+        <location filename="blocks/RainMachine.cpp" line="54"/>
         <source>: off</source>
         <translation>: выключена</translation>
     </message>
@@ -815,47 +820,47 @@
         <translation>C-Собрать</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="441"/>
+        <location filename="screens/CursedScreen.cpp" line="437"/>
         <source>Gorged</source>
         <translation>Объелся</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="437"/>
+        <location filename="screens/CursedScreen.cpp" line="433"/>
         <source>Full</source>
         <translation>Сытый</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="433"/>
+        <location filename="screens/CursedScreen.cpp" line="429"/>
         <source>Hungry</source>
         <translation>Голодный</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="669"/>
+        <location filename="screens/CursedScreen.cpp" line="665"/>
         <source>x Down x</source>
         <translation>х Низ х</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="670"/>
+        <location filename="screens/CursedScreen.cpp" line="666"/>
         <source>^ North ^</source>
         <translation>^ Север ^</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="671"/>
+        <location filename="screens/CursedScreen.cpp" line="667"/>
         <source>v South v</source>
         <translation>v Юг v</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="672"/>
+        <location filename="screens/CursedScreen.cpp" line="668"/>
         <source>&gt; East &gt;</source>
         <translation>&gt; Восток &gt;</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="673"/>
+        <location filename="screens/CursedScreen.cpp" line="669"/>
         <source>&lt; West &lt;</source>
         <translation>&lt; Запад &lt;</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="668"/>
+        <location filename="screens/CursedScreen.cpp" line="664"/>
         <source>.  Up  .</source>
         <translation>. Верх .</translation>
     </message>
@@ -875,36 +880,36 @@
         <translation>N-Подписать</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="412"/>
+        <location filename="screens/CursedScreen.cpp" line="408"/>
         <source>Creative Mode
 xyz: %1, %2, %3. XY: %4, %5.</source>
         <translation>Режим Творца
 xyz: %1, %2, %3. XY: %4, %5.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="714"/>
+        <location filename="screens/CursedScreen.cpp" line="710"/>
         <source>All weight: %1 mz</source>
         <translation>Полный вес: %1 mz</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="723"/>
+        <location filename="screens/CursedScreen.cpp" line="719"/>
         <source>Your inventory</source>
         <translation>Ваш инвентарь</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="750"/>
+        <location filename="screens/CursedScreen.cpp" line="746"/>
         <location filename="screens/TextScreen.cpp" line="214"/>
         <source>File path: %1/%2</source>
         <translation>Путь к файлу: %1/%2</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="751"/>
+        <location filename="screens/CursedScreen.cpp" line="747"/>
         <location filename="screens/TextScreen.cpp" line="215"/>
         <source>There is no such help file: %1/%2.</source>
         <translation>Нет такого файла справки: %1/%2.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="793"/>
+        <location filename="screens/CursedScreen.cpp" line="789"/>
         <location filename="screens/TextScreen.cpp" line="236"/>
         <source>You die.
 Waiting for respawn...</source>
@@ -912,12 +917,12 @@ Waiting for respawn...</source>
 Ожидание возрождения...</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="863"/>
+        <location filename="screens/CursedScreen.cpp" line="859"/>
         <source>Set your terminal width at least %1 chars.</source>
         <translation>Установите ширину терминала не менее %1 символов.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="880"/>
+        <location filename="screens/CursedScreen.cpp" line="876"/>
         <location filename="screens/TextScreen.cpp" line="263"/>
         <source>
 Version %1.
@@ -929,7 +934,7 @@ Press any key.</source>
 Нажмите любую клавишу.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="887"/>
+        <location filename="screens/CursedScreen.cpp" line="883"/>
         <location filename="screens/TextScreen.cpp" line="266"/>
         <source>*--- Game started. Press &apos;H&apos; for help. ---*</source>
         <translation>*--- Игра запущена. Нажмите &apos;H&apos; для вызова справки. ---*</translation>

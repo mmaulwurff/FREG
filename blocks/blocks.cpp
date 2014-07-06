@@ -358,6 +358,7 @@
                 } else {
                     GetWorld()->Move(X(), Y(), Z(), GetDir());
                 }
+                moved_in_this_turn = false; // for next turn
             } return;
             }
             GetWorld()->Move(X(), Y(), Z(), GetDir());

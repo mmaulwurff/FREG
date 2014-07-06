@@ -71,13 +71,12 @@ const {
 
 void Screen::RePrint() {
     clear();
-    mvwaddstr(actionWin, 0, 0, qPrintable(tr("Use/Eat")));
+    mvwaddstr(actionWin, 0, 0, qPrintable(tr("Use")));
     mvwaddstr(actionWin, 1, 0, qPrintable(tr("Throw")));
     mvwaddstr(actionWin, 2, 0, qPrintable(tr("Obtain")));
-    mvwaddstr(actionWin, 3, 0, qPrintable(tr("Wield/take oFF")));
-    mvwaddstr(actionWin, 4, 0, qPrintable(tr("iNscribe")));
-    mvwaddstr(actionWin, 5, 0, qPrintable(tr("Build")));
-    mvwaddstr(actionWin, 6, 0, qPrintable(tr("Craft")));
+    mvwaddstr(actionWin, 3, 0, qPrintable(tr("iNscribe")));
+    mvwaddstr(actionWin, 4, 0, qPrintable(tr("Build")));
+    mvwaddstr(actionWin, 5, 0, qPrintable(tr("Craft")));
     refresh();
     wrefresh(actionWin);
     updated = false;
@@ -262,10 +261,10 @@ void Screen::ControlPlayer(const int ch) {
     case 'N': SetActionMode(ACTION_INSCRIBE); break;
     case 'G':
     case 'O': SetActionMode(ACTION_OBTAIN);   break;
+    case 'F':
+    case 'W':
     case 'E':
     case 'U': SetActionMode(ACTION_USE);      break;
-    case 'F':
-    case 'W': SetActionMode(ACTION_WIELD);    break;
     case 'S':
         if ( player->PlayerInventory() ) {
               player->PlayerInventory()->Shake();
@@ -321,7 +320,6 @@ void Screen::InventoryAction(const int num) const {
     case ACTION_USE:      player->Use     (num); break;
     case ACTION_THROW:    player->Throw   (num); break;
     case ACTION_OBTAIN:   player->Obtain  (num); break;
-    case ACTION_WIELD:    player->Wield   (num); break;
     case ACTION_INSCRIBE: player->Inscribe(num); break;
     case ACTION_BUILD:    player->Build   (num); break;
     case ACTION_CRAFT:    player->Craft   (num); break;
@@ -697,10 +695,10 @@ void Screen::PrintInv(WINDOW * const window, const Inventory & inv) const {
         }
         const QString str = inv.GetInvNote(i);
         if ( not str.isEmpty() ) {
-            if ( str.size() < 33 ) {
+            if ( str.size() < 31 ) {
                 wprintw(window, " ~:%s", qPrintable(str));
             } else {
-                wprintw(window, " ~:%s...", qPrintable(str.left(13)));
+                wprintw(window, " ~:%s...", qPrintable(str.left(29)));
             }
         }
         wstandend(window);

@@ -208,7 +208,8 @@ enum usage_types {
     USAGE_TYPE_READ,
     USAGE_TYPE_READ_IN_INVENTORY,
     USAGE_TYPE_POUR,
-    USAGE_TYPE_SET_FIRE
+    USAGE_TYPE_SET_FIRE,
+    USAGE_TYPE_WEAR
 };
 
 enum transparency {

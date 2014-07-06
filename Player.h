@@ -111,7 +111,6 @@ public:
     usage_types Use(int num);
     /// Tries to get block number num from outer inventory.
     void Obtain(int src, int dest = 0, int num = 1);
-    void Wield   (int num);
     void Inscribe(int num);
     void Craft   (int num);
     void Build   (int num);
@@ -155,12 +154,12 @@ private slots:
     void UpdateXYZ(int dir = NOWHERE);
 
 private:
-    usage_types UseNoLock(int num);
     /// Checks player/inventory/block existence, size limits.
     Block * ValidBlock(int num) const;
     Shred * GetShred() const;
     World * GetWorld() const;
     bool ForbiddenAdminCommands() const;
+    void Wield (int num);
 
     long homeLongi, homeLati;
     int homeX, homeY, homeZ;

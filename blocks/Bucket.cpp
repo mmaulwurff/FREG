@@ -41,7 +41,7 @@ QString Bucket::FullName() const {
     return ( GetInvSub(0) == AIR ) ?
         QObject::tr("Empty bucket") :
         QObject::tr("Bucket with %1 (%2/%3 full)")
-            .arg(ShowBlock(0)->FullName())
+            .arg(ShowBlock(0)->FullName().toLower())
             .arg(Number(0))
             .arg(MAX_STACK_SIZE);
 }

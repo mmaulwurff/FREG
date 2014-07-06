@@ -94,31 +94,21 @@ bool Inventory::Get(Block * const block, const int start) {
 }
 
 bool Inventory::GetExact(Block * const block, const int num) {
-    if ( block ) {
-        if ( inventory[num].isEmpty() ) {
-            inventory[num].push(block);
-        } else if ( *block == *inventory[num].top()
-                && Number(num) < MAX_STACK_SIZE )
-        {
-            Inventory * const inner = inventory[num].top()->HasInventory();
-            if ( inner==nullptr || inner->IsEmpty() ) {
-                inventory[num].push(block);
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
+    if ( block == nullptr) return true;
+    if ( inventory[num].isEmpty() ||
+            (*block == *inventory[num].top() && Number(num)<MAX_STACK_SIZE) )
+    {
+        inventory[num].push(block);
+        return true;
+    } else {
+        return false;
     }
-    return true;
 }
 
-void Inventory::MoveInside(const int num_from, const int num_to,
-        const int num)
-{
+void Inventory::MoveInside(const int from, const int num_to, const int num) {
     for (int i=0; i<num; ++i) {
-        if ( GetExact(ShowBlock(num_from), num_to) ) {
-            Pull(num_from);
+        if ( GetExact(ShowBlock(from), num_to) ) {
+            Pull(from);
         }
     }
 }

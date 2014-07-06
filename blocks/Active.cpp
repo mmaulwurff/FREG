@@ -131,9 +131,9 @@ void Active::Damage(const int dmg, const int dmg_kind) {
     if ( last_dur != GetDurability() ) {
         ReceiveSignal(OUCH);
         switch ( dmg_kind ) {
-        case HUNGER:      ReceiveSignal(tr("You faint from hunger!")); break;
-        case HEAT:        ReceiveSignal(tr("You burn!"));              break;
-        case BREATH:      ReceiveSignal(tr("You choke withot air!"));  break;
+        case HUNGER:      ReceiveSignal(tr("You weaken from hunger!")); break;
+        case HEAT:        ReceiveSignal(tr("You burn!"));               break;
+        case BREATH:      ReceiveSignal(tr("You choke withot air!"));   break;
         default:          ReceiveSignal(tr("Received damage!"));
         }
         emit Updated();
