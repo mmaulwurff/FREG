@@ -165,8 +165,8 @@ private:
     int homeX, homeY, homeZ;
     dirs dir = NORTH;
     Active * player;
-    int usingType     = USAGE_TYPE_NO;
-    int usingSelfType = USAGE_TYPE_NO;
+    int usingType;
+    int usingSelfType;
     int usingInInventory;
     bool creativeMode;
     bool cleaned = false;

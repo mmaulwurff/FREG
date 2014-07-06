@@ -481,6 +481,8 @@ Player::Player() {
     homeX  = sett.value("home_x", 0).toInt();
     homeY  = sett.value("home_y", 0).toInt();
     homeZ  = sett.value("home_z", HEIGHT/2).toInt();
+    usingType     = sett.value("using_type",      USAGE_TYPE_NO).toInt();
+    usingSelfType = sett.value("using_self_type", USAGE_TYPE_NO).toInt();
     SetXyz(sett.value("current_x", 0).toInt(),
            sett.value("current_y", 0).toInt(),
            sett.value("current_z", HEIGHT/2+1).toInt());
@@ -519,4 +521,6 @@ Player::~Player() {
     sett.setValue("current_y", Y()-min);
     sett.setValue("current_z", Z());
     sett.setValue("creative_mode", GetCreativeMode());
+    sett.setValue("using_type", usingType);
+    sett.setValue("using_self_type", usingSelfType);
 }
