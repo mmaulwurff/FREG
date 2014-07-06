@@ -51,7 +51,7 @@
                     Shred::CoordInShred(X()), Shred::CoordInShred(Y()), Z());
             }
         }
-        return USAGE_TYPE_WEAR;
+        return USAGE_TYPE_NO;
     }
 
     int Weapon::DamageLevel() const {

@@ -232,8 +232,7 @@ usage_types Player::Use(const int num) {
         emit GetFocus(&x_targ, &y_targ, &z_targ);
         player->GetDeferredAction()->SetSetFire(x_targ, y_targ, z_targ);
         } break;
-    case USAGE_TYPE_WEAR: Wield(num); break;
-    default: break;
+    default: Wield(num); break;
     }
     return result;
 }

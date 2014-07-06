@@ -10,7 +10,7 @@
     </message>
     <message>
         <location filename="blocks/Active.cpp" line="134"/>
-        <source>You faint from hunger!</source>
+        <source>You weaken from hunger!</source>
         <translation>Вы слабеете от голода!</translation>
     </message>
     <message>
@@ -63,7 +63,7 @@
 <context>
     <name>Clock</name>
     <message>
-        <location filename="blocks/blocks.cpp" line="468"/>
+        <location filename="blocks/blocks.cpp" line="469"/>
         <source>Time is %1.</source>
         <translation>Сейчас %1.</translation>
     </message>
@@ -104,7 +104,7 @@
 <context>
     <name>Creator</name>
     <message>
-        <location filename="blocks/blocks.cpp" line="554"/>
+        <location filename="blocks/blocks.cpp" line="555"/>
         <source>Creative block</source>
         <translation>Творец</translation>
     </message>
@@ -112,37 +112,37 @@
 <context>
     <name>Door</name>
     <message>
-        <location filename="blocks/blocks.cpp" line="429"/>
+        <location filename="blocks/blocks.cpp" line="430"/>
         <source> of wood</source>
         <translation> из дерева</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="431"/>
+        <location filename="blocks/blocks.cpp" line="432"/>
         <source> of stone</source>
         <translation> из камня</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="432"/>
+        <location filename="blocks/blocks.cpp" line="433"/>
         <source> of glass</source>
         <translation> из стекла</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="433"/>
+        <location filename="blocks/blocks.cpp" line="434"/>
         <source> of iron</source>
         <translation> из железа</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="435"/>
+        <location filename="blocks/blocks.cpp" line="436"/>
         <source> of something</source>
         <translation> из чего-то</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="438"/>
+        <location filename="blocks/blocks.cpp" line="439"/>
         <source>Locked door</source>
         <translation>Запертая дверь</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="438"/>
+        <location filename="blocks/blocks.cpp" line="439"/>
         <source>Door</source>
         <translation>Дверь</translation>
     </message>
@@ -150,7 +150,12 @@
 <context>
     <name>Dwarf</name>
     <message>
-        <location filename="blocks/Dwarf.cpp" line="124"/>
+        <location filename="blocks/Dwarf.cpp" line="50"/>
+        <source>Rational creature</source>
+        <translation>Разумное существо</translation>
+    </message>
+    <message>
+        <location filename="blocks/Dwarf.cpp" line="125"/>
         <source>Don&apos;t touch me!</source>
         <translation>Не трогай меня!</translation>
     </message>
@@ -265,22 +270,22 @@
         <translation>Здесь ничего нет.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="373"/>
+        <location filename="Player.cpp" line="361"/>
         <source>freg version: %1. Compiled on %2 at %3 with Qt %4.</source>
         <translation>Версия freg: %1. Скомпилировано %2 в %3 с Qt %4.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="378"/>
+        <location filename="Player.cpp" line="366"/>
         <source>Current Qt version: %1. Build type: %2. Compiler: %3.</source>
         <translation>Текущая версия Qt: %1. Тип сборки: %2. Компилятор: %3.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="380"/>
+        <location filename="Player.cpp" line="368"/>
         <source>debug</source>
         <translation>отладка</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="380"/>
+        <location filename="Player.cpp" line="368"/>
         <source>release</source>
         <translation>выпуск</translation>
     </message>
@@ -300,22 +305,22 @@
         <translation>Игрока нет.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="321"/>
+        <location filename="Player.cpp" line="309"/>
         <source>You are not in Creative Mode.</source>
         <translation>Вы не в режиме Творца.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="346"/>
+        <location filename="Player.cpp" line="334"/>
         <source>%1 command: invalid kind!</source>
         <translation>Команда %1: недопустимый тип!</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="352"/>
+        <location filename="Player.cpp" line="340"/>
         <source>%1 command: invalid substance!</source>
         <translation>Команда %1: недопустимое вещество!</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="392"/>
+        <location filename="Player.cpp" line="380"/>
         <source>Don&apos;t know such command: &quot;%1&quot;.</source>
         <translation>Неизвестная команда: &quot;%1&quot;.</translation>
     </message>
@@ -323,7 +328,7 @@
 <context>
     <name>Predator</name>
     <message>
-        <location filename="blocks/blocks.cpp" line="741"/>
+        <location filename="blocks/blocks.cpp" line="742"/>
         <source>Predator bites you!</source>
         <translation>Хищник кусает вас!</translation>
     </message>
@@ -332,7 +337,7 @@
     <name>QObject</name>
     <message>
         <location filename="blocks/Block.cpp" line="29"/>
-        <location filename="blocks/Weapons.cpp" line="29"/>
+        <location filename="blocks/Weapons.cpp" line="32"/>
         <source>Air</source>
         <translation>Воздух</translation>
     </message>
@@ -457,148 +462,148 @@
         <translation>Лиана</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="484"/>
+        <location filename="blocks/blocks.cpp" line="485"/>
         <source>Bomb</source>
         <translation>Бомба</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="511"/>
+        <location filename="blocks/blocks.cpp" line="512"/>
         <source>Timer fired. %1</source>
         <translation>Сработал таймер.</translation>
     </message>
     <message>
-        <location filename="blocks/Weapons.cpp" line="25"/>
+        <location filename="blocks/Weapons.cpp" line="28"/>
         <source>Pebble</source>
         <translation>Булыжник</translation>
     </message>
     <message>
-        <location filename="blocks/Weapons.cpp" line="26"/>
+        <location filename="blocks/Weapons.cpp" line="29"/>
         <source>Spike</source>
         <translation>Шип</translation>
     </message>
     <message>
-        <location filename="blocks/Weapons.cpp" line="27"/>
+        <location filename="blocks/Weapons.cpp" line="30"/>
         <source>Stick</source>
         <translation>Палка</translation>
     </message>
     <message>
-        <location filename="blocks/Weapons.cpp" line="28"/>
+        <location filename="blocks/Weapons.cpp" line="31"/>
         <source>Bone</source>
         <translation>Кость</translation>
     </message>
     <message>
-        <location filename="blocks/Weapons.cpp" line="80"/>
+        <location filename="blocks/Weapons.cpp" line="96"/>
         <source>Iron pick</source>
         <translation>Железная пика</translation>
     </message>
     <message>
-        <location filename="blocks/Weapons.cpp" line="81"/>
+        <location filename="blocks/Weapons.cpp" line="97"/>
         <source>Steel pick</source>
         <translation>Стальная кирка</translation>
     </message>
     <message>
-        <location filename="blocks/Weapons.cpp" line="82"/>
+        <location filename="blocks/Weapons.cpp" line="98"/>
         <source>Adamantine pick</source>
         <translation>Адамантиновая кирка</translation>
     </message>
     <message>
-        <location filename="blocks/Weapons.cpp" line="104"/>
+        <location filename="blocks/Weapons.cpp" line="120"/>
         <source>Bone shovel</source>
         <translation>Костяная лопата</translation>
     </message>
     <message>
-        <location filename="blocks/Weapons.cpp" line="105"/>
+        <location filename="blocks/Weapons.cpp" line="121"/>
         <source>Iron shovel</source>
         <translation>Железная лопата</translation>
     </message>
     <message>
-        <location filename="blocks/Weapons.cpp" line="106"/>
+        <location filename="blocks/Weapons.cpp" line="122"/>
         <source>Steel shovel</source>
         <translation>Стальная лопата</translation>
     </message>
     <message>
-        <location filename="blocks/Weapons.cpp" line="107"/>
+        <location filename="blocks/Weapons.cpp" line="123"/>
         <source>Adamantine shovel</source>
         <translation>Адамантиновая лопата</translation>
     </message>
     <message>
-        <location filename="blocks/Weapons.cpp" line="129"/>
+        <location filename="blocks/Weapons.cpp" line="145"/>
         <source>Club</source>
         <translation>Дубина</translation>
     </message>
     <message>
-        <location filename="blocks/Weapons.cpp" line="130"/>
+        <location filename="blocks/Weapons.cpp" line="146"/>
         <source>Stone hammer</source>
         <translation>Каменный молот</translation>
     </message>
     <message>
-        <location filename="blocks/Weapons.cpp" line="131"/>
+        <location filename="blocks/Weapons.cpp" line="147"/>
         <source>Iron hammer</source>
         <translation>Железный молот</translation>
     </message>
     <message>
-        <location filename="blocks/Weapons.cpp" line="132"/>
+        <location filename="blocks/Weapons.cpp" line="148"/>
         <source>Steel hammer</source>
         <translation>Стальной молот</translation>
     </message>
     <message>
-        <location filename="blocks/Weapons.cpp" line="133"/>
+        <location filename="blocks/Weapons.cpp" line="149"/>
         <source>Adamantine hammer</source>
         <translation>Адамантиновый молот</translation>
     </message>
     <message>
-        <location filename="blocks/Weapons.cpp" line="155"/>
+        <location filename="blocks/Weapons.cpp" line="171"/>
         <source>Bone axe</source>
         <translation>Костяной топор</translation>
     </message>
     <message>
-        <location filename="blocks/Weapons.cpp" line="156"/>
+        <location filename="blocks/Weapons.cpp" line="172"/>
         <source>Stone axe</source>
         <translation>Каменный топор</translation>
     </message>
     <message>
-        <location filename="blocks/Weapons.cpp" line="157"/>
+        <location filename="blocks/Weapons.cpp" line="173"/>
         <source>Iron axe</source>
         <translation>Железный топор</translation>
     </message>
     <message>
-        <location filename="blocks/Weapons.cpp" line="158"/>
+        <location filename="blocks/Weapons.cpp" line="174"/>
         <source>Steel axe</source>
         <translation>Стальной топор</translation>
     </message>
     <message>
-        <location filename="blocks/Weapons.cpp" line="159"/>
+        <location filename="blocks/Weapons.cpp" line="175"/>
         <source>Adamantine axe</source>
         <translation>Адамантиновый топор</translation>
     </message>
     <message>
-        <location filename="blocks/Inventory.cpp" line="92"/>
+        <location filename="blocks/Inventory.cpp" line="93"/>
         <source>No room.</source>
         <translation>Нет места.</translation>
     </message>
     <message>
-        <location filename="blocks/Inventory.cpp" line="129"/>
-        <location filename="blocks/Inventory.cpp" line="212"/>
+        <location filename="blocks/Inventory.cpp" line="120"/>
+        <location filename="blocks/Inventory.cpp" line="195"/>
         <source>Nothing here.</source>
         <translation>Здесь ничего нет.</translation>
     </message>
     <message>
-        <location filename="blocks/Inventory.cpp" line="140"/>
+        <location filename="blocks/Inventory.cpp" line="131"/>
         <source>Cannot inscribe this.</source>
         <translation>Это нельзя надписать.</translation>
     </message>
     <message>
-        <location filename="blocks/Inventory.cpp" line="144"/>
+        <location filename="blocks/Inventory.cpp" line="135"/>
         <source>Inscribed.</source>
         <translation>Надписано.</translation>
     </message>
     <message>
-        <location filename="blocks/Inventory.cpp" line="228"/>
+        <location filename="blocks/Inventory.cpp" line="211"/>
         <source>Craft successful.</source>
         <translation>Сборка удалась.</translation>
     </message>
     <message>
-        <location filename="blocks/Inventory.cpp" line="232"/>
+        <location filename="blocks/Inventory.cpp" line="215"/>
         <source>You don&apos;t know how to craft this.</source>
         <translation>Вы не знаете как собрать это.</translation>
     </message>
@@ -613,42 +618,42 @@
         <translation>Железная наковальня</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="483"/>
+        <location filename="blocks/blocks.cpp" line="484"/>
         <source>Iron clock</source>
         <translation>Железные часы</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="582"/>
+        <location filename="blocks/blocks.cpp" line="583"/>
         <source>Paper page</source>
         <translation>Бумажная страница</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="583"/>
+        <location filename="blocks/blocks.cpp" line="584"/>
         <source>Screen</source>
         <translation>Экран</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="586"/>
+        <location filename="blocks/blocks.cpp" line="587"/>
         <source>Strange text</source>
         <translation>Странный текст</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="594"/>
+        <location filename="blocks/blocks.cpp" line="595"/>
         <source>Nothing is written on this page.</source>
         <translation>На этой странице ничего не написано.</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="611"/>
+        <location filename="blocks/blocks.cpp" line="612"/>
         <source>Map</source>
         <translation>Карта</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="616"/>
+        <location filename="blocks/blocks.cpp" line="617"/>
         <source>Set title to this map first.</source>
         <translation>Сначала укажите название для этой карты.</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="698"/>
+        <location filename="blocks/blocks.cpp" line="699"/>
         <source>Bell</source>
         <translation>Звонок</translation>
     </message>
@@ -731,7 +736,7 @@
 <context>
     <name>Rabbit</name>
     <message>
-        <location filename="blocks/blocks.cpp" line="377"/>
+        <location filename="blocks/blocks.cpp" line="378"/>
         <source>Herbivore</source>
         <translation>Травоядное животное</translation>
     </message>
@@ -794,7 +799,7 @@
         <translation>левая</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="231"/>
+        <location filename="screens/CursedScreen.cpp" line="230"/>
         <location filename="screens/TextScreen.cpp" line="140"/>
         <source>Unknown key. Press &apos;H&apos; for help.</source>
         <translation>Неизвестная клавиша. Нажмите &apos;H&apos; для вызова справки.</translation>
@@ -810,106 +815,105 @@
         <translation>О-Взять</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="79"/>
+        <location filename="screens/CursedScreen.cpp" line="78"/>
         <source>Build</source>
         <translation>B-Строить</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="80"/>
+        <location filename="screens/CursedScreen.cpp" line="79"/>
         <source>Craft</source>
         <translation>C-Собрать</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="437"/>
+        <location filename="screens/CursedScreen.cpp" line="435"/>
         <source>Gorged</source>
         <translation>Объелся</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="433"/>
+        <location filename="screens/CursedScreen.cpp" line="431"/>
         <source>Full</source>
         <translation>Сытый</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="429"/>
+        <location filename="screens/CursedScreen.cpp" line="427"/>
         <source>Hungry</source>
         <translation>Голодный</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="665"/>
+        <location filename="screens/CursedScreen.cpp" line="663"/>
         <source>x Down x</source>
         <translation>х Низ х</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="666"/>
+        <location filename="screens/CursedScreen.cpp" line="664"/>
         <source>^ North ^</source>
         <translation>^ Север ^</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="667"/>
+        <location filename="screens/CursedScreen.cpp" line="665"/>
         <source>v South v</source>
         <translation>v Юг v</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="668"/>
+        <location filename="screens/CursedScreen.cpp" line="666"/>
         <source>&gt; East &gt;</source>
         <translation>&gt; Восток &gt;</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="669"/>
+        <location filename="screens/CursedScreen.cpp" line="667"/>
         <source>&lt; West &lt;</source>
         <translation>&lt; Запад &lt;</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="664"/>
+        <location filename="screens/CursedScreen.cpp" line="662"/>
         <source>.  Up  .</source>
         <translation>. Верх .</translation>
     </message>
     <message>
         <location filename="screens/CursedScreen.cpp" line="74"/>
-        <source>Use/Eat</source>
-        <translation>U-Использовать/Eсть</translation>
+        <source>Use</source>
+        <translation>U-Использовать</translation>
+    </message>
+    <message>
+        <source>Wield/take oFF</source>
+        <translation type="obsolete">W-Надеть/снять</translation>
     </message>
     <message>
         <location filename="screens/CursedScreen.cpp" line="77"/>
-        <source>Wield/take oFF</source>
-        <translation>W-Надеть/снять</translation>
-    </message>
-    <message>
-        <location filename="screens/CursedScreen.cpp" line="78"/>
         <source>iNscribe</source>
         <translation>N-Подписать</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="408"/>
+        <location filename="screens/CursedScreen.cpp" line="406"/>
         <source>Creative Mode
 xyz: %1, %2, %3. XY: %4, %5.</source>
         <translation>Режим Творца
 xyz: %1, %2, %3. XY: %4, %5.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="710"/>
+        <location filename="screens/CursedScreen.cpp" line="712"/>
         <source>All weight: %1 mz</source>
         <translation>Полный вес: %1 mz</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="719"/>
+        <location filename="screens/CursedScreen.cpp" line="721"/>
         <source>Your inventory</source>
         <translation>Ваш инвентарь</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="746"/>
+        <location filename="screens/CursedScreen.cpp" line="748"/>
         <location filename="screens/TextScreen.cpp" line="214"/>
         <source>File path: %1/%2</source>
         <translation>Путь к файлу: %1/%2</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="747"/>
+        <location filename="screens/CursedScreen.cpp" line="749"/>
         <location filename="screens/TextScreen.cpp" line="215"/>
         <source>There is no such help file: %1/%2.</source>
         <translation>Нет такого файла справки: %1/%2.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="789"/>
+        <location filename="screens/CursedScreen.cpp" line="791"/>
         <location filename="screens/TextScreen.cpp" line="236"/>
         <source>You die.
 Waiting for respawn...</source>
@@ -917,12 +921,12 @@ Waiting for respawn...</source>
 Ожидание возрождения...</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="859"/>
+        <location filename="screens/CursedScreen.cpp" line="861"/>
         <source>Set your terminal width at least %1 chars.</source>
         <translation>Установите ширину терминала не менее %1 символов.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="876"/>
+        <location filename="screens/CursedScreen.cpp" line="878"/>
         <location filename="screens/TextScreen.cpp" line="263"/>
         <source>
 Version %1.
@@ -934,7 +938,7 @@ Press any key.</source>
 Нажмите любую клавишу.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="883"/>
+        <location filename="screens/CursedScreen.cpp" line="885"/>
         <location filename="screens/TextScreen.cpp" line="266"/>
         <source>*--- Game started. Press &apos;H&apos; for help. ---*</source>
         <translation>*--- Игра запущена. Нажмите &apos;H&apos; для вызова справки. ---*</translation>
@@ -968,63 +972,63 @@ Press any key.</source>
         <translation>Наступила ночь.</translation>
     </message>
     <message>
-        <location filename="world.cpp" line="605"/>
+        <location filename="world.cpp" line="611"/>
         <source>Cannot build here.</source>
         <translation>Здесь нельзя строить.</translation>
     </message>
     <message>
-        <location filename="world.cpp" line="632"/>
+        <location filename="world.cpp" line="638"/>
         <source>No note received.</source>
         <translation>Не получено заметки.</translation>
     </message>
     <message>
-        <location filename="world.cpp" line="644"/>
+        <location filename="world.cpp" line="650"/>
         <source>No inventory.</source>
         <translation>Нет инвентаря.</translation>
     </message>
     <message>
-        <location filename="world.cpp" line="648"/>
-        <location filename="world.cpp" line="649"/>
+        <location filename="world.cpp" line="654"/>
+        <location filename="world.cpp" line="655"/>
         <source>Nothing here.</source>
         <translation>Здесь ничего нет.</translation>
     </message>
     <message>
-        <location filename="world.cpp" line="654"/>
+        <location filename="world.cpp" line="660"/>
         <source>No room there.</source>
         <translation>Нет места.</translation>
     </message>
     <message>
-        <location filename="world.cpp" line="658"/>
+        <location filename="world.cpp" line="664"/>
         <source>Your bag is lighter now.</source>
         <translation>Ваша сумка стала легче.</translation>
     </message>
     <message>
-        <location filename="world.cpp" line="659"/>
+        <location filename="world.cpp" line="665"/>
         <source>Your bag is heavier now.</source>
         <translation>Ваша сумка стала тяжелее.</translation>
     </message>
     <message>
-        <location filename="world.cpp" line="703"/>
+        <location filename="world.cpp" line="709"/>
         <source>Invalid active shreds number. Set to %1.</source>
         <translation>Некорректное число активных лоскутов. Установлено %1.</translation>
     </message>
     <message>
-        <location filename="world.cpp" line="708"/>
+        <location filename="world.cpp" line="714"/>
         <source>Active shreds number too small, set to 3.</source>
         <translation>Слишком маленькое число активных лоскутов, установлено 3.</translation>
     </message>
     <message>
-        <location filename="world.cpp" line="711"/>
+        <location filename="world.cpp" line="717"/>
         <source>Active shreds number too big. Set to %1.</source>
         <translation>Слишком большое число активных лоскутов. Установлено %1.</translation>
     </message>
     <message>
-        <location filename="world.cpp" line="714"/>
+        <location filename="world.cpp" line="720"/>
         <source>Active shreds number is %1x%1.</source>
         <translation>Число активных лоскутов: %1x%1.</translation>
     </message>
     <message>
-        <location filename="world.cpp" line="760"/>
+        <location filename="world.cpp" line="766"/>
         <source>Loading world...</source>
         <translation>Загрузка мира...</translation>
     </message>
