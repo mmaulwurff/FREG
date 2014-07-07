@@ -455,7 +455,7 @@ bool World::CanMove(const int x, const int y, const int z,
         const int newx, const int newy, const int newz, const dirs dir)
 {
     Block * const block    = GetBlock(x, y, z);
-    Block * const block_to = GetBlock(newx, newy, newz);
+    Block *       block_to = GetBlock(newx, newy, newz);
     if ( DOWN != dir && block->Weight() != 0 ) {
         Falling * const falling = block->ShouldFall();
         if ( falling != nullptr
@@ -476,8 +476,10 @@ bool World::CanMove(const int x, const int y, const int z,
     default:
     case NOT_MOVABLE: return false;
     }
-    const push_reaction target_push = block_to->PushResult(dir);
+    push_reaction target_push = block_to->PushResult(dir);
     block_to->Push(dir, block);
+    block_to = GetBlock(newx, newy, newz);
+    target_push = block_to->PushResult(dir);
     switch ( target_push ) {
     case MOVABLE:
         return ( (block->Weight() > block_to->Weight()) &&
@@ -523,7 +525,7 @@ void World::NoCheckMove(const int x, const int y, const int z,
     emit Updated(newx, newy, newz);
 
     shred_from->AddFalling(shred_from->GetBlock(x_in, y_in, z+1));
-    shred_to  ->AddFalling(shred_from->GetBlock(newx_in, newy_in, newz+1));
+    shred_to  ->AddFalling(shred_to  ->GetBlock(newx_in, newy_in, newz+1));
     shred_to  ->AddFalling(block);
 
     if ( block_to->Sub() != AIR ) {
@@ -607,7 +609,7 @@ bool World::Build(Block * block, const int x, const int y, const int z,
 {
     Block * const target_block = GetBlock(x, y, z);
     if ( ENVIRONMENT!=target_block->PushResult(NOWHERE) && not anyway ) {
-        if ( who ) {
+        if ( who != nullptr ) {
             who->ReceiveSignal(tr("Cannot build here."));
         }
         return false;

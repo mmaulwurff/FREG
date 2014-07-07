@@ -61,14 +61,10 @@ void DeferredAction::Build() const {
         return;
     } // else:
     Inventory * const inv = attachedBlock->HasInventory();
-    if ( inv == nullptr ) {
-        return;
-    } // else:
+    if ( inv == nullptr ) return;
     inv->Pull(srcSlot);
     // put more material in building inventory slot:
-    if ( inv->Number(srcSlot) ) {
-        return;
-    } // else:
+    if ( inv->Number(srcSlot) ) return;
     for (int i=srcSlot+1; i<inv->Size() &&
         inv->Number(srcSlot)<MAX_STACK_SIZE; ++i)
     {

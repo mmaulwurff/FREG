@@ -38,9 +38,15 @@ Inventory * Bucket::HasInventory() { return this; }
 usage_types Bucket::Use(Block *) { return USAGE_TYPE_POUR; }
 
 QString Bucket::FullName() const {
+    QString name;
+    switch ( Sub() ) {
+    default:    name = QObject::tr("Bucket"); break;
+    case GLASS: name = QObject::tr("Bottle"); break;
+    }
     return ( GetInvSub(0) == AIR ) ?
         QObject::tr("Empty bucket") :
-        QObject::tr("Bucket with %1 (%2/%3 full)")
+        QObject::tr("%1 with %2 (%3/%4 full)")
+            .arg(name)
             .arg(ShowBlock(0)->FullName().toLower())
             .arg(Number(0))
             .arg(MAX_STACK_SIZE);

@@ -286,7 +286,7 @@ void Player::Build(const int slot) {
     int x_targ, y_targ, z_targ;
     emit GetFocus(&x_targ, &y_targ, &z_targ);
     Block * const block = ValidBlock(slot);
-    if ( block && (AIR != world->GetBlock(X(), Y(), Z()-1)->Sub()
+    if ( block != nullptr && (AIR != world->GetBlock(X(), Y(), Z()-1)->Sub()
             || 0 == player->Weight()) )
     {
         player->GetDeferredAction()->

@@ -113,7 +113,6 @@ public:
     using Animal::Animal;
 
     int Kind() const override;
-    Block * DropAfterDamage(bool * delete_block) override;
     int NutritionalValue(int sub) const override;
     QString FullName() const override;
 

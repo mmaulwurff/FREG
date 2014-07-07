@@ -31,15 +31,25 @@
     }
 
     void Container::DoRareAction() {
-        if ( Sub() == DIFFERENT ) {
-            Inventory * const inv =
-                GetWorld()->GetBlock(X(), Y(), Z()-1)->HasInventory();
-            if ( inv ) {
-                inv->GetAll(this);
-            }
-            if ( IsEmpty() ) {
+        switch ( Sub() ) {
+        default: break;
+        case DIFFERENT: {
+                Inventory * const inv =
+                    GetWorld()->GetBlock(X(), Y(), Z()-1)->HasInventory();
+                if ( inv != nullptr ) {
+                    inv->GetAll(this);
+                }
+                if ( IsEmpty() ) {
+                    GetWorld()->DestroyAndReplace(X(), Y(), Z());
+                }
+            } break;
+        case A_MEAT:
+        case H_MEAT:
+            Damage(MAX_DURABILITY/SECONDS_IN_DAY, TIME);
+            if ( GetDurability() <= 0 ) {
                 GetWorld()->DestroyAndReplace(X(), Y(), Z());
             }
+            break;
         }
     }
 
@@ -51,8 +61,16 @@
     int Container::Kind() const { return CONTAINER; }
     int Container::Sub() const { return Block::Sub(); }
     Inventory * Container::HasInventory() { return this; }
-    usage_types Container::Use(Block *) { return USAGE_TYPE_OPEN; }
-    push_reaction Container::PushResult(dirs) const { return MOVABLE; }
+    push_reaction Container::PushResult(dirs) const { return NOT_MOVABLE; }
+
+    usage_types Container::Use(Block *) {
+        if ( Sub() == A_MEAT || Sub() == H_MEAT ) {
+            GetWorld()->DestroyAndReplace(X(), Y(), Z());
+            return USAGE_TYPE_NO;
+        } else {
+            return USAGE_TYPE_OPEN;
+        }
+    }
 
     Block * Container::DropAfterDamage(bool * const delete_block) {
         if ( DIFFERENT == Sub() ) {
@@ -86,8 +104,10 @@
         case STONE:     return tr("Stone chest");
         case IRON:      return tr("Locker");
         case WATER:     return tr("Fridge");
+        case A_MEAT:
+        case H_MEAT:    return tr("Cadaver");
         default:
-            fprintf(stderr, "Container::FullName: unlisted sub: %d\n", Sub());
+            fprintf(stderr, "%s: unlisted sub: %d\n", Q_FUNC_INFO, Sub());
             return tr("Unknown container");
         }
     }
@@ -178,7 +198,7 @@
         case WOOD: return QObject::tr("Workbench");
         case IRON: return QObject::tr("Iron anvil");
         default:
-            fprintf(stderr, "Workbench::FullName: sub (?): %d\n", Sub());
+            fprintf(stderr, "%s: sub (?): %d\n", Q_FUNC_INFO, Sub());
             return "Strange workbench";
         }
     }

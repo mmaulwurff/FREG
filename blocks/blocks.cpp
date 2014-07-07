@@ -141,7 +141,9 @@
     }
 
     Block * Animal::DropAfterDamage(bool *) {
-        return block_manager.NewBlock(WEAPON, BONE);
+        Block * const cadaver = block_manager.NewBlock(CONTAINER, Sub());
+        cadaver->HasInventory()->Get(block_manager.NewBlock(WEAPON, BONE));
+        return cadaver;
     }
 
     Animal::Animal(const int sub, const int id) :
@@ -365,14 +367,6 @@
         }
         moved_in_this_turn = false; // for next turn
         Animal::DoRareAction();
-    }
-
-    Block * Rabbit::DropAfterDamage(bool * delete_block) {
-        Block * const pile = block_manager.NewBlock(CONTAINER, DIFFERENT);
-        Inventory * const pile_inv = pile->HasInventory();
-        pile_inv->Get(block_manager.NormalBlock(A_MEAT));
-        pile_inv->Get(Animal::DropAfterDamage(delete_block));
-        return pile;
     }
 
     QString Rabbit::FullName() const { return tr("Herbivore"); }

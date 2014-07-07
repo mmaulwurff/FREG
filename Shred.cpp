@@ -223,12 +223,7 @@ void Shred::Unregister(Active * const active) {
 
 void Shred::AddFalling(Block * const block) {
     Falling * const falling = block->ShouldFall();
-    if ( falling != nullptr &&
-            not falling->IsFalling() &&
-            not (*falling == *GetBlock(
-                CoordInShred(falling->X()),
-                CoordInShred(falling->Y()), falling->Z()-1)) )
-    {
+    if ( falling != nullptr ) {
         falling->SetFalling(true);
         fallList.append(falling);
     }

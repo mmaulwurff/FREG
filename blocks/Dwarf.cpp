@@ -33,12 +33,9 @@ int Dwarf::Weight() const {
 }
 
 Block * Dwarf::DropAfterDamage(bool * const delete_block) {
-    Block * const pile = block_manager.NewBlock(CONTAINER, DIFFERENT);
-    Inventory * const pile_inv = pile->HasInventory();
-    pile_inv->Get(block_manager.NormalBlock(H_MEAT));
-    pile_inv->Get(Animal::DropAfterDamage(delete_block));
-    pile_inv->Get(block_manager.NewBlock(WEAPON, BONE));
-    return pile;
+    Block * cadaver = Animal::DropAfterDamage(delete_block);
+    cadaver->HasInventory()->Get(block_manager.NewBlock(WEAPON, BONE));
+    return cadaver;
 }
 
 int  Dwarf::Sub() const { return Block::Sub(); }
@@ -100,12 +97,12 @@ int Dwarf::NutritionalValue(const int sub) const {
 
 bool Dwarf::GetExact(Block * const block, const int to) {
     if ( block==nullptr ) return true;
-    if ( (to > ON_LEGS
-                ||   IN_RIGHT==to
+    if ( (to > ON_LEGS || ( Number(to) == 0 && (
+                     IN_RIGHT==to
                 ||   IN_LEFT ==to
                 || ( ON_HEAD ==to && WEARABLE_HEAD==block->Wearable() )
                 || ( ON_BODY ==to && WEARABLE_BODY==block->Wearable() )
-                || ( ON_LEGS ==to && WEARABLE_LEGS==block->Wearable() ))
+                || ( ON_LEGS ==to && WEARABLE_LEGS==block->Wearable() ))))
             && Inventory::GetExact(block, to) )
     {
         UpdateLightRadius();
