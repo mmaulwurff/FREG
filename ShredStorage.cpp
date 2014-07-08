@@ -148,7 +148,6 @@ void PreloadThread::run() {
             storage->AddShredData(i, lati_center-size/2);
         }
     break;
-    default: fprintf(stderr,
-        "PreloadThread::run: unknown direction: %d\n", direction);
+    default: Q_UNREACHABLE(); break;
     }
 }

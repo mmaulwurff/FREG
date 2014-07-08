@@ -316,8 +316,7 @@ void World::ReloadShreds(const int direction) {
                 latitude  - NumShreds()/2, memory);
         }
     break;
-    default: fprintf(stderr,
-        "%s: invalid direction: %d.\n", Q_FUNC_INFO, direction);
+    default: Q_UNREACHABLE(); break;
     }
     shredStorage->Shift(direction, longitude, latitude);
     MakeSun();

@@ -61,8 +61,8 @@ const QString locale = QLocale::system().name();
 
 enum shred_type {
     SHRED_PLAIN     = '.',
-    SHRED_TESTSHRED = 't',
-    SHRED_PYRAMID   = 'p',
+    SHRED_TESTSHRED = 'T',
+    SHRED_PYRAMID   = 'P',
     SHRED_HILL      = '+',
     SHRED_DESERT    = ':',
     SHRED_WATER     = '~',
@@ -70,8 +70,10 @@ enum shred_type {
     SHRED_MOUNTAIN  = '^',
     SHRED_EMPTY     = '_',
     SHRED_CHAOS     = '!',
-    SHRED_CASTLE    = 'c',
+    SHRED_CASTLE    = 'C',
     SHRED_WASTE     = '=',
+    SHRED_ACID_LAKE = 'a',
+    SHRED_LAVA_LAKE = 'l',
     SHRED_NULLMOUNTAIN = '#',
     SHRED_NORMAL_UNDERGROUND = '-',
 };

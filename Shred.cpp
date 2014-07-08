@@ -120,6 +120,8 @@ Shred::Shred(const int shred_x, const int shred_y,
     case SHRED_CHAOS:     ChaosShred(); break;
     case SHRED_NORMAL_UNDERGROUND: NormalUnderground(); break;
     case SHRED_EMPTY: break;
+    case SHRED_ACID_LAKE: Water(ACID ); break;
+    case SHRED_LAVA_LAKE: Water(STONE); break;
     default:
         fprintf(stderr, "%s: type: %c, code %d?\n", Q_FUNC_INFO, type, type);
         Plain();
@@ -252,8 +254,7 @@ void Shred::ReloadTo(const dirs direction) {
     case SOUTH: reload = &Active::ReloadToSouth; --shredY; break;
     case EAST:  reload = &Active::ReloadToEast;  --shredX; break;
     case WEST:  reload = &Active::ReloadToWest;  ++shredX; break;
-    default: Q_UNREACHABLE();
-        fprintf(stderr, "%s: unlisted dir: %d,\n", Q_FUNC_INFO, direction);
+    default: Q_UNREACHABLE(); break;
     }
     activeListAll.removeAll(nullptr);
     for (auto i=activeListAll.constBegin(); i!=activeListAll.constEnd(); ++i) {
@@ -574,7 +575,7 @@ void Shred::ChaosShred() {
 
 void Shred::NormalCube(
         const int x_start, const int y_start, const int z_start,
-        const int x_size,  const int y_size,  const int z_size, const int sub)
+        const int x_size,  const int y_size,  const int z_size, const subs sub)
 {
     Block * const block = Normal(sub);
     for (int x=x_start; x < x_start+x_size; ++x)

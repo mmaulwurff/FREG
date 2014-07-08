@@ -121,7 +121,7 @@ private:
 
     QString FileName() const;
 
-    void NormalUnderground(int depth = 0, int sub = SOIL);
+    void NormalUnderground(int depth = 0, subs sub = SOIL);
     void CoverWith(int kind, int sub);
     /// Puts num things(kind-sub) in random places on shred surface.
     /** If on_water is false, this will not drop things on water,
@@ -135,7 +135,7 @@ private:
     void NullMountain();
     void Plain();
     void Forest();
-    void Water();
+    void Water(subs sub = WATER);
     void Pyramid();
     void Mountain();
     void Hill();
@@ -155,7 +155,7 @@ private:
     void AddWater();
     int FlatUndeground(int depth = 0);
     void NormalCube(int x_start, int y_start, int z_start,
-                    int x_size,  int y_size,  int z_size, int sub);
+                    int x_size,  int y_size,  int z_size, subs);
 
     void RainBlock(int * kind, int * sub) const;
 
