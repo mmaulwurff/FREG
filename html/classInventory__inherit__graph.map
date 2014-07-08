@@ -4,5 +4,6 @@
 <area shape="rect" id="node7" href="$classContainer.html" title="Container is multi&#45;purpose container for blocks. " alt="" coords="165,89,243,122"/>
 <area shape="rect" id="node11" href="$classCreator.html" title="Creator" alt="" coords="267,89,331,122"/>
 <area shape="rect" id="node13" href="$classDwarf.html" title="Dwarf" alt="" coords="355,89,411,122"/>
+<area shape="rect" id="node15" href="$classRainMachine.html" title="RainMachine" alt="" coords="435,89,533,122"/>
 <area shape="rect" id="node9" href="$classWorkbench.html" title="Workbench allows craft from multiple sources. There can be up to 2 products. Also can be used as cont..." alt="" coords="160,171,248,205"/>
 </map>

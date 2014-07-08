@@ -1,7 +1,6 @@
 var searchData=
 [
   ['damage_5facid',['DAMAGE_ACID',['../header_8h.html#a5adfb93f736d9aa263cea4b7b74da15ea0b27ddbbf4c1c2c5901215f00a54ef87',1,'header.h']]],
-  ['damage_5ffall',['DAMAGE_FALL',['../header_8h.html#a5adfb93f736d9aa263cea4b7b74da15ea4e07f767d39ffd8e48e5138ec45710f8',1,'header.h']]],
   ['damage_5fhands',['DAMAGE_HANDS',['../header_8h.html#a5adfb93f736d9aa263cea4b7b74da15eafe201840b8de13216ac699ce9f00ca41',1,'header.h']]],
   ['deferred_5fbuild',['DEFERRED_BUILD',['../DeferredAction_8h.html#a9c85a475666355ed2ba754fb11de9b82a53efb7bf931502e9a7561ac67331158f',1,'DeferredAction.h']]],
   ['deferred_5fdamage',['DEFERRED_DAMAGE',['../DeferredAction_8h.html#a9c85a475666355ed2ba754fb11de9b82a80b2535eebfaf83f236b4078a006e5ac',1,'DeferredAction.h']]],

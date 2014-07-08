@@ -1,5 +1,7 @@
 <map id="Shred&#45;gen&#45;flat.cpp" name="Shred&#45;gen&#45;flat.cpp">
-<area shape="rect" id="node3" href="$Shred_8h.html" title="Shred.h" alt="" coords="33,89,100,122"/>
+<area shape="rect" id="node3" href="$Shred_8h.html" title="Shred.h" alt="" coords="28,89,95,122"/>
 <area shape="rect" id="node7" href="$header_8h.html" title="header.h" alt="" coords="120,171,189,205"/>
-<area shape="rect" id="node14" href="$Block_8h.html" title="Provides definition for class Block. " alt="" coords="175,89,281,122"/>
+<area shape="rect" id="node13" href="$world_8h.html" title="world.h" alt="" coords="300,89,364,122"/>
+<area shape="rect" id="node25" href="$Block_8h.html" title="Provides definition for class Block. " alt="" coords="169,89,276,122"/>
+<area shape="rect" id="node20" href="$worldmap_8h.html" title="worldmap.h" alt="" coords="400,171,488,205"/>
 </map>

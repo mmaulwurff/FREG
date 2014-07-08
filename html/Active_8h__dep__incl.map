@@ -1,18 +1,22 @@
 <map id="blocks/Active.h" name="blocks/Active.h">
-<area shape="rect" id="node3" href="$Animal_8h.html" title="blocks/Animal.h" alt="" coords="271,89,385,122"/>
-<area shape="rect" id="node18" href="$Illuminator_8h.html" title="blocks/Illuminator.h" alt="" coords="420,89,553,122"/>
-<area shape="rect" id="node23" href="$Container_8h.html" title="blocks/Container.h" alt="" coords="577,89,708,122"/>
-<area shape="rect" id="node28" href="$Active_8cpp.html" title="blocks/Active.cpp" alt="" coords="732,89,857,122"/>
-<area shape="rect" id="node30" href="$DeferredAction_8cpp.html" title="DeferredAction.cpp" alt="" coords="881,89,1015,122"/>
-<area shape="rect" id="node32" href="$Lighting-inertia_8cpp.html" title="This file provides simple (also mad) lighting for freg. " alt="" coords="1039,89,1169,122"/>
-<area shape="rect" id="node34" href="$Shred_8cpp.html" title="Shred.cpp" alt="" coords="1193,89,1273,122"/>
-<area shape="rect" id="node36" href="$world_8cpp.html" title="world.cpp" alt="" coords="1297,89,1375,122"/>
-<area shape="rect" id="node5" href="$blocks_8h.html" title="blocks/blocks.h" alt="" coords="272,171,384,205"/>
-<area shape="rect" id="node11" href="$Dwarf_8h.html" title="blocks/Dwarf.h" alt="" coords="139,171,248,205"/>
-<area shape="rect" id="node7" href="$BlockManager_8cpp.html" title="BlockManager.cpp" alt="" coords="408,254,536,287"/>
-<area shape="rect" id="node9" href="$blocks_8cpp.html" title="blocks/blocks.cpp" alt="" coords="259,254,384,287"/>
+<area shape="rect" id="node3" href="$Animal_8h.html" title="blocks/Animal.h" alt="" coords="211,89,325,122"/>
+<area shape="rect" id="node18" href="$Weapons_8h.html" title="blocks/Weapons.h" alt="" coords="511,89,641,122"/>
+<area shape="rect" id="node23" href="$Illuminator_8h.html" title="blocks/Illuminator.h" alt="" coords="671,89,804,122"/>
+<area shape="rect" id="node28" href="$Container_8h.html" title="blocks/Container.h" alt="" coords="1016,89,1147,122"/>
+<area shape="rect" id="node33" href="$RainMachine_8h.html" title="blocks/RainMachine.h" alt="" coords="843,89,992,122"/>
+<area shape="rect" id="node38" href="$Active_8cpp.html" title="blocks/Active.cpp" alt="" coords="1171,89,1296,122"/>
+<area shape="rect" id="node40" href="$DeferredAction_8cpp.html" title="DeferredAction.cpp" alt="" coords="1320,89,1453,122"/>
+<area shape="rect" id="node42" href="$Lighting-inertia_8cpp.html" title="This file provides simple (also mad) lighting for freg. " alt="" coords="1477,89,1608,122"/>
+<area shape="rect" id="node44" href="$Shred_8cpp.html" title="Shred.cpp" alt="" coords="1632,89,1712,122"/>
+<area shape="rect" id="node46" href="$world_8cpp.html" title="world.cpp" alt="" coords="1736,89,1813,122"/>
+<area shape="rect" id="node5" href="$blocks_8h.html" title="blocks/blocks.h" alt="" coords="152,171,264,205"/>
+<area shape="rect" id="node11" href="$Dwarf_8h.html" title="blocks/Dwarf.h" alt="" coords="19,171,128,205"/>
+<area shape="rect" id="node16" href="$Player_8cpp.html" title="Player.cpp" alt="" coords="288,171,371,205"/>
+<area shape="rect" id="node7" href="$BlockManager_8cpp.html" title="BlockManager.cpp" alt="" coords="537,254,665,287"/>
+<area shape="rect" id="node9" href="$blocks_8cpp.html" title="blocks/blocks.cpp" alt="" coords="152,254,277,287"/>
 <area shape="rect" id="node14" href="$Dwarf_8cpp.html" title="blocks/Dwarf.cpp" alt="" coords="5,254,128,287"/>
-<area shape="rect" id="node16" href="$Player_8cpp.html" title="Player.cpp" alt="" coords="152,254,235,287"/>
-<area shape="rect" id="node21" href="$Illuminator_8cpp.html" title="blocks/Illuminator.cpp" alt="" coords="459,171,605,205"/>
-<area shape="rect" id="node26" href="$Container_8cpp.html" title="blocks/Container.cpp" alt="" coords="680,171,824,205"/>
+<area shape="rect" id="node21" href="$Weapons_8cpp.html" title="blocks/Weapons.cpp" alt="" coords="395,171,539,205"/>
+<area shape="rect" id="node26" href="$Illuminator_8cpp.html" title="blocks/Illuminator.cpp" alt="" coords="664,171,811,205"/>
+<area shape="rect" id="node31" href="$Container_8cpp.html" title="blocks/Container.cpp" alt="" coords="1075,171,1219,205"/>
+<area shape="rect" id="node36" href="$RainMachine_8cpp.html" title="blocks/RainMachine.cpp" alt="" coords="835,171,1000,205"/>
 </map>

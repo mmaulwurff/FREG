@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['eat',['Eat',['../classAnimal.html#a6cb945bc5a0daed211ab050bcf8d2537',1,'Animal::Eat()'],['../classPlayer.html#a8b30dae38f581c7e9757c3fbb51e52f4',1,'Player::Eat()']]],
+  ['eat',['Eat',['../classAnimal.html#a6cb945bc5a0daed211ab050bcf8d2537',1,'Animal']]],
   ['eatgrass',['EatGrass',['../classAnimal.html#a84b3c9986de1c6bc9ef11308a91accc3',1,'Animal']]],
   ['enlightened',['Enlightened',['../classWorld.html#a8fafc6ce6c49823d88f02e3d86eea3be',1,'World::Enlightened(int x, int y, int z) const '],['../classWorld.html#a08f303e04f53ce28fe43fc4d3dcf7db1',1,'World::Enlightened(int x, int y, int z, dirs dir) const ']]],
   ['examine',['Examine',['../classPlayer.html#ad50c303e216bf37d1de867312c2d1f91',1,'Player']]],

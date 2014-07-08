@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['takeoff',['TakeOff',['../classPlayer.html#a0f7610cbc23fe3177a1478f00493116f',1,'Player']]],
   ['telegraph',['TELEGRAPH',['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285ad5f14c717b2946d4731f9a94301cb0e9',1,'header.h']]],
   ['text',['Text',['../classText.html',1,'Text'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a9a4a47c1606e295076055a9cc4373197',1,'TEXT():&#160;header.h']]],
   ['textscreen_2ecpp',['TextScreen.cpp',['../TextScreen_8cpp.html',1,'']]],
@@ -22,5 +21,5 @@ var searchData=
   ['trylock',['TryLock',['../classWorld.html#a6d808bbff33cc6b15f9cf1f9cd00368d',1,'World']]],
   ['turnleft',['TurnLeft',['../classWorld.html#a725592c05c3bb73a551ad73b64511bb7',1,'World']]],
   ['turnright',['TurnRight',['../classWorld.html#a923f18e4edbc19f6ff3a6e440e202b0c',1,'World']]],
-  ['typeofshred',['TypeOfShred',['../classShred.html#a4d7fa1d67fe461fa9cec013d9755e870',1,'Shred::TypeOfShred()'],['../classWorld.html#ad4690105a74d774569f05b163411b5dd',1,'World::TypeOfShred()'],['../classWorldMap.html#a83cd692581de5db72039cbd1e43f7806',1,'WorldMap::TypeOfShred()']]]
+  ['typeofshred',['TypeOfShred',['../classWorld.html#ad4690105a74d774569f05b163411b5dd',1,'World::TypeOfShred()'],['../classWorldMap.html#a83cd692581de5db72039cbd1e43f7806',1,'WorldMap::TypeOfShred()']]]
 ];

@@ -12,7 +12,6 @@ var searchData=
   ['isempty',['IsEmpty',['../classInventory.html#aa494b4db63fd11b4eddbf862db1fb5ff',1,'Inventory']]],
   ['isfalling',['IsFalling',['../classFalling.html#a555bf72239917581030749f4d460b406',1,'Falling']]],
   ['islikeair',['IsLikeAir',['../Global_8cpp.html#a8dd0679dfe5dd11669555f842a12aa19',1,'IsLikeAir(const int sub):&#160;Global.cpp'],['../header_8h.html#a5031863b564b19336ad6c88a4ea15545',1,'IsLikeAir(int sub):&#160;Global.cpp']]],
-  ['isrightactivehand',['IsRightActiveHand',['../classPlayer.html#a7f900ae656daeb6509e693cfe1d6bc5b',1,'Player']]],
   ['issubaround',['IsSubAround',['../classActive.html#af6229f8297154481383e855de3931ac4',1,'Active']]],
   ['isvalidworldname',['IsValidWorldName',['../main_8cpp.html#a3fa6dd1edf5619b92cfd7db301417980',1,'main.cpp']]],
   ['itemsless',['ItemsLess',['../CraftManager_8cpp.html#a9d098c141ece984d3f33df9f3afc1ad1',1,'CraftManager.cpp']]],

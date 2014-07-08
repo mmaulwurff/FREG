@@ -34,6 +34,6 @@ var searchData=
   ['move_5fup',['MOVE_UP',['../header_8h.html#a4b1e949f8e745e1bab6b99b32b34c544ad1c2df17d4a2cdc3b734e4554ebbced6',1,'header.h']]],
   ['moved',['Moved',['../classActive.html#a05769b0afa87193e72adcd991aac6815',1,'Active::Moved()'],['../classPlayer.html#a26152b66bf854f05788159643616f1f0',1,'Player::Moved()'],['../classWorld.html#a5719414f65ee220f9bfa96564932c385',1,'World::Moved()']]],
   ['moved_5fin_5fthis_5fturn',['moved_in_this_turn',['../classAnimal.html#a230c7b194ad68263cc00d259fe7a2aef',1,'Animal']]],
-  ['moveinside',['MoveInside',['../classDwarf.html#acc9861d48189f262c54f95ab680049ed',1,'Dwarf::MoveInside()'],['../classInventory.html#a492259100a235e37cd1a54313734718a',1,'Inventory::MoveInside()']]],
+  ['moveinside',['MoveInside',['../classInventory.html#a492259100a235e37cd1a54313734718a',1,'Inventory']]],
   ['moveinsideinventory',['MoveInsideInventory',['../classPlayer.html#acdb58b8d413043092df9d3e94db570d4',1,'Player']]]
 ];

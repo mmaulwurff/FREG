@@ -12,7 +12,8 @@
 <area shape="rect" id="node23" href="$CursedScreen_8cpp.html" title="This file is related to curses screen for freg. " alt="" coords="1456,89,1635,122"/>
 <area shape="rect" id="node25" href="$TextScreen_8cpp.html" title="This file is related to text screen for freg. " alt="" coords="1659,89,1821,122"/>
 <area shape="rect" id="node27" href="$VirtScreen_8cpp.html" title="This file provides definitions of code common to all freg screens. " alt="" coords="1845,89,2003,122"/>
-<area shape="rect" id="node29" href="$Shred_8cpp.html" title="Shred.cpp" alt="" coords="2027,89,2107,122"/>
-<area shape="rect" id="node31" href="$ShredStorage_8cpp.html" title="ShredStorage.cpp" alt="" coords="2131,89,2256,122"/>
-<area shape="rect" id="node33" href="$world_8cpp.html" title="world.cpp" alt="" coords="2280,89,2357,122"/>
+<area shape="rect" id="node29" href="$Shred-gen-flat_8cpp.html" title="Shred&#45;gen&#45;flat.cpp" alt="" coords="2027,89,2155,122"/>
+<area shape="rect" id="node31" href="$Shred_8cpp.html" title="Shred.cpp" alt="" coords="2179,89,2259,122"/>
+<area shape="rect" id="node33" href="$ShredStorage_8cpp.html" title="ShredStorage.cpp" alt="" coords="2283,89,2408,122"/>
+<area shape="rect" id="node35" href="$world_8cpp.html" title="world.cpp" alt="" coords="2432,89,2509,122"/>
 </map>

@@ -1,43 +1,45 @@
 <map id="header.h" name="header.h">
-<area shape="rect" id="node3" href="$BlockManager_8h.html" title="BlockManager.h" alt="" coords="1067,171,1181,205"/>
-<area shape="rect" id="node29" href="$Block_8h.html" title="Provides definition for class Block. " alt="" coords="1816,89,1923,122"/>
-<area shape="rect" id="node76" href="$Shred-gen-flat_8cpp.html" title="Shred&#45;gen&#45;flat.cpp" alt="" coords="2733,254,2861,287"/>
-<area shape="rect" id="node78" href="$Shred_8h.html" title="Shred.h" alt="" coords="2512,171,2579,205"/>
-<area shape="rect" id="node90" href="$world_8h.html" title="world.h" alt="" coords="2312,171,2376,205"/>
-<area shape="rect" id="node110" href="$Global_8cpp.html" title="Global.cpp" alt="" coords="2755,89,2837,122"/>
-<area shape="rect" id="node112" href="$Player_8h.html" title="Player.h" alt="" coords="3333,171,3403,205"/>
-<area shape="rect" id="node119" href="$VirtScreen_8h.html" title="screens/VirtScreen.h" alt="" coords="2929,89,3073,122"/>
-<area shape="rect" id="node131" href="$worldmap_8cpp.html" title="worldmap.cpp" alt="" coords="3148,89,3249,122"/>
-<area shape="rect" id="node5" href="$BlockManager_8cpp.html" title="BlockManager.cpp" alt="" coords="643,419,771,453"/>
-<area shape="rect" id="node7" href="$Block_8cpp.html" title="blocks/Block.cpp" alt="" coords="243,254,365,287"/>
-<area shape="rect" id="node9" href="$blocks_8cpp.html" title="blocks/blocks.cpp" alt="" coords="1912,419,2037,453"/>
-<area shape="rect" id="node11" href="$Container_8cpp.html" title="blocks/Container.cpp" alt="" coords="1075,337,1219,370"/>
-<area shape="rect" id="node13" href="$Dwarf_8cpp.html" title="blocks/Dwarf.cpp" alt="" coords="1372,419,1495,453"/>
-<area shape="rect" id="node15" href="$Illuminator_8cpp.html" title="blocks/Illuminator.cpp" alt="" coords="817,337,964,370"/>
-<area shape="rect" id="node17" href="$Inventory_8cpp.html" title="blocks/Inventory.cpp" alt="" coords="1053,254,1195,287"/>
-<area shape="rect" id="node19" href="$CraftManager_8cpp.html" title="CraftManager.cpp" alt="" coords="389,254,515,287"/>
-<area shape="rect" id="node21" href="$DeferredAction_8cpp.html" title="DeferredAction.cpp" alt="" coords="1613,254,1747,287"/>
-<area shape="rect" id="node23" href="$Player_8cpp.html" title="Player.cpp" alt="" coords="2455,419,2537,453"/>
-<area shape="rect" id="node25" href="$Shred_8cpp.html" title="Shred.cpp" alt="" coords="1771,254,1851,287"/>
-<area shape="rect" id="node27" href="$world_8cpp.html" title="world.cpp" alt="" coords="1875,254,1952,287"/>
-<area shape="rect" id="node31" href="$Active_8h.html" title="blocks/Active.h" alt="" coords="1755,171,1867,205"/>
-<area shape="rect" id="node55" href="$Lighting-inertia_8cpp.html" title="This file provides simple (also mad) lighting for freg. " alt="" coords="1976,254,2107,287"/>
-<area shape="rect" id="node59" href="$Bucket_8h.html" title="blocks/Bucket.h" alt="" coords="597,171,712,205"/>
-<area shape="rect" id="node64" href="$Weapons_8h.html" title="blocks/Weapons.h" alt="" coords="31,171,161,205"/>
-<area shape="rect" id="node72" href="$CursedScreen_8cpp.html" title="This file is related to curses screen for freg. " alt="" coords="2885,254,3064,287"/>
-<area shape="rect" id="node74" href="$TextScreen_8cpp.html" title="This file is related to text screen for freg. " alt="" coords="3187,254,3349,287"/>
-<area shape="rect" id="node33" href="$Animal_8h.html" title="blocks/Animal.h" alt="" coords="1373,254,1488,287"/>
-<area shape="rect" id="node44" href="$Illuminator_8h.html" title="blocks/Illuminator.h" alt="" coords="845,254,979,287"/>
-<area shape="rect" id="node48" href="$Container_8h.html" title="blocks/Container.h" alt="" coords="1219,254,1349,287"/>
-<area shape="rect" id="node52" href="$Active_8cpp.html" title="blocks/Active.cpp" alt="" coords="2131,254,2256,287"/>
-<area shape="rect" id="node35" href="$blocks_8h.html" title="blocks/blocks.h" alt="" coords="1243,337,1355,370"/>
-<area shape="rect" id="node39" href="$Dwarf_8h.html" title="blocks/Dwarf.h" alt="" coords="1379,337,1488,370"/>
-<area shape="rect" id="node62" href="$Bucket_8cpp.html" title="blocks/Bucket.cpp" alt="" coords="589,254,720,287"/>
-<area shape="rect" id="node67" href="$Weapons_8cpp.html" title="blocks/Weapons.cpp" alt="" coords="24,254,168,287"/>
-<area shape="rect" id="node87" href="$ShredStorage_8cpp.html" title="ShredStorage.cpp" alt="" coords="2483,254,2608,287"/>
-<area shape="rect" id="node100" href="$main_8cpp.html" title="main.cpp" alt="" coords="3088,254,3163,287"/>
-<area shape="rect" id="node105" href="$VirtScreen_8cpp.html" title="This file provides definitions of code common to all freg screens. " alt="" coords="3373,254,3531,287"/>
-<area shape="rect" id="node121" href="$CursedScreen_8h.html" title="Provides curses (text&#45;based graphics interface) screen for freg. " alt="" coords="2805,171,2971,205"/>
-<area shape="rect" id="node124" href="$IThread_8cpp.html" title="screens/IThread.cpp" alt="" coords="3168,171,3309,205"/>
-<area shape="rect" id="node126" href="$TextScreen_8h.html" title="Provides minimal text screen for freg. Not suitable for playing. Can be used for testing and porting ..." alt="" coords="2995,171,3144,205"/>
+<area shape="rect" id="node3" href="$BlockManager_8h.html" title="BlockManager.h" alt="" coords="358,171,472,205"/>
+<area shape="rect" id="node31" href="$Block_8h.html" title="Provides definition for class Block. " alt="" coords="2148,89,2255,122"/>
+<area shape="rect" id="node82" href="$Shred-gen-flat_8cpp.html" title="Shred&#45;gen&#45;flat.cpp" alt="" coords="2742,254,2870,287"/>
+<area shape="rect" id="node84" href="$Shred_8h.html" title="Shred.h" alt="" coords="2372,171,2439,205"/>
+<area shape="rect" id="node98" href="$world_8h.html" title="world.h" alt="" coords="2687,171,2751,205"/>
+<area shape="rect" id="node119" href="$Global_8cpp.html" title="Global.cpp" alt="" coords="2876,89,2959,122"/>
+<area shape="rect" id="node121" href="$Player_8h.html" title="Player.h" alt="" coords="3218,171,3287,205"/>
+<area shape="rect" id="node128" href="$VirtScreen_8h.html" title="screens/VirtScreen.h" alt="" coords="3174,89,3318,122"/>
+<area shape="rect" id="node140" href="$worldmap_8cpp.html" title="worldmap.cpp" alt="" coords="3342,89,3443,122"/>
+<area shape="rect" id="node5" href="$BlockManager_8cpp.html" title="BlockManager.cpp" alt="" coords="1108,419,1236,453"/>
+<area shape="rect" id="node7" href="$Block_8cpp.html" title="blocks/Block.cpp" alt="" coords="478,254,600,287"/>
+<area shape="rect" id="node9" href="$blocks_8cpp.html" title="blocks/blocks.cpp" alt="" coords="2138,419,2263,453"/>
+<area shape="rect" id="node11" href="$Container_8cpp.html" title="blocks/Container.cpp" alt="" coords="966,337,1110,370"/>
+<area shape="rect" id="node13" href="$Dwarf_8cpp.html" title="blocks/Dwarf.cpp" alt="" coords="1636,419,1759,453"/>
+<area shape="rect" id="node15" href="$Illuminator_8cpp.html" title="blocks/Illuminator.cpp" alt="" coords="447,337,594,370"/>
+<area shape="rect" id="node17" href="$Inventory_8cpp.html" title="blocks/Inventory.cpp" alt="" coords="624,254,766,287"/>
+<area shape="rect" id="node19" href="$Weapons_8cpp.html" title="blocks/Weapons.cpp" alt="" coords="1235,337,1379,370"/>
+<area shape="rect" id="node21" href="$CraftManager_8cpp.html" title="CraftManager.cpp" alt="" coords="24,254,150,287"/>
+<area shape="rect" id="node23" href="$DeferredAction_8cpp.html" title="DeferredAction.cpp" alt="" coords="1152,254,1286,287"/>
+<area shape="rect" id="node25" href="$Player_8cpp.html" title="Player.cpp" alt="" coords="2314,337,2396,370"/>
+<area shape="rect" id="node27" href="$Shred_8cpp.html" title="Shred.cpp" alt="" coords="1776,254,1856,287"/>
+<area shape="rect" id="node29" href="$world_8cpp.html" title="world.cpp" alt="" coords="1880,254,1958,287"/>
+<area shape="rect" id="node33" href="$Active_8h.html" title="blocks/Active.h" alt="" coords="1699,171,1811,205"/>
+<area shape="rect" id="node66" href="$Lighting-inertia_8cpp.html" title="This file provides simple (also mad) lighting for freg. " alt="" coords="2136,254,2267,287"/>
+<area shape="rect" id="node70" href="$Bucket_8h.html" title="blocks/Bucket.h" alt="" coords="1560,171,1675,205"/>
+<area shape="rect" id="node78" href="$CursedScreen_8cpp.html" title="This file is related to curses screen for freg. " alt="" coords="3096,254,3275,287"/>
+<area shape="rect" id="node80" href="$TextScreen_8cpp.html" title="This file is related to text screen for freg. " alt="" coords="3398,254,3560,287"/>
+<area shape="rect" id="node35" href="$Animal_8h.html" title="blocks/Animal.h" alt="" coords="1638,254,1752,287"/>
+<area shape="rect" id="node46" href="$Weapons_8h.html" title="blocks/Weapons.h" alt="" coords="1310,254,1440,287"/>
+<area shape="rect" id="node50" href="$Illuminator_8h.html" title="blocks/Illuminator.h" alt="" coords="840,254,974,287"/>
+<area shape="rect" id="node54" href="$Container_8h.html" title="blocks/Container.h" alt="" coords="998,254,1128,287"/>
+<area shape="rect" id="node58" href="$RainMachine_8h.html" title="blocks/RainMachine.h" alt="" coords="1464,254,1614,287"/>
+<area shape="rect" id="node63" href="$Active_8cpp.html" title="blocks/Active.cpp" alt="" coords="2392,254,2518,287"/>
+<area shape="rect" id="node37" href="$blocks_8h.html" title="blocks/blocks.h" alt="" coords="1776,337,1888,370"/>
+<area shape="rect" id="node41" href="$Dwarf_8h.html" title="blocks/Dwarf.h" alt="" coords="1643,337,1752,370"/>
+<area shape="rect" id="node61" href="$RainMachine_8cpp.html" title="blocks/RainMachine.cpp" alt="" coords="1454,337,1619,370"/>
+<area shape="rect" id="node73" href="$Bucket_8cpp.html" title="blocks/Bucket.cpp" alt="" coords="1982,254,2112,287"/>
+<area shape="rect" id="node95" href="$ShredStorage_8cpp.html" title="ShredStorage.cpp" alt="" coords="2592,254,2718,287"/>
+<area shape="rect" id="node108" href="$main_8cpp.html" title="main.cpp" alt="" coords="3299,254,3374,287"/>
+<area shape="rect" id="node113" href="$VirtScreen_8cpp.html" title="This file provides definitions of code common to all freg screens. " alt="" coords="3584,254,3742,287"/>
+<area shape="rect" id="node130" href="$CursedScreen_8h.html" title="Provides curses (text&#45;based graphics interface) screen for freg. " alt="" coords="3028,171,3194,205"/>
+<area shape="rect" id="node133" href="$IThread_8cpp.html" title="screens/IThread.cpp" alt="" coords="3311,171,3452,205"/>
+<area shape="rect" id="node135" href="$TextScreen_8h.html" title="Provides minimal text screen for freg. Not suitable for playing. Can be used for testing and porting ..." alt="" coords="3476,171,3626,205"/>
 </map>

@@ -16,6 +16,6 @@ var searchData=
   ['num',['num',['../structCraftItem.html#aa306cfab0bcc4bacc76fa45b7e885dd1',1,'CraftItem']]],
   ['number',['Number',['../classInventory.html#afcc106682a5c1bb7c6818332dc60a420',1,'Inventory']]],
   ['numshreds',['NumShreds',['../classWorld.html#af6ea24b43dd472bacaee43d61f534a5c',1,'World']]],
-  ['numstr',['NumStr',['../classInventory.html#adff6e309595778b3a3750fc4ec1b42e6',1,'Inventory']]],
+  ['numstr',['NumStr',['../classInventory.html#a9f010760669063e89fe1a78f7bb11de0',1,'Inventory']]],
   ['nutritionalvalue',['NutritionalValue',['../classAnimal.html#a753447bd5c4cacdb50d7ef888a0db64f',1,'Animal::NutritionalValue()'],['../classRabbit.html#a8d423548d6536a58427e30feab830c1b',1,'Rabbit::NutritionalValue()'],['../classPredator.html#a734651c6c0e15461ea82fb0057af4e67',1,'Predator::NutritionalValue()'],['../classDwarf.html#a989caa1617ad18b31ccec47453b28244',1,'Dwarf::NutritionalValue()']]]
 ];

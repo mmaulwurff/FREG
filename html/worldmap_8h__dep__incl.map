@@ -1,7 +1,7 @@
 <map id="worldmap.h" name="worldmap.h">
-<area shape="rect" id="node3" href="$world_8h.html" title="world.h" alt="" coords="1260,89,1324,122"/>
-<area shape="rect" id="node21" href="$main_8cpp.html" title="main.cpp" alt="" coords="2283,171,2357,205"/>
-<area shape="rect" id="node38" href="$worldmap_8cpp.html" title="worldmap.cpp" alt="" coords="1877,89,1979,122"/>
+<area shape="rect" id="node3" href="$world_8h.html" title="world.h" alt="" coords="1337,89,1401,122"/>
+<area shape="rect" id="node21" href="$main_8cpp.html" title="main.cpp" alt="" coords="2435,171,2509,205"/>
+<area shape="rect" id="node40" href="$worldmap_8cpp.html" title="worldmap.cpp" alt="" coords="2031,89,2132,122"/>
 <area shape="rect" id="node5" href="$Active_8cpp.html" title="blocks/Active.cpp" alt="" coords="5,171,131,205"/>
 <area shape="rect" id="node7" href="$blocks_8cpp.html" title="blocks/blocks.cpp" alt="" coords="155,171,280,205"/>
 <area shape="rect" id="node9" href="$Bucket_8cpp.html" title="blocks/Bucket.cpp" alt="" coords="304,171,435,205"/>
@@ -14,7 +14,8 @@
 <area shape="rect" id="node25" href="$CursedScreen_8cpp.html" title="This file is related to curses screen for freg. " alt="" coords="1357,171,1536,205"/>
 <area shape="rect" id="node27" href="$TextScreen_8cpp.html" title="This file is related to text screen for freg. " alt="" coords="1560,171,1723,205"/>
 <area shape="rect" id="node29" href="$VirtScreen_8cpp.html" title="This file provides definitions of code common to all freg screens. " alt="" coords="1747,171,1904,205"/>
-<area shape="rect" id="node31" href="$Shred_8cpp.html" title="Shred.cpp" alt="" coords="1928,171,2008,205"/>
-<area shape="rect" id="node33" href="$ShredStorage_8cpp.html" title="ShredStorage.cpp" alt="" coords="2032,171,2157,205"/>
-<area shape="rect" id="node35" href="$world_8cpp.html" title="world.cpp" alt="" coords="2181,171,2259,205"/>
+<area shape="rect" id="node31" href="$Shred-gen-flat_8cpp.html" title="Shred&#45;gen&#45;flat.cpp" alt="" coords="1928,171,2056,205"/>
+<area shape="rect" id="node33" href="$Shred_8cpp.html" title="Shred.cpp" alt="" coords="2080,171,2160,205"/>
+<area shape="rect" id="node35" href="$ShredStorage_8cpp.html" title="ShredStorage.cpp" alt="" coords="2184,171,2309,205"/>
+<area shape="rect" id="node37" href="$world_8cpp.html" title="world.cpp" alt="" coords="2333,171,2411,205"/>
 </map>

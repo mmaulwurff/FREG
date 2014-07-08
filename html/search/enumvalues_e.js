@@ -1,6 +1,7 @@
 var searchData=
 [
   ['rabbit',['RABBIT',['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285aa6ec8c6d343f4a4e758ae7b4105c62e8',1,'header.h']]],
+  ['rain_5fmachine',['RAIN_MACHINE',['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a763fe6221be3342f37c19609dfe3982d',1,'header.h']]],
   ['red_5fblack',['RED_BLACK',['../CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a8eb80d1f88b31998106932eba9a21029',1,'CursedScreen.h']]],
   ['red_5fblue',['RED_BLUE',['../CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072aa050b0f2cc34a9dceff6933e388378b3',1,'CursedScreen.h']]],
   ['red_5fcyan',['RED_CYAN',['../CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a53e886b503bc92d2e84f749e7df53a01',1,'CursedScreen.h']]],

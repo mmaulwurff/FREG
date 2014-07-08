@@ -1,8 +1,8 @@
 <map id="blocks/Animal.h" name="blocks/Animal.h">
-<area shape="rect" id="node3" href="$blocks_8h.html" title="blocks/blocks.h" alt="" coords="163,89,275,122"/>
-<area shape="rect" id="node9" href="$Dwarf_8h.html" title="blocks/Dwarf.h" alt="" coords="305,89,415,122"/>
+<area shape="rect" id="node3" href="$blocks_8h.html" title="blocks/blocks.h" alt="" coords="95,89,207,122"/>
+<area shape="rect" id="node9" href="$Dwarf_8h.html" title="blocks/Dwarf.h" alt="" coords="231,89,340,122"/>
+<area shape="rect" id="node14" href="$Player_8cpp.html" title="Player.cpp" alt="" coords="364,89,447,122"/>
 <area shape="rect" id="node5" href="$BlockManager_8cpp.html" title="BlockManager.cpp" alt="" coords="155,171,283,205"/>
 <area shape="rect" id="node7" href="$blocks_8cpp.html" title="blocks/blocks.cpp" alt="" coords="5,171,131,205"/>
 <area shape="rect" id="node12" href="$Dwarf_8cpp.html" title="blocks/Dwarf.cpp" alt="" coords="307,171,429,205"/>
-<area shape="rect" id="node14" href="$Player_8cpp.html" title="Player.cpp" alt="" coords="453,171,536,205"/>
 </map>

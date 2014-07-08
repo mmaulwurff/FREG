@@ -33,7 +33,7 @@ var searchData=
   ['blue_5fyellow',['BLUE_YELLOW',['../CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a74397d6ab3cfc162bd5e676092ae9569',1,'CursedScreen.h']]],
   ['bone',['BONE',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a618bf303fb58b4eb006b58c15ca0f7ab',1,'header.h']]],
   ['break',['Break',['../classBlock.html#a8dae7cf589a4775d4c01866569500720',1,'Block']]],
-  ['breath',['Breath',['../classAnimal.html#a02f9e5c7701daf0c758a35ea25577a5a',1,'Animal::Breath()'],['../classPlayer.html#a879d3c2f6876c506e8fe0b6ee6619def',1,'Player::Breath()'],['../header_8h.html#a5adfb93f736d9aa263cea4b7b74da15eac19a68bcd93ab97d42557ecfb59a6cd2',1,'BREATH():&#160;header.h']]],
+  ['breath',['Breath',['../classAnimal.html#a02f9e5c7701daf0c758a35ea25577a5a',1,'Animal::Breath()'],['../header_8h.html#a5adfb93f736d9aa263cea4b7b74da15eac19a68bcd93ab97d42557ecfb59a6cd2',1,'BREATH():&#160;header.h']]],
   ['breathpercent',['BreathPercent',['../classPlayer.html#a527554ff84f509163261f65f9e8a2e35',1,'Player']]],
   ['bucket',['Bucket',['../classBucket.html',1,'Bucket'],['../classBucket.html#a060ae224d575e424b4da0bac661bf2c8',1,'Bucket::Bucket(int sub, int id)'],['../classBucket.html#aed7242e1f0d9cb7a74c464073f2d96ef',1,'Bucket::Bucket(QDataStream &amp;str, int sub, int id)'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a6562baa14d39f302094c545623c5ae14',1,'BUCKET():&#160;header.h']]],
   ['bucket_2ecpp',['Bucket.cpp',['../Bucket_8cpp.html',1,'']]],
