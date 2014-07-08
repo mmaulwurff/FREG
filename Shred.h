@@ -84,7 +84,7 @@ public:
     int SunLight(  int x, int y, int z) const;
     int LightLevel(int x, int y, int z) const;
 
-    bool SetSunLight( int x, int y, int z, int level);
+    void SetSunLight( int x, int y, int z, int level);
     bool SetFireLight(int x, int y, int z, int level);
     void SetLightmap( int x, int y, int z, int level);
 
@@ -93,7 +93,6 @@ public:
 
     // Information section
     void SetNewBlock(int kind, int sub, int x, int y, int z, int dir = UP);
-    char TypeOfShred(long longi, long lati) const;
     char GetTypeOfShred() const;
 
     static QString FileName(QString world_name, long longi, long lati);

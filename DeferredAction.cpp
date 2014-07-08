@@ -24,8 +24,11 @@
 #include "BlockManager.h"
 
 void DeferredAction::GhostMove() const {
-    attachedBlock->Move(( NOWHERE==num ) ?
-        attachedBlock->GetDir() : static_cast<dirs>(num));
+    const dirs dir = ( NOWHERE == num ) ?
+        attachedBlock->GetDir() : static_cast<dirs>(num);
+    if ( dir == DOWN && attachedBlock->Z() == 0 ) return;
+    if ( dir == UP   && attachedBlock->Z() == HEIGHT-1 ) return;
+    attachedBlock->Move(dir);
 }
 
 void DeferredAction::Move() const {

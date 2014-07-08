@@ -92,6 +92,7 @@ void Block::Damage(const int dmg, const int dmg_kind) {
     case DIFFERENT: return;
     case MOSS_STONE:
     case STONE: switch ( dmg_kind ) {
+        case HEAT:
         case DAMAGE_HANDS:
         case CUT:   return;
         case MINE:  mult = 2; break;

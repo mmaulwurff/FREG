@@ -515,7 +515,7 @@ void Screen::PrintNormal(WINDOW * const window, dirs dir) const {
         int k = k_start;
         for ( ; INVISIBLE == shred->GetBlock(i_in, j_in, k)->Transparent();
             k += k_step);
-        if ( (w->Enlightened(i, j, k) && player->Visible(i, j, k)) ) {
+        if ( player->Visible(i, j, k) ) {
             waddch(window, PrintBlock(*shred->GetBlock(i_in,j_in,k), window));
             waddch(window, CharNumber(k));
         } else {
@@ -633,7 +633,7 @@ void Screen::PrintFront(WINDOW * const window, const dirs dir) const {
                 wattrset(window, sky_colour);
                 waddch(window, sky_char);
                 waddch(window, ' ');
-            } else if ( w->Enlightened(i, j, k) && player->Visible(i, j, k) ) {
+            } else if ( player->Visible(i, j, k) ) {
                 const Block * const block = w->GetBlock(i, j, k);
                 waddch(window, PrintBlock(*block, window));
                 waddch(window, CharNumberFront(i, j));
