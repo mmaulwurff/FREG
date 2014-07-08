@@ -22,11 +22,6 @@
 #include "BlockManager.h"
 #include <QDataStream>
 
-int  Dwarf::GetActiveHand() const { return activeHand; }
-void Dwarf::SetActiveHand(const bool right) {
-    activeHand = (right ? IN_RIGHT : IN_LEFT);
-}
-
 int Dwarf::Weight() const {
     World * const world = GetWorld();
     static const int bound = world->NumShreds() * SHRED_WIDTH - 1;
@@ -38,22 +33,19 @@ int Dwarf::Weight() const {
 }
 
 Block * Dwarf::DropAfterDamage(bool * const delete_block) {
-    Block * const pile = block_manager.NewBlock(CONTAINER, DIFFERENT);
-    Inventory * const pile_inv = pile->HasInventory();
-    pile_inv->Get(block_manager.NormalBlock(H_MEAT));
-    pile_inv->Get(Animal::DropAfterDamage(delete_block));
-    pile_inv->Get(block_manager.NewBlock(WEAPON, BONE));
-    return pile;
+    Block * cadaver = Animal::DropAfterDamage(delete_block);
+    cadaver->HasInventory()->Get(block_manager.NewBlock(WEAPON, BONE));
+    return cadaver;
 }
 
-int Dwarf::Sub() const { return Block::Sub(); }
-int Dwarf::ShouldAct() const { return FREQUENT_FIRST | FREQUENT_RARE; }
+int  Dwarf::Sub() const { return Block::Sub(); }
+int  Dwarf::ShouldAct() const { return FREQUENT_FIRST | FREQUENT_RARE; }
+int  Dwarf::Start() const { return ON_LEGS + 1; }
+int  Dwarf::Kind() const { return DWARF; }
+int  Dwarf::LightRadius() const { return lightRadius; }
 bool Dwarf::Access() const { return false; }
-int Dwarf::Start() const { return ON_LEGS+1; }
-int Dwarf::Kind() const { return DWARF; }
-QString Dwarf::FullName() const { return "Rational"; }
+QString Dwarf::FullName() const { return tr("Rational creature"); }
 Inventory * Dwarf::HasInventory() { return this; }
-int Dwarf::LightRadius() const { return lightRadius; }
 
 void Dwarf::UpdateLightRadius() {
     Block * const in_left  = ShowBlock(IN_LEFT);
@@ -66,8 +58,8 @@ void Dwarf::UpdateLightRadius() {
 void Dwarf::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
 
 int Dwarf::DamageKind() const {
-    return ( Number(GetActiveHand()) ) ?
-        ShowBlock(GetActiveHand())->DamageKind() : DAMAGE_HANDS;
+    return ( Number(IN_RIGHT) ) ?
+        ShowBlock(IN_RIGHT)->DamageKind() : DAMAGE_HANDS;
 }
 
 int Dwarf::DamageLevel() const {
@@ -103,27 +95,27 @@ int Dwarf::NutritionalValue(const int sub) const {
     return 0;
 }
 
-void Dwarf::MoveInside(const int num_from, const int num_to, const int num) {
-    Block * const block = ShowBlock(num_from);
-    if ( block && (num_to > ON_LEGS ||
-            IN_RIGHT==num_to || IN_LEFT==num_to ||
-            ( ON_HEAD==num_to &&
-                WEARABLE_HEAD==block->Wearable() ) ||
-            ( ON_BODY==num_to &&
-                WEARABLE_BODY==block->Wearable() ) ||
-            ( ON_LEGS==num_to &&
-                WEARABLE_LEGS==block->Wearable() )) )
+bool Dwarf::GetExact(Block * const block, const int to) {
+    if ( block==nullptr ) return true;
+    if ( (to > ON_LEGS || ( Number(to) == 0 && (
+                     IN_RIGHT==to
+                ||   IN_LEFT ==to
+                || ( ON_HEAD ==to && WEARABLE_HEAD==block->Wearable() )
+                || ( ON_BODY ==to && WEARABLE_BODY==block->Wearable() )
+                || ( ON_LEGS ==to && WEARABLE_LEGS==block->Wearable() ))))
+            && Inventory::GetExact(block, to) )
     {
-        Inventory::MoveInside(num_from, num_to, num);
+        UpdateLightRadius();
+        GetWorld()->Shine(X(), Y(), Z(), lightRadius, true);
+        return true;
+    } else {
+        return false;
     }
-    UpdateLightRadius();
-    GetWorld()->Shine(X(), Y(), Z(), lightRadius, true);
 }
 
 void Dwarf::SaveAttributes(QDataStream & out) const {
     Animal::SaveAttributes(out);
     Inventory::SaveAttributes(out);
-    out << activeHand;
 }
 
 bool Dwarf::Inscribe(const QString) {
@@ -134,15 +126,14 @@ bool Dwarf::Inscribe(const QString) {
 Dwarf::Dwarf(const int sub, const int id) :
         Animal(sub, id),
         Inventory(),
-        activeHand(IN_RIGHT),
         lightRadius(MIN_DWARF_LIGHT_RADIUS)
 {
     note = new QString("Urist");
 }
+
 Dwarf::Dwarf(QDataStream & str, const int sub, const int id) :
         Animal(str, sub, id),
         Inventory(str)
 {
-    str >> activeHand;
     UpdateLightRadius();
 }

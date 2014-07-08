@@ -44,7 +44,8 @@ QString Block::FullName() const {
     case CLAY:       return QObject::tr("Clay brick");
     case GOLD:       return QObject::tr("Block of gold");
     case COAL:       return QObject::tr("Block of coal");
-    default: fprintf(stderr, "Block::FullName: sub ?: %d.\n", Sub());
+    case ACID:       return QObject::tr("Acid concentrate");
+    default: fprintf(stderr, "%s: sub ?: %d.\n", Q_FUNC_INFO, Sub());
         return "Unknown block";
     }
 }
@@ -77,6 +78,7 @@ void Block::Damage(const int dmg, const int dmg_kind) {
     }
     switch ( dmg_kind ) {
     case NO_HARM: return;
+    case TIME: durability -= dmg; return;
     case DAMAGE_ACID:
         switch ( Sub() ) {
         default: durability -= 2 * dmg; return;
@@ -87,34 +89,26 @@ void Block::Damage(const int dmg, const int dmg_kind) {
     }
     int mult = 1; // default
     switch ( Sub() ) {
-    case DIFFERENT:
-        if ( TIME == dmg_kind ) {
-            durability = 0;
-            return;
-        }
-    return;
-    case WATER: mult = ( HEAT==dmg_kind || TIME==dmg_kind ); break;
+    case DIFFERENT: return;
     case MOSS_STONE:
     case STONE: switch ( dmg_kind ) {
-        case CRUSH:
+        case HEAT:
         case DAMAGE_HANDS:
         case CUT:   return;
         case MINE:  mult = 2; break;
-    } break;
-    case GLASS: durability = (HEAT==dmg_kind) ? durability : 0; return;
+        } break;
     case WOOD: switch ( dmg_kind ) {
-        default:  mult = 1; break;
         case CUT: mult = 2; break;
         case DAMAGE_HANDS: return;
-    } break;
-    case SAND:
+        } break;
     case A_MEAT:
-    case H_MEAT: ++(mult = (THRUST==dmg_kind || HEAT==dmg_kind)); break;
-    case SOIL: switch ( dmg_kind ) {
-        case DIG: mult = 2; break;
-        case DAMAGE_FALL: return;
-    } break;
-    case FIRE: mult = (FREEZE==dmg_kind || TIME==dmg_kind); break;
+    case H_MEAT:    mult += (THRUST==dmg_kind || HEAT==dmg_kind); break;
+    case SAND:
+    case SOIL:      mult += ( DIG    == dmg_kind ); break;
+    case FIRE:      mult  = ( FREEZE == dmg_kind ); break;
+    case WATER:     mult  = ( HEAT   == dmg_kind ); break;
+    case GLASS:     mult  = ( HEAT   != dmg_kind ); break;
+    case IRON:      mult  = ( DAMAGE_HANDS != dmg_kind ); break;
     }
     durability -= mult*dmg;
 }
@@ -122,7 +116,7 @@ void Block::Damage(const int dmg, const int dmg_kind) {
 Block * Block::DropAfterDamage(bool * const delete_block) {
     switch ( Sub() ) {
     case GLASS:
-    case AIR: return nullptr;
+    case AIR: return block_manager.NormalBlock(AIR);
     case STONE: if ( BLOCK==Kind() ) {
         return block_manager.NewBlock(LADDER, STONE);
     } // no break;
@@ -170,7 +164,7 @@ Active * Block::ActiveBlock() { return nullptr; }
 Falling * Block::ShouldFall() { return nullptr; }
 
 void Block::Restore() { durability = MAX_DURABILITY; }
-void Block::Break() { durability = 0; }
+void Block::Break()   { durability = 0; }
 dirs Block::GetDir() const { return static_cast<dirs>(direction); }
 int  Block::GetDurability() const { return durability; }
 QString Block::GetNote() const { return note ? *note : ""; }
@@ -231,9 +225,9 @@ void Block::SaveToFile(QDataStream & out) {
         SaveNormalToFile(out);
     } else {
         out << sub << quint8(BlockManager::KindFromId(id)) <<
-            (quint16)( ( ( ( durability
+            ( ( ( ( durability
             <<= 3 ) |= direction )
-            <<= 1 ) |= !!note );
+            <<= 1 ) |= bool(note) );
         if ( Q_UNLIKELY(note) ) {
             out << *note;
         }
@@ -263,7 +257,7 @@ Block::Block(QDataStream & str, const int subst, const int i, const int transp)
         id(i)
 {
     // use durability as buffer, set actual value in the end:
-    str >> (quint16 &)durability;
+    str >> durability;
     if ( Q_UNLIKELY(durability & 1) ) {
         str >> *(note = new QString);
     } else {

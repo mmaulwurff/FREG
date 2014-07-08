@@ -15,6 +15,8 @@ syn match fregMapElementForest '%'
 syn match fregMapElementMount  '\^'
 syn match fregMapElementNull   '#'
 syn match fregMapElementDesert ':'
+syn match fregMapElementLava   'l'
+syn match fregMapElementAcid   'a'
 
 let b:current_syntax = "fregMap"
 
@@ -25,3 +27,5 @@ hi fregMapElementMount  ctermfg=Black   ctermbg=White
 hi fregMapElementForest ctermfg=Yellow  ctermbg=Green
 hi fregMapElementNull   ctermfg=Magenta ctermbg=Black
 hi fregMapElementDesert ctermfg=Yellow  ctermbg=White
+hi fregMapElementLava   ctermfg=Red     ctermbg=Yellow
+hi fregMapElementAcid   ctermfg=Green   ctermbg=LightGreen

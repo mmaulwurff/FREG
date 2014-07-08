@@ -46,16 +46,17 @@ public:
     virtual bool Access() const;
     /// Returns true on success.
     virtual bool Get(Block * block, int start = 0);
-    virtual void MoveInside(int num_from, int num_to, int num);
     virtual void ReceiveSignal(QString) = 0;
     virtual int Start() const;
     virtual int Weight() const;
     virtual QString FullName() const = 0;
+    virtual Inventory * HasInventory() = 0;
+    /// Returns true if block found its place.
+    virtual bool GetExact(Block * block, int num);
 
     /// Removes block from inventory. Does not delete block.
     void Pull(int num);
-    /// Returns true if block found its place.
-    bool GetExact(Block * block, int num);
+    void MoveInside(int num_from, int num_to, int num);
     /// Returns true on success (something has been crafted).
     bool MiniCraft(int num);
     /// Returns true on success.
@@ -69,9 +70,8 @@ public:
     int Number(int i) const;
     Block * ShowBlock(int slot) const;
     Block * ShowBlock(int slot, int num) const;
-    QString GetInvNote(int num) const;
     QString InvFullName(int num) const;
-    QString NumStr(int num) const;
+    static QString NumStr(int num);
 
     bool IsEmpty() const;
 

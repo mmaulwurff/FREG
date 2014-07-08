@@ -48,7 +48,8 @@ public:
     QString FullName() const override;
     Active * ActiveBlock() override;
     Inventory * HasInventory() override final;
-    usage_types Use(Block * who = 0) override;
+    usage_types Use(Block * who) override;
+    push_reaction PushResult(dirs) const override;
 
 protected:
     void SaveAttributes(QDataStream & out) const override;

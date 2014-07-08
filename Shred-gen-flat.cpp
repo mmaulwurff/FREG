@@ -18,6 +18,7 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "Shred.h"
+#include "world.h"
 #include "header.h"
 #include "blocks/Block.h"
 
@@ -26,15 +27,18 @@ int Shred::FlatUndeground(int) {
     return HEIGHT/2;
 }
 
-void Shred::NormalUnderground(const int depth, const int sub) {
+void Shred::NormalUnderground(const int depth, const subs sub) {
     NormalCube(0,0,1, SHRED_WIDTH,SHRED_WIDTH,HEIGHT/2-depth-5, STONE);
     Block * const block = Normal(sub);
     Block * const stone = Normal(STONE);
-    for (int x=0; x<SHRED_WIDTH; ++x)
-    for (int y=0; y<SHRED_WIDTH; ++y) {
-        PutBlock( ((qrand()%2) ? stone : block), x, y, HEIGHT/2-depth-6);
+    for (int x=0; x<SHRED_WIDTH; ++x) {
+        int rand = qrand();
+        for (int y=0; y<SHRED_WIDTH; ++y) {
+            PutBlock( ((rand & 1) ? stone : block), x, y, HEIGHT/2-depth-6);
+            rand >>= 1;
+        }
     }
-    NormalCube(0,0,HEIGHT/2-depth-5, SHRED_WIDTH,SHRED_WIDTH,depth+6, sub);
+    NormalCube(0,0,HEIGHT/2-depth-5, SHRED_WIDTH,SHRED_WIDTH,6, sub);
 }
 
 void Shred::Plain() {
@@ -65,13 +69,37 @@ void Shred::Forest() {
     PlantGrass();
 }
 
-void Shred::Water() {
-    const ushort depth = CountShredTypeAround(SHRED_WATER);
-    NormalUnderground(depth);
+void Shred::Water(const subs sub) {
+    subs shore;
+    switch ( sub ) {
+    case WATER: shore = SAND;  break;
+    case STONE: shore = STONE; break;
+    default:
+    case ACID:  shore = GLASS; break;
+    }
+    const int depth = CountShredTypeAround(GetTypeOfShred()) + 1;
+    NormalUnderground(depth, shore);
+    int z_start = HEIGHT/2-depth;
+    NormalCube(0,0,z_start++, SHRED_WIDTH,SHRED_WIDTH,1, shore); // bottom
+    World * const world = GetWorld();
+    if ( type != world->TypeOfShred(longitude-1, latitude) ) { // north
+        NormalCube(0,0,z_start, SHRED_WIDTH,1,depth, shore);
+    }
+    if ( type != world->TypeOfShred(longitude+1, latitude) ) { // south
+        NormalCube(0,SHRED_WIDTH-1,z_start, SHRED_WIDTH,1,depth, shore);
+    }
+    if ( type != world->TypeOfShred(longitude, latitude+1) ) { // east
+        NormalCube(SHRED_WIDTH-1,0,z_start, 1,SHRED_WIDTH,depth, shore);
+    }
+    if ( type != world->TypeOfShred(longitude, latitude-1) ) { // west
+        NormalCube(0,0,z_start, 1,SHRED_WIDTH,depth, shore);
+    }
     for (int i=0; i<SHRED_WIDTH; ++i)
     for (int j=0; j<SHRED_WIDTH; ++j)
-    for (int k=HEIGHT/2-depth; k<=HEIGHT/2; ++k) {
-        SetNewBlock(LIQUID, WATER, i, j, k);
+    for (int k=z_start; k<=HEIGHT/2; ++k) {
+        if ( shore != GetBlock(i, j, k)->Sub() ) {
+            SetNewBlock(LIQUID, sub, i, j, k);
+        }
     }
 }
 
@@ -113,13 +141,14 @@ void Shred::Mountain() {
      *  ?  */
     const ushort mount_top = 3*HEIGHT/4;
     NormalCube(0, 0, 1, SHRED_WIDTH/2, SHRED_WIDTH/2, mount_top, STONE);
+    World * const world = GetWorld();
     // south bridge
-    if ( SHRED_MOUNTAIN == TypeOfShred(longitude+1, latitude) ) {
+    if ( SHRED_MOUNTAIN == world->TypeOfShred(longitude+1, latitude) ) {
         NormalCube(qrand()%(SHRED_WIDTH/2-1), SHRED_WIDTH/2, mount_top,
             2, SHRED_WIDTH/2, 1, STONE);
     }
     // east bridge
-    if ( SHRED_MOUNTAIN == TypeOfShred(longitude, latitude+1) ) {
+    if ( SHRED_MOUNTAIN == world->TypeOfShred(longitude, latitude+1) ) {
         NormalCube(SHRED_WIDTH/2, qrand()%(SHRED_WIDTH/2-1), mount_top,
             SHRED_WIDTH/2, 2, 1, STONE);
     }

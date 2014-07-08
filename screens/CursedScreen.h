@@ -41,12 +41,9 @@ enum actions {
     ACTION_USE,
     ACTION_THROW,
     ACTION_OBTAIN,
-    ACTION_WIELD,
     ACTION_INSCRIBE,
-    ACTION_EAT,
     ACTION_BUILD,
-    ACTION_CRAFT,
-    ACTION_TAKEOFF
+    ACTION_CRAFT
 };
 
 enum color_pairs { // do not change colors order! // foreground_background
@@ -165,8 +162,8 @@ private:
     void Arrows(WINDOW *, int x, int y, bool show_dir = false) const;
     void HorizontalArrows(WINDOW *, int y, int color = WHITE_RED,
             bool show_dir = false) const;
-    void PrintNormal(WINDOW *, int dir) const;
-    void PrintFront(WINDOW *) const;
+    void PrintNormal(WINDOW *, dirs) const;
+    void PrintFront(WINDOW *, dirs) const;
     void PrintInv(WINDOW *, const Inventory &) const;
     /// Can print health, breath and other bars on hudWin.
     void PrintBar(int x, int color, int ch, int percent,
@@ -174,6 +171,8 @@ private:
     /// Returns false when file does not exist, otherwise true.
     bool PrintFile(WINDOW *, QString const & file_name);
     void PrintHUD();
+    void PrintMiniMap();
+    void PrintQuickInventory();
     void CleanFileToShow();
     void RePrint();
     void InventoryAction(int num) const;
@@ -182,16 +181,18 @@ private:
     char PrintBlock(const Block &, WINDOW *) const;
     void SetActionMode(actions mode);
     void ProcessCommand(QString command);
-    void PrintTitle(WINDOW *, int dir) const;
+    void PrintTitle(WINDOW *, dirs) const;
     void MovePlayer(dirs dir);
     void MovePlayerDiag(dirs dir1, dirs dir2) const;
     static bool IsScreenWide();
 
-    WINDOW * leftWin;
-    WINDOW * rightWin;
-    WINDOW * notifyWin;
-    WINDOW * hudWin; // head-up display
-    WINDOW * miniMapWin;
+    WINDOW * windows[6];
+    WINDOW *& leftWin    = windows[0];
+    WINDOW *& rightWin   = windows[1];
+    WINDOW *& notifyWin  = windows[2];
+    WINDOW *& hudWin     = windows[3]; // head-up display
+    WINDOW *& miniMapWin = windows[4];
+    WINDOW *& actionWin  = windows[5];
     mutable QString lastNotification;
     IThread * const input;
     volatile bool updated;
@@ -200,10 +201,12 @@ private:
     /// Can be -1, 0, 1 for low, normal, and high focus.
     int shiftFocus;
     /// Save previous command for further execution.
-    QString command;
+    QString previousCommand;
     QFile * fileToShow;
     bool beepOn;
     const bool ascii;
+    SCREEN * const screen;
+    mutable bool inputActive = false;
 };
 
 #endif // CURSEDSCREEN_H

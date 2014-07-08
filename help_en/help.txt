@@ -21,12 +21,10 @@
  Set inventory actions:
  'B' - build
  'C' - craft
- 'E' - eat
- 'F' - takeoff (unwield)
  'H' - show this help
  'I' - inscribe
  'U' - use
  'O' - obtain from outer inventory (e.g. chest)
  'T' - throw away
- 'W' - wield
+ 'W' - wield/take off
  'a'-'z' - make inventory action with this inventory slot

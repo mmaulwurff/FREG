@@ -110,7 +110,7 @@
         const int value = NutritionalValue(sub);
         if ( value ) {
             satiation += value;
-            ReceiveSignal(tr("Yum!"));
+            ReceiveSignal(tr("Ate."));
             if ( SECONDS_IN_DAY < satiation ) {
                 satiation = 1.1 * SECONDS_IN_DAY;
                 ReceiveSignal(tr("You have gorged yourself!"));
@@ -141,7 +141,9 @@
     }
 
     Block * Animal::DropAfterDamage(bool *) {
-        return block_manager.NewBlock(WEAPON, BONE);
+        Block * const cadaver = block_manager.NewBlock(CONTAINER, Sub());
+        cadaver->HasInventory()->Get(block_manager.NewBlock(WEAPON, BONE));
+        return cadaver;
     }
 
     Animal::Animal(const int sub, const int id) :
@@ -192,8 +194,8 @@
     push_reaction Liquid::PushResult(dirs) const { return ENVIRONMENT; }
 
     Block * Liquid::DropAfterDamage(bool *) {
-        return ( Sub() == STONE ) ?
-            block_manager.NormalBlock(STONE) : nullptr;
+        return block_manager.NormalBlock( ( Sub() == STONE ) ?
+            STONE : AIR);
     }
 
     int Liquid::LightRadius() const {
@@ -203,7 +205,7 @@
 
     QString Liquid::FullName() const {
         switch ( Sub() ) {
-        case WATER: return tr("Liquid");
+        case WATER: return tr("Water");
         case STONE: return tr("Lava");
         case ACID:  return tr("Acid");
         case SUB_CLOUD: return tr("Cloud");
@@ -217,19 +219,7 @@
     void Grass::DoRareAction() {
         World * const world = GetWorld();
         if ( FIRE == Sub() ) {
-            const Xyz coords[] = {
-                Xyz( X()-1, Y(),   Z()   ),
-                Xyz( X()+1, Y(),   Z()   ),
-                Xyz( X(),   Y()-1, Z()   ),
-                Xyz( X(),   Y()+1, Z()   ),
-                Xyz( X(),   Y(),   Z()-1 ),
-                Xyz( X(),   Y(),   Z()+1 )
-            };
-            for (const Xyz xyz : coords) {
-                if ( world->InBounds(xyz.X(), xyz.Y()) ) {
-                    TryDestroy(xyz.X(), xyz.Y(), xyz.Z());
-                }
-            }
+            DamageAround();
             if ( qrand()%10 || IsSubAround(WATER) ) {
                 Damage(2, FREEZE);
             }
@@ -238,7 +228,7 @@
             world->DestroyAndReplace(X(), Y(), Z());
             return;
         } // else:
-        int i=X(), j=Y();
+        int i=X(), j=Y(), k=Z();
         // increase this if grass grows too fast
         switch ( qrand() % (FIRE==Sub() ? 4 : SECONDS_IN_HOUR*2) ) {
         case 0: ++i; break;
@@ -247,7 +237,6 @@
         case 3: --j; break;
         default: return;
         }
-        int k = Z();
         if ( not world->InBounds(i, j) ) return;
         const int sub_near = world->GetBlock(i, j, k)->Sub();
         if ( world->Enlightened(i, j, k) || FIRE == Sub() ) {
@@ -287,8 +276,11 @@
 
     int  Grass::ShouldAct() const  { return FREQUENT_RARE; }
     int  Grass::Kind() const { return GRASS; }
-    Block * Grass::DropAfterDamage(bool *) { return nullptr; }
-    push_reaction Grass::PushResult(dirs) const { return PUSH_DELETE_SELF; }
+    push_reaction Grass::PushResult(dirs) const { return ENVIRONMENT; }
+
+    Block * Grass::DropAfterDamage(bool *) {
+        return block_manager.NormalBlock(AIR);
+    }
 
     void Grass::Push(dirs, Block *) {
         GetWorld()->DestroyAndReplace(X(), Y(), Z());
@@ -368,20 +360,13 @@
                 } else {
                     GetWorld()->Move(X(), Y(), Z(), GetDir());
                 }
+                moved_in_this_turn = false; // for next turn
             } return;
             }
             GetWorld()->Move(X(), Y(), Z(), GetDir());
         }
         moved_in_this_turn = false; // for next turn
         Animal::DoRareAction();
-    }
-
-    Block * Rabbit::DropAfterDamage(bool * delete_block) {
-        Block * const pile = block_manager.NewBlock(CONTAINER, DIFFERENT);
-        Inventory * const pile_inv = pile->HasInventory();
-        pile_inv->Get(block_manager.NormalBlock(A_MEAT));
-        pile_inv->Get(Animal::DropAfterDamage(delete_block));
-        return pile;
     }
 
     QString Rabbit::FullName() const { return tr("Herbivore"); }

@@ -25,7 +25,7 @@
 #include "blocks/Inventory.h"
 
 const quint8 DATASTREAM_VERSION = QDataStream::Qt_5_2;
-const quint8 CURRENT_SHRED_FORMAT_VERSION = 5;
+const quint8 CURRENT_SHRED_FORMAT_VERSION = 6;
 
 long Shred::Longitude() const { return longitude; }
 long Shred::Latitude()  const { return latitude; }
@@ -53,12 +53,9 @@ bool Shred::LoadShred() {
         return false;
     } // else:
     in.setVersion(DATASTREAM_VERSION);
-    in >> (quint8 &)(type);
-    for (int i=0; i<=TIME_EVENING; ++i) {
-        quint8 new_weather;
-        in >> new_weather;
-        weather[i] = static_cast<weathers>(new_weather);
-    }
+    quint8 read_type;
+    in >> read_type;
+    type = read_type;
     Block * const null_stone = Normal(NULLSTONE);
     Block * const air = Normal(AIR);
     SetAllLightMapNull();
@@ -96,7 +93,6 @@ Shred::Shred(const int shred_x, const int shred_y,
 {
     if ( LoadShred() ) return; // successfull loading
     // new shred generation:
-    SetWeathers();
     Block * const null_stone = Normal(NULLSTONE);
     Block * const air  = Normal(AIR);
     Block * const sky  = Normal(SKY);
@@ -110,7 +106,7 @@ Shred::Shred(const int shred_x, const int shred_y,
         }
         PutBlock(((qrand()%5) ? sky : star), i, j, HEIGHT-1);
     }
-    switch ( type=TypeOfShred(longi, lati) ) {
+    switch ( type=GetWorld()->TypeOfShred(longi, lati) ) {
     case SHRED_WATER:     Water();     break;
     case SHRED_PLAIN:     Plain();     break;
     case SHRED_FOREST:    Forest();    break;
@@ -124,6 +120,8 @@ Shred::Shred(const int shred_x, const int shred_y,
     case SHRED_CHAOS:     ChaosShred(); break;
     case SHRED_NORMAL_UNDERGROUND: NormalUnderground(); break;
     case SHRED_EMPTY: break;
+    case SHRED_ACID_LAKE: Water(ACID ); break;
+    case SHRED_LAVA_LAKE: Water(STONE); break;
     default:
         fprintf(stderr, "%s: type: %c, code %d?\n", Q_FUNC_INFO, type, type);
         Plain();
@@ -136,10 +134,7 @@ Shred::~Shred() {
     QDataStream outstr(shred_data, QIODevice::WriteOnly);
     outstr << DATASTREAM_VERSION << CURRENT_SHRED_FORMAT_VERSION;
     outstr.setVersion(DATASTREAM_VERSION);
-    outstr << (quint8)GetTypeOfShred();
-    for (int i=0; i<=TIME_EVENING; ++i) {
-        outstr << (quint8)weather[i];
-    }
+    outstr << quint8(GetTypeOfShred());
     for (int x=0; x<SHRED_WIDTH; ++x)
     for (int y=0; y<SHRED_WIDTH; ++y) {
         int height = HEIGHT-2;
@@ -175,25 +170,9 @@ void Shred::PhysEventsFrequent() {
         } else if ( (*i)->Weight() <= 0 ) {
             (*i)->SetFalling(false);
             *i = nullptr;
-        } else {
-            const int x = (*i)->X();
-            const int y = (*i)->Y();
-            const int z = (*i)->Z();
-            Block * const block_under =
-                GetBlock(CoordInShred(x), CoordInShred(y), z-1);
-            if (LIQUID==block_under->Kind() && SUB_CLOUD!=block_under->Sub()) {
-                (*i)->SetFalling(false);
-                *i = nullptr;
-            } else if ( not world->Move(x, y, z, DOWN) ) {
-                (*i)->FallDamage();
-                if ( (*i)->GetDurability() <= 0 ) {
-                    world->DestroyAndReplace(x, y, z);
-                }
-                if ( block_under->GetDurability() <= 0 ) {
-                    world->DestroyAndReplace(x, y, z-1);
-                }
-                *i = nullptr;
-            }
+        } else if ( not world->Move((*i)->X(), (*i)->Y(), (*i)->Z(), DOWN) ) {
+            (*i)->FallDamage();
+            *i = nullptr;
         }
     }
     for (auto i  = activeListFrequent.constBegin();
@@ -214,12 +193,6 @@ void Shred::PhysEventsRare() {
             case INNER_ACTION_NONE: (*i)->ActRare(); break;
             }
         }
-    }
-    switch ( GetCurrentWeather() ) {
-    case WEATHER_CLEAR: break;
-    case WEATHER_RAIN: if ( qrand()%20 ) break;
-    case WEATHER_CLOUDS: Rain(); break;
-    case WEATHER_DEW: Dew(); break;
     }
     activeListAll.removeAll(nullptr);
     activeListFrequent.removeAll(nullptr);
@@ -252,12 +225,7 @@ void Shred::Unregister(Active * const active) {
 
 void Shred::AddFalling(Block * const block) {
     Falling * const falling = block->ShouldFall();
-    if ( falling != nullptr &&
-            not falling->IsFalling() &&
-            not (*falling == *GetBlock(
-                CoordInShred(falling->X()),
-                CoordInShred(falling->Y()), falling->Z()-1)) )
-    {
+    if ( falling != nullptr ) {
         falling->SetFalling(true);
         fallList.append(falling);
     }
@@ -286,8 +254,7 @@ void Shred::ReloadTo(const dirs direction) {
     case SOUTH: reload = &Active::ReloadToSouth; --shredY; break;
     case EAST:  reload = &Active::ReloadToEast;  --shredX; break;
     case WEST:  reload = &Active::ReloadToWest;  ++shredX; break;
-    default: Q_UNREACHABLE();
-        fprintf(stderr, "%s: unlisted dir: %d,\n", Q_FUNC_INFO, direction);
+    default: Q_UNREACHABLE(); break;
     }
     activeListAll.removeAll(nullptr);
     for (auto i=activeListAll.constBegin(); i!=activeListAll.constEnd(); ++i) {
@@ -340,10 +307,6 @@ QString Shred::FileName(const QString world_name,
         const long longi, const long lati)
 {
     return QString("%1/y%2x%3").arg(world_name).arg(longi).arg(lati);
-}
-
-char Shred::TypeOfShred(const long longi, const long lati) const {
-    return GetWorld()->TypeOfShred(longi, lati);
 }
 
 char Shred::GetTypeOfShred() const { return type; }
@@ -474,6 +437,7 @@ void Shred::TestShred() { // 7 items in a row
     NormalCube(++column, row-1, level, 3, 3, 3, GLASS);
     SetNewBlock(LIQUID, ACID, ++column, row, level+1);
     SetNewBlock(LIQUID, SUB_CLOUD, column+=2, row, level);
+    SetNewBlock(RAIN_MACHINE, IRON, column+=2, row, level);
 } // void Shred::TestShred()
 
 void Shred::NullMountain() {
@@ -492,18 +456,19 @@ void Shred::NullMountain() {
             }
         }
     }
-    if ( SHRED_NULLMOUNTAIN == TypeOfShred(longitude-1, latitude) ) { // north
+    World * const world = GetWorld();
+    if ( SHRED_NULLMOUNTAIN == world->TypeOfShred(longitude-1, latitude) ) {//N
         NormalCube(7,0,HEIGHT/2, 2,SHRED_WIDTH/2-1,HEIGHT/2-2, NULLSTONE);
     }
-    if ( SHRED_NULLMOUNTAIN == TypeOfShred(longitude+1, latitude) ) { // south
+    if ( SHRED_NULLMOUNTAIN == world->TypeOfShred(longitude+1, latitude) ) {//S
         NormalCube(7,SHRED_WIDTH/2+1,HEIGHT/2, 2,SHRED_WIDTH/2-1,HEIGHT/2-2,
             NULLSTONE);
     }
-    if ( SHRED_NULLMOUNTAIN == TypeOfShred(longitude, latitude+1) ) { // east
+    if ( SHRED_NULLMOUNTAIN == world->TypeOfShred(longitude, latitude+1) ) {//E
         NormalCube(SHRED_WIDTH/2+1,7,HEIGHT/2, SHRED_WIDTH/2-1,2,HEIGHT/2-2,
             NULLSTONE);
     }
-    if ( SHRED_NULLMOUNTAIN == TypeOfShred(longitude, latitude-1) ) { // west
+    if ( SHRED_NULLMOUNTAIN == world->TypeOfShred(longitude, latitude-1) ) {//W
         NormalCube(0,7,HEIGHT/2, SHRED_WIDTH/2-1,2,HEIGHT/2-2, NULLSTONE);
     }
 }
@@ -544,7 +509,7 @@ void Shred::Castle() {
     NormalCube(2,2,HEIGHT/2-4, SHRED_WIDTH-4,SHRED_WIDTH-4,5, AIR );
     // floors
     int level = HEIGHT/2-1;
-    for (int floors=CountShredTypeAround(SHRED_CASTLE); floors; --floors) {
+    for (int floors=CountShredTypeAround(SHRED_CASTLE); ; --floors) {
         NormalCube(0,0,level,   SHRED_WIDTH,  SHRED_WIDTH,  6, STONE);
         NormalCube(2,2,level+1, SHRED_WIDTH-4,SHRED_WIDTH-4,1, WOOD );
         NormalCube(2,2,level+2, SHRED_WIDTH-4,SHRED_WIDTH-4,5, AIR  );
@@ -555,32 +520,35 @@ void Shred::Castle() {
                 SetNewBlock(PLATE, STONE, 4+step, y, level-3+step);
             }
         }
-        if ( floors != 1 ) { // lamps
+        if ( floors != 1 ) { // not roof, lamps
             for (int x=3; x<SHRED_WIDTH-3; x+=3)
             for (int y=3; y<SHRED_WIDTH-3; y+=3) {
                 SetNewBlock(ILLUMINATOR, GLASS, x, y, level+4);
             }
+        } else {
+            return;
         }
+        World * const world = GetWorld();
         // north pass and lamps
-        if ( TypeOfShred(longitude-1, latitude)==SHRED_CASTLE && floors!=1 ) {
+        if ( world->TypeOfShred(longitude-1, latitude) == SHRED_CASTLE ) {
             NormalCube(2,0,level+2, SHRED_WIDTH-4,2,4, AIR);
             for (int x=3; x<SHRED_WIDTH-3; x+=3) {
                 SetNewBlock(ILLUMINATOR, GLASS, x, 0, level+4);
             }
         }
         // south pass
-        if ( TypeOfShred(longitude+1, latitude) == SHRED_CASTLE && floors!=1) {
+        if ( world->TypeOfShred(longitude+1, latitude) == SHRED_CASTLE ) {
             NormalCube(2,SHRED_WIDTH-2,level+2, SHRED_WIDTH-4,2,4, AIR);
         }
         // west pass and lamps
-        if ( TypeOfShred(longitude, latitude-1)==SHRED_CASTLE && floors!=1 ) {
+        if ( world->TypeOfShred(longitude, latitude-1) == SHRED_CASTLE ) {
             NormalCube(0,2,level+2, 2,SHRED_WIDTH,4, AIR);
             for (int y=3; y<SHRED_WIDTH-3; y+=3) {
                 SetNewBlock(ILLUMINATOR, GLASS, 0, y, level+4);
             }
         }
         // east pass
-        if ( TypeOfShred(longitude, latitude+1) == SHRED_CASTLE && floors!=1) {
+        if ( world->TypeOfShred(longitude, latitude+1) == SHRED_CASTLE ) {
             NormalCube(SHRED_WIDTH-2,2,level+2, 2,SHRED_WIDTH,4, AIR);
         }
         level += 5;
@@ -605,7 +573,7 @@ void Shred::ChaosShred() {
 
 void Shred::NormalCube(
         const int x_start, const int y_start, const int z_start,
-        const int x_size,  const int y_size,  const int z_size, const int sub)
+        const int x_size,  const int y_size,  const int z_size, const subs sub)
 {
     Block * const block = Normal(sub);
     for (int x=x_start; x < x_start+x_size; ++x)
@@ -635,11 +603,8 @@ bool Shred::Tree(const int x, const int y, const int z, const int height) {
             PutBlock(leaves, i, j, k);
         }
     }
-    if ( z > 1 ) { // root, do not plant trees in nullstone
-        SetBlock(Normal(WOOD), x+1, y+1, z-1);
-    }
-    for (int k=z; k < z+height-1; ++k) { // trunk
-        PutBlock(Normal(WOOD), x+1, y+1, k);
+    for (int k=qMax(z-1, 1); k < z+height-1; ++k) { // trunk
+        SetBlock(Normal(WOOD), x+1, y+1, k);
     }
     // branches
     const int r = qrand();
@@ -652,11 +617,10 @@ bool Shred::Tree(const int x, const int y, const int z, const int height) {
 
 int Shred::CountShredTypeAround(const int type) const {
     int result = 0;
+    World * const world = GetWorld();
     for (long i=longitude-1; i<=longitude+1; ++i)
     for (long j=latitude -1; j<=latitude +1; ++j) {
-        if ( type == TypeOfShred(i, j) ) {
-            ++result;
-        }
+        result += ( type == world->TypeOfShred(i, j) );
     }
     return result;
 }
@@ -666,25 +630,13 @@ bool Shred::InBounds(const int x, const int y, const int z) {
         && 0 <=z && z < HEIGHT-1 );
 }
 
-weathers Shred::GetWeather(const times_of_day time) const {
-    return weather[time];
+void Shred::Dew(const int kind, const int sub) {
+    DropBlock(block_manager.NewBlock(kind, sub), true);
 }
 
-weathers Shred::GetCurrentWeather() const {
-    return GetWeather(GetWorld()->PartOfDay());
-}
-
-void Shred::SetWeathers() {
-    // TODO: add weather generation
-    weather[TIME_NIGHT]   = WEATHER_RAIN;
-    weather[TIME_MORNING] = WEATHER_CLOUDS;
-    weather[TIME_NOON]    = WEATHER_CLEAR;
-    weather[TIME_EVENING] = WEATHER_CLOUDS;
-}
-
-void Shred::Rain() {
+void Shred::Rain(const int kind, const int sub) {
     if ( RAIN_IS_DEW == 1 ) { // RAIN_IS_DEW is defined in Freg.pro
-        Dew();
+        Dew(kind, sub);
         return;
     } // else:
     static const int CLOUD_HEIGHT = HEIGHT*3/4;
@@ -693,18 +645,7 @@ void Shred::Rain() {
     y = CoordInShred(unsigned(y) >> SHRED_WIDTH_SHIFT);
     const int to_replace_sub = GetBlock(x, y, CLOUD_HEIGHT)->Sub();
     if ( to_replace_sub == AIR || to_replace_sub == SUB_CLOUD ) {
-        SetBlock(RainBlock(), x, y, CLOUD_HEIGHT);
+        SetBlock(block_manager.NewBlock(kind, sub), x, y, CLOUD_HEIGHT);
     }
 }
 
-void Shred::Dew() { DropBlock(RainBlock(), true); }
-
-Block * Shred::RainBlock() const {
-    if ( GetCurrentWeather() == WEATHER_CLOUDS ) {
-        return block_manager.NewBlock(LIQUID, SUB_CLOUD);
-    }
-    switch ( GetTypeOfShred() ) {
-    default: return block_manager.NewBlock(LIQUID, WATER);
-    case SHRED_MOUNTAIN: return block_manager.NewBlock(FALLING, WATER);
-    }
-}

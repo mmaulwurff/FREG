@@ -21,7 +21,8 @@
 #include <QSettings>
 #include <QDir>
 #include <QMutexLocker>
-#include "blocks/Dwarf.h"
+#include "blocks/Animal.h"
+#include "blocks/Inventory.h"
 #include "Player.h"
 #include "world.h"
 #include "Shred.h"
@@ -33,25 +34,11 @@ const bool COMMANDS_ALWAYS_ON = true;
 long Player::GlobalX() const { return GetShred()->GlobalX(X()); }
 long Player::GlobalY() const { return GetShred()->GlobalY(Y()); }
 
-bool Player::IsRightActiveHand() const {
-    return Dwarf::IN_RIGHT == GetActiveHand();
-}
-int Player::GetActiveHand() const {
-    Dwarf * const dwarf = dynamic_cast<Dwarf *>(player);
-    return ( dwarf ) ?
-        dwarf->GetActiveHand() : 0;
-}
-void Player::SetActiveHand(const bool right) {
-    Dwarf * const dwarf = dynamic_cast<Dwarf *>(player);
-    if ( dwarf ) {
-        dwarf->SetActiveHand(right);
-    }
-}
-
 Shred * Player::GetShred() const { return world->GetShred(X(), Y()); }
 World * Player::GetWorld() const { return world; }
 
 bool Player::GetCreativeMode() const { return creativeMode; }
+
 void Player::SetCreativeMode(const bool creative_on) {
     creativeMode = creative_on;
     player->disconnect();
@@ -63,7 +50,7 @@ void Player::SetCreativeMode(const bool creative_on) {
         inv->GetAll(prev_player->HasInventory());
     }
     if ( not creative_on ) {
-        delete prev_player;
+        block_manager.DeleteBlock(prev_player);
     }
     emit Updated();
 }
@@ -78,28 +65,18 @@ int Player::HP() const {
         -1 : player ? player->GetDurability() : 0;
 }
 
-int Player::Breath() const {
-    if ( not IfPlayerExists() || GetCreativeMode() ) return -1;
-    Animal const * const animal = player->IsAnimal();
-    return ( animal ? animal->Breath() : -1 );
-}
-
 int Player::BreathPercent() const {
-    const int breath = Breath();
-    return ( -1==breath ) ?
-        100 : breath*100/MAX_BREATH;
-}
-
-int Player::Satiation() const {
-    if ( not IfPlayerExists() || GetCreativeMode() ) return -1;
+    if ( not IfPlayerExists() || GetCreativeMode() ) return -100;
     Animal const * const animal = player->IsAnimal();
-    return ( animal ? animal->Satiation() : -1 );
+    if ( animal == nullptr ) return -100;
+    return animal->Breath()*100/MAX_BREATH;
 }
 
 int Player::SatiationPercent() const {
-    const int satiation = Satiation();
-    return ( -1==satiation ) ?
-        50 : satiation*100/SECONDS_IN_DAY;
+    if ( not IfPlayerExists() || GetCreativeMode() ) return -100;
+    Animal const * const animal = player->IsAnimal();
+    if ( animal == nullptr ) return -100;
+    return animal->Satiation()*100/SECONDS_IN_DAY;
 }
 
 Inventory * Player::PlayerInventory() const {
@@ -218,7 +195,7 @@ Block * Player::ValidBlock(const int num) const {
     } // else:
     Block * const block = inv->ShowBlock(num);
     if ( block == nullptr ) {
-        emit Notify("Nothing here.");
+        emit Notify(tr("Nothing here."));
         return 0;
     } else {
         return block;
@@ -227,19 +204,15 @@ Block * Player::ValidBlock(const int num) const {
 
 usage_types Player::Use(const int num) {
     const QMutexLocker locker(world->GetLock());
-    return UseNoLock(num);
-}
-
-usage_types Player::UseNoLock(const int num) {
     Block * const block = ValidBlock(num);
     if ( block == nullptr ) return USAGE_TYPE_NO;
     Animal * const animal = player->IsAnimal();
     if ( animal && animal->NutritionalValue(block->Sub()) ) {
-        animal->Eat(block->Sub());
-        Inventory * const inv = PlayerInventory();
-        Block * const eaten = inv->ShowBlock(num);
-        inv->Pull(num);
-        block_manager.DeleteBlock(eaten);
+        if ( animal->Eat(block->Sub()) ) {
+            PlayerInventory()->Pull(num);
+            block_manager.DeleteBlock(block);
+            emit Updated();
+        }
         return USAGE_TYPE_NO;
     } // else:
     const usage_types result = block->Use(player);
@@ -248,18 +221,18 @@ usage_types Player::UseNoLock(const int num) {
         usingInInventory = num;
         usingType = USAGE_TYPE_READ_IN_INVENTORY;
         emit Updated();
-    break;
+        break;
     case USAGE_TYPE_POUR: {
         int x_targ, y_targ, z_targ;
         emit GetFocus(&x_targ, &y_targ, &z_targ);
         player->GetDeferredAction()->SetPour(x_targ, y_targ, z_targ, num);
-    } break;
+        } break;
     case USAGE_TYPE_SET_FIRE: {
         int x_targ, y_targ, z_targ;
         emit GetFocus(&x_targ, &y_targ, &z_targ);
         player->GetDeferredAction()->SetSetFire(x_targ, y_targ, z_targ);
-    } break;
-    default: break;
+        } break;
+    default: Wield(num); break;
     }
     return result;
 }
@@ -280,28 +253,23 @@ void Player::Obtain(const int src, const int dest, const int num) {
     emit Updated();
 }
 
-void Player::Wield(const int num) {
-    const QMutexLocker locker(world->GetLock());
-    if ( ValidBlock(num) ) {
-        for (int i=0; i<=Dwarf::ON_LEGS; ++i) {
-            InnerMove(num, i);
+void Player::Wield(const int from) {
+    if ( ValidBlock(from) ) {
+        Inventory * const inv = PlayerInventory();
+        const int start = (from >= inv->Start()) ? 0 : inv->Start();
+        for (int i=start; i<inv->Size(); ++i) {
+            PlayerInventory()->MoveInside(from, i, 1);
         }
         emit Updated();
     }
 }
 
-void Player::MoveInsideInventory(const int num_from, const int num_to,
-        const int num)
-{
+void Player::MoveInsideInventory(const int from, const int to, const int num) {
     const QMutexLocker locker(world->GetLock());
-    if ( ValidBlock(num_from) ) {
-        InnerMove(num_from, num_to, num);
+    if ( ValidBlock(from) ) {
+        PlayerInventory()->MoveInside(from, to, num);
+        emit Updated();
     }
-}
-
-void Player::InnerMove(const int num_from, const int num_to, const int num) {
-    PlayerInventory()->MoveInside(num_from, num_to, num);
-    emit Updated();
 }
 
 void Player::Inscribe(const int num) {
@@ -313,29 +281,12 @@ void Player::Inscribe(const int num) {
     }
 }
 
-void Player::Eat(const int num) {
-    const QMutexLocker locker(world->GetLock());
-    Block * const food = ValidBlock(num);
-    if ( food ) {
-        Animal * const animal = player->IsAnimal();
-        if ( animal ) {
-            if ( animal->Eat(food->Sub()) ) {
-                PlayerInventory()->Pull(num);
-                block_manager.DeleteBlock(food);
-                emit Updated();
-            }
-        } else {
-            emit Notify(tr("You cannot eat."));
-        }
-    }
-}
-
 void Player::Build(const int slot) {
     const QMutexLocker locker(world->GetLock());
     int x_targ, y_targ, z_targ;
     emit GetFocus(&x_targ, &y_targ, &z_targ);
     Block * const block = ValidBlock(slot);
-    if ( block && (AIR != world->GetBlock(X(), Y(), Z()-1)->Sub()
+    if ( block != nullptr && (AIR != world->GetBlock(X(), Y(), Z()-1)->Sub()
             || 0 == player->Weight()) )
     {
         player->GetDeferredAction()->
@@ -351,78 +302,91 @@ void Player::Craft(const int num) {
     }
 }
 
-void Player::TakeOff(const int num) {
-    const QMutexLocker locker(world->GetLock());
-    if ( ValidBlock(num) ) {
-        for (int i=PlayerInventory()->Start();
-                i<PlayerInventory()->Size(); ++i)
-        {
-            InnerMove(num, i, PlayerInventory()->Number(num));
-        }
+bool Player::ForbiddenAdminCommands() const {
+    if ( GetCreativeMode() || COMMANDS_ALWAYS_ON ) {
+        return false;
+    } else {
+        emit Notify(tr("You are not in Creative Mode."));
+        return true;
     }
 }
 
+constexpr quint64 Player::UniqueIntFromString(const char * const chars) {
+    return chars[0] == '\0' ?
+        0 : (UniqueIntFromString(chars + 1) << 5) | chars[0]-'a';
+}
+
 void Player::ProcessCommand(QString command) {
-    if ( command.isEmpty() ) return;
-    const QMutexLocker locker(world->GetLock());
     QTextStream comm_stream(&command);
-    QString request;
+    QByteArray request;
     comm_stream >> request;
-    if ( "give"==request || "get"==request ) {
-        if ( not (GetCreativeMode() || COMMANDS_ALWAYS_ON) ) {
-            emit Notify(tr("You are not in Creative Mode."));
-            return;
-        } // else:
+    const QMutexLocker locker(world->GetLock());
+    switch ( UniqueIntFromString(request.constData()) ) {
+    case UniqueIntFromString("give"):
+    case UniqueIntFromString("get" ): {
+        if ( ForbiddenAdminCommands() ) return;
         Inventory * const inv = PlayerInventory();
         if ( inv == nullptr ) return;
         QString kind, sub;
         comm_stream >> kind >> sub;
         const int kind_code = BlockManager::StringToKind(kind);
         if ( kind_code == LAST_KIND ) {
-            emit Notify(tr("%1 command: invalid kind!").arg(request));
+            emit Notify(tr("%1 command: invalid kind!").arg(QString(request)));
             return;
         } // else:
         const int sub_code = sub.isEmpty() ?
             static_cast<int>(STONE) : BlockManager::StringToSub(sub);
         if ( sub_code == LAST_SUB ) {
-            emit Notify(tr("%1 command: invalid substance!").arg(request));
+            emit Notify(tr("%1 command: invalid substance!")
+                .arg(QString(request)));
             return;
         } // else:
-        emit Notify(QString("sub: %1").arg(sub_code));
         Block * const block = block_manager.NewBlock(kind_code, sub_code);
-        if ( not inv->Get(block) ) {
-            emit Notify(tr("No place for requested thing."));
-            block_manager.DeleteBlock(block);
-        } else {
+        if ( inv->Get(block) ) {
             emit Updated();
+        } else {
+            block_manager.DeleteBlock(block);
         }
-    } else if ( "move" == request ) {
+        } break;
+    case UniqueIntFromString("move"): {
         int direction;
         comm_stream >> direction;
         Move(static_cast<dirs>(direction));
-    } else if ( "time" == request ) {
-        emit Notify( (GetCreativeMode() || COMMANDS_ALWAYS_ON) ?
-            GetWorld()->TimeOfDayStr() : tr("Not in Creative Mode.") );
-    } else if ( "version" == request ) {
-        emit Notify(tr("freg version: %1. Compiled on %2 at %3 with Qt %4.\n\
-Current Qt version: %5. Build type: %6. Compiler: %7.").
-            arg(VER).arg(__DATE__).arg(__TIME__).arg(QT_VERSION_STR).
-            arg(qVersion()).arg(DEBUG ? tr("debug") : tr("release")).
-            arg(COMPILER));
-    } else if ( "help" == request ) {
+        } break;
+    case UniqueIntFromString("time"):
+        if ( ForbiddenAdminCommands() ) return;
+        emit Notify(GetWorld()->TimeOfDayStr());
+        break;
+    case UniqueIntFromString("version"):
+        emit Notify(tr("freg version: %1. Compiled on %2 at %3 with Qt %4.")
+            .arg(VER)
+            .arg(__DATE__)
+            .arg(__TIME__)
+            .arg(QT_VERSION_STR));
+        emit Notify(tr("Current Qt version: %1. Build type: %2. Compiler: %3.")
+            .arg(qVersion())
+            .arg(DEBUG ? tr("debug") : tr("release"))
+            .arg(COMPILER));
+        break;
+    case UniqueIntFromString("help"):
         comm_stream >> request;
+        if ( request.isEmpty() ) {
+            request = "help";
+        }
         emit ShowFile( QString("help_%1/%2.txt")
-            .arg(locale.left(2)).arg(request) );
-    } else {
+            .arg(locale.left(2)).arg(QString(request)) );
+        break;
+    default:
         emit Notify(tr("Don't know such command: \"%1\".").arg(command));
+        break;
     }
 } // void Player::ProcessCommand(QString command)
 
-bool Player::Visible(const int x_to, const int y_to, const int z_to)
-const {
-    return (X()==x_to && Y()==y_to && Z()==z_to) ?
-        true :
-        world->Visible(X(), Y(), Z(), x_to, y_to, z_to);
+bool Player::Visible(const int x_to, const int y_to, const int z_to) const {
+    return ( (X()==x_to && Y()==y_to && Z()==z_to) || GetCreativeMode() ) ?
+        true : (
+            world->Enlightened(x_to, y_to, z_to) &&
+            world->Visible(X(), Y(), Z(), x_to, y_to, z_to));
 }
 
 dirs Player::GetDir() const { return dir; }
@@ -518,6 +482,8 @@ Player::Player() {
     homeX  = sett.value("home_x", 0).toInt();
     homeY  = sett.value("home_y", 0).toInt();
     homeZ  = sett.value("home_z", HEIGHT/2).toInt();
+    usingType     = sett.value("using_type",      USAGE_TYPE_NO).toInt();
+    usingSelfType = sett.value("using_self_type", USAGE_TYPE_NO).toInt();
     SetXyz(sett.value("current_x", 0).toInt(),
            sett.value("current_y", 0).toInt(),
            sett.value("current_z", HEIGHT/2+1).toInt());
@@ -536,12 +502,9 @@ Player::Player() {
         Qt::DirectConnection);
     connect(world, SIGNAL(Moved(int)), SLOT(UpdateXYZ(int)),
         Qt::DirectConnection);
-} // Player::Player()
+}
 
-void Player::CleanAll() {
-    if ( cleaned ) return;
-    cleaned = true;
-
+Player::~Player() {
     if ( GetCreativeMode() ) {
         block_manager.DeleteBlock(player);
     }
@@ -559,6 +522,6 @@ void Player::CleanAll() {
     sett.setValue("current_y", Y()-min);
     sett.setValue("current_z", Z());
     sett.setValue("creative_mode", GetCreativeMode());
+    sett.setValue("using_type", usingType);
+    sett.setValue("using_self_type", usingSelfType);
 }
-
-Player::~Player() { CleanAll(); }

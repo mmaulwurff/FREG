@@ -24,7 +24,6 @@
 #include "header.h"
 #include "Xyz.h"
 
-class QString;
 class World;
 class Block;
 class Active;
@@ -52,30 +51,20 @@ public:
     /// Constructor creates or loads player.
     /** It puts player block to the world if there is no player block,
      *  and makes necessary connections. */
-    Player();
-    /// Destructor calls Player::CleanAll().
+     Player();
     ~Player();
 
     long GlobalX() const;
     long GlobalY() const;
-
-    /// If player is not dwarf, false is always returned.
-    bool IsRightActiveHand() const;
-    /// If player is not dwarf, 0 is returned.
-    int  GetActiveHand() const;
-    /// If player is not dwarf, does nothing.
-    void SetActiveHand(bool right);
 
     /// This returns current player direction (see enum dirs in header.h)
     dirs GetDir() const;
 
     /// This returns player hitpoints, also known as durability.
     int HP() const;
-    /// This returns player breath reserve.
-    int Breath() const;
+    /// This returns player breath reserve. On error returns -100.
     int BreathPercent() const;
-    int Satiation() const;
-    /// Can be > 100 if player is gorged. When player is not animal, 50.
+    /// Can be > 100 if player is gorged. On error returns -100.
     int SatiationPercent() const;
 
     bool IfPlayerExists() const;
@@ -122,15 +111,15 @@ public:
     usage_types Use(int num);
     /// Tries to get block number num from outer inventory.
     void Obtain(int src, int dest = 0, int num = 1);
-    void Wield   (int num);
     void Inscribe(int num);
-    void Eat     (int num);
     void Craft   (int num);
-    void TakeOff (int num);
-    void Build(int num);
+    void Build   (int num);
     /// Can also wield appropriate things.
-    void MoveInsideInventory(int num_from, int num_to, int num=1);
+    void MoveInsideInventory(int num_from, int num_to, int num = 1);
     void ProcessCommand(QString command);
+
+    /// Turns low-case ASCII chars array (length <= 12) into unique quint64.
+    constexpr static quint64 UniqueIntFromString(const char *);
 
 signals:
     void Moved(long x, long y, int z) const;
@@ -151,13 +140,6 @@ signals:
     void GetFocus(int * x, int * y, int * z) const;
 
 private slots:
-    /// For cleaning player-related data before exiting program.
-    /** This is connected to app's aboutToQuit() signal, also it
-     *  is called from destructor. There is a check for data deleting
-     *  not to be called twice.
-     *  Also this saves player to file player_save. */
-    void CleanAll();
-
     /// Checks if player walked over the shred border.
     /** This is connected to player's block signal Moved(int).
      *  It emits OverstepBorder(int) signal when player walks
@@ -172,20 +154,19 @@ private slots:
     void UpdateXYZ(int dir = NOWHERE);
 
 private:
-    usage_types UseNoLock(int num);
-    void InnerMove(int num_from, int num_to, int num = 1);
-    /// Checks player existence, inventory existence, size limits,
-    /// block existence.
+    /// Checks player/inventory/block existence, size limits.
     Block * ValidBlock(int num) const;
     Shred * GetShred() const;
     World * GetWorld() const;
+    bool ForbiddenAdminCommands() const;
+    void Wield (int num);
 
     long homeLongi, homeLati;
     int homeX, homeY, homeZ;
     dirs dir = NORTH;
     Active * player;
-    int usingType     = USAGE_TYPE_NO;
-    int usingSelfType = USAGE_TYPE_NO;
+    int usingType;
+    int usingSelfType;
     int usingInInventory;
     bool creativeMode;
     bool cleaned = false;

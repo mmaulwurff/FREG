@@ -31,9 +31,6 @@ public:
     Dwarf(int sub, int id);
     Dwarf(QDataStream & str, int sub, int id);
 
-    int  GetActiveHand() const;
-    void SetActiveHand(bool right);
-
     int Sub() const override;
     int ShouldAct() const override;
     int DamageKind() const override;
@@ -46,26 +43,27 @@ public:
 
     bool Access() const override;
     bool Inscribe(QString str) override;
-    void MoveInside(int num_from, int num_to, int num) override;
+    bool GetExact(Block *, int to) override;
     void ReceiveSignal(QString) override;
     int  LightRadius() const override;
     Block * DropAfterDamage(bool * delete_block) override;
     int  NutritionalValue(int sub) const override;
     Inventory * HasInventory() override;
 
-    static const int ON_HEAD  = 0;
-    static const int IN_RIGHT = 1;
-    static const int IN_LEFT  = 2;
-    static const int ON_BODY  = 3;
-    static const int ON_LEGS  = 4;
-
 protected:
     void SaveAttributes(QDataStream & out) const override;
 
 private:
+    enum {
+        ON_HEAD,
+        IN_RIGHT,
+        IN_LEFT,
+        ON_BODY,
+        ON_LEGS
+    };
+
     void UpdateLightRadius();
 
-    quint8 activeHand;
     int lightRadius;
 };
 

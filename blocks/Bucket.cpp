@@ -39,18 +39,17 @@ usage_types Bucket::Use(Block *) { return USAGE_TYPE_POUR; }
 
 QString Bucket::FullName() const {
     QString name;
-    switch (GetInvSub(0)) {
-        case AIR:   return QObject::tr("Empty bucket"); break;
-        case WATER: name = QObject::tr("Bucket with water"); break;
-        case STONE: name = QObject::tr("Bucket with lava"); break;
-        default:
-            fprintf(stderr, "Bucket::FullName: unlisted sub: %d\n.",
-                GetInvSub(0));
-            name = QObject::tr("Bucket with something");
+    switch ( Sub() ) {
+    default:    name = QObject::tr("Bucket"); break;
+    case GLASS: name = QObject::tr("Bottle"); break;
     }
-    name.append(QObject::tr(" (%1/%2 full)").
-        arg(Number(0)).arg(MAX_STACK_SIZE));
-    return name;
+    return ( GetInvSub(0) == AIR ) ?
+        QObject::tr("Empty bucket") :
+        QObject::tr("%1 with %2 (%3/%4 full)")
+            .arg(name)
+            .arg(ShowBlock(0)->FullName().toLower())
+            .arg(Number(0))
+            .arg(MAX_STACK_SIZE);
 }
 
 bool Bucket::Get(Block * const block, const int start = 0) {

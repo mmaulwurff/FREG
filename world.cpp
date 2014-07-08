@@ -116,9 +116,14 @@ void World::Get(Block * const block_to,
     Inventory * const inv = block_from->HasInventory();
     if ( inv == nullptr ) { // for vessel
         if ( block_from->Kind() == LIQUID ) {
-            Block * const tried = NewBlock(LIQUID, block_from->Sub());
             Inventory * const inv_to = block_to->HasInventory();
-            if ( inv_to && inv_to->Get(tried, src) ) {
+            if ( inv_to == nullptr ) return;
+            Block * const vessel = inv_to->ShowBlock(src);
+            if ( vessel == nullptr ) return;
+            Inventory * const vessel_inv = vessel->HasInventory();
+            if ( vessel_inv == nullptr ) return;
+            Block * const tried = NewBlock(LIQUID, block_from->Sub());
+            if ( vessel_inv->Get(tried, 0) ) {
                 SetBlock(Normal(AIR), x_from, y_from, z_from);
                 Shred * const shred = GetShred(x_from, y_from);
                 shred->AddFalling(shred->GetBlock(
@@ -143,7 +148,11 @@ bool World::InBounds(const int x, const int y, const int z) const {
     return ( InBounds(x, y) && InVertBounds(z) );
 }
 
-int  World::GetBound() const { return NumShreds() * SHRED_WIDTH - 1; }
+int World::GetBound() const {
+    static const int bound = NumShreds() * SHRED_WIDTH - 1;
+    return bound;
+}
+
 bool World::InVertBounds(const int z) { return ( 0 <= z && z < HEIGHT ); }
 
 void World::ReloadAllShreds(const long lati, const long longi,
@@ -307,8 +316,7 @@ void World::ReloadShreds(const int direction) {
                 latitude  - NumShreds()/2, memory);
         }
     break;
-    default: fprintf(stderr,
-        "%s: invalid direction: %d.\n", Q_FUNC_INFO, direction);
+    default: Q_UNREACHABLE(); break;
     }
     shredStorage->Shift(direction, longitude, latitude);
     MakeSun();
@@ -371,18 +379,15 @@ void World::PhysEvents() {
     switch ( TimeOfDay() ) {
     default: break;
     case END_OF_NIGHT:
-        for (int i=NumShreds()*NumShreds()-1; i>=0; --i) {
-            shreds[i]->SetWeathers();
-        }
-        ReEnlightenTime();
         emit Notify(tr("It's morning now."));
-    break;
+        ReEnlightenTime();
+        break;
     case END_OF_MORNING: emit Notify(tr("It's day now.")); break;
     case END_OF_NOON:    emit Notify(tr("It's evening now.")); break;
     case END_OF_EVENING:
-        ReEnlightenTime();
         emit Notify(tr("It's night now."));
-    break;
+        ReEnlightenTime();
+        break;
     }
     Unlock();
     emit UpdatesEnded();
@@ -449,42 +454,50 @@ bool World::CanMove(const int x, const int y, const int z,
         const int newx, const int newy, const int newz, const dirs dir)
 {
     Block * const block    = GetBlock(x, y, z);
-    Block * const block_to = GetBlock(newx, newy, newz);
-    const push_reaction target_push = block_to->PushResult(dir);
-    block_to->Push(dir, block);
-    bool move_flag = false;
-    if ( ENVIRONMENT == block->PushResult(NOWHERE) ) {
-        move_flag = ( (target_push <= ENVIRONMENT
-                || target_push == PUSH_DELETE_SELF)
-            && *block != *block_to );
-    } else {
-        switch ( target_push ) {
-        case MOVABLE:
-            move_flag = ( (block->Weight() > block_to->Weight()) &&
-                Move(newx, newy, newz, dir) );
-        break;
-        case ENVIRONMENT: move_flag = true; break;
-        case NOT_MOVABLE: break;
-        case MOVE_UP:
-            if ( dir > DOWN ) { // not UP and not DOWN
-                Move(x, y, z, UP);
-            }
-        break;
-        case JUMP:
-            if ( dir > DOWN ) { // not UP and not DOWN
-                Jump(x, y, z, dir);
-            }
-        break;
-        case PUSH_DELETE_SELF: move_flag = true; break;
+    Block *       block_to = GetBlock(newx, newy, newz);
+    if ( DOWN != dir && block->Weight() != 0 ) {
+        Falling * const falling = block->ShouldFall();
+        if ( falling != nullptr
+                && falling->IsFalling()
+                && AIR==GetBlock(x, y, z-1)->Sub()
+                && AIR==GetBlock(newx, newy, newz-1)->Sub() )
+        {
+            return false;
         }
     }
-    Falling * falling;
-    return ( move_flag &&
-        (DOWN==dir || !block->Weight() ||
-        not ( (falling=block->ShouldFall())
-            && falling->IsFalling()
-            && AIR==GetBlock(x, y, z-1)->Sub()
-            && AIR==GetBlock(newx, newy, newz-1)->Sub() )) );
+    switch ( block->PushResult(dir) ) {
+    case MOVABLE: break;
+    case ENVIRONMENT:
+        if ( *block == *block_to ) { // prevent useless flow
+            return false;
+        }
+        break;
+    default:
+    case NOT_MOVABLE: return false;
+    }
+    push_reaction target_push = block_to->PushResult(dir);
+    block_to->Push(dir, block);
+    block_to = GetBlock(newx, newy, newz);
+    target_push = block_to->PushResult(dir);
+    switch ( target_push ) {
+    case MOVABLE:
+        return ( (block->Weight() > block_to->Weight()) &&
+                Move(newx, newy, newz, dir) );
+    case ENVIRONMENT: return true;
+    case NOT_MOVABLE: return false;
+    case MOVE_UP:
+        if ( dir > DOWN ) { // not UP and not DOWN
+            Move(x, y, z, UP);
+        }
+        return false;
+    case JUMP:
+        if ( dir > DOWN ) { // not UP and not DOWN
+            Jump(x, y, z, dir);
+        }
+        return false;
+    }
+    Q_UNREACHABLE();
+    return false;
 } // bool World::CanMove(const int x, y, z, newx, newy, newz, int dir)
 
 void World::NoCheckMove(const int x, const int y, const int z,
@@ -511,7 +524,7 @@ void World::NoCheckMove(const int x, const int y, const int z,
     emit Updated(newx, newy, newz);
 
     shred_from->AddFalling(shred_from->GetBlock(x_in, y_in, z+1));
-    shred_to  ->AddFalling(shred_from->GetBlock(newx_in, newy_in, newz+1));
+    shred_to  ->AddFalling(shred_to  ->GetBlock(newx_in, newy_in, newz+1));
     shred_to  ->AddFalling(block);
 
     if ( block_to->Sub() != AIR ) {
@@ -570,10 +583,7 @@ void World::DestroyAndReplace(const int x, const int y, const int z) {
     const int y_in_shred = Shred::CoordInShred(y);
     Block * const block = shred->GetBlock(x_in_shred, y_in_shred, z);
     bool delete_block = true;
-    Block * new_block = block->DropAfterDamage(&delete_block);
-    if ( new_block == nullptr ) {
-        new_block = Normal(AIR);
-    }
+    Block * const new_block = block->DropAfterDamage(&delete_block);
     shred->SetBlockNoCheck(new_block, x_in_shred, y_in_shred, z);
     if (    block->Transparent() != new_block->Transparent() ||
             block->LightRadius() != new_block->LightRadius() )
@@ -582,6 +592,12 @@ void World::DestroyAndReplace(const int x, const int y, const int z) {
     }
     if ( delete_block ) {
         block_manager.DeleteBlock(block);
+    } else {
+        block->Restore();
+        Active * const active = block->ActiveBlock();
+        if ( active != nullptr ) {
+            active->Unregister();
+        }
     }
     shred->AddFalling(shred->GetBlock(x_in_shred, y_in_shred, z+1));
     emit Updated(x, y, z);
@@ -592,7 +608,7 @@ bool World::Build(Block * block, const int x, const int y, const int z,
 {
     Block * const target_block = GetBlock(x, y, z);
     if ( ENVIRONMENT!=target_block->PushResult(NOWHERE) && not anyway ) {
-        if ( who ) {
+        if ( who != nullptr ) {
             who->ReceiveSignal(tr("Cannot build here."));
         }
         return false;

@@ -81,7 +81,6 @@ public: // Lighting section
 
     bool GetEvernight() const;
 private:
-    bool SetSunLightMap (int level, int x, int y, int z);
     bool SetFireLightMap(int level, int x, int y, int z);
     void AddFireLight   (int x, int y, int z, int level);
     void RemoveFireLight(int x, int y, int z);

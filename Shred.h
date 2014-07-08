@@ -84,7 +84,7 @@ public:
     int SunLight(  int x, int y, int z) const;
     int LightLevel(int x, int y, int z) const;
 
-    bool SetSunLight( int x, int y, int z, int level);
+    void SetSunLight( int x, int y, int z, int level);
     bool SetFireLight(int x, int y, int z, int level);
     void SetLightmap( int x, int y, int z, int level);
 
@@ -93,7 +93,6 @@ public:
 
     // Information section
     void SetNewBlock(int kind, int sub, int x, int y, int z, int dir = UP);
-    char TypeOfShred(long longi, long lati) const;
     char GetTypeOfShred() const;
 
     static QString FileName(QString world_name, long longi, long lati);
@@ -109,12 +108,8 @@ public:
        return x >> SHRED_WIDTH_SHIFT;
     }
 
-    // Weather
-    void SetWeathers();
-    weathers GetWeather(times_of_day time) const;
-    weathers GetCurrentWeather() const;
-    void Rain();
-    void Dew();
+    void Rain(int kind, int sub);
+    void Dew (int kind, int sub);
 
 private:
     void RemoveAllSunLight();
@@ -125,7 +120,7 @@ private:
 
     QString FileName() const;
 
-    void NormalUnderground(int depth = 0, int sub = SOIL);
+    void NormalUnderground(int depth = 0, subs sub = SOIL);
     void CoverWith(int kind, int sub);
     /// Puts num things(kind-sub) in random places on shred surface.
     /** If on_water is false, this will not drop things on water,
@@ -139,7 +134,7 @@ private:
     void NullMountain();
     void Plain();
     void Forest();
-    void Water();
+    void Water(subs sub = WATER);
     void Pyramid();
     void Mountain();
     void Hill();
@@ -159,9 +154,9 @@ private:
     void AddWater();
     int FlatUndeground(int depth = 0);
     void NormalCube(int x_start, int y_start, int z_start,
-                    int x_size,  int y_size,  int z_size, int sub);
+                    int x_size,  int y_size,  int z_size, subs);
 
-    Block * RainBlock() const;
+    void RainBlock(int * kind, int * sub) const;
 
     /// Lowest nullstone and sky are not in bounds.
     static bool InBounds(int x, int y, int z);
@@ -182,9 +177,6 @@ private:
 
     /// memory, allocated for this shred.
     Shred * const memory;
-
-    /// Weather for this day. (TIME_EVENING is the last time of day.)
-    weathers weather[TIME_EVENING+1];
 };
 
 #endif // SHRED_H

@@ -37,6 +37,7 @@ WorldMap::WorldMap(const QString world_name) :
 }
 
 char WorldMap::TypeOfShred(const long longi, const long lati) const {
+    //return '-'; // for testing purposes
     if (
             longi >= mapSize || longi < 0 ||
             lati  >= mapSize || lati  < 0 )
@@ -52,19 +53,19 @@ char WorldMap::TypeOfShred(const long longi, const long lati) const {
 
 long WorldMap::MapSize() const { return mapSize; }
 
-float WorldMap::Deg(const float x, const float y, const ushort size) {
-    const float x_cent = x-size/2;
-    const float y_cent = y-size/2;
+float WorldMap::Deg(const int x, const int y, const int size) {
+    const float x_cent = x-size/2.f;
+    const float y_cent = y-size/2.f;
     float fi;
     if ( x_cent > 0 && y_cent >= 0 ) {
-        fi = atan(y_cent/x_cent);
+        fi = atanf(y_cent/x_cent);
     } else if ( x_cent>0 && y_cent<0 ) {
-        fi = atan(y_cent/x_cent)+2*PI;
+        fi = atanf(y_cent/x_cent)+2*PI;
     } else if ( x_cent<0 ) {
-        fi = atan(y_cent/x_cent)+PI;
-    } else if ( x_cent==0 && y_cent>0 ) {
+        fi = atanf(y_cent/x_cent)+PI;
+    } else if ( qFuzzyCompare(x_cent, 0.f) && y_cent>0 ) {
         fi = PI/2;
-    } else if ( x_cent==0 && y_cent<0 ) {
+    } else if ( qFuzzyCompare(x_cent, 0.f) && y_cent<0 ) {
         fi = 3*PI/2;
     } else {
         fi = 0;
@@ -72,26 +73,25 @@ float WorldMap::Deg(const float x, const float y, const ushort size) {
     return 360*fi / 2 / PI;
 }
 
-float WorldMap::R(const float x, const float y, const ushort size) {
-    return sqrt((x-size/2)*(x-size/2)+(y-size/2)*(y-size/2));
+float WorldMap::R(const int x, const int y, const int size) {
+    return sqrtf((x-size/2.f)*(x-size/2.f)+(y-size/2.f)*(y-size/2.f));
 }
 
 void WorldMap::Circle(
-        const float min_rad,
-        const float max_rad,
+        const int min_rad,
+        const int max_rad,
         const char ch,
-        const ushort size,
+        const int size,
         char * const map)
 {
     if ( min_rad >= max_rad ) {
-        fprintf(stderr,
-            "WorldMap::Circle: %c: min_rad (%f) >= max_rad (%f).\n",
-            ch, min_rad, max_rad);
+        fprintf(stderr, "%s: %c: min_rad (%d) >= max_rad (%d).\n",
+            Q_FUNC_INFO, ch, min_rad, max_rad);
     }
-    float maxs[360] = { (float)qMax(min_rad, float(qrand()%Round(max_rad))) };
+    float maxs[360] = { float(qMax(min_rad, qrand()%Round(max_rad))) };
     for (int x=1; x<360; ++x) {
-        maxs[x]= qBound(
-            min_rad, float(maxs[x-1]+(qrand()%400-200.0)/200.0),max_rad);
+        maxs[x] = qBound(float(min_rad),
+            maxs[x-1]+(qrand()%400-200)/200.f, float(max_rad));
         if ( x > 315 ) { // connect beginning and end of circle
             maxs[x] += (maxs[0]-maxs[x-1])/90;
         }
@@ -106,38 +106,41 @@ void WorldMap::Circle(
 
 void WorldMap::GenerateMap(
         const char * const filename,
-        ushort size,
+        int size,
         const char outer,
         const int seed)
 {
     qsrand(seed);
-    size = qMax(ushort(10U), size);
+    size = qMax(10, size);
 
-    char * const map = new char[(ulong)size*size];
-    for (int y=0; y<size; ++y)
-    for (int x=0; x<size; ++x) {
-        map[x*size+y] = outer;
-    }
+    char * const map = new char[size*size];
+    memset(map, outer, size*size);
 
-    const float min_rad = (float)size/3;
-    const float max_rad = (float)size/2;
+    const float min_rad = size/3.0f;
+    const float max_rad = size/2.0f;
     Circle(min_rad,   max_rad,     SHRED_PLAIN,    size, map);
     Circle(min_rad/2, max_rad/2,   SHRED_FOREST,   size, map);
     Circle(min_rad/3, max_rad/3+1, SHRED_HILL,     size, map);
     Circle(min_rad/4, max_rad/4+1, SHRED_MOUNTAIN, size, map);
 
-    // rivers
-    // on large maps rivers behave badly, bug is known.
-    // TODO: another river algorythm
-    const float river_width = 4;
-    const float river_width_deg = river_width*80/size;
-    for (float deg=river_width_deg; deg<360-river_width_deg; ++deg) {
-        if ( qrand()%(60*80/size) == 0 ) {
-            for (float j=deg-river_width_deg; j<=deg+river_width_deg; ++j) {
-                for (float r=max_rad/3; r<max_rad; r+=0.5f) {
-                    map[int((r*cos(j*2*PI/360))+size/2)*size+
-                        int((r*sin(j*2*PI/360))+size/2)] = SHRED_WATER;
-                }
+    const int lakes_number = qrand() % size;
+    for (int i=0; i<lakes_number; ++i) {
+        char type = SHRED_WATER;
+        switch ( qrand()%3 ) {
+        case 1: type = SHRED_ACID_LAKE; break;
+        case 2: type = SHRED_LAVA_LAKE; break;
+        }
+        const float lake_size  = qrand() % (size/10) + 1;
+        const int lake_start_x = qrand() % int(size-lake_size);
+        const int lake_start_y = qrand() % int(size-lake_size);
+        const int border = (lake_size-1)*(lake_size-1)/2/2;
+        for (int x=lake_start_x; x<lake_start_x+lake_size; ++x)
+        for (int y=lake_start_y; y<lake_start_y+lake_size; ++y) {
+            if (      (x-lake_start_x-lake_size/2)*(x-lake_start_x-lake_size/2)
+                    + (y-lake_start_y-lake_size/2)*(y-lake_start_y-lake_size/2)
+                    < border )
+            {
+                map[x*size+y] = type;
             }
         }
     }

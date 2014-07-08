@@ -17,33 +17,32 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#ifndef WORLDMAP_H
-#define WORLDMAP_H
+#ifndef RAINMACHINE_H
+#define RAINMACHINE_H
 
-#include <QFile>
+#include "blocks/Inventory.h"
+#include "blocks/Active.h"
+#include "Shred.h"
 
-class WorldMap final {
+class RainMachine : public Active, public Inventory {
+    Q_OBJECT
 public:
-    explicit WorldMap(QString);
+    RainMachine(int sub, int id);
+    RainMachine(QDataStream & stream, int sub, int id);
 
-    WorldMap & operator=(const WorldMap &) = delete;
-    WorldMap(const WorldMap &) = delete;
-
-    long MapSize() const;
-    char TypeOfShred(long longi, long lati) const;
-    static void GenerateMap(
-            const char * filename,
-            int size,
-            char outer,
-            int seed);
+    int  Sub() const override;
+    int  Kind() const override;
+    void DoRareAction() override;
+    int  ShouldAct() const override;
+    void Push(dirs, Block *) override;
+    QString FullName() const override;
+    Inventory * HasInventory() override;
+    void ReceiveSignal(QString) override;
+    usage_types Use(Block * who) override;
+    void SaveAttributes(QDataStream &) const override;
 
 private:
-    static float Deg(int x, int y, int size);
-    static float R  (int x, int y, int size);
-    static void Circle(int min_rad, int max_rad, char ch, int size, char* map);
-
-    long mapSize;
-    mutable QFile map;
+    bool isOn;
 };
 
-#endif // WORLDMAP_H
+#endif // RAINMACHINE_H

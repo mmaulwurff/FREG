@@ -58,7 +58,6 @@ public:
     void SetThrow  (int x, int y, int z,
             int src_slot, int dest_slot, int unum);
 
-    World * GetWorld() const;
     int  GetActionType() const;
     void MakeAction();
 

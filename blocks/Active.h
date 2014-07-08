@@ -25,7 +25,7 @@
 #include "Xyz.h"
 
 /// Frequency can be "never", "rare", "rare & first", "rare & second".
-enum ACTIVE_FREQUENCY {
+enum active_frequency {
     FREQUENT_NEVER  = 0,
     FREQUENT_RARE   = 1,
     FREQUENT_FIRST  = 2,
@@ -55,7 +55,6 @@ public:
     int  Kind() const override = 0;
     QString  FullName() const override = 0;
     Active * ActiveBlock() override;
-    push_reaction PushResult(dirs) const override;
 
     Shred * GetShred() const;
     World * GetWorld() const;

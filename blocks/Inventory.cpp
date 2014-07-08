@@ -23,10 +23,11 @@
 #include "BlockManager.h"
 #include "world.h"
 
-bool   Inventory::Access() const { return true; }
-int Inventory::Start() const { return 0; }
-int Inventory::Size() const { return size; }
-int Inventory::Number(const int i) const { return inventory[i].size(); }
+int  Inventory::Start() const { return 0; }
+int  Inventory::Size() const { return size; }
+int  Inventory::Number(const int i) const { return inventory[i].size(); }
+bool Inventory::Access() const { return true; }
+QString Inventory::NumStr(const int num) { return QString(" (%1x)").arg(num); }
 
 bool Inventory::Drop(const int src, int dest, int num,
         Inventory * const inv_to)
@@ -82,42 +83,33 @@ bool Inventory::Get(Block * const block, const int start) {
                 }
             }
         }
-        return false;
-    } // else:
-    for (int i=qMax(Start(), start); i<Size(); ++i) {
-        if ( GetExact(block, i) ) {
-            return true;
+    } else {
+        for (int i=start; i<Size(); ++i) {
+            if ( GetExact(block, i) ) {
+                return true;
+            }
         }
     }
+    ReceiveSignal(QObject::tr("No room."));
     return false;
 }
 
 bool Inventory::GetExact(Block * const block, const int num) {
-    if ( block ) {
-        if ( inventory[num].isEmpty() ) {
-            inventory[num].push(block);
-        } else if ( *block == *inventory[num].top()
-                && Number(num) < MAX_STACK_SIZE )
-        {
-            Inventory * const inner = inventory[num].top()->HasInventory();
-            if ( inner==nullptr || inner->IsEmpty() ) {
-                inventory[num].push(block);
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
+    if ( block == nullptr) return true;
+    if ( inventory[num].isEmpty() ||
+            (*block == *inventory[num].top() && Number(num)<MAX_STACK_SIZE) )
+    {
+        inventory[num].push(block);
+        return true;
+    } else {
+        return false;
     }
-    return true;
 }
 
-void Inventory::MoveInside(const int num_from, const int num_to,
-        const int num)
-{
+void Inventory::MoveInside(const int from, const int num_to, const int num) {
     for (int i=0; i<num; ++i) {
-        if ( GetExact(ShowBlock(num_from), num_to) ) {
-            Pull(num_from);
+        if ( GetExact(ShowBlock(from), num_to) ) {
+            Pull(from);
         }
     }
 }
@@ -149,10 +141,6 @@ QString Inventory::InvFullName(const int num) const {
         "" : inventory[num].top()->FullName();
 }
 
-QString Inventory::NumStr(const int num) const {
-    return QString(" (%1x)").arg(Number(num));
-}
-
 int Inventory::GetInvWeight(const int i) const {
     return inventory[i].isEmpty() ?
         0 : inventory[i].top()->Weight()*Number(i);
@@ -166,10 +154,6 @@ int Inventory::GetInvSub(const int i) const {
 int Inventory::GetInvKind(const int i) const {
     return inventory[i].isEmpty() ?
         BLOCK : int(inventory[i].top()->Kind());
-}
-
-QString Inventory::GetInvNote(const int num) const {
-    return inventory[num].top()->GetNote();
 }
 
 int Inventory::Weight() const {

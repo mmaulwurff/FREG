@@ -26,10 +26,11 @@
 #include "blocks/Weapons.h"
 #include "blocks/Illuminator.h"
 #include "blocks/Container.h"
+#include "blocks/RainMachine.h"
 
 #define sizeof_array(ARRAY) (sizeof(ARRAY)/sizeof(ARRAY[0]))
 
-const QString BlockManager::kinds[] = {
+const QString BlockManager::kinds[] = { // do not usp space, use '_'
     "block",
     "bell",
     "container",
@@ -48,7 +49,7 @@ const QString BlockManager::kinds[] = {
     "weapon",
     "ladder",
     "door",
-    "locked door",
+    "locked_door",
     "creator",
     "text",
     "map",
@@ -58,9 +59,10 @@ const QString BlockManager::kinds[] = {
     "axe",
     "hammer",
     "illuminator",
+    "rain_machine",
 };
 
-const QString BlockManager::subs[] = {
+const QString BlockManager::subs[] = { // do not usp space, use '_'
     "stone",
     "moss stone",
     "nullstone",
@@ -144,6 +146,7 @@ Block * BlockManager::NewBlock(const int kind, const int sub) {
     case CREATOR: return new Creator(sub, id);
     case WORKBENCH: return new Workbench(sub, id);
     case ILLUMINATOR: return new Illuminator(sub, id);
+    case RAIN_MACHINE: return new RainMachine(sub, id);
     // invalid kinds:
     case ANIMAL:
     case TELEGRAPH:
@@ -187,6 +190,7 @@ Block * BlockManager::BlockFromFile(QDataStream & str,
     case CREATOR: return new Creator(str, sub, id);
     case WORKBENCH: return new Workbench(str, sub, id);
     case ILLUMINATOR: return new Illuminator(str, sub, id);
+    case RAIN_MACHINE: return new RainMachine(str, sub, id);
     // invalid kinds:
     case ANIMAL:
     case TELEGRAPH:

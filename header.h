@@ -50,7 +50,7 @@ const int SECONDS_IN_NIGHT = END_OF_NIGHT;
 const int SECONDS_IN_DAYLIGHT = SECONDS_IN_DAY-END_OF_NIGHT;
 
 /// 10 bits to store durability in file, signed.
-const int MAX_DURABILITY = pow(2, 10);
+const int MAX_DURABILITY = 1024;
 const int MAX_BREATH = 60;
 
 const int MAX_LIGHT_RADIUS = 15;
@@ -61,8 +61,8 @@ const QString locale = QLocale::system().name();
 
 enum shred_type {
     SHRED_PLAIN     = '.',
-    SHRED_TESTSHRED = 't',
-    SHRED_PYRAMID   = 'p',
+    SHRED_TESTSHRED = 'T',
+    SHRED_PYRAMID   = 'P',
     SHRED_HILL      = '+',
     SHRED_DESERT    = ':',
     SHRED_WATER     = '~',
@@ -70,8 +70,10 @@ enum shred_type {
     SHRED_MOUNTAIN  = '^',
     SHRED_EMPTY     = '_',
     SHRED_CHAOS     = '!',
-    SHRED_CASTLE    = 'c',
+    SHRED_CASTLE    = 'C',
     SHRED_WASTE     = '=',
+    SHRED_ACID_LAKE = 'a',
+    SHRED_LAVA_LAKE = 'l',
     SHRED_NULLMOUNTAIN = '#',
     SHRED_NORMAL_UNDERGROUND = '-',
 };
@@ -96,7 +98,6 @@ enum push_reaction {
     NOT_MOVABLE,
     MOVE_UP,
     JUMP,
-    PUSH_DELETE_SELF
 };
 
 enum times_of_day {
@@ -121,10 +122,9 @@ enum damage_kinds {
     BITE,    ///< 11
     TIME,    ///< 12
     NO_HARM, ///< 13
-    DAMAGE_FALL,  ///< 14
-    DAMAGE_HANDS, ///< 15
-    DAMAGE_ACID,  ///< 16
-}; // enum damage_kinds
+    DAMAGE_HANDS, ///< 14
+    DAMAGE_ACID,  ///< 15
+};
 
 /// Kinds of atom
 enum kinds {
@@ -158,6 +158,7 @@ enum kinds {
     AXE,         ///< 25
     HAMMER,      ///< 26
     ILLUMINATOR, ///< 27
+    RAIN_MACHINE, ///< 28
     /// Nothing is LAST_KIND.
     LAST_KIND // keep it last in this list.
 }; // enum kinds

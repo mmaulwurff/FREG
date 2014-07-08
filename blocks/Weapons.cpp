@@ -18,6 +18,9 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "blocks/Weapons.h"
+#include "blocks/Inventory.h"
+#include "BlockManager.h"
+#include "Shred.h"
 
 // Weapon::
     QString Weapon::FullName() const {
@@ -37,6 +40,19 @@
     int  Weapon::Weight() const { return Block::Weight()/4; }
     int  Weapon::Wearable() const { return WEARABLE_ARM; }
     void Weapon::Damage(int, int) { Break(); }
+
+    usage_types Weapon::Use(Block * const who) {
+        Shred * const shred = GetShred();
+        if ( shred != nullptr ) { // not currently in inventory
+            Inventory * const inv = who->HasInventory();
+            if ( inv != nullptr && inv->Get(this) ) {
+                Unregister();
+                shred->SetBlockNoCheck(block_manager.NormalBlock(AIR),
+                    Shred::CoordInShred(X()), Shred::CoordInShred(Y()), Z());
+            }
+        }
+        return USAGE_TYPE_NO;
+    }
 
     int Weapon::DamageLevel() const {
         switch ( Sub() ) {
