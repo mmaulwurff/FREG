@@ -163,7 +163,7 @@ int Screen::Color(const int kind, const int sub) const {
         case GOLD:       return COLOR_PAIR(WHITE_YELLOW);
         case BONE:       return COLOR_PAIR(MAGENTA_WHITE);
         case FIRE:       return COLOR_PAIR(RED_YELLOW) | A_BLINK;
-        case EXPLOSIVE:  return COLOR_PAIR(WHITE_RED) | A_ALTCHARSET;
+        case EXPLOSIVE:  return COLOR_PAIR(WHITE_RED);
         case SUN_MOON:   return COLOR_PAIR(( TIME_NIGHT == w->PartOfDay() ) ?
             WHITE_WHITE : YELLOW_YELLOW);
         case SKY:
@@ -175,6 +175,7 @@ int Screen::Color(const int kind, const int sub) const {
             case TIME_NOON:    return COLOR_PAIR(CYAN_CYAN);
             case TIME_EVENING: return COLOR_PAIR(WHITE_CYAN);
             }
+        case SUB_DUST: return COLOR_PAIR(BLACK_BLACK) | A_BOLD | A_REVERSE;
         }
     case DWARF:     return COLOR_PAIR(WHITE_BLUE);
     case RABBIT:    return COLOR_PAIR(RED_WHITE);

@@ -437,6 +437,7 @@ void Shred::TestShred() { // 7 items in a row
     SetNewBlock(LIQUID, ACID, ++column, row, level+1);
     SetNewBlock(LIQUID, SUB_CLOUD, column+=2, row, level);
     SetNewBlock(RAIN_MACHINE, IRON, column+=2, row, level);
+    SetNewBlock(FALLING, SUB_DUST, column+=2, row, level);
 } // void Shred::TestShred()
 
 void Shred::NullMountain() {

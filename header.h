@@ -200,6 +200,7 @@ enum subs {
     EXPLOSIVE,  ///<  27
     ACID,       ///<  28
     SUB_CLOUD,  ///<  29
+    SUB_DUST,   ///<  30
     /// Nothing is made from LAST_SUB.
     LAST_SUB // keep it last in this list
 }; // enum subs

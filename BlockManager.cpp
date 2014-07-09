@@ -93,6 +93,7 @@ const QString BlockManager::subs[] = { // do not usp space, use '_'
     "explosive",
     "acid",
     "cloud",
+    "dust",
 };
 
 BlockManager block_manager;
