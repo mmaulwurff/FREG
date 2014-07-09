@@ -84,7 +84,7 @@ public:
     int SunLight(  int x, int y, int z) const;
     int LightLevel(int x, int y, int z) const;
 
-    void SetSunLight( int x, int y, int z, int level);
+    bool SetSunLight( int x, int y, int z, int level);
     bool SetFireLight(int x, int y, int z, int level);
     void SetLightmap( int x, int y, int z, int level);
 

@@ -31,8 +31,10 @@ VirtScreen::VirtScreen(World * const world_, Player * const player_) :
         w(world_),
         player(player_)
 {
-    connect(w, SIGNAL(Notify(QString)), SLOT(Notify(QString)));
-    connect(player, SIGNAL(Notify(QString)), SLOT(Notify(QString)));
+    connect(     w, SIGNAL(Notify(QString)), SLOT(Notify(QString)),
+        Qt::DirectConnection);
+    connect(player, SIGNAL(Notify(QString)), SLOT(Notify(QString)),
+        Qt::DirectConnection);
     connect(player, SIGNAL(ShowFile(QString)), SLOT(DisplayFile(QString)));
     connect(player, SIGNAL(GetFocus(int *, int *, int *)),
         SLOT(ActionXyz(int *, int *, int *)), Qt::DirectConnection);

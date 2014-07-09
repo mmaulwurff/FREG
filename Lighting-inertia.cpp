@@ -128,17 +128,17 @@ void World::UpShineInit(int x, int y, int z_bottom) {
     Shred * const shred = GetShred(x, y);
     x = Shred::CoordInShred(x);
     y = Shred::CoordInShred(y);
-    while (z_bottom < HEIGHT-1) {
-        shred->SetSunLight(x, y, z_bottom++, 1);
-    }
+    for ( ; shred->SetSunLight(x, y, z_bottom, 1) && z_bottom < HEIGHT-1;
+            ++z_bottom);
 }
 
 void World::UpShine(const int x, const int y, int z_bottom) {
     Shred * const shred = GetShred(x, y);
     const int x_in = Shred::CoordInShred(x);
     const int y_in = Shred::CoordInShred(y);
-    while (z_bottom < HEIGHT-1) {
-        shred->SetSunLight(x_in, y_in, z_bottom, 1);
+    for ( ; shred->SetSunLight(x_in, y_in, z_bottom, 1) && z_bottom < HEIGHT-1;
+            ++z_bottom)
+    {
         emit Updated(x, y, z_bottom++);
     }
 }
@@ -239,10 +239,13 @@ int Shred::SunLight(const int x, const int y, const int z) const {
     return (lightMap[x][y][z] & 0x0F);
 }
 
-void Shred::SetSunLight(const int x, const int y, const int z, const int level)
+bool Shred::SetSunLight(const int x, const int y, const int z, const int level)
 {
     if ( ( lightMap[x][y][z] &  0x0F ) <  level ) {
          ( lightMap[x][y][z] &= 0xF0 ) |= level;
+        return true;
+    } else {
+        return false;
     }
 }
 

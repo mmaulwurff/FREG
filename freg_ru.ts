@@ -55,7 +55,7 @@
 <context>
     <name>Bush</name>
     <message>
-        <location filename="blocks/blocks.cpp" line="298"/>
+        <location filename="blocks/blocks.cpp" line="300"/>
         <source>Bush</source>
         <translation>Куст</translation>
     </message>
@@ -63,7 +63,7 @@
 <context>
     <name>Clock</name>
     <message>
-        <location filename="blocks/blocks.cpp" line="469"/>
+        <location filename="blocks/blocks.cpp" line="463"/>
         <source>Time is %1.</source>
         <translation>Сейчас %1.</translation>
     </message>
@@ -71,32 +71,37 @@
 <context>
     <name>Container</name>
     <message>
-        <location filename="blocks/Container.cpp" line="84"/>
+        <location filename="blocks/Container.cpp" line="102"/>
         <source>Pile</source>
         <translation>Куча</translation>
     </message>
     <message>
-        <location filename="blocks/Container.cpp" line="85"/>
+        <location filename="blocks/Container.cpp" line="103"/>
         <source>Wooden chest</source>
         <translation>Деревянный сундук</translation>
     </message>
     <message>
-        <location filename="blocks/Container.cpp" line="86"/>
+        <location filename="blocks/Container.cpp" line="104"/>
         <source>Stone chest</source>
         <translation>Каменный сундук</translation>
     </message>
     <message>
-        <location filename="blocks/Container.cpp" line="87"/>
+        <location filename="blocks/Container.cpp" line="105"/>
         <source>Locker</source>
         <translation>Сейф</translation>
     </message>
     <message>
-        <location filename="blocks/Container.cpp" line="88"/>
+        <location filename="blocks/Container.cpp" line="106"/>
         <source>Fridge</source>
         <translation>Холодильнк</translation>
     </message>
     <message>
-        <location filename="blocks/Container.cpp" line="91"/>
+        <location filename="blocks/Container.cpp" line="108"/>
+        <source>Cadaver</source>
+        <translation>Труп</translation>
+    </message>
+    <message>
+        <location filename="blocks/Container.cpp" line="111"/>
         <source>Unknown container</source>
         <translation>Неизвестный контейнер</translation>
     </message>
@@ -104,7 +109,7 @@
 <context>
     <name>Creator</name>
     <message>
-        <location filename="blocks/blocks.cpp" line="555"/>
+        <location filename="blocks/blocks.cpp" line="549"/>
         <source>Creative block</source>
         <translation>Творец</translation>
     </message>
@@ -112,37 +117,37 @@
 <context>
     <name>Door</name>
     <message>
-        <location filename="blocks/blocks.cpp" line="430"/>
+        <location filename="blocks/blocks.cpp" line="424"/>
         <source> of wood</source>
         <translation> из дерева</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="432"/>
+        <location filename="blocks/blocks.cpp" line="426"/>
         <source> of stone</source>
         <translation> из камня</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="433"/>
+        <location filename="blocks/blocks.cpp" line="427"/>
         <source> of glass</source>
         <translation> из стекла</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="434"/>
+        <location filename="blocks/blocks.cpp" line="428"/>
         <source> of iron</source>
         <translation> из железа</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="436"/>
+        <location filename="blocks/blocks.cpp" line="430"/>
         <source> of something</source>
         <translation> из чего-то</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="439"/>
+        <location filename="blocks/blocks.cpp" line="433"/>
         <source>Locked door</source>
         <translation>Запертая дверь</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="439"/>
+        <location filename="blocks/blocks.cpp" line="433"/>
         <source>Door</source>
         <translation>Дверь</translation>
     </message>
@@ -150,12 +155,12 @@
 <context>
     <name>Dwarf</name>
     <message>
-        <location filename="blocks/Dwarf.cpp" line="50"/>
+        <location filename="blocks/Dwarf.cpp" line="47"/>
         <source>Rational creature</source>
         <translation>Разумное существо</translation>
     </message>
     <message>
-        <location filename="blocks/Dwarf.cpp" line="125"/>
+        <location filename="blocks/Dwarf.cpp" line="122"/>
         <source>Don&apos;t touch me!</source>
         <translation>Не трогай меня!</translation>
     </message>
@@ -181,12 +186,12 @@
 <context>
     <name>Grass</name>
     <message>
-        <location filename="blocks/blocks.cpp" line="267"/>
+        <location filename="blocks/blocks.cpp" line="269"/>
         <source>Grass</source>
         <translation>Трава</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="268"/>
+        <location filename="blocks/blocks.cpp" line="270"/>
         <source>Fire</source>
         <translation>Огонь</translation>
     </message>
@@ -222,22 +227,22 @@
 <context>
     <name>Liquid</name>
     <message>
-        <location filename="blocks/blocks.cpp" line="206"/>
+        <location filename="blocks/blocks.cpp" line="208"/>
         <source>Water</source>
         <translation>Вода</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="207"/>
+        <location filename="blocks/blocks.cpp" line="209"/>
         <source>Lava</source>
         <translation>Лава</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="208"/>
+        <location filename="blocks/blocks.cpp" line="210"/>
         <source>Acid</source>
         <translation>Кислота</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="209"/>
+        <location filename="blocks/blocks.cpp" line="211"/>
         <source>Cloud</source>
         <translation>Облако</translation>
     </message>
@@ -328,7 +333,7 @@
 <context>
     <name>Predator</name>
     <message>
-        <location filename="blocks/blocks.cpp" line="742"/>
+        <location filename="blocks/blocks.cpp" line="736"/>
         <source>Predator bites you!</source>
         <translation>Хищник кусает вас!</translation>
     </message>
@@ -462,12 +467,12 @@
         <translation>Лиана</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="485"/>
+        <location filename="blocks/blocks.cpp" line="479"/>
         <source>Bomb</source>
         <translation>Бомба</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="512"/>
+        <location filename="blocks/blocks.cpp" line="506"/>
         <source>Timer fired. %1</source>
         <translation>Сработал таймер.</translation>
     </message>
@@ -608,64 +613,74 @@
         <translation>Вы не знаете как собрать это.</translation>
     </message>
     <message>
-        <location filename="blocks/Container.cpp" line="178"/>
+        <location filename="blocks/Container.cpp" line="198"/>
         <source>Workbench</source>
         <translation>Верстак</translation>
     </message>
     <message>
-        <location filename="blocks/Container.cpp" line="179"/>
+        <location filename="blocks/Container.cpp" line="199"/>
         <source>Iron anvil</source>
         <translation>Железная наковальня</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="484"/>
+        <location filename="blocks/blocks.cpp" line="478"/>
         <source>Iron clock</source>
         <translation>Железные часы</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="583"/>
+        <location filename="blocks/blocks.cpp" line="577"/>
         <source>Paper page</source>
         <translation>Бумажная страница</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="584"/>
+        <location filename="blocks/blocks.cpp" line="578"/>
         <source>Screen</source>
         <translation>Экран</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="587"/>
+        <location filename="blocks/blocks.cpp" line="581"/>
         <source>Strange text</source>
         <translation>Странный текст</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="595"/>
+        <location filename="blocks/blocks.cpp" line="589"/>
         <source>Nothing is written on this page.</source>
         <translation>На этой странице ничего не написано.</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="612"/>
+        <location filename="blocks/blocks.cpp" line="606"/>
         <source>Map</source>
         <translation>Карта</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="617"/>
+        <location filename="blocks/blocks.cpp" line="611"/>
         <source>Set title to this map first.</source>
         <translation>Сначала укажите название для этой карты.</translation>
     </message>
     <message>
-        <location filename="blocks/blocks.cpp" line="699"/>
+        <location filename="blocks/blocks.cpp" line="693"/>
         <source>Bell</source>
         <translation>Звонок</translation>
     </message>
     <message>
-        <location filename="blocks/Bucket.cpp" line="42"/>
+        <location filename="blocks/Bucket.cpp" line="43"/>
+        <source>Bucket</source>
+        <translation>Ведро</translation>
+    </message>
+    <message>
+        <location filename="blocks/Bucket.cpp" line="44"/>
+        <source>Bottle</source>
+        <translation>Бутыль</translation>
+    </message>
+    <message>
+        <location filename="blocks/Bucket.cpp" line="47"/>
         <source>Empty bucket</source>
         <translation>Пустое ведро</translation>
     </message>
     <message>
-        <location filename="blocks/Bucket.cpp" line="43"/>
-        <source>Bucket with %1 (%2/%3 full)</source>
-        <translation>Ведро, в нём %1 (полное на %2/%3)</translation>
+        <location filename="blocks/Bucket.cpp" line="48"/>
+        <source>%1 with %2 (%3/%4 full)</source>
+        <translation>%1, в нём %2 (ёмкость %3/%4)</translation>
     </message>
     <message>
         <location filename="main.cpp" line="85"/>
@@ -736,7 +751,7 @@
 <context>
     <name>Rabbit</name>
     <message>
-        <location filename="blocks/blocks.cpp" line="378"/>
+        <location filename="blocks/blocks.cpp" line="372"/>
         <source>Herbivore</source>
         <translation>Травоядное животное</translation>
     </message>
@@ -875,10 +890,6 @@
         <translation>U-Использовать</translation>
     </message>
     <message>
-        <source>Wield/take oFF</source>
-        <translation type="obsolete">W-Надеть/снять</translation>
-    </message>
-    <message>
         <location filename="screens/CursedScreen.cpp" line="77"/>
         <source>iNscribe</source>
         <translation>N-Подписать</translation>
@@ -952,83 +963,83 @@ Press any key.</source>
         <translation>Время: %1:%2.</translation>
     </message>
     <message>
-        <location filename="world.cpp" line="383"/>
+        <location filename="world.cpp" line="382"/>
         <source>It&apos;s morning now.</source>
         <translation>Наступило утро.</translation>
     </message>
     <message>
-        <location filename="world.cpp" line="386"/>
+        <location filename="world.cpp" line="385"/>
         <source>It&apos;s day now.</source>
         <translation>Наступил день.</translation>
     </message>
     <message>
-        <location filename="world.cpp" line="387"/>
+        <location filename="world.cpp" line="386"/>
         <source>It&apos;s evening now.</source>
         <translation>Наступил вечер.</translation>
     </message>
     <message>
-        <location filename="world.cpp" line="389"/>
+        <location filename="world.cpp" line="388"/>
         <source>It&apos;s night now.</source>
         <translation>Наступила ночь.</translation>
     </message>
     <message>
-        <location filename="world.cpp" line="611"/>
+        <location filename="world.cpp" line="612"/>
         <source>Cannot build here.</source>
         <translation>Здесь нельзя строить.</translation>
     </message>
     <message>
-        <location filename="world.cpp" line="638"/>
+        <location filename="world.cpp" line="639"/>
         <source>No note received.</source>
         <translation>Не получено заметки.</translation>
     </message>
     <message>
-        <location filename="world.cpp" line="650"/>
+        <location filename="world.cpp" line="651"/>
         <source>No inventory.</source>
         <translation>Нет инвентаря.</translation>
     </message>
     <message>
-        <location filename="world.cpp" line="654"/>
         <location filename="world.cpp" line="655"/>
+        <location filename="world.cpp" line="656"/>
         <source>Nothing here.</source>
         <translation>Здесь ничего нет.</translation>
     </message>
     <message>
-        <location filename="world.cpp" line="660"/>
+        <location filename="world.cpp" line="661"/>
         <source>No room there.</source>
         <translation>Нет места.</translation>
     </message>
     <message>
-        <location filename="world.cpp" line="664"/>
+        <location filename="world.cpp" line="665"/>
         <source>Your bag is lighter now.</source>
         <translation>Ваша сумка стала легче.</translation>
     </message>
     <message>
-        <location filename="world.cpp" line="665"/>
+        <location filename="world.cpp" line="666"/>
         <source>Your bag is heavier now.</source>
         <translation>Ваша сумка стала тяжелее.</translation>
     </message>
     <message>
-        <location filename="world.cpp" line="709"/>
+        <location filename="world.cpp" line="710"/>
         <source>Invalid active shreds number. Set to %1.</source>
         <translation>Некорректное число активных лоскутов. Установлено %1.</translation>
     </message>
     <message>
-        <location filename="world.cpp" line="714"/>
+        <location filename="world.cpp" line="715"/>
         <source>Active shreds number too small, set to 3.</source>
         <translation>Слишком маленькое число активных лоскутов, установлено 3.</translation>
     </message>
     <message>
-        <location filename="world.cpp" line="717"/>
+        <location filename="world.cpp" line="718"/>
         <source>Active shreds number too big. Set to %1.</source>
         <translation>Слишком большое число активных лоскутов. Установлено %1.</translation>
     </message>
     <message>
-        <location filename="world.cpp" line="720"/>
+        <location filename="world.cpp" line="721"/>
         <source>Active shreds number is %1x%1.</source>
         <translation>Число активных лоскутов: %1x%1.</translation>
     </message>
     <message>
-        <location filename="world.cpp" line="766"/>
+        <location filename="world.cpp" line="767"/>
         <source>Loading world...</source>
         <translation>Загрузка мира...</translation>
     </message>
