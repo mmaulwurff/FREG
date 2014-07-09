@@ -8,9 +8,6 @@
 CONFIG += cursed_screen
 #CONFIG += text_screen
 
-# Define RAIN_IS_DEW as 1 to make rain act as dew.
-DEFINES += RAIN_IS_DEW=0
-
 CONFIG += thread warn_on console
 CONFIG += debug
 
@@ -28,6 +25,7 @@ QMAKE_CXXFLAGS += -Wold-style-cast -Wfloat-equal -Woverloaded-virtual -Wundef
 
 #QMAKE_CXXFLAGS_DEBUG += -fno-inline
 QMAKE_CXXFLAGS_RELEASE -= -O2
+QMAKE_CXXFLAGS_RELEASE += -DQT_NO_DEBUG
 QMAKE_CXXFLAGS += -O3
 QMAKE_CXXFLAGS += -fstrict-enums -fno-rtti
 

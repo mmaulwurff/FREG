@@ -227,7 +227,12 @@ void Screen::ControlPlayer(const int ch) {
         return;
     } // else:
     switch ( ch ) { // interactions with world
-    default: Notify(tr("Unknown key. Press 'H' for help.")); break;
+    default:
+        Notify(tr("Unknown key. Press 'H' for help."));
+        #ifndef QT_NO_DEBUG
+        Notify(QString("Pressed key code: %1.").arg(ch));
+        #endif
+        break;
     case KEY_UP:    case '8': MovePlayer(NORTH);  break;
     case KEY_DOWN:  case '2': MovePlayer(SOUTH);  break;
     case KEY_RIGHT: case '6': MovePlayer(EAST);   break;
@@ -247,6 +252,7 @@ void Screen::ControlPlayer(const int ch) {
     case 'I':
     case KEY_HOME: player->Backpack(); break;
     case 8:
+    case KEY_DC: // delete
     case KEY_BACKSPACE: player->Damage(); break;
     case 13:
     case '\n': player->Use();      break;
@@ -254,6 +260,7 @@ void Screen::ControlPlayer(const int ch) {
     case  '~': player->Inscribe(); break;
     case 27: /* esc */ player->StopUseAll(); break;
 
+    case KEY_IC: player->Build(1); break; // insert
     case 'B': SetActionMode(ACTION_BUILD);    break;
     case 'C': SetActionMode(ACTION_CRAFT);    break;
     case 'D':
@@ -696,8 +703,7 @@ void Screen::PrintInv(WINDOW * const window, const Inventory & inv) const {
         }
         const QString str = block->GetNote();
         if ( not str.isEmpty() ) {
-            int x, y;
-            getyx(window, y, x);
+            const int x = getcurx(window);
             const int width = SCREEN_SIZE*2+2 - x - 10;
             if ( str.size() < width ) {
                 wprintw(window, " ~:%s", qPrintable(str));
@@ -770,8 +776,7 @@ void Screen::Notify(const QString str) const {
     static int notification_repeat_count = 1;
     if ( str == lastNotification ) {
         ++notification_repeat_count;
-        int x, y;
-        getyx(notifyWin, y, x);
+        const int y = getcury(notifyWin);
         mvwprintw(notifyWin, y-1, 0, "\n%s (%dx)",
             qPrintable(str), notification_repeat_count);
     } else {

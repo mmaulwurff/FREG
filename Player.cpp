@@ -29,7 +29,11 @@
 #include "BlockManager.h"
 #include "DeferredAction.h"
 
+#ifdef QT_NO_DEBUG
+const bool COMMANDS_ALWAYS_ON = false;
+#else
 const bool COMMANDS_ALWAYS_ON = true;
+#endif
 
 long Player::GlobalX() const { return GetShred()->GlobalX(X()); }
 long Player::GlobalY() const { return GetShred()->GlobalY(Y()); }
@@ -313,7 +317,7 @@ bool Player::ForbiddenAdminCommands() const {
 
 constexpr quint64 Player::UniqueIntFromString(const char * const chars) {
     return chars[0] == '\0' ?
-        0 : (UniqueIntFromString(chars + 1) << 5) | chars[0]-'a';
+        0 : (UniqueIntFromString(chars + 1) << 5) | (chars[0]-'a');
 }
 
 void Player::ProcessCommand(QString command) {

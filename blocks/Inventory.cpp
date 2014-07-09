@@ -66,8 +66,12 @@ void Inventory::Pull(const int num) {
 void Inventory::SaveAttributes(QDataStream & out) const {
     for (int i=0; i<Size(); ++i) {
         out << quint8(Number(i));
-        for (int j=0; j<Number(i); ++j) {
-            inventory[i].top()->SaveToFile(out);
+        if ( not inventory[i].isEmpty() ) {
+            Block * const to_save = inventory[i].top();
+            for (int j=0; j<Number(i); ++j) {
+                to_save->SaveToFile(out);
+                to_save->RestoreDurabilityAfterSave();
+            }
         }
     }
 }

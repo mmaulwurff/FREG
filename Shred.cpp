@@ -27,11 +27,16 @@
 const quint8 DATASTREAM_VERSION = QDataStream::Qt_5_2;
 const quint8 CURRENT_SHRED_FORMAT_VERSION = 6;
 
+const int RAIN_IS_DEW = 1;
+
 long Shred::Longitude() const { return longitude; }
-long Shred::Latitude()  const { return latitude; }
-int Shred::ShredX() const { return shredX; }
-int Shred::ShredY() const { return shredY; }
+long Shred::Latitude()  const { return latitude;  }
+int  Shred::ShredX() const { return shredX; }
+int  Shred::ShredY() const { return shredY; }
+char Shred::GetTypeOfShred() const { return type; }
 World * Shred::GetWorld() const { return world; }
+Shred * Shred::GetShredMemory() const { return memory; }
+Block * Shred::Normal(const int sub) { return block_manager.NormalBlock(sub); }
 
 bool Shred::LoadShred() {
     const QByteArray * const data =
@@ -153,8 +158,6 @@ Shred::~Shred() {
     GetWorld()->SetShredData(shred_data, longitude, latitude);
 }
 
-Shred * Shred::GetShredMemory() const { return memory; }
-
 long Shred::GlobalX(const int x) const {
     return (Latitude()  - CoordOfShred(x))*SHRED_WIDTH + x;
 }
@@ -237,7 +240,7 @@ void Shred::AddShining(Active * const active) {
     }
 }
 
-void Shred::RemShining (Active * const active) {shiningList.removeOne(active);}
+void Shred::RemShining(Active * const active) {shiningList.removeOne(active);}
 
 QLinkedList<Active * const>::const_iterator Shred::ShiningBegin() const {
     return shiningList.constBegin();
@@ -297,8 +300,6 @@ void Shred::PutBlock(Block * const block,
     blocks[x][y][z] = block;
 }
 
-Block * Shred::Normal(const int sub) { return block_manager.NormalBlock(sub); }
-
 QString Shred::FileName() const {
     return FileName(GetWorld()->WorldName(), longitude, latitude);
 }
@@ -308,8 +309,6 @@ QString Shred::FileName(const QString world_name,
 {
     return QString("%1/y%2x%3").arg(world_name).arg(longi).arg(lati);
 }
-
-char Shred::GetTypeOfShred() const { return type; }
 
 // shred generators section
 // these functions fill space between the lowest nullstone layer and sky.
