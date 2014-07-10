@@ -140,6 +140,7 @@ private:
     void Hill();
     void Desert();
     void Castle();
+    void WasteShred();
     /// For testing purposes.
     void ChaosShred();
 

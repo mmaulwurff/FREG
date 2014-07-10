@@ -455,7 +455,8 @@ bool World::CanMove(const int x, const int y, const int z,
 {
     Block * const block    = GetBlock(x, y, z);
     Block *       block_to = GetBlock(newx, newy, newz);
-    if ( DOWN != dir && block->Weight() != 0 ) {
+    const int weight = block->Weight();
+    if ( DOWN != dir && weight != 0 ) {
         Falling * const falling = block->ShouldFall();
         if ( falling != nullptr
                 && falling->IsFalling()
@@ -481,9 +482,9 @@ bool World::CanMove(const int x, const int y, const int z,
     target_push = block_to->PushResult(dir);
     switch ( target_push ) {
     case MOVABLE:
-        return ( (block->Weight() > block_to->Weight()) &&
+        return ( (weight > block_to->Weight()) &&
                 Move(newx, newy, newz, dir) );
-    case ENVIRONMENT: return true;
+    case ENVIRONMENT: return (weight == 0 || weight > block_to->Weight());
     case NOT_MOVABLE: return false;
     case MOVE_UP:
         if ( dir > DOWN ) { // not UP and not DOWN

@@ -190,3 +190,24 @@ void Shred::Desert() {
     }
 }
 
+void Shred::WasteShred() {
+    NormalUnderground(0, STONE);
+    int random = qrand();
+    RandomDrop((random & 0x7)+3, FALLING, SUB_DUST);
+    random >>= 3;
+    RandomDrop(random & 0x1, WEAPON, BONE);
+    RandomDrop((random & 0x7)+3, WEAPON, STONE);
+    random >>= 3;
+    if ( random & 0x1 ) {
+        random >>= 1;
+        const subs pool_sub = ( random & 0x1 ) ? WATER : STONE;
+        random >>= 1;
+        const int x = random & 0xF;
+        random >>= 4;
+        const int y = random & 0xF;
+        SetNewBlock(LIQUID,  pool_sub, x, y, HEIGHT/2-1);
+        SetNewBlock(LIQUID,  pool_sub, x, y, HEIGHT/2  );
+        SetNewBlock(FALLING, SUB_DUST, x, y, HEIGHT/2+1);
+        SetNewBlock(FALLING, SUB_DUST, x, y, HEIGHT/2+2);
+    }
+}

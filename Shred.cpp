@@ -112,16 +112,17 @@ Shred::Shred(const int shred_x, const int shred_y,
         PutBlock(((qrand()%5) ? sky : star), i, j, HEIGHT-1);
     }
     switch ( type=GetWorld()->TypeOfShred(longi, lati) ) {
-    case SHRED_WATER:     Water();     break;
-    case SHRED_PLAIN:     Plain();     break;
-    case SHRED_FOREST:    Forest();    break;
-    case SHRED_HILL:      Hill();      break;
-    case SHRED_MOUNTAIN:  Mountain();  break;
-    case SHRED_DESERT:    Desert();    break;
+    case SHRED_WATER:     Water();      break;
+    case SHRED_WASTE:     WasteShred(); break;
+    case SHRED_PLAIN:     Plain();      break;
+    case SHRED_FOREST:    Forest();     break;
+    case SHRED_HILL:      Hill();       break;
+    case SHRED_MOUNTAIN:  Mountain();   break;
+    case SHRED_DESERT:    Desert();     break;
     case SHRED_NULLMOUNTAIN: NullMountain(); break;
-    case SHRED_TESTSHRED: TestShred(); break;
-    case SHRED_PYRAMID:   Pyramid();   break;
-    case SHRED_CASTLE:    Castle();    break;
+    case SHRED_TESTSHRED: TestShred();  break;
+    case SHRED_PYRAMID:   Pyramid();    break;
+    case SHRED_CASTLE:    Castle();     break;
     case SHRED_CHAOS:     ChaosShred(); break;
     case SHRED_NORMAL_UNDERGROUND: NormalUnderground(); break;
     case SHRED_EMPTY: break;
@@ -222,13 +223,14 @@ void Shred::Unregister(Active * const active) {
     Falling * const falling = active->ShouldFall();
     if ( falling != nullptr ) {
         *qFind(fallList.begin(), fallList.end(), falling) = nullptr;
+        falling->SetFalling(false);
     }
     RemShining(active);
 }
 
 void Shred::AddFalling(Block * const block) {
     Falling * const falling = block->ShouldFall();
-    if ( falling != nullptr ) {
+    if ( falling != nullptr && not falling->IsFalling() ) {
         falling->SetFalling(true);
         fallList.append(falling);
     }
