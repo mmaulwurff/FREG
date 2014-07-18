@@ -77,7 +77,7 @@
             *delete_block = true;
             return block_manager.NormalBlock(AIR);
         } // else:
-        Block * const pile = block_manager.NewBlock(CONTAINER, DIFFERENT);
+        Block * const pile = BlockManager::NewBlock(CONTAINER, DIFFERENT);
         Inventory * const pile_inv = pile->HasInventory();
         GetAll(pile_inv);
         *delete_block = not pile_inv->Get(this);
@@ -155,8 +155,8 @@
             for (int i=0; i<products->GetSize(); ++i) {
                 for (int n=0; n<products->GetItem(i)->num; ++n) {
                     int id = products->GetItem(i)->id;
-                    GetExact(block_manager.NewBlock(
-                        block_manager.KindFromId(id),
+                    GetExact(BlockManager::NewBlock(
+                        BlockManager::KindFromId(id),
                         block_manager. SubFromId(id)), i);
                 }
             }

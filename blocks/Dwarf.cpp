@@ -34,7 +34,7 @@ int Dwarf::Weight() const {
 
 Block * Dwarf::DropAfterDamage(bool * const delete_block) {
     Block * cadaver = Animal::DropAfterDamage(delete_block);
-    cadaver->HasInventory()->Get(block_manager.NewBlock(WEAPON, BONE));
+    cadaver->HasInventory()->Get(BlockManager::NewBlock(WEAPON, BONE));
     return cadaver;
 }
 

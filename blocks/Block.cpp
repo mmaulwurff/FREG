@@ -120,10 +120,10 @@ Block * Block::DropAfterDamage(bool * const delete_block) {
     case GLASS:
     case AIR: return block_manager.NormalBlock(AIR);
     case STONE: if ( BLOCK==Kind() ) {
-        return block_manager.NewBlock(LADDER, STONE);
+        return BlockManager::NewBlock(LADDER, STONE);
     } // no break;
     default: {
-        Block * const pile = block_manager.NewBlock(CONTAINER, DIFFERENT);
+        Block * const pile = BlockManager::NewBlock(CONTAINER, DIFFERENT);
         pile->HasInventory()->Get(this);
         *delete_block = false;
         return pile;

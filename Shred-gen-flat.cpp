@@ -73,6 +73,7 @@ void Shred::Water(const subs sub) {
     subs shore;
     switch ( sub ) {
     case WATER: shore = SAND;  break;
+    case AIR:
     case STONE: shore = STONE; break;
     default:
     case ACID:  shore = GLASS; break;
@@ -94,11 +95,16 @@ void Shred::Water(const subs sub) {
     if ( type != map->TypeOfShred(longitude, latitude-1) ) { // west
         NormalCube(0,0,z_start, 1,SHRED_WIDTH,depth, shore);
     }
+    Block * const air = Normal(AIR);
     for (int i=0; i<SHRED_WIDTH; ++i)
     for (int j=0; j<SHRED_WIDTH; ++j)
     for (int k=z_start; k<=HEIGHT/2; ++k) {
         if ( shore != GetBlock(i, j, k)->Sub() ) {
-            SetNewBlock(LIQUID, sub, i, j, k);
+            if ( AIR == sub ) {
+                PutBlock(air, i, j, k);
+            } else {
+                SetNewBlock(LIQUID, sub, i, j, k);
+            }
         }
     }
 }

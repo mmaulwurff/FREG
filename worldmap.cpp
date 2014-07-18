@@ -144,12 +144,13 @@ void WorldMap::GenerateMap(
     Circle(min_rad/3, max_rad/3+1, SHRED_HILL,     size, map);
     Circle(min_rad/4, max_rad/4+1, SHRED_MOUNTAIN, size, map);
 
-    const int lakes_number = qrand() % size;
-    for (int i=0; i<lakes_number; ++i) {
+    int lakes_number = (qrand() % size) + 5;
+    while ( lakes_number-- ) {
         char type = SHRED_WATER;
-        switch ( qrand()%3 ) {
+        switch ( qrand()%4 ) {
         case 1: type = SHRED_ACID_LAKE; break;
         case 2: type = SHRED_LAVA_LAKE; break;
+        case 3: type = SHRED_CRATER;    break;
         }
         const float lake_size  = qrand() % (size/10) + 1;
         const int lake_start_x = qrand() % int(size-lake_size);

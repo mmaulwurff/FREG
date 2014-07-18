@@ -243,7 +243,7 @@ void World::PutBlock(Block * const block,
 Block * World::Normal(const int sub) { return block_manager.NormalBlock(sub); }
 
 Block * World::NewBlock(const int kind, const int sub) {
-    return block_manager.NewBlock(kind, sub);
+    return BlockManager::NewBlock(kind, sub);
 }
 
 Shred ** World::FindShred(const int x, const int y) const {

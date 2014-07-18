@@ -345,7 +345,7 @@ void Player::ProcessCommand(QString command) {
                 .arg(QString(request)));
             return;
         } // else:
-        Block * const block = block_manager.NewBlock(kind_code, sub_code);
+        Block * const block = BlockManager::NewBlock(kind_code, sub_code);
         if ( inv->Get(block) ) {
             emit Updated();
         } else {
@@ -441,7 +441,7 @@ void Player::BlockDestroy() {
 void Player::SetPlayer(const int _x, const int _y, const int _z) {
     SetXyz(_x, _y, _z);
     if ( GetCreativeMode() ) {
-        ( player = block_manager.NewBlock(CREATOR, DIFFERENT)->
+        ( player = BlockManager::NewBlock(CREATOR, DIFFERENT)->
             ActiveBlock() )->SetXyz(X(), Y(), Z());
         GetShred()->Register(player);
     } else {

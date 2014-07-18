@@ -74,6 +74,7 @@ enum shred_type {
     SHRED_WASTE     = '=',
     SHRED_ACID_LAKE = 'a',
     SHRED_LAVA_LAKE = 'l',
+    SHRED_CRATER    = 'c',
     SHRED_NULLMOUNTAIN = '#',
     SHRED_NORMAL_UNDERGROUND = '-',
 };

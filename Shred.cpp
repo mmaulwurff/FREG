@@ -69,7 +69,7 @@ bool Shred::LoadShred() {
         PutBlock(null_stone, x, y, 0);
         for (int z=1; ; ++z) {
             int kind, sub;
-            const bool normal = block_manager.KindSubFromFile(in, &kind, &sub);
+            const bool normal = BlockManager::KindSubFromFile(in, &kind, &sub);
             if ( normal ) {
                 if ( sub==SKY || sub==STAR ) {
                     for ( ; z < HEIGHT-1; ++z) {
@@ -81,7 +81,7 @@ bool Shred::LoadShred() {
                     PutBlock(Normal(sub), x, y, z);
                 }
             } else {
-                SetBlockNoCheck(block_manager.BlockFromFile(in, kind, sub),
+                SetBlockNoCheck(BlockManager::BlockFromFile(in, kind, sub),
                     x, y, z);
             }
         }
@@ -128,6 +128,7 @@ Shred::Shred(const int shred_x, const int shred_y,
     case SHRED_EMPTY: break;
     case SHRED_ACID_LAKE: Water(ACID ); break;
     case SHRED_LAVA_LAKE: Water(STONE); break;
+    case SHRED_CRATER:    Water(AIR);   break;
     default:
         fprintf(stderr, "%s: type: %c, code %d?\n", Q_FUNC_INFO, type, type);
         Plain();
@@ -291,7 +292,7 @@ void Shred::SetBlockNoCheck(Block * const block,
 void Shred::SetNewBlock(const int kind, const int sub,
         const int x, const int y, const int z, const int dir)
 {
-    Block * const block = block_manager.NewBlock(kind, sub);
+    Block * const block = BlockManager::NewBlock(kind, sub);
     block->SetDir(dir);
     SetBlock(block, x, y, z);
 }
@@ -320,7 +321,7 @@ void Shred::CoverWith(const int kind, const int sub) {
     for (int j=0; j<SHRED_WIDTH; ++j) {
         int k = HEIGHT-2;
         for ( ; AIR==GetBlock(i, j, k)->Sub(); --k);
-        SetBlock(block_manager.NewBlock(kind, sub), i, j, ++k);
+        SetBlock(BlockManager::NewBlock(kind, sub), i, j, ++k);
     }
 }
 
@@ -328,7 +329,7 @@ void Shred::RandomDrop(int num, const int kind, const int sub,
         const bool on_water)
 {
     for ( ; num!=0; --num) {
-        DropBlock(block_manager.NewBlock(kind, sub), on_water);
+        DropBlock(BlockManager::NewBlock(kind, sub), on_water);
     }
 }
 
@@ -351,7 +352,7 @@ void Shred::PlantGrass() {
         if ( SOIL==GetBlock(i, j, k)->Sub()
                 && AIR==GetBlock(i, j, ++k)->Sub() )
         {
-            SetBlock(block_manager.NewBlock(GRASS, GREENERY), i, j, k);
+            SetBlock(BlockManager::NewBlock(GRASS, GREENERY), i, j, k);
         }
     }
 }
@@ -633,7 +634,7 @@ bool Shred::InBounds(const int x, const int y, const int z) {
 }
 
 void Shred::Dew(const int kind, const int sub) {
-    DropBlock(block_manager.NewBlock(kind, sub), true);
+    DropBlock(BlockManager::NewBlock(kind, sub), true);
 }
 
 void Shred::Rain(const int kind, const int sub) {
@@ -647,7 +648,7 @@ void Shred::Rain(const int kind, const int sub) {
     y = CoordInShred(unsigned(y) >> SHRED_WIDTH_SHIFT);
     const int to_replace_sub = GetBlock(x, y, CLOUD_HEIGHT)->Sub();
     if ( to_replace_sub == AIR || to_replace_sub == SUB_CLOUD ) {
-        SetBlock(block_manager.NewBlock(kind, sub), x, y, CLOUD_HEIGHT);
+        SetBlock(BlockManager::NewBlock(kind, sub), x, y, CLOUD_HEIGHT);
     }
 }
 
