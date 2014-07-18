@@ -51,8 +51,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onfocus="searchBox.OnSearchFieldFocus(true)"$
+               onblur="searchBox.OnSearchFieldFocus(false)"$
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -78,7 +78,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0" 
+<iframe src="javascript:void(0)" frameborder="0"$
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>
@@ -93,7 +93,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
-<p><a class="el" href="classWorkbench.html" title="Workbench allows craft from multiple sources. There can be up to 2 products. Also can be used as cont...">Workbench</a> allows craft from multiple sources. There can be up to 2 products. Also can be used as container of smaller size.  
+<p><a class="el" href="classWorkbench.html" title="Workbench allows craft from multiple sources. There can be up to 2 products. Also can be used as cont...">Workbench</a> allows craft from multiple sources. There can be up to 2 products. Also can be used as container of smaller size. $
  <a href="classWorkbench.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="Container_8h_source.html">Container.h</a>&gt;</code></p>
@@ -258,7 +258,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a3e7b5d7b7ffe9a9667a30df94fa7855c inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#a3e7b5d7b7ffe9a9667a30df94fa7855c">operator!=</a> (const <a class="el" href="classBlock.html">Block</a> &amp;) const </td></tr>
 <tr class="separator:a3e7b5d7b7ffe9a9667a30df94fa7855c inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adde63e2ded7f013bad5e702e67a6ab20 inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#adde63e2ded7f013bad5e702e67a6ab20">SaveToFile</a> (QDataStream &amp;out)</td></tr>
-<tr class="memdesc:adde63e2ded7f013bad5e702e67a6ab20 inherit pub_methods_classBlock"><td class="mdescLeft">&#160;</td><td class="mdescRight">Important! If block should be used after save, call RestoreDurability.  <a href="#adde63e2ded7f013bad5e702e67a6ab20">More...</a><br /></td></tr>
 <tr class="separator:adde63e2ded7f013bad5e702e67a6ab20 inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40efb307d08a3e319beb968c9e5e209f inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#a40efb307d08a3e319beb968c9e5e209f">SaveNormalToFile</a> (QDataStream &amp;out) const </td></tr>
 <tr class="separator:a40efb307d08a3e319beb968c9e5e209f inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -662,7 +661,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jul 9 2014 00:13:39 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jul 18 2014 22:55:25 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

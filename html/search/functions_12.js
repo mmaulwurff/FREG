@@ -27,7 +27,7 @@ var searchData=
   ['setsetfire',['SetSetFire',['../classDeferredAction.html#aa9a80d3e84437f0699bbd857cc780671',1,'DeferredAction']]],
   ['setshred',['SetShred',['../classActive.html#ae1d16459b549b5c96e5a83b5c4f62908',1,'Active']]],
   ['setshreddata',['SetShredData',['../classShredStorage.html#ab3132cc792993805cabe8b5c6c3ab13e',1,'ShredStorage::SetShredData()'],['../classWorld.html#a74a7a770c54bf705b029b54546688351',1,'World::SetShredData()']]],
-  ['setsunlight',['SetSunLight',['../classShred.html#a8d73b5c21a3ed83964b2b643e001d959',1,'Shred']]],
+  ['setsunlight',['SetSunLight',['../classShred.html#a71e764b8b11fa8ecec526644e8701413',1,'Shred']]],
   ['setthrow',['SetThrow',['../classDeferredAction.html#a59ca7f8957ad8c4f6e7ed5204e76403c',1,'DeferredAction']]],
   ['setusingtypeno',['SetUsingTypeNo',['../classPlayer.html#afacf19d71c8575e37d582c0c086fd449',1,'Player']]],
   ['setxyz',['SetXyz',['../classXyz.html#aace0fc4fa8c0391dfa38adecef0ad70c',1,'Xyz']]],

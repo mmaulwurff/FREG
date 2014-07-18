@@ -21,5 +21,5 @@ var searchData=
   ['trylock',['TryLock',['../classWorld.html#a6d808bbff33cc6b15f9cf1f9cd00368d',1,'World']]],
   ['turnleft',['TurnLeft',['../classWorld.html#a725592c05c3bb73a551ad73b64511bb7',1,'World']]],
   ['turnright',['TurnRight',['../classWorld.html#a923f18e4edbc19f6ff3a6e440e202b0c',1,'World']]],
-  ['typeofshred',['TypeOfShred',['../classWorld.html#ad4690105a74d774569f05b163411b5dd',1,'World::TypeOfShred()'],['../classWorldMap.html#a83cd692581de5db72039cbd1e43f7806',1,'WorldMap::TypeOfShred()']]]
+  ['typeofshred',['TypeOfShred',['../classWorldMap.html#a83cd692581de5db72039cbd1e43f7806',1,'WorldMap']]]
 ];

@@ -4,7 +4,7 @@ var searchData=
   ['makeaction',['MakeAction',['../classDeferredAction.html#a3b2b7cc205cda25958faa6fec023c23e',1,'DeferredAction']]],
   ['makeid',['MakeId',['../classBlockManager.html#a1a57f6833aee2e2d461fc900ad82f118',1,'BlockManager']]],
   ['map',['Map',['../classMap.html#ac2b5df92888864735de84c99d0f5546e',1,'Map::Map(int sub, int id)'],['../classMap.html#a102878bf3ef015eee9017d6949ba2442',1,'Map::Map(QDataStream &amp;str, int sub, int id)']]],
-  ['mapsize',['MapSize',['../classWorld.html#af19c6d4f193e10e31b52a5caad5d0448',1,'World::MapSize()'],['../classWorldMap.html#a215fe4401ff033af88091e5291bd7895',1,'WorldMap::MapSize()']]],
+  ['mapsize',['MapSize',['../classWorldMap.html#a215fe4401ff033af88091e5291bd7895',1,'WorldMap']]],
   ['mend',['Mend',['../classBlock.html#ad76d9df3bc012a8ad25e5cebe30f6549',1,'Block']]],
   ['minicraft',['MiniCraft',['../classInventory.html#aa34bb5dd7e516db28eccb8b60ab215d1',1,'Inventory::MiniCraft()'],['../classCraftManager.html#a832751893ac2941d82781b7064f73276',1,'CraftManager::MiniCraft()']]],
   ['minitime',['MiniTime',['../classWorld.html#ad7fd312e81cec334532bfbcc0b00cc66',1,'World']]],

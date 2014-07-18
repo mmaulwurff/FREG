@@ -17,7 +17,7 @@ var searchData=
   ['block_5fmanager',['block_manager',['../BlockManager_8cpp.html#a25664f6404016a6c1fb61a0a1cf371ab',1,'block_manager():&#160;BlockManager.cpp'],['../BlockManager_8h.html#a25664f6404016a6c1fb61a0a1cf371ab',1,'block_manager():&#160;BlockManager.cpp']]],
   ['block_5fopaque',['BLOCK_OPAQUE',['../header_8h.html#a48a539666409f8c99365fc6d8a58f708a6f3369e7a0cbefeea43c4e9c35b345c9',1,'header.h']]],
   ['block_5ftransparent',['BLOCK_TRANSPARENT',['../header_8h.html#a48a539666409f8c99365fc6d8a58f708ae72d7a9ac5db4110222e69339723b6ab',1,'header.h']]],
-  ['blockfromfile',['BlockFromFile',['../classBlockManager.html#a49efb21a554754d0552a6e01220a26df',1,'BlockManager::BlockFromFile(QDataStream &amp;, int kind, int sub)'],['../classBlockManager.html#aee85760edd3eba2f6efb8e79a58c833b',1,'BlockManager::BlockFromFile(QDataStream &amp;) const ']]],
+  ['blockfromfile',['BlockFromFile',['../classBlockManager.html#a49efb21a554754d0552a6e01220a26df',1,'BlockManager']]],
   ['blockmanager',['BlockManager',['../classBlockManager.html',1,'BlockManager'],['../classBlockManager.html#a93282216d97540def52c1fa4029eb693',1,'BlockManager::BlockManager()']]],
   ['blockmanager_2ecpp',['BlockManager.cpp',['../BlockManager_8cpp.html',1,'']]],
   ['blockmanager_2eh',['BlockManager.h',['../BlockManager_8h.html',1,'']]],

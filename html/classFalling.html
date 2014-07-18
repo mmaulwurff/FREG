@@ -51,8 +51,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onfocus="searchBox.OnSearchFieldFocus(true)"$
+               onblur="searchBox.OnSearchFieldFocus(false)"$
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -78,7 +78,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0" 
+<iframe src="javascript:void(0)" frameborder="0"$
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>
@@ -242,7 +242,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a3e7b5d7b7ffe9a9667a30df94fa7855c inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#a3e7b5d7b7ffe9a9667a30df94fa7855c">operator!=</a> (const <a class="el" href="classBlock.html">Block</a> &amp;) const </td></tr>
 <tr class="separator:a3e7b5d7b7ffe9a9667a30df94fa7855c inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adde63e2ded7f013bad5e702e67a6ab20 inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#adde63e2ded7f013bad5e702e67a6ab20">SaveToFile</a> (QDataStream &amp;out)</td></tr>
-<tr class="memdesc:adde63e2ded7f013bad5e702e67a6ab20 inherit pub_methods_classBlock"><td class="mdescLeft">&#160;</td><td class="mdescRight">Important! If block should be used after save, call RestoreDurability.  <a href="#adde63e2ded7f013bad5e702e67a6ab20">More...</a><br /></td></tr>
 <tr class="separator:adde63e2ded7f013bad5e702e67a6ab20 inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40efb307d08a3e319beb968c9e5e209f inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#a40efb307d08a3e319beb968c9e5e209f">SaveNormalToFile</a> (QDataStream &amp;out) const </td></tr>
 <tr class="separator:a40efb307d08a3e319beb968c9e5e209f inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -407,7 +406,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00253">253</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00254">254</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -453,7 +452,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00249">249</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00250">250</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -482,7 +481,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classPredator.html#a406e4077df4692947c5c610ac62873dd">Predator</a>, <a class="el" href="classRabbit.html#a9ab831b5e7000110422b9b1d0c6977b1">Rabbit</a>, <a class="el" href="classAxe.html#a159de84677f60bfeb391c273844ef057">Axe</a>, <a class="el" href="classHammer.html#a2acee6ad38bae4136a770c306467b41f">Hammer</a>, <a class="el" href="classShovel.html#a01f29554c0887c70103cd719e916c035">Shovel</a>, <a class="el" href="classLiquid.html#a01436461753510035488012dbaa604d6">Liquid</a>, <a class="el" href="classPick.html#abd954d1398b8fa413c5a97156ed730a4">Pick</a>, <a class="el" href="classDwarf.html#a98a7a970da9ae1c4726bb12eca32f726">Dwarf</a>, and <a class="el" href="classWeapon.html#aefd5ea54e64ee4c8ce6e49a54507eabd">Weapon</a>.</p>
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00247">247</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00248">248</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -512,7 +511,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classDwarf.html#aa6e0389dc917f05f7503582b752e4210">Dwarf</a>.</p>
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00273">273</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00274">274</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -542,7 +541,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classLiquid.html#adee5eea186a316c633c8c4e1a5b78c17">Liquid</a>.</p>
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00251">251</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00252">252</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -572,7 +571,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classDwarf.html#a939bc24656b6c9e7979291b7110c502a">Dwarf</a>, and <a class="el" href="classAnimal.html#adf17c8d680012b670355107bcdccd354">Animal</a>.</p>
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00248">248</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00249">249</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -590,7 +589,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00280">280</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00281">281</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -617,7 +616,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classBlock.html#a4e91a96d559c6d44e0a0d9e61209cbdf">Block</a>.</p>
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00250">250</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00251">251</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -628,7 +627,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jul 9 2014 00:13:38 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jul 18 2014 22:55:25 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

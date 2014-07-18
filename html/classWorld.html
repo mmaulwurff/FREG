@@ -51,8 +51,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onfocus="searchBox.OnSearchFieldFocus(true)"$
+               onblur="searchBox.OnSearchFieldFocus(false)"$
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -78,7 +78,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0" 
+<iframe src="javascript:void(0)" frameborder="0"$
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>
@@ -96,10 +96,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
-<p><a class="el" href="classWorld.html" title="World provides global physics and shred connection. ">World</a> provides global physics and shred connection.  
+<p><a class="el" href="classWorld.html" title="World provides global physics and shred connection. ">World</a> provides global physics and shred connection. $
  <a href="classWorld.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="world_8h_source.html">world.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="World_8h_source.html">World.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for World:</div>
 <div class="dyncontent">
@@ -195,18 +195,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a6c874cebacacde0370c7d069e19b73cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af6ea24b43dd472bacaee43d61f534a5c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWorld.html#af6ea24b43dd472bacaee43d61f534a5c">NumShreds</a> () const </td></tr>
 <tr class="separator:af6ea24b43dd472bacaee43d61f534a5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad8a808434fca693a29f8a6050f7217f7"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWorld.html#ad8a808434fca693a29f8a6050f7217f7">GetSpawnLongi</a> () const </td></tr>
-<tr class="separator:ad8a808434fca693a29f8a6050f7217f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a46a6023a45e0076fff0dc32d8a2cf7b2"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWorld.html#a46a6023a45e0076fff0dc32d8a2cf7b2">GetSpawnLati</a> () const </td></tr>
-<tr class="separator:a46a6023a45e0076fff0dc32d8a2cf7b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae4f011c606d4e5f8e163ba3b7137d08d"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWorld.html#ae4f011c606d4e5f8e163ba3b7137d08d">Longitude</a> () const </td></tr>
 <tr class="separator:ae4f011c606d4e5f8e163ba3b7137d08d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9d64b52a83eee2291c549dc682544c76"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWorld.html#a9d64b52a83eee2291c549dc682544c76">Latitude</a> () const </td></tr>
 <tr class="separator:a9d64b52a83eee2291c549dc682544c76"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad4690105a74d774569f05b163411b5dd"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWorld.html#ad4690105a74d774569f05b163411b5dd">TypeOfShred</a> (long longi, long lati) const </td></tr>
-<tr class="separator:ad4690105a74d774569f05b163411b5dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af19c6d4f193e10e31b52a5caad5d0448"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWorld.html#af19c6d4f193e10e31b52a5caad5d0448">MapSize</a> () const </td></tr>
-<tr class="separator:af19c6d4f193e10e31b52a5caad5d0448"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae87ca1343e5f22b22db241d254ea442a"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classWorldMap.html">WorldMap</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWorld.html#ae87ca1343e5f22b22db241d254ea442a">GetMap</a> () const </td></tr>
+<tr class="separator:ae87ca1343e5f22b22db241d254ea442a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aacebc5457e44d1841ab99bb6f6dfea78"><td class="memItemLeft" align="right" valign="top">QByteArray *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWorld.html#aacebc5457e44d1841ab99bb6f6dfea78">GetShredData</a> (long longi, long lati) const </td></tr>
 <tr class="separator:aacebc5457e44d1841ab99bb6f6dfea78"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a74a7a770c54bf705b029b54546688351"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWorld.html#a74a7a770c54bf705b029b54546688351">SetShredData</a> (QByteArray *, long longi, long lati)</td></tr>
@@ -288,7 +282,7 @@ Static Public Member Functions</h2></td></tr>
 <div class="textblock"><p><a class="el" href="classWorld.html" title="World provides global physics and shred connection. ">World</a> provides global physics and shred connection. </p>
 <p>Designed to be single. </p>
 
-<p>Definition at line <a class="el" href="world_8h_source.html#l00039">39</a> of file <a class="el" href="world_8h_source.html">world.h</a>.</p>
+<p>Definition at line <a class="el" href="World_8h_source.html#l00039">39</a> of file <a class="el" href="World_8h_source.html">World.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a92a1ab954bc72bc108a34b9aac1add63"></a>
 <div class="memitem">
@@ -312,7 +306,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00724">724</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00719">719</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -329,7 +323,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00772">772</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00762">762</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -356,7 +350,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00210">210</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00204">204</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -414,7 +408,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00606">606</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00601">601</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -474,7 +468,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>This CAN move blocks, but not xyz block. </p>
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00453">453</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00447">447</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -570,7 +564,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Returns damaged block result durability. </p>
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00563">563</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00558">558</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -606,7 +600,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Does not check target block durability. </p>
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00580">580</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00575">575</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -659,7 +653,7 @@ Static Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>optimized DDA line with integers only. </p>
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00397">397</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00391">391</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -717,7 +711,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00094">94</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00088">88</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -933,7 +927,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>False on error, true if focus is received to _targ successfully. </p>
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00545">545</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00540">540</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -991,7 +985,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00111">111</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00105">105</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -1025,7 +1019,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00230">230</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00224">224</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -1042,7 +1036,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00151">151</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00145">145</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -1059,7 +1053,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00037">37</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00037">37</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -1076,7 +1070,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00059">59</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00056">56</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -1093,7 +1087,24 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00169">169</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00163">163</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ae87ca1343e5f22b22db241d254ea442a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classWorldMap.html">WorldMap</a> * World::GetMap </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00058">58</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -1121,7 +1132,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00041">41</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00041">41</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -1149,7 +1160,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00045">45</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00045">45</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -1177,41 +1188,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00066">66</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a46a6023a45e0076fff0dc32d8a2cf7b2"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">long World::GetSpawnLati </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00055">55</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ad8a808434fca693a29f8a6050f7217f7"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">long World::GetSpawnLongi </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00054">54</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00060">60</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -1263,7 +1240,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00142">142</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00136">136</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -1297,7 +1274,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00147">147</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00141">141</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -1333,7 +1310,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Returns true on success. Gets a string and inscribes block. </p>
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00631">631</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00626">626</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -1359,7 +1336,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00156">156</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00150">150</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -1399,7 +1376,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00537">537</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00532">532</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -1416,7 +1393,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00057">57</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00055">55</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -1469,7 +1446,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00170">170</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00164">164</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -1486,24 +1463,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00056">56</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="af19c6d4f193e10e31b52a5caad5d0448"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">long World::MapSize </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00058">58</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00054">54</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -1522,7 +1482,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Returns number of physics steps since second start. </p>
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00052">52</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00052">52</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -1564,7 +1524,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Check and move. </p>
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00441">441</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00435">435</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -1671,7 +1631,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00049">49</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00049">49</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -1688,7 +1648,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00084">84</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00078">78</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -1713,7 +1673,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00329">329</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00323">323</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -1759,7 +1719,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00158">158</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00152">152</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -1817,7 +1777,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00327">327</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00321">321</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -1851,7 +1811,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00070">70</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00064">64</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -2073,7 +2033,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Returns time in seconds since world creation. </p>
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00053">53</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00053">53</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -2092,7 +2052,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>This returns seconds from start of current day. </p>
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00050">50</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00050">50</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -2109,7 +2069,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00088">88</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00082">82</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -2134,7 +2094,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00051">51</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00051">51</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -2151,7 +2111,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00171">171</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00165">165</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -2177,7 +2137,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00196">196</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00190">190</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -2203,35 +2163,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00182">182</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ad4690105a74d774569f05b163411b5dd"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">char World::TypeOfShred </td>
-          <td>(</td>
-          <td class="paramtype">long&#160;</td>
-          <td class="paramname"><em>longi</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">long&#160;</td>
-          <td class="paramname"><em>lati</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00062">62</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00176">176</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -2248,7 +2180,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00172">172</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00166">166</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -2436,7 +2368,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>At least one side of block is visible. </p>
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00420">420</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00414">414</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
@@ -2453,19 +2385,19 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="world_8cpp_source.html#l00060">60</a> of file <a class="el" href="world_8cpp_source.html">world.cpp</a>.</p>
+<p>Definition at line <a class="el" href="World_8cpp_source.html#l00057">57</a> of file <a class="el" href="World_8cpp_source.html">World.cpp</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li><a class="el" href="world_8h_source.html">world.h</a></li>
+<li><a class="el" href="World_8h_source.html">World.h</a></li>
 <li><a class="el" href="Lighting-inertia_8cpp_source.html">Lighting-inertia.cpp</a></li>
-<li><a class="el" href="world_8cpp_source.html">world.cpp</a></li>
+<li><a class="el" href="World_8cpp_source.html">World.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jul 9 2014 00:13:39 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jul 18 2014 22:55:25 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

@@ -51,8 +51,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onfocus="searchBox.OnSearchFieldFocus(true)"$
+               onblur="searchBox.OnSearchFieldFocus(false)"$
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -76,7 +76,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0" 
+<iframe src="javascript:void(0)" frameborder="0"$
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>
@@ -100,7 +100,7 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="worldmap_8h__dep__incl.png" border="0" usemap="#worldmap_8hdep" alt=""/></div>
 <map name="worldmap_8hdep" id="worldmap_8hdep">
-<area shape="rect" id="node3" href="world_8h.html" title="world.h" alt="" coords="1337,89,1401,122"/><area shape="rect" id="node21" href="main_8cpp.html" title="main.cpp" alt="" coords="2435,171,2509,205"/><area shape="rect" id="node40" href="worldmap_8cpp.html" title="worldmap.cpp" alt="" coords="2031,89,2132,122"/><area shape="rect" id="node5" href="Active_8cpp.html" title="blocks/Active.cpp" alt="" coords="5,171,131,205"/><area shape="rect" id="node7" href="blocks_8cpp.html" title="blocks/blocks.cpp" alt="" coords="155,171,280,205"/><area shape="rect" id="node9" href="Bucket_8cpp.html" title="blocks/Bucket.cpp" alt="" coords="304,171,435,205"/><area shape="rect" id="node11" href="Container_8cpp.html" title="blocks/Container.cpp" alt="" coords="459,171,603,205"/><area shape="rect" id="node13" href="Dwarf_8cpp.html" title="blocks/Dwarf.cpp" alt="" coords="627,171,749,205"/><area shape="rect" id="node15" href="Inventory_8cpp.html" title="blocks/Inventory.cpp" alt="" coords="773,171,915,205"/><area shape="rect" id="node17" href="DeferredAction_8cpp.html" title="DeferredAction.cpp" alt="" coords="939,171,1072,205"/><area shape="rect" id="node19" href="Lighting-inertia_8cpp.html" title="This file provides simple (also mad) lighting for freg. " alt="" coords="1096,171,1227,205"/><area shape="rect" id="node23" href="Player_8cpp.html" title="Player.cpp" alt="" coords="1251,171,1333,205"/><area shape="rect" id="node25" href="CursedScreen_8cpp.html" title="This file is related to curses screen for freg. " alt="" coords="1357,171,1536,205"/><area shape="rect" id="node27" href="TextScreen_8cpp.html" title="This file is related to text screen for freg. " alt="" coords="1560,171,1723,205"/><area shape="rect" id="node29" href="VirtScreen_8cpp.html" title="This file provides definitions of code common to all freg screens. " alt="" coords="1747,171,1904,205"/><area shape="rect" id="node31" href="Shred-gen-flat_8cpp.html" title="Shred&#45;gen&#45;flat.cpp" alt="" coords="1928,171,2056,205"/><area shape="rect" id="node33" href="Shred_8cpp.html" title="Shred.cpp" alt="" coords="2080,171,2160,205"/><area shape="rect" id="node35" href="ShredStorage_8cpp.html" title="ShredStorage.cpp" alt="" coords="2184,171,2309,205"/><area shape="rect" id="node37" href="world_8cpp.html" title="world.cpp" alt="" coords="2333,171,2411,205"/></map>
+<area shape="rect" id="node3" href="World_8h.html" title="World.h" alt="" coords="1172,89,1239,122"/><area shape="rect" id="node19" href="main_8cpp.html" title="main.cpp" alt="" coords="1931,171,2005,205"/><area shape="rect" id="node47" href="worldmap_8cpp.html" title="worldmap.cpp" alt="" coords="1693,89,1795,122"/><area shape="rect" id="node5" href="Active_8cpp.html" title="blocks/Active.cpp" alt="" coords="5,171,131,205"/><area shape="rect" id="node7" href="blocks_8cpp.html" title="blocks/blocks.cpp" alt="" coords="155,171,280,205"/><area shape="rect" id="node9" href="Container_8cpp.html" title="blocks/Container.cpp" alt="" coords="304,171,448,205"/><area shape="rect" id="node11" href="Dwarf_8cpp.html" title="blocks/Dwarf.cpp" alt="" coords="472,171,595,205"/><area shape="rect" id="node13" href="Inventory_8cpp.html" title="blocks/Inventory.cpp" alt="" coords="619,171,760,205"/><area shape="rect" id="node15" href="DeferredAction_8cpp.html" title="DeferredAction.cpp" alt="" coords="784,171,917,205"/><area shape="rect" id="node17" href="Lighting-inertia_8cpp.html" title="This file provides simple (also mad) lighting for freg. " alt="" coords="941,171,1072,205"/><area shape="rect" id="node21" href="Player_8cpp.html" title="Player.cpp" alt="" coords="1096,171,1179,205"/><area shape="rect" id="node23" href="VirtScreen_8h.html" title="screens/VirtScreen.h" alt="" coords="1203,171,1347,205"/><area shape="rect" id="node35" href="VirtScreen_8cpp.html" title="This file provides definitions of code common to all freg screens. " alt="" coords="1373,254,1531,287"/><area shape="rect" id="node38" href="Shred-gen-flat_8cpp.html" title="Shred&#45;gen&#45;flat.cpp" alt="" coords="1421,171,1549,205"/><area shape="rect" id="node40" href="Shred_8cpp.html" title="Shred.cpp" alt="" coords="1573,171,1653,205"/><area shape="rect" id="node42" href="ShredStorage_8cpp.html" title="ShredStorage.cpp" alt="" coords="1677,171,1803,205"/><area shape="rect" id="node44" href="World_8cpp.html" title="World.cpp" alt="" coords="1827,171,1907,205"/><area shape="rect" id="node25" href="CursedScreen_8h.html" title="Provides curses (text&#45;based graphics interface) screen for freg. " alt="" coords="845,254,1011,287"/><area shape="rect" id="node29" href="IThread_8cpp.html" title="screens/IThread.cpp" alt="" coords="1035,254,1176,287"/><area shape="rect" id="node31" href="TextScreen_8h.html" title="Provides minimal text screen for freg. Not suitable for playing. Can be used for testing and porting ..." alt="" coords="1200,254,1349,287"/><area shape="rect" id="node27" href="CursedScreen_8cpp.html" title="This file is related to curses screen for freg. " alt="" coords="839,337,1017,370"/><area shape="rect" id="node33" href="TextScreen_8cpp.html" title="This file is related to text screen for freg. " alt="" coords="1193,337,1356,370"/></map>
 </div>
 </div>
 <p><a href="worldmap_8h_source.html">Go to the source code of this file.</a></p>
@@ -113,7 +113,7 @@ Classes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jul 9 2014 00:13:38 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jul 18 2014 22:55:25 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

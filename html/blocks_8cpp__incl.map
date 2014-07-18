@@ -1,6 +1,6 @@
 <map id="blocks/blocks.cpp" name="blocks/blocks.cpp">
 <area shape="rect" id="node9" href="$blocks_8h.html" title="blocks.h" alt="" coords="193,89,263,122"/>
-<area shape="rect" id="node31" href="$world_8h.html" title="world.h" alt="" coords="599,89,663,122"/>
+<area shape="rect" id="node31" href="$World_8h.html" title="World.h" alt="" coords="597,89,664,122"/>
 <area shape="rect" id="node41" href="$Shred_8h.html" title="Shred.h" alt="" coords="329,89,396,122"/>
 <area shape="rect" id="node46" href="$BlockManager_8h.html" title="BlockManager.h" alt="" coords="832,254,947,287"/>
 <area shape="rect" id="node11" href="$Inventory_8h.html" title="Provides declaration for class Inventory for freg. " alt="" coords="19,171,104,205"/>

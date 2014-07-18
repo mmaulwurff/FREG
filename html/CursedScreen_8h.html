@@ -51,8 +51,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onfocus="searchBox.OnSearchFieldFocus(true)"$
+               onblur="searchBox.OnSearchFieldFocus(false)"$
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -76,7 +76,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0" 
+<iframe src="javascript:void(0)" frameborder="0"$
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>
@@ -97,7 +97,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
-<p>Provides curses (text-based graphics interface) screen for freg.  
+<p>Provides curses (text-based graphics interface) screen for freg. $
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;QMutex&gt;</code><br />
 <code>#include &lt;ncursesw/ncurses.h&gt;</code><br />
@@ -107,7 +107,7 @@ Include dependency graph for CursedScreen.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="CursedScreen_8h__incl.png" border="0" usemap="#screens_2CursedScreen_8h" alt=""/></div>
 <map name="screens_2CursedScreen_8h" id="screens_2CursedScreen_8h">
-<area shape="rect" id="node7" href="VirtScreen_8h.html" title="screens/VirtScreen.h" alt="" coords="259,89,403,122"/><area shape="rect" id="node11" href="header_8h.html" title="header.h" alt="" coords="343,171,412,205"/></map>
+<area shape="rect" id="node7" href="VirtScreen_8h.html" title="screens/VirtScreen.h" alt="" coords="133,89,277,122"/><area shape="rect" id="node11" href="header_8h.html" title="header.h" alt="" coords="304,254,373,287"/><area shape="rect" id="node17" href="World_8h.html" title="World.h" alt="" coords="115,171,181,205"/><area shape="rect" id="node23" href="worldmap_8h.html" title="worldmap.h" alt="" coords="96,254,184,287"/></map>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
@@ -134,117 +134,117 @@ Macros</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
 <tr class="memitem:af806efc6052edbc741683ec893bb2fe1"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CursedScreen_8h.html#af806efc6052edbc741683ec893bb2fe1">actions</a> { <br />
-&#160;&#160;<a class="el" href="CursedScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a21be300b59358a6caddeea191d2b282d">ACTION_USE</a>, 
-<a class="el" href="CursedScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a4f339f0f5388d44b7d11efcaadf004de">ACTION_THROW</a>, 
-<a class="el" href="CursedScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a0eaa96d5138b8349b4b531bc373eb202">ACTION_OBTAIN</a>, 
-<a class="el" href="CursedScreen_8h.html#af806efc6052edbc741683ec893bb2fe1ad9b1f52840791a48e010d5ac98b129e2">ACTION_INSCRIBE</a>, 
+&#160;&#160;<a class="el" href="CursedScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a21be300b59358a6caddeea191d2b282d">ACTION_USE</a>,$
+<a class="el" href="CursedScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a4f339f0f5388d44b7d11efcaadf004de">ACTION_THROW</a>,$
+<a class="el" href="CursedScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a0eaa96d5138b8349b4b531bc373eb202">ACTION_OBTAIN</a>,$
+<a class="el" href="CursedScreen_8h.html#af806efc6052edbc741683ec893bb2fe1ad9b1f52840791a48e010d5ac98b129e2">ACTION_INSCRIBE</a>,$
 <br />
-&#160;&#160;<a class="el" href="CursedScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a5d97b2a463c30e1033322e898c796d9a">ACTION_BUILD</a>, 
-<a class="el" href="CursedScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a099861b259d988ce46b10ff4410229a9">ACTION_CRAFT</a>, 
-<a class="el" href="TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a21be300b59358a6caddeea191d2b282d">ACTION_USE</a>, 
-<a class="el" href="TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a4f339f0f5388d44b7d11efcaadf004de">ACTION_THROW</a>, 
+&#160;&#160;<a class="el" href="CursedScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a5d97b2a463c30e1033322e898c796d9a">ACTION_BUILD</a>,$
+<a class="el" href="CursedScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a099861b259d988ce46b10ff4410229a9">ACTION_CRAFT</a>,$
+<a class="el" href="TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a21be300b59358a6caddeea191d2b282d">ACTION_USE</a>,$
+<a class="el" href="TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a4f339f0f5388d44b7d11efcaadf004de">ACTION_THROW</a>,$
 <br />
-&#160;&#160;<a class="el" href="TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a0eaa96d5138b8349b4b531bc373eb202">ACTION_OBTAIN</a>, 
-<a class="el" href="TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a4a7c2ce37e72c10b3cc2f79a30e7e5f0">ACTION_WIELD</a>, 
-<a class="el" href="TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1ad9b1f52840791a48e010d5ac98b129e2">ACTION_INSCRIBE</a>, 
-<a class="el" href="TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a0d3f7eb11e6f79192bfa276507f8c31a">ACTION_EAT</a>, 
+&#160;&#160;<a class="el" href="TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a0eaa96d5138b8349b4b531bc373eb202">ACTION_OBTAIN</a>,$
+<a class="el" href="TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a4a7c2ce37e72c10b3cc2f79a30e7e5f0">ACTION_WIELD</a>,$
+<a class="el" href="TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1ad9b1f52840791a48e010d5ac98b129e2">ACTION_INSCRIBE</a>,$
+<a class="el" href="TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a0d3f7eb11e6f79192bfa276507f8c31a">ACTION_EAT</a>,$
 <br />
-&#160;&#160;<a class="el" href="TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a5d97b2a463c30e1033322e898c796d9a">ACTION_BUILD</a>, 
-<a class="el" href="TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a099861b259d988ce46b10ff4410229a9">ACTION_CRAFT</a>, 
+&#160;&#160;<a class="el" href="TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a5d97b2a463c30e1033322e898c796d9a">ACTION_BUILD</a>,$
+<a class="el" href="TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a099861b259d988ce46b10ff4410229a9">ACTION_CRAFT</a>,$
 <a class="el" href="TextScreen_8h.html#af806efc6052edbc741683ec893bb2fe1aebf1536c9fd2032a492d601cd1d46d61">ACTION_TAKEOFF</a>
 <br />
  }</td></tr>
 <tr class="separator:af806efc6052edbc741683ec893bb2fe1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a92b9b42632766b6a6f2173546ce16072"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072">color_pairs</a> { <br />
-&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072afcd76b34514669761bd5cc5807b47cc7">BLACK_BLACK</a> = 1, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072ad4d53b59914a536f06a87a7a8a694231">BLACK_RED</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a563bf8b94b8cb623fd9d17a6511cbad2">BLACK_GREEN</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a69c6d074dde26482b93bc29242d2044c">BLACK_YELLOW</a>, 
+&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072afcd76b34514669761bd5cc5807b47cc7">BLACK_BLACK</a> = 1,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072ad4d53b59914a536f06a87a7a8a694231">BLACK_RED</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a563bf8b94b8cb623fd9d17a6511cbad2">BLACK_GREEN</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a69c6d074dde26482b93bc29242d2044c">BLACK_YELLOW</a>,$
 <br />
-&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a7ea9008e5111c16cd317d8daffe21f0a">BLACK_BLUE</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072ae582c733b432f64138d32ecf8654d710">BLACK_MAGENTA</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a6891812b72fa1cd39e359d7f8539c9b7">BLACK_CYAN</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a2879550cb7b282e89baaddb83f921d73">BLACK_WHITE</a>, 
+&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a7ea9008e5111c16cd317d8daffe21f0a">BLACK_BLUE</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072ae582c733b432f64138d32ecf8654d710">BLACK_MAGENTA</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a6891812b72fa1cd39e359d7f8539c9b7">BLACK_CYAN</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a2879550cb7b282e89baaddb83f921d73">BLACK_WHITE</a>,$
 <br />
-&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a8eb80d1f88b31998106932eba9a21029">RED_BLACK</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072ab5e1714d6b9543f7f60267c3abf70cc8">RED_RED</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a4ca95a142d3b65498d1c737477badc51">RED_GREEN</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a0ba403e582f13ac4452785af422f1309">RED_YELLOW</a>, 
+&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a8eb80d1f88b31998106932eba9a21029">RED_BLACK</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072ab5e1714d6b9543f7f60267c3abf70cc8">RED_RED</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a4ca95a142d3b65498d1c737477badc51">RED_GREEN</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a0ba403e582f13ac4452785af422f1309">RED_YELLOW</a>,$
 <br />
-&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072aa050b0f2cc34a9dceff6933e388378b3">RED_BLUE</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072aaa96181b5c53b8678feecc84bd68be17">RED_MAGENTA</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a53e886b503bc92d2e84f749e7df53a01">RED_CYAN</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a9d20a270e52139e9516e2ad47dfba657">RED_WHITE</a>, 
+&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072aa050b0f2cc34a9dceff6933e388378b3">RED_BLUE</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072aaa96181b5c53b8678feecc84bd68be17">RED_MAGENTA</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a53e886b503bc92d2e84f749e7df53a01">RED_CYAN</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a9d20a270e52139e9516e2ad47dfba657">RED_WHITE</a>,$
 <br />
-&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a96a854ed01256c2a8e27ed05eeeaf9b7">GREEN_BLACK</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072aa9b687fa36bd15c13e74cc3bd67b26d5">GREEN_RED</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a308d9c5cee166e27e128202c54531c7a">GREEN_GREEN</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072ab5bb6fd1111845fae1a42966ba475be7">GREEN_YELLOW</a>, 
+&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a96a854ed01256c2a8e27ed05eeeaf9b7">GREEN_BLACK</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072aa9b687fa36bd15c13e74cc3bd67b26d5">GREEN_RED</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a308d9c5cee166e27e128202c54531c7a">GREEN_GREEN</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072ab5bb6fd1111845fae1a42966ba475be7">GREEN_YELLOW</a>,$
 <br />
-&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a18794118cd8aa28311da4cad5ad03d59">GREEN_BLUE</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072aca1c6cba15d3123833540c80f426915c">GREEN_MAGENTA</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072aadea45ce541b4b83c94f952bcbc03b37">GREEN_CYAN</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a5dba6aadaeed280cd155dd9b3a4ca271">GREEN_WHITE</a>, 
+&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a18794118cd8aa28311da4cad5ad03d59">GREEN_BLUE</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072aca1c6cba15d3123833540c80f426915c">GREEN_MAGENTA</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072aadea45ce541b4b83c94f952bcbc03b37">GREEN_CYAN</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a5dba6aadaeed280cd155dd9b3a4ca271">GREEN_WHITE</a>,$
 <br />
-&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a07aa836826cf14afc4e9af0c7df630eb">YELLOW_BLACK</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a861e28456456e34a69b1f6d400605b59">YELLOW_RED</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a68208b1fae55cc0b10e119a84b21d6f9">YELLOW_GREEN</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a73bb3a8030d2fe5b138d2ed74501021c">YELLOW_YELLOW</a>, 
+&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a07aa836826cf14afc4e9af0c7df630eb">YELLOW_BLACK</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a861e28456456e34a69b1f6d400605b59">YELLOW_RED</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a68208b1fae55cc0b10e119a84b21d6f9">YELLOW_GREEN</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a73bb3a8030d2fe5b138d2ed74501021c">YELLOW_YELLOW</a>,$
 <br />
-&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072afb6a71246a687f34ba4a4253533d9a61">YELLOW_BLUE</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072aaa190943423204dfc0519edd848c1648">YELLOW_MAGENTA</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072aed0f18d20c19b3780488a03e3dc71786">YELLOW_CYAN</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072acd629fa851c2c9880b8b56a5c4f63160">YELLOW_WHITE</a>, 
+&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072afb6a71246a687f34ba4a4253533d9a61">YELLOW_BLUE</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072aaa190943423204dfc0519edd848c1648">YELLOW_MAGENTA</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072aed0f18d20c19b3780488a03e3dc71786">YELLOW_CYAN</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072acd629fa851c2c9880b8b56a5c4f63160">YELLOW_WHITE</a>,$
 <br />
-&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a189a7800234e077b2d997d65da120818">BLUE_BLACK</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a57e5a66cca9ba1ac1bcfa08135701a99">BLUE_RED</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a7605a0137ca3a2a70b3a35ecc3dbb812">BLUE_GREEN</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a74397d6ab3cfc162bd5e676092ae9569">BLUE_YELLOW</a>, 
+&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a189a7800234e077b2d997d65da120818">BLUE_BLACK</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a57e5a66cca9ba1ac1bcfa08135701a99">BLUE_RED</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a7605a0137ca3a2a70b3a35ecc3dbb812">BLUE_GREEN</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a74397d6ab3cfc162bd5e676092ae9569">BLUE_YELLOW</a>,$
 <br />
-&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072ac82fafe41e998b9a3d65914817718ff1">BLUE_BLUE</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a417c99a9ca4cbc41040e1a1ae37b1f7c">BLUE_MAGENTA</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072af4a38c54a73533e43f702530126000cf">BLUE_CYAN</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072af3e0cc40aaf150a398fea27e4ea9afcf">BLUE_WHITE</a>, 
+&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072ac82fafe41e998b9a3d65914817718ff1">BLUE_BLUE</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a417c99a9ca4cbc41040e1a1ae37b1f7c">BLUE_MAGENTA</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072af4a38c54a73533e43f702530126000cf">BLUE_CYAN</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072af3e0cc40aaf150a398fea27e4ea9afcf">BLUE_WHITE</a>,$
 <br />
-&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a83f2bed5886330f31c2b13c9ceaf3465">MAGENTA_BLACK</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a2f8ae6f6b1294d0bb6f3fa1abfcc356d">MAGENTA_RED</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a1822c064415a12e431054eaaafb7bcd2">MAGENTA_GREEN</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a019ea9df4bdb37aaeb543fd764876b7a">MAGENTA_YELLOW</a>, 
+&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a83f2bed5886330f31c2b13c9ceaf3465">MAGENTA_BLACK</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a2f8ae6f6b1294d0bb6f3fa1abfcc356d">MAGENTA_RED</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a1822c064415a12e431054eaaafb7bcd2">MAGENTA_GREEN</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a019ea9df4bdb37aaeb543fd764876b7a">MAGENTA_YELLOW</a>,$
 <br />
-&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a76dce98acaca9f861d40ebb575e1c6d9">MAGENTA_BLUE</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072ac9e415e4ac59ecb10187fb42a1ca75e6">MAGENTA_MAGENTA</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a7bf71982e95e2a70e9c867bc65a4cc69">MAGENTA_CYAN</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a656e43c6749cb89f2a59f150d45162fb">MAGENTA_WHITE</a>, 
+&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a76dce98acaca9f861d40ebb575e1c6d9">MAGENTA_BLUE</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072ac9e415e4ac59ecb10187fb42a1ca75e6">MAGENTA_MAGENTA</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a7bf71982e95e2a70e9c867bc65a4cc69">MAGENTA_CYAN</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a656e43c6749cb89f2a59f150d45162fb">MAGENTA_WHITE</a>,$
 <br />
-&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072ac95606d562cc9867be52faec59f98d54">CYAN_BLACK</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a709a04363f022eae29fa31355eed0d6b">CYAN_RED</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072aea4703e77821190fb6abfc6e18a40ddf">CYAN_GREEN</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072ac60f6a03f9d3026e409cd379c791ea35">CYAN_YELLOW</a>, 
+&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072ac95606d562cc9867be52faec59f98d54">CYAN_BLACK</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a709a04363f022eae29fa31355eed0d6b">CYAN_RED</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072aea4703e77821190fb6abfc6e18a40ddf">CYAN_GREEN</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072ac60f6a03f9d3026e409cd379c791ea35">CYAN_YELLOW</a>,$
 <br />
-&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a02dfe411dadbf2a54182577f6d2631d9">CYAN_BLUE</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072aa6ed53934dd5a63245335bba3c8bdb2c">CYAN_MAGENTA</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a3456039daf4948106b2b1918cc14973c">CYAN_CYAN</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a8f807fa6f3c02abf9878a72e7125065d">CYAN_WHITE</a>, 
+&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a02dfe411dadbf2a54182577f6d2631d9">CYAN_BLUE</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072aa6ed53934dd5a63245335bba3c8bdb2c">CYAN_MAGENTA</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a3456039daf4948106b2b1918cc14973c">CYAN_CYAN</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a8f807fa6f3c02abf9878a72e7125065d">CYAN_WHITE</a>,$
 <br />
-&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a4402daa3b8a81f48b4267db22f0361eb">WHITE_BLACK</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a0a65792bbbaf04364dff768313fdc94a">WHITE_RED</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a9647764a69b7b8b8a66c8e975f9bc6ac">WHITE_GREEN</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072aae70527dfc74f825573e9e8676766732">WHITE_YELLOW</a>, 
+&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a4402daa3b8a81f48b4267db22f0361eb">WHITE_BLACK</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a0a65792bbbaf04364dff768313fdc94a">WHITE_RED</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a9647764a69b7b8b8a66c8e975f9bc6ac">WHITE_GREEN</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072aae70527dfc74f825573e9e8676766732">WHITE_YELLOW</a>,$
 <br />
-&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a5a78ad96303b99175e96793bf2293d44">WHITE_BLUE</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a2bcc626b42de567b9809221a217a5594">WHITE_MAGENTA</a>, 
-<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a3d6f9ea8db4e7dcb37514db16f759ef1">WHITE_CYAN</a>, 
+&#160;&#160;<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a5a78ad96303b99175e96793bf2293d44">WHITE_BLUE</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a2bcc626b42de567b9809221a217a5594">WHITE_MAGENTA</a>,$
+<a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a3d6f9ea8db4e7dcb37514db16f759ef1">WHITE_CYAN</a>,$
 <a class="el" href="CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072ac0e9970b7d4d621f5081dcc857b848d9">WHITE_WHITE</a>
 <br />
  }</td></tr>
 <tr class="separator:a92b9b42632766b6a6f2173546ce16072"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae6468bd5894ef69f1df5fca80d2550d3"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CursedScreen_8h.html#ae6468bd5894ef69f1df5fca80d2550d3">screen_errors</a> { <br />
-&#160;&#160;<a class="el" href="CursedScreen_8h.html#ae6468bd5894ef69f1df5fca80d2550d3ac4da796070e3424323e9826d5ae5ae79">SCREEN_NO_ERROR</a> = 0, 
-<a class="el" href="CursedScreen_8h.html#ae6468bd5894ef69f1df5fca80d2550d3a0d9082f472eeed9d87b8976d34db17a9">HEIGHT_NOT_ENOUGH</a>, 
-<a class="el" href="CursedScreen_8h.html#ae6468bd5894ef69f1df5fca80d2550d3a68529a3255b62e2c883a1c38ae179c36">WIDTH_NOT_ENOUGH</a>, 
-<a class="el" href="TextScreen_8h.html#ae6468bd5894ef69f1df5fca80d2550d3ac4da796070e3424323e9826d5ae5ae79">SCREEN_NO_ERROR</a> = 0, 
+&#160;&#160;<a class="el" href="CursedScreen_8h.html#ae6468bd5894ef69f1df5fca80d2550d3ac4da796070e3424323e9826d5ae5ae79">SCREEN_NO_ERROR</a> = 0,$
+<a class="el" href="CursedScreen_8h.html#ae6468bd5894ef69f1df5fca80d2550d3a0d9082f472eeed9d87b8976d34db17a9">HEIGHT_NOT_ENOUGH</a>,$
+<a class="el" href="CursedScreen_8h.html#ae6468bd5894ef69f1df5fca80d2550d3a68529a3255b62e2c883a1c38ae179c36">WIDTH_NOT_ENOUGH</a>,$
+<a class="el" href="TextScreen_8h.html#ae6468bd5894ef69f1df5fca80d2550d3ac4da796070e3424323e9826d5ae5ae79">SCREEN_NO_ERROR</a> = 0,$
 <br />
-&#160;&#160;<a class="el" href="TextScreen_8h.html#ae6468bd5894ef69f1df5fca80d2550d3a0d9082f472eeed9d87b8976d34db17a9">HEIGHT_NOT_ENOUGH</a>, 
+&#160;&#160;<a class="el" href="TextScreen_8h.html#ae6468bd5894ef69f1df5fca80d2550d3a0d9082f472eeed9d87b8976d34db17a9">HEIGHT_NOT_ENOUGH</a>,$
 <a class="el" href="TextScreen_8h.html#ae6468bd5894ef69f1df5fca80d2550d3a68529a3255b62e2c883a1c38ae179c36">WIDTH_NOT_ENOUGH</a>
 <br />
  }</td></tr>
@@ -525,7 +525,7 @@ Variables</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jul 9 2014 00:13:38 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jul 18 2014 22:55:25 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

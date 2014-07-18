@@ -51,8 +51,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onfocus="searchBox.OnSearchFieldFocus(true)"$
+               onblur="searchBox.OnSearchFieldFocus(false)"$
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -112,7 +112,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0" 
+<iframe src="javascript:void(0)" frameborder="0"$
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>
@@ -139,6 +139,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 <li>SHRED_CHAOS
 : <a class="el" href="header_8h.html#a67902c112e090330b7c684c88cca3c32a6e28340a03cf7591a54e8f34f07e58e2">header.h</a>
+</li>
+<li>SHRED_CRATER
+: <a class="el" href="header_8h.html#a67902c112e090330b7c684c88cca3c32a59434eb6732d1dc106be8a620af1416e">header.h</a>
+</li>
+<li>SHRED_DEAD_FOREST
+: <a class="el" href="header_8h.html#a67902c112e090330b7c684c88cca3c32aa89b1b5d978aee0c7e9f2d706d7dfa69">header.h</a>
+</li>
+<li>SHRED_DEAD_HILL
+: <a class="el" href="header_8h.html#a67902c112e090330b7c684c88cca3c32a84efccd26c7c7866732d5c1fbb74698e">header.h</a>
 </li>
 <li>SHRED_DESERT
 : <a class="el" href="header_8h.html#a67902c112e090330b7c684c88cca3c32a597f6376654e7aeeb29207e428301376">header.h</a>
@@ -200,6 +209,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>SUB_CLOUD
 : <a class="el" href="header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a01d6321edbb1180683797c037e5f5f5d">header.h</a>
 </li>
+<li>SUB_DUST
+: <a class="el" href="header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706aa0f538d7569d701c524eff31266361f4">header.h</a>
+</li>
 <li>SUN_MOON
 : <a class="el" href="header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a4c77c12e4eec4870f0c5550da6f87981">header.h</a>
 </li>
@@ -207,7 +219,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jul 9 2014 00:13:39 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jul 18 2014 22:55:25 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

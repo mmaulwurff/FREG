@@ -51,8 +51,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onfocus="searchBox.OnSearchFieldFocus(true)"$
+               onblur="searchBox.OnSearchFieldFocus(false)"$
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -78,7 +78,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0" 
+<iframe src="javascript:void(0)" frameborder="0"$
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>
@@ -159,8 +159,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a687f90ab40595c327b50301b5636bbd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ca804e740896b8ae57d47bdd311c284"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShred.html#a1ca804e740896b8ae57d47bdd311c284">LightLevel</a> (int x, int y, int z) const </td></tr>
 <tr class="separator:a1ca804e740896b8ae57d47bdd311c284"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8d73b5c21a3ed83964b2b643e001d959"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShred.html#a8d73b5c21a3ed83964b2b643e001d959">SetSunLight</a> (int x, int y, int z, int level)</td></tr>
-<tr class="separator:a8d73b5c21a3ed83964b2b643e001d959"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71e764b8b11fa8ecec526644e8701413"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShred.html#a71e764b8b11fa8ecec526644e8701413">SetSunLight</a> (int x, int y, int z, int level)</td></tr>
+<tr class="separator:a71e764b8b11fa8ecec526644e8701413"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a96e6e653a6fbfe4c0af3c3bb270db60f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShred.html#a96e6e653a6fbfe4c0af3c3bb270db60f">SetFireLight</a> (int x, int y, int z, int level)</td></tr>
 <tr class="separator:a96e6e653a6fbfe4c0af3c3bb270db60f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aed402faa84bfdb52d72e8864634af3db"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShred.html#aed402faa84bfdb52d72e8864634af3db">SetLightmap</a> (int x, int y, int z, int level)</td></tr>
@@ -245,7 +245,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00087">87</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00092">92</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -262,7 +262,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00131">131</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00140">140</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -281,7 +281,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00226">226</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00234">234</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -299,7 +299,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00234">234</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00242">242</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -399,7 +399,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00633">633</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00639">639</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -441,7 +441,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00306">306</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00312">312</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -534,7 +534,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00156">156</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00038">38</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -551,7 +551,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00312">312</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00036">36</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -568,7 +568,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00034">34</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00037">37</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -588,7 +588,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Make global coordinate from local (in loaded zone). </p>
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00158">158</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00165">165</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -606,7 +606,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00162">162</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00169">169</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -625,7 +625,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Returns x (column) shred coordinate on world map. </p>
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00031">31</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00033">33</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -710,7 +710,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Returns y (line) shred coordinate on world map. </p>
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00030">30</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00032">32</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -736,7 +736,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00300">300</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00039">39</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -777,7 +777,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00166">166</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00173">173</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -794,7 +794,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00187">187</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00194">194</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -836,7 +836,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Puts block to coordinates, not activates it. </p>
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00294">294</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00302">302</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -864,7 +864,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00637">637</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00643">643</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -882,7 +882,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00202">202</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00209">209</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -900,7 +900,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00250">250</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00258">258</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -918,7 +918,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00240">240</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00248">248</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -935,7 +935,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Lighting-inertia_8cpp_source.html#l00265">265</a> of file <a class="el" href="Lighting-inertia_8cpp_source.html">Lighting-inertia.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Lighting-inertia_8cpp_source.html#l00268">268</a> of file <a class="el" href="Lighting-inertia_8cpp_source.html">Lighting-inertia.cpp</a>.</p>
 
 </div>
 </div>
@@ -977,7 +977,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Removes last block at xyz, then SetBlock, then makes block normal. </p>
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00265">265</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00273">273</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -1019,7 +1019,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Puts block to coordinates xyz and activates it. </p>
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00274">274</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00282">282</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -1059,7 +1059,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Lighting-inertia_8cpp_source.html#l00249">249</a> of file <a class="el" href="Lighting-inertia_8cpp_source.html">Lighting-inertia.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Lighting-inertia_8cpp_source.html#l00252">252</a> of file <a class="el" href="Lighting-inertia_8cpp_source.html">Lighting-inertia.cpp</a>.</p>
 
 </div>
 </div>
@@ -1099,7 +1099,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Lighting-inertia_8cpp_source.html#l00260">260</a> of file <a class="el" href="Lighting-inertia_8cpp_source.html">Lighting-inertia.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Lighting-inertia_8cpp_source.html#l00263">263</a> of file <a class="el" href="Lighting-inertia_8cpp_source.html">Lighting-inertia.cpp</a>.</p>
 
 </div>
 </div>
@@ -1151,16 +1151,16 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00286">286</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00294">294</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a8d73b5c21a3ed83964b2b643e001d959"></a>
+<a class="anchor" id="a71e764b8b11fa8ecec526644e8701413"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Shred::SetSunLight </td>
+          <td class="memname">bool Shred::SetSunLight </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>x</em>, </td>
@@ -1210,7 +1210,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Makes all shining blocks of shred shine. </p>
 
-<p>Definition at line <a class="el" href="Lighting-inertia_8cpp_source.html#l00268">268</a> of file <a class="el" href="Lighting-inertia_8cpp_source.html">Lighting-inertia.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Lighting-inertia_8cpp_source.html#l00271">271</a> of file <a class="el" href="Lighting-inertia_8cpp_source.html">Lighting-inertia.cpp</a>.</p>
 
 </div>
 </div>
@@ -1227,7 +1227,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00242">242</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00250">250</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -1244,7 +1244,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00246">246</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00254">254</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -1261,7 +1261,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00032">32</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00034">34</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -1278,7 +1278,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00033">33</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00035">35</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -1330,7 +1330,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00215">215</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00222">222</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -1343,7 +1343,7 @@ Static Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jul 9 2014 00:13:39 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jul 18 2014 22:55:25 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

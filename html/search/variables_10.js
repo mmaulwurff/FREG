@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['y_5fself',['y_self',['../classXy.html#aa50394806d126295fb81da5701e44830',1,'Xy']]]
+  ['x_5fself',['x_self',['../classXy.html#a75171c6c3aa056e007fb6a0bc821dba9',1,'Xy']]]
 ];

@@ -51,8 +51,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onfocus="searchBox.OnSearchFieldFocus(true)"$
+               onblur="searchBox.OnSearchFieldFocus(false)"$
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -76,7 +76,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0" 
+<iframe src="javascript:void(0)" frameborder="0"$
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>
@@ -91,7 +91,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="contents">
 <div class="textblock"><code>#include &lt;QDataStream&gt;</code><br />
 <code>#include &quot;<a class="el" href="Shred_8h_source.html">Shred.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="world_8h_source.html">world.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="World_8h_source.html">World.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="BlockManager_8h_source.html">BlockManager.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Active_8h_source.html">blocks/Active.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Inventory_8h_source.html">blocks/Inventory.h</a>&quot;</code><br />
@@ -100,7 +100,7 @@ Include dependency graph for Shred.cpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="Shred_8cpp__incl.png" border="0" usemap="#Shred_8cpp" alt=""/></div>
 <map name="Shred_8cpp" id="Shred_8cpp">
-<area shape="rect" id="node5" href="Shred_8h.html" title="Shred.h" alt="" coords="131,89,197,122"/><area shape="rect" id="node15" href="world_8h.html" title="world.h" alt="" coords="360,89,424,122"/><area shape="rect" id="node26" href="BlockManager_8h.html" title="BlockManager.h" alt="" coords="221,89,336,122"/><area shape="rect" id="node29" href="Active_8h.html" title="blocks/Active.h" alt="" coords="640,89,752,122"/><area shape="rect" id="node38" href="Inventory_8h.html" title="Provides declaration for class Inventory for freg. " alt="" coords="835,89,963,122"/><area shape="rect" id="node9" href="header_8h.html" title="header.h" alt="" coords="237,254,307,287"/><area shape="rect" id="node22" href="worldmap_8h.html" title="worldmap.h" alt="" coords="521,171,609,205"/><area shape="rect" id="node33" href="Block_8h.html" title="Provides definition for class Block. " alt="" coords="633,171,700,205"/><area shape="rect" id="node36" href="Xyz_8h.html" title="Xyz.h" alt="" coords="724,171,777,205"/></map>
+<area shape="rect" id="node5" href="Shred_8h.html" title="Shred.h" alt="" coords="131,89,197,122"/><area shape="rect" id="node15" href="World_8h.html" title="World.h" alt="" coords="360,89,427,122"/><area shape="rect" id="node26" href="BlockManager_8h.html" title="BlockManager.h" alt="" coords="221,89,336,122"/><area shape="rect" id="node29" href="Active_8h.html" title="blocks/Active.h" alt="" coords="640,89,752,122"/><area shape="rect" id="node38" href="Inventory_8h.html" title="Provides declaration for class Inventory for freg. " alt="" coords="835,89,963,122"/><area shape="rect" id="node9" href="header_8h.html" title="header.h" alt="" coords="237,254,307,287"/><area shape="rect" id="node22" href="worldmap_8h.html" title="worldmap.h" alt="" coords="521,171,609,205"/><area shape="rect" id="node33" href="Block_8h.html" title="Provides definition for class Block. " alt="" coords="633,171,700,205"/><area shape="rect" id="node36" href="Xyz_8h.html" title="Xyz.h" alt="" coords="724,171,777,205"/></map>
 </div>
 </div>
 <p><a href="Shred_8cpp_source.html">Go to the source code of this file.</a></p>
@@ -111,6 +111,8 @@ Variables</h2></td></tr>
 <tr class="separator:ac530076131d8b31353bdae6f58a364b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a887ec940d24ba8d20fabafcafe3930fd"><td class="memItemLeft" align="right" valign="top">const quint8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Shred_8cpp.html#a887ec940d24ba8d20fabafcafe3930fd">CURRENT_SHRED_FORMAT_VERSION</a> = 6</td></tr>
 <tr class="separator:a887ec940d24ba8d20fabafcafe3930fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c7e6ebd745b500b91fa6411e43368f9"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Shred_8cpp.html#a7c7e6ebd745b500b91fa6411e43368f9">RAIN_IS_DEW</a> = 1</td></tr>
+<tr class="separator:a7c7e6ebd745b500b91fa6411e43368f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Variable Documentation</h2>
 <a class="anchor" id="a887ec940d24ba8d20fabafcafe3930fd"></a>
@@ -141,10 +143,24 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a7c7e6ebd745b500b91fa6411e43368f9"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int RAIN_IS_DEW = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00030">30</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jul 9 2014 00:13:38 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jul 18 2014 22:55:25 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

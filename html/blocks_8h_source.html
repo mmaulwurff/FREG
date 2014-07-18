@@ -51,8 +51,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onfocus="searchBox.OnSearchFieldFocus(true)"$
+               onblur="searchBox.OnSearchFieldFocus(false)"$
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -76,7 +76,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0" 
+<iframe src="javascript:void(0)" frameborder="0"$
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>
@@ -353,7 +353,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="classCreator_html_a15b5ac622022e17fb0166c58f42a354d"><div class="ttname"><a href="classCreator.html#a15b5ac622022e17fb0166c58f42a354d">Creator::FullName</a></div><div class="ttdeci">QString FullName() const override</div><div class="ttdef"><b>Definition:</b> <a href="blocks_8cpp_source.html#l00549">blocks.cpp:549</a></div></div>
 <div class="ttc" id="classGrass_html_acd9ce8f3fcf007e8714794b0a49f59c1"><div class="ttname"><a href="classGrass.html#acd9ce8f3fcf007e8714794b0a49f59c1">Grass::FullName</a></div><div class="ttdeci">QString FullName() const override</div><div class="ttdef"><b>Definition:</b> <a href="blocks_8cpp_source.html#l00267">blocks.cpp:267</a></div></div>
 <div class="ttc" id="classBell_html_a6edd22711cdb8b0ade59e687bc591f44"><div class="ttname"><a href="classBell.html#a6edd22711cdb8b0ade59e687bc591f44">Bell::Use</a></div><div class="ttdeci">usage_types Use(Block *who=0) override</div><div class="ttdef"><b>Definition:</b> <a href="blocks_8cpp_source.html#l00695">blocks.cpp:695</a></div></div>
-<div class="ttc" id="header_8h_html_a4b1e949f8e745e1bab6b99b32b34c544"><div class="ttname"><a href="header_8h.html#a4b1e949f8e745e1bab6b99b32b34c544">push_reaction</a></div><div class="ttdeci">push_reaction</div><div class="ttdef"><b>Definition:</b> <a href="header_8h_source.html#l00095">header.h:95</a></div></div>
+<div class="ttc" id="header_8h_html_a4b1e949f8e745e1bab6b99b32b34c544"><div class="ttname"><a href="header_8h.html#a4b1e949f8e745e1bab6b99b32b34c544">push_reaction</a></div><div class="ttdeci">push_reaction</div><div class="ttdef"><b>Definition:</b> <a href="header_8h_source.html#l00098">header.h:98</a></div></div>
 <div class="ttc" id="classPredator_html_a7a2014810811c472a295d3ad07677e09"><div class="ttname"><a href="classPredator.html#a7a2014810811c472a295d3ad07677e09">Predator::DoFrequentAction</a></div><div class="ttdeci">void DoFrequentAction() override</div><div class="ttdef"><b>Definition:</b> <a href="blocks_8cpp_source.html#l00715">blocks.cpp:715</a></div></div>
 <div class="ttc" id="classPredator_html_acbde927ca4f618230921fb0f2f2caa4c"><div class="ttname"><a href="classPredator.html#acbde927ca4f618230921fb0f2f2caa4c">Predator::DoRareAction</a></div><div class="ttdeci">void DoRareAction() override</div><div class="ttdef"><b>Definition:</b> <a href="blocks_8cpp_source.html#l00721">blocks.cpp:721</a></div></div>
 <div class="ttc" id="classDoor_html_a1ce52c0db6ba7043a4bf159c866e7c05"><div class="ttname"><a href="classDoor.html#a1ce52c0db6ba7043a4bf159c866e7c05">Door::PushResult</a></div><div class="ttdeci">push_reaction PushResult(dirs) const override</div><div class="ttdef"><b>Definition:</b> <a href="blocks_8cpp_source.html#l00390">blocks.cpp:390</a></div></div>
@@ -432,11 +432,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="classCreator_html_a9105558bfd023922376a7150ba7ca49a"><div class="ttname"><a href="classCreator.html#a9105558bfd023922376a7150ba7ca49a">Creator::Creator</a></div><div class="ttdeci">Creator(int sub, int id)</div><div class="ttdef"><b>Definition:</b> <a href="blocks_8cpp_source.html#l00564">blocks.cpp:564</a></div></div>
 <div class="ttc" id="classDoor_html_aa3d424b9721782e6aaa1bed59c116154"><div class="ttname"><a href="classDoor.html#aa3d424b9721782e6aaa1bed59c116154">Door::DoFrequentAction</a></div><div class="ttdeci">void DoFrequentAction() override</div><div class="ttdef"><b>Definition:</b> <a href="blocks_8cpp_source.html#l00405">blocks.cpp:405</a></div></div>
 <div class="ttc" id="classActive_html"><div class="ttname"><a href="classActive.html">Active</a></div><div class="ttdef"><b>Definition:</b> <a href="Active_8h_source.html#l00045">Active.h:45</a></div></div>
-<div class="ttc" id="classBlock_html_ac54c22c472d32b25702b29358857f437"><div class="ttname"><a href="classBlock.html#ac54c22c472d32b25702b29358857f437">Block::Block</a></div><div class="ttdeci">Block(int sub, int id, int transp=UNDEF)</div><div class="ttdef"><b>Definition:</b> <a href="Block_8cpp_source.html#l00244">Block.cpp:244</a></div></div>
-<div class="ttc" id="header_8h_html_a305c682db7e7cdce78096178c0c9ef4a"><div class="ttname"><a href="header_8h.html#a305c682db7e7cdce78096178c0c9ef4a">usage_types</a></div><div class="ttdeci">usage_types</div><div class="ttdef"><b>Definition:</b> <a href="header_8h_source.html#l00207">header.h:207</a></div></div>
+<div class="ttc" id="classBlock_html_ac54c22c472d32b25702b29358857f437"><div class="ttname"><a href="classBlock.html#ac54c22c472d32b25702b29358857f437">Block::Block</a></div><div class="ttdeci">Block(int sub, int id, int transp=UNDEF)</div><div class="ttdef"><b>Definition:</b> <a href="Block_8cpp_source.html#l00248">Block.cpp:248</a></div></div>
+<div class="ttc" id="header_8h_html_a305c682db7e7cdce78096178c0c9ef4a"><div class="ttname"><a href="header_8h.html#a305c682db7e7cdce78096178c0c9ef4a">usage_types</a></div><div class="ttdeci">usage_types</div><div class="ttdef"><b>Definition:</b> <a href="header_8h_source.html#l00211">header.h:211</a></div></div>
 <div class="ttc" id="classBush_html_a7d94fb68cbe9fd7ebff713caa1e5d70c"><div class="ttname"><a href="classBush.html#a7d94fb68cbe9fd7ebff713caa1e5d70c">Bush::ReceiveSignal</a></div><div class="ttdeci">void ReceiveSignal(QString) override</div><div class="ttdoc">Receive text signal. </div><div class="ttdef"><b>Definition:</b> <a href="blocks_8cpp_source.html#l00297">blocks.cpp:297</a></div></div>
 <div class="ttc" id="classCreator_html_a7b2b03d67f137550f1bd1b48aacc997c"><div class="ttname"><a href="classCreator.html#a7b2b03d67f137550f1bd1b48aacc997c">Creator::Sub</a></div><div class="ttdeci">int Sub() const override</div><div class="ttdef"><b>Definition:</b> <a href="blocks_8cpp_source.html#l00548">blocks.cpp:548</a></div></div>
-<div class="ttc" id="header_8h_html_aeac25a28aa4d3c6009f7249ee82ae12d"><div class="ttname"><a href="header_8h.html#aeac25a28aa4d3c6009f7249ee82ae12d">dirs</a></div><div class="ttdeci">dirs</div><div class="ttdef"><b>Definition:</b> <a href="header_8h_source.html#l00085">header.h:85</a></div></div>
+<div class="ttc" id="header_8h_html_aeac25a28aa4d3c6009f7249ee82ae12d"><div class="ttname"><a href="header_8h.html#aeac25a28aa4d3c6009f7249ee82ae12d">dirs</a></div><div class="ttdeci">dirs</div><div class="ttdef"><b>Definition:</b> <a href="header_8h_source.html#l00088">header.h:88</a></div></div>
 <div class="ttc" id="classRabbit_html_a59c2d39d06e83a9d1f5f800df79540ca"><div class="ttname"><a href="classRabbit.html#a59c2d39d06e83a9d1f5f800df79540ca">Rabbit::FullName</a></div><div class="ttdeci">QString FullName() const override</div><div class="ttdef"><b>Definition:</b> <a href="blocks_8cpp_source.html#l00372">blocks.cpp:372</a></div></div>
 <div class="ttc" id="classInventory_html"><div class="ttname"><a href="classInventory.html">Inventory</a></div><div class="ttdoc">Provides block ability to contain other blocks inside. </div><div class="ttdef"><b>Definition:</b> <a href="Inventory_8h_source.html#l00033">Inventory.h:33</a></div></div>
 <div class="ttc" id="classLiquid_html_a01436461753510035488012dbaa604d6"><div class="ttname"><a href="classLiquid.html#a01436461753510035488012dbaa604d6">Liquid::Kind</a></div><div class="ttdeci">int Kind() const override</div><div class="ttdef"><b>Definition:</b> <a href="blocks_8cpp_source.html#l00193">blocks.cpp:193</a></div></div>
@@ -466,7 +466,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jul 9 2014 00:13:38 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jul 18 2014 22:55:24 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

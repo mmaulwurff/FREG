@@ -1,7 +1,7 @@
 <map id="main.cpp" name="main.cpp">
-<area shape="rect" id="node15" href="$world_8h.html" title="world.h" alt="" coords="661,89,725,122"/>
-<area shape="rect" id="node27" href="$worldmap_8h.html" title="worldmap.h" alt="" coords="668,171,756,205"/>
-<area shape="rect" id="node31" href="$Player_8h.html" title="Player.h" alt="" coords="800,89,869,122"/>
-<area shape="rect" id="node21" href="$header_8h.html" title="header.h" alt="" coords="780,171,849,205"/>
-<area shape="rect" id="node36" href="$Xyz_8h.html" title="Xyz.h" alt="" coords="967,171,1020,205"/>
+<area shape="rect" id="node15" href="$World_8h.html" title="World.h" alt="" coords="661,89,728,122"/>
+<area shape="rect" id="node27" href="$worldmap_8h.html" title="worldmap.h" alt="" coords="671,171,759,205"/>
+<area shape="rect" id="node31" href="$Player_8h.html" title="Player.h" alt="" coords="803,89,872,122"/>
+<area shape="rect" id="node21" href="$header_8h.html" title="header.h" alt="" coords="783,171,852,205"/>
+<area shape="rect" id="node36" href="$Xyz_8h.html" title="Xyz.h" alt="" coords="969,171,1023,205"/>
 </map>

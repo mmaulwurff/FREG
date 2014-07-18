@@ -1,13 +1,13 @@
 <map id="screens/CursedScreen.cpp" name="screens/CursedScreen.cpp">
-<area shape="rect" id="node11" href="$CursedScreen_8h.html" title="Provides curses (text&#45;based graphics interface) screen for freg. " alt="" coords="440,89,605,122"/>
-<area shape="rect" id="node26" href="$IThread_8h.html" title="screens/IThread.h" alt="" coords="780,89,905,122"/>
-<area shape="rect" id="node30" href="$world_8h.html" title="world.h" alt="" coords="692,89,756,122"/>
-<area shape="rect" id="node39" href="$Shred_8h.html" title="Shred.h" alt="" coords="929,89,996,122"/>
-<area shape="rect" id="node44" href="$Block_8h.html" title="Provides definition for class Block. " alt="" coords="1077,171,1184,205"/>
-<area shape="rect" id="node47" href="$Inventory_8h.html" title="Provides declaration for class Inventory for freg. " alt="" coords="1264,89,1392,122"/>
-<area shape="rect" id="node51" href="$Player_8h.html" title="Player.h" alt="" coords="1208,171,1277,205"/>
-<area shape="rect" id="node17" href="$VirtScreen_8h.html" title="screens/VirtScreen.h" alt="" coords="395,171,539,205"/>
-<area shape="rect" id="node21" href="$header_8h.html" title="header.h" alt="" coords="876,254,945,287"/>
-<area shape="rect" id="node35" href="$worldmap_8h.html" title="worldmap.h" alt="" coords="653,171,741,205"/>
-<area shape="rect" id="node55" href="$Xyz_8h.html" title="Xyz.h" alt="" coords="1216,254,1269,287"/>
+<area shape="rect" id="node11" href="$CursedScreen_8h.html" title="Provides curses (text&#45;based graphics interface) screen for freg. " alt="" coords="424,89,589,122"/>
+<area shape="rect" id="node36" href="$IThread_8h.html" title="screens/IThread.h" alt="" coords="424,254,549,287"/>
+<area shape="rect" id="node39" href="$Shred_8h.html" title="Shred.h" alt="" coords="821,89,888,122"/>
+<area shape="rect" id="node44" href="$Block_8h.html" title="Provides definition for class Block. " alt="" coords="667,254,773,287"/>
+<area shape="rect" id="node47" href="$Inventory_8h.html" title="Provides declaration for class Inventory for freg. " alt="" coords="929,89,1057,122"/>
+<area shape="rect" id="node51" href="$Player_8h.html" title="Player.h" alt="" coords="716,171,785,205"/>
+<area shape="rect" id="node17" href="$VirtScreen_8h.html" title="screens/VirtScreen.h" alt="" coords="283,171,427,205"/>
+<area shape="rect" id="node21" href="$header_8h.html" title="header.h" alt="" coords="612,337,681,370"/>
+<area shape="rect" id="node26" href="$World_8h.html" title="World.h" alt="" coords="283,254,349,287"/>
+<area shape="rect" id="node32" href="$worldmap_8h.html" title="worldmap.h" alt="" coords="323,337,411,370"/>
+<area shape="rect" id="node55" href="$Xyz_8h.html" title="Xyz.h" alt="" coords="848,254,901,287"/>
 </map>

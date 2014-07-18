@@ -51,8 +51,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onfocus="searchBox.OnSearchFieldFocus(true)"$
+               onblur="searchBox.OnSearchFieldFocus(false)"$
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -78,7 +78,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0" 
+<iframe src="javascript:void(0)" frameborder="0"$
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>
@@ -108,11 +108,17 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a215fe4401ff033af88091e5291bd7895"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a83cd692581de5db72039cbd1e43f7806"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWorldMap.html#a83cd692581de5db72039cbd1e43f7806">TypeOfShred</a> (long longi, long lati) const </td></tr>
 <tr class="separator:a83cd692581de5db72039cbd1e43f7806"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a012290ce26b083b62ca5d0ebc740018e"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWorldMap.html#a012290ce26b083b62ca5d0ebc740018e">GetSpawnLongitude</a> () const </td></tr>
+<tr class="separator:a012290ce26b083b62ca5d0ebc740018e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5e848271b8141c1eda866f57412f130"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWorldMap.html#ac5e848271b8141c1eda866f57412f130">GetSpawnLatitude</a> () const </td></tr>
+<tr class="separator:ac5e848271b8141c1eda866f57412f130"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a99d343e4e2ffc128d6afa11804d7e66d"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWorldMap.html#a99d343e4e2ffc128d6afa11804d7e66d">GenerateMap</a> (const char *filename, int size, char outer, int seed)</td></tr>
-<tr class="separator:a99d343e4e2ffc128d6afa11804d7e66d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24ed0b2867dacb3c4735bc02a3292bf6"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWorldMap.html#a24ed0b2867dacb3c4735bc02a3292bf6">GenerateMap</a> (QString world_name, int size, char outer, int seed)</td></tr>
+<tr class="separator:a24ed0b2867dacb3c4735bc02a3292bf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4901df255411a3de3d6859b608c55964"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWorldMap.html#a4901df255411a3de3d6859b608c55964">GetSpawnCoordinate</a> (int size)</td></tr>
+<tr class="separator:a4901df255411a3de3d6859b608c55964"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
@@ -140,7 +146,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="worldmap_8cpp_source.html#l00026">26</a> of file <a class="el" href="worldmap_8cpp_source.html">worldmap.cpp</a>.</p>
+<p>Definition at line <a class="el" href="worldmap_8cpp_source.html#l00027">27</a> of file <a class="el" href="worldmap_8cpp_source.html">worldmap.cpp</a>.</p>
 
 </div>
 </div>
@@ -169,7 +175,7 @@ Static Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a99d343e4e2ffc128d6afa11804d7e66d"></a>
+<a class="anchor" id="a24ed0b2867dacb3c4735bc02a3292bf6"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -179,8 +185,8 @@ Static Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void WorldMap::GenerateMap </td>
           <td>(</td>
-          <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>filename</em>, </td>
+          <td class="paramtype">QString&#160;</td>
+          <td class="paramname"><em>world_name</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -213,7 +219,67 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="worldmap_8cpp_source.html#l00107">107</a> of file <a class="el" href="worldmap_8cpp_source.html">worldmap.cpp</a>.</p>
+<p>Definition at line <a class="el" href="worldmap_8cpp_source.html#l00128">128</a> of file <a class="el" href="worldmap_8cpp_source.html">worldmap.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a4901df255411a3de3d6859b608c55964"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int WorldMap::GetSpawnCoordinate </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>size</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="worldmap_8cpp_source.html#l00052">52</a> of file <a class="el" href="worldmap_8cpp_source.html">worldmap.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac5e848271b8141c1eda866f57412f130"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">long WorldMap::GetSpawnLatitude </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="worldmap_8cpp_source.html#l00058">58</a> of file <a class="el" href="worldmap_8cpp_source.html">worldmap.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a012290ce26b083b62ca5d0ebc740018e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">long WorldMap::GetSpawnLongitude </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="worldmap_8cpp_source.html#l00057">57</a> of file <a class="el" href="worldmap_8cpp_source.html">worldmap.cpp</a>.</p>
 
 </div>
 </div>
@@ -230,7 +296,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="worldmap_8cpp_source.html#l00054">54</a> of file <a class="el" href="worldmap_8cpp_source.html">worldmap.cpp</a>.</p>
+<p>Definition at line <a class="el" href="worldmap_8cpp_source.html#l00075">75</a> of file <a class="el" href="worldmap_8cpp_source.html">worldmap.cpp</a>.</p>
 
 </div>
 </div>
@@ -282,7 +348,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="worldmap_8cpp_source.html#l00039">39</a> of file <a class="el" href="worldmap_8cpp_source.html">worldmap.cpp</a>.</p>
+<p>Definition at line <a class="el" href="worldmap_8cpp_source.html#l00060">60</a> of file <a class="el" href="worldmap_8cpp_source.html">worldmap.cpp</a>.</p>
 
 </div>
 </div>
@@ -293,7 +359,7 @@ Static Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jul 9 2014 00:13:39 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jul 18 2014 22:55:25 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

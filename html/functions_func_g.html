@@ -51,8 +51,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onfocus="searchBox.OnSearchFieldFocus(true)"$
+               onblur="searchBox.OnSearchFieldFocus(false)"$
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -116,7 +116,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0" 
+<iframe src="javascript:void(0)" frameborder="0"$
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>
@@ -126,7 +126,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <h3><a class="anchor" id="index_g"></a>- g -</h3><ul>
 <li>GenerateMap()
-: <a class="el" href="classWorldMap.html#a99d343e4e2ffc128d6afa11804d7e66d">WorldMap</a>
+: <a class="el" href="classWorldMap.html#a24ed0b2867dacb3c4735bc02a3292bf6">WorldMap</a>
 </li>
 <li>Get()
 : <a class="el" href="classBucket.html#ac850366037e2e4d23f7c41f68de3ae1b">Bucket</a>
@@ -202,6 +202,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>GetLongitude()
 : <a class="el" href="classPlayer.html#adba92d9e30f0fd3b15995eefa53b7157">Player</a>
 </li>
+<li>GetMap()
+: <a class="el" href="classWorld.html#ae87ca1343e5f22b22db241d254ea442a">World</a>
+</li>
 <li>GetNote()
 : <a class="el" href="classBlock.html#a2be0125fc9e14effa2f28c2569e10d71">Block</a>
 </li>
@@ -225,11 +228,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>GetSize()
 : <a class="el" href="classCraftList.html#a611b14f4f285f49c6c25b13187037191">CraftList</a>
 </li>
-<li>GetSpawnLati()
-: <a class="el" href="classWorld.html#a46a6023a45e0076fff0dc32d8a2cf7b2">World</a>
+<li>GetSpawnCoordinate()
+: <a class="el" href="classWorldMap.html#a4901df255411a3de3d6859b608c55964">WorldMap</a>
 </li>
-<li>GetSpawnLongi()
-: <a class="el" href="classWorld.html#ad8a808434fca693a29f8a6050f7217f7">World</a>
+<li>GetSpawnLatitude()
+: <a class="el" href="classWorldMap.html#ac5e848271b8141c1eda866f57412f130">WorldMap</a>
+</li>
+<li>GetSpawnLongitude()
+: <a class="el" href="classWorldMap.html#a012290ce26b083b62ca5d0ebc740018e">WorldMap</a>
 </li>
 <li>GetString()
 : <a class="el" href="classPlayer.html#a54abfb37017831118b8f5637ea8847f3">Player</a>
@@ -261,7 +267,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jul 9 2014 00:13:39 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jul 18 2014 22:55:25 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

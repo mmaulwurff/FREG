@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['generatemap',['GenerateMap',['../classWorldMap.html#a99d343e4e2ffc128d6afa11804d7e66d',1,'WorldMap']]],
+  ['generatemap',['GenerateMap',['../classWorldMap.html#a24ed0b2867dacb3c4735bc02a3292bf6',1,'WorldMap']]],
   ['get',['Get',['../classBucket.html#ac850366037e2e4d23f7c41f68de3ae1b',1,'Bucket::Get()'],['../classWorkbench.html#a98cd240d8009d29b65f8d404d5a3583f',1,'Workbench::Get()'],['../classInventory.html#a176498bd0363e01297d1dfe30bd8b0df',1,'Inventory::Get()'],['../classWorld.html#a791ee75e4494857f805815b856382c5e',1,'World::Get()']]],
   ['getactiontype',['GetActionType',['../classDeferredAction.html#a457f421bf5e4573d5693f79a7a6610ac',1,'DeferredAction']]],
   ['getall',['GetAll',['../classWorkbench.html#a97daa6d2678a4a1f8d0516bce0b362a8',1,'Workbench::GetAll()'],['../classInventory.html#ac9390556471adc043bf60da5b38e1291',1,'Inventory::GetAll()']]],
@@ -23,6 +23,7 @@ var searchData=
   ['getlatitude',['GetLatitude',['../classPlayer.html#a7ca41076c19e8b11da51fcfed0bdb5e5',1,'Player']]],
   ['getlock',['GetLock',['../classWorld.html#aef8268353e2733e8420737b3d18d0958',1,'World']]],
   ['getlongitude',['GetLongitude',['../classPlayer.html#adba92d9e30f0fd3b15995eefa53b7157',1,'Player']]],
+  ['getmap',['GetMap',['../classWorld.html#ae87ca1343e5f22b22db241d254ea442a',1,'World']]],
   ['getnote',['GetNote',['../classBlock.html#a2be0125fc9e14effa2f28c2569e10d71',1,'Block']]],
   ['getproductsnumber',['GetProductsNumber',['../classCraftList.html#af00e9390f3e1b9eb86ccba8a2977616d',1,'CraftList']]],
   ['getshred',['GetShred',['../classActive.html#a2647465c56ce987d9791885b10e381fb',1,'Active::GetShred()'],['../classWorld.html#a4caeae627b81238e450d16caad206a1e',1,'World::GetShred()']]],
@@ -30,8 +31,9 @@ var searchData=
   ['getshreddata',['GetShredData',['../classShredStorage.html#a9afe06cc1ab104ec6c27406082b8ea45',1,'ShredStorage::GetShredData()'],['../classWorld.html#aacebc5457e44d1841ab99bb6f6dfea78',1,'World::GetShredData()']]],
   ['getshredmemory',['GetShredMemory',['../classShred.html#ab3e66f66d5ac84f24faf7d4feb550c21',1,'Shred']]],
   ['getsize',['GetSize',['../classCraftList.html#a611b14f4f285f49c6c25b13187037191',1,'CraftList']]],
-  ['getspawnlati',['GetSpawnLati',['../classWorld.html#a46a6023a45e0076fff0dc32d8a2cf7b2',1,'World']]],
-  ['getspawnlongi',['GetSpawnLongi',['../classWorld.html#ad8a808434fca693a29f8a6050f7217f7',1,'World']]],
+  ['getspawncoordinate',['GetSpawnCoordinate',['../classWorldMap.html#a4901df255411a3de3d6859b608c55964',1,'WorldMap']]],
+  ['getspawnlatitude',['GetSpawnLatitude',['../classWorldMap.html#ac5e848271b8141c1eda866f57412f130',1,'WorldMap']]],
+  ['getspawnlongitude',['GetSpawnLongitude',['../classWorldMap.html#a012290ce26b083b62ca5d0ebc740018e',1,'WorldMap']]],
   ['getstring',['GetString',['../classPlayer.html#a54abfb37017831118b8f5637ea8847f3',1,'Player::GetString()'],['../classWorld.html#a58f7e66ad1ce8c22a81cd6e1a5b1975d',1,'World::GetString()']]],
   ['gettypeofshred',['GetTypeOfShred',['../classShred.html#ac218c2410b1b5ab4beba034a47d4518b',1,'Shred']]],
   ['getusingininventory',['GetUsingInInventory',['../classPlayer.html#a6b12100aa3480572813c5116158a52b1',1,'Player']]],
