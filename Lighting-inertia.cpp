@@ -32,7 +32,7 @@
     * & 0xF0 bits are for non-sun light,
     * & 0x0F bits for sun. */
 
-#include "world.h"
+#include "World.h"
 #include "Shred.h"
 #include "blocks/Block.h"
 #include "blocks/Active.h"

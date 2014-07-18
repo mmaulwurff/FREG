@@ -17,7 +17,6 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include "world.h"
 #include "Bucket.h"
 
 Bucket::Bucket(const int sub, const int id) :

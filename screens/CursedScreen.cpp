@@ -26,7 +26,6 @@
 #include <QMutexLocker>
 #include "screens/CursedScreen.h"
 #include "screens/IThread.h"
-#include "world.h"
 #include "Shred.h"
 #include "blocks/Block.h"
 #include "blocks/Inventory.h"

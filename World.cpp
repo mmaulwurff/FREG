@@ -25,7 +25,7 @@
 #include "blocks/Active.h"
 #include "blocks/Inventory.h"
 #include "Shred.h"
-#include "world.h"
+#include "World.h"
 #include "BlockManager.h"
 #include "ShredStorage.h"
 #include "CraftManager.h"
@@ -51,17 +51,11 @@ int World::TimeOfDay() const { return time % SECONDS_IN_DAY; }
 int World::TimeStepsInSec() { return TIME_STEPS_IN_SEC; }
 int World::MiniTime() const { return timeStep; }
 ulong World::Time() const { return time; }
-long World::GetSpawnLongi() const { return spawnLongi; }
-long World::GetSpawnLati()  const { return spawnLati; }
 long World::Longitude() const { return longitude; }
 long World::Latitude()  const { return latitude; }
-long World::MapSize() const { return map.MapSize(); }
 bool World::GetEvernight() const { return evernight; }
 QString World::WorldName() const { return worldName; }
-
-char World::TypeOfShred(const long longi, const long lati) const {
-    return map.TypeOfShred(longi, lati);
-}
+const WorldMap * World::GetMap() const { return &map; }
 
 QByteArray * World::GetShredData(long longi, long lati) const {
     return shredStorage->GetShredData(longi, lati);
@@ -731,8 +725,7 @@ World::World(const QString world_name) :
 {
     world = this;
     QSettings game_settings("freg.ini", QSettings::IniFormat);
-    numShreds = game_settings.value("number_of_shreds", MIN_WORLD_SIZE).
-        toLongLong();
+    numShreds=game_settings.value("number_of_shreds", MIN_WORLD_SIZE).toInt();
     if ( 1 != numShreds%2 ) {
         ++numShreds;
         fprintf(stderr, "%s: Invalid number of shreds. Set to %d.\n",
@@ -744,22 +737,18 @@ World::World(const QString world_name) :
         numShreds = MIN_WORLD_SIZE;
     }
     SetNumActiveShreds(game_settings.value("number_of_active_shreds",
-        numShreds).toUInt());
+        numShreds).toInt());
     game_settings.setValue("number_of_shreds", numShreds);
     game_settings.setValue("number_of_active_shreds", numActiveShreds);
 
     QDir::current().mkpath(worldName+"/texts");
     QSettings settings(worldName+"/settings.ini", QSettings::IniFormat);
-    time = settings.value("time", END_OF_NIGHT).toLongLong();
-    timeStep = settings.value("time_step", 0).toInt();
-    spawnLongi = settings.value( "spawn_longitude",
-        int(qrand() % MapSize()) ).toLongLong();
-    spawnLati  = settings.value( "spawn_latitude",
-        int(qrand() % MapSize()) ).toLongLong();
-    settings.setValue("spawn_longitude", qlonglong(spawnLongi));
-    settings.setValue("spawn_latitude",  qlonglong(spawnLati));
-    longitude = settings.value("longitude", int(spawnLongi)).toLongLong();
-    latitude  = settings.value("latitude",  int(spawnLati )).toLongLong();
+    time      = settings.value("time", END_OF_NIGHT).toLongLong();
+    timeStep  = settings.value("time_step", 0).toInt();
+    longitude = settings.value("longitude", qlonglong(map.GetSpawnLongitude()))
+        .toLongLong();
+    latitude  = settings.value("latitude",  qlonglong(map.GetSpawnLatitude ()))
+        .toLongLong();
 
     evernight = settings.value("evernight", false).toBool();
     settings.setValue("evernight", evernight); // save if not present

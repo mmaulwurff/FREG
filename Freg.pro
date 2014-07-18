@@ -75,7 +75,7 @@ HEADERS += \
     Player.h \
     Shred.h \
     screens/VirtScreen.h \
-    world.h \
+    World.h \
     worldmap.h \
     ShredStorage.h \
     Xyz.h \
@@ -101,7 +101,7 @@ SOURCES += \
     Shred-gen-flat.cpp \
     Shred.cpp \
     screens/VirtScreen.cpp \
-    world.cpp \
+    World.cpp \
     worldmap.cpp \
     ShredStorage.cpp \
     Xyz.cpp \

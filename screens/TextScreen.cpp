@@ -27,7 +27,6 @@
 #include <QLocale>
 #include "screens/TextScreen.h"
 #include "screens/IThread.h"
-#include "world.h"
 #include "blocks/Block.h"
 #include "blocks/Inventory.h"
 #include "Player.h"

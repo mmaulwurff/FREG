@@ -21,7 +21,7 @@
 #include "Inventory.h"
 #include "CraftManager.h"
 #include "BlockManager.h"
-#include "world.h"
+#include "World.h"
 
 int  Inventory::Start() const { return 0; }
 int  Inventory::Size() const { return size; }

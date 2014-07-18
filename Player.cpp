@@ -24,7 +24,7 @@
 #include "blocks/Animal.h"
 #include "blocks/Inventory.h"
 #include "Player.h"
-#include "world.h"
+#include "World.h"
 #include "Shred.h"
 #include "BlockManager.h"
 #include "DeferredAction.h"
@@ -480,9 +480,9 @@ Player::Player() {
         + "/settings.ini", QSettings::IniFormat);
     sett.beginGroup("player");
     homeLongi = sett.value("home_longitude",
-        qlonglong(world->GetSpawnLongi())).toLongLong();
+        qlonglong(world->GetMap()->GetSpawnLongitude())).toLongLong();
     homeLati  = sett.value("home_latitude",
-        qlonglong(world->GetSpawnLati())).toLongLong();
+        qlonglong(world->GetMap()->GetSpawnLatitude ())).toLongLong();
     homeX  = sett.value("home_x", 0).toInt();
     homeY  = sett.value("home_y", 0).toInt();
     homeZ  = sett.value("home_z", HEIGHT/2).toInt();

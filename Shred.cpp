@@ -19,7 +19,7 @@
 
 #include <QDataStream>
 #include "Shred.h"
-#include "world.h"
+#include "World.h"
 #include "BlockManager.h"
 #include "blocks/Active.h"
 #include "blocks/Inventory.h"
@@ -111,7 +111,7 @@ Shred::Shred(const int shred_x, const int shred_y,
         }
         PutBlock(((qrand()%5) ? sky : star), i, j, HEIGHT-1);
     }
-    switch ( type=GetWorld()->TypeOfShred(longi, lati) ) {
+    switch ( type=GetWorld()->GetMap()->TypeOfShred(longi, lati) ) {
     case SHRED_WATER:     Water();      break;
     case SHRED_WASTE:     WasteShred(); break;
     case SHRED_PLAIN:     Plain();      break;
@@ -458,19 +458,19 @@ void Shred::NullMountain() {
             }
         }
     }
-    World * const world = GetWorld();
-    if ( SHRED_NULLMOUNTAIN == world->TypeOfShred(longitude-1, latitude) ) {//N
+    const WorldMap * const map = GetWorld()->GetMap();
+    if ( SHRED_NULLMOUNTAIN == map->TypeOfShred(longitude-1, latitude) ) { //N
         NormalCube(7,0,HEIGHT/2, 2,SHRED_WIDTH/2-1,HEIGHT/2-2, NULLSTONE);
     }
-    if ( SHRED_NULLMOUNTAIN == world->TypeOfShred(longitude+1, latitude) ) {//S
+    if ( SHRED_NULLMOUNTAIN == map->TypeOfShred(longitude+1, latitude) ) { //S
         NormalCube(7,SHRED_WIDTH/2+1,HEIGHT/2, 2,SHRED_WIDTH/2-1,HEIGHT/2-2,
             NULLSTONE);
     }
-    if ( SHRED_NULLMOUNTAIN == world->TypeOfShred(longitude, latitude+1) ) {//E
+    if ( SHRED_NULLMOUNTAIN == map->TypeOfShred(longitude, latitude+1) ) { //E
         NormalCube(SHRED_WIDTH/2+1,7,HEIGHT/2, SHRED_WIDTH/2-1,2,HEIGHT/2-2,
             NULLSTONE);
     }
-    if ( SHRED_NULLMOUNTAIN == world->TypeOfShred(longitude, latitude-1) ) {//W
+    if ( SHRED_NULLMOUNTAIN == map->TypeOfShred(longitude, latitude-1) ) { //W
         NormalCube(0,7,HEIGHT/2, SHRED_WIDTH/2-1,2,HEIGHT/2-2, NULLSTONE);
     }
 }
@@ -530,27 +530,27 @@ void Shred::Castle() {
         } else {
             return;
         }
-        World * const world = GetWorld();
+        const WorldMap * const map = GetWorld()->GetMap();
         // north pass and lamps
-        if ( world->TypeOfShred(longitude-1, latitude) == SHRED_CASTLE ) {
+        if ( map->TypeOfShred(longitude-1, latitude) == SHRED_CASTLE ) {
             NormalCube(2,0,level+2, SHRED_WIDTH-4,2,4, AIR);
             for (int x=3; x<SHRED_WIDTH-3; x+=3) {
                 SetNewBlock(ILLUMINATOR, GLASS, x, 0, level+4);
             }
         }
         // south pass
-        if ( world->TypeOfShred(longitude+1, latitude) == SHRED_CASTLE ) {
+        if ( map->TypeOfShred(longitude+1, latitude) == SHRED_CASTLE ) {
             NormalCube(2,SHRED_WIDTH-2,level+2, SHRED_WIDTH-4,2,4, AIR);
         }
         // west pass and lamps
-        if ( world->TypeOfShred(longitude, latitude-1) == SHRED_CASTLE ) {
+        if ( map->TypeOfShred(longitude, latitude-1) == SHRED_CASTLE ) {
             NormalCube(0,2,level+2, 2,SHRED_WIDTH,4, AIR);
             for (int y=3; y<SHRED_WIDTH-3; y+=3) {
                 SetNewBlock(ILLUMINATOR, GLASS, 0, y, level+4);
             }
         }
         // east pass
-        if ( world->TypeOfShred(longitude, latitude+1) == SHRED_CASTLE ) {
+        if ( map->TypeOfShred(longitude, latitude+1) == SHRED_CASTLE ) {
             NormalCube(SHRED_WIDTH-2,2,level+2, 2,SHRED_WIDTH,4, AIR);
         }
         level += 5;
@@ -619,10 +619,10 @@ bool Shred::Tree(const int x, const int y, const int z, const int height) {
 
 int Shred::CountShredTypeAround(const int type) const {
     int result = 0;
-    World * const world = GetWorld();
+    const WorldMap * const map = GetWorld()->GetMap();
     for (long i=longitude-1; i<=longitude+1; ++i)
     for (long j=latitude -1; j<=latitude +1; ++j) {
-        result += ( type == world->TypeOfShred(i, j) );
+        result += ( type == map->TypeOfShred(i, j) );
     }
     return result;
 }

@@ -19,7 +19,7 @@
 
 #include "Active.h"
 #include "Shred.h"
-#include "world.h"
+#include "World.h"
 #include "DeferredAction.h"
 #include "Xyz.h"
 #include "blocks/Inventory.h"

@@ -21,7 +21,7 @@
 #include <QFile>
 #include <QTime>
 #include "blocks.h"
-#include "world.h"
+#include "World.h"
 #include "Shred.h"
 #include "BlockManager.h"
 
@@ -660,7 +660,7 @@
                 (longi-longiStart+FILE_SIZE_CHARS/2)+
                  lati -latiStart +FILE_SIZE_CHARS/2);
             map_file.putChar('@');
-            savedChar=active->GetWorld()->TypeOfShred(longi, lati);
+            savedChar=active->GetWorld()->GetMap()->TypeOfShred(longi, lati);
             map_file.seek((FILE_SIZE_CHARS+1)*FILE_SIZE_CHARS-1);
             map_file.write("\n @ = ");
             map_file.putChar(savedChar);

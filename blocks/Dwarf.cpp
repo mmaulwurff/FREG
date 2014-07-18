@@ -18,7 +18,7 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "Dwarf.h"
-#include "world.h"
+#include "World.h"
 #include "BlockManager.h"
 #include <QDataStream>
 
