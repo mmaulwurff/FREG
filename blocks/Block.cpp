@@ -68,7 +68,9 @@ int Block::Transparency(const int transp, const int sub) const {
 
 void Block::Damage(const int dmg, const int dmg_kind) {
     switch ( Sub() ) {
+    case SUB_DUST:
     case GREENERY:
+    case ROSE:
     case HAZELNUT: durability = 0; return;
     case NULLSTONE:
     case STAR:
@@ -115,13 +117,14 @@ void Block::Damage(const int dmg, const int dmg_kind) {
 
 Block * Block::DropAfterDamage(bool * const delete_block) {
     switch ( Sub() ) {
+    case SUB_DUST:
     case GLASS:
     case AIR: return block_manager.NormalBlock(AIR);
     case STONE: if ( BLOCK==Kind() ) {
-        return block_manager.NewBlock(LADDER, STONE);
+        return BlockManager::NewBlock(LADDER, STONE);
     } // no break;
     default: {
-        Block * const pile = block_manager.NewBlock(CONTAINER, DIFFERENT);
+        Block * const pile = BlockManager::NewBlock(CONTAINER, DIFFERENT);
         pile->HasInventory()->Get(this);
         *delete_block = false;
         return pile;
@@ -199,6 +202,7 @@ int Block::Weight() const {
     case SUN_MOON:
     case FIRE:
     case DIFFERENT: return WEIGHT_WATER;
+    case SUB_DUST:  return WEIGHT_MINIMAL;
     }
 }
 

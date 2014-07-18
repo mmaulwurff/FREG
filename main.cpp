@@ -23,7 +23,7 @@
 #include <QTime>
 #include <QCommandLineParser>
 #include <QLockFile>
-#include "world.h"
+#include "World.h"
 #include "Player.h"
 #include "worldmap.h"
 
@@ -121,7 +121,7 @@ int main(int argc, char ** argv) {
     if ( parser.isSet(generate) ) {
         QDir::current().mkdir(worldName);
         WorldMap::GenerateMap(
-            qPrintable(worldName + "/map.txt"),
+            worldName,
             parser.value(map_size).toUShort(),
             parser.value(map_outer).at(0).toLatin1(),
             parser.value(map_seed).toInt());

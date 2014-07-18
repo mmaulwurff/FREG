@@ -18,7 +18,7 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "Shred.h"
-#include "world.h"
+#include "World.h"
 #include "header.h"
 #include "blocks/Block.h"
 
@@ -43,12 +43,13 @@ void Shred::NormalUnderground(const int depth, const subs sub) {
 
 void Shred::Plain() {
     NormalUnderground();
-    RandomDrop(qrand()%4, BUSH, WOOD);
+    RandomDrop(qrand()%4, BUSH,   WOOD);
+    RandomDrop(qrand()%4, BLOCK,  ROSE);
     RandomDrop(qrand()%4, RABBIT, A_MEAT);
     PlantGrass();
 }
 
-void Shred::Forest() {
+void Shred::Forest(const bool dead) {
     NormalUnderground();
     for (int number_of_trees = CountShredTypeAround(SHRED_FOREST);
             number_of_trees != 0; --number_of_trees)
@@ -66,13 +67,17 @@ void Shred::Forest() {
         }
     }
     RandomDrop(qrand()%4, WEAPON, WOOD);
-    PlantGrass();
+    if ( not dead ) {
+        RandomDrop(qrand()%2, BLOCK, ROSE);
+        PlantGrass();
+    }
 }
 
 void Shred::Water(const subs sub) {
     subs shore;
     switch ( sub ) {
     case WATER: shore = SAND;  break;
+    case AIR:
     case STONE: shore = STONE; break;
     default:
     case ACID:  shore = GLASS; break;
@@ -81,29 +86,34 @@ void Shred::Water(const subs sub) {
     NormalUnderground(depth, shore);
     int z_start = HEIGHT/2-depth;
     NormalCube(0,0,z_start++, SHRED_WIDTH,SHRED_WIDTH,1, shore); // bottom
-    World * const world = GetWorld();
-    if ( type != world->TypeOfShred(longitude-1, latitude) ) { // north
+    const WorldMap * const map = GetWorld()->GetMap();
+    if ( type != map->TypeOfShred(longitude-1, latitude) ) { // north
         NormalCube(0,0,z_start, SHRED_WIDTH,1,depth, shore);
     }
-    if ( type != world->TypeOfShred(longitude+1, latitude) ) { // south
+    if ( type != map->TypeOfShred(longitude+1, latitude) ) { // south
         NormalCube(0,SHRED_WIDTH-1,z_start, SHRED_WIDTH,1,depth, shore);
     }
-    if ( type != world->TypeOfShred(longitude, latitude+1) ) { // east
+    if ( type != map->TypeOfShred(longitude, latitude+1) ) { // east
         NormalCube(SHRED_WIDTH-1,0,z_start, 1,SHRED_WIDTH,depth, shore);
     }
-    if ( type != world->TypeOfShred(longitude, latitude-1) ) { // west
+    if ( type != map->TypeOfShred(longitude, latitude-1) ) { // west
         NormalCube(0,0,z_start, 1,SHRED_WIDTH,depth, shore);
     }
+    Block * const air = Normal(AIR);
     for (int i=0; i<SHRED_WIDTH; ++i)
     for (int j=0; j<SHRED_WIDTH; ++j)
     for (int k=z_start; k<=HEIGHT/2; ++k) {
         if ( shore != GetBlock(i, j, k)->Sub() ) {
-            SetNewBlock(LIQUID, sub, i, j, k);
+            if ( AIR == sub ) {
+                PutBlock(air, i, j, k);
+            } else {
+                SetNewBlock(LIQUID, sub, i, j, k);
+            }
         }
     }
 }
 
-void Shred::Hill() {
+void Shred::Hill(const bool dead) {
     NormalUnderground();
     ushort x, y, z;
     Block * const soil = Normal(SOIL);
@@ -128,7 +138,11 @@ void Shred::Hill() {
         }
     }
     RandomDrop(qrand()%4, WEAPON, STONE);
-    PlantGrass();
+    if ( not dead ) {
+        RandomDrop(qrand()%4, BLOCK, ROSE);
+        RandomDrop(qrand()%4, RABBIT, A_MEAT);
+        PlantGrass();
+    }
 }
 
 void Shred::Mountain() {
@@ -141,14 +155,14 @@ void Shred::Mountain() {
      *  ?  */
     const ushort mount_top = 3*HEIGHT/4;
     NormalCube(0, 0, 1, SHRED_WIDTH/2, SHRED_WIDTH/2, mount_top, STONE);
-    World * const world = GetWorld();
+    const WorldMap * const map = GetWorld()->GetMap();
     // south bridge
-    if ( SHRED_MOUNTAIN == world->TypeOfShred(longitude+1, latitude) ) {
+    if ( SHRED_MOUNTAIN == map->TypeOfShred(longitude+1, latitude) ) {
         NormalCube(qrand()%(SHRED_WIDTH/2-1), SHRED_WIDTH/2, mount_top,
             2, SHRED_WIDTH/2, 1, STONE);
     }
     // east bridge
-    if ( SHRED_MOUNTAIN == world->TypeOfShred(longitude, latitude+1) ) {
+    if ( SHRED_MOUNTAIN == map->TypeOfShred(longitude, latitude+1) ) {
         NormalCube(SHRED_WIDTH/2, qrand()%(SHRED_WIDTH/2-1), mount_top,
             SHRED_WIDTH/2, 2, 1, STONE);
     }
@@ -190,3 +204,24 @@ void Shred::Desert() {
     }
 }
 
+void Shred::WasteShred() {
+    NormalUnderground(0, STONE);
+    int random = qrand();
+    RandomDrop((random & 0x7)+3, FALLING, SUB_DUST);
+    random >>= 3;
+    RandomDrop(random & 0x1, WEAPON, BONE);
+    RandomDrop((random & 0x7)+3, WEAPON, STONE);
+    random >>= 3;
+    if ( random & 0x1 ) {
+        random >>= 1;
+        const subs pool_sub = ( random & 0x1 ) ? WATER : STONE;
+        random >>= 1;
+        const int x = random & 0xF;
+        random >>= 4;
+        const int y = random & 0xF;
+        SetNewBlock(LIQUID,  pool_sub, x, y, HEIGHT/2-1);
+        SetNewBlock(LIQUID,  pool_sub, x, y, HEIGHT/2  );
+        SetNewBlock(FALLING, SUB_DUST, x, y, HEIGHT/2+1);
+        SetNewBlock(FALLING, SUB_DUST, x, y, HEIGHT/2+2);
+    }
+}

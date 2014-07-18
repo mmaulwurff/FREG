@@ -22,8 +22,8 @@
 
 #include <QObject>
 #include "header.h"
+#include "World.h"
 
-class World;
 class Player;
 
 class VirtScreen : public QObject {

@@ -51,7 +51,6 @@ public:
     static Block * NewBlock(int kind, int sub);
     /// Use this to load block from file.
     static Block * BlockFromFile(QDataStream &, int kind, int sub);
-    Block * BlockFromFile(QDataStream &) const;
     /// Returns true if block is normal.
     static bool KindSubFromFile(QDataStream &, int * kind, int * sub);
     /// Use this to safely delete block.

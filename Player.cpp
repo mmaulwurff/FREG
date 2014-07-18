@@ -24,12 +24,16 @@
 #include "blocks/Animal.h"
 #include "blocks/Inventory.h"
 #include "Player.h"
-#include "world.h"
+#include "World.h"
 #include "Shred.h"
 #include "BlockManager.h"
 #include "DeferredAction.h"
 
+#ifdef QT_NO_DEBUG
+const bool COMMANDS_ALWAYS_ON = false;
+#else
 const bool COMMANDS_ALWAYS_ON = true;
+#endif
 
 long Player::GlobalX() const { return GetShred()->GlobalX(X()); }
 long Player::GlobalY() const { return GetShred()->GlobalY(Y()); }
@@ -313,7 +317,7 @@ bool Player::ForbiddenAdminCommands() const {
 
 constexpr quint64 Player::UniqueIntFromString(const char * const chars) {
     return chars[0] == '\0' ?
-        0 : (UniqueIntFromString(chars + 1) << 5) | chars[0]-'a';
+        0 : (UniqueIntFromString(chars + 1) << 5) | (chars[0]-'a');
 }
 
 void Player::ProcessCommand(QString command) {
@@ -341,7 +345,7 @@ void Player::ProcessCommand(QString command) {
                 .arg(QString(request)));
             return;
         } // else:
-        Block * const block = block_manager.NewBlock(kind_code, sub_code);
+        Block * const block = BlockManager::NewBlock(kind_code, sub_code);
         if ( inv->Get(block) ) {
             emit Updated();
         } else {
@@ -437,7 +441,7 @@ void Player::BlockDestroy() {
 void Player::SetPlayer(const int _x, const int _y, const int _z) {
     SetXyz(_x, _y, _z);
     if ( GetCreativeMode() ) {
-        ( player = block_manager.NewBlock(CREATOR, DIFFERENT)->
+        ( player = BlockManager::NewBlock(CREATOR, DIFFERENT)->
             ActiveBlock() )->SetXyz(X(), Y(), Z());
         GetShred()->Register(player);
     } else {
@@ -476,9 +480,9 @@ Player::Player() {
         + "/settings.ini", QSettings::IniFormat);
     sett.beginGroup("player");
     homeLongi = sett.value("home_longitude",
-        qlonglong(world->GetSpawnLongi())).toLongLong();
+        qlonglong(world->GetMap()->GetSpawnLongitude())).toLongLong();
     homeLati  = sett.value("home_latitude",
-        qlonglong(world->GetSpawnLati())).toLongLong();
+        qlonglong(world->GetMap()->GetSpawnLatitude ())).toLongLong();
     homeX  = sett.value("home_x", 0).toInt();
     homeY  = sett.value("home_y", 0).toInt();
     homeZ  = sett.value("home_z", HEIGHT/2).toInt();

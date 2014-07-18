@@ -32,18 +32,26 @@ public:
     long MapSize() const;
     char TypeOfShred(long longi, long lati) const;
     static void GenerateMap(
-            const char * filename,
+            QString world_name,
             int size,
             char outer,
             int seed);
+    long GetSpawnLongitude() const;
+    long GetSpawnLatitude()  const;
+    static int GetSpawnCoordinate(int size);
 
 private:
     static float Deg(int x, int y, int size);
     static float R  (int x, int y, int size);
     static void Circle(int min_rad, int max_rad, char ch, int size, char* map);
+    static void PieceOfEden(int x, int y, char * map, size_t map_size);
+    static void MakeAndSaveSpawn(QString world_name, int size,
+            long * longitude, long * latitude);
 
     long mapSize;
     mutable QFile map;
+    long spawnLongitude;
+    long spawnLatitude;
 };
 
 #endif // WORLDMAP_H

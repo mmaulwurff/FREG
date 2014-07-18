@@ -84,7 +84,7 @@ public:
     int SunLight(  int x, int y, int z) const;
     int LightLevel(int x, int y, int z) const;
 
-    void SetSunLight( int x, int y, int z, int level);
+    bool SetSunLight( int x, int y, int z, int level);
     bool SetFireLight(int x, int y, int z, int level);
     void SetLightmap( int x, int y, int z, int level);
 
@@ -133,13 +133,14 @@ private:
     void TestShred();
     void NullMountain();
     void Plain();
-    void Forest();
+    void Forest(bool dead);
     void Water(subs sub = WATER);
     void Pyramid();
     void Mountain();
-    void Hill();
+    void Hill(bool dead);
     void Desert();
     void Castle();
+    void WasteShred();
     /// For testing purposes.
     void ChaosShred();
 

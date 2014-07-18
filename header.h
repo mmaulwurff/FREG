@@ -74,11 +74,14 @@ enum shred_type {
     SHRED_WASTE     = '=',
     SHRED_ACID_LAKE = 'a',
     SHRED_LAVA_LAKE = 'l',
+    SHRED_CRATER    = 'c',
+    SHRED_DEAD_FOREST = 'f',
+    SHRED_DEAD_HILL   = '*',
     SHRED_NULLMOUNTAIN = '#',
     SHRED_NORMAL_UNDERGROUND = '-',
 };
 
-const int DEFAULT_MAP_SIZE = 75U;
+const int DEFAULT_MAP_SIZE = 79;
 const char DEFAULT_SHRED = SHRED_PLAIN;
 const char OUT_BORDER_SHRED = SHRED_WATER;
 
@@ -200,6 +203,7 @@ enum subs {
     EXPLOSIVE,  ///<  27
     ACID,       ///<  28
     SUB_CLOUD,  ///<  29
+    SUB_DUST,   ///<  30
     /// Nothing is made from LAST_SUB.
     LAST_SUB // keep it last in this list
 }; // enum subs

@@ -21,7 +21,7 @@
 #include "Inventory.h"
 #include "CraftManager.h"
 #include "BlockManager.h"
-#include "world.h"
+#include "World.h"
 
 int  Inventory::Start() const { return 0; }
 int  Inventory::Size() const { return size; }
@@ -66,8 +66,12 @@ void Inventory::Pull(const int num) {
 void Inventory::SaveAttributes(QDataStream & out) const {
     for (int i=0; i<Size(); ++i) {
         out << quint8(Number(i));
-        for (int j=0; j<Number(i); ++j) {
-            inventory[i].top()->SaveToFile(out);
+        if ( not inventory[i].isEmpty() ) {
+            Block * const to_save = inventory[i].top();
+            for (int j=0; j<Number(i); ++j) {
+                to_save->SaveToFile(out);
+                to_save->RestoreDurabilityAfterSave();
+            }
         }
     }
 }
@@ -204,7 +208,7 @@ bool Inventory::MiniCraft(const int num) {
             block_manager.DeleteBlock(to_delete);
         }
         for (int i=0; i<crafted->num; ++i) {
-            GetExact(block_manager.NewBlock(
+            GetExact(BlockManager::NewBlock(
                 BlockManager::KindFromId(crafted->id),
                 BlockManager:: SubFromId(crafted->id) ), num);
         }
@@ -239,7 +243,10 @@ Inventory::Inventory(QDataStream & str, const int sz) :
         quint8 num;
         str >> num;
         while ( num-- ) {
-            inventory[i].push(block_manager.BlockFromFile(str));
+            int kind, sub;
+            inventory[i].push(BlockManager::KindSubFromFile(str, &kind, &sub) ?
+                block_manager.NormalBlock(sub) :
+                BlockManager::BlockFromFile(str, kind, sub));
         }
     }
 }

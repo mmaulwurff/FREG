@@ -21,7 +21,7 @@
 #include <QFile>
 #include <QTime>
 #include "blocks.h"
-#include "world.h"
+#include "World.h"
 #include "Shred.h"
 #include "BlockManager.h"
 
@@ -61,7 +61,7 @@
     push_reaction Ladder::PushResult(dirs) const { return MOVE_UP; }
 
     Block * Ladder::DropAfterDamage(bool * const delete_block) {
-        Block * const pile = block_manager.NewBlock(CONTAINER, DIFFERENT);
+        Block * const pile = BlockManager::NewBlock(CONTAINER, DIFFERENT);
         if ( STONE==Sub() || MOSS_STONE==Sub() ) {
             pile->HasInventory()->Get(block_manager.NormalBlock(Sub()));
         } else {
@@ -141,8 +141,8 @@
     }
 
     Block * Animal::DropAfterDamage(bool *) {
-        Block * const cadaver = block_manager.NewBlock(CONTAINER, Sub());
-        cadaver->HasInventory()->Get(block_manager.NewBlock(WEAPON, BONE));
+        Block * const cadaver = BlockManager::NewBlock(CONTAINER, Sub());
+        cadaver->HasInventory()->Get(BlockManager::NewBlock(WEAPON, BONE));
         return cadaver;
     }
 
@@ -243,11 +243,11 @@
             if ( AIR == sub_near
                     && IsBase(Sub(), world->GetBlock(i, j, k-1)->Sub() ) )
             {
-                world->Build(block_manager.NewBlock(GRASS, Sub()), i, j, k);
+                world->Build(BlockManager::NewBlock(GRASS, Sub()), i, j, k);
             } else if ( IsBase(Sub(), sub_near)
                     && AIR == world->GetBlock(i, j, ++k)->Sub() )
             {
-                world->Build(block_manager.NewBlock(GRASS, Sub()), i, j, k);
+                world->Build(BlockManager::NewBlock(GRASS, Sub()), i, j, k);
             }
         }
     }
@@ -310,9 +310,9 @@
     void Bush::Push(dirs, Block * const who) { Inventory::Push(who); }
 
     Block * Bush::DropAfterDamage(bool *) {
-        Block * const pile = block_manager.NewBlock(CONTAINER, DIFFERENT);
+        Block * const pile = BlockManager::NewBlock(CONTAINER, DIFFERENT);
         Inventory * const pile_inv = pile->HasInventory();
-        pile_inv->Get(block_manager.NewBlock(WEAPON, WOOD));
+        pile_inv->Get(BlockManager::NewBlock(WEAPON, WOOD));
         pile_inv->Get(block_manager.NormalBlock(HAZELNUT));
         return pile;
     }
@@ -660,7 +660,7 @@
                 (longi-longiStart+FILE_SIZE_CHARS/2)+
                  lati -latiStart +FILE_SIZE_CHARS/2);
             map_file.putChar('@');
-            savedChar=active->GetWorld()->TypeOfShred(longi, lati);
+            savedChar=active->GetWorld()->GetMap()->TypeOfShred(longi, lati);
             map_file.seek((FILE_SIZE_CHARS+1)*FILE_SIZE_CHARS-1);
             map_file.write("\n @ = ");
             map_file.putChar(savedChar);

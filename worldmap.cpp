@@ -18,6 +18,7 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include <qmath.h>
+#include <QSettings>
 #include "worldmap.h"
 #include "header.h"
 
@@ -29,12 +30,32 @@ WorldMap::WorldMap(const QString world_name) :
     if ( map.open(QIODevice::ReadOnly | QIODevice::Text) ) {
         mapSize = int(qSqrt(1+4*map.size())-1)/2;
     } else {
-        GenerateMap(qPrintable(world_name+"/map.txt"),
-            DEFAULT_MAP_SIZE, SHRED_WATER, 0);
+        GenerateMap(world_name, DEFAULT_MAP_SIZE, SHRED_WATER, 0);
         mapSize = ( map.open(QIODevice::ReadOnly | QIODevice::Text) ) ?
             DEFAULT_MAP_SIZE : 1;
     }
+    MakeAndSaveSpawn(world_name, mapSize, &spawnLongitude, &spawnLatitude);
 }
+
+void WorldMap::MakeAndSaveSpawn(const QString world_name, const int size,
+        long * longitude, long * latitude)
+{
+    QSettings map_info(world_name+"/map.ini", QSettings::IniFormat);
+    *longitude = map_info.value("spawn_longitude", GetSpawnCoordinate(size)).
+        toLongLong();
+    *latitude  = map_info.value("spawn_latitude",  GetSpawnCoordinate(size)).
+        toLongLong();
+    map_info.setValue("spawn_longitude", qlonglong(*longitude));
+    map_info.setValue("spawn_latitude" , qlonglong(*latitude ));
+}
+
+int WorldMap::GetSpawnCoordinate(int size) {
+    size /= 4;
+    return (qrand()%size) + size;
+}
+
+long WorldMap::GetSpawnLongitude() const { return spawnLongitude; }
+long WorldMap::GetSpawnLatitude()  const { return spawnLatitude;  }
 
 char WorldMap::TypeOfShred(const long longi, const long lati) const {
     //return '-'; // for testing purposes
@@ -105,7 +126,7 @@ void WorldMap::Circle(
 }
 
 void WorldMap::GenerateMap(
-        const char * const filename,
+        const QString world_name,
         int size,
         const char outer,
         const int seed)
@@ -118,17 +139,18 @@ void WorldMap::GenerateMap(
 
     const float min_rad = size/3.0f;
     const float max_rad = size/2.0f;
-    Circle(min_rad,   max_rad,     SHRED_PLAIN,    size, map);
-    Circle(min_rad/2, max_rad/2,   SHRED_FOREST,   size, map);
-    Circle(min_rad/3, max_rad/3+1, SHRED_HILL,     size, map);
-    Circle(min_rad/4, max_rad/4+1, SHRED_MOUNTAIN, size, map);
+    Circle(min_rad,   max_rad,     SHRED_WASTE,       size, map);
+    Circle(min_rad/2, max_rad/2,   SHRED_DEAD_FOREST, size, map);
+    Circle(min_rad/3, max_rad/3+1, SHRED_DEAD_HILL,   size, map);
+    Circle(min_rad/4, max_rad/4+1, SHRED_MOUNTAIN,    size, map);
 
-    const int lakes_number = qrand() % size;
-    for (int i=0; i<lakes_number; ++i) {
+    int lakes_number = (qrand() % size) + 5;
+    while ( lakes_number-- ) {
         char type = SHRED_WATER;
-        switch ( qrand()%3 ) {
+        switch ( qrand()%4 ) {
         case 1: type = SHRED_ACID_LAKE; break;
         case 2: type = SHRED_LAVA_LAKE; break;
+        case 3: type = SHRED_CRATER;    break;
         }
         const float lake_size  = qrand() % (size/10) + 1;
         const int lake_start_x = qrand() % int(size-lake_size);
@@ -145,11 +167,33 @@ void WorldMap::GenerateMap(
         }
     }
 
-    FILE * const file = fopen(filename, "wb");
+    long spawn_longitude, spawn_latitude;
+    MakeAndSaveSpawn(world_name, size, &spawn_longitude, &spawn_latitude);
+    PieceOfEden(spawn_latitude-1, spawn_longitude-1, map, size);
+
+    FILE * const file = fopen(qPrintable(world_name+"/map.txt"), "wb");
     for (int y=0; y<size; ++y, fputc('\n', file))
     for (int x=0; x<size; ++x) {
         fputc(map[x*size+y], file);
     }
     delete [] map;
     fclose(file);
+}
+
+void WorldMap::PieceOfEden(const int x, const int y,
+        char * const map, const size_t size)
+{
+    if ( (x+5)*size + y+5 > size*size) return;
+    char eden[][7] = {
+        "^~~~~^",
+        "~~%%~~",
+        "~%++%~",
+        "~%++%~",
+        "~~%%~~",
+        "^~~~~^"
+    };
+    for (int j=0; j<6; ++j)
+    for (int i=0; i<6; ++i) {
+        map[(x+j)*size + y+i] = eden[i][j];
+    }
 }

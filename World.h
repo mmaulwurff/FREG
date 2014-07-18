@@ -104,14 +104,11 @@ public: // Information section
     static dirs TurnRight(dirs dir);
     static dirs TurnLeft (dirs dir);
     static dirs Anti(dirs dir);
-    long GetSpawnLongi() const;
-    long GetSpawnLati()  const;
     long Longitude() const;
     long Latitude() const;
     static int TimeStepsInSec();
 
-    char TypeOfShred(long longi, long lati) const;
-    long MapSize() const;
+    const WorldMap * GetMap() const;
 
     QByteArray * GetShredData(long longi, long lati) const;
     void SetShredData(QByteArray *, long longi, long lati);
@@ -226,7 +223,6 @@ private:
      *  S v longitude ( y for shreds )
      * center of active zone: */
     long longitude, latitude;
-    long spawnLongi, spawnLati;
     const QString worldName;
     int numShreds; ///< size of loaded zone
     int numActiveShreds; ///< size of active zone

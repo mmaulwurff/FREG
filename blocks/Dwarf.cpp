@@ -18,7 +18,7 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "Dwarf.h"
-#include "world.h"
+#include "World.h"
 #include "BlockManager.h"
 #include <QDataStream>
 
@@ -34,7 +34,7 @@ int Dwarf::Weight() const {
 
 Block * Dwarf::DropAfterDamage(bool * const delete_block) {
     Block * cadaver = Animal::DropAfterDamage(delete_block);
-    cadaver->HasInventory()->Get(block_manager.NewBlock(WEAPON, BONE));
+    cadaver->HasInventory()->Get(BlockManager::NewBlock(WEAPON, BONE));
     return cadaver;
 }
 

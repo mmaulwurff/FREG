@@ -19,7 +19,7 @@
 
 #include <QFile>
 #include "ShredStorage.h"
-#include "world.h"
+#include "World.h"
 #include "Shred.h"
 
 bool LongLat::operator==(const LongLat & coords) const {

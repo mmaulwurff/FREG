@@ -93,6 +93,7 @@ const QString BlockManager::subs[] = { // do not usp space, use '_'
     "explosive",
     "acid",
     "cloud",
+    "dust",
 };
 
 BlockManager block_manager;
@@ -105,7 +106,8 @@ BlockManager::BlockManager() {
         "invalid number of strings in BlockManager::kinds[]");
     static_assert((sizeof_array(BlockManager::subs) == LAST_SUB),
         "invalid number of strings in BlockManager::subs[]");
-    static_assert((LAST_SUB <= 128), "too many substances, should be < 127.");
+    static_assert((LAST_SUB  <= 128), "too many substances, should be < 127.");
+    static_assert((LAST_KIND <= 256), "too many kinds, should be < 255.");
 }
 
 BlockManager::~BlockManager() {
@@ -200,12 +202,6 @@ Block * BlockManager::BlockFromFile(QDataStream & str,
     }
     Q_UNREACHABLE();
     return nullptr;
-}
-
-Block * BlockManager::BlockFromFile(QDataStream & str) const {
-    int kind, sub;
-    return KindSubFromFile(str, &kind, &sub) ?
-        NormalBlock(sub) : BlockFromFile(str, kind, sub);
 }
 
 bool BlockManager::KindSubFromFile(QDataStream & str, int * kind, int * sub) {

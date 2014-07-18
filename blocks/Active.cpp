@@ -19,7 +19,7 @@
 
 #include "Active.h"
 #include "Shred.h"
-#include "world.h"
+#include "World.h"
 #include "DeferredAction.h"
 #include "Xyz.h"
 #include "blocks/Inventory.h"
@@ -238,6 +238,7 @@ QString Falling::FullName() const {
     case SAND:  return tr("Sand");
     case WATER: return tr("Snow");
     case STONE: return tr("Masonry");
+    case SUB_DUST: return tr("Dust");
     default:
         fprintf(stderr, "%s: Unlisted sub: %d.\n", Q_FUNC_INFO, Sub());
         return "Unkown active block";
