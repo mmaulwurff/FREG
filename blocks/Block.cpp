@@ -70,6 +70,7 @@ void Block::Damage(const int dmg, const int dmg_kind) {
     switch ( Sub() ) {
     case SUB_DUST:
     case GREENERY:
+    case ROSE:
     case HAZELNUT: durability = 0; return;
     case NULLSTONE:
     case STAR:

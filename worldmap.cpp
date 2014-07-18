@@ -139,10 +139,10 @@ void WorldMap::GenerateMap(
 
     const float min_rad = size/3.0f;
     const float max_rad = size/2.0f;
-    Circle(min_rad,   max_rad,     SHRED_WASTE,    size, map);
-    Circle(min_rad/2, max_rad/2,   SHRED_FOREST,   size, map);
-    Circle(min_rad/3, max_rad/3+1, SHRED_HILL,     size, map);
-    Circle(min_rad/4, max_rad/4+1, SHRED_MOUNTAIN, size, map);
+    Circle(min_rad,   max_rad,     SHRED_WASTE,       size, map);
+    Circle(min_rad/2, max_rad/2,   SHRED_DEAD_FOREST, size, map);
+    Circle(min_rad/3, max_rad/3+1, SHRED_DEAD_HILL,   size, map);
+    Circle(min_rad/4, max_rad/4+1, SHRED_MOUNTAIN,    size, map);
 
     int lakes_number = (qrand() % size) + 5;
     while ( lakes_number-- ) {

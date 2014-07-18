@@ -133,11 +133,11 @@ private:
     void TestShred();
     void NullMountain();
     void Plain();
-    void Forest();
+    void Forest(bool dead);
     void Water(subs sub = WATER);
     void Pyramid();
     void Mountain();
-    void Hill();
+    void Hill(bool dead);
     void Desert();
     void Castle();
     void WasteShred();

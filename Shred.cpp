@@ -112,26 +112,28 @@ Shred::Shred(const int shred_x, const int shred_y,
         PutBlock(((qrand()%5) ? sky : star), i, j, HEIGHT-1);
     }
     switch ( type=GetWorld()->GetMap()->TypeOfShred(longi, lati) ) {
-    case SHRED_WATER:     Water();      break;
+    default:
+        fprintf(stderr, "%s: type: %c, code %d?\n", Q_FUNC_INFO, type, type);
+        // no break;
     case SHRED_WASTE:     WasteShred(); break;
+    case SHRED_WATER:     Water();      break;
     case SHRED_PLAIN:     Plain();      break;
-    case SHRED_FOREST:    Forest();     break;
-    case SHRED_HILL:      Hill();       break;
     case SHRED_MOUNTAIN:  Mountain();   break;
     case SHRED_DESERT:    Desert();     break;
+    case SHRED_HILL:      Hill(false);  break;
+    case SHRED_DEAD_HILL: Hill(true);   break;
+    case SHRED_FOREST:      Forest(false); break;
+    case SHRED_DEAD_FOREST: Forest(true);  break;
     case SHRED_NULLMOUNTAIN: NullMountain(); break;
     case SHRED_TESTSHRED: TestShred();  break;
     case SHRED_PYRAMID:   Pyramid();    break;
     case SHRED_CASTLE:    Castle();     break;
     case SHRED_CHAOS:     ChaosShred(); break;
-    case SHRED_NORMAL_UNDERGROUND: NormalUnderground(); break;
     case SHRED_EMPTY: break;
     case SHRED_ACID_LAKE: Water(ACID ); break;
     case SHRED_LAVA_LAKE: Water(STONE); break;
     case SHRED_CRATER:    Water(AIR);   break;
-    default:
-        fprintf(stderr, "%s: type: %c, code %d?\n", Q_FUNC_INFO, type, type);
-        Plain();
+    case SHRED_NORMAL_UNDERGROUND: NormalUnderground(); break;
     }
 } // Shred::Shred(int shred_x, shred_y, long longi, lati, Shred * mem)
 
@@ -328,7 +330,7 @@ void Shred::CoverWith(const int kind, const int sub) {
 void Shred::RandomDrop(int num, const int kind, const int sub,
         const bool on_water)
 {
-    for ( ; num!=0; --num) {
+    while ( num-- ) {
         DropBlock(BlockManager::NewBlock(kind, sub), on_water);
     }
 }
@@ -441,6 +443,7 @@ void Shred::TestShred() { // 7 items in a row
     SetNewBlock(LIQUID, SUB_CLOUD, column+=2, row, level);
     SetNewBlock(RAIN_MACHINE, IRON, column+=2, row, level);
     SetNewBlock(FALLING, SUB_DUST, column+=2, row, level);
+    PutBlock(Normal(ROSE), column+=2, row, level);
 } // void Shred::TestShred()
 
 void Shred::NullMountain() {

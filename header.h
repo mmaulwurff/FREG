@@ -75,11 +75,13 @@ enum shred_type {
     SHRED_ACID_LAKE = 'a',
     SHRED_LAVA_LAKE = 'l',
     SHRED_CRATER    = 'c',
+    SHRED_DEAD_FOREST = 'f',
+    SHRED_DEAD_HILL   = '*',
     SHRED_NULLMOUNTAIN = '#',
     SHRED_NORMAL_UNDERGROUND = '-',
 };
 
-const int DEFAULT_MAP_SIZE = 75U;
+const int DEFAULT_MAP_SIZE = 79;
 const char DEFAULT_SHRED = SHRED_PLAIN;
 const char OUT_BORDER_SHRED = SHRED_WATER;
 

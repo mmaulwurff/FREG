@@ -43,12 +43,13 @@ void Shred::NormalUnderground(const int depth, const subs sub) {
 
 void Shred::Plain() {
     NormalUnderground();
-    RandomDrop(qrand()%4, BUSH, WOOD);
+    RandomDrop(qrand()%4, BUSH,   WOOD);
+    RandomDrop(qrand()%4, BLOCK,  ROSE);
     RandomDrop(qrand()%4, RABBIT, A_MEAT);
     PlantGrass();
 }
 
-void Shred::Forest() {
+void Shred::Forest(const bool dead) {
     NormalUnderground();
     for (int number_of_trees = CountShredTypeAround(SHRED_FOREST);
             number_of_trees != 0; --number_of_trees)
@@ -66,7 +67,10 @@ void Shred::Forest() {
         }
     }
     RandomDrop(qrand()%4, WEAPON, WOOD);
-    PlantGrass();
+    if ( not dead ) {
+        RandomDrop(qrand()%2, BLOCK, ROSE);
+        PlantGrass();
+    }
 }
 
 void Shred::Water(const subs sub) {
@@ -109,7 +113,7 @@ void Shred::Water(const subs sub) {
     }
 }
 
-void Shred::Hill() {
+void Shred::Hill(const bool dead) {
     NormalUnderground();
     ushort x, y, z;
     Block * const soil = Normal(SOIL);
@@ -134,7 +138,11 @@ void Shred::Hill() {
         }
     }
     RandomDrop(qrand()%4, WEAPON, STONE);
-    PlantGrass();
+    if ( not dead ) {
+        RandomDrop(qrand()%4, BLOCK, ROSE);
+        RandomDrop(qrand()%4, RABBIT, A_MEAT);
+        PlantGrass();
+    }
 }
 
 void Shred::Mountain() {
