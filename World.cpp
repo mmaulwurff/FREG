@@ -28,13 +28,10 @@
 #include "World.h"
 #include "BlockManager.h"
 #include "ShredStorage.h"
-#include "CraftManager.h"
 
 const int MIN_WORLD_SIZE = 7;
 
 World * world;
-
-CraftManager * World::GetCraftManager() const { return craftManager; }
 
 int World::ShredPos(const int x, const int y) const { return y*NumShreds()+x; }
 
@@ -720,7 +717,6 @@ World::World(const QString world_name) :
         worldName(world_name),
         map(world_name),
         toResetDir(UP),
-        craftManager(new CraftManager),
         initial_lighting()
 {
     world = this;
@@ -767,7 +763,6 @@ World::~World() {
 
     DeleteAllShreds();
     delete shredStorage;
-    delete craftManager;
 
     QSettings settings(worldName+"/settings.ini", QSettings::IniFormat);
     settings.setValue("time", qlonglong(time));

@@ -31,7 +31,6 @@ class Shred;
 class ShredStorage;
 class QByteArray;
 class QReadWriteLock;
-class CraftManager;
 
 const int MOON_LIGHT_FACTOR = 1;
 const int  SUN_LIGHT_FACTOR = 8;
@@ -155,7 +154,6 @@ public: // Interactions section
             bool anyway = false);
     /// Returns true on success. Gets a string and inscribes block.
     bool Inscribe(int x, int y, int z);
-    CraftManager * GetCraftManager() const;
 
 private: // Inventory functions section
     void Exchange(Block * block_from, Block * block_to,
@@ -244,7 +242,6 @@ private:
 
     ShredStorage * shredStorage;
     Shred * shredMemoryPool;
-    CraftManager * const craftManager;
     bool initial_lighting;
 };
 

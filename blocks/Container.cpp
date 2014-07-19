@@ -150,7 +150,7 @@
                 list << new CraftItem({Number(i), ShowBlock(i)->GetId()});
             }
         }
-        CraftList * products = world->GetCraftManager()->Craft(&list, Sub());
+        CraftList * products = craft_manager.Craft(&list, Sub());
         if ( products != nullptr ) {
             for (int i=0; i<products->GetSize(); ++i) {
                 for (int n=0; n<products->GetItem(i)->num; ++n) {

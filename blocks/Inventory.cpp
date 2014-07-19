@@ -21,10 +21,9 @@
 #include "Inventory.h"
 #include "CraftManager.h"
 #include "BlockManager.h"
-#include "World.h"
 
 int  Inventory::Start() const { return 0; }
-int  Inventory::Size() const { return size; }
+int  Inventory::Size()  const { return size; }
 int  Inventory::Number(const int i) const { return inventory[i].size(); }
 bool Inventory::Access() const { return true; }
 QString Inventory::NumStr(const int num) { return QString(" (%1x)").arg(num); }
@@ -199,7 +198,7 @@ bool Inventory::MiniCraft(const int num) {
         ReceiveSignal(QObject::tr("Nothing here."));
         return false;
     } // else:
-    const CraftItem * const crafted = world->GetCraftManager()->MiniCraft(
+    const CraftItem * const crafted = craft_manager.MiniCraft(
         Number(num), BlockManager::MakeId(GetInvKind(num), GetInvSub(num)));
     if ( crafted != nullptr ) {
         while ( not inventory[num].isEmpty() ) {

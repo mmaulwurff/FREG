@@ -80,4 +80,6 @@ private:
     int * recipesSubsList; // list of substances of workbench
 }; // CraftManager
 
+extern CraftManager craft_manager;
+
 #endif // CRAFTMANAGER_H

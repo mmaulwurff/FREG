@@ -22,6 +22,8 @@
 #include "BlockManager.h"
 #include "CraftManager.h"
 
+CraftManager craft_manager;
+
 // CraftItem section
 CraftItem::CraftItem(const int num_, const int id_) :
         num(num_),
