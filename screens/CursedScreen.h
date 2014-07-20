@@ -159,9 +159,8 @@ private slots:
 private:
     char CharNumber(int z) const;
     char CharNumberFront(int x, int y) const;
-    void Arrows(WINDOW *, int x, int y, bool show_dir = false) const;
-    void HorizontalArrows(WINDOW *, int y, int color = WHITE_RED,
-            bool show_dir = false) const;
+    void Arrows(WINDOW *, int x, int y, bool show_dir) const;
+    void HorizontalArrows(WINDOW *, int y, int color, bool show_dir) const;
     void PrintNormal(WINDOW *, dirs) const;
     void PrintFront(WINDOW *, dirs) const;
     void PrintInv(WINDOW *, const Inventory &) const;
@@ -177,7 +176,7 @@ private:
     void RePrint();
     void InventoryAction(int num) const;
     int  Color(int kind, int sub) const;
-    static color_pairs ColorShred(int type);
+    int  ColorShred(shred_type)   const;
     char PrintBlock(const Block &, WINDOW *) const;
     void SetActionMode(actions mode);
     void ProcessCommand(QString command);

@@ -110,25 +110,6 @@ enum times_of_day {
     TIME_EVENING
 };
 
-enum damage_kinds {
-    MINE,    ///<  0
-    DIG,     ///<  1
-    CUT,     ///<  2
-    THRUST,  ///<  3
-    CRUSH,   ///<  4
-    HEAT,    ///<  5
-    FREEZE,  ///<  6
-    MELT,    ///<  7
-    ELECTRO, ///<  8
-    HUNGER,  ///<  9
-    BREATH,  ///< 10
-    BITE,    ///< 11
-    TIME,    ///< 12
-    NO_HARM, ///< 13
-    DAMAGE_HANDS, ///< 14
-    DAMAGE_ACID,  ///< 15
-};
-
 /// Kinds of atom
 enum kinds {
     // add new kinds to bottom (before LAST_KIND).

@@ -79,8 +79,8 @@ void Block::Damage(const int dmg, const int dmg_kind) {
     case SUN_MOON: return;
     }
     switch ( dmg_kind ) {
-    case NO_HARM: return;
-    case TIME: durability -= dmg; return;
+    case DAMAGE_NO: return;
+    case DAMAGE_TIME: durability -= dmg; return;
     case DAMAGE_ACID:
         switch ( Sub() ) {
         default: durability -= 2 * dmg; return;
@@ -94,23 +94,25 @@ void Block::Damage(const int dmg, const int dmg_kind) {
     case DIFFERENT: return;
     case MOSS_STONE:
     case STONE: switch ( dmg_kind ) {
-        case HEAT:
+        case DAMAGE_HEAT:
         case DAMAGE_HANDS:
-        case CUT:   return;
-        case MINE:  mult = 2; break;
+        case DAMAGE_CUT: return;
+        case DAMAGE_MINE: mult = 2; break;
         } break;
     case WOOD: switch ( dmg_kind ) {
-        case CUT: mult = 2; break;
+        case DAMAGE_CUT: mult = 2; break;
         case DAMAGE_HANDS: return;
         } break;
     case A_MEAT:
-    case H_MEAT:    mult += (THRUST==dmg_kind || HEAT==dmg_kind); break;
+    case H_MEAT:
+        mult += (DAMAGE_THRUST==dmg_kind || DAMAGE_HEAT==dmg_kind);
+        break;
     case SAND:
-    case SOIL:      mult += ( DIG    == dmg_kind ); break;
-    case FIRE:      mult  = ( FREEZE == dmg_kind ); break;
-    case WATER:     mult  = ( HEAT   == dmg_kind ); break;
-    case GLASS:     mult  = ( HEAT   != dmg_kind ); break;
-    case IRON:      mult  = ( DAMAGE_HANDS != dmg_kind ); break;
+    case SOIL:      mult += ( DAMAGE_DIG    == dmg_kind ); break;
+    case FIRE:      mult  = ( DAMAGE_FREEZE == dmg_kind ); break;
+    case WATER:     mult  = ( DAMAGE_HEAT   == dmg_kind ); break;
+    case GLASS:     mult  = ( DAMAGE_HEAT   != dmg_kind ); break;
+    case IRON:      mult  = ( DAMAGE_HANDS  != dmg_kind ); break;
     }
     durability -= mult*dmg;
 }
@@ -143,7 +145,7 @@ void Block::Push(dirs, Block *) {}
 void Block::Move(dirs) {}
 usage_types Block::Use(Block *) { return USAGE_TYPE_NO; }
 int  Block::Wearable() const { return WEARABLE_NOWHERE; }
-int  Block::DamageKind() const { return CRUSH; }
+int  Block::DamageKind() const { return DAMAGE_CRUSH; }
 int  Block::DamageLevel() const { return 1; }
 int  Block::LightRadius() const { return 0; }
 void Block::ReceiveSignal(QString) {}

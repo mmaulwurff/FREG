@@ -45,7 +45,7 @@
             } break;
         case A_MEAT:
         case H_MEAT:
-            Damage(MAX_DURABILITY/SECONDS_IN_DAY, TIME);
+            Damage(MAX_DURABILITY/SECONDS_IN_DAY, DAMAGE_TIME);
             if ( GetDurability() <= 0 ) {
                 GetWorld()->DestroyAndReplace(X(), Y(), Z());
             }

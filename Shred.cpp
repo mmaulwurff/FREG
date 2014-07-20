@@ -33,19 +33,19 @@ long Shred::Longitude() const { return longitude; }
 long Shred::Latitude()  const { return latitude;  }
 int  Shred::ShredX() const { return shredX; }
 int  Shred::ShredY() const { return shredY; }
-char Shred::GetTypeOfShred() const { return type; }
 World * Shred::GetWorld() const { return world; }
 Shred * Shred::GetShredMemory() const { return memory; }
 Block * Shred::Normal(const int sub) { return block_manager.NormalBlock(sub); }
+shred_type Shred::GetTypeOfShred() const { return type; }
 
 bool Shred::LoadShred() {
     const QByteArray * const data =
         GetWorld()->GetShredData(longitude, latitude);
     if ( data == nullptr ) return false;
     QDataStream in(*data);
-    quint8  dataStreamVersion;
     quint8 shredFormatVersion;
-    in >> dataStreamVersion >> shredFormatVersion;
+    quint8  dataStreamVersion;
+    in >>   dataStreamVersion >> shredFormatVersion;
     if ( Q_UNLIKELY(DATASTREAM_VERSION != dataStreamVersion) ) {
         fprintf(stderr, "%s: %d (must be %d). Generating new shred.\n",
             Q_FUNC_INFO, dataStreamVersion, DATASTREAM_VERSION);
@@ -59,8 +59,8 @@ bool Shred::LoadShred() {
     } // else:
     in.setVersion(DATASTREAM_VERSION);
     quint8 read_type;
-    in >> read_type;
-    type = read_type;
+    in >>  read_type;
+    type = static_cast<shred_type>(read_type);
     Block * const null_stone = Normal(NULLSTONE);
     Block * const air = Normal(AIR);
     SetAllLightMapNull();
@@ -111,7 +111,9 @@ Shred::Shred(const int shred_x, const int shred_y,
         }
         PutBlock(((qrand()%5) ? sky : star), i, j, HEIGHT-1);
     }
-    switch ( type=GetWorld()->GetMap()->TypeOfShred(longi, lati) ) {
+    switch ( type = static_cast<shred_type>
+            (GetWorld()->GetMap()->TypeOfShred(longi, lati)) )
+    {
     default:
         fprintf(stderr, "%s: type: %c, code %d?\n", Q_FUNC_INFO, type, type);
         // no break;

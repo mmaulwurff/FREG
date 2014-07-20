@@ -146,24 +146,24 @@ int Screen::Color(const int kind, const int sub) const {
         case GREENERY:   return COLOR_PAIR(BLACK_GREEN);
         case WOOD:
         case HAZELNUT:
-        case SOIL:       return COLOR_PAIR(BLACK_YELLOW);
-        case SAND:       return COLOR_PAIR(YELLOW_WHITE);
-        case COAL:       return COLOR_PAIR(BLACK_WHITE);
-        case IRON:       return COLOR_PAIR(BLACK_BLACK) | A_BOLD;
-        case A_MEAT:     return COLOR_PAIR(WHITE_RED);
-        case H_MEAT:     return COLOR_PAIR(BLACK_RED);
-        case WATER:      return COLOR_PAIR(WHITE_CYAN);
-        case GLASS:      return COLOR_PAIR(BLUE_WHITE);
+        case SOIL:       return COLOR_PAIR(  BLACK_YELLOW);
+        case SAND:       return COLOR_PAIR(  WHITE_YELLOW);
+        case COAL:       return COLOR_PAIR(  BLACK_WHITE);
+        case IRON:       return COLOR_PAIR(  BLACK_BLACK) | A_BOLD;
+        case A_MEAT:     return COLOR_PAIR(  WHITE_RED);
+        case H_MEAT:     return COLOR_PAIR(  BLACK_RED);
+        case WATER:      return COLOR_PAIR(  WHITE_CYAN);
+        case GLASS:      return COLOR_PAIR(   BLUE_WHITE);
         case NULLSTONE:  return COLOR_PAIR(MAGENTA_BLACK) | A_BOLD;
-        case MOSS_STONE: return COLOR_PAIR(GREEN_WHITE);
-        case ROSE:       return COLOR_PAIR(RED_GREEN);
-        case CLAY:       return COLOR_PAIR(WHITE_RED);
+        case MOSS_STONE: return COLOR_PAIR(  GREEN_WHITE);
+        case ROSE:       return COLOR_PAIR(    RED_GREEN);
+        case CLAY:       return COLOR_PAIR(  WHITE_RED);
         case PAPER:      return COLOR_PAIR(MAGENTA_WHITE);
-        case GOLD:       return COLOR_PAIR(WHITE_YELLOW);
+        case GOLD:       return COLOR_PAIR(  WHITE_YELLOW);
         case BONE:       return COLOR_PAIR(MAGENTA_WHITE);
-        case FIRE:       return COLOR_PAIR(RED_YELLOW) | A_BLINK;
-        case EXPLOSIVE:  return COLOR_PAIR(WHITE_RED);
-        case SUN_MOON:   return COLOR_PAIR(( TIME_NIGHT == w->PartOfDay() ) ?
+        case FIRE:       return COLOR_PAIR(    RED_YELLOW) | A_BLINK;
+        case EXPLOSIVE:  return COLOR_PAIR(  WHITE_RED);
+        case SUN_MOON:   return COLOR_PAIR((TIME_NIGHT == w->PartOfDay() ) ?
             WHITE_WHITE : YELLOW_YELLOW);
         case SKY:
         case STAR:
@@ -171,28 +171,39 @@ int Screen::Color(const int kind, const int sub) const {
             switch ( w->PartOfDay() ) {
             case TIME_NIGHT:   return COLOR_PAIR(WHITE_BLACK) | A_BOLD;
             case TIME_MORNING: return COLOR_PAIR(WHITE_BLUE);
-            case TIME_NOON:    return COLOR_PAIR(CYAN_CYAN);
+            case TIME_NOON:    return COLOR_PAIR( CYAN_CYAN);
             case TIME_EVENING: return COLOR_PAIR(WHITE_CYAN);
             }
         case SUB_DUST: return COLOR_PAIR(BLACK_BLACK) | A_BOLD | A_REVERSE;
         }
     case DWARF:     return COLOR_PAIR(WHITE_BLUE);
-    case RABBIT:    return COLOR_PAIR(RED_WHITE);
-    case PREDATOR:  return COLOR_PAIR(RED_BLACK);
-    case TELEGRAPH: return COLOR_PAIR(CYAN_BLACK);
+    case RABBIT:    return COLOR_PAIR(  RED_WHITE);
+    case PREDATOR:  return COLOR_PAIR(  RED_BLACK);
+    case TELEGRAPH: return COLOR_PAIR( CYAN_BLACK);
     }
 } // color_pairs Screen::Color(int kind, int sub)
 
-color_pairs Screen::ColorShred(const int type) {
+int Screen::ColorShred(const shred_type type) const {
     switch ( type ) { // foreground_background
-    case 'c':
-    case '^': return BLACK_WHITE;
-    case '.': return BLACK_GREEN;
-    case '~': return CYAN_BLUE;
-    case '#': return MAGENTA_BLACK;
-    case '%': return YELLOW_GREEN;
-    case '+': return WHITE_GREEN;
-    default:  return WHITE_BLACK;
+    case SHRED_NORMAL_UNDERGROUND:
+    case SHRED_TESTSHRED:
+    case SHRED_EMPTY:
+    case SHRED_CHAOS:       return COLOR_PAIR( WHITE_BLACK);
+    case SHRED_DEAD_FOREST: return COLOR_PAIR(YELLOW_BLACK);
+    case SHRED_DEAD_HILL:   return COLOR_PAIR( BLACK_WHITE) | A_BOLD;
+    case SHRED_PYRAMID:
+    case SHRED_WASTE:
+    case SHRED_CASTLE:
+    case SHRED_MOUNTAIN:  return Color(BLOCK,  STONE);
+    case SHRED_PLAIN:     return Color(BLOCK,  GREENERY);
+    case SHRED_DESERT:    return Color(BLOCK,  SAND);
+    case SHRED_WATER:     return Color(LIQUID, WATER);
+    case SHRED_LAVA_LAKE: return Color(LIQUID, STONE);
+    case SHRED_ACID_LAKE: return Color(LIQUID, ACID);
+    case SHRED_CRATER:    return COLOR_PAIR( WHITE_WHITE) | A_BOLD;
+    case SHRED_FOREST:    return COLOR_PAIR(YELLOW_GREEN);
+    case SHRED_HILL:      return COLOR_PAIR( WHITE_GREEN);
+    case SHRED_NULLMOUNTAIN: return Color(BLOCK, NULLSTONE);
     }
 }
 
@@ -653,13 +664,13 @@ void Screen::PrintFront(WINDOW * const window, const dirs dir) const {
     }
     PrintTitle(window, dir);
     if ( shiftFocus ) {
-        HorizontalArrows(window, arrow_Y-shiftFocus, WHITE_BLUE);
+        HorizontalArrows(window, arrow_Y-shiftFocus, WHITE_BLUE, false);
         for (int q=arrow_Y-shiftFocus; q<SCREEN_SIZE+1 && q>0; q-=shiftFocus) {
             mvwaddch(window, q, 0, '|');
             mvwaddch(window, q, SCREEN_SIZE*2+1, '|');
         }
     }
-    Arrows(window, arrow_X, arrow_Y);
+    Arrows(window, arrow_X, arrow_Y, false);
     wrefresh(window);
 } // void Screen::PrintFront(WINDOW * window)
 

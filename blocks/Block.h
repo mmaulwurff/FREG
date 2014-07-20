@@ -32,13 +32,32 @@ const QString SOUND_STRINGS[] = {
 const QString DING = SOUND_STRINGS[0];
 const QString OUCH = SOUND_STRINGS[1];
 
-enum WEARABLE {
+enum wearable {
     WEARABLE_NOWHERE,
     WEARABLE_HEAD,
     WEARABLE_ARM,
     WEARABLE_BODY,
     WEARABLE_LEGS
 }; // enum WEARABLE
+
+enum damage_kinds {
+    DAMAGE_MINE,    ///<  0
+    DAMAGE_DIG,     ///<  1
+    DAMAGE_CUT,     ///<  2
+    DAMAGE_THRUST,  ///<  3
+    DAMAGE_CRUSH,   ///<  4
+    DAMAGE_HEAT,    ///<  5
+    DAMAGE_FREEZE,  ///<  6
+    DAMAGE_MELT,    ///<  7
+    DAMAGE_ELECTRO, ///<  8
+    DAMAGE_HUNGER,  ///<  9
+    DAMAGE_BREATH,  ///< 10
+    DAMAGE_BITE,    ///< 11
+    DAMAGE_TIME,    ///< 12
+    DAMAGE_NO,      ///< 13
+    DAMAGE_HANDS,   ///< 14
+    DAMAGE_ACID,    ///< 15
+}; // enum damage_kinds
 
 // weights in measures - mz (mezuro)
     const int WEIGHT_NULLSTONE = 1000;

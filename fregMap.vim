@@ -29,7 +29,7 @@ hi fregMapElementHill   ctermfg=White   ctermbg=Green
 hi fregMapElementMount  ctermfg=Black   ctermbg=White
 hi fregMapElementForest ctermfg=Yellow  ctermbg=Green
 hi fregMapElementNull   ctermfg=Magenta ctermbg=Black
-hi fregMapElementDesert ctermfg=Yellow  ctermbg=White
+hi fregMapElementDesert ctermfg=White   ctermbg=Yellow
 hi fregMapElementLava   ctermfg=Red     ctermbg=Yellow
 hi fregMapElementAcid   ctermfg=Green   ctermbg=LightGreen
 hi fregMapElementCrater ctermfg=White   ctermbg=Grey

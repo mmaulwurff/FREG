@@ -68,9 +68,9 @@
 
     int  Weapon::DamageKind() const {
         switch ( Sub() ) {
-        case IRON: return THRUST;
-        case SKY:  return TIME;
-        default:   return CRUSH;
+        case IRON: return DAMAGE_THRUST;
+        case SKY:  return DAMAGE_TIME;
+        default:   return DAMAGE_CRUSH;
         }
     }
 
@@ -80,7 +80,7 @@
 
 // Pick::
     int Pick::Kind() const { return PICK; }
-    int Pick::DamageKind() const { return MINE; }
+    int Pick::DamageKind() const { return DAMAGE_MINE; }
 
     int Pick::DamageLevel() const {
         switch ( Sub() ) {
@@ -104,7 +104,7 @@
 
 // Shovel::
     int Shovel::Kind() const { return SHOVEL; }
-    int Shovel::DamageKind() const { return DIG; }
+    int Shovel::DamageKind() const { return DAMAGE_DIG; }
 
     int Shovel::DamageLevel() const {
         switch ( Sub() ) {
@@ -129,7 +129,7 @@
 
 // Hammer::
     int Hammer::Kind() const { return HAMMER; }
-    int Hammer::DamageKind() const { return CRUSH; }
+    int Hammer::DamageKind() const { return DAMAGE_CRUSH; }
 
     int Hammer::DamageLevel() const {
         switch ( Sub() ) {
@@ -155,7 +155,7 @@
 
 // Axe::
     int Axe::Kind() const { return AXE; }
-    int Axe::DamageKind() const { return CUT; }
+    int Axe::DamageKind() const { return DAMAGE_CUT; }
 
     int Axe::DamageLevel() const {
         switch ( Sub() ) {

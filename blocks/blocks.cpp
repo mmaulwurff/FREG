@@ -74,7 +74,7 @@
 // Animal::
     INNER_ACTIONS Animal::ActInner() {
         if ( satiation <= 0 ) {
-            Damage(5, HUNGER);
+            Damage(5, DAMAGE_HUNGER);
         } else {
             --satiation;
             Mend();
@@ -86,7 +86,7 @@
     void Animal::DoRareAction() {
         if ( not IsSubAround(AIR) ) {
             if ( breath <= 0 ) {
-                Damage(10, BREATH);
+                Damage(10, DAMAGE_BREATH);
             } else {
                 --breath;
             }
@@ -104,7 +104,7 @@
     int Animal::Breath() const { return breath; }
     int Animal::Satiation() const { return satiation; }
     Animal * Animal::IsAnimal() { return this; }
-    int Animal::DamageKind() const { return BITE; }
+    int Animal::DamageKind() const { return DAMAGE_BITE; }
 
     bool Animal::Eat(const int sub) {
         const int value = NutritionalValue(sub);
@@ -161,7 +161,7 @@
 // Liquid::
     void Liquid::DoRareAction() {
         if ( not IsSubAround(Sub()) || Sub()==SUB_CLOUD ) {
-            Damage(MAX_DURABILITY*2/SECONDS_IN_NIGHT, TIME);
+            Damage(MAX_DURABILITY*2/SECONDS_IN_NIGHT, DAMAGE_TIME);
             if ( GetDurability() <= 0 ) {
                 GetWorld()->DestroyAndReplace(X(), Y(), Z());
                 return;
@@ -183,9 +183,9 @@
 
     int Liquid::DamageKind() const {
         switch ( Sub() ) {
-        default:    return NO_HARM;
+        default:    return DAMAGE_NO;
         case ACID:  return DAMAGE_ACID;
-        case STONE: return HEAT;
+        case STONE: return DAMAGE_HEAT;
         }
     }
 
@@ -221,7 +221,7 @@
         if ( FIRE == Sub() ) {
             DamageAround();
             if ( qrand()%10 || IsSubAround(WATER) ) {
-                Damage(2, FREEZE);
+                Damage(2, DAMAGE_FREEZE);
             }
         }
         if ( not IsBase(Sub(), world->GetBlock(X(), Y(), Z()-1)->Sub()) ) {
@@ -547,7 +547,7 @@
     int Creator::Kind() const { return CREATOR; }
     int Creator::Sub() const { return Block::Sub(); }
     QString Creator::FullName() const { return tr("Creative block"); }
-    int Creator::DamageKind() const { return TIME; }
+    int Creator::DamageKind() const { return DAMAGE_TIME; }
     int Creator::DamageLevel() const { return MAX_DURABILITY; }
     Inventory * Creator::HasInventory() { return this; }
     int Creator::ShouldAct() const { return FREQUENT_FIRST; }

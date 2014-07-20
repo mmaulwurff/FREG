@@ -93,7 +93,7 @@ public:
 
     // Information section
     void SetNewBlock(int kind, int sub, int x, int y, int z, int dir = UP);
-    char GetTypeOfShred() const;
+    shred_type GetTypeOfShred() const;
 
     static QString FileName(QString world_name, long longi, long lati);
     Shred * GetShredMemory() const;
@@ -168,7 +168,7 @@ private:
     uchar lightMap[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
     const long longitude, latitude;
     int shredX, shredY;
-    char type;
+    shred_type type;
 
     /// Contains all active blocks.
     QLinkedList<Active *> activeListAll;
