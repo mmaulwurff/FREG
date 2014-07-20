@@ -50,7 +50,7 @@ void WorldMap::MakeAndSaveSpawn(const QString world_name, const int size,
 }
 
 int WorldMap::GetSpawnCoordinate(int size) {
-    size /= 4;
+    size = qMax(size/4, 1);
     return (qrand()%size) + size;
 }
 

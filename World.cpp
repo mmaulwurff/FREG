@@ -467,10 +467,9 @@ bool World::CanMove(const int x, const int y, const int z,
     default:
     case NOT_MOVABLE: return false;
     }
-    push_reaction target_push = block_to->PushResult(dir);
     block_to->Push(dir, block);
     block_to = GetBlock(newx, newy, newz);
-    target_push = block_to->PushResult(dir);
+    push_reaction target_push = block_to->PushResult(dir);
     switch ( target_push ) {
     case MOVABLE:
         return ( (weight > block_to->Weight()) &&

@@ -140,11 +140,11 @@ CraftManager::CraftManager() : size(0) {
                     break;
                 }
             }
-            if ( not ok ) {
+            if ( ok ) {
+                recipesList[size].append(recipe);
+            } else {
                 delete recipe;
-                continue;
-            } // else:
-            recipesList[size].append(recipe);
+            }
         }
         ++size;
     }

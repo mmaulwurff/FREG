@@ -51,7 +51,7 @@ void Shred::Plain() {
 
 void Shred::Forest(const bool dead) {
     NormalUnderground();
-    for (int number_of_trees = CountShredTypeAround(SHRED_FOREST);
+    for (int number_of_trees = CountShredTypeAround(type);
             number_of_trees != 0; --number_of_trees)
     {
         const ushort x=qrand()%(SHRED_WIDTH-2);

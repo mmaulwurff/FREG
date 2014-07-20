@@ -136,9 +136,7 @@ void World::UpShine(const int x, const int y, int z_bottom) {
     Shred * const shred = GetShred(x, y);
     const int x_in = Shred::CoordInShred(x);
     const int y_in = Shred::CoordInShred(y);
-    for ( ; shred->SetSunLight(x_in, y_in, z_bottom, 1) && z_bottom < HEIGHT-1;
-            ++z_bottom)
-    {
+    while (shred->SetSunLight(x_in, y_in, z_bottom, 1) && z_bottom<HEIGHT-1) {
         emit Updated(x, y, z_bottom++);
     }
 }

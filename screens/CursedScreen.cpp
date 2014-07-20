@@ -478,7 +478,7 @@ void Screen::PrintQuickInventory() {
 }
 
 void Screen::PrintMiniMap() {
-    wmove(miniMapWin, 1, 0);
+    (void)wmove(miniMapWin, 1, 0);
     const int x_center = Shred::CoordOfShred(player->X());
     const int y_center = Shred::CoordOfShred(player->Y());
     const int j_start = qMax(x_center-2, 0);
