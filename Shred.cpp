@@ -25,7 +25,7 @@
 #include "blocks/Inventory.h"
 
 const quint8 DATASTREAM_VERSION = QDataStream::Qt_5_2;
-const quint8 CURRENT_SHRED_FORMAT_VERSION = 6;
+const quint8 CURRENT_SHRED_FORMAT_VERSION = 7;
 
 const int RAIN_IS_DEW = 1;
 
@@ -81,8 +81,18 @@ bool Shred::LoadShred() {
                     PutBlock(Normal(sub), x, y, z);
                 }
             } else {
-                SetBlockNoCheck(BlockManager::BlockFromFile(in, kind, sub),
-                    x, y, z);
+                Active * const active = (blocks[x][y][z] =
+                    BlockManager::BlockFromFile(in, kind, sub))->ActiveBlock();
+                if ( active != nullptr ) {
+                    active->SetXyz(
+                        (ShredX() << SHRED_WIDTH_SHIFT) | x,
+                        (ShredY() << SHRED_WIDTH_SHIFT) | y, z );
+                    RegisterInit(active);
+                    Falling * const falling = active->ShouldFall();
+                    if ( falling != nullptr && falling->IsFalling() ) {
+                        fallList.append(falling);
+                    }
+                }
             }
         }
     }
@@ -215,7 +225,7 @@ void Shred::PhysEventsRare() {
     fallList.removeAll(nullptr);
 }
 
-void Shred::Register(Active * const active) {
+void Shred::RegisterInit(Active * const active) {
     active->SetShred(this);
     activeListAll.append(active);
     const int should_act = active->ShouldAct();
@@ -224,8 +234,12 @@ void Shred::Register(Active * const active) {
     } else if ( should_act & FREQUENT_SECOND ) {
         activeListFrequent.append(active);
     }
-    AddFalling(active);
     AddShining(active);
+}
+
+void Shred::Register(Active * const active) {
+    RegisterInit(active);
+    AddFalling(active);
 }
 
 void Shred::Unregister(Active * const active) {

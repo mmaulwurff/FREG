@@ -230,7 +230,11 @@ Falling::Falling(QDataStream & str, const int sub, const int id,
     :
         Active(str, sub, id, transp)
 {
-    str >> fallHeight;
+    str >> fallHeight >> falling;
+}
+
+void Falling::SaveAttributes(QDataStream & out) const {
+    out << fallHeight << falling;
 }
 
 QString Falling::FullName() const {
@@ -246,7 +250,6 @@ QString Falling::FullName() const {
 }
 
 int  Falling::Kind() const { return FALLING; }
-void Falling::SaveAttributes(QDataStream & out) const { out << fallHeight; }
 bool Falling::IsFalling() const { return falling; }
 Falling * Falling::ShouldFall() { return this; }
 push_reaction Falling::PushResult(dirs) const { return MOVABLE; }

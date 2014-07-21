@@ -196,6 +196,12 @@
     bool Liquid::Inscribe(QString) { return false; }
     push_reaction Liquid::PushResult(dirs) const { return ENVIRONMENT; }
 
+    void Liquid::Damage(const int dmg, const int dmg_kind) {
+        if ( dmg_kind < DAMAGE_PUSH_UP ) {
+            Falling::Damage(dmg, dmg_kind);
+        }
+    }
+
     Block * Liquid::DropAfterDamage(bool *) {
         return block_manager.NormalBlock( ( Sub() == STONE ) ?
             STONE : AIR);

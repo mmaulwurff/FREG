@@ -93,6 +93,8 @@ void Block::Damage(const int dmg, int dmg_kind) {
         switch ( Sub() ) {
         default: durability -= 2 * dmg; return;
         case DIFFERENT: durability = 0; return;
+        case ACID:
+        case ADAMANTINE:
         case IRON:
         case GLASS: return;
         }
@@ -122,7 +124,11 @@ void Block::Damage(const int dmg, int dmg_kind) {
     case ADAMANTINE:
     case FIRE:      mult  = ( DAMAGE_FREEZE == dmg_kind ); break;
     case WATER:     mult  = ( DAMAGE_HEAT   == dmg_kind ); break;
-    case GLASS:     mult  = ( DAMAGE_HEAT   != dmg_kind ); break;
+    case GLASS: switch ( dmg_kind ) {
+        case DAMAGE_PUSH_UP: durability -= dmg*((MAX_DURABILITY+9)/10); return;
+        default:             durability  = 0; // no break;
+        case DAMAGE_HEAT: return;
+        }
     case IRON: switch ( dmg_kind ) {
         case DAMAGE_HANDS:
         case DAMAGE_PUSH_UP: return;

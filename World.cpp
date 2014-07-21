@@ -392,10 +392,11 @@ const {
     if ( Abs(x-=x_from) > max) {
         max = Abs(x);
     }
+    //fprintf(stderr, "max: %d\n", max);
     x_from *= max;
     y_from *= max;
     z_from *= max;
-    for (int i=1; i<max; ++i) {
+    for (int i=max; i--; ) {
         if ( not (GetBlock((x_from+=x)/max, (y_from+=y)/max, (z_from+=z)/max)->
                     Transparent()
                 || GetBlock( (x_from+max-1)/max, (y_from+max-1)/max,
@@ -413,15 +414,15 @@ bool World::Visible(
 const {
     int temp;
     return ( DirectlyVisible(x_from, y_from, z_from, x_to, y_to, z_to)
-        || (x_to!=x_from &&
+        || (x_to != x_from &&
             GetBlock(x_to+(temp=(x_to>x_from) ? (-1) : 1), y_to, z_to)->
                 Transparent()
             && DirectlyVisible(x_from, y_from, z_from, x_to+temp, y_to, z_to))
-        || (y_to!=y_from &&
+        || (y_to != y_from &&
             GetBlock(x_to, y_to+(temp=(y_to>y_from) ? (-1) : 1), z_to)->
                 Transparent()
             && DirectlyVisible(x_from, y_from, z_from, x_to, y_to+temp, z_to))
-        || (z_to!=z_from &&
+        || (z_to != z_from &&
             GetBlock(x_to, y_to, z_to+(temp=(z_to>z_from) ? (-1) : 1))->
                 Transparent()
             && DirectlyVisible(x_from, y_from, z_from, x_to, y_to, z_to+temp))
