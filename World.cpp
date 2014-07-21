@@ -176,7 +176,7 @@ dirs World::TurnRight(const dirs dir) {
     case NORTH: return EAST;
     case SOUTH: return WEST;
     case EAST:  return SOUTH;
-    case WEST:
+    case WEST:  return NORTH;
     case NOWHERE: return NOWHERE;
     }
     Q_UNREACHABLE();

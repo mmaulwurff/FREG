@@ -1,0 +1,8 @@
+
+    freg cursed screen commands
+
+    warranty
+        Show warranty.
+
+    size
+        Show terminal size.

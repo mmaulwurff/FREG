@@ -94,7 +94,7 @@ void Screen::UpdateAll() {
 void Screen::PassString(QString & str) const {
     inputActive = true;
     wstandend(notifyWin);
-    waddstr(notifyWin, "\n:");
+    waddch(notifyWin, ':');
     char temp_str[MAX_NOTE_LENGTH + 1];
     echo();
     wgetnstr(notifyWin, temp_str, MAX_NOTE_LENGTH);
@@ -266,6 +266,7 @@ void Screen::ControlPlayer(const int ch) {
     case KEY_DC: // delete
     case KEY_BACKSPACE: player->Damage(); break;
     case 13:
+    case 'E':
     case '\n': player->Use();      break;
     case  '?': player->Examine();  break;
     case  '~': player->Inscribe(); break;
@@ -281,7 +282,6 @@ void Screen::ControlPlayer(const int ch) {
     case 'O': SetActionMode(ACTION_OBTAIN);   break;
     case 'F':
     case 'W':
-    case 'E':
     case 'U': SetActionMode(ACTION_USE);      break;
     case 'S':
         if ( player->PlayerInventory() ) {
@@ -787,14 +787,13 @@ void Screen::Notify(const QString str) const {
     static int notification_repeat_count = 1;
     if ( str == lastNotification ) {
         ++notification_repeat_count;
-        const int y = getcury(notifyWin);
-        mvwprintw(notifyWin, y-1, 0, "\n%s (%dx)",
+        mvwprintw(notifyWin, getcury(notifyWin)-1, 0, "%s (%dx)",
             qPrintable(str), notification_repeat_count);
     } else {
         notification_repeat_count = 1;
-        waddch(notifyWin, '\n');
         waddstr(notifyWin, qPrintable(lastNotification = str));
     }
+    waddch(notifyWin, '\n');
     wrefresh(notifyWin);
 }
 
