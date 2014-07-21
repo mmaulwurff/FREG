@@ -500,10 +500,10 @@ void Screen::PrintMiniMap() {
         Shred * const shred = w->GetShredByPos(j, i);
         if ( shred == nullptr ) {
             wstandend(miniMapWin);
-            waddstr(miniMapWin, "  ");
+            waddstr  (miniMapWin, "  ");
         } else {
-            wcolor_set(miniMapWin,ColorShred(shred->GetTypeOfShred()),nullptr);
-            wprintw(miniMapWin, " %c", shred->GetTypeOfShred());
+            wattrset(miniMapWin, ColorShred(shred->GetTypeOfShred()));
+            wprintw (miniMapWin, " %c", shred->GetTypeOfShred());
         }
     }
     wstandend(miniMapWin);
