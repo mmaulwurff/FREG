@@ -49,21 +49,20 @@ enum damage_kinds {
     DAMAGE_CRUSH,   ///<  4
     DAMAGE_HEAT,    ///<  5
     DAMAGE_FREEZE,  ///<  6
-    DAMAGE_MELT,    ///<  7
-    DAMAGE_ELECTRO, ///<  8
-    DAMAGE_HUNGER,  ///<  9
-    DAMAGE_BREATH,  ///< 10
-    DAMAGE_BITE,    ///< 11
-    DAMAGE_TIME,    ///< 12
-    DAMAGE_NO,      ///< 13
-    DAMAGE_HANDS,   ///< 14
-    DAMAGE_ACID,    ///< 15
-    DAMAGE_PUSH_UP, ///< 16
-    DAMAGE_PUSH_DOWN,  ///< 17
-    DAMAGE_PUSH_NORTH, ///< 18
-    DAMAGE_PUSH_SOUTH, ///< 19
-    DAMAGE_PUSH_EAST,  ///< 20
-    DAMAGE_PUSH_WEST,  ///< 21
+    DAMAGE_ELECTRO, ///<  7
+    DAMAGE_HUNGER,  ///<  8
+    DAMAGE_BREATH,  ///<  9
+    DAMAGE_BITE,    ///< 10
+    DAMAGE_TIME,    ///< 11
+    DAMAGE_NO,      ///< 12
+    DAMAGE_HANDS,   ///< 13
+    DAMAGE_ACID,    ///< 14
+    DAMAGE_PUSH_UP,    ///< 15
+    DAMAGE_PUSH_DOWN,  ///< 16
+    DAMAGE_PUSH_NORTH, ///< 17
+    DAMAGE_PUSH_SOUTH, ///< 18
+    DAMAGE_PUSH_EAST,  ///< 19
+    DAMAGE_PUSH_WEST,  ///< 20
 }; // enum damage_kinds
 
 // weights in measures - mz (mezuro)

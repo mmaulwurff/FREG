@@ -119,6 +119,7 @@ void Block::Damage(const int dmg, int dmg_kind) {
         break;
     case SAND:
     case SOIL:      mult += ( DAMAGE_DIG    == dmg_kind ); break;
+    case ADAMANTINE:
     case FIRE:      mult  = ( DAMAGE_FREEZE == dmg_kind ); break;
     case WATER:     mult  = ( DAMAGE_HEAT   == dmg_kind ); break;
     case GLASS:     mult  = ( DAMAGE_HEAT   != dmg_kind ); break;

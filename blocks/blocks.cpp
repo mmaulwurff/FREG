@@ -84,6 +84,7 @@
     }
 
     void Animal::DoRareAction() {
+        if ( Sub() != H_MEAT && Sub() != A_MEAT ) return; // mechanical
         if ( not IsSubAround(AIR) ) {
             if ( breath <= 0 ) {
                 Damage(10, DAMAGE_BREATH);
@@ -100,13 +101,14 @@
         }
     }
 
-    int Animal::ShouldAct() const { return FREQUENT_SECOND | FREQUENT_RARE; }
     int Animal::Breath() const { return breath; }
     int Animal::Satiation() const { return satiation; }
-    Animal * Animal::IsAnimal() { return this; }
+    int Animal::ShouldAct() const { return FREQUENT_SECOND | FREQUENT_RARE; }
     int Animal::DamageKind() const { return DAMAGE_BITE; }
+    int Animal::NutritionalValue(subs) const { return 0; }
+    Animal * Animal::IsAnimal() { return this; }
 
-    bool Animal::Eat(const int sub) {
+    bool Animal::Eat(const subs sub) {
         const int value = NutritionalValue(sub);
         if ( value ) {
             satiation += value;
@@ -388,7 +390,7 @@
         }
     }
 
-    int Rabbit::NutritionalValue(const int sub) const {
+    int Rabbit::NutritionalValue(const subs sub) const {
         return ( GREENERY == sub ) ? SECONDS_IN_HOUR*4 : 0;
     }
 
@@ -568,16 +570,16 @@
     }
 
     void Creator::SaveAttributes(QDataStream & out) const {
-        Active::SaveAttributes(out);
+        Animal::SaveAttributes(out);
         Inventory::SaveAttributes(out);
     }
 
     Creator::Creator(const int sub, const int id) :
-            Active(sub, id, NONSTANDARD),
+            Animal(sub, id),
             Inventory(INV_SIZE)
     {}
     Creator::Creator(QDataStream & str, const int sub, const int id) :
-            Active(str, sub, id, NONSTANDARD),
+            Animal(str, sub, id),
             Inventory(str, INV_SIZE)
     {}
 
@@ -719,7 +721,7 @@
     int Predator::Kind() const { return PREDATOR; }
     QString Predator::FullName() const { return "Predator"; }
 
-    int Predator::NutritionalValue(const int sub) const {
+    int Predator::NutritionalValue(const subs sub) const {
         return Attractive(sub) * SECONDS_IN_HOUR;
     }
 
@@ -747,7 +749,7 @@
                 block->ReceiveSignal(tr("Predator bites you!"));
                 world->Damage(xyz.X(), xyz.Y(), xyz.Z(),
                     DamageLevel(), DamageKind());
-                Eat(block->Sub());
+                Eat(static_cast<subs>(block->Sub()));
             }
         }
         if ( SECONDS_IN_DAY/4 > Satiation() ) {

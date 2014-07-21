@@ -112,13 +112,15 @@ public:
     using Animal::Animal;
 
     int Kind() const override;
-    int NutritionalValue(int sub) const override;
     QString FullName() const override;
 
 protected:
     void DoFrequentAction() override;
     void DoRareAction() override;
     int  Attractive(int sub) const override;
+
+private:
+    int NutritionalValue(subs) const override;
 };
 
 class Door : public Active {
@@ -167,7 +169,7 @@ private:
     int timerTime = -1;
 };
 
-class Creator : public Active, public Inventory {
+class Creator : public Animal, public Inventory {
     Q_OBJECT
 public:
     Creator(int sub, int id);
@@ -235,12 +237,14 @@ public:
     int DamageLevel() const override;
     int Kind() const override;
     QString FullName() const override;
-    int NutritionalValue(int sub) const override;
 
 protected:
     void DoFrequentAction() override;
     void DoRareAction() override;
     int  Attractive(int sub) const override;
+
+private:
+    int NutritionalValue(subs) const override;
 };
 
 #endif // BLOCKS_H

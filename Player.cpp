@@ -35,6 +35,8 @@ const bool COMMANDS_ALWAYS_ON = false;
 const bool COMMANDS_ALWAYS_ON = true;
 #endif
 
+const subs PLAYER_SUB = ADAMANTINE;
+
 long Player::GlobalX() const { return GetShred()->GlobalX(X()); }
 long Player::GlobalY() const { return GetShred()->GlobalY(Y()); }
 Shred * Player::GetShred() const { return world->GetShred(X(), Y()); }
@@ -74,16 +76,12 @@ int Player::HP() const {
 
 int Player::BreathPercent() const {
     if ( not IfPlayerExists() || GetCreativeMode() ) return -100;
-    Animal const * const animal = player->IsAnimal();
-    if ( animal == nullptr ) return -100;
-    return animal->Breath()*100/MAX_BREATH;
+    return player->Breath()*100/MAX_BREATH;
 }
 
 int Player::SatiationPercent() const {
     if ( not IfPlayerExists() || GetCreativeMode() ) return -100;
-    Animal const * const animal = player->IsAnimal();
-    if ( animal == nullptr ) return -100;
-    return animal->Satiation()*100/SECONDS_IN_DAY;
+    return player->Satiation()*100/SECONDS_IN_DAY;
 }
 
 Inventory * Player::PlayerInventory() const {
@@ -208,13 +206,10 @@ usage_types Player::Use(const int num) {
     const QMutexLocker locker(world->GetLock());
     Block * const block = ValidBlock(num);
     if ( block == nullptr ) return USAGE_TYPE_NO;
-    Animal * const animal = player->IsAnimal();
-    if ( animal && animal->NutritionalValue(block->Sub()) ) {
-        if ( animal->Eat(block->Sub()) ) {
-            PlayerInventory()->Pull(num);
-            block_manager.DeleteBlock(block);
-            emit Updated();
-        }
+    if ( player->Eat(static_cast<subs>(block->Sub())) ) {
+        PlayerInventory()->Pull(num);
+        block_manager.DeleteBlock(block);
+        emit Updated();
         return USAGE_TYPE_NO;
     } // else:
     const usage_types result = block->Use(player);
@@ -435,23 +430,20 @@ void Player::BlockDestroy() {
 void Player::SetPlayer(const int _x, const int _y, const int _z) {
     SetXyz(_x, _y, _z);
     if ( GetCreativeMode() ) {
-        ( player = BlockManager::NewBlock(CREATOR, DIFFERENT)->
-            ActiveBlock() )->SetXyz(X(), Y(), Z());
+        ( player = BlockManager::NewBlock(CREATOR, DIFFERENT)->IsAnimal() )->
+            SetXyz(X(), Y(), Z());
         GetShred()->Register(player);
     } else {
         World * const world = GetWorld();
-        for ( ; z_self < HEIGHT-1; ++z_self) {
-            const Block * const target_block = world->GetBlock(X(), Y(), Z());
-            if ( AIR==target_block->Sub() || DWARF==target_block->Kind() ) {
+        for ( ; z_self < HEIGHT-2; ++z_self ) {
+            Block * const block = world->GetBlock(X(), Y(), z_self);
+            if ( AIR == block->Sub() || nullptr != block->IsAnimal() ) {
                 break;
             }
         }
-        Block * const target_block = world->GetBlock(X(), Y(), Z());
-        if ( DWARF == target_block->Kind() ) {
-            player = target_block->ActiveBlock();
-        } else {
-            world->Build( (player = block_manager.
-                    NewBlock(DWARF, H_MEAT)->ActiveBlock()),
+        if ( (player=world->GetBlock(X(), Y(), Z())->IsAnimal()) == nullptr ) {
+            world->Build( (player = BlockManager::
+                    NewBlock(DWARF, PLAYER_SUB)->IsAnimal()),
                 X(), Y(), Z(), GetDir(), 0, true /*force build*/ );
         }
     }
@@ -467,7 +459,7 @@ void Player::SetPlayer(const int _x, const int _y, const int _z) {
     connect(player, SIGNAL(ReceivedText(const QString)),
         SIGNAL(Notify(const QString)),
         Qt::DirectConnection);
-} // void Player::SetPlayer(int _x, int _y, int _z)
+}
 
 Player::Player() {
     QSettings sett(QDir::currentPath() + '/' + world->WorldName()

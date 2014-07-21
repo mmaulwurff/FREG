@@ -176,7 +176,7 @@ int Screen::Color(const int kind, const int sub) const {
             }
         case SUB_DUST: return COLOR_PAIR(BLACK_BLACK) | A_BOLD | A_REVERSE;
         }
-    case DWARF:     return COLOR_PAIR(WHITE_BLUE);
+    case DWARF: return COLOR_PAIR((sub==ADAMANTINE) ? CYAN_BLACK : WHITE_BLUE);
     case RABBIT:    return COLOR_PAIR(  RED_WHITE);
     case PREDATOR:  return COLOR_PAIR(  RED_BLACK);
     case TELEGRAPH: return COLOR_PAIR( CYAN_BLACK);

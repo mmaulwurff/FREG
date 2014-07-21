@@ -46,8 +46,8 @@ public:
     bool GetExact(Block *, int to) override;
     void ReceiveSignal(QString) override;
     int  LightRadius() const override;
+    int  NutritionalValue(subs) const override;
     Block * DropAfterDamage(bool * delete_block) override;
-    int  NutritionalValue(int sub) const override;
     Inventory * HasInventory() override;
 
 protected:

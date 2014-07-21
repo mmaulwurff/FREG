@@ -26,7 +26,7 @@
 
 class World;
 class Block;
-class Active;
+class Animal;
 class Inventory;
 class Shred;
 
@@ -164,7 +164,7 @@ private:
     long homeLongi, homeLati;
     int homeX, homeY, homeZ;
     dirs dir = NORTH;
-    Active * player;
+    Animal * player;
     int usingType;
     int usingSelfType;
     int usingInInventory;

@@ -31,15 +31,13 @@ public:
     int  DamageKind() const override;
     int  ShouldAct() const override;
     void DoRareAction() override;
-    bool Eat(int sub);
+    bool Eat(subs);
     int  Breath() const;
     int  Satiation() const;
     QString FullName() const override = 0;
     Animal * IsAnimal() override;
     Block  * DropAfterDamage(bool * delete_block) override;
     INNER_ACTIONS ActInner() override;
-
-    virtual int NutritionalValue(int sub) const = 0;
 
 protected:
     void SaveAttributes(QDataStream & out) const override;
@@ -48,6 +46,8 @@ protected:
     bool moved_in_this_turn = false;
 
 private:
+    virtual int NutritionalValue(subs) const;
+
     quint8  breath;
     quint16 satiation;
 };
