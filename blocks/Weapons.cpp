@@ -74,10 +74,6 @@
         }
     }
 
-    void Weapon::Push(dirs, Block * const who) {
-        who->Damage(DamageLevel(), DamageKind());
-    }
-
 // Pick::
     int Pick::Kind() const { return PICK; }
     int Pick::DamageKind() const { return DAMAGE_MINE; }

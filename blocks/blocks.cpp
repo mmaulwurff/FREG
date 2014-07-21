@@ -282,10 +282,6 @@
         return block_manager.NormalBlock(AIR);
     }
 
-    void Grass::Push(dirs, Block *) {
-        GetWorld()->DestroyAndReplace(X(), Y(), Z());
-    }
-
     int  Grass::LightRadius() const {
         static const int radius = (FIRE == Sub()) ? 5 : 0;
         return radius;
@@ -307,7 +303,16 @@
         }
     }
 
-    void Bush::Push(dirs, Block * const who) { Inventory::Push(who); }
+    void Bush::Damage(const int dmg, const int dmg_kind) {
+        if ( dmg_kind >= DAMAGE_PUSH_UP ) {
+            int x, y, z;
+            GetWorld()->Focus( X(), Y(), Z(), &x, &y, &z,
+                World::Anti(MakeDirFromDamage(dmg_kind)) );
+            Inventory::Push(GetWorld()->GetBlock(x, y, z));
+        } else {
+            Block::Damage(dmg, dmg_kind);
+        }
+    }
 
     Block * Bush::DropAfterDamage(bool *) {
         Block * const pile = BlockManager::NewBlock(CONTAINER, DIFFERENT);
@@ -387,36 +392,35 @@
     }
 
 // Door::
-    push_reaction Door::PushResult(dirs) const {
-        return movable ? MOVABLE : NOT_MOVABLE;
-    }
-
-    void Door::Push(dirs, Block * const who) {
-        if ( not shifted
+    void Door::Damage(const int dmg, const int dmg_kind) {
+        if ( dmg_kind >= DAMAGE_PUSH_UP
+                && not shifted
                 && not locked
-                && World::Anti(GetDir())!=who->GetDir() )
+                && World::Anti(GetDir()) != MakeDirFromDamage(dmg_kind) )
         {
-            movable = true;
+            movable = MOVABLE;
             shifted = GetWorld()->Move(X(), Y(), Z(), GetDir());
-            movable = false;
+            movable = NOT_MOVABLE;
         }
+        Block::Damage(dmg, dmg_kind);
     }
 
     void Door::DoFrequentAction() {
         if ( shifted ) {
-            movable = true;
             World * const world = GetWorld();
             int x, y, z;
             world->Focus(X(), Y(), Z(), &x, &y, &z, World::Anti(GetDir()));
             if (ENVIRONMENT == world->GetBlock(x, y, z)->PushResult(NOWHERE)) {
+                movable = MOVABLE;
                 shifted = !world->Move(X(), Y(), Z(), World::Anti(GetDir()));
+                movable = NOT_MOVABLE;
             }
-            movable = false;
         }
     }
 
     int  Door::ShouldAct() const { return FREQUENT_SECOND; }
     int  Door::Kind() const { return locked ? LOCKED_DOOR : DOOR; }
+    push_reaction Door::PushResult(dirs) const { return movable; }
 
     QString Door::FullName() const {
         QString sub_string;
@@ -483,9 +487,15 @@
         }
     }
 
+    void Clock::Damage(int, int dmg_kind) {
+        if ( dmg_kind >= DAMAGE_PUSH_UP ) {
+            Use();
+        } else {
+            Break();
+        }
+    }
+
     int  Clock::ShouldAct() const  { return FREQUENT_RARE; }
-    void Clock::Damage(int, int) { Break(); }
-    void Clock::Push(dirs, Block *) { Use(); }
     int  Clock::Kind() const { return CLOCK; }
     int  Clock::Weight() const { return Block::Weight()/10; }
 

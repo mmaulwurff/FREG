@@ -101,6 +101,7 @@ enum push_reaction {
     NOT_MOVABLE,
     MOVE_UP,
     JUMP,
+    DAMAGE,
 };
 
 enum times_of_day {

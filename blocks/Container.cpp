@@ -23,10 +23,18 @@
 #include "CraftManager.h"
 
 // Container::
-    void Container::Push(dirs, Block * const who) {
-        Inventory::Push(who);
-        if ( Sub()==DIFFERENT && IsEmpty() ) {
-            GetWorld()->DestroyAndReplace(X(), Y(), Z());
+    void Container::Damage(const int dmg, const int dmg_kind) {
+        if ( dmg_kind >= DAMAGE_PUSH_UP ) {
+            int x, y, z;
+            World * const world = GetWorld();
+            world->Focus( X(), Y(), Z(), &x, &y, &z,
+                World::Anti(MakeDirFromDamage(dmg_kind)) );
+            Inventory::Push(world->GetBlock(x, y, z));
+            if ( Sub()==DIFFERENT && IsEmpty() ) {
+                world->DestroyAndReplace(X(), Y(), Z());
+            }
+        } else {
+            Block::Damage(dmg, dmg_kind);
         }
     }
 

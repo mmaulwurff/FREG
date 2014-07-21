@@ -21,6 +21,11 @@
 #include "BlockManager.h"
 #include "Inventory.h"
 
+dirs Block::MakeDirFromDamage(const int dmg_kind) {
+    Q_ASSERT(dmg_kind >= DAMAGE_PUSH_UP);
+    return static_cast<dirs>(dmg_kind - DAMAGE_PUSH_UP);
+}
+
 QString Block::FullName() const {
     switch ( Sub() ) {
     case STAR:
@@ -66,7 +71,10 @@ int Block::Transparency(const int transp, const int sub) const {
     }
 }
 
-void Block::Damage(const int dmg, const int dmg_kind) {
+void Block::Damage(const int dmg, int dmg_kind) {
+    if ( dmg_kind > DAMAGE_PUSH_UP ) {
+        dmg_kind = DAMAGE_PUSH_UP;
+    }
     switch ( Sub() ) {
     case SUB_DUST:
     case GREENERY:
@@ -96,11 +104,13 @@ void Block::Damage(const int dmg, const int dmg_kind) {
     case STONE: switch ( dmg_kind ) {
         case DAMAGE_HEAT:
         case DAMAGE_HANDS:
+        case DAMAGE_PUSH_UP:
         case DAMAGE_CUT: return;
         case DAMAGE_MINE: mult = 2; break;
         } break;
     case WOOD: switch ( dmg_kind ) {
         case DAMAGE_CUT: mult = 2; break;
+        case DAMAGE_PUSH_UP:
         case DAMAGE_HANDS: return;
         } break;
     case A_MEAT:
@@ -112,7 +122,10 @@ void Block::Damage(const int dmg, const int dmg_kind) {
     case FIRE:      mult  = ( DAMAGE_FREEZE == dmg_kind ); break;
     case WATER:     mult  = ( DAMAGE_HEAT   == dmg_kind ); break;
     case GLASS:     mult  = ( DAMAGE_HEAT   != dmg_kind ); break;
-    case IRON:      mult  = ( DAMAGE_HANDS  != dmg_kind ); break;
+    case IRON: switch ( dmg_kind ) {
+        case DAMAGE_HANDS:
+        case DAMAGE_PUSH_UP: return;
+        }
     }
     durability -= mult*dmg;
 }
@@ -141,14 +154,13 @@ push_reaction Block::PushResult(dirs) const {
 int  Block::Kind() const { return BLOCK; }
 int  Block::GetId() const { return id; }
 bool Block::Catchable() const { return false; }
-void Block::Push(dirs, Block *) {}
 void Block::Move(dirs) {}
-usage_types Block::Use(Block *) { return USAGE_TYPE_NO; }
 int  Block::Wearable() const { return WEARABLE_NOWHERE; }
 int  Block::DamageKind() const { return DAMAGE_CRUSH; }
 int  Block::DamageLevel() const { return 1; }
 int  Block::LightRadius() const { return 0; }
 void Block::ReceiveSignal(QString) {}
+usage_types Block::Use(Block *) { return USAGE_TYPE_NO; }
 
 bool Block::Inscribe(QString str) {
     if ( note ) {

@@ -47,4 +47,4 @@ private:
     quint16 fuel_level;
 };
 
-#endif
+#endif // ILLUMINATOR_H

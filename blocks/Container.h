@@ -41,9 +41,9 @@ public:
     void ReceiveSignal(QString) override;
     void DoRareAction() override;
     int  ShouldAct() const override;
-    void Push(dirs, Block * who) override;
     int  Weight() const override;
     int  Kind() const override;
+    void Damage(int dmg, int dmg_kind) override;
     Block * DropAfterDamage(bool * delete_block) override;
     QString FullName() const override;
     Active * ActiveBlock() override;

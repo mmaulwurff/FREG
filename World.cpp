@@ -467,8 +467,11 @@ bool World::CanMove(const int x, const int y, const int z,
     default:
     case NOT_MOVABLE: return false;
     }
-    block_to->Push(dir, block);
-    block_to = GetBlock(newx, newy, newz);
+    block_to->Damage(1, DAMAGE_PUSH_UP + dir);
+    if ( block_to->GetDurability() <= 0 ) {
+        DestroyAndReplace(x, y, z);
+        block_to = GetBlock(newx, newy, newz);
+    }
     push_reaction target_push = block_to->PushResult(dir);
     switch ( target_push ) {
     case MOVABLE:
@@ -485,6 +488,9 @@ bool World::CanMove(const int x, const int y, const int z,
         if ( dir > DOWN ) { // not UP and not DOWN
             Jump(x, y, z, dir);
         }
+        return false;
+    case DAMAGE:
+        block->Damage(block_to->DamageLevel(), block_to->DamageKind());
         return false;
     }
     Q_UNREACHABLE();
@@ -556,13 +562,13 @@ int World::Damage(const int x, const int y, const int z,
 {
     Block * temp = GetBlock(x, y, z);
     const int sub  = temp->Sub();
-    if ( AIR==sub ) return 0;
+    if ( AIR == sub ) return 0;
     const int kind = temp->Kind();
-    if ( temp==Normal(sub) ) {
+    if ( temp == Normal(sub) ) {
         temp = NewBlock(kind, sub);
     }
     temp->Damage(dmg, dmg_kind);
-    int durability = temp->GetDurability();
+    const int durability = temp->GetDurability();
     // SetBlock can alter temp (by ReplaceWithNormal) so put in last place.
     SetBlock(temp, x, y, z);
     return durability;

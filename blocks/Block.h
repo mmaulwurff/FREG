@@ -41,6 +41,7 @@ enum wearable {
 }; // enum WEARABLE
 
 enum damage_kinds {
+    // Put new damage kinds before DAMAGE_PUSH_UP.
     DAMAGE_MINE,    ///<  0
     DAMAGE_DIG,     ///<  1
     DAMAGE_CUT,     ///<  2
@@ -57,6 +58,12 @@ enum damage_kinds {
     DAMAGE_NO,      ///< 13
     DAMAGE_HANDS,   ///< 14
     DAMAGE_ACID,    ///< 15
+    DAMAGE_PUSH_UP, ///< 16
+    DAMAGE_PUSH_DOWN,  ///< 17
+    DAMAGE_PUSH_NORTH, ///< 18
+    DAMAGE_PUSH_SOUTH, ///< 19
+    DAMAGE_PUSH_EAST,  ///< 20
+    DAMAGE_PUSH_WEST,  ///< 21
 }; // enum damage_kinds
 
 // weights in measures - mz (mezuro)
@@ -91,7 +98,6 @@ public:
     virtual bool Catchable() const;
     /// Returns true on success.
     virtual bool Inscribe(QString str);
-    virtual void Push(dirs, Block * who);
     virtual void Move(dirs direction);
     virtual void Damage(int dmg, int dmg_kind);
     virtual usage_types Use(Block * who);
@@ -145,6 +151,8 @@ public:
 
 protected:
     virtual void SaveAttributes(QDataStream &) const;
+    /// To convert DAMAGE_PUSH_UP...WEST to corresponding direction.
+    static dirs MakeDirFromDamage(int damage_kind);
 
     QString * note;
 

@@ -50,10 +50,10 @@ class Liquid : public Falling {
 public:
     using Falling::Falling;
 
-    int ShouldAct() const override;
-    int LightRadius() const override;
     int Kind() const override;
+    int ShouldAct() const override;
     int DamageKind() const override;
+    int LightRadius() const override;
     QString FullName() const override;
     Block * DropAfterDamage(bool * delete_block) override;
     push_reaction PushResult(dirs) const override;
@@ -67,12 +67,11 @@ class Grass : public Active {
 public:
     using Active::Active;
 
+    int  Kind()     const override;
     int  ShouldAct()  const override;
     int  LightRadius() const override;
-    int  Kind()     const override;
-    void Push(dirs, Block * who) override;
-    Block * DropAfterDamage(bool * delete_block) override;
     QString FullName() const override;
+    Block * DropAfterDamage(bool * delete_block) override;
     push_reaction PushResult(dirs) const override;
 
 protected:
@@ -91,15 +90,14 @@ public:
     Bush(QDataStream & str, int sub, int id);
 
     int  Sub() const override;
-    int  ShouldAct() const override;
-    void Push(dirs, Block * who) override;
-    void ReceiveSignal(QString) override;
     int  Kind() const override;
-    int Weight() const override;
-
+    int  Weight() const override;
+    int  ShouldAct() const override;
+    void ReceiveSignal(QString) override;
+    void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
-    usage_types Use(Block * who = 0) override;
     Inventory * HasInventory() override;
+    usage_types Use(Block * who = 0) override;
     Block * DropAfterDamage(bool * delete_block) override;
 
 protected:
@@ -128,9 +126,9 @@ public:
     Door(int sub, int id);
     Door(QDataStream & str, int sub, int id);
 
-    int ShouldAct() const override;
-    void Push(dirs, Block *) override;
     int  Kind() const override;
+    int  ShouldAct() const override;
+    void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
     usage_types Use(Block * who) override;
     push_reaction PushResult(dirs) const override;
@@ -142,7 +140,7 @@ protected:
 private:
     bool shifted;
     bool locked;
-    bool movable = false;
+    push_reaction movable = NOT_MOVABLE;
 };
 
 class Clock : public Active {
@@ -151,12 +149,11 @@ public:
     Clock(int sub, int id);
     Clock (QDataStream & str, int sub, int id);
 
-    int ShouldAct() const override;
-    int Weight() const override;
-    bool Inscribe(QString) override;
-    void Push(dirs dir, Block * who) override;
-    void Damage(int dmg, int dmg_kind) override;
     int  Kind() const override;
+    int  Weight() const override;
+    int  ShouldAct() const override;
+    bool Inscribe(QString) override;
+    void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
     usage_types Use(Block * who = 0) override;
     INNER_ACTIONS ActInner() override;
@@ -222,9 +219,9 @@ class Bell : public Active {
 public:
     using Active::Active;
 
+    int  Kind() const override;
     void ReceiveSignal(QString) override;
     void Damage(int dmg, int dmg_kind) override;
-    int  Kind() const override;
     QString FullName() const override;
     usage_types Use(Block * who = 0) override;
 };

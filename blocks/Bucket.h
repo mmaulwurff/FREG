@@ -28,12 +28,12 @@ public:
     Bucket(int sub, int id);
     Bucket(QDataStream & str, int sub, int id);
 
-    int  Kind() const override;
     int  Sub() const override;
+    int  Kind() const override;
     int  Weight() const override;
+    void ReceiveSignal(QString str) override;
     bool Get(Block * block, int start) override;
     void Damage(int dmg, int dmg_kind) override;
-    void ReceiveSignal(QString str) override;
     QString FullName() const override;
     usage_types Use(Block *) override;
     Inventory * HasInventory() override final;
