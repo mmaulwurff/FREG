@@ -253,9 +253,5 @@ Block * BlockManager::ReplaceWithNormal(Block * const block) const {
     }
 }
 
-int BlockManager::MakeId(const int kind, const int sub) {
-    return (kind << 8) | sub;
-}
-
 int BlockManager::KindFromId(const int id) { return (id >> 8); }
 int BlockManager:: SubFromId(const int id) { return (id & 0xFF); }

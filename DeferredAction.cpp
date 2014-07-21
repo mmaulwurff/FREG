@@ -44,10 +44,10 @@ void DeferredAction::Jump() const {
 }
 
 void DeferredAction::Build() const {
-    int z = z_self;
+    int z = Z();
     World * const world = attachedBlock->GetWorld();
     if ( DOWN==attachedBlock->GetDir() &&
-            AIR!=world->GetBlock(x_self, y_self, z_self)->Sub() )
+            AIR!=world->GetBlock(X(), Y(), Z())->Sub() )
     {
         if ( world->Move(attachedBlock->X(),
                 attachedBlock->Y(), attachedBlock->Z(), UP) )
@@ -58,7 +58,7 @@ void DeferredAction::Build() const {
         }
     }
     const int id = material->GetId();
-    if ( not world->Build(material, x_self, y_self, z,
+    if ( not world->Build(material, X(), Y(), z,
             World::TurnRight(attachedBlock->GetDir()), attachedBlock) )
     { // build not successful
         return;
@@ -88,7 +88,7 @@ void DeferredAction::Damage() const {
 }
 
 void DeferredAction::Throw() const {
-    attachedBlock->GetWorld()->Drop(attachedBlock, x_self, y_self, z_self,
+    attachedBlock->GetWorld()->Drop(attachedBlock, X(), Y(), Z(),
         srcSlot, destSlot, num);
 }
 
@@ -105,16 +105,15 @@ void DeferredAction::Pour() const {
     Block * const liquid = vessel_inv->ShowBlock(0);
     if ( liquid == nullptr ) return;
 
-    if ( attachedBlock->GetWorld()->Build(liquid, x_self, y_self, z_self) ) {
+    if ( attachedBlock->GetWorld()->Build(liquid, X(), Y(), Z()) ) {
         vessel_inv->Pull(0);
     }
 }
 
 void DeferredAction::SetFire() const {
     World * const world = attachedBlock->GetWorld();
-    if ( world->GetBlock(x_self, y_self, z_self)->Sub() == AIR ) {
-        world->Build(BlockManager::NewBlock(GRASS, FIRE),
-            x_self, y_self, z_self);
+    if ( world->GetBlock(X(), Y(), Z())->Sub() == AIR ) {
+         world->Build(BlockManager::NewBlock(GRASS, FIRE), X(), Y(), Z());
     }
 }
 

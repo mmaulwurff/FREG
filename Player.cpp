@@ -37,10 +37,18 @@ const bool COMMANDS_ALWAYS_ON = true;
 
 long Player::GlobalX() const { return GetShred()->GlobalX(X()); }
 long Player::GlobalY() const { return GetShred()->GlobalY(Y()); }
-
 Shred * Player::GetShred() const { return world->GetShred(X(), Y()); }
 World * Player::GetWorld() const { return world; }
 
+dirs Player::GetDir() const { return dir; }
+int  Player::UsingType() const { return usingType; }
+void Player::StopUseAll() { usingType = usingSelfType = USAGE_TYPE_NO; }
+int  Player::UsingSelfType() const { return usingSelfType; }
+void Player::SetUsingTypeNo() { usingType = USAGE_TYPE_NO; }
+bool Player::IfPlayerExists() const { return player != nullptr; }
+int  Player::GetUsingInInventory() const { return usingInInventory; }
+long Player::GetLongitude() const { return GetShred()->Longitude(); }
+long Player::GetLatitude()  const { return GetShred()->Latitude();  }
 bool Player::GetCreativeMode() const { return creativeMode; }
 
 void Player::SetCreativeMode(const bool creative_on) {
@@ -58,11 +66,6 @@ void Player::SetCreativeMode(const bool creative_on) {
     }
     emit Updated();
 }
-
-int Player::UsingSelfType() const { return usingSelfType; }
-int Player::UsingType() const { return usingType; }
-void Player::SetUsingTypeNo() { usingType = USAGE_TYPE_NO; }
-bool Player::IfPlayerExists() const { return player != nullptr; }
 
 int Player::HP() const {
     return ( not IfPlayerExists() || GetCreativeMode() ) ?
@@ -92,9 +95,6 @@ Inventory * Player::PlayerInventory() const {
         return 0;
     }
 }
-
-long Player::GetLongitude() const { return GetShred()->Longitude(); }
-long Player::GetLatitude()  const { return GetShred()->Latitude();  }
 
 void Player::UpdateXYZ(int) {
     if ( player ) {
@@ -153,8 +153,6 @@ void Player::Move(const dirs direction) {
         }
     }
 }
-
-void Player::StopUseAll() { usingType = usingSelfType = USAGE_TYPE_NO; }
 
 void Player::Backpack() {
     if ( PlayerInventory() ) {
@@ -240,8 +238,6 @@ usage_types Player::Use(const int num) {
     }
     return result;
 }
-
-int Player::GetUsingInInventory() const { return usingInInventory; }
 
 void Player::Throw(const int src, const int dest, const int num) {
     int x, y, z;
@@ -392,8 +388,6 @@ bool Player::Visible(const int x_to, const int y_to, const int z_to) const {
             world->Enlightened(x_to, y_to, z_to) &&
             world->Visible(X(), Y(), Z(), x_to, y_to, z_to));
 }
-
-dirs Player::GetDir() const { return dir; }
 
 void Player::SetDir(const dirs direction) {
     usingType = USAGE_TYPE_NO;

@@ -176,7 +176,14 @@ void Shred::PhysEventsFrequent() {
     for (auto i = fallList.begin(); i != fallList.end(); ++i) {
         if ( *i == nullptr ) {
             continue;
-        } else if ( (*i)->Weight() <= 0 ) {
+        } // else:
+        const int x_in = CoordInShred((*i)->X());
+        const int y_in = CoordInShred((*i)->Y());
+        Block * const floor_block = GetBlock(x_in, y_in, (*i)->Z()-1);
+        if ( (*i)->Weight() <= 0
+                || ( floor_block->PushResult(NOWHERE) == ENVIRONMENT
+                    && floor_block->Sub() != AIR ) )
+        {
             (*i)->SetFalling(false);
             *i = nullptr;
         } else if ( not world->Move((*i)->X(), (*i)->Y(), (*i)->Z(), DOWN) ) {

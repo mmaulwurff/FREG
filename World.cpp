@@ -86,14 +86,13 @@ void World::Drop(Block * const block_from,
         const int x_to, const int y_to, const int z_to,
         const int src, const int dest, const int num)
 {
-    Block * block_to = GetBlock(x_to, y_to, z_to);
-    if ( AIR == block_to->Sub() ) {
-        SetBlock((block_to=NewBlock(CONTAINER, DIFFERENT)), x_to, y_to, z_to);
-    } else if ( LIQUID == block_to->Kind() ) {
-        Block * const pile = NewBlock(CONTAINER, DIFFERENT);
-        SetBlock(pile, x_to, y_to, z_to);
-        pile->HasInventory()->Get(block_to);
-        block_to = pile;
+    Shred * const shred = GetShred(x_to, y_to);
+    const int x_in = Shred::CoordInShred(x_to);
+    const int y_in = Shred::CoordInShred(y_to);
+    Block * block_to = shred->GetBlock(x_in, y_in, z_to);
+    if ( ENVIRONMENT == block_to->PushResult(NOWHERE) ) {
+        shred->SetBlock( (block_to=NewBlock(CONTAINER, DIFFERENT)),
+            x_in, y_in, z_to );
     }
     Exchange(block_from, block_to, src, dest, num);
     emit Updated(x_to, y_to, z_to);
@@ -457,7 +456,8 @@ bool World::CanMove(const int x, const int y, const int z,
             return false;
         }
     }
-    switch ( block->PushResult(dir) ) {
+    const push_reaction reaction = block->PushResult(dir);
+    switch ( reaction ) {
     case MOVABLE: break;
     case ENVIRONMENT:
         if ( *block == *block_to ) { // prevent useless flow
@@ -467,7 +467,9 @@ bool World::CanMove(const int x, const int y, const int z,
     default:
     case NOT_MOVABLE: return false;
     }
-    if ( Damage(newx, newy, newz, 1, DAMAGE_PUSH_UP + dir) <= 0 ) {
+    if ( reaction != ENVIRONMENT
+            && Damage(newx, newy, newz, 1, DAMAGE_PUSH_UP + dir) <= 0 )
+    {
         DestroyAndReplace  (newx, newy, newz);
         block_to = GetBlock(newx, newy, newz);
     }
@@ -476,7 +478,7 @@ bool World::CanMove(const int x, const int y, const int z,
     case MOVABLE:
         return ( (weight > block_to->Weight()) &&
                 Move(newx, newy, newz, dir) );
-    case ENVIRONMENT: return (weight == 0 || weight > block_to->Weight());
+    case ENVIRONMENT: return true;
     case NOT_MOVABLE: return false;
     case MOVE_UP:
         if ( dir > DOWN ) { // not UP and not DOWN

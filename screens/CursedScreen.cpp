@@ -306,7 +306,7 @@ void Screen::ControlPlayer(const int ch) {
     updated = false;
 } // void Screen::ControlPlayer(int ch)
 
-void Screen::ProcessCommand(QString command) {
+void Screen::ProcessCommand(const QString command) {
     if ( command.length()==1 && "."!=command ) {
         ControlPlayer(command.at(0).toLatin1());
     } else if ( "warranty" == command ) {

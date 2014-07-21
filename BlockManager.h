@@ -69,7 +69,10 @@ public:
     /// If string is not convertible to substance, returns LAST_SUB.
     static int StringToSub(QString);
 
-    static int MakeId(int kind, int sub);
+    constexpr static int MakeId(const int kind, const int sub) {
+        return (kind << 8) | sub;
+    }
+
     static int KindFromId(int id);
     static int SubFromId(int id);
 
