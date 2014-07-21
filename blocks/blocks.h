@@ -54,6 +54,7 @@ public:
     int ShouldAct() const override;
     int DamageKind() const override;
     int LightRadius() const override;
+    bool Inscribe(QString) override;
     QString FullName() const override;
     Block * DropAfterDamage(bool * delete_block) override;
     push_reaction PushResult(dirs) const override;

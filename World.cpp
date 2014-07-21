@@ -467,9 +467,8 @@ bool World::CanMove(const int x, const int y, const int z,
     default:
     case NOT_MOVABLE: return false;
     }
-    block_to->Damage(1, DAMAGE_PUSH_UP + dir);
-    if ( block_to->GetDurability() <= 0 ) {
-        DestroyAndReplace(x, y, z);
+    if ( Damage(newx, newy, newz, 1, DAMAGE_PUSH_UP + dir) <= 0 ) {
+        DestroyAndReplace  (newx, newy, newz);
         block_to = GetBlock(newx, newy, newz);
     }
     push_reaction target_push = block_to->PushResult(dir);
@@ -575,10 +574,10 @@ int World::Damage(const int x, const int y, const int z,
 }
 
 void World::DestroyAndReplace(const int x, const int y, const int z) {
-    Shred * const shred = GetShred(x, y);
+    Shred * const  shred = GetShred(x, y);
     const int x_in_shred = Shred::CoordInShred(x);
     const int y_in_shred = Shred::CoordInShred(y);
-    Block * const block = shred->GetBlock(x_in_shred, y_in_shred, z);
+    Block * const block  = shred->GetBlock(x_in_shred, y_in_shred, z);
     bool delete_block = true;
     Block * const new_block = block->DropAfterDamage(&delete_block);
     shred->SetBlockNoCheck(new_block, x_in_shred, y_in_shred, z);
@@ -600,7 +599,7 @@ void World::DestroyAndReplace(const int x, const int y, const int z) {
     emit Updated(x, y, z);
 }
 
-bool World::Build(Block * block, const int x, const int y, const int z,
+bool World::Build(Block * const block, const int x, const int y, const int z,
         const int dir, Block * const who, const bool anyway)
 {
     Block * const target_block = GetBlock(x, y, z);
@@ -627,17 +626,13 @@ bool World::Build(Block * block, const int x, const int y, const int z,
 
 bool World::Inscribe(const int x, const int y, const int z) {
     Block * block = GetBlock(x, y, z);
-    if ( LIQUID==block->Kind() || AIR==block->Sub() ) {
-        return false;
-    } // else:
-    if ( block==Normal(block->Sub()) ) {
+    if ( block == Normal(block->Sub()) ) {
         block = NewBlock(block->Kind(), block->Sub());
+        SetBlock(block, x, y, z);
     }
-    QString str = tr("No note received.");
+    QString str;
     emit GetString(str);
-    const bool ok_flag = block->Inscribe(str);
-    SetBlock(block, x, y, z);
-    return ok_flag;
+    return block->Inscribe(str);
 }
 
 void World::Exchange(Block * const block_from, Block * const block_to,

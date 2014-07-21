@@ -191,6 +191,7 @@
 
     int Liquid::ShouldAct() const  { return FREQUENT_RARE; }
     int Liquid::Kind() const { return LIQUID; }
+    bool Liquid::Inscribe(QString) { return false; }
     push_reaction Liquid::PushResult(dirs) const { return ENVIRONMENT; }
 
     Block * Liquid::DropAfterDamage(bool *) {

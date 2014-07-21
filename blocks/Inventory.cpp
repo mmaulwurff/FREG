@@ -164,16 +164,11 @@ int Inventory::Weight() const {
     for (int i=0; i<Size(); ++i) {
         sum += GetInvWeight(i);
     }
-    return sum;
-}
-
-Block * Inventory::ShowBlock(const int slot) const {
-    return ( slot > Size() || Number(slot)==0 ) ?
-        nullptr : inventory[slot].top();
+    return sum / MAX_STACK_SIZE;
 }
 
 Block * Inventory::ShowBlock(const int slot, const int num) const {
-    return ( slot > Size() || num+1 > Number(slot) ) ?
+    return ( slot > Size() || num >= Number(slot) ) ?
         nullptr : inventory[slot].at(num);
 }
 

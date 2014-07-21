@@ -68,14 +68,14 @@ enum damage_kinds {
 
 // weights in measures - mz (mezuro)
     const int WEIGHT_NULLSTONE = 1000;
-    const int WEIGHT_SAND = 100;
-    const int WEIGHT_WATER = 50;
-    const int WEIGHT_GLASS = 150;
-    const int WEIGHT_IRON = 300;
-    const int WEIGHT_GREENERY = 3;
-    const int WEIGHT_MINIMAL = 1;
-    const int WEIGHT_STONE = 200;
-    const int WEIGHT_AIR = 0;
+    const int WEIGHT_WATER     =  500;
+    const int WEIGHT_IRON      =  300;
+    const int WEIGHT_STONE     =  200;
+    const int WEIGHT_GLASS     =  150;
+    const int WEIGHT_SAND      =  100;
+    const int WEIGHT_GREENERY  =    3;
+    const int WEIGHT_MINIMAL   =    1;
+    const int WEIGHT_AIR       =    0;
 
 class Inventory;
 class Active;

@@ -73,7 +73,7 @@ int Block::Transparency(const int transp, const int sub) const {
 
 void Block::Damage(const int dmg, int dmg_kind) {
     if ( dmg_kind > DAMAGE_PUSH_UP ) {
-        dmg_kind = DAMAGE_PUSH_UP;
+         dmg_kind = DAMAGE_PUSH_UP;
     }
     switch ( Sub() ) {
     case SUB_DUST:
@@ -162,7 +162,10 @@ int  Block::LightRadius() const { return 0; }
 void Block::ReceiveSignal(QString) {}
 usage_types Block::Use(Block *) { return USAGE_TYPE_NO; }
 
-bool Block::Inscribe(QString str) {
+bool Block::Inscribe(const QString str) {
+    if ( Sub() == AIR ) {
+        return false;
+    } // else:
     if ( note ) {
         *note = str.left(MAX_NOTE_LENGTH);
     } else {

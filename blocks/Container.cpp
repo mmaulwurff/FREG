@@ -31,7 +31,7 @@
                 World::Anti(MakeDirFromDamage(dmg_kind)) );
             Inventory::Push(world->GetBlock(x, y, z));
             if ( Sub()==DIFFERENT && IsEmpty() ) {
-                world->DestroyAndReplace(X(), Y(), Z());
+                Break();
             }
         } else {
             Block::Damage(dmg, dmg_kind);
@@ -66,8 +66,9 @@
             FREQUENT_NEVER : FREQUENT_RARE;
     }
 
-    int Container::Kind() const { return CONTAINER; }
-    int Container::Sub() const { return Block::Sub(); }
+    int  Container::Sub()  const { return Block::Sub(); }
+    int  Container::Kind() const { return CONTAINER; }
+    void Container::ReceiveSignal(QString) {}
     Inventory * Container::HasInventory() { return this; }
     push_reaction Container::PushResult(dirs) const { return NOT_MOVABLE; }
 
@@ -99,10 +100,6 @@
 
     int Container::Weight() const {
         return Block::Weight()*4 + Inventory::Weight();
-    }
-
-    void Container::ReceiveSignal(const QString str) {
-        Block::ReceiveSignal(str);
     }
 
     QString Container::FullName() const {
