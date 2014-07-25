@@ -80,7 +80,11 @@ int Player::BreathPercent() const {
 }
 
 int Player::SatiationPercent() const {
-    if ( not IfPlayerExists() || GetCreativeMode() ) return -100;
+    if ( not IfPlayerExists() || GetCreativeMode()
+            || (player->Sub()!=H_MEAT && player->Sub()!=A_MEAT) )
+    {
+        return -100;
+    }
     return player->Satiation()*100/SECONDS_IN_DAY;
 }
 

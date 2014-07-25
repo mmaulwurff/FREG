@@ -384,22 +384,22 @@ void World::PhysEvents() {
     // emit ExitReceived(); // close all after 1 turn
 } // void World::PhysEvents()
 
-bool World::DirectlyVisible(int x_from, int y_from, int z_from,
-        int x, int y, int z)
+bool World::DirectlyVisible(
+        int x_from, int y_from, int z_from,
+        int x,      int y,      int z)
 const {
     /// optimized DDA line with integers only.
-    int max = Abs(Abs(z-=z_from) > Abs(y-=y_from) ? z : y);
-    if ( Abs(x-=x_from) > max) {
-        max = Abs(x);
+    int max = Abs(Abs(x-=x_from) > Abs(y-=y_from) ? x : y);
+    if ( Abs(z-=z_from) > max) {
+        max = Abs(z);
     }
-    //fprintf(stderr, "max: %d\n", max);
     x_from *= max;
     y_from *= max;
     z_from *= max;
-    for (int i=max; i--; ) {
+    for (int i=max-1; i-- > 0; ) {
         if ( not (GetBlock((x_from+=x)/max, (y_from+=y)/max, (z_from+=z)/max)->
                     Transparent()
-                || GetBlock( (x_from+max-1)/max, (y_from+max-1)/max,
+                && GetBlock( (x_from+max-1)/max, (y_from+max-1)/max,
                     (z_from+max-1)/max )->Transparent()) )
         {
                return false;

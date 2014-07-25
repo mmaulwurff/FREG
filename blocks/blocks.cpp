@@ -73,6 +73,7 @@
 
 // Animal::
     INNER_ACTIONS Animal::ActInner() {
+        if ( Sub() != H_MEAT && Sub() != A_MEAT ) return INNER_ACTION_NONE;
         if ( satiation <= 0 ) {
             Damage(5, DAMAGE_HUNGER);
         } else {
