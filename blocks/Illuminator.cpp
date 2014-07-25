@@ -23,24 +23,28 @@
 
 Illuminator::Illuminator(const int sub, const int id) :
         Active(sub, id),
-        fuel_level(MAX_FUEL)
+        fuelLevel(MAX_FUEL)
 {}
 
 Illuminator::Illuminator(QDataStream & str, const int sub, const int id) :
         Active(str, sub, id)
 {
-    str >> fuel_level;
+    str >> fuelLevel;
 }
 
+int  Illuminator::Kind() const { return ILLUMINATOR; }
 void Illuminator::Damage(int, int) { Break(); }
-int Illuminator::Kind() const { return ILLUMINATOR; }
+
+int  Illuminator::DamageKind() const {
+    return (Sub()==GLASS) ? DAMAGE_NO : DAMAGE_HEAT;
+}
 
 QString Illuminator::FullName() const {
     switch ( Sub() ) {
-    case WOOD:  return tr("Torch, fuel: %1"        ).arg(fuel_level);
-    case STONE: return tr("Flint, charges: %1"     ).arg(fuel_level);
-    case IRON:  return tr("Lantern, fuel: %1"      ).arg(fuel_level);
-    case GLASS: return tr("Flashlight, battery: %1").arg(fuel_level);
+    case WOOD:  return tr("Torch, fuel: %1"        ).arg(fuelLevel);
+    case STONE: return tr("Flint, charges: %1"     ).arg(fuelLevel);
+    case IRON:  return tr("Lantern, fuel: %1"      ).arg(fuelLevel);
+    case GLASS: return tr("Flashlight, battery: %1").arg(fuelLevel);
     default: fprintf(stderr, "Illuminator::FullName: sub ?: %d\n", Sub());
         return tr("Strange illuminator");
     }
@@ -57,14 +61,14 @@ usage_types Illuminator::Use(Block *) {
     if ( Sub() == GLASS ) { // flashlight
         return USAGE_TYPE_NO;
     } else {
-        fuel_level = ( fuel_level >= 10 ) ?
-            fuel_level - 10 : 0;
+        fuelLevel = ( fuelLevel >= 10 ) ?
+            fuelLevel - 10 : 0;
         return USAGE_TYPE_SET_FIRE;
     }
 }
 
 int Illuminator::LightRadius() const {
-    if ( fuel_level == 0 ) return 0;
+    if ( fuelLevel == 0 ) return 0;
     switch ( Sub() ) {
     default:
     case STONE: return 0;
@@ -78,13 +82,13 @@ int  Illuminator::ShouldAct() const { return FREQUENT_RARE; }
 void Illuminator::DoRareAction() { ActInner(); }
 
 INNER_ACTIONS Illuminator::ActInner() {
-    if ( fuel_level == 0 ) {
+    if ( fuelLevel == 0 ) {
         if ( Sub() == WOOD ) {
             Break();
         }
     } else {
         if ( Sub() != STONE ) {
-            --fuel_level;
+            --fuelLevel;
         }
     }
     return INNER_ACTION_NONE;
@@ -92,5 +96,5 @@ INNER_ACTIONS Illuminator::ActInner() {
 
 void Illuminator::SaveAttributes(QDataStream & out) const {
     Active::SaveAttributes(out);
-    out << fuel_level;
+    out << fuelLevel;
 }

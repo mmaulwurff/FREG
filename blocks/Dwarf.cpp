@@ -19,6 +19,7 @@
 
 #include "Dwarf.h"
 #include "World.h"
+#include "Shred.h"
 #include "BlockManager.h"
 #include <QDataStream>
 
@@ -106,7 +107,12 @@ bool Dwarf::GetExact(Block * const block, const int to) {
             && Inventory::GetExact(block, to) )
     {
         UpdateLightRadius();
-        GetWorld()->Shine(X(), Y(), Z(), lightRadius, true);
+        if ( lightRadius == 0 ) {
+            GetWorld()->GetShred(X(), Y())->RemShining(this);
+        } else {
+            GetWorld()->GetShred(X(), Y())->AddShining(this);
+            GetWorld()->Shine(X(), Y(), Z(), lightRadius, true);
+        }
         return true;
     } else {
         return false;

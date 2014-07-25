@@ -17,10 +17,13 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include "blocks/Container.h"
+#include "blocks/Containers.h"
 #include "World.h"
+#include "Shred.h"
 #include "BlockManager.h"
 #include "CraftManager.h"
+
+const int CONVERTER_LIGHT_RADIUS = 2;
 
 // Container::
     void Container::Damage(const int dmg, const int dmg_kind) {
@@ -232,6 +235,54 @@
     Workbench::Workbench(const int sub, const int id) :
             Container(sub, id, WORKBENCH_SIZE)
     {}
+
     Workbench::Workbench(QDataStream & str, const int sub, const int id) :
             Container(str, sub, id, WORKBENCH_SIZE)
     {}
+
+// Converter
+    Converter::Converter(const int sub, const int id) :
+            Container(sub, id, WORKBENCH_SIZE),
+            isOn(false),
+            fuelLevel(0),
+            lightRadius(0)
+    {}
+
+    Converter::Converter(QDataStream & str, const int sub, const int id) :
+            Container(str, sub, id, WORKBENCH_SIZE)
+    {
+        str >> isOn >> fuelLevel;
+        lightRadius = isOn ? CONVERTER_LIGHT_RADIUS : 0;
+    }
+
+    void Converter::SaveAttributes(QDataStream & out) const {
+        Container::SaveAttributes(out);
+        out << isOn << fuelLevel;
+    }
+
+    int Converter::Kind() const { return CONVERTER; }
+    int Converter::LightRadius() const { return lightRadius; }
+
+    QString Converter::FullName() const {
+        switch ( Sub() ) {
+            default:
+            case STONE: return tr("Furnace");
+        }
+    }
+
+    void Converter::Damage(const int dmg, const int dmg_kind) {
+        switch ( dmg_kind ) {
+        default: Block::Damage(dmg, dmg_kind); break;;
+        case DAMAGE_HEAT:
+            isOn = true;
+            GetWorld()->GetShred(X(), Y())->AddShining(this);
+            GetWorld()->Shine(X(), Y(), Z(),
+                lightRadius=CONVERTER_LIGHT_RADIUS, true);
+            break;
+        case DAMAGE_FREEZE:
+            isOn = false;
+            lightRadius = 0;
+            GetWorld()->GetShred(X(), Y())->RemShining(this);
+            break;
+        }
+    }

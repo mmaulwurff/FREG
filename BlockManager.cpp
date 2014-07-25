@@ -25,7 +25,7 @@
 #include "blocks/Bucket.h"
 #include "blocks/Weapons.h"
 #include "blocks/Illuminator.h"
-#include "blocks/Container.h"
+#include "blocks/Containers.h"
 #include "blocks/RainMachine.h"
 
 #define sizeof_array(ARRAY) (sizeof(ARRAY)/sizeof(ARRAY[0]))
@@ -60,6 +60,7 @@ const QString BlockManager::kinds[] = { // do not usp space, use '_'
     "hammer",
     "illuminator",
     "rain_machine",
+    "converter",
 };
 
 const QString BlockManager::subs[] = { // do not usp space, use '_'
@@ -127,6 +128,7 @@ Block * BlockManager::NewBlock(const int kind, const int sub) {
     case GRASS:  return new Grass (sub, id);
     case FALLING: return new Falling(sub, id);
     case CONTAINER: return new Container(sub, id);
+    case CONVERTER: return new Converter(sub, id);
     case PLATE:  return new Plate (sub, id);
     case LADDER: return new Ladder(sub, id);
     case WEAPON: return new Weapon(sub, id);
@@ -170,6 +172,7 @@ Block * BlockManager::BlockFromFile(QDataStream & str,
     case LIQUID: return new Liquid(str, sub, id);
     case GRASS:  return new Grass (str, sub, id);
     case CONTAINER: return new Container(str, sub, id);
+    case CONVERTER: return new Converter(str, sub, id);
     case FALLING: return new Falling(str, sub, id);
     case PLATE:  return new Plate (str, sub, id);
     case LADDER: return new Ladder(str, sub, id);

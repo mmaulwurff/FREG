@@ -107,31 +107,33 @@ void Player::UpdateXYZ(int) {
 
 void Player::Examine() const {
     const QMutexLocker locker(world->GetLock());
-
     int i, j, k;
     emit GetFocus(&i, &j, &k);
     const Block * const block = world->GetBlock(i, j, k);
-    emit Notify( QString("*----- %1 -----*").arg(block->FullName()) );
-    const int sub = block->Sub();
-    if ( GetCreativeMode() || COMMANDS_ALWAYS_ON ) { // know more
-        emit Notify(tr(
+    emit Notify(tr("You see: %1.").arg(block->FullName()));
+    if ( DEBUG ) {
+        emit Notify(QString("Durability: %2. Weight: %3. Id: %4.").
+            arg(block->GetDurability()).
+            arg(block->Weight()).
+            arg(block->GetId()));
+        emit Notify(QString("Kind: %1, substance: %2. LightRadius: %3").
+            arg(block->Kind()).
+            arg(block->Sub()).
+            arg(block->LightRadius()));
+        emit Notify(QString(
             "Light:%1, fire:%2, sun:%3. Transp:%4. Norm:%5. Dir:%6.").
             arg(world->Enlightened(i, j, k)).
             arg(world->FireLight(i, j, k)/16).
             arg(world->SunLight(i, j, k)).
             arg(block->Transparent()).
-            arg(block==block_manager.NormalBlock(sub)).
+            arg(block==block_manager.NormalBlock(block->Sub())).
             arg(block->GetDir()));
     }
-    if ( IsLikeAir(sub) ) return;
+    if ( IsLikeAir(block->Sub()) ) return;
     const QString str = block->GetNote();
     if ( not str.isEmpty() ) {
-        emit Notify(tr("Inscription: ")+str);
+        emit Notify(tr("Inscription: ") + str);
     }
-    emit Notify(tr("Durability: %2. Weight: %3. Id: %4.").
-        arg(block->GetDurability()).
-        arg(block->Weight()).
-        arg(block->GetId()));
 }
 
 void Player::Jump() {

@@ -733,7 +733,7 @@ void Screen::PrintInv(WINDOW * const window, const Inventory & inv) const {
     if ( start != 0 ) {
         mvwhline(window, 2+start, 1, ACS_HLINE, SCREEN_SIZE*2);
     }
-    mvwprintw(window, 0, 1, "[%c]%s", CharName( inv.Kind(), inv.Sub()),
+    mvwprintw(window, 0, 1, "[%c] %s", CharName( inv.Kind(), inv.Sub()),
         qPrintable((player->PlayerInventory()==&inv) ?
             tr("Your inventory") : inv.FullName()) );
     wrefresh(window);

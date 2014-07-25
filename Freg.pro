@@ -88,7 +88,7 @@ HEADERS += \
     blocks/Bucket.h \
     blocks/Illuminator.h \
     blocks/Weapons.h \
-    blocks/Container.h \
+    blocks/Containers.h \
     blocks/RainMachine.h \
     screens/IThread.h
 SOURCES += \
@@ -113,7 +113,7 @@ SOURCES += \
     blocks/Illuminator.cpp \
     blocks/Inventory.cpp \
     blocks/Bucket.cpp \
-    blocks/Container.cpp \
+    blocks/Containers.cpp \
     blocks/Block.cpp \
     blocks/RainMachine.cpp \
     screens/IThread.cpp

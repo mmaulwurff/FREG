@@ -144,6 +144,7 @@ enum kinds {
     HAMMER,      ///< 26
     ILLUMINATOR, ///< 27
     RAIN_MACHINE, ///< 28
+    CONVERTER,    ///< 29
     /// Nothing is LAST_KIND.
     LAST_KIND // keep it last in this list.
 }; // enum kinds

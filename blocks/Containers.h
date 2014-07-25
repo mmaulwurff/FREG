@@ -23,6 +23,8 @@
 #include "blocks/Active.h"
 #include "blocks/Inventory.h"
 
+const int WORKBENCH_SIZE = 10;
+
 class Container : public Active, public Inventory {
     /** \class Container Container.h
      *  \brief Container is multi-purpose container for blocks.
@@ -73,8 +75,26 @@ public:
 
 private:
     void Craft();
-
-    static const int WORKBENCH_SIZE = 10;
 }; // Workbench
+
+class Converter : public Container {
+    Q_OBJECT
+public:
+    Converter(int sub, int id);
+    Converter(QDataStream & str, int sub, int id);
+
+    int  Kind() const override;
+    int  LightRadius() const override;
+    void Damage(int dmg, int dmg_kind) override;
+    QString FullName() const override;
+
+protected:
+    void SaveAttributes(QDataStream &) const override;
+
+private:
+    bool isOn;
+    quint16 fuelLevel;
+    int lightRadius;
+}; // Converter
 
 #endif // CONTAINER_H
