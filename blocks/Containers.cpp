@@ -74,6 +74,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
     void Container::ReceiveSignal(QString) {}
     Inventory * Container::HasInventory() { return this; }
     push_reaction Container::PushResult(dirs) const { return NOT_MOVABLE; }
+    inner_actions Container::ActInner() { return INNER_ACTION_NONE; }
 
     usage_types Container::Use(Block *) {
         if ( Sub() == A_MEAT || Sub() == H_MEAT ) {
@@ -246,13 +247,16 @@ const int CONVERTER_LIGHT_RADIUS = 2;
             isOn(false),
             fuelLevel(0),
             lightRadius(0)
-    {}
+    {
+        InitDamageKinds();
+    }
 
     Converter::Converter(QDataStream & str, const int sub, const int id) :
             Container(str, sub, id, WORKBENCH_SIZE)
     {
         str >> isOn >> fuelLevel;
         lightRadius = isOn ? CONVERTER_LIGHT_RADIUS : 0;
+        InitDamageKinds();
     }
 
     void Converter::SaveAttributes(QDataStream & out) const {
@@ -261,28 +265,65 @@ const int CONVERTER_LIGHT_RADIUS = 2;
     }
 
     int Converter::Kind() const { return CONVERTER; }
+    int Converter::ShouldAct() const { return FREQUENT_RARE; }
     int Converter::LightRadius() const { return lightRadius; }
 
+    int Converter::DamageKind() const {
+        return (fuelLevel > 0) ? damageKindOn : 0;
+    }
+
+    void Converter::DoRareAction() {
+        World * const world = GetWorld();
+        if ( fuelLevel > 0 ) {
+            if ( world->Damage(X(), Y(), Z()+1, DamageLevel(), damageKindOn)
+                    <= 0 )
+            {
+                world->DestroyAndReplace(X(), Y(), Z()+1);
+            }
+            fuelLevel -= DamageLevel();
+        }
+        if ( GetWorld()->GetBlock(X(), Y(), Z()+1)->Sub() == WATER
+                && Sub() == STONE )
+        {
+            Damage(1, damageKindOff);
+        }
+    }
+
     QString Converter::FullName() const {
+        QString name;
         switch ( Sub() ) {
             default:
-            case STONE: return tr("Furnace");
+            case STONE: name = tr("Furnace"); break;
+        }
+        return name + tr(" (charge for %1 s)").arg(fuelLevel/DamageLevel());
+    }
+
+    void Converter::InitDamageKinds() {
+        switch ( Sub() ) {
+        default: fprintf(stderr, "%s: unlisted sub.\n", Q_FUNC_INFO);
+        case STONE:
+            damageKindOn  = DAMAGE_HEAT;
+            damageKindOff = DAMAGE_FREEZE;
+            break;
         }
     }
 
     void Converter::Damage(const int dmg, const int dmg_kind) {
-        switch ( dmg_kind ) {
-        default: Block::Damage(dmg, dmg_kind); break;;
-        case DAMAGE_HEAT:
-            isOn = true;
-            GetWorld()->GetShred(X(), Y())->AddShining(this);
-            GetWorld()->Shine(X(), Y(), Z(),
-                lightRadius=CONVERTER_LIGHT_RADIUS, true);
-            break;
-        case DAMAGE_FREEZE:
+        if ( dmg_kind == damageKindOn ) {
+            if ( not isOn ) {
+                isOn = true;
+                GetWorld()->GetShred(X(), Y())->AddShining(this);
+                GetWorld()->Shine(X(), Y(), Z(),
+                    (lightRadius=CONVERTER_LIGHT_RADIUS), true);
+            } else {
+                fuelLevel += dmg;
+            }
+        } else if ( dmg_kind == damageKindOff ) {
             isOn = false;
+            fuelLevel = 0;
             lightRadius = 0;
             GetWorld()->GetShred(X(), Y())->RemShining(this);
-            break;
+        } else {
+            Block::Damage(dmg, dmg_kind);
         }
     }

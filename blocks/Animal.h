@@ -37,7 +37,7 @@ public:
     QString FullName() const override = 0;
     Animal * IsAnimal() override;
     Block  * DropAfterDamage(bool * delete_block) override;
-    INNER_ACTIONS ActInner() override;
+    inner_actions ActInner() override;
 
 protected:
     void SaveAttributes(QDataStream & out) const override;

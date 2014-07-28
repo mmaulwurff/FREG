@@ -214,9 +214,10 @@ void Shred::PhysEventsRare() {
     for (auto i=activeListAll.constBegin(); i!=activeListAll.constEnd(); ++i) {
         if ( *i != nullptr ) {
             switch ( (*i)->ActInner() ) {
-            case INNER_ACTION_MESSAGE:
-            case INNER_ACTION_EXPLODE: // TODO: add explosion
+            case INNER_ACTION_ONLY:    break;
             case INNER_ACTION_NONE: (*i)->ActRare(); break;
+            case INNER_ACTION_EXPLODE: break; // TODO: add explosion
+            case INNER_ACTION_MESSAGE: break;
             }
         }
     }

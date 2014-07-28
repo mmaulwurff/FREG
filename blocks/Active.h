@@ -32,7 +32,9 @@ enum active_frequency {
     FREQUENT_SECOND = 4,
 };
 
-enum INNER_ACTIONS {
+/// See Shred::PhysEventsRare() for details.
+enum inner_actions {
+    INNER_ACTION_ONLY,
     INNER_ACTION_NONE,
     INNER_ACTION_EXPLODE, // like in Fallout
     INNER_ACTION_MESSAGE
@@ -49,10 +51,10 @@ public:
      Active(QDataStream & str, int sub, int id, int transp = UNDEF);
     ~Active();
 
-    void Move(dirs dir) override;
-    void Damage(int dmg, int dmg_kind) override;
-    void ReceiveSignal(QString) override;
     int  Kind() const override = 0;
+    void Move(dirs dir) override;
+    void ReceiveSignal(QString) override;
+    void Damage(int dmg, int dmg_kind) override;
     QString  FullName() const override = 0;
     Active * ActiveBlock() override;
 
@@ -62,8 +64,8 @@ public:
     void ActFrequent();
     void ActRare();
 
-    virtual INNER_ACTIONS ActInner();
-    virtual int  ShouldAct()  const;
+    virtual inner_actions ActInner();
+    virtual int ShouldAct() const;
 
     void SetDeferredAction(DeferredAction *);
     DeferredAction * GetDeferredAction() const;

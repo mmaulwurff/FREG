@@ -52,6 +52,7 @@ public:
     Inventory * HasInventory() override final;
     usage_types Use(Block * who) override;
     push_reaction PushResult(dirs) const override;
+    inner_actions ActInner() override;
 
 protected:
     void SaveAttributes(QDataStream & out) const override;
@@ -84,7 +85,10 @@ public:
     Converter(QDataStream & str, int sub, int id);
 
     int  Kind() const override;
+    int  ShouldAct() const override;
+    int  DamageKind() const override;
     int  LightRadius() const override;
+    void DoRareAction() override;
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
 
@@ -92,9 +96,16 @@ protected:
     void SaveAttributes(QDataStream &) const override;
 
 private:
+    void InitDamageKinds();
+
+    // saved attributes
     bool isOn;
     quint16 fuelLevel;
+
+    // not saved attributes
     int lightRadius;
+    damage_kinds damageKindOn;
+    damage_kinds damageKindOff;
 }; // Converter
 
 #endif // CONTAINER_H

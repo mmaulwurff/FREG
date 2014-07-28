@@ -35,7 +35,8 @@ const bool COMMANDS_ALWAYS_ON = false;
 const bool COMMANDS_ALWAYS_ON = true;
 #endif
 
-const subs PLAYER_SUB = ADAMANTINE;
+//const subs PLAYER_SUB = ADAMANTINE;
+const subs PLAYER_SUB = H_MEAT;
 
 long Player::GlobalX() const { return GetShred()->GlobalX(X()); }
 long Player::GlobalY() const { return GetShred()->GlobalY(Y()); }

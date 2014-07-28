@@ -38,7 +38,7 @@ public:
     Block * DropAfterDamage(bool * delete_block) override;
     QString FullName() const override;
     usage_types Use(Block *) override;
-    INNER_ACTIONS ActInner() override;
+    inner_actions ActInner() override;
 
 protected:
     void DoRareAction() override;

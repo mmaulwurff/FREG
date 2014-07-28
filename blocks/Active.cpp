@@ -29,8 +29,14 @@
 Active * Active::ActiveBlock() { return this; }
 int  Active::ShouldAct() const { return FREQUENT_NEVER; }
 void Active::DoFrequentAction() {}
-void Active::DoRareAction() {}
-INNER_ACTIONS Active::ActInner() { return INNER_ACTION_NONE; }
+inner_actions Active::ActInner() { return INNER_ACTION_ONLY; }
+
+void Active::DoRareAction() {
+    fprintf(stderr, "Active::DoRareAction called, check ShouldAct and ActInner\
+ return values or add DoRareAction implementation.\nKind: %d, sub: %d.\n",
+        Kind(), Sub());
+    Q_UNREACHABLE();
+}
 
 void Active::ActFrequent() {
     if ( GetDeferredAction() != nullptr ) {

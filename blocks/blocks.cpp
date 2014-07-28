@@ -72,7 +72,7 @@
     }
 
 // Animal::
-    INNER_ACTIONS Animal::ActInner() {
+    inner_actions Animal::ActInner() {
         if ( Sub() != H_MEAT && Sub() != A_MEAT ) return INNER_ACTION_NONE;
         if ( satiation <= 0 ) {
             Damage(5, DAMAGE_HUNGER);
@@ -120,7 +120,6 @@
             }
             return true;
         } else {
-            ReceiveSignal(tr("You cannot eat this."));
             return false;
         }
     }
@@ -192,9 +191,10 @@
         }
     }
 
-    int Liquid::ShouldAct() const  { return FREQUENT_RARE; }
-    int Liquid::Kind() const { return LIQUID; }
+    int  Liquid::Kind() const { return LIQUID; }
+    int  Liquid::ShouldAct() const  { return FREQUENT_RARE; }
     bool Liquid::Inscribe(QString) { return false; }
+    inner_actions Liquid::ActInner() { return INNER_ACTION_NONE; }
     push_reaction Liquid::PushResult(dirs) const { return ENVIRONMENT; }
 
     void Liquid::Damage(const int dmg, const int dmg_kind) {
@@ -287,6 +287,7 @@
     int  Grass::ShouldAct() const  { return FREQUENT_RARE; }
     int  Grass::Kind() const { return GRASS; }
     push_reaction Grass::PushResult(dirs) const { return ENVIRONMENT; }
+    inner_actions Grass::ActInner() { return INNER_ACTION_NONE; }
 
     Block * Grass::DropAfterDamage(bool *) {
         return block_manager.NormalBlock(AIR);
@@ -306,6 +307,7 @@
     QString Bush::FullName() const { return tr("Bush"); }
     usage_types Bush::Use(Block *) { return USAGE_TYPE_OPEN; }
     Inventory * Bush::HasInventory() { return this; }
+    inner_actions Bush::ActInner() { return INNER_ACTION_NONE; }
 
     void Bush::DoRareAction() {
         if ( 0 == qrand()%(SECONDS_IN_HOUR*4) ) {
@@ -517,7 +519,7 @@
         }
     }
 
-    INNER_ACTIONS Clock::ActInner() {
+    inner_actions Clock::ActInner() {
         if ( timerTime > 0 )  {
             --timerTime;
             note->setNum(timerTime);

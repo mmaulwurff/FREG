@@ -81,7 +81,7 @@ int Illuminator::LightRadius() const {
 int  Illuminator::ShouldAct() const { return FREQUENT_RARE; }
 void Illuminator::DoRareAction() { ActInner(); }
 
-INNER_ACTIONS Illuminator::ActInner() {
+inner_actions Illuminator::ActInner() {
     if ( fuelLevel == 0 ) {
         if ( Sub() == WOOD ) {
             Break();
