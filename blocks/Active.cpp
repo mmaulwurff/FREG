@@ -39,10 +39,13 @@ void Active::DoRareAction() {
 }
 
 void Active::ActFrequent() {
-    if ( GetDeferredAction() != nullptr ) {
-        GetDeferredAction()->MakeAction();
+    if ( defActionPending ) {
+        defActionPending = false;
+        deferredAction->MakeAction();
+        delete deferredAction;
+    } else {
+        DoFrequentAction();
     }
-    DoFrequentAction();
 }
 
 void Active::ActRare() {
@@ -68,11 +71,12 @@ void Active::ActRare() {
 }
 
 void Active::SetDeferredAction(DeferredAction * const action) {
-    delete deferredAction;
+    if ( defActionPending ) {
+        delete deferredAction;
+    }
     deferredAction = action;
+    defActionPending = true;
 }
-
-DeferredAction * Active::GetDeferredAction() const { return deferredAction; }
 
 void Active::Unregister() {
     if ( shred != nullptr ) {
@@ -175,8 +179,6 @@ Active::Active(QDataStream & str, const int sub, const int id,
         Block(str, sub, id, transp),
         Xyz()
 {}
-
-Active::~Active() { delete deferredAction; }
 
 bool Active::Gravitate(const int range, int bottom, int top,
         const int calmness)

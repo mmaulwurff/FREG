@@ -39,7 +39,13 @@
     int  Weapon::Kind() const { return WEAPON; }
     int  Weapon::Weight() const { return Block::Weight()/4; }
     int  Weapon::Wearable() const { return WEARABLE_ARM; }
-    void Weapon::Damage(int, int) { Break(); }
+    push_reaction Weapon::PushResult(dirs) const { return DAMAGE; }
+
+    void Weapon::Damage(int, const int dmg_kind) {
+        if ( dmg_kind < DAMAGE_PUSH_UP ) {
+            Break();
+        }
+    }
 
     usage_types Weapon::Use(Block * const who) {
         Shred * const shred = GetShred();

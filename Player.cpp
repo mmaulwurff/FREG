@@ -142,19 +142,26 @@ void Player::Jump() {
     usingType = USAGE_TYPE_NO;
     if ( GetCreativeMode() ) {
         if ( (UP==dir && z_self<HEIGHT-2) || (DOWN==dir && z_self>1) ) {
-            player->GetDeferredAction()->SetGhostMove();
+            DeferredAction * const def_action = new DeferredAction(player);
+            def_action->SetGhostMove();
+            player->SetDeferredAction(def_action);
         }
     } else {
-        player->GetDeferredAction()->SetJump();
+        DeferredAction * const def_action = new DeferredAction(player);
+        def_action->SetJump();
+        player->SetDeferredAction(def_action);
     }
 }
 
 void Player::Move(const dirs direction) {
     if ( player ) {
+        DeferredAction * const def_action = new DeferredAction(player);
         if ( GetCreativeMode() ) {
-            player->GetDeferredAction()->SetGhostMove(direction);
+            def_action->SetGhostMove(direction);
+            player->SetDeferredAction(def_action);
         } else {
-            player->GetDeferredAction()->SetMove(direction);
+            def_action->SetMove(direction);
+            player->SetDeferredAction(def_action);
         }
     }
 }
@@ -229,12 +236,16 @@ usage_types Player::Use(const int num) {
     case USAGE_TYPE_POUR: {
         int x_targ, y_targ, z_targ;
         emit GetFocus(&x_targ, &y_targ, &z_targ);
-        player->GetDeferredAction()->SetPour(x_targ, y_targ, z_targ, num);
+        DeferredAction * const def_action = new DeferredAction(player);
+        def_action->SetPour(x_targ, y_targ, z_targ, num);
+        player->SetDeferredAction(def_action);
         } break;
     case USAGE_TYPE_SET_FIRE: {
         int x_targ, y_targ, z_targ;
         emit GetFocus(&x_targ, &y_targ, &z_targ);
-        player->GetDeferredAction()->SetSetFire(x_targ, y_targ, z_targ);
+        DeferredAction * const def_action = new DeferredAction(player);
+        def_action->SetSetFire(x_targ, y_targ, z_targ);
+        player->SetDeferredAction(def_action);
         } break;
     default: locker.unlock(); Wield(num); break;
     }
@@ -244,7 +255,9 @@ usage_types Player::Use(const int num) {
 void Player::Throw(const int src, const int dest, const int num) {
     int x, y, z;
     emit GetFocus(&x, &y, &z);
-    player->GetDeferredAction()->SetThrow(x, y, z, src, dest, num);
+    DeferredAction * const def_action = new DeferredAction(player);
+    def_action->SetThrow(x, y, z, src, dest, num);
+    player->SetDeferredAction(def_action);
 }
 
 void Player::Obtain(const int src, const int dest, const int num) {
@@ -292,8 +305,9 @@ void Player::Build(const int slot) {
     if ( block != nullptr && (AIR != world->GetBlock(X(), Y(), Z()-1)->Sub()
             || 0 == player->Weight()) )
     {
-        player->GetDeferredAction()->
-            SetBuild(x_targ, y_targ, z_targ, block, slot);
+        DeferredAction * const def_action = new DeferredAction(player);
+        def_action->SetBuild(x_targ, y_targ, z_targ, block, slot);
+        player->SetDeferredAction(def_action);
     }
 }
 
@@ -405,7 +419,9 @@ bool Player::Damage() const {
     int x, y, z;
     emit GetFocus(&x, &y, &z);
     if ( player && GetWorld()->InBounds(x, y, z) ) {
-        player->GetDeferredAction()->SetDamage(x, y, z);
+        DeferredAction * const def_action = new DeferredAction(player);
+        def_action->SetDamage(x, y, z);
+        player->SetDeferredAction(def_action);
         return true;
     } else {
         return false;
@@ -455,7 +471,6 @@ void Player::SetPlayer(const int _x, const int _y, const int _z) {
                 X(), Y(), Z(), GetDir(), 0, true /*force build*/ );
         }
     }
-    player->SetDeferredAction(new DeferredAction(player));
     SetDir(player->GetDir());
 
     connect(player, SIGNAL(Destroyed()), SLOT(BlockDestroy()),

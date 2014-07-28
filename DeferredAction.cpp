@@ -178,7 +178,6 @@ void DeferredAction::MakeAction() {
     case DEFERRED_SET_FIRE: SetFire(); break;
     case DEFERRED_GHOST_MOVE: GhostMove(); break;
     }
-    type = DEFERRED_NOTHING;
 }
 
 DeferredAction::DeferredAction(Active * const attached) :

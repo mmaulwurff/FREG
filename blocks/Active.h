@@ -47,9 +47,8 @@ class DeferredAction;
 class Active : public QObject, public Block, public Xyz {
     Q_OBJECT
 public:
-     Active(int sub, int id, int transp = UNDEF);
-     Active(QDataStream & str, int sub, int id, int transp = UNDEF);
-    ~Active();
+    Active(int sub, int id, int transp = UNDEF);
+    Active(QDataStream & str, int sub, int id, int transp = UNDEF);
 
     int  Kind() const override = 0;
     void Move(dirs dir) override;
@@ -68,7 +67,6 @@ public:
     virtual int ShouldAct() const;
 
     void SetDeferredAction(DeferredAction *);
-    DeferredAction * GetDeferredAction() const;
 
     void ReloadToNorth();
     void ReloadToSouth();
@@ -103,7 +101,8 @@ private:
 
     DeferredAction * deferredAction = nullptr;
     Shred * shred = nullptr;
-};
+    bool defActionPending = false;
+}; // Active
 
 class Falling : public Active {
     Q_OBJECT
@@ -127,6 +126,6 @@ protected:
 private:
     quint8 fallHeight;
     bool falling = false;
-};
+}; // Falling
 
 #endif // ACTIVE_H

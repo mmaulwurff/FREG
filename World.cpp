@@ -433,8 +433,7 @@ bool World::CanMove(const int x, const int y, const int z,
         DestroyAndReplace  (newx, newy, newz);
         block_to = GetBlock(newx, newy, newz);
     }
-    push_reaction target_push = block_to->PushResult(dir);
-    switch ( target_push ) {
+    switch ( block_to->PushResult(dir) ) {
     case MOVABLE:
         return ( (weight > block_to->Weight()) &&
                 Move(newx, newy, newz, dir) );
@@ -451,7 +450,11 @@ bool World::CanMove(const int x, const int y, const int z,
         }
         return false;
     case DAMAGE:
-        block->Damage(block_to->DamageLevel(), block_to->DamageKind());
+        if ( Damage(x, y, z, block_to->DamageLevel(), block_to->DamageKind())
+                <= 0)
+        {
+            DestroyAndReplace(x, y, z);
+        }
         return false;
     }
     Q_UNREACHABLE();

@@ -114,7 +114,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
         case IRON:      return tr("Locker");
         case WATER:     return tr("Fridge");
         case A_MEAT:
-        case H_MEAT:    return tr("Cadaver");
+        case H_MEAT:    return tr("Corpse");
         default:
             fprintf(stderr, "%s: unlisted sub: %d\n", Q_FUNC_INFO, Sub());
             return tr("Unknown container");
