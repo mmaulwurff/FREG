@@ -210,7 +210,7 @@ Block * Player::ValidBlock(const int num) const {
 }
 
 usage_types Player::Use(const int num) {
-    const QMutexLocker locker(world->GetLock());
+    QMutexLocker locker(world->GetLock());
     Block * const block = ValidBlock(num);
     if ( block == nullptr ) return USAGE_TYPE_NO;
     if ( player->Eat(static_cast<subs>(block->Sub())) ) {
@@ -236,7 +236,7 @@ usage_types Player::Use(const int num) {
         emit GetFocus(&x_targ, &y_targ, &z_targ);
         player->GetDeferredAction()->SetSetFire(x_targ, y_targ, z_targ);
         } break;
-    default: Wield(num); break;
+    default: locker.unlock(); Wield(num); break;
     }
     return result;
 }
@@ -256,12 +256,13 @@ void Player::Obtain(const int src, const int dest, const int num) {
 }
 
 void Player::Wield(const int from) {
+    const QMutexLocker locker(world->GetLock());
     if ( ValidBlock(from) ) {
         Inventory * const inv = PlayerInventory();
         const int start = (from >= inv->Start()) ? 0 : inv->Start();
-        for (int i=start; i<inv->Size(); ++i) {
-            PlayerInventory()->MoveInside(from, i, 1);
-        }
+        Block * const block = inv->ShowBlock(from);
+        inv->Pull(from);
+        inv->Get(block, start);
         emit Updated();
     }
 }

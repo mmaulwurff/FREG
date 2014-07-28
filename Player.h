@@ -114,6 +114,7 @@ public:
     void Inscribe(int num);
     void Craft   (int num);
     void Build   (int num);
+    void Wield   (int num);
     /// Can also wield appropriate things.
     void MoveInsideInventory(int num_from, int num_to, int num = 1);
     void ProcessCommand(QString command);
@@ -159,7 +160,6 @@ private:
     Shred * GetShred() const;
     World * GetWorld() const;
     bool ForbiddenAdminCommands() const;
-    void Wield (int num);
 
     long homeLongi, homeLati;
     int homeX, homeY, homeZ;

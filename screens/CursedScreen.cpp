@@ -76,6 +76,7 @@ void Screen::RePrint() {
     mvwaddstr(actionWin, 3, 0, qPrintable(tr("iNscribe")));
     mvwaddstr(actionWin, 4, 0, qPrintable(tr("Build")));
     mvwaddstr(actionWin, 5, 0, qPrintable(tr("Craft")));
+    mvwaddstr(actionWin, 6, 0, qPrintable(tr("Wield/take oFF")));
     refresh();
     wrefresh(actionWin);
     updated = false;
@@ -281,7 +282,7 @@ void Screen::ControlPlayer(const int ch) {
     case 'G':
     case 'O': SetActionMode(ACTION_OBTAIN);   break;
     case 'F':
-    case 'W':
+    case 'W': SetActionMode(ACTION_WIELD);    break;
     case 'U': SetActionMode(ACTION_USE);      break;
     case 'S':
         if ( player->PlayerInventory() ) {
@@ -341,6 +342,7 @@ void Screen::InventoryAction(const int num) const {
     case ACTION_INSCRIBE: player->Inscribe(num); break;
     case ACTION_BUILD:    player->Build   (num); break;
     case ACTION_CRAFT:    player->Craft   (num); break;
+    case ACTION_WIELD:    player->Wield   (num); break;
     }
 }
 

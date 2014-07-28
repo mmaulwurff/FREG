@@ -167,9 +167,14 @@ int Inventory::Weight() const {
     return sum / MAX_STACK_SIZE;
 }
 
-Block * Inventory::ShowBlock(const int slot, const int num) const {
-    return ( slot > Size() || num >= Number(slot) ) ?
-        nullptr : inventory[slot].at(num);
+Block * Inventory::ShowBlockInSlot(const int slot, const int index) const {
+    return ( slot >= Size() || index >= Number(slot) ) ?
+        nullptr : inventory[slot].at(index);
+}
+
+Block * Inventory::ShowBlock(const int slot) const {
+    return ( slot >= Size() || inventory[slot].isEmpty() ) ?
+        nullptr : inventory[slot].top();
 }
 
 bool Inventory::IsEmpty() const {
@@ -246,7 +251,8 @@ Inventory::Inventory(QDataStream & str, const int sz) :
 }
 
 Inventory::~Inventory() {
-    for (int i=0; i<Size(); ++i) {
+    const int size = Size();
+    for (int i=0; i<size; ++i) {
         while ( not inventory[i].isEmpty() ) {
             block_manager.DeleteBlock(inventory[i].pop());
         }

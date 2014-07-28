@@ -48,13 +48,19 @@ void Active::ActFrequent() {
 void Active::ActRare() {
     Inventory * const inv = HasInventory();
     if ( inv != nullptr ) {
-        for (int i=inv->Size()-1; i; --i)
-        for (int j=0; j<inv->Number(i); ++j) {
-            Active * const active = inv->ShowBlock(i, j)->ActiveBlock();
-            if (active!=nullptr && active->ActInner()==INNER_ACTION_MESSAGE) {
-                ReceiveSignal(tr("Item in slot '%1' changed.").
-                    arg(char('a'+i)));
-                ReceiveSignal(inv->ShowBlock(i, j)->GetNote());
+        for (int i=inv->Size()-1; i; --i) {
+            const int number = inv->Number(i);
+            if ( number == 0 ) continue;
+            Active * const top_active = inv->ShowBlock(i)->ActiveBlock();
+            if ( top_active == nullptr ) continue;
+            for (int j=0; j<number; ++j) {
+                Active * const active = inv->ShowBlockInSlot(i, j)->
+                    ActiveBlock();
+                if ( active->ActInner() == INNER_ACTION_MESSAGE ) {
+                    ReceiveSignal(tr("Item in slot '%1' changed.").
+                        arg(char('a'+i)));
+                    ReceiveSignal(inv->ShowBlockInSlot(i, j)->GetNote());
+                }
             }
         }
     }

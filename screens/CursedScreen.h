@@ -43,7 +43,8 @@ enum actions {
     ACTION_OBTAIN,
     ACTION_INSCRIBE,
     ACTION_BUILD,
-    ACTION_CRAFT
+    ACTION_CRAFT,
+    ACTION_WIELD,
 };
 
 enum color_pairs { // do not change colors order! // foreground_background
