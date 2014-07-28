@@ -63,7 +63,7 @@
     Block * Ladder::DropAfterDamage(bool * const delete_block) {
         Block * const pile = BlockManager::NewBlock(CONTAINER, DIFFERENT);
         if ( STONE==Sub() || MOSS_STONE==Sub() ) {
-            pile->HasInventory()->Get(block_manager.NormalBlock(Sub()));
+            pile->HasInventory()->Get(block_manager.Normal(Sub()));
         } else {
             pile->HasInventory()->Get(this);
             *delete_block = false;
@@ -204,7 +204,7 @@
     }
 
     Block * Liquid::DropAfterDamage(bool *) {
-        return block_manager.NormalBlock( ( Sub() == STONE ) ?
+        return block_manager.Normal( ( Sub() == STONE ) ?
             STONE : AIR);
     }
 
@@ -288,10 +288,7 @@
     int  Grass::Kind() const { return GRASS; }
     push_reaction Grass::PushResult(dirs) const { return ENVIRONMENT; }
     inner_actions Grass::ActInner() { return INNER_ACTION_NONE; }
-
-    Block * Grass::DropAfterDamage(bool *) {
-        return block_manager.NormalBlock(AIR);
-    }
+    Block * Grass::DropAfterDamage(bool*) { return block_manager.Normal(AIR); }
 
     int  Grass::LightRadius() const {
         static const int radius = (FIRE == Sub()) ? 5 : 0;
@@ -311,7 +308,7 @@
 
     void Bush::DoRareAction() {
         if ( 0 == qrand()%(SECONDS_IN_HOUR*4) ) {
-            Get(block_manager.NormalBlock(HAZELNUT));
+            Get(block_manager.Normal(HAZELNUT));
         }
     }
 
@@ -330,7 +327,7 @@
         Block * const pile = BlockManager::NewBlock(CONTAINER, DIFFERENT);
         Inventory * const pile_inv = pile->HasInventory();
         pile_inv->Get(BlockManager::NewBlock(WEAPON, WOOD));
-        pile_inv->Get(block_manager.NormalBlock(HAZELNUT));
+        pile_inv->Get(block_manager.Normal(HAZELNUT));
         return pile;
     }
 

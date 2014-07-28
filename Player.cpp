@@ -127,7 +127,7 @@ void Player::Examine() const {
             arg(world->FireLight(i, j, k)/16).
             arg(world->SunLight(i, j, k)).
             arg(block->Transparent()).
-            arg(block==block_manager.NormalBlock(block->Sub())).
+            arg(block==block_manager.Normal(block->Sub())).
             arg(block->GetDir()));
     }
     if ( IsLikeAir(block->Sub()) ) return;

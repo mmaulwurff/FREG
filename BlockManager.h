@@ -35,7 +35,7 @@ class QDataStream;
      * Normal blocks: blocks that are not special, e.g. usual stone, air, soil
      * are actually one block (for each substance).
      * One can receive a pointer to such block with
-     * Block * NormalBlock(int sub).
+     * Block * Normal(int sub).
      * Normal blocks are not needed to be deleted.
      * Use Block * NewBlock(int kind, int sub) to receive a pointer to
      * block that will be changed (damaged, inscribed, etc). */
@@ -46,7 +46,7 @@ public:
     ~BlockManager();
 
     /// Use this to receive a pointer to normal block.
-    Block * NormalBlock(int sub) const;
+    Block * Normal(int sub) const;
     /// Use this to receive a pointer to new not-normal block.
     static Block * NewBlock(int kind, int sub);
     /// Use this to load block from file.

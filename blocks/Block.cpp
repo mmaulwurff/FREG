@@ -141,7 +141,7 @@ Block * Block::DropAfterDamage(bool * const delete_block) {
     switch ( Sub() ) {
     case SUB_DUST:
     case GLASS:
-    case AIR: return block_manager.NormalBlock(AIR);
+    case AIR: return block_manager.Normal(AIR);
     case STONE: if ( BLOCK==Kind() ) {
         return BlockManager::NewBlock(LADDER, STONE);
     } // no break;
@@ -249,7 +249,7 @@ bool Block::operator==(const Block & block) const {
 void Block::SaveAttributes(QDataStream &) const {}
 
 void Block::SaveToFile(QDataStream & out) {
-    if ( this == block_manager.NormalBlock(sub) ) {
+    if ( this == block_manager.Normal(sub) ) {
         SaveNormalToFile(out);
     } else {
         out << sub << quint8(BlockManager::KindFromId(id)) <<

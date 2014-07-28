@@ -124,9 +124,9 @@ bool Inventory::InscribeInv(const int num, const QString str) {
         return false;
     }
     const int sub = inventory[num].top()->Sub();
-    if ( inventory[num].top() == block_manager.NormalBlock(sub) ) {
+    if ( inventory[num].top() == block_manager.Normal(sub) ) {
         for (int i=0; i<number; ++i) {
-            inventory[num].replace(i, block_manager.NormalBlock(sub));
+            inventory[num].replace(i, block_manager.Normal(sub));
         }
     }
     for (int i=0; i<number; ++i) {
@@ -244,7 +244,7 @@ Inventory::Inventory(QDataStream & str, const int sz) :
         while ( num-- ) {
             int kind, sub;
             inventory[i].push(BlockManager::KindSubFromFile(str, &kind, &sub) ?
-                block_manager.NormalBlock(sub) :
+                block_manager.Normal(sub) :
                 BlockManager::BlockFromFile(str, kind, sub));
         }
     }

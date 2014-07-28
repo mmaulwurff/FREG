@@ -35,7 +35,7 @@ int  Shred::ShredX() const { return shredX; }
 int  Shred::ShredY() const { return shredY; }
 World * Shred::GetWorld() const { return world; }
 Shred * Shred::GetShredMemory() const { return memory; }
-Block * Shred::Normal(const int sub) { return block_manager.NormalBlock(sub); }
+Block * Shred::Normal(const int sub) { return block_manager.Normal(sub); }
 shred_type Shred::GetTypeOfShred() const { return type; }
 
 bool Shred::LoadShred() {
@@ -162,7 +162,7 @@ Shred::~Shred() {
         for ( ; blocks[x][y][height]->Sub()==AIR; --height);
         for (int z=1; z <= height; ++z) {
             Block * const block = blocks[x][y][z];
-            if ( block == block_manager.NormalBlock(block->Sub()) ) {
+            if ( block == Normal(block->Sub()) ) {
                 block->SaveNormalToFile(outstr);
             } else {
                 block->SaveToFile(outstr);

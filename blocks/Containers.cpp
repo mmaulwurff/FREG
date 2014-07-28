@@ -88,7 +88,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
     Block * Container::DropAfterDamage(bool * const delete_block) {
         if ( DIFFERENT == Sub() ) {
             *delete_block = true;
-            return block_manager.NormalBlock(AIR);
+            return block_manager.Normal(AIR);
         } // else:
         Block * const pile = BlockManager::NewBlock(CONTAINER, DIFFERENT);
         Inventory * const pile_inv = pile->HasInventory();

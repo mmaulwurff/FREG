@@ -47,7 +47,7 @@
             Inventory * const inv = who->HasInventory();
             if ( inv != nullptr && inv->Get(this) ) {
                 Unregister();
-                shred->SetBlockNoCheck(block_manager.NormalBlock(AIR),
+                shred->SetBlockNoCheck(block_manager.Normal(AIR),
                     Shred::CoordInShred(X()), Shred::CoordInShred(Y()), Z());
             }
         }

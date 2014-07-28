@@ -64,14 +64,6 @@ void World::SetShredData(QByteArray * const data,
     shredStorage->SetShredData(data, longi, lati);
 }
 
-int World::SunMoonX() const {
-    return ( TIME_NIGHT == PartOfDay() ) ?
-        TimeOfDay()*SHRED_WIDTH*NumShreds()/
-            SECONDS_IN_NIGHT :
-        (TimeOfDay()-SECONDS_IN_NIGHT)*SHRED_WIDTH*NumShreds()/
-            SECONDS_IN_DAYLIGHT;
-}
-
 times_of_day World::PartOfDay() const {
     return static_cast<times_of_day>(TimeOfDay() / SECONDS_IN_NIGHT);
 }
@@ -114,11 +106,11 @@ void World::Get(Block * const block_to,
             if ( vessel_inv == nullptr ) return;
             Block * const tried = NewBlock(LIQUID, block_from->Sub());
             if ( vessel_inv->Get(tried, 0) ) {
-                SetBlock(Normal(AIR), x_from, y_from, z_from);
                 Shred * const shred = GetShred(x_from, y_from);
-                shred->AddFalling(shred->GetBlock(
-                    Shred::CoordInShred(x_from),
-                    Shred::CoordInShred(y_from), z_from+1));
+                const int x_in = Shred::CoordInShred(x_from);
+                const int y_in = Shred::CoordInShred(y_from);
+                shred->SetBlock(block_manager.Normal(AIR), x_in, y_in, z_from);
+                shred->AddFalling(shred->GetBlock(x_in, y_in, z_from+1));
                 emit Updated(x_from, y_from, z_from);
             } else {
                 delete tried;
@@ -211,32 +203,10 @@ dirs World::Anti(const dirs dir) {
     return NORTH;
 }
 
-void World::MakeSun() {
-    behindSun =
-        GetBlock( (sunMoonX=SunMoonX()), SHRED_WIDTH*NumShreds()/2, HEIGHT-1);
-    PutBlock(Normal(SUN_MOON), sunMoonX, SHRED_WIDTH*NumShreds()/2, HEIGHT-1);
-}
-
 Block * World::GetBlock(const int x, const int y, const int z) const {
     return GetShred(x, y)->
         GetBlock(Shred::CoordInShred(x), Shred::CoordInShred(y), z);
 }
-
-void World::SetBlock(Block * const block,
-        const int x, const int y, const int z)
-{
-    GetShred(x, y)->SetBlock(block,
-        Shred::CoordInShred(x), Shred::CoordInShred(y), z);
-}
-
-void World::PutBlock(Block * const block,
-        const int x, const int y, const int z)
-{
-    GetShred(x, y)->PutBlock(block,
-        Shred::CoordInShred(x), Shred::CoordInShred(y), z);
-}
-
-Block * World::Normal(const int sub) { return block_manager.NormalBlock(sub); }
 
 Block * World::NewBlock(const int kind, const int sub) {
     return BlockManager::NewBlock(kind, sub);
@@ -248,7 +218,6 @@ Shred ** World::FindShred(const int x, const int y) const {
 
 void World::ReloadShreds(const int direction) {
     emit StartMove(direction);
-    RemSun();
     switch ( direction ) {
     case NORTH:
         --longitude;
@@ -309,7 +278,6 @@ void World::ReloadShreds(const int direction) {
     default: Q_UNREACHABLE(); break;
     }
     shredStorage->Shift(direction, longitude, latitude);
-    MakeSun();
     ReEnlightenMove(direction);
     emit Moved(direction);
 } // void World::ReloadShreds(int direction)
@@ -357,15 +325,6 @@ void World::PhysEvents() {
     }
     timeStep = 0;
     ++time;
-    // sun/moon moving
-    if ( not GetEvernight() && sunMoonX != SunMoonX() ) {
-        static const int y = SHRED_WIDTH*NumShreds()/2;
-        PutBlock(behindSun, sunMoonX, y, HEIGHT-1);
-        emit Updated(sunMoonX, y, HEIGHT-1);
-        behindSun = GetBlock(( sunMoonX=SunMoonX() ), y, HEIGHT-1);
-        PutBlock(Normal(SUN_MOON), sunMoonX, y, HEIGHT-1);
-        emit Updated(sunMoonX, y, HEIGHT-1);
-    }
     switch ( TimeOfDay() ) {
     default: break;
     case END_OF_NIGHT:
@@ -562,17 +521,20 @@ const {
 int World::Damage(const int x, const int y, const int z,
         const int dmg, const int dmg_kind)
 {
-    Block * temp = GetBlock(x, y, z);
+    Shred * const shred = GetShred(x, y);
+    const int x_in = Shred::CoordInShred(x);
+    const int y_in = Shred::CoordInShred(y);
+    Block * temp = shred->GetBlock(x_in, y_in, z);
     const int sub  = temp->Sub();
     if ( AIR == sub ) return 0;
     const int kind = temp->Kind();
-    if ( temp == Normal(sub) ) {
+    if ( temp == block_manager.Normal(sub) ) {
         temp = NewBlock(kind, sub);
     }
     temp->Damage(dmg, dmg_kind);
     const int durability = temp->GetDurability();
     // SetBlock can alter temp (by ReplaceWithNormal) so put in last place.
-    SetBlock(temp, x, y, z);
+    shred->SetBlock(temp, x_in, y_in, z);
     return durability;
 }
 
@@ -605,7 +567,10 @@ void World::DestroyAndReplace(const int x, const int y, const int z) {
 bool World::Build(Block * const block, const int x, const int y, const int z,
         const int dir, Block * const who, const bool anyway)
 {
-    Block * const target_block = GetBlock(x, y, z);
+    Shred * const shred = GetShred(x, y);
+    const int x_in = Shred::CoordInShred(x);
+    const int y_in = Shred::CoordInShred(y);
+    Block * const target_block = shred->GetBlock(x_in, y_in, z);
     if ( ENVIRONMENT!=target_block->PushResult(NOWHERE) && not anyway ) {
         if ( who != nullptr ) {
             who->ReceiveSignal(tr("Cannot build here."));
@@ -617,7 +582,7 @@ bool World::Build(Block * const block, const int x, const int y, const int z,
     const int old_transparency = target_block->Transparent();
     const int new_transparency = block->Transparent();
     const int block_light = block->LightRadius();
-    SetBlock(block, x, y, z);
+    shred->SetBlock(block, x_in, y_in, z);
     if ( old_transparency != new_transparency ) {
         ReEnlighten(x, y, z);
     }
@@ -628,10 +593,13 @@ bool World::Build(Block * const block, const int x, const int y, const int z,
 }
 
 bool World::Inscribe(const int x, const int y, const int z) {
+    Shred * const shred = GetShred(x, y);
+    const int x_in = Shred::CoordInShred(x);
+    const int y_in = Shred::CoordInShred(y);
     Block * block = GetBlock(x, y, z);
-    if ( block == Normal(block->Sub()) ) {
+    if ( block == block_manager.Normal(block->Sub()) ) {
         block = NewBlock(block->Kind(), block->Sub());
-        SetBlock(block, x, y, z);
+        shred->SetBlock(block, x_in, y_in, z);
     }
     QString str;
     emit GetString(str);
@@ -662,12 +630,6 @@ void World::Exchange(Block * const block_from, Block * const block_to,
     }
 }
 
-void World::RemSun() {
-    if ( not GetEvernight() ) {
-        PutBlock(behindSun, sunMoonX, SHRED_WIDTH*NumShreds()/2, HEIGHT-1);
-    }
-}
-
 void World::LoadAllShreds() {
     shreds = new Shred *[NumShreds()*NumShreds()];
     shredMemoryPool = static_cast<Shred *>
@@ -678,18 +640,13 @@ void World::LoadAllShreds() {
         shreds[pos] = new(shredMemoryPool + pos)
             Shred(x, y, j, i, shredMemoryPool + pos);
     }
-    if ( evernight ) {
-        sunMoonFactor = 0;
-    } else {
-        MakeSun();
-        sunMoonFactor = ( TIME_NIGHT==PartOfDay() ) ?
+    sunMoonFactor = evernight ?
+        0 : ( TIME_NIGHT==PartOfDay() ) ?
             MOON_LIGHT_FACTOR : SUN_LIGHT_FACTOR;
-    }
     ReEnlightenAll();
 }
 
 void World::DeleteAllShreds() {
-    RemSun();
     for (int i=0; i<NumShreds()*NumShreds(); ++i) {
         shreds[i]->~Shred();
     }

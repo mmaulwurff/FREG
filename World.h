@@ -50,15 +50,7 @@ public: // Block work section
     Shred * GetShred(int i, int j) const;
     Shred * GetShredByPos(int x, int y) const;
 private:
-    /// Puts block to coordinates xyz and activates it.
-    void SetBlock(Block * block, int x, int y, int z);
-    /// Puts block to coordinates and not activates it.
-    void PutBlock(Block * block, int x, int y, int z);
-    static Block * Normal(int sub);
     static Block * NewBlock(int kind, int sub);
-
-    void MakeSun();
-    void RemSun();
 
 public: // Lighting section
     int Enlightened(int x, int y, int z) const;
@@ -112,7 +104,6 @@ public: // Information section
     QByteArray * GetShredData(long longi, long lati) const;
     void SetShredData(QByteArray *, long longi, long lati);
 private:
-    int SunMoonX() const;
     int ShredPos(int x, int y) const;
 
 public: // Visibility section
@@ -211,8 +202,10 @@ signals:
 private:
     static const int TIME_STEPS_IN_SEC = 10;
 
+    const QString worldName;
+    const WorldMap map;
     ulong time;
-    int timeStep;
+    int   timeStep;
     Shred ** shreds;
     /**   N
      *    |  E
@@ -221,23 +214,14 @@ private:
      *  S v longitude ( y for shreds )
      * center of active zone: */
     long longitude, latitude;
-    const QString worldName;
     int numShreds; ///< size of loaded zone
     int numActiveShreds; ///< size of active zone
     QMutex mutex;
-
-    int sunMoonX;
-    /// stores block behind sun or moon (normal with sub STAR or SKY)
-    Block * behindSun;
     bool evernight;
-
-    const WorldMap map;
-
     long newLati, newLongi;
-    int newX, newY, newZ;
+    int  newX, newY, newZ;
     /// UP for no reset, DOWN for full reset, NSEW for side shift.
     volatile int toResetDir;
-
     int sunMoonFactor;
 
     ShredStorage * shredStorage;

@@ -117,7 +117,7 @@ BlockManager::~BlockManager() {
     }
 }
 
-Block * BlockManager::NormalBlock(const int sub) const { return normals[sub]; }
+Block * BlockManager::Normal(const int sub) const { return normals[sub]; }
 
 Block * BlockManager::NewBlock(const int kind, const int sub) {
     const int id = MakeId(kind, sub);
@@ -221,7 +221,7 @@ bool BlockManager::KindSubFromFile(QDataStream & str, int * kind, int * sub) {
 }
 
 void BlockManager::DeleteBlock(Block * const block) const {
-    if ( block != NormalBlock(block->Sub()) ) {
+    if ( block != Normal(block->Sub()) ) {
         Active * const active = block->ActiveBlock();
         if ( active != nullptr ) {
             active->Farewell();
@@ -247,7 +247,7 @@ int BlockManager::StringToSub(const QString str) {
 }
 
 Block * BlockManager::ReplaceWithNormal(Block * const block) const {
-    Block * const normal = NormalBlock(block->Sub());
+    Block * const normal = Normal(block->Sub());
     if ( block!=normal && *block==*normal ) {
         delete block;
         return normal;
