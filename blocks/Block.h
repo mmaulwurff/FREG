@@ -154,7 +154,7 @@ protected:
     /// To convert DAMAGE_PUSH_UP...WEST to corresponding direction.
     static dirs MakeDirFromDamage(int damage_kind);
 
-    QString * note;
+    QString note;
 
 private:
     int Transparency(int transp, int sub) const;

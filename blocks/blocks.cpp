@@ -515,10 +515,10 @@
     inner_actions Clock::ActInner() {
         if ( timerTime > 0 )  {
             --timerTime;
-            note->setNum(timerTime);
+            note.setNum(timerTime);
         } else if ( timerTime == 0 ) {
             Use();
-            *note = QObject::tr("Timer fired. %1").
+            note = QObject::tr("Timer fired. %1").
                 arg(GetWorld()->TimeOfDayStr());
             timerTime = -1;
             return INNER_ACTION_MESSAGE;
@@ -529,18 +529,21 @@
     bool Clock::Inscribe(const QString str) {
         Block::Inscribe(str);
         char c;
-        QTextStream txt_stream(note);
+        QTextStream txt_stream(&note);
         txt_stream >> c;
-        if ( 'a' == c ) {
+        switch ( c ) {
+        case 'a': {
             int alarm_hour;
             txt_stream >> alarm_hour;
             txt_stream >> alarmTime;
             alarmTime += alarm_hour*60;
             timerTime = -1;
-        } else if ( 't'==c ) {
+            } break;
+        case 't':
             txt_stream >> timerTime;
             alarmTime = -1;
-        } else {
+            break;
+        default:
             alarmTime = timerTime = -1;
         }
         return true;
@@ -553,9 +556,7 @@
     Clock::Clock (QDataStream & str, const int sub, const int id) :
             Active(str, sub, id, NONSTANDARD)
     {
-        if ( note ) {
-            Inscribe(*note);
-        }
+        Inscribe(note);
     }
 
 // Creator::
@@ -598,17 +599,17 @@
     }
 
     usage_types Text::Use(Block * const who) {
-        if ( note ) {
-            return USAGE_TYPE_READ;
-        } else {
+        if ( note.isEmpty() ) {
             who->ReceiveSignal(QObject::tr(
                 "Nothing is written on this page."));
             return USAGE_TYPE_NO;
+        } else {
+            return USAGE_TYPE_READ;
         }
     }
 
     bool Text::Inscribe(const QString str) {
-        if ( '.' != str.at(0) && (note == nullptr || GLASS == Sub()) ) {
+        if ( '.' != str.at(0) && (note.isEmpty() || GLASS == Sub()) ) {
             Block::Inscribe(str);
             return true;
         } else {
@@ -621,7 +622,7 @@
     QString Map::FullName() const { return QObject::tr("Map"); }
 
     usage_types Map::Use(Block * const who) {
-        if ( note == nullptr ) {
+        if ( note.isEmpty() ) {
             if ( who ) {
                 who->ReceiveSignal(QObject::tr(
                     "Set title to this map first."));
@@ -630,7 +631,7 @@
         } else if ( who && who->ActiveBlock() ) {
             const Active * const active = who->ActiveBlock();
             QFile map_file(active->GetWorld()->
-                WorldName() + "/texts/" + *note + ".txt");
+                WorldName() + "/texts/" + note + ".txt");
             if ( not map_file.open(QIODevice::ReadWrite | QIODevice::Text) ) {
                 return USAGE_TYPE_READ;
             }

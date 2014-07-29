@@ -25,7 +25,7 @@
 
 int Dwarf::Weight() const {
     World * const world = GetWorld();
-    static const int bound = world->NumShreds() * SHRED_WIDTH - 1;
+    const int bound = world->GetBound();
     return ( (X() < bound && world->GetBlock(X()+1, Y(), Z())->Catchable()) ||
             ( X() > 0     && world->GetBlock(X()-1, Y(), Z())->Catchable()) ||
             ( Y() < bound && world->GetBlock(X(), Y()+1, Z())->Catchable()) ||
@@ -134,7 +134,7 @@ Dwarf::Dwarf(const int sub, const int id) :
         Inventory(),
         lightRadius(MIN_DWARF_LIGHT_RADIUS)
 {
-    note = new QString("Urist");
+    note = "Urist";
 }
 
 Dwarf::Dwarf(QDataStream & str, const int sub, const int id) :

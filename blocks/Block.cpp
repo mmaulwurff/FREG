@@ -170,18 +170,8 @@ void Block::ReceiveSignal(QString) {}
 usage_types Block::Use(Block *) { return USAGE_TYPE_NO; }
 
 bool Block::Inscribe(const QString str) {
-    if ( Sub() == AIR ) {
-        return false;
-    } // else:
-    if ( note ) {
-        *note = str.left(MAX_NOTE_LENGTH);
-    } else {
-        note = new QString(str.left(MAX_NOTE_LENGTH));
-    }
-    if ( "" == *note ) {
-        delete note;
-        note = nullptr;
-    }
+    if ( Sub() == AIR ) return false;
+    note = str.left(MAX_NOTE_LENGTH);
     return true;
 }
 
@@ -194,7 +184,7 @@ void Block::Restore() { durability = MAX_DURABILITY; }
 void Block::Break()   { durability = 0; }
 dirs Block::GetDir() const { return static_cast<dirs>(direction); }
 int  Block::GetDurability() const { return durability; }
-QString Block::GetNote() const { return note ? *note : ""; }
+QString Block::GetNote() const { return note; }
 
 void Block::Mend() {
     if ( GetDurability() < MAX_DURABILITY ) {
@@ -239,11 +229,10 @@ void Block::SetDir(const int dir) {
 bool Block::operator!=(const Block & block) const { return !(*this == block); }
 
 bool Block::operator==(const Block & block) const {
-    return ( block.GetId()==GetId() &&
-        block.GetDurability()==GetDurability() &&
-        block.GetDir()==GetDir() &&
-        ( (!note && !block.note) ||
-            (note && block.note && *block.note==*note) ) );
+    return ( block.GetId() == GetId()
+        && block.GetDurability() == GetDurability()
+        && block.GetDir() == GetDir()
+        && block.note==note );
 }
 
 void Block::SaveAttributes(QDataStream &) const {}
@@ -255,9 +244,9 @@ void Block::SaveToFile(QDataStream & out) {
         out << sub << quint8(BlockManager::KindFromId(id)) <<
             ( ( ( ( durability
             <<= 3 ) |= direction )
-            <<= 1 ) |= bool(note) );
-        if ( Q_UNLIKELY(note) ) {
-            out << *note;
+            <<= 1 ) |= bool(not note.isEmpty()) );
+        if ( Q_UNLIKELY(not note.isEmpty()) ) {
+            out << note;
         }
         SaveAttributes(out);
     }
@@ -270,7 +259,7 @@ void Block::SaveNormalToFile(QDataStream & out) const {
 void Block::RestoreDurabilityAfterSave() { durability >>= 4; }
 
 Block::Block(const int subst, const int i, const int transp) :
-        note(nullptr),
+        note(),
         durability(MAX_DURABILITY),
         transparent(Transparency(transp, subst)),
         sub(subst),
@@ -287,12 +276,10 @@ Block::Block(QDataStream & str, const int subst, const int i, const int transp)
     // use durability as buffer, set actual value in the end:
     str >> durability;
     if ( Q_UNLIKELY(durability & 1) ) {
-        str >> *(note = new QString);
-    } else {
-        note = nullptr;
+        str >> note;
     }
     direction = ( durability >>= 1 ) & 0x7;
     durability >>= 3;
 }
 
-Block::~Block() { delete note; }
+Block::~Block() {}

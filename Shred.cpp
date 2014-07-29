@@ -383,7 +383,7 @@ void Shred::PlantGrass() {
     }
 }
 
-void Shred::TestShred() { // 7 items in a row
+void Shred::TestShred() {
     const int level = FlatUndeground()+1;
     struct {
         kinds kind;
@@ -617,7 +617,7 @@ void Shred::Rain(const int kind, const int sub) {
         Dew(kind, sub);
         return;
     } // else:
-    static const int CLOUD_HEIGHT = HEIGHT*3/4;
+    const int CLOUD_HEIGHT = HEIGHT*3/4;
     int y = qrand();
     const int x = CoordInShred(y);
     y = CoordInShred(unsigned(y) >> SHRED_WIDTH_SHIFT);

@@ -430,8 +430,8 @@ bool Player::Damage() const {
 
 void Player::CheckOverstep(const int direction) {
     UpdateXYZ();
-    static const int half_num_shreds = GetWorld()->NumShreds()/2;
-    if ( DOWN!=direction && UP!=direction && ( // leaving central zone
+    const int half_num_shreds = GetWorld()->NumShreds()/2;
+    if ( direction > DOWN && ( // leaving central zone
             X() <  (half_num_shreds-1)*SHRED_WIDTH ||
             Y() <  (half_num_shreds-1)*SHRED_WIDTH ||
             X() >= (half_num_shreds+2)*SHRED_WIDTH ||

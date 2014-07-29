@@ -108,7 +108,7 @@ void Active::Move(const dirs dir) {
 
 void Active::SendSignalAround(const QString signal) const {
     World * const world = GetWorld();
-    static const int bound = world->GetBound();
+    const int bound = world->GetBound();
     if ( X() > 0 )     world->GetBlock(X()-1, Y(), Z())->ReceiveSignal(signal);
     if ( X() < bound ) world->GetBlock(X()+1, Y(), Z())->ReceiveSignal(signal);
     if ( Y() > 0 )     world->GetBlock(X(), Y()-1, Z())->ReceiveSignal(signal);
@@ -118,7 +118,7 @@ void Active::SendSignalAround(const QString signal) const {
 }
 
 void Active::DamageAround() const {
-    static const int bound = GetWorld()->GetBound();
+    const int bound = GetWorld()->GetBound();
     int x_temp = X()-1;
     int y_temp = Y();
     int z_temp = Z();
@@ -183,8 +183,8 @@ Active::Active(QDataStream & str, const int sub, const int id,
 bool Active::Gravitate(const int range, int bottom, int top,
         const int calmness)
 {
-    static World * const world = GetWorld();
-    static const int bound = world->GetBound();
+    World * const world = GetWorld();
+    const int bound = world->GetBound();
     // analyse world around
     int for_north = 0, for_west = 0;
     const int y_start = qMax(Y()-range, 0);
@@ -223,7 +223,7 @@ int Active::Attractive(int) const { return 0; }
 
 bool Active::IsSubAround(const int sub) const {
     const World * const world = GetWorld();
-    static const int bound = world->GetBound();
+    const int bound = world->GetBound();
     return (sub == world->GetBlock(X(), Y(), Z()-1)->Sub() ||
             sub == world->GetBlock(X(), Y(), Z()+1)->Sub() ||
             (X() > 0     && sub == world->GetBlock(X()-1, Y(), Z())->Sub()) ||
@@ -269,10 +269,10 @@ Falling * Falling::ShouldFall() { return this; }
 push_reaction Falling::PushResult(dirs) const { return MOVABLE; }
 
 void Falling::FallDamage() {
-    static const int SAFE_FALL_HEIGHT = 5;
+    const int SAFE_FALL_HEIGHT = 5;
     if ( fallHeight > SAFE_FALL_HEIGHT ) {
         const int dmg = (fallHeight - SAFE_FALL_HEIGHT)*10;
-        static World * const world = GetWorld();
+        World * const world = GetWorld();
         Block * const block_under = world->GetBlock(X(), Y(), Z()-1);
         world->Damage(X(), Y(), Z()-1, dmg, DamageKind());
         if ( block_under->GetDurability() <= 0 ) {
