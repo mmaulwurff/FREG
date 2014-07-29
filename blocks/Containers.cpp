@@ -273,19 +273,32 @@ const int CONVERTER_LIGHT_RADIUS = 2;
     }
 
     void Converter::DoRareAction() {
+        if ( isOn && fuelLevel < SECONDS_IN_DAY/DamageLevel() ) {
+            for (int i=Size()-1; i>=0; --i) {
+                Block * const block = ShowBlock(i);
+                if ( block != nullptr ) {
+                    const int add = ConvertRatio(block->Sub());
+                    if ( add > 0 ) {
+                        fuelLevel += add;
+                        Pull(i);
+                        block_manager.DeleteBlock(block);
+                        break;
+                    }
+                }
+            }
+        }
         World * const world = GetWorld();
-        if ( fuelLevel > 0 ) {
-            if ( world->Damage(X(), Y(), Z()+1, DamageLevel(), damageKindOn)
-                    <= 0 )
+        if ( fuelLevel <= 0
+                || ( Sub() == STONE
+                    && world->GetBlock(X(), Y(), Z()+1)->Sub() == WATER ) )
+        {
+            Damage(1, damageKindOff);
+        } else {
+            if (world->Damage(X(), Y(), Z()+1, DamageLevel(), damageKindOn)<=0)
             {
                 world->DestroyAndReplace(X(), Y(), Z()+1);
             }
             fuelLevel -= DamageLevel();
-        }
-        if ( GetWorld()->GetBlock(X(), Y(), Z()+1)->Sub() == WATER
-                && Sub() == STONE )
-        {
-            Damage(1, damageKindOff);
         }
     }
 
@@ -325,5 +338,16 @@ const int CONVERTER_LIGHT_RADIUS = 2;
             GetWorld()->GetShred(X(), Y())->RemShining(this);
         } else {
             Block::Damage(dmg, dmg_kind);
+        }
+    }
+
+    int Converter::ConvertRatio(const int sub) const {
+        switch ( Sub() ) {
+        default: return 0;
+        case STONE: switch ( sub ) {
+            default:       return  0;
+            case WOOD:     return 50;
+            case GREENERY: return 10;
+            }
         }
     }

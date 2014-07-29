@@ -495,8 +495,6 @@ Player::Player() {
     homeX  = sett.value("home_x", 0).toInt();
     homeY  = sett.value("home_y", 0).toInt();
     homeZ  = sett.value("home_z", HEIGHT/2).toInt();
-    usingType     = sett.value("using_type",      USAGE_TYPE_NO).toInt();
-    usingSelfType = sett.value("using_self_type", USAGE_TYPE_NO).toInt();
     SetXyz(sett.value("current_x", 0).toInt(),
            sett.value("current_y", 0).toInt(),
            sett.value("current_z", HEIGHT/2+1).toInt());
@@ -506,6 +504,8 @@ Player::Player() {
     homeX += plus;
     homeY += plus;
     SetPlayer(x_self+=plus, y_self+=plus, z_self);
+    usingType     = sett.value("using_type",      USAGE_TYPE_NO).toInt();
+    usingSelfType = sett.value("using_self_type", USAGE_TYPE_NO).toInt();
 
     connect(world, SIGNAL(NeedPlayer(int, int, int)),
         SLOT(SetPlayer(int, int, int)),

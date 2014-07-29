@@ -97,6 +97,7 @@ protected:
 
 private:
     void InitDamageKinds();
+    int  ConvertRatio(int sub) const;
 
     // saved attributes
     bool isOn;
