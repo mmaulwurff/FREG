@@ -71,7 +71,8 @@ public:
     using Active::Active;
 
     int  Kind()     const override;
-    int  ShouldAct()  const override;
+    int  ShouldAct() const override;
+    int  DamageKind() const override;
     int  LightRadius() const override;
     QString FullName() const override;
     Block * DropAfterDamage(bool * delete_block) override;

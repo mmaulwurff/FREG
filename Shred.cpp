@@ -385,90 +385,37 @@ void Shred::PlantGrass() {
 
 void Shred::TestShred() { // 7 items in a row
     const int level = FlatUndeground()+1;
-    int row = 1, column = -1;
-    // row 1
-    SetNewBlock(CLOCK,     IRON, column+=2, row, level);
-    SetNewBlock(CONTAINER, WOOD, column+=2, row, level);
-    SetNewBlock(FALLING,   SAND, column+=2, row, level);
-    PutBlock(Normal(GLASS),      column+=2, row, level);
-    SetNewBlock(CONTAINER, DIFFERENT, column+=2, row, level);
-    SetNewBlock(PLATE, STONE, column+=2, row, level);
-    PutBlock(Normal(NULLSTONE), column+=2, row, level);
-    // row 2
-    column = -1;
-    row += 2;
-    SetNewBlock(LADDER, NULLSTONE, column+=2, row, level);
-    SetNewBlock(LADDER, GREENERY,  column,    row, level+1);
-    SetNewBlock(LADDER, STONE,     column,    row, level+2);
-    // tall ladder
-    for (int i=level+3; i<=level+20 && i<HEIGHT-1; ++i) {
-        SetNewBlock(LADDER, WOOD, column, row, i);
+    struct {
+        kinds kind;
+        subs  sub;
+    } set[SHRED_WIDTH/2][SHRED_WIDTH] = {
+        { // rows
+            {CLOCK, IRON}, {CONTAINER, WOOD}, {FALLING, SAND},
+            {BLOCK, GLASS}, {CONTAINER, DIFFERENT}, {PLATE, STONE},
+            {BLOCK, NULLSTONE}, {LADDER, NULLSTONE}, {LADDER, GREENERY},
+            {LADDER, STONE}, {DWARF, ADAMANTINE}, {BUSH, WOOD},
+            {WORKBENCH, IRON}, {DOOR, GLASS}, {WEAPON, IRON},
+            {BLOCK, SAND}
+        }, {
+            {BLOCK, WATER}, {FALLING, WATER}, {DOOR, STONE},
+            {BLOCK, CLAY}, {TEXT, PAPER}, {BELL, IRON},
+            {BUCKET, IRON}, {PICK, IRON}, {SHOVEL, IRON},
+            {HAMMER, IRON}, {AXE, IRON}, {FALLING, STONE},
+            {WEAPON, STONE}, {BLOCK, WOOD}, {TEXT, GLASS},
+            {BLOCK, COAL}
+        }, {
+            {CLOCK, EXPLOSIVE}, {BLOCK, MOSS_STONE}, {ILLUMINATOR, STONE},
+            {ILLUMINATOR, WOOD}, {ILLUMINATOR, IRON}, {ILLUMINATOR, GLASS},
+            {CONTAINER, IRON}, {CONTAINER, WATER}, {WEAPON, SKY},
+            {LIQUID, SUB_CLOUD}, {RAIN_MACHINE, IRON}, {FALLING, SUB_DUST},
+            {BLOCK, ROSE}, {CONVERTER, STONE}
+        }
+    };
+    for (int i=0; i<SHRED_WIDTH/2; ++i)
+    for (int j=0; j<SHRED_WIDTH  ; ++j) {
+        if ( set[i][j].kind == 0 && set[i][j].sub == 0) continue;
+        SetNewBlock(set[i][j].kind, set[i][j].sub, j, i*2, level);
     }
-    SetNewBlock(DWARF, H_MEAT, column+=2, row, level);
-    SetNewBlock(LIQUID, WATER, column+=2, row, level - 3);
-    SetNewBlock(LIQUID, WATER, column, row, level - 2);
-    PutBlock(Normal(AIR), column, row, level - 1);
-    SetNewBlock(BUSH,   WOOD,   column+=2, row, level);
-    SetNewBlock(RABBIT, A_MEAT, column+=2, row, level - 2);
-    PutBlock(Normal(AIR), column, row, level - 1);
-    SetNewBlock(WORKBENCH, IRON,  column+=2, row, level);
-    SetNewBlock(DOOR,      GLASS, column+=2, row, level);
-    blocks[column][row][level]->SetDir(NORTH);
-    // row 3
-    column = -1;
-    row += 2;
-    SetNewBlock(WEAPON,  IRON,  column+=2, row, level);
-    SetNewBlock(BLOCK,   SAND,  column+=2, row, level);
-    SetNewBlock(BLOCK,   WATER, column+=2, row, level);
-    SetNewBlock(FALLING, WATER, column+=2, row, level);
-    SetNewBlock(DOOR,   STONE, column+=2, row, level);
-    blocks[column][row][level]->SetDir(NORTH);
-    SetNewBlock(BLOCK,  CLAY,  column+=2, row, level);
-    NormalCube(++column, row-1, level, 3, 3, 3, GLASS);
-    SetNewBlock(LIQUID, STONE, ++column, row, level+1);
-    // row 4
-    column = -1;
-    row += 2;
-    SetNewBlock(TEXT, PAPER, column+=2, row, level);
-    GetBlock(column, row, level)->Inscribe(".hidden");
-    SetNewBlock(BELL,   IRON, column+=2, row, level);
-    SetNewBlock(BUCKET, IRON, column+=2, row, level);
-    SetNewBlock(PICK,   IRON, column+=2, row, level);
-    SetNewBlock(SHOVEL, IRON, column+=2, row, level);
-    SetNewBlock(HAMMER, IRON, column+=2, row, level);
-    SetNewBlock(AXE,    IRON, column+=2, row, level);
-    // row 5
-    column = -1;
-    row += 2;
-    SetNewBlock(FALLING, STONE, column+=2, row, level);
-    SetNewBlock(WEAPON,  STONE, column+=2, row, level);
-    SetNewBlock(GRASS,   FIRE,  column+=2, row, level);
-    SetNewBlock(BLOCK,   WOOD,  column, row, level-1);
-    SetNewBlock(TEXT,    GLASS, column+=2, row, level);
-    PutBlock(Normal(COAL), column+=2, row, level);
-    SetNewBlock(CLOCK, EXPLOSIVE, column+=2, row, level);
-    PutBlock(Normal(MOSS_STONE),  column+=2, row, level);
-    // row 6
-    column = -1;
-    row += 2;
-    SetNewBlock(ILLUMINATOR, STONE, column+=2, row, level);
-    SetNewBlock(ILLUMINATOR, WOOD,  column+=2, row, level);
-    SetNewBlock(ILLUMINATOR, IRON,  column+=2, row, level);
-    SetNewBlock(ILLUMINATOR, GLASS, column+=2, row, level);
-    SetNewBlock(CONTAINER,   IRON,  column+=2, row, level);
-    SetNewBlock(CONTAINER,   WATER, column+=2, row, level);
-    PutBlock(Normal(STONE), column+=2, row, level);
-    // row 7
-    column = -1;
-    row += 2;
-    SetNewBlock(WEAPON, SKY, column+=2, row, level);
-    NormalCube(++column, row-1, level, 3, 3, 3, GLASS);
-    SetNewBlock(LIQUID, ACID, ++column, row, level+1);
-    SetNewBlock(LIQUID, SUB_CLOUD, column+=2, row, level);
-    SetNewBlock(RAIN_MACHINE, IRON, column+=2, row, level);
-    SetNewBlock(FALLING, SUB_DUST, column+=2, row, level);
-    PutBlock(Normal(ROSE), column+=2, row, level);
-    SetNewBlock(CONVERTER, STONE, column+=2, row, level);
 } // void Shred::TestShred()
 
 void Shred::NullMountain() {

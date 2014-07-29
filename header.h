@@ -161,7 +161,7 @@ enum subs {
     NULLSTONE,  ///<   2
     SKY,        ///<   3
     STAR,       ///<   4
-    SUN_MOON,   ///<   5
+    SUN_MOON,   ///<   5 // can be reused
     SOIL,       ///<   6
     H_MEAT,     ///<   7 (hominid meat)
     A_MEAT,     ///<   8 (animal meat)

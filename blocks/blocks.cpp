@@ -193,6 +193,7 @@
 
     int  Liquid::Kind() const { return LIQUID; }
     int  Liquid::ShouldAct() const  { return FREQUENT_RARE; }
+    int  Liquid::LightRadius() const { return ( STONE==Sub() ) ? 3 : 0; }
     bool Liquid::Inscribe(QString) { return false; }
     inner_actions Liquid::ActInner() { return INNER_ACTION_NONE; }
     push_reaction Liquid::PushResult(dirs) const { return ENVIRONMENT; }
@@ -206,11 +207,6 @@
     Block * Liquid::DropAfterDamage(bool *) {
         return block_manager.Normal( ( Sub() == STONE ) ?
             STONE : AIR);
-    }
-
-    int Liquid::LightRadius() const {
-        static const int radius = ( STONE==Sub() ) ? 3 : 0;
-        return radius;
     }
 
     QString Liquid::FullName() const {
@@ -286,13 +282,13 @@
 
     int  Grass::ShouldAct() const  { return FREQUENT_RARE; }
     int  Grass::Kind() const { return GRASS; }
+    int  Grass::LightRadius() const { return (FIRE == Sub()) ? 5 : 0; }
     push_reaction Grass::PushResult(dirs) const { return ENVIRONMENT; }
     inner_actions Grass::ActInner() { return INNER_ACTION_NONE; }
     Block * Grass::DropAfterDamage(bool*) { return block_manager.Normal(AIR); }
 
-    int  Grass::LightRadius() const {
-        static const int radius = (FIRE == Sub()) ? 5 : 0;
-        return radius;
+    int Grass::DamageKind() const {
+        return (Sub() == FIRE) ? DAMAGE_HEAT : DAMAGE_NO;
     }
 
 // Bush::
@@ -641,7 +637,7 @@
             const Shred * const shred = active->GetShred();
             const long  lati = shred->Latitude();
             const long longi = shred->Longitude();
-            static const int FILE_SIZE_CHARS = 31;
+            const int FILE_SIZE_CHARS = 31;
             if ( 0 == map_file.size() ) { // new map
                 char header[FILE_SIZE_CHARS+1];
                 memset(header, '-', FILE_SIZE_CHARS);

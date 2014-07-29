@@ -57,12 +57,13 @@ enum damage_kinds {
     DAMAGE_NO,      ///< 12
     DAMAGE_HANDS,   ///< 13
     DAMAGE_ACID,    ///< 14
-    DAMAGE_PUSH_UP,    ///< 15
-    DAMAGE_PUSH_DOWN,  ///< 16
-    DAMAGE_PUSH_NORTH, ///< 17
-    DAMAGE_PUSH_SOUTH, ///< 18
-    DAMAGE_PUSH_EAST,  ///< 19
-    DAMAGE_PUSH_WEST,  ///< 20
+    DAMAGE_RADIATION,
+    DAMAGE_PUSH_UP,
+    DAMAGE_PUSH_DOWN,
+    DAMAGE_PUSH_NORTH,
+    DAMAGE_PUSH_SOUTH,
+    DAMAGE_PUSH_EAST,
+    DAMAGE_PUSH_WEST
 }; // enum damage_kinds
 
 // weights in measures - mz (mezuro)

@@ -41,9 +41,12 @@
     int  Weapon::Wearable() const { return WEARABLE_ARM; }
     push_reaction Weapon::PushResult(dirs) const { return DAMAGE; }
 
-    void Weapon::Damage(int, const int dmg_kind) {
+    void Weapon::Damage(const int dmg, const int dmg_kind) {
         if ( dmg_kind < DAMAGE_PUSH_UP ) {
-            Break();
+            Block::Damage(dmg, dmg_kind);
+            if ( GetDurability() < MAX_DURABILITY ) {
+                Break();
+            }
         }
     }
 
