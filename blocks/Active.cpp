@@ -242,7 +242,8 @@ Falling::Falling(const int sub, const int id, const int transp) :
 Falling::Falling(QDataStream & str, const int sub, const int id,
         const int transp)
     :
-        Active(str, sub, id, transp)
+        Active(str, sub, id, transp),
+        fallHeight()
 {
     str >> fallHeight >> falling;
 }

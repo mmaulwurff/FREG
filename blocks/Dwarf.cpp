@@ -139,7 +139,8 @@ Dwarf::Dwarf(const int sub, const int id) :
 
 Dwarf::Dwarf(QDataStream & str, const int sub, const int id) :
         Animal(str, sub, id),
-        Inventory(str)
+        Inventory(str),
+        lightRadius()
 {
     UpdateLightRadius();
 }

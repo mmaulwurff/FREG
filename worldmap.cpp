@@ -25,7 +25,10 @@
 const float PI = 3.141592f;
 
 WorldMap::WorldMap(const QString world_name) :
-        map(world_name+"/map.txt")
+        mapSize(),
+        map(world_name+"/map.txt"),
+        spawnLongitude(),
+        spawnLatitude()
 {
     if ( map.open(QIODevice::ReadOnly | QIODevice::Text) ) {
         mapSize = int(qSqrt(1+4*map.size())-1)/2;

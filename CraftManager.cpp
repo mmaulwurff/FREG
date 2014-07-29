@@ -38,7 +38,8 @@ bool CraftItem::operator!=(const CraftItem & item) const {
 
 // CraftList section
 CraftList:: CraftList(const int materials_number, const int  products_number) :
-        productsNumber(products_number)
+        productsNumber(products_number),
+        items()
 {
     items.reserve(materials_number + productsNumber);
 }
@@ -87,7 +88,11 @@ int CraftList::GetProductsNumber() const { return productsNumber; }
 CraftItem * CraftList::GetItem(const int i) const { return items.at(i); }
 
 // CraftManager section
-CraftManager::CraftManager() : size(0) {
+CraftManager::CraftManager() :
+        size(0),
+        recipesList(),
+        recipesSubsList()
+{
     QDir::current().mkdir("recipes");
     const QStringList recipesNames = QDir("recipes").entryList();
     if ( recipesNames.size() < 3 ) { // minimum: . and ..

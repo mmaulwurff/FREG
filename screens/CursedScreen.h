@@ -158,6 +158,8 @@ private slots:
     void Print() override;
 
 private:
+    Screen(const Screen &) = delete;
+    Screen & operator=(const Screen &) = delete;
     char CharNumber(int z) const;
     char CharNumberFront(int x, int y) const;
     void Arrows(WINDOW *, int x, int y, bool show_dir) const;

@@ -21,6 +21,7 @@
 
 Xy::Xy(const short i, const short j) : x_self(i), y_self(j) {}
 Xy::Xy()                             : x_self(),  y_self()  {}
+Xy::~Xy() {}
 
 Xyz::Xyz(const short i, const short j, const short k) : Xy(i, j), z_self(k) {}
 Xyz::Xyz()                                            : Xy(),     z_self()  {}

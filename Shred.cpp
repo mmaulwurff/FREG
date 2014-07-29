@@ -104,6 +104,11 @@ Shred::Shred(const int shred_x, const int shred_y,
     :
         longitude(longi), latitude(lati),
         shredX(shred_x), shredY(shred_y),
+        type(),
+        activeListAll(),
+        activeListFrequent(),
+        shiningList(),
+        fallList(),
         memory(mem)
 {
     if ( LoadShred() ) return; // successfull loading

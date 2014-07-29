@@ -27,7 +27,8 @@ Illuminator::Illuminator(const int sub, const int id) :
 {}
 
 Illuminator::Illuminator(QDataStream & str, const int sub, const int id) :
-        Active(str, sub, id)
+        Active(str, sub, id),
+        fuelLevel()
 {
     str >> fuelLevel;
 }

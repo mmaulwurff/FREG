@@ -20,7 +20,7 @@ VERSTR = '\\"$${VERSION}\\"'
 DEFINES += VER=\"$${VERSTR}\"
 TEMPLATE = app
 
-QMAKE_CXXFLAGS += -Wall -Wextra -Werror -std=c++11 -pedantic
+QMAKE_CXXFLAGS += -Wall -Wextra -Werror -std=c++11 -pedantic -Weffc++
 QMAKE_CXXFLAGS += -Wold-style-cast -Wfloat-equal -Woverloaded-virtual -Wundef
 
 #QMAKE_CXXFLAGS_DEBUG += -fno-inline

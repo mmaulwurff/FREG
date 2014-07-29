@@ -200,6 +200,8 @@ signals:
     void ExitReceived();
 
 private:
+    World(const World &) = delete;
+    World & operator=(const World &) = delete;
     static const int TIME_STEPS_IN_SEC = 10;
 
     const QString worldName;

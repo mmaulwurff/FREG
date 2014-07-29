@@ -40,6 +40,9 @@ protected:
     void run() override;
 
 private:
+    IThread(const IThread &) = delete;
+    IThread & operator=(const IThread &) = delete;
+
     VirtScreen * const screen;
     volatile bool stopped;
 };

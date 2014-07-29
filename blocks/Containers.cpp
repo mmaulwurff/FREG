@@ -246,13 +246,20 @@ const int CONVERTER_LIGHT_RADIUS = 2;
             Container(sub, id, WORKBENCH_SIZE),
             isOn(false),
             fuelLevel(0),
-            lightRadius(0)
+            lightRadius(0),
+            damageKindOn(),
+            damageKindOff()
     {
         InitDamageKinds();
     }
 
     Converter::Converter(QDataStream & str, const int sub, const int id) :
-            Container(str, sub, id, WORKBENCH_SIZE)
+            Container(str, sub, id, WORKBENCH_SIZE),
+            isOn(),
+            fuelLevel(),
+            lightRadius(),
+            damageKindOn(),
+            damageKindOff()
     {
         str >> isOn >> fuelLevel;
         lightRadius = isOn ? CONVERTER_LIGHT_RADIUS : 0;

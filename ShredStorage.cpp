@@ -40,6 +40,7 @@ uint qHash(const LongLat & coords) {
 ShredStorage::ShredStorage(const ushort size_,
         const long longi_center, const long lati_center)
     :
+        storage(),
         size(size_)
 {
     storage.reserve(size*size);

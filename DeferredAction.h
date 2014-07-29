@@ -47,6 +47,7 @@ class DeferredAction final : private Xyz {
 public:
     explicit DeferredAction(Active * attached);
     DeferredAction & operator=(const DeferredAction &) = delete;
+    DeferredAction(const DeferredAction &) = delete;
 
     void SetGhostMove(int dir = NOWHERE);
     void SetMove(int dir = NOWHERE);

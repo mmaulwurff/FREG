@@ -155,7 +155,9 @@
     {}
 
     Animal::Animal(QDataStream & str, const int sub, const int id) :
-            Falling(str, sub, id, NONSTANDARD)
+            Falling(str, sub, id, NONSTANDARD),
+            breath(),
+            satiation()
     {
         str >> breath >> satiation;
     }
@@ -461,7 +463,9 @@
 
     Door::Door(QDataStream & str, const int sub, const int id) :
             Active(str, sub, id, ( STONE==sub || MOSS_STONE==sub ) ?
-                BLOCK_OPAQUE : NONSTANDARD)
+                BLOCK_OPAQUE : NONSTANDARD),
+            shifted(),
+            locked()
     {
         str >> shifted >> locked;
     }
@@ -698,7 +702,11 @@
     {}
 
     Map::Map(QDataStream & str, const int sub, const int id) :
-            Text(str, sub, id)
+            Text(str, sub, id),
+            longiStart(),
+            latiStart(),
+            savedShift(),
+            savedChar()
     {
         str >> longiStart >> latiStart >> savedShift >> savedChar;
     }

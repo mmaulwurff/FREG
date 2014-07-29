@@ -30,7 +30,7 @@
 
 #define sizeof_array(ARRAY) (sizeof(ARRAY)/sizeof(ARRAY[0]))
 
-const QString BlockManager::kinds[] = { // do not usp space, use '_'
+const QByteArray BlockManager::kinds[] = { // do not usp space, use '_'
     "block",
     "bell",
     "container",
@@ -63,7 +63,7 @@ const QString BlockManager::kinds[] = { // do not usp space, use '_'
     "converter",
 };
 
-const QString BlockManager::subs[] = { // do not usp space, use '_'
+const QByteArray BlockManager::subs[] = { // do not usp space, use '_'
     "stone",
     "moss stone",
     "nullstone",

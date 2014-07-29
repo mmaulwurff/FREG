@@ -77,9 +77,12 @@ public:
     static int SubFromId(int id);
 
 private:
+    BlockManager(const BlockManager &) = delete;
+    BlockManager & operator=(const BlockManager &) = delete;
+
     Block * normals[LAST_SUB];
-    static const QString kinds[];
-    static const QString subs[];
+    static const QByteArray kinds[];
+    static const QByteArray subs[];
 };
 
 extern BlockManager block_manager;

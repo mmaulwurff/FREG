@@ -679,7 +679,24 @@ void World::SetNumActiveShreds(const int num) {
 World::World(const QString world_name) :
         worldName(world_name),
         map(world_name),
+        time(),
+        timeStep(),
+        shreds(),
+        longitude(),
+        latitude(),
+        numShreds(),
+        numActiveShreds(),
+        mutex(),
+        evernight(),
+        newLati(),
+        newLongi(),
+        newX(),
+        newY(),
+        newZ(),
         toResetDir(UP),
+        sunMoonFactor(),
+        shredStorage(),
+        shredMemoryPool(),
         initial_lighting()
 {
     world = this;

@@ -43,6 +43,7 @@ public:
     ~Shred();
 
     Shred & operator=(const Shred &) = delete;
+    Shred(const Shred &) = delete;
 
     /// Returns y (line) shred coordinate on world map.
     long Longitude() const;

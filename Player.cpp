@@ -344,7 +344,7 @@ void Player::ProcessCommand(QString command) {
         if ( ForbiddenAdminCommands() ) return;
         Inventory * const inv = PlayerInventory();
         if ( inv == nullptr ) return;
-        QString kind, sub;
+        QByteArray kind, sub;
         comm_stream >> kind >> sub;
         const int kind_code = BlockManager::StringToKind(kind);
         if ( kind_code == LAST_KIND ) {
@@ -484,7 +484,18 @@ void Player::SetPlayer(const int _x, const int _y, const int _z) {
         Qt::DirectConnection);
 }
 
-Player::Player() {
+Player::Player() :
+        homeLongi(),
+        homeLati(),
+        homeX(),
+        homeY(),
+        homeZ(),
+        player(),
+        usingType(),
+        usingSelfType(),
+        usingInInventory(),
+        creativeMode()
+{
     QSettings sett(QDir::currentPath() + '/' + world->WorldName()
         + "/settings.ini", QSettings::IniFormat);
     sett.beginGroup("player");

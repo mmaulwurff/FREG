@@ -206,6 +206,8 @@ int Screen::ColorShred(const shred_type type) const {
     case SHRED_HILL:      return COLOR_PAIR( WHITE_GREEN);
     case SHRED_NULLMOUNTAIN: return Color(BLOCK, NULLSTONE);
     }
+    Q_UNREACHABLE();
+    return COLOR_PAIR(WHITE_BLACK);
 }
 
 void Screen::MovePlayer(const dirs dir) {
@@ -824,8 +826,11 @@ Screen::Screen(
         VirtScreen(wor, pl),
         lastNotification(),
         input(new IThread(this)),
+        updated(),
         notifyLog(fopen("texts/messages.txt", "at")),
         actionMode(ACTION_USE),
+        shiftFocus(),
+        previousCommand(),
         fileToShow(nullptr),
         beepOn(false),
         ascii(_ascii),

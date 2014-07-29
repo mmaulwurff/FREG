@@ -27,7 +27,8 @@ RainMachine::RainMachine(const int sub, const int id) :
 
 RainMachine::RainMachine(QDataStream & stream, const int sub, const int id) :
     Active(stream, sub, id),
-    Inventory(stream, 1)
+    Inventory(stream, 1),
+    isOn()
 {
     stream >> isOn;
 }

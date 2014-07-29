@@ -116,6 +116,10 @@ protected:
 
     World  * const w;
     Player * const player;
+
+private:
+    VirtScreen(const VirtScreen &) = delete;
+    VirtScreen & operator=(const VirtScreen &) = delete;
 };
 
 #endif // VIRTSCREEN_H
