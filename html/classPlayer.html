@@ -51,8 +51,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)"$
-               onblur="searchBox.OnSearchFieldFocus(false)"$
+               onfocus="searchBox.OnSearchFieldFocus(true)"
+               onblur="searchBox.OnSearchFieldFocus(false)"
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -78,7 +78,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0"$
+<iframe src="javascript:void(0)" frameborder="0"
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>
@@ -95,7 +95,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
-<p>This class contains information specific to player and interface for manipulating him. $
+<p>This class contains information specific to player and interface for manipulating him.
  <a href="classPlayer.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="Player_8h_source.html">Player.h</a>&gt;</code></p>
@@ -221,6 +221,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a296203015c064fac1f9023426a36e3e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a07fdac0e20ff80ce72f1efcd04d03022"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a07fdac0e20ff80ce72f1efcd04d03022">Build</a> (int num)</td></tr>
 <tr class="separator:a07fdac0e20ff80ce72f1efcd04d03022"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1154b7eeb9b31698467ea396916a762a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a1154b7eeb9b31698467ea396916a762a">Wield</a> (int num)</td></tr>
+<tr class="separator:a1154b7eeb9b31698467ea396916a762a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acdb58b8d413043092df9d3e94db570d4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#acdb58b8d413043092df9d3e94db570d4">MoveInsideInventory</a> (int num_from, int num_to, int num=1)</td></tr>
 <tr class="memdesc:acdb58b8d413043092df9d3e94db570d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Can also wield appropriate things.  <a href="#acdb58b8d413043092df9d3e94db570d4">More...</a><br /></td></tr>
 <tr class="separator:acdb58b8d413043092df9d3e94db570d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -240,6 +242,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ae66496db6e44d6ed3a6dfbe9771db3f3 inherit pub_methods_classXy"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2e395842100120ca44ed54edcf785cd7 inherit pub_methods_classXy"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classXy.html#a2e395842100120ca44ed54edcf785cd7">Xy</a> ()</td></tr>
 <tr class="separator:a2e395842100120ca44ed54edcf785cd7 inherit pub_methods_classXy"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c79d2fe2030fefa730afba00ce17823 inherit pub_methods_classXy"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classXy.html#a9c79d2fe2030fefa730afba00ce17823">~Xy</a> ()</td></tr>
+<tr class="separator:a9c79d2fe2030fefa730afba00ce17823 inherit pub_methods_classXy"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea695a90dcb452a57b5654b0138fae56 inherit pub_methods_classXy"><td class="memItemLeft" align="right" valign="top">short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classXy.html#aea695a90dcb452a57b5654b0138fae56">X</a> () const </td></tr>
 <tr class="separator:aea695a90dcb452a57b5654b0138fae56 inherit pub_methods_classXy"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0e049ad1b559014e46e3a9516c0a4d58 inherit pub_methods_classXy"><td class="memItemLeft" align="right" valign="top">short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classXy.html#a0e049ad1b559014e46e3a9516c0a4d58">Y</a> () const </td></tr>
@@ -269,7 +273,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Note: player block with its inventory is stored it shred file with all other blocks. player_save contains only coordinates where player is, his home coordinates and world player belongs to.</p>
 <p>Also it does checks for player walking over the shred border. </p>
 
-<p>Definition at line <a class="el" href="Player_8h_source.html#l00033">33</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
+<p>Definition at line <a class="el" href="Player_8h_source.html#l00034">34</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="affe0cc3cb714f6deb4e62f0c0d3f1fd8"></a>
 <div class="memitem">
@@ -287,7 +291,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Constructor creates or loads player. </p>
 <p>It puts player block to the world if there is no player block, and makes necessary connections. </p>
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00478">478</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00485">485</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -304,7 +308,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00511">511</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00519">519</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -324,7 +328,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Tries to switch usingSelfType from NO to OPEN. </p>
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00159">159</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00167">167</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -343,7 +347,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>This returns player breath reserve. On error returns -100. </p>
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00072">72</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00076">76</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -361,7 +365,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00288">288</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00298">298</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -379,7 +383,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00301">301</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00312">312</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -398,7 +402,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Returns true if xyz are in world bounds. </p>
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00407">407</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00416">416</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -438,7 +442,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00106">106</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00107">107</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -455,7 +459,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00044">44</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00053">53</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -474,7 +478,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>This returns current player direction (see enum dirs in <a class="el" href="header_8h.html">header.h</a>) </p>
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00396">396</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00044">44</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -531,7 +535,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00097">97</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00052">52</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -548,7 +552,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00096">96</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00051">51</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -589,7 +593,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00244">244</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00050">50</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -606,7 +610,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00038">38</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00039">39</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -623,7 +627,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00039">39</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00040">40</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -642,7 +646,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>This returns player hitpoints, also known as durability. </p>
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00067">67</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00071">71</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -659,7 +663,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00065">65</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00049">49</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -676,7 +680,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00176">176</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00184">184</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -694,7 +698,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00279">279</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00289">289</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -711,7 +715,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00135">135</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00138">138</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -729,7 +733,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00147">147</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00154">154</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -805,7 +809,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Can also wield appropriate things. </p>
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00271">271</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00281">281</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -868,7 +872,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Tries to get block number num from outer inventory. </p>
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00252">252</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00261">261</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -914,7 +918,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Returns 0 if there is no inventory, otherwise returns inventory. </p>
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00086">86</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00090">90</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -932,7 +936,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00323">323</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00334">334</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -951,7 +955,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Can be &gt; 100 if player is gorged. On error returns -100. </p>
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00079">79</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00081">81</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -969,7 +973,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00046">46</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00055">55</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -987,7 +991,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00398">398</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00407">407</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -1004,7 +1008,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00064">64</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00048">48</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -1047,7 +1051,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Closes backpack, chests, etc. </p>
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00157">157</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00046">46</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -1083,7 +1087,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Tries to throw (drop out) block number num from inventory. </p>
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00246">246</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00253">253</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -1111,7 +1115,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Turns low-case ASCII chars array (length &lt;= 12) into unique quint64. </p>
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00318">318</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00329">329</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -1154,7 +1158,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00167">167</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00175">175</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -1174,7 +1178,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Tries to use block number num in inventory. </p>
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00209">209</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00217">217</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -1194,7 +1198,7 @@ Additional Inherited Members</h2></td></tr>
 <p>This returns how player is using himself. </p>
 <p>For example, OPEN means he is looking in his backpack. See enum usage_types in <a class="el" href="header_8h.html">header.h</a>. </p>
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00062">62</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00047">47</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -1214,7 +1218,7 @@ Additional Inherited Members</h2></td></tr>
 <p>This returns how player is using something now. </p>
 <p>See enum usage_types in <a class="el" href="header_8h.html">header.h</a>. </p>
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00063">63</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00045">45</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -1250,7 +1254,25 @@ Additional Inherited Members</h2></td></tr>
 
 <p>This returns true if block at (x, y, z) is visible to player. </p>
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00389">389</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00400">400</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a1154b7eeb9b31698467ea396916a762a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Player::Wield </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>num</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00269">269</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -1261,7 +1283,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jul 18 2014 22:55:25 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jul 30 2014 12:58:20 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

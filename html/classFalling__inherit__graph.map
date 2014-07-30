@@ -1,16 +1,17 @@
 <map id="Falling" name="Falling">
-<area shape="rect" id="node13" href="$classAnimal.html" title="Animal" alt="" coords="108,337,169,370"/>
-<area shape="rect" id="node21" href="$classLiquid.html" title="Liquid" alt="" coords="213,337,269,370"/>
-<area shape="rect" id="node23" href="$classWeapon.html" title="Weapon class represents simple weapons as sticks, pebbles and so on. Also is used as base class for m..." alt="" coords="332,337,401,370"/>
-<area shape="rect" id="node2" href="$classActive.html" title="Active" alt="" coords="212,171,271,205"/>
-<area shape="rect" id="node6" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="215,89,268,122"/>
-<area shape="rect" id="node8" href="$classXyz.html" title="Xyz" alt="" coords="292,89,335,122"/>
-<area shape="rect" id="node10" href="$classXy.html" title="Xy" alt="" coords="295,6,332,39"/>
-<area shape="rect" id="node15" href="$classDwarf.html" title="Dwarf" alt="" coords="5,419,61,453"/>
-<area shape="rect" id="node17" href="$classPredator.html" title="Predator" alt="" coords="85,419,155,453"/>
-<area shape="rect" id="node19" href="$classRabbit.html" title="Rabbit" alt="" coords="179,419,237,453"/>
-<area shape="rect" id="node25" href="$classAxe.html" title="Axe" alt="" coords="261,419,307,453"/>
-<area shape="rect" id="node27" href="$classHammer.html" title="Hammer" alt="" coords="331,419,403,453"/>
-<area shape="rect" id="node29" href="$classPick.html" title="Pick" alt="" coords="427,419,475,453"/>
-<area shape="rect" id="node31" href="$classShovel.html" title="Shovel" alt="" coords="499,419,560,453"/>
+<area shape="rect" id="node13" href="$classAnimal.html" title="Animal" alt="" coords="177,337,239,370"/>
+<area shape="rect" id="node23" href="$classLiquid.html" title="Liquid" alt="" coords="301,337,357,370"/>
+<area shape="rect" id="node25" href="$classWeapon.html" title="Weapon class represents simple weapons as sticks, pebbles and so on. Also is used as base class for m..." alt="" coords="420,337,489,370"/>
+<area shape="rect" id="node2" href="$classActive.html" title="Active" alt="" coords="300,171,359,205"/>
+<area shape="rect" id="node6" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="303,89,356,122"/>
+<area shape="rect" id="node8" href="$classXyz.html" title="Xyz" alt="" coords="380,89,423,122"/>
+<area shape="rect" id="node10" href="$classXy.html" title="Xy" alt="" coords="383,6,420,39"/>
+<area shape="rect" id="node15" href="$classCreator.html" title="Creator" alt="" coords="5,419,69,453"/>
+<area shape="rect" id="node17" href="$classDwarf.html" title="Dwarf" alt="" coords="93,419,149,453"/>
+<area shape="rect" id="node19" href="$classPredator.html" title="Predator" alt="" coords="173,419,243,453"/>
+<area shape="rect" id="node21" href="$classRabbit.html" title="Rabbit" alt="" coords="267,419,325,453"/>
+<area shape="rect" id="node27" href="$classAxe.html" title="Axe" alt="" coords="349,419,395,453"/>
+<area shape="rect" id="node29" href="$classHammer.html" title="Hammer" alt="" coords="419,419,491,453"/>
+<area shape="rect" id="node31" href="$classPick.html" title="Pick" alt="" coords="515,419,563,453"/>
+<area shape="rect" id="node33" href="$classShovel.html" title="Shovel" alt="" coords="587,419,648,453"/>
 </map>

@@ -51,8 +51,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)"$
-               onblur="searchBox.OnSearchFieldFocus(false)"$
+               onfocus="searchBox.OnSearchFieldFocus(true)"
+               onblur="searchBox.OnSearchFieldFocus(false)"
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -78,7 +78,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0"$
+<iframe src="javascript:void(0)" frameborder="0"
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>
@@ -94,7 +94,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
-<p>This class is used for creating and deleting blocks, also for loading them from file. $
+<p>This class is used for creating and deleting blocks, also for loading them from file.
  <a href="classBlockManager.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="BlockManager_8h_source.html">BlockManager.h</a>&gt;</code></p>
@@ -105,11 +105,11 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a93282216d97540def52c1fa4029eb693"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3c31dd479e07890a5885485fe8d1ccbe"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockManager.html#a3c31dd479e07890a5885485fe8d1ccbe">~BlockManager</a> ()</td></tr>
 <tr class="separator:a3c31dd479e07890a5885485fe8d1ccbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7fc28ea07e80762e996c4d687b3780f3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBlock.html">Block</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockManager.html#a7fc28ea07e80762e996c4d687b3780f3">NormalBlock</a> (int sub) const </td></tr>
-<tr class="memdesc:a7fc28ea07e80762e996c4d687b3780f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Use this to receive a pointer to normal block.  <a href="#a7fc28ea07e80762e996c4d687b3780f3">More...</a><br /></td></tr>
-<tr class="separator:a7fc28ea07e80762e996c4d687b3780f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa054aaa9b802f8b11929b0efb889a2ec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBlock.html">Block</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockManager.html#aa054aaa9b802f8b11929b0efb889a2ec">Normal</a> (int sub) const </td></tr>
+<tr class="memdesc:aa054aaa9b802f8b11929b0efb889a2ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Use this to receive a pointer to normal block.  <a href="#aa054aaa9b802f8b11929b0efb889a2ec">More...</a><br /></td></tr>
+<tr class="separator:aa054aaa9b802f8b11929b0efb889a2ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab3fbdb9af7557b671d9baa817dc948e4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockManager.html#ab3fbdb9af7557b671d9baa817dc948e4">DeleteBlock</a> (<a class="el" href="classBlock.html">Block</a> *) const </td></tr>
-<tr class="memdesc:ab3fbdb9af7557b671d9baa817dc948e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Use this to safely delete block.  <a href="#ab3fbdb9af7557b671d9baa817dc948e4">More...</a><br /></td></tr>
+<tr class="memdesc:ab3fbdb9af7557b671d9baa817dc948e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Does not actually delete normal blocks.  <a href="#ab3fbdb9af7557b671d9baa817dc948e4">More...</a><br /></td></tr>
 <tr class="separator:ab3fbdb9af7557b671d9baa817dc948e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e55d306c1a11f38e9ead5527d11a497"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBlock.html">Block</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockManager.html#a8e55d306c1a11f38e9ead5527d11a497">ReplaceWithNormal</a> (<a class="el" href="classBlock.html">Block</a> *block) const </td></tr>
 <tr class="memdesc:a8e55d306c1a11f38e9ead5527d11a497"><td class="mdescLeft">&#160;</td><td class="mdescRight">For memory economy.  <a href="#a8e55d306c1a11f38e9ead5527d11a497">More...</a><br /></td></tr>
@@ -138,8 +138,8 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a355de871948626eb045b1ca2516d46f7"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockManager.html#a355de871948626eb045b1ca2516d46f7">StringToSub</a> (QString)</td></tr>
 <tr class="memdesc:a355de871948626eb045b1ca2516d46f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">If string is not convertible to substance, returns LAST_SUB.  <a href="#a355de871948626eb045b1ca2516d46f7">More...</a><br /></td></tr>
 <tr class="separator:a355de871948626eb045b1ca2516d46f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1a57f6833aee2e2d461fc900ad82f118"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockManager.html#a1a57f6833aee2e2d461fc900ad82f118">MakeId</a> (int kind, int sub)</td></tr>
-<tr class="separator:a1a57f6833aee2e2d461fc900ad82f118"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a907d78cd3f48a1c46a573b8a7cbaa85c"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockManager.html#a907d78cd3f48a1c46a573b8a7cbaa85c">MakeId</a> (const int kind, const int sub)</td></tr>
+<tr class="separator:a907d78cd3f48a1c46a573b8a7cbaa85c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac1e81563fdcad5e662f6b3edf2372171"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockManager.html#ac1e81563fdcad5e662f6b3edf2372171">KindFromId</a> (int id)</td></tr>
 <tr class="separator:ac1e81563fdcad5e662f6b3edf2372171"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a877c2805dbce720ea30f21947f2b584b"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockManager.html#a877c2805dbce720ea30f21947f2b584b">SubFromId</a> (int id)</td></tr>
@@ -148,7 +148,7 @@ Static Public Member Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This class is used for creating and deleting blocks, also for loading them from file. </p>
 <p>Memory management, if any, should be implemented in this class. At the current moment no special memory management is used.</p>
-<p>Normal blocks: blocks that are not special, e.g. usual stone, air, soil are actually one block (for each substance). One can receive a pointer to such block with <a class="el" href="classBlock.html" title="Block without special physics and attributes. ">Block</a> * NormalBlock(int sub). Normal blocks are not needed to be deleted. Use <a class="el" href="classBlock.html" title="Block without special physics and attributes. ">Block</a> * <a class="el" href="classBlockManager.html#a26e9fcd2287526b92ed75f0cc23e43e1" title="Use this to receive a pointer to new not-normal block. ">NewBlock(int kind, int sub)</a> to receive a pointer to block that will be changed (damaged, inscribed, etc). </p>
+<p>Normal blocks: blocks that are not special, e.g. usual stone, air, soil are actually one block (for each substance). One can receive a pointer to such block with <a class="el" href="classBlock.html" title="Block without special physics and attributes. ">Block</a> * Normal(int sub). Normal blocks are not needed to be deleted. Use <a class="el" href="classBlock.html" title="Block without special physics and attributes. ">Block</a> * <a class="el" href="classBlockManager.html#a26e9fcd2287526b92ed75f0cc23e43e1" title="Use this to receive a pointer to new not-normal block. ">NewBlock(int kind, int sub)</a> to receive a pointer to block that will be changed (damaged, inscribed, etc). </p>
 
 <p>Definition at line <a class="el" href="BlockManager_8h_source.html#l00043">43</a> of file <a class="el" href="BlockManager_8h_source.html">BlockManager.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
@@ -165,7 +165,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00101">101</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
+<p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00102">102</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
 
 </div>
 </div>
@@ -182,7 +182,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00113">113</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
+<p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00114">114</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
 
 </div>
 </div>
@@ -227,7 +227,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Use this to load block from file. </p>
 
-<p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00163">163</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
+<p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00165">165</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
 
 </div>
 </div>
@@ -245,9 +245,9 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Use this to safely delete block. </p>
+<p>Does not actually delete normal blocks. </p>
 
-<p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00220">220</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
+<p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00223">223</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
 
 </div>
 </div>
@@ -273,7 +273,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00260">260</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
+<p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00254">254</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
 
 </div>
 </div>
@@ -317,7 +317,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Returns true if block is normal. </p>
 
-<p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00207">207</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
+<p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00210">210</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
 
 </div>
 </div>
@@ -345,11 +345,11 @@ Static Public Member Functions</h2></td></tr>
 
 <p>If kind is unknown, returns "unknown_kind". </p>
 
-<p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00231">231</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
+<p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00229">229</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a1a57f6833aee2e2d461fc900ad82f118"></a>
+<a class="anchor" id="a907d78cd3f48a1c46a573b8a7cbaa85c"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -357,15 +357,15 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">int BlockManager::MakeId </td>
+          <td class="memname">static constexpr int BlockManager::MakeId </td>
           <td>(</td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>kind</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>sub</em>&#160;</td>
         </tr>
         <tr>
@@ -376,12 +376,12 @@ Static Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00256">256</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
+<p>Definition at line <a class="el" href="BlockManager_8h_source.html#l00072">72</a> of file <a class="el" href="BlockManager_8h_source.html">BlockManager.h</a>.</p>
 
 </div>
 </div>
@@ -419,16 +419,16 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Use this to receive a pointer to new not-normal block. </p>
 
-<p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00121">121</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
+<p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00122">122</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a7fc28ea07e80762e996c4d687b3780f3"></a>
+<a class="anchor" id="aa054aaa9b802f8b11929b0efb889a2ec"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classBlock.html">Block</a> * BlockManager::NormalBlock </td>
+          <td class="memname"><a class="el" href="classBlock.html">Block</a> * BlockManager::Normal </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>sub</em></td><td>)</td>
@@ -439,7 +439,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Use this to receive a pointer to normal block. </p>
 
-<p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00119">119</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
+<p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00120">120</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
 
 </div>
 </div>
@@ -460,7 +460,7 @@ Static Public Member Functions</h2></td></tr>
 <p>For memory economy. </p>
 <p>Checks and replaces block with corresponding normal block. Can delete block, use carefully. </p>
 
-<p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00246">246</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
+<p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00244">244</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
 
 </div>
 </div>
@@ -488,7 +488,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>If string is not convertible to kind, returns LAST_KIND. </p>
 
-<p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00234">234</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
+<p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00232">232</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
 
 </div>
 </div>
@@ -516,7 +516,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>If string is not convertible to substance, returns LAST_SUB. </p>
 
-<p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00240">240</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
+<p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00238">238</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
 
 </div>
 </div>
@@ -542,7 +542,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00261">261</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
+<p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00255">255</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
 
 </div>
 </div>
@@ -570,7 +570,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>If substance is unknown, returns "unknown_sub". </p>
 
-<p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00232">232</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
+<p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00230">230</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
 
 </div>
 </div>
@@ -581,7 +581,7 @@ Static Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jul 18 2014 22:55:25 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jul 30 2014 12:58:20 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

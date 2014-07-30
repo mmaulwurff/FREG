@@ -51,8 +51,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)"$
-               onblur="searchBox.OnSearchFieldFocus(false)"$
+               onfocus="searchBox.OnSearchFieldFocus(true)"
+               onblur="searchBox.OnSearchFieldFocus(false)"
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -76,7 +76,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0"$
+<iframe src="javascript:void(0)" frameborder="0"
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>
@@ -209,9 +209,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;</div>
 <div class="line"><a name="l00117"></a><span class="lineno"><a class="line" href="classVirtScreen.html#a4370c655ab8fef96399dcf6f2925612f">  117</a></span>&#160;    <a class="code" href="classWorld.html">World</a>  * <span class="keyword">const</span> <a class="code" href="classVirtScreen.html#a4370c655ab8fef96399dcf6f2925612f">w</a>;</div>
 <div class="line"><a name="l00118"></a><span class="lineno"><a class="line" href="classVirtScreen.html#aaed763dcb848640a199dcc6af3ac9453">  118</a></span>&#160;    <a class="code" href="classPlayer.html">Player</a> * <span class="keyword">const</span> <a class="code" href="classVirtScreen.html#aaed763dcb848640a199dcc6af3ac9453">player</a>;</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;};</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;<span class="preprocessor">#endif // VIRTSCREEN_H</span></div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    <a class="code" href="classVirtScreen.html#a038d31b20e33cd3683dfce2c41d7dfed">VirtScreen</a>(<span class="keyword">const</span> <a class="code" href="classVirtScreen.html">VirtScreen</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    <a class="code" href="classVirtScreen.html">VirtScreen</a> &amp; operator=(<span class="keyword">const</span> <a class="code" href="classVirtScreen.html">VirtScreen</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;};</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;<span class="preprocessor">#endif // VIRTSCREEN_H</span></div>
 <div class="ttc" id="header_8h_html"><div class="ttname"><a href="header_8h.html">header.h</a></div></div>
 <div class="ttc" id="classVirtScreen_html_a235e958b714022d9191ca8f0789820a3"><div class="ttname"><a href="classVirtScreen.html#a235e958b714022d9191ca8f0789820a3">VirtScreen::ActionXyz</a></div><div class="ttdeci">virtual void ActionXyz(int *x, int *y, int *z) const </div><div class="ttdoc">Used to get player focus coordinates from screen. </div><div class="ttdef"><b>Definition:</b> <a href="VirtScreen_8cpp_source.html#l00072">VirtScreen.cpp:72</a></div></div>
 <div class="ttc" id="classVirtScreen_html_a3a652c00f2692d027ee20806195feedd"><div class="ttname"><a href="classVirtScreen.html#a3a652c00f2692d027ee20806195feedd">VirtScreen::Update</a></div><div class="ttdeci">virtual void Update(int x, int y, int z)=0</div><div class="ttdoc">This is called when block at (x, y, z) should be updated in screen. </div></div>
@@ -237,11 +241,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="classVirtScreen_html_aa8c0cccd74d52f7df3626eb32890cca1"><div class="ttname"><a href="classVirtScreen.html#aa8c0cccd74d52f7df3626eb32890cca1">VirtScreen::ControlPlayer</a></div><div class="ttdeci">virtual void ControlPlayer(int command)</div><div class="ttdef"><b>Definition:</b> <a href="VirtScreen_8cpp_source.html#l00069">VirtScreen.cpp:69</a></div></div>
 <div class="ttc" id="classVirtScreen_html_a95211d3030daf852e37ca3bf5a552f9f"><div class="ttname"><a href="classVirtScreen.html#a95211d3030daf852e37ca3bf5a552f9f">VirtScreen::~VirtScreen</a></div><div class="ttdeci">virtual ~VirtScreen()</div><div class="ttdef"><b>Definition:</b> <a href="VirtScreen_8cpp_source.html#l00065">VirtScreen.cpp:65</a></div></div>
 <div class="ttc" id="classVirtScreen_html_af4b841b03471d9a19ae1175a3dea4edd"><div class="ttname"><a href="classVirtScreen.html#af4b841b03471d9a19ae1175a3dea4edd">VirtScreen::DeathScreen</a></div><div class="ttdeci">void DeathScreen()</div><div class="ttdoc">This is called when player is dead, and displayed until respawn. </div><div class="ttdef"><b>Definition:</b> <a href="VirtScreen_8cpp_source.html#l00028">VirtScreen.cpp:28</a></div></div>
-<div class="ttc" id="classPlayer_html"><div class="ttname"><a href="classPlayer.html">Player</a></div><div class="ttdoc">This class contains information specific to player and interface for manipulating him...</div><div class="ttdef"><b>Definition:</b> <a href="Player_8h_source.html#l00033">Player.h:33</a></div></div>
+<div class="ttc" id="classPlayer_html"><div class="ttname"><a href="classPlayer.html">Player</a></div><div class="ttdoc">This class contains information specific to player and interface for manipulating him...</div><div class="ttdef"><b>Definition:</b> <a href="Player_8h_source.html#l00034">Player.h:34</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jul 18 2014 22:55:24 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jul 30 2014 12:58:20 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

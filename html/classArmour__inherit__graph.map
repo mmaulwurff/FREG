@@ -1,0 +1,5 @@
+<map id="Armour" name="Armour">
+<area shape="rect" id="node5" href="$classBoots.html" title="Boots" alt="" coords="5,171,61,205"/>
+<area shape="rect" id="node7" href="$classHelmet.html" title="Helmet" alt="" coords="85,171,149,205"/>
+<area shape="rect" id="node2" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="48,6,101,39"/>
+</map>

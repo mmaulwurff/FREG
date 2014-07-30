@@ -1,9 +1,8 @@
 var searchData=
 [
   ['east',['EAST',['../header_8h.html#aeac25a28aa4d3c6009f7249ee82ae12dab5b3793b961949c817c7c0d99c05dad7',1,'header.h']]],
-  ['eat',['Eat',['../classAnimal.html#a6cb945bc5a0daed211ab050bcf8d2537',1,'Animal']]],
+  ['eat',['Eat',['../classAnimal.html#a57d1bd2726ec49bba2c8bf9e7d73f581',1,'Animal']]],
   ['eatgrass',['EatGrass',['../classAnimal.html#a84b3c9986de1c6bc9ef11308a91accc3',1,'Animal']]],
-  ['electro',['ELECTRO',['../header_8h.html#a5adfb93f736d9aa263cea4b7b74da15ea46412ad582a5b09811a5b40e32c1715e',1,'header.h']]],
   ['end_5fof_5fevening',['END_OF_EVENING',['../header_8h.html#a5b4ca3e39dbf62e91fb6f601f7be0e2f',1,'header.h']]],
   ['end_5fof_5fmorning',['END_OF_MORNING',['../header_8h.html#a5fc3a87750d58c224369f12ec82b673f',1,'header.h']]],
   ['end_5fof_5fnight',['END_OF_NIGHT',['../header_8h.html#a8e90cf80ab23415110e5ca2c5e098cd1',1,'header.h']]],

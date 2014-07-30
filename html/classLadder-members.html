@@ -51,8 +51,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)"$
-               onblur="searchBox.OnSearchFieldFocus(false)"$
+               onfocus="searchBox.OnSearchFieldFocus(true)"
+               onblur="searchBox.OnSearchFieldFocus(false)"
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -78,7 +78,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0"$
+<iframe src="javascript:void(0)" frameborder="0"
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>
@@ -112,13 +112,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr><td class="entry"><a class="el" href="classBlock.html#aac35702513c4f975787b9679103ce678">IsAnimal</a>()</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classLadder.html#ab61e96cda8edeb6feb9f67566ec61624">Kind</a>() const override</td><td class="entry"><a class="el" href="classLadder.html">Ladder</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
   <tr><td class="entry"><a class="el" href="classBlock.html#a4ef904547fb1917efe905f176727825d">LightRadius</a>() const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classBlock.html#ad76d9df3bc012a8ad25e5cebe30f6549">Mend</a>()</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="classBlock.html#a5b323a730223105018f4000c6ef149fd">Move</a>(dirs direction)</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classBlock.html#a6aaf4d22a7c92b0a6c643912f4e4169c">note</a></td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
-  <tr><td class="entry"><a class="el" href="classBlock.html#a3e7b5d7b7ffe9a9667a30df94fa7855c">operator!=</a>(const Block &amp;) const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classBlock.html#a02be3e82de650474f471ffcade2f826e">operator=</a>(const Block &amp;)=delete</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="classBlock.html#aaae97d5826396f14373026d13d6f0e7f">operator==</a>(const Block &amp;) const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classBlock.html#aee6bb582138b232a7b9de0845c1cb79a">Push</a>(dirs, Block *who)</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classBlock.html#a60a9be872caca48e0f5da2f12f25f258">MakeDirFromDamage</a>(int damage_kind)</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">protected</span><span class="mlabel">static</span></td></tr>
+  <tr><td class="entry"><a class="el" href="classBlock.html#ad76d9df3bc012a8ad25e5cebe30f6549">Mend</a>()</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classBlock.html#a5b323a730223105018f4000c6ef149fd">Move</a>(dirs direction)</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr><td class="entry"><a class="el" href="classBlock.html#a8fcfd2abe274b4b8b251588f9f213d32">note</a></td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classBlock.html#a3e7b5d7b7ffe9a9667a30df94fa7855c">operator!=</a>(const Block &amp;) const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="classBlock.html#a02be3e82de650474f471ffcade2f826e">operator=</a>(const Block &amp;)=delete</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classBlock.html#aaae97d5826396f14373026d13d6f0e7f">operator==</a>(const Block &amp;) const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="classLadder.html#ad2de04669d4117d756b8a8dcbf3fb33a">PushResult</a>(dirs) const override</td><td class="entry"><a class="el" href="classLadder.html">Ladder</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classBlock.html#a191359f3dd8baa2973f5cb790fd4d839">ReceiveSignal</a>(QString)</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
   <tr><td class="entry"><a class="el" href="classBlock.html#aa87bacc77cb049c9261bfde171a9455b">Restore</a>()</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
@@ -137,7 +137,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </table></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jul 18 2014 22:55:25 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jul 30 2014 12:58:20 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

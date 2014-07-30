@@ -51,8 +51,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)"$
-               onblur="searchBox.OnSearchFieldFocus(false)"$
+               onfocus="searchBox.OnSearchFieldFocus(true)"
+               onblur="searchBox.OnSearchFieldFocus(false)"
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -78,7 +78,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0"$
+<iframe src="javascript:void(0)" frameborder="0"
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>
@@ -93,7 +93,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>This is the complete list of members for <a class="el" href="classPredator.html">Predator</a>, including all inherited members.</p>
 <table class="directory">
   <tr class="even"><td class="entry"><a class="el" href="classActive.html#aebbfa0341ef4b0839448641f50f313b9">ActFrequent</a>()</td><td class="entry"><a class="el" href="classActive.html">Active</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="classAnimal.html#ac992687684c7da2840803ebf080f5676">ActInner</a>() override</td><td class="entry"><a class="el" href="classAnimal.html">Animal</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr><td class="entry"><a class="el" href="classAnimal.html#aae7d136a00b50726bdae0bc6aef483e0">ActInner</a>() override</td><td class="entry"><a class="el" href="classAnimal.html">Animal</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classActive.html#a62cdff852ee3506c60b988e7f2646627">Active</a>(int sub, int id, int transp=UNDEF)</td><td class="entry"><a class="el" href="classActive.html">Active</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="classActive.html#aa0b6a4fafa16bab124cef7d1fbdfc4d5">Active</a>(QDataStream &amp;str, int sub, int id, int transp=UNDEF)</td><td class="entry"><a class="el" href="classActive.html">Active</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classActive.html#ab57fec0ba72b588d5c424f9a674abf27">ActiveBlock</a>() override</td><td class="entry"><a class="el" href="classActive.html">Active</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
@@ -115,38 +115,36 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr class="even"><td class="entry"><a class="el" href="classPredator.html#a7a2014810811c472a295d3ad07677e09">DoFrequentAction</a>() override</td><td class="entry"><a class="el" href="classPredator.html">Predator</a></td><td class="entry"><span class="mlabel">protected</span><span class="mlabel">virtual</span></td></tr>
   <tr><td class="entry"><a class="el" href="classPredator.html#acbde927ca4f618230921fb0f2f2caa4c">DoRareAction</a>() override</td><td class="entry"><a class="el" href="classPredator.html">Predator</a></td><td class="entry"><span class="mlabel">protected</span><span class="mlabel">virtual</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classAnimal.html#a12a217dc4ce2eeebb292ae44171c5c3d">DropAfterDamage</a>(bool *delete_block) override</td><td class="entry"><a class="el" href="classAnimal.html">Animal</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
-  <tr><td class="entry"><a class="el" href="classAnimal.html#a6cb945bc5a0daed211ab050bcf8d2537">Eat</a>(int sub)</td><td class="entry"><a class="el" href="classAnimal.html">Animal</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="classAnimal.html#a57d1bd2726ec49bba2c8bf9e7d73f581">Eat</a>(subs)</td><td class="entry"><a class="el" href="classAnimal.html">Animal</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classAnimal.html#a84b3c9986de1c6bc9ef11308a91accc3">EatGrass</a>()</td><td class="entry"><a class="el" href="classAnimal.html">Animal</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
   <tr><td class="entry"><a class="el" href="classFalling.html#a7350e9359fc67db7da5925b570c629ca">FallDamage</a>()</td><td class="entry"><a class="el" href="classFalling.html">Falling</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classFalling.html#ac5fec795418932cff8bc9fd703c2aada">Falling</a>(int sub, int id, int transp=UNDEF)</td><td class="entry"><a class="el" href="classFalling.html">Falling</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="classFalling.html#aa5beb3e3473bdd2b421be0a246b8d509">Falling</a>(QDataStream &amp;str, int sub, int id, int transp=UNDEF)</td><td class="entry"><a class="el" href="classFalling.html">Falling</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classActive.html#a5afcbddc965266502fc2fef5977351f2">Farewell</a>()</td><td class="entry"><a class="el" href="classActive.html">Active</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="classPredator.html#a177cb908fb708eea8c60cfd28acb2e03">FullName</a>() const override</td><td class="entry"><a class="el" href="classPredator.html">Predator</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classActive.html#a6569df5ebe2f46597fb4165faabe0166">GetDeferredAction</a>() const </td><td class="entry"><a class="el" href="classActive.html">Active</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="classBlock.html#a5151310c8eda7622118f271947089e89">GetDir</a>() const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classBlock.html#ab6c31dc3056aee946b3acc092f5e8ad2">GetDurability</a>() const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="classBlock.html#ae8778fd8d0014c0bc6aca9767af7ff05">GetId</a>() const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classBlock.html#a2be0125fc9e14effa2f28c2569e10d71">GetNote</a>() const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="classActive.html#a2647465c56ce987d9791885b10e381fb">GetShred</a>() const </td><td class="entry"><a class="el" href="classActive.html">Active</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classActive.html#aaa8a15599e6ee605105dfc3b2ea13a29">GetWorld</a>() const </td><td class="entry"><a class="el" href="classActive.html">Active</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="classActive.html#aa3d19053485aa1b7636312beac6e3fd7">Gravitate</a>(int range, int down, int up, int calmness)</td><td class="entry"><a class="el" href="classActive.html">Active</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classBlock.html#a725cb8988b2af9ce8805a2c9ea4ee479">HasInventory</a>()</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
-  <tr><td class="entry"><a class="el" href="classBlock.html#a66f434f7c2448289e87e424ee95c7e21">Inscribe</a>(QString str)</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classAnimal.html#ac1ce27a8d446f40c48b66af1a5f90e45">IsAnimal</a>() override</td><td class="entry"><a class="el" href="classAnimal.html">Animal</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
-  <tr><td class="entry"><a class="el" href="classFalling.html#a555bf72239917581030749f4d460b406">IsFalling</a>() const </td><td class="entry"><a class="el" href="classFalling.html">Falling</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classActive.html#af6229f8297154481383e855de3931ac4">IsSubAround</a>(int sub) const </td><td class="entry"><a class="el" href="classActive.html">Active</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
-  <tr><td class="entry"><a class="el" href="classPredator.html#a406e4077df4692947c5c610ac62873dd">Kind</a>() const override</td><td class="entry"><a class="el" href="classPredator.html">Predator</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classBlock.html#a4ef904547fb1917efe905f176727825d">LightRadius</a>() const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classBlock.html#a5151310c8eda7622118f271947089e89">GetDir</a>() const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="classBlock.html#ab6c31dc3056aee946b3acc092f5e8ad2">GetDurability</a>() const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classBlock.html#ae8778fd8d0014c0bc6aca9767af7ff05">GetId</a>() const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="classBlock.html#a2be0125fc9e14effa2f28c2569e10d71">GetNote</a>() const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classActive.html#a2647465c56ce987d9791885b10e381fb">GetShred</a>() const </td><td class="entry"><a class="el" href="classActive.html">Active</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="classActive.html#aaa8a15599e6ee605105dfc3b2ea13a29">GetWorld</a>() const </td><td class="entry"><a class="el" href="classActive.html">Active</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classActive.html#aa3d19053485aa1b7636312beac6e3fd7">Gravitate</a>(int range, int down, int up, int calmness)</td><td class="entry"><a class="el" href="classActive.html">Active</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
+  <tr><td class="entry"><a class="el" href="classBlock.html#a725cb8988b2af9ce8805a2c9ea4ee479">HasInventory</a>()</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classBlock.html#a66f434f7c2448289e87e424ee95c7e21">Inscribe</a>(QString str)</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr><td class="entry"><a class="el" href="classAnimal.html#ac1ce27a8d446f40c48b66af1a5f90e45">IsAnimal</a>() override</td><td class="entry"><a class="el" href="classAnimal.html">Animal</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classFalling.html#a555bf72239917581030749f4d460b406">IsFalling</a>() const </td><td class="entry"><a class="el" href="classFalling.html">Falling</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="classActive.html#af6229f8297154481383e855de3931ac4">IsSubAround</a>(int sub) const </td><td class="entry"><a class="el" href="classActive.html">Active</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classPredator.html#a406e4077df4692947c5c610ac62873dd">Kind</a>() const override</td><td class="entry"><a class="el" href="classPredator.html">Predator</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr><td class="entry"><a class="el" href="classBlock.html#a4ef904547fb1917efe905f176727825d">LightRadius</a>() const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classBlock.html#a60a9be872caca48e0f5da2f12f25f258">MakeDirFromDamage</a>(int damage_kind)</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">protected</span><span class="mlabel">static</span></td></tr>
   <tr><td class="entry"><a class="el" href="classBlock.html#ad76d9df3bc012a8ad25e5cebe30f6549">Mend</a>()</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classFalling.html#a67cc88f285dc253e44a82291a7702495">Move</a>(dirs dir) override</td><td class="entry"><a class="el" href="classFalling.html">Falling</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
   <tr><td class="entry"><a class="el" href="classActive.html#a05769b0afa87193e72adcd991aac6815">Moved</a>(int)</td><td class="entry"><a class="el" href="classActive.html">Active</a></td><td class="entry"><span class="mlabel">signal</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classAnimal.html#a230c7b194ad68263cc00d259fe7a2aef">moved_in_this_turn</a></td><td class="entry"><a class="el" href="classAnimal.html">Animal</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
-  <tr><td class="entry"><a class="el" href="classBlock.html#a6aaf4d22a7c92b0a6c643912f4e4169c">note</a></td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classPredator.html#a734651c6c0e15461ea82fb0057af4e67">NutritionalValue</a>(int sub) const override</td><td class="entry"><a class="el" href="classPredator.html">Predator</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
-  <tr><td class="entry"><a class="el" href="classBlock.html#a3e7b5d7b7ffe9a9667a30df94fa7855c">operator!=</a>(const Block &amp;) const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classBlock.html#a02be3e82de650474f471ffcade2f826e">operator=</a>(const Block &amp;)=delete</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="classBlock.html#aaae97d5826396f14373026d13d6f0e7f">operator==</a>(const Block &amp;) const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classBlock.html#aee6bb582138b232a7b9de0845c1cb79a">Push</a>(dirs, Block *who)</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr><td class="entry"><a class="el" href="classBlock.html#a8fcfd2abe274b4b8b251588f9f213d32">note</a></td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classBlock.html#a3e7b5d7b7ffe9a9667a30df94fa7855c">operator!=</a>(const Block &amp;) const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="classBlock.html#a02be3e82de650474f471ffcade2f826e">Block::operator=</a>(const Block &amp;)=delete</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classBlock.html#aaae97d5826396f14373026d13d6f0e7f">operator==</a>(const Block &amp;) const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="classFalling.html#ae6bcf0a4bc7eca2a16c672b64ff46fc0">PushResult</a>(dirs) const override</td><td class="entry"><a class="el" href="classFalling.html">Falling</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classActive.html#a9a5c8fd7b3b99212e9fb70b8dec3c1a9">ReceivedText</a>(const QString)</td><td class="entry"><a class="el" href="classActive.html">Active</a></td><td class="entry"><span class="mlabel">signal</span></td></tr>
   <tr><td class="entry"><a class="el" href="classActive.html#a7c43d188f23aaac44f2e1b22fcf41bb9">ReceiveSignal</a>(QString) override</td><td class="entry"><a class="el" href="classActive.html">Active</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
@@ -188,10 +186,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr><td class="entry"><a class="el" href="classXyz.html#a1b4751619130c4e8b3e0296965067cdf">z_self</a></td><td class="entry"><a class="el" href="classXyz.html">Xyz</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classActive.html#a5a0365a3412ef2d7f466582336866c23">~Active</a>()</td><td class="entry"><a class="el" href="classActive.html">Active</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="classBlock.html#a19d1bd0e1cef6a865ed2745a2e648405">~Block</a>()</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classXy.html#a9c79d2fe2030fefa730afba00ce17823">~Xy</a>()</td><td class="entry"><a class="el" href="classXy.html">Xy</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
 </table></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jul 18 2014 22:55:25 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jul 30 2014 12:58:20 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

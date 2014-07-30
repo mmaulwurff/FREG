@@ -1,5 +1,6 @@
 <map id="Container" name="Container">
-<area shape="rect" id="node15" href="$classWorkbench.html" title="Workbench allows craft from multiple sources. There can be up to 2 products. Also can be used as cont..." alt="" coords="127,337,215,370"/>
+<area shape="rect" id="node15" href="$classConverter.html" title="Converter" alt="" coords="79,337,156,370"/>
+<area shape="rect" id="node17" href="$classWorkbench.html" title="Workbench allows craft from multiple sources. There can be up to 2 products. Also can be used as cont..." alt="" coords="180,337,268,370"/>
 <area shape="rect" id="node2" href="$classActive.html" title="Active" alt="" coords="96,171,155,205"/>
 <area shape="rect" id="node6" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="99,89,152,122"/>
 <area shape="rect" id="node8" href="$classXyz.html" title="Xyz" alt="" coords="176,89,219,122"/>

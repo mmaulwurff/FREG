@@ -51,8 +51,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)"$
-               onblur="searchBox.OnSearchFieldFocus(false)"$
+               onfocus="searchBox.OnSearchFieldFocus(true)"
+               onblur="searchBox.OnSearchFieldFocus(false)"
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -116,7 +116,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0"$
+<iframe src="javascript:void(0)" frameborder="0"
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>
@@ -127,12 +127,19 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <h3><a class="anchor" id="index_d"></a>- d -</h3><ul>
 <li>Damage()
 : <a class="el" href="classActive.html#a5c46e557fba53e75f9f8fd48d5285e63">Active</a>
+, <a class="el" href="classArmour.html#a2c1fba273e4cb5e1138db5ac8eb6d66e">Armour</a>
 , <a class="el" href="classBell.html#aab2d6cbc5bef297fcd06d105964f9918">Bell</a>
 , <a class="el" href="classBlock.html#a77d9f883e2566fa391344ce9d358bd6d">Block</a>
 , <a class="el" href="classBucket.html#ab5c6d3f50ee4275f8d1ab70d00f0359d">Bucket</a>
+, <a class="el" href="classBush.html#a85e45cd3e1f401bea846e819dbbed6b8">Bush</a>
 , <a class="el" href="classClock.html#a6490513f82ac227cac3072c961dbc29f">Clock</a>
+, <a class="el" href="classContainer.html#a3210a500ddd76171b3d9dc1eae6c750e">Container</a>
+, <a class="el" href="classConverter.html#a498c588ade59f5cfe272b599087565f3">Converter</a>
+, <a class="el" href="classDoor.html#ab1f0936ef917e89215d4407b6ff94fb3">Door</a>
 , <a class="el" href="classIlluminator.html#a184d5bc8a821d7980e8e66826c38dc99">Illuminator</a>
+, <a class="el" href="classLiquid.html#a898323c096fc26b2c37456d22f523c00">Liquid</a>
 , <a class="el" href="classPlayer.html#a5b8a299afda763781331d489f18e7879">Player</a>
+, <a class="el" href="classRainMachine.html#a2c05059342b6f4265a7f91e215ac2960">RainMachine</a>
 , <a class="el" href="classWeapon.html#a69e15ddc66243f0472ae8eaa67e1c713">Weapon</a>
 , <a class="el" href="classWorld.html#ad6ba33aef1d0fc14295131c17035e2b7">World</a>
 </li>
@@ -143,16 +150,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="classAnimal.html#ae1106fcb205d40342ad694bba42d3a4b">Animal</a>
 , <a class="el" href="classAxe.html#abed2eb4e7ea54ca95660e9e2466b2ca4">Axe</a>
 , <a class="el" href="classBlock.html#aa2bb9530fe8167ba1bb66761e9a45628">Block</a>
+, <a class="el" href="classConverter.html#a2ab2f9d9b13371d0dd70914f299b9a7c">Converter</a>
 , <a class="el" href="classCreator.html#ac69c35e405f077092f03bede522a7359">Creator</a>
 , <a class="el" href="classDwarf.html#aafafbf32090c1a741d6e096f3a413fa5">Dwarf</a>
+, <a class="el" href="classGrass.html#a9319917632584c4b1496981df0a833ca">Grass</a>
 , <a class="el" href="classHammer.html#a46eab86e6ab8d139ca2f8b7985f56f06">Hammer</a>
+, <a class="el" href="classIlluminator.html#ab34348b610450ca436e848df882d69ed">Illuminator</a>
 , <a class="el" href="classLiquid.html#ad2573a962106bc5ae29837c4985ceeaa">Liquid</a>
 , <a class="el" href="classPick.html#a8b82ff20c2b6e7e53c2ca985ac12866f">Pick</a>
 , <a class="el" href="classShovel.html#ad772c4df367037ee3eaca0cd0e01a9b1">Shovel</a>
 , <a class="el" href="classWeapon.html#abfc16260bbd9a143c32107bdb5b6f0b9">Weapon</a>
 </li>
 <li>DamageLevel()
-: <a class="el" href="classAxe.html#a1714d6cf4fcfa1108b74f93f8d3a2164">Axe</a>
+: <a class="el" href="classArmour.html#a30316e4a51a1df54c4ee3bc0b8b8dd0e">Armour</a>
+, <a class="el" href="classAxe.html#a1714d6cf4fcfa1108b74f93f8d3a2164">Axe</a>
 , <a class="el" href="classBlock.html#a5efc76c08d665eee50e8f00c3c0a3960">Block</a>
 , <a class="el" href="classCreator.html#a6665783fd8ae01d6e4ca9b1431e15856">Creator</a>
 , <a class="el" href="classDwarf.html#a5b0ab93b3e08b2481b8b66cdcfb8c811">Dwarf</a>
@@ -204,6 +215,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 , <a class="el" href="classBush.html#a0543847d5ac449bebcfe3d03c0e2f86f">Bush</a>
 , <a class="el" href="classClock.html#a99cdb5ed020da531e09bfbb64cde5713">Clock</a>
 , <a class="el" href="classContainer.html#a0b8999f9449f8ea105687c6fca12a4f0">Container</a>
+, <a class="el" href="classConverter.html#af8c0b05186638981945eeea6b87b62ba">Converter</a>
 , <a class="el" href="classGrass.html#a40be3bd43fbaf7ef02b72c26d0e7fc27">Grass</a>
 , <a class="el" href="classIlluminator.html#a19b2d0ef12e8517c5151bdb11284e3ed">Illuminator</a>
 , <a class="el" href="classLiquid.html#aba9679b7d98e137f1a6a1851ad131453">Liquid</a>
@@ -234,7 +246,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jul 18 2014 22:55:25 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jul 30 2014 12:58:20 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

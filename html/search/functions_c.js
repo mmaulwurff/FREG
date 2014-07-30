@@ -2,7 +2,8 @@ var searchData=
 [
   ['main',['main',['../main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627',1,'main.cpp']]],
   ['makeaction',['MakeAction',['../classDeferredAction.html#a3b2b7cc205cda25958faa6fec023c23e',1,'DeferredAction']]],
-  ['makeid',['MakeId',['../classBlockManager.html#a1a57f6833aee2e2d461fc900ad82f118',1,'BlockManager']]],
+  ['makedirfromdamage',['MakeDirFromDamage',['../classBlock.html#a60a9be872caca48e0f5da2f12f25f258',1,'Block']]],
+  ['makeid',['MakeId',['../classBlockManager.html#a907d78cd3f48a1c46a573b8a7cbaa85c',1,'BlockManager']]],
   ['map',['Map',['../classMap.html#ac2b5df92888864735de84c99d0f5546e',1,'Map::Map(int sub, int id)'],['../classMap.html#a102878bf3ef015eee9017d6949ba2442',1,'Map::Map(QDataStream &amp;str, int sub, int id)']]],
   ['mapsize',['MapSize',['../classWorldMap.html#a215fe4401ff033af88091e5291bd7895',1,'WorldMap']]],
   ['mend',['Mend',['../classBlock.html#ad76d9df3bc012a8ad25e5cebe30f6549',1,'Block']]],

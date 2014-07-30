@@ -1,7 +1,7 @@
 <map id="screens/IThread.cpp" name="screens/IThread.cpp">
-<area shape="rect" id="node3" href="$IThread_8h.html" title="screens/IThread.h" alt="" coords="12,89,137,122"/>
-<area shape="rect" id="node7" href="$VirtScreen_8h.html" title="screens/VirtScreen.h" alt="" coords="167,89,311,122"/>
-<area shape="rect" id="node11" href="$header_8h.html" title="header.h" alt="" coords="304,254,373,287"/>
-<area shape="rect" id="node17" href="$World_8h.html" title="World.h" alt="" coords="119,171,185,205"/>
-<area shape="rect" id="node23" href="$worldmap_8h.html" title="worldmap.h" alt="" coords="101,254,189,287"/>
+<area shape="rect" id="node3" href="$IThread_8h.html" title="screens/IThread.h" alt="" coords="96,89,221,122"/>
+<area shape="rect" id="node7" href="$VirtScreen_8h.html" title="screens/VirtScreen.h" alt="" coords="257,89,401,122"/>
+<area shape="rect" id="node11" href="$header_8h.html" title="header.h" alt="" coords="408,254,477,287"/>
+<area shape="rect" id="node17" href="$World_8h.html" title="World.h" alt="" coords="216,171,283,205"/>
+<area shape="rect" id="node25" href="$worldmap_8h.html" title="worldmap.h" alt="" coords="205,254,293,287"/>
 </map>

@@ -51,8 +51,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)"$
-               onblur="searchBox.OnSearchFieldFocus(false)"$
+               onfocus="searchBox.OnSearchFieldFocus(true)"
+               onblur="searchBox.OnSearchFieldFocus(false)"
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -78,7 +78,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0"$
+<iframe src="javascript:void(0)" frameborder="0"
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>
@@ -101,7 +101,7 @@ Inheritance diagram for Active:</div>
 <div class="dyncontent">
 <div class="center"><img src="classActive__inherit__graph.png" border="0" usemap="#Active_inherit__map" alt="Inheritance graph"/></div>
 <map name="Active_inherit__map" id="Active_inherit__map">
-<area shape="rect" id="node11" href="classBell.html" title="Bell" alt="" coords="5,254,48,287"/><area shape="rect" id="node13" href="classBush.html" title="Bush" alt="" coords="72,254,123,287"/><area shape="rect" id="node15" href="classClock.html" title="Clock" alt="" coords="147,254,203,287"/><area shape="rect" id="node17" href="classContainer.html" title="Container is multi&#45;purpose container for blocks. " alt="" coords="227,254,304,287"/><area shape="rect" id="node21" href="classCreator.html" title="Creator" alt="" coords="328,254,392,287"/><area shape="rect" id="node23" href="classDoor.html" title="Door" alt="" coords="416,254,467,287"/><area shape="rect" id="node25" href="classFalling.html" title="Falling" alt="" coords="491,254,549,287"/><area shape="rect" id="node47" href="classGrass.html" title="Grass" alt="" coords="573,254,629,287"/><area shape="rect" id="node49" href="classIlluminator.html" title="Illuminator" alt="" coords="653,254,736,287"/><area shape="rect" id="node51" href="classRainMachine.html" title="RainMachine" alt="" coords="760,254,859,287"/><area shape="rect" id="node4" href="classBlock.html" title="Block without special physics and attributes. " alt="" coords="373,89,427,122"/><area shape="rect" id="node6" href="classXyz.html" title="Xyz" alt="" coords="451,89,493,122"/><area shape="rect" id="node8" href="classXy.html" title="Xy" alt="" coords="453,6,491,39"/><area shape="rect" id="node19" href="classWorkbench.html" title="Workbench allows craft from multiple sources. There can be up to 2 products. Also can be used as cont..." alt="" coords="221,337,309,370"/><area shape="rect" id="node27" href="classAnimal.html" title="Animal" alt="" coords="369,337,431,370"/><area shape="rect" id="node35" href="classLiquid.html" title="Liquid" alt="" coords="492,337,548,370"/><area shape="rect" id="node37" href="classWeapon.html" title="Weapon class represents simple weapons as sticks, pebbles and so on. Also is used as base class for m..." alt="" coords="592,337,661,370"/><area shape="rect" id="node29" href="classDwarf.html" title="Dwarf" alt="" coords="265,419,321,453"/><area shape="rect" id="node31" href="classPredator.html" title="Predator" alt="" coords="345,419,415,453"/><area shape="rect" id="node33" href="classRabbit.html" title="Rabbit" alt="" coords="439,419,497,453"/><area shape="rect" id="node39" href="classAxe.html" title="Axe" alt="" coords="521,419,567,453"/><area shape="rect" id="node41" href="classHammer.html" title="Hammer" alt="" coords="591,419,663,453"/><area shape="rect" id="node43" href="classPick.html" title="Pick" alt="" coords="687,419,735,453"/><area shape="rect" id="node45" href="classShovel.html" title="Shovel" alt="" coords="759,419,820,453"/></map>
+<area shape="rect" id="node11" href="classBell.html" title="Bell" alt="" coords="5,254,48,287"/><area shape="rect" id="node13" href="classBush.html" title="Bush" alt="" coords="72,254,123,287"/><area shape="rect" id="node15" href="classClock.html" title="Clock" alt="" coords="147,254,203,287"/><area shape="rect" id="node17" href="classContainer.html" title="Container is multi&#45;purpose container for blocks. " alt="" coords="227,254,304,287"/><area shape="rect" id="node23" href="classDoor.html" title="Door" alt="" coords="328,254,379,287"/><area shape="rect" id="node25" href="classFalling.html" title="Falling" alt="" coords="403,254,461,287"/><area shape="rect" id="node49" href="classGrass.html" title="Grass" alt="" coords="485,254,541,287"/><area shape="rect" id="node51" href="classIlluminator.html" title="Illuminator" alt="" coords="565,254,648,287"/><area shape="rect" id="node53" href="classRainMachine.html" title="RainMachine" alt="" coords="672,254,771,287"/><area shape="rect" id="node4" href="classBlock.html" title="Block without special physics and attributes. " alt="" coords="327,89,380,122"/><area shape="rect" id="node6" href="classXyz.html" title="Xyz" alt="" coords="404,89,447,122"/><area shape="rect" id="node8" href="classXy.html" title="Xy" alt="" coords="407,6,444,39"/><area shape="rect" id="node19" href="classConverter.html" title="Converter" alt="" coords="120,337,197,370"/><area shape="rect" id="node21" href="classWorkbench.html" title="Workbench allows craft from multiple sources. There can be up to 2 products. Also can be used as cont..." alt="" coords="221,337,309,370"/><area shape="rect" id="node27" href="classAnimal.html" title="Animal" alt="" coords="333,337,395,370"/><area shape="rect" id="node37" href="classLiquid.html" title="Liquid" alt="" coords="419,337,475,370"/><area shape="rect" id="node39" href="classWeapon.html" title="Weapon class represents simple weapons as sticks, pebbles and so on. Also is used as base class for m..." alt="" coords="576,337,645,370"/><area shape="rect" id="node29" href="classCreator.html" title="Creator" alt="" coords="161,419,225,453"/><area shape="rect" id="node31" href="classDwarf.html" title="Dwarf" alt="" coords="249,419,305,453"/><area shape="rect" id="node33" href="classPredator.html" title="Predator" alt="" coords="329,419,399,453"/><area shape="rect" id="node35" href="classRabbit.html" title="Rabbit" alt="" coords="423,419,481,453"/><area shape="rect" id="node41" href="classAxe.html" title="Axe" alt="" coords="505,419,551,453"/><area shape="rect" id="node43" href="classHammer.html" title="Hammer" alt="" coords="575,419,647,453"/><area shape="rect" id="node45" href="classPick.html" title="Pick" alt="" coords="671,419,719,453"/><area shape="rect" id="node47" href="classShovel.html" title="Shovel" alt="" coords="743,419,804,453"/></map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
 Collaboration diagram for Active:</div>
@@ -130,15 +130,15 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa0b6a4fafa16bab124cef7d1fbdfc4d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a0365a3412ef2d7f466582336866c23"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#a5a0365a3412ef2d7f466582336866c23">~Active</a> ()</td></tr>
 <tr class="separator:a5a0365a3412ef2d7f466582336866c23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a10c24cb7fd58e7141190bf8e37258c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#a7a10c24cb7fd58e7141190bf8e37258c">Kind</a> () const override=0</td></tr>
+<tr class="separator:a7a10c24cb7fd58e7141190bf8e37258c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac919694f9c9c273e8536d4af778e0fdf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#ac919694f9c9c273e8536d4af778e0fdf">Move</a> (<a class="el" href="header_8h.html#aeac25a28aa4d3c6009f7249ee82ae12d">dirs</a> dir) override</td></tr>
 <tr class="separator:ac919694f9c9c273e8536d4af778e0fdf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5c46e557fba53e75f9f8fd48d5285e63"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#a5c46e557fba53e75f9f8fd48d5285e63">Damage</a> (int dmg, int dmg_kind) override</td></tr>
-<tr class="separator:a5c46e557fba53e75f9f8fd48d5285e63"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7c43d188f23aaac44f2e1b22fcf41bb9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#a7c43d188f23aaac44f2e1b22fcf41bb9">ReceiveSignal</a> (QString) override</td></tr>
 <tr class="memdesc:a7c43d188f23aaac44f2e1b22fcf41bb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receive text signal.  <a href="#a7c43d188f23aaac44f2e1b22fcf41bb9">More...</a><br /></td></tr>
 <tr class="separator:a7c43d188f23aaac44f2e1b22fcf41bb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7a10c24cb7fd58e7141190bf8e37258c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#a7a10c24cb7fd58e7141190bf8e37258c">Kind</a> () const override=0</td></tr>
-<tr class="separator:a7a10c24cb7fd58e7141190bf8e37258c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c46e557fba53e75f9f8fd48d5285e63"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#a5c46e557fba53e75f9f8fd48d5285e63">Damage</a> (int dmg, int dmg_kind) override</td></tr>
+<tr class="separator:a5c46e557fba53e75f9f8fd48d5285e63"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9734484e6a46a860cf98c5003c782ed0"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#a9734484e6a46a860cf98c5003c782ed0">FullName</a> () const override=0</td></tr>
 <tr class="separator:a9734484e6a46a860cf98c5003c782ed0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab57fec0ba72b588d5c424f9a674abf27"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classActive.html">Active</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#ab57fec0ba72b588d5c424f9a674abf27">ActiveBlock</a> () override</td></tr>
@@ -151,14 +151,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aebbfa0341ef4b0839448641f50f313b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b2ccf7fde185461db3cf94bf34ef7e7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#a9b2ccf7fde185461db3cf94bf34ef7e7">ActRare</a> ()</td></tr>
 <tr class="separator:a9b2ccf7fde185461db3cf94bf34ef7e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2df9b38348525db5f2641ac12ac7b033"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="Active_8h.html#a3ac24c9d33c4b9290b701ef1b5eff482">INNER_ACTIONS</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#a2df9b38348525db5f2641ac12ac7b033">ActInner</a> ()</td></tr>
-<tr class="separator:a2df9b38348525db5f2641ac12ac7b033"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2367487664fc72c67c5a8331ecb32e63"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="Active_8h.html#a402bda14d184e5e93e0ce9e36d015141">inner_actions</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#a2367487664fc72c67c5a8331ecb32e63">ActInner</a> ()</td></tr>
+<tr class="separator:a2367487664fc72c67c5a8331ecb32e63"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a787b19b127d07c00af658a17e2fe29a8"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#a787b19b127d07c00af658a17e2fe29a8">ShouldAct</a> () const </td></tr>
 <tr class="separator:a787b19b127d07c00af658a17e2fe29a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a509f99efaf66a953b1b9a6a4147679e9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#a509f99efaf66a953b1b9a6a4147679e9">SetDeferredAction</a> (<a class="el" href="classDeferredAction.html">DeferredAction</a> *)</td></tr>
 <tr class="separator:a509f99efaf66a953b1b9a6a4147679e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6569df5ebe2f46597fb4165faabe0166"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classDeferredAction.html">DeferredAction</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#a6569df5ebe2f46597fb4165faabe0166">GetDeferredAction</a> () const </td></tr>
-<tr class="separator:a6569df5ebe2f46597fb4165faabe0166"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7304800a331a2a677cb912df9106ea13"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#a7304800a331a2a677cb912df9106ea13">ReloadToNorth</a> ()</td></tr>
 <tr class="separator:a7304800a331a2a677cb912df9106ea13"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9628696949ca414a5334ed9798bd8320"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#a9628696949ca414a5334ed9798bd8320">ReloadToSouth</a> ()</td></tr>
@@ -189,8 +187,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a66f434f7c2448289e87e424ee95c7e21 inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#a66f434f7c2448289e87e424ee95c7e21">Inscribe</a> (QString str)</td></tr>
 <tr class="memdesc:a66f434f7c2448289e87e424ee95c7e21 inherit pub_methods_classBlock"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true on success.  <a href="#a66f434f7c2448289e87e424ee95c7e21">More...</a><br /></td></tr>
 <tr class="separator:a66f434f7c2448289e87e424ee95c7e21 inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee6bb582138b232a7b9de0845c1cb79a inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#aee6bb582138b232a7b9de0845c1cb79a">Push</a> (<a class="el" href="header_8h.html#aeac25a28aa4d3c6009f7249ee82ae12d">dirs</a>, <a class="el" href="classBlock.html">Block</a> *who)</td></tr>
-<tr class="separator:aee6bb582138b232a7b9de0845c1cb79a inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a19bb384757938c21ed727d079dda6567 inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="header_8h.html#a305c682db7e7cdce78096178c0c9ef4a">usage_types</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#a19bb384757938c21ed727d079dda6567">Use</a> (<a class="el" href="classBlock.html">Block</a> *who)</td></tr>
 <tr class="separator:a19bb384757938c21ed727d079dda6567 inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0e518d22724cef190fd3d106f9c6a39d inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="header_8h.html#a4b1e949f8e745e1bab6b99b32b34c544">push_reaction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#a0e518d22724cef190fd3d106f9c6a39d">PushResult</a> (<a class="el" href="header_8h.html#aeac25a28aa4d3c6009f7249ee82ae12d">dirs</a>) const </td></tr>
@@ -263,6 +259,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ae66496db6e44d6ed3a6dfbe9771db3f3 inherit pub_methods_classXy"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2e395842100120ca44ed54edcf785cd7 inherit pub_methods_classXy"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classXy.html#a2e395842100120ca44ed54edcf785cd7">Xy</a> ()</td></tr>
 <tr class="separator:a2e395842100120ca44ed54edcf785cd7 inherit pub_methods_classXy"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c79d2fe2030fefa730afba00ce17823 inherit pub_methods_classXy"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classXy.html#a9c79d2fe2030fefa730afba00ce17823">~Xy</a> ()</td></tr>
+<tr class="separator:a9c79d2fe2030fefa730afba00ce17823 inherit pub_methods_classXy"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea695a90dcb452a57b5654b0138fae56 inherit pub_methods_classXy"><td class="memItemLeft" align="right" valign="top">short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classXy.html#aea695a90dcb452a57b5654b0138fae56">X</a> () const </td></tr>
 <tr class="separator:aea695a90dcb452a57b5654b0138fae56 inherit pub_methods_classXy"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0e049ad1b559014e46e3a9516c0a4d58 inherit pub_methods_classXy"><td class="memItemLeft" align="right" valign="top">short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classXy.html#a0e049ad1b559014e46e3a9516c0a4d58">Y</a> () const </td></tr>
@@ -294,9 +292,13 @@ Protected Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pro_static_methods_classBlock"><td colspan="2" onclick="javascript:toggleInherit('pro_static_methods_classBlock')"><img src="closed.png" alt="-"/>&#160;Static Protected Member Functions inherited from <a class="el" href="classBlock.html">Block</a></td></tr>
+<tr class="memitem:a60a9be872caca48e0f5da2f12f25f258 inherit pro_static_methods_classBlock"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="header_8h.html#aeac25a28aa4d3c6009f7249ee82ae12d">dirs</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#a60a9be872caca48e0f5da2f12f25f258">MakeDirFromDamage</a> (int damage_kind)</td></tr>
+<tr class="memdesc:a60a9be872caca48e0f5da2f12f25f258 inherit pro_static_methods_classBlock"><td class="mdescLeft">&#160;</td><td class="mdescRight">To convert DAMAGE_PUSH_UP...WEST to corresponding direction.  <a href="#a60a9be872caca48e0f5da2f12f25f258">More...</a><br /></td></tr>
+<tr class="separator:a60a9be872caca48e0f5da2f12f25f258 inherit pro_static_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classBlock"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classBlock')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classBlock.html">Block</a></td></tr>
-<tr class="memitem:a6aaf4d22a7c92b0a6c643912f4e4169c inherit pro_attribs_classBlock"><td class="memItemLeft" align="right" valign="top">QString *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#a6aaf4d22a7c92b0a6c643912f4e4169c">note</a></td></tr>
-<tr class="separator:a6aaf4d22a7c92b0a6c643912f4e4169c inherit pro_attribs_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fcfd2abe274b4b8b251588f9f213d32 inherit pro_attribs_classBlock"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#a8fcfd2abe274b4b8b251588f9f213d32">note</a></td></tr>
+<tr class="separator:a8fcfd2abe274b4b8b251588f9f213d32 inherit pro_attribs_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classXyz"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classXyz')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classXyz.html">Xyz</a></td></tr>
 <tr class="memitem:a1b4751619130c4e8b3e0296965067cdf inherit pro_attribs_classXyz"><td class="memItemLeft" align="right" valign="top">short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classXyz.html#a1b4751619130c4e8b3e0296965067cdf">z_self</a></td></tr>
 <tr class="separator:a1b4751619130c4e8b3e0296965067cdf inherit pro_attribs_classXyz"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -308,7 +310,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="Active_8h_source.html#l00045">45</a> of file <a class="el" href="Active_8h_source.html">Active.h</a>.</p>
+<p>Definition at line <a class="el" href="Active_8h_source.html#l00047">47</a> of file <a class="el" href="Active_8h_source.html">Active.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a62cdff852ee3506c60b988e7f2646627"></a>
 <div class="memitem">
@@ -340,7 +342,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00155">155</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00171">171</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -380,7 +382,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00160">160</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00176">176</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -397,7 +399,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00167">167</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00183">183</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -415,11 +417,11 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00035">35</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00041">41</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a2df9b38348525db5f2641ac12ac7b033"></a>
+<a class="anchor" id="a2367487664fc72c67c5a8331ecb32e63"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -427,7 +429,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="Active_8h.html#a3ac24c9d33c4b9290b701ef1b5eff482">INNER_ACTIONS</a> Active::ActInner </td>
+          <td class="memname"><a class="el" href="Active_8h.html#a402bda14d184e5e93e0ce9e36d015141">inner_actions</a> Active::ActInner </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -440,9 +442,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classClock.html#a40a1751a002141dfa112090b31a8dbbb">Clock</a>, <a class="el" href="classAnimal.html#ac992687684c7da2840803ebf080f5676">Animal</a>, and <a class="el" href="classIlluminator.html#ab7d6214d12fc02870e5818640ecaeca2">Illuminator</a>.</p>
+<p>Reimplemented in <a class="el" href="classClock.html#ab72ad13424cfc8361fa3127b7122283b">Clock</a>, <a class="el" href="classBush.html#a7506ac3cc73690d87510e3bce0d70dee">Bush</a>, <a class="el" href="classGrass.html#a46d089dafc894930e97a44abeef4df53">Grass</a>, <a class="el" href="classLiquid.html#aa59400fec7bd1ae9d5387e586521ee9e">Liquid</a>, <a class="el" href="classContainer.html#a68fd285b454eb14352e2c6dd82e8bc5c">Container</a>, <a class="el" href="classIlluminator.html#a639518171e952494400985d7c86d5bc0">Illuminator</a>, and <a class="el" href="classAnimal.html#aae7d136a00b50726bdae0bc6aef483e0">Animal</a>.</p>
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00033">33</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00032">32</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -488,7 +490,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00042">42</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00051">51</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -516,7 +518,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classPredator.html#adc6a150a359e37e0dfa5ae58d68d9a86">Predator</a>, and <a class="el" href="classRabbit.html#acad45f176b8319deb0e80e69c3e06aa1">Rabbit</a>.</p>
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00208">208</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00227">227</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -554,9 +556,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classBlock.html#a77d9f883e2566fa391344ce9d358bd6d">Block</a>.</p>
 
-<p>Reimplemented in <a class="el" href="classBell.html#aab2d6cbc5bef297fcd06d105964f9918">Bell</a>, <a class="el" href="classClock.html#a6490513f82ac227cac3072c961dbc29f">Clock</a>, <a class="el" href="classWeapon.html#a69e15ddc66243f0472ae8eaa67e1c713">Weapon</a>, and <a class="el" href="classIlluminator.html#a184d5bc8a821d7980e8e66826c38dc99">Illuminator</a>.</p>
+<p>Reimplemented in <a class="el" href="classBell.html#aab2d6cbc5bef297fcd06d105964f9918">Bell</a>, <a class="el" href="classClock.html#a6490513f82ac227cac3072c961dbc29f">Clock</a>, <a class="el" href="classDoor.html#ab1f0936ef917e89215d4407b6ff94fb3">Door</a>, <a class="el" href="classBush.html#a85e45cd3e1f401bea846e819dbbed6b8">Bush</a>, <a class="el" href="classConverter.html#a498c588ade59f5cfe272b599087565f3">Converter</a>, <a class="el" href="classLiquid.html#a898323c096fc26b2c37456d22f523c00">Liquid</a>, <a class="el" href="classContainer.html#a3210a500ddd76171b3d9dc1eae6c750e">Container</a>, <a class="el" href="classRainMachine.html#a2c05059342b6f4265a7f91e215ac2960">RainMachine</a>, <a class="el" href="classWeapon.html#a69e15ddc66243f0472ae8eaa67e1c713">Weapon</a>, and <a class="el" href="classIlluminator.html#a184d5bc8a821d7980e8e66826c38dc99">Illuminator</a>.</p>
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00128">128</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00144">144</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -581,7 +583,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00104">104</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00120">120</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -656,9 +658,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classPredator.html#acbde927ca4f618230921fb0f2f2caa4c">Predator</a>, <a class="el" href="classClock.html#a99cdb5ed020da531e09bfbb64cde5713">Clock</a>, <a class="el" href="classRabbit.html#a5f8138107f738d3468c9f3c84b915fad">Rabbit</a>, <a class="el" href="classBush.html#a0543847d5ac449bebcfe3d03c0e2f86f">Bush</a>, <a class="el" href="classGrass.html#a40be3bd43fbaf7ef02b72c26d0e7fc27">Grass</a>, <a class="el" href="classLiquid.html#aba9679b7d98e137f1a6a1851ad131453">Liquid</a>, <a class="el" href="classIlluminator.html#a19b2d0ef12e8517c5151bdb11284e3ed">Illuminator</a>, <a class="el" href="classContainer.html#a0b8999f9449f8ea105687c6fca12a4f0">Container</a>, <a class="el" href="classRainMachine.html#adcf7533adb3a669fa5d23b4d7971bd7d">RainMachine</a>, and <a class="el" href="classAnimal.html#aea85583538d6b29a0973815a5ef01c38">Animal</a>.</p>
+<p>Reimplemented in <a class="el" href="classPredator.html#acbde927ca4f618230921fb0f2f2caa4c">Predator</a>, <a class="el" href="classClock.html#a99cdb5ed020da531e09bfbb64cde5713">Clock</a>, <a class="el" href="classRabbit.html#a5f8138107f738d3468c9f3c84b915fad">Rabbit</a>, <a class="el" href="classBush.html#a0543847d5ac449bebcfe3d03c0e2f86f">Bush</a>, <a class="el" href="classConverter.html#af8c0b05186638981945eeea6b87b62ba">Converter</a>, <a class="el" href="classGrass.html#a40be3bd43fbaf7ef02b72c26d0e7fc27">Grass</a>, <a class="el" href="classLiquid.html#aba9679b7d98e137f1a6a1851ad131453">Liquid</a>, <a class="el" href="classContainer.html#a0b8999f9449f8ea105687c6fca12a4f0">Container</a>, <a class="el" href="classIlluminator.html#a19b2d0ef12e8517c5151bdb11284e3ed">Illuminator</a>, <a class="el" href="classRainMachine.html#adcf7533adb3a669fa5d23b4d7971bd7d">RainMachine</a>, and <a class="el" href="classAnimal.html#aea85583538d6b29a0973815a5ef01c38">Animal</a>.</p>
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00032">32</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00034">34</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -675,7 +677,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00150">150</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00166">166</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -702,24 +704,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classBlock.html#a42e2de8de9f9424cd7f5eac77e0c7a5e">Block</a>.</p>
 
-<p>Implemented in <a class="el" href="classPredator.html#a177cb908fb708eea8c60cfd28acb2e03">Predator</a>, <a class="el" href="classBell.html#af038f54079acce733a01f291691cc817">Bell</a>, <a class="el" href="classCreator.html#a15b5ac622022e17fb0166c58f42a354d">Creator</a>, <a class="el" href="classClock.html#acf751369854b80778c2a5abe7276b386">Clock</a>, <a class="el" href="classDoor.html#a16a1e3d07200efcbeba9b995f8f9653b">Door</a>, <a class="el" href="classRabbit.html#a59c2d39d06e83a9d1f5f800df79540ca">Rabbit</a>, <a class="el" href="classFalling.html#aa95b549bdec158f2eafcd640f1fecdee">Falling</a>, <a class="el" href="classBush.html#af65738dbcd37d9b0ca7630de9dc00fac">Bush</a>, <a class="el" href="classAxe.html#a3e38ad72b6620fb1ffd7617fa477f0aa">Axe</a>, <a class="el" href="classGrass.html#acd9ce8f3fcf007e8714794b0a49f59c1">Grass</a>, <a class="el" href="classHammer.html#a19926213abe18ccdd52491d9e5c99cbe">Hammer</a>, <a class="el" href="classWorkbench.html#a098ccff69f737900527831ccd78980c1">Workbench</a>, <a class="el" href="classShovel.html#a291e79401f70b6d1470724df8c4ef127">Shovel</a>, <a class="el" href="classLiquid.html#a840f4dbe5390b7feed529b00a593dcd3">Liquid</a>, <a class="el" href="classPick.html#a02c00ac09af27ba6880aea4e465db989">Pick</a>, <a class="el" href="classContainer.html#aee19489b79a4523498c1409c3e47d4cf">Container</a>, <a class="el" href="classDwarf.html#a3d77978b4b19cc7e09fd11cb1c1734da">Dwarf</a>, <a class="el" href="classWeapon.html#a073dc6425bae03f21452bf633917299c">Weapon</a>, <a class="el" href="classIlluminator.html#a978541f6fed9fcd22f60fa68d12cf769">Illuminator</a>, <a class="el" href="classRainMachine.html#a35fba67b53c862699a738afe12a11016">RainMachine</a>, and <a class="el" href="classAnimal.html#a9e6852a48df38ff4b338740f0d05b596">Animal</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a6569df5ebe2f46597fb4165faabe0166"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classDeferredAction.html">DeferredAction</a> * Active::GetDeferredAction </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00063">63</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Implemented in <a class="el" href="classPredator.html#a177cb908fb708eea8c60cfd28acb2e03">Predator</a>, <a class="el" href="classBell.html#af038f54079acce733a01f291691cc817">Bell</a>, <a class="el" href="classCreator.html#a15b5ac622022e17fb0166c58f42a354d">Creator</a>, <a class="el" href="classClock.html#acf751369854b80778c2a5abe7276b386">Clock</a>, <a class="el" href="classDoor.html#a16a1e3d07200efcbeba9b995f8f9653b">Door</a>, <a class="el" href="classRabbit.html#a59c2d39d06e83a9d1f5f800df79540ca">Rabbit</a>, <a class="el" href="classFalling.html#aa95b549bdec158f2eafcd640f1fecdee">Falling</a>, <a class="el" href="classBush.html#af65738dbcd37d9b0ca7630de9dc00fac">Bush</a>, <a class="el" href="classConverter.html#ac03f1fa69f9c980fa0626d169257bcb1">Converter</a>, <a class="el" href="classAxe.html#a3e38ad72b6620fb1ffd7617fa477f0aa">Axe</a>, <a class="el" href="classGrass.html#acd9ce8f3fcf007e8714794b0a49f59c1">Grass</a>, <a class="el" href="classWorkbench.html#a098ccff69f737900527831ccd78980c1">Workbench</a>, <a class="el" href="classHammer.html#a19926213abe18ccdd52491d9e5c99cbe">Hammer</a>, <a class="el" href="classShovel.html#a291e79401f70b6d1470724df8c4ef127">Shovel</a>, <a class="el" href="classLiquid.html#a840f4dbe5390b7feed529b00a593dcd3">Liquid</a>, <a class="el" href="classPick.html#a02c00ac09af27ba6880aea4e465db989">Pick</a>, <a class="el" href="classContainer.html#aee19489b79a4523498c1409c3e47d4cf">Container</a>, <a class="el" href="classDwarf.html#a3d77978b4b19cc7e09fd11cb1c1734da">Dwarf</a>, <a class="el" href="classWeapon.html#a073dc6425bae03f21452bf633917299c">Weapon</a>, <a class="el" href="classRainMachine.html#a35fba67b53c862699a738afe12a11016">RainMachine</a>, <a class="el" href="classIlluminator.html#a978541f6fed9fcd22f60fa68d12cf769">Illuminator</a>, and <a class="el" href="classAnimal.html#a9e6852a48df38ff4b338740f0d05b596">Animal</a>.</p>
 
 </div>
 </div>
@@ -736,7 +721,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00125">125</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00141">141</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -753,7 +738,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00126">126</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00142">142</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -801,7 +786,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00169">169</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00188">188</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -829,7 +814,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Returns true if there is at least 1 block of substance sub around. </p>
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00210">210</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00229">229</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -856,7 +841,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classBlock.html#adc1d6ab61f70957e7be5b4bb6baedc9f">Block</a>.</p>
 
-<p>Implemented in <a class="el" href="classPredator.html#a406e4077df4692947c5c610ac62873dd">Predator</a>, <a class="el" href="classBell.html#a279173f4e02bb423900866612a85a1e0">Bell</a>, <a class="el" href="classCreator.html#afee24e80cc45538aee2133d80e7a9132">Creator</a>, <a class="el" href="classClock.html#a53d18290581ffb8d59c74a1699a3ab87">Clock</a>, <a class="el" href="classDoor.html#a504331f069725ae6029f896c538cb307">Door</a>, <a class="el" href="classRabbit.html#a9ab831b5e7000110422b9b1d0c6977b1">Rabbit</a>, <a class="el" href="classFalling.html#abf928556d28f54415e19ce5757b3de9b">Falling</a>, <a class="el" href="classBush.html#aa5d96a71cf4637b5a6d433f1be0e0466">Bush</a>, <a class="el" href="classAxe.html#a159de84677f60bfeb391c273844ef057">Axe</a>, <a class="el" href="classGrass.html#adf42ce5509bbacae1315fd74826449e2">Grass</a>, <a class="el" href="classHammer.html#a2acee6ad38bae4136a770c306467b41f">Hammer</a>, <a class="el" href="classWorkbench.html#acc900a92ade525d18396e0c1d48bac5b">Workbench</a>, <a class="el" href="classShovel.html#a01f29554c0887c70103cd719e916c035">Shovel</a>, <a class="el" href="classLiquid.html#a01436461753510035488012dbaa604d6">Liquid</a>, <a class="el" href="classPick.html#abd954d1398b8fa413c5a97156ed730a4">Pick</a>, <a class="el" href="classContainer.html#a17d5f936f137da46c37b8d7d3448367b">Container</a>, <a class="el" href="classDwarf.html#a98a7a970da9ae1c4726bb12eca32f726">Dwarf</a>, <a class="el" href="classIlluminator.html#a275ad5ca6cc9a25c2eeea6a58d200645">Illuminator</a>, <a class="el" href="classWeapon.html#aefd5ea54e64ee4c8ce6e49a54507eabd">Weapon</a>, and <a class="el" href="classRainMachine.html#a1fb154d0d31ceea391d637c59ff4aecb">RainMachine</a>.</p>
+<p>Implemented in <a class="el" href="classPredator.html#a406e4077df4692947c5c610ac62873dd">Predator</a>, <a class="el" href="classBell.html#a279173f4e02bb423900866612a85a1e0">Bell</a>, <a class="el" href="classCreator.html#afee24e80cc45538aee2133d80e7a9132">Creator</a>, <a class="el" href="classClock.html#a53d18290581ffb8d59c74a1699a3ab87">Clock</a>, <a class="el" href="classDoor.html#a504331f069725ae6029f896c538cb307">Door</a>, <a class="el" href="classRabbit.html#a9ab831b5e7000110422b9b1d0c6977b1">Rabbit</a>, <a class="el" href="classFalling.html#abf928556d28f54415e19ce5757b3de9b">Falling</a>, <a class="el" href="classBush.html#aa5d96a71cf4637b5a6d433f1be0e0466">Bush</a>, <a class="el" href="classConverter.html#aca7eaf87fc3510946a1d7fed1d56bcff">Converter</a>, <a class="el" href="classAxe.html#a159de84677f60bfeb391c273844ef057">Axe</a>, <a class="el" href="classGrass.html#adf42ce5509bbacae1315fd74826449e2">Grass</a>, <a class="el" href="classWorkbench.html#acc900a92ade525d18396e0c1d48bac5b">Workbench</a>, <a class="el" href="classHammer.html#a2acee6ad38bae4136a770c306467b41f">Hammer</a>, <a class="el" href="classShovel.html#a01f29554c0887c70103cd719e916c035">Shovel</a>, <a class="el" href="classLiquid.html#a01436461753510035488012dbaa604d6">Liquid</a>, <a class="el" href="classPick.html#abd954d1398b8fa413c5a97156ed730a4">Pick</a>, <a class="el" href="classContainer.html#a17d5f936f137da46c37b8d7d3448367b">Container</a>, <a class="el" href="classDwarf.html#a98a7a970da9ae1c4726bb12eca32f726">Dwarf</a>, <a class="el" href="classWeapon.html#aefd5ea54e64ee4c8ce6e49a54507eabd">Weapon</a>, <a class="el" href="classRainMachine.html#a1fb154d0d31ceea391d637c59ff4aecb">RainMachine</a>, and <a class="el" href="classIlluminator.html#a275ad5ca6cc9a25c2eeea6a58d200645">Illuminator</a>.</p>
 
 </div>
 </div>
@@ -886,7 +871,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classFalling.html#a67cc88f285dc253e44a82291a7702495">Falling</a>, and <a class="el" href="classDwarf.html#aa6e0389dc917f05f7503582b752e4210">Dwarf</a>.</p>
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00072">72</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00088">88</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -966,7 +951,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classBell.html#adcf7e7556f703fd5462b7edb6c37c4c8">Bell</a>, <a class="el" href="classCreator.html#ad954c68e8dda2689bc61eb4ac3763f04">Creator</a>, <a class="el" href="classBush.html#a7d94fb68cbe9fd7ebff713caa1e5d70c">Bush</a>, <a class="el" href="classDwarf.html#ad9bd7739339e8b8c6540a0b3bd4f3b74">Dwarf</a>, <a class="el" href="classContainer.html#a7f6191d2c5838d1acdf23c09bb2fa16e">Container</a>, and <a class="el" href="classRainMachine.html#a3240e5e1d8b7ec3b69a887fb2fbe0f3a">RainMachine</a>.</p>
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00143">143</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00159">159</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -983,7 +968,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00148">148</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00164">164</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -1000,7 +985,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00145">145</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00161">161</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -1017,7 +1002,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00146">146</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00162">162</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -1034,7 +1019,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00147">147</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00163">163</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -1060,7 +1045,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00093">93</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00109">109</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -1078,7 +1063,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00058">58</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00073">73</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -1096,7 +1081,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00124">124</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00140">140</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -1121,7 +1106,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classCreator.html#a76538165b8607675ce7c4ba9a57fc507">Creator</a>, <a class="el" href="classClock.html#a9915f256f54ec8e6562903c2a74cc0bf">Clock</a>, <a class="el" href="classDoor.html#a338008ef4e7e562d22646302f62a5e57">Door</a>, <a class="el" href="classBush.html#a6b31d9697c95c5c96b02faa3a8fcae30">Bush</a>, <a class="el" href="classGrass.html#aed8fd244fd9e5567bf1e0b5e978acbd8">Grass</a>, <a class="el" href="classLiquid.html#aae5b6912f42ad062e60e54c3f5395d39">Liquid</a>, <a class="el" href="classContainer.html#ae5b6b38aa8bd09bda55c8c23c15c1b4c">Container</a>, <a class="el" href="classRainMachine.html#aabcf79fec2d2a7538d198d8ef5547793">RainMachine</a>, <a class="el" href="classDwarf.html#a1f6f0bf0c6bfa1dda376194160627d34">Dwarf</a>, <a class="el" href="classIlluminator.html#ac95fd08cbbf82b046e6f1b01373d2abe">Illuminator</a>, and <a class="el" href="classAnimal.html#aeb4cfc81dea30b7e48c416f50382083e">Animal</a>.</p>
+<p>Reimplemented in <a class="el" href="classCreator.html#a76538165b8607675ce7c4ba9a57fc507">Creator</a>, <a class="el" href="classClock.html#a9915f256f54ec8e6562903c2a74cc0bf">Clock</a>, <a class="el" href="classDoor.html#a338008ef4e7e562d22646302f62a5e57">Door</a>, <a class="el" href="classBush.html#a6b31d9697c95c5c96b02faa3a8fcae30">Bush</a>, <a class="el" href="classConverter.html#ac46baa52e63d201f9b4570d41f28a3b0">Converter</a>, <a class="el" href="classGrass.html#aed8fd244fd9e5567bf1e0b5e978acbd8">Grass</a>, <a class="el" href="classLiquid.html#aae5b6912f42ad062e60e54c3f5395d39">Liquid</a>, <a class="el" href="classContainer.html#ae5b6b38aa8bd09bda55c8c23c15c1b4c">Container</a>, <a class="el" href="classRainMachine.html#aabcf79fec2d2a7538d198d8ef5547793">RainMachine</a>, <a class="el" href="classDwarf.html#a1f6f0bf0c6bfa1dda376194160627d34">Dwarf</a>, <a class="el" href="classIlluminator.html#ac95fd08cbbf82b046e6f1b01373d2abe">Illuminator</a>, and <a class="el" href="classAnimal.html#aeb4cfc81dea30b7e48c416f50382083e">Animal</a>.</p>
 
 <p>Definition at line <a class="el" href="Active_8cpp_source.html#l00030">30</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
@@ -1167,7 +1152,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Damages block and destroys it if it is broken. </p>
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00117">117</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00133">133</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -1184,7 +1169,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00065">65</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Active_8cpp_source.html#l00081">81</a> of file <a class="el" href="Active_8cpp_source.html">Active.cpp</a>.</p>
 
 </div>
 </div>
@@ -1218,7 +1203,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jul 18 2014 22:55:25 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jul 30 2014 12:58:20 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

@@ -51,8 +51,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)"$
-               onblur="searchBox.OnSearchFieldFocus(false)"$
+               onfocus="searchBox.OnSearchFieldFocus(true)"
+               onblur="searchBox.OnSearchFieldFocus(false)"
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -78,7 +78,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0"$
+<iframe src="javascript:void(0)" frameborder="0"
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>
@@ -112,14 +112,19 @@ Collaboration diagram for Liquid:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aae5b6912f42ad062e60e54c3f5395d39"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLiquid.html#aae5b6912f42ad062e60e54c3f5395d39">ShouldAct</a> () const override</td></tr>
-<tr class="separator:aae5b6912f42ad062e60e54c3f5395d39"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa701c3cf9df791c542c27966b912d02b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLiquid.html#aa701c3cf9df791c542c27966b912d02b">LightRadius</a> () const override</td></tr>
-<tr class="separator:aa701c3cf9df791c542c27966b912d02b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a01436461753510035488012dbaa604d6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLiquid.html#a01436461753510035488012dbaa604d6">Kind</a> () const override</td></tr>
 <tr class="separator:a01436461753510035488012dbaa604d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae5b6912f42ad062e60e54c3f5395d39"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLiquid.html#aae5b6912f42ad062e60e54c3f5395d39">ShouldAct</a> () const override</td></tr>
+<tr class="separator:aae5b6912f42ad062e60e54c3f5395d39"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad2573a962106bc5ae29837c4985ceeaa"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLiquid.html#ad2573a962106bc5ae29837c4985ceeaa">DamageKind</a> () const override</td></tr>
 <tr class="separator:ad2573a962106bc5ae29837c4985ceeaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa701c3cf9df791c542c27966b912d02b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLiquid.html#aa701c3cf9df791c542c27966b912d02b">LightRadius</a> () const override</td></tr>
+<tr class="separator:aa701c3cf9df791c542c27966b912d02b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a7f028d6680d6d64b26cf8b48e55ba8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLiquid.html#a7a7f028d6680d6d64b26cf8b48e55ba8">Inscribe</a> (QString) override</td></tr>
+<tr class="memdesc:a7a7f028d6680d6d64b26cf8b48e55ba8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true on success.  <a href="#a7a7f028d6680d6d64b26cf8b48e55ba8">More...</a><br /></td></tr>
+<tr class="separator:a7a7f028d6680d6d64b26cf8b48e55ba8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a898323c096fc26b2c37456d22f523c00"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLiquid.html#a898323c096fc26b2c37456d22f523c00">Damage</a> (int dmg, int dmg_kind) override</td></tr>
+<tr class="separator:a898323c096fc26b2c37456d22f523c00"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a840f4dbe5390b7feed529b00a593dcd3"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLiquid.html#a840f4dbe5390b7feed529b00a593dcd3">FullName</a> () const override</td></tr>
 <tr class="separator:a840f4dbe5390b7feed529b00a593dcd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abc122a91ec557348c71e5e0cd9896b4f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBlock.html">Block</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLiquid.html#abc122a91ec557348c71e5e0cd9896b4f">DropAfterDamage</a> (bool *delete_block) override</td></tr>
@@ -127,6 +132,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:abc122a91ec557348c71e5e0cd9896b4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adee5eea186a316c633c8c4e1a5b78c17"><td class="memItemLeft" align="right" valign="top"><a class="el" href="header_8h.html#a4b1e949f8e745e1bab6b99b32b34c544">push_reaction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLiquid.html#adee5eea186a316c633c8c4e1a5b78c17">PushResult</a> (<a class="el" href="header_8h.html#aeac25a28aa4d3c6009f7249ee82ae12d">dirs</a>) const override</td></tr>
 <tr class="separator:adee5eea186a316c633c8c4e1a5b78c17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa59400fec7bd1ae9d5387e586521ee9e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Active_8h.html#a402bda14d184e5e93e0ce9e36d015141">inner_actions</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLiquid.html#aa59400fec7bd1ae9d5387e586521ee9e">ActInner</a> () override</td></tr>
+<tr class="separator:aa59400fec7bd1ae9d5387e586521ee9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classFalling"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classFalling')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classFalling.html">Falling</a></td></tr>
 <tr class="memitem:ac5fec795418932cff8bc9fd703c2aada inherit pub_methods_classFalling"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFalling.html#ac5fec795418932cff8bc9fd703c2aada">Falling</a> (int sub, int id, int transp=<a class="el" href="header_8h.html#a48a539666409f8c99365fc6d8a58f708a632fa39438c1676b435ec43e6a0f9647">UNDEF</a>)</td></tr>
 <tr class="separator:ac5fec795418932cff8bc9fd703c2aada inherit pub_methods_classFalling"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -149,8 +156,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa0b6a4fafa16bab124cef7d1fbdfc4d5 inherit pub_methods_classActive"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a0365a3412ef2d7f466582336866c23 inherit pub_methods_classActive"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#a5a0365a3412ef2d7f466582336866c23">~Active</a> ()</td></tr>
 <tr class="separator:a5a0365a3412ef2d7f466582336866c23 inherit pub_methods_classActive"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5c46e557fba53e75f9f8fd48d5285e63 inherit pub_methods_classActive"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#a5c46e557fba53e75f9f8fd48d5285e63">Damage</a> (int dmg, int dmg_kind) override</td></tr>
-<tr class="separator:a5c46e557fba53e75f9f8fd48d5285e63 inherit pub_methods_classActive"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7c43d188f23aaac44f2e1b22fcf41bb9 inherit pub_methods_classActive"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#a7c43d188f23aaac44f2e1b22fcf41bb9">ReceiveSignal</a> (QString) override</td></tr>
 <tr class="memdesc:a7c43d188f23aaac44f2e1b22fcf41bb9 inherit pub_methods_classActive"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receive text signal.  <a href="#a7c43d188f23aaac44f2e1b22fcf41bb9">More...</a><br /></td></tr>
 <tr class="separator:a7c43d188f23aaac44f2e1b22fcf41bb9 inherit pub_methods_classActive"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -164,12 +169,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aebbfa0341ef4b0839448641f50f313b9 inherit pub_methods_classActive"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b2ccf7fde185461db3cf94bf34ef7e7 inherit pub_methods_classActive"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#a9b2ccf7fde185461db3cf94bf34ef7e7">ActRare</a> ()</td></tr>
 <tr class="separator:a9b2ccf7fde185461db3cf94bf34ef7e7 inherit pub_methods_classActive"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2df9b38348525db5f2641ac12ac7b033 inherit pub_methods_classActive"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="Active_8h.html#a3ac24c9d33c4b9290b701ef1b5eff482">INNER_ACTIONS</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#a2df9b38348525db5f2641ac12ac7b033">ActInner</a> ()</td></tr>
-<tr class="separator:a2df9b38348525db5f2641ac12ac7b033 inherit pub_methods_classActive"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a509f99efaf66a953b1b9a6a4147679e9 inherit pub_methods_classActive"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#a509f99efaf66a953b1b9a6a4147679e9">SetDeferredAction</a> (<a class="el" href="classDeferredAction.html">DeferredAction</a> *)</td></tr>
 <tr class="separator:a509f99efaf66a953b1b9a6a4147679e9 inherit pub_methods_classActive"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6569df5ebe2f46597fb4165faabe0166 inherit pub_methods_classActive"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classDeferredAction.html">DeferredAction</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#a6569df5ebe2f46597fb4165faabe0166">GetDeferredAction</a> () const </td></tr>
-<tr class="separator:a6569df5ebe2f46597fb4165faabe0166 inherit pub_methods_classActive"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7304800a331a2a677cb912df9106ea13 inherit pub_methods_classActive"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#a7304800a331a2a677cb912df9106ea13">ReloadToNorth</a> ()</td></tr>
 <tr class="separator:a7304800a331a2a677cb912df9106ea13 inherit pub_methods_classActive"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9628696949ca414a5334ed9798bd8320 inherit pub_methods_classActive"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#a9628696949ca414a5334ed9798bd8320">ReloadToSouth</a> ()</td></tr>
@@ -197,11 +198,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a0b82be82678747aaf1dc304df9edc1be inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac97fd6a91473431393a401475ec73fe7 inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#ac97fd6a91473431393a401475ec73fe7">Catchable</a> () const </td></tr>
 <tr class="separator:ac97fd6a91473431393a401475ec73fe7 inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a66f434f7c2448289e87e424ee95c7e21 inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#a66f434f7c2448289e87e424ee95c7e21">Inscribe</a> (QString str)</td></tr>
-<tr class="memdesc:a66f434f7c2448289e87e424ee95c7e21 inherit pub_methods_classBlock"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true on success.  <a href="#a66f434f7c2448289e87e424ee95c7e21">More...</a><br /></td></tr>
-<tr class="separator:a66f434f7c2448289e87e424ee95c7e21 inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee6bb582138b232a7b9de0845c1cb79a inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#aee6bb582138b232a7b9de0845c1cb79a">Push</a> (<a class="el" href="header_8h.html#aeac25a28aa4d3c6009f7249ee82ae12d">dirs</a>, <a class="el" href="classBlock.html">Block</a> *who)</td></tr>
-<tr class="separator:aee6bb582138b232a7b9de0845c1cb79a inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a19bb384757938c21ed727d079dda6567 inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="header_8h.html#a305c682db7e7cdce78096178c0c9ef4a">usage_types</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#a19bb384757938c21ed727d079dda6567">Use</a> (<a class="el" href="classBlock.html">Block</a> *who)</td></tr>
 <tr class="separator:a19bb384757938c21ed727d079dda6567 inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a725cb8988b2af9ce8805a2c9ea4ee479 inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classInventory.html">Inventory</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#a725cb8988b2af9ce8805a2c9ea4ee479">HasInventory</a> ()</td></tr>
@@ -263,6 +259,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ae66496db6e44d6ed3a6dfbe9771db3f3 inherit pub_methods_classXy"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2e395842100120ca44ed54edcf785cd7 inherit pub_methods_classXy"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classXy.html#a2e395842100120ca44ed54edcf785cd7">Xy</a> ()</td></tr>
 <tr class="separator:a2e395842100120ca44ed54edcf785cd7 inherit pub_methods_classXy"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c79d2fe2030fefa730afba00ce17823 inherit pub_methods_classXy"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classXy.html#a9c79d2fe2030fefa730afba00ce17823">~Xy</a> ()</td></tr>
+<tr class="separator:a9c79d2fe2030fefa730afba00ce17823 inherit pub_methods_classXy"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea695a90dcb452a57b5654b0138fae56 inherit pub_methods_classXy"><td class="memItemLeft" align="right" valign="top">short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classXy.html#aea695a90dcb452a57b5654b0138fae56">X</a> () const </td></tr>
 <tr class="separator:aea695a90dcb452a57b5654b0138fae56 inherit pub_methods_classXy"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0e049ad1b559014e46e3a9516c0a4d58 inherit pub_methods_classXy"><td class="memItemLeft" align="right" valign="top">short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classXy.html#a0e049ad1b559014e46e3a9516c0a4d58">Y</a> () const </td></tr>
@@ -304,9 +302,13 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:a6345b2d3f3f520c69db8b5a9c542ad9c inherit signals_classActive"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a5c8fd7b3b99212e9fb70b8dec3c1a9 inherit signals_classActive"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classActive.html#a9a5c8fd7b3b99212e9fb70b8dec3c1a9">ReceivedText</a> (const QString)</td></tr>
 <tr class="separator:a9a5c8fd7b3b99212e9fb70b8dec3c1a9 inherit signals_classActive"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_static_methods_classBlock"><td colspan="2" onclick="javascript:toggleInherit('pro_static_methods_classBlock')"><img src="closed.png" alt="-"/>&#160;Static Protected Member Functions inherited from <a class="el" href="classBlock.html">Block</a></td></tr>
+<tr class="memitem:a60a9be872caca48e0f5da2f12f25f258 inherit pro_static_methods_classBlock"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="header_8h.html#aeac25a28aa4d3c6009f7249ee82ae12d">dirs</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#a60a9be872caca48e0f5da2f12f25f258">MakeDirFromDamage</a> (int damage_kind)</td></tr>
+<tr class="memdesc:a60a9be872caca48e0f5da2f12f25f258 inherit pro_static_methods_classBlock"><td class="mdescLeft">&#160;</td><td class="mdescRight">To convert DAMAGE_PUSH_UP...WEST to corresponding direction.  <a href="#a60a9be872caca48e0f5da2f12f25f258">More...</a><br /></td></tr>
+<tr class="separator:a60a9be872caca48e0f5da2f12f25f258 inherit pro_static_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classBlock"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classBlock')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classBlock.html">Block</a></td></tr>
-<tr class="memitem:a6aaf4d22a7c92b0a6c643912f4e4169c inherit pro_attribs_classBlock"><td class="memItemLeft" align="right" valign="top">QString *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#a6aaf4d22a7c92b0a6c643912f4e4169c">note</a></td></tr>
-<tr class="separator:a6aaf4d22a7c92b0a6c643912f4e4169c inherit pro_attribs_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fcfd2abe274b4b8b251588f9f213d32 inherit pro_attribs_classBlock"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#a8fcfd2abe274b4b8b251588f9f213d32">note</a></td></tr>
+<tr class="separator:a8fcfd2abe274b4b8b251588f9f213d32 inherit pro_attribs_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classXyz"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classXyz')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classXyz.html">Xyz</a></td></tr>
 <tr class="memitem:a1b4751619130c4e8b3e0296965067cdf inherit pro_attribs_classXyz"><td class="memItemLeft" align="right" valign="top">short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classXyz.html#a1b4751619130c4e8b3e0296965067cdf">z_self</a></td></tr>
 <tr class="separator:a1b4751619130c4e8b3e0296965067cdf inherit pro_attribs_classXyz"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -320,6 +322,71 @@ Additional Inherited Members</h2></td></tr>
 <div class="textblock">
 <p>Definition at line <a class="el" href="blocks_8h_source.html#l00048">48</a> of file <a class="el" href="blocks_8h_source.html">blocks.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="aa59400fec7bd1ae9d5387e586521ee9e"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Active_8h.html#a402bda14d184e5e93e0ce9e36d015141">inner_actions</a> Liquid::ActInner </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classActive.html#a2367487664fc72c67c5a8331ecb32e63">Active</a>.</p>
+
+<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00200">200</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a898323c096fc26b2c37456d22f523c00"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Liquid::Damage </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>dmg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>dmg_kind</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classActive.html#a5c46e557fba53e75f9f8fd48d5285e63">Active</a>.</p>
+
+<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00203">203</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="ad2573a962106bc5ae29837c4985ceeaa"></a>
 <div class="memitem">
 <div class="memproto">
@@ -343,7 +410,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classBlock.html#aa2bb9530fe8167ba1bb66761e9a45628">Block</a>.</p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00184">184</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00188">188</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
 
 </div>
 </div>
@@ -370,7 +437,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classActive.html#a805849d52bec958fca5cb14931399742">Active</a>.</p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00162">162</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00166">166</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
 
 </div>
 </div>
@@ -401,7 +468,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classBlock.html#ae4b8f3e882c8af7a92d537bb1dd30f68">Block</a>.</p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00196">196</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00209">209</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
 
 </div>
 </div>
@@ -428,7 +495,37 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classFalling.html#aa95b549bdec158f2eafcd640f1fecdee">Falling</a>.</p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00206">206</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00214">214</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7a7f028d6680d6d64b26cf8b48e55ba8"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Liquid::Inscribe </td>
+          <td>(</td>
+          <td class="paramtype">QString&#160;</td>
+          <td class="paramname"><em>str</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns true on success. </p>
+
+<p>Reimplemented from <a class="el" href="classBlock.html#a66f434f7c2448289e87e424ee95c7e21">Block</a>.</p>
+
+<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00199">199</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
 
 </div>
 </div>
@@ -455,7 +552,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classFalling.html#abf928556d28f54415e19ce5757b3de9b">Falling</a>.</p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00193">193</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00196">196</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
 
 </div>
 </div>
@@ -482,7 +579,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classBlock.html#a4ef904547fb1917efe905f176727825d">Block</a>.</p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00201">201</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00198">198</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
 
 </div>
 </div>
@@ -510,7 +607,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classFalling.html#ae6bcf0a4bc7eca2a16c672b64ff46fc0">Falling</a>.</p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00194">194</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00201">201</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
 
 </div>
 </div>
@@ -537,7 +634,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classActive.html#a787b19b127d07c00af658a17e2fe29a8">Active</a>.</p>
 
-<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00192">192</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
+<p>Definition at line <a class="el" href="blocks_8cpp_source.html#l00197">197</a> of file <a class="el" href="blocks_8cpp_source.html">blocks.cpp</a>.</p>
 
 </div>
 </div>
@@ -548,7 +645,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jul 18 2014 22:55:25 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jul 30 2014 12:58:20 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

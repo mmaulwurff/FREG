@@ -51,8 +51,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)"$
-               onblur="searchBox.OnSearchFieldFocus(false)"$
+               onfocus="searchBox.OnSearchFieldFocus(true)"
+               onblur="searchBox.OnSearchFieldFocus(false)"
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -76,7 +76,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0"$
+<iframe src="javascript:void(0)" frameborder="0"
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>
@@ -133,11 +133,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classIThread.html#ab008d4881339e9441b11598d3df9e1a3">run</a>() <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <a class="code" href="classVirtScreen.html">VirtScreen</a> * <span class="keyword">const</span> screen;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keyword">volatile</span> <span class="keywordtype">bool</span> stopped;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;};</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="preprocessor">#endif // ITHREAD_H</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <a class="code" href="classIThread.html#a5979c548a621d4f53a9c553db2999b44">IThread</a>(<span class="keyword">const</span> <a class="code" href="classIThread.html">IThread</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <a class="code" href="classIThread.html">IThread</a> &amp; operator=(<span class="keyword">const</span> <a class="code" href="classIThread.html">IThread</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <a class="code" href="classVirtScreen.html">VirtScreen</a> * <span class="keyword">const</span> screen;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keyword">volatile</span> <span class="keywordtype">bool</span> stopped;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;};</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="preprocessor">#endif // ITHREAD_H</span></div>
 <div class="ttc" id="classIThread_html_a5979c548a621d4f53a9c553db2999b44"><div class="ttname"><a href="classIThread.html#a5979c548a621d4f53a9c553db2999b44">IThread::IThread</a></div><div class="ttdeci">IThread(VirtScreen *const)</div><div class="ttdef"><b>Definition:</b> <a href="IThread_8cpp_source.html#l00023">IThread.cpp:23</a></div></div>
 <div class="ttc" id="classIThread_html_ab008d4881339e9441b11598d3df9e1a3"><div class="ttname"><a href="classIThread.html#ab008d4881339e9441b11598d3df9e1a3">IThread::run</a></div><div class="ttdeci">void run() override</div><div class="ttdef"><b>Definition:</b> <a href="IThread_8cpp_source.html#l00028">IThread.cpp:28</a></div></div>
 <div class="ttc" id="classIThread_html"><div class="ttname"><a href="classIThread.html">IThread</a></div><div class="ttdoc">Keyboard input thread for curses screen for freg. </div><div class="ttdef"><b>Definition:</b> <a href="IThread_8h_source.html#l00033">IThread.h:33</a></div></div>
@@ -146,7 +149,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jul 18 2014 22:55:24 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jul 30 2014 12:58:20 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

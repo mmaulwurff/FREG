@@ -51,8 +51,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)"$
-               onblur="searchBox.OnSearchFieldFocus(false)"$
+               onfocus="searchBox.OnSearchFieldFocus(true)"
+               onblur="searchBox.OnSearchFieldFocus(false)"
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -78,7 +78,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0"$
+<iframe src="javascript:void(0)" frameborder="0"
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>
@@ -116,20 +116,20 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a060ae224d575e424b4da0bac661bf2c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aed7242e1f0d9cb7a74c464073f2d96ef"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBucket.html#aed7242e1f0d9cb7a74c464073f2d96ef">Bucket</a> (QDataStream &amp;str, int sub, int id)</td></tr>
 <tr class="separator:aed7242e1f0d9cb7a74c464073f2d96ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe8c4888252c7c37dfdca52cf07fa3ef"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBucket.html#abe8c4888252c7c37dfdca52cf07fa3ef">Kind</a> () const override</td></tr>
-<tr class="separator:abe8c4888252c7c37dfdca52cf07fa3ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a80f3956bf64d5718701f1444d86e675b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBucket.html#a80f3956bf64d5718701f1444d86e675b">Sub</a> () const override</td></tr>
 <tr class="separator:a80f3956bf64d5718701f1444d86e675b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe8c4888252c7c37dfdca52cf07fa3ef"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBucket.html#abe8c4888252c7c37dfdca52cf07fa3ef">Kind</a> () const override</td></tr>
+<tr class="separator:abe8c4888252c7c37dfdca52cf07fa3ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa398158a14e7714da031042746d29d6e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBucket.html#aa398158a14e7714da031042746d29d6e">Weight</a> () const override</td></tr>
 <tr class="separator:aa398158a14e7714da031042746d29d6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b0a94b5d9b75a57077e77e747a7c58d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBucket.html#a7b0a94b5d9b75a57077e77e747a7c58d">ReceiveSignal</a> (QString str) override</td></tr>
+<tr class="memdesc:a7b0a94b5d9b75a57077e77e747a7c58d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receive text signal.  <a href="#a7b0a94b5d9b75a57077e77e747a7c58d">More...</a><br /></td></tr>
+<tr class="separator:a7b0a94b5d9b75a57077e77e747a7c58d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac850366037e2e4d23f7c41f68de3ae1b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBucket.html#ac850366037e2e4d23f7c41f68de3ae1b">Get</a> (<a class="el" href="classBlock.html">Block</a> *block, int start) override</td></tr>
 <tr class="memdesc:ac850366037e2e4d23f7c41f68de3ae1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true on success.  <a href="#ac850366037e2e4d23f7c41f68de3ae1b">More...</a><br /></td></tr>
 <tr class="separator:ac850366037e2e4d23f7c41f68de3ae1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab5c6d3f50ee4275f8d1ab70d00f0359d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBucket.html#ab5c6d3f50ee4275f8d1ab70d00f0359d">Damage</a> (int dmg, int dmg_kind) override</td></tr>
 <tr class="separator:ab5c6d3f50ee4275f8d1ab70d00f0359d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7b0a94b5d9b75a57077e77e747a7c58d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBucket.html#a7b0a94b5d9b75a57077e77e747a7c58d">ReceiveSignal</a> (QString str) override</td></tr>
-<tr class="memdesc:a7b0a94b5d9b75a57077e77e747a7c58d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receive text signal.  <a href="#a7b0a94b5d9b75a57077e77e747a7c58d">More...</a><br /></td></tr>
-<tr class="separator:a7b0a94b5d9b75a57077e77e747a7c58d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae3a940ddca8defd7e03c7d1e0585cebb"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBucket.html#ae3a940ddca8defd7e03c7d1e0585cebb">FullName</a> () const override</td></tr>
 <tr class="separator:ae3a940ddca8defd7e03c7d1e0585cebb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c74e34beba4c6cebd461cd4f22ec964"><td class="memItemLeft" align="right" valign="top"><a class="el" href="header_8h.html#a305c682db7e7cdce78096178c0c9ef4a">usage_types</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBucket.html#a8c74e34beba4c6cebd461cd4f22ec964">Use</a> (<a class="el" href="classBlock.html">Block</a> *) override</td></tr>
@@ -152,8 +152,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a66f434f7c2448289e87e424ee95c7e21 inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#a66f434f7c2448289e87e424ee95c7e21">Inscribe</a> (QString str)</td></tr>
 <tr class="memdesc:a66f434f7c2448289e87e424ee95c7e21 inherit pub_methods_classBlock"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true on success.  <a href="#a66f434f7c2448289e87e424ee95c7e21">More...</a><br /></td></tr>
 <tr class="separator:a66f434f7c2448289e87e424ee95c7e21 inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee6bb582138b232a7b9de0845c1cb79a inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#aee6bb582138b232a7b9de0845c1cb79a">Push</a> (<a class="el" href="header_8h.html#aeac25a28aa4d3c6009f7249ee82ae12d">dirs</a>, <a class="el" href="classBlock.html">Block</a> *who)</td></tr>
-<tr class="separator:aee6bb582138b232a7b9de0845c1cb79a inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b323a730223105018f4000c6ef149fd inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#a5b323a730223105018f4000c6ef149fd">Move</a> (<a class="el" href="header_8h.html#aeac25a28aa4d3c6009f7249ee82ae12d">dirs</a> direction)</td></tr>
 <tr class="separator:a5b323a730223105018f4000c6ef149fd inherit pub_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0e518d22724cef190fd3d106f9c6a39d inherit pub_methods_classBlock"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="header_8h.html#a4b1e949f8e745e1bab6b99b32b34c544">push_reaction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#a0e518d22724cef190fd3d106f9c6a39d">PushResult</a> (<a class="el" href="header_8h.html#aeac25a28aa4d3c6009f7249ee82ae12d">dirs</a>) const </td></tr>
@@ -253,8 +251,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:afcc106682a5c1bb7c6818332dc60a420 inherit pub_methods_classInventory"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a243ba3ad5aa6df07e7194ff34e586cc3 inherit pub_methods_classInventory"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBlock.html">Block</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInventory.html#a243ba3ad5aa6df07e7194ff34e586cc3">ShowBlock</a> (int slot) const </td></tr>
 <tr class="separator:a243ba3ad5aa6df07e7194ff34e586cc3 inherit pub_methods_classInventory"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7916086c9c43e8bd97bdb9bcc6d9281e inherit pub_methods_classInventory"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBlock.html">Block</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInventory.html#a7916086c9c43e8bd97bdb9bcc6d9281e">ShowBlock</a> (int slot, int num) const </td></tr>
-<tr class="separator:a7916086c9c43e8bd97bdb9bcc6d9281e inherit pub_methods_classInventory"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88ab2510f7ab10a614f8b6d5f5acc42a inherit pub_methods_classInventory"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBlock.html">Block</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInventory.html#a88ab2510f7ab10a614f8b6d5f5acc42a">ShowBlockInSlot</a> (int slot, int index) const </td></tr>
+<tr class="memdesc:a88ab2510f7ab10a614f8b6d5f5acc42a inherit pub_methods_classInventory"><td class="mdescLeft">&#160;</td><td class="mdescRight">Don't move block shown by this function.  <a href="#a88ab2510f7ab10a614f8b6d5f5acc42a">More...</a><br /></td></tr>
+<tr class="separator:a88ab2510f7ab10a614f8b6d5f5acc42a inherit pub_methods_classInventory"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aae0360c4932c519c8c46d5de39b1cb99 inherit pub_methods_classInventory"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInventory.html#aae0360c4932c519c8c46d5de39b1cb99">InvFullName</a> (int num) const </td></tr>
 <tr class="separator:aae0360c4932c519c8c46d5de39b1cb99 inherit pub_methods_classInventory"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa494b4db63fd11b4eddbf862db1fb5ff inherit pub_methods_classInventory"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInventory.html#aa494b4db63fd11b4eddbf862db1fb5ff">IsEmpty</a> () const </td></tr>
@@ -283,9 +282,13 @@ Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pub_static_methods_classInventory"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classInventory')"><img src="closed.png" alt="-"/>&#160;Static Public Member Functions inherited from <a class="el" href="classInventory.html">Inventory</a></td></tr>
 <tr class="memitem:a9f010760669063e89fe1a78f7bb11de0 inherit pub_static_methods_classInventory"><td class="memItemLeft" align="right" valign="top">static QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInventory.html#a9f010760669063e89fe1a78f7bb11de0">NumStr</a> (int num)</td></tr>
 <tr class="separator:a9f010760669063e89fe1a78f7bb11de0 inherit pub_static_methods_classInventory"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_static_methods_classBlock"><td colspan="2" onclick="javascript:toggleInherit('pro_static_methods_classBlock')"><img src="closed.png" alt="-"/>&#160;Static Protected Member Functions inherited from <a class="el" href="classBlock.html">Block</a></td></tr>
+<tr class="memitem:a60a9be872caca48e0f5da2f12f25f258 inherit pro_static_methods_classBlock"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="header_8h.html#aeac25a28aa4d3c6009f7249ee82ae12d">dirs</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#a60a9be872caca48e0f5da2f12f25f258">MakeDirFromDamage</a> (int damage_kind)</td></tr>
+<tr class="memdesc:a60a9be872caca48e0f5da2f12f25f258 inherit pro_static_methods_classBlock"><td class="mdescLeft">&#160;</td><td class="mdescRight">To convert DAMAGE_PUSH_UP...WEST to corresponding direction.  <a href="#a60a9be872caca48e0f5da2f12f25f258">More...</a><br /></td></tr>
+<tr class="separator:a60a9be872caca48e0f5da2f12f25f258 inherit pro_static_methods_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classBlock"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classBlock')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classBlock.html">Block</a></td></tr>
-<tr class="memitem:a6aaf4d22a7c92b0a6c643912f4e4169c inherit pro_attribs_classBlock"><td class="memItemLeft" align="right" valign="top">QString *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#a6aaf4d22a7c92b0a6c643912f4e4169c">note</a></td></tr>
-<tr class="separator:a6aaf4d22a7c92b0a6c643912f4e4169c inherit pro_attribs_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fcfd2abe274b4b8b251588f9f213d32 inherit pro_attribs_classBlock"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlock.html#a8fcfd2abe274b4b8b251588f9f213d32">note</a></td></tr>
+<tr class="separator:a8fcfd2abe274b4b8b251588f9f213d32 inherit pro_attribs_classBlock"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
@@ -660,7 +663,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jul 18 2014 22:55:25 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jul 30 2014 12:58:20 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

@@ -11,5 +11,6 @@ var searchData=
   ['_7eshred',['~Shred',['../classShred.html#a3af250706a727a4aefda66e3460e61d8',1,'Shred']]],
   ['_7eshredstorage',['~ShredStorage',['../classShredStorage.html#a6e1d27899a24f171c8e673a14b56dd78',1,'ShredStorage']]],
   ['_7evirtscreen',['~VirtScreen',['../classVirtScreen.html#a95211d3030daf852e37ca3bf5a552f9f',1,'VirtScreen']]],
-  ['_7eworld',['~World',['../classWorld.html#a8c73fba541a5817fff65147ba47cd827',1,'World']]]
+  ['_7eworld',['~World',['../classWorld.html#a8c73fba541a5817fff65147ba47cd827',1,'World']]],
+  ['_7exy',['~Xy',['../classXy.html#a9c79d2fe2030fefa730afba00ce17823',1,'Xy']]]
 ];

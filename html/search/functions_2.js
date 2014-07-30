@@ -9,6 +9,7 @@ var searchData=
   ['clock',['Clock',['../classClock.html#a768e1d56df49ed930361fb3b0094843b',1,'Clock::Clock(int sub, int id)'],['../classClock.html#a8c3821011eea3dc34338ce06cbc79d08',1,'Clock::Clock(QDataStream &amp;str, int sub, int id)']]],
   ['container',['Container',['../classContainer.html#a0a232215b2d78d0c6a515751ee222d58',1,'Container::Container(int sub, int id, int size=INV_SIZE)'],['../classContainer.html#a09b9dc18692c63dd5ace400ca4c75223',1,'Container::Container(QDataStream &amp;str, int sub, int id, int size=INV_SIZE)']]],
   ['controlplayer',['ControlPlayer',['../classScreen.html#a793f77cb399ee400f734a9ad29be03cb',1,'Screen::ControlPlayer(int command) override'],['../classScreen.html#a793f77cb399ee400f734a9ad29be03cb',1,'Screen::ControlPlayer(int command) override'],['../classVirtScreen.html#aa8c0cccd74d52f7df3626eb32890cca1',1,'VirtScreen::ControlPlayer()']]],
+  ['converter',['Converter',['../classConverter.html#a9e92a80ba4fe7d61d6d3db024a9545be',1,'Converter::Converter(int sub, int id)'],['../classConverter.html#a48947f674b5ffb52f8cb26b462dc525c',1,'Converter::Converter(QDataStream &amp;str, int sub, int id)']]],
   ['coordinshred',['CoordInShred',['../classShred.html#a58099d77557acf6ab26fa82edf9750ef',1,'Shred']]],
   ['coordofshred',['CoordOfShred',['../classShred.html#a2ff310bfeac6b79fa990e91f21eef22c',1,'Shred']]],
   ['craft',['Craft',['../classCraftManager.html#aae91b909190d3e3cf521e2d8b0f28a17',1,'CraftManager::Craft()'],['../classPlayer.html#a296203015c064fac1f9023426a36e3e9',1,'Player::Craft()']]],

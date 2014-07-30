@@ -51,8 +51,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)"$
-               onblur="searchBox.OnSearchFieldFocus(false)"$
+               onfocus="searchBox.OnSearchFieldFocus(true)"
+               onblur="searchBox.OnSearchFieldFocus(false)"
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -78,7 +78,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0"$
+<iframe src="javascript:void(0)" frameborder="0"
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>
@@ -93,32 +93,34 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>This is the complete list of members for <a class="el" href="classDeferredAction.html">DeferredAction</a>, including all inherited members.</p>
 <table class="directory">
   <tr class="even"><td class="entry"><a class="el" href="classDeferredAction.html#a1d798068eedd906257cf09134967b9c8">DeferredAction</a>(Active *attached)</td><td class="entry"><a class="el" href="classDeferredAction.html">DeferredAction</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
-  <tr><td class="entry"><a class="el" href="classDeferredAction.html#a457f421bf5e4573d5693f79a7a6610ac">GetActionType</a>() const </td><td class="entry"><a class="el" href="classDeferredAction.html">DeferredAction</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classDeferredAction.html#a3b2b7cc205cda25958faa6fec023c23e">MakeAction</a>()</td><td class="entry"><a class="el" href="classDeferredAction.html">DeferredAction</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="classDeferredAction.html#a9928c30a3cb4848f8f00211246538243">operator=</a>(const DeferredAction &amp;)=delete</td><td class="entry"><a class="el" href="classDeferredAction.html">DeferredAction</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classDeferredAction.html#a8a69d441b74b883d04da565b81c2516b">SetBuild</a>(int x, int y, int z, Block *material, int builder_slot)</td><td class="entry"><a class="el" href="classDeferredAction.html">DeferredAction</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="classDeferredAction.html#a890f3c95bd766e0d8b37b77f62c09623">SetDamage</a>(int x, int y, int z)</td><td class="entry"><a class="el" href="classDeferredAction.html">DeferredAction</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classDeferredAction.html#a2c52fe010916548999c812f2680132d4">SetGhostMove</a>(int dir=NOWHERE)</td><td class="entry"><a class="el" href="classDeferredAction.html">DeferredAction</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="classDeferredAction.html#ae401996a9164b3770295328ecb6d9882">SetJump</a>()</td><td class="entry"><a class="el" href="classDeferredAction.html">DeferredAction</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classDeferredAction.html#a015ac1ecca87ef420ce89dc745bb8a12">SetMove</a>(int dir=NOWHERE)</td><td class="entry"><a class="el" href="classDeferredAction.html">DeferredAction</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="classDeferredAction.html#ab560044661fe9d69ed9b70ece5a1f864">SetPour</a>(int x, int y, int z, int slot)</td><td class="entry"><a class="el" href="classDeferredAction.html">DeferredAction</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classDeferredAction.html#aa9a80d3e84437f0699bbd857cc780671">SetSetFire</a>(int x, int y, int z)</td><td class="entry"><a class="el" href="classDeferredAction.html">DeferredAction</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="classDeferredAction.html#a59ca7f8957ad8c4f6e7ed5204e76403c">SetThrow</a>(int x, int y, int z, int src_slot, int dest_slot, int unum)</td><td class="entry"><a class="el" href="classDeferredAction.html">DeferredAction</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classXyz.html#aace0fc4fa8c0391dfa38adecef0ad70c">SetXyz</a>(short x, short y, short z)</td><td class="entry"><a class="el" href="classXyz.html">Xyz</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
-  <tr><td class="entry"><a class="el" href="classXy.html#aea695a90dcb452a57b5654b0138fae56">X</a>() const </td><td class="entry"><a class="el" href="classXy.html">Xy</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classXy.html#a75171c6c3aa056e007fb6a0bc821dba9">x_self</a></td><td class="entry"><a class="el" href="classXy.html">Xy</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
-  <tr><td class="entry"><a class="el" href="classXy.html#ae66496db6e44d6ed3a6dfbe9771db3f3">Xy</a>(short x, short y)</td><td class="entry"><a class="el" href="classXy.html">Xy</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classXy.html#a2e395842100120ca44ed54edcf785cd7">Xy</a>()</td><td class="entry"><a class="el" href="classXy.html">Xy</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
-  <tr><td class="entry"><a class="el" href="classXyz.html#a0610d113498e23fa72b907e3bd720afc">Xyz</a>(short x, short y, short z)</td><td class="entry"><a class="el" href="classXyz.html">Xyz</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classXyz.html#a5f20a0a3e5822fb5c8f7a8922ccb6344">Xyz</a>()</td><td class="entry"><a class="el" href="classXyz.html">Xyz</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
-  <tr><td class="entry"><a class="el" href="classXy.html#a0e049ad1b559014e46e3a9516c0a4d58">Y</a>() const </td><td class="entry"><a class="el" href="classXy.html">Xy</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classXy.html#aa50394806d126295fb81da5701e44830">y_self</a></td><td class="entry"><a class="el" href="classXy.html">Xy</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
-  <tr><td class="entry"><a class="el" href="classXyz.html#a1a293814623c75d5dc437b3219f2464c">Z</a>() const </td><td class="entry"><a class="el" href="classXyz.html">Xyz</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classXyz.html#a1b4751619130c4e8b3e0296965067cdf">z_self</a></td><td class="entry"><a class="el" href="classXyz.html">Xyz</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="classDeferredAction.html#aed6f4033d97c056ae0ba25413c25c380">DeferredAction</a>(const DeferredAction &amp;)=delete</td><td class="entry"><a class="el" href="classDeferredAction.html">DeferredAction</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classDeferredAction.html#a457f421bf5e4573d5693f79a7a6610ac">GetActionType</a>() const </td><td class="entry"><a class="el" href="classDeferredAction.html">DeferredAction</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="classDeferredAction.html#a3b2b7cc205cda25958faa6fec023c23e">MakeAction</a>()</td><td class="entry"><a class="el" href="classDeferredAction.html">DeferredAction</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classDeferredAction.html#a9928c30a3cb4848f8f00211246538243">operator=</a>(const DeferredAction &amp;)=delete</td><td class="entry"><a class="el" href="classDeferredAction.html">DeferredAction</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="classDeferredAction.html#a8a69d441b74b883d04da565b81c2516b">SetBuild</a>(int x, int y, int z, Block *material, int builder_slot)</td><td class="entry"><a class="el" href="classDeferredAction.html">DeferredAction</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classDeferredAction.html#a890f3c95bd766e0d8b37b77f62c09623">SetDamage</a>(int x, int y, int z)</td><td class="entry"><a class="el" href="classDeferredAction.html">DeferredAction</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="classDeferredAction.html#a2c52fe010916548999c812f2680132d4">SetGhostMove</a>(int dir=NOWHERE)</td><td class="entry"><a class="el" href="classDeferredAction.html">DeferredAction</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classDeferredAction.html#ae401996a9164b3770295328ecb6d9882">SetJump</a>()</td><td class="entry"><a class="el" href="classDeferredAction.html">DeferredAction</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="classDeferredAction.html#a015ac1ecca87ef420ce89dc745bb8a12">SetMove</a>(int dir=NOWHERE)</td><td class="entry"><a class="el" href="classDeferredAction.html">DeferredAction</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classDeferredAction.html#ab560044661fe9d69ed9b70ece5a1f864">SetPour</a>(int x, int y, int z, int slot)</td><td class="entry"><a class="el" href="classDeferredAction.html">DeferredAction</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="classDeferredAction.html#aa9a80d3e84437f0699bbd857cc780671">SetSetFire</a>(int x, int y, int z)</td><td class="entry"><a class="el" href="classDeferredAction.html">DeferredAction</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classDeferredAction.html#a59ca7f8957ad8c4f6e7ed5204e76403c">SetThrow</a>(int x, int y, int z, int src_slot, int dest_slot, int unum)</td><td class="entry"><a class="el" href="classDeferredAction.html">DeferredAction</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="classXyz.html#aace0fc4fa8c0391dfa38adecef0ad70c">SetXyz</a>(short x, short y, short z)</td><td class="entry"><a class="el" href="classXyz.html">Xyz</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classXy.html#aea695a90dcb452a57b5654b0138fae56">X</a>() const </td><td class="entry"><a class="el" href="classXy.html">Xy</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="classXy.html#a75171c6c3aa056e007fb6a0bc821dba9">x_self</a></td><td class="entry"><a class="el" href="classXy.html">Xy</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classXy.html#ae66496db6e44d6ed3a6dfbe9771db3f3">Xy</a>(short x, short y)</td><td class="entry"><a class="el" href="classXy.html">Xy</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="classXy.html#a2e395842100120ca44ed54edcf785cd7">Xy</a>()</td><td class="entry"><a class="el" href="classXy.html">Xy</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classXyz.html#a0610d113498e23fa72b907e3bd720afc">Xyz</a>(short x, short y, short z)</td><td class="entry"><a class="el" href="classXyz.html">Xyz</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="classXyz.html#a5f20a0a3e5822fb5c8f7a8922ccb6344">Xyz</a>()</td><td class="entry"><a class="el" href="classXyz.html">Xyz</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classXy.html#a0e049ad1b559014e46e3a9516c0a4d58">Y</a>() const </td><td class="entry"><a class="el" href="classXy.html">Xy</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="classXy.html#aa50394806d126295fb81da5701e44830">y_self</a></td><td class="entry"><a class="el" href="classXy.html">Xy</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classXyz.html#a1a293814623c75d5dc437b3219f2464c">Z</a>() const </td><td class="entry"><a class="el" href="classXyz.html">Xyz</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="classXyz.html#a1b4751619130c4e8b3e0296965067cdf">z_self</a></td><td class="entry"><a class="el" href="classXyz.html">Xyz</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classXy.html#a9c79d2fe2030fefa730afba00ce17823">~Xy</a>()</td><td class="entry"><a class="el" href="classXy.html">Xy</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">virtual</span></td></tr>
 </table></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jul 18 2014 22:55:25 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jul 30 2014 12:58:20 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

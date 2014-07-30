@@ -10,5 +10,6 @@ var searchData=
   ['weight_5fsand',['WEIGHT_SAND',['../Block_8h.html#a162564858bc44e0020edbe620b837eae',1,'Block.h']]],
   ['weight_5fstone',['WEIGHT_STONE',['../Block_8h.html#ae62294f6dd21c2b88d45a3dce4ce0baf',1,'Block.h']]],
   ['weight_5fwater',['WEIGHT_WATER',['../Block_8h.html#a3bf2319ed726c4e980a5826022698c9e',1,'Block.h']]],
+  ['workbench_5fsize',['WORKBENCH_SIZE',['../Containers_8h.html#a220f6a2ba5bfe354c355d47d311ff7ea',1,'Containers.h']]],
   ['world',['world',['../World_8cpp.html#a38026b801fec560c0322d4e5b6cab8be',1,'world():&#160;World.cpp'],['../World_8h.html#a38026b801fec560c0322d4e5b6cab8be',1,'world():&#160;World.cpp']]]
 ];

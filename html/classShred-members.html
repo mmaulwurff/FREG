@@ -51,8 +51,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)"$
-               onblur="searchBox.OnSearchFieldFocus(false)"$
+               onfocus="searchBox.OnSearchFieldFocus(true)"
+               onblur="searchBox.OnSearchFieldFocus(false)"
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -78,7 +78,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0"$
+<iframe src="javascript:void(0)" frameborder="0"
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>
@@ -102,7 +102,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr><td class="entry"><a class="el" href="classShred.html#afa7700c8e27ef28c082cc299d34ec841">FireLight</a>(int x, int y, int z) const </td><td class="entry"><a class="el" href="classShred.html">Shred</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classShred.html#a805aa0c4af560b6c32f02065d353f655">GetBlock</a>(const int x, const int y, const int z) const </td><td class="entry"><a class="el" href="classShred.html">Shred</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
   <tr><td class="entry"><a class="el" href="classShred.html#ab3e66f66d5ac84f24faf7d4feb550c21">GetShredMemory</a>() const </td><td class="entry"><a class="el" href="classShred.html">Shred</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classShred.html#ac218c2410b1b5ab4beba034a47d4518b">GetTypeOfShred</a>() const </td><td class="entry"><a class="el" href="classShred.html">Shred</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classShred.html#a5f4003a26091ebf5f02ca16dba32a5b6">GetTypeOfShred</a>() const </td><td class="entry"><a class="el" href="classShred.html">Shred</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="classShred.html#ae2e311d65d9322895a3715471b237aee">GetWorld</a>() const </td><td class="entry"><a class="el" href="classShred.html">Shred</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classShred.html#a5647e65d64eb1b454bde08e6ccf912a1">GlobalX</a>(int x) const </td><td class="entry"><a class="el" href="classShred.html">Shred</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="classShred.html#ab4c118162d56206c742e219ef950f30c">GlobalY</a>(int y) const </td><td class="entry"><a class="el" href="classShred.html">Shred</a></td><td class="entry"></td></tr>
@@ -130,15 +130,16 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr><td class="entry"><a class="el" href="classShred.html#a33b64bd32e654a78c6a8b3829ac39868">ShiningBegin</a>() const </td><td class="entry"><a class="el" href="classShred.html">Shred</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classShred.html#ab05b473299cb34f519192109dc3da5a6">ShiningEnd</a>() const </td><td class="entry"><a class="el" href="classShred.html">Shred</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="classShred.html#a3305cb039e51c62ca60f1c3a9fe74f5e">Shred</a>(int shred_x, int shred_y, long longi, long lati, Shred *memory)</td><td class="entry"><a class="el" href="classShred.html">Shred</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classShred.html#af6692cb7ee2fab3bb2e22daa0d783ece">ShredX</a>() const </td><td class="entry"><a class="el" href="classShred.html">Shred</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="classShred.html#aab47beaf1570ec1eea20133460c4ca20">ShredY</a>() const </td><td class="entry"><a class="el" href="classShred.html">Shred</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classShred.html#a687f90ab40595c327b50301b5636bbd9">SunLight</a>(int x, int y, int z) const </td><td class="entry"><a class="el" href="classShred.html">Shred</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="classShred.html#abd932aa5086ff9b3f12b3435d674c506">Unregister</a>(Active *)</td><td class="entry"><a class="el" href="classShred.html">Shred</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classShred.html#a3af250706a727a4aefda66e3460e61d8">~Shred</a>()</td><td class="entry"><a class="el" href="classShred.html">Shred</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classShred.html#a38ae4b62231087bb6586ffd81938b4a4">Shred</a>(const Shred &amp;)=delete</td><td class="entry"><a class="el" href="classShred.html">Shred</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="classShred.html#af6692cb7ee2fab3bb2e22daa0d783ece">ShredX</a>() const </td><td class="entry"><a class="el" href="classShred.html">Shred</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classShred.html#aab47beaf1570ec1eea20133460c4ca20">ShredY</a>() const </td><td class="entry"><a class="el" href="classShred.html">Shred</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="classShred.html#a687f90ab40595c327b50301b5636bbd9">SunLight</a>(int x, int y, int z) const </td><td class="entry"><a class="el" href="classShred.html">Shred</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classShred.html#abd932aa5086ff9b3f12b3435d674c506">Unregister</a>(Active *)</td><td class="entry"><a class="el" href="classShred.html">Shred</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="classShred.html#a3af250706a727a4aefda66e3460e61d8">~Shred</a>()</td><td class="entry"><a class="el" href="classShred.html">Shred</a></td><td class="entry"></td></tr>
 </table></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jul 18 2014 22:55:25 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jul 30 2014 12:58:20 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

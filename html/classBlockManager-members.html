@@ -51,8 +51,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)"$
-               onblur="searchBox.OnSearchFieldFocus(false)"$
+               onfocus="searchBox.OnSearchFieldFocus(true)"
+               onblur="searchBox.OnSearchFieldFocus(false)"
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -78,7 +78,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0"$
+<iframe src="javascript:void(0)" frameborder="0"
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>
@@ -98,9 +98,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr><td class="entry"><a class="el" href="classBlockManager.html#ac1e81563fdcad5e662f6b3edf2372171">KindFromId</a>(int id)</td><td class="entry"><a class="el" href="classBlockManager.html">BlockManager</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classBlockManager.html#aaba5601cd6c9c4281ab7a4e2ca6c873e">KindSubFromFile</a>(QDataStream &amp;, int *kind, int *sub)</td><td class="entry"><a class="el" href="classBlockManager.html">BlockManager</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
   <tr><td class="entry"><a class="el" href="classBlockManager.html#a8f34c9ad41c8c15b565c6341522b9d3e">KindToString</a>(int kind)</td><td class="entry"><a class="el" href="classBlockManager.html">BlockManager</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classBlockManager.html#a1a57f6833aee2e2d461fc900ad82f118">MakeId</a>(int kind, int sub)</td><td class="entry"><a class="el" href="classBlockManager.html">BlockManager</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classBlockManager.html#a907d78cd3f48a1c46a573b8a7cbaa85c">MakeId</a>(const int kind, const int sub)</td><td class="entry"><a class="el" href="classBlockManager.html">BlockManager</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
   <tr><td class="entry"><a class="el" href="classBlockManager.html#a26e9fcd2287526b92ed75f0cc23e43e1">NewBlock</a>(int kind, int sub)</td><td class="entry"><a class="el" href="classBlockManager.html">BlockManager</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classBlockManager.html#a7fc28ea07e80762e996c4d687b3780f3">NormalBlock</a>(int sub) const </td><td class="entry"><a class="el" href="classBlockManager.html">BlockManager</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classBlockManager.html#aa054aaa9b802f8b11929b0efb889a2ec">Normal</a>(int sub) const </td><td class="entry"><a class="el" href="classBlockManager.html">BlockManager</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="classBlockManager.html#a8e55d306c1a11f38e9ead5527d11a497">ReplaceWithNormal</a>(Block *block) const </td><td class="entry"><a class="el" href="classBlockManager.html">BlockManager</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classBlockManager.html#a2e795201fdc776c8a39a9bea141ca96f">StringToKind</a>(QString)</td><td class="entry"><a class="el" href="classBlockManager.html">BlockManager</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
   <tr><td class="entry"><a class="el" href="classBlockManager.html#a355de871948626eb045b1ca2516d46f7">StringToSub</a>(QString)</td><td class="entry"><a class="el" href="classBlockManager.html">BlockManager</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
@@ -110,7 +110,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </table></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jul 18 2014 22:55:25 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jul 30 2014 12:58:20 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>
