@@ -18,8 +18,6 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include <QTextStream>
-#include <QSettings>
-#include <QDir>
 #include <QMutexLocker>
 #include "blocks/Animal.h"
 #include "blocks/Inventory.h"
@@ -65,7 +63,7 @@ void Player::SetCreativeMode(const bool creative_on) {
         inv->GetAll(prev_player->HasInventory());
     }
     if ( not creative_on ) {
-        block_manager.DeleteBlock(prev_player);
+        delete prev_player;
     }
     emit Updated();
 }
@@ -471,7 +469,7 @@ void Player::SetPlayer(const int _x, const int _y, const int _z) {
                 X(), Y(), Z(), GetDir(), 0, true /*force build*/ );
         }
     }
-    SetDir(player->GetDir());
+    dir = player->GetDir();
 
     connect(player, SIGNAL(Destroyed()), SLOT(BlockDestroy()),
         Qt::DirectConnection);
@@ -485,38 +483,28 @@ void Player::SetPlayer(const int _x, const int _y, const int _z) {
 }
 
 Player::Player() :
-        homeLongi(),
-        homeLati(),
-        homeX(),
-        homeY(),
-        homeZ(),
+        settings(world->WorldName() + "/settings.ini", QSettings::IniFormat),
+        homeLongi(settings.value("home_longitude",
+            qlonglong(world->GetMap()->GetSpawnLongitude())).toLongLong()),
+        homeLati (settings.value("home_latitude",
+            qlonglong(world->GetMap()->GetSpawnLatitude ())).toLongLong()),
+        homeX(settings.value("home_x", 0).toInt()),
+        homeY(settings.value("home_y", 0).toInt()),
+        homeZ(settings.value("home_z", HEIGHT/2).toInt()),
         player(),
-        usingType(),
-        usingSelfType(),
+        usingType(settings.value("using_type",      USAGE_TYPE_NO).toInt()),
+        usingSelfType(settings.value("using_self_type",USAGE_TYPE_NO).toInt()),
         usingInInventory(),
-        creativeMode()
+        creativeMode(settings.value("creative_mode", false).toBool())
 {
-    QSettings sett(QDir::currentPath() + '/' + world->WorldName()
-        + "/settings.ini", QSettings::IniFormat);
-    sett.beginGroup("player");
-    homeLongi = sett.value("home_longitude",
-        qlonglong(world->GetMap()->GetSpawnLongitude())).toLongLong();
-    homeLati  = sett.value("home_latitude",
-        qlonglong(world->GetMap()->GetSpawnLatitude ())).toLongLong();
-    homeX  = sett.value("home_x", 0).toInt();
-    homeY  = sett.value("home_y", 0).toInt();
-    homeZ  = sett.value("home_z", HEIGHT/2).toInt();
-    SetXyz(sett.value("current_x", 0).toInt(),
-           sett.value("current_y", 0).toInt(),
-           sett.value("current_z", HEIGHT/2+1).toInt());
-    creativeMode = sett.value("creative_mode", false).toBool();
+    SetXyz(settings.value("current_x", 0).toInt(),
+           settings.value("current_y", 0).toInt(),
+           settings.value("current_z", HEIGHT/2+1).toInt());
 
-    const int plus = world->NumShreds()/2*SHRED_WIDTH;
+    const int plus = world->NumShreds()/2 * SHRED_WIDTH;
     homeX += plus;
     homeY += plus;
     SetPlayer(x_self+=plus, y_self+=plus, z_self);
-    usingType     = sett.value("using_type",      USAGE_TYPE_NO).toInt();
-    usingSelfType = sett.value("using_self_type", USAGE_TYPE_NO).toInt();
 
     connect(world, SIGNAL(NeedPlayer(int, int, int)),
         SLOT(SetPlayer(int, int, int)),
@@ -530,22 +518,19 @@ Player::Player() :
 
 Player::~Player() {
     if ( GetCreativeMode() ) {
-        block_manager.DeleteBlock(player);
+        delete player;
     }
 
-    QSettings sett(QDir::currentPath()+'/'+world->WorldName()+"/settings.ini",
-        QSettings::IniFormat);
-    sett.beginGroup("player");
-    sett.setValue("home_longitude", qlonglong(homeLongi));
-    sett.setValue("home_latitude", qlonglong(homeLati));
+    settings.setValue("home_longitude", qlonglong(homeLongi));
+    settings.setValue("home_latitude", qlonglong(homeLati));
     const int min = world->NumShreds()/2*SHRED_WIDTH;
-    sett.setValue("home_x", homeX-min);
-    sett.setValue("home_y", homeY-min);
-    sett.setValue("home_z", homeZ);
-    sett.setValue("current_x", X()-min);
-    sett.setValue("current_y", Y()-min);
-    sett.setValue("current_z", Z());
-    sett.setValue("creative_mode", GetCreativeMode());
-    sett.setValue("using_type", usingType);
-    sett.setValue("using_self_type", usingSelfType);
+    settings.setValue("home_x", homeX-min);
+    settings.setValue("home_y", homeY-min);
+    settings.setValue("home_z", homeZ);
+    settings.setValue("current_x", X()-min);
+    settings.setValue("current_y", Y()-min);
+    settings.setValue("current_z", Z());
+    settings.setValue("creative_mode", GetCreativeMode());
+    settings.setValue("using_type", usingType);
+    settings.setValue("using_self_type", usingSelfType);
 }

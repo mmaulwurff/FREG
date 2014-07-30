@@ -19,7 +19,6 @@
 
 #include <QTimer>
 #include <QDir>
-#include <QSettings>
 #include <QMutexLocker>
 #include <memory>
 #include "blocks/Active.h"
@@ -679,15 +678,18 @@ void World::SetNumActiveShreds(const int num) {
 World::World(const QString world_name) :
         worldName(world_name),
         map(world_name),
-        time(),
-        timeStep(),
+        settings(worldName + "/settings.ini", QSettings::IniFormat),
+        time(settings.value("time", END_OF_NIGHT).toLongLong()),
+        timeStep(settings.value("time_step", 0).toInt()),
         shreds(),
-        longitude(),
-        latitude(),
+        longitude(settings.value("longitude",
+            qlonglong(map.GetSpawnLongitude())).toLongLong()),
+        latitude (settings.value("latitude",
+            qlonglong(map.GetSpawnLatitude ())).toLongLong()),
         numShreds(),
         numActiveShreds(),
         mutex(),
-        evernight(),
+        evernight(settings.value("evernight", false).toBool()),
         newLati(),
         newLongi(),
         newX(),
@@ -718,15 +720,7 @@ World::World(const QString world_name) :
     game_settings.setValue("number_of_active_shreds", numActiveShreds);
 
     QDir::current().mkpath(worldName+"/texts");
-    QSettings settings(worldName+"/settings.ini", QSettings::IniFormat);
-    time      = settings.value("time", END_OF_NIGHT).toLongLong();
-    timeStep  = settings.value("time_step", 0).toInt();
-    longitude = settings.value("longitude", qlonglong(map.GetSpawnLongitude()))
-        .toLongLong();
-    latitude  = settings.value("latitude",  qlonglong(map.GetSpawnLatitude ()))
-        .toLongLong();
 
-    evernight = settings.value("evernight", false).toBool();
     settings.setValue("evernight", evernight); // save if not present
 
     shredStorage = new ShredStorage(numShreds+2, longitude, latitude);
@@ -744,7 +738,6 @@ World::~World() {
     DeleteAllShreds();
     delete shredStorage;
 
-    QSettings settings(worldName+"/settings.ini", QSettings::IniFormat);
     settings.setValue("time", qlonglong(time));
     settings.setValue("time_step", timeStep);
     settings.setValue("longitude", qlonglong(longitude));

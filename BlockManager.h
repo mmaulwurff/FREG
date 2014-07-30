@@ -53,7 +53,7 @@ public:
     static Block * BlockFromFile(QDataStream &, int kind, int sub);
     /// Returns true if block is normal.
     static bool KindSubFromFile(QDataStream &, int * kind, int * sub);
-    /// Use this to safely delete block.
+    /// Does not actually delete normal blocks.
     void DeleteBlock(Block *) const;
     /// For memory economy.
     /** Checks and replaces block with corresponding normal block.

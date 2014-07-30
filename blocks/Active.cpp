@@ -180,6 +180,11 @@ Active::Active(QDataStream & str, const int sub, const int id,
         Xyz()
 {}
 
+Active::~Active() {
+    Farewell();
+    Unregister();
+}
+
 bool Active::Gravitate(const int range, int bottom, int top,
         const int calmness)
 {

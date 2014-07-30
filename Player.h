@@ -21,6 +21,7 @@
 #define PLAYER_H
 
 #include <QObject>
+#include <QSettings>
 #include "header.h"
 #include "Xyz.h"
 
@@ -164,6 +165,7 @@ private:
     World * GetWorld() const;
     bool ForbiddenAdminCommands() const;
 
+    QSettings settings;
     long homeLongi, homeLati;
     int homeX, homeY, homeZ;
     dirs dir = NORTH;

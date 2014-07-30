@@ -222,11 +222,6 @@ bool BlockManager::KindSubFromFile(QDataStream & str, int * kind, int * sub) {
 
 void BlockManager::DeleteBlock(Block * const block) const {
     if ( block != Normal(block->Sub()) ) {
-        Active * const active = block->ActiveBlock();
-        if ( active != nullptr ) {
-            active->Farewell();
-            active->Unregister();
-        }
         delete block;
     }
 }

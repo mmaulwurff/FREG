@@ -22,6 +22,7 @@
 
 #include <QThread>
 #include <QMutex>
+#include <QSettings>
 #include "header.h"
 #include "worldmap.h"
 
@@ -206,6 +207,7 @@ private:
 
     const QString worldName;
     const WorldMap map;
+    QSettings settings;
     ulong time;
     int   timeStep;
     Shred ** shreds;
@@ -219,7 +221,7 @@ private:
     int numShreds; ///< size of loaded zone
     int numActiveShreds; ///< size of active zone
     QMutex mutex;
-    bool evernight;
+    const bool evernight;
     long newLati, newLongi;
     int  newX, newY, newZ;
     /// UP for no reset, DOWN for full reset, NSEW for side shift.

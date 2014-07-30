@@ -47,8 +47,9 @@ class DeferredAction;
 class Active : public QObject, public Block, public Xyz {
     Q_OBJECT
 public:
-    Active(int sub, int id, int transp = UNDEF);
-    Active(QDataStream & str, int sub, int id, int transp = UNDEF);
+     Active(int sub, int id, int transp = UNDEF);
+     Active(QDataStream & str, int sub, int id, int transp = UNDEF);
+    ~Active();
 
     int  Kind() const override = 0;
     void Move(dirs dir) override;
