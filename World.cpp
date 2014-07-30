@@ -423,10 +423,9 @@ bool World::CanMove(const int x, const int y, const int z,
         }
         break;
     case ENVIRONMENT:
-        if ( *block == *block_to ) { // prevent useless flow
-            return false;
-        }
-        break;
+        if ( *block != *block_to ) { // prevent useless flow
+            break;
+        } // no break;
     default: return false;
     }
     switch ( block_to->PushResult(dir) ) {
@@ -434,26 +433,25 @@ bool World::CanMove(const int x, const int y, const int z,
         return ( block->Weight() > block_to->Weight()
             && Move(newx, newy, newz, dir) );
     case ENVIRONMENT: return true;
-    case NOT_MOVABLE: return false;
+    case NOT_MOVABLE: break;
     case MOVE_UP:
         if ( dir > DOWN ) { // not UP and not DOWN
             Move(x, y, z, UP);
         }
-        return false;
+        break;
     case JUMP:
         if ( dir > DOWN ) { // not UP and not DOWN
             Jump(x, y, z, dir);
         }
-        return false;
+        break;
     case DAMAGE:
         if ( Damage(x, y, z, block_to->DamageLevel(), block_to->DamageKind())
                 <= 0 )
         {
             DestroyAndReplace(x, y, z);
         }
-        return false;
+        break;
     }
-    Q_UNREACHABLE();
     return false;
 } // bool World::CanMove(const int x, y, z, newx, newy, newz, int dir)
 

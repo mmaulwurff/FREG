@@ -70,8 +70,8 @@ protected:
     void run() override;
 
 private:
-    PreloadThread & operator=(const PreloadThread &) = delete;
-    PreloadThread(const PreloadThread &) = delete;
+    PreloadThread & operator=(PreloadThread &) = delete;
+    PreloadThread(PreloadThread &) = delete;
 
     ShredStorage * const storage;
     const int direction;

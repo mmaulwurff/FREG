@@ -17,9 +17,9 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include <QDir>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QFile>
 #include "BlockManager.h"
 #include "CraftManager.h"
 
@@ -86,7 +86,6 @@ CraftItem * CraftList::GetItem(const int i) const { return items.at(i); }
 
 // CraftManager section
 CraftManager::CraftManager() : recipesList() {
-    QDir::current().mkdir("recipes");
     for (int sub=0; sub<LAST_SUB; ++sub) {
         QFile file(QString("recipes/%1.json").
             arg(BlockManager::SubToString(sub)));

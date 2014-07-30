@@ -34,8 +34,8 @@ class Inventory {
     /**\class Inventory Inventory.h
      * \brief Provides block ability to contain other blocks inside. */
 public:
-    Inventory & operator=(const Inventory &) = delete;
-    Inventory(const Inventory & inv) = delete;
+    Inventory & operator=(Inventory &) = delete;
+    Inventory(Inventory & inv) = delete;
 
     virtual int Kind() const = 0;
     virtual int Sub() const = 0;

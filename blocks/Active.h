@@ -98,8 +98,8 @@ protected:
     virtual int  Attractive(int sub) const;
 
 private:
-    Active(const Active &) = delete;
-    Active & operator=(const Active &) = delete;
+    Active(Active &) = delete;
+    Active & operator=(Active &) = delete;
     void UpdateShred();
 
     DeferredAction * deferredAction = nullptr;

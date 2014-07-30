@@ -90,8 +90,8 @@ public:
     Block(QDataStream &, int sub, int id, int transp = UNDEF);
     virtual ~Block();
 
-    Block & operator=(const Block &) = delete;
-    Block(const Block &) = delete;
+    Block & operator=(Block &) = delete;
+    Block(Block &) = delete;
 
     virtual QString FullName() const;
     virtual int  Kind() const;

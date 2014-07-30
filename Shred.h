@@ -42,8 +42,8 @@ public:
             Shred * memory);
     ~Shred();
 
-    Shred & operator=(const Shred &) = delete;
-    Shred(const Shred &) = delete;
+    Shred & operator=(Shred &) = delete;
+    Shred(Shred &) = delete;
 
     /// Returns y (line) shred coordinate on world map.
     long Longitude() const;
