@@ -23,6 +23,8 @@
 #include "blocks/Active.h"
 #include "blocks/Inventory.h"
 
+const int WORKBENCH_SIZE = 10;
+
 class Container : public Active, public Inventory {
     /** \class Container Container.h
      *  \brief Container is multi-purpose container for blocks.
@@ -41,15 +43,16 @@ public:
     void ReceiveSignal(QString) override;
     void DoRareAction() override;
     int  ShouldAct() const override;
-    void Push(dirs, Block * who) override;
     int  Weight() const override;
     int  Kind() const override;
+    void Damage(int dmg, int dmg_kind) override;
     Block * DropAfterDamage(bool * delete_block) override;
     QString FullName() const override;
     Active * ActiveBlock() override;
     Inventory * HasInventory() override final;
     usage_types Use(Block * who) override;
     push_reaction PushResult(dirs) const override;
+    inner_actions ActInner() override;
 
 protected:
     void SaveAttributes(QDataStream & out) const override;
@@ -73,8 +76,37 @@ public:
 
 private:
     void Craft();
-
-    static const int WORKBENCH_SIZE = 10;
 }; // Workbench
+
+class Converter : public Container {
+    Q_OBJECT
+public:
+    Converter(int sub, int id);
+    Converter(QDataStream & str, int sub, int id);
+
+    int  Kind() const override;
+    int  ShouldAct() const override;
+    int  DamageKind() const override;
+    int  LightRadius() const override;
+    void DoRareAction() override;
+    void Damage(int dmg, int dmg_kind) override;
+    QString FullName() const override;
+
+protected:
+    void SaveAttributes(QDataStream &) const override;
+
+private:
+    void InitDamageKinds();
+    int  ConvertRatio(int sub) const;
+
+    // saved attributes
+    bool isOn;
+    quint16 fuelLevel;
+
+    // not saved attributes
+    int lightRadius;
+    damage_kinds damageKindOn;
+    damage_kinds damageKindOff;
+}; // Converter
 
 #endif // CONTAINER_H

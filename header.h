@@ -101,6 +101,7 @@ enum push_reaction {
     NOT_MOVABLE,
     MOVE_UP,
     JUMP,
+    DAMAGE,
 };
 
 enum times_of_day {
@@ -108,25 +109,6 @@ enum times_of_day {
     TIME_MORNING,
     TIME_NOON,
     TIME_EVENING
-};
-
-enum damage_kinds {
-    MINE,    ///<  0
-    DIG,     ///<  1
-    CUT,     ///<  2
-    THRUST,  ///<  3
-    CRUSH,   ///<  4
-    HEAT,    ///<  5
-    FREEZE,  ///<  6
-    MELT,    ///<  7
-    ELECTRO, ///<  8
-    HUNGER,  ///<  9
-    BREATH,  ///< 10
-    BITE,    ///< 11
-    TIME,    ///< 12
-    NO_HARM, ///< 13
-    DAMAGE_HANDS, ///< 14
-    DAMAGE_ACID,  ///< 15
 };
 
 /// Kinds of atom
@@ -162,6 +144,7 @@ enum kinds {
     HAMMER,      ///< 26
     ILLUMINATOR, ///< 27
     RAIN_MACHINE, ///< 28
+    CONVERTER,    ///< 29
     /// Nothing is LAST_KIND.
     LAST_KIND // keep it last in this list.
 }; // enum kinds
@@ -178,7 +161,7 @@ enum subs {
     NULLSTONE,  ///<   2
     SKY,        ///<   3
     STAR,       ///<   4
-    SUN_MOON,   ///<   5
+    SUN_MOON,   ///<   5 // can be reused
     SOIL,       ///<   6
     H_MEAT,     ///<   7 (hominid meat)
     A_MEAT,     ///<   8 (animal meat)

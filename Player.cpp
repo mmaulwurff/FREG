@@ -18,8 +18,6 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include <QTextStream>
-#include <QSettings>
-#include <QDir>
 #include <QMutexLocker>
 #include "blocks/Animal.h"
 #include "blocks/Inventory.h"
@@ -35,12 +33,23 @@ const bool COMMANDS_ALWAYS_ON = false;
 const bool COMMANDS_ALWAYS_ON = true;
 #endif
 
+//const subs PLAYER_SUB = ADAMANTINE;
+const subs PLAYER_SUB = H_MEAT;
+
 long Player::GlobalX() const { return GetShred()->GlobalX(X()); }
 long Player::GlobalY() const { return GetShred()->GlobalY(Y()); }
-
 Shred * Player::GetShred() const { return world->GetShred(X(), Y()); }
 World * Player::GetWorld() const { return world; }
 
+dirs Player::GetDir() const { return dir; }
+int  Player::UsingType() const { return usingType; }
+void Player::StopUseAll() { usingType = usingSelfType = USAGE_TYPE_NO; }
+int  Player::UsingSelfType() const { return usingSelfType; }
+void Player::SetUsingTypeNo() { usingType = USAGE_TYPE_NO; }
+bool Player::IfPlayerExists() const { return player != nullptr; }
+int  Player::GetUsingInInventory() const { return usingInInventory; }
+long Player::GetLongitude() const { return GetShred()->Longitude(); }
+long Player::GetLatitude()  const { return GetShred()->Latitude();  }
 bool Player::GetCreativeMode() const { return creativeMode; }
 
 void Player::SetCreativeMode(const bool creative_on) {
@@ -54,15 +63,10 @@ void Player::SetCreativeMode(const bool creative_on) {
         inv->GetAll(prev_player->HasInventory());
     }
     if ( not creative_on ) {
-        block_manager.DeleteBlock(prev_player);
+        delete prev_player;
     }
     emit Updated();
 }
-
-int Player::UsingSelfType() const { return usingSelfType; }
-int Player::UsingType() const { return usingType; }
-void Player::SetUsingTypeNo() { usingType = USAGE_TYPE_NO; }
-bool Player::IfPlayerExists() const { return player != nullptr; }
 
 int Player::HP() const {
     return ( not IfPlayerExists() || GetCreativeMode() ) ?
@@ -71,16 +75,16 @@ int Player::HP() const {
 
 int Player::BreathPercent() const {
     if ( not IfPlayerExists() || GetCreativeMode() ) return -100;
-    Animal const * const animal = player->IsAnimal();
-    if ( animal == nullptr ) return -100;
-    return animal->Breath()*100/MAX_BREATH;
+    return player->Breath()*100/MAX_BREATH;
 }
 
 int Player::SatiationPercent() const {
-    if ( not IfPlayerExists() || GetCreativeMode() ) return -100;
-    Animal const * const animal = player->IsAnimal();
-    if ( animal == nullptr ) return -100;
-    return animal->Satiation()*100/SECONDS_IN_DAY;
+    if ( not IfPlayerExists() || GetCreativeMode()
+            || (player->Sub()!=H_MEAT && player->Sub()!=A_MEAT) )
+    {
+        return -100;
+    }
+    return player->Satiation()*100/SECONDS_IN_DAY;
 }
 
 Inventory * Player::PlayerInventory() const {
@@ -93,9 +97,6 @@ Inventory * Player::PlayerInventory() const {
     }
 }
 
-long Player::GetLongitude() const { return GetShred()->Longitude(); }
-long Player::GetLatitude()  const { return GetShred()->Latitude();  }
-
 void Player::UpdateXYZ(int) {
     if ( player ) {
         SetXyz(player->X(), player->Y(), player->Z());
@@ -105,31 +106,33 @@ void Player::UpdateXYZ(int) {
 
 void Player::Examine() const {
     const QMutexLocker locker(world->GetLock());
-
     int i, j, k;
     emit GetFocus(&i, &j, &k);
     const Block * const block = world->GetBlock(i, j, k);
-    emit Notify( QString("*----- %1 -----*").arg(block->FullName()) );
-    const int sub = block->Sub();
-    if ( GetCreativeMode() || COMMANDS_ALWAYS_ON ) { // know more
-        emit Notify(tr(
+    emit Notify(tr("You see: %1.").arg(block->FullName()));
+    if ( DEBUG ) {
+        emit Notify(QString("Durability: %2. Weight: %3. Id: %4.").
+            arg(block->GetDurability()).
+            arg(block->Weight()).
+            arg(block->GetId()));
+        emit Notify(QString("Kind: %1, substance: %2. LightRadius: %3").
+            arg(block->Kind()).
+            arg(block->Sub()).
+            arg(block->LightRadius()));
+        emit Notify(QString(
             "Light:%1, fire:%2, sun:%3. Transp:%4. Norm:%5. Dir:%6.").
             arg(world->Enlightened(i, j, k)).
             arg(world->FireLight(i, j, k)/16).
             arg(world->SunLight(i, j, k)).
             arg(block->Transparent()).
-            arg(block==block_manager.NormalBlock(sub)).
+            arg(block==block_manager.Normal(block->Sub())).
             arg(block->GetDir()));
     }
-    if ( IsLikeAir(sub) ) return;
+    if ( IsLikeAir(block->Sub()) ) return;
     const QString str = block->GetNote();
     if ( not str.isEmpty() ) {
-        emit Notify(tr("Inscription: ")+str);
+        emit Notify(tr("Inscription: ") + str);
     }
-    emit Notify(tr("Durability: %2. Weight: %3. Id: %4.").
-        arg(block->GetDurability()).
-        arg(block->Weight()).
-        arg(block->GetId()));
 }
 
 void Player::Jump() {
@@ -137,24 +140,29 @@ void Player::Jump() {
     usingType = USAGE_TYPE_NO;
     if ( GetCreativeMode() ) {
         if ( (UP==dir && z_self<HEIGHT-2) || (DOWN==dir && z_self>1) ) {
-            player->GetDeferredAction()->SetGhostMove();
+            DeferredAction * const def_action = new DeferredAction(player);
+            def_action->SetGhostMove();
+            player->SetDeferredAction(def_action);
         }
     } else {
-        player->GetDeferredAction()->SetJump();
+        DeferredAction * const def_action = new DeferredAction(player);
+        def_action->SetJump();
+        player->SetDeferredAction(def_action);
     }
 }
 
 void Player::Move(const dirs direction) {
     if ( player ) {
+        DeferredAction * const def_action = new DeferredAction(player);
         if ( GetCreativeMode() ) {
-            player->GetDeferredAction()->SetGhostMove(direction);
+            def_action->SetGhostMove(direction);
+            player->SetDeferredAction(def_action);
         } else {
-            player->GetDeferredAction()->SetMove(direction);
+            def_action->SetMove(direction);
+            player->SetDeferredAction(def_action);
         }
     }
 }
-
-void Player::StopUseAll() { usingType = usingSelfType = USAGE_TYPE_NO; }
 
 void Player::Backpack() {
     if ( PlayerInventory() ) {
@@ -207,16 +215,13 @@ Block * Player::ValidBlock(const int num) const {
 }
 
 usage_types Player::Use(const int num) {
-    const QMutexLocker locker(world->GetLock());
+    QMutexLocker locker(world->GetLock());
     Block * const block = ValidBlock(num);
     if ( block == nullptr ) return USAGE_TYPE_NO;
-    Animal * const animal = player->IsAnimal();
-    if ( animal && animal->NutritionalValue(block->Sub()) ) {
-        if ( animal->Eat(block->Sub()) ) {
-            PlayerInventory()->Pull(num);
-            block_manager.DeleteBlock(block);
-            emit Updated();
-        }
+    if ( player->Eat(static_cast<subs>(block->Sub())) ) {
+        PlayerInventory()->Pull(num);
+        block_manager.DeleteBlock(block);
+        emit Updated();
         return USAGE_TYPE_NO;
     } // else:
     const usage_types result = block->Use(player);
@@ -229,24 +234,28 @@ usage_types Player::Use(const int num) {
     case USAGE_TYPE_POUR: {
         int x_targ, y_targ, z_targ;
         emit GetFocus(&x_targ, &y_targ, &z_targ);
-        player->GetDeferredAction()->SetPour(x_targ, y_targ, z_targ, num);
+        DeferredAction * const def_action = new DeferredAction(player);
+        def_action->SetPour(x_targ, y_targ, z_targ, num);
+        player->SetDeferredAction(def_action);
         } break;
     case USAGE_TYPE_SET_FIRE: {
         int x_targ, y_targ, z_targ;
         emit GetFocus(&x_targ, &y_targ, &z_targ);
-        player->GetDeferredAction()->SetSetFire(x_targ, y_targ, z_targ);
+        DeferredAction * const def_action = new DeferredAction(player);
+        def_action->SetSetFire(x_targ, y_targ, z_targ);
+        player->SetDeferredAction(def_action);
         } break;
-    default: Wield(num); break;
+    default: locker.unlock(); Wield(num); break;
     }
     return result;
 }
 
-int Player::GetUsingInInventory() const { return usingInInventory; }
-
 void Player::Throw(const int src, const int dest, const int num) {
     int x, y, z;
     emit GetFocus(&x, &y, &z);
-    player->GetDeferredAction()->SetThrow(x, y, z, src, dest, num);
+    DeferredAction * const def_action = new DeferredAction(player);
+    def_action->SetThrow(x, y, z, src, dest, num);
+    player->SetDeferredAction(def_action);
 }
 
 void Player::Obtain(const int src, const int dest, const int num) {
@@ -258,12 +267,13 @@ void Player::Obtain(const int src, const int dest, const int num) {
 }
 
 void Player::Wield(const int from) {
+    const QMutexLocker locker(world->GetLock());
     if ( ValidBlock(from) ) {
         Inventory * const inv = PlayerInventory();
         const int start = (from >= inv->Start()) ? 0 : inv->Start();
-        for (int i=start; i<inv->Size(); ++i) {
-            PlayerInventory()->MoveInside(from, i, 1);
-        }
+        Block * const block = inv->ShowBlock(from);
+        inv->Pull(from);
+        inv->Get(block, start);
         emit Updated();
     }
 }
@@ -293,8 +303,9 @@ void Player::Build(const int slot) {
     if ( block != nullptr && (AIR != world->GetBlock(X(), Y(), Z()-1)->Sub()
             || 0 == player->Weight()) )
     {
-        player->GetDeferredAction()->
-            SetBuild(x_targ, y_targ, z_targ, block, slot);
+        DeferredAction * const def_action = new DeferredAction(player);
+        def_action->SetBuild(x_targ, y_targ, z_targ, block, slot);
+        player->SetDeferredAction(def_action);
     }
 }
 
@@ -331,7 +342,7 @@ void Player::ProcessCommand(QString command) {
         if ( ForbiddenAdminCommands() ) return;
         Inventory * const inv = PlayerInventory();
         if ( inv == nullptr ) return;
-        QString kind, sub;
+        QByteArray kind, sub;
         comm_stream >> kind >> sub;
         const int kind_code = BlockManager::StringToKind(kind);
         if ( kind_code == LAST_KIND ) {
@@ -393,8 +404,6 @@ bool Player::Visible(const int x_to, const int y_to, const int z_to) const {
             world->Visible(X(), Y(), Z(), x_to, y_to, z_to));
 }
 
-dirs Player::GetDir() const { return dir; }
-
 void Player::SetDir(const dirs direction) {
     usingType = USAGE_TYPE_NO;
     if ( player ) {
@@ -408,7 +417,9 @@ bool Player::Damage() const {
     int x, y, z;
     emit GetFocus(&x, &y, &z);
     if ( player && GetWorld()->InBounds(x, y, z) ) {
-        player->GetDeferredAction()->SetDamage(x, y, z);
+        DeferredAction * const def_action = new DeferredAction(player);
+        def_action->SetDamage(x, y, z);
+        player->SetDeferredAction(def_action);
         return true;
     } else {
         return false;
@@ -417,8 +428,8 @@ bool Player::Damage() const {
 
 void Player::CheckOverstep(const int direction) {
     UpdateXYZ();
-    static const int half_num_shreds = GetWorld()->NumShreds()/2;
-    if ( DOWN!=direction && UP!=direction && ( // leaving central zone
+    const int half_num_shreds = GetWorld()->NumShreds()/2;
+    if ( direction > DOWN && ( // leaving central zone
             X() <  (half_num_shreds-1)*SHRED_WIDTH ||
             Y() <  (half_num_shreds-1)*SHRED_WIDTH ||
             X() >= (half_num_shreds+2)*SHRED_WIDTH ||
@@ -441,28 +452,24 @@ void Player::BlockDestroy() {
 void Player::SetPlayer(const int _x, const int _y, const int _z) {
     SetXyz(_x, _y, _z);
     if ( GetCreativeMode() ) {
-        ( player = BlockManager::NewBlock(CREATOR, DIFFERENT)->
-            ActiveBlock() )->SetXyz(X(), Y(), Z());
+        ( player = BlockManager::NewBlock(CREATOR, DIFFERENT)->IsAnimal() )->
+            SetXyz(X(), Y(), Z());
         GetShred()->Register(player);
     } else {
         World * const world = GetWorld();
-        for ( ; z_self < HEIGHT-1; ++z_self) {
-            const Block * const target_block = world->GetBlock(X(), Y(), Z());
-            if ( AIR==target_block->Sub() || DWARF==target_block->Kind() ) {
+        for ( ; z_self < HEIGHT-2; ++z_self ) {
+            Block * const block = world->GetBlock(X(), Y(), z_self);
+            if ( AIR == block->Sub() || nullptr != block->IsAnimal() ) {
                 break;
             }
         }
-        Block * const target_block = world->GetBlock(X(), Y(), Z());
-        if ( DWARF == target_block->Kind() ) {
-            player = target_block->ActiveBlock();
-        } else {
-            world->Build( (player = block_manager.
-                    NewBlock(DWARF, H_MEAT)->ActiveBlock()),
+        if ( (player=world->GetBlock(X(), Y(), Z())->IsAnimal()) == nullptr ) {
+            world->Build( (player = BlockManager::
+                    NewBlock(DWARF, PLAYER_SUB)->IsAnimal()),
                 X(), Y(), Z(), GetDir(), 0, true /*force build*/ );
         }
     }
-    player->SetDeferredAction(new DeferredAction(player));
-    SetDir(player->GetDir());
+    dir = player->GetDir();
 
     connect(player, SIGNAL(Destroyed()), SLOT(BlockDestroy()),
         Qt::DirectConnection);
@@ -473,27 +480,28 @@ void Player::SetPlayer(const int _x, const int _y, const int _z) {
     connect(player, SIGNAL(ReceivedText(const QString)),
         SIGNAL(Notify(const QString)),
         Qt::DirectConnection);
-} // void Player::SetPlayer(int _x, int _y, int _z)
+}
 
-Player::Player() {
-    QSettings sett(QDir::currentPath() + '/' + world->WorldName()
-        + "/settings.ini", QSettings::IniFormat);
-    sett.beginGroup("player");
-    homeLongi = sett.value("home_longitude",
-        qlonglong(world->GetMap()->GetSpawnLongitude())).toLongLong();
-    homeLati  = sett.value("home_latitude",
-        qlonglong(world->GetMap()->GetSpawnLatitude ())).toLongLong();
-    homeX  = sett.value("home_x", 0).toInt();
-    homeY  = sett.value("home_y", 0).toInt();
-    homeZ  = sett.value("home_z", HEIGHT/2).toInt();
-    usingType     = sett.value("using_type",      USAGE_TYPE_NO).toInt();
-    usingSelfType = sett.value("using_self_type", USAGE_TYPE_NO).toInt();
-    SetXyz(sett.value("current_x", 0).toInt(),
-           sett.value("current_y", 0).toInt(),
-           sett.value("current_z", HEIGHT/2+1).toInt());
-    creativeMode = sett.value("creative_mode", false).toBool();
+Player::Player() :
+        settings(world->WorldName() + "/settings.ini", QSettings::IniFormat),
+        homeLongi(settings.value("home_longitude",
+            qlonglong(world->GetMap()->GetSpawnLongitude())).toLongLong()),
+        homeLati (settings.value("home_latitude",
+            qlonglong(world->GetMap()->GetSpawnLatitude ())).toLongLong()),
+        homeX(settings.value("home_x", 0).toInt()),
+        homeY(settings.value("home_y", 0).toInt()),
+        homeZ(settings.value("home_z", HEIGHT/2).toInt()),
+        player(),
+        usingType(settings.value("using_type",      USAGE_TYPE_NO).toInt()),
+        usingSelfType(settings.value("using_self_type",USAGE_TYPE_NO).toInt()),
+        usingInInventory(),
+        creativeMode(settings.value("creative_mode", false).toBool())
+{
+    SetXyz(settings.value("current_x", 0).toInt(),
+           settings.value("current_y", 0).toInt(),
+           settings.value("current_z", HEIGHT/2+1).toInt());
 
-    const int plus = world->NumShreds()/2*SHRED_WIDTH;
+    const int plus = world->NumShreds()/2 * SHRED_WIDTH;
     homeX += plus;
     homeY += plus;
     SetPlayer(x_self+=plus, y_self+=plus, z_self);
@@ -510,22 +518,19 @@ Player::Player() {
 
 Player::~Player() {
     if ( GetCreativeMode() ) {
-        block_manager.DeleteBlock(player);
+        delete player;
     }
 
-    QSettings sett(QDir::currentPath()+'/'+world->WorldName()+"/settings.ini",
-        QSettings::IniFormat);
-    sett.beginGroup("player");
-    sett.setValue("home_longitude", qlonglong(homeLongi));
-    sett.setValue("home_latitude", qlonglong(homeLati));
+    settings.setValue("home_longitude", qlonglong(homeLongi));
+    settings.setValue("home_latitude", qlonglong(homeLati));
     const int min = world->NumShreds()/2*SHRED_WIDTH;
-    sett.setValue("home_x", homeX-min);
-    sett.setValue("home_y", homeY-min);
-    sett.setValue("home_z", homeZ);
-    sett.setValue("current_x", X()-min);
-    sett.setValue("current_y", Y()-min);
-    sett.setValue("current_z", Z());
-    sett.setValue("creative_mode", GetCreativeMode());
-    sett.setValue("using_type", usingType);
-    sett.setValue("using_self_type", usingSelfType);
+    settings.setValue("home_x", homeX-min);
+    settings.setValue("home_y", homeY-min);
+    settings.setValue("home_z", homeZ);
+    settings.setValue("current_x", X()-min);
+    settings.setValue("current_y", Y()-min);
+    settings.setValue("current_z", Z());
+    settings.setValue("creative_mode", GetCreativeMode());
+    settings.setValue("using_type", usingType);
+    settings.setValue("using_self_type", usingSelfType);
 }

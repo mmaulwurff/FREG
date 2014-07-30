@@ -26,6 +26,7 @@
 #define NOX
 
 #include <QMutex>
+#include <QSettings>
 
 #ifdef __MINGW32__
 #include "pdcurses/curses.h"
@@ -43,7 +44,8 @@ enum actions {
     ACTION_OBTAIN,
     ACTION_INSCRIBE,
     ACTION_BUILD,
-    ACTION_CRAFT
+    ACTION_CRAFT,
+    ACTION_WIELD,
 };
 
 enum color_pairs { // do not change colors order! // foreground_background
@@ -157,11 +159,12 @@ private slots:
     void Print() override;
 
 private:
+    Screen(const Screen &) = delete;
+    Screen & operator=(const Screen &) = delete;
     char CharNumber(int z) const;
     char CharNumberFront(int x, int y) const;
-    void Arrows(WINDOW *, int x, int y, bool show_dir = false) const;
-    void HorizontalArrows(WINDOW *, int y, int color = WHITE_RED,
-            bool show_dir = false) const;
+    void Arrows(WINDOW *, int x, int y, bool show_dir) const;
+    void HorizontalArrows(WINDOW *, int y, int color, bool show_dir) const;
     void PrintNormal(WINDOW *, dirs) const;
     void PrintFront(WINDOW *, dirs) const;
     void PrintInv(WINDOW *, const Inventory &) const;
@@ -177,7 +180,7 @@ private:
     void RePrint();
     void InventoryAction(int num) const;
     int  Color(int kind, int sub) const;
-    static color_pairs ColorShred(int type);
+    int  ColorShred(shred_type)   const;
     char PrintBlock(const Block &, WINDOW *) const;
     void SetActionMode(actions mode);
     void ProcessCommand(QString command);
@@ -198,6 +201,7 @@ private:
     volatile bool updated;
     FILE * const notifyLog;
     actions actionMode;
+    QSettings settings;
     /// Can be -1, 0, 1 for low, normal, and high focus.
     int shiftFocus;
     /// Save previous command for further execution.

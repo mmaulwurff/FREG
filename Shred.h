@@ -43,6 +43,7 @@ public:
     ~Shred();
 
     Shred & operator=(const Shred &) = delete;
+    Shred(const Shred &) = delete;
 
     /// Returns y (line) shred coordinate on world map.
     long Longitude() const;
@@ -93,7 +94,7 @@ public:
 
     // Information section
     void SetNewBlock(int kind, int sub, int x, int y, int z, int dir = UP);
-    char GetTypeOfShred() const;
+    shred_type GetTypeOfShred() const;
 
     static QString FileName(QString world_name, long longi, long lati);
     Shred * GetShredMemory() const;
@@ -117,6 +118,7 @@ private:
     void RemoveAllLight();
 
     bool LoadShred();
+    void RegisterInit(Active *);
 
     QString FileName() const;
 
@@ -168,7 +170,7 @@ private:
     uchar lightMap[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
     const long longitude, latitude;
     int shredX, shredY;
-    char type;
+    shred_type type;
 
     /// Contains all active blocks.
     QLinkedList<Active *> activeListAll;

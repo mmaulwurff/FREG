@@ -39,7 +39,16 @@
     int  Weapon::Kind() const { return WEAPON; }
     int  Weapon::Weight() const { return Block::Weight()/4; }
     int  Weapon::Wearable() const { return WEARABLE_ARM; }
-    void Weapon::Damage(int, int) { Break(); }
+    push_reaction Weapon::PushResult(dirs) const { return DAMAGE; }
+
+    void Weapon::Damage(const int dmg, const int dmg_kind) {
+        if ( dmg_kind < DAMAGE_PUSH_UP ) {
+            Block::Damage(dmg, dmg_kind);
+            if ( GetDurability() < MAX_DURABILITY ) {
+                Break();
+            }
+        }
+    }
 
     usage_types Weapon::Use(Block * const who) {
         Shred * const shred = GetShred();
@@ -47,7 +56,7 @@
             Inventory * const inv = who->HasInventory();
             if ( inv != nullptr && inv->Get(this) ) {
                 Unregister();
-                shred->SetBlockNoCheck(block_manager.NormalBlock(AIR),
+                shred->SetBlockNoCheck(block_manager.Normal(AIR),
                     Shred::CoordInShred(X()), Shred::CoordInShred(Y()), Z());
             }
         }
@@ -68,19 +77,15 @@
 
     int  Weapon::DamageKind() const {
         switch ( Sub() ) {
-        case IRON: return THRUST;
-        case SKY:  return TIME;
-        default:   return CRUSH;
+        case IRON: return DAMAGE_THRUST;
+        case SKY:  return DAMAGE_TIME;
+        default:   return DAMAGE_CRUSH;
         }
-    }
-
-    void Weapon::Push(dirs, Block * const who) {
-        who->Damage(DamageLevel(), DamageKind());
     }
 
 // Pick::
     int Pick::Kind() const { return PICK; }
-    int Pick::DamageKind() const { return MINE; }
+    int Pick::DamageKind() const { return DAMAGE_MINE; }
 
     int Pick::DamageLevel() const {
         switch ( Sub() ) {
@@ -104,7 +109,7 @@
 
 // Shovel::
     int Shovel::Kind() const { return SHOVEL; }
-    int Shovel::DamageKind() const { return DIG; }
+    int Shovel::DamageKind() const { return DAMAGE_DIG; }
 
     int Shovel::DamageLevel() const {
         switch ( Sub() ) {
@@ -129,7 +134,7 @@
 
 // Hammer::
     int Hammer::Kind() const { return HAMMER; }
-    int Hammer::DamageKind() const { return CRUSH; }
+    int Hammer::DamageKind() const { return DAMAGE_CRUSH; }
 
     int Hammer::DamageLevel() const {
         switch ( Sub() ) {
@@ -155,7 +160,7 @@
 
 // Axe::
     int Axe::Kind() const { return AXE; }
-    int Axe::DamageKind() const { return CUT; }
+    int Axe::DamageKind() const { return DAMAGE_CUT; }
 
     int Axe::DamageLevel() const {
         switch ( Sub() ) {

@@ -72,6 +72,7 @@ public:
     CraftList * Craft(CraftList * items, int sub) const;
 
 private:
+    CraftManager & operator=(const CraftManager &) = delete;
     CraftManager(const CraftManager &) = delete;
     CraftList * CraftSub(CraftList * items, int sub) const;
 
@@ -79,5 +80,7 @@ private:
     QList<CraftList *> * recipesList;
     int * recipesSubsList; // list of substances of workbench
 }; // CraftManager
+
+extern CraftManager craft_manager;
 
 #endif // CRAFTMANAGER_H

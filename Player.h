@@ -21,12 +21,13 @@
 #define PLAYER_H
 
 #include <QObject>
+#include <QSettings>
 #include "header.h"
 #include "Xyz.h"
 
 class World;
 class Block;
-class Active;
+class Animal;
 class Inventory;
 class Shred;
 
@@ -114,6 +115,7 @@ public:
     void Inscribe(int num);
     void Craft   (int num);
     void Build   (int num);
+    void Wield   (int num);
     /// Can also wield appropriate things.
     void MoveInsideInventory(int num_from, int num_to, int num = 1);
     void ProcessCommand(QString command);
@@ -154,17 +156,20 @@ private slots:
     void UpdateXYZ(int dir = NOWHERE);
 
 private:
+    Player & operator=(const Player &) = delete;
+    Player(const Player &) = delete;
+
     /// Checks player/inventory/block existence, size limits.
     Block * ValidBlock(int num) const;
     Shred * GetShred() const;
     World * GetWorld() const;
     bool ForbiddenAdminCommands() const;
-    void Wield (int num);
 
+    QSettings settings;
     long homeLongi, homeLati;
     int homeX, homeY, homeZ;
     dirs dir = NORTH;
-    Active * player;
+    Animal * player;
     int usingType;
     int usingSelfType;
     int usingInInventory;

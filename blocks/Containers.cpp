@@ -17,16 +17,27 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include "blocks/Container.h"
+#include "blocks/Containers.h"
 #include "World.h"
+#include "Shred.h"
 #include "BlockManager.h"
 #include "CraftManager.h"
 
+const int CONVERTER_LIGHT_RADIUS = 2;
+
 // Container::
-    void Container::Push(dirs, Block * const who) {
-        Inventory::Push(who);
-        if ( Sub()==DIFFERENT && IsEmpty() ) {
-            GetWorld()->DestroyAndReplace(X(), Y(), Z());
+    void Container::Damage(const int dmg, const int dmg_kind) {
+        if ( dmg_kind >= DAMAGE_PUSH_UP ) {
+            int x, y, z;
+            World * const world = GetWorld();
+            world->Focus( X(), Y(), Z(), &x, &y, &z,
+                World::Anti(MakeDirFromDamage(dmg_kind)) );
+            Inventory::Push(world->GetBlock(x, y, z));
+            if ( Sub()==DIFFERENT && IsEmpty() ) {
+                Break();
+            }
+        } else {
+            Block::Damage(dmg, dmg_kind);
         }
     }
 
@@ -45,7 +56,7 @@
             } break;
         case A_MEAT:
         case H_MEAT:
-            Damage(MAX_DURABILITY/SECONDS_IN_DAY, TIME);
+            Damage(MAX_DURABILITY/SECONDS_IN_DAY, DAMAGE_TIME);
             if ( GetDurability() <= 0 ) {
                 GetWorld()->DestroyAndReplace(X(), Y(), Z());
             }
@@ -58,10 +69,12 @@
             FREQUENT_NEVER : FREQUENT_RARE;
     }
 
-    int Container::Kind() const { return CONTAINER; }
-    int Container::Sub() const { return Block::Sub(); }
+    int  Container::Sub()  const { return Block::Sub(); }
+    int  Container::Kind() const { return CONTAINER; }
+    void Container::ReceiveSignal(QString) {}
     Inventory * Container::HasInventory() { return this; }
     push_reaction Container::PushResult(dirs) const { return NOT_MOVABLE; }
+    inner_actions Container::ActInner() { return INNER_ACTION_NONE; }
 
     usage_types Container::Use(Block *) {
         if ( Sub() == A_MEAT || Sub() == H_MEAT ) {
@@ -75,7 +88,7 @@
     Block * Container::DropAfterDamage(bool * const delete_block) {
         if ( DIFFERENT == Sub() ) {
             *delete_block = true;
-            return block_manager.NormalBlock(AIR);
+            return block_manager.Normal(AIR);
         } // else:
         Block * const pile = BlockManager::NewBlock(CONTAINER, DIFFERENT);
         Inventory * const pile_inv = pile->HasInventory();
@@ -93,10 +106,6 @@
         return Block::Weight()*4 + Inventory::Weight();
     }
 
-    void Container::ReceiveSignal(const QString str) {
-        Block::ReceiveSignal(str);
-    }
-
     QString Container::FullName() const {
         switch ( Sub() ) {
         case DIFFERENT: return tr("Pile");
@@ -105,7 +114,7 @@
         case IRON:      return tr("Locker");
         case WATER:     return tr("Fridge");
         case A_MEAT:
-        case H_MEAT:    return tr("Cadaver");
+        case H_MEAT:    return tr("Corpse");
         default:
             fprintf(stderr, "%s: unlisted sub: %d\n", Q_FUNC_INFO, Sub());
             return tr("Unknown container");
@@ -150,7 +159,7 @@
                 list << new CraftItem({Number(i), ShowBlock(i)->GetId()});
             }
         }
-        CraftList * products = world->GetCraftManager()->Craft(&list, Sub());
+        CraftList * products = craft_manager.Craft(&list, Sub());
         if ( products != nullptr ) {
             for (int i=0; i<products->GetSize(); ++i) {
                 for (int n=0; n<products->GetItem(i)->num; ++n) {
@@ -227,6 +236,125 @@
     Workbench::Workbench(const int sub, const int id) :
             Container(sub, id, WORKBENCH_SIZE)
     {}
+
     Workbench::Workbench(QDataStream & str, const int sub, const int id) :
             Container(str, sub, id, WORKBENCH_SIZE)
     {}
+
+// Converter
+    Converter::Converter(const int sub, const int id) :
+            Container(sub, id, WORKBENCH_SIZE),
+            isOn(false),
+            fuelLevel(0),
+            lightRadius(0),
+            damageKindOn(),
+            damageKindOff()
+    {
+        InitDamageKinds();
+    }
+
+    Converter::Converter(QDataStream & str, const int sub, const int id) :
+            Container(str, sub, id, WORKBENCH_SIZE),
+            isOn(),
+            fuelLevel(),
+            lightRadius(),
+            damageKindOn(),
+            damageKindOff()
+    {
+        str >> isOn >> fuelLevel;
+        lightRadius = isOn ? CONVERTER_LIGHT_RADIUS : 0;
+        InitDamageKinds();
+    }
+
+    void Converter::SaveAttributes(QDataStream & out) const {
+        Container::SaveAttributes(out);
+        out << isOn << fuelLevel;
+    }
+
+    int Converter::Kind() const { return CONVERTER; }
+    int Converter::ShouldAct() const { return FREQUENT_RARE; }
+    int Converter::LightRadius() const { return lightRadius; }
+
+    int Converter::DamageKind() const {
+        return (fuelLevel > 0) ? damageKindOn : 0;
+    }
+
+    void Converter::DoRareAction() {
+        if ( isOn && fuelLevel < SECONDS_IN_DAY/DamageLevel() ) {
+            for (int i=Size()-1; i>=0; --i) {
+                Block * const block = ShowBlock(i);
+                if ( block != nullptr ) {
+                    const int add = ConvertRatio(block->Sub());
+                    if ( add > 0 ) {
+                        fuelLevel += add;
+                        Pull(i);
+                        block_manager.DeleteBlock(block);
+                        break;
+                    }
+                }
+            }
+        }
+        World * const world = GetWorld();
+        if ( fuelLevel <= 0
+                || ( Sub() == STONE
+                    && world->GetBlock(X(), Y(), Z()+1)->Sub() == WATER ) )
+        {
+            Damage(1, damageKindOff);
+        } else {
+            if (world->Damage(X(), Y(), Z()+1, DamageLevel(), damageKindOn)<=0)
+            {
+                world->DestroyAndReplace(X(), Y(), Z()+1);
+            }
+            fuelLevel -= DamageLevel();
+        }
+    }
+
+    QString Converter::FullName() const {
+        QString name;
+        switch ( Sub() ) {
+            default:
+            case STONE: name = tr("Furnace"); break;
+        }
+        return name + tr(" (charge for %1 s)").arg(fuelLevel/DamageLevel());
+    }
+
+    void Converter::InitDamageKinds() {
+        switch ( Sub() ) {
+        default: fprintf(stderr, "%s: unlisted sub.\n", Q_FUNC_INFO);
+        case STONE:
+            damageKindOn  = DAMAGE_HEAT;
+            damageKindOff = DAMAGE_FREEZE;
+            break;
+        }
+    }
+
+    void Converter::Damage(const int dmg, const int dmg_kind) {
+        if ( dmg_kind == damageKindOn ) {
+            if ( not isOn ) {
+                isOn = true;
+                GetWorld()->GetShred(X(), Y())->AddShining(this);
+                GetWorld()->Shine(X(), Y(), Z(),
+                    (lightRadius=CONVERTER_LIGHT_RADIUS), true);
+            } else {
+                fuelLevel += dmg;
+            }
+        } else if ( dmg_kind == damageKindOff ) {
+            isOn = false;
+            fuelLevel = 0;
+            lightRadius = 0;
+            GetWorld()->GetShred(X(), Y())->RemShining(this);
+        } else {
+            Block::Damage(dmg, dmg_kind);
+        }
+    }
+
+    int Converter::ConvertRatio(const int sub) const {
+        switch ( Sub() ) {
+        default: return 0;
+        case STONE: switch ( sub ) {
+            default:       return  0;
+            case WOOD:     return 50;
+            case GREENERY: return 10;
+            }
+        }
+    }

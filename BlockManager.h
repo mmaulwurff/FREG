@@ -35,7 +35,7 @@ class QDataStream;
      * Normal blocks: blocks that are not special, e.g. usual stone, air, soil
      * are actually one block (for each substance).
      * One can receive a pointer to such block with
-     * Block * NormalBlock(int sub).
+     * Block * Normal(int sub).
      * Normal blocks are not needed to be deleted.
      * Use Block * NewBlock(int kind, int sub) to receive a pointer to
      * block that will be changed (damaged, inscribed, etc). */
@@ -46,14 +46,14 @@ public:
     ~BlockManager();
 
     /// Use this to receive a pointer to normal block.
-    Block * NormalBlock(int sub) const;
+    Block * Normal(int sub) const;
     /// Use this to receive a pointer to new not-normal block.
     static Block * NewBlock(int kind, int sub);
     /// Use this to load block from file.
     static Block * BlockFromFile(QDataStream &, int kind, int sub);
     /// Returns true if block is normal.
     static bool KindSubFromFile(QDataStream &, int * kind, int * sub);
-    /// Use this to safely delete block.
+    /// Does not actually delete normal blocks.
     void DeleteBlock(Block *) const;
     /// For memory economy.
     /** Checks and replaces block with corresponding normal block.
@@ -69,14 +69,20 @@ public:
     /// If string is not convertible to substance, returns LAST_SUB.
     static int StringToSub(QString);
 
-    static int MakeId(int kind, int sub);
+    constexpr static int MakeId(const int kind, const int sub) {
+        return (kind << 8) | sub;
+    }
+
     static int KindFromId(int id);
     static int SubFromId(int id);
 
 private:
+    BlockManager(const BlockManager &) = delete;
+    BlockManager & operator=(const BlockManager &) = delete;
+
     Block * normals[LAST_SUB];
-    static const QString kinds[];
-    static const QString subs[];
+    static const QByteArray kinds[];
+    static const QByteArray subs[];
 };
 
 extern BlockManager block_manager;

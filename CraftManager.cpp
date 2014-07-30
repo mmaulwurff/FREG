@@ -22,6 +22,8 @@
 #include "BlockManager.h"
 #include "CraftManager.h"
 
+CraftManager craft_manager;
+
 // CraftItem section
 CraftItem::CraftItem(const int num_, const int id_) :
         num(num_),
@@ -36,7 +38,8 @@ bool CraftItem::operator!=(const CraftItem & item) const {
 
 // CraftList section
 CraftList:: CraftList(const int materials_number, const int  products_number) :
-        productsNumber(products_number)
+        productsNumber(products_number),
+        items()
 {
     items.reserve(materials_number + productsNumber);
 }
@@ -85,7 +88,11 @@ int CraftList::GetProductsNumber() const { return productsNumber; }
 CraftItem * CraftList::GetItem(const int i) const { return items.at(i); }
 
 // CraftManager section
-CraftManager::CraftManager() : size(0) {
+CraftManager::CraftManager() :
+        size(0),
+        recipesList(),
+        recipesSubsList()
+{
     QDir::current().mkdir("recipes");
     const QStringList recipesNames = QDir("recipes").entryList();
     if ( recipesNames.size() < 3 ) { // minimum: . and ..
@@ -138,11 +145,11 @@ CraftManager::CraftManager() : size(0) {
                     break;
                 }
             }
-            if ( not ok ) {
+            if ( ok ) {
+                recipesList[size].append(recipe);
+            } else {
                 delete recipe;
-                continue;
-            } // else:
-            recipesList[size].append(recipe);
+            }
         }
         ++size;
     }

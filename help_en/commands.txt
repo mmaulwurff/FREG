@@ -1,32 +1,31 @@
- freg commands. [!] means only in Creative Mode.
- help PAGE
- shows help page PAGE.
+--------------------------------------------------------------
+    freg commands
 
- give KIND SUB NUMBER (== get KIND SUB NUMBER) [!]
- ! Works only in CreativeMode.
- * KIND is requested block kind code (default 0 - block).
- * SUB is requested block substance code (default 0 - stone).
- * NUMBER is number of requested blocks (default - 1).
- See kinds and subs: help kinds
+    help PAGE
+        shows help page PAGE.
 
- move DIRECTION
- * DIRECTION is movement direction. Possible directions:
- * 0,1,2,3,4,3: up (default), down, north, south, east, west.
+    give KIND SUB NUMBER (== get KIND SUB NUMBER)
+        KIND is requested block kind.
+        See "help kinds" for details.
+        SUB is requested block substance.
+        See "help subs" for details.
+        NUMBER is number of requested blocks (default - 1).
 
- what X Y Z
- * X, Y, Z are examined block coordinates.
+    move DIRECTION
+        DIRECTION is movement direction. Possible directions:
+        0, 1, 2, 3, 4, 5:
+        up (default), down, north, south, east, west.
 
- kindtostring CODE (== k2str)
- Shows which kind of block is represented by CODE.
+    time
+        Shows current time.
 
- subtostring CODE (== s2str)
- Shows which substance is represented by CODE.
+    version
+        Shows freg version, compile time, build type,
+        Qt versions and compiler.
 
- stringtokind STRING (== str2k)
- Shows which code corresponds to STRING.
+    See also:
+        "help screen_commands" for screen-related commands.
 
- stringtosub STRING (== str2s)
- Shows which code corresponds to STRING.
 
- time [!]
- Shows current time.
+
+--------------------------------------------------------------

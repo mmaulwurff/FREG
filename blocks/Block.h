@@ -32,7 +32,7 @@ const QString SOUND_STRINGS[] = {
 const QString DING = SOUND_STRINGS[0];
 const QString OUCH = SOUND_STRINGS[1];
 
-enum WEARABLE {
+enum wearable {
     WEARABLE_NOWHERE,
     WEARABLE_HEAD,
     WEARABLE_ARM,
@@ -40,16 +40,42 @@ enum WEARABLE {
     WEARABLE_LEGS
 }; // enum WEARABLE
 
+enum damage_kinds {
+    // Put new damage kinds before DAMAGE_PUSH_UP.
+    DAMAGE_MINE,    ///<  0
+    DAMAGE_DIG,     ///<  1
+    DAMAGE_CUT,     ///<  2
+    DAMAGE_THRUST,  ///<  3
+    DAMAGE_CRUSH,   ///<  4
+    DAMAGE_HEAT,    ///<  5
+    DAMAGE_FREEZE,  ///<  6
+    DAMAGE_ELECTRO, ///<  7
+    DAMAGE_HUNGER,  ///<  8
+    DAMAGE_BREATH,  ///<  9
+    DAMAGE_BITE,    ///< 10
+    DAMAGE_TIME,    ///< 11
+    DAMAGE_NO,      ///< 12
+    DAMAGE_HANDS,   ///< 13
+    DAMAGE_ACID,    ///< 14
+    DAMAGE_RADIATION,
+    DAMAGE_PUSH_UP,
+    DAMAGE_PUSH_DOWN,
+    DAMAGE_PUSH_NORTH,
+    DAMAGE_PUSH_SOUTH,
+    DAMAGE_PUSH_EAST,
+    DAMAGE_PUSH_WEST
+}; // enum damage_kinds
+
 // weights in measures - mz (mezuro)
     const int WEIGHT_NULLSTONE = 1000;
-    const int WEIGHT_SAND = 100;
-    const int WEIGHT_WATER = 50;
-    const int WEIGHT_GLASS = 150;
-    const int WEIGHT_IRON = 300;
-    const int WEIGHT_GREENERY = 3;
-    const int WEIGHT_MINIMAL = 1;
-    const int WEIGHT_STONE = 200;
-    const int WEIGHT_AIR = 0;
+    const int WEIGHT_WATER     =  500;
+    const int WEIGHT_IRON      =  300;
+    const int WEIGHT_STONE     =  200;
+    const int WEIGHT_GLASS     =  150;
+    const int WEIGHT_SAND      =  100;
+    const int WEIGHT_GREENERY  =    3;
+    const int WEIGHT_MINIMAL   =    1;
+    const int WEIGHT_AIR       =    0;
 
 class Inventory;
 class Active;
@@ -72,7 +98,6 @@ public:
     virtual bool Catchable() const;
     /// Returns true on success.
     virtual bool Inscribe(QString str);
-    virtual void Push(dirs, Block * who);
     virtual void Move(dirs direction);
     virtual void Damage(int dmg, int dmg_kind);
     virtual usage_types Use(Block * who);
@@ -126,8 +151,10 @@ public:
 
 protected:
     virtual void SaveAttributes(QDataStream &) const;
+    /// To convert DAMAGE_PUSH_UP...WEST to corresponding direction.
+    static dirs MakeDirFromDamage(int damage_kind);
 
-    QString * note;
+    QString note;
 
 private:
     int Transparency(int transp, int sub) const;

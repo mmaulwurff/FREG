@@ -95,36 +95,24 @@ char VirtScreen::CharName(const int kind, const int sub) const {
     case TEXT:   return '?';
     case PREDATOR: return '!';
     case WORKBENCH: return '*';
+    case CONVERTER: return 'V';
     case CONTAINER: return '&';
     case TELEGRAPH: return 't';
     case DOOR:        return ( STONE == sub ) ? '#' : '\'';
     case LOCKED_DOOR: return ( STONE == sub ) ? '#' : '`';
     case ILLUMINATOR: return 'i';
     case WEAPON: switch ( sub ) {
-        default: fprintf(stderr, "Screen::CharName: weapon sub ?: %d\n", sub);
-        // no break;
-        case SKY:   return ' ';
+        default:    return '/';
         case STONE: return '.';
-        case IRON:
-        case BONE:
-        case WOOD:  return '/';
+        case SKY:   return ' ';
     } break;
     case FALLING: switch ( sub ) {
         case SAND:  return '.';
         case WATER: return '*';
         case STONE: return ':';
-        default: fprintf(stderr, "Screen::CharName: active sub ?: %d\n", sub);
     } // no break;
     default: switch ( sub ) {
-        default: fprintf(stderr, "%s: sub (?): %d.\n", Q_FUNC_INFO,sub);
-        case NULLSTONE:
-        case IRON:
-        case CLAY:
-        case WOOD:
-        case GOLD:
-        case MOSS_STONE:
-        case SAND:
-        case STONE: return '#';
+        default:    return '#';
         case SOIL:  return '.';
         case WATER: return '~';
         case GREENERY: return '%';

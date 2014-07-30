@@ -21,10 +21,9 @@
 #include "Inventory.h"
 #include "CraftManager.h"
 #include "BlockManager.h"
-#include "World.h"
 
 int  Inventory::Start() const { return 0; }
-int  Inventory::Size() const { return size; }
+int  Inventory::Size()  const { return size; }
 int  Inventory::Number(const int i) const { return inventory[i].size(); }
 bool Inventory::Access() const { return true; }
 QString Inventory::NumStr(const int num) { return QString(" (%1x)").arg(num); }
@@ -125,9 +124,9 @@ bool Inventory::InscribeInv(const int num, const QString str) {
         return false;
     }
     const int sub = inventory[num].top()->Sub();
-    if ( inventory[num].top() == block_manager.NormalBlock(sub) ) {
+    if ( inventory[num].top() == block_manager.Normal(sub) ) {
         for (int i=0; i<number; ++i) {
-            inventory[num].replace(i, block_manager.NormalBlock(sub));
+            inventory[num].replace(i, block_manager.Normal(sub));
         }
     }
     for (int i=0; i<number; ++i) {
@@ -165,17 +164,17 @@ int Inventory::Weight() const {
     for (int i=0; i<Size(); ++i) {
         sum += GetInvWeight(i);
     }
-    return sum;
+    return sum / MAX_STACK_SIZE;
+}
+
+Block * Inventory::ShowBlockInSlot(const int slot, const int index) const {
+    return ( slot >= Size() || index >= Number(slot) ) ?
+        nullptr : inventory[slot].at(index);
 }
 
 Block * Inventory::ShowBlock(const int slot) const {
-    return ( slot > Size() || Number(slot)==0 ) ?
+    return ( slot >= Size() || inventory[slot].isEmpty() ) ?
         nullptr : inventory[slot].top();
-}
-
-Block * Inventory::ShowBlock(const int slot, const int num) const {
-    return ( slot > Size() || num+1 > Number(slot) ) ?
-        nullptr : inventory[slot].at(num);
 }
 
 bool Inventory::IsEmpty() const {
@@ -199,7 +198,7 @@ bool Inventory::MiniCraft(const int num) {
         ReceiveSignal(QObject::tr("Nothing here."));
         return false;
     } // else:
-    const CraftItem * const crafted = world->GetCraftManager()->MiniCraft(
+    const CraftItem * const crafted = craft_manager.MiniCraft(
         Number(num), BlockManager::MakeId(GetInvKind(num), GetInvSub(num)));
     if ( crafted != nullptr ) {
         while ( not inventory[num].isEmpty() ) {
@@ -245,14 +244,15 @@ Inventory::Inventory(QDataStream & str, const int sz) :
         while ( num-- ) {
             int kind, sub;
             inventory[i].push(BlockManager::KindSubFromFile(str, &kind, &sub) ?
-                block_manager.NormalBlock(sub) :
+                block_manager.Normal(sub) :
                 BlockManager::BlockFromFile(str, kind, sub));
         }
     }
 }
 
 Inventory::~Inventory() {
-    for (int i=0; i<Size(); ++i) {
+    const int size = Size();
+    for (int i=0; i<size; ++i) {
         while ( not inventory[i].isEmpty() ) {
             block_manager.DeleteBlock(inventory[i].pop());
         }

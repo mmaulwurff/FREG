@@ -34,12 +34,12 @@ public:
     int  Kind() const override;
     void DoRareAction() override;
     int  ShouldAct() const override;
-    void Push(dirs, Block *) override;
+    void ReceiveSignal(QString) override;
+    void Damage(int dmg, int dmg_kind) override;
+    void SaveAttributes(QDataStream &) const override;
     QString FullName() const override;
     Inventory * HasInventory() override;
-    void ReceiveSignal(QString) override;
     usage_types Use(Block * who) override;
-    void SaveAttributes(QDataStream &) const override;
 
 private:
     bool isOn;

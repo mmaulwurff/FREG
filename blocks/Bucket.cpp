@@ -31,7 +31,7 @@ Bucket::Bucket(QDataStream & str, const int sub, const int id) :
 
 int  Bucket::Kind() const { return BUCKET; }
 int  Bucket::Sub()  const { return Block::Sub(); }
-void Bucket::Damage(int /*dmg*/, int /*dmg_kind*/) { Break(); }
+void Bucket::Damage(int, int) { Break(); }
 void Bucket::ReceiveSignal(const QString str) { Block::ReceiveSignal(str); }
 Inventory * Bucket::HasInventory() { return this; }
 usage_types Bucket::Use(Block *) { return USAGE_TYPE_POUR; }

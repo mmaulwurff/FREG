@@ -29,26 +29,41 @@
 Active * Active::ActiveBlock() { return this; }
 int  Active::ShouldAct() const { return FREQUENT_NEVER; }
 void Active::DoFrequentAction() {}
-void Active::DoRareAction() {}
-INNER_ACTIONS Active::ActInner() { return INNER_ACTION_NONE; }
+inner_actions Active::ActInner() { return INNER_ACTION_ONLY; }
+
+void Active::DoRareAction() {
+    fprintf(stderr, "Active::DoRareAction called, check ShouldAct and ActInner\
+ return values or add DoRareAction implementation.\nKind: %d, sub: %d.\n",
+        Kind(), Sub());
+    Q_UNREACHABLE();
+}
 
 void Active::ActFrequent() {
-    if ( GetDeferredAction() != nullptr ) {
-        GetDeferredAction()->MakeAction();
+    if ( defActionPending ) {
+        defActionPending = false;
+        deferredAction->MakeAction();
+        delete deferredAction;
+    } else {
+        DoFrequentAction();
     }
-    DoFrequentAction();
 }
 
 void Active::ActRare() {
     Inventory * const inv = HasInventory();
     if ( inv != nullptr ) {
-        for (int i=inv->Size()-1; i; --i)
-        for (int j=0; j<inv->Number(i); ++j) {
-            Active * const active = inv->ShowBlock(i, j)->ActiveBlock();
-            if (active!=nullptr && active->ActInner()==INNER_ACTION_MESSAGE) {
-                ReceiveSignal(tr("Item in slot '%1' changed.").
-                    arg(char('a'+i)));
-                ReceiveSignal(inv->ShowBlock(i, j)->GetNote());
+        for (int i=inv->Size()-1; i; --i) {
+            const int number = inv->Number(i);
+            if ( number == 0 ) continue;
+            Active * const top_active = inv->ShowBlock(i)->ActiveBlock();
+            if ( top_active == nullptr ) continue;
+            for (int j=0; j<number; ++j) {
+                Active * const active = inv->ShowBlockInSlot(i, j)->
+                    ActiveBlock();
+                if ( active->ActInner() == INNER_ACTION_MESSAGE ) {
+                    ReceiveSignal(tr("Item in slot '%1' changed.").
+                        arg(char('a'+i)));
+                    ReceiveSignal(inv->ShowBlockInSlot(i, j)->GetNote());
+                }
             }
         }
     }
@@ -56,11 +71,12 @@ void Active::ActRare() {
 }
 
 void Active::SetDeferredAction(DeferredAction * const action) {
-    delete deferredAction;
+    if ( defActionPending ) {
+        delete deferredAction;
+    }
     deferredAction = action;
+    defActionPending = true;
 }
-
-DeferredAction * Active::GetDeferredAction() const { return deferredAction; }
 
 void Active::Unregister() {
     if ( shred != nullptr ) {
@@ -92,7 +108,7 @@ void Active::Move(const dirs dir) {
 
 void Active::SendSignalAround(const QString signal) const {
     World * const world = GetWorld();
-    static const int bound = world->GetBound();
+    const int bound = world->GetBound();
     if ( X() > 0 )     world->GetBlock(X()-1, Y(), Z())->ReceiveSignal(signal);
     if ( X() < bound ) world->GetBlock(X()+1, Y(), Z())->ReceiveSignal(signal);
     if ( Y() > 0 )     world->GetBlock(X(), Y()-1, Z())->ReceiveSignal(signal);
@@ -102,7 +118,7 @@ void Active::SendSignalAround(const QString signal) const {
 }
 
 void Active::DamageAround() const {
-    static const int bound = GetWorld()->GetBound();
+    const int bound = GetWorld()->GetBound();
     int x_temp = X()-1;
     int y_temp = Y();
     int z_temp = Z();
@@ -131,10 +147,10 @@ void Active::Damage(const int dmg, const int dmg_kind) {
     if ( last_dur != GetDurability() ) {
         ReceiveSignal(OUCH);
         switch ( dmg_kind ) {
-        case HUNGER:      ReceiveSignal(tr("You weaken from hunger!")); break;
-        case HEAT:        ReceiveSignal(tr("You burn!"));               break;
-        case BREATH:      ReceiveSignal(tr("You choke withot air!"));   break;
-        default:          ReceiveSignal(tr("Received damage!"));
+        case DAMAGE_HUNGER: ReceiveSignal(tr("You weaken from hunger!"));break;
+        case DAMAGE_HEAT:   ReceiveSignal(tr("You burn!"));              break;
+        case DAMAGE_BREATH: ReceiveSignal(tr("You choke withot air!"));  break;
+        default:            ReceiveSignal(tr("Received damage!"));
         }
         emit Updated();
     }
@@ -164,13 +180,16 @@ Active::Active(QDataStream & str, const int sub, const int id,
         Xyz()
 {}
 
-Active::~Active() { delete deferredAction; }
+Active::~Active() {
+    Farewell();
+    Unregister();
+}
 
 bool Active::Gravitate(const int range, int bottom, int top,
         const int calmness)
 {
-    static World * const world = GetWorld();
-    static const int bound = world->GetBound();
+    World * const world = GetWorld();
+    const int bound = world->GetBound();
     // analyse world around
     int for_north = 0, for_west = 0;
     const int y_start = qMax(Y()-range, 0);
@@ -209,7 +228,7 @@ int Active::Attractive(int) const { return 0; }
 
 bool Active::IsSubAround(const int sub) const {
     const World * const world = GetWorld();
-    static const int bound = world->GetBound();
+    const int bound = world->GetBound();
     return (sub == world->GetBlock(X(), Y(), Z()-1)->Sub() ||
             sub == world->GetBlock(X(), Y(), Z()+1)->Sub() ||
             (X() > 0     && sub == world->GetBlock(X()-1, Y(), Z())->Sub()) ||
@@ -228,9 +247,14 @@ Falling::Falling(const int sub, const int id, const int transp) :
 Falling::Falling(QDataStream & str, const int sub, const int id,
         const int transp)
     :
-        Active(str, sub, id, transp)
+        Active(str, sub, id, transp),
+        fallHeight()
 {
-    str >> fallHeight;
+    str >> fallHeight >> falling;
+}
+
+void Falling::SaveAttributes(QDataStream & out) const {
+    out << fallHeight << falling;
 }
 
 QString Falling::FullName() const {
@@ -246,16 +270,15 @@ QString Falling::FullName() const {
 }
 
 int  Falling::Kind() const { return FALLING; }
-void Falling::SaveAttributes(QDataStream & out) const { out << fallHeight; }
 bool Falling::IsFalling() const { return falling; }
 Falling * Falling::ShouldFall() { return this; }
 push_reaction Falling::PushResult(dirs) const { return MOVABLE; }
 
 void Falling::FallDamage() {
-    static const int SAFE_FALL_HEIGHT = 5;
+    const int SAFE_FALL_HEIGHT = 5;
     if ( fallHeight > SAFE_FALL_HEIGHT ) {
         const int dmg = (fallHeight - SAFE_FALL_HEIGHT)*10;
-        static World * const world = GetWorld();
+        World * const world = GetWorld();
         Block * const block_under = world->GetBlock(X(), Y(), Z()-1);
         world->Damage(X(), Y(), Z()-1, dmg, DamageKind());
         if ( block_under->GetDurability() <= 0 ) {

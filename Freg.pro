@@ -20,7 +20,7 @@ VERSTR = '\\"$${VERSION}\\"'
 DEFINES += VER=\"$${VERSTR}\"
 TEMPLATE = app
 
-QMAKE_CXXFLAGS += -Wall -Wextra -Werror -std=c++11 -pedantic
+QMAKE_CXXFLAGS += -Wall -Wextra -Werror -std=c++11 -pedantic -Weffc++
 QMAKE_CXXFLAGS += -Wold-style-cast -Wfloat-equal -Woverloaded-virtual -Wundef
 
 #QMAKE_CXXFLAGS_DEBUG += -fno-inline
@@ -88,7 +88,7 @@ HEADERS += \
     blocks/Bucket.h \
     blocks/Illuminator.h \
     blocks/Weapons.h \
-    blocks/Container.h \
+    blocks/Containers.h \
     blocks/RainMachine.h \
     screens/IThread.h
 SOURCES += \
@@ -113,7 +113,7 @@ SOURCES += \
     blocks/Illuminator.cpp \
     blocks/Inventory.cpp \
     blocks/Bucket.cpp \
-    blocks/Container.cpp \
+    blocks/Containers.cpp \
     blocks/Block.cpp \
     blocks/RainMachine.cpp \
     screens/IThread.cpp

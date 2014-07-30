@@ -25,12 +25,12 @@
 #include "blocks/Bucket.h"
 #include "blocks/Weapons.h"
 #include "blocks/Illuminator.h"
-#include "blocks/Container.h"
+#include "blocks/Containers.h"
 #include "blocks/RainMachine.h"
 
 #define sizeof_array(ARRAY) (sizeof(ARRAY)/sizeof(ARRAY[0]))
 
-const QString BlockManager::kinds[] = { // do not usp space, use '_'
+const QByteArray BlockManager::kinds[] = { // do not usp space, use '_'
     "block",
     "bell",
     "container",
@@ -60,9 +60,10 @@ const QString BlockManager::kinds[] = { // do not usp space, use '_'
     "hammer",
     "illuminator",
     "rain_machine",
+    "converter",
 };
 
-const QString BlockManager::subs[] = { // do not usp space, use '_'
+const QByteArray BlockManager::subs[] = { // do not usp space, use '_'
     "stone",
     "moss stone",
     "nullstone",
@@ -116,7 +117,7 @@ BlockManager::~BlockManager() {
     }
 }
 
-Block * BlockManager::NormalBlock(const int sub) const { return normals[sub]; }
+Block * BlockManager::Normal(const int sub) const { return normals[sub]; }
 
 Block * BlockManager::NewBlock(const int kind, const int sub) {
     const int id = MakeId(kind, sub);
@@ -127,6 +128,7 @@ Block * BlockManager::NewBlock(const int kind, const int sub) {
     case GRASS:  return new Grass (sub, id);
     case FALLING: return new Falling(sub, id);
     case CONTAINER: return new Container(sub, id);
+    case CONVERTER: return new Converter(sub, id);
     case PLATE:  return new Plate (sub, id);
     case LADDER: return new Ladder(sub, id);
     case WEAPON: return new Weapon(sub, id);
@@ -170,6 +172,7 @@ Block * BlockManager::BlockFromFile(QDataStream & str,
     case LIQUID: return new Liquid(str, sub, id);
     case GRASS:  return new Grass (str, sub, id);
     case CONTAINER: return new Container(str, sub, id);
+    case CONVERTER: return new Converter(str, sub, id);
     case FALLING: return new Falling(str, sub, id);
     case PLATE:  return new Plate (str, sub, id);
     case LADDER: return new Ladder(str, sub, id);
@@ -218,12 +221,7 @@ bool BlockManager::KindSubFromFile(QDataStream & str, int * kind, int * sub) {
 }
 
 void BlockManager::DeleteBlock(Block * const block) const {
-    if ( block != NormalBlock(block->Sub()) ) {
-        Active * const active = block->ActiveBlock();
-        if ( active != nullptr ) {
-            active->Farewell();
-            active->Unregister();
-        }
+    if ( block != Normal(block->Sub()) ) {
         delete block;
     }
 }
@@ -244,17 +242,13 @@ int BlockManager::StringToSub(const QString str) {
 }
 
 Block * BlockManager::ReplaceWithNormal(Block * const block) const {
-    Block * const normal = NormalBlock(block->Sub());
+    Block * const normal = Normal(block->Sub());
     if ( block!=normal && *block==*normal ) {
         delete block;
         return normal;
     } else {
         return block;
     }
-}
-
-int BlockManager::MakeId(const int kind, const int sub) {
-    return (kind << 8) | sub;
 }
 
 int BlockManager::KindFromId(const int id) { return (id >> 8); }

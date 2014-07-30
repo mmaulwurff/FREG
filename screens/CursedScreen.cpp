@@ -20,7 +20,6 @@
 /**\file CursedScreen.cpp
  * \brief This file is related to curses screen for freg. */
 
-#include <QSettings>
 #include <QDir>
 #include <QLocale>
 #include <QMutexLocker>
@@ -76,6 +75,7 @@ void Screen::RePrint() {
     mvwaddstr(actionWin, 3, 0, qPrintable(tr("iNscribe")));
     mvwaddstr(actionWin, 4, 0, qPrintable(tr("Build")));
     mvwaddstr(actionWin, 5, 0, qPrintable(tr("Craft")));
+    mvwaddstr(actionWin, 6, 0, qPrintable(tr("Wield/take oFF")));
     refresh();
     wrefresh(actionWin);
     updated = false;
@@ -94,7 +94,7 @@ void Screen::UpdateAll() {
 void Screen::PassString(QString & str) const {
     inputActive = true;
     wstandend(notifyWin);
-    waddstr(notifyWin, "\n:");
+    waddch(notifyWin, ':');
     char temp_str[MAX_NOTE_LENGTH + 1];
     echo();
     wgetnstr(notifyWin, temp_str, MAX_NOTE_LENGTH);
@@ -146,24 +146,24 @@ int Screen::Color(const int kind, const int sub) const {
         case GREENERY:   return COLOR_PAIR(BLACK_GREEN);
         case WOOD:
         case HAZELNUT:
-        case SOIL:       return COLOR_PAIR(BLACK_YELLOW);
-        case SAND:       return COLOR_PAIR(YELLOW_WHITE);
-        case COAL:       return COLOR_PAIR(BLACK_WHITE);
-        case IRON:       return COLOR_PAIR(BLACK_BLACK) | A_BOLD;
-        case A_MEAT:     return COLOR_PAIR(WHITE_RED);
-        case H_MEAT:     return COLOR_PAIR(BLACK_RED);
-        case WATER:      return COLOR_PAIR(WHITE_CYAN);
-        case GLASS:      return COLOR_PAIR(BLUE_WHITE);
+        case SOIL:       return COLOR_PAIR(  BLACK_YELLOW);
+        case SAND:       return COLOR_PAIR(  WHITE_YELLOW);
+        case COAL:       return COLOR_PAIR(  BLACK_WHITE);
+        case IRON:       return COLOR_PAIR(  BLACK_BLACK) | A_BOLD;
+        case A_MEAT:     return COLOR_PAIR(  WHITE_RED);
+        case H_MEAT:     return COLOR_PAIR(  BLACK_RED);
+        case WATER:      return COLOR_PAIR(  WHITE_CYAN);
+        case GLASS:      return COLOR_PAIR(   BLUE_WHITE);
         case NULLSTONE:  return COLOR_PAIR(MAGENTA_BLACK) | A_BOLD;
-        case MOSS_STONE: return COLOR_PAIR(GREEN_WHITE);
-        case ROSE:       return COLOR_PAIR(RED_GREEN);
-        case CLAY:       return COLOR_PAIR(WHITE_RED);
+        case MOSS_STONE: return COLOR_PAIR(  GREEN_WHITE);
+        case ROSE:       return COLOR_PAIR(    RED_GREEN);
+        case CLAY:       return COLOR_PAIR(  WHITE_RED);
         case PAPER:      return COLOR_PAIR(MAGENTA_WHITE);
-        case GOLD:       return COLOR_PAIR(WHITE_YELLOW);
+        case GOLD:       return COLOR_PAIR(  WHITE_YELLOW);
         case BONE:       return COLOR_PAIR(MAGENTA_WHITE);
-        case FIRE:       return COLOR_PAIR(RED_YELLOW) | A_BLINK;
-        case EXPLOSIVE:  return COLOR_PAIR(WHITE_RED);
-        case SUN_MOON:   return COLOR_PAIR(( TIME_NIGHT == w->PartOfDay() ) ?
+        case FIRE:       return COLOR_PAIR(    RED_YELLOW) | A_BLINK;
+        case EXPLOSIVE:  return COLOR_PAIR(  WHITE_RED);
+        case SUN_MOON:   return COLOR_PAIR((TIME_NIGHT == w->PartOfDay() ) ?
             WHITE_WHITE : YELLOW_YELLOW);
         case SKY:
         case STAR:
@@ -171,29 +171,42 @@ int Screen::Color(const int kind, const int sub) const {
             switch ( w->PartOfDay() ) {
             case TIME_NIGHT:   return COLOR_PAIR(WHITE_BLACK) | A_BOLD;
             case TIME_MORNING: return COLOR_PAIR(WHITE_BLUE);
-            case TIME_NOON:    return COLOR_PAIR(CYAN_CYAN);
+            case TIME_NOON:    return COLOR_PAIR( CYAN_CYAN);
             case TIME_EVENING: return COLOR_PAIR(WHITE_CYAN);
             }
         case SUB_DUST: return COLOR_PAIR(BLACK_BLACK) | A_BOLD | A_REVERSE;
         }
-    case DWARF:     return COLOR_PAIR(WHITE_BLUE);
-    case RABBIT:    return COLOR_PAIR(RED_WHITE);
-    case PREDATOR:  return COLOR_PAIR(RED_BLACK);
-    case TELEGRAPH: return COLOR_PAIR(CYAN_BLACK);
+    case DWARF: return COLOR_PAIR((sub==ADAMANTINE) ? CYAN_BLACK : WHITE_BLUE);
+    case RABBIT:    return COLOR_PAIR(  RED_WHITE);
+    case PREDATOR:  return COLOR_PAIR(  RED_BLACK);
+    case TELEGRAPH: return COLOR_PAIR( CYAN_BLACK);
     }
 } // color_pairs Screen::Color(int kind, int sub)
 
-color_pairs Screen::ColorShred(const int type) {
+int Screen::ColorShred(const shred_type type) const {
     switch ( type ) { // foreground_background
-    case 'c':
-    case '^': return BLACK_WHITE;
-    case '.': return BLACK_GREEN;
-    case '~': return CYAN_BLUE;
-    case '#': return MAGENTA_BLACK;
-    case '%': return YELLOW_GREEN;
-    case '+': return WHITE_GREEN;
-    default:  return WHITE_BLACK;
+    case SHRED_NORMAL_UNDERGROUND:
+    case SHRED_TESTSHRED:
+    case SHRED_EMPTY:
+    case SHRED_CHAOS:       return COLOR_PAIR( WHITE_BLACK);
+    case SHRED_DEAD_FOREST: return COLOR_PAIR(YELLOW_BLACK);
+    case SHRED_DEAD_HILL:   return COLOR_PAIR( BLACK_WHITE) | A_BOLD;
+    case SHRED_PYRAMID:
+    case SHRED_WASTE:
+    case SHRED_CASTLE:
+    case SHRED_MOUNTAIN:  return Color(BLOCK,  STONE);
+    case SHRED_PLAIN:     return Color(BLOCK,  GREENERY);
+    case SHRED_DESERT:    return Color(BLOCK,  SAND);
+    case SHRED_WATER:     return Color(LIQUID, WATER);
+    case SHRED_LAVA_LAKE: return Color(LIQUID, STONE);
+    case SHRED_ACID_LAKE: return Color(LIQUID, ACID);
+    case SHRED_CRATER:    return COLOR_PAIR( WHITE_WHITE) | A_BOLD;
+    case SHRED_FOREST:    return COLOR_PAIR(YELLOW_GREEN);
+    case SHRED_HILL:      return COLOR_PAIR( WHITE_GREEN);
+    case SHRED_NULLMOUNTAIN: return Color(BLOCK, NULLSTONE);
     }
+    Q_UNREACHABLE();
+    return COLOR_PAIR(WHITE_BLACK);
 }
 
 void Screen::MovePlayer(const dirs dir) {
@@ -255,6 +268,7 @@ void Screen::ControlPlayer(const int ch) {
     case KEY_DC: // delete
     case KEY_BACKSPACE: player->Damage(); break;
     case 13:
+    case 'E':
     case '\n': player->Use();      break;
     case  '?': player->Examine();  break;
     case  '~': player->Inscribe(); break;
@@ -269,8 +283,7 @@ void Screen::ControlPlayer(const int ch) {
     case 'G':
     case 'O': SetActionMode(ACTION_OBTAIN);   break;
     case 'F':
-    case 'W':
-    case 'E':
+    case 'W': SetActionMode(ACTION_WIELD);    break;
     case 'U': SetActionMode(ACTION_USE);      break;
     case 'S':
         if ( player->PlayerInventory() ) {
@@ -295,7 +308,7 @@ void Screen::ControlPlayer(const int ch) {
     updated = false;
 } // void Screen::ControlPlayer(int ch)
 
-void Screen::ProcessCommand(QString command) {
+void Screen::ProcessCommand(const QString command) {
     if ( command.length()==1 && "."!=command ) {
         ControlPlayer(command.at(0).toLatin1());
     } else if ( "warranty" == command ) {
@@ -330,6 +343,7 @@ void Screen::InventoryAction(const int num) const {
     case ACTION_INSCRIBE: player->Inscribe(num); break;
     case ACTION_BUILD:    player->Build   (num); break;
     case ACTION_CRAFT:    player->Craft   (num); break;
+    case ACTION_WIELD:    player->Wield   (num); break;
     }
 }
 
@@ -478,7 +492,7 @@ void Screen::PrintQuickInventory() {
 }
 
 void Screen::PrintMiniMap() {
-    wmove(miniMapWin, 1, 0);
+    (void)wmove(miniMapWin, 1, 0);
     const int x_center = Shred::CoordOfShred(player->X());
     const int y_center = Shred::CoordOfShred(player->Y());
     const int j_start = qMax(x_center-2, 0);
@@ -489,10 +503,10 @@ void Screen::PrintMiniMap() {
         Shred * const shred = w->GetShredByPos(j, i);
         if ( shred == nullptr ) {
             wstandend(miniMapWin);
-            waddstr(miniMapWin, "  ");
+            waddstr  (miniMapWin, "  ");
         } else {
-            wcolor_set(miniMapWin,ColorShred(shred->GetTypeOfShred()),nullptr);
-            wprintw(miniMapWin, " %c", shred->GetTypeOfShred());
+            wattrset(miniMapWin, ColorShred(shred->GetTypeOfShred()));
+            wprintw (miniMapWin, " %c", shred->GetTypeOfShred());
         }
     }
     wstandend(miniMapWin);
@@ -653,13 +667,13 @@ void Screen::PrintFront(WINDOW * const window, const dirs dir) const {
     }
     PrintTitle(window, dir);
     if ( shiftFocus ) {
-        HorizontalArrows(window, arrow_Y-shiftFocus, WHITE_BLUE);
+        HorizontalArrows(window, arrow_Y-shiftFocus, WHITE_BLUE, false);
         for (int q=arrow_Y-shiftFocus; q<SCREEN_SIZE+1 && q>0; q-=shiftFocus) {
             mvwaddch(window, q, 0, '|');
             mvwaddch(window, q, SCREEN_SIZE*2+1, '|');
         }
     }
-    Arrows(window, arrow_X, arrow_Y);
+    Arrows(window, arrow_X, arrow_Y, false);
     wrefresh(window);
 } // void Screen::PrintFront(WINDOW * window)
 
@@ -722,7 +736,7 @@ void Screen::PrintInv(WINDOW * const window, const Inventory & inv) const {
     if ( start != 0 ) {
         mvwhline(window, 2+start, 1, ACS_HLINE, SCREEN_SIZE*2);
     }
-    mvwprintw(window, 0, 1, "[%c]%s", CharName( inv.Kind(), inv.Sub()),
+    mvwprintw(window, 0, 1, "[%c] %s", CharName( inv.Kind(), inv.Sub()),
         qPrintable((player->PlayerInventory()==&inv) ?
             tr("Your inventory") : inv.FullName()) );
     wrefresh(window);
@@ -776,14 +790,13 @@ void Screen::Notify(const QString str) const {
     static int notification_repeat_count = 1;
     if ( str == lastNotification ) {
         ++notification_repeat_count;
-        const int y = getcury(notifyWin);
-        mvwprintw(notifyWin, y-1, 0, "\n%s (%dx)",
+        mvwprintw(notifyWin, getcury(notifyWin)-1, 0, "%s (%dx)",
             qPrintable(str), notification_repeat_count);
     } else {
         notification_repeat_count = 1;
-        waddch(notifyWin, '\n');
         waddstr(notifyWin, qPrintable(lastNotification = str));
     }
+    waddch(notifyWin, '\n');
     wrefresh(notifyWin);
 }
 
@@ -812,10 +825,14 @@ Screen::Screen(
         VirtScreen(wor, pl),
         lastNotification(),
         input(new IThread(this)),
+        updated(),
         notifyLog(fopen("texts/messages.txt", "at")),
         actionMode(ACTION_USE),
+        settings("/freg.ini", QSettings::IniFormat),
+        shiftFocus(settings.value("focus_shift", 0).toInt()),
+        previousCommand(settings.value("last_command", "hello").toString()),
         fileToShow(nullptr),
-        beepOn(false),
+        beepOn(settings.value("beep_on", false).toBool()),
         ascii(_ascii),
         screen(newterm(nullptr, stdout, stdin))
 {
@@ -870,12 +887,7 @@ Screen::Screen(
     }
     scrollok(notifyWin, TRUE);
 
-    QSettings sett(QDir::currentPath()+"/freg.ini", QSettings::IniFormat);
-    sett.beginGroup("screen_curses");
-    shiftFocus = sett.value("focus_shift", 0).toInt();
-    previousCommand = sett.value("last_command", "hello").toString();
-    beepOn     = sett.value("beep_on", false).toBool();
-    sett.setValue("beep_on", beepOn);
+    settings.setValue("beep_on", beepOn);
 
     if ( not PrintFile(stdscr, "texts/splash.txt") ) {
         addstr("Free-Roaming Elementary Game\nby mmaulwurff\n");
@@ -885,7 +897,7 @@ Screen::Screen(
     CleanFileToShow();
     RePrint();
     SetActionMode(static_cast<actions>
-        (sett.value("action_mode", ACTION_USE).toInt()));
+        (settings.value("action_mode", ACTION_USE).toInt()));
     Print();
     Notify(tr("*--- Game started. Press 'H' for help. ---*"));
     if ( COLS < preferred_width ) {
@@ -916,11 +928,9 @@ Screen::~Screen() {
         fclose(notifyLog);
     }
     delete fileToShow;
-    QSettings sett(QDir::currentPath()+"/freg.ini", QSettings::IniFormat);
-    sett.beginGroup("screen_curses");
-    sett.setValue("focus_shift", shiftFocus);
-    sett.setValue("action_mode", actionMode);
-    sett.setValue("last_command", previousCommand);
+    settings.setValue("focus_shift", shiftFocus);
+    settings.setValue("action_mode", actionMode);
+    settings.setValue("last_command", previousCommand);
 }
 
 bool Screen::IsScreenWide() { return COLS >= (SCREEN_SIZE*2+2)*2; }

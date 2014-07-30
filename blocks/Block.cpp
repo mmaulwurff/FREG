@@ -21,6 +21,11 @@
 #include "BlockManager.h"
 #include "Inventory.h"
 
+dirs Block::MakeDirFromDamage(const int dmg_kind) {
+    Q_ASSERT(dmg_kind >= DAMAGE_PUSH_UP);
+    return static_cast<dirs>(dmg_kind - DAMAGE_PUSH_UP);
+}
+
 QString Block::FullName() const {
     switch ( Sub() ) {
     case STAR:
@@ -66,7 +71,10 @@ int Block::Transparency(const int transp, const int sub) const {
     }
 }
 
-void Block::Damage(const int dmg, const int dmg_kind) {
+void Block::Damage(const int dmg, int dmg_kind) {
+    if ( dmg_kind > DAMAGE_PUSH_UP ) {
+         dmg_kind = DAMAGE_PUSH_UP;
+    }
     switch ( Sub() ) {
     case SUB_DUST:
     case GREENERY:
@@ -79,12 +87,14 @@ void Block::Damage(const int dmg, const int dmg_kind) {
     case SUN_MOON: return;
     }
     switch ( dmg_kind ) {
-    case NO_HARM: return;
-    case TIME: durability -= dmg; return;
+    case DAMAGE_NO: return;
+    case DAMAGE_TIME: durability -= dmg; return;
     case DAMAGE_ACID:
         switch ( Sub() ) {
         default: durability -= 2 * dmg; return;
         case DIFFERENT: durability = 0; return;
+        case ACID:
+        case ADAMANTINE:
         case IRON:
         case GLASS: return;
         }
@@ -94,23 +104,35 @@ void Block::Damage(const int dmg, const int dmg_kind) {
     case DIFFERENT: return;
     case MOSS_STONE:
     case STONE: switch ( dmg_kind ) {
-        case HEAT:
+        case DAMAGE_HEAT:
         case DAMAGE_HANDS:
-        case CUT:   return;
-        case MINE:  mult = 2; break;
+        case DAMAGE_PUSH_UP:
+        case DAMAGE_CUT: return;
+        case DAMAGE_MINE: mult = 2; break;
         } break;
     case WOOD: switch ( dmg_kind ) {
-        case CUT: mult = 2; break;
+        case DAMAGE_CUT: mult = 2; break;
+        case DAMAGE_PUSH_UP:
         case DAMAGE_HANDS: return;
         } break;
     case A_MEAT:
-    case H_MEAT:    mult += (THRUST==dmg_kind || HEAT==dmg_kind); break;
+    case H_MEAT:
+        mult += (DAMAGE_THRUST==dmg_kind || DAMAGE_HEAT==dmg_kind);
+        break;
     case SAND:
-    case SOIL:      mult += ( DIG    == dmg_kind ); break;
-    case FIRE:      mult  = ( FREEZE == dmg_kind ); break;
-    case WATER:     mult  = ( HEAT   == dmg_kind ); break;
-    case GLASS:     mult  = ( HEAT   != dmg_kind ); break;
-    case IRON:      mult  = ( DAMAGE_HANDS != dmg_kind ); break;
+    case SOIL:      mult += ( DAMAGE_DIG    == dmg_kind ); break;
+    case ADAMANTINE:
+    case FIRE:      mult  = ( DAMAGE_FREEZE == dmg_kind ); break;
+    case WATER:     mult  = ( DAMAGE_HEAT   == dmg_kind ); break;
+    case GLASS: switch ( dmg_kind ) {
+        case DAMAGE_PUSH_UP: durability -= dmg*((MAX_DURABILITY+9)/10); return;
+        default:             durability  = 0; // no break;
+        case DAMAGE_HEAT: return;
+        }
+    case IRON: switch ( dmg_kind ) {
+        case DAMAGE_HANDS:
+        case DAMAGE_PUSH_UP: return;
+        }
     }
     durability -= mult*dmg;
 }
@@ -119,7 +141,7 @@ Block * Block::DropAfterDamage(bool * const delete_block) {
     switch ( Sub() ) {
     case SUB_DUST:
     case GLASS:
-    case AIR: return block_manager.NormalBlock(AIR);
+    case AIR: return block_manager.Normal(AIR);
     case STONE: if ( BLOCK==Kind() ) {
         return BlockManager::NewBlock(LADDER, STONE);
     } // no break;
@@ -139,25 +161,17 @@ push_reaction Block::PushResult(dirs) const {
 int  Block::Kind() const { return BLOCK; }
 int  Block::GetId() const { return id; }
 bool Block::Catchable() const { return false; }
-void Block::Push(dirs, Block *) {}
 void Block::Move(dirs) {}
-usage_types Block::Use(Block *) { return USAGE_TYPE_NO; }
 int  Block::Wearable() const { return WEARABLE_NOWHERE; }
-int  Block::DamageKind() const { return CRUSH; }
+int  Block::DamageKind() const { return DAMAGE_CRUSH; }
 int  Block::DamageLevel() const { return 1; }
 int  Block::LightRadius() const { return 0; }
 void Block::ReceiveSignal(QString) {}
+usage_types Block::Use(Block *) { return USAGE_TYPE_NO; }
 
-bool Block::Inscribe(QString str) {
-    if ( note ) {
-        *note = str.left(MAX_NOTE_LENGTH);
-    } else {
-        note = new QString(str.left(MAX_NOTE_LENGTH));
-    }
-    if ( "" == *note ) {
-        delete note;
-        note = nullptr;
-    }
+bool Block::Inscribe(const QString str) {
+    if ( Sub() == AIR ) return false;
+    note = str.left(MAX_NOTE_LENGTH);
     return true;
 }
 
@@ -170,7 +184,7 @@ void Block::Restore() { durability = MAX_DURABILITY; }
 void Block::Break()   { durability = 0; }
 dirs Block::GetDir() const { return static_cast<dirs>(direction); }
 int  Block::GetDurability() const { return durability; }
-QString Block::GetNote() const { return note ? *note : ""; }
+QString Block::GetNote() const { return note; }
 
 void Block::Mend() {
     if ( GetDurability() < MAX_DURABILITY ) {
@@ -215,25 +229,24 @@ void Block::SetDir(const int dir) {
 bool Block::operator!=(const Block & block) const { return !(*this == block); }
 
 bool Block::operator==(const Block & block) const {
-    return ( block.GetId()==GetId() &&
-        block.GetDurability()==GetDurability() &&
-        block.GetDir()==GetDir() &&
-        ( (!note && !block.note) ||
-            (note && block.note && *block.note==*note) ) );
+    return ( block.GetId() == GetId()
+        && block.GetDurability() == GetDurability()
+        && block.GetDir() == GetDir()
+        && block.note==note );
 }
 
 void Block::SaveAttributes(QDataStream &) const {}
 
 void Block::SaveToFile(QDataStream & out) {
-    if ( this == block_manager.NormalBlock(sub) ) {
+    if ( this == block_manager.Normal(sub) ) {
         SaveNormalToFile(out);
     } else {
         out << sub << quint8(BlockManager::KindFromId(id)) <<
             ( ( ( ( durability
             <<= 3 ) |= direction )
-            <<= 1 ) |= bool(note) );
-        if ( Q_UNLIKELY(note) ) {
-            out << *note;
+            <<= 1 ) |= bool(not note.isEmpty()) );
+        if ( Q_UNLIKELY(not note.isEmpty()) ) {
+            out << note;
         }
         SaveAttributes(out);
     }
@@ -246,7 +259,7 @@ void Block::SaveNormalToFile(QDataStream & out) const {
 void Block::RestoreDurabilityAfterSave() { durability >>= 4; }
 
 Block::Block(const int subst, const int i, const int transp) :
-        note(nullptr),
+        note(),
         durability(MAX_DURABILITY),
         transparent(Transparency(transp, subst)),
         sub(subst),
@@ -256,19 +269,20 @@ Block::Block(const int subst, const int i, const int transp) :
 
 Block::Block(QDataStream & str, const int subst, const int i, const int transp)
     :
+        note(),
+        durability(),
         transparent(Transparency(transp, subst)),
         sub(subst),
-        id(i)
+        id(i),
+        direction()
 {
     // use durability as buffer, set actual value in the end:
     str >> durability;
     if ( Q_UNLIKELY(durability & 1) ) {
-        str >> *(note = new QString);
-    } else {
-        note = nullptr;
+        str >> note;
     }
     direction = ( durability >>= 1 ) & 0x7;
     durability >>= 3;
 }
 
-Block::~Block() { delete note; }
+Block::~Block() {}

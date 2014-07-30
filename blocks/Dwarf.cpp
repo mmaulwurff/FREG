@@ -19,12 +19,13 @@
 
 #include "Dwarf.h"
 #include "World.h"
+#include "Shred.h"
 #include "BlockManager.h"
 #include <QDataStream>
 
 int Dwarf::Weight() const {
     World * const world = GetWorld();
-    static const int bound = world->NumShreds() * SHRED_WIDTH - 1;
+    const int bound = world->GetBound();
     return ( (X() < bound && world->GetBlock(X()+1, Y(), Z())->Catchable()) ||
             ( X() > 0     && world->GetBlock(X()-1, Y(), Z())->Catchable()) ||
             ( Y() < bound && world->GetBlock(X(), Y()+1, Z())->Catchable()) ||
@@ -33,7 +34,7 @@ int Dwarf::Weight() const {
 }
 
 Block * Dwarf::DropAfterDamage(bool * const delete_block) {
-    Block * cadaver = Animal::DropAfterDamage(delete_block);
+    Block * const cadaver = Animal::DropAfterDamage(delete_block);
     cadaver->HasInventory()->Get(BlockManager::NewBlock(WEAPON, BONE));
     return cadaver;
 }
@@ -86,13 +87,13 @@ void Dwarf::Move(const dirs dir) {
     }
 }
 
-int Dwarf::NutritionalValue(const int sub) const {
+int Dwarf::NutritionalValue(const subs sub) const {
     switch ( sub ) {
     case HAZELNUT: return SECONDS_IN_HOUR/2;
-    case H_MEAT:   return SECONDS_IN_HOUR*2.5;
+    case H_MEAT:   return SECONDS_IN_HOUR*2.5f;
     case A_MEAT:   return SECONDS_IN_HOUR*2;
+    default:       return 0;
     }
-    return 0;
 }
 
 bool Dwarf::GetExact(Block * const block, const int to) {
@@ -106,7 +107,12 @@ bool Dwarf::GetExact(Block * const block, const int to) {
             && Inventory::GetExact(block, to) )
     {
         UpdateLightRadius();
-        GetWorld()->Shine(X(), Y(), Z(), lightRadius, true);
+        if ( lightRadius == 0 ) {
+            GetWorld()->GetShred(X(), Y())->RemShining(this);
+        } else {
+            GetWorld()->GetShred(X(), Y())->AddShining(this);
+            GetWorld()->Shine(X(), Y(), Z(), lightRadius, true);
+        }
         return true;
     } else {
         return false;
@@ -118,7 +124,7 @@ void Dwarf::SaveAttributes(QDataStream & out) const {
     Inventory::SaveAttributes(out);
 }
 
-bool Dwarf::Inscribe(const QString) {
+bool Dwarf::Inscribe(QString) {
     SendSignalAround(tr("Don't touch me!"));
     return false;
 }
@@ -128,12 +134,13 @@ Dwarf::Dwarf(const int sub, const int id) :
         Inventory(),
         lightRadius(MIN_DWARF_LIGHT_RADIUS)
 {
-    note = new QString("Urist");
+    note = "Urist";
 }
 
 Dwarf::Dwarf(QDataStream & str, const int sub, const int id) :
         Animal(str, sub, id),
-        Inventory(str)
+        Inventory(str),
+        lightRadius()
 {
     UpdateLightRadius();
 }

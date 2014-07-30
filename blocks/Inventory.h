@@ -69,7 +69,8 @@ public:
     int GetInvWeight(int i) const;
     int Number(int i) const;
     Block * ShowBlock(int slot) const;
-    Block * ShowBlock(int slot, int num) const;
+    /// Don't move block shown by this function.
+    Block * ShowBlockInSlot(int slot, int index) const;
     QString InvFullName(int num) const;
     static QString NumStr(int num);
 

@@ -32,7 +32,9 @@ enum active_frequency {
     FREQUENT_SECOND = 4,
 };
 
-enum INNER_ACTIONS {
+/// See Shred::PhysEventsRare() for details.
+enum inner_actions {
+    INNER_ACTION_ONLY,
     INNER_ACTION_NONE,
     INNER_ACTION_EXPLODE, // like in Fallout
     INNER_ACTION_MESSAGE
@@ -49,10 +51,10 @@ public:
      Active(QDataStream & str, int sub, int id, int transp = UNDEF);
     ~Active();
 
-    void Move(dirs dir) override;
-    void Damage(int dmg, int dmg_kind) override;
-    void ReceiveSignal(QString) override;
     int  Kind() const override = 0;
+    void Move(dirs dir) override;
+    void ReceiveSignal(QString) override;
+    void Damage(int dmg, int dmg_kind) override;
     QString  FullName() const override = 0;
     Active * ActiveBlock() override;
 
@@ -62,11 +64,10 @@ public:
     void ActFrequent();
     void ActRare();
 
-    virtual INNER_ACTIONS ActInner();
-    virtual int  ShouldAct()  const;
+    virtual inner_actions ActInner();
+    virtual int ShouldAct() const;
 
     void SetDeferredAction(DeferredAction *);
-    DeferredAction * GetDeferredAction() const;
 
     void ReloadToNorth();
     void ReloadToSouth();
@@ -97,11 +98,14 @@ protected:
     virtual int  Attractive(int sub) const;
 
 private:
+    Active(const Active &) = delete;
+    Active & operator=(const Active &) = delete;
     void UpdateShred();
 
     DeferredAction * deferredAction = nullptr;
     Shred * shred = nullptr;
-};
+    bool defActionPending = false;
+}; // Active
 
 class Falling : public Active {
     Q_OBJECT
@@ -125,6 +129,6 @@ protected:
 private:
     quint8 fallHeight;
     bool falling = false;
-};
+}; // Falling
 
 #endif // ACTIVE_H

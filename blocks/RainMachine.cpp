@@ -27,7 +27,8 @@ RainMachine::RainMachine(const int sub, const int id) :
 
 RainMachine::RainMachine(QDataStream & stream, const int sub, const int id) :
     Active(stream, sub, id),
-    Inventory(stream, 1)
+    Inventory(stream, 1),
+    isOn()
 {
     stream >> isOn;
 }
@@ -57,7 +58,14 @@ QString RainMachine::FullName() const {
 int  RainMachine::Sub() const { return Block::Sub(); }
 int  RainMachine::Kind() const { return RAIN_MACHINE; }
 int  RainMachine::ShouldAct() const { return FREQUENT_RARE; }
-void RainMachine::Push(dirs, Block *) { isOn = not isOn; }
 void RainMachine::ReceiveSignal(QString str) { Active::ReceiveSignal(str); }
 usage_types RainMachine::Use(Block *) { return USAGE_TYPE_OPEN; }
 Inventory * RainMachine::HasInventory() { return this; }
+
+void RainMachine::Damage(const int dmg, const int dmg_kind) {
+    if ( dmg_kind >= DAMAGE_PUSH_UP ) {
+        isOn = not isOn;
+    } else {
+        Block::Damage(dmg, dmg_kind);
+    }
+}

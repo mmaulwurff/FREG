@@ -43,6 +43,7 @@ public:
     ~ShredStorage();
 
     ShredStorage & operator=(const ShredStorage &) = delete;
+    ShredStorage(const ShredStorage &) = delete;
 
     QByteArray * GetShredData(long longi, long lati) const;
     void SetShredData(QByteArray *, long longi, long lati);
@@ -69,6 +70,9 @@ protected:
     void run() override;
 
 private:
+    PreloadThread & operator=(const PreloadThread &) = delete;
+    PreloadThread(const PreloadThread &) = delete;
+
     ShredStorage * const storage;
     const int direction;
     const long longi_center;

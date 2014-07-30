@@ -71,7 +71,7 @@ void World::Shine(const int x, const int y, const int z, int level,
     }
     if ( (transparent != BLOCK_OPAQUE && level > 1) || init ) {
         --level;
-        static const int border = SHRED_WIDTH * NumShreds() - 1;
+        const int border = GetBound();
         if ( x > 0 )      Shine(x-1, y,   z, level, false);
         if ( x < border ) Shine(x+1, y,   z, level, false);
         if ( y > 0 )      Shine(x,   y-1, z, level, false);
@@ -109,7 +109,7 @@ void World::SunShineVertical(const int x, const int y, int z, int light_lev) {
 }
 
 void World::CrossUpShine(const int x, const int y, const int z_bottom) {
-    static const int bound = GetBound();
+    const int bound = GetBound();
     if ( initial_lighting ) {
         if ( x > 0     ) UpShineInit(x-1, y,   z_bottom);
         if ( x < bound ) UpShineInit(x+1, y,   z_bottom);
@@ -136,9 +136,7 @@ void World::UpShine(const int x, const int y, int z_bottom) {
     Shred * const shred = GetShred(x, y);
     const int x_in = Shred::CoordInShred(x);
     const int y_in = Shred::CoordInShred(y);
-    for ( ; shred->SetSunLight(x_in, y_in, z_bottom, 1) && z_bottom < HEIGHT-1;
-            ++z_bottom)
-    {
+    while (shred->SetSunLight(x_in, y_in, z_bottom, 1) && z_bottom<HEIGHT-1) {
         emit Updated(x, y, z_bottom++);
     }
 }

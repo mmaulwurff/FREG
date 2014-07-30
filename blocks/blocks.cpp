@@ -63,7 +63,7 @@
     Block * Ladder::DropAfterDamage(bool * const delete_block) {
         Block * const pile = BlockManager::NewBlock(CONTAINER, DIFFERENT);
         if ( STONE==Sub() || MOSS_STONE==Sub() ) {
-            pile->HasInventory()->Get(block_manager.NormalBlock(Sub()));
+            pile->HasInventory()->Get(block_manager.Normal(Sub()));
         } else {
             pile->HasInventory()->Get(this);
             *delete_block = false;
@@ -72,9 +72,10 @@
     }
 
 // Animal::
-    INNER_ACTIONS Animal::ActInner() {
+    inner_actions Animal::ActInner() {
+        if ( Sub() != H_MEAT && Sub() != A_MEAT ) return INNER_ACTION_NONE;
         if ( satiation <= 0 ) {
-            Damage(5, HUNGER);
+            Damage(5, DAMAGE_HUNGER);
         } else {
             --satiation;
             Mend();
@@ -84,9 +85,10 @@
     }
 
     void Animal::DoRareAction() {
+        if ( Sub() != H_MEAT && Sub() != A_MEAT ) return; // mechanical
         if ( not IsSubAround(AIR) ) {
             if ( breath <= 0 ) {
-                Damage(10, BREATH);
+                Damage(10, DAMAGE_BREATH);
             } else {
                 --breath;
             }
@@ -100,13 +102,14 @@
         }
     }
 
-    int Animal::ShouldAct() const { return FREQUENT_SECOND | FREQUENT_RARE; }
     int Animal::Breath() const { return breath; }
     int Animal::Satiation() const { return satiation; }
+    int Animal::ShouldAct() const { return FREQUENT_SECOND | FREQUENT_RARE; }
+    int Animal::DamageKind() const { return DAMAGE_BITE; }
+    int Animal::NutritionalValue(subs) const { return 0; }
     Animal * Animal::IsAnimal() { return this; }
-    int Animal::DamageKind() const { return BITE; }
 
-    bool Animal::Eat(const int sub) {
+    bool Animal::Eat(const subs sub) {
         const int value = NutritionalValue(sub);
         if ( value ) {
             satiation += value;
@@ -117,7 +120,6 @@
             }
             return true;
         } else {
-            ReceiveSignal(tr("You cannot eat this."));
             return false;
         }
     }
@@ -153,7 +155,9 @@
     {}
 
     Animal::Animal(QDataStream & str, const int sub, const int id) :
-            Falling(str, sub, id, NONSTANDARD)
+            Falling(str, sub, id, NONSTANDARD),
+            breath(),
+            satiation()
     {
         str >> breath >> satiation;
     }
@@ -161,7 +165,7 @@
 // Liquid::
     void Liquid::DoRareAction() {
         if ( not IsSubAround(Sub()) || Sub()==SUB_CLOUD ) {
-            Damage(MAX_DURABILITY*2/SECONDS_IN_NIGHT, TIME);
+            Damage(MAX_DURABILITY*2/SECONDS_IN_NIGHT, DAMAGE_TIME);
             if ( GetDurability() <= 0 ) {
                 GetWorld()->DestroyAndReplace(X(), Y(), Z());
                 return;
@@ -183,24 +187,28 @@
 
     int Liquid::DamageKind() const {
         switch ( Sub() ) {
-        default:    return NO_HARM;
+        default:    return DAMAGE_NO;
         case ACID:  return DAMAGE_ACID;
-        case STONE: return HEAT;
+        case STONE: return DAMAGE_HEAT;
         }
     }
 
-    int Liquid::ShouldAct() const  { return FREQUENT_RARE; }
-    int Liquid::Kind() const { return LIQUID; }
+    int  Liquid::Kind() const { return LIQUID; }
+    int  Liquid::ShouldAct() const  { return FREQUENT_RARE; }
+    int  Liquid::LightRadius() const { return ( STONE==Sub() ) ? 3 : 0; }
+    bool Liquid::Inscribe(QString) { return false; }
+    inner_actions Liquid::ActInner() { return INNER_ACTION_NONE; }
     push_reaction Liquid::PushResult(dirs) const { return ENVIRONMENT; }
 
-    Block * Liquid::DropAfterDamage(bool *) {
-        return block_manager.NormalBlock( ( Sub() == STONE ) ?
-            STONE : AIR);
+    void Liquid::Damage(const int dmg, const int dmg_kind) {
+        if ( dmg_kind < DAMAGE_PUSH_UP ) {
+            Falling::Damage(dmg, dmg_kind);
+        }
     }
 
-    int Liquid::LightRadius() const {
-        static const int radius = ( STONE==Sub() ) ? 3 : 0;
-        return radius;
+    Block * Liquid::DropAfterDamage(bool *) {
+        return block_manager.Normal( ( Sub() == STONE ) ?
+            STONE : AIR);
     }
 
     QString Liquid::FullName() const {
@@ -221,7 +229,7 @@
         if ( FIRE == Sub() ) {
             DamageAround();
             if ( qrand()%10 || IsSubAround(WATER) ) {
-                Damage(2, FREEZE);
+                Damage(2, DAMAGE_FREEZE);
             }
         }
         if ( not IsBase(Sub(), world->GetBlock(X(), Y(), Z()-1)->Sub()) ) {
@@ -276,19 +284,13 @@
 
     int  Grass::ShouldAct() const  { return FREQUENT_RARE; }
     int  Grass::Kind() const { return GRASS; }
+    int  Grass::LightRadius() const { return (FIRE == Sub()) ? 5 : 0; }
     push_reaction Grass::PushResult(dirs) const { return ENVIRONMENT; }
+    inner_actions Grass::ActInner() { return INNER_ACTION_NONE; }
+    Block * Grass::DropAfterDamage(bool*) { return block_manager.Normal(AIR); }
 
-    Block * Grass::DropAfterDamage(bool *) {
-        return block_manager.NormalBlock(AIR);
-    }
-
-    void Grass::Push(dirs, Block *) {
-        GetWorld()->DestroyAndReplace(X(), Y(), Z());
-    }
-
-    int  Grass::LightRadius() const {
-        static const int radius = (FIRE == Sub()) ? 5 : 0;
-        return radius;
+    int Grass::DamageKind() const {
+        return (Sub() == FIRE) ? DAMAGE_HEAT : DAMAGE_NO;
     }
 
 // Bush::
@@ -300,20 +302,30 @@
     QString Bush::FullName() const { return tr("Bush"); }
     usage_types Bush::Use(Block *) { return USAGE_TYPE_OPEN; }
     Inventory * Bush::HasInventory() { return this; }
+    inner_actions Bush::ActInner() { return INNER_ACTION_NONE; }
 
     void Bush::DoRareAction() {
         if ( 0 == qrand()%(SECONDS_IN_HOUR*4) ) {
-            Get(block_manager.NormalBlock(HAZELNUT));
+            Get(block_manager.Normal(HAZELNUT));
         }
     }
 
-    void Bush::Push(dirs, Block * const who) { Inventory::Push(who); }
+    void Bush::Damage(const int dmg, const int dmg_kind) {
+        if ( dmg_kind >= DAMAGE_PUSH_UP ) {
+            int x, y, z;
+            GetWorld()->Focus( X(), Y(), Z(), &x, &y, &z,
+                World::Anti(MakeDirFromDamage(dmg_kind)) );
+            Inventory::Push(GetWorld()->GetBlock(x, y, z));
+        } else {
+            Block::Damage(dmg, dmg_kind);
+        }
+    }
 
     Block * Bush::DropAfterDamage(bool *) {
         Block * const pile = BlockManager::NewBlock(CONTAINER, DIFFERENT);
         Inventory * const pile_inv = pile->HasInventory();
         pile_inv->Get(BlockManager::NewBlock(WEAPON, WOOD));
-        pile_inv->Get(block_manager.NormalBlock(HAZELNUT));
+        pile_inv->Get(block_manager.Normal(HAZELNUT));
         return pile;
     }
 
@@ -382,41 +394,40 @@
         }
     }
 
-    int Rabbit::NutritionalValue(const int sub) const {
+    int Rabbit::NutritionalValue(const subs sub) const {
         return ( GREENERY == sub ) ? SECONDS_IN_HOUR*4 : 0;
     }
 
 // Door::
-    push_reaction Door::PushResult(dirs) const {
-        return movable ? MOVABLE : NOT_MOVABLE;
-    }
-
-    void Door::Push(dirs, Block * const who) {
-        if ( not shifted
+    void Door::Damage(const int dmg, const int dmg_kind) {
+        if ( dmg_kind >= DAMAGE_PUSH_UP
+                && not shifted
                 && not locked
-                && World::Anti(GetDir())!=who->GetDir() )
+                && World::Anti(GetDir()) != MakeDirFromDamage(dmg_kind) )
         {
-            movable = true;
+            movable = MOVABLE;
             shifted = GetWorld()->Move(X(), Y(), Z(), GetDir());
-            movable = false;
+            movable = NOT_MOVABLE;
         }
+        Block::Damage(dmg, dmg_kind);
     }
 
     void Door::DoFrequentAction() {
         if ( shifted ) {
-            movable = true;
             World * const world = GetWorld();
             int x, y, z;
             world->Focus(X(), Y(), Z(), &x, &y, &z, World::Anti(GetDir()));
             if (ENVIRONMENT == world->GetBlock(x, y, z)->PushResult(NOWHERE)) {
+                movable = MOVABLE;
                 shifted = !world->Move(X(), Y(), Z(), World::Anti(GetDir()));
+                movable = NOT_MOVABLE;
             }
-            movable = false;
         }
     }
 
     int  Door::ShouldAct() const { return FREQUENT_SECOND; }
     int  Door::Kind() const { return locked ? LOCKED_DOOR : DOOR; }
+    push_reaction Door::PushResult(dirs) const { return movable; }
 
     QString Door::FullName() const {
         QString sub_string;
@@ -452,7 +463,9 @@
 
     Door::Door(QDataStream & str, const int sub, const int id) :
             Active(str, sub, id, ( STONE==sub || MOSS_STONE==sub ) ?
-                BLOCK_OPAQUE : NONSTANDARD)
+                BLOCK_OPAQUE : NONSTANDARD),
+            shifted(),
+            locked()
     {
         str >> shifted >> locked;
     }
@@ -483,9 +496,15 @@
         }
     }
 
+    void Clock::Damage(int, int dmg_kind) {
+        if ( dmg_kind >= DAMAGE_PUSH_UP ) {
+            Use();
+        } else {
+            Break();
+        }
+    }
+
     int  Clock::ShouldAct() const  { return FREQUENT_RARE; }
-    void Clock::Damage(int, int) { Break(); }
-    void Clock::Push(dirs, Block *) { Use(); }
     int  Clock::Kind() const { return CLOCK; }
     int  Clock::Weight() const { return Block::Weight()/10; }
 
@@ -497,13 +516,13 @@
         }
     }
 
-    INNER_ACTIONS Clock::ActInner() {
+    inner_actions Clock::ActInner() {
         if ( timerTime > 0 )  {
             --timerTime;
-            note->setNum(timerTime);
+            note.setNum(timerTime);
         } else if ( timerTime == 0 ) {
             Use();
-            *note = QObject::tr("Timer fired. %1").
+            note = QObject::tr("Timer fired. %1").
                 arg(GetWorld()->TimeOfDayStr());
             timerTime = -1;
             return INNER_ACTION_MESSAGE;
@@ -514,18 +533,21 @@
     bool Clock::Inscribe(const QString str) {
         Block::Inscribe(str);
         char c;
-        QTextStream txt_stream(note);
+        QTextStream txt_stream(&note);
         txt_stream >> c;
-        if ( 'a' == c ) {
+        switch ( c ) {
+        case 'a': {
             int alarm_hour;
             txt_stream >> alarm_hour;
             txt_stream >> alarmTime;
             alarmTime += alarm_hour*60;
             timerTime = -1;
-        } else if ( 't'==c ) {
+            } break;
+        case 't':
             txt_stream >> timerTime;
             alarmTime = -1;
-        } else {
+            break;
+        default:
             alarmTime = timerTime = -1;
         }
         return true;
@@ -538,16 +560,14 @@
     Clock::Clock (QDataStream & str, const int sub, const int id) :
             Active(str, sub, id, NONSTANDARD)
     {
-        if ( note ) {
-            Inscribe(*note);
-        }
+        Inscribe(note);
     }
 
 // Creator::
     int Creator::Kind() const { return CREATOR; }
     int Creator::Sub() const { return Block::Sub(); }
     QString Creator::FullName() const { return tr("Creative block"); }
-    int Creator::DamageKind() const { return TIME; }
+    int Creator::DamageKind() const { return DAMAGE_TIME; }
     int Creator::DamageLevel() const { return MAX_DURABILITY; }
     Inventory * Creator::HasInventory() { return this; }
     int Creator::ShouldAct() const { return FREQUENT_FIRST; }
@@ -557,16 +577,16 @@
     }
 
     void Creator::SaveAttributes(QDataStream & out) const {
-        Active::SaveAttributes(out);
+        Animal::SaveAttributes(out);
         Inventory::SaveAttributes(out);
     }
 
     Creator::Creator(const int sub, const int id) :
-            Active(sub, id, NONSTANDARD),
+            Animal(sub, id),
             Inventory(INV_SIZE)
     {}
     Creator::Creator(QDataStream & str, const int sub, const int id) :
-            Active(str, sub, id, NONSTANDARD),
+            Animal(str, sub, id),
             Inventory(str, INV_SIZE)
     {}
 
@@ -583,17 +603,17 @@
     }
 
     usage_types Text::Use(Block * const who) {
-        if ( note ) {
-            return USAGE_TYPE_READ;
-        } else {
+        if ( note.isEmpty() ) {
             who->ReceiveSignal(QObject::tr(
                 "Nothing is written on this page."));
             return USAGE_TYPE_NO;
+        } else {
+            return USAGE_TYPE_READ;
         }
     }
 
     bool Text::Inscribe(const QString str) {
-        if ( '.' != str.at(0) && (note == nullptr || GLASS == Sub()) ) {
+        if ( '.' != str.at(0) && (note.isEmpty() || GLASS == Sub()) ) {
             Block::Inscribe(str);
             return true;
         } else {
@@ -606,7 +626,7 @@
     QString Map::FullName() const { return QObject::tr("Map"); }
 
     usage_types Map::Use(Block * const who) {
-        if ( note == nullptr ) {
+        if ( note.isEmpty() ) {
             if ( who ) {
                 who->ReceiveSignal(QObject::tr(
                     "Set title to this map first."));
@@ -615,14 +635,14 @@
         } else if ( who && who->ActiveBlock() ) {
             const Active * const active = who->ActiveBlock();
             QFile map_file(active->GetWorld()->
-                WorldName() + "/texts/" + *note + ".txt");
+                WorldName() + "/texts/" + note + ".txt");
             if ( not map_file.open(QIODevice::ReadWrite | QIODevice::Text) ) {
                 return USAGE_TYPE_READ;
             }
             const Shred * const shred = active->GetShred();
             const long  lati = shred->Latitude();
             const long longi = shred->Longitude();
-            static const int FILE_SIZE_CHARS = 31;
+            const int FILE_SIZE_CHARS = 31;
             if ( 0 == map_file.size() ) { // new map
                 char header[FILE_SIZE_CHARS+1];
                 memset(header, '-', FILE_SIZE_CHARS);
@@ -682,7 +702,11 @@
     {}
 
     Map::Map(QDataStream & str, const int sub, const int id) :
-            Text(str, sub, id)
+            Text(str, sub, id),
+            longiStart(),
+            latiStart(),
+            savedShift(),
+            savedChar()
     {
         str >> longiStart >> latiStart >> savedShift >> savedChar;
     }
@@ -708,7 +732,7 @@
     int Predator::Kind() const { return PREDATOR; }
     QString Predator::FullName() const { return "Predator"; }
 
-    int Predator::NutritionalValue(const int sub) const {
+    int Predator::NutritionalValue(const subs sub) const {
         return Attractive(sub) * SECONDS_IN_HOUR;
     }
 
@@ -736,7 +760,7 @@
                 block->ReceiveSignal(tr("Predator bites you!"));
                 world->Damage(xyz.X(), xyz.Y(), xyz.Z(),
                     DamageLevel(), DamageKind());
-                Eat(block->Sub());
+                Eat(static_cast<subs>(block->Sub()));
             }
         }
         if ( SECONDS_IN_DAY/4 > Satiation() ) {

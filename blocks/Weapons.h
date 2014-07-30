@@ -35,12 +35,12 @@ public:
     int  Kind() const override;
     int  Wearable() const override;
     int  DamageKind() const override;
-    void Push(dirs, Block * who) override;
     void Damage(int dmg, int kind) override;
     int  DamageLevel() const override;
     int  Weight() const override;
     QString FullName() const override;
     usage_types Use(Block * who) override;
+    push_reaction PushResult(dirs) const override;
 };
 
 class Pick : public Weapon {
