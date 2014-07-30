@@ -404,38 +404,35 @@ bool World::CanMove(const int x, const int y, const int z,
 {
     Block * const block    = GetBlock(x, y, z);
     Block *       block_to = GetBlock(newx, newy, newz);
-    const int weight = block->Weight();
-    if ( DOWN != dir && weight != 0 ) {
-        Falling * const falling = block->ShouldFall();
-        if ( falling != nullptr
-                && falling->IsFalling()
-                && AIR==GetBlock(x, y, z-1)->Sub()
-                && AIR==GetBlock(newx, newy, newz-1)->Sub() )
-        {
-            return false;
-        }
+    Falling * const falling = block->ShouldFall();
+    if ( DOWN != dir
+            && block->Weight() != 0
+            && falling != nullptr
+            && falling->IsFalling()
+            && AIR == GetBlock(x, y, z-1)->Sub()
+            && AIR == GetBlock(newx, newy, newz-1)->Sub() )
+    { // prevent moving while falling
+        return false;
     }
     const push_reaction reaction = block->PushResult(dir);
     switch ( reaction ) {
-    case MOVABLE: break;
+    case MOVABLE:
+        if ( Damage(newx, newy, newz, 1, DAMAGE_PUSH_UP + dir) <= 0 ) {
+            DestroyAndReplace  (newx, newy, newz);
+            block_to = GetBlock(newx, newy, newz);
+        }
+        break;
     case ENVIRONMENT:
         if ( *block == *block_to ) { // prevent useless flow
             return false;
         }
         break;
-    default:
-    case NOT_MOVABLE: return false;
-    }
-    if ( reaction != ENVIRONMENT
-            && Damage(newx, newy, newz, 1, DAMAGE_PUSH_UP + dir) <= 0 )
-    {
-        DestroyAndReplace  (newx, newy, newz);
-        block_to = GetBlock(newx, newy, newz);
+    default: return false;
     }
     switch ( block_to->PushResult(dir) ) {
     case MOVABLE:
-        return ( (weight > block_to->Weight()) &&
-                Move(newx, newy, newz, dir) );
+        return ( block->Weight() > block_to->Weight()
+            && Move(newx, newy, newz, dir) );
     case ENVIRONMENT: return true;
     case NOT_MOVABLE: return false;
     case MOVE_UP:
@@ -450,7 +447,7 @@ bool World::CanMove(const int x, const int y, const int z,
         return false;
     case DAMAGE:
         if ( Damage(x, y, z, block_to->DamageLevel(), block_to->DamageKind())
-                <= 0)
+                <= 0 )
         {
             DestroyAndReplace(x, y, z);
         }

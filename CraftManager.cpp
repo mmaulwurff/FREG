@@ -18,7 +18,8 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include <QDir>
-#include <QTextStream>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include "BlockManager.h"
 #include "CraftManager.h"
 
@@ -68,101 +69,50 @@ bool ItemsLess(const CraftItem * item1, const CraftItem * item2) {
     return *item1 < *item2;
 }
 
-void CraftList::Sort() { qSort(items.begin(), items.end(), ItemsLess); }
-
-bool CraftList::LoadItem(QTextStream & stream) {
-    int number;
-    stream >> number;
-    if ( number == 0 ) return false;
-    QString   kind_string,   sub_string;
-    stream >> kind_string >> sub_string;
-    const int kind = BlockManager::StringToKind(kind_string);
-    const int sub  = BlockManager::StringToSub ( sub_string);
-    if ( LAST_KIND==kind || LAST_SUB==sub ) return false;
-    items.append(new CraftItem(number, BlockManager::MakeId(kind, sub)));
-    return true;
+void CraftList::LoadItems(const QJsonArray & array) {
+    for (int n=0; n<array.size(); ++n) {
+        const QJsonObject item = array.at(n).toObject();
+        items.append( new CraftItem(item["number"].toInt(),
+            BlockManager::MakeId(
+                BlockManager::StringToKind(item["kind"].toString()),
+                BlockManager::StringToSub (item["sub" ].toString()) )) );
+    }
 }
 
-int CraftList::GetSize() const { return items.size(); }
-int CraftList::GetProductsNumber() const { return productsNumber; }
+void CraftList::Sort() { qSort(items.begin(), items.end(), ItemsLess); }
+int  CraftList::GetSize() const { return items.size(); }
+int  CraftList::GetProductsNumber() const { return productsNumber; }
 CraftItem * CraftList::GetItem(const int i) const { return items.at(i); }
 
 // CraftManager section
-CraftManager::CraftManager() :
-        size(0),
-        recipesList(),
-        recipesSubsList()
-{
+CraftManager::CraftManager() : recipesList() {
     QDir::current().mkdir("recipes");
-    const QStringList recipesNames = QDir("recipes").entryList();
-    if ( recipesNames.size() < 3 ) { // minimum: . and ..
-        recipesList = nullptr;
-        recipesSubsList = nullptr;
-        return;
-    } // else:
-    // array sizes are a bit more than needed, this is ok
-    recipesList = new QList<CraftList *>[recipesNames.size()];
-    recipesSubsList = new int[recipesNames.size()];
-    for (auto & recipeName : recipesNames) { // file level
-        const int sub = BlockManager::StringToSub(recipeName);
-        if ( sub == LAST_SUB ) {
-            continue;
-        }
-        recipesSubsList[size] = sub;
-        QFile file(QString("recipes/" + recipeName));
-        file.open(QIODevice::ReadOnly | QIODevice::Text);
-        int line = 0;
-        while ( not file.atEnd() ) { // line(recipe) level
-            QTextStream in(file.readLine(),
-                QIODevice::ReadOnly | QIODevice::Text);
-            ++line;
-            int   materials_number,   products_number;
-            in >> materials_number >> products_number;
-            if ( materials_number==0 || products_number==0 ) {
-                continue;
-            }
+    for (int sub=0; sub<LAST_SUB; ++sub) {
+        QFile file(QString("recipes/%1.json").
+            arg(BlockManager::SubToString(sub)));
+        if ( not file.open(QIODevice::ReadOnly | QIODevice::Text) ) continue;
+        const QJsonArray recipes =
+            QJsonDocument::fromJson(file.readAll()).array();
+        for (int i=0; i<recipes.size(); ++i) {
+            const QJsonObject recipeObject = recipes.at(i).toObject();
+            const QJsonArray materials = recipeObject["materials"].toArray();
+            const QJsonArray products  = recipeObject["products" ].toArray();
             CraftList * const recipe =
-                new CraftList(materials_number, products_number);
-            bool ok = true;
-            while ( materials_number-- ) {
-                if ( not recipe->LoadItem(in) ) {
-                    fprintf(stderr, "Recipe read error: %s::%d.\n",
-                        qPrintable(recipeName), line);
-                    ok = false;
-                    break;
-                }
-            }
-            if ( not ok ) {
-                delete recipe;
-                continue;
-            } // else:
+                new CraftList(materials.size(), products.size());
+            recipe->LoadItems(materials);
             recipe->Sort();
-            while ( products_number-- ) {
-                if ( not recipe->LoadItem(in) ) {
-                    fprintf(stderr, "Recipe read error: %s::%d.\n",
-                        qPrintable(recipeName), line);
-                    ok = false;
-                    break;
-                }
-            }
-            if ( ok ) {
-                recipesList[size].append(recipe);
-            } else {
-                delete recipe;
-            }
+            recipe->LoadItems(products);
+            recipesList[sub].append(recipe);
         }
-        ++size;
     }
-} // CraftManager::CraftManager()
+}
 
 CraftManager::~CraftManager() {
-    for (int i=0; i<size; ++i) {
+    for (int i=0; i<LAST_SUB; ++i) {
         for (int j=0; j<recipesList[i].size(); ++j) {
             delete recipesList[i].at(j);
         }
     }
-    delete [] recipesList;
-    delete [] recipesSubsList;
 }
 
 CraftItem * CraftManager::MiniCraft(const int num, const int id) const {
@@ -188,13 +138,9 @@ const {
 CraftList * CraftManager::CraftSub(CraftList * const recipe, const int sub)
 const {
     recipe->Sort();
-    // find needed recipes list
-    int point = 0;
-    for ( ; point < size && recipesSubsList[point] != sub; ++point);
-    if ( point == size ) return nullptr; //recipes list for sub not found
     // find recipe and copy products from it
-    for (int i=0; i<recipesList[point].size(); ++i) {
-        const CraftList & tried = *recipesList[point].at(i);
+    for (int i=0; i<recipesList[sub].size(); ++i) {
+        const CraftList & tried = *recipesList[sub].at(i);
         if ( tried == *recipe ) {
             int number = tried.GetProductsNumber();
             CraftList * const result = new CraftList(number, 0);

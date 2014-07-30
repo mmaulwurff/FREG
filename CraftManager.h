@@ -20,6 +20,8 @@
 #ifndef CRAFTMANAGER_H
 #define CRAFTMANAGER_H
 
+#include "header.h"
+#include <QJsonArray>
 class QTextStream;
 
 struct CraftItem final {
@@ -50,7 +52,8 @@ public:
     CraftList & operator=(const CraftList &) = delete;
 
     void Sort();
-    bool LoadItem(QTextStream &);
+    //bool LoadItem(QTextStream &);
+    void LoadItems(const QJsonArray &);
     int  GetSize() const;
     int  GetProductsNumber() const;
     CraftItem * GetItem(int item_position) const;
@@ -76,9 +79,7 @@ private:
     CraftManager(const CraftManager &) = delete;
     CraftList * CraftSub(CraftList * items, int sub) const;
 
-    int size;
-    QList<CraftList *> * recipesList;
-    int * recipesSubsList; // list of substances of workbench
+    QList<CraftList *> recipesList[LAST_SUB];
 }; // CraftManager
 
 extern CraftManager craft_manager;

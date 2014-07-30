@@ -60,7 +60,7 @@ public:
             int src_slot, int dest_slot, int unum);
 
     int  GetActionType() const;
-    void MakeAction();
+    void MakeAction() const;
 
 private:
     deferred_actions type;
