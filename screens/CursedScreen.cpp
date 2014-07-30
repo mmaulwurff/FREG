@@ -20,7 +20,6 @@
 /**\file screen.cpp
  * \brief This file is related to curses screen for freg. */
 
-#include <QSettings>
 #include <QDir>
 #include <QLocale>
 #include <QMutexLocker>
@@ -829,10 +828,11 @@ Screen::Screen(
         updated(),
         notifyLog(fopen("texts/messages.txt", "at")),
         actionMode(ACTION_USE),
-        shiftFocus(),
-        previousCommand(),
+        settings("/freg.ini", QSettings::IniFormat),
+        shiftFocus(settings.value("focus_shift", 0).toInt()),
+        previousCommand(settings.value("last_command", "hello").toString()),
         fileToShow(nullptr),
-        beepOn(false),
+        beepOn(settings.value("beep_on", false).toBool()),
         ascii(_ascii),
         screen(newterm(nullptr, stdout, stdin))
 {
@@ -887,12 +887,7 @@ Screen::Screen(
     }
     scrollok(notifyWin, TRUE);
 
-    QSettings sett(QDir::currentPath()+"/freg.ini", QSettings::IniFormat);
-    sett.beginGroup("screen_curses");
-    shiftFocus = sett.value("focus_shift", 0).toInt();
-    previousCommand = sett.value("last_command", "hello").toString();
-    beepOn     = sett.value("beep_on", false).toBool();
-    sett.setValue("beep_on", beepOn);
+    settings.setValue("beep_on", beepOn);
 
     if ( not PrintFile(stdscr, "texts/splash.txt") ) {
         addstr("Free-Roaming Elementary Game\nby mmaulwurff\n");
@@ -902,7 +897,7 @@ Screen::Screen(
     CleanFileToShow();
     RePrint();
     SetActionMode(static_cast<actions>
-        (sett.value("action_mode", ACTION_USE).toInt()));
+        (settings.value("action_mode", ACTION_USE).toInt()));
     Print();
     Notify(tr("*--- Game started. Press 'H' for help. ---*"));
     if ( COLS < preferred_width ) {
@@ -933,11 +928,9 @@ Screen::~Screen() {
         fclose(notifyLog);
     }
     delete fileToShow;
-    QSettings sett(QDir::currentPath()+"/freg.ini", QSettings::IniFormat);
-    sett.beginGroup("screen_curses");
-    sett.setValue("focus_shift", shiftFocus);
-    sett.setValue("action_mode", actionMode);
-    sett.setValue("last_command", previousCommand);
+    settings.setValue("focus_shift", shiftFocus);
+    settings.setValue("action_mode", actionMode);
+    settings.setValue("last_command", previousCommand);
 }
 
 bool Screen::IsScreenWide() { return COLS >= (SCREEN_SIZE*2+2)*2; }
