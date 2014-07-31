@@ -20,19 +20,17 @@
 #ifndef CRAFTMANAGER_H
 #define CRAFTMANAGER_H
 
-class QTextStream;
+#include "header.h"
+#include <QJsonArray>
 
 struct CraftItem final {
-    CraftItem() = delete;
-    CraftItem(int num, int id);
-
     CraftItem & operator=(const CraftItem &) = delete;
 
-    bool operator< (const CraftItem & item) const;
-    bool operator!=(const CraftItem & item) const;
+    bool operator<(const CraftItem & item) const;
 
     const int num;
-    const int id;
+    const int kind;
+    const int sub;
 }; // CraftItem
 
 /** \class CraftList CraftManager.h
@@ -44,22 +42,23 @@ struct CraftItem final {
     * Comparison (==) of CraftLists is done by materials. */
 class CraftList final {
 public:
-     CraftList(int materials_number, int products_number);
+    explicit CraftList(int materials_number);
     ~CraftList();
 
     CraftList & operator=(const CraftList &) = delete;
 
     void Sort();
-    bool LoadItem(QTextStream &);
-    int  GetSize() const;
-    int  GetProductsNumber() const;
-    CraftItem * GetItem(int item_position) const;
+    void LoadItems(const QJsonArray &);
+    int  size() const;
+    void clear();
+    int  GetMaterialsNumber() const;
+    CraftItem * at(int item_position) const;
 
-    CraftList & operator<<(CraftItem *);
-    bool        operator==(const CraftList &) const;
+    void operator<<(CraftItem *);
+    bool operator==(const CraftList &) const;
 
 private:
-    const int productsNumber;
+    const int materialsNumber;
     QList<CraftItem *> items;
 }; // CraftList
 
@@ -68,17 +67,15 @@ public:
      CraftManager();
     ~CraftManager();
 
-    CraftItem * MiniCraft(int num, int id) const;
-    CraftList * Craft(CraftList * items, int sub) const;
+    bool MiniCraft(CraftItem **) const;
+    bool Craft(CraftList * items, int sub) const;
 
 private:
     CraftManager & operator=(const CraftManager &) = delete;
     CraftManager(const CraftManager &) = delete;
-    CraftList * CraftSub(CraftList * items, int sub) const;
+    bool CraftSub(CraftList * items, int sub) const;
 
-    int size;
-    QList<CraftList *> * recipesList;
-    int * recipesSubsList; // list of substances of workbench
+    QList<CraftList *> recipesList[LAST_SUB];
 }; // CraftManager
 
 extern CraftManager craft_manager;

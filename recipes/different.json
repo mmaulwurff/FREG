@@ -1,0 +1,18 @@
+[
+    {
+        "materials" : [
+            {
+                "number" : 9,
+                "kind" : "weapon",
+                "sub" : "stone"
+            }
+        ],
+        "products" : [
+            {
+                "number" : 1,
+                "kind" : "illuminator",
+                "sub" : "stone"
+            }
+        ]
+    }
+]

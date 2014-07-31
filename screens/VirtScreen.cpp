@@ -99,7 +99,6 @@ char VirtScreen::CharName(const int kind, const int sub) const {
     case CONTAINER: return '&';
     case TELEGRAPH: return 't';
     case DOOR:        return ( STONE == sub ) ? '#' : '\'';
-    case LOCKED_DOOR: return ( STONE == sub ) ? '#' : '`';
     case ILLUMINATOR: return 'i';
     case WEAPON: switch ( sub ) {
         default:    return '/';

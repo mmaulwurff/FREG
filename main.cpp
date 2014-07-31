@@ -69,7 +69,8 @@ bool IsValidWorldName(const QString world_name) {
 int main(int argc, char ** argv) {
     setlocale(LC_CTYPE, "C-UTF-8");
     QDir::current().mkdir("texts");
-    freopen("errors.txt", "wt", stderr);
+    QDir::current().mkdir("recipes");
+    (void)freopen("errors.txt", "wt", stderr);
 
     Application freg(argc, argv);
     QCoreApplication::setOrganizationName("freg-team");

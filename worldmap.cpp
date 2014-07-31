@@ -75,8 +75,6 @@ char WorldMap::TypeOfShred(const long longi, const long lati) const {
     return c;
 }
 
-long WorldMap::MapSize() const { return mapSize; }
-
 float WorldMap::Deg(const int x, const int y, const int size) {
     const float x_cent = x-size/2.f;
     const float y_cent = y-size/2.f;

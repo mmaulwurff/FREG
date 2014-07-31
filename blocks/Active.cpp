@@ -168,15 +168,15 @@ void Active::Farewell() {
     emit Destroyed();
 }
 
-Active::Active(const int sub, const int id, const int transp) :
-        Block(sub, id, transp),
+Active::Active(const int kind, const int sub, const int transp) :
+        Block(kind, sub, transp),
         Xyz()
 {}
 
-Active::Active(QDataStream & str, const int sub, const int id,
+Active::Active(QDataStream & str, const int kind, const int sub,
         const int transp)
     :
-        Block(str, sub, id, transp),
+        Block(str, kind, sub, transp),
         Xyz()
 {}
 
@@ -239,15 +239,15 @@ bool Active::IsSubAround(const int sub) const {
 
 // Falling section
 
-Falling::Falling(const int sub, const int id, const int transp) :
-        Active(sub, id, transp),
+Falling::Falling(const int kind, const int sub, const int transp) :
+        Active(kind, sub, transp),
         fallHeight(0)
 {}
 
-Falling::Falling(QDataStream & str, const int sub, const int id,
+Falling::Falling(QDataStream & str, const int kind, const int sub,
         const int transp)
     :
-        Active(str, sub, id, transp),
+        Active(str, kind, sub, transp),
         fallHeight()
 {
     str >> fallHeight >> falling;
@@ -269,7 +269,6 @@ QString Falling::FullName() const {
     }
 }
 
-int  Falling::Kind() const { return FALLING; }
 bool Falling::IsFalling() const { return falling; }
 Falling * Falling::ShouldFall() { return this; }
 push_reaction Falling::PushResult(dirs) const { return MOVABLE; }

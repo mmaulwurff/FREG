@@ -828,7 +828,7 @@ Screen::Screen(
         updated(),
         notifyLog(fopen("texts/messages.txt", "at")),
         actionMode(ACTION_USE),
-        settings("/freg.ini", QSettings::IniFormat),
+        settings("freg.ini", QSettings::IniFormat),
         shiftFocus(settings.value("focus_shift", 0).toInt()),
         previousCommand(settings.value("last_command", "hello").toString()),
         fileToShow(nullptr),

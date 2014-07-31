@@ -49,7 +49,6 @@ const QByteArray BlockManager::kinds[] = { // do not usp space, use '_'
     "weapon",
     "ladder",
     "door",
-    "locked_door",
     "creator",
     "text",
     "map",
@@ -101,7 +100,7 @@ BlockManager block_manager;
 
 BlockManager::BlockManager() {
     for (int sub=0; sub<LAST_SUB; ++sub) {
-        normals[sub] = new Block(sub, MakeId(BLOCK, sub));
+        normals[sub] = new Block(BLOCK, sub);
     }
     static_assert((sizeof_array(BlockManager::kinds) == LAST_KIND),
         "invalid number of strings in BlockManager::kinds[]");
@@ -120,43 +119,41 @@ BlockManager::~BlockManager() {
 Block * BlockManager::Normal(const int sub) const { return normals[sub]; }
 
 Block * BlockManager::NewBlock(const int kind, const int sub) {
-    const int id = MakeId(kind, sub);
     switch ( static_cast<enum kinds>(kind) ) {
     // valid kinds:
-    case BLOCK:  return new Block (sub, id);
-    case LIQUID: return new Liquid(sub, id);
-    case GRASS:  return new Grass (sub, id);
-    case FALLING: return new Falling(sub, id);
-    case CONTAINER: return new Container(sub, id);
-    case CONVERTER: return new Converter(sub, id);
-    case PLATE:  return new Plate (sub, id);
-    case LADDER: return new Ladder(sub, id);
-    case WEAPON: return new Weapon(sub, id);
-    case BUSH:   return new Bush  (sub, id);
-    case DWARF:  return new Dwarf (sub, id);
-    case RABBIT: return new Rabbit(sub, id);
-    case PREDATOR: return new Predator(sub, id);
-    case LOCKED_DOOR:
-    case DOOR:   return new Door  (sub, id);
-    case CLOCK:  return new Clock (sub, id);
-    case BELL:   return new Bell  (sub, id);
-    case TEXT:   return new Text  (sub, id);
-    case MAP:    return new Map   (sub, id);
-    case BUCKET: return new Bucket(sub, id);
-    case PICK:   return new Pick  (sub, id);
-    case SHOVEL: return new Shovel(sub, id);
-    case HAMMER: return new Hammer(sub, id);
-    case AXE:    return new Axe   (sub, id);
-    case CREATOR: return new Creator(sub, id);
-    case WORKBENCH: return new Workbench(sub, id);
-    case ILLUMINATOR: return new Illuminator(sub, id);
-    case RAIN_MACHINE: return new RainMachine(sub, id);
+    case BLOCK:  return new Block (kind, sub);
+    case LIQUID: return new Liquid(kind, sub);
+    case GRASS:  return new Grass (kind, sub);
+    case FALLING: return new Falling(kind, sub);
+    case CONTAINER: return new Container(kind, sub);
+    case CONVERTER: return new Converter(kind, sub);
+    case PLATE:  return new Plate (kind, sub);
+    case LADDER: return new Ladder(kind, sub);
+    case WEAPON: return new Weapon(kind, sub);
+    case BUSH:   return new Bush  (kind, sub);
+    case DWARF:  return new Dwarf (kind, sub);
+    case RABBIT: return new Rabbit(kind, sub);
+    case PREDATOR: return new Predator(kind, sub);
+    case DOOR:   return new Door  (kind, sub);
+    case CLOCK:  return new Clock (kind, sub);
+    case BELL:   return new Bell  (kind, sub);
+    case TEXT:   return new Text  (kind, sub);
+    case MAP:    return new Map   (kind, sub);
+    case BUCKET: return new Bucket(kind, sub);
+    case PICK:   return new Pick  (kind, sub);
+    case SHOVEL: return new Shovel(kind, sub);
+    case HAMMER: return new Hammer(kind, sub);
+    case AXE:    return new Axe   (kind, sub);
+    case CREATOR: return new Creator(kind, sub);
+    case WORKBENCH: return new Workbench(kind, sub);
+    case ILLUMINATOR: return new Illuminator(kind, sub);
+    case RAIN_MACHINE: return new RainMachine(kind, sub);
     // invalid kinds:
     case ANIMAL:
     case TELEGRAPH:
     case LAST_KIND:
         fprintf(stderr, "%s: kind ?: %d.\n", Q_FUNC_INFO, kind);
-        return new Block(sub, id);
+        return new Block(kind, sub);
     }
     Q_UNREACHABLE();
     return nullptr;
@@ -165,43 +162,41 @@ Block * BlockManager::NewBlock(const int kind, const int sub) {
 Block * BlockManager::BlockFromFile(QDataStream & str,
         const int kind, const int sub)
 {
-    const int id = MakeId(kind, sub);
     switch ( static_cast<enum kinds>(kind) ) {
     // valid kinds:
-    case BLOCK:  return new Block (str, sub, id);
-    case LIQUID: return new Liquid(str, sub, id);
-    case GRASS:  return new Grass (str, sub, id);
-    case CONTAINER: return new Container(str, sub, id);
-    case CONVERTER: return new Converter(str, sub, id);
-    case FALLING: return new Falling(str, sub, id);
-    case PLATE:  return new Plate (str, sub, id);
-    case LADDER: return new Ladder(str, sub, id);
-    case WEAPON: return new Weapon(str, sub, id);
-    case BUSH:   return new Bush  (str, sub, id);
-    case RABBIT: return new Rabbit(str, sub, id);
-    case PREDATOR: return new Predator(str, sub, id);
-    case DWARF:  return new Dwarf (str, sub, id);
-    case BELL:   return new Bell  (str, sub, id);
-    case TEXT:   return new Text  (str, sub, id);
-    case MAP:    return new Map   (str, sub, id);
-    case BUCKET: return new Bucket(str, sub, id);
-    case PICK:   return new Pick  (str, sub, id);
-    case SHOVEL: return new Shovel(str, sub, id);
-    case HAMMER: return new Hammer(str, sub, id);
-    case AXE:    return new Axe   (str, sub, id);
-    case LOCKED_DOOR:
-    case DOOR:   return new Door  (str, sub, id);
-    case CLOCK:  return new Clock (str, sub, id);
-    case CREATOR: return new Creator(str, sub, id);
-    case WORKBENCH: return new Workbench(str, sub, id);
-    case ILLUMINATOR: return new Illuminator(str, sub, id);
-    case RAIN_MACHINE: return new RainMachine(str, sub, id);
+    case BLOCK:  return new Block (str, kind, sub);
+    case LIQUID: return new Liquid(str, kind, sub);
+    case GRASS:  return new Grass (str, kind, sub);
+    case CONTAINER: return new Container(str, kind, sub);
+    case CONVERTER: return new Converter(str, kind, sub);
+    case FALLING: return new Falling(str, kind, sub);
+    case PLATE:  return new Plate (str, kind, sub);
+    case LADDER: return new Ladder(str, kind, sub);
+    case WEAPON: return new Weapon(str, kind, sub);
+    case BUSH:   return new Bush  (str, kind, sub);
+    case RABBIT: return new Rabbit(str, kind, sub);
+    case PREDATOR: return new Predator(str, kind, sub);
+    case DWARF:  return new Dwarf (str, kind, sub);
+    case BELL:   return new Bell  (str, kind, sub);
+    case TEXT:   return new Text  (str, kind, sub);
+    case MAP:    return new Map   (str, kind, sub);
+    case BUCKET: return new Bucket(str, kind, sub);
+    case PICK:   return new Pick  (str, kind, sub);
+    case SHOVEL: return new Shovel(str, kind, sub);
+    case HAMMER: return new Hammer(str, kind, sub);
+    case AXE:    return new Axe   (str, kind, sub);
+    case DOOR:   return new Door  (str, kind, sub);
+    case CLOCK:  return new Clock (str, kind, sub);
+    case CREATOR: return new Creator(str, kind, sub);
+    case WORKBENCH: return new Workbench(str, kind, sub);
+    case ILLUMINATOR: return new Illuminator(str, kind, sub);
+    case RAIN_MACHINE: return new RainMachine(str, kind, sub);
     // invalid kinds:
     case ANIMAL:
     case TELEGRAPH:
     case LAST_KIND:
         fprintf(stderr, "%s: kind ?: %d.\n", Q_FUNC_INFO, kind);
-        return new Block(str, sub, id);
+        return new Block(str, kind, sub);
     }
     Q_UNREACHABLE();
     return nullptr;

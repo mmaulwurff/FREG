@@ -26,8 +26,7 @@ help_*/*
 !help_*/*.txt
 
 !recipes
-!recipes/*
-recipes/*~
+!recipes/*json
 
 !texts
 texts/*

@@ -19,17 +19,17 @@
 
 #include "Bucket.h"
 
-Bucket::Bucket(const int sub, const int id) :
-        Block(sub, id),
+Bucket::Bucket(const int kind, const int sub) :
+        Block(kind, sub),
         Inventory(1)
 {}
 
-Bucket::Bucket(QDataStream & str, const int sub, const int id) :
-        Block(str, sub, id),
+Bucket::Bucket(QDataStream & str, const int kind, const int sub) :
+        Block(str, kind, sub),
         Inventory(str, 1)
 {}
 
-int  Bucket::Kind() const { return BUCKET; }
+int  Bucket::Kind() const { return Block::Kind(); }
 int  Bucket::Sub()  const { return Block::Sub(); }
 void Bucket::Damage(int, int) { Break(); }
 void Bucket::ReceiveSignal(const QString str) { Block::ReceiveSignal(str); }

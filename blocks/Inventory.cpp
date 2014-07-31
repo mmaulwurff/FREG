@@ -198,24 +198,22 @@ bool Inventory::MiniCraft(const int num) {
         ReceiveSignal(QObject::tr("Nothing here."));
         return false;
     } // else:
-    const CraftItem * const crafted = craft_manager.MiniCraft(
-        Number(num), BlockManager::MakeId(GetInvKind(num), GetInvSub(num)));
-    if ( crafted != nullptr ) {
+    CraftItem * crafted =
+        new CraftItem({Number(num), GetInvKind(num), GetInvSub(num)});
+    if ( craft_manager.MiniCraft(&crafted) ) {
         while ( not inventory[num].isEmpty() ) {
-            Block * const to_delete = ShowBlock(num);
+            block_manager.DeleteBlock(ShowBlock(num));
             Pull(num);
-            block_manager.DeleteBlock(to_delete);
         }
         for (int i=0; i<crafted->num; ++i) {
-            GetExact(BlockManager::NewBlock(
-                BlockManager::KindFromId(crafted->id),
-                BlockManager:: SubFromId(crafted->id) ), num);
+            GetExact(BlockManager::NewBlock(crafted->kind, crafted->sub), num);
         }
         ReceiveSignal(QObject::tr("Craft successful."));
         delete crafted;
         return true;
     } else {
         ReceiveSignal(QObject::tr("You don't know how to craft this."));
+        delete crafted;
         return false;
     }
 }

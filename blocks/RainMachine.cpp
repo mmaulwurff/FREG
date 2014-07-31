@@ -19,14 +19,14 @@
 
 #include "blocks/RainMachine.h"
 
-RainMachine::RainMachine(const int sub, const int id) :
-    Active(sub, id),
+RainMachine::RainMachine(const int kind, const int sub) :
+    Active(kind, sub),
     Inventory(1),
     isOn(false)
 {}
 
-RainMachine::RainMachine(QDataStream & stream, const int sub, const int id) :
-    Active(stream, sub, id),
+RainMachine::RainMachine(QDataStream & stream, const int kind, const int sub) :
+    Active(stream, kind, sub),
     Inventory(stream, 1),
     isOn()
 {

@@ -166,7 +166,7 @@ void DeferredAction::SetSetFire(const int x, int y, int z) {
     type = DEFERRED_SET_FIRE;
 }
 
-void DeferredAction::MakeAction() {
+void DeferredAction::MakeAction() const {
     switch ( type ) {
     case DEFERRED_NOTHING: break;
     case DEFERRED_MOVE:   Move();   break;

@@ -29,7 +29,6 @@ public:
     WorldMap & operator=(const WorldMap &) = delete;
     WorldMap(const WorldMap &) = delete;
 
-    long MapSize() const;
     char TypeOfShred(long longi, long lati) const;
     static void GenerateMap(
             QString world_name,

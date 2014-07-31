@@ -133,18 +133,17 @@ enum kinds {
     WEAPON,      ///< 15
     LADDER,      ///< 16
     DOOR,        ///< 17
-    LOCKED_DOOR, ///< 18
-    CREATOR,     ///< 19
-    TEXT,        ///< 20
-    MAP,         ///< 21
-    PREDATOR,    ///< 22
-    BUCKET,      ///< 23
-    SHOVEL,      ///< 24
-    AXE,         ///< 25
-    HAMMER,      ///< 26
-    ILLUMINATOR, ///< 27
-    RAIN_MACHINE, ///< 28
-    CONVERTER,    ///< 29
+    CREATOR,     ///< 18
+    TEXT,        ///< 19
+    MAP,         ///< 20
+    PREDATOR,    ///< 21
+    BUCKET,      ///< 22
+    SHOVEL,      ///< 23
+    AXE,         ///< 24
+    HAMMER,      ///< 25
+    ILLUMINATOR, ///< 26
+    RAIN_MACHINE, ///< 27
+    CONVERTER,    ///< 28
     /// Nothing is LAST_KIND.
     LAST_KIND // keep it last in this list.
 }; // enum kinds

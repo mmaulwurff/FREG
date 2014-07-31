@@ -69,8 +69,8 @@ const int CONVERTER_LIGHT_RADIUS = 2;
             FREQUENT_NEVER : FREQUENT_RARE;
     }
 
+    int  Container::Kind() const { return Block::Kind(); }
     int  Container::Sub()  const { return Block::Sub(); }
-    int  Container::Kind() const { return CONTAINER; }
     void Container::ReceiveSignal(QString) {}
     Inventory * Container::HasInventory() { return this; }
     push_reaction Container::PushResult(dirs) const { return NOT_MOVABLE; }
@@ -126,15 +126,15 @@ const int CONVERTER_LIGHT_RADIUS = 2;
         Inventory::SaveAttributes(out);
     }
 
-    Container::Container(const int sub, const int id, const int size) :
-            Active(sub, id, NONSTANDARD),
+    Container::Container(const int kind, const int sub, const int size) :
+            Active(kind, sub, NONSTANDARD),
             Inventory(size)
     {}
 
-    Container::Container(QDataStream & str, const int sub, const int id,
+    Container::Container(QDataStream & str, const int kind, const int sub,
             const int size)
         :
-            Active(str, sub, id, NONSTANDARD),
+            Active(str, kind, sub, NONSTANDARD),
             Inventory(str, size)
     {}
 
@@ -153,23 +153,20 @@ const int CONVERTER_LIGHT_RADIUS = 2;
                 ++materials_number;
             }
         }
-        CraftList list(materials_number, 0);
+        CraftList list(materials_number);
         for (int i=Start(); i<Size(); ++i) {
             if ( Number(i) ) {
-                list << new CraftItem({Number(i), ShowBlock(i)->GetId()});
+                list << new CraftItem(
+                    {Number(i), ShowBlock(i)->Kind(), ShowBlock(i)->Sub()} );
             }
         }
-        CraftList * products = craft_manager.Craft(&list, Sub());
-        if ( products != nullptr ) {
-            for (int i=0; i<products->GetSize(); ++i) {
-                for (int n=0; n<products->GetItem(i)->num; ++n) {
-                    int id = products->GetItem(i)->id;
-                    GetExact(BlockManager::NewBlock(
-                        BlockManager::KindFromId(id),
-                        block_manager. SubFromId(id)), i);
+        if ( craft_manager.Craft(&list, Sub()) ) {
+            for (int i=0; i<list.size(); ++i) {
+                for (int n=0; n<list.at(i)->num; ++n) {
+                    const CraftItem * const item = list.at(i);
+                    GetExact(BlockManager::NewBlock(item->kind, item->sub), i);
                 }
             }
-            delete products;
         }
     }
 
@@ -212,7 +209,6 @@ const int CONVERTER_LIGHT_RADIUS = 2;
         }
     }
 
-    int Workbench::Kind() const { return WORKBENCH; }
     int Workbench::Start() const { return 2; }
 
     bool Workbench::Get(Block * const block, const int start) {
@@ -233,17 +229,17 @@ const int CONVERTER_LIGHT_RADIUS = 2;
         }
     }
 
-    Workbench::Workbench(const int sub, const int id) :
-            Container(sub, id, WORKBENCH_SIZE)
+    Workbench::Workbench(const int kind, const int sub) :
+            Container(kind, sub, WORKBENCH_SIZE)
     {}
 
-    Workbench::Workbench(QDataStream & str, const int sub, const int id) :
-            Container(str, sub, id, WORKBENCH_SIZE)
+    Workbench::Workbench(QDataStream & str, const int kind, const int sub) :
+            Container(str, kind, sub, WORKBENCH_SIZE)
     {}
 
 // Converter
-    Converter::Converter(const int sub, const int id) :
-            Container(sub, id, WORKBENCH_SIZE),
+    Converter::Converter(const int kind, const int sub) :
+            Container(kind, sub, WORKBENCH_SIZE),
             isOn(false),
             fuelLevel(0),
             lightRadius(0),
@@ -253,8 +249,8 @@ const int CONVERTER_LIGHT_RADIUS = 2;
         InitDamageKinds();
     }
 
-    Converter::Converter(QDataStream & str, const int sub, const int id) :
-            Container(str, sub, id, WORKBENCH_SIZE),
+    Converter::Converter(QDataStream & str, const int kind, const int sub) :
+            Container(str, kind, sub, WORKBENCH_SIZE),
             isOn(),
             fuelLevel(),
             lightRadius(),
@@ -271,7 +267,6 @@ const int CONVERTER_LIGHT_RADIUS = 2;
         out << isOn << fuelLevel;
     }
 
-    int Converter::Kind() const { return CONVERTER; }
     int Converter::ShouldAct() const { return FREQUENT_RARE; }
     int Converter::LightRadius() const { return lightRadius; }
 
