@@ -25,7 +25,7 @@
 #include "blocks/Inventory.h"
 
 const quint8 DATASTREAM_VERSION = QDataStream::Qt_5_2;
-const quint8 CURRENT_SHRED_FORMAT_VERSION = 8;
+const quint8 CURRENT_SHRED_FORMAT_VERSION = 9;
 
 const int RAIN_IS_DEW = 1;
 
@@ -44,13 +44,7 @@ bool Shred::LoadShred() {
     if ( data == nullptr ) return false;
     QDataStream in(*data);
     quint8 shredFormatVersion;
-    quint8  dataStreamVersion;
-    in >>   dataStreamVersion >> shredFormatVersion;
-    if ( Q_UNLIKELY(DATASTREAM_VERSION != dataStreamVersion) ) {
-        fprintf(stderr, "%s: %d (must be %d). Generating new shred.\n",
-            Q_FUNC_INFO, dataStreamVersion, DATASTREAM_VERSION);
-        return false;
-    } // else:
+    in >>  shredFormatVersion;
     if ( Q_UNLIKELY(CURRENT_SHRED_FORMAT_VERSION != shredFormatVersion) ) {
         fprintf(stderr,
             "%s: Shred format: %d (must be %d). Generating new shred.\n",
@@ -68,12 +62,11 @@ bool Shred::LoadShred() {
     for (int y=0; y<SHRED_WIDTH; ++y) {
         PutBlock(null_stone, x, y, 0);
         for (int z=1; ; ++z) {
-            int kind, sub;
-            const bool normal = BlockManager::KindSubFromFile(in, &kind, &sub);
-            if ( normal ) {
+            quint8 kind, sub;
+            if ( BlockManager::KindSubFromFile(in, &kind, &sub) ) { // normal
                 if ( sub==SKY || sub==STAR ) {
-                    for ( ; z < HEIGHT-1; ++z) {
-                        PutBlock(air, x, y, z);
+                    while (z < HEIGHT-1) {
+                        PutBlock(air, x, y, z++);
                     }
                     PutBlock(Normal(sub), x, y, HEIGHT-1);
                     break;
@@ -158,7 +151,7 @@ Shred::~Shred() {
     QByteArray * const shred_data = new QByteArray();
     shred_data->reserve(30000);
     QDataStream outstr(shred_data, QIODevice::WriteOnly);
-    outstr << DATASTREAM_VERSION << CURRENT_SHRED_FORMAT_VERSION;
+    outstr << CURRENT_SHRED_FORMAT_VERSION;
     outstr.setVersion(DATASTREAM_VERSION);
     outstr << quint8(GetTypeOfShred());
     for (int x=0; x<SHRED_WIDTH; ++x)

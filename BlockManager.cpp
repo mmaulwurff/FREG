@@ -202,15 +202,16 @@ Block * BlockManager::BlockFromFile(QDataStream & str,
     return nullptr;
 }
 
-bool BlockManager::KindSubFromFile(QDataStream & str, int * kind, int * sub) {
-    quint8 data;
-    str >> data;
-    *sub = (data & 0x7F);
-    if ( data & 0x80 ) { // normal bit
+bool BlockManager::KindSubFromFile(QDataStream & str,
+        quint8 * kind, quint8 * sub)
+{
+    str >> *sub;
+    if ( *sub & 0x80 ) { // normal bit
+        *sub &= 0x7F;
         return true;
     } else {
-        str >> data; // read quint8, not int
-        *kind = data;
+        *sub &= 0x7F;
+        str >> *kind;
         return false;
     }
 }

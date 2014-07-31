@@ -240,7 +240,7 @@ Inventory::Inventory(QDataStream & str, const int sz) :
         quint8 num;
         str >> num;
         while ( num-- ) {
-            int kind, sub;
+            quint8 kind, sub;
             inventory[i].push(BlockManager::KindSubFromFile(str, &kind, &sub) ?
                 block_manager.Normal(sub) :
                 BlockManager::BlockFromFile(str, kind, sub));
