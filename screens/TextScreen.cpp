@@ -21,7 +21,6 @@
  * \brief This file is related to text screen for freg. */
 
 #include <QTimer>
-#include <QSettings>
 #include <QDir>
 #include <QMutex>
 #include <QLocale>
@@ -34,7 +33,7 @@
 void Screen::Update(int, int, int) {}
 void Screen::UpdatePlayer() {}
 void Screen::UpdateAll() {}
-void Screen::UpdateAround(int, int, int, ushort) {}
+void Screen::UpdateAround(int, int, int, int) {}
 void Screen::Move(int) {}
 
 void Screen::PassString(QString & str) const {
@@ -47,7 +46,7 @@ void Screen::PassString(QString & str) const {
 int  Screen::GetChar() const { return getchar(); }
 void Screen::FlushInput() const {}
 
-void Screen::MovePlayer(const int dir) const {
+void Screen::MovePlayer(const dirs dir) const {
     if ( player->GetDir() == dir ) {
         player->Move(dir);
     } else {
@@ -55,7 +54,7 @@ void Screen::MovePlayer(const int dir) const {
     }
 }
 
-void Screen::MovePlayerDiag(const int dir1, const int dir2) const {
+void Screen::MovePlayerDiag(const dirs dir1, const dirs dir2) const {
     player->SetDir(dir1);
     static bool step_trigger = true;
     player->Move(step_trigger ? dir1 : dir2);
@@ -85,7 +84,6 @@ void Screen::ControlPlayer(const int ch) {
     case '1': MovePlayerDiag(SOUTH, WEST); break;
     case '3': MovePlayerDiag(SOUTH, EAST); break;
     case ' ': player->Jump(); break;
-    case '=': player->Move(); break;
 
     case '>': player->SetDir(World::TurnRight(player->GetDir())); break;
     case '<': player->SetDir(World::TurnLeft (player->GetDir())); break;
@@ -104,12 +102,12 @@ void Screen::ControlPlayer(const int ch) {
     case 'C': SetActionMode(ACTION_CRAFT);    break;
     case 'D':
     case 'T': SetActionMode(ACTION_THROW);    break;
-    case 'E': SetActionMode(ACTION_EAT);      break;
-    case 'F': SetActionMode(ACTION_TAKEOFF);  break;
     case 'N': SetActionMode(ACTION_INSCRIBE); break;
     case 'G':
     case 'O': SetActionMode(ACTION_OBTAIN);   break;
+    case 'E':
     case 'U': SetActionMode(ACTION_USE);      break;
+    case 'F':
     case 'W': SetActionMode(ACTION_WIELD);    break;
     case 'S':
         if ( player->PlayerInventory() ) {
@@ -118,14 +116,6 @@ void Screen::ControlPlayer(const int ch) {
     break;
     case 'H':
         DisplayFile(QString("help_%1/help.txt").arg(locale.left(2)));
-    break;
-    case 'R': // switch active hand
-        if ( not player->GetCreativeMode() ) {
-            player->SetActiveHand(not player->IsRightActiveHand());
-            Notify(tr("Now %1 hand is active.").
-                arg(player->IsRightActiveHand() ?
-                    tr("right") : tr("left")));
-        }
     break;
 
     case '-': shiftFocus = -!shiftFocus; break; // move focus down
@@ -158,14 +148,12 @@ void Screen::ProcessCommand(QString command) {
 
 void Screen::SetActionMode(const actions mode) { actionMode = mode; }
 
-void Screen::InventoryAction(const ushort num) const {
+void Screen::InventoryAction(const int num) const {
     switch ( actionMode ) {
     case ACTION_USE:      player->Use     (num); break;
     case ACTION_WIELD:    player->Wield   (num); break;
     case ACTION_INSCRIBE: player->Inscribe(num); break;
-    case ACTION_EAT:      player->Eat     (num); break;
     case ACTION_CRAFT:    player->Craft   (num); break;
-    case ACTION_TAKEOFF:  player->TakeOff (num); break;
     case ACTION_OBTAIN:   player->Obtain  (num); break;
     case ACTION_THROW:    player->Throw   (num); break;
     case ACTION_BUILD:    player->Build   (num); break;
@@ -246,16 +234,12 @@ Screen::Screen(
         input(new IThread(this)),
         timer(new QTimer(this)),
         notifyLog(fopen("texts/messages.txt", "at")),
+        actionMode(static_cast<actions>
+            (settings.value("action_mode", ACTION_USE).toInt())),
+        shiftFocus(settings.value("focus_shift", 0).toInt()),
         fileToShow(nullptr),
         ascii(_ascii)
 {
-    QSettings sett(QDir::currentPath()+"/freg.ini", QSettings::IniFormat);
-    sett.beginGroup("screen_curses");
-    shiftFocus = sett.value("focus_shift", 0).toInt();
-    actionMode = static_cast<actions>
-        (sett.value("action_mode", ACTION_USE).toInt());
-    command    = sett.value("last_command", "hello").toString();
-
     if ( not PrintFile("texts/splash.txt") ) {
         puts("Free-Roaming Elementary Game\nby mmaulwurff\n");
     }
@@ -279,9 +263,7 @@ Screen::~Screen() {
         fclose(notifyLog);
     }
     delete fileToShow;
-    QSettings sett(QDir::currentPath()+"/freg.ini", QSettings::IniFormat);
-    sett.beginGroup("screen_curses");
-    sett.setValue("focus_shift", shiftFocus);
-    sett.setValue("action_mode", actionMode);
-    sett.setValue("last_command", command);
+    settings.setValue("focus_shift", shiftFocus);
+    settings.setValue("action_mode", actionMode);
+    settings.setValue("last_command", command);
 }

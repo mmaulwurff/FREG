@@ -70,7 +70,7 @@ public slots:
     void Update(int, int, int) override;
     void UpdateAll() override;
     void UpdatePlayer() override;
-    void UpdateAround(int, int, int, ushort) override;
+    void UpdateAround(int, int, int, int) override;
     void Move(int) override;
     void DeathScreen();
     void DisplayFile(QString path) override;
@@ -80,16 +80,16 @@ private slots:
     void Print() override;
 
 private:
-    char CharNumber(ushort z) const;
-    char CharNumberFront(ushort x, ushort y) const;
+    char CharNumber(int z) const;
+    char CharNumberFront(int x, int y) const;
     /// Returns false when file does not exist, otherwise true.
     bool PrintFile(QString const & file_name);
     void CleanFileToShow();
-    void InventoryAction(ushort num) const;
+    void InventoryAction(int num) const;
     void SetActionMode(actions mode);
     void ProcessCommand(QString command);
-    void MovePlayer(int dir) const;
-    void MovePlayerDiag(int dir1, int dir2) const;
+    void MovePlayer(dirs) const;
+    void MovePlayerDiag(dirs dir1, dirs dir2) const;
 
     IThread * const input;
     volatile bool updated;
@@ -98,8 +98,6 @@ private:
     actions actionMode;
     /// Can be -1, 0, 1 for low, normal, and high focus.
     short shiftFocus;
-    /// Save previous command for further execution.
-    QString command;
     QFile * fileToShow;
     const bool ascii;
 };

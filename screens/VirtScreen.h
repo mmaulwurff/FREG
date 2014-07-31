@@ -21,6 +21,8 @@
 #define VIRTSCREEN_H
 
 #include <QObject>
+#include <QSettings>
+#include <QString>
 #include "header.h"
 #include "World.h"
 
@@ -116,6 +118,8 @@ protected:
 
     World  * const w;
     Player * const player;
+    QSettings settings;
+    QString previousCommand;
 
 private:
     VirtScreen(const VirtScreen &) = delete;

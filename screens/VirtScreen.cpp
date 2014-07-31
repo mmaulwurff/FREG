@@ -29,7 +29,9 @@ void VirtScreen::DeathScreen() {}
 
 VirtScreen::VirtScreen(World * const world_, Player * const player_) :
         w(world_),
-        player(player_)
+        player(player_),
+        settings("freg.ini", QSettings::IniFormat),
+        previousCommand(settings.value("last_command", "moo").toString())
 {
     connect(     w, SIGNAL(Notify(QString)), SLOT(Notify(QString)),
         Qt::DirectConnection);
@@ -39,7 +41,7 @@ VirtScreen::VirtScreen(World * const world_, Player * const player_) :
     connect(player, SIGNAL(GetFocus(int *, int *, int *)),
         SLOT(ActionXyz(int *, int *, int *)), Qt::DirectConnection);
 
-    connect(w, SIGNAL(GetString(QString &)),
+    connect(     w, SIGNAL(GetString(QString &)),
         SLOT(PassString(QString &)), Qt::DirectConnection);
     connect(player, SIGNAL(GetString(QString &)),
         SLOT(PassString(QString &)), Qt::DirectConnection);
