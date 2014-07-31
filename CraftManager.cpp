@@ -26,41 +26,30 @@
 CraftManager craft_manager;
 
 // CraftItem section
-CraftItem::CraftItem(const int num_, const int id_) :
-        num(num_),
-        id(id_)
-{}
-
-bool CraftItem::operator<(const CraftItem &item) const { return item.id < id; }
-
-bool CraftItem::operator!=(const CraftItem & item) const {
-    return num!=item.num || id!=item.id;
+bool CraftItem::operator<(const CraftItem &item) const {
+    return
+        BlockManager::MakeId(item.kind, item.sub) <
+        BlockManager::MakeId(     kind,      sub);
 }
 
 // CraftList section
-CraftList:: CraftList(const int materials_number, const int  products_number) :
-        productsNumber(products_number),
+CraftList:: CraftList(const int materials_number) :
+        materialsNumber(materials_number),
         items()
-{
-    items.reserve(materials_number + productsNumber);
-}
+{}
 
-CraftList::~CraftList() {
-    for (auto & item : items) {
-        delete item;
-    }
-}
+CraftList::~CraftList() { clear(); }
 
-CraftList & CraftList::operator<<(CraftItem * const new_item) {
+void CraftList::operator<<(CraftItem * const new_item) {
     items.append(new_item);
-    return *this;
 }
 
 bool CraftList::operator==(const CraftList & compared) const {
-    const int materials_number=compared.GetSize()-compared.GetProductsNumber();
-    if ( GetSize()-GetProductsNumber() != materials_number ) return false;
-    for (int i=0; i<materials_number; ++i) {
-        if ( *items.at(i) != *compared.items.at(i) ) return false;
+    if ( GetMaterialsNumber() != compared.GetMaterialsNumber() ) return false;
+    for (int i=0; i<GetMaterialsNumber(); ++i) {
+        if ( memcmp(items.at(i), compared.items.at(i), sizeof(CraftItem)) ) {
+            return false;
+        }
     }
     return true;
 }
@@ -72,18 +61,23 @@ bool ItemsLess(const CraftItem * item1, const CraftItem * item2) {
 void CraftList::LoadItems(const QJsonArray & array) {
     for (int n=0; n<array.size(); ++n) {
         const QJsonObject item = array.at(n).toObject();
-        items.append( new CraftItem(item["number"].toInt(),
-            BlockManager::MakeId(
+        items.append( new CraftItem( {item["number"].toInt(),
                 BlockManager::StringToKind(item["kind"].toString()),
-                BlockManager::StringToSub (item["sub" ].toString()) )) );
+                BlockManager::StringToSub (item["sub" ].toString())} ) );
     }
 }
 
 void CraftList::Sort() { qSort(items.begin(), items.end(), ItemsLess); }
-int  CraftList::GetSize() const { return items.size(); }
-int  CraftList::GetProductsNumber() const { return productsNumber; }
-CraftItem * CraftList::GetItem(const int i) const { return items.at(i); }
+int  CraftList::GetMaterialsNumber() const { return materialsNumber; }
+int  CraftList::size() const { return items.size(); }
+CraftItem * CraftList::at(const int i) const { return items.at(i); }
 
+void CraftList::clear() {
+    for (const auto item : items) {
+        delete item;
+    }
+    items.clear();
+}
 // CraftManager section
 CraftManager::CraftManager() : recipesList() {
     for (int sub=0; sub<LAST_SUB; ++sub) {
@@ -95,60 +89,53 @@ CraftManager::CraftManager() : recipesList() {
         for (int i=0; i<recipes.size(); ++i) {
             const QJsonObject recipeObject = recipes.at(i).toObject();
             const QJsonArray materials = recipeObject["materials"].toArray();
-            const QJsonArray products  = recipeObject["products" ].toArray();
-            CraftList * const recipe =
-                new CraftList(materials.size(), products.size());
+            CraftList * const recipe = new CraftList(materials.size());
             recipe->LoadItems(materials);
             recipe->Sort();
-            recipe->LoadItems(products);
+            recipe->LoadItems(recipeObject["products"].toArray());
             recipesList[sub].append(recipe);
         }
     }
 }
 
 CraftManager::~CraftManager() {
-    for (int i=0; i<LAST_SUB; ++i) {
-        for (int j=0; j<recipesList[i].size(); ++j) {
-            delete recipesList[i].at(j);
+    for (int sub=0; sub<LAST_SUB; ++sub) {
+        for (const auto recipe : recipesList[sub]) {
+            delete recipe;
         }
     }
 }
 
-CraftItem * CraftManager::MiniCraft(const int num, const int id) const {
-    CraftList recipe(1, 0);
-    recipe << new CraftItem(num, id);
-    const CraftList * const result = Craft(&recipe, DIFFERENT);
-    if ( result != nullptr ) {
-        CraftItem * const ret = new CraftItem(*result->GetItem(0));
-        delete result;
-        return ret;
+bool CraftManager::MiniCraft(CraftItem ** item) const {
+    CraftList recipe(1);
+    recipe << *item;
+    if ( CraftSub(&recipe, DIFFERENT) ) {
+        *item = new CraftItem(
+            {recipe.at(0)->num, recipe.at(0)->kind, recipe.at(0)->sub} );
+        return true;
     } else {
-        return nullptr;
+        return false;
     }
 }
 
-CraftList * CraftManager::Craft(CraftList * const recipe, const int sub)
-const {
-    CraftList * ret;
-    return ( sub==DIFFERENT || not (ret=CraftSub(recipe, sub)) ) ?
-        CraftSub(recipe, DIFFERENT) : ret;
+bool CraftManager::Craft(CraftList * const recipe, const int sub) const {
+    return ( sub==DIFFERENT || not CraftSub(recipe, sub) ) ?
+        CraftSub(recipe, DIFFERENT) : true;
 }
 
-CraftList * CraftManager::CraftSub(CraftList * const recipe, const int sub)
-const {
+bool CraftManager::CraftSub(CraftList * const recipe, const int sub) const {
     recipe->Sort();
     // find recipe and copy products from it
     for (int i=0; i<recipesList[sub].size(); ++i) {
         const CraftList & tried = *recipesList[sub].at(i);
         if ( tried == *recipe ) {
-            int number = tried.GetProductsNumber();
-            CraftList * const result = new CraftList(number, 0);
-            for (; number; --number) {
-                *result <<
-                    new CraftItem(*tried.GetItem(tried.GetSize()-number));
+            recipe->clear();
+            for (int i=tried.GetMaterialsNumber(); i<tried.size(); ++i) {
+                *recipe << new CraftItem({tried.at(i)->num,
+                    tried.at(i)->kind, tried.at(i)->sub});
             }
-            return result;
+            return true;
         }
     }
-    return nullptr; // suitable recipe not found
+    return false; // suitable recipe not found
 }

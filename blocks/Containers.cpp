@@ -153,23 +153,20 @@ const int CONVERTER_LIGHT_RADIUS = 2;
                 ++materials_number;
             }
         }
-        CraftList list(materials_number, 0);
+        CraftList list(materials_number);
         for (int i=Start(); i<Size(); ++i) {
             if ( Number(i) ) {
-                list << new CraftItem({Number(i), ShowBlock(i)->GetId()});
+                list << new CraftItem(
+                    {Number(i), ShowBlock(i)->Kind(), ShowBlock(i)->Sub()} );
             }
         }
-        CraftList * products = craft_manager.Craft(&list, Sub());
-        if ( products != nullptr ) {
-            for (int i=0; i<products->GetSize(); ++i) {
-                for (int n=0; n<products->GetItem(i)->num; ++n) {
-                    int id = products->GetItem(i)->id;
-                    GetExact(BlockManager::NewBlock(
-                        BlockManager::KindFromId(id),
-                        block_manager. SubFromId(id)), i);
+        if ( craft_manager.Craft(&list, Sub()) ) {
+            for (int i=0; i<list.size(); ++i) {
+                for (int n=0; n<list.at(i)->num; ++n) {
+                    const CraftItem * const item = list.at(i);
+                    GetExact(BlockManager::NewBlock(item->kind, item->sub), i);
                 }
             }
-            delete products;
         }
     }
 
