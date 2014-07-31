@@ -86,15 +86,14 @@ class Block {
     /**\class Block Block.h
      * \brief Block without special physics and attributes. */
 public:
-    Block(int sub, int id, int transp = UNDEF);
-    Block(QDataStream &, int sub, int id, int transp = UNDEF);
+    Block(int sub, int kind, int transp = UNDEF);
+    Block(QDataStream &, int sub, int kind, int transp = UNDEF);
     virtual ~Block();
 
     Block & operator=(Block &) = delete;
     Block(Block &) = delete;
 
     virtual QString FullName() const;
-    virtual int  Kind() const;
     virtual bool Catchable() const;
     /// Returns true on success.
     virtual bool Inscribe(QString str);
@@ -137,7 +136,8 @@ public:
     int GetDurability() const;
     QString GetNote() const;
     inline int Transparent() const { return transparent; }
-    inline int Sub() const { return sub; }
+    inline int Sub()  const { return sub; }
+    inline int Kind() const { return kind; }
 
     bool operator==(const Block &) const;
     bool operator!=(const Block &) const;
@@ -161,8 +161,8 @@ private:
 
     qint16 durability;
     const quint8 transparent;
+    const quint8 kind;
     const quint8 sub;
-    const quint16 id;
     quint8 direction;
 };
 

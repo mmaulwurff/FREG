@@ -36,7 +36,6 @@
         }
     }
 
-    int  Weapon::Kind() const { return WEAPON; }
     int  Weapon::Weight() const { return Block::Weight()/4; }
     int  Weapon::Wearable() const { return WEARABLE_ARM; }
     push_reaction Weapon::PushResult(dirs) const { return DAMAGE; }
@@ -84,7 +83,6 @@
     }
 
 // Pick::
-    int Pick::Kind() const { return PICK; }
     int Pick::DamageKind() const { return DAMAGE_MINE; }
 
     int Pick::DamageLevel() const {
@@ -108,7 +106,6 @@
     }
 
 // Shovel::
-    int Shovel::Kind() const { return SHOVEL; }
     int Shovel::DamageKind() const { return DAMAGE_DIG; }
 
     int Shovel::DamageLevel() const {
@@ -133,7 +130,6 @@
     }
 
 // Hammer::
-    int Hammer::Kind() const { return HAMMER; }
     int Hammer::DamageKind() const { return DAMAGE_CRUSH; }
 
     int Hammer::DamageLevel() const {
@@ -159,7 +155,6 @@
     }
 
 // Axe::
-    int Axe::Kind() const { return AXE; }
     int Axe::DamageKind() const { return DAMAGE_CUT; }
 
     int Axe::DamageLevel() const {

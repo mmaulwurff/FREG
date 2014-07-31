@@ -51,7 +51,6 @@ public:
      Active(QDataStream & str, int sub, int id, int transp = UNDEF);
     ~Active();
 
-    int  Kind() const override = 0;
     void Move(dirs dir) override;
     void ReceiveSignal(QString) override;
     void Damage(int dmg, int dmg_kind) override;
@@ -113,7 +112,6 @@ public:
     Falling(int sub, int id, int transp = UNDEF);
     Falling(QDataStream & str, int sub, int id, int transp = UNDEF);
 
-    int  Kind() const override;
     void Move(dirs dir) override;
     QString FullName() const override;
     Falling * ShouldFall() override final;

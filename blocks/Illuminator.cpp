@@ -21,19 +21,18 @@
 #include "BlockManager.h"
 #include "Inventory.h"
 
-Illuminator::Illuminator(const int sub, const int id) :
-        Active(sub, id),
+Illuminator::Illuminator(const int kind, const int sub) :
+        Active(kind, sub),
         fuelLevel(MAX_FUEL)
 {}
 
-Illuminator::Illuminator(QDataStream & str, const int sub, const int id) :
-        Active(str, sub, id),
+Illuminator::Illuminator(QDataStream & str, const int kind, const int sub) :
+        Active(str, kind, sub),
         fuelLevel()
 {
     str >> fuelLevel;
 }
 
-int  Illuminator::Kind() const { return ILLUMINATOR; }
 void Illuminator::Damage(int, int) { Break(); }
 
 int  Illuminator::DamageKind() const {

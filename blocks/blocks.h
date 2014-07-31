@@ -27,7 +27,6 @@ class Plate : public Block {
 public:
     using Block::Block;
 
-    int Kind() const override;
     int Weight() const override;
     QString FullName() const override;
     push_reaction PushResult(dirs) const override;
@@ -38,7 +37,6 @@ public:
     using Block::Block;
 
     bool Catchable() const override;
-    int  Kind() const override;
     int  Weight() const override;
     QString FullName() const override;
     Block * DropAfterDamage(bool * delete_block) override;
@@ -50,7 +48,6 @@ class Liquid : public Falling {
 public:
     using Falling::Falling;
 
-    int Kind() const override;
     int ShouldAct() const override;
     int DamageKind() const override;
     int LightRadius() const override;
@@ -70,7 +67,6 @@ class Grass : public Active {
 public:
     using Active::Active;
 
-    int  Kind()     const override;
     int  ShouldAct() const override;
     int  DamageKind() const override;
     int  LightRadius() const override;
@@ -116,7 +112,6 @@ class Rabbit : public Animal {
 public:
     using Animal::Animal;
 
-    int Kind() const override;
     QString FullName() const override;
 
 protected:
@@ -134,7 +129,6 @@ public:
     Door(int sub, int id);
     Door(QDataStream & str, int sub, int id);
 
-    int  Kind() const override;
     int  ShouldAct() const override;
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
@@ -157,7 +151,6 @@ public:
     Clock(int sub, int id);
     Clock (QDataStream & str, int sub, int id);
 
-    int  Kind() const override;
     int  Weight() const override;
     int  ShouldAct() const override;
     bool Inscribe(QString) override;
@@ -197,7 +190,6 @@ class Text : public Block {
 public:
     using Block::Block;
 
-    int  Kind() const override;
     bool Inscribe(QString) override;
     QString FullName() const override;
     usage_types Use(Block * who = 0) override;
@@ -208,7 +200,6 @@ public:
     Map(int sub, int id);
     Map(QDataStream & str, int sub, int id);
 
-    int Kind() const override;
     QString FullName() const override;
     usage_types Use(Block * who = 0) override;
 
@@ -227,7 +218,6 @@ class Bell : public Active {
 public:
     using Active::Active;
 
-    int  Kind() const override;
     void ReceiveSignal(QString) override;
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
@@ -240,7 +230,6 @@ public:
     using Animal::Animal;
 
     int DamageLevel() const override;
-    int Kind() const override;
     QString FullName() const override;
 
 protected:

@@ -25,7 +25,7 @@
 #include "blocks/Inventory.h"
 
 const quint8 DATASTREAM_VERSION = QDataStream::Qt_5_2;
-const quint8 CURRENT_SHRED_FORMAT_VERSION = 7;
+const quint8 CURRENT_SHRED_FORMAT_VERSION = 8;
 
 const int RAIN_IS_DEW = 1;
 

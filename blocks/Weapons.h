@@ -32,7 +32,6 @@ class Weapon : public Falling {
 public:
     using Falling::Falling;
 
-    int  Kind() const override;
     int  Wearable() const override;
     int  DamageKind() const override;
     void Damage(int dmg, int kind) override;
@@ -47,7 +46,6 @@ class Pick : public Weapon {
 public:
     using Weapon::Weapon;
 
-    int  Kind() const override;
     int  DamageKind() const override;
     int  DamageLevel() const override;
     QString FullName() const override;
@@ -57,7 +55,6 @@ class Shovel : public Weapon {
 public:
     using Weapon::Weapon;
 
-    int  Kind() const override;
     int  DamageKind() const override;
     int  DamageLevel() const override;
     QString FullName() const override;
@@ -67,7 +64,6 @@ class Hammer : public Weapon {
 public:
     using Weapon::Weapon;
 
-    int  Kind() const override;
     int  DamageKind() const override;
     int  DamageLevel() const override;
     QString FullName() const override;
@@ -77,7 +73,6 @@ class Axe : public Weapon {
 public:
     using Weapon::Weapon;
 
-    int  Kind() const override;
     int  DamageKind() const override;
     int  DamageLevel() const override;
     QString FullName() const override;

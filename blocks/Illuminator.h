@@ -30,7 +30,6 @@ public:
     Illuminator(int sub, int id);
     Illuminator(QDataStream & str, int sub, int id);
 
-    int  Kind() const override;
     int  ShouldAct() const override;
     int  DamageKind() const override;
     int  LightRadius() const override;

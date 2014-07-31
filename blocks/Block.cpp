@@ -158,8 +158,7 @@ push_reaction Block::PushResult(dirs) const {
     return ( AIR==Sub() ) ? ENVIRONMENT : NOT_MOVABLE;
 }
 
-int  Block::Kind() const { return BLOCK; }
-int  Block::GetId() const { return id; }
+int  Block::GetId() const { return BlockManager::MakeId(Kind(), Sub()); }
 bool Block::Catchable() const { return false; }
 void Block::Move(dirs) {}
 int  Block::Wearable() const { return WEARABLE_NOWHERE; }
@@ -241,7 +240,7 @@ void Block::SaveToFile(QDataStream & out) {
     if ( this == block_manager.Normal(sub) ) {
         SaveNormalToFile(out);
     } else {
-        out << sub << quint8(BlockManager::KindFromId(id)) <<
+        out << sub << kind <<
             ( ( ( ( durability
             <<= 3 ) |= direction )
             <<= 1 ) |= bool(not note.isEmpty()) );
@@ -258,22 +257,23 @@ void Block::SaveNormalToFile(QDataStream & out) const {
 
 void Block::RestoreDurabilityAfterSave() { durability >>= 4; }
 
-Block::Block(const int subst, const int i, const int transp) :
+Block::Block(const int kind_, const int sub_, const int transp) :
         note(),
         durability(MAX_DURABILITY),
-        transparent(Transparency(transp, subst)),
-        sub(subst),
-        id(i),
+        transparent(Transparency(transp, sub_)),
+        kind(kind_),
+        sub(sub_),
         direction(UP)
 {}
 
-Block::Block(QDataStream & str, const int subst, const int i, const int transp)
+Block::Block(QDataStream & str, const int kind_, const int sub_,
+        const int transp)
     :
         note(),
         durability(),
-        transparent(Transparency(transp, subst)),
-        sub(subst),
-        id(i),
+        transparent(Transparency(transp, sub_)),
+        kind(kind_),
+        sub(sub_),
         direction()
 {
     // use durability as buffer, set actual value in the end:

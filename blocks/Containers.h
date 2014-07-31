@@ -44,7 +44,7 @@ public:
     void DoRareAction() override;
     int  ShouldAct() const override;
     int  Weight() const override;
-    int  Kind() const override;
+    int  Kind() const override final;
     void Damage(int dmg, int dmg_kind) override;
     Block * DropAfterDamage(bool * delete_block) override;
     QString FullName() const override;
@@ -67,7 +67,6 @@ public:
     Workbench(int sub, int id);
     Workbench(QDataStream & str, int sub, int id);
 
-    int  Kind() const override;
     bool Drop(int src, int dest, int num, Inventory * inv) override;
     bool Get(Block * block, int start = 0) override;
     bool GetAll(Inventory * from) override;
@@ -84,7 +83,6 @@ public:
     Converter(int sub, int id);
     Converter(QDataStream & str, int sub, int id);
 
-    int  Kind() const override;
     int  ShouldAct() const override;
     int  DamageKind() const override;
     int  LightRadius() const override;

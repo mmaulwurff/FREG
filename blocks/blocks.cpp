@@ -38,7 +38,6 @@
         }
     }
 
-    int Plate::Kind() const { return PLATE; }
     int Plate::Weight() const { return Block::Weight()/4; }
     push_reaction Plate::PushResult(dirs) const { return JUMP; }
 
@@ -57,7 +56,6 @@
 
     bool Ladder::Catchable() const { return true; }
     int  Ladder::Weight() const { return Block::Weight()*3; }
-    int  Ladder::Kind() const { return LADDER; }
     push_reaction Ladder::PushResult(dirs) const { return MOVE_UP; }
 
     Block * Ladder::DropAfterDamage(bool * const delete_block) {
@@ -148,14 +146,14 @@
         return cadaver;
     }
 
-    Animal::Animal(const int sub, const int id) :
-            Falling(sub, id, NONSTANDARD),
+    Animal::Animal(const int kind, const int sub) :
+            Falling(kind, sub, NONSTANDARD),
             breath(MAX_BREATH),
             satiation(SECONDS_IN_DAY)
     {}
 
-    Animal::Animal(QDataStream & str, const int sub, const int id) :
-            Falling(str, sub, id, NONSTANDARD),
+    Animal::Animal(QDataStream & str, const int kind, const int sub) :
+            Falling(str, kind, sub, NONSTANDARD),
             breath(),
             satiation()
     {
@@ -193,7 +191,6 @@
         }
     }
 
-    int  Liquid::Kind() const { return LIQUID; }
     int  Liquid::ShouldAct() const  { return FREQUENT_RARE; }
     int  Liquid::LightRadius() const { return ( STONE==Sub() ) ? 3 : 0; }
     bool Liquid::Inscribe(QString) { return false; }
@@ -283,7 +280,6 @@
     }
 
     int  Grass::ShouldAct() const  { return FREQUENT_RARE; }
-    int  Grass::Kind() const { return GRASS; }
     int  Grass::LightRadius() const { return (FIRE == Sub()) ? 5 : 0; }
     push_reaction Grass::PushResult(dirs) const { return ENVIRONMENT; }
     inner_actions Grass::ActInner() { return INNER_ACTION_NONE; }
@@ -294,10 +290,10 @@
     }
 
 // Bush::
-    int  Bush::Sub() const { return Block::Sub(); }
+    int  Bush::Kind() const { return Block::Kind(); }
+    int  Bush::Sub()  const { return Block::Sub(); }
     int  Bush::ShouldAct() const  { return FREQUENT_RARE; }
     void Bush::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
-    int  Bush::Kind() const { return BUSH; }
     int  Bush::Weight() const { return Inventory::Weight()+Block::Weight(); }
     QString Bush::FullName() const { return tr("Bush"); }
     usage_types Bush::Use(Block *) { return USAGE_TYPE_OPEN; }
@@ -334,13 +330,13 @@
         Inventory::SaveAttributes(out);
     }
 
-    Bush::Bush(const int sub, const int id) :
-            Active(sub, id),
+    Bush::Bush(const int kind, const int sub) :
+            Active(kind, sub),
             Inventory(BUSH_SIZE)
     {}
 
-    Bush::Bush(QDataStream & str, const int sub, const int id) :
-            Active(str, sub, id),
+    Bush::Bush(QDataStream & str, const int kind, const int sub) :
+            Active(str, kind, sub),
             Inventory(str, BUSH_SIZE)
     {}
 
@@ -382,7 +378,6 @@
     }
 
     QString Rabbit::FullName() const { return tr("Herbivore"); }
-    int  Rabbit::Kind() const { return RABBIT; }
     void Rabbit::DoFrequentAction() {
         if ( Gravitate(2, 1, 2, 4) ) {
             if ( qrand()%2 ) {
@@ -426,7 +421,6 @@
     }
 
     int  Door::ShouldAct() const { return FREQUENT_SECOND; }
-    int  Door::Kind() const { return locked ? LOCKED_DOOR : DOOR; }
     push_reaction Door::PushResult(dirs) const { return movable; }
 
     QString Door::FullName() const {
@@ -454,15 +448,15 @@
         out << shifted << locked;
     }
 
-    Door::Door(const int sub, const int id) :
-            Active(sub, id, ( STONE==sub || MOSS_STONE==sub ) ?
+    Door::Door(const int kind, const int sub) :
+            Active(kind, sub, ( STONE==sub || MOSS_STONE==sub ) ?
                 BLOCK_OPAQUE : NONSTANDARD),
             shifted(false),
             locked(false)
     {}
 
-    Door::Door(QDataStream & str, const int sub, const int id) :
-            Active(str, sub, id, ( STONE==sub || MOSS_STONE==sub ) ?
+    Door::Door(QDataStream & str, const int kind, const int sub) :
+            Active(str, kind, sub, ( STONE==sub || MOSS_STONE==sub ) ?
                 BLOCK_OPAQUE : NONSTANDARD),
             shifted(),
             locked()
@@ -505,7 +499,6 @@
     }
 
     int  Clock::ShouldAct() const  { return FREQUENT_RARE; }
-    int  Clock::Kind() const { return CLOCK; }
     int  Clock::Weight() const { return Block::Weight()/10; }
 
     void Clock::DoRareAction() {
@@ -553,19 +546,19 @@
         return true;
     }
 
-    Clock::Clock(const int sub, const int id) :
-            Active(sub, id, NONSTANDARD)
+    Clock::Clock(const int kind, const int sub) :
+            Active(kind, sub, NONSTANDARD)
     {}
 
-    Clock::Clock (QDataStream & str, const int sub, const int id) :
-            Active(str, sub, id, NONSTANDARD)
+    Clock::Clock (QDataStream & str, const int kind, const int sub) :
+            Active(str, kind, sub, NONSTANDARD)
     {
         Inscribe(note);
     }
 
 // Creator::
-    int Creator::Kind() const { return CREATOR; }
-    int Creator::Sub() const { return Block::Sub(); }
+    int Creator::Kind() const { return Block::Kind(); }
+    int Creator::Sub()  const { return Block::Sub(); }
     QString Creator::FullName() const { return tr("Creative block"); }
     int Creator::DamageKind() const { return DAMAGE_TIME; }
     int Creator::DamageLevel() const { return MAX_DURABILITY; }
@@ -581,17 +574,16 @@
         Inventory::SaveAttributes(out);
     }
 
-    Creator::Creator(const int sub, const int id) :
-            Animal(sub, id),
+    Creator::Creator(const int kind, const int sub) :
+            Animal(kind, sub),
             Inventory(INV_SIZE)
     {}
-    Creator::Creator(QDataStream & str, const int sub, const int id) :
-            Animal(str, sub, id),
+    Creator::Creator(QDataStream & str, const int kind, const int sub) :
+            Animal(str, kind, sub),
             Inventory(str, INV_SIZE)
     {}
 
 // Text::
-    int Text::Kind() const { return TEXT; }
     QString Text::FullName() const {
         switch ( Sub() ) {
         case PAPER: return QObject::tr("Paper page");
@@ -622,7 +614,6 @@
     }
 
 // Map::
-    int Map::Kind() const { return MAP; }
     QString Map::FullName() const { return QObject::tr("Map"); }
 
     usage_types Map::Use(Block * const who) {
@@ -693,16 +684,16 @@
         out << longiStart << latiStart << savedShift << savedChar;
     }
 
-    Map::Map(const int sub, const int id) :
-            Text(sub, id),
+    Map::Map(const int kind, const int sub) :
+            Text(kind, sub),
             longiStart(),
             latiStart(),
             savedShift(),
             savedChar(0)
     {}
 
-    Map::Map(QDataStream & str, const int sub, const int id) :
-            Text(str, sub, id),
+    Map::Map(QDataStream & str, const int kind, const int sub) :
+            Text(str, kind, sub),
             longiStart(),
             latiStart(),
             savedShift(),
@@ -713,7 +704,6 @@
 
 // Bell::
     void Bell::Damage(int, int) { Break(); }
-    int  Bell::Kind() const { return BELL; }
     QString Bell::FullName() const { return QObject::tr("Bell"); }
 
     usage_types Bell::Use(Block  * const) {
@@ -729,7 +719,6 @@
 
 // Predator::
     int Predator::DamageLevel() const { return 10; }
-    int Predator::Kind() const { return PREDATOR; }
     QString Predator::FullName() const { return "Predator"; }
 
     int Predator::NutritionalValue(const subs sub) const {

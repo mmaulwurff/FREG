@@ -129,16 +129,16 @@ bool Dwarf::Inscribe(QString) {
     return false;
 }
 
-Dwarf::Dwarf(const int sub, const int id) :
-        Animal(sub, id),
+Dwarf::Dwarf(const int kind, const int sub) :
+        Animal(kind, sub),
         Inventory(),
         lightRadius(MIN_DWARF_LIGHT_RADIUS)
 {
     note = "Urist";
 }
 
-Dwarf::Dwarf(QDataStream & str, const int sub, const int id) :
-        Animal(str, sub, id),
+Dwarf::Dwarf(QDataStream & str, const int kind, const int sub) :
+        Animal(str, kind, sub),
         Inventory(str),
         lightRadius()
 {

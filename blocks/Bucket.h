@@ -29,7 +29,7 @@ public:
     Bucket(QDataStream & str, int sub, int id);
 
     int  Sub() const override;
-    int  Kind() const override;
+    int  Kind() const override final;
     int  Weight() const override;
     void ReceiveSignal(QString str) override;
     bool Get(Block * block, int start) override;
