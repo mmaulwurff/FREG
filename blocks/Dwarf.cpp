@@ -41,7 +41,7 @@ Block * Dwarf::DropAfterDamage(bool * const delete_block) {
 
 int  Dwarf::Sub() const { return Block::Sub(); }
 int  Dwarf::ShouldAct() const { return FREQUENT_FIRST | FREQUENT_RARE; }
-int  Dwarf::Start() const { return ON_LEGS + 1; }
+int  Dwarf::Start() const { return IN_LEFT + 1; }
 int  Dwarf::Kind() const { return DWARF; }
 int  Dwarf::LightRadius() const { return lightRadius; }
 bool Dwarf::Access() const { return false; }
@@ -74,11 +74,35 @@ int Dwarf::DamageLevel() const {
     return level;
 }
 
+void Dwarf::Damage(const int dmg, const int dmg_kind) {
+    if ( dmg_kind >= DAMAGE_PUSH_UP ) {
+        Block::Damage(dmg, DAMAGE_PUSH_UP);
+        return;
+    }
+    int damage_to_self = dmg;
+    const int places[] = { ON_HEAD, ON_BODY, ON_LEGS };
+    for (const int i : places) {
+        if ( Number(i) == 0 ) continue;
+        Block * const armour = ShowBlock(i);
+        const int dur_before_damage = armour->GetDurability();
+        const int damage_divider = (i == ON_BODY) ? 2 : 4;
+        armour->Damage(dmg/damage_divider, dmg_kind);
+        if ( armour->GetDurability() < dur_before_damage ) {
+            damage_to_self -= dmg/damage_divider;
+            if ( armour->GetDurability() <= 0 ) {
+                delete armour;
+                Pull(i);
+            }
+        }
+    }
+    Block::Damage(damage_to_self, dmg_kind);
+}
+
 void Dwarf::Move(const dirs dir) {
     Shred * const last_shred = GetShred();
     Falling::Move(dir);
     if ( last_shred != GetShred() ) {
-        for (int i=0; i<ON_LEGS; ++i) {
+        for (int i=0; i<IN_LEFT; ++i) {
             Block * const block = ShowBlock(i);
             if ( block && block->Kind()==MAP ) {
                 block->Use(this);
@@ -98,7 +122,7 @@ int Dwarf::NutritionalValue(const subs sub) const {
 
 bool Dwarf::GetExact(Block * const block, const int to) {
     if ( block==nullptr ) return true;
-    if ( (to > ON_LEGS || ( Number(to) == 0 && (
+    if ( (to > IN_LEFT || ( Number(to) == 0 && (
                      IN_RIGHT==to
                 ||   IN_LEFT ==to
                 || ( ON_HEAD ==to && WEARABLE_HEAD==block->Wearable() )

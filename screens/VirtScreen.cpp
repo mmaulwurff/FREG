@@ -99,7 +99,6 @@ char VirtScreen::CharName(const int kind, const int sub) const {
     case WORKBENCH: return '*';
     case CONVERTER: return 'V';
     case CONTAINER: return '&';
-    case TELEGRAPH: return 't';
     case DOOR:        return ( STONE == sub ) ? '#' : '\'';
     case ILLUMINATOR: return 'i';
     case WEAPON: switch ( sub ) {
@@ -107,6 +106,9 @@ char VirtScreen::CharName(const int kind, const int sub) const {
         case STONE: return '.';
         case SKY:   return ' ';
     } break;
+    case ARMOUR: return 'A';
+    case HELMET: return 'H';
+    case BOOTS:  return 'B';
     case FALLING: switch ( sub ) {
         case SAND:  return '.';
         case WATER: return '*';

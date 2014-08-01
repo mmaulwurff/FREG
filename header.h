@@ -119,31 +119,32 @@ enum kinds {
     BELL,        ///<  1
     CONTAINER,   ///<  2
     DWARF,       ///<  3
-    ANIMAL,      ///<  4
-    PICK,        ///<  5
-    TELEGRAPH,   ///<  6
-    LIQUID,      ///<  7
-    GRASS,       ///<  8
-    BUSH,        ///<  9
-    RABBIT,      ///< 10
-    FALLING,     ///< 11
-    CLOCK,       ///< 12
-    PLATE,       ///< 13
-    WORKBENCH,   ///< 14
-    WEAPON,      ///< 15
-    LADDER,      ///< 16
-    DOOR,        ///< 17
-    CREATOR,     ///< 18
-    TEXT,        ///< 19
-    MAP,         ///< 20
-    PREDATOR,    ///< 21
-    BUCKET,      ///< 22
-    SHOVEL,      ///< 23
-    AXE,         ///< 24
-    HAMMER,      ///< 25
-    ILLUMINATOR, ///< 26
-    RAIN_MACHINE, ///< 27
-    CONVERTER,    ///< 28
+    PICK,        ///<  4
+    LIQUID,      ///<  5
+    GRASS,       ///<  6
+    BUSH,        ///<  7
+    RABBIT,      ///<  8
+    FALLING,     ///<  9
+    CLOCK,       ///< 10
+    PLATE,       ///< 11
+    WORKBENCH,   ///< 12
+    WEAPON,      ///< 13
+    LADDER,      ///< 14
+    DOOR,        ///< 15
+    CREATOR,     ///< 16
+    TEXT,        ///< 17
+    MAP,         ///< 18
+    PREDATOR,    ///< 19
+    BUCKET,      ///< 20
+    SHOVEL,      ///< 21
+    AXE,         ///< 22
+    HAMMER,      ///< 23
+    ILLUMINATOR, ///< 24
+    RAIN_MACHINE, ///< 25
+    CONVERTER,    ///< 26
+    ARMOUR,       ///< 27
+    HELMET,       ///< 28
+    BOOTS,        ///< 29
     /// Nothing is LAST_KIND.
     LAST_KIND // keep it last in this list.
 }; // enum kinds

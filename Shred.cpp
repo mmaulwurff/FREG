@@ -25,7 +25,7 @@
 #include "blocks/Inventory.h"
 
 const quint8 DATASTREAM_VERSION = QDataStream::Qt_5_2;
-const quint8 CURRENT_SHRED_FORMAT_VERSION = 10;
+const quint8 CURRENT_SHRED_FORMAT_VERSION = 11;
 
 const int RAIN_IS_DEW = 1;
 
@@ -406,7 +406,9 @@ void Shred::TestShred() {
             {ILLUMINATOR, WOOD}, {ILLUMINATOR, IRON}, {ILLUMINATOR, GLASS},
             {CONTAINER, IRON}, {CONTAINER, WATER}, {WEAPON, SKY},
             {LIQUID, SUB_CLOUD}, {RAIN_MACHINE, IRON}, {FALLING, SUB_DUST},
-            {BLOCK, ROSE}, {CONVERTER, STONE}
+            {BLOCK, ROSE}, {CONVERTER, STONE},
+        }, {
+            {ARMOUR, STEEL}, {HELMET, STEEL}, {BOOTS, STEEL},
         }
     };
     for (int i=0; i<SHRED_WIDTH/2; ++i)
@@ -537,9 +539,6 @@ void Shred::ChaosShred() {
     for (int k=1; k<HEIGHT/2; ++k) {
         int kind = qrand() % LAST_KIND;
         int sub  = qrand() % LAST_SUB;
-        if ( kind==TELEGRAPH || kind==ANIMAL ) {
-            kind = BLOCK;
-        }
         if ( sub==AIR || sub==STAR || sub==SUN_MOON || sub==SKY ) {
             sub = STONE;
         }

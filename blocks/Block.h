@@ -35,7 +35,6 @@ const QString OUCH = SOUND_STRINGS[1];
 enum wearable {
     WEARABLE_NOWHERE,
     WEARABLE_HEAD,
-    WEARABLE_ARM,
     WEARABLE_BODY,
     WEARABLE_LEGS
 }; // enum WEARABLE

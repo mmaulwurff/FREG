@@ -459,7 +459,7 @@ void Player::SetPlayer(const int _x, const int _y, const int _z) {
         World * const world = GetWorld();
         for ( ; z_self < HEIGHT-2; ++z_self ) {
             Block * const block = world->GetBlock(X(), Y(), z_self);
-            if ( AIR == block->Sub() || nullptr != block->IsAnimal() ) {
+            if ( AIR == block->Sub() || block->IsAnimal() ) {
                 break;
             }
         }

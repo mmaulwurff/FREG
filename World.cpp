@@ -138,19 +138,19 @@ bool World::InVertBounds(const int z) { return ( 0 <= z && z < HEIGHT ); }
 
 int World::SetNote(const QString note) {
     notes.append(note);
-    return notes.size() - 1;
+    return notes.size();
 }
 
 int World::ChangeNote(const QString note, const int noteId) {
-    if ( noteId >= notes.size() ) {
+    if ( noteId > notes.size() ) {
         return SetNote(note);
     } else {
-        notes[noteId] = note;
+        notes[noteId - 1] = note;
         return noteId;
     }
 }
 
-QString World::GetNote(const int noteId) const { return notes.at(noteId); }
+QString World::GetNote(const int noteId) const { return notes.at(noteId-1); }
 
 void World::ReloadAllShreds(const long lati, const long longi,
     const int new_x, const int new_y, const int new_z)
@@ -711,7 +711,8 @@ World::World(const QString world_name) :
         sunMoonFactor(),
         shredStorage(),
         shredMemoryPool(),
-        initial_lighting()
+        initial_lighting(),
+        notes()
 {
     world = this;
     QSettings game_settings("freg.ini", QSettings::IniFormat);
@@ -737,16 +738,15 @@ World::World(const QString world_name) :
 
     shredStorage = new ShredStorage(numShreds+2, longitude, latitude);
     puts(qPrintable(tr("Loading world...")));
-    LoadAllShreds();
 
     QFile notes_file(worldName + "/notes.txt");
-    notes.append("This is freg block notes list.");
     if ( notes_file.open(QIODevice::ReadOnly | QIODevice::Text) ) {
         char note[MAX_NOTE_LENGTH*2];
-        while ( notes_file.readLine(note, MAX_NOTE_LENGTH*2) >= 0 ) {
+        while ( notes_file.readLine(note, MAX_NOTE_LENGTH*2) > 0 ) {
             notes.append(QString(note).trimmed());
         }
     }
+    LoadAllShreds();
 
     emit UpdatedAll();
 }
@@ -767,7 +767,7 @@ World::~World() {
 
     QFile notes_file(worldName + "/notes.txt");
     if ( notes_file.open(QIODevice::WriteOnly | QIODevice::Text) ) {
-        for (int i=1; i<notes.size(); ++i) {
+        for (int i=0; i<notes.size(); ++i) {
             notes_file.write(qPrintable(notes.at(i)));
             notes_file.putChar('\n');
         }

@@ -32,7 +32,6 @@ class Weapon : public Falling {
 public:
     using Falling::Falling;
 
-    int  Wearable() const override;
     int  DamageKind() const override;
     void Damage(int dmg, int kind) override;
     int  DamageLevel() const override;

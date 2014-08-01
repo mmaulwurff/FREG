@@ -554,7 +554,9 @@
     Clock::Clock (QDataStream & str, const int kind, const int sub) :
             Active(str, kind, sub, NONSTANDARD)
     {
-        Inscribe(GetNote());
+        if ( noteId != 0 ) {
+            Inscribe(GetNote());
+        }
     }
 
 // Creator::
