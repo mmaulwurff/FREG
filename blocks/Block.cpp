@@ -19,6 +19,7 @@
 
 #include "blocks/Block.h"
 #include "BlockManager.h"
+#include "World.h"
 #include "Inventory.h"
 
 dirs Block::MakeDirFromDamage(const int dmg_kind) {
@@ -170,7 +171,9 @@ usage_types Block::Use(Block *) { return USAGE_TYPE_NO; }
 
 bool Block::Inscribe(const QString str) {
     if ( Sub() == AIR ) return false;
-    note = str.left(MAX_NOTE_LENGTH);
+    noteId = ( noteId == 0 ) ? // new note
+        world->SetNote(str.left(MAX_NOTE_LENGTH)) :
+        world->ChangeNote(str.left(MAX_NOTE_LENGTH), noteId);
     return true;
 }
 
@@ -183,7 +186,10 @@ void Block::Restore() { durability = MAX_DURABILITY; }
 void Block::Break()   { durability = 0; }
 dirs Block::GetDir() const { return static_cast<dirs>(direction); }
 int  Block::GetDurability() const { return durability; }
-QString Block::GetNote() const { return note; }
+
+QString Block::GetNote() const {
+    return (noteId == 0) ? QString() : world->GetNote(noteId);
+}
 
 void Block::Mend() {
     if ( GetDurability() < MAX_DURABILITY ) {
@@ -228,10 +234,12 @@ void Block::SetDir(const int dir) {
 bool Block::operator!=(const Block & block) const { return !(*this == block); }
 
 bool Block::operator==(const Block & block) const {
-    return ( block.GetId() == GetId()
+    return ( block.Kind() == Kind()
+        && block.Sub() == Sub()
         && block.GetDurability() == GetDurability()
         && block.GetDir() == GetDir()
-        && block.note==note );
+        && ( (block.noteId == 0 && noteId == 0)
+            || world->GetNote(block.noteId) == world->GetNote(noteId) ) );
 }
 
 void Block::SaveAttributes(QDataStream &) const {}
@@ -243,9 +251,9 @@ void Block::SaveToFile(QDataStream & out) {
         out << sub << kind <<
             ( ( ( ( durability
             <<= 3 ) |= direction )
-            <<= 1 ) |= bool(not note.isEmpty()) );
-        if ( Q_UNLIKELY(not note.isEmpty()) ) {
-            out << note;
+            <<= 1 ) |= (noteId != 0) );
+        if ( Q_UNLIKELY(noteId != 0) ) {
+            out << noteId;
         }
         SaveAttributes(out);
     }
@@ -258,7 +266,7 @@ void Block::SaveNormalToFile(QDataStream & out) const {
 void Block::RestoreDurabilityAfterSave() { durability >>= 4; }
 
 Block::Block(const int kind_, const int sub_, const int transp) :
-        note(),
+        noteId(0),
         durability(MAX_DURABILITY),
         transparent(Transparency(transp, sub_)),
         kind(kind_),
@@ -269,7 +277,7 @@ Block::Block(const int kind_, const int sub_, const int transp) :
 Block::Block(QDataStream & str, const int kind_, const int sub_,
         const int transp)
     :
-        note(),
+        noteId(),
         durability(),
         transparent(Transparency(transp, sub_)),
         kind(kind_),
@@ -279,7 +287,7 @@ Block::Block(QDataStream & str, const int kind_, const int sub_,
     // use durability as buffer, set actual value in the end:
     str >> durability;
     if ( Q_UNLIKELY(durability & 1) ) {
-        str >> note;
+        str >> noteId;
     }
     direction = ( durability >>= 1 ) & 0x7;
     durability >>= 3;

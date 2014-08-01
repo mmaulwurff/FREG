@@ -134,7 +134,7 @@ Dwarf::Dwarf(const int kind, const int sub) :
         Inventory(),
         lightRadius(MIN_DWARF_LIGHT_RADIUS)
 {
-    note = "Urist";
+    Block::Inscribe("Urist");
 }
 
 Dwarf::Dwarf(QDataStream & str, const int kind, const int sub) :

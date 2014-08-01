@@ -99,7 +99,7 @@ public:
     QString FullName() const override;
     Block * DropAfterDamage(bool * delete_block) override;
     Inventory * HasInventory() override;
-    usage_types Use(Block * who = 0) override;
+    usage_types Use(Block * who) override;
     inner_actions ActInner() override;
 
 protected:
@@ -156,7 +156,7 @@ public:
     bool Inscribe(QString) override;
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
-    usage_types Use(Block * who = 0) override;
+    usage_types Use(Block * who) override;
     inner_actions ActInner() override;
 
 protected:
@@ -192,7 +192,7 @@ public:
 
     bool Inscribe(QString) override;
     QString FullName() const override;
-    usage_types Use(Block * who = 0) override;
+    usage_types Use(Block * who) override;
 };
 
 class Map : public Text {
@@ -201,7 +201,7 @@ public:
     Map(QDataStream & str, int sub, int id);
 
     QString FullName() const override;
-    usage_types Use(Block * who = 0) override;
+    usage_types Use(Block * who) override;
 
 protected:
     void SaveAttributes(QDataStream & out) const override;
@@ -221,7 +221,7 @@ public:
     void ReceiveSignal(QString) override;
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
-    usage_types Use(Block * who = 0) override;
+    usage_types Use(Block * who) override;
 };
 
 class Predator : public Animal {
