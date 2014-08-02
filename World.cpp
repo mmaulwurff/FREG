@@ -629,8 +629,9 @@ void World::Exchange(Block * const block_from, Block * const block_to,
         return;
     }
     if ( inv_from->Number(src) == 0 ) {
-        block_from->ReceiveSignal(tr("Nothing here."));
-        block_to  ->ReceiveSignal(tr("Nothing here."));
+        const QString nothing_here = tr("Nothing here.");
+        block_from->ReceiveSignal(nothing_here);
+        block_to  ->ReceiveSignal(nothing_here);
         return;
     }
     Inventory * const inv_to = block_to->HasInventory();

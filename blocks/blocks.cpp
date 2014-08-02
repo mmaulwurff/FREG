@@ -429,8 +429,7 @@
         case STONE: sub_string = tr(" of stone"); break;
         case GLASS: sub_string = tr(" of glass"); break;
         case IRON:  sub_string = tr(" of iron");  break;
-        default:
-            sub_string = tr(" of something");
+        default:    sub_string = " of something";
             fprintf(stderr, "%s: unlisted sub: %d\n", Q_FUNC_INFO, Sub());
         }
         return locked ? tr("Locked door") : tr("Door") + sub_string;
@@ -480,8 +479,8 @@
 
     QString Clock::FullName() const {
         switch ( Sub() ) {
-        case IRON: return QObject::tr("Iron clock");
-        case EXPLOSIVE: return QObject::tr("Bomb");
+        case IRON:      return tr("Iron clock");
+        case EXPLOSIVE: return tr("Bomb");
         default:
             fprintf(stderr, "%s: unlisted sub: %d\n", Q_FUNC_INFO, Sub());
             return "Strange clock";
@@ -589,7 +588,7 @@
         case GLASS: return QObject::tr("Screen");
         default:
             fprintf(stderr, "%s: sub ?: %d\n", Q_FUNC_INFO, Sub());
-            return QObject::tr("Strange text");
+            return "Strange text";
         }
     }
 

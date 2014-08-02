@@ -93,7 +93,7 @@ Inventory * Player::PlayerInventory() const {
         return inv;
     } else {
         emit Notify(tr("You have no inventory."));
-        return 0;
+        return nullptr;
     }
 }
 
