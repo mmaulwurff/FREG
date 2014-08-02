@@ -1,6 +1,6 @@
 <map id="screens/TextScreen.h" name="screens/TextScreen.h">
-<area shape="rect" id="node3" href="$VirtScreen_8h.html" title="screens/VirtScreen.h" alt="" coords="52,89,196,122"/>
-<area shape="rect" id="node7" href="$header_8h.html" title="header.h" alt="" coords="53,254,123,287"/>
-<area shape="rect" id="node13" href="$World_8h.html" title="World.h" alt="" coords="196,171,263,205"/>
-<area shape="rect" id="node22" href="$worldmap_8h.html" title="worldmap.h" alt="" coords="437,254,525,287"/>
+<area shape="rect" id="node3" href="$VirtScreen_8h.html" title="screens/VirtScreen.h" alt="" coords="91,89,235,122"/>
+<area shape="rect" id="node11" href="$header_8h.html" title="header.h" alt="" coords="128,254,197,287"/>
+<area shape="rect" id="node17" href="$World_8h.html" title="World.h" alt="" coords="200,171,267,205"/>
+<area shape="rect" id="node25" href="$worldmap_8h.html" title="worldmap.h" alt="" coords="408,254,496,287"/>
 </map>

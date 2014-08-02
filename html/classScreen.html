@@ -142,8 +142,8 @@ Public Slots</h2></td></tr>
 <tr class="separator:a18190b0c47d96c385fcde56dc2f2f346"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1cef3c6b529d234d035cdc5344f1148b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScreen.html#a1cef3c6b529d234d035cdc5344f1148b">UpdatePlayer</a> () override</td></tr>
 <tr class="separator:a1cef3c6b529d234d035cdc5344f1148b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a51c01ac73a3b3eeadd66d504b8df868a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScreen.html#a51c01ac73a3b3eeadd66d504b8df868a">UpdateAround</a> (int, int, int, ushort) override</td></tr>
-<tr class="separator:a51c01ac73a3b3eeadd66d504b8df868a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f11e06d23666e491cf197021ec12cc3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScreen.html#a1f11e06d23666e491cf197021ec12cc3">UpdateAround</a> (int, int, int, int) override</td></tr>
+<tr class="separator:a1f11e06d23666e491cf197021ec12cc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a581cf350dc2d6ea1552cc9741c81c100"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScreen.html#a581cf350dc2d6ea1552cc9741c81c100">Move</a> (int) override</td></tr>
 <tr class="separator:a581cf350dc2d6ea1552cc9741c81c100"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a216c3023af7ebaef736385fdb0f02d79"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classScreen.html#a216c3023af7ebaef736385fdb0f02d79">DeathScreen</a> ()</td></tr>
@@ -234,10 +234,14 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:a4370c655ab8fef96399dcf6f2925612f inherit pro_attribs_classVirtScreen"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaed763dcb848640a199dcc6af3ac9453 inherit pro_attribs_classVirtScreen"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classPlayer.html">Player</a> *const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVirtScreen.html#aaed763dcb848640a199dcc6af3ac9453">player</a></td></tr>
 <tr class="separator:aaed763dcb848640a199dcc6af3ac9453 inherit pro_attribs_classVirtScreen"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3eb2e530bbfa1f718323ec1e3502b974 inherit pro_attribs_classVirtScreen"><td class="memItemLeft" align="right" valign="top">QSettings&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVirtScreen.html#a3eb2e530bbfa1f718323ec1e3502b974">settings</a></td></tr>
+<tr class="separator:a3eb2e530bbfa1f718323ec1e3502b974 inherit pro_attribs_classVirtScreen"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae70b019939ba4aed76413681265e63a inherit pro_attribs_classVirtScreen"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVirtScreen.html#aae70b019939ba4aed76413681265e63a">previousCommand</a></td></tr>
+<tr class="separator:aae70b019939ba4aed76413681265e63a inherit pro_attribs_classVirtScreen"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="CursedScreen_8h_source.html#l00136">136</a> of file <a class="el" href="CursedScreen_8h_source.html">CursedScreen.h</a>.</p>
+<p>Definition at line <a class="el" href="CursedScreen_8h_source.html#l00135">135</a> of file <a class="el" href="CursedScreen_8h_source.html">CursedScreen.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a0d536276618329395239659811519a65"></a>
 <div class="memitem">
@@ -275,7 +279,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="CursedScreen_8cpp_source.html#l00819">819</a> of file <a class="el" href="CursedScreen_8cpp_source.html">CursedScreen.cpp</a>.</p>
+<p>Definition at line <a class="el" href="CursedScreen_8cpp_source.html#l00815">815</a> of file <a class="el" href="CursedScreen_8cpp_source.html">CursedScreen.cpp</a>.</p>
 
 </div>
 </div>
@@ -300,7 +304,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="CursedScreen_8cpp_source.html#l00913">913</a> of file <a class="el" href="CursedScreen_8cpp_source.html">CursedScreen.cpp</a>.</p>
+<p>Definition at line <a class="el" href="CursedScreen_8cpp_source.html#l00907">907</a> of file <a class="el" href="CursedScreen_8cpp_source.html">CursedScreen.cpp</a>.</p>
 
 </div>
 </div>
@@ -444,7 +448,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="CursedScreen_8cpp_source.html#l00350">350</a> of file <a class="el" href="CursedScreen_8cpp_source.html">CursedScreen.cpp</a>.</p>
+<p>Definition at line <a class="el" href="CursedScreen_8cpp_source.html#l00349">349</a> of file <a class="el" href="CursedScreen_8cpp_source.html">CursedScreen.cpp</a>.</p>
 
 </div>
 </div>
@@ -498,7 +502,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classVirtScreen.html#aa8c0cccd74d52f7df3626eb32890cca1">VirtScreen</a>.</p>
 
-<p>Definition at line <a class="el" href="CursedScreen_8cpp_source.html#l00230">230</a> of file <a class="el" href="CursedScreen_8cpp_source.html">CursedScreen.cpp</a>.</p>
+<p>Definition at line <a class="el" href="CursedScreen_8cpp_source.html#l00229">229</a> of file <a class="el" href="CursedScreen_8cpp_source.html">CursedScreen.cpp</a>.</p>
 
 </div>
 </div>
@@ -546,7 +550,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="CursedScreen_8cpp_source.html#l00803">803</a> of file <a class="el" href="CursedScreen_8cpp_source.html">CursedScreen.cpp</a>.</p>
+<p>Definition at line <a class="el" href="CursedScreen_8cpp_source.html#l00799">799</a> of file <a class="el" href="CursedScreen_8cpp_source.html">CursedScreen.cpp</a>.</p>
 
 </div>
 </div>
@@ -596,7 +600,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="CursedScreen_8cpp_source.html#l00765">765</a> of file <a class="el" href="CursedScreen_8cpp_source.html">CursedScreen.cpp</a>.</p>
+<p>Definition at line <a class="el" href="CursedScreen_8cpp_source.html#l00761">761</a> of file <a class="el" href="CursedScreen_8cpp_source.html">CursedScreen.cpp</a>.</p>
 
 </div>
 </div>
@@ -647,60 +651,60 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classVirtScreen.html#a6136fa032244875ed3fd91554e3f9ad4">VirtScreen</a>.</p>
-
-<p>Definition at line <a class="el" href="CursedScreen_8cpp_source.html#l00228">228</a> of file <a class="el" href="CursedScreen_8cpp_source.html">CursedScreen.cpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a9406442ed0bf4f6b9e04a6937bd2fe41"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">int Screen::GetChar </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Reimplemented from <a class="el" href="classVirtScreen.html#af3ad74efc0d44ae54a2c27900d3bb631">VirtScreen</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a9406442ed0bf4f6b9e04a6937bd2fe41"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">int Screen::GetChar </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Reimplemented from <a class="el" href="classVirtScreen.html#af3ad74efc0d44ae54a2c27900d3bb631">VirtScreen</a>.</p>
 
 <p>Definition at line <a class="el" href="CursedScreen_8cpp_source.html#l00227">227</a> of file <a class="el" href="CursedScreen_8cpp_source.html">CursedScreen.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a9406442ed0bf4f6b9e04a6937bd2fe41"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Screen::GetChar </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classVirtScreen.html#af3ad74efc0d44ae54a2c27900d3bb631">VirtScreen</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a9406442ed0bf4f6b9e04a6937bd2fe41"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Screen::GetChar </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classVirtScreen.html#af3ad74efc0d44ae54a2c27900d3bb631">VirtScreen</a>.</p>
+
+<p>Definition at line <a class="el" href="CursedScreen_8cpp_source.html#l00226">226</a> of file <a class="el" href="CursedScreen_8cpp_source.html">CursedScreen.cpp</a>.</p>
 
 </div>
 </div>
@@ -800,7 +804,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="CursedScreen_8cpp_source.html#l00773">773</a> of file <a class="el" href="CursedScreen_8cpp_source.html">CursedScreen.cpp</a>.</p>
+<p>Definition at line <a class="el" href="CursedScreen_8cpp_source.html#l00769">769</a> of file <a class="el" href="CursedScreen_8cpp_source.html">CursedScreen.cpp</a>.</p>
 
 </div>
 </div>
@@ -984,7 +988,7 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a51c01ac73a3b3eeadd66d504b8df868a"></a>
+<a class="anchor" id="a1f11e06d23666e491cf197021ec12cc3"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -1012,7 +1016,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">ushort&#160;</td>
+          <td class="paramtype">int&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -1027,8 +1031,6 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="TextScreen_8cpp_source.html#l00037">37</a> of file <a class="el" href="TextScreen_8cpp_source.html">TextScreen.cpp</a>.</p>
 
 </div>
 </div>
@@ -1137,7 +1139,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jul 30 2014 12:58:20 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun Aug 3 2014 00:05:58 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

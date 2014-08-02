@@ -2,7 +2,6 @@ var searchData=
 [
   ['water',['WATER',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a9ac7d5e5851d7a2bc186a1c3341589f6',1,'header.h']]],
   ['weapon',['WEAPON',['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285aabb6de3c5dc7e2f70051d23bb1e5e613',1,'header.h']]],
-  ['wearable_5farm',['WEARABLE_ARM',['../Block_8h.html#a627dbcae5241f12e1929324094714a65a76f3df8fcdec43686ec9c3381c474b80',1,'Block.h']]],
   ['wearable_5fbody',['WEARABLE_BODY',['../Block_8h.html#a627dbcae5241f12e1929324094714a65aaac45da1e0ee5f766e5ee39619a9a229',1,'Block.h']]],
   ['wearable_5fhead',['WEARABLE_HEAD',['../Block_8h.html#a627dbcae5241f12e1929324094714a65a6bd4d30cdda68fdbd265bad0205c7466',1,'Block.h']]],
   ['wearable_5flegs',['WEARABLE_LEGS',['../Block_8h.html#a627dbcae5241f12e1929324094714a65ae8cd09b057327833eef759131565c5dd',1,'Block.h']]],

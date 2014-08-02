@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['id',['id',['../structCraftItem.html#a3eeeba1fe0ce47cfd205de5f86a4abf3',1,'CraftItem']]],
-  ['ifplayerexists',['IfPlayerExists',['../classPlayer.html#ad79b93e11ef42e570f150d79483e4b88',1,'Player']]],
   ['illuminator',['Illuminator',['../classIlluminator.html',1,'Illuminator'],['../classIlluminator.html#afd5b1a60de807718291655aed4a3881b',1,'Illuminator::Illuminator(int sub, int id)'],['../classIlluminator.html#afbfbc5e005f138df1db0813689161a5d',1,'Illuminator::Illuminator(QDataStream &amp;str, int sub, int id)'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285af8a07976b0fd176782f809d62375b8fa',1,'ILLUMINATOR():&#160;header.h']]],
   ['illuminator_2ecpp',['Illuminator.cpp',['../Illuminator_8cpp.html',1,'']]],
   ['illuminator_2eh',['Illuminator.h',['../Illuminator_8h.html',1,'']]],
@@ -14,7 +12,7 @@ var searchData=
   ['inscribe',['Inscribe',['../classBlock.html#a66f434f7c2448289e87e424ee95c7e21',1,'Block::Inscribe()'],['../classLiquid.html#a7a7f028d6680d6d64b26cf8b48e55ba8',1,'Liquid::Inscribe()'],['../classClock.html#a933431182237f8e19afd8b171f92fa30',1,'Clock::Inscribe()'],['../classText.html#af5ffb3803629aee831a1fc84a7257b4b',1,'Text::Inscribe()'],['../classDwarf.html#a7b69e3f3b54d625b63db5f67312b90b9',1,'Dwarf::Inscribe()'],['../classPlayer.html#af9994ed6549b1fbafbc9b9b9acb2ddab',1,'Player::Inscribe() const '],['../classPlayer.html#a3294d1ef4eff086991b7b4505b668442',1,'Player::Inscribe(int num)'],['../classWorld.html#a6ea0b2391d35a7522c2055cbd392c04e',1,'World::Inscribe()']]],
   ['inscribeinv',['InscribeInv',['../classInventory.html#ae955a12d366978748fb0f914f12638cd',1,'Inventory']]],
   ['inv_5fsize',['INV_SIZE',['../Inventory_8h.html#a3de0a20008d74f0b7fedfe1da66ab5ec',1,'Inventory.h']]],
-  ['inventory',['Inventory',['../classInventory.html',1,'Inventory'],['../classInventory.html#a76f6a8b946a8898a08f597431e0e272d',1,'Inventory::Inventory(const Inventory &amp;inv)=delete'],['../classInventory.html#ad397e013573784b17472a769ed316fac',1,'Inventory::Inventory(int sz=INV_SIZE)'],['../classInventory.html#a35fd9dc5c981a7432c7ffb90944ee263',1,'Inventory::Inventory(QDataStream &amp;str, int size=INV_SIZE)']]],
+  ['inventory',['Inventory',['../classInventory.html',1,'Inventory'],['../classInventory.html#a505141542e60ee4044b045861a326ff4',1,'Inventory::Inventory(Inventory &amp;inv)=delete'],['../classInventory.html#ad397e013573784b17472a769ed316fac',1,'Inventory::Inventory(int sz=INV_SIZE)'],['../classInventory.html#a35fd9dc5c981a7432c7ffb90944ee263',1,'Inventory::Inventory(QDataStream &amp;str, int size=INV_SIZE)']]],
   ['inventory_2ecpp',['Inventory.cpp',['../Inventory_8cpp.html',1,'']]],
   ['inventory_2eh',['Inventory.h',['../Inventory_8h.html',1,'']]],
   ['invertbounds',['InVertBounds',['../classWorld.html#ab58cf610fc9fc6c933ff75493aead01b',1,'World']]],

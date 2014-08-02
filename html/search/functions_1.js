@@ -1,7 +1,7 @@
 var searchData=
 [
   ['backpack',['Backpack',['../classPlayer.html#a0aed24881e8f2558dfe42976d1b9700d',1,'Player']]],
-  ['block',['Block',['../classBlock.html#ac54c22c472d32b25702b29358857f437',1,'Block::Block(int sub, int id, int transp=UNDEF)'],['../classBlock.html#a7cd811c785b5ac494371d430e2a2a34d',1,'Block::Block(QDataStream &amp;, int sub, int id, int transp=UNDEF)'],['../classBlock.html#a0b82be82678747aaf1dc304df9edc1be',1,'Block::Block(const Block &amp;)=delete']]],
+  ['block',['Block',['../classBlock.html#a025d5d632ec8bf5a4d6e66de5aadc651',1,'Block::Block(int sub, int kind, int transp=UNDEF)'],['../classBlock.html#af1f3b863cd81d5114a18962a0148206c',1,'Block::Block(QDataStream &amp;, int sub, int kind, int transp=UNDEF)'],['../classBlock.html#a3ccf329b6b4974bd367bcf3d94a398c7',1,'Block::Block(Block &amp;)=delete']]],
   ['blockfromfile',['BlockFromFile',['../classBlockManager.html#a49efb21a554754d0552a6e01220a26df',1,'BlockManager']]],
   ['blockmanager',['BlockManager',['../classBlockManager.html#a93282216d97540def52c1fa4029eb693',1,'BlockManager']]],
   ['break',['Break',['../classBlock.html#a8dae7cf589a4775d4c01866569500720',1,'Block']]],

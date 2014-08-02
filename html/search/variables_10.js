@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['x_5fself',['x_self',['../classXy.html#a75171c6c3aa056e007fb6a0bc821dba9',1,'Xy']]]
+  ['treshold',['TRESHOLD',['../Armour_8cpp.html#ad752760c7226b6260aabea7edd4b170c',1,'Armour.cpp']]]
 ];

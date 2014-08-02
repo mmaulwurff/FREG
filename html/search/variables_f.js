@@ -1,15 +1,13 @@
 var searchData=
 [
-  ['w',['w',['../classVirtScreen.html#a4370c655ab8fef96399dcf6f2925612f',1,'VirtScreen']]],
-  ['weight_5fair',['WEIGHT_AIR',['../Block_8h.html#a98c3d68ae52e4b98973f1fe86de294ea',1,'Block.h']]],
-  ['weight_5fglass',['WEIGHT_GLASS',['../Block_8h.html#ae4ce3936a853d91039fddf20cfcf1dbd',1,'Block.h']]],
-  ['weight_5fgreenery',['WEIGHT_GREENERY',['../Block_8h.html#aa3790befdf33e8811c15dd13c32867d9',1,'Block.h']]],
-  ['weight_5firon',['WEIGHT_IRON',['../Block_8h.html#a218767c29ad4a89a915e2176dc3577ec',1,'Block.h']]],
-  ['weight_5fminimal',['WEIGHT_MINIMAL',['../Block_8h.html#a77d09b001f0ca17f3c0a994fc2bb7bff',1,'Block.h']]],
-  ['weight_5fnullstone',['WEIGHT_NULLSTONE',['../Block_8h.html#a8cca719e02a8544db31be33b6e3700cf',1,'Block.h']]],
-  ['weight_5fsand',['WEIGHT_SAND',['../Block_8h.html#a162564858bc44e0020edbe620b837eae',1,'Block.h']]],
-  ['weight_5fstone',['WEIGHT_STONE',['../Block_8h.html#ae62294f6dd21c2b88d45a3dce4ce0baf',1,'Block.h']]],
-  ['weight_5fwater',['WEIGHT_WATER',['../Block_8h.html#a3bf2319ed726c4e980a5826022698c9e',1,'Block.h']]],
-  ['workbench_5fsize',['WORKBENCH_SIZE',['../Containers_8h.html#a220f6a2ba5bfe354c355d47d311ff7ea',1,'Containers.h']]],
-  ['world',['world',['../World_8cpp.html#a38026b801fec560c0322d4e5b6cab8be',1,'world():&#160;World.cpp'],['../World_8h.html#a38026b801fec560c0322d4e5b6cab8be',1,'world():&#160;World.cpp']]]
+  ['screen_5fsize',['SCREEN_SIZE',['../CursedScreen_8h.html#a62bead7f96452cb837e1dba3d0678faa',1,'CursedScreen.h']]],
+  ['seconds_5fin_5fday',['SECONDS_IN_DAY',['../header_8h.html#aff10c03bcf66f89bed6708c35fb5ada3',1,'header.h']]],
+  ['seconds_5fin_5fdaylight',['SECONDS_IN_DAYLIGHT',['../header_8h.html#a3075305f41a0ae0081d785fdc49b89fe',1,'header.h']]],
+  ['seconds_5fin_5fhour',['SECONDS_IN_HOUR',['../header_8h.html#a783cd37c928f6ed101059c585e8eb61f',1,'header.h']]],
+  ['seconds_5fin_5fnight',['SECONDS_IN_NIGHT',['../header_8h.html#a7f228aed9dbb67d39a7a49cbdcb9037c',1,'header.h']]],
+  ['settings',['settings',['../classVirtScreen.html#a3eb2e530bbfa1f718323ec1e3502b974',1,'VirtScreen']]],
+  ['shred_5fwidth',['SHRED_WIDTH',['../header_8h.html#aafd122473982b0312dbad3f7720eb762',1,'header.h']]],
+  ['sound_5fstrings',['SOUND_STRINGS',['../Block_8h.html#a34d1f7669235dd5a5f51d7cc681be418',1,'Block.h']]],
+  ['sub',['sub',['../structCraftItem.html#a1f43f9af07c6fb56b24a9cd8343d6270',1,'CraftItem']]],
+  ['sun_5flight_5ffactor',['SUN_LIGHT_FACTOR',['../World_8h.html#a9c2d04dab224c787ecdebfe0370d59f0',1,'World.h']]]
 ];

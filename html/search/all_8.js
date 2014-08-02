@@ -7,6 +7,6 @@ var searchData=
   ['header_2eh',['header.h',['../header_8h.html',1,'']]],
   ['height',['HEIGHT',['../header_8h.html#af728b7647e0b8c49832983a31f9a2e9b',1,'header.h']]],
   ['height_5fnot_5fenough',['HEIGHT_NOT_ENOUGH',['../CursedScreen_8h.html#ae6468bd5894ef69f1df5fca80d2550d3a0d9082f472eeed9d87b8976d34db17a9',1,'HEIGHT_NOT_ENOUGH():&#160;CursedScreen.h'],['../TextScreen_8h.html#ae6468bd5894ef69f1df5fca80d2550d3a0d9082f472eeed9d87b8976d34db17a9',1,'HEIGHT_NOT_ENOUGH():&#160;TextScreen.h']]],
-  ['helmet',['Helmet',['../classHelmet.html',1,'']]],
+  ['helmet',['Helmet',['../classHelmet.html',1,'Helmet'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a79ede55d79c4823510a452253427fbd8',1,'HELMET():&#160;header.h']]],
   ['hp',['HP',['../classPlayer.html#a6c7c6dc7a4847327cb0f82dfdab3964b',1,'Player']]]
 ];

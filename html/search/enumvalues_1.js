@@ -21,6 +21,7 @@ var searchData=
   ['blue_5fwhite',['BLUE_WHITE',['../CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072af3e0cc40aaf150a398fea27e4ea9afcf',1,'CursedScreen.h']]],
   ['blue_5fyellow',['BLUE_YELLOW',['../CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a74397d6ab3cfc162bd5e676092ae9569',1,'CursedScreen.h']]],
   ['bone',['BONE',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a618bf303fb58b4eb006b58c15ca0f7ab',1,'header.h']]],
+  ['boots',['BOOTS',['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a3f13a4421904ef2c756e541b69f7cf5c',1,'header.h']]],
   ['bucket',['BUCKET',['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a6562baa14d39f302094c545623c5ae14',1,'header.h']]],
   ['bush',['BUSH',['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285ab2e062d1d8146bf8e158300e5930fff4',1,'header.h']]]
 ];

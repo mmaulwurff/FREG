@@ -91,62 +91,72 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">Armour.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<a href="Armour_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef ARMOURS_H</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define ARMOURS_H</span></div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;</div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="Block_8h.html">blocks/Block.h</a>&quot;</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;</div>
-<div class="line"><a name="l00006"></a><span class="lineno"><a class="line" href="classArmour.html">    6</a></span>&#160;<span class="keyword">class </span><a class="code" href="classArmour.html">Armour</a> : <span class="keyword">public</span> <a class="code" href="classBlock.html">Block</a> {</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;    <span class="keyword">using</span> <a class="code" href="classBlock.html#ac54c22c472d32b25702b29358857f437">Block::Block</a>;</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;    <span class="keywordtype">int</span>  <a class="code" href="classArmour.html#adcc75712ff54db8527236b2c271a143a">Kind</a>() <span class="keyword">const override</span>;</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classArmour.html#a2c1fba273e4cb5e1138db5ac8eb6d66e">Damage</a>(<span class="keywordtype">int</span> dmg, <span class="keywordtype">int</span> dmg_kind) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    <span class="keywordtype">int</span>  <a class="code" href="classArmour.html#a129859fb63d95e2224b411047c88605a">Wearable</a>() <span class="keyword">const override</span>;</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    <span class="keywordtype">int</span>  <a class="code" href="classArmour.html#a30316e4a51a1df54c4ee3bc0b8b8dd0e">DamageLevel</a>() <span class="keyword">const override</span>;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    QString <a class="code" href="classArmour.html#ad5761b5790e4307fe8c6365022efc30e">FullName</a>() <span class="keyword">const override</span>;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;};</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="classHelmet.html">   17</a></span>&#160;<span class="keyword">class </span><a class="code" href="classHelmet.html">Helmet</a> : <span class="keyword">public</span> <a class="code" href="classArmour.html">Armour</a> {</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <span class="keyword">using</span> Armour::Armour;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keywordtype">int</span>  <a class="code" href="classHelmet.html#a99e8910243516a408cc98369ee217f52">Kind</a>() <span class="keyword">const override</span>;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <span class="keywordtype">int</span>  <a class="code" href="classHelmet.html#a67f57f21d65449ecc7827f26a3bba8dd">Wearable</a>() <span class="keyword">const override</span>;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    QString <a class="code" href="classHelmet.html#a6fc94d078140e73f6e3247f46581a8d9">FullName</a>() <span class="keyword">const override</span>;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;};</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
-<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="classBoots.html">   26</a></span>&#160;<span class="keyword">class </span><a class="code" href="classBoots.html">Boots</a> : <span class="keyword">public</span> <a class="code" href="classArmour.html">Armour</a> {</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keyword">using</span> Armour::Armour;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keywordtype">int</span>  <a class="code" href="classBoots.html#abbff9da918c05fcfcdeeee4e0f633f19">Kind</a>() <span class="keyword">const override</span>;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="keywordtype">int</span>  <a class="code" href="classBoots.html#a884a005c0517db01f9c929fe11346a9e">Wearable</a>() <span class="keyword">const override</span>;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    QString <a class="code" href="classBoots.html#a5404185c02aa2ebd250ab4b4fbe8b523">FullName</a>() <span class="keyword">const override</span>;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;};</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#endif // ARMOURS_H</span></div>
-<div class="ttc" id="classHelmet_html_a67f57f21d65449ecc7827f26a3bba8dd"><div class="ttname"><a href="classHelmet.html#a67f57f21d65449ecc7827f26a3bba8dd">Helmet::Wearable</a></div><div class="ttdeci">int Wearable() const override</div></div>
-<div class="ttc" id="classHelmet_html_a99e8910243516a408cc98369ee217f52"><div class="ttname"><a href="classHelmet.html#a99e8910243516a408cc98369ee217f52">Helmet::Kind</a></div><div class="ttdeci">int Kind() const override</div></div>
-<div class="ttc" id="classBoots_html_a884a005c0517db01f9c929fe11346a9e"><div class="ttname"><a href="classBoots.html#a884a005c0517db01f9c929fe11346a9e">Boots::Wearable</a></div><div class="ttdeci">int Wearable() const override</div></div>
-<div class="ttc" id="classHelmet_html_a6fc94d078140e73f6e3247f46581a8d9"><div class="ttname"><a href="classHelmet.html#a6fc94d078140e73f6e3247f46581a8d9">Helmet::FullName</a></div><div class="ttdeci">QString FullName() const override</div></div>
-<div class="ttc" id="classArmour_html_a30316e4a51a1df54c4ee3bc0b8b8dd0e"><div class="ttname"><a href="classArmour.html#a30316e4a51a1df54c4ee3bc0b8b8dd0e">Armour::DamageLevel</a></div><div class="ttdeci">int DamageLevel() const override</div></div>
-<div class="ttc" id="classArmour_html"><div class="ttname"><a href="classArmour.html">Armour</a></div><div class="ttdef"><b>Definition:</b> <a href="Armour_8h_source.html#l00006">Armour.h:6</a></div></div>
-<div class="ttc" id="classArmour_html_adcc75712ff54db8527236b2c271a143a"><div class="ttname"><a href="classArmour.html#adcc75712ff54db8527236b2c271a143a">Armour::Kind</a></div><div class="ttdeci">int Kind() const override</div></div>
-<div class="ttc" id="classArmour_html_ad5761b5790e4307fe8c6365022efc30e"><div class="ttname"><a href="classArmour.html#ad5761b5790e4307fe8c6365022efc30e">Armour::FullName</a></div><div class="ttdeci">QString FullName() const override</div></div>
-<div class="ttc" id="classBoots_html_a5404185c02aa2ebd250ab4b4fbe8b523"><div class="ttname"><a href="classBoots.html#a5404185c02aa2ebd250ab4b4fbe8b523">Boots::FullName</a></div><div class="ttdeci">QString FullName() const override</div></div>
-<div class="ttc" id="classArmour_html_a129859fb63d95e2224b411047c88605a"><div class="ttname"><a href="classArmour.html#a129859fb63d95e2224b411047c88605a">Armour::Wearable</a></div><div class="ttdeci">int Wearable() const override</div></div>
-<div class="ttc" id="classBoots_html"><div class="ttname"><a href="classBoots.html">Boots</a></div><div class="ttdef"><b>Definition:</b> <a href="Armour_8h_source.html#l00026">Armour.h:26</a></div></div>
-<div class="ttc" id="classBoots_html_abbff9da918c05fcfcdeeee4e0f633f19"><div class="ttname"><a href="classBoots.html#abbff9da918c05fcfcdeeee4e0f633f19">Boots::Kind</a></div><div class="ttdeci">int Kind() const override</div></div>
-<div class="ttc" id="classBlock_html_ac54c22c472d32b25702b29358857f437"><div class="ttname"><a href="classBlock.html#ac54c22c472d32b25702b29358857f437">Block::Block</a></div><div class="ttdeci">Block(int sub, int id, int transp=UNDEF)</div><div class="ttdef"><b>Definition:</b> <a href="Block_8cpp_source.html#l00261">Block.cpp:261</a></div></div>
-<div class="ttc" id="classHelmet_html"><div class="ttname"><a href="classHelmet.html">Helmet</a></div><div class="ttdef"><b>Definition:</b> <a href="Armour_8h_source.html#l00017">Armour.h:17</a></div></div>
-<div class="ttc" id="classArmour_html_a2c1fba273e4cb5e1138db5ac8eb6d66e"><div class="ttname"><a href="classArmour.html#a2c1fba273e4cb5e1138db5ac8eb6d66e">Armour::Damage</a></div><div class="ttdeci">void Damage(int dmg, int dmg_kind) override</div></div>
-<div class="ttc" id="classBlock_html"><div class="ttname"><a href="classBlock.html">Block</a></div><div class="ttdoc">Block without special physics and attributes. </div><div class="ttdef"><b>Definition:</b> <a href="Block_8h_source.html#l00085">Block.h:85</a></div></div>
+<a href="Armour_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;    <span class="comment">/* freg, Free-Roaming Elementary Game with open and interactive world</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">    *  Copyright (C) 2012-2014 Alexander &#39;mmaulwurff&#39; Kromm</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">    *  mmaulwurff@gmail.com</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">    *</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">    * This file is part of FREG.</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">    *</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">    * FREG is free software: you can redistribute it and/or modify</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment">    * it under the terms of the GNU General Public License as published by</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">    * the Free Software Foundation, either version 3 of the License, or</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment">    * (at your option) any later version.</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment">    *</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment">    * FREG is distributed in the hope that it will be useful,</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment">    * but WITHOUT ANY WARRANTY; without even the implied warranty of</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment">    * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment">    * GNU General Public License for more details.</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment">    *</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment">    * You should have received a copy of the GNU General Public License</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">    * along with FREG. If not, see &lt;http://www.gnu.org/licenses/&gt;. */</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#ifndef ARMOURS_H</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#define ARMOURS_H</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="Block_8h.html">blocks/Block.h</a>&quot;</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
+<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="classArmour.html">   25</a></span>&#160;<span class="keyword">class </span><a class="code" href="classArmour.html">Armour</a> : <span class="keyword">public</span> <a class="code" href="classBlock.html">Block</a> {</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keyword">using</span> <a class="code" href="classBlock.html#a025d5d632ec8bf5a4d6e66de5aadc651">Block::Block</a>;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classArmour.html#a2c1fba273e4cb5e1138db5ac8eb6d66e">Damage</a>(<span class="keywordtype">int</span> dmg, <span class="keywordtype">int</span> dmg_kind) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keywordtype">int</span>  <a class="code" href="classArmour.html#a129859fb63d95e2224b411047c88605a">Wearable</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="keywordtype">int</span>  <a class="code" href="classArmour.html#a30316e4a51a1df54c4ee3bc0b8b8dd0e">DamageLevel</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    QString <a class="code" href="classArmour.html#ad5761b5790e4307fe8c6365022efc30e">FullName</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;}; <span class="comment">// class Armour</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
+<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="classHelmet.html">   34</a></span>&#160;<span class="keyword">class </span><a class="code" href="classHelmet.html">Helmet</a> : <span class="keyword">public</span> <a class="code" href="classArmour.html">Armour</a> {</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keyword">using</span> Armour::Armour;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keywordtype">int</span>  <a class="code" href="classHelmet.html#a67f57f21d65449ecc7827f26a3bba8dd">Wearable</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    QString <a class="code" href="classHelmet.html#a6fc94d078140e73f6e3247f46581a8d9">FullName</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;}; <span class="comment">// class Helmet</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
+<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="classBoots.html">   41</a></span>&#160;<span class="keyword">class </span><a class="code" href="classBoots.html">Boots</a> : <span class="keyword">public</span> <a class="code" href="classArmour.html">Armour</a> {</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keyword">using</span> Armour::Armour;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keywordtype">int</span>  <a class="code" href="classBoots.html#a884a005c0517db01f9c929fe11346a9e">Wearable</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    QString <a class="code" href="classBoots.html#a5404185c02aa2ebd250ab4b4fbe8b523">FullName</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;}; <span class="comment">// class Boots</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="preprocessor">#endif // ARMOURS_H</span></div>
+<div class="ttc" id="classHelmet_html_a67f57f21d65449ecc7827f26a3bba8dd"><div class="ttname"><a href="classHelmet.html#a67f57f21d65449ecc7827f26a3bba8dd">Helmet::Wearable</a></div><div class="ttdeci">int Wearable() const override</div><div class="ttdef"><b>Definition:</b> <a href="Armour_8cpp_source.html#l00047">Armour.cpp:47</a></div></div>
+<div class="ttc" id="classBoots_html_a884a005c0517db01f9c929fe11346a9e"><div class="ttname"><a href="classBoots.html#a884a005c0517db01f9c929fe11346a9e">Boots::Wearable</a></div><div class="ttdeci">int Wearable() const override</div><div class="ttdef"><b>Definition:</b> <a href="Armour_8cpp_source.html#l00059">Armour.cpp:59</a></div></div>
+<div class="ttc" id="classHelmet_html_a6fc94d078140e73f6e3247f46581a8d9"><div class="ttname"><a href="classHelmet.html#a6fc94d078140e73f6e3247f46581a8d9">Helmet::FullName</a></div><div class="ttdeci">QString FullName() const override</div><div class="ttdef"><b>Definition:</b> <a href="Armour_8cpp_source.html#l00049">Armour.cpp:49</a></div></div>
+<div class="ttc" id="classArmour_html_a30316e4a51a1df54c4ee3bc0b8b8dd0e"><div class="ttname"><a href="classArmour.html#a30316e4a51a1df54c4ee3bc0b8b8dd0e">Armour::DamageLevel</a></div><div class="ttdeci">int DamageLevel() const override</div><div class="ttdef"><b>Definition:</b> <a href="Armour_8cpp_source.html#l00035">Armour.cpp:35</a></div></div>
+<div class="ttc" id="classArmour_html"><div class="ttname"><a href="classArmour.html">Armour</a></div><div class="ttdef"><b>Definition:</b> <a href="Armour_8h_source.html#l00025">Armour.h:25</a></div></div>
+<div class="ttc" id="classArmour_html_ad5761b5790e4307fe8c6365022efc30e"><div class="ttname"><a href="classArmour.html#ad5761b5790e4307fe8c6365022efc30e">Armour::FullName</a></div><div class="ttdeci">QString FullName() const override</div><div class="ttdef"><b>Definition:</b> <a href="Armour_8cpp_source.html#l00037">Armour.cpp:37</a></div></div>
+<div class="ttc" id="classBoots_html_a5404185c02aa2ebd250ab4b4fbe8b523"><div class="ttname"><a href="classBoots.html#a5404185c02aa2ebd250ab4b4fbe8b523">Boots::FullName</a></div><div class="ttdeci">QString FullName() const override</div><div class="ttdef"><b>Definition:</b> <a href="Armour_8cpp_source.html#l00061">Armour.cpp:61</a></div></div>
+<div class="ttc" id="classArmour_html_a129859fb63d95e2224b411047c88605a"><div class="ttname"><a href="classArmour.html#a129859fb63d95e2224b411047c88605a">Armour::Wearable</a></div><div class="ttdeci">int Wearable() const override</div><div class="ttdef"><b>Definition:</b> <a href="Armour_8cpp_source.html#l00034">Armour.cpp:34</a></div></div>
+<div class="ttc" id="classBoots_html"><div class="ttname"><a href="classBoots.html">Boots</a></div><div class="ttdef"><b>Definition:</b> <a href="Armour_8h_source.html#l00041">Armour.h:41</a></div></div>
+<div class="ttc" id="classBlock_html_a025d5d632ec8bf5a4d6e66de5aadc651"><div class="ttname"><a href="classBlock.html#a025d5d632ec8bf5a4d6e66de5aadc651">Block::Block</a></div><div class="ttdeci">Block(int sub, int kind, int transp=UNDEF)</div><div class="ttdef"><b>Definition:</b> <a href="Block_8cpp_source.html#l00268">Block.cpp:268</a></div></div>
+<div class="ttc" id="classHelmet_html"><div class="ttname"><a href="classHelmet.html">Helmet</a></div><div class="ttdef"><b>Definition:</b> <a href="Armour_8h_source.html#l00034">Armour.h:34</a></div></div>
+<div class="ttc" id="classArmour_html_a2c1fba273e4cb5e1138db5ac8eb6d66e"><div class="ttname"><a href="classArmour.html#a2c1fba273e4cb5e1138db5ac8eb6d66e">Armour::Damage</a></div><div class="ttdeci">void Damage(int dmg, int dmg_kind) override</div><div class="ttdef"><b>Definition:</b> <a href="Armour_8cpp_source.html#l00025">Armour.cpp:25</a></div></div>
+<div class="ttc" id="classBlock_html"><div class="ttname"><a href="classBlock.html">Block</a></div><div class="ttdoc">Block without special physics and attributes. </div><div class="ttdef"><b>Definition:</b> <a href="Block_8h_source.html#l00084">Block.h:84</a></div></div>
 <div class="ttc" id="Block_8h_html"><div class="ttname"><a href="Block_8h.html">Block.h</a></div><div class="ttdoc">Provides definition for class Block. </div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jul 30 2014 12:58:19 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun Aug 3 2014 00:05:57 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>
