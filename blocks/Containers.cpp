@@ -69,8 +69,6 @@ const int CONVERTER_LIGHT_RADIUS = 2;
             FREQUENT_NEVER : FREQUENT_RARE;
     }
 
-    int  Container::Kind() const { return Block::Kind(); }
-    int  Container::Sub()  const { return Block::Sub(); }
     void Container::ReceiveSignal(QString) {}
     Inventory * Container::HasInventory() { return this; }
     push_reaction Container::PushResult(dirs) const { return NOT_MOVABLE; }

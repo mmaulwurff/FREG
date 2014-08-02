@@ -90,8 +90,6 @@ public:
     Bush(int sub, int id);
     Bush(QDataStream & str, int sub, int id);
 
-    int  Sub() const override;
-    int  Kind() const override;
     int  Weight() const override;
     int  ShouldAct() const override;
     void ReceiveSignal(QString) override;
@@ -173,9 +171,7 @@ public:
     Creator(int sub, int id);
     Creator(QDataStream & str, int sub, int id);
 
-    int  Kind() const override;
     int  ShouldAct() const override;
-    int  Sub() const override;
     void ReceiveSignal(QString) override;
     int  DamageKind() const override;
     int  DamageLevel() const override;

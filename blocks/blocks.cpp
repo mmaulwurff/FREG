@@ -290,8 +290,6 @@
     }
 
 // Bush::
-    int  Bush::Kind() const { return Block::Kind(); }
-    int  Bush::Sub()  const { return Block::Sub(); }
     int  Bush::ShouldAct() const  { return FREQUENT_RARE; }
     void Bush::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
     int  Bush::Weight() const { return Inventory::Weight()+Block::Weight(); }
@@ -560,8 +558,6 @@
     }
 
 // Creator::
-    int Creator::Kind() const { return Block::Kind(); }
-    int Creator::Sub()  const { return Block::Sub(); }
     QString Creator::FullName() const { return tr("Creative block"); }
     int Creator::DamageKind() const { return DAMAGE_TIME; }
     int Creator::DamageLevel() const { return MAX_DURABILITY; }

@@ -368,15 +368,15 @@ char Screen::PrintBlock(const Block & block, WINDOW * const window) const {
 }
 
 void Screen::Print() {
-    if ( not player->IfPlayerExists() || updated ) return;
+    if ( not player->GetBlock() || updated ) return;
     updated = true;
     w->Lock();
     PrintHUD();
     const dirs dir = player->GetDir();
     if ( player->UsingSelfType() != USAGE_TYPE_OPEN ) { // left window
         PrintNormal(leftWin, (UP==dir || DOWN==dir) ? NORTH : dir);
-    } else if ( player->PlayerInventory() != nullptr ) {
-        PrintInv(leftWin, *player->PlayerInventory());
+    } else {
+        PrintInv(leftWin, player->GetBlock(), player->PlayerInventory());
     }
     if ( fileToShow == nullptr ) { // right window
         switch ( player->UsingType() ) {
@@ -405,14 +405,8 @@ void Screen::Print() {
         case USAGE_TYPE_OPEN: {
                 int x, y, z;
                 ActionXyz(&x, &y, &z);
-                const Inventory * const inv =
-                    w->GetBlock(x, y, z)->HasInventory();
-                if ( inv != nullptr ) {
-                    PrintInv(rightWin, *inv);
-                    break;
-                } else {
-                    player->SetUsingTypeNo();
-                }
+                Block * const block = w->GetBlock(x, y, z);
+                PrintInv(rightWin, block, block->HasInventory());
             } break;
         }
     }
@@ -544,7 +538,7 @@ void Screen::PrintNormal(WINDOW * const window, dirs dir) const {
             waddch(window, ' ');
         }
     }
-    if ( player->IfPlayerExists() && dir > DOWN ) {
+    if ( player->GetBlock() && dir > DOWN ) {
         static const QString arrow_left (QChar(ascii ? '<' : 0x2190));
         static const QString arrow_up   (QChar(ascii ? '^' : 0x2191));
         static const QString arrow_right(QChar(ascii ? '>' : 0x2192));
@@ -693,21 +687,24 @@ void Screen::PrintTitle(WINDOW * const window, const dirs dir) const {
     mvwaddstr(window, 0, 1, qPrintable(dir_string));
 }
 
-void Screen::PrintInv(WINDOW * const window, const Inventory & inv) const {
+void Screen::PrintInv(WINDOW * const window,
+        const Block * const block, const Inventory * const inv)
+const {
+    if ( inv == nullptr ) return;
     werase(window);
     wstandend(window);
-    const int start = inv.Start();
+    const int start = inv->Start();
     int shift = 0; // to divide inventory sections
-    for (int i=0; i<inv.Size(); ++i) {
+    for (int i=0; i<inv->Size(); ++i) {
         shift += ( start == i && i != 0 );
         mvwprintw(window, 2+i+shift, 1, "%c) ", 'a'+i);
-        const int number = inv.Number(i);
+        const int number = inv->Number(i);
         if ( 0 == number ) {
             continue;
         }
-        const Block * const block = inv.ShowBlock(i);
+        const Block * const block = inv->ShowBlock(i);
         wprintw(window, "[%c]%s",
-            PrintBlock(*block, window), qPrintable(inv.InvFullName(i)) );
+            PrintBlock(*block, window), qPrintable(inv->InvFullName(i)) );
         if ( 1 < number ) {
             waddstr(window, qPrintable(Inventory::NumStr(number)));
         }
@@ -725,21 +722,21 @@ void Screen::PrintInv(WINDOW * const window, const Inventory & inv) const {
             }
         }
         wstandend(window);
-        mvwprintw(window, 2+i+shift, 53, "%5hu mz", inv.GetInvWeight(i));
+        mvwprintw(window, 2+i+shift, 53, "%5hu mz", inv->GetInvWeight(i));
     }
-    mvwprintw(window, 2+inv.Size()+shift, 40,
+    mvwprintw(window, 2+inv->Size()+shift, 40,
         qPrintable(tr("All weight: %1 mz").
-            arg(inv.Weight(), 6, 10, QChar(' '))));
-    wattrset(window, Color(inv.Kind(), inv.Sub()));
+            arg(inv->Weight(), 6, 10, QChar(' '))));
+    wattrset(window, Color(block->Kind(), block->Sub()));
     box(window, 0, 0);
     if ( start != 0 ) {
         mvwhline(window, 2+start, 1, ACS_HLINE, SCREEN_SIZE*2);
     }
-    mvwprintw(window, 0, 1, "[%c] %s", CharName( inv.Kind(), inv.Sub()),
-        qPrintable((player->PlayerInventory()==&inv) ?
-            tr("Your inventory") : inv.FullName()) );
+    mvwprintw(window, 0, 1, "[%c] %s", CharName( block->Kind(), block->Sub()),
+        qPrintable((player->PlayerInventory() == inv) ?
+            tr("Your inventory") : block->FullName()) );
     wrefresh(window);
-} // void Screen::PrintInv(WINDOW * window, const Inventory * inv)
+} // void Screen::PrintInv(WINDOW *, const Block *, const Inventory *)
 
 void Screen::CleanFileToShow() {
     delete fileToShow;

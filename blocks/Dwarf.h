@@ -31,11 +31,9 @@ public:
     Dwarf(int sub, int id);
     Dwarf(QDataStream & str, int sub, int id);
 
-    int Sub() const override;
     int ShouldAct() const override;
     int DamageKind() const override;
     void Move(dirs direction) override;
-    int Kind() const override;
     int Start() const override;
     int Weight() const override;
     int DamageLevel() const override;

@@ -46,11 +46,11 @@ int  Player::UsingType() const { return usingType; }
 void Player::StopUseAll() { usingType = usingSelfType = USAGE_TYPE_NO; }
 int  Player::UsingSelfType() const { return usingSelfType; }
 void Player::SetUsingTypeNo() { usingType = USAGE_TYPE_NO; }
-bool Player::IfPlayerExists() const { return player != nullptr; }
 int  Player::GetUsingInInventory() const { return usingInInventory; }
 long Player::GetLongitude() const { return GetShred()->Longitude(); }
 long Player::GetLatitude()  const { return GetShred()->Latitude();  }
 bool Player::GetCreativeMode() const { return creativeMode; }
+const Block * Player::GetBlock() const { return player; }
 
 void Player::SetCreativeMode(const bool creative_on) {
     creativeMode = creative_on;
@@ -69,17 +69,17 @@ void Player::SetCreativeMode(const bool creative_on) {
 }
 
 int Player::HP() const {
-    return ( not IfPlayerExists() || GetCreativeMode() ) ?
+    return ( not GetBlock() || GetCreativeMode() ) ?
         -1 : player ? player->GetDurability() : 0;
 }
 
 int Player::BreathPercent() const {
-    if ( not IfPlayerExists() || GetCreativeMode() ) return -100;
+    if ( not GetBlock() || GetCreativeMode() ) return -100;
     return player->Breath()*100/MAX_BREATH;
 }
 
 int Player::SatiationPercent() const {
-    if ( not IfPlayerExists() || GetCreativeMode()
+    if ( not GetBlock() || GetCreativeMode()
             || (player->Sub()!=H_MEAT && player->Sub()!=A_MEAT) )
     {
         return -100;
@@ -136,7 +136,7 @@ void Player::Examine() const {
 }
 
 void Player::Jump() {
-    if ( not IfPlayerExists() ) return;
+    if ( not GetBlock() ) return;
     usingType = USAGE_TYPE_NO;
     if ( GetCreativeMode() ) {
         if ( (UP==dir && z_self<HEIGHT-2) || (DOWN==dir && z_self>1) ) {
@@ -192,7 +192,7 @@ void Player::Inscribe() const {
 }
 
 Block * Player::ValidBlock(const int num) const {
-    if ( not IfPlayerExists() ) {
+    if ( not GetBlock() ) {
         emit Notify("Player does not exist.");
         return 0;
     } // else:

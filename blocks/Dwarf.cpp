@@ -39,10 +39,8 @@ Block * Dwarf::DropAfterDamage(bool * const delete_block) {
     return cadaver;
 }
 
-int  Dwarf::Sub() const { return Block::Sub(); }
 int  Dwarf::ShouldAct() const { return FREQUENT_FIRST | FREQUENT_RARE; }
 int  Dwarf::Start() const { return IN_LEFT + 1; }
-int  Dwarf::Kind() const { return DWARF; }
 int  Dwarf::LightRadius() const { return lightRadius; }
 bool Dwarf::Access() const { return false; }
 QString Dwarf::FullName() const { return tr("Rational creature"); }
@@ -76,7 +74,7 @@ int Dwarf::DamageLevel() const {
 
 void Dwarf::Damage(const int dmg, const int dmg_kind) {
     if ( dmg_kind >= DAMAGE_PUSH_UP ) {
-        Block::Damage(dmg, DAMAGE_PUSH_UP);
+        Active::Damage(dmg, DAMAGE_PUSH_UP);
         return;
     }
     int damage_to_self = dmg;
@@ -95,7 +93,7 @@ void Dwarf::Damage(const int dmg, const int dmg_kind) {
             }
         }
     }
-    Block::Damage(damage_to_self, dmg_kind);
+    Active::Damage(damage_to_self, dmg_kind);
 }
 
 void Dwarf::Move(const dirs dir) {
