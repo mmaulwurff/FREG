@@ -90,6 +90,7 @@ HEADERS += \
     blocks/Weapons.h \
     blocks/Containers.h \
     blocks/RainMachine.h \
+    blocks/Armour.h \
     screens/IThread.h
 SOURCES += \
     BlockManager.cpp \
@@ -116,6 +117,7 @@ SOURCES += \
     blocks/Containers.cpp \
     blocks/Block.cpp \
     blocks/RainMachine.cpp \
+    blocks/Armour.cpp \
     screens/IThread.cpp
 
 TRANSLATIONS = \

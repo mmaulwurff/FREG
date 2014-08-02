@@ -37,7 +37,6 @@
     }
 
     int  Weapon::Weight() const { return Block::Weight()/4; }
-    int  Weapon::Wearable() const { return WEARABLE_ARM; }
     push_reaction Weapon::PushResult(dirs) const { return DAMAGE; }
 
     void Weapon::Damage(const int dmg, const int dmg_kind) {

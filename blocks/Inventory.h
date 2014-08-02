@@ -37,8 +37,6 @@ public:
     Inventory & operator=(Inventory &) = delete;
     Inventory(Inventory & inv) = delete;
 
-    virtual int Kind() const = 0;
-    virtual int Sub() const = 0;
     /// Returns true on success.
     virtual bool Drop(int src, int dest, int num, Inventory * to);
     /// Returns true on success.

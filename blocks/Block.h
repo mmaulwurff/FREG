@@ -35,7 +35,6 @@ const QString OUCH = SOUND_STRINGS[1];
 enum wearable {
     WEARABLE_NOWHERE,
     WEARABLE_HEAD,
-    WEARABLE_ARM,
     WEARABLE_BODY,
     WEARABLE_LEGS
 }; // enum WEARABLE
@@ -154,7 +153,7 @@ protected:
     /// To convert DAMAGE_PUSH_UP...WEST to corresponding direction.
     static dirs MakeDirFromDamage(int damage_kind);
 
-    QString note;
+    quint16 noteId;
 
 private:
     int Transparency(int transp, int sub) const;

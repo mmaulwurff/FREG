@@ -30,8 +30,6 @@ public:
     RainMachine(int sub, int id);
     RainMachine(QDataStream & stream, int sub, int id);
 
-    int  Sub() const override;
-    int  Kind() const override;
     void DoRareAction() override;
     int  ShouldAct() const override;
     void ReceiveSignal(QString) override;

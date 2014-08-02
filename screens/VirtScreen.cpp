@@ -29,7 +29,9 @@ void VirtScreen::DeathScreen() {}
 
 VirtScreen::VirtScreen(World * const world_, Player * const player_) :
         w(world_),
-        player(player_)
+        player(player_),
+        settings("freg.ini", QSettings::IniFormat),
+        previousCommand(settings.value("last_command", "moo").toString())
 {
     connect(     w, SIGNAL(Notify(QString)), SLOT(Notify(QString)),
         Qt::DirectConnection);
@@ -39,7 +41,7 @@ VirtScreen::VirtScreen(World * const world_, Player * const player_) :
     connect(player, SIGNAL(GetFocus(int *, int *, int *)),
         SLOT(ActionXyz(int *, int *, int *)), Qt::DirectConnection);
 
-    connect(w, SIGNAL(GetString(QString &)),
+    connect(     w, SIGNAL(GetString(QString &)),
         SLOT(PassString(QString &)), Qt::DirectConnection);
     connect(player, SIGNAL(GetString(QString &)),
         SLOT(PassString(QString &)), Qt::DirectConnection);
@@ -97,7 +99,6 @@ char VirtScreen::CharName(const int kind, const int sub) const {
     case WORKBENCH: return '*';
     case CONVERTER: return 'V';
     case CONTAINER: return '&';
-    case TELEGRAPH: return 't';
     case DOOR:        return ( STONE == sub ) ? '#' : '\'';
     case ILLUMINATOR: return 'i';
     case WEAPON: switch ( sub ) {
@@ -105,6 +106,9 @@ char VirtScreen::CharName(const int kind, const int sub) const {
         case STONE: return '.';
         case SKY:   return ' ';
     } break;
+    case ARMOUR: return 'A';
+    case HELMET: return 'H';
+    case BOOTS:  return 'B';
     case FALLING: switch ( sub ) {
         case SAND:  return '.';
         case WATER: return '*';

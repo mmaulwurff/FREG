@@ -96,7 +96,7 @@ float WorldMap::Deg(const int x, const int y, const int size) {
 }
 
 float WorldMap::R(const int x, const int y, const int size) {
-    return sqrtf((x-size/2.f)*(x-size/2.f)+(y-size/2.f)*(y-size/2.f));
+    return sqrtf( (x-size/2.f)*(x-size/2.f)+(y-size/2.f)*(y-size/2.f) );
 }
 
 void WorldMap::Circle(
@@ -106,17 +106,13 @@ void WorldMap::Circle(
         const int size,
         char * const map)
 {
-    if ( min_rad >= max_rad ) {
-        fprintf(stderr, "%s: %c: min_rad (%d) >= max_rad (%d).\n",
-            Q_FUNC_INFO, ch, min_rad, max_rad);
-    }
-    float maxs[360] = { float(qMax(min_rad, qrand()%Round(max_rad))) };
+    Q_ASSERT(min_rad < max_rad);
+    float maxs[360] = { float(qrand()%(max_rad - min_rad) + min_rad) };
     for (int x=1; x<360; ++x) {
-        maxs[x] = qBound(float(min_rad),
-            maxs[x-1]+(qrand()%400-200)/200.f, float(max_rad));
-        if ( x > 315 ) { // connect beginning and end of circle
-            maxs[x] += (maxs[0]-maxs[x-1])/90;
-        }
+        maxs[x] = ( x > 345 ) ? // connect beginning and end of circle
+            maxs[x-1] + (maxs[0] - maxs[345]) / 15 :
+            qBound(float(min_rad),
+                maxs[x-1]+(qrand()%400-200)/200.f, float(max_rad));
     }
     for (int y=0; y<size; ++y)
     for (int x=0; x<size; ++x) {

@@ -90,8 +90,6 @@ public:
     Bush(int sub, int id);
     Bush(QDataStream & str, int sub, int id);
 
-    int  Sub() const override;
-    int  Kind() const override;
     int  Weight() const override;
     int  ShouldAct() const override;
     void ReceiveSignal(QString) override;
@@ -99,7 +97,7 @@ public:
     QString FullName() const override;
     Block * DropAfterDamage(bool * delete_block) override;
     Inventory * HasInventory() override;
-    usage_types Use(Block * who = 0) override;
+    usage_types Use(Block * who) override;
     inner_actions ActInner() override;
 
 protected:
@@ -156,7 +154,7 @@ public:
     bool Inscribe(QString) override;
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
-    usage_types Use(Block * who = 0) override;
+    usage_types Use(Block * who) override;
     inner_actions ActInner() override;
 
 protected:
@@ -173,9 +171,7 @@ public:
     Creator(int sub, int id);
     Creator(QDataStream & str, int sub, int id);
 
-    int  Kind() const override;
     int  ShouldAct() const override;
-    int  Sub() const override;
     void ReceiveSignal(QString) override;
     int  DamageKind() const override;
     int  DamageLevel() const override;
@@ -192,7 +188,7 @@ public:
 
     bool Inscribe(QString) override;
     QString FullName() const override;
-    usage_types Use(Block * who = 0) override;
+    usage_types Use(Block * who) override;
 };
 
 class Map : public Text {
@@ -201,7 +197,7 @@ public:
     Map(QDataStream & str, int sub, int id);
 
     QString FullName() const override;
-    usage_types Use(Block * who = 0) override;
+    usage_types Use(Block * who) override;
 
 protected:
     void SaveAttributes(QDataStream & out) const override;
@@ -221,7 +217,7 @@ public:
     void ReceiveSignal(QString) override;
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
-    usage_types Use(Block * who = 0) override;
+    usage_types Use(Block * who) override;
 };
 
 class Predator : public Animal {

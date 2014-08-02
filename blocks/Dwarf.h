@@ -31,14 +31,13 @@ public:
     Dwarf(int sub, int id);
     Dwarf(QDataStream & str, int sub, int id);
 
-    int Sub() const override;
     int ShouldAct() const override;
     int DamageKind() const override;
     void Move(dirs direction) override;
-    int Kind() const override;
     int Start() const override;
     int Weight() const override;
     int DamageLevel() const override;
+    void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
 
     bool Access() const override;
@@ -56,10 +55,10 @@ protected:
 private:
     enum {
         ON_HEAD,
-        IN_RIGHT,
-        IN_LEFT,
         ON_BODY,
-        ON_LEGS
+        ON_LEGS,
+        IN_RIGHT,
+        IN_LEFT
     };
 
     void UpdateLightRadius();

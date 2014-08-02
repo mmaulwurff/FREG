@@ -52,7 +52,7 @@ public:
     /// Use this to load block from file.
     static Block * BlockFromFile(QDataStream &, int kind, int sub);
     /// Returns true if block is normal.
-    static bool KindSubFromFile(QDataStream &, int * kind, int * sub);
+    static bool KindSubFromFile(QDataStream &, quint8 * kind, quint8 * sub);
     /// Does not actually delete normal blocks.
     void DeleteBlock(Block *) const;
     /// For memory economy.

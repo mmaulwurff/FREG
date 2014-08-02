@@ -68,7 +68,7 @@ public:
     /// Can be > 100 if player is gorged. On error returns -100.
     int SatiationPercent() const;
 
-    bool IfPlayerExists() const;
+    const Block * GetBlock() const;
 
     /// This returns true if block at (x, y, z) is visible to player.
     bool Visible(int x, int y, int z) const;

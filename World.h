@@ -162,6 +162,10 @@ public: // Block information section
     bool InBounds(int x, int y, int z) const;
     int  GetBound() const;
 
+    int SetNote(QString note);
+    int ChangeNote(QString note, int note_id);
+    QString GetNote(int note_id) const;
+
 public: // World section
     void ReloadAllShreds(long lati, long longi,
             int new_x, int new_y, int new_z);
@@ -231,6 +235,7 @@ private:
     ShredStorage * shredStorage;
     Shred * shredMemoryPool;
     bool initial_lighting;
+    QList<QString> notes;
 };
 
 extern World * world;

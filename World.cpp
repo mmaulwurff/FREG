@@ -136,6 +136,22 @@ int World::GetBound() const {
 
 bool World::InVertBounds(const int z) { return ( 0 <= z && z < HEIGHT ); }
 
+int World::SetNote(const QString note) {
+    notes.append(note);
+    return notes.size();
+}
+
+int World::ChangeNote(const QString note, const int noteId) {
+    if ( noteId > notes.size() ) {
+        return SetNote(note);
+    } else {
+        notes[noteId - 1] = note;
+        return noteId;
+    }
+}
+
+QString World::GetNote(const int noteId) const { return notes.at(noteId-1); }
+
 void World::ReloadAllShreds(const long lati, const long longi,
     const int new_x, const int new_y, const int new_z)
 {
@@ -596,7 +612,8 @@ bool World::Inscribe(const int x, const int y, const int z) {
     Block * block = GetBlock(x, y, z);
     if ( block == block_manager.Normal(block->Sub()) ) {
         block = NewBlock(block->Kind(), block->Sub());
-        shred->SetBlock(block, x_in, y_in, z);
+        shred->SetBlockNoCheck(block, x_in, y_in, z);
+        block = GetBlock(x, y, z);
     }
     QString str;
     emit GetString(str);
@@ -612,8 +629,9 @@ void World::Exchange(Block * const block_from, Block * const block_to,
         return;
     }
     if ( inv_from->Number(src) == 0 ) {
-        block_from->ReceiveSignal(tr("Nothing here."));
-        block_to  ->ReceiveSignal(tr("Nothing here."));
+        const QString nothing_here = tr("Nothing here.");
+        block_from->ReceiveSignal(nothing_here);
+        block_to  ->ReceiveSignal(nothing_here);
         return;
     }
     Inventory * const inv_to = block_to->HasInventory();
@@ -694,7 +712,8 @@ World::World(const QString world_name) :
         sunMoonFactor(),
         shredStorage(),
         shredMemoryPool(),
-        initial_lighting()
+        initial_lighting(),
+        notes()
 {
     world = this;
     QSettings game_settings("freg.ini", QSettings::IniFormat);
@@ -720,7 +739,16 @@ World::World(const QString world_name) :
 
     shredStorage = new ShredStorage(numShreds+2, longitude, latitude);
     puts(qPrintable(tr("Loading world...")));
+
+    QFile notes_file(worldName + "/notes.txt");
+    if ( notes_file.open(QIODevice::ReadOnly | QIODevice::Text) ) {
+        char note[MAX_NOTE_LENGTH*2];
+        while ( notes_file.readLine(note, MAX_NOTE_LENGTH*2) > 0 ) {
+            notes.append(QString(note).trimmed());
+        }
+    }
     LoadAllShreds();
+
     emit UpdatedAll();
 }
 
@@ -737,4 +765,12 @@ World::~World() {
     settings.setValue("time_step", timeStep);
     settings.setValue("longitude", qlonglong(longitude));
     settings.setValue("latitude", qlonglong(latitude));
+
+    QFile notes_file(worldName + "/notes.txt");
+    if ( notes_file.open(QIODevice::WriteOnly | QIODevice::Text) ) {
+        for (int i=0; i<notes.size(); ++i) {
+            notes_file.write(qPrintable(notes.at(i)));
+            notes_file.putChar('\n');
+        }
+    }
 }

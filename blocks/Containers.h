@@ -39,12 +39,10 @@ public:
     Container(int sub, int id, int size = INV_SIZE);
     Container(QDataStream & str, int sub, int id, int size = INV_SIZE);
 
-    int  Sub() const override;
     void ReceiveSignal(QString) override;
     void DoRareAction() override;
     int  ShouldAct() const override;
     int  Weight() const override;
-    int  Kind() const override final;
     void Damage(int dmg, int dmg_kind) override;
     Block * DropAfterDamage(bool * delete_block) override;
     QString FullName() const override;

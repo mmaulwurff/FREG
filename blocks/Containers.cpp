@@ -69,8 +69,6 @@ const int CONVERTER_LIGHT_RADIUS = 2;
             FREQUENT_NEVER : FREQUENT_RARE;
     }
 
-    int  Container::Kind() const { return Block::Kind(); }
-    int  Container::Sub()  const { return Block::Sub(); }
     void Container::ReceiveSignal(QString) {}
     Inventory * Container::HasInventory() { return this; }
     push_reaction Container::PushResult(dirs) const { return NOT_MOVABLE; }
@@ -201,8 +199,8 @@ const int CONVERTER_LIGHT_RADIUS = 2;
 
     QString Workbench::FullName() const {
         switch ( Sub() ) {
-        case WOOD: return QObject::tr("Workbench");
-        case IRON: return QObject::tr("Iron anvil");
+        case WOOD: return tr("Workbench");
+        case IRON: return tr("Iron anvil");
         default:
             fprintf(stderr, "%s: sub (?): %d\n", Q_FUNC_INFO, Sub());
             return "Strange workbench";

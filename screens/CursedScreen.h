@@ -26,7 +26,6 @@
 #define NOX
 
 #include <QMutex>
-#include <QSettings>
 
 #ifdef __MINGW32__
 #include "pdcurses/curses.h"
@@ -167,7 +166,7 @@ private:
     void HorizontalArrows(WINDOW *, int y, int color, bool show_dir) const;
     void PrintNormal(WINDOW *, dirs) const;
     void PrintFront(WINDOW *, dirs) const;
-    void PrintInv(WINDOW *, const Inventory &) const;
+    void PrintInv(WINDOW *, const Block *, const Inventory *) const;
     /// Can print health, breath and other bars on hudWin.
     void PrintBar(int x, int color, int ch, int percent,
             bool value_position_right = true);
@@ -201,11 +200,9 @@ private:
     volatile bool updated;
     FILE * const notifyLog;
     actions actionMode;
-    QSettings settings;
     /// Can be -1, 0, 1 for low, normal, and high focus.
     int shiftFocus;
     /// Save previous command for further execution.
-    QString previousCommand;
     QFile * fileToShow;
     bool beepOn;
     const bool ascii;

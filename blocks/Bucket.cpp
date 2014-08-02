@@ -29,8 +29,6 @@ Bucket::Bucket(QDataStream & str, const int kind, const int sub) :
         Inventory(str, 1)
 {}
 
-int  Bucket::Kind() const { return Block::Kind(); }
-int  Bucket::Sub()  const { return Block::Sub(); }
 void Bucket::Damage(int, int) { Break(); }
 void Bucket::ReceiveSignal(const QString str) { Block::ReceiveSignal(str); }
 Inventory * Bucket::HasInventory() { return this; }

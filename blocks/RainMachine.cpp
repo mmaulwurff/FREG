@@ -55,8 +55,6 @@ QString RainMachine::FullName() const {
         tr(": on") : tr(": off") );
 }
 
-int  RainMachine::Sub() const { return Block::Sub(); }
-int  RainMachine::Kind() const { return RAIN_MACHINE; }
 int  RainMachine::ShouldAct() const { return FREQUENT_RARE; }
 void RainMachine::ReceiveSignal(QString str) { Active::ReceiveSignal(str); }
 usage_types RainMachine::Use(Block *) { return USAGE_TYPE_OPEN; }
