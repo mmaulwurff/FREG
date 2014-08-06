@@ -310,9 +310,6 @@ void Screen::ControlPlayer(const int ch) {
 void Screen::ProcessCommand(const QString command) {
     if ( command.length()==1 && "."!=command ) {
         ControlPlayer(command.at(0).toLatin1());
-    } else if ( "warranty" == command ) {
-        wstandend(rightWin);
-        PrintFile(rightWin, "texts/warranty.txt");
     } else if ( "size" == command ) {
         Notify(QString("Terminal height: %1 lines, width: %2 chars.").
             arg(LINES).arg(COLS));

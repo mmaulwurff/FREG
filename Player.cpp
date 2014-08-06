@@ -383,6 +383,7 @@ void Player::ProcessCommand(QString command) {
             .arg(DEBUG ? tr("debug") : tr("release"))
             .arg(COMPILER));
         break;
+    case UniqueIntFromString("warranty"): comm_stream <<  "warranty";
     case UniqueIntFromString("help"):
         comm_stream >> request;
         if ( request.isEmpty() ) {

@@ -1,8 +1,11 @@
+-------------------------------------------------------------
+freg cursed screen commands
+===========================
 
-    freg cursed screen commands
+#### `warranty` ####
+Show warranty.
 
-    warranty
-        Show warranty.
+#### `size` ####
+Show terminal size.
 
-    size
-        Show terminal size.
+-------------------------------------------------------------

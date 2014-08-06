@@ -29,10 +29,7 @@ help_*/*
 !recipes/*json
 
 !texts
-texts/*
-!texts/*.txt
-texts/errors.txt
-texts/messages.txt
+!texts/*.md
 
 !html
 !html/*
