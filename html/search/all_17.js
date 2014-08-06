@@ -1,6 +1,8 @@
 var searchData=
 [
+  ['warranty',['warranty',['../md_help_en_warranty.html',1,'']]],
   ['w',['w',['../classVirtScreen.html#a4370c655ab8fef96399dcf6f2925612f',1,'VirtScreen']]],
+  ['warranty_2emd',['warranty.md',['../warranty_8md.html',1,'']]],
   ['wasteshred',['WasteShred',['../classShred.html#a0ebc5f8be9cde1a145072bf7f5e053d7',1,'Shred']]],
   ['water',['Water',['../classShred.html#a97b6f7411385a65ece2d1a76c7f4b53c',1,'Shred::Water()'],['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a9ac7d5e5851d7a2bc186a1c3341589f6',1,'WATER():&#160;header.h']]],
   ['weapon',['Weapon',['../classWeapon.html',1,'Weapon'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285aabb6de3c5dc7e2f70051d23bb1e5e613',1,'WEAPON():&#160;header.h']]],

@@ -34,7 +34,7 @@ var searchData=
   ['convertratio',['ConvertRatio',['../classConverter.html#a9ff7d17147b052bf9f0eca830a5aa326',1,'Converter']]],
   ['coordinshred',['CoordInShred',['../classShred.html#a58099d77557acf6ab26fa82edf9750ef',1,'Shred']]],
   ['coordofshred',['CoordOfShred',['../classShred.html#a2ff310bfeac6b79fa990e91f21eef22c',1,'Shred']]],
-  ['copying',['COPYING',['../COPYING.html',1,'']]],
+  ['copying_2emd',['COPYING.md',['../COPYING_8md.html',1,'']]],
   ['countshredtypearound',['CountShredTypeAround',['../classShred.html#a1bd6cd2a21d59a70b3d5a2c9a0dfc02a',1,'Shred']]],
   ['coverwith',['CoverWith',['../classShred.html#a916313b04be75b202dbe577602ce1e10',1,'Shred']]],
   ['craft',['Craft',['../classWorkbench.html#a560a3d2c35de4b2a5d2543190e2a59bf',1,'Workbench::Craft()'],['../classCraftManager.html#ae426452058ade005ad1b73427069a6b2',1,'CraftManager::Craft()'],['../classPlayer.html#a296203015c064fac1f9023426a36e3e9',1,'Player::Craft()']]],
