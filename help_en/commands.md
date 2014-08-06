@@ -3,7 +3,7 @@ freg commands
 =============
 
 #### `help PAGE` ####
-Shows help page PAGE.
+Show help page PAGE.
 
 #### `give KIND SUB NUMBER` ####
 #### `get  KIND SUB NUMBER` ####
@@ -19,10 +19,10 @@ Shows help page PAGE.
 up (default), down, north, south, east, west.
 
 #### `time` ####
-Shows current time.
+Show current time.
 
 #### `version` ####
-Shows freg version, compile time, build type,
+Show freg version, compile time, build type,
 Qt versions and compiler.
 
 ### See also: ###
