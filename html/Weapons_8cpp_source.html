@@ -142,7 +142,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    }</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
 <div class="line"><a name="l00051"></a><span class="lineno"><a class="line" href="classWeapon.html#aadfcb8361b6bbbef9062ee3c0e6a1c72">   51</a></span>&#160;    <a class="code" href="header_8h.html#a305c682db7e7cdce78096178c0c9ef4a">usage_types</a> <a class="code" href="classWeapon.html#aadfcb8361b6bbbef9062ee3c0e6a1c72">Weapon::Use</a>(<a class="code" href="classBlock.html">Block</a> * <span class="keyword">const</span> who) {</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        <a class="code" href="classShred.html">Shred</a> * <span class="keyword">const</span> shred = <a class="code" href="classActive.html#a2647465c56ce987d9791885b10e381fb">GetShred</a>();</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        <a class="code" href="classShred.html">Shred</a> * <span class="keyword">const</span> <a class="code" href="classActive.html#a8a05a0625ec0b4b899260de5b87dbcaa">shred</a> = <a class="code" href="classActive.html#a2647465c56ce987d9791885b10e381fb">GetShred</a>();</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        <span class="keywordflow">if</span> ( shred != <span class="keyword">nullptr</span> ) { <span class="comment">// not currently in inventory</span></div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;            <a class="code" href="classInventory.html">Inventory</a> * <span class="keyword">const</span> inv = who-&gt;<a class="code" href="classBlock.html#a725cb8988b2af9ce8805a2c9ea4ee479">HasInventory</a>();</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            <span class="keywordflow">if</span> ( inv != <span class="keyword">nullptr</span> &amp;&amp; inv-&gt;<a class="code" href="classInventory.html#a176498bd0363e01297d1dfe30bd8b0df">Get</a>(<span class="keyword">this</span>) ) {</div>
@@ -330,13 +330,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="classShovel_html_a482a3d4cc47097ec4734aded13a4cb53"><div class="ttname"><a href="classShovel.html#a482a3d4cc47097ec4734aded13a4cb53">Shovel::DamageLevel</a></div><div class="ttdeci">int DamageLevel() const override</div><div class="ttdef"><b>Definition:</b> <a href="Weapons_8cpp_source.html#l00110">Weapons.cpp:110</a></div></div>
 <div class="ttc" id="classShovel_html_ad772c4df367037ee3eaca0cd0e01a9b1"><div class="ttname"><a href="classShovel.html#ad772c4df367037ee3eaca0cd0e01a9b1">Shovel::DamageKind</a></div><div class="ttdeci">int DamageKind() const override</div><div class="ttdef"><b>Definition:</b> <a href="Weapons_8cpp_source.html#l00108">Weapons.cpp:108</a></div></div>
 <div class="ttc" id="classBlock_html"><div class="ttname"><a href="classBlock.html">Block</a></div><div class="ttdoc">Block without special physics and attributes. </div><div class="ttdef"><b>Definition:</b> <a href="Block_8h_source.html#l00084">Block.h:84</a></div></div>
+<div class="ttc" id="classActive_html_a8a05a0625ec0b4b899260de5b87dbcaa"><div class="ttname"><a href="classActive.html#a8a05a0625ec0b4b899260de5b87dbcaa">Active::shred</a></div><div class="ttdeci">Shred * shred</div><div class="ttdef"><b>Definition:</b> <a href="Active_8h_source.html#l00105">Active.h:105</a></div></div>
 <div class="ttc" id="header_8h_html_a305c682db7e7cdce78096178c0c9ef4aa8186b7b3267ee8ca1e61726ab3ea0325"><div class="ttname"><a href="header_8h.html#a305c682db7e7cdce78096178c0c9ef4aa8186b7b3267ee8ca1e61726ab3ea0325">USAGE_TYPE_NO</a></div><div class="ttdef"><b>Definition:</b> <a href="header_8h_source.html#l00195">header.h:195</a></div></div>
 <div class="ttc" id="classWeapon_html_a69e15ddc66243f0472ae8eaa67e1c713"><div class="ttname"><a href="classWeapon.html#a69e15ddc66243f0472ae8eaa67e1c713">Weapon::Damage</a></div><div class="ttdeci">void Damage(int dmg, int kind) override</div><div class="ttdef"><b>Definition:</b> <a href="Weapons_8cpp_source.html#l00042">Weapons.cpp:42</a></div></div>
 <div class="ttc" id="Shred_8h_html"><div class="ttname"><a href="Shred_8h.html">Shred.h</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Aug 3 2014 00:05:57 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Aug 6 2014 23:45:31 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

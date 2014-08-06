@@ -123,17 +123,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <a class="code" href="classInventory.html">Inventory</a>(stream, 1),</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    isOn()</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;{</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    stream &gt;&gt; isOn;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    stream &gt;&gt; <a class="code" href="classRainMachine.html#a515020cda056c3ef740ba75245ab8099">isOn</a>;</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;}</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
 <div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="classRainMachine.html#a8d84f5bfdaed953accd54ef4ec5ddc0c">   36</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classRainMachine.html#a8d84f5bfdaed953accd54ef4ec5ddc0c">RainMachine::SaveAttributes</a>(QDataStream &amp; stream)<span class="keyword"> const </span>{</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <a class="code" href="classBlock.html#a692d5cc8f38a9483134c2fe5a2eb68fc">Active::SaveAttributes</a>(stream);</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <a class="code" href="classInventory.html#a08e8365855f7067e4a86c183e16ba62d">Inventory::SaveAttributes</a>(stream);</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    stream &lt;&lt; isOn;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    stream &lt;&lt; <a class="code" href="classRainMachine.html#a515020cda056c3ef740ba75245ab8099">isOn</a>;</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;}</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
 <div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="classRainMachine.html#adcf7533adb3a669fa5d23b4d7971bd7d">   42</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classRainMachine.html#adcf7533adb3a669fa5d23b4d7971bd7d">RainMachine::DoRareAction</a>() {</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keywordflow">if</span> ( not isOn ) <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keywordflow">if</span> ( not <a class="code" href="classRainMachine.html#a515020cda056c3ef740ba75245ab8099">isOn</a> ) <span class="keywordflow">return</span>;</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keywordflow">if</span> ( <a class="code" href="header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a2b284adc15b412cbd260beb887f2df87">AIR</a> == <a class="code" href="classInventory.html#a747848210e118e26e5f75c0b6c50d723">GetInvSub</a>(0) ) {</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        <span class="keywordflow">if</span> ( qrand() % 5 ) {</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;            <a class="code" href="classActive.html#a2647465c56ce987d9791885b10e381fb">GetShred</a>()-&gt;<a class="code" href="classShred.html#acc025dfd20ee9dc813a799e99311c3ba">Rain</a>(<a class="code" href="header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285aa87f9501ff2b390be1ea7d261b0d7cce">LIQUID</a>, <a class="code" href="header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a01d6321edbb1180683797c037e5f5f5d">SUB_CLOUD</a>);</div>
@@ -144,7 +144,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;}</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
 <div class="line"><a name="l00053"></a><span class="lineno"><a class="line" href="classRainMachine.html#a35fba67b53c862699a738afe12a11016">   53</a></span>&#160;QString <a class="code" href="classRainMachine.html#a35fba67b53c862699a738afe12a11016">RainMachine::FullName</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keywordflow">return</span> tr(<span class="stringliteral">&quot;Rain Machine&quot;</span>) + ( isOn ?</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keywordflow">return</span> tr(<span class="stringliteral">&quot;Rain Machine&quot;</span>) + ( <a class="code" href="classRainMachine.html#a515020cda056c3ef740ba75245ab8099">isOn</a> ?</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        tr(<span class="stringliteral">&quot;: on&quot;</span>) : tr(<span class="stringliteral">&quot;: off&quot;</span>) );</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;}</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
@@ -155,7 +155,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
 <div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="classRainMachine.html#a2c05059342b6f4265a7f91e215ac2960">   63</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classRainMachine.html#a2c05059342b6f4265a7f91e215ac2960">RainMachine::Damage</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> dmg, <span class="keyword">const</span> <span class="keywordtype">int</span> dmg_kind) {</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keywordflow">if</span> ( dmg_kind &gt;= <a class="code" href="Block_8h.html#a5adfb93f736d9aa263cea4b7b74da15ea031bd53370b7dc93fc29c79650018adf">DAMAGE_PUSH_UP</a> ) {</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        isOn = not isOn;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        <a class="code" href="classRainMachine.html#a515020cda056c3ef740ba75245ab8099">isOn</a> = not <a class="code" href="classRainMachine.html#a515020cda056c3ef740ba75245ab8099">isOn</a>;</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        <a class="code" href="classBlock.html#a77d9f883e2566fa391344ce9d358bd6d">Block::Damage</a>(dmg, dmg_kind);</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    }</div>
@@ -172,6 +172,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="classActive_html_a2647465c56ce987d9791885b10e381fb"><div class="ttname"><a href="classActive.html#a2647465c56ce987d9791885b10e381fb">Active::GetShred</a></div><div class="ttdeci">Shred * GetShred() const </div><div class="ttdef"><b>Definition:</b> <a href="Active_8cpp_source.html#l00141">Active.cpp:141</a></div></div>
 <div class="ttc" id="classActive_html_a7c43d188f23aaac44f2e1b22fcf41bb9"><div class="ttname"><a href="classActive.html#a7c43d188f23aaac44f2e1b22fcf41bb9">Active::ReceiveSignal</a></div><div class="ttdeci">void ReceiveSignal(QString) override</div><div class="ttdoc">Receive text signal. </div><div class="ttdef"><b>Definition:</b> <a href="Active_8cpp_source.html#l00159">Active.cpp:159</a></div></div>
 <div class="ttc" id="classRainMachine_html_a3240e5e1d8b7ec3b69a887fb2fbe0f3a"><div class="ttname"><a href="classRainMachine.html#a3240e5e1d8b7ec3b69a887fb2fbe0f3a">RainMachine::ReceiveSignal</a></div><div class="ttdeci">void ReceiveSignal(QString) override</div><div class="ttdoc">Receive text signal. </div><div class="ttdef"><b>Definition:</b> <a href="RainMachine_8cpp_source.html#l00059">RainMachine.cpp:59</a></div></div>
+<div class="ttc" id="classRainMachine_html_a515020cda056c3ef740ba75245ab8099"><div class="ttname"><a href="classRainMachine.html#a515020cda056c3ef740ba75245ab8099">RainMachine::isOn</a></div><div class="ttdeci">bool isOn</div><div class="ttdef"><b>Definition:</b> <a href="RainMachine_8h_source.html#l00043">RainMachine.h:43</a></div></div>
 <div class="ttc" id="classRainMachine_html_a8d84f5bfdaed953accd54ef4ec5ddc0c"><div class="ttname"><a href="classRainMachine.html#a8d84f5bfdaed953accd54ef4ec5ddc0c">RainMachine::SaveAttributes</a></div><div class="ttdeci">void SaveAttributes(QDataStream &amp;) const override</div><div class="ttdef"><b>Definition:</b> <a href="RainMachine_8cpp_source.html#l00036">RainMachine.cpp:36</a></div></div>
 <div class="ttc" id="classRainMachine_html_adcf7533adb3a669fa5d23b4d7971bd7d"><div class="ttname"><a href="classRainMachine.html#adcf7533adb3a669fa5d23b4d7971bd7d">RainMachine::DoRareAction</a></div><div class="ttdeci">void DoRareAction() override</div><div class="ttdef"><b>Definition:</b> <a href="RainMachine_8cpp_source.html#l00042">RainMachine.cpp:42</a></div></div>
 <div class="ttc" id="header_8h_html_afd79b1cc0d9d0e4bc4b0d92c18afe706a2b284adc15b412cbd260beb887f2df87"><div class="ttname"><a href="header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a2b284adc15b412cbd260beb887f2df87">AIR</a></div><div class="ttdoc">19 </div><div class="ttdef"><b>Definition:</b> <a href="header_8h_source.html#l00178">header.h:178</a></div></div>
@@ -191,7 +192,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Aug 3 2014 00:05:57 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Aug 6 2014 23:45:31 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

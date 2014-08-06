@@ -9,7 +9,9 @@ var searchData=
   ['end_5fof_5fnoon',['END_OF_NOON',['../header_8h.html#ad80059177c1cf098a190898f02b1433c',1,'header.h']]],
   ['enlightened',['Enlightened',['../classWorld.html#a8fafc6ce6c49823d88f02e3d86eea3be',1,'World::Enlightened(int x, int y, int z) const '],['../classWorld.html#a08f303e04f53ce28fe43fc4d3dcf7db1',1,'World::Enlightened(int x, int y, int z, dirs dir) const ']]],
   ['environment',['ENVIRONMENT',['../header_8h.html#a4b1e949f8e745e1bab6b99b32b34c544afd814900096e893b213ee1245ad0fdb0',1,'header.h']]],
+  ['evernight',['evernight',['../classWorld.html#a9872fd767b53d6dc22c5ccba4159a1be',1,'World']]],
   ['examine',['Examine',['../classPlayer.html#ad50c303e216bf37d1de867312c2d1f91',1,'Player']]],
+  ['exchange',['Exchange',['../classWorld.html#add0eb3086f99a2fdab03adc31973a57d',1,'World']]],
   ['exitreceived',['ExitReceived',['../classVirtScreen.html#a624df7ec9b4e536b7d74b34b7b03c52e',1,'VirtScreen::ExitReceived()'],['../classWorld.html#acbc1ee902cdcb076f5e4c1ff2dbdccb2',1,'World::ExitReceived()']]],
   ['explosive',['EXPLOSIVE',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a4775eeac3a68d0ba359775e3187f2ab4',1,'header.h']]]
 ];

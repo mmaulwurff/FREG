@@ -88,6 +88,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="#pri-static-attribs">Static Private Attributes</a> &#124;
 <a href="classBlockManager-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">BlockManager Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div>  </div>
@@ -98,6 +101,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
  <a href="classBlockManager.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="BlockManager_8h_source.html">BlockManager.h</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for BlockManager:</div>
+<div class="dyncontent">
+<div class="center"><img src="classBlockManager__coll__graph.png" border="0" usemap="#BlockManager_coll__map" alt="Collaboration graph"/></div>
+<map name="BlockManager_coll__map" id="BlockManager_coll__map">
+<area shape="rect" id="node2" href="classBlock.html" title="Block without special physics and attributes. " alt="" coords="31,5,85,32"/></map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -144,6 +154,25 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:ac1e81563fdcad5e662f6b3edf2372171"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a877c2805dbce720ea30f21947f2b584b"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockManager.html#a877c2805dbce720ea30f21947f2b584b">SubFromId</a> (int id)</td></tr>
 <tr class="separator:a877c2805dbce720ea30f21947f2b584b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a6119eb81f9b30a115d01c2d514abb028"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockManager.html#a6119eb81f9b30a115d01c2d514abb028">BlockManager</a> (const <a class="el" href="classBlockManager.html">BlockManager</a> &amp;)=delete</td></tr>
+<tr class="separator:a6119eb81f9b30a115d01c2d514abb028"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e6bc022fb03d98fe97c0ed4eda6a7c0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBlockManager.html">BlockManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockManager.html#a4e6bc022fb03d98fe97c0ed4eda6a7c0">operator=</a> (const <a class="el" href="classBlockManager.html">BlockManager</a> &amp;)=delete</td></tr>
+<tr class="separator:a4e6bc022fb03d98fe97c0ed4eda6a7c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:ada982a567c8741977cbc936b8709b92b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBlock.html">Block</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockManager.html#ada982a567c8741977cbc936b8709b92b">normals</a> [<a class="el" href="header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a5d2285dc7607a44e19df60f05fe740c8">LAST_SUB</a>]</td></tr>
+<tr class="separator:ada982a567c8741977cbc936b8709b92b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-static-attribs"></a>
+Static Private Attributes</h2></td></tr>
+<tr class="memitem:a5944f7e4395bc6d5534ddf286a4ffcf4"><td class="memItemLeft" align="right" valign="top">static const QByteArray&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockManager.html#a5944f7e4395bc6d5534ddf286a4ffcf4">kinds</a> []</td></tr>
+<tr class="separator:a5944f7e4395bc6d5534ddf286a4ffcf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac911667f6ab20c424fde409459db9021"><td class="memItemLeft" align="right" valign="top">static const QByteArray&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBlockManager.html#ac911667f6ab20c424fde409459db9021">subs</a> []</td></tr>
+<tr class="separator:ac911667f6ab20c424fde409459db9021"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This class is used for creating and deleting blocks, also for loading them from file. </p>
@@ -183,6 +212,30 @@ Static Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Definition at line <a class="el" href="BlockManager_8cpp_source.html#l00115">115</a> of file <a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a6119eb81f9b30a115d01c2d514abb028"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">BlockManager::BlockManager </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classBlockManager.html">BlockManager</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -443,6 +496,30 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a4e6bc022fb03d98fe97c0ed4eda6a7c0"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classBlockManager.html">BlockManager</a>&amp; BlockManager::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classBlockManager.html">BlockManager</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="a8e55d306c1a11f38e9ead5527d11a497"></a>
 <div class="memitem">
 <div class="memproto">
@@ -574,6 +651,73 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="a5944f7e4395bc6d5534ddf286a4ffcf4"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const QByteArray BlockManager::kinds</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="BlockManager_8h_source.html#l00084">84</a> of file <a class="el" href="BlockManager_8h_source.html">BlockManager.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ada982a567c8741977cbc936b8709b92b"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classBlock.html">Block</a>* BlockManager::normals[<a class="el" href="header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a5d2285dc7607a44e19df60f05fe740c8">LAST_SUB</a>]</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="BlockManager_8h_source.html#l00083">83</a> of file <a class="el" href="BlockManager_8h_source.html">BlockManager.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac911667f6ab20c424fde409459db9021"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const QByteArray BlockManager::subs</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="BlockManager_8h_source.html#l00085">85</a> of file <a class="el" href="BlockManager_8h_source.html">BlockManager.h</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li><a class="el" href="BlockManager_8h_source.html">BlockManager.h</a></li>
 <li><a class="el" href="BlockManager_8cpp_source.html">BlockManager.cpp</a></li>
@@ -581,7 +725,7 @@ Static Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Aug 3 2014 00:05:57 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Aug 6 2014 23:45:31 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

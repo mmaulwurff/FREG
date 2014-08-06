@@ -1,13 +1,15 @@
 var searchData=
 [
-  ['max_5fbreath',['MAX_BREATH',['../header_8h.html#aaf31934c65f2f73f163d6bffd604bdd1',1,'header.h']]],
-  ['max_5fdurability',['MAX_DURABILITY',['../header_8h.html#acbd1d6d19ec35d2a56979f18ffc8682b',1,'header.h']]],
-  ['max_5ffuel',['MAX_FUEL',['../Illuminator_8h.html#a3b12ca72f767f8d0c7ac1c2b16ed5994',1,'Illuminator.h']]],
-  ['max_5flight_5fradius',['MAX_LIGHT_RADIUS',['../header_8h.html#ab2a8ddd0431475af1f856a04314f958b',1,'header.h']]],
-  ['max_5fnote_5flength',['MAX_NOTE_LENGTH',['../header_8h.html#aff1ba36d8531f2bbaa167ed5424dea16',1,'header.h']]],
-  ['max_5fstack_5fsize',['MAX_STACK_SIZE',['../Inventory_8h.html#a76cb87e7ea8b6d0ffb94d32046b2e698',1,'Inventory.h']]],
-  ['min_5fdwarf_5flight_5fradius',['MIN_DWARF_LIGHT_RADIUS',['../Dwarf_8h.html#a9c3301f7fce89f54f832c020da04081f',1,'Dwarf.h']]],
-  ['min_5fworld_5fsize',['MIN_WORLD_SIZE',['../World_8cpp.html#a7354add5f63f24ddd6f64adffa1dc2bb',1,'World.cpp']]],
-  ['moon_5flight_5ffactor',['MOON_LIGHT_FACTOR',['../World_8h.html#af25f372e0a0974d80c6484725f1c3f49',1,'World.h']]],
-  ['moved_5fin_5fthis_5fturn',['moved_in_this_turn',['../classAnimal.html#a230c7b194ad68263cc00d259fe7a2aef',1,'Animal']]]
+  ['lastnotification',['lastNotification',['../classScreen.html#ad97f406c069b85e783b920f106ae4c8b',1,'Screen']]],
+  ['lati_5fcenter',['lati_center',['../classPreloadThread.html#a80b454c021b12a52f2cc488790934a12',1,'PreloadThread']]],
+  ['latistart',['latiStart',['../classMap.html#ae1b72e18bc8916949870addc1ec1f0ba',1,'Map']]],
+  ['latitude',['latitude',['../classShred.html#a4b7a511e63b075cbc80cb4fbb641b92e',1,'Shred::latitude()'],['../structLongLat.html#a9772b6aa5cafbf475116bebcf3a5b35b',1,'LongLat::latitude()'],['../classWorld.html#a3d95951955a02ab1637d785c3172ecc1',1,'World::latitude()']]],
+  ['leftwin',['leftWin',['../classScreen.html#a03cf39bd8aa7595db21c6ef926d6ee51',1,'Screen']]],
+  ['lightmap',['lightMap',['../classShred.html#a554cf4df283cacf56fb89d10e075c5a7',1,'Shred']]],
+  ['lightradius',['lightRadius',['../classConverter.html#ab6b654dafe86f35eaa9710dd97ecf838',1,'Converter::lightRadius()'],['../classDwarf.html#a74af5071a07fb8a06909ddce74e0d8a9',1,'Dwarf::lightRadius()']]],
+  ['locale',['locale',['../header_8h.html#a732a695ec07d1876d0d6d6cd6d3b733a',1,'header.h']]],
+  ['locked',['locked',['../classDoor.html#af633fe4fdcbc36e2e3f73c9a4d3db398',1,'Door']]],
+  ['longi_5fcenter',['longi_center',['../classPreloadThread.html#aa24f080209fd43c13f4a6805eefdea7f',1,'PreloadThread']]],
+  ['longistart',['longiStart',['../classMap.html#a26ec3f38350bc2aa12e00d8dad3bcea9',1,'Map']]],
+  ['longitude',['longitude',['../classShred.html#a59338bb60084c23a48d7cf74ffa0d227',1,'Shred::longitude()'],['../structLongLat.html#a53fe8333e0dca417969d30e54b121f1f',1,'LongLat::longitude()'],['../classWorld.html#abf6cae11b6e5ba5b04ed00d5cb0646e9',1,'World::longitude()']]]
 ];

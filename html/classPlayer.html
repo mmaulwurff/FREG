@@ -89,6 +89,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#signals">Signals</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pri-slots">Private Slots</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classPlayer-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">Player Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div>  </div>
@@ -111,7 +114,7 @@ Collaboration diagram for Player:</div>
 <div class="dyncontent">
 <div class="center"><img src="classPlayer__coll__graph.png" border="0" usemap="#Player_coll__map" alt="Collaboration graph"/></div>
 <map name="Player_coll__map" id="Player_coll__map">
-<area shape="rect" id="node4" href="classXyz.html" title="Xyz" alt="" coords="99,89,141,122"/><area shape="rect" id="node6" href="classXy.html" title="Xy" alt="" coords="101,6,139,39"/></map>
+<area shape="rect" id="node7" href="classActive.html" title="Active" alt="" coords="89,184,147,211"/><area shape="rect" id="node3" href="classXyz.html" title="Xyz" alt="" coords="375,95,421,121"/><area shape="rect" id="node10" href="classDeferredAction.html" title="Deferred Action is used when some action needs to be done at next physics turn. " alt="" coords="231,273,341,300"/><area shape="rect" id="node4" href="classXy.html" title="Xy" alt="" coords="379,5,417,32"/><area shape="rect" id="node5" href="classAnimal.html" title="Animal" alt="" coords="73,349,136,376"/><area shape="rect" id="node6" href="classFalling.html" title="Falling" alt="" coords="75,273,135,300"/><area shape="rect" id="node8" href="classBlock.html" title="Block without special physics and attributes. " alt="" coords="156,5,211,32"/><area shape="rect" id="node9" href="classShred.html" title="Shred" alt="" coords="155,95,211,121"/></map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="signals"></a>
@@ -255,6 +258,65 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memdesc:aa05c9d95e74a9521519aaa2b379fdbe7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Turns low-case ASCII chars array (length &lt;= 12) into unique quint64.  <a href="#aa05c9d95e74a9521519aaa2b379fdbe7">More...</a><br /></td></tr>
 <tr class="separator:aa05c9d95e74a9521519aaa2b379fdbe7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-slots"></a>
+Private Slots</h2></td></tr>
+<tr class="memitem:a10c65debc08d33f76ab5344f52effeaf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a10c65debc08d33f76ab5344f52effeaf">CheckOverstep</a> (int <a class="el" href="classPlayer.html#a38f2a029d90c0969ea3159a022ddb858">dir</a>)</td></tr>
+<tr class="memdesc:a10c65debc08d33f76ab5344f52effeaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if player walked over the shred border.  <a href="#a10c65debc08d33f76ab5344f52effeaf">More...</a><br /></td></tr>
+<tr class="separator:a10c65debc08d33f76ab5344f52effeaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bad5b5b9e3c9a94d45c4a3eb893e24a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a2bad5b5b9e3c9a94d45c4a3eb893e24a">BlockDestroy</a> ()</td></tr>
+<tr class="memdesc:a2bad5b5b9e3c9a94d45c4a3eb893e24a"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is called when player block is destroyed.  <a href="#a2bad5b5b9e3c9a94d45c4a3eb893e24a">More...</a><br /></td></tr>
+<tr class="separator:a2bad5b5b9e3c9a94d45c4a3eb893e24a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9df9c4bcbf023e9058547180e08f6ff"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#ac9df9c4bcbf023e9058547180e08f6ff">SetPlayer</a> (int set_x, int set_y, int set_z)</td></tr>
+<tr class="separator:ac9df9c4bcbf023e9058547180e08f6ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37656931a5014e245c88864eeaefb507"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a37656931a5014e245c88864eeaefb507">UpdateXYZ</a> (int <a class="el" href="classPlayer.html#a38f2a029d90c0969ea3159a022ddb858">dir</a>=<a class="el" href="header_8h.html#aeac25a28aa4d3c6009f7249ee82ae12da8baa369a007f0229f710055dee398153">NOWHERE</a>)</td></tr>
+<tr class="memdesc:a37656931a5014e245c88864eeaefb507"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dir is not used, for slot signature compatibility only.  <a href="#a37656931a5014e245c88864eeaefb507">More...</a><br /></td></tr>
+<tr class="separator:a37656931a5014e245c88864eeaefb507"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:ab81d34e4adb4e329d26b1635d866462d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classPlayer.html">Player</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#ab81d34e4adb4e329d26b1635d866462d">operator=</a> (const <a class="el" href="classPlayer.html">Player</a> &amp;)=delete</td></tr>
+<tr class="separator:ab81d34e4adb4e329d26b1635d866462d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8015d1f08ba69d663cfdaea1a64d1a4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#ae8015d1f08ba69d663cfdaea1a64d1a4">Player</a> (const <a class="el" href="classPlayer.html">Player</a> &amp;)=delete</td></tr>
+<tr class="separator:ae8015d1f08ba69d663cfdaea1a64d1a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c858bbf09efb9e17aba07211d81c087"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBlock.html">Block</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a3c858bbf09efb9e17aba07211d81c087">ValidBlock</a> (int num) const </td></tr>
+<tr class="memdesc:a3c858bbf09efb9e17aba07211d81c087"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks player/inventory/block existence, size limits.  <a href="#a3c858bbf09efb9e17aba07211d81c087">More...</a><br /></td></tr>
+<tr class="separator:a3c858bbf09efb9e17aba07211d81c087"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9109f6470bc6cf7f28bbc8ff452eca9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classShred.html">Shred</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#ac9109f6470bc6cf7f28bbc8ff452eca9">GetShred</a> () const </td></tr>
+<tr class="separator:ac9109f6470bc6cf7f28bbc8ff452eca9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a734ee4f6c2d664d60363c3b1b9f2d9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classWorld.html">World</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a0a734ee4f6c2d664d60363c3b1b9f2d9">GetWorld</a> () const </td></tr>
+<tr class="separator:a0a734ee4f6c2d664d60363c3b1b9f2d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a49f191419e0d7b7c846c1bd28b7b90"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a8a49f191419e0d7b7c846c1bd28b7b90">ForbiddenAdminCommands</a> () const </td></tr>
+<tr class="separator:a8a49f191419e0d7b7c846c1bd28b7b90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a38ffb7570f784a1e05ee41b1958a44ca"><td class="memItemLeft" align="right" valign="top">QSettings&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a38ffb7570f784a1e05ee41b1958a44ca">settings</a></td></tr>
+<tr class="separator:a38ffb7570f784a1e05ee41b1958a44ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7a6763e24b891de683ca50e7be31e36"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#aa7a6763e24b891de683ca50e7be31e36">homeLongi</a></td></tr>
+<tr class="separator:aa7a6763e24b891de683ca50e7be31e36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c1caf38968467ff58162ecdd3266b32"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a9c1caf38968467ff58162ecdd3266b32">homeLati</a></td></tr>
+<tr class="separator:a9c1caf38968467ff58162ecdd3266b32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad30db6cefe6d8ba23ea097e910656c57"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#ad30db6cefe6d8ba23ea097e910656c57">homeX</a></td></tr>
+<tr class="separator:ad30db6cefe6d8ba23ea097e910656c57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5424d7c9bb97ebe417222eb92695ed19"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a5424d7c9bb97ebe417222eb92695ed19">homeY</a></td></tr>
+<tr class="separator:a5424d7c9bb97ebe417222eb92695ed19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac644863ae39e0c4f03789b24bb761868"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#ac644863ae39e0c4f03789b24bb761868">homeZ</a></td></tr>
+<tr class="separator:ac644863ae39e0c4f03789b24bb761868"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38f2a029d90c0969ea3159a022ddb858"><td class="memItemLeft" align="right" valign="top"><a class="el" href="header_8h.html#aeac25a28aa4d3c6009f7249ee82ae12d">dirs</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a38f2a029d90c0969ea3159a022ddb858">dir</a> = <a class="el" href="header_8h.html#aeac25a28aa4d3c6009f7249ee82ae12dad0611de6f28d4a9c9eac959f5344698e">NORTH</a></td></tr>
+<tr class="separator:a38f2a029d90c0969ea3159a022ddb858"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72163c6dc0f119e7c87978e87e2b11c3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classAnimal.html">Animal</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a72163c6dc0f119e7c87978e87e2b11c3">player</a></td></tr>
+<tr class="separator:a72163c6dc0f119e7c87978e87e2b11c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f70de896aeeba71be8336beb28c4cb2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a4f70de896aeeba71be8336beb28c4cb2">usingType</a></td></tr>
+<tr class="separator:a4f70de896aeeba71be8336beb28c4cb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13166cbea7a5322c8f3e58bd1fc5d861"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a13166cbea7a5322c8f3e58bd1fc5d861">usingSelfType</a></td></tr>
+<tr class="separator:a13166cbea7a5322c8f3e58bd1fc5d861"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd7abbb9a26a7353b4d979db78d9dd32"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#afd7abbb9a26a7353b4d979db78d9dd32">usingInInventory</a></td></tr>
+<tr class="separator:afd7abbb9a26a7353b4d979db78d9dd32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94fcc0a29c56a289cd9a11c84d477954"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a94fcc0a29c56a289cd9a11c84d477954">creativeMode</a></td></tr>
+<tr class="separator:a94fcc0a29c56a289cd9a11c84d477954"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8be2e65eec3921cd3c1eef87b079da7f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a8be2e65eec3921cd3c1eef87b079da7f">cleaned</a> = false</td></tr>
+<tr class="separator:a8be2e65eec3921cd3c1eef87b079da7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pro_attribs_classXyz"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classXyz')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classXyz.html">Xyz</a></td></tr>
@@ -312,6 +374,30 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ae8015d1f08ba69d663cfdaea1a64d1a4"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Player::Player </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classPlayer.html">Player</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a0aed24881e8f2558dfe42976d1b9700d"></a>
 <div class="memitem">
@@ -329,6 +415,33 @@ Additional Inherited Members</h2></td></tr>
 <p>Tries to switch usingSelfType from NO to OPEN. </p>
 
 <p>Definition at line <a class="el" href="Player_8cpp_source.html#l00167">167</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a2bad5b5b9e3c9a94d45c4a3eb893e24a"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Player::BlockDestroy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>This is called when player block is destroyed. </p>
+
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00443">443</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -366,6 +479,35 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Definition at line <a class="el" href="Player_8cpp_source.html#l00298">298</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a10c65debc08d33f76ab5344f52effeaf"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Player::CheckOverstep </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>dir</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks if player walked over the shred border. </p>
+<p>This is connected to player's block signal Moved(int). It emits <a class="el" href="classPlayer.html#abcc3613a74c2ea087f95e3575bb1ef1e" title="This is emitted when player walks over shred border. ">OverstepBorder(int)</a> signal when player walks over the shred border. </p>
+
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00429">429</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -443,6 +585,31 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Definition at line <a class="el" href="Player_8cpp_source.html#l00107">107</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a8a49f191419e0d7b7c846c1bd28b7b90"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Player::ForbiddenAdminCommands </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00320">320</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -573,6 +740,31 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ac9109f6470bc6cf7f28bbc8ff452eca9"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classShred.html">Shred</a> * Player::GetShred </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00041">41</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a54abfb37017831118b8f5637ea8847f3"></a>
 <div class="memitem">
 <div class="memproto">
@@ -611,6 +803,31 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Definition at line <a class="el" href="Player_8cpp_source.html#l00049">49</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a0a734ee4f6c2d664d60363c3b1b9f2d9"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classWorld.html">World</a> * Player::GetWorld </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00042">42</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -876,6 +1093,30 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ab81d34e4adb4e329d26b1635d866462d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classPlayer.html">Player</a>&amp; Player::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classPlayer.html">Player</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="abcc3613a74c2ea087f95e3575bb1ef1e"></a>
 <div class="memitem">
 <div class="memproto">
@@ -899,7 +1140,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>This is emitted when player walks over shred border. </p>
-<p>It should be connected to World::ReloadShreds(int) signal. </p>
+<p>It should be connected to <a class="el" href="classWorld.html#ad66c04e2df9eb3272bc19eff7562045e">World::ReloadShreds(int)</a> signal. </p>
 
 </div>
 </div>
@@ -992,6 +1233,48 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Definition at line <a class="el" href="Player_8cpp_source.html#l00407">407</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac9df9c4bcbf023e9058547180e08f6ff"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Player::SetPlayer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>set_x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>set_y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>set_z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00452">452</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -1145,6 +1428,34 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a37656931a5014e245c88864eeaefb507"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Player::UpdateXYZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>dir</em> = <code><a class="el" href="header_8h.html#aeac25a28aa4d3c6009f7249ee82ae12da8baa369a007f0229f710055dee398153">NOWHERE</a></code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Dir is not used, for slot signature compatibility only. </p>
+
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00100">100</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a5db292308bd5b0780299cf30c8d4bc5c"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1222,6 +1533,34 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a3c858bbf09efb9e17aba07211d81c087"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classBlock.html">Block</a> * Player::ValidBlock </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>num</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks player/inventory/block existence, size limits. </p>
+
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00194">194</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a84f4f4a5f7b21b5b024a61fba4ca348b"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1276,6 +1615,293 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="a8be2e65eec3921cd3c1eef87b079da7f"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Player::cleaned = false</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="Player_8h_source.html#l00177">177</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a94fcc0a29c56a289cd9a11c84d477954"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Player::creativeMode</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="Player_8h_source.html#l00176">176</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a38f2a029d90c0969ea3159a022ddb858"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="header_8h.html#aeac25a28aa4d3c6009f7249ee82ae12d">dirs</a> Player::dir = <a class="el" href="header_8h.html#aeac25a28aa4d3c6009f7249ee82ae12dad0611de6f28d4a9c9eac959f5344698e">NORTH</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="Player_8h_source.html#l00171">171</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a9c1caf38968467ff58162ecdd3266b32"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long Player::homeLati</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="Player_8h_source.html#l00169">169</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa7a6763e24b891de683ca50e7be31e36"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long Player::homeLongi</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="Player_8h_source.html#l00169">169</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ad30db6cefe6d8ba23ea097e910656c57"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Player::homeX</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="Player_8h_source.html#l00170">170</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a5424d7c9bb97ebe417222eb92695ed19"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Player::homeY</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="Player_8h_source.html#l00170">170</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac644863ae39e0c4f03789b24bb761868"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Player::homeZ</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="Player_8h_source.html#l00170">170</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a72163c6dc0f119e7c87978e87e2b11c3"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classAnimal.html">Animal</a>* Player::player</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="Player_8h_source.html#l00172">172</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a38ffb7570f784a1e05ee41b1958a44ca"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">QSettings Player::settings</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="Player_8h_source.html#l00168">168</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="afd7abbb9a26a7353b4d979db78d9dd32"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Player::usingInInventory</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="Player_8h_source.html#l00175">175</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a13166cbea7a5322c8f3e58bd1fc5d861"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Player::usingSelfType</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="Player_8h_source.html#l00174">174</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a4f70de896aeeba71be8336beb28c4cb2"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Player::usingType</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="Player_8h_source.html#l00173">173</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li><a class="el" href="Player_8h_source.html">Player.h</a></li>
 <li><a class="el" href="Player_8cpp_source.html">Player.cpp</a></li>
@@ -1283,7 +1909,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Aug 3 2014 00:05:58 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Aug 6 2014 23:45:32 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

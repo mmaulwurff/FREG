@@ -91,6 +91,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
+<a href="#pri-slots">Private Slots</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
 <a href="classVirtScreen-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">VirtScreen Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
@@ -113,7 +115,7 @@ Collaboration diagram for VirtScreen:</div>
 <div class="dyncontent">
 <div class="center"><img src="classVirtScreen__coll__graph.png" border="0" usemap="#VirtScreen_coll__map" alt="Collaboration graph"/></div>
 <map name="VirtScreen_coll__map" id="VirtScreen_coll__map">
-<area shape="rect" id="node4" href="classPlayer.html" title="This class contains information specific to player and interface for manipulating him..." alt="" coords="83,177,141,210"/><area shape="rect" id="node7" href="classXyz.html" title="Xyz" alt="" coords="99,91,141,125"/><area shape="rect" id="node9" href="classXy.html" title="Xy" alt="" coords="101,6,139,39"/><area shape="rect" id="node11" href="classWorld.html" title="World provides global physics and shred connection. " alt="" coords="169,177,225,210"/></map>
+<area shape="rect" id="node3" href="classPlayer.html" title="This class contains information specific to player and interface for manipulating him..." alt="" coords="379,455,437,481"/><area shape="rect" id="node8" href="classActive.html" title="Active" alt="" coords="547,184,605,211"/><area shape="rect" id="node4" href="classXyz.html" title="Xyz" alt="" coords="695,95,740,121"/><area shape="rect" id="node11" href="classDeferredAction.html" title="Deferred Action is used when some action needs to be done at next physics turn. " alt="" coords="521,275,631,301"/><area shape="rect" id="node5" href="classXy.html" title="Xy" alt="" coords="698,5,737,32"/><area shape="rect" id="node6" href="classAnimal.html" title="Animal" alt="" coords="486,365,549,392"/><area shape="rect" id="node7" href="classFalling.html" title="Falling" alt="" coords="655,275,715,301"/><area shape="rect" id="node9" href="classBlock.html" title="Block without special physics and attributes. " alt="" coords="435,5,490,32"/><area shape="rect" id="node10" href="classShred.html" title="Shred" alt="" coords="435,95,491,121"/><area shape="rect" id="node12" href="classWorld.html" title="World provides global physics and shred connection. " alt="" coords="175,455,231,481"/><area shape="rect" id="node16" href="classPreloadThread.html" title="PreloadThread" alt="" coords="93,275,200,301"/><area shape="rect" id="node14" href="classWorldMap.html" title="WorldMap" alt="" coords="219,365,301,392"/><area shape="rect" id="node15" href="classShredStorage.html" title="ShredStorage" alt="" coords="93,365,195,392"/></map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-slots"></a>
@@ -191,6 +193,19 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:a3eb2e530bbfa1f718323ec1e3502b974"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aae70b019939ba4aed76413681265e63a"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVirtScreen.html#aae70b019939ba4aed76413681265e63a">previousCommand</a></td></tr>
 <tr class="separator:aae70b019939ba4aed76413681265e63a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-slots"></a>
+Private Slots</h2></td></tr>
+<tr class="memitem:a369d79021429f208b741745fc1ea1363"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVirtScreen.html#a369d79021429f208b741745fc1ea1363">Print</a> ()=0</td></tr>
+<tr class="memdesc:a369d79021429f208b741745fc1ea1363"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints world. Should not be called not within screen.  <a href="#a369d79021429f208b741745fc1ea1363">More...</a><br /></td></tr>
+<tr class="separator:a369d79021429f208b741745fc1ea1363"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:ad3eac3c642825427fb506a188bb67153"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVirtScreen.html#ad3eac3c642825427fb506a188bb67153">VirtScreen</a> (const <a class="el" href="classVirtScreen.html">VirtScreen</a> &amp;)=delete</td></tr>
+<tr class="separator:ad3eac3c642825427fb506a188bb67153"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a377f7c30679eee3b7c753d9ac418849b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classVirtScreen.html">VirtScreen</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVirtScreen.html#a377f7c30679eee3b7c753d9ac418849b">operator=</a> (const <a class="el" href="classVirtScreen.html">VirtScreen</a> &amp;)=delete</td></tr>
+<tr class="separator:a377f7c30679eee3b7c753d9ac418849b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This class provides base for all screens for freg. </p>
@@ -275,6 +290,30 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Definition at line <a class="el" href="VirtScreen_8cpp_source.html#l00067">67</a> of file <a class="el" href="VirtScreen_8cpp_source.html">VirtScreen.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ad3eac3c642825427fb506a188bb67153"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">VirtScreen::VirtScreen </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classVirtScreen.html">VirtScreen</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -602,6 +641,30 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a377f7c30679eee3b7c753d9ac418849b"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classVirtScreen.html">VirtScreen</a>&amp; VirtScreen::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classVirtScreen.html">VirtScreen</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="a3e2309cdf91f62a737cba5d705f12896"></a>
 <div class="memitem">
 <div class="memproto">
@@ -626,6 +689,31 @@ Protected Attributes</h2></td></tr>
 
 <p>This is called when string is needed to be received from input. </p>
 <p>It is connected to world in constructor. </p>
+
+</div>
+</div>
+<a class="anchor" id="a369d79021429f208b741745fc1ea1363"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void VirtScreen::Print </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">pure virtual</span><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prints world. Should not be called not within screen. </p>
 
 </div>
 </div>
@@ -897,7 +985,7 @@ Protected Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Aug 3 2014 00:05:58 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Aug 6 2014 23:45:32 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

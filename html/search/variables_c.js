@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['pi',['PI',['../worldmap_8cpp.html#aa08a577393243b86dfd2a97e61443673',1,'worldmap.cpp']]],
-  ['player',['player',['../classVirtScreen.html#aaed763dcb848640a199dcc6af3ac9453',1,'VirtScreen']]],
-  ['player_5fsub',['PLAYER_SUB',['../Player_8cpp.html#a7435a1420a4d94ac3c4cca9ecfaef6f2',1,'Player.cpp']]],
-  ['previouscommand',['previousCommand',['../classVirtScreen.html#aae70b019939ba4aed76413681265e63a',1,'VirtScreen']]]
+  ['obscure_5fblock',['OBSCURE_BLOCK',['../CursedScreen_8cpp.html#ac081627c3bc05a7b3fe8044422473a35',1,'CursedScreen.cpp']]],
+  ['ouch',['OUCH',['../Block_8h.html#a5bd069c401d0a44979606f9b46c8c0ea',1,'Block.h']]],
+  ['out_5fborder_5fshred',['OUT_BORDER_SHRED',['../header_8h.html#aa632576c2551fb43ee10d6ff15903629',1,'header.h']]]
 ];

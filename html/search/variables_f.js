@@ -1,13 +1,6 @@
 var searchData=
 [
-  ['screen_5fsize',['SCREEN_SIZE',['../CursedScreen_8h.html#a62bead7f96452cb837e1dba3d0678faa',1,'CursedScreen.h']]],
-  ['seconds_5fin_5fday',['SECONDS_IN_DAY',['../header_8h.html#aff10c03bcf66f89bed6708c35fb5ada3',1,'header.h']]],
-  ['seconds_5fin_5fdaylight',['SECONDS_IN_DAYLIGHT',['../header_8h.html#a3075305f41a0ae0081d785fdc49b89fe',1,'header.h']]],
-  ['seconds_5fin_5fhour',['SECONDS_IN_HOUR',['../header_8h.html#a783cd37c928f6ed101059c585e8eb61f',1,'header.h']]],
-  ['seconds_5fin_5fnight',['SECONDS_IN_NIGHT',['../header_8h.html#a7f228aed9dbb67d39a7a49cbdcb9037c',1,'header.h']]],
-  ['settings',['settings',['../classVirtScreen.html#a3eb2e530bbfa1f718323ec1e3502b974',1,'VirtScreen']]],
-  ['shred_5fwidth',['SHRED_WIDTH',['../header_8h.html#aafd122473982b0312dbad3f7720eb762',1,'header.h']]],
-  ['sound_5fstrings',['SOUND_STRINGS',['../Block_8h.html#a34d1f7669235dd5a5f51d7cc681be418',1,'Block.h']]],
-  ['sub',['sub',['../structCraftItem.html#a1f43f9af07c6fb56b24a9cd8343d6270',1,'CraftItem']]],
-  ['sun_5flight_5ffactor',['SUN_LIGHT_FACTOR',['../World_8h.html#a9c2d04dab224c787ecdebfe0370d59f0',1,'World.h']]]
+  ['rain_5fis_5fdew',['RAIN_IS_DEW',['../Shred_8cpp.html#a7c7e6ebd745b500b91fa6411e43368f9',1,'Shred.cpp']]],
+  ['recipeslist',['recipesList',['../classCraftManager.html#a4fada233eb827eb84ea4d6ad56fd7392',1,'CraftManager']]],
+  ['rightwin',['rightWin',['../classScreen.html#afc8e8eed12063eb192f8f9b7ed833344',1,'Screen']]]
 ];

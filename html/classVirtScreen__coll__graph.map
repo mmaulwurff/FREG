@@ -1,6 +1,15 @@
 <map id="VirtScreen" name="VirtScreen">
-<area shape="rect" id="node4" href="$classPlayer.html" title="This class contains information specific to player and interface for manipulating him..." alt="" coords="83,177,141,210"/>
-<area shape="rect" id="node7" href="$classXyz.html" title="Xyz" alt="" coords="99,91,141,125"/>
-<area shape="rect" id="node9" href="$classXy.html" title="Xy" alt="" coords="101,6,139,39"/>
-<area shape="rect" id="node11" href="$classWorld.html" title="World provides global physics and shred connection. " alt="" coords="169,177,225,210"/>
+<area shape="rect" id="node3" href="$classPlayer.html" title="This class contains information specific to player and interface for manipulating him..." alt="" coords="379,455,437,481"/>
+<area shape="rect" id="node8" href="$classActive.html" title="Active" alt="" coords="547,184,605,211"/>
+<area shape="rect" id="node4" href="$classXyz.html" title="Xyz" alt="" coords="695,95,740,121"/>
+<area shape="rect" id="node11" href="$classDeferredAction.html" title="Deferred Action is used when some action needs to be done at next physics turn. " alt="" coords="521,275,631,301"/>
+<area shape="rect" id="node5" href="$classXy.html" title="Xy" alt="" coords="698,5,737,32"/>
+<area shape="rect" id="node6" href="$classAnimal.html" title="Animal" alt="" coords="486,365,549,392"/>
+<area shape="rect" id="node7" href="$classFalling.html" title="Falling" alt="" coords="655,275,715,301"/>
+<area shape="rect" id="node9" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="435,5,490,32"/>
+<area shape="rect" id="node10" href="$classShred.html" title="Shred" alt="" coords="435,95,491,121"/>
+<area shape="rect" id="node12" href="$classWorld.html" title="World provides global physics and shred connection. " alt="" coords="175,455,231,481"/>
+<area shape="rect" id="node16" href="$classPreloadThread.html" title="PreloadThread" alt="" coords="93,275,200,301"/>
+<area shape="rect" id="node14" href="$classWorldMap.html" title="WorldMap" alt="" coords="219,365,301,392"/>
+<area shape="rect" id="node15" href="$classShredStorage.html" title="ShredStorage" alt="" coords="93,365,195,392"/>
 </map>

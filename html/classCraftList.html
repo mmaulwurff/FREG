@@ -87,13 +87,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classCraftList-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">CraftList Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>This class represent craft recipe.
+<p>This class represents craft recipe.
  <a href="classCraftList.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="CraftManager_8h_source.html">CraftManager.h</a>&gt;</code></p>
@@ -122,9 +123,16 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a9c4f46e3bf46f3c8ff9fb07f907683f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ad5430cf01b7e58b8b63c29b5ee5a04"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCraftList.html#a5ad5430cf01b7e58b8b63c29b5ee5a04">operator==</a> (const <a class="el" href="classCraftList.html">CraftList</a> &amp;) const </td></tr>
 <tr class="separator:a5ad5430cf01b7e58b8b63c29b5ee5a04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a721edadd16895602f8e8d3a0d184332d"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCraftList.html#a721edadd16895602f8e8d3a0d184332d">materialsNumber</a></td></tr>
+<tr class="separator:a721edadd16895602f8e8d3a0d184332d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4c54c3642c01841d8b15d4ecb8fd009"><td class="memItemLeft" align="right" valign="top">QList&lt; <a class="el" href="structCraftItem.html">CraftItem</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCraftList.html#ad4c54c3642c01841d8b15d4ecb8fd009">items</a></td></tr>
+<tr class="separator:ad4c54c3642c01841d8b15d4ecb8fd009"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>This class represent craft recipe. </p>
+<div class="textblock"><p>This class represents craft recipe. </p>
 <p>It stores recipe like this: (QList::size()-products_number) materials (sorted) (products_number) products. Comparison (==) of CraftLists is done by materials. </p>
 
 <p>Definition at line <a class="el" href="CraftManager_8h_source.html#l00043">43</a> of file <a class="el" href="CraftManager_8h_source.html">CraftManager.h</a>.</p>
@@ -337,6 +345,51 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="ad4c54c3642c01841d8b15d4ecb8fd009"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">QList&lt;<a class="el" href="structCraftItem.html">CraftItem</a> *&gt; CraftList::items</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="CraftManager_8h_source.html#l00062">62</a> of file <a class="el" href="CraftManager_8h_source.html">CraftManager.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a721edadd16895602f8e8d3a0d184332d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int CraftList::materialsNumber</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="CraftManager_8h_source.html#l00061">61</a> of file <a class="el" href="CraftManager_8h_source.html">CraftManager.h</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li><a class="el" href="CraftManager_8h_source.html">CraftManager.h</a></li>
 <li><a class="el" href="CraftManager_8cpp_source.html">CraftManager.cpp</a></li>
@@ -344,7 +397,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Aug 3 2014 00:05:57 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Aug 6 2014 23:45:31 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

@@ -1,6 +1,7 @@
 var searchData=
 [
   ['backpack',['Backpack',['../classPlayer.html#a0aed24881e8f2558dfe42976d1b9700d',1,'Player']]],
+  ['beepon',['beepOn',['../classScreen.html#a0f33655b2af69446a46f6c8262d35de7',1,'Screen']]],
   ['bell',['Bell',['../classBell.html',1,'Bell'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a9b1ed7d9244144b7a44adfa64333a630',1,'BELL():&#160;header.h']]],
   ['black_5fblack',['BLACK_BLACK',['../CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072afcd76b34514669761bd5cc5807b47cc7',1,'CursedScreen.h']]],
   ['black_5fblue',['BLACK_BLUE',['../CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a7ea9008e5111c16cd317d8daffe21f0a',1,'CursedScreen.h']]],
@@ -16,10 +17,12 @@ var searchData=
   ['block_5fmanager',['block_manager',['../BlockManager_8cpp.html#a25664f6404016a6c1fb61a0a1cf371ab',1,'block_manager():&#160;BlockManager.cpp'],['../BlockManager_8h.html#a25664f6404016a6c1fb61a0a1cf371ab',1,'block_manager():&#160;BlockManager.cpp']]],
   ['block_5fopaque',['BLOCK_OPAQUE',['../header_8h.html#a48a539666409f8c99365fc6d8a58f708a6f3369e7a0cbefeea43c4e9c35b345c9',1,'header.h']]],
   ['block_5ftransparent',['BLOCK_TRANSPARENT',['../header_8h.html#a48a539666409f8c99365fc6d8a58f708ae72d7a9ac5db4110222e69339723b6ab',1,'header.h']]],
+  ['blockdestroy',['BlockDestroy',['../classPlayer.html#a2bad5b5b9e3c9a94d45c4a3eb893e24a',1,'Player']]],
   ['blockfromfile',['BlockFromFile',['../classBlockManager.html#a49efb21a554754d0552a6e01220a26df',1,'BlockManager']]],
-  ['blockmanager',['BlockManager',['../classBlockManager.html',1,'BlockManager'],['../classBlockManager.html#a93282216d97540def52c1fa4029eb693',1,'BlockManager::BlockManager()']]],
+  ['blockmanager',['BlockManager',['../classBlockManager.html',1,'BlockManager'],['../classBlockManager.html#a93282216d97540def52c1fa4029eb693',1,'BlockManager::BlockManager()'],['../classBlockManager.html#a6119eb81f9b30a115d01c2d514abb028',1,'BlockManager::BlockManager(const BlockManager &amp;)=delete']]],
   ['blockmanager_2ecpp',['BlockManager.cpp',['../BlockManager_8cpp.html',1,'']]],
   ['blockmanager_2eh',['BlockManager.h',['../BlockManager_8h.html',1,'']]],
+  ['blocks',['blocks',['../classShred.html#acb1b73a20a986e55c25d709099b151f6',1,'Shred']]],
   ['blocks_2ecpp',['blocks.cpp',['../blocks_8cpp.html',1,'']]],
   ['blocks_2eh',['blocks.h',['../blocks_8h.html',1,'']]],
   ['blue_5fblack',['BLUE_BLACK',['../CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a189a7800234e077b2d997d65da120818',1,'CursedScreen.h']]],
@@ -33,11 +36,12 @@ var searchData=
   ['bone',['BONE',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a618bf303fb58b4eb006b58c15ca0f7ab',1,'header.h']]],
   ['boots',['Boots',['../classBoots.html',1,'Boots'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a3f13a4421904ef2c756e541b69f7cf5c',1,'BOOTS():&#160;header.h']]],
   ['break',['Break',['../classBlock.html#a8dae7cf589a4775d4c01866569500720',1,'Block']]],
-  ['breath',['Breath',['../classAnimal.html#a02f9e5c7701daf0c758a35ea25577a5a',1,'Animal']]],
+  ['breath',['breath',['../classAnimal.html#aa8f5baad98e23b210a1967fcc6d6ad84',1,'Animal::breath()'],['../classAnimal.html#a02f9e5c7701daf0c758a35ea25577a5a',1,'Animal::Breath() const ']]],
   ['breathpercent',['BreathPercent',['../classPlayer.html#a527554ff84f509163261f65f9e8a2e35',1,'Player']]],
   ['bucket',['Bucket',['../classBucket.html',1,'Bucket'],['../classBucket.html#a060ae224d575e424b4da0bac661bf2c8',1,'Bucket::Bucket(int sub, int id)'],['../classBucket.html#aed7242e1f0d9cb7a74c464073f2d96ef',1,'Bucket::Bucket(QDataStream &amp;str, int sub, int id)'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a6562baa14d39f302094c545623c5ae14',1,'BUCKET():&#160;header.h']]],
   ['bucket_2ecpp',['Bucket.cpp',['../Bucket_8cpp.html',1,'']]],
   ['bucket_2eh',['Bucket.h',['../Bucket_8h.html',1,'']]],
-  ['build',['Build',['../classPlayer.html#a07fdac0e20ff80ce72f1efcd04d03022',1,'Player::Build()'],['../classWorld.html#aee473f3e2dba94c83c66d456ceceeb6e',1,'World::Build()']]],
-  ['bush',['Bush',['../classBush.html',1,'Bush'],['../classBush.html#a629a95949ce4da475a58d9bb2d2f9c63',1,'Bush::Bush(int sub, int id)'],['../classBush.html#ad2eee0df96df47199d4ddf1977d0db92',1,'Bush::Bush(QDataStream &amp;str, int sub, int id)'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285ab2e062d1d8146bf8e158300e5930fff4',1,'BUSH():&#160;header.h']]]
+  ['build',['Build',['../classDeferredAction.html#a3123847a2037611f36d3feef73e46260',1,'DeferredAction::Build()'],['../classPlayer.html#a07fdac0e20ff80ce72f1efcd04d03022',1,'Player::Build()'],['../classWorld.html#aee473f3e2dba94c83c66d456ceceeb6e',1,'World::Build()']]],
+  ['bush',['Bush',['../classBush.html',1,'Bush'],['../classBush.html#a629a95949ce4da475a58d9bb2d2f9c63',1,'Bush::Bush(int sub, int id)'],['../classBush.html#ad2eee0df96df47199d4ddf1977d0db92',1,'Bush::Bush(QDataStream &amp;str, int sub, int id)'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285ab2e062d1d8146bf8e158300e5930fff4',1,'BUSH():&#160;header.h']]],
+  ['bush_5fsize',['BUSH_SIZE',['../classBush.html#a60aebf9d3293694aca2963403605514f',1,'Bush']]]
 ];

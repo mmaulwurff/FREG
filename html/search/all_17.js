@@ -1,7 +1,8 @@
 var searchData=
 [
   ['w',['w',['../classVirtScreen.html#a4370c655ab8fef96399dcf6f2925612f',1,'VirtScreen']]],
-  ['water',['WATER',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a9ac7d5e5851d7a2bc186a1c3341589f6',1,'header.h']]],
+  ['wasteshred',['WasteShred',['../classShred.html#a0ebc5f8be9cde1a145072bf7f5e053d7',1,'Shred']]],
+  ['water',['Water',['../classShred.html#a97b6f7411385a65ece2d1a76c7f4b53c',1,'Shred::Water()'],['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a9ac7d5e5851d7a2bc186a1c3341589f6',1,'WATER():&#160;header.h']]],
   ['weapon',['Weapon',['../classWeapon.html',1,'Weapon'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285aabb6de3c5dc7e2f70051d23bb1e5e613',1,'WEAPON():&#160;header.h']]],
   ['weapons_2ecpp',['Weapons.cpp',['../Weapons_8cpp.html',1,'']]],
   ['weapons_2eh',['Weapons.h',['../Weapons_8h.html',1,'']]],
@@ -36,15 +37,16 @@ var searchData=
   ['white_5fyellow',['WHITE_YELLOW',['../CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072aae70527dfc74f825573e9e8676766732',1,'CursedScreen.h']]],
   ['width_5fnot_5fenough',['WIDTH_NOT_ENOUGH',['../CursedScreen_8h.html#ae6468bd5894ef69f1df5fca80d2550d3a68529a3255b62e2c883a1c38ae179c36',1,'WIDTH_NOT_ENOUGH():&#160;CursedScreen.h'],['../TextScreen_8h.html#ae6468bd5894ef69f1df5fca80d2550d3a68529a3255b62e2c883a1c38ae179c36',1,'WIDTH_NOT_ENOUGH():&#160;TextScreen.h']]],
   ['wield',['Wield',['../classPlayer.html#a1154b7eeb9b31698467ea396916a762a',1,'Player']]],
+  ['windows',['windows',['../classScreen.html#ae01f861dd5fd9e9510f377443dad7113',1,'Screen']]],
   ['wood',['WOOD',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a633a5aa6913d52cbd31286e8934e8df0',1,'header.h']]],
   ['workbench',['Workbench',['../classWorkbench.html',1,'Workbench'],['../classWorkbench.html#a5c5755e702fdd4d0874a40ea3f0ed0e3',1,'Workbench::Workbench(int sub, int id)'],['../classWorkbench.html#acab0f5f91a609ce010f5df42ac5df39d',1,'Workbench::Workbench(QDataStream &amp;str, int sub, int id)'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a0032388d4e3fa6725005fefb165f1a4c',1,'WORKBENCH():&#160;header.h']]],
   ['workbench_5fsize',['WORKBENCH_SIZE',['../Containers_8h.html#a220f6a2ba5bfe354c355d47d311ff7ea',1,'Containers.h']]],
-  ['world',['World',['../classWorld.html',1,'World'],['../classWorld.html#a92a1ab954bc72bc108a34b9aac1add63',1,'World::World()'],['../World_8cpp.html#a38026b801fec560c0322d4e5b6cab8be',1,'world():&#160;World.cpp'],['../World_8h.html#a38026b801fec560c0322d4e5b6cab8be',1,'world():&#160;World.cpp']]],
+  ['world',['World',['../classWorld.html',1,'World'],['../classWorld.html#a92a1ab954bc72bc108a34b9aac1add63',1,'World::World(QString)'],['../classWorld.html#ae3fa869f4add011a9074cd0e9804bcbc',1,'World::World(const World &amp;)=delete'],['../World_8cpp.html#a38026b801fec560c0322d4e5b6cab8be',1,'world():&#160;World.cpp'],['../World_8h.html#a38026b801fec560c0322d4e5b6cab8be',1,'world():&#160;World.cpp']]],
   ['world_2ecpp',['World.cpp',['../World_8cpp.html',1,'']]],
   ['world_2eh',['World.h',['../World_8h.html',1,'']]],
   ['worldmap',['WorldMap',['../classWorldMap.html',1,'WorldMap'],['../classWorldMap.html#a5561d374f63002c47469fa156f7a9f05',1,'WorldMap::WorldMap(QString)'],['../classWorldMap.html#ad6fc5b6fc56bd7920c7247d3f2863a63',1,'WorldMap::WorldMap(const WorldMap &amp;)=delete']]],
   ['worldmap_2ecpp',['worldmap.cpp',['../worldmap_8cpp.html',1,'']]],
   ['worldmap_2eh',['worldmap.h',['../worldmap_8h.html',1,'']]],
-  ['worldname',['WorldName',['../classWorld.html#a5e00d95d0d1f9a0646ff3d74c9b03867',1,'World']]],
+  ['worldname',['worldName',['../classWorld.html#aa43a643b2fd57cd6c2011c2b5deb3347',1,'World::worldName()'],['../classWorld.html#a5e00d95d0d1f9a0646ff3d74c9b03867',1,'World::WorldName() const ']]],
   ['writetofileshreddata',['WriteToFileShredData',['../classShredStorage.html#aa1798fe720c45df5906d04cd0aabb7af',1,'ShredStorage']]]
 ];
