@@ -21,7 +21,7 @@ screens/*
 
 !help_*
 help_*/*
-!help_*/*.txt
+!help_*/*.md
 
 !recipes
 !recipes/*json

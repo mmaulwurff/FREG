@@ -388,7 +388,7 @@ void Player::ProcessCommand(QString command) {
         if ( request.isEmpty() ) {
             request = "help";
         }
-        emit ShowFile( QString("help_%1/%2.txt")
+        emit ShowFile( QString("help_%1/%2.md")
             .arg(locale.left(2)).arg(QString(request)) );
         break;
     default:
