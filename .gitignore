@@ -1,13 +1,12 @@
 *
 !.gitignore
-!README
-!COPYING
 !Freg.pro
 !*.cpp
 !*.h
 !*.ts
 !*.vim
 !*.sln
+!*.md
 
 !blocks
 blocks/*
