@@ -1,0 +1,31 @@
+-------------------------------------------------------------
+freg commands
+=============
+
+#### `help PAGE` ####
+Shows help page PAGE.
+
+#### `give KIND SUB NUMBER` ####
+#### `get  KIND SUB NUMBER` ####
+- `KIND` is requested block kind.
+  See `help kinds` for details.
+- `SUB` is requested block substance.
+  See `help subs` for details.
+- `NUMBER` is number of requested blocks (default is 1).
+
+#### `move DIRECTION` ####
+`DIRECTION` is movement direction. Possible directions:
+0, 1, 2, 3, 4, 5:
+up (default), down, north, south, east, west.
+
+#### `time` ####
+Shows current time.
+
+#### `version` ####
+Shows freg version, compile time, build type,
+Qt versions and compiler.
+
+### See also: ###
+`help screen_commands` for screen-related commands.
+
+-------------------------------------------------------------
