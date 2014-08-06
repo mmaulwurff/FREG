@@ -34,7 +34,7 @@ struct CraftItem final {
 }; // CraftItem
 
 /** \class CraftList CraftManager.h
-    * \brief This class represent craft recipe.
+    * \brief This class represents craft recipe.
     *
     * It stores recipe like this:
     * (QList::size()-products_number) materials (sorted)
