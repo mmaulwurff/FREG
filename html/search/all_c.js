@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['list_20of_20available_20kinds',['List of available kinds',['../kinds.html',1,'']]],
   ['ladder',['Ladder',['../classLadder.html',1,'Ladder'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285accbaaacafc0cf36b5e9a48ca2a8955f0',1,'LADDER():&#160;header.h']]],
   ['last_5fkind',['LAST_KIND',['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285ac8e823433db1723711ac5685ba2e7f60',1,'header.h']]],
   ['last_5fsub',['LAST_SUB',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a5d2285dc7607a44e19df60f05fe740c8',1,'header.h']]],
@@ -22,5 +23,6 @@ var searchData=
   ['longi_5fcenter',['longi_center',['../classPreloadThread.html#aa24f080209fd43c13f4a6805eefdea7f',1,'PreloadThread']]],
   ['longistart',['longiStart',['../classMap.html#a26ec3f38350bc2aa12e00d8dad3bcea9',1,'Map']]],
   ['longitude',['longitude',['../classShred.html#a59338bb60084c23a48d7cf74ffa0d227',1,'Shred::longitude()'],['../structLongLat.html#a53fe8333e0dca417969d30e54b121f1f',1,'LongLat::longitude()'],['../classWorld.html#abf6cae11b6e5ba5b04ed00d5cb0646e9',1,'World::longitude()'],['../classShred.html#ab64e5bd043292cbbca15813992669da6',1,'Shred::Longitude()'],['../classWorld.html#ae4f011c606d4e5f8e163ba3b7137d08d',1,'World::Longitude()']]],
-  ['longlat',['LongLat',['../structLongLat.html',1,'LongLat'],['../structLongLat.html#ad0763835657709f5697d41a43e7645c7',1,'LongLat::LongLat()']]]
+  ['longlat',['LongLat',['../structLongLat.html',1,'LongLat'],['../structLongLat.html#ad0763835657709f5697d41a43e7645c7',1,'LongLat::LongLat()']]],
+  ['list_20of_20available_20substances',['List of available substances',['../subs.html',1,'']]]
 ];

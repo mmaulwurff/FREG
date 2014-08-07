@@ -58,6 +58,5 @@ var searchData=
   ['cyan_5fmagenta',['CYAN_MAGENTA',['../CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072aa6ed53934dd5a63245335bba3c8bdb2c',1,'CursedScreen.h']]],
   ['cyan_5fred',['CYAN_RED',['../CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a709a04363f022eae29fa31355eed0d6b',1,'CursedScreen.h']]],
   ['cyan_5fwhite',['CYAN_WHITE',['../CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a8f807fa6f3c02abf9878a72e7125065d',1,'CursedScreen.h']]],
-  ['cyan_5fyellow',['CYAN_YELLOW',['../CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072ac60f6a03f9d3026e409cd379c791ea35',1,'CursedScreen.h']]],
-  ['commands',['commands',['../md_help_en_commands.html',1,'']]]
+  ['cyan_5fyellow',['CYAN_YELLOW',['../CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072ac60f6a03f9d3026e409cd379c791ea35',1,'CursedScreen.h']]]
 ];
