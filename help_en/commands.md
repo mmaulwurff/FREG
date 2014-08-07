@@ -1,6 +1,5 @@
--------------------------------------------------------------
 freg commands
-=============
+=============================================================
 
 #### `help PAGE` ####
 Show help page PAGE.
@@ -19,13 +18,14 @@ Show help page PAGE.
 up (default), down, north, south, east, west.
 
 #### `time` ####
-Show current time.
+Show current game time.
 
 #### `version` ####
 Show freg version, compile time, build type,
 Qt versions and compiler.
 
+### `warranty` ###
+Show warranty.
+
 ### See also: ###
 `help screen_commands` for screen-related commands.
-
--------------------------------------------------------------
