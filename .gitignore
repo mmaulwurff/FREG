@@ -1,7 +1,5 @@
 *
 !.gitignore
-!README
-!COPYING
 !Freg.pro
 !Doxyfile
 !freg-logo.png
@@ -10,6 +8,7 @@
 !*.ts
 !*.vim
 !*.sln
+!*.md
 
 !blocks
 blocks/*

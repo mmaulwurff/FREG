@@ -31,7 +31,10 @@
 
 #define sizeof_array(ARRAY) (sizeof(ARRAY)/sizeof(ARRAY[0]))
 
-const QByteArray BlockManager::kinds[] = { // do not usp space, use '_'
+/** \page kinds List of available kinds
+ *  \snippet BlockManager.cpp List of kinds */
+const QByteArray BlockManager::kinds[] = { // do not use space, use '_'
+    //! [List of kinds]
     "block",
     "bell",
     "container",
@@ -62,9 +65,13 @@ const QByteArray BlockManager::kinds[] = { // do not usp space, use '_'
     "armour",
     "helmet",
     "boots",
+    //! [List of kinds]
 };
 
+/** \page subs List of available substances
+ *  \snippet BlockManager.cpp List of kinds */
 const QByteArray BlockManager::subs[] = { // do not usp space, use '_'
+    //! [List of subs]
     "stone",
     "moss stone",
     "nullstone",
@@ -96,6 +103,7 @@ const QByteArray BlockManager::subs[] = { // do not usp space, use '_'
     "acid",
     "cloud",
     "dust",
+    //! [List of subs]
 };
 
 BlockManager block_manager;
