@@ -36,22 +36,22 @@ const int QUICK_INVENTORY_X_SHIFT = 36;
 void Screen::Arrows(WINDOW * const window, const int x, const int y,
         const bool show_dir)
 const {
-    wcolor_set(window, WHITE_BLACK, nullptr);
     if ( show_dir ) {
+        wcolor_set(window, WHITE_BLACK, nullptr);
         mvwaddstr(window, 0, x-2, qPrintable(tr("N    N")));
         mvwaddstr(window, SCREEN_SIZE+1, x-2, qPrintable(tr("S    S")));
     }
     wcolor_set(window, WHITE_RED, nullptr);
-    static const QString arrows_down(2, QChar(ascii ? 'v' : 0x2193));
-    static const QString arrows_up  (2, QChar(ascii ? '^' : 0x2191));
-    mvwaddstr(window, 0, x, qPrintable(arrows_down));
-    mvwaddstr(window, SCREEN_SIZE+1, x, qPrintable(arrows_up));
-    HorizontalArrows(window, y, WHITE_RED, show_dir);
+    mvwaddstr(window, 0, x, qPrintable(arrowDown));
+    waddstr  (window,       qPrintable(arrowDown));
+    mvwaddstr(window, SCREEN_SIZE+1, x, qPrintable(arrowUp));
+    waddstr  (window, qPrintable(arrowUp));
+    HorizontalArrows(window, y, show_dir);
     (void)wmove(window, y, x);
 }
 
 void Screen::HorizontalArrows(WINDOW * const window, const int y,
-        const int color, const bool show_dir)
+        const bool show_dir)
 const {
     wcolor_set(window, WHITE_BLACK, nullptr);
     if ( show_dir ) {
@@ -60,11 +60,9 @@ const {
         mvwaddstr(window, y-1, SCREEN_SIZE*2+1, qPrintable(tr("E")));
         mvwaddstr(window, y+1, SCREEN_SIZE*2+1, qPrintable(tr("E")));
     }
-    wcolor_set(window, color, nullptr);
-    static const QString arrow_right(QChar(ascii ? '>' : 0x2192));
-    static const QString arrow_left (QChar(ascii ? '<' : 0x2190));
-    mvwaddstr(window, y, 0, qPrintable(arrow_right));
-    mvwaddstr(window, y, SCREEN_SIZE*2+1, qPrintable(arrow_left));
+    wcolor_set(window, WHITE_RED, nullptr);
+    mvwaddstr(window, y, 0, qPrintable(arrowRight));
+    mvwaddstr(window, y, SCREEN_SIZE*2+1, qPrintable(arrowLeft));
 }
 
 void Screen::RePrint() {
@@ -536,10 +534,6 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
         }
     }
     if ( player->GetBlock() && dir > DOWN ) {
-        static const QString arrow_left (QChar(ascii ? '<' : 0x2190));
-        static const QString arrow_up   (QChar(ascii ? '^' : 0x2191));
-        static const QString arrow_right(QChar(ascii ? '>' : 0x2192));
-        static const QString arrow_down (QChar(ascii ? 'v' : 0x2193));
         const Block * const block =
             w->GetBlock(player->X(), player->Y(), player->Z());
         wattrset(window, Color(block->Kind(), block->Sub()));
@@ -547,10 +541,10 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
         switch ( player->GetDir() ) {
         case UP:      waddch(window, '.'); break;
         case DOWN:    waddch(window, 'x'); break;
-        case NORTH:   waddstr(window, qPrintable(arrow_up));    break;
-        case SOUTH:   waddstr(window, qPrintable(arrow_down));  break;
-        case EAST:    waddstr(window, qPrintable(arrow_right)); break;
-        case WEST:    waddstr(window, qPrintable(arrow_left));  break;
+        case NORTH:   waddstr(window, qPrintable(arrowUp));    break;
+        case SOUTH:   waddstr(window, qPrintable(arrowDown));  break;
+        case EAST:    waddstr(window, qPrintable(arrowRight)); break;
+        case WEST:    waddstr(window, qPrintable(arrowLeft));  break;
         case NOWHERE: waddch(window, '*'); break;
         }
     }
@@ -623,8 +617,7 @@ void Screen::PrintFront(WINDOW * const window, const dirs dir) const {
     }
     const int k_start =
         qBound(SCREEN_SIZE-1, player->Z()+SCREEN_SIZE/2, HEIGHT-1);
-    const int sky_colour = Color(BLOCK, SKY);
-    const char sky_char = CharName(BLOCK, SKY);
+    const int sky_color = Color(BLOCK, SKY);
     (void)wmove(window, 1, 1);
     for (int k=k_start; k>k_start-SCREEN_SIZE; --k, waddstr(window, "\n_")) {
         for (*x=x_start; *x!=x_end; *x+=x_step) {
@@ -632,27 +625,25 @@ void Screen::PrintFront(WINDOW * const window, const dirs dir) const {
                         Transparent()==INVISIBLE;
                     *z += z_step);
             if ( *z == z_end ) {
-                wattrset(window, sky_colour);
-                waddch(window, sky_char);
-                waddch(window, ' ');
+                static const chtype sky_char = CharName(BLOCK, SKY);
+                waddch(window, sky_char | sky_color);
+                waddch(window, ' ' | sky_color);
             } else if ( player->Visible(i, j, k) ) {
                 const Block * const block = w->GetBlock(i, j, k);
                 waddch(window, PrintBlock(*block, window));
                 waddch(window, CharNumberFront(i, j));
             } else {
-                wstandend(window);
-                waddch(window, OBSCURE_BLOCK);
-                waddch(window, ' ');
+                waddch(window, OBSCURE_BLOCK | COLOR_PAIR(WHITE_BLACK));
+                waddch(window, ' ' | COLOR_PAIR(WHITE_BLACK));
             }
         }
     }
     PrintTitle(window, dir);
     const int arrow_Y = k_start + 1 - player->Z();
     if ( shiftFocus ) {
-        HorizontalArrows(window, arrow_Y-shiftFocus, WHITE_BLUE, false);
         for (int q=arrow_Y-shiftFocus; q<SCREEN_SIZE+1 && q>0; q-=shiftFocus) {
-            mvwaddch(window, q, 0, '|');
-            mvwaddch(window, q, SCREEN_SIZE*2+1, '|');
+            mvwaddch(window, q, 0, '|' | COLOR_PAIR(WHITE_BLUE));
+            mvwaddch(window, q, SCREEN_SIZE*2+1, '|' | COLOR_PAIR(WHITE_BLUE));
         }
     }
     Arrows(window, arrow_X, arrow_Y, false);
@@ -817,6 +808,10 @@ Screen::Screen(
         fileToShow(nullptr),
         beepOn(settings.value("beep_on", false).toBool()),
         ascii(_ascii),
+        arrowUp   (ascii ? '^' : 0x2191),
+        arrowDown (ascii ? 'v' : 0x2193),
+        arrowRight(ascii ? '>' : 0x2192),
+        arrowLeft (ascii ? '<' : 0x2190),
         screen(newterm(nullptr, stdout, stdin))
 {
     #ifndef Q_OS_WIN32
