@@ -485,16 +485,16 @@ void Screen::PrintMiniMap() {
     (void)wmove(miniMapWin, 1, 0);
     const int x_center = Shred::CoordOfShred(player->X());
     const int y_center = Shred::CoordOfShred(player->Y());
-    const int j_start = qMax(x_center-2, 0);
-    const int j_end = qMin(x_center+2, w->NumShreds()-1);
-    const int i_end = qMin(y_center+2, w->NumShreds()-1);
-    for (int i=qMax(y_center-2, 0); i<=i_end; ++i, waddch(miniMapWin, '\n'))
-    for (int j=j_start;             j<=j_end; ++j) {
-        Shred * const shred = w->GetShredByPos(j, i);
-        if ( shred == nullptr ) {
+    const int j_start = x_center - 2;
+    const int j_end   = x_center + 2;
+    const int i_end   = y_center + 2;
+    for (int i=y_center-2; i<=i_end; ++i, waddch(miniMapWin, '\n'))
+    for (int j=j_start;    j<=j_end; ++j) {
+        if ( i<0 || j<0 || i>=w->NumShreds() || j>=w->NumShreds() ) {
             wstandend(miniMapWin);
             waddstr  (miniMapWin, "  ");
         } else {
+            Shred * const shred = w->GetShredByPos(j, i);
             wattrset(miniMapWin, ColorShred(shred->GetTypeOfShred()));
             wprintw (miniMapWin, " %c", shred->GetTypeOfShred());
         }
@@ -504,10 +504,10 @@ void Screen::PrintMiniMap() {
     wrefresh(miniMapWin);
 }
 
-void Screen::PrintNormal(WINDOW * const window, dirs dir) const {
+void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
     int k_start, k_step;
     if ( UP == dir ) {
-        k_start = player->Z()+1;
+        k_start = player->Z() + 1;
         k_step  = 1;
     } else {
         k_start = player->Z() - ( DOWN==dir );
@@ -545,12 +545,12 @@ void Screen::PrintNormal(WINDOW * const window, dirs dir) const {
         wattrset(window, Color(block->Kind(), block->Sub()));
         (void)wmove(window, player->Y()-start_y+1, (player->X()-start_x)*2+2);
         switch ( player->GetDir() ) {
-        case UP:    waddch(window, '.'); break;
-        case DOWN:  waddch(window, 'x'); break;
-        case NORTH: waddstr(window, qPrintable(arrow_up));    break;
-        case SOUTH: waddstr(window, qPrintable(arrow_down));  break;
-        case EAST:  waddstr(window, qPrintable(arrow_right)); break;
-        case WEST:  waddstr(window, qPrintable(arrow_left));  break;
+        case UP:      waddch(window, '.'); break;
+        case DOWN:    waddch(window, 'x'); break;
+        case NORTH:   waddstr(window, qPrintable(arrow_up));    break;
+        case SOUTH:   waddstr(window, qPrintable(arrow_down));  break;
+        case EAST:    waddstr(window, qPrintable(arrow_right)); break;
+        case WEST:    waddstr(window, qPrintable(arrow_left));  break;
         case NOWHERE: waddch(window, '*'); break;
         }
     }
@@ -560,78 +560,69 @@ void Screen::PrintNormal(WINDOW * const window, dirs dir) const {
 } // void Screen::PrintNormal(WINDOW * window, int dir)
 
 void Screen::PrintFront(WINDOW * const window, const dirs dir) const {
-    int x_step, z_step,
-        x_end,  z_end;
-    int * x, * z;
-    int i, j;
     const int pX = player->X();
-    const int pY = player->Y();
-    const int pZ = player->Z();
     const int begin_x = ( pX/SHRED_WIDTH )*SHRED_WIDTH +
         ( SHRED_WIDTH-SCREEN_SIZE )/2;
+    const int pY = player->Y();
     const int begin_y = ( pY/SHRED_WIDTH )*SHRED_WIDTH +
         ( SHRED_WIDTH-SCREEN_SIZE )/2;
-    int x_start, z_start, k_start;
-    int arrow_Y, arrow_X;
+    int x_step,  z_step,
+        x_start, z_start,
+        x_end,   z_end;
+    int * x, * z;
+    int i, j;
+    int arrow_X;
     switch ( dir ) {
     case NORTH:
         x = &i;
-        x_step = 1;
+        x_step  = 1;
         x_start = begin_x;
-        x_end = x_start+SCREEN_SIZE;
+        x_end   = x_start + SCREEN_SIZE;
         z = &j;
-        z_step = -1;
-        z_start = pY-1;
-        z_end = pY-SHRED_WIDTH*2+1;
-        arrow_X = (pX-begin_x)*2+1;
-    break;
+        z_step  = -1;
+        z_start = pY - 1;
+        z_end   = qMax(0, pY - SHRED_WIDTH*2);
+        arrow_X = (pX - begin_x)*2 + 1;
+        break;
     case SOUTH:
         x = &i;
-        x_step = -1;
-        x_start = SCREEN_SIZE-1+begin_x;
-        x_end = begin_x-1;
+        x_step  = -1;
+        x_start = SCREEN_SIZE - 1 + begin_x;
+        x_end   = begin_x - 1;
         z = &j;
-        z_step = 1;
-        z_start = pY+1;
-        z_end = pY+SHRED_WIDTH*2-1;
-        arrow_X = (SCREEN_SIZE-pX+begin_x)*2-1;
-    break;
-    case WEST:
-        x = &j;
-        x_step = -1;
-        x_start = SCREEN_SIZE-1+begin_y;
-        x_end = begin_y-1;
-        z = &i;
-        z_step = -1;
-        z_start = pX-1;
-        z_end = pX-SHRED_WIDTH*2+1;
-        arrow_X = (SCREEN_SIZE-pY+begin_y)*2-1;
-    break;
+        z_step  = 1;
+        z_start = pY + 1;
+        z_end   = qMin(pY+SHRED_WIDTH*2, w->GetBound());
+        arrow_X = (SCREEN_SIZE - pX + begin_x)*2 - 1;
+        break;
     case EAST:
         x = &j;
-        x_step = 1;
+        x_step  = 1;
         x_start = begin_y;
-        x_end = SCREEN_SIZE+begin_y;
+        x_end   = SCREEN_SIZE + begin_y;
         z = &i;
-        z_step = 1;
-        z_start = pX+1;
-        z_end = pX+SHRED_WIDTH*2-1;
-        arrow_X = (pY-begin_y)*2+1;
-    break;
+        z_step  = 1;
+        z_start = pX + 1;
+        z_end   = qMin(pX + SHRED_WIDTH*2, w->GetBound());
+        arrow_X = (pY - begin_y)*2 + 1;
+        break;
+    case WEST:
+        x = &j;
+        x_step  = -1;
+        x_start = SCREEN_SIZE - 1 + begin_y;
+        x_end   = begin_y - 1;
+        z = &i;
+        z_step  = -1;
+        z_start = pX - 1;
+        z_end   = qMax(0, pX - SHRED_WIDTH*2);
+        arrow_X = (SCREEN_SIZE - pY + begin_y)*2 - 1;
+        break;
     default:
-        fprintf(stderr, "%s: unlisted dir: %d.\n", Q_FUNC_INFO, int(dir));
+        Q_UNREACHABLE();
         return;
     }
-    if ( pZ+SCREEN_SIZE/2 >= HEIGHT-1 ) { // near top of the world
-        k_start = HEIGHT-2;
-        arrow_Y = HEIGHT-pZ;
-    } else if ( pZ-SCREEN_SIZE/2 < 0 ) { // middle of the world
-        k_start = SCREEN_SIZE-1;
-        arrow_Y = SCREEN_SIZE-pZ;
-    } else { // near bottom of the world
-        k_start = pZ+SCREEN_SIZE/2;
-        arrow_Y = SCREEN_SIZE/2+1;
-    }
+    const int k_start =
+        qBound(SCREEN_SIZE-1, player->Z()+SCREEN_SIZE/2, HEIGHT-1);
     const int sky_colour = Color(BLOCK, SKY);
     const char sky_char = CharName(BLOCK, SKY);
     (void)wmove(window, 1, 1);
@@ -656,6 +647,7 @@ void Screen::PrintFront(WINDOW * const window, const dirs dir) const {
         }
     }
     PrintTitle(window, dir);
+    const int arrow_Y = k_start + 1 - player->Z();
     if ( shiftFocus ) {
         HorizontalArrows(window, arrow_Y-shiftFocus, WHITE_BLUE, false);
         for (int q=arrow_Y-shiftFocus; q<SCREEN_SIZE+1 && q>0; q-=shiftFocus) {

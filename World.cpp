@@ -28,7 +28,7 @@
 #include "BlockManager.h"
 #include "ShredStorage.h"
 
-const int MIN_WORLD_SIZE = 7;
+const int MIN_WORLD_SIZE = 5;
 
 World * world;
 
@@ -231,10 +231,22 @@ Shred ** World::FindShred(const int x, const int y) const {
     return &shreds[ShredPos(x, y)];
 }
 
-void World::ReloadShreds(const int direction) {
-    emit StartMove(direction);
-    switch ( direction ) {
+void World::ReloadShreds() {
+    switch ( toResetDir ) {
+    case UP: return; // no reset
+    case DOWN:       // full reset
+        emit StartReloadAll();
+        DeleteAllShreds();
+        longitude = newLongi;
+        latitude  = newLati;
+        LoadAllShreds();
+        emit NeedPlayer(newX, newY, newZ);
+        emit UpdatedAll();
+        emit FinishReloadAll();
+        toResetDir = UP; // set no reset
+        return;
     case NORTH:
+        emit StartMove(toResetDir);
         --longitude;
         for (int x=0; x<NumShreds(); ++x) {
             const Shred * const shred = *FindShred(x, NumShreds()-1);
@@ -247,8 +259,9 @@ void World::ReloadShreds(const int direction) {
                 longitude - NumShreds()/2,
                 latitude  - NumShreds()/2+x, memory);
         }
-    break;
+        break;
     case SOUTH:
+        emit StartMove(toResetDir);
         ++longitude;
         for (int x=0; x<NumShreds(); ++x) {
             const Shred * const shred = *FindShred(x, 0);
@@ -261,8 +274,9 @@ void World::ReloadShreds(const int direction) {
                 longitude + NumShreds()/2,
                 latitude  - NumShreds()/2+x, memory);
         }
-    break;
+        break;
     case EAST:
+        emit StartMove(toResetDir);
         ++latitude;
         for (int y=0; y<NumShreds(); ++y) {
             const Shred * const shred = *FindShred(0, y);
@@ -275,8 +289,9 @@ void World::ReloadShreds(const int direction) {
                 longitude - NumShreds()/2+y,
                 latitude  + NumShreds()/2, memory);
         }
-    break;
+        break;
     case WEST:
+        emit StartMove(toResetDir);
         --latitude;
         for (int y=0; y<NumShreds(); ++y) {
             const Shred * const shred = *FindShred(NumShreds()-1, y);
@@ -289,37 +304,19 @@ void World::ReloadShreds(const int direction) {
                 longitude - NumShreds()/2+y,
                 latitude  - NumShreds()/2, memory);
         }
-    break;
-    default: Q_UNREACHABLE(); break;
+        break;
+    case NOWHERE: Q_UNREACHABLE(); return;
     }
-    shredStorage->Shift(direction, longitude, latitude);
-    ReEnlightenMove(direction);
-    emit Moved(direction);
-} // void World::ReloadShreds(int direction)
+    shredStorage->Shift(toResetDir, longitude, latitude);
+    ReEnlightenMove(toResetDir);
+    emit Moved(toResetDir);
+    toResetDir = UP; // set no reset
+} // void World::ReloadShreds()
 
 void World::SetReloadShreds(const int direction) { toResetDir = direction; }
 
 void World::PhysEvents() {
     Lock();
-    switch ( toResetDir ) {
-    case UP: break; // no reset
-    default:
-        ReloadShreds(toResetDir);
-        toResetDir = UP; // set no reset
-    break;
-    case DOWN: // full reset
-        emit StartReloadAll();
-        DeleteAllShreds();
-        longitude = newLongi;
-        latitude  = newLati;
-        LoadAllShreds();
-        emit NeedPlayer(newX, newY, newZ);
-        emit UpdatedAll();
-        emit FinishReloadAll();
-        toResetDir = UP; // set no reset
-    break;
-    }
-
     static const int start = NumShreds()/2 - numActiveShreds/2;
     static const int end   = start + numActiveShreds;
     for (int i=start; i<end; ++i)
@@ -329,30 +326,29 @@ void World::PhysEvents() {
 
     if ( TimeStepsInSec() > timeStep ) {
         ++timeStep;
-        Unlock();
-        emit UpdatesEnded();
-        return;
-    } // else:
+    } else {
+        for (int i=start; i<end; ++i)
+        for (int j=start; j<end; ++j) {
+            shreds[ShredPos(i, j)]->PhysEventsRare();
+        }
+        timeStep = 0;
+        ++time;
+        switch ( TimeOfDay() ) {
+        default: break;
+        case END_OF_NIGHT:
+            emit Notify(tr("It's morning now."));
+            ReEnlightenTime();
+            break;
+        case END_OF_MORNING: emit Notify(tr("It's day now."));     break;
+        case END_OF_NOON:    emit Notify(tr("It's evening now.")); break;
+        case END_OF_EVENING:
+            emit Notify(tr("It's night now."));
+            ReEnlightenTime();
+            break;
+        }
+    }
 
-    for (int i=start; i<end; ++i)
-    for (int j=start; j<end; ++j) {
-        shreds[ShredPos(i, j)]->PhysEventsRare();
-    }
-    timeStep = 0;
-    ++time;
-    switch ( TimeOfDay() ) {
-    default: break;
-    case END_OF_NIGHT:
-        emit Notify(tr("It's morning now."));
-        ReEnlightenTime();
-        break;
-    case END_OF_MORNING: emit Notify(tr("It's day now.")); break;
-    case END_OF_NOON:    emit Notify(tr("It's evening now.")); break;
-    case END_OF_EVENING:
-        emit Notify(tr("It's night now."));
-        ReEnlightenTime();
-        break;
-    }
+    ReloadShreds();
     Unlock();
     emit UpdatesEnded();
     // emit ExitReceived(); // close all after 1 turn
