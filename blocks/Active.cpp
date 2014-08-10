@@ -93,7 +93,6 @@ void Active::Move(const dirs dir) {
     case SOUTH: ++y_self; break;
     case EAST:  ++x_self; break;
     case WEST:  --x_self; break;
-    case NOWHERE: Q_UNREACHABLE(); return;
     }
     emit Moved(dir);
     if ( dir > DOWN ) {
@@ -145,7 +144,6 @@ void Active::Damage(const int dmg, const int dmg_kind) {
     const int last_dur = GetDurability();
     Block::Damage(dmg, dmg_kind);
     if ( last_dur != GetDurability() ) {
-        ReceiveSignal(OUCH);
         switch ( dmg_kind ) {
         case DAMAGE_HUNGER: ReceiveSignal(tr("You weaken from hunger!"));break;
         case DAMAGE_HEAT:   ReceiveSignal(tr("You burn!"));              break;
@@ -163,10 +161,7 @@ void Active::ReloadToSouth() { y_self -= SHRED_WIDTH; }
 void Active::ReloadToWest()  { x_self += SHRED_WIDTH; }
 void Active::ReloadToEast()  { x_self -= SHRED_WIDTH; }
 
-void Active::Farewell() {
-    ReceiveSignal(tr("You die."));
-    emit Destroyed();
-}
+void Active::Farewell() { ReceiveSignal(tr("^ You die. ^")); }
 
 Active::Active(const int kind, const int sub, const int transp) :
         Block(kind, sub, transp),

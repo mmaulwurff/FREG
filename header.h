@@ -86,13 +86,13 @@ const char DEFAULT_SHRED = SHRED_PLAIN;
 const char OUT_BORDER_SHRED = SHRED_WATER;
 
 enum dirs {
-    UP,     ///< 0
+    ANYWHERE = 0,
+    UP = 0, ///< 0
     DOWN,   ///< 1
     NORTH,  ///< 2
     SOUTH,  ///< 3
     EAST,   ///< 4
-    WEST,   ///< 5
-    NOWHERE ///< 6
+    WEST    ///< 5
 };
 
 enum push_reaction {

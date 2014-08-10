@@ -32,6 +32,8 @@
 #define sizeof_array(ARRAY) (sizeof(ARRAY)/sizeof(ARRAY[0]))
 
 /** \page kinds List of available kinds
+ *  Complete list.
+ *  These kinds can be used as parameters to `get KIND SUB` command.
  *  \snippet BlockManager.cpp List of kinds */
 const QByteArray BlockManager::kinds[] = { // do not use space, use '_'
     /// [List of kinds]
@@ -69,7 +71,9 @@ const QByteArray BlockManager::kinds[] = { // do not use space, use '_'
 };
 
 /** \page subs List of available substances
- *  \snippet BlockManager.cpp List of kinds */
+ *  Complete list.
+ *  These substances can be used as parameters to `get KIND SUB` command.
+ *  \snippet BlockManager.cpp List of subs */
 const QByteArray BlockManager::subs[] = { // do not usp space, use '_'
     /// [List of subs]
     "stone",

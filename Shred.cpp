@@ -189,7 +189,7 @@ void Shred::PhysEventsFrequent() {
         const int y_in = CoordInShred((*i)->Y());
         Block * const floor_block = GetBlock(x_in, y_in, (*i)->Z()-1);
         if ( (*i)->Weight() <= 0
-                || ( floor_block->PushResult(NOWHERE) == ENVIRONMENT
+                || ( floor_block->PushResult(ANYWHERE) == ENVIRONMENT
                     && floor_block->Sub() != AIR ) )
         {
             (*i)->SetFalling(false);
@@ -214,7 +214,7 @@ void Shred::PhysEventsRare() {
             switch ( (*i)->ActInner() ) {
             case INNER_ACTION_ONLY:    break;
             case INNER_ACTION_NONE: (*i)->ActRare(); break;
-            case INNER_ACTION_EXPLODE: break; // TODO: add explosion
+            case INNER_ACTION_EXPLODE: break; /// \todo add explosion
             case INNER_ACTION_MESSAGE: break;
             }
         }

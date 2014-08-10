@@ -83,6 +83,7 @@ void Screen::Update(int, int, int) { updated = false; }
 void Screen::UpdatePlayer() { updated = false; }
 void Screen::UpdateAround(int, int, int, int) { updated = false; }
 void Screen::Move(int) { updated = false; }
+bool Screen::IsScreenWide() { return COLS >= (SCREEN_SIZE*2+2)*2; }
 
 void Screen::UpdateAll() {
     CleanFileToShow();
@@ -227,7 +228,7 @@ void Screen::FlushInput() const { flushinp(); }
 void Screen::ControlPlayer(const int ch) {
     CleanFileToShow();
     // Q, ctrl-c, ctrl-d, ctrl-q, ctrl-x
-    // TODO: ctrl-z (to background) support
+    // \todo: ctrl-z (to background) support
     if ( 'Q'==ch || 3==ch || 4==ch || 17==ch || 24==ch ) {
         emit ExitReceived();
         return;
@@ -545,7 +546,6 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
         case SOUTH:   waddstr(window, qPrintable(arrowDown));  break;
         case EAST:    waddstr(window, qPrintable(arrowRight)); break;
         case WEST:    waddstr(window, qPrintable(arrowLeft));  break;
-        case NOWHERE: waddch(window, '*'); break;
         }
     }
     PrintTitle(window, UP==dir ? UP : DOWN);
@@ -659,7 +659,6 @@ void Screen::PrintTitle(WINDOW * const window, const dirs dir) const {
     case SOUTH: dir_string = tr("v South v"); break;
     case EAST:  dir_string = tr("> East >");  break;
     case WEST:  dir_string = tr("< West <");  break;
-    case NOWHERE: dir_string =  "Nowhere";    break;
     }
     wstandend(window);
     box(window, 0, 0);
@@ -747,39 +746,31 @@ void Screen::DisplayFile(QString path) {
 }
 
 void Screen::Notify(const QString str) const {
-    fprintf(notifyLog, "%s %s\n",
-        qPrintable(w->TimeOfDayStr()), qPrintable(str));
+    fputs(qPrintable(QString("%1 %2\n").arg(w->TimeOfDayStr()).arg(str)),
+        notifyLog);
     if ( inputActive ) return;
-    if ( beepOn ) {
-        if ( str == DING ) {
-            beep();
-        } else if ( str == OUCH ) {
-            flash();
-        }
+    switch ( str.at(str.size()-1).unicode() ) {
+    default: wstandend(notifyWin); break;
+    case '!': wcolor_set(notifyWin, RED_BLACK, nullptr); // no break;
+    case '*': if ( flashOn ) flash(); break;
+    case '^': if (  beepOn ) beep();  break;
     }
-    if ( str.at(str.size()-1) == '!' ) {
-        wcolor_set(notifyWin, RED_BLACK, nullptr);
-    } else {
-        wstandend(notifyWin);
-    }
-
     static int notification_repeat_count = 1;
     if ( str == lastNotification ) {
         ++notification_repeat_count;
-        mvwprintw(notifyWin, getcury(notifyWin)-1, 0, "%s (%dx)",
+        mvwprintw(notifyWin, getcury(notifyWin)-1, 0, "%s (%dx)\n",
             qPrintable(str), notification_repeat_count);
     } else {
         notification_repeat_count = 1;
         waddstr(notifyWin, qPrintable(lastNotification = str));
+        waddch(notifyWin, '\n');
     }
-    waddch(notifyWin, '\n');
     wrefresh(notifyWin);
 }
 
 void Screen::DeathScreen() {
     werase(rightWin);
     werase(hudWin);
-    Notify(DING);
     wcolor_set(leftWin, WHITE_RED, nullptr);
     if ( not PrintFile(leftWin, "texts/death.txt") ) {
         waddstr(leftWin, qPrintable(tr("You die.\nWaiting for respawn...")));
@@ -806,7 +797,8 @@ Screen::Screen(
         actionMode(ACTION_USE),
         shiftFocus(settings.value("focus_shift", 0).toInt()),
         fileToShow(nullptr),
-        beepOn(settings.value("beep_on", false).toBool()),
+        beepOn (settings.value("beep_on",  false).toBool()),
+        flashOn(settings.value("flash_on", true ).toBool()),
         ascii(_ascii),
         arrowUp   (ascii ? '^' : 0x2191),
         arrowDown (ascii ? 'v' : 0x2193),
@@ -865,8 +857,6 @@ Screen::Screen(
     }
     scrollok(notifyWin, TRUE);
 
-    settings.setValue("beep_on", beepOn);
-
     if ( not PrintFile(stdscr, "texts/splash.txt") ) {
         addstr("Free-Roaming Elementary Game\nby mmaulwurff\n");
     }
@@ -879,8 +869,8 @@ Screen::Screen(
     Print();
     Notify(tr("*--- Game started. Press 'H' for help. ---*"));
     if ( COLS < preferred_width ) {
-        Notify("For better gameplay ");
-        Notify(QString("set your terminal width at least %1 chars.").
+        Notify(tr("For better gameplay "));
+        Notify(tr("set your terminal width at least %1 chars.").
             arg(preferred_width));
     }
 
@@ -909,9 +899,9 @@ Screen::~Screen() {
     settings.setValue("focus_shift", shiftFocus);
     settings.setValue("action_mode", actionMode);
     settings.setValue("last_command", previousCommand);
+    settings.setValue("beep_on", beepOn);
+    settings.setValue("beep_on", flashOn);
 }
-
-bool Screen::IsScreenWide() { return COLS >= (SCREEN_SIZE*2+2)*2; }
 
 void Screen::PrintBar(const int x, const int attr, const int ch,
         const int percent, const bool value_position_right)

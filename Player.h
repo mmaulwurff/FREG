@@ -153,7 +153,7 @@ private slots:
 
     void SetPlayer(int set_x, int set_y, int set_z);
     /// Dir is not used, for slot signature compatibility only.
-    void UpdateXYZ(int dir = NOWHERE);
+    void UpdateXYZ();
 
 private:
     Player & operator=(const Player &) = delete;

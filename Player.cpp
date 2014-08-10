@@ -97,7 +97,7 @@ Inventory * Player::PlayerInventory() const {
     }
 }
 
-void Player::UpdateXYZ(int) {
+void Player::UpdateXYZ() {
     if ( player ) {
         SetXyz(player->X(), player->Y(), player->Z());
         emit Updated();
@@ -138,17 +138,13 @@ void Player::Examine() const {
 void Player::Jump() {
     if ( not GetBlock() ) return;
     usingType = USAGE_TYPE_NO;
+    DeferredAction * const def_action = new DeferredAction(player);
     if ( GetCreativeMode() ) {
-        if ( (UP==dir && z_self<HEIGHT-2) || (DOWN==dir && z_self>1) ) {
-            DeferredAction * const def_action = new DeferredAction(player);
-            def_action->SetGhostMove();
-            player->SetDeferredAction(def_action);
-        }
+        def_action->SetGhostMove(GetDir());
     } else {
-        DeferredAction * const def_action = new DeferredAction(player);
         def_action->SetJump();
-        player->SetDeferredAction(def_action);
     }
+    player->SetDeferredAction(def_action);
 }
 
 void Player::Move(const dirs direction) {
@@ -156,11 +152,10 @@ void Player::Move(const dirs direction) {
         DeferredAction * const def_action = new DeferredAction(player);
         if ( GetCreativeMode() ) {
             def_action->SetGhostMove(direction);
-            player->SetDeferredAction(def_action);
         } else {
             def_action->SetMove(direction);
-            player->SetDeferredAction(def_action);
         }
+        player->SetDeferredAction(def_action);
     }
 }
 
@@ -445,7 +440,7 @@ void Player::BlockDestroy() {
     if ( not cleaned ) {
         usingType = usingSelfType = USAGE_TYPE_NO;
         emit Destroyed();
-        player = 0;
+        player = nullptr;
         world->ReloadAllShreds(homeLati, homeLongi, homeX,homeY,homeZ);
     }
 }
@@ -472,7 +467,7 @@ void Player::SetPlayer(const int _x, const int _y, const int _z) {
     }
     dir = player->GetDir();
 
-    connect(player, SIGNAL(Destroyed()), SLOT(BlockDestroy()),
+    connect(player, SIGNAL(destroyed()), SLOT(BlockDestroy()),
         Qt::DirectConnection);
     connect(player, SIGNAL(Moved(int)), SLOT(CheckOverstep(int)),
         Qt::DirectConnection);
@@ -513,7 +508,7 @@ Player::Player() :
     connect(this, SIGNAL(OverstepBorder(int)),
         world, SLOT(SetReloadShreds(int)),
         Qt::DirectConnection);
-    connect(world, SIGNAL(Moved(int)), SLOT(UpdateXYZ(int)),
+    connect(world, SIGNAL(Moved(int)), SLOT(UpdateXYZ()),
         Qt::DirectConnection);
 }
 

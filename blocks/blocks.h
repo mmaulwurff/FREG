@@ -72,7 +72,6 @@ public:
     int  LightRadius() const override;
     QString FullName() const override;
     Block * DropAfterDamage(bool * delete_block) override;
-    push_reaction PushResult(dirs) const override;
     inner_actions ActInner() override;
 
 protected:
@@ -214,7 +213,6 @@ class Bell : public Active {
 public:
     using Active::Active;
 
-    void ReceiveSignal(QString) override;
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
     usage_types Use(Block * who) override;

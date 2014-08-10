@@ -79,7 +79,6 @@ public:
 
 signals:
     void Moved(int);
-    void Destroyed();
     void Updated();
     void ReceivedText(const QString);
 

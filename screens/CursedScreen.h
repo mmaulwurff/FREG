@@ -202,11 +202,10 @@ private:
     actions actionMode;
     /// Can be -1, 0, 1 for low, normal, and high focus.
     int shiftFocus;
-    /// Save previous command for further execution.
     QFile * fileToShow;
-    bool beepOn;
+    const bool beepOn, flashOn;
     const bool ascii;
-    QString arrowUp, arrowDown, arrowRight, arrowLeft;
+    const QString arrowUp, arrowDown, arrowRight, arrowLeft;
     SCREEN * const screen;
     mutable bool inputActive = false;
 };
