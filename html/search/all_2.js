@@ -1,7 +1,7 @@
 var searchData=
 [
   ['backpack',['Backpack',['../classPlayer.html#a0aed24881e8f2558dfe42976d1b9700d',1,'Player']]],
-  ['beepon',['beepOn',['../classScreen.html#a0f33655b2af69446a46f6c8262d35de7',1,'Screen']]],
+  ['beepon',['beepOn',['../classScreen.html#a5e6e99060bf84069f152cb76bc528af6',1,'Screen']]],
   ['bell',['Bell',['../classBell.html',1,'Bell'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a9b1ed7d9244144b7a44adfa64333a630',1,'BELL():&#160;header.h']]],
   ['black_5fblack',['BLACK_BLACK',['../CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072afcd76b34514669761bd5cc5807b47cc7',1,'CursedScreen.h']]],
   ['black_5fblue',['BLACK_BLUE',['../CursedScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a7ea9008e5111c16cd317d8daffe21f0a',1,'CursedScreen.h']]],

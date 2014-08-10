@@ -11,7 +11,7 @@ var searchData=
   ['deleteblock',['DeleteBlock',['../classBlockManager.html#ab3fbdb9af7557b671d9baa817dc948e4',1,'BlockManager']]],
   ['desert',['Desert',['../classShred.html#a66dde65fc4dd59f429f8a58bf1fd7a7b',1,'Shred']]],
   ['destroyandreplace',['DestroyAndReplace',['../classWorld.html#a058d245050067ab3ee6838a9ca79fbc8',1,'World']]],
-  ['destroyed',['Destroyed',['../classActive.html#a6e2481db996d956734d30e2bcfaf5f70',1,'Active::Destroyed()'],['../classPlayer.html#a2a9ac49122ec48f35f62e1788c87cad1',1,'Player::Destroyed()']]],
+  ['destroyed',['Destroyed',['../classPlayer.html#a2a9ac49122ec48f35f62e1788c87cad1',1,'Player']]],
   ['dew',['Dew',['../classShred.html#a5ab7ea30f34eaae57b4c93be2b9d570d',1,'Shred']]],
   ['directlyvisible',['DirectlyVisible',['../classWorld.html#a917f1e6c2988300670f07d819ae3559b',1,'World']]],
   ['displayfile',['DisplayFile',['../classScreen.html#ab9866ed100bad95bd02dfb3c402dfa12',1,'Screen::DisplayFile(QString path) override'],['../classScreen.html#ab9866ed100bad95bd02dfb3c402dfa12',1,'Screen::DisplayFile(QString path) override'],['../classVirtScreen.html#a15ad5ab115d887ac455b49db1e5679c3',1,'VirtScreen::DisplayFile()']]],

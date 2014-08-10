@@ -12,6 +12,7 @@ var searchData=
   ['fire',['FIRE',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a6811f08ec3a763b0351fab6fb5054df8',1,'header.h']]],
   ['fire_5flight_5ffactor',['FIRE_LIGHT_FACTOR',['../Lighting-inertia_8cpp.html#a9238de6c319d1f60a3ac023a2fb1b1dd',1,'Lighting-inertia.cpp']]],
   ['firelight',['FireLight',['../classShred.html#afa7700c8e27ef28c082cc299d34ec841',1,'Shred::FireLight()'],['../classWorld.html#acc1c1fab9e5a810e660dc6fb0f28c9ba',1,'World::FireLight()']]],
+  ['flashon',['flashOn',['../classScreen.html#adda6bc18cfd0bf66598aa516bebc64f2',1,'Screen']]],
   ['flatundeground',['FlatUndeground',['../classShred.html#a0ae48ff49eaacbf8e56bce644805db58',1,'Shred']]],
   ['flushinput',['FlushInput',['../classScreen.html#a74c53c81a8085d0f0ac1cd088549e746',1,'Screen::FlushInput() const override'],['../classScreen.html#a74c53c81a8085d0f0ac1cd088549e746',1,'Screen::FlushInput() const override'],['../classVirtScreen.html#a6136fa032244875ed3fd91554e3f9ad4',1,'VirtScreen::FlushInput()']]],
   ['focus',['Focus',['../classWorld.html#a6c874cebacacde0370c7d069e19b73cf',1,'World']]],

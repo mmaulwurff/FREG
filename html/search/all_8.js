@@ -15,7 +15,7 @@ var searchData=
   ['homex',['homeX',['../classPlayer.html#ad30db6cefe6d8ba23ea097e910656c57',1,'Player']]],
   ['homey',['homeY',['../classPlayer.html#a5424d7c9bb97ebe417222eb92695ed19',1,'Player']]],
   ['homez',['homeZ',['../classPlayer.html#ac644863ae39e0c4f03789b24bb761868',1,'Player']]],
-  ['horizontalarrows',['HorizontalArrows',['../classScreen.html#a5828f389438158f7cf1b2ce6071ac0ca',1,'Screen']]],
+  ['horizontalarrows',['HorizontalArrows',['../classScreen.html#a68f83bd3a4e0b0bd2ae2bf35f61b982d',1,'Screen']]],
   ['hp',['HP',['../classPlayer.html#a6c7c6dc7a4847327cb0f82dfdab3964b',1,'Player']]],
   ['hudwin',['hudWin',['../classScreen.html#ab4e5fe2116d7fc99ffc873f5ba7c5eac',1,'Screen']]],
   ['help',['help',['../md_help_en_help.html',1,'']]]

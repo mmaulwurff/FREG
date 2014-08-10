@@ -16,7 +16,7 @@ var searchData=
   ['updatesend',['UpdatesEnd',['../classVirtScreen.html#a387072973bcefb52c736186de6249d45',1,'VirtScreen']]],
   ['updatesended',['UpdatesEnded',['../classWorld.html#ace76119720f57bbfecc098e008e0ed95',1,'World']]],
   ['updateshred',['UpdateShred',['../classActive.html#a981a988c86ac94fc49d245d5f55b22b7',1,'Active']]],
-  ['updatexyz',['UpdateXYZ',['../classPlayer.html#a37656931a5014e245c88864eeaefb507',1,'Player']]],
+  ['updatexyz',['UpdateXYZ',['../classPlayer.html#a62ad553db215163821b032d3722f169f',1,'Player']]],
   ['upshine',['UpShine',['../classWorld.html#ac89dac8e13674106658af473c3b4333a',1,'World']]],
   ['upshineinit',['UpShineInit',['../classWorld.html#a15d52d95989f2bcec7c98b1d98b6dbd7',1,'World']]],
   ['usage_5ftype_5fno',['USAGE_TYPE_NO',['../header_8h.html#a305c682db7e7cdce78096178c0c9ef4aa8186b7b3267ee8ca1e61726ab3ea0325',1,'header.h']]],
@@ -29,5 +29,5 @@ var searchData=
   ['use',['Use',['../classBlock.html#a19bb384757938c21ed727d079dda6567',1,'Block::Use()'],['../classBush.html#a1cdaa987013618c87b18cef67ac955a5',1,'Bush::Use()'],['../classDoor.html#a4e79c344e29c1ff80c0e3d7e776cd83e',1,'Door::Use()'],['../classClock.html#a89a5af3a84e3109085c60a097c6e5a10',1,'Clock::Use()'],['../classText.html#a6d80d3635e85b585d0ee96c9168ae0e0',1,'Text::Use()'],['../classMap.html#a5164116739672a53d6bae30335406d06',1,'Map::Use()'],['../classBell.html#a6e891e2fe56f1944f1cbb5a1abd63d72',1,'Bell::Use()'],['../classBucket.html#a8c74e34beba4c6cebd461cd4f22ec964',1,'Bucket::Use()'],['../classContainer.html#a5a6987aabe796d9fb09c6c1d0c68555c',1,'Container::Use()'],['../classIlluminator.html#a574f11b4572ffff2a78b9158d703969a',1,'Illuminator::Use()'],['../classRainMachine.html#a90fc608557933859f3114ca3dd02ed2b',1,'RainMachine::Use()'],['../classWeapon.html#aadfcb8361b6bbbef9062ee3c0e6a1c72',1,'Weapon::Use()'],['../classPlayer.html#a5db292308bd5b0780299cf30c8d4bc5c',1,'Player::Use()'],['../classPlayer.html#ac99107dbfb4dea717876f259749a4e68',1,'Player::Use(int num)']]],
   ['usingininventory',['usingInInventory',['../classPlayer.html#afd7abbb9a26a7353b4d979db78d9dd32',1,'Player']]],
   ['usingselftype',['usingSelfType',['../classPlayer.html#a13166cbea7a5322c8f3e58bd1fc5d861',1,'Player::usingSelfType()'],['../classPlayer.html#ac124d33e62cd393dcffa2c63f83ee461',1,'Player::UsingSelfType() const ']]],
-  ['usingtype',['usingType',['../classPlayer.html#a4f70de896aeeba71be8336beb28c4cb2',1,'Player::usingType()'],['../classPlayer.html#a9b58fe30fc7efc96b77deecbefb54a81',1,'Player::UsingType() const ']]]
+  ['usingtype',['UsingType',['../classPlayer.html#a9b58fe30fc7efc96b77deecbefb54a81',1,'Player::UsingType() const '],['../classPlayer.html#a4f70de896aeeba71be8336beb28c4cb2',1,'Player::usingType()']]]
 ];
