@@ -25,8 +25,8 @@
 
 void DeferredAction::GhostMove() const {
     const dirs dir = static_cast<dirs>(num);
-    if ( dir == DOWN && attachedBlock->Z() == 0        ) return;
-    if ( dir == UP   && attachedBlock->Z() == HEIGHT-1 ) return;
+    if ( dir == DOWN && attachedBlock->Z() == 1        ) return;
+    if ( dir == UP   && attachedBlock->Z() == HEIGHT-2 ) return;
     attachedBlock->Move(dir);
 }
 

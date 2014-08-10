@@ -17,7 +17,7 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-/**\file screen.cpp
+/**\file CursedScreen.cpp
  * \brief This file is related to curses screen for freg. */
 
 #include <QDir>
@@ -36,22 +36,22 @@ const int QUICK_INVENTORY_X_SHIFT = 36;
 void Screen::Arrows(WINDOW * const window, const int x, const int y,
         const bool show_dir)
 const {
-    wcolor_set(window, WHITE_BLACK, nullptr);
     if ( show_dir ) {
+        wcolor_set(window, WHITE_BLACK, nullptr);
         mvwaddstr(window, 0, x-2, qPrintable(tr("N    N")));
         mvwaddstr(window, SCREEN_SIZE+1, x-2, qPrintable(tr("S    S")));
     }
     wcolor_set(window, WHITE_RED, nullptr);
-    static const QString arrows_down(2, QChar(ascii ? 'v' : 0x2193));
-    static const QString arrows_up  (2, QChar(ascii ? '^' : 0x2191));
-    mvwaddstr(window, 0, x, qPrintable(arrows_down));
-    mvwaddstr(window, SCREEN_SIZE+1, x, qPrintable(arrows_up));
-    HorizontalArrows(window, y, WHITE_RED, show_dir);
+    mvwaddstr(window, 0, x, qPrintable(arrowDown));
+    waddstr  (window,       qPrintable(arrowDown));
+    mvwaddstr(window, SCREEN_SIZE+1, x, qPrintable(arrowUp));
+    waddstr  (window, qPrintable(arrowUp));
+    HorizontalArrows(window, y, show_dir);
     (void)wmove(window, y, x);
 }
 
 void Screen::HorizontalArrows(WINDOW * const window, const int y,
-        const int color, const bool show_dir)
+        const bool show_dir)
 const {
     wcolor_set(window, WHITE_BLACK, nullptr);
     if ( show_dir ) {
@@ -60,11 +60,9 @@ const {
         mvwaddstr(window, y-1, SCREEN_SIZE*2+1, qPrintable(tr("E")));
         mvwaddstr(window, y+1, SCREEN_SIZE*2+1, qPrintable(tr("E")));
     }
-    wcolor_set(window, color, nullptr);
-    static const QString arrow_right(QChar(ascii ? '>' : 0x2192));
-    static const QString arrow_left (QChar(ascii ? '<' : 0x2190));
-    mvwaddstr(window, y, 0, qPrintable(arrow_right));
-    mvwaddstr(window, y, SCREEN_SIZE*2+1, qPrintable(arrow_left));
+    wcolor_set(window, WHITE_RED, nullptr);
+    mvwaddstr(window, y, 0, qPrintable(arrowRight));
+    mvwaddstr(window, y, SCREEN_SIZE*2+1, qPrintable(arrowLeft));
 }
 
 void Screen::RePrint() {
@@ -485,16 +483,16 @@ void Screen::PrintMiniMap() {
     (void)wmove(miniMapWin, 1, 0);
     const int x_center = Shred::CoordOfShred(player->X());
     const int y_center = Shred::CoordOfShred(player->Y());
-    const int j_start = qMax(x_center-2, 0);
-    const int j_end = qMin(x_center+2, w->NumShreds()-1);
-    const int i_end = qMin(y_center+2, w->NumShreds()-1);
-    for (int i=qMax(y_center-2, 0); i<=i_end; ++i, waddch(miniMapWin, '\n'))
-    for (int j=j_start;             j<=j_end; ++j) {
-        Shred * const shred = w->GetShredByPos(j, i);
-        if ( shred == nullptr ) {
+    const int j_start = x_center - 2;
+    const int j_end   = x_center + 2;
+    const int i_end   = y_center + 2;
+    for (int i=y_center-2; i<=i_end; ++i, waddch(miniMapWin, '\n'))
+    for (int j=j_start;    j<=j_end; ++j) {
+        if ( i<0 || j<0 || i>=w->NumShreds() || j>=w->NumShreds() ) {
             wstandend(miniMapWin);
             waddstr  (miniMapWin, "  ");
         } else {
+            Shred * const shred = w->GetShredByPos(j, i);
             wattrset(miniMapWin, ColorShred(shred->GetTypeOfShred()));
             wprintw (miniMapWin, " %c", shred->GetTypeOfShred());
         }
@@ -504,10 +502,10 @@ void Screen::PrintMiniMap() {
     wrefresh(miniMapWin);
 }
 
-void Screen::PrintNormal(WINDOW * const window, dirs dir) const {
+void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
     int k_start, k_step;
     if ( UP == dir ) {
-        k_start = player->Z()+1;
+        k_start = player->Z() + 1;
         k_step  = 1;
     } else {
         k_start = player->Z() - ( DOWN==dir );
@@ -536,21 +534,17 @@ void Screen::PrintNormal(WINDOW * const window, dirs dir) const {
         }
     }
     if ( player->GetBlock() && dir > DOWN ) {
-        static const QString arrow_left (QChar(ascii ? '<' : 0x2190));
-        static const QString arrow_up   (QChar(ascii ? '^' : 0x2191));
-        static const QString arrow_right(QChar(ascii ? '>' : 0x2192));
-        static const QString arrow_down (QChar(ascii ? 'v' : 0x2193));
         const Block * const block =
             w->GetBlock(player->X(), player->Y(), player->Z());
         wattrset(window, Color(block->Kind(), block->Sub()));
         (void)wmove(window, player->Y()-start_y+1, (player->X()-start_x)*2+2);
         switch ( player->GetDir() ) {
-        case UP:    waddch(window, '.'); break;
-        case DOWN:  waddch(window, 'x'); break;
-        case NORTH: waddstr(window, qPrintable(arrow_up));    break;
-        case SOUTH: waddstr(window, qPrintable(arrow_down));  break;
-        case EAST:  waddstr(window, qPrintable(arrow_right)); break;
-        case WEST:  waddstr(window, qPrintable(arrow_left));  break;
+        case UP:      waddch(window, '.'); break;
+        case DOWN:    waddch(window, 'x'); break;
+        case NORTH:   waddstr(window, qPrintable(arrowUp));    break;
+        case SOUTH:   waddstr(window, qPrintable(arrowDown));  break;
+        case EAST:    waddstr(window, qPrintable(arrowRight)); break;
+        case WEST:    waddstr(window, qPrintable(arrowLeft));  break;
         }
     }
     PrintTitle(window, UP==dir ? UP : DOWN);
@@ -559,80 +553,70 @@ void Screen::PrintNormal(WINDOW * const window, dirs dir) const {
 } // void Screen::PrintNormal(WINDOW * window, int dir)
 
 void Screen::PrintFront(WINDOW * const window, const dirs dir) const {
-    int x_step, z_step,
-        x_end,  z_end;
-    int * x, * z;
-    int i, j;
     const int pX = player->X();
-    const int pY = player->Y();
-    const int pZ = player->Z();
     const int begin_x = ( pX/SHRED_WIDTH )*SHRED_WIDTH +
         ( SHRED_WIDTH-SCREEN_SIZE )/2;
+    const int pY = player->Y();
     const int begin_y = ( pY/SHRED_WIDTH )*SHRED_WIDTH +
         ( SHRED_WIDTH-SCREEN_SIZE )/2;
-    int x_start, z_start, k_start;
-    int arrow_Y, arrow_X;
+    int x_step,  z_step,
+        x_start, z_start,
+        x_end,   z_end;
+    int * x, * z;
+    int i, j;
+    int arrow_X;
     switch ( dir ) {
     case NORTH:
         x = &i;
-        x_step = 1;
+        x_step  = 1;
         x_start = begin_x;
-        x_end = x_start+SCREEN_SIZE;
+        x_end   = x_start + SCREEN_SIZE;
         z = &j;
-        z_step = -1;
-        z_start = pY-1;
-        z_end = pY-SHRED_WIDTH*2+1;
-        arrow_X = (pX-begin_x)*2+1;
-    break;
+        z_step  = -1;
+        z_start = pY - 1;
+        z_end   = qMax(0, pY - SHRED_WIDTH*2);
+        arrow_X = (pX - begin_x)*2 + 1;
+        break;
     case SOUTH:
         x = &i;
-        x_step = -1;
-        x_start = SCREEN_SIZE-1+begin_x;
-        x_end = begin_x-1;
+        x_step  = -1;
+        x_start = SCREEN_SIZE - 1 + begin_x;
+        x_end   = begin_x - 1;
         z = &j;
-        z_step = 1;
-        z_start = pY+1;
-        z_end = pY+SHRED_WIDTH*2-1;
-        arrow_X = (SCREEN_SIZE-pX+begin_x)*2-1;
-    break;
-    case WEST:
-        x = &j;
-        x_step = -1;
-        x_start = SCREEN_SIZE-1+begin_y;
-        x_end = begin_y-1;
-        z = &i;
-        z_step = -1;
-        z_start = pX-1;
-        z_end = pX-SHRED_WIDTH*2+1;
-        arrow_X = (SCREEN_SIZE-pY+begin_y)*2-1;
-    break;
+        z_step  = 1;
+        z_start = pY + 1;
+        z_end   = qMin(pY+SHRED_WIDTH*2, w->GetBound());
+        arrow_X = (SCREEN_SIZE - pX + begin_x)*2 - 1;
+        break;
     case EAST:
         x = &j;
-        x_step = 1;
+        x_step  = 1;
         x_start = begin_y;
-        x_end = SCREEN_SIZE+begin_y;
+        x_end   = SCREEN_SIZE + begin_y;
         z = &i;
-        z_step = 1;
-        z_start = pX+1;
-        z_end = pX+SHRED_WIDTH*2-1;
-        arrow_X = (pY-begin_y)*2+1;
-    break;
+        z_step  = 1;
+        z_start = pX + 1;
+        z_end   = qMin(pX + SHRED_WIDTH*2, w->GetBound());
+        arrow_X = (pY - begin_y)*2 + 1;
+        break;
+    case WEST:
+        x = &j;
+        x_step  = -1;
+        x_start = SCREEN_SIZE - 1 + begin_y;
+        x_end   = begin_y - 1;
+        z = &i;
+        z_step  = -1;
+        z_start = pX - 1;
+        z_end   = qMax(0, pX - SHRED_WIDTH*2);
+        arrow_X = (SCREEN_SIZE - pY + begin_y)*2 - 1;
+        break;
     default:
-        fprintf(stderr, "%s: unlisted dir: %d.\n", Q_FUNC_INFO, int(dir));
+        Q_UNREACHABLE();
         return;
     }
-    if ( pZ+SCREEN_SIZE/2 >= HEIGHT-1 ) { // near top of the world
-        k_start = HEIGHT-2;
-        arrow_Y = HEIGHT-pZ;
-    } else if ( pZ-SCREEN_SIZE/2 < 0 ) { // middle of the world
-        k_start = SCREEN_SIZE-1;
-        arrow_Y = SCREEN_SIZE-pZ;
-    } else { // near bottom of the world
-        k_start = pZ+SCREEN_SIZE/2;
-        arrow_Y = SCREEN_SIZE/2+1;
-    }
-    const int sky_colour = Color(BLOCK, SKY);
-    const char sky_char = CharName(BLOCK, SKY);
+    const int k_start =
+        qBound(SCREEN_SIZE-1, player->Z()+SCREEN_SIZE/2, HEIGHT-1);
+    const int sky_color = Color(BLOCK, SKY);
     (void)wmove(window, 1, 1);
     for (int k=k_start; k>k_start-SCREEN_SIZE; --k, waddstr(window, "\n_")) {
         for (*x=x_start; *x!=x_end; *x+=x_step) {
@@ -640,26 +624,25 @@ void Screen::PrintFront(WINDOW * const window, const dirs dir) const {
                         Transparent()==INVISIBLE;
                     *z += z_step);
             if ( *z == z_end ) {
-                wattrset(window, sky_colour);
-                waddch(window, sky_char);
-                waddch(window, ' ');
+                static const chtype sky_char = CharName(BLOCK, SKY);
+                waddch(window, sky_char | sky_color);
+                waddch(window, ' ' | sky_color);
             } else if ( player->Visible(i, j, k) ) {
                 const Block * const block = w->GetBlock(i, j, k);
                 waddch(window, PrintBlock(*block, window));
                 waddch(window, CharNumberFront(i, j));
             } else {
-                wstandend(window);
-                waddch(window, OBSCURE_BLOCK);
-                waddch(window, ' ');
+                waddch(window, OBSCURE_BLOCK | COLOR_PAIR(WHITE_BLACK));
+                waddch(window, ' ' | COLOR_PAIR(WHITE_BLACK));
             }
         }
     }
     PrintTitle(window, dir);
+    const int arrow_Y = k_start + 1 - player->Z();
     if ( shiftFocus ) {
-        HorizontalArrows(window, arrow_Y-shiftFocus, WHITE_BLUE, false);
         for (int q=arrow_Y-shiftFocus; q<SCREEN_SIZE+1 && q>0; q-=shiftFocus) {
-            mvwaddch(window, q, 0, '|');
-            mvwaddch(window, q, SCREEN_SIZE*2+1, '|');
+            mvwaddch(window, q, 0, '|' | COLOR_PAIR(WHITE_BLUE));
+            mvwaddch(window, q, SCREEN_SIZE*2+1, '|' | COLOR_PAIR(WHITE_BLUE));
         }
     }
     Arrows(window, arrow_X, arrow_Y, false);
@@ -823,6 +806,10 @@ Screen::Screen(
         fileToShow(nullptr),
         beepOn(settings.value("beep_on", false).toBool()),
         ascii(_ascii),
+        arrowUp   (ascii ? '^' : 0x2191),
+        arrowDown (ascii ? 'v' : 0x2193),
+        arrowRight(ascii ? '>' : 0x2192),
+        arrowLeft (ascii ? '<' : 0x2190),
         screen(newterm(nullptr, stdout, stdin))
 {
     #ifndef Q_OS_WIN32

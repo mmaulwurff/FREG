@@ -174,7 +174,7 @@ private:
     /// Also saves all shreds.
     void DeleteAllShreds();
     void LoadAllShreds();
-    void ReloadShreds(int direction);
+    void ReloadShreds();
     void run() override;
     Shred ** FindShred(int x, int y) const;
 

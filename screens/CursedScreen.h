@@ -163,7 +163,7 @@ private:
     char CharNumber(int z) const;
     char CharNumberFront(int x, int y) const;
     void Arrows(WINDOW *, int x, int y, bool show_dir) const;
-    void HorizontalArrows(WINDOW *, int y, int color, bool show_dir) const;
+    void HorizontalArrows(WINDOW *, int y, bool show_dir) const;
     void PrintNormal(WINDOW *, dirs) const;
     void PrintFront(WINDOW *, dirs) const;
     void PrintInv(WINDOW *, const Block *, const Inventory *) const;
@@ -206,6 +206,7 @@ private:
     QFile * fileToShow;
     bool beepOn;
     const bool ascii;
+    QString arrowUp, arrowDown, arrowRight, arrowLeft;
     SCREEN * const screen;
     mutable bool inputActive = false;
 };
