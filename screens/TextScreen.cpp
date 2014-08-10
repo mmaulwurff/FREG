@@ -63,8 +63,8 @@ void Screen::MovePlayerDiag(const dirs dir1, const dirs dir2) const {
 
 void Screen::ControlPlayer(const int ch) {
     CleanFileToShow();
+    /// \todo: ctrl-z (to background) support
     // Q, ctrl-c, ctrl-d, ctrl-q, ctrl-x
-    // \todo: ctrl-z (to background) support
     if ( 'Q'==ch || 3==ch || 4==ch || 17==ch || 24==ch ) {
         emit ExitReceived();
         return;

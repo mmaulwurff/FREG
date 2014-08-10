@@ -227,13 +227,13 @@ void Screen::FlushInput() const { flushinp(); }
 
 void Screen::ControlPlayer(const int ch) {
     CleanFileToShow();
+    /// \todo: ctrl-z (to background) support
     // Q, ctrl-c, ctrl-d, ctrl-q, ctrl-x
-    // \todo: ctrl-z (to background) support
     if ( 'Q'==ch || 3==ch || 4==ch || 17==ch || 24==ch ) {
         emit ExitReceived();
         return;
     } // else:
-    if ( ch>='a' && ch<='z' ) { // actions with inventory
+    if ( 'a'<=ch && ch<='z' ) { // actions with inventory
         InventoryAction(ch-'a');
         return;
     } // else:
