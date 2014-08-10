@@ -551,7 +551,6 @@ void Screen::PrintNormal(WINDOW * const window, dirs dir) const {
         case SOUTH: waddstr(window, qPrintable(arrow_down));  break;
         case EAST:  waddstr(window, qPrintable(arrow_right)); break;
         case WEST:  waddstr(window, qPrintable(arrow_left));  break;
-        case NOWHERE: waddch(window, '*'); break;
         }
     }
     PrintTitle(window, UP==dir ? UP : DOWN);
@@ -676,7 +675,6 @@ void Screen::PrintTitle(WINDOW * const window, const dirs dir) const {
     case SOUTH: dir_string = tr("v South v"); break;
     case EAST:  dir_string = tr("> East >");  break;
     case WEST:  dir_string = tr("< West <");  break;
-    case NOWHERE: dir_string =  "Nowhere";    break;
     }
     wstandend(window);
     box(window, 0, 0);

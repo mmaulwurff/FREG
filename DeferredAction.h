@@ -49,8 +49,8 @@ public:
     DeferredAction & operator=(const DeferredAction &) = delete;
     DeferredAction(const DeferredAction &) = delete;
 
-    void SetGhostMove(int dir = NOWHERE);
-    void SetMove(int dir = NOWHERE);
+    void SetGhostMove(int dir);
+    void SetMove(int dir);
     void SetJump();
     void SetDamage (int x, int y, int z);
     void SetPour   (int x, int y, int z, int slot);

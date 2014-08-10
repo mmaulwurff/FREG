@@ -410,7 +410,7 @@
             World * const world = GetWorld();
             int x, y, z;
             world->Focus(X(), Y(), Z(), &x, &y, &z, World::Anti(GetDir()));
-            if (ENVIRONMENT == world->GetBlock(x, y, z)->PushResult(NOWHERE)) {
+            if (ENVIRONMENT==world->GetBlock(x, y, z)->PushResult(ANYWHERE)) {
                 movable = MOVABLE;
                 shifted = !world->Move(X(), Y(), Z(), World::Anti(GetDir()));
                 movable = NOT_MOVABLE;

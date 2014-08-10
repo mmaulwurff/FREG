@@ -93,7 +93,6 @@ void Active::Move(const dirs dir) {
     case SOUTH: ++y_self; break;
     case EAST:  ++x_self; break;
     case WEST:  --x_self; break;
-    case NOWHERE: Q_UNREACHABLE(); return;
     }
     emit Moved(dir);
     if ( dir > DOWN ) {

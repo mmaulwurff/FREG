@@ -81,7 +81,7 @@ void World::Drop(Block * const block_from,
     const int x_in = Shred::CoordInShred(x_to);
     const int y_in = Shred::CoordInShred(y_to);
     Block * block_to = shred->GetBlock(x_in, y_in, z_to);
-    if ( ENVIRONMENT == block_to->PushResult(NOWHERE) ) {
+    if ( ENVIRONMENT == block_to->PushResult(ANYWHERE) ) {
         shred->SetBlock( (block_to=NewBlock(CONTAINER, DIFFERENT)),
             x_in, y_in, z_to );
     }
@@ -184,7 +184,6 @@ dirs World::TurnRight(const dirs dir) {
     case SOUTH: return WEST;
     case EAST:  return SOUTH;
     case WEST:  return NORTH;
-    case NOWHERE: return NOWHERE;
     }
     Q_UNREACHABLE();
     return NORTH;
@@ -198,7 +197,6 @@ dirs World::TurnLeft(const dirs dir) {
     case SOUTH: return EAST;
     case EAST:  return NORTH;
     case WEST:  return SOUTH;
-    case NOWHERE: return NOWHERE;
     }
     Q_UNREACHABLE();
     return NORTH;
@@ -212,7 +210,6 @@ dirs World::Anti(const dirs dir) {
     case SOUTH: return NORTH;
     case EAST:  return WEST;
     case WEST:  return EAST;
-    case NOWHERE: return NOWHERE;
     }
     Q_UNREACHABLE();
     return NORTH;
@@ -526,7 +523,6 @@ const {
     case SOUTH: ++*y_to; break;
     case EAST:  ++*x_to; break;
     case WEST:  --*x_to; break;
-    case NOWHERE: break;
     }
     return InBounds(*x_to, *y_to, *z_to);
 }
@@ -584,7 +580,7 @@ bool World::Build(Block * const block, const int x, const int y, const int z,
     const int x_in = Shred::CoordInShred(x);
     const int y_in = Shred::CoordInShred(y);
     Block * const target_block = shred->GetBlock(x_in, y_in, z);
-    if ( ENVIRONMENT!=target_block->PushResult(NOWHERE) && not anyway ) {
+    if ( ENVIRONMENT!=target_block->PushResult(ANYWHERE) && not anyway ) {
         if ( who != nullptr ) {
             who->ReceiveSignal(tr("Cannot build here."));
         }

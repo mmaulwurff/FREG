@@ -24,17 +24,15 @@
 #include "BlockManager.h"
 
 void DeferredAction::GhostMove() const {
-    const dirs dir = ( NOWHERE == num ) ?
-        attachedBlock->GetDir() : static_cast<dirs>(num);
-    if ( dir == DOWN && attachedBlock->Z() == 0 ) return;
+    const dirs dir = static_cast<dirs>(num);
+    if ( dir == DOWN && attachedBlock->Z() == 0        ) return;
     if ( dir == UP   && attachedBlock->Z() == HEIGHT-1 ) return;
     attachedBlock->Move(dir);
 }
 
 void DeferredAction::Move() const {
     attachedBlock->GetWorld()->Move(attachedBlock->X(), attachedBlock->Y(),
-        attachedBlock->Z(), ( NOWHERE==num ) ?
-            attachedBlock->GetDir() : static_cast<dirs>(num));
+        attachedBlock->Z(), static_cast<dirs>(num));
 }
 
 void DeferredAction::Jump() const {
