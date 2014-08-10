@@ -25,13 +25,6 @@
 
 #include "header.h"
 
-const QString SOUND_STRINGS[] = {
-    "Ding!",
-    "Ouch!"
-};
-const QString DING = SOUND_STRINGS[0];
-const QString OUCH = SOUND_STRINGS[1];
-
 enum wearable {
     WEARABLE_NOWHERE,
     WEARABLE_HEAD,

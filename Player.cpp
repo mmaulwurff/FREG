@@ -440,7 +440,7 @@ void Player::BlockDestroy() {
     if ( not cleaned ) {
         usingType = usingSelfType = USAGE_TYPE_NO;
         emit Destroyed();
-        player = 0;
+        player = nullptr;
         world->ReloadAllShreds(homeLati, homeLongi, homeX,homeY,homeZ);
     }
 }
@@ -467,7 +467,7 @@ void Player::SetPlayer(const int _x, const int _y, const int _z) {
     }
     dir = player->GetDir();
 
-    connect(player, SIGNAL(Destroyed()), SLOT(BlockDestroy()),
+    connect(player, SIGNAL(destroyed()), SLOT(BlockDestroy()),
         Qt::DirectConnection);
     connect(player, SIGNAL(Moved(int)), SLOT(CheckOverstep(int)),
         Qt::DirectConnection);

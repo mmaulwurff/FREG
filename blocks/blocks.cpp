@@ -281,7 +281,6 @@
 
     int  Grass::ShouldAct() const  { return FREQUENT_RARE; }
     int  Grass::LightRadius() const { return (FIRE == Sub()) ? 5 : 0; }
-    push_reaction Grass::PushResult(dirs) const { return ENVIRONMENT; }
     inner_actions Grass::ActInner() { return INNER_ACTION_NONE; }
     Block * Grass::DropAfterDamage(bool*) { return block_manager.Normal(AIR); }
 
@@ -697,18 +696,16 @@
     }
 
 // Bell::
-    void Bell::Damage(int, int) { Break(); }
-    QString Bell::FullName() const { return QObject::tr("Bell"); }
-
-    usage_types Bell::Use(Block  * const) {
-        SendSignalAround(DING);
-        return USAGE_TYPE_NO;
+    void Bell::Damage(int, int) {
+        Use(nullptr);
+        Break();
     }
 
-    void Bell::ReceiveSignal(const QString str) {
-        if ( DING != str ) {
-            SendSignalAround(DING);
-        }
+    QString Bell::FullName() const { return tr("Bell"); }
+
+    usage_types Bell::Use(Block *) {
+        SendSignalAround(tr("^ Ding! ^"));
+        return USAGE_TYPE_NO;
     }
 
 // Predator::
