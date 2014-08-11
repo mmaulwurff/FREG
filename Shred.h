@@ -118,6 +118,7 @@ private:
     void RemoveAllLight();
 
     bool LoadShred();
+    void RegisterInit(Active *);
 
     QString FileName() const;
 
