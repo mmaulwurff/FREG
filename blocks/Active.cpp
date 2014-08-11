@@ -20,7 +20,6 @@
 #include "Active.h"
 #include "Shred.h"
 #include "World.h"
-#include "DeferredAction.h"
 #include "Xyz.h"
 #include "blocks/Inventory.h"
 
@@ -28,24 +27,20 @@
 
 Active * Active::ActiveBlock() { return this; }
 int  Active::ShouldAct() const { return FREQUENT_NEVER; }
-void Active::DoFrequentAction() {}
 inner_actions Active::ActInner() { return INNER_ACTION_ONLY; }
+
+void Active::ActFrequent() {
+    fprintf(stderr, "Active::ActFrequent called, check ShouldAct\
+ return value or add ActFrequent implementation.\nKind: %d, sub: %d.\n",
+        Kind(), Sub());
+    Q_UNREACHABLE();
+}
 
 void Active::DoRareAction() {
     fprintf(stderr, "Active::DoRareAction called, check ShouldAct and ActInner\
  return values or add DoRareAction implementation.\nKind: %d, sub: %d.\n",
         Kind(), Sub());
     Q_UNREACHABLE();
-}
-
-void Active::ActFrequent() {
-    if ( defActionPending ) {
-        defActionPending = false;
-        deferredAction->MakeAction();
-        delete deferredAction;
-    } else {
-        DoFrequentAction();
-    }
 }
 
 void Active::ActRare() {
@@ -70,14 +65,6 @@ void Active::ActRare() {
     DoRareAction();
 }
 
-void Active::SetDeferredAction(DeferredAction * const action) {
-    if ( defActionPending ) {
-        delete deferredAction;
-    }
-    deferredAction = action;
-    defActionPending = true;
-}
-
 void Active::Unregister() {
     if ( shred != nullptr ) {
         shred->Unregister(this);
@@ -97,8 +84,7 @@ void Active::Move(const dirs dir) {
     emit Moved(dir);
     if ( dir > DOWN ) {
         Shred * const new_shred = GetWorld()->GetShred(X(), Y());
-        const bool overstep = ( shred != new_shred );
-        if ( overstep ) {
+        if ( shred != new_shred ) {
             shred->Unregister(this);
             new_shred->Register(this);
         }
@@ -161,8 +147,6 @@ void Active::ReloadToSouth() { y_self -= SHRED_WIDTH; }
 void Active::ReloadToWest()  { x_self += SHRED_WIDTH; }
 void Active::ReloadToEast()  { x_self -= SHRED_WIDTH; }
 
-void Active::Farewell() { ReceiveSignal(tr("^ You die. ^")); }
-
 Active::Active(const int kind, const int sub, const int transp) :
         Block(kind, sub, transp),
         Xyz()
@@ -174,11 +158,6 @@ Active::Active(QDataStream & str, const int kind, const int sub,
         Block(str, kind, sub, transp),
         Xyz()
 {}
-
-Active::~Active() {
-    Farewell();
-    Unregister();
-}
 
 bool Active::Gravitate(const int range, int bottom, int top,
         const int calmness)

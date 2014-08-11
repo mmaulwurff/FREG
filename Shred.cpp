@@ -34,7 +34,6 @@ long Shred::Latitude()  const { return latitude;  }
 int  Shred::ShredX() const { return shredX; }
 int  Shred::ShredY() const { return shredY; }
 World * Shred::GetWorld() const { return world; }
-Shred * Shred::GetShredMemory() const { return memory; }
 Block * Shred::Normal(const int sub) { return block_manager.Normal(sub); }
 shred_type Shred::GetTypeOfShred() const { return type; }
 
@@ -55,8 +54,8 @@ bool Shred::LoadShred() {
     quint8 read_type;
     in >>  read_type;
     type = static_cast<shred_type>(read_type);
-    Block * const null_stone = Normal(NULLSTONE);
-    Block * const air = Normal(AIR);
+    Block * const null_stone = block_manager.Normal(NULLSTONE);
+    Block * const air        = block_manager.Normal(AIR);
     SetAllLightMapNull();
     for (int x=0; x<SHRED_WIDTH; ++x)
     for (int y=0; y<SHRED_WIDTH; ++y) {
@@ -93,7 +92,7 @@ bool Shred::LoadShred() {
 } // bool Shred::LoadShred()
 
 Shred::Shred(const int shred_x, const int shred_y,
-        const long longi, const long lati, Shred * const mem)
+        const long longi, const long lati)
     :
         longitude(longi), latitude(lati),
         shredX(shred_x), shredY(shred_y),
@@ -101,8 +100,7 @@ Shred::Shred(const int shred_x, const int shred_y,
         activeListAll(),
         activeListFrequent(),
         shiningList(),
-        fallList(),
-        memory(mem)
+        fallList()
 {
     if ( LoadShred() ) return; // successfull loading
     // new shred generation:
@@ -164,7 +162,7 @@ Shred::~Shred() {
                 block->SaveNormalToFile(outstr);
             } else {
                 block->SaveToFile(outstr);
-                delete block;
+                delete block; // without unregistering.
             }
         }
         blocks[x][y][HEIGHT-1]->SaveNormalToFile(outstr);
@@ -319,12 +317,6 @@ void Shred::SetNewBlock(const int kind, const int sub,
     Block * const block = BlockManager::NewBlock(kind, sub);
     block->SetDir(dir);
     SetBlock(block, x, y, z);
-}
-
-void Shred::PutBlock(Block * const block,
-        const int x, const int y, const int z)
-{
-    blocks[x][y][z] = block;
 }
 
 QString Shred::FileName() const {

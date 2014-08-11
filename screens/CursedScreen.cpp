@@ -227,13 +227,13 @@ void Screen::FlushInput() const { flushinp(); }
 
 void Screen::ControlPlayer(const int ch) {
     CleanFileToShow();
+    /// \todo: ctrl-z (to background) support
     // Q, ctrl-c, ctrl-d, ctrl-q, ctrl-x
-    // \todo: ctrl-z (to background) support
     if ( 'Q'==ch || 3==ch || 4==ch || 17==ch || 24==ch ) {
         emit ExitReceived();
         return;
     } // else:
-    if ( ch>='a' && ch<='z' ) { // actions with inventory
+    if ( 'a'<=ch && ch<='z' ) { // actions with inventory
         InventoryAction(ch-'a');
         return;
     } // else:
@@ -380,7 +380,7 @@ void Screen::Print() {
             if ( UP==dir || DOWN==dir ) {
                 PrintNormal(rightWin, dir);
             } else if ( rightWin != nullptr ) {
-                PrintFront(rightWin, dir);
+                PrintFront(dir);
             }
             break;
         case USAGE_TYPE_READ_IN_INVENTORY:
@@ -553,7 +553,7 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
     wrefresh(window);
 } // void Screen::PrintNormal(WINDOW * window, int dir)
 
-void Screen::PrintFront(WINDOW * const window, const dirs dir) const {
+void Screen::PrintFront(const dirs dir) const {
     const int pX = player->X();
     const int begin_x = ( pX/SHRED_WIDTH )*SHRED_WIDTH +
         ( SHRED_WIDTH-SCREEN_SIZE )/2;
@@ -618,37 +618,41 @@ void Screen::PrintFront(WINDOW * const window, const dirs dir) const {
     const int k_start =
         qBound(SCREEN_SIZE-1, player->Z()+SCREEN_SIZE/2, HEIGHT-1);
     const int sky_color = Color(BLOCK, SKY);
-    (void)wmove(window, 1, 1);
-    for (int k=k_start; k>k_start-SCREEN_SIZE; --k, waddstr(window, "\n_")) {
+    (void)wmove(rightWin, 1, 1);
+    for (int k=k_start; k>k_start-SCREEN_SIZE; --k, waddstr(rightWin, "\n_")) {
         for (*x=x_start; *x!=x_end; *x+=x_step) {
             for (*z=z_start; *z!=z_end && w->GetBlock(i, j, k)->
                         Transparent()==INVISIBLE;
                     *z += z_step);
             if ( *z == z_end ) {
-                static const chtype sky_char = CharName(BLOCK, SKY);
-                waddch(window, sky_char | sky_color);
-                waddch(window, ' ' | sky_color);
+                static const int sky_char = CharName(BLOCK, SKY);
+                wattrset(rightWin, sky_color);
+                waddch(rightWin, sky_char);
+                waddch(rightWin, ' ');
             } else if ( player->Visible(i, j, k) ) {
                 const Block * const block = w->GetBlock(i, j, k);
-                waddch(window, PrintBlock(*block, window));
-                waddch(window, CharNumberFront(i, j));
+                waddch(rightWin, PrintBlock(*block, rightWin));
+                waddch(rightWin, CharNumberFront(i, j));
             } else {
-                waddch(window, OBSCURE_BLOCK | COLOR_PAIR(WHITE_BLACK));
-                waddch(window, ' ' | COLOR_PAIR(WHITE_BLACK));
+                wattrset(rightWin, COLOR_PAIR(WHITE_BLACK));
+                waddch(rightWin, OBSCURE_BLOCK);
+                waddch(rightWin, ' ');
             }
         }
     }
-    PrintTitle(window, dir);
+    PrintTitle(rightWin, dir);
     const int arrow_Y = k_start + 1 - player->Z();
     if ( shiftFocus ) {
-        for (int q=arrow_Y-shiftFocus; q<SCREEN_SIZE+1 && q>0; q-=shiftFocus) {
-            mvwaddch(window, q, 0, '|' | COLOR_PAIR(WHITE_BLUE));
-            mvwaddch(window, q, SCREEN_SIZE*2+1, '|' | COLOR_PAIR(WHITE_BLUE));
+        wattrset(rightWin, COLOR_PAIR(WHITE_BLUE));
+        const int ch = ( shiftFocus == 1 ) ? '^' : 'v';
+        for (int q=arrow_Y-shiftFocus; 0<q && q<=SCREEN_SIZE; q-=shiftFocus) {
+            mvwaddch(rightWin, q,               0, ch);
+            mvwaddch(rightWin, q, SCREEN_SIZE*2+1, ch);
         }
     }
-    Arrows(window, arrow_X, arrow_Y, false);
-    wrefresh(window);
-} // void Screen::PrintFront(WINDOW * window)
+    Arrows(rightWin, arrow_X, arrow_Y, false);
+    wrefresh(rightWin);
+} // void Screen::PrintFront(dirs)
 
 void Screen::PrintTitle(WINDOW * const window, const dirs dir) const {
     QString dir_string;
@@ -899,8 +903,8 @@ Screen::~Screen() {
     settings.setValue("focus_shift", shiftFocus);
     settings.setValue("action_mode", actionMode);
     settings.setValue("last_command", previousCommand);
-    settings.setValue("beep_on", beepOn);
-    settings.setValue("beep_on", flashOn);
+    settings.setValue("beep_on",  beepOn);
+    settings.setValue("flash_on", flashOn);
 }
 
 void Screen::PrintBar(const int x, const int attr, const int ch,

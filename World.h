@@ -233,6 +233,7 @@ private:
     int sunMoonFactor;
 
     ShredStorage * shredStorage;
+    /// For reusing memory on full shreds reload.
     Shred * shredMemoryPool;
     bool initial_lighting;
     QList<QString> notes;

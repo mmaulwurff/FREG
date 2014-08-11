@@ -394,10 +394,10 @@ void Player::ProcessCommand(QString command) {
 } // void Player::ProcessCommand(QString command)
 
 bool Player::Visible(const int x_to, const int y_to, const int z_to) const {
-    return ( (X()==x_to && Y()==y_to && Z()==z_to) || GetCreativeMode() ) ?
-        true : (
-            world->Enlightened(x_to, y_to, z_to) &&
-            world->Visible(X(), Y(), Z(), x_to, y_to, z_to));
+    return ( (X()==x_to && Y()==y_to && Z()==z_to)
+            || GetCreativeMode()
+            || ( world->Enlightened(x_to, y_to, z_to)
+                && world->Visible(X(), Y(), Z(), x_to, y_to, z_to)) );
 }
 
 void Player::SetDir(const dirs direction) {
@@ -439,6 +439,7 @@ void Player::CheckOverstep(const int direction) {
 void Player::BlockDestroy() {
     if ( not cleaned ) {
         usingType = usingSelfType = USAGE_TYPE_NO;
+        emit Notify(tr("^ You die. ^"));
         emit Destroyed();
         player = nullptr;
         world->ReloadAllShreds(homeLati, homeLongi, homeX,homeY,homeZ);

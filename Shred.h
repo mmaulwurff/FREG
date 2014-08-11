@@ -37,9 +37,7 @@ enum weathers {
 
 class Shred final {
 public:
-    Shred(int shred_x, int shred_y,
-            long longi, long lati,
-            Shred * memory);
+     Shred(int shred_x, int shred_y, long longi, long lati);
     ~Shred();
 
     Shred & operator=(Shred &) = delete;
@@ -75,9 +73,12 @@ public:
     /// Puts block to coordinates xyz and activates it.
     void SetBlockNoCheck(Block *, int x, int y, int z);
     /// Puts block to coordinates, not activates it.
-    void PutBlock(Block * block, int x, int y, int z);
     static Block * Normal(int sub);
     void AddFalling(Block *);
+
+    inline void PutBlock(Block * const block, const int x, int y, int z) {
+        blocks[x][y][z] = block;
+    }
 
     // Lighting section
     int Lightmap(  int x, int y, int z) const;
@@ -177,9 +178,6 @@ private:
     QLinkedList<Active *> activeListFrequent;
     QLinkedList<Active * const> shiningList;
     QLinkedList<Falling *> fallList;
-
-    /// memory, allocated for this shred.
-    Shred * const memory;
 };
 
 #endif // SHRED_H

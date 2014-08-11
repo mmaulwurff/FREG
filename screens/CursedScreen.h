@@ -165,7 +165,7 @@ private:
     void Arrows(WINDOW *, int x, int y, bool show_dir) const;
     void HorizontalArrows(WINDOW *, int y, bool show_dir) const;
     void PrintNormal(WINDOW *, dirs) const;
-    void PrintFront(WINDOW *, dirs) const;
+    void PrintFront(dirs) const;
     void PrintInv(WINDOW *, const Block *, const Inventory *) const;
     /// Can print health, breath and other bars on hudWin.
     void PrintBar(int x, int color, int ch, int percent,

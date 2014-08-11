@@ -110,9 +110,9 @@ public:
     using Animal::Animal;
 
     QString FullName() const override;
+    void ActFrequent() override;
 
 protected:
-    void DoFrequentAction() override;
     void DoRareAction() override;
     int  Attractive(int sub) const override;
 
@@ -127,13 +127,13 @@ public:
     Door(QDataStream & str, int sub, int id);
 
     int  ShouldAct() const override;
+    void ActFrequent() override;
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
     usage_types Use(Block * who) override;
     push_reaction PushResult(dirs) const override;
 
 protected:
-    void DoFrequentAction() override;
     void SaveAttributes(QDataStream & out) const override;
 
 private:
@@ -224,10 +224,10 @@ public:
     using Animal::Animal;
 
     int DamageLevel() const override;
+    void ActFrequent() override;
     QString FullName() const override;
 
 protected:
-    void DoFrequentAction() override;
     void DoRareAction() override;
     int  Attractive(int sub) const override;
 

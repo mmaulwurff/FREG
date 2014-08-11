@@ -22,6 +22,8 @@
 
 #include "blocks/Active.h"
 
+class DeferredAction;
+
 class Animal : public Falling {
     Q_OBJECT
 public:
@@ -30,6 +32,7 @@ public:
 
     int  DamageKind() const override;
     int  ShouldAct() const override;
+    void ActFrequent() override;
     void DoRareAction() override;
     bool Eat(subs);
     int  Breath() const;
@@ -38,6 +41,8 @@ public:
     Animal * IsAnimal() override;
     Block  * DropAfterDamage(bool * delete_block) override;
     inner_actions ActInner() override;
+
+    void SetDeferredAction(DeferredAction *);
 
 protected:
     void SaveAttributes(QDataStream & out) const override;
@@ -50,6 +55,8 @@ private:
 
     quint8  breath;
     quint16 satiation;
+    bool defActionPending = false;
+    DeferredAction * deferredAction = nullptr;
 };
 
 #endif // ANIMAL_H

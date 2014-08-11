@@ -24,7 +24,6 @@ class Xy {
 public:
     Xy(short x, short y);
     Xy();
-    virtual ~Xy();
 
     short X() const;
     short Y() const;

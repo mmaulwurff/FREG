@@ -35,7 +35,7 @@ enum deferred_actions {
 };
 
 class Block;
-class Active;
+class Animal;
 class World;
 
 class DeferredAction final : private Xyz {
@@ -45,7 +45,7 @@ class DeferredAction final : private Xyz {
      *
      *  Xyz is action target coordinates. */
 public:
-    explicit DeferredAction(Active * attached);
+    explicit DeferredAction(Animal * attached);
     DeferredAction & operator=(const DeferredAction &) = delete;
     DeferredAction(const DeferredAction &) = delete;
 
@@ -64,7 +64,7 @@ public:
 
 private:
     deferred_actions type;
-    Active * const attachedBlock;
+    Animal * const attachedBlock;
     Block * material;
     int srcSlot, destSlot;
     int num;

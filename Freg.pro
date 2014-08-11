@@ -118,6 +118,7 @@ SOURCES += \
     blocks/Block.cpp \
     blocks/RainMachine.cpp \
     blocks/Armour.cpp \
+    blocks/Animal.cpp \
     screens/IThread.cpp
 
 TRANSLATIONS = \
