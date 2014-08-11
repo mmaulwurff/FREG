@@ -34,7 +34,6 @@ long Shred::Latitude()  const { return latitude;  }
 int  Shred::ShredX() const { return shredX; }
 int  Shred::ShredY() const { return shredY; }
 World * Shred::GetWorld() const { return world; }
-Shred * Shred::GetShredMemory() const { return memory; }
 Block * Shred::Normal(const int sub) { return block_manager.Normal(sub); }
 shred_type Shred::GetTypeOfShred() const { return type; }
 
@@ -93,7 +92,7 @@ bool Shred::LoadShred() {
 } // bool Shred::LoadShred()
 
 Shred::Shred(const int shred_x, const int shred_y,
-        const long longi, const long lati, Shred * const mem)
+        const long longi, const long lati)
     :
         longitude(longi), latitude(lati),
         shredX(shred_x), shredY(shred_y),
@@ -101,8 +100,7 @@ Shred::Shred(const int shred_x, const int shred_y,
         activeListAll(),
         activeListFrequent(),
         shiningList(),
-        fallList(),
-        memory(mem)
+        fallList()
 {
     if ( LoadShred() ) return; // successfull loading
     // new shred generation:

@@ -37,9 +37,7 @@ enum weathers {
 
 class Shred final {
 public:
-    Shred(int shred_x, int shred_y,
-            long longi, long lati,
-            Shred * memory);
+     Shred(int shred_x, int shred_y, long longi, long lati);
     ~Shred();
 
     Shred & operator=(Shred &) = delete;
@@ -177,9 +175,6 @@ private:
     QLinkedList<Active *> activeListFrequent;
     QLinkedList<Active * const> shiningList;
     QLinkedList<Falling *> fallList;
-
-    /// memory, allocated for this shred.
-    Shred * const memory;
 };
 
 #endif // SHRED_H
