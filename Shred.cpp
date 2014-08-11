@@ -80,7 +80,7 @@ bool Shred::LoadShred() {
                     active->SetXyz(
                         (ShredX() << SHRED_WIDTH_SHIFT) | x,
                         (ShredY() << SHRED_WIDTH_SHIFT) | y, z );
-                    RegisterInit(active);
+                    Register(active);
                     Falling * const falling = active->ShouldFall();
                     if ( falling != nullptr && falling->IsFalling() ) {
                         fallList.append(falling);
@@ -224,7 +224,7 @@ void Shred::PhysEventsRare() {
     fallList.removeAll(nullptr);
 }
 
-void Shred::RegisterInit(Active * const active) {
+void Shred::Register(Active * const active) {
     active->SetShred(this);
     activeListAll.append(active);
     const int should_act = active->ShouldAct();
@@ -234,10 +234,6 @@ void Shred::RegisterInit(Active * const active) {
         activeListFrequent.append(active);
     }
     AddShining(active);
-}
-
-void Shred::Register(Active * const active) {
-    RegisterInit(active);
     AddFalling(active);
 }
 

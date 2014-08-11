@@ -42,7 +42,6 @@ enum inner_actions {
 
 class Shred;
 class World;
-class DeferredAction;
 
 class Active : public QObject, public Block, public Xyz {
     Q_OBJECT
@@ -60,13 +59,11 @@ public:
     Shred * GetShred() const;
     World * GetWorld() const;
 
-    void ActFrequent();
+    virtual void ActFrequent();
     void ActRare();
 
     virtual inner_actions ActInner();
     virtual int ShouldAct() const;
-
-    void SetDeferredAction(DeferredAction *);
 
     void ReloadToNorth();
     void ReloadToSouth();
@@ -91,7 +88,6 @@ protected:
     bool IsSubAround(int sub) const;
     bool Gravitate(int range, int down, int up, int calmness);
 
-    virtual void DoFrequentAction();
     virtual void DoRareAction();
     virtual int  Attractive(int sub) const;
 
@@ -100,9 +96,7 @@ private:
     Active & operator=(Active &) = delete;
     void UpdateShred();
 
-    DeferredAction * deferredAction = nullptr;
     Shred * shred = nullptr;
-    bool defActionPending = false;
 }; // Active
 
 class Falling : public Active {

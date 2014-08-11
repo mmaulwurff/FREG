@@ -899,8 +899,8 @@ Screen::~Screen() {
     settings.setValue("focus_shift", shiftFocus);
     settings.setValue("action_mode", actionMode);
     settings.setValue("last_command", previousCommand);
-    settings.setValue("beep_on", beepOn);
-    settings.setValue("beep_on", flashOn);
+    settings.setValue("beep_on",  beepOn);
+    settings.setValue("flash_on", flashOn);
 }
 
 void Screen::PrintBar(const int x, const int attr, const int ch,

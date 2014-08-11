@@ -18,7 +18,7 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "World.h"
-#include "blocks/Active.h"
+#include "blocks/Animal.h"
 #include "blocks/Inventory.h"
 #include "DeferredAction.h"
 #include "BlockManager.h"
@@ -167,18 +167,18 @@ void DeferredAction::SetSetFire(const int x, int y, int z) {
 void DeferredAction::MakeAction() const {
     switch ( type ) {
     case DEFERRED_NOTHING: break;
+    case DEFERRED_GHOST_MOVE: GhostMove(); break;
     case DEFERRED_MOVE:   Move();   break;
     case DEFERRED_JUMP:   Jump();   break;
     case DEFERRED_BUILD:  Build();  break;
+    case DEFERRED_DAMAGE: Damage(); break;
     case DEFERRED_THROW:  Throw();  break;
     case DEFERRED_POUR:   Pour();   break;
-    case DEFERRED_DAMAGE: Damage(); break;
     case DEFERRED_SET_FIRE: SetFire(); break;
-    case DEFERRED_GHOST_MOVE: GhostMove(); break;
     }
 }
 
-DeferredAction::DeferredAction(Active * const attached) :
+DeferredAction::DeferredAction(Animal * const attached) :
         Xyz(),
         type(DEFERRED_NOTHING),
         attachedBlock(attached),

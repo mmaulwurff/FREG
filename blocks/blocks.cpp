@@ -69,97 +69,6 @@
         return pile;
     }
 
-// Animal::
-    inner_actions Animal::ActInner() {
-        if ( Sub() != H_MEAT && Sub() != A_MEAT ) return INNER_ACTION_NONE;
-        if ( satiation <= 0 ) {
-            Damage(5, DAMAGE_HUNGER);
-        } else {
-            --satiation;
-            Mend();
-        }
-        emit Updated();
-        return INNER_ACTION_NONE;
-    }
-
-    void Animal::DoRareAction() {
-        if ( Sub() != H_MEAT && Sub() != A_MEAT ) return; // mechanical
-        if ( not IsSubAround(AIR) ) {
-            if ( breath <= 0 ) {
-                Damage(10, DAMAGE_BREATH);
-            } else {
-                --breath;
-            }
-        } else if ( breath < MAX_BREATH ) {
-            ++breath;
-        }
-        if ( GetDurability() <= 0 ) {
-            GetWorld()->DestroyAndReplace(X(), Y(), Z());
-        } else {
-            emit Updated();
-        }
-    }
-
-    int Animal::Breath() const { return breath; }
-    int Animal::Satiation() const { return satiation; }
-    int Animal::ShouldAct() const { return FREQUENT_SECOND | FREQUENT_RARE; }
-    int Animal::DamageKind() const { return DAMAGE_BITE; }
-    int Animal::NutritionalValue(subs) const { return 0; }
-    Animal * Animal::IsAnimal() { return this; }
-
-    bool Animal::Eat(const subs sub) {
-        const int value = NutritionalValue(sub);
-        if ( value ) {
-            satiation += value;
-            ReceiveSignal(tr("Ate."));
-            if ( SECONDS_IN_DAY < satiation ) {
-                satiation = 1.1 * SECONDS_IN_DAY;
-                ReceiveSignal(tr("You have gorged yourself!"));
-            }
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    void Animal::SaveAttributes(QDataStream & out) const {
-        Falling::SaveAttributes(out);
-        out << breath << satiation;
-    }
-
-    void Animal::EatGrass() {
-        for (int x=X()-1; x<=X()+1; ++x)
-        for (int y=Y()-1; y<=Y()+1; ++y) {
-            if ( world->InBounds(x, y) &&
-                    GREENERY == world->GetBlock(x, y, Z())->Sub() )
-            {
-                TryDestroy(x, y, Z());
-                Eat(GREENERY);
-                return;
-            }
-        }
-    }
-
-    Block * Animal::DropAfterDamage(bool *) {
-        Block * const cadaver = BlockManager::NewBlock(CONTAINER, Sub());
-        cadaver->HasInventory()->Get(BlockManager::NewBlock(WEAPON, BONE));
-        return cadaver;
-    }
-
-    Animal::Animal(const int kind, const int sub) :
-            Falling(kind, sub, NONSTANDARD),
-            breath(MAX_BREATH),
-            satiation(SECONDS_IN_DAY)
-    {}
-
-    Animal::Animal(QDataStream & str, const int kind, const int sub) :
-            Falling(str, kind, sub, NONSTANDARD),
-            breath(),
-            satiation()
-    {
-        str >> breath >> satiation;
-    }
-
 // Liquid::
     void Liquid::DoRareAction() {
         if ( not IsSubAround(Sub()) || Sub()==SUB_CLOUD ) {
@@ -375,7 +284,7 @@
     }
 
     QString Rabbit::FullName() const { return tr("Herbivore"); }
-    void Rabbit::DoFrequentAction() {
+    void Rabbit::ActFrequent() {
         if ( Gravitate(2, 1, 2, 4) ) {
             if ( qrand()%2 ) {
                 world->Jump(X(), Y(), Z(), GetDir());
@@ -404,7 +313,7 @@
         Block::Damage(dmg, dmg_kind);
     }
 
-    void Door::DoFrequentAction() {
+    void Door::ActFrequent() {
         if ( shifted ) {
             World * const world = GetWorld();
             int x, y, z;
@@ -716,7 +625,7 @@
         return Attractive(sub) * SECONDS_IN_HOUR;
     }
 
-    void Predator::DoFrequentAction() {
+    void Predator::ActFrequent() {
         if ( Gravitate(5, 1, 2, 0) ) {
             world->Move(X(), Y(), Z(), GetDir());
         }
