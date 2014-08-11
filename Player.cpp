@@ -439,6 +439,7 @@ void Player::CheckOverstep(const int direction) {
 void Player::BlockDestroy() {
     if ( not cleaned ) {
         usingType = usingSelfType = USAGE_TYPE_NO;
+        emit Notify(tr("^ You die. ^"));
         emit Destroyed();
         player = nullptr;
         world->ReloadAllShreds(homeLati, homeLongi, homeX,homeY,homeZ);

@@ -46,9 +46,8 @@ class World;
 class Active : public QObject, public Block, public Xyz {
     Q_OBJECT
 public:
-     Active(int sub, int id, int transp = UNDEF);
-     Active(QDataStream & str, int sub, int id, int transp = UNDEF);
-    ~Active();
+    Active(int sub, int id, int transp = UNDEF);
+    Active(QDataStream & str, int sub, int id, int transp = UNDEF);
 
     void Move(dirs dir) override;
     void ReceiveSignal(QString) override;

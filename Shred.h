@@ -73,9 +73,12 @@ public:
     /// Puts block to coordinates xyz and activates it.
     void SetBlockNoCheck(Block *, int x, int y, int z);
     /// Puts block to coordinates, not activates it.
-    void PutBlock(Block * block, int x, int y, int z);
     static Block * Normal(int sub);
     void AddFalling(Block *);
+
+    inline void PutBlock(Block * const block, const int x, int y, int z) {
+        blocks[x][y][z] = block;
+    }
 
     // Lighting section
     int Lightmap(  int x, int y, int z) const;

@@ -147,8 +147,6 @@ void Active::ReloadToSouth() { y_self -= SHRED_WIDTH; }
 void Active::ReloadToWest()  { x_self += SHRED_WIDTH; }
 void Active::ReloadToEast()  { x_self -= SHRED_WIDTH; }
 
-void Active::Farewell() { ReceiveSignal(tr("^ You die. ^")); }
-
 Active::Active(const int kind, const int sub, const int transp) :
         Block(kind, sub, transp),
         Xyz()
@@ -160,11 +158,6 @@ Active::Active(QDataStream & str, const int kind, const int sub,
         Block(str, kind, sub, transp),
         Xyz()
 {}
-
-Active::~Active() {
-    Farewell();
-    Unregister();
-}
 
 bool Active::Gravitate(const int range, int bottom, int top,
         const int calmness)

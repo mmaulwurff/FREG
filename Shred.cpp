@@ -54,8 +54,8 @@ bool Shred::LoadShred() {
     quint8 read_type;
     in >>  read_type;
     type = static_cast<shred_type>(read_type);
-    Block * const null_stone = Normal(NULLSTONE);
-    Block * const air = Normal(AIR);
+    Block * const null_stone = block_manager.Normal(NULLSTONE);
+    Block * const air        = block_manager.Normal(AIR);
     SetAllLightMapNull();
     for (int x=0; x<SHRED_WIDTH; ++x)
     for (int y=0; y<SHRED_WIDTH; ++y) {
@@ -162,7 +162,7 @@ Shred::~Shred() {
                 block->SaveNormalToFile(outstr);
             } else {
                 block->SaveToFile(outstr);
-                delete block;
+                delete block; // without unregistering.
             }
         }
         blocks[x][y][HEIGHT-1]->SaveNormalToFile(outstr);
@@ -317,12 +317,6 @@ void Shred::SetNewBlock(const int kind, const int sub,
     Block * const block = BlockManager::NewBlock(kind, sub);
     block->SetDir(dir);
     SetBlock(block, x, y, z);
-}
-
-void Shred::PutBlock(Block * const block,
-        const int x, const int y, const int z)
-{
-    blocks[x][y][z] = block;
 }
 
 QString Shred::FileName() const {

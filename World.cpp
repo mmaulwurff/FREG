@@ -242,6 +242,7 @@ void World::ReloadShreds() {
         emit FinishReloadAll();
         toResetDir = UP; // set no reset
         return;
+    // while reloading, reuse memory places.
     case NORTH:
         emit StartMove(toResetDir);
         --longitude;
