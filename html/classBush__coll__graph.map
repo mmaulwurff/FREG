@@ -1,9 +1,8 @@
 <map id="Bush" name="Bush">
-<area shape="rect" id="node2" href="$classActive.html" title="Active" alt="" coords="113,184,171,211"/>
-<area shape="rect" id="node8" href="$classDeferredAction.html" title="Deferred Action is used when some action needs to be done at next physics turn. " alt="" coords="239,273,349,300"/>
-<area shape="rect" id="node4" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="180,5,235,32"/>
-<area shape="rect" id="node7" href="$classShred.html" title="Shred" alt="" coords="179,95,235,121"/>
-<area shape="rect" id="node5" href="$classXyz.html" title="Xyz" alt="" coords="413,95,458,121"/>
-<area shape="rect" id="node6" href="$classXy.html" title="Xy" alt="" coords="416,5,455,32"/>
-<area shape="rect" id="node9" href="$classInventory.html" title="Provides block ability to contain other blocks inside. " alt="" coords="5,184,81,211"/>
+<area shape="rect" id="node2" href="$classActive.html" title="Active" alt="" coords="111,184,170,211"/>
+<area shape="rect" id="node4" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="115,5,169,32"/>
+<area shape="rect" id="node7" href="$classShred.html" title="Shred" alt="" coords="151,95,207,121"/>
+<area shape="rect" id="node5" href="$classXyz.html" title="Xyz" alt="" coords="231,95,277,121"/>
+<area shape="rect" id="node6" href="$classXy.html" title="Xy" alt="" coords="235,5,273,32"/>
+<area shape="rect" id="node8" href="$classInventory.html" title="Provides block ability to contain other blocks inside. " alt="" coords="195,184,271,211"/>
 </map>

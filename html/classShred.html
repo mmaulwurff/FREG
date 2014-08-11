@@ -109,8 +109,8 @@ Collaboration diagram for Shred:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a3305cb039e51c62ca60f1c3a9fe74f5e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShred.html#a3305cb039e51c62ca60f1c3a9fe74f5e">Shred</a> (int shred_x, int shred_y, long longi, long lati, <a class="el" href="classShred.html">Shred</a> *<a class="el" href="classShred.html#abc0eb92e26ed69bfdbe5fc3a34a37f53">memory</a>)</td></tr>
-<tr class="separator:a3305cb039e51c62ca60f1c3a9fe74f5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4ea8b18bf96a8a66fd85385027011c6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShred.html#ab4ea8b18bf96a8a66fd85385027011c6">Shred</a> (int shred_x, int shred_y, long longi, long lati)</td></tr>
+<tr class="separator:ab4ea8b18bf96a8a66fd85385027011c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3af250706a727a4aefda66e3460e61d8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShred.html#a3af250706a727a4aefda66e3460e61d8">~Shred</a> ()</td></tr>
 <tr class="separator:a3af250706a727a4aefda66e3460e61d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac4a93ac5147f9d1cad131c182b6ff7c9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classShred.html">Shred</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShred.html#ac4a93ac5147f9d1cad131c182b6ff7c9">operator=</a> (<a class="el" href="classShred.html">Shred</a> &amp;)=delete</td></tr>
@@ -159,11 +159,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:afa048705fd31119a2aadad3857da2878"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShred.html#afa048705fd31119a2aadad3857da2878">SetBlockNoCheck</a> (<a class="el" href="classBlock.html">Block</a> *, int x, int y, int z)</td></tr>
 <tr class="memdesc:afa048705fd31119a2aadad3857da2878"><td class="mdescLeft">&#160;</td><td class="mdescRight">Puts block to coordinates xyz and activates it.  <a href="#afa048705fd31119a2aadad3857da2878">More...</a><br /></td></tr>
 <tr class="separator:afa048705fd31119a2aadad3857da2878"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a83068ddce48146c7fec768538ebf0767"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShred.html#a83068ddce48146c7fec768538ebf0767">PutBlock</a> (<a class="el" href="classBlock.html">Block</a> *block, int x, int y, int z)</td></tr>
-<tr class="memdesc:a83068ddce48146c7fec768538ebf0767"><td class="mdescLeft">&#160;</td><td class="mdescRight">Puts block to coordinates, not activates it.  <a href="#a83068ddce48146c7fec768538ebf0767">More...</a><br /></td></tr>
-<tr class="separator:a83068ddce48146c7fec768538ebf0767"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9c62a0501e676bc7e3ac3dcc0354cb85"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShred.html#a9c62a0501e676bc7e3ac3dcc0354cb85">AddFalling</a> (<a class="el" href="classBlock.html">Block</a> *)</td></tr>
 <tr class="separator:a9c62a0501e676bc7e3ac3dcc0354cb85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a862d44fa11802a5f5a47a2f5e5d8eb25"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShred.html#a862d44fa11802a5f5a47a2f5e5d8eb25">PutBlock</a> (<a class="el" href="classBlock.html">Block</a> *const block, const int x, int y, int z)</td></tr>
+<tr class="separator:a862d44fa11802a5f5a47a2f5e5d8eb25"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8496203177e164a3d221923c0930cbf7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShred.html#a8496203177e164a3d221923c0930cbf7">Lightmap</a> (int x, int y, int z) const </td></tr>
 <tr class="separator:a8496203177e164a3d221923c0930cbf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afa7700c8e27ef28c082cc299d34ec841"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShred.html#afa7700c8e27ef28c082cc299d34ec841">FireLight</a> (int x, int y, int z) const </td></tr>
@@ -187,8 +186,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a52addab7a54bcbccac668e48b3751234"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f4003a26091ebf5f02ca16dba32a5b6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="header_8h.html#a67902c112e090330b7c684c88cca3c32">shred_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShred.html#a5f4003a26091ebf5f02ca16dba32a5b6">GetTypeOfShred</a> () const </td></tr>
 <tr class="separator:a5f4003a26091ebf5f02ca16dba32a5b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab3e66f66d5ac84f24faf7d4feb550c21"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classShred.html">Shred</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShred.html#ab3e66f66d5ac84f24faf7d4feb550c21">GetShredMemory</a> () const </td></tr>
-<tr class="separator:ab3e66f66d5ac84f24faf7d4feb550c21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60ff0aacb63695503c44e283d3cab74c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classShred.html">Shred</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShred.html#a60ff0aacb63695503c44e283d3cab74c">GetShredMemory</a> () const </td></tr>
+<tr class="separator:a60ff0aacb63695503c44e283d3cab74c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5647e65d64eb1b454bde08e6ccf912a1"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShred.html#a5647e65d64eb1b454bde08e6ccf912a1">GlobalX</a> (int x) const </td></tr>
 <tr class="memdesc:a5647e65d64eb1b454bde08e6ccf912a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make global coordinate from local (in loaded zone).  <a href="#a5647e65d64eb1b454bde08e6ccf912a1">More...</a><br /></td></tr>
 <tr class="separator:a5647e65d64eb1b454bde08e6ccf912a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -202,6 +201,7 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a47b6929437dc550cf68c7119c88eec5f"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classBlock.html">Block</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShred.html#a47b6929437dc550cf68c7119c88eec5f">Normal</a> (int sub)</td></tr>
+<tr class="memdesc:a47b6929437dc550cf68c7119c88eec5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Puts block to coordinates, not activates it.  <a href="#a47b6929437dc550cf68c7119c88eec5f">More...</a><br /></td></tr>
 <tr class="separator:a47b6929437dc550cf68c7119c88eec5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a05f062047e3a119cde672ab547dc458f"><td class="memItemLeft" align="right" valign="top">static QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShred.html#a05f062047e3a119cde672ab547dc458f">FileName</a> (QString world_name, long longi, long lati)</td></tr>
 <tr class="separator:a05f062047e3a119cde672ab547dc458f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -312,9 +312,6 @@ Private Attributes</h2></td></tr>
 <tr class="separator:aa4fece870939a3a249ac5031b1bb1fae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77a1c6205697392ec40c0737a479687a"><td class="memItemLeft" align="right" valign="top">QLinkedList&lt; <a class="el" href="classFalling.html">Falling</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShred.html#a77a1c6205697392ec40c0737a479687a">fallList</a></td></tr>
 <tr class="separator:a77a1c6205697392ec40c0737a479687a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abc0eb92e26ed69bfdbe5fc3a34a37f53"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classShred.html">Shred</a> *const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShred.html#abc0eb92e26ed69bfdbe5fc3a34a37f53">memory</a></td></tr>
-<tr class="memdesc:abc0eb92e26ed69bfdbe5fc3a34a37f53"><td class="mdescLeft">&#160;</td><td class="mdescRight">memory, allocated for this shred.  <a href="#abc0eb92e26ed69bfdbe5fc3a34a37f53">More...</a><br /></td></tr>
-<tr class="separator:abc0eb92e26ed69bfdbe5fc3a34a37f53"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-static-attribs"></a>
 Static Private Attributes</h2></td></tr>
@@ -325,7 +322,7 @@ Static Private Attributes</h2></td></tr>
 <div class="textblock">
 <p>Definition at line <a class="el" href="Shred_8h_source.html#l00038">38</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a3305cb039e51c62ca60f1c3a9fe74f5e"></a>
+<a class="anchor" id="ab4ea8b18bf96a8a66fd85385027011c6"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -351,13 +348,7 @@ Static Private Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">long&#160;</td>
-          <td class="paramname"><em>lati</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classShred.html">Shred</a> *&#160;</td>
-          <td class="paramname"><em>memory</em>&#160;</td>
+          <td class="paramname"><em>lati</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -367,7 +358,7 @@ Static Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00095">95</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00094">94</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -384,7 +375,7 @@ Static Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00150">150</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00148">148</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -427,7 +418,7 @@ Static Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00256">256</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00254">254</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -445,7 +436,7 @@ Static Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00264">264</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00262">262</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -509,7 +500,7 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00483">483</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00475">475</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -536,7 +527,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>For testing purposes. </p>
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00536">536</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00528">528</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -564,7 +555,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>Get local coordinate. </p>
 
-<p>Definition at line <a class="el" href="Shred_8h_source.html#l00105">105</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8h_source.html#l00106">106</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
 
 </div>
 </div>
@@ -592,7 +583,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>Get shred coordinate in loaded zone (from 0 to numShreds). </p>
 
-<p>Definition at line <a class="el" href="Shred_8h_source.html#l00108">108</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8h_source.html#l00109">109</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
 
 </div>
 </div>
@@ -618,7 +609,7 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00593">593</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00585">585</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -654,7 +645,7 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00343">343</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00335">335</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -707,7 +698,7 @@ Static Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00608">608</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00600">600</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -743,7 +734,7 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00360">360</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00352">352</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -785,7 +776,7 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00334">334</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00326">326</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -810,7 +801,7 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00330">330</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00322">322</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -938,24 +929,22 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8h_source.html#l00069">69</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8h_source.html#l00067">67</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="ab3e66f66d5ac84f24faf7d4feb550c21"></a>
+<a class="anchor" id="a60ff0aacb63695503c44e283d3cab74c"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classShred.html">Shred</a> * Shred::GetShredMemory </td>
+          <td class="memname"><a class="el" href="classShred.html">Shred</a>* Shred::GetShredMemory </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00037">37</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -972,7 +961,7 @@ Static Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00039">39</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00038">38</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -1009,7 +998,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>Make global coordinate from local (in loaded zone). </p>
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00175">175</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00173">173</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -1027,7 +1016,7 @@ Static Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00179">179</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00177">177</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -1097,7 +1086,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>Lowest nullstone and sky are not in bounds. </p>
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00603">603</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00595">595</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -1207,7 +1196,7 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00041">41</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00040">40</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -1277,7 +1266,9 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00038">38</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Puts block to coordinates, not activates it. </p>
+
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00037">37</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -1343,7 +1334,7 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00549">549</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00541">541</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -1404,7 +1395,7 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00421">421</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00413">413</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -1445,7 +1436,7 @@ Static Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00183">183</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00181">181</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -1461,9 +1452,9 @@ Static Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000001">Todo:</a></b></dt><dd>add explosion </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>add explosion </dd></dl>
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00211">211</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00209">209</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -1513,24 +1504,27 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00371">371</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00363">363</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a83068ddce48146c7fec768538ebf0767"></a>
+<a class="anchor" id="a862d44fa11802a5f5a47a2f5e5d8eb25"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void Shred::PutBlock </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classBlock.html">Block</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="classBlock.html">Block</a> *const&#160;</td>
           <td class="paramname"><em>block</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>x</em>, </td>
         </tr>
         <tr>
@@ -1551,11 +1545,14 @@ Static Private Attributes</h2></td></tr>
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
-<p>Puts block to coordinates, not activates it. </p>
-
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00324">324</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8h_source.html#l00079">79</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
 
 </div>
 </div>
@@ -1580,7 +1577,7 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00454">454</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00446">446</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -1608,7 +1605,7 @@ Static Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00612">612</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00604">604</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -1693,7 +1690,7 @@ Static Private Attributes</h2></td></tr>
 <p>Puts num things(kind-sub) in random places on shred surface. </p>
 <p>If on_water is false, this will not drop things on water, otherwise on water too. </p>
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00352">352</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00344">344</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -1711,7 +1708,7 @@ Static Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00239">239</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00237">237</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -1737,7 +1734,7 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00227">227</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00225">225</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -1755,7 +1752,7 @@ Static Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00280">280</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00278">278</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -1842,7 +1839,7 @@ Static Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00270">270</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00268">268</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -1901,7 +1898,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>Removes last block at xyz, then SetBlock, then makes block normal. </p>
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00295">295</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00293">293</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -1943,7 +1940,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>Puts block to coordinates xyz and activates it. </p>
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00304">304</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00302">302</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -2075,7 +2072,7 @@ Static Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00316">316</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00314">314</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -2151,7 +2148,7 @@ Static Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00272">272</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00270">270</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -2168,7 +2165,7 @@ Static Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00276">276</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00274">274</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -2349,7 +2346,7 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00384">384</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00376">376</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -2399,7 +2396,7 @@ Static Private Attributes</h2></td></tr>
 
 <p><a class="el" href="classBlock.html" title="Block without special physics and attributes. ">Block</a> combinations section (trees, buildings, etc): </p>
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00563">563</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00555">555</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -2417,7 +2414,7 @@ Static Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00244">244</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8cpp_source.html#l00242">242</a> of file <a class="el" href="Shred_8cpp_source.html">Shred.cpp</a>.</p>
 
 </div>
 </div>
@@ -2493,7 +2490,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>Contains all active blocks. </p>
 
-<p>Definition at line <a class="el" href="Shred_8h_source.html#l00176">176</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8h_source.html#l00177">177</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
 
 </div>
 </div>
@@ -2515,7 +2512,7 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8h_source.html#l00177">177</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8h_source.html#l00178">178</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
 
 </div>
 </div>
@@ -2537,7 +2534,7 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8h_source.html#l00169">169</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8h_source.html#l00170">170</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
 
 </div>
 </div>
@@ -2559,7 +2556,7 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8h_source.html#l00179">179</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8h_source.html#l00180">180</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
 
 </div>
 </div>
@@ -2581,7 +2578,7 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8h_source.html#l00171">171</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8h_source.html#l00172">172</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
 
 </div>
 </div>
@@ -2603,7 +2600,7 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8h_source.html#l00170">170</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8h_source.html#l00171">171</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
 
 </div>
 </div>
@@ -2625,31 +2622,7 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8h_source.html#l00171">171</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="abc0eb92e26ed69bfdbe5fc3a34a37f53"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classShred.html">Shred</a>* const Shred::memory</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>memory, allocated for this shred. </p>
-
-<p>Definition at line <a class="el" href="Shred_8h_source.html#l00182">182</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8h_source.html#l00172">172</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
 
 </div>
 </div>
@@ -2671,7 +2644,7 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8h_source.html#l00178">178</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8h_source.html#l00179">179</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
 
 </div>
 </div>
@@ -2693,7 +2666,7 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8h_source.html#l00167">167</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8h_source.html#l00168">168</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
 
 </div>
 </div>
@@ -2715,7 +2688,7 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8h_source.html#l00172">172</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8h_source.html#l00173">173</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
 
 </div>
 </div>
@@ -2737,7 +2710,7 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8h_source.html#l00172">172</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8h_source.html#l00173">173</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
 
 </div>
 </div>
@@ -2759,7 +2732,7 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Shred_8h_source.html#l00173">173</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
+<p>Definition at line <a class="el" href="Shred_8h_source.html#l00174">174</a> of file <a class="el" href="Shred_8h_source.html">Shred.h</a>.</p>
 
 </div>
 </div>
@@ -2772,7 +2745,7 @@ Static Private Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Aug 11 2014 21:35:36 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Aug 11 2014 22:07:22 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

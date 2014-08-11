@@ -1,7 +1,6 @@
 <map id="Active" name="Active">
-<area shape="rect" id="node7" href="$classDeferredAction.html" title="Deferred Action is used when some action needs to be done at next physics turn. " alt="" coords="107,273,216,300"/>
-<area shape="rect" id="node3" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="21,5,75,32"/>
-<area shape="rect" id="node6" href="$classShred.html" title="Shred" alt="" coords="20,95,76,121"/>
-<area shape="rect" id="node4" href="$classXyz.html" title="Xyz" alt="" coords="323,95,368,121"/>
-<area shape="rect" id="node5" href="$classXy.html" title="Xy" alt="" coords="326,5,365,32"/>
+<area shape="rect" id="node3" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="119,5,173,32"/>
+<area shape="rect" id="node6" href="$classShred.html" title="Shred" alt="" coords="151,95,207,121"/>
+<area shape="rect" id="node4" href="$classXyz.html" title="Xyz" alt="" coords="231,95,277,121"/>
+<area shape="rect" id="node5" href="$classXy.html" title="Xy" alt="" coords="235,5,273,32"/>
 </map>

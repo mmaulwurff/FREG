@@ -49,6 +49,6 @@ var searchData=
   ['worldmap',['WorldMap',['../classWorldMap.html',1,'WorldMap'],['../classWorldMap.html#a5561d374f63002c47469fa156f7a9f05',1,'WorldMap::WorldMap(QString)'],['../classWorldMap.html#ad6fc5b6fc56bd7920c7247d3f2863a63',1,'WorldMap::WorldMap(const WorldMap &amp;)=delete']]],
   ['worldmap_2ecpp',['worldmap.cpp',['../worldmap_8cpp.html',1,'']]],
   ['worldmap_2eh',['worldmap.h',['../worldmap_8h.html',1,'']]],
-  ['worldname',['worldName',['../classWorld.html#aa43a643b2fd57cd6c2011c2b5deb3347',1,'World::worldName()'],['../classWorld.html#a5e00d95d0d1f9a0646ff3d74c9b03867',1,'World::WorldName() const ']]],
+  ['worldname',['WorldName',['../classWorld.html#a5e00d95d0d1f9a0646ff3d74c9b03867',1,'World::WorldName() const '],['../classWorld.html#aa43a643b2fd57cd6c2011c2b5deb3347',1,'World::worldName()']]],
   ['writetofileshreddata',['WriteToFileShredData',['../classShredStorage.html#aa1798fe720c45df5906d04cd0aabb7af',1,'ShredStorage']]]
 ];

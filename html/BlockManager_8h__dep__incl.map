@@ -1,15 +1,16 @@
 <map id="BlockManager.h" name="BlockManager.h">
-<area shape="rect" id="node3" href="$BlockManager_8cpp.html" title="BlockManager.cpp" alt="" coords="5,89,133,122"/>
-<area shape="rect" id="node5" href="$Block_8cpp.html" title="blocks/Block.cpp" alt="" coords="157,89,280,122"/>
-<area shape="rect" id="node7" href="$blocks_8cpp.html" title="blocks/blocks.cpp" alt="" coords="304,89,429,122"/>
-<area shape="rect" id="node9" href="$Containers_8cpp.html" title="blocks/Containers.cpp" alt="" coords="453,89,605,122"/>
-<area shape="rect" id="node11" href="$Dwarf_8cpp.html" title="blocks/Dwarf.cpp" alt="" coords="629,89,752,122"/>
-<area shape="rect" id="node13" href="$Illuminator_8cpp.html" title="blocks/Illuminator.cpp" alt="" coords="776,89,923,122"/>
-<area shape="rect" id="node15" href="$Inventory_8cpp.html" title="blocks/Inventory.cpp" alt="" coords="947,89,1088,122"/>
-<area shape="rect" id="node17" href="$Weapons_8cpp.html" title="blocks/Weapons.cpp" alt="" coords="1112,89,1256,122"/>
-<area shape="rect" id="node19" href="$CraftManager_8cpp.html" title="CraftManager.cpp" alt="" coords="1280,89,1405,122"/>
-<area shape="rect" id="node21" href="$DeferredAction_8cpp.html" title="DeferredAction.cpp" alt="" coords="1429,89,1563,122"/>
-<area shape="rect" id="node23" href="$Player_8cpp.html" title="Player.cpp" alt="" coords="1587,89,1669,122"/>
-<area shape="rect" id="node25" href="$Shred_8cpp.html" title="Shred.cpp" alt="" coords="1693,89,1773,122"/>
-<area shape="rect" id="node27" href="$World_8cpp.html" title="World.cpp" alt="" coords="1797,89,1877,122"/>
+<area shape="rect" id="node2" href="$BlockManager_8cpp.html" title="BlockManager.cpp" alt="" coords="5,80,136,107"/>
+<area shape="rect" id="node3" href="$Animal_8cpp.html" title="blocks/Animal.cpp" alt="" coords="159,80,289,107"/>
+<area shape="rect" id="node4" href="$Block_8cpp.html" title="blocks/Block.cpp" alt="" coords="313,80,436,107"/>
+<area shape="rect" id="node5" href="$blocks_8cpp.html" title="blocks/blocks.cpp" alt="" coords="461,80,587,107"/>
+<area shape="rect" id="node6" href="$Containers_8cpp.html" title="blocks/Containers.cpp" alt="" coords="612,80,764,107"/>
+<area shape="rect" id="node7" href="$Dwarf_8cpp.html" title="blocks/Dwarf.cpp" alt="" coords="789,80,913,107"/>
+<area shape="rect" id="node8" href="$Illuminator_8cpp.html" title="blocks/Illuminator.cpp" alt="" coords="936,80,1085,107"/>
+<area shape="rect" id="node9" href="$Inventory_8cpp.html" title="blocks/Inventory.cpp" alt="" coords="1109,80,1251,107"/>
+<area shape="rect" id="node10" href="$Weapons_8cpp.html" title="blocks/Weapons.cpp" alt="" coords="1276,80,1420,107"/>
+<area shape="rect" id="node11" href="$CraftManager_8cpp.html" title="CraftManager.cpp" alt="" coords="1445,80,1571,107"/>
+<area shape="rect" id="node12" href="$DeferredAction_8cpp.html" title="DeferredAction.cpp" alt="" coords="1595,80,1730,107"/>
+<area shape="rect" id="node13" href="$Player_8cpp.html" title="Player.cpp" alt="" coords="1754,80,1838,107"/>
+<area shape="rect" id="node14" href="$Shred_8cpp.html" title="Shred.cpp" alt="" coords="1862,80,1943,107"/>
+<area shape="rect" id="node15" href="$World_8cpp.html" title="World.cpp" alt="" coords="1967,80,2049,107"/>
 </map>
