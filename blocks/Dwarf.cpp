@@ -45,6 +45,7 @@ int  Dwarf::LightRadius() const { return lightRadius; }
 bool Dwarf::Access() const { return false; }
 QString Dwarf::FullName() const { return tr("Rational creature"); }
 Inventory * Dwarf::HasInventory() { return this; }
+void Dwarf::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
 
 void Dwarf::UpdateLightRadius() {
     Block * const in_left  = ShowBlock(IN_LEFT);
@@ -53,8 +54,6 @@ void Dwarf::UpdateLightRadius() {
     const int right_rad = in_right ? in_right->LightRadius() : 0;
     lightRadius = qMax(MIN_DWARF_LIGHT_RADIUS, qMax(left_rad, right_rad));
 }
-
-void Dwarf::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
 
 int Dwarf::DamageKind() const {
     return ( Number(IN_RIGHT) ) ?
@@ -149,6 +148,19 @@ void Dwarf::SaveAttributes(QDataStream & out) const {
 bool Dwarf::Inscribe(QString) {
     SendSignalAround(tr("Don't touch me!"));
     return false;
+}
+
+QString Dwarf::InvFullName(const int slot_number) const {
+    if ( Number(slot_number) == 0 ) {
+        switch ( slot_number ) {
+        case ON_HEAD: return tr("-head-");
+        case ON_BODY: return tr("-body-");
+        case ON_LEGS: return tr("-legs-");
+        case IN_RIGHT: return tr("-right hand-");
+        case IN_LEFT:  return tr("-left hand-");
+        }
+    }
+    return Inventory::InvFullName(slot_number);
 }
 
 Dwarf::Dwarf(const int kind, const int sub) :

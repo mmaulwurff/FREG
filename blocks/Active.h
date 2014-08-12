@@ -43,11 +43,16 @@ enum inner_actions {
 class Shred;
 class World;
 
-class Active : public QObject, public Block, public Xyz {
+class Active : public QObject, public Block, protected Xyz {
     Q_OBJECT
 public:
     Active(int sub, int id, int transp = UNDEF);
     Active(QDataStream & str, int sub, int id, int transp = UNDEF);
+
+    using Xyz::X;
+    using Xyz::Y;
+    using Xyz::Z;
+    using Xyz::SetXyz;
 
     void Move(dirs dir) override;
     void ReceiveSignal(QString) override;
@@ -118,7 +123,7 @@ protected:
 
 private:
     quint8 fallHeight;
-    bool falling = false;
+    bool falling;
 }; // Falling
 
 #endif // ACTIVE_H

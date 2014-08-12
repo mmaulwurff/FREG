@@ -218,21 +218,4 @@ public:
     usage_types Use(Block * who) override;
 };
 
-class Predator : public Animal {
-    Q_OBJECT
-public:
-    using Animal::Animal;
-
-    int DamageLevel() const override;
-    void ActFrequent() override;
-    QString FullName() const override;
-
-protected:
-    void DoRareAction() override;
-    int  Attractive(int sub) const override;
-
-private:
-    int NutritionalValue(subs) const override;
-};
-
 #endif // BLOCKS_H

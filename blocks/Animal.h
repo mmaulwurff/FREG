@@ -27,8 +27,9 @@ class DeferredAction;
 class Animal : public Falling {
     Q_OBJECT
 public:
-    Animal(int sub, int id);
-    Animal(QDataStream & str, int sub, int id);
+     Animal(int sub, int id);
+     Animal(QDataStream & str, int sub, int id);
+    ~Animal();
 
     int  DamageKind() const override;
     int  ShouldAct() const override;
@@ -51,12 +52,30 @@ protected:
     bool moved_in_this_turn = false;
 
 private:
+    Animal(Animal &) = delete;
+    Animal & operator=(Animal &) = delete;
     virtual int NutritionalValue(subs) const;
 
     quint8  breath;
     quint16 satiation;
-    bool defActionPending = false;
     DeferredAction * deferredAction = nullptr;
-};
+}; // class Animal
+
+class Predator : public Animal {
+    Q_OBJECT
+public:
+    using Animal::Animal;
+
+    int DamageLevel() const override;
+    void ActFrequent() override;
+    QString FullName() const override;
+
+protected:
+    void DoRareAction() override;
+    int  Attractive(int sub) const override;
+
+private:
+    int NutritionalValue(subs) const override;
+}; // class Predator
 
 #endif // ANIMAL_H

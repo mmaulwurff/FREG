@@ -675,14 +675,16 @@ void Screen::PrintInv(WINDOW * const window,
 const {
     if ( inv == nullptr ) return;
     werase(window);
-    wstandend(window);
     const int start = inv->Start();
     int shift = 0; // to divide inventory sections
     for (int i=0; i<inv->Size(); ++i) {
         shift += ( start == i && i != 0 );
+        wstandend(window);
         mvwprintw(window, 2+i+shift, 1, "%c) ", 'a'+i);
         const int number = inv->Number(i);
         if ( 0 == number ) {
+            wattrset(window, COLOR_PAIR(BLACK_BLACK) | A_BOLD);
+            waddstr(window, qPrintable(inv->InvFullName(i)));
             continue;
         }
         const Block * const block = inv->ShowBlock(i);
@@ -707,6 +709,7 @@ const {
         wstandend(window);
         mvwprintw(window, 2+i+shift, 53, "%5hu mz", inv->GetInvWeight(i));
     }
+    wstandend(window);
     mvwprintw(window, 2+inv->Size()+shift, 40,
         qPrintable(tr("All weight: %1 mz").
             arg(inv->Weight(), 6, 10, QChar(' '))));

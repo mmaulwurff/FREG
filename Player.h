@@ -31,7 +31,7 @@ class Animal;
 class Inventory;
 class Shred;
 
-class Player final : public QObject, public Xyz {
+class Player final : public QObject, private Xyz {
     /** \class Player Player.h
      * \brief This class contains information specific to player
      * and interface for manipulating him.
@@ -57,6 +57,10 @@ public:
 
     long GlobalX() const;
     long GlobalY() const;
+
+    using Xyz::X;
+    using Xyz::Y;
+    using Xyz::Z;
 
     /// This returns current player direction (see enum dirs in header.h)
     dirs GetDir() const;

@@ -215,14 +215,16 @@ bool Active::IsSubAround(const int sub) const {
 
 Falling::Falling(const int kind, const int sub, const int transp) :
         Active(kind, sub, transp),
-        fallHeight(0)
+        fallHeight(0),
+        falling(false)
 {}
 
 Falling::Falling(QDataStream & str, const int kind, const int sub,
         const int transp)
     :
         Active(str, kind, sub, transp),
-        fallHeight()
+        fallHeight(),
+        falling()
 {
     str >> fallHeight >> falling;
 }
