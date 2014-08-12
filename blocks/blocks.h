@@ -218,6 +218,7 @@ public:
     usage_types Use(Block * who) override;
 };
 
+/// \todo add channels.
 class Telegraph : public Active {
     Q_OBJECT
 public:

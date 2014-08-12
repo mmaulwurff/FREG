@@ -452,11 +452,15 @@ void Screen::PrintHUD() {
     ActionXyz(&x, &y, &z);
     Block * const focused = GetWorld()->GetBlock(x, y, z);
     if ( not IsLikeAir(focused->Sub()) ) {
-        PrintBar(((SCREEN_SIZE*2+2) * (IsScreenWide() ? 2 : 1)) - 15,
+        const int left_border = (SCREEN_SIZE*2+2) * (IsScreenWide() ? 2 : 1);
+        PrintBar(left_border - 15,
             Color(focused->Kind(), focused->Sub()),
             (focused->IsAnimal() == nullptr) ? '+' : '*',
             focused->GetDurability()*100/MAX_DURABILITY,
             false);
+        const QString name = focused->FullName();
+        mvwaddstr(hudWin, 2, left_border-name.length(),
+            qPrintable(focused->FullName()));
     }
     PrintQuickInventory();
     wrefresh(hudWin);

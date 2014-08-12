@@ -109,10 +109,11 @@ void Player::Examine() const {
     int i, j, k;
     emit GetFocus(&i, &j, &k);
     const Block * const block = world->GetBlock(i, j, k);
-    emit Notify(tr("You see: %1.").arg(block->FullName()));
+    emit Notify( tr("You see: %1, durability: %2.").
+        arg(block->FullName()).
+        arg(block->GetDurability()) );
     if ( DEBUG ) {
-        emit Notify(QString("Durability: %2. Weight: %3. Id: %4.").
-            arg(block->GetDurability()).
+        emit Notify(QString("Weight: %1. Id: %2.").
             arg(block->Weight()).
             arg(block->GetId()));
         emit Notify(QString("Kind: %1, substance: %2. LightRadius: %3").
