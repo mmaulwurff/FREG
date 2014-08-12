@@ -638,14 +638,10 @@
         str << isReceiver;
     }
 
-    QString Telegraph::FullName() const {
-        return isReceiver ?
-            tr("Receiver") : tr("Transmitter");
-    }
-
     int  Telegraph::ShouldAct() const { return FREQUENT_RARE; }
     void Telegraph::ReceiveSignal(const QString str) { Inscribe(str); }
     void Telegraph::Damage(int, int) { Break(); }
+    QString Telegraph::FullName() const { return tr("Telegraph"); }
 
     bool Telegraph::Inscribe(const QString str) {
         isReceiver = false;
