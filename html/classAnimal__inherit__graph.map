@@ -1,11 +1,11 @@
 <map id="Animal" name="Animal">
-<area shape="rect" id="node15" href="$classCreator.html" title="Creator" alt="" coords="5,419,69,453"/>
-<area shape="rect" id="node17" href="$classDwarf.html" title="Dwarf" alt="" coords="93,419,149,453"/>
-<area shape="rect" id="node19" href="$classPredator.html" title="Predator" alt="" coords="173,419,243,453"/>
-<area shape="rect" id="node21" href="$classRabbit.html" title="Rabbit" alt="" coords="267,419,325,453"/>
-<area shape="rect" id="node2" href="$classFalling.html" title="Falling" alt="" coords="135,254,193,287"/>
-<area shape="rect" id="node4" href="$classActive.html" title="Active" alt="" coords="135,171,193,205"/>
-<area shape="rect" id="node8" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="137,89,191,122"/>
-<area shape="rect" id="node10" href="$classXyz.html" title="Xyz" alt="" coords="215,89,257,122"/>
-<area shape="rect" id="node12" href="$classXy.html" title="Xy" alt="" coords="217,6,255,39"/>
+<area shape="rect" id="node8" href="$classCreator.html" title="Creator" alt="" coords="5,379,71,405"/>
+<area shape="rect" id="node9" href="$classDwarf.html" title="Dwarf" alt="" coords="95,379,152,405"/>
+<area shape="rect" id="node10" href="$classPredator.html" title="Predator" alt="" coords="176,379,247,405"/>
+<area shape="rect" id="node11" href="$classRabbit.html" title="Rabbit" alt="" coords="271,379,331,405"/>
+<area shape="rect" id="node2" href="$classFalling.html" title="Falling" alt="" coords="137,229,197,256"/>
+<area shape="rect" id="node3" href="$classActive.html" title="Active" alt="" coords="138,155,197,181"/>
+<area shape="rect" id="node5" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="140,80,195,107"/>
+<area shape="rect" id="node6" href="$classXyz.html" title="Xyz" alt="" coords="219,80,265,107"/>
+<area shape="rect" id="node7" href="$classXy.html" title="Xy" alt="" coords="223,5,261,32"/>
 </map>

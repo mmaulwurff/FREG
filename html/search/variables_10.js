@@ -10,6 +10,7 @@ var searchData=
   ['seconds_5fin_5fhour',['SECONDS_IN_HOUR',['../header_8h.html#a783cd37c928f6ed101059c585e8eb61f',1,'header.h']]],
   ['seconds_5fin_5fnight',['SECONDS_IN_NIGHT',['../header_8h.html#a7f228aed9dbb67d39a7a49cbdcb9037c',1,'header.h']]],
   ['settings',['settings',['../classPlayer.html#a38ffb7570f784a1e05ee41b1958a44ca',1,'Player::settings()'],['../classVirtScreen.html#a3eb2e530bbfa1f718323ec1e3502b974',1,'VirtScreen::settings()'],['../classWorld.html#ad448cf4bc4a35b179911432b237be1af',1,'World::settings()']]],
+  ['sharedmessage',['sharedMessage',['../classTelegraph.html#a46eb79d7d33c8e4fdcb60220de206b26',1,'Telegraph']]],
   ['shifted',['shifted',['../classDoor.html#a251b34b8556db83a0f0fa327cc3b3134',1,'Door']]],
   ['shiftfocus',['shiftFocus',['../classScreen.html#ab1e597b76b808a3a3474ef8717fbd81d',1,'Screen::shiftFocus()'],['../classScreen.html#a00f90d3ddb9d03262a4f40d712440c18',1,'Screen::shiftFocus()']]],
   ['shininglist',['shiningList',['../classShred.html#aa4fece870939a3a249ac5031b1bb1fae',1,'Shred']]],

@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['telegraph',['Telegraph',['../classTelegraph.html#a4d86a4a9bfbaa95de1f69f8743264612',1,'Telegraph::Telegraph(int sub, int id)'],['../classTelegraph.html#ab8cdcee3d2cfa238434115ea182366b3',1,'Telegraph::Telegraph(QDataStream &amp;, int sub, int id)']]],
   ['testshred',['TestShred',['../classShred.html#ace95ee73454939cea2e0cc374c09a4e8',1,'Shred']]],
   ['throw',['Throw',['../classDeferredAction.html#a8e40934af80b6537498789568bbdbbf9',1,'DeferredAction::Throw()'],['../classPlayer.html#a4710bcdf5c1d44a974e7363b0d18ce60',1,'Player::Throw()']]],
   ['time',['Time',['../classWorld.html#a0289184686d205a2cea34088bdf7a7b7',1,'World']]],

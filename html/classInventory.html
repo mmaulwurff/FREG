@@ -138,6 +138,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5adbf10fd46b25d49ae9aa3bb2954a1f"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInventory.html#a5adbf10fd46b25d49ae9aa3bb2954a1f">GetExact</a> (<a class="el" href="classBlock.html">Block</a> *block, int num)</td></tr>
 <tr class="memdesc:a5adbf10fd46b25d49ae9aa3bb2954a1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if block found its place.  <a href="#a5adbf10fd46b25d49ae9aa3bb2954a1f">More...</a><br /></td></tr>
 <tr class="separator:a5adbf10fd46b25d49ae9aa3bb2954a1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae0360c4932c519c8c46d5de39b1cb99"><td class="memItemLeft" align="right" valign="top">virtual QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInventory.html#aae0360c4932c519c8c46d5de39b1cb99">InvFullName</a> (int num) const </td></tr>
+<tr class="separator:aae0360c4932c519c8c46d5de39b1cb99"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a64779f0819b731f70a67d598c9fec2f5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInventory.html#a64779f0819b731f70a67d598c9fec2f5">Pull</a> (int num)</td></tr>
 <tr class="memdesc:a64779f0819b731f70a67d598c9fec2f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes block from inventory. Does not delete block.  <a href="#a64779f0819b731f70a67d598c9fec2f5">More...</a><br /></td></tr>
 <tr class="separator:a64779f0819b731f70a67d598c9fec2f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -166,8 +168,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a88ab2510f7ab10a614f8b6d5f5acc42a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBlock.html">Block</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInventory.html#a88ab2510f7ab10a614f8b6d5f5acc42a">ShowBlockInSlot</a> (int slot, int index) const </td></tr>
 <tr class="memdesc:a88ab2510f7ab10a614f8b6d5f5acc42a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Don't move block shown by this function.  <a href="#a88ab2510f7ab10a614f8b6d5f5acc42a">More...</a><br /></td></tr>
 <tr class="separator:a88ab2510f7ab10a614f8b6d5f5acc42a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aae0360c4932c519c8c46d5de39b1cb99"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInventory.html#aae0360c4932c519c8c46d5de39b1cb99">InvFullName</a> (int num) const </td></tr>
-<tr class="separator:aae0360c4932c519c8c46d5de39b1cb99"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa494b4db63fd11b4eddbf862db1fb5ff"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInventory.html#aa494b4db63fd11b4eddbf862db1fb5ff">IsEmpty</a> () const </td></tr>
 <tr class="separator:aa494b4db63fd11b4eddbf862db1fb5ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0a1e07439671e115645a638353459f2a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInventory.html#a0a1e07439671e115645a638353459f2a">Push</a> (<a class="el" href="classBlock.html">Block</a> *who)</td></tr>
@@ -613,7 +613,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classCreator.html#a131cd6e10928c61c923bad6c1d1bcd7a">Creator</a>, <a class="el" href="classBush.html#a56e38a3e102f87a2c5c21c14246d67c8">Bush</a>, <a class="el" href="classContainer.html#a1695a898af6e605e47de6525b22c3175">Container</a>, <a class="el" href="classDwarf.html#afe4fb3df9d077a08ad1d59f6714f5d20">Dwarf</a>, <a class="el" href="classRainMachine.html#a60c874b8b7c4508e6b2d63501a079f1a">RainMachine</a>, and <a class="el" href="classBucket.html#a6b06478a07ee3af83d68bef9a5c53bf2">Bucket</a>.</p>
+<p>Implemented in <a class="el" href="classCreator.html#a131cd6e10928c61c923bad6c1d1bcd7a">Creator</a>, <a class="el" href="classBush.html#a56e38a3e102f87a2c5c21c14246d67c8">Bush</a>, <a class="el" href="classDwarf.html#afe4fb3df9d077a08ad1d59f6714f5d20">Dwarf</a>, <a class="el" href="classContainer.html#a1695a898af6e605e47de6525b22c3175">Container</a>, <a class="el" href="classRainMachine.html#a60c874b8b7c4508e6b2d63501a079f1a">RainMachine</a>, and <a class="el" href="classBucket.html#a6b06478a07ee3af83d68bef9a5c53bf2">Bucket</a>.</p>
 
 </div>
 </div>
@@ -650,6 +650,9 @@ Private Attributes</h2></td></tr>
 <a class="anchor" id="aae0360c4932c519c8c46d5de39b1cb99"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">QString Inventory::InvFullName </td>
@@ -659,7 +662,14 @@ Private Attributes</h2></td></tr>
           <td> const</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="classDwarf.html#a8ec3efec9355d9ead606d4164a2d69ca">Dwarf</a>.</p>
 
 <p>Definition at line <a class="el" href="Inventory_8cpp_source.html#l00142">142</a> of file <a class="el" href="Inventory_8cpp_source.html">Inventory.cpp</a>.</p>
 
@@ -1086,7 +1096,7 @@ Private Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Aug 11 2014 22:07:22 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Aug 12 2014 20:45:23 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

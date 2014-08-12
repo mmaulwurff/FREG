@@ -14,7 +14,7 @@ var searchData=
   ['makeandsavespawn',['MakeAndSaveSpawn',['../classWorldMap.html#aabbb9cd0897d84df7e69c00d3440dc8c',1,'WorldMap']]],
   ['makedirfromdamage',['MakeDirFromDamage',['../classBlock.html#a60a9be872caca48e0f5da2f12f25f258',1,'Block']]],
   ['makeid',['MakeId',['../classBlockManager.html#a907d78cd3f48a1c46a573b8a7cbaa85c',1,'BlockManager']]],
-  ['map',['Map',['../classMap.html',1,'Map'],['../classWorld.html#abebb124936500faf7f37765b784d6ba1',1,'World::map()'],['../classWorldMap.html#ae74025980e96a8768c6275b7649a1af5',1,'WorldMap::map()'],['../classMap.html#ac2b5df92888864735de84c99d0f5546e',1,'Map::Map(int sub, int id)'],['../classMap.html#a102878bf3ef015eee9017d6949ba2442',1,'Map::Map(QDataStream &amp;str, int sub, int id)'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a4cafa5feda04184537b4d7d346e1e89b',1,'MAP():&#160;header.h']]],
+  ['map',['Map',['../classMap.html',1,'Map'],['../classMap.html#ac2b5df92888864735de84c99d0f5546e',1,'Map::Map(int sub, int id)'],['../classMap.html#a102878bf3ef015eee9017d6949ba2442',1,'Map::Map(QDataStream &amp;str, int sub, int id)'],['../classWorld.html#abebb124936500faf7f37765b784d6ba1',1,'World::map()'],['../classWorldMap.html#ae74025980e96a8768c6275b7649a1af5',1,'WorldMap::map()'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a4cafa5feda04184537b4d7d346e1e89b',1,'MAP():&#160;header.h']]],
   ['mapsize',['mapSize',['../classWorldMap.html#ac193007fbe0525cc6e51582a9275fb52',1,'WorldMap']]],
   ['material',['material',['../classDeferredAction.html#a70570e5fb59a02da8928e1f6d15df7db',1,'DeferredAction']]],
   ['materialsnumber',['materialsNumber',['../classCraftList.html#a721edadd16895602f8e8d3a0d184332d',1,'CraftList']]],

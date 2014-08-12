@@ -1,6 +1,7 @@
 var searchData=
 [
   ['template',['template',['../md_help_en_template.html',1,'']]],
+  ['telegraph',['Telegraph',['../classTelegraph.html',1,'Telegraph'],['../classTelegraph.html#a4d86a4a9bfbaa95de1f69f8743264612',1,'Telegraph::Telegraph(int sub, int id)'],['../classTelegraph.html#ab8cdcee3d2cfa238434115ea182366b3',1,'Telegraph::Telegraph(QDataStream &amp;, int sub, int id)'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285ad5f14c717b2946d4731f9a94301cb0e9',1,'TELEGRAPH():&#160;header.h']]],
   ['template_2emd',['template.md',['../template_8md.html',1,'']]],
   ['testshred',['TestShred',['../classShred.html#ace95ee73454939cea2e0cc374c09a4e8',1,'Shred']]],
   ['text',['Text',['../classText.html',1,'Text'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a9a4a47c1606e295076055a9cc4373197',1,'TEXT():&#160;header.h']]],
@@ -23,7 +24,7 @@ var searchData=
   ['todo_20list',['Todo List',['../todo.html',1,'']]],
   ['toresetdir',['toResetDir',['../classWorld.html#af29e6b21e0b01add4138bfa46ca8faf8',1,'World']]],
   ['transparency',['Transparency',['../classBlock.html#a7d480c4cdcdb1e64c1cd4703db0d1423',1,'Block::Transparency()'],['../header_8h.html#a48a539666409f8c99365fc6d8a58f708',1,'transparency():&#160;header.h']]],
-  ['transparent',['Transparent',['../classBlock.html#a8ef3abd6e851ae31883f6b8cc423ef56',1,'Block::Transparent() const '],['../classBlock.html#a792bf7bd74b66e681a450cbbc2a3d6d7',1,'Block::transparent()']]],
+  ['transparent',['transparent',['../classBlock.html#a792bf7bd74b66e681a450cbbc2a3d6d7',1,'Block::transparent()'],['../classBlock.html#a8ef3abd6e851ae31883f6b8cc423ef56',1,'Block::Transparent() const ']]],
   ['tree',['Tree',['../classShred.html#af24cd15dcba9ad378586ce4bc88cfe41',1,'Shred']]],
   ['treshold',['TRESHOLD',['../Armour_8cpp.html#ad752760c7226b6260aabea7edd4b170c',1,'Armour.cpp']]],
   ['trydestroy',['TryDestroy',['../classActive.html#a76d2cb795e55910dc1249c033e44894b',1,'Active']]],

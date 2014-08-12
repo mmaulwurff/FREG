@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['_7eanimal',['~Animal',['../classAnimal.html#a476af25adde5f0dfa688129c8f86fa5c',1,'Animal']]],
   ['_7eblock',['~Block',['../classBlock.html#a19d1bd0e1cef6a865ed2745a2e648405',1,'Block']]],
   ['_7eblockmanager',['~BlockManager',['../classBlockManager.html#a3c31dd479e07890a5885485fe8d1ccbe',1,'BlockManager']]],
   ['_7ecraftlist',['~CraftList',['../classCraftList.html#adbf278f23eb8f7b7460712b9d66f9a77',1,'CraftList']]],
