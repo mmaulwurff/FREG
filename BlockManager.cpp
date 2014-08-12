@@ -67,6 +67,7 @@ const QByteArray BlockManager::kinds[] = { // do not use space, use '_'
     "armour",
     "helmet",
     "boots",
+    "telegraph",
     /// [List of kinds]
 };
 
@@ -164,9 +165,8 @@ Block * BlockManager::NewBlock(const int kind, const int sub) {
     case ARMOUR:    return new Armour(kind, sub);
     case HELMET:    return new Helmet(kind, sub);
     case BOOTS:     return new Boots (kind, sub);
-    case LAST_KIND:
-        fprintf(stderr, "%s: kind ?: %d.\n", Q_FUNC_INFO, kind);
-        return new Block(kind, sub);
+    case TELEGRAPH: return new Telegraph(kind, sub);
+    case LAST_KIND: break;
     }
     Q_UNREACHABLE();
     return nullptr;
@@ -206,9 +206,8 @@ Block * BlockManager::BlockFromFile(QDataStream & str,
     case ARMOUR:    return new Armour(str, kind, sub);
     case HELMET:    return new Helmet(str, kind, sub);
     case BOOTS:     return new Boots (str, kind, sub);
-    case LAST_KIND:
-        fprintf(stderr, "%s: kind ?: %d.\n", Q_FUNC_INFO, kind);
-        return new Block(str, kind, sub);
+    case TELEGRAPH: return new Telegraph(str, kind, sub);
+    case LAST_KIND: break;
     }
     Q_UNREACHABLE();
     return nullptr;

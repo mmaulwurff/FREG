@@ -420,9 +420,11 @@
             Block::Inscribe(GetNote().setNum(timerTime));
         } else if ( timerTime == 0 ) {
             Use(nullptr);
-            Block::Inscribe(QObject::tr("Timer fired. %1").
-                arg(GetWorld()->TimeOfDayStr()));
+            const QString message = tr("Timer fired. %1").
+                arg(GetWorld()->TimeOfDayStr());
             timerTime = -1;
+            Block::Inscribe(message);
+            SendSignalAround(message);
             return INNER_ACTION_MESSAGE;
         }
         return INNER_ACTION_NONE;
@@ -615,4 +617,57 @@
     usage_types Bell::Use(Block *) {
         SendSignalAround(tr("^ Ding! ^"));
         return USAGE_TYPE_NO;
+    }
+
+// Telegraph:: section
+    QString Telegraph::sharedMessage;
+
+    Telegraph::Telegraph(const int sub, const int id) :
+            Active(sub, id, BLOCK_OPAQUE),
+            isReceiver(true)
+    {}
+
+    Telegraph::Telegraph(QDataStream & str, const int sub, const int id) :
+            Active(str, sub, id),
+            isReceiver()
+    {
+        str >> isReceiver;
+    }
+
+    void Telegraph::SaveAttributes(QDataStream & str) const {
+        str << isReceiver;
+    }
+
+    QString Telegraph::FullName() const {
+        return isReceiver ?
+            tr("Receiver") : tr("Transmitter");
+    }
+
+    int  Telegraph::ShouldAct() const { return FREQUENT_RARE; }
+    void Telegraph::ReceiveSignal(const QString str) { Inscribe(str); }
+    void Telegraph::Damage(int, int) { Break(); }
+
+    bool Telegraph::Inscribe(const QString str) {
+        isReceiver = false;
+        return Block::Inscribe(str);
+    }
+
+    usage_types Telegraph::Use(Block *) {
+        isReceiver = not isReceiver;
+        return USAGE_TYPE_NO;
+    }
+
+    inner_actions Telegraph::ActInner() {
+        if ( isReceiver ) {
+            const QString note = GetNote();
+            if ( note != sharedMessage && not sharedMessage.isEmpty() ) {
+                Inscribe(sharedMessage);
+                SendSignalAround(sharedMessage);
+                return INNER_ACTION_MESSAGE;
+            }
+        } else {
+            sharedMessage = GetNote();
+            isReceiver    = true;
+        }
+        return INNER_ACTION_ONLY;
     }

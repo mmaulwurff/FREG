@@ -44,25 +44,24 @@ void Active::DoRareAction() {
 }
 
 void Active::ActRare() {
+    DoRareAction();
     Inventory * const inv = HasInventory();
-    if ( inv != nullptr ) {
-        for (int i=inv->Size()-1; i; --i) {
-            const int number = inv->Number(i);
-            if ( number == 0 ) continue;
-            Active * const top_active = inv->ShowBlock(i)->ActiveBlock();
-            if ( top_active == nullptr ) continue;
-            for (int j=0; j<number; ++j) {
-                Active * const active = inv->ShowBlockInSlot(i, j)->
-                    ActiveBlock();
-                if ( active->ActInner() == INNER_ACTION_MESSAGE ) {
-                    ReceiveSignal(tr("Item in slot '%1' changed.").
-                        arg(char('a'+i)));
-                    ReceiveSignal(inv->ShowBlockInSlot(i, j)->GetNote());
-                }
+    if ( inv == nullptr ) return;
+    for (int i=inv->Size()-1; i; --i) {
+        const int number = inv->Number(i);
+        if ( number == 0 ) continue;
+        Active * const top_active = inv->ShowBlock(i)->ActiveBlock();
+        if ( top_active == nullptr ) continue;
+        for (int j=0; j<number; ++j) {
+            Active * const active = inv->ShowBlockInSlot(i, j)->ActiveBlock();
+            if ( active->ActInner() == INNER_ACTION_MESSAGE ) {
+                ReceiveSignal( tr("%1 in slot '%2' changed: %3").
+                    arg(inv->InvFullName(i)).
+                    arg(char('a'+i)).
+                    arg(inv->ShowBlockInSlot(i, j)->GetNote()) );
             }
         }
     }
-    DoRareAction();
 }
 
 void Active::Unregister() {
@@ -92,6 +91,7 @@ void Active::Move(const dirs dir) {
 }
 
 void Active::SendSignalAround(const QString signal) const {
+    if ( shred == nullptr ) return; // for blocks inside inventories
     World * const world = GetWorld();
     const int bound = world->GetBound();
     if ( X() > 0 )     world->GetBlock(X()-1, Y(), Z())->ReceiveSignal(signal);

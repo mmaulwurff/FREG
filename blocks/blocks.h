@@ -218,4 +218,26 @@ public:
     usage_types Use(Block * who) override;
 };
 
+class Telegraph : public Active {
+    Q_OBJECT
+public:
+    Telegraph(int sub, int id);
+    Telegraph(QDataStream &, int sub, int id);
+
+    int ShouldAct() const override;
+    bool Inscribe(QString) override;
+    void ReceiveSignal(QString) override;
+    void Damage(int dmg, int dmg_kind) override;
+    QString FullName() const override;
+    inner_actions ActInner() override;
+    usage_types Use(Block * who) override;
+
+protected:
+    void SaveAttributes(QDataStream &) const override;
+
+private:
+    static QString sharedMessage;
+    bool isReceiver;
+};
+
 #endif // BLOCKS_H

@@ -134,11 +134,11 @@ int Screen::Color(const int kind, const int sub) const {
         case WATER:     return COLOR_PAIR(CYAN_BLUE);
         case SUB_CLOUD: return COLOR_PAIR(WHITE_WHITE);
         default:        return COLOR_PAIR(RED_YELLOW);
-    } // no break);
+        } // no break);
     case FALLING: switch ( sub ) {
         case WATER: return COLOR_PAIR(CYAN_WHITE);
         case SAND:  return COLOR_PAIR(YELLOW_WHITE);
-    } // no break);
+        } // no break);
     default: switch ( sub ) {
         default: return COLOR_PAIR(WHITE_BLACK);
         case STONE:      return COLOR_PAIR(BLACK_WHITE);
@@ -178,6 +178,7 @@ int Screen::Color(const int kind, const int sub) const {
     case DWARF: return COLOR_PAIR((sub==ADAMANTINE) ? CYAN_BLACK : WHITE_BLUE);
     case RABBIT:    return COLOR_PAIR(  RED_WHITE);
     case PREDATOR:  return COLOR_PAIR(  RED_BLACK);
+    case TELEGRAPH: return COLOR_PAIR( BLUE_BLUE) | A_BOLD;
     }
 } // color_pairs Screen::Color(int kind, int sub)
 
