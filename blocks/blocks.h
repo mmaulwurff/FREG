@@ -218,21 +218,27 @@ public:
     usage_types Use(Block * who) override;
 };
 
-class Predator : public Animal {
+/// \todo add channels.
+class Telegraph : public Active {
     Q_OBJECT
 public:
-    using Animal::Animal;
+    Telegraph(int sub, int id);
+    Telegraph(QDataStream &, int sub, int id);
 
-    int DamageLevel() const override;
-    void ActFrequent() override;
+    int ShouldAct() const override;
+    bool Inscribe(QString) override;
+    void ReceiveSignal(QString) override;
+    void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
+    inner_actions ActInner() override;
+    usage_types Use(Block * who) override;
 
 protected:
-    void DoRareAction() override;
-    int  Attractive(int sub) const override;
+    void SaveAttributes(QDataStream &) const override;
 
 private:
-    int NutritionalValue(subs) const override;
+    static QString sharedMessage;
+    bool isReceiver;
 };
 
 #endif // BLOCKS_H

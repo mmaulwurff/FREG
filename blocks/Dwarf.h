@@ -39,6 +39,7 @@ public:
     int DamageLevel() const override;
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
+    QString InvFullName(int slot_number) const override;
 
     bool Access() const override;
     bool Inscribe(QString str) override;

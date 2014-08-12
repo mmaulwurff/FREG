@@ -109,6 +109,7 @@ char VirtScreen::CharName(const int kind, const int sub) const {
     case ARMOUR: return 'A';
     case HELMET: return 'H';
     case BOOTS:  return 'B';
+    case TELEGRAPH: return 't';
     case FALLING: switch ( sub ) {
         case SAND:  return '.';
         case WATER: return '*';

@@ -134,11 +134,11 @@ int Screen::Color(const int kind, const int sub) const {
         case WATER:     return COLOR_PAIR(CYAN_BLUE);
         case SUB_CLOUD: return COLOR_PAIR(WHITE_WHITE);
         default:        return COLOR_PAIR(RED_YELLOW);
-    } // no break);
+        } // no break);
     case FALLING: switch ( sub ) {
         case WATER: return COLOR_PAIR(CYAN_WHITE);
         case SAND:  return COLOR_PAIR(YELLOW_WHITE);
-    } // no break);
+        } // no break);
     default: switch ( sub ) {
         default: return COLOR_PAIR(WHITE_BLACK);
         case STONE:      return COLOR_PAIR(BLACK_WHITE);
@@ -178,6 +178,7 @@ int Screen::Color(const int kind, const int sub) const {
     case DWARF: return COLOR_PAIR((sub==ADAMANTINE) ? CYAN_BLACK : WHITE_BLUE);
     case RABBIT:    return COLOR_PAIR(  RED_WHITE);
     case PREDATOR:  return COLOR_PAIR(  RED_BLACK);
+    case TELEGRAPH: return COLOR_PAIR( BLUE_BLUE) | A_BOLD;
     }
 } // color_pairs Screen::Color(int kind, int sub)
 
@@ -451,11 +452,15 @@ void Screen::PrintHUD() {
     ActionXyz(&x, &y, &z);
     Block * const focused = GetWorld()->GetBlock(x, y, z);
     if ( not IsLikeAir(focused->Sub()) ) {
-        PrintBar(((SCREEN_SIZE*2+2) * (IsScreenWide() ? 2 : 1)) - 15,
+        const int left_border = (SCREEN_SIZE*2+2) * (IsScreenWide() ? 2 : 1);
+        PrintBar(left_border - 15,
             Color(focused->Kind(), focused->Sub()),
             (focused->IsAnimal() == nullptr) ? '+' : '*',
             focused->GetDurability()*100/MAX_DURABILITY,
             false);
+        const QString name = focused->FullName();
+        mvwaddstr(hudWin, 2, left_border-name.length(),
+            qPrintable(focused->FullName()));
     }
     PrintQuickInventory();
     wrefresh(hudWin);
@@ -675,14 +680,16 @@ void Screen::PrintInv(WINDOW * const window,
 const {
     if ( inv == nullptr ) return;
     werase(window);
-    wstandend(window);
     const int start = inv->Start();
     int shift = 0; // to divide inventory sections
     for (int i=0; i<inv->Size(); ++i) {
         shift += ( start == i && i != 0 );
+        wstandend(window);
         mvwprintw(window, 2+i+shift, 1, "%c) ", 'a'+i);
         const int number = inv->Number(i);
         if ( 0 == number ) {
+            wattrset(window, COLOR_PAIR(BLACK_BLACK) | A_BOLD);
+            waddstr(window, qPrintable(inv->InvFullName(i)));
             continue;
         }
         const Block * const block = inv->ShowBlock(i);
@@ -707,6 +714,7 @@ const {
         wstandend(window);
         mvwprintw(window, 2+i+shift, 53, "%5hu mz", inv->GetInvWeight(i));
     }
+    wstandend(window);
     mvwprintw(window, 2+inv->Size()+shift, 40,
         qPrintable(tr("All weight: %1 mz").
             arg(inv->Weight(), 6, 10, QChar(' '))));

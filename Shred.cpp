@@ -398,7 +398,7 @@ void Shred::TestShred() {
             {ILLUMINATOR, WOOD}, {ILLUMINATOR, IRON}, {ILLUMINATOR, GLASS},
             {CONTAINER, IRON}, {CONTAINER, WATER}, {WEAPON, SKY},
             {LIQUID, SUB_CLOUD}, {RAIN_MACHINE, IRON}, {FALLING, SUB_DUST},
-            {BLOCK, ROSE}, {CONVERTER, STONE},
+            {BLOCK, ROSE}, {CONVERTER, STONE}, {TELEGRAPH, IRON}
         }, {
             {ARMOUR, STEEL}, {HELMET, STEEL}, {BOOTS, STEEL},
         }

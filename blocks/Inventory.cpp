@@ -141,7 +141,7 @@ bool Inventory::InscribeInv(const int num, const QString str) {
 
 QString Inventory::InvFullName(const int num) const {
     return inventory[num].isEmpty() ?
-        "" : inventory[num].top()->FullName();
+        QObject::tr("-empty-") : inventory[num].top()->FullName();
 }
 
 int Inventory::GetInvWeight(const int i) const {

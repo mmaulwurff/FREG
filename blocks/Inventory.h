@@ -51,6 +51,7 @@ public:
     virtual Inventory * HasInventory() = 0;
     /// Returns true if block found its place.
     virtual bool GetExact(Block * block, int num);
+    virtual QString InvFullName(int num) const;
 
     /// Removes block from inventory. Does not delete block.
     void Pull(int num);
@@ -69,7 +70,6 @@ public:
     Block * ShowBlock(int slot) const;
     /// Don't move block shown by this function.
     Block * ShowBlockInSlot(int slot, int index) const;
-    QString InvFullName(int num) const;
     static QString NumStr(int num);
 
     bool IsEmpty() const;

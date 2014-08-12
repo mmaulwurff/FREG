@@ -420,9 +420,11 @@
             Block::Inscribe(GetNote().setNum(timerTime));
         } else if ( timerTime == 0 ) {
             Use(nullptr);
-            Block::Inscribe(QObject::tr("Timer fired. %1").
-                arg(GetWorld()->TimeOfDayStr()));
+            const QString message = tr("Timer fired. %1").
+                arg(GetWorld()->TimeOfDayStr());
             timerTime = -1;
+            Block::Inscribe(message);
+            SendSignalAround(message);
             return INNER_ACTION_MESSAGE;
         }
         return INNER_ACTION_NONE;
@@ -617,52 +619,55 @@
         return USAGE_TYPE_NO;
     }
 
-// Predator::
-    int Predator::DamageLevel() const { return 10; }
-    QString Predator::FullName() const { return "Predator"; }
+// Telegraph:: section
+    QString Telegraph::sharedMessage;
 
-    int Predator::NutritionalValue(const subs sub) const {
-        return Attractive(sub) * SECONDS_IN_HOUR;
+    Telegraph::Telegraph(const int sub, const int id) :
+            Active(sub, id, BLOCK_OPAQUE),
+            isReceiver(true)
+    {}
+
+    Telegraph::Telegraph(QDataStream & str, const int sub, const int id) :
+            Active(str, sub, id),
+            isReceiver()
+    {
+        str >> isReceiver;
     }
 
-    void Predator::ActFrequent() {
-        if ( Gravitate(5, 1, 2, 0) ) {
-            world->Move(X(), Y(), Z(), GetDir());
-        }
+    void Telegraph::SaveAttributes(QDataStream & str) const {
+        str << isReceiver;
     }
 
-    void Predator::DoRareAction() {
-        const Xyz coords[] = {
-            Xyz(X()-1, Y(), Z()),
-            Xyz(X()+1, Y(), Z()),
-            Xyz(X(), Y()-1, Z()),
-            Xyz(X(), Y()+1, Z()),
-            Xyz(X(), Y(), Z()-1)
-        };
-        World * const world = GetWorld();
-        for (const Xyz xyz : coords) {
-            if ( not world->InBounds(xyz.X(), xyz.Y()) ) {
-                continue;
+    QString Telegraph::FullName() const {
+        return isReceiver ?
+            tr("Receiver") : tr("Transmitter");
+    }
+
+    int  Telegraph::ShouldAct() const { return FREQUENT_RARE; }
+    void Telegraph::ReceiveSignal(const QString str) { Inscribe(str); }
+    void Telegraph::Damage(int, int) { Break(); }
+
+    bool Telegraph::Inscribe(const QString str) {
+        isReceiver = false;
+        return Block::Inscribe(str);
+    }
+
+    usage_types Telegraph::Use(Block *) {
+        isReceiver = not isReceiver;
+        return USAGE_TYPE_NO;
+    }
+
+    inner_actions Telegraph::ActInner() {
+        if ( isReceiver ) {
+            const QString note = GetNote();
+            if ( note != sharedMessage && not sharedMessage.isEmpty() ) {
+                Inscribe(sharedMessage);
+                SendSignalAround(sharedMessage);
+                return INNER_ACTION_MESSAGE;
             }
-            Block * const block = world->GetBlock(xyz.X(), xyz.Y(), xyz.Z());
-            if ( Attractive(block->Sub()) ) {
-                block->ReceiveSignal(tr("Predator bites you!"));
-                world->Damage(xyz.X(), xyz.Y(), xyz.Z(),
-                    DamageLevel(), DamageKind());
-                Eat(static_cast<subs>(block->Sub()));
-            }
+        } else {
+            sharedMessage = GetNote();
+            isReceiver    = true;
         }
-        if ( SECONDS_IN_DAY/4 > Satiation() ) {
-            EatGrass();
-        }
-        Animal::DoRareAction();
-    }
-
-    int Predator::Attractive(const int sub) const {
-        switch ( sub ) {
-        default:       return  0;
-        case GREENERY: return  1;
-        case A_MEAT:
-        case H_MEAT:   return 10;
-        }
+        return INNER_ACTION_ONLY;
     }
