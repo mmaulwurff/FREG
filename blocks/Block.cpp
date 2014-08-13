@@ -30,7 +30,6 @@ dirs Block::MakeDirFromDamage(const int dmg_kind) {
 QString Block::FullName() const {
     switch ( Sub() ) {
     case STAR:
-    case SUN_MOON:
     case SKY:
     case AIR:        return QObject::tr("Air");
     case STONE:      return QObject::tr("Stone");
@@ -84,8 +83,7 @@ void Block::Damage(const int dmg, int dmg_kind) {
     case NULLSTONE:
     case STAR:
     case AIR:
-    case SKY:
-    case SUN_MOON: return;
+    case SKY: return;
     }
     switch ( dmg_kind ) {
     case DAMAGE_NO: return;
@@ -218,7 +216,6 @@ int Block::Weight() const {
     case H_MEAT:    return WEIGHT_WATER-10;
     case SKY:
     case STAR:
-    case SUN_MOON:
     case FIRE:
     case DIFFERENT: return WEIGHT_WATER;
     case SUB_DUST:  return WEIGHT_MINIMAL;

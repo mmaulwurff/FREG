@@ -129,7 +129,7 @@ void Player::Examine() const {
             arg(block==block_manager.Normal(block->Sub())).
             arg(block->GetDir()));
     }
-    if ( IsLikeAir(block->Sub()) ) return;
+    if ( Shred::IsLikeAir(block->Sub()) ) return;
     const QString str = block->GetNote();
     if ( not str.isEmpty() ) {
         emit Notify(tr("Inscription: ") + str);
@@ -322,17 +322,13 @@ bool Player::ForbiddenAdminCommands() const {
     }
 }
 
-constexpr quint64 Player::UniqueIntFromString(const char * const chars) {
-    return chars[0] == '\0' ?
-        0 : (UniqueIntFromString(chars + 1) << 5) | (chars[0]-'a');
-}
-
 void Player::ProcessCommand(QString command) {
     QTextStream comm_stream(&command);
     QByteArray request;
     comm_stream >> request;
     const QMutexLocker locker(world->GetLock());
     switch ( UniqueIntFromString(request.constData()) ) {
+    case UniqueIntFromString(""): break;
     case UniqueIntFromString("give"):
     case UniqueIntFromString("get" ): {
         if ( ForbiddenAdminCommands() ) return;

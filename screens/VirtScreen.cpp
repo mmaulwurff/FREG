@@ -128,7 +128,6 @@ char VirtScreen::CharName(const int kind, const int sub) const {
         case COAL:  return '*';
         case STAR:  return '.';
         case SKY:
-        case SUN_MOON:
         case AIR:   return ' ';
         }
     }

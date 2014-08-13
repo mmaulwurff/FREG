@@ -531,7 +531,7 @@ void Shred::ChaosShred() {
     for (int k=1; k<HEIGHT/2; ++k) {
         int kind = qrand() % LAST_KIND;
         int sub  = qrand() % LAST_SUB;
-        if ( sub==AIR || sub==STAR || sub==SUN_MOON || sub==SKY ) {
+        if ( IsLikeAir(sub) ) {
             sub = STONE;
         }
         SetNewBlock(kind, sub, i, j, k);
@@ -616,3 +616,6 @@ void Shred::Rain(const int kind, const int sub) {
     }
 }
 
+bool Shred::IsLikeAir(const int sub) {
+    return ( sub==AIR || sub==SKY || sub==STAR );
+}
