@@ -2,7 +2,7 @@ Source: freg
 Section: games
 Priority: extra
 Maintainer: Alexander Kromm <mmaulwurff@gmail.com>
-Build-depends: libc6-dev, libncursesw5-dev, qtbase5-dev (>= 5.3)
+Build-depends: debhelper, libc6-dev, libncursesw5-dev, qtbase5-dev (>= 5.3)
 Standards-Version: 3.8.4
 Homepage: http://mmaulwurff.github.io/FREG/html/index.html
 
