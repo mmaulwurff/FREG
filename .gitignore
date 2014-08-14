@@ -7,7 +7,6 @@
 !*.vim
 !*.sln
 !*.md
-!*dsc
 
 !blocks
 blocks/*
@@ -32,6 +31,3 @@ help_*/*
 !debian
 !debian/*
 debian/*~
-
-!tarballs
-!tarballs/freg*.tar.gz

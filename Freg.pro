@@ -128,6 +128,7 @@ DISTFILES += \
     texts/splash.txt \
     recipes/*.json \
     help_*/* \
+    debian/* \
     fregMap.vim \
     *.md
 
