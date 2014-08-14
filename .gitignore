@@ -27,3 +27,8 @@ help_*/*
 
 !texts
 !texts/*.md
+
+!debian
+!debian/changelog
+!debian/control
+!debian/rules
