@@ -124,12 +124,12 @@ TRANSLATIONS = \
     freg_ru.ts
 
 DISTFILES += \
-    texts/*.txt \
-    recipes/* \
+    texts/death.txt \
+    texts/splash.txt \
+    recipes/*.json \
     help_*/* \
     fregMap.vim \
-    COPYING \
-    README
+    *.md
 
 MOC_DIR = moc
 OBJECTS_DIR = obj
