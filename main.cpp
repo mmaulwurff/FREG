@@ -70,7 +70,9 @@ int main(int argc, char ** argv) {
     setlocale(LC_CTYPE, "C-UTF-8");
     QDir::current().mkdir("texts");
     QDir::current().mkdir("recipes");
-    (void)freopen("errors.txt", "wt", stderr);
+    if ( freopen("errors.txt", "wt", stderr) ) {
+        puts("Error opening errors.txt, writing errors to standard out.");
+    }
 
     Application freg(argc, argv);
     QCoreApplication::setOrganizationName("freg-team");
