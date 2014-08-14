@@ -15,7 +15,7 @@ CONFIG += debug
 #CONFIG += clang
 #CONFIG += g++-old
 
-VERSION = 0.2
+VERSION = 0.3
 VERSTR = '\\"$${VERSION}\\"'
 DEFINES += VER=\"$${VERSTR}\"
 TEMPLATE = app
@@ -133,3 +133,4 @@ DISTFILES += \
 
 MOC_DIR = moc
 OBJECTS_DIR = obj
+QMAKE_CLEAN += -r moc obj
