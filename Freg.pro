@@ -123,6 +123,8 @@ SOURCES += \
 TRANSLATIONS = \
     freg_ru.ts
 
+RESOURCES = resources.qrc
+
 DISTFILES += \
     texts/death.txt \
     texts/splash.txt \

@@ -5,8 +5,9 @@
 !*.h
 !*.ts
 !*.vim
-!*.sln
 !*.md
+!*.qrc
+qrc_*.cpp
 
 !blocks
 blocks/*
@@ -23,10 +24,12 @@ help_*/*
 !help_*/*.md
 
 !recipes
+recipes/*
 !recipes/*json
 
 !texts
-!texts/*.md
+texts/*
+!texts/*.txt
 
 !debian
 !debian/*

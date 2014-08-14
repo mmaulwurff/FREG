@@ -122,8 +122,6 @@ private:
     bool LoadShred();
     void RegisterInit(Active *);
 
-    QString FileName() const;
-
     void NormalUnderground(int depth = 0, subs sub = SOIL);
     void CoverWith(int kind, int sub);
     /// Puts num things(kind-sub) in random places on shred surface.

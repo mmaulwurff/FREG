@@ -319,14 +319,11 @@ void Shred::SetNewBlock(const int kind, const int sub,
     SetBlock(block, x, y, z);
 }
 
-QString Shred::FileName() const {
-    return FileName(GetWorld()->WorldName(), longitude, latitude);
-}
-
 QString Shred::FileName(const QString world_name,
         const long longi, const long lati)
 {
-    return QString("%1/y%2x%3").arg(world_name).arg(longi).arg(lati);
+    return QString("%1%2/y%3x%4").
+        arg(home_path).arg(world_name).arg(longi).arg(lati);
 }
 
 // shred generators section

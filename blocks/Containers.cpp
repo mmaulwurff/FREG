@@ -158,7 +158,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
                     {Number(i), ShowBlock(i)->Kind(), ShowBlock(i)->Sub()} );
             }
         }
-        if ( craft_manager.Craft(&list, Sub()) ) {
+        if ( craft_manager->Craft(&list, Sub()) ) {
             for (int i=0; i<list.size(); ++i) {
                 for (int n=0; n<list.at(i)->num; ++n) {
                     const CraftItem * const item = list.at(i);

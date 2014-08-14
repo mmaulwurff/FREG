@@ -287,11 +287,11 @@ void Screen::ControlPlayer(const int ch) {
         if ( player->PlayerInventory() ) {
               player->PlayerInventory()->Shake();
         }
-    break;
+        break;
     case KEY_HELP:
     case 'H':
         DisplayFile(QString("help_%1/help.txt").arg(locale.left(2)));
-    break;
+        break;
     case 'R':
     case 'L': RePrint(); break;
 
@@ -754,10 +754,9 @@ bool Screen::PrintFile(WINDOW * const window, QString const & file_name) {
 
 void Screen::DisplayFile(QString path) {
     wstandend(rightWin);
-    Notify( PrintFile(rightWin, path) ?
-        tr("File path: %1/%2").arg(QDir::currentPath()).arg(path) :
-        tr("There is no such help file: %1/%2.")
-            .arg(QDir::currentPath()).arg(path) );
+    if ( not PrintFile(rightWin, path) ) {
+        Notify(tr("There is no such file."));
+    }
 }
 
 void Screen::Notify(const QString str) const {
@@ -787,7 +786,7 @@ void Screen::DeathScreen() {
     werase(rightWin);
     werase(hudWin);
     wcolor_set(leftWin, WHITE_RED, nullptr);
-    if ( not PrintFile(leftWin, "texts/death.txt") ) {
+    if ( not PrintFile(leftWin, ":/texts/death.txt") ) {
         waddstr(leftWin, qPrintable(tr("You die.\nWaiting for respawn...")));
     }
     box(leftWin, 0, 0);
@@ -808,7 +807,7 @@ Screen::Screen(
         lastNotification(),
         input(new IThread(this)),
         updated(),
-        notifyLog(fopen("texts/messages.txt", "at")),
+        notifyLog(fopen(qPrintable(home_path + "log.txt"), "at")),
         actionMode(ACTION_USE),
         shiftFocus(settings.value("focus_shift", 0).toInt()),
         fileToShow(nullptr),
@@ -872,7 +871,7 @@ Screen::Screen(
     }
     scrollok(notifyWin, TRUE);
 
-    if ( not PrintFile(stdscr, "texts/splash.txt") ) {
+    if ( not PrintFile(stdscr, ":/texts/splash.txt") ) {
         addstr("Free-Roaming Elementary Game\nby mmaulwurff\n");
     }
     addstr(qPrintable(tr("\nVersion %1.\n\nPress any key.").arg(VER)));

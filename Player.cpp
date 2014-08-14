@@ -381,7 +381,7 @@ void Player::ProcessCommand(QString command) {
         if ( request.isEmpty() ) {
             request = "help";
         }
-        emit ShowFile( QString("help_%1/%2.md")
+        emit ShowFile( QString(":/help_%1/%2.md")
             .arg(locale.left(2)).arg(QString(request)) );
         break;
     default:
@@ -477,7 +477,8 @@ void Player::SetPlayer(const int _x, const int _y, const int _z) {
 }
 
 Player::Player() :
-        settings(world->WorldName() + "/settings.ini", QSettings::IniFormat),
+        settings(home_path + world->WorldName() + "/settings.ini",
+            QSettings::IniFormat),
         homeLongi(settings.value("home_longitude",
             qlonglong(world->GetMap()->GetSpawnLongitude())).toLongLong()),
         homeLati (settings.value("home_latitude",

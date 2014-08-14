@@ -43,7 +43,7 @@ class World final : public QThread {
      * Designed to be single. */
     Q_OBJECT
 public:
-    explicit World(QString);
+     World(QString world_name, bool * error);
     ~World();
 
 public: // Block work section

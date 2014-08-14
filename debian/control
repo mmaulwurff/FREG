@@ -9,4 +9,5 @@ Homepage: http://mmaulwurff.github.io/FREG/html/index.html
 Package: freg
 Architecture: any
 Depends: libc6, libncursesw5, libqt5core5a
-Description: Free-Roaming Elementary Game with open interactive 3d world and text graphics, much like other sandbox games, fast and compact, with own features.
+Description: Free-Roaming Elementary Game
+ Game with open interactive 3d world and text graphics, much like other sandbox games, fast and compact, with its own features.

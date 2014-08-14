@@ -78,6 +78,6 @@ private:
     QList<CraftList *> recipesList[LAST_SUB];
 }; // CraftManager
 
-extern CraftManager craft_manager;
+extern const CraftManager * craft_manager;
 
 #endif // CRAFTMANAGER_H

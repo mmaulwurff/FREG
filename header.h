@@ -37,6 +37,8 @@ const bool DEBUG = false;
 const bool DEBUG = true;
 #endif
 
+extern const QString home_path;
+
 const int SHRED_WIDTH = 16;
 const int HEIGHT = 128;
 

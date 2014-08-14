@@ -329,7 +329,7 @@ freg (0.3-2) unstable; urgency=medium
   * now all new blocks are received through BlockManager
   * BlockManager little interface change, little tunings
   * prepare blocks constructor interfaces
-  * finish block constructor interface compatibiliy
+  * finish block constructor interface compatibility
   * new memory system. not stable
   * New memory system. Not finished.
   * forgot two files
@@ -420,20 +420,12 @@ freg (0.3-2) unstable; urgency=medium
   * minor fixes
   * minor fixes
 
-  [ Panzerschrek ]
-  * Update Shred.cpp
-  * Добавлено неравномерное заполнение лоскута землёй ближе к вершинам гор.
-  * Изменён порядок генерации равнины и леса. Добавлена возможность роста деревьев в воде.
-
   [ mmaulwurff ]
   * map generator (island)
   * wide rivers
   * building in water, small fixes
   * mountain and hill
   * fix generation constants
-
-  [ Panzerschrek ]
-  * Добавлена заливка водой лоскутов, имеющих по углам лоскут океана
 
   [ mmaulwurff ]
   * can take everything in hand
@@ -506,7 +498,7 @@ freg (0.3-2) unstable; urgency=medium
   * code chore
   * Code cleanup
   * code cleanup, remove excess bounds check
-  * add text signal processing to Inventory, revise return types in Inventory::InscribeInv and Inventory::Minicraft.
+  * add text signal processing to Inventory
   * revise return type of World::CanMove and World::GetAll
   * minor changes, also prepare for travelling in creative mode
   * far travelling in creative mode
