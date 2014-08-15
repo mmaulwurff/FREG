@@ -35,3 +35,17 @@ texts/*
 !debian
 !debian/*
 debian/*~
+!debian/usr
+debian/usr/*
+!debian/usr/share
+debian/usr/share/*
+!debian/usr/share/doc
+debian/usr/share/doc/*
+!debian/usr/share/doc/freg
+debian/usr/share/doc/freg/*
+!debian/usr/share/doc/freg/copyright
+!debian/usr/share/man
+debian/usr/share/man/*
+!debian/usr/share/man/man1
+debian/usr/share/man/man1/*
+!debian/usr/share/man/man1/man1.gz
