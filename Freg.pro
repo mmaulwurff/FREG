@@ -134,6 +134,8 @@ DISTFILES += \
     debian/c* \
     debian/rules \
     debian/usr/share/doc/freg/copyright \
+    debian/source/format \
+    debian/source/include-binaries \
     fregMap.vim \
     *.md
 
