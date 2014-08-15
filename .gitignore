@@ -49,3 +49,6 @@ debian/usr/share/man/*
 !debian/usr/share/man/man1
 debian/usr/share/man/man1/*
 !debian/usr/share/man/man1/man1.gz
+!debian/source
+debian/source/*
+!debian/source/format
