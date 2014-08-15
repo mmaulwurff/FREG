@@ -7,7 +7,6 @@
 !*.vim
 !*.md
 !*.qrc
-!*.qm
 qrc_*.cpp
 
 !blocks

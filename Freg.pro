@@ -130,6 +130,7 @@ DISTFILES += \
     texts/splash.txt \
     recipes/*.json \
     help_*/* \
+    freg_ru.qm \
     debian/c* \
     debian/rules \
     debian/usr/share/doc/freg/copyright \
