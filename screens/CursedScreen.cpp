@@ -132,7 +132,7 @@ int Screen::Color(const int kind, const int sub) const {
     switch ( kind ) { // foreground_background
     case LIQUID: switch ( sub ) {
         case WATER:     return COLOR_PAIR(CYAN_BLUE);
-        case SUB_CLOUD: return COLOR_PAIR(WHITE_WHITE);
+        case SUB_CLOUD: return COLOR_PAIR(BLACK_WHITE);
         default:        return COLOR_PAIR(RED_YELLOW);
         } // no break);
     case FALLING: switch ( sub ) {
@@ -163,6 +163,7 @@ int Screen::Color(const int kind, const int sub) const {
         case FIRE:       return COLOR_PAIR(    RED_YELLOW) | A_BLINK;
         case EXPLOSIVE:  return COLOR_PAIR(  WHITE_RED   );
         case DIAMOND:    return COLOR_PAIR(   CYAN_WHITE ) | A_BOLD;
+        case ADAMANTINE: return COLOR_PAIR(   CYAN_BLACK );
         case SKY:
         case STAR:
             if ( w->GetEvernight() ) return COLOR_PAIR(BLACK_BLACK);

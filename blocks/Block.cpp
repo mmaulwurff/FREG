@@ -22,6 +22,49 @@
 #include "World.h"
 #include "Inventory.h"
 
+QString Block::SubName(const int sub) {
+    switch ( static_cast<subs>(sub) ) {
+    case STONE:
+    case MOSS_STONE: return QObject::tr("moss stone");
+    case NULLSTONE:  return QObject::tr("nullstone");
+    case SKY:
+    case STAR:       return QObject::tr("air");
+    case DIAMOND:    return QObject::tr("diamond");
+    case SOIL:       return QObject::tr("soil");
+    case H_MEAT:     return QObject::tr("meat of rational");
+    case A_MEAT:     return QObject::tr("meat");
+    case GLASS:      return QObject::tr("glass");
+    case WOOD:       return QObject::tr("wood");
+    case DIFFERENT:  return QObject::tr("different");
+    case IRON:       return QObject::tr("iron");
+    case WATER:      return QObject::tr("water");
+    case GREENERY:   return QObject::tr("greenery");
+    case SAND:       return QObject::tr("sand");
+    case HAZELNUT:   return QObject::tr("hazelnut");
+    case ROSE:       return QObject::tr("rose");
+    case CLAY:       return QObject::tr("clay");
+    case AIR:        return QObject::tr("air");
+    case PAPER:      return QObject::tr("paper");
+    case GOLD:       return QObject::tr("gold");
+    case BONE:       return QObject::tr("bone");
+    case STEEL:      return QObject::tr("steel");
+    case ADAMANTINE: return QObject::tr("adamantine");
+    case FIRE:       return QObject::tr("fire");
+    case COAL:       return QObject::tr("coal");
+    case EXPLOSIVE:  return QObject::tr("explosive");
+    case ACID:       return QObject::tr("acid");
+    case SUB_CLOUD:  return QObject::tr("cloud");
+    case SUB_DUST:   return QObject::tr("dust");
+    case LAST_SUB: Q_UNREACHABLE(); return "";
+    }
+}
+
+QString Block::SubNameUpper(const int sub) {
+    QString result = SubName(sub);
+    result.replace(0, 1, result.at(0).toUpper());
+    return result;
+}
+
 dirs Block::MakeDirFromDamage(const int dmg_kind) {
     Q_ASSERT(dmg_kind >= DAMAGE_PUSH_UP);
     return static_cast<dirs>(dmg_kind - DAMAGE_PUSH_UP);
@@ -29,29 +72,14 @@ dirs Block::MakeDirFromDamage(const int dmg_kind) {
 
 QString Block::FullName() const {
     switch ( Sub() ) {
-    case STAR:
-    case SKY:
-    case AIR:        return QObject::tr("Air");
-    case STONE:      return QObject::tr("Stone");
-    case SOIL:       return QObject::tr("Soil");
-    case WATER:      return QObject::tr("Ice");
-    case MOSS_STONE: return QObject::tr("Moss stone");
-    case NULLSTONE:  return QObject::tr("Nullstone");
-    case GLASS:      return QObject::tr("Glass");
-    case HAZELNUT:   return QObject::tr("Hazelnut");
-    case WOOD:       return QObject::tr("Wood");
-    case GREENERY:   return QObject::tr("Leaves");
-    case ROSE:       return QObject::tr("Rose");
-    case A_MEAT:     return QObject::tr("Animal meat");
-    case H_MEAT:     return QObject::tr("Not animal meat");
-    case IRON:       return QObject::tr("Iron block");
-    case SAND:       return QObject::tr("Sandstone");
-    case CLAY:       return QObject::tr("Clay brick");
-    case GOLD:       return QObject::tr("Block of gold");
-    case COAL:       return QObject::tr("Block of coal");
-    case ACID:       return QObject::tr("Acid concentrate");
-    default: fprintf(stderr, "%s: sub ?: %d.\n", Q_FUNC_INFO, Sub());
-        return "Unknown block";
+    default:    return SubNameUpper(Sub());
+    case WATER: return QObject::tr("Ice");
+    case SAND:  return QObject::tr("Sandstone");
+    case CLAY:  return QObject::tr("Clay brick");
+    case ACID:  return QObject::tr("Acid concentrate");
+    case IRON:
+    case GOLD:
+    case COAL:  return QObject::tr("Block (%1)").arg(SubName(Sub()));
     }
 }
 

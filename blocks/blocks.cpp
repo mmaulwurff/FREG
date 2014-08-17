@@ -32,9 +32,7 @@
         case IRON:  return QObject::tr("Iron plate");
         case MOSS_STONE:
         case STONE: return QObject::tr("Stone slab");
-        default:
-            fprintf(stderr, "%s: unlisted sub: %d.\n", Q_FUNC_INFO, Sub());
-            return "Strange plate";
+        default:    return QObject::tr("Plate (%1)").arg(SubName(Sub()));
         }
     }
 
@@ -44,13 +42,11 @@
 // Ladder::
     QString Ladder::FullName() const {
         switch ( Sub() ) {
-        case WOOD:  return QObject::tr("Ladder");
+        case WOOD:     return QObject::tr("Ladder");
         case MOSS_STONE:
-        case STONE: return QObject::tr("Rock with ledges");
+        case STONE:    return QObject::tr("Rock with ledges");
         case GREENERY: return QObject::tr("Liana");
-        default:
-            fprintf(stderr, "%s: unlisted sub: %d\n", Q_FUNC_INFO, Sub());
-            return "Strange ladder";
+        default:       return QObject::tr("Ladder (%1)").arg(SubName(Sub()));
     }
     }
 
@@ -119,13 +115,8 @@
 
     QString Liquid::FullName() const {
         switch ( Sub() ) {
-        case WATER: return tr("Water");
         case STONE: return tr("Lava");
-        case ACID:  return tr("Acid");
-        case SUB_CLOUD: return tr("Cloud");
-        default:
-            fprintf(stderr, "%s: sub (?): %d\n", Q_FUNC_INFO, Sub());
-            return "Unknown liquid";
+        default:    return SubNameUpper(Sub());
         }
     }
 
@@ -182,9 +173,7 @@
         switch ( Sub() ) {
         case GREENERY: return tr("Grass");
         case FIRE:     return tr("Fire");
-        default:
-            fprintf(stderr, "%s: sub (?): %d\n", Q_FUNC_INFO, Sub());
-            return "Unknown plant";
+        default:       return tr("Plant (%1)").arg(Sub());
         }
     }
 
@@ -330,17 +319,9 @@
     push_reaction Door::PushResult(dirs) const { return movable; }
 
     QString Door::FullName() const {
-        QString sub_string;
-        switch ( Sub() ) {
-        case WOOD:  sub_string = tr(" of wood");  break;
-        case MOSS_STONE:
-        case STONE: sub_string = tr(" of stone"); break;
-        case GLASS: sub_string = tr(" of glass"); break;
-        case IRON:  sub_string = tr(" of iron");  break;
-        default:    sub_string = " of something";
-            fprintf(stderr, "%s: unlisted sub: %d\n", Q_FUNC_INFO, Sub());
-        }
-        return locked ? tr("Locked door") : tr("Door") + sub_string;
+        return QString("%1 (%2)").
+            arg(locked ? tr("Locked door") : tr("Door")).
+            arg(SubName(Sub()));
     }
 
     usage_types Door::Use(Block *) {
@@ -387,11 +368,8 @@
 
     QString Clock::FullName() const {
         switch ( Sub() ) {
-        case IRON:      return tr("Iron clock");
         case EXPLOSIVE: return tr("Bomb");
-        default:
-            fprintf(stderr, "%s: unlisted sub: %d\n", Q_FUNC_INFO, Sub());
-            return "Strange clock";
+        default:        return tr("Clock (%1)").arg(SubName(Sub()));
         }
     }
 
@@ -496,9 +474,7 @@
         switch ( Sub() ) {
         case PAPER: return QObject::tr("Paper page");
         case GLASS: return QObject::tr("Screen");
-        default:
-            fprintf(stderr, "%s: sub ?: %d\n", Q_FUNC_INFO, Sub());
-            return "Strange text";
+        default:    return QObject::tr("Sign (%1)").arg(SubName(Sub()));
         }
     }
 
@@ -612,7 +588,9 @@
         Break();
     }
 
-    QString Bell::FullName() const { return tr("Bell"); }
+    QString Bell::FullName() const {
+        return tr("Bell (%1)").arg(SubName(Sub()));
+    }
 
     usage_types Bell::Use(Block *) {
         SendSignalAround(tr("^ Ding! ^"));
@@ -641,7 +619,9 @@
     int  Telegraph::ShouldAct() const { return FREQUENT_RARE; }
     void Telegraph::ReceiveSignal(const QString str) { Inscribe(str); }
     void Telegraph::Damage(int, int) { Break(); }
-    QString Telegraph::FullName() const { return tr("Telegraph"); }
+    QString Telegraph::FullName() const {
+        return tr("Telegraph (%1)").arg(SubName(Sub()));
+    }
 
     bool Telegraph::Inscribe(const QString str) {
         isReceiver = false;

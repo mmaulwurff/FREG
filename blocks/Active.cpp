@@ -44,9 +44,11 @@ void Active::DoRareAction() {
 }
 
 void Active::ActRare() {
-    DoRareAction();
     Inventory * const inv = HasInventory();
-    if ( inv == nullptr ) return;
+    if ( inv == nullptr ) {
+        DoRareAction();
+        return;
+    } // else:
     for (int i=inv->Size()-1; i; --i) {
         const int number = inv->Number(i);
         if ( number == 0 ) continue;
@@ -62,6 +64,7 @@ void Active::ActRare() {
             }
         }
     }
+    DoRareAction();
 }
 
 void Active::Unregister() {
@@ -235,13 +238,9 @@ void Falling::SaveAttributes(QDataStream & out) const {
 
 QString Falling::FullName() const {
     switch ( Sub() ) {
-    case SAND:  return tr("Sand");
+    default:    return SubNameUpper(Sub());
     case WATER: return tr("Snow");
     case STONE: return tr("Masonry");
-    case SUB_DUST: return tr("Dust");
-    default:
-        fprintf(stderr, "%s: Unlisted sub: %d.\n", Q_FUNC_INFO, Sub());
-        return "Unkown active block";
     }
 }
 

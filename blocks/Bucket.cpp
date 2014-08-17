@@ -41,9 +41,10 @@ QString Bucket::FullName() const {
     case GLASS: name = QObject::tr("Bottle"); break;
     }
     return ( GetInvSub(0) == AIR ) ?
-        QObject::tr("Empty bucket") :
-        QObject::tr("%1 with %2 (%3/%4 full)")
+        QObject::tr("Empty bucket (%1)").arg(SubName(Sub())) :
+        QObject::tr("%1 (%2) with %3 (%4/%5 full)")
             .arg(name)
+            .arg(SubName(Sub()))
             .arg(ShowBlock(0)->FullName().toLower())
             .arg(Number(0))
             .arg(MAX_STACK_SIZE);
@@ -66,5 +67,5 @@ void Bucket::SaveAttributes(QDataStream & out) const {
 }
 
 int Bucket::Weight() const {
-    return Block::Weight()/6+Inventory::Weight();
+    return Block::Weight()/6 + Inventory::Weight();
 }

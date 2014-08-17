@@ -141,6 +141,11 @@ public:
     /// Importart! Use it if block won't be deleted after SaveToFile.
     void RestoreDurabilityAfterSave();
 
+    /// Returns translated substance name.
+    static QString SubName(int sub);
+    /// Returns translated substance name with first upper letter.
+    static QString SubNameUpper(int sub);
+
 protected:
     virtual void SaveAttributes(QDataStream &) const;
     /// To convert DAMAGE_PUSH_UP...WEST to corresponding direction.
