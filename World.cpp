@@ -720,14 +720,14 @@ World::World(const QString world_name, bool * error) :
     game_settings.setValue("number_of_shreds", numShreds);
     game_settings.setValue("number_of_active_shreds", numActiveShreds);
 
-    if ( not QDir(home_path).mkpath(worldName) ) {
+    if ( not QDir(home_path).mkpath(worldName + "/texts") ) {
         *error = true;
     }
 
     shredStorage = new ShredStorage(numShreds+2, longitude, latitude);
     puts(qPrintable(tr("Loading world...")));
 
-    QFile notes_file(worldName + "/notes.txt");
+    QFile notes_file(home_path + worldName + "/notes.txt");
     if ( notes_file.open(QIODevice::ReadOnly | QIODevice::Text) ) {
         char note[MAX_NOTE_LENGTH*2];
         while ( notes_file.readLine(note, MAX_NOTE_LENGTH*2) > 0 ) {
@@ -735,7 +735,6 @@ World::World(const QString world_name, bool * error) :
         }
     }
     LoadAllShreds();
-
     emit UpdatedAll();
 }
 
@@ -754,7 +753,7 @@ World::~World() {
     settings.setValue("latitude", qlonglong(latitude));
     settings.setValue("evernight", evernight); // save if not present
 
-    QFile notes_file(worldName + "/notes.txt");
+    QFile notes_file(home_path + worldName + "/notes.txt");
     if ( notes_file.open(QIODevice::WriteOnly | QIODevice::Text) ) {
         for (int i=0; i<notes.size(); ++i) {
             notes_file.write(qPrintable(notes.at(i)));

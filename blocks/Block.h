@@ -92,6 +92,7 @@ public:
     virtual void Move(dirs direction);
     virtual void Damage(int dmg, int dmg_kind);
     virtual usage_types Use(Block * who);
+    virtual usage_types UseOnShredMove(Block * who);
     virtual push_reaction PushResult(dirs) const;
     /// Should return dropped block.
     /** It can be pile(CONTAINER, DIFFERENT) containing all dropped blocks, or

@@ -29,7 +29,6 @@
     QString Plate::FullName() const {
         switch ( Sub() ) {
         case WOOD:  return QObject::tr("Wooden board");
-        case IRON:  return QObject::tr("Iron plate");
         case MOSS_STONE:
         case STONE: return QObject::tr("Stone slab");
         default:    return QObject::tr("Plate (%1)").arg(SubName(Sub()));
@@ -42,7 +41,6 @@
 // Ladder::
     QString Ladder::FullName() const {
         switch ( Sub() ) {
-        case WOOD:     return QObject::tr("Ladder");
         case MOSS_STONE:
         case STONE:    return QObject::tr("Rock with ledges");
         case GREENERY: return QObject::tr("Liana");
@@ -78,13 +76,12 @@
         case SUB_CLOUD: return;
         case ACID:
         case STONE: DamageAround(); // no break;
-        default:
-            switch ( qrand()%20 ) {
+        default: switch ( qrand() % 20 ) {
             case 0: GetWorld()->Move(X(), Y(), Z(), NORTH); break;
-            case 1: GetWorld()->Move(X(), Y(), Z(), EAST ); break;
-            case 2: GetWorld()->Move(X(), Y(), Z(), SOUTH); break;
+            case 1: GetWorld()->Move(X(), Y(), Z(), SOUTH); break;
+            case 2: GetWorld()->Move(X(), Y(), Z(), EAST ); break;
             case 3: GetWorld()->Move(X(), Y(), Z(), WEST ); break;
-            }
+            } break;
         }
     }
 
@@ -173,7 +170,7 @@
         switch ( Sub() ) {
         case GREENERY: return tr("Grass");
         case FIRE:     return tr("Fire");
-        default:       return tr("Plant (%1)").arg(Sub());
+        default:       return tr("Plant (%1)").arg(SubName(Sub()));
         }
     }
 
@@ -273,6 +270,7 @@
     }
 
     QString Rabbit::FullName() const { return tr("Herbivore"); }
+
     void Rabbit::ActFrequent() {
         if ( Gravitate(2, 1, 2, 4) ) {
             if ( qrand()%2 ) {
@@ -497,66 +495,65 @@
     }
 
 // Map::
-    QString Map::FullName() const { return QObject::tr("Map"); }
+    QString     Map::FullName() const { return QObject::tr("Map"); }
+    usage_types Map::UseOnShredMove(Block * const who) { return Use(who); }
+
+    void Map::Damage(int, int dmg_kind) {
+        if ( dmg_kind >= DAMAGE_PUSH_UP ) {
+            Use(nullptr);
+        } else {
+            Break();
+        }
+    }
 
     usage_types Map::Use(Block * const who) {
         if ( noteId == 0 ) {
             who->ReceiveSignal(QObject::tr("Set title to this map first."));
             return USAGE_TYPE_NO;
-        } else if ( who && who->ActiveBlock() ) {
-            const Active * const active = who->ActiveBlock();
-            QFile map_file(active->GetWorld()->
-                WorldName() + "/texts/" + GetNote() + ".txt");
-            if ( not map_file.open(QIODevice::ReadWrite | QIODevice::Text) ) {
-                return USAGE_TYPE_READ;
-            }
-            const Shred * const shred = active->GetShred();
-            const long  lati = shred->Latitude();
-            const long longi = shred->Longitude();
-            const int FILE_SIZE_CHARS = 31;
-            if ( 0 == map_file.size() ) { // new map
-                char header[FILE_SIZE_CHARS+1];
-                memset(header, '-', FILE_SIZE_CHARS);
-                header[0] = header[FILE_SIZE_CHARS/2] =
-                    header[FILE_SIZE_CHARS-1] = '+';
-                char body[FILE_SIZE_CHARS+1];
-                memset(body, ' ', FILE_SIZE_CHARS);
-                body[0] = body[FILE_SIZE_CHARS-1] = '|';
-                body[FILE_SIZE_CHARS] = header[FILE_SIZE_CHARS] = '\n';
-                map_file.write(header, FILE_SIZE_CHARS+1);
-                for (int i=0; i<FILE_SIZE_CHARS-2; ++i) {
-                    map_file.write(body,FILE_SIZE_CHARS+1);
-                }
-                map_file.write(header, FILE_SIZE_CHARS+1);
-
-                map_file.seek( FILE_SIZE_CHARS/2 * (FILE_SIZE_CHARS+1) );
-                map_file.putChar('+');
-                map_file.seek(FILE_SIZE_CHARS/2*
-                    (FILE_SIZE_CHARS+1)+FILE_SIZE_CHARS-1);
-                map_file.putChar('+');
-
-                longiStart = longi;
-                latiStart  = lati;
-            }
-            if ( ( qAbs(lati-latiStart) > FILE_SIZE_CHARS/2 )
-                    || ( qAbs(longi-longiStart) > FILE_SIZE_CHARS/2 ) )
-            {
-                return USAGE_TYPE_READ;
-            }
-            if ( savedChar ) {
-                map_file.seek(savedShift);
-                map_file.putChar(savedChar);
-            }
-            map_file.seek(savedShift=(FILE_SIZE_CHARS+1)*
-                (longi-longiStart+FILE_SIZE_CHARS/2)+
-                 lati -latiStart +FILE_SIZE_CHARS/2);
-            map_file.putChar('@');
-            savedChar=active->GetWorld()->GetMap()->TypeOfShred(longi, lati);
-            map_file.seek((FILE_SIZE_CHARS+1)*FILE_SIZE_CHARS-1);
-            map_file.write("\n @ = ");
-            map_file.putChar(savedChar);
-            map_file.putChar('\n');
+        } // else:
+        if ( who == nullptr ) return USAGE_TYPE_READ;
+        const Active * const active = who->ActiveBlock();
+        if ( active == nullptr ) return USAGE_TYPE_READ;
+        QFile map_file(home_path + active->GetWorld()->WorldName()
+            + "/texts/" + GetNote());
+        if ( not map_file.open(QIODevice::ReadWrite | QIODevice::Text) ) {
+            return USAGE_TYPE_READ;
         }
+        const long  lati = active->GetShred()->Latitude();
+        const long longi = active->GetShred()->Longitude();
+        const int FILE_SIZE_CHARS = 31 + 1;
+        if ( 0 == map_file.size() ) { // new map
+            const char header[FILE_SIZE_CHARS+1] =
+                "+-----------------------------+\n";
+            const char   body[FILE_SIZE_CHARS+1] =
+                "|                             |\n";
+            map_file.write(header, FILE_SIZE_CHARS);
+            for (int i=0; i<FILE_SIZE_CHARS-3; ++i) {
+                map_file.write(body, FILE_SIZE_CHARS);
+            }
+            map_file.write(header, FILE_SIZE_CHARS);
+            longiStart = longi;
+            latiStart  = lati;
+        }
+        const int border_dist = (FILE_SIZE_CHARS - 1) / 2;
+        if (
+                ( qAbs(lati  - latiStart ) > border_dist ) ||
+                ( qAbs(longi - longiStart) > border_dist ) )
+        {
+            return USAGE_TYPE_READ;
+        }
+        if ( savedChar ) {
+            map_file.seek(savedShift);
+            map_file.putChar(savedChar);
+        }
+        map_file.seek( savedShift = FILE_SIZE_CHARS *
+            (longi - longiStart + border_dist ) +
+             lati  - latiStart  + border_dist );
+        map_file.putChar('@');
+        savedChar = active->GetWorld()->GetMap()->TypeOfShred(longi, lati);
+        map_file.seek(FILE_SIZE_CHARS * (FILE_SIZE_CHARS - 1));
+        map_file.write(" @ = ");
+        map_file.putChar(savedChar);
         return USAGE_TYPE_READ;
     } // usage_types Map::Use(Block * who)
 

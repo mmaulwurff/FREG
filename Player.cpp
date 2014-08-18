@@ -241,7 +241,7 @@ usage_types Player::Use(const int num) {
         def_action->SetSetFire(x_targ, y_targ, z_targ);
         player->SetDeferredAction(def_action);
         } break;
-    default: locker.unlock(); Wield(num); break;
+    default: break;
     }
     return result;
 }
@@ -259,17 +259,20 @@ void Player::Obtain(const int src, const int dest, const int num) {
     int x, y, z;
     emit GetFocus(&x, &y, &z);
     world->Get(player, x, y, z, src, dest, num);
+    Inventory * const from = world->GetBlock(x, y, z)->HasInventory();
+    if ( from != nullptr && from->IsEmpty() ) {
+        usingType = USAGE_TYPE_NO;
+    }
     emit Updated();
 }
 
 void Player::Wield(const int from) {
     const QMutexLocker locker(world->GetLock());
-    if ( ValidBlock(from) ) {
+    Block * const block = ValidBlock(from);
+    if ( block != nullptr ) {
         Inventory * const inv = PlayerInventory();
-        const int start = (from >= inv->Start()) ? 0 : inv->Start();
-        Block * const block = inv->ShowBlock(from);
         inv->Pull(from);
-        inv->Get(block, start);
+        inv->Get(block, (from >= inv->Start()) ? 0 : inv->Start());
         emit Updated();
     }
 }

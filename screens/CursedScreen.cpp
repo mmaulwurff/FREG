@@ -390,7 +390,7 @@ void Screen::Print() {
             break;
         case USAGE_TYPE_READ_IN_INVENTORY:
             wstandend(rightWin);
-            PrintFile(rightWin, QString(w->WorldName() + "/texts/"
+            PrintFile(rightWin, QString(home_path + w->WorldName() + "/texts/"
                 + player->PlayerInventory()->ShowBlock(
                     player->GetUsingInInventory())->GetNote()));
             player->SetUsingTypeNo();
@@ -399,8 +399,8 @@ void Screen::Print() {
                 int x, y, z;
                 ActionXyz(&x, &y, &z);
                 wstandend(rightWin);
-                PrintFile(rightWin, QString(w->WorldName() + "/texts/"
-                    + w->GetBlock(x, y, z)->GetNote()));
+                PrintFile(rightWin, QString(home_path + w->WorldName()
+                    + "/texts/" + w->GetBlock(x, y, z)->GetNote()));
                 player->SetUsingTypeNo();
             } break;
         case USAGE_TYPE_OPEN: {
@@ -434,8 +434,6 @@ void Screen::PrintHUD() {
             PrintBar(16, COLOR_PAIR(BLUE_BLACK), ascii ? 'o' : 0x00b0, breath);
         }
         switch ( player->SatiationPercent()/25 ) { // satiation status
-        case  1:
-        case  2:
         default: break;
         case  0:
             wcolor_set(hudWin, RED_BLACK, nullptr);

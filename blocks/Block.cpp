@@ -25,7 +25,7 @@
 QString Block::SubName(const int sub) {
     switch ( static_cast<subs>(sub) ) {
     case STONE:
-    case MOSS_STONE: return QObject::tr("moss stone");
+    case MOSS_STONE: return QObject::tr("stone");
     case NULLSTONE:  return QObject::tr("nullstone");
     case SKY:
     case STAR:       return QObject::tr("air");
@@ -194,6 +194,7 @@ int  Block::DamageLevel() const { return 1; }
 int  Block::LightRadius() const { return 0; }
 void Block::ReceiveSignal(QString) {}
 usage_types Block::Use(Block *) { return USAGE_TYPE_NO; }
+usage_types Block::UseOnShredMove(Block *) { return USAGE_TYPE_NO; }
 
 bool Block::Inscribe(const QString str) {
     if ( Sub() == AIR ) return false;
@@ -260,11 +261,10 @@ bool Block::operator!=(const Block & block) const { return !(*this == block); }
 
 bool Block::operator==(const Block & block) const {
     return ( block.Kind() == Kind()
-        && block.Sub() == Sub()
+        && block.Sub()    == Sub()
         && block.GetDurability() == GetDurability()
-        && block.GetDir() == GetDir()
-        && ( (block.noteId == 0 && noteId == 0)
-            || world->GetNote(block.noteId) == world->GetNote(noteId) ) );
+        && block.GetDir()        == GetDir()
+        && block.GetNote()       == GetNote() );
 }
 
 void Block::SaveAttributes(QDataStream &) const {}
