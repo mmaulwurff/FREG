@@ -718,7 +718,7 @@ const {
     }
     wstandend(window);
     mvwprintw(window, 2+inv->Size()+shift, 40,
-        qPrintable(tr("All weight: %1 mz").
+        qPrintable(tr("Full weight: %1 mz").
             arg(inv->Weight(), 6, 10, QChar(' '))));
     wattrset(window, Color(block->Kind(), block->Sub()));
     box(window, 0, 0);

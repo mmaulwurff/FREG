@@ -70,6 +70,7 @@ public:
     bool GetAll(Inventory * from) override;
     int Start() const override;
     QString FullName() const override;
+    QString InvFullName(int slot_number) const override;
 
 private:
     void Craft();
@@ -87,6 +88,7 @@ public:
     void DoRareAction() override;
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
+    QString InvFullName(int slot_number) const override;
 
 protected:
     void SaveAttributes(QDataStream &) const override;

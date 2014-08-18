@@ -120,6 +120,8 @@ SOURCES += \
     blocks/Animal.cpp \
     screens/IThread.cpp
 
+INCLUDEPATH += .
+
 TRANSLATIONS = \
     freg_ru.ts
 

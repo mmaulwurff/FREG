@@ -57,7 +57,7 @@ void Active::ActRare() {
         for (int j=0; j<number; ++j) {
             Active * const active = inv->ShowBlockInSlot(i, j)->ActiveBlock();
             if ( active->ActInner() == INNER_ACTION_MESSAGE ) {
-                ReceiveSignal( tr("%1 in slot '%2' changed: %3").
+                ReceiveSignal( tr("%1 in slot '%2': %3").
                     arg(inv->InvFullName(i)).
                     arg(char('a'+i)).
                     arg(inv->ShowBlockInSlot(i, j)->GetNote()) );
