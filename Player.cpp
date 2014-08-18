@@ -129,7 +129,7 @@ void Player::Examine() const {
             arg(block==block_manager.Normal(block->Sub())).
             arg(block->GetDir()));
     }
-    if ( IsLikeAir(block->Sub()) ) return;
+    if ( Shred::IsLikeAir(block->Sub()) ) return;
     const QString str = block->GetNote();
     if ( not str.isEmpty() ) {
         emit Notify(tr("Inscription: ") + str);
@@ -241,7 +241,7 @@ usage_types Player::Use(const int num) {
         def_action->SetSetFire(x_targ, y_targ, z_targ);
         player->SetDeferredAction(def_action);
         } break;
-    default: locker.unlock(); Wield(num); break;
+    default: break;
     }
     return result;
 }
@@ -259,17 +259,20 @@ void Player::Obtain(const int src, const int dest, const int num) {
     int x, y, z;
     emit GetFocus(&x, &y, &z);
     world->Get(player, x, y, z, src, dest, num);
+    Inventory * const from = world->GetBlock(x, y, z)->HasInventory();
+    if ( from != nullptr && from->IsEmpty() ) {
+        usingType = USAGE_TYPE_NO;
+    }
     emit Updated();
 }
 
 void Player::Wield(const int from) {
     const QMutexLocker locker(world->GetLock());
-    if ( ValidBlock(from) ) {
+    Block * const block = ValidBlock(from);
+    if ( block != nullptr ) {
         Inventory * const inv = PlayerInventory();
-        const int start = (from >= inv->Start()) ? 0 : inv->Start();
-        Block * const block = inv->ShowBlock(from);
         inv->Pull(from);
-        inv->Get(block, start);
+        inv->Get(block, (from >= inv->Start()) ? 0 : inv->Start());
         emit Updated();
     }
 }
@@ -322,17 +325,13 @@ bool Player::ForbiddenAdminCommands() const {
     }
 }
 
-constexpr quint64 Player::UniqueIntFromString(const char * const chars) {
-    return chars[0] == '\0' ?
-        0 : (UniqueIntFromString(chars + 1) << 5) | (chars[0]-'a');
-}
-
 void Player::ProcessCommand(QString command) {
     QTextStream comm_stream(&command);
     QByteArray request;
     comm_stream >> request;
     const QMutexLocker locker(world->GetLock());
     switch ( UniqueIntFromString(request.constData()) ) {
+    case UniqueIntFromString(""): break;
     case UniqueIntFromString("give"):
     case UniqueIntFromString("get" ): {
         if ( ForbiddenAdminCommands() ) return;
@@ -385,7 +384,7 @@ void Player::ProcessCommand(QString command) {
         if ( request.isEmpty() ) {
             request = "help";
         }
-        emit ShowFile( QString("help_%1/%2.md")
+        emit ShowFile( QString(":/help_%1/%2.md")
             .arg(locale.left(2)).arg(QString(request)) );
         break;
     default:
@@ -481,7 +480,8 @@ void Player::SetPlayer(const int _x, const int _y, const int _z) {
 }
 
 Player::Player() :
-        settings(world->WorldName() + "/settings.ini", QSettings::IniFormat),
+        settings(home_path + world->WorldName() + "/settings.ini",
+            QSettings::IniFormat),
         homeLongi(settings.value("home_longitude",
             qlonglong(world->GetMap()->GetSpawnLongitude())).toLongLong()),
         homeLati (settings.value("home_latitude",

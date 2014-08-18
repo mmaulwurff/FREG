@@ -82,7 +82,7 @@ const QByteArray BlockManager::subs[] = { // do not usp space, use '_'
     "nullstone",
     "sky",
     "star",
-    "sun_or_moon",
+    "diamond",
     "soil",
     "meat_of_intellectual",
     "animal_meat",

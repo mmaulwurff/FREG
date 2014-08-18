@@ -30,7 +30,7 @@ void VirtScreen::DeathScreen() {}
 VirtScreen::VirtScreen(World * const world_, Player * const player_) :
         w(world_),
         player(player_),
-        settings("freg.ini", QSettings::IniFormat),
+        settings(home_path + "freg.ini", QSettings::IniFormat),
         previousCommand(settings.value("last_command", "moo").toString())
 {
     connect(     w, SIGNAL(Notify(QString)), SLOT(Notify(QString)),
@@ -128,7 +128,6 @@ char VirtScreen::CharName(const int kind, const int sub) const {
         case COAL:  return '*';
         case STAR:  return '.';
         case SKY:
-        case SUN_MOON:
         case AIR:   return ' ';
         }
     }

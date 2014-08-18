@@ -15,7 +15,7 @@ CONFIG += debug
 #CONFIG += clang
 #CONFIG += g++-old
 
-VERSION = 0.2
+VERSION = 0.3
 VERSTR = '\\"$${VERSION}\\"'
 DEFINES += VER=\"$${VERSTR}\"
 TEMPLATE = app
@@ -106,7 +106,6 @@ SOURCES += \
     worldmap.cpp \
     ShredStorage.cpp \
     Xyz.cpp \
-    Global.cpp \
     blocks/blocks.cpp \
     blocks/Active.cpp \
     blocks/Dwarf.cpp \
@@ -124,13 +123,22 @@ SOURCES += \
 TRANSLATIONS = \
     freg_ru.ts
 
+RESOURCES = resources.qrc
+
 DISTFILES += \
-    texts/*.txt \
-    recipes/* \
+    texts/death.txt \
+    texts/splash.txt \
+    recipes/*.json \
     help_*/* \
+    freg_ru.qm \
+    debian/c* \
+    debian/rules \
+    debian/usr/share/doc/freg/copyright \
+    debian/source/format \
+    debian/source/include-binaries \
     fregMap.vim \
-    COPYING \
-    README
+    *.md
 
 MOC_DIR = moc
 OBJECTS_DIR = obj
+QMAKE_CLEAN += -r moc obj

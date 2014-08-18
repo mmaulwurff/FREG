@@ -37,6 +37,8 @@ const bool DEBUG = false;
 const bool DEBUG = true;
 #endif
 
+extern const QString home_path;
+
 const int SHRED_WIDTH = 16;
 const int HEIGHT = 128;
 
@@ -162,7 +164,7 @@ enum subs {
     NULLSTONE,  ///<   2
     SKY,        ///<   3
     STAR,       ///<   4
-    SUN_MOON,   ///<   5 // can be reused
+    DIAMOND,    ///<   5
     SOIL,       ///<   6
     H_MEAT,     ///<   7 (hominid meat)
     A_MEAT,     ///<   8 (animal meat)

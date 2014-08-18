@@ -27,12 +27,9 @@
         switch ( Sub() ) {
         case STONE: return QObject::tr("Pebble");
         case IRON:  return QObject::tr("Spike");
-        case WOOD:  return QObject::tr("Stick");
         case BONE:  return QObject::tr("Bone");
         case SKY:   return QObject::tr("Air");
-        default:
-            fprintf(stderr, "Weapon::FullName: unlisted sub: %d\n", Sub());
-            return "Some weapon";
+        default:    return QObject::tr("Stick (%1)").arg(SubName(Sub()));
         }
     }
 
@@ -94,14 +91,7 @@
     }
 
     QString Pick::FullName() const {
-        switch ( Sub() ) {
-        case IRON:  return QObject::tr("Iron pick");
-        case STEEL: return QObject::tr("Steel pick");
-        case ADAMANTINE: return QObject::tr("Adamantine pick");
-        default:
-            fprintf(stderr, "Pick::FullName: unknown sub: %d\n", Sub());
-            return "Strange pick";
-        }
+        return QObject::tr("Pick (%1)").arg(SubName(Sub()));
     }
 
 // Shovel::
@@ -117,15 +107,7 @@
     }
 
     QString Shovel::FullName() const {
-        switch ( Sub() ) {
-        case BONE:  return QObject::tr("Bone shovel");
-        case IRON:  return QObject::tr("Iron shovel");
-        case STEEL: return QObject::tr("Steel shovel");
-        case ADAMANTINE: return QObject::tr("Adamantine shovel");
-        default:
-            fprintf(stderr, "Shovel::FullName: unknown sub: %d\n", Sub());
-            return "Strange shovel";
-        }
+        return QObject::tr("Shovel (%1)").arg(SubName(Sub()));
     }
 
 // Hammer::
@@ -141,16 +123,7 @@
     }
 
     QString Hammer::FullName() const {
-        switch ( Sub() ) {
-        case WOOD:  return QObject::tr("Club");
-        case STONE: return QObject::tr("Stone hammer");
-        case IRON:  return QObject::tr("Iron hammer");
-        case STEEL: return QObject::tr("Steel hammer");
-        case ADAMANTINE: return QObject::tr("Adamantine hammer");
-        default:
-            fprintf(stderr, "Hammer::FullName: unknown sub: %d\n", Sub());
-            return "Strange hammer";
-        }
+        return QObject::tr("Hammer (%1)").arg(SubName(Sub()));
     }
 
 // Axe::
@@ -166,14 +139,5 @@
     }
 
     QString Axe::FullName() const {
-        switch ( Sub() ) {
-        case BONE:  return QObject::tr("Bone axe");
-        case STONE: return QObject::tr("Stone axe");
-        case IRON:  return QObject::tr("Iron axe");
-        case STEEL:  return QObject::tr("Steel axe");
-        case ADAMANTINE: return QObject::tr("Adamantine axe");
-        default:
-            fprintf(stderr, "Axe::FullName: unknown sub: %d\n", Sub());
-            return "Strange axe";
-        }
+        return QObject::tr("Axe (%1)").arg(SubName(Sub()));
     }

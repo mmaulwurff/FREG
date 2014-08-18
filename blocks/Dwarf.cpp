@@ -99,11 +99,9 @@ void Dwarf::Move(const dirs dir) {
     Shred * const last_shred = GetShred();
     Falling::Move(dir);
     if ( last_shred != GetShred() ) {
-        for (int i=0; i<IN_LEFT; ++i) {
-            Block * const block = ShowBlock(i);
-            if ( block && block->Kind()==MAP ) {
-                block->Use(this);
-            }
+        for (int i=0; i<Size();    ++i)
+        for (int j=0; j<Number(i); ++j) {
+            ShowBlockInSlot(i, j)->UseOnShredMove(this);
         }
     }
 }

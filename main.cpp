@@ -26,6 +26,7 @@
 #include "World.h"
 #include "Player.h"
 #include "worldmap.h"
+#include "CraftManager.h"
 
 #ifdef CURSED_SCREEN
     #include "screens/CursedScreen.h"
@@ -42,35 +43,18 @@
     #endif
 #endif
 
-bool IsValidWorldName(const QString world_name) {
-    const QStringList invalid_world_names(QStringList()
-            << "blocks"
-            << "moc"
-            << "obj"
-            << "recipes"
-            << "texts");
-    if ( world_name.left(5)=="help_" ) {
-        printf("Invalid world name: %s.\n",
-            qPrintable(world_name));
-        return false;
-    }
-    for (auto i = invalid_world_names.constBegin();
-            i < invalid_world_names.constEnd(); ++i)
-    {
-        if ( *i == world_name ) {
-            printf("Invalid world name: %s.\n",
-                qPrintable(world_name));
-            return false;
-        }
-    }
-    return true;
-}
+const QString home_path = QDir::homePath() + "/.freg/";
 
 int main(int argc, char ** argv) {
     setlocale(LC_CTYPE, "C-UTF-8");
-    QDir::current().mkdir("texts");
-    QDir::current().mkdir("recipes");
-    (void)freopen("errors.txt", "wt", stderr);
+    if ( not QDir::home().mkpath(".freg") ) {
+        puts(qPrintable( QObject::tr("Error creating game home directory") ));
+        return EXIT_FAILURE;
+    }
+    if ( freopen(qPrintable(home_path + "err.txt"), "at", stderr)==nullptr ) {
+        puts(qPrintable( QObject::tr(
+            "Error opening errors.txt, writing errors to standard out.") ));
+    }
 
     Application freg(argc, argv);
     QCoreApplication::setOrganizationName("freg-team");
@@ -78,7 +62,7 @@ int main(int argc, char ** argv) {
     QCoreApplication::setApplicationVersion(VER);
 
     QTranslator translator;
-    translator.load(QString("freg_") + locale);
+    translator.load(QString(":/freg_") + locale);
     freg.installTranslator(&translator);
 
     // parse arguments
@@ -111,16 +95,17 @@ int main(int argc, char ** argv) {
     parser.process(freg);
 
     QSettings::setDefaultFormat(QSettings::IniFormat);
-    QSettings sett(QDir::currentPath()+"/freg.ini", QSettings::IniFormat);
-    const QString worldName =
-        ( parser.isSet(world_argument)
-            && IsValidWorldName(parser.value(world_argument)) ) ?
+    QSettings sett(home_path + ".freg/freg.ini", QSettings::IniFormat);
+    const QString worldName = parser.isSet(world_argument) ?
         parser.value(world_argument) :
         sett.value("current_world", "mu").toString();
     sett.setValue("current_world", worldName);
 
     if ( parser.isSet(generate) ) {
-        QDir::current().mkdir(worldName);
+        if ( not QDir(home_path).mkpath(worldName) ) {
+            puts(qPrintable(QObject::tr("Error generating world.")));
+            return EXIT_FAILURE;
+        }
         WorldMap::GenerateMap(
             worldName,
             parser.value(map_size).toUShort(),
@@ -130,8 +115,16 @@ int main(int argc, char ** argv) {
         return EXIT_SUCCESS;
     }
 
+    CraftManager craftManager;
+    craft_manager = &craftManager;
+
     qsrand(QTime::currentTime().msec());
-    World world(worldName);
+    bool world_error = false;
+    World world(worldName, &world_error);
+    if ( world_error ) {
+        puts(qPrintable(QObject::tr("Error loading world.")));
+        return EXIT_FAILURE;
+    }
     QLockFile lock_file(worldName + "/lock");
     if ( not lock_file.tryLock() ) {
         puts(qPrintable(

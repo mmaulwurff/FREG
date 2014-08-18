@@ -29,12 +29,9 @@
     QString Plate::FullName() const {
         switch ( Sub() ) {
         case WOOD:  return QObject::tr("Wooden board");
-        case IRON:  return QObject::tr("Iron plate");
         case MOSS_STONE:
         case STONE: return QObject::tr("Stone slab");
-        default:
-            fprintf(stderr, "%s: unlisted sub: %d.\n", Q_FUNC_INFO, Sub());
-            return "Strange plate";
+        default:    return QObject::tr("Plate (%1)").arg(SubName(Sub()));
         }
     }
 
@@ -44,13 +41,10 @@
 // Ladder::
     QString Ladder::FullName() const {
         switch ( Sub() ) {
-        case WOOD:  return QObject::tr("Ladder");
         case MOSS_STONE:
-        case STONE: return QObject::tr("Rock with ledges");
+        case STONE:    return QObject::tr("Rock with ledges");
         case GREENERY: return QObject::tr("Liana");
-        default:
-            fprintf(stderr, "%s: unlisted sub: %d\n", Q_FUNC_INFO, Sub());
-            return "Strange ladder";
+        default:       return QObject::tr("Ladder (%1)").arg(SubName(Sub()));
     }
     }
 
@@ -82,13 +76,12 @@
         case SUB_CLOUD: return;
         case ACID:
         case STONE: DamageAround(); // no break;
-        default:
-            switch ( qrand()%20 ) {
+        default: switch ( qrand() % 20 ) {
             case 0: GetWorld()->Move(X(), Y(), Z(), NORTH); break;
-            case 1: GetWorld()->Move(X(), Y(), Z(), EAST ); break;
-            case 2: GetWorld()->Move(X(), Y(), Z(), SOUTH); break;
+            case 1: GetWorld()->Move(X(), Y(), Z(), SOUTH); break;
+            case 2: GetWorld()->Move(X(), Y(), Z(), EAST ); break;
             case 3: GetWorld()->Move(X(), Y(), Z(), WEST ); break;
-            }
+            } break;
         }
     }
 
@@ -119,13 +112,8 @@
 
     QString Liquid::FullName() const {
         switch ( Sub() ) {
-        case WATER: return tr("Water");
         case STONE: return tr("Lava");
-        case ACID:  return tr("Acid");
-        case SUB_CLOUD: return tr("Cloud");
-        default:
-            fprintf(stderr, "%s: sub (?): %d\n", Q_FUNC_INFO, Sub());
-            return "Unknown liquid";
+        default:    return SubNameUpper(Sub());
         }
     }
 
@@ -182,9 +170,7 @@
         switch ( Sub() ) {
         case GREENERY: return tr("Grass");
         case FIRE:     return tr("Fire");
-        default:
-            fprintf(stderr, "%s: sub (?): %d\n", Q_FUNC_INFO, Sub());
-            return "Unknown plant";
+        default:       return tr("Plant (%1)").arg(SubName(Sub()));
         }
     }
 
@@ -284,6 +270,7 @@
     }
 
     QString Rabbit::FullName() const { return tr("Herbivore"); }
+
     void Rabbit::ActFrequent() {
         if ( Gravitate(2, 1, 2, 4) ) {
             if ( qrand()%2 ) {
@@ -330,17 +317,9 @@
     push_reaction Door::PushResult(dirs) const { return movable; }
 
     QString Door::FullName() const {
-        QString sub_string;
-        switch ( Sub() ) {
-        case WOOD:  sub_string = tr(" of wood");  break;
-        case MOSS_STONE:
-        case STONE: sub_string = tr(" of stone"); break;
-        case GLASS: sub_string = tr(" of glass"); break;
-        case IRON:  sub_string = tr(" of iron");  break;
-        default:    sub_string = " of something";
-            fprintf(stderr, "%s: unlisted sub: %d\n", Q_FUNC_INFO, Sub());
-        }
-        return locked ? tr("Locked door") : tr("Door") + sub_string;
+        return QString("%1 (%2)").
+            arg(locked ? tr("Locked door") : tr("Door")).
+            arg(SubName(Sub()));
     }
 
     usage_types Door::Use(Block *) {
@@ -387,11 +366,8 @@
 
     QString Clock::FullName() const {
         switch ( Sub() ) {
-        case IRON:      return tr("Iron clock");
         case EXPLOSIVE: return tr("Bomb");
-        default:
-            fprintf(stderr, "%s: unlisted sub: %d\n", Q_FUNC_INFO, Sub());
-            return "Strange clock";
+        default:        return tr("Clock (%1)").arg(SubName(Sub()));
         }
     }
 
@@ -496,9 +472,7 @@
         switch ( Sub() ) {
         case PAPER: return QObject::tr("Paper page");
         case GLASS: return QObject::tr("Screen");
-        default:
-            fprintf(stderr, "%s: sub ?: %d\n", Q_FUNC_INFO, Sub());
-            return "Strange text";
+        default:    return QObject::tr("Sign (%1)").arg(SubName(Sub()));
         }
     }
 
@@ -521,66 +495,65 @@
     }
 
 // Map::
-    QString Map::FullName() const { return QObject::tr("Map"); }
+    QString     Map::FullName() const { return QObject::tr("Map"); }
+    usage_types Map::UseOnShredMove(Block * const who) { return Use(who); }
+
+    void Map::Damage(int, int dmg_kind) {
+        if ( dmg_kind >= DAMAGE_PUSH_UP ) {
+            Use(nullptr);
+        } else {
+            Break();
+        }
+    }
 
     usage_types Map::Use(Block * const who) {
         if ( noteId == 0 ) {
             who->ReceiveSignal(QObject::tr("Set title to this map first."));
             return USAGE_TYPE_NO;
-        } else if ( who && who->ActiveBlock() ) {
-            const Active * const active = who->ActiveBlock();
-            QFile map_file(active->GetWorld()->
-                WorldName() + "/texts/" + GetNote() + ".txt");
-            if ( not map_file.open(QIODevice::ReadWrite | QIODevice::Text) ) {
-                return USAGE_TYPE_READ;
-            }
-            const Shred * const shred = active->GetShred();
-            const long  lati = shred->Latitude();
-            const long longi = shred->Longitude();
-            const int FILE_SIZE_CHARS = 31;
-            if ( 0 == map_file.size() ) { // new map
-                char header[FILE_SIZE_CHARS+1];
-                memset(header, '-', FILE_SIZE_CHARS);
-                header[0] = header[FILE_SIZE_CHARS/2] =
-                    header[FILE_SIZE_CHARS-1] = '+';
-                char body[FILE_SIZE_CHARS+1];
-                memset(body, ' ', FILE_SIZE_CHARS);
-                body[0] = body[FILE_SIZE_CHARS-1] = '|';
-                body[FILE_SIZE_CHARS] = header[FILE_SIZE_CHARS] = '\n';
-                map_file.write(header, FILE_SIZE_CHARS+1);
-                for (int i=0; i<FILE_SIZE_CHARS-2; ++i) {
-                    map_file.write(body,FILE_SIZE_CHARS+1);
-                }
-                map_file.write(header, FILE_SIZE_CHARS+1);
-
-                map_file.seek( FILE_SIZE_CHARS/2 * (FILE_SIZE_CHARS+1) );
-                map_file.putChar('+');
-                map_file.seek(FILE_SIZE_CHARS/2*
-                    (FILE_SIZE_CHARS+1)+FILE_SIZE_CHARS-1);
-                map_file.putChar('+');
-
-                longiStart = longi;
-                latiStart  = lati;
-            }
-            if ( ( qAbs(lati-latiStart) > FILE_SIZE_CHARS/2 )
-                    || ( qAbs(longi-longiStart) > FILE_SIZE_CHARS/2 ) )
-            {
-                return USAGE_TYPE_READ;
-            }
-            if ( savedChar ) {
-                map_file.seek(savedShift);
-                map_file.putChar(savedChar);
-            }
-            map_file.seek(savedShift=(FILE_SIZE_CHARS+1)*
-                (longi-longiStart+FILE_SIZE_CHARS/2)+
-                 lati -latiStart +FILE_SIZE_CHARS/2);
-            map_file.putChar('@');
-            savedChar=active->GetWorld()->GetMap()->TypeOfShred(longi, lati);
-            map_file.seek((FILE_SIZE_CHARS+1)*FILE_SIZE_CHARS-1);
-            map_file.write("\n @ = ");
-            map_file.putChar(savedChar);
-            map_file.putChar('\n');
+        } // else:
+        if ( who == nullptr ) return USAGE_TYPE_READ;
+        const Active * const active = who->ActiveBlock();
+        if ( active == nullptr ) return USAGE_TYPE_READ;
+        QFile map_file(home_path + active->GetWorld()->WorldName()
+            + "/texts/" + GetNote());
+        if ( not map_file.open(QIODevice::ReadWrite | QIODevice::Text) ) {
+            return USAGE_TYPE_READ;
         }
+        const long  lati = active->GetShred()->Latitude();
+        const long longi = active->GetShred()->Longitude();
+        const int FILE_SIZE_CHARS = 31 + 1;
+        if ( 0 == map_file.size() ) { // new map
+            const char header[FILE_SIZE_CHARS+1] =
+                "+-----------------------------+\n";
+            const char   body[FILE_SIZE_CHARS+1] =
+                "|                             |\n";
+            map_file.write(header, FILE_SIZE_CHARS);
+            for (int i=0; i<FILE_SIZE_CHARS-3; ++i) {
+                map_file.write(body, FILE_SIZE_CHARS);
+            }
+            map_file.write(header, FILE_SIZE_CHARS);
+            longiStart = longi;
+            latiStart  = lati;
+        }
+        const int border_dist = (FILE_SIZE_CHARS - 1) / 2;
+        if (
+                ( qAbs(lati  - latiStart ) > border_dist ) ||
+                ( qAbs(longi - longiStart) > border_dist ) )
+        {
+            return USAGE_TYPE_READ;
+        }
+        if ( savedChar ) {
+            map_file.seek(savedShift);
+            map_file.putChar(savedChar);
+        }
+        map_file.seek( savedShift = FILE_SIZE_CHARS *
+            (longi - longiStart + border_dist ) +
+             lati  - latiStart  + border_dist );
+        map_file.putChar('@');
+        savedChar = active->GetWorld()->GetMap()->TypeOfShred(longi, lati);
+        map_file.seek(FILE_SIZE_CHARS * (FILE_SIZE_CHARS - 1));
+        map_file.write(" @ = ");
+        map_file.putChar(savedChar);
         return USAGE_TYPE_READ;
     } // usage_types Map::Use(Block * who)
 
@@ -612,7 +585,9 @@
         Break();
     }
 
-    QString Bell::FullName() const { return tr("Bell"); }
+    QString Bell::FullName() const {
+        return tr("Bell (%1)").arg(SubName(Sub()));
+    }
 
     usage_types Bell::Use(Block *) {
         SendSignalAround(tr("^ Ding! ^"));
@@ -638,14 +613,12 @@
         str << isReceiver;
     }
 
-    QString Telegraph::FullName() const {
-        return isReceiver ?
-            tr("Receiver") : tr("Transmitter");
-    }
-
     int  Telegraph::ShouldAct() const { return FREQUENT_RARE; }
     void Telegraph::ReceiveSignal(const QString str) { Inscribe(str); }
     void Telegraph::Damage(int, int) { Break(); }
+    QString Telegraph::FullName() const {
+        return tr("Telegraph (%1)").arg(SubName(Sub()));
+    }
 
     bool Telegraph::Inscribe(const QString str) {
         isReceiver = false;

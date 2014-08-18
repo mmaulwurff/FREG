@@ -35,34 +35,19 @@ const int TRESHOLD = 10;
     int Armour::DamageLevel() const { return 0; }
 
     QString Armour::FullName() const {
-        switch ( Sub() ) {
-        case IRON:  return QObject::tr("Iron body armour");
-        case STEEL: return QObject::tr("Steel body armour");
-        default: fprintf(stderr, "%s: sub (?) %d.\n", Q_FUNC_INFO, Sub());
-             return "Unknown armour";
-        }
+        return QObject::tr("Body armour (%1)").arg(SubName(Sub()));
     }
 
 // Helmet section
     int Helmet::Wearable() const { return WEARABLE_HEAD; }
 
     QString Helmet::FullName() const {
-        switch ( Sub() ) {
-        case IRON:  return QObject::tr("Iron helmet");
-        case STEEL: return QObject::tr("Steel helmet");
-        default: fprintf(stderr, "%s: sub (?) %d.\n", Q_FUNC_INFO, Sub());
-             return "Unknown helmet";
-        }
+        return QObject::tr("Helmet (%1)").arg(SubName(Sub()));
     }
 
 // Boots section
     int Boots::Wearable() const { return WEARABLE_LEGS; }
 
     QString Boots::FullName() const {
-        switch ( Sub() ) {
-        case IRON:  return QObject::tr("Iron boots");
-        case STEEL: return QObject::tr("Steel boots");
-        default: fprintf(stderr, "%s: sub (?) %d.\n", Q_FUNC_INFO, Sub());
-             return "Unknown boots";
-        }
+        return QObject::tr("Boots (%1)").arg(SubName(Sub()));
     }

@@ -23,7 +23,7 @@
 #include "BlockManager.h"
 #include "CraftManager.h"
 
-CraftManager craft_manager;
+const CraftManager * craft_manager;
 
 // CraftItem section
 bool CraftItem::operator<(const CraftItem &item) const {
@@ -81,7 +81,7 @@ void CraftList::clear() {
 // CraftManager section
 CraftManager::CraftManager() : recipesList() {
     for (int sub=0; sub<LAST_SUB; ++sub) {
-        QFile file(QString("recipes/%1.json").
+        QFile file(QString(":/recipes/%1.json").
             arg(BlockManager::SubToString(sub)));
         if ( not file.open(QIODevice::ReadOnly | QIODevice::Text) ) continue;
         const QJsonArray recipes =

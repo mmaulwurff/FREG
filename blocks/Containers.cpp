@@ -107,15 +107,11 @@ const int CONVERTER_LIGHT_RADIUS = 2;
     QString Container::FullName() const {
         switch ( Sub() ) {
         case DIFFERENT: return tr("Pile");
-        case WOOD:      return tr("Wooden chest");
-        case STONE:     return tr("Stone chest");
         case IRON:      return tr("Locker");
         case WATER:     return tr("Fridge");
         case A_MEAT:
         case H_MEAT:    return tr("Corpse");
-        default:
-            fprintf(stderr, "%s: unlisted sub: %d\n", Q_FUNC_INFO, Sub());
-            return tr("Unknown container");
+        default:        return tr("Chest (%1)").arg(SubName(Sub()));
         }
     }
 
@@ -158,7 +154,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
                     {Number(i), ShowBlock(i)->Kind(), ShowBlock(i)->Sub()} );
             }
         }
-        if ( craft_manager.Craft(&list, Sub()) ) {
+        if ( craft_manager->Craft(&list, Sub()) ) {
             for (int i=0; i<list.size(); ++i) {
                 for (int n=0; n<list.at(i)->num; ++n) {
                     const CraftItem * const item = list.at(i);

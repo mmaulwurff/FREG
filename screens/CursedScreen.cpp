@@ -132,7 +132,7 @@ int Screen::Color(const int kind, const int sub) const {
     switch ( kind ) { // foreground_background
     case LIQUID: switch ( sub ) {
         case WATER:     return COLOR_PAIR(CYAN_BLUE);
-        case SUB_CLOUD: return COLOR_PAIR(WHITE_WHITE);
+        case SUB_CLOUD: return COLOR_PAIR(BLACK_WHITE);
         default:        return COLOR_PAIR(RED_YELLOW);
         } // no break);
     case FALLING: switch ( sub ) {
@@ -147,23 +147,23 @@ int Screen::Color(const int kind, const int sub) const {
         case HAZELNUT:
         case SOIL:       return COLOR_PAIR(  BLACK_YELLOW);
         case SAND:       return COLOR_PAIR(  WHITE_YELLOW);
-        case COAL:       return COLOR_PAIR(  BLACK_WHITE);
-        case IRON:       return COLOR_PAIR(  BLACK_BLACK) | A_BOLD;
-        case A_MEAT:     return COLOR_PAIR(  WHITE_RED);
-        case H_MEAT:     return COLOR_PAIR(  BLACK_RED);
-        case WATER:      return COLOR_PAIR(  WHITE_CYAN);
-        case GLASS:      return COLOR_PAIR(   BLUE_WHITE);
-        case NULLSTONE:  return COLOR_PAIR(MAGENTA_BLACK) | A_BOLD;
-        case MOSS_STONE: return COLOR_PAIR(  GREEN_WHITE);
-        case ROSE:       return COLOR_PAIR(    RED_GREEN);
-        case CLAY:       return COLOR_PAIR(  WHITE_RED);
-        case PAPER:      return COLOR_PAIR(MAGENTA_WHITE);
+        case COAL:       return COLOR_PAIR(  BLACK_WHITE );
+        case IRON:       return COLOR_PAIR(  BLACK_BLACK ) | A_BOLD;
+        case A_MEAT:     return COLOR_PAIR(  WHITE_RED   );
+        case H_MEAT:     return COLOR_PAIR(  BLACK_RED   );
+        case WATER:      return COLOR_PAIR(  WHITE_CYAN  );
+        case GLASS:      return COLOR_PAIR(   BLUE_WHITE );
+        case NULLSTONE:  return COLOR_PAIR(MAGENTA_BLACK ) | A_BOLD;
+        case MOSS_STONE: return COLOR_PAIR(  GREEN_WHITE );
+        case ROSE:       return COLOR_PAIR(    RED_GREEN );
+        case CLAY:       return COLOR_PAIR(  WHITE_RED   );
+        case PAPER:      return COLOR_PAIR(MAGENTA_WHITE );
         case GOLD:       return COLOR_PAIR(  WHITE_YELLOW);
-        case BONE:       return COLOR_PAIR(MAGENTA_WHITE);
+        case BONE:       return COLOR_PAIR(MAGENTA_WHITE );
         case FIRE:       return COLOR_PAIR(    RED_YELLOW) | A_BLINK;
-        case EXPLOSIVE:  return COLOR_PAIR(  WHITE_RED);
-        case SUN_MOON:   return COLOR_PAIR((TIME_NIGHT == w->PartOfDay() ) ?
-            WHITE_WHITE : YELLOW_YELLOW);
+        case EXPLOSIVE:  return COLOR_PAIR(  WHITE_RED   );
+        case DIAMOND:    return COLOR_PAIR(   CYAN_WHITE ) | A_BOLD;
+        case ADAMANTINE: return COLOR_PAIR(   CYAN_BLACK );
         case SKY:
         case STAR:
             if ( w->GetEvernight() ) return COLOR_PAIR(BLACK_BLACK);
@@ -178,7 +178,7 @@ int Screen::Color(const int kind, const int sub) const {
     case DWARF: return COLOR_PAIR((sub==ADAMANTINE) ? CYAN_BLACK : WHITE_BLUE);
     case RABBIT:    return COLOR_PAIR(  RED_WHITE);
     case PREDATOR:  return COLOR_PAIR(  RED_BLACK);
-    case TELEGRAPH: return COLOR_PAIR( BLUE_BLUE) | A_BOLD;
+    case TELEGRAPH: return COLOR_PAIR( BLUE_BLUE ) | A_BOLD;
     }
 } // color_pairs Screen::Color(int kind, int sub)
 
@@ -288,11 +288,11 @@ void Screen::ControlPlayer(const int ch) {
         if ( player->PlayerInventory() ) {
               player->PlayerInventory()->Shake();
         }
-    break;
+        break;
     case KEY_HELP:
     case 'H':
         DisplayFile(QString("help_%1/help.txt").arg(locale.left(2)));
-    break;
+        break;
     case 'R':
     case 'L': RePrint(); break;
 
@@ -308,19 +308,23 @@ void Screen::ControlPlayer(const int ch) {
 } // void Screen::ControlPlayer(int ch)
 
 void Screen::ProcessCommand(const QString command) {
-    if ( command.length()==1 && "."!=command ) {
+    if ( command.length()==1 && command.at(0)!='.' ) {
         ControlPlayer(command.at(0).toLatin1());
-    } else if ( "size" == command ) {
+        return;
+    }
+    switch ( Player::UniqueIntFromString(qPrintable(command)) ) {
+    case Player::UniqueIntFromString("size"):
         Notify(QString("Terminal height: %1 lines, width: %2 chars.").
             arg(LINES).arg(COLS));
-    } else if ( "moo" == command ) {
+        break;
+    case Player::UniqueIntFromString("moo"):
         Notify("^__^");
         Notify("(oo)\\_______");
         Notify("(__)\\       )\\/\\");
         Notify("    ||----w |");
         Notify("    ||     ||");
-    } else {
-        player->ProcessCommand(command);
+        break;
+    default: player->ProcessCommand(command); break;
     }
 }
 
@@ -386,7 +390,7 @@ void Screen::Print() {
             break;
         case USAGE_TYPE_READ_IN_INVENTORY:
             wstandend(rightWin);
-            PrintFile(rightWin, QString(w->WorldName() + "/texts/"
+            PrintFile(rightWin, QString(home_path + w->WorldName() + "/texts/"
                 + player->PlayerInventory()->ShowBlock(
                     player->GetUsingInInventory())->GetNote()));
             player->SetUsingTypeNo();
@@ -395,8 +399,8 @@ void Screen::Print() {
                 int x, y, z;
                 ActionXyz(&x, &y, &z);
                 wstandend(rightWin);
-                PrintFile(rightWin, QString(w->WorldName() + "/texts/"
-                    + w->GetBlock(x, y, z)->GetNote()));
+                PrintFile(rightWin, QString(home_path + w->WorldName()
+                    + "/texts/" + w->GetBlock(x, y, z)->GetNote()));
                 player->SetUsingTypeNo();
             } break;
         case USAGE_TYPE_OPEN: {
@@ -430,8 +434,6 @@ void Screen::PrintHUD() {
             PrintBar(16, COLOR_PAIR(BLUE_BLACK), ascii ? 'o' : 0x00b0, breath);
         }
         switch ( player->SatiationPercent()/25 ) { // satiation status
-        case  1:
-        case  2:
         default: break;
         case  0:
             wcolor_set(hudWin, RED_BLACK, nullptr);
@@ -451,7 +453,7 @@ void Screen::PrintHUD() {
     int x, y, z;
     ActionXyz(&x, &y, &z);
     Block * const focused = GetWorld()->GetBlock(x, y, z);
-    if ( not IsLikeAir(focused->Sub()) ) {
+    if ( not Shred::IsLikeAir(focused->Sub()) ) {
         const int left_border = (SCREEN_SIZE*2+2) * (IsScreenWide() ? 2 : 1);
         PrintBar(left_border - 15,
             Color(focused->Kind(), focused->Sub()),
@@ -751,10 +753,9 @@ bool Screen::PrintFile(WINDOW * const window, QString const & file_name) {
 
 void Screen::DisplayFile(QString path) {
     wstandend(rightWin);
-    Notify( PrintFile(rightWin, path) ?
-        tr("File path: %1/%2").arg(QDir::currentPath()).arg(path) :
-        tr("There is no such help file: %1/%2.")
-            .arg(QDir::currentPath()).arg(path) );
+    if ( not PrintFile(rightWin, path) ) {
+        Notify(tr("There is no such file."));
+    }
 }
 
 void Screen::Notify(const QString str) const {
@@ -784,7 +785,7 @@ void Screen::DeathScreen() {
     werase(rightWin);
     werase(hudWin);
     wcolor_set(leftWin, WHITE_RED, nullptr);
-    if ( not PrintFile(leftWin, "texts/death.txt") ) {
+    if ( not PrintFile(leftWin, ":/texts/death.txt") ) {
         waddstr(leftWin, qPrintable(tr("You die.\nWaiting for respawn...")));
     }
     box(leftWin, 0, 0);
@@ -805,7 +806,7 @@ Screen::Screen(
         lastNotification(),
         input(new IThread(this)),
         updated(),
-        notifyLog(fopen("texts/messages.txt", "at")),
+        notifyLog(fopen(qPrintable(home_path + "log.txt"), "at")),
         actionMode(ACTION_USE),
         shiftFocus(settings.value("focus_shift", 0).toInt()),
         fileToShow(nullptr),
@@ -869,7 +870,7 @@ Screen::Screen(
     }
     scrollok(notifyWin, TRUE);
 
-    if ( not PrintFile(stdscr, "texts/splash.txt") ) {
+    if ( not PrintFile(stdscr, ":/texts/splash.txt") ) {
         addstr("Free-Roaming Elementary Game\nby mmaulwurff\n");
     }
     addstr(qPrintable(tr("\nVersion %1.\n\nPress any key.").arg(VER)));

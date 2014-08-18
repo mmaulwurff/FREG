@@ -92,6 +92,7 @@ public:
     virtual void Move(dirs direction);
     virtual void Damage(int dmg, int dmg_kind);
     virtual usage_types Use(Block * who);
+    virtual usage_types UseOnShredMove(Block * who);
     virtual push_reaction PushResult(dirs) const;
     /// Should return dropped block.
     /** It can be pile(CONTAINER, DIFFERENT) containing all dropped blocks, or
@@ -140,6 +141,11 @@ public:
     void SaveNormalToFile(QDataStream & out) const;
     /// Importart! Use it if block won't be deleted after SaveToFile.
     void RestoreDurabilityAfterSave();
+
+    /// Returns translated substance name.
+    static QString SubName(int sub);
+    /// Returns translated substance name with first upper letter.
+    static QString SubNameUpper(int sub);
 
 protected:
     virtual void SaveAttributes(QDataStream &) const;

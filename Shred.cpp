@@ -319,14 +319,11 @@ void Shred::SetNewBlock(const int kind, const int sub,
     SetBlock(block, x, y, z);
 }
 
-QString Shred::FileName() const {
-    return FileName(GetWorld()->WorldName(), longitude, latitude);
-}
-
 QString Shred::FileName(const QString world_name,
         const long longi, const long lati)
 {
-    return QString("%1/y%2x%3").arg(world_name).arg(longi).arg(lati);
+    return QString("%1%2/y%3x%4").
+        arg(home_path).arg(world_name).arg(longi).arg(lati);
 }
 
 // shred generators section
@@ -531,7 +528,7 @@ void Shred::ChaosShred() {
     for (int k=1; k<HEIGHT/2; ++k) {
         int kind = qrand() % LAST_KIND;
         int sub  = qrand() % LAST_SUB;
-        if ( sub==AIR || sub==STAR || sub==SUN_MOON || sub==SKY ) {
+        if ( IsLikeAir(sub) ) {
             sub = STONE;
         }
         SetNewBlock(kind, sub, i, j, k);
@@ -616,3 +613,6 @@ void Shred::Rain(const int kind, const int sub) {
     }
 }
 
+bool Shred::IsLikeAir(const int sub) {
+    return ( sub==AIR || sub==SKY || sub==STAR );
+}

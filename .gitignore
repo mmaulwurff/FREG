@@ -7,9 +7,11 @@
 !*.h
 !*.ts
 !*.vim
-!*.sln
 !*.md
 !update_docs.sh
+!*.qrc
+!*.qm
+qrc_*.cpp
 
 !blocks
 blocks/*
@@ -26,11 +28,30 @@ help_*/*
 !help_*/*.md
 
 !recipes
+recipes/*
 !recipes/*json
 
 !texts
-!texts/*.md
+texts/*
+!texts/*.txt
 
 !html
 !html/*
 !html/search/*
+
+!debian
+!debian/*
+debian/*~
+!debian/usr
+debian/usr/*
+!debian/usr/share
+debian/usr/share/*
+!debian/usr/share/doc
+debian/usr/share/doc/*
+!debian/usr/share/doc/freg
+debian/usr/share/doc/freg/*
+!debian/usr/share/doc/freg/copyright
+!debian/source
+debian/source/*
+!debian/source/format
+!debian/source/include-binaries

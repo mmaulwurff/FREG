@@ -195,14 +195,16 @@ public:
     Map(int sub, int id);
     Map(QDataStream & str, int sub, int id);
 
+    void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
     usage_types Use(Block * who) override;
+    usage_types UseOnShredMove(Block * who) override;
 
 protected:
     void SaveAttributes(QDataStream & out) const override;
 
 private:
-    // coordinates map titled in. also ~center.
+    /// coordinates map titled in. also ~center.
     qint64 longiStart, latiStart;
     quint16 savedShift;
     qint8 savedChar;
@@ -218,7 +220,6 @@ public:
     usage_types Use(Block * who) override;
 };
 
-/// \todo add channels.
 class Telegraph : public Active {
     Q_OBJECT
 public:

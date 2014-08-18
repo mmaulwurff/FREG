@@ -200,7 +200,7 @@ bool Inventory::MiniCraft(const int num) {
     } // else:
     CraftItem * crafted =
         new CraftItem({Number(num), GetInvKind(num), GetInvSub(num)});
-    if ( craft_manager.MiniCraft(&crafted) ) {
+    if ( craft_manager->MiniCraft(&crafted) ) {
         while ( not inventory[num].isEmpty() ) {
             block_manager.DeleteBlock(ShowBlock(num));
             Pull(num);
@@ -213,7 +213,6 @@ bool Inventory::MiniCraft(const int num) {
         return true;
     } else {
         ReceiveSignal(QObject::tr("You don't know how to craft this."));
-        delete crafted;
         return false;
     }
 }

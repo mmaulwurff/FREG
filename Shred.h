@@ -97,6 +97,7 @@ public:
     void SetNewBlock(int kind, int sub, int x, int y, int z, int dir = UP);
     shred_type GetTypeOfShred() const;
 
+    static bool IsLikeAir(int sub);
     static QString FileName(QString world_name, long longi, long lati);
     Shred * GetShredMemory() const;
     /// Make global coordinate from local (in loaded zone).
@@ -120,8 +121,6 @@ private:
 
     bool LoadShred();
     void RegisterInit(Active *);
-
-    QString FileName() const;
 
     void NormalUnderground(int depth = 0, subs sub = SOIL);
     void CoverWith(int kind, int sub);

@@ -675,10 +675,10 @@ void World::SetNumActiveShreds(const int num) {
     emit Notify(tr("Active shreds number is %1x%1.").arg(numActiveShreds));
 }
 
-World::World(const QString world_name) :
+World::World(const QString world_name, bool * error) :
         worldName(world_name),
         map(world_name),
-        settings(worldName + "/settings.ini", QSettings::IniFormat),
+        settings(home_path + worldName +"/settings.ini", QSettings::IniFormat),
         time(settings.value("time", END_OF_NIGHT).toLongLong()),
         timeStep(settings.value("time_step", 0).toInt()),
         shreds(),
@@ -703,7 +703,7 @@ World::World(const QString world_name) :
         notes()
 {
     world = this;
-    QSettings game_settings("freg.ini", QSettings::IniFormat);
+    QSettings game_settings(home_path + "freg.ini", QSettings::IniFormat);
     numShreds=game_settings.value("number_of_shreds", MIN_WORLD_SIZE).toInt();
     if ( 1 != numShreds%2 ) {
         ++numShreds;
@@ -720,14 +720,14 @@ World::World(const QString world_name) :
     game_settings.setValue("number_of_shreds", numShreds);
     game_settings.setValue("number_of_active_shreds", numActiveShreds);
 
-    QDir::current().mkpath(worldName+"/texts");
-
-    settings.setValue("evernight", evernight); // save if not present
+    if ( not QDir(home_path).mkpath(worldName + "/texts") ) {
+        *error = true;
+    }
 
     shredStorage = new ShredStorage(numShreds+2, longitude, latitude);
     puts(qPrintable(tr("Loading world...")));
 
-    QFile notes_file(worldName + "/notes.txt");
+    QFile notes_file(home_path + worldName + "/notes.txt");
     if ( notes_file.open(QIODevice::ReadOnly | QIODevice::Text) ) {
         char note[MAX_NOTE_LENGTH*2];
         while ( notes_file.readLine(note, MAX_NOTE_LENGTH*2) > 0 ) {
@@ -735,7 +735,6 @@ World::World(const QString world_name) :
         }
     }
     LoadAllShreds();
-
     emit UpdatedAll();
 }
 
@@ -752,8 +751,9 @@ World::~World() {
     settings.setValue("time_step", timeStep);
     settings.setValue("longitude", qlonglong(longitude));
     settings.setValue("latitude", qlonglong(latitude));
+    settings.setValue("evernight", evernight); // save if not present
 
-    QFile notes_file(worldName + "/notes.txt");
+    QFile notes_file(home_path + worldName + "/notes.txt");
     if ( notes_file.open(QIODevice::WriteOnly | QIODevice::Text) ) {
         for (int i=0; i<notes.size(); ++i) {
             notes_file.write(qPrintable(notes.at(i)));

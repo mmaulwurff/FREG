@@ -125,7 +125,11 @@ public:
     void ProcessCommand(QString command);
 
     /// Turns low-case ASCII chars array (length <= 12) into unique quint64.
-    constexpr static quint64 UniqueIntFromString(const char *);
+    /// Can be used as switch statement for switch on strings.
+    constexpr static quint64 UniqueIntFromString(const char * const chars ) {
+        return chars[0] == '\0' ?
+            0 : (UniqueIntFromString(chars + 1) << 5) | (chars[0]-'a');
+    }
 
 signals:
     void Moved(long x, long y, int z) const;
