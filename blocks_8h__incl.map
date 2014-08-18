@@ -1,0 +1,8 @@
+<map id="blocks/blocks.h" name="blocks/blocks.h">
+<area shape="rect" id="node2" href="$Inventory_8h.html" title="Provides declaration for class Inventory for freg. " alt="" coords="5,80,92,107"/>
+<area shape="rect" id="node4" href="$Animal_8h.html" title="blocks/Animal.h" alt="" coords="117,80,231,107"/>
+<area shape="rect" id="node5" href="$Active_8h.html" title="blocks/Active.h" alt="" coords="118,155,230,181"/>
+<area shape="rect" id="node7" href="$Block_8h.html" title="Provides definition for class Block. " alt="" coords="141,229,207,256"/>
+<area shape="rect" id="node11" href="$Xyz_8h.html" title="Xyz.h" alt="" coords="231,229,287,256"/>
+<area shape="rect" id="node8" href="$header_8h.html" title="header.h" alt="" coords="138,304,210,331"/>
+</map>

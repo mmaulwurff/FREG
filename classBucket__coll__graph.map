@@ -1,0 +1,4 @@
+<map id="Bucket" name="Bucket">
+<area shape="rect" id="node2" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="5,5,60,32"/>
+<area shape="rect" id="node3" href="$classInventory.html" title="Provides block ability to contain other blocks inside. " alt="" coords="84,5,160,32"/>
+</map>

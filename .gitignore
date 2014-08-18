@@ -2,7 +2,6 @@
 !.gitignore
 !Freg.pro
 !Doxyfile
-!freg-logo.png
 !*.cpp
 !*.h
 !*.ts
@@ -11,6 +10,20 @@
 !update_docs.sh
 !*.qrc
 !*.qm
+!*.html
+!*.png
+!*.md5
+!*.map
+!*.css
+!*.js
+
+!search
+!search/*
+!javascripts
+!javascripts/*
+!stylesheets
+!stylesheets/*
+
 qrc_*.cpp
 
 !blocks
@@ -34,10 +47,6 @@ recipes/*
 !texts
 texts/*
 !texts/*.txt
-
-!html
-!html/*
-!html/search/*
 
 !debian
 !debian/*

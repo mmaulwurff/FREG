@@ -1,8 +1,0 @@
-<map id="screens/VirtScreen.h" name="screens/VirtScreen.h">
-<area shape="rect" id="node3" href="$CursedScreen_8h.html" title="Provides curses (text&#45;based graphics interface) screen for freg. " alt="" coords="12,89,177,122"/>
-<area shape="rect" id="node7" href="$IThread_8cpp.html" title="screens/IThread.cpp" alt="" coords="201,89,343,122"/>
-<area shape="rect" id="node9" href="$TextScreen_8h.html" title="Provides minimal text screen for freg. Not suitable for playing. Can be used for testing and porting ..." alt="" coords="367,89,516,122"/>
-<area shape="rect" id="node13" href="$VirtScreen_8cpp.html" title="This file provides definitions of code common to all freg screens. " alt="" coords="540,89,697,122"/>
-<area shape="rect" id="node5" href="$CursedScreen_8cpp.html" title="This file is related to curses screen for freg. " alt="" coords="5,171,184,205"/>
-<area shape="rect" id="node11" href="$TextScreen_8cpp.html" title="This file is related to text screen for freg. " alt="" coords="360,171,523,205"/>
-</map>

@@ -1,0 +1,6 @@
+<map id="Player.h" name="Player.h">
+<area shape="rect" id="node2" href="$main_8cpp.html" title="main.cpp" alt="" coords="5,80,80,107"/>
+<area shape="rect" id="node3" href="$Player_8cpp.html" title="Player.cpp" alt="" coords="105,80,189,107"/>
+<area shape="rect" id="node4" href="$CursedScreen_8cpp.html" title="This file is related to curses screen for freg. " alt="" coords="213,80,393,107"/>
+<area shape="rect" id="node5" href="$VirtScreen_8cpp.html" title="This file provides definitions of code common to all freg screens. " alt="" coords="417,80,575,107"/>
+</map>

@@ -1,0 +1,10 @@
+<map id="Inventory" name="Inventory">
+<area shape="rect" id="node2" href="$classBucket.html" title="Bucket" alt="" coords="5,80,68,107"/>
+<area shape="rect" id="node3" href="$classBush.html" title="Bush" alt="" coords="92,80,144,107"/>
+<area shape="rect" id="node4" href="$classContainer.html" title="Container is multi&#45;purpose container for blocks. " alt="" coords="168,80,247,107"/>
+<area shape="rect" id="node7" href="$classCreator.html" title="Creator" alt="" coords="271,80,336,107"/>
+<area shape="rect" id="node8" href="$classDwarf.html" title="Dwarf" alt="" coords="360,80,417,107"/>
+<area shape="rect" id="node9" href="$classRainMachine.html" title="RainMachine" alt="" coords="442,80,541,107"/>
+<area shape="rect" id="node5" href="$classConverter.html" title="Converter" alt="" coords="113,155,192,181"/>
+<area shape="rect" id="node6" href="$classWorkbench.html" title="Workbench allows craft from multiple sources. There can be up to 2 products. Also can be used as cont..." alt="" coords="217,155,305,181"/>
+</map>
