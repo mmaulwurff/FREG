@@ -22,7 +22,6 @@
 
 #include "VirtScreen.h"
 #include "Player.h"
-#include "World.h"
 
 void VirtScreen::UpdatesEnd() {}
 void VirtScreen::DeathScreen() {}

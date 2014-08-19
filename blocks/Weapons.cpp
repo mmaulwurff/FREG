@@ -37,24 +37,12 @@
     wearable Weapon::Wearable() const { return WEARABLE_OTHER; }
     push_reaction Weapon::PushResult(dirs) const { return DAMAGE; }
 
-    void Weapon::Damage(const int dmg, const int dmg_kind) {
-        if ( dmg_kind < DAMAGE_PUSH_UP ) {
-            Block::Damage(dmg, dmg_kind);
-            if ( GetDurability() < MAX_DURABILITY ) {
-                Break();
-            }
-        }
-    }
-
     int Weapon::DamageLevel() const {
         switch ( Sub() ) {
         case WOOD:  return 4;
         case IRON:  return 6;
         case STONE: return 5;
-        case SKY:   return MAX_DURABILITY;
-        default:
-            fprintf(stderr, "Weapon::DamageLevel: sub (?): %d\n.", Sub());
-            return 1;
+        default:    return 1;
         }
     }
 

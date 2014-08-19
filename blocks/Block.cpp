@@ -114,6 +114,7 @@ void Block::Damage(const int dmg, int dmg_kind) {
     case SKY: return;
     }
     switch ( dmg_kind ) {
+    case DAMAGE_ULTIMATE: durability = 0; return;
     case DAMAGE_NO: return;
     case DAMAGE_TIME: durability -= dmg; return;
     case DAMAGE_ACID:

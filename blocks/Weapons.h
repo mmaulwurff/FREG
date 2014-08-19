@@ -33,7 +33,6 @@ public:
     using Falling::Falling;
 
     int  DamageKind() const override;
-    void Damage(int dmg, int kind) override;
     int  DamageLevel() const override;
     int  Weight() const override;
     QString FullName() const override;

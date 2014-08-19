@@ -51,6 +51,7 @@ enum damage_kinds {
     DAMAGE_HANDS,   ///< 13
     DAMAGE_ACID,    ///< 14
     DAMAGE_RADIATION,
+    DAMAGE_ULTIMATE,
     DAMAGE_PUSH_UP,
     DAMAGE_PUSH_DOWN,
     DAMAGE_PUSH_NORTH,

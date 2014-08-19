@@ -26,7 +26,6 @@
 #include "header.h"
 #include "worldmap.h"
 
-class WorldMap;
 class Block;
 class Shred;
 class ShredStorage;
@@ -35,6 +34,12 @@ class QReadWriteLock;
 
 const int MOON_LIGHT_FACTOR = 1;
 const int  SUN_LIGHT_FACTOR = 8;
+const int MAX_LIGHT_RADIUS = 15;
+
+const int MAX_BREATH = 60;
+/// 10 bits to store durability in file, signed.
+const int MAX_DURABILITY = 1024;
+const int MAX_NOTE_LENGTH = 144;
 
 class World final : public QThread {
     /** \class World world.h
