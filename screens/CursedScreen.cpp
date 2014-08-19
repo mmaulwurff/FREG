@@ -179,6 +179,7 @@ int Screen::Color(const int kind, const int sub) const {
     case RABBIT:    return COLOR_PAIR(  RED_WHITE);
     case PREDATOR:  return COLOR_PAIR(  RED_BLACK);
     case TELEGRAPH: return COLOR_PAIR( BLUE_BLUE ) | A_BOLD;
+    case MEDKIT:    return COLOR_PAIR(  RED_WHITE);
     }
 } // color_pairs Screen::Color(int kind, int sub)
 

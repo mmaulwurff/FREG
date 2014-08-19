@@ -29,8 +29,9 @@ enum wearable {
     WEARABLE_NOWHERE,
     WEARABLE_HEAD,
     WEARABLE_BODY,
-    WEARABLE_LEGS
-}; // enum WEARABLE
+    WEARABLE_LEGS,
+    WEARABLE_OTHER
+};
 
 enum damage_kinds {
     // Put new damage kinds before DAMAGE_PUSH_UP.
@@ -56,18 +57,19 @@ enum damage_kinds {
     DAMAGE_PUSH_SOUTH,
     DAMAGE_PUSH_EAST,
     DAMAGE_PUSH_WEST
-}; // enum damage_kinds
+};
 
-// weights in measures - mz (mezuro)
-    const int WEIGHT_NULLSTONE = 1000;
-    const int WEIGHT_WATER     =  500;
-    const int WEIGHT_IRON      =  300;
-    const int WEIGHT_STONE     =  200;
-    const int WEIGHT_GLASS     =  150;
-    const int WEIGHT_SAND      =  100;
-    const int WEIGHT_GREENERY  =    3;
-    const int WEIGHT_MINIMAL   =    1;
-    const int WEIGHT_AIR       =    0;
+enum weights { ///< weights in measures - mz (mezuro)
+    WEIGHT_NULLSTONE = 1000,
+    WEIGHT_WATER     =  500,
+    WEIGHT_IRON      =  300,
+    WEIGHT_STONE     =  200,
+    WEIGHT_GLASS     =  150,
+    WEIGHT_SAND      =  100,
+    WEIGHT_GREENERY  =    3,
+    WEIGHT_MINIMAL   =    1,
+    WEIGHT_AIR       =    0,
+};
 
 class Inventory;
 class Active;
@@ -91,8 +93,8 @@ public:
     virtual bool Inscribe(QString str);
     virtual void Move(dirs direction);
     virtual void Damage(int dmg, int dmg_kind);
-    virtual usage_types Use(Block * who);
-    virtual usage_types UseOnShredMove(Block * who);
+    virtual usage_types Use(Block * user);
+    virtual usage_types UseOnShredMove(Block * user);
     virtual push_reaction PushResult(dirs) const;
     /// Should return dropped block.
     /** It can be pile(CONTAINER, DIFFERENT) containing all dropped blocks, or
@@ -106,7 +108,7 @@ public:
     virtual Active * ActiveBlock();
     virtual Falling * ShouldFall();
 
-    virtual int Wearable() const;
+    virtual wearable Wearable() const;
     virtual int DamageKind() const;
     virtual int DamageLevel() const;
 
@@ -121,8 +123,8 @@ public:
     void Restore();
     /// Set durability to null.
     void Break();
-    /// Increments durability, no more than MAX_DURABILITY.
-    void Mend();
+    /// Increase durability, no more than MAX_DURABILITY.
+    void Mend(int plus);
     void SetDir(int dir);
 
     dirs GetDir() const;

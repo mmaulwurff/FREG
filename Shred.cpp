@@ -293,8 +293,10 @@ void Shred::ReloadTo(const dirs direction) {
 void Shred::SetBlock(Block * block, const int x, const int y, const int z) {
     Block * const to_delete = GetBlock(x, y, z);
     if ( to_delete != block ) {
-        block_manager.DeleteBlock(to_delete);
-        block = block_manager.ReplaceWithNormal(block);
+        Active * const active = to_delete->ActiveBlock();
+        if ( active ) {
+            active->Unregister();
+        }
         SetBlockNoCheck(block, x, y, z);
     }
 }
@@ -395,7 +397,8 @@ void Shred::TestShred() {
             {ILLUMINATOR, WOOD}, {ILLUMINATOR, IRON}, {ILLUMINATOR, GLASS},
             {CONTAINER, IRON}, {CONTAINER, WATER}, {WEAPON, SKY},
             {LIQUID, SUB_CLOUD}, {RAIN_MACHINE, IRON}, {FALLING, SUB_DUST},
-            {BLOCK, ROSE}, {CONVERTER, STONE}, {TELEGRAPH, IRON}
+            {BLOCK, ROSE}, {CONVERTER, STONE}, {TELEGRAPH, IRON},
+            {MEDKIT, IRON}
         }, {
             {ARMOUR, STEEL}, {HELMET, STEEL}, {BOOTS, STEEL},
         }

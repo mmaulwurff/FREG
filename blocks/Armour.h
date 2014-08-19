@@ -26,23 +26,23 @@ class Armour : public Block {
 public:
     using Block::Block;
     void Damage(int dmg, int dmg_kind) override;
-    int  Wearable() const override;
     int  DamageLevel() const override;
     QString FullName() const override;
+    wearable Wearable() const override;
 }; // class Armour
 
 class Helmet : public Armour {
 public:
     using Armour::Armour;
-    int  Wearable() const override;
     QString FullName() const override;
+    wearable Wearable() const override;
 }; // class Helmet
 
 class Boots : public Armour {
 public:
     using Armour::Armour;
-    int  Wearable() const override;
     QString FullName() const override;
+    wearable Wearable() const override;
 }; // class Boots
 
 #endif // ARMOURS_H

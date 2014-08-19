@@ -23,30 +23,27 @@ const int TRESHOLD = 10;
 
 // Armour section
     void Armour::Damage(const int dmg, const int dmg_kind) {
-        if ( dmg_kind >= DAMAGE_PUSH_UP ) {
-            Break();
-        }
         if ( dmg > TRESHOLD ) {
             Block::Damage(dmg/((Kind() == ARMOUR) ? 4 : 2), dmg_kind);
         }
     }
 
-    int Armour::Wearable() const { return WEARABLE_BODY; }
     int Armour::DamageLevel() const { return 0; }
+    wearable Armour::Wearable() const { return WEARABLE_BODY; }
 
     QString Armour::FullName() const {
         return QObject::tr("Body armour (%1)").arg(SubName(Sub()));
     }
 
 // Helmet section
-    int Helmet::Wearable() const { return WEARABLE_HEAD; }
+    wearable Helmet::Wearable() const { return WEARABLE_HEAD; }
 
     QString Helmet::FullName() const {
         return QObject::tr("Helmet (%1)").arg(SubName(Sub()));
     }
 
 // Boots section
-    int Boots::Wearable() const { return WEARABLE_LEGS; }
+    wearable Boots::Wearable() const { return WEARABLE_LEGS; }
 
     QString Boots::FullName() const {
         return QObject::tr("Boots (%1)").arg(SubName(Sub()));

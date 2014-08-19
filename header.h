@@ -148,6 +148,7 @@ enum kinds {
     HELMET,       ///< 28
     BOOTS,        ///< 29
     TELEGRAPH,    ///< 30
+    MEDKIT,       ///< 31
     /// Nothing is LAST_KIND.
     LAST_KIND // keep it last in this list.
 }; // enum kinds

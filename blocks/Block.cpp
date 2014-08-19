@@ -188,11 +188,11 @@ push_reaction Block::PushResult(dirs) const {
 int  Block::GetId() const { return BlockManager::MakeId(Kind(), Sub()); }
 bool Block::Catchable() const { return false; }
 void Block::Move(dirs) {}
-int  Block::Wearable() const { return WEARABLE_NOWHERE; }
 int  Block::DamageKind() const { return DAMAGE_CRUSH; }
 int  Block::DamageLevel() const { return 1; }
 int  Block::LightRadius() const { return 0; }
 void Block::ReceiveSignal(QString) {}
+wearable Block::Wearable() const { return WEARABLE_NOWHERE; }
 usage_types Block::Use(Block *) { return USAGE_TYPE_NO; }
 usage_types Block::UseOnShredMove(Block *) { return USAGE_TYPE_NO; }
 
@@ -218,10 +218,8 @@ QString Block::GetNote() const {
     return (noteId == 0) ? QString() : world->GetNote(noteId);
 }
 
-void Block::Mend() {
-    if ( GetDurability() < MAX_DURABILITY ) {
-        ++durability;
-    }
+void Block::Mend(const int plus) {
+    durability = qMin(MAX_DURABILITY, durability+plus);
 }
 
 int Block::Weight() const {

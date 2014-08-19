@@ -223,7 +223,6 @@ usage_types Player::Use(const int num) {
     case USAGE_TYPE_READ:
         usingInInventory = num;
         usingType = USAGE_TYPE_READ_IN_INVENTORY;
-        emit Updated();
         break;
     case USAGE_TYPE_POUR: {
         int x_targ, y_targ, z_targ;
@@ -241,6 +240,7 @@ usage_types Player::Use(const int num) {
         } break;
     default: break;
     }
+    emit Updated();
     return result;
 }
 

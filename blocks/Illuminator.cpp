@@ -33,8 +33,6 @@ Illuminator::Illuminator(QDataStream & str, const int kind, const int sub) :
     str >> fuelLevel;
 }
 
-void Illuminator::Damage(int, int) { Break(); }
-
 int  Illuminator::DamageKind() const {
     return (Sub()==GLASS) ? DAMAGE_NO : DAMAGE_HEAT;
 }
@@ -43,10 +41,9 @@ QString Illuminator::FullName() const {
     switch ( Sub() ) {
     case WOOD:  return tr("Torch, fuel: %1"        ).arg(fuelLevel);
     case STONE: return tr("Flint, charges: %1"     ).arg(fuelLevel);
-    case IRON:  return tr("Lantern, fuel: %1"      ).arg(fuelLevel);
     case GLASS: return tr("Flashlight, battery: %1").arg(fuelLevel);
-    default: fprintf(stderr, "Illuminator::FullName: sub ?: %d\n", Sub());
-        return tr("Strange illuminator");
+    default:    return tr("Lantern (%1), fuel: %2" ).
+        arg(SubName(Sub())).arg(fuelLevel);
     }
 }
 
@@ -80,6 +77,7 @@ int Illuminator::LightRadius() const {
 
 int  Illuminator::ShouldAct() const { return FREQUENT_RARE; }
 void Illuminator::DoRareAction() { ActInner(); }
+wearable Illuminator::Wearable() const { return WEARABLE_OTHER; }
 
 inner_actions Illuminator::ActInner() {
     if ( fuelLevel == 0 ) {

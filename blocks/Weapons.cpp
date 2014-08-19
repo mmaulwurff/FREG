@@ -34,6 +34,7 @@
     }
 
     int  Weapon::Weight() const { return Block::Weight()/4; }
+    wearable Weapon::Wearable() const { return WEARABLE_OTHER; }
     push_reaction Weapon::PushResult(dirs) const { return DAMAGE; }
 
     void Weapon::Damage(const int dmg, const int dmg_kind) {
@@ -43,19 +44,6 @@
                 Break();
             }
         }
-    }
-
-    usage_types Weapon::Use(Block * const who) {
-        Shred * const shred = GetShred();
-        if ( shred != nullptr ) { // not currently in inventory
-            Inventory * const inv = who->HasInventory();
-            if ( inv != nullptr && inv->Get(this) ) {
-                Unregister();
-                shred->SetBlockNoCheck(block_manager.Normal(AIR),
-                    Shred::CoordInShred(X()), Shred::CoordInShred(Y()), Z());
-            }
-        }
-        return USAGE_TYPE_NO;
     }
 
     int Weapon::DamageLevel() const {

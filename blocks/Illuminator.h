@@ -33,9 +33,9 @@ public:
     int  ShouldAct() const override;
     int  DamageKind() const override;
     int  LightRadius() const override;
-    void Damage(int dmg, int dmg_kind) override;
     Block * DropAfterDamage(bool * delete_block) override;
     QString FullName() const override;
+    wearable Wearable() const override;
     usage_types Use(Block *) override;
     inner_actions ActInner() override;
 

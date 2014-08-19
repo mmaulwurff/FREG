@@ -375,8 +375,9 @@
         }
     }
 
-    int  Clock::ShouldAct() const  { return FREQUENT_RARE; }
-    int  Clock::Weight() const { return Block::Weight()/10; }
+    int Clock::ShouldAct() const  { return FREQUENT_RARE; }
+    int Clock::Weight() const { return Block::Weight()/10; }
+    wearable Clock::Wearable() const { return WEARABLE_OTHER; }
 
     inner_actions Clock::ActInner() {
         const int current_time = GetWorld()->TimeOfDay();
@@ -393,6 +394,7 @@
                 arg(GetWorld()->TimeOfDayStr()));
             ++notify_flag;
         }
+        if ( Sub()==EXPLOSIVE && notify_flag>1 ) return INNER_ACTION_EXPLODE;
         switch ( current_time ) {
         default: --notify_flag; break;
         case END_OF_NIGHT:   Inscribe(tr("Morning has come.")); break;
@@ -498,14 +500,9 @@
     }
 
 // Map::
+    wearable    Map::Wearable() const { return WEARABLE_OTHER; }
     QString     Map::FullName() const { return QObject::tr("Map"); }
-    usage_types Map::UseOnShredMove(Block * const who) { return Use(who); }
-
-    void Map::Damage(int, const int dmg_kind) {
-        if ( dmg_kind < DAMAGE_PUSH_UP ) {
-            Break();
-        }
-    }
+    usage_types Map::UseOnShredMove(Block * const user) { return Use(user); }
 
     usage_types Map::Use(Block * const who) {
         if ( noteId == 0 ) {
@@ -580,9 +577,11 @@
         str >> longiStart >> latiStart >> savedShift >> savedChar;
     }
 
-// Bell::
+// Bell:: section
+    wearable Bell::Wearable() const { return WEARABLE_OTHER; }
+
     void Bell::Damage(int, int) {
-        Use(nullptr);
+        SendSignalAround(tr("^ Ding-ding! ^"));
         Break();
     }
 
@@ -616,7 +615,8 @@
 
     int  Telegraph::ShouldAct() const { return FREQUENT_RARE; }
     void Telegraph::ReceiveSignal(const QString str) { Inscribe(str); }
-    void Telegraph::Damage(int, int) { Break(); }
+    wearable Telegraph::Wearable() const { return WEARABLE_OTHER; }
+
     QString Telegraph::FullName() const {
         return tr("Telegraph (%1)").arg(SubName(Sub()));
     }
@@ -644,4 +644,18 @@
             isReceiver    = true;
         }
         return INNER_ACTION_ONLY;
+    }
+
+// MedKit:: section
+    QString MedKit::FullName() const { return QObject::tr("MedKit"); }
+    wearable MedKit::Wearable() const { return WEARABLE_OTHER; }
+
+    usage_types MedKit::Use(Block * const user) {
+        if ( user && (user->Sub()==H_MEAT || user->Sub()==A_MEAT) ) {
+            if ( GetDurability() > MAX_DURABILITY/10 ) {
+                user->Mend(MAX_DURABILITY/10);
+                Damage(MAX_DURABILITY/10, DAMAGE_TIME);
+            }
+        }
+        return USAGE_TYPE_NO;
     }

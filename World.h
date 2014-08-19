@@ -148,7 +148,8 @@ public: // Interactions section
     bool Inscribe(int x, int y, int z);
 
 private: // Inventory functions section
-    void Exchange(Block * block_from, Block * block_to,
+    /// Returns true if block_from can be put into block_to.
+    bool Exchange(Block * block_from, Block * block_to,
             int src, int dest, int num);
 public:
     void Drop(Block * from, int x_to, int y_to, int z_to,

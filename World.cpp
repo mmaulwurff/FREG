@@ -77,16 +77,11 @@ void World::Drop(Block * const block_from,
         const int x_to, const int y_to, const int z_to,
         const int src, const int dest, const int num)
 {
-    Shred * const shred = GetShred(x_to, y_to);
-    const int x_in = Shred::CoordInShred(x_to);
-    const int y_in = Shred::CoordInShred(y_to);
-    Block * block_to = shred->GetBlock(x_in, y_in, z_to);
-    if ( ENVIRONMENT == block_to->PushResult(ANYWHERE) ) {
-        shred->SetBlock( (block_to=NewBlock(CONTAINER, DIFFERENT)),
-            x_in, y_in, z_to );
+    Block * const block_to = NewBlock(CONTAINER, DIFFERENT);
+    if ( not Build(block_to, x_to, y_to, z_to) ) {
+        delete block_to;
     }
-    Exchange(block_from, block_to, src, dest, num);
-    emit Updated(x_to, y_to, z_to);
+    Exchange(block_from, GetBlock(x_to, y_to, z_to), src, dest, num);
 }
 
 void World::Get(Block * const block_to,
@@ -95,25 +90,24 @@ void World::Get(Block * const block_to,
 {
     Block * const block_from = GetBlock(x_from, y_from, z_from);
     Inventory * const inv = block_from->HasInventory();
-    if ( inv == nullptr ) { // for vessel
+    if ( not inv ) { // for vessel
         if ( block_from->Kind() == LIQUID ) {
             Inventory * const inv_to = block_to->HasInventory();
-            if ( inv_to == nullptr ) return;
+            if ( not inv_to ) return;
             Block * const vessel = inv_to->ShowBlock(src);
-            if ( vessel == nullptr ) return;
+            if ( not vessel ) return;
             Inventory * const vessel_inv = vessel->HasInventory();
-            if ( vessel_inv == nullptr ) return;
+            if ( not vessel_inv ) return;
             Block * const tried = NewBlock(LIQUID, block_from->Sub());
             if ( vessel_inv->Get(tried, 0) ) {
-                Shred * const shred = GetShred(x_from, y_from);
-                const int x_in = Shred::CoordInShred(x_from);
-                const int y_in = Shred::CoordInShred(y_from);
-                shred->SetBlock(block_manager.Normal(AIR), x_in, y_in, z_from);
-                shred->AddFalling(shred->GetBlock(x_in, y_in, z_from+1));
-                emit Updated(x_from, y_from, z_from);
+                Build(block_manager.Normal(AIR), x_from, y_from, z_from, UP,
+                    nullptr, true);
             } else {
                 delete tried;
             }
+        } else if ( Exchange(block_from, block_to, src, dest, num) ) {
+            Build(block_manager.Normal(AIR), x_from, y_from, z_from, UP,
+                nullptr, true);
         }
     } else if ( inv->Access() ) {
         Exchange(block_from, block_to, src, dest, num);
@@ -547,7 +541,6 @@ void World::DestroyAndReplace(const int x, const int y, const int z) {
     if ( delete_block ) {
         block_manager.DeleteBlock(block);
     } else {
-        block->Restore();
         Active * const active = block->ActiveBlock();
         if ( active != nullptr ) {
             active->Unregister();
@@ -582,6 +575,7 @@ bool World::Build(Block * const block, const int x, const int y, const int z,
     if ( block_light ) {
         AddFireLight(x, y, z, block_light);
     }
+    shred->AddFalling(shred->GetBlock(x_in, y_in, z+1));
     return true;
 }
 
@@ -600,29 +594,33 @@ bool World::Inscribe(const int x, const int y, const int z) {
     return block->Inscribe(str);
 }
 
-void World::Exchange(Block * const block_from, Block * const block_to,
+bool World::Exchange(Block * const block_from, Block * const block_to,
         const int src, const int dest, const int num)
 {
+    Inventory * const inv_to = block_to->HasInventory();
+    if ( not inv_to ) {
+        block_from->ReceiveSignal(tr("No room there."));
+        return false;
+    }
     Inventory * const inv_from = block_from->HasInventory();
-    if ( inv_from == nullptr ) {
-        block_from->ReceiveSignal(tr("No inventory."));
-        return;
+    if ( not inv_from ) {
+        if ( block_from->Wearable() > WEARABLE_NOWHERE
+                && inv_to->Get(block_from) )
+        {
+            return true;
+        } else {
+            block_from->ReceiveSignal(tr("Nothing can be obtained."));
+            return false;
+        }
     }
     if ( inv_from->Number(src) == 0 ) {
-        const QString nothing_here = tr("Nothing here.");
-        block_from->ReceiveSignal(nothing_here);
-        block_to  ->ReceiveSignal(nothing_here);
-        return;
-    }
-    Inventory * const inv_to = block_to->HasInventory();
-    if ( inv_to == nullptr ) {
-        block_from->ReceiveSignal(tr("No room there."));
-        return;
-    }
-    if ( inv_from->Drop(src, dest, num, inv_to) ) {
+        block_from->ReceiveSignal(tr("Nothing here."));
+        block_to  ->ReceiveSignal(tr("Nothing here."));
+    } else if ( inv_from->Drop(src, dest, num, inv_to) ) {
         block_from->ReceiveSignal(tr("Your bag is lighter now."));
         block_to  ->ReceiveSignal(tr("Your bag is heavier now."));
     }
+    return false;
 }
 
 void World::LoadAllShreds() {
