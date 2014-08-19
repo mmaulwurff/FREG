@@ -63,7 +63,7 @@ void Player::SetCreativeMode(const bool creative_on) {
         inv->GetAll(prev_player->HasInventory());
     }
     if ( not creative_on ) {
-        delete prev_player;
+        block_manager.DeleteBlock(prev_player);
     }
     emit Updated();
 }
@@ -376,7 +376,9 @@ void Player::ProcessCommand(QString command) {
             .arg(DEBUG ? tr("debug") : tr("release"))
             .arg(COMPILER));
         break;
-    case UniqueIntFromString("warranty"): comm_stream <<  "warranty";
+    case UniqueIntFromString("warranty"):
+        comm_stream <<  "warranty";
+        // no break;
     case UniqueIntFromString("help"):
         comm_stream >> request;
         if ( request.isEmpty() ) {

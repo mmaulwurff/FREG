@@ -329,15 +329,7 @@ void World::PhysEvents() {
         switch ( TimeOfDay() ) {
         default: break;
         case END_OF_NIGHT:
-            emit Notify(tr("It's morning now."));
-            ReEnlightenTime();
-            break;
-        case END_OF_MORNING: emit Notify(tr("It's day now."));     break;
-        case END_OF_NOON:    emit Notify(tr("It's evening now.")); break;
-        case END_OF_EVENING:
-            emit Notify(tr("It's night now."));
-            ReEnlightenTime();
-            break;
+        case END_OF_EVENING: ReEnlightenTime(); break;
         }
     }
 

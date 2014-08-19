@@ -350,31 +350,27 @@
 
 // Clock::
     usage_types Clock::Use(Block * const who) {
-        const QString time_str = (GetNote() == "real") ?
-            tr("Time is %1.").arg(QTime::currentTime().toString()) :
-            GetWorld()->TimeOfDayStr();
         if ( who != nullptr ) {
-            const Active * const active = who->ActiveBlock();
-            if ( active != nullptr ) {
-                who->ReceiveSignal(time_str);
-            }
+            who->ReceiveSignal( (GetNote().left(4) == "real") ?
+                tr("Outer time is %1.").arg(QTime::currentTime().toString()) :
+                GetWorld()->TimeOfDayStr() );
         } else {
-            SendSignalAround(time_str);
+            SendSignalAround(GetNote());
         }
         return USAGE_TYPE_NO;
     }
 
     QString Clock::FullName() const {
-        switch ( Sub() ) {
-        case EXPLOSIVE: return tr("Bomb");
-        default:        return tr("Clock (%1)").arg(SubName(Sub()));
-        }
+        return ( Sub() == EXPLOSIVE ) ?
+            tr("Bomb") :
+            tr("Clock (%1)").arg(SubName(Sub()));
     }
 
-    void Clock::Damage(int, int dmg_kind) {
+    void Clock::Damage(int, const int dmg_kind) {
         if ( dmg_kind >= DAMAGE_PUSH_UP ) {
             Use(nullptr);
         } else {
+            alarmTime = timerTime = -1;
             Break();
         }
     }
@@ -382,41 +378,45 @@
     int  Clock::ShouldAct() const  { return FREQUENT_RARE; }
     int  Clock::Weight() const { return Block::Weight()/10; }
 
-    void Clock::DoRareAction() {
-        if ( alarmTime == GetWorld()->TimeOfDay()
-                || ActInner() == INNER_ACTION_MESSAGE )
-        {
-            Use(nullptr);
-        }
-    }
-
     inner_actions Clock::ActInner() {
-        if ( timerTime > 0 )  {
+        const int current_time = GetWorld()->TimeOfDay();
+        int notify_flag = 1;
+        if ( alarmTime == current_time ) {
+            Block::Inscribe(tr("Alarm. %1").arg(GetWorld()->TimeOfDayStr()));
+            ++notify_flag;
+        } else if ( timerTime > 0 )  {
             --timerTime;
-            Block::Inscribe(GetNote().setNum(timerTime));
+            Block::Inscribe(QString().setNum(timerTime));
         } else if ( timerTime == 0 ) {
-            Use(nullptr);
-            const QString message = tr("Timer fired. %1").
-                arg(GetWorld()->TimeOfDayStr());
             timerTime = -1;
-            Block::Inscribe(message);
-            SendSignalAround(message);
-            return INNER_ACTION_MESSAGE;
+            Block::Inscribe(tr("Timer fired. %1").
+                arg(GetWorld()->TimeOfDayStr()));
+            ++notify_flag;
         }
-        return INNER_ACTION_NONE;
+        switch ( current_time ) {
+        default: --notify_flag; break;
+        case END_OF_NIGHT:   Inscribe(tr("Morning has come.")); break;
+        case END_OF_MORNING: Inscribe(tr("Day has come."));     break;
+        case END_OF_NOON:    Inscribe(tr("Evening has come.")); break;
+        case END_OF_EVENING: Inscribe(tr("Night has come."));   break;
+        }
+        if ( notify_flag > 0 ) {
+            Use(nullptr);
+            return INNER_ACTION_MESSAGE;
+        } else {
+            return INNER_ACTION_ONLY;
+        }
     }
 
-    bool Clock::Inscribe(const QString str) {
+    bool Clock::Inscribe(QString str) {
         Block::Inscribe(str);
         char c;
-        QString note = GetNote();
-        QTextStream txt_stream(&note);
+        QTextStream txt_stream(&str);
         txt_stream >> c;
         switch ( c ) {
         case 'a': {
             int alarm_hour;
-            txt_stream >> alarm_hour;
-            txt_stream >> alarmTime;
+            txt_stream >> alarm_hour >> alarmTime;
             alarmTime += alarm_hour*60;
             timerTime = -1;
             } break;
@@ -426,8 +426,13 @@
             break;
         default:
             alarmTime = timerTime = -1;
+            break;
         }
         return true;
+    }
+
+    void Clock::SaveAttributes(QDataStream & str) const {
+        str << alarmTime << timerTime;
     }
 
     Clock::Clock(const int kind, const int sub) :
@@ -437,9 +442,7 @@
     Clock::Clock (QDataStream & str, const int kind, const int sub) :
             Active(str, kind, sub, NONSTANDARD)
     {
-        if ( noteId != 0 ) {
-            Inscribe(GetNote());
-        }
+        str >> alarmTime >> timerTime;
     }
 
 // Creator::
@@ -498,10 +501,8 @@
     QString     Map::FullName() const { return QObject::tr("Map"); }
     usage_types Map::UseOnShredMove(Block * const who) { return Use(who); }
 
-    void Map::Damage(int, int dmg_kind) {
-        if ( dmg_kind >= DAMAGE_PUSH_UP ) {
-            Use(nullptr);
-        } else {
+    void Map::Damage(int, const int dmg_kind) {
+        if ( dmg_kind < DAMAGE_PUSH_UP ) {
             Break();
         }
     }

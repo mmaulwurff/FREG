@@ -157,7 +157,7 @@ public:
     inner_actions ActInner() override;
 
 protected:
-    void DoRareAction() override;
+    void SaveAttributes(QDataStream &) const override;
 
 private:
     int alarmTime = -1;

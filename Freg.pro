@@ -143,4 +143,3 @@ DISTFILES += \
 
 MOC_DIR = moc
 OBJECTS_DIR = obj
-QMAKE_CLEAN += -r moc obj

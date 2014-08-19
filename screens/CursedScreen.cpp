@@ -461,8 +461,18 @@ void Screen::PrintHUD() {
             focused->GetDurability()*100/MAX_DURABILITY,
             false);
         const QString name = focused->FullName();
-        mvwaddstr(hudWin, 2, left_border-name.length(),
+        mvwaddstr(hudWin, 1, left_border-name.length(),
             qPrintable(focused->FullName()));
+        const QString note = focused->GetNote();
+        if ( not note.isEmpty() ) {
+            const int width = qMin(36, note.length() + 2);
+            (void)wmove(hudWin, 2, left_border - width);
+            if ( note.length()+2 <= width ) {
+                wprintw(hudWin, "~:%s", qPrintable(note));
+            } else {
+                wprintw(hudWin, "~:%s ...", qPrintable(note.left(width - 6)));
+            }
+        }
     }
     PrintQuickInventory();
     wrefresh(hudWin);
@@ -706,11 +716,11 @@ const {
         const QString str = block->GetNote();
         if ( not str.isEmpty() ) {
             const int x = getcurx(window);
-            const int width = SCREEN_SIZE*2+2 - x - 10;
-            if ( str.size() < width ) {
+            const int width = SCREEN_SIZE*2 - x - 3 - 8;
+            if ( str.length() <= width ) {
                 wprintw(window, " ~:%s", qPrintable(str));
             } else {
-                wprintw(window, " ~:%s...", qPrintable(str.left(width-6)));
+                wprintw(window, " ~:%s ...", qPrintable(str.left(width - 4)));
             }
         }
         wstandend(window);
