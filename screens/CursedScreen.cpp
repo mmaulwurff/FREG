@@ -125,13 +125,17 @@ char Screen::CharNumberFront(const int i, const int j) const {
             dist+'0' : ' ';
 }
 
+int Screen::RandomBlink() const {
+    return ( (random_blink >>= 1) & 1 ) ? 0 : A_REVERSE;
+}
+
 int Screen::Color(const int kind, const int sub) const {
     switch ( sub ) {
     case ACID: return COLOR_PAIR(GREEN_GREEN) | A_BOLD | A_REVERSE;
     }
     switch ( kind ) { // foreground_background
     case LIQUID: switch ( sub ) {
-        case WATER:     return COLOR_PAIR(CYAN_BLUE);
+        case WATER:     return COLOR_PAIR(CYAN_BLUE) | RandomBlink();
         case SUB_CLOUD: return COLOR_PAIR(BLACK_WHITE);
         default:        return COLOR_PAIR(RED_YELLOW);
         } // no break);
@@ -160,7 +164,6 @@ int Screen::Color(const int kind, const int sub) const {
         case PAPER:      return COLOR_PAIR(MAGENTA_WHITE );
         case GOLD:       return COLOR_PAIR(  WHITE_YELLOW);
         case BONE:       return COLOR_PAIR(MAGENTA_WHITE );
-        case FIRE:       return COLOR_PAIR(    RED_YELLOW) | A_BLINK;
         case EXPLOSIVE:  return COLOR_PAIR(  WHITE_RED   );
         case DIAMOND:    return COLOR_PAIR(   CYAN_WHITE ) | A_BOLD;
         case ADAMANTINE: return COLOR_PAIR(   CYAN_BLACK );
@@ -173,7 +176,8 @@ int Screen::Color(const int kind, const int sub) const {
             case TIME_NOON:    return COLOR_PAIR( CYAN_CYAN);
             case TIME_EVENING: return COLOR_PAIR(WHITE_CYAN);
             }
-        case SUB_DUST: return COLOR_PAIR(BLACK_BLACK) | A_BOLD | A_REVERSE;
+        case SUB_DUST: return COLOR_PAIR(BLACK_BLACK ) | A_BOLD | A_REVERSE;
+        case FIRE:     return COLOR_PAIR(  RED_YELLOW) |A_BLINK |RandomBlink();
         }
     case DWARF: return COLOR_PAIR((sub==ADAMANTINE) ? CYAN_BLACK : WHITE_BLUE);
     case RABBIT:    return COLOR_PAIR(  RED_WHITE);
@@ -537,6 +541,7 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
         ( SHRED_WIDTH-SCREEN_SIZE )/2;
     for (int j=start_y; j<SCREEN_SIZE+start_y; ++j, waddstr(window, "\n_"))
     for (int i=start_x; i<SCREEN_SIZE+start_x; ++i ) {
+        random_blink = qrand();
         Shred * const shred = w->GetShred(i, j);
         const int i_in = Shred::CoordInShred(i);
         const int j_in = Shred::CoordInShred(j);
@@ -639,6 +644,7 @@ void Screen::PrintFront(const dirs dir) const {
     (void)wmove(rightWin, 1, 1);
     for (int k=k_start; k>k_start-SCREEN_SIZE; --k, waddstr(rightWin, "\n_")) {
         for (*x=x_start; *x!=x_end; *x+=x_step) {
+            random_blink = qrand();
             for (*z=z_start; *z!=z_end && w->GetBlock(i, j, k)->
                         Transparent()==INVISIBLE;
                     *z += z_step);
@@ -828,7 +834,8 @@ Screen::Screen(
         arrowDown (ascii ? 'v' : 0x2193),
         arrowRight(ascii ? '>' : 0x2192),
         arrowLeft (ascii ? '<' : 0x2190),
-        screen(newterm(nullptr, stdout, stdin))
+        screen(newterm(nullptr, stdout, stdin)),
+        random_blink()
 {
     #ifndef Q_OS_WIN32
         set_escdelay(10);

@@ -120,9 +120,6 @@ Shred::Shred(const int shred_x, const int shred_y,
     switch ( type = static_cast<shred_type>
             (GetWorld()->GetMap()->TypeOfShred(longi, lati)) )
     {
-    default:
-        fprintf(stderr, "%s: type: %c, code %d?\n", Q_FUNC_INFO, type, type);
-        // no break;
     case SHRED_WASTE:     WasteShred(); break;
     case SHRED_WATER:     Water();      break;
     case SHRED_PLAIN:     Plain();      break;

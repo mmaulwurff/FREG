@@ -196,10 +196,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
     QString Workbench::FullName() const {
         switch ( Sub() ) {
         case WOOD: return tr("Workbench");
-        case IRON: return tr("Iron anvil");
-        default:
-            fprintf(stderr, "%s: sub (?): %d\n", Q_FUNC_INFO, Sub());
-            return "Strange workbench";
+        default:   return tr("Anvil (%1)").arg(SubName(Sub()));
         }
     }
 
