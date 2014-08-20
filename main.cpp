@@ -125,7 +125,7 @@ int main(int argc, char ** argv) {
         puts(qPrintable(QObject::tr("Error loading world.")));
         return EXIT_FAILURE;
     }
-    QLockFile lock_file(worldName + "/lock");
+    QLockFile lock_file(home_path + worldName + "/lock");
     if ( not lock_file.tryLock() ) {
         puts(qPrintable(
             QObject::tr("World \"%1\" is used by another instance of freg.")

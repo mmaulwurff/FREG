@@ -196,11 +196,13 @@ const int CONVERTER_LIGHT_RADIUS = 2;
     QString Workbench::FullName() const {
         switch ( Sub() ) {
         case WOOD: return tr("Workbench");
-        case IRON: return tr("Iron anvil");
-        default:
-            fprintf(stderr, "%s: sub (?): %d\n", Q_FUNC_INFO, Sub());
-            return "Strange workbench";
+        default:   return tr("Anvil (%1)").arg(SubName(Sub()));
         }
+    }
+
+    QString Workbench::InvFullName(const int slot_number) const {
+        return ( slot_number < Start() ) ?
+            tr("-product-") : tr("-material-");
     }
 
     int Workbench::Start() const { return 2; }
@@ -263,6 +265,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
 
     int Converter::ShouldAct() const { return FREQUENT_RARE; }
     int Converter::LightRadius() const { return lightRadius; }
+    QString Converter::InvFullName(int) const { return tr("-fuel-"); }
 
     int Converter::DamageKind() const {
         return (fuelLevel > 0) ? damageKindOn : 0;
@@ -309,7 +312,9 @@ const int CONVERTER_LIGHT_RADIUS = 2;
 
     void Converter::InitDamageKinds() {
         switch ( Sub() ) {
-        default: fprintf(stderr, "%s: unlisted sub.\n", Q_FUNC_INFO);
+        default:
+            fprintf(stderr, "%s: sub ?: %d.\n", Q_FUNC_INFO, Sub());
+            // no break;
         case STONE:
             damageKindOn  = DAMAGE_HEAT;
             damageKindOff = DAMAGE_FREEZE;

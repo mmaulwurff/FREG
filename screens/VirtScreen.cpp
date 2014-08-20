@@ -22,7 +22,6 @@
 
 #include "VirtScreen.h"
 #include "Player.h"
-#include "World.h"
 
 void VirtScreen::UpdatesEnd() {}
 void VirtScreen::DeathScreen() {}
@@ -110,6 +109,7 @@ char VirtScreen::CharName(const int kind, const int sub) const {
     case HELMET: return 'H';
     case BOOTS:  return 'B';
     case TELEGRAPH: return 't';
+    case MEDKIT:    return '+';
     case FALLING: switch ( sub ) {
         case SAND:  return '.';
         case WATER: return '*';

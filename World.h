@@ -26,15 +26,22 @@
 #include "header.h"
 #include "worldmap.h"
 
-class WorldMap;
 class Block;
 class Shred;
 class ShredStorage;
 class QByteArray;
 class QReadWriteLock;
 
+const int TIME_STEPS_IN_SEC = 10;
+
 const int MOON_LIGHT_FACTOR = 1;
 const int  SUN_LIGHT_FACTOR = 8;
+const int MAX_LIGHT_RADIUS = 15;
+
+const int MAX_BREATH = 60;
+/// 10 bits to store durability in file, signed.
+const int MAX_DURABILITY = 1024;
+const int MAX_NOTE_LENGTH = 144;
 
 class World final : public QThread {
     /** \class World world.h
@@ -50,8 +57,6 @@ public: // Block work section
     Block * GetBlock(int x, int y, int z) const;
     Shred * GetShred(int i, int j) const;
     Shred * GetShredByPos(int x, int y) const;
-private:
-    static Block * NewBlock(int kind, int sub);
 
 public: // Lighting section
     int Enlightened(int x, int y, int z) const;
@@ -98,7 +103,6 @@ public: // Information section
     static dirs Anti(dirs dir);
     long Longitude() const;
     long Latitude() const;
-    static int TimeStepsInSec();
 
     const WorldMap * GetMap() const;
 
@@ -148,7 +152,8 @@ public: // Interactions section
     bool Inscribe(int x, int y, int z);
 
 private: // Inventory functions section
-    void Exchange(Block * block_from, Block * block_to,
+    /// Returns true if block_from can be put into block_to.
+    bool Exchange(Block * block_from, Block * block_to,
             int src, int dest, int num);
 public:
     void Drop(Block * from, int x_to, int y_to, int z_to,
@@ -207,7 +212,6 @@ signals:
 private:
     World(const World &) = delete;
     World & operator=(const World &) = delete;
-    static const int TIME_STEPS_IN_SEC = 10;
 
     const QString worldName;
     const WorldMap map;

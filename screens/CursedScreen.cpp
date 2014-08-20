@@ -125,13 +125,17 @@ char Screen::CharNumberFront(const int i, const int j) const {
             dist+'0' : ' ';
 }
 
+int Screen::RandomBlink() const {
+    return ( (random_blink >>= 1) & 1 ) ? 0 : A_REVERSE;
+}
+
 int Screen::Color(const int kind, const int sub) const {
     switch ( sub ) {
     case ACID: return COLOR_PAIR(GREEN_GREEN) | A_BOLD | A_REVERSE;
     }
     switch ( kind ) { // foreground_background
     case LIQUID: switch ( sub ) {
-        case WATER:     return COLOR_PAIR(CYAN_BLUE);
+        case WATER:     return COLOR_PAIR(CYAN_BLUE) | RandomBlink();
         case SUB_CLOUD: return COLOR_PAIR(BLACK_WHITE);
         default:        return COLOR_PAIR(RED_YELLOW);
         } // no break);
@@ -160,7 +164,6 @@ int Screen::Color(const int kind, const int sub) const {
         case PAPER:      return COLOR_PAIR(MAGENTA_WHITE );
         case GOLD:       return COLOR_PAIR(  WHITE_YELLOW);
         case BONE:       return COLOR_PAIR(MAGENTA_WHITE );
-        case FIRE:       return COLOR_PAIR(    RED_YELLOW) | A_BLINK;
         case EXPLOSIVE:  return COLOR_PAIR(  WHITE_RED   );
         case DIAMOND:    return COLOR_PAIR(   CYAN_WHITE ) | A_BOLD;
         case ADAMANTINE: return COLOR_PAIR(   CYAN_BLACK );
@@ -173,12 +176,14 @@ int Screen::Color(const int kind, const int sub) const {
             case TIME_NOON:    return COLOR_PAIR( CYAN_CYAN);
             case TIME_EVENING: return COLOR_PAIR(WHITE_CYAN);
             }
-        case SUB_DUST: return COLOR_PAIR(BLACK_BLACK) | A_BOLD | A_REVERSE;
+        case SUB_DUST: return COLOR_PAIR(BLACK_BLACK ) | A_BOLD | A_REVERSE;
+        case FIRE:     return COLOR_PAIR(  RED_YELLOW) |A_BLINK |RandomBlink();
         }
     case DWARF: return COLOR_PAIR((sub==ADAMANTINE) ? CYAN_BLACK : WHITE_BLUE);
     case RABBIT:    return COLOR_PAIR(  RED_WHITE);
     case PREDATOR:  return COLOR_PAIR(  RED_BLACK);
     case TELEGRAPH: return COLOR_PAIR( BLUE_BLUE ) | A_BOLD;
+    case MEDKIT:    return COLOR_PAIR(  RED_WHITE);
     }
 } // color_pairs Screen::Color(int kind, int sub)
 
@@ -461,8 +466,18 @@ void Screen::PrintHUD() {
             focused->GetDurability()*100/MAX_DURABILITY,
             false);
         const QString name = focused->FullName();
-        mvwaddstr(hudWin, 2, left_border-name.length(),
+        mvwaddstr(hudWin, 1, left_border-name.length(),
             qPrintable(focused->FullName()));
+        const QString note = focused->GetNote();
+        if ( not note.isEmpty() ) {
+            const int width = qMin(36, note.length() + 2);
+            (void)wmove(hudWin, 2, left_border - width);
+            if ( note.length()+2 <= width ) {
+                wprintw(hudWin, "~:%s", qPrintable(note));
+            } else {
+                wprintw(hudWin, "~:%s ...", qPrintable(note.left(width - 6)));
+            }
+        }
     }
     PrintQuickInventory();
     wrefresh(hudWin);
@@ -526,6 +541,7 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
         ( SHRED_WIDTH-SCREEN_SIZE )/2;
     for (int j=start_y; j<SCREEN_SIZE+start_y; ++j, waddstr(window, "\n_"))
     for (int i=start_x; i<SCREEN_SIZE+start_x; ++i ) {
+        random_blink = qrand();
         Shred * const shred = w->GetShred(i, j);
         const int i_in = Shred::CoordInShred(i);
         const int j_in = Shred::CoordInShred(j);
@@ -628,6 +644,7 @@ void Screen::PrintFront(const dirs dir) const {
     (void)wmove(rightWin, 1, 1);
     for (int k=k_start; k>k_start-SCREEN_SIZE; --k, waddstr(rightWin, "\n_")) {
         for (*x=x_start; *x!=x_end; *x+=x_step) {
+            random_blink = qrand();
             for (*z=z_start; *z!=z_end && w->GetBlock(i, j, k)->
                         Transparent()==INVISIBLE;
                     *z += z_step);
@@ -706,11 +723,11 @@ const {
         const QString str = block->GetNote();
         if ( not str.isEmpty() ) {
             const int x = getcurx(window);
-            const int width = SCREEN_SIZE*2+2 - x - 10;
-            if ( str.size() < width ) {
+            const int width = SCREEN_SIZE*2 - x - 3 - 8;
+            if ( str.length() <= width ) {
                 wprintw(window, " ~:%s", qPrintable(str));
             } else {
-                wprintw(window, " ~:%s...", qPrintable(str.left(width-6)));
+                wprintw(window, " ~:%s ...", qPrintable(str.left(width - 4)));
             }
         }
         wstandend(window);
@@ -718,7 +735,7 @@ const {
     }
     wstandend(window);
     mvwprintw(window, 2+inv->Size()+shift, 40,
-        qPrintable(tr("All weight: %1 mz").
+        qPrintable(tr("Full weight: %1 mz").
             arg(inv->Weight(), 6, 10, QChar(' '))));
     wattrset(window, Color(block->Kind(), block->Sub()));
     box(window, 0, 0);
@@ -817,7 +834,8 @@ Screen::Screen(
         arrowDown (ascii ? 'v' : 0x2193),
         arrowRight(ascii ? '>' : 0x2192),
         arrowLeft (ascii ? '<' : 0x2190),
-        screen(newterm(nullptr, stdout, stdin))
+        screen(newterm(nullptr, stdout, stdin)),
+        random_blink()
 {
     #ifndef Q_OS_WIN32
         set_escdelay(10);

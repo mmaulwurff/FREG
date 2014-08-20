@@ -114,6 +114,7 @@ void Block::Damage(const int dmg, int dmg_kind) {
     case SKY: return;
     }
     switch ( dmg_kind ) {
+    case DAMAGE_ULTIMATE: durability = 0; return;
     case DAMAGE_NO: return;
     case DAMAGE_TIME: durability -= dmg; return;
     case DAMAGE_ACID:
@@ -188,11 +189,11 @@ push_reaction Block::PushResult(dirs) const {
 int  Block::GetId() const { return BlockManager::MakeId(Kind(), Sub()); }
 bool Block::Catchable() const { return false; }
 void Block::Move(dirs) {}
-int  Block::Wearable() const { return WEARABLE_NOWHERE; }
 int  Block::DamageKind() const { return DAMAGE_CRUSH; }
 int  Block::DamageLevel() const { return 1; }
 int  Block::LightRadius() const { return 0; }
 void Block::ReceiveSignal(QString) {}
+wearable Block::Wearable() const { return WEARABLE_NOWHERE; }
 usage_types Block::Use(Block *) { return USAGE_TYPE_NO; }
 usage_types Block::UseOnShredMove(Block *) { return USAGE_TYPE_NO; }
 
@@ -218,10 +219,8 @@ QString Block::GetNote() const {
     return (noteId == 0) ? QString() : world->GetNote(noteId);
 }
 
-void Block::Mend() {
-    if ( GetDurability() < MAX_DURABILITY ) {
-        ++durability;
-    }
+void Block::Mend(const int plus) {
+    durability = qMin(MAX_DURABILITY, durability+plus);
 }
 
 int Block::Weight() const {

@@ -55,6 +55,7 @@ public:
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
     Block * DropAfterDamage(bool * delete_block) override;
+    wearable Wearable() const override;
     push_reaction PushResult(dirs) const override;
     inner_actions ActInner() override;
 
@@ -153,11 +154,12 @@ public:
     bool Inscribe(QString) override;
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
+    wearable Wearable() const override;
     usage_types Use(Block * who) override;
     inner_actions ActInner() override;
 
 protected:
-    void DoRareAction() override;
+    void SaveAttributes(QDataStream &) const override;
 
 private:
     int alarmTime = -1;
@@ -195,8 +197,8 @@ public:
     Map(int sub, int id);
     Map(QDataStream & str, int sub, int id);
 
-    void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
+    wearable Wearable() const override;
     usage_types Use(Block * who) override;
     usage_types UseOnShredMove(Block * who) override;
 
@@ -217,6 +219,7 @@ public:
 
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
+    wearable Wearable() const override;
     usage_types Use(Block * who) override;
 };
 
@@ -229,8 +232,8 @@ public:
     int ShouldAct() const override;
     bool Inscribe(QString) override;
     void ReceiveSignal(QString) override;
-    void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
+    wearable Wearable() const override;
     inner_actions ActInner() override;
     usage_types Use(Block * who) override;
 
@@ -240,6 +243,14 @@ protected:
 private:
     static QString sharedMessage;
     bool isReceiver;
+};
+
+class MedKit : public Block {
+public:
+    using Block::Block;
+    QString FullName() const override;
+    wearable Wearable() const override;
+    usage_types Use(Block * user) override;
 };
 
 #endif // BLOCKS_H

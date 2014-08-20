@@ -42,22 +42,16 @@ extern const QString home_path;
 const int SHRED_WIDTH = 16;
 const int HEIGHT = 128;
 
-const int SECONDS_IN_HOUR = 60;
-const int SECONDS_IN_DAY = 24*SECONDS_IN_HOUR;
-const int END_OF_NIGHT   =  6*SECONDS_IN_HOUR;
-const int END_OF_MORNING = 12*SECONDS_IN_HOUR;
-const int END_OF_NOON    = 18*SECONDS_IN_HOUR;
-const int END_OF_EVENING =  0*SECONDS_IN_HOUR;
-const int SECONDS_IN_NIGHT = END_OF_NIGHT;
-const int SECONDS_IN_DAYLIGHT = SECONDS_IN_DAY-END_OF_NIGHT;
-
-/// 10 bits to store durability in file, signed.
-const int MAX_DURABILITY = 1024;
-const int MAX_BREATH = 60;
-
-const int MAX_LIGHT_RADIUS = 15;
-
-const int MAX_NOTE_LENGTH = 144;
+enum times {
+    SECONDS_IN_HOUR = 60,
+    SECONDS_IN_DAY = 24*SECONDS_IN_HOUR,
+    END_OF_NIGHT   =  6*SECONDS_IN_HOUR,
+    END_OF_MORNING = 12*SECONDS_IN_HOUR,
+    END_OF_NOON    = 18*SECONDS_IN_HOUR,
+    END_OF_EVENING =  0*SECONDS_IN_HOUR,
+    SECONDS_IN_NIGHT = END_OF_NIGHT,
+    SECONDS_IN_DAYLIGHT = SECONDS_IN_DAY-END_OF_NIGHT
+};
 
 const QString locale = QLocale::system().name();
 
@@ -148,6 +142,7 @@ enum kinds {
     HELMET,       ///< 28
     BOOTS,        ///< 29
     TELEGRAPH,    ///< 30
+    MEDKIT,       ///< 31
     /// Nothing is LAST_KIND.
     LAST_KIND // keep it last in this list.
 }; // enum kinds

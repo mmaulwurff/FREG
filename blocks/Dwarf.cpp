@@ -151,11 +151,11 @@ bool Dwarf::Inscribe(QString) {
 QString Dwarf::InvFullName(const int slot_number) const {
     if ( Number(slot_number) == 0 ) {
         switch ( slot_number ) {
-        case ON_HEAD: return tr("-head-");
-        case ON_BODY: return tr("-body-");
-        case ON_LEGS: return tr("-legs-");
+        case ON_HEAD:  return tr("-head-");
+        case ON_BODY:  return tr("-body-");
+        case ON_LEGS:  return tr("-legs-");
         case IN_RIGHT: return tr("-right hand-");
-        case IN_LEFT:  return tr("-left hand-");
+        case IN_LEFT:  return tr("-left  hand-");
         }
     }
     return Inventory::InvFullName(slot_number);

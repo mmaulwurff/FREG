@@ -187,6 +187,7 @@ private:
     void MovePlayer(dirs dir);
     void MovePlayerDiag(dirs dir1, dirs dir2) const;
     static bool IsScreenWide();
+    int  RandomBlink() const;
 
     WINDOW * windows[6];
     WINDOW *& leftWin    = windows[0];
@@ -208,6 +209,7 @@ private:
     const QString arrowUp, arrowDown, arrowRight, arrowLeft;
     SCREEN * const screen;
     mutable bool inputActive = false;
+    mutable int random_blink;
 };
 
 #endif // CURSEDSCREEN_H

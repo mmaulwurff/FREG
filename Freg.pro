@@ -120,6 +120,8 @@ SOURCES += \
     blocks/Animal.cpp \
     screens/IThread.cpp
 
+INCLUDEPATH += .
+
 TRANSLATIONS = \
     freg_ru.ts
 
@@ -141,4 +143,3 @@ DISTFILES += \
 
 MOC_DIR = moc
 OBJECTS_DIR = obj
-QMAKE_CLEAN += -r moc obj

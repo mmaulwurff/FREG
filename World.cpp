@@ -44,7 +44,6 @@ Shred * World::GetShredByPos(const int x, const int y) const {
 
 int World::NumShreds() const { return numShreds; }
 int World::TimeOfDay() const { return time % SECONDS_IN_DAY; }
-int World::TimeStepsInSec() { return TIME_STEPS_IN_SEC; }
 int World::MiniTime() const { return timeStep; }
 ulong World::Time() const { return time; }
 long World::Longitude() const { return longitude; }
@@ -77,46 +76,26 @@ void World::Drop(Block * const block_from,
         const int x_to, const int y_to, const int z_to,
         const int src, const int dest, const int num)
 {
-    Shred * const shred = GetShred(x_to, y_to);
-    const int x_in = Shred::CoordInShred(x_to);
-    const int y_in = Shred::CoordInShred(y_to);
-    Block * block_to = shred->GetBlock(x_in, y_in, z_to);
-    if ( ENVIRONMENT == block_to->PushResult(ANYWHERE) ) {
-        shred->SetBlock( (block_to=NewBlock(CONTAINER, DIFFERENT)),
-            x_in, y_in, z_to );
+    Block * const block_to = BlockManager::NewBlock(CONTAINER, DIFFERENT);
+    if ( not Build(block_to, x_to, y_to, z_to) ) {
+        delete block_to;
     }
-    Exchange(block_from, block_to, src, dest, num);
-    emit Updated(x_to, y_to, z_to);
+    Exchange(block_from, GetBlock(x_to, y_to, z_to), src, dest, num);
 }
 
 void World::Get(Block * const block_to,
         const int x_from, const int y_from, const int z_from,
         const int src, const int dest, const int num)
 {
-    Block * const block_from = GetBlock(x_from, y_from, z_from);
-    Inventory * const inv = block_from->HasInventory();
-    if ( inv == nullptr ) { // for vessel
-        if ( block_from->Kind() == LIQUID ) {
-            Inventory * const inv_to = block_to->HasInventory();
-            if ( inv_to == nullptr ) return;
-            Block * const vessel = inv_to->ShowBlock(src);
-            if ( vessel == nullptr ) return;
-            Inventory * const vessel_inv = vessel->HasInventory();
-            if ( vessel_inv == nullptr ) return;
-            Block * const tried = NewBlock(LIQUID, block_from->Sub());
-            if ( vessel_inv->Get(tried, 0) ) {
-                Shred * const shred = GetShred(x_from, y_from);
-                const int x_in = Shred::CoordInShred(x_from);
-                const int y_in = Shred::CoordInShred(y_from);
-                shred->SetBlock(block_manager.Normal(AIR), x_in, y_in, z_from);
-                shred->AddFalling(shred->GetBlock(x_in, y_in, z_from+1));
-                emit Updated(x_from, y_from, z_from);
-            } else {
-                delete tried;
-            }
+    Block     * const block_from = GetBlock(x_from, y_from, z_from);
+    Inventory * const inv_from   = block_from->HasInventory();
+    if ( inv_from ) {
+        if ( inv_from->Access() ) {
+            Exchange(block_from, block_to, src, dest, num);
         }
-    } else if ( inv->Access() ) {
-        Exchange(block_from, block_to, src, dest, num);
+    } else if ( Exchange(block_from, block_to, src, dest, num) ) {
+        Build(block_manager.Normal(AIR), x_from, y_from, z_from, UP,
+            nullptr, true);
     }
 }
 
@@ -172,7 +151,7 @@ void World::run() {
     QTimer timer;
     connect(&timer, SIGNAL(timeout()), SLOT(PhysEvents()),
         Qt::DirectConnection);
-    timer.start(1000/TimeStepsInSec());
+    timer.start(1000/TIME_STEPS_IN_SEC);
     exec();
 }
 
@@ -218,10 +197,6 @@ dirs World::Anti(const dirs dir) {
 Block * World::GetBlock(const int x, const int y, const int z) const {
     return GetShred(x, y)->
         GetBlock(Shred::CoordInShred(x), Shred::CoordInShred(y), z);
-}
-
-Block * World::NewBlock(const int kind, const int sub) {
-    return BlockManager::NewBlock(kind, sub);
 }
 
 Shred ** World::FindShred(const int x, const int y) const {
@@ -309,15 +284,14 @@ void World::ReloadShreds() {
 void World::SetReloadShreds(const int direction) { toResetDir = direction; }
 
 void World::PhysEvents() {
-    Lock();
     static const int start = NumShreds()/2 - numActiveShreds/2;
     static const int end   = start + numActiveShreds;
+    Lock();
     for (int i=start; i<end; ++i)
     for (int j=start; j<end; ++j) {
         shreds[ShredPos(i, j)]->PhysEventsFrequent();
     }
-
-    if ( TimeStepsInSec() > timeStep ) {
+    if ( TIME_STEPS_IN_SEC > timeStep ) {
         ++timeStep;
     } else {
         for (int i=start; i<end; ++i)
@@ -329,23 +303,14 @@ void World::PhysEvents() {
         switch ( TimeOfDay() ) {
         default: break;
         case END_OF_NIGHT:
-            emit Notify(tr("It's morning now."));
-            ReEnlightenTime();
-            break;
-        case END_OF_MORNING: emit Notify(tr("It's day now."));     break;
-        case END_OF_NOON:    emit Notify(tr("It's evening now.")); break;
-        case END_OF_EVENING:
-            emit Notify(tr("It's night now."));
-            ReEnlightenTime();
-            break;
+        case END_OF_EVENING: ReEnlightenTime(); break;
         }
     }
-
     ReloadShreds();
     Unlock();
     emit UpdatesEnded();
     // emit ExitReceived(); // close all after 1 turn
-} // void World::PhysEvents()
+}
 
 bool World::DirectlyVisible(
         int x_from, int y_from, int z_from,
@@ -530,7 +495,7 @@ int World::Damage(const int x, const int y, const int z,
     if ( AIR == sub ) return 0;
     const int kind = temp->Kind();
     if ( temp == block_manager.Normal(sub) ) {
-        temp = NewBlock(kind, sub);
+        temp = BlockManager::NewBlock(kind, sub);
     }
     temp->Damage(dmg, dmg_kind);
     const int durability = temp->GetDurability();
@@ -555,7 +520,6 @@ void World::DestroyAndReplace(const int x, const int y, const int z) {
     if ( delete_block ) {
         block_manager.DeleteBlock(block);
     } else {
-        block->Restore();
         Active * const active = block->ActiveBlock();
         if ( active != nullptr ) {
             active->Unregister();
@@ -590,6 +554,7 @@ bool World::Build(Block * const block, const int x, const int y, const int z,
     if ( block_light ) {
         AddFireLight(x, y, z, block_light);
     }
+    shred->AddFalling(shred->GetBlock(x_in, y_in, z+1));
     return true;
 }
 
@@ -597,40 +562,43 @@ bool World::Inscribe(const int x, const int y, const int z) {
     Shred * const shred = GetShred(x, y);
     const int x_in = Shred::CoordInShred(x);
     const int y_in = Shred::CoordInShred(y);
-    Block * block = GetBlock(x, y, z);
+    Block * block  = shred->GetBlock(x_in, y_in, z);
     if ( block == block_manager.Normal(block->Sub()) ) {
-        block = NewBlock(block->Kind(), block->Sub());
+        block = BlockManager::NewBlock(block->Kind(), block->Sub());
         shred->SetBlockNoCheck(block, x_in, y_in, z);
-        block = GetBlock(x, y, z);
     }
     QString str;
     emit GetString(str);
     return block->Inscribe(str);
 }
 
-void World::Exchange(Block * const block_from, Block * const block_to,
+bool World::Exchange(Block * const block_from, Block * const block_to,
         const int src, const int dest, const int num)
 {
+    Inventory * const inv_to = block_to->HasInventory();
+    if ( not inv_to ) {
+        block_from->ReceiveSignal(tr("No room there."));
+        return false;
+    }
     Inventory * const inv_from = block_from->HasInventory();
-    if ( inv_from == nullptr ) {
-        block_from->ReceiveSignal(tr("No inventory."));
-        return;
+    if ( not inv_from ) {
+        if ( block_from->Wearable() > WEARABLE_NOWHERE
+                && inv_to->Get(block_from) )
+        {
+            return true;
+        } else {
+            block_from->ReceiveSignal(tr("Nothing can be obtained."));
+            return false;
+        }
     }
     if ( inv_from->Number(src) == 0 ) {
-        const QString nothing_here = tr("Nothing here.");
-        block_from->ReceiveSignal(nothing_here);
-        block_to  ->ReceiveSignal(nothing_here);
-        return;
-    }
-    Inventory * const inv_to = block_to->HasInventory();
-    if ( inv_to == nullptr ) {
-        block_from->ReceiveSignal(tr("No room there."));
-        return;
-    }
-    if ( inv_from->Drop(src, dest, num, inv_to) ) {
+        block_from->ReceiveSignal(tr("Nothing here."));
+        block_to  ->ReceiveSignal(tr("Nothing here."));
+    } else if ( inv_from->Drop(src, dest, num, inv_to) ) {
         block_from->ReceiveSignal(tr("Your bag is lighter now."));
         block_to  ->ReceiveSignal(tr("Your bag is heavier now."));
     }
+    return false;
 }
 
 void World::LoadAllShreds() {

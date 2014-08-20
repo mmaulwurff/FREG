@@ -33,11 +33,10 @@ public:
     using Falling::Falling;
 
     int  DamageKind() const override;
-    void Damage(int dmg, int kind) override;
     int  DamageLevel() const override;
     int  Weight() const override;
     QString FullName() const override;
-    usage_types Use(Block * who) override;
+    wearable Wearable() const override;
     push_reaction PushResult(dirs) const override;
 };
 
@@ -46,7 +45,6 @@ public:
     using Weapon::Weapon;
 
     int  DamageKind() const override;
-    int  DamageLevel() const override;
     QString FullName() const override;
 };
 
@@ -55,7 +53,6 @@ public:
     using Weapon::Weapon;
 
     int  DamageKind() const override;
-    int  DamageLevel() const override;
     QString FullName() const override;
 };
 
@@ -64,7 +61,6 @@ public:
     using Weapon::Weapon;
 
     int  DamageKind() const override;
-    int  DamageLevel() const override;
     QString FullName() const override;
 };
 
@@ -73,7 +69,6 @@ public:
     using Weapon::Weapon;
 
     int  DamageKind() const override;
-    int  DamageLevel() const override;
     QString FullName() const override;
 };
 

@@ -30,7 +30,7 @@
             Damage(5, DAMAGE_HUNGER);
         } else {
             --satiation;
-            Mend();
+            Mend(1);
         }
         emit Updated();
         return INNER_ACTION_NONE;

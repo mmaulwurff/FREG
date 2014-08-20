@@ -23,7 +23,6 @@
 #include <QObject>
 #include <QSettings>
 #include <QString>
-#include "header.h"
 #include "World.h"
 
 class Player;

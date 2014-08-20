@@ -77,7 +77,7 @@ void Inventory::SaveAttributes(QDataStream & out) const {
 
 bool Inventory::Get(Block * const block, const int start) {
     if ( block == nullptr ) return true;
-    if ( block->Kind() == LIQUID ) {
+    if ( block->Wearable() == WEARABLE_VESSEL ) {
         for (int i=qMax(Start(), start); i<Size(); ++i) {
             if ( Number(i)==1 && ShowBlock(i) ) {
                 Inventory * const inner = ShowBlock(i)->HasInventory();

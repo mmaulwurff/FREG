@@ -43,7 +43,7 @@ WorldMap::WorldMap(const QString world_name) :
 void WorldMap::MakeAndSaveSpawn(const QString world_name, const int size,
         long * longitude, long * latitude)
 {
-    QSettings map_info(world_name+"/map.ini", QSettings::IniFormat);
+    QSettings map_info(home_path+world_name+"/map.ini", QSettings::IniFormat);
     *longitude = map_info.value("spawn_longitude", GetSpawnCoordinate(size)).
         toLongLong();
     *latitude  = map_info.value("spawn_latitude",  GetSpawnCoordinate(size)).
@@ -168,7 +168,8 @@ void WorldMap::GenerateMap(
     MakeAndSaveSpawn(world_name, size, &spawn_longitude, &spawn_latitude);
     PieceOfEden(spawn_latitude-1, spawn_longitude-1, map, size);
 
-    FILE * const file = fopen(qPrintable(world_name+"/map.txt"), "wb");
+    FILE * const file =
+        fopen(qPrintable(home_path + world_name + "/map.txt"), "wb");
     for (int y=0; y<size; ++y, fputc('\n', file))
     for (int x=0; x<size; ++x) {
         fputc(map[x*size+y], file);

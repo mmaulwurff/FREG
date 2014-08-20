@@ -174,7 +174,7 @@ void World::ReEnlightenMove(const int dir) {
     switch ( dir ) {
     case NORTH:
         for (int i=0; i<NumShreds(); ++i) {
-            shreds[i]->ShineAll();
+            shreds[i            ]->ShineAll();
             shreds[i+NumShreds()]->ShineAll();
         }
     break;
@@ -196,7 +196,7 @@ void World::ReEnlightenMove(const int dir) {
             shreds[NumShreds()*i+1]->ShineAll();
         }
     break;
-    default: fprintf(stderr, "%s: dir (?): %d\n", Q_FUNC_INFO, dir);
+    default: Q_UNREACHABLE(); break;
     }
     initial_lighting = false;
 }

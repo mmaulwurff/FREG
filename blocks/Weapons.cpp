@@ -34,39 +34,18 @@
     }
 
     int  Weapon::Weight() const { return Block::Weight()/4; }
+    wearable Weapon::Wearable() const { return WEARABLE_OTHER; }
     push_reaction Weapon::PushResult(dirs) const { return DAMAGE; }
-
-    void Weapon::Damage(const int dmg, const int dmg_kind) {
-        if ( dmg_kind < DAMAGE_PUSH_UP ) {
-            Block::Damage(dmg, dmg_kind);
-            if ( GetDurability() < MAX_DURABILITY ) {
-                Break();
-            }
-        }
-    }
-
-    usage_types Weapon::Use(Block * const who) {
-        Shred * const shred = GetShred();
-        if ( shred != nullptr ) { // not currently in inventory
-            Inventory * const inv = who->HasInventory();
-            if ( inv != nullptr && inv->Get(this) ) {
-                Unregister();
-                shred->SetBlockNoCheck(block_manager.Normal(AIR),
-                    Shred::CoordInShred(X()), Shred::CoordInShred(Y()), Z());
-            }
-        }
-        return USAGE_TYPE_NO;
-    }
 
     int Weapon::DamageLevel() const {
         switch ( Sub() ) {
-        case WOOD:  return 4;
-        case IRON:  return 6;
-        case STONE: return 5;
-        case SKY:   return MAX_DURABILITY;
-        default:
-            fprintf(stderr, "Weapon::DamageLevel: sub (?): %d\n.", Sub());
-            return 1;
+        default:    return  1;
+        case WOOD:  return  4;
+        case BONE:  return  5;
+        case STONE: return  7;
+        case IRON:  return 10;
+        case STEEL: return 12;
+        case ADAMANTINE: return 20;
         }
     }
 
@@ -81,30 +60,12 @@
 // Pick::
     int Pick::DamageKind() const { return DAMAGE_MINE; }
 
-    int Pick::DamageLevel() const {
-        switch ( Sub() ) {
-        case IRON: return 10;
-        default:
-            fprintf(stderr, "Pick::DamageLevel: sub (?): %d\n.", Sub());
-            return 1;
-        }
-    }
-
     QString Pick::FullName() const {
         return QObject::tr("Pick (%1)").arg(SubName(Sub()));
     }
 
 // Shovel::
     int Shovel::DamageKind() const { return DAMAGE_DIG; }
-
-    int Shovel::DamageLevel() const {
-        switch ( Sub() ) {
-        case IRON: return 3;
-        default:
-            fprintf(stderr, "Shovel::DamageLevel: sub (?): %d\n.", Sub());
-            return 1;
-        }
-    }
 
     QString Shovel::FullName() const {
         return QObject::tr("Shovel (%1)").arg(SubName(Sub()));
@@ -113,30 +74,12 @@
 // Hammer::
     int Hammer::DamageKind() const { return DAMAGE_CRUSH; }
 
-    int Hammer::DamageLevel() const {
-        switch ( Sub() ) {
-        case IRON: return 10;
-        default:
-            fprintf(stderr, "Hammer::DamageLevel: sub (?): %d\n.", Sub());
-            return 1;
-        }
-    }
-
     QString Hammer::FullName() const {
         return QObject::tr("Hammer (%1)").arg(SubName(Sub()));
     }
 
 // Axe::
     int Axe::DamageKind() const { return DAMAGE_CUT; }
-
-    int Axe::DamageLevel() const {
-        switch ( Sub() ) {
-        case IRON: return 10;
-        default:
-            fprintf(stderr, "Axe::DamageLevel: sub (?): %d\n.", Sub());
-            return 1;
-        }
-    }
 
     QString Axe::FullName() const {
         return QObject::tr("Axe (%1)").arg(SubName(Sub()));

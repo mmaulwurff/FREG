@@ -63,7 +63,7 @@ void Player::SetCreativeMode(const bool creative_on) {
         inv->GetAll(prev_player->HasInventory());
     }
     if ( not creative_on ) {
-        delete prev_player;
+        block_manager.DeleteBlock(prev_player);
     }
     emit Updated();
 }
@@ -109,9 +109,7 @@ void Player::Examine() const {
     int i, j, k;
     emit GetFocus(&i, &j, &k);
     const Block * const block = world->GetBlock(i, j, k);
-    emit Notify( tr("You see: %1, durability: %2.").
-        arg(block->FullName()).
-        arg(block->GetDurability()) );
+    emit Notify( tr("You see %1.").arg(block->FullName()) );
     if ( DEBUG ) {
         emit Notify(QString("Weight: %1. Id: %2.").
             arg(block->Weight()).
@@ -225,7 +223,6 @@ usage_types Player::Use(const int num) {
     case USAGE_TYPE_READ:
         usingInInventory = num;
         usingType = USAGE_TYPE_READ_IN_INVENTORY;
-        emit Updated();
         break;
     case USAGE_TYPE_POUR: {
         int x_targ, y_targ, z_targ;
@@ -243,6 +240,7 @@ usage_types Player::Use(const int num) {
         } break;
     default: break;
     }
+    emit Updated();
     return result;
 }
 
@@ -378,7 +376,9 @@ void Player::ProcessCommand(QString command) {
             .arg(DEBUG ? tr("debug") : tr("release"))
             .arg(COMPILER));
         break;
-    case UniqueIntFromString("warranty"): comm_stream <<  "warranty";
+    case UniqueIntFromString("warranty"):
+        comm_stream <<  "warranty";
+        // no break;
     case UniqueIntFromString("help"):
         comm_stream >> request;
         if ( request.isEmpty() ) {

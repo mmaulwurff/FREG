@@ -25,7 +25,7 @@
 #include "blocks/Inventory.h"
 
 const quint8 DATASTREAM_VERSION = QDataStream::Qt_5_2;
-const quint8 CURRENT_SHRED_FORMAT_VERSION = 11;
+const quint8 CURRENT_SHRED_FORMAT_VERSION = 12;
 
 const int RAIN_IS_DEW = 1;
 
@@ -120,9 +120,6 @@ Shred::Shred(const int shred_x, const int shred_y,
     switch ( type = static_cast<shred_type>
             (GetWorld()->GetMap()->TypeOfShred(longi, lati)) )
     {
-    default:
-        fprintf(stderr, "%s: type: %c, code %d?\n", Q_FUNC_INFO, type, type);
-        // no break;
     case SHRED_WASTE:     WasteShred(); break;
     case SHRED_WATER:     Water();      break;
     case SHRED_PLAIN:     Plain();      break;
@@ -293,8 +290,10 @@ void Shred::ReloadTo(const dirs direction) {
 void Shred::SetBlock(Block * block, const int x, const int y, const int z) {
     Block * const to_delete = GetBlock(x, y, z);
     if ( to_delete != block ) {
-        block_manager.DeleteBlock(to_delete);
-        block = block_manager.ReplaceWithNormal(block);
+        Active * const active = to_delete->ActiveBlock();
+        if ( active ) {
+            active->Unregister();
+        }
         SetBlockNoCheck(block, x, y, z);
     }
 }
@@ -395,7 +394,8 @@ void Shred::TestShred() {
             {ILLUMINATOR, WOOD}, {ILLUMINATOR, IRON}, {ILLUMINATOR, GLASS},
             {CONTAINER, IRON}, {CONTAINER, WATER}, {WEAPON, SKY},
             {LIQUID, SUB_CLOUD}, {RAIN_MACHINE, IRON}, {FALLING, SUB_DUST},
-            {BLOCK, ROSE}, {CONVERTER, STONE}, {TELEGRAPH, IRON}
+            {BLOCK, ROSE}, {CONVERTER, STONE}, {TELEGRAPH, IRON},
+            {MEDKIT, IRON}
         }, {
             {ARMOUR, STEEL}, {HELMET, STEEL}, {BOOTS, STEEL},
         }
