@@ -30,7 +30,8 @@ enum wearable {
     WEARABLE_HEAD,
     WEARABLE_BODY,
     WEARABLE_LEGS,
-    WEARABLE_OTHER
+    WEARABLE_OTHER,
+    WEARABLE_VESSEL
 };
 
 enum damage_kinds {

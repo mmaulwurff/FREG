@@ -50,13 +50,12 @@ QString Bucket::FullName() const {
             .arg(MAX_STACK_SIZE);
 }
 
-bool Bucket::Get(Block * const block, const int start = 0) {
-    if ( block->Kind() != LIQUID ) {
-        return false;
-    }
-    for (int i=start; i<Size(); ++i) {
-        if ( GetExact(block, i) ) {
-            return true;
+bool Bucket::Get(Block * const block, const int start) {
+    if ( block->Wearable() == WEARABLE_VESSEL ) {
+        for (int i=start; i<Size(); ++i) {
+            if ( GetExact(block, i) ) {
+                return true;
+            }
         }
     }
     return false;

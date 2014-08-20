@@ -96,6 +96,7 @@
     int  Liquid::ShouldAct() const  { return FREQUENT_RARE; }
     int  Liquid::LightRadius() const { return ( STONE==Sub() ) ? 3 : 0; }
     bool Liquid::Inscribe(QString) { return false; }
+    wearable Liquid::Wearable() const { return WEARABLE_VESSEL; }
     inner_actions Liquid::ActInner() { return INNER_ACTION_NONE; }
     push_reaction Liquid::PushResult(dirs) const { return ENVIRONMENT; }
 
@@ -394,7 +395,10 @@
                 arg(GetWorld()->TimeOfDayStr()));
             ++notify_flag;
         }
-        if ( Sub()==EXPLOSIVE && notify_flag>1 ) return INNER_ACTION_EXPLODE;
+        if ( Sub()==EXPLOSIVE ) {
+            return ( notify_flag>1 ) ?
+                INNER_ACTION_EXPLODE : INNER_ACTION_ONLY;
+        }
         switch ( current_time ) {
         default: --notify_flag; break;
         case END_OF_NIGHT:   Inscribe(tr("Morning has come.")); break;

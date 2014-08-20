@@ -55,6 +55,7 @@ public:
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
     Block * DropAfterDamage(bool * delete_block) override;
+    wearable Wearable() const override;
     push_reaction PushResult(dirs) const override;
     inner_actions ActInner() override;
 

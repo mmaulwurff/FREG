@@ -88,29 +88,15 @@ void World::Get(Block * const block_to,
         const int x_from, const int y_from, const int z_from,
         const int src, const int dest, const int num)
 {
-    Block * const block_from = GetBlock(x_from, y_from, z_from);
-    Inventory * const inv = block_from->HasInventory();
-    if ( not inv ) { // for vessel
-        if ( block_from->Kind() == LIQUID ) {
-            Inventory * const inv_to = block_to->HasInventory();
-            if ( not inv_to ) return;
-            Block * const vessel = inv_to->ShowBlock(src);
-            if ( not vessel ) return;
-            Inventory * const vessel_inv = vessel->HasInventory();
-            if ( not vessel_inv ) return;
-            Block * const tried = NewBlock(LIQUID, block_from->Sub());
-            if ( vessel_inv->Get(tried, 0) ) {
-                Build(block_manager.Normal(AIR), x_from, y_from, z_from, UP,
-                    nullptr, true);
-            } else {
-                delete tried;
-            }
-        } else if ( Exchange(block_from, block_to, src, dest, num) ) {
-            Build(block_manager.Normal(AIR), x_from, y_from, z_from, UP,
-                nullptr, true);
+    Block     * const block_from = GetBlock(x_from, y_from, z_from);
+    Inventory * const inv_from   = block_from->HasInventory();
+    if ( inv_from ) {
+        if ( inv_from->Access() ) {
+            Exchange(block_from, block_to, src, dest, num);
         }
-    } else if ( inv->Access() ) {
-        Exchange(block_from, block_to, src, dest, num);
+    } else if ( Exchange(block_from, block_to, src, dest, num) ) {
+        Build(block_manager.Normal(AIR), x_from, y_from, z_from, UP,
+            nullptr, true);
     }
 }
 
