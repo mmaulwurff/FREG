@@ -44,7 +44,6 @@ Shred * World::GetShredByPos(const int x, const int y) const {
 
 int World::NumShreds() const { return numShreds; }
 int World::TimeOfDay() const { return time % SECONDS_IN_DAY; }
-int World::TimeStepsInSec() { return TIME_STEPS_IN_SEC; }
 int World::MiniTime() const { return timeStep; }
 ulong World::Time() const { return time; }
 long World::Longitude() const { return longitude; }
@@ -77,7 +76,7 @@ void World::Drop(Block * const block_from,
         const int x_to, const int y_to, const int z_to,
         const int src, const int dest, const int num)
 {
-    Block * const block_to = NewBlock(CONTAINER, DIFFERENT);
+    Block * const block_to = BlockManager::NewBlock(CONTAINER, DIFFERENT);
     if ( not Build(block_to, x_to, y_to, z_to) ) {
         delete block_to;
     }
@@ -152,7 +151,7 @@ void World::run() {
     QTimer timer;
     connect(&timer, SIGNAL(timeout()), SLOT(PhysEvents()),
         Qt::DirectConnection);
-    timer.start(1000/TimeStepsInSec());
+    timer.start(1000/TIME_STEPS_IN_SEC);
     exec();
 }
 
@@ -198,10 +197,6 @@ dirs World::Anti(const dirs dir) {
 Block * World::GetBlock(const int x, const int y, const int z) const {
     return GetShred(x, y)->
         GetBlock(Shred::CoordInShred(x), Shred::CoordInShred(y), z);
-}
-
-Block * World::NewBlock(const int kind, const int sub) {
-    return BlockManager::NewBlock(kind, sub);
 }
 
 Shred ** World::FindShred(const int x, const int y) const {
@@ -289,15 +284,14 @@ void World::ReloadShreds() {
 void World::SetReloadShreds(const int direction) { toResetDir = direction; }
 
 void World::PhysEvents() {
-    Lock();
     static const int start = NumShreds()/2 - numActiveShreds/2;
     static const int end   = start + numActiveShreds;
+    Lock();
     for (int i=start; i<end; ++i)
     for (int j=start; j<end; ++j) {
         shreds[ShredPos(i, j)]->PhysEventsFrequent();
     }
-
-    if ( TimeStepsInSec() > timeStep ) {
+    if ( TIME_STEPS_IN_SEC > timeStep ) {
         ++timeStep;
     } else {
         for (int i=start; i<end; ++i)
@@ -312,12 +306,11 @@ void World::PhysEvents() {
         case END_OF_EVENING: ReEnlightenTime(); break;
         }
     }
-
     ReloadShreds();
     Unlock();
     emit UpdatesEnded();
     // emit ExitReceived(); // close all after 1 turn
-} // void World::PhysEvents()
+}
 
 bool World::DirectlyVisible(
         int x_from, int y_from, int z_from,
@@ -502,7 +495,7 @@ int World::Damage(const int x, const int y, const int z,
     if ( AIR == sub ) return 0;
     const int kind = temp->Kind();
     if ( temp == block_manager.Normal(sub) ) {
-        temp = NewBlock(kind, sub);
+        temp = BlockManager::NewBlock(kind, sub);
     }
     temp->Damage(dmg, dmg_kind);
     const int durability = temp->GetDurability();
@@ -569,11 +562,10 @@ bool World::Inscribe(const int x, const int y, const int z) {
     Shred * const shred = GetShred(x, y);
     const int x_in = Shred::CoordInShred(x);
     const int y_in = Shred::CoordInShred(y);
-    Block * block = GetBlock(x, y, z);
+    Block * block  = shred->GetBlock(x_in, y_in, z);
     if ( block == block_manager.Normal(block->Sub()) ) {
-        block = NewBlock(block->Kind(), block->Sub());
+        block = BlockManager::NewBlock(block->Kind(), block->Sub());
         shred->SetBlockNoCheck(block, x_in, y_in, z);
-        block = GetBlock(x, y, z);
     }
     QString str;
     emit GetString(str);
