@@ -45,7 +45,6 @@ public:
     using Weapon::Weapon;
 
     int  DamageKind() const override;
-    int  DamageLevel() const override;
     QString FullName() const override;
 };
 
@@ -54,7 +53,6 @@ public:
     using Weapon::Weapon;
 
     int  DamageKind() const override;
-    int  DamageLevel() const override;
     QString FullName() const override;
 };
 
@@ -63,7 +61,6 @@ public:
     using Weapon::Weapon;
 
     int  DamageKind() const override;
-    int  DamageLevel() const override;
     QString FullName() const override;
 };
 
@@ -72,7 +69,6 @@ public:
     using Weapon::Weapon;
 
     int  DamageKind() const override;
-    int  DamageLevel() const override;
     QString FullName() const override;
 };
 

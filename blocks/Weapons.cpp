@@ -39,10 +39,13 @@
 
     int Weapon::DamageLevel() const {
         switch ( Sub() ) {
-        case WOOD:  return 4;
-        case IRON:  return 6;
-        case STONE: return 5;
-        default:    return 1;
+        default:    return  1;
+        case WOOD:  return  4;
+        case BONE:  return  5;
+        case STONE: return  7;
+        case IRON:  return 10;
+        case STEEL: return 12;
+        case ADAMANTINE: return 20;
         }
     }
 
@@ -57,30 +60,12 @@
 // Pick::
     int Pick::DamageKind() const { return DAMAGE_MINE; }
 
-    int Pick::DamageLevel() const {
-        switch ( Sub() ) {
-        case IRON: return 10;
-        default:
-            fprintf(stderr, "Pick::DamageLevel: sub (?): %d\n.", Sub());
-            return 1;
-        }
-    }
-
     QString Pick::FullName() const {
         return QObject::tr("Pick (%1)").arg(SubName(Sub()));
     }
 
 // Shovel::
     int Shovel::DamageKind() const { return DAMAGE_DIG; }
-
-    int Shovel::DamageLevel() const {
-        switch ( Sub() ) {
-        case IRON: return 3;
-        default:
-            fprintf(stderr, "Shovel::DamageLevel: sub (?): %d\n.", Sub());
-            return 1;
-        }
-    }
 
     QString Shovel::FullName() const {
         return QObject::tr("Shovel (%1)").arg(SubName(Sub()));
@@ -89,30 +74,12 @@
 // Hammer::
     int Hammer::DamageKind() const { return DAMAGE_CRUSH; }
 
-    int Hammer::DamageLevel() const {
-        switch ( Sub() ) {
-        case IRON: return 10;
-        default:
-            fprintf(stderr, "Hammer::DamageLevel: sub (?): %d\n.", Sub());
-            return 1;
-        }
-    }
-
     QString Hammer::FullName() const {
         return QObject::tr("Hammer (%1)").arg(SubName(Sub()));
     }
 
 // Axe::
     int Axe::DamageKind() const { return DAMAGE_CUT; }
-
-    int Axe::DamageLevel() const {
-        switch ( Sub() ) {
-        case IRON: return 10;
-        default:
-            fprintf(stderr, "Axe::DamageLevel: sub (?): %d\n.", Sub());
-            return 1;
-        }
-    }
 
     QString Axe::FullName() const {
         return QObject::tr("Axe (%1)").arg(SubName(Sub()));
