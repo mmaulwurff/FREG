@@ -21,7 +21,6 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="freg-logo.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">freg
    &#160;<span id="projectnumber">0.3</span>
@@ -142,7 +141,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr><td class="entry"><a class="el" href="classBlock.html#adc1d6ab61f70957e7be5b4bb6baedc9f">Kind</a>() const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classBlock.html#a4ef904547fb1917efe905f176727825d">LightRadius</a>() const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
   <tr><td class="entry"><a class="el" href="classBlock.html#a60a9be872caca48e0f5da2f12f25f258">MakeDirFromDamage</a>(int damage_kind)</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">protected</span><span class="mlabel">static</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classBlock.html#ad76d9df3bc012a8ad25e5cebe30f6549">Mend</a>()</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classBlock.html#adbc9850f169361514ba6f8c7232d0684">Mend</a>(int plus)</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="classInventory.html#aa34bb5dd7e516db28eccb8b60ab215d1">MiniCraft</a>(int num)</td><td class="entry"><a class="el" href="classInventory.html">Inventory</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classActive.html#ac919694f9c9c273e8536d4af778e0fdf">Move</a>(dirs dir) override</td><td class="entry"><a class="el" href="classActive.html">Active</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
   <tr><td class="entry"><a class="el" href="classActive.html#a05769b0afa87193e72adcd991aac6815">Moved</a>(int)</td><td class="entry"><a class="el" href="classActive.html">Active</a></td><td class="entry"><span class="mlabel">signal</span></td></tr>
@@ -187,8 +186,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr class="even"><td class="entry"><a class="el" href="classActive.html#a7d3f1904c237a6faea690458eefb31e1">Unregister</a>()</td><td class="entry"><a class="el" href="classActive.html">Active</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="classActive.html#a6345b2d3f3f520c69db8b5a9c542ad9c">Updated</a>()</td><td class="entry"><a class="el" href="classActive.html">Active</a></td><td class="entry"><span class="mlabel">signal</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classContainer.html#a5a6987aabe796d9fb09c6c1d0c68555c">Use</a>(Block *who) override</td><td class="entry"><a class="el" href="classContainer.html">Container</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
-  <tr><td class="entry"><a class="el" href="classBlock.html#a1b97b0a77f4d6c00d1a5a0e952a34e25">UseOnShredMove</a>(Block *who)</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classBlock.html#a4ee69ab3394914c1411f1279c5e4bc0a">Wearable</a>() const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr><td class="entry"><a class="el" href="classBlock.html#a28e702f9ef3f099cd07c183901ed8a2c">UseOnShredMove</a>(Block *user)</td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classBlock.html#a19f403c75728c912fe58cc07583cc290">Wearable</a>() const </td><td class="entry"><a class="el" href="classBlock.html">Block</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
   <tr><td class="entry"><a class="el" href="classContainer.html#a2b0cce8b159d384814abdcca02a9a05c">Weight</a>() const override</td><td class="entry"><a class="el" href="classContainer.html">Container</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classXy.html#aea695a90dcb452a57b5654b0138fae56">X</a>() const </td><td class="entry"><a class="el" href="classXy.html">Xy</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
   <tr><td class="entry"><a class="el" href="classXy.html#a75171c6c3aa056e007fb6a0bc821dba9">x_self</a></td><td class="entry"><a class="el" href="classXy.html">Xy</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
@@ -205,7 +204,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </table></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Aug 18 2014 11:17:24 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Aug 20 2014 15:05:04 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

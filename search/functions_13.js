@@ -6,7 +6,6 @@ var searchData=
   ['time',['Time',['../classWorld.html#a0289184686d205a2cea34088bdf7a7b7',1,'World']]],
   ['timeofday',['TimeOfDay',['../classWorld.html#adfe9e0497505a5b68ccd8f5ed3782ab9',1,'World']]],
   ['timeofdaystr',['TimeOfDayStr',['../classWorld.html#a268fad4b34692e435238be1b215e717b',1,'World']]],
-  ['timestepsinsec',['TimeStepsInSec',['../classWorld.html#a3418b2adf5b23423621e1b5bb7a0169a',1,'World']]],
   ['transparency',['Transparency',['../classBlock.html#a7d480c4cdcdb1e64c1cd4703db0d1423',1,'Block']]],
   ['transparent',['Transparent',['../classBlock.html#a8ef3abd6e851ae31883f6b8cc423ef56',1,'Block']]],
   ['tree',['Tree',['../classShred.html#af24cd15dcba9ad378586ce4bc88cfe41',1,'Shred']]],

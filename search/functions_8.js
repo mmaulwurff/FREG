@@ -8,7 +8,7 @@ var searchData=
   ['inventory',['Inventory',['../classInventory.html#a505141542e60ee4044b045861a326ff4',1,'Inventory::Inventory(Inventory &amp;inv)=delete'],['../classInventory.html#ad397e013573784b17472a769ed316fac',1,'Inventory::Inventory(int sz=INV_SIZE)'],['../classInventory.html#a35fd9dc5c981a7432c7ffb90944ee263',1,'Inventory::Inventory(QDataStream &amp;str, int size=INV_SIZE)']]],
   ['inventoryaction',['InventoryAction',['../classScreen.html#a24893ee8dd94f0db843de92cf3b04f21',1,'Screen']]],
   ['invertbounds',['InVertBounds',['../classWorld.html#ab58cf610fc9fc6c933ff75493aead01b',1,'World']]],
-  ['invfullname',['InvFullName',['../classDwarf.html#a8ec3efec9355d9ead606d4164a2d69ca',1,'Dwarf::InvFullName()'],['../classInventory.html#aae0360c4932c519c8c46d5de39b1cb99',1,'Inventory::InvFullName()']]],
+  ['invfullname',['InvFullName',['../classWorkbench.html#a33d5fce75aaf7b2190678d8efca417be',1,'Workbench::InvFullName()'],['../classConverter.html#ae523ff8193332871ca3caf95612cdeb1',1,'Converter::InvFullName()'],['../classDwarf.html#a8ec3efec9355d9ead606d4164a2d69ca',1,'Dwarf::InvFullName()'],['../classInventory.html#aae0360c4932c519c8c46d5de39b1cb99',1,'Inventory::InvFullName()']]],
   ['isanimal',['IsAnimal',['../classAnimal.html#ac1ce27a8d446f40c48b66af1a5f90e45',1,'Animal::IsAnimal()'],['../classBlock.html#aac35702513c4f975787b9679103ce678',1,'Block::IsAnimal()']]],
   ['isbase',['IsBase',['../classGrass.html#afb74d6d8465c9fc30e8bdc6f4017ff13',1,'Grass']]],
   ['isempty',['IsEmpty',['../classInventory.html#aa494b4db63fd11b4eddbf862db1fb5ff',1,'Inventory']]],

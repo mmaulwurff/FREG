@@ -1,7 +1,5 @@
 #!/bin/bash
 
 doxygen Doxyfile &&
-git add html/*   &&
-optipng html/*png html/search/*png;
-sed -i "s/ *$//" html/*html html/*css html/*js &&
+optipng *png search/*png;
 git commit -am 'docs update';

@@ -2,6 +2,10 @@ var searchData=
 [
   ['sand',['SAND',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706aa4b82daa92a2c6388ae0dedd6e48b331',1,'header.h']]],
   ['screen_5fno_5ferror',['SCREEN_NO_ERROR',['../CursedScreen_8h.html#ae6468bd5894ef69f1df5fca80d2550d3ac4da796070e3424323e9826d5ae5ae79',1,'CursedScreen.h']]],
+  ['seconds_5fin_5fday',['SECONDS_IN_DAY',['../header_8h.html#ac150111bafc331bafb353619452c5c5caf6179aa4803663f9aae890dddbdd04e1',1,'header.h']]],
+  ['seconds_5fin_5fdaylight',['SECONDS_IN_DAYLIGHT',['../header_8h.html#ac150111bafc331bafb353619452c5c5ca8008f428ffa24e8e12b07c9220efe884',1,'header.h']]],
+  ['seconds_5fin_5fhour',['SECONDS_IN_HOUR',['../header_8h.html#ac150111bafc331bafb353619452c5c5ca1c6177d722948242fea83e8b07e15736',1,'header.h']]],
+  ['seconds_5fin_5fnight',['SECONDS_IN_NIGHT',['../header_8h.html#ac150111bafc331bafb353619452c5c5cab0134a7bd3edb5c0ccdb50d0b8fae73a',1,'header.h']]],
   ['shovel',['SHOVEL',['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a21c120ba530bade9e01fbbe5f23626e2',1,'header.h']]],
   ['shred_5facid_5flake',['SHRED_ACID_LAKE',['../header_8h.html#a67902c112e090330b7c684c88cca3c32a03c5a4022ca02edffbe1fb69455e6025',1,'header.h']]],
   ['shred_5fcastle',['SHRED_CASTLE',['../header_8h.html#a67902c112e090330b7c684c88cca3c32a58344af91a5d530dd6e1dd8b3ac48d64',1,'header.h']]],

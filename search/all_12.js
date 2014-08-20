@@ -9,6 +9,8 @@ var searchData=
   ['rainmachine',['RainMachine',['../classRainMachine.html',1,'RainMachine'],['../classRainMachine.html#a9ba8df638d24aa2f68e1a6b323c129c0',1,'RainMachine::RainMachine(int sub, int id)'],['../classRainMachine.html#a28fb66e0badf3364f84278d1486f0f2e',1,'RainMachine::RainMachine(QDataStream &amp;stream, int sub, int id)']]],
   ['rainmachine_2ecpp',['RainMachine.cpp',['../RainMachine_8cpp.html',1,'']]],
   ['rainmachine_2eh',['RainMachine.h',['../RainMachine_8h.html',1,'']]],
+  ['random_5fblink',['random_blink',['../classScreen.html#a9ad53b99cbf0396c7bda215ffbc1cb9f',1,'Screen']]],
+  ['randomblink',['RandomBlink',['../classScreen.html#a2b660dd43a0f2d658bd430f040cf9ae2',1,'Screen']]],
   ['randomdrop',['RandomDrop',['../classShred.html#acbfb7220c0da8ff263a8d63dda39d7d7',1,'Shred']]],
   ['readme_2emd',['README.md',['../README_8md.html',1,'']]],
   ['receivedtext',['ReceivedText',['../classActive.html#a9a5c8fd7b3b99212e9fb70b8dec3c1a9',1,'Active']]],

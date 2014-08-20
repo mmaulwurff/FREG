@@ -1,7 +1,7 @@
 var searchData=
 [
   ['needplayer',['NeedPlayer',['../classWorld.html#a8f6219e4b5df8f63481e6fa9ce1d4fd6',1,'World']]],
-  ['newblock',['NewBlock',['../classBlockManager.html#a26e9fcd2287526b92ed75f0cc23e43e1',1,'BlockManager::NewBlock()'],['../classWorld.html#ae53d57c45c2acdc92f30b69815f47cc5',1,'World::NewBlock()']]],
+  ['newblock',['NewBlock',['../classBlockManager.html#a26e9fcd2287526b92ed75f0cc23e43e1',1,'BlockManager']]],
   ['newlati',['newLati',['../classWorld.html#a4934f6329ff4877dd24fe04698decae4',1,'World']]],
   ['newlongi',['newLongi',['../classWorld.html#ac8915ae7e584cb0d60eaec68dbbdacd1',1,'World']]],
   ['newx',['newX',['../classWorld.html#a6efc79c4d62b2f6b69f779c0c685cf58',1,'World']]],

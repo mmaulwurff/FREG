@@ -23,7 +23,7 @@ var searchData=
   ['inventory_2eh',['Inventory.h',['../Inventory_8h.html',1,'']]],
   ['inventoryaction',['InventoryAction',['../classScreen.html#a24893ee8dd94f0db843de92cf3b04f21',1,'Screen']]],
   ['invertbounds',['InVertBounds',['../classWorld.html#ab58cf610fc9fc6c933ff75493aead01b',1,'World']]],
-  ['invfullname',['InvFullName',['../classDwarf.html#a8ec3efec9355d9ead606d4164a2d69ca',1,'Dwarf::InvFullName()'],['../classInventory.html#aae0360c4932c519c8c46d5de39b1cb99',1,'Inventory::InvFullName()']]],
+  ['invfullname',['InvFullName',['../classWorkbench.html#a33d5fce75aaf7b2190678d8efca417be',1,'Workbench::InvFullName()'],['../classConverter.html#ae523ff8193332871ca3caf95612cdeb1',1,'Converter::InvFullName()'],['../classDwarf.html#a8ec3efec9355d9ead606d4164a2d69ca',1,'Dwarf::InvFullName()'],['../classInventory.html#aae0360c4932c519c8c46d5de39b1cb99',1,'Inventory::InvFullName()']]],
   ['invisible',['INVISIBLE',['../header_8h.html#a48a539666409f8c99365fc6d8a58f708a59810d2438e63be8bce699880cb6dfad',1,'header.h']]],
   ['iron',['IRON',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a1c1fdce1593af16402fd482beb1e1497',1,'header.h']]],
   ['isanimal',['IsAnimal',['../classAnimal.html#ac1ce27a8d446f40c48b66af1a5f90e45',1,'Animal::IsAnimal()'],['../classBlock.html#aac35702513c4f975787b9679103ce678',1,'Block::IsAnimal()']]],

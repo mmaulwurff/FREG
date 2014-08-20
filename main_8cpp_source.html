@@ -21,7 +21,6 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="freg-logo.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">freg
    &#160;<span id="projectnumber">0.3</span>
@@ -214,7 +213,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;        puts(qPrintable(QObject::tr(<span class="stringliteral">&quot;Error loading world.&quot;</span>)));</div>
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;        <span class="keywordflow">return</span> EXIT_FAILURE;</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;    }</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;    QLockFile lock_file(worldName + <span class="stringliteral">&quot;/lock&quot;</span>);</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;    QLockFile lock_file(<a class="code" href="main_8cpp.html#a9ec9bc6a2ae0cabea9355f139d78856c">home_path</a> + worldName + <span class="stringliteral">&quot;/lock&quot;</span>);</div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;    <span class="keywordflow">if</span> ( not lock_file.tryLock() ) {</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;        puts(qPrintable(</div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;            QObject::tr(<span class="stringliteral">&quot;World \&quot;%1\&quot; is used by another instance of freg.&quot;</span>)</div>
@@ -239,7 +238,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="World_8cpp_html_a38026b801fec560c0322d4e5b6cab8be"><div class="ttname"><a href="World_8cpp.html#a38026b801fec560c0322d4e5b6cab8be">world</a></div><div class="ttdeci">World * world</div><div class="ttdef"><b>Definition:</b> <a href="World_8cpp_source.html#l00033">World.cpp:33</a></div></div>
 <div class="ttc" id="classScreen_html"><div class="ttname"><a href="classScreen.html">Screen</a></div><div class="ttdef"><b>Definition:</b> <a href="CursedScreen_8h_source.html#l00135">CursedScreen.h:135</a></div></div>
 <div class="ttc" id="main_8cpp_html_a3c04138a5bfe5d72780bb7e82a18e627"><div class="ttname"><a href="main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627">main</a></div><div class="ttdeci">int main(int argc, char **argv)</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00048">main.cpp:48</a></div></div>
-<div class="ttc" id="classWorld_html"><div class="ttname"><a href="classWorld.html">World</a></div><div class="ttdoc">World provides global physics and shred connection. </div><div class="ttdef"><b>Definition:</b> <a href="World_8h_source.html#l00039">World.h:39</a></div></div>
+<div class="ttc" id="classWorld_html"><div class="ttname"><a href="classWorld.html">World</a></div><div class="ttdoc">World provides global physics and shred connection. </div><div class="ttdef"><b>Definition:</b> <a href="World_8h_source.html#l00046">World.h:46</a></div></div>
 <div class="ttc" id="main_8cpp_html_a9ec9bc6a2ae0cabea9355f139d78856c"><div class="ttname"><a href="main_8cpp.html#a9ec9bc6a2ae0cabea9355f139d78856c">home_path</a></div><div class="ttdeci">const QString home_path</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00046">main.cpp:46</a></div></div>
 <div class="ttc" id="classCraftManager_html"><div class="ttname"><a href="classCraftManager.html">CraftManager</a></div><div class="ttdef"><b>Definition:</b> <a href="CraftManager_8h_source.html#l00065">CraftManager.h:65</a></div></div>
 <div class="ttc" id="CraftManager_8h_html"><div class="ttname"><a href="CraftManager_8h.html">CraftManager.h</a></div></div>
@@ -247,17 +246,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="CursedScreen_8h_html"><div class="ttname"><a href="CursedScreen_8h.html">CursedScreen.h</a></div><div class="ttdoc">Provides curses (text-based graphics interface) screen for freg. </div></div>
 <div class="ttc" id="World_8h_html"><div class="ttname"><a href="World_8h.html">World.h</a></div></div>
 <div class="ttc" id="CursedScreen_8h_html_ae6468bd5894ef69f1df5fca80d2550d3ac4da796070e3424323e9826d5ae5ae79"><div class="ttname"><a href="CursedScreen_8h.html#ae6468bd5894ef69f1df5fca80d2550d3ac4da796070e3424323e9826d5ae5ae79">SCREEN_NO_ERROR</a></div><div class="ttdef"><b>Definition:</b> <a href="CursedScreen_8h_source.html#l00125">CursedScreen.h:125</a></div></div>
-<div class="ttc" id="header_8h_html_a732a695ec07d1876d0d6d6cd6d3b733a"><div class="ttname"><a href="header_8h.html#a732a695ec07d1876d0d6d6cd6d3b733a">locale</a></div><div class="ttdeci">const QString locale</div><div class="ttdef"><b>Definition:</b> <a href="header_8h_source.html#l00062">header.h:62</a></div></div>
-<div class="ttc" id="header_8h_html_aa632576c2551fb43ee10d6ff15903629"><div class="ttname"><a href="header_8h.html#aa632576c2551fb43ee10d6ff15903629">OUT_BORDER_SHRED</a></div><div class="ttdeci">const char OUT_BORDER_SHRED</div><div class="ttdef"><b>Definition:</b> <a href="header_8h_source.html#l00088">header.h:88</a></div></div>
+<div class="ttc" id="header_8h_html_a732a695ec07d1876d0d6d6cd6d3b733a"><div class="ttname"><a href="header_8h.html#a732a695ec07d1876d0d6d6cd6d3b733a">locale</a></div><div class="ttdeci">const QString locale</div><div class="ttdef"><b>Definition:</b> <a href="header_8h_source.html#l00056">header.h:56</a></div></div>
+<div class="ttc" id="header_8h_html_aa632576c2551fb43ee10d6ff15903629"><div class="ttname"><a href="header_8h.html#aa632576c2551fb43ee10d6ff15903629">OUT_BORDER_SHRED</a></div><div class="ttdeci">const char OUT_BORDER_SHRED</div><div class="ttdef"><b>Definition:</b> <a href="header_8h_source.html#l00082">header.h:82</a></div></div>
 <div class="ttc" id="classWorldMap_html_a24ed0b2867dacb3c4735bc02a3292bf6"><div class="ttname"><a href="classWorldMap.html#a24ed0b2867dacb3c4735bc02a3292bf6">WorldMap::GenerateMap</a></div><div class="ttdeci">static void GenerateMap(QString world_name, int size, char outer, int seed)</div><div class="ttdef"><b>Definition:</b> <a href="worldmap_8cpp_source.html#l00125">worldmap.cpp:125</a></div></div>
 <div class="ttc" id="worldmap_8h_html"><div class="ttname"><a href="worldmap_8h.html">worldmap.h</a></div></div>
 <div class="ttc" id="CraftManager_8cpp_html_ae7a08bda42aef2d56869e13bda4379c8"><div class="ttname"><a href="CraftManager_8cpp.html#ae7a08bda42aef2d56869e13bda4379c8">craft_manager</a></div><div class="ttdeci">const CraftManager * craft_manager</div><div class="ttdef"><b>Definition:</b> <a href="CraftManager_8cpp_source.html#l00026">CraftManager.cpp:26</a></div></div>
 <div class="ttc" id="classPlayer_html"><div class="ttname"><a href="classPlayer.html">Player</a></div><div class="ttdoc">This class contains information specific to player and interface for manipulating him...</div><div class="ttdef"><b>Definition:</b> <a href="Player_8h_source.html#l00034">Player.h:34</a></div></div>
-<div class="ttc" id="header_8h_html_ab21b6b40ef7f8b70336abc988d4d28b6"><div class="ttname"><a href="header_8h.html#ab21b6b40ef7f8b70336abc988d4d28b6">DEFAULT_MAP_SIZE</a></div><div class="ttdeci">const int DEFAULT_MAP_SIZE</div><div class="ttdef"><b>Definition:</b> <a href="header_8h_source.html#l00086">header.h:86</a></div></div>
+<div class="ttc" id="header_8h_html_ab21b6b40ef7f8b70336abc988d4d28b6"><div class="ttname"><a href="header_8h.html#ab21b6b40ef7f8b70336abc988d4d28b6">DEFAULT_MAP_SIZE</a></div><div class="ttdeci">const int DEFAULT_MAP_SIZE</div><div class="ttdef"><b>Definition:</b> <a href="header_8h_source.html#l00080">header.h:80</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Aug 18 2014 11:17:23 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Aug 20 2014 15:05:04 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

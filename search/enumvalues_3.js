@@ -23,6 +23,7 @@ var searchData=
   ['damage_5fradiation',['DAMAGE_RADIATION',['../Block_8h.html#a5adfb93f736d9aa263cea4b7b74da15ea014b3aaccd8e680c8ce9e40386bf7b89',1,'Block.h']]],
   ['damage_5fthrust',['DAMAGE_THRUST',['../Block_8h.html#a5adfb93f736d9aa263cea4b7b74da15ea2cf7d7ea0f2b094334aec0c909009822',1,'Block.h']]],
   ['damage_5ftime',['DAMAGE_TIME',['../Block_8h.html#a5adfb93f736d9aa263cea4b7b74da15eac94f44a84467c858e4e5898f694648cb',1,'Block.h']]],
+  ['damage_5fultimate',['DAMAGE_ULTIMATE',['../Block_8h.html#a5adfb93f736d9aa263cea4b7b74da15eace43360fb8683fa1d388fdd24db020a2',1,'Block.h']]],
   ['deferred_5fbuild',['DEFERRED_BUILD',['../DeferredAction_8h.html#a9c85a475666355ed2ba754fb11de9b82a53efb7bf931502e9a7561ac67331158f',1,'DeferredAction.h']]],
   ['deferred_5fdamage',['DEFERRED_DAMAGE',['../DeferredAction_8h.html#a9c85a475666355ed2ba754fb11de9b82a80b2535eebfaf83f236b4078a006e5ac',1,'DeferredAction.h']]],
   ['deferred_5fghost_5fmove',['DEFERRED_GHOST_MOVE',['../DeferredAction_8h.html#a9c85a475666355ed2ba754fb11de9b82a0923b8f64b6e703867690225d521e03a',1,'DeferredAction.h']]],

@@ -21,7 +21,6 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="freg-logo.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">freg
    &#160;<span id="projectnumber">0.3</span>
@@ -89,8 +88,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#enum-members">Enumerations</a> &#124;
-<a href="#var-members">Variables</a>  </div>
+<a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
 <div class="title">Block.h File Reference</div>  </div>
 </div><!--header-->
@@ -124,10 +122,15 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:a627dbcae5241f12e1929324094714a65"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Block_8h.html#a627dbcae5241f12e1929324094714a65">wearable</a> { <a class="el" href="Block_8h.html#a627dbcae5241f12e1929324094714a65a2722fe596763e22657c506aff48f1e72">WEARABLE_NOWHERE</a>, 
+<tr class="memitem:a627dbcae5241f12e1929324094714a65"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Block_8h.html#a627dbcae5241f12e1929324094714a65">wearable</a> { <br />
+&#160;&#160;<a class="el" href="Block_8h.html#a627dbcae5241f12e1929324094714a65a2722fe596763e22657c506aff48f1e72">WEARABLE_NOWHERE</a>, 
 <a class="el" href="Block_8h.html#a627dbcae5241f12e1929324094714a65a6bd4d30cdda68fdbd265bad0205c7466">WEARABLE_HEAD</a>, 
 <a class="el" href="Block_8h.html#a627dbcae5241f12e1929324094714a65aaac45da1e0ee5f766e5ee39619a9a229">WEARABLE_BODY</a>, 
-<a class="el" href="Block_8h.html#a627dbcae5241f12e1929324094714a65ae8cd09b057327833eef759131565c5dd">WEARABLE_LEGS</a>
+<a class="el" href="Block_8h.html#a627dbcae5241f12e1929324094714a65ae8cd09b057327833eef759131565c5dd">WEARABLE_LEGS</a>, 
+<br />
+&#160;&#160;<a class="el" href="Block_8h.html#a627dbcae5241f12e1929324094714a65ad62c692583c57d7635f2e6e9a5ef9f3d">WEARABLE_OTHER</a>, 
+<a class="el" href="Block_8h.html#a627dbcae5241f12e1929324094714a65a47d7f7e5a1f10e8accf8c3b65be770d0">WEARABLE_VESSEL</a>
+<br />
  }</td></tr>
 <tr class="separator:a627dbcae5241f12e1929324094714a65"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5adfb93f736d9aa263cea4b7b74da15e"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Block_8h.html#a5adfb93f736d9aa263cea4b7b74da15e">damage_kinds</a> { <br />
@@ -151,37 +154,32 @@ Enumerations</h2></td></tr>
 <a class="el" href="Block_8h.html#a5adfb93f736d9aa263cea4b7b74da15ea0b27ddbbf4c1c2c5901215f00a54ef87">DAMAGE_ACID</a>, 
 <a class="el" href="Block_8h.html#a5adfb93f736d9aa263cea4b7b74da15ea014b3aaccd8e680c8ce9e40386bf7b89">DAMAGE_RADIATION</a>, 
 <br />
-&#160;&#160;<a class="el" href="Block_8h.html#a5adfb93f736d9aa263cea4b7b74da15ea031bd53370b7dc93fc29c79650018adf">DAMAGE_PUSH_UP</a>, 
+&#160;&#160;<a class="el" href="Block_8h.html#a5adfb93f736d9aa263cea4b7b74da15eace43360fb8683fa1d388fdd24db020a2">DAMAGE_ULTIMATE</a>, 
+<a class="el" href="Block_8h.html#a5adfb93f736d9aa263cea4b7b74da15ea031bd53370b7dc93fc29c79650018adf">DAMAGE_PUSH_UP</a>, 
 <a class="el" href="Block_8h.html#a5adfb93f736d9aa263cea4b7b74da15ea01116910a141cbd1c082c4e622128fd9">DAMAGE_PUSH_DOWN</a>, 
 <a class="el" href="Block_8h.html#a5adfb93f736d9aa263cea4b7b74da15ea28d808bcef61205f557344fd5dd1f7a1">DAMAGE_PUSH_NORTH</a>, 
-<a class="el" href="Block_8h.html#a5adfb93f736d9aa263cea4b7b74da15ea7026dfa998fb83da3034294b913465b8">DAMAGE_PUSH_SOUTH</a>, 
 <br />
-&#160;&#160;<a class="el" href="Block_8h.html#a5adfb93f736d9aa263cea4b7b74da15ea5aecd8f49b51a27e9990593f84ecbe90">DAMAGE_PUSH_EAST</a>, 
+&#160;&#160;<a class="el" href="Block_8h.html#a5adfb93f736d9aa263cea4b7b74da15ea7026dfa998fb83da3034294b913465b8">DAMAGE_PUSH_SOUTH</a>, 
+<a class="el" href="Block_8h.html#a5adfb93f736d9aa263cea4b7b74da15ea5aecd8f49b51a27e9990593f84ecbe90">DAMAGE_PUSH_EAST</a>, 
 <a class="el" href="Block_8h.html#a5adfb93f736d9aa263cea4b7b74da15ea09dd533a92bb790cb986e5e495acbe21">DAMAGE_PUSH_WEST</a>
 <br />
  }</td></tr>
 <tr class="separator:a5adfb93f736d9aa263cea4b7b74da15e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
-Variables</h2></td></tr>
-<tr class="memitem:a8cca719e02a8544db31be33b6e3700cf"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Block_8h.html#a8cca719e02a8544db31be33b6e3700cf">WEIGHT_NULLSTONE</a> = 1000</td></tr>
-<tr class="separator:a8cca719e02a8544db31be33b6e3700cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3bf2319ed726c4e980a5826022698c9e"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Block_8h.html#a3bf2319ed726c4e980a5826022698c9e">WEIGHT_WATER</a> = 500</td></tr>
-<tr class="separator:a3bf2319ed726c4e980a5826022698c9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a218767c29ad4a89a915e2176dc3577ec"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Block_8h.html#a218767c29ad4a89a915e2176dc3577ec">WEIGHT_IRON</a> = 300</td></tr>
-<tr class="separator:a218767c29ad4a89a915e2176dc3577ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae62294f6dd21c2b88d45a3dce4ce0baf"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Block_8h.html#ae62294f6dd21c2b88d45a3dce4ce0baf">WEIGHT_STONE</a> = 200</td></tr>
-<tr class="separator:ae62294f6dd21c2b88d45a3dce4ce0baf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4ce3936a853d91039fddf20cfcf1dbd"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Block_8h.html#ae4ce3936a853d91039fddf20cfcf1dbd">WEIGHT_GLASS</a> = 150</td></tr>
-<tr class="separator:ae4ce3936a853d91039fddf20cfcf1dbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a162564858bc44e0020edbe620b837eae"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Block_8h.html#a162564858bc44e0020edbe620b837eae">WEIGHT_SAND</a> = 100</td></tr>
-<tr class="separator:a162564858bc44e0020edbe620b837eae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa3790befdf33e8811c15dd13c32867d9"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Block_8h.html#aa3790befdf33e8811c15dd13c32867d9">WEIGHT_GREENERY</a> = 3</td></tr>
-<tr class="separator:aa3790befdf33e8811c15dd13c32867d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a77d09b001f0ca17f3c0a994fc2bb7bff"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Block_8h.html#a77d09b001f0ca17f3c0a994fc2bb7bff">WEIGHT_MINIMAL</a> = 1</td></tr>
-<tr class="separator:a77d09b001f0ca17f3c0a994fc2bb7bff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a98c3d68ae52e4b98973f1fe86de294ea"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Block_8h.html#a98c3d68ae52e4b98973f1fe86de294ea">WEIGHT_AIR</a> = 0</td></tr>
-<tr class="separator:a98c3d68ae52e4b98973f1fe86de294ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a025e7807c1d898d829ddfc91a937fc78"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Block_8h.html#a025e7807c1d898d829ddfc91a937fc78">weights</a> { <br />
+&#160;&#160;<a class="el" href="Block_8h.html#a025e7807c1d898d829ddfc91a937fc78aa16014f723b60b59068d45eacb7ef06c">WEIGHT_NULLSTONE</a> = 1000, 
+<a class="el" href="Block_8h.html#a025e7807c1d898d829ddfc91a937fc78a1d276711337595ebc0ef156a916b5c24">WEIGHT_WATER</a> = 500, 
+<a class="el" href="Block_8h.html#a025e7807c1d898d829ddfc91a937fc78a2584338604d5af66764509711033fbd7">WEIGHT_IRON</a> = 300, 
+<a class="el" href="Block_8h.html#a025e7807c1d898d829ddfc91a937fc78a04b024fcd645b3d7a0f587b38458cb44">WEIGHT_STONE</a> = 200, 
+<br />
+&#160;&#160;<a class="el" href="Block_8h.html#a025e7807c1d898d829ddfc91a937fc78a9f58be1e4e040663a16ce1af61637602">WEIGHT_GLASS</a> = 150, 
+<a class="el" href="Block_8h.html#a025e7807c1d898d829ddfc91a937fc78a2fb2b92b08cfbc4a2c6384c35292f032">WEIGHT_SAND</a> = 100, 
+<a class="el" href="Block_8h.html#a025e7807c1d898d829ddfc91a937fc78a9ac9437b39684dc58497dedb083e2b8f">WEIGHT_GREENERY</a> = 3, 
+<a class="el" href="Block_8h.html#a025e7807c1d898d829ddfc91a937fc78abc78b858a02a4c56acd76261844c56b2">WEIGHT_MINIMAL</a> = 1, 
+<br />
+&#160;&#160;<a class="el" href="Block_8h.html#a025e7807c1d898d829ddfc91a937fc78ac55d1f4b53d983f15186d9dd9598d490">WEIGHT_AIR</a> = 0
+<br />
+ }</td></tr>
+<tr class="separator:a025e7807c1d898d829ddfc91a937fc78"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Provides definition for class <a class="el" href="classBlock.html" title="Block without special physics and attributes. ">Block</a>. </p>
@@ -245,6 +243,8 @@ Variables</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a class="anchor" id="a5adfb93f736d9aa263cea4b7b74da15ea014b3aaccd8e680c8ce9e40386bf7b89"></a>DAMAGE_RADIATION&#160;</td><td class="fielddoc">
 </td></tr>
+<tr><td class="fieldname"><a class="anchor" id="a5adfb93f736d9aa263cea4b7b74da15eace43360fb8683fa1d388fdd24db020a2"></a>DAMAGE_ULTIMATE&#160;</td><td class="fielddoc">
+</td></tr>
 <tr><td class="fieldname"><a class="anchor" id="a5adfb93f736d9aa263cea4b7b74da15ea031bd53370b7dc93fc29c79650018adf"></a>DAMAGE_PUSH_UP&#160;</td><td class="fielddoc">
 </td></tr>
 <tr><td class="fieldname"><a class="anchor" id="a5adfb93f736d9aa263cea4b7b74da15ea01116910a141cbd1c082c4e622128fd9"></a>DAMAGE_PUSH_DOWN&#160;</td><td class="fielddoc">
@@ -259,7 +259,7 @@ Variables</h2></td></tr>
 </td></tr>
 </table>
 
-<p>Definition at line <a class="el" href="Block_8h_source.html#l00035">35</a> of file <a class="el" href="Block_8h_source.html">Block.h</a>.</p>
+<p>Definition at line <a class="el" href="Block_8h_source.html#l00037">37</a> of file <a class="el" href="Block_8h_source.html">Block.h</a>.</p>
 
 </div>
 </div>
@@ -281,143 +281,55 @@ Variables</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a class="anchor" id="a627dbcae5241f12e1929324094714a65ae8cd09b057327833eef759131565c5dd"></a>WEARABLE_LEGS&#160;</td><td class="fielddoc">
 </td></tr>
+<tr><td class="fieldname"><a class="anchor" id="a627dbcae5241f12e1929324094714a65ad62c692583c57d7635f2e6e9a5ef9f3d"></a>WEARABLE_OTHER&#160;</td><td class="fielddoc">
+</td></tr>
+<tr><td class="fieldname"><a class="anchor" id="a627dbcae5241f12e1929324094714a65a47d7f7e5a1f10e8accf8c3b65be770d0"></a>WEARABLE_VESSEL&#160;</td><td class="fielddoc">
+</td></tr>
 </table>
 
 <p>Definition at line <a class="el" href="Block_8h_source.html#l00028">28</a> of file <a class="el" href="Block_8h_source.html">Block.h</a>.</p>
 
 </div>
 </div>
-<h2 class="groupheader">Variable Documentation</h2>
-<a class="anchor" id="a98c3d68ae52e4b98973f1fe86de294ea"></a>
+<a class="anchor" id="a025e7807c1d898d829ddfc91a937fc78"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const int WEIGHT_AIR = 0</td>
+          <td class="memname">enum <a class="el" href="Block_8h.html#a025e7807c1d898d829ddfc91a937fc78">weights</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="Block_8h_source.html#l00070">70</a> of file <a class="el" href="Block_8h_source.html">Block.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ae4ce3936a853d91039fddf20cfcf1dbd"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const int WEIGHT_GLASS = 150</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="Block_8h_source.html#l00066">66</a> of file <a class="el" href="Block_8h_source.html">Block.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="aa3790befdf33e8811c15dd13c32867d9"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const int WEIGHT_GREENERY = 3</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="Block_8h_source.html#l00068">68</a> of file <a class="el" href="Block_8h_source.html">Block.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a218767c29ad4a89a915e2176dc3577ec"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const int WEIGHT_IRON = 300</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a class="anchor" id="a025e7807c1d898d829ddfc91a937fc78aa16014f723b60b59068d45eacb7ef06c"></a>WEIGHT_NULLSTONE&#160;</td><td class="fielddoc">
+<p>weights in measures - mz (mezuro) </p>
+</td></tr>
+<tr><td class="fieldname"><a class="anchor" id="a025e7807c1d898d829ddfc91a937fc78a1d276711337595ebc0ef156a916b5c24"></a>WEIGHT_WATER&#160;</td><td class="fielddoc">
+</td></tr>
+<tr><td class="fieldname"><a class="anchor" id="a025e7807c1d898d829ddfc91a937fc78a2584338604d5af66764509711033fbd7"></a>WEIGHT_IRON&#160;</td><td class="fielddoc">
+</td></tr>
+<tr><td class="fieldname"><a class="anchor" id="a025e7807c1d898d829ddfc91a937fc78a04b024fcd645b3d7a0f587b38458cb44"></a>WEIGHT_STONE&#160;</td><td class="fielddoc">
+</td></tr>
+<tr><td class="fieldname"><a class="anchor" id="a025e7807c1d898d829ddfc91a937fc78a9f58be1e4e040663a16ce1af61637602"></a>WEIGHT_GLASS&#160;</td><td class="fielddoc">
+</td></tr>
+<tr><td class="fieldname"><a class="anchor" id="a025e7807c1d898d829ddfc91a937fc78a2fb2b92b08cfbc4a2c6384c35292f032"></a>WEIGHT_SAND&#160;</td><td class="fielddoc">
+</td></tr>
+<tr><td class="fieldname"><a class="anchor" id="a025e7807c1d898d829ddfc91a937fc78a9ac9437b39684dc58497dedb083e2b8f"></a>WEIGHT_GREENERY&#160;</td><td class="fielddoc">
+</td></tr>
+<tr><td class="fieldname"><a class="anchor" id="a025e7807c1d898d829ddfc91a937fc78abc78b858a02a4c56acd76261844c56b2"></a>WEIGHT_MINIMAL&#160;</td><td class="fielddoc">
+</td></tr>
+<tr><td class="fieldname"><a class="anchor" id="a025e7807c1d898d829ddfc91a937fc78ac55d1f4b53d983f15186d9dd9598d490"></a>WEIGHT_AIR&#160;</td><td class="fielddoc">
+</td></tr>
+</table>
 
 <p>Definition at line <a class="el" href="Block_8h_source.html#l00064">64</a> of file <a class="el" href="Block_8h_source.html">Block.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a77d09b001f0ca17f3c0a994fc2bb7bff"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const int WEIGHT_MINIMAL = 1</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="Block_8h_source.html#l00069">69</a> of file <a class="el" href="Block_8h_source.html">Block.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a8cca719e02a8544db31be33b6e3700cf"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const int WEIGHT_NULLSTONE = 1000</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="Block_8h_source.html#l00062">62</a> of file <a class="el" href="Block_8h_source.html">Block.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a162564858bc44e0020edbe620b837eae"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const int WEIGHT_SAND = 100</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="Block_8h_source.html#l00067">67</a> of file <a class="el" href="Block_8h_source.html">Block.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ae62294f6dd21c2b88d45a3dce4ce0baf"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const int WEIGHT_STONE = 200</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="Block_8h_source.html#l00065">65</a> of file <a class="el" href="Block_8h_source.html">Block.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a3bf2319ed726c4e980a5826022698c9e"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const int WEIGHT_WATER = 500</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="Block_8h_source.html#l00063">63</a> of file <a class="el" href="Block_8h_source.html">Block.h</a>.</p>
 
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Aug 18 2014 11:17:23 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Aug 20 2014 15:05:04 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>
