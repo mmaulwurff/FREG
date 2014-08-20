@@ -127,7 +127,7 @@ enum kinds {
     WEAPON,      ///< 13
     LADDER,      ///< 14
     DOOR,        ///< 15
-    CREATOR,     ///< 16
+    REUSE_THIS,  ///< 16 // should be reused
     TEXT,        ///< 17
     MAP,         ///< 18
     PREDATOR,    ///< 19

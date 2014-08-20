@@ -43,6 +43,12 @@ const int MAX_BREATH = 60;
 const int MAX_DURABILITY = 1024;
 const int MAX_NOTE_LENGTH = 144;
 
+enum can_move_results {
+    CAN_MOVE_OK,
+    CAN_MOVE_CANNOT,
+    CAN_MOVE_DESTROYED
+};
+
 class World final : public QThread {
     /** \class World world.h
      * \brief World provides global physics and shred connection.
@@ -121,11 +127,11 @@ public: // Visibility section
 public: // Movement section
     /// Check and move
     bool Move(int x, int y, int z, dirs dir);
-    /// This CAN move blocks, but not xyz block.
-    bool CanMove(int x,    int y,    int z,
-                 int x_to, int y_to, int z_to, dirs dir);
     void Jump(int x, int y, int z, dirs dir);
 private:
+    /// This CAN move blocks, but not xyz block.
+    can_move_results CanMove(int x,    int y,    int z,
+                             int x_to, int y_to, int z_to, dirs dir);
     void NoCheckMove(int x,    int y,    int z,
                      int x_to, int y_to, int z_to, dirs dir);
 

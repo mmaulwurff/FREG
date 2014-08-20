@@ -53,7 +53,7 @@ const QByteArray BlockManager::kinds[] = { // do not use space, use '_'
     "weapon",
     "ladder",
     "door",
-    "creator",
+    "REUSE_THIS",
     "text",
     "map",
     "predator",
@@ -152,7 +152,7 @@ Block * BlockManager::NewBlock(const int kind, const int sub) {
     case WEAPON:    return new Weapon(kind, sub);
     case LADDER:    return new Ladder(kind, sub);
     case DOOR:      return new Door  (kind, sub);
-    case CREATOR:   return new Creator(kind, sub);
+    case REUSE_THIS: Q_UNREACHABLE(); return nullptr;
     case TEXT:      return new Text  (kind, sub);
     case MAP:       return new Map   (kind, sub);
     case PREDATOR:  return new Predator(kind, sub);
@@ -194,7 +194,7 @@ Block * BlockManager::BlockFromFile(QDataStream & str,
     case WEAPON:    return new Weapon(str, kind, sub);
     case LADDER:    return new Ladder(str, kind, sub);
     case DOOR:      return new Door  (str, kind, sub);
-    case CREATOR:   return new Creator(str, kind, sub);
+    case REUSE_THIS: Q_UNREACHABLE(); return nullptr;
     case TEXT:      return new Text  (str, kind, sub);
     case MAP:       return new Map   (str, kind, sub);
     case PREDATOR:  return new Predator(str, kind, sub);

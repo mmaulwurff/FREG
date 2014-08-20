@@ -52,7 +52,7 @@
     int  Weapon::DamageKind() const {
         switch ( Sub() ) {
         case IRON: return DAMAGE_THRUST;
-        case SKY:  return DAMAGE_TIME;
+        case SKY:  return DAMAGE_ULTIMATE;
         default:   return DAMAGE_CRUSH;
         }
     }

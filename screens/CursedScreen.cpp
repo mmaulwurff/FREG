@@ -130,21 +130,19 @@ int Screen::RandomBlink() const {
 }
 
 int Screen::Color(const int kind, const int sub) const {
-    switch ( sub ) {
-    case ACID: return COLOR_PAIR(GREEN_GREEN) | A_BOLD | A_REVERSE;
-    }
     switch ( kind ) { // foreground_background
     case LIQUID: switch ( sub ) {
-        case WATER:     return COLOR_PAIR(CYAN_BLUE) | RandomBlink();
-        case SUB_CLOUD: return COLOR_PAIR(BLACK_WHITE);
-        default:        return COLOR_PAIR(RED_YELLOW);
-        } // no break);
+        case WATER:     return COLOR_PAIR( CYAN_BLUE  ) | RandomBlink();
+        case SUB_CLOUD: return COLOR_PAIR(BLACK_WHITE );
+        case ACID:      return COLOR_PAIR(GREEN_GREEN ) |A_BOLD |RandomBlink();
+        default:        return COLOR_PAIR(  RED_YELLOW) | RandomBlink();
+        } break;
     case FALLING: switch ( sub ) {
-        case WATER: return COLOR_PAIR(CYAN_WHITE);
+        case WATER: return COLOR_PAIR(  CYAN_WHITE);
         case SAND:  return COLOR_PAIR(YELLOW_WHITE);
-        } // no break);
+        } // no break;
     default: switch ( sub ) {
-        default: return COLOR_PAIR(WHITE_BLACK);
+        default:         return COLOR_PAIR(WHITE_BLACK);
         case STONE:      return COLOR_PAIR(BLACK_WHITE);
         case GREENERY:   return COLOR_PAIR(BLACK_GREEN);
         case WOOD:
@@ -178,8 +176,13 @@ int Screen::Color(const int kind, const int sub) const {
             }
         case SUB_DUST: return COLOR_PAIR(BLACK_BLACK ) | A_BOLD | A_REVERSE;
         case FIRE:     return COLOR_PAIR(  RED_YELLOW) |A_BLINK |RandomBlink();
+        case ACID:     return COLOR_PAIR(GREEN_GREEN ) | A_BOLD | A_REVERSE;
         }
-    case DWARF: return COLOR_PAIR((sub==ADAMANTINE) ? CYAN_BLACK : WHITE_BLUE);
+    case DWARF: switch ( sub ) {
+        case ADAMANTINE: return COLOR_PAIR( CYAN_BLACK);
+        case DIFFERENT:  return COLOR_PAIR(WHITE_BLACK);
+        default:         return COLOR_PAIR(WHITE_BLUE );
+        }
     case RABBIT:    return COLOR_PAIR(  RED_WHITE);
     case PREDATOR:  return COLOR_PAIR(  RED_BLACK);
     case TELEGRAPH: return COLOR_PAIR( BLUE_BLUE ) | A_BOLD;
@@ -374,7 +377,7 @@ char Screen::PrintBlock(const Block & block, WINDOW * const window) const {
 }
 
 void Screen::Print() {
-    if ( not player->GetBlock() || updated ) return;
+    if ( updated ) return;
     updated = true;
     w->Lock();
     PrintHUD();
@@ -427,7 +430,7 @@ void Screen::PrintHUD() {
             .arg(player->GlobalX()).arg(player->GlobalY()).arg(player->Z())
             .arg(player->GetLatitude()).arg(player->GetLongitude())) );
     } else {
-        const int dur = player->HP();
+        const int dur = player->GetBlock()->GetDurability();
         if ( dur > 0 ) { // HitPoints line
             PrintBar(0,
                 (dur > MAX_DURABILITY/5) ?
@@ -435,7 +438,7 @@ void Screen::PrintHUD() {
                 ascii ? '@' : 0x2665, dur*100/MAX_DURABILITY);
         }
         const int breath = player->BreathPercent();
-        if ( -100!=breath && breath!=100 ) { // breath line
+        if ( breath != 100 ) {
             PrintBar(16, COLOR_PAIR(BLUE_BLACK), ascii ? 'o' : 0x00b0, breath);
         }
         switch ( player->SatiationPercent()/25 ) { // satiation status
@@ -557,9 +560,8 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
             waddch(window, ' ');
         }
     }
-    if ( player->GetBlock() && dir > DOWN ) {
-        const Block * const block =
-            w->GetBlock(player->X(), player->Y(), player->Z());
+    if ( dir > DOWN ) {
+        const Block * const block = player->GetBlock();
         wattrset(window, Color(block->Kind(), block->Sub()));
         (void)wmove(window, player->Y()-start_y+1, (player->X()-start_x)*2+2);
         switch ( player->GetDir() ) {

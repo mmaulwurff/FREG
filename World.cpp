@@ -359,17 +359,21 @@ const {
 
 bool World::Move(const int x, const int y, const int z, const dirs dir) {
     int newx, newy, newz;
-    if (      Focus(x, y, z, &newx, &newy, &newz, dir) &&
-            CanMove(x, y, z,  newx,  newy,  newz, dir) )
-    {
-        NoCheckMove(x, y, z,  newx,  newy,  newz, dir);
+    if ( Focus(x, y, z, &newx, &newy, &newz, dir) ) {
+        switch ( CanMove(x, y, z,  newx,  newy,  newz, dir) ) {
+        case CAN_MOVE_OK:
+            NoCheckMove(x, y, z,  newx,  newy,  newz, dir);
+            return true;
+        case CAN_MOVE_CANNOT: return false;
+        case CAN_MOVE_DESTROYED: return true;
+        }
         return true;
     } else {
         return false;
     }
 }
 
-bool World::CanMove(const int x, const int y, const int z,
+can_move_results World::CanMove(const int x, const int y, const int z,
         const int newx, const int newy, const int newz, const dirs dir)
 {
     Block * const block    = GetBlock(x, y, z);
@@ -382,7 +386,7 @@ bool World::CanMove(const int x, const int y, const int z,
             && AIR == GetBlock(x, y, z-1)->Sub()
             && AIR == GetBlock(newx, newy, newz-1)->Sub() )
     { // prevent moving while falling
-        return false;
+        return CAN_MOVE_CANNOT;
     }
     const push_reaction reaction = block->PushResult(dir);
     switch ( reaction ) {
@@ -396,13 +400,14 @@ bool World::CanMove(const int x, const int y, const int z,
         if ( *block != *block_to ) { // prevent useless flow
             break;
         } // no break;
-    default: return false;
+    default: return CAN_MOVE_CANNOT;
     }
     switch ( block_to->PushResult(dir) ) {
     case MOVABLE:
         return ( block->Weight() > block_to->Weight()
-            && Move(newx, newy, newz, dir) );
-    case ENVIRONMENT: return true;
+            && Move(newx, newy, newz, dir) ) ?
+                CAN_MOVE_OK : CAN_MOVE_CANNOT;
+    case ENVIRONMENT: return CAN_MOVE_OK;
     case NOT_MOVABLE: break;
     case MOVE_UP:
         if ( dir > DOWN ) { // not UP and not DOWN
@@ -419,10 +424,11 @@ bool World::CanMove(const int x, const int y, const int z,
                 <= 0 )
         {
             DestroyAndReplace(x, y, z);
+            return CAN_MOVE_DESTROYED;
         }
         break;
     }
-    return false;
+    return CAN_MOVE_CANNOT;;
 } // bool World::CanMove(const int x, y, z, newx, newy, newz, int dir)
 
 void World::NoCheckMove(const int x, const int y, const int z,

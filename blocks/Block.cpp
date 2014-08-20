@@ -241,7 +241,7 @@ int Block::Weight() const {
     case HAZELNUT:  return WEIGHT_MINIMAL;
     case MOSS_STONE:
     case A_MEAT:
-    case H_MEAT:    return WEIGHT_WATER-10;
+    case H_MEAT:    return WEIGHT_WATER+10;
     case SKY:
     case STAR:
     case FIRE:

@@ -167,6 +167,8 @@ private:
     Player & operator=(const Player &) = delete;
     Player(const Player &) = delete;
 
+    Animal * NewPlayer() const;
+
     /// Checks player/inventory/block existence, size limits.
     Block * ValidBlock(int num) const;
     Shred * GetShred() const;
@@ -176,8 +178,8 @@ private:
     QSettings settings;
     long homeLongi, homeLati;
     int homeX, homeY, homeZ;
-    dirs dir = NORTH;
     Animal * player;
+    Animal * creator;
     int usingType;
     int usingSelfType;
     int usingInInventory;

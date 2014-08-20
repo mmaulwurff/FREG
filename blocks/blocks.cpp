@@ -451,31 +451,6 @@
         str >> alarmTime >> timerTime;
     }
 
-// Creator::
-    QString Creator::FullName() const { return tr("Creative block"); }
-    int Creator::DamageKind() const { return DAMAGE_TIME; }
-    int Creator::DamageLevel() const { return MAX_DURABILITY; }
-    Inventory * Creator::HasInventory() { return this; }
-    int Creator::ShouldAct() const { return FREQUENT_FIRST; }
-
-    void Creator::ReceiveSignal(const QString str) {
-        Active::ReceiveSignal(str);
-    }
-
-    void Creator::SaveAttributes(QDataStream & out) const {
-        Animal::SaveAttributes(out);
-        Inventory::SaveAttributes(out);
-    }
-
-    Creator::Creator(const int kind, const int sub) :
-            Animal(kind, sub),
-            Inventory(INV_SIZE)
-    {}
-    Creator::Creator(QDataStream & str, const int kind, const int sub) :
-            Animal(str, kind, sub),
-            Inventory(str, INV_SIZE)
-    {}
-
 // Text::
     QString Text::FullName() const {
         switch ( Sub() ) {

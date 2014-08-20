@@ -79,7 +79,6 @@ World * VirtScreen::GetWorld() const { return w; }
 char VirtScreen::CharName(const int kind, const int sub) const {
     switch ( kind )  {
     case BUSH:   return ';';
-    case CREATOR:
     case DWARF:  return '@';
     case LIQUID: return '~';
     case GRASS:  return ( FIRE == sub ) ? 'f' : '.';
