@@ -67,8 +67,8 @@ void Player::SetCreativeMode(const bool creative_on) {
 int Player::BreathPercent() const { return player->Breath()*100/MAX_BREATH; }
 
 int Player::SatiationPercent() const {
-    return ( GetCreativeMode() ||
-        (player->Sub()!=H_MEAT && player->Sub()!=A_MEAT) ) ?
+    return ( GetCreativeMode()
+            || GROUP_MEAT != Block::GetSubGroup(player->Sub()) ) ?
         50 : player->Satiation()*100/SECONDS_IN_DAY;
 }
 
@@ -110,7 +110,7 @@ void Player::Examine() const {
             arg(block==block_manager.Normal(block->Sub())).
             arg(block->GetDir()));
     }
-    if ( Shred::IsLikeAir(block->Sub()) ) return;
+    if ( Block::GetSubGroup(block->Sub()) == GROUP_AIR ) return;
     const QString str = block->GetNote();
     if ( not str.isEmpty() ) {
         emit Notify(tr("Inscription: ") + str);

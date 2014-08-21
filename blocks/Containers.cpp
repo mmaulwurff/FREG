@@ -42,25 +42,20 @@ const int CONVERTER_LIGHT_RADIUS = 2;
     }
 
     void Container::DoRareAction() {
-        switch ( Sub() ) {
-        default: break;
-        case DIFFERENT: {
-                Inventory * const inv =
-                    GetWorld()->GetBlock(X(), Y(), Z()-1)->HasInventory();
-                if ( inv != nullptr ) {
-                    inv->GetAll(this);
-                }
-                if ( IsEmpty() ) {
-                    GetWorld()->DestroyAndReplace(X(), Y(), Z());
-                }
-            } break;
-        case A_MEAT:
-        case H_MEAT:
+        if ( GROUP_MEAT == GetSubGroup(Sub()) ) {
             Damage(MAX_DURABILITY/SECONDS_IN_DAY, DAMAGE_TIME);
             if ( GetDurability() <= 0 ) {
                 GetWorld()->DestroyAndReplace(X(), Y(), Z());
             }
-            break;
+        } else if ( Sub() == DIFFERENT ) {
+            Inventory * const inv =
+                GetWorld()->GetBlock(X(), Y(), Z()-1)->HasInventory();
+            if ( inv ) {
+                inv->GetAll(this);
+            }
+            if ( IsEmpty() ) {
+                GetWorld()->DestroyAndReplace(X(), Y(), Z());
+            }
         }
     }
 
@@ -75,7 +70,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
     inner_actions Container::ActInner() { return INNER_ACTION_NONE; }
 
     usage_types Container::Use(Block *) {
-        if ( Sub() == A_MEAT || Sub() == H_MEAT ) {
+        if ( GROUP_MEAT == GetSubGroup(Sub()) ) {
             GetWorld()->DestroyAndReplace(X(), Y(), Z());
             return USAGE_TYPE_NO;
         } else {

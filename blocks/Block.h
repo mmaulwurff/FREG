@@ -73,6 +73,12 @@ enum weights { ///< weights in measures - mz (mezuro)
     WEIGHT_AIR       =    0,
 };
 
+enum sub_groups {
+    GROUP_NONE,
+    GROUP_AIR,
+    GROUP_MEAT,
+};
+
 class Inventory;
 class Active;
 class Falling;
@@ -150,6 +156,8 @@ public:
     static QString SubName(int sub);
     /// Returns translated substance name with first upper letter.
     static QString SubNameUpper(int sub);
+
+    static sub_groups GetSubGroup(int sub);
 
 protected:
     virtual void SaveAttributes(QDataStream &) const;

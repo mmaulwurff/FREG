@@ -626,11 +626,12 @@
     wearable MedKit::Wearable() const { return WEARABLE_OTHER; }
 
     usage_types MedKit::Use(Block * const user) {
-        if ( user && (user->Sub()==H_MEAT || user->Sub()==A_MEAT) ) {
-            if ( GetDurability() > MAX_DURABILITY/10 ) {
-                user->Mend(MAX_DURABILITY/10);
-                Damage(MAX_DURABILITY/10, DAMAGE_TIME);
-            }
+        if ( user
+                && GROUP_MEAT == GetSubGroup(user->Sub())
+                && GetDurability() > MAX_DURABILITY/10 )
+        {
+            user->Mend(MAX_DURABILITY/10);
+            Damage(MAX_DURABILITY/10, DAMAGE_TIME);
         }
         return USAGE_TYPE_NO;
     }

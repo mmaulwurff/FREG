@@ -528,9 +528,6 @@ void Shred::ChaosShred() {
     for (int k=1; k<HEIGHT/2; ++k) {
         int kind = qrand() % LAST_KIND;
         int sub  = qrand() % LAST_SUB;
-        if ( IsLikeAir(sub) ) {
-            sub = STONE;
-        }
         SetNewBlock(kind, sub, i, j, k);
     }
 }
@@ -611,8 +608,4 @@ void Shred::Rain(const int kind, const int sub) {
     if ( to_replace_sub == AIR || to_replace_sub == SUB_CLOUD ) {
         SetBlock(BlockManager::NewBlock(kind, sub), x, y, CLOUD_HEIGHT);
     }
-}
-
-bool Shred::IsLikeAir(const int sub) {
-    return ( sub==AIR || sub==SKY || sub==STAR );
 }

@@ -258,6 +258,17 @@ void Block::SetDir(const int dir) {
     }
 }
 
+sub_groups Block::GetSubGroup(const int sub) {
+    switch ( sub ) {
+    default:     return GROUP_NONE;
+    case AIR:
+    case SKY:
+    case STAR:   return GROUP_AIR;
+    case H_MEAT:
+    case A_MEAT: return GROUP_MEAT;
+    }
+}
+
 bool Block::operator!=(const Block & block) const { return !(*this == block); }
 
 bool Block::operator==(const Block & block) const {

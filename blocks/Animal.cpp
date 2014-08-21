@@ -25,7 +25,7 @@
 
 // Animal:: section
     inner_actions Animal::ActInner() {
-        if ( Sub() != H_MEAT && Sub() != A_MEAT ) return INNER_ACTION_NONE;
+        if ( GROUP_MEAT != GetSubGroup(Sub()) ) return INNER_ACTION_NONE;
         if ( satiation <= 0 ) {
             Damage(5, DAMAGE_HUNGER);
         } else {
@@ -45,7 +45,7 @@
     }
 
     void Animal::DoRareAction() {
-        if ( Sub() != H_MEAT && Sub() != A_MEAT ) return; // mechanical
+        if ( GROUP_MEAT != GetSubGroup(Sub()) ) return;
         if ( not IsSubAround(AIR) ) {
             if ( breath <= 0 ) {
                 Damage(10, DAMAGE_BREATH);
@@ -174,10 +174,7 @@
     }
 
     int Predator::Attractive(const int sub) const {
-        switch ( sub ) {
-        default:       return  0;
-        case GREENERY: return  1;
-        case A_MEAT:
-        case H_MEAT:   return 10;
-        }
+        return ( GROUP_MEAT == GetSubGroup(sub) ) ?
+            10 : ( sub == GREENERY ) ?
+                1 : 0;
     }

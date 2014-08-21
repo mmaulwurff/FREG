@@ -461,7 +461,7 @@ void Screen::PrintHUD() {
     int x, y, z;
     ActionXyz(&x, &y, &z);
     Block * const focused = GetWorld()->GetBlock(x, y, z);
-    if ( not Shred::IsLikeAir(focused->Sub()) ) {
+    if ( Block::GetSubGroup(focused->Sub()) != GROUP_AIR ) {
         const int left_border = (SCREEN_SIZE*2+2) * (IsScreenWide() ? 2 : 1);
         PrintBar(left_border - 15,
             Color(focused->Kind(), focused->Sub()),
