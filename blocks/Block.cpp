@@ -144,9 +144,11 @@ void Block::Damage(const int dmg, int dmg_kind) {
         case DAMAGE_HANDS: return;
         } break;
     case A_MEAT:
-    case H_MEAT:
-        mult += (DAMAGE_THRUST==dmg_kind || DAMAGE_HEAT==dmg_kind);
-        break;
+    case H_MEAT: switch ( dmg_kind ) {
+        case DAMAGE_HEAT:
+        case DAMAGE_THRUST:  mult = 2;
+        case DAMAGE_PUSH_UP: mult = ( dmg < 10 ) ? 0 : 1;
+        } break;
     case SAND:
     case SOIL:      mult += ( DAMAGE_DIG    == dmg_kind ); break;
     case ADAMANTINE:
@@ -163,7 +165,7 @@ void Block::Damage(const int dmg, int dmg_kind) {
         }
     }
     durability -= mult*dmg;
-}
+} // Block::Damage(const ind dmg, const int dmg_kind)
 
 Block * Block::DropAfterDamage(bool * const delete_block) {
     switch ( Sub() ) {

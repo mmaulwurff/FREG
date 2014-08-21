@@ -201,8 +201,9 @@ const int CONVERTER_LIGHT_RADIUS = 2;
     }
 
     QString Workbench::InvFullName(const int slot_number) const {
-        return ( slot_number < Start() ) ?
-            tr("-product-") : tr("-material-");
+        return ( Number(slot_number) > 0 ) ?
+            ShowBlock(slot_number)->FullName() : ( slot_number < Start() ) ?
+                tr("-product-") : tr("-material-");
     }
 
     int Workbench::Start() const { return 2; }
@@ -265,7 +266,11 @@ const int CONVERTER_LIGHT_RADIUS = 2;
 
     int Converter::ShouldAct() const { return FREQUENT_RARE; }
     int Converter::LightRadius() const { return lightRadius; }
-    QString Converter::InvFullName(int) const { return tr("-fuel-"); }
+
+    QString Converter::InvFullName(const int slot_number) const {
+        return ( Number(slot_number) == 0 ) ?
+            tr("-fuel-") : ShowBlock(slot_number)->FullName();
+    }
 
     int Converter::DamageKind() const {
         return (fuelLevel > 0) ? damageKindOn : 0;

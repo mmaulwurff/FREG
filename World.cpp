@@ -360,11 +360,11 @@ const {
 bool World::Move(const int x, const int y, const int z, const dirs dir) {
     int newx, newy, newz;
     if ( Focus(x, y, z, &newx, &newy, &newz, dir) ) {
-        switch ( CanMove(x, y, z,  newx,  newy,  newz, dir) ) {
+        switch ( CanMove(x, y, z, newx, newy, newz, dir) ) {
         case CAN_MOVE_OK:
-            NoCheckMove(x, y, z,  newx,  newy,  newz, dir);
+            NoCheckMove(x, y, z, newx, newy, newz, dir);
             return true;
-        case CAN_MOVE_CANNOT: return false;
+        case CAN_MOVE_CANNOT:    return false;
         case CAN_MOVE_DESTROYED: return true;
         }
         return true;
@@ -393,8 +393,8 @@ can_move_results World::CanMove(const int x, const int y, const int z,
     case MOVABLE:
         if ( Damage(newx, newy, newz, 1, DAMAGE_PUSH_UP + dir) <= 0 ) {
             DestroyAndReplace  (newx, newy, newz);
-            block_to = GetBlock(newx, newy, newz);
         }
+        block_to = GetBlock(newx, newy, newz);
         break;
     case ENVIRONMENT:
         if ( *block != *block_to ) { // prevent useless flow
@@ -434,10 +434,10 @@ can_move_results World::CanMove(const int x, const int y, const int z,
 void World::NoCheckMove(const int x, const int y, const int z,
         const int newx, const int newy, const int newz, const dirs dir)
 {
-    Shred * const shred_from = GetShred(x, y);
+    Shred * const shred_from = GetShred(   x,    y);
     Shred * const shred_to   = GetShred(newx, newy);
-    const int x_in = Shred::CoordInShred(x);
-    const int y_in = Shred::CoordInShred(y);
+    const int    x_in = Shred::CoordInShred(x);
+    const int    y_in = Shred::CoordInShred(y);
     const int newx_in = Shred::CoordInShred(newx);
     const int newy_in = Shred::CoordInShred(newy);
     Block * const block    = shred_from->GetBlock(   x_in,    y_in,    z);
@@ -454,7 +454,7 @@ void World::NoCheckMove(const int x, const int y, const int z,
     block->Move(dir);
     emit Updated(newx, newy, newz);
 
-    shred_from->AddFalling(shred_from->GetBlock(x_in, y_in, z+1));
+    shred_from->AddFalling(shred_from->GetBlock(   x_in,    y_in,    z+1));
     shred_to  ->AddFalling(shred_to  ->GetBlock(newx_in, newy_in, newz+1));
     shred_to  ->AddFalling(block);
 
@@ -499,15 +499,12 @@ int World::Damage(const int x, const int y, const int z,
     Block * temp = shred->GetBlock(x_in, y_in, z);
     const int sub  = temp->Sub();
     if ( AIR == sub ) return 0;
-    const int kind = temp->Kind();
     if ( temp == block_manager.Normal(sub) ) {
-        temp = BlockManager::NewBlock(kind, sub);
+        temp = BlockManager::NewBlock(temp->Kind(), sub);
+        shred->SetBlockNoCheck(temp, x_in, y_in, z);
     }
     temp->Damage(dmg, dmg_kind);
-    const int durability = temp->GetDurability();
-    // SetBlock can alter temp (by ReplaceWithNormal) so put in last place.
-    shred->SetBlock(temp, x_in, y_in, z);
-    return durability;
+    return temp->GetDurability();
 }
 
 void World::DestroyAndReplace(const int x, const int y, const int z) {
