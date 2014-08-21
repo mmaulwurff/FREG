@@ -93,7 +93,7 @@ private:
     void ReEnlightenAll();
     void ReEnlightenTime();
     /// Called from ReloadShreds(int), enlightens only needed shreds.
-    void ReEnlightenMove(int direction);
+    void ReEnlightenMove(dirs);
     void UpShine(int x, int y, int z_bottom);
     void UpShineInit(int x, int y, int z_bottom);
     void CrossUpShine(int x, int y, int z_bottom);
@@ -239,7 +239,7 @@ private:
     long newLati, newLongi;
     int  newX, newY, newZ;
     /// UP for no reset, DOWN for full reset, NSEW for side shift.
-    volatile int toResetDir;
+    volatile dirs toResetDir;
     int sunMoonFactor;
 
     ShredStorage * shredStorage;

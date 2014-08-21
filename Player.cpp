@@ -426,10 +426,16 @@ Animal * Player::NewPlayer() const {
 
 void Player::SetPlayer(const int _x, const int _y, const int _z) {
     SetXyz(_x, _y, _z);
+    if ( player != nullptr ) {
+        player->disconnect();
+    }
     if ( GetCreativeMode() ) {
         (player = creator)->SetXyz(X(), Y(), Z());
         GetShred()->Register(player);
     } else {
+        if ( player != nullptr ) {
+            GetShred()->Unregister(player);
+        }
         World * const world = GetWorld();
         Block * candidate;
         for ( ; z_self < HEIGHT-2; ++z_self ) {

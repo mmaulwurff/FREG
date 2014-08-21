@@ -146,7 +146,7 @@ void Block::Damage(const int dmg, int dmg_kind) {
     case A_MEAT:
     case H_MEAT: switch ( dmg_kind ) {
         case DAMAGE_HEAT:
-        case DAMAGE_THRUST:  mult = 2;
+        case DAMAGE_THRUST:  mult = 2; break;
         case DAMAGE_PUSH_UP: mult = ( dmg < 10 ) ? 0 : 1;
         } break;
     case SAND:

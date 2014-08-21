@@ -169,7 +169,7 @@ void World::ReEnlightenAll() {
     initial_lighting = false;
 }
 
-void World::ReEnlightenMove(const int dir) {
+void World::ReEnlightenMove(const dirs dir) {
     initial_lighting = true;
     switch ( dir ) {
     case NORTH:
@@ -177,25 +177,25 @@ void World::ReEnlightenMove(const int dir) {
             shreds[i            ]->ShineAll();
             shreds[i+NumShreds()]->ShineAll();
         }
-    break;
+        break;
     case SOUTH:
         for (int i=0; i<NumShreds(); ++i) {
             shreds[i+NumShreds()*(NumShreds()-1)]->ShineAll();
             shreds[i+NumShreds()*(NumShreds()-2)]->ShineAll();
         }
-    break;
+        break;
     case EAST:
         for (int i=0; i<NumShreds(); ++i) {
             shreds[NumShreds()*i+NumShreds()-1]->ShineAll();
             shreds[NumShreds()*i+NumShreds()-2]->ShineAll();
         }
-    break;
+        break;
     case WEST:
         for (int i=0; i<NumShreds(); ++i) {
             shreds[NumShreds()*i  ]->ShineAll();
             shreds[NumShreds()*i+1]->ShineAll();
         }
-    break;
+        break;
     default: Q_UNREACHABLE(); break;
     }
     initial_lighting = false;

@@ -281,7 +281,9 @@ void World::ReloadShreds() {
     toResetDir = UP; // set no reset
 } // void World::ReloadShreds()
 
-void World::SetReloadShreds(const int direction) { toResetDir = direction; }
+void World::SetReloadShreds(const int direction) {
+    toResetDir = static_cast<dirs>(direction);
+}
 
 void World::PhysEvents() {
     static const int start = NumShreds()/2 - numActiveShreds/2;
