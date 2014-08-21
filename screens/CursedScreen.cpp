@@ -736,9 +736,10 @@ const {
         mvwprintw(window, 2+i+shift, 53, "%5hu mz", inv->GetInvWeight(i));
     }
     wstandend(window);
-    mvwprintw(window, 2+inv->Size()+shift, 40,
-        qPrintable(tr("Full weight: %1 mz").
-            arg(inv->Weight(), 6, 10, QChar(' '))));
+    QString full_weight = tr("Full weight: %1 mz").
+        arg(inv->Weight(), 6, 10, QChar(' '));
+    mvwprintw(window, 2+inv->Size()+shift,
+        SCREEN_SIZE*2 + 1 - full_weight.length(), qPrintable(full_weight));
     wattrset(window, Color(block->Kind(), block->Sub()));
     box(window, 0, 0);
     if ( start != 0 ) {
