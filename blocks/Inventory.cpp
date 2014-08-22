@@ -18,6 +18,7 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "Block.h"
+#include "World.h"
 #include "Inventory.h"
 #include "CraftManager.h"
 #include "BlockManager.h"
@@ -186,8 +187,13 @@ bool Inventory::IsEmpty() const {
     return true;
 }
 
-void Inventory::Push(Block * const who) {
-    Inventory * const inv = who->HasInventory();
+void Inventory::Push(const int x, const int y, const int z,
+        const int push_direction)
+{
+    int x_targ, y_targ, z_targ;
+    world->Focus(x, y, z, &x_targ, &y_targ, &z_targ,
+        World::Anti(Block::MakeDirFromDamage(push_direction)));
+    Inventory * const inv = world->GetBlock(x, y, z)->HasInventory();
     if ( inv != nullptr ) {
         inv->GetAll(this);
     }

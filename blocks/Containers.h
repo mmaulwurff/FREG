@@ -36,8 +36,8 @@ class Container : public Active, public Inventory {
      *  - container from other substances are different chests. */
     Q_OBJECT
 public:
-    Container(int sub, int id, int size = INV_SIZE);
-    Container(QDataStream & str, int sub, int id, int size = INV_SIZE);
+    Container(int kind, int sub, int size = INV_SIZE);
+    Container(QDataStream & str, int kind, int sub, int size = INV_SIZE);
 
     void ReceiveSignal(QString) override;
     void DoRareAction() override;
@@ -56,17 +56,39 @@ protected:
     void SaveAttributes(QDataStream & out) const override;
 }; // Container
 
+class Box : public Falling, public Inventory {
+    /** \class Box Box.h
+     *  \brief Box represents falling inventory.
+     *
+     *  Unlike chests, position of box is not static, it can be moved and falls
+     *  when it can.
+     *  Also, pile is box of substance DIFFERENT. */
+    Q_OBJECT
+public:
+    Box(int kind, int sub);
+    Box(QDataStream & str, int kind, int sub);
+
+    void Damage(int dmg, int dmg_kind);
+    void ReceiveSignal(QString) override;
+    QString FullName() const;
+    Inventory * HasInventory() override final;
+
+protected:
+    void SaveAttributes(QDataStream & out) const override;
+}; // Box
+
+
 class Workbench : public Container {
     /** \class Workbench Container.h
      *  \brief Workbench allows craft from multiple sources. There can be up to
      *  2 products. Also can be used as container of smaller size. */
     Q_OBJECT
 public:
-    Workbench(int sub, int id);
-    Workbench(QDataStream & str, int sub, int id);
+    Workbench(int kind, int sub);
+    Workbench(QDataStream & str, int kind, int sub);
 
     bool Drop(int src, int dest, int num, Inventory * inv) override;
-    bool Get(Block * block, int start = 0) override;
+    bool Get(Block * block, int start) override;
     bool GetAll(Inventory * from) override;
     int Start() const override;
     QString FullName() const override;
@@ -79,8 +101,8 @@ private:
 class Converter : public Container {
     Q_OBJECT
 public:
-    Converter(int sub, int id);
-    Converter(QDataStream & str, int sub, int id);
+    Converter(int kind, int sub);
+    Converter(QDataStream & str, int kind, int sub);
 
     int  ShouldAct() const override;
     int  DamageKind() const override;

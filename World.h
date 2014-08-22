@@ -150,6 +150,7 @@ public: // Interactions section
     int Damage(int x, int y, int z, int level, int dmg_kind);
     /// Does not check target block durability.
     void DestroyAndReplace(int x, int y, int z);
+    /// Returns true on successfull build, otherwise false.
     bool Build(Block * thing, int x, int y, int z,
             int dir = UP,
             Block * who = nullptr,

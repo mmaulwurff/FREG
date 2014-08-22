@@ -201,10 +201,7 @@
 
     void Bush::Damage(const int dmg, const int dmg_kind) {
         if ( dmg_kind >= DAMAGE_PUSH_UP ) {
-            int x, y, z;
-            GetWorld()->Focus( X(), Y(), Z(), &x, &y, &z,
-                World::Anti(MakeDirFromDamage(dmg_kind)) );
-            Inventory::Push(GetWorld()->GetBlock(x, y, z));
+            Push(X(), Y(), Z(), dmg_kind);
         } else {
             Block::Damage(dmg, dmg_kind);
         }

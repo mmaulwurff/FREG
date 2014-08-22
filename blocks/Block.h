@@ -156,13 +156,12 @@ public:
     static QString SubName(int sub);
     /// Returns translated substance name with first upper letter.
     static QString SubNameUpper(int sub);
-
     static sub_groups GetSubGroup(int sub);
+    static dirs MakeDirFromDamage(int damage_kind);
 
 protected:
     virtual void SaveAttributes(QDataStream &) const;
     /// To convert DAMAGE_PUSH_UP...WEST to corresponding direction.
-    static dirs MakeDirFromDamage(int damage_kind);
 
     quint16 noteId;
 

@@ -28,14 +28,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
 // Container::
     void Container::Damage(const int dmg, const int dmg_kind) {
         if ( dmg_kind >= DAMAGE_PUSH_UP ) {
-            int x, y, z;
-            World * const world = GetWorld();
-            world->Focus( X(), Y(), Z(), &x, &y, &z,
-                World::Anti(MakeDirFromDamage(dmg_kind)) );
-            Inventory::Push(world->GetBlock(x, y, z));
-            if ( Sub()==DIFFERENT && IsEmpty() ) {
-                Break();
-            }
+            Push(X(), Y(), Z(), dmg_kind);
         } else {
             Block::Damage(dmg, dmg_kind);
         }
@@ -104,8 +97,6 @@ const int CONVERTER_LIGHT_RADIUS = 2;
         case DIFFERENT: return tr("Pile");
         case IRON:      return tr("Locker");
         case WATER:     return tr("Fridge");
-        case A_MEAT:
-        case H_MEAT:    return tr("Corpse");
         default:        return tr("Chest (%1)").arg(SubName(Sub()));
         }
     }
@@ -116,16 +107,55 @@ const int CONVERTER_LIGHT_RADIUS = 2;
     }
 
     Container::Container(const int kind, const int sub, const int size) :
-            Active(kind, sub, NONSTANDARD),
+            Active(kind, sub),
             Inventory(size)
     {}
 
     Container::Container(QDataStream & str, const int kind, const int sub,
             const int size)
         :
-            Active(str, kind, sub, NONSTANDARD),
+            Active(str, kind, sub),
             Inventory(str, size)
     {}
+
+// Box::
+    Box::Box(const int kind, const int sub) :
+            Falling(kind, sub),
+            Inventory(INV_SIZE)
+    {}
+
+    Box::Box(QDataStream & str, const int kind, const int sub) :
+            Falling(str, kind, sub),
+            Inventory(str, INV_SIZE)
+    {}
+
+    void Box::SaveAttributes(QDataStream & str) const {
+        Falling::SaveAttributes(str);
+        Inventory::SaveAttributes(str);
+    }
+
+    void Box::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
+    Inventory * Box::HasInventory() { return this; }
+
+    void Box::Damage(const int dmg, const int dmg_kind) {
+        if ( dmg_kind >= DAMAGE_PUSH_UP ) {
+            Push(X(), Y(), Z(), dmg_kind);
+            if ( Sub()==DIFFERENT && IsEmpty() ) {
+                Break();
+            }
+        } else {
+            Block::Damage(dmg, dmg_kind);
+        }
+    }
+
+    QString Box::FullName() const {
+        switch ( Sub() ) {
+        default:        return tr("Box (%1)").arg(SubName(Sub()));
+        case H_MEAT:
+        case A_MEAT:    return tr("Corpse (%1)").arg(SubName(Sub()));
+        case DIFFERENT: return tr("Pile");
+        }
+    }
 
 // Workbench::
     void Workbench::Craft() {
