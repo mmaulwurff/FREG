@@ -298,9 +298,7 @@ void Screen::ControlPlayer(const int ch) {
         }
         break;
     case KEY_HELP:
-    case 'H':
-        DisplayFile(QString("help_%1/help.txt").arg(locale.left(2)));
-        break;
+    case 'H': ProcessCommand("help"); break;
     case 'R':
     case 'L': RePrint(); break;
 

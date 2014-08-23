@@ -27,7 +27,7 @@
 
 #include <QMutex>
 
-#ifdef __MINGW32__
+#ifdef Q_OS_WIN32
 #include "pdcurses/curses.h"
 #else
 #define _X_OPEN_SOURCE_EXTENDED

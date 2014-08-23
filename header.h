@@ -23,10 +23,6 @@
 #include <QtGlobal>
 #include <QLocale>
 
-#ifdef Q_CC_MSVC
-#define not !
-#endif
-
 #ifdef Q_OS_WIN32
 #include <windows.h>
 #endif

@@ -437,12 +437,12 @@ void Player::SetPlayer(const int _x, const int _y, const int _z) {
             GetShred()->Unregister(player);
         }
         World * const world = GetWorld();
-        Block * candidate;
+        Block * candidate = world->GetBlock(X(), Y(), z_self);
         for ( ; z_self < HEIGHT-2; ++z_self ) {
-            candidate = world->GetBlock(X(), Y(), z_self);
             if ( AIR == candidate->Sub() || candidate->IsAnimal() ) {
                 break;
             }
+            candidate = world->GetBlock(X(), Y(), z_self);
         }
         if ( candidate->IsAnimal() ) {
             player = candidate->IsAnimal();
@@ -476,7 +476,7 @@ Player::Player() :
         homeZ(settings.value("home_z", HEIGHT/2).toInt()),
         player(nullptr),
         creator(BlockManager::NewBlock(DWARF, DIFFERENT)->IsAnimal()),
-        usingType(settings.value("using_type",      USAGE_TYPE_NO).toInt()),
+        usingType    (settings.value("using_type",     USAGE_TYPE_NO).toInt()),
         usingSelfType(settings.value("using_self_type",USAGE_TYPE_NO).toInt()),
         usingInInventory(),
         creativeMode(settings.value("creative_mode", false).toBool())
