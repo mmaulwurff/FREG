@@ -49,7 +49,11 @@ enum times {
     SECONDS_IN_DAYLIGHT = SECONDS_IN_DAY-END_OF_NIGHT
 };
 
+#ifdef Q_OS_WIN32
+const QString locale = "en";
+#else
 const QString locale = QLocale::system().name();
+#endif
 
 enum shred_type {
     SHRED_PLAIN     = '.',
