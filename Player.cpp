@@ -87,12 +87,16 @@ void Player::UpdateXYZ() {
     emit Updated();
 }
 
-void Player::Examine() const {
-    const QMutexLocker locker(world->GetLock());
+void Player::Examine() {
+    QMutexLocker locker(world->GetLock());
     int i, j, k;
     emit GetFocus(&i, &j, &k);
     const Block * const block = world->GetBlock(i, j, k);
     emit Notify( tr("You see %1.").arg(block->FullName()) );
+    locker.unlock();
+    ProcessCommand(QString("help %1").
+        arg(BlockManager::KindToString(block->Kind())));
+    locker.relock();
     if ( DEBUG ) {
         emit Notify(QString("Weight: %1. Id: %2.").
             arg(block->Weight()).

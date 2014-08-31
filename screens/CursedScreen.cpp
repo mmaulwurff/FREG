@@ -367,6 +367,12 @@ void Screen::ActionXyz(int * x, int * y, int * z) const {
     }
 }
 
+Block * Screen::GetFocusedBlock() const {
+    int x, y, z;
+    ActionXyz(&x, &y, &z);
+    return GetWorld()->GetBlock(x, y, z);
+}
+
 char Screen::PrintBlock(const Block & block, WINDOW * const window) const {
     const int kind = block.Kind();
     const int sub  = block.Sub();
@@ -395,24 +401,18 @@ void Screen::Print() {
             }
             break;
         case USAGE_TYPE_READ_IN_INVENTORY:
-            wstandend(rightWin);
-            PrintFile(rightWin, QString(home_path + w->WorldName() + "/texts/"
+            DisplayFile(QString(home_path + w->WorldName() + "/texts/"
                 + player->PlayerInventory()->ShowBlock(
                     player->GetUsingInInventory())->GetNote()));
             player->SetUsingTypeNo();
             break;
-        case USAGE_TYPE_READ: {
-                int x, y, z;
-                ActionXyz(&x, &y, &z);
-                wstandend(rightWin);
-                PrintFile(rightWin, QString(home_path + w->WorldName()
-                    + "/texts/" + w->GetBlock(x, y, z)->GetNote()));
-                player->SetUsingTypeNo();
-            } break;
+        case USAGE_TYPE_READ:
+            DisplayFile(QString(home_path + w->WorldName()
+                + "/texts/" + GetFocusedBlock()->GetNote()));
+            player->SetUsingTypeNo();
+            break;
         case USAGE_TYPE_OPEN: {
-                int x, y, z;
-                ActionXyz(&x, &y, &z);
-                Block * const block = w->GetBlock(x, y, z);
+                Block * const block = GetFocusedBlock();
                 PrintInv(rightWin, block, block->HasInventory());
             } break;
         }
@@ -455,10 +455,7 @@ void Screen::PrintHUD() {
             break;
         }
     }
-    // focused block
-    int x, y, z;
-    ActionXyz(&x, &y, &z);
-    Block * const focused = GetWorld()->GetBlock(x, y, z);
+    Block * const focused = GetFocusedBlock();
     if ( Block::GetSubGroup(focused->Sub()) != GROUP_AIR ) {
         const int left_border = (SCREEN_SIZE*2+2) * (IsScreenWide() ? 2 : 1);
         PrintBar(left_border - 15,
@@ -899,7 +896,7 @@ Screen::Screen(
     SetActionMode(static_cast<actions>
         (settings.value("action_mode", ACTION_USE).toInt()));
     Print();
-    Notify(tr("*--- Game started. Press 'H' for help. ---*"));
+    Notify(tr("--- Game started. Press 'H' for help. ---"));
     if ( COLS < preferred_width ) {
         Notify(tr("For better gameplay "));
         Notify(tr("set your terminal width at least %1 chars.").

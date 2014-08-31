@@ -72,7 +72,7 @@ QString World::TimeOfDayStr() const {
         arg(TimeOfDay()%60, 2, 10, QChar('0'));
 }
 
-void World::Drop(Block * const block_from,
+bool World::Drop(Block * const block_from,
         const int x_to, const int y_to, const int z_to,
         const int src, const int dest, const int num)
 {
@@ -80,7 +80,7 @@ void World::Drop(Block * const block_from,
     if ( not Build(block_to, x_to, y_to, z_to) ) {
         delete block_to;
     }
-    Exchange(block_from, GetBlock(x_to, y_to, z_to), src, dest, num);
+    return Exchange(block_from, GetBlock(x_to, y_to, z_to), src, dest, num);
 }
 
 void World::Get(Block * const block_to,
@@ -390,11 +390,10 @@ can_move_results World::CanMove(const int x, const int y, const int z,
     { // prevent moving while falling
         return CAN_MOVE_CANNOT;
     }
-    const push_reaction reaction = block->PushResult(dir);
-    switch ( reaction ) {
+    switch ( block->PushResult(dir) ) {
     case MOVABLE:
         if ( Damage(newx, newy, newz, 1, DAMAGE_PUSH_UP + dir) <= 0 ) {
-            DestroyAndReplace  (newx, newy, newz);
+            DestroyAndReplace(newx, newy, newz);
         }
         block_to = GetBlock(newx, newy, newz);
         break;

@@ -80,6 +80,7 @@ HEADERS += \
     worldmap.h \
     ShredStorage.h \
     Xyz.h \
+    screens/IThread.h \
     blocks/blocks.h \
     blocks/Block.h \
     blocks/Active.h \
@@ -92,7 +93,7 @@ HEADERS += \
     blocks/Containers.h \
     blocks/RainMachine.h \
     blocks/Armour.h \
-    screens/IThread.h
+    blocks/Filter.h
 SOURCES += \
     BlockManager.cpp \
     CraftManager.cpp \
@@ -107,6 +108,7 @@ SOURCES += \
     worldmap.cpp \
     ShredStorage.cpp \
     Xyz.cpp \
+    screens/IThread.cpp \
     blocks/blocks.cpp \
     blocks/Active.cpp \
     blocks/Dwarf.cpp \
@@ -119,7 +121,7 @@ SOURCES += \
     blocks/RainMachine.cpp \
     blocks/Armour.cpp \
     blocks/Animal.cpp \
-    screens/IThread.cpp
+    blocks/Filter.cpp
 
 INCLUDEPATH += .
 

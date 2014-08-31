@@ -188,6 +188,7 @@ private:
     void MovePlayerDiag(dirs dir1, dirs dir2) const;
     static bool IsScreenWide();
     int  RandomBlink() const;
+    Block * GetFocusedBlock() const;
 
     WINDOW * windows[6];
     WINDOW *& leftWin    = windows[0];

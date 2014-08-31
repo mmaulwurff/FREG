@@ -28,6 +28,7 @@
 #include "blocks/Containers.h"
 #include "blocks/RainMachine.h"
 #include "blocks/Armour.h"
+#include "blocks/Filter.h"
 
 #define sizeof_array(ARRAY) (sizeof(ARRAY)/sizeof(ARRAY[0]))
 
@@ -69,6 +70,7 @@ const QByteArray BlockManager::kinds[] = { // do not use space, use '_'
     "boots",
     "telegraph",
     "medkit",
+    "filter",
     /// [List of kinds]
 };
 
@@ -168,6 +170,7 @@ Block * BlockManager::NewBlock(const int kind, const int sub) {
     case BOOTS:     return new Boots (kind, sub);
     case TELEGRAPH: return new Telegraph(kind, sub);
     case MEDKIT:    return new MedKit(kind, sub);
+    case FILTER:    return new Filter(kind, sub);
     case LAST_KIND: break;
     }
     Q_UNREACHABLE();
@@ -210,6 +213,7 @@ Block * BlockManager::BlockFromFile(QDataStream & str,
     case BOOTS:     return new Boots (str, kind, sub);
     case TELEGRAPH: return new Telegraph(str, kind, sub);
     case MEDKIT:    return new MedKit(str, kind, sub);
+    case FILTER:    return new Filter(str, kind, sub);
     case LAST_KIND: break;
     }
     Q_UNREACHABLE();

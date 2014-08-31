@@ -105,7 +105,7 @@ public:
     /// Tries to switch usingSelfType from NO to OPEN.
     void Backpack();
     void Inscribe() const;
-    void Examine() const;
+    void Examine();
     /// Returns true if xyz are in world bounds.
     bool Damage() const;
     void Use();

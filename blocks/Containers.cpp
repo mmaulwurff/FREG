@@ -34,24 +34,6 @@ const int CONVERTER_LIGHT_RADIUS = 2;
         }
     }
 
-    void Container::DoRareAction() {
-        if ( GROUP_MEAT == GetSubGroup(Sub()) ) {
-            Damage(MAX_DURABILITY/SECONDS_IN_DAY, DAMAGE_TIME);
-            if ( GetDurability() <= 0 ) {
-                GetWorld()->DestroyAndReplace(X(), Y(), Z());
-            }
-        } else if ( Sub() == DIFFERENT ) {
-            Inventory * const inv =
-                GetWorld()->GetBlock(X(), Y(), Z()-1)->HasInventory();
-            if ( inv ) {
-                inv->GetAll(this);
-            }
-            if ( IsEmpty() ) {
-                GetWorld()->DestroyAndReplace(X(), Y(), Z());
-            }
-        }
-    }
-
     int Container::ShouldAct() const {
         return ( Sub() == IRON || Sub() == WATER ) ?
             FREQUENT_NEVER : FREQUENT_RARE;
@@ -59,23 +41,11 @@ const int CONVERTER_LIGHT_RADIUS = 2;
 
     void Container::ReceiveSignal(QString) {}
     Inventory * Container::HasInventory() { return this; }
+    usage_types Container::Use(Block *) { return USAGE_TYPE_OPEN; }
     push_reaction Container::PushResult(dirs) const { return NOT_MOVABLE; }
-    inner_actions Container::ActInner() { return INNER_ACTION_NONE; }
-
-    usage_types Container::Use(Block *) {
-        if ( GROUP_MEAT == GetSubGroup(Sub()) ) {
-            GetWorld()->DestroyAndReplace(X(), Y(), Z());
-            return USAGE_TYPE_NO;
-        } else {
-            return USAGE_TYPE_OPEN;
-        }
-    }
+    inner_actions Container::ActInner() { return INNER_ACTION_ONLY; }
 
     Block * Container::DropAfterDamage(bool * const delete_block) {
-        if ( DIFFERENT == Sub() ) {
-            *delete_block = true;
-            return block_manager.Normal(AIR);
-        } // else:
         Block * const pile = BlockManager::NewBlock(BOX, DIFFERENT);
         Inventory * const pile_inv = pile->HasInventory();
         GetAll(pile_inv);
@@ -133,8 +103,33 @@ const int CONVERTER_LIGHT_RADIUS = 2;
         Inventory::SaveAttributes(str);
     }
 
+    int  Box::ShouldAct() const { return FREQUENT_RARE; }
     void Box::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
     Inventory * Box::HasInventory() { return this; }
+    inner_actions Box::ActInner() { return INNER_ACTION_NONE; }
+
+    void Box::DoRareAction() {
+        if ( GROUP_MEAT == GetSubGroup(Sub()) ) {
+            Damage(MAX_DURABILITY/SECONDS_IN_DAY, DAMAGE_TIME);
+            if ( GetDurability() <= 0 ) {
+                GetWorld()->DestroyAndReplace(X(), Y(), Z());
+            }
+        } else if ( Sub() == DIFFERENT ) {
+            Inventory * const inv =
+                GetWorld()->GetBlock(X(), Y(), Z()-1)->HasInventory();
+            if ( inv ) {
+                inv->GetAll(this);
+            }
+            if ( IsEmpty() ) {
+                GetWorld()->DestroyAndReplace(X(), Y(), Z());
+            }
+        }
+    }
+
+    Block * Box::DropAfterDamage(bool * const delete_block) {
+        *delete_block = true;
+        return block_manager.Normal(AIR);
+    }
 
     void Box::Damage(const int dmg, const int dmg_kind) {
         if ( dmg_kind >= DAMAGE_PUSH_UP ) {
@@ -153,6 +148,15 @@ const int CONVERTER_LIGHT_RADIUS = 2;
         case H_MEAT:
         case A_MEAT:    return tr("Corpse (%1)").arg(SubName(Sub()));
         case DIFFERENT: return tr("Pile");
+        }
+    }
+
+    usage_types Box::Use(Block *) {
+        if ( GROUP_MEAT == GetSubGroup(Sub()) ) {
+            GetWorld()->DestroyAndReplace(X(), Y(), Z());
+            return USAGE_TYPE_NO;
+        } else {
+            return USAGE_TYPE_OPEN;
         }
     }
 

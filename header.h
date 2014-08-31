@@ -143,6 +143,7 @@ enum kinds {
     BOOTS,        ///< 29
     TELEGRAPH,    ///< 30
     MEDKIT,       ///< 31
+    FILTER,       ///< 32
     /// Nothing is LAST_KIND.
     LAST_KIND // keep it last in this list.
 }; // enum kinds
