@@ -176,7 +176,7 @@ Block * Block::DropAfterDamage(bool * const delete_block) {
         return BlockManager::NewBlock(LADDER, STONE);
     } // no break;
     default: {
-        Block * const pile = BlockManager::NewBlock(CONTAINER, DIFFERENT);
+        Block * const pile = BlockManager::NewBlock(BOX, DIFFERENT);
         pile->HasInventory()->Get(this);
         *delete_block = false;
         return pile;

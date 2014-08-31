@@ -76,7 +76,7 @@ void World::Drop(Block * const block_from,
         const int x_to, const int y_to, const int z_to,
         const int src, const int dest, const int num)
 {
-    Block * const block_to = BlockManager::NewBlock(CONTAINER, DIFFERENT);
+    Block * const block_to = BlockManager::NewBlock(BOX, DIFFERENT);
     if ( not Build(block_to, x_to, y_to, z_to) ) {
         delete block_to;
     }

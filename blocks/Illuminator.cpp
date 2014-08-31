@@ -49,7 +49,7 @@ QString Illuminator::FullName() const {
 
 Block * Illuminator::DropAfterDamage(bool * const delete_block) {
     *delete_block = false;
-    Block * const pile = BlockManager::NewBlock(CONTAINER, DIFFERENT);
+    Block * const pile = BlockManager::NewBlock(BOX, DIFFERENT);
     pile->HasInventory()->Get(this);
     return pile;
 }

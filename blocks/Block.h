@@ -105,7 +105,7 @@ public:
     virtual usage_types UseOnShredMove(Block * user);
     virtual push_reaction PushResult(dirs) const;
     /// Should return dropped block.
-    /** It can be pile(CONTAINER, DIFFERENT) containing all dropped blocks, or
+    /** It can be pile(BOX, DIFFERENT) containing all dropped blocks, or
      *  block itself.
      *  Set delete_self false if this block itself should not be deleted.
      *  (by default block is deleted, beware). */

@@ -96,6 +96,7 @@ char VirtScreen::CharName(const int kind, const int sub) const {
     case PREDATOR: return '!';
     case WORKBENCH: return '*';
     case CONVERTER: return 'V';
+    case BOX:       return '&';
     case CONTAINER: return '&';
     case DOOR:        return ( STONE == sub ) ? '#' : '\'';
     case ILLUMINATOR: return 'i';

@@ -76,7 +76,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
             *delete_block = true;
             return block_manager.Normal(AIR);
         } // else:
-        Block * const pile = BlockManager::NewBlock(CONTAINER, DIFFERENT);
+        Block * const pile = BlockManager::NewBlock(BOX, DIFFERENT);
         Inventory * const pile_inv = pile->HasInventory();
         GetAll(pile_inv);
         *delete_block = not pile_inv->Get(this);
@@ -94,7 +94,6 @@ const int CONVERTER_LIGHT_RADIUS = 2;
 
     QString Container::FullName() const {
         switch ( Sub() ) {
-        case DIFFERENT: return tr("Pile");
         case IRON:      return tr("Locker");
         case WATER:     return tr("Fridge");
         default:        return tr("Chest (%1)").arg(SubName(Sub()));
