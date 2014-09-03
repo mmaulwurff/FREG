@@ -632,3 +632,22 @@
         }
         return USAGE_TYPE_NO;
     }
+
+// Informer:: section
+    wearable Informer::Wearable() const { return WEARABLE_OTHER; }
+
+    usage_types Informer::Use(Block * const user) {
+        switch ( Sub() ) {
+        case IRON: user->ReceiveSignal(QString("Your direction: %1.").
+            arg(DirString(user->GetDir()).toLower())); break;
+        default: break;
+        }
+        return USAGE_TYPE_NO;
+    }
+
+    QString Informer::FullName() const {
+        switch ( Sub() ) {
+        case IRON: return QObject::tr("Compass");
+        default:   return QObject::tr("Informer (%1)").arg(SubName(Sub()));
+        }
+    }

@@ -207,7 +207,7 @@ private:
     QFile * fileToShow;
     const bool beepOn, flashOn;
     const bool ascii;
-    const QString arrowUp, arrowDown, arrowRight, arrowLeft;
+    const QChar arrows[WEST+1];
     SCREEN * const screen;
     mutable bool inputActive = false;
     mutable int random_blink;

@@ -236,4 +236,17 @@ public:
     usage_types Use(Block * user) override;
 };
 
+/** @brief The Informer class, provides various information.
+ *
+ * Can be used inside inventory and outside.
+ * Iron informer is compass. */
+class Informer : public Block {
+public:
+    using Block::Block;
+
+    QString FullName() const override;
+    wearable Wearable() const override;
+    usage_types Use(Block * user) override;
+};
+
 #endif // BLOCKS_H

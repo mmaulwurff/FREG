@@ -22,42 +22,51 @@
 #include "World.h"
 #include "Inventory.h"
 
-QString Block::SubName(const int sub) {
-    switch ( static_cast<subs>(sub) ) {
-    case STONE:
-    case MOSS_STONE: return QObject::tr("stone");
-    case NULLSTONE:  return QObject::tr("nullstone");
-    case SKY:
-    case STAR:       return QObject::tr("air");
-    case DIAMOND:    return QObject::tr("diamond");
-    case SOIL:       return QObject::tr("soil");
-    case H_MEAT:     return QObject::tr("meat of rational");
-    case A_MEAT:     return QObject::tr("meat");
-    case GLASS:      return QObject::tr("glass");
-    case WOOD:       return QObject::tr("wood");
-    case DIFFERENT:  return QObject::tr("different");
-    case IRON:       return QObject::tr("iron");
-    case WATER:      return QObject::tr("water");
-    case GREENERY:   return QObject::tr("greenery");
-    case SAND:       return QObject::tr("sand");
-    case HAZELNUT:   return QObject::tr("hazelnut");
-    case ROSE:       return QObject::tr("rose");
-    case CLAY:       return QObject::tr("clay");
-    case AIR:        return QObject::tr("air");
-    case PAPER:      return QObject::tr("paper");
-    case GOLD:       return QObject::tr("gold");
-    case BONE:       return QObject::tr("bone");
-    case STEEL:      return QObject::tr("steel");
-    case ADAMANTINE: return QObject::tr("adamantine");
-    case FIRE:       return QObject::tr("fire");
-    case COAL:       return QObject::tr("coal");
-    case EXPLOSIVE:  return QObject::tr("explosive");
-    case ACID:       return QObject::tr("acid");
-    case SUB_CLOUD:  return QObject::tr("cloud");
-    case SUB_DUST:   return QObject::tr("dust");
-    case LAST_SUB: Q_UNREACHABLE(); return "";
-    }
-}
+static QString dir_strings[] = {
+    QObject::tr("Up"),
+    QObject::tr("Down"),
+    QObject::tr("North"),
+    QObject::tr("South"),
+    QObject::tr("East"),
+    QObject::tr("West")
+};
+
+static QString sub_names[] = {
+    QObject::tr("stone"),
+    QObject::tr("stone"),
+    QObject::tr("nullstone"),
+    QObject::tr("air"),
+    QObject::tr("air"),
+    QObject::tr("diamond"),
+    QObject::tr("soil"),
+    QObject::tr("meat of rational"),
+    QObject::tr("meat"),
+    QObject::tr("glass"),
+    QObject::tr("wood"),
+    QObject::tr("different"),
+    QObject::tr("iron"),
+    QObject::tr("water"),
+    QObject::tr("greenery"),
+    QObject::tr("sand"),
+    QObject::tr("hazelnut"),
+    QObject::tr("rose"),
+    QObject::tr("clay"),
+    QObject::tr("air"),
+    QObject::tr("paper"),
+    QObject::tr("gold"),
+    QObject::tr("bone"),
+    QObject::tr("steel"),
+    QObject::tr("adamantine"),
+    QObject::tr("fire"),
+    QObject::tr("coal"),
+    QObject::tr("explosive"),
+    QObject::tr("acid"),
+    QObject::tr("cloud"),
+    QObject::tr("dust"),
+};
+
+QString Block::SubName(const int sub) { return sub_names[sub]; }
+QString Block::DirString(const dirs dir) { return dir_strings[dir]; }
 
 QString Block::SubNameUpper(const int sub) {
     QString result = SubName(sub);

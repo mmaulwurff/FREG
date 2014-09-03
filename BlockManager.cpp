@@ -71,6 +71,7 @@ const QByteArray BlockManager::kinds[] = { // do not use space, use '_'
     "telegraph",
     "medkit",
     "filter",
+    "informer",
     /// [List of kinds]
 };
 
@@ -171,6 +172,7 @@ Block * BlockManager::NewBlock(const int kind, const int sub) {
     case TELEGRAPH: return new Telegraph(kind, sub);
     case MEDKIT:    return new MedKit(kind, sub);
     case FILTER:    return new Filter(kind, sub);
+    case INFORMER:  return new Informer(kind, sub);
     case LAST_KIND: break;
     }
     Q_UNREACHABLE();
@@ -214,6 +216,7 @@ Block * BlockManager::BlockFromFile(QDataStream & str,
     case TELEGRAPH: return new Telegraph(str, kind, sub);
     case MEDKIT:    return new MedKit(str, kind, sub);
     case FILTER:    return new Filter(str, kind, sub);
+    case INFORMER:  return new Informer(str, kind, sub);
     case LAST_KIND: break;
     }
     Q_UNREACHABLE();

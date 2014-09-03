@@ -158,6 +158,7 @@ public:
     static QString SubNameUpper(int sub);
     static sub_groups GetSubGroup(int sub);
     static dirs MakeDirFromDamage(int damage_kind);
+    static QString DirString(dirs);
 
 protected:
     virtual void SaveAttributes(QDataStream &) const;

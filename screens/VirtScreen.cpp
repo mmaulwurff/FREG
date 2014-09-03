@@ -111,6 +111,7 @@ char VirtScreen::CharName(const int kind, const int sub) const {
     case TELEGRAPH: return 't';
     case MEDKIT:    return '+';
     case FILTER:    return 'F';
+    case INFORMER:  return 'I';
     case FALLING: switch ( sub ) {
         case SAND:  return '.';
         case WATER: return '*';

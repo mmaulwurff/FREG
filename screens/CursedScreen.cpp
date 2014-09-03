@@ -42,10 +42,10 @@ const {
         mvwaddstr(window, SCREEN_SIZE+1, x-2, qPrintable(tr("S    S")));
     }
     wcolor_set(window, WHITE_RED, nullptr);
-    mvwaddstr(window, 0, x, qPrintable(arrowDown));
-    waddstr  (window,       qPrintable(arrowDown));
-    mvwaddstr(window, SCREEN_SIZE+1, x, qPrintable(arrowUp));
-    waddstr  (window, qPrintable(arrowUp));
+    mvwaddstr(window, 0, x, qPrintable(arrows[SOUTH]));
+    waddstr  (window,       qPrintable(arrows[SOUTH]));
+    mvwaddstr(window, SCREEN_SIZE+1, x, qPrintable(arrows[NORTH]));
+    waddstr  (window, qPrintable(arrows[NORTH]));
     HorizontalArrows(window, y, show_dir);
     (void)wmove(window, y, x);
 }
@@ -61,8 +61,8 @@ const {
         mvwaddstr(window, y+1, SCREEN_SIZE*2+1, qPrintable(tr("E")));
     }
     wcolor_set(window, WHITE_RED, nullptr);
-    mvwaddstr(window, y, 0, qPrintable(arrowRight));
-    mvwaddstr(window, y, SCREEN_SIZE*2+1, qPrintable(arrowLeft));
+    mvwaddstr(window, y, 0, qPrintable(arrows[EAST]));
+    mvwaddstr(window, y, SCREEN_SIZE*2+1, qPrintable(arrows[WEST]));
 }
 
 void Screen::RePrint() {
@@ -558,15 +558,8 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
     if ( dir > DOWN ) {
         const Block * const block = player->GetBlock();
         wattrset(window, Color(block->Kind(), block->Sub()));
-        (void)wmove(window, player->Y()-start_y+1, (player->X()-start_x)*2+2);
-        switch ( player->GetDir() ) {
-        case UP:      waddch(window, '.'); break;
-        case DOWN:    waddch(window, 'x'); break;
-        case NORTH:   waddstr(window, qPrintable(arrowUp));    break;
-        case SOUTH:   waddstr(window, qPrintable(arrowDown));  break;
-        case EAST:    waddstr(window, qPrintable(arrowRight)); break;
-        case WEST:    waddstr(window, qPrintable(arrowLeft));  break;
-        }
+        mvwaddstr(window, player->Y()-start_y+1, (player->X()-start_x)*2+2,
+            qPrintable(arrows[player->GetDir()]));
     }
     PrintTitle(window, UP==dir ? UP : DOWN);
     Arrows(window, (player->X()-start_x)*2+1, player->Y()-start_y+1, true);
@@ -676,15 +669,9 @@ void Screen::PrintFront(const dirs dir) const {
 } // void Screen::PrintFront(dirs)
 
 void Screen::PrintTitle(WINDOW * const window, const dirs dir) const {
-    QString dir_string;
-    switch ( dir ) {
-    case UP:    dir_string = tr(".  Up  .");  break;
-    case DOWN:  dir_string = tr("x Down x");  break;
-    case NORTH: dir_string = tr("^ North ^"); break;
-    case SOUTH: dir_string = tr("v South v"); break;
-    case EAST:  dir_string = tr("> East >");  break;
-    case WEST:  dir_string = tr("< West <");  break;
-    }
+    QString dir_string = QString("%1 %2 %1").
+        arg(arrows[dir]).
+        arg(Block::DirString(dir));
     wstandend(window);
     box(window, 0, 0);
     wcolor_set(window, BLACK_WHITE, nullptr);
@@ -828,10 +815,12 @@ Screen::Screen(
         beepOn (settings.value("beep_on",  false).toBool()),
         flashOn(settings.value("flash_on", true ).toBool()),
         ascii(_ascii),
-        arrowUp   (ascii ? '^' : 0x2191),
-        arrowDown (ascii ? 'v' : 0x2193),
-        arrowRight(ascii ? '>' : 0x2192),
-        arrowLeft (ascii ? '<' : 0x2190),
+        arrows({'.', 'x',
+            ascii ? '^' : 0x2191,
+            ascii ? 'v' : 0x2193,
+            ascii ? '>' : 0x2192,
+            ascii ? '<' : 0x2190
+        }),
         screen(newterm(nullptr, stdout, stdin)),
         random_blink()
 {
