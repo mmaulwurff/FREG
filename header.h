@@ -128,7 +128,7 @@ enum kinds {
     LADDER,      ///< 14
     DOOR,        ///< 15
     BOX,         ///< 16
-    TEXT,        ///< 17
+    KIND_TEXT,   ///< 17
     MAP,         ///< 18
     PREDATOR,    ///< 19
     BUCKET,      ///< 20

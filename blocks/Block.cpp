@@ -22,7 +22,7 @@
 #include "World.h"
 #include "Inventory.h"
 
-static QString dir_strings[] = {
+const static QString dir_strings[] = {
     QObject::tr("Up"),
     QObject::tr("Down"),
     QObject::tr("North"),
@@ -31,7 +31,7 @@ static QString dir_strings[] = {
     QObject::tr("West")
 };
 
-static QString sub_names[] = {
+const static QString sub_names[] = {
     QObject::tr("stone"),
     QObject::tr("stone"),
     QObject::tr("nullstone"),

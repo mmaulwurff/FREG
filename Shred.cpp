@@ -384,10 +384,10 @@ void Shred::TestShred() {
             {BLOCK, SAND}
         }, {
             {BLOCK, WATER}, {FALLING, WATER}, {DOOR, STONE},
-            {BLOCK, CLAY}, {TEXT, PAPER}, {BELL, IRON},
+            {BLOCK, CLAY}, {KIND_TEXT, PAPER}, {BELL, IRON},
             {BUCKET, IRON}, {PICK, IRON}, {SHOVEL, IRON},
             {HAMMER, IRON}, {AXE, IRON}, {FALLING, STONE},
-            {WEAPON, STONE}, {BLOCK, WOOD}, {TEXT, GLASS},
+            {WEAPON, STONE}, {BLOCK, WOOD}, {KIND_TEXT, GLASS},
             {BLOCK, COAL}
         }, {
             {CLOCK, EXPLOSIVE}, {BLOCK, MOSS_STONE}, {ILLUMINATOR, STONE},

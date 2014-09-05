@@ -92,8 +92,8 @@ char VirtScreen::CharName(const int kind, const int sub) const {
     case AXE:    return '/';
     case BELL:   return 'b';
     case BUCKET: return 'u';
-    case TEXT:   return '?';
-    case PREDATOR: return '!';
+    case KIND_TEXT: return '?';
+    case PREDATOR:  return '!';
     case WORKBENCH: return '*';
     case CONVERTER: return 'V';
     case BOX:       return '&';

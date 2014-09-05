@@ -156,7 +156,7 @@ Block * BlockManager::NewBlock(const int kind, const int sub) {
     case LADDER:    return new Ladder(kind, sub);
     case DOOR:      return new Door  (kind, sub);
     case BOX:       return new Box   (kind, sub);
-    case TEXT:      return new Text  (kind, sub);
+    case KIND_TEXT: return new Text  (kind, sub);
     case MAP:       return new Map   (kind, sub);
     case PREDATOR:  return new Predator(kind, sub);
     case BUCKET:    return new Bucket(kind, sub);
@@ -200,7 +200,7 @@ Block * BlockManager::BlockFromFile(QDataStream & str,
     case LADDER:    return new Ladder(str, kind, sub);
     case DOOR:      return new Door  (str, kind, sub);
     case BOX:       return new Box   (str, kind, sub);
-    case TEXT:      return new Text  (str, kind, sub);
+    case KIND_TEXT: return new Text  (str, kind, sub);
     case MAP:       return new Map   (str, kind, sub);
     case PREDATOR:  return new Predator(str, kind, sub);
     case BUCKET:    return new Bucket(str, kind, sub);
