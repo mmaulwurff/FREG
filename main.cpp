@@ -46,7 +46,8 @@
 #ifdef Q_OS_WIN32
 const QString home_path = "";
 #else
-const QString home_path = QDir::homePath() + "/.freg/";
+//const QString home_path = QDir::homePath() + "/.freg/";
+const QString home_path = "";
 #endif
 
 int main(int argc, char ** argv) {
