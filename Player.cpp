@@ -445,7 +445,8 @@ void Player::SetPlayer(const int _x, const int _y, const int _z) {
             GetShred()->Unregister(player);
         }
         World * const world = GetWorld();
-        Block * candidate = nullptr;
+        Q_ASSERT(z_self <= HEIGHT-2);
+        Block * candidate = world->GetBlock(_x, _y, z_self);
         for ( ; z_self < HEIGHT-2; ++z_self ) {
             candidate = world->GetBlock(_x, _y, z_self);
             if ( AIR == candidate->Sub() || candidate->IsAnimal() ) {
