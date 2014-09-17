@@ -1,7 +1,7 @@
 var searchData=
 [
   ['generatemap',['GenerateMap',['../classWorldMap.html#a24ed0b2867dacb3c4735bc02a3292bf6',1,'WorldMap']]],
-  ['get',['Get',['../classBucket.html#ac850366037e2e4d23f7c41f68de3ae1b',1,'Bucket::Get()'],['../classWorkbench.html#a98cd240d8009d29b65f8d404d5a3583f',1,'Workbench::Get()'],['../classInventory.html#a176498bd0363e01297d1dfe30bd8b0df',1,'Inventory::Get()'],['../classWorld.html#a791ee75e4494857f805815b856382c5e',1,'World::Get()']]],
+  ['get',['Get',['../classBucket.html#ac850366037e2e4d23f7c41f68de3ae1b',1,'Bucket::Get()'],['../classWorkbench.html#a6e6a41f0a500568f15f507d1c2b5691f',1,'Workbench::Get()'],['../classFilter.html#a81677f4e38488fc909418dea3dd7459c',1,'Filter::Get()'],['../classInventory.html#a176498bd0363e01297d1dfe30bd8b0df',1,'Inventory::Get()'],['../classWorld.html#a791ee75e4494857f805815b856382c5e',1,'World::Get()']]],
   ['getactiontype',['GetActionType',['../classDeferredAction.html#a457f421bf5e4573d5693f79a7a6610ac',1,'DeferredAction']]],
   ['getall',['GetAll',['../classWorkbench.html#a97daa6d2678a4a1f8d0516bce0b362a8',1,'Workbench::GetAll()'],['../classInventory.html#ac9390556471adc043bf60da5b38e1291',1,'Inventory::GetAll()']]],
   ['getblock',['GetBlock',['../classPlayer.html#a3b32c6956be32044b9de112580dd7195',1,'Player::GetBlock()'],['../classShred.html#a805aa0c4af560b6c32f02065d353f655',1,'Shred::GetBlock()'],['../classWorld.html#a40d77ceb6c6ff6c37348f0c36f7af047',1,'World::GetBlock()']]],
@@ -13,6 +13,7 @@ var searchData=
   ['getevernight',['GetEvernight',['../classWorld.html#ad2af8f0fd758fb4f61389741988f7cf7',1,'World']]],
   ['getexact',['GetExact',['../classDwarf.html#ab8af75b3a0193336e2bc451632e73162',1,'Dwarf::GetExact()'],['../classInventory.html#a5adbf10fd46b25d49ae9aa3bb2954a1f',1,'Inventory::GetExact()']]],
   ['getfocus',['GetFocus',['../classPlayer.html#a071758c6c55a69cba5858f154629b123',1,'Player']]],
+  ['getfocusedblock',['GetFocusedBlock',['../classScreen.html#a16f209a4b9c9f0453b564cca9e37d1b8',1,'Screen']]],
   ['getid',['GetId',['../classBlock.html#ae8778fd8d0014c0bc6aca9767af7ff05',1,'Block']]],
   ['getinvkind',['GetInvKind',['../classInventory.html#a2f192c8ca67b05cd6a1432c913ee4898',1,'Inventory']]],
   ['getinvsub',['GetInvSub',['../classInventory.html#a747848210e118e26e5f75c0b6c50d723',1,'Inventory']]],
@@ -22,6 +23,7 @@ var searchData=
   ['getlongitude',['GetLongitude',['../classPlayer.html#adba92d9e30f0fd3b15995eefa53b7157',1,'Player']]],
   ['getmap',['GetMap',['../classWorld.html#ae87ca1343e5f22b22db241d254ea442a',1,'World']]],
   ['getmaterialsnumber',['GetMaterialsNumber',['../classCraftList.html#aa3ccefc62af3b7942f9d410455e37834',1,'CraftList']]],
+  ['getnearshred',['GetNearShred',['../classWorld.html#ac0168df76438daae40949815145a35c7',1,'World']]],
   ['getnote',['GetNote',['../classBlock.html#a2be0125fc9e14effa2f28c2569e10d71',1,'Block::GetNote()'],['../classWorld.html#abfea43573db09d5b2bdb46afb9b88226',1,'World::GetNote()']]],
   ['getshred',['GetShred',['../classActive.html#a2647465c56ce987d9791885b10e381fb',1,'Active::GetShred()'],['../classPlayer.html#ac9109f6470bc6cf7f28bbc8ff452eca9',1,'Player::GetShred()'],['../classWorld.html#a4caeae627b81238e450d16caad206a1e',1,'World::GetShred()']]],
   ['getshredbypos',['GetShredByPos',['../classWorld.html#a805159a7a2734d4b12cdd13d690adc04',1,'World']]],
@@ -31,6 +33,7 @@ var searchData=
   ['getspawnlatitude',['GetSpawnLatitude',['../classWorldMap.html#ac5e848271b8141c1eda866f57412f130',1,'WorldMap']]],
   ['getspawnlongitude',['GetSpawnLongitude',['../classWorldMap.html#a012290ce26b083b62ca5d0ebc740018e',1,'WorldMap']]],
   ['getstring',['GetString',['../classPlayer.html#a54abfb37017831118b8f5637ea8847f3',1,'Player::GetString()'],['../classWorld.html#a58f7e66ad1ce8c22a81cd6e1a5b1975d',1,'World::GetString()']]],
+  ['getsubgroup',['GetSubGroup',['../classBlock.html#aa3975c29f16c1a87bedd4ca28c28936d',1,'Block']]],
   ['gettypeofshred',['GetTypeOfShred',['../classShred.html#a5f4003a26091ebf5f02ca16dba32a5b6',1,'Shred']]],
   ['getusingininventory',['GetUsingInInventory',['../classPlayer.html#a6b12100aa3480572813c5116158a52b1',1,'Player']]],
   ['getworld',['GetWorld',['../classActive.html#aaa8a15599e6ee605105dfc3b2ea13a29',1,'Active::GetWorld()'],['../classPlayer.html#a0a734ee4f6c2d664d60363c3b1b9f2d9',1,'Player::GetWorld()'],['../classVirtScreen.html#ad956ae35701caa43ca075f155d3ee41d',1,'VirtScreen::GetWorld()'],['../classShred.html#ae2e311d65d9322895a3715471b237aee',1,'Shred::GetWorld()']]],

@@ -1,7 +1,7 @@
 <map id="World" name="World">
 <area shape="rect" id="node7" href="$classPreloadThread.html" title="PreloadThread" alt="" coords="48,81,155,108"/>
-<area shape="rect" id="node3" href="$classShred.html" title="Shred" alt="" coords="212,171,268,197"/>
+<area shape="rect" id="node3" href="$classShred.html" title="Shred" alt="" coords="203,171,259,197"/>
 <area shape="rect" id="node4" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="223,81,278,108"/>
-<area shape="rect" id="node5" href="$classWorldMap.html" title="WorldMap" alt="" coords="326,171,407,197"/>
+<area shape="rect" id="node5" href="$classWorldMap.html" title="WorldMap" alt="" coords="283,171,365,197"/>
 <area shape="rect" id="node6" href="$classShredStorage.html" title="ShredStorage" alt="" coords="68,171,169,197"/>
 </map>

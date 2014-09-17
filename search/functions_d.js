@@ -2,6 +2,7 @@ var searchData=
 [
   ['needplayer',['NeedPlayer',['../classWorld.html#a8f6219e4b5df8f63481e6fa9ce1d4fd6',1,'World']]],
   ['newblock',['NewBlock',['../classBlockManager.html#a26e9fcd2287526b92ed75f0cc23e43e1',1,'BlockManager']]],
+  ['newplayer',['NewPlayer',['../classPlayer.html#a9f6fd62ed6ca1008a60e745b8e8182c4',1,'Player']]],
   ['nocheckmove',['NoCheckMove',['../classWorld.html#ada626f398ce70ae5c19e064a5079b741',1,'World']]],
   ['normal',['Normal',['../classBlockManager.html#aa054aaa9b802f8b11929b0efb889a2ec',1,'BlockManager::Normal()'],['../classShred.html#a47b6929437dc550cf68c7119c88eec5f',1,'Shred::Normal()']]],
   ['normalcube',['NormalCube',['../classShred.html#a98d468623b0f63c3d94f1ad0911901b2',1,'Shred']]],

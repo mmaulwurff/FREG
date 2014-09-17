@@ -1,18 +1,19 @@
 <map id="BlockManager.cpp" name="BlockManager.cpp">
-<area shape="rect" id="node3" href="$BlockManager_8h.html" title="BlockManager.h" alt="" coords="1037,155,1153,181"/>
-<area shape="rect" id="node7" href="$blocks_8h.html" title="blocks/blocks.h" alt="" coords="235,80,348,107"/>
-<area shape="rect" id="node15" href="$Dwarf_8h.html" title="blocks/Dwarf.h" alt="" coords="372,80,483,107"/>
-<area shape="rect" id="node16" href="$Bucket_8h.html" title="blocks/Bucket.h" alt="" coords="845,80,961,107"/>
-<area shape="rect" id="node17" href="$Weapons_8h.html" title="blocks/Weapons.h" alt="" coords="55,155,186,181"/>
-<area shape="rect" id="node18" href="$Illuminator_8h.html" title="blocks/Illuminator.h" alt="" coords="211,155,345,181"/>
-<area shape="rect" id="node19" href="$Containers_8h.html" title="blocks/Containers.h" alt="" coords="507,80,646,107"/>
-<area shape="rect" id="node20" href="$RainMachine_8h.html" title="blocks/RainMachine.h" alt="" coords="671,80,821,107"/>
-<area shape="rect" id="node23" href="$Armour_8h.html" title="blocks/Armour.h" alt="" coords="941,229,1058,256"/>
-<area shape="rect" id="node4" href="$header_8h.html" title="header.h" alt="" coords="870,379,942,405"/>
-<area shape="rect" id="node8" href="$Inventory_8h.html" title="Provides declaration for class Inventory for freg. " alt="" coords="560,155,647,181"/>
-<area shape="rect" id="node10" href="$Animal_8h.html" title="blocks/Animal.h" alt="" coords="370,155,485,181"/>
-<area shape="rect" id="node11" href="$Active_8h.html" title="blocks/Active.h" alt="" coords="402,229,514,256"/>
-<area shape="rect" id="node13" href="$Block_8h.html" title="Provides definition for class Block. " alt="" coords="873,304,939,331"/>
-<area shape="rect" id="node14" href="$Xyz_8h.html" title="Xyz.h" alt="" coords="386,304,442,331"/>
-<area shape="rect" id="node21" href="$Shred_8h.html" title="Shred.h" alt="" coords="722,155,789,181"/>
+<area shape="rect" id="node3" href="$BlockManager_8h.html" title="BlockManager.h" alt="" coords="1172,229,1288,256"/>
+<area shape="rect" id="node7" href="$blocks_8h.html" title="blocks/blocks.h" alt="" coords="328,80,441,107"/>
+<area shape="rect" id="node15" href="$Dwarf_8h.html" title="blocks/Dwarf.h" alt="" coords="465,80,576,107"/>
+<area shape="rect" id="node16" href="$Bucket_8h.html" title="blocks/Bucket.h" alt="" coords="184,155,300,181"/>
+<area shape="rect" id="node17" href="$Weapons_8h.html" title="blocks/Weapons.h" alt="" coords="727,155,858,181"/>
+<area shape="rect" id="node18" href="$Illuminator_8h.html" title="blocks/Illuminator.h" alt="" coords="883,155,1017,181"/>
+<area shape="rect" id="node19" href="$Containers_8h.html" title="blocks/Containers.h" alt="" coords="565,155,703,181"/>
+<area shape="rect" id="node20" href="$RainMachine_8h.html" title="blocks/RainMachine.h" alt="" coords="1041,155,1192,181"/>
+<area shape="rect" id="node23" href="$Armour_8h.html" title="blocks/Armour.h" alt="" coords="113,229,230,256"/>
+<area shape="rect" id="node24" href="$Filter_8h.html" title="blocks/Filter.h" alt="" coords="651,80,755,107"/>
+<area shape="rect" id="node4" href="$header_8h.html" title="header.h" alt="" coords="1110,379,1182,405"/>
+<area shape="rect" id="node8" href="$Inventory_8h.html" title="Provides declaration for class Inventory for freg. " alt="" coords="484,229,571,256"/>
+<area shape="rect" id="node10" href="$Animal_8h.html" title="blocks/Animal.h" alt="" coords="375,155,490,181"/>
+<area shape="rect" id="node11" href="$Active_8h.html" title="blocks/Active.h" alt="" coords="695,229,807,256"/>
+<area shape="rect" id="node13" href="$Block_8h.html" title="Provides definition for class Block. " alt="" coords="355,304,422,331"/>
+<area shape="rect" id="node14" href="$Xyz_8h.html" title="Xyz.h" alt="" coords="767,304,823,331"/>
+<area shape="rect" id="node21" href="$Shred_8h.html" title="Shred.h" alt="" coords="1081,229,1147,256"/>
 </map>

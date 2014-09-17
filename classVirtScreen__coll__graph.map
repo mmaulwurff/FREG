@@ -1,15 +1,15 @@
 <map id="VirtScreen" name="VirtScreen">
-<area shape="rect" id="node3" href="$classPlayer.html" title="This class contains information specific to player and interface for manipulating him..." alt="" coords="119,455,177,481"/>
-<area shape="rect" id="node8" href="$classActive.html" title="Active" alt="" coords="233,184,292,211"/>
+<area shape="rect" id="node3" href="$classPlayer.html" title="This class contains information specific to player and interface for manipulating him..." alt="" coords="119,467,177,493"/>
+<area shape="rect" id="node8" href="$classActive.html" title="Active" alt="" coords="239,184,297,211"/>
 <area shape="rect" id="node4" href="$classXyz.html" title="Xyz" alt="" coords="143,95,188,121"/>
-<area shape="rect" id="node11" href="$classDeferredAction.html" title="Deferred Action is used when some action needs to be done at next physics turn. " alt="" coords="268,455,377,481"/>
+<area shape="rect" id="node11" href="$classDeferredAction.html" title="Deferred Action is used when some action needs to be done at next physics turn. " alt="" coords="273,467,383,493"/>
 <area shape="rect" id="node5" href="$classXy.html" title="Xy" alt="" coords="146,5,185,32"/>
-<area shape="rect" id="node6" href="$classAnimal.html" title="Animal" alt="" coords="231,365,294,392"/>
-<area shape="rect" id="node7" href="$classFalling.html" title="Falling" alt="" coords="233,275,293,301"/>
-<area shape="rect" id="node9" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="335,5,390,32"/>
-<area shape="rect" id="node10" href="$classShred.html" title="Shred" alt="" coords="335,95,391,121"/>
-<area shape="rect" id="node12" href="$classWorld.html" title="World provides global physics and shred connection. " alt="" coords="604,455,660,481"/>
-<area shape="rect" id="node16" href="$classPreloadThread.html" title="PreloadThread" alt="" coords="609,275,716,301"/>
-<area shape="rect" id="node14" href="$classWorldMap.html" title="WorldMap" alt="" coords="791,365,873,392"/>
-<area shape="rect" id="node15" href="$classShredStorage.html" title="ShredStorage" alt="" coords="581,365,683,392"/>
+<area shape="rect" id="node6" href="$classAnimal.html" title="Animal" alt="" coords="237,363,299,389"/>
+<area shape="rect" id="node7" href="$classFalling.html" title="Falling" alt="" coords="238,273,298,300"/>
+<area shape="rect" id="node9" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="359,5,414,32"/>
+<area shape="rect" id="node10" href="$classShred.html" title="Shred" alt="" coords="359,95,415,121"/>
+<area shape="rect" id="node12" href="$classWorld.html" title="World provides global physics and shred connection. " alt="" coords="609,467,665,493"/>
+<area shape="rect" id="node16" href="$classPreloadThread.html" title="PreloadThread" alt="" coords="615,273,721,300"/>
+<area shape="rect" id="node14" href="$classWorldMap.html" title="WorldMap" alt="" coords="797,363,878,389"/>
+<area shape="rect" id="node15" href="$classShredStorage.html" title="ShredStorage" alt="" coords="587,363,688,389"/>
 </map>

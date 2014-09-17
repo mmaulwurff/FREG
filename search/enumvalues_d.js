@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['on_5fbody',['ON_BODY',['../classDwarf.html#ae710d7dc0c30eb31a95a64f69531a5e8ad9bf236c2abd76b5fa3fea70476a371b',1,'Dwarf']]],
-  ['on_5fhead',['ON_HEAD',['../classDwarf.html#ae710d7dc0c30eb31a95a64f69531a5e8aa959bf2026ae66cc5368953a9332004a',1,'Dwarf']]],
-  ['on_5flegs',['ON_LEGS',['../classDwarf.html#ae710d7dc0c30eb31a95a64f69531a5e8a7d44e25c78892440e2e03cf4f9b6970d',1,'Dwarf']]]
+  ['nonstandard',['NONSTANDARD',['../header_8h.html#a48a539666409f8c99365fc6d8a58f708aad30f681b2f3fd80f6c69c9874a2273b',1,'header.h']]],
+  ['north',['NORTH',['../header_8h.html#aeac25a28aa4d3c6009f7249ee82ae12dad0611de6f28d4a9c9eac959f5344698e',1,'header.h']]],
+  ['not_5fmovable',['NOT_MOVABLE',['../header_8h.html#a4b1e949f8e745e1bab6b99b32b34c544a62cfdc93a556ab1811c2f092144b05b3',1,'header.h']]],
+  ['nullstone',['NULLSTONE',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706acbec00389fc7f5098e1b14294876d449',1,'header.h']]]
 ];
