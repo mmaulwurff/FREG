@@ -76,7 +76,7 @@ void VirtScreen::ActionXyz(int * x, int * y, int * z) const {
 
 World * VirtScreen::GetWorld() const { return w; }
 
-char VirtScreen::CharName(const int kind, const int sub) const {
+char VirtScreen::CharName(const int kind, const int sub) {
     switch ( static_cast<kinds>(kind) )  {
     case BUSH:   return ';';
     case DWARF:  return '@';

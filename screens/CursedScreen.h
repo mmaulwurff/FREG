@@ -114,6 +114,7 @@ private:
     void MovePlayerDiag(dirs dir1, dirs dir2) const;
     static bool IsScreenWide();
     int  RandomBlink() const;
+    bool RandomBit() const;
     Block * GetFocusedBlock() const;
 
     WINDOW * windows[6];
@@ -136,7 +137,7 @@ private:
     const QChar arrows[WEST+1];
     SCREEN * const screen;
     mutable bool inputActive = false;
-    mutable int random_blink;
+    mutable int randomBlink;
 };
 
 #endif // CURSEDSCREEN_H

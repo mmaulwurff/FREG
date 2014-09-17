@@ -21,7 +21,7 @@ DEFINES += VER=\"$${VERSTR}\"
 TEMPLATE = app
 
 QMAKE_CXXFLAGS += -Wall -Wextra -std=c++11 -pedantic
-#QMAKE_CXXFLAGS += -Weffc++ -Wold-style-cast -Werror
+QMAKE_CXXFLAGS += -Weffc++ -Wold-style-cast -Werror
 QMAKE_CXXFLAGS += -Wfloat-equal -Woverloaded-virtual -Wundef
 
 #QMAKE_CXXFLAGS_DEBUG += -fno-inline

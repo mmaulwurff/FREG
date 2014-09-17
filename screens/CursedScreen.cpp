@@ -125,9 +125,8 @@ char Screen::CharNumberFront(const int i, const int j) const {
             dist+'0' : ' ';
 }
 
-int Screen::RandomBlink() const {
-    return ( (random_blink >>= 1) & 1 ) ? 0 : A_REVERSE;
-}
+int  Screen::RandomBlink() const { return RandomBit() ? 0 : A_REVERSE; }
+bool Screen::RandomBit()   const { return ( (randomBlink >>= 1) & 1 ); }
 
 int Screen::Color(const int kind, const int sub) const {
     switch ( kind ) { // foreground_background
@@ -169,7 +168,8 @@ int Screen::Color(const int kind, const int sub) const {
         case STAR:
             if ( w->GetEvernight() ) return COLOR_PAIR(BLACK_BLACK);
             switch ( w->PartOfDay() ) {
-            case TIME_NIGHT:   return COLOR_PAIR(WHITE_BLACK) | A_BOLD;
+            case TIME_NIGHT: return
+                COLOR_PAIR(WHITE_BLACK) | ( RandomBit() ? A_BOLD : 0 );
             case TIME_MORNING: return COLOR_PAIR(WHITE_BLUE);
             case TIME_NOON:    return COLOR_PAIR( CYAN_CYAN);
             case TIME_EVENING: return COLOR_PAIR(WHITE_CYAN);
@@ -539,7 +539,7 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
         ( SHRED_WIDTH-SCREEN_SIZE )/2;
     for (int j=start_y; j<SCREEN_SIZE+start_y; ++j, waddstr(window, "\n_"))
     for (int i=start_x; i<SCREEN_SIZE+start_x; ++i ) {
-        random_blink = qrand();
+        randomBlink = qrand();
         Shred * const shred = w->GetShred(i, j);
         const int i_in = Shred::CoordInShred(i);
         const int j_in = Shred::CoordInShred(j);
@@ -634,7 +634,7 @@ void Screen::PrintFront(const dirs dir) const {
     (void)wmove(rightWin, 1, 1);
     for (int k=k_start; k>k_start-SCREEN_SIZE; --k, waddstr(rightWin, "\n_")) {
         for (*x=x_start; *x!=x_end; *x+=x_step) {
-            random_blink = qrand();
+            randomBlink = qrand();
             for (*z=z_start; *z!=z_end && w->GetBlock(i, j, k)->
                         Transparent()==INVISIBLE;
                     *z += z_step);
@@ -815,14 +815,14 @@ Screen::Screen(
         beepOn (settings.value("beep_on",  false).toBool()),
         flashOn(settings.value("flash_on", true ).toBool()),
         ascii(_ascii),
-        arrows({'.', 'x',
+        arrows{'.', 'x',
             ascii ? '^' : 0x2191,
             ascii ? 'v' : 0x2193,
             ascii ? '>' : 0x2192,
             ascii ? '<' : 0x2190
-        }),
+        },
         screen(newterm(nullptr, stdout, stdin)),
-        random_blink()
+        randomBlink()
 {
     #ifndef Q_OS_WIN32
         set_escdelay(10);

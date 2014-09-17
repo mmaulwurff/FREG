@@ -125,8 +125,8 @@ BlockManager::BlockManager() {
         "invalid number of strings in BlockManager::kinds[]");
     static_assert((sizeof_array(BlockManager::subs) == LAST_SUB),
         "invalid number of strings in BlockManager::subs[]");
-    static_assert((LAST_SUB  <= 128), "too many substances, should be < 127.");
-    static_assert((LAST_KIND <= 256), "too many kinds, should be < 255.");
+    static_assert((LAST_SUB  <= 64 ), "too many substances, should be < 64.");
+    static_assert((LAST_KIND <= 128), "too many kinds, should be < 128.");
 }
 
 BlockManager::~BlockManager() {
