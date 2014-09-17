@@ -101,10 +101,6 @@ void Player::Examine() {
     emit GetFocus(&i, &j, &k);
     const Block * const block = world->GetBlock(i, j, k);
     emit Notify( tr("You see %1.").arg(block->FullName()) );
-    locker.unlock();
-    ProcessCommand(QString("help %1").
-        arg(BlockManager::KindToString(block->Kind())));
-    locker.relock();
     if ( DEBUG ) {
         emit Notify(QString("Weight: %1. Id: %2.").
             arg(block->Weight()).
@@ -424,7 +420,7 @@ void Player::BlockDestroy() {
         usingType = usingSelfType = USAGE_TYPE_NO;
         emit Notify(tr("^ You die. ^"));
         emit Destroyed();
-        player = NewPlayer();
+        player = nullptr;
         world->ReloadAllShreds(homeLati, homeLongi, homeX,homeY,homeZ);
     }
 }
@@ -441,8 +437,9 @@ void Player::SetPlayer(const int _x, const int _y, const int _z) {
         player->disconnect();
     }
     if ( GetCreativeMode() ) {
-        (player = creator)->SetXyz(X(), Y(), Z());
-        GetShred()->Register(player);
+        (player = creator)->SetXyz(
+            Shred::CoordInShred(_x), Shred::CoordInShred(_y), _z);
+        GetWorld()->GetShred(_x, _y)->Register(player);
     } else {
         if ( player != nullptr ) {
             GetShred()->Unregister(player);
@@ -454,7 +451,6 @@ void Player::SetPlayer(const int _x, const int _y, const int _z) {
             if ( AIR == candidate->Sub() || candidate->IsAnimal() ) {
                 break;
             }
-            candidate = world->GetBlock(X(), Y(), z_self);
         }
         if ( candidate->IsAnimal() ) {
             player = candidate->IsAnimal();

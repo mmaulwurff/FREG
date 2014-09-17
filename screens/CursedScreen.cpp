@@ -159,7 +159,7 @@ int Screen::Color(const int kind, const int sub) const {
         case ROSE:       return COLOR_PAIR(    RED_GREEN );
         case CLAY:       return COLOR_PAIR(  WHITE_RED   );
         case PAPER:      return COLOR_PAIR(MAGENTA_WHITE );
-        case GOLD:       return COLOR_PAIR(  WHITE_YELLOW);
+        case GOLD:       return COLOR_PAIR(  WHITE_YELLOW) | RandomBlink();
         case BONE:       return COLOR_PAIR(MAGENTA_WHITE );
         case EXPLOSIVE:  return COLOR_PAIR(  WHITE_RED   );
         case DIAMOND:    return COLOR_PAIR(   CYAN_WHITE ) | A_BOLD;
