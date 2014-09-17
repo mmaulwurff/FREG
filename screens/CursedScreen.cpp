@@ -42,10 +42,10 @@ const {
         mvwaddstr(window, SCREEN_SIZE+1, x-2, qPrintable(tr("S    S")));
     }
     wcolor_set(window, WHITE_RED, nullptr);
-    mvwaddstr(window, 0, x, qPrintable(arrowDown));
-    waddstr  (window,       qPrintable(arrowDown));
-    mvwaddstr(window, SCREEN_SIZE+1, x, qPrintable(arrowUp));
-    waddstr  (window, qPrintable(arrowUp));
+    mvwaddstr(window, 0, x, qPrintable(arrows[SOUTH]));
+    waddstr  (window,       qPrintable(arrows[SOUTH]));
+    mvwaddstr(window, SCREEN_SIZE+1, x, qPrintable(arrows[NORTH]));
+    waddstr  (window, qPrintable(arrows[NORTH]));
     HorizontalArrows(window, y, show_dir);
     (void)wmove(window, y, x);
 }
@@ -61,8 +61,8 @@ const {
         mvwaddstr(window, y+1, SCREEN_SIZE*2+1, qPrintable(tr("E")));
     }
     wcolor_set(window, WHITE_RED, nullptr);
-    mvwaddstr(window, y, 0, qPrintable(arrowRight));
-    mvwaddstr(window, y, SCREEN_SIZE*2+1, qPrintable(arrowLeft));
+    mvwaddstr(window, y, 0, qPrintable(arrows[EAST]));
+    mvwaddstr(window, y, SCREEN_SIZE*2+1, qPrintable(arrows[WEST]));
 }
 
 void Screen::RePrint() {
@@ -298,9 +298,7 @@ void Screen::ControlPlayer(const int ch) {
         }
         break;
     case KEY_HELP:
-    case 'H':
-        DisplayFile(QString("help_%1/help.txt").arg(locale.left(2)));
-        break;
+    case 'H': ProcessCommand("help"); break;
     case 'R':
     case 'L': RePrint(); break;
 
@@ -369,6 +367,12 @@ void Screen::ActionXyz(int * x, int * y, int * z) const {
     }
 }
 
+Block * Screen::GetFocusedBlock() const {
+    int x, y, z;
+    ActionXyz(&x, &y, &z);
+    return GetWorld()->GetBlock(x, y, z);
+}
+
 char Screen::PrintBlock(const Block & block, WINDOW * const window) const {
     const int kind = block.Kind();
     const int sub  = block.Sub();
@@ -397,24 +401,18 @@ void Screen::Print() {
             }
             break;
         case USAGE_TYPE_READ_IN_INVENTORY:
-            wstandend(rightWin);
-            PrintFile(rightWin, QString(home_path + w->WorldName() + "/texts/"
+            DisplayFile(QString(home_path + w->WorldName() + "/texts/"
                 + player->PlayerInventory()->ShowBlock(
                     player->GetUsingInInventory())->GetNote()));
             player->SetUsingTypeNo();
             break;
-        case USAGE_TYPE_READ: {
-                int x, y, z;
-                ActionXyz(&x, &y, &z);
-                wstandend(rightWin);
-                PrintFile(rightWin, QString(home_path + w->WorldName()
-                    + "/texts/" + w->GetBlock(x, y, z)->GetNote()));
-                player->SetUsingTypeNo();
-            } break;
+        case USAGE_TYPE_READ:
+            DisplayFile(QString(home_path + w->WorldName()
+                + "/texts/" + GetFocusedBlock()->GetNote()));
+            player->SetUsingTypeNo();
+            break;
         case USAGE_TYPE_OPEN: {
-                int x, y, z;
-                ActionXyz(&x, &y, &z);
-                Block * const block = w->GetBlock(x, y, z);
+                Block * const block = GetFocusedBlock();
                 PrintInv(rightWin, block, block->HasInventory());
             } break;
         }
@@ -457,10 +455,7 @@ void Screen::PrintHUD() {
             break;
         }
     }
-    // focused block
-    int x, y, z;
-    ActionXyz(&x, &y, &z);
-    Block * const focused = GetWorld()->GetBlock(x, y, z);
+    Block * const focused = GetFocusedBlock();
     if ( Block::GetSubGroup(focused->Sub()) != GROUP_AIR ) {
         const int left_border = (SCREEN_SIZE*2+2) * (IsScreenWide() ? 2 : 1);
         PrintBar(left_border - 15,
@@ -563,15 +558,8 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
     if ( dir > DOWN ) {
         const Block * const block = player->GetBlock();
         wattrset(window, Color(block->Kind(), block->Sub()));
-        (void)wmove(window, player->Y()-start_y+1, (player->X()-start_x)*2+2);
-        switch ( player->GetDir() ) {
-        case UP:      waddch(window, '.'); break;
-        case DOWN:    waddch(window, 'x'); break;
-        case NORTH:   waddstr(window, qPrintable(arrowUp));    break;
-        case SOUTH:   waddstr(window, qPrintable(arrowDown));  break;
-        case EAST:    waddstr(window, qPrintable(arrowRight)); break;
-        case WEST:    waddstr(window, qPrintable(arrowLeft));  break;
-        }
+        mvwaddstr(window, player->Y()-start_y+1, (player->X()-start_x)*2+2,
+            qPrintable(arrows[player->GetDir()]));
     }
     PrintTitle(window, UP==dir ? UP : DOWN);
     Arrows(window, (player->X()-start_x)*2+1, player->Y()-start_y+1, true);
@@ -681,15 +669,9 @@ void Screen::PrintFront(const dirs dir) const {
 } // void Screen::PrintFront(dirs)
 
 void Screen::PrintTitle(WINDOW * const window, const dirs dir) const {
-    QString dir_string;
-    switch ( dir ) {
-    case UP:    dir_string = tr(".  Up  .");  break;
-    case DOWN:  dir_string = tr("x Down x");  break;
-    case NORTH: dir_string = tr("^ North ^"); break;
-    case SOUTH: dir_string = tr("v South v"); break;
-    case EAST:  dir_string = tr("> East >");  break;
-    case WEST:  dir_string = tr("< West <");  break;
-    }
+    QString dir_string = QString("%1 %2 %1").
+        arg(arrows[dir]).
+        arg(Block::DirString(dir));
     wstandend(window);
     box(window, 0, 0);
     wcolor_set(window, BLACK_WHITE, nullptr);
@@ -833,10 +815,12 @@ Screen::Screen(
         beepOn (settings.value("beep_on",  false).toBool()),
         flashOn(settings.value("flash_on", true ).toBool()),
         ascii(_ascii),
-        arrowUp   (ascii ? '^' : 0x2191),
-        arrowDown (ascii ? 'v' : 0x2193),
-        arrowRight(ascii ? '>' : 0x2192),
-        arrowLeft (ascii ? '<' : 0x2190),
+        arrows({'.', 'x',
+            ascii ? '^' : 0x2191,
+            ascii ? 'v' : 0x2193,
+            ascii ? '>' : 0x2192,
+            ascii ? '<' : 0x2190
+        }),
         screen(newterm(nullptr, stdout, stdin)),
         random_blink()
 {
@@ -901,7 +885,7 @@ Screen::Screen(
     SetActionMode(static_cast<actions>
         (settings.value("action_mode", ACTION_USE).toInt()));
     Print();
-    Notify(tr("*--- Game started. Press 'H' for help. ---*"));
+    Notify(tr("--- Game started. Press 'H' for help. ---"));
     if ( COLS < preferred_width ) {
         Notify(tr("For better gameplay "));
         Notify(tr("set your terminal width at least %1 chars.").

@@ -28,6 +28,7 @@
 #include "blocks/Containers.h"
 #include "blocks/RainMachine.h"
 #include "blocks/Armour.h"
+#include "blocks/Filter.h"
 
 #define sizeof_array(ARRAY) (sizeof(ARRAY)/sizeof(ARRAY[0]))
 
@@ -69,6 +70,8 @@ const QByteArray BlockManager::kinds[] = { // do not use space, use '_'
     "boots",
     "telegraph",
     "medkit",
+    "filter",
+    "informer",
     /// [List of kinds]
 };
 
@@ -153,7 +156,7 @@ Block * BlockManager::NewBlock(const int kind, const int sub) {
     case LADDER:    return new Ladder(kind, sub);
     case DOOR:      return new Door  (kind, sub);
     case BOX:       return new Box   (kind, sub);
-    case TEXT:      return new Text  (kind, sub);
+    case KIND_TEXT: return new Text  (kind, sub);
     case MAP:       return new Map   (kind, sub);
     case PREDATOR:  return new Predator(kind, sub);
     case BUCKET:    return new Bucket(kind, sub);
@@ -168,6 +171,8 @@ Block * BlockManager::NewBlock(const int kind, const int sub) {
     case BOOTS:     return new Boots (kind, sub);
     case TELEGRAPH: return new Telegraph(kind, sub);
     case MEDKIT:    return new MedKit(kind, sub);
+    case FILTER:    return new Filter(kind, sub);
+    case INFORMER:  return new Informer(kind, sub);
     case LAST_KIND: break;
     }
     Q_UNREACHABLE();
@@ -195,7 +200,7 @@ Block * BlockManager::BlockFromFile(QDataStream & str,
     case LADDER:    return new Ladder(str, kind, sub);
     case DOOR:      return new Door  (str, kind, sub);
     case BOX:       return new Box   (str, kind, sub);
-    case TEXT:      return new Text  (str, kind, sub);
+    case KIND_TEXT: return new Text  (str, kind, sub);
     case MAP:       return new Map   (str, kind, sub);
     case PREDATOR:  return new Predator(str, kind, sub);
     case BUCKET:    return new Bucket(str, kind, sub);
@@ -210,6 +215,8 @@ Block * BlockManager::BlockFromFile(QDataStream & str,
     case BOOTS:     return new Boots (str, kind, sub);
     case TELEGRAPH: return new Telegraph(str, kind, sub);
     case MEDKIT:    return new MedKit(str, kind, sub);
+    case FILTER:    return new Filter(str, kind, sub);
+    case INFORMER:  return new Informer(str, kind, sub);
     case LAST_KIND: break;
     }
     Q_UNREACHABLE();

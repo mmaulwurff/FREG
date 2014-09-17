@@ -20,8 +20,9 @@ VERSTR = '\\"$${VERSION}\\"'
 DEFINES += VER=\"$${VERSTR}\"
 TEMPLATE = app
 
-QMAKE_CXXFLAGS += -Wall -Wextra -Werror -std=c++11 -pedantic -Weffc++
-QMAKE_CXXFLAGS += -Wold-style-cast -Wfloat-equal -Woverloaded-virtual -Wundef
+QMAKE_CXXFLAGS += -Wall -Wextra -std=c++11 -pedantic
+#QMAKE_CXXFLAGS += -Weffc++ -Wold-style-cast -Werror
+QMAKE_CXXFLAGS += -Wfloat-equal -Woverloaded-virtual -Wundef
 
 #QMAKE_CXXFLAGS_DEBUG += -fno-inline
 QMAKE_CXXFLAGS_RELEASE -= -O2
@@ -79,6 +80,7 @@ HEADERS += \
     worldmap.h \
     ShredStorage.h \
     Xyz.h \
+    screens/IThread.h \
     blocks/blocks.h \
     blocks/Block.h \
     blocks/Active.h \
@@ -91,7 +93,7 @@ HEADERS += \
     blocks/Containers.h \
     blocks/RainMachine.h \
     blocks/Armour.h \
-    screens/IThread.h
+    blocks/Filter.h
 SOURCES += \
     BlockManager.cpp \
     CraftManager.cpp \
@@ -106,6 +108,7 @@ SOURCES += \
     worldmap.cpp \
     ShredStorage.cpp \
     Xyz.cpp \
+    screens/IThread.cpp \
     blocks/blocks.cpp \
     blocks/Active.cpp \
     blocks/Dwarf.cpp \
@@ -118,7 +121,7 @@ SOURCES += \
     blocks/RainMachine.cpp \
     blocks/Armour.cpp \
     blocks/Animal.cpp \
-    screens/IThread.cpp
+    blocks/Filter.cpp
 
 INCLUDEPATH += .
 

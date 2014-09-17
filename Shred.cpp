@@ -368,17 +368,17 @@ void Shred::TestShred() {
     } set[SHRED_WIDTH/2][SHRED_WIDTH] = {
         { // rows
             {CLOCK, IRON}, {CONTAINER, WOOD}, {FALLING, SAND},
-            {BLOCK, GLASS}, {CONTAINER, DIFFERENT}, {PLATE, STONE},
+            {BLOCK, GLASS}, {BOX, DIFFERENT}, {PLATE, STONE},
             {BLOCK, NULLSTONE}, {LADDER, NULLSTONE}, {LADDER, GREENERY},
             {LADDER, STONE}, {DWARF, ADAMANTINE}, {BUSH, WOOD},
             {WORKBENCH, IRON}, {DOOR, GLASS}, {WEAPON, IRON},
             {BLOCK, SAND}
         }, {
             {BLOCK, WATER}, {FALLING, WATER}, {DOOR, STONE},
-            {BLOCK, CLAY}, {TEXT, PAPER}, {BELL, IRON},
+            {BLOCK, CLAY}, {KIND_TEXT, PAPER}, {BELL, IRON},
             {BUCKET, IRON}, {PICK, IRON}, {SHOVEL, IRON},
             {HAMMER, IRON}, {AXE, IRON}, {FALLING, STONE},
-            {WEAPON, STONE}, {BLOCK, WOOD}, {TEXT, GLASS},
+            {WEAPON, STONE}, {BLOCK, WOOD}, {KIND_TEXT, GLASS},
             {BLOCK, COAL}
         }, {
             {CLOCK, EXPLOSIVE}, {BLOCK, MOSS_STONE}, {ILLUMINATOR, STONE},

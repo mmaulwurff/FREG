@@ -53,7 +53,7 @@
     push_reaction Ladder::PushResult(dirs) const { return MOVE_UP; }
 
     Block * Ladder::DropAfterDamage(bool * const delete_block) {
-        Block * const pile = BlockManager::NewBlock(CONTAINER, DIFFERENT);
+        Block * const pile = BlockManager::NewBlock(BOX, DIFFERENT);
         if ( STONE==Sub() || MOSS_STONE==Sub() ) {
             pile->HasInventory()->Get(block_manager.Normal(Sub()));
         } else {
@@ -208,7 +208,7 @@
     }
 
     Block * Bush::DropAfterDamage(bool *) {
-        Block * const pile = BlockManager::NewBlock(CONTAINER, DIFFERENT);
+        Block * const pile = BlockManager::NewBlock(BOX, DIFFERENT);
         Inventory * const pile_inv = pile->HasInventory();
         pile_inv->Get(BlockManager::NewBlock(WEAPON, WOOD));
         pile_inv->Get(block_manager.Normal(HAZELNUT));
@@ -631,4 +631,23 @@
             Damage(MAX_DURABILITY/10, DAMAGE_TIME);
         }
         return USAGE_TYPE_NO;
+    }
+
+// Informer:: section
+    wearable Informer::Wearable() const { return WEARABLE_OTHER; }
+
+    usage_types Informer::Use(Block * const user) {
+        switch ( Sub() ) {
+        case IRON: user->ReceiveSignal(QString("Your direction: %1.").
+            arg(DirString(user->GetDir()).toLower())); break;
+        default: break;
+        }
+        return USAGE_TYPE_NO;
+    }
+
+    QString Informer::FullName() const {
+        switch ( Sub() ) {
+        case IRON: return QObject::tr("Compass");
+        default:   return QObject::tr("Informer (%1)").arg(SubName(Sub()));
+        }
     }

@@ -95,12 +95,16 @@ void Player::UpdateXYZ() {
     emit Updated();
 }
 
-void Player::Examine() const {
-    const QMutexLocker locker(world->GetLock());
+void Player::Examine() {
+    QMutexLocker locker(world->GetLock());
     int i, j, k;
     emit GetFocus(&i, &j, &k);
     const Block * const block = world->GetBlock(i, j, k);
     emit Notify( tr("You see %1.").arg(block->FullName()) );
+    locker.unlock();
+    ProcessCommand(QString("help %1").
+        arg(BlockManager::KindToString(block->Kind())));
+    locker.relock();
     if ( DEBUG ) {
         emit Notify(QString("Weight: %1. Id: %2.").
             arg(block->Weight()).
@@ -450,6 +454,7 @@ void Player::SetPlayer(const int _x, const int _y, const int _z) {
             if ( AIR == candidate->Sub() || candidate->IsAnimal() ) {
                 break;
             }
+            candidate = world->GetBlock(X(), Y(), z_self);
         }
         if ( candidate->IsAnimal() ) {
             player = candidate->IsAnimal();
@@ -483,7 +488,7 @@ Player::Player() :
         homeZ(settings.value("home_z", HEIGHT/2).toInt()),
         player(nullptr),
         creator(BlockManager::NewBlock(DWARF, DIFFERENT)->IsAnimal()),
-        usingType(settings.value("using_type",      USAGE_TYPE_NO).toInt()),
+        usingType    (settings.value("using_type",     USAGE_TYPE_NO).toInt()),
         usingSelfType(settings.value("using_self_type",USAGE_TYPE_NO).toInt()),
         usingInInventory(),
         creativeMode(settings.value("creative_mode", false).toBool())

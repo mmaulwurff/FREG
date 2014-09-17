@@ -30,7 +30,6 @@ class Container : public Active, public Inventory {
      *  \brief Container is multi-purpose container for blocks.
      *
      *  Behaviour depends on substance:
-     *  - container from DIFFERENT is a pile, and will dissapear if empty;
      *  - container from IRON (locker) and WATER (fridge) prevents all activity
      *    inside;
      *  - container from other substances are different chests. */
@@ -40,7 +39,6 @@ public:
     Container(QDataStream & str, int kind, int sub, int size = INV_SIZE);
 
     void ReceiveSignal(QString) override;
-    void DoRareAction() override;
     int  ShouldAct() const override;
     int  Weight() const override;
     void Damage(int dmg, int dmg_kind) override;
@@ -62,16 +60,21 @@ class Box : public Falling, public Inventory {
      *
      *  Unlike chests, position of box is not static, it can be moved and falls
      *  when it can.
-     *  Also, pile is box of substance DIFFERENT. */
+     *  Also, pile is box of substance DIFFERENT, it will dissapear if empty; */
     Q_OBJECT
 public:
     Box(int kind, int sub);
     Box(QDataStream & str, int kind, int sub);
 
-    void Damage(int dmg, int dmg_kind);
+    int  ShouldAct() const override;
+    void Damage(int dmg, int dmg_kind) override;
     void ReceiveSignal(QString) override;
-    QString FullName() const;
+    void DoRareAction() override;
+    QString FullName() const override;
+    Block * DropAfterDamage(bool * delete_block) override;
     Inventory * HasInventory() override final;
+    usage_types Use(Block * who) override;
+    inner_actions ActInner() override;
 
 protected:
     void SaveAttributes(QDataStream & out) const override;

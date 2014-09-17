@@ -193,7 +193,8 @@ void Inventory::Push(const int x, const int y, const int z,
     int x_targ, y_targ, z_targ;
     world->Focus(x, y, z, &x_targ, &y_targ, &z_targ,
         World::Anti(Block::MakeDirFromDamage(push_direction)));
-    Inventory * const inv = world->GetBlock(x, y, z)->HasInventory();
+    Inventory * const inv =
+        world->GetBlock(x_targ, y_targ, z_targ)->HasInventory();
     if ( inv != nullptr ) {
         inv->GetAll(this);
     }

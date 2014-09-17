@@ -165,7 +165,8 @@ private: // Inventory functions section
     bool Exchange(Block * block_from, Block * block_to,
             int src, int dest, int num);
 public:
-    void Drop(Block * from, int x_to, int y_to, int z_to,
+    /// Returns true on success.
+    bool Drop(Block * from, int x_to, int y_to, int z_to,
             int src, int dest, int num);
     void Get(Block * to, int x_from, int y_from, int z_from,
             int src, int dest, int num);

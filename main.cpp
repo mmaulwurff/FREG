@@ -43,7 +43,12 @@
     #endif
 #endif
 
-const QString home_path = QDir::homePath() + "/.freg/";
+#ifdef Q_OS_WIN32
+const QString home_path = "";
+#else
+//const QString home_path = QDir::homePath() + "/.freg/";
+const QString home_path = "";
+#endif
 
 int main(int argc, char ** argv) {
     setlocale(LC_CTYPE, "C-UTF-8");
@@ -134,7 +139,12 @@ int main(int argc, char ** argv) {
     }
     Player player;
     int error = SCREEN_NO_ERROR;
+    #ifdef Q_OS_WIN32
+    const Screen screen(&world, &player, error, true);
+    #else
     const Screen screen(&world, &player, error, parser.isSet(ascii));
+    #endif
+
     if ( error ) return EXIT_FAILURE;
 
     QObject::connect(&player, SIGNAL(Destroyed()),
