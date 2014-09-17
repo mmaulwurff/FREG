@@ -76,6 +76,8 @@ public:
     static int KindFromId(int id);
     static int SubFromId(int id);
 
+    static bool IsValid(int kind, int sub);
+
 private:
     BlockManager(const BlockManager &) = delete;
     BlockManager & operator=(const BlockManager &) = delete;

@@ -112,6 +112,7 @@ const QByteArray BlockManager::subs[] = { // do not usp space, use '_'
     "acid",
     "cloud",
     "dust",
+    "plastic",
     /// [List of subs]
 };
 
@@ -127,6 +128,12 @@ BlockManager::BlockManager() {
         "invalid number of strings in BlockManager::subs[]");
     static_assert((LAST_SUB  <= 64 ), "too many substances, should be < 64.");
     static_assert((LAST_KIND <= 128), "too many kinds, should be < 128.");
+    /*int sum = 0;
+    for (int kind = 0; kind<LAST_KIND; ++kind)
+    for (int sub  = 0; sub <LAST_SUB;  ++sub) {
+        sum += IsValid(kind, sub);
+    }
+    fprintf(stderr, "valid pairs: %d\n", sum);*/
 }
 
 BlockManager::~BlockManager() {
@@ -274,3 +281,51 @@ Block * BlockManager::ReplaceWithNormal(Block * const block) const {
 
 int BlockManager::KindFromId(const int id) { return (id >> 8); }
 int BlockManager:: SubFromId(const int id) { return (id & 0xFF); }
+
+bool BlockManager::IsValid(const int kind, const int sub) {
+    const sub_groups group = Block::GetSubGroup(sub);
+    switch ( static_cast<enum kinds>(kind) ) {
+    case BLOCK:     return true;
+    case LAST_KIND: break;
+    case DWARF:     return ( sub == H_MEAT || group == GROUP_METAL );
+    case GRASS:     return ( sub == GREENERY || sub == FIRE );
+    case BUSH:      return ( sub == GREENERY || sub == WOOD );
+    case FALLING:   return ( sub == WATER || sub == STONE );
+    case LIQUID:    return ( group == GROUP_MEAT || group == GROUP_METAL
+                            || sub == STONE );
+
+    case BUCKET:
+    case CLOCK:
+    case RAIN_MACHINE:
+    case ARMOUR:
+    case HELMET:
+    case BOOTS:
+    case TELEGRAPH:
+    case MEDKIT:
+    case FILTER:
+    case INFORMER:
+    case BELL:      return ( group == GROUP_METAL );
+
+    case BOX:
+    case DOOR:
+    case LADDER:
+    case PLATE:
+    case WEAPON:
+    case PICK:
+    case SHOVEL:
+    case AXE:
+    case HAMMER:
+    case ILLUMINATOR:
+    case WORKBENCH:
+    case CONVERTER:
+    case CONTAINER: return ( group == GROUP_METAL || group == GROUP_HANDY );
+
+    case PREDATOR:
+    case RABBIT:    return ( sub == A_MEAT );
+
+    case MAP:
+    case KIND_TEXT: return ( sub == PAPER || sub == GLASS );
+    }
+    Q_UNREACHABLE();
+    return false;
+}

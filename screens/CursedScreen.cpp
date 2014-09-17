@@ -134,6 +134,8 @@ int Screen::Color(const int kind, const int sub) const {
         case WATER:     return COLOR_PAIR( CYAN_BLUE  ) | RandomBlink();
         case SUB_CLOUD: return COLOR_PAIR(BLACK_WHITE );
         case ACID:      return COLOR_PAIR(GREEN_GREEN ) |A_BOLD |RandomBlink();
+        case H_MEAT:
+        case A_MEAT:    return COLOR_PAIR(BLACK_RED);
         default:        return COLOR_PAIR(  RED_YELLOW) | RandomBlink();
         } break;
     case FALLING: switch ( sub ) {
