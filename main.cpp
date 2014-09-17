@@ -100,12 +100,12 @@ int main(int argc, char ** argv) {
         parser.value(world_argument) :
         sett.value("current_world", "mu").toString();
     sett.setValue("current_world", worldName);
+    if ( not QDir(home_path).mkpath(worldName) ) {
+        puts(qPrintable(QObject::tr("Error generating world.")));
+        return EXIT_FAILURE;
+    }
 
     if ( parser.isSet(generate) ) {
-        if ( not QDir(home_path).mkpath(worldName) ) {
-            puts(qPrintable(QObject::tr("Error generating world.")));
-            return EXIT_FAILURE;
-        }
         WorldMap::GenerateMap(
             worldName,
             parser.value(map_size).toUShort(),

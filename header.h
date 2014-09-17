@@ -40,6 +40,7 @@ const bool DEBUG = true;
 extern const QString home_path;
 
 const int SHRED_WIDTH = 16;
+const int SHRED_WIDTH_SHIFT = 4;
 const int HEIGHT = 128;
 
 enum times {
