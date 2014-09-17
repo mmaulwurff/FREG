@@ -42,10 +42,10 @@ const {
         mvwaddstr(window, SCREEN_SIZE+1, x-2, qPrintable(tr("S    S")));
     }
     wcolor_set(window, WHITE_RED, nullptr);
-    mvwaddstr(window, 0, x, qPrintable(arrowDown));
-    waddstr  (window,       qPrintable(arrowDown));
-    mvwaddstr(window, SCREEN_SIZE+1, x, qPrintable(arrowUp));
-    waddstr  (window, qPrintable(arrowUp));
+    mvwaddstr(window, 0, x, qPrintable(arrows[SOUTH]));
+    waddstr  (window,       qPrintable(arrows[SOUTH]));
+    mvwaddstr(window, SCREEN_SIZE+1, x, qPrintable(arrows[NORTH]));
+    waddstr  (window, qPrintable(arrows[NORTH]));
     HorizontalArrows(window, y, show_dir);
     (void)wmove(window, y, x);
 }
@@ -61,8 +61,8 @@ const {
         mvwaddstr(window, y+1, SCREEN_SIZE*2+1, qPrintable(tr("E")));
     }
     wcolor_set(window, WHITE_RED, nullptr);
-    mvwaddstr(window, y, 0, qPrintable(arrowRight));
-    mvwaddstr(window, y, SCREEN_SIZE*2+1, qPrintable(arrowLeft));
+    mvwaddstr(window, y, 0, qPrintable(arrows[EAST]));
+    mvwaddstr(window, y, SCREEN_SIZE*2+1, qPrintable(arrows[WEST]));
 }
 
 void Screen::RePrint() {
@@ -125,26 +125,25 @@ char Screen::CharNumberFront(const int i, const int j) const {
             dist+'0' : ' ';
 }
 
-int Screen::RandomBlink() const {
-    return ( (random_blink >>= 1) & 1 ) ? 0 : A_REVERSE;
-}
+int  Screen::RandomBlink() const { return RandomBit() ? 0 : A_REVERSE; }
+bool Screen::RandomBit()   const { return ( (randomBlink >>= 1) & 1 ); }
 
 int Screen::Color(const int kind, const int sub) const {
-    switch ( sub ) {
-    case ACID: return COLOR_PAIR(GREEN_GREEN) | A_BOLD | A_REVERSE;
-    }
     switch ( kind ) { // foreground_background
     case LIQUID: switch ( sub ) {
-        case WATER:     return COLOR_PAIR(CYAN_BLUE) | RandomBlink();
-        case SUB_CLOUD: return COLOR_PAIR(BLACK_WHITE);
-        default:        return COLOR_PAIR(RED_YELLOW);
-        } // no break);
+        case WATER:     return COLOR_PAIR( CYAN_BLUE  ) | RandomBlink();
+        case SUB_CLOUD: return COLOR_PAIR(BLACK_WHITE );
+        case ACID:      return COLOR_PAIR(GREEN_GREEN ) |A_BOLD |RandomBlink();
+        case H_MEAT:
+        case A_MEAT:    return COLOR_PAIR(BLACK_RED);
+        default:        return COLOR_PAIR(  RED_YELLOW) | RandomBlink();
+        } break;
     case FALLING: switch ( sub ) {
-        case WATER: return COLOR_PAIR(CYAN_WHITE);
+        case WATER: return COLOR_PAIR(  CYAN_WHITE);
         case SAND:  return COLOR_PAIR(YELLOW_WHITE);
-        } // no break);
+        } // no break;
     default: switch ( sub ) {
-        default: return COLOR_PAIR(WHITE_BLACK);
+        default:         return COLOR_PAIR(WHITE_BLACK);
         case STONE:      return COLOR_PAIR(BLACK_WHITE);
         case GREENERY:   return COLOR_PAIR(BLACK_GREEN);
         case WOOD:
@@ -162,7 +161,7 @@ int Screen::Color(const int kind, const int sub) const {
         case ROSE:       return COLOR_PAIR(    RED_GREEN );
         case CLAY:       return COLOR_PAIR(  WHITE_RED   );
         case PAPER:      return COLOR_PAIR(MAGENTA_WHITE );
-        case GOLD:       return COLOR_PAIR(  WHITE_YELLOW);
+        case GOLD:       return COLOR_PAIR(  WHITE_YELLOW) | RandomBlink();
         case BONE:       return COLOR_PAIR(MAGENTA_WHITE );
         case EXPLOSIVE:  return COLOR_PAIR(  WHITE_RED   );
         case DIAMOND:    return COLOR_PAIR(   CYAN_WHITE ) | A_BOLD;
@@ -171,15 +170,21 @@ int Screen::Color(const int kind, const int sub) const {
         case STAR:
             if ( w->GetEvernight() ) return COLOR_PAIR(BLACK_BLACK);
             switch ( w->PartOfDay() ) {
-            case TIME_NIGHT:   return COLOR_PAIR(WHITE_BLACK) | A_BOLD;
+            case TIME_NIGHT: return
+                COLOR_PAIR(WHITE_BLACK) | ( RandomBit() ? A_BOLD : 0 );
             case TIME_MORNING: return COLOR_PAIR(WHITE_BLUE);
             case TIME_NOON:    return COLOR_PAIR( CYAN_CYAN);
             case TIME_EVENING: return COLOR_PAIR(WHITE_CYAN);
             }
         case SUB_DUST: return COLOR_PAIR(BLACK_BLACK ) | A_BOLD | A_REVERSE;
         case FIRE:     return COLOR_PAIR(  RED_YELLOW) |A_BLINK |RandomBlink();
+        case ACID:     return COLOR_PAIR(GREEN_GREEN ) | A_BOLD | A_REVERSE;
         }
-    case DWARF: return COLOR_PAIR((sub==ADAMANTINE) ? CYAN_BLACK : WHITE_BLUE);
+    case DWARF: switch ( sub ) {
+        case ADAMANTINE: return COLOR_PAIR( CYAN_BLACK);
+        case DIFFERENT:  return COLOR_PAIR(WHITE_BLACK);
+        default:         return COLOR_PAIR(WHITE_BLUE );
+        }
     case RABBIT:    return COLOR_PAIR(  RED_WHITE);
     case PREDATOR:  return COLOR_PAIR(  RED_BLACK);
     case TELEGRAPH: return COLOR_PAIR( BLUE_BLUE ) | A_BOLD;
@@ -295,9 +300,7 @@ void Screen::ControlPlayer(const int ch) {
         }
         break;
     case KEY_HELP:
-    case 'H':
-        DisplayFile(QString("help_%1/help.txt").arg(locale.left(2)));
-        break;
+    case 'H': ProcessCommand("help"); break;
     case 'R':
     case 'L': RePrint(); break;
 
@@ -366,6 +369,12 @@ void Screen::ActionXyz(int * x, int * y, int * z) const {
     }
 }
 
+Block * Screen::GetFocusedBlock() const {
+    int x, y, z;
+    ActionXyz(&x, &y, &z);
+    return GetWorld()->GetBlock(x, y, z);
+}
+
 char Screen::PrintBlock(const Block & block, WINDOW * const window) const {
     const int kind = block.Kind();
     const int sub  = block.Sub();
@@ -374,7 +383,7 @@ char Screen::PrintBlock(const Block & block, WINDOW * const window) const {
 }
 
 void Screen::Print() {
-    if ( not player->GetBlock() || updated ) return;
+    if ( updated ) return;
     updated = true;
     w->Lock();
     PrintHUD();
@@ -394,24 +403,18 @@ void Screen::Print() {
             }
             break;
         case USAGE_TYPE_READ_IN_INVENTORY:
-            wstandend(rightWin);
-            PrintFile(rightWin, QString(home_path + w->WorldName() + "/texts/"
+            DisplayFile(QString(home_path + w->WorldName() + "/texts/"
                 + player->PlayerInventory()->ShowBlock(
                     player->GetUsingInInventory())->GetNote()));
             player->SetUsingTypeNo();
             break;
-        case USAGE_TYPE_READ: {
-                int x, y, z;
-                ActionXyz(&x, &y, &z);
-                wstandend(rightWin);
-                PrintFile(rightWin, QString(home_path + w->WorldName()
-                    + "/texts/" + w->GetBlock(x, y, z)->GetNote()));
-                player->SetUsingTypeNo();
-            } break;
+        case USAGE_TYPE_READ:
+            DisplayFile(QString(home_path + w->WorldName()
+                + "/texts/" + GetFocusedBlock()->GetNote()));
+            player->SetUsingTypeNo();
+            break;
         case USAGE_TYPE_OPEN: {
-                int x, y, z;
-                ActionXyz(&x, &y, &z);
-                Block * const block = w->GetBlock(x, y, z);
+                Block * const block = GetFocusedBlock();
                 PrintInv(rightWin, block, block->HasInventory());
             } break;
         }
@@ -427,7 +430,7 @@ void Screen::PrintHUD() {
             .arg(player->GlobalX()).arg(player->GlobalY()).arg(player->Z())
             .arg(player->GetLatitude()).arg(player->GetLongitude())) );
     } else {
-        const int dur = player->HP();
+        const int dur = player->GetBlock()->GetDurability();
         if ( dur > 0 ) { // HitPoints line
             PrintBar(0,
                 (dur > MAX_DURABILITY/5) ?
@@ -435,7 +438,7 @@ void Screen::PrintHUD() {
                 ascii ? '@' : 0x2665, dur*100/MAX_DURABILITY);
         }
         const int breath = player->BreathPercent();
-        if ( -100!=breath && breath!=100 ) { // breath line
+        if ( breath != 100 ) {
             PrintBar(16, COLOR_PAIR(BLUE_BLACK), ascii ? 'o' : 0x00b0, breath);
         }
         switch ( player->SatiationPercent()/25 ) { // satiation status
@@ -454,11 +457,8 @@ void Screen::PrintHUD() {
             break;
         }
     }
-    // focused block
-    int x, y, z;
-    ActionXyz(&x, &y, &z);
-    Block * const focused = GetWorld()->GetBlock(x, y, z);
-    if ( not Shred::IsLikeAir(focused->Sub()) ) {
+    Block * const focused = GetFocusedBlock();
+    if ( Block::GetSubGroup(focused->Sub()) != GROUP_AIR ) {
         const int left_border = (SCREEN_SIZE*2+2) * (IsScreenWide() ? 2 : 1);
         PrintBar(left_border - 15,
             Color(focused->Kind(), focused->Sub()),
@@ -541,7 +541,7 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
         ( SHRED_WIDTH-SCREEN_SIZE )/2;
     for (int j=start_y; j<SCREEN_SIZE+start_y; ++j, waddstr(window, "\n_"))
     for (int i=start_x; i<SCREEN_SIZE+start_x; ++i ) {
-        random_blink = qrand();
+        randomBlink = qrand();
         Shred * const shred = w->GetShred(i, j);
         const int i_in = Shred::CoordInShred(i);
         const int j_in = Shred::CoordInShred(j);
@@ -557,19 +557,11 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
             waddch(window, ' ');
         }
     }
-    if ( player->GetBlock() && dir > DOWN ) {
-        const Block * const block =
-            w->GetBlock(player->X(), player->Y(), player->Z());
+    if ( dir > DOWN ) {
+        const Block * const block = player->GetBlock();
         wattrset(window, Color(block->Kind(), block->Sub()));
-        (void)wmove(window, player->Y()-start_y+1, (player->X()-start_x)*2+2);
-        switch ( player->GetDir() ) {
-        case UP:      waddch(window, '.'); break;
-        case DOWN:    waddch(window, 'x'); break;
-        case NORTH:   waddstr(window, qPrintable(arrowUp));    break;
-        case SOUTH:   waddstr(window, qPrintable(arrowDown));  break;
-        case EAST:    waddstr(window, qPrintable(arrowRight)); break;
-        case WEST:    waddstr(window, qPrintable(arrowLeft));  break;
-        }
+        mvwaddstr(window, player->Y()-start_y+1, (player->X()-start_x)*2+2,
+            qPrintable(arrows[player->GetDir()]));
     }
     PrintTitle(window, UP==dir ? UP : DOWN);
     Arrows(window, (player->X()-start_x)*2+1, player->Y()-start_y+1, true);
@@ -644,7 +636,7 @@ void Screen::PrintFront(const dirs dir) const {
     (void)wmove(rightWin, 1, 1);
     for (int k=k_start; k>k_start-SCREEN_SIZE; --k, waddstr(rightWin, "\n_")) {
         for (*x=x_start; *x!=x_end; *x+=x_step) {
-            random_blink = qrand();
+            randomBlink = qrand();
             for (*z=z_start; *z!=z_end && w->GetBlock(i, j, k)->
                         Transparent()==INVISIBLE;
                     *z += z_step);
@@ -679,15 +671,9 @@ void Screen::PrintFront(const dirs dir) const {
 } // void Screen::PrintFront(dirs)
 
 void Screen::PrintTitle(WINDOW * const window, const dirs dir) const {
-    QString dir_string;
-    switch ( dir ) {
-    case UP:    dir_string = tr(".  Up  .");  break;
-    case DOWN:  dir_string = tr("x Down x");  break;
-    case NORTH: dir_string = tr("^ North ^"); break;
-    case SOUTH: dir_string = tr("v South v"); break;
-    case EAST:  dir_string = tr("> East >");  break;
-    case WEST:  dir_string = tr("< West <");  break;
-    }
+    QString dir_string = QString("%1 %2 %1").
+        arg(arrows[dir]).
+        arg(Block::DirString(dir));
     wstandend(window);
     box(window, 0, 0);
     wcolor_set(window, BLACK_WHITE, nullptr);
@@ -734,9 +720,10 @@ const {
         mvwprintw(window, 2+i+shift, 53, "%5hu mz", inv->GetInvWeight(i));
     }
     wstandend(window);
-    mvwprintw(window, 2+inv->Size()+shift, 40,
-        qPrintable(tr("Full weight: %1 mz").
-            arg(inv->Weight(), 6, 10, QChar(' '))));
+    QString full_weight = tr("Full weight: %1 mz").
+        arg(inv->Weight(), 6, 10, QChar(' '));
+    mvwprintw(window, 2+inv->Size()+shift,
+        SCREEN_SIZE*2 + 1 - full_weight.length(), qPrintable(full_weight));
     wattrset(window, Color(block->Kind(), block->Sub()));
     box(window, 0, 0);
     if ( start != 0 ) {
@@ -830,12 +817,14 @@ Screen::Screen(
         beepOn (settings.value("beep_on",  false).toBool()),
         flashOn(settings.value("flash_on", true ).toBool()),
         ascii(_ascii),
-        arrowUp   (ascii ? '^' : 0x2191),
-        arrowDown (ascii ? 'v' : 0x2193),
-        arrowRight(ascii ? '>' : 0x2192),
-        arrowLeft (ascii ? '<' : 0x2190),
+        arrows{'.', 'x',
+            ascii ? '^' : 0x2191,
+            ascii ? 'v' : 0x2193,
+            ascii ? '>' : 0x2192,
+            ascii ? '<' : 0x2190
+        },
         screen(newterm(nullptr, stdout, stdin)),
-        random_blink()
+        randomBlink()
 {
     #ifndef Q_OS_WIN32
         set_escdelay(10);
@@ -898,7 +887,7 @@ Screen::Screen(
     SetActionMode(static_cast<actions>
         (settings.value("action_mode", ACTION_USE).toInt()));
     Print();
-    Notify(tr("*--- Game started. Press 'H' for help. ---*"));
+    Notify(tr("--- Game started. Press 'H' for help. ---"));
     if ( COLS < preferred_width ) {
         Notify(tr("For better gameplay "));
         Notify(tr("set your terminal width at least %1 chars.").

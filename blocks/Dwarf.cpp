@@ -43,9 +43,14 @@ int  Dwarf::ShouldAct() const { return FREQUENT_FIRST | FREQUENT_RARE; }
 int  Dwarf::Start() const { return IN_LEFT + 1; }
 int  Dwarf::LightRadius() const { return lightRadius; }
 bool Dwarf::Access() const { return false; }
-QString Dwarf::FullName() const { return tr("Rational creature"); }
 Inventory * Dwarf::HasInventory() { return this; }
 void Dwarf::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
+
+QString Dwarf::FullName() const {
+    return ( DIFFERENT == Sub() ) ?
+        tr("Creator") :
+        tr("Rational creature");
+}
 
 void Dwarf::UpdateLightRadius() {
     Block * const in_left  = ShowBlock(IN_LEFT);
@@ -56,8 +61,9 @@ void Dwarf::UpdateLightRadius() {
 }
 
 int Dwarf::DamageKind() const {
-    return ( Number(IN_RIGHT) ) ?
-        ShowBlock(IN_RIGHT)->DamageKind() : DAMAGE_HANDS;
+    return ( DIFFERENT == Sub() ) ?
+        DAMAGE_ULTIMATE : ( Number(IN_RIGHT) ) ?
+            ShowBlock(IN_RIGHT)->DamageKind() : DAMAGE_HANDS;
 }
 
 int Dwarf::DamageLevel() const {

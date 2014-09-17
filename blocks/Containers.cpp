@@ -28,39 +28,9 @@ const int CONVERTER_LIGHT_RADIUS = 2;
 // Container::
     void Container::Damage(const int dmg, const int dmg_kind) {
         if ( dmg_kind >= DAMAGE_PUSH_UP ) {
-            int x, y, z;
-            World * const world = GetWorld();
-            world->Focus( X(), Y(), Z(), &x, &y, &z,
-                World::Anti(MakeDirFromDamage(dmg_kind)) );
-            Inventory::Push(world->GetBlock(x, y, z));
-            if ( Sub()==DIFFERENT && IsEmpty() ) {
-                Break();
-            }
+            Push(X(), Y(), Z(), dmg_kind);
         } else {
             Block::Damage(dmg, dmg_kind);
-        }
-    }
-
-    void Container::DoRareAction() {
-        switch ( Sub() ) {
-        default: break;
-        case DIFFERENT: {
-                Inventory * const inv =
-                    GetWorld()->GetBlock(X(), Y(), Z()-1)->HasInventory();
-                if ( inv != nullptr ) {
-                    inv->GetAll(this);
-                }
-                if ( IsEmpty() ) {
-                    GetWorld()->DestroyAndReplace(X(), Y(), Z());
-                }
-            } break;
-        case A_MEAT:
-        case H_MEAT:
-            Damage(MAX_DURABILITY/SECONDS_IN_DAY, DAMAGE_TIME);
-            if ( GetDurability() <= 0 ) {
-                GetWorld()->DestroyAndReplace(X(), Y(), Z());
-            }
-            break;
         }
     }
 
@@ -71,24 +41,12 @@ const int CONVERTER_LIGHT_RADIUS = 2;
 
     void Container::ReceiveSignal(QString) {}
     Inventory * Container::HasInventory() { return this; }
+    usage_types Container::Use(Block *) { return USAGE_TYPE_OPEN; }
     push_reaction Container::PushResult(dirs) const { return NOT_MOVABLE; }
-    inner_actions Container::ActInner() { return INNER_ACTION_NONE; }
-
-    usage_types Container::Use(Block *) {
-        if ( Sub() == A_MEAT || Sub() == H_MEAT ) {
-            GetWorld()->DestroyAndReplace(X(), Y(), Z());
-            return USAGE_TYPE_NO;
-        } else {
-            return USAGE_TYPE_OPEN;
-        }
-    }
+    inner_actions Container::ActInner() { return INNER_ACTION_ONLY; }
 
     Block * Container::DropAfterDamage(bool * const delete_block) {
-        if ( DIFFERENT == Sub() ) {
-            *delete_block = true;
-            return block_manager.Normal(AIR);
-        } // else:
-        Block * const pile = BlockManager::NewBlock(CONTAINER, DIFFERENT);
+        Block * const pile = BlockManager::NewBlock(BOX, DIFFERENT);
         Inventory * const pile_inv = pile->HasInventory();
         GetAll(pile_inv);
         *delete_block = not pile_inv->Get(this);
@@ -106,11 +64,8 @@ const int CONVERTER_LIGHT_RADIUS = 2;
 
     QString Container::FullName() const {
         switch ( Sub() ) {
-        case DIFFERENT: return tr("Pile");
         case IRON:      return tr("Locker");
         case WATER:     return tr("Fridge");
-        case A_MEAT:
-        case H_MEAT:    return tr("Corpse");
         default:        return tr("Chest (%1)").arg(SubName(Sub()));
         }
     }
@@ -121,16 +76,89 @@ const int CONVERTER_LIGHT_RADIUS = 2;
     }
 
     Container::Container(const int kind, const int sub, const int size) :
-            Active(kind, sub, NONSTANDARD),
+            Active(kind, sub),
             Inventory(size)
     {}
 
     Container::Container(QDataStream & str, const int kind, const int sub,
             const int size)
         :
-            Active(str, kind, sub, NONSTANDARD),
+            Active(str, kind, sub),
             Inventory(str, size)
     {}
+
+// Box::
+    Box::Box(const int kind, const int sub) :
+            Falling(kind, sub),
+            Inventory(INV_SIZE)
+    {}
+
+    Box::Box(QDataStream & str, const int kind, const int sub) :
+            Falling(str, kind, sub),
+            Inventory(str, INV_SIZE)
+    {}
+
+    void Box::SaveAttributes(QDataStream & str) const {
+        Falling::SaveAttributes(str);
+        Inventory::SaveAttributes(str);
+    }
+
+    int  Box::ShouldAct() const { return FREQUENT_RARE; }
+    void Box::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
+    Inventory * Box::HasInventory() { return this; }
+    inner_actions Box::ActInner() { return INNER_ACTION_NONE; }
+
+    void Box::DoRareAction() {
+        if ( GROUP_MEAT == GetSubGroup(Sub()) ) {
+            Damage(MAX_DURABILITY/SECONDS_IN_DAY, DAMAGE_TIME);
+            if ( GetDurability() <= 0 ) {
+                GetWorld()->DestroyAndReplace(X(), Y(), Z());
+            }
+        } else if ( Sub() == DIFFERENT ) {
+            Inventory * const inv =
+                GetWorld()->GetBlock(X(), Y(), Z()-1)->HasInventory();
+            if ( inv ) {
+                inv->GetAll(this);
+            }
+            if ( IsEmpty() ) {
+                GetWorld()->DestroyAndReplace(X(), Y(), Z());
+            }
+        }
+    }
+
+    Block * Box::DropAfterDamage(bool * const delete_block) {
+        *delete_block = true;
+        return block_manager.Normal(AIR);
+    }
+
+    void Box::Damage(const int dmg, const int dmg_kind) {
+        if ( dmg_kind >= DAMAGE_PUSH_UP ) {
+            Push(X(), Y(), Z(), dmg_kind);
+            if ( Sub()==DIFFERENT && IsEmpty() ) {
+                Break();
+            }
+        } else {
+            Block::Damage(dmg, dmg_kind);
+        }
+    }
+
+    QString Box::FullName() const {
+        switch ( Sub() ) {
+        default:        return tr("Box (%1)").arg(SubName(Sub()));
+        case H_MEAT:
+        case A_MEAT:    return tr("Corpse (%1)").arg(SubName(Sub()));
+        case DIFFERENT: return tr("Pile");
+        }
+    }
+
+    usage_types Box::Use(Block *) {
+        if ( GROUP_MEAT == GetSubGroup(Sub()) ) {
+            GetWorld()->DestroyAndReplace(X(), Y(), Z());
+            return USAGE_TYPE_NO;
+        } else {
+            return USAGE_TYPE_OPEN;
+        }
+    }
 
 // Workbench::
     void Workbench::Craft() {
@@ -201,8 +229,9 @@ const int CONVERTER_LIGHT_RADIUS = 2;
     }
 
     QString Workbench::InvFullName(const int slot_number) const {
-        return ( slot_number < Start() ) ?
-            tr("-product-") : tr("-material-");
+        return ( Number(slot_number) > 0 ) ?
+            ShowBlock(slot_number)->FullName() : ( slot_number < Start() ) ?
+                tr("-product-") : tr("-material-");
     }
 
     int Workbench::Start() const { return 2; }
@@ -265,7 +294,11 @@ const int CONVERTER_LIGHT_RADIUS = 2;
 
     int Converter::ShouldAct() const { return FREQUENT_RARE; }
     int Converter::LightRadius() const { return lightRadius; }
-    QString Converter::InvFullName(int) const { return tr("-fuel-"); }
+
+    QString Converter::InvFullName(const int slot_number) const {
+        return ( Number(slot_number) == 0 ) ?
+            tr("-fuel-") : ShowBlock(slot_number)->FullName();
+    }
 
     int Converter::DamageKind() const {
         return (fuelLevel > 0) ? damageKindOn : 0;

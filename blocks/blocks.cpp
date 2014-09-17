@@ -53,7 +53,7 @@
     push_reaction Ladder::PushResult(dirs) const { return MOVE_UP; }
 
     Block * Ladder::DropAfterDamage(bool * const delete_block) {
-        Block * const pile = BlockManager::NewBlock(CONTAINER, DIFFERENT);
+        Block * const pile = BlockManager::NewBlock(BOX, DIFFERENT);
         if ( STONE==Sub() || MOSS_STONE==Sub() ) {
             pile->HasInventory()->Get(block_manager.Normal(Sub()));
         } else {
@@ -113,8 +113,10 @@
 
     QString Liquid::FullName() const {
         switch ( Sub() ) {
-        case STONE: return tr("Lava");
-        default:    return SubNameUpper(Sub());
+        case STONE:  return tr("Lava");
+        case H_MEAT:
+        case A_MEAT: return tr("Blood");
+        default:     return SubNameUpper(Sub());
         }
     }
 
@@ -201,17 +203,14 @@
 
     void Bush::Damage(const int dmg, const int dmg_kind) {
         if ( dmg_kind >= DAMAGE_PUSH_UP ) {
-            int x, y, z;
-            GetWorld()->Focus( X(), Y(), Z(), &x, &y, &z,
-                World::Anti(MakeDirFromDamage(dmg_kind)) );
-            Inventory::Push(GetWorld()->GetBlock(x, y, z));
+            Push(X(), Y(), Z(), dmg_kind);
         } else {
             Block::Damage(dmg, dmg_kind);
         }
     }
 
     Block * Bush::DropAfterDamage(bool *) {
-        Block * const pile = BlockManager::NewBlock(CONTAINER, DIFFERENT);
+        Block * const pile = BlockManager::NewBlock(BOX, DIFFERENT);
         Inventory * const pile_inv = pile->HasInventory();
         pile_inv->Get(BlockManager::NewBlock(WEAPON, WOOD));
         pile_inv->Get(block_manager.Normal(HAZELNUT));
@@ -304,13 +303,9 @@
     void Door::ActFrequent() {
         if ( shifted ) {
             World * const world = GetWorld();
-            int x, y, z;
-            world->Focus(X(), Y(), Z(), &x, &y, &z, World::Anti(GetDir()));
-            if (ENVIRONMENT==world->GetBlock(x, y, z)->PushResult(ANYWHERE)) {
-                movable = MOVABLE;
-                shifted = !world->Move(X(), Y(), Z(), World::Anti(GetDir()));
-                movable = NOT_MOVABLE;
-            }
+            movable = MOVABLE;
+            shifted = !world->Move(X(), Y(), Z(), World::Anti(GetDir()));
+            movable = NOT_MOVABLE;
         }
     }
 
@@ -450,31 +445,6 @@
     {
         str >> alarmTime >> timerTime;
     }
-
-// Creator::
-    QString Creator::FullName() const { return tr("Creative block"); }
-    int Creator::DamageKind() const { return DAMAGE_TIME; }
-    int Creator::DamageLevel() const { return MAX_DURABILITY; }
-    Inventory * Creator::HasInventory() { return this; }
-    int Creator::ShouldAct() const { return FREQUENT_FIRST; }
-
-    void Creator::ReceiveSignal(const QString str) {
-        Active::ReceiveSignal(str);
-    }
-
-    void Creator::SaveAttributes(QDataStream & out) const {
-        Animal::SaveAttributes(out);
-        Inventory::SaveAttributes(out);
-    }
-
-    Creator::Creator(const int kind, const int sub) :
-            Animal(kind, sub),
-            Inventory(INV_SIZE)
-    {}
-    Creator::Creator(QDataStream & str, const int kind, const int sub) :
-            Animal(str, kind, sub),
-            Inventory(str, INV_SIZE)
-    {}
 
 // Text::
     QString Text::FullName() const {
@@ -655,11 +625,31 @@
     wearable MedKit::Wearable() const { return WEARABLE_OTHER; }
 
     usage_types MedKit::Use(Block * const user) {
-        if ( user && (user->Sub()==H_MEAT || user->Sub()==A_MEAT) ) {
-            if ( GetDurability() > MAX_DURABILITY/10 ) {
-                user->Mend(MAX_DURABILITY/10);
-                Damage(MAX_DURABILITY/10, DAMAGE_TIME);
-            }
+        if ( user
+                && GROUP_MEAT == GetSubGroup(user->Sub())
+                && GetDurability() > MAX_DURABILITY/10 )
+        {
+            user->Mend(MAX_DURABILITY/10);
+            Damage(MAX_DURABILITY/10, DAMAGE_TIME);
         }
         return USAGE_TYPE_NO;
+    }
+
+// Informer:: section
+    wearable Informer::Wearable() const { return WEARABLE_OTHER; }
+
+    usage_types Informer::Use(Block * const user) {
+        switch ( Sub() ) {
+        case IRON: user->ReceiveSignal(QString("Your direction: %1.").
+            arg(DirString(user->GetDir()).toLower())); break;
+        default: break;
+        }
+        return USAGE_TYPE_NO;
+    }
+
+    QString Informer::FullName() const {
+        switch ( Sub() ) {
+        case IRON: return QObject::tr("Compass");
+        default:   return QObject::tr("Informer (%1)").arg(SubName(Sub()));
+        }
     }

@@ -166,23 +166,6 @@ private:
     int timerTime = -1;
 };
 
-class Creator : public Animal, public Inventory {
-    Q_OBJECT
-public:
-    Creator(int sub, int id);
-    Creator(QDataStream & str, int sub, int id);
-
-    int  ShouldAct() const override;
-    void ReceiveSignal(QString) override;
-    int  DamageKind() const override;
-    int  DamageLevel() const override;
-    QString FullName() const override;
-    Inventory * HasInventory() override;
-
-protected:
-    void SaveAttributes(QDataStream & out) const override;
-};
-
 class Text : public Block {
 public:
     using Block::Block;
@@ -248,6 +231,19 @@ private:
 class MedKit : public Block {
 public:
     using Block::Block;
+    QString FullName() const override;
+    wearable Wearable() const override;
+    usage_types Use(Block * user) override;
+};
+
+/** @brief The Informer class, provides various information.
+ *
+ * Can be used inside inventory and outside.
+ * Iron informer is compass. */
+class Informer : public Block {
+public:
+    using Block::Block;
+
     QString FullName() const override;
     wearable Wearable() const override;
     usage_types Use(Block * user) override;

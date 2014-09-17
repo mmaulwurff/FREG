@@ -36,12 +36,20 @@ const bool COMMANDS_ALWAYS_ON = true;
 //const subs PLAYER_SUB = ADAMANTINE;
 const subs PLAYER_SUB = H_MEAT;
 
+int Player::X() const {
+    return GetShred()->ShredX() << SHRED_WIDTH_SHIFT | Xyz::X();
+}
+
+int Player::Y() const {
+    return GetShred()->ShredY() << SHRED_WIDTH_SHIFT | Xyz::Y();
+}
+
 long Player::GlobalX() const { return GetShred()->GlobalX(X()); }
 long Player::GlobalY() const { return GetShred()->GlobalY(Y()); }
-Shred * Player::GetShred() const { return world->GetShred(X(), Y()); }
+Shred * Player::GetShred() const { return player->GetShred(); }
 World * Player::GetWorld() const { return world; }
 
-dirs Player::GetDir() const { return dir; }
+dirs Player::GetDir() const { return player->GetDir(); }
 int  Player::UsingType() const { return usingType; }
 void Player::StopUseAll() { usingType = usingSelfType = USAGE_TYPE_NO; }
 int  Player::UsingSelfType() const { return usingSelfType; }
@@ -54,42 +62,27 @@ const Block * Player::GetBlock() const { return player; }
 
 void Player::SetCreativeMode(const bool creative_on) {
     creativeMode = creative_on;
-    player->disconnect();
-    Active * const prev_player = player;
+    Animal * const prev_player = player;
     SetPlayer(X(), Y(), Z());
     player->SetDir(prev_player->GetDir());
     Inventory * const inv = PlayerInventory();
     if ( inv != nullptr ) {
         inv->GetAll(prev_player->HasInventory());
     }
-    if ( not creative_on ) {
-        block_manager.DeleteBlock(prev_player);
-    }
     emit Updated();
 }
 
-int Player::HP() const {
-    return ( not GetBlock() || GetCreativeMode() ) ?
-        -1 : player ? player->GetDurability() : 0;
-}
-
-int Player::BreathPercent() const {
-    if ( not GetBlock() || GetCreativeMode() ) return -100;
-    return player->Breath()*100/MAX_BREATH;
-}
+int Player::BreathPercent() const { return player->Breath()*100/MAX_BREATH; }
 
 int Player::SatiationPercent() const {
-    if ( not GetBlock() || GetCreativeMode()
-            || (player->Sub()!=H_MEAT && player->Sub()!=A_MEAT) )
-    {
-        return -100;
-    }
-    return player->Satiation()*100/SECONDS_IN_DAY;
+    return ( GetCreativeMode()
+            || GROUP_MEAT != Block::GetSubGroup(player->Sub()) ) ?
+        50 : player->Satiation()*100/SECONDS_IN_DAY;
 }
 
 Inventory * Player::PlayerInventory() const {
-    Inventory * inv;
-    if ( player && (inv=player->HasInventory()) ) {
+    Inventory * const inv = player->HasInventory();
+    if ( inv != nullptr ) {
         return inv;
     } else {
         emit Notify(tr("You have no inventory."));
@@ -98,14 +91,12 @@ Inventory * Player::PlayerInventory() const {
 }
 
 void Player::UpdateXYZ() {
-    if ( player ) {
-        SetXyz(player->X(), player->Y(), player->Z());
-        emit Updated();
-    }
+    SetXyz(player->X(), player->Y(), player->Z());
+    emit Updated();
 }
 
-void Player::Examine() const {
-    const QMutexLocker locker(world->GetLock());
+void Player::Examine() {
+    QMutexLocker locker(world->GetLock());
     int i, j, k;
     emit GetFocus(&i, &j, &k);
     const Block * const block = world->GetBlock(i, j, k);
@@ -127,7 +118,7 @@ void Player::Examine() const {
             arg(block==block_manager.Normal(block->Sub())).
             arg(block->GetDir()));
     }
-    if ( Shred::IsLikeAir(block->Sub()) ) return;
+    if ( Block::GetSubGroup(block->Sub()) == GROUP_AIR ) return;
     const QString str = block->GetNote();
     if ( not str.isEmpty() ) {
         emit Notify(tr("Inscription: ") + str);
@@ -147,15 +138,13 @@ void Player::Jump() {
 }
 
 void Player::Move(const dirs direction) {
-    if ( player ) {
-        DeferredAction * const def_action = new DeferredAction(player);
-        if ( GetCreativeMode() ) {
-            def_action->SetGhostMove(direction);
-        } else {
-            def_action->SetMove(direction);
-        }
-        player->SetDeferredAction(def_action);
+    DeferredAction * const def_action = new DeferredAction(player);
+    if ( GetCreativeMode() ) {
+        def_action->SetGhostMove(direction);
+    } else {
+        def_action->SetMove(direction);
     }
+    player->SetDeferredAction(def_action);
 }
 
 void Player::Backpack() {
@@ -186,23 +175,18 @@ void Player::Inscribe() const {
 }
 
 Block * Player::ValidBlock(const int num) const {
-    if ( not GetBlock() ) {
-        emit Notify("Player does not exist.");
-        return 0;
-    } // else:
-    Inventory * const inv = player->HasInventory();
-    if ( inv == nullptr ) {
-        emit Notify("Player has no inventory.");
-        return 0;
+    Inventory * const inv = PlayerInventory();
+    if ( not inv ) {
+        return nullptr;
     } // else:
     if ( num >= inv->Size() ) {
         emit Notify("No such place.");
-        return 0;
+        return nullptr;
     } // else:
     Block * const block = inv->ShowBlock(num);
-    if ( block == nullptr ) {
+    if ( not block ) {
         emit Notify(tr("Nothing here."));
-        return 0;
+        return nullptr;
     } else {
         return block;
     }
@@ -402,17 +386,14 @@ bool Player::Visible(const int x_to, const int y_to, const int z_to) const {
 
 void Player::SetDir(const dirs direction) {
     usingType = USAGE_TYPE_NO;
-    if ( player ) {
-        player->SetDir(direction);
-    }
-    dir = direction;
+    player->SetDir(direction);
     emit Updated();
 }
 
 bool Player::Damage() const {
     int x, y, z;
     emit GetFocus(&x, &y, &z);
-    if ( player && GetWorld()->InBounds(x, y, z) ) {
+    if ( GetWorld()->InBounds(x, y, z) ) {
         DeferredAction * const def_action = new DeferredAction(player);
         def_action->SetDamage(x, y, z);
         player->SetDeferredAction(def_action);
@@ -423,13 +404,11 @@ bool Player::Damage() const {
 }
 
 void Player::CheckOverstep(const int direction) {
-    UpdateXYZ();
-    const int half_num_shreds = GetWorld()->NumShreds()/2;
-    if ( direction > DOWN && ( // leaving central zone
-            X() <  (half_num_shreds-1)*SHRED_WIDTH ||
-            Y() <  (half_num_shreds-1)*SHRED_WIDTH ||
-            X() >= (half_num_shreds+2)*SHRED_WIDTH ||
-            Y() >= (half_num_shreds+2)*SHRED_WIDTH ) )
+    SetXyz(Shred::CoordInShred(player->X()), Shred::CoordInShred(player->Y()),
+        player->Z());
+    if ( direction > DOWN
+            && not GetWorld()->ShredInCentralZone(
+                GetShred()->Longitude(), GetShred()->Latitude()) )
     {
         emit OverstepBorder(direction);
     }
@@ -446,28 +425,43 @@ void Player::BlockDestroy() {
     }
 }
 
+Animal * Player::NewPlayer() const {
+    return GetCreativeMode() ?
+        creator : BlockManager::NewBlock(DWARF, PLAYER_SUB)->IsAnimal();
+}
+
 void Player::SetPlayer(const int _x, const int _y, const int _z) {
-    SetXyz(_x, _y, _z);
+    SetXyz(Shred::CoordInShred(_x), Shred::CoordInShred(_y), _z);
+
+    if ( player != nullptr ) {
+        player->disconnect();
+    }
     if ( GetCreativeMode() ) {
-        ( player = BlockManager::NewBlock(CREATOR, DIFFERENT)->IsAnimal() )->
-            SetXyz(X(), Y(), Z());
-        GetShred()->Register(player);
+        (player = creator)->SetXyz(
+            Shred::CoordInShred(_x), Shred::CoordInShred(_y), _z);
+        GetWorld()->GetShred(_x, _y)->Register(player);
     } else {
+        if ( player != nullptr ) {
+            GetShred()->Unregister(player);
+        }
         World * const world = GetWorld();
+        Q_ASSERT(z_self <= HEIGHT-2);
+        Block * candidate = world->GetBlock(_x, _y, z_self);
         for ( ; z_self < HEIGHT-2; ++z_self ) {
-            Block * const block = world->GetBlock(X(), Y(), z_self);
-            if ( AIR == block->Sub() || block->IsAnimal() ) {
+            candidate = world->GetBlock(_x, _y, z_self);
+            if ( AIR == candidate->Sub() || candidate->IsAnimal() ) {
                 break;
             }
         }
-        if ( (player=world->GetBlock(X(), Y(), Z())->IsAnimal()) == nullptr ) {
-            world->Build( (player = BlockManager::
-                    NewBlock(DWARF, PLAYER_SUB)->IsAnimal()),
-                X(), Y(), Z(), GetDir(), 0, true /*force build*/ );
+        if ( candidate->IsAnimal() ) {
+            player = candidate->IsAnimal();
+        } else {
+            if ( player == nullptr || player == creator ) {
+                player = NewPlayer();
+            }
+            world->Build(player, _x, _y, Z(), GetDir(), nullptr, true);
         }
     }
-    dir = player->GetDir();
-
     connect(player, SIGNAL(destroyed()), SLOT(BlockDestroy()),
         Qt::DirectConnection);
     connect(player, SIGNAL(Moved(int)), SLOT(CheckOverstep(int)),
@@ -489,8 +483,9 @@ Player::Player() :
         homeX(settings.value("home_x", 0).toInt()),
         homeY(settings.value("home_y", 0).toInt()),
         homeZ(settings.value("home_z", HEIGHT/2).toInt()),
-        player(),
-        usingType(settings.value("using_type",      USAGE_TYPE_NO).toInt()),
+        player(nullptr),
+        creator(BlockManager::NewBlock(DWARF, DIFFERENT)->IsAnimal()),
+        usingType    (settings.value("using_type",     USAGE_TYPE_NO).toInt()),
         usingSelfType(settings.value("using_self_type",USAGE_TYPE_NO).toInt()),
         usingInInventory(),
         creativeMode(settings.value("creative_mode", false).toBool())
@@ -510,15 +505,10 @@ Player::Player() :
     connect(this, SIGNAL(OverstepBorder(int)),
         world, SLOT(SetReloadShreds(int)),
         Qt::DirectConnection);
-    connect(world, SIGNAL(Moved(int)), SLOT(UpdateXYZ()),
-        Qt::DirectConnection);
 }
 
 Player::~Player() {
-    if ( GetCreativeMode() ) {
-        delete player;
-    }
-
+    delete creator;
     settings.setValue("home_longitude", qlonglong(homeLongi));
     settings.setValue("home_latitude", qlonglong(homeLati));
     const int min = world->NumShreds()/2*SHRED_WIDTH;

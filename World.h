@@ -43,6 +43,12 @@ const int MAX_BREATH = 60;
 const int MAX_DURABILITY = 1024;
 const int MAX_NOTE_LENGTH = 144;
 
+enum can_move_results {
+    CAN_MOVE_OK,
+    CAN_MOVE_CANNOT,
+    CAN_MOVE_DESTROYED
+};
+
 class World final : public QThread {
     /** \class World world.h
      * \brief World provides global physics and shred connection.
@@ -57,6 +63,7 @@ public: // Block work section
     Block * GetBlock(int x, int y, int z) const;
     Shred * GetShred(int i, int j) const;
     Shred * GetShredByPos(int x, int y) const;
+    Shred * GetNearShred(Shred *, dirs dir) const;
 
 public: // Lighting section
     int Enlightened(int x, int y, int z) const;
@@ -87,7 +94,7 @@ private:
     void ReEnlightenAll();
     void ReEnlightenTime();
     /// Called from ReloadShreds(int), enlightens only needed shreds.
-    void ReEnlightenMove(int direction);
+    void ReEnlightenMove(dirs);
     void UpShine(int x, int y, int z_bottom);
     void UpShineInit(int x, int y, int z_bottom);
     void CrossUpShine(int x, int y, int z_bottom);
@@ -98,6 +105,7 @@ public: // Information section
     bool Focus(int x, int y, int z,
             int * x_targ, int * y_targ, int * z_targ, dirs dir) const;
     int NumShreds() const;
+    bool ShredInCentralZone(long longi, long  lati) const;
     static dirs TurnRight(dirs dir);
     static dirs TurnLeft (dirs dir);
     static dirs Anti(dirs dir);
@@ -121,11 +129,11 @@ public: // Visibility section
 public: // Movement section
     /// Check and move
     bool Move(int x, int y, int z, dirs dir);
-    /// This CAN move blocks, but not xyz block.
-    bool CanMove(int x,    int y,    int z,
-                 int x_to, int y_to, int z_to, dirs dir);
     void Jump(int x, int y, int z, dirs dir);
 private:
+    /// This CAN move blocks, but not xyz block.
+    can_move_results CanMove(int x,    int y,    int z,
+                             int x_to, int y_to, int z_to, dirs dir);
     void NoCheckMove(int x,    int y,    int z,
                      int x_to, int y_to, int z_to, dirs dir);
 
@@ -144,6 +152,7 @@ public: // Interactions section
     int Damage(int x, int y, int z, int level, int dmg_kind);
     /// Does not check target block durability.
     void DestroyAndReplace(int x, int y, int z);
+    /// Returns true on successfull build, otherwise false.
     bool Build(Block * thing, int x, int y, int z,
             int dir = UP,
             Block * who = nullptr,
@@ -156,7 +165,8 @@ private: // Inventory functions section
     bool Exchange(Block * block_from, Block * block_to,
             int src, int dest, int num);
 public:
-    void Drop(Block * from, int x_to, int y_to, int z_to,
+    /// Returns true on success.
+    bool Drop(Block * from, int x_to, int y_to, int z_to,
             int src, int dest, int num);
     void Get(Block * to, int x_from, int y_from, int z_from,
             int src, int dest, int num);
@@ -233,12 +243,10 @@ private:
     long newLati, newLongi;
     int  newX, newY, newZ;
     /// UP for no reset, DOWN for full reset, NSEW for side shift.
-    volatile int toResetDir;
+    volatile dirs toResetDir;
     int sunMoonFactor;
 
     ShredStorage * shredStorage;
-    /// For reusing memory on full shreds reload.
-    Shred * shredMemoryPool;
     bool initial_lighting;
     QList<QString> notes;
 };

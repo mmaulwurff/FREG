@@ -23,10 +23,6 @@
 #include <QtGlobal>
 #include <QLocale>
 
-#ifdef Q_CC_MSVC
-#define not !
-#endif
-
 #ifdef Q_OS_WIN32
 #include <windows.h>
 #endif
@@ -40,6 +36,7 @@ const bool DEBUG = true;
 extern const QString home_path;
 
 const int SHRED_WIDTH = 16;
+const int SHRED_WIDTH_SHIFT = 4;
 const int HEIGHT = 128;
 
 enum times {
@@ -53,7 +50,11 @@ enum times {
     SECONDS_IN_DAYLIGHT = SECONDS_IN_DAY-END_OF_NIGHT
 };
 
+#ifdef Q_OS_WIN32
+const QString locale = "en";
+#else
 const QString locale = QLocale::system().name();
+#endif
 
 enum shred_type {
     SHRED_PLAIN     = '.',
@@ -127,8 +128,8 @@ enum kinds {
     WEAPON,      ///< 13
     LADDER,      ///< 14
     DOOR,        ///< 15
-    CREATOR,     ///< 16
-    TEXT,        ///< 17
+    BOX,         ///< 16
+    KIND_TEXT,   ///< 17
     MAP,         ///< 18
     PREDATOR,    ///< 19
     BUCKET,      ///< 20
@@ -143,6 +144,8 @@ enum kinds {
     BOOTS,        ///< 29
     TELEGRAPH,    ///< 30
     MEDKIT,       ///< 31
+    FILTER,       ///< 32
+    INFORMER,     ///< 33
     /// Nothing is LAST_KIND.
     LAST_KIND // keep it last in this list.
 }; // enum kinds
@@ -185,6 +188,7 @@ enum subs {
     ACID,       ///<  28
     SUB_CLOUD,  ///<  29
     SUB_DUST,   ///<  30
+    SUB_PLASTIC,///<  31
     /// Nothing is made from LAST_SUB.
     LAST_SUB // keep it last in this list
 }; // enum subs

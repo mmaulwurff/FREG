@@ -22,42 +22,52 @@
 #include "World.h"
 #include "Inventory.h"
 
-QString Block::SubName(const int sub) {
-    switch ( static_cast<subs>(sub) ) {
-    case STONE:
-    case MOSS_STONE: return QObject::tr("stone");
-    case NULLSTONE:  return QObject::tr("nullstone");
-    case SKY:
-    case STAR:       return QObject::tr("air");
-    case DIAMOND:    return QObject::tr("diamond");
-    case SOIL:       return QObject::tr("soil");
-    case H_MEAT:     return QObject::tr("meat of rational");
-    case A_MEAT:     return QObject::tr("meat");
-    case GLASS:      return QObject::tr("glass");
-    case WOOD:       return QObject::tr("wood");
-    case DIFFERENT:  return QObject::tr("different");
-    case IRON:       return QObject::tr("iron");
-    case WATER:      return QObject::tr("water");
-    case GREENERY:   return QObject::tr("greenery");
-    case SAND:       return QObject::tr("sand");
-    case HAZELNUT:   return QObject::tr("hazelnut");
-    case ROSE:       return QObject::tr("rose");
-    case CLAY:       return QObject::tr("clay");
-    case AIR:        return QObject::tr("air");
-    case PAPER:      return QObject::tr("paper");
-    case GOLD:       return QObject::tr("gold");
-    case BONE:       return QObject::tr("bone");
-    case STEEL:      return QObject::tr("steel");
-    case ADAMANTINE: return QObject::tr("adamantine");
-    case FIRE:       return QObject::tr("fire");
-    case COAL:       return QObject::tr("coal");
-    case EXPLOSIVE:  return QObject::tr("explosive");
-    case ACID:       return QObject::tr("acid");
-    case SUB_CLOUD:  return QObject::tr("cloud");
-    case SUB_DUST:   return QObject::tr("dust");
-    case LAST_SUB: Q_UNREACHABLE(); return "";
-    }
-}
+const static QString dir_strings[] = {
+    QObject::tr("Up"),
+    QObject::tr("Down"),
+    QObject::tr("North"),
+    QObject::tr("South"),
+    QObject::tr("East"),
+    QObject::tr("West")
+};
+
+const static QString sub_names[] = {
+    QObject::tr("stone"),
+    QObject::tr("stone"),
+    QObject::tr("nullstone"),
+    QObject::tr("air"),
+    QObject::tr("air"),
+    QObject::tr("diamond"),
+    QObject::tr("soil"),
+    QObject::tr("meat of rational"),
+    QObject::tr("meat"),
+    QObject::tr("glass"),
+    QObject::tr("wood"),
+    QObject::tr("different"),
+    QObject::tr("iron"),
+    QObject::tr("water"),
+    QObject::tr("greenery"),
+    QObject::tr("sand"),
+    QObject::tr("hazelnut"),
+    QObject::tr("rose"),
+    QObject::tr("clay"),
+    QObject::tr("air"),
+    QObject::tr("paper"),
+    QObject::tr("gold"),
+    QObject::tr("bone"),
+    QObject::tr("steel"),
+    QObject::tr("adamantine"),
+    QObject::tr("fire"),
+    QObject::tr("coal"),
+    QObject::tr("explosive"),
+    QObject::tr("acid"),
+    QObject::tr("cloud"),
+    QObject::tr("dust"),
+    QObject::tr("plastic"),
+};
+
+QString Block::SubName(const int sub) { return sub_names[sub]; }
+QString Block::DirString(const dirs dir) { return dir_strings[dir]; }
 
 QString Block::SubNameUpper(const int sub) {
     QString result = SubName(sub);
@@ -144,9 +154,11 @@ void Block::Damage(const int dmg, int dmg_kind) {
         case DAMAGE_HANDS: return;
         } break;
     case A_MEAT:
-    case H_MEAT:
-        mult += (DAMAGE_THRUST==dmg_kind || DAMAGE_HEAT==dmg_kind);
-        break;
+    case H_MEAT: switch ( dmg_kind ) {
+        case DAMAGE_HEAT:
+        case DAMAGE_THRUST:  mult = 2; break;
+        case DAMAGE_PUSH_UP: mult = ( dmg < 10 ) ? 0 : 1;
+        } break;
     case SAND:
     case SOIL:      mult += ( DAMAGE_DIG    == dmg_kind ); break;
     case ADAMANTINE:
@@ -163,7 +175,7 @@ void Block::Damage(const int dmg, int dmg_kind) {
         }
     }
     durability -= mult*dmg;
-}
+} // Block::Damage(const ind dmg, const int dmg_kind)
 
 Block * Block::DropAfterDamage(bool * const delete_block) {
     switch ( Sub() ) {
@@ -174,7 +186,7 @@ Block * Block::DropAfterDamage(bool * const delete_block) {
         return BlockManager::NewBlock(LADDER, STONE);
     } // no break;
     default: {
-        Block * const pile = BlockManager::NewBlock(CONTAINER, DIFFERENT);
+        Block * const pile = BlockManager::NewBlock(BOX, DIFFERENT);
         pile->HasInventory()->Get(this);
         *delete_block = false;
         return pile;
@@ -241,7 +253,7 @@ int Block::Weight() const {
     case HAZELNUT:  return WEIGHT_MINIMAL;
     case MOSS_STONE:
     case A_MEAT:
-    case H_MEAT:    return WEIGHT_WATER-10;
+    case H_MEAT:    return WEIGHT_WATER+10;
     case SKY:
     case STAR:
     case FIRE:
@@ -253,6 +265,28 @@ int Block::Weight() const {
 void Block::SetDir(const int dir) {
     if ( BLOCK!=Kind() || WOOD==Sub() ) {
         direction = dir;
+    }
+}
+
+sub_groups Block::GetSubGroup(const int sub) {
+    switch ( sub ) {
+    default:     return GROUP_NONE;
+    case AIR:
+    case SKY:
+    case STAR:   return GROUP_AIR;
+
+    case H_MEAT:
+    case A_MEAT: return GROUP_MEAT;
+
+    case STONE:
+    case DIAMOND:
+    case WOOD:
+    case BONE:   return GROUP_HANDY;
+
+    case IRON:
+    case GOLD:
+    case ADAMANTINE:
+    case STEEL:  return GROUP_METAL;
     }
 }
 

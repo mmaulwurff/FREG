@@ -28,6 +28,7 @@
 #include "blocks/Containers.h"
 #include "blocks/RainMachine.h"
 #include "blocks/Armour.h"
+#include "blocks/Filter.h"
 
 #define sizeof_array(ARRAY) (sizeof(ARRAY)/sizeof(ARRAY[0]))
 
@@ -53,7 +54,7 @@ const QByteArray BlockManager::kinds[] = { // do not use space, use '_'
     "weapon",
     "ladder",
     "door",
-    "creator",
+    "box",
     "text",
     "map",
     "predator",
@@ -69,6 +70,8 @@ const QByteArray BlockManager::kinds[] = { // do not use space, use '_'
     "boots",
     "telegraph",
     "medkit",
+    "filter",
+    "informer",
     /// [List of kinds]
 };
 
@@ -109,6 +112,7 @@ const QByteArray BlockManager::subs[] = { // do not usp space, use '_'
     "acid",
     "cloud",
     "dust",
+    "plastic",
     /// [List of subs]
 };
 
@@ -122,8 +126,14 @@ BlockManager::BlockManager() {
         "invalid number of strings in BlockManager::kinds[]");
     static_assert((sizeof_array(BlockManager::subs) == LAST_SUB),
         "invalid number of strings in BlockManager::subs[]");
-    static_assert((LAST_SUB  <= 128), "too many substances, should be < 127.");
-    static_assert((LAST_KIND <= 256), "too many kinds, should be < 255.");
+    static_assert((LAST_SUB  <= 64 ), "too many substances, should be < 64.");
+    static_assert((LAST_KIND <= 128), "too many kinds, should be < 128.");
+    /*int sum = 0;
+    for (int kind = 0; kind<LAST_KIND; ++kind)
+    for (int sub  = 0; sub <LAST_SUB;  ++sub) {
+        sum += IsValid(kind, sub);
+    }
+    fprintf(stderr, "valid pairs: %d\n", sum);*/
 }
 
 BlockManager::~BlockManager() {
@@ -152,8 +162,8 @@ Block * BlockManager::NewBlock(const int kind, const int sub) {
     case WEAPON:    return new Weapon(kind, sub);
     case LADDER:    return new Ladder(kind, sub);
     case DOOR:      return new Door  (kind, sub);
-    case CREATOR:   return new Creator(kind, sub);
-    case TEXT:      return new Text  (kind, sub);
+    case BOX:       return new Box   (kind, sub);
+    case KIND_TEXT: return new Text  (kind, sub);
     case MAP:       return new Map   (kind, sub);
     case PREDATOR:  return new Predator(kind, sub);
     case BUCKET:    return new Bucket(kind, sub);
@@ -168,6 +178,8 @@ Block * BlockManager::NewBlock(const int kind, const int sub) {
     case BOOTS:     return new Boots (kind, sub);
     case TELEGRAPH: return new Telegraph(kind, sub);
     case MEDKIT:    return new MedKit(kind, sub);
+    case FILTER:    return new Filter(kind, sub);
+    case INFORMER:  return new Informer(kind, sub);
     case LAST_KIND: break;
     }
     Q_UNREACHABLE();
@@ -194,8 +206,8 @@ Block * BlockManager::BlockFromFile(QDataStream & str,
     case WEAPON:    return new Weapon(str, kind, sub);
     case LADDER:    return new Ladder(str, kind, sub);
     case DOOR:      return new Door  (str, kind, sub);
-    case CREATOR:   return new Creator(str, kind, sub);
-    case TEXT:      return new Text  (str, kind, sub);
+    case BOX:       return new Box   (str, kind, sub);
+    case KIND_TEXT: return new Text  (str, kind, sub);
     case MAP:       return new Map   (str, kind, sub);
     case PREDATOR:  return new Predator(str, kind, sub);
     case BUCKET:    return new Bucket(str, kind, sub);
@@ -210,6 +222,8 @@ Block * BlockManager::BlockFromFile(QDataStream & str,
     case BOOTS:     return new Boots (str, kind, sub);
     case TELEGRAPH: return new Telegraph(str, kind, sub);
     case MEDKIT:    return new MedKit(str, kind, sub);
+    case FILTER:    return new Filter(str, kind, sub);
+    case INFORMER:  return new Informer(str, kind, sub);
     case LAST_KIND: break;
     }
     Q_UNREACHABLE();
@@ -267,3 +281,51 @@ Block * BlockManager::ReplaceWithNormal(Block * const block) const {
 
 int BlockManager::KindFromId(const int id) { return (id >> 8); }
 int BlockManager:: SubFromId(const int id) { return (id & 0xFF); }
+
+bool BlockManager::IsValid(const int kind, const int sub) {
+    const sub_groups group = Block::GetSubGroup(sub);
+    switch ( static_cast<enum kinds>(kind) ) {
+    case BLOCK:     return true;
+    case LAST_KIND: break;
+    case DWARF:     return ( sub == H_MEAT || group == GROUP_METAL );
+    case GRASS:     return ( sub == GREENERY || sub == FIRE );
+    case BUSH:      return ( sub == GREENERY || sub == WOOD );
+    case FALLING:   return ( sub == WATER || sub == STONE );
+    case LIQUID:    return ( group == GROUP_MEAT || group == GROUP_METAL
+                            || sub == STONE );
+
+    case BUCKET:
+    case CLOCK:
+    case RAIN_MACHINE:
+    case ARMOUR:
+    case HELMET:
+    case BOOTS:
+    case TELEGRAPH:
+    case MEDKIT:
+    case FILTER:
+    case INFORMER:
+    case BELL:      return ( group == GROUP_METAL );
+
+    case BOX:
+    case DOOR:
+    case LADDER:
+    case PLATE:
+    case WEAPON:
+    case PICK:
+    case SHOVEL:
+    case AXE:
+    case HAMMER:
+    case ILLUMINATOR:
+    case WORKBENCH:
+    case CONVERTER:
+    case CONTAINER: return ( group == GROUP_METAL || group == GROUP_HANDY );
+
+    case PREDATOR:
+    case RABBIT:    return ( sub == A_MEAT );
+
+    case MAP:
+    case KIND_TEXT: return ( sub == PAPER || sub == GLASS );
+    }
+    Q_UNREACHABLE();
+    return false;
+}

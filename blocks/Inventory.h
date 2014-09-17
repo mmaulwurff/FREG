@@ -74,7 +74,7 @@ public:
 
     bool IsEmpty() const;
 
-    void Push(Block * who);
+    void Push(int x, int y, int z, int push_direction);
     /// Stacks items in inventory if possible.
     void Shake();
 

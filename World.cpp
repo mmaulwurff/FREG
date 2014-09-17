@@ -32,6 +32,10 @@ const int MIN_WORLD_SIZE = 5;
 
 World * world;
 
+bool World::ShredInCentralZone(const long longi, const long  lati) const {
+    return ( qAbs(longi - longitude) <= 1 ) && ( qAbs(lati - latitude) <= 1 );
+}
+
 int World::ShredPos(const int x, const int y) const { return y*NumShreds()+x; }
 
 Shred * World::GetShred(const int x, const int y) const {
@@ -40,6 +44,16 @@ Shred * World::GetShred(const int x, const int y) const {
 
 Shred * World::GetShredByPos(const int x, const int y) const {
     return shreds[ShredPos(x, y)];
+}
+
+Shred * World::GetNearShred(Shred * const shred, const dirs dir) const {
+    switch ( dir ) {
+    case NORTH: return GetShredByPos(shred->ShredX(),   shred->ShredY()-1);
+    case SOUTH: return GetShredByPos(shred->ShredX(),   shred->ShredY()+1);
+    case EAST:  return GetShredByPos(shred->ShredX()+1, shred->ShredY());
+    case WEST:  return GetShredByPos(shred->ShredX()-1, shred->ShredY());
+    default: Q_UNREACHABLE(); break;
+    }
 }
 
 int World::NumShreds() const { return numShreds; }
@@ -72,15 +86,15 @@ QString World::TimeOfDayStr() const {
         arg(TimeOfDay()%60, 2, 10, QChar('0'));
 }
 
-void World::Drop(Block * const block_from,
+bool World::Drop(Block * const block_from,
         const int x_to, const int y_to, const int z_to,
         const int src, const int dest, const int num)
 {
-    Block * const block_to = BlockManager::NewBlock(CONTAINER, DIFFERENT);
+    Block * const block_to = BlockManager::NewBlock(BOX, DIFFERENT);
     if ( not Build(block_to, x_to, y_to, z_to) ) {
         delete block_to;
     }
-    Exchange(block_from, GetBlock(x_to, y_to, z_to), src, dest, num);
+    return Exchange(block_from, GetBlock(x_to, y_to, z_to), src, dest, num);
 }
 
 void World::Get(Block * const block_to,
@@ -219,57 +233,53 @@ void World::ReloadShreds() {
         return;
     // while reloading, reuse memory places.
     case NORTH:
-        emit StartMove(toResetDir);
+        emit StartMove(NORTH);
         --longitude;
         for (int x=0; x<NumShreds(); ++x) {
-            Shred * const shred = *FindShred(x, NumShreds()-1);
-            shred->~Shred();
+            delete *FindShred(x, NumShreds()-1);
             for (int y=NumShreds()-1; y>0; --y) {
                 ( *FindShred(x, y) = *FindShred(x, y-1) )->ReloadTo(NORTH);
             }
-            *FindShred(x, 0) = new(shred) Shred(x, 0,
+            *FindShred(x, 0) = new Shred(x, 0,
                 longitude - NumShreds()/2,
                 latitude  - NumShreds()/2+x);
         }
         break;
     case SOUTH:
-        emit StartMove(toResetDir);
+        emit StartMove(SOUTH);
         ++longitude;
         for (int x=0; x<NumShreds(); ++x) {
-            Shred * const shred = *FindShred(x, 0);
-            shred->~Shred();
+            delete *FindShred(x, 0);
             for (int y=0; y<NumShreds()-1; ++y) {
                 ( *FindShred(x, y) = *FindShred(x, y+1) )->ReloadTo(SOUTH);
             }
-            *FindShred(x, NumShreds()-1) = new(shred) Shred(x, NumShreds()-1,
+            *FindShred(x, NumShreds()-1) = new Shred(x, NumShreds()-1,
                 longitude + NumShreds()/2,
                 latitude  - NumShreds()/2+x);
         }
         break;
     case EAST:
-        emit StartMove(toResetDir);
+        emit StartMove(EAST);
         ++latitude;
         for (int y=0; y<NumShreds(); ++y) {
-            Shred * const shred = *FindShred(0, y);
-            shred->~Shred();
+            delete *FindShred(0, y);
             for (int x=0; x<NumShreds()-1; ++x) {
                 ( *FindShred(x, y) = *FindShred(x+1, y) )->ReloadTo(EAST);
             }
-            *FindShred(NumShreds()-1, y) = new(shred) Shred(NumShreds()-1, y,
+            *FindShred(NumShreds()-1, y) = new Shred(NumShreds()-1, y,
                 longitude - NumShreds()/2+y,
                 latitude  + NumShreds()/2);
         }
         break;
     case WEST:
-        emit StartMove(toResetDir);
+        emit StartMove(WEST);
         --latitude;
         for (int y=0; y<NumShreds(); ++y) {
-            Shred * const shred = *FindShred(NumShreds()-1, y);
-            shred->~Shred();
+            delete *FindShred(NumShreds()-1, y);
             for (int x=NumShreds()-1; x>0; --x) {
                 ( *FindShred(x, y) = *FindShred(x-1, y) )->ReloadTo(WEST);
             }
-            *FindShred(0, y) = new(shred) Shred(0, y,
+            *FindShred(0, y) = new Shred(0, y,
                 longitude - NumShreds()/2+y,
                 latitude  - NumShreds()/2);
         }
@@ -281,7 +291,9 @@ void World::ReloadShreds() {
     toResetDir = UP; // set no reset
 } // void World::ReloadShreds()
 
-void World::SetReloadShreds(const int direction) { toResetDir = direction; }
+void World::SetReloadShreds(const int direction) {
+    toResetDir = static_cast<dirs>(direction);
+}
 
 void World::PhysEvents() {
     static const int start = NumShreds()/2 - numActiveShreds/2;
@@ -359,17 +371,21 @@ const {
 
 bool World::Move(const int x, const int y, const int z, const dirs dir) {
     int newx, newy, newz;
-    if (      Focus(x, y, z, &newx, &newy, &newz, dir) &&
-            CanMove(x, y, z,  newx,  newy,  newz, dir) )
-    {
-        NoCheckMove(x, y, z,  newx,  newy,  newz, dir);
+    if ( Focus(x, y, z, &newx, &newy, &newz, dir) ) {
+        switch ( CanMove(x, y, z, newx, newy, newz, dir) ) {
+        case CAN_MOVE_OK:
+            NoCheckMove(x, y, z, newx, newy, newz, dir);
+            return true;
+        case CAN_MOVE_CANNOT:    return false;
+        case CAN_MOVE_DESTROYED: return true;
+        }
         return true;
     } else {
         return false;
     }
 }
 
-bool World::CanMove(const int x, const int y, const int z,
+can_move_results World::CanMove(const int x, const int y, const int z,
         const int newx, const int newy, const int newz, const dirs dir)
 {
     Block * const block    = GetBlock(x, y, z);
@@ -382,27 +398,27 @@ bool World::CanMove(const int x, const int y, const int z,
             && AIR == GetBlock(x, y, z-1)->Sub()
             && AIR == GetBlock(newx, newy, newz-1)->Sub() )
     { // prevent moving while falling
-        return false;
+        return CAN_MOVE_CANNOT;
     }
-    const push_reaction reaction = block->PushResult(dir);
-    switch ( reaction ) {
+    switch ( block->PushResult(dir) ) {
     case MOVABLE:
         if ( Damage(newx, newy, newz, 1, DAMAGE_PUSH_UP + dir) <= 0 ) {
-            DestroyAndReplace  (newx, newy, newz);
-            block_to = GetBlock(newx, newy, newz);
+            DestroyAndReplace(newx, newy, newz);
         }
+        block_to = GetBlock(newx, newy, newz);
         break;
     case ENVIRONMENT:
         if ( *block != *block_to ) { // prevent useless flow
             break;
         } // no break;
-    default: return false;
+    default: return CAN_MOVE_CANNOT;
     }
     switch ( block_to->PushResult(dir) ) {
     case MOVABLE:
         return ( block->Weight() > block_to->Weight()
-            && Move(newx, newy, newz, dir) );
-    case ENVIRONMENT: return true;
+            && Move(newx, newy, newz, dir) ) ?
+                CAN_MOVE_OK : CAN_MOVE_CANNOT;
+    case ENVIRONMENT: return CAN_MOVE_OK;
     case NOT_MOVABLE: break;
     case MOVE_UP:
         if ( dir > DOWN ) { // not UP and not DOWN
@@ -419,19 +435,20 @@ bool World::CanMove(const int x, const int y, const int z,
                 <= 0 )
         {
             DestroyAndReplace(x, y, z);
+            return CAN_MOVE_DESTROYED;
         }
         break;
     }
-    return false;
+    return CAN_MOVE_CANNOT;;
 } // bool World::CanMove(const int x, y, z, newx, newy, newz, int dir)
 
 void World::NoCheckMove(const int x, const int y, const int z,
         const int newx, const int newy, const int newz, const dirs dir)
 {
-    Shred * const shred_from = GetShred(x, y);
+    Shred * const shred_from = GetShred(   x,    y);
     Shred * const shred_to   = GetShred(newx, newy);
-    const int x_in = Shred::CoordInShred(x);
-    const int y_in = Shred::CoordInShred(y);
+    const int    x_in = Shred::CoordInShred(x);
+    const int    y_in = Shred::CoordInShred(y);
     const int newx_in = Shred::CoordInShred(newx);
     const int newy_in = Shred::CoordInShred(newy);
     Block * const block    = shred_from->GetBlock(   x_in,    y_in,    z);
@@ -448,7 +465,7 @@ void World::NoCheckMove(const int x, const int y, const int z,
     block->Move(dir);
     emit Updated(newx, newy, newz);
 
-    shred_from->AddFalling(shred_from->GetBlock(x_in, y_in, z+1));
+    shred_from->AddFalling(shred_from->GetBlock(   x_in,    y_in,    z+1));
     shred_to  ->AddFalling(shred_to  ->GetBlock(newx_in, newy_in, newz+1));
     shred_to  ->AddFalling(block);
 
@@ -493,15 +510,12 @@ int World::Damage(const int x, const int y, const int z,
     Block * temp = shred->GetBlock(x_in, y_in, z);
     const int sub  = temp->Sub();
     if ( AIR == sub ) return 0;
-    const int kind = temp->Kind();
     if ( temp == block_manager.Normal(sub) ) {
-        temp = BlockManager::NewBlock(kind, sub);
+        temp = BlockManager::NewBlock(temp->Kind(), sub);
+        shred->SetBlockNoCheck(temp, x_in, y_in, z);
     }
     temp->Damage(dmg, dmg_kind);
-    const int durability = temp->GetDurability();
-    // SetBlock can alter temp (by ReplaceWithNormal) so put in last place.
-    shred->SetBlock(temp, x_in, y_in, z);
-    return durability;
+    return temp->GetDurability();
 }
 
 void World::DestroyAndReplace(const int x, const int y, const int z) {
@@ -602,13 +616,9 @@ bool World::Exchange(Block * const block_from, Block * const block_to,
 }
 
 void World::LoadAllShreds() {
-    shreds = new Shred *[NumShreds()*NumShreds()];
-    shredMemoryPool = static_cast<Shred *>
-        (operator new (sizeof(Shred)*NumShreds()*NumShreds()));
-    for (long i=latitude -NumShreds()/2, x=0; x<NumShreds(); ++i, ++x)
-    for (long j=longitude-NumShreds()/2, y=0; y<NumShreds(); ++j, ++y) {
-        const int pos = ShredPos(x, y);
-        shreds[pos] = new(shredMemoryPool + pos) Shred(x, y, j, i);
+    for (long j=longitude-NumShreds()/2, y=0; y<NumShreds(); ++j, ++y)
+    for (long i=latitude -NumShreds()/2, x=0; x<NumShreds(); ++i, ++x) {
+        *FindShred(x, y) = new Shred(x, y, j, i);
     }
     sunMoonFactor = evernight ?
         0 : ( TIME_NIGHT==PartOfDay() ) ?
@@ -618,10 +628,8 @@ void World::LoadAllShreds() {
 
 void World::DeleteAllShreds() {
     for (int i=0; i<NumShreds()*NumShreds(); ++i) {
-        shreds[i]->~Shred();
+        delete shreds[i];
     }
-    operator delete(shredMemoryPool);
-    delete [] shreds;
 }
 
 void World::SetNumActiveShreds(const int num) {
@@ -666,7 +674,6 @@ World::World(const QString world_name, bool * error) :
         toResetDir(UP),
         sunMoonFactor(),
         shredStorage(),
-        shredMemoryPool(),
         initial_lighting(),
         notes()
 {
@@ -688,6 +695,7 @@ World::World(const QString world_name, bool * error) :
     game_settings.setValue("number_of_shreds", numShreds);
     game_settings.setValue("number_of_active_shreds", numActiveShreds);
 
+    shreds = new Shred *[NumShreds()*NumShreds()];
     if ( not QDir(home_path).mkpath(worldName + "/texts") ) {
         *error = true;
     }
@@ -713,6 +721,7 @@ World::~World() {
     Unlock();
 
     DeleteAllShreds();
+    delete [] shreds;
     delete shredStorage;
 
     settings.setValue("time", qlonglong(time));

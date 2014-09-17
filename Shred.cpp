@@ -76,9 +76,7 @@ bool Shred::LoadShred() {
                 Active * const active = (blocks[x][y][z] =
                     BlockManager::BlockFromFile(in, kind, sub))->ActiveBlock();
                 if ( active != nullptr ) {
-                    active->SetXyz(
-                        (ShredX() << SHRED_WIDTH_SHIFT) | x,
-                        (ShredY() << SHRED_WIDTH_SHIFT) | y, z );
+                    active->SetXyz(x, y, z);
                     RegisterInit(active);
                     Falling * const falling = active->ShouldFall();
                     if ( falling != nullptr && falling->IsFalling() ) {
@@ -273,17 +271,12 @@ QLinkedList<Active * const>::const_iterator Shred::ShiningEnd() const {
 }
 
 void Shred::ReloadTo(const dirs direction) {
-    void (Active::* reload)() = nullptr;
     switch ( direction ) {
-    case NORTH: reload = &Active::ReloadToNorth; ++shredY; break;
-    case SOUTH: reload = &Active::ReloadToSouth; --shredY; break;
-    case EAST:  reload = &Active::ReloadToEast;  --shredX; break;
-    case WEST:  reload = &Active::ReloadToWest;  ++shredX; break;
+    case NORTH: ++shredY; break;
+    case SOUTH: --shredY; break;
+    case EAST:  --shredX; break;
+    case WEST:  ++shredX; break;
     default: Q_UNREACHABLE(); break;
-    }
-    activeListAll.removeAll(nullptr);
-    for (auto i=activeListAll.constBegin(); i!=activeListAll.constEnd(); ++i) {
-        ((*i)->*reload)();
     }
 }
 
@@ -303,9 +296,7 @@ void Shred::SetBlockNoCheck(Block * const block,
 {
     Active * const active = ( blocks[x][y][z]=block )->ActiveBlock();
     if ( active != nullptr ) {
-        active->SetXyz(
-            (ShredX() << SHRED_WIDTH_SHIFT) | x,
-            (ShredY() << SHRED_WIDTH_SHIFT) | y, z );
+        active->SetXyz(x, y, z);
         Register(active);
     }
 }
@@ -377,17 +368,17 @@ void Shred::TestShred() {
     } set[SHRED_WIDTH/2][SHRED_WIDTH] = {
         { // rows
             {CLOCK, IRON}, {CONTAINER, WOOD}, {FALLING, SAND},
-            {BLOCK, GLASS}, {CONTAINER, DIFFERENT}, {PLATE, STONE},
+            {BLOCK, GLASS}, {BOX, DIFFERENT}, {PLATE, STONE},
             {BLOCK, NULLSTONE}, {LADDER, NULLSTONE}, {LADDER, GREENERY},
             {LADDER, STONE}, {DWARF, ADAMANTINE}, {BUSH, WOOD},
             {WORKBENCH, IRON}, {DOOR, GLASS}, {WEAPON, IRON},
             {BLOCK, SAND}
         }, {
             {BLOCK, WATER}, {FALLING, WATER}, {DOOR, STONE},
-            {BLOCK, CLAY}, {TEXT, PAPER}, {BELL, IRON},
+            {BLOCK, CLAY}, {KIND_TEXT, PAPER}, {BELL, IRON},
             {BUCKET, IRON}, {PICK, IRON}, {SHOVEL, IRON},
             {HAMMER, IRON}, {AXE, IRON}, {FALLING, STONE},
-            {WEAPON, STONE}, {BLOCK, WOOD}, {TEXT, GLASS},
+            {WEAPON, STONE}, {BLOCK, WOOD}, {KIND_TEXT, GLASS},
             {BLOCK, COAL}
         }, {
             {CLOCK, EXPLOSIVE}, {BLOCK, MOSS_STONE}, {ILLUMINATOR, STONE},
@@ -528,9 +519,6 @@ void Shred::ChaosShred() {
     for (int k=1; k<HEIGHT/2; ++k) {
         int kind = qrand() % LAST_KIND;
         int sub  = qrand() % LAST_SUB;
-        if ( IsLikeAir(sub) ) {
-            sub = STONE;
-        }
         SetNewBlock(kind, sub, i, j, k);
     }
 }
@@ -589,9 +577,14 @@ int Shred::CountShredTypeAround(const int type) const {
     return result;
 }
 
+bool Shred::InBounds(const int z) { return (0 <= z && z < HEIGHT-1 ); }
+
+bool Shred::InBounds(const int x, const int y) {
+    return (0 <= x && x < SHRED_WIDTH) && (0 <= y && y < SHRED_WIDTH);
+}
+
 bool Shred::InBounds(const int x, const int y, const int z) {
-    return ( (0 <= x && x < SHRED_WIDTH) && (0 <= y && y < SHRED_WIDTH)
-        && 0 <=z && z < HEIGHT-1 );
+    return InBounds(x, y) && InBounds(z);
 }
 
 void Shred::Dew(const int kind, const int sub) {
@@ -611,8 +604,4 @@ void Shred::Rain(const int kind, const int sub) {
     if ( to_replace_sub == AIR || to_replace_sub == SUB_CLOUD ) {
         SetBlock(BlockManager::NewBlock(kind, sub), x, y, CLOUD_HEIGHT);
     }
-}
-
-bool Shred::IsLikeAir(const int sub) {
-    return ( sub==AIR || sub==SKY || sub==STAR );
 }

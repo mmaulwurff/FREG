@@ -73,6 +73,14 @@ enum weights { ///< weights in measures - mz (mezuro)
     WEIGHT_AIR       =    0,
 };
 
+enum sub_groups {
+    GROUP_NONE,
+    GROUP_AIR,
+    GROUP_MEAT,
+    GROUP_METAL,
+    GROUP_HANDY,
+};
+
 class Inventory;
 class Active;
 class Falling;
@@ -99,7 +107,7 @@ public:
     virtual usage_types UseOnShredMove(Block * user);
     virtual push_reaction PushResult(dirs) const;
     /// Should return dropped block.
-    /** It can be pile(CONTAINER, DIFFERENT) containing all dropped blocks, or
+    /** It can be pile(BOX, DIFFERENT) containing all dropped blocks, or
      *  block itself.
      *  Set delete_self false if this block itself should not be deleted.
      *  (by default block is deleted, beware). */
@@ -150,11 +158,13 @@ public:
     static QString SubName(int sub);
     /// Returns translated substance name with first upper letter.
     static QString SubNameUpper(int sub);
+    static sub_groups GetSubGroup(int sub);
+    static dirs MakeDirFromDamage(int damage_kind);
+    static QString DirString(dirs);
 
 protected:
     virtual void SaveAttributes(QDataStream &) const;
     /// To convert DAMAGE_PUSH_UP...WEST to corresponding direction.
-    static dirs MakeDirFromDamage(int damage_kind);
 
     quint16 noteId;
 

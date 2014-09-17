@@ -58,8 +58,8 @@ public:
     long GlobalX() const;
     long GlobalY() const;
 
-    using Xyz::X;
-    using Xyz::Y;
+    int X() const;
+    int Y() const;
     using Xyz::Z;
 
     /// This returns current player direction (see enum dirs in header.h)
@@ -105,7 +105,7 @@ public:
     /// Tries to switch usingSelfType from NO to OPEN.
     void Backpack();
     void Inscribe() const;
-    void Examine() const;
+    void Examine();
     /// Returns true if xyz are in world bounds.
     bool Damage() const;
     void Use();
@@ -167,6 +167,8 @@ private:
     Player & operator=(const Player &) = delete;
     Player(const Player &) = delete;
 
+    Animal * NewPlayer() const;
+
     /// Checks player/inventory/block existence, size limits.
     Block * ValidBlock(int num) const;
     Shred * GetShred() const;
@@ -176,8 +178,8 @@ private:
     QSettings settings;
     long homeLongi, homeLati;
     int homeX, homeY, homeZ;
-    dirs dir = NORTH;
     Animal * player;
+    Animal * creator;
     int usingType;
     int usingSelfType;
     int usingInInventory;
