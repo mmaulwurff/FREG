@@ -30,8 +30,6 @@
 #include "blocks/Armour.h"
 #include "blocks/Filter.h"
 
-#define sizeof_array(ARRAY) (sizeof(ARRAY)/sizeof(ARRAY[0]))
-
 /** \page kinds List of available kinds
  *  Complete list.
  *  These kinds can be used as parameters to `get KIND SUB` command.

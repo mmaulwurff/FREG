@@ -66,7 +66,12 @@ const static QString sub_names[] = {
     QObject::tr("plastic"),
 };
 
-QString Block::SubName(const int sub) { return sub_names[sub]; }
+QString Block::SubName(const int sub) {
+    static_assert(sizeof_array(sub_names) == LAST_SUB,
+        "invalid number of strings in sub_names");
+    return sub_names[sub];
+}
+
 QString Block::DirString(const dirs dir) { return dir_strings[dir]; }
 
 QString Block::SubNameUpper(const int sub) {

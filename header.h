@@ -220,4 +220,6 @@ inline int Abs(const int x) {
     return (x ^ mask) - mask;
 }
 
+#define sizeof_array(ARRAY) (sizeof(ARRAY)/sizeof(ARRAY[0]))
+
 #endif // HEADER_H

@@ -126,7 +126,7 @@ char Screen::CharNumberFront(const int i, const int j) const {
 }
 
 int  Screen::RandomBlink() const { return RandomBit() ? 0 : A_REVERSE; }
-bool Screen::RandomBit()   const { return ( (randomBlink >>= 1) & 1 ); }
+bool Screen::RandomBit()   const { return (randomBlink >>= 1) & blinkOn; }
 
 int Screen::Color(const int kind, const int sub) const {
     switch ( kind ) { // foreground_background
@@ -819,6 +819,7 @@ Screen::Screen(
         beepOn (settings.value("beep_on",  false).toBool()),
         flashOn(settings.value("flash_on", true ).toBool()),
         ascii(_ascii),
+        blinkOn(settings.value("blink_on", true).toBool()),
         arrows{'.', 'x',
             ascii ? '^' : 0x2191,
             ascii ? 'v' : 0x2193,
@@ -926,6 +927,7 @@ Screen::~Screen() {
     settings.setValue("last_command", previousCommand);
     settings.setValue("beep_on",  beepOn);
     settings.setValue("flash_on", flashOn);
+    settings.setValue("blink_on", blinkOn);
 }
 
 void Screen::PrintBar(const int x, const int attr, const int ch,
