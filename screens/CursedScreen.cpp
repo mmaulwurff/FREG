@@ -557,12 +557,12 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
             waddch(window, ' ');
         }
     }
-    if ( dir > DOWN ) {
-        const Block * const block = player->GetBlock();
-        wattrset(window, Color(block->Kind(), block->Sub()));
-        mvwaddstr(window, player->Y()-start_y+1, (player->X()-start_x)*2+2,
-            qPrintable(arrows[player->GetDir()]));
-    }
+
+    const Block * const block = player->GetBlock();
+    wattrset(window, Color(block->Kind(), block->Sub()));
+    mvwaddstr(window, player->Y()-start_y+1, (player->X()-start_x)*2+2,
+        qPrintable(arrows[player->GetDir()]));
+
     PrintTitle(window, UP==dir ? UP : DOWN);
     Arrows(window, (player->X()-start_x)*2+1, player->Y()-start_y+1, true);
     wrefresh(window);
