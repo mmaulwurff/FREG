@@ -508,7 +508,6 @@ Player::Player() :
 }
 
 Player::~Player() {
-    delete creator;
     settings.setValue("home_longitude", qlonglong(homeLongi));
     settings.setValue("home_latitude", qlonglong(homeLati));
     const int min = world->NumShreds()/2*SHRED_WIDTH;
@@ -521,4 +520,5 @@ Player::~Player() {
     settings.setValue("creative_mode", GetCreativeMode());
     settings.setValue("using_type", usingType);
     settings.setValue("using_self_type", usingSelfType);
+    delete creator;
 }

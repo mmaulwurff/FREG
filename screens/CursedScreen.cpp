@@ -459,7 +459,9 @@ void Screen::PrintHUD() {
     }
     Block * const focused = GetFocusedBlock();
     if ( Block::GetSubGroup(focused->Sub()) != GROUP_AIR ) {
-        const int left_border = (SCREEN_SIZE*2+2) * (IsScreenWide() ? 2 : 1);
+        const int left_border = IsScreenWide() ?
+            (SCREEN_SIZE*2+2) * 2 :
+            SCREEN_SIZE*2+2 - 15;
         PrintBar(left_border - 15,
             Color(focused->Kind(), focused->Sub()),
             (focused->IsAnimal() == nullptr) ? '+' : '*',
@@ -835,10 +837,13 @@ Screen::Screen(
     nonl();
     keypad(stdscr, TRUE); // use arrows
     memset(windows, 0, sizeof(windows));
-    if ( LINES < 41 ) {
+    if ( LINES < 41 && IsScreenWide() ) {
         printf("Make your terminal height to be at least 41 lines.\n");
         error = HEIGHT_NOT_ENOUGH;
         return;
+    } else if ( LINES < 39 ) {
+        printf("Make your terminal height to be at least 39 lines.\n");
+        error = HEIGHT_NOT_ENOUGH;
     }
     // all available color pairs (maybe some of them will not be used)
     const int colors[] = { // do not change colors order!
@@ -855,7 +860,7 @@ Screen::Screen(
         init_pair(i, colors[(i-1)/8], colors[(i-1)%8]);
     }
     const int preferred_width = (SCREEN_SIZE*2+2)*2;
-    if ( COLS >= preferred_width ) {
+    if ( IsScreenWide() ) {
         const int left_border = COLS/2-SCREEN_SIZE*2-2;
         rightWin  = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, COLS/2);
         leftWin   = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, left_border);
@@ -866,9 +871,10 @@ Screen::Screen(
     } else if ( COLS >= preferred_width/2 ) {
         const int left_border = COLS/2-SCREEN_SIZE-1;
         leftWin   = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, left_border);
-        hudWin    = newwin(3, SCREEN_SIZE*2+2, SCREEN_SIZE+2, left_border);
-        notifyWin = newwin(21,SCREEN_SIZE*2+2, SCREEN_SIZE+2+3,left_border+20);
-        actionWin = newwin(0, 20, SCREEN_SIZE+2+3, left_border);
+        hudWin    = newwin(2,SCREEN_SIZE*2+2-15, SCREEN_SIZE+2,left_border+15);
+        notifyWin = newwin(21, SCREEN_SIZE*2+2-15,
+            SCREEN_SIZE+2+2, left_border+15);
+        actionWin = newwin(0, 15, SCREEN_SIZE+2, left_border);
     } else {
         puts(qPrintable(tr("Set your terminal width at least %1 chars.").
             arg(SCREEN_SIZE*2+2)));
@@ -888,10 +894,9 @@ Screen::Screen(
         (settings.value("action_mode", ACTION_USE).toInt()));
     Print();
     Notify(tr("--- Game started. Press 'H' for help. ---"));
-    if ( COLS < preferred_width ) {
-        Notify(tr("For better gameplay "));
-        Notify(tr("set your terminal width at least %1 chars.").
-            arg(preferred_width));
+    if ( not IsScreenWide() ) {
+        Notify(tr("For better gameplay set your"));
+        Notify(tr("terminal width at least %1 chars.").arg(preferred_width));
     }
 
     input->start();
