@@ -129,43 +129,24 @@ int  Screen::RandomBlink() const { return RandomBit() ? 0 : A_REVERSE; }
 bool Screen::RandomBit()   const { return (randomBlink >>= 1) & blinkOn; }
 
 int Screen::Color(const int kind, const int sub) const {
+    const int color = COLOR_PAIR(VirtScreen::Color(kind, sub));
     switch ( kind ) { // foreground_background
+    case TELEGRAPH: return color | A_BOLD;
     case LIQUID: switch ( sub ) {
-        case WATER:     return COLOR_PAIR( CYAN_BLUE  ) | RandomBlink();
-        case SUB_CLOUD: return COLOR_PAIR(BLACK_WHITE );
-        case ACID:      return COLOR_PAIR(GREEN_GREEN ) |A_BOLD |RandomBlink();
         case H_MEAT:
-        case A_MEAT:    return COLOR_PAIR(BLACK_RED);
-        default:        return COLOR_PAIR(  RED_YELLOW) | RandomBlink();
+        case A_MEAT:
+        case SUB_CLOUD: return color;
+        default:        return color | RandomBlink();
+        case ACID:      return color | RandomBlink() | A_BOLD;
         } break;
-    case FALLING: switch ( sub ) {
-        case WATER: return COLOR_PAIR(  CYAN_WHITE);
-        case SAND:  return COLOR_PAIR(YELLOW_WHITE);
-        } // no break;
     default: switch ( sub ) {
-        default:         return COLOR_PAIR(WHITE_BLACK);
-        case STONE:      return COLOR_PAIR(BLACK_WHITE);
-        case GREENERY:   return COLOR_PAIR(BLACK_GREEN);
-        case WOOD:
-        case HAZELNUT:
-        case SOIL:       return COLOR_PAIR(  BLACK_YELLOW);
-        case SAND:       return COLOR_PAIR(  WHITE_YELLOW);
-        case COAL:       return COLOR_PAIR(  BLACK_WHITE );
-        case IRON:       return COLOR_PAIR(  BLACK_BLACK ) | A_BOLD;
-        case A_MEAT:     return COLOR_PAIR(  WHITE_RED   );
-        case H_MEAT:     return COLOR_PAIR(  BLACK_RED   );
-        case WATER:      return COLOR_PAIR(  WHITE_CYAN  );
-        case GLASS:      return COLOR_PAIR(   BLUE_WHITE );
-        case NULLSTONE:  return COLOR_PAIR(MAGENTA_BLACK ) | A_BOLD;
-        case MOSS_STONE: return COLOR_PAIR(  GREEN_WHITE );
-        case ROSE:       return COLOR_PAIR(    RED_GREEN );
-        case CLAY:       return COLOR_PAIR(  WHITE_RED   );
-        case PAPER:      return COLOR_PAIR(MAGENTA_WHITE );
-        case GOLD:       return COLOR_PAIR(  WHITE_YELLOW) | RandomBlink();
-        case BONE:       return COLOR_PAIR(MAGENTA_WHITE );
-        case EXPLOSIVE:  return COLOR_PAIR(  WHITE_RED   );
-        case DIAMOND:    return COLOR_PAIR(   CYAN_WHITE ) | A_BOLD;
-        case ADAMANTINE: return COLOR_PAIR(   CYAN_BLACK );
+        case GOLD:       return color | RandomBlink();
+        case IRON:
+        case NULLSTONE:
+        case DIAMOND:    return color | A_BOLD;
+        case ACID:
+        case SUB_DUST:   return color | A_BOLD  | A_REVERSE;
+        case FIRE:       return color | A_BLINK | RandomBlink();
         case SKY:
         case STAR:
             if ( w->GetEvernight() ) return COLOR_PAIR(BLACK_BLACK);
@@ -175,20 +156,9 @@ int Screen::Color(const int kind, const int sub) const {
             case TIME_MORNING: return COLOR_PAIR(WHITE_BLUE);
             case TIME_NOON:    return COLOR_PAIR( CYAN_CYAN);
             case TIME_EVENING: return COLOR_PAIR(WHITE_CYAN);
-            }
-        case SUB_DUST: return COLOR_PAIR(BLACK_BLACK ) | A_BOLD | A_REVERSE;
-        case FIRE:     return COLOR_PAIR(  RED_YELLOW) |A_BLINK |RandomBlink();
-        case ACID:     return COLOR_PAIR(GREEN_GREEN ) | A_BOLD | A_REVERSE;
-        }
-    case DWARF: switch ( sub ) {
-        case ADAMANTINE: return COLOR_PAIR( CYAN_BLACK);
-        case DIFFERENT:  return COLOR_PAIR(WHITE_BLACK);
-        default:         return COLOR_PAIR(WHITE_BLUE );
-        }
-    case RABBIT:    return COLOR_PAIR(  RED_WHITE);
-    case PREDATOR:  return COLOR_PAIR(  RED_BLACK);
-    case TELEGRAPH: return COLOR_PAIR( BLUE_BLUE ) | A_BOLD;
-    case MEDKIT:    return COLOR_PAIR(  RED_WHITE);
+            } break;
+        default: return color;
+        } break;
     }
 } // color_pairs Screen::Color(int kind, int sub)
 
