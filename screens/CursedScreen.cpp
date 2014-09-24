@@ -32,17 +32,24 @@
 
 const char OBSCURE_BLOCK = ' ';
 const int QUICK_INVENTORY_X_SHIFT = 36;
+const int SHADOW_COLOR = COLOR_PAIR(BLACK_BLACK) | A_BOLD | A_REVERSE;
+
+void Screen::PrintVerticalDirection(WINDOW * const window, const int y,
+        const int x, const dirs direction)
+{
+    mvwaddstr(window, y, x + 3, qPrintable(Block::DirString(direction)));
+}
 
 void Screen::Arrows(WINDOW * const window, const int x, const int y,
         const dirs direction)
 const {
     wcolor_set(window, WHITE_BLACK, nullptr);
     if ( direction >= DOWN ) {
-        mvwaddstr(window, 0, x-3, qPrintable(tr("UP    UP")));
-        mvwaddstr(window, SCREEN_SIZE+1, x-5, qPrintable(tr("Down    Down")));
+        PrintVerticalDirection(window, 0, x, UP);
+        PrintVerticalDirection(window, SCREEN_SIZE+1, x, DOWN);
     } else {
-        mvwaddstr(window, 0, x-2, qPrintable(tr( "N    N")));
-        mvwaddstr(window, SCREEN_SIZE+1, x-2, qPrintable(tr(   "S    S")));
+        PrintVerticalDirection(window, 0, x, NORTH);
+        PrintVerticalDirection(window, SCREEN_SIZE+1, x, SOUTH);
     }
     wcolor_set(window, WHITE_RED, nullptr);
     mvwaddstr(window, 0, x, qPrintable(arrows[SOUTH]));
@@ -58,8 +65,8 @@ void Screen::HorizontalArrows(WINDOW * const window, const int y,
 const {
     wcolor_set(window, WHITE_BLACK, nullptr);
     const static QString dir_chars[] = {
-        Block::DirString(UP   ).left(1),
-        Block::DirString(DOWN ).left(1),
+        QString(),
+        QString(),
         Block::DirString(NORTH).left(1),
         Block::DirString(SOUTH).left(1),
         Block::DirString(EAST ).left(1),
@@ -75,9 +82,7 @@ const {
     case WEST:  left = dir_chars[SOUTH]; right = dir_chars[NORTH]; break;
     }
     mvwaddstr(window, y-1, 0, qPrintable(left));
-    mvwaddstr(window, y+1, 0, qPrintable(left));
     mvwaddstr(window, y-1, SCREEN_SIZE*2+1, qPrintable(right));
-    mvwaddstr(window, y+1, SCREEN_SIZE*2+1, qPrintable(right));
 
     wcolor_set(window, WHITE_RED, nullptr);
     mvwaddstr(window, y, 0, qPrintable(arrows[EAST]));
@@ -86,7 +91,7 @@ const {
 
 void Screen::RePrint() {
     clear();
-    mvwaddstr(actionWin, 0, 0, qPrintable(tr("Use")));
+    mvwaddstr(actionWin, 0, 0, qPrintable(tr("Use, eat")));
     mvwaddstr(actionWin, 1, 0, qPrintable(tr("Throw")));
     mvwaddstr(actionWin, 2, 0, qPrintable(tr("Obtain")));
     mvwaddstr(actionWin, 3, 0, qPrintable(tr("iNscribe")));
@@ -157,6 +162,7 @@ int Screen::Color(const int kind, const int sub) const {
         case SUB_CLOUD: return color;
         default:        return color | RandomBlink();
         case ACID:      return color | RandomBlink() | A_BOLD;
+        case WATER: return RandomBit() ? color : COLOR_PAIR(BLUE_BLUE)|A_BOLD;
         } break;
     default: switch ( sub ) {
         case GOLD:       return color | RandomBlink();
@@ -533,6 +539,7 @@ void Screen::PrintMiniMap() {
     }
     wstandend(miniMapWin);
     box(miniMapWin, 0, 0);
+    mvwaddstr(miniMapWin, 0, 1, qPrintable(tr("Minimap")));
     wrefresh(miniMapWin);
 }
 
@@ -563,7 +570,7 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
             waddch(window, PrintBlock(*shred->GetBlock(i_in,j_in,k), window));
             waddch(window, CharNumber(k));
         } else {
-            wstandend(window);
+            wattrset(window, SHADOW_COLOR);
             waddch(window, OBSCURE_BLOCK);
             waddch(window, ' ');
         }
@@ -576,7 +583,8 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
             qPrintable(arrows[player->GetDir()]));
     }
 
-    PrintTitle(window, UP==dir ? UP : DOWN);
+    wstandend(window);
+    box(window, 0, 0);
     Arrows(window, (player->X()-start_x)*2+1, player->Y()-start_y+1, UP);
     wrefresh(window);
 } // void Screen::PrintNormal(WINDOW * window, int dir)
@@ -663,13 +671,14 @@ void Screen::PrintFront(const dirs dir) const {
                 waddch(rightWin, PrintBlock(*block, rightWin));
                 waddch(rightWin, CharNumberFront(i, j));
             } else {
-                wattrset(rightWin, COLOR_PAIR(WHITE_BLACK));
+                wattrset(rightWin, SHADOW_COLOR);
                 waddch(rightWin, OBSCURE_BLOCK);
                 waddch(rightWin, ' ');
             }
         }
     }
-    PrintTitle(rightWin, dir);
+    wstandend(rightWin);
+    box(rightWin, 0, 0);
     const int arrow_Y = k_start + 1 - player->Z();
     if ( shiftFocus ) {
         wattrset(rightWin, COLOR_PAIR(WHITE_BLUE));
@@ -682,16 +691,6 @@ void Screen::PrintFront(const dirs dir) const {
     Arrows(rightWin, arrow_X, arrow_Y, dir);
     wrefresh(rightWin);
 } // void Screen::PrintFront(dirs)
-
-void Screen::PrintTitle(WINDOW * const window, const dirs dir) const {
-    QString dir_string = QString("%1 %2 %1").
-        arg(arrows[dir]).
-        arg(Block::DirString(dir));
-    wstandend(window);
-    box(window, 0, 0);
-    wcolor_set(window, BLACK_WHITE, nullptr);
-    mvwaddstr(window, 0, 1, qPrintable(dir_string));
-}
 
 void Screen::PrintInv(WINDOW * const window,
         const Block * const block, const Inventory * const inv)

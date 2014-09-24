@@ -40,7 +40,6 @@ void RainMachine::SaveAttributes(QDataStream & stream) const {
 }
 
 void RainMachine::DoRareAction() {
-    fprintf(stderr, "hello\n");
     if ( not isOn ) return;
     if ( AIR == GetInvSub(0) ) {
         if ( qrand() % 5 ) {
