@@ -7,6 +7,7 @@ Key | function
 'Q', 'X', F10         | quit game
 'H', F1               | this help
 arrows, NumPad, WASD  | turn and move
+'{', '}'              | move to the left and right
 '=', '0'              | move to your current direction
 End                   | move down
 '>', '<'              | turn right and left
