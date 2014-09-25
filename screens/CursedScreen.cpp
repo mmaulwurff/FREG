@@ -244,6 +244,7 @@ void Screen::ControlPlayer(const int ch) {
             || KEY_F(10) == ch )
     {
         emit ExitReceived();
+        input->Stop();
         return;
     } // else:
     if ( 'a'<=ch && ch<='z' ) { // actions with inventory

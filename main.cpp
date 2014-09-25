@@ -147,11 +147,10 @@ int main(int argc, char ** argv) {
 
     if ( error ) return EXIT_FAILURE;
 
-    QObject::connect(&player, SIGNAL(Destroyed()),
-        &screen, SLOT(DeathScreen()));
-
-    QObject::connect(&screen, SIGNAL(ExitReceived()), &freg, SLOT(quit()));
-    QObject::connect(&world,  SIGNAL(ExitReceived()), &freg, SLOT(quit()));
+    QObject::connect(&screen, SIGNAL(ExitReceived()), &freg, SLOT(quit()),
+        Qt::DirectConnection);
+    QObject::connect(&world,  SIGNAL(ExitReceived()), &freg, SLOT(quit()),
+        Qt::DirectConnection);
 
     world.start();
     return freg.exec();
