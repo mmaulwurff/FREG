@@ -10,6 +10,7 @@ CONFIG += cursed_screen
 
 CONFIG += thread warn_on console
 CONFIG += debug
+CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 
 # compile with clang:
 #CONFIG += clang

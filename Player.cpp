@@ -28,11 +28,7 @@
 #include "DeferredAction.h"
 #include "Weather.h"
 
-#ifdef QT_NO_DEBUG
-const bool COMMANDS_ALWAYS_ON = false;
-#else
-const bool COMMANDS_ALWAYS_ON = true;
-#endif
+const bool COMMANDS_ALWAYS_ON = DEBUG;
 
 //const subs PLAYER_SUB = ADAMANTINE;
 const subs PLAYER_SUB = H_MEAT;
