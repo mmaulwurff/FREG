@@ -116,8 +116,8 @@ void Screen::UpdateAll() {
 
 void Screen::PassString(QString & str) const {
     inputActive = true;
-    wstandend(notifyWin);
-    waddch(notifyWin, ':');
+    wattrset(notifyWin, A_UNDERLINE);
+    waddstr(notifyWin, qPrintable(tr("Enter command: ")));
     char temp_str[MAX_NOTE_LENGTH + 1];
     echo();
     wgetnstr(notifyWin, temp_str, MAX_NOTE_LENGTH);
@@ -484,12 +484,12 @@ void Screen::PrintHUD() {
             focused->GetDurability()*100/MAX_DURABILITY,
             false);
         const QString name = focused->FullName();
-        mvwaddstr(hudWin, 1, left_border-name.length(),
+        mvwaddstr(hudWin, 1, left_border-name.length() - 1,
             qPrintable(focused->FullName()));
         const QString note = focused->GetNote();
-        if ( not note.isEmpty() ) {
+        if ( not note.isEmpty() && IsScreenWide() ) {
             const int width = qMin(36, note.length() + 2);
-            (void)wmove(hudWin, 2, left_border - width);
+            (void)wmove(hudWin, 2, left_border - width - 1);
             if ( note.length()+2 <= width ) {
                 wprintw(hudWin, "~:%s", qPrintable(note));
             } else {
@@ -779,8 +779,8 @@ void Screen::Notify(const QString str) const {
     fputs(qPrintable(QString("%1 %2\n").arg(w->TimeOfDayStr()).arg(str)),
         notifyLog);
     if ( inputActive ) return;
+    wstandend(notifyWin);
     switch ( str.at(str.size()-1).unicode() ) {
-    default: wstandend(notifyWin); break;
     case '!': wcolor_set(notifyWin, RED_BLACK, nullptr); // no break;
     case '*': if ( flashOn ) flash(); break;
     case '^': if (  beepOn ) beep();  break;

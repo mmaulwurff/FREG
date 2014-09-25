@@ -118,6 +118,7 @@ void Block::Damage(const int dmg, int dmg_kind) {
     if ( dmg_kind > DAMAGE_PUSH_UP ) {
          dmg_kind = DAMAGE_PUSH_UP;
     }
+    // Fragile or undestructible substances:
     switch ( Sub() ) {
     case SUB_DUST:
     case GREENERY:
@@ -128,7 +129,19 @@ void Block::Damage(const int dmg, int dmg_kind) {
     case AIR:
     case SKY: return;
     }
+    // Special damage kinds:
     switch ( dmg_kind ) {
+    case DAMAGE_PUSH_UP: switch ( Sub() ) {
+        default: return;
+        case A_MEAT:
+        case H_MEAT: durability -= dmg * ( dmg > 10 ); return;
+        case GLASS:: durability -= dmg * (MAX_DURABILITY+9) / 10; return;
+        } break;
+    case DAMAGE_HANDS: switch ( Sub() ) {
+        default: return;
+        case A_MEAT:
+        case H_MEAT: break;
+        } break;
     case DAMAGE_ULTIMATE: durability = 0; return;
     case DAMAGE_NO: return;
     case DAMAGE_TIME: durability -= dmg; return;
@@ -138,48 +151,33 @@ void Block::Damage(const int dmg, int dmg_kind) {
         case DIFFERENT: durability = 0; return;
         case ACID:
         case ADAMANTINE:
-        case IRON:
         case GLASS: return;
-        }
+        } break;
     }
+    // Common substances and damage kinds:
     int mult = 1; // default
     switch ( Sub() ) {
     case DIFFERENT: return;
     case MOSS_STONE:
     case STONE: switch ( dmg_kind ) {
         case DAMAGE_HEAT:
-        case DAMAGE_HANDS:
-        case DAMAGE_PUSH_UP:
         case DAMAGE_CUT: return;
         case DAMAGE_MINE: mult = 2; break;
         } break;
-    case WOOD: switch ( dmg_kind ) {
-        case DAMAGE_CUT: mult = 2; break;
-        case DAMAGE_PUSH_UP:
-        case DAMAGE_HANDS: return;
-        } break;
+    case WOOD: mult += ( DAMAGE_CUT == dmg_kind ); break;
     case A_MEAT:
     case H_MEAT: switch ( dmg_kind ) {
         case DAMAGE_HEAT:
-        case DAMAGE_THRUST:  mult = 2; break;
-        case DAMAGE_PUSH_UP: mult = ( dmg < 10 ) ? 0 : 1;
+        case DAMAGE_THRUST: mult = 2; break;
         } break;
     case SAND:
-    case SOIL:      mult += ( DAMAGE_DIG    == dmg_kind ); break;
+    case SOIL:  mult += ( DAMAGE_DIG    == dmg_kind ); break;
     case ADAMANTINE:
-    case FIRE:      mult  = ( DAMAGE_FREEZE == dmg_kind ); break;
-    case WATER:     mult  = ( DAMAGE_HEAT   == dmg_kind ); break;
-    case GLASS: switch ( dmg_kind ) {
-        case DAMAGE_PUSH_UP: durability -= dmg*((MAX_DURABILITY+9)/10); return;
-        default:             durability  = 0; // no break;
-        case DAMAGE_HEAT: return;
-        }
-    case IRON: switch ( dmg_kind ) {
-        case DAMAGE_HANDS:
-        case DAMAGE_PUSH_UP: return;
-        }
+    case FIRE:  mult  = ( DAMAGE_FREEZE == dmg_kind ); break;
+    case WATER: mult  = ( DAMAGE_HEAT   == dmg_kind ); break;
+    case GLASS: durability *= ( DAMAGE_HEAT == dmg_kind ); return;
     }
-    durability -= mult*dmg;
+    durability -= mult * dmg;
 } // Block::Damage(const ind dmg, const int dmg_kind)
 
 Block * Block::DropAfterDamage(bool * const delete_block) {
