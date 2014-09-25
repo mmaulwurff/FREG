@@ -135,7 +135,7 @@ void Block::Damage(const int dmg, int dmg_kind) {
         default: return;
         case A_MEAT:
         case H_MEAT: durability -= dmg * ( dmg > 10 ); return;
-        case GLASS:: durability -= dmg * (MAX_DURABILITY+9) / 10; return;
+        case GLASS:  durability -= dmg * (MAX_DURABILITY+9) / 10; return;
         } break;
     case DAMAGE_HANDS: switch ( Sub() ) {
         default: return;

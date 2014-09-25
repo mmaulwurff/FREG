@@ -42,32 +42,38 @@ void DeferredAction::Jump() const {
 }
 
 void DeferredAction::Build() const {
-    int z = Z();
     World * const world = attachedBlock->GetWorld();
-    if ( DOWN==attachedBlock->GetDir() &&
-            AIR!=world->GetBlock(X(), Y(), Z())->Sub() )
-    {
-        if ( world->Move(attachedBlock->X(),
-                attachedBlock->Y(), attachedBlock->Z(), UP) )
-        {
-            ++z;
+    int x = X(), y = Y(), z = Z();
+    if ( ENVIRONMENT != world->GetBlock(x, y, z)->PushResult(ANYWHERE) ) {
+        if ( world->Move(
+                attachedBlock->X(), attachedBlock->Y(), attachedBlock->Z(),
+                World::Anti(attachedBlock->GetDir())) )
+        { // shift coordinates to opposite side:
+            switch ( attachedBlock->GetDir() ) {
+            case UP:    --z; break;
+            case DOWN:  ++z; break;
+            case NORTH: ++y; break;
+            case SOUTH: --y; break;
+            case EAST:  --x; break;
+            case WEST:  ++x; break;
+            }
         } else {
             return;
         }
     }
-    const int id = material->GetId();
-    if ( not world->Build(material, X(), Y(), z,
+    if ( not world->Build(material, x, y, z,
             World::TurnRight(attachedBlock->GetDir()), attachedBlock) )
     { // build not successful
         return;
-    } // else:
+    }
     Inventory * const inv = attachedBlock->HasInventory();
     if ( inv == nullptr ) return;
     inv->Pull(srcSlot);
     // put more material in building inventory slot:
     if ( inv->Number(srcSlot) ) return;
+    const int id = material->GetId();
     for (int i=srcSlot+1; i<inv->Size() &&
-        inv->Number(srcSlot)<MAX_STACK_SIZE; ++i)
+            inv->Number(srcSlot)<MAX_STACK_SIZE; ++i)
     {
         const Block * const block_i = inv->ShowBlock(i);
         if ( block_i && id==block_i->GetId() ) {
