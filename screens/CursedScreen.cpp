@@ -309,6 +309,7 @@ void Screen::ControlPlayer(const int ch) {
     case 'Z':
         if ( player->PlayerInventory() ) {
               player->PlayerInventory()->Shake();
+              Notify(tr("Inventory reorganized."));
         }
         break;
     case KEY_HELP:
@@ -318,12 +319,21 @@ void Screen::ControlPlayer(const int ch) {
     case 'R':
     case 'L': RePrint(); break;
 
-    case '-': shiftFocus = -!shiftFocus; break; // move focus down
-    case '+': shiftFocus =  !shiftFocus; break; // move focus up
+    case '-':
+        shiftFocus = -!shiftFocus;
+        Notify(tr("%1 focus is set.").
+            arg(shiftFocus ? tr("Low") : tr("Normal")));
+        break; // move focus down
+    case '+':
+        shiftFocus =  !shiftFocus;
+        Notify(tr("%1 focus is set.").
+            arg(shiftFocus ? tr("High") : tr("Normal")));
+        break;
 
     case KEY_F(12):
     case '!': player->SetCreativeMode( not player->GetCreativeMode() ); break;
     case KEY_F(9):
+    case '\\':
     case ':':
     case '/': PassString(previousCommand); // no break
     case '.': ProcessCommand(previousCommand); break;
@@ -338,7 +348,7 @@ void Screen::ProcessCommand(const QString command) {
     }
     switch ( Player::UniqueIntFromString(qPrintable(command)) ) {
     case Player::UniqueIntFromString("size"):
-        Notify(QString("Terminal height: %1 lines, width: %2 chars.").
+        Notify(tr("Terminal height: %1 lines, width: %2 chars.").
             arg(LINES).arg(COLS));
         break;
     case Player::UniqueIntFromString("moo"):
