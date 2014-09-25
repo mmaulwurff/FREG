@@ -329,7 +329,7 @@ bool World::DirectlyVisible(
         int x,      int y,      int z)
 const {
     /// optimized DDA line with integers only.
-    int max = Abs(Abs(x-=x_from) > Abs(y-=y_from) ? x : y);
+    unsigned max = Abs(Abs(x-=x_from) > Abs(y-=y_from) ? x : y);
     if ( Abs(z-=z_from) > max) {
         max = Abs(z);
     }
@@ -337,12 +337,16 @@ const {
     y_from *= max;
     z_from *= max;
     for (int i=max-1; i-- > 0; ) {
-        if ( not (GetBlock((x_from+=x)/max, (y_from+=y)/max, (z_from+=z)/max)->
-                    Transparent()
-                && GetBlock( (x_from+max-1)/max, (y_from+max-1)/max,
-                    (z_from+max-1)/max )->Transparent()) )
+        if ( not (GetBlock(
+                    static_cast<unsigned>(x_from+=x)/max,
+                    static_cast<unsigned>(y_from+=y)/max,
+                    static_cast<unsigned>(z_from+=z)/max )->Transparent()
+                && GetBlock(
+                    static_cast<unsigned>(x_from+max-1)/max,
+                    static_cast<unsigned>(y_from+max-1)/max,
+                    static_cast<unsigned>(z_from+max-1)/max )->Transparent()) )
         {
-               return false;
+                return false;
         }
     }
     return true;

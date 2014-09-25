@@ -215,8 +215,8 @@ bool IsLikeAir(int sub);
 /// For positive numbers only.
 inline int Round(const float x) { return int(x + 0.5f); }
 
-inline int Abs(const int x) {
-    const int mask = x >> (sizeof(int)*8 - 1);
+inline unsigned Abs(const int x) {
+    const unsigned mask = x >> (sizeof(unsigned)*8 - 1);
     return (x ^ mask) - mask;
 }
 
