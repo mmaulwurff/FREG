@@ -150,7 +150,7 @@ char Screen::CharNumberFront(const int i, const int j) const {
 }
 
 int  Screen::RandomBlink() const { return RandomBit() ? 0 : A_REVERSE; }
-bool Screen::RandomBit()   const { return (randomBlink >>= 1) & blinkOn; }
+bool Screen::RandomBit()   const { return (randomBlink >>= 1) & 1; }
 
 int Screen::Color(const int kind, const int sub) const {
     const int color = COLOR_PAIR(VirtScreen::Color(kind, sub));
@@ -348,6 +348,11 @@ void Screen::ProcessCommand(const QString command) {
         return;
     }
     switch ( Player::UniqueIntFromString(qPrintable(command)) ) {
+    case Player::UniqueIntFromString("blink"):
+        blinkOn = not blinkOn;
+        Notify(tr("Block blink is now %1.").
+            arg(blinkOn ? tr("on") : tr("off")));
+        break;
     case Player::UniqueIntFromString("size"):
         Notify(tr("Terminal height: %1 lines, width: %2 chars.").
             arg(LINES).arg(COLS));
@@ -571,7 +576,7 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
         ( SHRED_WIDTH-SCREEN_SIZE )/2;
     for (int j=start_y; j<SCREEN_SIZE+start_y; ++j, waddstr(window, "\n_"))
     for (int i=start_x; i<SCREEN_SIZE+start_x; ++i ) {
-        randomBlink = qrand();
+        randomBlink = blinkOn ? qrand() : 0;
         Shred * const shred = w->GetShred(i, j);
         const int i_in = Shred::CoordInShred(i);
         const int j_in = Shred::CoordInShred(j);

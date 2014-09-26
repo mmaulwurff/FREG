@@ -143,7 +143,7 @@ BlockManager::~BlockManager() {
 Block * BlockManager::Normal(const int sub) const { return normals[sub]; }
 
 Block * BlockManager::NewBlock(const int kind, const int sub) {
-    qDebug("kind: %d, sub: %d, valid: %d", kind, sub, IsValid(kind, sub));
+    //qDebug("kind: %d, sub: %d, valid: %d", kind, sub, IsValid(kind, sub));
     switch ( static_cast<enum kinds>(kind) ) {
     case BLOCK:     return new Block (kind, sub);
     case BELL:      return new Bell  (kind, sub);
@@ -188,7 +188,7 @@ Block * BlockManager::NewBlock(const int kind, const int sub) {
 Block * BlockManager::BlockFromFile(QDataStream & str,
         const int kind, const int sub)
 {
-    qDebug("kind: %d, sub: %d, valid: %d", kind, sub, IsValid(kind, sub));
+    //qDebug("kind: %d, sub: %d, valid: %d", kind, sub, IsValid(kind, sub));
     switch ( static_cast<enum kinds>(kind) ) {
     case BLOCK:     return new Block (str, kind, sub);
     case BELL:      return new Bell  (str, kind, sub);

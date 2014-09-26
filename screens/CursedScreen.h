@@ -134,7 +134,7 @@ private:
     QFile * fileToShow;
     const bool beepOn, flashOn;
     const bool ascii;
-    const bool blinkOn;
+    bool blinkOn;
     const QChar arrows[WEST+1];
     SCREEN * const screen;
     mutable bool inputActive = false;
