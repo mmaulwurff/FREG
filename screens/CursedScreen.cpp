@@ -232,6 +232,7 @@ int Screen::GetChar() const { return getch(); }
 void Screen::FlushInput() const { flushinp(); }
 
 void Screen::ControlPlayer(const int ch) {
+    if ( player->GetBlock() == nullptr ) return;
     CleanFileToShow();
     /// \todo: ctrl-z (to background) support
     // Q, ctrl-c, ctrl-d, ctrl-q, ctrl-x

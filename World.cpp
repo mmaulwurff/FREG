@@ -321,7 +321,6 @@ void World::PhysEvents() {
     ReloadShreds();
     Unlock();
     emit UpdatesEnded();
-    // emit ExitReceived(); // close all after 1 turn
 }
 
 bool World::DirectlyVisible(
@@ -686,11 +685,11 @@ World::World(const QString world_name, bool * error) :
     numShreds=game_settings.value("number_of_shreds", MIN_WORLD_SIZE).toInt();
     if ( 1 != numShreds%2 ) {
         ++numShreds;
-        fprintf(stderr, "%s: Invalid number of shreds. Set to %d.\n",
+        qDebug("%s: Invalid number of shreds. Set to %d.",
             Q_FUNC_INFO, numShreds);
     }
     if ( numShreds < MIN_WORLD_SIZE ) {
-        fprintf(stderr, "%s: Number of shreds to small: %d. Set to %d.\n",
+        qDebug("%s: Number of shreds to small: %d. Set to %d.",
             Q_FUNC_INFO, numShreds, MIN_WORLD_SIZE);
         numShreds = MIN_WORLD_SIZE;
     }

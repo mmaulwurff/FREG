@@ -346,7 +346,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
     void Converter::InitDamageKinds() {
         switch ( Sub() ) {
         default:
-            fprintf(stderr, "%s: sub ?: %d.\n", Q_FUNC_INFO, Sub());
+            qDebug("%s: sub ?: %d.", Q_FUNC_INFO, Sub());
             // no break;
         case STONE:
             damageKindOn  = DAMAGE_HEAT;

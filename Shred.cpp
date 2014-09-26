@@ -45,8 +45,7 @@ bool Shred::LoadShred() {
     quint8 read;
     in >>  read;
     if ( Q_UNLIKELY(CURRENT_SHRED_FORMAT_VERSION != read) ) {
-        fprintf(stderr,
-            "%s: Shred format: %d (must be %d). Generating new shred.\n",
+        qDebug("%s: Shred format: %d (must be %d). Generating new shred.",
             Q_FUNC_INFO, read, CURRENT_SHRED_FORMAT_VERSION);
         return false;
     } // else:
