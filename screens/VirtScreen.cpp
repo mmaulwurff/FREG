@@ -193,3 +193,13 @@ char VirtScreen::CharName(const int kind, const int sub) {
     }
     Q_UNREACHABLE();
 } // char VirtScreen::CharName(int kind, int sub)
+
+// Define pure virtual functions to simplify debugging
+void VirtScreen::Update(int, int, int) { Q_UNREACHABLE(); }
+void VirtScreen::UpdateAll() { Q_UNREACHABLE(); }
+void VirtScreen::Move(int) { Q_UNREACHABLE(); }
+void VirtScreen::UpdatePlayer() { Q_UNREACHABLE(); }
+void VirtScreen::UpdateAround(int, int, int, int) { Q_UNREACHABLE(); }
+void VirtScreen::Print() { Q_UNREACHABLE(); }
+void VirtScreen::Notify(QString) const { Q_UNREACHABLE(); }
+void VirtScreen::PassString(QString &) const { Q_UNREACHABLE(); }
