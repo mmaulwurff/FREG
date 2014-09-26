@@ -36,6 +36,8 @@ var searchData=
   ['getsubgroup',['GetSubGroup',['../classBlock.html#aa3975c29f16c1a87bedd4ca28c28936d',1,'Block']]],
   ['gettypeofshred',['GetTypeOfShred',['../classShred.html#a5f4003a26091ebf5f02ca16dba32a5b6',1,'Shred']]],
   ['getusingininventory',['GetUsingInInventory',['../classPlayer.html#a6b12100aa3480572813c5116158a52b1',1,'Player']]],
+  ['getweather',['GetWeather',['../classWeather.html#a263d76270c0974da3bf706df3fcee29f',1,'Weather']]],
+  ['getweatherstring',['GetWeatherString',['../classWeather.html#a21eef2bed7c93881fdb596a942ca444b',1,'Weather']]],
   ['getworld',['GetWorld',['../classActive.html#aaa8a15599e6ee605105dfc3b2ea13a29',1,'Active::GetWorld()'],['../classPlayer.html#a0a734ee4f6c2d664d60363c3b1b9f2d9',1,'Player::GetWorld()'],['../classVirtScreen.html#ad956ae35701caa43ca075f155d3ee41d',1,'VirtScreen::GetWorld()'],['../classShred.html#ae2e311d65d9322895a3715471b237aee',1,'Shred::GetWorld()']]],
   ['ghostmove',['GhostMove',['../classDeferredAction.html#a026a9e7a381470aa8602587d4645276d',1,'DeferredAction']]],
   ['globalx',['GlobalX',['../classPlayer.html#a8f543ad1b7e3227ca670ac9aade7c66b',1,'Player::GlobalX()'],['../classShred.html#a5647e65d64eb1b454bde08e6ccf912a1',1,'Shred::GlobalX()']]],

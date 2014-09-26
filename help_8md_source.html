@@ -92,34 +92,35 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;</div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;Key | <span class="keyword">function</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;--- | --------</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="charliteral">&#39;Q&#39;</span>               | quit game</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="charliteral">&#39;H&#39;</span>               | <span class="keyword">this</span> help</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;arrows, NumPad    | turn and move in four directions</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="charliteral">&#39;=&#39;</span>               | move to your current direction</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;End               | move down</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="charliteral">&#39;&gt;&#39;</span>, <span class="charliteral">&#39;&lt;&#39;</span>          | turn right and left</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;space             | jump</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;Page Up           | look up</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;Page Down         | loo down</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;Home, <span class="charliteral">&#39;I&#39;</span>         | inventory</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;Backspace, Delete | hit</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;Enter, <span class="charliteral">&#39;E&#39;</span>        | use</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;Esc               | stop <span class="keyword">using</span> everything</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="charliteral">&#39;?&#39;</span>               | examine</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="charliteral">&#39;~&#39;</span>               | inscribe</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="charliteral">&#39;!&#39;</span>               | enter/leave creative mode</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="charliteral">&#39;:&#39;</span>, <span class="charliteral">&#39;/&#39;</span>          | enter command mode (leave with enter)</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="charliteral">&#39;.&#39;</span>               | repeat last command</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="charliteral">&#39;L&#39;</span>, <span class="charliteral">&#39;R&#39;</span>          | redraw screen</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="charliteral">&#39;-&#39;</span>, <span class="charliteral">&#39;+&#39;</span>          | shift focus down and up</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="charliteral">&#39;S&#39;</span>               | shake inventory</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="charliteral">&#39;a&#39;</span>-<span class="charliteral">&#39;z&#39;</span> | make inventory action with <span class="keyword">this</span> inventory slot</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;-------------------------------------------------------------</div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;Q, X, F10             | quit game</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;H, F1                 | <span class="keyword">this</span> help</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;arrows, NumPad, WASD  | turn and move</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;{, }                  | move to the left and right</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;=, 0                  | move to your current direction</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;End                   | move down</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;&gt;, &lt;                  | turn right and left</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;space                 | jump</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;Page Up, ^            | look up</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;Page Down, V          | look down</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;Home, I               | inventory</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;Backspace, Delete, F8 | hit</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;Enter, F, F2          | use</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;Esc                   | stop <span class="keyword">using</span> everything</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;?, *, F3              | examine</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;~, F4                 | inscribe</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;!, F12                | enter/leave creative mode</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;:, /, F9              | enter command mode (leave with enter)</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;.                     | repeat last command</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;L, R, F5              | redraw screen</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;-, +                  | shift focus down and up</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;Z                     | shake inventory</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;a-z | make inventory action with <span class="keyword">this</span> inventory slot</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;-------------------------------------------------------------</div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Sep 18 2014 00:12:07 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Sep 26 2014 08:55:06 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

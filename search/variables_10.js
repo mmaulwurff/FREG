@@ -6,6 +6,7 @@ var searchData=
   ['screen',['screen',['../classScreen.html#ae76c71361b28f1f0d523d555a1d17a56',1,'Screen::screen()'],['../classIThread.html#aa5e5ac391a2e48e78e17142d5ab50115',1,'IThread::screen()']]],
   ['screen_5fsize',['SCREEN_SIZE',['../CursedScreen_8h.html#a62bead7f96452cb837e1dba3d0678faa',1,'CursedScreen.h']]],
   ['settings',['settings',['../classPlayer.html#a38ffb7570f784a1e05ee41b1958a44ca',1,'Player::settings()'],['../classVirtScreen.html#a3eb2e530bbfa1f718323ec1e3502b974',1,'VirtScreen::settings()'],['../classWorld.html#ad448cf4bc4a35b179911432b237be1af',1,'World::settings()']]],
+  ['shadow_5fcolor',['SHADOW_COLOR',['../CursedScreen_8cpp.html#af8d190e2a8b467b6a9fceeeb2872d511',1,'CursedScreen.cpp']]],
   ['sharedmessage',['sharedMessage',['../classTelegraph.html#a46eb79d7d33c8e4fdcb60220de206b26',1,'Telegraph']]],
   ['shifted',['shifted',['../classDoor.html#a251b34b8556db83a0f0fa327cc3b3134',1,'Door']]],
   ['shiftfocus',['shiftFocus',['../classScreen.html#ab1e597b76b808a3a3474ef8717fbd81d',1,'Screen']]],

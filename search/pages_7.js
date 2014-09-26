@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['warranty',['warranty',['../md_help_en_warranty.html',1,'']]]
+  ['visuals',['visuals',['../md_help_en_visuals.html',1,'']]]
 ];

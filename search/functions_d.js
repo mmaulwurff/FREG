@@ -7,7 +7,7 @@ var searchData=
   ['normal',['Normal',['../classBlockManager.html#aa054aaa9b802f8b11929b0efb889a2ec',1,'BlockManager::Normal()'],['../classShred.html#a47b6929437dc550cf68c7119c88eec5f',1,'Shred::Normal()']]],
   ['normalcube',['NormalCube',['../classShred.html#a98d468623b0f63c3d94f1ad0911901b2',1,'Shred']]],
   ['normalunderground',['NormalUnderground',['../classShred.html#acf4850f058571121209ac9b3d8efba13',1,'Shred']]],
-  ['notify',['Notify',['../classPlayer.html#a14a49f4159a8574ec7e205446b2624dc',1,'Player::Notify()'],['../classScreen.html#ab51e9de6d6fbd176e259a3107c4459b0',1,'Screen::Notify()'],['../classVirtScreen.html#ae5658982ce13c9731eb71d06cc472599',1,'VirtScreen::Notify()'],['../classWorld.html#acbf3aa2fc9b76be33b133ecea70c6fc0',1,'World::Notify()']]],
+  ['notify',['Notify',['../classPlayer.html#a14a49f4159a8574ec7e205446b2624dc',1,'Player::Notify()'],['../classScreen.html#ab51e9de6d6fbd176e259a3107c4459b0',1,'Screen::Notify()'],['../classVirtScreen.html#ae7b6ff0ca11d18d9553f3760e41c7db3',1,'VirtScreen::Notify()'],['../classWorld.html#acbf3aa2fc9b76be33b133ecea70c6fc0',1,'World::Notify()']]],
   ['nullmountain',['NullMountain',['../classShred.html#ae3c0aecff058b1ed9efb79f546a5af97',1,'Shred']]],
   ['number',['Number',['../classInventory.html#afcc106682a5c1bb7c6818332dc60a420',1,'Inventory']]],
   ['numshreds',['NumShreds',['../classWorld.html#af6ea24b43dd472bacaee43d61f534a5c',1,'World']]],

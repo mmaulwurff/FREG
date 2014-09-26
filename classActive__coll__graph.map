@@ -1,6 +1,7 @@
 <map id="Active" name="Active">
-<area shape="rect" id="node3" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="119,5,173,32"/>
+<area shape="rect" id="node3" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="97,5,152,32"/>
 <area shape="rect" id="node6" href="$classShred.html" title="Shred" alt="" coords="151,95,207,121"/>
-<area shape="rect" id="node4" href="$classXyz.html" title="Xyz" alt="" coords="231,95,277,121"/>
-<area shape="rect" id="node5" href="$classXy.html" title="Xy" alt="" coords="235,5,273,32"/>
+<area shape="rect" id="node4" href="$classXyz.html" title="Xyz" alt="" coords="254,95,299,121"/>
+<area shape="rect" id="node5" href="$classXy.html" title="Xy" alt="" coords="280,5,319,32"/>
+<area shape="rect" id="node7" href="$classWeather.html" title="Weather" alt="" coords="185,5,256,32"/>
 </map>

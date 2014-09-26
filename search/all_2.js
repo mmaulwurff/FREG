@@ -11,6 +11,7 @@ var searchData=
   ['black_5fred',['BLACK_RED',['../VirtScreen_8h.html#a92b9b42632766b6a6f2173546ce16072ad4d53b59914a536f06a87a7a8a694231',1,'VirtScreen.h']]],
   ['black_5fwhite',['BLACK_WHITE',['../VirtScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a2879550cb7b282e89baaddb83f921d73',1,'VirtScreen.h']]],
   ['black_5fyellow',['BLACK_YELLOW',['../VirtScreen_8h.html#a92b9b42632766b6a6f2173546ce16072a69c6d074dde26482b93bc29242d2044c',1,'VirtScreen.h']]],
+  ['blinkon',['blinkOn',['../classScreen.html#a097d783889185b9de9746a9fa70d72d5',1,'Screen']]],
   ['block',['Block',['../classBlock.html',1,'Block'],['../classBlock.html#a025d5d632ec8bf5a4d6e66de5aadc651',1,'Block::Block(int sub, int kind, int transp=UNDEF)'],['../classBlock.html#af1f3b863cd81d5114a18962a0148206c',1,'Block::Block(QDataStream &amp;, int sub, int kind, int transp=UNDEF)'],['../classBlock.html#a3ccf329b6b4974bd367bcf3d94a398c7',1,'Block::Block(Block &amp;)=delete'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a02fc27068fe9a3c151ffcc08ec5bb65d',1,'BLOCK():&#160;header.h']]],
   ['block_2ecpp',['Block.cpp',['../Block_8cpp.html',1,'']]],
   ['block_2eh',['Block.h',['../Block_8h.html',1,'']]],

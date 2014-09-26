@@ -1,19 +1,20 @@
 <map id="BlockManager.cpp" name="BlockManager.cpp">
-<area shape="rect" id="node3" href="$BlockManager_8h.html" title="BlockManager.h" alt="" coords="1172,229,1288,256"/>
-<area shape="rect" id="node7" href="$blocks_8h.html" title="blocks/blocks.h" alt="" coords="328,80,441,107"/>
-<area shape="rect" id="node15" href="$Dwarf_8h.html" title="blocks/Dwarf.h" alt="" coords="465,80,576,107"/>
-<area shape="rect" id="node16" href="$Bucket_8h.html" title="blocks/Bucket.h" alt="" coords="184,155,300,181"/>
-<area shape="rect" id="node17" href="$Weapons_8h.html" title="blocks/Weapons.h" alt="" coords="727,155,858,181"/>
-<area shape="rect" id="node18" href="$Illuminator_8h.html" title="blocks/Illuminator.h" alt="" coords="883,155,1017,181"/>
-<area shape="rect" id="node19" href="$Containers_8h.html" title="blocks/Containers.h" alt="" coords="565,155,703,181"/>
-<area shape="rect" id="node20" href="$RainMachine_8h.html" title="blocks/RainMachine.h" alt="" coords="1041,155,1192,181"/>
-<area shape="rect" id="node23" href="$Armour_8h.html" title="blocks/Armour.h" alt="" coords="113,229,230,256"/>
-<area shape="rect" id="node24" href="$Filter_8h.html" title="blocks/Filter.h" alt="" coords="651,80,755,107"/>
-<area shape="rect" id="node4" href="$header_8h.html" title="header.h" alt="" coords="1110,379,1182,405"/>
-<area shape="rect" id="node8" href="$Inventory_8h.html" title="Provides declaration for class Inventory for freg. " alt="" coords="484,229,571,256"/>
-<area shape="rect" id="node10" href="$Animal_8h.html" title="blocks/Animal.h" alt="" coords="375,155,490,181"/>
-<area shape="rect" id="node11" href="$Active_8h.html" title="blocks/Active.h" alt="" coords="695,229,807,256"/>
-<area shape="rect" id="node13" href="$Block_8h.html" title="Provides definition for class Block. " alt="" coords="355,304,422,331"/>
-<area shape="rect" id="node14" href="$Xyz_8h.html" title="Xyz.h" alt="" coords="767,304,823,331"/>
-<area shape="rect" id="node21" href="$Shred_8h.html" title="Shred.h" alt="" coords="1081,229,1147,256"/>
+<area shape="rect" id="node3" href="$BlockManager_8h.html" title="BlockManager.h" alt="" coords="1117,229,1233,256"/>
+<area shape="rect" id="node7" href="$blocks_8h.html" title="blocks/blocks.h" alt="" coords="498,80,611,107"/>
+<area shape="rect" id="node15" href="$Dwarf_8h.html" title="blocks/Dwarf.h" alt="" coords="635,80,746,107"/>
+<area shape="rect" id="node16" href="$Bucket_8h.html" title="blocks/Bucket.h" alt="" coords="898,155,1014,181"/>
+<area shape="rect" id="node17" href="$Weapons_8h.html" title="blocks/Weapons.h" alt="" coords="5,155,136,181"/>
+<area shape="rect" id="node18" href="$Illuminator_8h.html" title="blocks/Illuminator.h" alt="" coords="161,155,295,181"/>
+<area shape="rect" id="node19" href="$Containers_8h.html" title="blocks/Containers.h" alt="" coords="320,155,459,181"/>
+<area shape="rect" id="node20" href="$RainMachine_8h.html" title="blocks/RainMachine.h" alt="" coords="723,155,874,181"/>
+<area shape="rect" id="node25" href="$Armour_8h.html" title="blocks/Armour.h" alt="" coords="975,229,1092,256"/>
+<area shape="rect" id="node26" href="$Filter_8h.html" title="blocks/Filter.h" alt="" coords="369,80,473,107"/>
+<area shape="rect" id="node4" href="$header_8h.html" title="header.h" alt="" coords="972,379,1044,405"/>
+<area shape="rect" id="node8" href="$Inventory_8h.html" title="Provides declaration for class Inventory for freg. " alt="" coords="634,229,721,256"/>
+<area shape="rect" id="node10" href="$Animal_8h.html" title="blocks/Animal.h" alt="" coords="533,155,648,181"/>
+<area shape="rect" id="node11" href="$Active_8h.html" title="blocks/Active.h" alt="" coords="396,229,508,256"/>
+<area shape="rect" id="node13" href="$Block_8h.html" title="Provides definition for class Block. " alt="" coords="975,304,1041,331"/>
+<area shape="rect" id="node14" href="$Xyz_8h.html" title="Xyz.h" alt="" coords="468,304,524,331"/>
+<area shape="rect" id="node21" href="$Shred_8h.html" title="Shred.h" alt="" coords="773,229,840,256"/>
+<area shape="rect" id="node23" href="$Weather_8h.html" title="Weather.h" alt="" coords="703,304,785,331"/>
 </map>

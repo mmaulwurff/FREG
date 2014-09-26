@@ -1,3 +1,4 @@
 <map id="Shred" name="Shred">
-<area shape="rect" id="node2" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="6,5,61,32"/>
+<area shape="rect" id="node2" href="$classWeather.html" title="Weather" alt="" coords="5,5,76,32"/>
+<area shape="rect" id="node3" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="100,5,155,32"/>
 </map>

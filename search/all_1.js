@@ -1,11 +1,11 @@
 var searchData=
 [
   ['a_5fmeat',['A_MEAT',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a8c8b29db7ece3eff1fc9218b59d6dc31',1,'header.h']]],
-  ['abs',['Abs',['../header_8h.html#a3e1cd3a3f00a9b6bf8cf933cf5efb935',1,'header.h']]],
+  ['abs',['Abs',['../header_8h.html#a01a8611cdb0cfde808caa2a5d4d70fe0',1,'header.h']]],
   ['access',['Access',['../classDwarf.html#aa1f8a47b08a8608886726bdbed14504f',1,'Dwarf::Access()'],['../classInventory.html#aa1c67d1a4c1cac38cc68313634143563',1,'Inventory::Access()']]],
   ['acid',['ACID',['../header_8h.html#afd79b1cc0d9d0e4bc4b0d92c18afe706a9115260fa6c16f6f5aa5e77ec4d327f7',1,'header.h']]],
   ['actfrequent',['ActFrequent',['../classActive.html#aebbfa0341ef4b0839448641f50f313b9',1,'Active::ActFrequent()'],['../classAnimal.html#a07e196b82ec227f91be7c1d5b905c612',1,'Animal::ActFrequent()'],['../classPredator.html#a47df1538782f75e80c0fec603f597e0e',1,'Predator::ActFrequent()'],['../classRabbit.html#a3ab055aec680217b83f7cf8ac9db9fff',1,'Rabbit::ActFrequent()'],['../classDoor.html#a08f8fdf26959bc174df2339be9fca06e',1,'Door::ActFrequent()']]],
-  ['actinner',['ActInner',['../classActive.html#a2367487664fc72c67c5a8331ecb32e63',1,'Active::ActInner()'],['../classAnimal.html#aae7d136a00b50726bdae0bc6aef483e0',1,'Animal::ActInner()'],['../classLiquid.html#aa59400fec7bd1ae9d5387e586521ee9e',1,'Liquid::ActInner()'],['../classGrass.html#a46d089dafc894930e97a44abeef4df53',1,'Grass::ActInner()'],['../classBush.html#a7506ac3cc73690d87510e3bce0d70dee',1,'Bush::ActInner()'],['../classClock.html#ab72ad13424cfc8361fa3127b7122283b',1,'Clock::ActInner()'],['../classTelegraph.html#a6beb4abcdd032d8595ed4b8cabf2414b',1,'Telegraph::ActInner()'],['../classContainer.html#a68fd285b454eb14352e2c6dd82e8bc5c',1,'Container::ActInner()'],['../classBox.html#adedc808115c7fafb2722e9128424404b',1,'Box::ActInner()'],['../classIlluminator.html#a639518171e952494400985d7c86d5bc0',1,'Illuminator::ActInner()']]],
+  ['actinner',['ActInner',['../classActive.html#a2367487664fc72c67c5a8331ecb32e63',1,'Active::ActInner()'],['../classAnimal.html#aae7d136a00b50726bdae0bc6aef483e0',1,'Animal::ActInner()'],['../classLiquid.html#aa59400fec7bd1ae9d5387e586521ee9e',1,'Liquid::ActInner()'],['../classGrass.html#a46d089dafc894930e97a44abeef4df53',1,'Grass::ActInner()'],['../classBush.html#a7506ac3cc73690d87510e3bce0d70dee',1,'Bush::ActInner()'],['../classClock.html#ab72ad13424cfc8361fa3127b7122283b',1,'Clock::ActInner()'],['../classTelegraph.html#a6beb4abcdd032d8595ed4b8cabf2414b',1,'Telegraph::ActInner()'],['../classContainer.html#a68fd285b454eb14352e2c6dd82e8bc5c',1,'Container::ActInner()'],['../classBox.html#adedc808115c7fafb2722e9128424404b',1,'Box::ActInner()'],['../classIlluminator.html#a639518171e952494400985d7c86d5bc0',1,'Illuminator::ActInner()'],['../classRainMachine.html#aeb2bcdf13721e6e65a30be963ba31e91',1,'RainMachine::ActInner()']]],
   ['action_5fbuild',['ACTION_BUILD',['../CursedScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a5d97b2a463c30e1033322e898c796d9a',1,'CursedScreen.h']]],
   ['action_5fcraft',['ACTION_CRAFT',['../CursedScreen_8h.html#af806efc6052edbc741683ec893bb2fe1a099861b259d988ce46b10ff4410229a9',1,'CursedScreen.h']]],
   ['action_5finscribe',['ACTION_INSCRIBE',['../CursedScreen_8h.html#af806efc6052edbc741683ec893bb2fe1ad9b1f52840791a48e010d5ac98b129e2',1,'CursedScreen.h']]],
@@ -43,7 +43,7 @@ var searchData=
   ['armour',['Armour',['../classArmour.html',1,'Armour'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285ae4915fac45f39bac2931876b337f41e3',1,'ARMOUR():&#160;header.h']]],
   ['armour_2ecpp',['Armour.cpp',['../Armour_8cpp.html',1,'']]],
   ['armour_2eh',['Armour.h',['../Armour_8h.html',1,'']]],
-  ['arrows',['Arrows',['../classScreen.html#ac422e2da53e0ce1ad2d30e11de0819d7',1,'Screen::Arrows(WINDOW *, int x, int y, bool show_dir) const '],['../classScreen.html#a236a72e36623d0387720620a4bd174ad',1,'Screen::arrows()']]],
+  ['arrows',['arrows',['../classScreen.html#a236a72e36623d0387720620a4bd174ad',1,'Screen::arrows()'],['../classScreen.html#a14f74ec68a3eeb4eade09796a3ed9776',1,'Screen::Arrows(WINDOW *, int x, int y, dirs) const ']]],
   ['ascii',['ascii',['../classScreen.html#a691e71ac753e2def7162049347744944',1,'Screen']]],
   ['at',['at',['../classCraftList.html#a1445f0370462d1e17f49c9219480487d',1,'CraftList']]],
   ['attachedblock',['attachedBlock',['../classDeferredAction.html#a43a99d5edb5d001ded13bfe813c02bea',1,'DeferredAction']]],

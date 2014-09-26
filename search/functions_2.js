@@ -16,7 +16,7 @@ var searchData=
   ['cleanfiletoshow',['CleanFileToShow',['../classScreen.html#a0e6ec3582fdd7b2f35618369a2088bfb',1,'Screen']]],
   ['clear',['clear',['../classCraftList.html#a255987eb2628d92e29d6865c59edc61d',1,'CraftList']]],
   ['clock',['Clock',['../classClock.html#a768e1d56df49ed930361fb3b0094843b',1,'Clock::Clock(int sub, int id)'],['../classClock.html#a8c3821011eea3dc34338ce06cbc79d08',1,'Clock::Clock(QDataStream &amp;str, int sub, int id)']]],
-  ['color',['Color',['../classScreen.html#ad760c09c7bb873e86319d14c0f63f684',1,'Screen']]],
+  ['color',['Color',['../classScreen.html#ad760c09c7bb873e86319d14c0f63f684',1,'Screen::Color()'],['../classVirtScreen.html#acc657a123189341b95140dadbe7e19fe',1,'VirtScreen::Color()']]],
   ['colorshred',['ColorShred',['../classScreen.html#a16678966b859d1846831c9fc756af4c5',1,'Screen']]],
   ['container',['Container',['../classContainer.html#a03017d99bf69d0a63a1fe5fb4d68915c',1,'Container::Container(int kind, int sub, int size=INV_SIZE)'],['../classContainer.html#a8641d7e37eb0bc35b35d1a9b11f070e8',1,'Container::Container(QDataStream &amp;str, int kind, int sub, int size=INV_SIZE)']]],
   ['controlplayer',['ControlPlayer',['../classScreen.html#a793f77cb399ee400f734a9ad29be03cb',1,'Screen::ControlPlayer()'],['../classVirtScreen.html#aa8c0cccd74d52f7df3626eb32890cca1',1,'VirtScreen::ControlPlayer()']]],

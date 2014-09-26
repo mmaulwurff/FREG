@@ -1,9 +1,10 @@
 <map id="DeferredAction" name="DeferredAction">
 <area shape="rect" id="node5" href="$classAnimal.html" title="Animal" alt="" coords="96,361,159,388"/>
-<area shape="rect" id="node2" href="$classXyz.html" title="Xyz" alt="" coords="31,95,77,121"/>
+<area shape="rect" id="node2" href="$classXyz.html" title="Xyz" alt="" coords="30,95,75,121"/>
 <area shape="rect" id="node7" href="$classActive.html" title="Active" alt="" coords="242,184,301,211"/>
-<area shape="rect" id="node3" href="$classXy.html" title="Xy" alt="" coords="35,5,73,32"/>
-<area shape="rect" id="node4" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="200,5,255,32"/>
-<area shape="rect" id="node9" href="$classShred.html" title="Shred" alt="" coords="199,95,255,121"/>
+<area shape="rect" id="node3" href="$classXy.html" title="Xy" alt="" coords="33,5,72,32"/>
+<area shape="rect" id="node4" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="280,5,335,32"/>
+<area shape="rect" id="node9" href="$classShred.html" title="Shred" alt="" coords="345,95,401,121"/>
 <area shape="rect" id="node6" href="$classFalling.html" title="Falling" alt="" coords="241,285,301,312"/>
+<area shape="rect" id="node10" href="$classWeather.html" title="Weather" alt="" coords="379,5,449,32"/>
 </map>
