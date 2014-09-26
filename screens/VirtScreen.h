@@ -125,6 +125,9 @@ public:
     virtual void FlushInput() const;
     virtual void ControlPlayer(int command);
 
+    static char CharName(int kind, int sub);
+    static int  Color   (int kind, int sub);
+
 signals:
     /// This is emitted when input receives exit key.
     /** This is connected to application exit. */
@@ -187,7 +190,6 @@ private slots:
 
 protected:
     World * GetWorld() const;
-    static char CharName(int kind, int sub);
 
     World  * const w;
     Player * const player;

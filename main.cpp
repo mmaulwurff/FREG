@@ -56,7 +56,7 @@ int main(int argc, char ** argv) {
         puts(qPrintable( QObject::tr("Error creating game home directory") ));
         return EXIT_FAILURE;
     }
-    if ( freopen(qPrintable(home_path + "err.txt"), "at", stderr)==nullptr ) {
+    if (freopen(qPrintable(home_path + "err.txt"), "wt", stderr) == nullptr) {
         puts(qPrintable( QObject::tr(
             "Error opening errors.txt, writing errors to standard out.") ));
     }
@@ -147,11 +147,10 @@ int main(int argc, char ** argv) {
 
     if ( error ) return EXIT_FAILURE;
 
-    QObject::connect(&player, SIGNAL(Destroyed()),
-        &screen, SLOT(DeathScreen()));
-
-    QObject::connect(&screen, SIGNAL(ExitReceived()), &freg, SLOT(quit()));
-    QObject::connect(&world,  SIGNAL(ExitReceived()), &freg, SLOT(quit()));
+    QObject::connect(&screen, SIGNAL(ExitReceived()), &freg, SLOT(quit()),
+        Qt::DirectConnection);
+    QObject::connect(&world,  SIGNAL(ExitReceived()), &freg, SLOT(quit()),
+        Qt::DirectConnection);
 
     world.start();
     return freg.exec();

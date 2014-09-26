@@ -30,15 +30,15 @@ int  Active::ShouldAct() const { return FREQUENT_NEVER; }
 inner_actions Active::ActInner() { return INNER_ACTION_ONLY; }
 
 void Active::ActFrequent() {
-    fprintf(stderr, "Active::ActFrequent called, check ShouldAct\
- return value or add ActFrequent implementation.\nKind: %d, sub: %d.\n",
+    qDebug("Active::ActFrequent called, check ShouldAct\
+ return value or add ActFrequent implementation.\nKind: %d, sub: %d.",
         Kind(), Sub());
     Q_UNREACHABLE();
 }
 
 void Active::DoRareAction() {
-    fprintf(stderr, "Active::DoRareAction called, check ShouldAct and ActInner\
- return values or add DoRareAction implementation.\nKind: %d, sub: %d.\n",
+    qDebug("Active::DoRareAction called, check ShouldAct and ActInner\
+ return values or add DoRareAction implementation.\nKind: %d, sub: %d.",
         Kind(), Sub());
     Q_UNREACHABLE();
 }

@@ -26,12 +26,9 @@
 #include "Shred.h"
 #include "BlockManager.h"
 #include "DeferredAction.h"
+#include "Weather.h"
 
-#ifdef QT_NO_DEBUG
-const bool COMMANDS_ALWAYS_ON = false;
-#else
-const bool COMMANDS_ALWAYS_ON = true;
-#endif
+const bool COMMANDS_ALWAYS_ON = DEBUG;
 
 //const subs PLAYER_SUB = ADAMANTINE;
 const subs PLAYER_SUB = H_MEAT;
@@ -314,6 +311,9 @@ void Player::ProcessCommand(QString command) {
     const QMutexLocker locker(world->GetLock());
     switch ( UniqueIntFromString(request.constData()) ) {
     case UniqueIntFromString(""): break;
+    case UniqueIntFromString("weather"):
+        emit Notify(Weather::GetWeatherString(GetShred()->GetWeather()));
+        break;
     case UniqueIntFromString("give"):
     case UniqueIntFromString("get" ): {
         if ( ForbiddenAdminCommands() ) return;
@@ -508,7 +508,6 @@ Player::Player() :
 }
 
 Player::~Player() {
-    delete creator;
     settings.setValue("home_longitude", qlonglong(homeLongi));
     settings.setValue("home_latitude", qlonglong(homeLati));
     const int min = world->NumShreds()/2*SHRED_WIDTH;
@@ -521,4 +520,5 @@ Player::~Player() {
     settings.setValue("creative_mode", GetCreativeMode());
     settings.setValue("using_type", usingType);
     settings.setValue("using_self_type", usingSelfType);
+    delete creator;
 }

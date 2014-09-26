@@ -263,3 +263,16 @@ Inventory::~Inventory() {
     }
     delete [] inventory;
 }
+
+// Define pure virtual functions to simplify debugging
+void Inventory::ReceiveSignal(QString) { Q_UNREACHABLE(); }
+
+QString Inventory::FullName() const {
+    Q_UNREACHABLE();
+    return QString();
+}
+
+Inventory * Inventory::HasInventory() {
+    Q_UNREACHABLE();
+    return nullptr;
+}

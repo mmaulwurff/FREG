@@ -32,34 +32,58 @@
 
 const char OBSCURE_BLOCK = ' ';
 const int QUICK_INVENTORY_X_SHIFT = 36;
+const int SHADOW_COLOR = COLOR_PAIR(BLACK_BLACK) | A_BOLD | A_REVERSE;
+
+void Screen::PrintVerticalDirection(WINDOW * const window, const int y,
+        const int x, const dirs direction)
+{
+    mvwaddstr(window, y, x + 3, qPrintable(Block::DirString(direction)));
+}
 
 void Screen::Arrows(WINDOW * const window, const int x, const int y,
-        const bool show_dir)
+        const dirs direction)
 const {
-    if ( show_dir ) {
-        wcolor_set(window, WHITE_BLACK, nullptr);
-        mvwaddstr(window, 0, x-2, qPrintable(tr("N    N")));
-        mvwaddstr(window, SCREEN_SIZE+1, x-2, qPrintable(tr("S    S")));
+    wcolor_set(window, WHITE_BLACK, nullptr);
+    if ( direction >= DOWN ) {
+        PrintVerticalDirection(window, 0, x, UP);
+        PrintVerticalDirection(window, SCREEN_SIZE+1, x, DOWN);
+    } else {
+        PrintVerticalDirection(window, 0, x, NORTH);
+        PrintVerticalDirection(window, SCREEN_SIZE+1, x, SOUTH);
     }
     wcolor_set(window, WHITE_RED, nullptr);
     mvwaddstr(window, 0, x, qPrintable(arrows[SOUTH]));
     waddstr  (window,       qPrintable(arrows[SOUTH]));
     mvwaddstr(window, SCREEN_SIZE+1, x, qPrintable(arrows[NORTH]));
     waddstr  (window, qPrintable(arrows[NORTH]));
-    HorizontalArrows(window, y, show_dir);
+    HorizontalArrows(window, y, direction);
     (void)wmove(window, y, x);
 }
 
 void Screen::HorizontalArrows(WINDOW * const window, const int y,
-        const bool show_dir)
+        const dirs direction)
 const {
     wcolor_set(window, WHITE_BLACK, nullptr);
-    if ( show_dir ) {
-        mvwaddstr(window, y-1, 0, qPrintable(tr("W")));
-        mvwaddstr(window, y+1, 0, qPrintable(tr("W")));
-        mvwaddstr(window, y-1, SCREEN_SIZE*2+1, qPrintable(tr("E")));
-        mvwaddstr(window, y+1, SCREEN_SIZE*2+1, qPrintable(tr("E")));
+    const static QString dir_chars[] = {
+        QString(),
+        QString(),
+        Block::DirString(NORTH).left(1),
+        Block::DirString(SOUTH).left(1),
+        Block::DirString(EAST ).left(1),
+        Block::DirString(WEST ).left(1)
+    };
+    QString left, right;
+    switch ( direction ) {
+    case UP:
+    case DOWN:
+    case NORTH: left = dir_chars[WEST];  right = dir_chars[EAST]; break;
+    case SOUTH: left = dir_chars[EAST];  right = dir_chars[WEST]; break;
+    case EAST:  left = dir_chars[NORTH]; right = dir_chars[SOUTH]; break;
+    case WEST:  left = dir_chars[SOUTH]; right = dir_chars[NORTH]; break;
     }
+    mvwaddstr(window, y-1, 0, qPrintable(left));
+    mvwaddstr(window, y-1, SCREEN_SIZE*2+1, qPrintable(right));
+
     wcolor_set(window, WHITE_RED, nullptr);
     mvwaddstr(window, y, 0, qPrintable(arrows[EAST]));
     mvwaddstr(window, y, SCREEN_SIZE*2+1, qPrintable(arrows[WEST]));
@@ -67,13 +91,13 @@ const {
 
 void Screen::RePrint() {
     clear();
-    mvwaddstr(actionWin, 0, 0, qPrintable(tr("Use")));
+    mvwaddstr(actionWin, 0, 0, qPrintable(tr("Use, eat")));
     mvwaddstr(actionWin, 1, 0, qPrintable(tr("Throw")));
     mvwaddstr(actionWin, 2, 0, qPrintable(tr("Obtain")));
     mvwaddstr(actionWin, 3, 0, qPrintable(tr("iNscribe")));
     mvwaddstr(actionWin, 4, 0, qPrintable(tr("Build")));
     mvwaddstr(actionWin, 5, 0, qPrintable(tr("Craft")));
-    mvwaddstr(actionWin, 6, 0, qPrintable(tr("Wield/take oFF")));
+    mvwaddstr(actionWin, 6, 0, qPrintable(tr("Equipment")));
     refresh();
     wrefresh(actionWin);
     updated = false;
@@ -92,8 +116,8 @@ void Screen::UpdateAll() {
 
 void Screen::PassString(QString & str) const {
     inputActive = true;
-    wstandend(notifyWin);
-    waddch(notifyWin, ':');
+    wattrset(notifyWin, A_UNDERLINE);
+    waddstr(notifyWin, qPrintable(tr("Enter command: ")));
     char temp_str[MAX_NOTE_LENGTH + 1];
     echo();
     wgetnstr(notifyWin, temp_str, MAX_NOTE_LENGTH);
@@ -126,46 +150,28 @@ char Screen::CharNumberFront(const int i, const int j) const {
 }
 
 int  Screen::RandomBlink() const { return RandomBit() ? 0 : A_REVERSE; }
-bool Screen::RandomBit()   const { return ( (randomBlink >>= 1) & 1 ); }
+bool Screen::RandomBit()   const { return (randomBlink >>= 1) & 1; }
 
 int Screen::Color(const int kind, const int sub) const {
+    const int color = COLOR_PAIR(VirtScreen::Color(kind, sub));
     switch ( kind ) { // foreground_background
+    case TELEGRAPH: return color | A_BOLD;
     case LIQUID: switch ( sub ) {
-        case WATER:     return COLOR_PAIR( CYAN_BLUE  ) | RandomBlink();
-        case SUB_CLOUD: return COLOR_PAIR(BLACK_WHITE );
-        case ACID:      return COLOR_PAIR(GREEN_GREEN ) |A_BOLD |RandomBlink();
         case H_MEAT:
-        case A_MEAT:    return COLOR_PAIR(BLACK_RED);
-        default:        return COLOR_PAIR(  RED_YELLOW) | RandomBlink();
+        case A_MEAT:
+        case SUB_CLOUD: return color;
+        default:        return color | RandomBlink();
+        case ACID:      return color | RandomBlink() | A_BOLD;
+        case WATER: return RandomBit() ? color : COLOR_PAIR(BLUE_BLUE)|A_BOLD;
         } break;
-    case FALLING: switch ( sub ) {
-        case WATER: return COLOR_PAIR(  CYAN_WHITE);
-        case SAND:  return COLOR_PAIR(YELLOW_WHITE);
-        } // no break;
     default: switch ( sub ) {
-        default:         return COLOR_PAIR(WHITE_BLACK);
-        case STONE:      return COLOR_PAIR(BLACK_WHITE);
-        case GREENERY:   return COLOR_PAIR(BLACK_GREEN);
-        case WOOD:
-        case HAZELNUT:
-        case SOIL:       return COLOR_PAIR(  BLACK_YELLOW);
-        case SAND:       return COLOR_PAIR(  WHITE_YELLOW);
-        case COAL:       return COLOR_PAIR(  BLACK_WHITE );
-        case IRON:       return COLOR_PAIR(  BLACK_BLACK ) | A_BOLD;
-        case A_MEAT:     return COLOR_PAIR(  WHITE_RED   );
-        case H_MEAT:     return COLOR_PAIR(  BLACK_RED   );
-        case WATER:      return COLOR_PAIR(  WHITE_CYAN  );
-        case GLASS:      return COLOR_PAIR(   BLUE_WHITE );
-        case NULLSTONE:  return COLOR_PAIR(MAGENTA_BLACK ) | A_BOLD;
-        case MOSS_STONE: return COLOR_PAIR(  GREEN_WHITE );
-        case ROSE:       return COLOR_PAIR(    RED_GREEN );
-        case CLAY:       return COLOR_PAIR(  WHITE_RED   );
-        case PAPER:      return COLOR_PAIR(MAGENTA_WHITE );
-        case GOLD:       return COLOR_PAIR(  WHITE_YELLOW) | RandomBlink();
-        case BONE:       return COLOR_PAIR(MAGENTA_WHITE );
-        case EXPLOSIVE:  return COLOR_PAIR(  WHITE_RED   );
-        case DIAMOND:    return COLOR_PAIR(   CYAN_WHITE ) | A_BOLD;
-        case ADAMANTINE: return COLOR_PAIR(   CYAN_BLACK );
+        case GOLD:       return color | RandomBlink();
+        case IRON:
+        case NULLSTONE:
+        case DIAMOND:    return color | A_BOLD;
+        case ACID:
+        case SUB_DUST:   return color | A_BOLD  | A_REVERSE;
+        case FIRE:       return color | A_BLINK | RandomBlink();
         case SKY:
         case STAR:
             if ( w->GetEvernight() ) return COLOR_PAIR(BLACK_BLACK);
@@ -175,20 +181,9 @@ int Screen::Color(const int kind, const int sub) const {
             case TIME_MORNING: return COLOR_PAIR(WHITE_BLUE);
             case TIME_NOON:    return COLOR_PAIR( CYAN_CYAN);
             case TIME_EVENING: return COLOR_PAIR(WHITE_CYAN);
-            }
-        case SUB_DUST: return COLOR_PAIR(BLACK_BLACK ) | A_BOLD | A_REVERSE;
-        case FIRE:     return COLOR_PAIR(  RED_YELLOW) |A_BLINK |RandomBlink();
-        case ACID:     return COLOR_PAIR(GREEN_GREEN ) | A_BOLD | A_REVERSE;
-        }
-    case DWARF: switch ( sub ) {
-        case ADAMANTINE: return COLOR_PAIR( CYAN_BLACK);
-        case DIFFERENT:  return COLOR_PAIR(WHITE_BLACK);
-        default:         return COLOR_PAIR(WHITE_BLUE );
-        }
-    case RABBIT:    return COLOR_PAIR(  RED_WHITE);
-    case PREDATOR:  return COLOR_PAIR(  RED_BLACK);
-    case TELEGRAPH: return COLOR_PAIR( BLUE_BLUE ) | A_BOLD;
-    case MEDKIT:    return COLOR_PAIR(  RED_WHITE);
+            } break;
+        default: return color;
+        } break;
     }
 } // color_pairs Screen::Color(int kind, int sub)
 
@@ -237,11 +232,20 @@ int Screen::GetChar() const { return getch(); }
 void Screen::FlushInput() const { flushinp(); }
 
 void Screen::ControlPlayer(const int ch) {
+    if ( player->GetBlock() == nullptr ) return;
     CleanFileToShow();
     /// \todo: ctrl-z (to background) support
     // Q, ctrl-c, ctrl-d, ctrl-q, ctrl-x
-    if ( 'Q'==ch || 3==ch || 4==ch || 17==ch || 24==ch ) {
+    if ( 'Q' == ch
+            || 3 == ch
+            || 4 == ch
+            || 17 == ch
+            || 24 == ch
+            || 'X' == ch
+            || KEY_F(10) == ch )
+    {
         emit ExitReceived();
+        input->Stop();
         return;
     } // else:
     if ( 'a'<=ch && ch<='z' ) { // actions with inventory
@@ -255,59 +259,82 @@ void Screen::ControlPlayer(const int ch) {
         Notify(QString("Pressed key code: %1.").arg(ch));
         #endif
         break;
-    case KEY_UP:    case '8': MovePlayer(NORTH);  break;
-    case KEY_DOWN:  case '2': MovePlayer(SOUTH);  break;
-    case KEY_RIGHT: case '6': MovePlayer(EAST);   break;
-    case KEY_LEFT:  case '4': MovePlayer(WEST);   break;
+    case 'W': case KEY_UP:    case '8': MovePlayer(NORTH);  break;
+    case 'S': case KEY_DOWN:  case '2': MovePlayer(SOUTH);  break;
+    case 'D': case KEY_RIGHT: case '6': MovePlayer(EAST);   break;
+    case 'A': case KEY_LEFT:  case '4': MovePlayer(WEST);   break;
     case KEY_END:   case '5': player->Move(DOWN); break;
     case '7': MovePlayerDiag(NORTH, WEST); break;
     case '9': MovePlayerDiag(NORTH, EAST); break;
     case '1': MovePlayerDiag(SOUTH, WEST); break;
     case '3': MovePlayerDiag(SOUTH, EAST); break;
+    case '=':
+    case '0': MovePlayer(player->GetDir()); break;
     case ' ': player->Jump(); break;
+    case '{': player->Move(World::TurnLeft (player->GetDir())); break;
+    case '}': player->Move(World::TurnRight(player->GetDir())); break;
 
     case '>': player->SetDir(World::TurnRight(player->GetDir())); break;
     case '<': player->SetDir(World::TurnLeft (player->GetDir())); break;
+    case 'V':
     case KEY_NPAGE: player->SetDir(DOWN); break;
+    case '^':
     case KEY_PPAGE: player->SetDir(UP);   break;
 
     case 'I':
     case KEY_HOME: player->Backpack(); break;
     case 8:
+    case KEY_F(8):
     case KEY_DC: // delete
     case KEY_BACKSPACE: player->Damage(); break;
+    case '\n':
     case 13:
-    case 'E':
-    case '\n': player->Use();      break;
-    case  '?': player->Examine();  break;
-    case  '~': player->Inscribe(); break;
+    case KEY_F(2):
+    case 'F': player->Use();      break;
+    case '*':
+    case KEY_F(3):
+    case '?': player->Examine();  break;
+    case KEY_F(4):
+    case '~': player->Inscribe(); break;
     case 27: /* esc */ player->StopUseAll(); break;
 
     case KEY_IC: player->Build(1); break; // insert
     case 'B': SetActionMode(ACTION_BUILD);    break;
     case 'C': SetActionMode(ACTION_CRAFT);    break;
-    case 'D':
     case 'T': SetActionMode(ACTION_THROW);    break;
     case 'N': SetActionMode(ACTION_INSCRIBE); break;
     case 'G':
     case 'O': SetActionMode(ACTION_OBTAIN);   break;
-    case 'F':
-    case 'W': SetActionMode(ACTION_WIELD);    break;
+    case 'E': SetActionMode(ACTION_WIELD);    break;
     case 'U': SetActionMode(ACTION_USE);      break;
-    case 'S':
+    case 'Z':
         if ( player->PlayerInventory() ) {
               player->PlayerInventory()->Shake();
+              Notify(tr("Inventory reorganized."));
         }
         break;
     case KEY_HELP:
+    case KEY_F(1):
     case 'H': ProcessCommand("help"); break;
+    case KEY_F(5):
     case 'R':
     case 'L': RePrint(); break;
 
-    case '-': shiftFocus = -!shiftFocus; break; // move focus down
-    case '+': shiftFocus =  !shiftFocus; break; // move focus up
+    case '-':
+        shiftFocus = -!shiftFocus;
+        Notify(tr("%1 focus is set.").
+            arg(shiftFocus ? tr("Low") : tr("Normal")));
+        break; // move focus down
+    case '+':
+        shiftFocus =  !shiftFocus;
+        Notify(tr("%1 focus is set.").
+            arg(shiftFocus ? tr("High") : tr("Normal")));
+        break;
 
+    case KEY_F(12):
     case '!': player->SetCreativeMode( not player->GetCreativeMode() ); break;
+    case KEY_F(9):
+    case '\\':
     case ':':
     case '/': PassString(previousCommand); // no break
     case '.': ProcessCommand(previousCommand); break;
@@ -321,8 +348,13 @@ void Screen::ProcessCommand(const QString command) {
         return;
     }
     switch ( Player::UniqueIntFromString(qPrintable(command)) ) {
+    case Player::UniqueIntFromString("blink"):
+        blinkOn = not blinkOn;
+        Notify(tr("Block blink is now %1.").
+            arg(blinkOn ? tr("on") : tr("off")));
+        break;
     case Player::UniqueIntFromString("size"):
-        Notify(QString("Terminal height: %1 lines, width: %2 chars.").
+        Notify(tr("Terminal height: %1 lines, width: %2 chars.").
             arg(LINES).arg(COLS));
         break;
     case Player::UniqueIntFromString("moo"):
@@ -459,19 +491,21 @@ void Screen::PrintHUD() {
     }
     Block * const focused = GetFocusedBlock();
     if ( Block::GetSubGroup(focused->Sub()) != GROUP_AIR ) {
-        const int left_border = (SCREEN_SIZE*2+2) * (IsScreenWide() ? 2 : 1);
+        const int left_border = IsScreenWide() ?
+            (SCREEN_SIZE*2+2) * 2 :
+            SCREEN_SIZE*2+2 - 15;
         PrintBar(left_border - 15,
             Color(focused->Kind(), focused->Sub()),
             (focused->IsAnimal() == nullptr) ? '+' : '*',
             focused->GetDurability()*100/MAX_DURABILITY,
             false);
         const QString name = focused->FullName();
-        mvwaddstr(hudWin, 1, left_border-name.length(),
+        mvwaddstr(hudWin, 1, left_border-name.length() - 1,
             qPrintable(focused->FullName()));
         const QString note = focused->GetNote();
-        if ( not note.isEmpty() ) {
+        if ( not note.isEmpty() && IsScreenWide() ) {
             const int width = qMin(36, note.length() + 2);
-            (void)wmove(hudWin, 2, left_border - width);
+            (void)wmove(hudWin, 2, left_border - width - 1);
             if ( note.length()+2 <= width ) {
                 wprintw(hudWin, "~:%s", qPrintable(note));
             } else {
@@ -522,6 +556,7 @@ void Screen::PrintMiniMap() {
     }
     wstandend(miniMapWin);
     box(miniMapWin, 0, 0);
+    mvwaddstr(miniMapWin, 0, 1, qPrintable(tr("Minimap")));
     wrefresh(miniMapWin);
 }
 
@@ -541,7 +576,7 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
         ( SHRED_WIDTH-SCREEN_SIZE )/2;
     for (int j=start_y; j<SCREEN_SIZE+start_y; ++j, waddstr(window, "\n_"))
     for (int i=start_x; i<SCREEN_SIZE+start_x; ++i ) {
-        randomBlink = qrand();
+        randomBlink = blinkOn ? qrand() : 0;
         Shred * const shred = w->GetShred(i, j);
         const int i_in = Shred::CoordInShred(i);
         const int j_in = Shred::CoordInShred(j);
@@ -552,19 +587,22 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
             waddch(window, PrintBlock(*shred->GetBlock(i_in,j_in,k), window));
             waddch(window, CharNumber(k));
         } else {
-            wstandend(window);
+            wattrset(window, SHADOW_COLOR);
             waddch(window, OBSCURE_BLOCK);
             waddch(window, ' ');
         }
     }
 
-    const Block * const block = player->GetBlock();
-    wattrset(window, Color(block->Kind(), block->Sub()));
-    mvwaddstr(window, player->Y()-start_y+1, (player->X()-start_x)*2+2,
-        qPrintable(arrows[player->GetDir()]));
+    if ( dir > DOWN ) {
+        const Block * const block = player->GetBlock();
+        wattrset(window, Color(block->Kind(), block->Sub()));
+        mvwaddstr(window, player->Y()-start_y+1, (player->X()-start_x)*2+2,
+            qPrintable(arrows[player->GetDir()]));
+    }
 
-    PrintTitle(window, UP==dir ? UP : DOWN);
-    Arrows(window, (player->X()-start_x)*2+1, player->Y()-start_y+1, true);
+    wstandend(window);
+    box(window, 0, 0);
+    Arrows(window, (player->X()-start_x)*2+1, player->Y()-start_y+1, UP);
     wrefresh(window);
 } // void Screen::PrintNormal(WINDOW * window, int dir)
 
@@ -650,13 +688,14 @@ void Screen::PrintFront(const dirs dir) const {
                 waddch(rightWin, PrintBlock(*block, rightWin));
                 waddch(rightWin, CharNumberFront(i, j));
             } else {
-                wattrset(rightWin, COLOR_PAIR(WHITE_BLACK));
+                wattrset(rightWin, SHADOW_COLOR);
                 waddch(rightWin, OBSCURE_BLOCK);
                 waddch(rightWin, ' ');
             }
         }
     }
-    PrintTitle(rightWin, dir);
+    wstandend(rightWin);
+    box(rightWin, 0, 0);
     const int arrow_Y = k_start + 1 - player->Z();
     if ( shiftFocus ) {
         wattrset(rightWin, COLOR_PAIR(WHITE_BLUE));
@@ -666,19 +705,9 @@ void Screen::PrintFront(const dirs dir) const {
             mvwaddch(rightWin, q, SCREEN_SIZE*2+1, ch);
         }
     }
-    Arrows(rightWin, arrow_X, arrow_Y, false);
+    Arrows(rightWin, arrow_X, arrow_Y, dir);
     wrefresh(rightWin);
 } // void Screen::PrintFront(dirs)
-
-void Screen::PrintTitle(WINDOW * const window, const dirs dir) const {
-    QString dir_string = QString("%1 %2 %1").
-        arg(arrows[dir]).
-        arg(Block::DirString(dir));
-    wstandend(window);
-    box(window, 0, 0);
-    wcolor_set(window, BLACK_WHITE, nullptr);
-    mvwaddstr(window, 0, 1, qPrintable(dir_string));
-}
 
 void Screen::PrintInv(WINDOW * const window,
         const Block * const block, const Inventory * const inv)
@@ -766,8 +795,8 @@ void Screen::Notify(const QString str) const {
     fputs(qPrintable(QString("%1 %2\n").arg(w->TimeOfDayStr()).arg(str)),
         notifyLog);
     if ( inputActive ) return;
+    wstandend(notifyWin);
     switch ( str.at(str.size()-1).unicode() ) {
-    default: wstandend(notifyWin); break;
     case '!': wcolor_set(notifyWin, RED_BLACK, nullptr); // no break;
     case '*': if ( flashOn ) flash(); break;
     case '^': if (  beepOn ) beep();  break;
@@ -817,6 +846,7 @@ Screen::Screen(
         beepOn (settings.value("beep_on",  false).toBool()),
         flashOn(settings.value("flash_on", true ).toBool()),
         ascii(_ascii),
+        blinkOn(settings.value("blink_on", true).toBool()),
         arrows{'.', 'x',
             ascii ? '^' : 0x2191,
             ascii ? 'v' : 0x2193,
@@ -835,10 +865,13 @@ Screen::Screen(
     nonl();
     keypad(stdscr, TRUE); // use arrows
     memset(windows, 0, sizeof(windows));
-    if ( LINES < 41 ) {
+    if ( LINES < 41 && IsScreenWide() ) {
         printf("Make your terminal height to be at least 41 lines.\n");
         error = HEIGHT_NOT_ENOUGH;
         return;
+    } else if ( LINES < 39 ) {
+        printf("Make your terminal height to be at least 39 lines.\n");
+        error = HEIGHT_NOT_ENOUGH;
     }
     // all available color pairs (maybe some of them will not be used)
     const int colors[] = { // do not change colors order!
@@ -855,7 +888,7 @@ Screen::Screen(
         init_pair(i, colors[(i-1)/8], colors[(i-1)%8]);
     }
     const int preferred_width = (SCREEN_SIZE*2+2)*2;
-    if ( COLS >= preferred_width ) {
+    if ( IsScreenWide() ) {
         const int left_border = COLS/2-SCREEN_SIZE*2-2;
         rightWin  = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, COLS/2);
         leftWin   = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, left_border);
@@ -866,9 +899,10 @@ Screen::Screen(
     } else if ( COLS >= preferred_width/2 ) {
         const int left_border = COLS/2-SCREEN_SIZE-1;
         leftWin   = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, left_border);
-        hudWin    = newwin(3, SCREEN_SIZE*2+2, SCREEN_SIZE+2, left_border);
-        notifyWin = newwin(21,SCREEN_SIZE*2+2, SCREEN_SIZE+2+3,left_border+20);
-        actionWin = newwin(0, 20, SCREEN_SIZE+2+3, left_border);
+        hudWin    = newwin(2,SCREEN_SIZE*2+2-15, SCREEN_SIZE+2,left_border+15);
+        notifyWin = newwin(21, SCREEN_SIZE*2+2-15,
+            SCREEN_SIZE+2+2, left_border+15);
+        actionWin = newwin(0, 15, SCREEN_SIZE+2, left_border);
     } else {
         puts(qPrintable(tr("Set your terminal width at least %1 chars.").
             arg(SCREEN_SIZE*2+2)));
@@ -888,10 +922,9 @@ Screen::Screen(
         (settings.value("action_mode", ACTION_USE).toInt()));
     Print();
     Notify(tr("--- Game started. Press 'H' for help. ---"));
-    if ( COLS < preferred_width ) {
-        Notify(tr("For better gameplay "));
-        Notify(tr("set your terminal width at least %1 chars.").
-            arg(preferred_width));
+    if ( not IsScreenWide() ) {
+        Notify(tr("For better gameplay set your"));
+        Notify(tr("terminal width at least %1 chars.").arg(preferred_width));
     }
 
     input->start();
@@ -921,6 +954,7 @@ Screen::~Screen() {
     settings.setValue("last_command", previousCommand);
     settings.setValue("beep_on",  beepOn);
     settings.setValue("flash_on", flashOn);
+    settings.setValue("blink_on", blinkOn);
 }
 
 void Screen::PrintBar(const int x, const int attr, const int ch,

@@ -30,8 +30,6 @@
 #include "blocks/Armour.h"
 #include "blocks/Filter.h"
 
-#define sizeof_array(ARRAY) (sizeof(ARRAY)/sizeof(ARRAY[0]))
-
 /** \page kinds List of available kinds
  *  Complete list.
  *  These kinds can be used as parameters to `get KIND SUB` command.
@@ -133,7 +131,7 @@ BlockManager::BlockManager() {
     for (int sub  = 0; sub <LAST_SUB;  ++sub) {
         sum += IsValid(kind, sub);
     }
-    fprintf(stderr, "valid pairs: %d\n", sum);*/
+    qDebug() << "valid pairs:" << sum;*/
 }
 
 BlockManager::~BlockManager() {
@@ -145,6 +143,7 @@ BlockManager::~BlockManager() {
 Block * BlockManager::Normal(const int sub) const { return normals[sub]; }
 
 Block * BlockManager::NewBlock(const int kind, const int sub) {
+    //qDebug("kind: %d, sub: %d, valid: %d", kind, sub, IsValid(kind, sub));
     switch ( static_cast<enum kinds>(kind) ) {
     case BLOCK:     return new Block (kind, sub);
     case BELL:      return new Bell  (kind, sub);
@@ -189,6 +188,7 @@ Block * BlockManager::NewBlock(const int kind, const int sub) {
 Block * BlockManager::BlockFromFile(QDataStream & str,
         const int kind, const int sub)
 {
+    //qDebug("kind: %d, sub: %d, valid: %d", kind, sub, IsValid(kind, sub));
     switch ( static_cast<enum kinds>(kind) ) {
     case BLOCK:     return new Block (str, kind, sub);
     case BELL:      return new Bell  (str, kind, sub);
@@ -287,12 +287,13 @@ bool BlockManager::IsValid(const int kind, const int sub) {
     switch ( static_cast<enum kinds>(kind) ) {
     case BLOCK:     return true;
     case LAST_KIND: break;
-    case DWARF:     return ( sub == H_MEAT || group == GROUP_METAL );
+    case DWARF:     return ( sub == DIFFERENT || sub == H_MEAT
+                            || group == GROUP_METAL );
     case GRASS:     return ( sub == GREENERY || sub == FIRE );
     case BUSH:      return ( sub == GREENERY || sub == WOOD );
-    case FALLING:   return ( sub == WATER || sub == STONE );
+    case FALLING:   return ( sub == WATER || sub == STONE || sub == SUB_DUST );
     case LIQUID:    return ( group == GROUP_MEAT || group == GROUP_METAL
-                            || sub == STONE );
+                            || sub == STONE || sub == WATER );
 
     case BUCKET:
     case CLOCK:
@@ -317,8 +318,10 @@ bool BlockManager::IsValid(const int kind, const int sub) {
     case HAMMER:
     case ILLUMINATOR:
     case WORKBENCH:
-    case CONVERTER:
-    case CONTAINER: return ( group == GROUP_METAL || group == GROUP_HANDY );
+    case CONVERTER: return ( group == GROUP_METAL || group == GROUP_HANDY );
+    case CONTAINER: return ( group == GROUP_METAL ||
+                             group == GROUP_HANDY ||
+                             group == GROUP_MEAT );
 
     case PREDATOR:
     case RABBIT:    return ( sub == A_MEAT );

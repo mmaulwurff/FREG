@@ -321,7 +321,6 @@ void World::PhysEvents() {
     ReloadShreds();
     Unlock();
     emit UpdatesEnded();
-    // emit ExitReceived(); // close all after 1 turn
 }
 
 bool World::DirectlyVisible(
@@ -329,7 +328,7 @@ bool World::DirectlyVisible(
         int x,      int y,      int z)
 const {
     /// optimized DDA line with integers only.
-    int max = Abs(Abs(x-=x_from) > Abs(y-=y_from) ? x : y);
+    unsigned max = Abs(Abs(x-=x_from) > Abs(y-=y_from) ? x : y);
     if ( Abs(z-=z_from) > max) {
         max = Abs(z);
     }
@@ -337,12 +336,16 @@ const {
     y_from *= max;
     z_from *= max;
     for (int i=max-1; i-- > 0; ) {
-        if ( not (GetBlock((x_from+=x)/max, (y_from+=y)/max, (z_from+=z)/max)->
-                    Transparent()
-                && GetBlock( (x_from+max-1)/max, (y_from+max-1)/max,
-                    (z_from+max-1)/max )->Transparent()) )
+        if ( not (GetBlock(
+                    static_cast<unsigned>(x_from+=x)/max,
+                    static_cast<unsigned>(y_from+=y)/max,
+                    static_cast<unsigned>(z_from+=z)/max )->Transparent()
+                && GetBlock(
+                    static_cast<unsigned>(x_from+max-1)/max,
+                    static_cast<unsigned>(y_from+max-1)/max,
+                    static_cast<unsigned>(z_from+max-1)/max )->Transparent()) )
         {
-               return false;
+                return false;
         }
     }
     return true;
@@ -682,11 +685,11 @@ World::World(const QString world_name, bool * error) :
     numShreds=game_settings.value("number_of_shreds", MIN_WORLD_SIZE).toInt();
     if ( 1 != numShreds%2 ) {
         ++numShreds;
-        fprintf(stderr, "%s: Invalid number of shreds. Set to %d.\n",
+        qDebug("%s: Invalid number of shreds. Set to %d.",
             Q_FUNC_INFO, numShreds);
     }
     if ( numShreds < MIN_WORLD_SIZE ) {
-        fprintf(stderr, "%s: Number of shreds to small: %d. Set to %d.\n",
+        qDebug("%s: Number of shreds to small: %d. Set to %d.",
             Q_FUNC_INFO, numShreds, MIN_WORLD_SIZE);
         numShreds = MIN_WORLD_SIZE;
     }

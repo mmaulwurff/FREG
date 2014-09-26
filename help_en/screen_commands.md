@@ -2,10 +2,13 @@
 freg cursed screen commands
 ===========================
 
-#### `warranty` ####
+** `warranty` **
 Show warranty.
 
-#### `size` ####
+** `size` **
 Show terminal size.
+
+** `blink` **
+Toggle block blinking.
 
 -------------------------------------------------------------

@@ -10,6 +10,7 @@ CONFIG += cursed_screen
 
 CONFIG += thread warn_on console
 CONFIG += debug
+CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 
 # compile with clang:
 #CONFIG += clang
@@ -80,6 +81,7 @@ HEADERS += \
     worldmap.h \
     ShredStorage.h \
     Xyz.h \
+    Weather.h \
     screens/IThread.h \
     blocks/blocks.h \
     blocks/Block.h \
@@ -108,6 +110,7 @@ SOURCES += \
     worldmap.cpp \
     ShredStorage.cpp \
     Xyz.cpp \
+    Weather.cpp \
     screens/IThread.cpp \
     blocks/blocks.cpp \
     blocks/Active.cpp \

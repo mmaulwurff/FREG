@@ -88,8 +88,8 @@ private:
     Screen & operator=(const Screen &) = delete;
     char CharNumber(int z) const;
     char CharNumberFront(int x, int y) const;
-    void Arrows(WINDOW *, int x, int y, bool show_dir) const;
-    void HorizontalArrows(WINDOW *, int y, bool show_dir) const;
+    void Arrows(WINDOW *, int x, int y, dirs) const;
+    void HorizontalArrows(WINDOW *, int y, dirs) const;
     void PrintNormal(WINDOW *, dirs) const;
     void PrintFront(dirs) const;
     void PrintInv(WINDOW *, const Block *, const Inventory *) const;
@@ -109,13 +109,13 @@ private:
     char PrintBlock(const Block &, WINDOW *) const;
     void SetActionMode(actions mode);
     void ProcessCommand(QString command);
-    void PrintTitle(WINDOW *, dirs) const;
     void MovePlayer(dirs dir);
     void MovePlayerDiag(dirs dir1, dirs dir2) const;
     static bool IsScreenWide();
     int  RandomBlink() const;
     bool RandomBit() const;
     Block * GetFocusedBlock() const;
+    static void PrintVerticalDirection(WINDOW *, int y, int x, dirs);
 
     WINDOW * windows[6];
     WINDOW *& leftWin    = windows[0];
@@ -134,6 +134,7 @@ private:
     QFile * fileToShow;
     const bool beepOn, flashOn;
     const bool ascii;
+    bool blinkOn;
     const QChar arrows[WEST+1];
     SCREEN * const screen;
     mutable bool inputActive = false;
