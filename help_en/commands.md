@@ -24,7 +24,7 @@ Show current game time.
 Show freg version, compile time, build type,
 Qt versions and compiler.
 
-### `warranty` ###
+#### `warranty` ####
 Show warranty.
 
 ### See also: ###
