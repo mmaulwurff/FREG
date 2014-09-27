@@ -91,13 +91,20 @@ const {
 
 void Screen::RePrint() {
     clear();
-    mvwaddstr(actionWin, 0, 0, qPrintable(tr("Use, eat")));
-    mvwaddstr(actionWin, 1, 0, qPrintable(tr("Throw")));
-    mvwaddstr(actionWin, 2, 0, qPrintable(tr("Obtain")));
-    mvwaddstr(actionWin, 3, 0, qPrintable(tr("iNscribe")));
-    mvwaddstr(actionWin, 4, 0, qPrintable(tr("Build")));
-    mvwaddstr(actionWin, 5, 0, qPrintable(tr("Craft")));
-    mvwaddstr(actionWin, 6, 0, qPrintable(tr("Equipment")));
+    static const QString action_strings[] = {
+        tr("[U] use, eat"),
+        tr("[T] throw"),
+        tr("[O] obtain"),
+        tr("[N] inscribe"),
+        tr("[B] build"),
+        tr("[C] craft"),
+        tr("[E] equipment"),
+    };
+    (void)wmove(actionWin, 0, 0);
+    for (int i=0; i<=ACTION_WIELD; ++i) {
+        waddstr(actionWin, qPrintable(action_strings[i]));
+        waddch(actionWin, '\n');
+    }
     refresh();
     wrefresh(actionWin);
     updated = false;
@@ -307,6 +314,14 @@ void Screen::ControlPlayer(const int ch) {
     case 'O': SetActionMode(ACTION_OBTAIN);   break;
     case 'E': SetActionMode(ACTION_WIELD);    break;
     case 'U': SetActionMode(ACTION_USE);      break;
+    case '[':
+        SetActionMode((actionMode == ACTION_USE) ?
+            ACTION_WIELD : static_cast<actions>(actionMode-1));
+        break;
+    case ']':
+        SetActionMode(actionMode == ACTION_WIELD ?
+            ACTION_USE : static_cast<actions>(actionMode+1));
+        break;
     case 'Z':
         if ( player->PlayerInventory() ) {
               player->PlayerInventory()->Shake();

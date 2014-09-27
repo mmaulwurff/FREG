@@ -90,6 +90,8 @@ bool Inventory::Get(Block * const block, const int start) {
     } else {
         for (int i=start; i<Size(); ++i) {
             if ( GetExact(block, i) ) {
+                ReceiveSignal(QObject::tr("You obtained %1.").
+                    arg(block->FullName()));
                 return true;
             }
         }

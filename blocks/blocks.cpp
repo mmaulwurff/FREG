@@ -93,6 +93,8 @@
         }
     }
 
+    int Liquid::DamageLevel() const { return MAX_DURABILITY / 20; }
+
     int  Liquid::ShouldAct() const  { return FREQUENT_RARE; }
     int  Liquid::LightRadius() const { return ( STONE==Sub() ) ? 3 : 0; }
     bool Liquid::Inscribe(QString) { return false; }

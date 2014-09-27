@@ -139,6 +139,7 @@ void Block::Damage(const int dmg, int dmg_kind) {
         } break;
     case DAMAGE_HANDS: switch ( Sub() ) {
         default: return;
+        case SOIL:
         case A_MEAT:
         case H_MEAT: break;
         } break;

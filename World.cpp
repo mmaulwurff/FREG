@@ -404,6 +404,7 @@ can_move_results World::CanMove(const int x, const int y, const int z,
         return CAN_MOVE_CANNOT;
     }
     switch ( block->PushResult(dir) ) {
+    case DAMAGE:
     case MOVABLE:
         if ( Damage(newx, newy, newz, 1, DAMAGE_PUSH_UP + dir) <= 0 ) {
             DestroyAndReplace(newx, newy, newz);
@@ -600,7 +601,7 @@ bool World::Exchange(Block * const block_from, Block * const block_to,
     Inventory * const inv_from = block_from->HasInventory();
     if ( not inv_from ) {
         if ( block_from->Wearable() > WEARABLE_NOWHERE
-                && inv_to->Get(block_from) )
+                && inv_to->Get(block_from, src) )
         {
             return true;
         } else {
