@@ -94,9 +94,14 @@ void Player::UpdateXYZ() {
 
 void Player::Examine() {
     QMutexLocker locker(world->GetLock());
-    int i, j, k;
-    emit GetFocus(&i, &j, &k);
-    const Block * const block = world->GetBlock(i, j, k);
+    int x, y, z;
+    emit GetFocus(&x, &y, &z);
+    Examine(x, y, z);
+}
+
+void Player::Examine(const int x, const int y, const int z) {
+    if ( not Visible(x, y, z) ) return;
+    const Block * const block = world->GetBlock(x, y, z);
     emit Notify( tr("You see %1.").arg(block->FullName()) );
     if ( DEBUG ) {
         emit Notify(QString("Weight: %1. Id: %2.").
@@ -108,9 +113,9 @@ void Player::Examine() {
             arg(block->LightRadius()));
         emit Notify(QString(
             "Light:%1, fire:%2, sun:%3. Transp:%4. Norm:%5. Dir:%6.").
-            arg(world->Enlightened(i, j, k)).
-            arg(world->FireLight(i, j, k)/16).
-            arg(world->SunLight(i, j, k)).
+            arg(world->Enlightened(x, y, z)).
+            arg(world->FireLight(x, y, z)/16).
+            arg(world->SunLight(x, y, z)).
             arg(block->Transparent()).
             arg(block==block_manager.Normal(block->Sub())).
             arg(block->GetDir()));

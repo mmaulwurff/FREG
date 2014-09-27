@@ -106,6 +106,7 @@ public:
     void Backpack();
     void Inscribe() const;
     void Examine();
+    void Examine(int x, int y, int z);
     /// Returns true if xyz are in world bounds.
     bool Damage() const;
     void Use();

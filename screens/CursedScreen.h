@@ -109,6 +109,7 @@ private:
     char PrintBlock(const Block &, WINDOW *) const;
     void SetActionMode(actions mode);
     void ProcessCommand(QString command);
+    void ProcessMouse() const;
     void MovePlayer(dirs dir);
     void MovePlayerDiag(dirs dir1, dirs dir2) const;
     static bool IsScreenWide();
@@ -116,6 +117,9 @@ private:
     bool RandomBit() const;
     Block * GetFocusedBlock() const;
     static void PrintVerticalDirection(WINDOW *, int y, int x, dirs);
+
+    int GetNormalStartX() const;
+    int GetNormalStartY() const;
 
     WINDOW * windows[6];
     WINDOW *& leftWin    = windows[0];

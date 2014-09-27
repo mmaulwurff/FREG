@@ -353,9 +353,29 @@ void Screen::ControlPlayer(const int ch) {
     case ':':
     case '/': PassString(previousCommand); // no break
     case '.': ProcessCommand(previousCommand); break;
+
+    case KEY_MOUSE: ProcessMouse(); break;
     }
     updated = false;
 } // void Screen::ControlPlayer(int ch)
+
+void Screen::ProcessMouse() const {
+    MEVENT mevent;
+    if ( getmouse(&mevent) == ERR ) return;
+    if ( wenclose(leftWin, mevent.y, mevent.x) ) {
+        World * const world = GetWorld();
+        if ( wmouse_trafo(leftWin, &mevent.y, &mevent.x, false)
+                && 0 < mevent.x && mevent.x < SCREEN_SIZE*2 + 1
+                && 0 < mevent.y && mevent.y < SCREEN_SIZE )
+        {
+            int z = player->Z();
+            const int x = (mevent.x-1)/2 + GetNormalStartX();
+            const int y =  mevent.y-1    + GetNormalStartY();
+            for ( ; world->GetBlock(x, y, z)->Transparent() == INVISIBLE; --z);
+            player->Examine(x, y, z);
+        }
+    }
+}
 
 void Screen::ProcessCommand(const QString command) {
     if ( command.length()==1 && command.at(0)!='.' ) {
@@ -575,6 +595,16 @@ void Screen::PrintMiniMap() {
     wrefresh(miniMapWin);
 }
 
+int Screen::GetNormalStartX() const {
+    return ( player->X()/SHRED_WIDTH )*SHRED_WIDTH +
+        ( SHRED_WIDTH-SCREEN_SIZE )/2;
+}
+
+int Screen::GetNormalStartY() const {
+    return ( player->Y()/SHRED_WIDTH )*SHRED_WIDTH +
+        ( SHRED_WIDTH-SCREEN_SIZE )/2;
+}
+
 void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
     int k_start, k_step;
     if ( UP == dir ) {
@@ -585,10 +615,8 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
         k_step  = -1;
     }
     (void)wmove(window, 1, 1);
-    const int start_x = ( player->X()/SHRED_WIDTH )*SHRED_WIDTH +
-        ( SHRED_WIDTH-SCREEN_SIZE )/2;
-    const int start_y = ( player->Y()/SHRED_WIDTH )*SHRED_WIDTH +
-        ( SHRED_WIDTH-SCREEN_SIZE )/2;
+    const int start_x = GetNormalStartX();
+    const int start_y = GetNormalStartY();
     for (int j=start_y; j<SCREEN_SIZE+start_y; ++j, waddstr(window, "\n_"))
     for (int i=start_x; i<SCREEN_SIZE+start_x; ++i ) {
         randomBlink = blinkOn ? qrand() : 0;
@@ -879,6 +907,7 @@ Screen::Screen(
     noecho(); // do not print typed symbols
     nonl();
     keypad(stdscr, TRUE); // use arrows
+    mousemask(BUTTON1_RELEASED, nullptr);
     memset(windows, 0, sizeof(windows));
     if ( LINES < 41 && IsScreenWide() ) {
         printf("Make your terminal height to be at least 41 lines.\n");
