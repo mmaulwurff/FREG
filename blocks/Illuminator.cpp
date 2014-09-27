@@ -56,7 +56,7 @@ Block * Illuminator::DropAfterDamage(bool * const delete_block) {
 
 usage_types Illuminator::Use(Block *) {
     if ( Sub() == GLASS ) { // flashlight
-        return USAGE_TYPE_NO;
+        return USAGE_TYPE_INNER;
     } else {
         fuelLevel = ( fuelLevel >= 10 ) ?
             fuelLevel - 10 : 0;

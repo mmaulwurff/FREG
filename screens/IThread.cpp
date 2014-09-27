@@ -28,7 +28,7 @@ IThread::IThread(VirtScreen * const scr) :
 void IThread::run() {
     while ( not stopped ) {
         screen->ControlPlayer(screen->GetChar());
-        msleep(90);
+        msleep(50);
         screen->FlushInput();
     }
 }

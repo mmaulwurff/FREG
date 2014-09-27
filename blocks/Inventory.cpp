@@ -90,8 +90,9 @@ bool Inventory::Get(Block * const block, const int start) {
     } else {
         for (int i=start; i<Size(); ++i) {
             if ( GetExact(block, i) ) {
-                ReceiveSignal(QObject::tr("You obtained %1.").
-                    arg(block->FullName()));
+                ReceiveSignal(QObject::tr("You have %1 at slot '%2'.").
+                    arg(block->FullName()).
+                    arg(char(i + 'a')));
                 return true;
             }
         }
@@ -123,7 +124,6 @@ void Inventory::MoveInside(const int from, const int num_to, const int num) {
 bool Inventory::InscribeInv(const int num, const QString str) {
     const int number = Number(num);
     if ( number == 0 ) {
-        ReceiveSignal(QObject::tr("Nothing here."));
         return false;
     }
     const int sub = inventory[num].top()->Sub();
@@ -134,11 +134,12 @@ bool Inventory::InscribeInv(const int num, const QString str) {
     }
     for (int i=0; i<number; ++i) {
         if ( not inventory[num].at(i)->Inscribe(str) ) {
-            ReceiveSignal(QObject::tr("Cannot inscribe this."));
+            ReceiveSignal(QObject::tr("Cannot inscribe %1.").
+                arg(InvFullName(num)));
             return false;
         }
     }
-    ReceiveSignal(QObject::tr("Inscribed."));
+    ReceiveSignal(QObject::tr("Inscribed %1.").arg(InvFullName(num)));
     return true;
 }
 
@@ -204,7 +205,8 @@ void Inventory::Push(const int x, const int y, const int z,
 
 bool Inventory::MiniCraft(const int num) {
     if ( Number(num) == 0 ) {
-        ReceiveSignal(QObject::tr("Nothing here."));
+        ReceiveSignal(QObject::tr("Nothing at slot '%1'.").
+            arg(char(num + 'a')));
         return false;
     } // else:
     CraftItem * crafted =

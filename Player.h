@@ -115,7 +115,8 @@ public:
     /// Tries to use block number num in inventory.
     usage_types Use(int num);
     /// Tries to get block number num from outer inventory.
-    void Obtain(int src, int dest = 0, int num = 1);
+    //  Returns true on success.
+    bool Obtain(int src, int dest = 0, int num = 1);
     void Inscribe(int num);
     void Craft   (int num);
     void Build   (int num);

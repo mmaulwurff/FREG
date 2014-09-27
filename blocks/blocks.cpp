@@ -166,7 +166,7 @@
                 || GREENERY==ground
                 || H_MEAT==ground
                 || A_MEAT==ground
-                || HAZELNUT==ground
+                || SUB_NUT==ground
                 || ROSE==ground
                 || PAPER==ground ) );
     }
@@ -199,7 +199,7 @@
 
     void Bush::DoRareAction() {
         if ( 0 == qrand()%(SECONDS_IN_HOUR*4) ) {
-            Get(block_manager.Normal(HAZELNUT));
+            Get(BlockManager::NewBlock(WEAPON, SUB_NUT));
         }
     }
 
@@ -215,7 +215,7 @@
         Block * const pile = BlockManager::NewBlock(BOX, DIFFERENT);
         Inventory * const pile_inv = pile->HasInventory();
         pile_inv->Get(BlockManager::NewBlock(WEAPON, WOOD));
-        pile_inv->Get(block_manager.Normal(HAZELNUT));
+        pile_inv->Get(BlockManager::NewBlock(WEAPON, SUB_NUT));
         return pile;
     }
 
@@ -322,7 +322,7 @@
 
     usage_types Door::Use(Block *) {
         locked = !locked;
-        return USAGE_TYPE_NO;
+        return USAGE_TYPE_INNER;
     }
 
     void Door::SaveAttributes(QDataStream & out) const {
@@ -355,7 +355,7 @@
         } else {
             SendSignalAround(GetNote());
         }
-        return USAGE_TYPE_NO;
+        return USAGE_TYPE_INNER;
     }
 
     QString Clock::FullName() const {
@@ -460,7 +460,7 @@
     usage_types Text::Use(Block * const who) {
         if ( noteId == 0 ) {
             who->ReceiveSignal(QObject::tr("Nothing is written here."));
-            return USAGE_TYPE_NO;
+            return USAGE_TYPE_INNER;
         } else {
             return USAGE_TYPE_READ;
         }
@@ -483,7 +483,7 @@
     usage_types Map::Use(Block * const who) {
         if ( noteId == 0 ) {
             who->ReceiveSignal(QObject::tr("Set title to this map first."));
-            return USAGE_TYPE_NO;
+            return USAGE_TYPE_INNER;
         } // else:
         if ( who == nullptr ) return USAGE_TYPE_READ;
         const Active * const active = who->ActiveBlock();
@@ -567,7 +567,7 @@
 
     usage_types Bell::Use(Block *) {
         SendSignalAround(tr("^ Ding! ^"));
-        return USAGE_TYPE_NO;
+        return USAGE_TYPE_INNER;
     }
 
 // Telegraph:: section
@@ -604,7 +604,7 @@
 
     usage_types Telegraph::Use(Block *) {
         isReceiver = not isReceiver;
-        return USAGE_TYPE_NO;
+        return USAGE_TYPE_INNER;
     }
 
     inner_actions Telegraph::ActInner() {
@@ -634,7 +634,7 @@
             user->Mend(MAX_DURABILITY/10);
             Damage(MAX_DURABILITY/10, DAMAGE_TIME);
         }
-        return USAGE_TYPE_NO;
+        return USAGE_TYPE_INNER;
     }
 
 // Informer:: section
@@ -646,7 +646,7 @@
             arg(DirString(user->GetDir()).toLower())); break;
         default: break;
         }
-        return USAGE_TYPE_NO;
+        return USAGE_TYPE_INNER;
     }
 
     QString Informer::FullName() const {

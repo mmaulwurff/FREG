@@ -173,7 +173,7 @@ enum subs {
     WATER,      ///<  13
     GREENERY,   ///<  14
     SAND,       ///<  15
-    HAZELNUT,   ///<  16
+    SUB_NUT,    ///<  16
     ROSE,       ///<  17
     CLAY,       ///<  18
     AIR,        ///<  19
@@ -199,7 +199,8 @@ enum usage_types {
     USAGE_TYPE_READ,
     USAGE_TYPE_READ_IN_INVENTORY,
     USAGE_TYPE_POUR,
-    USAGE_TYPE_SET_FIRE
+    USAGE_TYPE_SET_FIRE,
+    USAGE_TYPE_INNER
 };
 
 enum transparency {

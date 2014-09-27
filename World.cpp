@@ -97,7 +97,7 @@ bool World::Drop(Block * const block_from,
     return Exchange(block_from, GetBlock(x_to, y_to, z_to), src, dest, num);
 }
 
-void World::Get(Block * const block_to,
+bool World::Get(Block * const block_to,
         const int x_from, const int y_from, const int z_from,
         const int src, const int dest, const int num)
 {
@@ -105,12 +105,14 @@ void World::Get(Block * const block_to,
     Inventory * const inv_from   = block_from->HasInventory();
     if ( inv_from ) {
         if ( inv_from->Access() ) {
-            Exchange(block_from, block_to, src, dest, num);
+            return Exchange(block_from, block_to, src, dest, num);
         }
     } else if ( Exchange(block_from, block_to, src, dest, num) ) {
         Build(block_manager.Normal(AIR), x_from, y_from, z_from, UP,
             nullptr, true);
+        return true;
     }
+    return false;
 }
 
 bool World::InBounds(const int x, const int y) const {
@@ -605,7 +607,7 @@ bool World::Exchange(Block * const block_from, Block * const block_to,
         {
             return true;
         } else {
-            block_from->ReceiveSignal(tr("Nothing can be obtained."));
+            block_to->ReceiveSignal(tr("Nothing can be obtained."));
             return false;
         }
     }

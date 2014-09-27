@@ -115,7 +115,7 @@ void Dwarf::Move(const dirs dir) {
 int Dwarf::NutritionalValue(const subs sub) const {
     switch ( sub ) {
     case GREENERY: return SECONDS_IN_HOUR/20;
-    case HAZELNUT: return SECONDS_IN_HOUR/2;
+    case SUB_NUT:  return SECONDS_IN_HOUR/2;
     case H_MEAT:   return SECONDS_IN_HOUR*2.5f;
     case A_MEAT:   return SECONDS_IN_HOUR*2;
     default:       return 0;

@@ -124,7 +124,7 @@ void Screen::UpdateAll() {
 void Screen::PassString(QString & str) const {
     inputActive = true;
     wattrset(notifyWin, A_UNDERLINE);
-    waddstr(notifyWin, qPrintable(tr("Enter command: ")));
+    waddstr(notifyWin, qPrintable(tr("Enter input: ")));
     char temp_str[MAX_NOTE_LENGTH + 1];
     echo();
     wgetnstr(notifyWin, temp_str, MAX_NOTE_LENGTH);
@@ -781,7 +781,7 @@ const {
 
 void Screen::CleanFileToShow() {
     delete fileToShow;
-    fileToShow = 0;
+    fileToShow = nullptr;
 }
 
 bool Screen::PrintFile(WINDOW * const window, QString const & file_name) {
