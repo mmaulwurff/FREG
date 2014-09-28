@@ -109,7 +109,7 @@ private:
     char PrintBlock(const Block &, WINDOW *) const;
     void SetActionMode(actions mode);
     void ProcessCommand(QString command);
-    void ProcessMouse() const;
+    void ProcessMouse();
     void MovePlayer(dirs dir);
     void MovePlayerDiag(dirs dir1, dirs dir2) const;
     static bool IsScreenWide();

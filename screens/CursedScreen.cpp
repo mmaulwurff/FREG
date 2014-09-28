@@ -359,9 +359,13 @@ void Screen::ControlPlayer(const int ch) {
     updated = false;
 } // void Screen::ControlPlayer(int ch)
 
-void Screen::ProcessMouse() const {
+void Screen::ProcessMouse() {
     MEVENT mevent;
+    #ifdef PDCURSES
+    if ( nc_getmouse(&mevent) == ERR ) return;
+    #else
     if ( getmouse(&mevent) == ERR ) return;
+    #endif
     if ( wenclose(leftWin, mevent.y, mevent.x) ) {
         World * const world = GetWorld();
         if ( wmouse_trafo(leftWin, &mevent.y, &mevent.x, false)
@@ -373,7 +377,14 @@ void Screen::ProcessMouse() const {
             const int y =  mevent.y-1    + GetNormalStartY();
             for ( ; world->GetBlock(x, y, z)->Transparent() == INVISIBLE; --z);
             player->Examine(x, y, z);
+        } else {
+            Notify(tr("Left window, down view."));
         }
+    } else if ( wenclose(notifyWin, mevent.y, mevent.x) ) {
+        Notify("Notifications area.");
+    } else if ( wenclose(actionWin, mevent.y, mevent.x) ) {
+        wmouse_trafo(actionWin, &mevent.y, &mevent.x, false);
+        SetActionMode(static_cast<actions>(mevent.y));
     }
 }
 
@@ -406,6 +417,29 @@ void Screen::ProcessCommand(const QString command) {
 void Screen::SetActionMode(const actions mode) {
     mvwchgat(actionWin, actionMode,      0,20, A_NORMAL, WHITE_BLACK, nullptr);
     mvwchgat(actionWin, actionMode=mode, 0,20, A_NORMAL, BLACK_WHITE, nullptr);
+    switch ( mode ) {
+    case ACTION_USE:
+        Notify(tr("You switch to using things in inventory."));
+        break;
+    case ACTION_THROW:
+        Notify(tr("You switch to throwing things from inventory."));
+        break;
+    case ACTION_OBTAIN:
+        Notify(tr("You switch to obtaining things to your inventory."));
+        break;
+    case ACTION_INSCRIBE:
+        Notify(tr("You switch to inscribing things in your inventory."));
+        break;
+    case ACTION_BUILD:
+        Notify(tr("You switch to build things from your inventory."));
+        break;
+    case ACTION_CRAFT:
+        Notify(tr("You switch to craft things in your inventory."));
+        break;
+    case ACTION_WIELD:
+        Notify(tr("You switch to organize equipment in your inventory."));
+        break;
+    }
     wrefresh(actionWin);
     updated = false;
 }

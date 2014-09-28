@@ -100,7 +100,10 @@ void Player::Examine() {
 }
 
 void Player::Examine(const int x, const int y, const int z) {
-    if ( not Visible(x, y, z) ) return;
+    if ( not Visible(x, y, z) ) {
+        emit Notify(tr("You can't see what is there."));
+        return;
+    }
     const Block * const block = world->GetBlock(x, y, z);
     emit Notify( tr("You see %1.").arg(block->FullName()) );
     if ( DEBUG ) {
