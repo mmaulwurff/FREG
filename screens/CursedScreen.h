@@ -120,13 +120,15 @@ private:
 
     int GetNormalStartX() const;
     int GetNormalStartY() const;
+    int GetMinimapStartX() const;
+    int GetMinimapStartY() const;
 
     WINDOW * windows[6];
     WINDOW *& leftWin    = windows[0];
     WINDOW *& rightWin   = windows[1];
     WINDOW *& notifyWin  = windows[2];
     WINDOW *& hudWin     = windows[3]; // head-up display
-    WINDOW *& miniMapWin = windows[4];
+    WINDOW *& minimapWin = windows[4];
     WINDOW *& actionWin  = windows[5];
     mutable QString lastNotification;
     IThread * const input;

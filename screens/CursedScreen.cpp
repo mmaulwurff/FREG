@@ -34,6 +34,9 @@ const char OBSCURE_BLOCK = ' ';
 const int QUICK_INVENTORY_X_SHIFT = 36;
 const int SHADOW_COLOR = COLOR_PAIR(BLACK_BLACK) | A_BOLD | A_REVERSE;
 
+const int MINIMAP_WIDTH = 11;
+const int MINIMAP_HEIGHT = 7;
+
 void Screen::PrintVerticalDirection(WINDOW * const window, const int y,
         const int x, const dirs direction)
 {
@@ -381,10 +384,26 @@ void Screen::ProcessMouse() {
             Notify(tr("Left window, down view."));
         }
     } else if ( wenclose(notifyWin, mevent.y, mevent.x) ) {
-        Notify("Notifications area.");
+        Notify(tr("Notifications area."));
     } else if ( wenclose(actionWin, mevent.y, mevent.x) ) {
         wmouse_trafo(actionWin, &mevent.y, &mevent.x, false);
         SetActionMode(static_cast<actions>(mevent.y));
+    } else if ( wenclose(minimapWin, mevent.y, mevent.x) ) {
+        if ( wmouse_trafo(minimapWin, &mevent.y, &mevent.x, false)
+                && 0 < mevent.x && mevent.x < MINIMAP_WIDTH-1
+                && 0 < mevent.y && mevent.y < MINIMAP_HEIGHT-1)
+        {
+            const int shred_x = mevent.x/2 + GetMinimapStartX();
+            const int shred_y = mevent.y-1 + GetMinimapStartY();
+            Notify((0 <= shred_x && shred_x < w->NumShreds() &&
+                    0 <= shred_y && shred_y < w->NumShreds() ) ?
+                tr("On minimap: %1").arg( Shred::ShredTypeName(
+                    w->GetShredByPos(shred_x, shred_y)->GetTypeOfShred())) :
+                tr("You can't see that far.") );
+        } else {
+            Notify(tr("Minimap."));
+        }
+
     }
 }
 
@@ -605,28 +624,33 @@ void Screen::PrintQuickInventory() {
     }
 }
 
+int Screen::GetMinimapStartX() const {
+    return Shred::CoordOfShred(player->Y()) - 2;
+}
+
+int Screen::GetMinimapStartY() const {
+    return Shred::CoordOfShred(player->Y()) - 2;
+}
+
 void Screen::PrintMiniMap() {
-    (void)wmove(miniMapWin, 1, 0);
-    const int x_center = Shred::CoordOfShred(player->X());
-    const int y_center = Shred::CoordOfShred(player->Y());
-    const int j_start = x_center - 2;
-    const int j_end   = x_center + 2;
-    const int i_end   = y_center + 2;
-    for (int i=y_center-2; i<=i_end; ++i, waddch(miniMapWin, '\n'))
-    for (int j=j_start;    j<=j_end; ++j) {
+    (void)wmove(minimapWin, 1, 0);
+    const int i_start = GetMinimapStartY();
+    const int j_start = GetMinimapStartX();
+    for (int i=i_start; i <= i_start+4; ++i, waddch(minimapWin, '\n'))
+    for (int j=j_start; j <= j_start+4; ++j) {
         if ( i<0 || j<0 || i>=w->NumShreds() || j>=w->NumShreds() ) {
-            wstandend(miniMapWin);
-            waddstr  (miniMapWin, "  ");
+            wstandend(minimapWin);
+            waddstr  (minimapWin, "  ");
         } else {
             Shred * const shred = w->GetShredByPos(j, i);
-            wattrset(miniMapWin, ColorShred(shred->GetTypeOfShred()));
-            wprintw (miniMapWin, " %c", shred->GetTypeOfShred());
+            wattrset(minimapWin, ColorShred(shred->GetTypeOfShred()));
+            wprintw (minimapWin, " %c", shred->GetTypeOfShred());
         }
     }
-    wstandend(miniMapWin);
-    box(miniMapWin, 0, 0);
-    mvwaddstr(miniMapWin, 0, 1, qPrintable(tr("Minimap")));
-    wrefresh(miniMapWin);
+    wstandend(minimapWin);
+    box(minimapWin, 0, 0);
+    mvwaddstr(minimapWin, 0, 1, qPrintable(tr("Minimap")));
+    wrefresh(minimapWin);
 }
 
 int Screen::GetNormalStartX() const {
@@ -972,7 +996,8 @@ Screen::Screen(
         leftWin   = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, left_border);
         hudWin    = newwin(3, preferred_width, SCREEN_SIZE+2, left_border);
         notifyWin = newwin(0,preferred_width-13, SCREEN_SIZE+5,left_border+33);
-        miniMapWin = newwin(7, 11, SCREEN_SIZE+5, left_border  );
+        minimapWin =
+            newwin(MINIMAP_HEIGHT, MINIMAP_WIDTH, SCREEN_SIZE+5, left_border);
         actionWin  = newwin(7, 20, SCREEN_SIZE+5, left_border+12);
     } else if ( COLS >= preferred_width/2 ) {
         const int left_border = COLS/2-SCREEN_SIZE-1;
