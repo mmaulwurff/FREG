@@ -304,7 +304,7 @@ void Player::Build(const int slot) {
             || 0 == player->Weight()) )
     {
         DeferredAction * const def_action = new DeferredAction(player);
-        def_action->SetBuild(x_targ, y_targ, z_targ, block, slot);
+        def_action->SetBuild(x_targ, y_targ, z_targ, slot);
         player->SetDeferredAction(def_action);
     }
 }

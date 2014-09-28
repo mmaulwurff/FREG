@@ -61,13 +61,13 @@ void DeferredAction::Build() const {
             return;
         }
     }
+    Inventory * const inv = attachedBlock->HasInventory();
+    Block * const material = inv->ShowBlock(srcSlot);
     if ( not world->Build(material, x, y, z,
             World::TurnRight(attachedBlock->GetDir()), attachedBlock) )
     { // build not successful
         return;
     }
-    Inventory * const inv = attachedBlock->HasInventory();
-    if ( inv == nullptr ) return;
     inv->Pull(srcSlot);
     // put more material in building inventory slot:
     if ( inv->Number(srcSlot) ) return;
@@ -134,10 +134,9 @@ void DeferredAction::SetMove(const int dir) {
 void DeferredAction::SetJump() { type = DEFERRED_JUMP; }
 
 void DeferredAction::SetBuild(const int x, const int y, const int z,
-        Block * const mat, const int builder_slot)
+        const int builder_slot)
 {
     SetXyz(x, y, z);
-    material = mat;
     srcSlot  = builder_slot;
     type     = DEFERRED_BUILD;
 }
@@ -188,7 +187,6 @@ DeferredAction::DeferredAction(Animal * const attached) :
         Xyz(),
         type(DEFERRED_NOTHING),
         attachedBlock(attached),
-        material(),
         srcSlot(),
         destSlot(),
         num()

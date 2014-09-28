@@ -200,7 +200,6 @@ public:
     void Unlock();
 
 public slots:
-    void PhysEvents();
     void SetReloadShreds(int direction);
 
 signals:
@@ -249,6 +248,8 @@ private:
     ShredStorage * shredStorage;
     bool initial_lighting;
     QList<QString> notes;
+
+    bool isRunning;
 };
 
 extern World * world;

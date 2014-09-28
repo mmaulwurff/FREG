@@ -22,15 +22,13 @@
 
 IThread::IThread(VirtScreen * const scr) :
         screen(scr),
-        stopped(false)
+        isRunning(true)
 {}
 
 void IThread::run() {
-    while ( not stopped ) {
+    while ( isRunning ) {
         screen->ControlPlayer(screen->GetChar());
-        msleep(50);
-        screen->FlushInput();
     }
 }
 
-void IThread::Stop() { stopped = true; }
+void IThread::Stop() { isRunning = false; }

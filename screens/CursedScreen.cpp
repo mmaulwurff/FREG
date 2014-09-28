@@ -108,6 +108,7 @@ void Screen::RePrint() {
         waddstr(actionWin, qPrintable(action_strings[i]));
         waddch(actionWin, '\n');
     }
+    mvwchgat(actionWin, actionMode, 0, 20, A_NORMAL, BLACK_WHITE, nullptr);
     refresh();
     wrefresh(actionWin);
     updated = false;
@@ -552,30 +553,34 @@ void Screen::PrintHUD() {
     } else {
         const int dur = player->GetBlock()->GetDurability();
         if ( dur > 0 ) { // HitPoints line
+            static const int player_health_char =  ascii ? '@' : 0x2665;
             PrintBar(0,
                 (dur > MAX_DURABILITY/5) ?
                     COLOR_PAIR(RED_BLACK) : (COLOR_PAIR(BLACK_RED) | A_BLINK),
-                ascii ? '@' : 0x2665, dur*100/MAX_DURABILITY);
+                player_health_char, dur*100/MAX_DURABILITY);
         }
         const int breath = player->BreathPercent();
         if ( breath != 100 ) {
-            PrintBar(16, COLOR_PAIR(BLUE_BLACK), ascii ? 'o' : 0x00b0, breath);
+            static const int player_breath_char = ascii ? 'o' : 0x00b0;
+            PrintBar(16, COLOR_PAIR(BLUE_BLACK), player_breath_char, breath);
         }
-        switch ( player->SatiationPercent()/25 ) { // satiation status
-        default: break;
-        case  0:
-            wcolor_set(hudWin, RED_BLACK, nullptr);
-            mvwaddstr(hudWin, 1, 1, qPrintable(tr("Hungry")));
-            break;
-        case  3:
-            wcolor_set(hudWin, GREEN_BLACK, nullptr);
-            mvwaddstr(hudWin, 1, 1, qPrintable(tr("Full")));
-            break;
-        case  4:
-            wcolor_set(hudWin, BLUE_BLACK, nullptr);
-            mvwaddstr(hudWin, 1, 1, qPrintable(tr("Gorged")));
-            break;
-        }
+        static const QString satiation_strings[] = {
+            tr("Hungry"),
+            tr("Content"),
+            satiation_strings[1],
+            tr("Full"),
+            tr("Gorged")
+        };
+        static const int satiation_colors[] = {
+            RED_BLACK,
+            WHITE_BLACK,
+            satiation_colors[1],
+            GREEN_BLACK,
+            BLUE_BLACK
+        };
+        const int satiation_state = player->SatiationPercent() / 25;
+        wcolor_set(hudWin, satiation_colors[satiation_state], nullptr);
+        mvwaddstr(hudWin, 1,1, qPrintable(satiation_strings[satiation_state]));
     }
     Block * const focused = GetFocusedBlock();
     if ( Block::GetSubGroup(focused->Sub()) != GROUP_AIR ) {
@@ -961,7 +966,7 @@ Screen::Screen(
         set_escdelay(10);
     #endif
     start_color();
-    raw(); // send typed keys directly
+    nodelay(stdscr, FALSE);
     noecho(); // do not print typed symbols
     nonl();
     keypad(stdscr, TRUE); // use arrows
@@ -1067,7 +1072,6 @@ void Screen::PrintBar(const int x, const int attr, const int ch,
     mvwprintw(hudWin, 0, x,
         value_position_right ? "[..........]%hd" : "%3hd[..........]",percent);
     wattrset(hudWin, attr);
-    const QString str(10, QChar(ch));
-    mvwaddstr(hudWin, 0, x + (not value_position_right ? 4 : 1),
-        qPrintable(str.left(percent/10)));
+    mvwaddstr(hudWin, 0, x + (value_position_right ? 1 : 4),
+        qPrintable(QString(10, QChar(ch)).left(percent/10)));
 }

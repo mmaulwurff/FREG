@@ -44,7 +44,7 @@ private:
     IThread & operator=(const IThread &) = delete;
 
     VirtScreen * const screen;
-    volatile bool stopped;
+    volatile bool isRunning;
 };
 
 #endif // ITHREAD_H

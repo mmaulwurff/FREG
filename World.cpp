@@ -17,7 +17,6 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include <QTimer>
 #include <QDir>
 #include <QMutexLocker>
 #include <memory>
@@ -163,14 +162,6 @@ void World::Lock() { mutex.lock(); }
 bool World::TryLock() { return mutex.tryLock(); }
 void World::Unlock() { mutex.unlock(); }
 
-void World::run() {
-    QTimer timer;
-    connect(&timer, SIGNAL(timeout()), SLOT(PhysEvents()),
-        Qt::DirectConnection);
-    timer.start(1000/TIME_STEPS_IN_SEC);
-    exec();
-}
-
 dirs World::TurnRight(const dirs dir) {
     switch ( dir ) {
     case UP:
@@ -297,32 +288,35 @@ void World::SetReloadShreds(const int direction) {
     toResetDir = static_cast<dirs>(direction);
 }
 
-void World::PhysEvents() {
-    static const int start = NumShreds()/2 - numActiveShreds/2;
-    static const int end   = start + numActiveShreds;
-    Lock();
-    for (int i=start; i<end; ++i)
-    for (int j=start; j<end; ++j) {
-        shreds[ShredPos(i, j)]->PhysEventsFrequent();
-    }
-    if ( TIME_STEPS_IN_SEC > timeStep ) {
-        ++timeStep;
-    } else {
+void World::run() {
+    while ( isRunning ) {
+        static const int start = NumShreds()/2 - numActiveShreds/2;
+        static const int end   = start + numActiveShreds;
+        Lock();
         for (int i=start; i<end; ++i)
         for (int j=start; j<end; ++j) {
-            shreds[ShredPos(i, j)]->PhysEventsRare();
+            shreds[ShredPos(i, j)]->PhysEventsFrequent();
         }
-        timeStep = 0;
-        ++time;
-        switch ( TimeOfDay() ) {
-        default: break;
-        case END_OF_NIGHT:
-        case END_OF_EVENING: ReEnlightenTime(); break;
+        if ( TIME_STEPS_IN_SEC > timeStep ) {
+            ++timeStep;
+        } else {
+            for (int i=start; i<end; ++i)
+            for (int j=start; j<end; ++j) {
+                shreds[ShredPos(i, j)]->PhysEventsRare();
+            }
+            timeStep = 0;
+            ++time;
+            switch ( TimeOfDay() ) {
+            default: break;
+            case END_OF_NIGHT:
+            case END_OF_EVENING: ReEnlightenTime(); break;
+            }
         }
+        ReloadShreds();
+        Unlock();
+        emit UpdatesEnded();
+        msleep(1000 / TIME_STEPS_IN_SEC);
     }
-    ReloadShreds();
-    Unlock();
-    emit UpdatesEnded();
 }
 
 bool World::DirectlyVisible(
@@ -681,7 +675,8 @@ World::World(const QString world_name, bool * error) :
         sunMoonFactor(),
         shredStorage(),
         initial_lighting(),
-        notes()
+        notes(),
+        isRunning(true)
 {
     world = this;
     QSettings game_settings(home_path + "freg.ini", QSettings::IniFormat);
@@ -722,7 +717,7 @@ World::World(const QString world_name, bool * error) :
 
 World::~World() {
     Lock();
-    quit();
+    isRunning = false;
     wait();
     Unlock();
 
