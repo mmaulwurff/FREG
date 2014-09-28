@@ -116,12 +116,12 @@ private:
     int  RandomBlink() const;
     bool RandomBit() const;
     Block * GetFocusedBlock() const;
-    static void PrintVerticalDirection(WINDOW *, int y, int x, dirs);
+    inline static void PrintVerticalDirection(WINDOW *, int y, int x, dirs);
 
-    int GetNormalStartX() const;
-    int GetNormalStartY() const;
-    int GetMinimapStartX() const;
-    int GetMinimapStartY() const;
+    inline int GetNormalStartX() const;
+    inline int GetNormalStartY() const;
+    inline int GetMinimapStartX() const;
+    inline int GetMinimapStartY() const;
 
     WINDOW * windows[6];
     WINDOW *& leftWin    = windows[0];

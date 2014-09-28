@@ -438,27 +438,13 @@ void Screen::SetActionMode(const actions mode) {
     mvwchgat(actionWin, actionMode,      0,20, A_NORMAL, WHITE_BLACK, nullptr);
     mvwchgat(actionWin, actionMode=mode, 0,20, A_NORMAL, BLACK_WHITE, nullptr);
     switch ( mode ) {
-    case ACTION_USE:
-        Notify(tr("You switch to using things in inventory."));
-        break;
-    case ACTION_THROW:
-        Notify(tr("You switch to throwing things from inventory."));
-        break;
-    case ACTION_OBTAIN:
-        Notify(tr("You switch to obtaining things to your inventory."));
-        break;
-    case ACTION_INSCRIBE:
-        Notify(tr("You switch to inscribing things in your inventory."));
-        break;
-    case ACTION_BUILD:
-        Notify(tr("You switch to build things from your inventory."));
-        break;
-    case ACTION_CRAFT:
-        Notify(tr("You switch to craft things in your inventory."));
-        break;
-    case ACTION_WIELD:
-        Notify(tr("You switch to organize equipment in your inventory."));
-        break;
+    case ACTION_USE:      Notify(tr("Action: use in inventory."));      break;
+    case ACTION_THROW:    Notify(tr("Action: throw from inventory."));  break;
+    case ACTION_OBTAIN:   Notify(tr("Action: obtain to inventory."));   break;
+    case ACTION_INSCRIBE: Notify(tr("Action: inscribe in inventory.")); break;
+    case ACTION_BUILD:    Notify(tr("Action: build from inventory."));  break;
+    case ACTION_CRAFT:    Notify(tr("Action: craft in inventory."));    break;
+    case ACTION_WIELD:    Notify(tr("Action: organize equipment."));    break;
     }
     wrefresh(actionWin);
     updated = false;
@@ -517,7 +503,7 @@ void Screen::Print() {
     if ( fileToShow == nullptr ) { // right window
         switch ( player->UsingType() ) {
         default:
-            if ( UP==dir || DOWN==dir ) {
+            if ( dir <= DOWN ) {
                 PrintNormal(rightWin, dir);
             } else if ( rightWin != nullptr ) {
                 PrintFront(dir);
@@ -669,6 +655,7 @@ int Screen::GetNormalStartY() const {
 }
 
 void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
+    (void)wmove(window, 1, 1);
     int k_start, k_step;
     if ( UP == dir ) {
         k_start = player->Z() + 1;
@@ -677,25 +664,28 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
         k_start = player->Z() - ( DOWN==dir );
         k_step  = -1;
     }
-    (void)wmove(window, 1, 1);
     const int start_x = GetNormalStartX();
     const int start_y = GetNormalStartY();
-    for (int j=start_y; j<SCREEN_SIZE+start_y; ++j, waddstr(window, "\n_"))
-    for (int i=start_x; i<SCREEN_SIZE+start_x; ++i ) {
+    const int end_x = start_x + SCREEN_SIZE;
+    const int end_y = start_y + SCREEN_SIZE;
+    for (int j=start_y; j<end_y; ++j, waddstr(window, "\n_")) {
         randomBlink = blinkOn ? qrand() : 0;
-        Shred * const shred = w->GetShred(i, j);
-        const int i_in = Shred::CoordInShred(i);
-        const int j_in = Shred::CoordInShred(j);
-        int k = k_start;
-        for ( ; INVISIBLE == shred->GetBlock(i_in, j_in, k)->Transparent();
-            k += k_step);
-        if ( player->Visible(i, j, k) ) {
-            waddch(window, PrintBlock(*shred->GetBlock(i_in,j_in,k), window));
-            waddch(window, CharNumber(k));
-        } else {
-            wattrset(window, SHADOW_COLOR);
-            waddch(window, OBSCURE_BLOCK);
-            waddch(window, ' ');
+        for (int i=start_x; i<end_x; ++i ) {
+            Shred * const shred = w->GetShred(i, j);
+            const int i_in = Shred::CoordInShred(i);
+            const int j_in = Shred::CoordInShred(j);
+            int k = k_start;
+            for ( ; INVISIBLE == shred->GetBlock(i_in, j_in, k)->Transparent();
+                k += k_step);
+            if ( player->Visible(i, j, k) ) {
+                waddch(window,
+                    PrintBlock(*shred->GetBlock(i_in, j_in, k), window));
+                waddch(window, CharNumber(k));
+            } else {
+                wattrset(window, SHADOW_COLOR);
+                waddch(window, OBSCURE_BLOCK);
+                waddch(window, ' ');
+            }
         }
     }
 
@@ -779,8 +769,8 @@ void Screen::PrintFront(const dirs dir) const {
     const int sky_color = Color(BLOCK, SKY);
     (void)wmove(rightWin, 1, 1);
     for (int k=k_start; k>k_start-SCREEN_SIZE; --k, waddstr(rightWin, "\n_")) {
+        randomBlink = qrand();
         for (*x=x_start; *x!=x_end; *x+=x_step) {
-            randomBlink = qrand();
             for (*z=z_start; *z!=z_end && w->GetBlock(i, j, k)->
                         Transparent()==INVISIBLE;
                     *z += z_step);
@@ -790,8 +780,7 @@ void Screen::PrintFront(const dirs dir) const {
                 waddch(rightWin, sky_char);
                 waddch(rightWin, ' ');
             } else if ( player->Visible(i, j, k) ) {
-                const Block * const block = w->GetBlock(i, j, k);
-                waddch(rightWin, PrintBlock(*block, rightWin));
+                waddch(rightWin, PrintBlock(*w->GetBlock(i, j, k), rightWin));
                 waddch(rightWin, CharNumberFront(i, j));
             } else {
                 wattrset(rightWin, SHADOW_COLOR);
@@ -1000,7 +989,7 @@ Screen::Screen(
         rightWin  = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, COLS/2);
         leftWin   = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, left_border);
         hudWin    = newwin(3, preferred_width, SCREEN_SIZE+2, left_border);
-        notifyWin = newwin(0,preferred_width-13, SCREEN_SIZE+5,left_border+33);
+        notifyWin = newwin(0, 0, SCREEN_SIZE+5,left_border+33);
         minimapWin =
             newwin(MINIMAP_HEIGHT, MINIMAP_WIDTH, SCREEN_SIZE+5, left_border);
         actionWin  = newwin(7, 20, SCREEN_SIZE+5, left_border+12);
@@ -1008,9 +997,8 @@ Screen::Screen(
         const int left_border = COLS/2-SCREEN_SIZE-1;
         leftWin   = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, left_border);
         hudWin    = newwin(2,SCREEN_SIZE*2+2-15, SCREEN_SIZE+2,left_border+15);
-        notifyWin = newwin(21, SCREEN_SIZE*2+2-15,
-            SCREEN_SIZE+2+2, left_border+15);
-        actionWin = newwin(0, 15, SCREEN_SIZE+2, left_border);
+        notifyWin = newwin(0,  0, SCREEN_SIZE+2+2, left_border+15);
+        actionWin = newwin(7, 15, SCREEN_SIZE+2,   left_border);
     } else {
         puts(qPrintable(tr("Set your terminal width at least %1 chars.").
             arg(SCREEN_SIZE*2+2)));

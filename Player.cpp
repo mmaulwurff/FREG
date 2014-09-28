@@ -114,12 +114,12 @@ void Player::Examine(const int x, const int y, const int z) {
             arg(block->Kind()).
             arg(block->Sub()).
             arg(block->LightRadius()));
-        emit Notify(QString(
-            "Light:%1, fire:%2, sun:%3. Transp:%4. Norm:%5. Dir:%6.").
+        emit Notify(QString("Light: %1, fire: %2, sun: %3. Transp: %4.").
             arg(world->Enlightened(x, y, z)).
             arg(world->FireLight(x, y, z)/16).
             arg(world->SunLight(x, y, z)).
-            arg(block->Transparent()).
+            arg(block->Transparent()));
+        emit Notify(QString("Norm: %1. Dir: %2").
             arg(block==block_manager.Normal(block->Sub())).
             arg(block->GetDir()));
     }
@@ -400,10 +400,9 @@ void Player::ProcessCommand(QString command) {
 } // void Player::ProcessCommand(QString command)
 
 bool Player::Visible(const int x_to, const int y_to, const int z_to) const {
-    return ( (X()==x_to && Y()==y_to && Z()==z_to)
-            || GetCreativeMode()
-            || ( world->Enlightened(x_to, y_to, z_to)
-                && world->Visible(X(), Y(), Z(), x_to, y_to, z_to)) );
+    return ( GetCreativeMode()
+        || ( world->Enlightened(x_to, y_to, z_to)
+            && world->Visible(X(), Y(), Z(), x_to, y_to, z_to)) );
 }
 
 void Player::SetDir(const dirs direction) {
