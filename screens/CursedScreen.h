@@ -28,6 +28,7 @@
 #include <QMutex>
 
 #ifdef Q_OS_WIN32
+#define NCURSES_MOUSE_VERSION 2
 #include "pdcurses/curses.h"
 #else
 #define _X_OPEN_SOURCE_EXTENDED

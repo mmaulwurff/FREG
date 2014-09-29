@@ -19,7 +19,7 @@
 
 #include <QDir>
 #include <QMutexLocker>
-#include <memory>
+#include <QTimer>
 #include "blocks/Active.h"
 #include "blocks/Inventory.h"
 #include "Shred.h"
@@ -289,34 +289,38 @@ void World::SetReloadShreds(const int direction) {
 }
 
 void World::run() {
-    while ( isRunning ) {
-        static const int start = NumShreds()/2 - numActiveShreds/2;
-        static const int end   = start + numActiveShreds;
-        Lock();
+    QTimer timer;
+    connect(&timer, SIGNAL(timeout()), SLOT(PhysEvents()));
+    timer.start(1000 / TIME_STEPS_IN_SEC);
+    exec();
+}
+
+void World::PhysEvents() {
+    static const int start = NumShreds()/2 - numActiveShreds/2;
+    static const int end   = start + numActiveShreds;
+    Lock();
+    for (int i=start; i<end; ++i)
+    for (int j=start; j<end; ++j) {
+        shreds[ShredPos(i, j)]->PhysEventsFrequent();
+    }
+    if ( TIME_STEPS_IN_SEC > timeStep ) {
+        ++timeStep;
+    } else {
         for (int i=start; i<end; ++i)
         for (int j=start; j<end; ++j) {
-            shreds[ShredPos(i, j)]->PhysEventsFrequent();
+            shreds[ShredPos(i, j)]->PhysEventsRare();
         }
-        if ( TIME_STEPS_IN_SEC > timeStep ) {
-            ++timeStep;
-        } else {
-            for (int i=start; i<end; ++i)
-            for (int j=start; j<end; ++j) {
-                shreds[ShredPos(i, j)]->PhysEventsRare();
-            }
-            timeStep = 0;
-            ++time;
-            switch ( TimeOfDay() ) {
-            default: break;
-            case END_OF_NIGHT:
-            case END_OF_EVENING: ReEnlightenTime(); break;
-            }
+        timeStep = 0;
+        ++time;
+        switch ( TimeOfDay() ) {
+        default: break;
+        case END_OF_NIGHT:
+        case END_OF_EVENING: ReEnlightenTime(); break;
         }
-        ReloadShreds();
-        Unlock();
-        emit UpdatesEnded();
-        msleep(1000 / TIME_STEPS_IN_SEC);
     }
+    ReloadShreds();
+    Unlock();
+    emit UpdatesEnded();
 }
 
 bool World::DirectlyVisible(
@@ -675,8 +679,7 @@ World::World(const QString world_name, bool * error) :
         sunMoonFactor(),
         shredStorage(),
         initial_lighting(),
-        notes(),
-        isRunning(true)
+        notes()
 {
     world = this;
     QSettings game_settings(home_path + "freg.ini", QSettings::IniFormat);
@@ -717,7 +720,7 @@ World::World(const QString world_name, bool * error) :
 
 World::~World() {
     Lock();
-    isRunning = false;
+    quit();
     wait();
     Unlock();
 

@@ -365,11 +365,13 @@ void Screen::ControlPlayer(const int ch) {
 
 void Screen::ProcessMouse() {
     MEVENT mevent;
-    #ifdef PDCURSES
-    if ( nc_getmouse(&mevent) == ERR ) return;
-    #else
     if ( getmouse(&mevent) == ERR ) return;
-    #endif
+    switch ( mevent.bstate ) {
+    case BUTTON4_CLICKED: ControlPlayer('['); return;
+    case BUTTON5_CLICKED: ControlPlayer(']'); return;
+    case BUTTON1_CLICKED: break;
+    default: return;
+    }
     if ( wenclose(leftWin, mevent.y, mevent.x) ) {
         World * const world = GetWorld();
         if ( wmouse_trafo(leftWin, &mevent.y, &mevent.x, false)
@@ -940,7 +942,7 @@ Screen::Screen(
         fileToShow(nullptr),
         beepOn (settings.value("beep_on",  false).toBool()),
         flashOn(settings.value("flash_on", true ).toBool()),
-        ascii(_ascii),
+        ascii(_ascii && settings.value("ascii", true).toBool() ),
         blinkOn(settings.value("blink_on", true).toBool()),
         arrows{'.', 'x',
             ascii ? '^' : 0x2191,
@@ -959,7 +961,7 @@ Screen::Screen(
     noecho(); // do not print typed symbols
     nonl();
     keypad(stdscr, TRUE); // use arrows
-    mousemask(BUTTON1_RELEASED, nullptr);
+    mousemask(BUTTON1_CLICKED | BUTTON4_CLICKED | BUTTON5_CLICKED, nullptr);
     memset(windows, 0, sizeof(windows));
     if ( LINES < 41 && IsScreenWide() ) {
         printf("Make your terminal height to be at least 41 lines.\n");
@@ -1051,6 +1053,7 @@ Screen::~Screen() {
     settings.setValue("beep_on",  beepOn);
     settings.setValue("flash_on", flashOn);
     settings.setValue("blink_on", blinkOn);
+    settings.setValue("ascii", ascii);
 }
 
 void Screen::PrintBar(const int x, const int attr, const int ch,

@@ -201,6 +201,7 @@ public:
 
 public slots:
     void SetReloadShreds(int direction);
+    void PhysEvents();
 
 signals:
     void Notify(QString) const;
@@ -248,8 +249,6 @@ private:
     ShredStorage * shredStorage;
     bool initial_lighting;
     QList<QString> notes;
-
-    bool isRunning;
 };
 
 extern World * world;

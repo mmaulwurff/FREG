@@ -51,6 +51,8 @@ QString Shred::ShredTypeName(const shred_type type) {
     case SHRED_NULLMOUNTAIN: /*-*/ return QObject::tr("Null mountain");
     case SHRED_NORMAL_UNDERGROUND: return QObject::tr("Normal underground");
     }
+    Q_UNREACHABLE();
+    return QString();
 }
 
 
