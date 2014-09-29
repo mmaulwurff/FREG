@@ -239,8 +239,7 @@ void Screen::MovePlayerDiag(const dirs dir1, const dirs dir2) const {
     step_trigger = !step_trigger;
 }
 
-int Screen::GetChar() const { return getch(); }
-void Screen::FlushInput() const { flushinp(); }
+void Screen::ControlPlayer() { ControlPlayer(getch()); }
 
 void Screen::ControlPlayer(const int ch) {
     if ( player->GetBlock() == nullptr ) return;
@@ -406,7 +405,21 @@ void Screen::ProcessMouse() {
         } else {
             Notify(tr("Minimap."));
         }
-
+    } else if ( wenclose(hudWin, mevent.y, mevent.x) ) {
+        if ( not wmouse_trafo(hudWin, &mevent.y, &mevent.x, false) ) return;
+        mevent.x -= QUICK_INVENTORY_X_SHIFT;
+        mevent.x /= 2;
+        if ( not ( IsScreenWide() && 0 <= mevent.x && mevent.x <= 'z'-'a' ) ) {
+            Notify(tr("Information: left - player, right - focused thing."));
+            return;
+        }
+        Inventory * const inv = player->PlayerInventory();
+        if ( inv == nullptr ) return;
+        Notify(tr("%1 is in inventory at slot '%2'.").
+            arg(inv->Number(mevent.x) ?
+                inv->InvFullName(mevent.x) :
+                tr("Nothing")).
+            arg(char(mevent.x + 'a')));
     }
 }
 

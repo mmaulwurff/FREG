@@ -87,7 +87,7 @@ public:
      *  See enum usage_types in header.h. */
     int UsingSelfType() const;
 
-    /// Returns 0 if there is no inventory, otherwise returns inventory.
+    /// Returns nullptr if there is no inventory, otherwise returns inventory.
     Inventory * PlayerInventory() const;
 
     long GetLongitude() const;

@@ -28,12 +28,12 @@
 
 #include <QThread>
 
-class VirtScreen;
+class Screen;
 
 class IThread final : public QThread {
     Q_OBJECT
 public:
-    IThread(VirtScreen * const);
+    IThread(Screen *);
     void Stop();
 
 protected:
@@ -43,7 +43,7 @@ private:
     IThread(const IThread &) = delete;
     IThread & operator=(const IThread &) = delete;
 
-    VirtScreen * const screen;
+    Screen * const screen;
     volatile bool isRunning;
 };
 

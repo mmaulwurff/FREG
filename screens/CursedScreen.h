@@ -65,9 +65,8 @@ public:
      Screen(World *, Player *, int & error, bool ascii);
     ~Screen() override;
 
-    int  GetChar() const override;
-    void FlushInput() const override;
-    void ControlPlayer(int command) override;
+    void ControlPlayer();
+    void ControlPlayer(int ch);
 
 public slots:
     void Notify(QString) const override;

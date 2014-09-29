@@ -120,11 +120,6 @@ public:
     VirtScreen(VirtScreen &) = delete;
     virtual ~VirtScreen();
 
-    // Functions for text screens:
-    virtual int  GetChar() const;
-    virtual void FlushInput() const;
-    virtual void ControlPlayer(int command);
-
     static char CharName(int kind, int sub);
     static int  Color   (int kind, int sub);
 
