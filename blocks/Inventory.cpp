@@ -27,7 +27,6 @@ int  Inventory::Start() const { return 0; }
 int  Inventory::Size()  const { return size; }
 int  Inventory::Number(const int i) const { return inventory[i].size(); }
 bool Inventory::Access() const { return true; }
-QString Inventory::NumStr(const int num) { return QString(" (%1x)").arg(num); }
 
 bool Inventory::Drop(const int src, int dest, int num,
         Inventory * const inv_to)
@@ -144,8 +143,12 @@ bool Inventory::InscribeInv(const int num, const QString str) {
 }
 
 QString Inventory::InvFullName(const int num) const {
-    return inventory[num].isEmpty() ?
-        QObject::tr("-empty-") : inventory[num].top()->FullName();
+    return QString("%1%2").
+        arg( inventory[num].isEmpty() ?
+            QObject::tr("-empty-") :
+            inventory[num].top()->FullName() ).
+        arg( Number(num) <= 1 ?
+            "" : QString(" (x%1)").arg(Number(num)));
 }
 
 int Inventory::GetInvWeight(const int i) const {

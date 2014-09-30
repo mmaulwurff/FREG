@@ -415,11 +415,11 @@ void Screen::ProcessMouse() {
         }
         Inventory * const inv = player->PlayerInventory();
         if ( inv == nullptr ) return;
-        Notify(tr("%1 is in inventory at slot '%2'.").
-            arg(inv->Number(mevent.x) ?
+        Notify( tr("In inventory at slot '%1': %2.").
+            arg(char(mevent.x + 'a')).
+            arg( inv->Number(mevent.x) ?
                 inv->InvFullName(mevent.x) :
-                tr("Nothing")).
-            arg(char(mevent.x + 'a')));
+                tr("nothing") ) );
     }
 }
 
@@ -839,9 +839,6 @@ const {
         const Block * const block = inv->ShowBlock(i);
         wprintw(window, "[%c]%s",
             PrintBlock(*block, window), qPrintable(inv->InvFullName(i)) );
-        if ( 1 < number ) {
-            waddstr(window, qPrintable(Inventory::NumStr(number)));
-        }
         if ( MAX_DURABILITY != block->GetDurability() ) {
             wprintw(window, "{%d}", block->GetDurability()*100/MAX_DURABILITY);
         }
@@ -914,7 +911,7 @@ void Screen::Notify(const QString str) const {
     static int notification_repeat_count = 1;
     if ( str == lastNotification ) {
         ++notification_repeat_count;
-        mvwprintw(notifyWin, getcury(notifyWin)-1, 0, "%s (%dx)\n",
+        mvwprintw(notifyWin, getcury(notifyWin)-1, 0, "%s (x%d)\n",
             qPrintable(str), notification_repeat_count);
     } else {
         notification_repeat_count = 1;
@@ -974,7 +971,7 @@ Screen::Screen(
     noecho(); // do not print typed symbols
     nonl();
     keypad(stdscr, TRUE); // use arrows
-    mousemask(BUTTON1_CLICKED | BUTTON4_CLICKED | BUTTON5_CLICKED, nullptr);
+    mousemask(BUTTON1_CLICKED | BUTTON1_RELEASED | BUTTON4_CLICKED | BUTTON5_CLICKED, nullptr);
     memset(windows, 0, sizeof(windows));
     if ( LINES < 41 && IsScreenWide() ) {
         printf("Make your terminal height to be at least 41 lines.\n");
