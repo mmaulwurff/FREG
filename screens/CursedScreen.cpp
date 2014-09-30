@@ -362,6 +362,14 @@ void Screen::ControlPlayer(const int ch) {
     updated = false;
 } // void Screen::ControlPlayer(int ch)
 
+void Screen::ExamineOnNormalScreen(int x, int y, int z, const int step) const {
+    World * const world = GetWorld();
+    x = (x-1)/2 + GetNormalStartX();
+    y =  y-1    + GetNormalStartY();
+    for ( ; world->GetBlock(x, y, z)->Transparent() == INVISIBLE; z += step);
+    player->Examine(x, y, z);
+}
+
 void Screen::ProcessMouse() {
     MEVENT mevent;
     if ( getmouse(&mevent) == ERR ) return;
@@ -371,41 +379,38 @@ void Screen::ProcessMouse() {
     case BUTTON1_CLICKED: break;
     default: return;
     }
-    if ( wenclose(leftWin, mevent.y, mevent.x) ) {
-        World * const world = GetWorld();
-        if ( wmouse_trafo(leftWin, &mevent.y, &mevent.x, false)
-                && 0 < mevent.x && mevent.x < SCREEN_SIZE*2 + 1
-                && 0 < mevent.y && mevent.y < SCREEN_SIZE )
+    if ( wenclose(leftWin, mevent.y, mevent.x) ) { // left window
+        if ( not wmouse_trafo(leftWin, &mevent.y, &mevent.x, false) ) return;
+        if ( not (
+                0 < mevent.x && mevent.x < SCREEN_SIZE*2 + 1 &&
+                0 < mevent.y && mevent.y < SCREEN_SIZE ) )
         {
-            int z = player->Z();
-            const int x = (mevent.x-1)/2 + GetNormalStartX();
-            const int y =  mevent.y-1    + GetNormalStartY();
-            for ( ; world->GetBlock(x, y, z)->Transparent() == INVISIBLE; --z);
-            player->Examine(x, y, z);
-        } else {
-            Notify(tr("Left window, down view."));
+            Notify(tr("Left window, Down view."));
+            return;
         }
-    } else if ( wenclose(notifyWin, mevent.y, mevent.x) ) {
+        ExamineOnNormalScreen(mevent.x, mevent.y, player->Z(), -1);
+    } else if ( wenclose(notifyWin, mevent.y, mevent.x) ) { // notify
         Notify(tr("Notifications area."));
-    } else if ( wenclose(actionWin, mevent.y, mevent.x) ) {
+    } else if ( wenclose(actionWin, mevent.y, mevent.x) ) { // actions
         wmouse_trafo(actionWin, &mevent.y, &mevent.x, false);
         SetActionMode(static_cast<actions>(mevent.y));
-    } else if ( wenclose(minimapWin, mevent.y, mevent.x) ) {
-        if ( wmouse_trafo(minimapWin, &mevent.y, &mevent.x, false)
-                && 0 < mevent.x && mevent.x < MINIMAP_WIDTH-1
-                && 0 < mevent.y && mevent.y < MINIMAP_HEIGHT-1)
+    } else if ( wenclose(minimapWin, mevent.y, mevent.x) ) { // minimap
+        if (not wmouse_trafo(minimapWin, &mevent.y, &mevent.x, false)) return;
+        if ( not (
+                0 < mevent.x && mevent.x < MINIMAP_WIDTH-1 &&
+                0 < mevent.y && mevent.y < MINIMAP_HEIGHT-1 ) )
         {
-            const int shred_x = mevent.x/2 + GetMinimapStartX();
-            const int shred_y = mevent.y-1 + GetMinimapStartY();
-            Notify((0 <= shred_x && shred_x < w->NumShreds() &&
-                    0 <= shred_y && shred_y < w->NumShreds() ) ?
-                tr("On minimap: %1").arg( Shred::ShredTypeName(
-                    w->GetShredByPos(shred_x, shred_y)->GetTypeOfShred())) :
-                tr("You can't see that far.") );
-        } else {
             Notify(tr("Minimap."));
+            return;
         }
-    } else if ( wenclose(hudWin, mevent.y, mevent.x) ) {
+        const int shred_x = mevent.x/2 + GetMinimapStartX();
+        const int shred_y = mevent.y-1 + GetMinimapStartY();
+        Notify((0 <= shred_x && shred_x < w->NumShreds() &&
+                0 <= shred_y && shred_y < w->NumShreds() ) ?
+            tr("On minimap: %1").arg( Shred::ShredTypeName(
+                w->GetShredByPos(shred_x, shred_y)->GetTypeOfShred())) :
+            tr("You can't see that far.") );
+    } else if ( wenclose(hudWin, mevent.y, mevent.x) ) { // HUD
         if ( not wmouse_trafo(hudWin, &mevent.y, &mevent.x, false) ) return;
         mevent.x -= QUICK_INVENTORY_X_SHIFT;
         mevent.x /= 2;
@@ -420,6 +425,29 @@ void Screen::ProcessMouse() {
             arg( inv->Number(mevent.x) ?
                 inv->InvFullName(mevent.x) :
                 tr("nothing") ) );
+    } else if ( wenclose(rightWin, mevent.y, mevent.x) ) { // right window
+        if ( not wmouse_trafo(rightWin, &mevent.y, &mevent.x, false) ) return;
+        if ( not (
+                0 < mevent.x && mevent.x < SCREEN_SIZE*2 + 1 &&
+                0 < mevent.y && mevent.y < SCREEN_SIZE ) )
+        {
+            Notify(tr("Right window, %1 view.").
+                arg(Block::DirString(player->GetDir())));
+            return;
+        }
+        switch ( player->GetDir() ) {
+        case UP:
+            ExamineOnNormalScreen(mevent.x, mevent.y, player->Z()+1, 1);
+            break;
+        case DOWN:
+            ExamineOnNormalScreen(mevent.x, mevent.y, player->Z()-1, -1);
+            break;
+        default:
+            PrintFront(player->GetDir(), mevent.x, mevent.y);
+            break;
+        }
+    } else {
+        Notify(tr("Nothing here. Click on something to get information."));
     }
 }
 
@@ -631,7 +659,7 @@ void Screen::PrintQuickInventory() {
 }
 
 int Screen::GetMinimapStartX() const {
-    return Shred::CoordOfShred(player->Y()) - 2;
+    return Shred::CoordOfShred(player->X()) - 2;
 }
 
 int Screen::GetMinimapStartY() const {
@@ -717,7 +745,8 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
     wrefresh(window);
 } // void Screen::PrintNormal(WINDOW * window, int dir)
 
-void Screen::PrintFront(const dirs dir) const {
+void Screen::PrintFront(const dirs dir, const int block_x, const int block_y)
+const {
     const int pX = player->X();
     const int begin_x = ( pX/SHRED_WIDTH )*SHRED_WIDTH +
         ( SHRED_WIDTH-SCREEN_SIZE )/2;
@@ -781,6 +810,16 @@ void Screen::PrintFront(const dirs dir) const {
     }
     const int k_start =
         qBound(SCREEN_SIZE-1, player->Z()+SCREEN_SIZE/2, HEIGHT-1);
+    if ( block_x > 0 ) {
+        // ugly! use print function to get block by screen coordinates.
+        int k = k_start - block_y + 1;
+        *x = x_start + x_step * (block_x-1)/2;
+        for (*z=z_start; *z!=z_end && w->GetBlock(i, j, k)->
+                    Transparent()==INVISIBLE;
+                *z += z_step);
+        player->Examine(i, j, k);
+        return;
+    }
     const int sky_color = Color(BLOCK, SKY);
     (void)wmove(rightWin, 1, 1);
     for (int k=k_start; k>k_start-SCREEN_SIZE; --k, waddstr(rightWin, "\n_")) {

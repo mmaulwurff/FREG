@@ -91,7 +91,9 @@ private:
     void Arrows(WINDOW *, int x, int y, dirs) const;
     void HorizontalArrows(WINDOW *, int y, dirs) const;
     void PrintNormal(WINDOW *, dirs) const;
-    void PrintFront(dirs) const;
+    /// Has two functions: first - when x == -1 - prints front,
+    /// second - otherwise - returns block at position x,y (by get_block)
+    void PrintFront(dirs direction, int x = -1, int y = 0) const;
     void PrintInv(WINDOW *, const Block *, const Inventory *) const;
     /// Can print health, breath and other bars on hudWin.
     void PrintBar(int x, int color, int ch, int percent,
@@ -122,6 +124,7 @@ private:
     inline int GetNormalStartY() const;
     inline int GetMinimapStartX() const;
     inline int GetMinimapStartY() const;
+    void ExamineOnNormalScreen(int x, int y, int z, int step) const;
 
     WINDOW * windows[6];
     WINDOW *& leftWin    = windows[0];
