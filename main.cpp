@@ -76,7 +76,7 @@ int main(int argc, char ** argv) {
     parser.addHelpOption();
     parser.addVersionOption();
     const QCommandLineOption ascii(QStringList() << "a" << "ascii",
-        QObject::tr("Use ASCII-characters only."));
+        QObject::tr("Use ASCII-characters only and don't animate things."));
     parser.addOption(ascii);
     const QCommandLineOption world_argument(QStringList() << "w" << "world",
         QObject::tr("Specify world."),

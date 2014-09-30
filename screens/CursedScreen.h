@@ -92,7 +92,7 @@ private:
     void HorizontalArrows(WINDOW *, int y, dirs) const;
     void PrintNormal(WINDOW *, dirs) const;
     /// Has two functions: first - when x == -1 - prints front,
-    /// second - otherwise - returns block at position x,y (by get_block)
+    /// second - otherwise - examines block at position x, y.
     void PrintFront(dirs direction, int x = -1, int y = 0) const;
     void PrintInv(WINDOW *, const Block *, const Inventory *) const;
     /// Can print health, breath and other bars on hudWin.

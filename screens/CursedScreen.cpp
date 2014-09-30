@@ -823,7 +823,7 @@ const {
     const int sky_color = Color(BLOCK, SKY);
     (void)wmove(rightWin, 1, 1);
     for (int k=k_start; k>k_start-SCREEN_SIZE; --k, waddstr(rightWin, "\n_")) {
-        randomBlink = qrand();
+        randomBlink = blinkOn ? qrand() : 0;
         for (*x=x_start; *x!=x_end; *x+=x_step) {
             for (*z=z_start; *z!=z_end && w->GetBlock(i, j, k)->
                         Transparent()==INVISIBLE;
@@ -992,7 +992,7 @@ Screen::Screen(
         beepOn (settings.value("beep_on",  false).toBool()),
         flashOn(settings.value("flash_on", true ).toBool()),
         ascii(_ascii && settings.value("ascii", true).toBool() ),
-        blinkOn(settings.value("blink_on", true).toBool()),
+        blinkOn(not _ascii || settings.value("blink_on", true).toBool()),
         arrows{'.', 'x',
             ascii ? '^' : 0x2191,
             ascii ? 'v' : 0x2193,
