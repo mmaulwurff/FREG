@@ -443,7 +443,7 @@ can_move_results World::CanMove(const int x, const int y, const int z,
         }
         break;
     }
-    return CAN_MOVE_CANNOT;;
+    return CAN_MOVE_CANNOT;
 } // bool World::CanMove(const int x, y, z, newx, newy, newz, int dir)
 
 void World::NoCheckMove(const int x, const int y, const int z,
@@ -609,7 +609,7 @@ bool World::Exchange(Block * const block_from, Block * const block_to,
             return false;
         }
     }
-    if ( inv_from->Number(src) == 0 ) {
+    if ( src >= inv_from->Size() || inv_from->Number(src) == 0 ) {
         block_from->ReceiveSignal(tr("Nothing here."));
         block_to  ->ReceiveSignal(tr("Nothing here."));
     } else if ( inv_from->Drop(src, dest, num, inv_to) ) {

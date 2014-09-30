@@ -57,5 +57,3 @@ bool Filter::Get(Block * const block, int) {
         }
     }
 }
-
-Active * Filter::ActiveBlock() { return this; }

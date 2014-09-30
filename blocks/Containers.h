@@ -44,7 +44,6 @@ public:
     void Damage(int dmg, int dmg_kind) override;
     Block * DropAfterDamage(bool * delete_block) override;
     QString FullName() const override;
-    Active * ActiveBlock() override;
     Inventory * HasInventory() override final;
     usage_types Use(Block * who) override;
     push_reaction PushResult(dirs) const override;

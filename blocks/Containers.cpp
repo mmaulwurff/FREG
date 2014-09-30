@@ -53,11 +53,6 @@ const int CONVERTER_LIGHT_RADIUS = 2;
         return pile;
     }
 
-    Active * Container::ActiveBlock() {
-        return ( Sub() == IRON || Sub() == WATER) ?
-            nullptr : this;
-    }
-
     int Container::Weight() const {
         return Block::Weight()*4 + Inventory::Weight();
     }
