@@ -124,34 +124,30 @@
 
 // Grass::
     void Grass::DoRareAction() {
-        World * const world = GetWorld();
         int i=X(), j=Y(), k=Z();
         // increase this if grass grows too fast
-        switch ( qrand() % (FIRE==Sub() ? 4 : SECONDS_IN_HOUR*2) ) {
+        switch ( qrand() % (FIRE==Sub() ? 4 : SECONDS_IN_HOUR*4) ) {
         case 0: ++i; break;
         case 1: --i; break;
         case 2: ++j; break;
         case 3: --j; break;
         default: return;
         }
+        World * const world = GetWorld();
         if ( not world->InBounds(i, j) ) return;
-        const int sub_near = world->GetBlock(i, j, k)->Sub();
-        if ( world->Enlightened(i, j, k) || FIRE == Sub() ) {
-            if ( AIR == sub_near
-                    && IsBase(Sub(), world->GetBlock(i, j, k-1)->Sub() ) )
-            {
-                world->Build(BlockManager::NewBlock(GRASS, Sub()), i, j, k);
-            } else if ( IsBase(Sub(), sub_near)
-                    && AIR == world->GetBlock(i, j, ++k)->Sub() )
+        if ( FIRE == Sub() || world->Enlightened(i, j, k) ) {
+            const int sub_near = world->GetBlock(i, j, k)->Sub();
+            if ( (AIR == sub_near
+                        && IsBase(Sub(), world->GetBlock(i, j, k-1)->Sub() ) )
+                    || ( IsBase(Sub(), sub_near)
+                        && AIR == world->GetBlock(i, j, ++k)->Sub() ) )
             {
                 world->Build(BlockManager::NewBlock(GRASS, Sub()), i, j, k);
             }
         }
         if ( not IsBase(Sub(), world->GetBlock(X(), Y(), Z()-1)->Sub()) ) {
             world->DestroyAndReplace(X(), Y(), Z());
-            return;
-        }
-        if ( FIRE == Sub() ) {
+        } else if ( FIRE == Sub() ) {
             DamageAround();
             if ( qrand()%10 || IsSubAround(WATER) ) {
                 Damage(2, DAMAGE_FREEZE);
