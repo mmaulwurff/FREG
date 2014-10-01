@@ -612,9 +612,8 @@ bool World::Exchange(Block * const block_from, Block * const block_to,
     if ( src >= inv_from->Size() || inv_from->Number(src) == 0 ) {
         block_from->ReceiveSignal(tr("Nothing here."));
         block_to  ->ReceiveSignal(tr("Nothing here."));
-    } else if ( inv_from->Drop(src, dest, num, inv_to) ) {
-        block_from->ReceiveSignal(tr("Your bag is lighter now."));
-        block_to  ->ReceiveSignal(tr("Your bag is heavier now."));
+    } else {
+        inv_from->Drop(src, dest, num, inv_to);
     }
     return false;
 }

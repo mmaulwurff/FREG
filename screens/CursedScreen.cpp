@@ -243,7 +243,9 @@ void Screen::ControlPlayer() { ControlPlayer(getch()); }
 
 void Screen::ControlPlayer(const int ch) {
     if ( player->GetBlock() == nullptr ) return;
-    CleanFileToShow();
+    if ( ch != KEY_MOUSE ) {
+        CleanFileToShow();
+    }
     /// \todo: ctrl-z (to background) support
     // Q, ctrl-c, ctrl-d, ctrl-q, ctrl-x
     if ( 'Q' == ch
@@ -373,14 +375,12 @@ void Screen::ExamineOnNormalScreen(int x, int y, int z, const int step) const {
 void Screen::ProcessMouse() {
     MEVENT mevent;
     if ( getmouse(&mevent) == ERR ) return;
-    switch ( mevent.bstate ) {
-    case BUTTON4_CLICKED: ControlPlayer('['); return;
-    case BUTTON5_CLICKED: ControlPlayer(']'); return;
-    case BUTTON1_CLICKED: break;
-    default: return;
-    }
     if ( wenclose(leftWin, mevent.y, mevent.x) ) { // left window
         if ( not wmouse_trafo(leftWin, &mevent.y, &mevent.x, false) ) return;
+        if ( player->UsingSelfType() == USAGE_TYPE_OPEN ) {
+            Notify(tr("Your inventory."));
+            return;
+        }
         if ( not (
                 0 < mevent.x && mevent.x < SCREEN_SIZE*2 + 1 &&
                 0 < mevent.y && mevent.y < SCREEN_SIZE ) )
@@ -427,24 +427,28 @@ void Screen::ProcessMouse() {
                 tr("nothing") ) );
     } else if ( wenclose(rightWin, mevent.y, mevent.x) ) { // right window
         if ( not wmouse_trafo(rightWin, &mevent.y, &mevent.x, false) ) return;
-        if ( not (
+        if ( fileToShow != nullptr ) {
+            Notify(tr("Reading file: \"%1\".").arg(fileToShow->fileName()));
+        } else if (player->UsingType() == USAGE_TYPE_OPEN ) {
+            Notify(tr("Opened inventory."));
+        } else if ( not (
                 0 < mevent.x && mevent.x < SCREEN_SIZE*2 + 1 &&
                 0 < mevent.y && mevent.y < SCREEN_SIZE ) )
         {
             Notify(tr("Right window, %1 view.").
                 arg(Block::DirString(player->GetDir())));
-            return;
-        }
-        switch ( player->GetDir() ) {
-        case UP:
-            ExamineOnNormalScreen(mevent.x, mevent.y, player->Z()+1, 1);
-            break;
-        case DOWN:
-            ExamineOnNormalScreen(mevent.x, mevent.y, player->Z()-1, -1);
-            break;
-        default:
-            PrintFront(player->GetDir(), mevent.x, mevent.y);
-            break;
+        } else {
+            switch ( player->GetDir() ) {
+            case UP:
+                ExamineOnNormalScreen(mevent.x, mevent.y, player->Z()+1, 1);
+                break;
+            case DOWN:
+                ExamineOnNormalScreen(mevent.x, mevent.y, player->Z()-1, -1);
+                break;
+            default:
+                PrintFront(player->GetDir(), mevent.x, mevent.y);
+                break;
+            }
         }
     } else {
         Notify(tr("Nothing here. Click on something to get information."));
@@ -1010,7 +1014,7 @@ Screen::Screen(
     noecho(); // do not print typed symbols
     nonl();
     keypad(stdscr, TRUE); // use arrows
-    mousemask(BUTTON1_CLICKED | BUTTON1_RELEASED | BUTTON4_CLICKED | BUTTON5_CLICKED, nullptr);
+    mousemask(BUTTON1_CLICKED | BUTTON1_RELEASED, nullptr);
     memset(windows, 0, sizeof(windows));
     if ( LINES < 41 && IsScreenWide() ) {
         printf("Make your terminal height to be at least 41 lines.\n");

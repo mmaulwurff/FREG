@@ -117,7 +117,9 @@ void DeferredAction::Pour() const {
 void DeferredAction::SetFire() const {
     World * const world = attachedBlock->GetWorld();
     if ( world->GetBlock(X(), Y(), Z())->Sub() == AIR ) {
-         world->Build(BlockManager::NewBlock(GRASS, FIRE), X(), Y(), Z());
+        world->Build(BlockManager::NewBlock(GRASS, FIRE), X(), Y(), Z());
+    } else if ( world->Damage(X(), Y(), Z(), 1, DAMAGE_HEAT) <= 0 ) {
+        world->DestroyAndReplace(X(), Y(), Z());
     }
 }
 

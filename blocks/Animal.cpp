@@ -103,7 +103,7 @@
     }
 
     Block * Animal::DropAfterDamage(bool *) {
-        Block * const cadaver = BlockManager::NewBlock(CONTAINER, Sub());
+        Block * const cadaver = BlockManager::NewBlock(BOX, Sub());
         cadaver->HasInventory()->Get(BlockManager::NewBlock(WEAPON, BONE));
         return cadaver;
     }

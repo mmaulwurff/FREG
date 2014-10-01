@@ -125,16 +125,6 @@
 // Grass::
     void Grass::DoRareAction() {
         World * const world = GetWorld();
-        if ( FIRE == Sub() ) {
-            DamageAround();
-            if ( qrand()%10 || IsSubAround(WATER) ) {
-                Damage(2, DAMAGE_FREEZE);
-            }
-        }
-        if ( not IsBase(Sub(), world->GetBlock(X(), Y(), Z()-1)->Sub()) ) {
-            world->DestroyAndReplace(X(), Y(), Z());
-            return;
-        } // else:
         int i=X(), j=Y(), k=Z();
         // increase this if grass grows too fast
         switch ( qrand() % (FIRE==Sub() ? 4 : SECONDS_IN_HOUR*2) ) {
@@ -155,6 +145,16 @@
                     && AIR == world->GetBlock(i, j, ++k)->Sub() )
             {
                 world->Build(BlockManager::NewBlock(GRASS, Sub()), i, j, k);
+            }
+        }
+        if ( not IsBase(Sub(), world->GetBlock(X(), Y(), Z()-1)->Sub()) ) {
+            world->DestroyAndReplace(X(), Y(), Z());
+            return;
+        }
+        if ( FIRE == Sub() ) {
+            DamageAround();
+            if ( qrand()%10 || IsSubAround(WATER) ) {
+                Damage(2, DAMAGE_FREEZE);
             }
         }
     }
