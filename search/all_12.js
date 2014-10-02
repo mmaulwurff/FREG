@@ -10,7 +10,7 @@ var searchData=
   ['rainmachine_2ecpp',['RainMachine.cpp',['../RainMachine_8cpp.html',1,'']]],
   ['rainmachine_2eh',['RainMachine.h',['../RainMachine_8h.html',1,'']]],
   ['randombit',['RandomBit',['../classScreen.html#af45bfcfeb1b508c48bf3fd96bcd1588c',1,'Screen']]],
-  ['randomblink',['RandomBlink',['../classScreen.html#a2b660dd43a0f2d658bd430f040cf9ae2',1,'Screen::RandomBlink() const '],['../classScreen.html#a091bba8af968e283d04a40f2d5533d34',1,'Screen::randomBlink()']]],
+  ['randomblink',['randomBlink',['../classScreen.html#a091bba8af968e283d04a40f2d5533d34',1,'Screen::randomBlink()'],['../classScreen.html#a2b660dd43a0f2d658bd430f040cf9ae2',1,'Screen::RandomBlink() const ']]],
   ['randomdrop',['RandomDrop',['../classShred.html#acbfb7220c0da8ff263a8d63dda39d7d7',1,'Shred']]],
   ['readme_2emd',['README.md',['../README_8md.html',1,'']]],
   ['receivedtext',['ReceivedText',['../classActive.html#a9a5c8fd7b3b99212e9fb70b8dec3c1a9',1,'Active']]],

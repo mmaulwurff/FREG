@@ -21,7 +21,7 @@ var searchData=
   ['todo_20list',['Todo List',['../todo.html',1,'']]],
   ['toresetdir',['toResetDir',['../classWorld.html#a9aad16b9ba117724bb8e639aa6908eb4',1,'World']]],
   ['transparency',['Transparency',['../classBlock.html#a7d480c4cdcdb1e64c1cd4703db0d1423',1,'Block::Transparency()'],['../header_8h.html#a48a539666409f8c99365fc6d8a58f708',1,'transparency():&#160;header.h']]],
-  ['transparent',['transparent',['../classBlock.html#a792bf7bd74b66e681a450cbbc2a3d6d7',1,'Block::transparent()'],['../classBlock.html#a8ef3abd6e851ae31883f6b8cc423ef56',1,'Block::Transparent() const ']]],
+  ['transparent',['Transparent',['../classBlock.html#a8ef3abd6e851ae31883f6b8cc423ef56',1,'Block::Transparent() const '],['../classBlock.html#a792bf7bd74b66e681a450cbbc2a3d6d7',1,'Block::transparent()']]],
   ['tree',['Tree',['../classShred.html#af24cd15dcba9ad378586ce4bc88cfe41',1,'Shred']]],
   ['treshold',['TRESHOLD',['../Armour_8cpp.html#ad752760c7226b6260aabea7edd4b170c',1,'Armour.cpp']]],
   ['trydestroy',['TryDestroy',['../classActive.html#a76d2cb795e55910dc1249c033e44894b',1,'Active']]],

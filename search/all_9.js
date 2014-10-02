@@ -32,14 +32,15 @@ var searchData=
   ['isempty',['IsEmpty',['../classInventory.html#aa494b4db63fd11b4eddbf862db1fb5ff',1,'Inventory']]],
   ['isfalling',['IsFalling',['../classFalling.html#a555bf72239917581030749f4d460b406',1,'Falling']]],
   ['islikeair',['IsLikeAir',['../header_8h.html#a5031863b564b19336ad6c88a4ea15545',1,'header.h']]],
-  ['ison',['isOn',['../classConverter.html#a32dd3f02371ef09acb96cc01c66e7f0e',1,'Converter::isOn()'],['../classRainMachine.html#a515020cda056c3ef740ba75245ab8099',1,'RainMachine::isOn()']]],
+  ['ison',['isOn',['../classConverter.html#a32dd3f02371ef09acb96cc01c66e7f0e',1,'Converter::isOn()'],['../classIlluminator.html#a6a32f02ac1a30d5f4a18197a3c15cefd',1,'Illuminator::isOn()'],['../classRainMachine.html#a515020cda056c3ef740ba75245ab8099',1,'RainMachine::isOn()']]],
   ['isreceiver',['isReceiver',['../classTelegraph.html#a98b75e44f40c1480bb2412c17cba7f7b',1,'Telegraph']]],
+  ['isrunning',['isRunning',['../classIThread.html#a94e93477c7e4700e970dede408b27ca2',1,'IThread']]],
   ['isscreenwide',['IsScreenWide',['../classScreen.html#a9f486248461eb912868a61ba0df82bc7',1,'Screen']]],
   ['issubaround',['IsSubAround',['../classActive.html#af6229f8297154481383e855de3931ac4',1,'Active']]],
   ['isvalid',['IsValid',['../classBlockManager.html#ad29d31235ef5591366bc178052cbce27',1,'BlockManager']]],
   ['items',['items',['../classCraftList.html#ad4c54c3642c01841d8b15d4ecb8fd009',1,'CraftList']]],
   ['itemsless',['ItemsLess',['../CraftManager_8cpp.html#a9d098c141ece984d3f33df9f3afc1ad1',1,'CraftManager.cpp']]],
-  ['ithread',['IThread',['../classIThread.html',1,'IThread'],['../classIThread.html#a5979c548a621d4f53a9c553db2999b44',1,'IThread::IThread(VirtScreen *const)'],['../classIThread.html#a7ca3032e508c2d28338d9d4ea205228c',1,'IThread::IThread(const IThread &amp;)=delete']]],
+  ['ithread',['IThread',['../classIThread.html',1,'IThread'],['../classIThread.html#a2f45b05efe267337cce6c04f488de509',1,'IThread::IThread(Screen *)'],['../classIThread.html#a7ca3032e508c2d28338d9d4ea205228c',1,'IThread::IThread(const IThread &amp;)=delete']]],
   ['ithread_2ecpp',['IThread.cpp',['../IThread_8cpp.html',1,'']]],
   ['ithread_2eh',['IThread.h',['../IThread_8h.html',1,'']]]
 ];

@@ -27,7 +27,6 @@ var searchData=
   ['num',['num',['../structCraftItem.html#aa306cfab0bcc4bacc76fa45b7e885dd1',1,'CraftItem::num()'],['../classDeferredAction.html#ae7d16039cd09910dedf56ee486ca80e3',1,'DeferredAction::num()']]],
   ['numactiveshreds',['numActiveShreds',['../classWorld.html#a16b410ec0649d9a2ca809f513bb19eb0',1,'World']]],
   ['number',['Number',['../classInventory.html#afcc106682a5c1bb7c6818332dc60a420',1,'Inventory']]],
-  ['numshreds',['numShreds',['../classWorld.html#a40f56d9e191810cc427307171a5875df',1,'World::numShreds()'],['../classWorld.html#af6ea24b43dd472bacaee43d61f534a5c',1,'World::NumShreds() const ']]],
-  ['numstr',['NumStr',['../classInventory.html#a9f010760669063e89fe1a78f7bb11de0',1,'Inventory']]],
+  ['numshreds',['NumShreds',['../classWorld.html#af6ea24b43dd472bacaee43d61f534a5c',1,'World::NumShreds() const '],['../classWorld.html#a40f56d9e191810cc427307171a5875df',1,'World::numShreds()']]],
   ['nutritionalvalue',['NutritionalValue',['../classAnimal.html#ab3082c2cdee470c67e42ab40bda8023b',1,'Animal::NutritionalValue()'],['../classPredator.html#ac0995ebbe48b57e050ac93f7ffbe13e0',1,'Predator::NutritionalValue()'],['../classRabbit.html#a26d57099d8b8533de668634305e714b0',1,'Rabbit::NutritionalValue()'],['../classDwarf.html#a2e81c6ad98b4320491e00564bee0c68b',1,'Dwarf::NutritionalValue()']]]
 ];

@@ -1,11 +1,11 @@
 <map id="Player" name="Player">
-<area shape="rect" id="node7" href="$classActive.html" title="Active" alt="" coords="163,184,221,211"/>
-<area shape="rect" id="node3" href="$classXyz.html" title="Xyz" alt="" coords="49,95,95,121"/>
-<area shape="rect" id="node11" href="$classDeferredAction.html" title="Deferred Action is used when some action needs to be done at next physics turn. " alt="" coords="197,453,307,480"/>
-<area shape="rect" id="node4" href="$classXy.html" title="Xy" alt="" coords="53,5,91,32"/>
-<area shape="rect" id="node5" href="$classAnimal.html" title="Animal" alt="" coords="161,349,223,376"/>
-<area shape="rect" id="node6" href="$classFalling.html" title="Falling" alt="" coords="162,273,222,300"/>
-<area shape="rect" id="node8" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="322,5,377,32"/>
-<area shape="rect" id="node9" href="$classShred.html" title="Shred" alt="" coords="321,95,377,121"/>
-<area shape="rect" id="node10" href="$classWeather.html" title="Weather" alt="" coords="418,5,489,32"/>
+<area shape="rect" id="node7" href="$classActive.html" title="Active" alt="" coords="219,184,278,211"/>
+<area shape="rect" id="node3" href="$classXyz.html" title="Xyz" alt="" coords="118,95,163,121"/>
+<area shape="rect" id="node11" href="$classDeferredAction.html" title="Deferred Action is used when some action needs to be done at next physics turn. " alt="" coords="215,440,325,467"/>
+<area shape="rect" id="node4" href="$classXy.html" title="Xy" alt="" coords="117,5,156,32"/>
+<area shape="rect" id="node5" href="$classAnimal.html" title="Animal" alt="" coords="237,336,300,363"/>
+<area shape="rect" id="node6" href="$classFalling.html" title="Falling" alt="" coords="235,260,295,287"/>
+<area shape="rect" id="node8" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="284,5,339,32"/>
+<area shape="rect" id="node9" href="$classShred.html" title="Shred" alt="" coords="221,95,277,121"/>
+<area shape="rect" id="node10" href="$classWeather.html" title="Weather" alt="" coords="180,5,251,32"/>
 </map>

@@ -113,7 +113,7 @@ Collaboration diagram for Player:</div>
 <div class="dyncontent">
 <div class="center"><img src="classPlayer__coll__graph.png" border="0" usemap="#Player_coll__map" alt="Collaboration graph"/></div>
 <map name="Player_coll__map" id="Player_coll__map">
-<area shape="rect" id="node7" href="classActive.html" title="Active" alt="" coords="163,184,221,211"/><area shape="rect" id="node3" href="classXyz.html" title="Xyz" alt="" coords="49,95,95,121"/><area shape="rect" id="node11" href="classDeferredAction.html" title="Deferred Action is used when some action needs to be done at next physics turn. " alt="" coords="197,453,307,480"/><area shape="rect" id="node4" href="classXy.html" title="Xy" alt="" coords="53,5,91,32"/><area shape="rect" id="node5" href="classAnimal.html" title="Animal" alt="" coords="161,349,223,376"/><area shape="rect" id="node6" href="classFalling.html" title="Falling" alt="" coords="162,273,222,300"/><area shape="rect" id="node8" href="classBlock.html" title="Block without special physics and attributes. " alt="" coords="322,5,377,32"/><area shape="rect" id="node9" href="classShred.html" title="Shred" alt="" coords="321,95,377,121"/><area shape="rect" id="node10" href="classWeather.html" title="Weather" alt="" coords="418,5,489,32"/></map>
+<area shape="rect" id="node7" href="classActive.html" title="Active" alt="" coords="219,184,278,211"/><area shape="rect" id="node3" href="classXyz.html" title="Xyz" alt="" coords="118,95,163,121"/><area shape="rect" id="node11" href="classDeferredAction.html" title="Deferred Action is used when some action needs to be done at next physics turn. " alt="" coords="215,440,325,467"/><area shape="rect" id="node4" href="classXy.html" title="Xy" alt="" coords="117,5,156,32"/><area shape="rect" id="node5" href="classAnimal.html" title="Animal" alt="" coords="237,336,300,363"/><area shape="rect" id="node6" href="classFalling.html" title="Falling" alt="" coords="235,260,295,287"/><area shape="rect" id="node8" href="classBlock.html" title="Block without special physics and attributes. " alt="" coords="284,5,339,32"/><area shape="rect" id="node9" href="classShred.html" title="Shred" alt="" coords="221,95,277,121"/><area shape="rect" id="node10" href="classWeather.html" title="Weather" alt="" coords="180,5,251,32"/></map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="signals"></a>
@@ -181,7 +181,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ac124d33e62cd393dcffa2c63f83ee461"><td class="mdescLeft">&#160;</td><td class="mdescRight">This returns how player is using himself.  <a href="#ac124d33e62cd393dcffa2c63f83ee461">More...</a><br /></td></tr>
 <tr class="separator:ac124d33e62cd393dcffa2c63f83ee461"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25708f721e1fb1f823ef7afe234f8c60"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classInventory.html">Inventory</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a25708f721e1fb1f823ef7afe234f8c60">PlayerInventory</a> () const </td></tr>
-<tr class="memdesc:a25708f721e1fb1f823ef7afe234f8c60"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns 0 if there is no inventory, otherwise returns inventory.  <a href="#a25708f721e1fb1f823ef7afe234f8c60">More...</a><br /></td></tr>
+<tr class="memdesc:a25708f721e1fb1f823ef7afe234f8c60"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns nullptr if there is no inventory, otherwise returns inventory.  <a href="#a25708f721e1fb1f823ef7afe234f8c60">More...</a><br /></td></tr>
 <tr class="separator:a25708f721e1fb1f823ef7afe234f8c60"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adba92d9e30f0fd3b15995eefa53b7157"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#adba92d9e30f0fd3b15995eefa53b7157">GetLongitude</a> () const </td></tr>
 <tr class="separator:adba92d9e30f0fd3b15995eefa53b7157"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -207,6 +207,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:af9994ed6549b1fbafbc9b9b9acb2ddab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad8e53bca5f755940aaa81dfb47fc1d69"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#ad8e53bca5f755940aaa81dfb47fc1d69">Examine</a> ()</td></tr>
 <tr class="separator:ad8e53bca5f755940aaa81dfb47fc1d69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8d04cddc68ed1f148021c8e99b3a065"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#af8d04cddc68ed1f148021c8e99b3a065">Examine</a> (int x, int y, int z)</td></tr>
+<tr class="separator:af8d04cddc68ed1f148021c8e99b3a065"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b8a299afda763781331d489f18e7879"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a5b8a299afda763781331d489f18e7879">Damage</a> () const </td></tr>
 <tr class="memdesc:a5b8a299afda763781331d489f18e7879"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if xyz are in world bounds.  <a href="#a5b8a299afda763781331d489f18e7879">More...</a><br /></td></tr>
 <tr class="separator:a5b8a299afda763781331d489f18e7879"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -218,9 +220,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac99107dbfb4dea717876f259749a4e68"><td class="memItemLeft" align="right" valign="top"><a class="el" href="header_8h.html#a305c682db7e7cdce78096178c0c9ef4a">usage_types</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#ac99107dbfb4dea717876f259749a4e68">Use</a> (int num)</td></tr>
 <tr class="memdesc:ac99107dbfb4dea717876f259749a4e68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tries to use block number num in inventory.  <a href="#ac99107dbfb4dea717876f259749a4e68">More...</a><br /></td></tr>
 <tr class="separator:ac99107dbfb4dea717876f259749a4e68"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aca906db7adf93b6d50b7f88245c83137"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#aca906db7adf93b6d50b7f88245c83137">Obtain</a> (int src, int dest=0, int num=1)</td></tr>
-<tr class="memdesc:aca906db7adf93b6d50b7f88245c83137"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tries to get block number num from outer inventory.  <a href="#aca906db7adf93b6d50b7f88245c83137">More...</a><br /></td></tr>
-<tr class="separator:aca906db7adf93b6d50b7f88245c83137"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16305bfeea0e9cf5ecc44a16849529eb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a16305bfeea0e9cf5ecc44a16849529eb">Obtain</a> (int src, int dest=0, int num=1)</td></tr>
+<tr class="memdesc:a16305bfeea0e9cf5ecc44a16849529eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tries to get block number num from outer inventory.  <a href="#a16305bfeea0e9cf5ecc44a16849529eb">More...</a><br /></td></tr>
+<tr class="separator:a16305bfeea0e9cf5ecc44a16849529eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3294d1ef4eff086991b7b4505b668442"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a3294d1ef4eff086991b7b4505b668442">Inscribe</a> (int num)</td></tr>
 <tr class="separator:a3294d1ef4eff086991b7b4505b668442"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a296203015c064fac1f9023426a36e3e9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPlayer.html#a296203015c064fac1f9023426a36e3e9">Craft</a> (int num)</td></tr>
@@ -352,7 +354,7 @@ Private Attributes</h2></td></tr>
 <p>Constructor creates or loads player. </p>
 <p>It puts player block to the world if there is no player block, and makes necessary connections. </p>
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00476">476</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00497">497</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -369,7 +371,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00510">510</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00531">531</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -413,7 +415,7 @@ Private Attributes</h2></td></tr>
 
 <p>Tries to switch usingSelfType from NO to OPEN. </p>
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00147">147</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00155">155</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -440,7 +442,7 @@ Private Attributes</h2></td></tr>
 
 <p>This is called when player block is destroyed. </p>
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00418">418</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00439">439</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -477,7 +479,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00276">276</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00298">298</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -506,7 +508,7 @@ Private Attributes</h2></td></tr>
 <p>Checks if player walked over the shred border. </p>
 <p>This is connected to player's block signal Moved(int). It emits <a class="el" href="classPlayer.html#abcc3613a74c2ea087f95e3575bb1ef1e" title="This is emitted when player walks over shred border. ">OverstepBorder(int)</a> signal when player walks over the shred border. </p>
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00406">406</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00427">427</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -524,7 +526,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00290">290</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00312">312</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -543,7 +545,7 @@ Private Attributes</h2></td></tr>
 
 <p>Returns true if xyz are in world bounds. </p>
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00393">393</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00414">414</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -587,6 +589,40 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="af8d04cddc68ed1f148021c8e99b3a065"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Player::Examine </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00102">102</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a8a49f191419e0d7b7c846c1bd28b7b90"></a>
 <div class="memitem">
 <div class="memproto">
@@ -608,7 +644,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00298">298</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00320">320</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -894,7 +930,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00164">164</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00180">180</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -912,7 +948,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00267">267</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00289">289</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -929,7 +965,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00125">125</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00133">133</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -947,7 +983,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00137">137</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00145">145</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -1023,7 +1059,7 @@ Private Attributes</h2></td></tr>
 
 <p>Can also wield appropriate things. </p>
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00259">259</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00281">281</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -1048,7 +1084,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00428">428</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00449">449</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -1079,12 +1115,12 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="aca906db7adf93b6d50b7f88245c83137"></a>
+<a class="anchor" id="a16305bfeea0e9cf5ecc44a16849529eb"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Player::Obtain </td>
+          <td class="memname">bool Player::Obtain </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>src</em>, </td>
@@ -1111,7 +1147,7 @@ Private Attributes</h2></td></tr>
 
 <p>Tries to get block number num from outer inventory. </p>
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00236">236</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00257">257</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -1179,7 +1215,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns 0 if there is no inventory, otherwise returns inventory. </p>
+<p>Returns nullptr if there is no inventory, otherwise returns inventory. </p>
 
 <p>Definition at line <a class="el" href="Player_8cpp_source.html#l00080">80</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
@@ -1199,7 +1235,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00307">307</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00329">329</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -1254,7 +1290,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00387">387</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00408">408</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -1296,7 +1332,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00433">433</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00454">454</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -1392,7 +1428,7 @@ Private Attributes</h2></td></tr>
 
 <p>Tries to throw (drop out) block number num from inventory. </p>
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00228">228</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00249">249</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -1419,7 +1455,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Turns low-case ASCII chars array (length &lt;= 12) into unique quint64. Can be used as switch statement for switch on strings. </p>
 
-<p>Definition at line <a class="el" href="Player_8h_source.html#l00129">129</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
+<p>Definition at line <a class="el" href="Player_8h_source.html#l00131">131</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
 
 </div>
 </div>
@@ -1489,7 +1525,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00155">155</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00163">163</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -1509,7 +1545,7 @@ Private Attributes</h2></td></tr>
 
 <p>Tries to use block number num in inventory. </p>
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00192">192</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00210">210</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -1577,7 +1613,7 @@ Private Attributes</h2></td></tr>
 
 <p>Checks player/inventory/block existence, size limits. </p>
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00174">174</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00192">192</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -1613,7 +1649,7 @@ Private Attributes</h2></td></tr>
 
 <p>This returns true if block at (x, y, z) is visible to player. </p>
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00380">380</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00402">402</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -1631,7 +1667,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00248">248</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Player_8cpp_source.html#l00270">270</a> of file <a class="el" href="Player_8cpp_source.html">Player.cpp</a>.</p>
 
 </div>
 </div>
@@ -1688,7 +1724,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8h_source.html#l00187">187</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
+<p>Definition at line <a class="el" href="Player_8h_source.html#l00189">189</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
 
 </div>
 </div>
@@ -1710,7 +1746,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8h_source.html#l00186">186</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
+<p>Definition at line <a class="el" href="Player_8h_source.html#l00188">188</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
 
 </div>
 </div>
@@ -1732,7 +1768,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8h_source.html#l00182">182</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
+<p>Definition at line <a class="el" href="Player_8h_source.html#l00184">184</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
 
 </div>
 </div>
@@ -1754,7 +1790,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8h_source.html#l00179">179</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
+<p>Definition at line <a class="el" href="Player_8h_source.html#l00181">181</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
 
 </div>
 </div>
@@ -1776,7 +1812,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8h_source.html#l00179">179</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
+<p>Definition at line <a class="el" href="Player_8h_source.html#l00181">181</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
 
 </div>
 </div>
@@ -1798,7 +1834,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8h_source.html#l00180">180</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
+<p>Definition at line <a class="el" href="Player_8h_source.html#l00182">182</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
 
 </div>
 </div>
@@ -1820,7 +1856,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8h_source.html#l00180">180</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
+<p>Definition at line <a class="el" href="Player_8h_source.html#l00182">182</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
 
 </div>
 </div>
@@ -1842,7 +1878,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8h_source.html#l00180">180</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
+<p>Definition at line <a class="el" href="Player_8h_source.html#l00182">182</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
 
 </div>
 </div>
@@ -1864,7 +1900,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8h_source.html#l00181">181</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
+<p>Definition at line <a class="el" href="Player_8h_source.html#l00183">183</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
 
 </div>
 </div>
@@ -1886,7 +1922,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8h_source.html#l00178">178</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
+<p>Definition at line <a class="el" href="Player_8h_source.html#l00180">180</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
 
 </div>
 </div>
@@ -1908,7 +1944,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8h_source.html#l00185">185</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
+<p>Definition at line <a class="el" href="Player_8h_source.html#l00187">187</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
 
 </div>
 </div>
@@ -1930,7 +1966,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8h_source.html#l00184">184</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
+<p>Definition at line <a class="el" href="Player_8h_source.html#l00186">186</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
 
 </div>
 </div>
@@ -1952,7 +1988,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Player_8h_source.html#l00183">183</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
+<p>Definition at line <a class="el" href="Player_8h_source.html#l00185">185</a> of file <a class="el" href="Player_8h_source.html">Player.h</a>.</p>
 
 </div>
 </div>
@@ -1963,7 +1999,7 @@ Private Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Sep 26 2014 08:55:07 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Oct 2 2014 23:24:14 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

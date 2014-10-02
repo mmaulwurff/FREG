@@ -83,16 +83,31 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="textblock"><hr/>
  <h1>freg text ("cursed") screen </h1>
 <p><a class="el" href="classScreen.html">Screen</a> has two modes: wide and narrow. Mode is set automatically depending on your terminal size.</p>
-<p>Wide mode looks something like this: +&mdash;N-&mdash;+ +&mdash;U-&mdash;+ | | | | W @ E | | | | W E |(1) | |(2) | +&mdash;S-&mdash;+ +&mdash;D-&mdash;+</p>
-<p>[health] a(3)z [(4)]</p>
-<p>+&mdash;+ &mdash; |(5)| (6) (notifications) +&mdash;+ &mdash;</p>
-<p>1 is player view from above, similar to roguelike map. 2 is player first-person view. At borders of 1 and 2 you see directions.</p>
-<p>3 is mini-inventory. To view full inventory, type I or home. 4 is focused block information: durability and name. 5 is minimap. It shows area around you. 6 is action mode selection list.</p>
+<p>Wide mode looks something like this: </p><pre class="fragment">+---N----+ +---U----+
+|        | |        |
+W   @    E |        |
+|        | W        E
+|(1)     | |(2)     |
++---S----+ +---D----+
+
+[health] a(3)z  [(4)]
+
++---+  ---
+|(5)|  (6) (notifications)
++---+  ---
+</pre><ol type="1">
+<li>is player view from above, similar to roguelike map.</li>
+<li>is player first-person view. At borders of 1 and 2 you see directions.</li>
+<li>is mini-inventory. To view full inventory, type I or home.</li>
+<li>is focused block information: durability and name.</li>
+<li>is minimap. It shows area around you.</li>
+<li>is action mode selection list.</li>
+</ol>
 <h2>Type <code>help visuals</code> for more information. </h2>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Sep 26 2014 08:55:07 for freg by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Oct 2 2014 23:24:14 for freg by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

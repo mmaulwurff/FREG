@@ -9,7 +9,6 @@ var searchData=
   ['finishreloadall',['FinishReloadAll',['../classWorld.html#accd9a0a737db6b90cc3465448cbd640f',1,'World']]],
   ['firelight',['FireLight',['../classShred.html#afa7700c8e27ef28c082cc299d34ec841',1,'Shred::FireLight()'],['../classWorld.html#acc1c1fab9e5a810e660dc6fb0f28c9ba',1,'World::FireLight()']]],
   ['flatundeground',['FlatUndeground',['../classShred.html#a0ae48ff49eaacbf8e56bce644805db58',1,'Shred']]],
-  ['flushinput',['FlushInput',['../classScreen.html#a74c53c81a8085d0f0ac1cd088549e746',1,'Screen::FlushInput()'],['../classVirtScreen.html#a6136fa032244875ed3fd91554e3f9ad4',1,'VirtScreen::FlushInput()']]],
   ['focus',['Focus',['../classWorld.html#a6c874cebacacde0370c7d069e19b73cf',1,'World']]],
   ['forbiddenadmincommands',['ForbiddenAdminCommands',['../classPlayer.html#a8a49f191419e0d7b7c846c1bd28b7b90',1,'Player']]],
   ['forest',['Forest',['../classShred.html#a204111160b47034d59f3ed018ee9c450',1,'Shred']]],

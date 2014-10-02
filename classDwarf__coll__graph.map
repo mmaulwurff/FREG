@@ -1,12 +1,12 @@
 <map id="Dwarf" name="Dwarf">
-<area shape="rect" id="node2" href="$classAnimal.html" title="Animal" alt="" coords="167,349,229,376"/>
-<area shape="rect" id="node11" href="$classDeferredAction.html" title="Deferred Action is used when some action needs to be done at next physics turn. " alt="" coords="185,439,294,465"/>
-<area shape="rect" id="node3" href="$classFalling.html" title="Falling" alt="" coords="185,273,245,300"/>
-<area shape="rect" id="node4" href="$classActive.html" title="Active" alt="" coords="190,184,249,211"/>
-<area shape="rect" id="node6" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="332,5,387,32"/>
-<area shape="rect" id="node9" href="$classShred.html" title="Shred" alt="" coords="331,95,387,121"/>
-<area shape="rect" id="node7" href="$classXyz.html" title="Xyz" alt="" coords="105,95,150,121"/>
-<area shape="rect" id="node8" href="$classXy.html" title="Xy" alt="" coords="108,5,147,32"/>
-<area shape="rect" id="node10" href="$classWeather.html" title="Weather" alt="" coords="423,5,493,32"/>
-<area shape="rect" id="node12" href="$classInventory.html" title="Provides block ability to contain other blocks inside. " alt="" coords="5,349,81,376"/>
+<area shape="rect" id="node2" href="$classAnimal.html" title="Animal" alt="" coords="155,336,218,363"/>
+<area shape="rect" id="node11" href="$classDeferredAction.html" title="Deferred Action is used when some action needs to be done at next physics turn. " alt="" coords="13,425,123,452"/>
+<area shape="rect" id="node3" href="$classFalling.html" title="Falling" alt="" coords="133,260,193,287"/>
+<area shape="rect" id="node4" href="$classActive.html" title="Active" alt="" coords="128,184,187,211"/>
+<area shape="rect" id="node6" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="78,5,133,32"/>
+<area shape="rect" id="node9" href="$classShred.html" title="Shred" alt="" coords="129,95,185,121"/>
+<area shape="rect" id="node7" href="$classXyz.html" title="Xyz" alt="" coords="5,95,51,121"/>
+<area shape="rect" id="node8" href="$classXy.html" title="Xy" alt="" coords="9,5,47,32"/>
+<area shape="rect" id="node10" href="$classWeather.html" title="Weather" alt="" coords="163,5,234,32"/>
+<area shape="rect" id="node12" href="$classInventory.html" title="Provides block ability to contain other blocks inside. " alt="" coords="291,336,367,363"/>
 </map>

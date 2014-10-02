@@ -8,16 +8,18 @@ var searchData=
   ['update',['Update',['../classScreen.html#ad7941a4c69c566cf857144d79e3d013d',1,'Screen::Update()'],['../classVirtScreen.html#a05d1f691b3dfbca5f7b272257593cebc',1,'VirtScreen::Update()']]],
   ['updateall',['UpdateAll',['../classScreen.html#a18190b0c47d96c385fcde56dc2f2f346',1,'Screen::UpdateAll()'],['../classVirtScreen.html#adbbc6795cedc30859f754e6de08e876f',1,'VirtScreen::UpdateAll()']]],
   ['updatearound',['UpdateAround',['../classScreen.html#a1f11e06d23666e491cf197021ec12cc3',1,'Screen::UpdateAround()'],['../classVirtScreen.html#a0e24775c3e609940a57a08aebe747b30',1,'VirtScreen::UpdateAround()']]],
-  ['updated',['Updated',['../classActive.html#a6345b2d3f3f520c69db8b5a9c542ad9c',1,'Active::Updated()'],['../classPlayer.html#a5120ef398c6a20cca5252a24862a92ba',1,'Player::Updated()'],['../classWorld.html#a707d93089bea9c27b06546d89baab201',1,'World::Updated()'],['../classScreen.html#a43c677079fb42999304206175509ce67',1,'Screen::updated()']]],
+  ['updated',['updated',['../classScreen.html#a43c677079fb42999304206175509ce67',1,'Screen::updated()'],['../classActive.html#a6345b2d3f3f520c69db8b5a9c542ad9c',1,'Active::Updated()'],['../classPlayer.html#a5120ef398c6a20cca5252a24862a92ba',1,'Player::Updated()'],['../classWorld.html#a707d93089bea9c27b06546d89baab201',1,'World::Updated()']]],
   ['updatedall',['UpdatedAll',['../classWorld.html#ab6b9254ffabcb667e8d7671d34eb5ea7',1,'World']]],
   ['updatedaround',['UpdatedAround',['../classWorld.html#aebbb0b3e6b0afef5929f269e9738f611',1,'World']]],
-  ['updatelightradius',['UpdateLightRadius',['../classDwarf.html#a528eb620c0da7b0ff55747de437619dc',1,'Dwarf']]],
+  ['updatelightradius',['UpdateLightRadius',['../classActive.html#aa1e059f62f714b5a0d17d83d92d5d463',1,'Active::UpdateLightRadius()'],['../classDwarf.html#a708c2a05e085bd0b6e8076d5f9337a4d',1,'Dwarf::UpdateLightRadius()']]],
+  ['updatelightradiusinner',['UpdateLightRadiusInner',['../classDwarf.html#a75a6c9674c0d3abd95dbbb82b72b8b3e',1,'Dwarf']]],
   ['updateplayer',['UpdatePlayer',['../classScreen.html#a1cef3c6b529d234d035cdc5344f1148b',1,'Screen::UpdatePlayer()'],['../classVirtScreen.html#aa8ddd7dbe61aa603a3c04af793f23125',1,'VirtScreen::UpdatePlayer()']]],
   ['updatesend',['UpdatesEnd',['../classVirtScreen.html#a387072973bcefb52c736186de6249d45',1,'VirtScreen']]],
   ['updatesended',['UpdatesEnded',['../classWorld.html#ace76119720f57bbfecc098e008e0ed95',1,'World']]],
   ['updatexyz',['UpdateXYZ',['../classPlayer.html#a62ad553db215163821b032d3722f169f',1,'Player']]],
   ['upshine',['UpShine',['../classWorld.html#ac89dac8e13674106658af473c3b4333a',1,'World']]],
   ['upshineinit',['UpShineInit',['../classWorld.html#a15d52d95989f2bcec7c98b1d98b6dbd7',1,'World']]],
+  ['usage_5ftype_5finner',['USAGE_TYPE_INNER',['../header_8h.html#a305c682db7e7cdce78096178c0c9ef4aaaad31def31f5b7970a5040b151b08be4',1,'header.h']]],
   ['usage_5ftype_5fno',['USAGE_TYPE_NO',['../header_8h.html#a305c682db7e7cdce78096178c0c9ef4aa8186b7b3267ee8ca1e61726ab3ea0325',1,'header.h']]],
   ['usage_5ftype_5fopen',['USAGE_TYPE_OPEN',['../header_8h.html#a305c682db7e7cdce78096178c0c9ef4aae11dbd02806d8a5876b0710c429801ad',1,'header.h']]],
   ['usage_5ftype_5fpour',['USAGE_TYPE_POUR',['../header_8h.html#a305c682db7e7cdce78096178c0c9ef4aa51153cf429079db725b7a0f8d7393780',1,'header.h']]],
@@ -29,5 +31,5 @@ var searchData=
   ['useonshredmove',['UseOnShredMove',['../classBlock.html#a28e702f9ef3f099cd07c183901ed8a2c',1,'Block::UseOnShredMove()'],['../classMap.html#a9cdea2bb881c492736a041e42abe9330',1,'Map::UseOnShredMove()']]],
   ['usingininventory',['usingInInventory',['../classPlayer.html#afd7abbb9a26a7353b4d979db78d9dd32',1,'Player']]],
   ['usingselftype',['usingSelfType',['../classPlayer.html#a13166cbea7a5322c8f3e58bd1fc5d861',1,'Player::usingSelfType()'],['../classPlayer.html#ac124d33e62cd393dcffa2c63f83ee461',1,'Player::UsingSelfType() const ']]],
-  ['usingtype',['usingType',['../classPlayer.html#a4f70de896aeeba71be8336beb28c4cb2',1,'Player::usingType()'],['../classPlayer.html#a9b58fe30fc7efc96b77deecbefb54a81',1,'Player::UsingType() const ']]]
+  ['usingtype',['UsingType',['../classPlayer.html#a9b58fe30fc7efc96b77deecbefb54a81',1,'Player::UsingType() const '],['../classPlayer.html#a4f70de896aeeba71be8336beb28c4cb2',1,'Player::usingType()']]]
 ];

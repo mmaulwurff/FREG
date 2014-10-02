@@ -1,9 +1,11 @@
 <map id="blocks/Illuminator.cpp" name="blocks/Illuminator.cpp">
-<area shape="rect" id="node2" href="$Illuminator_8h.html" title="blocks/Illuminator.h" alt="" coords="85,80,220,107"/>
-<area shape="rect" id="node10" href="$BlockManager_8h.html" title="BlockManager.h" alt="" coords="223,155,339,181"/>
-<area shape="rect" id="node11" href="$Inventory_8h.html" title="Provides declaration for class Inventory for freg. " alt="" coords="336,80,423,107"/>
-<area shape="rect" id="node3" href="$Active_8h.html" title="blocks/Active.h" alt="" coords="81,155,193,181"/>
+<area shape="rect" id="node2" href="$Illuminator_8h.html" title="blocks/Illuminator.h" alt="" coords="68,80,203,107"/>
+<area shape="rect" id="node10" href="$BlockManager_8h.html" title="BlockManager.h" alt="" coords="227,80,343,107"/>
+<area shape="rect" id="node11" href="$Inventory_8h.html" title="Provides declaration for class Inventory for freg. " alt="" coords="367,80,453,107"/>
+<area shape="rect" id="node13" href="$World_8h.html" title="World.h" alt="" coords="519,80,586,107"/>
+<area shape="rect" id="node3" href="$Active_8h.html" title="blocks/Active.h" alt="" coords="78,155,190,181"/>
 <area shape="rect" id="node5" href="$Block_8h.html" title="Provides definition for class Block. " alt="" coords="101,229,167,256"/>
 <area shape="rect" id="node9" href="$Xyz_8h.html" title="Xyz.h" alt="" coords="191,229,247,256"/>
-<area shape="rect" id="node6" href="$header_8h.html" title="header.h" alt="" coords="173,304,245,331"/>
+<area shape="rect" id="node6" href="$header_8h.html" title="header.h" alt="" coords="249,304,321,331"/>
+<area shape="rect" id="node17" href="$worldmap_8h.html" title="worldmap.h" alt="" coords="757,155,847,181"/>
 </map>

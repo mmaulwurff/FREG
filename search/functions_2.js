@@ -19,7 +19,7 @@ var searchData=
   ['color',['Color',['../classScreen.html#ad760c09c7bb873e86319d14c0f63f684',1,'Screen::Color()'],['../classVirtScreen.html#acc657a123189341b95140dadbe7e19fe',1,'VirtScreen::Color()']]],
   ['colorshred',['ColorShred',['../classScreen.html#a16678966b859d1846831c9fc756af4c5',1,'Screen']]],
   ['container',['Container',['../classContainer.html#a03017d99bf69d0a63a1fe5fb4d68915c',1,'Container::Container(int kind, int sub, int size=INV_SIZE)'],['../classContainer.html#a8641d7e37eb0bc35b35d1a9b11f070e8',1,'Container::Container(QDataStream &amp;str, int kind, int sub, int size=INV_SIZE)']]],
-  ['controlplayer',['ControlPlayer',['../classScreen.html#a793f77cb399ee400f734a9ad29be03cb',1,'Screen::ControlPlayer()'],['../classVirtScreen.html#aa8c0cccd74d52f7df3626eb32890cca1',1,'VirtScreen::ControlPlayer()']]],
+  ['controlplayer',['ControlPlayer',['../classScreen.html#a70a2667faea15aaece0db717e169900b',1,'Screen::ControlPlayer()'],['../classScreen.html#a91aaec126cca8cba2f3942682e81924d',1,'Screen::ControlPlayer(int ch)']]],
   ['converter',['Converter',['../classConverter.html#a6177fcffd246de067f8708ee90b28052',1,'Converter::Converter(int kind, int sub)'],['../classConverter.html#ae0e06ae9521d9cb8abe014df2870472a',1,'Converter::Converter(QDataStream &amp;str, int kind, int sub)']]],
   ['convertratio',['ConvertRatio',['../classConverter.html#a9ff7d17147b052bf9f0eca830a5aa326',1,'Converter']]],
   ['coordinshred',['CoordInShred',['../classShred.html#a58099d77557acf6ab26fa82edf9750ef',1,'Shred']]],

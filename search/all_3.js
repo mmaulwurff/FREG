@@ -32,7 +32,7 @@ var searchData=
   ['container',['Container',['../classContainer.html',1,'Container'],['../classContainer.html#a03017d99bf69d0a63a1fe5fb4d68915c',1,'Container::Container(int kind, int sub, int size=INV_SIZE)'],['../classContainer.html#a8641d7e37eb0bc35b35d1a9b11f070e8',1,'Container::Container(QDataStream &amp;str, int kind, int sub, int size=INV_SIZE)'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285ae167e6a4547c44c68eb321881de789bd',1,'CONTAINER():&#160;header.h']]],
   ['containers_2ecpp',['Containers.cpp',['../Containers_8cpp.html',1,'']]],
   ['containers_2eh',['Containers.h',['../Containers_8h.html',1,'']]],
-  ['controlplayer',['ControlPlayer',['../classScreen.html#a793f77cb399ee400f734a9ad29be03cb',1,'Screen::ControlPlayer()'],['../classVirtScreen.html#aa8c0cccd74d52f7df3626eb32890cca1',1,'VirtScreen::ControlPlayer()']]],
+  ['controlplayer',['ControlPlayer',['../classScreen.html#a70a2667faea15aaece0db717e169900b',1,'Screen::ControlPlayer()'],['../classScreen.html#a91aaec126cca8cba2f3942682e81924d',1,'Screen::ControlPlayer(int ch)']]],
   ['converter',['Converter',['../classConverter.html',1,'Converter'],['../classConverter.html#a6177fcffd246de067f8708ee90b28052',1,'Converter::Converter(int kind, int sub)'],['../classConverter.html#ae0e06ae9521d9cb8abe014df2870472a',1,'Converter::Converter(QDataStream &amp;str, int kind, int sub)'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285a9858622acece061efca72c31a7b3420b',1,'CONVERTER():&#160;header.h']]],
   ['converter_5flight_5fradius',['CONVERTER_LIGHT_RADIUS',['../Containers_8cpp.html#a6d2c4426597481c6215674dab7da0a13',1,'Containers.cpp']]],
   ['convertratio',['ConvertRatio',['../classConverter.html#a9ff7d17147b052bf9f0eca830a5aa326',1,'Converter']]],

@@ -18,5 +18,5 @@ var searchData=
   ['issubaround',['IsSubAround',['../classActive.html#af6229f8297154481383e855de3931ac4',1,'Active']]],
   ['isvalid',['IsValid',['../classBlockManager.html#ad29d31235ef5591366bc178052cbce27',1,'BlockManager']]],
   ['itemsless',['ItemsLess',['../CraftManager_8cpp.html#a9d098c141ece984d3f33df9f3afc1ad1',1,'CraftManager.cpp']]],
-  ['ithread',['IThread',['../classIThread.html#a5979c548a621d4f53a9c553db2999b44',1,'IThread::IThread(VirtScreen *const)'],['../classIThread.html#a7ca3032e508c2d28338d9d4ea205228c',1,'IThread::IThread(const IThread &amp;)=delete']]]
+  ['ithread',['IThread',['../classIThread.html#a2f45b05efe267337cce6c04f488de509',1,'IThread::IThread(Screen *)'],['../classIThread.html#a7ca3032e508c2d28338d9d4ea205228c',1,'IThread::IThread(const IThread &amp;)=delete']]]
 ];

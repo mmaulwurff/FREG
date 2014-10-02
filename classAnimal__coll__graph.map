@@ -1,10 +1,10 @@
 <map id="Animal" name="Animal">
-<area shape="rect" id="node10" href="$classDeferredAction.html" title="Deferred Action is used when some action needs to be done at next physics turn. " alt="" coords="57,439,167,465"/>
-<area shape="rect" id="node2" href="$classFalling.html" title="Falling" alt="" coords="158,273,218,300"/>
-<area shape="rect" id="node3" href="$classActive.html" title="Active" alt="" coords="159,184,217,211"/>
-<area shape="rect" id="node5" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="114,5,169,32"/>
-<area shape="rect" id="node8" href="$classShred.html" title="Shred" alt="" coords="275,95,331,121"/>
-<area shape="rect" id="node6" href="$classXyz.html" title="Xyz" alt="" coords="5,95,51,121"/>
-<area shape="rect" id="node7" href="$classXy.html" title="Xy" alt="" coords="9,5,47,32"/>
-<area shape="rect" id="node9" href="$classWeather.html" title="Weather" alt="" coords="267,5,338,32"/>
+<area shape="rect" id="node10" href="$classDeferredAction.html" title="Deferred Action is used when some action needs to be done at next physics turn. " alt="" coords="126,425,235,452"/>
+<area shape="rect" id="node2" href="$classFalling.html" title="Falling" alt="" coords="111,260,171,287"/>
+<area shape="rect" id="node3" href="$classActive.html" title="Active" alt="" coords="111,184,170,211"/>
+<area shape="rect" id="node5" href="$classBlock.html" title="Block without special physics and attributes. " alt="" coords="97,5,152,32"/>
+<area shape="rect" id="node8" href="$classShred.html" title="Shred" alt="" coords="151,95,207,121"/>
+<area shape="rect" id="node6" href="$classXyz.html" title="Xyz" alt="" coords="267,95,313,121"/>
+<area shape="rect" id="node7" href="$classXy.html" title="Xy" alt="" coords="280,5,319,32"/>
+<area shape="rect" id="node9" href="$classWeather.html" title="Weather" alt="" coords="185,5,256,32"/>
 </map>

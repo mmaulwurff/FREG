@@ -16,6 +16,7 @@ var searchData=
   ['liquid',['Liquid',['../classLiquid.html',1,'Liquid'],['../header_8h.html#afcdf47c5cf0d9cddfd98749f134ad285aa87f9501ff2b390be1ea7d261b0d7cce',1,'LIQUID():&#160;header.h']]],
   ['loadallshreds',['LoadAllShreds',['../classWorld.html#a9397ddff982797eb4ea58e08f9c35b19',1,'World']]],
   ['loaditems',['LoadItems',['../classCraftList.html#a43cd53c38190e54f687b13b2b7fe7df4',1,'CraftList']]],
+  ['loadroom',['LoadRoom',['../classShred.html#a68fa63c079aa86637bf291359a53073b',1,'Shred']]],
   ['loadshred',['LoadShred',['../classShred.html#a6c71a7c719b85755efdad5da3e1a88bc',1,'Shred']]],
   ['locale',['locale',['../header_8h.html#a732a695ec07d1876d0d6d6cd6d3b733a',1,'header.h']]],
   ['lock',['Lock',['../classWorld.html#a1d0168988c685ab80752498a795f4469',1,'World']]],
