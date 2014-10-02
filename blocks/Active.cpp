@@ -29,6 +29,15 @@ Active * Active::ActiveBlock() { return this; }
 int  Active::ShouldAct() const { return FREQUENT_NEVER; }
 inner_actions Active::ActInner() { return INNER_ACTION_ONLY; }
 
+void Active::UpdateLightRadius() {
+    if ( LightRadius() ) {
+        GetShred()->AddShining(this);
+        GetWorld()->Shine(X(), Y(), Z(), LightRadius());
+    } else {
+        GetShred()->RemShining(this);
+    }
+}
+
 void Active::ActFrequent() {
     qDebug("Active::ActFrequent called, check ShouldAct\
  return value or add ActFrequent implementation.\nKind: %d, sub: %d.",

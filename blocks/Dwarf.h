@@ -38,6 +38,7 @@ public:
     int Weight() const override;
     int DamageLevel() const override;
     void Damage(int dmg, int dmg_kind) override;
+    void UpdateLightRadius() override;
     QString FullName() const override;
     QString InvFullName(int slot_number) const override;
 
@@ -62,7 +63,7 @@ private:
         IN_LEFT
     };
 
-    void UpdateLightRadius();
+    int UpdateLightRadiusInner() const;
 
     int lightRadius;
 };

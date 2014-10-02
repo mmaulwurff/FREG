@@ -70,7 +70,6 @@ public:
     Block * ShowBlock(int slot) const;
     /// Don't move block shown by this function.
     Block * ShowBlockInSlot(int slot, int index) const;
-    static QString NumStr(int num);
 
     bool IsEmpty() const;
 

@@ -34,6 +34,9 @@ const char OBSCURE_BLOCK = ' ';
 const int QUICK_INVENTORY_X_SHIFT = 36;
 const int SHADOW_COLOR = COLOR_PAIR(BLACK_BLACK) | A_BOLD | A_REVERSE;
 
+const int MINIMAP_WIDTH = 11;
+const int MINIMAP_HEIGHT = 7;
+
 void Screen::PrintVerticalDirection(WINDOW * const window, const int y,
         const int x, const dirs direction)
 {
@@ -91,13 +94,21 @@ const {
 
 void Screen::RePrint() {
     clear();
-    mvwaddstr(actionWin, 0, 0, qPrintable(tr("Use, eat")));
-    mvwaddstr(actionWin, 1, 0, qPrintable(tr("Throw")));
-    mvwaddstr(actionWin, 2, 0, qPrintable(tr("Obtain")));
-    mvwaddstr(actionWin, 3, 0, qPrintable(tr("iNscribe")));
-    mvwaddstr(actionWin, 4, 0, qPrintable(tr("Build")));
-    mvwaddstr(actionWin, 5, 0, qPrintable(tr("Craft")));
-    mvwaddstr(actionWin, 6, 0, qPrintable(tr("Equipment")));
+    static const QString action_strings[] = {
+        tr("[U] use, eat"),
+        tr("[T] throw"),
+        tr("[O] obtain"),
+        tr("[N] inscribe"),
+        tr("[B] build"),
+        tr("[C] craft"),
+        tr("[E] equipment"),
+    };
+    (void)wmove(actionWin, 0, 0);
+    for (int i=0; i<=ACTION_WIELD; ++i) {
+        waddstr(actionWin, qPrintable(action_strings[i]));
+        waddch(actionWin, '\n');
+    }
+    mvwchgat(actionWin, actionMode, 0, 20, A_NORMAL, BLACK_WHITE, nullptr);
     refresh();
     wrefresh(actionWin);
     updated = false;
@@ -117,7 +128,7 @@ void Screen::UpdateAll() {
 void Screen::PassString(QString & str) const {
     inputActive = true;
     wattrset(notifyWin, A_UNDERLINE);
-    waddstr(notifyWin, qPrintable(tr("Enter command: ")));
+    waddstr(notifyWin, qPrintable(tr("Enter input: ")));
     char temp_str[MAX_NOTE_LENGTH + 1];
     echo();
     wgetnstr(notifyWin, temp_str, MAX_NOTE_LENGTH);
@@ -228,12 +239,13 @@ void Screen::MovePlayerDiag(const dirs dir1, const dirs dir2) const {
     step_trigger = !step_trigger;
 }
 
-int Screen::GetChar() const { return getch(); }
-void Screen::FlushInput() const { flushinp(); }
+void Screen::ControlPlayer() { ControlPlayer(getch()); }
 
 void Screen::ControlPlayer(const int ch) {
     if ( player->GetBlock() == nullptr ) return;
-    CleanFileToShow();
+    if ( ch != KEY_MOUSE ) {
+        CleanFileToShow();
+    }
     /// \todo: ctrl-z (to background) support
     // Q, ctrl-c, ctrl-d, ctrl-q, ctrl-x
     if ( 'Q' == ch
@@ -307,6 +319,14 @@ void Screen::ControlPlayer(const int ch) {
     case 'O': SetActionMode(ACTION_OBTAIN);   break;
     case 'E': SetActionMode(ACTION_WIELD);    break;
     case 'U': SetActionMode(ACTION_USE);      break;
+    case '[':
+        SetActionMode((actionMode == ACTION_USE) ?
+            ACTION_WIELD : static_cast<actions>(actionMode-1));
+        break;
+    case ']':
+        SetActionMode(actionMode == ACTION_WIELD ?
+            ACTION_USE : static_cast<actions>(actionMode+1));
+        break;
     case 'Z':
         if ( player->PlayerInventory() ) {
               player->PlayerInventory()->Shake();
@@ -338,9 +358,102 @@ void Screen::ControlPlayer(const int ch) {
     case ':':
     case '/': PassString(previousCommand); // no break
     case '.': ProcessCommand(previousCommand); break;
+
+    case KEY_MOUSE: ProcessMouse(); break;
     }
     updated = false;
 } // void Screen::ControlPlayer(int ch)
+
+void Screen::ExamineOnNormalScreen(int x, int y, int z, const int step) const {
+    World * const world = GetWorld();
+    x = (x-1)/2 + GetNormalStartX();
+    y =  y-1    + GetNormalStartY();
+    for ( ; world->GetBlock(x, y, z)->Transparent() == INVISIBLE; z += step);
+    player->Examine(x, y, z);
+}
+
+void Screen::ProcessMouse() {
+    MEVENT mevent;
+    if ( getmouse(&mevent) == ERR ) return;
+    if ( wenclose(leftWin, mevent.y, mevent.x) ) { // left window
+        if ( not wmouse_trafo(leftWin, &mevent.y, &mevent.x, false) ) return;
+        if ( player->UsingSelfType() == USAGE_TYPE_OPEN ) {
+            Notify(tr("Your inventory."));
+            return;
+        }
+        if ( not (
+                0 < mevent.x && mevent.x < SCREEN_SIZE*2 + 1 &&
+                0 < mevent.y && mevent.y < SCREEN_SIZE ) )
+        {
+            Notify(tr("Left window, Down view."));
+            return;
+        }
+        ExamineOnNormalScreen(mevent.x, mevent.y, player->Z(), -1);
+    } else if ( wenclose(notifyWin, mevent.y, mevent.x) ) { // notify
+        Notify(tr("Notifications area."));
+    } else if ( wenclose(actionWin, mevent.y, mevent.x) ) { // actions
+        wmouse_trafo(actionWin, &mevent.y, &mevent.x, false);
+        SetActionMode(static_cast<actions>(mevent.y));
+    } else if ( wenclose(minimapWin, mevent.y, mevent.x) ) { // minimap
+        if (not wmouse_trafo(minimapWin, &mevent.y, &mevent.x, false)) return;
+        if ( not (
+                0 < mevent.x && mevent.x < MINIMAP_WIDTH-1 &&
+                0 < mevent.y && mevent.y < MINIMAP_HEIGHT-1 ) )
+        {
+            Notify(tr("Minimap."));
+            return;
+        }
+        const int shred_x = mevent.x/2 + GetMinimapStartX();
+        const int shred_y = mevent.y-1 + GetMinimapStartY();
+        Notify((0 <= shred_x && shred_x < w->NumShreds() &&
+                0 <= shred_y && shred_y < w->NumShreds() ) ?
+            tr("On minimap: %1").arg( Shred::ShredTypeName(
+                w->GetShredByPos(shred_x, shred_y)->GetTypeOfShred())) :
+            tr("You can't see that far.") );
+    } else if ( wenclose(hudWin, mevent.y, mevent.x) ) { // HUD
+        if ( not wmouse_trafo(hudWin, &mevent.y, &mevent.x, false) ) return;
+        mevent.x -= QUICK_INVENTORY_X_SHIFT;
+        mevent.x /= 2;
+        if ( not ( IsScreenWide() && 0 <= mevent.x && mevent.x <= 'z'-'a' ) ) {
+            Notify(tr("Information: left - player, right - focused thing."));
+            return;
+        }
+        Inventory * const inv = player->PlayerInventory();
+        if ( inv == nullptr ) return;
+        Notify( tr("In inventory at slot '%1': %2.").
+            arg(char(mevent.x + 'a')).
+            arg( inv->Number(mevent.x) ?
+                inv->InvFullName(mevent.x) :
+                tr("nothing") ) );
+    } else if ( wenclose(rightWin, mevent.y, mevent.x) ) { // right window
+        if ( not wmouse_trafo(rightWin, &mevent.y, &mevent.x, false) ) return;
+        if ( fileToShow != nullptr ) {
+            Notify(tr("Reading file: \"%1\".").arg(fileToShow->fileName()));
+        } else if (player->UsingType() == USAGE_TYPE_OPEN ) {
+            Notify(tr("Opened inventory."));
+        } else if ( not (
+                0 < mevent.x && mevent.x < SCREEN_SIZE*2 + 1 &&
+                0 < mevent.y && mevent.y < SCREEN_SIZE ) )
+        {
+            Notify(tr("Right window, %1 view.").
+                arg(Block::DirString(player->GetDir())));
+        } else {
+            switch ( player->GetDir() ) {
+            case UP:
+                ExamineOnNormalScreen(mevent.x, mevent.y, player->Z()+1, 1);
+                break;
+            case DOWN:
+                ExamineOnNormalScreen(mevent.x, mevent.y, player->Z()-1, -1);
+                break;
+            default:
+                PrintFront(player->GetDir(), mevent.x, mevent.y);
+                break;
+            }
+        }
+    } else {
+        Notify(tr("Nothing here. Click on something to get information."));
+    }
+}
 
 void Screen::ProcessCommand(const QString command) {
     if ( command.length()==1 && command.at(0)!='.' ) {
@@ -371,6 +484,15 @@ void Screen::ProcessCommand(const QString command) {
 void Screen::SetActionMode(const actions mode) {
     mvwchgat(actionWin, actionMode,      0,20, A_NORMAL, WHITE_BLACK, nullptr);
     mvwchgat(actionWin, actionMode=mode, 0,20, A_NORMAL, BLACK_WHITE, nullptr);
+    switch ( mode ) {
+    case ACTION_USE:      Notify(tr("Action: use in inventory."));      break;
+    case ACTION_THROW:    Notify(tr("Action: throw from inventory."));  break;
+    case ACTION_OBTAIN:   Notify(tr("Action: obtain to inventory."));   break;
+    case ACTION_INSCRIBE: Notify(tr("Action: inscribe in inventory.")); break;
+    case ACTION_BUILD:    Notify(tr("Action: build from inventory."));  break;
+    case ACTION_CRAFT:    Notify(tr("Action: craft in inventory."));    break;
+    case ACTION_WIELD:    Notify(tr("Action: organize equipment."));    break;
+    }
     wrefresh(actionWin);
     updated = false;
 }
@@ -404,7 +526,9 @@ void Screen::ActionXyz(int * x, int * y, int * z) const {
 Block * Screen::GetFocusedBlock() const {
     int x, y, z;
     ActionXyz(&x, &y, &z);
-    return GetWorld()->GetBlock(x, y, z);
+    return ( player->Visible(x, y, z) ) ?
+        GetWorld()->GetBlock(x, y, z) :
+        nullptr;
 }
 
 char Screen::PrintBlock(const Block & block, WINDOW * const window) const {
@@ -428,7 +552,7 @@ void Screen::Print() {
     if ( fileToShow == nullptr ) { // right window
         switch ( player->UsingType() ) {
         default:
-            if ( UP==dir || DOWN==dir ) {
+            if ( dir <= DOWN ) {
                 PrintNormal(rightWin, dir);
             } else if ( rightWin != nullptr ) {
                 PrintFront(dir);
@@ -440,14 +564,19 @@ void Screen::Print() {
                     player->GetUsingInInventory())->GetNote()));
             player->SetUsingTypeNo();
             break;
-        case USAGE_TYPE_READ:
-            DisplayFile(QString(home_path + w->WorldName()
-                + "/texts/" + GetFocusedBlock()->GetNote()));
-            player->SetUsingTypeNo();
-            break;
+        case USAGE_TYPE_READ: {
+            const Block * const focused = GetFocusedBlock();
+            if ( focused != nullptr ) {
+                DisplayFile(QString(home_path + w->WorldName()
+                    + "/texts/" + GetFocusedBlock()->GetNote()));
+                player->SetUsingTypeNo();
+            }
+            } break;
         case USAGE_TYPE_OPEN: {
-                Block * const block = GetFocusedBlock();
-                PrintInv(rightWin, block, block->HasInventory());
+            Block * const focused = GetFocusedBlock();
+            if ( focused != nullptr ) {
+                PrintInv(rightWin, focused, focused->HasInventory());
+            }
             } break;
         }
     }
@@ -458,39 +587,43 @@ void Screen::PrintHUD() {
     werase(hudWin);
     if ( player->GetCreativeMode() ) {
         mvwaddstr (hudWin, 0, 0,
-            qPrintable(tr("Creative Mode\nxyz: %1, %2, %3. XY: %4, %5.")
+            qPrintable(tr("Creative Mode\nxyz: %1, %2, %3. YX: %4, %5.")
             .arg(player->GlobalX()).arg(player->GlobalY()).arg(player->Z())
-            .arg(player->GetLatitude()).arg(player->GetLongitude())) );
+            .arg(player->GetLongitude()).arg(player->GetLatitude())) );
     } else {
         const int dur = player->GetBlock()->GetDurability();
         if ( dur > 0 ) { // HitPoints line
+            static const int player_health_char =  ascii ? '@' : 0x2665;
             PrintBar(0,
                 (dur > MAX_DURABILITY/5) ?
                     COLOR_PAIR(RED_BLACK) : (COLOR_PAIR(BLACK_RED) | A_BLINK),
-                ascii ? '@' : 0x2665, dur*100/MAX_DURABILITY);
+                player_health_char, dur*100/MAX_DURABILITY);
         }
         const int breath = player->BreathPercent();
         if ( breath != 100 ) {
-            PrintBar(16, COLOR_PAIR(BLUE_BLACK), ascii ? 'o' : 0x00b0, breath);
+            static const int player_breath_char = ascii ? 'o' : 0x00b0;
+            PrintBar(16, COLOR_PAIR(BLUE_BLACK), player_breath_char, breath);
         }
-        switch ( player->SatiationPercent()/25 ) { // satiation status
-        default: break;
-        case  0:
-            wcolor_set(hudWin, RED_BLACK, nullptr);
-            mvwaddstr(hudWin, 1, 1, qPrintable(tr("Hungry")));
-            break;
-        case  3:
-            wcolor_set(hudWin, GREEN_BLACK, nullptr);
-            mvwaddstr(hudWin, 1, 1, qPrintable(tr("Full")));
-            break;
-        case  4:
-            wcolor_set(hudWin, BLUE_BLACK, nullptr);
-            mvwaddstr(hudWin, 1, 1, qPrintable(tr("Gorged")));
-            break;
-        }
+        static const QString satiation_strings[] = {
+            tr("Hungry"),
+            tr("Content"),
+            satiation_strings[1],
+            tr("Full"),
+            tr("Gorged")
+        };
+        static const int satiation_colors[] = {
+            RED_BLACK,
+            WHITE_BLACK,
+            satiation_colors[1],
+            GREEN_BLACK,
+            BLUE_BLACK
+        };
+        const int satiation_state = player->SatiationPercent() / 25;
+        wcolor_set(hudWin, satiation_colors[satiation_state], nullptr);
+        mvwaddstr(hudWin, 1,1, qPrintable(satiation_strings[satiation_state]));
     }
     Block * const focused = GetFocusedBlock();
-    if ( Block::GetSubGroup(focused->Sub()) != GROUP_AIR ) {
+    if ( focused && Block::GetSubGroup(focused->Sub()) != GROUP_AIR ) {
         const int left_border = IsScreenWide() ?
             (SCREEN_SIZE*2+2) * 2 :
             SCREEN_SIZE*2+2 - 15;
@@ -536,31 +669,47 @@ void Screen::PrintQuickInventory() {
     }
 }
 
+int Screen::GetMinimapStartX() const {
+    return Shred::CoordOfShred(player->X()) - 2;
+}
+
+int Screen::GetMinimapStartY() const {
+    return Shred::CoordOfShred(player->Y()) - 2;
+}
+
 void Screen::PrintMiniMap() {
-    (void)wmove(miniMapWin, 1, 0);
-    const int x_center = Shred::CoordOfShred(player->X());
-    const int y_center = Shred::CoordOfShred(player->Y());
-    const int j_start = x_center - 2;
-    const int j_end   = x_center + 2;
-    const int i_end   = y_center + 2;
-    for (int i=y_center-2; i<=i_end; ++i, waddch(miniMapWin, '\n'))
-    for (int j=j_start;    j<=j_end; ++j) {
+    (void)wmove(minimapWin, 1, 0);
+    const int i_start = GetMinimapStartY();
+    const int j_start = GetMinimapStartX();
+    for (int i=i_start; i <= i_start+4; ++i, waddch(minimapWin, '\n'))
+    for (int j=j_start; j <= j_start+4; ++j) {
         if ( i<0 || j<0 || i>=w->NumShreds() || j>=w->NumShreds() ) {
-            wstandend(miniMapWin);
-            waddstr  (miniMapWin, "  ");
+            wstandend(minimapWin);
+            waddstr  (minimapWin, "  ");
         } else {
             Shred * const shred = w->GetShredByPos(j, i);
-            wattrset(miniMapWin, ColorShred(shred->GetTypeOfShred()));
-            wprintw (miniMapWin, " %c", shred->GetTypeOfShred());
+            wattrset(minimapWin, ColorShred(shred->GetTypeOfShred()));
+            wprintw (minimapWin, " %c", shred->GetTypeOfShred());
         }
     }
-    wstandend(miniMapWin);
-    box(miniMapWin, 0, 0);
-    mvwaddstr(miniMapWin, 0, 1, qPrintable(tr("Minimap")));
-    wrefresh(miniMapWin);
+    wstandend(minimapWin);
+    box(minimapWin, 0, 0);
+    mvwaddstr(minimapWin, 0, 1, qPrintable(tr("Minimap")));
+    wrefresh(minimapWin);
+}
+
+int Screen::GetNormalStartX() const {
+    return ( player->X()/SHRED_WIDTH )*SHRED_WIDTH +
+        ( SHRED_WIDTH-SCREEN_SIZE )/2;
+}
+
+int Screen::GetNormalStartY() const {
+    return ( player->Y()/SHRED_WIDTH )*SHRED_WIDTH +
+        ( SHRED_WIDTH-SCREEN_SIZE )/2;
 }
 
 void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
+    (void)wmove(window, 1, 1);
     int k_start, k_step;
     if ( UP == dir ) {
         k_start = player->Z() + 1;
@@ -569,27 +718,28 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
         k_start = player->Z() - ( DOWN==dir );
         k_step  = -1;
     }
-    (void)wmove(window, 1, 1);
-    const int start_x = ( player->X()/SHRED_WIDTH )*SHRED_WIDTH +
-        ( SHRED_WIDTH-SCREEN_SIZE )/2;
-    const int start_y = ( player->Y()/SHRED_WIDTH )*SHRED_WIDTH +
-        ( SHRED_WIDTH-SCREEN_SIZE )/2;
-    for (int j=start_y; j<SCREEN_SIZE+start_y; ++j, waddstr(window, "\n_"))
-    for (int i=start_x; i<SCREEN_SIZE+start_x; ++i ) {
+    const int start_x = GetNormalStartX();
+    const int start_y = GetNormalStartY();
+    const int end_x = start_x + SCREEN_SIZE;
+    const int end_y = start_y + SCREEN_SIZE;
+    for (int j=start_y; j<end_y; ++j, waddstr(window, "\n_")) {
         randomBlink = blinkOn ? qrand() : 0;
-        Shred * const shred = w->GetShred(i, j);
-        const int i_in = Shred::CoordInShred(i);
-        const int j_in = Shred::CoordInShred(j);
-        int k = k_start;
-        for ( ; INVISIBLE == shred->GetBlock(i_in, j_in, k)->Transparent();
-            k += k_step);
-        if ( player->Visible(i, j, k) ) {
-            waddch(window, PrintBlock(*shred->GetBlock(i_in,j_in,k), window));
-            waddch(window, CharNumber(k));
-        } else {
-            wattrset(window, SHADOW_COLOR);
-            waddch(window, OBSCURE_BLOCK);
-            waddch(window, ' ');
+        for (int i=start_x; i<end_x; ++i ) {
+            Shred * const shred = w->GetShred(i, j);
+            const int i_in = Shred::CoordInShred(i);
+            const int j_in = Shred::CoordInShred(j);
+            int k = k_start;
+            for ( ; INVISIBLE == shred->GetBlock(i_in, j_in, k)->Transparent();
+                k += k_step);
+            if ( player->Visible(i, j, k) ) {
+                waddch(window,
+                    PrintBlock(*shred->GetBlock(i_in, j_in, k), window));
+                waddch(window, CharNumber(k));
+            } else {
+                wattrset(window, SHADOW_COLOR);
+                waddch(window, OBSCURE_BLOCK);
+                waddch(window, ' ');
+            }
         }
     }
 
@@ -606,7 +756,8 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
     wrefresh(window);
 } // void Screen::PrintNormal(WINDOW * window, int dir)
 
-void Screen::PrintFront(const dirs dir) const {
+void Screen::PrintFront(const dirs dir, const int block_x, const int block_y)
+const {
     const int pX = player->X();
     const int begin_x = ( pX/SHRED_WIDTH )*SHRED_WIDTH +
         ( SHRED_WIDTH-SCREEN_SIZE )/2;
@@ -670,11 +821,21 @@ void Screen::PrintFront(const dirs dir) const {
     }
     const int k_start =
         qBound(SCREEN_SIZE-1, player->Z()+SCREEN_SIZE/2, HEIGHT-1);
+    if ( block_x > 0 ) {
+        // ugly! use print function to get block by screen coordinates.
+        int k = k_start - block_y + 1;
+        *x = x_start + x_step * (block_x-1)/2;
+        for (*z=z_start; *z!=z_end && w->GetBlock(i, j, k)->
+                    Transparent()==INVISIBLE;
+                *z += z_step);
+        player->Examine(i, j, k);
+        return;
+    }
     const int sky_color = Color(BLOCK, SKY);
     (void)wmove(rightWin, 1, 1);
     for (int k=k_start; k>k_start-SCREEN_SIZE; --k, waddstr(rightWin, "\n_")) {
+        randomBlink = blinkOn ? qrand() : 0;
         for (*x=x_start; *x!=x_end; *x+=x_step) {
-            randomBlink = qrand();
             for (*z=z_start; *z!=z_end && w->GetBlock(i, j, k)->
                         Transparent()==INVISIBLE;
                     *z += z_step);
@@ -684,8 +845,7 @@ void Screen::PrintFront(const dirs dir) const {
                 waddch(rightWin, sky_char);
                 waddch(rightWin, ' ');
             } else if ( player->Visible(i, j, k) ) {
-                const Block * const block = w->GetBlock(i, j, k);
-                waddch(rightWin, PrintBlock(*block, rightWin));
+                waddch(rightWin, PrintBlock(*w->GetBlock(i, j, k), rightWin));
                 waddch(rightWin, CharNumberFront(i, j));
             } else {
                 wattrset(rightWin, SHADOW_COLOR);
@@ -729,9 +889,6 @@ const {
         const Block * const block = inv->ShowBlock(i);
         wprintw(window, "[%c]%s",
             PrintBlock(*block, window), qPrintable(inv->InvFullName(i)) );
-        if ( 1 < number ) {
-            waddstr(window, qPrintable(Inventory::NumStr(number)));
-        }
         if ( MAX_DURABILITY != block->GetDurability() ) {
             wprintw(window, "{%d}", block->GetDurability()*100/MAX_DURABILITY);
         }
@@ -766,7 +923,7 @@ const {
 
 void Screen::CleanFileToShow() {
     delete fileToShow;
-    fileToShow = 0;
+    fileToShow = nullptr;
 }
 
 bool Screen::PrintFile(WINDOW * const window, QString const & file_name) {
@@ -804,7 +961,7 @@ void Screen::Notify(const QString str) const {
     static int notification_repeat_count = 1;
     if ( str == lastNotification ) {
         ++notification_repeat_count;
-        mvwprintw(notifyWin, getcury(notifyWin)-1, 0, "%s (%dx)\n",
+        mvwprintw(notifyWin, getcury(notifyWin)-1, 0, "%s (x%d)\n",
             qPrintable(str), notification_repeat_count);
     } else {
         notification_repeat_count = 1;
@@ -845,8 +1002,8 @@ Screen::Screen(
         fileToShow(nullptr),
         beepOn (settings.value("beep_on",  false).toBool()),
         flashOn(settings.value("flash_on", true ).toBool()),
-        ascii(_ascii),
-        blinkOn(settings.value("blink_on", true).toBool()),
+        ascii(_ascii && settings.value("ascii", true).toBool() ),
+        blinkOn(not _ascii || settings.value("blink_on", true).toBool()),
         arrows{'.', 'x',
             ascii ? '^' : 0x2191,
             ascii ? 'v' : 0x2193,
@@ -860,10 +1017,11 @@ Screen::Screen(
         set_escdelay(10);
     #endif
     start_color();
-    raw(); // send typed keys directly
+    nodelay(stdscr, FALSE);
     noecho(); // do not print typed symbols
     nonl();
     keypad(stdscr, TRUE); // use arrows
+    mousemask(BUTTON1_CLICKED | BUTTON1_RELEASED, nullptr);
     memset(windows, 0, sizeof(windows));
     if ( LINES < 41 && IsScreenWide() ) {
         printf("Make your terminal height to be at least 41 lines.\n");
@@ -893,16 +1051,16 @@ Screen::Screen(
         rightWin  = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, COLS/2);
         leftWin   = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, left_border);
         hudWin    = newwin(3, preferred_width, SCREEN_SIZE+2, left_border);
-        notifyWin = newwin(0,preferred_width-13, SCREEN_SIZE+5,left_border+33);
-        miniMapWin = newwin(7, 11, SCREEN_SIZE+5, left_border  );
+        notifyWin = newwin(0, 0, SCREEN_SIZE+5,left_border+33);
+        minimapWin =
+            newwin(MINIMAP_HEIGHT, MINIMAP_WIDTH, SCREEN_SIZE+5, left_border);
         actionWin  = newwin(7, 20, SCREEN_SIZE+5, left_border+12);
     } else if ( COLS >= preferred_width/2 ) {
         const int left_border = COLS/2-SCREEN_SIZE-1;
         leftWin   = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, left_border);
         hudWin    = newwin(2,SCREEN_SIZE*2+2-15, SCREEN_SIZE+2,left_border+15);
-        notifyWin = newwin(21, SCREEN_SIZE*2+2-15,
-            SCREEN_SIZE+2+2, left_border+15);
-        actionWin = newwin(0, 15, SCREEN_SIZE+2, left_border);
+        notifyWin = newwin(0,  0, SCREEN_SIZE+2+2, left_border+15);
+        actionWin = newwin(7, 15, SCREEN_SIZE+2,   left_border);
     } else {
         puts(qPrintable(tr("Set your terminal width at least %1 chars.").
             arg(SCREEN_SIZE*2+2)));
@@ -955,6 +1113,7 @@ Screen::~Screen() {
     settings.setValue("beep_on",  beepOn);
     settings.setValue("flash_on", flashOn);
     settings.setValue("blink_on", blinkOn);
+    settings.setValue("ascii", ascii);
 }
 
 void Screen::PrintBar(const int x, const int attr, const int ch,
@@ -964,7 +1123,6 @@ void Screen::PrintBar(const int x, const int attr, const int ch,
     mvwprintw(hudWin, 0, x,
         value_position_right ? "[..........]%hd" : "%3hd[..........]",percent);
     wattrset(hudWin, attr);
-    const QString str(10, QChar(ch));
-    mvwaddstr(hudWin, 0, x + (not value_position_right ? 4 : 1),
-        qPrintable(str.left(percent/10)));
+    mvwaddstr(hudWin, 0, x + (value_position_right ? 1 : 4),
+        qPrintable(QString(10, QChar(ch)).left(percent/10)));
 }

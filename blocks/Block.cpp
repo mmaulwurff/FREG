@@ -123,7 +123,7 @@ void Block::Damage(const int dmg, int dmg_kind) {
     case SUB_DUST:
     case GREENERY:
     case ROSE:
-    case HAZELNUT: durability = 0; return;
+    case SUB_NUT: durability = 0; return;
     case NULLSTONE:
     case STAR:
     case AIR:
@@ -139,6 +139,7 @@ void Block::Damage(const int dmg, int dmg_kind) {
         } break;
     case DAMAGE_HANDS: switch ( Sub() ) {
         default: return;
+        case SOIL:
         case A_MEAT:
         case H_MEAT: break;
         } break;
@@ -253,7 +254,7 @@ int Block::Weight() const {
     case IRON:      return WEIGHT_IRON;
     case PAPER:
     case ROSE:
-    case HAZELNUT:  return WEIGHT_MINIMAL;
+    case SUB_NUT:   return WEIGHT_MINIMAL;
     case MOSS_STONE:
     case A_MEAT:
     case H_MEAT:    return WEIGHT_WATER+10;

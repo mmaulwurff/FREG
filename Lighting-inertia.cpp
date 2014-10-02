@@ -57,27 +57,22 @@ void World::RemoveFireLight(int, int, int) {}
 
 /// Makes block emit shining.
 /** Receives only non-sun light as level, from 1 to F. */
-void World::Shine(const int x, const int y, const int z, int level,
-        const bool init)
-{
-    const int transparent = GetBlock(x, y, z)->Transparent();
+void World::Shine(const int x, const int y, const int z, int level) {
     if ( SetFireLightMap(level << 4, x, y, z) ) {
+        const int transparent = GetBlock(x, y, z)->Transparent();
         if ( INVISIBLE != transparent && not initial_lighting ) {
             emit Updated(x, y, z);
         }
-        if ( not init ) {
-            return;
+        if ( transparent != BLOCK_OPAQUE && level > 1 ) {
+            --level;
+            const int border = GetBound();
+            if ( x > 0 )      Shine(x-1, y,   z, level);
+            if ( x < border ) Shine(x+1, y,   z, level);
+            if ( y > 0 )      Shine(x,   y-1, z, level);
+            if ( y < border ) Shine(x,   y+1, z, level);
+            Shine(x, y, z-1, level);
+            Shine(x, y, z+1, level);
         }
-    }
-    if ( (transparent != BLOCK_OPAQUE && level > 1) || init ) {
-        --level;
-        const int border = GetBound();
-        if ( x > 0 )      Shine(x-1, y,   z, level, false);
-        if ( x < border ) Shine(x+1, y,   z, level, false);
-        if ( y > 0 )      Shine(x,   y-1, z, level, false);
-        if ( y < border ) Shine(x,   y+1, z, level, false);
-        Shine(x, y, z-1, level, false);
-        Shine(x, y, z+1, level, false);
     }
 }
 
@@ -148,7 +143,7 @@ void World::ReEnlighten(const int x, const int y, const int z) {
     }
     const int radius = GetBlock(x, y, z)->LightRadius();
     if ( radius != 0 ) {
-        Shine(x, y, z, radius, true);
+        Shine(x, y, z, radius);
     }
 }
 
@@ -269,7 +264,7 @@ void Shred::SetAllLightMapNull() { memset(lightMap, 0, sizeof(lightMap)); }
 void Shred::ShineAll() {
     for (auto i=ShiningBegin(); i!=ShiningEnd(); ++i) {
         GetWorld()->Shine((*i)->X(), (*i)->Y(), (*i)->Z(),
-            (*i)->LightRadius(), true);
+            (*i)->LightRadius());
     }
     if ( not GetWorld()->GetEvernight() ) {
         for (int i=shredX*SHRED_WIDTH; i<SHRED_WIDTH*(shredX+1); ++i)

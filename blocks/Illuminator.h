@@ -45,6 +45,7 @@ protected:
 
 private:
     quint16 fuelLevel;
+    bool isOn;
 };
 
 #endif // ILLUMINATOR_H

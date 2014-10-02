@@ -27,7 +27,6 @@ int  Inventory::Start() const { return 0; }
 int  Inventory::Size()  const { return size; }
 int  Inventory::Number(const int i) const { return inventory[i].size(); }
 bool Inventory::Access() const { return true; }
-QString Inventory::NumStr(const int num) { return QString(" (%1x)").arg(num); }
 
 bool Inventory::Drop(const int src, int dest, int num,
         Inventory * const inv_to)
@@ -90,6 +89,9 @@ bool Inventory::Get(Block * const block, const int start) {
     } else {
         for (int i=start; i<Size(); ++i) {
             if ( GetExact(block, i) ) {
+                ReceiveSignal(QObject::tr("You have %1 at slot '%2'.").
+                    arg(block->FullName()).
+                    arg(char(i + 'a')));
                 return true;
             }
         }
@@ -121,7 +123,6 @@ void Inventory::MoveInside(const int from, const int num_to, const int num) {
 bool Inventory::InscribeInv(const int num, const QString str) {
     const int number = Number(num);
     if ( number == 0 ) {
-        ReceiveSignal(QObject::tr("Nothing here."));
         return false;
     }
     const int sub = inventory[num].top()->Sub();
@@ -132,17 +133,22 @@ bool Inventory::InscribeInv(const int num, const QString str) {
     }
     for (int i=0; i<number; ++i) {
         if ( not inventory[num].at(i)->Inscribe(str) ) {
-            ReceiveSignal(QObject::tr("Cannot inscribe this."));
+            ReceiveSignal(QObject::tr("Cannot inscribe %1.").
+                arg(InvFullName(num)));
             return false;
         }
     }
-    ReceiveSignal(QObject::tr("Inscribed."));
+    ReceiveSignal(QObject::tr("Inscribed %1.").arg(InvFullName(num)));
     return true;
 }
 
 QString Inventory::InvFullName(const int num) const {
-    return inventory[num].isEmpty() ?
-        QObject::tr("-empty-") : inventory[num].top()->FullName();
+    return QString("%1%2").
+        arg( inventory[num].isEmpty() ?
+            QObject::tr("-empty-") :
+            inventory[num].top()->FullName() ).
+        arg( Number(num) <= 1 ?
+            "" : QString(" (x%1)").arg(Number(num)));
 }
 
 int Inventory::GetInvWeight(const int i) const {
@@ -202,7 +208,8 @@ void Inventory::Push(const int x, const int y, const int z,
 
 bool Inventory::MiniCraft(const int num) {
     if ( Number(num) == 0 ) {
-        ReceiveSignal(QObject::tr("Nothing here."));
+        ReceiveSignal(QObject::tr("Nothing at slot '%1'.").
+            arg(char(num + 'a')));
         return false;
     } // else:
     CraftItem * crafted =

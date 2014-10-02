@@ -94,9 +94,17 @@ void Player::UpdateXYZ() {
 
 void Player::Examine() {
     QMutexLocker locker(world->GetLock());
-    int i, j, k;
-    emit GetFocus(&i, &j, &k);
-    const Block * const block = world->GetBlock(i, j, k);
+    int x, y, z;
+    emit GetFocus(&x, &y, &z);
+    Examine(x, y, z);
+}
+
+void Player::Examine(const int x, const int y, const int z) {
+    if ( not Visible(x, y, z) ) {
+        emit Notify(tr("You can't see what is there."));
+        return;
+    }
+    const Block * const block = world->GetBlock(x, y, z);
     emit Notify( tr("You see %1.").arg(block->FullName()) );
     if ( DEBUG ) {
         emit Notify(QString("Weight: %1. Id: %2.").
@@ -106,12 +114,12 @@ void Player::Examine() {
             arg(block->Kind()).
             arg(block->Sub()).
             arg(block->LightRadius()));
-        emit Notify(QString(
-            "Light:%1, fire:%2, sun:%3. Transp:%4. Norm:%5. Dir:%6.").
-            arg(world->Enlightened(i, j, k)).
-            arg(world->FireLight(i, j, k)/16).
-            arg(world->SunLight(i, j, k)).
-            arg(block->Transparent()).
+        emit Notify(QString("Light: %1, fire: %2, sun: %3. Transp: %4.").
+            arg(world->Enlightened(x, y, z)).
+            arg(world->FireLight(x, y, z)/16).
+            arg(world->SunLight(x, y, z)).
+            arg(block->Transparent()));
+        emit Notify(QString("Norm: %1. Dir: %2").
             arg(block==block_manager.Normal(block->Sub())).
             arg(block->GetDir()));
     }
@@ -153,10 +161,18 @@ void Player::Backpack() {
 }
 
 void Player::Use() {
-    const QMutexLocker locker(world->GetLock());
+    QMutexLocker locker(world->GetLock());
     int x, y, z;
     emit GetFocus(&x, &y, &z);
-    const int us_type = world->GetBlock(x, y, z)->Use(player);
+    Block * const block = world->GetBlock(x, y, z);
+    const int us_type = block->Use(player);
+    if ( us_type == USAGE_TYPE_NO ) {
+        locker.unlock();
+        if ( not Obtain(0) ) {
+            Notify(tr("You cannot use %1.").arg(block->FullName()));
+        }
+        return;
+    }
     usingType = ( us_type==usingType ) ? USAGE_TYPE_NO : us_type;
     emit Updated();
 }
@@ -165,9 +181,11 @@ void Player::Inscribe() const {
     const QMutexLocker locker(world->GetLock());
     int x, y, z;
     emit GetFocus(&x, &y, &z);
+    const QString block_name = GetWorld()->GetBlock(x, y, z)->FullName();
     emit Notify(player ?
         (world->Inscribe(x, y, z) ?
-            tr("Inscribed.") : tr("Cannot inscribe this.")) :
+            tr("Inscribed %1.").arg(block_name) :
+            tr("Cannot inscribe %1.").arg(block_name)) :
         tr("No player."));
 }
 
@@ -182,7 +200,7 @@ Block * Player::ValidBlock(const int num) const {
     } // else:
     Block * const block = inv->ShowBlock(num);
     if ( not block ) {
-        emit Notify(tr("Nothing here."));
+        emit Notify(tr("Nothing at slot '%1'.").arg(char(num + 'a')));
         return nullptr;
     } else {
         return block;
@@ -219,7 +237,10 @@ usage_types Player::Use(const int num) {
         def_action->SetSetFire(x_targ, y_targ, z_targ);
         player->SetDeferredAction(def_action);
         } break;
-    default: break;
+    case USAGE_TYPE_INNER: break;
+    default:
+        Notify(tr("You cannot use %1.").arg(block->FullName()));
+        break;
     }
     emit Updated();
     return result;
@@ -233,16 +254,17 @@ void Player::Throw(const int src, const int dest, const int num) {
     player->SetDeferredAction(def_action);
 }
 
-void Player::Obtain(const int src, const int dest, const int num) {
+bool Player::Obtain(const int src, const int dest, const int num) {
     const QMutexLocker locker(world->GetLock());
     int x, y, z;
     emit GetFocus(&x, &y, &z);
-    world->Get(player, x, y, z, src, dest, num);
+    bool is_success = world->Get(player, x, y, z, src, dest, num);
     Inventory * const from = world->GetBlock(x, y, z)->HasInventory();
     if ( from != nullptr && from->IsEmpty() ) {
         usingType = USAGE_TYPE_NO;
     }
     emit Updated();
+    return is_success;
 }
 
 void Player::Wield(const int from) {
@@ -282,7 +304,7 @@ void Player::Build(const int slot) {
             || 0 == player->Weight()) )
     {
         DeferredAction * const def_action = new DeferredAction(player);
-        def_action->SetBuild(x_targ, y_targ, z_targ, block, slot);
+        def_action->SetBuild(x_targ, y_targ, z_targ, slot);
         player->SetDeferredAction(def_action);
     }
 }
@@ -378,10 +400,9 @@ void Player::ProcessCommand(QString command) {
 } // void Player::ProcessCommand(QString command)
 
 bool Player::Visible(const int x_to, const int y_to, const int z_to) const {
-    return ( (X()==x_to && Y()==y_to && Z()==z_to)
-            || GetCreativeMode()
-            || ( world->Enlightened(x_to, y_to, z_to)
-                && world->Visible(X(), Y(), Z(), x_to, y_to, z_to)) );
+    return ( GetCreativeMode()
+        || ( world->Enlightened(x_to, y_to, z_to)
+            && world->Visible(X(), Y(), Z(), x_to, y_to, z_to)) );
 }
 
 void Player::SetDir(const dirs direction) {

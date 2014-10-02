@@ -93,6 +93,8 @@
         }
     }
 
+    int Liquid::DamageLevel() const { return MAX_DURABILITY / 20; }
+
     int  Liquid::ShouldAct() const  { return FREQUENT_RARE; }
     int  Liquid::LightRadius() const { return ( STONE==Sub() ) ? 3 : 0; }
     bool Liquid::Inscribe(QString) { return false; }
@@ -122,37 +124,33 @@
 
 // Grass::
     void Grass::DoRareAction() {
-        World * const world = GetWorld();
-        if ( FIRE == Sub() ) {
-            DamageAround();
-            if ( qrand()%10 || IsSubAround(WATER) ) {
-                Damage(2, DAMAGE_FREEZE);
-            }
-        }
-        if ( not IsBase(Sub(), world->GetBlock(X(), Y(), Z()-1)->Sub()) ) {
-            world->DestroyAndReplace(X(), Y(), Z());
-            return;
-        } // else:
         int i=X(), j=Y(), k=Z();
         // increase this if grass grows too fast
-        switch ( qrand() % (FIRE==Sub() ? 4 : SECONDS_IN_HOUR*2) ) {
+        switch ( qrand() % (FIRE==Sub() ? 4 : SECONDS_IN_HOUR*4) ) {
         case 0: ++i; break;
         case 1: --i; break;
         case 2: ++j; break;
         case 3: --j; break;
         default: return;
         }
+        World * const world = GetWorld();
         if ( not world->InBounds(i, j) ) return;
-        const int sub_near = world->GetBlock(i, j, k)->Sub();
-        if ( world->Enlightened(i, j, k) || FIRE == Sub() ) {
-            if ( AIR == sub_near
-                    && IsBase(Sub(), world->GetBlock(i, j, k-1)->Sub() ) )
+        if ( FIRE == Sub() || world->Enlightened(i, j, k) ) {
+            const int sub_near = world->GetBlock(i, j, k)->Sub();
+            if ( (AIR == sub_near
+                        && IsBase(Sub(), world->GetBlock(i, j, k-1)->Sub() ) )
+                    || ( IsBase(Sub(), sub_near)
+                        && AIR == world->GetBlock(i, j, ++k)->Sub() ) )
             {
                 world->Build(BlockManager::NewBlock(GRASS, Sub()), i, j, k);
-            } else if ( IsBase(Sub(), sub_near)
-                    && AIR == world->GetBlock(i, j, ++k)->Sub() )
-            {
-                world->Build(BlockManager::NewBlock(GRASS, Sub()), i, j, k);
+            }
+        }
+        if ( not IsBase(Sub(), world->GetBlock(X(), Y(), Z()-1)->Sub()) ) {
+            world->DestroyAndReplace(X(), Y(), Z());
+        } else if ( FIRE == Sub() ) {
+            DamageAround();
+            if ( qrand()%10 || IsSubAround(WATER) ) {
+                Damage(2, DAMAGE_FREEZE);
             }
         }
     }
@@ -164,7 +162,7 @@
                 || GREENERY==ground
                 || H_MEAT==ground
                 || A_MEAT==ground
-                || HAZELNUT==ground
+                || SUB_NUT==ground
                 || ROSE==ground
                 || PAPER==ground ) );
     }
@@ -197,7 +195,7 @@
 
     void Bush::DoRareAction() {
         if ( 0 == qrand()%(SECONDS_IN_HOUR*4) ) {
-            Get(block_manager.Normal(HAZELNUT));
+            Get(BlockManager::NewBlock(WEAPON, SUB_NUT));
         }
     }
 
@@ -213,7 +211,7 @@
         Block * const pile = BlockManager::NewBlock(BOX, DIFFERENT);
         Inventory * const pile_inv = pile->HasInventory();
         pile_inv->Get(BlockManager::NewBlock(WEAPON, WOOD));
-        pile_inv->Get(block_manager.Normal(HAZELNUT));
+        pile_inv->Get(BlockManager::NewBlock(WEAPON, SUB_NUT));
         return pile;
     }
 
@@ -320,7 +318,7 @@
 
     usage_types Door::Use(Block *) {
         locked = !locked;
-        return USAGE_TYPE_NO;
+        return USAGE_TYPE_INNER;
     }
 
     void Door::SaveAttributes(QDataStream & out) const {
@@ -353,7 +351,7 @@
         } else {
             SendSignalAround(GetNote());
         }
-        return USAGE_TYPE_NO;
+        return USAGE_TYPE_INNER;
     }
 
     QString Clock::FullName() const {
@@ -458,7 +456,7 @@
     usage_types Text::Use(Block * const who) {
         if ( noteId == 0 ) {
             who->ReceiveSignal(QObject::tr("Nothing is written here."));
-            return USAGE_TYPE_NO;
+            return USAGE_TYPE_INNER;
         } else {
             return USAGE_TYPE_READ;
         }
@@ -481,7 +479,7 @@
     usage_types Map::Use(Block * const who) {
         if ( noteId == 0 ) {
             who->ReceiveSignal(QObject::tr("Set title to this map first."));
-            return USAGE_TYPE_NO;
+            return USAGE_TYPE_INNER;
         } // else:
         if ( who == nullptr ) return USAGE_TYPE_READ;
         const Active * const active = who->ActiveBlock();
@@ -565,7 +563,7 @@
 
     usage_types Bell::Use(Block *) {
         SendSignalAround(tr("^ Ding! ^"));
-        return USAGE_TYPE_NO;
+        return USAGE_TYPE_INNER;
     }
 
 // Telegraph:: section
@@ -602,7 +600,7 @@
 
     usage_types Telegraph::Use(Block *) {
         isReceiver = not isReceiver;
-        return USAGE_TYPE_NO;
+        return USAGE_TYPE_INNER;
     }
 
     inner_actions Telegraph::ActInner() {
@@ -632,7 +630,7 @@
             user->Mend(MAX_DURABILITY/10);
             Damage(MAX_DURABILITY/10, DAMAGE_TIME);
         }
-        return USAGE_TYPE_NO;
+        return USAGE_TYPE_INNER;
     }
 
 // Informer:: section
@@ -644,7 +642,7 @@
             arg(DirString(user->GetDir()).toLower())); break;
         default: break;
         }
-        return USAGE_TYPE_NO;
+        return USAGE_TYPE_INNER;
     }
 
     QString Informer::FullName() const {

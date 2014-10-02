@@ -95,7 +95,7 @@ const QByteArray BlockManager::subs[] = { // do not usp space, use '_'
     "water",
     "greenery",
     "sand",
-    "hazelnut",
+    "nut",
     "rose",
     "clay",
     "air",

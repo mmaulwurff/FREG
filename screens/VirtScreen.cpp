@@ -65,9 +65,6 @@ VirtScreen::VirtScreen(World * const world_, Player * const player_) :
 
 VirtScreen::~VirtScreen() {}
 
-int  VirtScreen::GetChar() const { return 0; }
-void VirtScreen::FlushInput() const {}
-void VirtScreen::ControlPlayer(int) {}
 void VirtScreen::DisplayFile(QString /* path */) {}
 
 void VirtScreen::ActionXyz(int * x, int * y, int * z) const {
@@ -95,7 +92,7 @@ int VirtScreen::Color(const int kind, const int sub) {
         case STONE:      return BLACK_WHITE;
         case GREENERY:   return BLACK_GREEN;
         case WOOD:
-        case HAZELNUT:
+        case SUB_NUT:
         case SOIL:       return   BLACK_YELLOW;
         case SAND:       return   WHITE_YELLOW;
         case COAL:       return   BLACK_WHITE;
@@ -152,7 +149,7 @@ char VirtScreen::CharName(const int kind, const int sub) {
     case PREDATOR:  return '!';
     case WORKBENCH: return '*';
     case CONVERTER: return 'V';
-    case BOX:       return '&';
+    case BOX:
     case CONTAINER: return '&';
     case DOOR:        return ( STONE == sub ) ? '#' : '\'';
     case ILLUMINATOR: return 'i';
@@ -160,6 +157,7 @@ char VirtScreen::CharName(const int kind, const int sub) {
         default:    return '/';
         case STONE: return '.';
         case SKY:   return ' ';
+        case SUB_NUT: return ',';
     } break;
     case ARMOUR: return 'A';
     case HELMET: return 'H';
@@ -180,8 +178,7 @@ char VirtScreen::CharName(const int kind, const int sub) {
         case WATER: return '~';
         case GREENERY: return '%';
         case A_MEAT:
-        case H_MEAT:
-        case HAZELNUT: return ',';
+        case H_MEAT: return ',';
         case GLASS: return 'g';
         case ROSE:  return ';';
         case COAL:  return '*';

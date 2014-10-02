@@ -35,9 +35,9 @@ QString Filter::FullName() const {
 }
 
 QString Filter::InvFullName(const int slot_number) const {
-    return ( slot_number == 1 ) ?
+    return ( slot_number > 0 ) ?
         Container::InvFullName(slot_number) : ( Number(0) == 0 ) ?
-            tr("-example-") : ShowBlock(0)->FullName();
+            tr("-example-") : Inventory::InvFullName(0);
 }
 
 bool Filter::Get(Block * const block, int) {
@@ -57,5 +57,3 @@ bool Filter::Get(Block * const block, int) {
         }
     }
 }
-
-Active * Filter::ActiveBlock() { return this; }

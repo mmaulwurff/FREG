@@ -55,7 +55,8 @@ public:
     void SetDamage (int x, int y, int z);
     void SetPour   (int x, int y, int z, int slot);
     void SetSetFire(int x, int y, int z);
-    void SetBuild  (int x, int y, int z, Block * material, int builder_slot);
+    /// Attached block should have inventory.
+    void SetBuild  (int x, int y, int z, int builder_slot);
     void SetThrow  (int x, int y, int z,
             int src_slot, int dest_slot, int unum);
 
@@ -65,7 +66,6 @@ public:
 private:
     deferred_actions type;
     Animal * const attachedBlock;
-    Block * material;
     int srcSlot, destSlot;
     int num;
 

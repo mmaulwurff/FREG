@@ -1,0 +1,44 @@
+
+
+      +   +
+
+    #       #
+             #
+   #    0
+       000
+   +    0    +
+
+    #       +
+
+       # +
+
+
+
+---------------|
+This is border ^
+Only first 16x16 square counts (any text can be placed after border).
+
+StoneHenge-like formation.
+
+Room symbols:
+# - one piece of stone
++ - stone pillar
+0 - nullstone pillar
+| - stone wall
+[ - wall with window
+= - wooden floor and stone ceiling
+^ - ladder
+* - anvil
+& - chest
+t - telegraph
+c - clock
+V - furnace
+b - bell
+i - lantern
+~ - water
+M - medkit
+R - rain machine
+F - filter
+
+other - nothing.
+. - can be used as marker, does not generate blocks.

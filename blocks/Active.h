@@ -58,7 +58,7 @@ public:
     void ReceiveSignal(QString) override;
     void Damage(int dmg, int dmg_kind) override;
     QString  FullName() const override = 0;
-    Active * ActiveBlock() override;
+    Active * ActiveBlock() override final;
 
     Shred * GetShred() const;
     World * GetWorld() const;
@@ -68,6 +68,7 @@ public:
 
     virtual inner_actions ActInner();
     virtual int ShouldAct() const;
+    virtual void UpdateLightRadius();
 
     void SetShred(Shred *);
     void Farewell();

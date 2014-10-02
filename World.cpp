@@ -17,10 +17,9 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include <QTimer>
 #include <QDir>
 #include <QMutexLocker>
-#include <memory>
+#include <QTimer>
 #include "blocks/Active.h"
 #include "blocks/Inventory.h"
 #include "Shred.h"
@@ -97,7 +96,7 @@ bool World::Drop(Block * const block_from,
     return Exchange(block_from, GetBlock(x_to, y_to, z_to), src, dest, num);
 }
 
-void World::Get(Block * const block_to,
+bool World::Get(Block * const block_to,
         const int x_from, const int y_from, const int z_from,
         const int src, const int dest, const int num)
 {
@@ -105,12 +104,14 @@ void World::Get(Block * const block_to,
     Inventory * const inv_from   = block_from->HasInventory();
     if ( inv_from ) {
         if ( inv_from->Access() ) {
-            Exchange(block_from, block_to, src, dest, num);
+            return Exchange(block_from, block_to, src, dest, num);
         }
     } else if ( Exchange(block_from, block_to, src, dest, num) ) {
         Build(block_manager.Normal(AIR), x_from, y_from, z_from, UP,
             nullptr, true);
+        return true;
     }
+    return false;
 }
 
 bool World::InBounds(const int x, const int y) const {
@@ -160,14 +161,6 @@ QMutex * World::GetLock() { return &mutex; }
 void World::Lock() { mutex.lock(); }
 bool World::TryLock() { return mutex.tryLock(); }
 void World::Unlock() { mutex.unlock(); }
-
-void World::run() {
-    QTimer timer;
-    connect(&timer, SIGNAL(timeout()), SLOT(PhysEvents()),
-        Qt::DirectConnection);
-    timer.start(1000/TIME_STEPS_IN_SEC);
-    exec();
-}
 
 dirs World::TurnRight(const dirs dir) {
     switch ( dir ) {
@@ -295,6 +288,13 @@ void World::SetReloadShreds(const int direction) {
     toResetDir = static_cast<dirs>(direction);
 }
 
+void World::run() {
+    QTimer timer;
+    connect(&timer, SIGNAL(timeout()), SLOT(PhysEvents()));
+    timer.start(1000 / TIME_STEPS_IN_SEC);
+    exec();
+}
+
 void World::PhysEvents() {
     static const int start = NumShreds()/2 - numActiveShreds/2;
     static const int end   = start + numActiveShreds;
@@ -404,6 +404,7 @@ can_move_results World::CanMove(const int x, const int y, const int z,
         return CAN_MOVE_CANNOT;
     }
     switch ( block->PushResult(dir) ) {
+    case DAMAGE:
     case MOVABLE:
         if ( Damage(newx, newy, newz, 1, DAMAGE_PUSH_UP + dir) <= 0 ) {
             DestroyAndReplace(newx, newy, newz);
@@ -442,7 +443,7 @@ can_move_results World::CanMove(const int x, const int y, const int z,
         }
         break;
     }
-    return CAN_MOVE_CANNOT;;
+    return CAN_MOVE_CANNOT;
 } // bool World::CanMove(const int x, y, z, newx, newy, newz, int dir)
 
 void World::NoCheckMove(const int x, const int y, const int z,
@@ -600,20 +601,19 @@ bool World::Exchange(Block * const block_from, Block * const block_to,
     Inventory * const inv_from = block_from->HasInventory();
     if ( not inv_from ) {
         if ( block_from->Wearable() > WEARABLE_NOWHERE
-                && inv_to->Get(block_from) )
+                && inv_to->Get(block_from, src) )
         {
             return true;
         } else {
-            block_from->ReceiveSignal(tr("Nothing can be obtained."));
+            block_to->ReceiveSignal(tr("Nothing can be obtained."));
             return false;
         }
     }
-    if ( inv_from->Number(src) == 0 ) {
+    if ( src >= inv_from->Size() || inv_from->Number(src) == 0 ) {
         block_from->ReceiveSignal(tr("Nothing here."));
         block_to  ->ReceiveSignal(tr("Nothing here."));
-    } else if ( inv_from->Drop(src, dest, num, inv_to) ) {
-        block_from->ReceiveSignal(tr("Your bag is lighter now."));
-        block_to  ->ReceiveSignal(tr("Your bag is heavier now."));
+    } else {
+        inv_from->Drop(src, dest, num, inv_to);
     }
     return false;
 }

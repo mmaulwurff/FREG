@@ -18,19 +18,17 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "screens/IThread.h"
-#include "screens/VirtScreen.h"
+#include "screens/CursedScreen.h"
 
-IThread::IThread(VirtScreen * const scr) :
+IThread::IThread(Screen * const scr) :
         screen(scr),
-        stopped(false)
+        isRunning(true)
 {}
 
 void IThread::run() {
-    while ( not stopped ) {
-        screen->ControlPlayer(screen->GetChar());
-        msleep(90);
-        screen->FlushInput();
+    while ( isRunning ) {
+        screen->ControlPlayer();
     }
 }
 
-void IThread::Stop() { stopped = true; }
+void IThread::Stop() { isRunning = false; }

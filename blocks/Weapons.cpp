@@ -29,6 +29,7 @@
         case IRON:  return QObject::tr("Spike");
         case BONE:  return QObject::tr("Bone");
         case SKY:   return QObject::tr("Air");
+        case SUB_NUT: return SubNameUpper(SUB_NUT);
         default:    return QObject::tr("Stick (%1)").arg(SubName(Sub()));
         }
     }

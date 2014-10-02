@@ -53,11 +53,6 @@ const int CONVERTER_LIGHT_RADIUS = 2;
         return pile;
     }
 
-    Active * Container::ActiveBlock() {
-        return ( Sub() == IRON || Sub() == WATER) ?
-            nullptr : this;
-    }
-
     int Container::Weight() const {
         return Block::Weight()*4 + Inventory::Weight();
     }
@@ -230,7 +225,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
 
     QString Workbench::InvFullName(const int slot_number) const {
         return ( Number(slot_number) > 0 ) ?
-            ShowBlock(slot_number)->FullName() : ( slot_number < Start() ) ?
+            Inventory::InvFullName(slot_number) : ( slot_number < Start() ) ?
                 tr("-product-") : tr("-material-");
     }
 
@@ -297,7 +292,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
 
     QString Converter::InvFullName(const int slot_number) const {
         return ( Number(slot_number) == 0 ) ?
-            tr("-fuel-") : ShowBlock(slot_number)->FullName();
+            tr("-fuel-") : Inventory::InvFullName(slot_number);
     }
 
     int Converter::DamageKind() const {
@@ -361,7 +356,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
                 isOn = true;
                 GetWorld()->GetShred(X(), Y())->AddShining(this);
                 GetWorld()->Shine(X(), Y(), Z(),
-                    (lightRadius=CONVERTER_LIGHT_RADIUS), true);
+                    (lightRadius=CONVERTER_LIGHT_RADIUS));
             } else {
                 fuelLevel += dmg;
             }

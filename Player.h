@@ -87,7 +87,7 @@ public:
      *  See enum usage_types in header.h. */
     int UsingSelfType() const;
 
-    /// Returns 0 if there is no inventory, otherwise returns inventory.
+    /// Returns nullptr if there is no inventory, otherwise returns inventory.
     Inventory * PlayerInventory() const;
 
     long GetLongitude() const;
@@ -106,6 +106,7 @@ public:
     void Backpack();
     void Inscribe() const;
     void Examine();
+    void Examine(int x, int y, int z);
     /// Returns true if xyz are in world bounds.
     bool Damage() const;
     void Use();
@@ -115,7 +116,8 @@ public:
     /// Tries to use block number num in inventory.
     usage_types Use(int num);
     /// Tries to get block number num from outer inventory.
-    void Obtain(int src, int dest = 0, int num = 1);
+    //  Returns true on success.
+    bool Obtain(int src, int dest = 0, int num = 1);
     void Inscribe(int num);
     void Craft   (int num);
     void Build   (int num);

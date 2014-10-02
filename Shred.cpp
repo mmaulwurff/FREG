@@ -25,9 +25,36 @@
 #include "blocks/Inventory.h"
 
 const quint8 DATASTREAM_VERSION = QDataStream::Qt_5_2;
-const quint8 CURRENT_SHRED_FORMAT_VERSION = 13;
+const quint8 CURRENT_SHRED_FORMAT_VERSION = 14;
 
 const int RAIN_IS_DEW = 1;
+
+QString Shred::ShredTypeName(const shred_type type) {
+    switch ( type ) {
+    case SHRED_PLAIN: /*--------*/ return QObject::tr("Plain");
+    case SHRED_TESTSHRED: /*----*/ return QObject::tr("Test shred");
+    case SHRED_PYRAMID: /*------*/ return QObject::tr("Pyramid");
+    case SHRED_HILL: /*---------*/ return QObject::tr("Hill");
+    case SHRED_DESERT: /*-------*/ return QObject::tr("Desert");
+    case SHRED_WATER: /*--------*/ return QObject::tr("Water");
+    case SHRED_FOREST: /*-------*/ return QObject::tr("Forest");
+    case SHRED_MOUNTAIN: /*-----*/ return QObject::tr("Mountain");
+    case SHRED_EMPTY: /*--------*/ return QObject::tr("Empty");
+    case SHRED_CHAOS: /*--------*/ return QObject::tr("Chaos");
+    case SHRED_CASTLE: /*-------*/ return QObject::tr("Castle");
+    case SHRED_WASTE: /*--------*/ return QObject::tr("Waste");
+    case SHRED_ACID_LAKE: /*----*/ return QObject::tr("Acid lake");
+    case SHRED_LAVA_LAKE: /*----*/ return QObject::tr("Lava lake");
+    case SHRED_CRATER: /*-------*/ return QObject::tr("Crater");
+    case SHRED_DEAD_FOREST: /*--*/ return QObject::tr("Dead forest");
+    case SHRED_DEAD_HILL: /*----*/ return QObject::tr("Dead hill");
+    case SHRED_NULLMOUNTAIN: /*-*/ return QObject::tr("Null mountain");
+    case SHRED_NORMAL_UNDERGROUND: return QObject::tr("Normal underground");
+    }
+    Q_UNREACHABLE();
+    return QString();
+}
+
 
 long Shred::Longitude() const { return longitude; }
 long Shred::Latitude()  const { return latitude;  }
@@ -313,7 +340,7 @@ void Shred::SetNewBlock(const int kind, const int sub,
 QString Shred::FileName(const QString world_name,
         const long longi, const long lati)
 {
-    return QString("%1%2/y%3x%4").
+    return QString("%1%2/%3-%4.fm").
         arg(home_path).arg(world_name).arg(longi).arg(lati);
 }
 
@@ -463,11 +490,12 @@ void Shred::Pyramid() {
 
 void Shred::Castle() {
     NormalUnderground();
+    const int bottom_level = HEIGHT/2 - 1;
     // basement
-    NormalCube(0,0,HEIGHT/2-6, SHRED_WIDTH,  SHRED_WIDTH,  9, IRON);
-    NormalCube(2,2,HEIGHT/2-4, SHRED_WIDTH-4,SHRED_WIDTH-4,5, AIR );
+    NormalCube(0,0,bottom_level-5, SHRED_WIDTH,  SHRED_WIDTH,  9, IRON);
+    NormalCube(2,2,bottom_level-3, SHRED_WIDTH-4,SHRED_WIDTH-4,5, AIR );
     // floors
-    int level = HEIGHT/2-1;
+    int level = bottom_level;
     for (int floors=CountShredTypeAround(SHRED_CASTLE); ; --floors) {
         NormalCube(0,0,level,   SHRED_WIDTH,  SHRED_WIDTH,  6, STONE);
         NormalCube(2,2,level+1, SHRED_WIDTH-4,SHRED_WIDTH-4,1, WOOD );
@@ -479,40 +507,34 @@ void Shred::Castle() {
                 SetNewBlock(PLATE, STONE, 4+step, y, level-3+step);
             }
         }
-        if ( floors != 1 ) { // not roof, lamps
-            for (int x=3; x<SHRED_WIDTH-3; x+=3)
-            for (int y=3; y<SHRED_WIDTH-3; y+=3) {
-                SetNewBlock(ILLUMINATOR, GLASS, x, y, level+4);
-            }
-        } else {
-            return;
-        }
+        if ( floors == 1 ) return; // roof
         const WorldMap * const map = GetWorld()->GetMap();
-        // north pass and lamps
-        if ( map->TypeOfShred(longitude-1, latitude) == SHRED_CASTLE ) {
+        if ( map->TypeOfShred(longitude-1, latitude) == SHRED_CASTLE
+                || level == bottom_level )
+        {// north pass
             NormalCube(2,0,level+2, SHRED_WIDTH-4,2,4, AIR);
-            for (int x=3; x<SHRED_WIDTH-3; x+=3) {
-                SetNewBlock(ILLUMINATOR, GLASS, x, 0, level+4);
-            }
         }
-        // south pass
-        if ( map->TypeOfShred(longitude+1, latitude) == SHRED_CASTLE ) {
+        if ( map->TypeOfShred(longitude+1, latitude) == SHRED_CASTLE
+                || level == bottom_level )
+        { // south pass
             NormalCube(2,SHRED_WIDTH-2,level+2, SHRED_WIDTH-4,2,4, AIR);
         }
-        // west pass and lamps
-        if ( map->TypeOfShred(longitude, latitude-1) == SHRED_CASTLE ) {
-            NormalCube(0,2,level+2, 2,SHRED_WIDTH,4, AIR);
-            for (int y=3; y<SHRED_WIDTH-3; y+=3) {
-                SetNewBlock(ILLUMINATOR, GLASS, 0, y, level+4);
-            }
+        if ( map->TypeOfShred(longitude, latitude-1) == SHRED_CASTLE
+                || level == bottom_level )
+        { // west pass
+            NormalCube(0,2,level+2, 2,SHRED_WIDTH-4,4, AIR);
         }
-        // east pass
-        if ( map->TypeOfShred(longitude, latitude+1) == SHRED_CASTLE ) {
-            NormalCube(SHRED_WIDTH-2,2,level+2, 2,SHRED_WIDTH,4, AIR);
+        if ( map->TypeOfShred(longitude, latitude+1) == SHRED_CASTLE
+                || level == bottom_level )
+        { // east pass
+            NormalCube(SHRED_WIDTH-2,2,level+2, 2,SHRED_WIDTH-4,4, AIR);
+        }
+        if ( level == bottom_level + 5 ) {
+            LoadRoom(level + 2);
         }
         level += 5;
     }
-}
+} // Shred::Castle()
 
 void Shred::ChaosShred() {
     for (int i=0; i<SHRED_WIDTH; ++i)
@@ -606,3 +628,64 @@ void Shred::Rain(const int kind, const int sub) {
         SetBlock(BlockManager::NewBlock(kind, sub), x, y, CLOUD_HEIGHT);
     }
 }
+
+void Shred::LoadRoom(const int level, const int index) {
+    QFile file(QString("%1%2.room").
+            arg(FileName(GetWorld()->WorldName(), longitude, latitude)).
+            arg((index >= 1 ) ?
+                QString("-%1").arg(index) : ""));
+    if ( not file.open(QIODevice::ReadOnly | QIODevice::Text) ) return;
+    for (int lines = 0; lines < SHRED_WIDTH; ++lines) {
+        char buffer[SHRED_WIDTH + 1] = {0};
+        file.readLine(buffer, sizeof(buffer));
+        for (unsigned i=0; i<sizeof(buffer); ++i) {
+            switch ( buffer[i] ) {
+                case '#':
+                    PutBlock(block_manager.Normal(STONE), i, lines, level);
+                    break;
+                case '+':
+                    NormalCube(i, lines, level, 1, 1, qrand()%3+5, STONE);
+                    break;
+                case '0':
+                    NormalCube(i, lines, level, 1, 1, 6, NULLSTONE);
+                    break;
+                case '|':
+                    NormalCube(i, lines, level, 1, 1, 5, STONE);
+                    break;
+                case '[': {
+                    Block * const stone = block_manager.Normal(STONE);
+                    PutBlock(stone, i, lines, level);
+                    PutBlock(stone, i, lines, level+1);
+                    PutBlock(stone, i, lines, level+3);
+                    PutBlock(stone, i, lines, level+4);
+                    } break;
+                case '=':
+                    PutBlock(block_manager.Normal(WOOD),  i, lines, level);
+                    PutBlock(block_manager.Normal(STONE), i, lines, level+4);
+                    break;
+                case '^':
+                    for (int z=level; z<level+5; ++z) {
+                        SetNewBlock(LADDER, WOOD, i, lines, z);
+                    }
+                    break;
+
+                case '*': SetNewBlock(WORKBENCH, IRON, i, lines, level); break;
+                case '&': SetNewBlock(CONTAINER, WOOD, i, lines, level); break;
+                case 't': SetNewBlock(TELEGRAPH, IRON, i, lines, level); break;
+                case 'c': SetNewBlock(CLOCK, IRON, i, lines, level); break;
+                case 'V': SetNewBlock(CONVERTER, STONE, i,lines,level); break;
+                case 'b': SetNewBlock(BELL, IRON, i, lines, level); break;
+                case 'i': SetNewBlock(ILLUMINATOR, IRON, i,lines,level); break;
+                case '~': SetNewBlock(LIQUID, WATER, i, lines, level); break;
+                case 'M': SetNewBlock(MEDKIT, IRON, i, lines, level); break;
+                case 'R': SetNewBlock(RAIN_MACHINE,IRON, i,lines,level); break;
+                case 'F': SetNewBlock(FILTER, IRON, i, lines, level); break;
+
+                case '.': // reserved for nothing
+                case 0:
+                case '\n':
+                default: break;
+            }
+        }
+    }
+} // Shred::LoadRoom(const int level)

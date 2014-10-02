@@ -22,7 +22,6 @@ DEFINES += VER=\"$${VERSTR}\"
 TEMPLATE = app
 
 QMAKE_CXXFLAGS += -Wall -Wextra -std=c++11 -pedantic
-QMAKE_CXXFLAGS += -Weffc++ -Wold-style-cast -Werror
 QMAKE_CXXFLAGS += -Wfloat-equal -Woverloaded-virtual -Wundef
 
 #QMAKE_CXXFLAGS_DEBUG += -fno-inline
@@ -64,9 +63,10 @@ unix:cursed_screen {
     LIBS += -lncursesw
     target.path += /usr/bin
     INSTALLS += target
+    QMAKE_CXXFLAGS += -Weffc++ -Wold-style-cast -Werror
 } else:win32 {
     # path =(
-    LIBS += -LC:/Users/Alexander/src/FREG/pdcurses -lpdcurses
+    LIBS += -Lpdcurses -lpdcurses
 }
 
 HEADERS += \

@@ -29,7 +29,6 @@ public:
     Filter(QDataStream &, int kind, int sub);
 
     bool Get(Block * block, int start) override;
-    Active * ActiveBlock() override;
     QString FullName() const override;
     QString InvFullName(int slot_number) const override;
 };

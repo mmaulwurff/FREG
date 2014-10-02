@@ -28,6 +28,7 @@
 #include <QMutex>
 
 #ifdef Q_OS_WIN32
+#define NCURSES_MOUSE_VERSION 2
 #include "pdcurses/curses.h"
 #else
 #define _X_OPEN_SOURCE_EXTENDED
@@ -64,9 +65,8 @@ public:
      Screen(World *, Player *, int & error, bool ascii);
     ~Screen() override;
 
-    int  GetChar() const override;
-    void FlushInput() const override;
-    void ControlPlayer(int command) override;
+    void ControlPlayer();
+    void ControlPlayer(int ch);
 
 public slots:
     void Notify(QString) const override;
@@ -91,7 +91,9 @@ private:
     void Arrows(WINDOW *, int x, int y, dirs) const;
     void HorizontalArrows(WINDOW *, int y, dirs) const;
     void PrintNormal(WINDOW *, dirs) const;
-    void PrintFront(dirs) const;
+    /// Has two functions: first - when x == -1 - prints front,
+    /// second - otherwise - examines block at position x, y.
+    void PrintFront(dirs direction, int x = -1, int y = 0) const;
     void PrintInv(WINDOW *, const Block *, const Inventory *) const;
     /// Can print health, breath and other bars on hudWin.
     void PrintBar(int x, int color, int ch, int percent,
@@ -109,20 +111,28 @@ private:
     char PrintBlock(const Block &, WINDOW *) const;
     void SetActionMode(actions mode);
     void ProcessCommand(QString command);
+    void ProcessMouse();
     void MovePlayer(dirs dir);
     void MovePlayerDiag(dirs dir1, dirs dir2) const;
     static bool IsScreenWide();
     int  RandomBlink() const;
     bool RandomBit() const;
+    /// Returns nullptr if block is not player->Visible().
     Block * GetFocusedBlock() const;
-    static void PrintVerticalDirection(WINDOW *, int y, int x, dirs);
+    inline static void PrintVerticalDirection(WINDOW *, int y, int x, dirs);
+
+    inline int GetNormalStartX() const;
+    inline int GetNormalStartY() const;
+    inline int GetMinimapStartX() const;
+    inline int GetMinimapStartY() const;
+    void ExamineOnNormalScreen(int x, int y, int z, int step) const;
 
     WINDOW * windows[6];
     WINDOW *& leftWin    = windows[0];
     WINDOW *& rightWin   = windows[1];
     WINDOW *& notifyWin  = windows[2];
     WINDOW *& hudWin     = windows[3]; // head-up display
-    WINDOW *& miniMapWin = windows[4];
+    WINDOW *& minimapWin = windows[4];
     WINDOW *& actionWin  = windows[5];
     mutable QString lastNotification;
     IThread * const input;

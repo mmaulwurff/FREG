@@ -80,7 +80,7 @@ public: // Lighting section
             int level = MAX_LIGHT_RADIUS);
     void SunShineHorizontal(int x, int y, int z);
     /// If init is false, light will not spread from non-invisible blocks.
-    void Shine(int x, int y, int z, int level, bool init);
+    void Shine(int x, int y, int z, int level);
     void RemoveSunLight(int x, int y, int z);
 
     bool GetEvernight() const;
@@ -168,7 +168,7 @@ public:
     /// Returns true on success.
     bool Drop(Block * from, int x_to, int y_to, int z_to,
             int src, int dest, int num);
-    void Get(Block * to, int x_from, int y_from, int z_from,
+    bool Get(Block * to, int x_from, int y_from, int z_from,
             int src, int dest, int num);
 
 public: // Block information section
@@ -200,8 +200,8 @@ public:
     void Unlock();
 
 public slots:
-    void PhysEvents();
     void SetReloadShreds(int direction);
+    void PhysEvents();
 
 signals:
     void Notify(QString) const;

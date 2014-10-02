@@ -50,6 +50,7 @@ public:
 
     int ShouldAct() const override;
     int DamageKind() const override;
+    int DamageLevel() const override;
     int LightRadius() const override;
     bool Inscribe(QString) override;
     void Damage(int dmg, int dmg_kind) override;

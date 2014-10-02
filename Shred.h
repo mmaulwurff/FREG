@@ -112,6 +112,8 @@ public:
     void Rain(int kind, int sub);
     void Dew (int kind, int sub);
 
+    static QString ShredTypeName(shred_type);
+
 private:
     void RemoveAllSunLight();
     void RemoveAllFireLight();
@@ -143,6 +145,10 @@ private:
     void WasteShred();
     /// For testing purposes.
     void ChaosShred();
+
+    /// Loads room from corresponding .room or -index.room file.
+    /// Should be placed before any other block generation at the same place.
+    void LoadRoom(int level, int index = 0);
 
     /// Block combinations section (trees, buildings, etc):
     bool Tree(int x, int y, int z, int height);
