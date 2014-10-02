@@ -490,11 +490,12 @@ void Shred::Pyramid() {
 
 void Shred::Castle() {
     NormalUnderground();
+    const int bottom_level = HEIGHT/2 - 1;
     // basement
-    NormalCube(0,0,HEIGHT/2-6, SHRED_WIDTH,  SHRED_WIDTH,  9, IRON);
-    NormalCube(2,2,HEIGHT/2-4, SHRED_WIDTH-4,SHRED_WIDTH-4,5, AIR );
+    NormalCube(0,0,bottom_level-5, SHRED_WIDTH,  SHRED_WIDTH,  9, IRON);
+    NormalCube(2,2,bottom_level-3, SHRED_WIDTH-4,SHRED_WIDTH-4,5, AIR );
     // floors
-    int level = HEIGHT/2-1;
+    int level = bottom_level;
     for (int floors=CountShredTypeAround(SHRED_CASTLE); ; --floors) {
         NormalCube(0,0,level,   SHRED_WIDTH,  SHRED_WIDTH,  6, STONE);
         NormalCube(2,2,level+1, SHRED_WIDTH-4,SHRED_WIDTH-4,1, WOOD );
@@ -506,40 +507,31 @@ void Shred::Castle() {
                 SetNewBlock(PLATE, STONE, 4+step, y, level-3+step);
             }
         }
-        if ( floors != 1 ) { // not roof, lamps
-            for (int x=3; x<SHRED_WIDTH-3; x+=3)
-            for (int y=3; y<SHRED_WIDTH-3; y+=3) {
-                SetNewBlock(ILLUMINATOR, GLASS, x, y, level+4);
-            }
-        } else {
-            return;
-        }
+        if ( floors == 1 ) return; // roof
         const WorldMap * const map = GetWorld()->GetMap();
-        // north pass and lamps
-        if ( map->TypeOfShred(longitude-1, latitude) == SHRED_CASTLE ) {
+        if ( map->TypeOfShred(longitude-1, latitude) == SHRED_CASTLE
+                || level == bottom_level )
+        {// north pass
             NormalCube(2,0,level+2, SHRED_WIDTH-4,2,4, AIR);
-            for (int x=3; x<SHRED_WIDTH-3; x+=3) {
-                SetNewBlock(ILLUMINATOR, GLASS, x, 0, level+4);
-            }
         }
-        // south pass
-        if ( map->TypeOfShred(longitude+1, latitude) == SHRED_CASTLE ) {
+        if ( map->TypeOfShred(longitude+1, latitude) == SHRED_CASTLE
+                || level == bottom_level )
+        { // south pass
             NormalCube(2,SHRED_WIDTH-2,level+2, SHRED_WIDTH-4,2,4, AIR);
         }
-        // west pass and lamps
-        if ( map->TypeOfShred(longitude, latitude-1) == SHRED_CASTLE ) {
-            NormalCube(0,2,level+2, 2,SHRED_WIDTH,4, AIR);
-            for (int y=3; y<SHRED_WIDTH-3; y+=3) {
-                SetNewBlock(ILLUMINATOR, GLASS, 0, y, level+4);
-            }
+        if ( map->TypeOfShred(longitude, latitude-1) == SHRED_CASTLE
+                || level == bottom_level )
+        { // west pass
+            NormalCube(0,2,level+2, 2,SHRED_WIDTH-4,4, AIR);
         }
-        // east pass
-        if ( map->TypeOfShred(longitude, latitude+1) == SHRED_CASTLE ) {
-            NormalCube(SHRED_WIDTH-2,2,level+2, 2,SHRED_WIDTH,4, AIR);
+        if ( map->TypeOfShred(longitude, latitude+1) == SHRED_CASTLE
+                || level == bottom_level )
+        { // east pass
+            NormalCube(SHRED_WIDTH-2,2,level+2, 2,SHRED_WIDTH-4,4, AIR);
         }
         level += 5;
     }
-}
+} // Shred::Castle()
 
 void Shred::ChaosShred() {
     for (int i=0; i<SHRED_WIDTH; ++i)

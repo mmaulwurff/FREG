@@ -80,7 +80,7 @@ public: // Lighting section
             int level = MAX_LIGHT_RADIUS);
     void SunShineHorizontal(int x, int y, int z);
     /// If init is false, light will not spread from non-invisible blocks.
-    void Shine(int x, int y, int z, int level, bool init);
+    void Shine(int x, int y, int z, int level);
     void RemoveSunLight(int x, int y, int z);
 
     bool GetEvernight() const;

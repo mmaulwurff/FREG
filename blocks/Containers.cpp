@@ -356,7 +356,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
                 isOn = true;
                 GetWorld()->GetShred(X(), Y())->AddShining(this);
                 GetWorld()->Shine(X(), Y(), Z(),
-                    (lightRadius=CONVERTER_LIGHT_RADIUS), true);
+                    (lightRadius=CONVERTER_LIGHT_RADIUS));
             } else {
                 fuelLevel += dmg;
             }

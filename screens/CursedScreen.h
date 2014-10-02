@@ -117,6 +117,7 @@ private:
     static bool IsScreenWide();
     int  RandomBlink() const;
     bool RandomBit() const;
+    /// Returns nullptr if block is not player->Visible().
     Block * GetFocusedBlock() const;
     inline static void PrintVerticalDirection(WINDOW *, int y, int x, dirs);
 

@@ -62,7 +62,7 @@ private:
         IN_LEFT
     };
 
-    void UpdateLightRadius();
+    int UpdateLightRadius() const;
 
     int lightRadius;
 };

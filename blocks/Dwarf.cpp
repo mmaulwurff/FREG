@@ -52,12 +52,12 @@ QString Dwarf::FullName() const {
         tr("Rational creature");
 }
 
-void Dwarf::UpdateLightRadius() {
-    Block * const in_left  = ShowBlock(IN_LEFT);
-    Block * const in_right = ShowBlock(IN_RIGHT);
+int Dwarf::UpdateLightRadius() const {
+    const Block * const in_left  = ShowBlock(IN_LEFT);
+    const Block * const in_right = ShowBlock(IN_RIGHT);
     const int left_rad  = in_left  ? in_left ->LightRadius() : 0;
     const int right_rad = in_right ? in_right->LightRadius() : 0;
-    lightRadius = qMax(MIN_DWARF_LIGHT_RADIUS, qMax(left_rad, right_rad));
+    return qMax(MIN_DWARF_LIGHT_RADIUS, qMax(left_rad, right_rad));
 }
 
 int Dwarf::DamageKind() const {
@@ -123,7 +123,7 @@ int Dwarf::NutritionalValue(const subs sub) const {
 }
 
 bool Dwarf::GetExact(Block * const block, const int to) {
-    if ( block==nullptr ) return true;
+    if ( block == nullptr ) return true;
     if ( (to > IN_LEFT || ( Number(to) == 0 && (
                      IN_RIGHT==to
                 ||   IN_LEFT ==to
@@ -132,12 +132,12 @@ bool Dwarf::GetExact(Block * const block, const int to) {
                 || ( ON_LEGS ==to && WEARABLE_LEGS==block->Wearable() ))))
             && Inventory::GetExact(block, to) )
     {
-        UpdateLightRadius();
-        if ( lightRadius == 0 ) {
+        if ( (lightRadius = UpdateLightRadius()) == 0 ) {
             GetWorld()->GetShred(X(), Y())->RemShining(this);
         } else {
+            ReceiveSignal("hello");
             GetWorld()->GetShred(X(), Y())->AddShining(this);
-            GetWorld()->Shine(X(), Y(), Z(), lightRadius, true);
+            GetWorld()->Shine(X(), Y(), Z(), lightRadius);
         }
         return true;
     } else {
@@ -179,7 +179,5 @@ Dwarf::Dwarf(const int kind, const int sub) :
 Dwarf::Dwarf(QDataStream & str, const int kind, const int sub) :
         Animal(str, kind, sub),
         Inventory(str),
-        lightRadius()
-{
-    UpdateLightRadius();
-}
+        lightRadius(UpdateLightRadius())
+{}

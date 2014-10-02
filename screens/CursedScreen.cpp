@@ -526,7 +526,9 @@ void Screen::ActionXyz(int * x, int * y, int * z) const {
 Block * Screen::GetFocusedBlock() const {
     int x, y, z;
     ActionXyz(&x, &y, &z);
-    return GetWorld()->GetBlock(x, y, z);
+    return ( player->Visible(x, y, z) ) ?
+        GetWorld()->GetBlock(x, y, z) :
+        nullptr;
 }
 
 char Screen::PrintBlock(const Block & block, WINDOW * const window) const {
@@ -562,14 +564,19 @@ void Screen::Print() {
                     player->GetUsingInInventory())->GetNote()));
             player->SetUsingTypeNo();
             break;
-        case USAGE_TYPE_READ:
-            DisplayFile(QString(home_path + w->WorldName()
-                + "/texts/" + GetFocusedBlock()->GetNote()));
-            player->SetUsingTypeNo();
-            break;
+        case USAGE_TYPE_READ: {
+            const Block * const focused = GetFocusedBlock();
+            if ( focused != nullptr ) {
+                DisplayFile(QString(home_path + w->WorldName()
+                    + "/texts/" + GetFocusedBlock()->GetNote()));
+                player->SetUsingTypeNo();
+            }
+            } break;
         case USAGE_TYPE_OPEN: {
-                Block * const block = GetFocusedBlock();
-                PrintInv(rightWin, block, block->HasInventory());
+            Block * const focused = GetFocusedBlock();
+            if ( focused != nullptr ) {
+                PrintInv(rightWin, focused, focused->HasInventory());
+            }
             } break;
         }
     }
@@ -616,7 +623,7 @@ void Screen::PrintHUD() {
         mvwaddstr(hudWin, 1,1, qPrintable(satiation_strings[satiation_state]));
     }
     Block * const focused = GetFocusedBlock();
-    if ( Block::GetSubGroup(focused->Sub()) != GROUP_AIR ) {
+    if ( focused && Block::GetSubGroup(focused->Sub()) != GROUP_AIR ) {
         const int left_border = IsScreenWide() ?
             (SCREEN_SIZE*2+2) * 2 :
             SCREEN_SIZE*2+2 - 15;
