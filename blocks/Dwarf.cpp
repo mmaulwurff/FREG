@@ -52,7 +52,12 @@ QString Dwarf::FullName() const {
         tr("Rational creature");
 }
 
-int Dwarf::UpdateLightRadius() const {
+void Dwarf::UpdateLightRadius() {
+    lightRadius = UpdateLightRadiusInner();
+    Active::UpdateLightRadius();
+}
+
+int Dwarf::UpdateLightRadiusInner() const {
     const Block * const in_left  = ShowBlock(IN_LEFT);
     const Block * const in_right = ShowBlock(IN_RIGHT);
     const int left_rad  = in_left  ? in_left ->LightRadius() : 0;
@@ -132,7 +137,7 @@ bool Dwarf::GetExact(Block * const block, const int to) {
                 || ( ON_LEGS ==to && WEARABLE_LEGS==block->Wearable() ))))
             && Inventory::GetExact(block, to) )
     {
-        if ( (lightRadius = UpdateLightRadius()) == 0 ) {
+        if ( (lightRadius = UpdateLightRadiusInner()) == 0 ) {
             GetWorld()->GetShred(X(), Y())->RemShining(this);
         } else {
             ReceiveSignal("hello");
@@ -179,5 +184,5 @@ Dwarf::Dwarf(const int kind, const int sub) :
 Dwarf::Dwarf(QDataStream & str, const int kind, const int sub) :
         Animal(str, kind, sub),
         Inventory(str),
-        lightRadius(UpdateLightRadius())
+        lightRadius(UpdateLightRadiusInner())
 {}

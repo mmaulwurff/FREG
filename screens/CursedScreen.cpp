@@ -587,9 +587,9 @@ void Screen::PrintHUD() {
     werase(hudWin);
     if ( player->GetCreativeMode() ) {
         mvwaddstr (hudWin, 0, 0,
-            qPrintable(tr("Creative Mode\nxyz: %1, %2, %3. XY: %4, %5.")
+            qPrintable(tr("Creative Mode\nxyz: %1, %2, %3. YX: %4, %5.")
             .arg(player->GlobalX()).arg(player->GlobalY()).arg(player->Z())
-            .arg(player->GetLatitude()).arg(player->GetLongitude())) );
+            .arg(player->GetLongitude()).arg(player->GetLatitude())) );
     } else {
         const int dur = player->GetBlock()->GetDurability();
         if ( dur > 0 ) { // HitPoints line

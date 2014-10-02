@@ -32,6 +32,10 @@ recipes/*
 texts/*
 !texts/*.txt
 
+!rooms
+rooms/*
+!rooms/*room
+
 !debian
 !debian/*
 debian/*~

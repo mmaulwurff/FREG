@@ -60,7 +60,9 @@ int WorldMap::GetSpawnCoordinate(int size) {
 long WorldMap::GetSpawnLongitude() const { return spawnLongitude; }
 long WorldMap::GetSpawnLatitude()  const { return spawnLatitude;  }
 
-char WorldMap::TypeOfShred(const long longi, const long lati) const {
+char WorldMap::TypeOfShred(long longi, long lati) const {
+    --longi;
+    --lati;
     //return '-'; // for testing purposes
     if (
             longi >= mapSize || longi < 0 ||

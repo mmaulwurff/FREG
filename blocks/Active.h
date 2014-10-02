@@ -68,6 +68,7 @@ public:
 
     virtual inner_actions ActInner();
     virtual int ShouldAct() const;
+    virtual void UpdateLightRadius();
 
     void SetShred(Shred *);
     void Farewell();

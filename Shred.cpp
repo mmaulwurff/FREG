@@ -25,7 +25,7 @@
 #include "blocks/Inventory.h"
 
 const quint8 DATASTREAM_VERSION = QDataStream::Qt_5_2;
-const quint8 CURRENT_SHRED_FORMAT_VERSION = 13;
+const quint8 CURRENT_SHRED_FORMAT_VERSION = 14;
 
 const int RAIN_IS_DEW = 1;
 
@@ -340,7 +340,7 @@ void Shred::SetNewBlock(const int kind, const int sub,
 QString Shred::FileName(const QString world_name,
         const long longi, const long lati)
 {
-    return QString("%1%2/y%3x%4").
+    return QString("%1%2/%3-%4.fm").
         arg(home_path).arg(world_name).arg(longi).arg(lati);
 }
 
@@ -529,6 +529,9 @@ void Shred::Castle() {
         { // east pass
             NormalCube(SHRED_WIDTH-2,2,level+2, 2,SHRED_WIDTH-4,4, AIR);
         }
+        if ( level == bottom_level + 5 ) {
+            LoadRoom(level + 2);
+        }
         level += 5;
     }
 } // Shred::Castle()
@@ -625,3 +628,64 @@ void Shred::Rain(const int kind, const int sub) {
         SetBlock(BlockManager::NewBlock(kind, sub), x, y, CLOUD_HEIGHT);
     }
 }
+
+void Shred::LoadRoom(const int level, const int index) {
+    QFile file(QString("%1%2.room").
+            arg(FileName(GetWorld()->WorldName(), longitude, latitude)).
+            arg((index >= 1 ) ?
+                QString("-%1").arg(index) : ""));
+    if ( not file.open(QIODevice::ReadOnly | QIODevice::Text) ) return;
+    for (int lines = 0; lines < SHRED_WIDTH; ++lines) {
+        char buffer[SHRED_WIDTH + 1] = {0};
+        file.readLine(buffer, sizeof(buffer));
+        for (unsigned i=0; i<sizeof(buffer); ++i) {
+            switch ( buffer[i] ) {
+                case '#':
+                    PutBlock(block_manager.Normal(STONE), i, lines, level);
+                    break;
+                case '+':
+                    NormalCube(i, lines, level, 1, 1, qrand()%3+5, STONE);
+                    break;
+                case '0':
+                    NormalCube(i, lines, level, 1, 1, 6, NULLSTONE);
+                    break;
+                case '|':
+                    NormalCube(i, lines, level, 1, 1, 5, STONE);
+                    break;
+                case '[': {
+                    Block * const stone = block_manager.Normal(STONE);
+                    PutBlock(stone, i, lines, level);
+                    PutBlock(stone, i, lines, level+1);
+                    PutBlock(stone, i, lines, level+3);
+                    PutBlock(stone, i, lines, level+4);
+                    } break;
+                case '=':
+                    PutBlock(block_manager.Normal(WOOD),  i, lines, level);
+                    PutBlock(block_manager.Normal(STONE), i, lines, level+4);
+                    break;
+                case '^':
+                    for (int z=level; z<level+5; ++z) {
+                        SetNewBlock(LADDER, WOOD, i, lines, z);
+                    }
+                    break;
+
+                case '*': SetNewBlock(WORKBENCH, IRON, i, lines, level); break;
+                case '&': SetNewBlock(CONTAINER, WOOD, i, lines, level); break;
+                case 't': SetNewBlock(TELEGRAPH, IRON, i, lines, level); break;
+                case 'c': SetNewBlock(CLOCK, IRON, i, lines, level); break;
+                case 'V': SetNewBlock(CONVERTER, STONE, i,lines,level); break;
+                case 'b': SetNewBlock(BELL, IRON, i, lines, level); break;
+                case 'i': SetNewBlock(ILLUMINATOR, IRON, i,lines,level); break;
+                case '~': SetNewBlock(LIQUID, WATER, i, lines, level); break;
+                case 'M': SetNewBlock(MEDKIT, IRON, i, lines, level); break;
+                case 'R': SetNewBlock(RAIN_MACHINE,IRON, i,lines,level); break;
+                case 'F': SetNewBlock(FILTER, IRON, i, lines, level); break;
+
+                case '.': // reserved for nothing
+                case 0:
+                case '\n':
+                default: break;
+            }
+        }
+    }
+} // Shred::LoadRoom(const int level)

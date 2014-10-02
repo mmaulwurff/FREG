@@ -20,17 +20,20 @@
 #include "blocks/Illuminator.h"
 #include "BlockManager.h"
 #include "Inventory.h"
+#include "World.h"
 
 Illuminator::Illuminator(const int kind, const int sub) :
-        Active(kind, sub),
-        fuelLevel(MAX_FUEL)
+        Active(kind, sub, NONSTANDARD),
+        fuelLevel(MAX_FUEL),
+        isOn(false)
 {}
 
 Illuminator::Illuminator(QDataStream & str, const int kind, const int sub) :
-        Active(str, kind, sub),
-        fuelLevel()
+        Active(str, kind, sub, NONSTANDARD),
+        fuelLevel(),
+        isOn()
 {
-    str >> fuelLevel;
+    str >> fuelLevel >> isOn;
 }
 
 int  Illuminator::DamageKind() const {
@@ -54,18 +57,23 @@ Block * Illuminator::DropAfterDamage(bool * const delete_block) {
     return pile;
 }
 
-usage_types Illuminator::Use(Block *) {
-    if ( Sub() == GLASS ) { // flashlight
-        return USAGE_TYPE_INNER;
-    } else {
+usage_types Illuminator::Use(Block * const user) {
+    if ( Sub() == WOOD || Sub() == STONE ) {
         fuelLevel = ( fuelLevel >= 10 ) ?
             fuelLevel - 10 : 0;
         return USAGE_TYPE_SET_FIRE;
+    } else {
+        isOn = not isOn;
+        Active * const active = user->ActiveBlock();
+        if ( active != nullptr ) {
+            active->UpdateLightRadius();
+        }
+        return USAGE_TYPE_INNER;
     }
 }
 
 int Illuminator::LightRadius() const {
-    if ( fuelLevel == 0 ) return 0;
+    if ( fuelLevel == 0 || not isOn ) return 0;
     switch ( Sub() ) {
     default:
     case STONE: return 0;
@@ -76,8 +84,11 @@ int Illuminator::LightRadius() const {
 }
 
 int  Illuminator::ShouldAct() const { return FREQUENT_RARE; }
-void Illuminator::DoRareAction() { ActInner(); }
 wearable Illuminator::Wearable() const { return WEARABLE_OTHER; }
+
+void Illuminator::DoRareAction() {
+    GetWorld()->Shine(X(), Y(), Z(), LightRadius());
+}
 
 inner_actions Illuminator::ActInner() {
     if ( fuelLevel == 0 ) {
@@ -85,7 +96,7 @@ inner_actions Illuminator::ActInner() {
             Break();
         }
     } else {
-        if ( Sub() != STONE ) {
+        if ( Sub() != STONE && isOn ) {
             --fuelLevel;
         }
     }
@@ -94,5 +105,5 @@ inner_actions Illuminator::ActInner() {
 
 void Illuminator::SaveAttributes(QDataStream & out) const {
     Active::SaveAttributes(out);
-    out << fuelLevel;
+    out << fuelLevel << isOn;
 }
