@@ -149,6 +149,9 @@ private:
     SCREEN * const screen;
     mutable bool inputActive = false;
     mutable int randomBlink;
+
+    mmask_t noMouseMask;
+    bool mouseOn;
 };
 
 #endif // CURSEDSCREEN_H

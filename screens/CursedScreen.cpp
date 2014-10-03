@@ -37,6 +37,8 @@ const int SHADOW_COLOR = COLOR_PAIR(BLACK_BLACK) | A_BOLD | A_REVERSE;
 const int MINIMAP_WIDTH = 11;
 const int MINIMAP_HEIGHT = 7;
 
+const int MOUSEMASK = BUTTON1_CLICKED | BUTTON1_RELEASED;
+
 void Screen::PrintVerticalDirection(WINDOW * const window, const int y,
         const int x, const dirs direction)
 {
@@ -359,6 +361,14 @@ void Screen::ControlPlayer(const int ch) {
     case '/': PassString(previousCommand); // no break
     case '.': ProcessCommand(previousCommand); break;
 
+    case 'M':
+        mouseOn = not mouseOn;
+        mousemask((mouseOn ? MOUSEMASK : noMouseMask), nullptr);
+        Notify(tr("Mouse %1.").arg(mouseOn ?
+            tr("turned on") :
+            tr("turned off")));
+        break;
+
     case KEY_MOUSE: ProcessMouse(); break;
     }
     updated = false;
@@ -586,10 +596,11 @@ void Screen::Print() {
 void Screen::PrintHUD() {
     werase(hudWin);
     if ( player->GetCreativeMode() ) {
-        mvwaddstr (hudWin, 0, 0,
-            qPrintable(tr("Creative Mode\nxyz: %1, %2, %3. YX: %4, %5.")
+        mvwaddstr(hudWin, 0, 0,
+            qPrintable(tr("Creative Mode\nxyz: %1, %2, %3.\nShred: %4")
             .arg(player->GlobalX()).arg(player->GlobalY()).arg(player->Z())
-            .arg(player->GetLongitude()).arg(player->GetLatitude())) );
+            .arg(Shred::FileName(GetWorld()->WorldName(),
+                player->GetLongitude(), player->GetLatitude()) )));
     } else {
         const int dur = player->GetBlock()->GetDurability();
         if ( dur > 0 ) { // HitPoints line
@@ -1011,7 +1022,9 @@ Screen::Screen(
             ascii ? '<' : 0x2190
         },
         screen(newterm(nullptr, stdout, stdin)),
-        randomBlink()
+        randomBlink(),
+        noMouseMask(),
+        mouseOn(settings.value("mouse_on", true).toBool())
 {
     #ifndef Q_OS_WIN32
         set_escdelay(10);
@@ -1021,7 +1034,10 @@ Screen::Screen(
     noecho(); // do not print typed symbols
     nonl();
     keypad(stdscr, TRUE); // use arrows
-    mousemask(BUTTON1_CLICKED | BUTTON1_RELEASED, nullptr);
+    mousemask(BUTTON1_CLICKED | BUTTON1_RELEASED, &noMouseMask);
+    if ( not mouseOn ) {
+        mousemask((mouseOn ? MOUSEMASK : noMouseMask), nullptr);
+    }
     memset(windows, 0, sizeof(windows));
     if ( LINES < 41 && IsScreenWide() ) {
         printf("Make your terminal height to be at least 41 lines.\n");
@@ -1114,6 +1130,7 @@ Screen::~Screen() {
     settings.setValue("flash_on", flashOn);
     settings.setValue("blink_on", blinkOn);
     settings.setValue("ascii", ascii);
+    settings.setValue("mouse_on", mouseOn);
 }
 
 void Screen::PrintBar(const int x, const int attr, const int ch,
