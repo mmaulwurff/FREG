@@ -629,12 +629,12 @@ void Shred::Rain(const int kind, const int sub) {
     }
 }
 
-void Shred::LoadRoom(const int level, const int index) {
+bool Shred::LoadRoom(const int level, const int index) {
     QFile file(QString("%1%2.room").
             arg(FileName(GetWorld()->WorldName(), longitude, latitude)).
             arg((index >= 1 ) ?
                 QString("-%1").arg(index) : ""));
-    if ( not file.open(QIODevice::ReadOnly | QIODevice::Text) ) return;
+    if ( not file.open(QIODevice::ReadOnly | QIODevice::Text) ) return false;
     for (int lines = 0; lines < SHRED_WIDTH; ++lines) {
         char buffer[SHRED_WIDTH + 1] = {0};
         file.readLine(buffer, sizeof(buffer));
@@ -688,4 +688,5 @@ void Shred::LoadRoom(const int level, const int index) {
             }
         }
     }
-} // Shred::LoadRoom(const int level)
+    return true;
+} // bool Shred::LoadRoom(const int level, const int index)

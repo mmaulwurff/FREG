@@ -210,15 +210,17 @@ void Shred::Desert() {
 
 void Shred::WasteShred() {
     NormalUnderground(0, STONE);
-    LoadRoom(HEIGHT/2);
-    LoadRoom(HEIGHT/2 + 1, 1);
+    bool room_loaded;
+    if ( (room_loaded = LoadRoom(HEIGHT/2)) ) {
+        LoadRoom(HEIGHT/2 + 1, 1);
+    }
     int random = qrand();
     RandomDrop((random & 0x7)+3, FALLING, SUB_DUST);
     random >>= 3;
     RandomDrop(random & 0x1, WEAPON, BONE);
     RandomDrop((random & 0x7)+3, WEAPON, STONE);
     random >>= 3;
-    if ( random & 0x1 ) {
+    if ( random & 0x1 && not room_loaded ) {
         random >>= 1;
         const subs pool_sub = ( random & 0x1 ) ? WATER : STONE;
         random >>= 1;

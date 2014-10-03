@@ -138,6 +138,7 @@ DISTFILES += \
     texts/splash.txt \
     recipes/*.json \
     help_*/* \
+    rooms/*.room \
     freg_ru.qm \
     debian/c* \
     debian/rules \
