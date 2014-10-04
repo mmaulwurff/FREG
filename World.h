@@ -182,7 +182,7 @@ public: // Block information section
     QString GetNote(int note_id) const;
 
 public: // World section
-    void ReloadAllShreds(long lati, long longi,
+    void ReloadAllShreds(QString new_world, long lati, long longi,
             int new_x, int new_y, int new_z);
 private:
     void SetNumActiveShreds(int num);
@@ -223,7 +223,7 @@ private:
     World(const World &) = delete;
     World & operator=(const World &) = delete;
 
-    const QString worldName;
+    QString worldName;
     const WorldMap map;
     QSettings settings;
     ulong time;
@@ -242,6 +242,7 @@ private:
     const bool evernight;
     long newLati, newLongi;
     int  newX, newY, newZ;
+    QString newWorld;
     /// UP for no reset, DOWN for full reset, NSEW for side shift.
     volatile dirs toResetDir;
     int sunMoonFactor;

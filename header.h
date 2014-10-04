@@ -146,6 +146,7 @@ enum kinds {
     MEDKIT,       ///< 31
     FILTER,       ///< 32
     INFORMER,     ///< 33
+    TELEPORT,     ///< 34
     /// Nothing is LAST_KIND.
     LAST_KIND // keep it last in this list.
 }; // enum kinds

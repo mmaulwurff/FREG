@@ -442,7 +442,8 @@ void Player::BlockDestroy() {
         emit Notify(tr("^ You die. ^"));
         emit Destroyed();
         player = nullptr;
-        world->ReloadAllShreds(homeLati, homeLongi, homeX,homeY,homeZ);
+        world->ReloadAllShreds(world->WorldName(),
+            homeLati, homeLongi, homeX,homeY,homeZ);
     }
 }
 
@@ -494,6 +495,11 @@ void Player::SetPlayer(const int _x, const int _y, const int _z) {
         Qt::DirectConnection);
 }
 
+void Player::Disconnect() {
+    player->disconnect();
+    player = nullptr;
+}
+
 Player::Player() :
         settings(home_path + world->WorldName() + "/settings.ini",
             QSettings::IniFormat),
@@ -525,6 +531,8 @@ Player::Player() :
         Qt::DirectConnection);
     connect(this, SIGNAL(OverstepBorder(int)),
         world, SLOT(SetReloadShreds(int)),
+        Qt::DirectConnection);
+    connect(world, SIGNAL(StartReloadAll()), SLOT(Disconnect()),
         Qt::DirectConnection);
 }
 

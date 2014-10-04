@@ -146,14 +146,16 @@ int World::ChangeNote(const QString note, const int noteId) {
 
 QString World::GetNote(const int noteId) const { return notes.at(noteId-1); }
 
-void World::ReloadAllShreds(const long lati, const long longi,
-    const int new_x, const int new_y, const int new_z)
+void World::ReloadAllShreds(const QString new_world,
+        const long lati, const long longi,
+        const int new_x, const int new_y, const int new_z)
 {
     newLati  = lati;
     newLongi = longi;
     newX = new_x;
     newY = new_y;
     newZ = new_z;
+    newWorld = new_world;
     toResetDir = DOWN; // full reset
 }
 
@@ -218,6 +220,7 @@ void World::ReloadShreds() {
         DeleteAllShreds();
         longitude = newLongi;
         latitude  = newLati;
+        worldName = newWorld;
         LoadAllShreds();
         emit NeedPlayer(newX, newY, newZ);
         emit UpdatedAll();
@@ -669,11 +672,9 @@ World::World(const QString world_name, bool * error) :
         numActiveShreds(),
         mutex(),
         evernight(settings.value("evernight", false).toBool()),
-        newLati(),
-        newLongi(),
-        newX(),
-        newY(),
-        newZ(),
+        newLati(), newLongi(),
+        newX(), newY(), newZ(),
+        newWorld(),
         toResetDir(UP),
         sunMoonFactor(),
         shredStorage(),

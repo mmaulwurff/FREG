@@ -125,6 +125,7 @@ int VirtScreen::Color(const int kind, const int sub) {
     case PREDATOR:  return  RED_BLACK;
     case TELEGRAPH: return BLUE_BLUE;
     case MEDKIT:    return  RED_WHITE;
+    case TELEPORT:  return  RED_BLUE;
     }
 } // color_pairs Screen::Color(int kind, int sub)
 
@@ -166,6 +167,7 @@ char VirtScreen::CharName(const int kind, const int sub) {
     case MEDKIT:    return '+';
     case FILTER:    return 'F';
     case INFORMER:  return 'I';
+    case TELEPORT:  return '0';
     case RAIN_MACHINE: return 'R';
     case FALLING: switch ( sub ) {
         case SAND:  return '.';

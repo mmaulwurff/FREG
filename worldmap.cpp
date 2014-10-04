@@ -57,6 +57,7 @@ int WorldMap::GetSpawnCoordinate(int size) {
     return (qrand()%size) + size;
 }
 
+int  WorldMap::GetSize() const { return mapSize; }
 long WorldMap::GetSpawnLongitude() const { return spawnLongitude; }
 long WorldMap::GetSpawnLatitude()  const { return spawnLatitude;  }
 

@@ -29,6 +29,7 @@
 #include "blocks/RainMachine.h"
 #include "blocks/Armour.h"
 #include "blocks/Filter.h"
+#include "blocks/Teleport.h"
 
 /** \page kinds List of available kinds
  *  Complete list.
@@ -70,6 +71,7 @@ const QByteArray BlockManager::kinds[] = { // do not use space, use '_'
     "medkit",
     "filter",
     "informer",
+    "teleport",
     /// [List of kinds]
 };
 
@@ -184,6 +186,7 @@ const static QString tr_kind_names[] = {
     QObject::tr("Medkit"),
     QObject::tr("Filter"),
     QObject::tr("Informer"),
+    QObject::tr("Teleport"),
 };
 
 QString BlockManager::SubName(const int sub) { return tr_sub_names[sub]; }
@@ -263,6 +266,7 @@ Block * BlockManager::NewBlock(const int kind, const int sub) {
     case MEDKIT:    return new MedKit(kind, sub);
     case FILTER:    return new Filter(kind, sub);
     case INFORMER:  return new Informer(kind, sub);
+    case TELEPORT:  return new Teleport(kind, sub);
     case LAST_KIND: break;
     }
     Q_UNREACHABLE();
@@ -308,6 +312,7 @@ Block * BlockManager::BlockFromFile(QDataStream & str,
     case MEDKIT:    return new MedKit(str, kind, sub);
     case FILTER:    return new Filter(str, kind, sub);
     case INFORMER:  return new Informer(str, kind, sub);
+    case TELEPORT:  return new Teleport(str, kind, sub);
     case LAST_KIND: break;
     }
     Q_UNREACHABLE();
@@ -402,6 +407,7 @@ bool BlockManager::IsValid(const int kind, const int sub) {
     case HAMMER:
     case ILLUMINATOR:
     case WORKBENCH:
+    case TELEPORT:
     case CONVERTER: return ( group == GROUP_METAL || group == GROUP_HANDY );
     case CONTAINER: return ( group == GROUP_METAL ||
                              group == GROUP_HANDY ||

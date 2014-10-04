@@ -35,6 +35,7 @@ public:
             int size,
             char outer,
             int seed);
+    int GetSize() const;
     long GetSpawnLongitude() const;
     long GetSpawnLatitude()  const;
     static int GetSpawnCoordinate(int size);

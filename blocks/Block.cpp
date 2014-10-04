@@ -51,7 +51,7 @@ QString Block::FullName() const {
         case COAL: break;
         }
     }
-    return QObject::tr("(%1) (%2)").
+    return QObject::tr("%1 (%2)").
         arg(BlockManager::KindName(Kind())).
         arg(BlockManager::SubName(Sub()));
 }
