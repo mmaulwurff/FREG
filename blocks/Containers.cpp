@@ -41,7 +41,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
 
     void Container::ReceiveSignal(QString) {}
     Inventory * Container::HasInventory() { return this; }
-    usage_types Container::Use(Block *) { return USAGE_TYPE_OPEN; }
+    usage_types Container::Use(Active *) { return USAGE_TYPE_OPEN; }
     push_reaction Container::PushResult(dirs) const { return NOT_MOVABLE; }
     inner_actions Container::ActInner() { return INNER_ACTION_ONLY; }
 
@@ -147,7 +147,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
         }
     }
 
-    usage_types Box::Use(Block *) {
+    usage_types Box::Use(Active *) {
         if ( GROUP_MEAT == GetSubGroup(Sub()) ) {
             GetWorld()->DestroyAndReplace(X(), Y(), Z());
             return USAGE_TYPE_NO;

@@ -33,7 +33,7 @@ public:
     bool Get(Block * block, int start) override;
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
-    usage_types Use(Block *) override;
+    usage_types Use(Active *) override;
     Inventory * HasInventory() override final;
 
 protected:

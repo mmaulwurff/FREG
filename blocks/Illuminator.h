@@ -36,7 +36,7 @@ public:
     Block * DropAfterDamage(bool * delete_block) override;
     QString FullName() const override;
     wearable Wearable() const override;
-    usage_types Use(Block *) override;
+    usage_types Use(Active *) override;
     inner_actions ActInner() override;
 
 protected:

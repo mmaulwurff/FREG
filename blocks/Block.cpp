@@ -168,8 +168,8 @@ int  Block::DamageLevel() const { return 1; }
 int  Block::LightRadius() const { return 0; }
 void Block::ReceiveSignal(QString) {}
 wearable Block::Wearable() const { return WEARABLE_NOWHERE; }
-usage_types Block::Use(Block *) { return USAGE_TYPE_NO; }
-usage_types Block::UseOnShredMove(Block *) { return USAGE_TYPE_NO; }
+usage_types Block::Use(Active *) { return USAGE_TYPE_NO; }
+usage_types Block::UseOnShredMove(Active *) { return USAGE_TYPE_NO; }
 
 bool Block::Inscribe(const QString str) {
     if ( Sub() == AIR ) return false;

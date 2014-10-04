@@ -189,7 +189,7 @@
     void Bush::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
     int  Bush::Weight() const { return Inventory::Weight()+Block::Weight(); }
     QString Bush::FullName() const { return tr("Bush"); }
-    usage_types Bush::Use(Block *) { return USAGE_TYPE_OPEN; }
+    usage_types Bush::Use(Active *) { return USAGE_TYPE_OPEN; }
     Inventory * Bush::HasInventory() { return this; }
     inner_actions Bush::ActInner() { return INNER_ACTION_NONE; }
 
@@ -316,7 +316,7 @@
             arg(BlockManager::SubName(Sub()));
     }
 
-    usage_types Door::Use(Block *) {
+    usage_types Door::Use(Active *) {
         locked = !locked;
         return USAGE_TYPE_INNER;
     }
@@ -343,7 +343,7 @@
     }
 
 // Clock::
-    usage_types Clock::Use(Block * const who) {
+    usage_types Clock::Use(Active * const who) {
         if ( who != nullptr ) {
             who->ReceiveSignal( (GetNote().left(4) == "real") ?
                 tr("Outer time is %1.").arg(QTime::currentTime().toString()) :
@@ -451,7 +451,7 @@
         }
     }
 
-    usage_types Text::Use(Block * const who) {
+    usage_types Text::Use(Active * const who) {
         if ( noteId == 0 ) {
             who->ReceiveSignal(QObject::tr("Nothing is written here."));
             return USAGE_TYPE_INNER;
@@ -471,23 +471,21 @@
 
 // Map::
     wearable    Map::Wearable() const { return WEARABLE_OTHER; }
-    usage_types Map::UseOnShredMove(Block * const user) { return Use(user); }
+    usage_types Map::UseOnShredMove(Active * const user) { return Use(user); }
 
-    usage_types Map::Use(Block * const who) {
+    usage_types Map::Use(Active * const user) {
+        if ( user == nullptr ) return USAGE_TYPE_READ;
         if ( noteId == 0 ) {
-            who->ReceiveSignal(QObject::tr("Set title to this map first."));
+            user->ReceiveSignal(QObject::tr("Set title to this map first."));
             return USAGE_TYPE_INNER;
         } // else:
-        if ( who == nullptr ) return USAGE_TYPE_READ;
-        const Active * const active = who->ActiveBlock();
-        if ( active == nullptr ) return USAGE_TYPE_READ;
-        QFile map_file(home_path + active->GetWorld()->WorldName()
+        QFile map_file(home_path + user->GetWorld()->WorldName()
             + "/texts/" + GetNote());
         if ( not map_file.open(QIODevice::ReadWrite | QIODevice::Text) ) {
             return USAGE_TYPE_READ;
         }
-        const long  lati = active->GetShred()->Latitude();
-        const long longi = active->GetShred()->Longitude();
+        const long  lati = user->GetShred()->Latitude();
+        const long longi = user->GetShred()->Longitude();
         const int FILE_SIZE_CHARS = 31 + 1;
         if ( 0 == map_file.size() ) { // new map
             const char header[FILE_SIZE_CHARS+1] =
@@ -517,12 +515,12 @@
             (longi - longiStart + border_dist ) +
              lati  - latiStart  + border_dist );
         map_file.putChar('@');
-        savedChar = active->GetWorld()->GetMap()->TypeOfShred(longi, lati);
+        savedChar = user->GetWorld()->GetMap()->TypeOfShred(longi, lati);
         map_file.seek(FILE_SIZE_CHARS * (FILE_SIZE_CHARS - 1));
         map_file.write(" @ = ");
         map_file.putChar(savedChar);
         return USAGE_TYPE_READ;
-    } // usage_types Map::Use(Block * who)
+    } // usage_types Map::Use(Active * const user)
 
     void Map::SaveAttributes(QDataStream & out) const {
         out << longiStart << latiStart << savedShift << savedChar;
@@ -554,7 +552,7 @@
         Break();
     }
 
-    usage_types Bell::Use(Block *) {
+    usage_types Bell::Use(Active *) {
         SendSignalAround(tr("^ Ding! ^"));
         return USAGE_TYPE_INNER;
     }
@@ -587,7 +585,7 @@
         return Block::Inscribe(str);
     }
 
-    usage_types Telegraph::Use(Block *) {
+    usage_types Telegraph::Use(Active *) {
         isReceiver = not isReceiver;
         return USAGE_TYPE_INNER;
     }
@@ -610,7 +608,7 @@
 // MedKit:: section
     wearable MedKit::Wearable() const { return WEARABLE_OTHER; }
 
-    usage_types MedKit::Use(Block * const user) {
+    usage_types MedKit::Use(Active * const user) {
         if ( user
                 && GROUP_MEAT == GetSubGroup(user->Sub())
                 && GetDurability() > MAX_DURABILITY/10 )
@@ -624,7 +622,7 @@
 // Informer:: section
     wearable Informer::Wearable() const { return WEARABLE_OTHER; }
 
-    usage_types Informer::Use(Block * const user) {
+    usage_types Informer::Use(Active * const user) {
         switch ( Sub() ) {
         case IRON: user->ReceiveSignal(QString("Your direction: %1.").
             arg(DirString(user->GetDir()).toLower())); break;

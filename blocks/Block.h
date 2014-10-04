@@ -103,8 +103,8 @@ public:
     virtual bool Inscribe(QString str);
     virtual void Move(dirs direction);
     virtual void Damage(int dmg, int dmg_kind);
-    virtual usage_types Use(Block * user);
-    virtual usage_types UseOnShredMove(Block * user);
+    virtual usage_types Use(Active * user);
+    virtual usage_types UseOnShredMove(Active * user);
     virtual push_reaction PushResult(dirs) const;
     /// Should return dropped block.
     /** It can be pile(BOX, DIFFERENT) containing all dropped blocks, or
