@@ -140,7 +140,6 @@ bool Dwarf::GetExact(Block * const block, const int to) {
         if ( (lightRadius = UpdateLightRadiusInner()) == 0 ) {
             GetWorld()->GetShred(X(), Y())->RemShining(this);
         } else {
-            ReceiveSignal("hello");
             GetWorld()->GetShred(X(), Y())->AddShining(this);
             GetWorld()->Shine(X(), Y(), Z(), lightRadius);
         }
