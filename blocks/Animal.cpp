@@ -73,7 +73,7 @@
         const int value = NutritionalValue(sub);
         if ( value ) {
             satiation += value;
-            ReceiveSignal(tr("Ate %1.").arg(SubName(sub)));
+            ReceiveSignal(tr("Ate %1.").arg(BlockManager::SubName(sub)));
             if ( SECONDS_IN_DAY < satiation ) {
                 satiation = 1.1 * SECONDS_IN_DAY;
                 ReceiveSignal(tr("You have gorged yourself!"));
@@ -134,7 +134,6 @@
 
 // Predator:: section
     int Predator::DamageLevel() const { return 10; }
-    QString Predator::FullName() const { return "Predator"; }
 
     int Predator::NutritionalValue(const subs sub) const {
         return Attractive(sub) * SECONDS_IN_HOUR;

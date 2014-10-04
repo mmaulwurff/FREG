@@ -69,6 +69,13 @@ public:
     /// If string is not convertible to substance, returns LAST_SUB.
     static int StringToSub(QString);
 
+    /// Returs translated kind name.
+    static QString KindName(int kind);
+    /// Returns translated substance name.
+    static QString SubName(int sub);
+    /// Returns translated substance name with first upper letter.
+    static QString SubNameUpper(int sub);
+
     constexpr static int MakeId(const int kind, const int sub) {
         return (kind << 6) | sub;
     }

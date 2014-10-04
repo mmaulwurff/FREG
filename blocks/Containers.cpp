@@ -61,7 +61,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
         switch ( Sub() ) {
         case IRON:      return tr("Locker");
         case WATER:     return tr("Fridge");
-        default:        return tr("Chest (%1)").arg(SubName(Sub()));
+        default:        return Block::FullName();
         }
     }
 
@@ -139,10 +139,11 @@ const int CONVERTER_LIGHT_RADIUS = 2;
 
     QString Box::FullName() const {
         switch ( Sub() ) {
-        default:        return tr("Box (%1)").arg(SubName(Sub()));
-        case H_MEAT:
-        case A_MEAT:    return tr("Corpse (%1)").arg(SubName(Sub()));
+        default:        return Block::FullName();
         case DIFFERENT: return tr("Pile");
+        case H_MEAT:
+        case A_MEAT:    return tr("Corpse (%1)").
+            arg(BlockManager::SubName(Sub()));
         }
     }
 
@@ -219,7 +220,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
     QString Workbench::FullName() const {
         switch ( Sub() ) {
         case WOOD: return tr("Workbench");
-        default:   return tr("Anvil (%1)").arg(SubName(Sub()));
+        default:   return Block::FullName();
         }
     }
 
@@ -332,7 +333,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
     QString Converter::FullName() const {
         QString name;
         switch ( Sub() ) {
-            default:
+            default:    name = Block::FullName(); break;
             case STONE: name = tr("Furnace"); break;
         }
         return name + tr(" (charge for %1 s)").arg(fuelLevel/DamageLevel());

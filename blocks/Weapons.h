@@ -45,7 +45,6 @@ public:
     using Weapon::Weapon;
 
     int  DamageKind() const override;
-    QString FullName() const override;
 };
 
 class Shovel : public Weapon {
@@ -53,7 +52,6 @@ public:
     using Weapon::Weapon;
 
     int  DamageKind() const override;
-    QString FullName() const override;
 };
 
 class Hammer : public Weapon {
@@ -61,7 +59,6 @@ public:
     using Weapon::Weapon;
 
     int  DamageKind() const override;
-    QString FullName() const override;
 };
 
 class Axe : public Weapon {
@@ -69,7 +66,6 @@ public:
     using Weapon::Weapon;
 
     int  DamageKind() const override;
-    QString FullName() const override;
 };
 
 #endif // WEAPONS_H

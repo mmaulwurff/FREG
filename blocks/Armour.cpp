@@ -31,20 +31,8 @@ const int TRESHOLD = 10;
     int Armour::DamageLevel() const { return 0; }
     wearable Armour::Wearable() const { return WEARABLE_BODY; }
 
-    QString Armour::FullName() const {
-        return QObject::tr("Body armour (%1)").arg(SubName(Sub()));
-    }
-
 // Helmet section
     wearable Helmet::Wearable() const { return WEARABLE_HEAD; }
 
-    QString Helmet::FullName() const {
-        return QObject::tr("Helmet (%1)").arg(SubName(Sub()));
-    }
-
 // Boots section
     wearable Boots::Wearable() const { return WEARABLE_LEGS; }
-
-    QString Boots::FullName() const {
-        return QObject::tr("Boots (%1)").arg(SubName(Sub()));
-    }

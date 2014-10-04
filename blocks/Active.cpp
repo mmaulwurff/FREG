@@ -22,6 +22,7 @@
 #include "World.h"
 #include "Xyz.h"
 #include "blocks/Inventory.h"
+#include "BlockManager.h"
 
 // Active section
 
@@ -251,7 +252,7 @@ void Falling::SaveAttributes(QDataStream & out) const {
 
 QString Falling::FullName() const {
     switch ( Sub() ) {
-    default:    return SubNameUpper(Sub());
+    default:    return BlockManager::SubNameUpper(Sub());
     case WATER: return tr("Snow");
     case STONE: return tr("Masonry");
     }

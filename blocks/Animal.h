@@ -38,7 +38,6 @@ public:
     bool Eat(subs);
     int  Breath() const;
     int  Satiation() const;
-    QString FullName() const override = 0;
     Animal * IsAnimal() override;
     Block  * DropAfterDamage(bool * delete_block) override;
     inner_actions ActInner() override;
@@ -68,7 +67,6 @@ public:
 
     int DamageLevel() const override;
     void ActFrequent() override;
-    QString FullName() const override;
 
 protected:
     void DoRareAction() override;

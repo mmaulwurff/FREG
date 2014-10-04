@@ -18,6 +18,7 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "Bucket.h"
+#include "BlockManager.h"
 
 Bucket::Bucket(const int kind, const int sub) :
         Block(kind, sub),
@@ -40,14 +41,12 @@ QString Bucket::FullName() const {
     default:    name = QObject::tr("Bucket"); break;
     case GLASS: name = QObject::tr("Bottle"); break;
     }
-    return ( GetInvSub(0) == AIR ) ?
-        QObject::tr("Empty bucket (%1)").arg(SubName(Sub())) :
-        QObject::tr("%1 (%2) with %3 (%4/%5 full)")
-            .arg(name)
-            .arg(SubName(Sub()))
-            .arg(ShowBlock(0)->FullName().toLower())
-            .arg(Number(0))
-            .arg(MAX_STACK_SIZE);
+    return QObject::tr("%1 (%2) with %3 (%4/%5 full)").
+        arg(name).
+        arg(BlockManager::SubName(Sub())).
+        arg(ShowBlock(0)->FullName().toLower()).
+        arg(Number(0)).
+        arg(MAX_STACK_SIZE);
 }
 
 bool Bucket::Get(Block * const block, const int start) {

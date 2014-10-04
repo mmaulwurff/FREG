@@ -27,10 +27,10 @@
         switch ( Sub() ) {
         case STONE: return QObject::tr("Pebble");
         case IRON:  return QObject::tr("Spike");
-        case BONE:  return QObject::tr("Bone");
-        case SKY:   return QObject::tr("Air");
-        case SUB_NUT: return SubNameUpper(SUB_NUT);
-        default:    return QObject::tr("Stick (%1)").arg(SubName(Sub()));
+        case BONE:
+        case SKY:
+        case SUB_NUT: return BlockManager::SubNameUpper(Sub());
+        default:      return Block::FullName();
         }
     }
 
@@ -61,27 +61,11 @@
 // Pick::
     int Pick::DamageKind() const { return DAMAGE_MINE; }
 
-    QString Pick::FullName() const {
-        return QObject::tr("Pick (%1)").arg(SubName(Sub()));
-    }
-
 // Shovel::
     int Shovel::DamageKind() const { return DAMAGE_DIG; }
-
-    QString Shovel::FullName() const {
-        return QObject::tr("Shovel (%1)").arg(SubName(Sub()));
-    }
 
 // Hammer::
     int Hammer::DamageKind() const { return DAMAGE_CRUSH; }
 
-    QString Hammer::FullName() const {
-        return QObject::tr("Hammer (%1)").arg(SubName(Sub()));
-    }
-
 // Axe::
     int Axe::DamageKind() const { return DAMAGE_CUT; }
-
-    QString Axe::FullName() const {
-        return QObject::tr("Axe (%1)").arg(SubName(Sub()));
-    }

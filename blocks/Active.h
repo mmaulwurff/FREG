@@ -57,7 +57,6 @@ public:
     void Move(dirs dir) override;
     void ReceiveSignal(QString) override;
     void Damage(int dmg, int dmg_kind) override;
-    QString  FullName() const override = 0;
     Active * ActiveBlock() override final;
 
     Shred * GetShred() const;

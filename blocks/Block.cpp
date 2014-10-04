@@ -31,54 +31,7 @@ const static QString dir_strings[] = {
     QObject::tr("West")
 };
 
-const static QString sub_names[] = {
-    QObject::tr("stone"),
-    QObject::tr("stone"),
-    QObject::tr("nullstone"),
-    QObject::tr("air"),
-    QObject::tr("air"),
-    QObject::tr("diamond"),
-    QObject::tr("soil"),
-    QObject::tr("meat of rational"),
-    QObject::tr("meat"),
-    QObject::tr("glass"),
-    QObject::tr("wood"),
-    QObject::tr("different"),
-    QObject::tr("iron"),
-    QObject::tr("water"),
-    QObject::tr("greenery"),
-    QObject::tr("sand"),
-    QObject::tr("hazelnut"),
-    QObject::tr("rose"),
-    QObject::tr("clay"),
-    QObject::tr("air"),
-    QObject::tr("paper"),
-    QObject::tr("gold"),
-    QObject::tr("bone"),
-    QObject::tr("steel"),
-    QObject::tr("adamantine"),
-    QObject::tr("fire"),
-    QObject::tr("coal"),
-    QObject::tr("explosive"),
-    QObject::tr("acid"),
-    QObject::tr("cloud"),
-    QObject::tr("dust"),
-    QObject::tr("plastic"),
-};
-
-QString Block::SubName(const int sub) {
-    static_assert(sizeof_array(sub_names) == LAST_SUB,
-        "invalid number of strings in sub_names");
-    return sub_names[sub];
-}
-
 QString Block::DirString(const dirs dir) { return dir_strings[dir]; }
-
-QString Block::SubNameUpper(const int sub) {
-    QString result = SubName(sub);
-    result.replace(0, 1, result.at(0).toUpper());
-    return result;
-}
 
 dirs Block::MakeDirFromDamage(const int dmg_kind) {
     Q_ASSERT(dmg_kind >= DAMAGE_PUSH_UP);
@@ -86,16 +39,21 @@ dirs Block::MakeDirFromDamage(const int dmg_kind) {
 }
 
 QString Block::FullName() const {
-    switch ( Sub() ) {
-    default:    return SubNameUpper(Sub());
-    case WATER: return QObject::tr("Ice");
-    case SAND:  return QObject::tr("Sandstone");
-    case CLAY:  return QObject::tr("Clay brick");
-    case ACID:  return QObject::tr("Acid concentrate");
-    case IRON:
-    case GOLD:
-    case COAL:  return QObject::tr("Block (%1)").arg(SubName(Sub()));
+    if ( Kind() ==  BLOCK ) {
+        switch ( Sub() ) {
+        default:    return BlockManager::SubNameUpper(Sub());
+        case WATER: return QObject::tr("Ice");
+        case SAND:  return QObject::tr("Sandstone");
+        case CLAY:  return QObject::tr("Clay brick");
+        case ACID:  return QObject::tr("Acid concentrate");
+        case IRON:
+        case GOLD:
+        case COAL: break;
+        }
     }
+    return QObject::tr("(%1) (%2)").
+        arg(BlockManager::KindName(Kind())).
+        arg(BlockManager::SubName(Sub()));
 }
 
 int Block::Transparency(const int transp, const int sub) const {

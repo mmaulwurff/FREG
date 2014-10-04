@@ -46,7 +46,7 @@ QString Illuminator::FullName() const {
     case STONE: return tr("Flint, charges: %1"     ).arg(fuelLevel);
     case GLASS: return tr("Flashlight, battery: %1").arg(fuelLevel);
     default:    return tr("Lantern (%1), fuel: %2" ).
-        arg(SubName(Sub())).arg(fuelLevel);
+        arg(BlockManager::SubName(Sub())).arg(fuelLevel);
     }
 }
 

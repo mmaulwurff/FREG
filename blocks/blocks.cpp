@@ -31,7 +31,7 @@
         case WOOD:  return QObject::tr("Wooden board");
         case MOSS_STONE:
         case STONE: return QObject::tr("Stone slab");
-        default:    return QObject::tr("Plate (%1)").arg(SubName(Sub()));
+        default:    return Block::FullName();
         }
     }
 
@@ -44,7 +44,7 @@
         case MOSS_STONE:
         case STONE:    return QObject::tr("Rock with ledges");
         case GREENERY: return QObject::tr("Liana");
-        default:       return QObject::tr("Ladder (%1)").arg(SubName(Sub()));
+        default:       return Block::FullName();
     }
     }
 
@@ -118,7 +118,7 @@
         case STONE:  return tr("Lava");
         case H_MEAT:
         case A_MEAT: return tr("Blood");
-        default:     return SubNameUpper(Sub());
+        default:     return BlockManager::SubNameUpper(Sub());
         }
     }
 
@@ -171,7 +171,7 @@
         switch ( Sub() ) {
         case GREENERY: return tr("Grass");
         case FIRE:     return tr("Fire");
-        default:       return tr("Plant (%1)").arg(SubName(Sub()));
+        default:       return Block::FullName();
         }
     }
 
@@ -313,7 +313,7 @@
     QString Door::FullName() const {
         return QString("%1 (%2)").
             arg(locked ? tr("Locked door") : tr("Door")).
-            arg(SubName(Sub()));
+            arg(BlockManager::SubName(Sub()));
     }
 
     usage_types Door::Use(Block *) {
@@ -355,9 +355,7 @@
     }
 
     QString Clock::FullName() const {
-        return ( Sub() == EXPLOSIVE ) ?
-            tr("Bomb") :
-            tr("Clock (%1)").arg(SubName(Sub()));
+        return ( Sub() == EXPLOSIVE ) ? tr("Bomb") : Block::FullName();
     }
 
     void Clock::Damage(int, const int dmg_kind) {
@@ -449,7 +447,7 @@
         switch ( Sub() ) {
         case PAPER: return QObject::tr("Paper page");
         case GLASS: return QObject::tr("Screen");
-        default:    return QObject::tr("Sign (%1)").arg(SubName(Sub()));
+        default:    return Block::FullName();
         }
     }
 
@@ -473,7 +471,6 @@
 
 // Map::
     wearable    Map::Wearable() const { return WEARABLE_OTHER; }
-    QString     Map::FullName() const { return QObject::tr("Map"); }
     usage_types Map::UseOnShredMove(Block * const user) { return Use(user); }
 
     usage_types Map::Use(Block * const who) {
@@ -557,10 +554,6 @@
         Break();
     }
 
-    QString Bell::FullName() const {
-        return tr("Bell (%1)").arg(SubName(Sub()));
-    }
-
     usage_types Bell::Use(Block *) {
         SendSignalAround(tr("^ Ding! ^"));
         return USAGE_TYPE_INNER;
@@ -589,10 +582,6 @@
     void Telegraph::ReceiveSignal(const QString str) { Inscribe(str); }
     wearable Telegraph::Wearable() const { return WEARABLE_OTHER; }
 
-    QString Telegraph::FullName() const {
-        return tr("Telegraph (%1)").arg(SubName(Sub()));
-    }
-
     bool Telegraph::Inscribe(const QString str) {
         isReceiver = false;
         return Block::Inscribe(str);
@@ -619,7 +608,6 @@
     }
 
 // MedKit:: section
-    QString MedKit::FullName() const { return QObject::tr("MedKit"); }
     wearable MedKit::Wearable() const { return WEARABLE_OTHER; }
 
     usage_types MedKit::Use(Block * const user) {
@@ -648,6 +636,6 @@
     QString Informer::FullName() const {
         switch ( Sub() ) {
         case IRON: return QObject::tr("Compass");
-        default:   return QObject::tr("Informer (%1)").arg(SubName(Sub()));
+        default:   return Block::FullName();
         }
     }

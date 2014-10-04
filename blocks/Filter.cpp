@@ -30,10 +30,6 @@ Filter::Filter(QDataStream & str, const int kind, const int sub) :
     Container(str, kind, sub, FILTER_INV_SIZE)
 {}
 
-QString Filter::FullName() const {
-    return tr("Filter (%1)").arg(SubName(Sub()));
-}
-
 QString Filter::InvFullName(const int slot_number) const {
     return ( slot_number > 0 ) ?
         Container::InvFullName(slot_number) : ( Number(0) == 0 ) ?

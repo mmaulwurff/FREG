@@ -181,7 +181,6 @@ public:
     Map(int sub, int id);
     Map(QDataStream & str, int sub, int id);
 
-    QString FullName() const override;
     wearable Wearable() const override;
     usage_types Use(Block * who) override;
     usage_types UseOnShredMove(Block * who) override;
@@ -202,7 +201,6 @@ public:
     using Active::Active;
 
     void Damage(int dmg, int dmg_kind) override;
-    QString FullName() const override;
     wearable Wearable() const override;
     usage_types Use(Block * who) override;
 };
@@ -216,7 +214,6 @@ public:
     int ShouldAct() const override;
     bool Inscribe(QString) override;
     void ReceiveSignal(QString) override;
-    QString FullName() const override;
     wearable Wearable() const override;
     inner_actions ActInner() override;
     usage_types Use(Block * who) override;
@@ -232,7 +229,6 @@ private:
 class MedKit : public Block {
 public:
     using Block::Block;
-    QString FullName() const override;
     wearable Wearable() const override;
     usage_types Use(Block * user) override;
 };
