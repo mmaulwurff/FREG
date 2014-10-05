@@ -101,6 +101,5 @@ inner_actions Illuminator::ActInner() {
 }
 
 void Illuminator::SaveAttributes(QDataStream & out) const {
-    Active::SaveAttributes(out);
     out << fuelLevel << isOn;
 }

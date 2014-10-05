@@ -31,6 +31,7 @@ class Shred;
 class ShredStorage;
 class QByteArray;
 class QReadWriteLock;
+class Active;
 
 const int TIME_STEPS_IN_SEC = 10;
 
@@ -182,7 +183,7 @@ public: // Block information section
     QString GetNote(int note_id) const;
 
 public: // World section
-    void ReloadAllShreds(QString new_world, long lati, long longi,
+    void ReloadAllShreds(QString new_world, qint64 lati, qint64 longi,
             int new_x, int new_y, int new_z);
 private:
     void SetNumActiveShreds(int num);
@@ -202,6 +203,7 @@ public:
 public slots:
     void SetReloadShreds(int direction);
     void PhysEvents();
+    void ActivateFullReload(Active * teleported);
 
 signals:
     void Notify(QString) const;
@@ -214,7 +216,7 @@ signals:
     void Moved(int);
     /// This is emitted when a pack of updates is complete.
     void UpdatesEnded();
-    void NeedPlayer(int, int, int);
+    void NeedPlayer(int, int, int, Active *);
     void StartReloadAll();
     void FinishReloadAll();
     void ExitReceived();
@@ -226,8 +228,8 @@ private:
     QString worldName;
     const WorldMap map;
     QSettings settings;
-    ulong time;
-    int   timeStep;
+    quint64 time;
+    int timeStep;
     Shred ** shreds;
     /**   N
      *    |  E
@@ -235,14 +237,15 @@ private:
      *    |
      *  S v longitude ( y for shreds )
      * center of active zone: */
-    long longitude, latitude;
+    qint64 longitude, latitude;
     int numShreds; ///< size of loaded zone
     int numActiveShreds; ///< size of active zone
     QMutex mutex;
     const bool evernight;
-    long newLati, newLongi;
+    qint64 newLati, newLongi;
     int  newX, newY, newZ;
     QString newWorld;
+    Active * teleported;
     /// UP for no reset, DOWN for full reset, NSEW for side shift.
     volatile dirs toResetDir;
     int sunMoonFactor;

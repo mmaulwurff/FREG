@@ -322,7 +322,6 @@
     }
 
     void Door::SaveAttributes(QDataStream & out) const {
-        Active::SaveAttributes(out);
         out << shifted << locked;
     }
 

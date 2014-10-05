@@ -66,7 +66,6 @@ const int CONVERTER_LIGHT_RADIUS = 2;
     }
 
     void Container::SaveAttributes(QDataStream & out) const {
-        Active::SaveAttributes(out);
         Inventory::SaveAttributes(out);
     }
 

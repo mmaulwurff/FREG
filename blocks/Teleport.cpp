@@ -20,16 +20,17 @@
 #include "blocks/Teleport.h"
 #include "World.h"
 #include <QTextStream>
+#include <blocks/Animal.h>
 
 Teleport::Teleport(const int sub, const int kind) :
-        Block(sub, kind),
+        Active(sub, kind),
         targetWorldName(world->WorldName()),
         targetLatitude(qrand()%(world->GetMap()->GetSize())),
         targetLongitude(qrand()%(world->GetMap()->GetSize()))
 {}
 
 Teleport::Teleport(QDataStream & stream, const int sub, const int kind) :
-        Block(stream, sub, kind),
+        Active(stream, sub, kind),
         targetWorldName(),
         targetLatitude(),
         targetLongitude()
@@ -56,8 +57,13 @@ void Teleport::Damage(const int damage, const int damage_kind) {
     if ( damage_kind >= DAMAGE_PUSH_UP ) {
         world->ReloadAllShreds(targetWorldName,
             targetLatitude, targetLongitude,
-            (world->NumShreds()/2+1)*SHRED_WIDTH,
-            (world->NumShreds()/2+1)*SHRED_WIDTH, 0);
+            world->NumShreds() / 2 * SHRED_WIDTH,
+            world->NumShreds() / 2 * SHRED_WIDTH, 0);
+        int x, y, z;
+        world->Focus(X(),Y(),Z(), &x, &y, &z,
+            World::Anti(MakeDirFromDamage(damage_kind)));
+        Animal * const teleported = world->GetBlock(x, y, z)->IsAnimal();
+        emit teleported->CauseTeleportation(teleported);
     } else {
         Block::Damage(damage, damage_kind);
     }

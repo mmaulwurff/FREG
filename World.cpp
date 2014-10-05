@@ -147,7 +147,7 @@ int World::ChangeNote(const QString note, const int noteId) {
 QString World::GetNote(const int noteId) const { return notes.at(noteId-1); }
 
 void World::ReloadAllShreds(const QString new_world,
-        const long lati, const long longi,
+        const qint64 lati, const qint64 longi,
         const int new_x, const int new_y, const int new_z)
 {
     newLati  = lati;
@@ -156,7 +156,11 @@ void World::ReloadAllShreds(const QString new_world,
     newY = new_y;
     newZ = new_z;
     newWorld = new_world;
-    toResetDir = DOWN; // full reset
+}
+
+void World::ActivateFullReload(Active * _teleported) {
+    toResetDir = DOWN;
+    teleported = _teleported;
 }
 
 QMutex * World::GetLock() { return &mutex; }
@@ -217,12 +221,19 @@ void World::ReloadShreds() {
     case UP: return; // no reset
     case DOWN:       // full reset
         emit StartReloadAll();
+        if ( teleported != nullptr ) {
+            GetShred(teleported->X(), teleported->Y())->SetBlockNoCheck(
+                block_manager.Normal(AIR),
+                Shred::CoordInShred(teleported->X()),
+                Shred::CoordInShred(teleported->Y()), teleported->Z());
+        }
         DeleteAllShreds();
         longitude = newLongi;
         latitude  = newLati;
         worldName = newWorld;
         LoadAllShreds();
-        emit NeedPlayer(newX, newY, newZ);
+        emit NeedPlayer(newX, newY, newZ, teleported);
+        teleported = nullptr;
         emit UpdatedAll();
         emit FinishReloadAll();
         toResetDir = UP; // set no reset
@@ -675,6 +686,7 @@ World::World(const QString world_name, bool * error) :
         newLati(), newLongi(),
         newX(), newY(), newZ(),
         newWorld(),
+        teleported(nullptr),
         toResetDir(UP),
         sunMoonFactor(),
         shredStorage(),

@@ -20,9 +20,10 @@
 #ifndef TELEPORT_H
 #define TELEPORT_H
 
-#include "Block.h"
+#include "blocks/Active.h"
 
-class Teleport : public Block {
+class Teleport : public Active {
+    Q_OBJECT
 public:
     Teleport(int sub, int kind);
     Teleport(QDataStream &, int sub, int kind);

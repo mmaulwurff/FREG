@@ -22,50 +22,42 @@
 #include "BlockManager.h"
 #include "Shred.h"
 
-// Weapon::
-    QString Weapon::FullName() const {
-        switch ( Sub() ) {
-        case STONE: return QObject::tr("Pebble");
-        case IRON:  return QObject::tr("Spike");
-        case BONE:
-        case SKY:
-        case SUB_NUT: return BlockManager::SubNameUpper(Sub());
-        default:      return Block::FullName();
-        }
+QString Weapon::FullName() const {
+    switch ( Sub() ) {
+    case STONE: return QObject::tr("Pebble");
+    case IRON:  return QObject::tr("Spike");
+    case BONE:
+    case SKY:
+    case SUB_NUT: return BlockManager::SubNameUpper(Sub());
+    default:      return Block::FullName();
     }
+}
 
-    int  Weapon::Weight() const { return Block::Weight()/4; }
-    wearable Weapon::Wearable() const { return WEARABLE_OTHER; }
-    push_reaction Weapon::PushResult(dirs) const { return DAMAGE; }
+int  Weapon::Weight() const { return Block::Weight()/4; }
+wearable Weapon::Wearable() const { return WEARABLE_OTHER; }
+push_reaction Weapon::PushResult(dirs) const { return DAMAGE; }
 
-    int Weapon::DamageLevel() const {
-        switch ( Sub() ) {
-        default:    return  1;
-        case WOOD:  return  4;
-        case BONE:  return  5;
-        case STONE: return  7;
-        case IRON:  return 10;
-        case STEEL: return 12;
-        case ADAMANTINE: return 20;
-        }
+int Weapon::DamageLevel() const {
+    switch ( Sub() ) {
+    default:    return  1;
+    case WOOD:  return  4;
+    case BONE:  return  5;
+    case STONE: return  7;
+    case IRON:  return 10;
+    case STEEL: return 12;
+    case ADAMANTINE: return 20;
     }
+}
 
-    int  Weapon::DamageKind() const {
-        switch ( Sub() ) {
-        case IRON: return DAMAGE_THRUST;
-        case SKY:  return DAMAGE_ULTIMATE;
-        default:   return DAMAGE_CRUSH;
-        }
+int  Weapon::DamageKind() const {
+    switch ( Sub() ) {
+    case IRON: return DAMAGE_THRUST;
+    case SKY:  return DAMAGE_ULTIMATE;
+    default:   return DAMAGE_CRUSH;
     }
+}
 
-// Pick::
-    int Pick::DamageKind() const { return DAMAGE_MINE; }
-
-// Shovel::
-    int Shovel::DamageKind() const { return DAMAGE_DIG; }
-
-// Hammer::
-    int Hammer::DamageKind() const { return DAMAGE_CRUSH; }
-
-// Axe::
-    int Axe::DamageKind() const { return DAMAGE_CUT; }
+int Pick  ::DamageKind() const { return DAMAGE_MINE;  }
+int Shovel::DamageKind() const { return DAMAGE_DIG;   }
+int Hammer::DamageKind() const { return DAMAGE_CRUSH; }
+int Axe   ::DamageKind() const { return DAMAGE_CUT;   }

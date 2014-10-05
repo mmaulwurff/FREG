@@ -60,7 +60,7 @@ const Block * Player::GetBlock() const { return player; }
 void Player::SetCreativeMode(const bool creative_on) {
     creativeMode = creative_on;
     Animal * const prev_player = player;
-    SetPlayer(X(), Y(), Z());
+    SetPlayer(X(), Y(), Z(), nullptr);
     player->SetDir(prev_player->GetDir());
     Inventory * const inv = PlayerInventory();
     if ( inv != nullptr ) {
@@ -444,6 +444,7 @@ void Player::BlockDestroy() {
         player = nullptr;
         world->ReloadAllShreds(world->WorldName(),
             homeLati, homeLongi, homeX,homeY,homeZ);
+        world->ActivateFullReload(nullptr);
     }
 }
 
@@ -452,8 +453,13 @@ Animal * Player::NewPlayer() const {
         creator : BlockManager::NewBlock(DWARF, PLAYER_SUB)->IsAnimal();
 }
 
-void Player::SetPlayer(const int _x, const int _y, const int _z) {
+void Player::SetPlayer(const int _x, const int _y, const int _z,
+        Active * const teleported)
+{
     SetXyz(Shred::CoordInShred(_x), Shred::CoordInShred(_y), _z);
+    if ( teleported != nullptr ) {
+        player = teleported->IsAnimal();
+    }
 
     if ( player != nullptr ) {
         player->disconnect();
@@ -463,7 +469,7 @@ void Player::SetPlayer(const int _x, const int _y, const int _z) {
             Shred::CoordInShred(_x), Shred::CoordInShred(_y), _z);
         GetWorld()->GetShred(_x, _y)->Register(player);
     } else {
-        if ( player != nullptr ) {
+        if ( player != nullptr && teleported == nullptr ) {
             GetShred()->Unregister(player);
         }
         World * const world = GetWorld();
@@ -490,8 +496,10 @@ void Player::SetPlayer(const int _x, const int _y, const int _z) {
         Qt::DirectConnection);
     connect(player, SIGNAL(Updated()), SIGNAL(Updated()),
         Qt::DirectConnection);
-    connect(player, SIGNAL(ReceivedText(const QString)),
-        SIGNAL(Notify(const QString)),
+    connect(player, SIGNAL(ReceivedText(QString)), SIGNAL(Notify(QString)),
+        Qt::DirectConnection);
+    connect(player, SIGNAL(CauseTeleportation(Active *)),
+        world, SLOT(ActivateFullReload(Active *)),
         Qt::DirectConnection);
 }
 
@@ -524,10 +532,10 @@ Player::Player() :
     const int plus = world->NumShreds()/2 * SHRED_WIDTH;
     homeX += plus;
     homeY += plus;
-    SetPlayer(x_self+=plus, y_self+=plus, z_self);
+    SetPlayer(x_self+=plus, y_self+=plus, z_self, nullptr);
 
-    connect(world, SIGNAL(NeedPlayer(int, int, int)),
-        SLOT(SetPlayer(int, int, int)),
+    connect(world, SIGNAL(NeedPlayer(int, int, int, Active *)),
+        SLOT(SetPlayer(int, int, int, Active *)),
         Qt::DirectConnection);
     connect(this, SIGNAL(OverstepBorder(int)),
         world, SLOT(SetReloadShreds(int)),

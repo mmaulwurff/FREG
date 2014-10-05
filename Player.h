@@ -28,6 +28,7 @@
 class World;
 class Block;
 class Animal;
+class Active;
 class Inventory;
 class Shred;
 
@@ -162,7 +163,7 @@ private slots:
     void BlockDestroy();
 
     void Disconnect();
-    void SetPlayer(int set_x, int set_y, int set_z);
+    void SetPlayer(int set_x, int set_y, int set_z, Active * teleported);
     /// Dir is not used, for slot signature compatibility only.
     void UpdateXYZ();
 

@@ -34,7 +34,6 @@ RainMachine::RainMachine(QDataStream & stream, const int kind, const int sub) :
 }
 
 void RainMachine::SaveAttributes(QDataStream & stream) const {
-    Active::SaveAttributes(stream);
     Inventory::SaveAttributes(stream);
     stream << isOn;
 }
