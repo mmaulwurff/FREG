@@ -24,6 +24,7 @@
 #include <QDataStream>
 
 int Dwarf::Weight() const {
+    if ( Sub() == DIFFERENT ) return 0;
     World * const world = GetWorld();
     const int bound = world->GetBound();
     return ( (X() < bound && world->GetBlock(X()+1, Y(), Z())->Catchable()) ||
@@ -176,9 +177,7 @@ Dwarf::Dwarf(const int kind, const int sub) :
         Animal(kind, sub),
         Inventory(),
         lightRadius(MIN_DWARF_LIGHT_RADIUS)
-{
-    Block::Inscribe("Urist");
-}
+{}
 
 Dwarf::Dwarf(QDataStream & str, const int kind, const int sub) :
         Animal(str, kind, sub),

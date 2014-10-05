@@ -52,14 +52,6 @@ const QString home_path = "";
 
 int main(int argc, char ** argv) {
     setlocale(LC_CTYPE, "C-UTF-8");
-    if ( not QDir::home().mkpath(".freg") ) {
-        puts(qPrintable( QObject::tr("Error creating game home directory") ));
-        return EXIT_FAILURE;
-    }
-    if (freopen(qPrintable(home_path + "err.txt"), "wt", stderr) == nullptr) {
-        puts(qPrintable( QObject::tr(
-            "Error opening errors.txt, writing errors to standard out.") ));
-    }
 
     Application freg(argc, argv);
     QCoreApplication::setOrganizationName("freg-team");
@@ -69,6 +61,15 @@ int main(int argc, char ** argv) {
     QTranslator translator;
     translator.load(QString(":/freg_") + locale);
     freg.installTranslator(&translator);
+
+    if ( not QDir::home().mkpath(".freg") ) {
+        puts(qPrintable( QObject::tr("Error creating game home directory") ));
+        return EXIT_FAILURE;
+    }
+    if (freopen(qPrintable(home_path + "err.txt"), "wt", stderr) == nullptr) {
+        puts(qPrintable( QObject::tr(
+            "Error opening errors.txt, writing errors to standard out.") ));
+    }
 
     // parse arguments
     QCommandLineParser parser;
@@ -99,17 +100,16 @@ int main(int argc, char ** argv) {
     parser.addOption(map_seed);
     parser.process(freg);
 
-    QSettings::setDefaultFormat(QSettings::IniFormat);
-    QSettings sett(home_path + ".freg/freg.ini", QSettings::IniFormat);
     const QString worldName = parser.isSet(world_argument) ?
         parser.value(world_argument) :
-        sett.value("current_world", "mu").toString();
-    sett.setValue("current_world", worldName);
+        QSettings(home_path + "freg.ini", QSettings::IniFormat).
+            value("current_world", "mu").toString();
     if ( not QDir(home_path).mkpath(worldName) ) {
         puts(qPrintable(QObject::tr("Error generating world.")));
         return EXIT_FAILURE;
     }
 
+    qsrand(QTime::currentTime().msec());
     if ( parser.isSet(generate) ) {
         WorldMap::GenerateMap(
             worldName,
@@ -119,11 +119,11 @@ int main(int argc, char ** argv) {
         puts(qPrintable(QObject::tr("Map generated successfully.")));
         return EXIT_SUCCESS;
     }
+    qsrand(QTime::currentTime().msec());
 
     CraftManager craftManager;
     craft_manager = &craftManager;
 
-    qsrand(QTime::currentTime().msec());
     bool world_error = false;
     World world(worldName, &world_error);
     if ( world_error ) {
@@ -140,9 +140,9 @@ int main(int argc, char ** argv) {
     Player player;
     int error = SCREEN_NO_ERROR;
     #ifdef Q_OS_WIN32
-    const Screen screen(&world, &player, error, true);
+    const Screen screen(&player, error, true);
     #else
-    const Screen screen(&world, &player, error, parser.isSet(ascii));
+    const Screen screen(&player, error, parser.isSet(ascii));
     #endif
 
     if ( error ) return EXIT_FAILURE;

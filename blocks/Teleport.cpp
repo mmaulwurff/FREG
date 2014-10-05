@@ -19,8 +19,8 @@
 
 #include "blocks/Teleport.h"
 #include "World.h"
+#include "worldmap.h"
 #include <QTextStream>
-#include <blocks/Animal.h>
 
 Teleport::Teleport(const int sub, const int kind) :
         Active(sub, kind),
@@ -55,15 +55,14 @@ bool Teleport::Inscribe(QString input) {
 
 void Teleport::Damage(const int damage, const int damage_kind) {
     if ( damage_kind >= DAMAGE_PUSH_UP ) {
+        int x, y, z;
+        world->Focus(X(), Y(), Z(), &x, &y, &z,
+            World::Anti(MakeDirFromDamage(damage_kind)));
         world->ReloadAllShreds(targetWorldName,
             targetLatitude, targetLongitude,
-            world->NumShreds() / 2 * SHRED_WIDTH,
-            world->NumShreds() / 2 * SHRED_WIDTH, 0);
-        int x, y, z;
-        world->Focus(X(),Y(),Z(), &x, &y, &z,
-            World::Anti(MakeDirFromDamage(damage_kind)));
-        Animal * const teleported = world->GetBlock(x, y, z)->IsAnimal();
-        emit teleported->CauseTeleportation(teleported);
+            (world->NumShreds() / 2 + 1) * SHRED_WIDTH,
+            (world->NumShreds() / 2 + 1) * SHRED_WIDTH, 0);
+        emit world->GetBlock(x, y, z)->ActiveBlock()->CauseTeleportation();
     } else {
         Block::Damage(damage, damage_kind);
     }

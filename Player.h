@@ -21,7 +21,6 @@
 #define PLAYER_H
 
 #include <QObject>
-#include <QSettings>
 #include "header.h"
 #include "Xyz.h"
 
@@ -163,7 +162,7 @@ private slots:
     void BlockDestroy();
 
     void Disconnect();
-    void SetPlayer(int set_x, int set_y, int set_z, Active * teleported);
+    void SetPlayer(int set_x, int set_y, int set_z);
     /// Dir is not used, for slot signature compatibility only.
     void UpdateXYZ();
 
@@ -171,19 +170,19 @@ private:
     Player & operator=(const Player &) = delete;
     Player(const Player &) = delete;
 
-    Animal * NewPlayer() const;
-
     /// Checks player/inventory/block existence, size limits.
     Block * ValidBlock(int num) const;
     Shred * GetShred() const;
     World * GetWorld() const;
     bool ForbiddenAdminCommands() const;
 
-    QSettings settings;
-    long homeLongi, homeLati;
+    void SaveState() const;
+    void LoadState();
+
+    qint64 longitude, latitude;
+    qint64 homeLongi, homeLati;
     int homeX, homeY, homeZ;
-    Animal * player;
-    Animal * creator;
+    Animal * player, * creator;
     int usingType;
     int usingSelfType;
     int usingInInventory;

@@ -23,9 +23,9 @@
 #include <QObject>
 #include <QSettings>
 #include <QString>
-#include "World.h"
 
 class Player;
+class World;
 
 enum color_pairs { // do not change colors order! // foreground_background
     BLACK_BLACK = 1,
@@ -116,7 +116,7 @@ public:
      *  connect(this, SIGNAL(InputReceived(int, int)),
      *     player, SLOT(Act(int, int)),
      *     Qt::DirectConnection); */
-    VirtScreen(World *, Player *);
+    VirtScreen(Player *);
     VirtScreen(VirtScreen &) = delete;
     virtual ~VirtScreen();
 
@@ -186,7 +186,6 @@ private slots:
 protected:
     World * GetWorld() const;
 
-    World  * const w;
     Player * const player;
     QSettings settings;
     QString previousCommand;

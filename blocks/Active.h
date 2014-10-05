@@ -77,7 +77,7 @@ signals:
     void Moved(int);
     void Updated();
     void ReceivedText(const QString);
-    void CauseTeleportation(Active *);
+    void CauseTeleportation();
 
 protected:
     void SendSignalAround(QString) const;

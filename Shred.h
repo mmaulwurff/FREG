@@ -23,6 +23,7 @@
 #include <QLinkedList>
 #include "header.h"
 #include "Weather.h"
+#include "worldmap.h"
 
 class World;
 class Block;

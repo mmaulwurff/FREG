@@ -26,6 +26,7 @@
 #define NOX
 
 #include <QMutex>
+#include "header.h"
 
 #ifdef Q_OS_WIN32
 #define NCURSES_MOUSE_VERSION 2
@@ -62,7 +63,7 @@ class Block;
 class Screen final : public VirtScreen {
     Q_OBJECT
 public:
-     Screen(World *, Player *, int & error, bool ascii);
+     Screen(Player *, int & error, bool ascii);
     ~Screen() override;
 
     void ControlPlayer();

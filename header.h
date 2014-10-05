@@ -39,6 +39,8 @@ const int SHRED_WIDTH = 16;
 const int SHRED_WIDTH_SHIFT = 4;
 const int HEIGHT = 128;
 
+const int MAX_NOTE_LENGTH = 144;
+
 enum times {
     SECONDS_IN_HOUR = 60,
     SECONDS_IN_DAY = 24*SECONDS_IN_HOUR,

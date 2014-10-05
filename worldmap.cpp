@@ -41,7 +41,7 @@ WorldMap::WorldMap(const QString world_name) :
 }
 
 void WorldMap::MakeAndSaveSpawn(const QString world_name, const int size,
-        long * longitude, long * latitude)
+        qint64 * longitude, qint64 * latitude)
 {
     QSettings map_info(home_path+world_name+"/map.ini", QSettings::IniFormat);
     *longitude = map_info.value("spawn_longitude", GetSpawnCoordinate(size)).
@@ -52,25 +52,23 @@ void WorldMap::MakeAndSaveSpawn(const QString world_name, const int size,
     map_info.setValue("spawn_latitude" , qlonglong(*latitude ));
 }
 
-int WorldMap::GetSpawnCoordinate(int size) {
+qint64 WorldMap::GetSpawnCoordinate(int size) {
     size = qMax(size/4, 1);
     return (qrand()%size) + size;
 }
 
-int  WorldMap::GetSize() const { return mapSize; }
-long WorldMap::GetSpawnLongitude() const { return spawnLongitude; }
-long WorldMap::GetSpawnLatitude()  const { return spawnLatitude;  }
+qint64 WorldMap::GetSize() const { return mapSize; }
+qint64 WorldMap::GetSpawnLongitude() const { return spawnLongitude; }
+qint64 WorldMap::GetSpawnLatitude()  const { return spawnLatitude;  }
 
-char WorldMap::TypeOfShred(long longi, long lati) const {
-    --longi;
-    --lati;
+char WorldMap::TypeOfShred(qint64 longi, qint64 lati) const {
     //return '-'; // for testing purposes
     if (
-            longi >= mapSize || longi < 0 ||
-            lati  >= mapSize || lati  < 0 )
+            longi > mapSize || longi <= 0 ||
+            lati  > mapSize || lati  <= 0 )
     {
         return OUT_BORDER_SHRED;
-    } else if ( not map.seek((mapSize+1)*longi+lati) ) {
+    } else if ( not map.seek((mapSize+1)*(longi-1)+lati-1) ) {
         return DEFAULT_SHRED;
     }
     char c;
@@ -131,7 +129,9 @@ void WorldMap::GenerateMap(
         const char outer,
         const int seed)
 {
-    qsrand(seed);
+    if ( seed ) {
+        qsrand(seed);
+    }
     size = qMax(10, size);
 
     char * const map = new char[size*size];
@@ -167,7 +167,7 @@ void WorldMap::GenerateMap(
         }
     }
 
-    long spawn_longitude, spawn_latitude;
+    qint64 spawn_longitude, spawn_latitude;
     MakeAndSaveSpawn(world_name, size, &spawn_longitude, &spawn_latitude);
     PieceOfEden(spawn_latitude-1, spawn_longitude-1, map, size);
 
@@ -181,7 +181,7 @@ void WorldMap::GenerateMap(
     fclose(file);
 }
 
-void WorldMap::PieceOfEden(const int x, const int y,
+void WorldMap::PieceOfEden(const qint64 x, const qint64 y,
         char * const map, const size_t size)
 {
     if ( (x+5)*size + y+5 > size*size) return;
@@ -195,6 +195,6 @@ void WorldMap::PieceOfEden(const int x, const int y,
     };
     for (int j=0; j<6; ++j)
     for (int i=0; i<6; ++i) {
-        map[(x+j)*size + y+i] = eden[i][j];
+        map[(x+j-1)*size + y+i - 1] = eden[i][j];
     }
 }

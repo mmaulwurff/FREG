@@ -20,12 +20,14 @@
 #include <QDir>
 #include <QMutexLocker>
 #include <QTimer>
+#include <QSettings>
 #include "blocks/Active.h"
 #include "blocks/Inventory.h"
 #include "Shred.h"
 #include "World.h"
 #include "BlockManager.h"
 #include "ShredStorage.h"
+#include "worldmap.h"
 
 const int MIN_WORLD_SIZE = 5;
 
@@ -58,12 +60,12 @@ Shred * World::GetNearShred(Shred * const shred, const dirs dir) const {
 int World::NumShreds() const { return numShreds; }
 int World::TimeOfDay() const { return time % SECONDS_IN_DAY; }
 int World::MiniTime() const { return timeStep; }
-ulong World::Time() const { return time; }
-long World::Longitude() const { return longitude; }
-long World::Latitude()  const { return latitude; }
+quint64 World::Time() const { return time; }
+qint64 World::Longitude() const { return longitude; }
+qint64 World::Latitude()  const { return latitude; }
 bool World::GetEvernight() const { return evernight; }
 QString World::WorldName() const { return worldName; }
-const WorldMap * World::GetMap() const { return &map; }
+const WorldMap * World::GetMap() const { return map; }
 
 QByteArray * World::GetShredData(long longi, long lati) const {
     return shredStorage->GetShredData(longi, lati);
@@ -158,10 +160,7 @@ void World::ReloadAllShreds(const QString new_world,
     newWorld = new_world;
 }
 
-void World::ActivateFullReload(Active * _teleported) {
-    toResetDir = DOWN;
-    teleported = _teleported;
-}
+void World::ActivateFullReload() { toResetDir = DOWN; }
 
 QMutex * World::GetLock() { return &mutex; }
 void World::Lock() { mutex.lock(); }
@@ -220,20 +219,22 @@ void World::ReloadShreds() {
     switch ( toResetDir ) {
     case UP: return; // no reset
     case DOWN:       // full reset
+        // clean old
         emit StartReloadAll();
-        if ( teleported != nullptr ) {
-            GetShred(teleported->X(), teleported->Y())->SetBlockNoCheck(
-                block_manager.Normal(AIR),
-                Shred::CoordInShred(teleported->X()),
-                Shred::CoordInShred(teleported->Y()), teleported->Z());
-        }
         DeleteAllShreds();
+        delete map;
+        delete shredStorage;
+        SaveNotes();
+        SaveState();
+        // load new
+        map = new WorldMap((worldName = newWorld));
+        LoadState();
         longitude = newLongi;
         latitude  = newLati;
-        worldName = newWorld;
+        shredStorage = new ShredStorage(numShreds+2, longitude, latitude);
+        LoadNotes();
         LoadAllShreds();
-        emit NeedPlayer(newX, newY, newZ, teleported);
-        teleported = nullptr;
+        emit NeedPlayer(newX, newY, newZ);
         emit UpdatedAll();
         emit FinishReloadAll();
         toResetDir = UP; // set no reset
@@ -670,23 +671,16 @@ void World::SetNumActiveShreds(const int num) {
 
 World::World(const QString world_name, bool * error) :
         worldName(world_name),
-        map(world_name),
-        settings(home_path + worldName +"/settings.ini", QSettings::IniFormat),
-        time(settings.value("time", END_OF_NIGHT).toLongLong()),
-        timeStep(settings.value("time_step", 0).toInt()),
+        map(new WorldMap(world_name)),
+        time(), timeStep(),
         shreds(),
-        longitude(settings.value("longitude",
-            qlonglong(map.GetSpawnLongitude())).toLongLong()),
-        latitude (settings.value("latitude",
-            qlonglong(map.GetSpawnLatitude ())).toLongLong()),
-        numShreds(),
-        numActiveShreds(),
+        longitude(), latitude(),
+        numShreds(), numActiveShreds(),
         mutex(),
-        evernight(settings.value("evernight", false).toBool()),
+        evernight(),
         newLati(), newLongi(),
         newX(), newY(), newZ(),
         newWorld(),
-        teleported(nullptr),
         toResetDir(UP),
         sunMoonFactor(),
         shredStorage(),
@@ -694,6 +688,7 @@ World::World(const QString world_name, bool * error) :
         notes()
 {
     world = this;
+    LoadState();
     QSettings game_settings(home_path + "freg.ini", QSettings::IniFormat);
     numShreds=game_settings.value("number_of_shreds", MIN_WORLD_SIZE).toInt();
     if ( 1 != numShreds%2 ) {
@@ -717,15 +712,9 @@ World::World(const QString world_name, bool * error) :
     }
 
     shredStorage = new ShredStorage(numShreds+2, longitude, latitude);
-    puts(qPrintable(tr("Loading world...")));
+    puts(qPrintable(tr("Loading world %1...").arg(worldName)));
 
-    QFile notes_file(home_path + worldName + "/notes.txt");
-    if ( notes_file.open(QIODevice::ReadOnly | QIODevice::Text) ) {
-        char note[MAX_NOTE_LENGTH*2];
-        while ( notes_file.readLine(note, MAX_NOTE_LENGTH*2) > 0 ) {
-            notes.append(QString(note).trimmed());
-        }
-    }
+    LoadNotes();
     LoadAllShreds();
     emit UpdatedAll();
 }
@@ -739,13 +728,37 @@ World::~World() {
     DeleteAllShreds();
     delete [] shreds;
     delete shredStorage;
+    delete map;
 
+    SaveState();
+    QSettings(home_path + "freg.ini", QSettings::IniFormat).
+        setValue("current_world", worldName);
+
+    SaveNotes();
+}
+
+void World::SaveState() const {
+    QSettings settings(home_path + worldName + "/settings.ini",
+        QSettings::IniFormat);
     settings.setValue("time", qlonglong(time));
     settings.setValue("time_step", timeStep);
     settings.setValue("longitude", qlonglong(longitude));
     settings.setValue("latitude", qlonglong(latitude));
-    settings.setValue("evernight", evernight); // save if not present
+    settings.setValue("evernight", evernight);
+}
 
+void World::LoadNotes() {
+    notes.clear();
+    QFile notes_file(home_path + worldName + "/notes.txt");
+    if ( notes_file.open(QIODevice::ReadOnly | QIODevice::Text) ) {
+        char note[MAX_NOTE_LENGTH*2];
+        while ( notes_file.readLine(note, MAX_NOTE_LENGTH*2) > 0 ) {
+            notes.append(QString(note).trimmed());
+        }
+    }
+}
+
+void World::SaveNotes() const {
     QFile notes_file(home_path + worldName + "/notes.txt");
     if ( notes_file.open(QIODevice::WriteOnly | QIODevice::Text) ) {
         for (int i=0; i<notes.size(); ++i) {
@@ -753,4 +766,16 @@ World::~World() {
             notes_file.putChar('\n');
         }
     }
+}
+
+void World::LoadState() {
+    const QSettings settings(home_path + worldName +"/settings.ini",
+        QSettings::IniFormat);
+    time = settings.value("time", END_OF_NIGHT).toLongLong();
+    timeStep = settings.value("time_step", 0).toInt();
+    longitude = settings.value("longitude",
+        qlonglong(map->GetSpawnLongitude())).toLongLong();
+    latitude  = settings.value("latitude",
+        qlonglong(map->GetSpawnLatitude ())).toLongLong();
+    evernight = settings.value("evernight", false).toBool();
 }

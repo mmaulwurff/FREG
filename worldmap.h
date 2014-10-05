@@ -29,29 +29,28 @@ public:
     WorldMap & operator=(const WorldMap &) = delete;
     WorldMap(const WorldMap &) = delete;
 
-    char TypeOfShred(long longi, long lati) const;
+    char TypeOfShred(qint64 longi, qint64 lati) const;
     static void GenerateMap(
             QString world_name,
             int size,
             char outer,
             int seed);
-    int GetSize() const;
-    long GetSpawnLongitude() const;
-    long GetSpawnLatitude()  const;
-    static int GetSpawnCoordinate(int size);
+    qint64 GetSize() const;
+    qint64 GetSpawnLongitude() const;
+    qint64 GetSpawnLatitude()  const;
+    static qint64 GetSpawnCoordinate(int size);
 
 private:
     static float Deg(int x, int y, int size);
     static float R  (int x, int y, int size);
     static void Circle(int min_rad, int max_rad, char ch, int size, char* map);
-    static void PieceOfEden(int x, int y, char * map, size_t map_size);
+    static void PieceOfEden(qint64 x, qint64 y, char * map, size_t map_size);
     static void MakeAndSaveSpawn(QString world_name, int size,
-            long * longitude, long * latitude);
+            qint64 * longitude, qint64 * latitude);
 
     long mapSize;
     mutable QFile map;
-    long spawnLongitude;
-    long spawnLatitude;
+    qint64 spawnLongitude, spawnLatitude;
 };
 
 #endif // WORLDMAP_H

@@ -19,6 +19,7 @@
 
 #include <QTextStream>
 #include <QMutexLocker>
+#include <QSettings>
 #include "blocks/Animal.h"
 #include "blocks/Inventory.h"
 #include "Player.h"
@@ -27,6 +28,7 @@
 #include "BlockManager.h"
 #include "DeferredAction.h"
 #include "Weather.h"
+#include "worldmap.h"
 
 const bool COMMANDS_ALWAYS_ON = DEBUG;
 
@@ -59,8 +61,9 @@ const Block * Player::GetBlock() const { return player; }
 
 void Player::SetCreativeMode(const bool creative_on) {
     creativeMode = creative_on;
+    SaveState();
     Animal * const prev_player = player;
-    SetPlayer(X(), Y(), Z(), nullptr);
+    SetPlayer(X(), Y(), Z());
     player->SetDir(prev_player->GetDir());
     Inventory * const inv = PlayerInventory();
     if ( inv != nullptr ) {
@@ -443,41 +446,34 @@ void Player::BlockDestroy() {
         emit Destroyed();
         player = nullptr;
         world->ReloadAllShreds(world->WorldName(),
-            homeLati, homeLongi, homeX,homeY,homeZ);
-        world->ActivateFullReload(nullptr);
+            homeLati+1, homeLongi+1, homeX, homeY, homeZ);
+        world->ActivateFullReload();
     }
 }
 
-Animal * Player::NewPlayer() const {
-    return GetCreativeMode() ?
-        creator : BlockManager::NewBlock(DWARF, PLAYER_SUB)->IsAnimal();
-}
-
-void Player::SetPlayer(const int _x, const int _y, const int _z,
-        Active * const teleported)
-{
-    SetXyz(Shred::CoordInShred(_x), Shred::CoordInShred(_y), _z);
-    if ( teleported != nullptr ) {
-        player = teleported->IsAnimal();
-    }
-
-    if ( player != nullptr ) {
-        player->disconnect();
+void Player::SetPlayer(int _x, int _y, int _z) {
+    LoadState();
+    if ( _z == -1 ) {
+        const int plus = world->NumShreds() / 2;
+        _x = Xyz::X() + (latitude  - world->Latitude()  + plus) * SHRED_WIDTH;
+        _y = Xyz::Y() + (longitude - world->Longitude() + plus) * SHRED_WIDTH;
+        _z = Xyz::Z();
+    } else {
+        SetXyz(Shred::CoordInShred(_x), Shred::CoordInShred(_y), _z);
     }
     if ( GetCreativeMode() ) {
-        (player = creator)->SetXyz(
-            Shred::CoordInShred(_x), Shred::CoordInShred(_y), _z);
-        GetWorld()->GetShred(_x, _y)->Register(player);
+        creator->SetXyz(Xyz::X(), Xyz::Y(), Xyz::Z());
+        GetWorld()->GetShred(_x, _y)->Register((player = creator));
     } else {
-        if ( player != nullptr && teleported == nullptr ) {
-            GetShred()->Unregister(player);
-        }
         World * const world = GetWorld();
         Q_ASSERT(z_self <= HEIGHT-2);
         Block * candidate = world->GetBlock(_x, _y, z_self);
         for ( ; z_self < HEIGHT-2; ++z_self ) {
             candidate = world->GetBlock(_x, _y, z_self);
-            if ( AIR == candidate->Sub() || candidate->IsAnimal() ) {
+            if ( AIR == candidate->Sub()
+                    || ((player==creator || player==nullptr)
+                        && candidate->IsAnimal()) )
+            {
                 break;
             }
         }
@@ -485,7 +481,7 @@ void Player::SetPlayer(const int _x, const int _y, const int _z,
             player = candidate->IsAnimal();
         } else {
             if ( player == nullptr || player == creator ) {
-                player = NewPlayer();
+                player = BlockManager::NewBlock(DWARF, PLAYER_SUB)->IsAnimal();
             }
             world->Build(player, _x, _y, Z(), GetDir(), nullptr, true);
         }
@@ -498,44 +494,30 @@ void Player::SetPlayer(const int _x, const int _y, const int _z,
         Qt::DirectConnection);
     connect(player, SIGNAL(ReceivedText(QString)), SIGNAL(Notify(QString)),
         Qt::DirectConnection);
-    connect(player, SIGNAL(CauseTeleportation(Active *)),
-        world, SLOT(ActivateFullReload(Active *)),
-        Qt::DirectConnection);
-}
+    connect(player, SIGNAL(CauseTeleportation()),
+        world, SLOT(ActivateFullReload()), Qt::DirectConnection);
+} // Player::SetPlayer(int _x, _y, _z)
 
 void Player::Disconnect() {
+    SaveState();
+    GetShred()->SetBlockNoCheck(block_manager.Normal(AIR), x_self,y_self,Z());
+    player->Unregister();
     player->disconnect();
-    player = nullptr;
 }
 
 Player::Player() :
-        settings(home_path + world->WorldName() + "/settings.ini",
-            QSettings::IniFormat),
-        homeLongi(settings.value("home_longitude",
-            qlonglong(world->GetMap()->GetSpawnLongitude())).toLongLong()),
-        homeLati (settings.value("home_latitude",
-            qlonglong(world->GetMap()->GetSpawnLatitude ())).toLongLong()),
-        homeX(settings.value("home_x", 0).toInt()),
-        homeY(settings.value("home_y", 0).toInt()),
-        homeZ(settings.value("home_z", HEIGHT/2).toInt()),
+        longitude(), latitude(),
+        homeLongi(), homeLati(),
+        homeX(), homeY(), homeZ(),
         player(nullptr),
         creator(BlockManager::NewBlock(DWARF, DIFFERENT)->IsAnimal()),
-        usingType    (settings.value("using_type",     USAGE_TYPE_NO).toInt()),
-        usingSelfType(settings.value("using_self_type",USAGE_TYPE_NO).toInt()),
+        usingType(), usingSelfType(),
         usingInInventory(),
-        creativeMode(settings.value("creative_mode", false).toBool())
+        creativeMode()
 {
-    SetXyz(settings.value("current_x", 0).toInt(),
-           settings.value("current_y", 0).toInt(),
-           settings.value("current_z", HEIGHT/2+1).toInt());
-
-    const int plus = world->NumShreds()/2 * SHRED_WIDTH;
-    homeX += plus;
-    homeY += plus;
-    SetPlayer(x_self+=plus, y_self+=plus, z_self, nullptr);
-
-    connect(world, SIGNAL(NeedPlayer(int, int, int, Active *)),
-        SLOT(SetPlayer(int, int, int, Active *)),
+    SetPlayer(0, 0, -1);
+    connect(world, SIGNAL(NeedPlayer(int, int, int)),
+        SLOT(SetPlayer(int, int, int)),
         Qt::DirectConnection);
     connect(this, SIGNAL(OverstepBorder(int)),
         world, SLOT(SetReloadShreds(int)),
@@ -545,17 +527,44 @@ Player::Player() :
 }
 
 Player::~Player() {
-    settings.setValue("home_longitude", qlonglong(homeLongi));
-    settings.setValue("home_latitude", qlonglong(homeLati));
-    const int min = world->NumShreds()/2*SHRED_WIDTH;
-    settings.setValue("home_x", homeX-min);
-    settings.setValue("home_y", homeY-min);
-    settings.setValue("home_z", homeZ);
-    settings.setValue("current_x", X()-min);
-    settings.setValue("current_y", Y()-min);
-    settings.setValue("current_z", Z());
-    settings.setValue("creative_mode", GetCreativeMode());
-    settings.setValue("using_type", usingType);
-    settings.setValue("using_self_type", usingSelfType);
+    SaveState();
     delete creator;
+}
+
+void Player::SaveState() const {
+    QSettings settings(home_path + world->WorldName() + "/player_state.ini",
+        QSettings::IniFormat);
+    settings.setValue("home_longitude", qlonglong(homeLongi));
+    settings.setValue("home_latitude",  qlonglong(homeLati));
+    settings.setValue("home_x", homeX);
+    settings.setValue("home_y", homeY);
+    settings.setValue("home_z", homeZ);
+    settings.setValue("current_longitude", qlonglong(GetShred()->Longitude()));
+    settings.setValue("current_latitude",  qlonglong(GetShred()->Latitude()));
+    settings.setValue("current_x", Xyz::X());
+    settings.setValue("current_y", Xyz::Y());
+    settings.setValue("current_z", Xyz::Z());
+    settings.setValue("using_type",      usingType);
+    settings.setValue("using_self_type", usingSelfType);
+    settings.setValue("creative_mode", GetCreativeMode());
+}
+
+void Player::LoadState() {
+    const QSettings settings(home_path + world->WorldName() +
+        "/player_state.ini", QSettings::IniFormat);
+    homeLongi = settings.value("home_longitude",
+        qlonglong(world->GetMap()->GetSpawnLongitude())).toLongLong();
+    homeLati  = settings.value("home_latitude",
+        qlonglong(world->GetMap()->GetSpawnLatitude ())).toLongLong();
+    homeX = settings.value("home_x", 0).toInt();
+    homeY = settings.value("home_y", 0).toInt();
+    homeZ = settings.value("home_z", HEIGHT/2).toInt();
+    usingType     = settings.value("using_type",      USAGE_TYPE_NO).toInt();
+    usingSelfType = settings.value("using_self_type", USAGE_TYPE_NO).toInt();
+    creativeMode  = settings.value("creative_mode", false).toBool();
+    SetXyz(settings.value("current_x", 0).toInt(),
+           settings.value("current_y", 0).toInt(),
+           settings.value("current_z", HEIGHT/2+1).toInt());
+    longitude = settings.value("current_longitude", homeLongi).toLongLong();
+    latitude  = settings.value("current_latitude",  homeLati ).toLongLong();
 }

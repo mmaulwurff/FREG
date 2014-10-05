@@ -22,17 +22,17 @@
 
 #include "VirtScreen.h"
 #include "Player.h"
+#include "World.h"
 
 void VirtScreen::UpdatesEnd() {}
 void VirtScreen::DeathScreen() {}
 
-VirtScreen::VirtScreen(World * const world_, Player * const player_) :
-        w(world_),
+VirtScreen::VirtScreen(Player * const player_) :
         player(player_),
         settings(home_path + "freg.ini", QSettings::IniFormat),
         previousCommand(settings.value("last_command", "moo").toString())
 {
-    connect(     w, SIGNAL(Notify(QString)), SLOT(Notify(QString)),
+    connect( world, SIGNAL(Notify(QString)), SLOT(Notify(QString)),
         Qt::DirectConnection);
     connect(player, SIGNAL(Notify(QString)), SLOT(Notify(QString)),
         Qt::DirectConnection);
@@ -40,23 +40,23 @@ VirtScreen::VirtScreen(World * const world_, Player * const player_) :
     connect(player, SIGNAL(GetFocus(int *, int *, int *)),
         SLOT(ActionXyz(int *, int *, int *)), Qt::DirectConnection);
 
-    connect(     w, SIGNAL(GetString(QString &)),
+    connect( world, SIGNAL(GetString(QString &)),
         SLOT(PassString(QString &)), Qt::DirectConnection);
     connect(player, SIGNAL(GetString(QString &)),
         SLOT(PassString(QString &)), Qt::DirectConnection);
 
     connect(player, SIGNAL(Updated()), SLOT(UpdatePlayer()),
         Qt::DirectConnection);
-    connect(w, SIGNAL(UpdatedAll()), SLOT(UpdateAll()),
+    connect(world, SIGNAL(UpdatedAll()), SLOT(UpdateAll()),
         Qt::DirectConnection);
-    connect(w, SIGNAL(Moved(int)), SLOT(Move(int)),
+    connect(world, SIGNAL(Moved(int)), SLOT(Move(int)),
         Qt::DirectConnection);
-    connect(w, SIGNAL(Updated(int, int, int)), SLOT(Update(int, int, int)),
+    connect(world, SIGNAL(Updated(int, int, int)), SLOT(Update(int, int, int)),
         Qt::DirectConnection);
-    connect(w, SIGNAL(UpdatedAround(int, int, int, int)),
+    connect(world, SIGNAL(UpdatedAround(int, int, int, int)),
         SLOT(UpdateAround(int, int, int, int)),
         Qt::DirectConnection);
-    connect(w, SIGNAL(UpdatesEnded()), SLOT(UpdatesEnd()),
+    connect(world, SIGNAL(UpdatesEnded()), SLOT(UpdatesEnd()),
         Qt::DirectConnection);
 
     connect(player, SIGNAL(Destroyed()), SLOT(DeathScreen()),
@@ -68,10 +68,11 @@ VirtScreen::~VirtScreen() {}
 void VirtScreen::DisplayFile(QString /* path */) {}
 
 void VirtScreen::ActionXyz(int * x, int * y, int * z) const {
-    w->Focus(player->X(), player->Y(), player->Z(), x, y, z, player->GetDir());
+    world->Focus(player->X(), player->Y(), player->Z(), x, y, z,
+        player->GetDir());
 }
 
-World * VirtScreen::GetWorld() const { return w; }
+World * VirtScreen::GetWorld() const { return world; }
 
 int VirtScreen::Color(const int kind, const int sub) {
     switch ( kind ) { // foreground_background

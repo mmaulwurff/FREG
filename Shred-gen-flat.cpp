@@ -21,6 +21,7 @@
 #include "World.h"
 #include "header.h"
 #include "blocks/Block.h"
+#include "worldmap.h"
 
 int Shred::FlatUndeground(int) {
     NormalUnderground();

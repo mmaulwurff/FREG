@@ -22,16 +22,14 @@
 
 #include <QThread>
 #include <QMutex>
-#include <QSettings>
 #include "header.h"
-#include "worldmap.h"
 
 class Block;
 class Shred;
 class ShredStorage;
 class QByteArray;
 class QReadWriteLock;
-class Active;
+class WorldMap;
 
 const int TIME_STEPS_IN_SEC = 10;
 
@@ -42,7 +40,6 @@ const int MAX_LIGHT_RADIUS = 15;
 const int MAX_BREATH = 60;
 /// 10 bits to store durability in file, signed.
 const int MAX_DURABILITY = 1024;
-const int MAX_NOTE_LENGTH = 144;
 
 enum can_move_results {
     CAN_MOVE_OK,
@@ -110,8 +107,8 @@ public: // Information section
     static dirs TurnRight(dirs dir);
     static dirs TurnLeft (dirs dir);
     static dirs Anti(dirs dir);
-    long Longitude() const;
-    long Latitude() const;
+    qint64 Longitude() const;
+    qint64 Latitude() const;
 
     const WorldMap * GetMap() const;
 
@@ -143,7 +140,7 @@ public: // Time section
     /// This returns seconds from start of current day.
     int TimeOfDay() const;
     /// Returns time in seconds since world creation.
-    ulong Time() const;
+    quint64 Time() const;
     QString TimeOfDayStr() const;
     /// Returns number of physics steps since second start.
     int MiniTime() const;
@@ -182,6 +179,12 @@ public: // Block information section
     int ChangeNote(QString note, int note_id);
     QString GetNote(int note_id) const;
 
+private:
+    void SaveNotes() const;
+    void LoadNotes();
+    void SaveState() const;
+    void LoadState();
+
 public: // World section
     void ReloadAllShreds(QString new_world, qint64 lati, qint64 longi,
             int new_x, int new_y, int new_z);
@@ -203,7 +206,7 @@ public:
 public slots:
     void SetReloadShreds(int direction);
     void PhysEvents();
-    void ActivateFullReload(Active * teleported);
+    void ActivateFullReload();
 
 signals:
     void Notify(QString) const;
@@ -216,7 +219,7 @@ signals:
     void Moved(int);
     /// This is emitted when a pack of updates is complete.
     void UpdatesEnded();
-    void NeedPlayer(int, int, int, Active *);
+    void NeedPlayer(int, int, int);
     void StartReloadAll();
     void FinishReloadAll();
     void ExitReceived();
@@ -226,8 +229,7 @@ private:
     World & operator=(const World &) = delete;
 
     QString worldName;
-    const WorldMap map;
-    QSettings settings;
+    WorldMap * map;
     quint64 time;
     int timeStep;
     Shred ** shreds;
@@ -241,11 +243,10 @@ private:
     int numShreds; ///< size of loaded zone
     int numActiveShreds; ///< size of active zone
     QMutex mutex;
-    const bool evernight;
+    bool evernight;
     qint64 newLati, newLongi;
     int  newX, newY, newZ;
     QString newWorld;
-    Active * teleported;
     /// UP for no reset, DOWN for full reset, NSEW for side shift.
     volatile dirs toResetDir;
     int sunMoonFactor;
