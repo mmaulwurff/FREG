@@ -35,9 +35,6 @@ public:
      Shred(int shred_x, int shred_y, long longi, long lati);
     ~Shred();
 
-    Shred & operator=(Shred &) = delete;
-    Shred(Shred &) = delete;
-
     /// Returns y (line) shred coordinate on world map.
     long Longitude() const;
     /// Returns x (column) shred coordinate on world map.
@@ -116,6 +113,8 @@ public:
     static QString ShredTypeName(shred_type);
 
 private:
+    Q_DISABLE_COPY(Shred)
+
     void RemoveAllSunLight();
     void RemoveAllFireLight();
     void RemoveAllLight();

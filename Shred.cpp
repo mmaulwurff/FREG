@@ -119,6 +119,7 @@ bool Shred::LoadShred() {
 Shred::Shred(const int shred_x, const int shred_y,
         const long longi, const long lati)
     :
+        Weather(),
         longitude(longi), latitude(lati),
         shredX(shred_x), shredY(shred_y),
         type(),

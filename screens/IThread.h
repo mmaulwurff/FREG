@@ -40,9 +40,6 @@ protected:
     void run() override;
 
 private:
-    IThread(const IThread &) = delete;
-    IThread & operator=(const IThread &) = delete;
-
     Screen * const screen;
     volatile bool isRunning;
 };

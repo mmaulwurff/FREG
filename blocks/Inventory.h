@@ -33,9 +33,8 @@ class Block;
 class Inventory {
     /**\class Inventory Inventory.h
      * \brief Provides block ability to contain other blocks inside. */
+    Q_DISABLE_COPY(Inventory)
 public:
-    Inventory & operator=(Inventory &) = delete;
-    Inventory(Inventory & inv) = delete;
 
     /// Returns true on success.
     virtual bool Drop(int src, int dest, int num, Inventory * to);

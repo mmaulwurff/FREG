@@ -225,9 +225,6 @@ signals:
     void ExitReceived();
 
 private:
-    World(const World &) = delete;
-    World & operator=(const World &) = delete;
-
     QString worldName;
     WorldMap * map;
     quint64 time;

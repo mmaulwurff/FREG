@@ -167,9 +167,6 @@ private slots:
     void UpdateXYZ();
 
 private:
-    Player & operator=(const Player &) = delete;
-    Player(const Player &) = delete;
-
     /// Checks player/inventory/block existence, size limits.
     Block * ValidBlock(int num) const;
     Shred * GetShred() const;

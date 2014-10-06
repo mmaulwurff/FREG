@@ -89,13 +89,11 @@ class Animal;
 class Block {
     /**\class Block Block.h
      * \brief Block without special physics and attributes. */
+    Q_DISABLE_COPY(Block)
 public:
     Block(int sub, int kind, int transp = UNDEF);
     Block(QDataStream &, int sub, int kind, int transp = UNDEF);
     virtual ~Block();
-
-    Block & operator=(Block &) = delete;
-    Block(Block &) = delete;
 
     virtual QString FullName() const;
     virtual bool Catchable() const;

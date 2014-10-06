@@ -92,8 +92,6 @@ protected:
     virtual int  Attractive(int sub) const;
 
 private:
-    Active(Active &) = delete;
-    Active & operator=(Active &) = delete;
     void ReRegister(dirs);
 
     Shred * shred = nullptr;

@@ -42,9 +42,6 @@ public:
      ShredStorage(ushort size, long longi_center, long lati_center);
     ~ShredStorage();
 
-    ShredStorage & operator=(const ShredStorage &) = delete;
-    ShredStorage(const ShredStorage &) = delete;
-
     QByteArray * GetShredData(long longi, long lati) const;
     void SetShredData(QByteArray *, long longi, long lati);
     void Shift(int direction, long longitude, long latitude);
@@ -55,6 +52,8 @@ public:
     void Remove(long longi, long lati);
 
 private:
+    Q_DISABLE_COPY(ShredStorage)
+
     QHash<LongLat, QByteArray *> storage;
     const ushort size;
     PreloadThread * preloadThread = nullptr;
@@ -70,9 +69,6 @@ protected:
     void run() override;
 
 private:
-    PreloadThread & operator=(PreloadThread &) = delete;
-    PreloadThread(PreloadThread &) = delete;
-
     ShredStorage * const storage;
     const int direction;
     const long longi_center;

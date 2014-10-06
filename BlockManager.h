@@ -86,8 +86,7 @@ public:
     static bool IsValid(int kind, int sub);
 
 private:
-    BlockManager(const BlockManager &) = delete;
-    BlockManager & operator=(const BlockManager &) = delete;
+    Q_DISABLE_COPY(BlockManager)
 
     Block * normals[LAST_SUB];
     static const QByteArray kinds[];

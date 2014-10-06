@@ -108,7 +108,6 @@ class VirtScreen : public QObject {
      * It provides interface for world-screen and player-screen
      * communications by its slots and signals. */
     Q_OBJECT
-
 public:
     /// Constructor makes player and world connections.
     /** Constructor of non-virtual screen should contain this code
@@ -189,10 +188,6 @@ protected:
     Player * const player;
     QSettings settings;
     QString previousCommand;
-
-private:
-    VirtScreen(const VirtScreen &) = delete;
-    VirtScreen & operator=(const VirtScreen &) = delete;
 };
 
 #endif // VIRTSCREEN_H

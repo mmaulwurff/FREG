@@ -26,9 +26,6 @@ class WorldMap final {
 public:
     explicit WorldMap(QString);
 
-    WorldMap & operator=(const WorldMap &) = delete;
-    WorldMap(const WorldMap &) = delete;
-
     char TypeOfShred(qint64 longi, qint64 lati) const;
     static void GenerateMap(
             QString world_name,
@@ -41,6 +38,8 @@ public:
     static qint64 GetSpawnCoordinate(int size);
 
 private:
+    Q_DISABLE_COPY(WorldMap)
+
     static float Deg(int x, int y, int size);
     static float R  (int x, int y, int size);
     static void Circle(int min_rad, int max_rad, char ch, int size, char* map);

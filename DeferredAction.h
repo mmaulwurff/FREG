@@ -46,8 +46,6 @@ class DeferredAction final : private Xyz {
      *  Xyz is action target coordinates. */
 public:
     explicit DeferredAction(Animal * attached);
-    DeferredAction & operator=(const DeferredAction &) = delete;
-    DeferredAction(const DeferredAction &) = delete;
 
     void SetGhostMove(int dir);
     void SetMove(int dir);
@@ -64,6 +62,8 @@ public:
     void MakeAction() const;
 
 private:
+    Q_DISABLE_COPY(DeferredAction)
+
     deferred_actions type;
     Animal * const attachedBlock;
     int srcSlot, destSlot;

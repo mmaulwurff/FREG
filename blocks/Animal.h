@@ -51,8 +51,6 @@ protected:
     bool moved_in_this_turn = false;
 
 private:
-    Animal(Animal &) = delete;
-    Animal & operator=(Animal &) = delete;
     virtual int NutritionalValue(subs) const;
 
     quint8  breath;

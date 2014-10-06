@@ -71,8 +71,8 @@ public:
     bool Craft(CraftList * items, int sub) const;
 
 private:
-    CraftManager & operator=(const CraftManager &) = delete;
-    CraftManager(const CraftManager &) = delete;
+    Q_DISABLE_COPY(CraftManager)
+
     bool CraftSub(CraftList * items, int sub) const;
 
     QList<CraftList *> recipesList[LAST_SUB];
