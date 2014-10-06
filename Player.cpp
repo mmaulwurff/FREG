@@ -61,6 +61,11 @@ const Block * Player::GetBlock() const { return player; }
 
 void Player::SetCreativeMode(const bool creative_on) {
     creativeMode = creative_on;
+    player->disconnect(SIGNAL(destroyed()), nullptr);
+    player->disconnect(SIGNAL(Moved(int)), nullptr);
+    player->disconnect(SIGNAL(Updated()), nullptr);
+    player->disconnect(SIGNAL(ReceivedText(QString)), nullptr);
+    player->disconnect(SIGNAL(CauseTeleportation()), nullptr);
     SaveState();
     Animal * const prev_player = player;
     SetPlayer(X(), Y(), Z());
@@ -445,8 +450,9 @@ void Player::BlockDestroy() {
         emit Notify(tr("^ You die. ^"));
         emit Destroyed();
         player = nullptr;
+        const int plus = world->NumShreds() / 2 * SHRED_WIDTH;
         world->ReloadAllShreds(world->WorldName(),
-            homeLati+1, homeLongi+1, homeX, homeY, homeZ);
+            homeLati, homeLongi, homeX+plus, homeY+plus, homeZ);
         world->ActivateFullReload();
     }
 }
@@ -499,10 +505,15 @@ void Player::SetPlayer(int _x, int _y, int _z) {
 } // Player::SetPlayer(int _x, _y, _z)
 
 void Player::Disconnect() {
-    SaveState();
-    GetShred()->SetBlockNoCheck(block_manager.Normal(AIR), x_self,y_self,Z());
-    player->Unregister();
-    player->disconnect();
+    if ( player == nullptr ) { // dead player
+        player = BlockManager::NewBlock(DWARF, PLAYER_SUB)->IsAnimal();
+    } else {
+        SaveState();
+        GetShred()->SetBlockNoCheck(block_manager.Normal(AIR),
+            x_self, y_self, z_self);
+        player->Unregister();
+        player->disconnect();
+    }
 }
 
 Player::Player() :

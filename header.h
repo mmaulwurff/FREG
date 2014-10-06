@@ -37,7 +37,7 @@ extern const QString home_path;
 
 const int SHRED_WIDTH = 16;
 const int SHRED_WIDTH_SHIFT = 4;
-const int HEIGHT = 128;
+const int HEIGHT = 256;
 
 const int MAX_NOTE_LENGTH = 144;
 

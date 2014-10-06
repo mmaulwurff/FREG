@@ -23,6 +23,7 @@
 #include "Shred.h"
 
 QString Weapon::FullName() const {
+    if ( Kind() != WEAPON ) return Block::FullName();
     switch ( Sub() ) {
     case STONE: return QObject::tr("Pebble");
     case IRON:  return QObject::tr("Spike");
