@@ -471,6 +471,8 @@ void Screen::ProcessCommand(const QString command) {
     switch ( Player::UniqueIntFromString(qPrintable(command)) ) {
     case Player::UniqueIntFromString("distance"):
         showDistance = not showDistance;
+        Notify(tr("Show distance: %1.").
+            arg(showDistance ? tr("on") : tr("off")));
         break;
     case Player::UniqueIntFromString("blink"):
         blinkOn = not blinkOn;
@@ -1020,7 +1022,7 @@ Screen::Screen(Player * const pl, int & error, bool _ascii) :
         },
         screen(newterm(nullptr, stdout, stdin)),
         randomBlink(),
-        showDistance(true),
+        showDistance(settings.value("show_distance", true).toBool()),
         noMouseMask(),
         mouseOn(settings.value("mouse_on", true).toBool())
 {
@@ -1129,6 +1131,7 @@ Screen::~Screen() {
     settings.setValue("blink_on", blinkOn);
     settings.setValue("ascii", ascii);
     settings.setValue("mouse_on", mouseOn);
+    settings.setValue("show_distance", showDistance);
 }
 
 void Screen::PrintBar(const int x, const int attr, const int ch,
