@@ -303,15 +303,11 @@ void Screen::ControlPlayer(const int ch) {
     case KEY_F(8):
     case KEY_DC: // delete
     case KEY_BACKSPACE: player->Damage(); break;
+
     case '\n':
-    case 13:
-    case KEY_F(2):
-    case 'F': player->Use();      break;
-    case '*':
-    case KEY_F(3):
-    case '?': player->Examine();  break;
-    case KEY_F(4):
-    case '~': player->Inscribe(); break;
+    case 13:  case KEY_F(2): case 'F': player->Use();      break;
+    case '*': case KEY_F(3): case '?': player->Examine();  break;
+    case '~': case KEY_F(4):           player->Inscribe(); break;
     case 27: /* esc */ player->StopUseAll(); break;
 
     case KEY_IC: player->Build(1); break; // insert
@@ -473,6 +469,9 @@ void Screen::ProcessCommand(const QString command) {
         return;
     }
     switch ( Player::UniqueIntFromString(qPrintable(command)) ) {
+    case Player::UniqueIntFromString("distance"):
+        showDistance = not showDistance;
+        break;
     case Player::UniqueIntFromString("blink"):
         blinkOn = not blinkOn;
         Notify(tr("Block blink is now %1.").
@@ -747,7 +746,7 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
             if ( player->Visible(i, j, k) ) {
                 waddch(window,
                     PrintBlock(*shred->GetBlock(i_in, j_in, k), window));
-                waddch(window, CharNumber(k));
+                waddch(window, showDistance ? CharNumber(k) : ' ');
             } else {
                 wattrset(window, SHADOW_COLOR);
                 waddch(window, OBSCURE_BLOCK);
@@ -860,7 +859,7 @@ const {
             } else if ( player->Visible(i, j, k) ) {
                 waddch(rightWin, PrintBlock(*world->GetBlock(i, j, k),
                     rightWin));
-                waddch(rightWin, CharNumberFront(i, j));
+                waddch(rightWin, showDistance ? CharNumberFront(i, j) : ' ');
             } else {
                 wattrset(rightWin, SHADOW_COLOR);
                 waddch(rightWin, OBSCURE_BLOCK);
@@ -1021,6 +1020,7 @@ Screen::Screen(Player * const pl, int & error, bool _ascii) :
         },
         screen(newterm(nullptr, stdout, stdin)),
         randomBlink(),
+        showDistance(true),
         noMouseMask(),
         mouseOn(settings.value("mouse_on", true).toBool())
 {

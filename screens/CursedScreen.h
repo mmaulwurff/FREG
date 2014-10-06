@@ -148,6 +148,7 @@ private:
     SCREEN * const screen;
     mutable bool inputActive = false;
     mutable int randomBlink;
+    bool showDistance;
 
     mmask_t noMouseMask;
     bool mouseOn;
