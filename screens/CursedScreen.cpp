@@ -100,7 +100,7 @@ void Screen::RePrint() {
     static const QString action_strings[] = {
         tr("[U] use, eat"),
         tr("[T] throw"),
-        tr("[O] obtain"),
+        tr("[G] get"),
         tr("[N] inscribe"),
         tr("[B] build"),
         tr("[C] craft"),
@@ -319,7 +319,7 @@ void Screen::ControlPlayer(const int ch) {
     case '~': case KEY_F(4):           player->Inscribe(); break;
     case 27: /* esc */ player->StopUseAll(); break;
 
-    case KEY_IC: player->Build(1); break; // insert
+    case KEY_IC: player->Build(3); break; // insert
     case 'B': SetActionMode(ACTION_BUILD);    break;
     case 'C': SetActionMode(ACTION_CRAFT);    break;
     case 'T': SetActionMode(ACTION_THROW);    break;
@@ -514,7 +514,7 @@ void Screen::SetActionMode(const actions mode) {
     switch ( mode ) {
     case ACTION_USE:      Notify(tr("Action: use in inventory."));      break;
     case ACTION_THROW:    Notify(tr("Action: throw from inventory."));  break;
-    case ACTION_OBTAIN:   Notify(tr("Action: obtain to inventory."));   break;
+    case ACTION_OBTAIN:   Notify(tr("Action: get to inventory."));      break;
     case ACTION_INSCRIBE: Notify(tr("Action: inscribe in inventory.")); break;
     case ACTION_BUILD:    Notify(tr("Action: build from inventory."));  break;
     case ACTION_CRAFT:    Notify(tr("Action: craft in inventory."));    break;

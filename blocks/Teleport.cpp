@@ -54,7 +54,7 @@ bool Teleport::Inscribe(QString input) {
 }
 
 void Teleport::Damage(const int damage, const int damage_kind) {
-    if ( damage_kind >= DAMAGE_PUSH_UP ) {
+    if ( damage_kind >= DAMAGE_PUSH_UP && damage_kind != DAMAGE_PUSH_DOWN) {
         int x, y, z;
         world->Focus(X(), Y(), Z(), &x, &y, &z,
             World::Anti(MakeDirFromDamage(damage_kind)));
