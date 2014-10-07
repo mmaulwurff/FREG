@@ -149,18 +149,27 @@ char Screen::CharNumber(const int z) const {
     const int z_dif = ( UP==player->GetDir() ) ?
         z - player->Z() : player->Z() - z;
     return ( z_dif == 0 ) ?
-        ' ' : ( z_dif<0 ) ?
-            '-' : ( z_dif<10 ) ?
-                z_dif+'0' : '+';
+        ' ' :
+        ( z_dif<0 ) ?
+            '-' :
+            ( z_dif<10 ) ?
+                z_dif+'0' :
+                ( farDistance && z_dif<=0xf ) ?
+                    z_dif-10+'a' :
+                    '+';
 }
 
 char Screen::CharNumberFront(const int i, const int j) const {
     const int dist = (( NORTH==player->GetDir() || SOUTH==player->GetDir() ) ?
         abs(player->Y()-j) :
         abs(player->X()-i)) -1;
-    return ( dist>9 ) ?
-        '+' : ( dist>0 ) ?
-            dist+'0' : ' ';
+    return ( dist == 0 ) ?
+        ' ' :
+        ( dist<10 ) ?
+            dist+'0' :
+            (farDistance && dist<=0xf) ?
+                dist-10+'a' :
+                '+';
 }
 
 int  Screen::RandomBlink() const { return RandomBit() ? 0 : A_REVERSE; }
@@ -472,6 +481,11 @@ void Screen::ProcessCommand(const QString command) {
     case Player::UniqueIntFromString("distance"):
         showDistance = not showDistance;
         Notify(tr("Show distance: %1.").
+            arg(showDistance ? tr("on") : tr("off")));
+        break;
+    case Player::UniqueIntFromString("far"):
+        farDistance = not farDistance;
+        Notify(tr("Use \"abcdef\" as distance: %1.").
             arg(showDistance ? tr("on") : tr("off")));
         break;
     case Player::UniqueIntFromString("blink"):
@@ -1023,6 +1037,7 @@ Screen::Screen(Player * const pl, int & error, bool _ascii) :
         screen(newterm(nullptr, stdout, stdin)),
         randomBlink(),
         showDistance(settings.value("show_distance", true).toBool()),
+        farDistance(settings.value("use_abcdef_distance", false).toBool()),
         noMouseMask(),
         mouseOn(settings.value("mouse_on", true).toBool())
 {
@@ -1132,6 +1147,7 @@ Screen::~Screen() {
     settings.setValue("ascii", ascii);
     settings.setValue("mouse_on", mouseOn);
     settings.setValue("show_distance", showDistance);
+    settings.setValue("use_abcdef_distance", farDistance);
 }
 
 void Screen::PrintBar(const int x, const int attr, const int ch,

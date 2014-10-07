@@ -149,6 +149,7 @@ private:
     mutable bool inputActive = false;
     mutable int randomBlink;
     bool showDistance;
+    bool farDistance;
 
     mmask_t noMouseMask;
     bool mouseOn;

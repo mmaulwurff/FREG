@@ -131,20 +131,21 @@ int VirtScreen::Color(const int kind, const int sub) {
 } // color_pairs Screen::Color(int kind, int sub)
 
 char VirtScreen::CharName(const int kind, const int sub) {
-    switch ( static_cast<kinds>(kind) )  {
+    // do not use abcdef as they can be used as distance specifiers.
+    switch ( static_cast<kinds>(kind) ) {
     case BUSH:   return ';';
     case DWARF:  return '@';
     case LIQUID: return '~';
-    case GRASS:  return ( FIRE == sub ) ? 'f' : '.';
+    case GRASS:  return ( FIRE == sub ) ? '^' : '.';
     case RABBIT: return 'r';
-    case CLOCK:  return 'c';
+    case CLOCK:  return 'C';
     case PLATE:  return '_';
     case LADDER: return '^';
     case PICK:   return '\\';
     case SHOVEL: return '|';
     case HAMMER: return 'T';
     case AXE:    return '/';
-    case BELL:   return 'b';
+    case BELL:   return 'B';
     case BUCKET: return 'u';
     case MAP:
     case KIND_TEXT: return '?';
@@ -163,7 +164,7 @@ char VirtScreen::CharName(const int kind, const int sub) {
     } break;
     case ARMOUR: return 'A';
     case HELMET: return 'H';
-    case BOOTS:  return 'B';
+    case BOOTS:  return 'L';
     case TELEGRAPH: return 't';
     case MEDKIT:    return '+';
     case FILTER:    return 'F';
