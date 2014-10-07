@@ -113,6 +113,7 @@ bool Shred::LoadShred() {
             }
         }
     }
+    delete data;
     return true;
 } // bool Shred::LoadShred()
 

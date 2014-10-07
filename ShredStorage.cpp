@@ -30,7 +30,7 @@ bool LongLat::operator==(const LongLat & coords) const {
               latitude==coords.latitude );
 }
 
-LongLat::LongLat(const long longi, const long lati) :
+LongLat::LongLat(const qint64 longi, const qint64 lati) :
         longitude(longi),
         latitude(lati)
 {}
@@ -40,15 +40,15 @@ uint qHash(const LongLat & coords) {
             (coords.latitude  & 0xffff);
 }
 
-ShredStorage::ShredStorage(const ushort size_,
-        const long longi_center, const long lati_center)
+ShredStorage::ShredStorage(const int size_,
+        const qint64 longi_center, const qint64 lati_center)
     :
         storage(),
         size(size_)
 {
     storage.reserve(size*size);
-    for (long i=longi_center-size/2; i<=longi_center+size/2; ++i)
-    for (long j= lati_center-size/2; j<= lati_center+size/2; ++j) {
+    for (qint64 i=longi_center-size/2; i<=longi_center+size/2; ++i)
+    for (qint64 j= lati_center-size/2; j<= lati_center+size/2; ++j) {
         AddShredData(i, j);
     }
 }
@@ -66,7 +66,7 @@ ShredStorage::~ShredStorage() {
 }
 
 void ShredStorage::Shift(const int direction,
-        const long longitude_center, const long latitude_center)
+        const qint64 longitude_center, const qint64 latitude_center)
 {
     if ( preloadThread != nullptr ) {
         preloadThread->wait();
@@ -77,27 +77,26 @@ void ShredStorage::Shift(const int direction,
     preloadThread->start();
 }
 
-QByteArray * ShredStorage::GetShredData(const long longi, const long lati)
-const {
-    return storage.value(LongLat(longi, lati));
+QByteArray* ShredStorage::GetShredData(const qint64 longi, const qint64 lati) {
+    return storage.take(LongLat(longi, lati));
 }
 
 void ShredStorage::SetShredData(QByteArray * const data,
-        const long longi, const long lati)
+        const qint64 longi, const qint64 lati)
 {
     const LongLat coords(longi, lati);
     delete storage.value(coords);
     storage.insert(coords, data);
 }
 
-void ShredStorage::AddShredData(const long longitude, const long latitude) {
+void ShredStorage::AddShredData(const qint64 longitude, const qint64 latitude){
     QFile file(Shred::FileName(world->WorldName(), longitude, latitude));
     storage.insert(LongLat(longitude, latitude),
         ( file.open(QIODevice::ReadOnly) ?
             new QByteArray(qUncompress(file.readAll())) : nullptr ));
 }
 
-void ShredStorage::WriteToFileShredData(const long longi, const long lati) {
+void ShredStorage::WriteToFileShredData(const qint64 longi, const qint64 lati){
     const QByteArray * const data = storage.value(LongLat(longi, lati));
     if ( data != nullptr ) {
         QFile file(Shred::FileName(world->WorldName(), longi, lati));
@@ -108,12 +107,12 @@ void ShredStorage::WriteToFileShredData(const long longi, const long lati) {
     }
 }
 
-void ShredStorage::Remove(const long longi, const long lati) {
+void ShredStorage::Remove(const qint64 longi, const qint64 lati) {
     storage.remove(LongLat(longi, lati));
 }
 
 PreloadThread::PreloadThread(ShredStorage * const stor, const int dir,
-        const long longi_c, const long lati_c, const ushort sz)
+        const qint64 longi_c, const qint64 lati_c, const int sz)
     :
         storage(stor),
         direction(dir),

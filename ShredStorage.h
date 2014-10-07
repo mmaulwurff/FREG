@@ -26,36 +26,36 @@
 class QByteArray;
 
 struct LongLat final {
-    LongLat(long longitude, long latitude);
+    LongLat(qint64 longitude, qint64 latitude);
     bool operator==(const LongLat &) const;
 
     LongLat & operator=(const LongLat &) = delete;
 
-    const long longitude;
-    const long latitude;
+    const qint64 longitude;
+    const qint64 latitude;
 };
 
 class PreloadThread;
 
 class ShredStorage final {
 public:
-     ShredStorage(ushort size, long longi_center, long lati_center);
+     ShredStorage(int size, qint64 longi_center, qint64 lati_center);
     ~ShredStorage();
 
-    QByteArray * GetShredData(long longi, long lati) const;
-    void SetShredData(QByteArray *, long longi, long lati);
-    void Shift(int direction, long longitude, long latitude);
+    QByteArray * GetShredData(qint64 longi, qint64 lati);
+    void SetShredData(QByteArray *, qint64 longi, qint64 lati);
+    void Shift(int direction, qint64 longitude, qint64 latitude);
 
-    void AddShredData(long longi, long lati);
-    void WriteToFileShredData(long longi, long lati);
+    void AddShredData(qint64 longi, qint64 lati);
+    void WriteToFileShredData(qint64 longi, qint64 lati);
 
-    void Remove(long longi, long lati);
+    void Remove(qint64 longi, qint64 lati);
 
 private:
     Q_DISABLE_COPY(ShredStorage)
 
     QHash<LongLat, QByteArray *> storage;
-    const ushort size;
+    const int size;
     PreloadThread * preloadThread = nullptr;
 }; // class ShredStorage
 
@@ -63,7 +63,7 @@ class PreloadThread final : public QThread {
     Q_OBJECT
 public:
     PreloadThread(ShredStorage *, int direction,
-            long longi_center, long lati_center, ushort size);
+            qint64 longi_center, qint64 lati_center, int size);
 
 protected:
     void run() override;
@@ -71,9 +71,9 @@ protected:
 private:
     ShredStorage * const storage;
     const int direction;
-    const long longi_center;
-    const long lati_center;
-    const ushort size;
+    const qint64 longi_center;
+    const qint64 lati_center;
+    const int size;
 }; // class PreloadThread
 
 #endif // SHRED_STORAGE_H
