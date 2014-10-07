@@ -20,28 +20,18 @@
 #ifndef XYZ_H
 #define XYZ_H
 
-class Xy {
+class Xyz {
 public:
-    Xy(short x, short y);
-    Xy();
-
-    short X() const;
-    short Y() const;
-
-protected:
-    short x_self, y_self;
-};
-
-class Xyz : public Xy {
-public:
-    Xyz(short x, short y, short z);
+    Xyz(int x, int y, int z);
     Xyz();
 
-    short Z() const;
-    void SetXyz(short x, short y, short z);
+    int X() const;
+    int Y() const;
+    int Z() const;
+    void SetXyz(int x, int y, int z);
 
 protected:
-    short z_self;
+    short x_self, y_self, z_self;
 };
 
 #endif

@@ -19,17 +19,16 @@
 
 #include "Xyz.h"
 
-Xy::Xy(const short i, const short j) : x_self(i), y_self(j) {}
-Xy::Xy()                             : x_self(),  y_self()  {}
+Xyz::Xyz(const int i, const int j, const int k) :
+        x_self(i), y_self(j), z_self(k)
+{}
+Xyz::Xyz() : x_self(), y_self(), z_self() {}
 
-Xyz::Xyz(const short i, const short j, const short k) : Xy(i, j), z_self(k) {}
-Xyz::Xyz()                                            : Xy(),     z_self()  {}
+int Xyz::X() const { return x_self; }
+int Xyz::Y() const { return y_self; }
+int Xyz::Z() const { return z_self; }
 
-short Xy ::X() const { return x_self; }
-short Xy ::Y() const { return y_self; }
-short Xyz::Z() const { return z_self; }
-
-void Xyz::SetXyz(const short x, const short y, const short z) {
+void Xyz::SetXyz(const int x, const int y, const int z) {
     x_self = x;
     y_self = y;
     z_self = z;
