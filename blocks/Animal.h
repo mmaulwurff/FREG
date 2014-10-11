@@ -26,6 +26,7 @@ class DeferredAction;
 
 class Animal : public Falling {
     Q_OBJECT
+    Q_DISABLE_COPY(Animal)
 public:
      Animal(int sub, int id);
      Animal(QDataStream & str, int sub, int id);

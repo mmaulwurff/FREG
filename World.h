@@ -53,6 +53,7 @@ class World final : public QThread {
      *
      * Designed to be single. */
     Q_OBJECT
+    Q_DISABLE_COPY(World)
 public:
      World(QString world_name, bool * error);
     ~World();

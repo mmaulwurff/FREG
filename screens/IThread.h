@@ -32,6 +32,7 @@ class Screen;
 
 class IThread final : public QThread {
     Q_OBJECT
+    Q_DISABLE_COPY(IThread)
 public:
     IThread(Screen *);
     void Stop();

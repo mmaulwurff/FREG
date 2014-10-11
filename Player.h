@@ -48,6 +48,7 @@ class Player final : public QObject, private Xyz {
      *
      * Also it does checks for player walking over the shred border. */
     Q_OBJECT
+    Q_DISABLE_COPY(Player)
 public:
     /// Constructor creates or loads player.
     /** It puts player block to the world if there is no player block,

@@ -45,6 +45,7 @@ class World;
 
 class Active : public QObject, public Block, protected Xyz {
     Q_OBJECT
+    Q_DISABLE_COPY(Active)
 public:
     Active(int sub, int id, int transp = UNDEF);
     Active(QDataStream & str, int sub, int id, int transp = UNDEF);

@@ -638,9 +638,9 @@ bool Shred::LoadRoom(const int level, const int index) {
                 QString("-%1").arg(index) : ""));
     if ( not file.open(QIODevice::ReadOnly | QIODevice::Text) ) return false;
     for (int lines = 0; lines < SHRED_WIDTH; ++lines) {
-        char buffer[SHRED_WIDTH + 1] = {0};
+        char buffer[SHRED_WIDTH + 1]{0};
         file.readLine(buffer, sizeof(buffer));
-        for (unsigned i=0; i<sizeof(buffer); ++i) {
+        for (unsigned i=0; i<SHRED_WIDTH; ++i) {
             switch ( buffer[i] ) {
                 case '#':
                     PutBlock(block_manager.Normal(STONE), i, lines, level);

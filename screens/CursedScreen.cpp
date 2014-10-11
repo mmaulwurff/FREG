@@ -392,7 +392,12 @@ void Screen::ExamineOnNormalScreen(int x, int y, int z, const int step) const {
 void Screen::ProcessMouse() {
     MEVENT mevent;
     if ( getmouse(&mevent) == ERR ) return;
-    if ( wenclose(leftWin, mevent.y, mevent.x) ) { // left window
+    int window_index = WINDOW_LEFT;
+    while ( window_index < WINDOW_COUNT ) {
+        if ( wenclose(windows[window_index++], mevent.y, mevent.x) ) break;
+    }
+    switch ( window_index ) {
+    case WINDOW_LEFT:
         if ( not wmouse_trafo(leftWin, &mevent.y, &mevent.x, false) ) return;
         if ( player->UsingSelfType() == USAGE_TYPE_OPEN ) {
             Notify(tr("Your inventory."));
@@ -406,43 +411,8 @@ void Screen::ProcessMouse() {
             return;
         }
         ExamineOnNormalScreen(mevent.x, mevent.y, player->Z(), -1);
-    } else if ( wenclose(notifyWin, mevent.y, mevent.x) ) { // notify
-        Notify(tr("Notifications area."));
-    } else if ( wenclose(actionWin, mevent.y, mevent.x) ) { // actions
-        wmouse_trafo(actionWin, &mevent.y, &mevent.x, false);
-        SetActionMode(static_cast<actions>(mevent.y));
-    } else if ( wenclose(minimapWin, mevent.y, mevent.x) ) { // minimap
-        if (not wmouse_trafo(minimapWin, &mevent.y, &mevent.x, false)) return;
-        if ( not (
-                0 < mevent.x && mevent.x < MINIMAP_WIDTH-1 &&
-                0 < mevent.y && mevent.y < MINIMAP_HEIGHT-1 ) )
-        {
-            Notify(tr("Minimap."));
-            return;
-        }
-        const int shred_x = mevent.x/2 + GetMinimapStartX();
-        const int shred_y = mevent.y-1 + GetMinimapStartY();
-        Notify((0 <= shred_x && shred_x < world->NumShreds() &&
-                0 <= shred_y && shred_y < world->NumShreds() ) ?
-            tr("On minimap: %1").arg( Shred::ShredTypeName(
-                world->GetShredByPos(shred_x, shred_y)->GetTypeOfShred())) :
-            tr("You can't see that far.") );
-    } else if ( wenclose(hudWin, mevent.y, mevent.x) ) { // HUD
-        if ( not wmouse_trafo(hudWin, &mevent.y, &mevent.x, false) ) return;
-        mevent.x -= QUICK_INVENTORY_X_SHIFT;
-        mevent.x /= 2;
-        if ( not ( IsScreenWide() && 0 <= mevent.x && mevent.x <= 'z'-'a' ) ) {
-            Notify(tr("Information: left - player, right - focused thing."));
-            return;
-        }
-        Inventory * const inv = player->PlayerInventory();
-        if ( inv == nullptr ) return;
-        Notify( tr("In inventory at slot '%1': %2.").
-            arg(char(mevent.x + 'a')).
-            arg( inv->Number(mevent.x) ?
-                inv->InvFullName(mevent.x) :
-                tr("nothing") ) );
-    } else if ( wenclose(rightWin, mevent.y, mevent.x) ) { // right window
+        break;
+    case WINDOW_RIGHT:
         if ( not wmouse_trafo(rightWin, &mevent.y, &mevent.x, false) ) return;
         if ( fileToShow != nullptr ) {
             Notify(tr("Reading file: \"%1\".").arg(fileToShow->fileName()));
@@ -467,10 +437,54 @@ void Screen::ProcessMouse() {
                 break;
             }
         }
-    } else {
+        break;
+    case WINDOW_NOTIFY:
+        Notify(tr("Notifications area."));
+        break;
+    case WINDOW_HUD:
+        if ( not wmouse_trafo(hudWin, &mevent.y, &mevent.x, false) ) return;
+        mevent.x -= QUICK_INVENTORY_X_SHIFT;
+        mevent.x /= 2;
+        if ( not ( IsScreenWide() && 0 <= mevent.x && mevent.x <= 'z'-'a' ) ) {
+            Notify(tr("Information: left - player, right - focused thing."));
+            return;
+        } else {
+            Inventory * const inv = player->PlayerInventory();
+            if ( inv == nullptr ) return;
+            Notify( tr("In inventory at slot '%1': %2.").
+                arg(char(mevent.x + 'a')).
+                arg( inv->Number(mevent.x) ?
+                    inv->InvFullName(mevent.x) :
+                    tr("nothing") ) );
+        }
+        break;
+    case WINDOW_MINIMAP:
+        if (not wmouse_trafo(minimapWin, &mevent.y, &mevent.x, false)) return;
+        if ( not (
+                0 < mevent.x && mevent.x < MINIMAP_WIDTH-1 &&
+                0 < mevent.y && mevent.y < MINIMAP_HEIGHT-1 ) )
+        {
+            Notify(tr("Minimap."));
+            return;
+        } else {
+            const int shred_x = mevent.x/2 + GetMinimapStartX();
+            const int shred_y = mevent.y-1 + GetMinimapStartY();
+            Notify((0 <= shred_x && shred_x < world->NumShreds() &&
+                    0 <= shred_y && shred_y < world->NumShreds() ) ?
+                tr("On minimap: %1").arg( Shred::ShredTypeName(
+                    world->GetShredByPos(shred_x, shred_y)->GetTypeOfShred())):
+                tr("You can't see that far.") );
+        }
+        break;
+    case WINDOW_ACTION:
+        if ( not wmouse_trafo(actionWin, &mevent.y, &mevent.x, false) ) return;
+        SetActionMode(static_cast<actions>(mevent.y));
+        break;
+    default:
         Notify(tr("Nothing here. Click on something to get information."));
+        break;
     }
-}
+} // Screen::ProcessMouse()
 
 void Screen::ProcessCommand(const QString command) {
     if ( command.length()==1 && command.at(0)!='.' ) {
@@ -1117,7 +1131,8 @@ Screen::Screen(Player * const pl, int & error, bool _ascii) :
     }
 
     input->start();
-    connect(world, SIGNAL(UpdatesEnded()), SLOT(Print()), Qt::DirectConnection);
+    connect(world, SIGNAL(UpdatesEnded()), SLOT(Print()),
+        Qt::DirectConnection);
 } // Screen::Screen(Player * const pl, int & error, bool _ascii)
 
 Screen::~Screen() {

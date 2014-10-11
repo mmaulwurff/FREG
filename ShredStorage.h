@@ -61,6 +61,7 @@ private:
 
 class PreloadThread final : public QThread {
     Q_OBJECT
+    Q_DISABLE_COPY(PreloadThread)
 public:
     PreloadThread(ShredStorage *, int direction,
             qint64 longi_center, qint64 lati_center, int size);

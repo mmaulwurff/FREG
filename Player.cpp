@@ -463,7 +463,6 @@ void Player::SetPlayer(int _x, int _y, int _z) {
         const int plus = world->NumShreds() / 2;
         _x = Xyz::X() + (latitude  - world->Latitude()  + plus) * SHRED_WIDTH;
         _y = Xyz::Y() + (longitude - world->Longitude() + plus) * SHRED_WIDTH;
-        _z = Xyz::Z();
     } else {
         SetXyz(Shred::CoordInShred(_x), Shred::CoordInShred(_y), _z);
     }

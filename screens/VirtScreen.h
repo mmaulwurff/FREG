@@ -108,6 +108,7 @@ class VirtScreen : public QObject {
      * It provides interface for world-screen and player-screen
      * communications by its slots and signals. */
     Q_OBJECT
+    Q_DISABLE_COPY(VirtScreen)
 public:
     /// Constructor makes player and world connections.
     /** Constructor of non-virtual screen should contain this code

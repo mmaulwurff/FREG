@@ -39,6 +39,16 @@
 
 const int SCREEN_SIZE = 30;
 
+enum windows_numbers {
+    WINDOW_LEFT,
+    WINDOW_RIGHT,
+    WINDOW_NOTIFY,
+    WINDOW_HUD,
+    WINDOW_MINIMAP,
+    WINDOW_ACTION,
+    WINDOW_COUNT // keep it last
+};
+
 enum actions {
     ACTION_USE,
     ACTION_THROW,
@@ -62,6 +72,7 @@ class Block;
 
 class Screen final : public VirtScreen {
     Q_OBJECT
+    Q_DISABLE_COPY(Screen)
 public:
      Screen(Player *, int & error, bool ascii);
     ~Screen() override;
@@ -126,13 +137,13 @@ private:
     inline int GetMinimapStartY() const;
     void ExamineOnNormalScreen(int x, int y, int z, int step) const;
 
-    WINDOW * windows[6];
-    WINDOW *& leftWin    = windows[0];
-    WINDOW *& rightWin   = windows[1];
-    WINDOW *& notifyWin  = windows[2];
-    WINDOW *& hudWin     = windows[3]; // head-up display
-    WINDOW *& minimapWin = windows[4];
-    WINDOW *& actionWin  = windows[5];
+    WINDOW * windows[WINDOW_COUNT];
+    WINDOW *& leftWin    = windows[WINDOW_LEFT];
+    WINDOW *& rightWin   = windows[WINDOW_RIGHT];
+    WINDOW *& notifyWin  = windows[WINDOW_NOTIFY];
+    WINDOW *& hudWin     = windows[WINDOW_HUD]; // head-up display
+    WINDOW *& minimapWin = windows[WINDOW_MINIMAP];
+    WINDOW *& actionWin  = windows[WINDOW_ACTION];
     mutable QString lastNotification;
     IThread * const input;
     volatile bool updated;
