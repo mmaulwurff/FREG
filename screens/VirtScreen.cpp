@@ -195,6 +195,19 @@ char VirtScreen::CharName(const int kind, const int sub) {
     Q_UNREACHABLE();
 } // char VirtScreen::CharName(int kind, int sub)
 
+bool VirtScreen::ProcessCommand(const QString command) {
+    switch ( Player::UniqueIntFromString(qPrintable(command)) ) {
+    case Player::UniqueIntFromString("moo"):
+        Notify("^__^");
+        Notify("(oo)\\_______");
+        Notify("(__)\\       )\\/\\");
+        Notify("    ||----w |");
+        Notify("    ||     ||");
+        return true;
+    default: return false;
+    }
+}
+
 // Define pure virtual functions to simplify debugging
 void VirtScreen::Update(int, int, int) { Q_UNREACHABLE(); }
 void VirtScreen::UpdateAll() { Q_UNREACHABLE(); }

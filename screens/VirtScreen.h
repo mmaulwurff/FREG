@@ -185,6 +185,8 @@ private slots:
 
 protected:
     World * GetWorld() const;
+    /// Returns true if command is recognized and processed.
+    bool ProcessCommand(QString command);
 
     Player * const player;
     QSettings settings;

@@ -491,6 +491,7 @@ void Screen::ProcessCommand(const QString command) {
         ControlPlayer(command.at(0).toLatin1());
         return;
     }
+    if ( VirtScreen::ProcessCommand(command) ) return;
     switch ( Player::UniqueIntFromString(qPrintable(command)) ) {
     case Player::UniqueIntFromString("distance"):
         showDistance = not showDistance;
@@ -510,13 +511,6 @@ void Screen::ProcessCommand(const QString command) {
     case Player::UniqueIntFromString("size"):
         Notify(tr("Terminal height: %1 lines, width: %2 chars.").
             arg(LINES).arg(COLS));
-        break;
-    case Player::UniqueIntFromString("moo"):
-        Notify("^__^");
-        Notify("(oo)\\_______");
-        Notify("(__)\\       )\\/\\");
-        Notify("    ||----w |");
-        Notify("    ||     ||");
         break;
     default: player->ProcessCommand(command); break;
     }
