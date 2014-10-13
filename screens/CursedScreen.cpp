@@ -269,6 +269,7 @@ void Screen::ControlPlayer(const int ch) {
             || 'X' == ch
             || KEY_F(10) == ch )
     {
+        Notify(tr("Exiting game..."));
         emit ExitReceived();
         input->Stop();
         return;
@@ -393,8 +394,8 @@ void Screen::ProcessMouse() {
     MEVENT mevent;
     if ( getmouse(&mevent) == ERR ) return;
     int window_index = WINDOW_LEFT;
-    while ( window_index < WINDOW_COUNT ) {
-        if ( wenclose(windows[window_index++], mevent.y, mevent.x) ) break;
+    for (; window_index < WINDOW_COUNT; ++window_index ) {
+        if ( wenclose(windows[window_index], mevent.y, mevent.x) ) break;
     }
     switch ( window_index ) {
     case WINDOW_LEFT:
@@ -501,7 +502,7 @@ void Screen::ProcessCommand(const QString command) {
     case Player::UniqueIntFromString("far"):
         farDistance = not farDistance;
         Notify(tr("Use \"abcdef\" as distance: %1.").
-            arg(showDistance ? tr("on") : tr("off")));
+            arg(farDistance ? tr("on") : tr("off")));
         break;
     case Player::UniqueIntFromString("blink"):
         blinkOn = not blinkOn;
