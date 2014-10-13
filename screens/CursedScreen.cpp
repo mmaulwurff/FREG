@@ -40,6 +40,8 @@ const int MINIMAP_HEIGHT = 7;
 
 const int MOUSEMASK = BUTTON1_CLICKED | BUTTON1_RELEASED;
 
+const int ACTIVE_HAND = 3;
+
 void Screen::PrintVerticalDirection(WINDOW * const window, const int y,
         const int x, const dirs direction)
 {
@@ -314,13 +316,23 @@ void Screen::ControlPlayer(const int ch) {
     case KEY_DC: // delete
     case KEY_BACKSPACE: player->Damage(); break;
 
-    case '\n':
-    case 13:  case KEY_F(2): case 'F': player->Use();      break;
-    case '*': case KEY_F(3): case '?': player->Examine();  break;
-    case '~': case KEY_F(4):           player->Inscribe(); break;
+    case 13:
+    case '\n': switch ( actionMode ) {
+        case ACTION_USE:      player->Use();              break;
+        case ACTION_THROW:    player->Throw(ACTIVE_HAND); break;
+        case ACTION_OBTAIN:   player->Obtain(0);          break;
+        case ACTION_INSCRIBE: player->Inscribe();         break;
+        case ACTION_BUILD:    player->Build(ACTIVE_HAND); break;
+        case ACTION_CRAFT:    player->Craft(ACTIVE_HAND); break;
+        case ACTION_WIELD:    player->Wield(ACTIVE_HAND); break;
+        }
+        break;
+    case 'F': case KEY_F(2): player->Use();      break;
+    case '?': case KEY_F(3): player->Examine();  break;
+    case '~': case KEY_F(4): player->Inscribe(); break;
     case 27: /* esc */ player->StopUseAll(); break;
 
-    case KEY_IC: player->Build(3); break; // insert
+    case KEY_IC: player->Build(ACTIVE_HAND); break; // insert
     case 'B': SetActionMode(ACTION_BUILD);    break;
     case 'C': SetActionMode(ACTION_CRAFT);    break;
     case 'T': SetActionMode(ACTION_THROW);    break;
@@ -670,7 +682,9 @@ void Screen::PrintHUD() {
             focused->GetDurability()*100/MAX_DURABILITY,
             false);
         const QString name = focused->FullName();
-        mvwaddstr(hudWin, 1, left_border-name.length() - 1,
+
+        mvwprintw(hudWin, 1, left_border-name.length() - 5, "[%c] %s",
+            PrintBlock(*focused, hudWin),
             qPrintable(focused->FullName()));
         const QString note = focused->GetNote();
         if ( not note.isEmpty() && IsScreenWide() ) {

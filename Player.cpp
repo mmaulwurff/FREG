@@ -176,9 +176,7 @@ void Player::Use() {
     const int us_type = block->Use(player);
     if ( us_type == USAGE_TYPE_NO ) {
         locker.unlock();
-        if ( not Obtain(0) ) {
-            Notify(tr("You cannot use %1.").arg(block->FullName()));
-        }
+        Notify(tr("You cannot use %1.").arg(block->FullName()));
         return;
     }
     usingType = ( us_type==usingType ) ? USAGE_TYPE_NO : us_type;
@@ -255,6 +253,7 @@ usage_types Player::Use(const int num) {
 }
 
 void Player::Throw(const int src, const int dest, const int num) {
+    if ( ValidBlock(src) == nullptr ) return;
     int x, y, z;
     emit GetFocus(&x, &y, &z);
     DeferredAction * const def_action = new DeferredAction(player);
