@@ -580,11 +580,17 @@ Block * Screen::GetFocusedBlock() const {
         nullptr;
 }
 
-char Screen::PrintBlock(const Block & block, WINDOW * const window) const {
-    const int kind = block.Kind();
-    const int sub  = block.Sub();
+void Screen::PrintBlock(const Block* const block, WINDOW* const window) const {
+    const int kind = block->Kind();
+    const int sub  = block->Sub();
     wattrset(window, Color(kind, sub));
-    return CharName(kind, sub);
+    waddch(window, CharName(kind, sub));
+}
+
+int Screen::ColoredChar(const Block * const block) const {
+    const int kind = block->Kind();
+    const int sub  = block->Sub();
+    return CharName(kind, sub) | Color(kind, sub);
 }
 
 void Screen::Print() {
@@ -643,16 +649,16 @@ void Screen::PrintHUD() {
     } else {
         const int dur = player->GetBlock()->GetDurability();
         if ( dur > 0 ) { // HitPoints line
-            static const int player_health_char =  ascii ? '@' : 0x2665;
+            static const int player_health_char = ascii ? '@' : 0x2665;
             PrintBar(0,
-                (dur > MAX_DURABILITY/5) ?
-                    COLOR_PAIR(RED_BLACK) : (COLOR_PAIR(BLACK_RED) | A_BLINK),
-                player_health_char, dur*100/MAX_DURABILITY);
+                player_health_char | int((dur > MAX_DURABILITY/5) ?
+                    COLOR_PAIR(RED_BLACK) : (COLOR_PAIR(BLACK_RED) | A_BLINK)),
+                dur*100/MAX_DURABILITY);
         }
         const int breath = player->BreathPercent();
         if ( breath != 100 ) {
             static const int player_breath_char = ascii ? 'o' : 0x00b0;
-            PrintBar(16, COLOR_PAIR(BLUE_BLACK), player_breath_char, breath);
+            PrintBar(16, COLOR_PAIR(BLUE_BLACK) | player_breath_char, breath);
         }
         static const QString satiation_strings[] = {
             tr("Hungry"),
@@ -678,14 +684,11 @@ void Screen::PrintHUD() {
             (SCREEN_SIZE*2+2) * 2 :
             SCREEN_SIZE*2+2 - 15;
         PrintBar(left_border - 15,
-            Color(focused->Kind(), focused->Sub()),
-            CharName(focused->Kind(), focused->Sub()),
+            ColoredChar(focused),
             focused->GetDurability()*100/MAX_DURABILITY,
             false);
         const QString name = focused->FullName();
-
-        mvwaddstr(hudWin, 1, left_border-name.length() - 1,
-            qPrintable(focused->FullName()));
+        mvwaddstr(hudWin, 1, left_border-name.length()-1, qPrintable(name));
         const QString note = focused->GetNote();
         if ( not note.isEmpty() && IsScreenWide() ) {
             const int width = qMin(36, note.length() + 2);
@@ -712,8 +715,7 @@ void Screen::PrintQuickInventory() {
             switch ( inv->Number(i) ) {
             case  0: break;
             default: mvwaddch(hudWin, 2, x, inv->Number(i)+'0'); // no break;
-            case  1: mvwaddch(hudWin, 1, x,
-                    PrintBlock(*inv->ShowBlock(i), hudWin));
+            case  1: mvwaddch(hudWin, 1, x, ColoredChar(inv->ShowBlock(i)));
                 break;
             }
         }
@@ -743,7 +745,7 @@ void Screen::PrintMiniMap() {
             wprintw (minimapWin, " %c", shred->GetTypeOfShred());
         }
     }
-    wstandend(minimapWin);
+    wattrset(minimapWin, COLOR_PAIR(BLACK_BLACK) | A_BOLD);
     box(minimapWin, 0, 0);
     mvwaddstr(minimapWin, 0, 1, qPrintable(tr("Minimap")));
     wrefresh(minimapWin);
@@ -783,13 +785,11 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
             for ( ; INVISIBLE == shred->GetBlock(i_in, j_in, k)->Transparent();
                 k += k_step);
             if ( player->Visible(i, j, k) ) {
-                waddch(window,
-                    PrintBlock(*shred->GetBlock(i_in, j_in, k), window));
+                PrintBlock(shred->GetBlock(i_in, j_in, k), window);
                 waddch(window, showDistance ? CharNumber(k) : ' ');
             } else {
-                wattrset(window, SHADOW_COLOR);
-                waddch(window, OBSCURE_BLOCK);
-                waddch(window, ' ');
+                waddch(window, SHADOW_COLOR | OBSCURE_BLOCK);
+                waddch(window, SHADOW_COLOR | ' ');
             }
         }
     }
@@ -801,7 +801,7 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
             qPrintable(arrows[player->GetDir()]));
     }
 
-    wstandend(window);
+    wattrset(window, COLOR_PAIR(BLACK_BLACK) | A_BOLD);
     box(window, 0, 0);
     Arrows(window, (player->X()-start_x)*2+1, player->Y()-start_y+1, UP);
     wrefresh(window);
@@ -892,26 +892,23 @@ const {
                     *z += z_step);
             if ( *z == z_end ) {
                 static const int sky_char = CharName(BLOCK, SKY);
-                wattrset(rightWin, sky_color);
-                waddch(rightWin, sky_char);
-                waddch(rightWin, ' ');
+                waddch(rightWin, sky_color | sky_char);
+                waddch(rightWin, sky_color | ' ');
             } else if ( player->Visible(i, j, k) ) {
-                waddch(rightWin, PrintBlock(*world->GetBlock(i, j, k),
-                    rightWin));
+                PrintBlock(world->GetBlock(i, j, k), rightWin);
                 waddch(rightWin, showDistance ? CharNumberFront(i, j) : ' ');
             } else {
-                wattrset(rightWin, SHADOW_COLOR);
-                waddch(rightWin, OBSCURE_BLOCK);
-                waddch(rightWin, ' ');
+                waddch(rightWin, SHADOW_COLOR | OBSCURE_BLOCK);
+                waddch(rightWin, SHADOW_COLOR | ' ');
             }
         }
     }
-    wstandend(rightWin);
+    wattrset(rightWin, COLOR_PAIR(BLACK_BLACK) | A_BOLD);
     box(rightWin, 0, 0);
     const int arrow_Y = k_start + 1 - player->Z();
     if ( shiftFocus ) {
-        wattrset(rightWin, COLOR_PAIR(WHITE_BLUE));
-        const int ch = ( shiftFocus == 1 ) ? '^' : 'v';
+        const int ch =
+            (( shiftFocus == 1 ) ? '^' : 'v') | COLOR_PAIR(WHITE_BLUE);
         for (int q=arrow_Y-shiftFocus; 0<q && q<=SCREEN_SIZE; q-=shiftFocus) {
             mvwaddch(rightWin, q,               0, ch);
             mvwaddch(rightWin, q, SCREEN_SIZE*2+1, ch);
@@ -939,8 +936,12 @@ const {
             continue;
         }
         const Block * const block = inv->ShowBlock(i);
-        wprintw(window, "[%c]%s",
-            PrintBlock(*block, window), qPrintable(inv->InvFullName(i)) );
+        wstandend(window);
+        const int color = Color(block->Kind(), block->Sub());
+        waddch(window, color | CharName(block->Kind(), block->Sub()));
+        waddch(window, color | ' ');
+        waddch(window, ' ');
+        waddstr(window, qPrintable(inv->InvFullName(i)));
         if ( MAX_DURABILITY != block->GetDurability() ) {
             wprintw(window, "{%d}", block->GetDurability()*100/MAX_DURABILITY);
         }
@@ -1174,13 +1175,14 @@ Screen::~Screen() {
     settings.setValue("use_abcdef_distance", farDistance);
 }
 
-void Screen::PrintBar(const int x, const int attr, const int ch,
+void Screen::PrintBar(const int x, const ulong ch,
         const int percent, const bool value_position_right)
 {
     wstandend(hudWin);
     mvwprintw(hudWin, 0, x,
         value_position_right ? "[..........]%hd" : "%3hd[..........]",percent);
-    wattrset(hudWin, attr);
-    mvwaddstr(hudWin, 0, x + (value_position_right ? 1 : 4),
-        qPrintable(QString(10, QChar(ch)).left(percent/10)));
+    const long unsigned durability_string[10] =
+        {ch, ch, ch, ch, ch, ch, ch, ch, ch, ch};
+    mvwaddchnstr(hudWin, 0, x + (value_position_right ? 1 : 4),
+        durability_string, percent/10);
 }

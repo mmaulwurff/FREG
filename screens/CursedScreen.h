@@ -106,7 +106,7 @@ private:
     void PrintFront(dirs direction, int x = -1, int y = 0) const;
     void PrintInv(WINDOW *, const Block *, const Inventory *) const;
     /// Can print health, breath and other bars on hudWin.
-    void PrintBar(int x, int color, int ch, int percent,
+    void PrintBar(int x, ulong ch, int percent,
             bool value_position_right = true);
     /// Returns false when file does not exist, otherwise true.
     bool PrintFile(WINDOW *, QString const & file_name);
@@ -118,7 +118,8 @@ private:
     void InventoryAction(int num) const;
     int  Color(int kind, int sub) const;
     int  ColorShred(shred_type)   const;
-    char PrintBlock(const Block &, WINDOW *) const;
+    void PrintBlock(const Block *, WINDOW *) const;
+    int  ColoredChar(const Block *) const;
     void SetActionMode(actions mode);
     void ProcessCommand(QString command);
     void ProcessMouse();
