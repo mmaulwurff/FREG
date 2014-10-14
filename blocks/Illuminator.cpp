@@ -59,14 +59,14 @@ Block * Illuminator::DropAfterDamage(bool * const delete_block) {
 
 usage_types Illuminator::Use(Active * const user) {
     if ( Sub() == WOOD || Sub() == STONE ) {
-        fuelLevel = ( fuelLevel >= 10 ) ?
-            fuelLevel - 10 : 0;
-        return USAGE_TYPE_SET_FIRE;
-    } else {
-        isOn = not isOn;
-        user->UpdateLightRadius();
-        return USAGE_TYPE_INNER;
+        fuelLevel -= ( fuelLevel >= 10 ) ? 10 : 0;
+        if ( Sub() == STONE ) {
+            return USAGE_TYPE_SET_FIRE;
+        }
     }
+    isOn = not isOn;
+    user->UpdateLightRadius();
+    return USAGE_TYPE_INNER;
 }
 
 int Illuminator::LightRadius() const {

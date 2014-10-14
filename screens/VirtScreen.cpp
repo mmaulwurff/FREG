@@ -171,6 +171,7 @@ char VirtScreen::CharName(const int kind, const int sub) {
     case INFORMER:  return 'I';
     case TELEPORT:  return '0';
     case RAIN_MACHINE: return 'R';
+    case ACCUMULATOR: return '=';
     case FALLING: switch ( sub ) {
         case SAND:  return '.';
         case WATER: return '*';

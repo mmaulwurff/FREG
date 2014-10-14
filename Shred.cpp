@@ -419,6 +419,7 @@ void Shred::TestShred() {
             {MEDKIT, IRON}
         }, {
             {ARMOUR, STEEL}, {HELMET, STEEL}, {BOOTS, STEEL},
+            {ACCUMULATOR, ADAMANTINE},
         }
     };
     for (int i=0; i<SHRED_WIDTH/2; ++i)

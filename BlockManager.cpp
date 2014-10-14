@@ -30,6 +30,7 @@
 #include "blocks/Armour.h"
 #include "blocks/Filter.h"
 #include "blocks/Teleport.h"
+#include "blocks/Accumulator.h"
 
 /** \page kinds List of available kinds
  *  Complete list.
@@ -72,6 +73,7 @@ const QByteArray BlockManager::kinds[] = { // do not use space, use '_'
     "filter",
     "informer",
     "teleport",
+    "accumulator"
     /// [List of kinds]
 };
 
@@ -187,6 +189,7 @@ const static QString tr_kind_names[] = {
     QObject::tr("Filter"),
     QObject::tr("Informer"),
     QObject::tr("Teleport"),
+    QObject::tr("Accumulator"),
 };
 
 QString BlockManager::SubName(const int sub) { return tr_sub_names[sub]; }
@@ -267,6 +270,7 @@ Block * BlockManager::NewBlock(const int kind, const int sub) {
     case FILTER:    return new Filter(kind, sub);
     case INFORMER:  return new Informer(kind, sub);
     case TELEPORT:  return new Teleport(kind, sub);
+    case ACCUMULATOR:  return new Accumulator(kind, sub);
     case LAST_KIND: break;
     }
     Q_UNREACHABLE();
@@ -313,6 +317,7 @@ Block * BlockManager::BlockFromFile(QDataStream & str,
     case FILTER:    return new Filter(str, kind, sub);
     case INFORMER:  return new Informer(str, kind, sub);
     case TELEPORT:  return new Teleport(str, kind, sub);
+    case ACCUMULATOR:  return new Accumulator(str, kind, sub);
     case LAST_KIND: break;
     }
     Q_UNREACHABLE();
@@ -383,6 +388,7 @@ bool BlockManager::IsValid(const int kind, const int sub) {
     case FALLING:   return ( sub == WATER || sub == STONE || sub == SUB_DUST );
     case LIQUID:    return ( group == GROUP_MEAT || group == GROUP_METAL
                             || sub == STONE || sub == WATER );
+    case ACCUMULATOR: return ( sub == GLASS || GROUP_METAL == group);
 
     case BUCKET:
     case CLOCK:

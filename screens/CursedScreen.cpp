@@ -346,6 +346,7 @@ void Screen::ControlPlayer(const int ch) {
             ACTION_WIELD : static_cast<actions>(actionMode-1));
         break;
     case ']':
+    case '\t':
         SetActionMode(actionMode == ACTION_WIELD ?
             ACTION_USE : static_cast<actions>(actionMode+1));
         break;
@@ -678,13 +679,12 @@ void Screen::PrintHUD() {
             SCREEN_SIZE*2+2 - 15;
         PrintBar(left_border - 15,
             Color(focused->Kind(), focused->Sub()),
-            (focused->IsAnimal() == nullptr) ? '+' : '*',
+            CharName(focused->Kind(), focused->Sub()),
             focused->GetDurability()*100/MAX_DURABILITY,
             false);
         const QString name = focused->FullName();
 
-        mvwprintw(hudWin, 1, left_border-name.length() - 5, "[%c] %s",
-            PrintBlock(*focused, hudWin),
+        mvwaddstr(hudWin, 1, left_border-name.length() - 1,
             qPrintable(focused->FullName()));
         const QString note = focused->GetNote();
         if ( not note.isEmpty() && IsScreenWide() ) {

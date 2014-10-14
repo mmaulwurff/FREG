@@ -97,6 +97,7 @@ HEADERS += \
     blocks/Armour.h \
     blocks/Filter.h \
     blocks/Teleport.h \
+    blocks/Accumulator.h \
 
 SOURCES += \
     BlockManager.cpp \
@@ -128,6 +129,7 @@ SOURCES += \
     blocks/Animal.cpp \
     blocks/Filter.cpp \
     blocks/Teleport.cpp \
+    blocks/Accumulator.cpp \
 
 INCLUDEPATH += .
 

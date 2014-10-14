@@ -628,6 +628,14 @@ bool World::Exchange(Block * const block_from, Block * const block_to,
         block_from->ReceiveSignal(tr("Nothing here."));
         block_to  ->ReceiveSignal(tr("Nothing here."));
     } else {
+        Active * active = block_from->ActiveBlock();
+        if ( active != nullptr ) {
+            emit active->Updated();
+        }
+        active = block_to->ActiveBlock();
+        if ( active != nullptr) {
+            emit active->Updated();
+        }
         inv_from->Drop(src, dest, num, inv_to);
     }
     return false;
