@@ -28,12 +28,15 @@ public:
     Accumulator(QDataStream &, int sub, int kind);
 
     QString FullName() const override;
+    void Damage(int dmg, int dmg_kind) override;
 
 protected:
     void SaveAttributes(QDataStream &) const;
 
 private:
-    static const qint16 MAX_CHARGE = 1024;
+    static damage_kinds EnergyType(int substance);
+
+    static const quint16 MAX_CHARGE = 0xffff;
 
     qint16 charge;
 };

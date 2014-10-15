@@ -46,5 +46,22 @@ QString Accumulator::FullName() const {
         default:    name = Block::FullName(); break;
         }
     }
-    return name.append(QString(" (charge: %1)").arg(100*charge / MAX_CHARGE));
+    return name.append(QString(" (charge: %1%)").arg(100*charge / MAX_CHARGE));
+}
+
+void Accumulator::Damage(const int dmg, const int dmg_kind) {
+    if ( dmg_kind == EnergyType(Sub()) ) {
+        charge += dmg;
+    } else {
+        Block::Damage(dmg, dmg_kind);
+    }
+}
+
+damage_kinds Accumulator::EnergyType(const int substance) {
+    switch ( substance ) {
+    default:    return DAMAGE_HEAT;
+    case IRON:
+    case ADAMANTINE:
+    case GOLD:  return DAMAGE_ELECTRO;
+    }
 }
