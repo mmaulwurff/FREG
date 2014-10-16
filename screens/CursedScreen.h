@@ -118,7 +118,7 @@ private:
     void InventoryAction(int num) const;
     int  Color(int kind, int sub) const;
     int  ColorShred(shred_type)   const;
-    void PrintBlock(const Block *, WINDOW *) const;
+    void PrintBlock(const Block *, WINDOW *, char second) const;
     int  ColoredChar(const Block *) const;
     void SetActionMode(actions mode);
     void ProcessCommand(QString command);

@@ -581,11 +581,14 @@ Block * Screen::GetFocusedBlock() const {
         nullptr;
 }
 
-void Screen::PrintBlock(const Block* const block, WINDOW* const window) const {
+void Screen::PrintBlock(const Block* const block, WINDOW* const window,
+        const char second) const
+{
     const int kind = block->Kind();
     const int sub  = block->Sub();
-    wattrset(window, Color(kind, sub));
-    waddch(window, CharName(kind, sub));
+    const int color = Color(kind, sub);
+    waddch(window, color | CharName(kind, sub));
+    waddch(window, color | second);
 }
 
 int Screen::ColoredChar(const Block * const block) const {
@@ -776,6 +779,7 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
         k_start = player->Z() - ( DOWN==dir );
         k_step  = -1;
     }
+    wstandend(window);
     const int start_x = GetNormalStartX();
     const int start_y = GetNormalStartY();
     const int end_x = start_x + SCREEN_SIZE;
@@ -790,8 +794,8 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
             for ( ; INVISIBLE == shred->GetBlock(i_in, j_in, k)->Transparent();
                 k += k_step);
             if ( player->Visible(i, j, k) ) {
-                PrintBlock(shred->GetBlock(i_in, j_in, k), window);
-                waddch(window, showDistance ? CharNumber(k) : ' ');
+                PrintBlock(shred->GetBlock(i_in, j_in, k), window,
+                    showDistance ? CharNumber(k) : ' ');
             } else {
                 waddch(window, SHADOW_COLOR | OBSCURE_BLOCK);
                 waddch(window, SHADOW_COLOR | ' ');
@@ -875,6 +879,7 @@ const {
         Q_UNREACHABLE();
         return;
     }
+    wstandend(rightWin);
     const int k_start =
         qBound(SCREEN_SIZE-1, player->Z()+SCREEN_SIZE/2, HEIGHT-1);
     if ( block_x > 0 ) {
@@ -887,7 +892,7 @@ const {
         player->Examine(i, j, k);
         return;
     }
-    const int sky_color = Color(BLOCK, SKY);
+    const int sky_color = COLOR_PAIR(VirtScreen::Color(BLOCK, SKY));
     (void)wmove(rightWin, 1, 1);
     for (int k=k_start; k>k_start-SCREEN_SIZE; --k, waddstr(rightWin, "\n_")) {
         randomBlink = blinkOn ? qrand() : 0;
@@ -900,8 +905,8 @@ const {
                 waddch(rightWin, sky_color | sky_char);
                 waddch(rightWin, sky_color | ' ');
             } else if ( player->Visible(i, j, k) ) {
-                PrintBlock(world->GetBlock(i, j, k), rightWin);
-                waddch(rightWin, showDistance ? CharNumberFront(i, j) : ' ');
+                PrintBlock(world->GetBlock(i, j, k), rightWin,
+                    showDistance ? CharNumberFront(i, j) : ' ');
             } else {
                 waddch(rightWin, SHADOW_COLOR | OBSCURE_BLOCK);
                 waddch(rightWin, SHADOW_COLOR | ' ');
@@ -934,17 +939,14 @@ const {
         shift += ( start == i && i != 0 );
         wstandend(window);
         mvwprintw(window, 2+i+shift, 1, "%c) ", 'a'+i);
-        const int number = inv->Number(i);
-        if ( 0 == number ) {
+        const Block * const block = inv->ShowBlock(i);
+        if ( block == nullptr ) {
             wattrset(window, COLOR_PAIR(BLACK_BLACK) | A_BOLD);
             waddwstr(window, printable(inv->InvFullName(i)));
             continue;
         }
-        const Block * const block = inv->ShowBlock(i);
+        PrintBlock(block, window, ' ');
         wstandend(window);
-        const int color = Color(block->Kind(), block->Sub());
-        waddch(window, color | CharName(block->Kind(), block->Sub()));
-        waddch(window, color | ' ');
         waddch(window, ' ');
         waddwstr(window, printable(inv->InvFullName(i)));
         if ( MAX_DURABILITY != block->GetDurability() ) {
