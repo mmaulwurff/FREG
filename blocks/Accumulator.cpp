@@ -39,7 +39,7 @@ void Accumulator::SaveAttributes(QDataStream & stream) const {
 QString Accumulator::FullName() const {
     QString name;
     if ( GetSubGroup(Sub()) == GROUP_METAL ) {
-        name = QObject::tr("Battery (%1)").arg(BlockManager::SubName(Sub()));
+        name = QObject::tr("Battery (%1)").arg(tr_manager->SubName(Sub()));
     } else {
         switch ( Sub() ) {
         case GLASS: name = QObject::tr("Thermos"); break;
@@ -51,7 +51,7 @@ QString Accumulator::FullName() const {
 
 void Accumulator::Damage(const int dmg, const int dmg_kind) {
     if ( dmg_kind == EnergyType(Sub()) ) {
-        charge += dmg;
+        charge = qMin(charge+dmg, int(MAX_CHARGE));
     } else {
         Block::Damage(dmg, dmg_kind);
     }

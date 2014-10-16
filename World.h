@@ -20,9 +20,9 @@
 #ifndef WORLD_H
 #define WORLD_H
 
+#include "header.h"
 #include <QThread>
 #include <QMutex>
-#include "header.h"
 
 class Block;
 class Shred;
@@ -30,6 +30,7 @@ class ShredStorage;
 class QByteArray;
 class QReadWriteLock;
 class WorldMap;
+class QSettings;
 
 const int TIME_STEPS_IN_SEC = 10;
 
@@ -190,7 +191,8 @@ public: // World section
     void ReloadAllShreds(QString new_world, qint64 lati, qint64 longi,
             int new_x, int new_y, int new_z);
 private:
-    void SetNumActiveShreds(int num);
+    static int CorrectNumShreds(int num);
+    static int CorrectNumActiveShreds(int num, int max_num);
     /// Also saves all shreds.
     void DeleteAllShreds();
     void LoadAllShreds();
@@ -238,8 +240,9 @@ private:
      *  S v longitude ( y for shreds )
      * center of active zone: */
     qint64 longitude, latitude;
-    int numShreds; ///< size of loaded zone
-    int numActiveShreds; ///< size of active zone
+    QSettings * const gameSettings;
+    const int numShreds; ///< size of loaded zone
+    const int numActiveShreds; ///< size of active zone
     QMutex mutex;
     bool evernight;
     qint64 newLati, newLongi;

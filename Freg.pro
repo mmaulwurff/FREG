@@ -8,8 +8,8 @@
 CONFIG += cursed_screen
 #CONFIG += text_screen
 
-CONFIG += thread warn_on console
-CONFIG += debug
+CONFIG += thread warn_on console link_prl
+#CONFIG += debug
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 
 # compile with clang:
@@ -65,8 +65,7 @@ unix:cursed_screen {
     INSTALLS += target
     QMAKE_CXXFLAGS += -Weffc++ -Wold-style-cast -Werror
 } else:win32 {
-    # path =(
-    LIBS += -Lpdcurses -lpdcurses
+    LIBS += -Lpdcurses -lcurses
 }
 
 HEADERS += \
@@ -98,6 +97,7 @@ HEADERS += \
     blocks/Filter.h \
     blocks/Teleport.h \
     blocks/Accumulator.h \
+    TranslationsManager.h
 
 SOURCES += \
     BlockManager.cpp \
@@ -130,11 +130,12 @@ SOURCES += \
     blocks/Filter.cpp \
     blocks/Teleport.cpp \
     blocks/Accumulator.cpp \
+    TranslationsManager.cpp
 
 INCLUDEPATH += .
 
 TRANSLATIONS = \
-    freg_ru.ts
+    freg_ru_RU.ts
 
 RESOURCES = resources.qrc
 

@@ -22,17 +22,6 @@
 #include "World.h"
 #include "Inventory.h"
 
-const static QString dir_strings[] = {
-    QObject::tr("Up"),
-    QObject::tr("Down"),
-    QObject::tr("North"),
-    QObject::tr("South"),
-    QObject::tr("East"),
-    QObject::tr("West")
-};
-
-QString Block::DirString(const dirs dir) { return dir_strings[dir]; }
-
 dirs Block::MakeDirFromDamage(const int dmg_kind) {
     Q_ASSERT(dmg_kind >= DAMAGE_PUSH_UP);
     return static_cast<dirs>(dmg_kind - DAMAGE_PUSH_UP);
@@ -41,7 +30,7 @@ dirs Block::MakeDirFromDamage(const int dmg_kind) {
 QString Block::FullName() const {
     if ( Kind() ==  BLOCK ) {
         switch ( Sub() ) {
-        default:    return BlockManager::SubNameUpper(Sub());
+        default:    return tr_manager->SubNameUpper(Sub());
         case WATER: return QObject::tr("Ice");
         case SAND:  return QObject::tr("Sandstone");
         case CLAY:  return QObject::tr("Clay brick");
@@ -51,9 +40,9 @@ QString Block::FullName() const {
         case COAL: break;
         }
     }
-    return QObject::tr("%1 (%2)").
-        arg(BlockManager::KindName(Kind())).
-        arg(BlockManager::SubName(Sub()));
+    return QString("%1 (%2)").
+        arg(tr_manager->KindName(Kind())).
+        arg(tr_manager->SubName(Sub()));
 }
 
 int Block::Transparency(const int transp, const int sub) const {
@@ -143,7 +132,7 @@ Block * Block::DropAfterDamage(bool * const delete_block) {
     switch ( Sub() ) {
     case SUB_DUST:
     case GLASS:
-    case AIR: return block_manager.Normal(AIR);
+    case AIR: return block_manager->Normal(AIR);
     case STONE: if ( BLOCK==Kind() ) {
         return BlockManager::NewBlock(LADDER, STONE);
     } // no break;
@@ -265,7 +254,7 @@ bool Block::operator==(const Block & block) const {
 void Block::SaveAttributes(QDataStream &) const {}
 
 void Block::SaveToFile(QDataStream & out) {
-    if ( this == block_manager.Normal(sub) ) {
+    if ( this == block_manager->Normal(sub) ) {
         SaveNormalToFile(out);
     } else {
         out << sub << kind <<

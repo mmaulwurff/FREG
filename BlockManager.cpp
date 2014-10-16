@@ -118,104 +118,18 @@ const QByteArray BlockManager::subs[] = { // do not usp space, use '_'
     /// [List of subs]
 };
 
-const static QString tr_sub_names[] = {
-    QObject::tr("stone"),
-    QObject::tr("stone"),
-    QObject::tr("nullstone"),
-    QObject::tr("air"),
-    QObject::tr("air"),
-    QObject::tr("diamond"),
-    QObject::tr("soil"),
-    QObject::tr("meat of rational"),
-    QObject::tr("meat"),
-    QObject::tr("glass"),
-    QObject::tr("wood"),
-    QObject::tr("different"),
-    QObject::tr("iron"),
-    QObject::tr("water"),
-    QObject::tr("greenery"),
-    QObject::tr("sand"),
-    QObject::tr("hazelnut"),
-    QObject::tr("rose"),
-    QObject::tr("clay"),
-    QObject::tr("air"),
-    QObject::tr("paper"),
-    QObject::tr("gold"),
-    QObject::tr("bone"),
-    QObject::tr("steel"),
-    QObject::tr("adamantine"),
-    QObject::tr("fire"),
-    QObject::tr("coal"),
-    QObject::tr("explosive"),
-    QObject::tr("acid"),
-    QObject::tr("cloud"),
-    QObject::tr("dust"),
-    QObject::tr("plastic"),
-};
-
-const static QString tr_kind_names[] = {
-    QObject::tr("Block"),
-    QObject::tr("Bell"),
-    QObject::tr("Chest"),
-    QObject::tr("Intellectual"),
-    QObject::tr("Pick"),
-    QObject::tr("Liquid"),
-    QObject::tr("Plant"),
-    QObject::tr("Bush"),
-    QObject::tr("Herbivore"),
-    QObject::tr("Falling"),
-    QObject::tr("Clock"),
-    QObject::tr("Plate"),
-    QObject::tr("Anvil"),
-    QObject::tr("Stick"),
-    QObject::tr("Ladder"),
-    QObject::tr("Door"),
-    QObject::tr("Box"),
-    QObject::tr("Sign"),
-    QObject::tr("Map"),
-    QObject::tr("Predator"),
-    QObject::tr("Bucket"),
-    QObject::tr("Shovel"),
-    QObject::tr("Axe"),
-    QObject::tr("Hammer"),
-    QObject::tr("Illuminator"),
-    QObject::tr("Rain Machine"),
-    QObject::tr("Converter"),
-    QObject::tr("Body armour"),
-    QObject::tr("Helmet"),
-    QObject::tr("Boots"),
-    QObject::tr("Telegraph"),
-    QObject::tr("Medkit"),
-    QObject::tr("Filter"),
-    QObject::tr("Informer"),
-    QObject::tr("Teleport"),
-    QObject::tr("Accumulator"),
-};
-
-QString BlockManager::SubName(const int sub) { return tr_sub_names[sub]; }
-QString BlockManager::KindName(const int kind) { return tr_kind_names[kind]; }
-
-QString BlockManager::SubNameUpper(const int sub) {
-    QString result = SubName(sub);
-    return result.replace(0, 1, result.at(0).toUpper());
-}
-
-BlockManager block_manager;
+const BlockManager * block_manager;
 
 BlockManager::BlockManager() {
-    for (int sub=0; sub<LAST_SUB; ++sub) {
+    for (int sub=0; sub<SUB_COUNT; ++sub) {
         normals[sub] = new Block(BLOCK, sub);
     }
-    static_assert((sizeof_array(BlockManager::kinds) == LAST_KIND),
+    static_assert((sizeof_array(BlockManager::kinds) == KIND_COUNT),
         "Invalid number of strings in BlockManager::kinds[].");
-    static_assert((sizeof_array(BlockManager::subs)  == LAST_SUB),
+    static_assert((sizeof_array(BlockManager::subs)  == SUB_COUNT),
         "Invalid number of strings in BlockManager::subs[].");
-    static_assert(sizeof_array(tr_kind_names) == LAST_KIND,
-        "Invalid number of strings in tr_kind_names.");
-    static_assert(sizeof_array(tr_sub_names)  == LAST_SUB,
-        "Invalid number of strings in tr_sub_names.");
-    static_assert((LAST_SUB  <= 64 ), "too many substances, should be < 64.");
-    static_assert((LAST_KIND <= 128), "too many kinds, should be < 128.");
+    static_assert((SUB_COUNT  <= 64 ), "too many substances, should be < 64.");
+    static_assert((KIND_COUNT <= 128), "too many kinds, should be < 128.");
     /*int sum = 0;
     for (int kind = 0; kind<LAST_KIND; ++kind)
     for (int sub  = 0; sub <LAST_SUB;  ++sub) {
@@ -225,7 +139,7 @@ BlockManager::BlockManager() {
 }
 
 BlockManager::~BlockManager() {
-    for(int sub=0; sub<LAST_SUB; ++sub) {
+    for(int sub=0; sub<SUB_COUNT; ++sub) {
         delete normals[sub];
     }
 }
@@ -353,13 +267,13 @@ QString BlockManager:: SubToString(const int sub ) { return  subs[sub ]; }
 
 int BlockManager::StringToKind(const QString str) {
     int i = 0;
-    for ( ; i<LAST_KIND && kinds[i]!=str; ++i);
+    for ( ; i<KIND_COUNT && kinds[i]!=str; ++i);
     return i;
 }
 
 int BlockManager::StringToSub(const QString str) {
     int i = 0;
-    for ( ; i<LAST_SUB && subs[i]!=str; ++i);
+    for ( ; i<SUB_COUNT && subs[i]!=str; ++i);
     return i;
 }
 

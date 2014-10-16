@@ -126,9 +126,9 @@ bool Inventory::InscribeInv(const int num, const QString str) {
         return false;
     }
     const int sub = inventory[num].top()->Sub();
-    if ( inventory[num].top() == block_manager.Normal(sub) ) {
+    if ( inventory[num].top() == block_manager->Normal(sub) ) {
         for (int i=0; i<number; ++i) {
-            inventory[num].replace(i, block_manager.Normal(sub));
+            inventory[num].replace(i, block_manager->Normal(sub));
         }
     }
     for (int i=0; i<number; ++i) {
@@ -216,7 +216,7 @@ bool Inventory::MiniCraft(const int num) {
         new CraftItem({Number(num), GetInvKind(num), GetInvSub(num)});
     if ( craft_manager->MiniCraft(&crafted) ) {
         while ( not inventory[num].isEmpty() ) {
-            block_manager.DeleteBlock(ShowBlock(num));
+            block_manager->DeleteBlock(ShowBlock(num));
             Pull(num);
         }
         for (int i=0; i<crafted->num; ++i) {
@@ -255,7 +255,7 @@ Inventory::Inventory(QDataStream & str, const int sz) :
         while ( num-- ) {
             quint8 kind, sub;
             inventory[i].push(BlockManager::KindSubFromFile(str, &kind, &sub) ?
-                block_manager.Normal(sub) :
+                block_manager->Normal(sub) :
                 BlockManager::BlockFromFile(str, kind, sub));
         }
     }
@@ -265,7 +265,7 @@ Inventory::~Inventory() {
     const int size = Size();
     for (int i=0; i<size; ++i) {
         while ( not inventory[i].isEmpty() ) {
-            block_manager.DeleteBlock(inventory[i].pop());
+            block_manager->DeleteBlock(inventory[i].pop());
         }
     }
     delete [] inventory;

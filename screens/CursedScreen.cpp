@@ -20,16 +20,17 @@
 /**\file CursedScreen.cpp
  * \brief This file is related to curses screen for freg. */
 
-#include <QDir>
-#include <QLocale>
-#include <QMutexLocker>
 #include "screens/CursedScreen.h"
 #include "screens/IThread.h"
 #include "Shred.h"
+#include "World.h"
+#include "Player.h"
+#include "TranslationsManager.h"
 #include "blocks/Block.h"
 #include "blocks/Inventory.h"
-#include "Player.h"
-#include "World.h"
+#include <QDir>
+#include <QLocale>
+#include <QMutexLocker>
 
 const char OBSCURE_BLOCK = ' ';
 const int QUICK_INVENTORY_X_SHIFT = 36;
@@ -45,7 +46,7 @@ const int ACTIVE_HAND = 3;
 void Screen::PrintVerticalDirection(WINDOW * const window, const int y,
         const int x, const dirs direction)
 {
-    mvwaddstr(window, y, x + 3, qPrintable(Block::DirString(direction)));
+    mvwaddwstr(window, y, x + 3, printable(tr_manager->DirString(direction)));
 }
 
 void Screen::Arrows(WINDOW * const window, const int x, const int y,
@@ -60,10 +61,10 @@ const {
         PrintVerticalDirection(window, SCREEN_SIZE+1, x, SOUTH);
     }
     wcolor_set(window, WHITE_RED, nullptr);
-    mvwaddstr(window, 0, x, qPrintable(arrows[SOUTH]));
-    waddstr  (window,       qPrintable(arrows[SOUTH]));
-    mvwaddstr(window, SCREEN_SIZE+1, x, qPrintable(arrows[NORTH]));
-    waddstr  (window, qPrintable(arrows[NORTH]));
+    mvwaddwstr(window, 0, x, arrows[SOUTH]);
+    waddwstr  (window,       arrows[SOUTH]);
+    mvwaddwstr(window, SCREEN_SIZE+1, x, arrows[NORTH]);
+    waddwstr  (window, arrows[NORTH]);
     HorizontalArrows(window, y, direction);
     (void)wmove(window, y, x);
 }
@@ -75,10 +76,10 @@ const {
     const static QString dir_chars[] = {
         QString(),
         QString(),
-        Block::DirString(NORTH).left(1),
-        Block::DirString(SOUTH).left(1),
-        Block::DirString(EAST ).left(1),
-        Block::DirString(WEST ).left(1)
+        tr_manager->DirString(NORTH).left(1),
+        tr_manager->DirString(SOUTH).left(1),
+        tr_manager->DirString(EAST ).left(1),
+        tr_manager->DirString(WEST ).left(1)
     };
     QString left, right;
     switch ( direction ) {
@@ -89,12 +90,12 @@ const {
     case EAST:  left = dir_chars[NORTH]; right = dir_chars[SOUTH]; break;
     case WEST:  left = dir_chars[SOUTH]; right = dir_chars[NORTH]; break;
     }
-    mvwaddstr(window, y-1, 0, qPrintable(left));
-    mvwaddstr(window, y-1, SCREEN_SIZE*2+1, qPrintable(right));
+    mvwaddwstr(window, y-1, 0, printable(left));
+    mvwaddwstr(window, y-1, SCREEN_SIZE*2+1, printable(right));
 
     wcolor_set(window, WHITE_RED, nullptr);
-    mvwaddstr(window, y, 0, qPrintable(arrows[EAST]));
-    mvwaddstr(window, y, SCREEN_SIZE*2+1, qPrintable(arrows[WEST]));
+    mvwaddwstr(window, y,               0, arrows[EAST]);
+    mvwaddwstr(window, y, SCREEN_SIZE*2+1, arrows[WEST]);
 }
 
 void Screen::RePrint() {
@@ -110,7 +111,7 @@ void Screen::RePrint() {
     };
     (void)wmove(actionWin, 0, 0);
     for (int i=0; i<=ACTION_WIELD; ++i) {
-        waddstr(actionWin, qPrintable(action_strings[i]));
+        waddwstr(actionWin, printable(action_strings[i]));
         waddch(actionWin, '\n');
     }
     mvwchgat(actionWin, actionMode, 0, 20, A_NORMAL, BLACK_WHITE, nullptr);
@@ -133,7 +134,7 @@ void Screen::UpdateAll() {
 void Screen::PassString(QString & str) const {
     inputActive = true;
     wattrset(notifyWin, A_UNDERLINE);
-    waddstr(notifyWin, qPrintable(tr("Enter input: ")));
+    waddwstr(notifyWin, printable(tr("Enter input: ")));
     char temp_str[MAX_NOTE_LENGTH + 1];
     echo();
     wgetnstr(notifyWin, temp_str, MAX_NOTE_LENGTH);
@@ -437,7 +438,7 @@ void Screen::ProcessMouse() {
                 0 < mevent.y && mevent.y < SCREEN_SIZE ) )
         {
             Notify(tr("Right window, %1 view.").
-                arg(Block::DirString(player->GetDir())));
+                arg(tr_manager->DirString(player->GetDir())));
         } else {
             switch ( player->GetDir() ) {
             case UP:
@@ -485,7 +486,7 @@ void Screen::ProcessMouse() {
             const int shred_y = mevent.y-1 + GetMinimapStartY();
             Notify((0 <= shred_x && shred_x < world->NumShreds() &&
                     0 <= shred_y && shred_y < world->NumShreds() ) ?
-                tr("On minimap: %1").arg( Shred::ShredTypeName(
+                tr("On minimap: %1.").arg( Shred::ShredTypeName(
                     world->GetShredByPos(shred_x, shred_y)->GetTypeOfShred())):
                 tr("You can't see that far.") );
         }
@@ -641,8 +642,8 @@ void Screen::Print() {
 void Screen::PrintHUD() {
     werase(hudWin);
     if ( player->GetCreativeMode() ) {
-        mvwaddstr(hudWin, 0, 0,
-            qPrintable(tr("Creative Mode\nxyz: %1, %2, %3.\nShred: %4")
+        mvwaddwstr(hudWin, 0, 0,
+            printable(tr("Creative Mode\nxyz: %1, %2, %3.\nShred: %4")
             .arg(player->GlobalX()).arg(player->GlobalY()).arg(player->Z())
             .arg(Shred::FileName(GetWorld()->WorldName(),
                 player->GetLongitude(), player->GetLatitude()) )));
@@ -651,14 +652,15 @@ void Screen::PrintHUD() {
         if ( dur > 0 ) { // HitPoints line
             static const int player_health_char = ascii ? '@' : 0x2665;
             PrintBar(0,
-                player_health_char | int((dur > MAX_DURABILITY/5) ?
+                player_health_char,
+                int((dur > MAX_DURABILITY/5) ?
                     COLOR_PAIR(RED_BLACK) : (COLOR_PAIR(BLACK_RED) | A_BLINK)),
                 dur*100/MAX_DURABILITY);
         }
         const int breath = player->BreathPercent();
         if ( breath != 100 ) {
             static const int player_breath_char = ascii ? 'o' : 0x00b0;
-            PrintBar(16, COLOR_PAIR(BLUE_BLACK) | player_breath_char, breath);
+            PrintBar(16, player_breath_char, COLOR_PAIR(BLUE_BLACK), breath);
         }
         static const QString satiation_strings[] = {
             tr("Hungry"),
@@ -676,7 +678,7 @@ void Screen::PrintHUD() {
         };
         const int satiation_state = player->SatiationPercent() / 25;
         wcolor_set(hudWin, satiation_colors[satiation_state], nullptr);
-        mvwaddstr(hudWin, 1,1, qPrintable(satiation_strings[satiation_state]));
+        mvwaddwstr(hudWin, 1,1, printable(satiation_strings[satiation_state]));
     }
     Block * const focused = GetFocusedBlock();
     if ( focused && Block::GetSubGroup(focused->Sub()) != GROUP_AIR ) {
@@ -684,19 +686,22 @@ void Screen::PrintHUD() {
             (SCREEN_SIZE*2+2) * 2 :
             SCREEN_SIZE*2+2 - 15;
         PrintBar(left_border - 15,
-            ColoredChar(focused),
+            CharName(focused->Kind(), focused->Sub()),
+            Color(focused->Kind(), focused->Sub()),
             focused->GetDurability()*100/MAX_DURABILITY,
             false);
+        wstandend(hudWin);
         const QString name = focused->FullName();
-        mvwaddstr(hudWin, 1, left_border-name.length()-1, qPrintable(name));
+        mvwaddwstr(hudWin, 1, left_border - name.length(), printable(name));
         const QString note = focused->GetNote();
         if ( not note.isEmpty() && IsScreenWide() ) {
-            const int width = qMin(36, note.length() + 2);
-            (void)wmove(hudWin, 2, left_border - width - 1);
-            if ( note.length()+2 <= width ) {
-                wprintw(hudWin, "~:%s", qPrintable(note));
+            const int width = qMin(34, note.length());
+            mvwaddstr(hudWin, 2, left_border - width - 2, "~:");
+            if ( note.length() <= width ) {
+                waddwstr(hudWin, printable(note));
             } else {
-                wprintw(hudWin, "~:%s ...", qPrintable(note.left(width - 6)));
+                waddnwstr(hudWin, printable(note), width - 1 - (ascii * 2));
+                waddwstr(hudWin, ellipsis);
             }
         }
     }
@@ -747,7 +752,7 @@ void Screen::PrintMiniMap() {
     }
     wattrset(minimapWin, COLOR_PAIR(BLACK_BLACK) | A_BOLD);
     box(minimapWin, 0, 0);
-    mvwaddstr(minimapWin, 0, 1, qPrintable(tr("Minimap")));
+    mvwaddwstr(minimapWin, 0, 1, printable(tr("Minimap")));
     wrefresh(minimapWin);
 }
 
@@ -797,8 +802,8 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
     if ( dir > DOWN ) {
         const Block * const block = player->GetBlock();
         wattrset(window, Color(block->Kind(), block->Sub()));
-        mvwaddstr(window, player->Y()-start_y+1, (player->X()-start_x)*2+2,
-            qPrintable(arrows[player->GetDir()]));
+        mvwaddwstr(window, player->Y()-start_y+1, (player->X()-start_x)*2+2,
+            arrows[player->GetDir()]);
     }
 
     wattrset(window, COLOR_PAIR(BLACK_BLACK) | A_BOLD);
@@ -932,7 +937,7 @@ const {
         const int number = inv->Number(i);
         if ( 0 == number ) {
             wattrset(window, COLOR_PAIR(BLACK_BLACK) | A_BOLD);
-            waddstr(window, qPrintable(inv->InvFullName(i)));
+            waddwstr(window, printable(inv->InvFullName(i)));
             continue;
         }
         const Block * const block = inv->ShowBlock(i);
@@ -941,18 +946,19 @@ const {
         waddch(window, color | CharName(block->Kind(), block->Sub()));
         waddch(window, color | ' ');
         waddch(window, ' ');
-        waddstr(window, qPrintable(inv->InvFullName(i)));
+        waddwstr(window, printable(inv->InvFullName(i)));
         if ( MAX_DURABILITY != block->GetDurability() ) {
             wprintw(window, "{%d}", block->GetDurability()*100/MAX_DURABILITY);
         }
         const QString str = block->GetNote();
         if ( not str.isEmpty() ) {
-            const int x = getcurx(window);
-            const int width = SCREEN_SIZE*2 - x - 3 - 8;
+            const int width = SCREEN_SIZE*2 - getcurx(window) - 3 - 8;
+            waddstr(window, " ~:");
             if ( str.length() <= width ) {
-                wprintw(window, " ~:%s", qPrintable(str));
+                waddwstr(window, printable(str));
             } else {
-                wprintw(window, " ~:%s ...", qPrintable(str.left(width - 4)));
+                waddwstr(window, printable(str.left(width - 2 - (ascii * 2))));
+                waddwstr(window, ellipsis);
             }
         }
         wstandend(window);
@@ -961,16 +967,16 @@ const {
     wstandend(window);
     QString full_weight = tr("Full weight: %1 mz").
         arg(inv->Weight(), 6, 10, QChar(' '));
-    mvwprintw(window, 2+inv->Size()+shift,
-        SCREEN_SIZE*2 + 1 - full_weight.length(), qPrintable(full_weight));
+    mvwaddwstr(window, 2+inv->Size()+shift,
+        SCREEN_SIZE*2 + 1 - full_weight.length(), printable(full_weight));
     wattrset(window, Color(block->Kind(), block->Sub()));
     box(window, 0, 0);
     if ( start != 0 ) {
         mvwhline(window, 2+start, 1, ACS_HLINE, SCREEN_SIZE*2);
     }
-    mvwprintw(window, 0, 1, "[%c] %s", CharName( block->Kind(), block->Sub()),
-        qPrintable((player->PlayerInventory() == inv) ?
-            tr("Your inventory") : block->FullName()) );
+    mvwprintw(window, 0, 1, "[%c] ", CharName( block->Kind(), block->Sub()));
+    waddwstr(window, printable((player->PlayerInventory() == inv) ?
+        tr("Your inventory") : block->FullName()) );
     wrefresh(window);
 } // void Screen::PrintInv(WINDOW *, const Block *, const Inventory *)
 
@@ -984,8 +990,8 @@ bool Screen::PrintFile(WINDOW * const window, QString const & file_name) {
     fileToShow = new QFile(file_name);
     if ( fileToShow->open(QIODevice::ReadOnly | QIODevice::Text) ) {
         werase(window);
-        waddstr(window, qPrintable(
-            QString::fromLocal8Bit(fileToShow->readAll().constData())) );
+        waddwstr(window, printable(
+            QString::fromUtf8(fileToShow->readAll().constData())) );
         wrefresh(window);
         return true;
     } else {
@@ -1014,11 +1020,11 @@ void Screen::Notify(const QString str) const {
     static int notification_repeat_count = 1;
     if ( str == lastNotification ) {
         ++notification_repeat_count;
-        mvwprintw(notifyWin, getcury(notifyWin)-1, 0, "%s (x%d)\n",
-            qPrintable(str), notification_repeat_count);
+        mvwaddwstr(notifyWin, getcury(notifyWin)-1, 0, printable(str));
+        wprintw(notifyWin, " (x%d)\n", notification_repeat_count);
     } else {
         notification_repeat_count = 1;
-        waddstr(notifyWin, qPrintable(lastNotification = str));
+        waddwstr(notifyWin, printable(lastNotification = str));
         waddch(notifyWin, '\n');
     }
     wrefresh(notifyWin);
@@ -1029,7 +1035,7 @@ void Screen::DeathScreen() {
     werase(hudWin);
     wcolor_set(leftWin, WHITE_RED, nullptr);
     if ( not PrintFile(leftWin, ":/texts/death.txt") ) {
-        waddstr(leftWin, qPrintable(tr("You die.\nWaiting for respawn...")));
+        waddwstr(leftWin, printable(tr("You die.\nWaiting for respawn...")));
     }
     box(leftWin, 0, 0);
     wnoutrefresh(leftWin);
@@ -1039,7 +1045,7 @@ void Screen::DeathScreen() {
     updated = true;
 }
 
-Screen::Screen(Player * const pl, int & error, bool _ascii) :
+Screen::Screen(Player * const pl, int & error) :
         VirtScreen(pl),
         lastNotification(),
         input(new IThread(this)),
@@ -1050,13 +1056,20 @@ Screen::Screen(Player * const pl, int & error, bool _ascii) :
         fileToShow(nullptr),
         beepOn (settings.value("beep_on",  false).toBool()),
         flashOn(settings.value("flash_on", true ).toBool()),
-        ascii(_ascii && settings.value("ascii", true).toBool() ),
-        blinkOn(not _ascii || settings.value("blink_on", true).toBool()),
-        arrows{'.', 'x',
-            ascii ? '^' : 0x2191,
-            ascii ? 'v' : 0x2193,
-            ascii ? '>' : 0x2192,
-            ascii ? '<' : 0x2190
+        ascii  (settings.value("ascii",    false).toBool()),
+        blinkOn(settings.value("blink_on", true ).toBool()),
+        arrows{
+            { wchar_t('.') },
+            { wchar_t('x') },
+            { wchar_t(ascii ? '^' : 0x2191) },
+            { wchar_t(ascii ? 'v' : 0x2193) },
+            { wchar_t(ascii ? '>' : 0x2192) },
+            { wchar_t(ascii ? '<' : 0x2190) }
+        },
+        ellipsis{
+            wchar_t(ascii ? '.' : 0x2026 ),
+            wchar_t(ascii ? '.' : 0),
+            wchar_t(ascii ? '.' : 0),
         },
         screen(newterm(nullptr, stdout, stdin)),
         randomBlink(),
@@ -1117,8 +1130,8 @@ Screen::Screen(Player * const pl, int & error, bool _ascii) :
         notifyWin = newwin(0,  0, SCREEN_SIZE+2+2, left_border+15);
         actionWin = newwin(7, 15, SCREEN_SIZE+2,   left_border);
     } else {
-        puts(qPrintable(tr("Set your terminal width at least %1 chars.").
-            arg(SCREEN_SIZE*2+2)));
+        fputws(printable(tr("Set your terminal width at least %1 chars.").
+            arg(SCREEN_SIZE*2+2)), stdout);
         error = WIDTH_NOT_ENOUGH;
         return;
     }
@@ -1127,19 +1140,14 @@ Screen::Screen(Player * const pl, int & error, bool _ascii) :
     if ( not PrintFile(stdscr, ":/texts/splash.txt") ) {
         addstr("Free-Roaming Elementary Game\nby mmaulwurff\n");
     }
-    addstr(qPrintable(tr("\nVersion %1.\n\nPress any key.").arg(VER)));
+    addwstr(printable(tr("\nVersion %1.\n\nPress any key.").arg(VER)));
     qsrand(getch());
     CleanFileToShow();
     RePrint();
+    Greet();
     SetActionMode(static_cast<actions>
         (settings.value("action_mode", ACTION_USE).toInt()));
     Print();
-    Notify(tr("--- Game started. Press 'H' for help. ---"));
-    if ( not IsScreenWide() ) {
-        Notify(tr("For better gameplay set your"));
-        Notify(tr("terminal width at least %1 chars.").arg(preferred_width));
-    }
-
     input->start();
     connect(world, SIGNAL(UpdatesEnded()), SLOT(Print()),
         Qt::DirectConnection);
@@ -1175,14 +1183,24 @@ Screen::~Screen() {
     settings.setValue("use_abcdef_distance", farDistance);
 }
 
-void Screen::PrintBar(const int x, const ulong ch,
+void Screen::Greet() const {
+    Notify(tr("--- Game started. Press 'H' for help. ---"));
+    if ( not IsScreenWide() ) {
+        const int preferred_width = (SCREEN_SIZE*2+2)*2;
+        Notify(tr("For better gameplay set your"));
+        Notify(tr("terminal width at least %1 chars.").arg(preferred_width));
+    }
+}
+
+void Screen::PrintBar(const int x, const wchar_t ch, const int color,
         const int percent, const bool value_position_right)
 {
     wstandend(hudWin);
     mvwprintw(hudWin, 0, x,
         value_position_right ? "[..........]%hd" : "%3hd[..........]",percent);
-    const long unsigned durability_string[10] =
+    const wchar_t durability_string[10] =
         {ch, ch, ch, ch, ch, ch, ch, ch, ch, ch};
-    mvwaddchnstr(hudWin, 0, x + (value_position_right ? 1 : 4),
+    wattrset(hudWin, color);
+    mvwaddnwstr(hudWin, 0, x + (value_position_right ? 1 : 4),
         durability_string, percent/10);
 }

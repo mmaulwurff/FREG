@@ -43,7 +43,7 @@ QString Bucket::FullName() const {
     }
     return QObject::tr("%1 (%2) with %3 (%4/%5 full)").
         arg(name).
-        arg(BlockManager::SubName(Sub())).
+        arg(tr_manager->SubName(Sub())).
         arg(ShowBlock(0)->FullName().toLower()).
         arg(Number(0)).
         arg(MAX_STACK_SIZE);

@@ -29,7 +29,7 @@ QString Weapon::FullName() const {
     case IRON:  return QObject::tr("Spike");
     case BONE:
     case SKY:
-    case SUB_NUT: return BlockManager::SubNameUpper(Sub());
+    case SUB_NUT: return tr_manager->SubNameUpper(Sub());
     default:      return Block::FullName();
     }
 }

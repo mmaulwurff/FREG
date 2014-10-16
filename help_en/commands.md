@@ -11,7 +11,7 @@ Show help page PAGE.
 - `SUB` is requested block substance.
   See `help subs` for details.
 - `NUMBER` is number of requested blocks (default is 1).
-
+русский текст ЪЪЪЪЪЪЪЪЪЪЪ
 #### `move DIRECTION` ####
 `DIRECTION` is movement direction. Possible directions:
 0, 1, 2, 3, 4, 5:

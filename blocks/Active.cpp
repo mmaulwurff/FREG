@@ -252,7 +252,7 @@ void Falling::SaveAttributes(QDataStream & out) const {
 
 QString Falling::FullName() const {
     switch ( Sub() ) {
-    default:    return BlockManager::SubNameUpper(Sub());
+    default:    return tr_manager->SubNameUpper(Sub());
     case WATER: return tr("Snow");
     case STONE: return tr("Masonry");
     }

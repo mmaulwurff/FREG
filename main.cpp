@@ -17,7 +17,6 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include <QTranslator>
 #include <QSettings>
 #include <QDir>
 #include <QTime>
@@ -27,6 +26,8 @@
 #include "Player.h"
 #include "worldmap.h"
 #include "CraftManager.h"
+#include "BlockManager.h"
+#include "TranslationsManager.h"
 
 #ifdef CURSED_SCREEN
     #include "screens/CursedScreen.h"
@@ -58,17 +59,17 @@ int main(int argc, char ** argv) {
     QCoreApplication::setApplicationName("freg");
     QCoreApplication::setApplicationVersion(VER);
 
-    QTranslator translator;
-    translator.load(QString(":/freg_") + locale);
-    freg.installTranslator(&translator);
+    tr_manager = new TranslationsManager;
 
     if ( not QDir::home().mkpath(".freg") ) {
-        puts(qPrintable( QObject::tr("Error creating game home directory") ));
+        fputws(printable(QObject::tr("Error creating game home directory")),
+            stdout);
         return EXIT_FAILURE;
     }
     if (freopen(qPrintable(home_path + "err.txt"), "wt", stderr) == nullptr) {
-        puts(qPrintable( QObject::tr(
-            "Error opening errors.txt, writing errors to standard out.") ));
+        fputws(printable( QObject::tr(
+            "Error opening errors.txt, writing errors to standard out.") ),
+            stdout);
     }
 
     // parse arguments
@@ -76,9 +77,6 @@ int main(int argc, char ** argv) {
     parser.setApplicationDescription(QObject::tr("freg - 3d open world game"));
     parser.addHelpOption();
     parser.addVersionOption();
-    const QCommandLineOption ascii(QStringList() << "a" << "ascii",
-        QObject::tr("Use ASCII-characters only and don't animate things."));
-    parser.addOption(ascii);
     const QCommandLineOption world_argument(QStringList() << "w" << "world",
         QObject::tr("Specify world."),
         QObject::tr("world_name"));
@@ -105,7 +103,7 @@ int main(int argc, char ** argv) {
         QSettings(home_path + "freg.ini", QSettings::IniFormat).
             value("current_world", "mu").toString();
     if ( not QDir(home_path).mkpath(worldName) ) {
-        puts(qPrintable(QObject::tr("Error generating world.")));
+        fputws(printable(QObject::tr("Error generating world.")), stdout);
         return EXIT_FAILURE;
     }
 
@@ -116,13 +114,15 @@ int main(int argc, char ** argv) {
             parser.value(map_size).toUShort(),
             parser.value(map_outer).at(0).toLatin1(),
             parser.value(map_seed).toInt());
-        puts(qPrintable(QObject::tr("Map generated successfully.")));
+        fputws(printable(QObject::tr("Map generated successfully.")), stdout);
         return EXIT_SUCCESS;
     }
     qsrand(QTime::currentTime().msec());
 
     CraftManager craftManager;
     craft_manager = &craftManager;
+    BlockManager blockManager;
+    block_manager = &blockManager;
 
     bool world_error = false;
     World world(worldName, &world_error);
@@ -139,11 +139,7 @@ int main(int argc, char ** argv) {
     }
     Player player;
     int error = SCREEN_NO_ERROR;
-    #ifdef Q_OS_WIN32
-    const Screen screen(&player, error, true);
-    #else
-    const Screen screen(&player, error, parser.isSet(ascii));
-    #endif
+    const Screen screen(&player, error);
 
     if ( error ) return EXIT_FAILURE;
 

@@ -74,7 +74,7 @@ class Screen final : public VirtScreen {
     Q_OBJECT
     Q_DISABLE_COPY(Screen)
 public:
-     Screen(Player *, int & error, bool ascii);
+     Screen(Player *, int & error);
     ~Screen() override;
 
     void ControlPlayer();
@@ -106,7 +106,7 @@ private:
     void PrintFront(dirs direction, int x = -1, int y = 0) const;
     void PrintInv(WINDOW *, const Block *, const Inventory *) const;
     /// Can print health, breath and other bars on hudWin.
-    void PrintBar(int x, ulong ch, int percent,
+    void PrintBar(int x, wchar_t ch, int color, int percent,
             bool value_position_right = true);
     /// Returns false when file does not exist, otherwise true.
     bool PrintFile(WINDOW *, QString const & file_name);
@@ -138,6 +138,8 @@ private:
     inline int GetMinimapStartY() const;
     void ExamineOnNormalScreen(int x, int y, int z, int step) const;
 
+    void Greet() const;
+
     WINDOW * windows[WINDOW_COUNT];
     WINDOW *& leftWin    = windows[WINDOW_LEFT];
     WINDOW *& rightWin   = windows[WINDOW_RIGHT];
@@ -156,7 +158,8 @@ private:
     const bool beepOn, flashOn;
     const bool ascii;
     bool blinkOn;
-    const QChar arrows[WEST+1];
+    const wchar_t arrows[WEST+1][2];
+    const wchar_t ellipsis[4];
     SCREEN * const screen;
     mutable bool inputActive = false;
     mutable int randomBlink;

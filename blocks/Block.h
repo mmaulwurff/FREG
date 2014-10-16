@@ -24,6 +24,7 @@
 #define BLOCK_H
 
 #include "header.h"
+#include "TranslationsManager.h"
 
 enum wearable {
     WEARABLE_NOWHERE,
@@ -154,7 +155,6 @@ public:
 
     static sub_groups GetSubGroup(int sub);
     static dirs MakeDirFromDamage(int damage_kind);
-    static QString DirString(dirs);
 
 protected:
     virtual void SaveAttributes(QDataStream &) const;

@@ -52,11 +52,11 @@ enum times {
     SECONDS_IN_DAYLIGHT = SECONDS_IN_DAY-END_OF_NIGHT
 };
 
-#ifdef Q_OS_WIN32
-const QString locale = "en";
-#else
+//#ifdef Q_OS_WIN32
+//const QString locale = "en";
+//#else
 const QString locale = QLocale::system().name();
-#endif
+//#endif
 
 enum shred_type {
     SHRED_PLAIN     = '.',
@@ -93,6 +93,8 @@ enum dirs {
     EAST,   ///< 4
     WEST    ///< 5
 };
+
+const int DIRS_COUNT = WEST + 1;
 
 enum push_reaction {
     MOVABLE,
@@ -151,7 +153,8 @@ enum kinds {
     TELEPORT,     ///< 34
     ACCUMULATOR,  ///< 35
     /// Nothing is LAST_KIND.
-    LAST_KIND // keep it last in this list.
+    LAST_KIND, // keep it last in this list.
+    KIND_COUNT = LAST_KIND
 }; // enum kinds
 
 /// Substance block is made from.
@@ -194,7 +197,8 @@ enum subs {
     SUB_DUST,   ///<  30
     SUB_PLASTIC,///<  31
     /// Nothing is made from LAST_SUB.
-    LAST_SUB // keep it last in this list
+    LAST_SUB, // keep it last in this list
+    SUB_COUNT = LAST_SUB
 }; // enum subs
 
 enum usage_types {
@@ -226,5 +230,9 @@ inline unsigned Abs(const int x) {
 }
 
 #define sizeof_array(ARRAY) (sizeof(ARRAY)/sizeof(ARRAY[0]))
+
+inline const wchar_t * printable(const QString string) {
+    return string.toStdWString().c_str();
+}
 
 #endif // HEADER_H

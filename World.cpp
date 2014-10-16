@@ -17,17 +17,17 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
+#include "World.h"
+#include "Shred.h"
+#include "BlockManager.h"
+#include "ShredStorage.h"
+#include "worldmap.h"
+#include "blocks/Active.h"
+#include "blocks/Inventory.h"
 #include <QDir>
 #include <QMutexLocker>
 #include <QTimer>
 #include <QSettings>
-#include "blocks/Active.h"
-#include "blocks/Inventory.h"
-#include "Shred.h"
-#include "World.h"
-#include "BlockManager.h"
-#include "ShredStorage.h"
-#include "worldmap.h"
 
 const int MIN_WORLD_SIZE = 5;
 
@@ -109,7 +109,7 @@ bool World::Get(Block * const block_to,
             return Exchange(block_from, block_to, src, dest, num);
         }
     } else if ( Exchange(block_from, block_to, src, dest, num) ) {
-        Build(block_manager.Normal(AIR), x_from, y_from, z_from, UP,
+        Build(block_manager->Normal(AIR), x_from, y_from, z_from, UP,
             nullptr, true);
         return true;
     }
@@ -529,7 +529,7 @@ int World::Damage(const int x, const int y, const int z,
     Block * temp = shred->GetBlock(x_in, y_in, z);
     const int sub  = temp->Sub();
     if ( AIR == sub ) return 0;
-    if ( temp == block_manager.Normal(sub) ) {
+    if ( temp == block_manager->Normal(sub) ) {
         temp = BlockManager::NewBlock(temp->Kind(), sub);
         shred->SetBlockNoCheck(temp, x_in, y_in, z);
     }
@@ -551,7 +551,7 @@ void World::DestroyAndReplace(const int x, const int y, const int z) {
         ReEnlighten(x, y, z);
     }
     if ( delete_block ) {
-        block_manager.DeleteBlock(block);
+        block_manager->DeleteBlock(block);
     } else {
         Active * const active = block->ActiveBlock();
         if ( active != nullptr ) {
@@ -596,7 +596,7 @@ bool World::Inscribe(const int x, const int y, const int z) {
     const int x_in = Shred::CoordInShred(x);
     const int y_in = Shred::CoordInShred(y);
     Block * block  = shred->GetBlock(x_in, y_in, z);
-    if ( block == block_manager.Normal(block->Sub()) ) {
+    if ( block == block_manager->Normal(block->Sub()) ) {
         block = BlockManager::NewBlock(block->Kind(), block->Sub());
         shred->SetBlockNoCheck(block, x_in, y_in, z);
     }
@@ -658,23 +658,14 @@ void World::DeleteAllShreds() {
     }
 }
 
-void World::SetNumActiveShreds(const int num) {
-    const QMutexLocker locker(&mutex);
-    numActiveShreds = num;
-    if ( 1 != numActiveShreds%2 ) {
-        ++numActiveShreds;
-        emit Notify(tr("Invalid active shreds number. Set to %1.").
-            arg(numActiveShreds));
-    }
-    if ( numActiveShreds < 3 ) {
-        numActiveShreds = 3;
-        emit Notify(tr("Active shreds number too small, set to 3."));
-    } else if ( numActiveShreds > NumShreds() ) {
-        numActiveShreds = NumShreds();
-        emit Notify(tr("Active shreds number too big. Set to %1.").
-            arg(numActiveShreds));
-    }
-    emit Notify(tr("Active shreds number is %1x%1.").arg(numActiveShreds));
+int World::CorrectNumShreds(int num) {
+    num += ( num%2 == 0 ); // must be odd
+    return qMax(num, MIN_WORLD_SIZE);
+}
+
+int World::CorrectNumActiveShreds(int num, const int num_shreds) {
+    num += ( num%2 == 0 ); // must be odd
+    return qBound(3, num, num_shreds);
 }
 
 World::World(const QString world_name, bool * error) :
@@ -683,7 +674,13 @@ World::World(const QString world_name, bool * error) :
         time(), timeStep(),
         shreds(),
         longitude(), latitude(),
-        numShreds(), numActiveShreds(),
+        gameSettings(
+            new QSettings(home_path + "freg.ini", QSettings::IniFormat)),
+        numShreds(CorrectNumShreds(
+            gameSettings->value("number_of_shreds", MIN_WORLD_SIZE).toInt())),
+        numActiveShreds(CorrectNumActiveShreds(
+            gameSettings->value("number_of_active_shreds", numShreds).toInt(),
+                numShreds)),
         mutex(),
         evernight(),
         newLati(), newLongi(),
@@ -696,23 +693,11 @@ World::World(const QString world_name, bool * error) :
         notes()
 {
     world = this;
+
     LoadState();
-    QSettings game_settings(home_path + "freg.ini", QSettings::IniFormat);
-    numShreds=game_settings.value("number_of_shreds", MIN_WORLD_SIZE).toInt();
-    if ( 1 != numShreds%2 ) {
-        ++numShreds;
-        qDebug("%s: Invalid number of shreds. Set to %d.",
-            Q_FUNC_INFO, numShreds);
-    }
-    if ( numShreds < MIN_WORLD_SIZE ) {
-        qDebug("%s: Number of shreds to small: %d. Set to %d.",
-            Q_FUNC_INFO, numShreds, MIN_WORLD_SIZE);
-        numShreds = MIN_WORLD_SIZE;
-    }
-    SetNumActiveShreds(game_settings.value("number_of_active_shreds",
-        numShreds).toInt());
-    game_settings.setValue("number_of_shreds", numShreds);
-    game_settings.setValue("number_of_active_shreds", numActiveShreds);
+    gameSettings->setValue("number_of_shreds", numShreds);
+    gameSettings->setValue("number_of_active_shreds", numActiveShreds);
+    delete gameSettings;
 
     shreds = new Shred *[NumShreds()*NumShreds()];
     if ( not QDir(home_path).mkpath(worldName + "/texts") ) {
@@ -720,7 +705,6 @@ World::World(const QString world_name, bool * error) :
     }
 
     shredStorage = new ShredStorage(numShreds+2, longitude, latitude);
-    puts(qPrintable(tr("Loading world %1...").arg(worldName)));
 
     LoadNotes();
     LoadAllShreds();

@@ -17,13 +17,13 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include <QTextStream>
-#include <QFile>
-#include <QTime>
 #include "blocks.h"
 #include "World.h"
 #include "Shred.h"
 #include "BlockManager.h"
+#include <QTextStream>
+#include <QFile>
+#include <QTime>
 
 // Plate::
     QString Plate::FullName() const {
@@ -55,7 +55,7 @@
     Block * Ladder::DropAfterDamage(bool * const delete_block) {
         Block * const pile = BlockManager::NewBlock(BOX, DIFFERENT);
         if ( STONE==Sub() || MOSS_STONE==Sub() ) {
-            pile->HasInventory()->Get(block_manager.Normal(Sub()));
+            pile->HasInventory()->Get(block_manager->Normal(Sub()));
         } else {
             pile->HasInventory()->Get(this);
             *delete_block = false;
@@ -109,7 +109,7 @@
     }
 
     Block * Liquid::DropAfterDamage(bool *) {
-        return block_manager.Normal( ( Sub() == STONE ) ?
+        return block_manager->Normal( ( Sub() == STONE ) ?
             STONE : AIR);
     }
 
@@ -118,7 +118,7 @@
         case STONE:  return tr("Lava");
         case H_MEAT:
         case A_MEAT: return tr("Blood");
-        default:     return BlockManager::SubNameUpper(Sub());
+        default:     return tr_manager->SubNameUpper(Sub());
         }
     }
 
@@ -178,7 +178,7 @@
     int  Grass::ShouldAct() const  { return FREQUENT_RARE; }
     int  Grass::LightRadius() const { return (FIRE == Sub()) ? 5 : 0; }
     inner_actions Grass::ActInner() { return INNER_ACTION_NONE; }
-    Block * Grass::DropAfterDamage(bool*) { return block_manager.Normal(AIR); }
+    Block * Grass::DropAfterDamage(bool *) {return block_manager->Normal(AIR);}
 
     int Grass::DamageKind() const {
         return (Sub() == FIRE) ? DAMAGE_HEAT : DAMAGE_NO;
@@ -313,7 +313,7 @@
     QString Door::FullName() const {
         return QString("%1 (%2)").
             arg(locked ? tr("Locked door") : tr("Door")).
-            arg(BlockManager::SubName(Sub()));
+            arg(tr_manager->SubName(Sub()));
     }
 
     usage_types Door::Use(Active *) {
@@ -624,7 +624,7 @@
     usage_types Informer::Use(Active * const user) {
         switch ( Sub() ) {
         case IRON: user->ReceiveSignal(QString("Your direction: %1.").
-            arg(DirString(user->GetDir()).toLower())); break;
+            arg(tr_manager->DirString(user->GetDir()).toLower())); break;
         default: break;
         }
         return USAGE_TYPE_INNER;

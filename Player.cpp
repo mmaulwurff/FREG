@@ -128,7 +128,7 @@ void Player::Examine(const int x, const int y, const int z) {
             arg(world->SunLight(x, y, z)).
             arg(block->Transparent()));
         emit Notify(QString("Norm: %1. Dir: %2").
-            arg(block==block_manager.Normal(block->Sub())).
+            arg(block==block_manager->Normal(block->Sub())).
             arg(block->GetDir()));
     }
     if ( Block::GetSubGroup(block->Sub()) == GROUP_AIR ) return;
@@ -219,7 +219,7 @@ usage_types Player::Use(const int num) {
     if ( block == nullptr ) return USAGE_TYPE_NO;
     if ( player->Eat(static_cast<subs>(block->Sub())) ) {
         PlayerInventory()->Pull(num);
-        block_manager.DeleteBlock(block);
+        block_manager->DeleteBlock(block);
         emit Updated();
         return USAGE_TYPE_NO;
     } // else:
@@ -366,7 +366,7 @@ void Player::ProcessCommand(QString command) {
         if ( inv->Get(block) ) {
             emit Updated();
         } else {
-            block_manager.DeleteBlock(block);
+            block_manager->DeleteBlock(block);
         }
         } break;
     case UniqueIntFromString("move"): {
@@ -507,7 +507,7 @@ void Player::Disconnect() {
         player = BlockManager::NewBlock(DWARF, PLAYER_SUB)->IsAnimal();
     } else {
         SaveState();
-        GetShred()->SetBlockNoCheck(block_manager.Normal(AIR),
+        GetShred()->SetBlockNoCheck(block_manager->Normal(AIR),
             x_self, y_self, z_self);
         player->Unregister();
         player->disconnect();

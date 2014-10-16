@@ -69,13 +69,6 @@ public:
     /// If string is not convertible to substance, returns LAST_SUB.
     static int StringToSub(QString);
 
-    /// Returs translated kind name.
-    static QString KindName(int kind);
-    /// Returns translated substance name.
-    static QString SubName(int sub);
-    /// Returns translated substance name with first upper letter.
-    static QString SubNameUpper(int sub);
-
     constexpr static int MakeId(const int kind, const int sub) {
         return (kind << 6) | sub;
     }
@@ -88,11 +81,11 @@ public:
 private:
     Q_DISABLE_COPY(BlockManager)
 
-    Block * normals[LAST_SUB];
+    Block * normals[SUB_COUNT];
     static const QByteArray kinds[];
     static const QByteArray subs[];
 };
 
-extern BlockManager block_manager;
+extern const BlockManager * block_manager;
 
 #endif // BLOCKMANAGER_H

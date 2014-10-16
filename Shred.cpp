@@ -61,7 +61,7 @@ long Shred::Latitude()  const { return latitude;  }
 int  Shred::ShredX() const { return shredX; }
 int  Shred::ShredY() const { return shredY; }
 World * Shred::GetWorld() const { return world; }
-Block * Shred::Normal(const int sub) { return block_manager.Normal(sub); }
+Block * Shred::Normal(const int sub) { return block_manager->Normal(sub); }
 shred_type Shred::GetTypeOfShred() const { return type; }
 
 bool Shred::LoadShred() {
@@ -81,8 +81,8 @@ bool Shred::LoadShred() {
     type = static_cast<shred_type>(read);
     in >> read;
     weather = static_cast<weathers>(read);
-    Block * const null_stone = block_manager.Normal(NULLSTONE);
-    Block * const air        = block_manager.Normal(AIR);
+    Block * const null_stone = block_manager->Normal(NULLSTONE);
+    Block * const air        = block_manager->Normal(AIR);
     SetAllLightMapNull();
     for (int x=0; x<SHRED_WIDTH; ++x)
     for (int y=0; y<SHRED_WIDTH; ++y) {
@@ -644,7 +644,7 @@ bool Shred::LoadRoom(const int level, const int index) {
         for (unsigned i=0; i<SHRED_WIDTH; ++i) {
             switch ( buffer[i] ) {
                 case '#':
-                    PutBlock(block_manager.Normal(STONE), i, lines, level);
+                    PutBlock(block_manager->Normal(STONE), i, lines, level);
                     break;
                 case '+':
                     NormalCube(i, lines, level, 1, 1, qrand()%3+5, STONE);
@@ -656,15 +656,15 @@ bool Shred::LoadRoom(const int level, const int index) {
                     NormalCube(i, lines, level, 1, 1, 5, STONE);
                     break;
                 case '[': {
-                    Block * const stone = block_manager.Normal(STONE);
+                    Block * const stone = block_manager->Normal(STONE);
                     PutBlock(stone, i, lines, level);
                     PutBlock(stone, i, lines, level+1);
                     PutBlock(stone, i, lines, level+3);
                     PutBlock(stone, i, lines, level+4);
                     } break;
                 case '=':
-                    PutBlock(block_manager.Normal(WOOD),  i, lines, level);
-                    PutBlock(block_manager.Normal(STONE), i, lines, level+4);
+                    PutBlock(block_manager->Normal(WOOD),  i, lines, level);
+                    PutBlock(block_manager->Normal(STONE), i, lines, level+4);
                     break;
                 case '^':
                     for (int z=level; z<level+5; ++z) {

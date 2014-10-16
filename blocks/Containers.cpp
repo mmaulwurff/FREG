@@ -122,7 +122,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
 
     Block * Box::DropAfterDamage(bool * const delete_block) {
         *delete_block = true;
-        return block_manager.Normal(AIR);
+        return block_manager->Normal(AIR);
     }
 
     void Box::Damage(const int dmg, const int dmg_kind) {
@@ -142,7 +142,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
         case DIFFERENT: return tr("Pile");
         case H_MEAT:
         case A_MEAT:    return tr("Corpse (%1)").
-            arg(BlockManager::SubName(Sub()));
+            arg(tr_manager->SubName(Sub()));
         }
     }
 
@@ -161,7 +161,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
             while ( Number(i) ) {
                 Block * const to_pull = ShowBlock(i);
                 Pull(i);
-                block_manager.DeleteBlock(to_pull);
+                block_manager->DeleteBlock(to_pull);
             }
         }
         int materials_number = 0;
@@ -206,7 +206,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
                     while ( Number(i) ) {
                         Block * const to_pull = ShowBlock(i);
                         Pull(i);
-                        block_manager.DeleteBlock(to_pull);
+                        block_manager->DeleteBlock(to_pull);
                     }
                 }
             } else {
@@ -308,7 +308,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
                     if ( add > 0 ) {
                         fuelLevel += add;
                         Pull(i);
-                        block_manager.DeleteBlock(block);
+                        block_manager->DeleteBlock(block);
                         break;
                     }
                 }
