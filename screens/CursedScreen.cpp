@@ -36,8 +36,9 @@ const char OBSCURE_BLOCK = ' ';
 const int QUICK_INVENTORY_X_SHIFT = 36;
 const int SHADOW_COLOR = COLOR_PAIR(BLACK_BLACK) | A_BOLD | A_REVERSE;
 
-const int MINIMAP_WIDTH = 11;
-const int MINIMAP_HEIGHT = 7;
+const int ACTIONS_WIDTH  = 23;
+const int MINIMAP_WIDTH  = 11;
+const int MINIMAP_HEIGHT =  7;
 
 const int MOUSEMASK = BUTTON1_CLICKED | BUTTON1_RELEASED;
 
@@ -114,7 +115,7 @@ void Screen::RePrint() {
         waddwstr(actionWin, printable(action_strings[i]));
         waddch(actionWin, '\n');
     }
-    mvwchgat(actionWin, actionMode, 0, 20, A_NORMAL, BLACK_WHITE, nullptr);
+    mvwchgat(actionWin, actionMode, 0, -1, A_NORMAL, BLACK_WHITE, nullptr);
     refresh();
     wrefresh(actionWin);
     updated = false;
@@ -532,8 +533,8 @@ void Screen::ProcessCommand(const QString command) {
 }
 
 void Screen::SetActionMode(const actions mode) {
-    mvwchgat(actionWin, actionMode,      0,20, A_NORMAL, WHITE_BLACK, nullptr);
-    mvwchgat(actionWin, actionMode=mode, 0,20, A_NORMAL, BLACK_WHITE, nullptr);
+    mvwchgat(actionWin, actionMode,     0, -1, A_NORMAL, WHITE_BLACK, nullptr);
+    mvwchgat(actionWin, actionMode=mode,0, -1, A_NORMAL, BLACK_WHITE, nullptr);
     switch ( mode ) {
     case ACTION_USE:      Notify(tr("Action: use in inventory."));      break;
     case ACTION_THROW:    Notify(tr("Action: throw from inventory."));  break;
@@ -654,45 +655,41 @@ void Screen::PrintHUD() {
         const int dur = player->GetBlock()->GetDurability();
         if ( dur > 0 ) { // HitPoints line
             static const int player_health_char = ascii ? '@' : 0x2665;
-            PrintBar(0,
-                player_health_char,
+            PrintBar(player_health_char,
                 int((dur > MAX_DURABILITY/5) ?
                     COLOR_PAIR(RED_BLACK) : (COLOR_PAIR(BLACK_RED) | A_BLINK)),
                 dur*100/MAX_DURABILITY);
         }
+        static const struct {
+            QString name;
+            int color;
+        } satiation[] = {
+            { tr("Hungry"),    RED_BLACK },
+            { tr("Content"), WHITE_BLACK },
+            satiation[1],
+            { tr("Full"),    GREEN_BLACK },
+            { tr("Gorged"),   BLUE_BLACK }
+        };
+        waddstr(hudWin, "   ");
+        const int satiation_state = player->SatiationPercent() / 25;
+        wcolor_set(hudWin, satiation[satiation_state].color, nullptr);
+        waddwstr(hudWin, printable(satiation[satiation_state].name));
+        waddch(hudWin, '\n');
         const int breath = player->BreathPercent();
         if ( breath != 100 ) {
             static const int player_breath_char = ascii ? 'o' : 0x00b0;
-            PrintBar(16, player_breath_char, COLOR_PAIR(BLUE_BLACK), breath);
+            PrintBar(player_breath_char, COLOR_PAIR(BLUE_BLACK), breath);
         }
-        static const QString satiation_strings[] = {
-            tr("Hungry"),
-            tr("Content"),
-            satiation_strings[1],
-            tr("Full"),
-            tr("Gorged")
-        };
-        static const int satiation_colors[] = {
-            RED_BLACK,
-            WHITE_BLACK,
-            satiation_colors[1],
-            GREEN_BLACK,
-            BLUE_BLACK
-        };
-        const int satiation_state = player->SatiationPercent() / 25;
-        wcolor_set(hudWin, satiation_colors[satiation_state], nullptr);
-        mvwaddwstr(hudWin, 1,1, printable(satiation_strings[satiation_state]));
     }
     Block * const focused = GetFocusedBlock();
     if ( focused && Block::GetSubGroup(focused->Sub()) != GROUP_AIR ) {
         const int left_border = IsScreenWide() ?
             (SCREEN_SIZE*2+2) * 2 :
             SCREEN_SIZE*2+2 - 15;
-        PrintBar(left_border - 15,
-            CharName(focused->Kind(), focused->Sub()),
+        (void)wmove(hudWin, 0, left_border - 15);
+        PrintBar(CharName(focused->Kind(), focused->Sub()),
             Color(focused->Kind(), focused->Sub()),
-            focused->GetDurability()*100/MAX_DURABILITY,
-            false);
+            focused->GetDurability()*100/MAX_DURABILITY);
         wstandend(hudWin);
         const QString name = focused->FullName();
         mvwaddwstr(hudWin, 1, left_border - name.length(), printable(name));
@@ -1117,14 +1114,15 @@ Screen::Screen(Player * const pl, int & error) :
     }
     const int preferred_width = (SCREEN_SIZE*2+2)*2;
     if ( IsScreenWide() ) {
-        const int left_border = COLS/2-SCREEN_SIZE*2-2;
+        int left_border = COLS/2-SCREEN_SIZE*2-2;
         rightWin  = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, COLS/2);
         leftWin   = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, left_border);
         hudWin    = newwin(3, preferred_width, SCREEN_SIZE+2, left_border);
-        notifyWin = newwin(0, 0, SCREEN_SIZE+5,left_border+33);
-        minimapWin =
-            newwin(MINIMAP_HEIGHT, MINIMAP_WIDTH, SCREEN_SIZE+5, left_border);
-        actionWin  = newwin(7, 20, SCREEN_SIZE+5, left_border+12);
+        minimapWin = newwin(MINIMAP_HEIGHT, MINIMAP_WIDTH,
+            SCREEN_SIZE+5, left_border);
+        actionWin = newwin(7, ACTIONS_WIDTH,
+            SCREEN_SIZE+5, left_border += MINIMAP_WIDTH + 1);
+        notifyWin = newwin(0, 0, SCREEN_SIZE+5, left_border+=ACTIONS_WIDTH+1);
     } else if ( COLS >= preferred_width/2 ) {
         const int left_border = COLS/2-SCREEN_SIZE-1;
         leftWin   = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, left_border);
@@ -1194,15 +1192,15 @@ void Screen::Greet() const {
     }
 }
 
-void Screen::PrintBar(const int x, const wchar_t ch, const int color,
-        const int percent, const bool value_position_right)
+void Screen::PrintBar(const wchar_t ch, const int color, const int percent)
 {
     wstandend(hudWin);
-    mvwprintw(hudWin, 0, x,
-        value_position_right ? "[..........]%hd" : "%3hd[..........]",percent);
+    const int x = getcurx(hudWin);
+    waddstr(hudWin, "[..........]");
     const wchar_t durability_string[10] =
         {ch, ch, ch, ch, ch, ch, ch, ch, ch, ch};
     wattrset(hudWin, color);
-    mvwaddnwstr(hudWin, 0, x + (value_position_right ? 1 : 4),
-        durability_string, percent/10);
+    mvwaddnwstr(hudWin, getcury(hudWin), x +  1, durability_string,percent/10);
+    wstandend(hudWin);
+    mvwprintw  (hudWin, getcury(hudWin), x + 12, "%3d", percent);
 }

@@ -936,17 +936,16 @@
         <translation>Карта успешно сгенерирована.</translation>
     </message>
     <message>
-        <location filename="main.cpp" line="129"/>
         <source>Loading world %1...</source>
-        <translation type="unfinished">Загрузка мира %1...</translation>
+        <translation type="vanished">Загрузка мира %1...</translation>
     </message>
     <message>
-        <location filename="main.cpp" line="132"/>
+        <location filename="main.cpp" line="130"/>
         <source>Error loading world.</source>
         <translation>Ошибка при загрузке мира.</translation>
     </message>
     <message>
-        <location filename="main.cpp" line="138"/>
+        <location filename="main.cpp" line="136"/>
         <source>World &quot;%1&quot; is used by another instance of freg.</source>
         <translation>Мир &quot;%1&quot; уже открыт freg.</translation>
     </message>
@@ -1105,244 +1104,234 @@
 <context>
     <name>Screen</name>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="286"/>
+        <location filename="screens/CursedScreen.cpp" line="287"/>
         <source>Unknown key. Press &apos;H&apos; for help.</source>
         <translation>Неизвестная клавиша. Нажмите &apos;H&apos; для вызова справки.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="670"/>
-        <source>Gorged</source>
-        <translation>Объелся</translation>
-    </message>
-    <message>
-        <location filename="screens/CursedScreen.cpp" line="669"/>
-        <source>Full</source>
-        <translation>Сытый</translation>
-    </message>
-    <message>
-        <location filename="screens/CursedScreen.cpp" line="104"/>
-        <source>[U] use, eat</source>
-        <translation>[U] использовать</translation>
-    </message>
-    <message>
         <location filename="screens/CursedScreen.cpp" line="105"/>
+        <source>[U] use, eat</source>
+        <translation>[U] использовать, есть</translation>
+    </message>
+    <message>
+        <location filename="screens/CursedScreen.cpp" line="106"/>
         <source>[T] throw</source>
         <translation>[T] бросить</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="106"/>
+        <location filename="screens/CursedScreen.cpp" line="107"/>
         <source>[G] get</source>
         <translation>[G] взять</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="107"/>
+        <location filename="screens/CursedScreen.cpp" line="108"/>
         <source>[N] inscribe</source>
         <translation>[N] подписать</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="108"/>
+        <location filename="screens/CursedScreen.cpp" line="109"/>
         <source>[B] build</source>
         <translation>[B] строить</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="109"/>
+        <location filename="screens/CursedScreen.cpp" line="110"/>
         <source>[C] craft</source>
         <translation>[C] мастерить</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="110"/>
+        <location filename="screens/CursedScreen.cpp" line="111"/>
         <source>[E] equipment</source>
         <translation>[E] снаряжение</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="137"/>
+        <location filename="screens/CursedScreen.cpp" line="138"/>
         <source>Enter input: </source>
         <translation>Ввод: </translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="275"/>
+        <location filename="screens/CursedScreen.cpp" line="276"/>
         <source>Exiting game...</source>
         <translation>Выход из игры...</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="357"/>
+        <location filename="screens/CursedScreen.cpp" line="358"/>
         <source>Inventory reorganized.</source>
         <translation>Инвентарь упорядочен.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="369"/>
-        <location filename="screens/CursedScreen.cpp" line="374"/>
+        <location filename="screens/CursedScreen.cpp" line="370"/>
+        <location filename="screens/CursedScreen.cpp" line="375"/>
         <source>%1 focus is set.</source>
         <translation>Фокус установлен %1.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="370"/>
+        <location filename="screens/CursedScreen.cpp" line="371"/>
         <source>Low</source>
         <translation>низко</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="370"/>
-        <location filename="screens/CursedScreen.cpp" line="375"/>
+        <location filename="screens/CursedScreen.cpp" line="371"/>
+        <location filename="screens/CursedScreen.cpp" line="376"/>
         <source>Normal</source>
         <translation>нормально</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="375"/>
+        <location filename="screens/CursedScreen.cpp" line="376"/>
         <source>High</source>
         <translation>высоко</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="389"/>
+        <location filename="screens/CursedScreen.cpp" line="390"/>
         <source>Mouse %1.</source>
         <translation>Мышь %1.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="390"/>
+        <location filename="screens/CursedScreen.cpp" line="391"/>
         <source>turned on</source>
         <translation>включена</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="391"/>
+        <location filename="screens/CursedScreen.cpp" line="392"/>
         <source>turned off</source>
         <translation>выключена</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="418"/>
+        <location filename="screens/CursedScreen.cpp" line="419"/>
         <source>Your inventory.</source>
         <translation>Ваш инвентарь.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="425"/>
+        <location filename="screens/CursedScreen.cpp" line="426"/>
         <source>Left window, Down view.</source>
         <translation>Левое окно, вид вниз.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="433"/>
+        <location filename="screens/CursedScreen.cpp" line="434"/>
         <source>Reading file: &quot;%1&quot;.</source>
         <translation>Чтение файла: &quot;%1&quot;.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="435"/>
+        <location filename="screens/CursedScreen.cpp" line="436"/>
         <source>Opened inventory.</source>
         <translation>Открыт инвентарь.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="440"/>
+        <location filename="screens/CursedScreen.cpp" line="441"/>
         <source>Right window, %1 view.</source>
         <translation>Правое окно, вид %1.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="457"/>
+        <location filename="screens/CursedScreen.cpp" line="458"/>
         <source>Notifications area.</source>
         <translation>Область уведомлений.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="464"/>
+        <location filename="screens/CursedScreen.cpp" line="465"/>
         <source>Information: left - player, right - focused thing.</source>
         <translation>Информация: слева - об игроке, справа - о блоке перед игроком.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="469"/>
+        <location filename="screens/CursedScreen.cpp" line="470"/>
         <source>In inventory at slot &apos;%1&apos;: %2.</source>
         <translation>В инвентаре в слоте &apos;%1&apos;: %2.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="473"/>
+        <location filename="screens/CursedScreen.cpp" line="474"/>
         <source>nothing</source>
         <translation>ничего</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="482"/>
+        <location filename="screens/CursedScreen.cpp" line="483"/>
         <source>Minimap.</source>
         <translation>Миникарта.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="489"/>
+        <location filename="screens/CursedScreen.cpp" line="490"/>
         <source>On minimap: %1.</source>
         <oldsource>On minimap: %1</oldsource>
         <translation>На миникарте: %1.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="491"/>
+        <location filename="screens/CursedScreen.cpp" line="492"/>
         <source>You can&apos;t see that far.</source>
         <translation>Не видно так далеко.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="499"/>
+        <location filename="screens/CursedScreen.cpp" line="500"/>
         <source>Nothing here. Click on something to get information.</source>
         <translation>Здесь ничего. Нажмите на что-нибудь чтобы получить информацию.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="513"/>
+        <location filename="screens/CursedScreen.cpp" line="514"/>
         <source>Show distance: %1.</source>
         <translation>Показывать расстояние: %1.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="514"/>
-        <location filename="screens/CursedScreen.cpp" line="519"/>
-        <location filename="screens/CursedScreen.cpp" line="524"/>
+        <location filename="screens/CursedScreen.cpp" line="515"/>
+        <location filename="screens/CursedScreen.cpp" line="520"/>
+        <location filename="screens/CursedScreen.cpp" line="525"/>
         <source>on</source>
         <translation>включено</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="514"/>
-        <location filename="screens/CursedScreen.cpp" line="519"/>
-        <location filename="screens/CursedScreen.cpp" line="524"/>
+        <location filename="screens/CursedScreen.cpp" line="515"/>
+        <location filename="screens/CursedScreen.cpp" line="520"/>
+        <location filename="screens/CursedScreen.cpp" line="525"/>
         <source>off</source>
         <translation>выключено</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="518"/>
+        <location filename="screens/CursedScreen.cpp" line="519"/>
         <source>Use &quot;abcdef&quot; as distance: %1.</source>
         <translation>Использовать &quot;abcdef&quot; для расстояния: %1.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="523"/>
+        <location filename="screens/CursedScreen.cpp" line="524"/>
         <source>Block blink is now %1.</source>
         <translation>Мигание блоков теперь %1.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="527"/>
+        <location filename="screens/CursedScreen.cpp" line="528"/>
         <source>Terminal height: %1 lines, width: %2 chars.</source>
         <translation>Высота терминала: %1, ширина: %2.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="538"/>
+        <location filename="screens/CursedScreen.cpp" line="539"/>
         <source>Action: use in inventory.</source>
         <translation>Действие: использовать в инвентаре.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="539"/>
+        <location filename="screens/CursedScreen.cpp" line="540"/>
         <source>Action: throw from inventory.</source>
         <translation>Действие: выбросить из инвентаря.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="540"/>
+        <location filename="screens/CursedScreen.cpp" line="541"/>
         <source>Action: get to inventory.</source>
         <translation>Действие: взять в инвентарь.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="541"/>
+        <location filename="screens/CursedScreen.cpp" line="542"/>
         <source>Action: inscribe in inventory.</source>
         <translation>Действие: подписать в инвентаре.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="542"/>
+        <location filename="screens/CursedScreen.cpp" line="543"/>
         <source>Action: build from inventory.</source>
         <translation>Действие: построить из инвентаря.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="543"/>
+        <location filename="screens/CursedScreen.cpp" line="544"/>
         <source>Action: craft in inventory.</source>
         <translation>Действие: смастерить в инвентаре.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="544"/>
+        <location filename="screens/CursedScreen.cpp" line="545"/>
         <source>Action: organize equipment.</source>
         <translation>Действие: управление снаряжением.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="646"/>
+        <location filename="screens/CursedScreen.cpp" line="650"/>
         <source>Creative Mode
 xyz: %1, %2, %3.
 Shred: %4</source>
@@ -1351,14 +1340,24 @@ xyz: %1, %2, %3.
 Лоскут: %4</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="666"/>
+        <location filename="screens/CursedScreen.cpp" line="667"/>
         <source>Hungry</source>
         <translation>Голодный</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="667"/>
+        <location filename="screens/CursedScreen.cpp" line="668"/>
         <source>Content</source>
         <translation>Сытый</translation>
+    </message>
+    <message>
+        <location filename="screens/CursedScreen.cpp" line="670"/>
+        <source>Full</source>
+        <translation>Сытый</translation>
+    </message>
+    <message>
+        <location filename="screens/CursedScreen.cpp" line="671"/>
+        <source>Gorged</source>
+        <translation>Объелся</translation>
     </message>
     <message>
         <location filename="screens/CursedScreen.cpp" line="755"/>
@@ -1366,7 +1365,7 @@ xyz: %1, %2, %3.
         <translation>Миникарта</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="1006"/>
+        <location filename="screens/CursedScreen.cpp" line="1005"/>
         <source>There is no such file.</source>
         <translation>Нет такого файла.</translation>
     </message>
@@ -1386,17 +1385,17 @@ xyz: %1, %2, %3.
         <translation>ширину терминала не меннее %1.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="968"/>
+        <location filename="screens/CursedScreen.cpp" line="967"/>
         <source>Full weight: %1 mz</source>
         <translation>Полный вес: %1 mz</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="979"/>
+        <location filename="screens/CursedScreen.cpp" line="978"/>
         <source>Your inventory</source>
         <translation>Ваш инвентарь</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="1038"/>
+        <location filename="screens/CursedScreen.cpp" line="1037"/>
         <source>You die.
 Waiting for respawn...</source>
         <translation>Вы умерли.
