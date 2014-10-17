@@ -773,7 +773,7 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
         k_start = player->Z() + 1;
         k_step  = 1;
     } else {
-        k_start = player->Z() - ( DOWN==dir );
+        k_start = player->Z() - ( DOWN==dir ) + shiftFocus;
         k_step  = -1;
     }
     wstandend(window);
