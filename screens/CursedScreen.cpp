@@ -773,7 +773,7 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
         k_start = player->Z() + 1;
         k_step  = 1;
     } else {
-        k_start = player->Z() - ( DOWN==dir ) + shiftFocus;
+        k_start = player->Z() - ( DOWN==dir ) + shiftFocus * (DOWN!=dir);
         k_step  = -1;
     }
     wstandend(window);
@@ -810,6 +810,14 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
     wattrset(window, COLOR_PAIR(BLACK_BLACK) | A_BOLD);
     box(window, 0, 0);
     Arrows(window, (player->X()-start_x)*2+1, player->Y()-start_y+1, UP);
+    if ( shiftFocus ) {
+        const int ch =
+            (( shiftFocus == 1 ) ? '+' : '-') | COLOR_PAIR(WHITE_BLUE);
+        mvwaddch(leftWin, 0,               0, ch);
+        mvwaddch(leftWin, 0, SCREEN_SIZE*2+1, ch);
+        mvwaddch(leftWin, SCREEN_SIZE+1,   0, ch);
+        mvwaddch(leftWin, SCREEN_SIZE+1, SCREEN_SIZE*2+1, ch);
+    }
     wrefresh(window);
 } // void Screen::PrintNormal(WINDOW * window, int dir)
 
