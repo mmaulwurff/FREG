@@ -138,6 +138,7 @@ private:
     void ExamineOnNormalScreen(int x, int y, int z, int step) const;
 
     void Greet() const;
+    void DrawBorder(WINDOW *) const;
 
     WINDOW * windows[WINDOW_COUNT];
     WINDOW *& leftWin    = windows[WINDOW_LEFT];

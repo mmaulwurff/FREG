@@ -17,12 +17,13 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include <QDataStream>
 #include "Shred.h"
 #include "World.h"
 #include "BlockManager.h"
 #include "blocks/Active.h"
 #include "blocks/Inventory.h"
+#include <algorithm>
+#include <QDataStream>
 
 const quint8 DATASTREAM_VERSION = QDataStream::Qt_5_2;
 const quint8 CURRENT_SHRED_FORMAT_VERSION = 14;
@@ -124,8 +125,8 @@ Shred::Shred(const int shred_x, const int shred_y,
         longitude(longi), latitude(lati),
         shredX(shred_x), shredY(shred_y),
         type(),
-        activeListAll(),
         activeListFrequent(),
+        activeListAll(),
         shiningList(),
         fallList(),
         weather(WEATHER_CLEAR)
@@ -265,12 +266,14 @@ void Shred::Register(Active * const active) {
 }
 
 void Shred::Unregister(Active * const active) {
-    *qFind(activeListAll.begin(), activeListAll.end(), active) = nullptr;
-    *qFind(activeListFrequent.begin(), activeListFrequent.end(), active) =
-        nullptr;
+    std::replace(activeListAll.begin(), activeListAll.end(), active,
+        static_cast<Active *>(nullptr));
+    std::replace(activeListFrequent.begin(), activeListFrequent.end(), active,
+        static_cast<Active *>(nullptr));
     Falling * const falling = active->ShouldFall();
     if ( falling != nullptr ) {
-        *qFind(fallList.begin(), fallList.end(), falling) = nullptr;
+        std::replace(fallList.begin(), fallList.end(), falling,
+            static_cast<Falling *>(nullptr));
         falling->SetFalling(false);
     }
     RemShining(active);

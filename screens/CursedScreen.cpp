@@ -47,7 +47,8 @@ const int ACTIVE_HAND = 3;
 void Screen::PrintVerticalDirection(WINDOW * const window, const int y,
         const int x, const dirs direction)
 {
-    mvwaddwstr(window, y, x + 3, printable(tr_manager->DirString(direction)));
+    mvwaddwstr(window, y, x + 3,
+        tr_manager->DirString(direction).toStdWString().c_str());
 }
 
 void Screen::Arrows(WINDOW * const window, const int x, const int y,
@@ -91,8 +92,8 @@ const {
     case EAST:  left = dir_chars[NORTH]; right = dir_chars[SOUTH]; break;
     case WEST:  left = dir_chars[SOUTH]; right = dir_chars[NORTH]; break;
     }
-    mvwaddwstr(window, y-1, 0, printable(left));
-    mvwaddwstr(window, y-1, SCREEN_SIZE*2+1, printable(right));
+    mvwaddwstr(window, y-1, 0, left.toStdWString().c_str());
+    mvwaddwstr(window, y-1, SCREEN_SIZE*2+1, right.toStdWString().c_str());
 
     wcolor_set(window, WHITE_RED, nullptr);
     mvwaddwstr(window, y,               0, arrows[EAST]);
@@ -112,7 +113,7 @@ void Screen::RePrint() {
     };
     (void)wmove(actionWin, 0, 0);
     for (int i=0; i<=ACTION_WIELD; ++i) {
-        waddwstr(actionWin, printable(action_strings[i]));
+        waddwstr(actionWin, action_strings[i].toStdWString().c_str());
         waddch(actionWin, '\n');
     }
     mvwchgat(actionWin, actionMode, 0, -1, A_NORMAL, BLACK_WHITE, nullptr);
@@ -135,7 +136,7 @@ void Screen::UpdateAll() {
 void Screen::PassString(QString & str) const {
     inputActive = true;
     wattrset(notifyWin, A_UNDERLINE);
-    waddwstr(notifyWin, printable(tr("Enter input: ")));
+    waddwstr(notifyWin, tr("Enter input: ").toStdWString().c_str());
     char temp_str[MAX_NOTE_LENGTH + 1];
     echo();
     wgetnstr(notifyWin, temp_str, MAX_NOTE_LENGTH);
@@ -365,16 +366,19 @@ void Screen::ControlPlayer(const int ch) {
     case 'R':
     case 'L': RePrint(); break;
 
-    case '-':
-        shiftFocus = -!shiftFocus;
-        Notify(tr("%1 focus is set.").
-            arg(shiftFocus ? tr("Low") : tr("Normal")));
-        break; // move focus down
-    case '+':
-        shiftFocus =  !shiftFocus;
-        Notify(tr("%1 focus is set.").
-            arg(shiftFocus ? tr("High") : tr("Normal")));
-        break;
+    case '-': shiftFocus -= 2; // no break;
+    case '+': {
+        ++shiftFocus;
+        if ( abs(shiftFocus) == 2 ) {
+            shiftFocus = 0;
+        }
+        static const QString levels[] = {
+            tr("Low"),
+            tr("Normal"),
+            tr("Hight")
+        };
+        Notify(tr("%1 focus is set.").arg(levels[shiftFocus+1]));
+        } break;
 
     case KEY_F(12):
     case '!': player->SetCreativeMode( not player->GetCreativeMode() ); break;
@@ -647,10 +651,11 @@ void Screen::PrintHUD() {
     werase(hudWin);
     if ( player->GetCreativeMode() ) {
         mvwaddwstr(hudWin, 0, 0,
-            printable(tr("Creative Mode\nxyz: %1, %2, %3.\nShred: %4")
+            (tr("Creative Mode\nxyz: %1, %2, %3.\nShred: %4")
             .arg(player->GlobalX()).arg(player->GlobalY()).arg(player->Z())
             .arg(Shred::FileName(GetWorld()->WorldName(),
-                player->GetLongitude(), player->GetLatitude()) )));
+                player->GetLongitude(), player->GetLatitude()) )).
+                    toStdWString().c_str());
     } else {
         const int dur = player->GetBlock()->GetDurability();
         if ( dur > 0 ) { // HitPoints line
@@ -673,7 +678,8 @@ void Screen::PrintHUD() {
         waddstr(hudWin, "   ");
         const int satiation_state = player->SatiationPercent() / 25;
         wcolor_set(hudWin, satiation[satiation_state].color, nullptr);
-        waddwstr(hudWin, printable(satiation[satiation_state].name));
+        waddwstr(hudWin,
+            satiation[satiation_state].name.toStdWString().c_str());
         waddch(hudWin, '\n');
         const int breath = player->BreathPercent();
         if ( breath != 100 ) {
@@ -692,15 +698,17 @@ void Screen::PrintHUD() {
             focused->GetDurability()*100/MAX_DURABILITY);
         wstandend(hudWin);
         const QString name = focused->FullName();
-        mvwaddwstr(hudWin, 1, left_border - name.length(), printable(name));
+        mvwaddwstr(hudWin, 1, left_border - name.length(),
+            name.toStdWString().c_str());
         const QString note = focused->GetNote();
         if ( not note.isEmpty() && IsScreenWide() ) {
             const int width = qMin(34, note.length());
             mvwaddstr(hudWin, 2, left_border - width - 2, "~:");
             if ( note.length() <= width ) {
-                waddwstr(hudWin, printable(note));
+                waddwstr(hudWin, note.toStdWString().c_str());
             } else {
-                waddnwstr(hudWin, printable(note), width - 1 - (ascii * 2));
+                waddnwstr(hudWin, note.toStdWString().c_str(),
+                    width - 1 - (ascii * 2));
                 waddwstr(hudWin, ellipsis);
             }
         }
@@ -742,17 +750,18 @@ void Screen::PrintMiniMap() {
     for (int i=i_start; i <= i_start+4; ++i, waddch(minimapWin, '\n'))
     for (int j=j_start; j <= j_start+4; ++j) {
         if ( i<0 || j<0 || i>=world->NumShreds() || j>=world->NumShreds() ) {
-            wstandend(minimapWin);
-            waddstr  (minimapWin, "  ");
+            waddch(minimapWin, ' ' | COLOR_PAIR(BLACK_BLACK));
+            waddch(minimapWin, ' ' | COLOR_PAIR(BLACK_BLACK));
         } else {
-            Shred * const shred = world->GetShredByPos(j, i);
-            wattrset(minimapWin, ColorShred(shred->GetTypeOfShred()));
-            wprintw (minimapWin, " %c", shred->GetTypeOfShred());
+            const shred_type t = world->GetShredByPos(j, i)->GetTypeOfShred();
+            const int color = ColorShred(t);
+            waddch(minimapWin, color | ' ');
+            waddch(minimapWin, color | t);
         }
     }
-    wattrset(minimapWin, COLOR_PAIR(BLACK_BLACK) | A_BOLD);
-    box(minimapWin, 0, 0);
-    mvwaddwstr(minimapWin, 0, 1, printable(tr("Minimap")));
+    DrawBorder(minimapWin);
+    static const std::wstring title = tr("Minimap").toStdWString();
+    mvwaddwstr(minimapWin, 0, 1, title.c_str());
     wrefresh(minimapWin);
 }
 
@@ -776,12 +785,11 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
         k_start = player->Z() - ( DOWN==dir ) + shiftFocus * (DOWN!=dir);
         k_step  = -1;
     }
-    wstandend(window);
     const int start_x = GetNormalStartX();
     const int start_y = GetNormalStartY();
     const int end_x = start_x + SCREEN_SIZE;
     const int end_y = start_y + SCREEN_SIZE;
-    for (int j=start_y; j<end_y; ++j, waddstr(window, "\n_")) {
+    for (int j=start_y; j<end_y; ++j, waddstr(window, "__")) {
         randomBlink = blinkOn ? qrand() : 0;
         for (int i=start_x; i<end_x; ++i ) {
             Shred * const shred = world->GetShred(i, j);
@@ -807,8 +815,7 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
             arrows[player->GetDir()]);
     }
 
-    wattrset(window, COLOR_PAIR(BLACK_BLACK) | A_BOLD);
-    box(window, 0, 0);
+    DrawBorder(window);
     Arrows(window, (player->X()-start_x)*2+1, player->Y()-start_y+1, UP);
     if ( shiftFocus ) {
         const int ch =
@@ -820,6 +827,15 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
     }
     wrefresh(window);
 } // void Screen::PrintNormal(WINDOW * window, int dir)
+
+void Screen::DrawBorder(WINDOW * const window) const {
+    static const int BORDER_COLOR = COLOR_PAIR(BLACK_BLACK) | A_BOLD;
+    (void)wborder( window,
+        ACS_VLINE    | BORDER_COLOR, ACS_VLINE    | BORDER_COLOR,
+        ACS_HLINE    | BORDER_COLOR, ACS_HLINE    | BORDER_COLOR,
+        ACS_ULCORNER | BORDER_COLOR, ACS_URCORNER | BORDER_COLOR,
+        ACS_LLCORNER | BORDER_COLOR, ACS_LRCORNER | BORDER_COLOR );
+}
 
 void Screen::PrintFront(const dirs dir, const int block_x, const int block_y)
 const {
@@ -884,7 +900,6 @@ const {
         Q_UNREACHABLE();
         return;
     }
-    wstandend(rightWin);
     const int k_start =
         qBound(SCREEN_SIZE-1, player->Z()+SCREEN_SIZE/2, HEIGHT-1);
     if ( block_x > 0 ) {
@@ -899,7 +914,7 @@ const {
     }
     const int sky_color = COLOR_PAIR(VirtScreen::Color(BLOCK, SKY));
     (void)wmove(rightWin, 1, 1);
-    for (int k=k_start; k>k_start-SCREEN_SIZE; --k, waddstr(rightWin, "\n_")) {
+    for (int k=k_start; k>k_start-SCREEN_SIZE; --k, waddstr(rightWin, "__")) {
         randomBlink = blinkOn ? qrand() : 0;
         for (*x=x_start; *x!=x_end; *x+=x_step) {
             for (*z=z_start; *z!=z_end && world->GetBlock(i, j, k)->
@@ -918,8 +933,7 @@ const {
             }
         }
     }
-    wattrset(rightWin, COLOR_PAIR(BLACK_BLACK) | A_BOLD);
-    box(rightWin, 0, 0);
+    DrawBorder(rightWin);
     const int arrow_Y = k_start + 1 - player->Z();
     if ( shiftFocus ) {
         const int ch =
@@ -947,13 +961,13 @@ const {
         const Block * const block = inv->ShowBlock(i);
         if ( block == nullptr ) {
             wattrset(window, COLOR_PAIR(BLACK_BLACK) | A_BOLD);
-            waddwstr(window, printable(inv->InvFullName(i)));
+            waddwstr(window, inv->InvFullName(i).toStdWString().c_str());
             continue;
         }
         PrintBlock(block, window, ' ');
         wstandend(window);
         waddch(window, ' ');
-        waddwstr(window, printable(inv->InvFullName(i)));
+        waddwstr(window, inv->InvFullName(i).toStdWString().c_str());
         if ( MAX_DURABILITY != block->GetDurability() ) {
             wprintw(window, "{%d}", block->GetDurability()*100/MAX_DURABILITY);
         }
@@ -962,9 +976,10 @@ const {
             const int width = SCREEN_SIZE*2 - getcurx(window) - 3 - 8;
             waddstr(window, " ~:");
             if ( str.length() <= width ) {
-                waddwstr(window, printable(str));
+                waddwstr(window, str.toStdWString().c_str());
             } else {
-                waddwstr(window, printable(str.left(width - 2 - (ascii * 2))));
+                waddnwstr( window, str.toStdWString().c_str(),
+                    width - 2 - ( ascii * 2 ) );
                 waddwstr(window, ellipsis);
             }
         }
@@ -974,16 +989,17 @@ const {
     wstandend(window);
     QString full_weight = tr("Full weight: %1 mz").
         arg(inv->Weight(), 6, 10, QChar(' '));
-    mvwaddwstr(window, 2+inv->Size()+shift,
-        SCREEN_SIZE*2 + 1 - full_weight.length(), printable(full_weight));
+    mvwaddwstr( window, 2+inv->Size()+shift,
+        SCREEN_SIZE*2 + 1 - full_weight.length(),
+        full_weight.toStdWString().c_str() );
     wattrset(window, Color(block->Kind(), block->Sub()));
     box(window, 0, 0);
     if ( start != 0 ) {
         mvwhline(window, 2+start, 1, ACS_HLINE, SCREEN_SIZE*2);
     }
     mvwprintw(window, 0, 1, "[%c] ", CharName( block->Kind(), block->Sub()));
-    waddwstr(window, printable((player->PlayerInventory() == inv) ?
-        tr("Your inventory") : block->FullName()) );
+    waddwstr(window, ((player->PlayerInventory() == inv) ?
+        tr("Your inventory") : block->FullName()).toStdWString().c_str() );
     wrefresh(window);
 } // void Screen::PrintInv(WINDOW *, const Block *, const Inventory *)
 
@@ -997,8 +1013,9 @@ bool Screen::PrintFile(WINDOW * const window, QString const & file_name) {
     fileToShow = new QFile(file_name);
     if ( fileToShow->open(QIODevice::ReadOnly | QIODevice::Text) ) {
         werase(window);
-        waddwstr(window, printable(
-            QString::fromUtf8(fileToShow->readAll().constData())) );
+        const QByteArray text = fileToShow->readAll();
+        waddwstr(window,
+            QString::fromUtf8(text.constData()).toStdWString().c_str() );
         wrefresh(window);
         return true;
     } else {
@@ -1027,11 +1044,12 @@ void Screen::Notify(const QString str) const {
     static int notification_repeat_count = 1;
     if ( str == lastNotification ) {
         ++notification_repeat_count;
-        mvwaddwstr(notifyWin, getcury(notifyWin)-1, 0, printable(str));
+        mvwaddwstr(notifyWin, getcury(notifyWin)-1, 0,
+            str.toStdWString().c_str());
         wprintw(notifyWin, " (x%d)\n", notification_repeat_count);
     } else {
         notification_repeat_count = 1;
-        waddwstr(notifyWin, printable(lastNotification = str));
+        waddwstr(notifyWin, (lastNotification = str).toStdWString().c_str());
         waddch(notifyWin, '\n');
     }
     wrefresh(notifyWin);
@@ -1042,7 +1060,8 @@ void Screen::DeathScreen() {
     werase(hudWin);
     wcolor_set(leftWin, WHITE_RED, nullptr);
     if ( not PrintFile(leftWin, ":/texts/death.txt") ) {
-        waddwstr(leftWin, printable(tr("You die.\nWaiting for respawn...")));
+        waddwstr(leftWin,
+            tr("You die.\nWaiting for respawn...").toStdWString().c_str());
     }
     box(leftWin, 0, 0);
     wnoutrefresh(leftWin);
@@ -1138,8 +1157,8 @@ Screen::Screen(Player * const pl, int & error) :
         notifyWin = newwin(0,  0, SCREEN_SIZE+2+2, left_border+15);
         actionWin = newwin(7, 15, SCREEN_SIZE+2,   left_border);
     } else {
-        fputws(printable(tr("Set your terminal width at least %1 chars.").
-            arg(SCREEN_SIZE*2+2)), stdout);
+        fputws(tr("Set your terminal width at least %1 chars.").
+            arg(SCREEN_SIZE*2+2).toStdWString().c_str(), stdout);
         error = WIDTH_NOT_ENOUGH;
         return;
     }
@@ -1148,7 +1167,8 @@ Screen::Screen(Player * const pl, int & error) :
     if ( not PrintFile(stdscr, ":/texts/splash.txt") ) {
         addstr("Free-Roaming Elementary Game\nby mmaulwurff\n");
     }
-    addwstr(printable(tr("\nVersion %1.\n\nPress any key.").arg(VER)));
+    addwstr((tr("\nVersion %1.\n\nPress any key.").arg(VER)).
+        toStdWString().c_str());
     qsrand(getch());
     CleanFileToShow();
     RePrint();

@@ -62,13 +62,11 @@ int main(int argc, char ** argv) {
     tr_manager = new TranslationsManager;
 
     if ( not QDir::home().mkpath(".freg") ) {
-        fputws(printable(QObject::tr("Error creating game home directory")),
-            stdout);
+        fputs("Error creating game home directory", stdout);
         return EXIT_FAILURE;
     }
     if (freopen(qPrintable(home_path + "err.txt"), "wt", stderr) == nullptr) {
-        fputws(printable( QObject::tr(
-            "Error opening errors.txt, writing errors to standard out.") ),
+        fputs("Error opening errors.txt, writing errors to standard out.",
             stdout);
     }
 
@@ -103,7 +101,7 @@ int main(int argc, char ** argv) {
         QSettings(home_path + "freg.ini", QSettings::IniFormat).
             value("current_world", "mu").toString();
     if ( not QDir(home_path).mkpath(worldName) ) {
-        fputws(printable(QObject::tr("Error generating world.")), stdout);
+        fputs("Error generating world.", stdout);
         return EXIT_FAILURE;
     }
 
@@ -114,7 +112,7 @@ int main(int argc, char ** argv) {
             parser.value(map_size).toUShort(),
             parser.value(map_outer).at(0).toLatin1(),
             parser.value(map_seed).toInt());
-        fputws(printable(QObject::tr("Map generated successfully.")), stdout);
+        fputs("Map generated successfully.", stdout);
         return EXIT_SUCCESS;
     }
     qsrand(QTime::currentTime().msec());

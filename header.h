@@ -231,8 +231,4 @@ inline unsigned Abs(const int x) {
 
 #define sizeof_array(ARRAY) (sizeof(ARRAY)/sizeof(ARRAY[0]))
 
-inline const wchar_t * printable(const QString string) {
-    return string.toStdWString().c_str();
-}
-
 #endif // HEADER_H

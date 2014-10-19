@@ -172,13 +172,8 @@ private:
     int shredX, shredY;
     shred_type type;
 
-    /// Contains all active blocks.
-    //QLinkedList<Active *> activeListAll;
     QLinkedList<Active *> activeListFrequent;
-    //QLinkedList<Active * const> shiningList;
-    //QLinkedList<Falling *> fallList;
     std::forward_list<Active *> activeListAll;
-    //std::forward_list<Active *> activeListFrequent;
     std::forward_list<Active *> shiningList;
     std::forward_list<Falling *> fallList;
 
