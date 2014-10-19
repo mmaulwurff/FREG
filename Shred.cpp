@@ -107,7 +107,7 @@ bool Shred::LoadShred() {
                     RegisterInit(active);
                     Falling * const falling = active->ShouldFall();
                     if ( falling != nullptr && falling->IsFalling() ) {
-                        fallList.append(falling);
+                        fallList.push_front(falling);
                     }
                 }
             }
@@ -222,8 +222,8 @@ void Shred::PhysEventsFrequent() {
             *i = nullptr;
         }
     }
-    for (auto i  = activeListFrequent.constBegin();
-              i != activeListFrequent.constEnd(); ++i)
+    for (auto i  = activeListFrequent.cbegin();
+              i != activeListFrequent.cend(); ++i)
     {
         if ( *i != nullptr ) {
             (*i)->ActFrequent();
@@ -232,7 +232,7 @@ void Shred::PhysEventsFrequent() {
 }
 
 void Shred::PhysEventsRare() {
-    for (auto i=activeListAll.constBegin(); i!=activeListAll.constEnd(); ++i) {
+    for (auto i=activeListAll.cbegin(); i!=activeListAll.cend(); ++i) {
         if ( *i != nullptr ) {
             switch ( (*i)->ActInner() ) {
             case INNER_ACTION_ONLY:    break;
@@ -242,14 +242,14 @@ void Shred::PhysEventsRare() {
             }
         }
     }
-    activeListAll.removeAll(nullptr);
+    activeListAll.remove(nullptr);
     activeListFrequent.removeAll(nullptr);
-    fallList.removeAll(nullptr);
+    fallList.remove(nullptr);
 }
 
 void Shred::RegisterInit(Active * const active) {
     active->SetShred(this);
-    activeListAll.append(active);
+    activeListAll.push_front(active);
     const int should_act = active->ShouldAct();
     if ( should_act & FREQUENT_FIRST ) {
         activeListFrequent.prepend(active);
@@ -280,24 +280,24 @@ void Shred::AddFalling(Block * const block) {
     Falling * const falling = block->ShouldFall();
     if ( falling != nullptr && not falling->IsFalling() ) {
         falling->SetFalling(true);
-        fallList.append(falling);
+        fallList.push_front(falling);
     }
 }
 
 void Shred::AddShining(Active * const active) {
     if ( active->LightRadius() != 0 ) {
-        shiningList.append(active);
+        shiningList.push_front(active);
     }
 }
 
-void Shred::RemShining(Active * const active) {shiningList.removeOne(active);}
+void Shred::RemShining(Active * const active) { shiningList.remove(active); }
 
-QLinkedList<Active * const>::const_iterator Shred::ShiningBegin() const {
-    return shiningList.constBegin();
+std::forward_list<Active *>::const_iterator Shred::ShiningBegin() const {
+    return shiningList.cbegin();
 }
 
-QLinkedList<Active * const>::const_iterator Shred::ShiningEnd() const {
-    return shiningList.constEnd();
+std::forward_list<Active *>::const_iterator Shred::ShiningEnd() const {
+    return shiningList.cend();
 }
 
 void Shred::ReloadTo(const dirs direction) {

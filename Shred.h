@@ -20,10 +20,11 @@
 #ifndef SHRED_H
 #define SHRED_H
 
-#include <QLinkedList>
 #include "header.h"
 #include "Weather.h"
 #include "worldmap.h"
+#include <forward_list>
+#include <QLinkedList>
 
 class World;
 class Block;
@@ -51,8 +52,8 @@ public:
     void AddToDelete(Active *);
     void ReloadTo(dirs);
 
-    QLinkedList<Active * const>::const_iterator ShiningBegin() const;
-    QLinkedList<Active * const>::const_iterator ShiningEnd() const;
+    std::forward_list<Active *>::const_iterator ShiningBegin() const;
+    std::forward_list<Active *>::const_iterator ShiningEnd()   const;
 
     World * GetWorld() const;
 
@@ -172,10 +173,14 @@ private:
     shred_type type;
 
     /// Contains all active blocks.
-    QLinkedList<Active *> activeListAll;
+    //QLinkedList<Active *> activeListAll;
     QLinkedList<Active *> activeListFrequent;
-    QLinkedList<Active * const> shiningList;
-    QLinkedList<Falling *> fallList;
+    //QLinkedList<Active * const> shiningList;
+    //QLinkedList<Falling *> fallList;
+    std::forward_list<Active *> activeListAll;
+    //std::forward_list<Active *> activeListFrequent;
+    std::forward_list<Active *> shiningList;
+    std::forward_list<Falling *> fallList;
 
     weathers weather;
 };
