@@ -37,8 +37,6 @@
 #endif
 #include "screens/VirtScreen.h"
 
-const int SCREEN_SIZE = 30;
-
 enum windows_numbers {
     WINDOW_LEFT,
     WINDOW_RIGHT,
@@ -125,8 +123,8 @@ private:
     void MovePlayer(dirs dir);
     void MovePlayerDiag(dirs dir1, dirs dir2) const;
     static bool IsScreenWide();
-    int  RandomBlink() const;
-    bool RandomBit() const;
+    static int  RandomBlink();
+    static bool RandomBit();
     /// Returns nullptr if block is not player->Visible().
     Block * GetFocusedBlock() const;
     inline static void PrintVerticalDirection(WINDOW *, int y, int x, dirs);
@@ -162,12 +160,14 @@ private:
     const wchar_t ellipsis[4];
     SCREEN * const screen;
     mutable bool inputActive = false;
-    mutable int randomBlink;
     bool showDistance;
     bool farDistance;
 
     mmask_t noMouseMask;
     bool mouseOn;
+
+    const int screenWidth;
+    const int screenHeight;
 };
 
 #endif // CURSEDSCREEN_H

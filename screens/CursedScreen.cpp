@@ -33,7 +33,6 @@
 #include <QMutexLocker>
 
 const char OBSCURE_BLOCK = ' ';
-const int QUICK_INVENTORY_X_SHIFT = 36;
 const int SHADOW_COLOR = COLOR_PAIR(BLACK_BLACK) | A_BOLD | A_REVERSE;
 
 const int ACTIONS_WIDTH  = 23;
@@ -43,6 +42,8 @@ const int MINIMAP_HEIGHT =  7;
 const int MOUSEMASK = BUTTON1_CLICKED | BUTTON1_RELEASED;
 
 const int ACTIVE_HAND = 3;
+
+const int AVERAGE_SCREEN_SIZE = 60;
 
 void Screen::PrintVerticalDirection(WINDOW * const window, const int y,
         const int x, const dirs direction)
@@ -57,15 +58,15 @@ const {
     wcolor_set(window, WHITE_BLACK, nullptr);
     if ( direction >= DOWN ) {
         PrintVerticalDirection(window, 0, x, UP);
-        PrintVerticalDirection(window, SCREEN_SIZE+1, x, DOWN);
+        PrintVerticalDirection(window, screenHeight-1, x, DOWN);
     } else {
         PrintVerticalDirection(window, 0, x, NORTH);
-        PrintVerticalDirection(window, SCREEN_SIZE+1, x, SOUTH);
+        PrintVerticalDirection(window, screenHeight-1, x, SOUTH);
     }
     wcolor_set(window, WHITE_RED, nullptr);
     mvwaddwstr(window, 0, x, arrows[SOUTH]);
     waddwstr  (window,       arrows[SOUTH]);
-    mvwaddwstr(window, SCREEN_SIZE+1, x, arrows[NORTH]);
+    mvwaddwstr(window, screenHeight-1, x, arrows[NORTH]);
     waddwstr  (window, arrows[NORTH]);
     HorizontalArrows(window, y, direction);
     (void)wmove(window, y, x);
@@ -93,11 +94,11 @@ const {
     case WEST:  left = dir_chars[SOUTH]; right = dir_chars[NORTH]; break;
     }
     mvwaddwstr(window, y-1, 0, left.toStdWString().c_str());
-    mvwaddwstr(window, y-1, SCREEN_SIZE*2+1, right.toStdWString().c_str());
+    mvwaddwstr(window, y-1, screenWidth-1, right.toStdWString().c_str());
 
     wcolor_set(window, WHITE_RED, nullptr);
-    mvwaddwstr(window, y,               0, arrows[EAST]);
-    mvwaddwstr(window, y, SCREEN_SIZE*2+1, arrows[WEST]);
+    mvwaddwstr(window, y,             0, arrows[EAST]);
+    mvwaddwstr(window, y, screenWidth-1, arrows[WEST]);
 }
 
 void Screen::RePrint() {
@@ -126,7 +127,7 @@ void Screen::Update(int, int, int) { updated = false; }
 void Screen::UpdatePlayer() { updated = false; }
 void Screen::UpdateAround(int, int, int, int) { updated = false; }
 void Screen::Move(int) { updated = false; }
-bool Screen::IsScreenWide() { return COLS >= (SCREEN_SIZE*2+2)*2; }
+bool Screen::IsScreenWide() { return COLS >= (AVERAGE_SCREEN_SIZE + 2) * 2; }
 
 void Screen::UpdateAll() {
     CleanFileToShow();
@@ -177,8 +178,8 @@ char Screen::CharNumberFront(const int i, const int j) const {
                 '+';
 }
 
-int  Screen::RandomBlink() const { return RandomBit() ? 0 : A_REVERSE; }
-bool Screen::RandomBit()   const { return (randomBlink >>= 1) & 1; }
+int  Screen::RandomBlink() { return (RandomBit() * A_REVERSE); }
+bool Screen::RandomBit()   { return (qrand() & 1); }
 
 int Screen::Color(const int kind, const int sub) const {
     const int color = COLOR_PAIR(VirtScreen::Color(kind, sub));
@@ -424,8 +425,8 @@ void Screen::ProcessMouse() {
             return;
         }
         if ( not (
-                0 < mevent.x && mevent.x < SCREEN_SIZE*2 + 1 &&
-                0 < mevent.y && mevent.y < SCREEN_SIZE ) )
+                0 < mevent.x && mevent.x < screenWidth  - 1 &&
+                0 < mevent.y && mevent.y < screenHeight - 1 ) )
         {
             Notify(tr("Left window, Down view."));
             return;
@@ -439,8 +440,8 @@ void Screen::ProcessMouse() {
         } else if (player->UsingType() == USAGE_TYPE_OPEN ) {
             Notify(tr("Opened inventory."));
         } else if ( not (
-                0 < mevent.x && mevent.x < SCREEN_SIZE*2 + 1 &&
-                0 < mevent.y && mevent.y < SCREEN_SIZE ) )
+                0 < mevent.x && mevent.x < screenWidth  - 1 &&
+                0 < mevent.y && mevent.y < screenHeight - 1 ) )
         {
             Notify(tr("Right window, %1 view.").
                 arg(tr_manager->DirString(player->GetDir())));
@@ -463,7 +464,7 @@ void Screen::ProcessMouse() {
         break;
     case WINDOW_HUD:
         if ( not wmouse_trafo(hudWin, &mevent.y, &mevent.x, false) ) return;
-        mevent.x -= QUICK_INVENTORY_X_SHIFT;
+        mevent.x -= getmaxx(hudWin)/2 - 'z' + 'a';
         mevent.x /= 2;
         if ( not ( IsScreenWide() && 0 <= mevent.x && mevent.x <= 'z'-'a' ) ) {
             Notify(tr("Information: left - player, right - focused thing."));
@@ -689,9 +690,7 @@ void Screen::PrintHUD() {
     }
     Block * const focused = GetFocusedBlock();
     if ( focused && Block::GetSubGroup(focused->Sub()) != GROUP_AIR ) {
-        const int left_border = IsScreenWide() ?
-            (SCREEN_SIZE*2+2) * 2 :
-            SCREEN_SIZE*2+2 - 15;
+        const int left_border = getmaxx(hudWin);
         (void)wmove(hudWin, 0, left_border - 15);
         PrintBar(CharName(focused->Kind(), focused->Sub()),
             Color(focused->Kind(), focused->Sub()),
@@ -720,18 +719,19 @@ void Screen::PrintHUD() {
 
 void Screen::PrintQuickInventory() {
     Inventory * const inv = player->PlayerInventory();
-    if ( inv!=nullptr && IsScreenWide() ) {
-        for (int i=inv->Size()-1; i>=0; --i) {
-            wstandend(hudWin);
-            const int x = QUICK_INVENTORY_X_SHIFT+i*2;
-            mvwaddch(hudWin, 0, x, 'a'+i);
-            switch ( inv->Number(i) ) {
-            case  0: break;
-            default: mvwaddch(hudWin, 2, x, inv->Number(i)+'0'); // no break;
-            case  1: mvwaddch(hudWin, 1, x, ColoredChar(inv->ShowBlock(i)));
-                break;
-            }
+    if ( inv==nullptr || not IsScreenWide() ) return;
+
+    const int inventory_size = inv->Size();
+    int x = getmaxx(hudWin)/2 - inventory_size;
+    for (int i=0; i<inventory_size; ++i) {
+        mvwaddch(hudWin, 0, x, 'a'+i | COLOR_PAIR(WHITE_BLACK));
+        switch ( inv->Number(i) ) {
+        case  0: break;
+        default: mvwaddch(hudWin, 2, x, inv->Number(i)+'0'); // no break;
+        case  1: mvwaddch(hudWin, 1, x, ColoredChar(inv->ShowBlock(i)));
+            break;
         }
+        x += 2;
     }
 }
 
@@ -766,13 +766,13 @@ void Screen::PrintMiniMap() {
 }
 
 int Screen::GetNormalStartX() const {
-    return ( player->X()/SHRED_WIDTH )*SHRED_WIDTH +
-        ( SHRED_WIDTH-SCREEN_SIZE )/2;
+    return qBound(0, player->X() - screenWidth/4,
+        GetWorld()->GetBound() - screenWidth/2 - 1);
 }
 
 int Screen::GetNormalStartY() const {
-    return ( player->Y()/SHRED_WIDTH )*SHRED_WIDTH +
-        ( SHRED_WIDTH-SCREEN_SIZE )/2;
+    return qBound(0, player->Y() - screenHeight/2,
+        GetWorld()->GetBound() - screenHeight - 1);
 }
 
 void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
@@ -787,10 +787,9 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
     }
     const int start_x = GetNormalStartX();
     const int start_y = GetNormalStartY();
-    const int end_x = start_x + SCREEN_SIZE;
-    const int end_y = start_y + SCREEN_SIZE;
+    const int end_x = start_x + screenWidth/2 - 1;
+    const int end_y = start_y + screenHeight  - 2;
     for (int j=start_y; j<end_y; ++j, waddstr(window, "__")) {
-        randomBlink = blinkOn ? qrand() : 0;
         for (int i=start_x; i<end_x; ++i ) {
             Shred * const shred = world->GetShred(i, j);
             const int i_in = Shred::CoordInShred(i);
@@ -821,9 +820,9 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
         const int ch =
             (( shiftFocus == 1 ) ? '+' : '-') | COLOR_PAIR(WHITE_BLUE);
         mvwaddch(leftWin, 0,               0, ch);
-        mvwaddch(leftWin, 0, SCREEN_SIZE*2+1, ch);
-        mvwaddch(leftWin, SCREEN_SIZE+1,   0, ch);
-        mvwaddch(leftWin, SCREEN_SIZE+1, SCREEN_SIZE*2+1, ch);
+        mvwaddch(leftWin, 0, screenWidth+1, ch);
+        mvwaddch(leftWin, screenHeight+1,   0, ch);
+        mvwaddch(leftWin, screenHeight+1, screenWidth+1, ch);
     }
     wrefresh(window);
 } // void Screen::PrintNormal(WINDOW * window, int dir)
@@ -839,12 +838,6 @@ void Screen::DrawBorder(WINDOW * const window) const {
 
 void Screen::PrintFront(const dirs dir, const int block_x, const int block_y)
 const {
-    const int pX = player->X();
-    const int begin_x = ( pX/SHRED_WIDTH )*SHRED_WIDTH +
-        ( SHRED_WIDTH-SCREEN_SIZE )/2;
-    const int pY = player->Y();
-    const int begin_y = ( pY/SHRED_WIDTH )*SHRED_WIDTH +
-        ( SHRED_WIDTH-SCREEN_SIZE )/2;
     int x_step,  z_step,
         x_start, z_start,
         x_end,   z_end;
@@ -855,53 +848,53 @@ const {
     case NORTH:
         x = &i;
         x_step  = 1;
-        x_start = begin_x;
-        x_end   = x_start + SCREEN_SIZE;
+        x_start = GetNormalStartX();
+        x_end   = x_start + screenWidth/2 - 1;
         z = &j;
         z_step  = -1;
-        z_start = pY - 1;
-        z_end   = qMax(0, pY - SHRED_WIDTH*2);
-        arrow_X = (pX - begin_x)*2 + 1;
+        z_start = player->Y() - 1;
+        z_end   = qMax(0, player->Y() - SHRED_WIDTH*2);
+        arrow_X = (player->X() - x_start)*2 + 1;
         break;
     case SOUTH:
         x = &i;
         x_step  = -1;
-        x_start = SCREEN_SIZE - 1 + begin_x;
-        x_end   = begin_x - 1;
+        x_end   = GetNormalStartX() - 1;
+        x_start = screenWidth/2 - 1 + x_end;
         z = &j;
         z_step  = 1;
-        z_start = pY + 1;
-        z_end   = qMin(pY+SHRED_WIDTH*2, world->GetBound());
-        arrow_X = (SCREEN_SIZE - pX + begin_x)*2 - 1;
+        z_start = player->Y() + 1;
+        z_end   = qMin(player->Y() + SHRED_WIDTH*2, world->GetBound());
+        arrow_X = (screenWidth/2 - player->X() + x_end)*2 - 1;
         break;
     case EAST:
         x = &j;
         x_step  = 1;
-        x_start = begin_y;
-        x_end   = SCREEN_SIZE + begin_y;
+        x_start = GetNormalStartY();
+        x_end   = screenWidth/2 - 1 + x_start;
         z = &i;
         z_step  = 1;
-        z_start = pX + 1;
-        z_end   = qMin(pX + SHRED_WIDTH*2, world->GetBound());
-        arrow_X = (pY - begin_y)*2 + 1;
+        z_start = player->X() + 1;
+        z_end   = qMin(player->X() + SHRED_WIDTH*2, world->GetBound());
+        arrow_X = (player->Y() - x_start)*2 + 1;
         break;
     case WEST:
         x = &j;
         x_step  = -1;
-        x_start = SCREEN_SIZE - 1 + begin_y;
-        x_end   = begin_y - 1;
+        x_end   = GetNormalStartY() - 1;
+        x_start = screenWidth/2 - 1 + x_end;
         z = &i;
         z_step  = -1;
-        z_start = pX - 1;
-        z_end   = qMax(0, pX - SHRED_WIDTH*2);
-        arrow_X = (SCREEN_SIZE - pY + begin_y)*2 - 1;
+        z_start = player->X() - 1;
+        z_end   = qMax(0, player->X() - SHRED_WIDTH*2);
+        arrow_X = (screenWidth/2 - player->Y() + x_end)*2 - 1;
         break;
     default:
         Q_UNREACHABLE();
         return;
     }
     const int k_start =
-        qBound(SCREEN_SIZE-1, player->Z()+SCREEN_SIZE/2, HEIGHT-1);
+        qBound(screenHeight-1, player->Z()+screenHeight/2, HEIGHT-1);
     if ( block_x > 0 ) {
         // ugly! use print function to get block by screen coordinates.
         int k = k_start - block_y + 1;
@@ -914,8 +907,7 @@ const {
     }
     const int sky_color = COLOR_PAIR(VirtScreen::Color(BLOCK, SKY));
     (void)wmove(rightWin, 1, 1);
-    for (int k=k_start; k>k_start-SCREEN_SIZE; --k, waddstr(rightWin, "__")) {
-        randomBlink = blinkOn ? qrand() : 0;
+    for (int k=k_start; k>k_start-screenHeight+2; --k, waddstr(rightWin, "__")) {
         for (*x=x_start; *x!=x_end; *x+=x_step) {
             for (*z=z_start; *z!=z_end && world->GetBlock(i, j, k)->
                         Transparent()==INVISIBLE;
@@ -938,9 +930,9 @@ const {
     if ( shiftFocus ) {
         const int ch =
             (( shiftFocus == 1 ) ? '^' : 'v') | COLOR_PAIR(WHITE_BLUE);
-        for (int q=arrow_Y-shiftFocus; 0<q && q<=SCREEN_SIZE; q-=shiftFocus) {
+        for (int q=arrow_Y-shiftFocus; 0<q && q<=screenWidth/2; q-=shiftFocus){
             mvwaddch(rightWin, q,               0, ch);
-            mvwaddch(rightWin, q, SCREEN_SIZE*2+1, ch);
+            mvwaddch(rightWin, q, screenWidth+1, ch);
         }
     }
     Arrows(rightWin, arrow_X, arrow_Y, dir);
@@ -973,7 +965,7 @@ const {
         }
         const QString str = block->GetNote();
         if ( not str.isEmpty() ) {
-            const int width = SCREEN_SIZE*2 - getcurx(window) - 3 - 8;
+            const int width = screenWidth - getcurx(window) - 3 - 8;
             waddstr(window, " ~:");
             if ( str.length() <= width ) {
                 waddwstr(window, str.toStdWString().c_str());
@@ -990,12 +982,12 @@ const {
     QString full_weight = tr("Full weight: %1 mz").
         arg(inv->Weight(), 6, 10, QChar(' '));
     mvwaddwstr( window, 2+inv->Size()+shift,
-        SCREEN_SIZE*2 + 1 - full_weight.length(),
+        screenWidth + 1 - full_weight.length(),
         full_weight.toStdWString().c_str() );
     wattrset(window, Color(block->Kind(), block->Sub()));
     box(window, 0, 0);
     if ( start != 0 ) {
-        mvwhline(window, 2+start, 1, ACS_HLINE, SCREEN_SIZE*2);
+        mvwhline(window, 2+start, 1, ACS_HLINE, screenWidth);
     }
     mvwprintw(window, 0, 1, "[%c] ", CharName( block->Kind(), block->Sub()));
     waddwstr(window, ((player->PlayerInventory() == inv) ?
@@ -1071,7 +1063,7 @@ void Screen::DeathScreen() {
     updated = true;
 }
 
-Screen::Screen(Player * const pl, int & error) :
+Screen::Screen(Player * const pl, int &) :
         VirtScreen(pl),
         lastNotification(),
         input(new IThread(this)),
@@ -1098,11 +1090,12 @@ Screen::Screen(Player * const pl, int & error) :
             wchar_t(ascii ? '.' : 0),
         },
         screen(newterm(nullptr, stdout, stdin)),
-        randomBlink(),
         showDistance(settings.value("show_distance", true).toBool()),
         farDistance(settings.value("use_abcdef_distance", false).toBool()),
         noMouseMask(),
-        mouseOn(settings.value("mouse_on", true).toBool())
+        mouseOn(settings.value("mouse_on", true).toBool()),
+        screenWidth((COLS / 2) - (COLS/2)%2),
+        screenHeight(LINES - 10)
 {
     #ifndef Q_OS_WIN32
         set_escdelay(10);
@@ -1117,14 +1110,7 @@ Screen::Screen(Player * const pl, int & error) :
         mousemask((mouseOn ? MOUSEMASK : noMouseMask), nullptr);
     }
     memset(windows, 0, sizeof(windows));
-    if ( LINES < 41 && IsScreenWide() ) {
-        printf("Make your terminal height to be at least 41 lines.\n");
-        error = HEIGHT_NOT_ENOUGH;
-        return;
-    } else if ( LINES < 39 ) {
-        printf("Make your terminal height to be at least 39 lines.\n");
-        error = HEIGHT_NOT_ENOUGH;
-    }
+
     // all available color pairs (maybe some of them will not be used)
     const int colors[] = { // do not change colors order!
         COLOR_BLACK,
@@ -1139,29 +1125,14 @@ Screen::Screen(Player * const pl, int & error) :
     for (int i=BLACK_BLACK; i<=WHITE_WHITE; ++i) {
         init_pair(i, colors[(i-1)/8], colors[(i-1)%8]);
     }
-    const int preferred_width = (SCREEN_SIZE*2+2)*2;
-    if ( IsScreenWide() ) {
-        int left_border = COLS/2-SCREEN_SIZE*2-2;
-        rightWin  = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, COLS/2);
-        leftWin   = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, left_border);
-        hudWin    = newwin(3, preferred_width, SCREEN_SIZE+2, left_border);
-        minimapWin = newwin(MINIMAP_HEIGHT, MINIMAP_WIDTH,
-            SCREEN_SIZE+5, left_border);
-        actionWin = newwin(7, ACTIONS_WIDTH,
-            SCREEN_SIZE+5, left_border += MINIMAP_WIDTH + 1);
-        notifyWin = newwin(0, 0, SCREEN_SIZE+5, left_border+=ACTIONS_WIDTH+1);
-    } else if ( COLS >= preferred_width/2 ) {
-        const int left_border = COLS/2-SCREEN_SIZE-1;
-        leftWin   = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, left_border);
-        hudWin    = newwin(2,SCREEN_SIZE*2+2-15, SCREEN_SIZE+2,left_border+15);
-        notifyWin = newwin(0,  0, SCREEN_SIZE+2+2, left_border+15);
-        actionWin = newwin(7, 15, SCREEN_SIZE+2,   left_border);
-    } else {
-        fputws(tr("Set your terminal width at least %1 chars.").
-            arg(SCREEN_SIZE*2+2).toStdWString().c_str(), stdout);
-        error = WIDTH_NOT_ENOUGH;
-        return;
-    }
+
+    leftWin  = newwin(screenHeight, screenWidth, 0, COLS/2%2);
+    rightWin = newwin(screenHeight, screenWidth, 0, COLS/2);
+    hudWin   = newwin(3, 0, screenHeight, 0);
+    minimapWin = newwin(MINIMAP_HEIGHT, MINIMAP_WIDTH, LINES-7, 0);
+    actionWin = newwin(7, ACTIONS_WIDTH, LINES-7, MINIMAP_WIDTH + 1);
+    notifyWin = newwin(0, 0, LINES-7, MINIMAP_WIDTH + 1 + ACTIONS_WIDTH + 1);
+
     scrollok(notifyWin, TRUE);
 
     if ( not PrintFile(stdscr, ":/texts/splash.txt") ) {
@@ -1213,11 +1184,6 @@ Screen::~Screen() {
 
 void Screen::Greet() const {
     Notify(tr("--- Game started. Press 'H' for help. ---"));
-    if ( not IsScreenWide() ) {
-        const int preferred_width = (SCREEN_SIZE*2+2)*2;
-        Notify(tr("For better gameplay set your"));
-        Notify(tr("terminal width at least %1 chars.").arg(preferred_width));
-    }
 }
 
 void Screen::PrintBar(const wchar_t ch, const int color, const int percent)
