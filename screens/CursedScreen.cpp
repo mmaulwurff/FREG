@@ -148,40 +148,40 @@ void Screen::PassString(QString & str) const {
     str = QString::fromUtf8(temp_str);
 }
 
-char Screen::CharNumber(const int z) const {
+char Screen::CharNumber(int z) const {
     if ( HEIGHT-1 == z ) { // sky
         return ' ';
     }
-    const int z_dif = ( UP==player->GetDir() ) ?
+    z = ( UP == player->GetDir() ) ?
         z - player->Z() : player->Z() - z;
-    return ( z_dif == 0 ) ?
+    return ( z == 0 ) ?
         ' ' :
-        ( z_dif<0 ) ?
+        ( z < 0 ) ?
             '-' :
-            ( z_dif<10 ) ?
-                z_dif+'0' :
-                ( farDistance && z_dif<=0xf ) ?
-                    z_dif-10+'a' :
+            ( z < 10 ) ?
+                z + '0' :
+                ( farDistance && z <= 0xf ) ?
+                    z - 10 + 'a' :
                     '+';
 }
 
-char Screen::CharNumberFront(const int i, const int j) const {
-    const int dist = (( NORTH==player->GetDir() || SOUTH==player->GetDir() ) ?
-        abs(player->Y()-j) :
-        abs(player->X()-i)) -1;
-    return ( dist == 0 ) ?
+char Screen::CharNumberFront(int i, const int j) const {
+    i = ( ( player->GetDir() > SOUTH ) ? // east or west
+        abs(player->X() - i) :
+        abs(player->Y() - j) ) - 1;
+    return ( i == 0 ) ?
         ' ' :
-        ( dist<10 ) ?
-            dist+'0' :
-            (farDistance && dist<=0xf) ?
-                dist-10+'a' :
+        ( i < 10 ) ?
+            i + '0' :
+            (farDistance && i <= 0xf) ?
+                i - 10 + 'a' :
                 '+';
 }
 
 int  Screen::RandomBlink() { return (RandomBit() * A_REVERSE); }
 bool Screen::RandomBit()   { return (qrand() & 1); }
 
-int Screen::Color(const int kind, const int sub) const {
+int Screen::Color(const int kind, const int sub) {
     const int color = COLOR_PAIR(VirtScreen::Color(kind, sub));
     switch ( kind ) { // foreground_background
     case TELEGRAPH: return color | A_BOLD;
@@ -588,7 +588,7 @@ Block * Screen::GetFocusedBlock() const {
 }
 
 void Screen::PrintBlock(const Block* const block, WINDOW* const window,
-        const char second) const
+        const char second)
 {
     const int kind = block->Kind();
     const int sub  = block->Sub();
@@ -661,38 +661,38 @@ void Screen::PrintHUD() {
         const int dur = player->GetBlock()->GetDurability();
         if ( dur > 0 ) { // HitPoints line
             static const int player_health_char = ascii ? '@' : 0x2665;
-            PrintBar(player_health_char,
+            PrintBar(hudWin, player_health_char,
                 int((dur > MAX_DURABILITY/5) ?
                     COLOR_PAIR(RED_BLACK) : (COLOR_PAIR(BLACK_RED) | A_BLINK)),
                 dur*100/MAX_DURABILITY);
         }
         static const struct {
-            QString name;
+            std::wstring name;
             int color;
         } satiation[] = {
-            { tr("Hungry"),    RED_BLACK },
-            { tr("Content"), WHITE_BLACK },
+            { tr("Hungry" ).toStdWString(),   RED_BLACK },
+            { tr("Content").toStdWString(), WHITE_BLACK },
             satiation[1],
-            { tr("Full"),    GREEN_BLACK },
-            { tr("Gorged"),   BLUE_BLACK }
+            { tr("Full"   ).toStdWString(), GREEN_BLACK },
+            { tr("Gorged" ).toStdWString(),  BLUE_BLACK }
         };
         waddstr(hudWin, "   ");
         const int satiation_state = player->SatiationPercent() / 25;
         wcolor_set(hudWin, satiation[satiation_state].color, nullptr);
         waddwstr(hudWin,
-            satiation[satiation_state].name.toStdWString().c_str());
+            satiation[satiation_state].name.c_str());
         waddch(hudWin, '\n');
         const int breath = player->BreathPercent();
         if ( breath != 100 ) {
-            static const int player_breath_char = ascii ? 'o' : 0x00b0;
-            PrintBar(player_breath_char, COLOR_PAIR(BLUE_BLACK), breath);
+            static const int breath_char = ascii ? 'o' : 0x00b0;
+            PrintBar(hudWin, breath_char, COLOR_PAIR(BLUE_BLACK), breath);
         }
     }
-    Block * const focused = GetFocusedBlock();
+    const Block * const focused = GetFocusedBlock();
     if ( focused && Block::GetSubGroup(focused->Sub()) != GROUP_AIR ) {
         const int left_border = getmaxx(hudWin);
         (void)wmove(hudWin, 0, left_border - 15);
-        PrintBar(CharName(focused->Kind(), focused->Sub()),
+        PrintBar(hudWin, CharName(focused->Kind(), focused->Sub()),
             Color(focused->Kind(), focused->Sub()),
             focused->GetDurability()*100/MAX_DURABILITY);
         wstandend(hudWin);
@@ -718,9 +718,10 @@ void Screen::PrintHUD() {
 } // void Screen::PrintHUD()
 
 void Screen::PrintQuickInventory() {
-    Inventory * const inv = player->PlayerInventory();
+    const Inventory * const inv = player->PlayerInventory();
     if ( inv==nullptr || not IsScreenWide() ) return;
 
+    wstandend(hudWin);
     const int inventory_size = inv->Size();
     int x = getmaxx(hudWin)/2 - inventory_size;
     for (int i=0; i<inventory_size; ++i) {
@@ -897,7 +898,7 @@ const {
         qBound(screenHeight-1, player->Z()+screenHeight/2, HEIGHT-1);
     if ( block_x > 0 ) {
         // ugly! use print function to get block by screen coordinates.
-        int k = k_start - block_y + 1;
+        const int k = k_start - block_y + 1;
         *x = x_start + x_step * (block_x-1)/2;
         for (*z=z_start; *z!=z_end && world->GetBlock(i, j, k)->
                     Transparent()==INVISIBLE;
@@ -905,9 +906,10 @@ const {
         player->Examine(i, j, k);
         return;
     }
+    const int k_end = k_start - screenHeight + 2;
     const int sky_color = COLOR_PAIR(VirtScreen::Color(BLOCK, SKY));
     (void)wmove(rightWin, 1, 1);
-    for (int k=k_start; k>k_start-screenHeight+2; --k, waddstr(rightWin, "__")) {
+    for (int k=k_start; k>k_end; --k, waddstr(rightWin, "__")) {
         for (*x=x_start; *x!=x_end; *x+=x_step) {
             for (*z=z_start; *z!=z_end && world->GetBlock(i, j, k)->
                         Transparent()==INVISIBLE;
@@ -1186,15 +1188,15 @@ void Screen::Greet() const {
     Notify(tr("--- Game started. Press 'H' for help. ---"));
 }
 
-void Screen::PrintBar(const wchar_t ch, const int color, const int percent)
+void Screen::PrintBar(WINDOW * const window,
+        const wchar_t ch, const int color, const int percent)
 {
-    wstandend(hudWin);
-    const int x = getcurx(hudWin);
-    waddstr(hudWin, "[..........]");
+    wstandend(window);
+    const int x = getcurx(window) + 1;
+    waddstr(window, "[..........]");
     const wchar_t durability_string[10] =
         {ch, ch, ch, ch, ch, ch, ch, ch, ch, ch};
-    wattrset(hudWin, color);
-    mvwaddnwstr(hudWin, getcury(hudWin), x +  1, durability_string,percent/10);
-    wstandend(hudWin);
-    mvwprintw  (hudWin, getcury(hudWin), x + 12, "%3d", percent);
+    wattrset(window, color);
+    mvwaddnwstr(window, getcury(window), x, durability_string, percent/10);
+    mvwprintw  (window, getcury(window), x + 11, "%3d", percent);
 }

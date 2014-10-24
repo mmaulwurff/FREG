@@ -57,7 +57,6 @@ Shred * World::GetNearShred(Shred * const shred, const dirs dir) const {
     }
 }
 
-int World::NumShreds() const { return numShreds; }
 int World::TimeOfDay() const { return time % SECONDS_IN_DAY; }
 int World::MiniTime() const { return timeStep; }
 quint64 World::Time() const { return time; }
@@ -351,16 +350,16 @@ const {
     y_from *= max;
     z_from *= max;
     for (int i=max-1; i-- > 0; ) {
-        if ( not (GetBlock(
+        if ( not (GetBlock( // floor
                     static_cast<unsigned>(x_from+=x)/max,
                     static_cast<unsigned>(y_from+=y)/max,
                     static_cast<unsigned>(z_from+=z)/max )->Transparent()
-                && GetBlock(
-                    static_cast<unsigned>(x_from+max-1)/max,
-                    static_cast<unsigned>(y_from+max-1)/max,
-                    static_cast<unsigned>(z_from+max-1)/max )->Transparent()) )
+                && GetBlock( // ceil
+                    static_cast<unsigned>(x_from-1)/max + 1,
+                    static_cast<unsigned>(y_from-1)/max + 1,
+                    static_cast<unsigned>(z_from-1)/max + 1)->Transparent()) )
         {
-                return false;
+            return false;
         }
     }
     return true;

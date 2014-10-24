@@ -104,7 +104,7 @@ public: // Information section
     /// False on error, true if focus is received to _targ successfully.
     bool Focus(int x, int y, int z,
             int * x_targ, int * y_targ, int * z_targ, dirs dir) const;
-    int NumShreds() const;
+    inline int NumShreds() const { return numShreds; }
     bool ShredInCentralZone(long longi, long  lati) const;
     static dirs TurnRight(dirs dir);
     static dirs TurnLeft (dirs dir);

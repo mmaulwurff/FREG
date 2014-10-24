@@ -103,8 +103,6 @@ private:
     /// second - otherwise - examines block at position x, y.
     void PrintFront(dirs direction, int x = -1, int y = 0) const;
     void PrintInv(WINDOW *, const Block *, const Inventory *) const;
-    /// Can print health, breath and other bars on hudWin.
-    void PrintBar(wchar_t ch, int color, int percent);
     /// Returns false when file does not exist, otherwise true.
     bool PrintFile(WINDOW *, QString const & file_name);
     void PrintHUD();
@@ -113,18 +111,22 @@ private:
     void CleanFileToShow();
     void RePrint();
     void InventoryAction(int num) const;
-    int  Color(int kind, int sub) const;
     int  ColorShred(shred_type)   const;
-    void PrintBlock(const Block *, WINDOW *, char second) const;
     int  ColoredChar(const Block *) const;
     void SetActionMode(actions mode);
     void ProcessCommand(QString command);
     void ProcessMouse();
     void MovePlayer(dirs dir);
     void MovePlayerDiag(dirs dir1, dirs dir2) const;
+
+    /// Can print health, breath and other bars on hudWin.
+    static void PrintBar(WINDOW *, wchar_t ch, int color, int percent);
+    static int  Color(int kind, int sub);
+    static void PrintBlock(const Block *, WINDOW *, char second);
     static bool IsScreenWide();
     static int  RandomBlink();
     static bool RandomBit();
+
     /// Returns nullptr if block is not player->Visible().
     Block * GetFocusedBlock() const;
     inline static void PrintVerticalDirection(WINDOW *, int y, int x, dirs);
