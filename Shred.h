@@ -74,7 +74,11 @@ public:
     }
 
     // Lighting section
-    int Lightmap(  int x, int y, int z) const;
+
+    inline int Lightmap(const int x, const int y, const int z) const {
+        return lightMap[x][y][z];
+    }
+
     int FireLight( int x, int y, int z) const;
     int SunLight(  int x, int y, int z) const;
     int LightLevel(int x, int y, int z) const;

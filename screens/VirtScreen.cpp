@@ -76,14 +76,6 @@ World * VirtScreen::GetWorld() const { return world; }
 
 int VirtScreen::Color(const int kind, const int sub) {
     switch ( kind ) { // foreground_background
-    case LIQUID: switch ( sub ) {
-        case WATER:     return CYAN_BLUE;
-        case SUB_CLOUD: return BLACK_WHITE;
-        case ACID:      return GREEN_GREEN;
-        case H_MEAT:
-        case A_MEAT:    return BLACK_RED;
-        default:        return RED_YELLOW;
-        } break;
     case FALLING: switch ( sub ) {
         case WATER: return   CYAN_WHITE;
         case SAND:  return YELLOW_WHITE;
@@ -117,11 +109,19 @@ int VirtScreen::Color(const int kind, const int sub) {
         case SUB_DUST:   return   BLACK_BLACK;
         case FIRE:       return     RED_YELLOW;
         case ACID:       return   GREEN_GREEN;
-        }
+        } break;
+    case LIQUID: switch ( sub ) {
+        case WATER:     return CYAN_BLUE;
+        case SUB_CLOUD: return BLACK_WHITE;
+        case ACID:      return GREEN_GREEN;
+        case H_MEAT:
+        case A_MEAT:    return BLACK_RED;
+        default:        return RED_YELLOW;
+        } break;
     case DWARF: switch ( sub ) {
         case ADAMANTINE: return  CYAN_BLACK;
         default:         return WHITE_BLUE ;
-        }
+        } break;
     case RABBIT:    return  RED_WHITE;
     case PREDATOR:  return  RED_BLACK;
     case TELEGRAPH: return BLUE_BLUE;
@@ -133,10 +133,29 @@ int VirtScreen::Color(const int kind, const int sub) {
 char VirtScreen::CharName(const int kind, const int sub) {
     // do not use abcdef as they can be used as distance specifiers.
     switch ( static_cast<kinds>(kind) ) {
+    case FALLING: switch ( sub ) {
+        case SAND:  return '.';
+        case WATER: return '*';
+        case STONE: return ':';
+    } // no break;
+    case BLOCK: switch ( sub ) {
+        default:    return '#';
+        case SOIL:  return '.';
+        case WATER: return '~';
+        case GREENERY: return '%';
+        case A_MEAT:
+        case H_MEAT: return ',';
+        case GLASS: return 'g';
+        case ROSE:  return ';';
+        case COAL:  return '*';
+        case STAR:  return '.';
+        case SKY:
+        case AIR:   return ' ';
+        } break;
+    case GRASS:  return ( FIRE == sub ) ? '^' : '.';
     case BUSH:   return ';';
     case DWARF:  return '@';
     case LIQUID: return '~';
-    case GRASS:  return ( FIRE == sub ) ? '^' : '.';
     case RABBIT: return 'r';
     case CLOCK:  return 'C';
     case PLATE:  return '_';
@@ -172,25 +191,6 @@ char VirtScreen::CharName(const int kind, const int sub) {
     case TELEPORT:  return '0';
     case RAIN_MACHINE: return 'R';
     case ACCUMULATOR: return '=';
-    case FALLING: switch ( sub ) {
-        case SAND:  return '.';
-        case WATER: return '*';
-        case STONE: return ':';
-    } // no break;
-    case BLOCK: switch ( sub ) {
-        default:    return '#';
-        case SOIL:  return '.';
-        case WATER: return '~';
-        case GREENERY: return '%';
-        case A_MEAT:
-        case H_MEAT: return ',';
-        case GLASS: return 'g';
-        case ROSE:  return ';';
-        case COAL:  return '*';
-        case STAR:  return '.';
-        case SKY:
-        case AIR:   return ' ';
-        } break;
     case LAST_KIND: break;
     }
     Q_UNREACHABLE();

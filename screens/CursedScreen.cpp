@@ -102,7 +102,11 @@ const {
 }
 
 void Screen::RePrint() {
-    clear();
+    erase();
+    refresh();
+    for (int i=0; i<WINDOW_COUNT; ++i) {
+        wclear(windows[i]);
+    }
     static const QString action_strings[] = {
         tr("[U] use, eat"),
         tr("[T] throw"),
@@ -118,9 +122,9 @@ void Screen::RePrint() {
         waddch(actionWin, '\n');
     }
     mvwchgat(actionWin, actionMode, 0, -1, A_NORMAL, BLACK_WHITE, nullptr);
-    refresh();
-    wrefresh(actionWin);
     updated = false;
+    Print();
+    wrefresh(actionWin);
 }
 
 void Screen::Update(int, int, int) { updated = false; }
@@ -179,29 +183,26 @@ char Screen::CharNumberFront(int i, const int j) const {
 }
 
 int  Screen::RandomBlink() { return (RandomBit() * A_REVERSE); }
-bool Screen::RandomBit()   { return (qrand() & 1); }
+
+bool Screen::RandomBit() {
+    static unsigned rands = 0;
+    return 1 & ( rands ?
+        (rands >>= 1) :
+        (rands = qrand()) );
+}
 
 int Screen::Color(const int kind, const int sub) {
     const int color = COLOR_PAIR(VirtScreen::Color(kind, sub));
     switch ( kind ) { // foreground_background
-    case TELEGRAPH: return color | A_BOLD;
-    case TELEPORT:  return color | (RandomBit() ? A_BOLD : 0);
-    case LIQUID: switch ( sub ) {
-        case H_MEAT:
-        case A_MEAT:
-        case SUB_CLOUD: return color;
-        default:        return color | RandomBlink();
-        case ACID:      return color | RandomBlink() | A_BOLD;
-        case WATER: return RandomBit() ? color : COLOR_PAIR(BLUE_BLUE)|A_BOLD;
-        } break;
     default: switch ( sub ) {
-        case GOLD:       return color | RandomBlink();
+        default:         return color;
         case IRON:
         case NULLSTONE:
         case DIAMOND:    return color | A_BOLD;
         case ACID:
         case SUB_DUST:   return color | A_BOLD  | A_REVERSE;
         case FIRE:       return color | A_BLINK | RandomBlink();
+        case GOLD:       return color | RandomBlink();
         case SKY:
         case STAR:
             if ( world->GetEvernight() ) return COLOR_PAIR(BLACK_BLACK);
@@ -212,8 +213,17 @@ int Screen::Color(const int kind, const int sub) {
             case TIME_NOON:    return COLOR_PAIR( CYAN_CYAN);
             case TIME_EVENING: return COLOR_PAIR(WHITE_CYAN);
             } break;
-        default: return color;
         } break;
+    case LIQUID: switch ( sub ) {
+        case H_MEAT:
+        case A_MEAT:
+        case SUB_CLOUD: return color;
+        default:        return color | RandomBlink();
+        case ACID:      return color | RandomBlink() | A_BOLD;
+        case WATER: return RandomBit() ? color : COLOR_PAIR(BLUE_BLUE)|A_BOLD;
+        } break;
+    case TELEGRAPH: return color | A_BOLD;
+    case TELEPORT:  return color | (RandomBit() ? A_BOLD : 0);
     }
 } // color_pairs Screen::Color(int kind, int sub)
 
@@ -540,6 +550,7 @@ void Screen::ProcessCommand(const QString command) {
 void Screen::SetActionMode(const actions mode) {
     mvwchgat(actionWin, actionMode,     0, -1, A_NORMAL, WHITE_BLACK, nullptr);
     mvwchgat(actionWin, actionMode=mode,0, -1, A_NORMAL, BLACK_WHITE, nullptr);
+    wrefresh(actionWin);
     switch ( mode ) {
     case ACTION_USE:      Notify(tr("Action: use in inventory."));      break;
     case ACTION_THROW:    Notify(tr("Action: throw from inventory."));  break;
@@ -549,8 +560,6 @@ void Screen::SetActionMode(const actions mode) {
     case ACTION_CRAFT:    Notify(tr("Action: craft in inventory."));    break;
     case ACTION_WIELD:    Notify(tr("Action: organize equipment."));    break;
     }
-    wrefresh(actionWin);
-    updated = false;
 }
 
 void Screen::InventoryAction(const int num) const {
@@ -610,7 +619,7 @@ void Screen::Print() {
     PrintHUD();
     const dirs dir = player->GetDir();
     if ( player->UsingSelfType() != USAGE_TYPE_OPEN ) { // left window
-        PrintNormal(leftWin, (UP==dir || DOWN==dir) ? NORTH : dir);
+        PrintNormal(leftWin, (dir >= DOWN) ? NORTH : dir);
     } else {
         PrintInv(leftWin, player->GetBlock(), player->PlayerInventory());
     }
@@ -646,6 +655,10 @@ void Screen::Print() {
         }
     }
     world->Unlock();
+
+    for (int i=1; i<WINDOW_COUNT; ++i) {
+        wrefresh(windows[i]);
+    }
 } // void Screen::Print()
 
 void Screen::PrintHUD() {
@@ -713,7 +726,6 @@ void Screen::PrintHUD() {
         }
     }
     PrintQuickInventory();
-    wrefresh(hudWin);
     PrintMiniMap();
 } // void Screen::PrintHUD()
 
@@ -725,7 +737,7 @@ void Screen::PrintQuickInventory() {
     const int inventory_size = inv->Size();
     int x = getmaxx(hudWin)/2 - inventory_size;
     for (int i=0; i<inventory_size; ++i) {
-        mvwaddch(hudWin, 0, x, 'a'+i | COLOR_PAIR(WHITE_BLACK));
+        mvwaddch(hudWin, 0, x, 'a' + i);
         switch ( inv->Number(i) ) {
         case  0: break;
         default: mvwaddch(hudWin, 2, x, inv->Number(i)+'0'); // no break;
@@ -763,16 +775,15 @@ void Screen::PrintMiniMap() {
     DrawBorder(minimapWin);
     static const std::wstring title = tr("Minimap").toStdWString();
     mvwaddwstr(minimapWin, 0, 1, title.c_str());
-    wrefresh(minimapWin);
 }
 
 int Screen::GetNormalStartX() const {
-    return qBound(0, player->X() - screenWidth/4,
+    return qBound(0, player->X() - screenWidth/4 + 1,
         GetWorld()->GetBound() - screenWidth/2 - 1);
 }
 
 int Screen::GetNormalStartY() const {
-    return qBound(0, player->Y() - screenHeight/2,
+    return qBound(0, player->Y() - screenHeight/2 + 1,
         GetWorld()->GetBound() - screenHeight - 1);
 }
 
@@ -825,7 +836,6 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
         mvwaddch(leftWin, screenHeight+1,   0, ch);
         mvwaddch(leftWin, screenHeight+1, screenWidth+1, ch);
     }
-    wrefresh(window);
 } // void Screen::PrintNormal(WINDOW * window, int dir)
 
 void Screen::DrawBorder(WINDOW * const window) const {
@@ -871,7 +881,8 @@ const {
     case EAST:
         x = &j;
         x_step  = 1;
-        x_start = GetNormalStartY();
+        x_start = qBound(0, player->Y() - screenWidth/4 - 1,
+            GetWorld()->GetBound() - screenWidth/2 - 1);
         x_end   = screenWidth/2 - 1 + x_start;
         z = &i;
         z_step  = 1;
@@ -882,7 +893,8 @@ const {
     case WEST:
         x = &j;
         x_step  = -1;
-        x_end   = GetNormalStartY() - 1;
+        x_end   = qBound(0, player->Y() - screenWidth/4 - 1,
+            GetWorld()->GetBound() - screenWidth/2 - 1) - 1;
         x_start = screenWidth/2 - 1 + x_end;
         z = &i;
         z_step  = -1;
@@ -907,7 +919,7 @@ const {
         return;
     }
     const int k_end = k_start - screenHeight + 2;
-    const int sky_color = COLOR_PAIR(VirtScreen::Color(BLOCK, SKY));
+    const int sky_color = Color(BLOCK, SKY);
     (void)wmove(rightWin, 1, 1);
     for (int k=k_start; k>k_end; --k, waddstr(rightWin, "__")) {
         for (*x=x_start; *x!=x_end; *x+=x_step) {
@@ -933,12 +945,11 @@ const {
         const int ch =
             (( shiftFocus == 1 ) ? '^' : 'v') | COLOR_PAIR(WHITE_BLUE);
         for (int q=arrow_Y-shiftFocus; 0<q && q<=screenWidth/2; q-=shiftFocus){
-            mvwaddch(rightWin, q,               0, ch);
+            mvwaddch(rightWin, q,             0, ch);
             mvwaddch(rightWin, q, screenWidth+1, ch);
         }
     }
     Arrows(rightWin, arrow_X, arrow_Y, dir);
-    wrefresh(rightWin);
 } // void Screen::PrintFront(dirs)
 
 void Screen::PrintInv(WINDOW * const window,
@@ -994,7 +1005,6 @@ const {
     mvwprintw(window, 0, 1, "[%c] ", CharName( block->Kind(), block->Sub()));
     waddwstr(window, ((player->PlayerInventory() == inv) ?
         tr("Your inventory") : block->FullName()).toStdWString().c_str() );
-    wrefresh(window);
 } // void Screen::PrintInv(WINDOW *, const Block *, const Inventory *)
 
 void Screen::CleanFileToShow() {
@@ -1010,7 +1020,6 @@ bool Screen::PrintFile(WINDOW * const window, QString const & file_name) {
         const QByteArray text = fileToShow->readAll();
         waddwstr(window,
             QString::fromUtf8(text.constData()).toStdWString().c_str() );
-        wrefresh(window);
         return true;
     } else {
         CleanFileToShow();
@@ -1046,7 +1055,6 @@ void Screen::Notify(const QString str) const {
         waddwstr(notifyWin, (lastNotification = str).toStdWString().c_str());
         waddch(notifyWin, '\n');
     }
-    wrefresh(notifyWin);
 }
 
 void Screen::DeathScreen() {
@@ -1067,18 +1075,30 @@ void Screen::DeathScreen() {
 
 Screen::Screen(Player * const pl, int &) :
         VirtScreen(pl),
+        screen(newterm(nullptr, stdout, stdin)),
+        screenWidth((COLS / 2) - (COLS/2)%2),
+        screenHeight(LINES - 10),
+        windows {
+            newwin(7, ACTIONS_WIDTH, LINES-7, MINIMAP_WIDTH + 1),
+            newwin(0, 0, LINES-7, MINIMAP_WIDTH + 1 + ACTIONS_WIDTH + 1),
+            newwin(3, 0, screenHeight, 0),
+            newwin(MINIMAP_HEIGHT, MINIMAP_WIDTH, LINES-7, 0),
+            newwin(screenHeight, screenWidth, 0, COLS/2%2),
+            newwin(screenHeight, screenWidth, 0, COLS/2)
+        },
         lastNotification(),
         input(new IThread(this)),
-        updated(),
+        updated(false),
         notifyLog(fopen(qPrintable(home_path + "log.txt"), "at")),
-        actionMode(ACTION_USE),
+        actionMode(static_cast<actions>
+            (settings.value("action_mode", ACTION_USE).toInt())),
         shiftFocus(settings.value("focus_shift", 0).toInt()),
         fileToShow(nullptr),
         beepOn (settings.value("beep_on",  false).toBool()),
         flashOn(settings.value("flash_on", true ).toBool()),
         ascii  (settings.value("ascii",    false).toBool()),
         blinkOn(settings.value("blink_on", true ).toBool()),
-        arrows{
+        arrows {
             { wchar_t('.') },
             { wchar_t('x') },
             { wchar_t(ascii ? '^' : 0x2191) },
@@ -1086,18 +1106,15 @@ Screen::Screen(Player * const pl, int &) :
             { wchar_t(ascii ? '>' : 0x2192) },
             { wchar_t(ascii ? '<' : 0x2190) }
         },
-        ellipsis{
+        ellipsis {
             wchar_t(ascii ? '.' : 0x2026 ),
             wchar_t(ascii ? '.' : 0),
             wchar_t(ascii ? '.' : 0),
         },
-        screen(newterm(nullptr, stdout, stdin)),
         showDistance(settings.value("show_distance", true).toBool()),
         farDistance(settings.value("use_abcdef_distance", false).toBool()),
         noMouseMask(),
-        mouseOn(settings.value("mouse_on", true).toBool()),
-        screenWidth((COLS / 2) - (COLS/2)%2),
-        screenHeight(LINES - 10)
+        mouseOn(settings.value("mouse_on", true).toBool())
 {
     #ifndef Q_OS_WIN32
         set_escdelay(10);
@@ -1111,7 +1128,6 @@ Screen::Screen(Player * const pl, int &) :
     if ( not mouseOn ) {
         mousemask((mouseOn ? MOUSEMASK : noMouseMask), nullptr);
     }
-    memset(windows, 0, sizeof(windows));
 
     // all available color pairs (maybe some of them will not be used)
     const int colors[] = { // do not change colors order!
@@ -1128,13 +1144,6 @@ Screen::Screen(Player * const pl, int &) :
         init_pair(i, colors[(i-1)/8], colors[(i-1)%8]);
     }
 
-    leftWin  = newwin(screenHeight, screenWidth, 0, COLS/2%2);
-    rightWin = newwin(screenHeight, screenWidth, 0, COLS/2);
-    hudWin   = newwin(3, 0, screenHeight, 0);
-    minimapWin = newwin(MINIMAP_HEIGHT, MINIMAP_WIDTH, LINES-7, 0);
-    actionWin = newwin(7, ACTIONS_WIDTH, LINES-7, MINIMAP_WIDTH + 1);
-    notifyWin = newwin(0, 0, LINES-7, MINIMAP_WIDTH + 1 + ACTIONS_WIDTH + 1);
-
     scrollok(notifyWin, TRUE);
 
     if ( not PrintFile(stdscr, ":/texts/splash.txt") ) {
@@ -1143,27 +1152,27 @@ Screen::Screen(Player * const pl, int &) :
     addwstr((tr("\nVersion %1.\n\nPress any key.").arg(VER)).
         toStdWString().c_str());
     qsrand(getch());
+
     CleanFileToShow();
     RePrint();
     Greet();
-    SetActionMode(static_cast<actions>
-        (settings.value("action_mode", ACTION_USE).toInt()));
-    Print();
-    input->start();
-    connect(world, SIGNAL(UpdatesEnded()), SLOT(Print()),
+
+    connect(world, &World::UpdatesEnded, this, &Screen::Print,
         Qt::DirectConnection);
+
+    input->start();
 } // Screen::Screen(Player * const pl, int & error, bool _ascii)
 
 Screen::~Screen() {
     world->Lock();
-    disconnect(world, SIGNAL(UpdatesEnded()), this, SLOT(Print()));
+    disconnect(world, &World::UpdatesEnded, this, &Screen::Print);
     world->Unlock();
 
     input->Stop();
     input->wait();
     delete input;
 
-    for (ulong i=0; i<sizeof(windows)/sizeof(windows[0]); ++i) {
+    for (int i=0; i<WINDOW_COUNT; ++i) {
         delwin(windows[i]);
     }
     endwin();

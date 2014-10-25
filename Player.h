@@ -94,7 +94,7 @@ public:
     long GetLongitude() const;
     long GetLatitude() const;
 
-    bool GetCreativeMode() const;
+    inline bool GetCreativeMode() const { return creativeMode; }
     void SetCreativeMode(bool turn);
 
     void SetDir(dirs);

@@ -220,10 +220,6 @@ int World::FireLight(const int x, const int y, const int z) const {
 
 // Shred methods
 
-int Shred::Lightmap(const int x, const int y, const int z) const {
-    return lightMap[x][y][z];
-}
-
 int Shred::FireLight(const int x, const int y, const int z) const {
     return ((lightMap[x][y][z] & 0xF0) >> 4) * FIRE_LIGHT_FACTOR;
 }

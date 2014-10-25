@@ -38,12 +38,12 @@
 #include "screens/VirtScreen.h"
 
 enum windows_numbers {
-    WINDOW_LEFT,
-    WINDOW_RIGHT,
+    WINDOW_ACTION,
     WINDOW_NOTIFY,
     WINDOW_HUD,
     WINDOW_MINIMAP,
-    WINDOW_ACTION,
+    WINDOW_LEFT,
+    WINDOW_RIGHT,
     WINDOW_COUNT // keep it last
 };
 
@@ -140,13 +140,17 @@ private:
     void Greet() const;
     void DrawBorder(WINDOW *) const;
 
-    WINDOW * windows[WINDOW_COUNT];
-    WINDOW *& leftWin    = windows[WINDOW_LEFT];
-    WINDOW *& rightWin   = windows[WINDOW_RIGHT];
-    WINDOW *& notifyWin  = windows[WINDOW_NOTIFY];
-    WINDOW *& hudWin     = windows[WINDOW_HUD]; // head-up display
-    WINDOW *& minimapWin = windows[WINDOW_MINIMAP];
-    WINDOW *& actionWin  = windows[WINDOW_ACTION];
+    SCREEN * const screen;
+    const int screenWidth;
+    const int screenHeight;
+
+    WINDOW * const windows[WINDOW_COUNT];
+    WINDOW * const & actionWin  = windows[WINDOW_ACTION];
+    WINDOW * const & notifyWin  = windows[WINDOW_NOTIFY];
+    WINDOW * const & hudWin     = windows[WINDOW_HUD]; // head-up display
+    WINDOW * const & minimapWin = windows[WINDOW_MINIMAP];
+    WINDOW * const & leftWin    = windows[WINDOW_LEFT];
+    WINDOW * const & rightWin   = windows[WINDOW_RIGHT];
     mutable QString lastNotification;
     IThread * const input;
     volatile bool updated;
@@ -160,16 +164,12 @@ private:
     bool blinkOn;
     const wchar_t arrows[WEST+1][2];
     const wchar_t ellipsis[4];
-    SCREEN * const screen;
     mutable bool inputActive = false;
     bool showDistance;
     bool farDistance;
 
     mmask_t noMouseMask;
     bool mouseOn;
-
-    const int screenWidth;
-    const int screenHeight;
 };
 
 #endif // CURSEDSCREEN_H

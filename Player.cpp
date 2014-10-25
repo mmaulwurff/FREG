@@ -56,7 +56,6 @@ void Player::SetUsingTypeNo() { usingType = USAGE_TYPE_NO; }
 int  Player::GetUsingInInventory() const { return usingInInventory; }
 long Player::GetLongitude() const { return GetShred()->Longitude(); }
 long Player::GetLatitude()  const { return GetShred()->Latitude();  }
-bool Player::GetCreativeMode() const { return creativeMode; }
 const Block * Player::GetBlock() const { return player; }
 
 void Player::SetCreativeMode(const bool creative_on) {
