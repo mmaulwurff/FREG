@@ -230,60 +230,6 @@
             Inventory(str, BUSH_SIZE)
     {}
 
-// Rabbit::
-    int Rabbit::Attractive(const int sub) const {
-        switch ( sub ) {
-        case GREENERY: return   1;
-        case H_MEAT:   return -16;
-        case A_MEAT:   return - 1;
-        case SAND:     return - 1;
-        default:       return   0;
-        }
-    }
-
-    void Rabbit::DoRareAction() {
-        // eat sometimes
-        if ( SECONDS_IN_DAY/2 > Satiation() ) {
-            EatGrass();
-        }
-        if ( not moved_in_this_turn ) {
-            switch ( qrand()%60 ) {
-            case 0: SetDir(NORTH); break;
-            case 1: SetDir(SOUTH); break;
-            case 2: SetDir(EAST);  break;
-            case 3: SetDir(WEST);  break;
-            default: if ( Gravitate(4, 1, 3, 4) ) {
-                if ( qrand()%2 ) {
-                    GetWorld()->Jump(X(), Y(), Z(), GetDir());
-                } else {
-                    GetWorld()->Move(X(), Y(), Z(), GetDir());
-                }
-                moved_in_this_turn = false; // for next turn
-            } return;
-            }
-            GetWorld()->Move(X(), Y(), Z(), GetDir());
-        }
-        moved_in_this_turn = false; // for next turn
-        Animal::DoRareAction();
-    }
-
-    QString Rabbit::FullName() const { return tr("Herbivore"); }
-
-    void Rabbit::ActFrequent() {
-        if ( Gravitate(2, 1, 2, 4) ) {
-            if ( qrand()%2 ) {
-                world->Jump(X(), Y(), Z(), GetDir());
-            } else {
-                world->Move(X(), Y(), Z(), GetDir());
-            }
-            moved_in_this_turn = true;
-        }
-    }
-
-    int Rabbit::NutritionalValue(const subs sub) const {
-        return ( GREENERY == sub ) ? SECONDS_IN_HOUR*4 : 0;
-    }
-
 // Door::
     void Door::Damage(const int dmg, const int dmg_kind) {
         if ( dmg_kind >= DAMAGE_PUSH_UP

@@ -20,8 +20,8 @@
 #ifndef BLOCKS_H
 #define BLOCKS_H
 
-#include "Inventory.h"
-#include "blocks/Animal.h"
+#include "blocks/Inventory.h"
+#include "blocks/Active.h"
 
 class Plate : public Block {
 public:
@@ -104,22 +104,6 @@ public:
 protected:
     void DoRareAction() override;
     void SaveAttributes(QDataStream & out) const override;
-};
-
-class Rabbit : public Animal {
-    Q_OBJECT
-public:
-    using Animal::Animal;
-
-    QString FullName() const override;
-    void ActFrequent() override;
-
-protected:
-    void DoRareAction() override;
-    int  Attractive(int sub) const override;
-
-private:
-    int NutritionalValue(subs) const override;
 };
 
 class Door : public Active {

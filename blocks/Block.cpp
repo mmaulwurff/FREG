@@ -175,7 +175,6 @@ Falling * Block::ShouldFall() { return nullptr; }
 
 void Block::Restore() { durability = MAX_DURABILITY; }
 void Block::Break()   { durability = 0; }
-dirs Block::GetDir() const { return static_cast<dirs>(direction); }
 int  Block::GetDurability() const { return durability; }
 
 QString Block::GetNote() const {

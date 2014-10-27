@@ -20,9 +20,10 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <QObject>
 #include "header.h"
 #include "Xyz.h"
+#include "blocks/Animal.h"
+#include <QObject>
 
 class World;
 class Block;
@@ -64,7 +65,7 @@ public:
     using Xyz::Z;
 
     /// This returns current player direction (see enum dirs in header.h)
-    dirs GetDir() const;
+    inline dirs GetDir() const { return player->GetDir(); }
 
     /// This returns player hitpoints, also known as durability.
     int HP() const;

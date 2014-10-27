@@ -43,7 +43,7 @@ public:
     Block  * DropAfterDamage(bool * delete_block) override;
     inner_actions ActInner() override;
 
-    void SetDeferredAction(DeferredAction *);
+    DeferredAction * GetDeferredAction();
 
 protected:
     void SaveAttributes(QDataStream & out) const override;
@@ -58,6 +58,26 @@ private:
     quint16 satiation;
     DeferredAction * deferredAction = nullptr;
 }; // class Animal
+
+// Rabbit
+
+class Rabbit : public Animal {
+    Q_OBJECT
+public:
+    using Animal::Animal;
+
+    QString FullName() const override;
+    void ActFrequent() override;
+
+protected:
+    void DoRareAction() override;
+    int  Attractive(int sub) const override;
+
+private:
+    int NutritionalValue(subs) const override;
+}; // class Rabbit
+
+// Predator
 
 class Predator : public Animal {
     Q_OBJECT

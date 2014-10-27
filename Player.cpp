@@ -20,7 +20,6 @@
 #include <QTextStream>
 #include <QMutexLocker>
 #include <QSettings>
-#include "blocks/Animal.h"
 #include "blocks/Inventory.h"
 #include "Player.h"
 #include "World.h"
@@ -48,7 +47,6 @@ long Player::GlobalY() const { return GetShred()->GlobalY(Y()); }
 Shred * Player::GetShred() const { return player->GetShred(); }
 World * Player::GetWorld() const { return world; }
 
-dirs Player::GetDir() const { return player->GetDir(); }
 int  Player::UsingType() const { return usingType; }
 void Player::StopUseAll() { usingType = usingSelfType = USAGE_TYPE_NO; }
 int  Player::UsingSelfType() const { return usingSelfType; }
@@ -138,25 +136,20 @@ void Player::Examine(const int x, const int y, const int z) {
 }
 
 void Player::Jump() {
-    if ( not GetBlock() ) return;
     usingType = USAGE_TYPE_NO;
-    DeferredAction * const def_action = new DeferredAction(player);
     if ( GetCreativeMode() ) {
-        def_action->SetGhostMove(GetDir());
+        player->GetDeferredAction()->SetGhostMove(GetDir());
     } else {
-        def_action->SetJump();
+        player->GetDeferredAction()->SetJump();
     }
-    player->SetDeferredAction(def_action);
 }
 
 void Player::Move(const dirs direction) {
-    DeferredAction * const def_action = new DeferredAction(player);
     if ( GetCreativeMode() ) {
-        def_action->SetGhostMove(direction);
+        player->GetDeferredAction()->SetGhostMove(direction);
     } else {
-        def_action->SetMove(direction);
+        player->GetDeferredAction()->SetMove(direction);
     }
-    player->SetDeferredAction(def_action);
 }
 
 void Player::Backpack() {
@@ -231,16 +224,12 @@ usage_types Player::Use(const int num) {
     case USAGE_TYPE_POUR: {
         int x_targ, y_targ, z_targ;
         emit GetFocus(&x_targ, &y_targ, &z_targ);
-        DeferredAction * const def_action = new DeferredAction(player);
-        def_action->SetPour(x_targ, y_targ, z_targ, num);
-        player->SetDeferredAction(def_action);
+        player->GetDeferredAction()->SetPour(x_targ, y_targ, z_targ, num);
         } break;
     case USAGE_TYPE_SET_FIRE: {
         int x_targ, y_targ, z_targ;
         emit GetFocus(&x_targ, &y_targ, &z_targ);
-        DeferredAction * const def_action = new DeferredAction(player);
-        def_action->SetSetFire(x_targ, y_targ, z_targ);
-        player->SetDeferredAction(def_action);
+        player->GetDeferredAction()->SetSetFire(x_targ, y_targ, z_targ);
         } break;
     case USAGE_TYPE_INNER: break;
     default:
@@ -255,9 +244,7 @@ void Player::Throw(const int src, const int dest, const int num) {
     if ( ValidBlock(src) == nullptr ) return;
     int x, y, z;
     emit GetFocus(&x, &y, &z);
-    DeferredAction * const def_action = new DeferredAction(player);
-    def_action->SetThrow(x, y, z, src, dest, num);
-    player->SetDeferredAction(def_action);
+    player->GetDeferredAction()->SetThrow(x, y, z, src, dest, num);
 }
 
 bool Player::Obtain(const int src, const int dest, const int num) {
@@ -309,9 +296,7 @@ void Player::Build(const int slot) {
     if ( block != nullptr && (AIR != world->GetBlock(X(), Y(), Z()-1)->Sub()
             || 0 == player->Weight()) )
     {
-        DeferredAction * const def_action = new DeferredAction(player);
-        def_action->SetBuild(x_targ, y_targ, z_targ, slot);
-        player->SetDeferredAction(def_action);
+        player->GetDeferredAction()->SetBuild(x_targ, y_targ, z_targ, slot);
     }
 }
 
@@ -421,9 +406,7 @@ bool Player::Damage() const {
     int x, y, z;
     emit GetFocus(&x, &y, &z);
     if ( GetWorld()->InBounds(x, y, z) ) {
-        DeferredAction * const def_action = new DeferredAction(player);
-        def_action->SetDamage(x, y, z);
-        player->SetDeferredAction(def_action);
+        player->GetDeferredAction()->SetDamage(x, y, z);
         return true;
     } else {
         return false;

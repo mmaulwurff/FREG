@@ -136,12 +136,13 @@ public:
     void Mend(int plus);
     void SetDir(int dir);
 
-    dirs GetDir() const;
     int GetDurability() const;
     QString GetNote() const;
+
     inline int Transparent() const { return transparent; }
     inline int Sub()  const { return sub; }
     inline int Kind() const { return kind; }
+    inline dirs GetDir() const { return static_cast<dirs>(direction); }
 
     bool operator==(const Block &) const;
     bool operator!=(const Block &) const;

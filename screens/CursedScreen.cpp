@@ -275,23 +275,9 @@ void Screen::ControlPlayer(const int ch) {
     if ( ch != KEY_MOUSE ) {
         CleanFileToShow();
     }
-    /// \todo: ctrl-z (to background) support
     // Q, ctrl-c, ctrl-d, ctrl-q, ctrl-x
-    if ( 'Q' == ch
-            || 3 == ch
-            || 4 == ch
-            || 17 == ch
-            || 24 == ch
-            || 'X' == ch
-            || KEY_F(10) == ch )
-    {
-        Notify(tr("Exiting game..."));
-        emit ExitReceived();
-        input->Stop();
-        return;
-    } // else:
     if ( 'a'<=ch && ch<='z' ) { // actions with inventory
-        InventoryAction(ch-'a');
+        InventoryAction(ch - 'a');
         return;
     } // else:
     switch ( ch ) { // interactions with world
@@ -408,6 +394,19 @@ void Screen::ControlPlayer(const int ch) {
         break;
 
     case KEY_MOUSE: ProcessMouse(); break;
+    }
+    if ( 'Q' == ch
+            || 3 == ch
+            || 4 == ch
+            || 17 == ch
+            || 24 == ch
+            || 'X' == ch
+            || KEY_F(10) == ch )
+    {
+        Notify(tr("Exiting game..."));
+        emit ExitReceived();
+        input->Stop();
+        return;
     }
     updated = false;
 } // void Screen::ControlPlayer(int ch)
