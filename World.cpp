@@ -349,14 +349,15 @@ const {
     x_from *= max;
     y_from *= max;
     z_from *= max;
-    for (int i=max-1; i-- > 0; ) {
+    for (int i=max-1; i-- > 0; ) { // unsigned / is faster than signed
         if ( not (GetBlock( // floor
                     static_cast<unsigned>(x_from+=x)/max,
                     static_cast<unsigned>(y_from+=y)/max,
                     static_cast<unsigned>(z_from+=z)/max )->Transparent()
                 && GetBlock( // ceil
-                    static_cast<unsigned>(x_from-1)/max + 1,
-                    static_cast<unsigned>(y_from-1)/max + 1,
+                    // force signed / to prevent anti-overflow
+                    (x_from-1)/static_cast<int>(max) + 1,
+                    (y_from-1)/static_cast<int>(max) + 1,
                     static_cast<unsigned>(z_from-1)/max + 1)->Transparent()) )
         {
             return false;

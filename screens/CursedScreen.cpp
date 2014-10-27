@@ -618,7 +618,7 @@ void Screen::Print() {
     PrintHUD();
     const dirs dir = player->GetDir();
     if ( player->UsingSelfType() != USAGE_TYPE_OPEN ) { // left window
-        PrintNormal(leftWin, (dir >= DOWN) ? NORTH : dir);
+        PrintNormal(leftWin, (dir <= DOWN) ? NORTH : dir);
     } else {
         PrintInv(leftWin, player->GetBlock(), player->PlayerInventory());
     }

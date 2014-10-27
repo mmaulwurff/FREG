@@ -129,12 +129,12 @@ private:
 
     /// Returns nullptr if block is not player->Visible().
     Block * GetFocusedBlock() const;
-    inline static void PrintVerticalDirection(WINDOW *, int y, int x, dirs);
+    static void PrintVerticalDirection(WINDOW *, int y, int x, dirs);
 
-    inline int GetNormalStartX() const;
-    inline int GetNormalStartY() const;
-    inline int GetMinimapStartX() const;
-    inline int GetMinimapStartY() const;
+    int GetNormalStartX() const;
+    int GetNormalStartY() const;
+    int GetMinimapStartX() const;
+    int GetMinimapStartY() const;
     void ExamineOnNormalScreen(int x, int y, int z, int step) const;
 
     void Greet() const;
