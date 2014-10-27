@@ -171,7 +171,7 @@ void DeferredAction::SetSetFire(const int x, int y, int z) {
     type = DEFERRED_SET_FIRE;
 }
 
-void DeferredAction::MakeAction() const {
+void DeferredAction::MakeAction() {
     switch ( type ) {
     case DEFERRED_NOTHING: break;
     case DEFERRED_GHOST_MOVE: GhostMove(); break;
@@ -183,13 +183,14 @@ void DeferredAction::MakeAction() const {
     case DEFERRED_POUR:   Pour();   break;
     case DEFERRED_SET_FIRE: SetFire(); break;
     }
+    type = DEFERRED_NOTHING;
 }
 
 DeferredAction::DeferredAction(Animal * const attached) :
         Xyz(),
         type(DEFERRED_NOTHING),
-        attachedBlock(attached),
         srcSlot(),
         destSlot(),
-        num()
+        num(),
+        attachedBlock(attached)
 {}

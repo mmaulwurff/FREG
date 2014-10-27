@@ -39,8 +39,6 @@
     void Animal::ActFrequent() {
         if ( deferredAction != nullptr ) {
             deferredAction->MakeAction();
-            delete deferredAction;
-            deferredAction = nullptr;
         }
     }
 

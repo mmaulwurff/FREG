@@ -20,9 +20,10 @@
 #ifndef ACTIVE_H
 #define ACTIVE_H
 
-#include <QObject>
-#include "Block.h"
+#include "blocks/Block.h"
 #include "Xyz.h"
+#include "World.h"
+#include <QObject>
 
 /// Frequency can be "never", "rare", "rare & first", "rare & second".
 enum active_frequency {
@@ -60,8 +61,8 @@ public:
     void Damage(int dmg, int dmg_kind) override;
     Active * ActiveBlock() override final;
 
-    Shred * GetShred() const;
-    World * GetWorld() const;
+    inline Shred * GetShred() const { return shred; }
+    inline World * GetWorld() const { return world; }
 
     virtual void ActFrequent();
     void ActRare();

@@ -655,7 +655,7 @@ void Screen::Print() {
     }
     world->Unlock();
 
-    for (int i=1; i<WINDOW_COUNT; ++i) {
+    for (int i=WINDOW_HUD; i<WINDOW_COUNT; ++i) {
         wrefresh(windows[i]);
     }
 } // void Screen::Print()
@@ -1054,6 +1054,7 @@ void Screen::Notify(const QString str) const {
         waddwstr(notifyWin, (lastNotification = str).toStdWString().c_str());
         waddch(notifyWin, '\n');
     }
+    wrefresh(notifyWin);
 }
 
 void Screen::DeathScreen() {

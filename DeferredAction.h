@@ -59,15 +59,15 @@ public:
             int src_slot, int dest_slot, int unum);
 
     int  GetActionType() const;
-    void MakeAction() const;
+    void MakeAction();
 
 private:
     Q_DISABLE_COPY(DeferredAction)
 
     deferred_actions type;
-    Animal * const attachedBlock;
     int srcSlot, destSlot;
     int num;
+    Animal * const attachedBlock;
 
     void GhostMove() const;
     void Move() const;

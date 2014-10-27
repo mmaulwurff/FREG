@@ -19,7 +19,6 @@
 
 #include "Active.h"
 #include "Shred.h"
-#include "World.h"
 #include "Xyz.h"
 #include "blocks/Inventory.h"
 #include "BlockManager.h"
@@ -137,8 +136,6 @@ void Active::TryDestroy(const int x, const int y, const int z) const {
 }
 
 void Active::SetShred(Shred * const new_shred) { shred = new_shred; }
-Shred * Active::GetShred() const { return shred; }
-World * Active::GetWorld() const { return world; }
 
 void Active::Damage(const int dmg, const int dmg_kind) {
     const int last_dur = GetDurability();
