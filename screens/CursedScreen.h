@@ -162,7 +162,7 @@ private:
     const bool beepOn, flashOn;
     const bool ascii;
     bool blinkOn;
-    const wchar_t arrows[WEST+1][2];
+    const wchar_t arrows[WEST+1];
     const wchar_t ellipsis[4];
     mutable bool inputActive = false;
     bool showDistance;

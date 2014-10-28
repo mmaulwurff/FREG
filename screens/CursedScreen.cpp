@@ -45,6 +45,8 @@ const int ACTIVE_HAND = 3;
 
 const int AVERAGE_SCREEN_SIZE = 60;
 
+const int ARROWS_COLOR = COLOR_PAIR(WHITE_RED);
+
 void Screen::PrintVerticalDirection(WINDOW * const window, const int y,
         const int x, const dirs direction)
 {
@@ -55,7 +57,7 @@ void Screen::PrintVerticalDirection(WINDOW * const window, const int y,
 void Screen::Arrows(WINDOW * const window, const int x, const int y,
         const dirs direction)
 const {
-    wcolor_set(window, WHITE_BLACK, nullptr);
+    wstandend(window);
     if ( direction >= DOWN ) {
         PrintVerticalDirection(window, 0, x, UP);
         PrintVerticalDirection(window, screenHeight-1, x, DOWN);
@@ -63,11 +65,10 @@ const {
         PrintVerticalDirection(window, 0, x, NORTH);
         PrintVerticalDirection(window, screenHeight-1, x, SOUTH);
     }
-    wcolor_set(window, WHITE_RED, nullptr);
-    mvwaddwstr(window, 0, x, arrows[SOUTH]);
-    waddwstr  (window,       arrows[SOUTH]);
-    mvwaddwstr(window, screenHeight-1, x, arrows[NORTH]);
-    waddwstr  (window, arrows[NORTH]);
+    mvwaddch(window, 0, x, arrows[SOUTH] | ARROWS_COLOR);
+    waddch  (window,       arrows[SOUTH] | ARROWS_COLOR);
+    mvwaddch(window, screenHeight-1, x, arrows[NORTH] | ARROWS_COLOR);
+    waddch  (window,                    arrows[NORTH] | ARROWS_COLOR);
     HorizontalArrows(window, y, direction);
     (void)wmove(window, y, x);
 }
@@ -75,7 +76,6 @@ const {
 void Screen::HorizontalArrows(WINDOW * const window, const int y,
         const dirs direction)
 const {
-    wcolor_set(window, WHITE_BLACK, nullptr);
     const static QString dir_chars[] = {
         QString(),
         QString(),
@@ -93,12 +93,12 @@ const {
     case EAST:  left = dir_chars[NORTH]; right = dir_chars[SOUTH]; break;
     case WEST:  left = dir_chars[SOUTH]; right = dir_chars[NORTH]; break;
     }
+    wstandend(window);
     mvwaddwstr(window, y-1, 0, left.toStdWString().c_str());
     mvwaddwstr(window, y-1, screenWidth-1, right.toStdWString().c_str());
 
-    wcolor_set(window, WHITE_RED, nullptr);
-    mvwaddwstr(window, y,             0, arrows[EAST]);
-    mvwaddwstr(window, y, screenWidth-1, arrows[WEST]);
+    mvwaddch(window, y,             0, arrows[EAST] | ARROWS_COLOR);
+    mvwaddch(window, y, screenWidth-1, arrows[WEST] | ARROWS_COLOR);
 }
 
 void Screen::RePrint() {
@@ -820,9 +820,8 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
 
     if ( dir > DOWN ) {
         const Block * const block = player->GetBlock();
-        wattrset(window, Color(block->Kind(), block->Sub()));
-        mvwaddwstr(window, player->Y()-start_y+1, (player->X()-start_x)*2+2,
-            arrows[player->GetDir()]);
+        mvwaddch(window, player->Y()-start_y+1, (player->X()-start_x)*2+2,
+            arrows[player->GetDir()] | Color(block->Kind(), block->Sub()));
     }
 
     DrawBorder(window);
@@ -1000,6 +999,8 @@ const {
     box(window, 0, 0);
     if ( start != 0 ) {
         mvwhline(window, 2+start, 1, ACS_HLINE, screenWidth);
+        mvwaddch(window, 2+start, 0, ACS_LTEE);
+        mvwaddch(window, 2+start, screenWidth-1, ACS_RTEE);
     }
     mvwprintw(window, 0, 1, "[%c] ", CharName( block->Kind(), block->Sub()));
     waddwstr(window, ((player->PlayerInventory() == inv) ?
@@ -1099,12 +1100,12 @@ Screen::Screen(Player * const pl, int &) :
         ascii  (settings.value("ascii",    false).toBool()),
         blinkOn(settings.value("blink_on", true ).toBool()),
         arrows {
-            { wchar_t('.') },
-            { wchar_t('x') },
-            { wchar_t(ascii ? '^' : 0x2191) },
-            { wchar_t(ascii ? 'v' : 0x2193) },
-            { wchar_t(ascii ? '>' : 0x2192) },
-            { wchar_t(ascii ? '<' : 0x2190) }
+            wchar_t('.'),
+            wchar_t('x'),
+            wchar_t(ACS_UARROW),
+            wchar_t(ACS_DARROW),
+            wchar_t(ACS_RARROW),
+            wchar_t(ACS_LARROW)
         },
         ellipsis {
             wchar_t(ascii ? '.' : 0x2026 ),
