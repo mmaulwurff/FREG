@@ -39,6 +39,8 @@ public:
     QString DirString(dirs) const;
 
 private:
+    Q_DISABLE_COPY(TranslationsManager)
+
     QTranslator * LoadTranslator() const;
 
     QTranslator * const translator;

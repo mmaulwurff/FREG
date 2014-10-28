@@ -8,8 +8,7 @@
 CONFIG += cursed_screen
 #CONFIG += text_screen
 
-CONFIG += thread warn_on console link_prl
-CONFIG += debug
+CONFIG += thread warn_on console c++11 rtti_off
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 
 # compile with clang:
