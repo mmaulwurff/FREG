@@ -34,6 +34,7 @@
 
 const char OBSCURE_BLOCK = ' ';
 const int SHADOW_COLOR = COLOR_PAIR(BLACK_BLACK) | A_BOLD | A_REVERSE;
+const int ARROWS_COLOR = COLOR_PAIR(WHITE_RED);
 
 const int ACTIONS_WIDTH  = 23;
 const int MINIMAP_WIDTH  = 11;
@@ -44,8 +45,6 @@ const int MOUSEMASK = BUTTON1_CLICKED | BUTTON1_RELEASED;
 const int ACTIVE_HAND = 3;
 
 const int AVERAGE_SCREEN_SIZE = 60;
-
-const int ARROWS_COLOR = COLOR_PAIR(WHITE_RED);
 
 void Screen::PrintVerticalDirection(WINDOW * const window, const int y,
         const int x, const dirs direction)
@@ -152,34 +151,30 @@ void Screen::PassString(QString & str) const {
     str = QString::fromUtf8(temp_str);
 }
 
-char Screen::CharNumber(int z) const {
-    if ( HEIGHT-1 == z ) { // sky
-        return ' ';
-    }
-    z = ( UP == player->GetDir() ) ?
-        z - player->Z() : player->Z() - z;
-    return ( z == 0 ) ?
-        ' ' :
-        ( z < 0 ) ?
+char Screen::Distance(const int dist) const {
+    return dist ?
+        ( dist < 0 ) ?
             '-' :
-            ( z < 10 ) ?
-                z + '0' :
-                ( farDistance && z <= 0xf ) ?
-                    z - 10 + 'a' :
-                    '+';
+            ( dist < 10 ) ?
+                dist | '0' : // numbers
+                ( farDistance && dist <= 0xf ) ?
+                    (dist - 9) | 0x60 : // abcdef
+                    '+' :
+        ' ';
 }
 
-char Screen::CharNumberFront(int i, const int j) const {
-    i = ( ( player->GetDir() > SOUTH ) ? // east or west
+char Screen::CharNumber(const int z) const {
+    return ( HEIGHT-1 == z ) ?
+        ' ' : // sky
+        Distance( ( UP == player->GetDir() ) ?
+            z - player->Z() :
+            player->Z() - z );
+}
+
+char Screen::CharNumberFront(const int i, const int j) const {
+    return Distance( ( ( player->GetDir() > SOUTH ) ? // east or west
         abs(player->X() - i) :
-        abs(player->Y() - j) ) - 1;
-    return ( i == 0 ) ?
-        ' ' :
-        ( i < 10 ) ?
-            i + '0' :
-            (farDistance && i <= 0xf) ?
-                i - 10 + 'a' :
-                '+';
+        abs(player->Y() - j) ) - 1 );
 }
 
 int  Screen::RandomBlink() { return (RandomBit() * A_REVERSE); }
@@ -800,7 +795,7 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
     const int start_y = GetNormalStartY();
     const int end_x = start_x + screenWidth/2 - 1;
     const int end_y = start_y + screenHeight  - 2;
-    for (int j=start_y; j<end_y; ++j, waddstr(window, "__")) {
+    for (int j=start_y; j<end_y; ++j, waddch(window, 30)) {
         for (int i=start_x; i<end_x; ++i ) {
             Shred * const shred = world->GetShred(i, j);
             const int i_in = Shred::CoordInShred(i);
@@ -827,12 +822,11 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
     DrawBorder(window);
     Arrows(window, (player->X()-start_x)*2+1, player->Y()-start_y+1, UP);
     if ( shiftFocus ) {
-        const int ch =
-            (( shiftFocus == 1 ) ? '+' : '-') | COLOR_PAIR(WHITE_BLUE);
-        mvwaddch(leftWin, 0,               0, ch);
-        mvwaddch(leftWin, 0, screenWidth+1, ch);
-        mvwaddch(leftWin, screenHeight+1,   0, ch);
-        mvwaddch(leftWin, screenHeight+1, screenWidth+1, ch);
+        const int ch = ( ',' - shiftFocus ) | COLOR_PAIR(WHITE_BLUE); // +/-
+        mvwaddch(leftWin, 0,              0,  ch);
+        mvwaddch(leftWin, 0,  screenWidth-1,  ch);
+        mvwaddch(leftWin, screenHeight-1, 0,  ch);
+        mvwaddch(leftWin, screenHeight-1, screenWidth-1, ch);
     }
 } // void Screen::PrintNormal(WINDOW * window, int dir)
 
@@ -919,7 +913,7 @@ const {
     const int k_end = k_start - screenHeight + 2;
     const int sky_color = Color(BLOCK, SKY);
     (void)wmove(rightWin, 1, 1);
-    for (int k=k_start; k>k_end; --k, waddstr(rightWin, "__")) {
+    for (int k=k_start; k>k_end; --k, waddch(rightWin, 30)) {
         for (*x=x_start; *x!=x_end; *x+=x_step) {
             for (*z=z_start; *z!=z_end && world->GetBlock(i, j, k)->
                         Transparent()==INVISIBLE;

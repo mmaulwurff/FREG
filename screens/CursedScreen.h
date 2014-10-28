@@ -96,6 +96,7 @@ private slots:
 private:
     char CharNumber(int z) const;
     char CharNumberFront(int x, int y) const;
+    char Distance(int distance) const;
     void Arrows(WINDOW *, int x, int y, dirs) const;
     void HorizontalArrows(WINDOW *, int y, dirs) const;
     void PrintNormal(WINDOW *, dirs) const;
