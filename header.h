@@ -89,8 +89,8 @@ enum dirs {
     UP = 0, ///< 0
     DOWN,   ///< 1
     NORTH,  ///< 2
-    SOUTH,  ///< 3
-    EAST,   ///< 4
+    EAST,   ///< 3
+    SOUTH,  ///< 4
     WEST    ///< 5
 };
 

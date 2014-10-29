@@ -79,8 +79,8 @@ const {
         QString(),
         QString(),
         tr_manager->DirString(NORTH).left(1),
-        tr_manager->DirString(SOUTH).left(1),
         tr_manager->DirString(EAST ).left(1),
+        tr_manager->DirString(SOUTH).left(1),
         tr_manager->DirString(WEST ).left(1)
     };
     QString left, right;
@@ -304,12 +304,15 @@ void Screen::ControlPlayer(const int ch) {
     case '^':
     case KEY_PPAGE: player->SetDir(UP);   break;
 
+    case 'K':
+    case KEY_BACKSPACE: player->SetDir(World::Anti(player->GetDir())); break;
+
     case 'I':
     case KEY_HOME: player->Backpack(); break;
-    case 8:
+
     case KEY_F(8):
     case KEY_DC: // delete
-    case KEY_BACKSPACE: player->Damage(); break;
+    case 8: player->Damage(); break;
 
     case 13:
     case '\n': switch ( actionMode ) {
@@ -1094,12 +1097,12 @@ Screen::Screen(Player * const pl, int &) :
         ascii  (settings.value("ascii",    false).toBool()),
         blinkOn(settings.value("blink_on", true ).toBool()),
         arrows {
-            wchar_t('.'),
-            wchar_t('x'),
-            wchar_t(ACS_UARROW),
-            wchar_t(ACS_DARROW),
-            wchar_t(ACS_RARROW),
-            wchar_t(ACS_LARROW)
+            '.',
+            'x',
+            ACS_UARROW,
+            ACS_RARROW,
+            ACS_DARROW,
+            ACS_LARROW
         },
         ellipsis {
             wchar_t(ascii ? '.' : 0x2026 ),

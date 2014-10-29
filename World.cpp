@@ -167,42 +167,17 @@ bool World::TryLock() { return mutex.tryLock(); }
 void World::Unlock() { mutex.unlock(); }
 
 dirs World::TurnRight(const dirs dir) {
-    switch ( dir ) {
-    case UP:
-    case DOWN:  return dir;
-    case NORTH: return EAST;
-    case SOUTH: return WEST;
-    case EAST:  return SOUTH;
-    case WEST:  return NORTH;
-    }
-    Q_UNREACHABLE();
-    return NORTH;
+    return static_cast<dirs>(((dir - 2 + 1) % 4) + 2);
 }
 
 dirs World::TurnLeft(const dirs dir) {
-    switch ( dir ) {
-    case UP:
-    case DOWN:  return dir;
-    case NORTH: return WEST;
-    case SOUTH: return EAST;
-    case EAST:  return NORTH;
-    case WEST:  return SOUTH;
-    }
-    Q_UNREACHABLE();
-    return NORTH;
+    return static_cast<dirs>(((dir + 4 - 2 - 1) % 4) + 2);
 }
 
 dirs World::Anti(const dirs dir) {
-    switch ( dir ) {
-    case UP:    return DOWN;
-    case DOWN:  return UP;
-    case NORTH: return SOUTH;
-    case SOUTH: return NORTH;
-    case EAST:  return WEST;
-    case WEST:  return EAST;
-    }
-    Q_UNREACHABLE();
-    return NORTH;
+    return static_cast<dirs>( ( dir <= DOWN ) ?
+        not dir :
+        dir % 4 + 2 );
 }
 
 Block * World::GetBlock(const int x, const int y, const int z) const {

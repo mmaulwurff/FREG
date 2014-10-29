@@ -101,8 +101,8 @@ TranslationsManager::TranslationsManager() :
             QObject::tr("Up"),
             QObject::tr("Down"),
             QObject::tr("North"),
-            QObject::tr("South"),
             QObject::tr("East"),
+            QObject::tr("South"),
             QObject::tr("West")
         }
 {
