@@ -290,7 +290,6 @@ void Screen::ControlPlayer(const int ch) {
     if ( ch != KEY_MOUSE ) {
         CleanFileToShow();
     }
-    // Q, ctrl-c, ctrl-d, ctrl-q, ctrl-x
     if ( 'a'<=ch && ch<='z' ) { // actions with inventory
         InventoryAction(ch - 'a');
         return;
@@ -302,11 +301,13 @@ void Screen::ControlPlayer(const int ch) {
         Notify(QString("Pressed key code: %1.").arg(ch));
         #endif
         break;
+
     case 'W': case KEY_UP:    case '8': MovePlayer(NORTH);  break;
     case 'S': case KEY_DOWN:  case '2': MovePlayer(SOUTH);  break;
     case 'D': case KEY_RIGHT: case '6': MovePlayer(EAST);   break;
     case 'A': case KEY_LEFT:  case '4': MovePlayer(WEST);   break;
     case KEY_END:   case '5': player->Move(DOWN); break;
+
     case '7': MovePlayerDiag(NORTH, WEST); break;
     case '9': MovePlayerDiag(NORTH, EAST); break;
     case '1': MovePlayerDiag(SOUTH, WEST); break;
@@ -314,7 +315,8 @@ void Screen::ControlPlayer(const int ch) {
     case '=':
     case '0': MovePlayer(player->GetDir()); break;
     case ' ': player->Jump(); break;
-    case '{': player->Move(World::TurnLeft (player->GetDir())); break;
+
+    case '{': player->Move(World::TurnLeft (player->GetDir())); break; //strafe
     case '}': player->Move(World::TurnRight(player->GetDir())); break;
 
     case '>': player->SetDir(World::TurnRight(player->GetDir())); break;
@@ -345,6 +347,7 @@ void Screen::ControlPlayer(const int ch) {
         case ACTION_WIELD:    player->Wield(ACTIVE_HAND); break;
         }
         break;
+
     case 'F': case KEY_F(2): player->Use();      break;
     case '?': case KEY_F(3): player->Examine();  break;
     case '~': case KEY_F(4): player->Inscribe(); break;
@@ -360,6 +363,7 @@ void Screen::ControlPlayer(const int ch) {
     case 'O': SetActionMode(ACTION_OBTAIN);   break;
     case 'E': SetActionMode(ACTION_WIELD);    break;
     case 'U': SetActionMode(ACTION_USE);      break;
+
     case '[':
         SetActionMode((actionMode == ACTION_USE) ?
             ACTION_WIELD : static_cast<actions>(actionMode-1));
@@ -369,15 +373,18 @@ void Screen::ControlPlayer(const int ch) {
         SetActionMode(actionMode == ACTION_WIELD ?
             ACTION_USE : static_cast<actions>(actionMode+1));
         break;
+
     case 'Z':
         if ( player->PlayerInventory() ) {
               player->PlayerInventory()->Shake();
               Notify(tr("Inventory reorganized."));
         }
         break;
+
     case KEY_HELP:
     case KEY_F(1):
     case 'H': ProcessCommand("help"); break;
+
     case KEY_F(5):
     case 'R':
     case 'L': RePrint(); break;
@@ -389,15 +396,16 @@ void Screen::ControlPlayer(const int ch) {
             shiftFocus = 0;
         }
         static const QString levels[] = {
-            tr("Low"),
-            tr("Normal"),
-            tr("Hight")
+            tr("low"),
+            tr("normal"),
+            tr("high")
         };
-        Notify(tr("%1 focus is set.").arg(levels[shiftFocus+1]));
+        Notify(tr("Focus is set: %1").arg(levels[shiftFocus+1]));
         } break;
 
     case KEY_F(12):
     case '!': player->SetCreativeMode( not player->GetCreativeMode() ); break;
+
     case KEY_F(9):
     case '\\':
     case ':':
@@ -426,6 +434,7 @@ void Screen::ControlPlayer(const int ch) {
         input->Stop();
         break;
     }
+
     CleanFileToShow();
     updatedNormal  = false;
     updatedFront   = false;
@@ -632,11 +641,14 @@ int Screen::ColoredChar(const Block * const block) const {
 }
 
 void Screen::Print() {
-    world->Lock();
+    QMutexLocker locker(world->GetLock());
     PrintHud();
     const dirs dir = player->GetDir();
+    bool printed_normal = false;
     if ( player->UsingSelfType() != USAGE_TYPE_OPEN ) { // left window
+        if ( updatedNormal ) return;
         PrintNormal(leftWin, (dir <= DOWN) ? NORTH : dir);
+        printed_normal = true;
     } else {
         PrintInv(leftWin, player->GetBlock(), player->PlayerInventory());
     }
@@ -644,8 +656,10 @@ void Screen::Print() {
         switch ( player->UsingType() ) {
         default:
             if ( dir <= DOWN ) {
+                if ( updatedNormal ) return;
                 PrintNormal(rightWin, dir);
-            } else if ( rightWin != nullptr ) {
+                printed_normal = true;
+            } else {
                 PrintFront(dir);
             }
             break;
@@ -671,10 +685,8 @@ void Screen::Print() {
             } break;
         }
     }
-    world->Unlock();
-
-    for (int i=WINDOW_HUD; i<WINDOW_COUNT; ++i) {
-        wrefresh(windows[i]);
+    if ( printed_normal ) {
+        updatedNormal = true;
     }
 } // void Screen::Print()
 
@@ -745,6 +757,7 @@ void Screen::PrintHud() {
         }
     }
     PrintQuickInventory();
+    wrefresh(hudWin);
     PrintMiniMap();
 } // void Screen::PrintHud()
 
@@ -796,6 +809,7 @@ void Screen::PrintMiniMap() {
     DrawBorder(minimapWin);
     static const std::wstring title = tr("Minimap").toStdWString();
     mvwaddwstr(minimapWin, 0, 1, title.c_str());
+    wrefresh(minimapWin);
 }
 
 int Screen::GetNormalStartX() const {
@@ -809,26 +823,18 @@ int Screen::GetNormalStartY() const {
 }
 
 void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
-    if ( updatedNormal ) return;
-    updatedNormal = true;
-    (void)wmove(window, 1, 1);
-    int k_start, k_step;
-    if ( UP == dir ) {
-        k_start = player->Z() + 1;
-        k_step  = 1;
-    } else {
-        k_start = player->Z() - ( DOWN==dir ) + shiftFocus * (DOWN!=dir);
-        k_step  = -1;
-    }
+    const int k_step  = ( dir == UP ) ? 1 : -1;
+    const int k_start = player->Z() + shiftFocus;
     const int start_x = GetNormalStartX();
     const int start_y = GetNormalStartY();
     const int end_x = start_x + screenWidth/2 - 1;
     const int end_y = start_y + screenHeight  - 2;
+    (void)wmove(window, 1, 1);
     for (int j=start_y; j<end_y; ++j, waddch(window, 30)) {
+        const int j_in = Shred::CoordInShred(j);
         for (int i=start_x; i<end_x; ++i ) {
             Shred * const shred = world->GetShred(i, j);
             const int i_in = Shred::CoordInShred(i);
-            const int j_in = Shred::CoordInShred(j);
             int k = k_start;
             for ( ; INVISIBLE == shred->GetBlock(i_in, j_in, k)->Transparent();
                 k += k_step);
@@ -853,11 +859,12 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
         NORTH, true);
     if ( shiftFocus ) {
         const int ch = ( ',' - shiftFocus ) | COLOR_PAIR(WHITE_BLUE); // +/-
-        mvwaddch(leftWin, 0,              0,  ch);
-        mvwaddch(leftWin, 0,  screenWidth-1,  ch);
-        mvwaddch(leftWin, screenHeight-1, 0,  ch);
-        mvwaddch(leftWin, screenHeight-1, screenWidth-1, ch);
+        mvwaddch(window, 0,              0,  ch);
+        mvwaddch(window, 0,  screenWidth-1,  ch);
+        mvwaddch(window, screenHeight-1, 0,  ch);
+        mvwaddch(window, screenHeight-1, screenWidth-1, ch);
     }
+    wrefresh(window);
 } // void Screen::PrintNormal(WINDOW * window, int dir)
 
 void Screen::DrawBorder(WINDOW * const window) const {
@@ -973,10 +980,11 @@ const {
             (( shiftFocus == 1 ) ? '^' : 'v') | COLOR_PAIR(WHITE_BLUE);
         for (int q=arrow_Y-shiftFocus; 0<q && q<=screenWidth/2; q-=shiftFocus){
             mvwaddch(rightWin, q,             0, ch);
-            mvwaddch(rightWin, q, screenWidth+1, ch);
+            mvwaddch(rightWin, q, screenWidth-1, ch);
         }
     }
     Arrows(rightWin, arrow_X, arrow_Y, dir, false);
+    wrefresh(rightWin);
 } // void Screen::PrintFront(dirs)
 
 void Screen::PrintInv(WINDOW * const window,
@@ -1016,7 +1024,8 @@ const {
             }
         }
         wstandend(window);
-        mvwprintw(window, 2+i+shift, 53, "%5hu mz", inv->GetInvWeight(i));
+        mvwprintw(window, 2 + i + shift, screenWidth - 9, "%5hu mz",
+            inv->GetInvWeight(i));
     }
     wstandend(window);
     QString full_weight = tr("Full weight: %1 mz").
@@ -1034,6 +1043,7 @@ const {
     mvwprintw(window, 0, 1, "[%c] ", CharName( block->Kind(), block->Sub()));
     waddwstr(window, ((player->PlayerInventory() == inv) ?
         tr("Your inventory") : block->FullName()).toStdWString().c_str() );
+    wrefresh(window);
 } // void Screen::PrintInv(WINDOW *, const Block *, const Inventory *)
 
 void Screen::CleanFileToShow() {
@@ -1054,6 +1064,7 @@ bool Screen::PrintFile(WINDOW * const window, QString const & file_name) {
         CleanFileToShow();
         return false;
     }
+    wrefresh(window);
 }
 
 void Screen::DisplayFile(QString path) {

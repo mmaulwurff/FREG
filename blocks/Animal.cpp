@@ -32,7 +32,6 @@
             --satiation;
             Mend(1);
         }
-        emit Updated();
         return INNER_ACTION_NONE;
     }
 
@@ -76,6 +75,7 @@
                 satiation = 1.1 * SECONDS_IN_DAY;
                 ReceiveSignal(tr("You have gorged yourself!"));
             }
+            emit Updated();
             return true;
         } else {
             return false;

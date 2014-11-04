@@ -64,7 +64,7 @@ void DeferredAction::Build() const {
     Inventory * const inv = attachedBlock->HasInventory();
     Block * const material = inv->ShowBlock(srcSlot);
     if ( not world->Build(material, x, y, z,
-            World::TurnRight(attachedBlock->GetDir()), attachedBlock) )
+            World::Anti(attachedBlock->GetDir()), attachedBlock) )
     { // build not successful
         return;
     }

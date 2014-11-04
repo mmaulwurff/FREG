@@ -216,7 +216,6 @@ usage_types Player::Use(const int num) {
     if ( player->Eat(static_cast<subs>(block->Sub())) ) {
         PlayerInventory()->Pull(num);
         block_manager->DeleteBlock(block);
-        emit Updated();
         return USAGE_TYPE_NO;
     } // else:
     const usage_types result = block->Use(player);
@@ -476,16 +475,16 @@ void Player::SetPlayer(int _x, int _y, int _z) {
             world->Build(player, _x, _y, Z(), GetDir(), nullptr, true);
         }
     }
-    connect(player, SIGNAL(destroyed()), SLOT(BlockDestroy()),
+    connect(player, &QObject::destroyed, this, &Player::BlockDestroy,
         Qt::DirectConnection);
-    connect(player, SIGNAL(Moved(int)), SLOT(CheckOverstep(int)),
+    connect(player, &Animal::Moved, this, &Player::CheckOverstep,
         Qt::DirectConnection);
-    connect(player, SIGNAL(Updated()), SIGNAL(Updated()),
+    connect(player, &Animal::Updated, this, &Player::Updated,
         Qt::DirectConnection);
-    connect(player, SIGNAL(ReceivedText(QString)), SIGNAL(Notify(QString)),
+    connect(player, &Animal::ReceivedText, this, &Player::Notify,
         Qt::DirectConnection);
-    connect(player, SIGNAL(CauseTeleportation()),
-        world, SLOT(ActivateFullReload()), Qt::DirectConnection);
+    connect(player, &Animal::CauseTeleportation,
+        world, &World::ActivateFullReload, Qt::DirectConnection);
 } // Player::SetPlayer(int _x, _y, _z)
 
 void Player::Disconnect() {
