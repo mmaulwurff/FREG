@@ -97,7 +97,7 @@ private:
     char CharNumber(int z) const;
     char CharNumberFront(int x, int y) const;
     char Distance(int distance) const;
-    void Arrows(WINDOW *, int x, int y, dirs) const;
+    void Arrows(WINDOW *, int x, int y, dirs, bool is_normal) const;
     void HorizontalArrows(WINDOW *, int y, dirs) const;
     void PrintNormal(WINDOW *, dirs) const;
     /// Has two functions: first - when x == -1 - prints front,
@@ -106,7 +106,7 @@ private:
     void PrintInv(WINDOW *, const Block *, const Inventory *) const;
     /// Returns false when file does not exist, otherwise true.
     bool PrintFile(WINDOW *, QString const & file_name);
-    void PrintHUD();
+    void PrintHud();
     void PrintMiniMap();
     void PrintQuickInventory();
     void CleanFileToShow();
@@ -130,10 +130,11 @@ private:
 
     /// Returns nullptr if block is not player->Visible().
     Block * GetFocusedBlock() const;
-    static void PrintVerticalDirection(WINDOW *, int y, int x, dirs);
+    static void PrintVerticalDirection(WINDOW *, dirs);
 
     int GetNormalStartX() const;
     int GetNormalStartY() const;
+    int GetFrontStartZ() const;
     int GetMinimapStartX() const;
     int GetMinimapStartY() const;
     void ExamineOnNormalScreen(int x, int y, int z, int step) const;
@@ -154,7 +155,8 @@ private:
     WINDOW * const & rightWin   = windows[WINDOW_RIGHT];
     mutable QString lastNotification;
     IThread * const input;
-    volatile bool updated;
+    mutable volatile bool updatedHud, updatedMinimap;
+    mutable volatile bool updatedNormal, updatedFront;
     FILE * const notifyLog;
     actions actionMode;
     /// Can be -1, 0, 1 for low, normal, and high focus.

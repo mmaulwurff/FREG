@@ -45,29 +45,25 @@ const int MOUSEMASK = BUTTON1_CLICKED | BUTTON1_RELEASED;
 const int ACTIVE_HAND = 3;
 
 const int AVERAGE_SCREEN_SIZE = 60;
+const int FRONT_MAX_DISTANCE = SHRED_WIDTH * 2;
 
-void Screen::PrintVerticalDirection(WINDOW * const window, const int y,
-        const int x, const dirs direction)
+void Screen::PrintVerticalDirection(WINDOW *const window, const dirs direction)
 {
-    mvwaddwstr(window, y, x + 3,
-        tr_manager->DirString(direction).toStdWString().c_str());
+    waddwstr(window, tr_manager->DirString(direction).toStdWString().c_str());
 }
 
 void Screen::Arrows(WINDOW * const window, const int x, const int y,
-        const dirs direction)
+        const dirs direction, const bool is_normal)
 const {
     wstandend(window);
-    if ( direction >= DOWN ) {
-        PrintVerticalDirection(window, 0, x, UP);
-        PrintVerticalDirection(window, screenHeight-1, x, DOWN);
-    } else {
-        PrintVerticalDirection(window, 0, x, NORTH);
-        PrintVerticalDirection(window, screenHeight-1, x, SOUTH);
-    }
     mvwaddch(window, 0, x, arrows[SOUTH] | ARROWS_COLOR);
     waddch  (window,       arrows[SOUTH] | ARROWS_COLOR);
+    waddch  (window, ' ');
+    PrintVerticalDirection(window, is_normal ? NORTH : UP);
     mvwaddch(window, screenHeight-1, x, arrows[NORTH] | ARROWS_COLOR);
     waddch  (window,                    arrows[NORTH] | ARROWS_COLOR);
+    waddch  (window, ' ');
+    PrintVerticalDirection(window, is_normal ? SOUTH : DOWN);
     HorizontalArrows(window, y, direction);
     (void)wmove(window, y, x);
 }
@@ -75,26 +71,18 @@ const {
 void Screen::HorizontalArrows(WINDOW * const window, const int y,
         const dirs direction)
 const {
-    const static QString dir_chars[] = {
-        QString(),
-        QString(),
-        tr_manager->DirString(NORTH).left(1),
-        tr_manager->DirString(EAST ).left(1),
-        tr_manager->DirString(SOUTH).left(1),
-        tr_manager->DirString(WEST ).left(1)
+    const static std::wstring dir_chars[] = {
+        std::wstring(),
+        std::wstring(),
+        tr_manager->DirString(NORTH).left(1).toStdWString(),
+        tr_manager->DirString(EAST ).left(1).toStdWString(),
+        tr_manager->DirString(SOUTH).left(1).toStdWString(),
+        tr_manager->DirString(WEST ).left(1).toStdWString()
     };
-    QString left, right;
-    switch ( direction ) {
-    case UP:
-    case DOWN:
-    case NORTH: left = dir_chars[WEST];  right = dir_chars[EAST]; break;
-    case SOUTH: left = dir_chars[EAST];  right = dir_chars[WEST]; break;
-    case EAST:  left = dir_chars[NORTH]; right = dir_chars[SOUTH]; break;
-    case WEST:  left = dir_chars[SOUTH]; right = dir_chars[NORTH]; break;
-    }
     wstandend(window);
-    mvwaddwstr(window, y-1, 0, left.toStdWString().c_str());
-    mvwaddwstr(window, y-1, screenWidth-1, right.toStdWString().c_str());
+    mvwaddwstr(window, y-1, 0, dir_chars[World::TurnLeft(direction)].c_str());
+    mvwaddwstr(window, y-1, screenWidth-1,
+        dir_chars[World::TurnRight(direction)].c_str());
 
     mvwaddch(window, y,             0, arrows[EAST] | ARROWS_COLOR);
     mvwaddch(window, y, screenWidth-1, arrows[WEST] | ARROWS_COLOR);
@@ -106,35 +94,67 @@ void Screen::RePrint() {
     for (int i=0; i<WINDOW_COUNT; ++i) {
         wclear(windows[i]);
     }
-    static const QString action_strings[] = {
-        tr("[U] use, eat"),
-        tr("[T] throw"),
-        tr("[G] get"),
-        tr("[N] inscribe"),
-        tr("[B] build"),
-        tr("[C] craft"),
-        tr("[E] equipment"),
+    static const std::wstring action_strings[] = {
+        tr("[U] use, eat").toStdWString(),
+        tr("[T] throw").toStdWString(),
+        tr("[G] get").toStdWString(),
+        tr("[N] inscribe").toStdWString(),
+        tr("[B] build").toStdWString(),
+        tr("[C] craft").toStdWString(),
+        tr("[E] equipment").toStdWString(),
     };
     (void)wmove(actionWin, 0, 0);
     for (int i=0; i<=ACTION_WIELD; ++i) {
-        waddwstr(actionWin, action_strings[i].toStdWString().c_str());
+        waddwstr(actionWin, action_strings[i].c_str());
         waddch(actionWin, '\n');
     }
     mvwchgat(actionWin, actionMode, 0, -1, A_NORMAL, BLACK_WHITE, nullptr);
-    updated = false;
+    updatedHud    = false;
+    updatedNormal = false;
+    updatedFront  = false;
     Print();
     wrefresh(actionWin);
 }
 
-void Screen::Update(int, int, int) { updated = false; }
-void Screen::UpdatePlayer() { updated = false; }
-void Screen::UpdateAround(int, int, int, int) { updated = false; }
-void Screen::Move(int) { updated = false; }
+void Screen::Update(const int x, const int y, const int z) {
+    int start_x = GetNormalStartX();
+    int start_y = GetNormalStartY();
+    if (
+            start_x <= x && x <= start_x + screenWidth/2 - 2 &&
+            start_y <= y && y <= start_y + screenHeight  - 2 )
+    {
+        updatedNormal = false;
+    }
+
+    start_x = player->X() - FRONT_MAX_DISTANCE;
+    start_y = player->Y() - FRONT_MAX_DISTANCE;
+    int start_z = GetFrontStartZ();
+    if (
+            start_x <= x && x <= start_x + 2 * FRONT_MAX_DISTANCE &&
+            start_y <= y && y <= start_y + 2 * FRONT_MAX_DISTANCE &&
+            start_z >= z && z >= start_z - screenHeight )
+    {
+        updatedFront = false;
+    }
+    updatedMinimap = false;
+}
+
+void Screen::UpdatePlayer() { updatedHud = false; }
+void Screen::Move(int) {}
+
+void Screen::UpdateAround(int, int, int, int) {
+    updatedNormal = false;
+    updatedFront  = false;
+}
+
 bool Screen::IsScreenWide() { return COLS >= (AVERAGE_SCREEN_SIZE + 2) * 2; }
 
 void Screen::UpdateAll() {
     CleanFileToShow();
-    updated = false;
+    updatedNormal  = false;
+    updatedFront   = false;
+    updatedHud     = false;
+    updatedMinimap = false;
 }
 
 void Screen::PassString(QString & str) const {
@@ -335,6 +355,7 @@ void Screen::ControlPlayer(const int ch) {
     case 'C': SetActionMode(ACTION_CRAFT);    break;
     case 'T': SetActionMode(ACTION_THROW);    break;
     case 'N': SetActionMode(ACTION_INSCRIBE); break;
+    case 'P':
     case 'G':
     case 'O': SetActionMode(ACTION_OBTAIN);   break;
     case 'E': SetActionMode(ACTION_WIELD);    break;
@@ -392,21 +413,23 @@ void Screen::ControlPlayer(const int ch) {
         break;
 
     case KEY_MOUSE: ProcessMouse(); break;
-    }
-    if ( 'Q' == ch
-            || 3 == ch
-            || 4 == ch
-            || 17 == ch
-            || 24 == ch
-            || 'X' == ch
-            || KEY_F(10) == ch )
-    {
+
+    case 'Q':
+    case 3:
+    case 4:
+    case 17:
+    case 24:
+    case 'X':
+    case KEY_F(10):
         Notify(tr("Exiting game..."));
         emit ExitReceived();
         input->Stop();
-        return;
+        break;
     }
-    updated = false;
+    CleanFileToShow();
+    updatedNormal  = false;
+    updatedFront   = false;
+    updatedHud     = false;
 } // void Screen::ControlPlayer(int ch)
 
 void Screen::ExamineOnNormalScreen(int x, int y, int z, const int step) const {
@@ -571,11 +594,10 @@ void Screen::InventoryAction(const int num) const {
     }
 }
 
-void Screen::ActionXyz(int * x, int * y, int * z) const {
+void Screen::ActionXyz(int * const x, int * const y, int * const z) const {
     VirtScreen::ActionXyz(x, y, z);
     if (
-            DOWN != player->GetDir() &&
-            UP   != player->GetDir() &&
+            player->GetDir() > DOWN &&
             ( AIR==world->GetBlock(*x, *y, *z)->Sub() || AIR==world->GetBlock(
                 player->X(),
                 player->Y(),
@@ -610,10 +632,8 @@ int Screen::ColoredChar(const Block * const block) const {
 }
 
 void Screen::Print() {
-    if ( updated ) return;
-    updated = true;
     world->Lock();
-    PrintHUD();
+    PrintHud();
     const dirs dir = player->GetDir();
     if ( player->UsingSelfType() != USAGE_TYPE_OPEN ) { // left window
         PrintNormal(leftWin, (dir <= DOWN) ? NORTH : dir);
@@ -658,7 +678,9 @@ void Screen::Print() {
     }
 } // void Screen::Print()
 
-void Screen::PrintHUD() {
+void Screen::PrintHud() {
+    if ( updatedHud ) return;
+    updatedHud = true;
     werase(hudWin);
     if ( player->GetCreativeMode() ) {
         mvwaddwstr(hudWin, 0, 0,
@@ -724,7 +746,7 @@ void Screen::PrintHUD() {
     }
     PrintQuickInventory();
     PrintMiniMap();
-} // void Screen::PrintHUD()
+} // void Screen::PrintHud()
 
 void Screen::PrintQuickInventory() {
     const Inventory * const inv = player->PlayerInventory();
@@ -754,6 +776,8 @@ int Screen::GetMinimapStartY() const {
 }
 
 void Screen::PrintMiniMap() {
+    if ( updatedMinimap ) return;
+    updatedMinimap = true;
     (void)wmove(minimapWin, 1, 0);
     const int i_start = GetMinimapStartY();
     const int j_start = GetMinimapStartX();
@@ -785,6 +809,8 @@ int Screen::GetNormalStartY() const {
 }
 
 void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
+    if ( updatedNormal ) return;
+    updatedNormal = true;
     (void)wmove(window, 1, 1);
     int k_start, k_step;
     if ( UP == dir ) {
@@ -823,7 +849,8 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
     }
 
     DrawBorder(window);
-    Arrows(window, (player->X()-start_x)*2+1, player->Y()-start_y+1, UP);
+    Arrows(window, (player->X()-start_x)*2+1, player->Y()-start_y+1,
+        NORTH, true);
     if ( shiftFocus ) {
         const int ch = ( ',' - shiftFocus ) | COLOR_PAIR(WHITE_BLUE); // +/-
         mvwaddch(leftWin, 0,              0,  ch);
@@ -842,8 +869,14 @@ void Screen::DrawBorder(WINDOW * const window) const {
         ACS_LLCORNER | BORDER_COLOR, ACS_LRCORNER | BORDER_COLOR );
 }
 
+int Screen::GetFrontStartZ() const {
+    return qBound(screenHeight-1, player->Z()+screenHeight/2, HEIGHT-1);
+}
+
 void Screen::PrintFront(const dirs dir, const int block_x, const int block_y)
 const {
+    if ( updatedFront ) return;
+    updatedFront = true;
     int x_step,  z_step,
         x_start, z_start,
         x_end,   z_end;
@@ -859,19 +892,8 @@ const {
         z = &j;
         z_step  = -1;
         z_start = player->Y() - 1;
-        z_end   = qMax(0, player->Y() - SHRED_WIDTH*2);
+        z_end   = qMax(0, player->Y() - FRONT_MAX_DISTANCE);
         arrow_X = (player->X() - x_start)*2 + 1;
-        break;
-    case SOUTH:
-        x = &i;
-        x_step  = -1;
-        x_end   = GetNormalStartX() - 1;
-        x_start = screenWidth/2 - 1 + x_end;
-        z = &j;
-        z_step  = 1;
-        z_start = player->Y() + 1;
-        z_end   = qMin(player->Y() + SHRED_WIDTH*2, world->GetBound());
-        arrow_X = (screenWidth/2 - player->X() + x_end)*2 - 1;
         break;
     case EAST:
         x = &j;
@@ -882,8 +904,19 @@ const {
         z = &i;
         z_step  = 1;
         z_start = player->X() + 1;
-        z_end   = qMin(player->X() + SHRED_WIDTH*2, world->GetBound());
+        z_end   = qMin(player->X() + FRONT_MAX_DISTANCE, world->GetBound());
         arrow_X = (player->Y() - x_start)*2 + 1;
+        break;
+    case SOUTH:
+        x = &i;
+        x_step  = -1;
+        x_end   = GetNormalStartX() - 1;
+        x_start = screenWidth/2 - 1 + x_end;
+        z = &j;
+        z_step  = 1;
+        z_start = player->Y() + 1;
+        z_end   = qMin(player->Y() + FRONT_MAX_DISTANCE, world->GetBound());
+        arrow_X = (screenWidth/2 - player->X() + x_end)*2 - 1;
         break;
     case WEST:
         x = &j;
@@ -894,15 +927,14 @@ const {
         z = &i;
         z_step  = -1;
         z_start = player->X() - 1;
-        z_end   = qMax(0, player->X() - SHRED_WIDTH*2);
+        z_end   = qMax(0, player->X() - FRONT_MAX_DISTANCE);
         arrow_X = (screenWidth/2 - player->Y() + x_end)*2 - 1;
         break;
     default:
         Q_UNREACHABLE();
         return;
     }
-    const int k_start =
-        qBound(screenHeight-1, player->Z()+screenHeight/2, HEIGHT-1);
+    const int k_start = GetFrontStartZ();
     if ( block_x > 0 ) {
         // ugly! use print function to get block by screen coordinates.
         const int k = k_start - block_y + 1;
@@ -944,7 +976,7 @@ const {
             mvwaddch(rightWin, q, screenWidth+1, ch);
         }
     }
-    Arrows(rightWin, arrow_X, arrow_Y, dir);
+    Arrows(rightWin, arrow_X, arrow_Y, dir, false);
 } // void Screen::PrintFront(dirs)
 
 void Screen::PrintInv(WINDOW * const window,
@@ -1068,7 +1100,9 @@ void Screen::DeathScreen() {
     wnoutrefresh(rightWin);
     wnoutrefresh(hudWin);
     doupdate();
-    updated = true;
+    updatedNormal = true;
+    updatedFront  = true;
+    updatedHud    = true;
 }
 
 Screen::Screen(Player * const pl, int &) :
@@ -1086,7 +1120,10 @@ Screen::Screen(Player * const pl, int &) :
         },
         lastNotification(),
         input(new IThread(this)),
-        updated(false),
+        updatedHud    (false),
+        updatedMinimap(false),
+        updatedNormal (false),
+        updatedFront  (false),
         notifyLog(fopen(qPrintable(home_path + "log.txt"), "at")),
         actionMode(static_cast<actions>
             (settings.value("action_mode", ACTION_USE).toInt())),

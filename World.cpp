@@ -595,13 +595,16 @@ bool World::Exchange(Block * const block_from, Block * const block_to,
         {
             return true;
         } else {
-            block_to->ReceiveSignal(tr("Nothing can be obtained."));
+            block_to->ReceiveSignal(tr("%1 cannot be obtained.").
+                arg(block_from->FullName()));
             return false;
         }
     }
     if ( src >= inv_from->Size() || inv_from->Number(src) == 0 ) {
         block_from->ReceiveSignal(tr("Nothing here."));
-        block_to  ->ReceiveSignal(tr("Nothing here."));
+        block_to  ->ReceiveSignal(tr("Nothing in %1 at slot '%2'.").
+            arg(block_from->FullName()).
+            arg(char(src + 'a')));
     } else {
         Active * active = block_from->ActiveBlock();
         if ( active != nullptr ) {

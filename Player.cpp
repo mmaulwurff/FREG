@@ -165,6 +165,10 @@ void Player::Use() {
     int x, y, z;
     emit GetFocus(&x, &y, &z);
     Block * const block = world->GetBlock(x, y, z);
+    if ( player->Eat(static_cast<subs>(block->Sub())) ) {
+        Notify(tr("To eat %1, you must first pick it up.").arg(block->FullName()));
+        return;
+    } // else:
     const int us_type = block->Use(player);
     if ( us_type == USAGE_TYPE_NO ) {
         locker.unlock();
