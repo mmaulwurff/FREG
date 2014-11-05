@@ -32,8 +32,7 @@
 #include <QLocale>
 #include <QMutexLocker>
 
-const char OBSCURE_BLOCK = ' ';
-const int SHADOW_COLOR = COLOR_PAIR(BLACK_BLACK) | A_BOLD | A_REVERSE;
+const chtype OBSCURE_BLOCK = ACS_CKBOARD | COLOR_PAIR(BLACK_BLACK) | A_BOLD;
 const int ARROWS_COLOR = COLOR_PAIR(WHITE_RED);
 
 const int ACTIONS_WIDTH  = 23;
@@ -192,7 +191,7 @@ char Screen::CharNumber(const int z) const {
 }
 
 char Screen::CharNumberFront(const int i, const int j) const {
-    return Distance( ( ( player->GetDir() > SOUTH ) ? // east or west
+    return Distance( ( ( player->GetDir() & 1 ) ? // east or west
         abs(player->X() - i) :
         abs(player->Y() - j) ) - 1 );
 }
@@ -642,7 +641,6 @@ int Screen::ColoredChar(const Block * const block) const {
 
 void Screen::Print() {
     QMutexLocker locker(world->GetLock());
-    PrintHud();
     const dirs dir = player->GetDir();
     bool printed_normal = false;
     if ( player->UsingSelfType() != USAGE_TYPE_OPEN ) { // left window
@@ -652,6 +650,7 @@ void Screen::Print() {
     } else {
         PrintInv(leftWin, player->GetBlock(), player->PlayerInventory());
     }
+    PrintHud();
     if ( fileToShow == nullptr ) { // right window
         switch ( player->UsingType() ) {
         default:
@@ -842,8 +841,8 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
                 PrintBlock(shred->GetBlock(i_in, j_in, k), window,
                     showDistance ? CharNumber(k) : ' ');
             } else {
-                waddch(window, SHADOW_COLOR | OBSCURE_BLOCK);
-                waddch(window, SHADOW_COLOR | ' ');
+                waddch(window, OBSCURE_BLOCK);
+                waddch(window, OBSCURE_BLOCK);
             }
         }
     }
@@ -968,8 +967,8 @@ const {
                 PrintBlock(world->GetBlock(i, j, k), rightWin,
                     showDistance ? CharNumberFront(i, j) : ' ');
             } else {
-                waddch(rightWin, SHADOW_COLOR | OBSCURE_BLOCK);
-                waddch(rightWin, SHADOW_COLOR | ' ');
+                waddch(rightWin, OBSCURE_BLOCK);
+                waddch(rightWin, OBSCURE_BLOCK);
             }
         }
     }
@@ -990,6 +989,7 @@ const {
 void Screen::PrintInv(WINDOW * const window,
         const Block * const block, const Inventory * const inv)
 const {
+    if ( updatedHud ) return;
     if ( inv == nullptr ) return;
     werase(window);
     const int start = inv->Start();
@@ -997,10 +997,11 @@ const {
     for (int i=0; i<inv->Size(); ++i) {
         shift += ( start == i && i != 0 );
         wstandend(window);
-        mvwprintw(window, 2+i+shift, 1, "%c) ", 'a'+i);
+        mvwprintw(window, 1+i+shift, 1, "%c) ", 'a'+i);
         const Block * const block = inv->ShowBlock(i);
         if ( block == nullptr ) {
             wattrset(window, COLOR_PAIR(BLACK_BLACK) | A_BOLD);
+            waddstr (window, "   ");
             waddwstr(window, inv->InvFullName(i).toStdWString().c_str());
             continue;
         }
@@ -1023,22 +1024,21 @@ const {
                 waddwstr(window, ellipsis);
             }
         }
-        wstandend(window);
-        mvwprintw(window, 2 + i + shift, screenWidth - 9, "%5hu mz",
+        mvwprintw(window, 1 + i + shift, screenWidth - 9, "%5hu mz",
             inv->GetInvWeight(i));
     }
     wstandend(window);
     QString full_weight = tr("Full weight: %1 mz").
         arg(inv->Weight(), 6, 10, QChar(' '));
-    mvwaddwstr( window, 2+inv->Size()+shift,
-        screenWidth + 1 - full_weight.length(),
+    mvwaddwstr(window, 1 + inv->Size() + shift,
+        screenWidth - 1 - full_weight.length(),
         full_weight.toStdWString().c_str() );
     wattrset(window, Color(block->Kind(), block->Sub()));
     box(window, 0, 0);
     if ( start != 0 ) {
-        mvwhline(window, 2+start, 1, ACS_HLINE, screenWidth);
-        mvwaddch(window, 2+start, 0, ACS_LTEE);
-        mvwaddch(window, 2+start, screenWidth-1, ACS_RTEE);
+        mvwhline(window, 1+start, 1, ACS_HLINE, screenWidth);
+        mvwaddch(window, 1+start, 0, ACS_LTEE);
+        mvwaddch(window, 1+start, screenWidth-1, ACS_RTEE);
     }
     mvwprintw(window, 0, 1, "[%c] ", CharName( block->Kind(), block->Sub()));
     waddwstr(window, ((player->PlayerInventory() == inv) ?

@@ -130,6 +130,7 @@ void Block::Damage(const int dmg, int dmg_kind) {
 
 Block * Block::DropAfterDamage(bool * const delete_block) {
     switch ( Sub() ) {
+    case GREENERY:
     case SUB_DUST:
     case GLASS:
     case AIR: return block_manager->Normal(AIR);
@@ -156,9 +157,15 @@ int  Block::DamageKind() const { return DAMAGE_CRUSH; }
 int  Block::DamageLevel() const { return 1; }
 int  Block::LightRadius() const { return 0; }
 void Block::ReceiveSignal(QString) {}
-wearable Block::Wearable() const { return WEARABLE_NOWHERE; }
 usage_types Block::Use(Active *) { return USAGE_TYPE_NO; }
 usage_types Block::UseOnShredMove(Active *) { return USAGE_TYPE_NO; }
+
+wearable Block::Wearable() const {
+    switch ( Sub() ) {
+    case GREENERY: return WEARABLE_OTHER;
+    default: return WEARABLE_NOWHERE;
+    }
+}
 
 bool Block::Inscribe(const QString str) {
     if ( Sub() == AIR ) return false;
@@ -169,9 +176,9 @@ bool Block::Inscribe(const QString str) {
 }
 
 Inventory * Block::HasInventory() { return nullptr; }
-Animal * Block::IsAnimal() { return nullptr; }
-Active * Block::ActiveBlock() { return nullptr; }
-Falling * Block::ShouldFall() { return nullptr; }
+Animal    * Block::IsAnimal()     { return nullptr; }
+Active    * Block::ActiveBlock()  { return nullptr; }
+Falling   * Block::ShouldFall()   { return nullptr; }
 
 void Block::Restore() { durability = MAX_DURABILITY; }
 void Block::Break()   { durability = 0; }
