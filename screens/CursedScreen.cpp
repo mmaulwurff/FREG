@@ -989,8 +989,8 @@ const {
 void Screen::PrintInv(WINDOW * const window,
         const Block * const block, const Inventory * const inv)
 const {
-    if ( updatedHud ) return;
     if ( inv == nullptr ) return;
+    if ( updatedHud && inv==player->PlayerInventory() ) return;
     werase(window);
     const int start = inv->Start();
     int shift = 0; // to divide inventory sections

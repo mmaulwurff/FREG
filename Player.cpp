@@ -171,7 +171,6 @@ void Player::Use() {
     } // else:
     const int us_type = block->Use(player);
     if ( us_type == USAGE_TYPE_NO ) {
-        locker.unlock();
         Notify(tr("You cannot use %1.").arg(block->FullName()));
         return;
     }
