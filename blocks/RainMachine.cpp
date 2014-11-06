@@ -41,7 +41,7 @@ void RainMachine::SaveAttributes(QDataStream & stream) const {
 void RainMachine::DoRareAction() {
     if ( not isOn ) return;
     if ( AIR == GetInvSub(0) ) {
-        if ( qrand() % 5 ) {
+        if ( qrand() & 3 ) {
             GetShred()->Rain(LIQUID, SUB_CLOUD);
         }
     } else if ( qrand() % (20 - Number(0)*2) ) {

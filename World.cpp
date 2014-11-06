@@ -167,17 +167,17 @@ bool World::TryLock() { return mutex.tryLock(); }
 void World::Unlock() { mutex.unlock(); }
 
 dirs World::TurnRight(const dirs dir) {
-    return static_cast<dirs>(((dir - 2 + 1) % 4) + 2);
+    return static_cast<dirs>(((dir - 2 + 1) & 3) + 2);
 }
 
 dirs World::TurnLeft(const dirs dir) {
-    return static_cast<dirs>(((dir + 4 - 2 - 1) % 4) + 2);
+    return static_cast<dirs>(((dir + 4 - 2 - 1) & 3) + 2);
 }
 
 dirs World::Anti(const dirs dir) {
     return static_cast<dirs>( ( dir <= DOWN ) ?
         not dir :
-        dir % 4 + 2 );
+        (dir & 3) + 2 );
 }
 
 Block * World::GetBlock(const int x, const int y, const int z) const {
@@ -227,19 +227,6 @@ void World::ReloadShreds() {
                 latitude  - NumShreds()/2+x);
         }
         break;
-    case SOUTH:
-        emit StartMove(SOUTH);
-        ++longitude;
-        for (int x=0; x<NumShreds(); ++x) {
-            delete *FindShred(x, 0);
-            for (int y=0; y<NumShreds()-1; ++y) {
-                ( *FindShred(x, y) = *FindShred(x, y+1) )->ReloadTo(SOUTH);
-            }
-            *FindShred(x, NumShreds()-1) = new Shred(x, NumShreds()-1,
-                longitude + NumShreds()/2,
-                latitude  - NumShreds()/2+x);
-        }
-        break;
     case EAST:
         emit StartMove(EAST);
         ++latitude;
@@ -251,6 +238,19 @@ void World::ReloadShreds() {
             *FindShred(NumShreds()-1, y) = new Shred(NumShreds()-1, y,
                 longitude - NumShreds()/2+y,
                 latitude  + NumShreds()/2);
+        }
+        break;
+    case SOUTH:
+        emit StartMove(SOUTH);
+        ++longitude;
+        for (int x=0; x<NumShreds(); ++x) {
+            delete *FindShred(x, 0);
+            for (int y=0; y<NumShreds()-1; ++y) {
+                ( *FindShred(x, y) = *FindShred(x, y+1) )->ReloadTo(SOUTH);
+            }
+            *FindShred(x, NumShreds()-1) = new Shred(x, NumShreds()-1,
+                longitude + NumShreds()/2,
+                latitude  - NumShreds()/2+x);
         }
         break;
     case WEST:
@@ -324,7 +324,7 @@ const {
     x_from *= max;
     y_from *= max;
     z_from *= max;
-    for (int i=max-1; i-- > 0; ) { // unsigned / is faster than signed
+    for (int i=max; --i > 0; ) { // unsigned / is faster than signed
         if ( not (GetBlock( // floor
                     static_cast<unsigned>(x_from+=x)/max,
                     static_cast<unsigned>(y_from+=y)/max,
@@ -488,8 +488,8 @@ const {
     case UP:    ++*z_to; break;
     case DOWN:  --*z_to; break;
     case NORTH: --*y_to; break;
-    case SOUTH: ++*y_to; break;
     case EAST:  ++*x_to; break;
+    case SOUTH: ++*y_to; break;
     case WEST:  --*x_to; break;
     }
     return InBounds(*x_to, *y_to, *z_to);
@@ -637,12 +637,12 @@ void World::DeleteAllShreds() {
 }
 
 int World::CorrectNumShreds(int num) {
-    num += ( num%2 == 0 ); // must be odd
+    num += ( (num & 1) == 0 ); // make odd
     return qMax(num, MIN_WORLD_SIZE);
 }
 
 int World::CorrectNumActiveShreds(int num, const int num_shreds) {
-    num += ( num%2 == 0 ); // must be odd
+    num += ( (num & 1) == 0 ); // make odd
     return qBound(3, num, num_shreds);
 }
 

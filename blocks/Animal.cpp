@@ -143,26 +143,21 @@
     }
 
     void Rabbit::DoRareAction() {
-        // eat sometimes
-        if ( SECONDS_IN_DAY/2 > Satiation() ) {
+        if ( SECONDS_IN_DAY/2 > Satiation() ) { // eat sometimes
             EatGrass();
         }
         if ( not moved_in_this_turn ) {
-            switch ( qrand()%60 ) {
-            case 0: SetDir(NORTH); break;
-            case 1: SetDir(SOUTH); break;
-            case 2: SetDir(EAST);  break;
-            case 3: SetDir(WEST);  break;
-            default: if ( Gravitate(4, 1, 3, 4) ) {
-                if ( qrand()%2 ) {
+            const int rand = qrand() & 255;
+            if ( rand < 64 ) {
+                GetWorld()->Move(X(), Y(), Z(),
+                    static_cast<dirs>(DOWN + (rand & 3)));
+            } else if ( Gravitate(4, 1, 3, 4) ) {
+                if ( rand & 1 ) {
                     GetWorld()->Jump(X(), Y(), Z(), GetDir());
                 } else {
                     GetWorld()->Move(X(), Y(), Z(), GetDir());
                 }
-                moved_in_this_turn = false; // for next turn
-            } return;
             }
-            GetWorld()->Move(X(), Y(), Z(), GetDir());
         }
         moved_in_this_turn = false; // for next turn
         Animal::DoRareAction();
@@ -172,7 +167,7 @@
 
     void Rabbit::ActFrequent() {
         if ( Gravitate(2, 1, 2, 4) ) {
-            if ( qrand()%2 ) {
+            if ( qrand() & 1 ) {
                 world->Jump(X(), Y(), Z(), GetDir());
             } else {
                 world->Move(X(), Y(), Z(), GetDir());

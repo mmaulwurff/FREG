@@ -53,8 +53,8 @@ void DeferredAction::Build() const {
             case UP:    --z; break;
             case DOWN:  ++z; break;
             case NORTH: ++y; break;
-            case SOUTH: --y; break;
             case EAST:  --x; break;
+            case SOUTH: --y; break;
             case WEST:  ++x; break;
             }
         } else {

@@ -147,7 +147,7 @@ void WorldMap::GenerateMap(
     int lakes_number = (qrand() % size) + 5;
     while ( lakes_number-- ) {
         char type = SHRED_WATER;
-        switch ( qrand()%4 ) {
+        switch ( qrand() & 3 ) {
         case 1: type = SHRED_ACID_LAKE; break;
         case 2: type = SHRED_LAVA_LAKE; break;
         case 3: type = SHRED_CRATER;    break;

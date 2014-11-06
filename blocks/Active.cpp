@@ -88,8 +88,8 @@ void Active::Move(const dirs dir) {
     case UP:    ++z_self; break;
     case DOWN:  --z_self; break;
     case NORTH: --y_self; ReRegister(NORTH); break;
-    case SOUTH: ++y_self; ReRegister(SOUTH); break;
     case EAST:  ++x_self; ReRegister(EAST ); break;
+    case SOUTH: ++y_self; ReRegister(SOUTH); break;
     case WEST:  --x_self; ReRegister(WEST ); break;
     }
     emit Moved(dir);

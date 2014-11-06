@@ -76,7 +76,7 @@
         case SUB_CLOUD: return;
         case ACID:
         case STONE: DamageAround(); // no break;
-        default: switch ( qrand() % 20 ) {
+        default: switch ( qrand() & 15 ) {
             case 0: GetWorld()->Move(X(), Y(), Z(), NORTH); break;
             case 1: GetWorld()->Move(X(), Y(), Z(), SOUTH); break;
             case 2: GetWorld()->Move(X(), Y(), Z(), EAST ); break;
@@ -126,7 +126,7 @@
     void Grass::DoRareAction() {
         int i=X(), j=Y(), k=Z();
         // increase this if grass grows too fast
-        switch ( qrand() % (FIRE==Sub() ? 4 : SECONDS_IN_HOUR*4) ) {
+        switch ( qrand() & (FIRE==Sub() ? 3 : 255) ) {
         case 0: ++i; break;
         case 1: --i; break;
         case 2: ++j; break;
@@ -149,7 +149,7 @@
             world->DestroyAndReplace(X(), Y(), Z());
         } else if ( FIRE == Sub() ) {
             DamageAround();
-            if ( qrand()%10 || IsSubAround(WATER) ) {
+            if ( (qrand() & 15) || IsSubAround(WATER) ) {
                 Damage(2, DAMAGE_FREEZE);
             }
         }
@@ -194,7 +194,7 @@
     inner_actions Bush::ActInner() { return INNER_ACTION_NONE; }
 
     void Bush::DoRareAction() {
-        if ( 0 == qrand()%(SECONDS_IN_HOUR*4) ) {
+        if ( 0 == (qrand() & 255) ) {
             Get(BlockManager::NewBlock(WEAPON, SUB_NUT));
         }
     }

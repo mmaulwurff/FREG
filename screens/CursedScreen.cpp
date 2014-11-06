@@ -1119,14 +1119,14 @@ void Screen::DeathScreen() {
 Screen::Screen(Player * const pl, int &) :
         VirtScreen(pl),
         screen(newterm(nullptr, stdout, stdin)),
-        screenWidth((COLS / 2) - (COLS/2)%2),
+        screenWidth((COLS / 2) - ((COLS/2) & 1)),
         screenHeight(LINES - 10),
         windows {
             newwin(7, ACTIONS_WIDTH, LINES-7, MINIMAP_WIDTH + 1),
             newwin(0, 0, LINES-7, MINIMAP_WIDTH + 1 + ACTIONS_WIDTH + 1),
             newwin(3, 0, screenHeight, 0),
             newwin(MINIMAP_HEIGHT, MINIMAP_WIDTH, LINES-7, 0),
-            newwin(screenHeight, screenWidth, 0, COLS/2%2),
+            newwin(screenHeight, screenWidth, 0, (COLS/2) & 1),
             newwin(screenHeight, screenWidth, 0, COLS/2)
         },
         lastNotification(),
@@ -1187,7 +1187,7 @@ Screen::Screen(Player * const pl, int &) :
         COLOR_WHITE
     };
     for (int i=BLACK_BLACK; i<=WHITE_WHITE; ++i) {
-        init_pair(i, colors[(i-1)/8], colors[(i-1)%8]);
+        init_pair(i, colors[(i-1)/8], colors[(i-1) & 7]);
     }
 
     scrollok(notifyWin, TRUE);

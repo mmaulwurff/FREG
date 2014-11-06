@@ -26,7 +26,7 @@
 #include <QDataStream>
 
 const quint8 DATASTREAM_VERSION = QDataStream::Qt_5_2;
-const quint8 CURRENT_SHRED_FORMAT_VERSION = 14;
+const quint8 CURRENT_SHRED_FORMAT_VERSION = 15;
 
 const int RAIN_IS_DEW = 1;
 
@@ -85,8 +85,8 @@ bool Shred::LoadShred() {
     Block * const null_stone = block_manager->Normal(NULLSTONE);
     Block * const air        = block_manager->Normal(AIR);
     SetAllLightMapNull();
-    for (int x=0; x<SHRED_WIDTH; ++x)
-    for (int y=0; y<SHRED_WIDTH; ++y) {
+    for (int x=SHRED_WIDTH; x--; )
+    for (int y=SHRED_WIDTH; y--; ) {
         PutBlock(null_stone, x, y, 0);
         for (int z=1; ; ++z) {
             quint8 kind, sub;
@@ -138,13 +138,13 @@ Shred::Shred(const int shred_x, const int shred_y,
     Block * const sky  = Normal(SKY);
     Block * const star = Normal(STAR);
     SetAllLightMapNull();
-    for (int i=0; i<SHRED_WIDTH; ++i)
-    for (int j=0; j<SHRED_WIDTH; ++j) {
+    for (int i=SHRED_WIDTH; i--; )
+    for (int j=SHRED_WIDTH; j--; ) {
         PutBlock(null_stone, i, j, 0);
-        for (int k=1; k<HEIGHT-1; ++k) {
+        for (int k=HEIGHT-1; --k; ) {
             PutBlock(air, i, j, k);
         }
-        PutBlock(((qrand()%5) ? sky : star), i, j, HEIGHT-1);
+        PutBlock(((qrand() & 3) ? sky : star), i, j, HEIGHT-1);
     }
     switch ( type = static_cast<shred_type>
             (GetWorld()->GetMap()->TypeOfShred(longi, lati)) )
@@ -173,13 +173,13 @@ Shred::Shred(const int shred_x, const int shred_y,
 
 Shred::~Shred() {
     QByteArray * const shred_data = new QByteArray();
-    shred_data->reserve(30000);
+    shred_data->reserve(40 * 1024);
     QDataStream outstr(shred_data, QIODevice::WriteOnly);
     outstr << CURRENT_SHRED_FORMAT_VERSION;
     outstr.setVersion(DATASTREAM_VERSION);
     outstr << quint8(GetTypeOfShred()) << quint8(weather);
-    for (int x=0; x<SHRED_WIDTH; ++x)
-    for (int y=0; y<SHRED_WIDTH; ++y) {
+    for (int x=SHRED_WIDTH; x--; )
+    for (int y=SHRED_WIDTH; y--; ) {
         int height = HEIGHT-2;
         for ( ; blocks[x][y][height]->Sub()==AIR; --height);
         for (int z=1; z <= height; ++z) {

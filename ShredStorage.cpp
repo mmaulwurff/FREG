@@ -123,34 +123,34 @@ PreloadThread::PreloadThread(ShredStorage * const stor, const int dir,
 
 void PreloadThread::run() {
     switch (direction) {
+    default: Q_UNREACHABLE(); break;
     case NORTH:
-        for (long i=lati_center-size/2; i<=lati_center+size/2; ++i) {
+        for (qint64 i=lati_center-size/2; i<=lati_center+size/2; ++i) {
             storage->WriteToFileShredData(longi_center+size/2, i);
             storage->Remove(longi_center+size/2, i);
             storage->AddShredData(longi_center-size/2, i);
         }
-    break;
-    case SOUTH:
-        for (long i=lati_center-size/2; i<=lati_center+size/2; ++i) {
-            storage->WriteToFileShredData(longi_center-size/2, i);
-            storage->Remove(longi_center-size/2, i);
-            storage->AddShredData(longi_center+size/2, i);
-        }
-    break;
+        break;
     case EAST:
-        for (long i=longi_center-size/2; i<=longi_center+size/2; ++i) {
+        for (qint64 i=longi_center-size/2; i<=longi_center+size/2; ++i) {
             storage->WriteToFileShredData(i, lati_center-size/2);
             storage->Remove(i, lati_center-size/2);
             storage->AddShredData(i, lati_center+size/2);
         }
-    break;
+        break;
+    case SOUTH:
+        for (qint64 i=lati_center-size/2; i<=lati_center+size/2; ++i) {
+            storage->WriteToFileShredData(longi_center-size/2, i);
+            storage->Remove(longi_center-size/2, i);
+            storage->AddShredData(longi_center+size/2, i);
+        }
+        break;
     case WEST:
-        for (long i=longi_center-size/2; i<=longi_center+size/2; ++i) {
+        for (qint64 i=longi_center-size/2; i<=longi_center+size/2; ++i) {
             storage->WriteToFileShredData(i, lati_center+size/2);
             storage->Remove(i, lati_center+size/2);
             storage->AddShredData(i, lati_center-size/2);
         }
-    break;
-    default: Q_UNREACHABLE(); break;
+        break;
     }
 }
