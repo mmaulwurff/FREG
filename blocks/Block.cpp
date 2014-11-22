@@ -182,7 +182,6 @@ Falling   * Block::ShouldFall()   { return nullptr; }
 
 void Block::Restore() { durability = MAX_DURABILITY; }
 void Block::Break()   { durability = 0; }
-int  Block::GetDurability() const { return durability; }
 
 QString Block::GetNote() const {
     return (noteId == 0) ? QString() : world->GetNote(noteId);

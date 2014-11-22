@@ -43,6 +43,7 @@
 
     void Animal::DoRareAction() {
         if ( GROUP_MEAT != GetSubGroup(Sub()) ) return;
+        EatAround();
         if ( not IsSubAround(AIR) ) {
             if ( breath <= 0 ) {
                 Damage(10, DAMAGE_BREATH);
@@ -59,11 +60,8 @@
         }
     }
 
-    int Animal::Breath() const { return breath; }
-    int Animal::Satiation() const { return satiation; }
     int Animal::ShouldAct() const { return FREQUENT_SECOND | FREQUENT_RARE; }
     int Animal::DamageKind() const { return DAMAGE_BITE; }
-    int Animal::NutritionalValue(subs) const { return 0; }
     Animal * Animal::IsAnimal() { return this; }
 
     bool Animal::Eat(const subs sub) {
@@ -87,15 +85,25 @@
         out << breath << satiation;
     }
 
-    void Animal::EatGrass() {
-        for (int x=X()-1; x<=X()+1; ++x)
-        for (int y=Y()-1; y<=Y()+1; ++y) {
-            if ( world->InBounds(x, y) &&
-                    GREENERY == world->GetBlock(x, y, Z())->Sub() )
-            {
-                TryDestroy(x, y, Z());
-                Eat(GREENERY);
-                return;
+    void Animal::EatAround() {
+        const Xyz coords[] = {
+            Xyz(X()-1, Y(), Z()),
+            Xyz(X()+1, Y(), Z()),
+            Xyz(X(), Y()-1, Z()),
+            Xyz(X(), Y()+1, Z()),
+            Xyz(X(), Y(), Z()-1)
+        };
+        World * const world = GetWorld();
+        for (const Xyz xyz : coords) {
+            if ( not world->InBounds(xyz.X(), xyz.Y()) ) {
+                continue;
+            }
+            const Block * const block =
+                world->GetBlock(xyz.X(), xyz.Y(), xyz.Z());
+            if ( Attractive(block->Sub()) ) {
+                world->Damage(xyz.X(), xyz.Y(), xyz.Z(),
+                    DamageLevel(), DamageKind());
+                Eat(static_cast<subs>(block->Sub()));
             }
         }
     }
@@ -134,7 +142,7 @@
 // Rabbit::section
     int Rabbit::Attractive(const int sub) const {
         switch ( sub ) {
-        case GREENERY: return   1;
+        case GREENERY: return ( Satiation() < SECONDS_IN_DAY/2 ) ? 1 : 0;
         case H_MEAT:   return -16;
         case A_MEAT:   return - 1;
         case SAND:     return - 1;
@@ -143,9 +151,6 @@
     }
 
     void Rabbit::DoRareAction() {
-        if ( SECONDS_IN_DAY/2 > Satiation() ) { // eat sometimes
-            EatGrass();
-        }
         if ( not moved_in_this_turn ) {
             const int rand = qrand() & 255;
             if ( rand < 64 ) {
@@ -174,6 +179,7 @@
             }
             moved_in_this_turn = true;
         }
+        Animal::ActFrequent();
     }
 
     int Rabbit::NutritionalValue(const subs sub) const {
@@ -182,6 +188,7 @@
 
 // Predator:: section
     int Predator::DamageLevel() const { return 10; }
+    QString Predator::FullName() const { return tr("Predator"); }
 
     int Predator::NutritionalValue(const subs sub) const {
         return Attractive(sub) * SECONDS_IN_HOUR;
@@ -193,35 +200,9 @@
         }
     }
 
-    void Predator::DoRareAction() {
-        const Xyz coords[] = {
-            Xyz(X()-1, Y(), Z()),
-            Xyz(X()+1, Y(), Z()),
-            Xyz(X(), Y()-1, Z()),
-            Xyz(X(), Y()+1, Z()),
-            Xyz(X(), Y(), Z()-1)
-        };
-        World * const world = GetWorld();
-        for (const Xyz xyz : coords) {
-            if ( not world->InBounds(xyz.X(), xyz.Y()) ) {
-                continue;
-            }
-            Block * const block = world->GetBlock(xyz.X(), xyz.Y(), xyz.Z());
-            if ( Attractive(block->Sub()) ) {
-                block->ReceiveSignal(tr("Predator bites you!"));
-                world->Damage(xyz.X(), xyz.Y(), xyz.Z(),
-                    DamageLevel(), DamageKind());
-                Eat(static_cast<subs>(block->Sub()));
-            }
-        }
-        if ( SECONDS_IN_DAY/4 > Satiation() ) {
-            EatGrass();
-        }
-        Animal::DoRareAction();
-    }
-
     int Predator::Attractive(const int sub) const {
-        return ( GROUP_MEAT == GetSubGroup(sub) ) ?
-            10 : ( sub == GREENERY ) ?
-                1 : 0;
+        return ( 2 * Satiation() / SECONDS_IN_DAY ) == 0 ?
+            0 : ( GROUP_MEAT == GetSubGroup(sub) ) ?
+                10 : ( sub == GREENERY ) ?
+                    1 : 0;
     }

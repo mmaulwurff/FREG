@@ -77,6 +77,8 @@ private:
     void Throw() const;
     void Pour() const;
     void SetFire() const;
+
+    static World * GetWorld();
 };
 
 #endif // DEFERRED_ACTION_H

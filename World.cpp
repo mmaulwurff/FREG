@@ -159,6 +159,9 @@ void World::ReloadAllShreds(const QString new_world,
     newWorld = new_world;
 }
 
+void World::Pause() { timer->stop(); }
+void World::Start() { timer->start(1000 / TIME_STEPS_IN_SEC); }
+
 void World::ActivateFullReload() { toResetDir = DOWN; }
 
 QMutex * World::GetLock() { return &mutex; }
@@ -278,9 +281,9 @@ void World::SetReloadShreds(const int direction) {
 }
 
 void World::run() {
-    QTimer timer;
-    connect(&timer, SIGNAL(timeout()), SLOT(PhysEvents()));
-    timer.start(1000 / TIME_STEPS_IN_SEC);
+    timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &World::PhysEvents);
+    Start();
     exec();
 }
 
@@ -666,6 +669,7 @@ World::World(const QString world_name, bool * error) :
         newWorld(),
         toResetDir(UP),
         sunMoonFactor(),
+        timer(nullptr),
         shredStorage(),
         initial_lighting(),
         notes()

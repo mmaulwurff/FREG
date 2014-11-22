@@ -36,23 +36,25 @@ public:
     int  ShouldAct() const override;
     void ActFrequent() override;
     void DoRareAction() override;
-    bool Eat(subs);
-    int  Breath() const;
-    int  Satiation() const;
     Animal * IsAnimal() override;
     Block  * DropAfterDamage(bool * delete_block) override;
     inner_actions ActInner() override;
 
+    int  Breath()    const { return breath; }
+    int  Satiation() const { return satiation; }
+
+    bool Eat(subs);
     DeferredAction * GetDeferredAction();
+
+    virtual int NutritionalValue(subs) const = 0;
 
 protected:
     void SaveAttributes(QDataStream & out) const override;
-    void EatGrass();
+    void EatAround();
 
     bool moved_in_this_turn = false;
 
 private:
-    virtual int NutritionalValue(subs) const;
 
     quint8  breath;
     quint16 satiation;
@@ -86,9 +88,9 @@ public:
 
     int DamageLevel() const override;
     void ActFrequent() override;
+    QString FullName() const override;
 
 protected:
-    void DoRareAction() override;
     int  Attractive(int sub) const override;
 
 private:

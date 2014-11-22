@@ -285,7 +285,7 @@ void Screen::MovePlayerDiag(const dirs dir1, const dirs dir2) const {
 void Screen::ControlPlayer() { ControlPlayer(getch()); }
 
 void Screen::ControlPlayer(const int ch) {
-    if ( player->GetBlock() == nullptr ) return;
+    if ( player->GetConstBlock() == nullptr ) return;
     if ( ch != KEY_MOUSE ) {
         CleanFileToShow();
     }
@@ -357,7 +357,6 @@ void Screen::ControlPlayer(const int ch) {
     case 'C': SetActionMode(ACTION_CRAFT);    break;
     case 'T': SetActionMode(ACTION_THROW);    break;
     case 'N': SetActionMode(ACTION_INSCRIBE); break;
-    case 'P':
     case 'G':
     case 'O': SetActionMode(ACTION_OBTAIN);   break;
     case 'E': SetActionMode(ACTION_WIELD);    break;
@@ -418,6 +417,19 @@ void Screen::ControlPlayer(const int ch) {
             tr("turned on") :
             tr("turned off")));
         break;
+
+    case KEY_BREAK:
+    case 'P': {
+        static bool isPaused = false;
+        if ( isPaused ) {
+            GetWorld()->Start();
+            Notify("Game is resumed.");
+        } else {
+            GetWorld()->Pause();
+            Notify("Game is paused.");
+        }
+        isPaused = not isPaused;
+    } break;
 
     case KEY_MOUSE: ProcessMouse(); break;
 
@@ -604,8 +616,7 @@ void Screen::InventoryAction(const int num) const {
 
 void Screen::ActionXyz(int * const x, int * const y, int * const z) const {
     VirtScreen::ActionXyz(x, y, z);
-    if (
-            player->GetDir() > DOWN &&
+    if ( player->GetDir() > DOWN &&
             ( AIR==world->GetBlock(*x, *y, *z)->Sub() || AIR==world->GetBlock(
                 player->X(),
                 player->Y(),
@@ -641,6 +652,7 @@ int Screen::ColoredChar(const Block * const block) const {
 
 void Screen::Print() {
     QMutexLocker locker(world->GetLock());
+    PrintHud();
     const dirs dir = player->GetDir();
     bool printed_normal = false;
     if ( player->UsingSelfType() != USAGE_TYPE_OPEN ) { // left window
@@ -648,9 +660,8 @@ void Screen::Print() {
         PrintNormal(leftWin, (dir <= DOWN) ? NORTH : dir);
         printed_normal = true;
     } else {
-        PrintInv(leftWin, player->GetBlock(), player->PlayerInventory());
+        PrintInv(leftWin, player->GetConstBlock(), player->PlayerInventory());
     }
-    PrintHud();
     if ( fileToShow == nullptr ) { // right window
         switch ( player->UsingType() ) {
         default:
@@ -690,7 +701,7 @@ void Screen::Print() {
 } // void Screen::Print()
 
 void Screen::PrintHud() {
-    if ( updatedHud ) return;
+    if ( updatedHud && updatedNormal ) return;
     updatedHud = true;
     werase(hudWin);
     if ( player->GetCreativeMode() ) {
@@ -701,7 +712,7 @@ void Screen::PrintHud() {
                 player->GetLongitude(), player->GetLatitude()) )).
                     toStdWString().c_str());
     } else {
-        const int dur = player->GetBlock()->GetDurability();
+        const int dur = player->GetConstBlock()->GetDurability();
         if ( dur > 0 ) { // HitPoints line
             static const int player_health_char = ascii ? '@' : 0x2665;
             PrintBar(hudWin, player_health_char,
@@ -761,7 +772,7 @@ void Screen::PrintHud() {
 } // void Screen::PrintHud()
 
 void Screen::PrintQuickInventory() {
-    const Inventory * const inv = player->PlayerInventory();
+    const Inventory * const inv = player->GetBlock()->HasInventory();
     if ( inv==nullptr || not IsScreenWide() ) return;
 
     wstandend(hudWin);
@@ -848,7 +859,7 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
     }
 
     if ( dir > DOWN ) {
-        const Block * const block = player->GetBlock();
+        const Block * const block = player->GetConstBlock();
         mvwaddch(window, player->Y()-start_y+1, (player->X()-start_x)*2+2,
             arrows[player->GetDir()] | Color(block->Kind(), block->Sub()));
     }

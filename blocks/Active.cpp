@@ -128,10 +128,13 @@ void Active::DamageAround() const {
     TryDestroy(x_temp,   y_temp,   z_temp+=2);
 }
 
-void Active::TryDestroy(const int x, const int y, const int z) const {
+bool Active::TryDestroy(const int x, const int y, const int z) const {
     World * const world = GetWorld();
     if ( world->Damage(x, y, z, DamageLevel(), DamageKind()) <= 0 ) {
         world->DestroyAndReplace(x, y, z);
+        return true;
+    } else {
+        return false;
     }
 }
 

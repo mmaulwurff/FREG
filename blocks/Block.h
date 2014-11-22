@@ -136,7 +136,7 @@ public:
     void Mend(int plus);
     void SetDir(int dir);
 
-    int GetDurability() const;
+    int GetDurability() const { return durability; }
     QString GetNote() const;
 
     inline int Transparent() const { return transparent; }

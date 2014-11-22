@@ -31,18 +31,18 @@ void DeferredAction::GhostMove() const {
 }
 
 void DeferredAction::Move() const {
-    attachedBlock->GetWorld()->Move(attachedBlock->X(), attachedBlock->Y(),
+    GetWorld()->Move(attachedBlock->X(), attachedBlock->Y(),
         attachedBlock->Z(), static_cast<dirs>(num));
 }
 
 void DeferredAction::Jump() const {
-    attachedBlock->GetWorld()->Jump(
+    GetWorld()->Jump(
         attachedBlock->X(), attachedBlock->Y(), attachedBlock->Z(),
         attachedBlock->GetDir());
 }
 
 void DeferredAction::Build() const {
-    World * const world = attachedBlock->GetWorld();
+    World * const world = GetWorld();
     int x = X(), y = Y(), z = Z();
     if ( ENVIRONMENT != world->GetBlock(x, y, z)->PushResult(ANYWHERE) ) {
         if ( world->Move(
@@ -83,17 +83,15 @@ void DeferredAction::Build() const {
 } // void DeferredAction::Build()
 
 void DeferredAction::Damage() const {
-    if ( attachedBlock->GetWorld()->Damage(X(), Y(), Z(),
-            attachedBlock->DamageLevel(),
-            attachedBlock->DamageKind()) <= 0 ) // durability
+    if ( GetWorld()->Damage(X(), Y(), Z(),
+            attachedBlock->DamageLevel(), attachedBlock->DamageKind()) <= 0 )
     {
-        attachedBlock->GetWorld()->DestroyAndReplace(X(), Y(), Z());
+        world->DestroyAndReplace(X(), Y(), Z());
     }
 }
 
 void DeferredAction::Throw() const {
-    attachedBlock->GetWorld()->Drop(attachedBlock, X(), Y(), Z(),
-        srcSlot, destSlot, num);
+    GetWorld()->Drop(attachedBlock, X(), Y(), Z(), srcSlot, destSlot, num);
 }
 
 void DeferredAction::Pour() const {
@@ -109,13 +107,13 @@ void DeferredAction::Pour() const {
     Block * const liquid = vessel_inv->ShowBlock(0);
     if ( liquid == nullptr ) return;
 
-    if ( attachedBlock->GetWorld()->Build(liquid, X(), Y(), Z()) ) {
+    if ( GetWorld()->Build(liquid, X(), Y(), Z()) ) {
         vessel_inv->Pull(0);
     }
 }
 
 void DeferredAction::SetFire() const {
-    World * const world = attachedBlock->GetWorld();
+    World * const world = GetWorld();
     if ( world->GetBlock(X(), Y(), Z())->Sub() == AIR ) {
         world->Build(BlockManager::NewBlock(GRASS, FIRE), X(), Y(), Z());
     } else if ( world->Damage(X(), Y(), Z(), 1, DAMAGE_HEAT) <= 0 ) {
@@ -194,3 +192,5 @@ DeferredAction::DeferredAction(Animal * const attached) :
         num(),
         attachedBlock(attached)
 {}
+
+World * DeferredAction::GetWorld() { return world; }

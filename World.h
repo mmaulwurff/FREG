@@ -31,6 +31,7 @@ class QByteArray;
 class QReadWriteLock;
 class WorldMap;
 class QSettings;
+class QTimer;
 
 const int TIME_STEPS_IN_SEC = 10;
 
@@ -190,6 +191,8 @@ private:
 public: // World section
     void ReloadAllShreds(QString new_world, qint64 lati, qint64 longi,
             int new_x, int new_y, int new_z);
+    void Pause();
+    void Start();
 private:
     static int CorrectNumShreds(int num);
     static int CorrectNumActiveShreds(int num, int max_num);
@@ -251,6 +254,7 @@ private:
     /// UP for no reset, DOWN for full reset, NSEW for side shift.
     volatile dirs toResetDir;
     int sunMoonFactor;
+    QTimer * timer;
 
     ShredStorage * shredStorage;
     bool initial_lighting;

@@ -54,7 +54,6 @@ void Player::SetUsingTypeNo() { usingType = USAGE_TYPE_NO; }
 int  Player::GetUsingInInventory() const { return usingInInventory; }
 long Player::GetLongitude() const { return GetShred()->Longitude(); }
 long Player::GetLatitude()  const { return GetShred()->Latitude();  }
-const Block * Player::GetBlock() const { return player; }
 
 void Player::SetCreativeMode(const bool creative_on) {
     creativeMode = creative_on;
@@ -68,7 +67,7 @@ void Player::SetCreativeMode(const bool creative_on) {
     SetPlayer(X(), Y(), Z());
     player->SetDir(prev_player->GetDir());
     Inventory * const inv = PlayerInventory();
-    if ( inv != nullptr ) {
+    if ( inv && prev_player->HasInventory() ) {
         inv->GetAll(prev_player->HasInventory());
     }
     emit Updated();
@@ -165,8 +164,9 @@ void Player::Use() {
     int x, y, z;
     emit GetFocus(&x, &y, &z);
     Block * const block = world->GetBlock(x, y, z);
-    if ( player->Eat(static_cast<subs>(block->Sub())) ) {
-        Notify(tr("To eat %1, you must first pick it up.").arg(block->FullName()));
+    if ( player->NutritionalValue(static_cast<subs>(block->Sub())) ) {
+        Notify(tr("To eat %1, you must first pick it up.").
+            arg(block->FullName()));
         return;
     } // else:
     const int us_type = block->Use(player);
