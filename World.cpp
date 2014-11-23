@@ -162,6 +162,14 @@ void World::ReloadAllShreds(const QString new_world,
 void World::Pause() { timer->stop(); }
 void World::Start() { timer->start(1000 / TIME_STEPS_IN_SEC); }
 
+void World::SaveToDisk() const {
+    for (int i=0; i<NumShreds()*NumShreds(); ++i) {
+        shreds[i]->SaveShred(false);
+    }
+    shredStorage->WriteToFileAllShredData();
+    SaveState();
+}
+
 void World::ActivateFullReload() { toResetDir = DOWN; }
 
 QMutex * World::GetLock() { return &mutex; }

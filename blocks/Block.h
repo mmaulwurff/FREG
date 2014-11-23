@@ -139,10 +139,10 @@ public:
     int GetDurability() const { return durability; }
     QString GetNote() const;
 
-    inline int Transparent() const { return transparent; }
-    inline int Sub()  const { return sub; }
-    inline int Kind() const { return kind; }
-    inline dirs GetDir() const { return static_cast<dirs>(direction); }
+    int Transparent() const { return transparent; }
+    int Sub()  const { return sub; }
+    int Kind() const { return kind; }
+    dirs GetDir() const { return static_cast<dirs>(direction); }
 
     bool operator==(const Block &) const;
     bool operator!=(const Block &) const;
@@ -150,7 +150,10 @@ public:
     /// Important! If block will be used after save,
     /// call RestoreDurabilityAfterSave.
     void SaveToFile(QDataStream & out);
-    void SaveNormalToFile(QDataStream & out) const;
+    void SaveNormalToFile(QDataStream & out) const {
+        out << quint8( 0x80 | sub );
+    }
+
     /// Importart! Use it if block won't be deleted after SaveToFile.
     void RestoreDurabilityAfterSave();
 

@@ -58,6 +58,13 @@ ShredStorage::~ShredStorage() {
         preloadThread->wait();
         delete preloadThread;
     }
+    WriteToFileAllShredData();
+    for (auto i=storage.constBegin(); i!=storage.constEnd(); ++i) {
+        delete i.value();
+    }
+}
+
+void ShredStorage::WriteToFileAllShredData() const {
     for (auto i=storage.constBegin(); i!=storage.constEnd(); ++i) {
         if ( i.value() ) {
             WriteToFileShredData(i.key().longitude, i.key().latitude);
@@ -96,14 +103,14 @@ void ShredStorage::AddShredData(const qint64 longitude, const qint64 latitude){
             new QByteArray(qUncompress(file.readAll())) : nullptr ));
 }
 
-void ShredStorage::WriteToFileShredData(const qint64 longi, const qint64 lati){
+void ShredStorage::WriteToFileShredData(const qint64 longi, const qint64 lati)
+const {
     const QByteArray * const data = storage.value(LongLat(longi, lati));
     if ( data != nullptr ) {
         QFile file(Shred::FileName(world->WorldName(), longi, lati));
         if ( file.open(QIODevice::WriteOnly) ) {
             file.write(qCompress(*data, COMPRESSION_LEVEL));
         }
-        delete data;
     }
 }
 

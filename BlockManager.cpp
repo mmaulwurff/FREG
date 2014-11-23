@@ -144,8 +144,6 @@ BlockManager::~BlockManager() {
     }
 }
 
-Block * BlockManager::Normal(const int sub) const { return normals[sub]; }
-
 Block * BlockManager::NewBlock(const int kind, const int sub) {
     //qDebug("kind: %d, sub: %d, valid: %d", kind, sub, IsValid(kind, sub));
     switch ( static_cast<enum kinds>(kind) ) {

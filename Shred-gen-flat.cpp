@@ -30,8 +30,8 @@ int Shred::FlatUndeground(int) {
 
 void Shred::NormalUnderground(const int depth, const subs sub) {
     NormalCube(0,0,1, SHRED_WIDTH,SHRED_WIDTH,HEIGHT/2-depth-5, STONE);
-    Block * const block = Normal(sub);
-    Block * const stone = Normal(STONE);
+    Block * const block = block_manager->Normal(sub);
+    Block * const stone = block_manager->Normal(STONE);
     for (int x=0; x<SHRED_WIDTH; ++x) {
         int rand = qrand();
         for (int y=0; y<SHRED_WIDTH; ++y) {
@@ -100,7 +100,7 @@ void Shred::Water(const subs sub) {
     if ( type != map->TypeOfShred(longitude, latitude-1) ) { // west
         NormalCube(0,0,z_start, 1,SHRED_WIDTH,depth, shore);
     }
-    Block * const air = Normal(AIR);
+    Block * const air = block_manager->Normal(AIR);
     for (int i=SHRED_WIDTH; i--; )
     for (int j=SHRED_WIDTH; j--; )
     for (int k=z_start; k<=HEIGHT/2; ++k) {
@@ -116,7 +116,7 @@ void Shred::Water(const subs sub) {
 
 void Shred::Hill(const bool dead) {
     NormalUnderground();
-    Block * const soil = Normal(SOIL);
+    Block * const soil = block_manager->Normal(SOIL);
     for (int x=SHRED_WIDTH; x--; )
     for (int y=SHRED_WIDTH; y--; )
     for (int z=SHRED_WIDTH/2-2; z--; ) {

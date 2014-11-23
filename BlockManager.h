@@ -46,7 +46,8 @@ public:
     ~BlockManager();
 
     /// Use this to receive a pointer to normal block.
-    Block * Normal(int sub) const;
+    Block * Normal(const int sub) const { return normals[sub]; }
+
     /// Use this to receive a pointer to new not-normal block.
     static Block * NewBlock(int kind, int sub);
     /// Use this to load block from file.

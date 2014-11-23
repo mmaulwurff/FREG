@@ -47,7 +47,8 @@ public:
     void Shift(int direction, qint64 longitude, qint64 latitude);
 
     void AddShredData(qint64 longi, qint64 lati);
-    void WriteToFileShredData(qint64 longi, qint64 lati);
+    void WriteToFileShredData(qint64 longi, qint64 lati) const ;
+    void WriteToFileAllShredData() const;
 
     void Remove(qint64 longi, qint64 lati);
 

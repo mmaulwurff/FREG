@@ -273,10 +273,6 @@ void Block::SaveToFile(QDataStream & out) {
     }
 }
 
-void Block::SaveNormalToFile(QDataStream & out) const {
-    out << quint8( 0x80 | sub );
-}
-
 void Block::RestoreDurabilityAfterSave() { durability >>= 4; }
 
 Block::Block(const int kind_, const int sub_, const int transp) :

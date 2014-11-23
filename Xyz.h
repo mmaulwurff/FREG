@@ -25,9 +25,9 @@ public:
     Xyz(int x, int y, int z);
     Xyz();
 
-    inline int X() const { return x_self; }
-    inline int Y() const { return y_self; }
-    inline int Z() const { return z_self; }
+    int X() const { return x_self; }
+    int Y() const { return y_self; }
+    int Z() const { return z_self; }
 
     void SetXyz(int x, int y, int z);
 

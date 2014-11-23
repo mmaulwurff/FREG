@@ -431,6 +431,13 @@ void Screen::ControlPlayer(const int ch) {
         isPaused = not isPaused;
     } break;
 
+    case 'Y':
+        Notify("Saving game...");
+        GetWorld()->SaveToDisk();
+        player->SaveState();
+        Notify("Game saved.");
+        break;
+
     case KEY_MOUSE: ProcessMouse(); break;
 
     case 'Q':

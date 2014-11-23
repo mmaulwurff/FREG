@@ -61,8 +61,8 @@ public:
     void Damage(int dmg, int dmg_kind) override;
     Active * ActiveBlock() override final;
 
-    inline Shred * GetShred() const { return shred; }
-    inline World * GetWorld() const { return world; }
+    Shred * GetShred() const { return shred; }
+    World * GetWorld() const { return world; }
 
     virtual void ActFrequent();
     void ActRare();

@@ -65,7 +65,7 @@ public:
     using Xyz::Z;
 
     /// This returns current player direction (see enum dirs in header.h)
-    inline dirs GetDir() const { return player->GetDir(); }
+    dirs GetDir() const { return player->GetDir(); }
 
     /// This returns player hitpoints, also known as durability.
     int HP() const;
@@ -96,7 +96,7 @@ public:
     long GetLongitude() const;
     long GetLatitude() const;
 
-    inline bool GetCreativeMode() const { return creativeMode; }
+    bool GetCreativeMode() const { return creativeMode; }
     void SetCreativeMode(bool turn);
 
     void SetDir(dirs);
@@ -135,6 +135,8 @@ public:
         return chars[0] == '\0' ?
             0 : (UniqueIntFromString(chars + 1) << 5) | (chars[0]-'a');
     }
+
+    void SaveState() const;
 
 signals:
     void Moved(long x, long y, int z) const;
@@ -176,7 +178,6 @@ private:
     World * GetWorld() const;
     bool ForbiddenAdminCommands() const;
 
-    void SaveState() const;
     void LoadState();
 
     qint64 longitude, latitude;

@@ -23,6 +23,7 @@
 #include "header.h"
 #include "Weather.h"
 #include "worldmap.h"
+#include "BlockManager.h"
 #include <forward_list>
 #include <QLinkedList>
 
@@ -37,11 +38,11 @@ public:
     ~Shred();
 
     /// Returns y (line) shred coordinate on world map.
-    long Longitude() const;
+    long Longitude() const { return longitude; }
     /// Returns x (column) shred coordinate on world map.
-    long Latitude()  const;
-    int ShredX() const;
-    int ShredY() const;
+    long Latitude()  const { return latitude;  }
+    int ShredX() const { return shredX; }
+    int ShredY() const { return shredY; }
     void PhysEventsFrequent();
     void PhysEventsRare();
 
@@ -56,8 +57,9 @@ public:
     std::forward_list<Active *>::const_iterator ShiningEnd()   const;
 
     World * GetWorld() const;
+    void SaveShred(bool isQuitGame);
 
-    inline Block * GetBlock(const int x, const int y, const int z) const {
+    Block * GetBlock(const int x, const int y, const int z) const {
         return blocks[x][y][z];
     }
 
@@ -65,17 +67,16 @@ public:
     void SetBlock(Block * block, int x, int y, int z);
     /// Puts block to coordinates xyz and activates it.
     void SetBlockNoCheck(Block *, int x, int y, int z);
-    /// Puts block to coordinates, not activates it.
-    static Block * Normal(int sub);
     void AddFalling(Block *);
 
-    inline void PutBlock(Block * const block, const int x, int y, int z) {
+    /// Puts block to coordinates, not activates it.
+    void PutBlock(Block * const block, const int x, const int y, const int z) {
         blocks[x][y][z] = block;
     }
 
     // Lighting section
 
-    inline int Lightmap(const int x, const int y, const int z) const {
+    int Lightmap(const int x, const int y, const int z) const {
         return lightMap[x][y][z];
     }
 
@@ -92,7 +93,7 @@ public:
 
     // Information section
     void SetNewBlock(int kind, int sub, int x, int y, int z, int dir = UP);
-    shred_type GetTypeOfShred() const;
+    shred_type GetTypeOfShred() const { return type; }
 
     static QString FileName(QString world_name, long longi, long lati);
     Shred * GetShredMemory() const;
@@ -100,12 +101,10 @@ public:
     long GlobalX(int x) const;
     long GlobalY(int y) const;
     /// Get local coordinate.
-    inline static int CoordInShred(const int x) { return x & 0xF; }
+    static int CoordInShred(const int x) { return x & 0xF; }
 
     /// Get shred coordinate in loaded zone (from 0 to numShreds).
-    inline static int CoordOfShred(const int x) {
-       return x >> SHRED_WIDTH_SHIFT;
-    }
+    static int CoordOfShred(const int x) { return x >> SHRED_WIDTH_SHIFT; }
 
     /// Lowest nullstone and sky are not in bounds.
     static bool InBounds(int x, int y, int z);
