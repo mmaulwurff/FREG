@@ -101,7 +101,7 @@ private:
     void CrossUpShine(int x, int y, int z_bottom);
 
 public: // Information section
-    QString WorldName() const;
+    QString WorldName() const { return worldName; }
     /// False on error, true if focus is received to _targ successfully.
     bool Focus(int x, int y, int z,
             int * x_targ, int * y_targ, int * z_targ, dirs dir) const;
@@ -206,7 +206,7 @@ private:
     Shred ** FindShred(int x, int y) const;
 
 public:
-    QMutex * GetLock();
+    QMutex * GetLock() { return &mutex; }
     void Lock();
     bool TryLock();
     void Unlock();

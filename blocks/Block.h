@@ -155,7 +155,7 @@ public:
     }
 
     /// Importart! Use it if block won't be deleted after SaveToFile.
-    void RestoreDurabilityAfterSave();
+    void RestoreDurabilityAfterSave() { durability >>= 4; }
 
     static sub_groups GetSubGroup(int sub);
     static dirs MakeDirFromDamage(int damage_kind);

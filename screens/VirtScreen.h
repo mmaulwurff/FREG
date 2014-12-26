@@ -179,10 +179,6 @@ public slots:
     /** Standard (non-reimpemented) version does nothing. */
     virtual void DisplayFile(QString path);
 
-private slots:
-    /// Prints world. Should not be called not within screen.
-    virtual void Print() = 0;
-
 protected:
     World * GetWorld() const;
     /// Returns true if command is recognized and processed.

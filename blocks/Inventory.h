@@ -63,9 +63,9 @@ public:
     int  GetInvSub(int i) const;
     /// Returns BLOCK if slot number i is empty.
     int  GetInvKind(int i) const;
-    int Size() const;
+    int Size() const { return size; }
     int GetInvWeight(int i) const;
-    int Number(int i) const;
+    int Number(const int i) const { return inventory[i].size(); }
     Block * ShowBlock(int slot) const;
     /// Don't move block shown by this function.
     Block * ShowBlockInSlot(int slot, int index) const;

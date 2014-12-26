@@ -24,8 +24,6 @@
 #include "BlockManager.h"
 
 int  Inventory::Start() const { return 0; }
-int  Inventory::Size()  const { return size; }
-int  Inventory::Number(const int i) const { return inventory[i].size(); }
 bool Inventory::Access() const { return true; }
 
 bool Inventory::Drop(const int src, int dest, int num,

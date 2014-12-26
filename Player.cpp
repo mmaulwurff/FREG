@@ -47,10 +47,7 @@ long Player::GlobalY() const { return GetShred()->GlobalY(Y()); }
 Shred * Player::GetShred() const { return player->GetShred(); }
 World * Player::GetWorld() const { return world; }
 
-int  Player::UsingType() const { return usingType; }
 void Player::StopUseAll() { usingType = usingSelfType = USAGE_TYPE_NO; }
-int  Player::UsingSelfType() const { return usingSelfType; }
-void Player::SetUsingTypeNo() { usingType = USAGE_TYPE_NO; }
 int  Player::GetUsingInInventory() const { return usingInInventory; }
 long Player::GetLongitude() const { return GetShred()->Longitude(); }
 long Player::GetLatitude()  const { return GetShred()->Latitude();  }
@@ -72,8 +69,6 @@ void Player::SetCreativeMode(const bool creative_on) {
     }
     emit Updated();
 }
-
-int Player::BreathPercent() const { return player->Breath()*100/MAX_BREATH; }
 
 int Player::SatiationPercent() const {
     return ( GetCreativeMode()

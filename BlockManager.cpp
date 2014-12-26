@@ -264,15 +264,11 @@ QString BlockManager::KindToString(const int kind) { return kinds[kind]; }
 QString BlockManager:: SubToString(const int sub ) { return  subs[sub ]; }
 
 int BlockManager::StringToKind(const QString str) {
-    int i = 0;
-    for ( ; i<KIND_COUNT && kinds[i]!=str; ++i);
-    return i;
+    return std::find(kinds, kinds + KIND_COUNT, str) - kinds;
 }
 
 int BlockManager::StringToSub(const QString str) {
-    int i = 0;
-    for ( ; i<SUB_COUNT && subs[i]!=str; ++i);
-    return i;
+    return std::find(subs, subs + SUB_COUNT, str) - subs;
 }
 
 Block * BlockManager::ReplaceWithNormal(Block * const block) const {

@@ -293,14 +293,6 @@ void Shred::AddShining(Active * const active) {
 
 void Shred::RemShining(Active * const active) { shiningList.remove(active); }
 
-std::forward_list<Active *>::const_iterator Shred::ShiningBegin() const {
-    return shiningList.cbegin();
-}
-
-std::forward_list<Active *>::const_iterator Shred::ShiningEnd() const {
-    return shiningList.cend();
-}
-
 void Shred::ReloadTo(const dirs direction) {
     switch ( direction ) {
     case NORTH: ++shredY; break;

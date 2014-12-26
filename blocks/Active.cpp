@@ -138,8 +138,6 @@ bool Active::TryDestroy(const int x, const int y, const int z) const {
     }
 }
 
-void Active::SetShred(Shred * const new_shred) { shred = new_shred; }
-
 void Active::Damage(const int dmg, const int dmg_kind) {
     const int last_dur = GetDurability();
     Block::Damage(dmg, dmg_kind);
@@ -258,7 +256,6 @@ QString Falling::FullName() const {
     }
 }
 
-bool Falling::IsFalling() const { return falling; }
 Falling * Falling::ShouldFall() { return this; }
 push_reaction Falling::PushResult(dirs) const { return MOVABLE; }
 

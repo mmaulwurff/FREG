@@ -63,7 +63,6 @@ quint64 World::Time() const { return time; }
 qint64 World::Longitude() const { return longitude; }
 qint64 World::Latitude()  const { return latitude; }
 bool World::GetEvernight() const { return evernight; }
-QString World::WorldName() const { return worldName; }
 const WorldMap * World::GetMap() const { return map; }
 
 QByteArray * World::GetShredData(long longi, long lati) const {
@@ -172,7 +171,6 @@ void World::SaveToDisk() const {
 
 void World::ActivateFullReload() { toResetDir = DOWN; }
 
-QMutex * World::GetLock() { return &mutex; }
 void World::Lock() { mutex.lock(); }
 bool World::TryLock() { return mutex.tryLock(); }
 void World::Unlock() { mutex.unlock(); }
@@ -743,8 +741,8 @@ void World::LoadNotes() {
 void World::SaveNotes() const {
     QFile notes_file(home_path + worldName + "/notes.txt");
     if ( notes_file.open(QIODevice::WriteOnly | QIODevice::Text) ) {
-        for (int i=0; i<notes.size(); ++i) {
-            notes_file.write(qPrintable(notes.at(i)));
+        for (const QString & note : notes) {
+            notes_file.write(qPrintable(note));
             notes_file.putChar('\n');
         }
     }

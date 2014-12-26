@@ -53,8 +53,13 @@ public:
     void AddToDelete(Active *);
     void ReloadTo(dirs);
 
-    std::forward_list<Active *>::const_iterator ShiningBegin() const;
-    std::forward_list<Active *>::const_iterator ShiningEnd()   const;
+    std::forward_list<Active *>::const_iterator ShiningBegin() const {
+        return shiningList.cbegin();
+    }
+
+    std::forward_list<Active *>::const_iterator ShiningEnd() const {
+        return shiningList.cend();
+    }
 
     World * GetWorld() const;
     void SaveShred(bool isQuitGame);

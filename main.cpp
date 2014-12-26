@@ -17,32 +17,19 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include <QSettings>
-#include <QDir>
-#include <QTime>
-#include <QCommandLineParser>
-#include <QLockFile>
 #include "World.h"
 #include "Player.h"
 #include "worldmap.h"
 #include "CraftManager.h"
 #include "BlockManager.h"
 #include "TranslationsManager.h"
-
-#ifdef CURSED_SCREEN
-    #include "screens/CursedScreen.h"
-    #include <QCoreApplication>
-    typedef QCoreApplication Application;
-#else
-    #ifdef TEXT_SCREEN
-        #include "screens/TextScreen.h"
-        #include <QCoreApplication>
-        typedef QCoreApplication Application;
-    #else
-        #include <QApplication>
-        typedef QApplication Application;
-    #endif
-#endif
+#include "screens/CursedScreen.h"
+#include <QDir>
+#include <QTime>
+#include <QSettings>
+#include <QLockFile>
+#include <QCoreApplication>
+#include <QCommandLineParser>
 
 #ifdef Q_OS_WIN32
 const QString home_path = "";
@@ -54,7 +41,7 @@ const QString home_path = "";
 int main(int argc, char ** argv) {
     setlocale(LC_CTYPE, "C-UTF-8");
 
-    Application freg(argc, argv);
+    QCoreApplication freg(argc, argv);
     QCoreApplication::setOrganizationName("freg-team");
     QCoreApplication::setApplicationName("freg");
     QCoreApplication::setApplicationVersion(VER);

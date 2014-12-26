@@ -94,12 +94,12 @@ void Screen::RePrint() {
         wclear(windows[i]);
     }
     static const std::wstring action_strings[] = {
-        tr("[U] use, eat").toStdWString(),
-        tr("[T] throw").toStdWString(),
-        tr("[G] get").toStdWString(),
-        tr("[N] inscribe").toStdWString(),
-        tr("[B] build").toStdWString(),
-        tr("[C] craft").toStdWString(),
+        tr("[U] use, eat" ).toStdWString(),
+        tr("[T] throw"    ).toStdWString(),
+        tr("[G] get"      ).toStdWString(),
+        tr("[N] inscribe" ).toStdWString(),
+        tr("[B] build"    ).toStdWString(),
+        tr("[C] craft"    ).toStdWString(),
         tr("[E] equipment").toStdWString(),
     };
     (void)wmove(actionWin, 0, 0);
@@ -432,10 +432,12 @@ void Screen::ControlPlayer(const int ch) {
     } break;
 
     case 'Y':
-        Notify("Saving game...");
+        Notify(tr("Saving game..."));
         GetWorld()->SaveToDisk();
         player->SaveState();
-        Notify("Game saved.");
+        Notify( tr("Game saved at location \"%1\".").
+            arg(QDir::toNativeSeparators(
+                QDir(home_path).absoluteFilePath(GetWorld()->WorldName())) ));
         break;
 
     case KEY_MOUSE: ProcessMouse(); break;
@@ -641,7 +643,7 @@ Block * Screen::GetFocusedBlock() const {
         nullptr;
 }
 
-void Screen::PrintBlock(const Block* const block, WINDOW* const window,
+void Screen::PrintBlock(const Block * const block, WINDOW * const window,
         const char second)
 {
     const int kind = block->Kind();
@@ -846,15 +848,16 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
     const int start_y = GetNormalStartY();
     const int end_x = start_x + screenWidth/2 - 1;
     const int end_y = start_y + screenHeight  - 2;
+    World * const world = GetWorld();
     (void)wmove(window, 1, 1);
     for (int j=start_y; j<end_y; ++j, waddch(window, 30)) {
         const int j_in = Shred::CoordInShred(j);
-        for (int i=start_x; i<end_x; ++i ) {
+        for (int i=start_x; i<end_x; ++i) {
             Shred * const shred = world->GetShred(i, j);
             const int i_in = Shred::CoordInShred(i);
-            int k = k_start;
-            for ( ; INVISIBLE == shred->GetBlock(i_in, j_in, k)->Transparent();
-                k += k_step);
+            int k = k_start - k_step;
+            while ( INVISIBLE ==
+                shred->GetBlock(i_in, j_in, k+=k_step)->Transparent() );
             if ( player->Visible(i, j, k) ) {
                 PrintBlock(shred->GetBlock(i_in, j_in, k), window,
                     showDistance ? CharNumber(k) : ' ');
@@ -971,6 +974,7 @@ const {
     }
     const int k_end = k_start - screenHeight + 2;
     const int sky_color = Color(BLOCK, SKY);
+    World * const world = GetWorld();
     (void)wmove(rightWin, 1, 1);
     for (int k=k_start; k>k_end; --k, waddch(rightWin, 30)) {
         for (*x=x_start; *x!=x_end; *x+=x_step) {
@@ -1008,7 +1012,6 @@ void Screen::PrintInv(WINDOW * const window,
         const Block * const block, const Inventory * const inv)
 const {
     if ( inv == nullptr ) return;
-    if ( updatedHud && inv==player->PlayerInventory() ) return;
     werase(window);
     const int start = inv->Start();
     int shift = 0; // to divide inventory sections

@@ -184,7 +184,7 @@ void Block::Restore() { durability = MAX_DURABILITY; }
 void Block::Break()   { durability = 0; }
 
 QString Block::GetNote() const {
-    return (noteId == 0) ? QString() : world->GetNote(noteId);
+    return noteId ? world->GetNote(noteId) : QString();
 }
 
 void Block::Mend(const int plus) {
@@ -272,8 +272,6 @@ void Block::SaveToFile(QDataStream & out) {
         SaveAttributes(out);
     }
 }
-
-void Block::RestoreDurabilityAfterSave() { durability >>= 4; }
 
 Block::Block(const int kind_, const int sub_, const int transp) :
         noteId(0),

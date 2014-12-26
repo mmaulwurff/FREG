@@ -215,6 +215,5 @@ void VirtScreen::UpdateAll() { Q_UNREACHABLE(); }
 void VirtScreen::Move(int) { Q_UNREACHABLE(); }
 void VirtScreen::UpdatePlayer() { Q_UNREACHABLE(); }
 void VirtScreen::UpdateAround(int, int, int, int) { Q_UNREACHABLE(); }
-void VirtScreen::Print() { Q_UNREACHABLE(); }
 void VirtScreen::Notify(QString) const { Q_UNREACHABLE(); }
 void VirtScreen::PassString(QString &) const { Q_UNREACHABLE(); }

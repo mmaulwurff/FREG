@@ -4,9 +4,8 @@
 
 # Build options
 
-# screen can be: cursed_screen, text_screen
-CONFIG += cursed_screen
-#CONFIG += text_screen
+QT -= gui
+TARGET = freg-nox
 
 CONFIG += thread warn_on console c++11 rtti_off
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
@@ -42,78 +41,24 @@ clang {
 }
 DEFINES += COMPILER=\"\\\"$${QMAKE_CXX}\"\\\"
 
-cursed_screen {
-    TARGET = freg-nox
-    QT -= gui
-    DEFINES += CURSED_SCREEN
-    HEADERS += screens/CursedScreen.h
-    SOURCES += screens/CursedScreen.cpp
-} else:text_screen {
-    TARGET = freg-text
-    QT -= gui
-    DEFINES += TEXT_SCREEN
-    HEADERS += screens/TextScreen.h
-    SOURCES += screens/TextScreen.cpp
-} else {
-    error("define screen type in CONFIG!")
-}
-
-unix:cursed_screen {
+unix {
     LIBS += -lncursesw
     target.path += /usr/bin
     INSTALLS += target
     QMAKE_CXXFLAGS += -Weffc++ -Wold-style-cast -Werror
-} else:win32 {
+} else {
     LIBS += -Lpdcurses -lcurses
 }
 
-HEADERS += \
-    BlockManager.h \
-    CraftManager.h \
-    DeferredAction.h \
-    header.h \
-    Player.h \
-    Shred.h \
-    screens/VirtScreen.h \
-    World.h \
-    worldmap.h \
-    ShredStorage.h \
-    Xyz.h \
-    Weather.h \
-    screens/IThread.h \
-    blocks/blocks.h \
-    blocks/Block.h \
-    blocks/Active.h \
-    blocks/Inventory.h \
-    blocks/Animal.h \
-    blocks/Dwarf.h \
-    blocks/Bucket.h \
-    blocks/Illuminator.h \
-    blocks/Weapons.h \
-    blocks/Containers.h \
-    blocks/RainMachine.h \
-    blocks/Armour.h \
-    blocks/Filter.h \
-    blocks/Teleport.h \
-    blocks/Accumulator.h \
-    TranslationsManager.h
+HEADERS += *.h  \
+    blocks/*.h  \
+    screens/*.h \
 
-SOURCES += \
-    BlockManager.cpp \
-    CraftManager.cpp \
-    DeferredAction.cpp \
-    Lighting-inertia.cpp \
-    main.cpp \
-    Player.cpp \
-    Shred-gen-flat.cpp \
-    Shred.cpp \
-    screens/VirtScreen.cpp \
-    World.cpp \
-    worldmap.cpp \
-    ShredStorage.cpp \
-    Xyz.cpp \
-    Weather.cpp \
-    screens/IThread.cpp \
+SOURCES += *.cpp \
+    screens/*.cpp \
+#    screens/VirtScreen.cpp \
+#    screens/IThread.cpp \
+#    screens/CursedScreen.cpp \
     blocks/blocks.cpp \
     blocks/Active.cpp \
     blocks/Dwarf.cpp \
@@ -129,12 +74,11 @@ SOURCES += \
     blocks/Filter.cpp \
     blocks/Teleport.cpp \
     blocks/Accumulator.cpp \
-    TranslationsManager.cpp
 
 INCLUDEPATH += .
 
-TRANSLATIONS = \
-    freg_ru_RU.ts
+TRANSLATIONS =    \
+    freg_ru_RU.ts \
 
 RESOURCES = resources.qrc
 
@@ -151,7 +95,7 @@ DISTFILES += \
     debian/source/format \
     debian/source/include-binaries \
     fregMap.vim \
-    *.md
+    *.md \
 
 MOC_DIR = moc
 OBJECTS_DIR = obj

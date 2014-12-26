@@ -49,10 +49,10 @@ public:
 
     void Sort();
     void LoadItems(const QJsonArray &);
-    int  size() const;
+    int  size() const { return items.size(); }
     void clear();
-    int  GetMaterialsNumber() const;
-    CraftItem * at(int item_position) const;
+    int  GetMaterialsNumber() const { return materialsNumber; }
+    CraftItem * at(const int i) const { return items.at(i); }
 
     void operator<<(CraftItem *);
     bool operator==(const CraftList &) const;

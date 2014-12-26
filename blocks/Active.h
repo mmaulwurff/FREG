@@ -71,7 +71,8 @@ public:
     virtual int ShouldAct() const;
     virtual void UpdateLightRadius();
 
-    void SetShred(Shred *);
+    void SetShred(Shred * const new_shred) { shred = new_shred; }
+
     void Farewell();
     void Unregister();
 
@@ -111,7 +112,7 @@ public:
     push_reaction PushResult(dirs) const override;
 
     void FallDamage();
-    bool IsFalling() const;
+    bool IsFalling() const { return falling; }
     void SetFalling(bool set);
 
 protected:

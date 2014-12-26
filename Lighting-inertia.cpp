@@ -258,14 +258,15 @@ void Shred::SetAllLightMapNull() { memset(lightMap, 0, sizeof(lightMap)); }
 
 /// Makes all shining blocks of shred shine.
 void Shred::ShineAll() {
-    for (auto i=ShiningBegin(); i!=ShiningEnd(); ++i) {
-        GetWorld()->Shine((*i)->X(), (*i)->Y(), (*i)->Z(),
-            (*i)->LightRadius());
+    World * const world = GetWorld();
+    for (const Active * const shining : shiningList) {
+        world->Shine(shining->X(), shining->Y(), shining->Z(),
+            shining->LightRadius());
     }
-    if ( not GetWorld()->GetEvernight() ) {
+    if ( not world->GetEvernight() ) {
         for (int i=shredX*SHRED_WIDTH; i<SHRED_WIDTH*(shredX+1); ++i)
         for (int j=shredY*SHRED_WIDTH; j<SHRED_WIDTH*(shredY+1); ++j) {
-            GetWorld()->SunShineVertical(i, j);
+            world->SunShineVertical(i, j);
         }
     }
 }

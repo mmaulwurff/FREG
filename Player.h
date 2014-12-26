@@ -67,10 +67,9 @@ public:
     /// This returns current player direction (see enum dirs in header.h)
     dirs GetDir() const { return player->GetDir(); }
 
-    /// This returns player hitpoints, also known as durability.
-    int HP() const;
     /// This returns player breath reserve. On error returns -100.
-    int BreathPercent() const;
+    int BreathPercent() const { return player->Breath() * 100 / MAX_BREATH; }
+
     /// Can be > 100 if player is gorged. On error returns -100.
     int SatiationPercent() const;
 
@@ -82,13 +81,13 @@ public:
 
     /// This returns how player is using something now.
     /** See enum usage_types in header.h. */
-    int UsingType() const;
+    int UsingType() const { return usingType; }
     int GetUsingInInventory() const;
-    void SetUsingTypeNo();
+    void SetUsingTypeNo() { usingType = USAGE_TYPE_NO; }
     /// This returns how player is using himself.
     /** For example, OPEN means he is looking in his backpack.
      *  See enum usage_types in header.h. */
-    int UsingSelfType() const;
+    int UsingSelfType() const { return usingSelfType; }
 
     /// Returns nullptr if there is no inventory, otherwise returns inventory.
     Inventory * PlayerInventory() const;

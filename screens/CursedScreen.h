@@ -79,6 +79,7 @@ public:
     void ControlPlayer(int ch);
 
 public slots:
+    /// This is called for a notification to be displayed.
     void Notify(QString) const override;
     void PassString(QString &) const override;
     void Update(int, int, int) override;
@@ -91,7 +92,8 @@ public slots:
     void ActionXyz(int * x, int * y, int * z) const override;
 
 private slots:
-    void Print() override;
+    /// Prints world. Should not be called not within screen.
+    void Print();
 
 private:
     char CharNumber(int z) const;
