@@ -25,9 +25,6 @@
 
 #include <QStack>
 
-const int INV_SIZE = 26;
-const int MAX_STACK_SIZE = 9;
-
 class Block;
 
 class Inventory {
@@ -76,7 +73,11 @@ public:
     /// Stacks items in inventory if possible.
     void Shake();
 
+    static const int MAX_STACK_SIZE = 9;
+
 protected:
+    static const int INV_SIZE = 26;
+
     /// It is not recommended to make inventory size more than 26.
     /** Because it will not be convenient to deal with inventory
      *  in console version. */

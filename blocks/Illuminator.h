@@ -22,8 +22,6 @@
 
 #include "blocks/Active.h"
 
-const int MAX_FUEL = SECONDS_IN_DAY;
-
 class Illuminator : public Active {
     Q_OBJECT
 public:
@@ -45,6 +43,8 @@ protected:
     void SaveAttributes(QDataStream & out) const override;
 
 private:
+    static const int MAX_FUEL = SECONDS_IN_DAY;
+
     quint16 fuelLevel;
     bool isOn;
 };

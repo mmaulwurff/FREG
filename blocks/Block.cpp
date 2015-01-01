@@ -183,12 +183,12 @@ Falling   * Block::ShouldFall()   { return nullptr; }
 void Block::Restore() { durability = MAX_DURABILITY; }
 void Block::Break()   { durability = 0; }
 
-QString Block::GetNote() const {
-    return noteId ? world->GetNote(noteId) : QString();
-}
-
 void Block::Mend(const int plus) {
     durability = qMin(MAX_DURABILITY, durability+plus);
+}
+
+QString Block::GetNote() const {
+    return noteId ? world->GetNote(noteId) : QString();
 }
 
 int Block::Weight() const {
@@ -245,8 +245,6 @@ sub_groups Block::GetSubGroup(const int sub) {
     case STEEL:  return GROUP_METAL;
     }
 }
-
-bool Block::operator!=(const Block & block) const { return !(*this == block); }
 
 bool Block::operator==(const Block & block) const {
     return ( block.Kind() == Kind()

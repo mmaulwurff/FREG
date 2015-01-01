@@ -73,7 +73,7 @@ void DeferredAction::Build() const {
     if ( inv->Number(srcSlot) ) return;
     const int id = material->GetId();
     for (int i=srcSlot+1; i<inv->Size() &&
-            inv->Number(srcSlot)<MAX_STACK_SIZE; ++i)
+            inv->Number(srcSlot)<Inventory::MAX_STACK_SIZE; ++i)
     {
         const Block * const block_i = inv->ShowBlock(i);
         if ( block_i && id==block_i->GetId() ) {

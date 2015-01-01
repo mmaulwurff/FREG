@@ -25,6 +25,7 @@
 
 #include "header.h"
 #include "TranslationsManager.h" // needed in lots of files, so include here.
+#include <QDataStream>           // needed in lots of files, so include here.
 
 enum wearable {
     WEARABLE_NOWHERE,
@@ -160,7 +161,6 @@ public:
     dirs GetDir() const { return static_cast<dirs>(direction); }
 
     bool operator==(const Block &) const;
-    bool operator!=(const Block &) const;
 
     /// Important! If block will be used after save,
     /// call RestoreDurabilityAfterSave.
@@ -174,6 +174,9 @@ public:
 
     static sub_groups GetSubGroup(int sub);
     static dirs MakeDirFromDamage(int damage_kind);
+
+    /// 10 bits to store durability in file, signed.
+    static const int MAX_DURABILITY = 1024;
 
 protected:
     virtual void SaveAttributes(QDataStream &) const;

@@ -33,22 +33,6 @@ class WorldMap;
 class QSettings;
 class QTimer;
 
-const int TIME_STEPS_IN_SEC = 10;
-
-const int MOON_LIGHT_FACTOR = 1;
-const int  SUN_LIGHT_FACTOR = 8;
-const int MAX_LIGHT_RADIUS = 15;
-
-const int MAX_BREATH = 60;
-/// 10 bits to store durability in file, signed.
-const int MAX_DURABILITY = 1024;
-
-enum can_move_results {
-    CAN_MOVE_OK,
-    CAN_MOVE_CANNOT,
-    CAN_MOVE_DESTROYED
-};
-
 class World final : public QThread {
     /** \class World world.h
      * \brief World provides global physics and shred connection.
@@ -84,7 +68,7 @@ public: // Lighting section
     void Shine(int x, int y, int z, int level);
     void RemoveSunLight(int x, int y, int z);
 
-    bool GetEvernight() const;
+    bool GetEvernight() const { return evernight; }
 private:
     bool SetFireLightMap(int level, int x, int y, int z);
     void AddFireLight   (int x, int y, int z, int level);
@@ -99,6 +83,10 @@ private:
     void UpShine(int x, int y, int z_bottom);
     void UpShineInit(int x, int y, int z_bottom);
     void CrossUpShine(int x, int y, int z_bottom);
+
+    static const int MOON_LIGHT_FACTOR = 1;
+    static const int  SUN_LIGHT_FACTOR = 8;
+    static const int MAX_LIGHT_RADIUS = 15;
 
 public: // Information section
     QString WorldName() const { return worldName; }
@@ -132,6 +120,12 @@ public: // Movement section
     bool Move(int x, int y, int z, dirs dir);
     void Jump(int x, int y, int z, dirs dir);
 private:
+    enum can_move_results {
+        CAN_MOVE_OK,
+        CAN_MOVE_CANNOT,
+        CAN_MOVE_DESTROYED
+    };
+
     /// This CAN move blocks, but not xyz block.
     can_move_results CanMove(int x,    int y,    int z,
                              int x_to, int y_to, int z_to, dirs dir);

@@ -23,9 +23,6 @@
 #ifndef CURSEDSCREEN_H
 #define CURSEDSCREEN_H
 
-#define NOX
-
-#include <QMutex>
 #include "header.h"
 
 #ifdef Q_OS_WIN32
@@ -36,26 +33,6 @@
 #include <ncursesw/ncurses.h>
 #endif
 #include "screens/VirtScreen.h"
-
-enum windows_numbers {
-    WINDOW_ACTION,
-    WINDOW_NOTIFY,
-    WINDOW_HUD,
-    WINDOW_MINIMAP,
-    WINDOW_LEFT,
-    WINDOW_RIGHT,
-    WINDOW_COUNT // keep it last
-};
-
-enum actions {
-    ACTION_USE,
-    ACTION_THROW,
-    ACTION_OBTAIN,
-    ACTION_INSCRIBE,
-    ACTION_BUILD,
-    ACTION_CRAFT,
-    ACTION_WIELD,
-};
 
 enum screen_errors {
     SCREEN_NO_ERROR = 0,
@@ -96,6 +73,26 @@ private slots:
     void Print();
 
 private:
+    enum windows_numbers {
+        WINDOW_ACTION,
+        WINDOW_NOTIFY,
+        WINDOW_HUD,
+        WINDOW_MINIMAP,
+        WINDOW_LEFT,
+        WINDOW_RIGHT,
+        WINDOW_COUNT // keep it last
+    };
+
+    enum actions {
+        ACTION_USE,
+        ACTION_THROW,
+        ACTION_OBTAIN,
+        ACTION_INSCRIBE,
+        ACTION_BUILD,
+        ACTION_CRAFT,
+        ACTION_WIELD,
+    };
+
     char CharNumber(int z) const;
     char CharNumberFront(int x, int y) const;
     char Distance(int distance) const;

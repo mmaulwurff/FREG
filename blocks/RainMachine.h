@@ -22,7 +22,6 @@
 
 #include "blocks/Inventory.h"
 #include "blocks/Active.h"
-#include "Shred.h"
 
 class RainMachine : public Active, public Inventory {
     Q_OBJECT

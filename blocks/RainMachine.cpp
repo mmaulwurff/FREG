@@ -18,6 +18,7 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "blocks/RainMachine.h"
+#include "Shred.h"
 
 RainMachine::RainMachine(const int kind, const int sub) :
     Active(kind, sub),

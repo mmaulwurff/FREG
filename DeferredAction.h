@@ -22,18 +22,6 @@
 
 #include "Xyz.h"
 
-enum deferred_actions {
-    DEFERRED_NOTHING,
-    DEFERRED_GHOST_MOVE,
-    DEFERRED_MOVE,
-    DEFERRED_JUMP,
-    DEFERRED_BUILD,
-    DEFERRED_DAMAGE,
-    DEFERRED_THROW,
-    DEFERRED_POUR,
-    DEFERRED_SET_FIRE
-};
-
 class Block;
 class Animal;
 class World;
@@ -62,7 +50,20 @@ public:
     void MakeAction();
 
 private:
-    Q_DISABLE_COPY(DeferredAction)
+    enum deferred_actions {
+        DEFERRED_NOTHING,
+        DEFERRED_GHOST_MOVE,
+        DEFERRED_MOVE,
+        DEFERRED_JUMP,
+        DEFERRED_BUILD,
+        DEFERRED_DAMAGE,
+        DEFERRED_THROW,
+        DEFERRED_POUR,
+        DEFERRED_SET_FIRE
+    };
+
+    DeferredAction(const DeferredAction &);
+    DeferredAction &operator=(const DeferredAction &);
 
     deferred_actions type;
     int srcSlot, destSlot;

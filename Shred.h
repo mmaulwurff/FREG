@@ -109,7 +109,7 @@ public:
     static int CoordInShred(const int x) { return x & 0xF; }
 
     /// Get shred coordinate in loaded zone (from 0 to numShreds).
-    static int CoordOfShred(const int x) { return x >> SHRED_WIDTH_SHIFT; }
+    static int CoordOfShred(const int x) { return x >> SHRED_WIDTH_BITSHIFT; }
 
     /// Lowest nullstone and sky are not in bounds.
     static bool InBounds(int x, int y, int z);

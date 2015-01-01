@@ -22,7 +22,8 @@
 
 #include "header.h"
 #include <QString>
-#include <QTranslator>
+
+class QTranslator;
 
 class TranslationsManager {
 public:

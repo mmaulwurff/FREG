@@ -23,8 +23,6 @@
 #include "blocks/Active.h"
 #include "blocks/Inventory.h"
 
-const int WORKBENCH_SIZE = 10;
-
 class Container : public Active, public Inventory {
     /** \class Container Container.h
      *  \brief Container is multi-purpose container for blocks.
@@ -49,6 +47,8 @@ public:
     usage_types Use(Active * user) override;
     push_reaction PushResult(dirs) const override;
     inner_actions ActInner() override;
+
+    static const int WORKBENCH_SIZE = 10;
 
 protected:
     void SaveAttributes(QDataStream & out) const override;

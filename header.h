@@ -21,11 +21,6 @@
 #define HEADER_H
 
 #include <QtGlobal>
-#include <QLocale>
-
-#ifdef Q_OS_WIN32
-#include <windows.h>
-#endif
 
 #ifdef QT_NO_DEBUG
 const bool DEBUG = false;
@@ -35,11 +30,13 @@ const bool DEBUG = true;
 
 extern const QString home_path;
 
-const int SHRED_WIDTH = 16;
-const int SHRED_WIDTH_SHIFT = 4;
-const int HEIGHT = 256;
-
-const int MAX_NOTE_LENGTH = 144;
+enum sizes {
+    SHRED_WIDTH_BITSHIFT = 4,
+    SHRED_WIDTH = 16,
+    HEIGHT = 256,
+    DEFAULT_MAP_SIZE = 79,
+    MAX_NOTE_LENGTH = 144,
+};
 
 enum times {
     SECONDS_IN_HOUR = 60,
@@ -51,12 +48,6 @@ enum times {
     SECONDS_IN_NIGHT = END_OF_NIGHT,
     SECONDS_IN_DAYLIGHT = SECONDS_IN_DAY-END_OF_NIGHT
 };
-
-//#ifdef Q_OS_WIN32
-//const QString locale = "en";
-//#else
-const QString locale = QLocale::system().name();
-//#endif
 
 enum shred_type {
     SHRED_PLAIN     = '.',
@@ -74,15 +65,13 @@ enum shred_type {
     SHRED_ACID_LAKE = 'a',
     SHRED_LAVA_LAKE = 'l',
     SHRED_CRATER    = 'c',
-    SHRED_DEAD_FOREST = 'f',
-    SHRED_DEAD_HILL   = '*',
+    SHRED_DEAD_FOREST  = 'f',
+    SHRED_DEAD_HILL    = '*',
     SHRED_NULLMOUNTAIN = '#',
     SHRED_NORMAL_UNDERGROUND = '-',
+    SHRED_DEFAULT    = SHRED_PLAIN,
+    SHRED_OUT_BORDER = SHRED_WATER,
 };
-
-const int DEFAULT_MAP_SIZE = 79;
-const char DEFAULT_SHRED = SHRED_PLAIN;
-const char OUT_BORDER_SHRED = SHRED_WATER;
 
 enum dirs {
     ANYWHERE = 0,
@@ -93,7 +82,6 @@ enum dirs {
     SOUTH,  ///< 4
     WEST    ///< 5
 };
-
 const int DIRS_COUNT = WEST + 1;
 
 enum push_reaction {
@@ -218,8 +206,6 @@ enum transparency {
     NONSTANDARD = 6,
     UNDEF // temporary, doesn't appear in world.
 };
-
-bool IsLikeAir(int sub);
 
 /// For positive numbers only.
 inline int Round(const float x) { return int(x + 0.5f); }

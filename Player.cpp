@@ -17,17 +17,18 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include <QTextStream>
-#include <QMutexLocker>
-#include <QSettings>
-#include "blocks/Inventory.h"
 #include "Player.h"
 #include "World.h"
 #include "Shred.h"
-#include "BlockFactory.h"
-#include "DeferredAction.h"
 #include "Weather.h"
 #include "worldmap.h"
+#include "BlockFactory.h"
+#include "DeferredAction.h"
+#include "blocks/Inventory.h"
+#include <QLocale>
+#include <QSettings>
+#include <QTextStream>
+#include <QMutexLocker>
 
 const bool COMMANDS_ALWAYS_ON = DEBUG;
 
@@ -35,11 +36,11 @@ const bool COMMANDS_ALWAYS_ON = DEBUG;
 const subs PLAYER_SUB = H_MEAT;
 
 int Player::X() const {
-    return GetShred()->ShredX() << SHRED_WIDTH_SHIFT | Xyz::X();
+    return GetShred()->ShredX() << SHRED_WIDTH_BITSHIFT | Xyz::X();
 }
 
 int Player::Y() const {
-    return GetShred()->ShredY() << SHRED_WIDTH_SHIFT | Xyz::Y();
+    return GetShred()->ShredY() << SHRED_WIDTH_BITSHIFT | Xyz::Y();
 }
 
 long Player::GlobalX() const { return GetShred()->GlobalX(X()); }
@@ -379,7 +380,7 @@ void Player::ProcessCommand(QString command) {
             request = "help";
         }
         emit ShowFile( QString(":/help_%1/%2.md")
-            .arg(locale.left(2)).arg(QString(request)) );
+            .arg(QLocale::system().name().left(2)).arg(QString(request)) );
         break;
     default:
         emit Notify(tr("Don't know such command: \"%1\".").arg(command));

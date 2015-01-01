@@ -22,7 +22,6 @@
 #include "blocks/Active.h"
 #include "blocks/Inventory.h"
 #include <algorithm>
-#include <QDataStream>
 
 const quint8 DATASTREAM_VERSION = QDataStream::Qt_5_2;
 const quint8 CURRENT_SHRED_FORMAT_VERSION = 15;
@@ -362,7 +361,7 @@ void Shred::RandomDrop(int num, const int kind, const int sub,
 void Shred::DropBlock(Block * const block, const bool on_water) {
     int y = qrand();
     const int x = CoordInShred(y);
-    y = CoordInShred(unsigned(y) >> SHRED_WIDTH_SHIFT);
+    y = CoordInShred(unsigned(y) >> SHRED_WIDTH_BITSHIFT);
     int z = HEIGHT-2;
     for ( ; GetBlock(x, y, z)->Sub()==AIR; --z);
     if( on_water || GetBlock(x, y, z)->Sub()!=WATER ) {
@@ -618,7 +617,7 @@ void Shred::Rain(const int kind, const int sub) {
     const int CLOUD_HEIGHT = HEIGHT*3/4;
     int y = qrand();
     const int x = CoordInShred(y);
-    y = CoordInShred(unsigned(y) >> SHRED_WIDTH_SHIFT);
+    y = CoordInShred(unsigned(y) >> SHRED_WIDTH_BITSHIFT);
     const int to_replace_sub = GetBlock(x, y, CLOUD_HEIGHT)->Sub();
     if ( to_replace_sub == AIR || to_replace_sub == SUB_CLOUD ) {
         SetBlock(blockFactory->NewBlock(kind, sub), x, y, CLOUD_HEIGHT);

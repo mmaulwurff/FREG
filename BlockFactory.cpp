@@ -1,5 +1,5 @@
     /* freg, Free-Roaming Elementary Game with open and interactive world
-    *  Copyright (C) 2012-2014 Alexander 'mmaulwurff' Kromm
+    *  Copyright (C) 2012-2015 Alexander 'mmaulwurff' Kromm
     *  mmaulwurff@gmail.com
     *
     * This file is part of FREG.
@@ -29,7 +29,6 @@
 #include "blocks/Filter.h"
 #include "blocks/Teleport.h"
 #include "blocks/Accumulator.h"
-#include <QDataStream>
 
 /** \page subs List of available substances
  *  Complete list.
@@ -210,8 +209,7 @@ void BlockFactory::RegisterAll(typeList<>) const {
 template <typename BlockType, typename ... RestBlockTypes>
 void BlockFactory::RegisterAll(const typeList<BlockType, RestBlockTypes...>) {
     if (BlockType::AlreadyRegistered()) {
-        //qFatal("Macro CREATE_LOAD is missing in class kind \"%d\".", kind);
-        qDebug("Macro CREATE_LOAD is missing in class kind \"%d\".", kindIndex);
+        qFatal("Macro CREATE_LOAD is missing: class kind \"%d\".", kindIndex);
     }
     creates[kindIndex] = BlockType::Create;
     loads  [kindIndex] = BlockType::Load;

@@ -27,10 +27,8 @@
 
 class World;
 class Block;
-class Animal;
-class Active;
-class Inventory;
 class Shred;
+class Inventory;
 
 class Player final : public QObject, private Xyz {
     /** \class Player Player.h
@@ -68,7 +66,7 @@ public:
     dirs GetDir() const { return player->GetDir(); }
 
     /// This returns player breath reserve. On error returns -100.
-    int BreathPercent() const { return player->Breath() * 100 / MAX_BREATH; }
+    int BreathPercent() const { return player->Breath() * 100 / Animal::MAX_BREATH; }
 
     /// Can be > 100 if player is gorged. On error returns -100.
     int SatiationPercent() const;

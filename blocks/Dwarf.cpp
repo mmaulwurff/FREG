@@ -21,7 +21,6 @@
 #include "World.h"
 #include "Shred.h"
 #include "BlockFactory.h"
-#include <QDataStream>
 
 int Dwarf::Weight() const {
     if ( Sub() == DIFFERENT ) return 0;

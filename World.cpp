@@ -29,6 +29,8 @@
 #include <QTimer>
 #include <QSettings>
 
+const int TIME_STEPS_IN_SEC = 10;
+
 const int MIN_WORLD_SIZE = 5;
 
 World * world;
@@ -62,7 +64,6 @@ int World::MiniTime() const { return timeStep; }
 quint64 World::Time() const { return time; }
 qint64 World::Longitude() const { return longitude; }
 qint64 World::Latitude()  const { return latitude; }
-bool World::GetEvernight() const { return evernight; }
 const WorldMap * World::GetMap() const { return map; }
 
 QByteArray * World::GetShredData(long longi, long lati) const {
@@ -387,7 +388,7 @@ bool World::Move(const int x, const int y, const int z, const dirs dir) {
     }
 }
 
-can_move_results World::CanMove(const int x, const int y, const int z,
+World::can_move_results World::CanMove(const int x, const int y, const int z,
         const int newx, const int newy, const int newz, const dirs dir)
 {
     Block * const block    = GetBlock(x, y, z);
@@ -411,7 +412,7 @@ can_move_results World::CanMove(const int x, const int y, const int z,
         block_to = GetBlock(newx, newy, newz);
         break;
     case ENVIRONMENT:
-        if ( *block != *block_to ) { // prevent useless flow
+        if ( not (*block == *block_to) ) { // prevent useless flow
             break;
         } // no break;
     default: return CAN_MOVE_CANNOT;

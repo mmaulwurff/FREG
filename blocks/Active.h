@@ -42,7 +42,6 @@ enum inner_actions {
 };
 
 class Shred;
-class World;
 
 class Active : public QObject, public Block, protected Xyz {
     Q_OBJECT

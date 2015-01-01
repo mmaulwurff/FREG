@@ -23,8 +23,6 @@
 #include "blocks/Animal.h"
 #include "Inventory.h"
 
-const int MIN_DWARF_LIGHT_RADIUS = 2;
-
 class Dwarf : public Animal, public Inventory {
     Q_OBJECT
 public:
@@ -63,6 +61,7 @@ private:
         IN_RIGHT,
         IN_LEFT
     };
+    static const int MIN_DWARF_LIGHT_RADIUS = 2;
 
     int UpdateLightRadiusInner() const;
 

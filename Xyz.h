@@ -35,4 +35,4 @@ protected:
     short x_self, y_self, z_self;
 };
 
-#endif
+#endif // XYZ_H

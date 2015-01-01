@@ -25,6 +25,14 @@
 
 // Active section
 
+int Active::X() const {
+    return GetShred()->ShredX() << SHRED_WIDTH_BITSHIFT | Xyz::X();
+}
+
+int Active::Y() const {
+    return GetShred()->ShredY() << SHRED_WIDTH_BITSHIFT | Xyz::Y();
+}
+
 Active * Active::ActiveBlock() { return this; }
 int  Active::ShouldAct() const { return FREQUENT_NEVER; }
 inner_actions Active::ActInner() { return INNER_ACTION_ONLY; }
@@ -153,14 +161,6 @@ void Active::Damage(const int dmg, const int dmg_kind) {
 }
 
 void Active::ReceiveSignal(const QString str) { emit ReceivedText(str); }
-
-int Active::X() const {
-    return GetShred()->ShredX() << SHRED_WIDTH_SHIFT | Xyz::X();
-}
-
-int Active::Y() const {
-    return GetShred()->ShredY() << SHRED_WIDTH_SHIFT | Xyz::Y();
-}
 
 Active::Active(const int kind, const int sub, const int transp) :
         Block(kind, sub, transp),

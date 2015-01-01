@@ -1,5 +1,5 @@
     /* freg, Free-Roaming Elementary Game with open and interactive world
-    *  Copyright (C) 2012-2014 Alexander 'mmaulwurff' Kromm
+    *  Copyright (C) 2012-2015 Alexander 'mmaulwurff' Kromm
     *  mmaulwurff@gmail.com
     *
     * This file is part of FREG.
@@ -21,6 +21,7 @@
 #define BLOCKFACTORY_H
 
 #include "header.h"
+#include <QByteArray>
 
 class Block;
 class QDataStream;

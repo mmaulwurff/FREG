@@ -75,7 +75,7 @@ int main(int argc, char ** argv) {
     parser.addOption(map_size);
     const QCommandLineOption map_outer(QStringList() << "o" << "outer",
         QObject::tr("Generated map outer shred. Works only with -g."),
-        QObject::tr("map_outer"), QString(QChar(OUT_BORDER_SHRED)));
+        QObject::tr("map_outer"), QString(QChar(SHRED_OUT_BORDER)));
     parser.addOption(map_outer);
     const QCommandLineOption map_seed(QStringList() << "d" << "seed",
         QObject::tr("Seed to generate map. Works only with -g."),

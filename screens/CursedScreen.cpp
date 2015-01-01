@@ -108,9 +108,7 @@ void Screen::RePrint() {
         waddch(actionWin, '\n');
     }
     mvwchgat(actionWin, actionMode, 0, -1, A_NORMAL, BLACK_WHITE, nullptr);
-    updatedHud    = false;
-    updatedNormal = false;
-    updatedFront  = false;
+    updatedHud = updatedNormal = updatedFront = false;
     Print();
     wrefresh(actionWin);
 }
@@ -142,18 +140,14 @@ void Screen::UpdatePlayer() { updatedHud = false; }
 void Screen::Move(int) {}
 
 void Screen::UpdateAround(int, int, int, int) {
-    updatedNormal = false;
-    updatedFront  = false;
+    updatedNormal = updatedFront = false;
 }
 
 bool Screen::IsScreenWide() { return COLS >= (AVERAGE_SCREEN_SIZE + 2) * 2; }
 
 void Screen::UpdateAll() {
     CleanFileToShow();
-    updatedNormal  = false;
-    updatedFront   = false;
-    updatedHud     = false;
-    updatedMinimap = false;
+    updatedNormal = updatedFront = updatedHud = updatedMinimap = false;
 }
 
 void Screen::PassString(QString & str) const {
@@ -456,9 +450,7 @@ void Screen::ControlPlayer(const int ch) {
     }
 
     CleanFileToShow();
-    updatedNormal  = false;
-    updatedFront   = false;
-    updatedHud     = false;
+    updatedNormal = updatedFront = updatedHud = false;
 } // void Screen::ControlPlayer(int ch)
 
 void Screen::ExamineOnNormalScreen(int x, int y, int z, const int step) const {
@@ -665,12 +657,14 @@ void Screen::Print() {
     const dirs dir = player->GetDir();
     bool printed_normal = false;
     if ( player->UsingSelfType() != USAGE_TYPE_OPEN ) { // left window
-        if ( updatedNormal ) return;
-        PrintNormal(leftWin, (dir <= DOWN) ? NORTH : dir);
+        if ( not updatedNormal ) {
+            PrintNormal(leftWin, (dir <= DOWN) ? NORTH : dir);
+        }
         printed_normal = true;
     } else {
         PrintInv(leftWin, player->GetConstBlock(), player->PlayerInventory());
     }
+    updatedHud = true;
     if ( fileToShow == nullptr ) { // right window
         switch ( player->UsingType() ) {
         default:
@@ -692,7 +686,7 @@ void Screen::Print() {
             const Block * const focused = GetFocusedBlock();
             if ( focused != nullptr ) {
                 DisplayFile(QString(home_path + world->WorldName()
-                    + "/texts/" + GetFocusedBlock()->GetNote()));
+                    + "/texts/" + focused->GetNote()));
                 player->SetUsingTypeNo();
             }
             } break;
@@ -703,6 +697,7 @@ void Screen::Print() {
             }
             } break;
         }
+        updatedFront = true;
     }
     if ( printed_normal ) {
         updatedNormal = true;
@@ -710,8 +705,7 @@ void Screen::Print() {
 } // void Screen::Print()
 
 void Screen::PrintHud() {
-    if ( updatedHud && updatedNormal ) return;
-    updatedHud = true;
+    if ( updatedHud ) return;
     werase(hudWin);
     if ( player->GetCreativeMode() ) {
         mvwaddwstr(hudWin, 0, 0,
@@ -725,9 +719,9 @@ void Screen::PrintHud() {
         if ( dur > 0 ) { // HitPoints line
             static const int player_health_char = ascii ? '@' : 0x2665;
             PrintBar(hudWin, player_health_char,
-                int((dur > MAX_DURABILITY/5) ?
+                int((dur > Block::MAX_DURABILITY/5) ?
                     COLOR_PAIR(RED_BLACK) : (COLOR_PAIR(BLACK_RED) | A_BLINK)),
-                dur*100/MAX_DURABILITY);
+                dur*100/Block::MAX_DURABILITY);
         }
         static const struct {
             std::wstring name;
@@ -757,7 +751,7 @@ void Screen::PrintHud() {
         (void)wmove(hudWin, 0, left_border - 15);
         PrintBar(hudWin, CharName(focused->Kind(), focused->Sub()),
             Color(focused->Kind(), focused->Sub()),
-            focused->GetDurability()*100/MAX_DURABILITY);
+            focused->GetDurability()*100/Block::MAX_DURABILITY);
         wstandend(hudWin);
         const QString name = focused->FullName();
         mvwaddwstr(hudWin, 1, left_border - name.length(),
@@ -903,7 +897,6 @@ int Screen::GetFrontStartZ() const {
 void Screen::PrintFront(const dirs dir, const int block_x, const int block_y)
 const {
     if ( updatedFront ) return;
-    updatedFront = true;
     int x_step,  z_step,
         x_start, z_start,
         x_end,   z_end;
@@ -1012,6 +1005,11 @@ void Screen::PrintInv(WINDOW * const window,
         const Block * const block, const Inventory * const inv)
 const {
     if ( inv == nullptr ) return;
+    if ( inv == player->PlayerInventory() ) {
+        if ( updatedHud ) return;
+    } else {
+        if ( updatedFront ) return;
+    }
     werase(window);
     const int start = inv->Start();
     int shift = 0; // to divide inventory sections
@@ -1030,8 +1028,9 @@ const {
         wstandend(window);
         waddch(window, ' ');
         waddwstr(window, inv->InvFullName(i).toStdWString().c_str());
-        if ( MAX_DURABILITY != block->GetDurability() ) {
-            wprintw(window, "{%d}", block->GetDurability()*100/MAX_DURABILITY);
+        if ( Block::MAX_DURABILITY != block->GetDurability() ) {
+            wprintw(window, "{%d}",
+                block->GetDurability() * 100 / Block::MAX_DURABILITY);
         }
         const QString str = block->GetNote();
         if ( not str.isEmpty() ) {
@@ -1132,9 +1131,7 @@ void Screen::DeathScreen() {
     wnoutrefresh(rightWin);
     wnoutrefresh(hudWin);
     doupdate();
-    updatedNormal = true;
-    updatedFront  = true;
-    updatedHud    = true;
+    updatedNormal = updatedFront = updatedHud = true;
 }
 
 Screen::Screen(Player * const pl, int &) :

@@ -18,7 +18,9 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "TranslationsManager.h"
+#include <QLocale>
 #include <QObject>
+#include <QTranslator>
 #include <QCoreApplication>
 
 const TranslationsManager * tr_manager;
@@ -115,7 +117,7 @@ TranslationsManager::TranslationsManager() :
 QTranslator * TranslationsManager::LoadTranslator() const {
     QCoreApplication * const application = QCoreApplication::instance();
     QTranslator * translator = new QTranslator(application);
-    translator->load(QString(":/freg_") + locale);
+    translator->load(QString(":/freg_") + QLocale::system().name());
     application->installTranslator(translator);
     return translator;
 }

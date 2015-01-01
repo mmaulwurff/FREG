@@ -67,9 +67,9 @@ char WorldMap::TypeOfShred(qint64 longi, qint64 lati) const {
             longi > mapSize || longi <= 0 ||
             lati  > mapSize || lati  <= 0 )
     {
-        return OUT_BORDER_SHRED;
+        return SHRED_OUT_BORDER;
     } else if ( not map.seek((mapSize+1)*(longi-1)+lati-1) ) {
-        return DEFAULT_SHRED;
+        return SHRED_DEFAULT;
     }
     char c;
     map.getChar(&c);
