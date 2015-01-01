@@ -27,6 +27,7 @@ class Filter : public Container {
 public:
     Filter(int kind, int sub);
     Filter(QDataStream &, int kind, int sub);
+    CREATE_LOAD(Filter)
 
     bool Get(Block * block, int start) override;
     QString InvFullName(int slot_number) const override;

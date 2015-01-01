@@ -17,15 +17,15 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#ifndef BLOCKMANAGER_H
-#define BLOCKMANAGER_H
+#ifndef BLOCKFACTORY_H
+#define BLOCKFACTORY_H
 
 #include "header.h"
 
 class Block;
 class QDataStream;
 
-/** \class BlockManager BlockManager.h
+/** \class BlockFactory BlockFactory.h
      * \brief This class is used for creating and deleting blocks,
      * also for loading them from file.
      *
@@ -40,18 +40,27 @@ class QDataStream;
      * Use Block * NewBlock(int kind, int sub) to receive a pointer to
      * block that will be changed (damaged, inscribed, etc). */
 
-class BlockManager final {
+class BlockFactory final {
 public:
-     BlockManager();
-    ~BlockManager();
+     BlockFactory();
+    ~BlockFactory();
 
     /// Use this to receive a pointer to normal block.
     Block * Normal(const int sub) const { return normals[sub]; }
 
     /// Use this to receive a pointer to new not-normal block.
-    static Block * NewBlock(int kind, int sub);
+    Block * NewBlock(const int kind, const int sub) const {
+        //qDebug("kind: %d, sub: %d, valid: %d", kind, sub, IsValid(kind,sub));
+        return creates[kind](kind, sub);
+    }
+
     /// Use this to load block from file.
-    static Block * BlockFromFile(QDataStream &, int kind, int sub);
+    Block * BlockFromFile(QDataStream & str, const int kind, const int sub)
+    const {
+        //qDebug("kind: %d, sub: %d, valid: %d", kind, sub, IsValid(kind,sub));
+        return loads[kind](str, kind, sub);
+    }
+
     /// Returns true if block is normal.
     static bool KindSubFromFile(QDataStream &, quint8 * kind, quint8 * sub);
     /// Does not actually delete normal blocks.
@@ -62,11 +71,11 @@ public:
     Block * ReplaceWithNormal(Block * block) const;
 
     /// If kind is unknown, returns "unknown_kind".
-    static QString KindToString(int kind);
+    QString KindToString(int kind) const;
     /// If substance is unknown, returns "unknown_sub".
     static QString SubToString(int sub);
     /// If string is not convertible to kind, returns LAST_KIND.
-    static int StringToKind(QString);
+    int StringToKind(QString) const;
     /// If string is not convertible to substance, returns LAST_SUB.
     static int StringToSub(QString);
 
@@ -74,19 +83,39 @@ public:
         return (kind << 6) | sub;
     }
 
-    static int KindFromId(int id);
-    static int SubFromId(int id);
+    static int KindFromId(const int id) { return (id >>   8); }
+    static int SubFromId (const int id) { return (id & 0xFF); }
 
     static bool IsValid(int kind, int sub);
 
 private:
-    Q_DISABLE_COPY(BlockManager)
+    Q_DISABLE_COPY(BlockFactory)
 
     Block * normals[SUB_COUNT];
-    static const QByteArray kinds[];
+    QByteArray kinds[KIND_COUNT];
     static const QByteArray subs[];
+
+    // Block registration system:
+
+    /// Array of pointers to Create functions.
+    Block * (* creates[KIND_COUNT])(int kind, int sub);
+    /// Array of pointers to Load functions.
+    Block * (*   loads[KIND_COUNT])(QDataStream &, int kind, int sub);
+
+    /// Type list struct for variadic template without formal parameters.
+    template <class ...> struct typeList {};
+
+    /// Base for variadic template.
+    void RegisterAll(typeList<>) const;
+
+    /// For check for registration of all block types.
+    int kindIndex = 0;
+
+    /// Core of block registration system.
+    template <typename BlockType, typename ... RestBlockTypes>
+    void RegisterAll(const typeList<BlockType, RestBlockTypes...>);
 };
 
-extern const BlockManager * block_manager;
+extern const BlockFactory * blockFactory;
 
-#endif // BLOCKMANAGER_H
+#endif // BLOCKFACTORY_H

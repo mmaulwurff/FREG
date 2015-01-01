@@ -19,7 +19,7 @@
 
 #include "World.h"
 #include "Shred.h"
-#include "BlockManager.h"
+#include "BlockFactory.h"
 #include "ShredStorage.h"
 #include "worldmap.h"
 #include "blocks/Active.h"
@@ -89,7 +89,7 @@ bool World::Drop(Block * const block_from,
         const int x_to, const int y_to, const int z_to,
         const int src, const int dest, const int num)
 {
-    Block * const block_to = BlockManager::NewBlock(BOX, DIFFERENT);
+    Block * const block_to = blockFactory->NewBlock(BOX, DIFFERENT);
     if ( not Build(block_to, x_to, y_to, z_to) ) {
         delete block_to;
     }
@@ -107,7 +107,7 @@ bool World::Get(Block * const block_to,
             return Exchange(block_from, block_to, src, dest, num);
         }
     } else if ( Exchange(block_from, block_to, src, dest, num) ) {
-        Build(block_manager->Normal(AIR), x_from, y_from, z_from, UP,
+        Build(blockFactory->Normal(AIR), x_from, y_from, z_from, UP,
             nullptr, true);
         return true;
     }
@@ -513,8 +513,8 @@ int World::Damage(const int x, const int y, const int z,
     Block * temp = shred->GetBlock(x_in, y_in, z);
     const int sub  = temp->Sub();
     if ( AIR == sub ) return 0;
-    if ( temp == block_manager->Normal(sub) ) {
-        temp = BlockManager::NewBlock(temp->Kind(), sub);
+    if ( temp == blockFactory->Normal(sub) ) {
+        temp = blockFactory->NewBlock(temp->Kind(), sub);
         shred->SetBlockNoCheck(temp, x_in, y_in, z);
     }
     temp->Damage(dmg, dmg_kind);
@@ -535,7 +535,7 @@ void World::DestroyAndReplace(const int x, const int y, const int z) {
         ReEnlighten(x, y, z);
     }
     if ( delete_block ) {
-        block_manager->DeleteBlock(block);
+        blockFactory->DeleteBlock(block);
     } else {
         Active * const active = block->ActiveBlock();
         if ( active != nullptr ) {
@@ -580,8 +580,8 @@ bool World::Inscribe(const int x, const int y, const int z) {
     const int x_in = Shred::CoordInShred(x);
     const int y_in = Shred::CoordInShred(y);
     Block * block  = shred->GetBlock(x_in, y_in, z);
-    if ( block == block_manager->Normal(block->Sub()) ) {
-        block = BlockManager::NewBlock(block->Kind(), block->Sub());
+    if ( block == blockFactory->Normal(block->Sub()) ) {
+        block = blockFactory->NewBlock(block->Kind(), block->Sub());
         shred->SetBlockNoCheck(block, x_in, y_in, z);
     }
     QString str;

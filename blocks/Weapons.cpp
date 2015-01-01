@@ -19,7 +19,7 @@
 
 #include "blocks/Weapons.h"
 #include "blocks/Inventory.h"
-#include "BlockManager.h"
+#include "BlockFactory.h"
 #include "Shred.h"
 
 QString Weapon::FullName() const {

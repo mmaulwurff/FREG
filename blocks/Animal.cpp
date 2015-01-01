@@ -20,7 +20,7 @@
 #include "blocks/Animal.h"
 #include "blocks/Inventory.h"
 #include "DeferredAction.h"
-#include "BlockManager.h"
+#include "BlockFactory.h"
 #include "World.h"
 
 // Animal:: section
@@ -109,8 +109,8 @@
     }
 
     Block * Animal::DropAfterDamage(bool *) {
-        Block * const cadaver = BlockManager::NewBlock(BOX, Sub());
-        cadaver->HasInventory()->Get(BlockManager::NewBlock(WEAPON, BONE));
+        Block * const cadaver = blockFactory->NewBlock(BOX, Sub());
+        cadaver->HasInventory()->Get(blockFactory->NewBlock(WEAPON, BONE));
         return cadaver;
     }
 

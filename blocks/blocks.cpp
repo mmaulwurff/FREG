@@ -20,7 +20,7 @@
 #include "blocks.h"
 #include "World.h"
 #include "Shred.h"
-#include "BlockManager.h"
+#include "BlockFactory.h"
 #include <QTextStream>
 #include <QFile>
 #include <QTime>
@@ -53,9 +53,9 @@
     push_reaction Ladder::PushResult(dirs) const { return MOVE_UP; }
 
     Block * Ladder::DropAfterDamage(bool * const delete_block) {
-        Block * const pile = BlockManager::NewBlock(BOX, DIFFERENT);
+        Block * const pile = blockFactory->NewBlock(BOX, DIFFERENT);
         if ( STONE==Sub() || MOSS_STONE==Sub() ) {
-            pile->HasInventory()->Get(block_manager->Normal(Sub()));
+            pile->HasInventory()->Get(blockFactory->Normal(Sub()));
         } else {
             pile->HasInventory()->Get(this);
             *delete_block = false;
@@ -109,7 +109,7 @@
     }
 
     Block * Liquid::DropAfterDamage(bool *) {
-        return block_manager->Normal( ( Sub() == STONE ) ?
+        return blockFactory->Normal( ( Sub() == STONE ) ?
             STONE : AIR);
     }
 
@@ -142,7 +142,7 @@
                     || ( IsBase(Sub(), sub_near)
                         && AIR == world->GetBlock(i, j, ++k)->Sub() ) )
             {
-                world->Build(BlockManager::NewBlock(GRASS, Sub()), i, j, k);
+                world->Build(blockFactory->NewBlock(GRASS, Sub()), i, j, k);
             }
         }
         if ( not IsBase(Sub(), world->GetBlock(X(), Y(), Z()-1)->Sub()) ) {
@@ -178,7 +178,7 @@
     int  Grass::ShouldAct() const  { return FREQUENT_RARE; }
     int  Grass::LightRadius() const { return (FIRE == Sub()) ? 5 : 0; }
     inner_actions Grass::ActInner() { return INNER_ACTION_NONE; }
-    Block * Grass::DropAfterDamage(bool *) {return block_manager->Normal(AIR);}
+    Block * Grass::DropAfterDamage(bool *) {return blockFactory->Normal(AIR);}
 
     int Grass::DamageKind() const {
         return (Sub() == FIRE) ? DAMAGE_HEAT : DAMAGE_NO;
@@ -195,7 +195,7 @@
 
     void Bush::DoRareAction() {
         if ( 0 == (qrand() & 255) ) {
-            Get(BlockManager::NewBlock(WEAPON, SUB_NUT));
+            Get(blockFactory->NewBlock(WEAPON, SUB_NUT));
         }
     }
 
@@ -208,10 +208,10 @@
     }
 
     Block * Bush::DropAfterDamage(bool *) {
-        Block * const pile = BlockManager::NewBlock(BOX, DIFFERENT);
+        Block * const pile = blockFactory->NewBlock(BOX, DIFFERENT);
         Inventory * const pile_inv = pile->HasInventory();
-        pile_inv->Get(BlockManager::NewBlock(WEAPON, WOOD));
-        pile_inv->Get(BlockManager::NewBlock(WEAPON, SUB_NUT));
+        pile_inv->Get(blockFactory->NewBlock(WEAPON, WOOD));
+        pile_inv->Get(blockFactory->NewBlock(WEAPON, SUB_NUT));
         return pile;
     }
 

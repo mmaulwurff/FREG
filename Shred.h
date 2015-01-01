@@ -23,7 +23,7 @@
 #include "header.h"
 #include "Weather.h"
 #include "worldmap.h"
-#include "BlockManager.h"
+#include "BlockFactory.h"
 #include <forward_list>
 #include <QLinkedList>
 

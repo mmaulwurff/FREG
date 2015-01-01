@@ -20,7 +20,7 @@
 #include "Dwarf.h"
 #include "World.h"
 #include "Shred.h"
-#include "BlockManager.h"
+#include "BlockFactory.h"
 #include <QDataStream>
 
 int Dwarf::Weight() const {
@@ -36,7 +36,7 @@ int Dwarf::Weight() const {
 
 Block * Dwarf::DropAfterDamage(bool * const delete_block) {
     Block * const cadaver = Animal::DropAfterDamage(delete_block);
-    cadaver->HasInventory()->Get(BlockManager::NewBlock(WEAPON, BONE));
+    cadaver->HasInventory()->Get(blockFactory->NewBlock(WEAPON, BONE));
     return cadaver;
 }
 

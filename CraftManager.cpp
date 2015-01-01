@@ -20,7 +20,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QFile>
-#include "BlockManager.h"
+#include "BlockFactory.h"
 #include "CraftManager.h"
 
 const CraftManager * craft_manager;
@@ -29,8 +29,8 @@ const CraftManager * craft_manager;
 
 bool CraftItem::operator<(const CraftItem &item) const {
     return
-        BlockManager::MakeId(item.kind, item.sub) <
-        BlockManager::MakeId(     kind,      sub);
+        BlockFactory::MakeId(item.kind, item.sub) <
+        BlockFactory::MakeId(     kind,      sub);
 }
 
 // CraftList section
@@ -59,8 +59,8 @@ void CraftList::LoadItems(const QJsonArray & array) {
     for (const QJsonValue & value : array) {
         const QJsonObject item = value.toObject();
         items.append( new CraftItem( {item["number"].toInt(),
-                BlockManager::StringToKind(item["kind"].toString()),
-                BlockManager::StringToSub (item["sub" ].toString())} ) );
+                blockFactory->StringToKind(item["kind"].toString()),
+                BlockFactory::StringToSub (item["sub" ].toString())} ) );
     }
 }
 
@@ -83,7 +83,7 @@ void CraftList::clear() {
 CraftManager::CraftManager() : recipesList() {
     for (int sub=0; sub<LAST_SUB; ++sub) {
         QFile file(QString(":/recipes/%1.json").
-            arg(BlockManager::SubToString(sub)));
+            arg(BlockFactory::SubToString(sub)));
         if ( not file.open(QIODevice::ReadOnly | QIODevice::Text) ) continue;
         const QJsonArray recipes =
             QJsonDocument::fromJson(file.readAll()).array();

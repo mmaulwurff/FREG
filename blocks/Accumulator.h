@@ -23,9 +23,11 @@
 #include "blocks/Block.h"
 
 class Accumulator : public Block {
+    Q_DISABLE_COPY(Accumulator)
 public:
     Accumulator(int sub, int kind);
     Accumulator(QDataStream &, int sub, int kind);
+    CREATE_LOAD(Accumulator)
 
     QString FullName() const override;
     void Damage(int dmg, int dmg_kind) override;

@@ -37,6 +37,7 @@ class Container : public Active, public Inventory {
 public:
     Container(int kind, int sub, int size = INV_SIZE);
     Container(QDataStream & str, int kind, int sub, int size = INV_SIZE);
+    CREATE_LOAD(Container)
 
     void ReceiveSignal(QString) override;
     int  ShouldAct() const override;
@@ -64,6 +65,7 @@ class Box : public Falling, public Inventory {
 public:
     Box(int kind, int sub);
     Box(QDataStream & str, int kind, int sub);
+    CREATE_LOAD(Box)
 
     int  ShouldAct() const override;
     void Damage(int dmg, int dmg_kind) override;
@@ -88,6 +90,7 @@ class Workbench : public Container {
 public:
     Workbench(int kind, int sub);
     Workbench(QDataStream & str, int kind, int sub);
+    CREATE_LOAD(Workbench)
 
     bool Drop(int src, int dest, int num, Inventory * inv) override;
     bool Get(Block * block, int start) override;
@@ -105,6 +108,7 @@ class Converter : public Container {
 public:
     Converter(int kind, int sub);
     Converter(QDataStream & str, int kind, int sub);
+    CREATE_LOAD(Converter)
 
     int  ShouldAct() const override;
     int  DamageKind() const override;

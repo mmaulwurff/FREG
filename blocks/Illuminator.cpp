@@ -18,7 +18,7 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "blocks/Illuminator.h"
-#include "BlockManager.h"
+#include "BlockFactory.h"
 #include "Inventory.h"
 #include "World.h"
 
@@ -52,7 +52,7 @@ QString Illuminator::FullName() const {
 
 Block * Illuminator::DropAfterDamage(bool * const delete_block) {
     *delete_block = false;
-    Block * const pile = BlockManager::NewBlock(BOX, DIFFERENT);
+    Block * const pile = blockFactory->NewBlock(BOX, DIFFERENT);
     pile->HasInventory()->Get(this);
     return pile;
 }

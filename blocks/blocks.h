@@ -26,6 +26,7 @@
 class Plate : public Block {
 public:
     using Block::Block;
+    CREATE_LOAD(Plate)
 
     int Weight() const override;
     QString FullName() const override;
@@ -35,6 +36,7 @@ public:
 class Ladder : public Block {
 public:
     using Block::Block;
+    CREATE_LOAD(Ladder)
 
     bool Catchable() const override;
     int  Weight() const override;
@@ -47,6 +49,7 @@ class Liquid : public Falling {
     Q_OBJECT
 public:
     using Falling::Falling;
+    CREATE_LOAD(Liquid)
 
     int ShouldAct() const override;
     int DamageKind() const override;
@@ -68,6 +71,7 @@ class Grass : public Active {
     Q_OBJECT
 public:
     using Active::Active;
+    CREATE_LOAD(Grass)
 
     int  ShouldAct() const override;
     int  DamageKind() const override;
@@ -90,6 +94,7 @@ class Bush : public Active, public Inventory {
 public:
     Bush(int sub, int id);
     Bush(QDataStream & str, int sub, int id);
+    CREATE_LOAD(Bush)
 
     int  Weight() const override;
     int  ShouldAct() const override;
@@ -111,6 +116,7 @@ class Door : public Active {
 public:
     Door(int sub, int id);
     Door(QDataStream & str, int sub, int id);
+    CREATE_LOAD(Door)
 
     int  ShouldAct() const override;
     void ActFrequent() override;
@@ -133,6 +139,7 @@ class Clock : public Active {
 public:
     Clock(int sub, int id);
     Clock (QDataStream & str, int sub, int id);
+    CREATE_LOAD(Clock)
 
     int  Weight() const override;
     int  ShouldAct() const override;
@@ -154,6 +161,7 @@ private:
 class Text : public Block {
 public:
     using Block::Block;
+    CREATE_LOAD(Text)
 
     bool Inscribe(QString) override;
     QString FullName() const override;
@@ -164,6 +172,7 @@ class Map : public Text {
 public:
     Map(int sub, int id);
     Map(QDataStream & str, int sub, int id);
+    CREATE_LOAD(Map)
 
     wearable Wearable() const override;
     usage_types Use(Active * user) override;
@@ -183,6 +192,7 @@ class Bell : public Active {
     Q_OBJECT
 public:
     using Active::Active;
+    CREATE_LOAD(Bell)
 
     void Damage(int dmg, int dmg_kind) override;
     wearable Wearable() const override;
@@ -194,6 +204,7 @@ class Telegraph : public Active {
 public:
     Telegraph(int sub, int id);
     Telegraph(QDataStream &, int sub, int id);
+    CREATE_LOAD(Telegraph)
 
     int ShouldAct() const override;
     bool Inscribe(QString) override;
@@ -213,6 +224,7 @@ private:
 class MedKit : public Block {
 public:
     using Block::Block;
+    CREATE_LOAD(MedKit)
     wearable Wearable() const override;
     usage_types Use(Active * user) override;
 };
@@ -224,6 +236,7 @@ public:
 class Informer : public Block {
 public:
     using Block::Block;
+    CREATE_LOAD(Informer)
 
     QString FullName() const override;
     wearable Wearable() const override;

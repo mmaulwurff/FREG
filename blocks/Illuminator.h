@@ -29,6 +29,7 @@ class Illuminator : public Active {
 public:
     Illuminator(int sub, int id);
     Illuminator(QDataStream & str, int sub, int id);
+    CREATE_LOAD(Illuminator)
 
     int  ShouldAct() const override;
     int  DamageKind() const override;

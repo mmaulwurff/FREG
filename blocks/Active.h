@@ -105,6 +105,7 @@ class Falling : public Active {
 public:
     Falling(int sub, int id, int transp = UNDEF);
     Falling(QDataStream & str, int sub, int id, int transp = UNDEF);
+    CREATE_LOAD(Falling)
 
     void Move(dirs dir) override;
     QString FullName() const override;

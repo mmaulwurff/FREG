@@ -54,26 +54,9 @@ HEADERS += *.h  \
     blocks/*.h  \
     screens/*.h \
 
-SOURCES += *.cpp \
+SOURCES += *.cpp  \
+    blocks/*.cpp  \
     screens/*.cpp \
-#    screens/VirtScreen.cpp \
-#    screens/IThread.cpp \
-#    screens/CursedScreen.cpp \
-    blocks/blocks.cpp \
-    blocks/Active.cpp \
-    blocks/Dwarf.cpp \
-    blocks/Weapons.cpp \
-    blocks/Illuminator.cpp \
-    blocks/Inventory.cpp \
-    blocks/Bucket.cpp \
-    blocks/Containers.cpp \
-    blocks/Block.cpp \
-    blocks/RainMachine.cpp \
-    blocks/Armour.cpp \
-    blocks/Animal.cpp \
-    blocks/Filter.cpp \
-    blocks/Teleport.cpp \
-    blocks/Accumulator.cpp \
 
 INCLUDEPATH += .
 

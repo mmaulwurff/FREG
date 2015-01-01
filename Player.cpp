@@ -24,7 +24,7 @@
 #include "Player.h"
 #include "World.h"
 #include "Shred.h"
-#include "BlockManager.h"
+#include "BlockFactory.h"
 #include "DeferredAction.h"
 #include "Weather.h"
 #include "worldmap.h"
@@ -119,7 +119,7 @@ void Player::Examine(const int x, const int y, const int z) {
             arg(world->SunLight(x, y, z)).
             arg(block->Transparent()));
         emit Notify(QString("Norm: %1. Dir: %2").
-            arg(block==block_manager->Normal(block->Sub())).
+            arg(block==blockFactory->Normal(block->Sub())).
             arg(block->GetDir()));
     }
     if ( Block::GetSubGroup(block->Sub()) == GROUP_AIR ) return;
@@ -209,7 +209,7 @@ usage_types Player::Use(const int num) {
     if ( block == nullptr ) return USAGE_TYPE_NO;
     if ( player->Eat(static_cast<subs>(block->Sub())) ) {
         PlayerInventory()->Pull(num);
-        block_manager->DeleteBlock(block);
+        blockFactory->DeleteBlock(block);
         return USAGE_TYPE_NO;
     } // else:
     const usage_types result = block->Use(player);
@@ -331,23 +331,23 @@ void Player::ProcessCommand(QString command) {
         if ( inv == nullptr ) return;
         QByteArray kind, sub;
         comm_stream >> kind >> sub;
-        const int kind_code = BlockManager::StringToKind(kind);
+        const int kind_code = blockFactory->StringToKind(kind);
         if ( kind_code == LAST_KIND ) {
             emit Notify(tr("%1 command: invalid kind!").arg(QString(request)));
             return;
         } // else:
         const int sub_code = sub.isEmpty() ?
-            static_cast<int>(STONE) : BlockManager::StringToSub(sub);
+            static_cast<int>(STONE) : BlockFactory::StringToSub(sub);
         if ( sub_code == LAST_SUB ) {
             emit Notify(tr("%1 command: invalid substance!")
                 .arg(QString(request)));
             return;
         } // else:
-        Block * const block = BlockManager::NewBlock(kind_code, sub_code);
+        Block * const block = blockFactory->NewBlock(kind_code, sub_code);
         if ( inv->Get(block) ) {
             emit Updated();
         } else {
-            block_manager->DeleteBlock(block);
+            blockFactory->DeleteBlock(block);
         }
         } break;
     case UniqueIntFromString("move"): {
@@ -464,7 +464,7 @@ void Player::SetPlayer(int _x, int _y, int _z) {
             player = candidate->IsAnimal();
         } else {
             if ( player == nullptr || player == creator ) {
-                player = BlockManager::NewBlock(DWARF, PLAYER_SUB)->IsAnimal();
+                player = blockFactory->NewBlock(DWARF, PLAYER_SUB)->IsAnimal();
             }
             world->Build(player, _x, _y, Z(), GetDir(), nullptr, true);
         }
@@ -483,10 +483,10 @@ void Player::SetPlayer(int _x, int _y, int _z) {
 
 void Player::Disconnect() {
     if ( player == nullptr ) { // dead player
-        player = BlockManager::NewBlock(DWARF, PLAYER_SUB)->IsAnimal();
+        player = blockFactory->NewBlock(DWARF, PLAYER_SUB)->IsAnimal();
     } else {
         SaveState();
-        GetShred()->SetBlockNoCheck(block_manager->Normal(AIR),
+        GetShred()->SetBlockNoCheck(blockFactory->Normal(AIR),
             x_self, y_self, z_self);
         player->Unregister();
         player->disconnect();
@@ -498,7 +498,7 @@ Player::Player() :
         homeLongi(), homeLati(),
         homeX(), homeY(), homeZ(),
         player(nullptr),
-        creator(BlockManager::NewBlock(DWARF, DIFFERENT)->IsAnimal()),
+        creator(blockFactory->NewBlock(DWARF, DIFFERENT)->IsAnimal()),
         usingType(), usingSelfType(),
         usingInInventory(),
         creativeMode()

@@ -27,6 +27,7 @@ class Teleport : public Active {
 public:
     Teleport(int sub, int kind);
     Teleport(QDataStream &, int sub, int kind);
+    CREATE_LOAD(Teleport)
 
     bool Inscribe(QString) override;
     void Damage(int damage, int damage_kind) override;

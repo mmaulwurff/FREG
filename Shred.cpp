@@ -74,27 +74,27 @@ bool Shred::LoadShred() {
     type = static_cast<shred_type>(read);
     in >> read;
     weather = static_cast<weathers>(read);
-    Block * const null_stone = block_manager->Normal(NULLSTONE);
-    Block * const air        = block_manager->Normal(AIR);
+    Block * const null_stone = blockFactory->Normal(NULLSTONE);
+    Block * const air        = blockFactory->Normal(AIR);
     SetAllLightMapNull();
     for (int x=SHRED_WIDTH; x--; )
     for (int y=SHRED_WIDTH; y--; ) {
         PutBlock(null_stone, x, y, 0);
         for (int z=1; ; ++z) {
             quint8 kind, sub;
-            if ( BlockManager::KindSubFromFile(in, &kind, &sub) ) { // normal
+            if ( BlockFactory::KindSubFromFile(in, &kind, &sub) ) { // normal
                 if ( sub==SKY || sub==STAR ) {
                     while (z < HEIGHT-1) {
                         PutBlock(air, x, y, z++);
                     }
-                    PutBlock(block_manager->Normal(sub), x, y, HEIGHT-1);
+                    PutBlock(blockFactory->Normal(sub), x, y, HEIGHT-1);
                     break;
                 } else {
-                    PutBlock(block_manager->Normal(sub), x, y, z);
+                    PutBlock(blockFactory->Normal(sub), x, y, z);
                 }
             } else {
                 Active * const active = (blocks[x][y][z] =
-                    BlockManager::BlockFromFile(in, kind, sub))->ActiveBlock();
+                    blockFactory->BlockFromFile(in, kind, sub))->ActiveBlock();
                 if ( active != nullptr ) {
                     active->SetXyz(x, y, z);
                     RegisterInit(active);
@@ -125,10 +125,10 @@ Shred::Shred(const int shred_x, const int shred_y,
 {
     if ( LoadShred() ) return; // successfull loading
     // new shred generation:
-    Block * const null_stone = block_manager->Normal(NULLSTONE);
-    Block * const air  = block_manager->Normal(AIR);
-    Block * const sky  = block_manager->Normal(SKY);
-    Block * const star = block_manager->Normal(STAR);
+    Block * const null_stone = blockFactory->Normal(NULLSTONE);
+    Block * const air  = blockFactory->Normal(AIR);
+    Block * const sky  = blockFactory->Normal(SKY);
+    Block * const star = blockFactory->Normal(STAR);
     SetAllLightMapNull();
     for (int i=SHRED_WIDTH; i--; )
     for (int j=SHRED_WIDTH; j--; ) {
@@ -178,7 +178,7 @@ void Shred::SaveShred(const bool isQuitGame) {
         while (GetBlock(x, y, --height)->Sub() == AIR);
         for (int z=1; z<=height; ++z) {
             Block * const block = GetBlock(x, y, z);
-            if ( block == block_manager->Normal(block->Sub()) ) {
+            if ( block == blockFactory->Normal(block->Sub()) ) {
                 block->SaveNormalToFile(outstr);
             } else {
                 block->SaveToFile(outstr);
@@ -327,7 +327,7 @@ void Shred::SetBlockNoCheck(Block * const block,
 void Shred::SetNewBlock(const int kind, const int sub,
         const int x, const int y, const int z, const int dir)
 {
-    Block * const block = BlockManager::NewBlock(kind, sub);
+    Block * const block = blockFactory->NewBlock(kind, sub);
     block->SetDir(dir);
     SetBlock(block, x, y, z);
 }
@@ -347,7 +347,7 @@ void Shred::CoverWith(const int kind, const int sub) {
     for (int j=0; j<SHRED_WIDTH; ++j) {
         int k = HEIGHT-2;
         for ( ; AIR==GetBlock(i, j, k)->Sub(); --k);
-        SetBlock(BlockManager::NewBlock(kind, sub), i, j, ++k);
+        SetBlock(blockFactory->NewBlock(kind, sub), i, j, ++k);
     }
 }
 
@@ -355,7 +355,7 @@ void Shred::RandomDrop(int num, const int kind, const int sub,
         const bool on_water)
 {
     while ( num-- ) {
-        DropBlock(BlockManager::NewBlock(kind, sub), on_water);
+        DropBlock(blockFactory->NewBlock(kind, sub), on_water);
     }
 }
 
@@ -378,7 +378,7 @@ void Shred::PlantGrass() {
         if ( SOIL==GetBlock(i, j, k)->Sub()
                 && AIR==GetBlock(i, j, ++k)->Sub() )
         {
-            SetBlock(BlockManager::NewBlock(GRASS, GREENERY), i, j, k);
+            SetBlock(blockFactory->NewBlock(GRASS, GREENERY), i, j, k);
         }
     }
 }
@@ -427,7 +427,7 @@ void Shred::NullMountain() {
     const int border_level = HEIGHT/2-2;
     NormalCube(0,SHRED_WIDTH/2-1,1, SHRED_WIDTH,2,border_level, NULLSTONE);
     NormalCube(SHRED_WIDTH/2-1,0,1, 2,SHRED_WIDTH,border_level, NULLSTONE);
-    Block * const null_stone = block_manager->Normal(NULLSTONE);
+    Block * const null_stone = blockFactory->Normal(NULLSTONE);
     for (int i=0; i<SHRED_WIDTH; ++i)
     for (int j=0; j<SHRED_WIDTH; ++j) {
         for (int k=border_level; k < HEIGHT-2; ++k) {
@@ -457,7 +457,7 @@ void Shred::NullMountain() {
 
 void Shred::Pyramid() {
     const int level = qMin(FlatUndeground(), HEIGHT-1-16);
-    Block * const stone = block_manager->Normal(STONE);
+    Block * const stone = blockFactory->Normal(STONE);
     for (int z=level+1, dz=0; dz<SHRED_WIDTH/2; z+=2, ++dz) { // pyramid
         for (int x=dz, y=dz; x<(SHRED_WIDTH - dz); ++x, ++y) {
             blocks[x][dz][z] =
@@ -470,7 +470,7 @@ void Shred::Pyramid() {
                 blocks[SHRED_WIDTH-1-dz][y][z+1] = stone;
         }
     }
-    Block * const air = block_manager->Normal(AIR);
+    Block * const air = blockFactory->Normal(AIR);
     PutBlock(air, SHRED_WIDTH/2, 0, level+1); // entrance
     // room below
     NormalCube(1, 1, HEIGHT/2-60, SHRED_WIDTH-2, SHRED_WIDTH-2, 8, AIR);
@@ -480,7 +480,7 @@ void Shred::Pyramid() {
     SetNewBlock(CONTAINER, STONE, SHRED_WIDTH-2, SHRED_WIDTH-2, level+1);
     Inventory * const inv =
         GetBlock(SHRED_WIDTH-2,SHRED_WIDTH-2, level+1)->HasInventory();
-    inv->Get(block_manager->Normal(GOLD));
+    inv->Get(blockFactory->Normal(GOLD));
     SetNewBlock(PREDATOR, A_MEAT, SHRED_WIDTH-3, SHRED_WIDTH-2, level+1);
 }
 
@@ -546,7 +546,7 @@ void Shred::NormalCube(
         const int x_start, const int y_start, const int z_start,
         const int x_size,  const int y_size,  const int z_size, const subs sub)
 {
-    Block * const block = block_manager->Normal(sub);
+    Block * const block = blockFactory->Normal(sub);
     for (int x=x_start; x < x_start+x_size; ++x)
     for (int y=y_start; y < y_start+y_size; ++y)
     for (int z=z_start; z < z_start+z_size; ++z) {
@@ -567,7 +567,7 @@ bool Shred::Tree(const int x, const int y, const int z, const int height) {
         }
     }
     const int leaves_level = z+height/2;
-    Block * const leaves = block_manager->Normal(GREENERY);
+    Block * const leaves = blockFactory->Normal(GREENERY);
     for (int i=x; i<=x+2; ++i)
     for (int j=y; j<=y+2; ++j) {
         for (int k=leaves_level; k<z+height; ++k ) {
@@ -575,7 +575,7 @@ bool Shred::Tree(const int x, const int y, const int z, const int height) {
         }
     }
     for (int k=qMax(z-1, 1); k < z+height-1; ++k) { // trunk
-        SetBlock(block_manager->Normal(WOOD), x+1, y+1, k);
+        SetBlock(blockFactory->Normal(WOOD), x+1, y+1, k);
     }
     // branches
     const int r = qrand();
@@ -607,7 +607,7 @@ bool Shred::InBounds(const int x, const int y, const int z) {
 }
 
 void Shred::Dew(const int kind, const int sub) {
-    DropBlock(BlockManager::NewBlock(kind, sub), true);
+    DropBlock(blockFactory->NewBlock(kind, sub), true);
 }
 
 void Shred::Rain(const int kind, const int sub) {
@@ -621,7 +621,7 @@ void Shred::Rain(const int kind, const int sub) {
     y = CoordInShred(unsigned(y) >> SHRED_WIDTH_SHIFT);
     const int to_replace_sub = GetBlock(x, y, CLOUD_HEIGHT)->Sub();
     if ( to_replace_sub == AIR || to_replace_sub == SUB_CLOUD ) {
-        SetBlock(BlockManager::NewBlock(kind, sub), x, y, CLOUD_HEIGHT);
+        SetBlock(blockFactory->NewBlock(kind, sub), x, y, CLOUD_HEIGHT);
     }
 }
 
@@ -637,7 +637,7 @@ bool Shred::LoadRoom(const int level, const int index) {
         for (unsigned i=0; i<SHRED_WIDTH; ++i) {
             switch ( buffer[i] ) {
                 case '#':
-                    PutBlock(block_manager->Normal(STONE), i, lines, level);
+                    PutBlock(blockFactory->Normal(STONE), i, lines, level);
                     break;
                 case '+':
                     NormalCube(i, lines, level, 1, 1, qrand()%3+5, STONE);
@@ -649,15 +649,15 @@ bool Shred::LoadRoom(const int level, const int index) {
                     NormalCube(i, lines, level, 1, 1, 5, STONE);
                     break;
                 case '[': {
-                    Block * const stone = block_manager->Normal(STONE);
+                    Block * const stone = blockFactory->Normal(STONE);
                     PutBlock(stone, i, lines, level);
                     PutBlock(stone, i, lines, level+1);
                     PutBlock(stone, i, lines, level+3);
                     PutBlock(stone, i, lines, level+4);
                     } break;
                 case '=':
-                    PutBlock(block_manager->Normal(WOOD),  i, lines, level);
-                    PutBlock(block_manager->Normal(STONE), i, lines, level+4);
+                    PutBlock(blockFactory->Normal(WOOD),  i, lines, level);
+                    PutBlock(blockFactory->Normal(STONE), i, lines, level+4);
                     break;
                 case '^':
                     for (int z=level; z<level+5; ++z) {

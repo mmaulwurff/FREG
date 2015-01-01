@@ -18,7 +18,7 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "blocks/Block.h"
-#include "BlockManager.h"
+#include "BlockFactory.h"
 #include "World.h"
 #include "Inventory.h"
 
@@ -133,12 +133,12 @@ Block * Block::DropAfterDamage(bool * const delete_block) {
     case GREENERY:
     case SUB_DUST:
     case GLASS:
-    case AIR: return block_manager->Normal(AIR);
+    case AIR: return blockFactory->Normal(AIR);
     case STONE: if ( BLOCK==Kind() ) {
-        return BlockManager::NewBlock(LADDER, STONE);
+        return blockFactory->NewBlock(LADDER, STONE);
     } // no break;
     default: {
-        Block * const pile = BlockManager::NewBlock(BOX, DIFFERENT);
+        Block * const pile = blockFactory->NewBlock(BOX, DIFFERENT);
         pile->HasInventory()->Get(this);
         *delete_block = false;
         return pile;
@@ -150,7 +150,7 @@ push_reaction Block::PushResult(dirs) const {
     return ( AIR==Sub() ) ? ENVIRONMENT : NOT_MOVABLE;
 }
 
-int  Block::GetId() const { return BlockManager::MakeId(Kind(), Sub()); }
+int  Block::GetId() const { return BlockFactory::MakeId(Kind(), Sub()); }
 bool Block::Catchable() const { return false; }
 void Block::Move(dirs) {}
 int  Block::DamageKind() const { return DAMAGE_CRUSH; }
@@ -259,7 +259,7 @@ bool Block::operator==(const Block & block) const {
 void Block::SaveAttributes(QDataStream &) const {}
 
 void Block::SaveToFile(QDataStream & out) {
-    if ( this == block_manager->Normal(sub) ) {
+    if ( this == blockFactory->Normal(sub) ) {
         SaveNormalToFile(out);
     } else {
         out << sub << kind <<

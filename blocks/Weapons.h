@@ -31,6 +31,7 @@ class Weapon : public Falling {
      *  will be destroyed. */
 public:
     using Falling::Falling;
+    CREATE_LOAD(Weapon)
 
     int  DamageKind() const override;
     int  DamageLevel() const override;
@@ -43,6 +44,7 @@ public:
 class Pick : public Weapon {
 public:
     using Weapon::Weapon;
+    CREATE_LOAD(Pick)
 
     int  DamageKind() const override;
 };
@@ -50,6 +52,7 @@ public:
 class Shovel : public Weapon {
 public:
     using Weapon::Weapon;
+    CREATE_LOAD(Shovel)
 
     int  DamageKind() const override;
 };
@@ -57,6 +60,7 @@ public:
 class Hammer : public Weapon {
 public:
     using Weapon::Weapon;
+    CREATE_LOAD(Hammer)
 
     int  DamageKind() const override;
 };
@@ -64,6 +68,7 @@ public:
 class Axe : public Weapon {
 public:
     using Weapon::Weapon;
+    CREATE_LOAD(Axe)
 
     int  DamageKind() const override;
 };

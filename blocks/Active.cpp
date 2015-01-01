@@ -21,7 +21,7 @@
 #include "Shred.h"
 #include "Xyz.h"
 #include "blocks/Inventory.h"
-#include "BlockManager.h"
+#include "BlockFactory.h"
 
 // Active section
 

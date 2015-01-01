@@ -24,7 +24,7 @@
 #define BLOCK_H
 
 #include "header.h"
-#include "TranslationsManager.h"
+#include "TranslationsManager.h" // needed in lots of files, so include here.
 
 enum wearable {
     WEARABLE_NOWHERE,
@@ -82,6 +82,20 @@ enum sub_groups {
     GROUP_HANDY,
 };
 
+#define CREATE_LOAD(BlockType)                                                \
+static Block * Create(const int kind, const int sub) {                        \
+    return new BlockType(kind, sub);                                          \
+}                                                                             \
+static Block * Load(QDataStream & str, const int kind, const int sub) {       \
+    return new BlockType(str, kind, sub);                                     \
+}                                                                             \
+static QByteArray Name() { return QByteArray(#BlockType); }                   \
+static bool AlreadyRegistered() {                                             \
+    static int check = 0;                                                     \
+    ++check;                                                                  \
+    return check > 1;                                                         \
+}
+
 class Inventory;
 class Active;
 class Falling;
@@ -95,6 +109,7 @@ public:
     Block(int sub, int kind, int transp = UNDEF);
     Block(QDataStream &, int sub, int kind, int transp = UNDEF);
     virtual ~Block();
+    CREATE_LOAD(Block)
 
     virtual QString FullName() const;
     virtual bool Catchable() const;

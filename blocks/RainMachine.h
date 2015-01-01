@@ -29,6 +29,7 @@ class RainMachine : public Active, public Inventory {
 public:
     RainMachine(int sub, int id);
     RainMachine(QDataStream & stream, int sub, int id);
+    CREATE_LOAD(RainMachine)
 
     void DoRareAction() override;
     int  ShouldAct() const override;

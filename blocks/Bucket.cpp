@@ -18,7 +18,7 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "Bucket.h"
-#include "BlockManager.h"
+#include "BlockFactory.h"
 
 Bucket::Bucket(const int kind, const int sub) :
         Block(kind, sub),

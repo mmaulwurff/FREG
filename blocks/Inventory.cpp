@@ -21,7 +21,7 @@
 #include "World.h"
 #include "Inventory.h"
 #include "CraftManager.h"
-#include "BlockManager.h"
+#include "BlockFactory.h"
 
 int  Inventory::Start() const { return 0; }
 bool Inventory::Access() const { return true; }
@@ -124,9 +124,9 @@ bool Inventory::InscribeInv(const int num, const QString str) {
         return false;
     }
     const int sub = inventory[num].top()->Sub();
-    if ( inventory[num].top() == block_manager->Normal(sub) ) {
+    if ( inventory[num].top() == blockFactory->Normal(sub) ) {
         for (int i=0; i<number; ++i) {
-            inventory[num].replace(i, block_manager->Normal(sub));
+            inventory[num].replace(i, blockFactory->Normal(sub));
         }
     }
     for (int i=0; i<number; ++i) {
@@ -214,11 +214,11 @@ bool Inventory::MiniCraft(const int num) {
         new CraftItem({Number(num), GetInvKind(num), GetInvSub(num)});
     if ( craft_manager->MiniCraft(&crafted) ) {
         while ( not inventory[num].isEmpty() ) {
-            block_manager->DeleteBlock(ShowBlock(num));
+            blockFactory->DeleteBlock(ShowBlock(num));
             Pull(num);
         }
         for (int i=0; i<crafted->num; ++i) {
-            GetExact(BlockManager::NewBlock(crafted->kind, crafted->sub), num);
+            GetExact(blockFactory->NewBlock(crafted->kind, crafted->sub), num);
         }
         ReceiveSignal(QObject::tr("Craft successful."));
         delete crafted;
@@ -252,9 +252,9 @@ Inventory::Inventory(QDataStream & str, const int sz) :
         str >> num;
         while ( num-- ) {
             quint8 kind, sub;
-            inventory[i].push(BlockManager::KindSubFromFile(str, &kind, &sub) ?
-                block_manager->Normal(sub) :
-                BlockManager::BlockFromFile(str, kind, sub));
+            inventory[i].push(BlockFactory::KindSubFromFile(str, &kind, &sub) ?
+                blockFactory->Normal(sub) :
+                blockFactory->BlockFromFile(str, kind, sub));
         }
     }
 }
@@ -263,7 +263,7 @@ Inventory::~Inventory() {
     const int size = Size();
     for (int i=0; i<size; ++i) {
         while ( not inventory[i].isEmpty() ) {
-            block_manager->DeleteBlock(inventory[i].pop());
+            blockFactory->DeleteBlock(inventory[i].pop());
         }
     }
     delete [] inventory;

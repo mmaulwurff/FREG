@@ -21,7 +21,7 @@
 #include "Player.h"
 #include "worldmap.h"
 #include "CraftManager.h"
-#include "BlockManager.h"
+#include "BlockFactory.h"
 #include "TranslationsManager.h"
 #include "screens/CursedScreen.h"
 #include <QDir>
@@ -104,10 +104,10 @@ int main(int argc, char ** argv) {
     }
     qsrand(QTime::currentTime().msec());
 
+    BlockFactory blockManager;
+    blockFactory = &blockManager;
     CraftManager craftManager;
     craft_manager = &craftManager;
-    BlockManager blockManager;
-    block_manager = &blockManager;
 
     bool world_error = false;
     World world(worldName, &world_error);

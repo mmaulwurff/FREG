@@ -20,7 +20,7 @@
 #include "blocks/Containers.h"
 #include "World.h"
 #include "Shred.h"
-#include "BlockManager.h"
+#include "BlockFactory.h"
 #include "CraftManager.h"
 
 const int CONVERTER_LIGHT_RADIUS = 2;
@@ -46,7 +46,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
     inner_actions Container::ActInner() { return INNER_ACTION_ONLY; }
 
     Block * Container::DropAfterDamage(bool * const delete_block) {
-        Block * const pile = BlockManager::NewBlock(BOX, DIFFERENT);
+        Block * const pile = blockFactory->NewBlock(BOX, DIFFERENT);
         Inventory * const pile_inv = pile->HasInventory();
         GetAll(pile_inv);
         *delete_block = not pile_inv->Get(this);
@@ -122,7 +122,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
 
     Block * Box::DropAfterDamage(bool * const delete_block) {
         *delete_block = true;
-        return block_manager->Normal(AIR);
+        return blockFactory->Normal(AIR);
     }
 
     void Box::Damage(const int dmg, const int dmg_kind) {
@@ -161,7 +161,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
             while ( Number(i) ) {
                 Block * const to_pull = ShowBlock(i);
                 Pull(i);
-                block_manager->DeleteBlock(to_pull);
+                blockFactory->DeleteBlock(to_pull);
             }
         }
         int materials_number = 0;
@@ -181,7 +181,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
             for (int i=0; i<list.size(); ++i) {
                 for (int n=0; n<list.at(i)->num; ++n) {
                     const CraftItem * const item = list.at(i);
-                    GetExact(BlockManager::NewBlock(item->kind, item->sub), i);
+                    GetExact(blockFactory->NewBlock(item->kind, item->sub), i);
                 }
             }
         }
@@ -206,7 +206,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
                     while ( Number(i) ) {
                         Block * const to_pull = ShowBlock(i);
                         Pull(i);
-                        block_manager->DeleteBlock(to_pull);
+                        blockFactory->DeleteBlock(to_pull);
                     }
                 }
             } else {
@@ -308,7 +308,7 @@ const int CONVERTER_LIGHT_RADIUS = 2;
                     if ( add > 0 ) {
                         fuelLevel += add;
                         Pull(i);
-                        block_manager->DeleteBlock(block);
+                        blockFactory->DeleteBlock(block);
                         break;
                     }
                 }
