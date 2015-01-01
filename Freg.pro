@@ -47,7 +47,8 @@ unix {
     INSTALLS += target
     QMAKE_CXXFLAGS += -Weffc++ -Wold-style-cast -Werror
 } else {
-    LIBS += -Lpdcurses -lcurses
+    LIBS           += $$PWD/pdcurses/libcurses.lib
+    PRE_TARGETDEPS += $$PWD/pdcurses/libcurses.lib
 }
 
 HEADERS += *.h  \

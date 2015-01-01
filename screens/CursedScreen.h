@@ -27,6 +27,8 @@
 
 #ifdef Q_OS_WIN32
 #define NCURSES_MOUSE_VERSION 2
+#define PDC_WIDE
+#define _LP64 0
 #include "pdcurses/curses.h"
 #else
 #define _X_OPEN_SOURCE_EXTENDED

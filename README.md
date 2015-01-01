@@ -40,7 +40,7 @@ Extra fun: block copy (Ctrl-v, then select, then p) and block paste (1vp).
 
 --------
 
-Copyright (C) 2014 Alexander Kromm (mmaulwurff@gmail.com).
+Copyright (C) 2012-2015 Alexander Kromm (mmaulwurff@gmail.com).
 
 [Source code is available at GitHub](https://github.com/mmaulwurff/freg)
 
