@@ -1,4 +1,8 @@
+# freg .gitignore file
+
+# ignore everything
 *
+# except:
 !.gitignore
 !Freg.pro
 !*.cpp
@@ -11,30 +15,21 @@
 qrc_*.cpp
 
 !blocks
-blocks/*
-!blocks/*.cpp
-!blocks/*.h
-
 !screens
-screens/*
-!screens/*.cpp
-!screens/*.h
-
+!everything
 !help_*
-help_*/*
-!help_*/*.md
-
 !recipes
-recipes/*
-!recipes/*json
-
 !texts
-texts/*
-!texts/*.txt
-
 !rooms
-rooms/*
-!rooms/*room
+
+*/*
+!*/*.cpp
+!*/*.h
+
+!texts/*.txt
+!help_*/*.md
+!rooms/*.room
+!recipes/*.json
 
 !debian
 !debian/*
