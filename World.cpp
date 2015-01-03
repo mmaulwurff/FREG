@@ -205,7 +205,7 @@ void World::ReloadShreds() {
     case DOWN:       // full reset
         // clean old
         emit StartReloadAll();
-        DeleteAllShreds();
+        qDeleteAll(shreds, shreds + NumShreds()*NumShreds());
         delete map;
         delete shredStorage;
         SaveNotes();
@@ -640,12 +640,6 @@ void World::LoadAllShreds() {
     ReEnlightenAll();
 }
 
-void World::DeleteAllShreds() {
-    for (int i=0; i<NumShreds()*NumShreds(); ++i) {
-        delete shreds[i];
-    }
-}
-
 int World::CorrectNumShreds(int num) {
     num += ( (num & 1) == 0 ); // make odd
     return qMax(num, MIN_WORLD_SIZE);
@@ -706,7 +700,7 @@ World::~World() {
     wait();
     Unlock();
 
-    DeleteAllShreds();
+    qDeleteAll(shreds, shreds + NumShreds()*NumShreds());
     delete [] shreds;
     delete shredStorage;
     delete map;

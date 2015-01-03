@@ -192,8 +192,6 @@ public: // World section
 private:
     static int CorrectNumShreds(int num);
     static int CorrectNumActiveShreds(int num, int max_num);
-    /// Also saves all shreds.
-    void DeleteAllShreds();
     void LoadAllShreds();
     void ReloadShreds();
     void run() override;

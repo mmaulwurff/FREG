@@ -24,7 +24,7 @@
 
 class WorldMap final {
 public:
-    explicit WorldMap(QString);
+    explicit WorldMap(QString worldName);
 
     char TypeOfShred(qint64 longi, qint64 lati) const;
     static void GenerateMap(

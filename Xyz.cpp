@@ -22,7 +22,6 @@
 Xyz::Xyz(const int i, const int j, const int k) :
         x_self(i), y_self(j), z_self(k)
 {}
-Xyz::Xyz() : x_self(), y_self(), z_self() {}
 
 void Xyz::SetXyz(const int x, const int y, const int z) {
     x_self = x;

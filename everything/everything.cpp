@@ -20,7 +20,7 @@
 /**\file everything.cpp
  * \brief This file includes all cpp files of project.
  *
- * This file is used for one-unit release compilation.
+ * This file is used for one-unit compilation (unity build) for release.
  * One-unit compilation provides faster compilation, a smaller executable,
  * and (probably) higher level of optimization, as modules know more about
  * contents of each other. */
@@ -75,3 +75,5 @@
 #include "moc/moc_Teleport.cpp"
 #include "moc/moc_VirtScreen.cpp"
 #include "moc/moc_World.cpp"
+
+#include "res/qrc_resources.cpp"

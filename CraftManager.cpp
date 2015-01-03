@@ -72,9 +72,7 @@ void CraftList::Sort() {
 }
 
 void CraftList::clear() {
-    for (const auto item : items) {
-        delete item;
-    }
+    qDeleteAll(items);
     items.clear();
 }
 
@@ -101,9 +99,7 @@ CraftManager::CraftManager() : recipesList() {
 
 CraftManager::~CraftManager() {
     for (int sub=0; sub<LAST_SUB; ++sub) {
-        for (const auto recipe : recipesList[sub]) {
-            delete recipe;
-        }
+        qDeleteAll(recipesList[sub]);
     }
 }
 

@@ -44,7 +44,7 @@ int main(int argc, char ** argv) {
     QCoreApplication freg(argc, argv);
     QCoreApplication::setOrganizationName("freg-team");
     QCoreApplication::setApplicationName("freg");
-    QCoreApplication::setApplicationVersion(VER);
+    QCoreApplication::setApplicationVersion(QString::number(VER));
 
     tr_manager = new TranslationsManager;
 

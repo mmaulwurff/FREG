@@ -97,11 +97,7 @@ BlockFactory::BlockFactory() {
         Filter, Informer, Teleport, Accumulator>());
 }
 
-BlockFactory::~BlockFactory() {
-    for(int sub=0; sub<SUB_COUNT; ++sub) {
-        delete normals[sub];
-    }
-}
+BlockFactory::~BlockFactory() { qDeleteAll(normals, normals + SUB_COUNT); }
 
 bool BlockFactory::KindSubFromFile(QDataStream & str,
         quint8 * kind, quint8 * sub)

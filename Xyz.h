@@ -23,7 +23,7 @@
 class Xyz {
 public:
     Xyz(int x, int y, int z);
-    Xyz();
+    Xyz() = default;
 
     int X() const { return x_self; }
     int Y() const { return y_self; }
