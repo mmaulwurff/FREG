@@ -75,7 +75,7 @@ private:
 
     bool CraftSub(CraftList * items, int sub) const;
 
-    QList<CraftList *> recipesList[LAST_SUB];
+    QList<CraftList *> recipesList[SUB_COUNT];
 }; // CraftManager
 
 extern const CraftManager * craft_manager;

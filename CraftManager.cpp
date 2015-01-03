@@ -79,7 +79,7 @@ void CraftList::clear() {
 // CraftManager section
 
 CraftManager::CraftManager() : recipesList() {
-    for (int sub=0; sub<LAST_SUB; ++sub) {
+    for (int sub=0; sub<SUB_COUNT; ++sub) {
         QFile file(QString(":/recipes/%1.json").
             arg(BlockFactory::SubToString(sub)));
         if ( not file.open(QIODevice::ReadOnly | QIODevice::Text) ) continue;
@@ -98,7 +98,7 @@ CraftManager::CraftManager() : recipesList() {
 }
 
 CraftManager::~CraftManager() {
-    for (int sub=0; sub<LAST_SUB; ++sub) {
+    for (int sub=0; sub<SUB_COUNT; ++sub) {
         qDeleteAll(recipesList[sub]);
     }
 }

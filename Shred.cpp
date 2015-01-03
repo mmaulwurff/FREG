@@ -132,9 +132,7 @@ Shred::Shred(const int shred_x, const int shred_y,
     for (int i=SHRED_WIDTH; i--; )
     for (int j=SHRED_WIDTH; j--; ) {
         PutBlock(null_stone, i, j, 0);
-        for (int k=HEIGHT-1; --k; ) {
-            PutBlock(air, i, j, k);
-        }
+        std::fill(blocks[i][j] + 1, blocks[i][j] + HEIGHT - 1, air);
         PutBlock(((qrand() & 3) ? sky : star), i, j, HEIGHT-1);
     }
     switch ( type = static_cast<shred_type>
@@ -202,39 +200,37 @@ long Shred::GlobalY(const int y) const {
 }
 
 void Shred::PhysEventsFrequent() {
-    for (auto i = fallList.begin(); i != fallList.end(); ++i) {
-        if ( *i == nullptr ) {
+    for (auto & i : fallList) {
+        if ( i == nullptr ) {
             continue;
         } // else:
-        const int x_in = CoordInShred((*i)->X());
-        const int y_in = CoordInShred((*i)->Y());
-        Block * const floor_block = GetBlock(x_in, y_in, (*i)->Z()-1);
-        if ( (*i)->Weight() <= 0
+        const int x_in = CoordInShred(i->X());
+        const int y_in = CoordInShred(i->Y());
+        Block * const floor_block = GetBlock(x_in, y_in, i->Z()-1);
+        if ( i->Weight() <= 0
                 || ( floor_block->PushResult(ANYWHERE) == ENVIRONMENT
                     && floor_block->Sub() != AIR ) )
         {
-            (*i)->SetFalling(false);
-            *i = nullptr;
-        } else if ( not world->Move((*i)->X(), (*i)->Y(), (*i)->Z(), DOWN) ) {
-            (*i)->FallDamage();
-            *i = nullptr;
+            i->SetFalling(false);
+            i = nullptr;
+        } else if ( not world->Move(i->X(), i->Y(), i->Z(), DOWN) ) {
+            i->FallDamage();
+            i = nullptr;
         }
     }
-    for (auto i  = activeListFrequent.cbegin();
-              i != activeListFrequent.cend(); ++i)
-    {
-        if ( *i != nullptr ) {
-            (*i)->ActFrequent();
+    for (const auto i : activeListFrequent) {
+        if ( i != nullptr ) {
+            i->ActFrequent();
         }
     }
 }
 
 void Shred::PhysEventsRare() {
-    for (auto i=activeListAll.cbegin(); i!=activeListAll.cend(); ++i) {
-        if ( *i != nullptr ) {
-            switch ( (*i)->ActInner() ) {
+    for (const auto i : activeListAll) {
+        if ( i != nullptr ) {
+            switch ( i->ActInner() ) {
             case INNER_ACTION_ONLY:    break;
-            case INNER_ACTION_NONE: (*i)->ActRare(); break;
+            case INNER_ACTION_NONE: i->ActRare(); break;
             case INNER_ACTION_EXPLODE: break; /// \todo add explosion
             case INNER_ACTION_MESSAGE: break;
             }
@@ -566,16 +562,13 @@ bool Shred::Tree(const int x, const int y, const int z, const int height) {
         }
     }
     const int leaves_level = z+height/2;
-    Block * const leaves = blockFactory->Normal(GREENERY);
     for (int i=x; i<=x+2; ++i)
     for (int j=y; j<=y+2; ++j) {
-        for (int k=leaves_level; k<z+height; ++k ) {
-            PutBlock(leaves, i, j, k);
-        }
+        std::fill(blocks[i][j] + leaves_level, blocks[i][j] + z + height,
+            blockFactory->Normal(GREENERY));
     }
-    for (int k=qMax(z-1, 1); k < z+height-1; ++k) { // trunk
-        SetBlock(blockFactory->Normal(WOOD), x+1, y+1, k);
-    }
+    std::fill(blocks[x+1][y+1] + qMax(z-1, 1), blocks[x+1][y+1] + z+height-1,
+        blockFactory->Normal(WOOD)); // trunk
     // branches
     const int r = qrand();
     if ( r & 0x1 ) SetNewBlock(BLOCK, WOOD, x,   y+1, leaves_level, WEST);

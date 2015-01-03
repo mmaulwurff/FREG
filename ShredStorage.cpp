@@ -59,9 +59,7 @@ ShredStorage::~ShredStorage() {
         delete preloadThread;
     }
     WriteToFileAllShredData();
-    for (QByteArray * const item : storage) {
-        delete item;
-    }
+    qDeleteAll(storage);
 }
 
 void ShredStorage::WriteToFileAllShredData() const {
