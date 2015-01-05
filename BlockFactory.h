@@ -111,7 +111,7 @@ private:
 
     /// Core of block registration system.
     template <typename BlockType, typename ... RestBlockTypes>
-    void RegisterAll(const typeList<BlockType, RestBlockTypes...>);
+    void RegisterAll(typeList<BlockType, RestBlockTypes...>);
     void RegisterAll(typeList<>) const; ///< Base for variadic template.
 };
 

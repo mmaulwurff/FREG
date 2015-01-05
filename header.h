@@ -100,94 +100,113 @@ enum times_of_day {
     TIME_EVENING
 };
 
-/// Kinds of atom
-enum kinds {
-    // add new kinds to bottom (before LAST_KIND).
-    // changind kind codes will break file compatibility.
-    BLOCK,       ///<  0
-    BELL,        ///<  1
-    CONTAINER,   ///<  2
-    DWARF,       ///<  3
-    PICK,        ///<  4
-    LIQUID,      ///<  5
-    GRASS,       ///<  6
-    BUSH,        ///<  7
-    RABBIT,      ///<  8
-    FALLING,     ///<  9
-    CLOCK,       ///< 10
-    PLATE,       ///< 11
-    WORKBENCH,   ///< 12
-    WEAPON,      ///< 13
-    LADDER,      ///< 14
-    DOOR,        ///< 15
-    BOX,         ///< 16
-    KIND_TEXT,   ///< 17
-    MAP,         ///< 18
-    PREDATOR,    ///< 19
-    BUCKET,      ///< 20
-    SHOVEL,      ///< 21
-    AXE,         ///< 22
-    HAMMER,      ///< 23
-    ILLUMINATOR, ///< 24
-    RAIN_MACHINE, ///< 25
-    CONVERTER,    ///< 26
-    ARMOUR,       ///< 27
-    HELMET,       ///< 28
-    BOOTS,        ///< 29
-    TELEGRAPH,    ///< 30
-    MEDKIT,       ///< 31
-    FILTER,       ///< 32
-    INFORMER,     ///< 33
-    TELEPORT,     ///< 34
-    ACCUMULATOR,  ///< 35
-    /// Nothing is LAST_KIND.
-    LAST_KIND, // keep it last in this list.
-    KIND_COUNT = LAST_KIND
-}; // enum kinds
+/** \page kinds List of available block kinds
+ *  Complete list.
+ *  These kinds can be used as parameters to `get KIND SUB` command.
+ *  Changind kind order will break file compatibility.
+ *  Do not use space in strings, use '_'.
+ *  Add new kinds to bottom.
+ *  Define X as "X(a, b) a," to get column 1 and "X(a, b) b," to get column 2.
+ *  \snippet header.h List of kinds */
+/// [List of kinds]
+#define KIND_TABLE \
+X(BLOCK,        "block")\
+X(BELL,         "bell")\
+X(CONTAINER,    "container")\
+X(DWARF,        "intellectual")\
+X(PICK,         "pick")\
+X(LIQUID,       "liquid")\
+X(GRASS,        "grass")\
+X(BUSH,         "bush")\
+X(RABBIT,       "rabbit")\
+X(FALLING,      "falling")\
+X(CLOCK,        "clock")\
+X(PLATE,        "plate")\
+X(WORKBENCH,    "workbench")\
+X(WEAPON,       "weapon")\
+X(LADDER,       "ladder")\
+X(DOOR,         "door")\
+X(BOX,          "box")\
+X(KIND_TEXT,    "text")\
+X(MAP,          "map")\
+X(PREDATOR,     "predator")\
+X(BUCKET,       "bucket")\
+X(SHOVEL,       "shovel")\
+X(AXE,          "axe")\
+X(HAMMER,       "hammer")\
+X(ILLUMINATOR,  "illuminator")\
+X(RAIN_MACHINE, "rain_machine")\
+X(CONVERTER,    "converter")\
+X(ARMOUR,       "armour")\
+X(HELMET,       "helmet")\
+X(BOOTS,        "boots")\
+X(TELEGRAPH,    "telegraph")\
+X(MEDKIT,       "medkit")\
+X(FILTER,       "filter")\
+X(INFORMER,     "informer")\
+X(TELEPORT,     "teleport")\
+X(ACCUMULATOR,  "accumulator")\
+/// [List of kinds]
 
-/// Substance block is made from.
-/** Don't make blocks from SKY and STAR, they are special for shred loading
- *  and saving.
- *  Don't make non-BLOCK blocks from air, otherwise leaks are possible. */
+/** \page subs List of available substances
+ *  Complete list.
+ *  These substances can be used as parameters to `get KIND SUB` command.
+ *  Don't make blocks (BLOCK kind) from SKY and STAR, they are special for
+ *  shred loading and saving.
+ *  Don't make non-BLOCK blocks from air, otherwise memory leaks are possible.
+ *  Don't change order, this will break save file compatibility.
+ *  Add new substances to bottom.
+ *  Define X as "X(a, b) a," to get column 1 and "X(a, b) b," to get column 2.
+ *  \snippet BlockFactory.cpp List of subs */
+/// [List of subs]
+#define SUB_TABLE \
+X(STONE,       "stone")\
+X(MOSS_STONE,  "moss stone")\
+X(NULLSTONE,   "nullstone")\
+X(SKY,         "sky")\
+X(STAR,        "star")\
+X(DIAMOND,     "diamond")\
+X(SOIL,        "soil")\
+X(H_MEAT,      "meat_of_intellectual")\
+X(A_MEAT,      "animal_meat")\
+X(GLASS,       "glass")\
+X(WOOD,        "wood")\
+X(DIFFERENT,   "different")\
+X(IRON,        "iron")\
+X(WATER,       "water")\
+X(GREENERY,    "greenery")\
+X(SAND,        "sand")\
+X(SUB_NUT,     "nut")\
+X(ROSE,        "rose")\
+X(CLAY,        "clay")\
+X(AIR,         "air")\
+X(PAPER,       "paper")\
+X(GOLD,        "gold")\
+X(BONE,        "bone")\
+X(STEEL,       "steel")\
+X(ADAMANTINE,  "adamantine")\
+X(FIRE,        "fire")\
+X(COAL,        "coal")\
+X(EXPLOSIVE,   "explosive")\
+X(ACID,        "acid")\
+X(SUB_CLOUD,   "cloud")\
+X(SUB_DUST,    "dust")\
+X(SUB_PLASTIC, "plastic")\
+/// [List of subs]
+
+#define X(column1, column2) column1,
+enum kinds {
+    KIND_TABLE
+    LAST_KIND, ///< Nothing is LAST_KIND.
+    KIND_COUNT = LAST_KIND
+};
+
 enum subs {
-    // do not change order, this will break file compatibility.
-    // add new substances right before LAST_SUB.
-    STONE,      ///<   0
-    MOSS_STONE, ///<   1
-    NULLSTONE,  ///<   2
-    SKY,        ///<   3
-    STAR,       ///<   4
-    DIAMOND,    ///<   5
-    SOIL,       ///<   6
-    H_MEAT,     ///<   7 (hominid meat)
-    A_MEAT,     ///<   8 (animal meat)
-    GLASS,      ///<   9
-    WOOD,       ///<  10
-    DIFFERENT,  ///<  11
-    IRON,       ///<  12
-    WATER,      ///<  13
-    GREENERY,   ///<  14
-    SAND,       ///<  15
-    SUB_NUT,    ///<  16
-    ROSE,       ///<  17
-    CLAY,       ///<  18
-    AIR,        ///<  19
-    PAPER,      ///<  20
-    GOLD,       ///<  21
-    BONE,       ///<  22
-    STEEL,      ///<  23
-    ADAMANTINE, ///<  24
-    FIRE,       ///<  25
-    COAL,       ///<  26
-    EXPLOSIVE,  ///<  27
-    ACID,       ///<  28
-    SUB_CLOUD,  ///<  29
-    SUB_DUST,   ///<  30
-    SUB_PLASTIC,///<  31
-    /// Nothing is made from LAST_SUB.
-    LAST_SUB, // keep it last in this list
+    SUB_TABLE
+    LAST_SUB, ///< Nothing is made from LAST_SUB.
     SUB_COUNT = LAST_SUB
-}; // enum subs
+};
+#undef X
 
 enum usage_types {
     USAGE_TYPE_NO,
