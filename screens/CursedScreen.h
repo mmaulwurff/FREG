@@ -36,6 +36,8 @@
 #endif
 #include "screens/VirtScreen.h"
 
+#define wPrintable(string) QString(string).toStdWString().c_str()
+
 enum screen_errors {
     SCREEN_NO_ERROR = 0,
     HEIGHT_NOT_ENOUGH,
@@ -76,13 +78,13 @@ private slots:
 
 private:
     enum windowIndex {
-        WINDOW_ACTION,
-        WINDOW_NOTIFY,
-        WINDOW_HUD,
-        WINDOW_MINIMAP,
-        WINDOW_LEFT,
-        WINDOW_RIGHT,
-        WINDOW_COUNT // keep it last
+        WIN_ACTION,
+        WIN_NOTIFY,
+        WIN_HUD, ///< head-up display
+        WIN_MINIMAP,
+        WIN_LEFT,
+        WIN_RIGHT,
+        WIN_COUNT // keep it last
     };
 
     enum actions {
@@ -94,6 +96,18 @@ private:
         ACTION_CRAFT,
         ACTION_WIELD,
     };
+
+    enum cursed_screen_sizes {
+        ACTIONS_WIDTH  = 23,
+        MINIMAP_WIDTH  = 11,
+        MINIMAP_HEIGHT =  7,
+        AVERAGE_SCREEN_SIZE = 60,
+        FRONT_MAX_DISTANCE = SHRED_WIDTH * 2,
+    };
+
+    const chtype OBSCURE_BLOCK = COLOR_PAIR(BLACK_BLACK) | A_BOLD|ACS_CKBOARD;
+    const int ARROWS_COLOR = COLOR_PAIR(WHITE_RED);
+    const int MOUSEMASK = BUTTON1_CLICKED | BUTTON1_RELEASED;
 
     char CharNumber(int z) const;
     char CharNumberFront(int x, int y) const;
@@ -147,13 +161,12 @@ private:
     const int screenWidth;
     const int screenHeight;
 
-    WINDOW * const windows[WINDOW_COUNT];
-    WINDOW * const & actionWin  = windows[WINDOW_ACTION];
-    WINDOW * const & notifyWin  = windows[WINDOW_NOTIFY];
-    WINDOW * const & hudWin     = windows[WINDOW_HUD]; // head-up display
-    WINDOW * const & minimapWin = windows[WINDOW_MINIMAP];
-    WINDOW * const & leftWin    = windows[WINDOW_LEFT];
-    WINDOW * const & rightWin   = windows[WINDOW_RIGHT];
+    WINDOW * const windows[WIN_COUNT];
+    WINDOW * const & actionWin  = windows[WIN_ACTION ];
+    WINDOW * const & hudWin     = windows[WIN_HUD    ];
+    WINDOW * const & minimapWin = windows[WIN_MINIMAP];
+    WINDOW * const & leftWin    = windows[WIN_LEFT   ];
+    WINDOW * const & rightWin   = windows[WIN_RIGHT  ];
     mutable QString lastNotification;
     IThread * const input;
     mutable volatile bool updatedHud, updatedMinimap;
