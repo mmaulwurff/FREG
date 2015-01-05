@@ -27,7 +27,6 @@ class Bucket : public Block, public Inventory {
 public:
     Bucket(int sub, int id);
     Bucket(QDataStream & str, int sub, int id);
-    CREATE_LOAD(Bucket)
 
     int  Weight() const override;
     void ReceiveSignal(QString str) override;

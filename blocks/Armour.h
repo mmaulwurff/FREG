@@ -25,7 +25,6 @@
 class Armour : public Block {
 public:
     using Block::Block;
-    CREATE_LOAD(Armour)
     void Damage(int dmg, int dmg_kind) override;
     int  DamageLevel() const override;
     wearable Wearable() const override;
@@ -34,14 +33,12 @@ public:
 class Helmet : public Armour {
 public:
     using Armour::Armour;
-    CREATE_LOAD(Helmet)
     wearable Wearable() const override;
 }; // class Helmet
 
 class Boots : public Armour {
 public:
     using Armour::Armour;
-    CREATE_LOAD(Boots)
     wearable Wearable() const override;
 }; // class Boots
 

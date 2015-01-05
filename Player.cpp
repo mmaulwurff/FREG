@@ -332,7 +332,7 @@ void Player::ProcessCommand(QString command) {
         if ( inv == nullptr ) return;
         QByteArray kind, sub;
         comm_stream >> kind >> sub;
-        const int kind_code = blockFactory->StringToKind(kind);
+        const int kind_code = BlockFactory::StringToKind(kind);
         if ( kind_code == LAST_KIND ) {
             emit Notify(tr("%1 command: invalid kind!").arg(QString(request)));
             return;

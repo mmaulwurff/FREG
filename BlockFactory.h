@@ -72,11 +72,11 @@ public:
     Block * ReplaceWithNormal(Block * block) const;
 
     /// If kind is unknown, returns "unknown_kind".
-    QString KindToString(int kind) const;
+    static QString KindToString(int kind);
     /// If substance is unknown, returns "unknown_sub".
     static QString SubToString(int sub);
     /// If string is not convertible to kind, returns LAST_KIND.
-    int StringToKind(QString) const;
+    static int StringToKind(QString);
     /// If string is not convertible to substance, returns LAST_SUB.
     static int StringToSub(QString);
 
@@ -93,8 +93,8 @@ private:
     Q_DISABLE_COPY(BlockFactory)
 
     Block * normals[SUB_COUNT];
-    QByteArray kinds[KIND_COUNT];
-    static const QByteArray subs[];
+    static const QByteArray kinds[];
+    static const QByteArray subs [];
 
     // Block registration system:
 
@@ -106,15 +106,13 @@ private:
     /// Type list struct for variadic template without formal parameters.
     template <class ...> struct typeList {};
 
-    /// Base for variadic template.
-    void RegisterAll(typeList<>) const;
-
     /// For check for registration of all block types.
     int kindIndex = 0;
 
     /// Core of block registration system.
     template <typename BlockType, typename ... RestBlockTypes>
     void RegisterAll(const typeList<BlockType, RestBlockTypes...>);
+    void RegisterAll(typeList<>) const; ///< Base for variadic template.
 };
 
 extern const BlockFactory * blockFactory;

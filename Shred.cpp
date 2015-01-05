@@ -73,9 +73,9 @@ bool Shred::LoadShred() {
     type = static_cast<shred_type>(read);
     in >> read;
     weather = static_cast<weathers>(read);
+    SetAllLightMapNull();
     Block * const null_stone = blockFactory->Normal(NULLSTONE);
     Block * const air        = blockFactory->Normal(AIR);
-    SetAllLightMapNull();
     for (int x=SHRED_WIDTH; x--; )
     for (int y=SHRED_WIDTH; y--; ) {
         PutBlock(null_stone, x, y, 0);
@@ -83,9 +83,7 @@ bool Shred::LoadShred() {
             quint8 kind, sub;
             if ( BlockFactory::KindSubFromFile(in, &kind, &sub) ) { // normal
                 if ( sub==SKY || sub==STAR ) {
-                    while (z < HEIGHT-1) {
-                        PutBlock(air, x, y, z++);
-                    }
+                    std::fill(blocks[x][y] + z, blocks[x][y] + HEIGHT-1, air);
                     PutBlock(blockFactory->Normal(sub), x, y, HEIGHT-1);
                     break;
                 } else {
@@ -541,13 +539,12 @@ void Shred::NormalCube(
         const int x_start, const int y_start, const int z_start,
         const int x_size,  const int y_size,  const int z_size, const subs sub)
 {
+    Q_ASSERT(InBounds(x_start, y_start, z_start) &&
+        InBounds(x_start + x_size-1, y_start + y_size-1, z_start + z_size-1));
     Block * const block = blockFactory->Normal(sub);
     for (int x=x_start; x < x_start+x_size; ++x)
-    for (int y=y_start; y < y_start+y_size; ++y)
-    for (int z=z_start; z < z_start+z_size; ++z) {
-        if ( InBounds(x, y, z) ) {
-            PutBlock(block, x, y, z);
-        }
+    for (int y=y_start; y < y_start+y_size; ++y) {
+        std::fill(blocks[x][y]+z_start, blocks[x][y]+z_start+z_size, block);
     }
 }
 
@@ -628,51 +625,51 @@ bool Shred::LoadRoom(const int level, const int index) {
         file.readLine(buffer, sizeof(buffer));
         for (unsigned i=0; i<SHRED_WIDTH; ++i) {
             switch ( buffer[i] ) {
-                case '#':
-                    PutBlock(blockFactory->Normal(STONE), i, lines, level);
-                    break;
-                case '+':
-                    NormalCube(i, lines, level, 1, 1, qrand()%3+5, STONE);
-                    break;
-                case '0':
-                    NormalCube(i, lines, level, 1, 1, 6, NULLSTONE);
-                    break;
-                case '|':
-                    NormalCube(i, lines, level, 1, 1, 5, STONE);
-                    break;
-                case '[': {
-                    Block * const stone = blockFactory->Normal(STONE);
-                    PutBlock(stone, i, lines, level);
-                    PutBlock(stone, i, lines, level+1);
-                    PutBlock(stone, i, lines, level+3);
-                    PutBlock(stone, i, lines, level+4);
-                    } break;
-                case '=':
-                    PutBlock(blockFactory->Normal(WOOD),  i, lines, level);
-                    PutBlock(blockFactory->Normal(STONE), i, lines, level+4);
-                    break;
-                case '^':
-                    for (int z=level; z<level+5; ++z) {
-                        SetNewBlock(LADDER, WOOD, i, lines, z);
-                    }
-                    break;
+            case '#':
+                PutBlock(blockFactory->Normal(STONE), i, lines, level);
+                break;
+            case '+':
+                NormalCube(i, lines, level, 1, 1, qrand()%3+5, STONE);
+                break;
+            case '0':
+                NormalCube(i, lines, level, 1, 1, 6, NULLSTONE);
+                break;
+            case '|':
+                NormalCube(i, lines, level, 1, 1, 5, STONE);
+                break;
+            case '[': { // window
+                Block * const stone = blockFactory->Normal(STONE);
+                PutBlock(stone, i, lines, level);
+                PutBlock(stone, i, lines, level+1); // level+2 is missing
+                PutBlock(stone, i, lines, level+3); // because it is window.
+                PutBlock(stone, i, lines, level+4);
+                } break;
+            case '=': // floor and ceiling
+                PutBlock(blockFactory->Normal(WOOD),  i, lines, level);
+                PutBlock(blockFactory->Normal(STONE), i, lines, level+4);
+                break;
+            case '^':
+                for (int z=level; z<level+5; ++z) {
+                    SetNewBlock(LADDER, WOOD, i, lines, z);
+                }
+                break;
 
-                case '*': SetNewBlock(WORKBENCH, IRON, i, lines, level); break;
-                case '&': SetNewBlock(CONTAINER, WOOD, i, lines, level); break;
-                case 't': SetNewBlock(TELEGRAPH, IRON, i, lines, level); break;
-                case 'c': SetNewBlock(CLOCK, IRON, i, lines, level); break;
-                case 'V': SetNewBlock(CONVERTER, STONE, i,lines,level); break;
-                case 'b': SetNewBlock(BELL, IRON, i, lines, level); break;
-                case 'i': SetNewBlock(ILLUMINATOR, IRON, i,lines,level); break;
-                case '~': SetNewBlock(LIQUID, WATER, i, lines, level); break;
-                case 'M': SetNewBlock(MEDKIT, IRON, i, lines, level); break;
-                case 'R': SetNewBlock(RAIN_MACHINE,IRON, i,lines,level); break;
-                case 'F': SetNewBlock(FILTER, IRON, i, lines, level); break;
+            case '*': SetNewBlock(WORKBENCH,    IRON,  i, lines, level); break;
+            case '&': SetNewBlock(CONTAINER,    WOOD,  i, lines, level); break;
+            case 't': SetNewBlock(TELEGRAPH,    IRON,  i, lines, level); break;
+            case 'c': SetNewBlock(CLOCK,        IRON,  i, lines, level); break;
+            case 'V': SetNewBlock(CONVERTER,    STONE, i, lines, level); break;
+            case 'b': SetNewBlock(BELL,         IRON,  i, lines, level); break;
+            case 'i': SetNewBlock(ILLUMINATOR,  IRON,  i, lines, level); break;
+            case '~': SetNewBlock(LIQUID,       WATER, i, lines, level); break;
+            case 'M': SetNewBlock(MEDKIT,       IRON,  i, lines, level); break;
+            case 'R': SetNewBlock(RAIN_MACHINE, IRON,  i, lines, level); break;
+            case 'F': SetNewBlock(FILTER,       IRON,  i, lines, level); break;
 
-                case '.': // reserved for nothing
-                case 0:
-                case '\n':
-                default: break;
+            case '.': // reserved for nothing
+            case 0:
+            case '\n':
+            default: break;
             }
         }
     }

@@ -28,7 +28,6 @@ class Dwarf : public Animal, public Inventory {
 public:
     Dwarf(int sub, int id);
     Dwarf(QDataStream & str, int sub, int id);
-    CREATE_LOAD(Dwarf)
 
     int ShouldAct() const override;
     int DamageKind() const override;

@@ -30,11 +30,56 @@
 #include "blocks/Teleport.h"
 #include "blocks/Accumulator.h"
 
+/** \page kinds List of available kinds
+ *  Complete list.
+ *  These kinds can be used as parameters to `get KIND SUB` command.
+ *  \snippet BlockFactory.cpp List of kinds */
+const QByteArray BlockFactory::kinds[] = { // do not use space, use '_'
+    /// [List of kinds]
+    "block",
+    "bell",
+    "container",
+    "intellectual",
+    "pick",
+    "liquid",
+    "grass",
+    "bush",
+    "rabbit",
+    "falling",
+    "clock",
+    "plate",
+    "workbench",
+    "weapon",
+    "ladder",
+    "door",
+    "box",
+    "text",
+    "map",
+    "predator",
+    "bucket",
+    "shovel",
+    "axe",
+    "hammer",
+    "illuminator",
+    "rain_machine",
+    "converter",
+    "armour",
+    "helmet",
+    "boots",
+    "telegraph",
+    "medkit",
+    "filter",
+    "informer",
+    "teleport",
+    "accumulator"
+    /// [List of kinds]
+};
+
 /** \page subs List of available substances
  *  Complete list.
  *  These substances can be used as parameters to `get KIND SUB` command.
- *  \snippet BlockManager.cpp List of subs */
-const QByteArray BlockFactory::subs[] = { // do not usp space, use '_'
+ *  \snippet BlockFactory.cpp List of subs */
+const QByteArray BlockFactory::subs[] = { // do not use space, use '_'
     /// [List of subs]
     "stone",
     "moss stone",
@@ -78,9 +123,9 @@ BlockFactory::BlockFactory() {
         normals[sub] = new Block(BLOCK, sub);
     }
     static_assert((sizeof_array(BlockFactory::kinds) == KIND_COUNT),
-        "Invalid number of strings in BlockManager::kinds[].");
+        "Invalid number of strings in BlockFactory::kinds[].");
     static_assert((sizeof_array(BlockFactory::subs)  == SUB_COUNT),
-        "Invalid number of strings in BlockManager::subs[].");
+        "Invalid number of strings in BlockFactory::subs[].");
     static_assert((SUB_COUNT  <= 64 ), "too many substances, should be < 64.");
     static_assert((KIND_COUNT <= 128), "too many kinds, should be < 128.");
     /*int sum = 0;
@@ -123,10 +168,10 @@ void BlockFactory::DeleteBlock(Block * const block) const {
     }
 }
 
-QString BlockFactory::KindToString(const int kind) const {return kinds[kind];}
+QString BlockFactory::KindToString(const int kind) { return kinds[kind]; }
 QString BlockFactory:: SubToString(const int sub ) { return  subs[sub ]; }
 
-int BlockFactory::StringToKind(const QString str) const {
+int BlockFactory::StringToKind(const QString str) {
     return std::find(kinds, kinds + KIND_COUNT, str) - kinds;
 }
 
@@ -199,17 +244,23 @@ bool BlockFactory::IsValid(const int kind, const int sub) {
 
 void BlockFactory::RegisterAll(typeList<>) const {
     Q_ASSERT_X(kindIndex == KIND_COUNT, "BlockFactory",
-        "Some classes are not registered by RegisterAll in constructor");
+        "Some classes are not registered by RegisterAll in constructor.");
+}
+
+template <typename BlockType>
+Block * Create(const int kind, const int sub) {
+    return new BlockType(kind, sub);
+}
+
+template <typename BlockType>
+Block * Load(QDataStream & str, const int kind, const int sub) {
+    return new BlockType(str, kind, sub);
 }
 
 template <typename BlockType, typename ... RestBlockTypes>
-void BlockFactory::RegisterAll(const typeList<BlockType, RestBlockTypes...>) {
-    if (BlockType::AlreadyRegistered()) {
-        qFatal("Macro CREATE_LOAD is missing: class kind \"%d\".", kindIndex);
-    }
-    creates[kindIndex] = BlockType::Create;
-    loads  [kindIndex] = BlockType::Load;
-    kinds  [kindIndex] = BlockType::Name();
+void BlockFactory::RegisterAll(typeList<BlockType, RestBlockTypes...>) {
+    creates[kindIndex] = Create<BlockType>;
+    loads  [kindIndex] = Load  <BlockType>;
     ++kindIndex;
     RegisterAll(typeList<RestBlockTypes...>()); // recursive call
 }

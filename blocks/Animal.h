@@ -68,7 +68,6 @@ class Rabbit : public Animal {
     Q_OBJECT
 public:
     using Animal::Animal;
-    CREATE_LOAD(Rabbit)
 
     QString FullName() const override;
     void ActFrequent() override;
@@ -87,7 +86,6 @@ class Predator : public Animal {
     Q_OBJECT
 public:
     using Animal::Animal;
-    CREATE_LOAD(Predator)
 
     int DamageLevel() const override;
     void ActFrequent() override;

@@ -27,7 +27,6 @@ class Accumulator : public Block {
 public:
     Accumulator(int sub, int kind);
     Accumulator(QDataStream &, int sub, int kind);
-    CREATE_LOAD(Accumulator)
 
     QString FullName() const override;
     void Damage(int dmg, int dmg_kind) override;

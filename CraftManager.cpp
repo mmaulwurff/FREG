@@ -59,7 +59,7 @@ void CraftList::LoadItems(const QJsonArray & array) {
     for (const QJsonValue & value : array) {
         const QJsonObject item = value.toObject();
         items.append( new CraftItem( {item["number"].toInt(),
-                blockFactory->StringToKind(item["kind"].toString()),
+                BlockFactory::StringToKind(item["kind"].toString()),
                 BlockFactory::StringToSub (item["sub" ].toString())} ) );
     }
 }
