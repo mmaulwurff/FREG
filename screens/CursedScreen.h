@@ -75,7 +75,7 @@ private slots:
     void Print();
 
 private:
-    enum windows_numbers {
+    enum windowIndex {
         WINDOW_ACTION,
         WINDOW_NOTIFY,
         WINDOW_HUD,

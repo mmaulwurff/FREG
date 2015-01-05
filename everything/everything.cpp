@@ -54,7 +54,7 @@
 #include "Shred-gen-flat.cpp"
 #include "Shred.cpp"
 #include "ShredStorage.cpp"
-#include "TranslationsManager.cpp"
+#include "TrManager.cpp"
 #include "Weather.cpp"
 #include "World.cpp"
 #include "worldmap.cpp"

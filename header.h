@@ -49,26 +49,31 @@ enum times {
     SECONDS_IN_DAYLIGHT = SECONDS_IN_DAY-END_OF_NIGHT
 };
 
+#define SHRED_TABLE \
+X(QT_TRANSLATE_NOOP("Shred", "Plain"      ), SHRED_PLAIN,        '.' )\
+X(QT_TRANSLATE_NOOP("Shred", "Test shred" ), SHRED_TESTSHRED,    'T' )\
+X(QT_TRANSLATE_NOOP("Shred", "Pyramid"    ), SHRED_PYRAMID,      'P' )\
+X(QT_TRANSLATE_NOOP("Shred", "Hill"       ), SHRED_HILL,         '+' )\
+X(QT_TRANSLATE_NOOP("Shred", "Desert"     ), SHRED_DESERT,       ':' )\
+X(QT_TRANSLATE_NOOP("Shred", "Water"      ), SHRED_WATER,        '~' )\
+X(QT_TRANSLATE_NOOP("Shred", "Forest"     ), SHRED_FOREST,       '%' )\
+X(QT_TRANSLATE_NOOP("Shred", "Mountain"   ), SHRED_MOUNTAIN,     '^' )\
+X(QT_TRANSLATE_NOOP("Shred", "Empty"      ), SHRED_EMPTY,        '_' )\
+X(QT_TRANSLATE_NOOP("Shred", "Chaos"      ), SHRED_CHAOS,        '!' )\
+X(QT_TRANSLATE_NOOP("Shred", "Castle"     ), SHRED_CASTLE,       'C' )\
+X(QT_TRANSLATE_NOOP("Shred", "Waste"      ), SHRED_WASTE,        '=' )\
+X(QT_TRANSLATE_NOOP("Shred", "Acid lake"  ), SHRED_ACID_LAKE,    'a' )\
+X(QT_TRANSLATE_NOOP("Shred", "Lava lake"  ), SHRED_LAVA_LAKE,    'l' )\
+X(QT_TRANSLATE_NOOP("Shred", "Crater"     ), SHRED_CRATER,       'c' )\
+X(QT_TRANSLATE_NOOP("Shred", "Dead forest"), SHRED_DEAD_FOREST,  'f' )\
+X(QT_TRANSLATE_NOOP("Shred", "Dead hill"  ), SHRED_DEAD_HILL,    '*' )\
+X(QT_TRANSLATE_NOOP("Shred", "0mountain"  ), SHRED_NULLMOUNTAIN, '#' )\
+X(QT_TRANSLATE_NOOP("Shred", "Underground"), SHRED_UNDERGROUND,  '-' )\
+
 enum shred_type {
-    SHRED_PLAIN     = '.',
-    SHRED_TESTSHRED = 'T',
-    SHRED_PYRAMID   = 'P',
-    SHRED_HILL      = '+',
-    SHRED_DESERT    = ':',
-    SHRED_WATER     = '~',
-    SHRED_FOREST    = '%',
-    SHRED_MOUNTAIN  = '^',
-    SHRED_EMPTY     = '_',
-    SHRED_CHAOS     = '!',
-    SHRED_CASTLE    = 'C',
-    SHRED_WASTE     = '=',
-    SHRED_ACID_LAKE = 'a',
-    SHRED_LAVA_LAKE = 'l',
-    SHRED_CRATER    = 'c',
-    SHRED_DEAD_FOREST  = 'f',
-    SHRED_DEAD_HILL    = '*',
-    SHRED_NULLMOUNTAIN = '#',
-    SHRED_NORMAL_UNDERGROUND = '-',
+    #define X(column1, column2, column3) column2 = column3,
+    SHRED_TABLE
+    #undef X
     SHRED_DEFAULT    = SHRED_PLAIN,
     SHRED_OUT_BORDER = SHRED_WATER,
 };
@@ -110,42 +115,42 @@ enum times_of_day {
  *  \snippet header.h List of kinds */
 /// [List of kinds]
 #define KIND_TABLE \
-X(BLOCK,        "block")\
-X(BELL,         "bell")\
-X(CONTAINER,    "container")\
-X(DWARF,        "intellectual")\
-X(PICK,         "pick")\
-X(LIQUID,       "liquid")\
-X(GRASS,        "grass")\
-X(BUSH,         "bush")\
-X(RABBIT,       "rabbit")\
-X(FALLING,      "falling")\
-X(CLOCK,        "clock")\
-X(PLATE,        "plate")\
-X(WORKBENCH,    "workbench")\
-X(WEAPON,       "weapon")\
-X(LADDER,       "ladder")\
-X(DOOR,         "door")\
-X(BOX,          "box")\
-X(KIND_TEXT,    "text")\
-X(MAP,          "map")\
-X(PREDATOR,     "predator")\
-X(BUCKET,       "bucket")\
-X(SHOVEL,       "shovel")\
-X(AXE,          "axe")\
-X(HAMMER,       "hammer")\
-X(ILLUMINATOR,  "illuminator")\
-X(RAIN_MACHINE, "rain_machine")\
-X(CONVERTER,    "converter")\
-X(ARMOUR,       "armour")\
-X(HELMET,       "helmet")\
-X(BOOTS,        "boots")\
-X(TELEGRAPH,    "telegraph")\
-X(MEDKIT,       "medkit")\
-X(FILTER,       "filter")\
-X(INFORMER,     "informer")\
-X(TELEPORT,     "teleport")\
-X(ACCUMULATOR,  "accumulator")\
+X(QT_TRANSLATE_NOOP("Block", "Block"       ), BLOCK        )\
+X(QT_TRANSLATE_NOOP("Block", "Bell"        ), BELL         )\
+X(QT_TRANSLATE_NOOP("Block", "Chest"       ), CONTAINER    )\
+X(QT_TRANSLATE_NOOP("Block", "Intellectual"), DWARF        )\
+X(QT_TRANSLATE_NOOP("Block", "Pick"        ), PICK         )\
+X(QT_TRANSLATE_NOOP("Block", "Liquid"      ), LIQUID       )\
+X(QT_TRANSLATE_NOOP("Block", "Plant"       ), GRASS        )\
+X(QT_TRANSLATE_NOOP("Block", "Bush"        ), BUSH         )\
+X(QT_TRANSLATE_NOOP("Block", "Herbivore"   ), RABBIT       )\
+X(QT_TRANSLATE_NOOP("Block", "Falling"     ), FALLING      )\
+X(QT_TRANSLATE_NOOP("Block", "Clock"       ), CLOCK        )\
+X(QT_TRANSLATE_NOOP("Block", "Plate"       ), PLATE        )\
+X(QT_TRANSLATE_NOOP("Block", "Workbench"   ), WORKBENCH    )\
+X(QT_TRANSLATE_NOOP("Block", "Stick"       ), WEAPON       )\
+X(QT_TRANSLATE_NOOP("Block", "Ladder"      ), LADDER       )\
+X(QT_TRANSLATE_NOOP("Block", "Door"        ), DOOR         )\
+X(QT_TRANSLATE_NOOP("Block", "Box"         ), BOX          )\
+X(QT_TRANSLATE_NOOP("Block", "Sign"        ), KIND_TEXT    )\
+X(QT_TRANSLATE_NOOP("Block", "Map"         ), MAP          )\
+X(QT_TRANSLATE_NOOP("Block", "Predator"    ), PREDATOR     )\
+X(QT_TRANSLATE_NOOP("Block", "Bucket"      ), BUCKET       )\
+X(QT_TRANSLATE_NOOP("Block", "Shovel"      ), SHOVEL       )\
+X(QT_TRANSLATE_NOOP("Block", "Axe"         ), AXE          )\
+X(QT_TRANSLATE_NOOP("Block", "Hammer"      ), HAMMER       )\
+X(QT_TRANSLATE_NOOP("Block", "Illuminator" ), ILLUMINATOR  )\
+X(QT_TRANSLATE_NOOP("Block", "RainMachine" ), RAIN_MACHINE )\
+X(QT_TRANSLATE_NOOP("Block", "Converter"   ), CONVERTER    )\
+X(QT_TRANSLATE_NOOP("Block", "BodyArmour"  ), ARMOUR       )\
+X(QT_TRANSLATE_NOOP("Block", "Helmet"      ), HELMET       )\
+X(QT_TRANSLATE_NOOP("Block", "Boots"       ), BOOTS        )\
+X(QT_TRANSLATE_NOOP("Block", "Telegraph"   ), TELEGRAPH    )\
+X(QT_TRANSLATE_NOOP("Block", "Medkit"      ), MEDKIT       )\
+X(QT_TRANSLATE_NOOP("Block", "Filter"      ), FILTER       )\
+X(QT_TRANSLATE_NOOP("Block", "Informer"    ), INFORMER     )\
+X(QT_TRANSLATE_NOOP("Block", "Teleport"    ), TELEPORT     )\
+X(QT_TRANSLATE_NOOP("Block", "Accumulator" ), ACCUMULATOR  )\
 /// [List of kinds]
 
 /** \page subs List of available substances
@@ -157,44 +162,44 @@ X(ACCUMULATOR,  "accumulator")\
  *  Don't change order, this will break save file compatibility.
  *  Add new substances to bottom.
  *  Define X as "X(a, b) a," to get column 1 and "X(a, b) b," to get column 2.
- *  \snippet BlockFactory.cpp List of subs */
+ *  \snippet header.h List of subs */
 /// [List of subs]
 #define SUB_TABLE \
-X(STONE,       "stone")\
-X(MOSS_STONE,  "moss stone")\
-X(NULLSTONE,   "nullstone")\
-X(SKY,         "sky")\
-X(STAR,        "star")\
-X(DIAMOND,     "diamond")\
-X(SOIL,        "soil")\
-X(H_MEAT,      "meat_of_intellectual")\
-X(A_MEAT,      "animal_meat")\
-X(GLASS,       "glass")\
-X(WOOD,        "wood")\
-X(DIFFERENT,   "different")\
-X(IRON,        "iron")\
-X(WATER,       "water")\
-X(GREENERY,    "greenery")\
-X(SAND,        "sand")\
-X(SUB_NUT,     "nut")\
-X(ROSE,        "rose")\
-X(CLAY,        "clay")\
-X(AIR,         "air")\
-X(PAPER,       "paper")\
-X(GOLD,        "gold")\
-X(BONE,        "bone")\
-X(STEEL,       "steel")\
-X(ADAMANTINE,  "adamantine")\
-X(FIRE,        "fire")\
-X(COAL,        "coal")\
-X(EXPLOSIVE,   "explosive")\
-X(ACID,        "acid")\
-X(SUB_CLOUD,   "cloud")\
-X(SUB_DUST,    "dust")\
-X(SUB_PLASTIC, "plastic")\
+X(QT_TRANSLATE_NOOP("Block", "stone"     ), STONE       )\
+X(QT_TRANSLATE_NOOP("Block", "mossStone" ), MOSS_STONE  )\
+X(QT_TRANSLATE_NOOP("Block", "0stone"    ), NULLSTONE   )\
+X(QT_TRANSLATE_NOOP("Block", "air"       ), SKY         )\
+X(QT_TRANSLATE_NOOP("Block", "air"       ), STAR        )\
+X(QT_TRANSLATE_NOOP("Block", "diamond"   ), DIAMOND     )\
+X(QT_TRANSLATE_NOOP("Block", "soil"      ), SOIL        )\
+X(QT_TRANSLATE_NOOP("Block", "meat"      ), H_MEAT      )\
+X(QT_TRANSLATE_NOOP("Block", "meat"      ), A_MEAT      )\
+X(QT_TRANSLATE_NOOP("Block", "glass"     ), GLASS       )\
+X(QT_TRANSLATE_NOOP("Block", "wood"      ), WOOD        )\
+X(QT_TRANSLATE_NOOP("Block", "different" ), DIFFERENT   )\
+X(QT_TRANSLATE_NOOP("Block", "iron"      ), IRON        )\
+X(QT_TRANSLATE_NOOP("Block", "water"     ), WATER       )\
+X(QT_TRANSLATE_NOOP("Block", "greenery"  ), GREENERY    )\
+X(QT_TRANSLATE_NOOP("Block", "sand"      ), SAND        )\
+X(QT_TRANSLATE_NOOP("Block", "nut"       ), SUB_NUT     )\
+X(QT_TRANSLATE_NOOP("Block", "rose"      ), ROSE        )\
+X(QT_TRANSLATE_NOOP("Block", "clay"      ), CLAY        )\
+X(QT_TRANSLATE_NOOP("Block", "air"       ), AIR         )\
+X(QT_TRANSLATE_NOOP("Block", "paper"     ), PAPER       )\
+X(QT_TRANSLATE_NOOP("Block", "gold"      ), GOLD        )\
+X(QT_TRANSLATE_NOOP("Block", "bone"      ), BONE        )\
+X(QT_TRANSLATE_NOOP("Block", "steel"     ), STEEL       )\
+X(QT_TRANSLATE_NOOP("Block", "adamantine"), ADAMANTINE  )\
+X(QT_TRANSLATE_NOOP("Block", "fire"      ), FIRE        )\
+X(QT_TRANSLATE_NOOP("Block", "coal"      ), COAL        )\
+X(QT_TRANSLATE_NOOP("Block", "explosive" ), EXPLOSIVE   )\
+X(QT_TRANSLATE_NOOP("Block", "acid"      ), ACID        )\
+X(QT_TRANSLATE_NOOP("Block", "cloud"     ), SUB_CLOUD   )\
+X(QT_TRANSLATE_NOOP("Block", "dust"      ), SUB_DUST    )\
+X(QT_TRANSLATE_NOOP("Block", "plastic"   ), SUB_PLASTIC )\
 /// [List of subs]
 
-#define X(column1, column2) column1,
+#define X(column1, column2) column2,
 enum kinds {
     KIND_TABLE
     LAST_KIND, ///< Nothing is LAST_KIND.
@@ -223,7 +228,7 @@ enum transparency {
     BLOCK_TRANSPARENT,
     INVISIBLE,
     NONSTANDARD = 6,
-    UNDEF // temporary, doesn't appear in world.
+    UNDEF ///< temporary, doesn't appear in world.
 };
 
 /// For positive numbers only.
@@ -233,7 +238,5 @@ inline unsigned Abs(const int x) {
     const unsigned mask = x >> (sizeof(unsigned)*8 - 1);
     return (x ^ mask) - mask;
 }
-
-#define sizeof_array(ARRAY) (sizeof(ARRAY)/sizeof(ARRAY[0]))
 
 #endif // HEADER_H

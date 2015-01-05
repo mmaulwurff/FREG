@@ -25,7 +25,7 @@
 #include "Shred.h"
 #include "World.h"
 #include "Player.h"
-#include "TranslationsManager.h"
+#include "TrManager.h"
 #include "blocks/Block.h"
 #include "blocks/Inventory.h"
 #include <QDir>
@@ -48,7 +48,7 @@ const int FRONT_MAX_DISTANCE = SHRED_WIDTH * 2;
 
 void Screen::PrintVerticalDirection(WINDOW *const window, const dirs direction)
 {
-    waddwstr(window, tr_manager->DirString(direction).toStdWString().c_str());
+    waddwstr(window, tr_manager->DirName(direction).toStdWString().c_str());
 }
 
 void Screen::Arrows(WINDOW * const window, const int x, const int y,
@@ -73,10 +73,10 @@ const {
     const static std::wstring dir_chars[] = {
         std::wstring(),
         std::wstring(),
-        tr_manager->DirString(NORTH).left(1).toStdWString(),
-        tr_manager->DirString(EAST ).left(1).toStdWString(),
-        tr_manager->DirString(SOUTH).left(1).toStdWString(),
-        tr_manager->DirString(WEST ).left(1).toStdWString()
+        tr_manager->DirName(NORTH).left(1).toStdWString(),
+        tr_manager->DirName(EAST ).left(1).toStdWString(),
+        tr_manager->DirName(SOUTH).left(1).toStdWString(),
+        tr_manager->DirName(WEST ).left(1).toStdWString()
     };
     wstandend(window);
     mvwaddwstr(window, y-1, 0, dir_chars[World::TurnLeft(direction)].c_str());
@@ -235,7 +235,7 @@ int Screen::Color(const int kind, const int sub) {
 
 int Screen::ColorShred(const shred_type type) const {
     switch ( type ) { // foreground_background
-    case SHRED_NORMAL_UNDERGROUND:
+    case SHRED_UNDERGROUND:
     case SHRED_TESTSHRED:
     case SHRED_EMPTY:
     case SHRED_CHAOS:       return COLOR_PAIR( WHITE_BLACK);
@@ -462,57 +462,17 @@ void Screen::ExamineOnNormalScreen(int x, int y, int z, const int step) const {
 void Screen::ProcessMouse() {
     MEVENT mevent;
     if ( getmouse(&mevent) == ERR ) return;
-    int window_index = WINDOW_LEFT;
+    int window_index = 0;
     for (; window_index < WINDOW_COUNT; ++window_index ) {
-        if ( wenclose(windows[window_index], mevent.y, mevent.x) ) break;
+        if ( wenclose(windows[window_index], mevent.y, mevent.x) ) {
+            wmouse_trafo(windows[window_index], &mevent.y, &mevent.x, false);
+            break;
+        }
     }
-    switch ( window_index ) {
-    case WINDOW_LEFT:
-        if ( not wmouse_trafo(leftWin, &mevent.y, &mevent.x, false) ) return;
-        if ( player->UsingSelfType() == USAGE_TYPE_OPEN ) {
-            Notify(tr("Your inventory."));
-            return;
-        }
-        if ( not (
-                0 < mevent.x && mevent.x < screenWidth  - 1 &&
-                0 < mevent.y && mevent.y < screenHeight - 1 ) )
-        {
-            Notify(tr("Left window, Down view."));
-            return;
-        }
-        ExamineOnNormalScreen(mevent.x, mevent.y, player->Z(), -1);
-        break;
-    case WINDOW_RIGHT:
-        if ( not wmouse_trafo(rightWin, &mevent.y, &mevent.x, false) ) return;
-        if ( fileToShow != nullptr ) {
-            Notify(tr("Reading file: \"%1\".").arg(fileToShow->fileName()));
-        } else if (player->UsingType() == USAGE_TYPE_OPEN ) {
-            Notify(tr("Opened inventory."));
-        } else if ( not (
-                0 < mevent.x && mevent.x < screenWidth  - 1 &&
-                0 < mevent.y && mevent.y < screenHeight - 1 ) )
-        {
-            Notify(tr("Right window, %1 view.").
-                arg(tr_manager->DirString(player->GetDir())));
-        } else {
-            switch ( player->GetDir() ) {
-            case UP:
-                ExamineOnNormalScreen(mevent.x, mevent.y, player->Z()+1, 1);
-                break;
-            case DOWN:
-                ExamineOnNormalScreen(mevent.x, mevent.y, player->Z()-1, -1);
-                break;
-            default:
-                PrintFront(player->GetDir(), mevent.x, mevent.y);
-                break;
-            }
-        }
-        break;
-    case WINDOW_NOTIFY:
-        Notify(tr("Notifications area."));
-        break;
+    switch ( static_cast<windowIndex>(window_index) ) {
+    case WINDOW_ACTION: SetActionMode(static_cast<actions>(mevent.y)); break;
+    case WINDOW_NOTIFY: Notify(tr("Notifications area.")); break;
     case WINDOW_HUD:
-        if ( not wmouse_trafo(hudWin, &mevent.y, &mevent.x, false) ) return;
         mevent.x -= getmaxx(hudWin)/2 - 'z' + 'a';
         mevent.x /= 2;
         if ( not ( IsScreenWide() && 0 <= mevent.x && mevent.x <= 'z'-'a' ) ) {
@@ -529,7 +489,6 @@ void Screen::ProcessMouse() {
         }
         break;
     case WINDOW_MINIMAP:
-        if (not wmouse_trafo(minimapWin, &mevent.y, &mevent.x, false)) return;
         if ( not (
                 0 < mevent.x && mevent.x < MINIMAP_WIDTH-1 &&
                 0 < mevent.y && mevent.y < MINIMAP_HEIGHT-1 ) )
@@ -541,16 +500,51 @@ void Screen::ProcessMouse() {
             const int shred_y = mevent.y-1 + GetMinimapStartY();
             Notify((0 <= shred_x && shred_x < world->NumShreds() &&
                     0 <= shred_y && shred_y < world->NumShreds() ) ?
-                tr("On minimap: %1.").arg( Shred::ShredTypeName(
+                tr("On minimap: %1.").arg( tr_manager->ShredTypeName(
                     world->GetShredByPos(shred_x, shred_y)->GetTypeOfShred())):
                 tr("You can't see that far.") );
         }
         break;
-    case WINDOW_ACTION:
-        if ( not wmouse_trafo(actionWin, &mevent.y, &mevent.x, false) ) return;
-        SetActionMode(static_cast<actions>(mevent.y));
+    case WINDOW_LEFT:
+        if ( player->UsingSelfType() == USAGE_TYPE_OPEN ) {
+            Notify(tr("Your inventory."));
+            return;
+        }
+        if ( not (
+                0 < mevent.x && mevent.x < screenWidth  - 1 &&
+                0 < mevent.y && mevent.y < screenHeight - 1 ) )
+        {
+            Notify(tr("Left window, Down view."));
+            return;
+        }
+        ExamineOnNormalScreen(mevent.x, mevent.y, player->Z(), -1);
         break;
-    default:
+    case WINDOW_RIGHT:
+        if ( fileToShow != nullptr ) {
+            Notify(tr("Reading file: \"%1\".").arg(fileToShow->fileName()));
+        } else if (player->UsingType() == USAGE_TYPE_OPEN ) {
+            Notify(tr("Opened inventory."));
+        } else if ( not (
+                0 < mevent.x && mevent.x < screenWidth  - 1 &&
+                0 < mevent.y && mevent.y < screenHeight - 1 ) )
+        {
+            Notify(tr("Right window, %1 view.").
+                arg(tr_manager->DirName(player->GetDir())));
+        } else {
+            switch ( player->GetDir() ) {
+            case UP:
+                ExamineOnNormalScreen(mevent.x, mevent.y, player->Z()+1, 1);
+                break;
+            case DOWN:
+                ExamineOnNormalScreen(mevent.x, mevent.y, player->Z()-1, -1);
+                break;
+            default:
+                PrintFront(player->GetDir(), mevent.x, mevent.y);
+                break;
+            }
+        }
+        break;
+    case WINDOW_COUNT:
         Notify(tr("Nothing here. Click on something to get information."));
         break;
     }
@@ -894,7 +888,7 @@ int Screen::GetFrontStartZ() const {
 
 void Screen::PrintFront(const dirs dir, const int block_x, const int block_y)
 const {
-    if ( updatedFront ) return;
+    if ( updatedFront && block_x <= 0 ) return;
     int x_step,  z_step,
         x_start, z_start,
         x_end,   z_end;
@@ -955,6 +949,7 @@ const {
     const int k_start = GetFrontStartZ();
     if ( block_x > 0 ) {
         // ugly! use print function to get block by screen coordinates.
+        Notify("hello");
         const int k = k_start - block_y + 1;
         *x = x_start + x_step * (block_x-1)/2;
         for (*z=z_start; *z!=z_end && world->GetBlock(i, j, k)->

@@ -28,32 +28,6 @@ const quint8 CURRENT_SHRED_FORMAT_VERSION = 15;
 
 const int RAIN_IS_DEW = 1;
 
-QString Shred::ShredTypeName(const shred_type type) {
-    switch ( type ) {
-    case SHRED_PLAIN: /*--------*/ return QObject::tr("Plain");
-    case SHRED_TESTSHRED: /*----*/ return QObject::tr("Test shred");
-    case SHRED_PYRAMID: /*------*/ return QObject::tr("Pyramid");
-    case SHRED_HILL: /*---------*/ return QObject::tr("Hill");
-    case SHRED_DESERT: /*-------*/ return QObject::tr("Desert");
-    case SHRED_WATER: /*--------*/ return QObject::tr("Water");
-    case SHRED_FOREST: /*-------*/ return QObject::tr("Forest");
-    case SHRED_MOUNTAIN: /*-----*/ return QObject::tr("Mountain");
-    case SHRED_EMPTY: /*--------*/ return QObject::tr("Empty");
-    case SHRED_CHAOS: /*--------*/ return QObject::tr("Chaos");
-    case SHRED_CASTLE: /*-------*/ return QObject::tr("Castle");
-    case SHRED_WASTE: /*--------*/ return QObject::tr("Waste");
-    case SHRED_ACID_LAKE: /*----*/ return QObject::tr("Acid lake");
-    case SHRED_LAVA_LAKE: /*----*/ return QObject::tr("Lava lake");
-    case SHRED_CRATER: /*-------*/ return QObject::tr("Crater");
-    case SHRED_DEAD_FOREST: /*--*/ return QObject::tr("Dead forest");
-    case SHRED_DEAD_HILL: /*----*/ return QObject::tr("Dead hill");
-    case SHRED_NULLMOUNTAIN: /*-*/ return QObject::tr("Null mountain");
-    case SHRED_NORMAL_UNDERGROUND: return QObject::tr("Normal underground");
-    }
-    Q_UNREACHABLE();
-    return QString();
-}
-
 World * Shred::GetWorld() const { return world; }
 
 bool Shred::LoadShred() {
@@ -136,25 +110,25 @@ Shred::Shred(const int shred_x, const int shred_y,
     switch ( type = static_cast<shred_type>
             (GetWorld()->GetMap()->TypeOfShred(longi, lati)) )
     {
-    case SHRED_WASTE:     WasteShred(); break;
-    case SHRED_WATER:     Water();      break;
-    case SHRED_PLAIN:     Plain();      break;
-    case SHRED_MOUNTAIN:  Mountain();   break;
-    case SHRED_DESERT:    Desert();     break;
-    case SHRED_HILL:      Hill(false);  break;
-    case SHRED_DEAD_HILL: Hill(true);   break;
+    case SHRED_WASTE:       WasteShred(); break;
+    case SHRED_WATER:       Water();      break;
+    case SHRED_PLAIN:       Plain();      break;
+    case SHRED_MOUNTAIN:    Mountain();   break;
+    case SHRED_DESERT:      Desert();     break;
+    case SHRED_HILL:        Hill(false);  break;
+    case SHRED_DEAD_HILL:   Hill(true);   break;
     case SHRED_FOREST:      Forest(false); break;
     case SHRED_DEAD_FOREST: Forest(true);  break;
     case SHRED_NULLMOUNTAIN: NullMountain(); break;
-    case SHRED_TESTSHRED: TestShred();  break;
-    case SHRED_PYRAMID:   Pyramid();    break;
-    case SHRED_CASTLE:    Castle();     break;
-    case SHRED_CHAOS:     ChaosShred(); break;
+    case SHRED_TESTSHRED:   TestShred();  break;
+    case SHRED_PYRAMID:     Pyramid();    break;
+    case SHRED_CASTLE:      Castle();     break;
+    case SHRED_CHAOS:       ChaosShred(); break;
     case SHRED_EMPTY: break;
-    case SHRED_ACID_LAKE: Water(ACID ); break;
-    case SHRED_LAVA_LAKE: Water(STONE); break;
-    case SHRED_CRATER:    Water(AIR);   break;
-    case SHRED_NORMAL_UNDERGROUND: NormalUnderground(); break;
+    case SHRED_ACID_LAKE:   Water(ACID ); break;
+    case SHRED_LAVA_LAKE:   Water(STONE); break;
+    case SHRED_CRATER:      Water(AIR);   break;
+    case SHRED_UNDERGROUND: NormalUnderground(); break;
     }
 } // Shred::Shred(int shred_x, shred_y, long longi, lati, Shred * mem)
 

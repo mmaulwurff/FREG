@@ -570,7 +570,7 @@
     usage_types Informer::Use(Active * const user) {
         switch ( Sub() ) {
         case IRON: user->ReceiveSignal(QString("Your direction: %1.").
-            arg(tr_manager->DirString(user->GetDir()).toLower())); break;
+            arg(tr_manager->DirName(user->GetDir()).toLower())); break;
         default: break;
         }
         return USAGE_TYPE_INNER;

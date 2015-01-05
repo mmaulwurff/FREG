@@ -22,7 +22,7 @@
 #include "worldmap.h"
 #include "CraftManager.h"
 #include "BlockFactory.h"
-#include "TranslationsManager.h"
+#include "TrManager.h"
 #include "screens/CursedScreen.h"
 #include <QDir>
 #include <QTime>
@@ -46,19 +46,14 @@ int main(int argc, char ** argv) {
     QCoreApplication::setApplicationName("freg");
     QCoreApplication::setApplicationVersion(QString::number(VER));
 
-    tr_manager = new TranslationsManager;
+    tr_manager = new TrManager;
 
     if ( not QDir::home().mkpath(".freg") ) {
         fputs("Error creating game home directory", stdout);
         return EXIT_FAILURE;
     }
-    if (freopen(qPrintable(home_path + "err.txt"), "wt", stderr) == nullptr) {
-        fputs("Error opening errors.txt, writing errors to standard out.",
-            stdout);
-    }
 
-    // parse arguments
-    QCommandLineParser parser;
+    QCommandLineParser parser; // to parse command line arguments
     parser.setApplicationDescription(QObject::tr("freg - 3d open world game"));
     parser.addHelpOption();
     parser.addVersionOption();

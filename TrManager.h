@@ -17,17 +17,18 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#ifndef TRANSLATIONSMANAGER_H
-#define TRANSLATIONSMANAGER_H
+#ifndef TRMANAGER_H
+#define TRMANAGER_H
 
 #include "header.h"
 #include <QString>
+#include <QHash>
 
 class QTranslator;
 
-class TranslationsManager {
+class TrManager {
 public:
-    TranslationsManager();
+    TrManager();
 
     /// Returs translated kind name.
     QString KindName(int kind) const;
@@ -37,19 +38,23 @@ public:
     QString SubNameUpper(int sub) const;
 
     /// Returns translated direction.
-    QString DirString(dirs) const;
+    QString DirName(dirs) const;
+
+    /// Returns translated shred type.
+    QString ShredTypeName(shred_type) const;
 
 private:
-    Q_DISABLE_COPY(TranslationsManager)
+    Q_DISABLE_COPY(TrManager)
 
     QTranslator * LoadTranslator() const;
 
     QTranslator * const translator;
-    const QString subNames[SUB_COUNT];
-    const QString kindNames[KIND_COUNT];
+    QString subNames[SUB_COUNT];
+    QString kindNames[KIND_COUNT];
     const QString dirNames[DIRS_COUNT];
+    QHash<char, QString> shredTypeNames;
 };
 
-extern const TranslationsManager * tr_manager;
+extern const TrManager * tr_manager;
 
-#endif // TRANSLATIONSMANAGER_H
+#endif // TRMANAGER_H

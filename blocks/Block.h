@@ -24,8 +24,8 @@
 #define BLOCK_H
 
 #include "header.h"
-#include "TranslationsManager.h" // needed in lots of files, so include here.
-#include <QDataStream>           // needed in lots of files, so include here.
+#include "TrManager.h" // needed in lots of files, so include here.
+#include <QDataStream> // needed in lots of files, so include here.
 
 enum wearable {
     WEARABLE_NOWHERE,

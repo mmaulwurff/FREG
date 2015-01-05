@@ -30,7 +30,7 @@
 #include "blocks/Teleport.h"
 #include "blocks/Accumulator.h"
 
-#define X(column1, column2) column2,
+#define X(column1, column2) column1,
 const QByteArray BlockFactory::kinds[] = { KIND_TABLE };
 const QByteArray BlockFactory::subs [] = {  SUB_TABLE };
 #undef X

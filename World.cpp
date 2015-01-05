@@ -288,10 +288,11 @@ void World::SetReloadShreds(const int direction) {
 }
 
 void World::run() {
-    timer = new QTimer(this);
+    timer = new QTimer;
     connect(timer, &QTimer::timeout, this, &World::PhysEvents);
     Start();
     exec();
+    delete timer;
 }
 
 void World::PhysEvents() {

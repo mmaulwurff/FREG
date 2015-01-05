@@ -119,8 +119,6 @@ public:
     void Rain(int kind, int sub);
     void Dew (int kind, int sub);
 
-    static QString ShredTypeName(shred_type);
-
 private:
     Q_DISABLE_COPY(Shred)
 
