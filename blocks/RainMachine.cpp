@@ -51,8 +51,9 @@ void RainMachine::DoRareAction() {
 }
 
 QString RainMachine::FullName() const {
-    return tr("Rain Machine") + ( isOn ?
-        tr(": on") : tr(": off") );
+    return QString("%1: %2").
+        arg(tr_manager->KindName(RAIN_MACHINE)).
+        arg(tr_manager->OffOn(isOn));
 }
 
 int  RainMachine::ShouldAct() const { return FREQUENT_RARE; }

@@ -48,8 +48,7 @@ void Dwarf::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
 
 QString Dwarf::FullName() const {
     return ( DIFFERENT == Sub() ) ?
-        tr("Creator") :
-        tr_manager->KindName(DWARF);
+        tr("Creator") : Animal::FullName();
 }
 
 void Dwarf::UpdateLightRadius() {

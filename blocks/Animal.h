@@ -39,6 +39,7 @@ public:
     void Damage(int dmg, int dmg_kind) override;
     Animal * IsAnimal() override;
     Block  * DropAfterDamage(bool * delete_block) override;
+    QString FullName() const override;
     inner_actions ActInner() override;
 
     int  Breath()    const { return breath; }
@@ -74,7 +75,6 @@ class Rabbit : public Animal {
 public:
     using Animal::Animal;
 
-    QString FullName() const override;
     void ActFrequent() override;
 
 protected:
@@ -94,7 +94,6 @@ public:
 
     int DamageLevel() const override;
     void ActFrequent() override;
-    QString FullName() const override;
 
 protected:
     int  Attractive(int sub) const override;

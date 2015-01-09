@@ -169,7 +169,7 @@
 
     QString Grass::FullName() const {
         switch ( Sub() ) {
-        case GREENERY: return tr("Grass");
+        case GREENERY: return tr_manager->KindName(GRASS);
         case FIRE:     return tr("Fire");
         default:       return Block::FullName();
         }

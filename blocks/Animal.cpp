@@ -85,6 +85,7 @@
     int Animal::ShouldAct() const { return FREQUENT_SECOND | FREQUENT_RARE; }
     int Animal::DamageKind() const { return DAMAGE_BITE; }
     Animal * Animal::IsAnimal() { return this; }
+    QString Animal::FullName() const { return tr_manager->KindName(Kind()); }
 
     bool Animal::Eat(const subs sub) {
         const int value = NutritionalValue(sub);
@@ -190,8 +191,6 @@
         Animal::DoRareAction();
     }
 
-    QString Rabbit::FullName() const { return tr("Herbivore"); }
-
     void Rabbit::ActFrequent() {
         if ( Gravitate(2, 1, 2, 4) ) {
             if ( qrand() & 1 ) {
@@ -210,7 +209,6 @@
 
 // Predator:: section
     int Predator::DamageLevel() const { return 10; }
-    QString Predator::FullName() const { return tr("Predator"); }
 
     int Predator::NutritionalValue(const subs sub) const {
         return Attractive(sub) * SECONDS_IN_HOUR;

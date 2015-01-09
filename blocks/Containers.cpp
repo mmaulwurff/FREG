@@ -216,7 +216,7 @@
 
     QString Workbench::FullName() const {
         switch ( Sub() ) {
-        case WOOD: return tr("Workbench");
+        case WOOD: return tr_manager->KindName(WORKBENCH);
         default:   return Block::FullName();
         }
     }
