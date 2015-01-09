@@ -159,9 +159,6 @@ void World::ReloadAllShreds(const QString new_world,
     newWorld = new_world;
 }
 
-void World::Pause() { timer->stop(); }
-void World::Start() { timer->start(1000 / TIME_STEPS_IN_SEC); }
-
 void World::SaveToDisk() const {
     for (int i=0; i<NumShreds()*NumShreds(); ++i) {
         shreds[i]->SaveShred(false);
@@ -289,8 +286,13 @@ void World::SetReloadShreds(const int direction) {
 
 void World::run() {
     timer = new QTimer;
+    timer->setInterval(1000 / TIME_STEPS_IN_SEC);
     connect(timer, &QTimer::timeout, this, &World::PhysEvents);
-    Start();
+    connect(this, &World::Pause, timer, &QTimer::stop);
+    connect(this, &World::Start, timer,
+        static_cast<void (QTimer::*)()>(&QTimer::start));
+
+    timer->start();
     exec();
     delete timer;
 }

@@ -37,8 +37,8 @@ VirtScreen::VirtScreen(Player * const player_) :
     connect(player, SIGNAL(Notify(QString)), SLOT(Notify(QString)),
         Qt::DirectConnection);
     connect(player, SIGNAL(ShowFile(QString)), SLOT(DisplayFile(QString)));
-    connect(player, SIGNAL(GetFocus(int *, int *, int *)),
-        SLOT(ActionXyz(int *, int *, int *)), Qt::DirectConnection);
+    connect(player, &Player::GetFocus, this, &VirtScreen::ActionXyz,
+        Qt::DirectConnection);
 
     connect( world, SIGNAL(GetString(QString &)),
         SLOT(PassString(QString &)), Qt::DirectConnection);
@@ -53,11 +53,12 @@ VirtScreen::VirtScreen(Player * const player_) :
         Qt::DirectConnection);
     connect(world, SIGNAL(Updated(int, int, int)), SLOT(Update(int, int, int)),
         Qt::DirectConnection);
-    connect(world, SIGNAL(UpdatedAround(int, int, int, int)),
-        SLOT(UpdateAround(int, int, int, int)),
+    connect(world, &World::UpdatedAround, this, &VirtScreen::UpdateAround,
         Qt::DirectConnection);
     connect(world, SIGNAL(UpdatesEnded()), SLOT(UpdatesEnd()),
         Qt::DirectConnection);
+    connect(this, &VirtScreen::PauseWorld,  world, &World::Pause);
+    connect(this, &VirtScreen::ResumeWorld, world, &World::Start);
 
     connect(player, SIGNAL(Destroyed()), SLOT(DeathScreen()),
         Qt::DirectConnection );
@@ -132,69 +133,38 @@ int VirtScreen::Color(const int kind, const int sub) {
 
 char VirtScreen::CharName(const int kind, const int sub) {
     // do not use abcdef as they can be used as distance specifiers.
-    switch ( static_cast<kinds>(kind) ) {
+    // default charecters are defined in header.h in KIND_TABLE.
+    switch ( kind ) {
+    case GRASS: return ( FIRE  == sub ) ? '^' : '.';
+    case DOOR:  return ( STONE == sub ) ? '#' : '\'';
     case FALLING: switch ( sub ) {
-        case SAND:  return '.';
-        case WATER: return '*';
-        case STONE: return ':';
-    } // no break;
+        case SAND:     return '.';
+        case WATER:    return '*';
+        case STONE:    return ':';
+        } // no break;
     case BLOCK: switch ( sub ) {
-        default:    return '#';
-        case SOIL:  return '.';
-        case WATER: return '~';
+        case SOIL:     return '.';
         case GREENERY: return '%';
         case A_MEAT:
-        case H_MEAT: return ',';
-        case GLASS: return 'g';
-        case ROSE:  return ';';
-        case COAL:  return '*';
-        case STAR:  return '.';
+        case H_MEAT:   return ',';
+        case GLASS:    return 'g';
+        case ROSE:     return ';';
+        case COAL:     return '*';
+        case STAR:     return '.';
         case SKY:
-        case AIR:   return ' ';
+        case AIR:      return ' ';
         } break;
-    case GRASS:  return ( FIRE == sub ) ? '^' : '.';
-    case BUSH:   return ';';
-    case DWARF:  return '@';
-    case LIQUID: return '~';
-    case RABBIT: return 'r';
-    case CLOCK:  return 'C';
-    case PLATE:  return '_';
-    case LADDER: return '^';
-    case PICK:   return '\\';
-    case SHOVEL: return '|';
-    case HAMMER: return 'T';
-    case AXE:    return '/';
-    case BELL:   return 'B';
-    case BUCKET: return 'u';
-    case MAP:
-    case KIND_TEXT: return '?';
-    case PREDATOR:  return '!';
-    case WORKBENCH: return '*';
-    case CONVERTER: return 'V';
-    case BOX:
-    case CONTAINER: return '&';
-    case DOOR:        return ( STONE == sub ) ? '#' : '\'';
-    case ILLUMINATOR: return 'i';
     case WEAPON: switch ( sub ) {
-        default:    return '/';
-        case STONE: return '.';
-        case SKY:   return ' ';
-        case SUB_NUT: return ',';
-    } break;
-    case ARMOUR: return 'A';
-    case HELMET: return 'H';
-    case BOOTS:  return 'L';
-    case TELEGRAPH: return 't';
-    case MEDKIT:    return '+';
-    case FILTER:    return 'F';
-    case INFORMER:  return 'I';
-    case TELEPORT:  return '0';
-    case RAIN_MACHINE: return 'R';
-    case ACCUMULATOR: return '=';
-    case LAST_KIND: break;
+        case STONE:    return '.';
+        case SKY:      return ' ';
+        case SUB_NUT:  return ',';
+        } break;
     }
-    Q_UNREACHABLE();
-} // char VirtScreen::CharName(int kind, int sub)
+    #define X(translatable, enum_element, class, character) character,
+    static const char characters[] = { KIND_TABLE };
+    #undef X
+    return characters[kind];
+}
 
 bool VirtScreen::ProcessCommand(const QString command) {
     switch ( Player::UniqueIntFromString(qPrintable(command)) ) {
@@ -210,10 +180,10 @@ bool VirtScreen::ProcessCommand(const QString command) {
 }
 
 // Define pure virtual functions to simplify debugging
-void VirtScreen::Update(int, int, int) { Q_UNREACHABLE(); }
-void VirtScreen::UpdateAll() { Q_UNREACHABLE(); }
-void VirtScreen::Move(int) { Q_UNREACHABLE(); }
-void VirtScreen::UpdatePlayer() { Q_UNREACHABLE(); }
+void VirtScreen::Move(int)                        { Q_UNREACHABLE(); }
+void VirtScreen::UpdateAll()                      { Q_UNREACHABLE(); }
+void VirtScreen::UpdatePlayer()                   { Q_UNREACHABLE(); }
+void VirtScreen::Update(int, int, int)            { Q_UNREACHABLE(); }
+void VirtScreen::Notify(QString) const            { Q_UNREACHABLE(); }
+void VirtScreen::PassString(QString &) const      { Q_UNREACHABLE(); }
 void VirtScreen::UpdateAround(int, int, int, int) { Q_UNREACHABLE(); }
-void VirtScreen::Notify(QString) const { Q_UNREACHABLE(); }
-void VirtScreen::PassString(QString &) const { Q_UNREACHABLE(); }

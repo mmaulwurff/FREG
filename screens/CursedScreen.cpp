@@ -397,10 +397,10 @@ void Screen::ControlPlayer(const int ch) {
     case 'P': {
         static bool isPaused = false;
         if ( isPaused ) {
-            GetWorld()->Start();
+            emit ResumeWorld();
             Notify("Game is resumed.");
         } else {
-            GetWorld()->Pause();
+            emit PauseWorld();
             Notify("Game is paused.");
         }
         isPaused = not isPaused;

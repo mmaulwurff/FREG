@@ -27,80 +27,6 @@
 class Player;
 class World;
 
-enum color_pairs { // do not change colors order! // foreground_background
-    BLACK_BLACK = 1,
-    BLACK_RED,
-    BLACK_GREEN,
-    BLACK_YELLOW,
-    BLACK_BLUE,
-    BLACK_MAGENTA,
-    BLACK_CYAN,
-    BLACK_WHITE,
-    //
-    RED_BLACK,
-    RED_RED,
-    RED_GREEN,
-    RED_YELLOW,
-    RED_BLUE,
-    RED_MAGENTA,
-    RED_CYAN,
-    RED_WHITE,
-    //
-    GREEN_BLACK,
-    GREEN_RED,
-    GREEN_GREEN,
-    GREEN_YELLOW,
-    GREEN_BLUE,
-    GREEN_MAGENTA,
-    GREEN_CYAN,
-    GREEN_WHITE,
-    //
-    YELLOW_BLACK,
-    YELLOW_RED,
-    YELLOW_GREEN,
-    YELLOW_YELLOW,
-    YELLOW_BLUE,
-    YELLOW_MAGENTA,
-    YELLOW_CYAN,
-    YELLOW_WHITE,
-    //
-    BLUE_BLACK,
-    BLUE_RED,
-    BLUE_GREEN,
-    BLUE_YELLOW,
-    BLUE_BLUE,
-    BLUE_MAGENTA,
-    BLUE_CYAN,
-    BLUE_WHITE,
-    //
-    MAGENTA_BLACK,
-    MAGENTA_RED,
-    MAGENTA_GREEN,
-    MAGENTA_YELLOW,
-    MAGENTA_BLUE,
-    MAGENTA_MAGENTA,
-    MAGENTA_CYAN,
-    MAGENTA_WHITE,
-    //
-    CYAN_BLACK,
-    CYAN_RED,
-    CYAN_GREEN,
-    CYAN_YELLOW,
-    CYAN_BLUE,
-    CYAN_MAGENTA,
-    CYAN_CYAN,
-    CYAN_WHITE,
-    //
-    WHITE_BLACK,
-    WHITE_RED,
-    WHITE_GREEN,
-    WHITE_YELLOW,
-    WHITE_BLUE,
-    WHITE_MAGENTA,
-    WHITE_CYAN,
-    WHITE_WHITE
-}; // enum color_pairs
-
 class VirtScreen : public QObject {
     /** \class VirtScreen VirtScreen.h
      *  \brief This class provides base for all screens for freg.
@@ -127,6 +53,11 @@ signals:
     /// This is emitted when input receives exit key.
     /** This is connected to application exit. */
     void ExitReceived();
+
+    /// Emitted to pause physics in world.
+    void PauseWorld();
+    /// Emitted to resume paused physics in world.
+    void ResumeWorld();
 
 public slots:
     /// This is called for a notification to be displayed.
@@ -180,6 +111,80 @@ public slots:
     virtual void DisplayFile(QString path);
 
 protected:
+    enum color_pairs { // do not change colors order! // foreground_background
+        BLACK_BLACK = 1,
+        BLACK_RED,
+        BLACK_GREEN,
+        BLACK_YELLOW,
+        BLACK_BLUE,
+        BLACK_MAGENTA,
+        BLACK_CYAN,
+        BLACK_WHITE,
+        //
+        RED_BLACK,
+        RED_RED,
+        RED_GREEN,
+        RED_YELLOW,
+        RED_BLUE,
+        RED_MAGENTA,
+        RED_CYAN,
+        RED_WHITE,
+        //
+        GREEN_BLACK,
+        GREEN_RED,
+        GREEN_GREEN,
+        GREEN_YELLOW,
+        GREEN_BLUE,
+        GREEN_MAGENTA,
+        GREEN_CYAN,
+        GREEN_WHITE,
+        //
+        YELLOW_BLACK,
+        YELLOW_RED,
+        YELLOW_GREEN,
+        YELLOW_YELLOW,
+        YELLOW_BLUE,
+        YELLOW_MAGENTA,
+        YELLOW_CYAN,
+        YELLOW_WHITE,
+        //
+        BLUE_BLACK,
+        BLUE_RED,
+        BLUE_GREEN,
+        BLUE_YELLOW,
+        BLUE_BLUE,
+        BLUE_MAGENTA,
+        BLUE_CYAN,
+        BLUE_WHITE,
+        //
+        MAGENTA_BLACK,
+        MAGENTA_RED,
+        MAGENTA_GREEN,
+        MAGENTA_YELLOW,
+        MAGENTA_BLUE,
+        MAGENTA_MAGENTA,
+        MAGENTA_CYAN,
+        MAGENTA_WHITE,
+        //
+        CYAN_BLACK,
+        CYAN_RED,
+        CYAN_GREEN,
+        CYAN_YELLOW,
+        CYAN_BLUE,
+        CYAN_MAGENTA,
+        CYAN_CYAN,
+        CYAN_WHITE,
+        //
+        WHITE_BLACK,
+        WHITE_RED,
+        WHITE_GREEN,
+        WHITE_YELLOW,
+        WHITE_BLUE,
+        WHITE_MAGENTA,
+        WHITE_CYAN,
+        WHITE_WHITE
+    }; // enum color_pairs
+
     World * GetWorld() const;
     /// Returns true if command is recognized and processed.
     bool ProcessCommand(QString command);

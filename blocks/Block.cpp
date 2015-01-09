@@ -283,12 +283,7 @@ Block::Block(const int kind_, const int sub_, const int transp) :
 Block::Block(QDataStream & str, const int kind_, const int sub_,
         const int transp)
     :
-        noteId(),
-        durability(),
-        transparent(Transparency(transp, sub_)),
-        kind(kind_),
-        sub(sub_),
-        direction()
+        Block(kind_, sub_, transp)
 {
     // use durability as buffer, set actual value in the end:
     str >> durability;

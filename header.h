@@ -115,44 +115,44 @@ enum times_of_day {
  *  Define X as "X(a, b) a," to get column 1 and "X(a, b) b," to get column 2.
  *  \snippet header.h List of kinds */
 /// [List of kinds]
-/// X(QT_TRANSLATE_NOOP(context, translatable class name), enum element, class)
+/// (context, translatable class name), enum element, class, character)
 #define KIND_TABLE \
-X(QT_TRANSLATE_NOOP("Block", "Block"       ), BLOCK,        Block       )\
-X(QT_TRANSLATE_NOOP("Block", "Bell"        ), BELL,         Bell        )\
-X(QT_TRANSLATE_NOOP("Block", "Chest"       ), CONTAINER,    Container   )\
-X(QT_TRANSLATE_NOOP("Block", "Intellectual"), DWARF,        Dwarf       )\
-X(QT_TRANSLATE_NOOP("Block", "Pick"        ), PICK,         Pick        )\
-X(QT_TRANSLATE_NOOP("Block", "Liquid"      ), LIQUID,       Liquid      )\
-X(QT_TRANSLATE_NOOP("Block", "Plant"       ), GRASS,        Grass       )\
-X(QT_TRANSLATE_NOOP("Block", "Bush"        ), BUSH,         Bush        )\
-X(QT_TRANSLATE_NOOP("Block", "Herbivore"   ), RABBIT,       Rabbit      )\
-X(QT_TRANSLATE_NOOP("Block", "Falling"     ), FALLING,      Falling     )\
-X(QT_TRANSLATE_NOOP("Block", "Clock"       ), CLOCK,        Clock       )\
-X(QT_TRANSLATE_NOOP("Block", "Plate"       ), PLATE,        Plate       )\
-X(QT_TRANSLATE_NOOP("Block", "Workbench"   ), WORKBENCH,    Workbench   )\
-X(QT_TRANSLATE_NOOP("Block", "Stick"       ), WEAPON,       Weapon      )\
-X(QT_TRANSLATE_NOOP("Block", "Ladder"      ), LADDER,       Ladder      )\
-X(QT_TRANSLATE_NOOP("Block", "Door"        ), DOOR,         Door        )\
-X(QT_TRANSLATE_NOOP("Block", "Box"         ), BOX,          Box         )\
-X(QT_TRANSLATE_NOOP("Block", "Sign"        ), KIND_TEXT,    Text        )\
-X(QT_TRANSLATE_NOOP("Block", "Map"         ), MAP,          Map         )\
-X(QT_TRANSLATE_NOOP("Block", "Predator"    ), PREDATOR,     Predator    )\
-X(QT_TRANSLATE_NOOP("Block", "Bucket"      ), BUCKET,       Bucket      )\
-X(QT_TRANSLATE_NOOP("Block", "Shovel"      ), SHOVEL,       Shovel      )\
-X(QT_TRANSLATE_NOOP("Block", "Axe"         ), AXE,          Axe         )\
-X(QT_TRANSLATE_NOOP("Block", "Hammer"      ), HAMMER,       Hammer      )\
-X(QT_TRANSLATE_NOOP("Block", "Illuminator" ), ILLUMINATOR,  Illuminator )\
-X(QT_TRANSLATE_NOOP("Block", "RainMachine" ), RAIN_MACHINE, RainMachine )\
-X(QT_TRANSLATE_NOOP("Block", "Converter"   ), CONVERTER,    Converter   )\
-X(QT_TRANSLATE_NOOP("Block", "BodyArmour"  ), ARMOUR,       Armour      )\
-X(QT_TRANSLATE_NOOP("Block", "Helmet"      ), HELMET,       Helmet      )\
-X(QT_TRANSLATE_NOOP("Block", "Boots"       ), BOOTS,        Boots       )\
-X(QT_TRANSLATE_NOOP("Block", "Telegraph"   ), TELEGRAPH,    Telegraph   )\
-X(QT_TRANSLATE_NOOP("Block", "Medkit"      ), MEDKIT,       MedKit      )\
-X(QT_TRANSLATE_NOOP("Block", "Filter"      ), FILTER,       Filter      )\
-X(QT_TRANSLATE_NOOP("Block", "Informer"    ), INFORMER,     Informer    )\
-X(QT_TRANSLATE_NOOP("Block", "Teleport"    ), TELEPORT,     Teleport    )\
-X(QT_TRANSLATE_NOOP("Block", "Accumulator" ), ACCUMULATOR,  Accumulator )\
+X(QT_TRANSLATE_NOOP("Block", "Block"       ), BLOCK,        Block,       '#' )\
+X(QT_TRANSLATE_NOOP("Block", "Bell"        ), BELL,         Bell,        'B' )\
+X(QT_TRANSLATE_NOOP("Block", "Chest"       ), CONTAINER,    Container,   '&' )\
+X(QT_TRANSLATE_NOOP("Block", "Intellectual"), DWARF,        Dwarf,       '@' )\
+X(QT_TRANSLATE_NOOP("Block", "Pick"        ), PICK,         Pick,        '\\')\
+X(QT_TRANSLATE_NOOP("Block", "Liquid"      ), LIQUID,       Liquid,      '~' )\
+X(QT_TRANSLATE_NOOP("Block", "Plant"       ), GRASS,        Grass,       '.' )\
+X(QT_TRANSLATE_NOOP("Block", "Bush"        ), BUSH,         Bush,        ';' )\
+X(QT_TRANSLATE_NOOP("Block", "Herbivore"   ), RABBIT,       Rabbit,      'r' )\
+X(QT_TRANSLATE_NOOP("Block", "Falling"     ), FALLING,      Falling,     '.' )\
+X(QT_TRANSLATE_NOOP("Block", "Clock"       ), CLOCK,        Clock,       'C' )\
+X(QT_TRANSLATE_NOOP("Block", "Plate"       ), PLATE,        Plate,       '_' )\
+X(QT_TRANSLATE_NOOP("Block", "Workbench"   ), WORKBENCH,    Workbench,   '*' )\
+X(QT_TRANSLATE_NOOP("Block", "Stick"       ), WEAPON,       Weapon,      '/' )\
+X(QT_TRANSLATE_NOOP("Block", "Ladder"      ), LADDER,       Ladder,      '^' )\
+X(QT_TRANSLATE_NOOP("Block", "Door"        ), DOOR,         Door,        '\'')\
+X(QT_TRANSLATE_NOOP("Block", "Box"         ), BOX,          Box,         '&' )\
+X(QT_TRANSLATE_NOOP("Block", "Sign"        ), KIND_TEXT,    Text,        '?' )\
+X(QT_TRANSLATE_NOOP("Block", "Map"         ), MAP,          Map,         '?' )\
+X(QT_TRANSLATE_NOOP("Block", "Predator"    ), PREDATOR,     Predator,    '!' )\
+X(QT_TRANSLATE_NOOP("Block", "Bucket"      ), BUCKET,       Bucket,      'u' )\
+X(QT_TRANSLATE_NOOP("Block", "Shovel"      ), SHOVEL,       Shovel,      '|' )\
+X(QT_TRANSLATE_NOOP("Block", "Axe"         ), AXE,          Axe,         '/' )\
+X(QT_TRANSLATE_NOOP("Block", "Hammer"      ), HAMMER,       Hammer,      'T' )\
+X(QT_TRANSLATE_NOOP("Block", "Illuminator" ), ILLUMINATOR,  Illuminator, 'i' )\
+X(QT_TRANSLATE_NOOP("Block", "RainMachine" ), RAIN_MACHINE, RainMachine, 'R' )\
+X(QT_TRANSLATE_NOOP("Block", "Converter"   ), CONVERTER,    Converter,   'V' )\
+X(QT_TRANSLATE_NOOP("Block", "BodyArmour"  ), ARMOUR,       Armour,      'A' )\
+X(QT_TRANSLATE_NOOP("Block", "Helmet"      ), HELMET,       Helmet,      'H' )\
+X(QT_TRANSLATE_NOOP("Block", "Boots"       ), BOOTS,        Boots,       'L' )\
+X(QT_TRANSLATE_NOOP("Block", "Telegraph"   ), TELEGRAPH,    Telegraph,   't' )\
+X(QT_TRANSLATE_NOOP("Block", "Medkit"      ), MEDKIT,       MedKit,      '+' )\
+X(QT_TRANSLATE_NOOP("Block", "Filter"      ), FILTER,       Filter,      'F' )\
+X(QT_TRANSLATE_NOOP("Block", "Informer"    ), INFORMER,     Informer,    'I' )\
+X(QT_TRANSLATE_NOOP("Block", "Teleport"    ), TELEPORT,     Teleport,    '0' )\
+X(QT_TRANSLATE_NOOP("Block", "Accumulator" ), ACCUMULATOR,  Accumulator, '=' )\
 /// [List of kinds]
 
 /** \page subs List of available substances
@@ -203,7 +203,7 @@ X(QT_TRANSLATE_NOOP("Block", "plastic"   ), SUB_PLASTIC )\
 /// [List of subs]
 
 enum kinds {
-    #define X(translatable, enum_element, class) enum_element,
+    #define X(translatable, enum_element, ...) enum_element,
     KIND_TABLE
     #undef X
     LAST_KIND, ///< Nothing is LAST_KIND.

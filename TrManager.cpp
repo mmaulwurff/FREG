@@ -25,10 +25,8 @@
 
 const TrManager * tr_manager;
 
-#define X(string, enum_element, class) string,
+#define X(string, ...) string,
 const QByteArray TrManager::rawKinds[] = { KIND_TABLE };
-#undef X
-#define X(string, enum_element) string,
 const QByteArray TrManager::rawSubs [] = {  SUB_TABLE };
 #undef X
 

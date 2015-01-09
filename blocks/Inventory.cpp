@@ -141,12 +141,13 @@ bool Inventory::InscribeInv(const int num, const QString str) {
 }
 
 QString Inventory::InvFullName(const int num) const {
-    return QString("%1%2").
-        arg( inventory[num].isEmpty() ?
-            QObject::tr("-empty-") :
-            inventory[num].top()->FullName() ).
-        arg( Number(num) <= 1 ?
-            "" : QString(" (x%1)").arg(Number(num)));
+    static const QString emptyString = World::tr("-empty-");
+    return inventory[num].isEmpty() ?
+        emptyString :
+        QString("%1%2").
+            arg( inventory[num].top()->FullName() ).
+            arg( Number(num) <= 1 ?
+                "" : QString(" (x%1)").arg(Number(num)) );
 }
 
 int Inventory::GetInvWeight(const int i) const {

@@ -316,7 +316,6 @@ bool Player::ForbiddenAdminCommands() const {
 }
 
 void Player::ProcessCommand(QString command) {
-    command = command.toLower();
     QTextStream comm_stream(&command);
     QByteArray request;
     comm_stream >> request;

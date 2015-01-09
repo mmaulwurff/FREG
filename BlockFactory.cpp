@@ -45,7 +45,7 @@ BlockFactory::BlockFactory() {
     }
     qDebug() << "valid pairs:" << sum;*/
 
-    #define X(translatable, enum_element, class) class,
+    #define X(translatable, enum_element, class, ...) class,
     RegisterAll(typeList< KIND_TABLE TemplateTerminator >());
     #undef X
 }

@@ -186,9 +186,12 @@ public: // World section
     void ReloadAllShreds(QString new_world, qint64 lati, qint64 longi,
             int new_x, int new_y, int new_z);
 
+    void SaveToDisk() const;
+
+signals:
     void Pause();
     void Start();
-    void SaveToDisk() const;
+
 private:
     static int CorrectNumShreds(int num);
     static int CorrectNumActiveShreds(int num, int max_num);
