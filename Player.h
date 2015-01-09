@@ -153,7 +153,7 @@ signals:
     void ShowFile(QString path);
     void GetFocus(int * x, int * y, int * z) const;
 
-private slots:
+public:
     /// Checks if player walked over the shred border.
     /** This is connected to player's block signal Moved(int).
      *  It emits OverstepBorder(int) signal when player walks
@@ -165,10 +165,12 @@ private slots:
 
     void Disconnect();
     void SetPlayer(int set_x, int set_y, int set_z);
-    /// Dir is not used, for slot signature compatibility only.
     void UpdateXYZ();
 
 private:
+    //static const subs PLAYER_SUB = ADAMANTINE;
+    static const subs PLAYER_SUB = H_MEAT;
+
     /// Checks player/inventory/block existence, size limits.
     Block * ValidBlock(int num) const;
     Shred * GetShred() const;

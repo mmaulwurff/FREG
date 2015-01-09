@@ -30,11 +30,6 @@
 #include <QTextStream>
 #include <QMutexLocker>
 
-const bool COMMANDS_ALWAYS_ON = DEBUG;
-
-//const subs PLAYER_SUB = ADAMANTINE;
-const subs PLAYER_SUB = H_MEAT;
-
 int Player::X() const {
     return GetShred()->ShredX() << SHRED_WIDTH_BITSHIFT | Xyz::X();
 }
@@ -307,7 +302,7 @@ void Player::Craft(const int num) {
 }
 
 bool Player::ForbiddenAdminCommands() const {
-    if ( GetCreativeMode() || COMMANDS_ALWAYS_ON ) {
+    if ( GetCreativeMode() || DEBUG ) {
         return false;
     } else {
         emit Notify(tr("You are not in Creative Mode."));
@@ -504,13 +499,11 @@ Player::Player() :
         creativeMode()
 {
     SetPlayer(0, 0, -1);
-    connect(world, SIGNAL(NeedPlayer(int, int, int)),
-        SLOT(SetPlayer(int, int, int)),
+    connect(world, &World::NeedPlayer, this, &Player::SetPlayer,
         Qt::DirectConnection);
-    connect(this, SIGNAL(OverstepBorder(int)),
-        world, SLOT(SetReloadShreds(int)),
+    connect(this, &Player::OverstepBorder, world, &World::SetReloadShreds,
         Qt::DirectConnection);
-    connect(world, SIGNAL(StartReloadAll()), SLOT(Disconnect()),
+    connect(world, &World::StartReloadAll, this, &Player::Disconnect,
         Qt::DirectConnection);
 }
 

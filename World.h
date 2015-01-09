@@ -69,6 +69,8 @@ public: // Lighting section
     void RemoveSunLight(int x, int y, int z);
 
     bool GetEvernight() const { return evernight; }
+
+    static const int FIRE_LIGHT_FACTOR = 4;
 private:
     bool SetFireLightMap(int level, int x, int y, int z);
     void AddFireLight   (int x, int y, int z, int level);
@@ -175,7 +177,6 @@ public: // Block information section
     int SetNote(QString note);
     int ChangeNote(QString note, int note_id);
     QString GetNote(int note_id) const;
-
 private:
     void SaveNotes() const;
     void LoadNotes();
@@ -188,25 +189,11 @@ public: // World section
 
     void SaveToDisk() const;
 
-signals:
-    void Pause();
-    void Start();
-
-private:
-    static int CorrectNumShreds(int num);
-    static int CorrectNumActiveShreds(int num, int max_num);
-    void LoadAllShreds();
-    void ReloadShreds();
-    void run() override;
-    Shred ** FindShred(int x, int y) const;
-
-public:
     QMutex * GetLock() { return &mutex; }
     void Lock();
     bool TryLock();
     void Unlock();
 
-public slots:
     void SetReloadShreds(int direction);
     void PhysEvents();
     void ActivateFullReload();
@@ -227,7 +214,20 @@ signals:
     void FinishReloadAll();
     void ExitReceived();
 
+    void Pause();
+    void Start();
+
 private:
+    static const int TIME_STEPS_IN_SEC = 10;
+    static const int MIN_WORLD_SIZE    =  5;
+
+    static int CorrectNumShreds(int num);
+    static int CorrectNumActiveShreds(int num, int max_num);
+    void LoadAllShreds();
+    void ReloadShreds();
+    void run() override;
+    Shred ** FindShred(int x, int y) const;
+
     QString worldName;
     WorldMap * map;
     quint64 time;

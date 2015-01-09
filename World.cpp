@@ -29,10 +29,6 @@
 #include <QTimer>
 #include <QSettings>
 
-const int TIME_STEPS_IN_SEC = 10;
-
-const int MIN_WORLD_SIZE = 5;
-
 World * world;
 
 bool World::ShredInCentralZone(const long longi, const long  lati) const {

@@ -30,6 +30,9 @@ public:
 
     bool Get(Block * block, int start) override;
     QString InvFullName(int slot_number) const override;
+
+private:
+    static const int FILTER_INV_SIZE = 2;
 };
 
 #endif // FILTER_H

@@ -17,9 +17,6 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-/**\file CursedScreen.h
- * \brief Provides curses (text-based graphics interface) screen for freg.*/
-
 #ifndef CURSEDSCREEN_H
 #define CURSEDSCREEN_H
 
@@ -59,7 +56,6 @@ public:
     void ControlPlayer();
     void ControlPlayer(int ch);
 
-public slots:
     /// This is called for a notification to be displayed.
     void Notify(QString) const override;
     void PassString(QString &) const override;
@@ -71,10 +67,6 @@ public slots:
     void DeathScreen();
     void DisplayFile(QString path) override;
     void ActionXyz(int * x, int * y, int * z) const override;
-
-private slots:
-    /// Prints world. Should not be called not within screen.
-    void Print();
 
 private:
     enum windowIndex {
@@ -109,6 +101,8 @@ private:
     const int ARROWS_COLOR = COLOR_PAIR(WHITE_RED);
     const int MOUSEMASK = BUTTON1_CLICKED | BUTTON1_RELEASED;
 
+    /// Prints world. Should not be called not within screen.
+    void Print();
     char CharNumber(int z) const;
     char CharNumberFront(int x, int y) const;
     char Distance(int distance) const;

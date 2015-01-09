@@ -37,8 +37,6 @@
 #include "blocks/Block.h"
 #include "blocks/Active.h"
 
-const int FIRE_LIGHT_FACTOR = 4;
-
 /// Use Enlightened instead, which is smart wrapper of this.
 int World::LightMap(const int x, const int y, const int z) const {
     return GetShred(x, y)->
@@ -221,7 +219,7 @@ int World::FireLight(const int x, const int y, const int z) const {
 // Shred methods
 
 int Shred::FireLight(const int x, const int y, const int z) const {
-    return ((lightMap[x][y][z] & 0xF0) >> 4) * FIRE_LIGHT_FACTOR;
+    return ((lightMap[x][y][z] & 0xF0) >> 4) * World::FIRE_LIGHT_FACTOR;
 }
 
 int Shred::SunLight(const int x, const int y, const int z) const {

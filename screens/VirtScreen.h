@@ -31,17 +31,11 @@ class VirtScreen : public QObject {
     /** \class VirtScreen VirtScreen.h
      *  \brief This class provides base for all screens for freg.
      *
-     * It provides interface for world-screen and player-screen
-     * communications by its slots and signals. */
+     * Provides interface for world-screen and player-screen communications. */
     Q_OBJECT
     Q_DISABLE_COPY(VirtScreen)
 public:
     /// Constructor makes player and world connections.
-    /** Constructor of non-virtual screen should contain this code
-     *  to connect to player for sending input:
-     *  connect(this, SIGNAL(InputReceived(int, int)),
-     *     player, SLOT(Act(int, int)),
-     *     Qt::DirectConnection); */
     VirtScreen(Player *);
     VirtScreen(VirtScreen &) = delete;
     virtual ~VirtScreen();
@@ -49,17 +43,6 @@ public:
     static char CharName(int kind, int sub);
     static int  Color   (int kind, int sub);
 
-signals:
-    /// This is emitted when input receives exit key.
-    /** This is connected to application exit. */
-    void ExitReceived();
-
-    /// Emitted to pause physics in world.
-    void PauseWorld();
-    /// Emitted to resume paused physics in world.
-    void ResumeWorld();
-
-public slots:
     /// This is called for a notification to be displayed.
     virtual void Notify(QString) const = 0;
 
@@ -109,6 +92,16 @@ public slots:
     /// This shows a file by path.
     /** Standard (non-reimpemented) version does nothing. */
     virtual void DisplayFile(QString path);
+
+signals:
+    /// This is emitted when input receives exit key.
+    /** This is connected to application exit. */
+    void ExitReceived();
+
+    /// Emitted to pause physics in world.
+    void PauseWorld();
+    /// Emitted to resume paused physics in world.
+    void ResumeWorld();
 
 protected:
     enum color_pairs { // do not change colors order! // foreground_background

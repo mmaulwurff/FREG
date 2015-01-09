@@ -28,6 +28,9 @@ public:
     void Damage(int dmg, int dmg_kind) override;
     int  DamageLevel() const override;
     wearable Wearable() const override;
+
+protected:
+    static const int TRESHOLD = 10;
 }; // class Armour
 
 class Helmet : public Armour {

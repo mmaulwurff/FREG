@@ -19,8 +19,6 @@
 
 #include "blocks/Armour.h"
 
-const int TRESHOLD = 10;
-
 // Armour section
     void Armour::Damage(const int dmg, const int dmg_kind) {
         if ( dmg > TRESHOLD ) {

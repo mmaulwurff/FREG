@@ -32,35 +32,35 @@ VirtScreen::VirtScreen(Player * const player_) :
         settings(home_path + "freg.ini", QSettings::IniFormat),
         previousCommand(settings.value("last_command", "moo").toString())
 {
-    connect( world, SIGNAL(Notify(QString)), SLOT(Notify(QString)),
+    connect( world, &World::Notify, this, &VirtScreen::Notify,
         Qt::DirectConnection);
-    connect(player, SIGNAL(Notify(QString)), SLOT(Notify(QString)),
+    connect(player, &Player::Notify, this, &VirtScreen::Notify,
         Qt::DirectConnection);
-    connect(player, SIGNAL(ShowFile(QString)), SLOT(DisplayFile(QString)));
+    connect(player, &Player::ShowFile, this, &VirtScreen::DisplayFile);
     connect(player, &Player::GetFocus, this, &VirtScreen::ActionXyz,
         Qt::DirectConnection);
 
-    connect( world, SIGNAL(GetString(QString &)),
-        SLOT(PassString(QString &)), Qt::DirectConnection);
-    connect(player, SIGNAL(GetString(QString &)),
-        SLOT(PassString(QString &)), Qt::DirectConnection);
+    connect( world, &World::GetString, this, &VirtScreen::PassString,
+        Qt::DirectConnection);
+    connect(player, &Player::GetString, this, &VirtScreen::PassString,
+        Qt::DirectConnection);
 
-    connect(player, SIGNAL(Updated()), SLOT(UpdatePlayer()),
+    connect(player, &Player::Updated, this, &VirtScreen::UpdatePlayer,
         Qt::DirectConnection);
-    connect(world, SIGNAL(UpdatedAll()), SLOT(UpdateAll()),
+    connect(world, &World::UpdatedAll, this, &VirtScreen::UpdateAll,
         Qt::DirectConnection);
-    connect(world, SIGNAL(Moved(int)), SLOT(Move(int)),
+    connect(world, &World::Moved, this, &VirtScreen::Move,
         Qt::DirectConnection);
-    connect(world, SIGNAL(Updated(int, int, int)), SLOT(Update(int, int, int)),
+    connect(world, &World::Updated, this, &VirtScreen::Update,
         Qt::DirectConnection);
     connect(world, &World::UpdatedAround, this, &VirtScreen::UpdateAround,
         Qt::DirectConnection);
-    connect(world, SIGNAL(UpdatesEnded()), SLOT(UpdatesEnd()),
+    connect(world, &World::UpdatesEnded, this, &VirtScreen::UpdatesEnd,
         Qt::DirectConnection);
     connect(this, &VirtScreen::PauseWorld,  world, &World::Pause);
     connect(this, &VirtScreen::ResumeWorld, world, &World::Start);
 
-    connect(player, SIGNAL(Destroyed()), SLOT(DeathScreen()),
+    connect(player, &Player::Destroyed, this, &VirtScreen::DeathScreen,
         Qt::DirectConnection );
 }
 

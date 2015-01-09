@@ -23,10 +23,7 @@
 #include "blocks/Inventory.h"
 #include <algorithm>
 
-const quint8 DATASTREAM_VERSION = QDataStream::Qt_5_2;
-const quint8 CURRENT_SHRED_FORMAT_VERSION = 15;
-
-const int RAIN_IS_DEW = 1;
+const quint8 Shred::DATASTREAM_VERSION = QDataStream::Qt_5_2;
 
 World * Shred::GetWorld() const { return world; }
 

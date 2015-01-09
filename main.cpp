@@ -123,10 +123,10 @@ int main(int argc, char ** argv) {
 
     if ( error ) return EXIT_FAILURE;
 
-    QObject::connect(&screen, SIGNAL(ExitReceived()), &freg, SLOT(quit()),
-        Qt::DirectConnection);
-    QObject::connect(&world,  SIGNAL(ExitReceived()), &freg, SLOT(quit()),
-        Qt::DirectConnection);
+    QObject::connect(&screen, &Screen::ExitReceived,
+        &freg, &QCoreApplication::quit, Qt::DirectConnection);
+    QObject::connect(&world, &World::ExitReceived,
+        &freg, &QCoreApplication::quit, Qt::DirectConnection);
 
     world.start();
     return freg.exec();

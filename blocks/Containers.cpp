@@ -23,8 +23,6 @@
 #include "BlockFactory.h"
 #include "CraftManager.h"
 
-const int CONVERTER_LIGHT_RADIUS = 2;
-
 // Container::
     void Container::Damage(const int dmg, const int dmg_kind) {
         if ( dmg_kind >= DAMAGE_PUSH_UP ) {

@@ -122,6 +122,11 @@ public:
 private:
     Q_DISABLE_COPY(Shred)
 
+    static const quint8 DATASTREAM_VERSION;
+    static const quint8 CURRENT_SHRED_FORMAT_VERSION = 15;
+
+    static const int RAIN_IS_DEW = 1;
+
     void RemoveAllSunLight();
     void RemoveAllFireLight();
     void RemoveAllLight();

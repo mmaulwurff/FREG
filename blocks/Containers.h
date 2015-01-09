@@ -118,6 +118,8 @@ protected:
     void SaveAttributes(QDataStream &) const override;
 
 private:
+    static const int CONVERTER_LIGHT_RADIUS = 2;
+
     void InitDamageKinds();
     int  ConvertRatio(int sub) const;
 

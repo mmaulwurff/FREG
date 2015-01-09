@@ -20,8 +20,6 @@
 #include "Filter.h"
 #include "World.h"
 
-const int FILTER_INV_SIZE = 2;
-
 Filter::Filter(const int kind, const int sub) :
     Container(kind, sub, FILTER_INV_SIZE)
 {}
