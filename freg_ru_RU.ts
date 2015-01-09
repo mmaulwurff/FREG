@@ -59,330 +59,330 @@
 <context>
     <name>Block</name>
     <message>
-        <location filename="header.h" line="118"/>
+        <location filename="header.h" line="120"/>
         <source>Block</source>
         <translation type="unfinished">Блок</translation>
     </message>
     <message>
-        <location filename="header.h" line="119"/>
+        <location filename="header.h" line="121"/>
         <source>Bell</source>
         <translation type="unfinished">Звонок</translation>
     </message>
     <message>
-        <location filename="header.h" line="120"/>
+        <location filename="header.h" line="122"/>
         <source>Chest</source>
         <translation type="unfinished">Сундук</translation>
     </message>
     <message>
-        <location filename="header.h" line="121"/>
+        <location filename="header.h" line="123"/>
         <source>Intellectual</source>
         <translation type="unfinished">Разумное</translation>
     </message>
     <message>
-        <location filename="header.h" line="122"/>
+        <location filename="header.h" line="124"/>
         <source>Pick</source>
         <translation type="unfinished">Кирка</translation>
     </message>
     <message>
-        <location filename="header.h" line="123"/>
+        <location filename="header.h" line="125"/>
         <source>Liquid</source>
         <translation type="unfinished">Жидкость</translation>
     </message>
     <message>
-        <location filename="header.h" line="124"/>
+        <location filename="header.h" line="126"/>
         <source>Plant</source>
         <translation type="unfinished">Растение</translation>
     </message>
     <message>
-        <location filename="header.h" line="125"/>
+        <location filename="header.h" line="127"/>
         <source>Bush</source>
         <translation type="unfinished">Куст</translation>
     </message>
     <message>
-        <location filename="header.h" line="126"/>
+        <location filename="header.h" line="128"/>
         <source>Herbivore</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Травоядное животное</translation>
     </message>
     <message>
-        <location filename="header.h" line="127"/>
+        <location filename="header.h" line="129"/>
         <source>Falling</source>
         <translation type="unfinished">Падающее</translation>
     </message>
     <message>
-        <location filename="header.h" line="128"/>
+        <location filename="header.h" line="130"/>
         <source>Clock</source>
         <translation type="unfinished">Часы</translation>
     </message>
     <message>
-        <location filename="header.h" line="129"/>
+        <location filename="header.h" line="131"/>
         <source>Plate</source>
         <translation type="unfinished">Пластина</translation>
     </message>
     <message>
-        <location filename="header.h" line="130"/>
+        <location filename="header.h" line="132"/>
         <source>Workbench</source>
         <translation type="unfinished">Верстак</translation>
     </message>
     <message>
-        <location filename="header.h" line="131"/>
+        <location filename="header.h" line="133"/>
         <source>Stick</source>
         <translation type="unfinished">Палка</translation>
     </message>
     <message>
-        <location filename="header.h" line="132"/>
+        <location filename="header.h" line="134"/>
         <source>Ladder</source>
         <translation type="unfinished">Лестница</translation>
     </message>
     <message>
-        <location filename="header.h" line="133"/>
+        <location filename="header.h" line="135"/>
         <source>Door</source>
         <translation type="unfinished">Дверь</translation>
     </message>
     <message>
-        <location filename="header.h" line="134"/>
+        <location filename="header.h" line="136"/>
         <source>Box</source>
         <translation type="unfinished">Ящик</translation>
     </message>
     <message>
-        <location filename="header.h" line="135"/>
+        <location filename="header.h" line="137"/>
         <source>Sign</source>
         <translation type="unfinished">Знак</translation>
     </message>
     <message>
-        <location filename="header.h" line="136"/>
+        <location filename="header.h" line="138"/>
         <source>Map</source>
         <translation type="unfinished">Карта</translation>
     </message>
     <message>
-        <location filename="header.h" line="137"/>
+        <location filename="header.h" line="139"/>
         <source>Predator</source>
         <translation type="unfinished">Хищник</translation>
     </message>
     <message>
-        <location filename="header.h" line="138"/>
+        <location filename="header.h" line="140"/>
         <source>Bucket</source>
         <translation type="unfinished">Ведро</translation>
     </message>
     <message>
-        <location filename="header.h" line="139"/>
+        <location filename="header.h" line="141"/>
         <source>Shovel</source>
         <translation type="unfinished">Лопата</translation>
     </message>
     <message>
-        <location filename="header.h" line="140"/>
+        <location filename="header.h" line="142"/>
         <source>Axe</source>
         <translation type="unfinished">Топор</translation>
     </message>
     <message>
-        <location filename="header.h" line="141"/>
+        <location filename="header.h" line="143"/>
         <source>Hammer</source>
         <translation type="unfinished">Молот</translation>
     </message>
     <message>
-        <location filename="header.h" line="142"/>
+        <location filename="header.h" line="144"/>
         <source>Illuminator</source>
         <translation type="unfinished">Светильник</translation>
     </message>
     <message>
-        <location filename="header.h" line="143"/>
+        <location filename="header.h" line="145"/>
         <source>RainMachine</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="header.h" line="144"/>
+        <location filename="header.h" line="146"/>
         <source>Converter</source>
         <translation type="unfinished">Конвертер</translation>
     </message>
     <message>
-        <location filename="header.h" line="145"/>
+        <location filename="header.h" line="147"/>
         <source>BodyArmour</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="header.h" line="146"/>
+        <location filename="header.h" line="148"/>
         <source>Helmet</source>
         <translation type="unfinished">Шлем</translation>
     </message>
     <message>
-        <location filename="header.h" line="147"/>
+        <location filename="header.h" line="149"/>
         <source>Boots</source>
         <translation type="unfinished">Сапоги</translation>
     </message>
     <message>
-        <location filename="header.h" line="148"/>
+        <location filename="header.h" line="150"/>
         <source>Telegraph</source>
         <translation type="unfinished">Телеграф</translation>
     </message>
     <message>
-        <location filename="header.h" line="149"/>
+        <location filename="header.h" line="151"/>
         <source>Medkit</source>
         <translation type="unfinished">Аптечка</translation>
     </message>
     <message>
-        <location filename="header.h" line="150"/>
+        <location filename="header.h" line="152"/>
         <source>Filter</source>
         <translation type="unfinished">Фильтр</translation>
     </message>
     <message>
-        <location filename="header.h" line="151"/>
+        <location filename="header.h" line="153"/>
         <source>Informer</source>
         <translation type="unfinished">Информер</translation>
     </message>
     <message>
-        <location filename="header.h" line="152"/>
+        <location filename="header.h" line="154"/>
         <source>Teleport</source>
         <translation type="unfinished">Телепорт</translation>
     </message>
     <message>
-        <location filename="header.h" line="153"/>
+        <location filename="header.h" line="155"/>
         <source>Accumulator</source>
         <translation type="unfinished">Аккумулятор</translation>
     </message>
     <message>
-        <location filename="header.h" line="168"/>
+        <location filename="header.h" line="171"/>
         <source>stone</source>
         <translation type="unfinished">камень</translation>
     </message>
     <message>
-        <location filename="header.h" line="169"/>
+        <location filename="header.h" line="172"/>
         <source>mossStone</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="header.h" line="170"/>
+        <location filename="header.h" line="173"/>
         <source>0stone</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="header.h" line="171"/>
-        <location filename="header.h" line="172"/>
-        <location filename="header.h" line="187"/>
+        <location filename="header.h" line="174"/>
+        <location filename="header.h" line="175"/>
+        <location filename="header.h" line="190"/>
         <source>air</source>
         <translation type="unfinished">Воздух</translation>
     </message>
     <message>
-        <location filename="header.h" line="173"/>
+        <location filename="header.h" line="176"/>
         <source>diamond</source>
         <translation type="unfinished">алмаз</translation>
     </message>
     <message>
-        <location filename="header.h" line="174"/>
+        <location filename="header.h" line="177"/>
         <source>soil</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="header.h" line="175"/>
-        <location filename="header.h" line="176"/>
+        <location filename="header.h" line="178"/>
+        <location filename="header.h" line="179"/>
         <source>meat</source>
         <translation type="unfinished">мясо</translation>
     </message>
     <message>
-        <location filename="header.h" line="177"/>
+        <location filename="header.h" line="180"/>
         <source>glass</source>
         <translation type="unfinished">стекло</translation>
     </message>
     <message>
-        <location filename="header.h" line="178"/>
+        <location filename="header.h" line="181"/>
         <source>wood</source>
         <translation type="unfinished">дерево</translation>
     </message>
     <message>
-        <location filename="header.h" line="179"/>
+        <location filename="header.h" line="182"/>
         <source>different</source>
         <translation type="unfinished">разное</translation>
     </message>
     <message>
-        <location filename="header.h" line="180"/>
+        <location filename="header.h" line="183"/>
         <source>iron</source>
         <translation type="unfinished">железо</translation>
     </message>
     <message>
-        <location filename="header.h" line="181"/>
+        <location filename="header.h" line="184"/>
         <source>water</source>
         <translation type="unfinished">вода</translation>
     </message>
     <message>
-        <location filename="header.h" line="182"/>
+        <location filename="header.h" line="185"/>
         <source>greenery</source>
         <translation type="unfinished">зелень</translation>
     </message>
     <message>
-        <location filename="header.h" line="183"/>
+        <location filename="header.h" line="186"/>
         <source>sand</source>
         <translation type="unfinished">песок</translation>
     </message>
     <message>
-        <location filename="header.h" line="184"/>
+        <location filename="header.h" line="187"/>
         <source>nut</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="header.h" line="185"/>
+        <location filename="header.h" line="188"/>
         <source>rose</source>
         <translation type="unfinished">роза</translation>
     </message>
     <message>
-        <location filename="header.h" line="186"/>
+        <location filename="header.h" line="189"/>
         <source>clay</source>
         <translation type="unfinished">глина</translation>
     </message>
     <message>
-        <location filename="header.h" line="188"/>
+        <location filename="header.h" line="191"/>
         <source>paper</source>
         <translation type="unfinished">бумага</translation>
     </message>
     <message>
-        <location filename="header.h" line="189"/>
+        <location filename="header.h" line="192"/>
         <source>gold</source>
         <translation type="unfinished">золото</translation>
     </message>
     <message>
-        <location filename="header.h" line="190"/>
+        <location filename="header.h" line="193"/>
         <source>bone</source>
         <translation type="unfinished">кость</translation>
     </message>
     <message>
-        <location filename="header.h" line="191"/>
+        <location filename="header.h" line="194"/>
         <source>steel</source>
         <translation type="unfinished">сталь</translation>
     </message>
     <message>
-        <location filename="header.h" line="192"/>
+        <location filename="header.h" line="195"/>
         <source>adamantine</source>
         <translation type="unfinished">адамантин</translation>
     </message>
     <message>
-        <location filename="header.h" line="193"/>
+        <location filename="header.h" line="196"/>
         <source>fire</source>
         <translation type="unfinished">огонь</translation>
     </message>
     <message>
-        <location filename="header.h" line="194"/>
+        <location filename="header.h" line="197"/>
         <source>coal</source>
         <translation type="unfinished">уголь</translation>
     </message>
     <message>
-        <location filename="header.h" line="195"/>
+        <location filename="header.h" line="198"/>
         <source>explosive</source>
         <translation type="unfinished">взрывчатка</translation>
     </message>
     <message>
-        <location filename="header.h" line="196"/>
+        <location filename="header.h" line="199"/>
         <source>acid</source>
         <translation type="unfinished">кислота</translation>
     </message>
     <message>
-        <location filename="header.h" line="197"/>
+        <location filename="header.h" line="200"/>
         <source>cloud</source>
         <translation type="unfinished">облако</translation>
     </message>
     <message>
-        <location filename="header.h" line="198"/>
+        <location filename="header.h" line="201"/>
         <source>dust</source>
         <translation type="unfinished">пыль</translation>
     </message>
     <message>
-        <location filename="header.h" line="199"/>
+        <location filename="header.h" line="202"/>
         <source>plastic</source>
         <translation type="unfinished">пластик</translation>
     </message>
@@ -560,6 +560,49 @@
     </message>
 </context>
 <context>
+    <name>Global</name>
+    <message>
+        <location filename="TrManager.cpp" line="40"/>
+        <source>Up</source>
+        <translation type="unfinished">Верх</translation>
+    </message>
+    <message>
+        <location filename="TrManager.cpp" line="41"/>
+        <source>Down</source>
+        <translation type="unfinished">Низ</translation>
+    </message>
+    <message>
+        <location filename="TrManager.cpp" line="42"/>
+        <source>North</source>
+        <translation type="unfinished">Север</translation>
+    </message>
+    <message>
+        <location filename="TrManager.cpp" line="43"/>
+        <source>East</source>
+        <translation type="unfinished">Восток</translation>
+    </message>
+    <message>
+        <location filename="TrManager.cpp" line="44"/>
+        <source>South</source>
+        <translation type="unfinished">Юг</translation>
+    </message>
+    <message>
+        <location filename="TrManager.cpp" line="45"/>
+        <source>West</source>
+        <translation type="unfinished">Запад</translation>
+    </message>
+    <message>
+        <location filename="TrManager.cpp" line="49"/>
+        <source>off</source>
+        <translation type="unfinished">выключено</translation>
+    </message>
+    <message>
+        <location filename="TrManager.cpp" line="50"/>
+        <source>on</source>
+        <translation type="unfinished">включено</translation>
+    </message>
+</context>
+<context>
     <name>Grass</name>
     <message>
         <location filename="blocks/blocks.cpp" line="172"/>
@@ -631,17 +674,17 @@
         <translation>Надпись: </translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="364"/>
+        <location filename="Player.cpp" line="365"/>
         <source>freg version: %1. Compiled on %2 at %3 with Qt %4.</source>
         <translation>Версия freg: %1. Скомпилировано %2 в %3 с Qt %4.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="371"/>
+        <location filename="Player.cpp" line="372"/>
         <source>debug</source>
         <translation>отладка</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="371"/>
+        <location filename="Player.cpp" line="372"/>
         <source>release</source>
         <translation>выпуск</translation>
     </message>
@@ -682,27 +725,27 @@
         <translation>Вы не в режиме Творца.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="337"/>
+        <location filename="Player.cpp" line="338"/>
         <source>%1 command: invalid kind!</source>
         <translation>Команда %1: недопустимый тип!</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="343"/>
+        <location filename="Player.cpp" line="344"/>
         <source>%1 command: invalid substance!</source>
         <translation>Команда %1: недопустимое вещество!</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="369"/>
+        <location filename="Player.cpp" line="370"/>
         <source>Current Qt version: %1. Build type: %2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="385"/>
+        <location filename="Player.cpp" line="386"/>
         <source>Don&apos;t know such command: &quot;%1&quot;.</source>
         <translation>Неизвестная команда: &quot;%1&quot;.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="428"/>
+        <location filename="Player.cpp" line="429"/>
         <source>^ You die. ^</source>
         <translation>^ Вы умерли. ^</translation>
     </message>
@@ -721,42 +764,6 @@
         <location filename="blocks/Block.cpp" line="34"/>
         <source>Ice</source>
         <translation>Лёд</translation>
-    </message>
-    <message>
-        <location filename="TrManager.cpp" line="33"/>
-        <source>Up</source>
-        <translation>Верх</translation>
-    </message>
-    <message>
-        <location filename="TrManager.cpp" line="34"/>
-        <source>Down</source>
-        <translation>Низ</translation>
-    </message>
-    <message>
-        <location filename="TrManager.cpp" line="35"/>
-        <source>North</source>
-        <translation>Север</translation>
-    </message>
-    <message>
-        <location filename="TrManager.cpp" line="37"/>
-        <source>South</source>
-        <translation>Юг</translation>
-    </message>
-    <message>
-        <location filename="TrManager.cpp" line="36"/>
-        <source>East</source>
-        <translation>Восток</translation>
-    </message>
-    <message>
-        <location filename="TrManager.cpp" line="38"/>
-        <source>West</source>
-        <translation>Запад</translation>
-    </message>
-    <message>
-        <location filename="TrManager.cpp" line="37"/>
-        <source>South</source>
-        <oldsource>soil</oldsource>
-        <translation type="unfinished">земля</translation>
     </message>
     <message>
         <location filename="blocks/Block.cpp" line="35"/>
@@ -1008,242 +1015,218 @@
 <context>
     <name>Screen</name>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="291"/>
+        <location filename="screens/CursedScreen.cpp" line="275"/>
         <source>Unknown key. Press &apos;H&apos; for help.</source>
         <translation>Неизвестная клавиша. Нажмите &apos;H&apos; для вызова справки.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="96"/>
+        <location filename="screens/CursedScreen.cpp" line="79"/>
         <source>[U] use, eat</source>
         <translation>[U] использовать, есть</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="97"/>
+        <location filename="screens/CursedScreen.cpp" line="80"/>
         <source>[T] throw</source>
         <translation>[T] бросить</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="98"/>
+        <location filename="screens/CursedScreen.cpp" line="81"/>
         <source>[G] get</source>
         <translation>[G] взять</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="99"/>
+        <location filename="screens/CursedScreen.cpp" line="82"/>
         <source>[N] inscribe</source>
         <translation>[N] подписать</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="100"/>
+        <location filename="screens/CursedScreen.cpp" line="83"/>
         <source>[B] build</source>
         <translation>[B] строить</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="101"/>
+        <location filename="screens/CursedScreen.cpp" line="84"/>
         <source>[C] craft</source>
         <translation>[C] мастерить</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="102"/>
+        <location filename="screens/CursedScreen.cpp" line="85"/>
         <source>[E] equipment</source>
         <translation>[E] снаряжение</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="155"/>
+        <location filename="screens/CursedScreen.cpp" line="138"/>
         <source>Enter input: </source>
         <translation>Ввод: </translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="445"/>
+        <location filename="screens/CursedScreen.cpp" line="427"/>
         <source>Exiting game...</source>
         <translation>Выход из игры...</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="371"/>
+        <location filename="screens/CursedScreen.cpp" line="355"/>
         <source>Inventory reorganized.</source>
         <translation>Инвентарь упорядочен.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="409"/>
-        <source>Mouse %1.</source>
-        <translation>Мышь %1.</translation>
-    </message>
-    <message>
-        <location filename="screens/CursedScreen.cpp" line="410"/>
-        <source>turned on</source>
-        <translation>включена</translation>
-    </message>
-    <message>
-        <location filename="screens/CursedScreen.cpp" line="411"/>
-        <source>turned off</source>
-        <translation>выключена</translation>
-    </message>
-    <message>
-        <location filename="screens/CursedScreen.cpp" line="512"/>
+        <location filename="screens/CursedScreen.cpp" line="493"/>
         <source>Your inventory.</source>
         <translation>Ваш инвентарь.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="519"/>
+        <location filename="screens/CursedScreen.cpp" line="500"/>
         <source>Left window, Down view.</source>
         <translation>Левое окно, вид вниз.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="526"/>
+        <location filename="screens/CursedScreen.cpp" line="507"/>
         <source>Reading file: &quot;%1&quot;.</source>
         <translation>Чтение файла: &quot;%1&quot;.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="528"/>
+        <location filename="screens/CursedScreen.cpp" line="509"/>
         <source>Opened inventory.</source>
         <translation>Открыт инвентарь.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="533"/>
+        <location filename="screens/CursedScreen.cpp" line="514"/>
         <source>Right window, %1 view.</source>
         <translation>Правое окно, вид %1.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="476"/>
+        <location filename="screens/CursedScreen.cpp" line="457"/>
         <source>Notifications area.</source>
         <translation>Область уведомлений.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="390"/>
+        <location filename="screens/CursedScreen.cpp" line="374"/>
         <source>low</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="391"/>
+        <location filename="screens/CursedScreen.cpp" line="375"/>
         <source>normal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="392"/>
+        <location filename="screens/CursedScreen.cpp" line="376"/>
         <source>high</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="394"/>
+        <location filename="screens/CursedScreen.cpp" line="378"/>
         <source>Focus is set: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="428"/>
+        <location filename="screens/CursedScreen.cpp" line="393"/>
+        <source>Mouse: %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="screens/CursedScreen.cpp" line="410"/>
         <source>Saving game...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="431"/>
+        <location filename="screens/CursedScreen.cpp" line="413"/>
         <source>Game saved at location &quot;%1&quot;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="481"/>
+        <location filename="screens/CursedScreen.cpp" line="462"/>
         <source>Information: left - player, right - focused thing.</source>
         <translation>Информация: слева - об игроке, справа - о блоке перед игроком.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="486"/>
+        <location filename="screens/CursedScreen.cpp" line="467"/>
         <source>In inventory at slot &apos;%1&apos;: %2.</source>
         <translation>В инвентаре в слоте &apos;%1&apos;: %2.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="490"/>
+        <location filename="screens/CursedScreen.cpp" line="471"/>
         <source>nothing</source>
         <translation>ничего</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="498"/>
+        <location filename="screens/CursedScreen.cpp" line="479"/>
         <source>Minimap.</source>
         <translation>Миникарта.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="505"/>
+        <location filename="screens/CursedScreen.cpp" line="486"/>
         <source>On minimap: %1.</source>
         <oldsource>On minimap: %1</oldsource>
         <translation>На миникарте: %1.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="507"/>
+        <location filename="screens/CursedScreen.cpp" line="488"/>
         <source>You can&apos;t see that far.</source>
         <translation>Не видно так далеко.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="550"/>
+        <location filename="screens/CursedScreen.cpp" line="531"/>
         <source>Nothing here. Click on something to get information.</source>
         <translation>Здесь ничего. Нажмите на что-нибудь чтобы получить информацию.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="564"/>
+        <location filename="screens/CursedScreen.cpp" line="545"/>
         <source>Show distance: %1.</source>
         <translation>Показывать расстояние: %1.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="565"/>
-        <location filename="screens/CursedScreen.cpp" line="570"/>
-        <location filename="screens/CursedScreen.cpp" line="575"/>
-        <source>on</source>
-        <translation>включено</translation>
-    </message>
-    <message>
-        <location filename="screens/CursedScreen.cpp" line="565"/>
-        <location filename="screens/CursedScreen.cpp" line="570"/>
-        <location filename="screens/CursedScreen.cpp" line="575"/>
-        <source>off</source>
-        <translation>выключено</translation>
-    </message>
-    <message>
-        <location filename="screens/CursedScreen.cpp" line="569"/>
+        <location filename="screens/CursedScreen.cpp" line="549"/>
         <source>Use &quot;abcdef&quot; as distance: %1.</source>
         <translation>Использовать &quot;abcdef&quot; для расстояния: %1.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="574"/>
+        <location filename="screens/CursedScreen.cpp" line="554"/>
         <source>Block blink is now %1.</source>
         <translation>Мигание блоков теперь %1.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="578"/>
+        <location filename="screens/CursedScreen.cpp" line="557"/>
         <source>Terminal height: %1 lines, width: %2 chars.</source>
         <translation>Высота терминала: %1, ширина: %2.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="590"/>
+        <location filename="screens/CursedScreen.cpp" line="569"/>
         <source>Action: use in inventory.</source>
         <translation>Действие: использовать в инвентаре.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="591"/>
+        <location filename="screens/CursedScreen.cpp" line="570"/>
         <source>Action: throw from inventory.</source>
         <translation>Действие: выбросить из инвентаря.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="592"/>
+        <location filename="screens/CursedScreen.cpp" line="571"/>
         <source>Action: get to inventory.</source>
         <translation>Действие: взять в инвентарь.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="593"/>
+        <location filename="screens/CursedScreen.cpp" line="572"/>
         <source>Action: inscribe in inventory.</source>
         <translation>Действие: подписать в инвентаре.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="594"/>
+        <location filename="screens/CursedScreen.cpp" line="573"/>
         <source>Action: build from inventory.</source>
         <translation>Действие: построить из инвентаря.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="595"/>
+        <location filename="screens/CursedScreen.cpp" line="574"/>
         <source>Action: craft in inventory.</source>
         <translation>Действие: смастерить в инвентаре.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="596"/>
+        <location filename="screens/CursedScreen.cpp" line="575"/>
         <source>Action: organize equipment.</source>
         <translation>Действие: управление снаряжением.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="706"/>
+        <location filename="screens/CursedScreen.cpp" line="686"/>
         <source>Creative Mode
 xyz: %1, %2, %3.
 Shred: %4</source>
@@ -1252,52 +1235,60 @@ xyz: %1, %2, %3.
 Лоскут: %4</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="724"/>
+        <location filename="screens/CursedScreen.cpp" line="704"/>
         <source>Hungry</source>
         <translation>Голодный</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="725"/>
+        <location filename="screens/CursedScreen.cpp" line="705"/>
         <source>Content</source>
         <translation>Сытый</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="727"/>
+        <location filename="screens/CursedScreen.cpp" line="707"/>
         <source>Full</source>
         <translation>Сытый</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="728"/>
+        <location filename="screens/CursedScreen.cpp" line="708"/>
         <source>Gorged</source>
         <translation>Объелся</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="817"/>
+        <location filename="screens/CursedScreen.cpp" line="795"/>
         <source>Minimap</source>
         <translation>Миникарта</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="1087"/>
+        <location filename="screens/CursedScreen.cpp" line="1064"/>
         <source>There is no such file.</source>
         <translation>Нет такого файла.</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="1253"/>
+        <location filename="screens/CursedScreen.cpp" line="1187"/>
+        <source>
+Version %1.
+
+Press any key.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="screens/CursedScreen.cpp" line="1229"/>
         <source>--- Game started. Press &apos;H&apos; for help. ---</source>
         <translation>--- Игра запущена. Нажмите &apos;H&apos; для вызова справки. ---</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="1045"/>
+        <location filename="screens/CursedScreen.cpp" line="1023"/>
         <source>Full weight: %1 mz</source>
         <translation>Полный вес: %1 mz</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="1059"/>
+        <location filename="screens/CursedScreen.cpp" line="1037"/>
         <source>Your inventory</source>
         <translation>Ваш инвентарь</translation>
     </message>
     <message>
-        <location filename="screens/CursedScreen.cpp" line="1121"/>
+        <location filename="screens/CursedScreen.cpp" line="1097"/>
         <source>You die.
 Waiting for respawn...</source>
         <translation>Вы умерли.
@@ -1307,97 +1298,97 @@ Waiting for respawn...</source>
 <context>
     <name>Shred</name>
     <message>
-        <location filename="header.h" line="53"/>
+        <location filename="header.h" line="54"/>
         <source>Plain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="header.h" line="54"/>
+        <location filename="header.h" line="55"/>
         <source>Test shred</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="header.h" line="55"/>
+        <location filename="header.h" line="56"/>
         <source>Pyramid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="header.h" line="56"/>
+        <location filename="header.h" line="57"/>
         <source>Hill</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="header.h" line="57"/>
+        <location filename="header.h" line="58"/>
         <source>Desert</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="header.h" line="58"/>
+        <location filename="header.h" line="59"/>
         <source>Water</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="header.h" line="59"/>
+        <location filename="header.h" line="60"/>
         <source>Forest</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="header.h" line="60"/>
+        <location filename="header.h" line="61"/>
         <source>Mountain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="header.h" line="61"/>
+        <location filename="header.h" line="62"/>
         <source>Empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="header.h" line="62"/>
+        <location filename="header.h" line="63"/>
         <source>Chaos</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="header.h" line="63"/>
+        <location filename="header.h" line="64"/>
         <source>Castle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="header.h" line="64"/>
+        <location filename="header.h" line="65"/>
         <source>Waste</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="header.h" line="65"/>
+        <location filename="header.h" line="66"/>
         <source>Acid lake</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="header.h" line="66"/>
+        <location filename="header.h" line="67"/>
         <source>Lava lake</source>
         <translation type="unfinished">Озеро лавы</translation>
     </message>
     <message>
-        <location filename="header.h" line="67"/>
+        <location filename="header.h" line="68"/>
         <source>Crater</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="header.h" line="68"/>
+        <location filename="header.h" line="69"/>
         <source>Dead forest</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="header.h" line="69"/>
+        <location filename="header.h" line="70"/>
         <source>Dead hill</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="header.h" line="70"/>
+        <location filename="header.h" line="71"/>
         <source>0mountain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="header.h" line="71"/>
+        <location filename="header.h" line="72"/>
         <source>Underground</source>
         <translation type="unfinished"></translation>
     </message>

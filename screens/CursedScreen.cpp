@@ -390,9 +390,7 @@ void Screen::ControlPlayer(const int ch) {
     case 'M':
         mouseOn = not mouseOn;
         mousemask((mouseOn ? MOUSEMASK : noMouseMask), nullptr);
-        Notify(tr("Mouse %1.").arg(mouseOn ?
-            tr("turned on") :
-            tr("turned off")));
+        Notify(tr("Mouse: %1.").arg(tr_manager->OffOn(mouseOn)));
         break;
 
     case KEY_BREAK:
@@ -544,18 +542,16 @@ void Screen::ProcessCommand(const QString command) {
     switch ( Player::UniqueIntFromString(qPrintable(command)) ) {
     case Player::UniqueIntFromString("distance"):
         showDistance = not showDistance;
-        Notify(tr("Show distance: %1.").
-            arg(showDistance ? tr("on") : tr("off")));
+        Notify(tr("Show distance: %1.").arg(tr_manager->OffOn(showDistance)));
         break;
     case Player::UniqueIntFromString("far"):
         farDistance = not farDistance;
         Notify(tr("Use \"abcdef\" as distance: %1.").
-            arg(farDistance ? tr("on") : tr("off")));
+            arg(tr_manager->OffOn(farDistance)));
         break;
     case Player::UniqueIntFromString("blink"):
         blinkOn = not blinkOn;
-        Notify(tr("Block blink is now %1.").
-            arg(blinkOn ? tr("on") : tr("off")));
+        Notify(tr("Block blink is now %1.").arg(tr_manager->OffOn(blinkOn)));
         break;
     case Player::UniqueIntFromString("size"):
         Notify(tr("Terminal height: %1 lines, width: %2 chars.").
@@ -569,15 +565,16 @@ void Screen::SetActionMode(const actions mode) {
     mvwchgat(actionWin, actionMode,     0, -1, A_NORMAL, WHITE_BLACK, nullptr);
     mvwchgat(actionWin, actionMode=mode,0, -1, A_NORMAL, BLACK_WHITE, nullptr);
     wrefresh(actionWin);
-    switch ( mode ) {
-    case ACTION_USE:      Notify(tr("Action: use in inventory."));      break;
-    case ACTION_THROW:    Notify(tr("Action: throw from inventory."));  break;
-    case ACTION_OBTAIN:   Notify(tr("Action: get to inventory."));      break;
-    case ACTION_INSCRIBE: Notify(tr("Action: inscribe in inventory.")); break;
-    case ACTION_BUILD:    Notify(tr("Action: build from inventory."));  break;
-    case ACTION_CRAFT:    Notify(tr("Action: craft in inventory."));    break;
-    case ACTION_WIELD:    Notify(tr("Action: organize equipment."));    break;
-    }
+    static const QString actionStrings[] = {
+        tr("Action: use in inventory."     ),
+        tr("Action: throw from inventory." ),
+        tr("Action: get to inventory."     ),
+        tr("Action: inscribe in inventory."),
+        tr("Action: build from inventory." ),
+        tr("Action: craft in inventory."   ),
+        tr("Action: organize equipment."   )
+    };
+    Notify(actionStrings[mode]);
 }
 
 void Screen::InventoryAction(const int num) const {
@@ -685,8 +682,9 @@ void Screen::PrintHud() {
     if ( updatedHud ) return;
     werase(hudWin);
     if ( player->GetCreativeMode() ) {
-        mvwaddwstr(hudWin, 0, 0,
-            wPrintable(tr("Creative Mode\nxyz: %1, %2, %3.\nShred: %4")
+        static const QString creativeInfo(
+            tr("Creative Mode\nxyz: %1, %2, %3.\nShred: %4") );
+        mvwaddwstr(hudWin, 0, 0, wPrintable(creativeInfo
             .arg(player->GlobalX()).arg(player->GlobalY()).arg(player->Z())
             .arg(Shred::FileName(GetWorld()->WorldName(),
                 player->GetLongitude(), player->GetLatitude()) )));
@@ -1022,7 +1020,7 @@ const {
             inv->GetInvWeight(i));
     }
     wstandend(window);
-    QString full_weight = tr("Full weight: %1 mz").
+    const QString full_weight = tr("Full weight: %1 mz").
         arg(inv->Weight(), 6, 10, QChar(' '));
     mvwaddwstr(window, 1 + inv->Size() + shift,
         screenWidth - 1 - full_weight.length(),
@@ -1185,7 +1183,8 @@ Screen::Screen(Player * const pl, int &) :
     if ( not PrintFile(stdscr, ":/texts/splash.txt") ) {
         addstr("Free-Roaming Elementary Game\nby mmaulwurff\n");
     }
-    addwstr(wPrintable(tr("\nVersion %1.\n\nPress any key.").arg(VER)));
+    addwstr(
+        wPrintable(Screen::tr("\nVersion %1.\n\nPress any key.").arg(VER)));
     qsrand(getch());
 
     CleanFileToShow();

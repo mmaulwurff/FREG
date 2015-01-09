@@ -43,16 +43,30 @@ public:
     /// Returns translated shred type.
     QString ShredTypeName(shred_type) const;
 
+    /// If kind is unknown, returns "unknown_kind".
+    static QString KindToString(int kind);
+    /// If substance is unknown, returns "unknown_sub".
+    static QString SubToString(int sub);
+    /// If string is not convertible to kind, returns LAST_KIND.
+    static int StringToKind(QString);
+    /// If string is not convertible to substance, returns LAST_SUB.
+    static int StringToSub(QString);
+
+    QString OffOn(bool on) const;
 private:
     Q_DISABLE_COPY(TrManager)
 
     QTranslator * LoadTranslator() const;
 
     QTranslator * const translator;
+    static const QByteArray rawKinds[];
+    static const QByteArray rawSubs [];
     QString subNames[SUB_COUNT];
     QString kindNames[KIND_COUNT];
     const QString dirNames[DIRS_COUNT];
     QHash<char, QString> shredTypeNames;
+
+    QString offOn[2];
 };
 
 extern const TrManager * tr_manager;

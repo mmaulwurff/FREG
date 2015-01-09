@@ -25,41 +25,45 @@
 
 const TrManager * tr_manager;
 
+#define X(string, enum_element, class) string,
+const QByteArray TrManager::rawKinds[] = { KIND_TABLE };
+#undef X
+#define X(string, enum_element) string,
+const QByteArray TrManager::rawSubs [] = {  SUB_TABLE };
+#undef X
+
 TrManager::TrManager() :
         translator(LoadTranslator()),
         subNames(),
         kindNames(),
         dirNames {
-            QObject::tr("Up"   ),
-            QObject::tr("Down" ),
-            QObject::tr("North"),
-            QObject::tr("East" ),
-            QObject::tr("South"),
-            QObject::tr("West" )
+            QCoreApplication::translate("Global", "Up"   ),
+            QCoreApplication::translate("Global", "Down" ),
+            QCoreApplication::translate("Global", "North"),
+            QCoreApplication::translate("Global", "East" ),
+            QCoreApplication::translate("Global", "South"),
+            QCoreApplication::translate("Global", "West" )
         },
-        shredTypeNames()
+        shredTypeNames(),
+        offOn {
+            QCoreApplication::translate("Global", "off"),
+            QCoreApplication::translate("Global", "on")
+        }
 {
-    #define X(column1, column2) column1,
-    const char * const rawSubs[] = { SUB_TABLE };
     for (int i = 0; i < SUB_COUNT; ++i) {
         subNames[i] = QCoreApplication::translate("Block", rawSubs[i]);
     }
-    const char * const rawKinds[] = { KIND_TABLE };
     for (int i = 0; i < KIND_COUNT; ++i) {
         kindNames[i] = QCoreApplication::translate("Block", rawKinds[i]);
     }
+
+    #define X(translatable, enum_element, symbol) translatable,
+    const char * const rawShredTypes[] = { SHRED_TABLE };
+    #undef X
+    #define X(translatable, enum_element, symbol) symbol,
+    const char shredChars[] = { SHRED_TABLE };
     #undef X
 
-    const char * const rawShredTypes[] = {
-        #define X(column1, column2, column3) column1,
-        SHRED_TABLE
-        #undef X
-    };
-    const char shredChars[] = {
-        #define X(column1, column2, column3) column3,
-        SHRED_TABLE
-        #undef X
-    };
     int index = 0;
     for (const char * raw : rawShredTypes) {
         shredTypeNames.insert(shredChars[index++],
@@ -78,6 +82,9 @@ QTranslator * TrManager::LoadTranslator() const {
 QString TrManager::  DirName(const dirs dir) const { return  dirNames[ dir]; }
 QString TrManager::  SubName(const int  sub) const { return  subNames[ sub]; }
 QString TrManager:: KindName(const int kind) const { return kindNames[kind]; }
+QString TrManager::KindToString(const int kind) { return rawKinds[kind]; }
+QString TrManager:: SubToString(const int sub ) { return  rawSubs[sub ]; }
+QString TrManager::OffOn(const bool on) const { return offOn[on]; }
 
 QString TrManager::SubNameUpper(const int sub) const {
     QString result = SubName(sub);
@@ -86,4 +93,12 @@ QString TrManager::SubNameUpper(const int sub) const {
 
 QString TrManager::ShredTypeName(const shred_type type) const {
     return shredTypeNames[type];
+}
+
+int TrManager::StringToKind(const QString str) {
+    return std::find(rawKinds, rawKinds + KIND_COUNT, str) - rawKinds;
+}
+
+int TrManager::StringToSub(const QString str) {
+    return std::find(rawSubs, rawSubs + SUB_COUNT, str) - rawSubs;
 }

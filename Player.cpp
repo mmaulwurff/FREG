@@ -333,13 +333,13 @@ void Player::ProcessCommand(QString command) {
         if ( inv == nullptr ) return;
         QByteArray kind, sub;
         comm_stream >> kind >> sub;
-        const int kind_code = BlockFactory::StringToKind(kind);
+        const int kind_code = TrManager::StringToKind(kind);
         if ( kind_code == LAST_KIND ) {
             emit Notify(tr("%1 command: invalid kind!").arg(QString(request)));
             return;
         } // else:
         const int sub_code = sub.isEmpty() ?
-            static_cast<int>(STONE) : BlockFactory::StringToSub(sub);
+            static_cast<int>(STONE) : TrManager::StringToSub(sub);
         if ( sub_code == LAST_SUB ) {
             emit Notify(tr("%1 command: invalid substance!")
                 .arg(QString(request)));

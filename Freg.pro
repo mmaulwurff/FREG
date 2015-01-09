@@ -4,6 +4,8 @@ TARGET   = freg
 TEMPLATE = app
 VERSION  = 0.3
 DEFINES += VER=$$VERSION
+QMAKE_TARGET_COPYRIGHT   = (C) 2012-2015 Alexander \'m8f\' Kromm
+QMAKE_TARGET_DESCRIPTION = Open world game with text graphics.
 
 QT -= gui
 CONFIG += warn_on console c++11 rtti_off exceptions_off

@@ -30,11 +30,6 @@
 #include "blocks/Teleport.h"
 #include "blocks/Accumulator.h"
 
-#define X(column1, column2) column1,
-const QByteArray BlockFactory::kinds[] = { KIND_TABLE };
-const QByteArray BlockFactory::subs [] = {  SUB_TABLE };
-#undef X
-
 const BlockFactory * blockFactory;
 
 BlockFactory::BlockFactory() {
@@ -50,11 +45,9 @@ BlockFactory::BlockFactory() {
     }
     qDebug() << "valid pairs:" << sum;*/
 
-    RegisterAll(typeList<Block, Bell, Container, Dwarf, Pick, Liquid, Grass,
-        Bush, Rabbit, Falling, Clock, Plate, Workbench, Weapon, Ladder, Door,
-        Box, Text, Map, Predator, Bucket, Shovel, Axe, Hammer, Illuminator,
-        RainMachine, Converter, Armour, Helmet,  Boots, Telegraph, MedKit,
-        Filter, Informer, Teleport, Accumulator>());
+    #define X(translatable, enum_element, class) class,
+    RegisterAll(typeList< KIND_TABLE TemplateTerminator >());
+    #undef X
 }
 
 BlockFactory::~BlockFactory() { qDeleteAll(normals, normals + SUB_COUNT); }
@@ -81,17 +74,6 @@ void BlockFactory::DeleteBlock(Block * const block) const {
         }
         delete block;
     }
-}
-
-QString BlockFactory::KindToString(const int kind) { return kinds[kind]; }
-QString BlockFactory:: SubToString(const int sub ) { return  subs[sub ]; }
-
-int BlockFactory::StringToKind(const QString str) {
-    return std::find(kinds, kinds + KIND_COUNT, str) - kinds;
-}
-
-int BlockFactory::StringToSub(const QString str) {
-    return std::find(subs, subs + SUB_COUNT, str) - subs;
 }
 
 Block * BlockFactory::ReplaceWithNormal(Block * const block) const {
@@ -157,11 +139,6 @@ bool BlockFactory::IsValid(const int kind, const int sub) {
     return false;
 }
 
-void BlockFactory::RegisterAll(typeList<>) const {
-    Q_ASSERT_X(kindIndex == KIND_COUNT, "BlockFactory",
-        "Some classes are not registered by RegisterAll in constructor.");
-}
-
 template <typename BlockType>
 Block * Create(const int kind, const int sub) {
     return new BlockType(kind, sub);
@@ -174,8 +151,7 @@ Block * Load(QDataStream & str, const int kind, const int sub) {
 
 template <typename BlockType, typename ... RestBlockTypes>
 void BlockFactory::RegisterAll(typeList<BlockType, RestBlockTypes...>) {
-    creates[kindIndex] = Create<BlockType>;
-    loads  [kindIndex] = Load  <BlockType>;
-    ++kindIndex;
+    creates[kindIndex  ] = Create<BlockType>;
+    loads  [kindIndex++] = Load  <BlockType>;
     RegisterAll(typeList<RestBlockTypes...>()); // recursive call
 }

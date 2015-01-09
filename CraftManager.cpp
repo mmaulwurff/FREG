@@ -21,6 +21,7 @@
 #include <QJsonObject>
 #include <QFile>
 #include "BlockFactory.h"
+#include "TrManager.h"
 #include "CraftManager.h"
 
 const CraftManager * craft_manager;
@@ -59,8 +60,8 @@ void CraftList::LoadItems(const QJsonArray & array) {
     for (const QJsonValue & value : array) {
         const QJsonObject item = value.toObject();
         items.append( new CraftItem( {item["number"].toInt(),
-                BlockFactory::StringToKind(item["kind"].toString()),
-                BlockFactory::StringToSub (item["sub" ].toString())} ) );
+                TrManager::StringToKind(item["kind"].toString()),
+                TrManager::StringToSub (item["sub" ].toString())} ) );
     }
 }
 
@@ -81,7 +82,7 @@ void CraftList::clear() {
 CraftManager::CraftManager() : recipesList() {
     for (int sub=0; sub<SUB_COUNT; ++sub) {
         QFile file(QString(":/recipes/%1.json").
-            arg(BlockFactory::SubToString(sub)));
+            arg(TrManager::SubToString(sub)));
         if ( not file.open(QIODevice::ReadOnly | QIODevice::Text) ) continue;
         const QJsonArray recipes =
             QJsonDocument::fromJson(file.readAll()).array();
