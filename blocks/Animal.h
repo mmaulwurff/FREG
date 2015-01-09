@@ -36,6 +36,7 @@ public:
     int  ShouldAct() const override;
     void ActFrequent() override;
     void DoRareAction() override;
+    void Damage(int dmg, int dmg_kind) override;
     Animal * IsAnimal() override;
     Block  * DropAfterDamage(bool * delete_block) override;
     inner_actions ActInner() override;
@@ -49,6 +50,10 @@ public:
     virtual int NutritionalValue(subs) const = 0;
 
     static const int MAX_BREATH = 60;
+
+signals:
+    void Updated();
+    void CauseTeleportation();
 
 protected:
     void SaveAttributes(QDataStream & out) const override;

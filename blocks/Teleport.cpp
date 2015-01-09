@@ -20,6 +20,7 @@
 #include "blocks/Teleport.h"
 #include "World.h"
 #include "worldmap.h"
+#include "Animal.h"
 #include <QTextStream>
 
 Teleport::Teleport(const int sub, const int kind) :
@@ -62,7 +63,10 @@ void Teleport::Damage(const int damage, const int damage_kind) {
             targetLatitude, targetLongitude,
             (world->NumShreds() / 2 + 1) * SHRED_WIDTH,
             (world->NumShreds() / 2 + 1) * SHRED_WIDTH, 0);
-        emit world->GetBlock(x, y, z)->ActiveBlock()->CauseTeleportation();
+        Animal * const animal = world->GetBlock(x, y, z)->IsAnimal();
+        if ( animal != nullptr ) {
+            emit animal->CauseTeleportation();
+        }
     } else {
         Block::Damage(damage, damage_kind);
     }

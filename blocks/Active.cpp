@@ -146,20 +146,6 @@ bool Active::TryDestroy(const int x, const int y, const int z) const {
     }
 }
 
-void Active::Damage(const int dmg, const int dmg_kind) {
-    const int last_dur = GetDurability();
-    Block::Damage(dmg, dmg_kind);
-    if ( last_dur != GetDurability() ) {
-        switch ( dmg_kind ) {
-        case DAMAGE_HUNGER: ReceiveSignal(tr("You weaken from hunger!"));break;
-        case DAMAGE_HEAT:   ReceiveSignal(tr("You burn!"));              break;
-        case DAMAGE_BREATH: ReceiveSignal(tr("You choke withot air!"));  break;
-        default:            ReceiveSignal(tr("Received damage!"));
-        }
-        emit Updated();
-    }
-}
-
 void Active::ReceiveSignal(const QString str) { emit ReceivedText(str); }
 
 Active::Active(const int kind, const int sub, const int transp) :

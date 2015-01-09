@@ -187,6 +187,9 @@ public:
     void Damage(int dmg, int dmg_kind) override;
     wearable Wearable() const override;
     usage_types Use(Active * who) override;
+
+private:
+    QString ding;
 };
 
 class Telegraph : public Active {

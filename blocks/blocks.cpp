@@ -187,8 +187,8 @@
 // Bush::
     int  Bush::ShouldAct() const  { return FREQUENT_RARE; }
     void Bush::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
-    int  Bush::Weight() const { return Inventory::Weight()+Block::Weight(); }
-    QString Bush::FullName() const { return tr("Bush"); }
+    int  Bush::Weight() const { return Inventory::Weight() + Block::Weight(); }
+    QString Bush::FullName() const { return tr_manager->KindName(BUSH); }
     usage_types Bush::Use(Active *) { return USAGE_TYPE_OPEN; }
     Inventory * Bush::HasInventory() { return this; }
     inner_actions Bush::ActInner() { return INNER_ACTION_NONE; }
@@ -258,7 +258,7 @@
 
     QString Door::FullName() const {
         return QString("%1 (%2)").
-            arg(locked ? tr("Locked door") : tr("Door")).
+            arg(locked ? tr("Locked door") : tr_manager->KindName(DOOR)).
             arg(tr_manager->SubName(Sub()));
     }
 
@@ -493,7 +493,7 @@
     wearable Bell::Wearable() const { return WEARABLE_OTHER; }
 
     void Bell::Damage(int, int) {
-        SendSignalAround(tr("^ Ding-ding! ^"));
+        Bell::Use(nullptr);
         Break();
     }
 

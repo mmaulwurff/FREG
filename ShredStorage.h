@@ -55,6 +55,9 @@ public:
 private:
     Q_DISABLE_COPY(ShredStorage)
 
+    /// -1 - default, 0 - no compression, 4 - best for CPU, 8 - optimal.
+    static const int COMPRESSION_LEVEL = 8;
+
     QHash<LongLat, QByteArray *> storage;
     const int size;
     PreloadThread * preloadThread = nullptr;

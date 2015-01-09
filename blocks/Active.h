@@ -57,7 +57,6 @@ public:
 
     void Move(dirs dir) override;
     void ReceiveSignal(QString) override;
-    void Damage(int dmg, int dmg_kind) override;
     Active * ActiveBlock() override final;
 
     Shred * GetShred() const { return shred; }
@@ -77,9 +76,7 @@ public:
 
 signals:
     void Moved(int);
-    void Updated();
     void ReceivedText(const QString);
-    void CauseTeleportation();
 
 protected:
     void SendSignalAround(QString) const;

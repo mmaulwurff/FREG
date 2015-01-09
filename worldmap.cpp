@@ -22,8 +22,6 @@
 #include "worldmap.h"
 #include "header.h"
 
-const float PI = 3.141592f;
-
 WorldMap::WorldMap(const QString world_name) :
         mapSize(),
         map(home_path + world_name + "/map.txt"),

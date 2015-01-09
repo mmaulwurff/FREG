@@ -49,7 +49,7 @@ void Dwarf::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
 QString Dwarf::FullName() const {
     return ( DIFFERENT == Sub() ) ?
         tr("Creator") :
-        tr("Rational creature");
+        tr_manager->KindName(DWARF);
 }
 
 void Dwarf::UpdateLightRadius() {
@@ -83,8 +83,11 @@ int Dwarf::DamageLevel() const {
 }
 
 void Dwarf::Damage(const int dmg, const int dmg_kind) {
-    if ( dmg_kind >= DAMAGE_PUSH_UP ) {
-        Active::Damage(dmg, DAMAGE_PUSH_UP);
+    if ( dmg_kind == DAMAGE_INVENTORY_ACTION ) {
+        emit Updated();
+        return;
+    } else if ( dmg_kind >= DAMAGE_PUSH_UP ) {
+        Animal::Damage(dmg, DAMAGE_PUSH_UP);
         return;
     }
     int damage_to_self = dmg;
@@ -103,7 +106,7 @@ void Dwarf::Damage(const int dmg, const int dmg_kind) {
             }
         }
     }
-    Active::Damage(damage_to_self, dmg_kind);
+    Animal::Damage(damage_to_self, dmg_kind);
 }
 
 void Dwarf::Move(const dirs dir) {

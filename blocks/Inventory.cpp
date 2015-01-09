@@ -41,6 +41,9 @@ bool Inventory::Drop(const int src, int dest, int num,
             Pull(src);
         }
     }
+    if ( ok_flag ) {
+        ReceiveSignal(World::tr("Your inventory is lighter now."));
+    }
     return ok_flag;
 }
 

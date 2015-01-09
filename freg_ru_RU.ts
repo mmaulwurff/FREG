@@ -8,48 +8,43 @@
         <source>%1 in slot &apos;%2&apos;: %3</source>
         <translation>%1 в слоте &apos;%2&apos;: %3</translation>
     </message>
-    <message>
-        <location filename="blocks/Active.cpp" line="154"/>
-        <source>You weaken from hunger!</source>
-        <translation>Вы слабеете от голода!</translation>
-    </message>
-    <message>
-        <location filename="blocks/Active.cpp" line="155"/>
-        <source>You burn!</source>
-        <translation>Вы горите!</translation>
-    </message>
-    <message>
-        <location filename="blocks/Active.cpp" line="156"/>
-        <source>You choke withot air!</source>
-        <translation>Вы задыхаетесь!</translation>
-    </message>
-    <message>
-        <location filename="blocks/Active.cpp" line="157"/>
-        <source>Received damage!</source>
-        <translation>Получено повреждение!</translation>
-    </message>
 </context>
 <context>
     <name>Animal</name>
     <message>
-        <location filename="blocks/Animal.cpp" line="71"/>
+        <location filename="blocks/Animal.cpp" line="69"/>
+        <source>You weaken from hunger!</source>
+        <translation type="unfinished">Вы слабеете от голода!</translation>
+    </message>
+    <message>
+        <location filename="blocks/Animal.cpp" line="72"/>
+        <source>You burn!</source>
+        <translation type="unfinished">Вы горите!</translation>
+    </message>
+    <message>
+        <location filename="blocks/Animal.cpp" line="75"/>
+        <source>You choke withot air!</source>
+        <translation type="unfinished">Вы задыхаетесь!</translation>
+    </message>
+    <message>
+        <location filename="blocks/Animal.cpp" line="78"/>
+        <source>Received damage!</source>
+        <translation type="unfinished">Получено повреждение!</translation>
+    </message>
+    <message>
+        <location filename="blocks/Animal.cpp" line="93"/>
         <source>Ate %1.</source>
         <oldsource>Ate.</oldsource>
         <translation>Съел %1.</translation>
     </message>
     <message>
-        <location filename="blocks/Animal.cpp" line="74"/>
+        <location filename="blocks/Animal.cpp" line="96"/>
         <source>You have gorged yourself!</source>
         <translation>Вы объелись!</translation>
     </message>
 </context>
 <context>
     <name>Bell</name>
-    <message>
-        <location filename="blocks/blocks.cpp" line="496"/>
-        <source>^ Ding-ding! ^</source>
-        <translation>^ Динь-динь! ^</translation>
-    </message>
     <message>
         <location filename="blocks/blocks.cpp" line="501"/>
         <source>^ Ding! ^</source>
@@ -390,22 +385,14 @@
 <context>
     <name>Box</name>
     <message>
-        <location filename="blocks/Containers.cpp" line="144"/>
+        <location filename="blocks/Containers.cpp" line="142"/>
         <source>Corpse (%1)</source>
         <translation>Труп (%1)</translation>
     </message>
     <message>
-        <location filename="blocks/Containers.cpp" line="142"/>
+        <location filename="blocks/Containers.cpp" line="140"/>
         <source>Pile</source>
         <translation>Куча</translation>
-    </message>
-</context>
-<context>
-    <name>Bush</name>
-    <message>
-        <location filename="blocks/blocks.cpp" line="191"/>
-        <source>Bush</source>
-        <translation>Куст</translation>
     </message>
 </context>
 <context>
@@ -454,12 +441,12 @@
 <context>
     <name>Container</name>
     <message>
-        <location filename="blocks/Containers.cpp" line="62"/>
+        <location filename="blocks/Containers.cpp" line="60"/>
         <source>Locker</source>
         <translation>Сейф</translation>
     </message>
     <message>
-        <location filename="blocks/Containers.cpp" line="63"/>
+        <location filename="blocks/Containers.cpp" line="61"/>
         <source>Fridge</source>
         <translation>Холодильнк</translation>
     </message>
@@ -467,17 +454,17 @@
 <context>
     <name>Converter</name>
     <message>
-        <location filename="blocks/Containers.cpp" line="295"/>
+        <location filename="blocks/Containers.cpp" line="293"/>
         <source>-fuel-</source>
         <translation>-топливо-</translation>
     </message>
     <message>
-        <location filename="blocks/Containers.cpp" line="336"/>
+        <location filename="blocks/Containers.cpp" line="334"/>
         <source>Furnace</source>
         <translation>Печь</translation>
     </message>
     <message>
-        <location filename="blocks/Containers.cpp" line="338"/>
+        <location filename="blocks/Containers.cpp" line="336"/>
         <source> (charge for %1 s)</source>
         <translation>(заряд на %1 с)</translation>
     </message>
@@ -508,32 +495,32 @@
         <translation>Разумное существо</translation>
     </message>
     <message>
-        <location filename="blocks/Dwarf.cpp" line="158"/>
+        <location filename="blocks/Dwarf.cpp" line="161"/>
         <source>Don&apos;t touch me!</source>
         <translation>Не трогай меня!</translation>
     </message>
     <message>
-        <location filename="blocks/Dwarf.cpp" line="165"/>
+        <location filename="blocks/Dwarf.cpp" line="168"/>
         <source>-head-</source>
         <translation>-голова-</translation>
     </message>
     <message>
-        <location filename="blocks/Dwarf.cpp" line="166"/>
+        <location filename="blocks/Dwarf.cpp" line="169"/>
         <source>-body-</source>
         <translation>-тело-</translation>
     </message>
     <message>
-        <location filename="blocks/Dwarf.cpp" line="167"/>
+        <location filename="blocks/Dwarf.cpp" line="170"/>
         <source>-legs-</source>
         <translation>-ноги-</translation>
     </message>
     <message>
-        <location filename="blocks/Dwarf.cpp" line="168"/>
+        <location filename="blocks/Dwarf.cpp" line="171"/>
         <source>-right hand-</source>
         <translation>-правая рука-</translation>
     </message>
     <message>
-        <location filename="blocks/Dwarf.cpp" line="169"/>
+        <location filename="blocks/Dwarf.cpp" line="172"/>
         <source>-left  hand-</source>
         <translation>-левая  рука-</translation>
     </message>
@@ -541,12 +528,12 @@
 <context>
     <name>Falling</name>
     <message>
-        <location filename="blocks/Active.cpp" line="254"/>
+        <location filename="blocks/Active.cpp" line="240"/>
         <source>Snow</source>
         <translation>Снег</translation>
     </message>
     <message>
-        <location filename="blocks/Active.cpp" line="255"/>
+        <location filename="blocks/Active.cpp" line="241"/>
         <source>Masonry</source>
         <translation>Каменная кладка</translation>
     </message>
@@ -554,7 +541,7 @@
 <context>
     <name>Filter</name>
     <message>
-        <location filename="blocks/Filter.cpp" line="36"/>
+        <location filename="blocks/Filter.cpp" line="34"/>
         <source>-example-</source>
         <translation>-сравниваемое-</translation>
     </message>
@@ -562,42 +549,42 @@
 <context>
     <name>Global</name>
     <message>
-        <location filename="TrManager.cpp" line="40"/>
+        <location filename="TrManager.cpp" line="38"/>
         <source>Up</source>
         <translation type="unfinished">Верх</translation>
     </message>
     <message>
-        <location filename="TrManager.cpp" line="41"/>
+        <location filename="TrManager.cpp" line="39"/>
         <source>Down</source>
         <translation type="unfinished">Низ</translation>
     </message>
     <message>
-        <location filename="TrManager.cpp" line="42"/>
+        <location filename="TrManager.cpp" line="40"/>
         <source>North</source>
         <translation type="unfinished">Север</translation>
     </message>
     <message>
-        <location filename="TrManager.cpp" line="43"/>
+        <location filename="TrManager.cpp" line="41"/>
         <source>East</source>
         <translation type="unfinished">Восток</translation>
     </message>
     <message>
-        <location filename="TrManager.cpp" line="44"/>
+        <location filename="TrManager.cpp" line="42"/>
         <source>South</source>
         <translation type="unfinished">Юг</translation>
     </message>
     <message>
-        <location filename="TrManager.cpp" line="45"/>
+        <location filename="TrManager.cpp" line="43"/>
         <source>West</source>
         <translation type="unfinished">Запад</translation>
     </message>
     <message>
-        <location filename="TrManager.cpp" line="49"/>
+        <location filename="TrManager.cpp" line="47"/>
         <source>off</source>
         <translation type="unfinished">выключено</translation>
     </message>
     <message>
-        <location filename="TrManager.cpp" line="50"/>
+        <location filename="TrManager.cpp" line="48"/>
         <source>on</source>
         <translation type="unfinished">включено</translation>
     </message>
@@ -654,98 +641,98 @@
 <context>
     <name>Player</name>
     <message>
-        <location filename="Player.cpp" line="85"/>
+        <location filename="Player.cpp" line="80"/>
         <source>You have no inventory.</source>
         <translation>У вас нет инвентаря.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="104"/>
+        <location filename="Player.cpp" line="99"/>
         <source>You can&apos;t see what is there.</source>
         <translation>Не видно что там.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="108"/>
+        <location filename="Player.cpp" line="103"/>
         <source>You see %1.</source>
         <translation>Перед вами %1.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="129"/>
+        <location filename="Player.cpp" line="124"/>
         <source>Inscription: </source>
         <translation>Надпись: </translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="365"/>
+        <location filename="Player.cpp" line="359"/>
         <source>freg version: %1. Compiled on %2 at %3 with Qt %4.</source>
         <translation>Версия freg: %1. Скомпилировано %2 в %3 с Qt %4.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="372"/>
+        <location filename="Player.cpp" line="366"/>
         <source>debug</source>
         <translation>отладка</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="372"/>
+        <location filename="Player.cpp" line="366"/>
         <source>release</source>
         <translation>выпуск</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="170"/>
-        <location filename="Player.cpp" line="234"/>
+        <location filename="Player.cpp" line="165"/>
+        <location filename="Player.cpp" line="229"/>
         <source>You cannot use %1.</source>
         <translation>Нельзя использовать %1.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="164"/>
+        <location filename="Player.cpp" line="159"/>
         <source>To eat %1, you must first pick it up.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="184"/>
+        <location filename="Player.cpp" line="179"/>
         <source>Inscribed %1.</source>
         <translation>Подписано: %1.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="185"/>
+        <location filename="Player.cpp" line="180"/>
         <source>Cannot inscribe %1.</source>
         <translation>Нельзя подписать %1.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="186"/>
+        <location filename="Player.cpp" line="181"/>
         <source>No player.</source>
         <translation>Игрока нет.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="200"/>
+        <location filename="Player.cpp" line="195"/>
         <source>Nothing at slot &apos;%1&apos;.</source>
         <translation>Ничего нет в слоте %1.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="313"/>
+        <location filename="Player.cpp" line="308"/>
         <source>You are not in Creative Mode.</source>
         <translation>Вы не в режиме Творца.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="338"/>
+        <location filename="Player.cpp" line="332"/>
         <source>%1 command: invalid kind!</source>
         <translation>Команда %1: недопустимый тип!</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="344"/>
+        <location filename="Player.cpp" line="338"/>
         <source>%1 command: invalid substance!</source>
         <translation>Команда %1: недопустимое вещество!</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="370"/>
+        <location filename="Player.cpp" line="364"/>
         <source>Current Qt version: %1. Build type: %2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="386"/>
+        <location filename="Player.cpp" line="380"/>
         <source>Don&apos;t know such command: &quot;%1&quot;.</source>
         <translation>Неизвестная команда: &quot;%1&quot;.</translation>
     </message>
     <message>
-        <location filename="Player.cpp" line="429"/>
+        <location filename="Player.cpp" line="423"/>
         <source>^ You die. ^</source>
         <translation>^ Вы умерли. ^</translation>
     </message>
@@ -753,7 +740,7 @@
 <context>
     <name>Predator</name>
     <message>
-        <location filename="blocks/Animal.cpp" line="191"/>
+        <location filename="blocks/Animal.cpp" line="213"/>
         <source>Predator</source>
         <translation type="unfinished">Хищник</translation>
     </message>
@@ -821,42 +808,37 @@
         <translation>Шип</translation>
     </message>
     <message>
-        <location filename="blocks/Inventory.cpp" line="97"/>
+        <location filename="blocks/Inventory.cpp" line="100"/>
         <source>No room.</source>
         <translation>Нет места.</translation>
     </message>
     <message>
-        <location filename="blocks/Inventory.cpp" line="90"/>
+        <location filename="blocks/Inventory.cpp" line="93"/>
         <source>You have %1 at slot &apos;%2&apos;.</source>
         <translation>%1 в слоте &apos;%2&apos;.</translation>
     </message>
     <message>
-        <location filename="blocks/Inventory.cpp" line="134"/>
+        <location filename="blocks/Inventory.cpp" line="137"/>
         <source>Cannot inscribe %1.</source>
         <translation>Нельзя подписать %1.</translation>
     </message>
     <message>
-        <location filename="blocks/Inventory.cpp" line="139"/>
+        <location filename="blocks/Inventory.cpp" line="142"/>
         <source>Inscribed %1.</source>
         <translation>Подписано: %1.</translation>
     </message>
     <message>
-        <location filename="blocks/Inventory.cpp" line="146"/>
-        <source>-empty-</source>
-        <translation>-пусто-</translation>
-    </message>
-    <message>
-        <location filename="blocks/Inventory.cpp" line="209"/>
+        <location filename="blocks/Inventory.cpp" line="213"/>
         <source>Nothing at slot &apos;%1&apos;.</source>
         <translation>Ничего нет в слоте &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="blocks/Inventory.cpp" line="223"/>
+        <location filename="blocks/Inventory.cpp" line="227"/>
         <source>Craft successful.</source>
         <translation>Сборка удалась.</translation>
     </message>
     <message>
-        <location filename="blocks/Inventory.cpp" line="227"/>
+        <location filename="blocks/Inventory.cpp" line="231"/>
         <source>You don&apos;t know how to craft this.</source>
         <translation>Вы не знаете как собрать это.</translation>
     </message>
@@ -989,7 +971,7 @@
 <context>
     <name>Rabbit</name>
     <message>
-        <location filename="blocks/Animal.cpp" line="171"/>
+        <location filename="blocks/Animal.cpp" line="193"/>
         <source>Herbivore</source>
         <translation>Травоядное животное</translation>
     </message>
@@ -1396,17 +1378,17 @@ Waiting for respawn...</source>
 <context>
     <name>Workbench</name>
     <message>
-        <location filename="blocks/Containers.cpp" line="221"/>
+        <location filename="blocks/Containers.cpp" line="219"/>
         <source>Workbench</source>
         <translation>Верстак</translation>
     </message>
     <message>
-        <location filename="blocks/Containers.cpp" line="229"/>
+        <location filename="blocks/Containers.cpp" line="227"/>
         <source>-product-</source>
         <translation>-изделие-</translation>
     </message>
     <message>
-        <location filename="blocks/Containers.cpp" line="229"/>
+        <location filename="blocks/Containers.cpp" line="227"/>
         <source>-material-</source>
         <translation>-материал-</translation>
     </message>
@@ -1414,34 +1396,44 @@ Waiting for respawn...</source>
 <context>
     <name>World</name>
     <message>
-        <location filename="World.cpp" line="84"/>
+        <location filename="World.cpp" line="80"/>
         <source>Time is %1:%2.</source>
         <translation>Время: %1:%2.</translation>
     </message>
     <message>
-        <location filename="World.cpp" line="560"/>
+        <location filename="World.cpp" line="558"/>
         <source>Cannot build here.</source>
         <translation>Здесь нельзя строить.</translation>
     </message>
     <message>
-        <location filename="World.cpp" line="609"/>
+        <location filename="World.cpp" line="607"/>
         <source>%1 cannot be obtained.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="World.cpp" line="615"/>
+        <location filename="World.cpp" line="613"/>
         <source>Nothing here.</source>
         <translation>Здесь ничего нет.</translation>
     </message>
     <message>
-        <location filename="World.cpp" line="616"/>
+        <location filename="World.cpp" line="614"/>
         <source>Nothing in %1 at slot &apos;%2&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="World.cpp" line="599"/>
+        <location filename="World.cpp" line="597"/>
         <source>No room there.</source>
         <translation>Нет места.</translation>
+    </message>
+    <message>
+        <location filename="blocks/Inventory.cpp" line="45"/>
+        <source>Your inventory is lighter now.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="blocks/Inventory.cpp" line="147"/>
+        <source>-empty-</source>
+        <translation type="unfinished">-пусто-</translation>
     </message>
 </context>
 </TS>

@@ -60,6 +60,28 @@
         }
     }
 
+    void Animal::Damage(const int dmg, const int dmg_kind) {
+        const int last_dur = GetDurability();
+        Falling::Damage(dmg, dmg_kind);
+        if ( last_dur != GetDurability() ) {
+            switch ( dmg_kind ) {
+            case DAMAGE_HUNGER:
+                ReceiveSignal(tr("You weaken from hunger!"));
+                break;
+            case DAMAGE_HEAT:
+                ReceiveSignal(tr("You burn!"));
+                break;
+            case DAMAGE_BREATH:
+                ReceiveSignal(tr("You choke withot air!"));
+                break;
+            default:
+                ReceiveSignal(tr("Received damage!"));
+                break;
+            }
+            emit Updated();
+        }
+    }
+
     int Animal::ShouldAct() const { return FREQUENT_SECOND | FREQUENT_RARE; }
     int Animal::DamageKind() const { return DAMAGE_BITE; }
     Animal * Animal::IsAnimal() { return this; }

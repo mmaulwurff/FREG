@@ -22,9 +22,6 @@
 #include "World.h"
 #include "Shred.h"
 
-/// -1 - default for zlib, 0 - no compression, 4 - best for CPU, 8 - optimal.
-const int COMPRESSION_LEVEL = 8;
-
 bool LongLat::operator==(const LongLat & coords) const {
     return ( longitude==coords.longitude &&
               latitude==coords.latitude );

@@ -120,7 +120,7 @@ enum times_of_day {
 X(QT_TRANSLATE_NOOP("Block", "Block"       ), BLOCK,        Block,       '#' )\
 X(QT_TRANSLATE_NOOP("Block", "Bell"        ), BELL,         Bell,        'B' )\
 X(QT_TRANSLATE_NOOP("Block", "Chest"       ), CONTAINER,    Container,   '&' )\
-X(QT_TRANSLATE_NOOP("Block", "Intellectual"), DWARF,        Dwarf,       '@' )\
+X(QT_TRANSLATE_NOOP("Block", "Rational"    ), DWARF,        Dwarf,       '@' )\
 X(QT_TRANSLATE_NOOP("Block", "Pick"        ), PICK,         Pick,        '\\')\
 X(QT_TRANSLATE_NOOP("Block", "Liquid"      ), LIQUID,       Liquid,      '~' )\
 X(QT_TRANSLATE_NOOP("Block", "Plant"       ), GRASS,        Grass,       '.' )\

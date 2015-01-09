@@ -91,6 +91,7 @@ void Block::Damage(const int dmg, int dmg_kind) {
         case H_MEAT: break;
         } break;
     case DAMAGE_ULTIMATE: durability = 0; return;
+    case DAMAGE_INVENTORY_ACTION:
     case DAMAGE_NO: return;
     case DAMAGE_TIME: durability -= dmg; return;
     case DAMAGE_ACID:

@@ -615,14 +615,8 @@ bool World::Exchange(Block * const block_from, Block * const block_to,
             arg(block_from->FullName()).
             arg(char(src + 'a')));
     } else {
-        Active * active = block_from->ActiveBlock();
-        if ( active != nullptr ) {
-            emit active->Updated();
-        }
-        active = block_to->ActiveBlock();
-        if ( active != nullptr) {
-            emit active->Updated();
-        }
+        block_from->Damage(1, DAMAGE_INVENTORY_ACTION);
+        block_to  ->Damage(1, DAMAGE_INVENTORY_ACTION);
         inv_from->Drop(src, dest, num, inv_to);
     }
     return false;
