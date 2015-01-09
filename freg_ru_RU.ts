@@ -14,22 +14,22 @@
     <message>
         <location filename="blocks/Animal.cpp" line="69"/>
         <source>You weaken from hunger!</source>
-        <translation type="unfinished">Вы слабеете от голода!</translation>
+        <translation>Вы слабеете от голода!</translation>
     </message>
     <message>
         <location filename="blocks/Animal.cpp" line="72"/>
         <source>You burn!</source>
-        <translation type="unfinished">Вы горите!</translation>
+        <translation>Вы горите!</translation>
     </message>
     <message>
         <location filename="blocks/Animal.cpp" line="75"/>
         <source>You choke withot air!</source>
-        <translation type="unfinished">Вы задыхаетесь!</translation>
+        <translation>Вы задыхаетесь!</translation>
     </message>
     <message>
         <location filename="blocks/Animal.cpp" line="78"/>
         <source>Received damage!</source>
-        <translation type="unfinished">Получено повреждение!</translation>
+        <translation>Получено повреждение!</translation>
     </message>
     <message>
         <location filename="blocks/Animal.cpp" line="94"/>
@@ -71,7 +71,7 @@
     <message>
         <location filename="header.h" line="123"/>
         <source>Rational</source>
-        <translation type="unfinished"></translation>
+        <translation>Разумное</translation>
     </message>
     <message>
         <location filename="header.h" line="124"/>
@@ -181,7 +181,7 @@
     <message>
         <location filename="header.h" line="145"/>
         <source>RainMachine</source>
-        <translation type="unfinished"></translation>
+        <translation>Дождь-машина</translation>
     </message>
     <message>
         <location filename="header.h" line="146"/>
@@ -191,7 +191,7 @@
     <message>
         <location filename="header.h" line="147"/>
         <source>BodyArmour</source>
-        <translation type="unfinished"></translation>
+        <translation>Доспехи</translation>
     </message>
     <message>
         <location filename="header.h" line="148"/>
@@ -241,12 +241,12 @@
     <message>
         <location filename="header.h" line="172"/>
         <source>mossStone</source>
-        <translation type="unfinished"></translation>
+        <translation>мшистокмень</translation>
     </message>
     <message>
         <location filename="header.h" line="173"/>
         <source>0stone</source>
-        <translation type="unfinished"></translation>
+        <translation>0камень</translation>
     </message>
     <message>
         <location filename="header.h" line="174"/>
@@ -263,7 +263,7 @@
     <message>
         <location filename="header.h" line="177"/>
         <source>soil</source>
-        <translation type="unfinished"></translation>
+        <translation>земля</translation>
     </message>
     <message>
         <location filename="header.h" line="178"/>
@@ -309,7 +309,7 @@
     <message>
         <location filename="header.h" line="187"/>
         <source>nut</source>
-        <translation type="unfinished"></translation>
+        <translation>орех</translation>
     </message>
     <message>
         <location filename="header.h" line="188"/>
@@ -669,7 +669,7 @@
     <message>
         <location filename="Player.cpp" line="159"/>
         <source>To eat %1, you must first pick it up.</source>
-        <translation type="unfinished"></translation>
+        <translation>Чтобы съесть %1, нужно сначала подобрать.</translation>
     </message>
     <message>
         <location filename="Player.cpp" line="179"/>
@@ -709,7 +709,7 @@
     <message>
         <location filename="Player.cpp" line="364"/>
         <source>Current Qt version: %1. Build type: %2.</source>
-        <translation type="unfinished"></translation>
+        <translation>Текущая версия Qt: %1. Тип сборки: %2.</translation>
     </message>
     <message>
         <location filename="Player.cpp" line="380"/>
@@ -852,7 +852,7 @@
     <message>
         <location filename="blocks/Bucket.cpp" line="51"/>
         <source>%1 (%2) (empty)</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 (%2) (пусто)</translation>
     </message>
     <message>
         <location filename="main.cpp" line="57"/>
@@ -1035,37 +1035,37 @@
     <message>
         <location filename="screens/CursedScreen.cpp" line="374"/>
         <source>low</source>
-        <translation type="unfinished"></translation>
+        <translation>низко</translation>
     </message>
     <message>
         <location filename="screens/CursedScreen.cpp" line="375"/>
         <source>normal</source>
-        <translation type="unfinished"></translation>
+        <translation>нормально</translation>
     </message>
     <message>
         <location filename="screens/CursedScreen.cpp" line="376"/>
         <source>high</source>
-        <translation type="unfinished"></translation>
+        <translation>высоко</translation>
     </message>
     <message>
         <location filename="screens/CursedScreen.cpp" line="378"/>
         <source>Focus is set: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Фокус установлен: %1</translation>
     </message>
     <message>
         <location filename="screens/CursedScreen.cpp" line="393"/>
         <source>Mouse: %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>Мышь: %1.</translation>
     </message>
     <message>
         <location filename="screens/CursedScreen.cpp" line="410"/>
         <source>Saving game...</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранение игры...</translation>
     </message>
     <message>
         <location filename="screens/CursedScreen.cpp" line="413"/>
         <source>Game saved at location &quot;%1&quot;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Игра сохранена здесь: &quot;%1&quot;.</translation>
     </message>
     <message>
         <location filename="screens/CursedScreen.cpp" line="462"/>
@@ -1203,7 +1203,10 @@ xyz: %1, %2, %3.
 Version %1.
 
 Press any key.</source>
-        <translation type="unfinished"></translation>
+        <translation>
+Версия %1.
+
+Нажмите любую клавишу.</translation>
     </message>
     <message>
         <location filename="screens/CursedScreen.cpp" line="1229"/>
@@ -1233,67 +1236,67 @@ Waiting for respawn...</source>
     <message>
         <location filename="header.h" line="54"/>
         <source>Plain</source>
-        <translation type="unfinished"></translation>
+        <translation>Равнина</translation>
     </message>
     <message>
         <location filename="header.h" line="55"/>
         <source>Test shred</source>
-        <translation type="unfinished"></translation>
+        <translation>Тестовый лоскут</translation>
     </message>
     <message>
         <location filename="header.h" line="56"/>
         <source>Pyramid</source>
-        <translation type="unfinished"></translation>
+        <translation>Пирамида</translation>
     </message>
     <message>
         <location filename="header.h" line="57"/>
         <source>Hill</source>
-        <translation type="unfinished"></translation>
+        <translation>Холм</translation>
     </message>
     <message>
         <location filename="header.h" line="58"/>
         <source>Desert</source>
-        <translation type="unfinished"></translation>
+        <translation>Пустыня</translation>
     </message>
     <message>
         <location filename="header.h" line="59"/>
         <source>Water</source>
-        <translation type="unfinished"></translation>
+        <translation>Вода</translation>
     </message>
     <message>
         <location filename="header.h" line="60"/>
         <source>Forest</source>
-        <translation type="unfinished"></translation>
+        <translation>Лес</translation>
     </message>
     <message>
         <location filename="header.h" line="61"/>
         <source>Mountain</source>
-        <translation type="unfinished"></translation>
+        <translation>Гора</translation>
     </message>
     <message>
         <location filename="header.h" line="62"/>
         <source>Empty</source>
-        <translation type="unfinished"></translation>
+        <translation>Пусто</translation>
     </message>
     <message>
         <location filename="header.h" line="63"/>
         <source>Chaos</source>
-        <translation type="unfinished"></translation>
+        <translation>Хаос</translation>
     </message>
     <message>
         <location filename="header.h" line="64"/>
         <source>Castle</source>
-        <translation type="unfinished"></translation>
+        <translation>Крепость</translation>
     </message>
     <message>
         <location filename="header.h" line="65"/>
         <source>Waste</source>
-        <translation type="unfinished"></translation>
+        <translation>Пустошь</translation>
     </message>
     <message>
         <location filename="header.h" line="66"/>
         <source>Acid lake</source>
-        <translation type="unfinished"></translation>
+        <translation>Озеро кислоты</translation>
     </message>
     <message>
         <location filename="header.h" line="67"/>
@@ -1303,27 +1306,27 @@ Waiting for respawn...</source>
     <message>
         <location filename="header.h" line="68"/>
         <source>Crater</source>
-        <translation type="unfinished"></translation>
+        <translation>Кратер</translation>
     </message>
     <message>
         <location filename="header.h" line="69"/>
         <source>Dead forest</source>
-        <translation type="unfinished"></translation>
+        <translation>Мёртвый лес</translation>
     </message>
     <message>
         <location filename="header.h" line="70"/>
         <source>Dead hill</source>
-        <translation type="unfinished"></translation>
+        <translation>Мёртвый холм</translation>
     </message>
     <message>
         <location filename="header.h" line="71"/>
         <source>0mountain</source>
-        <translation type="unfinished"></translation>
+        <translation>0гора</translation>
     </message>
     <message>
         <location filename="header.h" line="72"/>
         <source>Underground</source>
-        <translation type="unfinished"></translation>
+        <translation>Под землёй</translation>
     </message>
 </context>
 <context>
@@ -1359,7 +1362,7 @@ Waiting for respawn...</source>
     <message>
         <location filename="World.cpp" line="607"/>
         <source>%1 cannot be obtained.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 нельзя взять.</translation>
     </message>
     <message>
         <location filename="World.cpp" line="613"/>
@@ -1369,7 +1372,7 @@ Waiting for respawn...</source>
     <message>
         <location filename="World.cpp" line="614"/>
         <source>Nothing in %1 at slot &apos;%2&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1: пусто в слоте &apos;%2&apos;.</translation>
     </message>
     <message>
         <location filename="World.cpp" line="597"/>
@@ -1379,7 +1382,7 @@ Waiting for respawn...</source>
     <message>
         <location filename="blocks/Inventory.cpp" line="45"/>
         <source>Your inventory is lighter now.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ваш инвентарь стал легче.</translation>
     </message>
     <message>
         <location filename="blocks/Inventory.cpp" line="147"/>
