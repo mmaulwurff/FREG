@@ -24,6 +24,16 @@
 #include <QSettings>
 #include <QString>
 
+#define COLOR_LIST(color) \
+    color ## _BLACK,  \
+    color ## _RED,    \
+    color ## _GREEN,  \
+    color ## _YELLOW, \
+    color ## _BLUE,   \
+    color ## _MAGENTA,\
+    color ## _CYAN,   \
+    color ## _WHITE,
+
 class Player;
 class World;
 
@@ -104,79 +114,18 @@ signals:
     void ResumeWorld();
 
 protected:
-    enum color_pairs { // do not change colors order! // foreground_background
-        BLACK_BLACK = 1,
-        BLACK_RED,
-        BLACK_GREEN,
-        BLACK_YELLOW,
-        BLACK_BLUE,
-        BLACK_MAGENTA,
-        BLACK_CYAN,
-        BLACK_WHITE,
-        //
-        RED_BLACK,
-        RED_RED,
-        RED_GREEN,
-        RED_YELLOW,
-        RED_BLUE,
-        RED_MAGENTA,
-        RED_CYAN,
-        RED_WHITE,
-        //
-        GREEN_BLACK,
-        GREEN_RED,
-        GREEN_GREEN,
-        GREEN_YELLOW,
-        GREEN_BLUE,
-        GREEN_MAGENTA,
-        GREEN_CYAN,
-        GREEN_WHITE,
-        //
-        YELLOW_BLACK,
-        YELLOW_RED,
-        YELLOW_GREEN,
-        YELLOW_YELLOW,
-        YELLOW_BLUE,
-        YELLOW_MAGENTA,
-        YELLOW_CYAN,
-        YELLOW_WHITE,
-        //
-        BLUE_BLACK,
-        BLUE_RED,
-        BLUE_GREEN,
-        BLUE_YELLOW,
-        BLUE_BLUE,
-        BLUE_MAGENTA,
-        BLUE_CYAN,
-        BLUE_WHITE,
-        //
-        MAGENTA_BLACK,
-        MAGENTA_RED,
-        MAGENTA_GREEN,
-        MAGENTA_YELLOW,
-        MAGENTA_BLUE,
-        MAGENTA_MAGENTA,
-        MAGENTA_CYAN,
-        MAGENTA_WHITE,
-        //
-        CYAN_BLACK,
-        CYAN_RED,
-        CYAN_GREEN,
-        CYAN_YELLOW,
-        CYAN_BLUE,
-        CYAN_MAGENTA,
-        CYAN_CYAN,
-        CYAN_WHITE,
-        //
-        WHITE_BLACK,
-        WHITE_RED,
-        WHITE_GREEN,
-        WHITE_YELLOW,
-        WHITE_BLUE,
-        WHITE_MAGENTA,
-        WHITE_CYAN,
-        WHITE_WHITE
-    }; // enum color_pairs
+    /// All available colors. Format: foreground_background (e.ge WHITE_BLACK)
+    enum color_pairs { // do not change colors order!
+        UNUSED_ZERO_COLOR, ///< colors should start from 1, so occupy 0 by this
+        COLOR_LIST(BLACK)
+        COLOR_LIST(RED)
+        COLOR_LIST(GREEN)
+        COLOR_LIST(YELLOW)
+        COLOR_LIST(BLUE)
+        COLOR_LIST(MAGENTA)
+        COLOR_LIST(CYAN)
+        COLOR_LIST(WHITE)
+    };
 
     World * GetWorld() const;
     /// Returns true if command is recognized and processed.

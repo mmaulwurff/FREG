@@ -1152,7 +1152,7 @@ Screen::Screen(Player * const pl, int &) :
     ungetch('0');
     getch();
     Screen::Notify(tr("\t[[F][r][e][g]] version %1").arg(VER));
-    Screen::Notify(tr("Copyright (C) 2012-2015 Alexander 'm8' Kromm"));
+    Screen::Notify(tr("Copyright (C) 2012-2015 Alexander 'm8f' Kromm"));
     Screen::Notify("(mmaulwurff@gmail.com)\n");
     Screen::Notify(tr("Press any key to continue."));
 
