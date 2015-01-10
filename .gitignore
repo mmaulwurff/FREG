@@ -19,14 +19,12 @@ qrc_*.cpp
 !everything
 !help_*
 !recipes
-!texts
 !rooms
 
 */*
 !*/*.cpp
 !*/*.h
 
-!texts/*.txt
 !help_*/*.md
 !rooms/*.room
 !recipes/*.json

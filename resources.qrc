@@ -1,7 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>texts/splash.txt</file>
-        <file>texts/death.txt</file>
         <file>help_en/commands.md</file>
         <file>help_en/help.md</file>
         <file>help_en/screen_commands.md</file>

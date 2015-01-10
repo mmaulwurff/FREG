@@ -31,6 +31,8 @@
 #include <QDir>
 #include <QLocale>
 #include <QMutexLocker>
+#include <QDesktopServices>
+#include <QUrl>
 
 void Screen::PrintVerticalDirection(WINDOW *const window, const dirs direction)
 {
@@ -128,7 +130,6 @@ void Screen::UpdateAround(int, int, int, int) {
 bool Screen::IsScreenWide() { return COLS >= (AVERAGE_SCREEN_SIZE + 2) * 2; }
 
 void Screen::UpdateAll() {
-    CleanFileToShow();
     updatedNormal = updatedFront = updatedHud = updatedMinimap = false;
 }
 
@@ -263,9 +264,6 @@ void Screen::ControlPlayer() { ControlPlayer(getch()); }
 void Screen::ControlPlayer(const int ch) {
     static const int ACTIVE_HAND = 3;
     if ( player->GetConstBlock() == nullptr ) return;
-    if ( ch != KEY_MOUSE ) {
-        CleanFileToShow();
-    }
     if ( 'a'<=ch && ch<='z' ) { // actions with inventory
         InventoryAction(ch - 'a');
         return;
@@ -430,7 +428,6 @@ void Screen::ControlPlayer(const int ch) {
         break;
     }
 
-    CleanFileToShow();
     updatedNormal = updatedFront = updatedHud = false;
 } // void Screen::ControlPlayer(int ch)
 
@@ -503,9 +500,7 @@ void Screen::ProcessMouse() {
         ExamineOnNormalScreen(mevent.x, mevent.y, player->Z(), -1);
         break;
     case WIN_RIGHT:
-        if ( fileToShow != nullptr ) {
-            Notify(tr("Reading file: \"%1\".").arg(fileToShow->fileName()));
-        } else if (player->UsingType() == USAGE_TYPE_OPEN ) {
+        if (player->UsingType() == USAGE_TYPE_OPEN ) {
             Notify(tr("Opened inventory."));
         } else if ( not (
                 0 < mevent.x && mevent.x < screenWidth  - 1 &&
@@ -639,40 +634,38 @@ void Screen::Print() {
         PrintInv(leftWin, player->GetConstBlock(), player->PlayerInventory());
     }
     updatedHud = true;
-    if ( fileToShow == nullptr ) { // right window
-        switch ( player->UsingType() ) {
-        default:
-            if ( dir <= DOWN ) {
-                if ( updatedNormal ) return;
-                PrintNormal(rightWin, dir);
-                printed_normal = true;
-            } else {
-                PrintFront(dir);
-            }
-            break;
-        case USAGE_TYPE_READ_IN_INVENTORY:
-            DisplayFile(QString(home_path + world->WorldName() + "/texts/"
-                + player->PlayerInventory()->ShowBlock(
-                    player->GetUsingInInventory())->GetNote()));
-            player->SetUsingTypeNo();
-            break;
-        case USAGE_TYPE_READ: {
-            const Block * const focused = GetFocusedBlock();
-            if ( focused != nullptr ) {
-                DisplayFile(QString(home_path + world->WorldName()
-                    + "/texts/" + focused->GetNote()));
-                player->SetUsingTypeNo();
-            }
-            } break;
-        case USAGE_TYPE_OPEN: {
-            Block * const focused = GetFocusedBlock();
-            if ( focused != nullptr ) {
-                PrintInv(rightWin, focused, focused->HasInventory());
-            }
-            } break;
+    switch ( player->UsingType() ) {
+    default:
+        if ( dir <= DOWN ) {
+            if ( updatedNormal ) return;
+            PrintNormal(rightWin, dir);
+            printed_normal = true;
+        } else {
+            PrintFront(dir);
         }
-        updatedFront = true;
+        break;
+    case USAGE_TYPE_READ_IN_INVENTORY:
+        DisplayFile(QString(home_path + world->WorldName() + "/texts/"
+            + player->PlayerInventory()->ShowBlock(
+                player->GetUsingInInventory())->GetNote()));
+        player->SetUsingTypeNo();
+        break;
+    case USAGE_TYPE_READ: {
+        const Block * const focused = GetFocusedBlock();
+        if ( focused != nullptr ) {
+            DisplayFile(QString(home_path + world->WorldName()
+                + "/texts/" + focused->GetNote()));
+            player->SetUsingTypeNo();
+        }
+        } break;
+    case USAGE_TYPE_OPEN: {
+        Block * const focused = GetFocusedBlock();
+        if ( focused != nullptr ) {
+            PrintInv(rightWin, focused, focused->HasInventory());
+        }
+        } break;
     }
+    updatedFront = true;
     if ( printed_normal ) {
         updatedNormal = true;
     }
@@ -1038,31 +1031,9 @@ const {
     wrefresh(window);
 } // void Screen::PrintInv(WINDOW *, const Block *, const Inventory *)
 
-void Screen::CleanFileToShow() {
-    delete fileToShow;
-    fileToShow = nullptr;
-}
-
-bool Screen::PrintFile(WINDOW * const window, QString const & file_name) {
-    CleanFileToShow();
-    fileToShow = new QFile(file_name);
-    if ( fileToShow->open(QIODevice::ReadOnly | QIODevice::Text) ) {
-        werase(window);
-        waddwstr(window, wPrintable(fileToShow->readAll()));
-        return true;
-    } else {
-        CleanFileToShow();
-        return false;
-    }
-    wrefresh(window);
-}
-
-/// \todo big window to display file
 void Screen::DisplayFile(QString path) {
-    wstandend(rightWin);
-    if ( not PrintFile(rightWin, path) ) {
-        Notify(tr("There is no such file."));
-    }
+    { QFile(path).open(QIODevice::ReadWrite); } // create file if doesn't exist
+    QDesktopServices::openUrl(QUrl(path.prepend("file:///")));
 }
 
 void Screen::Notify(const QString str) const {
@@ -1093,9 +1064,8 @@ void Screen::DeathScreen() {
     werase(rightWin);
     werase(hudWin);
     wcolor_set(leftWin, WHITE_RED, nullptr);
-    if ( not PrintFile(leftWin, ":/texts/death.txt") ) {
-        waddwstr(leftWin, wPrintable(tr("You die.\nWaiting for respawn...")));
-    }
+    Notify(tr("You die!"));
+    Notify(tr("Waiting for respawn..."));
     box(leftWin, 0, 0);
     wnoutrefresh(leftWin);
     wnoutrefresh(rightWin);
@@ -1127,7 +1097,6 @@ Screen::Screen(Player * const pl, int &) :
         actionMode(static_cast<actions>
             (settings.value("action_mode", ACTION_USE).toInt())),
         shiftFocus(settings.value("focus_shift", 0).toInt()),
-        fileToShow(nullptr),
         beepOn (settings.value("beep_on",  false).toBool()),
         flashOn(settings.value("flash_on", true ).toBool()),
         ascii  (settings.value("ascii",    false).toBool()),
@@ -1180,16 +1149,17 @@ Screen::Screen(Player * const pl, int &) :
 
     scrollok(windows[WIN_NOTIFY], TRUE);
 
-    if ( not PrintFile(stdscr, ":/texts/splash.txt") ) {
-        addstr("Free-Roaming Elementary Game\nby mmaulwurff\n");
-    }
-    addwstr(
-        wPrintable(Screen::tr("\nVersion %1.\n\nPress any key.").arg(VER)));
+    ungetch('0');
+    getch();
+    Screen::Notify(tr("\t[[F][r][e][g]] version %1").arg(VER));
+    Screen::Notify(tr("Copyright (C) 2012-2015 Alexander 'm8' Kromm"));
+    Screen::Notify("(mmaulwurff@gmail.com)\n");
+    Screen::Notify(tr("Press any key to continue."));
+
     qsrand(getch());
 
-    CleanFileToShow();
     RePrint();
-    Greet();
+    Screen::Notify(tr("--- Game started. Press 'H' for help. ---"));
 
     connect(world, &World::UpdatesEnded, this, &Screen::Print,
         Qt::DirectConnection);
@@ -1212,7 +1182,6 @@ Screen::~Screen() {
     if ( notifyLog ) {
         fclose(notifyLog);
     }
-    delete fileToShow;
     settings.setValue("focus_shift", shiftFocus);
     settings.setValue("action_mode", actionMode);
     settings.setValue("last_command", previousCommand);
@@ -1223,10 +1192,6 @@ Screen::~Screen() {
     settings.setValue("mouse_on", mouseOn);
     settings.setValue("show_distance", showDistance);
     settings.setValue("use_abcdef_distance", farDistance);
-}
-
-void Screen::Greet() const {
-    Notify(tr("--- Game started. Press 'H' for help. ---"));
 }
 
 void Screen::PrintBar(WINDOW * const window,

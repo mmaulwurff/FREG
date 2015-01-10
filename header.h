@@ -120,7 +120,7 @@ enum times_of_day {
  *  Define X as "X(a, b) a," to get column 1 and "X(a, b) b," to get column 2.
  *  \snippet header.h List of kinds */
 /// [List of kinds]
-/// (context, translatable class name), enum element, class, character)
+/// (context, translatable class name), enum element, character, class)
 #define KIND_TABLE(X) \
 X(QT_TRANSLATE_NOOP("Block", "Block"       ), BLOCK,       '#',  Block,      )\
 X(QT_TRANSLATE_NOOP("Block", "Bell"        ), BELL,        'B',  Bell,       )\

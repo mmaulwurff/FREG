@@ -7,7 +7,6 @@ DEFINES += VER=$$VERSION
 QMAKE_TARGET_COPYRIGHT   = (C) 2012-2015 Alexander \'m8f\' Kromm
 QMAKE_TARGET_DESCRIPTION = Open world game with text graphics.
 
-QT -= gui
 CONFIG += warn_on console c++11 rtti_off exceptions_off
 CONFIG( release, debug|release ):DEFINES += QT_NO_DEBUG_OUTPUT
 
@@ -62,8 +61,6 @@ TRANSLATIONS =    \
 RESOURCES = resources.qrc
 
 DISTFILES += \
-    texts/death.txt \
-    texts/splash.txt \
     recipes/*.json \
     help_*/* \
     rooms/*.room \

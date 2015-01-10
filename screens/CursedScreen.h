@@ -148,7 +148,6 @@ private:
     int GetMinimapStartY() const;
     void ExamineOnNormalScreen(int x, int y, int z, int step) const;
 
-    void Greet() const;
     void DrawBorder(WINDOW *) const;
 
     SCREEN * const screen;
@@ -169,7 +168,6 @@ private:
     actions actionMode;
     /// Can be -1, 0, 1 for low, normal, and high focus.
     int shiftFocus;
-    QFile * fileToShow;
     const bool beepOn, flashOn;
     const bool ascii;
     bool blinkOn;

@@ -28,20 +28,20 @@
 #include <QTime>
 #include <QSettings>
 #include <QLockFile>
-#include <QCoreApplication>
+#include <QGuiApplication>
 #include <QCommandLineParser>
 
 #ifdef Q_OS_WIN32
-const QString home_path = "";
+const QString home_path = QDir::currentPath() + "/";
 #else
 //const QString home_path = QDir::homePath() + "/.freg/";
-const QString home_path = "";
+const QString home_path = QDir::currentPath() + "/";
 #endif
 
 int main(int argc, char ** argv) {
     setlocale(LC_CTYPE, "C-UTF-8");
 
-    QCoreApplication freg(argc, argv);
+    QGuiApplication freg(argc, argv);
     QCoreApplication::setOrganizationName("freg-team");
     QCoreApplication::setApplicationName("freg");
     QCoreApplication::setApplicationVersion(QString::number(VER));
