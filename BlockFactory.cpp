@@ -45,9 +45,7 @@ BlockFactory::BlockFactory() {
     }
     qDebug() << "valid pairs:" << sum;*/
 
-    #define X(translatable, enum_element, class, ...) class,
-    RegisterAll(typeList< KIND_TABLE TemplateTerminator >());
-    #undef X
+    RegisterAll(typeList< KIND_TABLE(X_CLASS) TemplateTerminator >());
 }
 
 BlockFactory::~BlockFactory() { qDeleteAll(normals, normals + SUB_COUNT); }

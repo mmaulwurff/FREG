@@ -49,32 +49,37 @@ enum times {
     SECONDS_IN_DAYLIGHT = SECONDS_IN_DAY-END_OF_NIGHT
 };
 
+#define X_STRING(string, ...) string,
+#define X_ENUM(  column1, enum_element, ...) enum_element,
+#define X_CHAR(  column1, column2, character, ...) character,
+#define X_CLASS( column1, column2, column3, class, ...) class,
+
+#define X_ENUM_INIT(column1, enum_element, init, ...) enum_element = init,
+
 // X(QT_TRANSLATE_NOOP(context, translatable shred name), enum element, symbol)
-#define SHRED_TABLE \
-X(QT_TRANSLATE_NOOP("Shred", "Plain"      ), SHRED_PLAIN,        '.' )\
-X(QT_TRANSLATE_NOOP("Shred", "Test shred" ), SHRED_TESTSHRED,    'T' )\
-X(QT_TRANSLATE_NOOP("Shred", "Pyramid"    ), SHRED_PYRAMID,      'P' )\
-X(QT_TRANSLATE_NOOP("Shred", "Hill"       ), SHRED_HILL,         '+' )\
-X(QT_TRANSLATE_NOOP("Shred", "Desert"     ), SHRED_DESERT,       ':' )\
-X(QT_TRANSLATE_NOOP("Shred", "Water"      ), SHRED_WATER,        '~' )\
-X(QT_TRANSLATE_NOOP("Shred", "Forest"     ), SHRED_FOREST,       '%' )\
-X(QT_TRANSLATE_NOOP("Shred", "Mountain"   ), SHRED_MOUNTAIN,     '^' )\
-X(QT_TRANSLATE_NOOP("Shred", "Empty"      ), SHRED_EMPTY,        '_' )\
-X(QT_TRANSLATE_NOOP("Shred", "Chaos"      ), SHRED_CHAOS,        '!' )\
-X(QT_TRANSLATE_NOOP("Shred", "Castle"     ), SHRED_CASTLE,       'C' )\
-X(QT_TRANSLATE_NOOP("Shred", "Waste"      ), SHRED_WASTE,        '=' )\
-X(QT_TRANSLATE_NOOP("Shred", "Acid lake"  ), SHRED_ACID_LAKE,    'a' )\
-X(QT_TRANSLATE_NOOP("Shred", "Lava lake"  ), SHRED_LAVA_LAKE,    'l' )\
-X(QT_TRANSLATE_NOOP("Shred", "Crater"     ), SHRED_CRATER,       'c' )\
-X(QT_TRANSLATE_NOOP("Shred", "Dead forest"), SHRED_DEAD_FOREST,  'f' )\
-X(QT_TRANSLATE_NOOP("Shred", "Dead hill"  ), SHRED_DEAD_HILL,    '*' )\
-X(QT_TRANSLATE_NOOP("Shred", "0mountain"  ), SHRED_NULLMOUNTAIN, '#' )\
-X(QT_TRANSLATE_NOOP("Shred", "Underground"), SHRED_UNDERGROUND,  '-' )\
+#define SHRED_TABLE(X) \
+X(QT_TRANSLATE_NOOP("Shred", "Plain"      ), SHRED_PLAIN,        '.', )\
+X(QT_TRANSLATE_NOOP("Shred", "Test shred" ), SHRED_TESTSHRED,    'T', )\
+X(QT_TRANSLATE_NOOP("Shred", "Pyramid"    ), SHRED_PYRAMID,      'P', )\
+X(QT_TRANSLATE_NOOP("Shred", "Hill"       ), SHRED_HILL,         '+', )\
+X(QT_TRANSLATE_NOOP("Shred", "Desert"     ), SHRED_DESERT,       ':', )\
+X(QT_TRANSLATE_NOOP("Shred", "Water"      ), SHRED_WATER,        '~', )\
+X(QT_TRANSLATE_NOOP("Shred", "Forest"     ), SHRED_FOREST,       '%', )\
+X(QT_TRANSLATE_NOOP("Shred", "Mountain"   ), SHRED_MOUNTAIN,     '^', )\
+X(QT_TRANSLATE_NOOP("Shred", "Empty"      ), SHRED_EMPTY,        '_', )\
+X(QT_TRANSLATE_NOOP("Shred", "Chaos"      ), SHRED_CHAOS,        '!', )\
+X(QT_TRANSLATE_NOOP("Shred", "Castle"     ), SHRED_CASTLE,       'C', )\
+X(QT_TRANSLATE_NOOP("Shred", "Waste"      ), SHRED_WASTE,        '=', )\
+X(QT_TRANSLATE_NOOP("Shred", "Acid lake"  ), SHRED_ACID_LAKE,    'a', )\
+X(QT_TRANSLATE_NOOP("Shred", "Lava lake"  ), SHRED_LAVA_LAKE,    'l', )\
+X(QT_TRANSLATE_NOOP("Shred", "Crater"     ), SHRED_CRATER,       'c', )\
+X(QT_TRANSLATE_NOOP("Shred", "Dead forest"), SHRED_DEAD_FOREST,  'f', )\
+X(QT_TRANSLATE_NOOP("Shred", "Dead hill"  ), SHRED_DEAD_HILL,    '*', )\
+X(QT_TRANSLATE_NOOP("Shred", "0mountain"  ), SHRED_NULLMOUNTAIN, '#', )\
+X(QT_TRANSLATE_NOOP("Shred", "Underground"), SHRED_UNDERGROUND,  '-', )\
 
 enum shred_type {
-    #define X(translatable, enum_element, symbol) enum_element = symbol,
-    SHRED_TABLE
-    #undef X
+    SHRED_TABLE(X_ENUM_INIT)
     SHRED_DEFAULT    = SHRED_PLAIN,
     SHRED_OUT_BORDER = SHRED_WATER,
 };
@@ -116,43 +121,43 @@ enum times_of_day {
  *  \snippet header.h List of kinds */
 /// [List of kinds]
 /// (context, translatable class name), enum element, class, character)
-#define KIND_TABLE \
-X(QT_TRANSLATE_NOOP("Block", "Block"       ), BLOCK,        Block,       '#' )\
-X(QT_TRANSLATE_NOOP("Block", "Bell"        ), BELL,         Bell,        'B' )\
-X(QT_TRANSLATE_NOOP("Block", "Chest"       ), CONTAINER,    Container,   '&' )\
-X(QT_TRANSLATE_NOOP("Block", "Rational"    ), DWARF,        Dwarf,       '@' )\
-X(QT_TRANSLATE_NOOP("Block", "Pick"        ), PICK,         Pick,        '\\')\
-X(QT_TRANSLATE_NOOP("Block", "Liquid"      ), LIQUID,       Liquid,      '~' )\
-X(QT_TRANSLATE_NOOP("Block", "Plant"       ), GRASS,        Grass,       '.' )\
-X(QT_TRANSLATE_NOOP("Block", "Bush"        ), BUSH,         Bush,        ';' )\
-X(QT_TRANSLATE_NOOP("Block", "Herbivore"   ), RABBIT,       Rabbit,      'r' )\
-X(QT_TRANSLATE_NOOP("Block", "Falling"     ), FALLING,      Falling,     '.' )\
-X(QT_TRANSLATE_NOOP("Block", "Clock"       ), CLOCK,        Clock,       'C' )\
-X(QT_TRANSLATE_NOOP("Block", "Plate"       ), PLATE,        Plate,       '_' )\
-X(QT_TRANSLATE_NOOP("Block", "Workbench"   ), WORKBENCH,    Workbench,   '*' )\
-X(QT_TRANSLATE_NOOP("Block", "Stick"       ), WEAPON,       Weapon,      '/' )\
-X(QT_TRANSLATE_NOOP("Block", "Ladder"      ), LADDER,       Ladder,      '^' )\
-X(QT_TRANSLATE_NOOP("Block", "Door"        ), DOOR,         Door,        '\'')\
-X(QT_TRANSLATE_NOOP("Block", "Box"         ), BOX,          Box,         '&' )\
-X(QT_TRANSLATE_NOOP("Block", "Sign"        ), KIND_TEXT,    Text,        '?' )\
-X(QT_TRANSLATE_NOOP("Block", "Map"         ), MAP,          Map,         '?' )\
-X(QT_TRANSLATE_NOOP("Block", "Predator"    ), PREDATOR,     Predator,    '!' )\
-X(QT_TRANSLATE_NOOP("Block", "Bucket"      ), BUCKET,       Bucket,      'u' )\
-X(QT_TRANSLATE_NOOP("Block", "Shovel"      ), SHOVEL,       Shovel,      '|' )\
-X(QT_TRANSLATE_NOOP("Block", "Axe"         ), AXE,          Axe,         '/' )\
-X(QT_TRANSLATE_NOOP("Block", "Hammer"      ), HAMMER,       Hammer,      'T' )\
-X(QT_TRANSLATE_NOOP("Block", "Illuminator" ), ILLUMINATOR,  Illuminator, 'i' )\
-X(QT_TRANSLATE_NOOP("Block", "RainMachine" ), RAIN_MACHINE, RainMachine, 'R' )\
-X(QT_TRANSLATE_NOOP("Block", "Converter"   ), CONVERTER,    Converter,   'V' )\
-X(QT_TRANSLATE_NOOP("Block", "BodyArmour"  ), ARMOUR,       Armour,      'A' )\
-X(QT_TRANSLATE_NOOP("Block", "Helmet"      ), HELMET,       Helmet,      'H' )\
-X(QT_TRANSLATE_NOOP("Block", "Boots"       ), BOOTS,        Boots,       'L' )\
-X(QT_TRANSLATE_NOOP("Block", "Telegraph"   ), TELEGRAPH,    Telegraph,   't' )\
-X(QT_TRANSLATE_NOOP("Block", "Medkit"      ), MEDKIT,       MedKit,      '+' )\
-X(QT_TRANSLATE_NOOP("Block", "Filter"      ), FILTER,       Filter,      'F' )\
-X(QT_TRANSLATE_NOOP("Block", "Informer"    ), INFORMER,     Informer,    'I' )\
-X(QT_TRANSLATE_NOOP("Block", "Teleport"    ), TELEPORT,     Teleport,    '0' )\
-X(QT_TRANSLATE_NOOP("Block", "Accumulator" ), ACCUMULATOR,  Accumulator, '=' )\
+#define KIND_TABLE(X) \
+X(QT_TRANSLATE_NOOP("Block", "Block"       ), BLOCK,       '#',  Block,      )\
+X(QT_TRANSLATE_NOOP("Block", "Bell"        ), BELL,        'B',  Bell,       )\
+X(QT_TRANSLATE_NOOP("Block", "Chest"       ), CONTAINER,   '&',  Container,  )\
+X(QT_TRANSLATE_NOOP("Block", "Rational"    ), DWARF,       '@',  Dwarf,      )\
+X(QT_TRANSLATE_NOOP("Block", "Pick"        ), PICK,        '\\', Pick,       )\
+X(QT_TRANSLATE_NOOP("Block", "Liquid"      ), LIQUID,      '~',  Liquid,     )\
+X(QT_TRANSLATE_NOOP("Block", "Plant"       ), GRASS,       '.',  Grass,      )\
+X(QT_TRANSLATE_NOOP("Block", "Bush"        ), BUSH,        ';',  Bush,       )\
+X(QT_TRANSLATE_NOOP("Block", "Herbivore"   ), RABBIT,      'r',  Rabbit,     )\
+X(QT_TRANSLATE_NOOP("Block", "Falling"     ), FALLING,     '.',  Falling,    )\
+X(QT_TRANSLATE_NOOP("Block", "Clock"       ), CLOCK,       'C',  Clock,      )\
+X(QT_TRANSLATE_NOOP("Block", "Plate"       ), PLATE,       '_',  Plate,      )\
+X(QT_TRANSLATE_NOOP("Block", "Workbench"   ), WORKBENCH,   '*',  Workbench,  )\
+X(QT_TRANSLATE_NOOP("Block", "Stick"       ), WEAPON,      '/',  Weapon,     )\
+X(QT_TRANSLATE_NOOP("Block", "Ladder"      ), LADDER,      '^',  Ladder,     )\
+X(QT_TRANSLATE_NOOP("Block", "Door"        ), DOOR,        '\'', Door,       )\
+X(QT_TRANSLATE_NOOP("Block", "Box"         ), BOX,         '&',  Box,        )\
+X(QT_TRANSLATE_NOOP("Block", "Sign"        ), KIND_TEXT,   '?',  Text,       )\
+X(QT_TRANSLATE_NOOP("Block", "Map"         ), MAP,         '?',  Map,        )\
+X(QT_TRANSLATE_NOOP("Block", "Predator"    ), PREDATOR,    '!',  Predator,   )\
+X(QT_TRANSLATE_NOOP("Block", "Bucket"      ), BUCKET,      'u',  Bucket,     )\
+X(QT_TRANSLATE_NOOP("Block", "Shovel"      ), SHOVEL,      '|',  Shovel,     )\
+X(QT_TRANSLATE_NOOP("Block", "Axe"         ), AXE,         '/',  Axe,        )\
+X(QT_TRANSLATE_NOOP("Block", "Hammer"      ), HAMMER,      'T',  Hammer,     )\
+X(QT_TRANSLATE_NOOP("Block", "Illuminator" ), ILLUMINATOR, 'i',  Illuminator,)\
+X(QT_TRANSLATE_NOOP("Block", "RainMachine" ), RAIN_MACHINE,'R',  RainMachine,)\
+X(QT_TRANSLATE_NOOP("Block", "Converter"   ), CONVERTER,   'V',  Converter,  )\
+X(QT_TRANSLATE_NOOP("Block", "BodyArmour"  ), ARMOUR,      'A',  Armour,     )\
+X(QT_TRANSLATE_NOOP("Block", "Helmet"      ), HELMET,      'H',  Helmet,     )\
+X(QT_TRANSLATE_NOOP("Block", "Boots"       ), BOOTS,       'L',  Boots,      )\
+X(QT_TRANSLATE_NOOP("Block", "Telegraph"   ), TELEGRAPH,   't',  Telegraph,  )\
+X(QT_TRANSLATE_NOOP("Block", "Medkit"      ), MEDKIT,      '+',  MedKit,     )\
+X(QT_TRANSLATE_NOOP("Block", "Filter"      ), FILTER,      'F',  Filter,     )\
+X(QT_TRANSLATE_NOOP("Block", "Informer"    ), INFORMER,    'I',  Informer,   )\
+X(QT_TRANSLATE_NOOP("Block", "Teleport"    ), TELEPORT,    '0',  Teleport,   )\
+X(QT_TRANSLATE_NOOP("Block", "Accumulator" ), ACCUMULATOR, '=',  Accumulator,)\
 /// [List of kinds]
 
 /** \page subs List of available substances
@@ -167,53 +172,49 @@ X(QT_TRANSLATE_NOOP("Block", "Accumulator" ), ACCUMULATOR,  Accumulator, '=' )\
  *  \snippet header.h List of subs */
 /// [List of subs]
 /// X(QT_TRANSLATE_NOOP(context, translatable substance name), enum element)
-#define SUB_TABLE \
-X(QT_TRANSLATE_NOOP("Block", "stone"     ), STONE       )\
-X(QT_TRANSLATE_NOOP("Block", "mossStone" ), MOSS_STONE  )\
-X(QT_TRANSLATE_NOOP("Block", "0stone"    ), NULLSTONE   )\
-X(QT_TRANSLATE_NOOP("Block", "air"       ), SKY         )\
-X(QT_TRANSLATE_NOOP("Block", "air"       ), STAR        )\
-X(QT_TRANSLATE_NOOP("Block", "diamond"   ), DIAMOND     )\
-X(QT_TRANSLATE_NOOP("Block", "soil"      ), SOIL        )\
-X(QT_TRANSLATE_NOOP("Block", "meat"      ), H_MEAT      )\
-X(QT_TRANSLATE_NOOP("Block", "meat"      ), A_MEAT      )\
-X(QT_TRANSLATE_NOOP("Block", "glass"     ), GLASS       )\
-X(QT_TRANSLATE_NOOP("Block", "wood"      ), WOOD        )\
-X(QT_TRANSLATE_NOOP("Block", "different" ), DIFFERENT   )\
-X(QT_TRANSLATE_NOOP("Block", "iron"      ), IRON        )\
-X(QT_TRANSLATE_NOOP("Block", "water"     ), WATER       )\
-X(QT_TRANSLATE_NOOP("Block", "greenery"  ), GREENERY    )\
-X(QT_TRANSLATE_NOOP("Block", "sand"      ), SAND        )\
-X(QT_TRANSLATE_NOOP("Block", "nut"       ), SUB_NUT     )\
-X(QT_TRANSLATE_NOOP("Block", "rose"      ), ROSE        )\
-X(QT_TRANSLATE_NOOP("Block", "clay"      ), CLAY        )\
-X(QT_TRANSLATE_NOOP("Block", "air"       ), AIR         )\
-X(QT_TRANSLATE_NOOP("Block", "paper"     ), PAPER       )\
-X(QT_TRANSLATE_NOOP("Block", "gold"      ), GOLD        )\
-X(QT_TRANSLATE_NOOP("Block", "bone"      ), BONE        )\
-X(QT_TRANSLATE_NOOP("Block", "steel"     ), STEEL       )\
-X(QT_TRANSLATE_NOOP("Block", "adamantine"), ADAMANTINE  )\
-X(QT_TRANSLATE_NOOP("Block", "fire"      ), FIRE        )\
-X(QT_TRANSLATE_NOOP("Block", "coal"      ), COAL        )\
-X(QT_TRANSLATE_NOOP("Block", "explosive" ), EXPLOSIVE   )\
-X(QT_TRANSLATE_NOOP("Block", "acid"      ), ACID        )\
-X(QT_TRANSLATE_NOOP("Block", "cloud"     ), SUB_CLOUD   )\
-X(QT_TRANSLATE_NOOP("Block", "dust"      ), SUB_DUST    )\
-X(QT_TRANSLATE_NOOP("Block", "plastic"   ), SUB_PLASTIC )\
+#define SUB_TABLE(X) \
+X(QT_TRANSLATE_NOOP("Block", "stone"     ), STONE,      )\
+X(QT_TRANSLATE_NOOP("Block", "mossStone" ), MOSS_STONE, )\
+X(QT_TRANSLATE_NOOP("Block", "0stone"    ), NULLSTONE,  )\
+X(QT_TRANSLATE_NOOP("Block", "air"       ), SKY,        )\
+X(QT_TRANSLATE_NOOP("Block", "air"       ), STAR,       )\
+X(QT_TRANSLATE_NOOP("Block", "diamond"   ), DIAMOND,    )\
+X(QT_TRANSLATE_NOOP("Block", "soil"      ), SOIL,       )\
+X(QT_TRANSLATE_NOOP("Block", "meat"      ), H_MEAT,     )\
+X(QT_TRANSLATE_NOOP("Block", "meat"      ), A_MEAT,     )\
+X(QT_TRANSLATE_NOOP("Block", "glass"     ), GLASS,      )\
+X(QT_TRANSLATE_NOOP("Block", "wood"      ), WOOD,       )\
+X(QT_TRANSLATE_NOOP("Block", "different" ), DIFFERENT,  )\
+X(QT_TRANSLATE_NOOP("Block", "iron"      ), IRON,       )\
+X(QT_TRANSLATE_NOOP("Block", "water"     ), WATER,      )\
+X(QT_TRANSLATE_NOOP("Block", "greenery"  ), GREENERY,   )\
+X(QT_TRANSLATE_NOOP("Block", "sand"      ), SAND,       )\
+X(QT_TRANSLATE_NOOP("Block", "nut"       ), SUB_NUT,    )\
+X(QT_TRANSLATE_NOOP("Block", "rose"      ), ROSE,       )\
+X(QT_TRANSLATE_NOOP("Block", "clay"      ), CLAY,       )\
+X(QT_TRANSLATE_NOOP("Block", "air"       ), AIR,        )\
+X(QT_TRANSLATE_NOOP("Block", "paper"     ), PAPER,      )\
+X(QT_TRANSLATE_NOOP("Block", "gold"      ), GOLD,       )\
+X(QT_TRANSLATE_NOOP("Block", "bone"      ), BONE,       )\
+X(QT_TRANSLATE_NOOP("Block", "steel"     ), STEEL,      )\
+X(QT_TRANSLATE_NOOP("Block", "adamantine"), ADAMANTINE, )\
+X(QT_TRANSLATE_NOOP("Block", "fire"      ), FIRE,       )\
+X(QT_TRANSLATE_NOOP("Block", "coal"      ), COAL,       )\
+X(QT_TRANSLATE_NOOP("Block", "explosive" ), EXPLOSIVE,  )\
+X(QT_TRANSLATE_NOOP("Block", "acid"      ), ACID,       )\
+X(QT_TRANSLATE_NOOP("Block", "cloud"     ), SUB_CLOUD,  )\
+X(QT_TRANSLATE_NOOP("Block", "dust"      ), SUB_DUST,   )\
+X(QT_TRANSLATE_NOOP("Block", "plastic"   ), SUB_PLASTIC,)\
 /// [List of subs]
 
 enum kinds {
-    #define X(translatable, enum_element, ...) enum_element,
-    KIND_TABLE
-    #undef X
+    KIND_TABLE(X_ENUM)
     LAST_KIND, ///< Nothing is LAST_KIND.
     KIND_COUNT = LAST_KIND
 };
 
 enum subs {
-    #define X(translatable, enum_element) enum_element,
-    SUB_TABLE
-    #undef X
+    SUB_TABLE(X_ENUM)
     LAST_SUB, ///< Nothing is made from LAST_SUB.
     SUB_COUNT = LAST_SUB
 };

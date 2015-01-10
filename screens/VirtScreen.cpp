@@ -160,9 +160,7 @@ char VirtScreen::CharName(const int kind, const int sub) {
         case SUB_NUT:  return ',';
         } break;
     }
-    #define X(translatable, enum_element, class, character) character,
-    static const char characters[] = { KIND_TABLE };
-    #undef X
+    static const char characters[] = { KIND_TABLE(X_CHAR) };
     return characters[kind];
 }
 

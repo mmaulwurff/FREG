@@ -25,10 +25,8 @@
 
 const TrManager * tr_manager;
 
-#define X(string, ...) string,
-const QByteArray TrManager::rawKinds[] = { KIND_TABLE };
-const QByteArray TrManager::rawSubs [] = {  SUB_TABLE };
-#undef X
+const QByteArray TrManager::rawKinds[] = { KIND_TABLE(X_STRING) };
+const QByteArray TrManager::rawSubs [] = {  SUB_TABLE(X_STRING) };
 
 TrManager::TrManager() :
         translator(LoadTranslator()),
@@ -55,12 +53,8 @@ TrManager::TrManager() :
         kindNames[i] = QCoreApplication::translate("Block", rawKinds[i]);
     }
 
-    #define X(translatable, enum_element, symbol) translatable,
-    const char * const rawShredTypes[] = { SHRED_TABLE };
-    #undef X
-    #define X(translatable, enum_element, symbol) symbol,
-    const char shredChars[] = { SHRED_TABLE };
-    #undef X
+    const char * const rawShredTypes[] = { SHRED_TABLE(X_STRING) };
+    const char shredChars[] = { SHRED_TABLE(X_CHAR) };
 
     int index = 0;
     for (const char * raw : rawShredTypes) {
