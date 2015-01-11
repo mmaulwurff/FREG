@@ -137,13 +137,12 @@ void Screen::PassString(QString & str) const {
     inputActive = true;
     wattrset(windows[WIN_NOTIFY], A_UNDERLINE);
     waddwstr(windows[WIN_NOTIFY], wPrintable(tr("Enter input: ")));
-    char temp_str[MAX_NOTE_LENGTH + 1];
     echo();
+    char temp_str[MAX_NOTE_LENGTH + 1];
     wgetnstr(windows[WIN_NOTIFY], temp_str, MAX_NOTE_LENGTH);
     inputActive = false;
     noecho();
-    lastNotification = str;
-    fprintf(notifyLog, "%llu: Command: %s\n", world->Time(), temp_str);
+    fprintf(notifyLog, "Command: %s\n", temp_str);
     str = QString::fromUtf8(temp_str);
 }
 
@@ -359,8 +358,12 @@ void Screen::ControlPlayer(const int ch) {
     case 'H': ProcessCommand("help"); break;
 
     case KEY_F(5):
-    case 'R':
-    case 'L': RePrint(); break;
+    case 'R': RePrint(); break;
+
+    case 'L':
+        QDesktopServices::openUrl(
+            QUrl(QString("file:///%1log.txt").arg(home_path)));
+        break;
 
     case '-': shiftFocus -= 2; // no break;
     case '+': {
@@ -422,7 +425,7 @@ void Screen::ControlPlayer(const int ch) {
     case 24:
     case 'X':
     case KEY_F(10):
-        Notify(tr("Exiting game..."));
+        Notify(tr("Exiting game...\n\n"));
         emit ExitReceived();
         input->Stop();
         break;
@@ -1037,8 +1040,7 @@ void Screen::DisplayFile(QString path) {
 }
 
 void Screen::Notify(const QString str) const {
-    fputs(qPrintable(QString("%1 %2\n").arg(world->TimeOfDayStr()).arg(str)),
-        notifyLog);
+    fprintf(notifyLog, "%s\n", qPrintable(str));
     if ( inputActive ) return;
     wstandend(windows[WIN_NOTIFY]);
     switch ( str.at(str.size()-1).unicode() ) {
@@ -1119,50 +1121,39 @@ Screen::Screen(Player * const pl, int &) :
         noMouseMask(),
         mouseOn(settings.value("mouse_on", true).toBool())
 {
-    #ifndef Q_OS_WIN32
-        set_escdelay(10);
-    #endif
     start_color();
     nodelay(stdscr, FALSE);
     noecho(); // do not print typed symbols
     nonl();
     keypad(stdscr, TRUE); // use arrows
-    mousemask(BUTTON1_CLICKED | BUTTON1_RELEASED, &noMouseMask);
-    if ( not mouseOn ) {
-        mousemask((mouseOn ? MOUSEMASK : noMouseMask), nullptr);
+
+    mousemask(MOUSEMASK, &noMouseMask); // store old mouse mask in noMouseMask
+    if ( not mouseOn ) { // if mouse is off, turn it off.
+        mousemask(noMouseMask, nullptr);
     }
 
-    // all available color pairs (maybe some of them will not be used)
-    const int colors[] = { // do not change colors order!
-        COLOR_BLACK,
-        COLOR_RED,
-        COLOR_GREEN,
-        COLOR_YELLOW,
-        COLOR_BLUE,
-        COLOR_MAGENTA,
-        COLOR_CYAN,
-        COLOR_WHITE
-    };
+    // initiate all possible color pairs
+    const int colors[] = { COLOR_LIST(COLOR) };
     for (int i=BLACK_BLACK; i<=WHITE_WHITE; ++i) {
         init_pair(i, colors[(i-1)/8], colors[(i-1) & 7]);
     }
 
     scrollok(windows[WIN_NOTIFY], TRUE);
 
+    connect(world, &World::UpdatesEnded, this, &Screen::Print,
+        Qt::DirectConnection);
+
     ungetch('0');
     getch();
-    Screen::Notify(tr("\t[[F][r][e][g]] version %1").arg(VER));
-    Screen::Notify(tr("Copyright (C) 2012-2015 Alexander 'm8f' Kromm"));
-    Screen::Notify("(mmaulwurff@gmail.com)\n");
-    Screen::Notify(tr("Press any key to continue."));
+    Notify(tr("\t[[F][r][e][g]] version %1").arg(VER));
+    Notify(tr("Copyright (C) 2012-2015 Alexander 'm8f' Kromm"));
+    Notify("(mmaulwurff@gmail.com)\n");
+    Notify(tr("Press any key to continue."));
 
     qsrand(getch());
 
     RePrint();
-    Screen::Notify(tr("--- Game started. Press 'H' for help. ---"));
-
-    connect(world, &World::UpdatesEnded, this, &Screen::Print,
-        Qt::DirectConnection);
+    Notify(tr("--- Game started. Press 'H' for help. ---"));
 
     input->start();
 } // Screen::Screen(Player * const pl, int & error, bool _ascii)

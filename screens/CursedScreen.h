@@ -113,12 +113,9 @@ private:
     /// second - otherwise - examines block at position x, y.
     void PrintFront(dirs direction, int x = -1, int y = 0) const;
     void PrintInv(WINDOW *, const Block *, const Inventory *) const;
-    /// Returns false when file does not exist, otherwise true.
-    bool PrintFile(WINDOW *, QString const & file_name);
     void PrintHud();
     void PrintMiniMap();
     void PrintQuickInventory();
-    void CleanFileToShow();
     void RePrint();
     void InventoryAction(int num) const;
     int  ColorShred(shred_type)   const;
