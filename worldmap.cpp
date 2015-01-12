@@ -29,7 +29,7 @@ WorldMap::WorldMap(const QString world_name) :
         spawnLatitude()
 {
     if ( map.open(QIODevice::ReadOnly | QIODevice::Text) ) {
-        mapSize = int(qSqrt(1+4*map.size())-1)/2;
+        mapSize = int(sqrtf(1+4*map.size())-1)/2;
     } else {
         GenerateMap(world_name, DEFAULT_MAP_SIZE, SHRED_WATER, 0);
         mapSize = ( map.open(QIODevice::ReadOnly | QIODevice::Text) ) ?
@@ -46,8 +46,8 @@ void WorldMap::MakeAndSaveSpawn(const QString world_name, const int size,
         toLongLong();
     *latitude  = map_info.value("spawn_latitude",  GetSpawnCoordinate(size)).
         toLongLong();
-    map_info.setValue("spawn_longitude", qlonglong(*longitude));
-    map_info.setValue("spawn_latitude" , qlonglong(*latitude ));
+    map_info.setValue("spawn_longitude", *longitude);
+    map_info.setValue("spawn_latitude" , *latitude );
 }
 
 qint64 WorldMap::GetSpawnCoordinate(int size) {

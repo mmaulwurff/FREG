@@ -429,8 +429,8 @@
         if ( not map_file.open(QIODevice::ReadWrite | QIODevice::Text) ) {
             return USAGE_TYPE_READ;
         }
-        const long  lati = user->GetShred()->Latitude();
-        const long longi = user->GetShred()->Longitude();
+        const qint64  lati = user->GetShred()->Latitude();
+        const qint64 longi = user->GetShred()->Longitude();
         const int FILE_SIZE_CHARS = 31 + 1;
         if ( 0 == map_file.size() ) { // new map
             const char header[FILE_SIZE_CHARS+1] =
@@ -570,7 +570,7 @@
     usage_types Informer::Use(Active * const user) {
         switch ( Sub() ) {
         case IRON: user->ReceiveSignal(QString("Your direction: %1.").
-            arg(tr_manager->DirName(user->GetDir()).toLower())); break;
+            arg(TrManager::DirName(user->GetDir()).toLower())); break;
         default: break;
         }
         return USAGE_TYPE_INNER;

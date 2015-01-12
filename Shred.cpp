@@ -43,7 +43,7 @@ bool Shred::LoadShred() {
     in >> read;
     type = static_cast<shred_type>(read);
     in >> read;
-    weather = static_cast<weathers>(read);
+    SetWeather(static_cast<weathers>(read));
     SetAllLightMapNull();
     Block * const null_stone = blockFactory->Normal(NULLSTONE);
     Block * const air        = blockFactory->Normal(AIR);
@@ -79,17 +79,19 @@ bool Shred::LoadShred() {
 } // bool Shred::LoadShred()
 
 Shred::Shred(const int shred_x, const int shred_y,
-        const long longi, const long lati)
+        const qint64 longi, const qint64 lati)
     :
-        Weather(),
-        longitude(longi), latitude(lati),
-        shredX(shred_x), shredY(shred_y),
-        type(),
+        Weather(WEATHER_CLEAR),
+        longitude(longi),
+        latitude(lati),
+        shredX(shred_x),
+        shredY(shred_y),
+        type(static_cast<shred_type>(
+            GetWorld()->GetMap()->TypeOfShred(longi, lati) )),
         activeListFrequent(),
         activeListAll(),
         shiningList(),
-        fallList(),
-        weather(WEATHER_CLEAR)
+        fallList()
 {
     if ( LoadShred() ) return; // successfull loading
     // new shred generation:
@@ -104,9 +106,7 @@ Shred::Shred(const int shred_x, const int shred_y,
         std::fill(blocks[i][j] + 1, blocks[i][j] + HEIGHT - 1, air);
         PutBlock(((qrand() & 3) ? sky : star), i, j, HEIGHT-1);
     }
-    switch ( type = static_cast<shred_type>
-            (GetWorld()->GetMap()->TypeOfShred(longi, lati)) )
-    {
+    switch ( type ) {
     case SHRED_WASTE:       WasteShred(); break;
     case SHRED_WATER:       Water();      break;
     case SHRED_PLAIN:       Plain();      break;
@@ -127,7 +127,7 @@ Shred::Shred(const int shred_x, const int shred_y,
     case SHRED_CRATER:      Water(AIR);   break;
     case SHRED_UNDERGROUND: NormalUnderground(); break;
     }
-} // Shred::Shred(int shred_x, shred_y, long longi, lati, Shred * mem)
+} // Shred::Shred(int shred_x, shred_y, qint64 longi, lati)
 
 Shred::~Shred() { SaveShred(true); }
 
@@ -137,7 +137,7 @@ void Shred::SaveShred(const bool isQuitGame) {
     QDataStream outstr(shred_data, QIODevice::WriteOnly);
     outstr << CURRENT_SHRED_FORMAT_VERSION;
     outstr.setVersion(DATASTREAM_VERSION);
-    outstr << quint8(GetTypeOfShred()) << quint8(weather);
+    outstr << quint8(GetTypeOfShred()) << quint8(GetWeather());
     for (int x=SHRED_WIDTH; x--; )
     for (int y=SHRED_WIDTH; y--; ) {
         int height = HEIGHT - 1;
@@ -160,11 +160,11 @@ void Shred::SaveShred(const bool isQuitGame) {
     GetWorld()->SetShredData(shred_data, longitude, latitude);
 }
 
-long Shred::GlobalX(const int x) const {
+qint64 Shred::GlobalX(const int x) const {
     return (Latitude()  - CoordOfShred(x))*SHRED_WIDTH + x;
 }
 
-long Shred::GlobalY(const int y) const {
+qint64 Shred::GlobalY(const int y) const {
     return (Longitude() - CoordOfShred(y))*SHRED_WIDTH + y;
 }
 
@@ -297,7 +297,7 @@ void Shred::SetNewBlock(const int kind, const int sub,
 }
 
 QString Shred::FileName(const QString world_name,
-        const long longi, const long lati)
+        const qint64 longi, const qint64 lati)
 {
     return QString("%1%2/%3-%4.fm").
         arg(home_path).arg(world_name).arg(longi).arg(lati);
@@ -549,8 +549,8 @@ bool Shred::Tree(const int x, const int y, const int z, const int height) {
 int Shred::CountShredTypeAround(const int type) const {
     int result = 0;
     const WorldMap * const map = GetWorld()->GetMap();
-    for (long i=longitude-1; i<=longitude+1; ++i)
-    for (long j=latitude -1; j<=latitude +1; ++j) {
+    for (qint64 i=longitude-1; i<=longitude+1; ++i)
+    for (qint64 j=latitude -1; j<=latitude +1; ++j) {
         result += ( type == map->TypeOfShred(i, j) );
     }
     return result;

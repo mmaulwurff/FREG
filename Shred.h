@@ -34,13 +34,13 @@ class Falling;
 
 class Shred final : public Weather {
 public:
-     Shred(int shred_x, int shred_y, long longi, long lati);
+     Shred(int shred_x, int shred_y, qint64 longi, qint64 lati);
     ~Shred();
 
     /// Returns y (line) shred coordinate on world map.
-    long Longitude() const { return longitude; }
+    qint64 Longitude() const { return longitude; }
     /// Returns x (column) shred coordinate on world map.
-    long Latitude()  const { return latitude;  }
+    qint64 Latitude()  const { return latitude;  }
     int ShredX() const { return shredX; }
     int ShredY() const { return shredY; }
     void PhysEventsFrequent();
@@ -100,11 +100,11 @@ public:
     void SetNewBlock(int kind, int sub, int x, int y, int z, int dir = UP);
     shred_type GetTypeOfShred() const { return type; }
 
-    static QString FileName(QString world_name, long longi, long lati);
+    static QString FileName(QString world_name, qint64 longi, qint64 lati);
     Shred * GetShredMemory() const;
     /// Make global coordinate from local (in loaded zone).
-    long GlobalX(int x) const;
-    long GlobalY(int y) const;
+    qint64 GlobalX(int x) const;
+    qint64 GlobalY(int y) const;
     /// Get local coordinate.
     static int CoordInShred(const int x) { return x & 0xF; }
 
@@ -166,7 +166,7 @@ private:
     bool Tree(int x, int y, int z, int height);
 
     /// Special land generation
-    void ShredLandAmplitudeAndLevel(long longi, long lati,
+    void ShredLandAmplitudeAndLevel(qint64 longi, qint64 lati,
             ushort * l, float * a) const;
     void ShredNominalAmplitudeAndLevel(char shred_type,
             ushort * l, float * a) const;
@@ -179,7 +179,7 @@ private:
 
     Block * blocks[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
     uchar lightMap[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
-    const long longitude, latitude;
+    const qint64 longitude, latitude;
     int shredX, shredY;
     shred_type type;
 
@@ -187,8 +187,6 @@ private:
     std::forward_list<Active *> activeListAll;
     std::forward_list<Active *> shiningList;
     std::forward_list<Falling *> fallList;
-
-    weathers weather;
 };
 
 #endif // SHRED_H

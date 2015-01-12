@@ -21,6 +21,7 @@
 #define TRMANAGER_H
 
 #include "header.h"
+#include "Weather.h"
 #include <QString>
 #include <QHash>
 
@@ -38,7 +39,7 @@ public:
     QString SubNameUpper(int sub) const;
 
     /// Returns translated direction.
-    QString DirName(dirs) const;
+    static QString DirName(dirs);
 
     /// Returns translated shred type.
     QString ShredTypeName(shred_type) const;
@@ -52,7 +53,12 @@ public:
     /// If string is not convertible to substance, returns LAST_SUB.
     static int StringToSub(QString);
 
-    QString OffOn(bool on) const;
+    /// Universal function, returns translated "off" or "on".
+    static QString OffOn(bool on);
+
+    /// Returns translated weather string.
+    static QString GetWeatherString(weathers);
+
 private:
     Q_DISABLE_COPY(TrManager)
 
@@ -63,10 +69,7 @@ private:
     static const QByteArray rawSubs [];
     QString subNames[SUB_COUNT];
     QString kindNames[KIND_COUNT];
-    const QString dirNames[DIRS_COUNT];
     QHash<char, QString> shredTypeNames;
-
-    QString offOn[2];
 };
 
 extern const TrManager * tr_manager;

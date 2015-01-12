@@ -49,7 +49,7 @@ private:
     static void MakeAndSaveSpawn(QString world_name, int size,
             qint64 * longitude, qint64 * latitude);
 
-    long mapSize;
+    int mapSize;
     mutable QFile map;
     qint64 spawnLongitude, spawnLatitude;
 };

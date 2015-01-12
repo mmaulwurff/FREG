@@ -55,8 +55,8 @@ public:
      Player();
     ~Player();
 
-    long GlobalX() const;
-    long GlobalY() const;
+    qint64 GlobalX() const;
+    qint64 GlobalY() const;
 
     int X() const;
     int Y() const;
@@ -90,8 +90,8 @@ public:
     /// Returns nullptr if there is no inventory, otherwise returns inventory.
     Inventory * PlayerInventory() const;
 
-    long GetLongitude() const;
-    long GetLatitude() const;
+    qint64 GetLongitude() const;
+    qint64 GetLatitude() const;
 
     bool GetCreativeMode() const { return creativeMode; }
     void SetCreativeMode(bool turn);
@@ -136,7 +136,9 @@ public:
     void SaveState() const;
 
 signals:
-    void Moved(long x, long y, int z) const;
+    /// Can be used to track player movements. x and y are global.
+    void Moved(qint64 x, qint64 y, int z) const;
+
     /// This is emitted when a notification is needed to be displayed.
     /** It should be connected to screen::Notify(QString). */
     void Notify(QString) const;

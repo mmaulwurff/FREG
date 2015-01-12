@@ -38,23 +38,21 @@ int Player::Y() const {
     return GetShred()->ShredY() << SHRED_WIDTH_BITSHIFT | Xyz::Y();
 }
 
-long Player::GlobalX() const { return GetShred()->GlobalX(X()); }
-long Player::GlobalY() const { return GetShred()->GlobalY(Y()); }
+qint64 Player::GlobalX() const { return GetShred()->GlobalX(X()); }
+qint64 Player::GlobalY() const { return GetShred()->GlobalY(Y()); }
 Shred * Player::GetShred() const { return player->GetShred(); }
 World * Player::GetWorld() const { return world; }
 
 void Player::StopUseAll() { usingType = usingSelfType = USAGE_TYPE_NO; }
 int  Player::GetUsingInInventory() const { return usingInInventory; }
-long Player::GetLongitude() const { return GetShred()->Longitude(); }
-long Player::GetLatitude()  const { return GetShred()->Latitude();  }
+qint64 Player::GetLongitude() const { return GetShred()->Longitude(); }
+qint64 Player::GetLatitude()  const { return GetShred()->Latitude();  }
 
 void Player::SetCreativeMode(const bool creative_on) {
     creativeMode = creative_on;
-    player->disconnect(SIGNAL(destroyed()), nullptr);
-    player->disconnect(SIGNAL(Moved(int)), nullptr);
-    player->disconnect(SIGNAL(Updated()), nullptr);
-    player->disconnect(SIGNAL(ReceivedText(QString)), nullptr);
-    player->disconnect(SIGNAL(CauseTeleportation()), nullptr);
+    player->disconnect(this, &Player::destroyed, nullptr, nullptr);
+    player->disconnect(this, &Player::Moved,     nullptr, nullptr);
+    player->disconnect(this, &Player::Updated,   nullptr, nullptr);
     SaveState();
     Animal * const prev_player = player;
     SetPlayer(X(), Y(), Z());
@@ -318,7 +316,7 @@ void Player::ProcessCommand(QString command) {
     switch ( UniqueIntFromString(request.constData()) ) {
     case UniqueIntFromString(""): break;
     case UniqueIntFromString("weather"):
-        emit Notify(Weather::GetWeatherString(GetShred()->GetWeather()));
+        emit Notify(TrManager::GetWeatherString(GetShred()->GetWeather()));
         break;
     case UniqueIntFromString("give"):
     case UniqueIntFromString("get" ): {
@@ -515,13 +513,13 @@ Player::~Player() {
 void Player::SaveState() const {
     QSettings settings(home_path + world->WorldName() + "/player_state.ini",
         QSettings::IniFormat);
-    settings.setValue("home_longitude", qlonglong(homeLongi));
-    settings.setValue("home_latitude",  qlonglong(homeLati));
+    settings.setValue("home_longitude", homeLongi);
+    settings.setValue("home_latitude",  homeLati);
     settings.setValue("home_x", homeX);
     settings.setValue("home_y", homeY);
     settings.setValue("home_z", homeZ);
-    settings.setValue("current_longitude", qlonglong(GetShred()->Longitude()));
-    settings.setValue("current_latitude",  qlonglong(GetShred()->Latitude()));
+    settings.setValue("current_longitude", GetShred()->Longitude());
+    settings.setValue("current_latitude",  GetShred()->Latitude());
     settings.setValue("current_x", Xyz::X());
     settings.setValue("current_y", Xyz::Y());
     settings.setValue("current_z", Xyz::Z());
@@ -534,9 +532,9 @@ void Player::LoadState() {
     const QSettings settings(home_path + world->WorldName() +
         "/player_state.ini", QSettings::IniFormat);
     homeLongi = settings.value("home_longitude",
-        qlonglong(world->GetMap()->GetSpawnLongitude())).toLongLong();
+        world->GetMap()->GetSpawnLongitude()).toLongLong();
     homeLati  = settings.value("home_latitude",
-        qlonglong(world->GetMap()->GetSpawnLatitude ())).toLongLong();
+        world->GetMap()->GetSpawnLatitude ()).toLongLong();
     homeX = settings.value("home_x", 0).toInt();
     homeY = settings.value("home_y", 0).toInt();
     homeZ = settings.value("home_z", HEIGHT/2).toInt();

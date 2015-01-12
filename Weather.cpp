@@ -20,14 +20,9 @@
 #include <QObject>
 #include "Weather.h"
 
+Weather::Weather(const weathers _weather) :
+        weather(_weather)
+{}
+
 void Weather::SetWeather(const weathers new_weather) { weather = new_weather; }
 weathers Weather::GetWeather() const { return weather; }
-
-QString Weather::GetWeatherString(const weathers w) {
-    switch ( w ) {
-    case WEATHER_CLEAR:  return QObject::tr("Clear");
-    case WEATHER_RAIN:   return QObject::tr("Rain");
-    case WEATHER_DEW:    return QObject::tr("Dew");
-    case WEATHER_CLOUDS: return QObject::tr("Clouds");
-    }
-}

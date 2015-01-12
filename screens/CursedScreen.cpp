@@ -36,7 +36,7 @@
 
 void Screen::PrintVerticalDirection(WINDOW *const window, const dirs direction)
 {
-    waddwstr(window, wPrintable(tr_manager->DirName(direction)));
+    waddwstr(window, wPrintable(TrManager::DirName(direction)));
 }
 
 void Screen::Arrows(WINDOW * const window, const int x, const int y,
@@ -59,10 +59,10 @@ void Screen::HorizontalArrows(WINDOW * const window, const int y,
         const dirs direction)
 const {
     static const std::wstring dir_chars[] = {
-        tr_manager->DirName(NORTH).left(1).toStdWString(),
-        tr_manager->DirName(EAST ).left(1).toStdWString(),
-        tr_manager->DirName(SOUTH).left(1).toStdWString(),
-        tr_manager->DirName(WEST ).left(1).toStdWString()
+        TrManager::DirName(NORTH).left(1).toStdWString(),
+        TrManager::DirName(EAST ).left(1).toStdWString(),
+        TrManager::DirName(SOUTH).left(1).toStdWString(),
+        TrManager::DirName(WEST ).left(1).toStdWString()
     };
     wstandend(window);
     mvwaddwstr(window, y-1,0, dir_chars[World::TurnLeft(direction)-2].c_str());
@@ -391,7 +391,7 @@ void Screen::ControlPlayer(const int ch) {
     case 'M':
         mouseOn = not mouseOn;
         mousemask((mouseOn ? MOUSEMASK : noMouseMask), nullptr);
-        Notify(tr("Mouse: %1.").arg(tr_manager->OffOn(mouseOn)));
+        Notify(tr("Mouse: %1.").arg(TrManager::OffOn(mouseOn)));
         break;
 
     case KEY_BREAK:
@@ -510,7 +510,7 @@ void Screen::ProcessMouse() {
                 0 < mevent.y && mevent.y < screenHeight - 1 ) )
         {
             Notify(tr("Right window, %1 view.").
-                arg(tr_manager->DirName(player->GetDir())));
+                arg(TrManager::DirName(player->GetDir())));
         } else {
             switch ( player->GetDir() ) {
             case UP:
@@ -540,16 +540,16 @@ void Screen::ProcessCommand(const QString command) {
     switch ( Player::UniqueIntFromString(qPrintable(command)) ) {
     case Player::UniqueIntFromString("distance"):
         showDistance = not showDistance;
-        Notify(tr("Show distance: %1.").arg(tr_manager->OffOn(showDistance)));
+        Notify(tr("Show distance: %1.").arg(TrManager::OffOn(showDistance)));
         break;
     case Player::UniqueIntFromString("far"):
         farDistance = not farDistance;
         Notify(tr("Use \"abcdef\" as distance: %1.").
-            arg(tr_manager->OffOn(farDistance)));
+            arg(TrManager::OffOn(farDistance)));
         break;
     case Player::UniqueIntFromString("blink"):
         blinkOn = not blinkOn;
-        Notify(tr("Block blink is now %1.").arg(tr_manager->OffOn(blinkOn)));
+        Notify(tr("Block blink is now %1.").arg(TrManager::OffOn(blinkOn)));
         break;
     case Player::UniqueIntFromString("size"):
         Notify(tr("Terminal height: %1 lines, width: %2 chars.").
@@ -925,7 +925,6 @@ const {
     const int k_start = GetFrontStartZ();
     if ( block_x > 0 ) {
         // ugly! use print function to get block by screen coordinates.
-        Notify("hello");
         const int k = k_start - block_y + 1;
         *x = x_start + x_step * (block_x-1)/2;
         for (*z=z_start; *z!=z_end && world->GetBlock(i, j, k)->

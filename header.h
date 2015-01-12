@@ -241,7 +241,7 @@ enum transparency {
 inline int Round(const float x) { return int(x + 0.5f); }
 
 inline unsigned Abs(const int x) {
-    const unsigned mask = x >> (sizeof(unsigned)*8 - 1);
+    const unsigned mask = x >> (sizeof(unsigned)*CHAR_BIT - 1);
     return (x ^ mask) - mask;
 }
 

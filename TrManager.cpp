@@ -32,19 +32,7 @@ TrManager::TrManager() :
         translator(LoadTranslator()),
         subNames(),
         kindNames(),
-        dirNames {
-            QCoreApplication::translate("Global", "Up"   ),
-            QCoreApplication::translate("Global", "Down" ),
-            QCoreApplication::translate("Global", "North"),
-            QCoreApplication::translate("Global", "East" ),
-            QCoreApplication::translate("Global", "South"),
-            QCoreApplication::translate("Global", "West" )
-        },
-        shredTypeNames(),
-        offOn {
-            QCoreApplication::translate("Global", "off"),
-            QCoreApplication::translate("Global", "on")
-        }
+        shredTypeNames()
 {
     for (int i = 0; i < SUB_COUNT; ++i) {
         subNames[i] = QCoreApplication::translate("Block", rawSubs[i]);
@@ -71,12 +59,40 @@ QTranslator * TrManager::LoadTranslator() const {
     return translator;
 }
 
-QString TrManager::  DirName(const dirs dir) const { return  dirNames[ dir]; }
 QString TrManager::  SubName(const int  sub) const { return  subNames[ sub]; }
 QString TrManager:: KindName(const int kind) const { return kindNames[kind]; }
 QString TrManager::KindToString(const int kind) { return rawKinds[kind]; }
 QString TrManager:: SubToString(const int sub ) { return  rawSubs[sub ]; }
-QString TrManager::OffOn(const bool on) const { return offOn[on]; }
+
+QString TrManager::OffOn(const bool on) {
+    static const QString offOn[] = {
+        QCoreApplication::translate("Global", "off"),
+        QCoreApplication::translate("Global", "on")
+    };
+    return offOn[on];
+}
+
+QString TrManager::DirName(const dirs dir) {
+    static const QString dirNames[] = {
+        QCoreApplication::translate("Global", "Up"   ),
+        QCoreApplication::translate("Global", "Down" ),
+        QCoreApplication::translate("Global", "North"),
+        QCoreApplication::translate("Global", "East" ),
+        QCoreApplication::translate("Global", "South"),
+        QCoreApplication::translate("Global", "West" )
+    };
+    return dirNames[dir];
+}
+
+QString TrManager::GetWeatherString(const weathers weather) {
+    static const QString weatherStrings[] = {
+        QCoreApplication::translate("Global", "Clear"),
+        QCoreApplication::translate("Global", "Rain"),
+        QCoreApplication::translate("Global", "Rain"),
+        QCoreApplication::translate("Global", "Clouds")
+    };
+    return weatherStrings[weather];
+}
 
 QString TrManager::SubNameUpper(const int sub) const {
     QString result = SubName(sub);

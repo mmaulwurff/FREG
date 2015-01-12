@@ -26,17 +26,20 @@ enum weathers {
     WEATHER_CLEAR,
     WEATHER_RAIN,
     WEATHER_DEW,
-    WEATHER_CLOUDS
+    WEATHER_CLOUDS,
+    WEATHER_COUNT
 };
 
 class Weather {
 public:
+    explicit Weather(weathers);
+
     void SetWeather(weathers);
     weathers GetWeather() const;
 
-    static QString GetWeatherString(weathers);
-
 private:
+    Q_DISABLE_COPY(Weather)
+
     weathers weather;
 };
 

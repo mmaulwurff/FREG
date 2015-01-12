@@ -31,7 +31,7 @@
 
 World * world;
 
-bool World::ShredInCentralZone(const long longi, const long  lati) const {
+bool World::ShredInCentralZone(const qint64 longi, const qint64  lati) const {
     return ( qAbs(longi - longitude) <= 1 ) && ( qAbs(lati - latitude) <= 1 );
 }
 
@@ -62,12 +62,12 @@ qint64 World::Longitude() const { return longitude; }
 qint64 World::Latitude()  const { return latitude; }
 const WorldMap * World::GetMap() const { return map; }
 
-QByteArray * World::GetShredData(long longi, long lati) const {
+QByteArray * World::GetShredData(qint64 longi, qint64 lati) const {
     return shredStorage->GetShredData(longi, lati);
 }
 
 void World::SetShredData(QByteArray * const data,
-        const long longi, const long lati)
+        const qint64 longi, const qint64 lati)
 {
     shredStorage->SetShredData(data, longi, lati);
 }
@@ -623,8 +623,8 @@ bool World::Exchange(Block * const block_from, Block * const block_to,
 }
 
 void World::LoadAllShreds() {
-    for (long j=longitude-NumShreds()/2, y=0; y<NumShreds(); ++j, ++y)
-    for (long i=latitude -NumShreds()/2, x=0; x<NumShreds(); ++i, ++x) {
+    for (qint64 j=longitude-NumShreds()/2, y=0; y<NumShreds(); ++j, ++y)
+    for (qint64 i=latitude -NumShreds()/2, x=0; x<NumShreds(); ++i, ++x) {
         *FindShred(x, y) = new Shred(x, y, j, i);
     }
     sunMoonFactor = evernight ?
@@ -706,18 +706,17 @@ World::~World() {
 }
 
 void World::SaveState() const {
-    QSettings settings(home_path + worldName + "/settings.ini",
-        QSettings::IniFormat);
-    settings.setValue("time", qlonglong(time));
+    QSettings settings(WorldPath() + "/settings.ini", QSettings::IniFormat);
+    settings.setValue("time", time);
     settings.setValue("time_step", timeStep);
-    settings.setValue("longitude", qlonglong(longitude));
-    settings.setValue("latitude", qlonglong(latitude));
+    settings.setValue("longitude", longitude);
+    settings.setValue("latitude",  latitude );
     settings.setValue("evernight", evernight);
 }
 
 void World::LoadNotes() {
     notes.clear();
-    QFile notes_file(home_path + worldName + "/notes.txt");
+    QFile notes_file(WorldPath() + "/notes.txt");
     if ( notes_file.open(QIODevice::ReadOnly | QIODevice::Text) ) {
         char note[MAX_NOTE_LENGTH*2];
         while ( notes_file.readLine(note, MAX_NOTE_LENGTH*2) > 0 ) {
@@ -727,7 +726,7 @@ void World::LoadNotes() {
 }
 
 void World::SaveNotes() const {
-    QFile notes_file(home_path + worldName + "/notes.txt");
+    QFile notes_file(WorldPath() + "/notes.txt");
     if ( notes_file.open(QIODevice::WriteOnly | QIODevice::Text) ) {
         for (const QString & note : notes) {
             notes_file.write(qPrintable(note));
@@ -737,13 +736,12 @@ void World::SaveNotes() const {
 }
 
 void World::LoadState() {
-    const QSettings settings(home_path + worldName +"/settings.ini",
-        QSettings::IniFormat);
-    time = settings.value("time", END_OF_NIGHT).toLongLong();
-    timeStep = settings.value("time_step", 0).toInt();
-    longitude = settings.value("longitude",
-        qlonglong(map->GetSpawnLongitude())).toLongLong();
-    latitude  = settings.value("latitude",
-        qlonglong(map->GetSpawnLatitude ())).toLongLong();
-    evernight = settings.value("evernight", false).toBool();
+    const QSettings setting(WorldPath()+"/settings.ini", QSettings::IniFormat);
+    time      = setting.value("time", END_OF_NIGHT).toULongLong();
+    timeStep  = setting.value("time_step", 0).toInt();
+    evernight = setting.value("evernight", false).toBool();
+    longitude = setting.value("longitude",
+        map->GetSpawnLongitude()).toLongLong();
+    latitude  = setting.value("latitude",
+        map->GetSpawnLatitude()).toLongLong();
 }

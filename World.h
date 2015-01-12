@@ -96,7 +96,7 @@ public: // Information section
     bool Focus(int x, int y, int z,
             int * x_targ, int * y_targ, int * z_targ, dirs dir) const;
     int NumShreds() const { return numShreds; }
-    bool ShredInCentralZone(long longi, long  lati) const;
+    bool ShredInCentralZone(qint64 longi, qint64  lati) const;
     static dirs TurnRight(dirs dir);
     static dirs TurnLeft (dirs dir);
     static dirs Anti(dirs dir);
@@ -105,9 +105,10 @@ public: // Information section
 
     const WorldMap * GetMap() const;
 
-    QByteArray * GetShredData(long longi, long lati) const;
-    void SetShredData(QByteArray *, long longi, long lati);
+    QByteArray * GetShredData(qint64 longi, qint64 lati) const;
+    void SetShredData(QByteArray *, qint64 longi, qint64 lati);
 private:
+    QString WorldPath() const { return home_path + WorldName(); }
     int ShredPos(int x, int y) const;
 
 public: // Visibility section
