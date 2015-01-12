@@ -92,7 +92,8 @@ void ShredStorage::SetShredData(QByteArray * const data,
 }
 
 void ShredStorage::AddShredData(const qint64 longitude, const qint64 latitude){
-    QFile file(Shred::FileName(world->WorldName(), longitude, latitude));
+    QFile file(Shred::FileName(
+        World::GetWorld()->WorldName(), longitude, latitude) );
     storage.insert(LongLat(longitude, latitude),
         ( file.open(QIODevice::ReadOnly) ?
             new QByteArray(qUncompress(file.readAll())) : nullptr ));
@@ -102,7 +103,8 @@ void ShredStorage::WriteToFileShredData(const qint64 longi, const qint64 lati)
 const {
     const QByteArray * const data = storage.value(LongLat(longi, lati));
     if ( data != nullptr ) {
-        QFile file(Shred::FileName(world->WorldName(), longi, lati));
+        QFile file(Shred::FileName(
+            World::GetWorld()->WorldName(), longi, lati));
         if ( file.open(QIODevice::WriteOnly) ) {
             file.write(qCompress(*data, COMPRESSION_LEVEL));
         }

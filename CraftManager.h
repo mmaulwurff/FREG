@@ -67,8 +67,8 @@ public:
      CraftManager();
     ~CraftManager();
 
-    bool MiniCraft(CraftItem **) const;
-    bool Craft(CraftList * items, int sub) const;
+    static bool MiniCraft(CraftItem **);
+    static bool Craft(CraftList * items, int sub);
 
 private:
     Q_DISABLE_COPY(CraftManager)
@@ -76,8 +76,8 @@ private:
     bool CraftSub(CraftList * items, int sub) const;
 
     QList<CraftList *> recipesList[SUB_COUNT];
-}; // CraftManager
 
-extern const CraftManager * craft_manager;
+    static CraftManager * craftManager;
+}; // CraftManager
 
 #endif // CRAFTMANAGER_H

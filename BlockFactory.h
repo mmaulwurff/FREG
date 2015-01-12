@@ -47,29 +47,24 @@ public:
     ~BlockFactory();
 
     /// Use this to receive a pointer to normal block.
-    Block * Normal(const int sub) const { return normals[sub]; }
+    static Block * Normal(const int sub);
 
     /// Use this to receive a pointer to new not-normal block.
-    Block * NewBlock(const int kind, const int sub) const {
-        //qDebug("kind: %d, sub: %d, valid: %d", kind, sub, IsValid(kind,sub));
-        return creates[kind](kind, sub);
-    }
+    static Block * NewBlock(int kind, int sub);
 
     /// Use this to load block from file.
-    Block * BlockFromFile(QDataStream & str, const int kind, const int sub)
-    const {
-        //qDebug("kind: %d, sub: %d, valid: %d", kind, sub, IsValid(kind,sub));
-        return loads[kind](str, kind, sub);
-    }
+    static Block * BlockFromFile(QDataStream & str, int kind, int sub);
 
     /// Returns true if block is normal.
     static bool KindSubFromFile(QDataStream &, quint8 * kind, quint8 * sub);
+
     /// Does not actually delete normal blocks.
-    void DeleteBlock(Block *) const;
+    static void DeleteBlock(Block *);
+
     /// For memory economy.
     /** Checks and replaces block with corresponding normal block.
      *  Can delete block, use carefully. */
-    Block * ReplaceWithNormal(Block * block) const;
+    static Block * ReplaceWithNormal(Block * block);
 
     constexpr static int MakeId(const int kind, const int sub) {
         return (kind << 6) | sub;
@@ -103,8 +98,8 @@ private:
     template <typename BlockType, typename ... RestBlockTypes>
     void RegisterAll(typeList<BlockType, RestBlockTypes...>);
     int kindIndex = 0;
-};
 
-extern const BlockFactory * blockFactory;
+    static BlockFactory * blockFactory;
+};
 
 #endif // BLOCKFACTORY_H

@@ -54,7 +54,7 @@
             ++breath;
         }
         if ( GetDurability() <= 0 ) {
-            GetWorld()->DestroyAndReplace(X(), Y(), Z());
+            World::GetWorld()->DestroyAndReplace(X(), Y(), Z());
         } else {
             emit Updated();
         }
@@ -85,13 +85,13 @@
     int Animal::ShouldAct() const { return FREQUENT_SECOND | FREQUENT_RARE; }
     int Animal::DamageKind() const { return DAMAGE_BITE; }
     Animal * Animal::IsAnimal() { return this; }
-    QString Animal::FullName() const { return tr_manager->KindName(Kind()); }
+    QString Animal::FullName() const { return TrManager::KindName(Kind()); }
 
     bool Animal::Eat(const subs sub) {
         const int value = NutritionalValue(sub);
         if ( value ) {
             satiation += value;
-            ReceiveSignal(tr("Ate %1.").arg(tr_manager->SubName(sub)));
+            ReceiveSignal(tr("Ate %1.").arg(TrManager::SubName(sub)));
             if ( SECONDS_IN_DAY < satiation ) {
                 satiation = 1.1 * SECONDS_IN_DAY;
                 ReceiveSignal(tr("You have gorged yourself!"));
@@ -116,7 +116,7 @@
             Xyz(X(), Y()+1, Z()),
             Xyz(X(), Y(), Z()-1)
         };
-        World * const world = GetWorld();
+        World * const world = World::GetWorld();
         for (const Xyz xyz : coords) {
             if ( not world->InBounds(xyz.X(), xyz.Y()) ) {
                 continue;
@@ -132,8 +132,8 @@
     }
 
     Block * Animal::DropAfterDamage(bool *) {
-        Block * const cadaver = blockFactory->NewBlock(BOX, Sub());
-        cadaver->HasInventory()->Get(blockFactory->NewBlock(WEAPON, BONE));
+        Block * const cadaver = BlockFactory::NewBlock(BOX, Sub());
+        cadaver->HasInventory()->Get(BlockFactory::NewBlock(WEAPON, BONE));
         return cadaver;
     }
 
@@ -177,13 +177,13 @@
         if ( not moved_in_this_turn ) {
             const int rand = qrand() & 255;
             if ( rand < 64 ) {
-                GetWorld()->Move(X(), Y(), Z(),
+                World::GetWorld()->Move(X(), Y(), Z(),
                     static_cast<dirs>(DOWN + (rand & 3)));
             } else if ( Gravitate(4, 1, 3, 4) ) {
                 if ( rand & 1 ) {
-                    GetWorld()->Jump(X(), Y(), Z(), GetDir());
+                    World::GetWorld()->Jump(X(), Y(), Z(), GetDir());
                 } else {
-                    GetWorld()->Move(X(), Y(), Z(), GetDir());
+                    World::GetWorld()->Move(X(), Y(), Z(), GetDir());
                 }
             }
         }
@@ -194,9 +194,9 @@
     void Rabbit::ActFrequent() {
         if ( Gravitate(2, 1, 2, 4) ) {
             if ( qrand() & 1 ) {
-                world->Jump(X(), Y(), Z(), GetDir());
+                World::GetWorld()->Jump(X(), Y(), Z(), GetDir());
             } else {
-                world->Move(X(), Y(), Z(), GetDir());
+                World::GetWorld()->Move(X(), Y(), Z(), GetDir());
             }
             moved_in_this_turn = true;
         }
@@ -216,7 +216,7 @@
 
     void Predator::ActFrequent() {
         if ( Gravitate(5, 1, 2, 0) ) {
-            world->Move(X(), Y(), Z(), GetDir());
+            World::GetWorld()->Move(X(), Y(), Z(), GetDir());
         }
     }
 

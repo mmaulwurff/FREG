@@ -20,6 +20,7 @@
 #include "blocks.h"
 #include "World.h"
 #include "Shred.h"
+#include "worldmap.h"
 #include "BlockFactory.h"
 #include <QTextStream>
 #include <QFile>
@@ -53,9 +54,9 @@
     push_reaction Ladder::PushResult(dirs) const { return MOVE_UP; }
 
     Block * Ladder::DropAfterDamage(bool * const delete_block) {
-        Block * const pile = blockFactory->NewBlock(BOX, DIFFERENT);
+        Block * const pile = BlockFactory::NewBlock(BOX, DIFFERENT);
         if ( STONE==Sub() || MOSS_STONE==Sub() ) {
-            pile->HasInventory()->Get(blockFactory->Normal(Sub()));
+            pile->HasInventory()->Get(BlockFactory::Normal(Sub()));
         } else {
             pile->HasInventory()->Get(this);
             *delete_block = false;
@@ -68,20 +69,17 @@
         if ( not IsSubAround(Sub()) || Sub()==SUB_CLOUD ) {
             Damage(MAX_DURABILITY*2/SECONDS_IN_NIGHT, DAMAGE_TIME);
             if ( GetDurability() <= 0 ) {
-                GetWorld()->DestroyAndReplace(X(), Y(), Z());
+                World::GetWorld()->DestroyAndReplace(X(), Y(), Z());
                 return;
             }
         }
-        switch ( Sub() ) {
-        case SUB_CLOUD: return;
-        case ACID:
-        case STONE: DamageAround(); // no break;
-        default: switch ( qrand() & 15 ) {
-            case 0: GetWorld()->Move(X(), Y(), Z(), NORTH); break;
-            case 1: GetWorld()->Move(X(), Y(), Z(), SOUTH); break;
-            case 2: GetWorld()->Move(X(), Y(), Z(), EAST ); break;
-            case 3: GetWorld()->Move(X(), Y(), Z(), WEST ); break;
-            } break;
+        if ( Sub() == SUB_CLOUD ) return;
+        if ( Sub() == ACID || Sub() == STONE ) {
+            DamageAround();
+        }
+        const int random = qrand() & 15;
+        if ( random < 4 ) {
+            World::GetWorld()->Move(X(), Y(), Z(), static_cast<dirs>(random+2));
         }
     }
 
@@ -109,7 +107,7 @@
     }
 
     Block * Liquid::DropAfterDamage(bool *) {
-        return blockFactory->Normal( ( Sub() == STONE ) ?
+        return BlockFactory::Normal( ( Sub() == STONE ) ?
             STONE : AIR);
     }
 
@@ -118,7 +116,7 @@
         case STONE:  return tr("Lava");
         case H_MEAT:
         case A_MEAT: return tr("Blood");
-        default:     return tr_manager->SubNameUpper(Sub());
+        default:     return TrManager::SubNameUpper(Sub());
         }
     }
 
@@ -133,7 +131,7 @@
         case 3: --j; break;
         default: return;
         }
-        World * const world = GetWorld();
+        World * const world = World::GetWorld();
         if ( not world->InBounds(i, j) ) return;
         if ( FIRE == Sub() || world->Enlightened(i, j, k) ) {
             const int sub_near = world->GetBlock(i, j, k)->Sub();
@@ -142,7 +140,7 @@
                     || ( IsBase(Sub(), sub_near)
                         && AIR == world->GetBlock(i, j, ++k)->Sub() ) )
             {
-                world->Build(blockFactory->NewBlock(GRASS, Sub()), i, j, k);
+                world->Build(BlockFactory::NewBlock(GRASS, Sub()), i, j, k);
             }
         }
         if ( not IsBase(Sub(), world->GetBlock(X(), Y(), Z()-1)->Sub()) ) {
@@ -169,7 +167,7 @@
 
     QString Grass::FullName() const {
         switch ( Sub() ) {
-        case GREENERY: return tr_manager->KindName(GRASS);
+        case GREENERY: return TrManager::KindName(GRASS);
         case FIRE:     return tr("Fire");
         default:       return Block::FullName();
         }
@@ -178,7 +176,7 @@
     int  Grass::ShouldAct() const  { return FREQUENT_RARE; }
     int  Grass::LightRadius() const { return (FIRE == Sub()) ? 5 : 0; }
     inner_actions Grass::ActInner() { return INNER_ACTION_NONE; }
-    Block * Grass::DropAfterDamage(bool *) {return blockFactory->Normal(AIR);}
+    Block * Grass::DropAfterDamage(bool *) {return BlockFactory::Normal(AIR);}
 
     int Grass::DamageKind() const {
         return (Sub() == FIRE) ? DAMAGE_HEAT : DAMAGE_NO;
@@ -188,14 +186,14 @@
     int  Bush::ShouldAct() const  { return FREQUENT_RARE; }
     void Bush::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
     int  Bush::Weight() const { return Inventory::Weight() + Block::Weight(); }
-    QString Bush::FullName() const { return tr_manager->KindName(BUSH); }
+    QString Bush::FullName() const { return TrManager::KindName(BUSH); }
     usage_types Bush::Use(Active *) { return USAGE_TYPE_OPEN; }
     Inventory * Bush::HasInventory() { return this; }
     inner_actions Bush::ActInner() { return INNER_ACTION_NONE; }
 
     void Bush::DoRareAction() {
         if ( 0 == (qrand() & 255) ) {
-            Get(blockFactory->NewBlock(WEAPON, SUB_NUT));
+            Get(BlockFactory::NewBlock(WEAPON, SUB_NUT));
         }
     }
 
@@ -208,10 +206,10 @@
     }
 
     Block * Bush::DropAfterDamage(bool *) {
-        Block * const pile = blockFactory->NewBlock(BOX, DIFFERENT);
+        Block * const pile = BlockFactory::NewBlock(BOX, DIFFERENT);
         Inventory * const pile_inv = pile->HasInventory();
-        pile_inv->Get(blockFactory->NewBlock(WEAPON, WOOD));
-        pile_inv->Get(blockFactory->NewBlock(WEAPON, SUB_NUT));
+        pile_inv->Get(BlockFactory::NewBlock(WEAPON, WOOD));
+        pile_inv->Get(BlockFactory::NewBlock(WEAPON, SUB_NUT));
         return pile;
     }
 
@@ -238,7 +236,7 @@
                 && World::Anti(GetDir()) != MakeDirFromDamage(dmg_kind) )
         {
             movable = MOVABLE;
-            shifted = GetWorld()->Move(X(), Y(), Z(), GetDir());
+            shifted = World::GetWorld()->Move(X(), Y(), Z(), GetDir());
             movable = NOT_MOVABLE;
         }
         Block::Damage(dmg, dmg_kind);
@@ -246,7 +244,7 @@
 
     void Door::ActFrequent() {
         if ( shifted ) {
-            World * const world = GetWorld();
+            World * const world = World::GetWorld();
             movable = MOVABLE;
             shifted = !world->Move(X(), Y(), Z(), World::Anti(GetDir()));
             movable = NOT_MOVABLE;
@@ -258,8 +256,8 @@
 
     QString Door::FullName() const {
         return QString("%1 (%2)").
-            arg(locked ? tr("Locked door") : tr_manager->KindName(DOOR)).
-            arg(tr_manager->SubName(Sub()));
+            arg(locked ? tr("Locked door") : TrManager::KindName(DOOR)).
+            arg(TrManager::SubName(Sub()));
     }
 
     usage_types Door::Use(Active *) {
@@ -292,7 +290,7 @@
         if ( who != nullptr ) {
             who->ReceiveSignal( (GetNote().left(4) == "real") ?
                 tr("Outer time is %1.").arg(QTime::currentTime().toString()) :
-                GetWorld()->TimeOfDayStr() );
+                World::GetWorld()->TimeOfDayStr() );
         } else {
             SendSignalAround(GetNote());
         }
@@ -317,10 +315,11 @@
     wearable Clock::Wearable() const { return WEARABLE_OTHER; }
 
     inner_actions Clock::ActInner() {
-        const int current_time = GetWorld()->TimeOfDay();
+        const int current_time = World::GetWorld()->TimeOfDay();
         int notify_flag = 1;
         if ( alarmTime == current_time ) {
-            Block::Inscribe(tr("Alarm. %1").arg(GetWorld()->TimeOfDayStr()));
+            Block::Inscribe(tr("Alarm. %1").
+                arg(World::GetWorld()->TimeOfDayStr()));
             ++notify_flag;
         } else if ( timerTime > 0 )  {
             --timerTime;
@@ -328,7 +327,7 @@
         } else if ( timerTime == 0 ) {
             timerTime = -1;
             Block::Inscribe(tr("Timer fired. %1").
-                arg(GetWorld()->TimeOfDayStr()));
+                arg(World::GetWorld()->TimeOfDayStr()));
             ++notify_flag;
         }
         if ( Sub()==EXPLOSIVE ) {
@@ -424,8 +423,7 @@
             user->ReceiveSignal(QObject::tr("Set title to this map first."));
             return USAGE_TYPE_INNER;
         } // else:
-        QFile map_file(home_path + user->GetWorld()->WorldName()
-            + "/texts/" + GetNote());
+        QFile map_file(World::GetWorld()->WorldPath() + "/texts/" + GetNote());
         if ( not map_file.open(QIODevice::ReadWrite | QIODevice::Text) ) {
             return USAGE_TYPE_READ;
         }
@@ -460,7 +458,7 @@
             (longi - longiStart + border_dist ) +
              lati  - latiStart  + border_dist );
         map_file.putChar('@');
-        savedChar = user->GetWorld()->GetMap()->TypeOfShred(longi, lati);
+        savedChar = World::GetWorld()->GetMap()->TypeOfShred(longi, lati);
         map_file.seek(FILE_SIZE_CHARS * (FILE_SIZE_CHARS - 1));
         map_file.write(" @ = ");
         map_file.putChar(savedChar);

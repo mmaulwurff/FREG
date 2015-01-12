@@ -44,6 +44,8 @@ public:
      World(QString world_name, bool * error);
     ~World();
 
+     static World * GetWorld();
+
 public: // Block work section
     Block * GetBlock(int x, int y, int z) const;
     Shred * GetShred(int i, int j) const;
@@ -92,6 +94,7 @@ private:
 
 public: // Information section
     QString WorldName() const { return worldName; }
+    QString WorldPath() const { return home_path + WorldName(); }
     /// False on error, true if focus is received to _targ successfully.
     bool Focus(int x, int y, int z,
             int * x_targ, int * y_targ, int * z_targ, dirs dir) const;
@@ -108,7 +111,6 @@ public: // Information section
     QByteArray * GetShredData(qint64 longi, qint64 lati) const;
     void SetShredData(QByteArray *, qint64 longi, qint64 lati);
 private:
-    QString WorldPath() const { return home_path + WorldName(); }
     int ShredPos(int x, int y) const;
 
 public: // Visibility section
@@ -257,8 +259,8 @@ private:
     ShredStorage * shredStorage;
     bool initial_lighting;
     QList<QString> notes;
-};
 
-extern World * world;
+    static World * world;
+};
 
 #endif // WORLD_H

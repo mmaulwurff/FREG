@@ -52,7 +52,7 @@ void RainMachine::DoRareAction() {
 
 QString RainMachine::FullName() const {
     return QString("%1: %2").
-        arg(tr_manager->KindName(RAIN_MACHINE)).
+        arg(TrManager::KindName(RAIN_MACHINE)).
         arg(TrManager::OffOn(isOn));
 }
 

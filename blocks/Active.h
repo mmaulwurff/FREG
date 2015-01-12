@@ -60,7 +60,6 @@ public:
     Active * ActiveBlock() override final;
 
     Shred * GetShred() const { return shred; }
-    World * GetWorld() const { return world; }
 
     virtual void ActFrequent();
     void ActRare();

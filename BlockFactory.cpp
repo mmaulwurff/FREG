@@ -32,7 +32,12 @@
 
 const BlockFactory * blockFactory;
 
+BlockFactory * BlockFactory::blockFactory = nullptr;
+
 BlockFactory::BlockFactory() {
+    Q_ASSERT(blockFactory == nullptr);
+    blockFactory = this;
+
     for (int sub=0; sub<SUB_COUNT; ++sub) {
         normals[sub] = new Block(BLOCK, sub);
     }
@@ -50,6 +55,22 @@ BlockFactory::BlockFactory() {
 
 BlockFactory::~BlockFactory() { qDeleteAll(normals, normals + SUB_COUNT); }
 
+Block * BlockFactory::NewBlock(const int kind, const int sub) {
+    //qDebug("kind: %d, sub: %d, valid: %d", kind, sub, IsValid(kind,sub));
+    return blockFactory->creates[kind](kind, sub);
+}
+
+Block * BlockFactory::Normal(const int sub) {
+    return blockFactory->normals[sub];
+}
+
+Block * BlockFactory::BlockFromFile(QDataStream & str,
+        const int kind, const int sub)
+{
+    //qDebug("kind: %d, sub: %d, valid: %d", kind, sub, IsValid(kind,sub));
+    return blockFactory->loads[kind](str, kind, sub);
+}
+
 bool BlockFactory::KindSubFromFile(QDataStream & str,
         quint8 * kind, quint8 * sub)
 {
@@ -64,8 +85,8 @@ bool BlockFactory::KindSubFromFile(QDataStream & str,
     }
 }
 
-void BlockFactory::DeleteBlock(Block * const block) const {
-    if ( block != Normal(block->Sub()) ) {
+void BlockFactory::DeleteBlock(Block * const block) {
+    if ( block != blockFactory->Normal(block->Sub()) ) {
         Active * const active = block->ActiveBlock();
         if ( active != nullptr ) {
             active->Unregister();
@@ -74,8 +95,8 @@ void BlockFactory::DeleteBlock(Block * const block) const {
     }
 }
 
-Block * BlockFactory::ReplaceWithNormal(Block * const block) const {
-    Block * const normal = Normal(block->Sub());
+Block * BlockFactory::ReplaceWithNormal(Block * const block) {
+    Block * const normal = blockFactory->Normal(block->Sub());
     if ( block!=normal && *block==*normal ) {
         delete block;
         return normal;

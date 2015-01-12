@@ -256,7 +256,7 @@ void Shred::SetAllLightMapNull() { memset(lightMap, 0, sizeof(lightMap)); }
 
 /// Makes all shining blocks of shred shine.
 void Shred::ShineAll() {
-    World * const world = GetWorld();
+    World * const world = World::GetWorld();
     for (const Active * const shining : shiningList) {
         world->Shine(shining->X(), shining->Y(), shining->Z(),
             shining->LightRadius());

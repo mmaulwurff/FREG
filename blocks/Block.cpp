@@ -30,7 +30,7 @@ dirs Block::MakeDirFromDamage(const int dmg_kind) {
 QString Block::FullName() const {
     if ( Kind() ==  BLOCK ) {
         switch ( Sub() ) {
-        default:    return tr_manager->SubNameUpper(Sub());
+        default:    return TrManager::SubNameUpper(Sub());
         case WATER: return QObject::tr("Ice");
         case SAND:  return QObject::tr("Sandstone");
         case CLAY:  return QObject::tr("Clay brick");
@@ -41,8 +41,8 @@ QString Block::FullName() const {
         }
     }
     return QString("%1 (%2)").
-        arg(tr_manager->KindName(Kind())).
-        arg(tr_manager->SubName(Sub()));
+        arg(TrManager::KindName(Kind())).
+        arg(TrManager::SubName(Sub()));
 }
 
 int Block::Transparency(const int transp, const int sub) const {
@@ -134,12 +134,12 @@ Block * Block::DropAfterDamage(bool * const delete_block) {
     case GREENERY:
     case SUB_DUST:
     case GLASS:
-    case AIR: return blockFactory->Normal(AIR);
+    case AIR: return BlockFactory::Normal(AIR);
     case STONE: if ( BLOCK==Kind() ) {
-        return blockFactory->NewBlock(LADDER, STONE);
+        return BlockFactory::NewBlock(LADDER, STONE);
     } // no break;
     default: {
-        Block * const pile = blockFactory->NewBlock(BOX, DIFFERENT);
+        Block * const pile = BlockFactory::NewBlock(BOX, DIFFERENT);
         pile->HasInventory()->Get(this);
         *delete_block = false;
         return pile;
@@ -171,8 +171,8 @@ wearable Block::Wearable() const {
 bool Block::Inscribe(const QString str) {
     if ( Sub() == AIR ) return false;
     noteId = ( noteId == 0 ) ? // new note
-        world->SetNote(str.left(MAX_NOTE_LENGTH)) :
-        world->ChangeNote(str.left(MAX_NOTE_LENGTH), noteId);
+        World::GetWorld()->SetNote(str.left(MAX_NOTE_LENGTH)) :
+        World::GetWorld()->ChangeNote(str.left(MAX_NOTE_LENGTH), noteId);
     return true;
 }
 
@@ -189,7 +189,7 @@ void Block::Mend(const int plus) {
 }
 
 QString Block::GetNote() const {
-    return noteId ? world->GetNote(noteId) : QString();
+    return noteId ? World::GetWorld()->GetNote(noteId) : QString();
 }
 
 int Block::Weight() const {
@@ -198,19 +198,19 @@ int Block::Weight() const {
     case SUB_CLOUD:
     case AIR:       return WEIGHT_AIR;
     case STONE:     return WEIGHT_STONE;
-    case SOIL:      return WEIGHT_SAND+WEIGHT_WATER;
+    case SOIL:      return WEIGHT_SAND + WEIGHT_WATER;
     case GREENERY:  return WEIGHT_GREENERY;
     case NULLSTONE: return WEIGHT_NULLSTONE;
     case SAND:      return WEIGHT_SAND;
     case GLASS:     return WEIGHT_GLASS;
-    case WOOD:      return WEIGHT_WATER-1;
+    case WOOD:      return WEIGHT_WATER - 1;
     case IRON:      return WEIGHT_IRON;
     case PAPER:
     case ROSE:
     case SUB_NUT:   return WEIGHT_MINIMAL;
     case MOSS_STONE:
     case A_MEAT:
-    case H_MEAT:    return WEIGHT_WATER+10;
+    case H_MEAT:    return WEIGHT_WATER + 10;
     case SKY:
     case STAR:
     case FIRE:
@@ -258,7 +258,7 @@ bool Block::operator==(const Block & block) const {
 void Block::SaveAttributes(QDataStream &) const {}
 
 void Block::SaveToFile(QDataStream & out) {
-    if ( this == blockFactory->Normal(sub) ) {
+    if ( this == BlockFactory::Normal(sub) ) {
         SaveNormalToFile(out);
     } else {
         out << sub << kind <<

@@ -44,13 +44,13 @@ QString Bucket::FullName() const {
     return ( Number(0) ?
         QObject::tr("%1 (%2) with %3 (%4/%5 full)").
             arg(name).
-            arg(tr_manager->SubName(Sub())).
+            arg(TrManager::SubName(Sub())).
             arg(ShowBlock(0)->FullName().toLower()).
             arg(Number(0)).
             arg(MAX_STACK_SIZE) :
         QObject::tr("%1 (%2) (empty)").
             arg(name).
-            arg(tr_manager->SubName(Sub())) );
+            arg(TrManager::SubName(Sub())) );
 }
 
 bool Bucket::Get(Block * const block, const int start) {

@@ -44,7 +44,7 @@
     inner_actions Container::ActInner() { return INNER_ACTION_ONLY; }
 
     Block * Container::DropAfterDamage(bool * const delete_block) {
-        Block * const pile = blockFactory->NewBlock(BOX, DIFFERENT);
+        Block * const pile = BlockFactory::NewBlock(BOX, DIFFERENT);
         Inventory * const pile_inv = pile->HasInventory();
         GetAll(pile_inv);
         *delete_block = not pile_inv->Get(this);
@@ -104,23 +104,24 @@
         if ( GROUP_MEAT == GetSubGroup(Sub()) ) {
             Damage(MAX_DURABILITY/SECONDS_IN_DAY, DAMAGE_TIME);
             if ( GetDurability() <= 0 ) {
-                GetWorld()->DestroyAndReplace(X(), Y(), Z());
+                World::GetWorld()->DestroyAndReplace(X(), Y(), Z());
             }
         } else if ( Sub() == DIFFERENT ) {
+            World * const world = World::GetWorld();
             Inventory * const inv =
-                GetWorld()->GetBlock(X(), Y(), Z()-1)->HasInventory();
+                world->GetBlock(X(), Y(), Z()-1)->HasInventory();
             if ( inv ) {
                 inv->GetAll(this);
             }
             if ( IsEmpty() ) {
-                GetWorld()->DestroyAndReplace(X(), Y(), Z());
+                world->DestroyAndReplace(X(), Y(), Z());
             }
         }
     }
 
     Block * Box::DropAfterDamage(bool * const delete_block) {
         *delete_block = true;
-        return blockFactory->Normal(AIR);
+        return BlockFactory::Normal(AIR);
     }
 
     void Box::Damage(const int dmg, const int dmg_kind) {
@@ -139,14 +140,13 @@
         default:        return Block::FullName();
         case DIFFERENT: return tr("Pile");
         case H_MEAT:
-        case A_MEAT:    return tr("Corpse (%1)").
-            arg(tr_manager->SubName(Sub()));
+        case A_MEAT: return tr("Corpse (%1)").arg(TrManager::SubName(Sub()));
         }
     }
 
     usage_types Box::Use(Active *) {
         if ( GROUP_MEAT == GetSubGroup(Sub()) ) {
-            GetWorld()->DestroyAndReplace(X(), Y(), Z());
+            World::GetWorld()->DestroyAndReplace(X(), Y(), Z());
             return USAGE_TYPE_NO;
         } else {
             return USAGE_TYPE_OPEN;
@@ -159,7 +159,7 @@
             while ( Number(i) ) {
                 Block * const to_pull = ShowBlock(i);
                 Pull(i);
-                blockFactory->DeleteBlock(to_pull);
+                BlockFactory::DeleteBlock(to_pull);
             }
         }
         int materials_number = 0;
@@ -175,11 +175,11 @@
                     {Number(i), ShowBlock(i)->Kind(), ShowBlock(i)->Sub()} );
             }
         }
-        if ( craft_manager->Craft(&list, Sub()) ) {
+        if ( CraftManager::Craft(&list, Sub()) ) {
             for (int i=0; i<list.size(); ++i) {
                 for (int n=0; n<list.at(i)->num; ++n) {
                     const CraftItem * const item = list.at(i);
-                    GetExact(blockFactory->NewBlock(item->kind, item->sub), i);
+                    GetExact(BlockFactory::NewBlock(item->kind, item->sub), i);
                 }
             }
         }
@@ -204,7 +204,7 @@
                     while ( Number(i) ) {
                         Block * const to_pull = ShowBlock(i);
                         Pull(i);
-                        blockFactory->DeleteBlock(to_pull);
+                        BlockFactory::DeleteBlock(to_pull);
                     }
                 }
             } else {
@@ -216,7 +216,7 @@
 
     QString Workbench::FullName() const {
         switch ( Sub() ) {
-        case WOOD: return tr_manager->KindName(WORKBENCH);
+        case WOOD: return TrManager::KindName(WORKBENCH);
         default:   return Block::FullName();
         }
     }
@@ -306,13 +306,13 @@
                     if ( add > 0 ) {
                         fuelLevel += add;
                         Pull(i);
-                        blockFactory->DeleteBlock(block);
+                        BlockFactory::DeleteBlock(block);
                         break;
                     }
                 }
             }
         }
-        World * const world = GetWorld();
+        World * const world = World::GetWorld();
         if ( fuelLevel <= 0
                 || ( Sub() == STONE
                     && world->GetBlock(X(), Y(), Z()+1)->Sub() == WATER ) )
@@ -349,11 +349,12 @@
     }
 
     void Converter::Damage(const int dmg, const int dmg_kind) {
+        World * const world = World::GetWorld();
         if ( dmg_kind == damageKindOn ) {
             if ( not isOn ) {
                 isOn = true;
-                GetWorld()->GetShred(X(), Y())->AddShining(this);
-                GetWorld()->Shine(X(), Y(), Z(),
+                world->GetShred(X(), Y())->AddShining(this);
+                world->Shine(X(), Y(), Z(),
                     (lightRadius=CONVERTER_LIGHT_RADIUS));
             } else {
                 fuelLevel += dmg;
@@ -362,7 +363,7 @@
             isOn = false;
             fuelLevel = 0;
             lightRadius = 0;
-            GetWorld()->GetShred(X(), Y())->RemShining(this);
+            world->GetShred(X(), Y())->RemShining(this);
         } else {
             Block::Damage(dmg, dmg_kind);
         }

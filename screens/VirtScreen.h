@@ -37,6 +37,12 @@
 class Player;
 class World;
 
+enum screen_errors {
+    SCREEN_NO_ERROR = 0,
+    HEIGHT_NOT_ENOUGH,
+    WIDTH_NOT_ENOUGH
+};
+
 class VirtScreen : public QObject {
     /** \class VirtScreen VirtScreen.h
      *  \brief This class provides base for all screens for freg.
@@ -127,7 +133,6 @@ protected:
         COLOR_LIST(WHITE)
     };
 
-    World * GetWorld() const;
     /// Returns true if command is recognized and processed.
     bool ProcessCommand(QString command);
 

@@ -195,8 +195,10 @@ int Screen::Color(const int kind, const int sub) {
         case GOLD:       return color | RandomBlink();
         case SKY:
         case STAR:
-            if ( world->GetEvernight() ) return COLOR_PAIR(BLACK_BLACK);
-            switch ( world->PartOfDay() ) {
+            if ( World::GetWorld()->GetEvernight() ) {
+                return COLOR_PAIR(BLACK_BLACK);
+            }
+            switch ( World::GetWorld()->PartOfDay() ) {
             case TIME_NIGHT: return
                 COLOR_PAIR(WHITE_BLACK) | ( RandomBit() ? A_BOLD : 0 );
             case TIME_MORNING: return COLOR_PAIR(WHITE_BLUE);
@@ -409,11 +411,10 @@ void Screen::ControlPlayer(const int ch) {
 
     case 'Y':
         Notify(tr("Saving game..."));
-        GetWorld()->SaveToDisk();
+        World::GetWorld()->SaveToDisk();
         player->SaveState();
         Notify( tr("Game saved at location \"%1\".").
-            arg(QDir::toNativeSeparators(
-                QDir(home_path).absoluteFilePath(GetWorld()->WorldName())) ));
+            arg( QDir(World::GetWorld()->WorldPath()).absolutePath() ) );
         break;
 
     case KEY_MOUSE: ProcessMouse(); break;
@@ -435,7 +436,7 @@ void Screen::ControlPlayer(const int ch) {
 } // void Screen::ControlPlayer(int ch)
 
 void Screen::ExamineOnNormalScreen(int x, int y, int z, const int step) const {
-    World * const world = GetWorld();
+    World * const world = World::GetWorld();
     x = (x-1)/2 + GetNormalStartX();
     y =  y-1    + GetNormalStartY();
     for ( ; world->GetBlock(x, y, z)->Transparent() == INVISIBLE; z += step);
@@ -481,10 +482,11 @@ void Screen::ProcessMouse() {
         } else {
             const int shred_x = mevent.x/2 + GetMinimapStartX();
             const int shred_y = mevent.y-1 + GetMinimapStartY();
-            Notify((0 <= shred_x && shred_x < world->NumShreds() &&
-                    0 <= shred_y && shred_y < world->NumShreds() ) ?
-                tr("On minimap: %1.").arg( tr_manager->ShredTypeName(
-                    world->GetShredByPos(shred_x, shred_y)->GetTypeOfShred())):
+            Notify((0 <= shred_x && shred_x < World::GetWorld()->NumShreds() &&
+                    0 <= shred_y && shred_y < World::GetWorld()->NumShreds() )?
+                tr("On minimap: %1.").arg( TrManager::ShredTypeName(
+                    World::GetWorld()->
+                        GetShredByPos(shred_x, shred_y)->GetTypeOfShred()) ) :
                 tr("You can't see that far.") );
         }
         break;
@@ -590,7 +592,8 @@ void Screen::InventoryAction(const int num) const {
 void Screen::ActionXyz(int * const x, int * const y, int * const z) const {
     VirtScreen::ActionXyz(x, y, z);
     if ( player->GetDir() > DOWN &&
-            ( AIR==world->GetBlock(*x, *y, *z)->Sub() || AIR==world->GetBlock(
+            ( AIR == World::GetWorld()->GetBlock(*x, *y, *z)->Sub() ||
+              AIR == World::GetWorld()->GetBlock(
                 player->X(),
                 player->Y(),
                 player->Z()+shiftFocus)->Sub() ))
@@ -603,7 +606,7 @@ Block * Screen::GetFocusedBlock() const {
     int x, y, z;
     ActionXyz(&x, &y, &z);
     return ( player->Visible(x, y, z) ) ?
-        GetWorld()->GetBlock(x, y, z) :
+        World::GetWorld()->GetBlock(x, y, z) :
         nullptr;
 }
 
@@ -624,7 +627,7 @@ int Screen::ColoredChar(const Block * const block) const {
 }
 
 void Screen::Print() {
-    QMutexLocker locker(world->GetLock());
+    QMutexLocker locker(World::GetWorld()->GetLock());
     PrintHud();
     const dirs dir = player->GetDir();
     bool printed_normal = false;
@@ -648,16 +651,16 @@ void Screen::Print() {
         }
         break;
     case USAGE_TYPE_READ_IN_INVENTORY:
-        DisplayFile(QString(home_path + world->WorldName() + "/texts/"
+        DisplayFile( World::GetWorld()->WorldPath() + "/texts/"
             + player->PlayerInventory()->ShowBlock(
-                player->GetUsingInInventory())->GetNote()));
+                player->GetUsingInInventory())->GetNote() );
         player->SetUsingTypeNo();
         break;
     case USAGE_TYPE_READ: {
         const Block * const focused = GetFocusedBlock();
         if ( focused != nullptr ) {
-            DisplayFile(QString(home_path + world->WorldName()
-                + "/texts/" + focused->GetNote()));
+            DisplayFile( World::GetWorld()->WorldPath()
+                + "/texts/" + focused->GetNote() );
             player->SetUsingTypeNo();
         }
         } break;
@@ -682,7 +685,7 @@ void Screen::PrintHud() {
             tr("Creative Mode\nxyz: %1, %2, %3.\nShred: %4") );
         mvwaddwstr(hudWin, 0, 0, wPrintable(creativeInfo
             .arg(player->GlobalX()).arg(player->GlobalY()).arg(player->Z())
-            .arg(Shred::FileName(GetWorld()->WorldName(),
+            .arg(Shred::FileName(World::GetWorld()->WorldName(),
                 player->GetLongitude(), player->GetLatitude()) )));
     } else {
         const int dur = player->GetConstBlock()->GetDurability();
@@ -775,6 +778,7 @@ void Screen::PrintMiniMap() {
     (void)wmove(minimapWin, 1, 0);
     const int i_start = GetMinimapStartY();
     const int j_start = GetMinimapStartX();
+    World * const world = World::GetWorld();
     for (int i=i_start; i <= i_start+4; ++i, waddch(minimapWin, '\n'))
     for (int j=j_start; j <= j_start+4; ++j) {
         if ( i<0 || j<0 || i>=world->NumShreds() || j>=world->NumShreds() ) {
@@ -795,12 +799,12 @@ void Screen::PrintMiniMap() {
 
 int Screen::GetNormalStartX() const {
     return qBound(0, player->X() - screenWidth/4 + 1,
-        GetWorld()->GetBound() - screenWidth/2 - 1);
+        World::GetWorld()->GetBound() - screenWidth/2 - 1);
 }
 
 int Screen::GetNormalStartY() const {
     return qBound(0, player->Y() - screenHeight/2 + 1,
-        GetWorld()->GetBound() - screenHeight - 1);
+        World::GetWorld()->GetBound() - screenHeight - 1);
 }
 
 void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
@@ -810,7 +814,7 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
     const int start_y = GetNormalStartY();
     const int end_x = start_x + screenWidth/2 - 1;
     const int end_y = start_y + screenHeight  - 2;
-    World * const world = GetWorld();
+    World * const world = World::GetWorld();
     (void)wmove(window, 1, 1);
     for (int j=start_y; j<end_y; ++j, waddch(window, 30)) {
         const int j_in = Shred::CoordInShred(j);
@@ -871,6 +875,7 @@ const {
     int * x, * z;
     int i, j;
     int arrow_X;
+    World * const world = World::GetWorld();
     switch ( dir ) {
     case NORTH:
         x = &i;
@@ -887,7 +892,7 @@ const {
         x = &j;
         x_step  = 1;
         x_start = qBound(0, player->Y() - screenWidth/4 - 1,
-            GetWorld()->GetBound() - screenWidth/2 - 1);
+            world->GetBound() - screenWidth/2 - 1);
         x_end   = screenWidth/2 - 1 + x_start;
         z = &i;
         z_step  = 1;
@@ -910,7 +915,7 @@ const {
         x = &j;
         x_step  = -1;
         x_end   = qBound(0, player->Y() - screenWidth/4 - 1,
-            GetWorld()->GetBound() - screenWidth/2 - 1) - 1;
+            world->GetBound() - screenWidth/2 - 1) - 1;
         x_start = screenWidth/2 - 1 + x_end;
         z = &i;
         z_step  = -1;
@@ -935,7 +940,6 @@ const {
     }
     const int k_end = k_start - screenHeight + 2;
     const int sky_color = Color(BLOCK, SKY);
-    World * const world = GetWorld();
     (void)wmove(rightWin, 1, 1);
     for (int k=k_start; k>k_end; --k, waddch(rightWin, 30)) {
         for (*x=x_start; *x!=x_end; *x+=x_step) {
@@ -1139,7 +1143,7 @@ Screen::Screen(Player * const pl, int &) :
 
     scrollok(windows[WIN_NOTIFY], TRUE);
 
-    connect(world, &World::UpdatesEnded, this, &Screen::Print,
+    connect(World::GetWorld(), &World::UpdatesEnded, this, &Screen::Print,
         Qt::DirectConnection);
 
     ungetch('0');
@@ -1158,6 +1162,7 @@ Screen::Screen(Player * const pl, int &) :
 } // Screen::Screen(Player * const pl, int & error, bool _ascii)
 
 Screen::~Screen() {
+    World * const world = World::GetWorld();
     world->Lock();
     disconnect(world, &World::UpdatesEnded, this, &Screen::Print);
     world->Unlock();

@@ -25,9 +25,9 @@
 
 Teleport::Teleport(const int sub, const int kind) :
         Active(sub, kind),
-        targetWorldName(world->WorldName()),
-        targetLatitude(qrand()%(world->GetMap()->GetSize())),
-        targetLongitude(qrand()%(world->GetMap()->GetSize()))
+        targetWorldName(World::GetWorld()->WorldName()),
+        targetLatitude( qrand()%(World::GetWorld()->GetMap()->GetSize())),
+        targetLongitude(qrand()%(World::GetWorld()->GetMap()->GetSize()))
 {}
 
 Teleport::Teleport(QDataStream & stream, const int sub, const int kind) :
@@ -49,13 +49,14 @@ bool Teleport::Inscribe(QString input) {
     --targetLatitude;
     --targetLongitude;
     if ( targetWorldName.isEmpty() ) {
-        targetWorldName = world->WorldName();
+        targetWorldName = World::GetWorld()->WorldName();
     }
     return Block::Inscribe(input);
 }
 
 void Teleport::Damage(const int damage, const int damage_kind) {
     if ( damage_kind >= DAMAGE_PUSH_UP && damage_kind != DAMAGE_PUSH_DOWN) {
+        World * const world = World::GetWorld();
         int x, y, z;
         world->Focus(X(), Y(), Z(), &x, &y, &z,
             World::Anti(MakeDirFromDamage(damage_kind)));

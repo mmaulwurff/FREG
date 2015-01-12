@@ -23,10 +23,10 @@
 #include <QTranslator>
 #include <QCoreApplication>
 
-const TrManager * tr_manager;
-
 const QByteArray TrManager::rawKinds[] = { KIND_TABLE(X_STRING) };
 const QByteArray TrManager::rawSubs [] = {  SUB_TABLE(X_STRING) };
+
+TrManager * TrManager::trManager = nullptr;
 
 TrManager::TrManager() :
         translator(LoadTranslator()),
@@ -34,6 +34,9 @@ TrManager::TrManager() :
         kindNames(),
         shredTypeNames()
 {
+    Q_ASSERT(trManager == nullptr);
+    trManager = this;
+
     for (int i = 0; i < SUB_COUNT; ++i) {
         subNames[i] = QCoreApplication::translate("Block", rawSubs[i]);
     }
@@ -59,8 +62,14 @@ QTranslator * TrManager::LoadTranslator() const {
     return translator;
 }
 
-QString TrManager::  SubName(const int  sub) const { return  subNames[ sub]; }
-QString TrManager:: KindName(const int kind) const { return kindNames[kind]; }
+QString TrManager::  SubName(const int  sub) {
+    return trManager->subNames[sub];
+}
+
+QString TrManager:: KindName(const int kind) {
+    return trManager->kindNames[kind];
+}
+
 QString TrManager::KindToString(const int kind) { return rawKinds[kind]; }
 QString TrManager:: SubToString(const int sub ) { return  rawSubs[sub ]; }
 
@@ -94,13 +103,13 @@ QString TrManager::GetWeatherString(const weathers weather) {
     return weatherStrings[weather];
 }
 
-QString TrManager::SubNameUpper(const int sub) const {
-    QString result = SubName(sub);
+QString TrManager::SubNameUpper(const int sub) {
+    QString result = trManager->SubName(sub);
     return result.replace(0, 1, result.at(0).toUpper());
 }
 
-QString TrManager::ShredTypeName(const shred_type type) const {
-    return shredTypeNames[type];
+QString TrManager::ShredTypeName(const shred_type type) {
+    return trManager->shredTypeNames[type];
 }
 
 int TrManager::StringToKind(const QString str) {

@@ -20,26 +20,20 @@
 #ifndef CURSEDSCREEN_H
 #define CURSEDSCREEN_H
 
+#include "screens/VirtScreen.h"
 #include "header.h"
 
 #ifdef Q_OS_WIN32
-#define NCURSES_MOUSE_VERSION 2
-#define PDC_WIDE
-#define _LP64 0
-#include "pdcurses/curses.h"
+    #define NCURSES_MOUSE_VERSION 2
+    #define PDC_WIDE
+    #define _LP64 0
+    #include "pdcurses/curses.h"
 #else
-#define _X_OPEN_SOURCE_EXTENDED
-#include <ncursesw/ncurses.h>
+    #define _X_OPEN_SOURCE_EXTENDED
+    #include <ncursesw/ncurses.h>
 #endif
-#include "screens/VirtScreen.h"
 
 #define wPrintable(string) QString(string).toStdWString().c_str()
-
-enum screen_errors {
-    SCREEN_NO_ERROR = 0,
-    HEIGHT_NOT_ENOUGH,
-    WIDTH_NOT_ENOUGH
-};
 
 class IThread;
 class Inventory;

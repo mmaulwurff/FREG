@@ -21,6 +21,7 @@
 #include "World.h"
 #include "header.h"
 #include "blocks/Block.h"
+#include "BlockFactory.h"
 #include "worldmap.h"
 
 int Shred::FlatUndeground(int) {
@@ -30,8 +31,8 @@ int Shred::FlatUndeground(int) {
 
 void Shred::NormalUnderground(const int depth, const subs sub) {
     NormalCube(0,0,1, SHRED_WIDTH,SHRED_WIDTH,HEIGHT/2-depth-5, STONE);
-    Block * const block = blockFactory->Normal(sub);
-    Block * const stone = blockFactory->Normal(STONE);
+    Block * const block = BlockFactory::Normal(sub);
+    Block * const stone = BlockFactory::Normal(STONE);
     for (int x=0; x<SHRED_WIDTH; ++x) {
         int rand = qrand();
         for (int y=0; y<SHRED_WIDTH; ++y) {
@@ -87,7 +88,7 @@ void Shred::Water(const subs sub) {
     NormalUnderground(depth, shore);
     int z_start = HEIGHT/2-depth;
     NormalCube(0,0,z_start++, SHRED_WIDTH,SHRED_WIDTH,1, shore); // bottom
-    const WorldMap * const map = GetWorld()->GetMap();
+    const WorldMap * const map = World::GetWorld()->GetMap();
     if ( type != map->TypeOfShred(longitude-1, latitude) ) { // north
         NormalCube(0,0,z_start, SHRED_WIDTH,1,depth, shore);
     }
@@ -100,7 +101,7 @@ void Shred::Water(const subs sub) {
     if ( type != map->TypeOfShred(longitude, latitude-1) ) { // west
         NormalCube(0,0,z_start, 1,SHRED_WIDTH,depth, shore);
     }
-    Block * const air = blockFactory->Normal(AIR);
+    Block * const air = BlockFactory::Normal(AIR);
     for (int i=SHRED_WIDTH; i--; )
     for (int j=SHRED_WIDTH; j--; )
     for (int k=z_start; k<=HEIGHT/2; ++k) {
@@ -116,7 +117,7 @@ void Shred::Water(const subs sub) {
 
 void Shred::Hill(const bool dead) {
     NormalUnderground();
-    Block * const soil = blockFactory->Normal(SOIL);
+    Block * const soil = BlockFactory::Normal(SOIL);
     for (int x=SHRED_WIDTH; x--; )
     for (int y=SHRED_WIDTH; y--; )
     for (int z=SHRED_WIDTH/2-2; z--; ) {
@@ -147,7 +148,7 @@ void Shred::Mountain() {
      *  ?  */
     const int mount_top = 3*HEIGHT/4;
     NormalCube(0, 0, 1, SHRED_WIDTH/2, SHRED_WIDTH/2, mount_top, STONE);
-    const WorldMap * const map = GetWorld()->GetMap();
+    const WorldMap * const map = World::GetWorld()->GetMap();
     // south bridge
     if ( SHRED_MOUNTAIN == map->TypeOfShred(longitude+1, latitude) ) {
         NormalCube(qrand()%(SHRED_WIDTH/2-1), SHRED_WIDTH/2, mount_top,

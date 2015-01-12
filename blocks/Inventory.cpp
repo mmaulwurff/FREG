@@ -127,9 +127,9 @@ bool Inventory::InscribeInv(const int num, const QString str) {
         return false;
     }
     const int sub = inventory[num].top()->Sub();
-    if ( inventory[num].top() == blockFactory->Normal(sub) ) {
+    if ( inventory[num].top() == BlockFactory::Normal(sub) ) {
         for (int i=0; i<number; ++i) {
-            inventory[num].replace(i, blockFactory->Normal(sub));
+            inventory[num].replace(i, BlockFactory::Normal(sub));
         }
     }
     for (int i=0; i<number; ++i) {
@@ -198,6 +198,7 @@ bool Inventory::IsEmpty() const {
 void Inventory::Push(const int x, const int y, const int z,
         const int push_direction)
 {
+    World * const world = World::GetWorld();
     int x_targ, y_targ, z_targ;
     world->Focus(x, y, z, &x_targ, &y_targ, &z_targ,
         World::Anti(Block::MakeDirFromDamage(push_direction)));
@@ -216,13 +217,13 @@ bool Inventory::MiniCraft(const int num) {
     } // else:
     CraftItem * crafted =
         new CraftItem({Number(num), GetInvKind(num), GetInvSub(num)});
-    if ( craft_manager->MiniCraft(&crafted) ) {
+    if ( CraftManager::MiniCraft(&crafted) ) {
         while ( not inventory[num].isEmpty() ) {
-            blockFactory->DeleteBlock(ShowBlock(num));
+            BlockFactory::DeleteBlock(ShowBlock(num));
             Pull(num);
         }
         for (int i=0; i<crafted->num; ++i) {
-            GetExact(blockFactory->NewBlock(crafted->kind, crafted->sub), num);
+            GetExact(BlockFactory::NewBlock(crafted->kind, crafted->sub), num);
         }
         ReceiveSignal(QObject::tr("Craft successful."));
         delete crafted;
@@ -257,8 +258,8 @@ Inventory::Inventory(QDataStream & str, const int sz) :
         while ( num-- ) {
             quint8 kind, sub;
             inventory[i].push(BlockFactory::KindSubFromFile(str, &kind, &sub) ?
-                blockFactory->Normal(sub) :
-                blockFactory->BlockFromFile(str, kind, sub));
+                BlockFactory::Normal(sub) :
+                BlockFactory::BlockFromFile(str, kind, sub));
         }
     }
 }
@@ -267,7 +268,7 @@ Inventory::~Inventory() {
     const int size = Size();
     for (int i=0; i<size; ++i) {
         while ( not inventory[i].isEmpty() ) {
-            blockFactory->DeleteBlock(inventory[i].pop());
+            BlockFactory::DeleteBlock(inventory[i].pop());
         }
     }
     delete [] inventory;

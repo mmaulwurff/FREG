@@ -22,11 +22,11 @@
 
 #include "header.h"
 #include "Xyz.h"
-#include "blocks/Animal.h"
 #include <QObject>
 
 class World;
 class Block;
+class Animal;
 class Shred;
 class Inventory;
 
@@ -63,16 +63,16 @@ public:
     using Xyz::Z;
 
     /// This returns current player direction (see enum dirs in header.h)
-    dirs GetDir() const { return player->GetDir(); }
+    dirs GetDir() const;
 
     /// This returns player breath reserve. On error returns -100.
-    int BreathPercent() const { return player->Breath() * 100 / Animal::MAX_BREATH; }
+    int BreathPercent() const;
 
     /// Can be > 100 if player is gorged. On error returns -100.
     int SatiationPercent() const;
 
-    Block * GetBlock() const { return player; }
-    const Block * GetConstBlock() const { return player; }
+    Block * GetBlock() const;
+    const Block * GetConstBlock() const;
 
     /// This returns true if block at (x, y, z) is visible to player.
     bool Visible(int x, int y, int z) const;
@@ -176,7 +176,6 @@ private:
     /// Checks player/inventory/block existence, size limits.
     Block * ValidBlock(int num) const;
     Shred * GetShred() const;
-    World * GetWorld() const;
     bool ForbiddenAdminCommands() const;
 
     void LoadState();

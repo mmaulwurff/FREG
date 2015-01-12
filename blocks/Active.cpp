@@ -40,7 +40,7 @@ inner_actions Active::ActInner() { return INNER_ACTION_ONLY; }
 void Active::UpdateLightRadius() {
     if ( LightRadius() ) {
         GetShred()->AddShining(this);
-        GetWorld()->Shine(X(), Y(), Z(), LightRadius());
+        World::GetWorld()->Shine(X(), Y(), Z(), LightRadius());
     } else {
         GetShred()->RemShining(this);
     }
@@ -108,12 +108,12 @@ void Active::ReRegister(const dirs dir) {
     x_self &= 0xF;
     y_self &= 0xF;
     shred->Unregister(this);
-    (shred = GetWorld()->GetNearShred(shred, dir))->Register(this);
+    (shred = World::GetWorld()->GetNearShred(shred, dir))->Register(this);
 }
 
 void Active::SendSignalAround(const QString signal) const {
     if ( shred == nullptr ) return; // for blocks inside inventories
-    World * const world = GetWorld();
+    World * const world = World::GetWorld();
     const int bound = world->GetBound();
     if ( X() > 0 )     world->GetBlock(X()-1, Y(), Z())->ReceiveSignal(signal);
     if ( X() < bound ) world->GetBlock(X()+1, Y(), Z())->ReceiveSignal(signal);
@@ -124,7 +124,7 @@ void Active::SendSignalAround(const QString signal) const {
 }
 
 void Active::DamageAround() const {
-    const int bound = GetWorld()->GetBound();
+    const int bound = World::GetWorld()->GetBound();
     int x_temp = X()-1;
     int y_temp = Y();
     int z_temp = Z();
@@ -137,7 +137,7 @@ void Active::DamageAround() const {
 }
 
 bool Active::TryDestroy(const int x, const int y, const int z) const {
-    World * const world = GetWorld();
+    World * const world = World::GetWorld();
     if ( world->Damage(x, y, z, DamageLevel(), DamageKind()) <= 0 ) {
         world->DestroyAndReplace(x, y, z);
         return true;
@@ -163,7 +163,7 @@ Active::Active(QDataStream & str, const int kind, const int sub,
 bool Active::Gravitate(const int range, int bottom, int top,
         const int calmness)
 {
-    World * const world = GetWorld();
+    World * const world = World::GetWorld();
     const int bound = world->GetBound();
     // analyse world around
     int for_north = 0, for_west = 0;
@@ -202,7 +202,7 @@ bool Active::Gravitate(const int range, int bottom, int top,
 int Active::Attractive(int) const { return 0; }
 
 bool Active::IsSubAround(const int sub) const {
-    const World * const world = GetWorld();
+    const World * const world = World::GetWorld();
     const int bound = world->GetBound();
     return (sub == world->GetBlock(X(), Y(), Z()-1)->Sub() ||
             sub == world->GetBlock(X(), Y(), Z()+1)->Sub() ||
@@ -236,7 +236,7 @@ void Falling::SaveAttributes(QDataStream & out) const {
 
 QString Falling::FullName() const {
     switch ( Sub() ) {
-    default:    return tr_manager->SubNameUpper(Sub());
+    default:    return TrManager::SubNameUpper(Sub());
     case WATER: return tr("Snow");
     case STONE: return tr("Masonry");
     }
@@ -249,7 +249,7 @@ void Falling::FallDamage() {
     const int SAFE_FALL_HEIGHT = 5;
     if ( fallHeight > SAFE_FALL_HEIGHT ) {
         const int dmg = (fallHeight - SAFE_FALL_HEIGHT)*10;
-        World * const world = GetWorld();
+        World * const world = World::GetWorld();
         Block * const block_under = world->GetBlock(X(), Y(), Z()-1);
         world->Damage(X(), Y(), Z()-1, dmg, DamageKind());
         if ( block_under->GetDurability() <= 0 ) {

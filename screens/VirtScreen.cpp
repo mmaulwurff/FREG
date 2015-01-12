@@ -32,6 +32,7 @@ VirtScreen::VirtScreen(Player * const player_) :
         settings(home_path + "freg.ini", QSettings::IniFormat),
         previousCommand(settings.value("last_command", "moo").toString())
 {
+    World * const world = World::GetWorld();
     connect( world, &World::Notify, this, &VirtScreen::Notify,
         Qt::DirectConnection);
     connect(player, &Player::Notify, this, &VirtScreen::Notify,
@@ -69,11 +70,9 @@ VirtScreen::~VirtScreen() {}
 void VirtScreen::DisplayFile(QString /* path */) {}
 
 void VirtScreen::ActionXyz(int * x, int * y, int * z) const {
-    world->Focus(player->X(), player->Y(), player->Z(), x, y, z,
+    World::GetWorld()->Focus(player->X(), player->Y(), player->Z(), x, y, z,
         player->GetDir());
 }
-
-World * VirtScreen::GetWorld() const { return world; }
 
 int VirtScreen::Color(const int kind, const int sub) {
     switch ( kind ) { // foreground_background

@@ -46,7 +46,8 @@ int main(int argc, char ** argv) {
     QCoreApplication::setApplicationName("freg");
     QCoreApplication::setApplicationVersion(QString::number(VER));
 
-    tr_manager = new TrManager;
+    // unused as local variable, but important things are in constructor.
+    TrManager tr_manager;
 
     if ( not QDir::home().mkpath(".freg") ) {
         fputs("Error creating game home directory", stdout);
@@ -99,10 +100,9 @@ int main(int argc, char ** argv) {
     }
     qsrand(QTime::currentTime().msec());
 
+    // unused as local variables, but important things are in constructors.
     BlockFactory blockManager;
-    blockFactory = &blockManager;
     CraftManager craftManager;
-    craft_manager = &craftManager;
 
     bool world_error = false;
     World world(worldName, &world_error);

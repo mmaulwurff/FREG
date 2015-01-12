@@ -46,13 +46,13 @@ QString Illuminator::FullName() const {
     case STONE: return tr("Flint, charges: %1"     ).arg(fuelLevel);
     case GLASS: return tr("Flashlight, battery: %1").arg(fuelLevel);
     default:    return tr("Lantern (%1), fuel: %2" ).
-        arg(tr_manager->SubName(Sub())).arg(fuelLevel);
+        arg(TrManager::SubName(Sub())).arg(fuelLevel);
     }
 }
 
 Block * Illuminator::DropAfterDamage(bool * const delete_block) {
     *delete_block = false;
-    Block * const pile = blockFactory->NewBlock(BOX, DIFFERENT);
+    Block * const pile = BlockFactory::NewBlock(BOX, DIFFERENT);
     pile->HasInventory()->Get(this);
     return pile;
 }
@@ -84,7 +84,7 @@ int  Illuminator::ShouldAct() const { return FREQUENT_RARE; }
 wearable Illuminator::Wearable() const { return WEARABLE_OTHER; }
 
 void Illuminator::DoRareAction() {
-    GetWorld()->Shine(X(), Y(), Z(), LightRadius());
+    World::GetWorld()->Shine(X(), Y(), Z(), LightRadius());
 }
 
 inner_actions Illuminator::ActInner() {

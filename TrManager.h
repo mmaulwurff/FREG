@@ -32,17 +32,17 @@ public:
     TrManager();
 
     /// Returs translated kind name.
-    QString KindName(int kind) const;
+    static QString KindName(int kind);
     /// Returns translated substance name.
-    QString SubName(int sub) const;
+    static QString SubName(int sub);
     /// Returns translated substance name with first upper letter.
-    QString SubNameUpper(int sub) const;
+    static QString SubNameUpper(int sub);
 
     /// Returns translated direction.
     static QString DirName(dirs);
 
     /// Returns translated shred type.
-    QString ShredTypeName(shred_type) const;
+    static QString ShredTypeName(shred_type);
 
     /// If kind is unknown, returns "unknown_kind".
     static QString KindToString(int kind);
@@ -70,8 +70,8 @@ private:
     QString subNames[SUB_COUNT];
     QString kindNames[KIND_COUNT];
     QHash<char, QString> shredTypeNames;
-};
 
-extern const TrManager * tr_manager;
+    static TrManager * trManager;
+};
 
 #endif // TRMANAGER_H

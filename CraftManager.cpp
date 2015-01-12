@@ -79,7 +79,12 @@ void CraftList::clear() {
 
 // CraftManager section
 
+CraftManager * CraftManager::craftManager = nullptr;
+
 CraftManager::CraftManager() : recipesList() {
+    Q_ASSERT(craftManager == nullptr); // CraftManager is a singleton.
+    craftManager = this;
+
     for (int sub=0; sub<SUB_COUNT; ++sub) {
         QFile file(QString(":/recipes/%1.json").
             arg(TrManager::SubToString(sub)));
@@ -104,10 +109,10 @@ CraftManager::~CraftManager() {
     }
 }
 
-bool CraftManager::MiniCraft(CraftItem ** item) const {
+bool CraftManager::MiniCraft(CraftItem ** item) {
     CraftList recipe(1);
     recipe << *item;
-    if ( CraftSub(&recipe, DIFFERENT) ) {
+    if ( craftManager->CraftSub(&recipe, DIFFERENT) ) {
         *item = new CraftItem(
             {recipe.at(0)->num, recipe.at(0)->kind, recipe.at(0)->sub} );
         return true;
@@ -116,9 +121,9 @@ bool CraftManager::MiniCraft(CraftItem ** item) const {
     }
 }
 
-bool CraftManager::Craft(CraftList * const recipe, const int sub) const {
-    return ( sub==DIFFERENT || not CraftSub(recipe, sub) ) ?
-        CraftSub(recipe, DIFFERENT) : true;
+bool CraftManager::Craft(CraftList * const recipe, const int sub) {
+    return ( sub==DIFFERENT || not craftManager->CraftSub(recipe, sub) ) ?
+        craftManager->CraftSub(recipe, DIFFERENT) : true;
 }
 
 bool CraftManager::CraftSub(CraftList * const recipe, const int sub) const {

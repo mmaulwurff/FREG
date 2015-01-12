@@ -39,7 +39,7 @@ void Accumulator::SaveAttributes(QDataStream & stream) const {
 QString Accumulator::FullName() const {
     QString name;
     if ( GetSubGroup(Sub()) == GROUP_METAL ) {
-        name = QObject::tr("Battery (%1)").arg(tr_manager->SubName(Sub()));
+        name = QObject::tr("Battery (%1)").arg(TrManager::SubName(Sub()));
     } else {
         switch ( Sub() ) {
         case GLASS: name = QObject::tr("Thermos"); break;

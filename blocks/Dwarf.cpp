@@ -24,7 +24,7 @@
 
 int Dwarf::Weight() const {
     if ( Sub() == DIFFERENT ) return 0;
-    World * const world = GetWorld();
+    World * const world = World::GetWorld();
     const int bound = world->GetBound();
     return ( (X() < bound && world->GetBlock(X()+1, Y(), Z())->Catchable()) ||
             ( X() > 0     && world->GetBlock(X()-1, Y(), Z())->Catchable()) ||
@@ -35,7 +35,7 @@ int Dwarf::Weight() const {
 
 Block * Dwarf::DropAfterDamage(bool * const delete_block) {
     Block * const cadaver = Animal::DropAfterDamage(delete_block);
-    cadaver->HasInventory()->Get(blockFactory->NewBlock(WEAPON, BONE));
+    cadaver->HasInventory()->Get(BlockFactory::NewBlock(WEAPON, BONE));
     return cadaver;
 }
 
@@ -139,11 +139,12 @@ bool Dwarf::GetExact(Block * const block, const int to) {
                 || ( ON_LEGS ==to && WEARABLE_LEGS==block->Wearable() ))))
             && Inventory::GetExact(block, to) )
     {
+        World * const world = World::GetWorld();
         if ( (lightRadius = UpdateLightRadiusInner()) == 0 ) {
-            GetWorld()->GetShred(X(), Y())->RemShining(this);
+            world->GetShred(X(), Y())->RemShining(this);
         } else {
-            GetWorld()->GetShred(X(), Y())->AddShining(this);
-            GetWorld()->Shine(X(), Y(), Z(), lightRadius);
+            world->GetShred(X(), Y())->AddShining(this);
+            world->Shine(X(), Y(), Z(), lightRadius);
         }
         return true;
     } else {

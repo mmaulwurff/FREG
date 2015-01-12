@@ -20,10 +20,8 @@
 #ifndef SHRED_H
 #define SHRED_H
 
-#include "header.h"
 #include "Weather.h"
-#include "worldmap.h"
-#include "BlockFactory.h"
+#include "header.h"
 #include <forward_list>
 #include <QLinkedList>
 
@@ -61,7 +59,6 @@ public:
         return shiningList.cend();
     }
 
-    World * GetWorld() const;
     void SaveShred(bool isQuitGame);
 
     Block * GetBlock(const int x, const int y, const int z) const {
@@ -167,9 +164,9 @@ private:
 
     /// Special land generation
     void ShredLandAmplitudeAndLevel(qint64 longi, qint64 lati,
-            ushort * l, float * a) const;
+            unsigned * l, float * a) const;
     void ShredNominalAmplitudeAndLevel(char shred_type,
-            ushort * l, float * a) const;
+            unsigned * l, float * a) const;
     void AddWater();
     int FlatUndeground(int depth = 0);
     void NormalCube(int x_start, int y_start, int z_start,
