@@ -162,7 +162,7 @@ private:
     const bool beepOn, flashOn;
     const bool ascii;
     bool blinkOn;
-    const chtype arrows[DIRS_COUNT];
+    const chtype arrows[LAST_DIR + 1];
     const wchar_t ellipsis[4];
     mutable bool inputActive = false;
     bool showDistance;

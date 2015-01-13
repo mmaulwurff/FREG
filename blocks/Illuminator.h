@@ -42,8 +42,6 @@ protected:
     void SaveAttributes(QDataStream & out) const override;
 
 private:
-    static const int MAX_FUEL = SECONDS_IN_DAY;
-
     quint16 fuelLevel;
     bool isOn;
 };

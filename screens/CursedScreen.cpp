@@ -29,7 +29,6 @@
 #include "blocks/Block.h"
 #include "blocks/Inventory.h"
 #include <QDir>
-#include <QLocale>
 #include <QMutexLocker>
 #include <QDesktopServices>
 #include <QUrl>
@@ -1163,9 +1162,9 @@ Screen::Screen(Player * const pl, int &) :
 
 Screen::~Screen() {
     World * const world = World::GetWorld();
-    world->Lock();
+    world->GetLock()->lock();
     disconnect(world, &World::UpdatesEnded, this, &Screen::Print);
-    world->Unlock();
+    world->GetLock()->unlock();
 
     input->Stop();
     input->wait();

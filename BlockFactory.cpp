@@ -30,8 +30,6 @@
 #include "blocks/Teleport.h"
 #include "blocks/Accumulator.h"
 
-const BlockFactory * blockFactory;
-
 BlockFactory * BlockFactory::blockFactory = nullptr;
 
 BlockFactory::BlockFactory() {
@@ -159,12 +157,12 @@ bool BlockFactory::IsValid(const int kind, const int sub) {
 }
 
 template <typename BlockType>
-Block * Create(const int kind, const int sub) {
+Block * BlockFactory::Create(const int kind, const int sub) {
     return new BlockType(kind, sub);
 }
 
 template <typename BlockType>
-Block * Load(QDataStream & str, const int kind, const int sub) {
+Block * BlockFactory::Load(QDataStream & str, const int kind, const int sub) {
     return new BlockType(str, kind, sub);
 }
 

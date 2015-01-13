@@ -19,12 +19,11 @@
 
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonArray>
 #include <QFile>
 #include "BlockFactory.h"
 #include "TrManager.h"
 #include "CraftManager.h"
-
-const CraftManager * craft_manager;
 
 // CraftItem section
 

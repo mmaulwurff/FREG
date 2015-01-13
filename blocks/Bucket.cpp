@@ -18,7 +18,6 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "Bucket.h"
-#include "BlockFactory.h"
 
 Bucket::Bucket(const int kind, const int sub) :
         Block(kind, sub),
@@ -38,19 +37,18 @@ usage_types Bucket::Use(Active *) { return USAGE_TYPE_POUR; }
 QString Bucket::FullName() const {
     QString name;
     switch ( Sub() ) {
-    default:    name = QObject::tr("Bucket"); break;
+    default:    name = TrManager::KindName(BUCKET); break;
     case GLASS: name = QObject::tr("Bottle"); break;
     }
-    return ( Number(0) ?
-        QObject::tr("%1 (%2) with %3 (%4/%5 full)").
-            arg(name).
-            arg(TrManager::SubName(Sub())).
-            arg(ShowBlock(0)->FullName().toLower()).
-            arg(Number(0)).
-            arg(MAX_STACK_SIZE) :
-        QObject::tr("%1 (%2) (empty)").
-            arg(name).
-            arg(TrManager::SubName(Sub())) );
+    return ( QString("%1 (%2) %3").
+        arg(name).
+        arg(TrManager::SubName(Sub())).
+        arg( Number(0) ?
+            QObject::tr("with %1 (%2/%3 full)").
+                arg(ShowBlock(0)->FullName().toLower()).
+                arg(Number(0)).
+                arg(MAX_STACK_SIZE) :
+            QObject::tr("(empty)")) );
 }
 
 bool Bucket::Get(Block * const block, const int start) {

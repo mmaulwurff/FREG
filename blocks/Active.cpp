@@ -19,9 +19,8 @@
 
 #include "Active.h"
 #include "Shred.h"
-#include "Xyz.h"
+#include "World.h"
 #include "blocks/Inventory.h"
-#include "BlockFactory.h"
 
 // Active section
 
@@ -237,7 +236,7 @@ void Falling::SaveAttributes(QDataStream & out) const {
 QString Falling::FullName() const {
     switch ( Sub() ) {
     default:    return TrManager::SubNameUpper(Sub());
-    case WATER: return tr("Snow");
+    case WATER: return TrManager::KindName(FALLING);
     case STONE: return tr("Masonry");
     }
 }

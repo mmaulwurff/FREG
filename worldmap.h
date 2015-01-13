@@ -37,6 +37,8 @@ public:
     qint64 GetSpawnLatitude()  const;
     static qint64 GetSpawnCoordinate(int size);
 
+    static const int DEFAULT_MAP_SIZE = 79;
+
 private:
     Q_DISABLE_COPY(WorldMap)
 

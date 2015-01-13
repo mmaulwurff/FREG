@@ -22,7 +22,6 @@
 
 #include "blocks/Block.h"
 #include "Xyz.h"
-#include "World.h"
 #include <QObject>
 
 /// Frequency can be "never", "rare", "rare & first", "rare & second".

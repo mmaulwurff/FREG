@@ -20,8 +20,6 @@
 #ifndef WEATHER_H
 #define WEATHER_H
 
-#include <QString>
-
 enum weathers {
     WEATHER_CLEAR,
     WEATHER_RAIN,
@@ -38,7 +36,8 @@ public:
     weathers GetWeather() const;
 
 private:
-    Q_DISABLE_COPY(Weather)
+    Weather(const Weather &) = delete;
+    Weather &operator=(const Weather &) = delete;
 
     weathers weather;
 };

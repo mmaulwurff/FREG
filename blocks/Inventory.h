@@ -44,7 +44,6 @@ public:
     virtual int Start() const;
     virtual int Weight() const;
     virtual QString FullName() const = 0;
-    virtual Inventory * HasInventory() = 0;
     /// Returns true if block found its place.
     virtual bool GetExact(Block * block, int num);
     virtual QString InvFullName(int num) const;

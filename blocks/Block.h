@@ -115,9 +115,9 @@ public:
     virtual Block * DropAfterDamage(bool * delete_self);
 
     virtual Inventory * HasInventory();
-    virtual Animal * IsAnimal();
-    virtual Active * ActiveBlock();
-    virtual Falling * ShouldFall();
+    virtual Active    * ActiveBlock();
+    virtual Falling   * ShouldFall();
+    virtual Animal    * IsAnimal();
 
     virtual wearable Wearable() const;
     virtual int DamageKind() const;

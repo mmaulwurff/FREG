@@ -102,7 +102,7 @@
 
     void Box::DoRareAction() {
         if ( GROUP_MEAT == GetSubGroup(Sub()) ) {
-            Damage(MAX_DURABILITY/SECONDS_IN_DAY, DAMAGE_TIME);
+            Damage(MAX_DURABILITY/World::SECONDS_IN_DAY, DAMAGE_TIME);
             if ( GetDurability() <= 0 ) {
                 World::GetWorld()->DestroyAndReplace(X(), Y(), Z());
             }
@@ -298,7 +298,7 @@
     }
 
     void Converter::DoRareAction() {
-        if ( isOn && fuelLevel < SECONDS_IN_DAY/DamageLevel() ) {
+        if ( isOn && fuelLevel < World::SECONDS_IN_DAY/DamageLevel() ) {
             for (int i=Size()-1; i>=0; --i) {
                 Block * const block = ShowBlock(i);
                 if ( block != nullptr ) {

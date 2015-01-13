@@ -21,7 +21,6 @@
 #define CRAFTMANAGER_H
 
 #include "header.h"
-#include <QJsonArray>
 
 struct CraftItem final {
     CraftItem & operator=(const CraftItem &) = delete;

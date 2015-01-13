@@ -67,7 +67,7 @@ int main(int argc, char ** argv) {
     parser.addOption(generate);
     const QCommandLineOption map_size(QStringList() << "s" << "size",
         QObject::tr("Generated map size. Works only with -g."),
-        QObject::tr("map_size"), QString::number(DEFAULT_MAP_SIZE));
+        QObject::tr("map_size"), QString::number(WorldMap::DEFAULT_MAP_SIZE));
     parser.addOption(map_size);
     const QCommandLineOption map_outer(QStringList() << "o" << "outer",
         QObject::tr("Generated map outer shred. Works only with -g."),

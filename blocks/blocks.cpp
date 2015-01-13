@@ -67,7 +67,7 @@
 // Liquid::
     void Liquid::DoRareAction() {
         if ( not IsSubAround(Sub()) || Sub()==SUB_CLOUD ) {
-            Damage(MAX_DURABILITY*2/SECONDS_IN_NIGHT, DAMAGE_TIME);
+            Damage(MAX_DURABILITY*2/World::SECONDS_IN_NIGHT, DAMAGE_TIME);
             if ( GetDurability() <= 0 ) {
                 World::GetWorld()->DestroyAndReplace(X(), Y(), Z());
                 return;
@@ -336,10 +336,10 @@
         }
         switch ( current_time ) {
         default: --notify_flag; break;
-        case END_OF_NIGHT:   Inscribe(tr("Morning has come.")); break;
-        case END_OF_MORNING: Inscribe(tr("Day has come."));     break;
-        case END_OF_NOON:    Inscribe(tr("Evening has come.")); break;
-        case END_OF_EVENING: Inscribe(tr("Night has come."));   break;
+        case World::END_OF_NIGHT:   Inscribe(tr("Morning has come.")); break;
+        case World::END_OF_MORNING: Inscribe(tr("Day has come."    )); break;
+        case World::END_OF_NOON:    Inscribe(tr("Evening has come.")); break;
+        case World::END_OF_EVENING: Inscribe(tr("Night has come."  )); break;
         }
         if ( notify_flag > 0 ) {
             Use(nullptr);

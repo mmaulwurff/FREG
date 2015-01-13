@@ -21,7 +21,6 @@
 #define BLOCKFACTORY_H
 
 #include "header.h"
-#include <QByteArray>
 
 class Block;
 class QDataStream;
@@ -86,6 +85,11 @@ private:
     Block * (* creates[KIND_COUNT])(int kind, int sub);
     /// Array of pointers to Load functions.
     Block * (*   loads[KIND_COUNT])(QDataStream &, int kind, int sub);
+
+    template <typename BlockType>
+    static Block * Create(int kind, int sub);
+    template <typename BlockType>
+    static Block * Load(QDataStream & str, int kind, int sub);
 
     /// Type list struct for variadic template without formal parameters.
     template <class ...> struct typeList {};

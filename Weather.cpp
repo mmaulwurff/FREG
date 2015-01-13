@@ -17,7 +17,6 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include <QObject>
 #include "Weather.h"
 
 Weather::Weather(const weathers _weather) :

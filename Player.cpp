@@ -25,7 +25,6 @@
 #include "DeferredAction.h"
 #include "blocks/Animal.h"
 #include "blocks/Inventory.h"
-#include <QLocale>
 #include <QSettings>
 #include <QTextStream>
 #include <QMutexLocker>
@@ -71,7 +70,7 @@ void Player::SetCreativeMode(const bool creative_on) {
 int Player::SatiationPercent() const {
     return ( GetCreativeMode()
             || GROUP_MEAT != Block::GetSubGroup(player->Sub()) ) ?
-        50 : player->Satiation()*100/SECONDS_IN_DAY;
+        50 : player->Satiation()*100/World::SECONDS_IN_DAY;
 }
 
 int Player::BreathPercent() const {

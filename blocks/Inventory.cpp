@@ -281,8 +281,3 @@ QString Inventory::FullName() const {
     Q_UNREACHABLE();
     return QString();
 }
-
-Inventory * Inventory::HasInventory() {
-    Q_UNREACHABLE();
-    return nullptr;
-}

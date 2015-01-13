@@ -53,8 +53,6 @@ bool World::SetFireLightMap(const int level,
 void World::AddFireLight(int, int, int, int) {}
 void World::RemoveFireLight(int, int, int) {}
 
-/// Makes block emit shining.
-/** Receives only non-sun light as level, from 1 to F. */
 void World::Shine(const int x, const int y, const int z, int level) {
     if ( SetFireLightMap(level << 4, x, y, z) ) {
         const int transparent = GetBlock(x, y, z)->Transparent();

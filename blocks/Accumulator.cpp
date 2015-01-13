@@ -18,7 +18,6 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "blocks/Accumulator.h"
-#include "BlockFactory.h"
 
 Accumulator::Accumulator(const int sub, const int kind) :
     Block(sub, kind),

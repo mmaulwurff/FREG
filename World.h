@@ -59,16 +59,13 @@ public: // Lighting section
     int FireLight  (int x, int y, int z) const;
     int LightMap   (int x, int y, int z) const;
 
-    int ClampX(int x) const;
-    int ClampY(int y) const;
-    int ClampZ(int z) const;
-
     void SunShineVertical  (int x, int y, int z = HEIGHT-2,
             int level = MAX_LIGHT_RADIUS);
     void SunShineHorizontal(int x, int y, int z);
-    /// If init is false, light will not spread from non-invisible blocks.
+
+    /// Makes block emit shining.
+    /** Receives only non-sun light as level, from 1 to F. */
     void Shine(int x, int y, int z, int level);
-    void RemoveSunLight(int x, int y, int z);
 
     bool GetEvernight() const { return evernight; }
 
@@ -138,6 +135,17 @@ private:
                      int x_to, int y_to, int z_to, dirs dir);
 
 public: // Time section
+    enum times {
+        SECONDS_IN_HOUR = 60,
+        SECONDS_IN_DAY  = 24 * SECONDS_IN_HOUR,
+        END_OF_NIGHT    =  6 * SECONDS_IN_HOUR,
+        END_OF_MORNING  = 12 * SECONDS_IN_HOUR,
+        END_OF_NOON     = 18 * SECONDS_IN_HOUR,
+        END_OF_EVENING  =  0 * SECONDS_IN_HOUR,
+        SECONDS_IN_NIGHT    = END_OF_NIGHT,
+        SECONDS_IN_DAYLIGHT = SECONDS_IN_DAY-END_OF_NIGHT
+    };
+
     times_of_day PartOfDay() const;
     /// This returns seconds from start of current day.
     int TimeOfDay() const;
@@ -193,9 +201,6 @@ public: // World section
     void SaveToDisk() const;
 
     QMutex * GetLock() { return &mutex; }
-    void Lock();
-    bool TryLock();
-    void Unlock();
 
     void SetReloadShreds(int direction);
     void PhysEvents();
@@ -230,6 +235,7 @@ private:
     void ReloadShreds();
     void run() override;
     Shred ** FindShred(int x, int y) const;
+    static unsigned Abs(int x);
 
     QString worldName;
     WorldMap * map;
@@ -249,7 +255,7 @@ private:
     QMutex mutex;
     bool evernight;
     qint64 newLati, newLongi;
-    int  newX, newY, newZ;
+    int newX, newY, newZ;
     QString newWorld;
     /// UP for no reset, DOWN for full reset, NSEW for side shift.
     volatile dirs toResetDir;

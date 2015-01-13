@@ -24,7 +24,7 @@
 
 Illuminator::Illuminator(const int kind, const int sub) :
         Active(kind, sub, NONSTANDARD),
-        fuelLevel(MAX_FUEL),
+        fuelLevel(World::SECONDS_IN_DAY),
         isOn(false)
 {}
 

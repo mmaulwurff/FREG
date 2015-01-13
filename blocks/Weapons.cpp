@@ -18,9 +18,6 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "blocks/Weapons.h"
-#include "blocks/Inventory.h"
-#include "BlockFactory.h"
-#include "Shred.h"
 
 QString Weapon::FullName() const {
     if ( Kind() != WEAPON ) return Block::FullName();

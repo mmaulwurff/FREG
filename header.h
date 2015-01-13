@@ -34,19 +34,7 @@ enum sizes {
     SHRED_WIDTH_BITSHIFT = 4,
     SHRED_WIDTH = 16,
     HEIGHT = 256,
-    DEFAULT_MAP_SIZE = 79,
     MAX_NOTE_LENGTH = 144,
-};
-
-enum times {
-    SECONDS_IN_HOUR = 60,
-    SECONDS_IN_DAY = 24*SECONDS_IN_HOUR,
-    END_OF_NIGHT   =  6*SECONDS_IN_HOUR,
-    END_OF_MORNING = 12*SECONDS_IN_HOUR,
-    END_OF_NOON    = 18*SECONDS_IN_HOUR,
-    END_OF_EVENING =  0*SECONDS_IN_HOUR,
-    SECONDS_IN_NIGHT = END_OF_NIGHT,
-    SECONDS_IN_DAYLIGHT = SECONDS_IN_DAY-END_OF_NIGHT
 };
 
 #define X_STRING(string, ...) string,
@@ -91,9 +79,9 @@ enum dirs {
     NORTH,  ///< 2
     EAST,   ///< 3
     SOUTH,  ///< 4
-    WEST    ///< 5
+    WEST,   ///< 5
+    LAST_DIR = WEST
 };
-const int DIRS_COUNT = WEST + 1;
 
 enum push_reaction {
     MOVABLE,
@@ -131,7 +119,7 @@ X(QT_TRANSLATE_NOOP("Block", "Liquid"      ), LIQUID,      '~',  Liquid,     )\
 X(QT_TRANSLATE_NOOP("Block", "Plant"       ), GRASS,       '.',  Grass,      )\
 X(QT_TRANSLATE_NOOP("Block", "Bush"        ), BUSH,        ';',  Bush,       )\
 X(QT_TRANSLATE_NOOP("Block", "Herbivore"   ), RABBIT,      'r',  Rabbit,     )\
-X(QT_TRANSLATE_NOOP("Block", "Falling"     ), FALLING,     '.',  Falling,    )\
+X(QT_TRANSLATE_NOOP("Block", "Snow"        ), FALLING,     '.',  Falling,    )\
 X(QT_TRANSLATE_NOOP("Block", "Clock"       ), CLOCK,       'C',  Clock,      )\
 X(QT_TRANSLATE_NOOP("Block", "Plate"       ), PLATE,       '_',  Plate,      )\
 X(QT_TRANSLATE_NOOP("Block", "Workbench"   ), WORKBENCH,   '*',  Workbench,  )\
@@ -236,13 +224,5 @@ enum transparency {
     NONSTANDARD = 6,
     UNDEF ///< temporary, doesn't appear in world.
 };
-
-/// For positive numbers only.
-inline int Round(const float x) { return int(x + 0.5f); }
-
-inline unsigned Abs(const int x) {
-    const unsigned mask = x >> (sizeof(unsigned)*CHAR_BIT - 1);
-    return (x ^ mask) - mask;
-}
 
 #endif // HEADER_H

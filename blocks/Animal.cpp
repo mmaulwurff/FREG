@@ -92,8 +92,8 @@
         if ( value ) {
             satiation += value;
             ReceiveSignal(tr("Ate %1.").arg(TrManager::SubName(sub)));
-            if ( SECONDS_IN_DAY < satiation ) {
-                satiation = 1.1 * SECONDS_IN_DAY;
+            if ( World::SECONDS_IN_DAY < satiation ) {
+                satiation = 1.1 * World::SECONDS_IN_DAY;
                 ReceiveSignal(tr("You have gorged yourself!"));
             }
             emit Updated();
@@ -146,7 +146,7 @@
     Animal::Animal(const int kind, const int sub) :
             Falling(kind, sub, NONSTANDARD),
             breath(MAX_BREATH),
-            satiation(SECONDS_IN_DAY)
+            satiation(World::SECONDS_IN_DAY)
     {}
 
     Animal::Animal(QDataStream & str, const int kind, const int sub) :
@@ -165,7 +165,7 @@
 // Rabbit::section
     int Rabbit::Attractive(const int sub) const {
         switch ( sub ) {
-        case GREENERY: return ( Satiation() < SECONDS_IN_DAY/2 ) ? 1 : 0;
+        case GREENERY: return Satiation() < World::SECONDS_IN_DAY/2;
         case H_MEAT:   return -16;
         case A_MEAT:   return - 1;
         case SAND:     return - 1;
@@ -204,14 +204,14 @@
     }
 
     int Rabbit::NutritionalValue(const subs sub) const {
-        return ( GREENERY == sub ) ? SECONDS_IN_HOUR*4 : 0;
+        return ( GREENERY == sub ) ? World::SECONDS_IN_HOUR*4 : 0;
     }
 
 // Predator:: section
     int Predator::DamageLevel() const { return 10; }
 
     int Predator::NutritionalValue(const subs sub) const {
-        return Attractive(sub) * SECONDS_IN_HOUR;
+        return Attractive(sub) * World::SECONDS_IN_HOUR;
     }
 
     void Predator::ActFrequent() {
@@ -221,7 +221,7 @@
     }
 
     int Predator::Attractive(const int sub) const {
-        return ( 2 * Satiation() / SECONDS_IN_DAY ) == 0 ?
+        return ( 2 * Satiation() / World::SECONDS_IN_DAY ) == 0 ?
             0 : ( GROUP_MEAT == GetSubGroup(sub) ) ?
                 10 : ( sub == GREENERY ) ?
                     1 : 0;

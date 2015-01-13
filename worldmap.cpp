@@ -115,7 +115,7 @@ void WorldMap::Circle(
     }
     for (int y=0; y<size; ++y)
     for (int x=0; x<size; ++x) {
-        if ( R(x, y, size) < maxs[Round(Deg(x, y, size))] ) {
+        if ( R(x, y, size) < maxs[qRound(Deg(x, y, size))] ) {
             map[x*size+y] = ch;
         }
     }

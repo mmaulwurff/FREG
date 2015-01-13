@@ -165,10 +165,6 @@ void World::SaveToDisk() const {
 
 void World::ActivateFullReload() { toResetDir = DOWN; }
 
-void World::Lock() { mutex.lock(); }
-bool World::TryLock() { return mutex.tryLock(); }
-void World::Unlock() { mutex.unlock(); }
-
 dirs World::TurnRight(const dirs dir) {
     return static_cast<dirs>(((dir - 2 + 1) & 3) + 2);
 }
@@ -296,7 +292,7 @@ void World::run() {
 void World::PhysEvents() {
     static const int start = NumShreds()/2 - numActiveShreds/2;
     static const int end   = start + numActiveShreds;
-    Lock();
+    GetLock()->lock();
     for (int i=start; i<end; ++i)
     for (int j=start; j<end; ++j) {
         shreds[ShredPos(i, j)]->PhysEventsFrequent();
@@ -317,7 +313,7 @@ void World::PhysEvents() {
         }
     }
     ReloadShreds();
-    Unlock();
+    GetLock()->unlock();
     emit UpdatesEnded();
 }
 
@@ -691,10 +687,10 @@ World::World(const QString world_name, bool * error) :
 }
 
 World::~World() {
-    Lock();
+    GetLock()->lock();
     quit();
     wait();
-    Unlock();
+    GetLock()->unlock();
 
     qDeleteAll(shreds, shreds + NumShreds()*NumShreds());
     delete [] shreds;
@@ -747,4 +743,9 @@ void World::LoadState() {
         map->GetSpawnLongitude()).toLongLong();
     latitude  = setting.value("latitude",
         map->GetSpawnLatitude()).toLongLong();
+}
+
+unsigned World::Abs(const int x) {
+    const unsigned mask = x >> (sizeof(unsigned)*8 - 1);
+    return (x ^ mask) - mask;
 }
