@@ -347,8 +347,8 @@ void Shred::PlantGrass() {
 }
 
 void Shred::TestShred() {
-    const int level = FlatUndeground()+1;
-    struct {
+    const int level = NormalUnderground() + 1;
+    const struct {
         kinds kind;
         subs  sub;
     } set[SHRED_WIDTH/2][SHRED_WIDTH] = {
@@ -419,7 +419,7 @@ void Shred::NullMountain() {
 }
 
 void Shred::Pyramid() {
-    const int level = qMin(FlatUndeground(), HEIGHT-1-16);
+    const int level = qMin(NormalUnderground(), HEIGHT-1-16);
     Block * const stone = BlockFactory::Normal(STONE);
     for (int z=level+1, dz=0; dz<SHRED_WIDTH/2; z+=2, ++dz) { // pyramid
         for (int x=dz, y=dz; x<(SHRED_WIDTH - dz); ++x, ++y) {

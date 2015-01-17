@@ -93,7 +93,7 @@ void Player::UpdateXYZ() {
 }
 
 void Player::Examine() {
-    QMutexLocker locker(World::GetWorld()->GetLock());
+    const QMutexLocker locker(World::GetWorld()->GetLock());
     int x, y, z;
     emit GetFocus(&x, &y, &z);
     Examine(x, y, z);
@@ -158,7 +158,7 @@ void Player::Backpack() {
 
 void Player::Use() {
     World * const world = World::GetWorld();
-    QMutexLocker locker(world->GetLock());
+    const QMutexLocker locker(world->GetLock());
     int x, y, z;
     emit GetFocus(&x, &y, &z);
     Block * const block = world->GetBlock(x, y, z);
@@ -208,7 +208,7 @@ Block * Player::ValidBlock(const int num) const {
 }
 
 usage_types Player::Use(const int num) {
-    QMutexLocker locker(World::GetWorld()->GetLock());
+    const QMutexLocker locker(World::GetWorld()->GetLock());
     Block * const block = ValidBlock(num);
     if ( block == nullptr ) return USAGE_TYPE_NO;
     if ( player->Eat(static_cast<subs>(block->Sub())) ) {
@@ -384,7 +384,7 @@ void Player::ProcessCommand(QString command) {
         if ( request.isEmpty() ) {
             request = "help";
         }
-        emit ShowFile( QString(":/help_%1/%2.md")
+        emit ShowFile( QString(home_path + "/help_%1/%2.md")
             .arg(QLocale::system().name().left(2)).arg(QString(request)) );
         break;
     default:

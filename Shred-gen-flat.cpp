@@ -24,12 +24,7 @@
 #include "BlockFactory.h"
 #include "worldmap.h"
 
-int Shred::FlatUndeground(int) {
-    NormalUnderground();
-    return HEIGHT/2;
-}
-
-void Shred::NormalUnderground(const int depth, const subs sub) {
+int Shred::NormalUnderground(const int depth, const subs sub) {
     NormalCube(0,0,1, SHRED_WIDTH,SHRED_WIDTH,HEIGHT/2-depth-5, STONE);
     Block * const block = BlockFactory::Normal(sub);
     Block * const stone = BlockFactory::Normal(STONE);
@@ -41,6 +36,7 @@ void Shred::NormalUnderground(const int depth, const subs sub) {
         }
     }
     NormalCube(0,0,HEIGHT/2-depth-5, SHRED_WIDTH,SHRED_WIDTH,6, sub);
+    return HEIGHT/2;
 }
 
 void Shred::Plain() {

@@ -33,11 +33,6 @@
 #include <QDesktopServices>
 #include <QUrl>
 
-void Screen::PrintVerticalDirection(WINDOW *const window, const dirs direction)
-{
-    waddwstr(window, wPrintable(TrManager::DirName(direction)));
-}
-
 void Screen::Arrows(WINDOW * const window, const int x, const int y,
         const dirs direction, const bool is_normal)
 const {
@@ -45,11 +40,11 @@ const {
     mvwaddch(window, 0, x, arrows[SOUTH] | ARROWS_COLOR);
     waddch  (window,       arrows[SOUTH] | ARROWS_COLOR);
     waddch  (window, ' ');
-    PrintVerticalDirection(window, is_normal ? NORTH : UP);
+    waddwstr(window, wPrintable(TrManager::DirName(is_normal ? NORTH : UP)));
     mvwaddch(window, screenHeight-1, x, arrows[NORTH] | ARROWS_COLOR);
     waddch  (window,                    arrows[NORTH] | ARROWS_COLOR);
     waddch  (window, ' ');
-    PrintVerticalDirection(window, is_normal ? SOUTH : DOWN);
+    waddwstr(window, wPrintable(TrManager::DirName(is_normal ? SOUTH : DOWN)));
     HorizontalArrows(window, y, direction);
     (void)wmove(window, y, x);
 }
@@ -626,7 +621,7 @@ int Screen::ColoredChar(const Block * const block) const {
 }
 
 void Screen::Print() {
-    QMutexLocker locker(World::GetWorld()->GetLock());
+    const QMutexLocker locker(World::GetWorld()->GetLock());
     PrintHud();
     const dirs dir = player->GetDir();
     bool printed_normal = false;
@@ -1039,6 +1034,7 @@ const {
 void Screen::DisplayFile(QString path) {
     { QFile(path).open(QIODevice::ReadWrite); } // create file if doesn't exist
     QDesktopServices::openUrl(QUrl(path.prepend("file:///")));
+    Notify(tr("Open ") + path);
 }
 
 void Screen::Notify(const QString str) const {
@@ -1101,10 +1097,6 @@ Screen::Screen(Player * const pl, int &) :
         actionMode(static_cast<actions>
             (settings.value("action_mode", ACTION_USE).toInt())),
         shiftFocus(settings.value("focus_shift", 0).toInt()),
-        beepOn (settings.value("beep_on",  false).toBool()),
-        flashOn(settings.value("flash_on", true ).toBool()),
-        ascii  (settings.value("ascii",    false).toBool()),
-        blinkOn(settings.value("blink_on", true ).toBool()),
         arrows {
             '.',
             'x',
@@ -1118,16 +1110,14 @@ Screen::Screen(Player * const pl, int &) :
             wchar_t(ascii ? '.' : 0),
             wchar_t(ascii ? '.' : 0),
         },
-        showDistance(settings.value("show_distance", true).toBool()),
-        farDistance(settings.value("use_abcdef_distance", false).toBool()),
-        noMouseMask(),
-        mouseOn(settings.value("mouse_on", true).toBool())
+        OPTIONS_TABLE(OPTIONS_INIT)
+        noMouseMask()
 {
     start_color();
-    nodelay(stdscr, FALSE);
+    nodelay(stdscr, false);
     noecho(); // do not print typed symbols
     nonl();
-    keypad(stdscr, TRUE); // use arrows
+    keypad(stdscr, true); // use arrows
 
     mousemask(MOUSEMASK, &noMouseMask); // store old mouse mask in noMouseMask
     if ( not mouseOn ) { // if mouse is off, turn it off.
@@ -1140,7 +1130,7 @@ Screen::Screen(Player * const pl, int &) :
         init_pair(i, colors[(i-1)/8], colors[(i-1) & 7]);
     }
 
-    scrollok(windows[WIN_NOTIFY], TRUE);
+    scrollok(windows[WIN_NOTIFY], true);
 
     connect(World::GetWorld(), &World::UpdatesEnded, this, &Screen::Print,
         Qt::DirectConnection);
@@ -1179,13 +1169,7 @@ Screen::~Screen() {
     settings.setValue("focus_shift", shiftFocus);
     settings.setValue("action_mode", actionMode);
     settings.setValue("last_command", previousCommand);
-    settings.setValue("beep_on",  beepOn);
-    settings.setValue("flash_on", flashOn);
-    settings.setValue("blink_on", blinkOn);
-    settings.setValue("ascii", ascii);
-    settings.setValue("mouse_on", mouseOn);
-    settings.setValue("show_distance", showDistance);
-    settings.setValue("use_abcdef_distance", farDistance);
+    OPTIONS_TABLE(OPTIONS_SAVE)
 }
 
 void Screen::PrintBar(WINDOW * const window,

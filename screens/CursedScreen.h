@@ -35,9 +35,24 @@
 
 #define wPrintable(string) QString(string).toStdWString().c_str()
 
+/// Cursed screen options
+/// X(settings_string, variable_name, default_value)
+#define OPTIONS_TABLE(X) \
+X("beep_on",         beepOn,       false, )\
+X("flash_on",        flashOn,      true,  )\
+X("blink_on",        blinkOn,      false, )\
+X("ascii",           ascii,        true,  )\
+X("mouse_on",        mouseOn,      true,  )\
+X("show_distance",   showDistance, true,  )\
+X("abcdef_distance", farDistance,  false, )\
+
+#define OPTIONS_SAVE(string, name, ...) settings.setValue(string, name);
+#define OPTIONS_DECLARE(string, name, ...) bool name;
+#define OPTIONS_INIT(string, name, default, ...) \
+name(settings.value(string, default).toBool()),
+
 class IThread;
 class Inventory;
-class QFile;
 class Block;
 
 class Screen final : public VirtScreen {
@@ -130,7 +145,6 @@ private:
 
     /// Returns nullptr if block is not player->Visible().
     Block * GetFocusedBlock() const;
-    static void PrintVerticalDirection(WINDOW *, dirs);
 
     int GetNormalStartX() const;
     int GetNormalStartY() const;
@@ -159,17 +173,12 @@ private:
     actions actionMode;
     /// Can be -1, 0, 1 for low, normal, and high focus.
     int shiftFocus;
-    const bool beepOn, flashOn;
-    const bool ascii;
-    bool blinkOn;
     const chtype arrows[LAST_DIR + 1];
     const wchar_t ellipsis[4];
     mutable bool inputActive = false;
-    bool showDistance;
-    bool farDistance;
 
+    OPTIONS_TABLE(OPTIONS_DECLARE)
     mmask_t noMouseMask;
-    bool mouseOn;
 };
 
 #endif // CURSEDSCREEN_H

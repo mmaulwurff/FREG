@@ -131,7 +131,8 @@ private:
     bool LoadShred();
     void RegisterInit(Active *);
 
-    void NormalUnderground(int depth = 0, subs sub = SOIL);
+    /// Builds normal underground. Returns ground level.
+    int NormalUnderground(int depth = 0, subs sub = SOIL);
     void CoverWith(int kind, int sub);
     /// Puts num things(kind-sub) in random places on shred surface.
     /** If on_water is false, this will not drop things on water,
@@ -168,7 +169,6 @@ private:
     void ShredNominalAmplitudeAndLevel(char shred_type,
             unsigned * l, float * a) const;
     void AddWater();
-    int FlatUndeground(int depth = 0);
     void NormalCube(int x_start, int y_start, int z_start,
                     int x_size,  int y_size,  int z_size, subs);
 
