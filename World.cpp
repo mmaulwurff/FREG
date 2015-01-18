@@ -602,7 +602,7 @@ bool World::Exchange(Block * const block_from, Block * const block_to,
             return false;
         }
     }
-    if ( src >= inv_from->Size() || inv_from->Number(src) == 0 ) {
+    if ( src >= inv_from->Size() || inv_from->IsEmpty(src) ) {
         block_from->ReceiveSignal(tr("Nothing here."));
         block_to  ->ReceiveSignal(tr("Nothing in %1 at slot '%2'.").
             arg(block_from->FullName()).

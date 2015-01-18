@@ -470,9 +470,9 @@ void Screen::ProcessMouse() {
             if ( inv == nullptr ) return;
             Notify( tr("In inventory at slot '%1': %2.").
                 arg(char(mevent.x + 'a')).
-                arg( inv->Number(mevent.x) ?
-                    inv->InvFullName(mevent.x) :
-                    tr("nothing") ) );
+                arg( inv->IsEmpty(mevent.x) ?
+                    tr("nothing") :
+                    inv->InvFullName(mevent.x) ) );
         }
         break;
     case WIN_MINIMAP:

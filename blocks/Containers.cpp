@@ -156,7 +156,7 @@
 // Workbench::
     void Workbench::Craft() {
         for (int i=0; i<Start(); ++i) { // remove previous products
-            while ( Number(i) ) {
+            while ( not IsEmpty(i) ) {
                 Block * const to_pull = ShowBlock(i);
                 Pull(i);
                 BlockFactory::DeleteBlock(to_pull);
@@ -164,13 +164,13 @@
         }
         int materials_number = 0;
         for (int i=Start(); i<Size(); ++i) {
-            if ( Number(i) ) {
+            if ( not IsEmpty(i) ) {
                 ++materials_number;
             }
         }
         CraftList list(materials_number);
         for (int i=Start(); i<Size(); ++i) {
-            if ( Number(i) ) {
+            if ( not IsEmpty(i) ) {
                 list << new CraftItem(
                     {Number(i), ShowBlock(i)->Kind(), ShowBlock(i)->Sub()} );
             }
@@ -191,7 +191,7 @@
         if ( inv_to == nullptr
                 || src  >= Size()
                 || dest >= inv_to->Size()
-                || Number(src) == 0 )
+                || IsEmpty(src) )
         {
             return false;
         }
@@ -201,7 +201,7 @@
             if ( src < Start() ) {
                 // remove materials:
                 for (int i=Start(); i<Size(); ++i) {
-                    while ( Number(i) ) {
+                    while ( not IsEmpty(i) ) {
                         Block * const to_pull = ShowBlock(i);
                         Pull(i);
                         BlockFactory::DeleteBlock(to_pull);
@@ -222,9 +222,10 @@
     }
 
     QString Workbench::InvFullName(const int slot_number) const {
-        return ( Number(slot_number) > 0 ) ?
-            Inventory::InvFullName(slot_number) : ( slot_number < Start() ) ?
-                tr("-product-") : tr("-material-");
+        return IsEmpty(slot_number) ?
+            ( slot_number < Start() ) ?
+                tr("-product-") : tr("-material-") :
+            Inventory::InvFullName(slot_number);
     }
 
     int Workbench::Start() const { return 2; }
@@ -289,7 +290,7 @@
     int Converter::LightRadius() const { return lightRadius; }
 
     QString Converter::InvFullName(const int slot_number) const {
-        return ( Number(slot_number) == 0 ) ?
+        return IsEmpty(slot_number) ?
             tr("-fuel-") : Inventory::InvFullName(slot_number);
     }
 

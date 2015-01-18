@@ -43,12 +43,12 @@ QString Bucket::FullName() const {
     return ( QString("%1 (%2) %3").
         arg(name).
         arg(TrManager::SubName(Sub())).
-        arg( Number(0) ?
+        arg( IsEmpty(0) ?
+            QObject::tr("(empty)") :
             QObject::tr("with %1 (%2/%3 full)").
                 arg(ShowBlock(0)->FullName().toLower()).
                 arg(Number(0)).
-                arg(MAX_STACK_SIZE) :
-            QObject::tr("(empty)")) );
+                arg(MAX_STACK_SIZE)) );
 }
 
 bool Bucket::Get(Block * const block, const int start) {

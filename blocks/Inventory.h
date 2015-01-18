@@ -66,7 +66,10 @@ public:
     /// Don't move block shown by this function.
     Block * ShowBlockInSlot(int slot, int index) const;
 
+    /// Returns true if all inventory slots are empty.
     bool IsEmpty() const;
+    /// Returns true if particular inventory slot is empty.
+    bool IsEmpty(int slot_index) const;
 
     void Push(int x, int y, int z, int push_direction);
     /// Stacks items in inventory if possible.
@@ -87,6 +90,8 @@ protected:
     virtual void SaveAttributes(QDataStream & out) const;
 
 private:
+    static int GetSlotWeight(const QStack<Block *> & slot);
+
     const quint8 size;
     QStack<Block *> * const inventory;
 };

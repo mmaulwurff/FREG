@@ -154,8 +154,12 @@ QString Inventory::InvFullName(const int num) const {
 }
 
 int Inventory::GetInvWeight(const int i) const {
-    return inventory[i].isEmpty() ?
-        0 : inventory[i].top()->Weight()*Number(i);
+    return GetSlotWeight(inventory[i]);
+}
+
+int Inventory::GetSlotWeight(const QStack<Block *> & slot) {
+    return slot.isEmpty() ?
+        0 : slot.top()->Weight() * slot.size();
 }
 
 int Inventory::GetInvSub(const int i) const {
@@ -169,11 +173,10 @@ int Inventory::GetInvKind(const int i) const {
 }
 
 int Inventory::Weight() const {
-    int sum = 0;
-    for (int i=0; i<Size(); ++i) {
-        sum += GetInvWeight(i);
-    }
-    return sum / MAX_STACK_SIZE;
+    return std::accumulate(inventory, inventory + Size(), 0,
+        [](const int sum, const QStack<Block *> & slot) {
+            return sum + GetSlotWeight(slot);
+    });
 }
 
 Block * Inventory::ShowBlockInSlot(const int slot, const int index) const {
@@ -187,13 +190,11 @@ Block * Inventory::ShowBlock(const int slot) const {
 }
 
 bool Inventory::IsEmpty() const {
-    for (int i=Start(); i<Size(); ++i) {
-        if ( not inventory[i].isEmpty() ) {
-            return false;
-        }
-    }
-    return true;
+    return std::all_of(inventory + Start(), inventory + Size(),
+        [](const QStack<Block *> & slot) { return slot.isEmpty(); });
 }
+
+bool Inventory::IsEmpty(const int i) const { return inventory[i].isEmpty(); }
 
 void Inventory::Push(const int x, const int y, const int z,
         const int push_direction)
@@ -210,7 +211,7 @@ void Inventory::Push(const int x, const int y, const int z,
 }
 
 bool Inventory::MiniCraft(const int num) {
-    if ( Number(num) == 0 ) {
+    if ( IsEmpty(num) ) {
         ReceiveSignal(QObject::tr("Nothing at slot '%1'.").
             arg(char(num + 'a')));
         return false;

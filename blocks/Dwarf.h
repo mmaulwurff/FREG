@@ -58,7 +58,8 @@ private:
         ON_BODY,
         ON_LEGS,
         IN_RIGHT,
-        IN_LEFT
+        IN_LEFT,
+        SPECIAL_SLOTS_COUNT
     };
     static const int MIN_DWARF_LIGHT_RADIUS = 2;
 

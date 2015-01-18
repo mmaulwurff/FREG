@@ -70,7 +70,7 @@ void DeferredAction::Build() const {
     }
     inv->Pull(srcSlot);
     // put more material in building inventory slot:
-    if ( inv->Number(srcSlot) ) return;
+    if ( not inv->IsEmpty(srcSlot) ) return;
     const int id = BlockFactory::MakeId(material->Kind(), material->Sub());
     for (int i = srcSlot+1; i < inv->Size() &&
             inv->Number(srcSlot) < Inventory::MAX_STACK_SIZE; ++i)

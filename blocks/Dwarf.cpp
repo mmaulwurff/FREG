@@ -40,7 +40,7 @@ Block * Dwarf::DropAfterDamage(bool * const delete_block) {
 }
 
 int  Dwarf::ShouldAct() const { return FREQUENT_FIRST | FREQUENT_RARE; }
-int  Dwarf::Start() const { return IN_LEFT + 1; }
+int  Dwarf::Start() const { return SPECIAL_SLOTS_COUNT; }
 int  Dwarf::LightRadius() const { return lightRadius; }
 bool Dwarf::Access() const { return false; }
 Inventory * Dwarf::HasInventory() { return this; }
@@ -66,16 +66,18 @@ int Dwarf::UpdateLightRadiusInner() const {
 
 int Dwarf::DamageKind() const {
     return ( DIFFERENT == Sub() ) ?
-        DAMAGE_ULTIMATE : ( Number(IN_RIGHT) ) ?
-            ShowBlock(IN_RIGHT)->DamageKind() : DAMAGE_HANDS;
+        DAMAGE_ULTIMATE :
+        IsEmpty(IN_RIGHT) ?
+            DAMAGE_HANDS :
+            ShowBlock(IN_RIGHT)->DamageKind();
 }
 
 int Dwarf::DamageLevel() const {
     int level = 1;
-    if ( Number(IN_RIGHT) ) {
+    if ( not IsEmpty(IN_RIGHT) ) {
         level += ShowBlock(IN_RIGHT)->DamageLevel();
     }
-    if ( Number(IN_LEFT) ) {
+    if ( not IsEmpty(IN_LEFT) ) {
         level += ShowBlock(IN_LEFT)->DamageLevel();
     }
     return level;
@@ -92,7 +94,7 @@ void Dwarf::Damage(const int dmg, const int dmg_kind) {
     int damage_to_self = dmg;
     const int places[] = { ON_HEAD, ON_BODY, ON_LEGS };
     for (const int i : places) {
-        if ( Number(i) == 0 ) continue;
+        if ( IsEmpty(i) ) continue;
         Block * const armour = ShowBlock(i);
         const int dur_before_damage = armour->GetDurability();
         const int damage_divider = (i == ON_BODY) ? 2 : 4;
@@ -131,7 +133,7 @@ int Dwarf::NutritionalValue(const subs sub) const {
 
 bool Dwarf::GetExact(Block * const block, const int to) {
     if ( block == nullptr ) return true;
-    if ( (to > IN_LEFT || ( Number(to) == 0 && (
+    if ( (to >= SPECIAL_SLOTS_COUNT || ( IsEmpty(to) && (
                      IN_RIGHT==to
                 ||   IN_LEFT ==to
                 || ( ON_HEAD ==to && WEARABLE_HEAD==block->Wearable() )
@@ -163,16 +165,16 @@ bool Dwarf::Inscribe(QString) {
 }
 
 QString Dwarf::InvFullName(const int slot_number) const {
-    if ( Number(slot_number) == 0 ) {
-        switch ( slot_number ) {
-        case ON_HEAD:  return tr("-head-");
-        case ON_BODY:  return tr("-body-");
-        case ON_LEGS:  return tr("-legs-");
-        case IN_RIGHT: return tr("-right hand-");
-        case IN_LEFT:  return tr("-left  hand-");
-        }
-    }
-    return Inventory::InvFullName(slot_number);
+    static const QString invFullNames[] = {
+        tr("-head-"),
+        tr("-body-"),
+        tr("-legs-"),
+        tr("-right hand-"),
+        tr("-left  hand-")
+    };
+    return ( IsEmpty(slot_number) && slot_number < SPECIAL_SLOTS_COUNT ) ?
+        invFullNames[slot_number] :
+        Inventory::InvFullName(slot_number);
 }
 
 Dwarf::Dwarf(const int kind, const int sub) :

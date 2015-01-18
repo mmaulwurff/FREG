@@ -30,7 +30,7 @@ Filter::Filter(QDataStream & str, const int kind, const int sub) :
 
 QString Filter::InvFullName(const int slot_number) const {
     return ( slot_number > 0 ) ?
-        Container::InvFullName(slot_number) : ( Number(0) == 0 ) ?
+        Container::InvFullName(slot_number) : IsEmpty(0) ?
             tr("-example-") : Inventory::InvFullName(0);
 }
 
