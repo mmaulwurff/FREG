@@ -112,20 +112,17 @@ bool World::Get(Block * const block_to,
 }
 
 bool World::InBounds(const int x, const int y) const {
-    static const int max_xy = GetBound();
-    return ( (0 <= x && x <= max_xy) && (0 <= y && y <= max_xy) );
+    return ( (0 <= x && x <= GetBound()) && (0 <= y && y <= GetBound()) );
 }
 
 bool World::InBounds(const int x, const int y, const int z) const {
-    return ( InBounds(x, y) && InVertBounds(z) );
+    return ( InBounds(x, y) && Shred::InBounds(z) );
 }
 
-int World::GetBound() const {
-    static const int bound = NumShreds() * SHRED_WIDTH - 1;
+int World::GetBound() {
+    static const int bound = World::GetWorld()->NumShreds() * SHRED_WIDTH - 1;
     return bound;
 }
-
-bool World::InVertBounds(const int z) { return ( 0 <= z && z < HEIGHT ); }
 
 int World::SetNote(const QString note) {
     notes.append(note);

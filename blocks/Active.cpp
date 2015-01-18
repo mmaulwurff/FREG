@@ -113,7 +113,7 @@ void Active::ReRegister(const dirs dir) {
 void Active::SendSignalAround(const QString signal) const {
     if ( shred == nullptr ) return; // for blocks inside inventories
     World * const world = World::GetWorld();
-    const int bound = world->GetBound();
+    const int bound = World::GetBound();
     if ( X() > 0 )     world->GetBlock(X()-1, Y(), Z())->ReceiveSignal(signal);
     if ( X() < bound ) world->GetBlock(X()+1, Y(), Z())->ReceiveSignal(signal);
     if ( Y() > 0 )     world->GetBlock(X(), Y()-1, Z())->ReceiveSignal(signal);
@@ -123,7 +123,7 @@ void Active::SendSignalAround(const QString signal) const {
 }
 
 void Active::DamageAround() const {
-    const int bound = World::GetWorld()->GetBound();
+    const int bound = World::GetBound();
     int x_temp = X()-1;
     int y_temp = Y();
     int z_temp = Z();
@@ -163,7 +163,7 @@ bool Active::Gravitate(const int range, int bottom, int top,
         const int calmness)
 {
     World * const world = World::GetWorld();
-    const int bound = world->GetBound();
+    const int bound = World::GetBound();
     // analyse world around
     int for_north = 0, for_west = 0;
     const int y_start = qMax(Y()-range, 0);

@@ -25,7 +25,7 @@
 int Dwarf::Weight() const {
     if ( Sub() == DIFFERENT ) return 0;
     World * const world = World::GetWorld();
-    const int bound = world->GetBound();
+    const int bound = World::GetBound();
     return ( (X() < bound && world->GetBlock(X()+1, Y(), Z())->Catchable()) ||
             ( X() > 0     && world->GetBlock(X()-1, Y(), Z())->Catchable()) ||
             ( Y() < bound && world->GetBlock(X(), Y()+1, Z())->Catchable()) ||

@@ -33,6 +33,15 @@
 #include <QDesktopServices>
 #include <QUrl>
 
+const chtype Screen::arrows[] = {
+    '.',
+    'x',
+    ACS_UARROW,
+    ACS_RARROW,
+    ACS_DARROW,
+    ACS_LARROW
+};
+
 void Screen::Arrows(WINDOW * const window, const int x, const int y,
         const dirs direction, const bool is_normal)
 const {
@@ -213,7 +222,7 @@ int Screen::Color(const int kind, const int sub) {
     }
 } // color_pairs Screen::Color(int kind, int sub)
 
-int Screen::ColorShred(const shred_type type) const {
+int Screen::ColorShred(const shred_type type) {
     switch ( type ) { // foreground_background
     case SHRED_UNDERGROUND:
     case SHRED_TESTSHRED:
@@ -239,7 +248,7 @@ int Screen::ColorShred(const shred_type type) const {
     return COLOR_PAIR(WHITE_BLACK);
 }
 
-void Screen::MovePlayer(const dirs dir) {
+void Screen::MovePlayer(const dirs dir) const {
     if ( player->GetDir() == dir ) {
         player->Move(dir);
     } else {
@@ -476,11 +485,11 @@ void Screen::ProcessMouse() {
         } else {
             const int shred_x = mevent.x/2 + GetMinimapStartX();
             const int shred_y = mevent.y-1 + GetMinimapStartY();
-            Notify((0 <= shred_x && shred_x < World::GetWorld()->NumShreds() &&
-                    0 <= shred_y && shred_y < World::GetWorld()->NumShreds() )?
-                tr("On minimap: %1.").arg( TrManager::ShredTypeName(
-                    World::GetWorld()->
-                        GetShredByPos(shred_x, shred_y)->GetTypeOfShred()) ) :
+            World * const world = World::GetWorld();
+            Notify( (0 <= shred_x && shred_x < world->NumShreds() &&
+                     0 <= shred_y && shred_y < world->NumShreds() ) ?
+                tr("On minimap: %1.").arg(TrManager::ShredTypeName(
+                    world->GetShredByPos(shred_x, shred_y)->GetTypeOfShred())):
                 tr("You can't see that far.") );
         }
         break;
@@ -614,7 +623,7 @@ void Screen::PrintBlock(const Block * const block, WINDOW * const window,
     waddch(window, color | second);
 }
 
-int Screen::ColoredChar(const Block * const block) const {
+int Screen::ColoredChar(const Block * const block) {
     const int kind = block->Kind();
     const int sub  = block->Sub();
     return CharName(kind, sub) | Color(kind, sub);
@@ -623,6 +632,7 @@ int Screen::ColoredChar(const Block * const block) const {
 void Screen::Print() {
     const QMutexLocker locker(World::GetWorld()->GetLock());
     PrintHud();
+    updatedMinimap = true;
     const dirs dir = player->GetDir();
     bool printed_normal = false;
     if ( player->UsingSelfType() != USAGE_TYPE_OPEN ) { // left window
@@ -671,7 +681,7 @@ void Screen::Print() {
     }
 } // void Screen::Print()
 
-void Screen::PrintHud() {
+void Screen::PrintHud() const {
     if ( updatedHud ) return;
     werase(hudWin);
     if ( player->GetCreativeMode() ) {
@@ -686,10 +696,11 @@ void Screen::PrintHud() {
         if ( dur > 0 ) { // HitPoints line
             static const int player_health_char = ascii ? '@' : 0x2665;
             PrintBar(hudWin, player_health_char,
-                int((dur > Block::MAX_DURABILITY/5) ?
+                int((dur > Block::MAX_DURABILITY/4) ?
                     COLOR_PAIR(RED_BLACK) : (COLOR_PAIR(BLACK_RED) | A_BLINK)),
                 dur*100/Block::MAX_DURABILITY);
         }
+        waddstr(hudWin, "   ");
         static const struct {
             const std::wstring name;
             const int color;
@@ -700,11 +711,9 @@ void Screen::PrintHud() {
             { tr("Full"   ).toStdWString(), GREEN_BLACK },
             { tr("Gorged" ).toStdWString(),  BLUE_BLACK }
         };
-        waddstr(hudWin, "   ");
         const int satiation_state = player->SatiationPercent() / 25;
         wcolor_set(hudWin, satiation[satiation_state].color, nullptr);
-        waddwstr(hudWin,
-            satiation[satiation_state].name.c_str());
+        waddwstr  (hudWin, satiation[satiation_state].name.c_str());
         waddch(hudWin, '\n');
         const int breath = player->BreathPercent();
         if ( breath != 100 ) {
@@ -739,7 +748,7 @@ void Screen::PrintHud() {
     PrintMiniMap();
 } // void Screen::PrintHud()
 
-void Screen::PrintQuickInventory() {
+void Screen::PrintQuickInventory() const {
     const Inventory * const inv = player->GetBlock()->HasInventory();
     if ( inv==nullptr || not IsScreenWide() ) return;
 
@@ -766,9 +775,8 @@ int Screen::GetMinimapStartY() const {
     return Shred::CoordOfShred(player->Y()) - 2;
 }
 
-void Screen::PrintMiniMap() {
+void Screen::PrintMiniMap() const {
     if ( updatedMinimap ) return;
-    updatedMinimap = true;
     (void)wmove(minimapWin, 1, 0);
     const int i_start = GetMinimapStartY();
     const int j_start = GetMinimapStartX();
@@ -793,12 +801,12 @@ void Screen::PrintMiniMap() {
 
 int Screen::GetNormalStartX() const {
     return qBound(0, player->X() - screenWidth/4 + 1,
-        World::GetWorld()->GetBound() - screenWidth/2 - 1);
+        World::GetBound() - screenWidth/2 - 1);
 }
 
 int Screen::GetNormalStartY() const {
     return qBound(0, player->Y() - screenHeight/2 + 1,
-        World::GetWorld()->GetBound() - screenHeight - 1);
+        World::GetBound() - screenHeight - 1);
 }
 
 void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
@@ -847,7 +855,7 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
     wrefresh(window);
 } // void Screen::PrintNormal(WINDOW * window, int dir)
 
-void Screen::DrawBorder(WINDOW * const window) const {
+void Screen::DrawBorder(WINDOW * const window) {
     static const int BORDER_COLOR = COLOR_PAIR(BLACK_BLACK) | A_BOLD;
     (void)wborder( window,
         ACS_VLINE    | BORDER_COLOR, ACS_VLINE    | BORDER_COLOR,
@@ -869,7 +877,6 @@ const {
     int * x, * z;
     int i, j;
     int arrow_X;
-    World * const world = World::GetWorld();
     switch ( dir ) {
     case NORTH:
         x = &i;
@@ -886,12 +893,12 @@ const {
         x = &j;
         x_step  = 1;
         x_start = qBound(0, player->Y() - screenWidth/4 - 1,
-            world->GetBound() - screenWidth/2 - 1);
+            World::GetBound() - screenWidth/2 - 1);
         x_end   = screenWidth/2 - 1 + x_start;
         z = &i;
         z_step  = 1;
         z_start = player->X() + 1;
-        z_end   = qMin(player->X() + FRONT_MAX_DISTANCE, world->GetBound());
+        z_end   = qMin(player->X() + FRONT_MAX_DISTANCE, World::GetBound());
         arrow_X = (player->Y() - x_start)*2 + 1;
         break;
     case SOUTH:
@@ -902,14 +909,14 @@ const {
         z = &j;
         z_step  = 1;
         z_start = player->Y() + 1;
-        z_end   = qMin(player->Y() + FRONT_MAX_DISTANCE, world->GetBound());
+        z_end   = qMin(player->Y() + FRONT_MAX_DISTANCE, World::GetBound());
         arrow_X = (screenWidth/2 - player->X() + x_end)*2 - 1;
         break;
     case WEST:
         x = &j;
         x_step  = -1;
         x_end   = qBound(0, player->Y() - screenWidth/4 - 1,
-            world->GetBound() - screenWidth/2 - 1) - 1;
+            World::GetBound() - screenWidth/2 - 1) - 1;
         x_start = screenWidth/2 - 1 + x_end;
         z = &i;
         z_step  = -1;
@@ -921,6 +928,7 @@ const {
         Q_UNREACHABLE();
         return;
     }
+    World * const world = World::GetWorld();
     const int k_start = GetFrontStartZ();
     if ( block_x > 0 ) {
         // ugly! use print function to get block by screen coordinates.
@@ -933,7 +941,7 @@ const {
         return;
     }
     const int k_end = k_start - screenHeight + 2;
-    const int sky_color = Color(BLOCK, SKY);
+    const int sky_color = Color(BLOCK, SKY); // changes during the day
     (void)wmove(rightWin, 1, 1);
     for (int k=k_start; k>k_end; --k, waddch(rightWin, 30)) {
         for (*x=x_start; *x!=x_end; *x+=x_step) {
@@ -1060,7 +1068,7 @@ void Screen::Notify(const QString str) const {
     wrefresh(windows[WIN_NOTIFY]);
 }
 
-void Screen::DeathScreen() {
+void Screen::DeathScreen() { /// \todo: update design
     werase(rightWin);
     werase(hudWin);
     wcolor_set(leftWin, WHITE_RED, nullptr);
@@ -1097,20 +1105,12 @@ Screen::Screen(Player * const pl, int &) :
         actionMode(static_cast<actions>
             (settings.value("action_mode", ACTION_USE).toInt())),
         shiftFocus(settings.value("focus_shift", 0).toInt()),
-        arrows {
-            '.',
-            'x',
-            ACS_UARROW,
-            ACS_RARROW,
-            ACS_DARROW,
-            ACS_LARROW
-        },
-        ellipsis {
-            wchar_t(ascii ? '.' : 0x2026 ),
-            wchar_t(ascii ? '.' : 0),
-            wchar_t(ascii ? '.' : 0),
-        },
         OPTIONS_TABLE(OPTIONS_INIT)
+        ellipsis{
+            ascii ? L'.' : L'\U00002026',
+            ascii ? L'.' : L'\00',
+            ellipsis[1]
+        },
         noMouseMask()
 {
     start_color();
@@ -1148,7 +1148,7 @@ Screen::Screen(Player * const pl, int &) :
     Notify(tr("--- Game started. Press 'H' for help. ---"));
 
     input->start();
-} // Screen::Screen(Player * const pl, int & error, bool _ascii)
+} // Screen::Screen(Player * const pl, int & error)
 
 Screen::~Screen() {
     World * const world = World::GetWorld();

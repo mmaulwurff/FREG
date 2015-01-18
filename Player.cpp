@@ -110,7 +110,7 @@ void Player::Examine(const int x, const int y, const int z) {
     if ( DEBUG ) {
         emit Notify(QString("Weight: %1. Id: %2.").
             arg(block->Weight()).
-            arg(block->GetId()));
+            arg(BlockFactory::MakeId(block->Kind(), block->Sub())));
         emit Notify(QString("Kind: %1, substance: %2. LightRadius: %3").
             arg(block->Kind()).
             arg(block->Sub()).

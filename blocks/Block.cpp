@@ -151,7 +151,6 @@ push_reaction Block::PushResult(dirs) const {
     return ( AIR==Sub() ) ? ENVIRONMENT : NOT_MOVABLE;
 }
 
-int  Block::GetId() const { return BlockFactory::MakeId(Kind(), Sub()); }
 bool Block::Catchable() const { return false; }
 void Block::Move(dirs) {}
 int  Block::DamageKind() const { return DAMAGE_CRUSH; }

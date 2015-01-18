@@ -180,10 +180,9 @@ public:
             int src, int dest, int num);
 
 public: // Block information section
-    static bool InVertBounds(int z);
     bool InBounds(int x, int y) const;
     bool InBounds(int x, int y, int z) const;
-    int  GetBound() const;
+    static int GetBound();
 
     int SetNote(QString note);
     int ChangeNote(QString note, int note_id);

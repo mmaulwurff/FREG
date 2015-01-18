@@ -128,8 +128,6 @@ public:
     /// Receive text signal.
     virtual void ReceiveSignal(QString);
 
-    /// Determines kind and sub, unique for every kind-sub pair.
-    int GetId() const;
     /// Set maximum durability.
     void Restore();
     /// Set durability to null.

@@ -82,8 +82,8 @@ void Shred::Water(const subs sub) {
     }
     const int depth = CountShredTypeAround(GetTypeOfShred()) + 1;
     NormalUnderground(depth, shore);
-    int z_start = HEIGHT/2-depth;
-    NormalCube(0,0,z_start++, SHRED_WIDTH,SHRED_WIDTH,1, shore); // bottom
+    const int z_start = HEIGHT/2 - depth + 1;
+    NormalCube(0,0,z_start-1, SHRED_WIDTH,SHRED_WIDTH,1, shore); // bottom
     const WorldMap * const map = World::GetWorld()->GetMap();
     if ( type != map->TypeOfShred(longitude-1, latitude) ) { // north
         NormalCube(0,0,z_start, SHRED_WIDTH,1,depth, shore);

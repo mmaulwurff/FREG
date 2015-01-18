@@ -71,12 +71,12 @@ void DeferredAction::Build() const {
     inv->Pull(srcSlot);
     // put more material in building inventory slot:
     if ( inv->Number(srcSlot) ) return;
-    const int id = material->GetId();
-    for (int i=srcSlot+1; i<inv->Size() &&
-            inv->Number(srcSlot)<Inventory::MAX_STACK_SIZE; ++i)
+    const int id = BlockFactory::MakeId(material->Kind(), material->Sub());
+    for (int i = srcSlot+1; i < inv->Size() &&
+            inv->Number(srcSlot) < Inventory::MAX_STACK_SIZE; ++i)
     {
-        const Block * const block_i = inv->ShowBlock(i);
-        if ( block_i && id==block_i->GetId() ) {
+        const Block * const block = inv->ShowBlock(i);
+        if ( block && id==BlockFactory::MakeId(block->Kind(), block->Sub()) ) {
             inv->MoveInside(i, srcSlot, inv->Number(i));
         }
     }
@@ -165,7 +165,7 @@ void DeferredAction::SetPour(const int x, const int y, const int z,
     type = DEFERRED_POUR;
 }
 
-void DeferredAction::SetSetFire(const int x, int y, int z) {
+void DeferredAction::SetSetFire(const int x, const int y, const int z) {
     SetXyz(x, y, z);
     type = DEFERRED_SET_FIRE;
 }

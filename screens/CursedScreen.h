@@ -63,7 +63,7 @@ public:
     ~Screen() override;
 
     void ControlPlayer();
-    void ControlPlayer(int ch);
+    void ControlPlayer(int key);
 
     /// This is called for a notification to be displayed.
     void Notify(QString) const override;
@@ -106,9 +106,11 @@ private:
         FRONT_MAX_DISTANCE = SHRED_WIDTH * 2,
     };
 
-    const chtype OBSCURE_BLOCK = COLOR_PAIR(BLACK_BLACK) | A_BOLD|ACS_CKBOARD;
-    const int ARROWS_COLOR = COLOR_PAIR(WHITE_RED);
-    const int MOUSEMASK = BUTTON1_CLICKED | BUTTON1_RELEASED;
+    static const chtype arrows[LAST_DIR + 1];
+    static const chtype OBSCURE_BLOCK =
+        COLOR_PAIR(BLACK_BLACK) | A_BOLD | ACS_CKBOARD;
+    static const int ARROWS_COLOR = COLOR_PAIR(WHITE_RED);
+    static const int MOUSEMASK = BUTTON1_CLICKED | BUTTON1_RELEASED;
 
     /// Prints world. Should not be called not within screen.
     void Print();
@@ -122,26 +124,27 @@ private:
     /// second - otherwise - examines block at position x, y.
     void PrintFront(dirs direction, int x = -1, int y = 0) const;
     void PrintInv(WINDOW *, const Block *, const Inventory *) const;
-    void PrintHud();
-    void PrintMiniMap();
-    void PrintQuickInventory();
+    void PrintHud() const;
+    void PrintMiniMap() const;
+    void PrintQuickInventory() const;
     void RePrint();
     void InventoryAction(int num) const;
-    int  ColorShred(shred_type)   const;
-    int  ColoredChar(const Block *) const;
     void SetActionMode(actions mode);
     void ProcessCommand(QString command);
     void ProcessMouse();
-    void MovePlayer(dirs dir);
+    void MovePlayer(dirs) const;
     void MovePlayerDiag(dirs dir1, dirs dir2) const;
 
     /// Can print health, breath and other bars on hudWin.
     static void PrintBar(WINDOW *, wchar_t ch, int color, int percent);
-    static int  Color(int kind, int sub);
     static void PrintBlock(const Block *, WINDOW *, char second);
-    static bool IsScreenWide();
+    static void DrawBorder(WINDOW *);
+    static int  Color(int kind, int sub);
+    static int  ColorShred(shred_type);
+    static int  ColoredChar(const Block *);
     static int  RandomBlink();
     static bool RandomBit();
+    static bool IsScreenWide();
 
     /// Returns nullptr if block is not player->Visible().
     Block * GetFocusedBlock() const;
@@ -153,12 +156,8 @@ private:
     int GetMinimapStartY() const;
     void ExamineOnNormalScreen(int x, int y, int z, int step) const;
 
-    void DrawBorder(WINDOW *) const;
-
     SCREEN * const screen;
-    const int screenWidth;
-    const int screenHeight;
-
+    const int screenWidth, screenHeight;
     WINDOW * const windows[WIN_COUNT];
     WINDOW * const & actionWin  = windows[WIN_ACTION ];
     WINDOW * const & hudWin     = windows[WIN_HUD    ];
@@ -173,11 +172,9 @@ private:
     actions actionMode;
     /// Can be -1, 0, 1 for low, normal, and high focus.
     int shiftFocus;
-    const chtype arrows[LAST_DIR + 1];
-    const wchar_t ellipsis[4];
     mutable bool inputActive = false;
-
     OPTIONS_TABLE(OPTIONS_DECLARE)
+    const wchar_t ellipsis[4];
     mmask_t noMouseMask;
 };
 
