@@ -117,7 +117,7 @@
             Xyz(X(), Y(), Z()-1)
         };
         World * const world = World::GetWorld();
-        for (const Xyz xyz : coords) {
+        for (const Xyz & xyz : coords) {
             if ( not world->InBounds(xyz.X(), xyz.Y()) ) {
                 continue;
             }

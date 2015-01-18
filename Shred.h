@@ -97,7 +97,7 @@ public:
     void SetNewBlock(int kind, int sub, int x, int y, int z, int dir = UP);
     shred_type GetTypeOfShred() const { return type; }
 
-    static QString FileName(QString world_name, qint64 longi, qint64 lati);
+    static QString FileName(qint64 longi, qint64 lati);
     Shred * GetShredMemory() const;
     /// Make global coordinate from local (in loaded zone).
     qint64 GlobalX(int x) const;

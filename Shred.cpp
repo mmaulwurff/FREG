@@ -295,11 +295,9 @@ void Shred::SetNewBlock(const int kind, const int sub,
     SetBlock(block, x, y, z);
 }
 
-QString Shred::FileName(const QString world_name,
-        const qint64 longi, const qint64 lati)
-{
+QString Shred::FileName(const qint64 longi, const qint64 lati) {
     return QString("%1%2/%3-%4.fm").
-        arg(home_path).arg(world_name).arg(longi).arg(lati);
+        arg(home_path).arg(World::WorldName()).arg(longi).arg(lati);
 }
 
 // shred generators section
@@ -586,7 +584,7 @@ void Shred::Rain(const int kind, const int sub) {
 
 bool Shred::LoadRoom(const int level, const int index) {
     QFile file(QString("%1%2.room").
-            arg(FileName(World::GetWorld()->WorldName(), longitude, latitude)).
+            arg(FileName(longitude, latitude)).
             arg((index >= 1 ) ?
                 QString("-%1").arg(index) : ""));
     if ( not file.open(QIODevice::ReadOnly | QIODevice::Text) ) return false;

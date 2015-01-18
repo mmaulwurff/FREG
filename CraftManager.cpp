@@ -103,8 +103,8 @@ CraftManager::CraftManager() : recipesList() {
 }
 
 CraftManager::~CraftManager() {
-    for (int sub=0; sub<SUB_COUNT; ++sub) {
-        qDeleteAll(recipesList[sub]);
+    for (const auto & i : recipesList) {
+        qDeleteAll(i);
     }
 }
 

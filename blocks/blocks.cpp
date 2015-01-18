@@ -423,7 +423,7 @@
             user->ReceiveSignal(QObject::tr("Set title to this map first."));
             return USAGE_TYPE_INNER;
         } // else:
-        QFile map_file(World::GetWorld()->WorldPath() + "/texts/" + GetNote());
+        QFile map_file(World::WorldPath() + "/texts/" + GetNote());
         if ( not map_file.open(QIODevice::ReadWrite | QIODevice::Text) ) {
             return USAGE_TYPE_READ;
         }

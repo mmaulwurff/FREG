@@ -417,7 +417,7 @@ void Screen::ControlPlayer(const int ch) {
         World::GetWorld()->SaveToDisk();
         player->SaveState();
         Notify( tr("Game saved at location \"%1\".").
-            arg( QDir(World::GetWorld()->WorldPath()).absolutePath() ) );
+            arg( QDir(World::WorldPath()).absolutePath() ) );
         break;
 
     case KEY_MOUSE: ProcessMouse(); break;
@@ -655,7 +655,7 @@ void Screen::Print() {
         }
         break;
     case USAGE_TYPE_READ_IN_INVENTORY:
-        DisplayFile( World::GetWorld()->WorldPath() + "/texts/"
+        DisplayFile( World::WorldPath() + "/texts/"
             + player->PlayerInventory()->ShowBlock(
                 player->GetUsingInInventory())->GetNote() );
         player->SetUsingTypeNo();
@@ -663,8 +663,7 @@ void Screen::Print() {
     case USAGE_TYPE_READ: {
         const Block * const focused = GetFocusedBlock();
         if ( focused != nullptr ) {
-            DisplayFile( World::GetWorld()->WorldPath()
-                + "/texts/" + focused->GetNote() );
+            DisplayFile(World::WorldPath() + "/texts/" + focused->GetNote());
             player->SetUsingTypeNo();
         }
         } break;
@@ -689,7 +688,7 @@ void Screen::PrintHud() const {
             tr("Creative Mode\nxyz: %1, %2, %3.\nShred: %4") );
         mvwaddwstr(hudWin, 0, 0, wPrintable(creativeInfo
             .arg(player->GlobalX()).arg(player->GlobalY()).arg(player->Z())
-            .arg(Shred::FileName(World::GetWorld()->WorldName(),
+            .arg(Shred::FileName(
                 player->GetLongitude(), player->GetLatitude()) )));
     } else {
         const int dur = player->GetConstBlock()->GetDurability();

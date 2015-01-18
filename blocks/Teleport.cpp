@@ -25,7 +25,7 @@
 
 Teleport::Teleport(const int sub, const int kind) :
         Active(sub, kind),
-        targetWorldName(World::GetWorld()->WorldName()),
+        targetWorldName(World::WorldName()),
         targetLatitude( qrand()%(World::GetWorld()->GetMap()->GetSize())),
         targetLongitude(qrand()%(World::GetWorld()->GetMap()->GetSize()))
 {}
@@ -49,7 +49,7 @@ bool Teleport::Inscribe(QString input) {
     --targetLatitude;
     --targetLongitude;
     if ( targetWorldName.isEmpty() ) {
-        targetWorldName = World::GetWorld()->WorldName();
+        targetWorldName = World::WorldName();
     }
     return Block::Inscribe(input);
 }

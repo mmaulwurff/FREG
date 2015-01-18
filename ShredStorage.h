@@ -24,17 +24,6 @@
 #include <QThread>
 
 class QByteArray;
-
-struct LongLat final {
-    LongLat(qint64 longitude, qint64 latitude);
-    bool operator==(const LongLat &) const;
-
-    LongLat & operator=(const LongLat &) = delete;
-
-    const qint64 longitude;
-    const qint64 latitude;
-};
-
 class PreloadThread;
 
 class ShredStorage final {
@@ -58,6 +47,7 @@ private:
     /// -1 - default, 0 - no compression, 4 - best for CPU, 8 - optimal.
     static const int COMPRESSION_LEVEL = 8;
 
+    typedef QPair<qint64 /*longitude*/, qint64 /*latitude*/> LongLat;
     QHash<LongLat, QByteArray *> storage;
     const int size;
     PreloadThread * preloadThread = nullptr;

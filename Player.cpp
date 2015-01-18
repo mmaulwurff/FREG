@@ -437,7 +437,7 @@ void Player::BlockDestroy() {
         player = nullptr;
         World * const world = World::GetWorld();
         const int plus = world->NumShreds() / 2 * SHRED_WIDTH;
-        world->ReloadAllShreds(world->WorldName(),
+        world->ReloadAllShreds(World::WorldName(),
             homeLati, homeLongi, homeX+plus, homeY+plus, homeZ);
         world->ActivateFullReload();
     }
@@ -527,7 +527,7 @@ Player::~Player() {
 }
 
 void Player::SaveState() const {
-    QSettings settings(World::GetWorld()->WorldPath() + "/player_state.ini",
+    QSettings settings(World::WorldPath() + "/player_state.ini",
         QSettings::IniFormat);
     settings.setValue("home_longitude", homeLongi);
     settings.setValue("home_latitude",  homeLati);
@@ -546,7 +546,7 @@ void Player::SaveState() const {
 
 void Player::LoadState() {
     World * const world = World::GetWorld();
-    const QSettings settings(world->WorldPath() + "/player_state.ini",
+    const QSettings settings(World::WorldPath() + "/player_state.ini",
         QSettings::IniFormat);
     homeLongi = settings.value("home_longitude",
         world->GetMap()->GetSpawnLongitude()).toLongLong();
