@@ -69,6 +69,7 @@ public:
     Block * GetBlock(const int x, const int y, const int z) const {
         return blocks[x][y][z];
     }
+    const Block * FindFirstVisible(int x, int y, int * z, int step) const;
 
     /// Removes last block at xyz, then SetBlock, then makes block normal.
     void SetBlock(Block * block, int x, int y, int z);

@@ -28,12 +28,8 @@ int Shred::NormalUnderground(const int depth, const subs sub) {
     NormalCube(0,0,1, SHRED_WIDTH,SHRED_WIDTH,HEIGHT/2-depth-5, STONE);
     Block * const block = BlockFactory::Normal(sub);
     Block * const stone = BlockFactory::Normal(STONE);
-    for (int x=0; x<SHRED_WIDTH; ++x) {
-        int rand = qrand();
-        for (int y=0; y<SHRED_WIDTH; ++y) {
-            PutBlock( ((rand & 1) ? stone : block), x, y, HEIGHT/2-depth-6);
-            rand >>= 1;
-        }
+    FOR_ALL_SHRED_AREA(x, y) {
+        PutBlock( ((qrand() & 1) ? stone : block), x, y, HEIGHT/2-depth-6);
     }
     NormalCube(0,0,HEIGHT/2-depth-5, SHRED_WIDTH,SHRED_WIDTH,6, sub);
     return HEIGHT/2;
@@ -51,17 +47,12 @@ void Shred::Plain() {
 void Shred::Forest(const bool dead) {
     NormalUnderground();
     RandomDrop(qrand() & 3, BUSH, WOOD);
-    for (int number_of_trees = CountShredTypeAround(type);
-            number_of_trees != 0; --number_of_trees)
-    {
-        const int x=qrand()%(SHRED_WIDTH-2);
-        const int y=qrand()%(SHRED_WIDTH-2);
-        for (int k=HEIGHT-2; ; --k) {
-            if ( GetBlock(x, y, k)->Sub() == SOIL ) {
-                Tree(x, y, k+1, 4 + (qrand() & 7));
-                break;
-            }
-
+    for (int number = CountShredTypeAround(type); number; --number) {
+        const int x = qrand()%(SHRED_WIDTH-2) + 1;
+        const int y = qrand()%(SHRED_WIDTH-2) + 1;
+        Block ** const position = FindTopNonAir(x, y);
+        if ( (*position)->Sub() == SOIL ) {
+            Tree(x-1, y-1, position - blocks[x][y] + 1, 4 + (qrand() & 7));
         }
     }
     RandomDrop(qrand() & 3, WEAPON, WOOD);
@@ -100,12 +91,13 @@ void Shred::Water(const subs sub) {
     }
     Block * const air = BlockFactory::Normal(AIR);
     FOR_ALL_SHRED_AREA(i, j) {
-        for (int k=z_start; k<=HEIGHT/2; ++k) {
-            if ( shore != GetBlock(i, j, k)->Sub() ) {
+        Block ** const pos = blocks[i][j];
+        for (Block ** block=pos+z_start; block<=pos+HEIGHT/2; ++block) {
+            if ( shore != (*block)->Sub() ) {
                 if ( AIR == sub ) {
-                    PutBlock(air, i, j, k);
+                    *block = air;
                 } else {
-                    SetNewBlock(LIQUID, sub, i, j, k);
+                    SetNewBlock(LIQUID, sub, i, j, block - pos);
                 }
             }
         }
@@ -115,14 +107,14 @@ void Shred::Water(const subs sub) {
 void Shred::Hill(const bool dead) {
     NormalUnderground();
     Block * const soil = BlockFactory::Normal(SOIL);
-    for (int x=SHRED_WIDTH; x--; )
-    for (int y=SHRED_WIDTH; y--; )
-    for (int z=SHRED_WIDTH/2-2; z--; ) {
-        if ( z <= -qAbs(x-SHRED_WIDTH/2) + SHRED_WIDTH/2-2 ) {
-            PutBlock(soil, x, y, z+HEIGHT/2); // north-south '^'
-        }
-        if ( z <= -qAbs(y-SHRED_WIDTH/2) + SHRED_WIDTH/2-2 ) {
-            PutBlock(soil, x, y, z+HEIGHT/2); // east-west '^'
+    FOR_ALL_SHRED_AREA(x, y) {
+        for (int z=SHRED_WIDTH/2-2; z--; ) {
+            if ( z <= -qAbs(x-SHRED_WIDTH/2) + SHRED_WIDTH/2-2 ) {
+                PutBlock(soil, x, y, z+HEIGHT/2); // north-south '^'
+            }
+            if ( z <= -qAbs(y-SHRED_WIDTH/2) + SHRED_WIDTH/2-2 ) {
+                PutBlock(soil, x, y, z+HEIGHT/2); // east-west '^'
+            }
         }
     }
     RandomDrop(qrand() & 3, WEAPON, STONE);

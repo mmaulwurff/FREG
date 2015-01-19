@@ -820,14 +820,11 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
     for (int j=start_y; j<end_y; ++j, waddch(window, 30)) {
         const int j_in = Shred::CoordInShred(j);
         for (int i=start_x; i<end_x; ++i) {
-            Shred * const shred = world->GetShred(i, j);
-            const int i_in = Shred::CoordInShred(i);
-            int k = k_start - k_step;
-            while ( INVISIBLE ==
-                shred->GetBlock(i_in, j_in, k+=k_step)->Transparent() );
+            int k = k_start;
+            const Block * const block = world->GetShred(i, j)->
+                FindFirstVisible(Shred::CoordInShred(i), j_in, &k, k_step);
             if ( player->Visible(i, j, k) ) {
-                PrintBlock(shred->GetBlock(i_in, j_in, k), window,
-                    showDistance ? CharNumber(k) : ' ');
+                PrintBlock(block, window, showDistance ? CharNumber(k) : ' ');
             } else {
                 waddch(window, OBSCURE_BLOCK);
                 waddch(window, OBSCURE_BLOCK);

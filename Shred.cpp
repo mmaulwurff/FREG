@@ -101,9 +101,10 @@ Shred::Shred(const int shred_x, const int shred_y,
     Block * const star = BlockFactory::Normal(STAR);
     SetAllLightMapNull();
     FOR_ALL_SHRED_AREA(i, j) {
-        PutBlock(null_stone, i, j, 0);
-        std::fill(blocks[i][j] + 1, blocks[i][j] + HEIGHT - 1, air);
-        PutBlock(((qrand() & 3) ? sky : star), i, j, HEIGHT-1);
+        Block ** const position = blocks[i][j];
+        *position = null_stone;
+        std::fill(position + 1, position + HEIGHT - 1, air);
+        *(position + HEIGHT - 1) = (qrand() & 3) ? sky : star;
     }
     switch ( type ) {
     case SHRED_WASTE:       WasteShred(); break;
@@ -160,6 +161,17 @@ Block ** Shred::FindTopNonAir(const int x, const int y) {
     Block ** ground = blocks[x][y] + HEIGHT-1;
     while ( (*(--ground))->Sub() == AIR );
     return ground;
+}
+
+const Block * Shred::FindFirstVisible(const int x, const int y, int * const z,
+        const int step)
+const {
+    const Block * const * found = blocks[x][y] + *z;
+    while ( (*found)->Transparent() == INVISIBLE ) {
+        found += step;
+        *z    += step;
+    }
+    return *found;
 }
 
 qint64 Shred::GlobalX(const int x) const {
@@ -326,8 +338,7 @@ void Shred::DropBlock(Block * const block, const bool on_water) {
     int y = qrand();
     const int x = CoordInShred(y);
     y = CoordInShred(unsigned(y) >> SHRED_WIDTH_BITSHIFT);
-    int z = HEIGHT-2;
-    for ( ; GetBlock(x, y, z)->Sub()==AIR; --z);
+    int z = FindTopNonAir(x, y) - blocks[x][y];
     if( on_water || GetBlock(x, y, z)->Sub()!=WATER ) {
         SetBlock(block, x, y, ++z);
     }
@@ -335,12 +346,10 @@ void Shred::DropBlock(Block * const block, const bool on_water) {
 
 void Shred::PlantGrass() {
     FOR_ALL_SHRED_AREA(i, j) {
-        int k = HEIGHT - 2;
-        for ( ; GetBlock(i, j, k)->Transparent(); --k);
-        if (    SOIL == GetBlock(i, j,   k)->Sub() &&
-                AIR  == GetBlock(i, j, ++k)->Sub() )
-        {
-            SetBlock(BlockFactory::NewBlock(GRASS, GREENERY), i, j, k);
+        Block ** const position = FindTopNonAir(i, j);
+        if ( SOIL == (*position)->Sub() ) {
+            SetBlock(BlockFactory::NewBlock(GRASS, GREENERY), i, j,
+                position - blocks[i][j]);
         }
     }
 }
@@ -379,7 +388,7 @@ void Shred::TestShred() {
     };
     for (int i=0; i<SHRED_WIDTH/2; ++i)
     for (int j=0; j<SHRED_WIDTH  ; ++j) {
-        if ( set[i][j].kind == 0 && set[i][j].sub == 0) continue;
+        if ( set[i][j].kind == 0 && set[i][j].sub == 0 ) continue;
         SetNewBlock(set[i][j].kind, set[i][j].sub, j, i*2, level);
     }
 } // void Shred::TestShred()
@@ -496,9 +505,7 @@ void Shred::Castle() {
 void Shred::ChaosShred() {
     FOR_ALL_SHRED_AREA(i, j) {
         for (int k=1; k<HEIGHT/2; ++k) {
-            int kind = qrand() % LAST_KIND;
-            int sub  = qrand() % LAST_SUB;
-            SetNewBlock(kind, sub, i, j, k);
+            SetNewBlock(qrand() % LAST_KIND, qrand() % LAST_SUB, i, j, k);
         }
     }
 }
