@@ -23,13 +23,12 @@
 #include "header.h"
 
 struct CraftItem final {
-    CraftItem & operator=(const CraftItem &) = delete;
+    Q_DISABLE_COPY(CraftItem)
 
     bool operator<(const CraftItem & item) const;
 
-    const int num;
-    const int kind;
-    const int sub;
+    const int number;
+    const int kind, sub;
 }; // CraftItem
 
 /** \class CraftList CraftManager.h
@@ -44,19 +43,19 @@ public:
     explicit CraftList(int materials_number);
     ~CraftList();
 
-    CraftList & operator=(const CraftList &) = delete;
-
+    int size() const;
+    int GetMaterialsNumber() const;
     void Sort();
     void LoadItems(const QJsonArray &);
-    int  size() const { return items.size(); }
     void clear();
-    int  GetMaterialsNumber() const { return materialsNumber; }
-    CraftItem * at(const int i) const { return items.at(i); }
+    const CraftItem * at(int i) const;
 
     void operator<<(CraftItem *);
     bool operator==(const CraftList &) const;
 
 private:
+    Q_DISABLE_COPY(CraftList)
+
     const int materialsNumber;
     QList<CraftItem *> items;
 }; // CraftList
@@ -75,7 +74,6 @@ private:
     bool CraftSub(CraftList * items, int sub) const;
 
     QList<CraftList *> recipesList[SUB_COUNT];
-
     static CraftManager * craftManager;
 }; // CraftManager
 

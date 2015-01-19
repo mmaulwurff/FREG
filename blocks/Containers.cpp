@@ -171,13 +171,13 @@
         CraftList list(materials_number);
         for (int i=Start(); i<Size(); ++i) {
             if ( not IsEmpty(i) ) {
-                list << new CraftItem(
-                    {Number(i), ShowBlock(i)->Kind(), ShowBlock(i)->Sub()} );
+                list << new CraftItem{
+                    Number(i), ShowBlock(i)->Kind(), ShowBlock(i)->Sub()};
             }
         }
         if ( CraftManager::Craft(&list, Sub()) ) {
             for (int i=0; i<list.size(); ++i) {
-                for (int n=0; n<list.at(i)->num; ++n) {
+                for (int n=0; n<list.at(i)->number; ++n) {
                     const CraftItem * const item = list.at(i);
                     GetExact(BlockFactory::NewBlock(item->kind, item->sub), i);
                 }

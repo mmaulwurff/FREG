@@ -69,6 +69,7 @@ void Shred::Forest(const bool dead) {
         RandomDrop(qrand() & 1, BLOCK, ROSE);
         PlantGrass();
     }
+    CoverWith(FALLING, SAND);
 }
 
 void Shred::Water(const subs sub) {
@@ -98,14 +99,14 @@ void Shred::Water(const subs sub) {
         NormalCube(0,0,z_start, 1,SHRED_WIDTH,depth, shore);
     }
     Block * const air = BlockFactory::Normal(AIR);
-    for (int i=SHRED_WIDTH; i--; )
-    for (int j=SHRED_WIDTH; j--; )
-    for (int k=z_start; k<=HEIGHT/2; ++k) {
-        if ( shore != GetBlock(i, j, k)->Sub() ) {
-            if ( AIR == sub ) {
-                PutBlock(air, i, j, k);
-            } else {
-                SetNewBlock(LIQUID, sub, i, j, k);
+    FOR_ALL_SHRED_AREA(i, j) {
+        for (int k=z_start; k<=HEIGHT/2; ++k) {
+            if ( shore != GetBlock(i, j, k)->Sub() ) {
+                if ( AIR == sub ) {
+                    PutBlock(air, i, j, k);
+                } else {
+                    SetNewBlock(LIQUID, sub, i, j, k);
+                }
             }
         }
     }

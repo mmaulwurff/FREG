@@ -58,11 +58,15 @@ bool CraftList::operator==(const CraftList & compared) const {
 void CraftList::LoadItems(const QJsonArray & array) {
     for (const QJsonValue & value : array) {
         const QJsonObject item = value.toObject();
-        items.append( new CraftItem( {item["number"].toInt(),
+        items.append( new CraftItem{item["number"].toInt(),
                 TrManager::StringToKind(item["kind"].toString()),
-                TrManager::StringToSub (item["sub" ].toString())} ) );
+                TrManager::StringToSub (item["sub" ].toString())} );
     }
 }
+
+int CraftList::size() const { return items.size(); }
+int CraftList::GetMaterialsNumber() const { return materialsNumber; }
+const CraftItem * CraftList::at(const int i) const { return items.at(i); }
 
 void CraftList::Sort() {
     std::sort(items.begin(), items.end(),
@@ -112,8 +116,8 @@ bool CraftManager::MiniCraft(CraftItem ** item) {
     CraftList recipe(1);
     recipe << *item;
     if ( craftManager->CraftSub(&recipe, DIFFERENT) ) {
-        *item = new CraftItem(
-            {recipe.at(0)->num, recipe.at(0)->kind, recipe.at(0)->sub} );
+        *item = new CraftItem{
+            recipe.at(0)->number, recipe.at(0)->kind, recipe.at(0)->sub};
         return true;
     } else {
         return false;
@@ -132,8 +136,8 @@ bool CraftManager::CraftSub(CraftList * const recipe, const int sub) const {
         if ( *tried == *recipe ) {
             recipe->clear();
             for (int i=tried->GetMaterialsNumber(); i<tried->size(); ++i) {
-                *recipe << new CraftItem({tried->at(i)->num,
-                        tried->at(i)->kind, tried->at(i)->sub});
+                *recipe << new CraftItem{
+                    tried->at(i)->number, tried->at(i)->kind, tried->at(i)->sub};
             }
             return true;
         }

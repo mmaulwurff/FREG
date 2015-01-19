@@ -217,13 +217,13 @@ bool Inventory::MiniCraft(const int num) {
         return false;
     } // else:
     CraftItem * crafted =
-        new CraftItem({Number(num), GetInvKind(num), GetInvSub(num)});
+        new CraftItem{Number(num), GetInvKind(num), GetInvSub(num)};
     if ( CraftManager::MiniCraft(&crafted) ) {
         while ( not inventory[num].isEmpty() ) {
             BlockFactory::DeleteBlock(ShowBlock(num));
             Pull(num);
         }
-        for (int i=0; i<crafted->num; ++i) {
+        for (int i=0; i<crafted->number; ++i) {
             GetExact(BlockFactory::NewBlock(crafted->kind, crafted->sub), num);
         }
         ReceiveSignal(QObject::tr("Craft successful."));

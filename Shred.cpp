@@ -46,24 +46,25 @@ bool Shred::LoadShred() {
     SetAllLightMapNull();
     Block * const null_stone = BlockFactory::Normal(NULLSTONE);
     Block * const air        = BlockFactory::Normal(AIR);
-    for (int x=SHRED_WIDTH; x--; )
-    for (int y=SHRED_WIDTH; y--; ) {
-        PutBlock(null_stone, x, y, 0);
-        for (int z=1; ; ++z) {
+    FOR_ALL_SHRED_AREA(x, y) {
+        Block ** to_fill = blocks[x][y];
+        *to_fill = null_stone;
+        for (;;) {
+            ++to_fill;
             quint8 kind, sub;
             if ( BlockFactory::KindSubFromFile(in, &kind, &sub) ) { // normal
                 if ( sub==SKY || sub==STAR ) {
-                    std::fill(blocks[x][y] + z, blocks[x][y] + HEIGHT-1, air);
+                    std::fill(to_fill, blocks[x][y] + HEIGHT-1, air);
                     PutBlock(BlockFactory::Normal(sub), x, y, HEIGHT-1);
                     break;
                 } else {
-                    PutBlock(BlockFactory::Normal(sub), x, y, z);
+                    *to_fill = BlockFactory::Normal(sub);
                 }
             } else {
-                Active * const active = (blocks[x][y][z] =
+                Active * const active = (*to_fill =
                     BlockFactory::BlockFromFile(in, kind, sub))->ActiveBlock();
                 if ( active != nullptr ) {
-                    active->SetXyz(x, y, z);
+                    active->SetXyz(x, y, to_fill - blocks[x][y]);
                     RegisterInit(active);
                     Falling * const falling = active->ShouldFall();
                     if ( falling != nullptr && falling->IsFalling() ) {
@@ -99,8 +100,7 @@ Shred::Shred(const int shred_x, const int shred_y,
     Block * const sky  = BlockFactory::Normal(SKY);
     Block * const star = BlockFactory::Normal(STAR);
     SetAllLightMapNull();
-    for (int i=SHRED_WIDTH; i--; )
-    for (int j=SHRED_WIDTH; j--; ) {
+    FOR_ALL_SHRED_AREA(i, j) {
         PutBlock(null_stone, i, j, 0);
         std::fill(blocks[i][j] + 1, blocks[i][j] + HEIGHT - 1, air);
         PutBlock(((qrand() & 3) ? sky : star), i, j, HEIGHT-1);
@@ -137,26 +137,29 @@ void Shred::SaveShred(const bool isQuitGame) {
     outstr << CURRENT_SHRED_FORMAT_VERSION;
     outstr.setVersion(DATASTREAM_VERSION);
     outstr << quint8(GetTypeOfShred()) << quint8(GetWeather());
-    for (int x=SHRED_WIDTH; x--; )
-    for (int y=SHRED_WIDTH; y--; ) {
-        int height = HEIGHT - 1;
-        while (GetBlock(x, y, --height)->Sub() == AIR);
-        for (int z=1; z<=height; ++z) {
-            Block * const block = GetBlock(x, y, z);
-            if ( block == BlockFactory::Normal(block->Sub()) ) {
-                block->SaveNormalToFile(outstr);
+    FOR_ALL_SHRED_AREA(x, y) {
+        Block ** const ground = FindTopNonAir(x, y);
+        for (Block ** block = blocks[x][y] + 1; block<=ground; ++block) {
+            if ( *block == BlockFactory::Normal((*block)->Sub()) ) {
+                (*block)->SaveNormalToFile(outstr);
             } else {
-                block->SaveToFile(outstr);
+                (*block)->SaveToFile(outstr);
                 if ( isQuitGame ) {
-                    delete block; // without unregistering.
+                    delete *block; // without unregistering.
                 } else {
-                    block->RestoreDurabilityAfterSave();
+                    (*block)->RestoreDurabilityAfterSave();
                 }
             }
         }
         GetBlock(x, y, HEIGHT-1)->SaveNormalToFile(outstr);
     }
     World::GetWorld()->SetShredData(shred_data, longitude, latitude);
+}
+
+Block ** Shred::FindTopNonAir(const int x, const int y) {
+    Block ** ground = blocks[x][y] + HEIGHT-1;
+    while ( (*(--ground))->Sub() == AIR );
+    return ground;
 }
 
 qint64 Shred::GlobalX(const int x) const {
@@ -258,11 +261,11 @@ void Shred::RemShining(Active * const active) { shiningList.remove(active); }
 
 void Shred::ReloadTo(const dirs direction) {
     switch ( direction ) {
-    case NORTH: ++shredY; break;
-    case SOUTH: --shredY; break;
-    case EAST:  --shredX; break;
-    case WEST:  ++shredX; break;
     default: Q_UNREACHABLE(); break;
+    case NORTH: ++shredY; break;
+    case EAST:  --shredX; break;
+    case SOUTH: --shredY; break;
+    case WEST:  ++shredX; break;
     }
 }
 
@@ -303,12 +306,11 @@ QString Shred::FileName(const qint64 longi, const qint64 lati) {
 // shred generators section
 // these functions fill space between the lowest nullstone layer and sky.
 // so use k from 1 to HEIGHT-2.
+
 void Shred::CoverWith(const int kind, const int sub) {
-    for (int i=0; i<SHRED_WIDTH; ++i)
-    for (int j=0; j<SHRED_WIDTH; ++j) {
-        int k = HEIGHT-2;
-        for ( ; AIR==GetBlock(i, j, k)->Sub(); --k);
-        SetBlock(BlockFactory::NewBlock(kind, sub), i, j, ++k);
+    FOR_ALL_SHRED_AREA(i, j) {
+        SetBlock(BlockFactory::NewBlock(kind, sub), i, j,
+            FindTopNonAir(i, j) - blocks[i][j] + 1);
     }
 }
 
@@ -332,8 +334,7 @@ void Shred::DropBlock(Block * const block, const bool on_water) {
 }
 
 void Shred::PlantGrass() {
-    for (int i=0; i<SHRED_WIDTH; ++i)
-    for (int j=0; j<SHRED_WIDTH; ++j) {
+    FOR_ALL_SHRED_AREA(i, j) {
         int k = HEIGHT - 2;
         for ( ; GetBlock(i, j, k)->Transparent(); --k);
         if (    SOIL == GetBlock(i, j,   k)->Sub() &&
@@ -389,8 +390,7 @@ void Shred::NullMountain() {
     NormalCube(0,SHRED_WIDTH/2-1,1, SHRED_WIDTH,2,border_level, NULLSTONE);
     NormalCube(SHRED_WIDTH/2-1,0,1, 2,SHRED_WIDTH,border_level, NULLSTONE);
     Block * const null_stone = BlockFactory::Normal(NULLSTONE);
-    for (int i=0; i<SHRED_WIDTH; ++i)
-    for (int j=0; j<SHRED_WIDTH; ++j) {
+    FOR_ALL_SHRED_AREA(i, j) {
         for (int k=border_level; k < HEIGHT-2; ++k) {
             const int surface =
                 HEIGHT/2 * (pow(1./(i-7.5), 2) * pow(1./(j-7.5), 2)+1);
@@ -494,12 +494,12 @@ void Shred::Castle() {
 } // Shred::Castle()
 
 void Shred::ChaosShred() {
-    for (int i=0; i<SHRED_WIDTH; ++i)
-    for (int j=0; j<SHRED_WIDTH; ++j)
-    for (int k=1; k<HEIGHT/2; ++k) {
-        int kind = qrand() % LAST_KIND;
-        int sub  = qrand() % LAST_SUB;
-        SetNewBlock(kind, sub, i, j, k);
+    FOR_ALL_SHRED_AREA(i, j) {
+        for (int k=1; k<HEIGHT/2; ++k) {
+            int kind = qrand() % LAST_KIND;
+            int sub  = qrand() % LAST_SUB;
+            SetNewBlock(kind, sub, i, j, k);
+        }
     }
 }
 

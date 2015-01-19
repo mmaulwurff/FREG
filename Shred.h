@@ -25,6 +25,11 @@
 #include <forward_list>
 #include <QLinkedList>
 
+/// Cycles over all shred area.
+#define FOR_ALL_SHRED_AREA(x, y) \
+for (int x = SHRED_WIDTH; x--; ) \
+for (int y = SHRED_WIDTH; y--; )
+
 class World;
 class Block;
 class Active;
@@ -140,6 +145,7 @@ private:
     void RandomDrop(int num, int kind, int sub, bool on_water = false);
     void DropBlock(Block * bloc, bool on_water);
     int CountShredTypeAround(int type) const;
+    Block ** FindTopNonAir(int x, int y);
 
     void PlantGrass();
     void TestShred();
