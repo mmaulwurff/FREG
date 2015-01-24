@@ -67,12 +67,12 @@ X(QT_TRANSLATE_NOOP("Shred", "Crater"     ), SHRED_CRATER,       'c', )\
 X(QT_TRANSLATE_NOOP("Shred", "Dead forest"), SHRED_DEAD_FOREST,  'f', )\
 X(QT_TRANSLATE_NOOP("Shred", "Dead hill"  ), SHRED_DEAD_HILL,    '*', )\
 X(QT_TRANSLATE_NOOP("Shred", "0mountain"  ), SHRED_NULLMOUNTAIN, '#', )\
+X(QT_TRANSLATE_NOOP("Shred", "Flat"       ), SHRED_FLAT,         'F', )\
 X(QT_TRANSLATE_NOOP("Shred", "Underground"), SHRED_UNDERGROUND,  '-', )\
 
 enum shred_type {
     SHRED_TABLE(X_ENUM_INIT)
-    SHRED_DEFAULT    = SHRED_PLAIN,
-    SHRED_OUT_BORDER = SHRED_WATER,
+    SHRED_OUT_BORDER = SHRED_WATER
 };
 
 enum dirs {

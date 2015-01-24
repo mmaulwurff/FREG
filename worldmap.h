@@ -57,6 +57,7 @@ private:
     int mapSize;
     mutable QFile map;
     qint64 spawnLongitude, spawnLatitude;
+    char defaultShred, outerShred;
 };
 
 #endif // WORLDMAP_H

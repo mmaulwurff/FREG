@@ -23,6 +23,12 @@
 #include "blocks/Active.h"
 #include "blocks/Inventory.h"
 #include "BlockFactory.h"
+#include "TrManager.h"
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
+#include <QTextStream>
+#pragma GCC diagnostic pop
 
 const quint8 Shred::DATASTREAM_VERSION = QDataStream::Qt_5_2;
 
@@ -125,6 +131,7 @@ Shred::Shred(const int shred_x, const int shred_y,
     case SHRED_ACID_LAKE:   Water(ACID ); break;
     case SHRED_LAVA_LAKE:   Water(STONE); break;
     case SHRED_CRATER:      Water(AIR);   break;
+    case SHRED_FLAT:        Layers();     break;
     case SHRED_UNDERGROUND: NormalUnderground(); break;
     }
 } // Shred::Shred(int shred_x, shred_y, qint64 longi, lati)
@@ -356,10 +363,7 @@ void Shred::PlantGrass() {
 
 void Shred::TestShred() {
     const int level = NormalUnderground() + 1;
-    const struct {
-        kinds kind;
-        subs  sub;
-    } set[SHRED_WIDTH/2][SHRED_WIDTH] = {
+    const KindSub set[SHRED_WIDTH/2][SHRED_WIDTH] = {
         { // rows
             {CLOCK, IRON}, {CONTAINER, WOOD}, {FALLING, SAND},
             {BLOCK, GLASS}, {BOX, DIFFERENT}, {PLATE, STONE},
@@ -501,6 +505,41 @@ void Shred::Castle() {
         level += 5;
     }
 } // Shred::Castle()
+
+void Shred::Layers() {
+    static std::vector<KindSub> layers;
+    if ( layers.empty() ) {
+        QFile file(World::WorldPath() + "/layers.txt");
+        if (file.open(QIODevice::Text | QIODevice::ReadOnly)) {
+            QTextStream stream(&file);
+            while ( not stream.atEnd() ) {
+                QString kind_string, sub_string;
+                stream >> kind_string >> sub_string;
+                layers.push_back(KindSub{
+                    static_cast<kinds>(TrManager::StringToKind(kind_string)),
+                    static_cast<subs> (TrManager::StringToSub ( sub_string))});
+                if ( layers.back().kind == LAST_KIND ) {
+                    layers.back().kind = BLOCK;
+                }
+                if ( layers.back().sub == LAST_SUB ) {
+                    layers.back().sub = STONE;
+                }
+            }
+        }
+        if ( layers.empty() ) {
+            layers.insert(layers.end(), {
+                {BLOCK, STONE},
+                {BLOCK, SOIL}
+            });
+        }
+    }
+
+    FOR_ALL_SHRED_AREA(x, y) {
+        for (uint z = 1, i = 0; z < HEIGHT-1 && i < layers.size(); ++z, ++i) {
+            SetNewBlock(layers[i].kind, layers[i].sub, x, y, z);
+        }
+    }
+}
 
 void Shred::ChaosShred() {
     FOR_ALL_SHRED_AREA(i, j) {

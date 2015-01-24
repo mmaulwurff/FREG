@@ -229,6 +229,7 @@ int Screen::ColorShred(const shred_type type) {
     case SHRED_UNDERGROUND:
     case SHRED_TESTSHRED:
     case SHRED_EMPTY:
+    case SHRED_FLAT:
     case SHRED_CHAOS:       return COLOR_PAIR( WHITE_BLACK);
     case SHRED_DEAD_FOREST: return COLOR_PAIR(YELLOW_BLACK);
     case SHRED_DEAD_HILL:   return COLOR_PAIR( BLACK_WHITE) | A_BOLD;
@@ -863,7 +864,7 @@ void Screen::DrawBorder(WINDOW * const window) {
 }
 
 int Screen::GetFrontStartZ() const {
-    return qBound(screenHeight-1, player->Z()+screenHeight/2, HEIGHT-1);
+    return qBound(screenHeight-3, player->Z()+screenHeight/2, HEIGHT-1);
 }
 
 void Screen::PrintFront(const dirs dir, const int block_x, const int block_y)

@@ -164,6 +164,7 @@ private:
     void Desert();
     void Castle();
     void WasteShred();
+    void Layers();
     /// For testing purposes.
     void ChaosShred();
 
@@ -195,6 +196,11 @@ private:
     std::forward_list<Active *> activeListAll;
     std::forward_list<Active *> shiningList;
     std::forward_list<Falling *> fallList;
+};
+
+struct KindSub {
+    kinds kind;
+    subs  sub;
 };
 
 #endif // SHRED_H

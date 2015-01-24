@@ -30,7 +30,9 @@ WorldMap::WorldMap(const QString world_name) :
         mapSize(),
         map(home_path + world_name + "/map.txt"),
         spawnLongitude(),
-        spawnLatitude()
+        spawnLatitude(),
+        defaultShred(),
+        outerShred()
 {
     if ( map.open(QIODevice::ReadOnly | QIODevice::Text) ) {
         mapSize = int(sqrtf(1+4*map.size())-1)/2;
@@ -40,6 +42,14 @@ WorldMap::WorldMap(const QString world_name) :
             DEFAULT_MAP_SIZE : 1;
     }
     MakeAndSaveSpawn(world_name, mapSize, &spawnLongitude, &spawnLatitude);
+
+    QSettings map_info(home_path+world_name+"/map.ini", QSettings::IniFormat);
+    defaultShred = map_info.value("default_shred", QChar(SHRED_PLAIN)).
+        toString().at(0).toLatin1();
+    outerShred   = map_info.value("outer_shred", QChar(SHRED_OUT_BORDER)).
+        toString().at(0).toLatin1();
+    map_info.setValue("default_shred", QString(defaultShred));
+    map_info.setValue(  "outer_shred", QString(  outerShred));
 }
 
 void WorldMap::MakeAndSaveSpawn(const QString world_name, const int size,
@@ -50,6 +60,7 @@ void WorldMap::MakeAndSaveSpawn(const QString world_name, const int size,
         toLongLong();
     *latitude  = map_info.value("spawn_latitude",  GetSpawnCoordinate(size)).
         toLongLong();
+
     map_info.setValue("spawn_longitude", *longitude);
     map_info.setValue("spawn_latitude" , *latitude );
 }
@@ -69,13 +80,14 @@ char WorldMap::TypeOfShred(qint64 longi, qint64 lati) const {
             longi > mapSize || longi <= 0 ||
             lati  > mapSize || lati  <= 0 )
     {
-        return SHRED_OUT_BORDER;
+        return outerShred;
     } else if ( not map.seek((mapSize+1)*(longi-1)+lati-1) ) {
-        return SHRED_DEFAULT;
+        return defaultShred;
+    } else {
+        char c;
+        map.getChar(&c);
+        return c;
     }
-    char c;
-    map.getChar(&c);
-    return c;
 }
 
 float WorldMap::Deg(const int x, const int y, const int size) {
