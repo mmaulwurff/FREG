@@ -53,9 +53,7 @@ qint64 Player::GetLatitude()  const { return GetShred()->Latitude();  }
 
 void Player::SetCreativeMode(const bool creative_on) {
     creativeMode = creative_on;
-    player->disconnect(this, &Player::destroyed, nullptr, nullptr);
-    player->disconnect(this, &Player::Moved,     nullptr, nullptr);
-    player->disconnect(this, &Player::Updated,   nullptr, nullptr);
+    player->disconnect();
     SaveState();
     Animal * const prev_player = player;
     SetPlayer(X(), Y(), Z());
@@ -454,8 +452,9 @@ void Player::SetPlayer(int _x, int _y, int _z) {
         SetXyz(Shred::CoordInShred(_x), Shred::CoordInShred(_y), _z);
     }
     if ( GetCreativeMode() ) {
+        player = creator;
         creator->SetXyz(Xyz::X(), Xyz::Y(), Xyz::Z());
-        world->GetShred(_x, _y)->Register((player = creator));
+        world->GetShred(_x, _y)->Register(player);
     } else {
         Q_ASSERT(z_self <= HEIGHT-2);
         Block * candidate = world->GetBlock(_x, _y, z_self);

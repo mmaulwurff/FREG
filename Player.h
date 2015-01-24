@@ -183,7 +183,7 @@ private:
     qint64 longitude, latitude;
     qint64 homeLongi, homeLati;
     int homeX, homeY, homeZ;
-    Animal * player, * creator;
+    Animal * player, * const creator;
     int usingType;
     int usingSelfType;
     int usingInInventory;
