@@ -109,7 +109,6 @@ private:
     static const chtype arrows[LAST_DIR + 1];
     static const chtype OBSCURE_BLOCK =
         COLOR_PAIR(BLACK_BLACK) | A_BOLD | ACS_CKBOARD;
-    static const int ARROWS_COLOR = COLOR_PAIR(WHITE_RED);
     static const int MOUSEMASK = BUTTON1_CLICKED | BUTTON1_RELEASED;
 
     /// Prints world. Should not be called not within screen.
@@ -118,7 +117,6 @@ private:
     char CharNumberFront(int x, int y) const;
     char Distance(int distance) const;
     void Arrows(WINDOW *, int x, int y, dirs, bool is_normal) const;
-    void HorizontalArrows(WINDOW *, int y, dirs) const;
     void PrintNormal(WINDOW *, dirs) const;
     /// Has two functions: first - when x == -1 - prints front,
     /// second - otherwise - examines block at position x, y.

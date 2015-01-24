@@ -46,34 +46,36 @@ void Screen::Arrows(WINDOW * const window, const int x, const int y,
         const dirs direction, const bool is_normal)
 const {
     wstandend(window);
-    mvwaddch(window, 0, x, arrows[SOUTH] | ARROWS_COLOR);
-    waddch  (window,       arrows[SOUTH] | ARROWS_COLOR);
-    waddch  (window, ' ');
-    waddwstr(window, wPrintable(TrManager::DirName(is_normal ? NORTH : UP)));
-    mvwaddch(window, screenHeight-1, x, arrows[NORTH] | ARROWS_COLOR);
-    waddch  (window,                    arrows[NORTH] | ARROWS_COLOR);
-    waddch  (window, ' ');
-    waddwstr(window, wPrintable(TrManager::DirName(is_normal ? SOUTH : DOWN)));
-    HorizontalArrows(window, y, direction);
-    (void)wmove(window, y, x);
-}
+    static const int ARROWS_COLOR = COLOR_PAIR(WHITE_RED);
+    // vertical
+    const chtype   up_str[] { arrows[SOUTH] | ARROWS_COLOR,   up_str[0] };
+    const chtype down_str[] { arrows[NORTH] | ARROWS_COLOR, down_str[0] };
+    mvwaddchnstr(window,              0, x,   up_str, 2);
+    mvwaddchnstr(window, screenHeight-1, x, down_str, 2);
+    static const std::wstring north_up[] {
+        TrManager::DirName(UP   ).toStdWString(),
+        TrManager::DirName(NORTH).toStdWString()
+    };
+    static const std::wstring south_down[] {
+        TrManager::DirName(DOWN ).toStdWString(),
+        TrManager::DirName(SOUTH).toStdWString()
+    };
+    mvwaddwstr(window,              0, x + 3, north_up  [is_normal].c_str());
+    mvwaddwstr(window, screenHeight-1, x + 3, south_down[is_normal].c_str());
 
-void Screen::HorizontalArrows(WINDOW * const window, const int y,
-        const dirs direction)
-const {
+    // horizontal
     static const std::wstring dir_chars[] = {
         TrManager::DirName(NORTH).left(1).toStdWString(),
         TrManager::DirName(EAST ).left(1).toStdWString(),
         TrManager::DirName(SOUTH).left(1).toStdWString(),
         TrManager::DirName(WEST ).left(1).toStdWString()
     };
-    wstandend(window);
     mvwaddwstr(window, y-1,0, dir_chars[World::TurnLeft(direction)-2].c_str());
     mvwaddwstr(window, y-1, screenWidth-1,
         dir_chars[World::TurnRight(direction)-2].c_str());
-
     mvwaddch(window, y,             0, arrows[EAST] | ARROWS_COLOR);
     mvwaddch(window, y, screenWidth-1, arrows[WEST] | ARROWS_COLOR);
+    (void)wmove(window, y, x);
 }
 
 void Screen::RePrint() {
