@@ -514,24 +514,28 @@ void Shred::Layers() {
             QTextStream stream(&file);
             while ( not stream.atEnd() ) {
                 QString kind_string, sub_string;
-                stream >> kind_string >> sub_string;
-                layers.push_back(KindSub{
-                    static_cast<kinds>(TrManager::StringToKind(kind_string)),
-                    static_cast<subs> (TrManager::StringToSub ( sub_string))});
-                if ( layers.back().kind == LAST_KIND ) {
-                    layers.back().kind = BLOCK;
-                }
-                if ( layers.back().sub == LAST_SUB ) {
-                    layers.back().sub = STONE;
+                int repeat;
+                stream >> kind_string >> sub_string >> repeat;
+                while (repeat--) {
+                    layers.push_back(KindSub{
+                        static_cast<kinds>(TrManager::StrToKind(kind_string)),
+                        static_cast<subs> (TrManager::StrToSub (sub_string))});
+                    if ( layers.back().kind == LAST_KIND ) {
+                        layers.back().kind = BLOCK;
+                    }
+                    if ( layers.back().sub == LAST_SUB ) {
+                        layers.back().sub = STONE;
+                    }
                 }
             }
         }
         if ( layers.empty() ) {
             layers.insert(layers.end(), {
-                {BLOCK, STONE},
-                {BLOCK, SOIL}
+                {BLOCK, SOIL },
+                {BLOCK, STONE}
             });
         }
+        std::reverse(layers.begin(), layers.end());
     }
 
     FOR_ALL_SHRED_AREA(x, y) {

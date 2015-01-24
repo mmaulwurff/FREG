@@ -51,7 +51,7 @@ BlockFactory::BlockFactory() {
     RegisterAll(typeList< KIND_TABLE(X_CLASS) TemplateTerminator >());
 }
 
-BlockFactory::~BlockFactory() { qDeleteAll(normals, normals + SUB_COUNT); }
+BlockFactory::~BlockFactory() { qDeleteAll(normals, std::end(normals)); }
 
 Block * BlockFactory::NewBlock(const int kind, const int sub) {
     //qDebug("kind: %d, sub: %d, valid: %d", kind, sub, IsValid(kind,sub));

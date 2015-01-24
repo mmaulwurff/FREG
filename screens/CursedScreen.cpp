@@ -81,7 +81,7 @@ const {
 void Screen::RePrint() {
     erase();
     refresh();
-    std::for_each(windows, windows + WIN_COUNT, wclear);
+    std::for_each(windows, std::end(windows), wclear);
     static const std::wstring action_strings[] = {
         tr("[U] use, eat" ).toStdWString(),
         tr("[T] throw"    ).toStdWString(),
@@ -1159,7 +1159,7 @@ Screen::~Screen() {
     input->wait();
     delete input;
 
-    std::for_each(windows, windows + WIN_COUNT, delwin);
+    std::for_each(windows, std::end(windows), delwin);
     endwin();
     delscreen(screen);
     if ( notifyLog ) {
