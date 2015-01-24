@@ -349,7 +349,7 @@ void Shred::PlantGrass() {
         Block ** const position = FindTopNonAir(i, j);
         if ( SOIL == (*position)->Sub() ) {
             SetBlock(BlockFactory::NewBlock(GRASS, GREENERY), i, j,
-                position - blocks[i][j]);
+                position - blocks[i][j] + 1);
         }
     }
 }

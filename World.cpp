@@ -153,8 +153,8 @@ void World::ReloadAllShreds(const QString new_world,
 }
 
 void World::SaveToDisk() const {
-    for (int i=0; i<NumShreds()*NumShreds(); ++i) {
-        shreds[i]->SaveShred(false);
+    for (Shred ** s = shreds + NumShreds()*NumShreds(); --s >= shreds; ) {
+        (*s)->SaveShred(false);
     }
     shredStorage->WriteToFileAllShredData();
     SaveState();
@@ -220,7 +220,7 @@ void World::ReloadShreds() {
             }
             *FindShred(x, 0) = new Shred(x, 0,
                 longitude - NumShreds()/2,
-                latitude  - NumShreds()/2+x);
+                latitude  - NumShreds()/2 + x);
         }
         break;
     case EAST:
@@ -232,7 +232,7 @@ void World::ReloadShreds() {
                 ( *FindShred(x, y) = *FindShred(x+1, y) )->ReloadTo(EAST);
             }
             *FindShred(NumShreds()-1, y) = new Shred(NumShreds()-1, y,
-                longitude - NumShreds()/2+y,
+                longitude - NumShreds()/2 + y,
                 latitude  + NumShreds()/2);
         }
         break;
@@ -246,7 +246,7 @@ void World::ReloadShreds() {
             }
             *FindShred(x, NumShreds()-1) = new Shred(x, NumShreds()-1,
                 longitude + NumShreds()/2,
-                latitude  - NumShreds()/2+x);
+                latitude  - NumShreds()/2 + x);
         }
         break;
     case WEST:
@@ -258,7 +258,7 @@ void World::ReloadShreds() {
                 ( *FindShred(x, y) = *FindShred(x-1, y) )->ReloadTo(WEST);
             }
             *FindShred(0, y) = new Shred(0, y,
-                longitude - NumShreds()/2+y,
+                longitude - NumShreds()/2 + y,
                 latitude  - NumShreds()/2);
         }
         break;

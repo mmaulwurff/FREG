@@ -169,16 +169,16 @@ void World::ReEnlightenMove(const dirs dir) {
             shreds[i+NumShreds()]->ShineAll();
         }
         break;
-    case SOUTH:
-        for (int i=0; i<NumShreds(); ++i) {
-            shreds[i+NumShreds()*(NumShreds()-1)]->ShineAll();
-            shreds[i+NumShreds()*(NumShreds()-2)]->ShineAll();
-        }
-        break;
     case EAST:
         for (int i=0; i<NumShreds(); ++i) {
             shreds[NumShreds()*i+NumShreds()-1]->ShineAll();
             shreds[NumShreds()*i+NumShreds()-2]->ShineAll();
+        }
+        break;
+    case SOUTH:
+        for (int i=0; i<NumShreds(); ++i) {
+            shreds[i+NumShreds()*(NumShreds()-1)]->ShineAll();
+            shreds[i+NumShreds()*(NumShreds()-2)]->ShineAll();
         }
         break;
     case WEST:

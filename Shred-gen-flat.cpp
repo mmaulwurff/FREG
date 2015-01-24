@@ -60,7 +60,6 @@ void Shred::Forest(const bool dead) {
         RandomDrop(qrand() & 1, BLOCK, ROSE);
         PlantGrass();
     }
-    CoverWith(FALLING, SAND);
 }
 
 void Shred::Water(const subs sub) {
