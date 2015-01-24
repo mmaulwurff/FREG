@@ -22,6 +22,11 @@
 
 #include "header.h"
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
+#include <QJsonArray>
+#pragma GCC diagnostic pop
+
 struct CraftItem final {
     Q_DISABLE_COPY(CraftItem)
 

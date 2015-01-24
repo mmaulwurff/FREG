@@ -22,9 +22,13 @@
 #include "Shred.h"
 #include "worldmap.h"
 #include "BlockFactory.h"
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
 #include <QTextStream>
 #include <QFile>
 #include <QTime>
+#pragma GCC diagnostic pop
 
 // Plate::
     QString Plate::FullName() const {

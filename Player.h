@@ -20,9 +20,13 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "header.h"
 #include "Xyz.h"
+#include "header.h"
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
 #include <QObject>
+#pragma GCC diagnostic pop
 
 class World;
 class Block;

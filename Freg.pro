@@ -16,6 +16,7 @@ CONFIG( release, debug|release ):DEFINES += QT_NO_DEBUG_OUTPUT
 
 QMAKE_CXXFLAGS += -pedantic
 QMAKE_CXXFLAGS += -Wfloat-equal -Woverloaded-virtual -Wundef -fstrict-enums
+QMAKE_CXXFLAGS += -Weffc++ -Werror
 
 #QMAKE_CXXFLAGS_DEBUG += -fno-inline
 QMAKE_CXXFLAGS_RELEASE -= -O2
@@ -37,7 +38,7 @@ unix {
     LIBS += -lncursesw
     target.path += /usr/bin
     INSTALLS += target
-    QMAKE_CXXFLAGS += -Weffc++ -Wold-style-cast -Werror
+    QMAKE_CXXFLAGS += -Wold-style-cast
 } else {
     LIBS           += $$PWD/pdcurses/libcurses.lib
     PRE_TARGETDEPS += $$PWD/pdcurses/libcurses.lib

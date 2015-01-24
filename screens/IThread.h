@@ -26,7 +26,10 @@
  * This class is thread, with IThread::run containing input loop.
  * Can be used in console-based freg screens. */
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
 #include <QThread>
+#pragma GCC diagnostic pop
 
 class Screen;
 

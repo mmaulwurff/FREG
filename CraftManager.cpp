@@ -17,13 +17,17 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
+#include "BlockFactory.h"
+#include "TrManager.h"
+#include "CraftManager.h"
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QFile>
-#include "BlockFactory.h"
-#include "TrManager.h"
-#include "CraftManager.h"
+#pragma GCC diagnostic pop
 
 // CraftItem section
 

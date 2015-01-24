@@ -21,8 +21,12 @@
 #define WORLD_H
 
 #include "header.h"
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
 #include <QThread>
 #include <QMutex>
+#pragma GCC diagnostic pop
 
 class Block;
 class Shred;

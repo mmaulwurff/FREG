@@ -18,10 +18,14 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "TrManager.h"
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
 #include <QLocale>
 #include <QObject>
 #include <QTranslator>
 #include <QCoreApplication>
+#pragma GCC diagnostic pop
 
 const QByteArray TrManager::rawKinds[] = { KIND_TABLE(X_STRING) };
 const QByteArray TrManager::rawSubs [] = {  SUB_TABLE(X_STRING) };

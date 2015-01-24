@@ -64,7 +64,7 @@ const {
     mvwaddwstr(window, screenHeight-1, x + 3, south_down[is_normal].c_str());
 
     // horizontal
-    static const std::wstring dir_chars[] = {
+    static const std::wstring dir_chars[] {
         TrManager::DirName(NORTH).left(1).toStdWString(),
         TrManager::DirName(EAST ).left(1).toStdWString(),
         TrManager::DirName(SOUTH).left(1).toStdWString(),

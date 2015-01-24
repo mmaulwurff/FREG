@@ -21,7 +21,11 @@
 #include "World.h"
 #include "worldmap.h"
 #include "Animal.h"
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
 #include <QTextStream>
+#pragma GCC diagnostic pop
 
 Teleport::Teleport(const int sub, const int kind) :
         Active(sub, kind),

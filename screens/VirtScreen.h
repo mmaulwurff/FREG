@@ -20,9 +20,12 @@
 #ifndef VIRTSCREEN_H
 #define VIRTSCREEN_H
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
 #include <QObject>
 #include <QSettings>
 #include <QString>
+#pragma GCC diagnostic pop
 
 #define COLOR_LIST(color) \
     color ## _BLACK,  \

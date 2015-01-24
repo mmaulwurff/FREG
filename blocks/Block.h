@@ -23,9 +23,13 @@
 #ifndef BLOCK_H
 #define BLOCK_H
 
-#include "header.h"
 #include "TrManager.h" // needed in lots of files, so include here.
+#include "header.h"
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
 #include <QDataStream> // needed in lots of files, so include here.
+#pragma GCC diagnostic pop
 
 enum wearable {
     WEARABLE_NOWHERE,

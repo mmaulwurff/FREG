@@ -20,7 +20,10 @@
 #ifndef HEADER_H
 #define HEADER_H
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
 #include <QtGlobal>
+#pragma GCC diagnostic pop
 
 #ifdef QT_NO_DEBUG
 const bool DEBUG = false;

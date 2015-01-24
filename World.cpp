@@ -24,10 +24,14 @@
 #include "worldmap.h"
 #include "blocks/Active.h"
 #include "blocks/Inventory.h"
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
 #include <QDir>
 #include <QMutexLocker>
 #include <QTimer>
 #include <QSettings>
+#pragma GCC diagnostic pop
 
 World * World::GetWorld() { return world; }
 

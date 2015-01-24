@@ -17,10 +17,14 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include <qmath.h>
-#include <QSettings>
 #include "worldmap.h"
 #include "header.h"
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
+#include <qmath.h>
+#include <QSettings>
+#pragma GCC diagnostic pop
 
 WorldMap::WorldMap(const QString world_name) :
         mapSize(),

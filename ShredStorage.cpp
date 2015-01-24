@@ -17,10 +17,14 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include <QFile>
 #include "ShredStorage.h"
 #include "World.h"
 #include "Shred.h"
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
+#include <QFile>
+#pragma GCC diagnostic pop
 
 ShredStorage::ShredStorage(const int size_,
         const qint64 longi_center, const qint64 lati_center)

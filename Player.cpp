@@ -25,9 +25,13 @@
 #include "DeferredAction.h"
 #include "blocks/Animal.h"
 #include "blocks/Inventory.h"
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
 #include <QSettings>
 #include <QTextStream>
 #include <QMutexLocker>
+#pragma GCC diagnostic pop
 
 int Player::X() const {
     return GetShred()->ShredX() << SHRED_WIDTH_BITSHIFT | Xyz::X();

@@ -23,7 +23,11 @@
 #include "Weather.h"
 #include "header.h"
 #include <forward_list>
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
 #include <QLinkedList>
+#pragma GCC diagnostic pop
 
 /// Cycles over all shred area.
 #define FOR_ALL_SHRED_AREA(x, y) \
