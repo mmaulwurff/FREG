@@ -22,8 +22,6 @@
 
 #include "blocks/Active.h"
 
-class DeferredAction;
-
 class Animal : public Falling {
     Q_OBJECT
     Q_DISABLE_COPY(Animal)
@@ -46,7 +44,7 @@ public:
     int  Satiation() const { return satiation; }
 
     bool Eat(subs);
-    DeferredAction * GetDeferredAction();
+    class DeferredAction * GetDeferredAction();
 
     virtual int NutritionalValue(subs) const = 0;
 
@@ -65,7 +63,7 @@ protected:
 private:
     quint8  breath;
     quint16 satiation;
-    DeferredAction * deferredAction = nullptr;
+    class DeferredAction * deferredAction = nullptr;
 }; // class Animal
 
 // Rabbit

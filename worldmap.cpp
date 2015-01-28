@@ -20,11 +20,9 @@
 #include "worldmap.h"
 #include "header.h"
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Weffc++"
-#include <qmath.h>
+GCC_IGNORE_WEFFCPP_BEGIN
 #include <QSettings>
-#pragma GCC diagnostic pop
+GCC_IGNORE_WEFFCPP_END
 
 WorldMap::WorldMap(const QString world_name) :
         mapSize(),

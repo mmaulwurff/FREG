@@ -23,16 +23,9 @@
 #include "Xyz.h"
 #include "header.h"
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Weffc++"
+GCC_IGNORE_WEFFCPP_BEGIN
 #include <QObject>
-#pragma GCC diagnostic pop
-
-class World;
-class Block;
-class Animal;
-class Shred;
-class Inventory;
+GCC_IGNORE_WEFFCPP_END
 
 class Player final : public QObject, private Xyz {
     /** \class Player Player.h
@@ -75,8 +68,8 @@ public:
     /// Can be > 100 if player is gorged. On error returns -100.
     int SatiationPercent() const;
 
-    Block * GetBlock() const;
-    const Block * GetConstBlock() const;
+    class Block * GetBlock() const;
+    const class Block * GetConstBlock() const;
 
     /// This returns true if block at (x, y, z) is visible to player.
     bool Visible(int x, int y, int z) const;
@@ -92,7 +85,7 @@ public:
     int UsingSelfType() const { return usingSelfType; }
 
     /// Returns nullptr if there is no inventory, otherwise returns inventory.
-    Inventory * PlayerInventory() const;
+    class Inventory * PlayerInventory() const;
 
     qint64 GetLongitude() const;
     qint64 GetLatitude() const;
@@ -178,8 +171,8 @@ private:
     static const subs PLAYER_SUB = H_MEAT;
 
     /// Checks player/inventory/block existence, size limits.
-    Block * ValidBlock(int num) const;
-    Shred * GetShred() const;
+    class Block * ValidBlock(int num) const;
+    class Shred * GetShred() const;
     bool ForbiddenAdminCommands() const;
 
     void LoadState();
@@ -187,7 +180,7 @@ private:
     qint64 longitude, latitude;
     qint64 homeLongi, homeLati;
     int homeX, homeY, homeZ;
-    Animal * player, * const creator;
+    class Animal * player, * const creator;
     int usingType;
     int usingSelfType;
     int usingInInventory;

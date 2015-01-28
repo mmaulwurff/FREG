@@ -22,10 +22,9 @@
 
 #include "header.h"
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Weffc++"
-#include <QJsonArray>
-#pragma GCC diagnostic pop
+GCC_IGNORE_WEFFCPP_BEGIN
+#include <QList>
+GCC_IGNORE_WEFFCPP_END
 
 struct CraftItem final {
     Q_DISABLE_COPY(CraftItem)
@@ -51,7 +50,7 @@ public:
     int size() const;
     int GetMaterialsNumber() const;
     void Sort();
-    void LoadItems(const QJsonArray &);
+    void LoadItems(const class QJsonArray &);
     void clear();
     const CraftItem * at(int i) const;
 

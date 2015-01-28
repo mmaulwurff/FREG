@@ -19,13 +19,12 @@
 
 #include "TrManager.h"
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Weffc++"
+GCC_IGNORE_WEFFCPP_BEGIN
 #include <QLocale>
 #include <QObject>
 #include <QTranslator>
 #include <QCoreApplication>
-#pragma GCC diagnostic pop
+GCC_IGNORE_WEFFCPP_END
 
 const QByteArray TrManager::rawKinds[] = { KIND_TABLE(X_STRING) };
 const QByteArray TrManager::rawSubs [] = {  SUB_TABLE(X_STRING) };

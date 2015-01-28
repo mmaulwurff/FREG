@@ -26,10 +26,9 @@
 #include "TrManager.h" // needed in lots of files, so include here.
 #include "header.h"
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Weffc++"
+GCC_IGNORE_WEFFCPP_BEGIN
 #include <QDataStream> // needed in lots of files, so include here.
-#pragma GCC diagnostic pop
+GCC_IGNORE_WEFFCPP_END
 
 enum wearable {
     WEARABLE_NOWHERE,
@@ -88,11 +87,6 @@ enum sub_groups {
     GROUP_HANDY,
 };
 
-class Inventory;
-class Active;
-class Falling;
-class Animal;
-
 class Block {
     /**\class Block Block.h
      * \brief Block without special physics and attributes. */
@@ -108,8 +102,8 @@ public:
     virtual bool Inscribe(QString str);
     virtual void Move(dirs direction);
     virtual void Damage(int dmg, int dmg_kind);
-    virtual usage_types Use(Active * user);
-    virtual usage_types UseOnShredMove(Active * user);
+    virtual usage_types Use(class Active * user);
+    virtual usage_types UseOnShredMove(class Active * user);
     virtual push_reaction PushResult(dirs) const;
     /// Should return dropped block.
     /** It can be pile(BOX, DIFFERENT) containing all dropped blocks, or
@@ -118,10 +112,10 @@ public:
      *  (by default block is deleted, beware). */
     virtual Block * DropAfterDamage(bool * delete_self);
 
-    virtual Inventory * HasInventory();
-    virtual Active    * ActiveBlock();
-    virtual Falling   * ShouldFall();
-    virtual Animal    * IsAnimal();
+    virtual class Inventory * HasInventory();
+    virtual class Active    * ActiveBlock();
+    virtual class Falling   * ShouldFall();
+    virtual class Animal    * IsAnimal();
 
     virtual wearable Wearable() const;
     virtual int DamageKind() const;

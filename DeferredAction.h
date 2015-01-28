@@ -22,10 +22,6 @@
 
 #include "Xyz.h"
 
-class Block;
-class Animal;
-class World;
-
 class DeferredAction final : private Xyz {
     /** \class DeferredAction DeferredAction.h
      *  \brief Deferred Action is used when some action needs to be done at
@@ -33,7 +29,7 @@ class DeferredAction final : private Xyz {
      *
      *  Xyz is action target coordinates. */
 public:
-    explicit DeferredAction(Animal * attached);
+    explicit DeferredAction(class Animal * attached);
 
     void SetGhostMove(int dir);
     void SetMove(int dir);
@@ -68,7 +64,7 @@ private:
     deferred_actions type;
     int srcSlot, destSlot;
     int num;
-    Animal * const attachedBlock;
+    class Animal * const attachedBlock;
 
     void GhostMove() const;
     void Move() const;

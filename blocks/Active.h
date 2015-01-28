@@ -40,8 +40,6 @@ enum inner_actions {
     INNER_ACTION_MESSAGE
 };
 
-class Shred;
-
 class Active : public QObject, public Block, protected Xyz {
     Q_OBJECT
     Q_DISABLE_COPY(Active)
@@ -58,7 +56,7 @@ public:
     void ReceiveSignal(QString) override;
     Active * ActiveBlock() override final;
 
-    Shred * GetShred() const { return shred; }
+    class Shred * GetShred() const { return shred; }
 
     virtual void ActFrequent();
     void ActRare();
@@ -67,7 +65,7 @@ public:
     virtual int ShouldAct() const;
     virtual void UpdateLightRadius();
 
-    void SetShred(Shred * const new_shred) { shred = new_shred; }
+    void SetShred(class Shred * const new_shred) { shred = new_shred; }
 
     void Farewell();
     void Unregister();
@@ -91,7 +89,7 @@ protected:
 private:
     void ReRegister(dirs);
 
-    Shred * shred = nullptr;
+    class Shred * shred = nullptr;
 }; // Active
 
 class Falling : public Active {

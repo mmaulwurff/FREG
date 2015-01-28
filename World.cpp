@@ -25,13 +25,12 @@
 #include "blocks/Active.h"
 #include "blocks/Inventory.h"
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Weffc++"
+GCC_IGNORE_WEFFCPP_BEGIN
 #include <QDir>
 #include <QMutexLocker>
 #include <QTimer>
 #include <QSettings>
-#pragma GCC diagnostic pop
+GCC_IGNORE_WEFFCPP_END
 
 World * World::GetWorld() { return world; }
 

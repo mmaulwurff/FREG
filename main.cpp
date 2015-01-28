@@ -25,15 +25,14 @@
 #include "TrManager.h"
 #include "screens/CursedScreen.h"
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Weffc++"
+GCC_IGNORE_WEFFCPP_BEGIN
 #include <QDir>
 #include <QTime>
 #include <QSettings>
 #include <QLockFile>
 #include <QGuiApplication>
 #include <QCommandLineParser>
-#pragma GCC diagnostic pop
+GCC_IGNORE_WEFFCPP_END
 
 #ifdef Q_OS_WIN32
 const QString home_path = QDir::currentPath() + "/";

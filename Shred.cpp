@@ -25,10 +25,9 @@
 #include "BlockFactory.h"
 #include "TrManager.h"
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Weffc++"
+GCC_IGNORE_WEFFCPP_BEGIN
 #include <QTextStream>
-#pragma GCC diagnostic pop
+GCC_IGNORE_WEFFCPP_END
 
 const quint8 Shred::DATASTREAM_VERSION = QDataStream::Qt_5_2;
 
@@ -229,6 +228,28 @@ void Shred::PhysEventsRare() {
     activeListAll.remove(nullptr);
     activeListFrequent.removeAll(nullptr);
     fallList.remove(nullptr);
+}
+
+std::forward_list<Active *>::const_iterator Shred::ShiningBegin() const {
+    return shiningList.cbegin();
+}
+
+std::forward_list<Active *>::const_iterator Shred::ShiningEnd() const {
+    return shiningList.cend();
+}
+
+int Shred::Lightmap(const int x, const int y, const int z) const {
+    return lightMap[x][y][z];
+}
+
+Block * Shred::GetBlock(const int x, const int y, const int z) const {
+    return blocks[x][y][z];
+}
+
+void Shred::PutBlock(Block * const block,
+        const int x, const int y, const int z)
+{
+    blocks[x][y][z] = block;
 }
 
 void Shred::RegisterInit(Active * const active) {

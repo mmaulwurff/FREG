@@ -21,13 +21,12 @@
 #include "TrManager.h"
 #include "CraftManager.h"
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Weffc++"
+GCC_IGNORE_WEFFCPP_BEGIN
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QFile>
-#pragma GCC diagnostic pop
+GCC_IGNORE_WEFFCPP_END
 
 // CraftItem section
 

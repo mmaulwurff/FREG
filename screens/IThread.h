@@ -31,20 +31,18 @@
 #include <QThread>
 #pragma GCC diagnostic pop
 
-class Screen;
-
 class IThread final : public QThread {
     Q_OBJECT
     Q_DISABLE_COPY(IThread)
 public:
-    explicit IThread(Screen *);
+    explicit IThread(class Screen *);
     void Stop();
 
 protected:
     void run() override;
 
 private:
-    Screen * const screen;
+    class Screen * const screen;
     volatile bool isRunning;
 };
 

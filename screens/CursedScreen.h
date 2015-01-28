@@ -51,8 +51,6 @@ X("abcdef_distance", farDistance,  false, )\
 #define OPTIONS_INIT(string, name, default, ...) \
 name(settings.value(string, default).toBool()),
 
-class IThread;
-class Inventory;
 class Block;
 
 class Screen final : public VirtScreen {
@@ -121,7 +119,7 @@ private:
     /// Has two functions: first - when x == -1 - prints front,
     /// second - otherwise - examines block at position x, y.
     void PrintFront(dirs direction, int x = -1, int y = 0) const;
-    void PrintInv(WINDOW *, const Block *, const Inventory *) const;
+    void PrintInv(WINDOW *, const Block *, const class Inventory *) const;
     void PrintHud() const;
     void PrintMiniMap() const;
     void PrintQuickInventory() const;
@@ -163,7 +161,7 @@ private:
     WINDOW * const & leftWin    = windows[WIN_LEFT   ];
     WINDOW * const & rightWin   = windows[WIN_RIGHT  ];
     mutable QString lastNotification;
-    IThread * const input;
+    class IThread * const input;
     mutable volatile bool updatedHud, updatedMinimap;
     mutable volatile bool updatedNormal, updatedFront;
     FILE * const notifyLog;

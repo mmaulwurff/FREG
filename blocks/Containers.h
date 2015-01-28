@@ -79,7 +79,6 @@ protected:
     void SaveAttributes(QDataStream & out) const override;
 }; // Box
 
-
 class Workbench : public Container {
     /** \class Workbench Container.h
      *  \brief Workbench allows craft from multiple sources. There can be up to

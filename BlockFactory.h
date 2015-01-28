@@ -76,8 +76,7 @@ public:
     static bool IsValid(int kind, int sub);
 
 private:
-    BlockFactory(const BlockFactory &) = delete;
-    BlockFactory &operator=(const BlockFactory &) = delete;
+    M_DISABLE_COPY(BlockFactory)
 
     Block * normals[SUB_COUNT];
 

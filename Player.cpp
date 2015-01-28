@@ -26,12 +26,11 @@
 #include "blocks/Animal.h"
 #include "blocks/Inventory.h"
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Weffc++"
+GCC_IGNORE_WEFFCPP_BEGIN
 #include <QSettings>
 #include <QTextStream>
 #include <QMutexLocker>
-#pragma GCC diagnostic pop
+GCC_IGNORE_WEFFCPP_END
 
 int Player::X() const {
     return GetShred()->ShredX() << SHRED_WIDTH_BITSHIFT | Xyz::X();

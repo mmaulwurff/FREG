@@ -22,20 +22,13 @@
 
 #include "header.h"
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Weffc++"
+GCC_IGNORE_WEFFCPP_BEGIN
 #include <QThread>
 #include <QMutex>
-#pragma GCC diagnostic pop
+GCC_IGNORE_WEFFCPP_END
 
 class Block;
 class Shred;
-class ShredStorage;
-class QByteArray;
-class QReadWriteLock;
-class WorldMap;
-class QSettings;
-class QTimer;
 
 class World final : public QThread {
     /** \class World world.h
@@ -107,10 +100,10 @@ public: // Information section
     qint64 Longitude() const;
     qint64 Latitude() const;
 
-    const WorldMap * GetMap() const;
+    const class WorldMap * GetMap() const;
 
-    QByteArray * GetShredData(qint64 longi, qint64 lati) const;
-    void SetShredData(QByteArray *, qint64 longi, qint64 lati);
+    class QByteArray * GetShredData(qint64 longi, qint64 lati) const;
+    void SetShredData(class QByteArray *, qint64 longi, qint64 lati);
 private:
     int ShredPos(int x, int y) const;
 
@@ -241,7 +234,7 @@ private:
     static unsigned Abs(int x);
 
     QString worldName;
-    WorldMap * map;
+    class WorldMap * map;
     quint64 time;
     int timeStep;
     Shred ** shreds;
@@ -252,7 +245,7 @@ private:
      *  S v longitude ( y for shreds )
      * center of active zone: */
     qint64 longitude, latitude;
-    QSettings * const gameSettings;
+    class QSettings * const gameSettings;
     const int numShreds; ///< size of loaded zone
     const int numActiveShreds; ///< size of active zone
     QMutex mutex;
@@ -263,9 +256,9 @@ private:
     /// UP for no reset, DOWN for full reset, NSEW for side shift.
     volatile dirs toResetDir;
     int sunMoonFactor;
-    QTimer * timer;
+    class QTimer * timer;
 
-    ShredStorage * shredStorage;
+    class ShredStorage * shredStorage;
     bool initial_lighting;
     QList<QString> notes;
 

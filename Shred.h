@@ -24,20 +24,17 @@
 #include "header.h"
 #include <forward_list>
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Weffc++"
+GCC_IGNORE_WEFFCPP_BEGIN
 #include <QLinkedList>
-#pragma GCC diagnostic pop
+GCC_IGNORE_WEFFCPP_END
 
 /// Cycles over all shred area.
 #define FOR_ALL_SHRED_AREA(x, y) \
 for (int x = SHRED_WIDTH; x--; ) \
 for (int y = SHRED_WIDTH; y--; )
 
-class World;
 class Block;
 class Active;
-class Falling;
 
 class Shred final : public Weather {
 public:
@@ -60,19 +57,12 @@ public:
     void AddToDelete(Active *);
     void ReloadTo(dirs);
 
-    std::forward_list<Active *>::const_iterator ShiningBegin() const {
-        return shiningList.cbegin();
-    }
-
-    std::forward_list<Active *>::const_iterator ShiningEnd() const {
-        return shiningList.cend();
-    }
+    std::forward_list<Active *>::const_iterator ShiningBegin() const;
+    std::forward_list<Active *>::const_iterator ShiningEnd() const;
 
     void SaveShred(bool isQuitGame);
 
-    Block * GetBlock(const int x, const int y, const int z) const {
-        return blocks[x][y][z];
-    }
+    Block * GetBlock(int x, int y, int z) const;
     const Block * FindFirstVisible(int x, int y, int * z, int step) const;
 
     /// Removes last block at xyz, then SetBlock, then makes block normal.
@@ -82,15 +72,11 @@ public:
     void AddFalling(Block *);
 
     /// Puts block to coordinates, not activates it.
-    void PutBlock(Block * const block, const int x, const int y, const int z) {
-        blocks[x][y][z] = block;
-    }
+    void PutBlock(Block * block, int x, int y, int z);
 
     // Lighting section
 
-    int Lightmap(const int x, const int y, const int z) const {
-        return lightMap[x][y][z];
-    }
+    int Lightmap(int x, int y, int z) const;
 
     int FireLight( int x, int y, int z) const;
     int SunLight(  int x, int y, int z) const;
@@ -195,7 +181,7 @@ private:
     QLinkedList<Active *> activeListFrequent;
     std::forward_list<Active *> activeListAll;
     std::forward_list<Active *> shiningList;
-    std::forward_list<Falling *> fallList;
+    std::forward_list<class Falling *> fallList;
 };
 
 struct KindSub {

@@ -37,9 +37,6 @@
     color ## _CYAN,   \
     color ## _WHITE,
 
-class Player;
-class World;
-
 enum screen_errors {
     SCREEN_NO_ERROR = 0,
     HEIGHT_NOT_ENOUGH,
@@ -55,8 +52,7 @@ class VirtScreen : public QObject {
     Q_DISABLE_COPY(VirtScreen)
 public:
     /// Constructor makes player and world connections.
-    VirtScreen(Player *);
-    VirtScreen(VirtScreen &) = delete;
+    VirtScreen(class Player *);
     virtual ~VirtScreen();
 
     static char CharName(int kind, int sub);
@@ -139,7 +135,7 @@ protected:
     /// Returns true if command is recognized and processed.
     bool ProcessCommand(QString command);
 
-    Player * const player;
+    class Player * const player;
     QSettings settings;
     QString previousCommand;
 };

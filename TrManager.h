@@ -28,8 +28,6 @@ GCC_IGNORE_WEFFCPP_BEGIN
 #include <QHash>
 GCC_IGNORE_WEFFCPP_END
 
-class QTranslator;
-
 class TrManager {
 public:
     TrManager();
@@ -65,9 +63,9 @@ public:
 private:
     Q_DISABLE_COPY(TrManager)
 
-    QTranslator * LoadTranslator() const;
+    class QTranslator * LoadTranslator() const;
 
-    QTranslator * const translator;
+    class QTranslator * const translator;
     static const QByteArray rawKinds[KIND_COUNT];
     static const QByteArray rawSubs [SUB_COUNT ];
     QString subNames[SUB_COUNT];

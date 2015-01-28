@@ -23,12 +23,11 @@
 #include "worldmap.h"
 #include "BlockFactory.h"
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Weffc++"
+GCC_IGNORE_WEFFCPP_BEGIN
 #include <QTextStream>
 #include <QFile>
 #include <QTime>
-#pragma GCC diagnostic pop
+GCC_IGNORE_WEFFCPP_END
 
 // Plate::
     QString Plate::FullName() const {

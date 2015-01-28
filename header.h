@@ -24,6 +24,10 @@
 _Pragma("GCC diagnostic ignored \"-Weffc++\"")
 #define GCC_IGNORE_WEFFCPP_END   _Pragma("GCC diagnostic pop")
 
+#define M_DISABLE_COPY(Class) \
+Class(const Class &) = delete; \
+Class &operator=(const Class &) = delete;
+
 #ifdef QT_NO_DEBUG
 const bool DEBUG = false;
 #else
