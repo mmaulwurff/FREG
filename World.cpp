@@ -24,13 +24,10 @@
 #include "worldmap.h"
 #include "blocks/Active.h"
 #include "blocks/Inventory.h"
-
-GCC_IGNORE_WEFFCPP_BEGIN
 #include <QDir>
 #include <QMutexLocker>
 #include <QTimer>
 #include <QSettings>
-GCC_IGNORE_WEFFCPP_END
 
 World * World::GetWorld() { return world; }
 

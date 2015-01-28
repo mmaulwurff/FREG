@@ -19,7 +19,7 @@
 
 #include "blocks/Illuminator.h"
 #include "BlockFactory.h"
-#include "Inventory.h"
+#include "blocks/Inventory.h"
 #include "World.h"
 
 Illuminator::Illuminator(const int kind, const int sub) :

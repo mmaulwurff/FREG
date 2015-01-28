@@ -23,10 +23,7 @@
 #include "Weather.h"
 #include "header.h"
 #include <forward_list>
-
-GCC_IGNORE_WEFFCPP_BEGIN
 #include <QLinkedList>
-GCC_IGNORE_WEFFCPP_END
 
 /// Cycles over all shred area.
 #define FOR_ALL_SHRED_AREA(x, y) \

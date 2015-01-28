@@ -25,10 +25,7 @@
 
 #include "TrManager.h" // needed in lots of files, so include here.
 #include "header.h"
-
-GCC_IGNORE_WEFFCPP_BEGIN
 #include <QDataStream> // needed in lots of files, so include here.
-GCC_IGNORE_WEFFCPP_END
 
 enum wearable {
     WEARABLE_NOWHERE,

@@ -20,9 +20,7 @@
 #include "worldmap.h"
 #include "header.h"
 
-GCC_IGNORE_WEFFCPP_BEGIN
 #include <QSettings>
-GCC_IGNORE_WEFFCPP_END
 
 WorldMap::WorldMap(const QString world_name) :
         mapSize(),

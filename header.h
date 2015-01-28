@@ -20,10 +20,6 @@
 #ifndef HEADER_H
 #define HEADER_H
 
-#define GCC_IGNORE_WEFFCPP_BEGIN _Pragma("GCC diagnostic push") \
-_Pragma("GCC diagnostic ignored \"-Weffc++\"")
-#define GCC_IGNORE_WEFFCPP_END   _Pragma("GCC diagnostic pop")
-
 #define M_DISABLE_COPY(Class) \
 Class(const Class &) = delete; \
 Class &operator=(const Class &) = delete;

@@ -22,6 +22,11 @@ QMAKE_CXXFLAGS += -Weffc++ -Werror
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS += -O3
 
+gcc:win32 {
+    QMAKE_CXXFLAGS += -isystem $$(QTDIR)/include/QtCore
+    QMAKE_CXXFLAGS += -isystem $$(QTDIR)/include/QtGui
+}
+
 clang {
     QMAKE_CXX  = clang++
     QMAKE_LINK = clang++

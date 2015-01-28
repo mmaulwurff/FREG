@@ -21,11 +21,8 @@
 #define WORLD_H
 
 #include "header.h"
-
-GCC_IGNORE_WEFFCPP_BEGIN
 #include <QThread>
 #include <QMutex>
-GCC_IGNORE_WEFFCPP_END
 
 class Block;
 class Shred;

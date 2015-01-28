@@ -28,8 +28,8 @@
 #include "TrManager.h"
 #include "blocks/Block.h"
 #include "blocks/Inventory.h"
-#include <QDir>
-#include <QMutexLocker>
+
+#include <QFile>
 #include <QDesktopServices>
 #include <QUrl>
 
@@ -419,8 +419,7 @@ void Screen::ControlPlayer(const int ch) {
         Notify(tr("Saving game..."));
         World::GetWorld()->SaveToDisk();
         player->SaveState();
-        Notify( tr("Game saved at location \"%1\".").
-            arg( QDir(World::WorldPath()).absolutePath() ) );
+        Notify( tr("Game saved at location \"%1\".").arg(World::WorldPath()) );
         break;
 
     case KEY_MOUSE: ProcessMouse(); break;

@@ -24,10 +24,7 @@
 #include "blocks/Inventory.h"
 #include "BlockFactory.h"
 #include "TrManager.h"
-
-GCC_IGNORE_WEFFCPP_BEGIN
 #include <QTextStream>
-GCC_IGNORE_WEFFCPP_END
 
 const quint8 Shred::DATASTREAM_VERSION = QDataStream::Qt_5_2;
 

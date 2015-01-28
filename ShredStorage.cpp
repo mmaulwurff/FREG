@@ -20,16 +20,14 @@
 #include "ShredStorage.h"
 #include "World.h"
 #include "Shred.h"
-
-GCC_IGNORE_WEFFCPP_BEGIN
 #include <QFile>
-GCC_IGNORE_WEFFCPP_END
 
 ShredStorage::ShredStorage(const int size_,
         const qint64 longi_center, const qint64 lati_center)
     :
         storage(),
-        size(size_)
+        size(size_),
+        preloadThread(new std::thread([](){})) // stub, so always joinable.
 {
     storage.reserve(size*size);
     for (qint64 i=longi_center-size/2; i<=longi_center+size/2; ++i)

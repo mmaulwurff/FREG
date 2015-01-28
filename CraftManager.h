@@ -21,10 +21,7 @@
 #define CRAFTMANAGER_H
 
 #include "header.h"
-
-GCC_IGNORE_WEFFCPP_BEGIN
 #include <QList>
-GCC_IGNORE_WEFFCPP_END
 
 struct CraftItem final {
     Q_DISABLE_COPY(CraftItem)

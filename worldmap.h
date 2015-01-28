@@ -20,10 +20,7 @@
 #ifndef WORLDMAP_H
 #define WORLDMAP_H
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Weffc++"
 #include <QFile>
-#pragma GCC diagnostic pop
 
 class WorldMap final {
 public:

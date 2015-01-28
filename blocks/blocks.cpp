@@ -17,17 +17,14 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include "blocks.h"
+#include "blocks/blocks.h"
 #include "World.h"
 #include "Shred.h"
 #include "worldmap.h"
 #include "BlockFactory.h"
-
-GCC_IGNORE_WEFFCPP_BEGIN
 #include <QTextStream>
 #include <QFile>
 #include <QTime>
-GCC_IGNORE_WEFFCPP_END
 
 // Plate::
     QString Plate::FullName() const {

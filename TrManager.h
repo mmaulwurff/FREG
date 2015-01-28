@@ -22,11 +22,8 @@
 
 #include "header.h"
 #include "Weather.h"
-
-GCC_IGNORE_WEFFCPP_BEGIN
-#include <QString>
 #include <QHash>
-GCC_IGNORE_WEFFCPP_END
+#include <QString>
 
 class TrManager {
 public:

@@ -17,9 +17,9 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include "Block.h"
+#include "blocks/Block.h"
 #include "World.h"
-#include "Inventory.h"
+#include "blocks/Inventory.h"
 #include "CraftManager.h"
 #include "BlockFactory.h"
 

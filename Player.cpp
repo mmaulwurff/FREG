@@ -25,12 +25,9 @@
 #include "DeferredAction.h"
 #include "blocks/Animal.h"
 #include "blocks/Inventory.h"
-
-GCC_IGNORE_WEFFCPP_BEGIN
 #include <QSettings>
 #include <QTextStream>
 #include <QMutexLocker>
-GCC_IGNORE_WEFFCPP_END
 
 int Player::X() const {
     return GetShred()->ShredX() << SHRED_WIDTH_BITSHIFT | Xyz::X();

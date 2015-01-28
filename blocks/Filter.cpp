@@ -17,7 +17,7 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include "Filter.h"
+#include "blocks/Filter.h"
 #include "World.h"
 
 Filter::Filter(const int kind, const int sub) :

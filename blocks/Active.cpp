@@ -17,7 +17,7 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include "Active.h"
+#include "blocks/Active.h"
 #include "Shred.h"
 #include "World.h"
 #include "blocks/Inventory.h"

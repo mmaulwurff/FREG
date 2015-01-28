@@ -20,13 +20,10 @@
 #include "BlockFactory.h"
 #include "TrManager.h"
 #include "CraftManager.h"
-
-GCC_IGNORE_WEFFCPP_BEGIN
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QFile>
-GCC_IGNORE_WEFFCPP_END
 
 // CraftItem section
 

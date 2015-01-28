@@ -17,7 +17,7 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include "Bucket.h"
+#include "blocks/Bucket.h"
 
 Bucket::Bucket(const int kind, const int sub) :
         Block(kind, sub),

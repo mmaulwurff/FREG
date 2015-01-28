@@ -17,7 +17,7 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include "Dwarf.h"
+#include "blocks/Dwarf.h"
 #include "World.h"
 #include "Shred.h"
 #include "BlockFactory.h"

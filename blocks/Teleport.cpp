@@ -20,11 +20,8 @@
 #include "blocks/Teleport.h"
 #include "World.h"
 #include "worldmap.h"
-#include "Animal.h"
-
-GCC_IGNORE_WEFFCPP_BEGIN
+#include "blocks/Animal.h"
 #include <QTextStream>
-GCC_IGNORE_WEFFCPP_END
 
 Teleport::Teleport(const int sub, const int kind) :
         Active(sub, kind),

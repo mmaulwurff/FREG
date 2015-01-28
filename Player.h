@@ -22,10 +22,7 @@
 
 #include "Xyz.h"
 #include "header.h"
-
-GCC_IGNORE_WEFFCPP_BEGIN
 #include <QObject>
-GCC_IGNORE_WEFFCPP_END
 
 class Player final : public QObject, private Xyz {
     /** \class Player Player.h

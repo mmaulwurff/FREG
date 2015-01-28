@@ -20,11 +20,7 @@
 #ifndef SHRED_STORAGE_H
 #define SHRED_STORAGE_H
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Weffc++"
 #include <QHash>
-#pragma GCC diagnostic pop
-
 #include <thread>
 
 class ShredStorage final {
@@ -54,8 +50,7 @@ private:
     QHash<LongLat, class QByteArray *> storage;
     const int size;
 
-    // lambda stub, so preloadThread is always joinable.
-    std::thread * preloadThread = new std::thread([](){});
+    std::thread * preloadThread;
 };
 
 #endif // SHRED_STORAGE_H
