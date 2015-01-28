@@ -21,10 +21,9 @@
 #include "World.h"
 #include "Shred.h"
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Weffc++"
+GCC_IGNORE_WEFFCPP_BEGIN
 #include <QFile>
-#pragma GCC diagnostic pop
+GCC_IGNORE_WEFFCPP_END
 
 ShredStorage::ShredStorage(const int size_,
         const qint64 longi_center, const qint64 lati_center)
@@ -35,15 +34,13 @@ ShredStorage::ShredStorage(const int size_,
     storage.reserve(size*size);
     for (qint64 i=longi_center-size/2; i<=longi_center+size/2; ++i)
     for (qint64 j= lati_center-size/2; j<= lati_center+size/2; ++j) {
-        AddShredData(i, j);
+        AddShred(i, j);
     }
 }
 
 ShredStorage::~ShredStorage() {
-    if ( preloadThread != nullptr ) {
-        preloadThread->wait();
-        delete preloadThread;
-    }
+    preloadThread->join();
+    delete preloadThread;
     WriteToFileAllShredData();
     qDeleteAll(storage);
 }
@@ -51,7 +48,7 @@ ShredStorage::~ShredStorage() {
 void ShredStorage::WriteToFileAllShredData() const {
     for (auto i=storage.constBegin(); i!=storage.constEnd(); ++i) {
         if ( i.value() ) {
-            WriteToFileShredData(i.key().first, i.key().second);
+            WriteShred(i.key().first, i.key().second);
         }
     }
 }
@@ -59,13 +56,10 @@ void ShredStorage::WriteToFileAllShredData() const {
 void ShredStorage::Shift(const int direction,
         const qint64 longitude_center, const qint64 latitude_center)
 {
-    if ( preloadThread != nullptr ) {
-        preloadThread->wait();
-        delete preloadThread;
-    }
-    preloadThread = new PreloadThread(this, direction,
-        longitude_center, latitude_center, size);
-    preloadThread->start();
+    preloadThread->join();
+    delete preloadThread;
+    preloadThread = new std::thread(&ShredStorage::asyncShift, this,
+        direction, longitude_center, latitude_center);
 }
 
 QByteArray* ShredStorage::GetShredData(const qint64 longi, const qint64 lati) {
@@ -80,15 +74,14 @@ void ShredStorage::SetShredData(QByteArray * const data,
     storage.insert(coords, data);
 }
 
-void ShredStorage::AddShredData(const qint64 longitude, const qint64 latitude){
+void ShredStorage::AddShred(const qint64 longitude, const qint64 latitude) {
     QFile file(Shred::FileName(longitude, latitude));
     storage.insert(LongLat(longitude, latitude),
         ( file.open(QIODevice::ReadOnly) ?
             new QByteArray(qUncompress(file.readAll())) : nullptr ));
 }
 
-void ShredStorage::WriteToFileShredData(const qint64 longi, const qint64 lati)
-const {
+void ShredStorage::WriteShred(const qint64 longi, const qint64 lati) const {
     const QByteArray * const data = storage.value(LongLat(longi, lati));
     if ( data != nullptr ) {
         QFile file(Shred::FileName(longi, lati));
@@ -102,45 +95,37 @@ void ShredStorage::Remove(const qint64 longi, const qint64 lati) {
     storage.remove(LongLat(longi, lati));
 }
 
-PreloadThread::PreloadThread(ShredStorage * const stor, const int dir,
-        const qint64 longi_c, const qint64 lati_c, const int sz)
-    :
-        storage(stor),
-        direction(dir),
-        longi_center(longi_c),
-        lati_center(lati_c),
-        size(sz)
-{}
-
-void PreloadThread::run() {
+void ShredStorage::asyncShift(const int direction,
+        const qint64 longi_center, const qint64 lati_center)
+{
     switch (direction) {
     default: Q_UNREACHABLE(); break;
     case NORTH:
         for (qint64 i=lati_center-size/2; i<=lati_center+size/2; ++i) {
-            storage->WriteToFileShredData(longi_center+size/2, i);
-            storage->Remove(longi_center+size/2, i);
-            storage->AddShredData(longi_center-size/2, i);
+            WriteShred(longi_center + size/2, i);
+            Remove    (longi_center + size/2, i);
+            AddShred  (longi_center - size/2, i);
         }
         break;
     case EAST:
         for (qint64 i=longi_center-size/2; i<=longi_center+size/2; ++i) {
-            storage->WriteToFileShredData(i, lati_center-size/2);
-            storage->Remove(i, lati_center-size/2);
-            storage->AddShredData(i, lati_center+size/2);
+            WriteShred(i, lati_center - size/2);
+            Remove    (i, lati_center - size/2);
+            AddShred  (i, lati_center + size/2);
         }
         break;
     case SOUTH:
         for (qint64 i=lati_center-size/2; i<=lati_center+size/2; ++i) {
-            storage->WriteToFileShredData(longi_center-size/2, i);
-            storage->Remove(longi_center-size/2, i);
-            storage->AddShredData(longi_center+size/2, i);
+            WriteShred(longi_center - size/2, i);
+            Remove    (longi_center - size/2, i);
+            AddShred  (longi_center + size/2, i);
         }
         break;
     case WEST:
         for (qint64 i=longi_center-size/2; i<=longi_center+size/2; ++i) {
-            storage->WriteToFileShredData(i, lati_center+size/2);
-            storage->Remove(i, lati_center+size/2);
-            storage->AddShredData(i, lati_center-size/2);
+            WriteShred(i, lati_center + size/2);
+            Remove    (i, lati_center + size/2);
+            AddShred  (i, lati_center - size/2);
         }
         break;
     }

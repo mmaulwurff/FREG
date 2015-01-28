@@ -23,55 +23,39 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Weffc++"
 #include <QHash>
-#include <QThread>
 #pragma GCC diagnostic pop
 
-class QByteArray;
-class PreloadThread;
+#include <thread>
 
 class ShredStorage final {
 public:
      ShredStorage(int size, qint64 longi_center, qint64 lati_center);
     ~ShredStorage();
 
-    QByteArray * GetShredData(qint64 longi, qint64 lati);
-    void SetShredData(QByteArray *, qint64 longi, qint64 lati);
+    class QByteArray * GetShredData(qint64 longi, qint64 lati);
+    void SetShredData(class QByteArray *, qint64 longi, qint64 lati);
     void Shift(int direction, qint64 longitude, qint64 latitude);
 
-    void AddShredData(qint64 longi, qint64 lati);
-    void WriteToFileShredData(qint64 longi, qint64 lati) const ;
     void WriteToFileAllShredData() const;
-
-    void Remove(qint64 longi, qint64 lati);
 
 private:
     Q_DISABLE_COPY(ShredStorage)
+
+    void WriteShred(qint64 longi, qint64 lati) const ;
+    void AddShred  (qint64 longi, qint64 lati);
+    void Remove    (qint64 longi, qint64 lati);
+
+    void asyncShift(int direction, qint64 longi_center, qint64 lati_center);
 
     /// -1 - default, 0 - no compression, 4 - best for CPU, 8 - optimal.
     static const int COMPRESSION_LEVEL = 8;
 
     typedef QPair<qint64 /*longitude*/, qint64 /*latitude*/> LongLat;
-    QHash<LongLat, QByteArray *> storage;
+    QHash<LongLat, class QByteArray *> storage;
     const int size;
-    PreloadThread * preloadThread = nullptr;
-}; // class ShredStorage
 
-class PreloadThread final : public QThread {
-    Q_OBJECT
-    Q_DISABLE_COPY(PreloadThread)
-public:
-    PreloadThread(ShredStorage *, int direction,
-            qint64 longi_center, qint64 lati_center, int size);
-
-protected:
-    void run() override;
-
-private:
-    ShredStorage * const storage;
-    const int direction;
-    const qint64 longi_center;
-    const qint64 lati_center;
-    const int size;
-}; // class PreloadThread
+    // lambda stub, so preloadThread is always joinable.
+    std::thread * preloadThread = new std::thread([](){});
+};
 
 #endif // SHRED_STORAGE_H

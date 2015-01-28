@@ -21,6 +21,7 @@
 #define BLOCKFACTORY_H
 
 #include "header.h"
+#include <cstdint>
 
 class Block;
 class QDataStream;
@@ -55,7 +56,7 @@ public:
     static Block * BlockFromFile(QDataStream & str, int kind, int sub);
 
     /// Returns true if block is normal.
-    static bool KindSubFromFile(QDataStream &, quint8 * kind, quint8 * sub);
+    static bool KindSubFromFile(QDataStream &, uint8_t * kind, uint8_t * sub);
 
     /// Does not actually delete normal blocks.
     static void DeleteBlock(Block *);
@@ -75,7 +76,8 @@ public:
     static bool IsValid(int kind, int sub);
 
 private:
-    Q_DISABLE_COPY(BlockFactory)
+    BlockFactory(const BlockFactory &) = delete;
+    BlockFactory &operator=(const BlockFactory &) = delete;
 
     Block * normals[SUB_COUNT];
 

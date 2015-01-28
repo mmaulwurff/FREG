@@ -20,10 +20,9 @@
 #ifndef HEADER_H
 #define HEADER_H
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Weffc++"
-#include <QtGlobal>
-#pragma GCC diagnostic pop
+#define GCC_IGNORE_WEFFCPP_BEGIN _Pragma("GCC diagnostic push") \
+_Pragma("GCC diagnostic ignored \"-Weffc++\"")
+#define GCC_IGNORE_WEFFCPP_END   _Pragma("GCC diagnostic pop")
 
 #ifdef QT_NO_DEBUG
 const bool DEBUG = false;
@@ -31,7 +30,7 @@ const bool DEBUG = false;
 const bool DEBUG = true;
 #endif
 
-extern const QString home_path;
+extern const class QString home_path;
 
 enum sizes {
     SHRED_WIDTH_BITSHIFT = 4,
