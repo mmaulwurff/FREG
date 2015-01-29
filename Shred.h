@@ -133,7 +133,7 @@ private:
     void RandomDrop(int num, int kind, int sub, bool on_water = false);
     void DropBlock(Block * bloc, bool on_water);
     int CountShredTypeAround(int type) const;
-    Block ** FindTopNonAir(int x, int y);
+    int FindTopNonAir(int x, int y);
 
     void PlantGrass();
     void TestShred();

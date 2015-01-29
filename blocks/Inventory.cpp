@@ -220,8 +220,7 @@ bool Inventory::MiniCraft(const int num) {
         new CraftItem{Number(num), GetInvKind(num), GetInvSub(num)};
     if ( CraftManager::MiniCraft(&crafted) ) {
         while ( not inventory[num].isEmpty() ) {
-            BlockFactory::DeleteBlock(ShowBlock(num));
-            Pull(num);
+            BlockFactory::DeleteBlock(inventory[num].pop());
         }
         for (int i=0; i<crafted->number; ++i) {
             GetExact(BlockFactory::NewBlock(crafted->kind, crafted->sub), num);
@@ -266,12 +265,10 @@ Inventory::Inventory(QDataStream & str, const int sz) :
 }
 
 Inventory::~Inventory() {
-    const int size = Size();
-    for (int i=0; i<size; ++i) {
-        while ( not inventory[i].isEmpty() ) {
-            BlockFactory::DeleteBlock(inventory[i].pop());
-        }
-    }
+    std::for_each(inventory, inventory+Size(), [](const QStack<Block*> & inv) {
+        std::for_each(inv.constBegin(), inv.constEnd(),
+            [](Block * const block) { BlockFactory::DeleteBlock(block); });
+    });
     delete [] inventory;
 }
 

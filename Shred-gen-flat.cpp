@@ -50,9 +50,9 @@ void Shred::Forest(const bool dead) {
     for (int number = CountShredTypeAround(type); number; --number) {
         const int x = qrand()%(SHRED_WIDTH-2) + 1;
         const int y = qrand()%(SHRED_WIDTH-2) + 1;
-        Block ** const position = FindTopNonAir(x, y);
-        if ( (*position)->Sub() == SOIL ) {
-            Tree(x-1, y-1, position - blocks[x][y] + 1, 4 + (qrand() & 7));
+        const int z = FindTopNonAir(x, y);
+        if ( GetBlock(x, y, z)->Sub() == SOIL ) {
+            Tree(x-1, y-1, z+1, 4 + (qrand() & 7));
         }
     }
     RandomDrop(qrand() & 3, WEAPON, WOOD);

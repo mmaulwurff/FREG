@@ -49,24 +49,22 @@ bool Shred::LoadShred() {
     Block * const null_stone = BlockFactory::Normal(NULLSTONE);
     Block * const air        = BlockFactory::Normal(AIR);
     FOR_ALL_SHRED_AREA(x, y) {
-        Block ** to_fill = blocks[x][y];
-        *to_fill = null_stone;
-        for (;;) {
-            ++to_fill;
+        PutBlock(null_stone, x, y, 0);
+        for (int z = 1; ; ++z) {
             quint8 kind, sub;
             if ( BlockFactory::KindSubFromFile(in, &kind, &sub) ) { // normal
                 if ( sub==SKY || sub==STAR ) {
-                    std::fill(to_fill, blocks[x][y] + HEIGHT-1, air);
+                    std::fill(blocks[x][y] + z, blocks[x][y] + HEIGHT-1, air);
                     PutBlock(BlockFactory::Normal(sub), x, y, HEIGHT-1);
                     break;
                 } else {
-                    *to_fill = BlockFactory::Normal(sub);
+                    PutBlock(BlockFactory::Normal(sub), x, y, z);
                 }
             } else {
-                Active * const active = (*to_fill =
+                Active * const active = (blocks[x][y][z] =
                     BlockFactory::BlockFromFile(in, kind, sub))->ActiveBlock();
                 if ( active != nullptr ) {
-                    active->SetXyz(x, y, to_fill - blocks[x][y]);
+                    active->SetXyz(x, y, z);
                     RegisterInit(active);
                     Falling * const falling = active->ShouldFall();
                     if ( falling != nullptr && falling->IsFalling() ) {
@@ -102,11 +100,10 @@ Shred::Shred(const int shred_x, const int shred_y,
     Block * const sky  = BlockFactory::Normal(SKY);
     Block * const star = BlockFactory::Normal(STAR);
     SetAllLightMapNull();
-    FOR_ALL_SHRED_AREA(i, j) {
-        Block ** const position = blocks[i][j];
-        *position = null_stone;
-        std::fill(position + 1, position + HEIGHT - 1, air);
-        *(position + HEIGHT - 1) = (qrand() & 3) ? sky : star;
+    FOR_ALL_SHRED_AREA(x, y) {
+        PutBlock(null_stone, x, y, 0);
+        std::fill(blocks[x][y] + 1, blocks[x][y] + HEIGHT - 1, air);
+        PutBlock((qrand() & 3) ? sky : star, x, y, HEIGHT - 1);
     }
     switch ( type ) {
     case SHRED_WASTE:       WasteShred(); break;
@@ -142,16 +139,17 @@ void Shred::SaveShred(const bool isQuitGame) {
     outstr.setVersion(DATASTREAM_VERSION);
     outstr << quint8(GetTypeOfShred()) << quint8(GetWeather());
     FOR_ALL_SHRED_AREA(x, y) {
-        Block ** const ground = FindTopNonAir(x, y);
-        for (Block ** block = blocks[x][y] + 1; block<=ground; ++block) {
-            if ( *block == BlockFactory::Normal((*block)->Sub()) ) {
-                (*block)->SaveNormalToFile(outstr);
+        const int ground_z = FindTopNonAir(x, y);
+        for (int z = 1; z<=ground_z; ++z) {
+            Block * const block = GetBlock(x, y, z);
+            if ( block == BlockFactory::Normal(block->Sub()) ) {
+                block->SaveNormalToFile(outstr);
             } else {
-                (*block)->SaveToFile(outstr);
+                block->SaveToFile(outstr);
                 if ( isQuitGame ) {
-                    delete *block; // without unregistering.
+                    delete block; // without unregistering.
                 } else {
-                    (*block)->RestoreDurabilityAfterSave();
+                    block->RestoreDurabilityAfterSave();
                 }
             }
         }
@@ -160,21 +158,17 @@ void Shred::SaveShred(const bool isQuitGame) {
     World::GetWorld()->SetShredData(shred_data, longitude, latitude);
 }
 
-Block ** Shred::FindTopNonAir(const int x, const int y) {
-    Block ** ground = blocks[x][y] + HEIGHT-1;
-    while ( (*(--ground))->Sub() == AIR );
-    return ground;
+int Shred::FindTopNonAir(const int x, const int y) {
+    int z = HEIGHT - 1;
+    while ( blocks[x][y][--z]->Sub() == AIR );
+    return z;
 }
 
 const Block * Shred::FindFirstVisible(const int x, const int y, int * const z,
         const int step)
 const {
-    const Block * const * found = blocks[x][y] + *z;
-    while ( (*found)->Transparent() == INVISIBLE ) {
-        found += step;
-        *z    += step;
-    }
-    return *found;
+    for (; GetBlock(x, y, *z)->Transparent() == INVISIBLE; *z += step);
+    return GetBlock(x, y, *z);
 }
 
 qint64 Shred::GlobalX(const int x) const {
@@ -347,7 +341,7 @@ QString Shred::FileName(const qint64 longi, const qint64 lati) {
 void Shred::CoverWith(const int kind, const int sub) {
     FOR_ALL_SHRED_AREA(i, j) {
         SetBlock(BlockFactory::NewBlock(kind, sub), i, j,
-            FindTopNonAir(i, j) - blocks[i][j] + 1);
+            FindTopNonAir(i, j) + 1);
     }
 }
 
@@ -363,18 +357,17 @@ void Shred::DropBlock(Block * const block, const bool on_water) {
     int y = qrand();
     const int x = CoordInShred(y);
     y = CoordInShred(unsigned(y) >> SHRED_WIDTH_BITSHIFT);
-    int z = FindTopNonAir(x, y) - blocks[x][y];
+    int z = FindTopNonAir(x, y);
     if( on_water || GetBlock(x, y, z)->Sub()!=WATER ) {
         SetBlock(block, x, y, ++z);
     }
 }
 
 void Shred::PlantGrass() {
-    FOR_ALL_SHRED_AREA(i, j) {
-        Block ** const position = FindTopNonAir(i, j);
-        if ( SOIL == (*position)->Sub() ) {
-            SetBlock(BlockFactory::NewBlock(GRASS, GREENERY), i, j,
-                position - blocks[i][j] + 1);
+    FOR_ALL_SHRED_AREA(x, y) {
+        const int z = FindTopNonAir(x, y);
+        if ( SOIL == GetBlock(x, y, z)->Sub() ) {
+            SetBlock(BlockFactory::NewBlock(GRASS, GREENERY), x, y, z + 1);
         }
     }
 }

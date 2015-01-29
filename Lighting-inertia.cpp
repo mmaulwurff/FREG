@@ -77,9 +77,8 @@ void World::SunShineVertical(const int x, const int y, int z, int light_lev) {
      *   *   First, light goes down, then divides to 4 branches
      * ^ | ^ to N-S-E-W, and goes up.
      * | | |
-     * | | |
      * |<v>|
-     *   #     */
+     * # # #   */
     Shred * const shred = GetShred(x, y);
     const int x_in = Shred::CoordInShred(x);
     const int y_in = Shred::CoordInShred(y);

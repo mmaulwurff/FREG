@@ -58,8 +58,8 @@ private:
         DEFERRED_SET_FIRE
     };
 
-    DeferredAction(const DeferredAction &);
-    DeferredAction &operator=(const DeferredAction &);
+    DeferredAction(const DeferredAction &) = delete;
+    DeferredAction &operator=(const DeferredAction &) = delete;
 
     deferred_actions type;
     int srcSlot, destSlot;

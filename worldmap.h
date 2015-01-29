@@ -42,8 +42,6 @@ public:
 private:
     Q_DISABLE_COPY(WorldMap)
 
-    static constexpr float PI = 3.141592f;
-
     static float Deg(int x, int y, int size);
     static float R  (int x, int y, int size);
     static void Circle(int min_rad, int max_rad, char ch, int size, char* map);

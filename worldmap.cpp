@@ -87,6 +87,7 @@ char WorldMap::TypeOfShred(qint64 longi, qint64 lati) const {
 }
 
 float WorldMap::Deg(const int x, const int y, const int size) {
+    static const float PI = 3.141592f;
     const float x_cent = x-size/2.f;
     const float y_cent = y-size/2.f;
     float fi;

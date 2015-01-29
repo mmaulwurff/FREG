@@ -24,7 +24,7 @@
 #include <QList>
 
 struct CraftItem final {
-    Q_DISABLE_COPY(CraftItem)
+    M_DISABLE_COPY(CraftItem)
 
     bool operator<(const CraftItem & item) const;
 
@@ -43,6 +43,7 @@ class CraftList final {
 public:
     explicit CraftList(int materials_number);
     ~CraftList();
+    M_DISABLE_COPY(CraftList)
 
     int size() const;
     int GetMaterialsNumber() const;
@@ -55,8 +56,6 @@ public:
     bool operator==(const CraftList &) const;
 
 private:
-    Q_DISABLE_COPY(CraftList)
-
     const int materialsNumber;
     QList<CraftItem *> items;
 }; // CraftList
@@ -65,13 +64,12 @@ class CraftManager final {
 public:
      CraftManager();
     ~CraftManager();
+    M_DISABLE_COPY(CraftManager)
 
     static bool MiniCraft(CraftItem **);
     static bool Craft(CraftList * items, int sub);
 
 private:
-    Q_DISABLE_COPY(CraftManager)
-
     bool CraftSub(CraftList * items, int sub) const;
 
     QList<CraftList *> recipesList[SUB_COUNT];
