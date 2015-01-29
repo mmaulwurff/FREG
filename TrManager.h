@@ -63,10 +63,8 @@ private:
     class QTranslator * LoadTranslator() const;
 
     class QTranslator * const translator;
-    static const QByteArray rawKinds[KIND_COUNT];
-    static const QByteArray rawSubs [SUB_COUNT ];
-    QString subNames[SUB_COUNT];
-    QString kindNames[KIND_COUNT];
+    static const QString rawKinds[KIND_COUNT], rawSubs [SUB_COUNT];
+    QString             kindNames[KIND_COUNT], subNames[SUB_COUNT];
     QHash<char, QString> shredTypeNames;
 
     static TrManager * trManager;

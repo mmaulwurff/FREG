@@ -40,7 +40,7 @@ QString Bucket::FullName() const {
     default:    name = TrManager::KindName(BUCKET); break;
     case GLASS: name = QObject::tr("Bottle"); break;
     }
-    return ( QString("%1 (%2) %3").
+    return ( QStringLiteral("%1 (%2) %3").
         arg(name).
         arg(TrManager::SubName(Sub())).
         arg( IsEmpty(0) ?

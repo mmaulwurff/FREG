@@ -45,7 +45,8 @@ QString Accumulator::FullName() const {
         default:    name = Block::FullName(); break;
         }
     }
-    return name.append(QString(" (charge: %1%)").arg(100*charge / MAX_CHARGE));
+    return name.append(QStringLiteral(" (charge: %1%)").
+        arg(100*charge / MAX_CHARGE));
 }
 
 void Accumulator::Damage(const int dmg, const int dmg_kind) {

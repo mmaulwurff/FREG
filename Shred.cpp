@@ -330,7 +330,7 @@ void Shred::SetNewBlock(const int kind, const int sub,
 }
 
 QString Shred::FileName(const qint64 longi, const qint64 lati) {
-    return QString("%1%2/%3-%4.fm").
+    return QStringLiteral("%1%2/%3-%4.fm").
         arg(home_path).arg(World::WorldName()).arg(longi).arg(lati);
 }
 
@@ -520,7 +520,7 @@ void Shred::Castle() {
 void Shred::Layers() {
     static std::vector<KindSub> layers;
     if ( layers.empty() ) {
-        QFile file(World::WorldPath() + "/layers.txt");
+        QFile file(World::WorldPath() + QStringLiteral("/layers.txt"));
         if (file.open(QIODevice::Text | QIODevice::ReadOnly)) {
             QTextStream stream(&file);
             while ( not stream.atEnd() ) {
@@ -644,10 +644,10 @@ void Shred::Rain(const int kind, const int sub) {
 }
 
 bool Shred::LoadRoom(const int level, const int index) {
-    QFile file(QString("%1%2.room").
+    QFile file(QStringLiteral("%1%2.room").
             arg(FileName(longitude, latitude)).
             arg((index >= 1 ) ?
-                QString("-%1").arg(index) : ""));
+                QStringLiteral("-%1").arg(index) : QStringLiteral("")));
     if ( not file.open(QIODevice::ReadOnly | QIODevice::Text) ) return false;
     for (int lines = 0; lines < SHRED_WIDTH; ++lines) {
         char buffer[SHRED_WIDTH + 1]{0};

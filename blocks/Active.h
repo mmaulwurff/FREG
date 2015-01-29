@@ -24,7 +24,7 @@
 #include "Xyz.h"
 #include <QObject>
 
-/// Frequency can be "never", "rare", "rare & first", "rare & second".
+/// Frequency can be "never", "rare", "rare | first", "rare | second".
 enum active_frequency {
     FREQUENT_NEVER  = 0,
     FREQUENT_RARE   = 1,

@@ -255,7 +255,7 @@
     push_reaction Door::PushResult(dirs) const { return movable; }
 
     QString Door::FullName() const {
-        return QString("%1 (%2)").
+        return QStringLiteral("%1 (%2)").
             arg(locked ? tr("Locked door") : TrManager::KindName(DOOR)).
             arg(TrManager::SubName(Sub()));
     }
@@ -288,7 +288,7 @@
 // Clock::
     usage_types Clock::Use(Active * const who) {
         if ( who != nullptr ) {
-            who->ReceiveSignal( (GetNote().left(4) == "real") ?
+            who->ReceiveSignal( (GetNote().left(4) == QStringLiteral("real")) ?
                 tr("Outer time is %1.").arg(QTime::currentTime().toString()) :
                 World::GetWorld()->TimeOfDayStr() );
         } else {
@@ -405,7 +405,7 @@
     }
 
     bool Text::Inscribe(const QString str) {
-        if ( '.' != str.at(0) && (noteId == 0 || GLASS == Sub()) ) {
+        if ( '.' != str.at(0).toLatin1() && (noteId == 0 || GLASS == Sub()) ) {
             Block::Inscribe(str);
             return true;
         } else {
@@ -423,7 +423,7 @@
             user->ReceiveSignal(QObject::tr("Set title to this map first."));
             return USAGE_TYPE_INNER;
         } // else:
-        QFile map_file(World::WorldPath() + "/texts/" + GetNote());
+        QFile map_file(World::WorldPath()+QStringLiteral("/texts/")+GetNote());
         if ( not map_file.open(QIODevice::ReadWrite | QIODevice::Text) ) {
             return USAGE_TYPE_READ;
         }
@@ -567,7 +567,7 @@
 
     usage_types Informer::Use(Active * const user) {
         switch ( Sub() ) {
-        case IRON: user->ReceiveSignal(QString("Your direction: %1.").
+        case IRON: user->ReceiveSignal(QObject::tr("Your direction: %1.").
             arg(TrManager::DirName(user->GetDir()).toLower())); break;
         default: break;
         }

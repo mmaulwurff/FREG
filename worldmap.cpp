@@ -24,7 +24,7 @@
 
 WorldMap::WorldMap(const QString world_name) :
         mapSize(),
-        map(home_path + world_name + "/map.txt"),
+        map(home_path + world_name + QStringLiteral("/map.txt")),
         spawnLongitude(),
         spawnLatitude(),
         defaultShred(),
@@ -39,26 +39,30 @@ WorldMap::WorldMap(const QString world_name) :
     }
     MakeAndSaveSpawn(world_name, mapSize, &spawnLongitude, &spawnLatitude);
 
-    QSettings map_info(home_path+world_name+"/map.ini", QSettings::IniFormat);
-    defaultShred = map_info.value("default_shred", QChar(SHRED_PLAIN)).
-        toString().at(0).toLatin1();
-    outerShred   = map_info.value("outer_shred", QChar(SHRED_OUT_BORDER)).
-        toString().at(0).toLatin1();
-    map_info.setValue("default_shred", QString(defaultShred));
-    map_info.setValue(  "outer_shred", QString(  outerShred));
+    QSettings map_info(home_path + world_name + QStringLiteral("/map.ini"),
+        QSettings::IniFormat);
+    defaultShred = map_info.value(QStringLiteral("default_shred"),
+        QChar(SHRED_PLAIN)).toString().at(0).toLatin1();
+    outerShred   = map_info.value(QStringLiteral("outer_shred"),
+        QChar(SHRED_OUT_BORDER)).toString().at(0).toLatin1();
+    map_info.setValue(QStringLiteral("default_shred"),
+        QChar::fromLatin1(defaultShred));
+    map_info.setValue(QStringLiteral(  "outer_shred"),
+        QChar::fromLatin1(  outerShred));
 }
 
 void WorldMap::MakeAndSaveSpawn(const QString world_name, const int size,
         qint64 * longitude, qint64 * latitude)
 {
-    QSettings map_info(home_path+world_name+"/map.ini", QSettings::IniFormat);
-    *longitude = map_info.value("spawn_longitude", GetSpawnCoordinate(size)).
-        toLongLong();
-    *latitude  = map_info.value("spawn_latitude",  GetSpawnCoordinate(size)).
-        toLongLong();
+    QSettings map_info(home_path + world_name + QStringLiteral("/map.ini"),
+        QSettings::IniFormat);
+    *longitude = map_info.value(QStringLiteral("spawn_longitude"),
+        GetSpawnCoordinate(size)).toLongLong();
+    *latitude  = map_info.value(QStringLiteral("spawn_latitude"),
+        GetSpawnCoordinate(size)).toLongLong();
 
-    map_info.setValue("spawn_longitude", *longitude);
-    map_info.setValue("spawn_latitude" , *latitude );
+    map_info.setValue(QStringLiteral("spawn_longitude"), *longitude);
+    map_info.setValue(QStringLiteral("spawn_latitude" ), *latitude );
 }
 
 qint64 WorldMap::GetSpawnCoordinate(int size) {
@@ -182,8 +186,8 @@ void WorldMap::GenerateMap(
     MakeAndSaveSpawn(world_name, size, &spawn_longitude, &spawn_latitude);
     PieceOfEden(spawn_latitude-1, spawn_longitude-1, map, size);
 
-    FILE * const file =
-        fopen(qPrintable(home_path + world_name + "/map.txt"), "wb");
+    FILE * const file = fopen(qPrintable(home_path + world_name +
+        QStringLiteral("/map.txt")), "wb");
     for (int y=0; y<size; ++y, fputc('\n', file))
     for (int x=0; x<size; ++x) {
         fputc(map[x*size+y], file);

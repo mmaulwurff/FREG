@@ -40,7 +40,7 @@ QString Block::FullName() const {
         case COAL: break;
         }
     }
-    return QString("%1 (%2)").
+    return QStringLiteral("%1 (%2)").
         arg(TrManager::KindName(Kind())).
         arg(TrManager::SubName(Sub()));
 }

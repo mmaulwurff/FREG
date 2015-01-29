@@ -147,10 +147,11 @@ QString Inventory::InvFullName(const int num) const {
     static const QString emptyString = World::tr("-empty-");
     return inventory[num].isEmpty() ?
         emptyString :
-        QString("%1%2").
+        QStringLiteral("%1%2").
             arg( inventory[num].top()->FullName() ).
             arg( Number(num) <= 1 ?
-                "" : QString(" (x%1)").arg(Number(num)) );
+                QStringLiteral("") :
+                QStringLiteral(" (x%1)").arg(Number(num)) );
 }
 
 int Inventory::GetInvWeight(const int i) const {

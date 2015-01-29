@@ -46,10 +46,11 @@ X("mouse_on",        mouseOn,      true,  )\
 X("show_distance",   showDistance, true,  )\
 X("abcdef_distance", farDistance,  false, )\
 
-#define OPTIONS_SAVE(string, name, ...) settings.setValue(string, name);
+#define OPTIONS_SAVE(string, name, ...) \
+settings.setValue(QStringLiteral(string), name);
 #define OPTIONS_DECLARE(string, name, ...) bool name;
 #define OPTIONS_INIT(string, name, default, ...) \
-name(settings.value(string, default).toBool()),
+name(settings.value(QStringLiteral(string), default).toBool()),
 
 class Block;
 

@@ -5,14 +5,10 @@ TEMPLATE = app
 VERSION  = 0.3
 DEFINES += VER=$$VERSION
 QMAKE_TARGET_COPYRIGHT   = (C) 2012-2015 Alexander \'m8f\' Kromm
-QMAKE_TARGET_DESCRIPTION = Open world game with text graphics.
+QMAKE_TARGET_DESCRIPTION = Freg - open world with text graphics.
 
 CONFIG += warn_on console c++11 rtti_off exceptions_off
 CONFIG( release, debug|release ):DEFINES += QT_NO_DEBUG_OUTPUT
-
-# compile with clang:
-#CONFIG += clang
-#CONFIG += g++-old
 
 QMAKE_CXXFLAGS += -pedantic
 QMAKE_CXXFLAGS += -Wfloat-equal -Woverloaded-virtual -Wundef -fstrict-enums
@@ -49,13 +45,13 @@ unix {
     PRE_TARGETDEPS += $$PWD/pdcurses/libcurses.lib
 }
 
-HEADERS += *.h  \
-    blocks/*.h  \
+HEADERS +=  *.h \
+     blocks/*.h \
     screens/*.h \
 
 CONFIG( debug, debug|release ) {
-    SOURCES += *.cpp  \
-        blocks/*.cpp  \
+    SOURCES +=  *.cpp \
+         blocks/*.cpp \
         screens/*.cpp \
 } else {
     SOURCES += everything/everything.cpp

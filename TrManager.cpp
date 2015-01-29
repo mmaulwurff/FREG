@@ -23,41 +23,43 @@
 #include <QObject>
 #include <QTranslator>
 
-const QByteArray TrManager::rawKinds[] = { KIND_TABLE(X_STRING) };
-const QByteArray TrManager::rawSubs [] = {  SUB_TABLE(X_STRING) };
+const QString TrManager::rawKinds[] = { KIND_TABLE(X_STRING) };
+const QString TrManager::rawSubs [] = {  SUB_TABLE(X_STRING) };
 
 TrManager * TrManager::trManager = nullptr;
 
 TrManager::TrManager() :
         translator(LoadTranslator()),
-        subNames(),
         kindNames(),
+        subNames(),
         shredTypeNames()
 {
     Q_ASSERT(trManager == nullptr);
     trManager = this;
 
     for (int i = 0; i < SUB_COUNT; ++i) {
-        subNames[i] = QCoreApplication::translate("Block", rawSubs[i]);
+        subNames[i] =
+            QCoreApplication::translate("Block", rawSubs[i].toLatin1());
     }
     for (int i = 0; i < KIND_COUNT; ++i) {
-        kindNames[i] = QCoreApplication::translate("Block", rawKinds[i]);
+        kindNames[i] =
+            QCoreApplication::translate("Block", rawKinds[i].toLatin1());
     }
 
-    const char * const rawShredTypes[] = { SHRED_TABLE(X_STRING) };
+    const QString rawShredTypes[] = { SHRED_TABLE(X_STRING) };
     const char shredChars[] = { SHRED_TABLE(X_CHAR) };
 
     int index = 0;
-    for (const char * raw : rawShredTypes) {
+    for (const QString & raw : rawShredTypes) {
         shredTypeNames.insert(shredChars[index++],
-            QCoreApplication::translate("Shred", raw));
+            QCoreApplication::translate("Shred", raw.toLatin1()));
     }
 }
 
 QTranslator * TrManager::LoadTranslator() const {
     QCoreApplication * const application = QCoreApplication::instance();
     QTranslator * translator = new QTranslator(application);
-    translator->load(QString(":/freg_") + QLocale::system().name());
+    translator->load(QStringLiteral(":/freg_") + QLocale::system().name());
     application->installTranslator(translator);
     return translator;
 }

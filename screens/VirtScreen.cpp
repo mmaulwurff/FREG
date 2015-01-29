@@ -29,8 +29,9 @@ void VirtScreen::DeathScreen() {}
 
 VirtScreen::VirtScreen(Player * const player_) :
         player(player_),
-        settings(home_path + "freg.ini", QSettings::IniFormat),
-        previousCommand(settings.value("last_command", "moo").toString())
+        settings(home_path + QStringLiteral("freg.ini"), QSettings::IniFormat),
+        previousCommand( settings.value(QStringLiteral("last_command"),
+            QStringLiteral("moo")).toString() )
 {
     World * const world = World::GetWorld();
     connect( world, &World::Notify, this, &VirtScreen::Notify,
@@ -166,11 +167,11 @@ char VirtScreen::CharName(const int kind, const int sub) {
 bool VirtScreen::ProcessCommand(const QString command) {
     switch ( Player::UniqueIntFromString(qPrintable(command)) ) {
     case Player::UniqueIntFromString("moo"):
-        Notify("^__^");
-        Notify("(oo)\\_______");
-        Notify("(__)\\       )\\/\\");
-        Notify("    ||----w |");
-        Notify("    ||     ||");
+        Notify(QStringLiteral("^__^"));
+        Notify(QStringLiteral("(oo)\\_______"));
+        Notify(QStringLiteral("(__)\\       )\\/\\"));
+        Notify(QStringLiteral("    ||----w |"));
+        Notify(QStringLiteral("    ||     ||"));
         return true;
     default: return false;
     }

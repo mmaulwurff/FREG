@@ -30,6 +30,9 @@ const bool DEBUG = false;
 const bool DEBUG = true;
 #endif
 
+#define QT_NO_CAST_FROM_ASCII
+#define QT_NO_CAST_TO_ASCII
+
 extern const class QString home_path;
 
 enum sizes {
@@ -39,7 +42,7 @@ enum sizes {
     MAX_NOTE_LENGTH = 144,
 };
 
-#define X_STRING(string, ...) string,
+#define X_STRING(string, ...) QStringLiteral(string),
 #define X_ENUM(  column1, enum_element, ...) enum_element,
 #define X_CHAR(  column1, column2, character, ...) character,
 #define X_CLASS( column1, column2, column3, class, ...) class,
