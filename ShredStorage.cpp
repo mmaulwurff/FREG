@@ -22,6 +22,11 @@
 #include "Shred.h"
 #include <QFile>
 
+uint qHash(const ShredStorage::LongLat & longLat) {
+    return  (quint64(longLat.longitude) & 0xff) |
+            (quint64(longLat.latitude ) & 0xff << 1);
+}
+
 ShredStorage::ShredStorage(const int size_,
         const qint64 longi_center, const qint64 lati_center)
     :
@@ -46,7 +51,7 @@ ShredStorage::~ShredStorage() {
 void ShredStorage::WriteToFileAllShredData() const {
     for (auto i=storage.constBegin(); i!=storage.constEnd(); ++i) {
         if ( i.value() ) {
-            WriteShred(i.key().first, i.key().second);
+            WriteShred(i.key().longitude, i.key().latitude);
         }
     }
 }
@@ -61,26 +66,24 @@ void ShredStorage::Shift(const int direction,
 }
 
 QByteArray* ShredStorage::GetShredData(const qint64 longi, const qint64 lati) {
-    return storage.take(LongLat(longi, lati));
+    return storage.take(LongLat{longi, lati});
 }
 
 void ShredStorage::SetShredData(QByteArray * const data,
         const qint64 longi, const qint64 lati)
 {
-    const LongLat coords(longi, lati);
-    delete storage.value(coords);
-    storage.insert(coords, data);
+    storage.insert(LongLat{longi, lati}, data);
 }
 
 void ShredStorage::AddShred(const qint64 longitude, const qint64 latitude) {
     QFile file(Shred::FileName(longitude, latitude));
-    storage.insert(LongLat(longitude, latitude),
+    storage.insert(LongLat{longitude, latitude},
         ( file.open(QIODevice::ReadOnly) ?
             new QByteArray(qUncompress(file.readAll())) : nullptr ));
 }
 
 void ShredStorage::WriteShred(const qint64 longi, const qint64 lati) const {
-    const QByteArray * const data = storage.value(LongLat(longi, lati));
+    const QByteArray * const data = storage.value(LongLat{longi, lati});
     if ( data != nullptr ) {
         QFile file(Shred::FileName(longi, lati));
         if ( file.open(QIODevice::WriteOnly) ) {
@@ -90,7 +93,7 @@ void ShredStorage::WriteShred(const qint64 longi, const qint64 lati) const {
 }
 
 void ShredStorage::Remove(const qint64 longi, const qint64 lati) {
-    storage.remove(LongLat(longi, lati));
+    storage.remove(LongLat{longi, lati});
 }
 
 void ShredStorage::asyncShift(const int direction,

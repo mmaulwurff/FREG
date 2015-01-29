@@ -142,6 +142,7 @@ private:
     static int  RandomBlink();
     static bool RandomBit();
     static bool IsScreenWide();
+    static void Palette(WINDOW *);
 
     /// Returns nullptr if block is not player->Visible().
     Block * GetFocusedBlock() const;

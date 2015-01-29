@@ -34,6 +34,12 @@ public:
 
     void WriteToFileAllShredData() const;
 
+    struct LongLat {
+        bool operator==(const LongLat & other) const {
+            return longitude == other.longitude && latitude == other.latitude;
+        }
+        qint64 longitude, latitude;
+    };
 private:
     Q_DISABLE_COPY(ShredStorage)
 
@@ -46,7 +52,6 @@ private:
     /// -1 - default, 0 - no compression, 4 - best for CPU, 8 - optimal.
     static const int COMPRESSION_LEVEL = 8;
 
-    typedef QPair<qint64 /*longitude*/, qint64 /*latitude*/> LongLat;
     QHash<LongLat, class QByteArray *> storage;
     const int size;
 

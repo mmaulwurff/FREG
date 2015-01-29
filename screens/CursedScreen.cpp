@@ -215,7 +215,7 @@ int Screen::Color(const int kind, const int sub) {
         case H_MEAT:
         case A_MEAT:
         case SUB_CLOUD: return color;
-        default:        return color | RandomBlink();
+        default:        return color | RandomBlink() | A_BLINK;
         case ACID:      return color | RandomBlink() | A_BOLD;
         case WATER: return RandomBit() ? color : COLOR_PAIR(BLUE_BLUE)|A_BOLD;
         } break;
@@ -562,6 +562,9 @@ void Screen::ProcessCommand(const QString command) {
         Notify(tr("Terminal height: %1 lines, width: %2 chars.").
             arg(LINES).arg(COLS));
         break;
+    case Player::UniqueIntFromString("palette"):
+        Palette(windows[WIN_NOTIFY]);
+        break;
     default: player->ProcessCommand(command); break;
     }
 }
@@ -621,7 +624,7 @@ void Screen::PrintBlock(const Block * const block, WINDOW * const window,
     const int kind = block->Kind();
     const int sub  = block->Sub();
     const int color = Color(kind, sub);
-    waddch(window, color | CharName(kind, sub));
+    waddch(window, color | (false ? CharName(kind, sub) : ' '));
     waddch(window, color | second);
 }
 
@@ -1182,4 +1185,30 @@ void Screen::PrintBar(WINDOW * const window,
     wattrset(window, color);
     mvwaddnwstr(window, getcury(window), x, durability_string, percent/10);
     mvwprintw  (window, getcury(window), x + 11, "%3d", percent);
+}
+
+void Screen::Palette(WINDOW * const window) {
+    wclear(window);
+    const struct {
+        chtype attribute;
+        std::string name;
+    } types[] = {
+        {A_NORMAL,    "A_NORMAL    "},
+        {A_BOLD,      "A_BOLD      "},
+        {A_BLINK,     "A_BLINK     "},
+        {A_UNDERLINE, "A_UNDERLINE "},
+        {A_REVERSE,   "A_REVERSE   "},
+        {A_STANDOUT,  "A_STANDOUT  "}
+    };
+    for (const auto & type : types) {
+        wstandend(window);
+        waddstr(window, type.name.c_str());
+        wattrset(window, type.attribute);
+        for (int i = BLACK_BLACK; i<=WHITE_WHITE; ++i) {
+            wcolor_set(window, i, nullptr);
+            waddch(window, ACS_DIAMOND);
+        }
+        waddch(window, '\n');
+    }
+    wrefresh(window);
 }

@@ -85,7 +85,7 @@ int VirtScreen::Color(const int kind, const int sub) {
         default:         return WHITE_BLACK;
         case STONE:      return BLACK_WHITE;
         case GREENERY:   return BLACK_GREEN;
-        case WOOD:
+        case WOOD:       return BLACK_RED;
         case SUB_NUT:
         case SOIL:       return   BLACK_YELLOW;
         case SAND:       return   WHITE_YELLOW;

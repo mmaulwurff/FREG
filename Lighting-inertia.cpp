@@ -259,8 +259,12 @@ void Shred::ShineAll() {
             shining->LightRadius());
     }
     if ( not world->GetEvernight() ) {
-        for (int i=shredX*SHRED_WIDTH; i<SHRED_WIDTH*(shredX+1); ++i)
-        for (int j=shredY*SHRED_WIDTH; j<SHRED_WIDTH*(shredY+1); ++j) {
+        const int start_x = shredX * SHRED_WIDTH;
+        const int start_y = shredY * SHRED_WIDTH;
+        const int end_x = start_x + SHRED_WIDTH;
+        const int end_y = start_y + SHRED_WIDTH;
+        for (int i=start_x; i<end_x; ++i)
+        for (int j=start_y; j<end_y; ++j) {
             world->SunShineVertical(i, j);
         }
     }
