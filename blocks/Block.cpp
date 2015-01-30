@@ -45,19 +45,16 @@ QString Block::FullName() const {
         arg(TrManager::SubName(Sub()));
 }
 
-int Block::Transparency(const int transp, const int sub) const {
-    if ( UNDEF == transp ) {
-        switch ( sub ) {
-        default:    return BLOCK_OPAQUE;
-        case AIR:   return INVISIBLE;
-        case WATER:
-        case GREENERY:
-        case ACID:
-        case SUB_CLOUD:
-        case GLASS: return BLOCK_TRANSPARENT;
-        }
-    } else {
-        return transp;
+int Block::Transparency(const int sub) {
+    switch ( sub ) {
+    default:    return BLOCK_OPAQUE;
+    case WATER:
+    case GREENERY:
+    case ACID:
+    case SUB_CLOUD:
+    case DIAMOND:
+    case GLASS: return BLOCK_TRANSPARENT;
+    case AIR:   return INVISIBLE;
     }
 }
 
@@ -274,7 +271,7 @@ void Block::SaveToFile(QDataStream & out) {
 Block::Block(const int kind_, const int sub_, const int transp) :
         noteId(0),
         durability(MAX_DURABILITY),
-        transparent(Transparency(transp, sub_)),
+        transparent(transp == UNDEF ? Transparency(sub_) : transp),
         kind(kind_),
         sub(sub_),
         direction(UP)

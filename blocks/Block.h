@@ -163,7 +163,7 @@ protected:
     quint16 noteId;
 
 private:
-    int Transparency(int transp, int sub) const;
+    static int Transparency(int sub);
 
     qint16 durability;
     const quint8 transparent;

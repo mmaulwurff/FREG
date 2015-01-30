@@ -543,6 +543,7 @@ void Player::SaveState() const {
     settings.setValue(QStringLiteral("using_type"),      usingType);
     settings.setValue(QStringLiteral("using_self_type"), usingSelfType);
     settings.setValue(QStringLiteral("creative_mode"), GetCreativeMode());
+    settings.setValue(QStringLiteral("creator_dir"), creator->GetDir());
 }
 
 void Player::LoadState() {
@@ -553,20 +554,20 @@ void Player::LoadState() {
         world->GetMap()->GetSpawnLongitude()).toLongLong();
     homeLati  = settings.value(QStringLiteral("home_latitude"),
         world->GetMap()->GetSpawnLatitude ()).toLongLong();
-    homeX = settings.value(QStringLiteral("home_x"), 0).toInt();
-    homeY = settings.value(QStringLiteral("home_y"), 0).toInt();
-    homeZ = settings.value(QStringLiteral("home_z"), HEIGHT/2).toInt();
+    homeX = settings.value(QStringLiteral("home_x")).toInt();
+    homeY = settings.value(QStringLiteral("home_y")).toInt();
+    homeZ = settings.value(QStringLiteral("home_z"), HEIGHT/2 + 1).toInt();
     usingType     = settings.value(QStringLiteral("using_type"),
         USAGE_TYPE_NO).toInt();
     usingSelfType = settings.value(QStringLiteral("using_self_type"),
         USAGE_TYPE_NO).toInt();
-    creativeMode  = settings.value(QStringLiteral("creative_mode"),
-        false).toBool();
-    SetXyz(settings.value(QStringLiteral("current_x"), 0).toInt(),
-           settings.value(QStringLiteral("current_y"), 0).toInt(),
-           settings.value(QStringLiteral("current_z"), HEIGHT/2+1).toInt());
+    creativeMode  = settings.value(QStringLiteral("creative_mode")).toBool();
+    SetXyz(settings.value(QStringLiteral("current_x"), homeX).toInt(),
+           settings.value(QStringLiteral("current_y"), homeY).toInt(),
+           settings.value(QStringLiteral("current_z"), homeZ).toInt());
     longitude = settings.value(QStringLiteral("current_longitude"),
         homeLongi).toLongLong();
     latitude  = settings.value(QStringLiteral("current_latitude"),
         homeLati ).toLongLong();
+    creator->SetDir(settings.value(QStringLiteral("creator_dir")).toInt());
 }

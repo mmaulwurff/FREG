@@ -624,7 +624,7 @@ void Screen::PrintBlock(const Block * const block, WINDOW * const window,
     const int kind = block->Kind();
     const int sub  = block->Sub();
     const int color = Color(kind, sub);
-    waddch(window, color | (false ? CharName(kind, sub) : ' '));
+    waddch(window, color | (true ? CharName(kind, sub) : ' '));
     waddch(window, color | second);
 }
 
