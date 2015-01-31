@@ -58,9 +58,9 @@ bool CraftList::operator==(const CraftList & compared) const {
 void CraftList::LoadItems(const QJsonArray & array) {
     for (const QJsonValue & value : array) {
         const QJsonObject item = value.toObject();
-        items.append( new CraftItem{item[QStringLiteral("number")].toInt(),
-                TrManager::StrToKind(item[QStringLiteral("kind")].toString()),
-                TrManager::StrToSub (item[QStringLiteral("sub")].toString())});
+        items.append( new CraftItem{item[Str("number")].toInt(),
+                TrManager::StrToKind(item[Str("kind")].toString()),
+                TrManager::StrToSub (item[Str("sub")].toString())});
     }
 }
 
@@ -89,20 +89,18 @@ CraftManager::CraftManager() : recipesList() {
     craftManager = this;
 
     for (int sub=0; sub<SUB_COUNT; ++sub) {
-        QFile file(QStringLiteral(":/recipes/%1.json").
-            arg(TrManager::SubToString(sub)));
+        QFile file(Str(":/recipes/%1.json").arg(TrManager::SubToString(sub)));
         if ( not file.open(QIODevice::ReadOnly | QIODevice::Text) ) continue;
         const QJsonArray recipes =
             QJsonDocument::fromJson(file.readAll()).array();
         for (int i=0; i<recipes.size(); ++i) {
-            const QJsonObject recipeObject = recipes.at(i).toObject();
-            const QJsonArray materials =
-                recipeObject[QStringLiteral("materials")].toArray();
+            const QJsonObject recipeObject(recipes.at(i).toObject());
+            const QJsonArray materials(recipeObject[Str("materials")].
+                toArray());
             CraftList * const recipe = new CraftList(materials.size());
             recipe->LoadItems(materials);
             recipe->Sort();
-            recipe->LoadItems(
-                recipeObject[QStringLiteral("products")].toArray());
+            recipe->LoadItems(recipeObject[Str("products")].toArray());
             recipesList[sub].append(recipe);
         }
     }

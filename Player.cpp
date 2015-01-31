@@ -25,6 +25,7 @@
 #include "DeferredAction.h"
 #include "blocks/Animal.h"
 #include "blocks/Inventory.h"
+#include "TrManager.h"
 #include <QSettings>
 #include <QTextStream>
 #include <QMutexLocker>
@@ -106,19 +107,19 @@ void Player::Examine(const int x, const int y, const int z) {
     const Block * const block = world->GetBlock(x, y, z);
     emit Notify( tr("You see %1.").arg(block->FullName()) );
     if ( DEBUG ) {
-        emit Notify(QStringLiteral("Weight: %1. Id: %2.").
+        emit Notify(Str("Weight: %1. Id: %2.").
             arg(block->Weight()).
             arg(BlockFactory::MakeId(block->Kind(), block->Sub())));
-        emit Notify(QStringLiteral("Kind: %1, substance: %2. LightRadius: %3").
+        emit Notify(Str("Kind: %1, substance: %2. LightRadius: %3").
             arg(block->Kind()).
             arg(block->Sub()).
             arg(block->LightRadius()));
-        emit Notify(QStringLiteral("Light: %1, fire: %2, sun: %3. Transp: %4").
+        emit Notify(Str("Light: %1, fire: %2, sun: %3. Transp: %4").
             arg(world->Enlightened(x, y, z)).
             arg(world->FireLight(x, y, z)/16).
             arg(world->SunLight(x, y, z)).
             arg(block->Transparent()));
-        emit Notify(QStringLiteral("Norm: %1. Dir: %2").
+        emit Notify(Str("Norm: %1. Dir: %2").
             arg(block==BlockFactory::Normal(block->Sub())).
             arg(block->GetDir()));
     }
@@ -193,7 +194,7 @@ Block * Player::ValidBlock(const int num) const {
         return nullptr;
     } // else:
     if ( num >= inv->Size() ) {
-        emit Notify(QStringLiteral("No such place."));
+        emit Notify(Str("No such place."));
         return nullptr;
     } // else:
     Block * const block = inv->ShowBlock(num);
@@ -367,9 +368,9 @@ void Player::ProcessCommand(QString command) {
     case UniqueIntFromString("version"):
         emit Notify(tr("freg version: %1. Compiled on %2 at %3 with Qt %4.")
             .arg(VER)
-            .arg(QStringLiteral(__DATE__))
-            .arg(QStringLiteral(__TIME__))
-            .arg(QStringLiteral(QT_VERSION_STR)));
+            .arg(Str(__DATE__))
+            .arg(Str(__TIME__))
+            .arg(Str(QT_VERSION_STR)));
         emit Notify(tr("Current Qt version: %1. Build type: %2.")
             .arg(QString::fromLatin1(qVersion()))
             .arg(DEBUG ? tr("debug") : tr("release")));
@@ -380,9 +381,9 @@ void Player::ProcessCommand(QString command) {
     case UniqueIntFromString("help"):
         comm_stream >> request;
         if ( request.isEmpty() ) {
-            request = QStringLiteral("help");
+            request = Str("help");
         }
-        emit ShowFile( QString(home_path + QStringLiteral("/help_%1/%2.md"))
+        emit ShowFile( QString(home_path + Str("/help_%1/%2.md"))
             .arg(QLocale::system().name().left(2)).arg(QString(request)) );
         break;
     default:
@@ -526,48 +527,45 @@ Player::~Player() {
 }
 
 void Player::SaveState() const {
-    QSettings settings(World::WorldPath()+QStringLiteral("/player_state.ini"),
+    QSettings settings(World::WorldPath() + Str("/player_state.ini"),
         QSettings::IniFormat);
-    settings.setValue(QStringLiteral("home_longitude"), homeLongi);
-    settings.setValue(QStringLiteral("home_latitude"),  homeLati);
-    settings.setValue(QStringLiteral("home_x"), homeX);
-    settings.setValue(QStringLiteral("home_y"), homeY);
-    settings.setValue(QStringLiteral("home_z"), homeZ);
-    settings.setValue(QStringLiteral("current_longitude"),
-        GetShred()->Longitude());
-    settings.setValue(QStringLiteral("current_latitude"),
-        GetShred()->Latitude());
-    settings.setValue(QStringLiteral("current_x"), Xyz::X());
-    settings.setValue(QStringLiteral("current_y"), Xyz::Y());
-    settings.setValue(QStringLiteral("current_z"), Xyz::Z());
-    settings.setValue(QStringLiteral("using_type"),      usingType);
-    settings.setValue(QStringLiteral("using_self_type"), usingSelfType);
-    settings.setValue(QStringLiteral("creative_mode"), GetCreativeMode());
-    settings.setValue(QStringLiteral("creator_dir"), creator->GetDir());
+    settings.setValue(Str("home_longitude"), homeLongi);
+    settings.setValue(Str("home_latitude"),  homeLati);
+    settings.setValue(Str("home_x"), homeX);
+    settings.setValue(Str("home_y"), homeY);
+    settings.setValue(Str("home_z"), homeZ);
+    settings.setValue(Str("current_longitude"), GetShred()->Longitude());
+    settings.setValue(Str("current_latitude" ), GetShred()->Latitude ());
+    settings.setValue(Str("current_x"), Xyz::X());
+    settings.setValue(Str("current_y"), Xyz::Y());
+    settings.setValue(Str("current_z"), Xyz::Z());
+    settings.setValue(Str("using_type"),      usingType);
+    settings.setValue(Str("using_self_type"), usingSelfType);
+    settings.setValue(Str("creative_mode"), GetCreativeMode());
+    settings.setValue(Str("creator_dir"), creator->GetDir());
 }
 
 void Player::LoadState() {
     World * const world = World::GetWorld();
-    const QSettings settings(World::WorldPath() +
-        QStringLiteral("/player_state.ini"), QSettings::IniFormat);
-    homeLongi = settings.value(QStringLiteral("home_longitude"),
+    const QSettings settings(World::WorldPath() + Str("/player_state.ini"),
+        QSettings::IniFormat);
+    homeLongi = settings.value(Str("home_longitude"),
         world->GetMap()->GetSpawnLongitude()).toLongLong();
-    homeLati  = settings.value(QStringLiteral("home_latitude"),
+    homeLati  = settings.value(Str("home_latitude"),
         world->GetMap()->GetSpawnLatitude ()).toLongLong();
-    homeX = settings.value(QStringLiteral("home_x")).toInt();
-    homeY = settings.value(QStringLiteral("home_y")).toInt();
-    homeZ = settings.value(QStringLiteral("home_z"), HEIGHT/2 + 1).toInt();
-    usingType     = settings.value(QStringLiteral("using_type"),
+    homeX = settings.value(Str("home_x")).toInt();
+    homeY = settings.value(Str("home_y")).toInt();
+    homeZ = settings.value(Str("home_z"), HEIGHT/2 + 1).toInt();
+    usingType     = settings.value(Str("using_type"), USAGE_TYPE_NO).toInt();
+    usingSelfType = settings.value(Str("using_self_type"),
         USAGE_TYPE_NO).toInt();
-    usingSelfType = settings.value(QStringLiteral("using_self_type"),
-        USAGE_TYPE_NO).toInt();
-    creativeMode  = settings.value(QStringLiteral("creative_mode")).toBool();
-    SetXyz(settings.value(QStringLiteral("current_x"), homeX).toInt(),
-           settings.value(QStringLiteral("current_y"), homeY).toInt(),
-           settings.value(QStringLiteral("current_z"), homeZ).toInt());
-    longitude = settings.value(QStringLiteral("current_longitude"),
+    creativeMode  = settings.value(Str("creative_mode")).toBool();
+    SetXyz(settings.value(Str("current_x"), homeX).toInt(),
+           settings.value(Str("current_y"), homeY).toInt(),
+           settings.value(Str("current_z"), homeZ).toInt());
+    longitude = settings.value(Str("current_longitude"),
         homeLongi).toLongLong();
-    latitude  = settings.value(QStringLiteral("current_latitude"),
+    latitude  = settings.value(Str("current_latitude"),
         homeLati ).toLongLong();
-    creator->SetDir(settings.value(QStringLiteral("creator_dir")).toInt());
+    creator->SetDir(settings.value(Str("creator_dir")).toInt());
 }

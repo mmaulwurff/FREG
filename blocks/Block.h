@@ -23,9 +23,8 @@
 #ifndef BLOCK_H
 #define BLOCK_H
 
-#include "TrManager.h" // needed in lots of files, so include here.
 #include "header.h"
-#include <QDataStream> // needed in lots of files, so include here.
+#include <cstdint>
 
 enum wearable {
     WEARABLE_NOWHERE,
@@ -87,10 +86,10 @@ enum sub_groups {
 class Block {
     /**\class Block Block.h
      * \brief Block without special physics and attributes. */
-    Q_DISABLE_COPY(Block)
+    M_DISABLE_COPY(Block)
 public:
     Block(int sub, int kind, int transp = UNDEF);
-    Block(QDataStream &, int sub, int kind, int transp = UNDEF);
+    Block(class QDataStream &, int sub, int kind, int transp = UNDEF);
     virtual ~Block();
 
     virtual QString FullName() const;
@@ -144,9 +143,7 @@ public:
     /// Important! If block will be used after save,
     /// call RestoreDurabilityAfterSave.
     void SaveToFile(QDataStream & out);
-    void SaveNormalToFile(QDataStream & out) const {
-        out << quint8( 0x80 | sub );
-    }
+    void SaveNormalToFile(class QDataStream & out) const;
 
     /// Importart! Use it if block won't be deleted after SaveToFile.
     void RestoreDurabilityAfterSave() { durability >>= 4; }
@@ -158,18 +155,18 @@ public:
     static const int MAX_DURABILITY = 1024;
 
 protected:
-    virtual void SaveAttributes(QDataStream &) const;
+    virtual void SaveAttributes(class QDataStream &) const;
 
-    quint16 noteId;
+    uint16_t noteId;
 
 private:
     static int Transparency(int sub);
 
-    qint16 durability;
-    const quint8 transparent;
-    const quint8 kind;
-    const quint8 sub;
-    quint8 direction;
+    int16_t durability;
+    const uint8_t transparent;
+    const uint8_t kind;
+    const uint8_t sub;
+    uint8_t direction;
 };
 
 #endif // BLOCK_H

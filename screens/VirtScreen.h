@@ -55,6 +55,9 @@ public:
     static char CharName(int kind, int sub);
     static int  Color   (int kind, int sub);
 
+    /// To store message history.
+    static void Log(QString);
+
     /// This is called for a notification to be displayed.
     virtual void Notify(QString) const = 0;
 

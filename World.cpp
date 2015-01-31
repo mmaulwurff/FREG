@@ -644,13 +644,12 @@ World::World(const QString world_name, bool * error) :
         time(), timeStep(),
         shreds(),
         longitude(), latitude(),
-        gameSettings(new QSettings(home_path + QStringLiteral("freg.ini"),
+        gameSettings(new QSettings(home_path + Str("freg.ini"),
             QSettings::IniFormat)),
         numShreds(CorrectNumShreds(gameSettings->value(
-            QStringLiteral("number_of_shreds"), MIN_WORLD_SIZE).toInt())),
+            Str("number_of_shreds"), MIN_WORLD_SIZE + 1).toInt())),
         numActiveShreds(CorrectNumActiveShreds(gameSettings->value(
-            QStringLiteral("number_of_active_shreds"), numShreds).toInt(),
-                numShreds)),
+            Str("number_of_active_shreds"), numShreds).toInt(), numShreds)),
         mutex(),
         evernight(),
         newLati(), newLongi(),
@@ -667,13 +666,12 @@ World::World(const QString world_name, bool * error) :
     world = this;
 
     LoadState();
-    gameSettings->setValue(QStringLiteral("number_of_shreds"), numShreds);
-    gameSettings->setValue(QStringLiteral("number_of_active_shreds"),
-        numActiveShreds);
+    gameSettings->setValue(Str("number_of_shreds"), numShreds);
+    gameSettings->setValue(Str("number_of_active_shreds"), numActiveShreds);
     delete gameSettings;
 
     shreds = new Shred *[NumShreds()*NumShreds()];
-    if ( not QDir(home_path).mkpath(worldName + QStringLiteral("/texts")) ) {
+    if ( not QDir(home_path).mkpath(worldName + Str("/texts")) ) {
         *error = true;
     }
 
@@ -696,25 +694,24 @@ World::~World() {
     delete map;
 
     SaveState();
-    QSettings(home_path + QStringLiteral("freg.ini"), QSettings::IniFormat).
-        setValue(QStringLiteral("current_world"), worldName);
+    QSettings(home_path + Str("freg.ini"), QSettings::IniFormat).
+        setValue(Str("current_world"), worldName);
 
     SaveNotes();
 }
 
 void World::SaveState() const {
-    QSettings settings(WorldPath() + QStringLiteral("/settings.ini"),
-        QSettings::IniFormat);
-    settings.setValue(QStringLiteral("time"), time);
-    settings.setValue(QStringLiteral("time_step"), timeStep);
-    settings.setValue(QStringLiteral("longitude"), longitude);
-    settings.setValue(QStringLiteral("latitude"),  latitude );
-    settings.setValue(QStringLiteral("evernight"), evernight);
+    QSettings settings(WorldPath()+Str("/settings.ini"), QSettings::IniFormat);
+    settings.setValue(Str("time"), time);
+    settings.setValue(Str("time_step"), timeStep);
+    settings.setValue(Str("longitude"), longitude);
+    settings.setValue(Str("latitude"),  latitude );
+    settings.setValue(Str("evernight"), evernight);
 }
 
 void World::LoadNotes() {
     notes.clear();
-    QFile notes_file(WorldPath() + QStringLiteral("/notes.txt"));
+    QFile notes_file(WorldPath() + Str("/notes.txt"));
     if ( not notes_file.open(QIODevice::ReadOnly | QIODevice::Text) ) return;
     char note[MAX_NOTE_LENGTH*2];
     while ( notes_file.readLine(note, MAX_NOTE_LENGTH*2) > 0 ) {
@@ -723,7 +720,7 @@ void World::LoadNotes() {
 }
 
 void World::SaveNotes() const {
-    QFile notes_file(WorldPath() + QStringLiteral("/notes.txt"));
+    QFile notes_file(WorldPath() + Str("/notes.txt"));
     if ( not notes_file.open(QIODevice::WriteOnly | QIODevice::Text) ) return;
     for (const QString & note : notes) {
         notes_file.write(note.toUtf8().constData());
@@ -732,14 +729,14 @@ void World::SaveNotes() const {
 }
 
 void World::LoadState() {
-    const QSettings setting(WorldPath() + QStringLiteral("/settings.ini"),
+    const QSettings setting(WorldPath() + Str("/settings.ini"),
         QSettings::IniFormat);
-    time = setting.value(QStringLiteral("time"), END_OF_NIGHT).toULongLong();
-    timeStep  = setting.value(QStringLiteral("time_step"), 0).toInt();
-    evernight = setting.value(QStringLiteral("evernight"), false).toBool();
-    longitude = setting.value(QStringLiteral("longitude"),
+    time = setting.value(Str("time"), END_OF_NIGHT).toULongLong();
+    timeStep  = setting.value(Str("time_step"), 0).toInt();
+    evernight = setting.value(Str("evernight"), false).toBool();
+    longitude = setting.value(Str("longitude"),
         map->GetSpawnLongitude()).toLongLong();
-    latitude  = setting.value(QStringLiteral("latitude"),
+    latitude  = setting.value(Str("latitude"),
         map->GetSpawnLatitude()).toLongLong();
 }
 

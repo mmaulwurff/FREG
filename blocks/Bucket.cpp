@@ -18,6 +18,8 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "blocks/Bucket.h"
+#include "TrManager.h"
+#include <QDataStream>
 
 Bucket::Bucket(const int kind, const int sub) :
         Block(kind, sub),
@@ -40,7 +42,7 @@ QString Bucket::FullName() const {
     default:    name = TrManager::KindName(BUCKET); break;
     case GLASS: name = QObject::tr("Bottle"); break;
     }
-    return ( QStringLiteral("%1 (%2) %3").
+    return ( Str("%1 (%2) %3").
         arg(name).
         arg(TrManager::SubName(Sub())).
         arg( IsEmpty(0) ?

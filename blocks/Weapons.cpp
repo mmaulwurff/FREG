@@ -18,6 +18,7 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "blocks/Weapons.h"
+#include "TrManager.h"
 
 QString Weapon::FullName() const {
     if ( Kind() != WEAPON ) return Block::FullName();

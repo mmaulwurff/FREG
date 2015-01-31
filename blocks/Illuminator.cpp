@@ -21,6 +21,8 @@
 #include "BlockFactory.h"
 #include "blocks/Inventory.h"
 #include "World.h"
+#include "TrManager.h"
+#include <QDataStream>
 
 Illuminator::Illuminator(const int kind, const int sub) :
         Active(kind, sub, NONSTANDARD),

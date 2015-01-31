@@ -18,6 +18,8 @@ QMAKE_CXXFLAGS += -Weffc++ -Werror
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS += -O3
 
+DEFINES *= QT_USE_QSTRINGBUILDER
+
 gcc:win32 {
     QMAKE_CXXFLAGS += -isystem $$(QTDIR)/include/QtCore
     QMAKE_CXXFLAGS += -isystem $$(QTDIR)/include/QtGui

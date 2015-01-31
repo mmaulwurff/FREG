@@ -23,7 +23,7 @@
 #include "blocks/Block.h"
 
 class Accumulator : public Block {
-    Q_DISABLE_COPY(Accumulator)
+    M_DISABLE_COPY(Accumulator)
 public:
     Accumulator(int sub, int kind);
     Accumulator(QDataStream &, int sub, int kind);
@@ -37,9 +37,9 @@ protected:
 private:
     static damage_kinds EnergyType(int substance);
 
-    static const quint16 MAX_CHARGE = 0xffff;
+    static const uint16_t MAX_CHARGE = 0xffff;
 
-    qint16 charge;
+    int16_t charge;
 };
 
 #endif // ACCUMULATOR_H

@@ -22,6 +22,7 @@
 #include "Shred.h"
 #include "worldmap.h"
 #include "BlockFactory.h"
+#include "TrManager.h"
 #include <QTextStream>
 #include <QFile>
 #include <QTime>
@@ -255,7 +256,7 @@
     push_reaction Door::PushResult(dirs) const { return movable; }
 
     QString Door::FullName() const {
-        return QStringLiteral("%1 (%2)").
+        return Str("%1 (%2)").
             arg(locked ? tr("Locked door") : TrManager::KindName(DOOR)).
             arg(TrManager::SubName(Sub()));
     }
@@ -288,7 +289,7 @@
 // Clock::
     usage_types Clock::Use(Active * const who) {
         if ( who != nullptr ) {
-            who->ReceiveSignal( (GetNote().left(4) == QStringLiteral("real")) ?
+            who->ReceiveSignal( (GetNote().left(4) == Str("real")) ?
                 tr("Outer time is %1.").arg(QTime::currentTime().toString()) :
                 World::GetWorld()->TimeOfDayStr() );
         } else {
@@ -423,7 +424,7 @@
             user->ReceiveSignal(QObject::tr("Set title to this map first."));
             return USAGE_TYPE_INNER;
         } // else:
-        QFile map_file(World::WorldPath()+QStringLiteral("/texts/")+GetNote());
+        QFile map_file(World::WorldPath()+Str("/texts/")+GetNote());
         if ( not map_file.open(QIODevice::ReadWrite | QIODevice::Text) ) {
             return USAGE_TYPE_READ;
         }

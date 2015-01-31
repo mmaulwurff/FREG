@@ -22,6 +22,7 @@
 #include "blocks/Inventory.h"
 #include "CraftManager.h"
 #include "BlockFactory.h"
+#include <QDataStream>
 
 int  Inventory::Start() const { return 0; }
 bool Inventory::Access() const { return true; }
@@ -147,11 +148,11 @@ QString Inventory::InvFullName(const int num) const {
     static const QString emptyString = World::tr("-empty-");
     return inventory[num].isEmpty() ?
         emptyString :
-        QStringLiteral("%1%2").
+        Str("%1%2").
             arg( inventory[num].top()->FullName() ).
             arg( Number(num) <= 1 ?
-                QStringLiteral("") :
-                QStringLiteral(" (x%1)").arg(Number(num)) );
+                Str("") :
+                Str(" (x%1)").arg(Number(num)) );
 }
 
 int Inventory::GetInvWeight(const int i) const {

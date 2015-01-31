@@ -59,7 +59,7 @@ TrManager::TrManager() :
 QTranslator * TrManager::LoadTranslator() const {
     QCoreApplication * const application = QCoreApplication::instance();
     QTranslator * translator = new QTranslator(application);
-    translator->load(QStringLiteral(":/freg_") + QLocale::system().name());
+    translator->load(Str(":/freg_") + QLocale::system().name());
     application->installTranslator(translator);
     return translator;
 }

@@ -166,7 +166,6 @@ private:
     class IThread * const input;
     mutable volatile bool updatedHud, updatedMinimap;
     mutable volatile bool updatedNormal, updatedFront;
-    FILE * const notifyLog;
     actions actionMode;
     /// Can be -1, 0, 1 for low, normal, and high focus.
     int shiftFocus;

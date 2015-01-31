@@ -22,6 +22,8 @@
 #include "Shred.h"
 #include "BlockFactory.h"
 #include "CraftManager.h"
+#include "TrManager.h"
+#include <QDataStream>
 
 // Container::
     void Container::Damage(const int dmg, const int dmg_kind) {

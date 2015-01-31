@@ -19,6 +19,8 @@
 
 #include "blocks/RainMachine.h"
 #include "Shred.h"
+#include <QDataStream>
+#include <TrManager.h>
 
 RainMachine::RainMachine(const int kind, const int sub) :
     Active(kind, sub),
@@ -51,7 +53,7 @@ void RainMachine::DoRareAction() {
 }
 
 QString RainMachine::FullName() const {
-    return QStringLiteral("%1: %2").
+    return Str("%1: %2").
         arg(TrManager::KindName(RAIN_MACHINE)).
         arg(TrManager::OffOn(isOn));
 }

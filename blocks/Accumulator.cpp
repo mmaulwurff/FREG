@@ -18,6 +18,8 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "blocks/Accumulator.h"
+#include "TrManager.h"
+#include <QDataStream>
 
 Accumulator::Accumulator(const int sub, const int kind) :
     Block(sub, kind),
@@ -45,8 +47,7 @@ QString Accumulator::FullName() const {
         default:    name = Block::FullName(); break;
         }
     }
-    return name.append(QStringLiteral(" (charge: %1%)").
-        arg(100*charge / MAX_CHARGE));
+    return name.append(Str(" (charge: %1%)").arg(100*charge / MAX_CHARGE));
 }
 
 void Accumulator::Damage(const int dmg, const int dmg_kind) {

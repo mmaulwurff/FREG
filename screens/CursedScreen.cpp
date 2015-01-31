@@ -29,9 +29,9 @@
 #include "blocks/Block.h"
 #include "blocks/Inventory.h"
 
-#include <QFile>
 #include <QDesktopServices>
 #include <QUrl>
+#include <QFile>
 
 const chtype Screen::arrows[] = {
     '.',
@@ -148,7 +148,7 @@ void Screen::PassString(QString & str) const {
     inputActive = false;
     noecho();
     str = QString::fromUtf16(temp_str);
-    fprintf(notifyLog, "Command: %s\n", qPrintable(str));
+    Log(Str("Command: ") + str);
 }
 
 char Screen::Distance(const int dist) const {
@@ -279,7 +279,7 @@ void Screen::ControlPlayer(const int ch) {
     default:
         Notify(tr("Unknown key. Press 'H' for help."));
         if ( DEBUG ) {
-            Notify(QStringLiteral("Pressed key code: %1.").arg(ch));
+            Notify(Str("Pressed key code: %1.").arg(ch));
         }
         break;
 
@@ -363,14 +363,14 @@ void Screen::ControlPlayer(const int ch) {
 
     case KEY_HELP:
     case KEY_F(1):
-    case 'H': ProcessCommand(QStringLiteral("help")); break;
+    case 'H': ProcessCommand(Str("help")); break;
 
     case KEY_F(5):
     case 'R': RePrint(); break;
 
     case 'L':
         QDesktopServices::openUrl(
-            QUrl(QStringLiteral("file:///%1log.txt").arg(home_path)));
+            QUrl(Str("file:///%1log.txt").arg(home_path)));
         break;
 
     case '-': shiftFocus -= 2; // no break;
@@ -407,10 +407,10 @@ void Screen::ControlPlayer(const int ch) {
         static bool isPaused = false;
         if ( isPaused ) {
             emit ResumeWorld();
-            Notify(QStringLiteral("Game is resumed."));
+            Notify(Str("Game is resumed."));
         } else {
             emit PauseWorld();
-            Notify(QStringLiteral("Game is paused."));
+            Notify(Str("Game is paused."));
         }
         isPaused = not isPaused;
     } break;
@@ -660,7 +660,7 @@ void Screen::Print() {
         }
         break;
     case USAGE_TYPE_READ_IN_INVENTORY:
-        DisplayFile( World::WorldPath() + QStringLiteral("/texts/")
+        DisplayFile( World::WorldPath() + Str("/texts/")
             + player->PlayerInventory()->ShowBlock(
                 player->GetUsingInInventory())->GetNote() );
         player->SetUsingTypeNo();
@@ -668,7 +668,7 @@ void Screen::Print() {
     case USAGE_TYPE_READ: {
         const Block * const focused = GetFocusedBlock();
         if ( focused != nullptr ) {
-            DisplayFile(World::WorldPath() + QStringLiteral("/texts/") +
+            DisplayFile(World::WorldPath() + Str("/texts/") +
                 focused->GetNote());
             player->SetUsingTypeNo();
         }
@@ -1043,12 +1043,12 @@ const {
 
 void Screen::DisplayFile(QString path) {
     { QFile(path).open(QIODevice::ReadWrite); } // create file if doesn't exist
-    QDesktopServices::openUrl(QUrl(path.prepend(QStringLiteral("file:///"))));
+    QDesktopServices::openUrl(QUrl(path.prepend(Str("file:///"))));
     Notify(tr("Open ") + path);
 }
 
 void Screen::Notify(const QString str) const {
-    fprintf(notifyLog, "%s\n", qPrintable(str));
+    Log(str);
     if ( inputActive ) return;
     wstandend(windows[WIN_NOTIFY]);
     switch ( str.at(str.size()-1).unicode() ) {
@@ -1103,10 +1103,9 @@ Screen::Screen(Player * const pl, int &) :
         updatedMinimap(false),
         updatedNormal (false),
         updatedFront  (false),
-        notifyLog(fopen(qPrintable(home_path+QStringLiteral("log.txt")),"at")),
         actionMode(static_cast<actions>(settings.value(
-            QStringLiteral("action_mode"), ACTION_USE).toInt())),
-        shiftFocus(settings.value(QStringLiteral("focus_shift"), 0).toInt()),
+            Str("action_mode"), ACTION_USE).toInt())),
+        shiftFocus(settings.value(Str("focus_shift"), 0).toInt()),
         OPTIONS_TABLE(OPTIONS_INIT)
         ellipsis{
             ascii ? L'.' : L'\U00002026',
@@ -1141,7 +1140,7 @@ Screen::Screen(Player * const pl, int &) :
     getch();
     Notify(tr("\t[[F][r][e][g]] version %1").arg(VER));
     Notify(tr("Copyright (C) 2012-2015 Alexander 'm8f' Kromm"));
-    Notify(QStringLiteral("(mmaulwurff@gmail.com)\n"));
+    Notify(Str("(mmaulwurff@gmail.com)\n"));
     Notify(tr("Press any key to continue."));
 
     qsrand(getch());
@@ -1165,12 +1164,9 @@ Screen::~Screen() {
     std::for_each(windows, std::end(windows), delwin);
     endwin();
     delscreen(screen);
-    if ( notifyLog ) {
-        fclose(notifyLog);
-    }
-    settings.setValue(QStringLiteral("focus_shift" ), shiftFocus);
-    settings.setValue(QStringLiteral("action_mode" ), actionMode);
-    settings.setValue(QStringLiteral("last_command"), previousCommand);
+    settings.setValue(Str("focus_shift" ), shiftFocus);
+    settings.setValue(Str("action_mode" ), actionMode);
+    settings.setValue(Str("last_command"), previousCommand);
     OPTIONS_TABLE(OPTIONS_SAVE)
 }
 

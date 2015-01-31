@@ -32,7 +32,7 @@
 #include <QCommandLineParser>
 
 #ifdef Q_OS_WIN32
-const QString home_path = QDir::currentPath() + QStringLiteral("/");
+const QString home_path(QDir::currentPath() + QChar::fromLatin1('/'));
 #else
 //const QString home_path = QDir::homePath() + "/.freg/";
 const QString home_path = QDir::currentPath() + "/";
@@ -42,15 +42,15 @@ int main(int argc, char ** argv) {
     setlocale(LC_CTYPE, "C-UTF-8");
 
     QGuiApplication freg(argc, argv);
-    QCoreApplication::setOrganizationName(QStringLiteral("freg-team"));
-    QCoreApplication::setApplicationName(QStringLiteral("freg"));
+    QCoreApplication::setOrganizationName(Str("freg-team"));
+    QCoreApplication::setApplicationName(Str("freg"));
     QCoreApplication::setApplicationVersion(QString::number(VER));
 
     // unused as local variable, but important things are in constructor.
     TrManager tr_manager;
 
-    if ( not QDir::home().mkpath(QStringLiteral(".freg")) ) {
-        fputs("Error creating game home directory", stdout);
+    if ( not QDir::home().mkpath(Str(".freg")) ) {
+        puts(qPrintable(QObject::tr("Error creating game home directory")));
         return EXIT_FAILURE;
     }
 
@@ -58,50 +58,40 @@ int main(int argc, char ** argv) {
     parser.setApplicationDescription(QObject::tr("freg - 3d open world game"));
     parser.addHelpOption();
     parser.addVersionOption();
-    const QCommandLineOption world_argument(QStringList{
-            QStringLiteral("w"), QStringLiteral("world") },
-        QObject::tr("Specify world."),
-        QObject::tr("world_name"));
-    parser.addOption(world_argument);
-    const QCommandLineOption generate(QStringList{
-            QStringLiteral("g"), QStringLiteral("generate") },
-        QObject::tr("Generate new map."));
-    parser.addOption(generate);
-    const QCommandLineOption map_size(QStringList{
-            QStringLiteral("s"), QStringLiteral("size") },
-        QObject::tr("Generated map size. Works only with -g."),
-        QObject::tr("map_size"), QString::number(WorldMap::DEFAULT_MAP_SIZE));
-    parser.addOption(map_size);
-    const QCommandLineOption map_outer(QStringList{
-            QStringLiteral("o"), QStringLiteral("outer") },
-        QObject::tr("Generated map outer shred. Works only with -g."),
-        QObject::tr("map_outer"), QString(QChar(SHRED_OUT_BORDER)));
-    parser.addOption(map_outer);
-    const QCommandLineOption map_seed(QStringList{
-            QStringLiteral("d"), QStringLiteral("seed") },
-        QObject::tr("Seed to generate map. Works only with -g."),
-        QObject::tr("map_seed"), QString::number(0));
-    parser.addOption(map_seed);
+    parser.addOptions({
+        {{ Str("w"), Str("world") },
+            QObject::tr("Specify world."), QObject::tr("world_name")},
+        {{ Str("g"), Str("generate") },
+            QObject::tr("Generate new map.")},
+        {{ Str("s"), Str("size") },
+            QObject::tr("Generated map size. Works only with -g."),
+            QObject::tr("map_size"),
+            QString::number(WorldMap::DEFAULT_MAP_SIZE)},
+        {{ Str("o"), Str("outer") },
+            QObject::tr("Generated map outer shred. Works only with -g."),
+            QObject::tr("map_outer"), QString(QChar(SHRED_OUT_BORDER))},
+        {{ Str("d"), Str("seed") },
+            QObject::tr("Seed to generate map. Works only with -g."),
+            QObject::tr("map_seed"), QString::number(0)},
+    });
     parser.process(freg);
 
-    const QString worldName = parser.isSet(world_argument) ?
-        parser.value(world_argument) :
-        QSettings(home_path+QStringLiteral("freg.ini"), QSettings::IniFormat).
-            value(QStringLiteral("current_world"), QStringLiteral("mu")).
-                toString();
+    const QString worldName = parser.isSet(Str("world")) ?
+        parser.value(Str("world")) :
+        QSettings(home_path + Str("freg.ini"), QSettings::IniFormat).
+            value(Str("current_world"), Str("mu")).toString();
     if ( not QDir(home_path).mkpath(worldName) ) {
-        fputs("Error generating world.", stdout);
+        puts(qPrintable(QObject::tr("Error generating world.")));
         return EXIT_FAILURE;
     }
 
     qsrand(QTime::currentTime().msec());
-    if ( parser.isSet(generate) ) {
-        WorldMap::GenerateMap(
-            worldName,
-            parser.value(map_size).toUShort(),
-            parser.value(map_outer).at(0).toLatin1(),
-            parser.value(map_seed).toInt());
-        fputs("Map generated successfully.", stdout);
+    if ( parser.isSet(Str("generate")) ) {
+        WorldMap::GenerateMap( worldName,
+            parser.value(Str("size" )).toUShort(),
+            parser.value(Str("outer")).at(0).toLatin1(),
+            parser.value(Str("seed" )).toInt() );
+        puts(qPrintable(QObject::tr("Map generated successfully.")));
         return EXIT_SUCCESS;
     }
     qsrand(QTime::currentTime().msec());
@@ -116,7 +106,7 @@ int main(int argc, char ** argv) {
         puts(qPrintable(QObject::tr("Error loading world.")));
         return EXIT_FAILURE;
     }
-    QLockFile lock_file(home_path + worldName + QStringLiteral("/lock"));
+    QLockFile lock_file(home_path + worldName + Str("/lock"));
     if ( not lock_file.tryLock() ) {
         puts(qPrintable(
             QObject::tr("World \"%1\" is used by another instance of freg.")
@@ -127,7 +117,10 @@ int main(int argc, char ** argv) {
     int error = SCREEN_NO_ERROR;
     const Screen screen(&player, error);
 
-    if ( error ) return EXIT_FAILURE;
+    if ( error ) {
+        puts(qPrintable(QObject::tr("Screen error.")));
+        return EXIT_FAILURE;
+    };
 
     QObject::connect(&screen, &Screen::ExitReceived,
         &freg, &QCoreApplication::quit, Qt::DirectConnection);

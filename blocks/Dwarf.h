@@ -21,7 +21,7 @@
 #define DWARF_H
 
 #include "blocks/Animal.h"
-#include "Inventory.h"
+#include "blocks/Inventory.h"
 
 class Dwarf : public Animal, public Inventory {
     Q_OBJECT

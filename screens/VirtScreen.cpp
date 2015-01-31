@@ -23,15 +23,17 @@
 #include "VirtScreen.h"
 #include "Player.h"
 #include "World.h"
+#include <QFile>
+#include <QTextStream>
 
 void VirtScreen::UpdatesEnd() {}
 void VirtScreen::DeathScreen() {}
 
 VirtScreen::VirtScreen(Player * const player_) :
         player(player_),
-        settings(home_path + QStringLiteral("freg.ini"), QSettings::IniFormat),
-        previousCommand( settings.value(QStringLiteral("last_command"),
-            QStringLiteral("moo")).toString() )
+        settings(home_path + Str("freg.ini"), QSettings::IniFormat),
+        previousCommand( settings.value(Str("last_command"),
+            Str("moo")).toString() )
 {
     World * const world = World::GetWorld();
     connect( world, &World::Notify, this, &VirtScreen::Notify,
@@ -67,6 +69,15 @@ VirtScreen::VirtScreen(Player * const player_) :
 }
 
 VirtScreen::~VirtScreen() {}
+
+void VirtScreen::Log(const QString message) {
+    static QFile message_log(home_path + Str("log.txt"));
+    static bool opened = message_log.open(QIODevice::Append | QIODevice::Text);
+    if ( opened ) {
+        static QTextStream text_stream(&message_log);
+        text_stream << message << endl;
+    }
+}
 
 void VirtScreen::DisplayFile(QString /* path */) {}
 
@@ -167,11 +178,11 @@ char VirtScreen::CharName(const int kind, const int sub) {
 bool VirtScreen::ProcessCommand(const QString command) {
     switch ( Player::UniqueIntFromString(qPrintable(command)) ) {
     case Player::UniqueIntFromString("moo"):
-        Notify(QStringLiteral("^__^"));
-        Notify(QStringLiteral("(oo)\\_______"));
-        Notify(QStringLiteral("(__)\\       )\\/\\"));
-        Notify(QStringLiteral("    ||----w |"));
-        Notify(QStringLiteral("    ||     ||"));
+        Notify(Str("^__^"));
+        Notify(Str("(oo)\\_______"));
+        Notify(Str("(__)\\       )\\/\\"));
+        Notify(Str("    ||----w |"));
+        Notify(Str("    ||     ||"));
         return true;
     default: return false;
     }

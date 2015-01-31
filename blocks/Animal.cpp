@@ -22,6 +22,8 @@
 #include "DeferredAction.h"
 #include "BlockFactory.h"
 #include "World.h"
+#include "TrManager.h"
+#include <QDataStream>
 
 // Animal:: section
     inner_actions Animal::ActInner() {

@@ -33,6 +33,8 @@ const bool DEBUG = true;
 #define QT_NO_CAST_FROM_ASCII
 #define QT_NO_CAST_TO_ASCII
 
+#define Str(str) QStringLiteral(str)
+
 extern const class QString home_path;
 
 enum sizes {

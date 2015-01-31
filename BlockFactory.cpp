@@ -29,6 +29,7 @@
 #include "blocks/Filter.h"
 #include "blocks/Teleport.h"
 #include "blocks/Accumulator.h"
+#include <QDataStream>
 
 BlockFactory * BlockFactory::blockFactory = nullptr;
 

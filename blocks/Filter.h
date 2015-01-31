@@ -20,7 +20,7 @@
 #ifndef FILTER_H
 #define FILTER_H
 
-#include "Containers.h"
+#include "blocks/Containers.h"
 
 class Filter : public Container {
     Q_OBJECT

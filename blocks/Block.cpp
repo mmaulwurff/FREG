@@ -21,6 +21,8 @@
 #include "BlockFactory.h"
 #include "World.h"
 #include "Inventory.h"
+#include "TrManager.h"
+#include <QDataStream>
 
 dirs Block::MakeDirFromDamage(const int dmg_kind) {
     Q_ASSERT(dmg_kind >= DAMAGE_PUSH_UP);
@@ -40,7 +42,7 @@ QString Block::FullName() const {
         case COAL: break;
         }
     }
-    return QStringLiteral("%1 (%2)").
+    return Str("%1 (%2)").
         arg(TrManager::KindName(Kind())).
         arg(TrManager::SubName(Sub()));
 }
@@ -266,6 +268,10 @@ void Block::SaveToFile(QDataStream & out) {
         }
         SaveAttributes(out);
     }
+}
+
+void Block::SaveNormalToFile(QDataStream & out) const {
+    out << quint8( 0x80 | sub );
 }
 
 Block::Block(const int kind_, const int sub_, const int transp) :

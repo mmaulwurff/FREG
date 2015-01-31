@@ -21,6 +21,8 @@
 #include "Shred.h"
 #include "World.h"
 #include "blocks/Inventory.h"
+#include "TrManager.h"
+#include <QDataStream>
 
 // Active section
 

@@ -330,7 +330,7 @@ void Shred::SetNewBlock(const int kind, const int sub,
 }
 
 QString Shred::FileName(const qint64 longi, const qint64 lati) {
-    return QStringLiteral("%1%2/%3-%4.fm").
+    return Str("%1%2/%3-%4.fm").
         arg(home_path).arg(World::WorldName()).arg(longi).arg(lati);
 }
 
@@ -520,7 +520,7 @@ void Shred::Castle() {
 void Shred::Layers() {
     static std::vector<KindSub> layers;
     if ( layers.empty() ) {
-        QFile file(World::WorldPath() + QStringLiteral("/layers.txt"));
+        QFile file(World::WorldPath() + Str("/layers.txt"));
         if (file.open(QIODevice::Text | QIODevice::ReadOnly)) {
             QTextStream stream(&file);
             while ( not stream.atEnd() ) {
@@ -588,10 +588,8 @@ bool Shred::Tree(const int x, const int y, const int z, const int height) {
         }
     }
     const int leaves_level = z+height/2;
-    for (int i=x; i<=x+2; ++i)
-    for (int j=y; j<=y+2; ++j) {
-        std::fill(blocks[i][j] + leaves_level, blocks[i][j] + z + height,
-            BlockFactory::Normal(GREENERY));
+    if ( GetTypeOfShred() != SHRED_DEAD_FOREST ) {
+        NormalCube(x, y, leaves_level, 3, 3, z+height-leaves_level, GREENERY);
     }
     std::fill(blocks[x+1][y+1] + qMax(z-1, 1), blocks[x+1][y+1] + z+height-1,
         BlockFactory::Normal(WOOD)); // trunk
@@ -644,10 +642,10 @@ void Shred::Rain(const int kind, const int sub) {
 }
 
 bool Shred::LoadRoom(const int level, const int index) {
-    QFile file(QStringLiteral("%1%2.room").
+    QFile file(Str("%1%2.room").
             arg(FileName(longitude, latitude)).
             arg((index >= 1 ) ?
-                QStringLiteral("-%1").arg(index) : QStringLiteral("")));
+                Str("-%1").arg(index) : Str("")));
     if ( not file.open(QIODevice::ReadOnly | QIODevice::Text) ) return false;
     for (int lines = 0; lines < SHRED_WIDTH; ++lines) {
         char buffer[SHRED_WIDTH + 1]{0};
