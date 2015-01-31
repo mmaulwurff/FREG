@@ -81,7 +81,7 @@ Inventory * Player::PlayerInventory() const {
     if ( inv != nullptr ) {
         return inv;
     } else {
-        emit Notify(tr("You have no inventory."));
+        Notify(tr("You have no inventory."));
         return nullptr;
     }
 }
@@ -100,33 +100,33 @@ void Player::Examine() {
 
 void Player::Examine(const int x, const int y, const int z) {
     if ( not Visible(x, y, z) ) {
-        emit Notify(tr("You can't see what is there."));
+        Notify(tr("You can't see what is there."));
         return;
     }
     World * const world = World::GetWorld();
     const Block * const block = world->GetBlock(x, y, z);
-    emit Notify( tr("You see %1.").arg(block->FullName()) );
+    Notify( tr("You see %1.").arg(block->FullName()) );
     if ( DEBUG ) {
-        emit Notify(Str("Weight: %1. Id: %2.").
+        Notify(Str("Weight: %1. Id: %2.").
             arg(block->Weight()).
             arg(BlockFactory::MakeId(block->Kind(), block->Sub())));
-        emit Notify(Str("Kind: %1, substance: %2. LightRadius: %3").
+        Notify(Str("Kind: %1, substance: %2. LightRadius: %3").
             arg(block->Kind()).
             arg(block->Sub()).
             arg(block->LightRadius()));
-        emit Notify(Str("Light: %1, fire: %2, sun: %3. Transp: %4").
+        Notify(Str("Light: %1, fire: %2, sun: %3. Transp: %4").
             arg(world->Enlightened(x, y, z)).
             arg(world->FireLight(x, y, z)/16).
             arg(world->SunLight(x, y, z)).
             arg(block->Transparent()));
-        emit Notify(Str("Norm: %1. Dir: %2").
+        Notify(Str("Norm: %1. Dir: %2").
             arg(block==BlockFactory::Normal(block->Sub())).
             arg(block->GetDir()));
     }
     if ( Block::GetSubGroup(block->Sub()) == GROUP_AIR ) return;
     const QString str = block->GetNote();
     if ( not str.isEmpty() ) {
-        emit Notify(tr("Inscription: ") + str);
+        Notify(tr("Inscription: ") + str);
     }
 }
 
@@ -145,6 +145,10 @@ void Player::Move(const dirs direction) {
     } else {
         player->GetDeferredAction()->SetMove(direction);
     }
+}
+
+void Player::Notify(const QString message) const {
+    emit World::GetWorld()->Notify(message);
 }
 
 void Player::Backpack() {
@@ -181,7 +185,7 @@ void Player::Inscribe() const {
     int x, y, z;
     emit GetFocus(&x, &y, &z);
     const QString block_name = world->GetBlock(x, y, z)->FullName();
-    emit Notify(player ?
+    Notify(player ?
         (world->Inscribe(x, y, z) ?
             tr("Inscribed %1.").arg(block_name) :
             tr("Cannot inscribe %1.").arg(block_name)) :
@@ -194,12 +198,12 @@ Block * Player::ValidBlock(const int num) const {
         return nullptr;
     } // else:
     if ( num >= inv->Size() ) {
-        emit Notify(Str("No such place."));
+        Notify(tr("No such place."));
         return nullptr;
     } // else:
     Block * const block = inv->ShowBlock(num);
     if ( not block ) {
-        emit Notify(tr("Nothing at slot '%1'.").arg(char(num + 'a')));
+        Notify(tr("Nothing at slot '%1'.").arg(char(num + 'a')));
         return nullptr;
     } else {
         return block;
@@ -314,7 +318,7 @@ bool Player::ForbiddenAdminCommands() const {
     if ( GetCreativeMode() || DEBUG ) {
         return false;
     } else {
-        emit Notify(tr("You are not in Creative Mode."));
+        Notify(tr("You are not in Creative Mode."));
         return true;
     }
 }
@@ -328,7 +332,7 @@ void Player::ProcessCommand(QString command) {
     switch ( UniqueIntFromString(request.toLatin1()) ) {
     case UniqueIntFromString(""): break;
     case UniqueIntFromString("weather"):
-        emit Notify(TrManager::GetWeatherString(GetShred()->GetWeather()));
+        Notify(TrManager::GetWeatherString(GetShred()->GetWeather()));
         break;
     case UniqueIntFromString("give"):
     case UniqueIntFromString("get" ): {
@@ -339,14 +343,13 @@ void Player::ProcessCommand(QString command) {
         comm_stream >> kind >> sub;
         const int kind_code = TrManager::StrToKind(kind);
         if ( kind_code == LAST_KIND ) {
-            emit Notify(tr("%1 command: invalid kind!").arg(QString(request)));
+            Notify(tr("%1 command: invalid kind!").arg(QString(request)));
             return;
         } // else:
         const int sub_code = sub.isEmpty() ?
             static_cast<int>(STONE) : TrManager::StrToSub(sub);
         if ( sub_code == LAST_SUB ) {
-            emit Notify(tr("%1 command: invalid substance!")
-                .arg(QString(request)));
+            Notify(tr("%1 command: invalid substance!").arg(QString(request)));
             return;
         } // else:
         Block * const block = BlockFactory::NewBlock(kind_code, sub_code);
@@ -363,15 +366,15 @@ void Player::ProcessCommand(QString command) {
         } break;
     case UniqueIntFromString("time"):
         if ( ForbiddenAdminCommands() ) return;
-        emit Notify(world->TimeOfDayStr());
+        Notify(world->TimeOfDayStr());
         break;
     case UniqueIntFromString("version"):
-        emit Notify(tr("freg version: %1. Compiled on %2 at %3 with Qt %4.")
+        Notify(tr("freg version: %1. Compiled on %2 at %3 with Qt %4.")
             .arg(VER)
             .arg(Str(__DATE__))
             .arg(Str(__TIME__))
             .arg(Str(QT_VERSION_STR)));
-        emit Notify(tr("Current Qt version: %1. Build type: %2.")
+        Notify(tr("Current Qt version: %1. Build type: %2.")
             .arg(QString::fromLatin1(qVersion()))
             .arg(DEBUG ? tr("debug") : tr("release")));
         break;
@@ -387,7 +390,7 @@ void Player::ProcessCommand(QString command) {
             .arg(QLocale::system().name().left(2)).arg(QString(request)) );
         break;
     default:
-        emit Notify(tr("Don't know such command: \"%1\".").arg(command));
+        Notify(tr("Don't know such command: \"%1\".").arg(command));
         break;
     }
 } // void Player::ProcessCommand(QString command)
@@ -431,7 +434,7 @@ void Player::CheckOverstep(const int direction) {
 void Player::BlockDestroy() {
     if ( not cleaned ) {
         usingType = usingSelfType = USAGE_TYPE_NO;
-        emit Notify(tr("^ You die. ^"));
+        Notify(tr("You die!"));
         emit Destroyed();
         player = nullptr;
         World * const world = World::GetWorld();
@@ -483,7 +486,7 @@ void Player::SetPlayer(int _x, int _y, int _z) {
         Qt::DirectConnection);
     connect(player, &Animal::Updated, this, &Player::Updated,
         Qt::DirectConnection);
-    connect(player, &Animal::ReceivedText, this, &Player::Notify,
+    connect(player, &Animal::ReceivedText, world, &World::Notify,
         Qt::DirectConnection);
     connect(player, &Animal::CauseTeleportation,
         world, &World::ActivateFullReload, Qt::DirectConnection);

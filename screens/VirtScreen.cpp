@@ -27,18 +27,15 @@
 #include <QTextStream>
 
 void VirtScreen::UpdatesEnd() {}
-void VirtScreen::DeathScreen() {}
 
 VirtScreen::VirtScreen(Player * const player_) :
         player(player_),
         settings(home_path + Str("freg.ini"), QSettings::IniFormat),
-        previousCommand( settings.value(Str("last_command"),
-            Str("moo")).toString() )
+        previousCommand(settings.value(Str("last_command"), Str("moo")).
+            toString())
 {
     World * const world = World::GetWorld();
     connect( world, &World::Notify, this, &VirtScreen::Notify,
-        Qt::DirectConnection);
-    connect(player, &Player::Notify, this, &VirtScreen::Notify,
         Qt::DirectConnection);
     connect(player, &Player::ShowFile, this, &VirtScreen::DisplayFile);
     connect(player, &Player::GetFocus, this, &VirtScreen::ActionXyz,
@@ -73,8 +70,9 @@ VirtScreen::~VirtScreen() {}
 void VirtScreen::Log(const QString message) {
     static QFile message_log(home_path + Str("log.txt"));
     static bool opened = message_log.open(QIODevice::Append | QIODevice::Text);
+    static QTextStream text_stream(&message_log);
+    text_stream.setCodec("UTF-8");
     if ( opened ) {
-        static QTextStream text_stream(&message_log);
         text_stream << message << endl;
     }
 }
@@ -191,6 +189,7 @@ bool VirtScreen::ProcessCommand(const QString command) {
 // Define pure virtual functions to simplify debugging
 void VirtScreen::Move(int)                        { Q_UNREACHABLE(); }
 void VirtScreen::UpdateAll()                      { Q_UNREACHABLE(); }
+void VirtScreen::DeathScreen()                    { Q_UNREACHABLE(); }
 void VirtScreen::UpdatePlayer()                   { Q_UNREACHABLE(); }
 void VirtScreen::Update(int, int, int)            { Q_UNREACHABLE(); }
 void VirtScreen::Notify(QString) const            { Q_UNREACHABLE(); }

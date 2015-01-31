@@ -94,6 +94,8 @@ public:
     void Move(dirs);
     void Jump();
 
+    void Notify(QString) const;
+
     /// Closes backpack, chests, etc.
     void StopUseAll();
     /// Tries to switch usingSelfType from NO to OPEN.
@@ -132,10 +134,6 @@ public:
 signals:
     /// Can be used to track player movements. x and y are global.
     void Moved(qint64 x, qint64 y, int z) const;
-
-    /// This is emitted when a notification is needed to be displayed.
-    /** It should be connected to screen::Notify(QString). */
-    void Notify(QString) const;
 
     /// This is emitted when player walks over shred border.
     /** It should be connected to World::ReloadShreds(int) signal. */

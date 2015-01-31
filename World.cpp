@@ -527,6 +527,7 @@ void World::DestroyAndReplace(const int x, const int y, const int z) {
     {
         ReEnlighten(x, y, z);
     }
+    emit Updated(x, y, z); // update before delete, because can affect deleted.
     if ( delete_block ) {
         BlockFactory::DeleteBlock(block);
     } else {
@@ -536,7 +537,6 @@ void World::DestroyAndReplace(const int x, const int y, const int z) {
         }
     }
     shred->AddFalling(shred->GetBlock(x_in_shred, y_in_shred, z+1));
-    emit Updated(x, y, z);
 }
 
 bool World::Build(Block * const block, const int x, const int y, const int z,

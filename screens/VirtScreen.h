@@ -96,7 +96,7 @@ public:
     virtual void UpdatesEnd();
 
     /// This is called when player is dead, and displayed until respawn.
-    void DeathScreen(); // virtual ?
+    virtual void DeathScreen();
 
     /// Used to get player focus coordinates from screen.
     /** x, y, z are coordinates where player will make action.

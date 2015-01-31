@@ -41,7 +41,7 @@
 X("beep_on",         beepOn,       false, )\
 X("flash_on",        flashOn,      true,  )\
 X("blink_on",        blinkOn,      false, )\
-X("ascii",           ascii,        true,  )\
+X("ascii",           ascii,        false, )\
 X("mouse_on",        mouseOn,      true,  )\
 X("show_distance",   showDistance, true,  )\
 X("abcdef_distance", farDistance,  false, )\
@@ -72,7 +72,7 @@ public:
     void UpdatePlayer() override;
     void UpdateAround(int, int, int, int) override;
     void Move(int) override;
-    void DeathScreen();
+    void DeathScreen() override;
     void DisplayFile(QString path) override;
     void ActionXyz(int * x, int * y, int * z) const override;
 

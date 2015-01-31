@@ -148,7 +148,7 @@ void Screen::PassString(QString & str) const {
     inputActive = false;
     noecho();
     str = QString::fromUtf16(temp_str);
-    Log(Str("Command: ") + str);
+    Log(Str("Input: ") + str);
 }
 
 char Screen::Distance(const int dist) const {
@@ -660,8 +660,8 @@ void Screen::Print() {
         }
         break;
     case USAGE_TYPE_READ_IN_INVENTORY:
-        DisplayFile( World::WorldPath() + Str("/texts/")
-            + player->PlayerInventory()->ShowBlock(
+        DisplayFile( World::WorldPath() + Str("/texts/") +
+            player->PlayerInventory()->ShowBlock(
                 player->GetUsingInInventory())->GetNote() );
         player->SetUsingTypeNo();
         break;
@@ -702,7 +702,7 @@ void Screen::PrintHud() const {
             static const int player_health_char = ascii ? '@' : 0x2665;
             PrintBar(hudWin, player_health_char,
                 int((dur > Block::MAX_DURABILITY/4) ?
-                    COLOR_PAIR(RED_BLACK) : (COLOR_PAIR(BLACK_RED) | A_BLINK)),
+                    COLOR_PAIR(RED_BLACK) : COLOR_PAIR(BLACK_RED)) | A_BOLD,
                 dur*100/Block::MAX_DURABILITY);
         }
         waddstr(hudWin, "   ");
@@ -1041,9 +1041,9 @@ const {
     wrefresh(window);
 } // void Screen::PrintInv(WINDOW *, const Block *, const Inventory *)
 
-void Screen::DisplayFile(QString path) {
+void Screen::DisplayFile(const QString path) {
     { QFile(path).open(QIODevice::ReadWrite); } // create file if doesn't exist
-    QDesktopServices::openUrl(QUrl(path.prepend(Str("file:///"))));
+    QDesktopServices::openUrl(QUrl(Str("file:///") + path));
     Notify(tr("Open ") + path);
 }
 
@@ -1070,18 +1070,18 @@ void Screen::Notify(const QString str) const {
     wrefresh(windows[WIN_NOTIFY]);
 }
 
-void Screen::DeathScreen() { /// \todo: update design
-    werase(rightWin);
-    werase(hudWin);
-    wcolor_set(leftWin, WHITE_RED, nullptr);
-    Notify(tr("You die!"));
+void Screen::DeathScreen() {
+    werase(windows[WIN_ACTION]);
+    std::for_each(windows + WIN_HUD, windows + WIN_COUNT, werase);
+    wattrset(leftWin,  COLOR_PAIR(WHITE_RED) | A_BOLD);
+    wattrset(rightWin, COLOR_PAIR(WHITE_RED) | A_BOLD);
     Notify(tr("Waiting for respawn..."));
-    box(leftWin, 0, 0);
-    wnoutrefresh(leftWin);
-    wnoutrefresh(rightWin);
-    wnoutrefresh(hudWin);
+    box( leftWin, 'X', 'X');
+    box(rightWin, 'X', 'X');
+    wnoutrefresh(windows[WIN_ACTION]);
+    std::for_each(windows + WIN_HUD, windows + WIN_COUNT, wnoutrefresh);
     doupdate();
-    updatedNormal = updatedFront = updatedHud = true;
+    updatedNormal = updatedFront = updatedHud = updatedMinimap = true;
 }
 
 Screen::Screen(Player * const pl, int &) :
