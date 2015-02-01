@@ -20,9 +20,11 @@
 #ifndef VIRTSCREEN_H
 #define VIRTSCREEN_H
 
+#include <QFile>
+#include <QString>
 #include <QObject>
 #include <QSettings>
-#include <QString>
+#include <QTextStream>
 
 #define COLOR_LIST(color) \
     color ## _BLACK,  \
@@ -56,7 +58,7 @@ public:
     static int  Color   (int kind, int sub);
 
     /// To store message history.
-    static void Log(QString);
+    void Log(QString message) const;
 
     /// This is called for a notification to be displayed.
     virtual void Notify(QString) const = 0;
@@ -138,6 +140,8 @@ protected:
     class Player * const player;
     QSettings settings;
     QString previousCommand;
+    mutable QFile logFile;
+    mutable QTextStream logStream;
 };
 
 #endif // VIRTSCREEN_H

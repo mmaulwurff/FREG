@@ -44,6 +44,7 @@ enum sizes {
     MAX_NOTE_LENGTH = 144,
 };
 
+#define X_COLOR X_CHAR
 #define X_STRING(string, ...) QStringLiteral(string),
 #define X_ENUM(  column1, enum_element, ...) enum_element,
 #define X_CHAR(  column1, column2, character, ...) character,
@@ -166,40 +167,40 @@ X(QT_TRANSLATE_NOOP("Block", "Accumulator" ), ACCUMULATOR, '=',  Accumulator,)\
  *  Define X as "X(a, b) a," to get column 1 and "X(a, b) b," to get column 2.
  *  \snippet header.h List of subs */
 /// [List of subs]
-/// X(QT_TRANSLATE_NOOP(context, translatable substance name), enum element)
+/// X(QT_TRANSLATE_NOOP(context, translatable name), enum element, color)
 #define SUB_TABLE(X) \
-X(QT_TRANSLATE_NOOP("Block", "stone"     ), STONE,      )\
-X(QT_TRANSLATE_NOOP("Block", "mossStone" ), MOSS_STONE, )\
-X(QT_TRANSLATE_NOOP("Block", "0stone"    ), NULLSTONE,  )\
-X(QT_TRANSLATE_NOOP("Block", "air"       ), SKY,        )\
-X(QT_TRANSLATE_NOOP("Block", "air"       ), STAR,       )\
-X(QT_TRANSLATE_NOOP("Block", "diamond"   ), DIAMOND,    )\
-X(QT_TRANSLATE_NOOP("Block", "soil"      ), SOIL,       )\
-X(QT_TRANSLATE_NOOP("Block", "meat"      ), H_MEAT,     )\
-X(QT_TRANSLATE_NOOP("Block", "meat"      ), A_MEAT,     )\
-X(QT_TRANSLATE_NOOP("Block", "glass"     ), GLASS,      )\
-X(QT_TRANSLATE_NOOP("Block", "wood"      ), WOOD,       )\
-X(QT_TRANSLATE_NOOP("Block", "different" ), DIFFERENT,  )\
-X(QT_TRANSLATE_NOOP("Block", "iron"      ), IRON,       )\
-X(QT_TRANSLATE_NOOP("Block", "water"     ), WATER,      )\
-X(QT_TRANSLATE_NOOP("Block", "greenery"  ), GREENERY,   )\
-X(QT_TRANSLATE_NOOP("Block", "sand"      ), SAND,       )\
-X(QT_TRANSLATE_NOOP("Block", "nut"       ), SUB_NUT,    )\
-X(QT_TRANSLATE_NOOP("Block", "rose"      ), ROSE,       )\
-X(QT_TRANSLATE_NOOP("Block", "clay"      ), CLAY,       )\
-X(QT_TRANSLATE_NOOP("Block", "air"       ), AIR,        )\
-X(QT_TRANSLATE_NOOP("Block", "paper"     ), PAPER,      )\
-X(QT_TRANSLATE_NOOP("Block", "gold"      ), GOLD,       )\
-X(QT_TRANSLATE_NOOP("Block", "bone"      ), BONE,       )\
-X(QT_TRANSLATE_NOOP("Block", "steel"     ), STEEL,      )\
-X(QT_TRANSLATE_NOOP("Block", "adamantine"), ADAMANTINE, )\
-X(QT_TRANSLATE_NOOP("Block", "fire"      ), FIRE,       )\
-X(QT_TRANSLATE_NOOP("Block", "coal"      ), COAL,       )\
-X(QT_TRANSLATE_NOOP("Block", "explosive" ), EXPLOSIVE,  )\
-X(QT_TRANSLATE_NOOP("Block", "acid"      ), ACID,       )\
-X(QT_TRANSLATE_NOOP("Block", "cloud"     ), SUB_CLOUD,  )\
-X(QT_TRANSLATE_NOOP("Block", "dust"      ), SUB_DUST,   )\
-X(QT_TRANSLATE_NOOP("Block", "plastic"   ), SUB_PLASTIC,)\
+X(QT_TRANSLATE_NOOP("Block", "stone"     ), STONE,       BLACK_WHITE,  )\
+X(QT_TRANSLATE_NOOP("Block", "mossStone" ), MOSS_STONE,  GREEN_WHITE,  )\
+X(QT_TRANSLATE_NOOP("Block", "0stone"    ), NULLSTONE, MAGENTA_BLACK,  )\
+X(QT_TRANSLATE_NOOP("Block", "air"       ), SKY,         WHITE_BLACK,  )\
+X(QT_TRANSLATE_NOOP("Block", "air"       ), STAR,        WHITE_BLACK,  )\
+X(QT_TRANSLATE_NOOP("Block", "diamond"   ), DIAMOND,      CYAN_WHITE,  )\
+X(QT_TRANSLATE_NOOP("Block", "soil"      ), SOIL,        BLACK_YELLOW, )\
+X(QT_TRANSLATE_NOOP("Block", "meat"      ), H_MEAT,      WHITE_RED,    )\
+X(QT_TRANSLATE_NOOP("Block", "meat"      ), A_MEAT,      BLACK_RED,    )\
+X(QT_TRANSLATE_NOOP("Block", "glass"     ), GLASS,        BLUE_WHITE,  )\
+X(QT_TRANSLATE_NOOP("Block", "wood"      ), WOOD,        BLACK_RED,    )\
+X(QT_TRANSLATE_NOOP("Block", "different" ), DIFFERENT,   WHITE_BLACK,  )\
+X(QT_TRANSLATE_NOOP("Block", "iron"      ), IRON,        WHITE_BLACK,  )\
+X(QT_TRANSLATE_NOOP("Block", "water"     ), WATER,       WHITE_CYAN,   )\
+X(QT_TRANSLATE_NOOP("Block", "greenery"  ), GREENERY,    BLACK_GREEN,  )\
+X(QT_TRANSLATE_NOOP("Block", "sand"      ), SAND,        WHITE_YELLOW, )\
+X(QT_TRANSLATE_NOOP("Block", "nut"       ), SUB_NUT,     BLACK_YELLOW, )\
+X(QT_TRANSLATE_NOOP("Block", "rose"      ), ROSE,          RED_GREEN,  )\
+X(QT_TRANSLATE_NOOP("Block", "clay"      ), CLAY,        WHITE_RED,    )\
+X(QT_TRANSLATE_NOOP("Block", "air"       ), AIR,         WHITE_BLACK,  )\
+X(QT_TRANSLATE_NOOP("Block", "paper"     ), PAPER,     MAGENTA_WHITE,  )\
+X(QT_TRANSLATE_NOOP("Block", "gold"      ), GOLD,        WHITE_YELLOW, )\
+X(QT_TRANSLATE_NOOP("Block", "bone"      ), BONE,      MAGENTA_WHITE,  )\
+X(QT_TRANSLATE_NOOP("Block", "steel"     ), STEEL,       WHITE_BLACK,  )\
+X(QT_TRANSLATE_NOOP("Block", "adamantine"), ADAMANTINE,   CYAN_BLACK,  )\
+X(QT_TRANSLATE_NOOP("Block", "fire"      ), FIRE,          RED_YELLOW, )\
+X(QT_TRANSLATE_NOOP("Block", "coal"      ), COAL,        BLACK_WHITE,  )\
+X(QT_TRANSLATE_NOOP("Block", "explosive" ), EXPLOSIVE,   WHITE_RED,    )\
+X(QT_TRANSLATE_NOOP("Block", "acid"      ), ACID,        GREEN_GREEN,  )\
+X(QT_TRANSLATE_NOOP("Block", "cloud"     ), SUB_CLOUD,   BLACK_WHITE,  )\
+X(QT_TRANSLATE_NOOP("Block", "dust"      ), SUB_DUST,    BLACK_BLACK,  )\
+X(QT_TRANSLATE_NOOP("Block", "plastic"   ), SUB_PLASTIC, GREEN_BLACK,  )\
 /// [List of subs]
 
 enum kinds {

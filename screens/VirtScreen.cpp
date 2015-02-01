@@ -23,8 +23,6 @@
 #include "VirtScreen.h"
 #include "Player.h"
 #include "World.h"
-#include <QFile>
-#include <QTextStream>
 
 void VirtScreen::UpdatesEnd() {}
 
@@ -32,7 +30,9 @@ VirtScreen::VirtScreen(Player * const player_) :
         player(player_),
         settings(home_path + Str("freg.ini"), QSettings::IniFormat),
         previousCommand(settings.value(Str("last_command"), Str("moo")).
-            toString())
+            toString()),
+        logFile(home_path + Str("log.txt")),
+        logStream(&logFile)
 {
     World * const world = World::GetWorld();
     connect( world, &World::Notify, this, &VirtScreen::Notify,
@@ -63,17 +63,16 @@ VirtScreen::VirtScreen(Player * const player_) :
 
     connect(player, &Player::Destroyed, this, &VirtScreen::DeathScreen,
         Qt::DirectConnection );
+
+    logFile.open(QIODevice::Append | QIODevice::Text);
+    logStream.setCodec("UTF-8");
 }
 
 VirtScreen::~VirtScreen() {}
 
-void VirtScreen::Log(const QString message) {
-    static QFile message_log(home_path + Str("log.txt"));
-    static bool opened = message_log.open(QIODevice::Append | QIODevice::Text);
-    static QTextStream text_stream(&message_log);
-    text_stream.setCodec("UTF-8");
-    if ( opened ) {
-        text_stream << message << endl;
+void VirtScreen::Log(const QString message) const {
+    if ( logFile.isOpen() ) {
+        logStream << message << endl;
     }
 }
 
@@ -85,51 +84,24 @@ void VirtScreen::ActionXyz(int * x, int * y, int * z) const {
 }
 
 int VirtScreen::Color(const int kind, const int sub) {
+    // default colors are defined in header.h in SUB_TABLE.
+    static const int colors[] { SUB_TABLE(X_COLOR) };
     switch ( kind ) { // foreground_background
     case FALLING: switch ( sub ) {
         case WATER: return   CYAN_WHITE;
         case SAND:  return YELLOW_WHITE;
         } // no break;
-    default: switch ( sub ) {
-        default:         return WHITE_BLACK;
-        case STONE:      return BLACK_WHITE;
-        case GREENERY:   return BLACK_GREEN;
-        case WOOD:       return BLACK_RED;
-        case SUB_NUT:
-        case SOIL:       return   BLACK_YELLOW;
-        case SAND:       return   WHITE_YELLOW;
-        case COAL:       return   BLACK_WHITE;
-        case IRON:       return   BLACK_BLACK;
-        case A_MEAT:     return   WHITE_RED;
-        case H_MEAT:     return   BLACK_RED;
-        case WATER:      return   WHITE_CYAN;
-        case GLASS:      return    BLUE_WHITE;
-        case NULLSTONE:  return MAGENTA_BLACK;
-        case MOSS_STONE: return   GREEN_WHITE;
-        case ROSE:       return     RED_GREEN;
-        case CLAY:       return   WHITE_RED;
-        case PAPER:      return MAGENTA_WHITE;
-        case GOLD:       return   WHITE_YELLOW;
-        case BONE:       return MAGENTA_WHITE;
-        case EXPLOSIVE:  return   WHITE_RED;
-        case DIAMOND:    return    CYAN_WHITE;
-        case ADAMANTINE: return    CYAN_BLACK;
-        case SKY:
-        case STAR:       return   WHITE_BLACK;
-        case SUB_DUST:   return   BLACK_BLACK;
-        case FIRE:       return     RED_YELLOW;
-        case ACID:       return   GREEN_GREEN;
-        } break;
+    default: return colors[sub];
     case LIQUID: switch ( sub ) {
         case WATER:     return CYAN_BLUE;
-        case SUB_CLOUD: return BLACK_WHITE;
-        case ACID:      return GREEN_GREEN;
-        case H_MEAT:
-        case A_MEAT:    return BLACK_RED;
         default:        return RED_YELLOW;
+        case SUB_CLOUD:
+        case ACID:
+        case H_MEAT:
+        case A_MEAT:    return colors[sub];
         } break;
     case DWARF: switch ( sub ) {
-        case ADAMANTINE: return  CYAN_BLACK;
+        case ADAMANTINE: return colors[ADAMANTINE];
         default:         return WHITE_BLUE ;
         } break;
     case RABBIT:    return  RED_WHITE;
@@ -138,11 +110,11 @@ int VirtScreen::Color(const int kind, const int sub) {
     case MEDKIT:    return  RED_WHITE;
     case TELEPORT:  return  RED_BLUE;
     }
-} // color_pairs Screen::Color(int kind, int sub)
+}
 
 char VirtScreen::CharName(const int kind, const int sub) {
     // do not use abcdef as they can be used as distance specifiers.
-    // default charecters are defined in header.h in KIND_TABLE.
+    // default characters are defined in header.h in KIND_TABLE.
     switch ( kind ) {
     case GRASS: return ( FIRE  == sub ) ? '^' : '.';
     case DOOR:  return ( STONE == sub ) ? '#' : '\'';

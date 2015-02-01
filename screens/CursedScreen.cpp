@@ -31,7 +31,6 @@
 
 #include <QDesktopServices>
 #include <QUrl>
-#include <QFile>
 
 const chtype Screen::arrows[] = {
     '.',
