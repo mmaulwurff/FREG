@@ -47,11 +47,11 @@ Shred * World::GetShredByPos(const int x, const int y) const {
 
 Shred * World::GetNearShred(Shred * const shred, const dirs dir) const {
     switch ( dir ) {
-    case NORTH: return GetShredByPos(shred->ShredX(),   shred->ShredY()-1);
-    case SOUTH: return GetShredByPos(shred->ShredX(),   shred->ShredY()+1);
-    case EAST:  return GetShredByPos(shred->ShredX()+1, shred->ShredY());
-    case WEST:  return GetShredByPos(shred->ShredX()-1, shred->ShredY());
     default: Q_UNREACHABLE(); break;
+    case NORTH: return GetShredByPos(shred->ShredX(),   shred->ShredY()-1);
+    case EAST:  return GetShredByPos(shred->ShredX()+1, shred->ShredY());
+    case SOUTH: return GetShredByPos(shred->ShredX(),   shred->ShredY()+1);
+    case WEST:  return GetShredByPos(shred->ShredX()-1, shred->ShredY());
     }
 }
 

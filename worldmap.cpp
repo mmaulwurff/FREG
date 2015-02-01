@@ -19,7 +19,6 @@
 
 #include "worldmap.h"
 #include "header.h"
-
 #include <QSettings>
 
 WorldMap::WorldMap(const QString world_name) :
@@ -89,36 +88,16 @@ char WorldMap::TypeOfShred(qint64 longi, qint64 lati) const {
 }
 
 float WorldMap::Deg(const int x, const int y, const int size) {
-    static const float PI = 3.141592f;
-    const float x_cent = x-size/2.f;
-    const float y_cent = y-size/2.f;
-    float fi;
-    if ( x_cent > 0 && y_cent >= 0 ) {
-        fi = atanf(y_cent/x_cent);
-    } else if ( x_cent>0 && y_cent<0 ) {
-        fi = atanf(y_cent/x_cent)+2*PI;
-    } else if ( x_cent<0 ) {
-        fi = atanf(y_cent/x_cent)+PI;
-    } else if ( qFuzzyCompare(x_cent, 0.f) && y_cent>0 ) {
-        fi = PI/2;
-    } else if ( qFuzzyCompare(x_cent, 0.f) && y_cent<0 ) {
-        fi = 3*PI/2;
-    } else {
-        fi = 0;
-    }
-    return 360*fi / 2 / PI;
+    const float PI = 3.141592f;
+    return (std::atan2(y-size / 2.f, x-size / 2.f) + PI) * 360 / 2 / PI;
 }
 
 float WorldMap::R(const int x, const int y, const int size) {
     return sqrtf( (x-size/2.f)*(x-size/2.f)+(y-size/2.f)*(y-size/2.f) );
 }
 
-void WorldMap::Circle(
-        const int min_rad,
-        const int max_rad,
-        const char ch,
-        const int size,
-        char * const map)
+void WorldMap::Circle(const int min_rad, const int max_rad,
+        const char ch, const int size, char * const map)
 {
     Q_ASSERT(min_rad < max_rad);
     float maxs[360] = { float(qrand()%(max_rad - min_rad) + min_rad) };
@@ -136,11 +115,8 @@ void WorldMap::Circle(
     }
 }
 
-void WorldMap::GenerateMap(
-        const QString world_name,
-        int size,
-        const char outer,
-        const int seed)
+void WorldMap::GenerateMap(const QString world_name,
+        int size, const char outer, const int seed)
 {
     if ( seed ) {
         qsrand(seed);
@@ -150,8 +126,8 @@ void WorldMap::GenerateMap(
     char * const map = new char[size*size];
     memset(map, outer, size*size);
 
-    const float min_rad = size/3.0f;
-    const float max_rad = size/2.0f;
+    const float min_rad = size / 3.0f;
+    const float max_rad = size / 2.0f;
     Circle(min_rad,   max_rad,     SHRED_WASTE,       size, map);
     Circle(min_rad/2, max_rad/2,   SHRED_DEAD_FOREST, size, map);
     Circle(min_rad/3, max_rad/3+1, SHRED_DEAD_HILL,   size, map);
@@ -160,10 +136,10 @@ void WorldMap::GenerateMap(
     int lakes_number = (qrand() % size) + 5;
     while ( lakes_number-- ) {
         char type = SHRED_WATER;
-        switch ( qrand() & 3 ) {
-        case 1: type = SHRED_ACID_LAKE; break;
-        case 2: type = SHRED_LAVA_LAKE; break;
-        case 3: type = SHRED_CRATER;    break;
+        switch ( qrand() % 4 ) {
+        case 0: type = SHRED_ACID_LAKE; break;
+        case 1: type = SHRED_LAVA_LAKE; break;
+        case 2: type = SHRED_CRATER;    break;
         }
         const float lake_size  = qrand() % (size/10) + 1;
         const int lake_start_x = qrand() % int(size-lake_size);
@@ -198,7 +174,7 @@ void WorldMap::PieceOfEden(const qint64 x, const qint64 y,
         char * const map, const size_t size)
 {
     if ( (x+5)*size + y+5 > size*size) return;
-    char eden[][7] = {
+    const char eden[][7] = {
         "^~~~~^",
         "~~%%~~",
         "~%++%~",
