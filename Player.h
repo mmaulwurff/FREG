@@ -101,8 +101,9 @@ public:
     /// Tries to switch usingSelfType from NO to OPEN.
     void Backpack();
     void Inscribe() const;
-    void Examine();
-    void Examine(int x, int y, int z);
+    void Examine() const;
+    void Examine(int x, int y, int z) const;
+    void Examine(const class Block *) const;
     /// Returns true if xyz are in world bounds.
     bool Damage() const;
     void Use();

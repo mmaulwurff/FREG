@@ -121,6 +121,7 @@ public:
     virtual int Weight() const;
     /// Receive text signal.
     virtual void ReceiveSignal(QString);
+    virtual QString Description() const;
 
     /// Set maximum durability.
     void Restore();

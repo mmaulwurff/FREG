@@ -173,17 +173,19 @@ void WorldMap::GenerateMap(const QString world_name,
 void WorldMap::PieceOfEden(const qint64 x, const qint64 y,
         char * const map, const size_t size)
 {
-    if ( (x+5)*size + y+5 > size*size) return;
-    const char eden[][7] = {
-        "^~~~~^",
-        "~~%%~~",
-        "~%++%~",
-        "~%++%~",
-        "~~%%~~",
-        "^~~~~^"
+    const int EDEN_SIZE = 8;
+    if ( (x+EDEN_SIZE-1)*size + y+EDEN_SIZE-1 > size*size) return;
+    const char eden[] = {
+        "^~~~~~~^"
+        "~~%%%%~~"
+        "~%%%%%%~"
+        "~%%++%%~"
+        "~%%+C%%~"
+        "~%%%%%%~"
+        "~~%%%%~~"
+        "^~~~~~~^"
     };
-    for (int j=0; j<6; ++j)
-    for (int i=0; i<6; ++i) {
-        map[(x+j-1)*size + y+i - 1] = eden[i][j];
+    for (int j=0; j<EDEN_SIZE; ++j) {
+        memcpy(map + (x+j-1) * size + y - 1, eden + j*EDEN_SIZE, EDEN_SIZE);
     }
 }

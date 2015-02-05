@@ -23,6 +23,7 @@
 #include "BlockFactory.h"
 #include "World.h"
 #include "TrManager.h"
+#include "AroundCoordinates.h"
 #include <QDataStream>
 
 // Animal:: section
@@ -111,24 +112,15 @@
     }
 
     void Animal::EatAround() {
-        const Xyz coords[] = {
-            Xyz(X()-1, Y(), Z()),
-            Xyz(X()+1, Y(), Z()),
-            Xyz(X(), Y()-1, Z()),
-            Xyz(X(), Y()+1, Z()),
-            Xyz(X(), Y(), Z()-1)
-        };
         World * const world = World::GetWorld();
-        for (const Xyz & xyz : coords) {
-            if ( not world->InBounds(xyz.X(), xyz.Y()) ) {
-                continue;
-            }
-            const Block * const block =
-                world->GetBlock(xyz.X(), xyz.Y(), xyz.Z());
-            if ( Attractive(block->Sub()) ) {
+        for (const Xyz& xyz :
+             AroundCoordinates(B_UP | B_DOWN | B_AROUND, *this))
+        {
+            const int sub = world->GetBlock(xyz.X(), xyz.Y(), xyz.Z())->Sub();
+            if ( Attractive(sub) ) {
                 world->Damage(xyz.X(), xyz.Y(), xyz.Z(),
                     DamageLevel(), DamageKind());
-                Eat(static_cast<subs>(block->Sub()));
+                Eat(static_cast<subs>(sub));
             }
         }
     }

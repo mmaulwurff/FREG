@@ -461,7 +461,7 @@ void Screen::ProcessMouse() {
     case WIN_ACTION: SetActionMode(static_cast<actions>(mevent.y)); break;
     case WIN_NOTIFY: Notify(tr("Notifications area.")); break;
     case WIN_HUD:
-        mevent.x -= getmaxx(hudWin)/2 - 'z' + 'a';
+        mevent.x -= getmaxx(hudWin)/2 - 'z' + 'a' - 1;
         mevent.x /= 2;
         if ( not ( IsScreenWide() && 0 <= mevent.x && mevent.x <= 'z'-'a' ) ) {
             Notify(tr("Information: left - player, right - focused thing."));
@@ -967,7 +967,8 @@ const {
     if ( shiftFocus ) {
         const int ch =
             (( shiftFocus == 1 ) ? '^' : 'v') | COLOR_PAIR(WHITE_BLUE);
-        for (int q=arrow_Y-shiftFocus; 0<q && q<=screenWidth/2; q-=shiftFocus){
+        for (int q=arrow_Y-shiftFocus; 0<q && q<=screenHeight/2; q-=shiftFocus)
+        {
             mvwaddch(rightWin, q,             0, ch);
             mvwaddch(rightWin, q, screenWidth-1, ch);
         }
@@ -1047,6 +1048,7 @@ void Screen::DisplayFile(const QString path) {
 }
 
 void Screen::Notify(const QString str) const {
+    if ( str.isEmpty() ) return;
     Log(str);
     if ( inputActive ) return;
     wstandend(windows[WIN_NOTIFY]);

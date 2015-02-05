@@ -159,6 +159,11 @@ void Block::ReceiveSignal(QString) {}
 usage_types Block::Use(Active *) { return USAGE_TYPE_NO; }
 usage_types Block::UseOnShredMove(Active *) { return USAGE_TYPE_NO; }
 
+QString Block::Description() const {
+    return QString(Str("Typical object of %1.")).
+        arg(TrManager::SubName(Sub()));
+}
+
 wearable Block::Wearable() const {
     switch ( Sub() ) {
     case GREENERY: return WEARABLE_OTHER;

@@ -59,6 +59,7 @@
 #include "World.cpp"
 #include "worldmap.cpp"
 #include "Xyz.cpp"
+#include "AroundCoordinates.cpp"
 
 #include "moc/moc_Active.cpp"
 #include "moc/moc_Animal.cpp"

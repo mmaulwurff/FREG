@@ -91,21 +91,30 @@ void Player::UpdateXYZ() {
     emit Updated();
 }
 
-void Player::Examine() {
+void Player::Examine() const {
     const QMutexLocker locker(World::GetWorld()->GetLock());
     int x, y, z;
     emit GetFocus(&x, &y, &z);
     Examine(x, y, z);
 }
 
-void Player::Examine(const int x, const int y, const int z) {
+void Player::Examine(const int x, const int y, const int z) const {
     if ( not Visible(x, y, z) ) {
         Notify(tr("You can't see what is there."));
         return;
     }
-    World * const world = World::GetWorld();
-    const Block * const block = world->GetBlock(x, y, z);
-    Notify( tr("You see %1.").arg(block->FullName()) );
+    if ( DEBUG ) {
+        World * const world = World::GetWorld();
+        Notify(Str("Light: %1, fire: %2, sun: %3").
+            arg(world->Enlightened(x, y, z)).
+            arg(world->FireLight(x, y, z)/16).
+            arg(world->SunLight(x, y, z)));
+    }
+    Examine(World::GetWorld()->GetBlock(x, y, z));
+}
+
+void Player::Examine(const Block * const block) const {
+    Notify( block->FullName() + Str(":") );
     if ( DEBUG ) {
         Notify(Str("Weight: %1. Id: %2.").
             arg(block->Weight()).
@@ -114,16 +123,13 @@ void Player::Examine(const int x, const int y, const int z) {
             arg(block->Kind()).
             arg(block->Sub()).
             arg(block->LightRadius()));
-        Notify(Str("Light: %1, fire: %2, sun: %3. Transp: %4").
-            arg(world->Enlightened(x, y, z)).
-            arg(world->FireLight(x, y, z)/16).
-            arg(world->SunLight(x, y, z)).
-            arg(block->Transparent()));
-        Notify(Str("Norm: %1. Dir: %2").
+        Notify(Str("Norm: %1. Dir: %2. Transparency: %3").
             arg(block==BlockFactory::Normal(block->Sub())).
-            arg(block->GetDir()));
+            arg(block->GetDir()).
+            arg(block->Transparent()));
     }
     if ( Block::GetSubGroup(block->Sub()) == GROUP_AIR ) return;
+    Notify(block->Description());
     const QString str = block->GetNote();
     if ( not str.isEmpty() ) {
         Notify(tr("Inscription: ") + str);

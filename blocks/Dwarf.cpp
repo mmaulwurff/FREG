@@ -21,16 +21,16 @@
 #include "World.h"
 #include "Shred.h"
 #include "BlockFactory.h"
+#include "AroundCoordinates.h"
 
 int Dwarf::Weight() const {
     if ( Sub() == DIFFERENT ) return 0;
     World * const world = World::GetWorld();
-    const int bound = World::GetBound();
-    return ( (X() < bound && world->GetBlock(X()+1, Y(), Z())->Catchable()) ||
-            ( X() > 0     && world->GetBlock(X()-1, Y(), Z())->Catchable()) ||
-            ( Y() < bound && world->GetBlock(X(), Y()+1, Z())->Catchable()) ||
-            ( Y() > 0     && world->GetBlock(X(), Y()-1, Z())->Catchable()) ) ?
-        0 : Inventory::Weight()+Block::Weight();
+    const AroundCoordinates around(B_AROUND, *this);
+    return std::any_of(around.begin(), around.end(), [=](const Xyz& xyz) {
+            return world->GetBlock(xyz.X(), xyz.Y(), xyz.Z())->Catchable();
+        }) ?
+        0 : Inventory::Weight() + Block::Weight();
 }
 
 Block * Dwarf::DropAfterDamage(bool * const delete_block) {

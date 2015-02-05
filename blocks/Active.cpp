@@ -22,6 +22,7 @@
 #include "World.h"
 #include "blocks/Inventory.h"
 #include "TrManager.h"
+#include "AroundCoordinates.h"
 #include <QDataStream>
 
 // Active section
@@ -115,26 +116,15 @@ void Active::ReRegister(const dirs dir) {
 void Active::SendSignalAround(const QString signal) const {
     if ( shred == nullptr ) return; // for blocks inside inventories
     World * const world = World::GetWorld();
-    const int bound = World::GetBound();
-    if ( X() > 0 )     world->GetBlock(X()-1, Y(), Z())->ReceiveSignal(signal);
-    if ( X() < bound ) world->GetBlock(X()+1, Y(), Z())->ReceiveSignal(signal);
-    if ( Y() > 0 )     world->GetBlock(X(), Y()-1, Z())->ReceiveSignal(signal);
-    if ( Y() < bound ) world->GetBlock(X(), Y()+1, Z())->ReceiveSignal(signal);
-    world->GetBlock(X(), Y(), Z()-1)->ReceiveSignal(signal);
-    world->GetBlock(X(), Y(), Z()+1)->ReceiveSignal(signal);
+    for (const Xyz& xyz : AroundCoordinates(B_UP | B_DOWN | B_AROUND, *this)) {
+        world->GetBlock(xyz.X(), xyz.Y(), xyz.Z())->ReceiveSignal(signal);
+    }
 }
 
 void Active::DamageAround() const {
-    const int bound = World::GetBound();
-    int x_temp = X()-1;
-    int y_temp = Y();
-    int z_temp = Z();
-    if (   x_temp     >= 0     ) TryDestroy(  x_temp, y_temp, z_temp);
-    if (  (x_temp+=2) <= bound ) TryDestroy(  x_temp, y_temp, z_temp);
-    if ( --y_temp     >= 0     ) TryDestroy(--x_temp, y_temp, z_temp);
-    if (  (y_temp+=2) <= bound ) TryDestroy(  x_temp, y_temp, z_temp);
-    TryDestroy(x_temp, --y_temp, --z_temp);
-    TryDestroy(x_temp,   y_temp,   z_temp+=2);
+    for (const Xyz& xyz : AroundCoordinates(B_UP | B_DOWN | B_AROUND, *this)) {
+        TryDestroy(xyz.X(), xyz.Y(), xyz.Z());
+    }
 }
 
 bool Active::TryDestroy(const int x, const int y, const int z) const {
@@ -204,13 +194,10 @@ int Active::Attractive(int) const { return 0; }
 
 bool Active::IsSubAround(const int sub) const {
     const World * const world = World::GetWorld();
-    const int bound = world->GetBound();
-    return (sub == world->GetBlock(X(), Y(), Z()-1)->Sub() ||
-            sub == world->GetBlock(X(), Y(), Z()+1)->Sub() ||
-            (X() > 0     && sub == world->GetBlock(X()-1, Y(), Z())->Sub()) ||
-            (X() < bound && sub == world->GetBlock(X()+1, Y(), Z())->Sub()) ||
-            (Y() > 0     && sub == world->GetBlock(X(), Y()-1, Z())->Sub()) ||
-            (Y() < bound && sub == world->GetBlock(X(), Y()+1, Z())->Sub()) );
+    const AroundCoordinates coords(B_UP | B_DOWN | B_AROUND, *this);
+    return std::any_of(coords.begin(), coords.end(), [=](const Xyz& xyz) {
+         return world->GetBlock(xyz.X(), xyz.Y(), xyz.Z())->Sub() == sub;
+    });
 }
 
 // Falling section

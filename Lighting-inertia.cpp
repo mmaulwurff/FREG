@@ -36,6 +36,7 @@
 #include "Shred.h"
 #include "blocks/Block.h"
 #include "blocks/Active.h"
+#include "AroundCoordinates.h"
 
 /// Use Enlightened instead, which is smart wrapper of this.
 int World::LightMap(const int x, const int y, const int z) const {
@@ -61,13 +62,11 @@ void World::Shine(const int x, const int y, const int z, int level) {
         }
         if ( transparent != BLOCK_OPAQUE && level > 1 ) {
             --level;
-            const int border = GetBound();
-            if ( x > 0 )      Shine(x-1, y,   z, level);
-            if ( x < border ) Shine(x+1, y,   z, level);
-            if ( y > 0 )      Shine(x,   y-1, z, level);
-            if ( y < border ) Shine(x,   y+1, z, level);
-            Shine(x, y, z-1, level);
-            Shine(x, y, z+1, level);
+            for (const Xyz& xyz :
+                    AroundCoordinates(B_UP | B_DOWN | B_AROUND, {x, y, z}))
+            {
+                Shine(xyz.X(), xyz.Y(), xyz.Z(), level);
+            }
         }
     }
 }
@@ -99,17 +98,11 @@ void World::SunShineVertical(const int x, const int y, int z, int light_lev) {
 }
 
 void World::CrossUpShine(const int x, const int y, const int z_bottom) {
-    const int bound = GetBound();
+    const AroundCoordinates around(B_AROUND, {x, y, z_bottom});
     if ( initial_lighting ) {
-        if ( x > 0     ) UpShineInit(x-1, y,   z_bottom);
-        if ( x < bound ) UpShineInit(x+1, y,   z_bottom);
-        if ( y > 0     ) UpShineInit(x,   y-1, z_bottom);
-        if ( y < bound ) UpShineInit(x,   y+1, z_bottom);
+        for (const Xyz& xyz : around) UpShineInit(xyz.X(), xyz.Y(), xyz.Z());
     } else {
-        if ( x > 0     ) UpShine(x-1, y,   z_bottom);
-        if ( x < bound ) UpShine(x+1, y,   z_bottom);
-        if ( y > 0     ) UpShine(x,   y-1, z_bottom);
-        if ( y < bound ) UpShine(x,   y+1, z_bottom);
+        for (const Xyz& xyz : around) UpShine(xyz.X(), xyz.Y(), xyz.Z());
         emit Updated(x, y, z_bottom);
     }
 }
