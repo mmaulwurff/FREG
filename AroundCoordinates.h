@@ -28,20 +28,32 @@ enum dirsBits {
     B_AROUND = 4
 };
 
+template<int maxSize>
+class AroundCoordinatesN {
+public:
+    const Xyz * begin() const { return array; }
+    const Xyz *   end() const { return array + size; }
+
+protected:
+    AroundCoordinatesN() : array(), size(0) {}
+
+    Xyz array[maxSize];
+    int size;
+};
+
 /**
  * @brief The AroundCoordinates class contains coordinates around source.
  * These coordinates are guaranteed to be correct.
  */
-class AroundCoordinates {
+class AroundCoordinates : public AroundCoordinatesN<6> {
 public:
+    AroundCoordinates(const Xyz & source);
     AroundCoordinates(int dirBits, const Xyz & source);
+};
 
-    const Xyz * begin() const;
-    const Xyz *   end() const;
-
-private:
-    Xyz array[6];
-    int size;
+class AroundCoordinates4 : public AroundCoordinatesN<4> {
+public:
+    AroundCoordinates4(const Xyz & source);
 };
 
 #endif // AROUNDCOORDINATES_H

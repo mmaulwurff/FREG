@@ -20,11 +20,12 @@
 #ifndef WORLDMAP_H
 #define WORLDMAP_H
 
-#include <QFile>
+#include <QString>
 
 class WorldMap final {
 public:
     explicit WorldMap(QString worldName);
+    ~WorldMap();
 
     char TypeOfShred(qint64 longi, qint64 lati) const;
     static void GenerateMap(
@@ -50,7 +51,7 @@ private:
             qint64 * longitude, qint64 * latitude);
 
     int mapSize;
-    mutable QFile map;
+    char * map;
     qint64 spawnLongitude, spawnLatitude;
     char defaultShred, outerShred;
 };

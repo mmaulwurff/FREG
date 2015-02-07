@@ -62,9 +62,7 @@ void World::Shine(const int x, const int y, const int z, int level) {
         }
         if ( transparent != BLOCK_OPAQUE && level > 1 ) {
             --level;
-            for (const Xyz& xyz :
-                    AroundCoordinates(B_UP | B_DOWN | B_AROUND, {x, y, z}))
-            {
+            for (const Xyz& xyz : AroundCoordinates({x, y, z})) {
                 Shine(xyz.X(), xyz.Y(), xyz.Z(), level);
             }
         }
@@ -98,7 +96,7 @@ void World::SunShineVertical(const int x, const int y, int z, int light_lev) {
 }
 
 void World::CrossUpShine(const int x, const int y, const int z_bottom) {
-    const AroundCoordinates around(B_AROUND, {x, y, z_bottom});
+    const AroundCoordinates4 around({x, y, z_bottom});
     if ( initial_lighting ) {
         for (const Xyz& xyz : around) UpShineInit(xyz.X(), xyz.Y(), xyz.Z());
     } else {

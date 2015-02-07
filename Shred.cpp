@@ -25,6 +25,7 @@
 #include "BlockFactory.h"
 #include "TrManager.h"
 #include <QTextStream>
+#include <QFile>
 
 const quint8 Shred::DATASTREAM_VERSION = QDataStream::Qt_5_2;
 

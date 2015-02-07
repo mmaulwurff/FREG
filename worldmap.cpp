@@ -20,33 +20,51 @@
 #include "worldmap.h"
 #include "header.h"
 #include <QSettings>
+#include <QFile>
 
 WorldMap::WorldMap(const QString world_name) :
         mapSize(),
-        map(home_path + world_name + Str("/map.txt")),
+        map(),
         spawnLongitude(),
         spawnLatitude(),
         defaultShred(),
         outerShred()
 {
-    if ( map.open(QIODevice::ReadOnly | QIODevice::Text) ) {
-        mapSize = int(sqrtf(1+4*map.size())-1)/2;
-    } else {
-        GenerateMap(world_name, DEFAULT_MAP_SIZE, SHRED_WATER, 0);
-        mapSize = ( map.open(QIODevice::ReadOnly | QIODevice::Text) ) ?
-            DEFAULT_MAP_SIZE : 1;
-    }
-    MakeAndSaveSpawn(world_name, mapSize, &spawnLongitude, &spawnLatitude);
-
     QSettings map_info(home_path + world_name + Str("/map.ini"),
         QSettings::IniFormat);
-    defaultShred = map_info.value(Str("default_shred"),
-        QChar(SHRED_PLAIN)).toString().at(0).toLatin1();
-    outerShred   = map_info.value(Str("outer_shred"),
-        QChar(SHRED_OUT_BORDER)).toString().at(0).toLatin1();
-    map_info.setValue(Str("default_shred"), QChar::fromLatin1(defaultShred));
-    map_info.setValue(Str(  "outer_shred"), QChar::fromLatin1(  outerShred));
+    mapSize = map_info.value(Str("map_size"), DEFAULT_MAP_SIZE).toInt();
+    defaultShred = map_info.value(Str("default_shred"), QChar(SHRED_PLAIN)).
+        toString().at(0).toLatin1();
+    outerShred   = map_info.value(Str("outer_shred"), QChar(SHRED_OUT_BORDER)).
+        toString().at(0).toLatin1();
+    map_info.setValue(Str("default_shred"),
+        QString::fromLatin1(&defaultShred, 1));
+    map_info.setValue(Str(  "outer_shred"),
+        QString::fromLatin1(&outerShred, 1));
+    MakeAndSaveSpawn(world_name, mapSize, &spawnLongitude, &spawnLatitude);
+
+    QFile mapFile(home_path + world_name + Str("/map.txt"));
+
+    if ( not mapFile.open(QIODevice::ReadOnly | QIODevice::Text) ) {
+        GenerateMap(world_name, DEFAULT_MAP_SIZE, SHRED_WATER, 0);
+        // second attempt to open, since file could be created by GenerateMap
+        mapFile.open(QIODevice::ReadOnly | QIODevice::Text);
+    }
+
+    map = new char[mapSize * mapSize];
+    memset(map, defaultShred, mapSize*mapSize);
+    if ( mapFile.isOpen() ) {
+        for (int i = 0; i < mapSize*mapSize; ) {
+            char c;
+            if ( not mapFile.getChar(&c) ) break;
+            if ( c != '\n' && c != '\r' ) {
+                map[i++] = c;
+            }
+        }
+    }
 }
+
+WorldMap::~WorldMap() { delete [] map; }
 
 void WorldMap::MakeAndSaveSpawn(const QString world_name, const int size,
         qint64 * longitude, qint64 * latitude)
@@ -73,18 +91,10 @@ qint64 WorldMap::GetSpawnLatitude()  const { return spawnLatitude;  }
 
 char WorldMap::TypeOfShred(qint64 longi, qint64 lati) const {
     //return '-'; // for testing purposes
-    if (
-            longi > mapSize || longi <= 0 ||
-            lati  > mapSize || lati  <= 0 )
-    {
-        return outerShred;
-    } else if ( not map.seek((mapSize+1)*(longi-1)+lati-1) ) {
-        return defaultShred;
-    } else {
-        char c;
-        map.getChar(&c);
-        return c;
-    }
+    return ( longi > mapSize || longi <= 0 ||
+             lati  > mapSize || lati  <= 0 ) ?
+        outerShred :
+        map[(longi-1)*mapSize + lati - 1];
 }
 
 float WorldMap::Deg(const int x, const int y, const int size) {
@@ -93,7 +103,7 @@ float WorldMap::Deg(const int x, const int y, const int size) {
 }
 
 float WorldMap::R(const int x, const int y, const int size) {
-    return sqrtf( (x-size/2.f)*(x-size/2.f)+(y-size/2.f)*(y-size/2.f) );
+    return sqrtf( (x-size/2.f)*(x-size/2.f) + (y-size/2.f)*(y-size/2.f) );
 }
 
 void WorldMap::Circle(const int min_rad, const int max_rad,
@@ -123,7 +133,7 @@ void WorldMap::GenerateMap(const QString world_name,
     }
     size = qMax(10, size);
 
-    char * const map = new char[size*size];
+    char * const map = new char[size * size];
     memset(map, outer, size*size);
 
     const float min_rad = size / 3.0f;
@@ -168,6 +178,9 @@ void WorldMap::GenerateMap(const QString world_name,
         }
     }
     delete [] map;
+
+    QSettings(home_path + world_name + Str("/map.ini"), QSettings::IniFormat).
+        setValue(Str("map_size"), size);
 }
 
 void WorldMap::PieceOfEden(const qint64 x, const qint64 y,

@@ -20,9 +20,10 @@
 #include "AroundCoordinates.h"
 #include "World.h"
 
+// AroundCoordinates:: section
+
 AroundCoordinates::AroundCoordinates(const int dirsBits, const Xyz & xyz) :
-        array(),
-        size(0)
+        AroundCoordinatesN<6>()
 {
     if ( dirsBits & B_UP )    array[size++] = { xyz.X(), xyz.Y(), xyz.Z()+1 };
     if ( dirsBits & B_DOWN )  array[size++] = { xyz.X(), xyz.Y(), xyz.Z()-1 };
@@ -35,5 +36,27 @@ AroundCoordinates::AroundCoordinates(const int dirsBits, const Xyz & xyz) :
     }
 }
 
-const Xyz * AroundCoordinates::begin() const { return array; }
-const Xyz * AroundCoordinates::end()   const { return array + size; }
+AroundCoordinates::AroundCoordinates(const Xyz & xyz) :
+        AroundCoordinatesN<6>()
+{
+    array[0] = { xyz.X(), xyz.Y(), xyz.Z()+1 };
+    array[1] = { xyz.X(), xyz.Y(), xyz.Z()-1 };
+    size = 2;
+    if ( xyz.X() > 0 )    array[size++] = { xyz.X()-1, xyz.Y(), xyz.Z() };
+    if ( xyz.Y() > 0    ) array[size++] = { xyz.X(), xyz.Y()-1, xyz.Z() };
+    const int bound = World::GetWorld()->GetBound();
+    if ( xyz.X() < bound) array[size++] = { xyz.X()+1, xyz.Y(), xyz.Z() };
+    if ( xyz.Y() < bound) array[size  ] = { xyz.X(), xyz.Y()+1, xyz.Z() };
+}
+
+// AroundCoordinates4:: section
+
+AroundCoordinates4::AroundCoordinates4(const Xyz & xyz) :
+    AroundCoordinatesN<4>()
+{
+    if ( xyz.X() > 0 )    array[size++] = { xyz.X()-1, xyz.Y(), xyz.Z() };
+    if ( xyz.Y() > 0    ) array[size++] = { xyz.X(), xyz.Y()-1, xyz.Z() };
+    const int bound = World::GetWorld()->GetBound();
+    if ( xyz.X() < bound) array[size++] = { xyz.X()+1, xyz.Y(), xyz.Z() };
+    if ( xyz.Y() < bound) array[size  ] = { xyz.X(), xyz.Y()+1, xyz.Z() };
+}

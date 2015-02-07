@@ -116,13 +116,13 @@ void Active::ReRegister(const dirs dir) {
 void Active::SendSignalAround(const QString signal) const {
     if ( shred == nullptr ) return; // for blocks inside inventories
     World * const world = World::GetWorld();
-    for (const Xyz& xyz : AroundCoordinates(B_UP | B_DOWN | B_AROUND, *this)) {
+    for (const Xyz& xyz : AroundCoordinates(*this)) {
         world->GetBlock(xyz.X(), xyz.Y(), xyz.Z())->ReceiveSignal(signal);
     }
 }
 
 void Active::DamageAround() const {
-    for (const Xyz& xyz : AroundCoordinates(B_UP | B_DOWN | B_AROUND, *this)) {
+    for (const Xyz& xyz : AroundCoordinates(*this)) {
         TryDestroy(xyz.X(), xyz.Y(), xyz.Z());
     }
 }
@@ -194,7 +194,7 @@ int Active::Attractive(int) const { return 0; }
 
 bool Active::IsSubAround(const int sub) const {
     const World * const world = World::GetWorld();
-    const AroundCoordinates coords(B_UP | B_DOWN | B_AROUND, *this);
+    const AroundCoordinates coords(*this);
     return std::any_of(coords.begin(), coords.end(), [=](const Xyz& xyz) {
          return world->GetBlock(xyz.X(), xyz.Y(), xyz.Z())->Sub() == sub;
     });

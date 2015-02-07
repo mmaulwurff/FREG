@@ -214,11 +214,12 @@ void World::ReloadShreds() {
         emit StartMove(NORTH);
         --longitude;
         for (int x=0; x<NumShreds(); ++x) {
-            delete *FindShred(x, NumShreds()-1);
+            Shred * const shred = *FindShred(x, NumShreds()-1);
+            shred->~Shred();
             for (int y=NumShreds()-1; y>0; --y) {
                 ( *FindShred(x, y) = *FindShred(x, y-1) )->ReloadTo(NORTH);
             }
-            *FindShred(x, 0) = new Shred(x, 0,
+            *FindShred(x, 0) = new(shred) Shred(x, 0,
                 longitude - NumShreds()/2,
                 latitude  - NumShreds()/2 + x);
         }
@@ -227,11 +228,12 @@ void World::ReloadShreds() {
         emit StartMove(EAST);
         ++latitude;
         for (int y=0; y<NumShreds(); ++y) {
-            delete *FindShred(0, y);
+            Shred * const shred = *FindShred(0, y);
+            shred->~Shred();
             for (int x=0; x<NumShreds()-1; ++x) {
                 ( *FindShred(x, y) = *FindShred(x+1, y) )->ReloadTo(EAST);
             }
-            *FindShred(NumShreds()-1, y) = new Shred(NumShreds()-1, y,
+            *FindShred(NumShreds()-1, y) = new(shred) Shred(NumShreds()-1, y,
                 longitude - NumShreds()/2 + y,
                 latitude  + NumShreds()/2);
         }
@@ -240,11 +242,12 @@ void World::ReloadShreds() {
         emit StartMove(SOUTH);
         ++longitude;
         for (int x=0; x<NumShreds(); ++x) {
-            delete *FindShred(x, 0);
+            Shred * const shred = *FindShred(x, 0);
+            shred->~Shred();
             for (int y=0; y<NumShreds()-1; ++y) {
                 ( *FindShred(x, y) = *FindShred(x, y+1) )->ReloadTo(SOUTH);
             }
-            *FindShred(x, NumShreds()-1) = new Shred(x, NumShreds()-1,
+            *FindShred(x, NumShreds()-1) = new(shred) Shred(x, NumShreds()-1,
                 longitude + NumShreds()/2,
                 latitude  - NumShreds()/2 + x);
         }
@@ -253,11 +256,11 @@ void World::ReloadShreds() {
         emit StartMove(WEST);
         --latitude;
         for (int y=0; y<NumShreds(); ++y) {
-            delete *FindShred(NumShreds()-1, y);
+            Shred * const shred = *FindShred(NumShreds()-1, y);
             for (int x=NumShreds()-1; x>0; --x) {
                 ( *FindShred(x, y) = *FindShred(x-1, y) )->ReloadTo(WEST);
             }
-            *FindShred(0, y) = new Shred(0, y,
+            *FindShred(0, y) = new(shred) Shred(0, y,
                 longitude - NumShreds()/2 + y,
                 latitude  - NumShreds()/2);
         }
