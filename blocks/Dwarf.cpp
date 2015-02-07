@@ -146,7 +146,7 @@ bool Dwarf::GetExact(Block * const block, const int to) {
             world->GetShred(X(), Y())->RemShining(this);
         } else {
             world->GetShred(X(), Y())->AddShining(this);
-            world->Shine(X(), Y(), Z(), lightRadius);
+            world->Shine(GetXyz(), lightRadius);
         }
         return true;
     } else {

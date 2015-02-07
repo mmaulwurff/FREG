@@ -357,8 +357,7 @@
             if ( not isOn ) {
                 isOn = true;
                 world->GetShred(X(), Y())->AddShining(this);
-                world->Shine(X(), Y(), Z(),
-                    (lightRadius=CONVERTER_LIGHT_RADIUS));
+                world->Shine(GetXyz(), (lightRadius=CONVERTER_LIGHT_RADIUS));
             } else {
                 fuelLevel += dmg;
             }

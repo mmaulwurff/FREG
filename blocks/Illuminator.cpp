@@ -86,7 +86,7 @@ int  Illuminator::ShouldAct() const { return FREQUENT_RARE; }
 wearable Illuminator::Wearable() const { return WEARABLE_OTHER; }
 
 void Illuminator::DoRareAction() {
-    World::GetWorld()->Shine(X(), Y(), Z(), LightRadius());
+    World::GetWorld()->Shine(GetXyz(), LightRadius());
 }
 
 inner_actions Illuminator::ActInner() {

@@ -54,22 +54,23 @@ bool World::SetFireLightMap(const int level,
 void World::AddFireLight(int, int, int, int) {}
 void World::RemoveFireLight(int, int, int) {}
 
-void World::Shine(const int x, const int y, const int z, int level) {
-    if ( SetFireLightMap(level << 4, x, y, z) ) {
-        const int transparent = GetBlock(x, y, z)->Transparent();
+void World::Shine(const Xyz& xyz, int level) {
+    if ( SetFireLightMap(level << 4, xyz.X(), xyz.Y(), xyz.Z()) ) {
+        const int transparent =
+            GetBlock(xyz.X(), xyz.Y(), xyz.Z())->Transparent();
         if ( INVISIBLE != transparent && not initial_lighting ) {
-            emit Updated(x, y, z);
+            emit Updated(xyz.X(), xyz.Y(), xyz.Z());
         }
         if ( transparent != BLOCK_OPAQUE && level > 1 ) {
             --level;
-            for (const Xyz& xyz : AroundCoordinates({x, y, z})) {
-                Shine(xyz.X(), xyz.Y(), xyz.Z(), level);
+            for (const Xyz& next_xyz : AroundCoordinates(xyz)) {
+                Shine(next_xyz, level);
             }
         }
     }
 }
 
-void World::SunShineVertical(const int x, const int y, int z, int light_lev) {
+void World::SunShineVertical(const int x, const int y) {
     /* 2 1 3
      *   *   First, light goes down, then divides to 4 branches
      * ^ | ^ to N-S-E-W, and goes up.
@@ -80,7 +81,8 @@ void World::SunShineVertical(const int x, const int y, int z, int light_lev) {
     const int x_in = Shred::CoordInShred(x);
     const int y_in = Shred::CoordInShred(y);
     shred->SetLightmap(x_in, y_in, HEIGHT-1, 0xFF);
-    for ( ; ; --z) {
+    int light_lev = MAX_LIGHT_RADIUS;
+    for (int z = HEIGHT-2; ; --z) {
         shred->SetSunLight(x_in, y_in, z, light_lev);
         switch ( shred->GetBlock(x_in, y_in, z)->Transparent() ) {
         case BLOCK_OPAQUE: CrossUpShine(x, y, z); return;
@@ -109,7 +111,7 @@ void World::UpShineInit(int x, int y, int z_bottom) {
     Shred * const shred = GetShred(x, y);
     x = Shred::CoordInShred(x);
     y = Shred::CoordInShred(y);
-    for ( ; shred->SetSunLight(x, y, z_bottom, 1) && z_bottom < HEIGHT-1;
+    for ( ; shred->SetSunLightOne(x, y, z_bottom) && z_bottom < HEIGHT-1;
             ++z_bottom);
 }
 
@@ -117,7 +119,7 @@ void World::UpShine(const int x, const int y, int z_bottom) {
     Shred * const shred = GetShred(x, y);
     const int x_in = Shred::CoordInShred(x);
     const int y_in = Shred::CoordInShred(y);
-    while (shred->SetSunLight(x_in, y_in, z_bottom, 1) && z_bottom<HEIGHT-1) {
+    while (shred->SetSunLightOne(x_in, y_in, z_bottom) && z_bottom<HEIGHT-1) {
         emit Updated(x, y, z_bottom++);
     }
 }
@@ -129,7 +131,7 @@ void World::ReEnlighten(const int x, const int y, const int z) {
     }
     const int radius = GetBlock(x, y, z)->LightRadius();
     if ( radius != 0 ) {
-        Shine(x, y, z, radius);
+        Shine({x, y, z}, radius);
     }
 }
 
@@ -214,6 +216,11 @@ int Shred::SunLight(const int x, const int y, const int z) const {
     return (lightMap[x][y][z] & 0x0F);
 }
 
+bool Shred::SetSunLightOne(const int x, const int y, const int z) {
+    return lightMap[x][y][z] ?
+        false : (lightMap[x][y][z] = 1);
+}
+
 bool Shred::SetSunLight(const int x, const int y, const int z, const int level)
 {
     if ( ( lightMap[x][y][z] &  0x0F ) <  level ) {
@@ -246,8 +253,7 @@ void Shred::SetAllLightMapNull() { memset(lightMap, 0, sizeof(lightMap)); }
 void Shred::ShineAll() {
     World * const world = World::GetWorld();
     for (const Active * const shining : shiningList) {
-        world->Shine(shining->X(), shining->Y(), shining->Z(),
-            shining->LightRadius());
+        world->Shine(shining->GetXyz(), shining->LightRadius());
     }
     if ( not world->GetEvernight() ) {
         const int start_x = shredX * SHRED_WIDTH;

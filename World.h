@@ -53,13 +53,11 @@ public: // Lighting section
     int FireLight  (int x, int y, int z) const;
     int LightMap   (int x, int y, int z) const;
 
-    void SunShineVertical  (int x, int y, int z = HEIGHT-2,
-            int level = MAX_LIGHT_RADIUS);
-    void SunShineHorizontal(int x, int y, int z);
+    void SunShineVertical(int x, int y);
 
     /// Makes block emit shining.
     /** Receives only non-sun light as level, from 1 to F. */
-    void Shine(int x, int y, int z, int level);
+    void Shine(const class Xyz&, int level);
 
     bool GetEvernight() const { return evernight; }
 

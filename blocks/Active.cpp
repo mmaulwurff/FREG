@@ -35,6 +35,8 @@ int Active::Y() const {
     return GetShred()->ShredY() << SHRED_WIDTH_BITSHIFT | Xyz::Y();
 }
 
+const Xyz& Active::GetXyz() const { return *this; }
+
 Active * Active::ActiveBlock() { return this; }
 int  Active::ShouldAct() const { return FREQUENT_NEVER; }
 inner_actions Active::ActInner() { return INNER_ACTION_ONLY; }
@@ -42,7 +44,7 @@ inner_actions Active::ActInner() { return INNER_ACTION_ONLY; }
 void Active::UpdateLightRadius() {
     if ( LightRadius() ) {
         GetShred()->AddShining(this);
-        World::GetWorld()->Shine(X(), Y(), Z(), LightRadius());
+        World::GetWorld()->Shine(GetXyz(), LightRadius());
     } else {
         GetShred()->RemShining(this);
     }
