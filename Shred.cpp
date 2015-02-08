@@ -424,19 +424,19 @@ void Shred::NullMountain() {
             }
         }
     }
-    const WorldMap * const map = World::GetWorld()->GetMap();
-    if ( SHRED_NULLMOUNTAIN == map->TypeOfShred(longitude-1, latitude) ) { //N
+    const AroundShredTypes shred_types(longitude, latitude);
+    if ( SHRED_NULLMOUNTAIN == shred_types.To(TO_NORTH) ) {
         NormalCube(7,0,HEIGHT/2, 2,SHRED_WIDTH/2-1,HEIGHT/2-2, NULLSTONE);
     }
-    if ( SHRED_NULLMOUNTAIN == map->TypeOfShred(longitude+1, latitude) ) { //S
+    if ( SHRED_NULLMOUNTAIN == shred_types.To(TO_SOUTH) ) {
         NormalCube(7,SHRED_WIDTH/2+1,HEIGHT/2, 2,SHRED_WIDTH/2-1,HEIGHT/2-2,
             NULLSTONE);
     }
-    if ( SHRED_NULLMOUNTAIN == map->TypeOfShred(longitude, latitude+1) ) { //E
+    if ( SHRED_NULLMOUNTAIN == shred_types.To(TO_EAST) ) {
         NormalCube(SHRED_WIDTH/2+1,7,HEIGHT/2, SHRED_WIDTH/2-1,2,HEIGHT/2-2,
             NULLSTONE);
     }
-    if ( SHRED_NULLMOUNTAIN == map->TypeOfShred(longitude, latitude-1) ) { //W
+    if ( SHRED_NULLMOUNTAIN == shred_types.To(TO_WEST) ) {
         NormalCube(0,7,HEIGHT/2, SHRED_WIDTH/2-1,2,HEIGHT/2-2, NULLSTONE);
     }
 }
@@ -478,7 +478,8 @@ void Shred::Castle() {
     NormalCube(2,2,bottom_level-3, SHRED_WIDTH-4,SHRED_WIDTH-4,5, AIR );
     // floors
     int level = bottom_level;
-    for (int floors=CountShredTypeAround(SHRED_CASTLE); ; --floors) {
+    const AroundShredTypes shred_types(longitude, latitude);
+    for (int floors=shred_types.Count(SHRED_CASTLE); ; --floors) {
         NormalCube(0,0,level,   SHRED_WIDTH,  SHRED_WIDTH,  6, STONE);
         NormalCube(2,2,level+1, SHRED_WIDTH-4,SHRED_WIDTH-4,1, WOOD );
         NormalCube(2,2,level+2, SHRED_WIDTH-4,SHRED_WIDTH-4,5, AIR  );
@@ -490,25 +491,17 @@ void Shred::Castle() {
             }
         }
         if ( floors == 1 ) return; // roof
-        const WorldMap * const map = World::GetWorld()->GetMap();
-        if ( map->TypeOfShred(longitude-1, latitude) == SHRED_CASTLE
-                || level == bottom_level )
-        {// north pass
+        // exits:
+        if ( shred_types.To(TO_NORTH)==SHRED_CASTLE || level==bottom_level ) {
             NormalCube(2,0,level+2, SHRED_WIDTH-4,2,4, AIR);
         }
-        if ( map->TypeOfShred(longitude+1, latitude) == SHRED_CASTLE
-                || level == bottom_level )
-        { // south pass
+        if ( shred_types.To(TO_SOUTH)==SHRED_CASTLE || level==bottom_level ) {
             NormalCube(2,SHRED_WIDTH-2,level+2, SHRED_WIDTH-4,2,4, AIR);
         }
-        if ( map->TypeOfShred(longitude, latitude-1) == SHRED_CASTLE
-                || level == bottom_level )
-        { // west pass
+        if ( shred_types.To(TO_WEST) ==SHRED_CASTLE || level==bottom_level ) {
             NormalCube(0,2,level+2, 2,SHRED_WIDTH-4,4, AIR);
         }
-        if ( map->TypeOfShred(longitude, latitude+1) == SHRED_CASTLE
-                || level == bottom_level )
-        { // east pass
+        if ( shred_types.To(TO_EAST) ==SHRED_CASTLE || level==bottom_level ) {
             NormalCube(SHRED_WIDTH-2,2,level+2, 2,SHRED_WIDTH-4,4, AIR);
         }
         if ( level == bottom_level + 5 ) {
@@ -603,16 +596,6 @@ bool Shred::Tree(const int x, const int y, const int z, const int height) {
     return true;
 }
 
-int Shred::CountShredTypeAround(const int type) const {
-    int result = 0;
-    const WorldMap * const map = World::GetWorld()->GetMap();
-    for (qint64 i=longitude-1; i<=longitude+1; ++i)
-    for (qint64 j=latitude -1; j<=latitude +1; ++j) {
-        result += ( type == map->TypeOfShred(i, j) );
-    }
-    return result;
-}
-
 bool Shred::InBounds(const int z) { return (0 <= z && z < HEIGHT-1 ); }
 
 bool Shred::InBounds(const int x, const int y) {
@@ -703,3 +686,21 @@ bool Shred::LoadRoom(const int level, const int index) {
     }
     return true;
 } // bool Shred::LoadRoom(const int level, const int index)
+
+// AroundShredTypes:: section
+
+AroundShredTypes::AroundShredTypes(const qint64 longitude, qint64 latitude) :
+        types()
+{
+    int position = 0;
+    for (qint64 i=longitude-1; i<=longitude+1; ++i)
+    for (qint64 j=latitude -1; j<=latitude +1; ++j) {
+        types[position++] = World::GetWorld()->GetMap()->TypeOfShred(i, j);
+    }
+}
+
+char AroundShredTypes::To(const to_dirs dir) const { return types[dir]; }
+
+int AroundShredTypes::Count(const char type) const {
+    return std::count(types, std::end(types), type);
+}

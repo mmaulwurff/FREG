@@ -33,6 +33,23 @@ for (int y = SHRED_WIDTH; y--; )
 class Block;
 class Active;
 
+enum to_dirs {
+    TO_NORTH_WEST, TO_NORTH, TO_NORTH_EAST,
+    TO_WEST,       TO_HERE,  TO_EAST,
+    TO_SOUTH_WEST, TO_SOUTH, TO_SOUTH_EAST,
+};
+
+class AroundShredTypes {
+public:
+    AroundShredTypes(qint64 longitude, qint64 latitude);
+
+    char To(to_dirs toDir) const;
+    int Count(char type) const;
+
+private:
+    char types[9];
+}; // class AroundShredTypes
+
 class Shred final : public Weather {
 public:
      Shred(int shred_x, int shred_y, qint64 longi, qint64 lati);
@@ -135,7 +152,6 @@ private:
      *  otherwise on water too. */
     void RandomDrop(int num, int kind, int sub, bool on_water = false);
     void DropBlock(Block * bloc, bool on_water);
-    int CountShredTypeAround(int type) const;
     int FindTopNonAir(int x, int y);
 
     void PlantGrass();

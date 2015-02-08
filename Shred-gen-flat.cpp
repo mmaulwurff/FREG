@@ -18,11 +18,8 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "Shred.h"
-#include "World.h"
-#include "header.h"
 #include "blocks/Block.h"
 #include "BlockFactory.h"
-#include "worldmap.h"
 
 int Shred::NormalUnderground(const int depth, const subs sub) {
     NormalCube(0,0,1, SHRED_WIDTH,SHRED_WIDTH,HEIGHT/2-depth-5, STONE);
@@ -47,7 +44,9 @@ void Shred::Plain() {
 void Shred::Forest(const bool dead) {
     NormalUnderground();
     RandomDrop(qrand() & 3, BUSH, WOOD);
-    for (int number = CountShredTypeAround(type); number; --number) {
+    for (int number = AroundShredTypes(longitude, latitude).Count(type);
+            number; --number)
+    {
         const int x = qrand()%(SHRED_WIDTH-2) + 1;
         const int y = qrand()%(SHRED_WIDTH-2) + 1;
         const int z = FindTopNonAir(x, y);
@@ -71,21 +70,21 @@ void Shred::Water(const subs sub) {
     default:
     case ACID:  shore = GLASS; break;
     }
-    const int depth = CountShredTypeAround(GetTypeOfShred()) + 1;
+    const AroundShredTypes shred_types(longitude, latitude);
+    const int depth = shred_types.Count(GetTypeOfShred()) + 1;
     NormalUnderground(depth, shore);
     const int z_start = HEIGHT/2 - depth + 1;
     NormalCube(0,0,z_start-1, SHRED_WIDTH,SHRED_WIDTH,1, shore); // bottom
-    const WorldMap * const map = World::GetWorld()->GetMap();
-    if ( type != map->TypeOfShred(longitude-1, latitude) ) { // north
+    if ( type != shred_types.To(TO_NORTH) ) {
         NormalCube(0,0,z_start, SHRED_WIDTH,1,depth, shore);
     }
-    if ( type != map->TypeOfShred(longitude+1, latitude) ) { // south
+    if ( type != shred_types.To(TO_SOUTH) ) {
         NormalCube(0,SHRED_WIDTH-1,z_start, SHRED_WIDTH,1,depth, shore);
     }
-    if ( type != map->TypeOfShred(longitude, latitude+1) ) { // east
+    if ( type != shred_types.To(TO_EAST) ) {
         NormalCube(SHRED_WIDTH-1,0,z_start, 1,SHRED_WIDTH,depth, shore);
     }
-    if ( type != map->TypeOfShred(longitude, latitude-1) ) { // west
+    if ( type != shred_types.To(TO_WEST) ) {
         NormalCube(0,0,z_start, 1,SHRED_WIDTH,depth, shore);
     }
     Block * const air = BlockFactory::Normal(AIR);
@@ -134,16 +133,15 @@ void Shred::Mountain() {
      *  ?
      *  ? south bridge
      *  ?  */
-    const int mount_top = 3*HEIGHT/4;
+    const AroundShredTypes shred_types(longitude, latitude);
+    const int mount_top = 3*HEIGHT/4 * shred_types.Count(SHRED_MOUNTAIN) / 9;
     NormalCube(0, 0, 1, SHRED_WIDTH/2, SHRED_WIDTH/2, mount_top, STONE);
-    const WorldMap * const map = World::GetWorld()->GetMap();
-    // south bridge
-    if ( SHRED_MOUNTAIN == map->TypeOfShred(longitude+1, latitude) ) {
+    // bridges
+    if ( SHRED_MOUNTAIN == shred_types.To(TO_SOUTH) ) {
         NormalCube(qrand()%(SHRED_WIDTH/2-1), SHRED_WIDTH/2, mount_top,
             2, SHRED_WIDTH/2, 1, STONE);
     }
-    // east bridge
-    if ( SHRED_MOUNTAIN == map->TypeOfShred(longitude, latitude+1) ) {
+    if ( SHRED_MOUNTAIN == shred_types.To(TO_EAST) ) {
         NormalCube(SHRED_WIDTH/2, qrand()%(SHRED_WIDTH/2-1), mount_top,
             SHRED_WIDTH/2, 2, 1, STONE);
     }
