@@ -33,8 +33,6 @@
     #include <ncursesw/ncurses.h>
 #endif
 
-#define wPrintable(string) QString(string).toStdWString().c_str()
-
 /// Cursed screen options
 /// X(settings_string, variable_name, default_value)
 #define OPTIONS_TABLE(X) \
@@ -46,11 +44,7 @@ X("mouse_on",        mouseOn,      true,  )\
 X("show_distance",   showDistance, true,  )\
 X("abcdef_distance", farDistance,  false, )\
 
-#define OPTIONS_SAVE(string, name, ...) \
-settings.setValue(QStringLiteral(string), name);
 #define OPTIONS_DECLARE(string, name, ...) bool name;
-#define OPTIONS_INIT(string, name, default, ...) \
-name(settings.value(QStringLiteral(string), default).toBool()),
 
 class Block;
 
@@ -106,8 +100,6 @@ private:
     };
 
     static const chtype arrows[LAST_DIR + 1];
-    static const chtype OBSCURE_BLOCK =
-        COLOR_PAIR(BLACK_BLACK) | A_BOLD | ACS_CKBOARD;
     static const int MOUSEMASK = BUTTON1_CLICKED | BUTTON1_RELEASED;
 
     /// Prints world. Should not be called not within screen.
@@ -156,6 +148,7 @@ private:
 
     SCREEN * const screen;
     const int screenWidth, screenHeight;
+    const chtype OBSCURE_BLOCK;
     WINDOW * const windows[WIN_COUNT];
     WINDOW * const & actionWin  = windows[WIN_ACTION ];
     WINDOW * const & hudWin     = windows[WIN_HUD    ];

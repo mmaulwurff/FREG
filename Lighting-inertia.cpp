@@ -55,11 +55,10 @@ void World::AddFireLight(int, int, int, int) {}
 void World::RemoveFireLight(int, int, int) {}
 
 void World::Shine(const Xyz& xyz, int level) {
-    if ( SetFireLightMap(level << 4, xyz.X(), xyz.Y(), xyz.Z()) ) {
-        const int transparent =
-            GetBlock(xyz.X(), xyz.Y(), xyz.Z())->Transparent();
+    if ( SetFireLightMap(level << 4, XYZ(xyz)) ) {
+        const int transparent = GetBlock(XYZ(xyz))->Transparent();
         if ( INVISIBLE != transparent && not initial_lighting ) {
-            emit Updated(xyz.X(), xyz.Y(), xyz.Z());
+            emit Updated(XYZ(xyz));
         }
         if ( transparent != BLOCK_OPAQUE && level > 1 ) {
             --level;
@@ -100,9 +99,9 @@ void World::SunShineVertical(const int x, const int y) {
 void World::CrossUpShine(const int x, const int y, const int z_bottom) {
     const AroundCoordinates4 around({x, y, z_bottom});
     if ( initial_lighting ) {
-        for (const Xyz& xyz : around) UpShineInit(xyz.X(), xyz.Y(), xyz.Z());
+        for (const Xyz& xyz : around) UpShineInit(XYZ(xyz));
     } else {
-        for (const Xyz& xyz : around) UpShine(xyz.X(), xyz.Y(), xyz.Z());
+        for (const Xyz& xyz : around) UpShine(XYZ(xyz));
         emit Updated(x, y, z_bottom);
     }
 }

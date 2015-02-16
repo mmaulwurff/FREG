@@ -69,7 +69,7 @@ int CraftList::GetMaterialsNumber() const { return materialsNumber; }
 const CraftItem * CraftList::at(const int i) const { return items.at(i); }
 
 void CraftList::Sort() {
-    std::sort(items.begin(), items.end(),
+    std::sort(ALL(items),
         [](const CraftItem * const item1, const CraftItem * const item2) {
             return *item1 < *item2;
     });

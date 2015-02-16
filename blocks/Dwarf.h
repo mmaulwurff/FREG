@@ -61,7 +61,7 @@ private:
         IN_LEFT,
         SPECIAL_SLOTS_COUNT
     };
-    static const int MIN_DWARF_LIGHT_RADIUS = 2;
+    static const int MIN_DWARF_LIGHT_RADIUS = 1;
 
     int UpdateLightRadiusInner() const;
 

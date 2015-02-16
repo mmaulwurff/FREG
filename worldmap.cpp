@@ -89,8 +89,8 @@ qint64 WorldMap::GetSize() const { return mapSize; }
 qint64 WorldMap::GetSpawnLongitude() const { return spawnLongitude; }
 qint64 WorldMap::GetSpawnLatitude()  const { return spawnLatitude;  }
 
-char WorldMap::TypeOfShred(qint64 longi, qint64 lati) const {
-    //return '-'; // for testing purposes
+char WorldMap::TypeOfShred(const qint64 longi, const qint64 lati) const {
+    //Q_UNUSED(longi); Q_UNUSED(lati); return SHRED_UNDERGROUND; // for testing
     return ( longi > mapSize || longi <= 0 ||
              lati  > mapSize || lati  <= 0 ) ?
         outerShred :

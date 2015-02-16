@@ -64,16 +64,14 @@ void Block::Damage(const int dmg, int dmg_kind) {
     if ( dmg_kind > DAMAGE_PUSH_UP ) {
          dmg_kind = DAMAGE_PUSH_UP;
     }
-    // Fragile or undestructible substances:
-    switch ( Sub() ) {
-    case SUB_DUST:
-    case GREENERY:
-    case ROSE:
-    case SUB_NUT: durability = 0; return;
-    case NULLSTONE:
-    case STAR:
-    case AIR:
-    case SKY: return;
+    static const int fragiles[] { SUB_DUST, GREENERY, ROSE, SUB_NUT };
+    if (std::find(ALL(fragiles), Sub()) != std::end(fragiles)) {
+        durability = 0;
+        return;
+    }
+    static const int undestructible[] { NULLSTONE, STAR, AIR, SKY };
+    if (std::find(ALL(undestructible), Sub()) != std::end(undestructible)) {
+        return;
     }
     // Special damage kinds:
     switch ( dmg_kind ) {

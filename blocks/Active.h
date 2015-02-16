@@ -51,7 +51,7 @@ public:
     int Y() const;
     using Xyz::Z;
     using Xyz::SetXyz;
-    const Xyz& GetXyz() const;
+    const Xyz GetXyz() const;
 
     void Move(dirs dir) override;
     void ReceiveSignal(QString) override;

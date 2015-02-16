@@ -31,15 +31,16 @@
 #include "blocks/Accumulator.h"
 #include <QDataStream>
 
+#define X_NEWBLOCKSUB(column1, substance, ...) new Block(BLOCK, substance),
+
 BlockFactory * BlockFactory::blockFactory = nullptr;
 
-BlockFactory::BlockFactory() {
+BlockFactory::BlockFactory() :
+    normals{ SUB_TABLE(X_NEWBLOCKSUB) }
+{
     Q_ASSERT(blockFactory == nullptr);
     blockFactory = this;
 
-    for (int sub=0; sub<SUB_COUNT; ++sub) {
-        normals[sub] = new Block(BLOCK, sub);
-    }
     static_assert((SUB_COUNT  <= 64 ), "too many substances, should be < 64.");
     static_assert((KIND_COUNT <= 128), "too many kinds, should be < 128.");
     /*int sum = 0;
@@ -52,7 +53,7 @@ BlockFactory::BlockFactory() {
     RegisterAll(typeList< KIND_TABLE(X_CLASS) TemplateTerminator >());
 }
 
-BlockFactory::~BlockFactory() { qDeleteAll(normals, std::end(normals)); }
+BlockFactory::~BlockFactory() { qDeleteAll(ALL(normals)); }
 
 Block * BlockFactory::NewBlock(const int kind, const int sub) {
     //qDebug("kind: %d, sub: %d, valid: %d", kind, sub, IsValid(kind,sub));

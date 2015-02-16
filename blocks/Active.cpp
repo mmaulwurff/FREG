@@ -35,7 +35,7 @@ int Active::Y() const {
     return GetShred()->ShredY() << SHRED_WIDTH_BITSHIFT | Xyz::Y();
 }
 
-const Xyz& Active::GetXyz() const { return *this; }
+const Xyz Active::GetXyz() const { return {X(), Y(), Z()}; }
 
 Active * Active::ActiveBlock() { return this; }
 int  Active::ShouldAct() const { return FREQUENT_NEVER; }
@@ -118,14 +118,14 @@ void Active::ReRegister(const dirs dir) {
 void Active::SendSignalAround(const QString signal) const {
     if ( shred == nullptr ) return; // for blocks inside inventories
     World * const world = World::GetWorld();
-    for (const Xyz& xyz : AroundCoordinates(*this)) {
-        world->GetBlock(xyz.X(), xyz.Y(), xyz.Z())->ReceiveSignal(signal);
+    for (const Xyz& xyz : AroundCoordinates(GetXyz())) {
+        world->GetBlock(XYZ(xyz))->ReceiveSignal(signal);
     }
 }
 
 void Active::DamageAround() const {
-    for (const Xyz& xyz : AroundCoordinates(*this)) {
-        TryDestroy(xyz.X(), xyz.Y(), xyz.Z());
+    for (const Xyz& xyz : AroundCoordinates(GetXyz())) {
+        TryDestroy(XYZ(xyz));
     }
 }
 
@@ -163,18 +163,15 @@ bool Active::Gravitate(const int range, int bottom, int top,
     const int y_start = qMax(Y()-range, 0);
     const int y_end   = qMin(Y()+range, bound);
     const int x_end   = qMin(X()+range, bound);
-    bottom = qMax(Z()-bottom,  0);
-    top    = qMin(Z()+top, HEIGHT-1);
+    bottom = qMax(Z() - bottom,  0);
+    top    = qMin(Z() + top,     HEIGHT-1);
     for (int x=qMax(X()-range, 0); x<=x_end; ++x)
     for (int y=y_start; y<=y_end; ++y) {
         Shred * const shred = world->GetShred(x, y);
-        const int x_in = Shred::CoordInShred(x);
-        const int y_in = Shred::CoordInShred(y);
         for (int z=bottom; z<=top; ++z) {
-            const int attractive =
-                Attractive(shred->GetBlock(x_in, y_in, z)->Sub());
-            if ( attractive != 0
-                    && world->DirectlyVisible(X(), Y(), Z(), x, y, z) )
+            const int attractive = Attractive(shred->GetBlock(
+                Shred::CoordInShred(x), Shred::CoordInShred(y), z)->Sub());
+            if ( attractive && world->DirectlyVisible(X(), Y(), Z(), x, y, z) )
             {
                 if ( y!=Y() ) for_north += attractive/(Y()-y);
                 if ( x!=X() ) for_west  += attractive/(X()-x);
@@ -195,10 +192,9 @@ bool Active::Gravitate(const int range, int bottom, int top,
 int Active::Attractive(int) const { return 0; }
 
 bool Active::IsSubAround(const int sub) const {
-    const World * const world = World::GetWorld();
-    const AroundCoordinates coords(*this);
-    return std::any_of(coords.begin(), coords.end(), [=](const Xyz& xyz) {
-         return world->GetBlock(xyz.X(), xyz.Y(), xyz.Z())->Sub() == sub;
+    const AroundCoordinates coords(GetXyz());
+    return std::any_of(ALL(coords), [=](const Xyz& xyz) {
+        return World::GetWorld()->GetBlock(XYZ(xyz))->Sub() == sub;
     });
 }
 

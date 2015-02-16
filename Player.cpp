@@ -116,9 +116,10 @@ void Player::Examine(const int x, const int y, const int z) const {
 void Player::Examine(const Block * const block) const {
     Notify( block->FullName() + Str(":") );
     if ( DEBUG ) {
-        Notify(Str("Weight: %1. Id: %2.").
+        Notify(Str("Weight: %1. Id: %2. Durability: %3.").
             arg(block->Weight()).
-            arg(BlockFactory::MakeId(block->Kind(), block->Sub())));
+            arg(BlockFactory::MakeId(block->Kind(), block->Sub())).
+            arg(block->GetDurability()));
         Notify(Str("Kind: %1, substance: %2. LightRadius: %3").
             arg(block->Kind()).
             arg(block->Sub()).
@@ -394,6 +395,9 @@ void Player::ProcessCommand(QString command) {
         }
         emit ShowFile( QString(home_path + Str("/help_%1/%2.md"))
             .arg(QLocale::system().name().left(2)).arg(QString(request)) );
+        break;
+    case UniqueIntFromString("about"):
+        emit ShowFile(home_path + Str("README.md"));
         break;
     default:
         Notify(tr("Don't know such command: \"%1\".").arg(command));

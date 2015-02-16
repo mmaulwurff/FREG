@@ -262,14 +262,12 @@ void Shred::Register(Active * const active) {
 }
 
 void Shred::Unregister(Active * const active) {
-    std::replace(activeListAll.begin(), activeListAll.end(), active,
-        static_cast<Active *>(nullptr));
-    std::replace(activeListFrequent.begin(), activeListFrequent.end(), active,
+    std::replace(ALL(activeListAll), active, static_cast<Active *>(nullptr));
+    std::replace(ALL(activeListFrequent), active,
         static_cast<Active *>(nullptr));
     Falling * const falling = active->ShouldFall();
     if ( falling != nullptr ) {
-        std::replace(fallList.begin(), fallList.end(), falling,
-            static_cast<Falling *>(nullptr));
+        std::replace(ALL(fallList), falling, static_cast<Falling *>(nullptr));
         falling->SetFalling(false);
     }
     RemShining(active);
@@ -540,7 +538,7 @@ void Shred::Layers() {
                 {BLOCK, STONE}
             });
         }
-        std::reverse(layers.begin(), layers.end());
+        std::reverse(ALL(layers));
     }
 
     FOR_ALL_SHRED_AREA(x, y) {
@@ -702,5 +700,5 @@ AroundShredTypes::AroundShredTypes(const qint64 longitude, qint64 latitude) :
 char AroundShredTypes::To(const to_dirs dir) const { return types[dir]; }
 
 int AroundShredTypes::Count(const char type) const {
-    return std::count(types, std::end(types), type);
+    return std::count(ALL(types), type);
 }

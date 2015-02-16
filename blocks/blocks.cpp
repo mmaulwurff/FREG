@@ -68,6 +68,7 @@
 // Liquid::
     void Liquid::DoRareAction() {
         if ( not IsSubAround(Sub()) || Sub()==SUB_CLOUD ) {
+            World::GetWorld()->Notify("no water!");
             Damage(MAX_DURABILITY*2/World::SECONDS_IN_NIGHT, DAMAGE_TIME);
             if ( GetDurability() <= 0 ) {
                 World::GetWorld()->DestroyAndReplace(X(), Y(), Z());
@@ -92,11 +93,10 @@
         }
     }
 
-    int Liquid::DamageLevel() const { return MAX_DURABILITY / 20; }
-
-    int  Liquid::ShouldAct() const  { return FREQUENT_RARE; }
+    int  Liquid::ShouldAct()   const { return FREQUENT_RARE; }
+    int  Liquid::DamageLevel() const { return MAX_DURABILITY / 20; }
     int  Liquid::LightRadius() const { return ( STONE==Sub() ) ? 3 : 0; }
-    bool Liquid::Inscribe(QString) { return false; }
+    bool Liquid::Inscribe(QString)   { return false; }
     wearable Liquid::Wearable() const { return WEARABLE_VESSEL; }
     inner_actions Liquid::ActInner() { return INNER_ACTION_NONE; }
     push_reaction Liquid::PushResult(dirs) const { return ENVIRONMENT; }
@@ -123,7 +123,7 @@
 
 // Grass::
     void Grass::DoRareAction() {
-        int i=X(), j=Y(), k=Z();
+        int i=X(), j=Y();
         // increase this if grass grows too fast
         switch ( qrand() & (FIRE==Sub() ? 3 : 255) ) {
         case 0: ++i; break;
@@ -134,8 +134,9 @@
         }
         World * const world = World::GetWorld();
         if ( not world->InBounds(i, j) ) return;
-        if ( FIRE == Sub() || world->Enlightened(i, j, k) ) {
-            const int sub_near = world->GetBlock(i, j, k)->Sub();
+        if ( FIRE == Sub() || world->Enlightened(i, j, Z()) ) {
+            const int sub_near = world->GetBlock(i, j, Z())->Sub();
+            int k = Z();
             if ( (AIR == sub_near
                         && IsBase(Sub(), world->GetBlock(i, j, k-1)->Sub() ) )
                     || ( IsBase(Sub(), sub_near)

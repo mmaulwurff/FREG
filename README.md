@@ -7,7 +7,7 @@ This is a version of FREG with text graphics.
 
 Development stage: implementing basics.
 
-Language: C++11, Qt (version >= 5.3)
+Language: C++11, Qt (version >= 5.4)
 
 Non-standard libraries: libncurses5
 

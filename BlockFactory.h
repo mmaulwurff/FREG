@@ -78,7 +78,7 @@ public:
 private:
     M_DISABLE_COPY(BlockFactory)
 
-    Block * normals[SUB_COUNT];
+    Block * const normals[SUB_COUNT];
 
     // Block registration system:
 

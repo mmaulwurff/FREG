@@ -32,7 +32,7 @@ AroundCoordinates::AroundCoordinates(const int dirsBits, const Xyz & xyz) :
         if ( xyz.Y() > 0    ) array[size++] = { xyz.X(), xyz.Y()-1, xyz.Z() };
         const int bound = World::GetWorld()->GetBound();
         if ( xyz.X() < bound) array[size++] = { xyz.X()+1, xyz.Y(), xyz.Z() };
-        if ( xyz.Y() < bound) array[size  ] = { xyz.X(), xyz.Y()+1, xyz.Z() };
+        if ( xyz.Y() < bound) array[size++] = { xyz.X(), xyz.Y()+1, xyz.Z() };
     }
 }
 
@@ -43,10 +43,10 @@ AroundCoordinates::AroundCoordinates(const Xyz & xyz) :
     array[1] = { xyz.X(), xyz.Y(), xyz.Z()-1 };
     size = 2;
     if ( xyz.X() > 0 )    array[size++] = { xyz.X()-1, xyz.Y(), xyz.Z() };
-    if ( xyz.Y() > 0    ) array[size++] = { xyz.X(), xyz.Y()-1, xyz.Z() };
+    if ( xyz.Y() > 0 )    array[size++] = { xyz.X(), xyz.Y()-1, xyz.Z() };
     const int bound = World::GetWorld()->GetBound();
     if ( xyz.X() < bound) array[size++] = { xyz.X()+1, xyz.Y(), xyz.Z() };
-    if ( xyz.Y() < bound) array[size  ] = { xyz.X(), xyz.Y()+1, xyz.Z() };
+    if ( xyz.Y() < bound) array[size++] = { xyz.X(), xyz.Y()+1, xyz.Z() };
 }
 
 // AroundCoordinates4:: section
@@ -55,8 +55,8 @@ AroundCoordinates4::AroundCoordinates4(const Xyz & xyz) :
     AroundCoordinatesN<4>()
 {
     if ( xyz.X() > 0 )    array[size++] = { xyz.X()-1, xyz.Y(), xyz.Z() };
-    if ( xyz.Y() > 0    ) array[size++] = { xyz.X(), xyz.Y()-1, xyz.Z() };
+    if ( xyz.Y() > 0 )    array[size++] = { xyz.X(), xyz.Y()-1, xyz.Z() };
     const int bound = World::GetWorld()->GetBound();
     if ( xyz.X() < bound) array[size++] = { xyz.X()+1, xyz.Y(), xyz.Z() };
-    if ( xyz.Y() < bound) array[size  ] = { xyz.X(), xyz.Y()+1, xyz.Z() };
+    if ( xyz.Y() < bound) array[size++] = { xyz.X(), xyz.Y()+1, xyz.Z() };
 }

@@ -32,6 +32,13 @@
 #include <QDesktopServices>
 #include <QUrl>
 
+#define wPrintable(string) QString(string).toStdWString().c_str()
+
+#define OPTIONS_SAVE(string, name, ...) \
+settings.setValue(QStringLiteral(string), name);
+#define OPTIONS_INIT(string, name, default, ...) \
+name(settings.value(QStringLiteral(string), default).toBool()),
+
 const chtype Screen::arrows[] = {
     '.',
     'x',
@@ -80,7 +87,7 @@ const {
 void Screen::RePrint() {
     erase();
     refresh();
-    std::for_each(windows, std::end(windows), wclear);
+    std::for_each(ALL(windows), wclear);
     static const std::wstring action_strings[] = {
         tr("[U] use, eat" ).toStdWString(),
         tr("[T] throw"    ).toStdWString(),
@@ -1090,6 +1097,7 @@ Screen::Screen(Player * const pl, int &) :
         screen(newterm(nullptr, stdout, stdin)),
         screenWidth((COLS / 2) - ((COLS/2) & 1)),
         screenHeight(LINES - 10),
+        OBSCURE_BLOCK(COLOR_PAIR(BLACK_BLACK) | A_BOLD | ACS_CKBOARD),
         windows {
             newwin(7, ACTIONS_WIDTH, LINES-7, MINIMAP_WIDTH + 1),
             newwin(0, 0, LINES-7, MINIMAP_WIDTH + 1 + ACTIONS_WIDTH + 1),
@@ -1162,7 +1170,7 @@ Screen::~Screen() {
     input->wait();
     delete input;
 
-    std::for_each(windows, std::end(windows), delwin);
+    std::for_each(ALL(windows), delwin);
     endwin();
     delscreen(screen);
     settings.setValue(Str("focus_shift" ), shiftFocus);
@@ -1189,23 +1197,29 @@ void Screen::Palette(WINDOW * const window) {
     const struct {
         chtype attribute;
         std::string name;
-    } types[] = {
+    } lines[] {
         {A_NORMAL,    "A_NORMAL    "},
         {A_BOLD,      "A_BOLD      "},
         {A_BLINK,     "A_BLINK     "},
-        {A_UNDERLINE, "A_UNDERLINE "},
         {A_REVERSE,   "A_REVERSE   "},
-        {A_STANDOUT,  "A_STANDOUT  "}
+        {A_STANDOUT,  "A_STANDOUT  "},
+    }, words[] {
+        {A_UNDERLINE, "A_UNDERLINE "},
+        {A_DIM,       "A_DIM       "},
     };
-    for (const auto & type : types) {
+    for (const auto & type : lines) {
         wstandend(window);
         waddstr(window, type.name.c_str());
         wattrset(window, type.attribute);
-        for (int i = BLACK_BLACK; i<=WHITE_WHITE; ++i) {
+        for (int i=BLACK_BLACK; i<=WHITE_WHITE; ++i) {
             wcolor_set(window, i, nullptr);
             waddch(window, ACS_DIAMOND);
         }
         waddch(window, '\n');
+    }
+    for (const auto & type : words) {
+        wattrset(window, type.attribute);
+        waddstr(window, type.name.c_str());
     }
     wrefresh(window);
 }

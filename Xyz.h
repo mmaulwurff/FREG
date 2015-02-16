@@ -20,6 +20,8 @@
 #ifndef XYZ_H
 #define XYZ_H
 
+#define XYZ(xyz) xyz.X(), xyz.Y(), xyz.Z()
+
 class Xyz {
 public:
     Xyz(int x, int y, int z);

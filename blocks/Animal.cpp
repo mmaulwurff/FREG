@@ -113,11 +113,10 @@
 
     void Animal::EatAround() {
         World * const world = World::GetWorld();
-        for (const Xyz& xyz : AroundCoordinates(*this)) {
-            const int sub = world->GetBlock(xyz.X(), xyz.Y(), xyz.Z())->Sub();
+        for (const Xyz& xyz : AroundCoordinates(GetXyz())) {
+            const int sub = world->GetBlock(XYZ(xyz))->Sub();
             if ( Attractive(sub) ) {
-                world->Damage(xyz.X(), xyz.Y(), xyz.Z(),
-                    DamageLevel(), DamageKind());
+                world->Damage(XYZ(xyz), DamageLevel(), DamageKind());
                 Eat(static_cast<subs>(sub));
             }
         }

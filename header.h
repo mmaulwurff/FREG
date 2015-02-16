@@ -30,6 +30,8 @@ const bool DEBUG = false;
 const bool DEBUG = true;
 #endif
 
+#define ALL(container) std::begin(container), std::end(container)
+
 #define QT_NO_CAST_FROM_ASCII
 #define QT_NO_CAST_TO_ASCII
 

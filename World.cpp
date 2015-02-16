@@ -398,6 +398,7 @@ World::can_move_results World::CanMove(const int x, const int y, const int z,
     { // prevent moving while falling
         return CAN_MOVE_CANNOT;
     }
+
     switch ( block->PushResult(dir) ) {
     case DAMAGE:
     case MOVABLE:
@@ -412,6 +413,7 @@ World::can_move_results World::CanMove(const int x, const int y, const int z,
         } // no break;
     default: return CAN_MOVE_CANNOT;
     }
+
     switch ( block_to->PushResult(dir) ) {
     case MOVABLE:
         return ( block->Weight() > block_to->Weight()
@@ -500,18 +502,16 @@ const {
     return InBounds(*x_to, *y_to, *z_to);
 }
 
-int World::Damage(const int x, const int y, const int z,
-        const int dmg, const int dmg_kind)
+int World::Damage(int x, int y, const int z, const int dmg, const int dmg_kind)
 {
     Shred * const shred = GetShred(x, y);
-    const int x_in = Shred::CoordInShred(x);
-    const int y_in = Shred::CoordInShred(y);
-    Block * temp = shred->GetBlock(x_in, y_in, z);
-    const int sub  = temp->Sub();
-    if ( AIR == sub ) return 0;
-    if ( temp == BlockFactory::Normal(sub) ) {
-        temp = BlockFactory::NewBlock(temp->Kind(), sub);
-        shred->SetBlockNoCheck(temp, x_in, y_in, z);
+    x = Shred::CoordInShred(x);
+    y = Shred::CoordInShred(y);
+    Block * temp = shred->GetBlock(x, y, z);
+    if ( AIR == temp->Sub() ) return Block::MAX_DURABILITY;
+    if ( temp == BlockFactory::Normal(temp->Sub()) ) {
+        temp = BlockFactory::NewBlock(temp->Kind(), temp->Sub());
+        shred->SetBlockNoCheck(temp, x, y, z);
     }
     temp->Damage(dmg, dmg_kind);
     return temp->GetDurability();

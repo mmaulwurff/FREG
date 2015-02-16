@@ -115,9 +115,9 @@ QString TrManager::ShredTypeName(const shred_type type) {
 }
 
 int TrManager::StrToKind(const QString str) {
-    return std::find(rawKinds, std::end(rawKinds), str) - rawKinds;
+    return std::find(ALL(rawKinds), str) - rawKinds;
 }
 
 int TrManager::StrToSub(const QString str) {
-    return std::find(rawSubs, std::end(rawSubs), str) - rawSubs;
+    return std::find(ALL(rawSubs), str) - rawSubs;
 }

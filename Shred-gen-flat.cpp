@@ -134,7 +134,8 @@ void Shred::Mountain() {
      *  ? south bridge
      *  ?  */
     const AroundShredTypes shred_types(longitude, latitude);
-    const int mount_top = 3*HEIGHT/4 * shred_types.Count(SHRED_MOUNTAIN) / 9;
+    const int mount_top =
+        HEIGHT/2 + HEIGHT/4 * shred_types.Count(GetTypeOfShred()) / 9;
     NormalCube(0, 0, 1, SHRED_WIDTH/2, SHRED_WIDTH/2, mount_top, STONE);
     // bridges
     if ( SHRED_MOUNTAIN == shred_types.To(TO_SOUTH) ) {

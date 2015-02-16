@@ -268,8 +268,9 @@ Inventory::Inventory(QDataStream & str, const int sz) :
 
 Inventory::~Inventory() {
     std::for_each(inventory, inventory+Size(), [](const QStack<Block*> & inv) {
-        std::for_each(inv.constBegin(), inv.constEnd(),
-            [](Block * const block) { BlockFactory::DeleteBlock(block); });
+        std::for_each(ALL(inv), [](Block * const block) {
+            BlockFactory::DeleteBlock(block);
+        });
     });
     delete [] inventory;
 }
