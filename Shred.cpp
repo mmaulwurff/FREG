@@ -230,10 +230,6 @@ std::forward_list<Active *>::const_iterator Shred::ShiningEnd() const {
     return shiningList.cend();
 }
 
-int Shred::Lightmap(const int x, const int y, const int z) const {
-    return lightMap[x][y][z];
-}
-
 Block * Shred::GetBlock(const int x, const int y, const int z) const {
     return blocks[x][y][z];
 }

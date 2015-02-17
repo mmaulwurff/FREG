@@ -104,11 +104,7 @@ void Player::Examine(const int x, const int y, const int z) const {
         return;
     }
     if ( DEBUG ) {
-        World * const world = World::GetWorld();
-        Notify(Str("Light: %1, fire: %2, sun: %3").
-            arg(world->Enlightened(x, y, z)).
-            arg(world->FireLight(x, y, z)/16).
-            arg(world->SunLight(x, y, z)));
+        Notify(Str("Light: %1.").arg(World::GetWorld()->Enlightened(x, y, z)));
     }
     Examine(World::GetWorld()->GetBlock(x, y, z));
 }

@@ -28,7 +28,7 @@ int Dwarf::Weight() const {
     World * const world = World::GetWorld();
     const AroundCoordinates4 around(GetXyz());
     return std::any_of(ALL(around), [=](const Xyz& xyz) {
-            return world->GetBlock(xyz.X(), xyz.Y(), xyz.Z())->Catchable();
+            return world->GetBlock(XYZ(xyz))->Catchable();
         }) ?
         0 : Inventory::Weight() + Block::Weight();
 }

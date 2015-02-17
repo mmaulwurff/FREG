@@ -88,43 +88,40 @@ public:
     /// Puts block to coordinates, not activates it.
     void PutBlock(Block * block, int x, int y, int z);
 
-    // Lighting section
+    ///\name Lighting section
+    ///@{
+        int Lightmap(int x, int y, int z) const;
 
-    int Lightmap(int x, int y, int z) const;
+        /// Sets sun light to 1 in coordinates xyz.
+        /// \returns false if light is already set, othewise true.
+        void AddLightOne(int x, int y, int z);
+        void AddLight(   int x, int y, int z, int level);
 
-    int FireLight( int x, int y, int z) const;
-    int SunLight(  int x, int y, int z) const;
-    int LightLevel(int x, int y, int z) const;
+        void SetAllLightMapNull();
+        void ShineAll();
+    ///@}
 
-    /// Sets sun light to 1 in coordinates xyz.
-    /// \returns false if light is already set, othewise true.
-    bool SetSunLightOne(int x, int y, int z);
-    bool SetSunLight( int x, int y, int z, int level);
-    bool SetFireLight(int x, int y, int z, int level);
-    void SetLightmap( int x, int y, int z, int level);
+    ///\name Information section
+    ///@{
+        void SetNewBlock(int kind, int sub, int x, int y, int z, int dir = UP);
+        shred_type GetTypeOfShred() const { return type; }
 
-    void SetAllLightMapNull();
-    void ShineAll();
+        static QString FileName(qint64 longi, qint64 lati);
+        Shred * GetShredMemory() const;
+        /// Make global coordinate from local (in loaded zone).
+        qint64 GlobalX(int x) const;
+        qint64 GlobalY(int y) const;
+        /// Get local coordinate.
+        static int CoordInShred(const int x) { return x & 0xF; }
 
-    // Information section
-    void SetNewBlock(int kind, int sub, int x, int y, int z, int dir = UP);
-    shred_type GetTypeOfShred() const { return type; }
+        /// Get shred coordinate in loaded zone (from 0 to numShreds).
+        static int CoordOfShred(const int x) {return x>>SHRED_WIDTH_BITSHIFT;}
 
-    static QString FileName(qint64 longi, qint64 lati);
-    Shred * GetShredMemory() const;
-    /// Make global coordinate from local (in loaded zone).
-    qint64 GlobalX(int x) const;
-    qint64 GlobalY(int y) const;
-    /// Get local coordinate.
-    static int CoordInShred(const int x) { return x & 0xF; }
-
-    /// Get shred coordinate in loaded zone (from 0 to numShreds).
-    static int CoordOfShred(const int x) { return x >> SHRED_WIDTH_BITSHIFT; }
-
-    /// Lowest nullstone and sky are not in bounds.
-    static bool InBounds(int x, int y, int z);
-    static bool InBounds(int x, int y);
-    static bool InBounds(int z);
+        /// Lowest nullstone and sky are not in bounds.
+        static bool InBounds(int x, int y, int z);
+        static bool InBounds(int x, int y);
+        static bool InBounds(int z);
+    ///@}
 
     void Rain(int kind, int sub);
     void Dew (int kind, int sub);

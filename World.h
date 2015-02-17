@@ -46,40 +46,31 @@ public: // Block work section
     Shred * GetShredByPos(int x, int y) const;
     Shred * GetNearShred(Shred *, dirs dir) const;
 
-public: // Lighting section
-    int Enlightened(int x, int y, int z) const;
-    int Enlightened(int x, int y, int z, dirs dir) const;
-    int SunLight   (int x, int y, int z) const;
-    int FireLight  (int x, int y, int z) const;
-    int LightMap   (int x, int y, int z) const;
+public:
+    ///\name Lighting section
+    ///@{
 
-    void SunShineVertical(int x, int y);
+    int Enlightened(int x, int y, int z) const;
+    /// Provides lighting of block side, not all block.
+    int Enlightened(int x, int y, int z, dirs dir) const;
 
     /// Makes block emit shining.
-    /** Receives only non-sun light as level, from 1 to F. */
     void Shine(const class Xyz&, int level);
+    void SunShineVertical(int x, int y);
 
     bool GetEvernight() const { return evernight; }
 
-    static const int FIRE_LIGHT_FACTOR = 4;
 private:
-    bool SetFireLightMap(int level, int x, int y, int z);
-    void AddFireLight   (int x, int y, int z, int level);
-    void RemoveFireLight(int x, int y, int z);
+    void AddLight(int x, int y, int z, int level);
 
-    /// Called when block is moved.
+    /// Called when one block is moved, built or destroyed.
     void ReEnlighten(int x, int y, int z);
     void ReEnlightenAll();
-    void ReEnlightenTime();
     /// Called from ReloadShreds(int), enlightens only needed shreds.
     void ReEnlightenMove(dirs);
-    void UpShine(int x, int y, int z_bottom);
-    void UpShineInit(int x, int y, int z_bottom);
-    void CrossUpShine(int x, int y, int z_bottom);
 
-    static const int MOON_LIGHT_FACTOR = 1;
-    static const int  SUN_LIGHT_FACTOR = 8;
-    static const int MAX_LIGHT_RADIUS = 15;
+    static const int MAX_LIGHT_RADIUS = 4;
+    ///@}
 
 public: // Information section
     static QString WorldName() { return GetWorld()->worldName; }
@@ -250,7 +241,6 @@ private:
     QString newWorld;
     /// UP for no reset, DOWN for full reset, NSEW for side shift.
     volatile dirs toResetDir;
-    int sunMoonFactor;
     class QTimer * timer;
 
     class ShredStorage * shredStorage;

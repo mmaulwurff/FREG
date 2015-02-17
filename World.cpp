@@ -306,11 +306,6 @@ void World::PhysEvents() {
         }
         timeStep = 0;
         ++time;
-        switch ( TimeOfDay() ) {
-        default: break;
-        case END_OF_NIGHT:
-        case END_OF_EVENING: ReEnlightenTime(); break;
-        }
     }
     ReloadShreds();
     GetLock()->unlock();
@@ -559,13 +554,9 @@ bool World::Build(Block * const block, const int x, const int y, const int z,
     block->SetDir(dir);
     const int old_transparency = target_block->Transparent();
     const int new_transparency = block->Transparent();
-    const int block_light = block->LightRadius();
     shred->SetBlock(block, x_in, y_in, z);
     if ( old_transparency != new_transparency ) {
         ReEnlighten(x, y, z);
-    }
-    if ( block_light ) {
-        AddFireLight(x, y, z, block_light);
     }
     shred->AddFalling(shred->GetBlock(x_in, y_in, z+1));
     return true;
@@ -623,9 +614,6 @@ void World::LoadAllShreds() {
     for (qint64 i=latitude -NumShreds()/2, x=0; x<NumShreds(); ++i, ++x) {
         *FindShred(x, y) = new Shred(x, y, j, i);
     }
-    sunMoonFactor = evernight ?
-        0 : ( TIME_NIGHT==PartOfDay() ) ?
-            MOON_LIGHT_FACTOR : SUN_LIGHT_FACTOR;
     ReEnlightenAll();
 }
 
@@ -659,7 +647,6 @@ World::World(const QString world_name, bool * error) :
         newX(), newY(), newZ(),
         newWorld(),
         toResetDir(UP),
-        sunMoonFactor(),
         timer(nullptr),
         shredStorage(),
         initial_lighting(),
