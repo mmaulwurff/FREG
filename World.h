@@ -56,8 +56,8 @@ public:
 
     /// Makes block emit shining.
     void Shine(const class Xyz&, int level);
-    void SunShineVertical(int x, int y);
 
+    bool GetInitial()   const { return initial_lighting; }
     bool GetEvernight() const { return evernight; }
 
 private:

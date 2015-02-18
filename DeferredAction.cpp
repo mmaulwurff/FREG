@@ -134,22 +134,18 @@ void DeferredAction::SetMove(const int dir) {
 
 void DeferredAction::SetJump() { type = DEFERRED_JUMP; }
 
-void DeferredAction::SetBuild(const int x, const int y, const int z,
-        const int builder_slot)
-{
+void DeferredAction::SetBuild(const_int(x, y, z), const int builder_slot) {
     SetXyz(x, y, z);
     srcSlot  = builder_slot;
     type     = DEFERRED_BUILD;
 }
 
-void DeferredAction::SetDamage(const int x, const int y, const int z) {
+void DeferredAction::SetDamage(const_int(x, y, z)) {
     SetXyz(x, y, z);
     type = DEFERRED_DAMAGE;
 }
 
-void DeferredAction::SetThrow(const int x, const int y, const int z,
-        const int src, const int dest, const int n)
-{
+void DeferredAction::SetThrow(const_int (x, y, z), const_int(src, dest, n)) {
     SetXyz(x, y, z);
     srcSlot  = src;
     destSlot = dest;
@@ -157,15 +153,13 @@ void DeferredAction::SetThrow(const int x, const int y, const int z,
     type = DEFERRED_THROW;
 }
 
-void DeferredAction::SetPour(const int x, const int y, const int z,
-        const int src)
-{
+void DeferredAction::SetPour(const_int(x, y, z), const int src) {
     SetXyz(x, y, z);
     srcSlot = src;
     type = DEFERRED_POUR;
 }
 
-void DeferredAction::SetSetFire(const int x, const int y, const int z) {
+void DeferredAction::SetSetFire(const_int(x, y, z)) {
     SetXyz(x, y, z);
     type = DEFERRED_SET_FIRE;
 }

@@ -82,9 +82,8 @@ QString World::TimeOfDayStr() const {
         arg(TimeOfDay()%60, 2, 10, QChar::fromLatin1('0'));
 }
 
-bool World::Drop(Block * const block_from,
-        const int x_to, const int y_to, const int z_to,
-        const int src, const int dest, const int num)
+bool World::Drop(Block * const block_from, const_int(x_to, y_to, z_to),
+        const_int(src, dest, num))
 {
     Block * const block_to = BlockFactory::NewBlock(BOX, DIFFERENT);
     if ( not Build(block_to, x_to, y_to, z_to) ) {
@@ -93,9 +92,8 @@ bool World::Drop(Block * const block_from,
     return Exchange(block_from, GetBlock(x_to, y_to, z_to), src, dest, num);
 }
 
-bool World::Get(Block * const block_to,
-        const int x_from, const int y_from, const int z_from,
-        const int src, const int dest, const int num)
+bool World::Get(Block * const block_to, const_int(x_from, y_from, z_from),
+        const_int(src, dest, num))
 {
     Block     * const block_from = GetBlock(x_from, y_from, z_from);
     Inventory * const inv_from   = block_from->HasInventory();
@@ -115,7 +113,7 @@ bool World::InBounds(const int x, const int y) const {
     return ( (0 <= x && x <= GetBound()) && (0 <= y && y <= GetBound()) );
 }
 
-bool World::InBounds(const int x, const int y, const int z) const {
+bool World::InBounds(const_int(x, y, z)) const {
     return ( InBounds(x, y) && Shred::InBounds(z) );
 }
 
@@ -176,7 +174,7 @@ dirs World::Anti(const dirs dir) {
         (dir & 3) + 2 );
 }
 
-Block * World::GetBlock(const int x, const int y, const int z) const {
+Block * World::GetBlock(const_int(x, y, z)) const {
     return GetShred(x, y)->
         GetBlock(Shred::CoordInShred(x), Shred::CoordInShred(y), z);
 }
@@ -342,8 +340,8 @@ const {
 }
 
 bool World::Visible(
-        const int x_from, const int y_from, const int z_from,
-        const int x_to,   const int y_to,   const int z_to)
+        const_int(x_from, y_from, z_from),
+        const_int(x_to,   y_to,   z_to) )
 const {
     int temp;
     return ( DirectlyVisible(x_from, y_from, z_from, x_to, y_to, z_to)
@@ -362,7 +360,7 @@ const {
         );
 }
 
-bool World::Move(const int x, const int y, const int z, const dirs dir) {
+bool World::Move(const_int(x, y, z), const dirs dir) {
     int newx, newy, newz;
     if ( Focus(x, y, z, &newx, &newy, &newz, dir) ) {
         switch ( CanMove(x, y, z, newx, newy, newz, dir) ) {
@@ -378,8 +376,9 @@ bool World::Move(const int x, const int y, const int z, const dirs dir) {
     }
 }
 
-World::can_move_results World::CanMove(const int x, const int y, const int z,
-        const int newx, const int newy, const int newz, const dirs dir)
+World::can_move_results World::CanMove(
+        const_int(x, y, z),
+        const_int(newx, newy, newz), const dirs dir)
 {
     Block * const block    = GetBlock(x, y, z);
     Block *       block_to = GetBlock(newx, newy, newz);
@@ -438,8 +437,8 @@ World::can_move_results World::CanMove(const int x, const int y, const int z,
     return CAN_MOVE_CANNOT;
 } // bool World::CanMove(const int x, y, z, newx, newy, newz, int dir)
 
-void World::NoCheckMove(const int x, const int y, const int z,
-        const int newx, const int newy, const int newz, const dirs dir)
+void World::NoCheckMove(const_int(x, y, z),
+                        const_int(newx, newy, newz), const dirs dir)
 {
     Shred * const shred_from = GetShred(   x,    y);
     Shred * const shred_to   = GetShred(newx, newy);
@@ -472,7 +471,7 @@ void World::NoCheckMove(const int x, const int y, const int z,
     }
 }
 
-void World::Jump(const int x, const int y, const int z, const dirs dir) {
+void World::Jump(const_int(x, y, z), const dirs dir) {
     if ( not (AIR == GetBlock(x, y, z-1)->Sub() && GetBlock(x, y, z)->Weight())
             && Move(x, y, z, UP) )
     {
@@ -480,7 +479,7 @@ void World::Jump(const int x, const int y, const int z, const dirs dir) {
     }
 }
 
-bool World::Focus(const int x, const int y, const int z,
+bool World::Focus(const_int(x, y, z),
         int * x_to, int * y_to, int * z_to, const dirs dir)
 const {
     *x_to = x;
@@ -512,7 +511,7 @@ int World::Damage(int x, int y, const int z, const int dmg, const int dmg_kind)
     return temp->GetDurability();
 }
 
-void World::DestroyAndReplace(const int x, const int y, const int z) {
+void World::DestroyAndReplace(const_int(x, y, z)) {
     Shred * const  shred = GetShred(x, y);
     const int x_in_shred = Shred::CoordInShred(x);
     const int y_in_shred = Shred::CoordInShred(y);
@@ -537,7 +536,7 @@ void World::DestroyAndReplace(const int x, const int y, const int z) {
     shred->AddFalling(shred->GetBlock(x_in_shred, y_in_shred, z+1));
 }
 
-bool World::Build(Block * const block, const int x, const int y, const int z,
+bool World::Build(Block * const block, const_int(x, y, z),
         const int dir, Block * const who, const bool anyway)
 {
     Shred * const shred = GetShred(x, y);
@@ -562,7 +561,7 @@ bool World::Build(Block * const block, const int x, const int y, const int z,
     return true;
 }
 
-bool World::Inscribe(const int x, const int y, const int z) {
+bool World::Inscribe(const_int(x, y, z)) {
     Shred * const shred = GetShred(x, y);
     const int x_in = Shred::CoordInShred(x);
     const int y_in = Shred::CoordInShred(y);
@@ -577,7 +576,7 @@ bool World::Inscribe(const int x, const int y, const int z) {
 }
 
 bool World::Exchange(Block * const block_from, Block * const block_to,
-        const int src, const int dest, const int num)
+        const_int(src, dest, num))
 {
     Inventory * const inv_to = block_to->HasInventory();
     if ( not inv_to ) {

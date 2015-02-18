@@ -52,33 +52,10 @@ void World::Shine(const Xyz& xyz, int level) {
     }
 }
 
-void World::SunShineVertical(const int x, const int y) {
-    /* 2 1 3
-     *   *   First, light goes down, then divides to 4 branches
-     * ^ | ^ to N-S-E-W, and goes up.
-     * | | |
-     * |<v>|
-     * # # #   */
-    Shred * const shred = GetShred(x, y);
-    const int x_in = Shred::CoordInShred(x);
-    const int y_in = Shred::CoordInShred(y);
-    shred->AddLightOne(x_in, y_in, HEIGHT-1);
-    for (int z = HEIGHT-2; ; --z) {
-        shred->AddLightOne(x_in, y_in, z);
-        switch ( shred->GetBlock(x_in, y_in, z)->Transparent() ) {
-        case BLOCK_OPAQUE: return;
-        case BLOCK_TRANSPARENT:
-            if ( not initial_lighting ) {
-                emit Updated(x, y, z);
-            }
-            break;
-        }
-    }
-}
-
-void World::ReEnlighten(const int x, const int y, const int z) {
+void World::ReEnlighten(const_int(x, y, z)) {
     if ( not GetEvernight() ) {
-        SunShineVertical(x, y);
+        GetShred(x, y)->SunShineVertical(
+            Shred::CoordInShred(x), Shred::CoordInShred(y), false );
     }
     const int radius = GetBlock(x, y, z)->LightRadius();
     if ( radius != 0 ) {
@@ -126,18 +103,17 @@ void World::ReEnlightenMove(const dirs dir) {
     initial_lighting = false;
 }
 
-void World::AddLight(const int x, const int y, const int z, const int level) {
+void World::AddLight(const_int(x, y, z), const int level) {
     GetShred(x, y)->
         AddLight(Shred::CoordInShred(x), Shred::CoordInShred(y), z, level);
 }
 
-int World::Enlightened(const int x, const int y, const int z) const {
+int World::Enlightened(const_int(x, y, z)) const {
     return GetShred(x, y)->
         Lightmap(Shred::CoordInShred(x), Shred::CoordInShred(y), z);
 }
 
-int World::Enlightened(const int i, const int j, const int k, const dirs dir)
-const {
+int World::Enlightened(const_int(i, j, k), const dirs dir) const {
     int x, y, z;
     Focus(i, j, k, &x, &y, &z, dir);
     return qMax(Enlightened(i, j, k), Enlightened(x, y, z));
@@ -145,16 +121,10 @@ const {
 
 // Shred methods
 
-int Shred::Lightmap(const int x, const int y, const int z) const {
-    return lightMap[x][y][z];
-}
-
-void Shred::AddLight(const int x, const int y, const int z, const int level) {
+int  Shred::Lightmap   (const_int(x, y, z)) const { return lightMap[x][y][z]; }
+void Shred::AddLightOne(const_int(x, y, z))       {      ++lightMap[x][y][z]; }
+void Shred::AddLight   (const_int(x, y, z), const int level) {
     lightMap[x][y][z] += level;
-}
-
-void Shred::AddLightOne(const int x, const int y, const int z) {
-    ++lightMap[x][y][z];
 }
 
 void Shred::SetAllLightMapNull() { memset(lightMap, 0, sizeof(lightMap)); }
@@ -162,17 +132,28 @@ void Shred::SetAllLightMapNull() { memset(lightMap, 0, sizeof(lightMap)); }
 /// Makes all shining blocks of shred shine.
 void Shred::ShineAll() {
     World * const world = World::GetWorld();
-    for (const Active * const shining : shiningList) {
-        world->Shine(shining->GetXyz(), shining->LightRadius());
+    auto shining = shiningList.cbegin();
+    while ( shining != shiningList.cend() ) {
+        world->Shine(shining.key()->GetXyz(), shining.value());
+        ++shining;
     }
-    if ( not world->GetEvernight() ) {
-        const int start_x = shredX * SHRED_WIDTH;
-        const int start_y = shredY * SHRED_WIDTH;
-        const int end_x = start_x + SHRED_WIDTH;
-        const int end_y = start_y + SHRED_WIDTH;
-        for (int i=start_x; i<end_x; ++i)
-        for (int j=start_y; j<end_y; ++j) {
-            world->SunShineVertical(i, j);
+    const bool initial = world->GetInitial();
+    FOR_ALL_SHRED_AREA(x, y) {
+        SunShineVertical(x, y, initial);
+    }
+}
+
+void Shred::SunShineVertical(const int x, const int y, const bool initial) {
+    AddLightOne(x, y, HEIGHT-1);
+    for (int z = HEIGHT-2; ; --z) {
+        AddLightOne(x, y, z);
+        switch ( GetBlock(x, y, z)->Transparent() ) {
+        case BLOCK_OPAQUE: return;
+        case BLOCK_TRANSPARENT:
+            if ( not initial ) {
+                emit World::GetWorld()->Updated(x, y, z);
+            }
+            break;
         }
     }
 }

@@ -222,21 +222,13 @@ void Shred::PhysEventsRare() {
     fallList.remove(nullptr);
 }
 
-std::forward_list<Active *>::const_iterator Shred::ShiningBegin() const {
-    return shiningList.cbegin();
+const QHash<Active *, int>& Shred::GetShiningList() const {
+    return shiningList;
 }
 
-std::forward_list<Active *>::const_iterator Shred::ShiningEnd() const {
-    return shiningList.cend();
-}
+Block * Shred::GetBlock(const_int(x, y, z)) const { return blocks[x][y][z]; }
 
-Block * Shred::GetBlock(const int x, const int y, const int z) const {
-    return blocks[x][y][z];
-}
-
-void Shred::PutBlock(Block * const block,
-        const int x, const int y, const int z)
-{
+void Shred::PutBlock(Block * const block, const_int(x, y, z)) {
     blocks[x][y][z] = block;
 }
 
@@ -278,8 +270,9 @@ void Shred::AddFalling(Block * const block) {
 }
 
 void Shred::AddShining(Active * const active) {
-    if ( active->LightRadius() != 0 ) {
-        shiningList.push_front(active);
+    const int radius = active->LightRadius();
+    if ( radius != 0 ) {
+        shiningList.insert(active, radius);
     }
 }
 
@@ -306,9 +299,7 @@ void Shred::SetBlock(Block * block, const int x, const int y, const int z) {
     }
 }
 
-void Shred::SetBlockNoCheck(Block * const block,
-        const int x, const int y, const int z)
-{
+void Shred::SetBlockNoCheck(Block * const block, const_int(x, y, z)) {
     Active * const active = ( blocks[x][y][z]=block )->ActiveBlock();
     if ( active != nullptr ) {
         active->SetXyz(x, y, z);
@@ -552,9 +543,8 @@ void Shred::ChaosShred() {
     }
 }
 
-void Shred::NormalCube(
-        const int x_start, const int y_start, const int z_start,
-        const int x_size,  const int y_size,  const int z_size, const subs sub)
+void Shred::NormalCube(const_int(x_start, y_start, z_start),
+                       const_int(x_size,  y_size,  z_size), const subs sub)
 {
     Q_ASSERT(InBounds(x_start, y_start, z_start) &&
         InBounds(x_start + x_size-1, y_start + y_size-1, z_start + z_size-1));

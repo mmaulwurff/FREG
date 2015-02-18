@@ -31,6 +31,7 @@ const bool DEBUG = true;
 #endif
 
 #define ALL(container) std::begin(container), std::end(container)
+#define const_int(x, y, z) const int x, const int y, const int z
 
 #define QT_NO_CAST_FROM_ASCII
 #define QT_NO_CAST_TO_ASCII

@@ -24,6 +24,7 @@
 #include "header.h"
 #include <forward_list>
 #include <QLinkedList>
+#include <QHash>
 
 /// Cycles over all shred area.
 #define FOR_ALL_SHRED_AREA(x, y) \
@@ -71,8 +72,7 @@ public:
     void AddToDelete(Active *);
     void ReloadTo(dirs);
 
-    std::forward_list<Active *>::const_iterator ShiningBegin() const;
-    std::forward_list<Active *>::const_iterator ShiningEnd() const;
+    const QHash<Active*, int>& GetShiningList() const;
 
     void SaveShred(bool isQuitGame);
 
@@ -97,6 +97,7 @@ public:
         void AddLightOne(int x, int y, int z);
         void AddLight(   int x, int y, int z, int level);
 
+        void SunShineVertical(int x, int y, bool initial);
         void SetAllLightMapNull();
         void ShineAll();
     ///@}
@@ -193,7 +194,7 @@ private:
 
     QLinkedList<Active *> activeListFrequent;
     std::forward_list<Active *> activeListAll;
-    std::forward_list<Active *> shiningList;
+    QHash<Active *, int> shiningList;
     std::forward_list<class Falling *> fallList;
 };
 

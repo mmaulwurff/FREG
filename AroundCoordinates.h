@@ -21,6 +21,7 @@
 #define AROUNDCOORDINATES_H
 
 #include "Xyz.h"
+#include "World.h"
 
 enum dirsBits {
     B_UP     = 1,
@@ -36,6 +37,8 @@ public:
 
 protected:
     AroundCoordinatesN() : array(), size(0) {}
+
+    void fill4(const Xyz & center);
 
     Xyz array[maxSize];
     int size;
@@ -55,5 +58,14 @@ class AroundCoordinates4 : public AroundCoordinatesN<4> {
 public:
     AroundCoordinates4(const Xyz & source);
 };
+
+template<int maxSize>
+void AroundCoordinatesN<maxSize>::fill4(const Xyz & xyz) {
+    if ( xyz.X() > 0 )    array[size++] = { xyz.X()-1, xyz.Y(), xyz.Z() };
+    if ( xyz.Y() > 0 )    array[size++] = { xyz.X(), xyz.Y()-1, xyz.Z() };
+    const int bound = World::GetWorld()->GetBound();
+    if ( xyz.X() < bound) array[size++] = { xyz.X()+1, xyz.Y(), xyz.Z() };
+    if ( xyz.Y() < bound) array[size++] = { xyz.X(), xyz.Y()+1, xyz.Z() };
+}
 
 #endif // AROUNDCOORDINATES_H
