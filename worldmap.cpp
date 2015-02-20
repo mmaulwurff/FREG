@@ -22,6 +22,8 @@
 #include <QSettings>
 #include <QFile>
 
+#define UNDERGROUND_ONLY true
+
 WorldMap::WorldMap(const QString world_name) :
         mapSize(),
         map(),
@@ -90,11 +92,12 @@ qint64 WorldMap::GetSpawnLongitude() const { return spawnLongitude; }
 qint64 WorldMap::GetSpawnLatitude()  const { return spawnLatitude;  }
 
 char WorldMap::TypeOfShred(const qint64 longi, const qint64 lati) const {
-    //Q_UNUSED(longi); Q_UNUSED(lati); return SHRED_UNDERGROUND; // for testing
-    return ( longi > mapSize || longi <= 0 ||
-             lati  > mapSize || lati  <= 0 ) ?
-        outerShred :
-        map[(longi-1)*mapSize + lati - 1];
+    return UNDERGROUND_ONLY ?
+        SHRED_UNDERGROUND :
+        static_cast<shred_type>((longi > mapSize || longi <= 0 ||
+                                 lati  > mapSize || lati  <= 0) ?
+            outerShred :
+            map[(longi-1)*mapSize + lati - 1]);
 }
 
 float WorldMap::Deg(const int x, const int y, const int size) {

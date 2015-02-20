@@ -33,8 +33,8 @@ int Dwarf::Weight() const {
         0 : Inventory::Weight() + Block::Weight();
 }
 
-Block * Dwarf::DropAfterDamage(bool * const delete_block) {
-    Block * const cadaver = Animal::DropAfterDamage(delete_block);
+Block* Dwarf::DropAfterDamage(bool * const delete_block) {
+    Block* const cadaver = Animal::DropAfterDamage(delete_block);
     cadaver->HasInventory()->Get(BlockFactory::NewBlock(WEAPON, BONE));
     return cadaver;
 }
@@ -46,22 +46,24 @@ bool Dwarf::Access() const { return false; }
 Inventory * Dwarf::HasInventory() { return this; }
 void Dwarf::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
 
+inner_actions Dwarf::ActInner() {
+    const int old_radius = lightRadius;
+    lightRadius = UpdateLightRadiusInner();
+    UpdateLightRadius(old_radius);
+    return Animal::ActInner();
+}
+
 QString Dwarf::FullName() const {
     return ( DIFFERENT == Sub() ) ?
         tr("Creator") : Animal::FullName();
 }
 
-void Dwarf::UpdateLightRadius() {
-    lightRadius = UpdateLightRadiusInner();
-    Active::UpdateLightRadius();
-}
-
 int Dwarf::UpdateLightRadiusInner() const {
-    const Block * const in_left  = ShowBlock(IN_LEFT);
-    const Block * const in_right = ShowBlock(IN_RIGHT);
-    const int left_rad  = in_left  ? in_left ->LightRadius() : 0;
-    const int right_rad = in_right ? in_right->LightRadius() : 0;
-    return qMax(MIN_DWARF_LIGHT_RADIUS, qMax(left_rad, right_rad));
+    const Block* const in_left  = ShowBlock(IN_LEFT );
+    const Block* const in_right = ShowBlock(IN_RIGHT);
+    return qMax(
+        (in_left  ? in_left ->LightRadius() : 0),
+        (in_right ? in_right->LightRadius() : 0) );
 }
 
 int Dwarf::DamageKind() const {
@@ -95,7 +97,7 @@ void Dwarf::Damage(const int dmg, const int dmg_kind) {
     const int places[] = { ON_HEAD, ON_BODY, ON_LEGS };
     for (const int i : places) {
         if ( IsEmpty(i) ) continue;
-        Block * const armour = ShowBlock(i);
+        Block* const armour = ShowBlock(i);
         const int dur_before_damage = armour->GetDurability();
         const int damage_divider = (i == ON_BODY) ? 2 : 4;
         armour->Damage(dmg/damage_divider, dmg_kind);
@@ -131,27 +133,15 @@ int Dwarf::NutritionalValue(const subs sub) const {
     }
 }
 
-bool Dwarf::GetExact(Block * const block, const int to) {
-    if ( block == nullptr ) return true;
-    if ( (to >= SPECIAL_SLOTS_COUNT || ( IsEmpty(to) && (
+bool Dwarf::GetExact(Block* const block, const int to) {
+    return ( block == nullptr ) ||
+        ( (to >= SPECIAL_SLOTS_COUNT || ( IsEmpty(to) && (
                      IN_RIGHT==to
                 ||   IN_LEFT ==to
                 || ( ON_HEAD ==to && WEARABLE_HEAD==block->Wearable() )
                 || ( ON_BODY ==to && WEARABLE_BODY==block->Wearable() )
                 || ( ON_LEGS ==to && WEARABLE_LEGS==block->Wearable() ))))
-            && Inventory::GetExact(block, to) )
-    {
-        World * const world = World::GetWorld();
-        if ( (lightRadius = UpdateLightRadiusInner()) == 0 ) {
-            world->GetShred(X(), Y())->RemShining(this);
-        } else {
-            world->GetShred(X(), Y())->AddShining(this);
-            world->Shine(GetXyz(), lightRadius);
-        }
-        return true;
-    } else {
-        return false;
-    }
+            && Inventory::GetExact(block, to) );
 }
 
 void Dwarf::SaveAttributes(QDataStream & out) const {
@@ -177,13 +167,13 @@ QString Dwarf::InvFullName(const int slot_number) const {
         Inventory::InvFullName(slot_number);
 }
 
-Dwarf::Dwarf(const int kind, const int sub) :
+Dwarf::Dwarf(const kinds kind, const subs sub) :
         Animal(kind, sub),
         Inventory(),
-        lightRadius(MIN_DWARF_LIGHT_RADIUS)
+        lightRadius(0)
 {}
 
-Dwarf::Dwarf(QDataStream & str, const int kind, const int sub) :
+Dwarf::Dwarf(QDataStream& str, const kinds kind, const subs sub) :
         Animal(str, kind, sub),
         Inventory(str),
         lightRadius(UpdateLightRadiusInner())

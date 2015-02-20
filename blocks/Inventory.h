@@ -24,6 +24,7 @@
 #define INVENTORY_H
 
 #include <QStack>
+#include "header.h"
 
 class Block;
 
@@ -39,13 +40,13 @@ public:
     virtual bool GetAll(Inventory * from);
     virtual bool Access() const;
     /// Returns true on success.
-    virtual bool Get(Block * block, int start = 0);
+    virtual bool Get(Block* block, int start = 0);
     virtual void ReceiveSignal(QString) = 0;
     virtual int Start() const;
     virtual int Weight() const;
     virtual QString FullName() const = 0;
     /// Returns true if block found its place.
-    virtual bool GetExact(Block * block, int num);
+    virtual bool GetExact(Block* block, int num);
     virtual QString InvFullName(int num) const;
 
     /// Removes block from inventory. Does not delete block.
@@ -56,15 +57,15 @@ public:
     /// Returns true on success.
     bool InscribeInv(int num, QString str);
     /// Returns AIR if slot number i is empty.
-    int  GetInvSub(int i) const;
+    subs GetInvSub(int i) const;
     /// Returns BLOCK if slot number i is empty.
-    int  GetInvKind(int i) const;
+    kinds GetInvKind(int i) const;
     int Size() const { return size; }
     int GetInvWeight(int i) const;
     int Number(const int i) const { return inventory[i].size(); }
-    Block * ShowBlock(int slot) const;
+    Block* ShowBlock(int slot) const;
     /// Don't move block shown by this function.
-    Block * ShowBlockInSlot(int slot, int index) const;
+    Block* ShowBlockInSlot(int slot, int index) const;
 
     /// Returns true if all inventory slots are empty.
     bool IsEmpty() const;
@@ -90,10 +91,10 @@ protected:
     virtual void SaveAttributes(QDataStream & out) const;
 
 private:
-    static int GetSlotWeight(const QStack<Block *> & slot);
+    static int GetSlotWeight(const QStack<Block*> & slot);
 
     const quint8 size;
-    QStack<Block *> * const inventory;
+    QStack<Block*> * const inventory;
 };
 
 #endif // INVENTORY_H

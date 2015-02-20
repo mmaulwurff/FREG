@@ -21,12 +21,12 @@
 #include "TrManager.h"
 #include <QDataStream>
 
-Bucket::Bucket(const int kind, const int sub) :
+Bucket::Bucket(const kinds kind, const subs sub) :
         Block(kind, sub),
         Inventory(1)
 {}
 
-Bucket::Bucket(QDataStream & str, const int kind, const int sub) :
+Bucket::Bucket(QDataStream& str, const kinds kind, const subs sub) :
         Block(str, kind, sub),
         Inventory(str, 1)
 {}
@@ -53,7 +53,7 @@ QString Bucket::FullName() const {
                 arg(MAX_STACK_SIZE)) );
 }
 
-bool Bucket::Get(Block * const block, const int start) {
+bool Bucket::Get(Block* const block, const int start) {
     if ( block->Wearable() == WEARABLE_VESSEL ) {
         for (int i=start; i<Size(); ++i) {
             if ( GetExact(block, i) ) {

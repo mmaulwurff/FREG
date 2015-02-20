@@ -62,11 +62,9 @@ void DeferredAction::Build() const {
         }
     }
     Inventory * const inv = attachedBlock->HasInventory();
-    Block * const material = inv->ShowBlock(srcSlot);
-    if ( not world->Build(material, x, y, z,
-            World::Anti(attachedBlock->GetDir()), attachedBlock) )
-    { // build not successful
-        return;
+    Block* const material = inv->ShowBlock(srcSlot);
+    if ( not world->Build(material, x, y, z, attachedBlock) ) {
+        return; // build not successful
     }
     inv->Pull(srcSlot);
     // put more material in building inventory slot:
@@ -75,7 +73,7 @@ void DeferredAction::Build() const {
     for (int i = srcSlot+1; i < inv->Size() &&
             inv->Number(srcSlot) < Inventory::MAX_STACK_SIZE; ++i)
     {
-        const Block * const block = inv->ShowBlock(i);
+        const Block* const block = inv->ShowBlock(i);
         if ( block && id==BlockFactory::MakeId(block->Kind(), block->Sub()) ) {
             inv->MoveInside(i, srcSlot, inv->Number(i));
         }
@@ -99,13 +97,13 @@ void DeferredAction::Pour() const {
     Inventory * const attached_inv = attachedBlock->HasInventory();
     if ( attached_inv == nullptr ) return;
 
-    Block * const vessel = attached_inv->ShowBlock(srcSlot);
+    Block* const vessel = attached_inv->ShowBlock(srcSlot);
     if ( vessel == nullptr ) return;
 
     Inventory * const vessel_inv = vessel->HasInventory();
     if ( vessel_inv == nullptr ) return;
 
-    Block * const liquid = vessel_inv->ShowBlock(0);
+    Block* const liquid = vessel_inv->ShowBlock(0);
     if ( liquid == nullptr ) return;
 
     if ( World::GetWorld()->Build(liquid, X(), Y(), Z()) ) {

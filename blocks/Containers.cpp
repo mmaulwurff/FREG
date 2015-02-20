@@ -45,8 +45,8 @@
     push_reaction Container::PushResult(dirs) const { return NOT_MOVABLE; }
     inner_actions Container::ActInner() { return INNER_ACTION_ONLY; }
 
-    Block * Container::DropAfterDamage(bool * const delete_block) {
-        Block * const pile = BlockFactory::NewBlock(BOX, DIFFERENT);
+    Block* Container::DropAfterDamage(bool * const delete_block) {
+        Block* const pile = BlockFactory::NewBlock(BOX, DIFFERENT);
         Inventory * const pile_inv = pile->HasInventory();
         GetAll(pile_inv);
         *delete_block = not pile_inv->Get(this);
@@ -69,12 +69,12 @@
         Inventory::SaveAttributes(out);
     }
 
-    Container::Container(const int kind, const int sub, const int size) :
+    Container::Container(const kinds kind, const subs sub, const int size) :
             Active(kind, sub),
             Inventory(size)
     {}
 
-    Container::Container(QDataStream & str, const int kind, const int sub,
+    Container::Container(QDataStream& str, const kinds kind, const subs sub,
             const int size)
         :
             Active(str, kind, sub),
@@ -82,12 +82,12 @@
     {}
 
 // Box::
-    Box::Box(const int kind, const int sub) :
+    Box::Box(const kinds kind, const subs sub) :
             Falling(kind, sub),
             Inventory(INV_SIZE)
     {}
 
-    Box::Box(QDataStream & str, const int kind, const int sub) :
+    Box::Box(QDataStream& str, const kinds kind, const subs sub) :
             Falling(str, kind, sub),
             Inventory(str, INV_SIZE)
     {}
@@ -121,7 +121,7 @@
         }
     }
 
-    Block * Box::DropAfterDamage(bool * const delete_block) {
+    Block* Box::DropAfterDamage(bool * const delete_block) {
         *delete_block = true;
         return BlockFactory::Normal(AIR);
     }
@@ -159,7 +159,7 @@
     void Workbench::Craft() {
         for (int i=0; i<Start(); ++i) { // remove previous products
             while ( not IsEmpty(i) ) {
-                Block * const to_pull = ShowBlock(i);
+                Block* const to_pull = ShowBlock(i);
                 Pull(i);
                 BlockFactory::DeleteBlock(to_pull);
             }
@@ -181,7 +181,9 @@
             for (int i=0; i<list.size(); ++i) {
                 for (int n=0; n<list.at(i)->number; ++n) {
                     const CraftItem * const item = list.at(i);
-                    GetExact(BlockFactory::NewBlock(item->kind, item->sub), i);
+                    GetExact(BlockFactory::NewBlock(
+                        static_cast<kinds>(item->kind),
+                        static_cast<subs >(item->sub )), i);
                 }
             }
         }
@@ -204,7 +206,7 @@
                 // remove materials:
                 for (int i=Start(); i<Size(); ++i) {
                     while ( not IsEmpty(i) ) {
-                        Block * const to_pull = ShowBlock(i);
+                        Block* const to_pull = ShowBlock(i);
                         Pull(i);
                         BlockFactory::DeleteBlock(to_pull);
                     }
@@ -232,7 +234,7 @@
 
     int Workbench::Start() const { return 2; }
 
-    bool Workbench::Get(Block * const block, const int start) {
+    bool Workbench::Get(Block* const block, const int start) {
         if ( Inventory::Get(block, start) ) {
             Craft();
             return true;
@@ -250,16 +252,16 @@
         }
     }
 
-    Workbench::Workbench(const int kind, const int sub) :
+    Workbench::Workbench(const kinds kind, const subs sub) :
             Container(kind, sub, WORKBENCH_SIZE)
     {}
 
-    Workbench::Workbench(QDataStream & str, const int kind, const int sub) :
+    Workbench::Workbench(QDataStream& str, const kinds kind, const subs sub) :
             Container(str, kind, sub, WORKBENCH_SIZE)
     {}
 
 // Converter
-    Converter::Converter(const int kind, const int sub) :
+    Converter::Converter(const kinds kind, const subs sub) :
             Container(kind, sub, WORKBENCH_SIZE),
             isOn(false),
             fuelLevel(0),
@@ -270,7 +272,7 @@
         InitDamageKinds();
     }
 
-    Converter::Converter(QDataStream & str, const int kind, const int sub) :
+    Converter::Converter(QDataStream& str, const kinds kind, const subs sub) :
             Container(str, kind, sub, WORKBENCH_SIZE),
             isOn(),
             fuelLevel(),
@@ -303,7 +305,7 @@
     void Converter::DoRareAction() {
         if ( isOn && fuelLevel < World::SECONDS_IN_DAY/DamageLevel() ) {
             for (int i=Size()-1; i>=0; --i) {
-                Block * const block = ShowBlock(i);
+                Block* const block = ShowBlock(i);
                 if ( block != nullptr ) {
                     const int add = ConvertRatio(block->Sub());
                     if ( add > 0 ) {

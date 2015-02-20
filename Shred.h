@@ -24,7 +24,6 @@
 #include "header.h"
 #include <forward_list>
 #include <QLinkedList>
-#include <QHash>
 
 /// Cycles over all shred area.
 #define FOR_ALL_SHRED_AREA(x, y) \
@@ -72,39 +71,37 @@ public:
     void AddToDelete(Active *);
     void ReloadTo(dirs);
 
-    const QHash<Active*, int>& GetShiningList() const;
+    const std::forward_list<Active *>& GetShiningList() const;
 
     void SaveShred(bool isQuitGame);
 
-    Block * GetBlock(int x, int y, int z) const;
-    const Block * FindFirstVisible(int x, int y, int * z, int step) const;
+    Block* GetBlock(int x, int y, int z) const;
+    const Block* FindFirstVisible(int x, int y, int * z, int step) const;
 
     /// Removes last block at xyz, then SetBlock, then makes block normal.
-    void SetBlock(Block * block, int x, int y, int z);
+    void SetBlock(Block* block, int x, int y, int z);
     /// Puts block to coordinates xyz and activates it.
-    void SetBlockNoCheck(Block *, int x, int y, int z);
-    void AddFalling(Block *);
+    void SetBlockNoCheck(Block*, int x, int y, int z);
+    void AddFalling(Block*);
 
     /// Puts block to coordinates, not activates it.
-    void PutBlock(Block * block, int x, int y, int z);
+    void PutBlock(Block* block, int x, int y, int z);
 
     ///\name Lighting section
     ///@{
+        /// Get light level in coordinates x, y, z.
         int Lightmap(int x, int y, int z) const;
 
-        /// Sets sun light to 1 in coordinates xyz.
-        /// \returns false if light is already set, othewise true.
-        void AddLightOne(int x, int y, int z);
-        void AddLight(   int x, int y, int z, int level);
+        /// Sets sun light to level in coordinates xyz.
+        void AddLight(int x, int y, int z, int level);
 
-        void SunShineVertical(int x, int y, bool initial);
-        void SetAllLightMapNull();
+        /// Make all shining block shine.
         void ShineAll();
     ///@}
 
     ///\name Information section
     ///@{
-        void SetNewBlock(int kind, int sub, int x, int y, int z, int dir = UP);
+        void SetNewBlock(kinds, subs, int x, int y, int z);
         shred_type GetTypeOfShred() const { return type; }
 
         static QString FileName(qint64 longi, qint64 lati);
@@ -124,8 +121,8 @@ public:
         static bool InBounds(int z);
     ///@}
 
-    void Rain(int kind, int sub);
-    void Dew (int kind, int sub);
+    void Rain(kinds, subs);
+    void Dew (kinds, subs);
 
 private:
     Q_DISABLE_COPY(Shred)
@@ -135,21 +132,17 @@ private:
 
     static const int RAIN_IS_DEW = 1;
 
-    void RemoveAllSunLight();
-    void RemoveAllFireLight();
-    void RemoveAllLight();
-
     bool LoadShred();
     void RegisterInit(Active *);
 
     /// Builds normal underground. Returns ground level.
     int NormalUnderground(int depth = 0, subs sub = SOIL);
-    void CoverWith(int kind, int sub);
+    void CoverWith(kinds, subs);
     /// Puts num things(kind-sub) in random places on shred surface.
     /** If on_water is false, this will not drop things on water,
      *  otherwise on water too. */
-    void RandomDrop(int num, int kind, int sub, bool on_water = false);
-    void DropBlock(Block * bloc, bool on_water);
+    void RandomDrop(int num, kinds, subs, bool on_water = false);
+    void DropBlock(Block* bloc, bool on_water);
     int FindTopNonAir(int x, int y);
 
     void PlantGrass();
@@ -173,7 +166,7 @@ private:
     bool LoadRoom(int level, int index = 0);
 
     /// Block combinations section (trees, buildings, etc):
-    bool Tree(int x, int y, int z, int height);
+    bool Tree(int x, int y, int z);
 
     /// Special land generation
     void ShredLandAmplitudeAndLevel(qint64 longi, qint64 lati,
@@ -186,7 +179,7 @@ private:
 
     void RainBlock(int * kind, int * sub) const;
 
-    Block * blocks[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
+    Block* blocks[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
     uchar lightMap[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
     const qint64 longitude, latitude;
     int shredX, shredY;
@@ -194,7 +187,7 @@ private:
 
     QLinkedList<Active *> activeListFrequent;
     std::forward_list<Active *> activeListAll;
-    QHash<Active *, int> shiningList;
+    std::forward_list<Active *> shiningList;
     std::forward_list<class Falling *> fallList;
 };
 

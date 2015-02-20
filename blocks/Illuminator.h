@@ -22,16 +22,15 @@
 
 #include "blocks/Active.h"
 
-class Illuminator : public Active {
+class Illuminator final : public Active {
     Q_OBJECT
 public:
-    Illuminator(int sub, int id);
-    Illuminator(QDataStream & str, int sub, int id);
+    BLOCK_CONSTRUCTORS(Illuminator)
 
     int  ShouldAct() const override;
     int  DamageKind() const override;
     int  LightRadius() const override;
-    Block * DropAfterDamage(bool * delete_block) override;
+    Block* DropAfterDamage(bool * delete_block) override;
     QString FullName() const override;
     wearable Wearable() const override;
     usage_types Use(Active *) override;

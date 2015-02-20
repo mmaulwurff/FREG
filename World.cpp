@@ -82,17 +82,17 @@ QString World::TimeOfDayStr() const {
         arg(TimeOfDay()%60, 2, 10, QChar::fromLatin1('0'));
 }
 
-bool World::Drop(Block * const block_from, const_int(x_to, y_to, z_to),
+bool World::Drop(Block* const block_from, const_int(x_to, y_to, z_to),
         const_int(src, dest, num))
 {
-    Block * const block_to = BlockFactory::NewBlock(BOX, DIFFERENT);
+    Block* const block_to = BlockFactory::NewBlock(BOX, DIFFERENT);
     if ( not Build(block_to, x_to, y_to, z_to) ) {
         delete block_to;
     }
     return Exchange(block_from, GetBlock(x_to, y_to, z_to), src, dest, num);
 }
 
-bool World::Get(Block * const block_to, const_int(x_from, y_from, z_from),
+bool World::Get(Block* const block_to, const_int(x_from, y_from, z_from),
         const_int(src, dest, num))
 {
     Block     * const block_from = GetBlock(x_from, y_from, z_from);
@@ -102,8 +102,10 @@ bool World::Get(Block * const block_to, const_int(x_from, y_from, z_from),
             return Exchange(block_from, block_to, src, dest, num);
         }
     } else if ( Exchange(block_from, block_to, src, dest, num) ) {
-        Build(BlockFactory::Normal(AIR), x_from, y_from, z_from, UP,
-            nullptr, true);
+        Block* const air = BlockFactory::Normal(AIR);
+        ReEnlightenCheck(air, block_from, x_from, y_from, z_from);
+        GetShred(x_from, y_from)->PutBlock(air,
+            Shred::CoordInShred(x_from), Shred::CoordInShred(y_from), z_from);
         return true;
     }
     return false;
@@ -174,7 +176,7 @@ dirs World::Anti(const dirs dir) {
         (dir & 3) + 2 );
 }
 
-Block * World::GetBlock(const_int(x, y, z)) const {
+Block* World::GetBlock(const_int(x, y, z)) const {
     return GetShred(x, y)->
         GetBlock(Shred::CoordInShred(x), Shred::CoordInShred(y), z);
 }
@@ -305,6 +307,7 @@ void World::PhysEvents() {
         timeStep = 0;
         ++time;
     }
+    ReEnlighten();
     ReloadShreds();
     GetLock()->unlock();
     emit UpdatesEnded();
@@ -380,8 +383,8 @@ World::can_move_results World::CanMove(
         const_int(x, y, z),
         const_int(newx, newy, newz), const dirs dir)
 {
-    Block * const block    = GetBlock(x, y, z);
-    Block *       block_to = GetBlock(newx, newy, newz);
+    Block* const block    = GetBlock(x, y, z);
+    Block*       block_to = GetBlock(newx, newy, newz);
     Falling * const falling = block->ShouldFall();
     if ( DOWN != dir
             && block->Weight() != 0
@@ -446,26 +449,21 @@ void World::NoCheckMove(const_int(x, y, z),
     const int    y_in = Shred::CoordInShred(y);
     const int newx_in = Shred::CoordInShred(newx);
     const int newy_in = Shred::CoordInShred(newy);
-    Block * const block    = shred_from->GetBlock(   x_in,    y_in,    z);
-    Block * const block_to = shred_to  ->GetBlock(newx_in, newy_in, newz);
+    Block* const block    = shred_from->GetBlock(   x_in,    y_in,    z);
+    Block* const block_to = shred_to  ->GetBlock(newx_in, newy_in, newz);
+
+    ReEnlightenCheck(block, block_to, x, y, z);
 
     shred_from->PutBlock(block_to,    x_in,    y_in,    z);
     shred_to  ->PutBlock(block,    newx_in, newy_in, newz);
 
-    if ( block_to->Transparent() != block->Transparent() ) {
-        ReEnlighten(newx, newy, newz);
-        ReEnlighten(x, y, z);
-    }
-
     block->Move(dir);
-    emit Updated(newx, newy, newz);
 
     shred_from->AddFalling(shred_from->GetBlock(   x_in,    y_in,    z+1));
     shred_to  ->AddFalling(shred_to  ->GetBlock(newx_in, newy_in, newz+1));
     shred_to  ->AddFalling(block);
 
     if ( block_to->Sub() != AIR ) {
-        emit Updated(x, y, z);
         block_to->Move(Anti(dir));
         shred_from->AddFalling(block_to);
     }
@@ -501,7 +499,7 @@ int World::Damage(int x, int y, const int z, const int dmg, const int dmg_kind)
     Shred * const shred = GetShred(x, y);
     x = Shred::CoordInShred(x);
     y = Shred::CoordInShred(y);
-    Block * temp = shred->GetBlock(x, y, z);
+    Block* temp = shred->GetBlock(x, y, z);
     if ( AIR == temp->Sub() ) return Block::MAX_DURABILITY;
     if ( temp == BlockFactory::Normal(temp->Sub()) ) {
         temp = BlockFactory::NewBlock(temp->Kind(), temp->Sub());
@@ -515,16 +513,14 @@ void World::DestroyAndReplace(const_int(x, y, z)) {
     Shred * const  shred = GetShred(x, y);
     const int x_in_shred = Shred::CoordInShred(x);
     const int y_in_shred = Shred::CoordInShred(y);
-    Block * const block  = shred->GetBlock(x_in_shred, y_in_shred, z);
+    Block* const block  = shred->GetBlock(x_in_shred, y_in_shred, z);
     bool delete_block = true;
-    Block * const new_block = block->DropAfterDamage(&delete_block);
+    Block* const new_block = block->DropAfterDamage(&delete_block);
+
+    ReEnlightenCheck(block, new_block, x, y, z);
+
     shred->SetBlockNoCheck(new_block, x_in_shred, y_in_shred, z);
-    if (    block->Transparent() != new_block->Transparent() ||
-            block->LightRadius() != new_block->LightRadius() )
-    {
-        ReEnlighten(x, y, z);
-    }
-    emit Updated(x, y, z); // update before delete, because can affect deleted.
+
     if ( delete_block ) {
         BlockFactory::DeleteBlock(block);
     } else {
@@ -536,36 +532,42 @@ void World::DestroyAndReplace(const_int(x, y, z)) {
     shred->AddFalling(shred->GetBlock(x_in_shred, y_in_shred, z+1));
 }
 
-bool World::Build(Block * const block, const_int(x, y, z),
-        const int dir, Block * const who, const bool anyway)
-{
+bool World::Build(Block* const block, const_int(x, y, z), Block* const who) {
     Shred * const shred = GetShred(x, y);
     const int x_in = Shred::CoordInShred(x);
     const int y_in = Shred::CoordInShred(y);
-    Block * const target_block = shred->GetBlock(x_in, y_in, z);
-    if ( ENVIRONMENT!=target_block->PushResult(ANYWHERE) && not anyway ) {
+    Block* const target_block = shred->GetBlock(x_in, y_in, z);
+    if ( ENVIRONMENT!=target_block->PushResult(ANYWHERE) ) {
         if ( who != nullptr ) {
             who->ReceiveSignal(tr("Cannot build here."));
         }
         return false;
     } // else:
     block->Restore();
-    block->SetDir(dir);
-    const int old_transparency = target_block->Transparent();
-    const int new_transparency = block->Transparent();
+    ReEnlightenCheck(block, target_block, x, y, z);
     shred->SetBlock(block, x_in, y_in, z);
-    if ( old_transparency != new_transparency ) {
-        ReEnlighten(x, y, z);
-    }
     shred->AddFalling(shred->GetBlock(x_in, y_in, z+1));
     return true;
+}
+
+void World::ReEnlightenCheck(Block* const block1, Block* const block2,
+        const_int(x, y, z))
+{
+    if (
+            block1->Transparent() != block2->Transparent() ||
+            block1->LightRadius() != block2->LightRadius() )
+    {
+        UnShine(x, y, z);
+    } else {
+        emit UpdatedAround(x, y, z);
+    }
 }
 
 bool World::Inscribe(const_int(x, y, z)) {
     Shred * const shred = GetShred(x, y);
     const int x_in = Shred::CoordInShred(x);
     const int y_in = Shred::CoordInShred(y);
-    Block * block  = shred->GetBlock(x_in, y_in, z);
+    Block* block  = shred->GetBlock(x_in, y_in, z);
     if ( block == BlockFactory::Normal(block->Sub()) ) {
         block = BlockFactory::NewBlock(block->Kind(), block->Sub());
         shred->SetBlockNoCheck(block, x_in, y_in, z);
@@ -575,7 +577,7 @@ bool World::Inscribe(const_int(x, y, z)) {
     return block->Inscribe(str);
 }
 
-bool World::Exchange(Block * const block_from, Block * const block_to,
+bool World::Exchange(Block* const block_from, Block* const block_to,
         const_int(src, dest, num))
 {
     Inventory * const inv_to = block_to->HasInventory();
@@ -628,7 +630,7 @@ int World::CorrectNumActiveShreds(int num, const int num_shreds) {
 
 World * World::world = nullptr;
 
-World::World(const QString world_name, bool * error) :
+World::World(const QString world_name, bool * const error) :
         worldName(world_name),
         map(new WorldMap(world_name)),
         time(), timeStep(),
@@ -641,15 +643,14 @@ World::World(const QString world_name, bool * error) :
         numActiveShreds(CorrectNumActiveShreds(gameSettings->value(
             Str("number_of_active_shreds"), numShreds).toInt(), numShreds)),
         mutex(),
-        evernight(),
         newLati(), newLongi(),
         newX(), newY(), newZ(),
         newWorld(),
         toResetDir(UP),
         timer(nullptr),
         shredStorage(),
-        initial_lighting(),
-        notes()
+        notes(),
+        tempShiningList()
 {
     Q_ASSERT(world == nullptr); // world is a singleton.
     world = this;
@@ -695,7 +696,6 @@ void World::SaveState() const {
     settings.setValue(Str("time_step"), timeStep);
     settings.setValue(Str("longitude"), longitude);
     settings.setValue(Str("latitude"),  latitude );
-    settings.setValue(Str("evernight"), evernight);
 }
 
 void World::LoadNotes() {
@@ -722,7 +722,6 @@ void World::LoadState() {
         QSettings::IniFormat);
     time = setting.value(Str("time"), END_OF_NIGHT).toULongLong();
     timeStep  = setting.value(Str("time_step"), 0).toInt();
-    evernight = setting.value(Str("evernight"), false).toBool();
     longitude = setting.value(Str("longitude"),
         map->GetSpawnLongitude()).toLongLong();
     latitude  = setting.value(Str("latitude"),

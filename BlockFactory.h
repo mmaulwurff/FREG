@@ -36,9 +36,9 @@ class QDataStream;
      * Normal blocks: blocks that are not special, e.g. usual stone, air, soil
      * are actually one block (for each substance).
      * One can receive a pointer to such block with
-     * Block * Normal(int sub).
+     * Block* Normal(int sub).
      * Normal blocks are not needed to be deleted.
-     * Use Block * NewBlock(int kind, int sub) to receive a pointer to
+     * Use Block* NewBlock(int kind, int sub) to receive a pointer to
      * block that will be changed (damaged, inscribed, etc). */
 
 class BlockFactory final {
@@ -47,24 +47,24 @@ public:
     ~BlockFactory();
 
     /// Use this to receive a pointer to normal block.
-    static Block * Normal(const int sub);
+    static Block* Normal(const int sub);
 
     /// Use this to receive a pointer to new not-normal block.
-    static Block * NewBlock(int kind, int sub);
+    static Block* NewBlock(kinds kind, subs sub);
 
     /// Use this to load block from file.
-    static Block * BlockFromFile(QDataStream & str, int kind, int sub);
+    static Block* BlockFromFile(QDataStream & str, kinds kind, subs sub);
 
     /// Returns true if block is normal.
     static bool KindSubFromFile(QDataStream &, uint8_t * kind, uint8_t * sub);
 
     /// Does not actually delete normal blocks.
-    static void DeleteBlock(Block *);
+    static void DeleteBlock(Block*);
 
     /// For memory economy.
     /** Checks and replaces block with corresponding normal block.
      *  Can delete block, use carefully. */
-    static Block * ReplaceWithNormal(Block * block);
+    static Block* ReplaceWithNormal(Block* block);
 
     constexpr static int MakeId(const int kind, const int sub) {
         return (kind << 6) | sub;
@@ -73,24 +73,24 @@ public:
     static int KindFromId(const int id) { return (id >>   8); }
     static int SubFromId (const int id) { return (id & 0xFF); }
 
-    static bool IsValid(int kind, int sub);
+    static bool IsValid(kinds, subs);
 
 private:
     M_DISABLE_COPY(BlockFactory)
 
-    Block * const normals[SUB_COUNT];
+    Block* const normals[SUB_COUNT];
 
     // Block registration system:
 
     /// Array of pointers to Create functions.
-    Block * (* creates[KIND_COUNT])(int kind, int sub);
+    Block* (* creates[KIND_COUNT])(kinds kind, subs sub);
     /// Array of pointers to Load functions.
-    Block * (*   loads[KIND_COUNT])(QDataStream &, int kind, int sub);
+    Block* (*   loads[KIND_COUNT])(QDataStream &, kinds kind, subs sub);
 
     template <typename BlockType>
-    static Block * Create(int kind, int sub);
+    static Block* Create(kinds kind, subs sub);
     template <typename BlockType>
-    static Block * Load(QDataStream & str, int kind, int sub);
+    static Block* Load(QDataStream & str, kinds kind, subs sub);
 
     /// Type list struct for variadic template without formal parameters.
     template <class ...> struct typeList {};

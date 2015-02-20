@@ -26,8 +26,7 @@
 class RainMachine : public Active, public Inventory {
     Q_OBJECT
 public:
-    RainMachine(int sub, int id);
-    RainMachine(QDataStream & stream, int sub, int id);
+    BLOCK_CONSTRUCTORS(RainMachine)
 
     void DoRareAction() override;
     int  ShouldAct() const override;

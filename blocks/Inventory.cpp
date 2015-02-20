@@ -68,7 +68,7 @@ void Inventory::SaveAttributes(QDataStream & out) const {
     for (int i=0; i<Size(); ++i) {
         out << quint8(Number(i));
         if ( not inventory[i].isEmpty() ) {
-            Block * const to_save = inventory[i].top();
+            Block* const to_save = inventory[i].top();
             for (int j=0; j<Number(i); ++j) {
                 to_save->SaveToFile(out);
                 to_save->RestoreDurabilityAfterSave();
@@ -77,7 +77,7 @@ void Inventory::SaveAttributes(QDataStream & out) const {
     }
 }
 
-bool Inventory::Get(Block * const block, const int start) {
+bool Inventory::Get(Block* const block, const int start) {
     if ( block == nullptr ) return true;
     if ( block->Wearable() == WEARABLE_VESSEL ) {
         for (int i=0; i<Size(); ++i) {
@@ -102,7 +102,7 @@ bool Inventory::Get(Block * const block, const int start) {
     return false;
 }
 
-bool Inventory::GetExact(Block * const block, const int num) {
+bool Inventory::GetExact(Block* const block, const int num) {
     if ( block == nullptr) return true;
     if ( inventory[num].isEmpty() ||
             (*block == *inventory[num].top() && Number(num)<MAX_STACK_SIZE) )
@@ -159,41 +159,41 @@ int Inventory::GetInvWeight(const int i) const {
     return GetSlotWeight(inventory[i]);
 }
 
-int Inventory::GetSlotWeight(const QStack<Block *> & slot) {
+int Inventory::GetSlotWeight(const QStack<Block*> & slot) {
     return slot.isEmpty() ?
         0 : slot.top()->Weight() * slot.size();
 }
 
-int Inventory::GetInvSub(const int i) const {
+subs Inventory::GetInvSub(const int i) const {
     return inventory[i].isEmpty() ?
         AIR : inventory[i].top()->Sub();
 }
 
-int Inventory::GetInvKind(const int i) const {
+kinds Inventory::GetInvKind(const int i) const {
     return inventory[i].isEmpty() ?
-        BLOCK : int(inventory[i].top()->Kind());
+        BLOCK : inventory[i].top()->Kind();
 }
 
 int Inventory::Weight() const {
     return std::accumulate(inventory, inventory + Size(), 0,
-        [](const int sum, const QStack<Block *> & slot) {
+        [](const int sum, const QStack<Block*> & slot) {
             return sum + GetSlotWeight(slot);
     });
 }
 
-Block * Inventory::ShowBlockInSlot(const int slot, const int index) const {
+Block* Inventory::ShowBlockInSlot(const int slot, const int index) const {
     return ( slot >= Size() || index >= Number(slot) ) ?
         nullptr : inventory[slot].at(index);
 }
 
-Block * Inventory::ShowBlock(const int slot) const {
+Block* Inventory::ShowBlock(const int slot) const {
     return ( slot >= Size() || inventory[slot].isEmpty() ) ?
         nullptr : inventory[slot].top();
 }
 
 bool Inventory::IsEmpty() const {
     return std::all_of(inventory + Start(), inventory + Size(),
-        [](const QStack<Block *> & slot) { return slot.isEmpty(); });
+        [](const QStack<Block*> & slot) { return slot.isEmpty(); });
 }
 
 bool Inventory::IsEmpty(const int i) const { return inventory[i].isEmpty(); }
@@ -225,7 +225,9 @@ bool Inventory::MiniCraft(const int num) {
             BlockFactory::DeleteBlock(inventory[num].pop());
         }
         for (int i=0; i<crafted->number; ++i) {
-            GetExact(BlockFactory::NewBlock(crafted->kind, crafted->sub), num);
+            GetExact(BlockFactory::NewBlock(
+                static_cast<kinds>(crafted->kind),
+                static_cast<subs >(crafted->sub)), num);
         }
         ReceiveSignal(QObject::tr("Craft successful."));
         delete crafted;
@@ -248,7 +250,7 @@ void Inventory::Shake() {
 
 Inventory::Inventory(const int sz) :
         size(sz),
-        inventory(new QStack<Block *>[sz])
+        inventory(new QStack<Block*>[sz])
 {}
 
 Inventory::Inventory(QDataStream & str, const int sz) :
@@ -260,15 +262,16 @@ Inventory::Inventory(QDataStream & str, const int sz) :
         while ( num-- ) {
             quint8 kind, sub;
             inventory[i].push(BlockFactory::KindSubFromFile(str, &kind, &sub) ?
-                BlockFactory::Normal(sub) :
-                BlockFactory::BlockFromFile(str, kind, sub));
+                BlockFactory::Normal(static_cast<subs>(sub)) :
+                BlockFactory::BlockFromFile(str, static_cast<kinds>(kind),
+                                                 static_cast<subs >(sub)));
         }
     }
 }
 
 Inventory::~Inventory() {
     std::for_each(inventory, inventory+Size(), [](const QStack<Block*> & inv) {
-        std::for_each(ALL(inv), [](Block * const block) {
+        std::for_each(ALL(inv), [](Block* const block) {
             BlockFactory::DeleteBlock(block);
         });
     });

@@ -23,15 +23,15 @@
 #include "blocks/Animal.h"
 #include <QTextStream>
 
-Teleport::Teleport(const int sub, const int kind) :
-        Active(sub, kind),
+Teleport::Teleport(const kinds kind, const subs sub) :
+        Active(kind, sub),
         targetWorldName(World::WorldName()),
         targetLatitude( qrand()%(World::GetWorld()->GetMap()->GetSize())),
         targetLongitude(qrand()%(World::GetWorld()->GetMap()->GetSize()))
 {}
 
-Teleport::Teleport(QDataStream & stream, const int sub, const int kind) :
-        Active(stream, sub, kind),
+Teleport::Teleport(QDataStream& stream, const kinds kind, const subs sub) :
+        Active(stream, kind, sub),
         targetWorldName(),
         targetLatitude(),
         targetLongitude()

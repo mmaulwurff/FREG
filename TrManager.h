@@ -47,9 +47,9 @@ public:
     /// If substance is unknown, returns "unknown_sub".
     static QString SubToString(int sub);
     /// If string is not convertible to kind, returns LAST_KIND.
-    static int StrToKind(QString);
+    static kinds StrToKind(QString);
     /// If string is not convertible to substance, returns LAST_SUB.
-    static int StrToSub(QString);
+    static subs StrToSub(QString);
 
     /// Universal function, returns translated "off" or "on".
     static QString OffOn(bool on);

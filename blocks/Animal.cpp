@@ -87,7 +87,7 @@
 
     int Animal::ShouldAct() const { return FREQUENT_SECOND | FREQUENT_RARE; }
     int Animal::DamageKind() const { return DAMAGE_BITE; }
-    Animal * Animal::IsAnimal() { return this; }
+    Animal* Animal::IsAnimal() { return this; }
     QString Animal::FullName() const { return TrManager::KindName(Kind()); }
 
     bool Animal::Eat(const subs sub) {
@@ -114,16 +114,16 @@
     void Animal::EatAround() {
         World * const world = World::GetWorld();
         for (const Xyz& xyz : AroundCoordinates(GetXyz())) {
-            const int sub = world->GetBlock(XYZ(xyz))->Sub();
+            const subs sub = world->GetBlock(XYZ(xyz))->Sub();
             if ( Attractive(sub) ) {
                 world->Damage(XYZ(xyz), DamageLevel(), DamageKind());
-                Eat(static_cast<subs>(sub));
+                Eat(sub);
             }
         }
     }
 
-    Block * Animal::DropAfterDamage(bool *) {
-        Block * const cadaver = BlockFactory::NewBlock(BOX, Sub());
+    Block* Animal::DropAfterDamage(bool *) {
+        Block* const cadaver = BlockFactory::NewBlock(BOX, Sub());
         cadaver->HasInventory()->Get(BlockFactory::NewBlock(WEAPON, BONE));
         return cadaver;
     }
@@ -134,14 +134,14 @@
             deferredAction;
     }
 
-    Animal::Animal(const int kind, const int sub) :
-            Falling(kind, sub, NONSTANDARD),
+    Animal::Animal(const kinds kind, const subs sub) :
+            Falling(kind, sub),
             breath(MAX_BREATH),
             satiation(World::SECONDS_IN_DAY)
     {}
 
-    Animal::Animal(QDataStream & str, const int kind, const int sub) :
-            Falling(str, kind, sub, NONSTANDARD),
+    Animal::Animal(QDataStream& str, const kinds kind, const subs sub) :
+            Falling(str, kind, sub),
             breath(),
             satiation()
     {

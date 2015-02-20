@@ -25,12 +25,11 @@
 
 class Bucket : public Block, public Inventory {
 public:
-    Bucket(int sub, int id);
-    Bucket(QDataStream & str, int sub, int id);
+    BLOCK_CONSTRUCTORS(Bucket)
 
     int  Weight() const override;
     void ReceiveSignal(QString str) override;
-    bool Get(Block * block, int start) override;
+    bool Get(Block* block, int start) override;
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
     usage_types Use(Active *) override;

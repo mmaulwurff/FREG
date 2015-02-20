@@ -108,34 +108,10 @@ void Screen::RePrint() {
     wrefresh(actionWin);
 }
 
-void Screen::Update(const int x, const int y, const int z) {
-    int start_x = GetNormalStartX();
-    int start_y = GetNormalStartY();
-    if (
-            start_x <= x && x <= start_x + screenWidth/2 - 2 &&
-            start_y <= y && y <= start_y + screenHeight  - 2 )
-    {
-        updatedNormal = false;
-    }
-
-    start_x = player->X() - FRONT_MAX_DISTANCE;
-    start_y = player->Y() - FRONT_MAX_DISTANCE;
-    int start_z = GetFrontStartZ();
-    if (
-            start_x <= x && x <= start_x + 2 * FRONT_MAX_DISTANCE &&
-            start_y <= y && y <= start_y + 2 * FRONT_MAX_DISTANCE &&
-            start_z >= z && z >= start_z - screenHeight )
-    {
-        updatedFront = false;
-    }
-    updatedMinimap = false;
-}
-
 void Screen::UpdatePlayer() { updatedHud = false; }
 void Screen::Move(int) {}
-
-void Screen::UpdateAround(int, int, int, int) {
-    updatedNormal = updatedFront = false;
+void Screen::UpdateAround(int, int, int) {
+    updatedNormal = updatedFront = updatedHud = updatedMinimap = false;
 }
 
 bool Screen::IsScreenWide() { return COLS >= (AVERAGE_SCREEN_SIZE + 2) * 2; }
@@ -205,17 +181,7 @@ int Screen::Color(const int kind, const int sub) {
         case FIRE:       return color | A_BLINK | RandomBlink();
         case GOLD:       return color | RandomBlink();
         case SKY:
-        case STAR:
-            if ( World::GetWorld()->GetEvernight() ) {
-                return COLOR_PAIR(BLACK_BLACK);
-            }
-            switch ( World::GetWorld()->PartOfDay() ) {
-            case TIME_NIGHT: return
-                COLOR_PAIR(WHITE_BLACK) | ( RandomBit() ? A_BOLD : 0 );
-            case TIME_MORNING: return COLOR_PAIR(WHITE_BLUE);
-            case TIME_NOON:    return COLOR_PAIR( CYAN_CYAN);
-            case TIME_EVENING: return COLOR_PAIR(WHITE_CYAN);
-            } break;
+        case STAR: return COLOR_PAIR(WHITE_BLACK) | (RandomBit() ? A_BOLD : 0);
         } break;
     case LIQUID: switch ( sub ) {
         case H_MEAT:
@@ -616,7 +582,7 @@ void Screen::ActionXyz(int * const x, int * const y, int * const z) const {
     }
 }
 
-Block * Screen::GetFocusedBlock() const {
+Block* Screen::GetFocusedBlock() const {
     int x, y, z;
     ActionXyz(&x, &y, &z);
     return ( player->Visible(x, y, z) ) ?
@@ -624,7 +590,7 @@ Block * Screen::GetFocusedBlock() const {
         nullptr;
 }
 
-void Screen::PrintBlock(const Block * const block, WINDOW * const window,
+void Screen::PrintBlock(const Block* const block, WINDOW * const window,
         const char second)
 {
     const int kind = block->Kind();
@@ -634,7 +600,7 @@ void Screen::PrintBlock(const Block * const block, WINDOW * const window,
     waddch(window, color | second);
 }
 
-int Screen::ColoredChar(const Block * const block) {
+int Screen::ColoredChar(const Block* const block) {
     const int kind = block->Kind();
     const int sub  = block->Sub();
     return CharName(kind, sub) | Color(kind, sub);
@@ -672,7 +638,7 @@ void Screen::Print() {
         player->SetUsingTypeNo();
         break;
     case USAGE_TYPE_READ: {
-        const Block * const focused = GetFocusedBlock();
+        const Block* const focused = GetFocusedBlock();
         if ( focused != nullptr ) {
             DisplayFile(World::WorldPath() + Str("/texts/") +
                 focused->GetNote());
@@ -680,7 +646,7 @@ void Screen::Print() {
         }
         } break;
     case USAGE_TYPE_OPEN: {
-        Block * const focused = GetFocusedBlock();
+        Block* const focused = GetFocusedBlock();
         if ( focused != nullptr ) {
             PrintInv(rightWin, focused, focused->HasInventory());
         }
@@ -732,7 +698,7 @@ void Screen::PrintHud() const {
             PrintBar(hudWin, breath_char, COLOR_PAIR(BLUE_BLACK), breath);
         }
     }
-    const Block * const focused = GetFocusedBlock();
+    const Block* const focused = GetFocusedBlock();
     if ( focused && Block::GetSubGroup(focused->Sub()) != GROUP_AIR ) {
         const int left_border = getmaxx(hudWin);
         (void)wmove(hudWin, 0, left_border - 15);
@@ -775,6 +741,12 @@ void Screen::PrintQuickInventory() const {
             break;
         }
         x += 2;
+        if ( i == inv->Start() && i != 0 ) {
+            mvwaddch(hudWin, 0, x, ACS_VLINE);
+            mvwaddch(hudWin, 1, x, ACS_VLINE);
+            mvwaddch(hudWin, 2, x, ACS_VLINE);
+            x += 2;
+        }
     }
 }
 
@@ -833,7 +805,7 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
         const int j_in = Shred::CoordInShred(j);
         for (int i=start_x; i<end_x; ++i) {
             int k = k_start;
-            const Block * const block = world->GetShred(i, j)->
+            const Block* const block = world->GetShred(i, j)->
                 FindFirstVisible(Shred::CoordInShred(i), j_in, &k, k_step);
             if ( player->Visible(i, j, k) ) {
                 PrintBlock(block, window, showDistance ? CharNumber(k) : ' ');
@@ -845,7 +817,7 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
     }
 
     if ( dir > DOWN ) {
-        const Block * const block = player->GetConstBlock();
+        const Block* const block = player->GetConstBlock();
         mvwaddch(window, player->Y()-start_y+1, (player->X()-start_x)*2+2,
             arrows[player->GetDir()] | Color(block->Kind(), block->Sub()));
     }
@@ -949,7 +921,6 @@ const {
         return;
     }
     const int k_end = k_start - screenHeight + 2;
-    const int sky_color = Color(BLOCK, SKY); // changes during the day
     (void)wmove(rightWin, 1, 1);
     for (int k=k_start; k>k_end; --k, waddch(rightWin, 30)) {
         for (*x=x_start; *x!=x_end; *x+=x_step) {
@@ -957,9 +928,10 @@ const {
                         Transparent()==INVISIBLE;
                     *z += z_step);
             if ( *z == z_end ) {
-                static const int sky_char = CharName(BLOCK, SKY);
-                waddch(rightWin, sky_color | sky_char);
-                waddch(rightWin, sky_color | ' ');
+                static const int sky_char =
+                    CharName(BLOCK, SKY) | Color(BLOCK, SKY);
+                waddch(rightWin, sky_char);
+                waddch(rightWin, ' ');
             } else if ( player->Visible(i, j, k) ) {
                 PrintBlock(world->GetBlock(i, j, k), rightWin,
                     showDistance ? CharNumberFront(i, j) : ' ');
@@ -985,7 +957,7 @@ const {
 } // void Screen::PrintFront(dirs)
 
 void Screen::PrintInv(WINDOW * const window,
-        const Block * const block, const Inventory * const inv)
+        const Block* const block, const Inventory * const inv)
 const {
     if ( inv == nullptr ) return;
     if ( inv == player->PlayerInventory() ) {
@@ -1000,7 +972,7 @@ const {
         shift += ( start == i && i != 0 );
         wstandend(window);
         mvwprintw(window, 1+i+shift, 1, "%c) ", 'a'+i);
-        const Block * const block = inv->ShowBlock(i);
+        const Block* const block = inv->ShowBlock(i);
         if ( block == nullptr ) {
             wattrset(window, COLOR_PAIR(BLACK_BLACK) | A_BOLD);
             waddstr (window, "   ");
@@ -1046,7 +1018,7 @@ const {
     waddwstr(window, wPrintable( (player->PlayerInventory() == inv) ?
         tr("Your inventory") : block->FullName() ));
     wrefresh(window);
-} // void Screen::PrintInv(WINDOW *, const Block *, const Inventory *)
+} // void Screen::PrintInv(WINDOW *, const Block*, const Inventory *)
 
 void Screen::DisplayFile(const QString path) {
     { QFile(path).open(QIODevice::ReadWrite); } // create file if doesn't exist

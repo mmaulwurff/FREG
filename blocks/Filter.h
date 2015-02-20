@@ -25,10 +25,9 @@
 class Filter : public Container {
     Q_OBJECT
 public:
-    Filter(int kind, int sub);
-    Filter(QDataStream &, int kind, int sub);
+    BLOCK_CONSTRUCTORS(Filter)
 
-    bool Get(Block * block, int start) override;
+    bool Get(Block* block, int start) override;
     QString InvFullName(int slot_number) const override;
 
 private:

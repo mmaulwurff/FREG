@@ -33,14 +33,14 @@ class Container : public Active, public Inventory {
      *  - container from other substances are different chests. */
     Q_OBJECT
 public:
-    Container(int kind, int sub, int size = INV_SIZE);
-    Container(QDataStream & str, int kind, int sub, int size = INV_SIZE);
+    Container(kinds, subs, int size = INV_SIZE);
+    Container(QDataStream&, kinds, subs, int size = INV_SIZE);
 
     void ReceiveSignal(QString) override;
     int  ShouldAct() const override;
     int  Weight() const override;
     void Damage(int dmg, int dmg_kind) override;
-    Block * DropAfterDamage(bool * delete_block) override;
+    Block* DropAfterDamage(bool * delete_block) override;
     QString FullName() const override;
     Inventory * HasInventory() override final;
     usage_types Use(Active * user) override;
@@ -50,7 +50,7 @@ public:
     static const int WORKBENCH_SIZE = 10;
 
 protected:
-    void SaveAttributes(QDataStream & out) const override;
+    void SaveAttributes(QDataStream& out) const override;
 }; // Container
 
 class Box : public Falling, public Inventory {
@@ -62,15 +62,14 @@ class Box : public Falling, public Inventory {
      *  Also, pile is box of substance DIFFERENT, it will dissapear if empty.*/
     Q_OBJECT
 public:
-    Box(int kind, int sub);
-    Box(QDataStream & str, int kind, int sub);
+    BLOCK_CONSTRUCTORS(Box)
 
     int  ShouldAct() const override;
     void Damage(int dmg, int dmg_kind) override;
     void ReceiveSignal(QString) override;
     void DoRareAction() override;
     QString FullName() const override;
-    Block * DropAfterDamage(bool * delete_block) override;
+    Block* DropAfterDamage(bool * delete_block) override;
     Inventory * HasInventory() override final;
     usage_types Use(Active * user) override;
     inner_actions ActInner() override;
@@ -85,11 +84,10 @@ class Workbench : public Container {
      *  2 products. Also can be used as container of smaller size. */
     Q_OBJECT
 public:
-    Workbench(int kind, int sub);
-    Workbench(QDataStream & str, int kind, int sub);
+    BLOCK_CONSTRUCTORS(Workbench)
 
     bool Drop(int src, int dest, int num, Inventory * inv) override;
-    bool Get(Block * block, int start) override;
+    bool Get(Block* block, int start) override;
     bool GetAll(Inventory * from) override;
     int Start() const override;
     QString FullName() const override;
@@ -102,8 +100,7 @@ private:
 class Converter : public Container {
     Q_OBJECT
 public:
-    Converter(int kind, int sub);
-    Converter(QDataStream & str, int kind, int sub);
+    BLOCK_CONSTRUCTORS(Converter)
 
     int  ShouldAct() const override;
     int  DamageKind() const override;

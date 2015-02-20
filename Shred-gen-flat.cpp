@@ -23,8 +23,8 @@
 
 int Shred::NormalUnderground(const int depth, const subs sub) {
     NormalCube(0,0,1, SHRED_WIDTH,SHRED_WIDTH,HEIGHT/2-depth-5, STONE);
-    Block * const block = BlockFactory::Normal(sub);
-    Block * const stone = BlockFactory::Normal(STONE);
+    Block* const block = BlockFactory::Normal(sub);
+    Block* const stone = BlockFactory::Normal(STONE);
     FOR_ALL_SHRED_AREA(x, y) {
         PutBlock( ((qrand() & 1) ? stone : block), x, y, HEIGHT/2-depth-6);
     }
@@ -51,7 +51,7 @@ void Shred::Forest(const bool dead) {
         const int y = qrand()%(SHRED_WIDTH-2) + 1;
         const int z = FindTopNonAir(x, y);
         if ( GetBlock(x, y, z)->Sub() == SOIL ) {
-            Tree(x-1, y-1, z+1, 4 + (qrand() & 7));
+            Tree(x-1, y-1, z+1);
         }
     }
     RandomDrop(qrand() & 3, WEAPON, WOOD);
@@ -87,10 +87,10 @@ void Shred::Water(const subs sub) {
     if ( type != shred_types.To(TO_WEST) ) {
         NormalCube(0,0,z_start, 1,SHRED_WIDTH,depth, shore);
     }
-    Block * const air = BlockFactory::Normal(AIR);
+    Block* const air = BlockFactory::Normal(AIR);
     FOR_ALL_SHRED_AREA(i, j) {
-        Block ** const pos = blocks[i][j];
-        for (Block ** block=pos+z_start; block<=pos+HEIGHT/2; ++block) {
+        Block** const pos = blocks[i][j];
+        for (Block** block=pos+z_start; block<=pos+HEIGHT/2; ++block) {
             if ( shore != (*block)->Sub() ) {
                 if ( AIR == sub ) {
                     *block = air;
@@ -104,7 +104,7 @@ void Shred::Water(const subs sub) {
 
 void Shred::Hill(const bool dead) {
     NormalUnderground();
-    Block * const soil = BlockFactory::Normal(SOIL);
+    Block* const soil = BlockFactory::Normal(SOIL);
     FOR_ALL_SHRED_AREA(x, y) {
         for (int z=SHRED_WIDTH/2-2; z--; ) {
             if ( z <= -qAbs(x-SHRED_WIDTH/2) + SHRED_WIDTH/2-2 ) {

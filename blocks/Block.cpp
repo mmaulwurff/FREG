@@ -122,11 +122,11 @@ void Block::Damage(const int dmg, int dmg_kind) {
     case FIRE:  mult  = ( DAMAGE_FREEZE == dmg_kind ); break;
     case WATER: mult  = ( DAMAGE_HEAT   == dmg_kind ); break;
     case GLASS: durability *= ( DAMAGE_HEAT == dmg_kind ); return;
+    default:    durability -= mult * dmg;
     }
-    durability -= mult * dmg;
 } // Block::Damage(const ind dmg, const int dmg_kind)
 
-Block * Block::DropAfterDamage(bool * const delete_block) {
+Block* Block::DropAfterDamage(bool * const delete_block) {
     switch ( Sub() ) {
     case GREENERY:
     case SUB_DUST:
@@ -136,7 +136,7 @@ Block * Block::DropAfterDamage(bool * const delete_block) {
         return BlockFactory::NewBlock(LADDER, STONE);
     } // no break;
     default: {
-        Block * const pile = BlockFactory::NewBlock(BOX, DIFFERENT);
+        Block* const pile = BlockFactory::NewBlock(BOX, DIFFERENT);
         pile->HasInventory()->Get(this);
         *delete_block = false;
         return pile;
@@ -147,6 +147,10 @@ Block * Block::DropAfterDamage(bool * const delete_block) {
 push_reaction Block::PushResult(dirs) const {
     return ( AIR==Sub() ) ? ENVIRONMENT : NOT_MOVABLE;
 }
+
+subs  Block::Sub()    const { return static_cast<subs >(sub ); }
+kinds Block::Kind()   const { return static_cast<kinds>(kind); }
+dirs  Block::GetDir() const { return static_cast<dirs>(direction); }
 
 bool Block::Catchable() const { return false; }
 void Block::Move(dirs) {}
@@ -277,19 +281,17 @@ void Block::SaveNormalToFile(QDataStream & out) const {
     out << quint8( 0x80 | sub );
 }
 
-Block::Block(const int kind_, const int sub_, const int transp) :
+Block::Block(const kinds kind_, const subs sub_) :
         noteId(0),
         durability(MAX_DURABILITY),
-        transparent(transp == UNDEF ? Transparency(sub_) : transp),
+        transparent(Transparency(sub_)),
         kind(kind_),
         sub(sub_),
         direction(UP)
 {}
 
-Block::Block(QDataStream & str, const int kind_, const int sub_,
-        const int transp)
-    :
-        Block(kind_, sub_, transp)
+Block::Block(QDataStream& str, const kinds kind_, const subs sub_) :
+        Block(kind_, sub_)
 {
     // use durability as buffer, set actual value in the end:
     str >> durability;

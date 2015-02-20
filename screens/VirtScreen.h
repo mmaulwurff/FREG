@@ -67,11 +67,6 @@ public:
     /** It is connected to world in constructor. */
     virtual void PassString(QString &) const = 0;
 
-    /// This is called when block at (x, y, z) should be updated in screen.
-    /** When implemented, this should work fast.
-     *  It is connected to world in constructor. */
-    virtual void Update(int x, int y, int z) = 0;
-
     /// This is called when all world should be updated in sceen.
     /** When implemented, this should work fast.
      *  It is connected to world in constructor. */
@@ -87,10 +82,10 @@ public:
      *  It is connected to world in constructor. */
     virtual void UpdatePlayer() = 0;
 
-    /// Called when area around xyz with range needs to be updated.
-    /** When implemented, this should work fast.
+    /// Called when area around xyz with range MAX_LIGHT_RADIUS + 1 is updated.
+    /** Implementation should be fast.
      *  It is connected to world in constructor. */
-    virtual void UpdateAround(int x, int y, int z, int rng) = 0;
+    virtual void UpdateAround(int x, int y, int z) = 0;
 
     /// This is called when current group of updates is ended.
     /** This is called from world when pack of world changing is ended.

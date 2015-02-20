@@ -12,6 +12,7 @@
 !*.md
 !*.qrc
 !*.qm
+!Doxyfile
 qrc_*.cpp
 
 !blocks

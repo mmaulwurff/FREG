@@ -37,15 +37,24 @@ int Active::Y() const {
 
 const Xyz Active::GetXyz() const { return {X(), Y(), Z()}; }
 
-Active * Active::ActiveBlock() { return this; }
 int  Active::ShouldAct() const { return FREQUENT_NEVER; }
+bool Active::IsInside()  const { return shred == nullptr; }
+Active * Active::ActiveBlock() { return this; }
 inner_actions Active::ActInner() { return INNER_ACTION_ONLY; }
 
-void Active::UpdateLightRadius() {
-    if ( LightRadius() ) {
+void Active::UpdateLightRadius(const int old_radius) {
+    if ( IsInside() ) return;
+    const int radius = LightRadius();
+    if ( radius != old_radius ) {
+        const Xyz xyz = GetXyz();
+        World* const world = World::GetWorld();
+        world->Shine(xyz, -old_radius);
+        world->Shine(xyz, radius);
+        emit world->UpdatedAround(XYZ(xyz));
+    }
+    if ( radius && old_radius == 0 ) {
         GetShred()->AddShining(this);
-        World::GetWorld()->Shine(GetXyz(), LightRadius());
-    } else {
+    } else if ( old_radius && radius == 0 ) {
         GetShred()->RemShining(this);
     }
 }
@@ -89,7 +98,7 @@ void Active::ActRare() {
 }
 
 void Active::Unregister() {
-    if ( shred != nullptr ) {
+    if ( not IsInside() ) {
         shred->Unregister(this);
         shred = nullptr;
     }
@@ -116,7 +125,7 @@ void Active::ReRegister(const dirs dir) {
 }
 
 void Active::SendSignalAround(const QString signal) const {
-    if ( shred == nullptr ) return; // for blocks inside inventories
+    if ( IsInside() ) return; // for blocks inside inventories
     World * const world = World::GetWorld();
     for (const Xyz& xyz : AroundCoordinates(GetXyz())) {
         world->GetBlock(XYZ(xyz))->ReceiveSignal(signal);
@@ -141,15 +150,13 @@ bool Active::TryDestroy(const int x, const int y, const int z) const {
 
 void Active::ReceiveSignal(const QString str) { emit ReceivedText(str); }
 
-Active::Active(const int kind, const int sub, const int transp) :
-        Block(kind, sub, transp),
+Active::Active(const kinds kind, const subs sub) :
+        Block(kind, sub),
         Xyz()
 {}
 
-Active::Active(QDataStream & str, const int kind, const int sub,
-        const int transp)
-    :
-        Block(str, kind, sub, transp),
+Active::Active(QDataStream& str, const kinds kind, const subs sub) :
+        Block(str, kind, sub),
         Xyz()
 {}
 
@@ -200,16 +207,14 @@ bool Active::IsSubAround(const int sub) const {
 
 // Falling section
 
-Falling::Falling(const int kind, const int sub, const int transp) :
-        Active(kind, sub, transp),
+Falling::Falling(const kinds kind, const subs sub) :
+        Active(kind, sub),
         fallHeight(0),
         falling(false)
 {}
 
-Falling::Falling(QDataStream & str, const int kind, const int sub,
-        const int transp)
-    :
-        Active(str, kind, sub, transp),
+Falling::Falling(QDataStream& str, const kinds kind, const subs sub) :
+        Active(str, kind, sub),
         fallHeight(),
         falling()
 {
@@ -236,7 +241,7 @@ void Falling::FallDamage() {
     if ( fallHeight > SAFE_FALL_HEIGHT ) {
         const int dmg = (fallHeight - SAFE_FALL_HEIGHT)*10;
         World * const world = World::GetWorld();
-        Block * const block_under = world->GetBlock(X(), Y(), Z()-1);
+        Block* const block_under = world->GetBlock(X(), Y(), Z()-1);
         world->Damage(X(), Y(), Z()-1, dmg, DamageKind());
         if ( block_under->GetDurability() <= 0 ) {
             world->DestroyAndReplace(X(), Y(), Z()-1);

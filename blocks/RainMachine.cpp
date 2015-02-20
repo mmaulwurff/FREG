@@ -22,16 +22,17 @@
 #include <QDataStream>
 #include <TrManager.h>
 
-RainMachine::RainMachine(const int kind, const int sub) :
-    Active(kind, sub),
-    Inventory(1),
-    isOn(false)
+RainMachine::RainMachine(const kinds kind, const subs sub) :
+        Active(kind, sub),
+        Inventory(1),
+        isOn(false)
 {}
 
-RainMachine::RainMachine(QDataStream & stream, const int kind, const int sub) :
-    Active(stream, kind, sub),
-    Inventory(stream, 1),
-    isOn()
+RainMachine::RainMachine(QDataStream& stream, const kinds kind, const subs sub)
+    :
+        Active(stream, kind, sub),
+        Inventory(stream, 1),
+        isOn()
 {
     stream >> isOn;
 }

@@ -22,16 +22,17 @@
 #include "blocks/Inventory.h"
 #include "World.h"
 #include "TrManager.h"
+#include "Shred.h"
 #include <QDataStream>
 
-Illuminator::Illuminator(const int kind, const int sub) :
-        Active(kind, sub, NONSTANDARD),
+Illuminator::Illuminator(const kinds kind, const subs sub) :
+        Active(kind, sub),
         fuelLevel(World::SECONDS_IN_DAY),
         isOn(false)
 {}
 
-Illuminator::Illuminator(QDataStream & str, const int kind, const int sub) :
-        Active(str, kind, sub, NONSTANDARD),
+Illuminator::Illuminator(QDataStream & str, const kinds kind, const subs sub) :
+        Active(str, kind, sub),
         fuelLevel(),
         isOn()
 {
@@ -52,22 +53,35 @@ QString Illuminator::FullName() const {
     }
 }
 
-Block * Illuminator::DropAfterDamage(bool * const delete_block) {
+Block* Illuminator::DropAfterDamage(bool * const delete_block) {
     *delete_block = false;
-    Block * const pile = BlockFactory::NewBlock(BOX, DIFFERENT);
+    Block* const pile = BlockFactory::NewBlock(BOX, DIFFERENT);
     pile->HasInventory()->Get(this);
     return pile;
 }
 
-usage_types Illuminator::Use(Active * const user) {
+usage_types Illuminator::Use(Active * /* user */) {
     if ( Sub() == WOOD || Sub() == STONE ) {
         fuelLevel -= ( fuelLevel >= 10 ) ? 10 : 0;
         if ( Sub() == STONE ) {
             return USAGE_TYPE_SET_FIRE;
         }
     }
-    isOn = not isOn;
-    user->UpdateLightRadius();
+    if ( IsInside() ) {
+        isOn = not isOn;
+    } else {
+        const Xyz xyz = GetXyz();
+        int radius = Illuminator::LightRadius();
+        if ( radius ) {
+            World::GetWorld()->Shine(xyz, -Illuminator::LightRadius());
+            GetShred()->RemShining(this);
+        }
+        isOn = not isOn; // can change light radius
+        if ( (radius = Illuminator::LightRadius()) ) {
+            World::GetWorld()->Shine(xyz, radius);
+            GetShred()->AddShining(this);
+        }
+    }
     return USAGE_TYPE_INNER;
 }
 
@@ -76,9 +90,9 @@ int Illuminator::LightRadius() const {
     switch ( Sub() ) {
     default:
     case STONE: return 0;
-    case WOOD:  return 4;
-    case IRON:  return 5;
-    case GLASS: return 7;
+    case WOOD:  return World::MAX_LIGHT_RADIUS - 1;
+    case IRON:  return World::MAX_LIGHT_RADIUS - 1;
+    case GLASS: return World::MAX_LIGHT_RADIUS;
     }
 }
 
@@ -86,7 +100,7 @@ int  Illuminator::ShouldAct() const { return FREQUENT_RARE; }
 wearable Illuminator::Wearable() const { return WEARABLE_OTHER; }
 
 void Illuminator::DoRareAction() {
-    World::GetWorld()->Shine(GetXyz(), LightRadius());
+    /// \todo decrease torch light radius when fuel is low
 }
 
 inner_actions Illuminator::ActInner() {

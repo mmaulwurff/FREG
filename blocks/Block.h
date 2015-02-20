@@ -26,6 +26,10 @@
 #include "header.h"
 #include <cstdint>
 
+#define BLOCK_CONSTRUCTORS(BlockClass) \
+BlockClass(kinds, subs); \
+BlockClass(class QDataStream&, kinds, subs);
+
 enum wearable {
     WEARABLE_NOWHERE,
     WEARABLE_HEAD,
@@ -88,8 +92,7 @@ class Block {
      * \brief Block without special physics and attributes. */
     M_DISABLE_COPY(Block)
 public:
-    Block(int sub, int kind, int transp = UNDEF);
-    Block(class QDataStream &, int sub, int kind, int transp = UNDEF);
+    BLOCK_CONSTRUCTORS(Block)
     virtual ~Block();
 
     virtual QString FullName() const;
@@ -106,7 +109,7 @@ public:
      *  block itself.
      *  Set delete_self false if this block itself should not be deleted.
      *  (by default block is deleted, beware). */
-    virtual Block * DropAfterDamage(bool * delete_self);
+    virtual Block* DropAfterDamage(bool * delete_self);
 
     virtual class Inventory * HasInventory();
     virtual class Active    * ActiveBlock();
@@ -135,9 +138,9 @@ public:
     QString GetNote() const;
 
     int Transparent() const { return transparent; }
-    int Sub()  const { return sub; }
-    int Kind() const { return kind; }
-    dirs GetDir() const { return static_cast<dirs>(direction); }
+    subs  Sub()  const;
+    kinds Kind() const;
+    dirs GetDir() const;
 
     bool operator==(const Block &) const;
 

@@ -39,7 +39,7 @@ public:
     bool Catchable() const override;
     int  Weight() const override;
     QString FullName() const override;
-    Block * DropAfterDamage(bool * delete_block) override;
+    Block* DropAfterDamage(bool * delete_block) override;
     push_reaction PushResult(dirs) const override;
 };
 
@@ -55,7 +55,7 @@ public:
     bool Inscribe(QString) override;
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
-    Block * DropAfterDamage(bool * delete_block) override;
+    Block* DropAfterDamage(bool * delete_block) override;
     wearable Wearable() const override;
     push_reaction PushResult(dirs) const override;
     inner_actions ActInner() override;
@@ -73,7 +73,7 @@ public:
     int  DamageKind() const override;
     int  LightRadius() const override;
     QString FullName() const override;
-    Block * DropAfterDamage(bool * delete_block) override;
+    Block* DropAfterDamage(bool * delete_block) override;
     inner_actions ActInner() override;
 
 protected:
@@ -88,15 +88,14 @@ class Bush : public Active, public Inventory {
 
     static const int BUSH_SIZE = 3;
 public:
-    Bush(int sub, int id);
-    Bush(QDataStream & str, int sub, int id);
+    BLOCK_CONSTRUCTORS(Bush)
 
     int  Weight() const override;
     int  ShouldAct() const override;
     void ReceiveSignal(QString) override;
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
-    Block * DropAfterDamage(bool * delete_block) override;
+    Block* DropAfterDamage(bool * delete_block) override;
     Inventory * HasInventory() override;
     usage_types Use(Active * who) override;
     inner_actions ActInner() override;
@@ -109,8 +108,7 @@ protected:
 class Door : public Active {
     Q_OBJECT
 public:
-    Door(int sub, int id);
-    Door(QDataStream & str, int sub, int id);
+    BLOCK_CONSTRUCTORS(Door)
 
     int  ShouldAct() const override;
     void ActFrequent() override;
@@ -131,8 +129,7 @@ private:
 class Clock : public Active {
     Q_OBJECT
 public:
-    Clock(int sub, int id);
-    Clock (QDataStream & str, int sub, int id);
+    BLOCK_CONSTRUCTORS(Clock)
 
     int  Weight() const override;
     int  ShouldAct() const override;
@@ -162,8 +159,7 @@ public:
 
 class Map : public Text {
 public:
-    Map(int sub, int id);
-    Map(QDataStream & str, int sub, int id);
+    BLOCK_CONSTRUCTORS(Map)
 
     wearable Wearable() const override;
     usage_types Use(Active * user) override;
@@ -192,8 +188,7 @@ public:
 class Telegraph : public Active {
     Q_OBJECT
 public:
-    Telegraph(int sub, int id);
-    Telegraph(QDataStream &, int sub, int id);
+    BLOCK_CONSTRUCTORS(Telegraph)
 
     int ShouldAct() const override;
     bool Inscribe(QString) override;

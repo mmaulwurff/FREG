@@ -49,12 +49,12 @@ unix {
 
 HEADERS +=  *.h \
      blocks/*.h \
-    screens/*.h \
+    screens/*.h
 
 CONFIG( debug, debug|release ) {
     SOURCES +=  *.cpp \
          blocks/*.cpp \
-        screens/*.cpp \
+        screens/*.cpp
 } else {
     SOURCES += everything/everything.cpp
 }
@@ -75,7 +75,7 @@ DISTFILES += \
     debian/source/format \
     debian/source/include-binaries \
     fregMap.vim \
-    *.md \
+    *.md
 
 MOC_DIR     = moc
 RCC_DIR     = res

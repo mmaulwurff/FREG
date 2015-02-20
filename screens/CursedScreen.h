@@ -61,10 +61,9 @@ public:
     /// This is called for a notification to be displayed.
     void Notify(QString) const override;
     void PassString(QString &) const override;
-    void Update(int, int, int) override;
     void UpdateAll() override;
     void UpdatePlayer() override;
-    void UpdateAround(int, int, int, int) override;
+    void UpdateAround(int x, int y, int z) override;
     void Move(int) override;
     void DeathScreen() override;
     void DisplayFile(QString path) override;
@@ -112,7 +111,7 @@ private:
     /// Has two functions: first - when x == -1 - prints front,
     /// second - otherwise - examines block at position x, y.
     void PrintFront(dirs direction, int x = -1, int y = 0) const;
-    void PrintInv(WINDOW *, const Block *, const class Inventory *) const;
+    void PrintInv(WINDOW *, const Block*, const class Inventory *) const;
     void PrintHud() const;
     void PrintMiniMap() const;
     void PrintQuickInventory() const;
@@ -126,18 +125,18 @@ private:
 
     /// Can print health, breath and other bars on hudWin.
     static void PrintBar(WINDOW *, wchar_t ch, int color, int percent);
-    static void PrintBlock(const Block *, WINDOW *, char second);
+    static void PrintBlock(const Block*, WINDOW *, char second);
     static void DrawBorder(WINDOW *);
     static int  Color(int kind, int sub);
     static int  ColorShred(shred_type);
-    static int  ColoredChar(const Block *);
+    static int  ColoredChar(const Block*);
     static int  RandomBlink();
     static bool RandomBit();
     static bool IsScreenWide();
     static void Palette(WINDOW *);
 
     /// Returns nullptr if block is not player->Visible().
-    Block * GetFocusedBlock() const;
+    Block* GetFocusedBlock() const;
 
     int GetNormalStartX() const;
     int GetNormalStartY() const;

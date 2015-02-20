@@ -20,11 +20,11 @@
 #include "blocks/Filter.h"
 #include "World.h"
 
-Filter::Filter(const int kind, const int sub) :
+Filter::Filter(const kinds kind, const subs sub) :
     Container(kind, sub, FILTER_INV_SIZE)
 {}
 
-Filter::Filter(QDataStream & str, const int kind, const int sub) :
+Filter::Filter(QDataStream& str, const kinds kind, const subs sub) :
     Container(str, kind, sub, FILTER_INV_SIZE)
 {}
 
@@ -34,7 +34,7 @@ QString Filter::InvFullName(const int slot_number) const {
             tr("-example-") : Inventory::InvFullName(0);
 }
 
-bool Filter::Get(Block * const block, int) {
+bool Filter::Get(Block* const block, int) {
     if ( IsEmpty() ) {
         return Container::Get(block, 0);
     } else {

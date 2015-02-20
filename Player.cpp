@@ -38,8 +38,8 @@ int Player::Y() const {
     return GetShred()->ShredY() << SHRED_WIDTH_BITSHIFT | Xyz::Y();
 }
 
-Block *Player::GetBlock() const { return player; }
-const Block *Player::GetConstBlock() const { return player; }
+Block*Player::GetBlock() const { return player; }
+const Block*Player::GetConstBlock() const { return player; }
 
 dirs Player::GetDir() const { return player->GetDir(); }
 
@@ -109,7 +109,7 @@ void Player::Examine(const int x, const int y, const int z) const {
     Examine(World::GetWorld()->GetBlock(x, y, z));
 }
 
-void Player::Examine(const Block * const block) const {
+void Player::Examine(const Block* const block) const {
     Notify( block->FullName() + Str(":") );
     if ( DEBUG ) {
         Notify(Str("Weight: %1. Id: %2. Durability: %3.").
@@ -167,8 +167,8 @@ void Player::Use() {
     const QMutexLocker locker(world->GetLock());
     int x, y, z;
     emit GetFocus(&x, &y, &z);
-    Block * const block = world->GetBlock(x, y, z);
-    if ( player->NutritionalValue(static_cast<subs>(block->Sub())) ) {
+    Block* const block = world->GetBlock(x, y, z);
+    if ( player->NutritionalValue(block->Sub()) ) {
         Notify(tr("To eat %1, you must first pick it up.").
             arg(block->FullName()));
         return;
@@ -195,7 +195,7 @@ void Player::Inscribe() const {
         tr("No player."));
 }
 
-Block * Player::ValidBlock(const int num) const {
+Block* Player::ValidBlock(const int num) const {
     Inventory * const inv = PlayerInventory();
     if ( not inv ) {
         return nullptr;
@@ -204,7 +204,7 @@ Block * Player::ValidBlock(const int num) const {
         Notify(tr("No such place."));
         return nullptr;
     } // else:
-    Block * const block = inv->ShowBlock(num);
+    Block* const block = inv->ShowBlock(num);
     if ( not block ) {
         Notify(tr("Nothing at slot '%1'.").arg(char(num + 'a')));
         return nullptr;
@@ -215,9 +215,9 @@ Block * Player::ValidBlock(const int num) const {
 
 usage_types Player::Use(const int num) {
     const QMutexLocker locker(World::GetWorld()->GetLock());
-    Block * const block = ValidBlock(num);
+    Block* const block = ValidBlock(num);
     if ( block == nullptr ) return USAGE_TYPE_NO;
-    if ( player->Eat(static_cast<subs>(block->Sub())) ) {
+    if ( player->Eat(block->Sub()) ) {
         PlayerInventory()->Pull(num);
         BlockFactory::DeleteBlock(block);
         return USAGE_TYPE_NO;
@@ -270,7 +270,7 @@ bool Player::Obtain(const int src, const int dest, const int num) {
 
 void Player::Wield(const int from) {
     const QMutexLocker locker(World::GetWorld()->GetLock());
-    Block * const block = ValidBlock(from);
+    Block* const block = ValidBlock(from);
     if ( block != nullptr ) {
         Inventory * const inv = PlayerInventory();
         inv->Pull(from);
@@ -301,7 +301,7 @@ void Player::Build(const int slot) {
     const QMutexLocker locker(world->GetLock());
     int x_targ, y_targ, z_targ;
     emit GetFocus(&x_targ, &y_targ, &z_targ);
-    Block * const block = ValidBlock(slot);
+    Block* const block = ValidBlock(slot);
     if ( block != nullptr && (AIR != world->GetBlock(X(), Y(), Z()-1)->Sub()
             || 0 == player->Weight()) )
     {
@@ -344,18 +344,18 @@ void Player::ProcessCommand(QString command) {
         if ( inv == nullptr ) return;
         QString kind, sub;
         comm_stream >> kind >> sub;
-        const int kind_code = TrManager::StrToKind(kind);
+        const kinds kind_code = TrManager::StrToKind(kind);
         if ( kind_code == LAST_KIND ) {
             Notify(tr("%1 command: invalid kind!").arg(QString(request)));
             return;
         } // else:
-        const int sub_code = sub.isEmpty() ?
-            static_cast<int>(STONE) : TrManager::StrToSub(sub);
+        const subs sub_code = sub.isEmpty() ?
+            STONE : TrManager::StrToSub(sub);
         if ( sub_code == LAST_SUB ) {
             Notify(tr("%1 command: invalid substance!").arg(QString(request)));
             return;
         } // else:
-        Block * const block = BlockFactory::NewBlock(kind_code, sub_code);
+        Block* const block = BlockFactory::NewBlock(kind_code, sub_code);
         if ( inv->Get(block) ) {
             emit Updated();
         } else {
@@ -467,7 +467,7 @@ void Player::SetPlayer(int _x, int _y, int _z) {
         world->GetShred(_x, _y)->Register(player);
     } else {
         Q_ASSERT(z_self <= HEIGHT-2);
-        Block * candidate = world->GetBlock(_x, _y, z_self);
+        Block* candidate = world->GetBlock(_x, _y, z_self);
         for ( ; z_self < HEIGHT-2; ++z_self ) {
             candidate = world->GetBlock(_x, _y, z_self);
             if ( AIR == candidate->Sub()
@@ -483,7 +483,9 @@ void Player::SetPlayer(int _x, int _y, int _z) {
             if ( player == nullptr || player == creator ) {
                 player = BlockFactory::NewBlock(DWARF, PLAYER_SUB)->IsAnimal();
             }
-            world->Build(player, _x, _y, Z(), GetDir(), nullptr, true);
+            world->DestroyAndReplace(_x, _y, Z());
+            world->DestroyAndReplace(_x, _y, Z()); // some blocks drop smth
+            world->Build(player, _x, _y, Z());
         }
     }
     connect(player, &QObject::destroyed, this, &Player::BlockDestroy,

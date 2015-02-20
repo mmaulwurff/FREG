@@ -65,8 +65,8 @@ public:
     /// Can be > 100 if player is gorged. On error returns -100.
     int SatiationPercent() const;
 
-    class Block * GetBlock() const;
-    const class Block * GetConstBlock() const;
+    class Block* GetBlock() const;
+    const class Block* GetConstBlock() const;
 
     /// This returns true if block at (x, y, z) is visible to player.
     bool Visible(int x, int y, int z) const;
@@ -103,7 +103,7 @@ public:
     void Inscribe() const;
     void Examine() const;
     void Examine(int x, int y, int z) const;
-    void Examine(const class Block *) const;
+    void Examine(const class Block*) const;
     /// Returns true if xyz are in world bounds.
     bool Damage() const;
     void Use();
@@ -167,7 +167,7 @@ private:
     static const subs PLAYER_SUB = H_MEAT;
 
     /// Checks player/inventory/block existence, size limits.
-    class Block * ValidBlock(int num) const;
+    class Block* ValidBlock(int num) const;
     class Shred * GetShred() const;
     bool ForbiddenAdminCommands() const;
 

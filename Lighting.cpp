@@ -18,19 +18,9 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 /**\file Lighting-inertia.cpp
-    * \brief This file provides simple (also mad) lighting for freg.
+    * \brief This file provides simple lighting for freg.
     *
-    * It has light inertia, meaning that block, enlightened by outer
-    * source, will remain enlightened when light source is removed.
-    * Light is divided to sunlight and other light. Sunlight is
-    * changing over the day.
-    *
-    * This lighting can be used to develop more intelligent one.
-    * Intended to be fast (and is!).
-    *
-    * LightMap is uchar:
-    * & 0xF0 bits are for non-sun light,
-    * & 0x0F bits for sun. */
+    * There is only ulluminator light (no sun). */
 
 #include "World.h"
 #include "Shred.h"
@@ -39,40 +29,69 @@
 #include "AroundCoordinates.h"
 
 void World::Shine(const Xyz& xyz, int level) {
-    AddLight(XYZ(xyz), level);
-    const int transparent = GetBlock(XYZ(xyz))->Transparent();
-    if ( INVISIBLE != transparent && not initial_lighting ) {
-        emit Updated(XYZ(xyz));
-    }
-    if ( BLOCK_OPAQUE != transparent && level > 1 ) {
-        --level;
-        for (const Xyz& next_xyz : AroundCoordinates(xyz)) {
+    AddLight(xyz, level);
+    level -= (0 < level) - (level < 0); // level sign
+    if ( level == 0 ) return;
+    for (const Xyz& next_xyz : AroundCoordinates(xyz)) {
+        if ( GetBlock(XYZ(next_xyz))->Transparent() != BLOCK_OPAQUE ) {
             Shine(next_xyz, level);
+        } else {
+            AddLight(next_xyz, level);
         }
     }
 }
 
-void World::ReEnlighten(const_int(x, y, z)) {
-    if ( not GetEvernight() ) {
-        GetShred(x, y)->SunShineVertical(
-            Shred::CoordInShred(x), Shred::CoordInShred(y), false );
+void World::UnShine(const_int(x, y, z)) {
+    // cycle over shreds around xyz, unshine all lights in radius
+    const int xShredCenter = Shred::CoordOfShred(x);
+    const int yShredCenter = Shred::CoordOfShred(y);
+    const int xShredBegin = qMax(0, xShredCenter-1);
+    const int yShredBegin = qMax(0, yShredCenter-1);
+    const int xShredEnd = qMin(NumShreds()-1, xShredCenter+1);
+    const int yShredEnd = qMin(NumShreds()-1, yShredCenter+1);
+
+    for (int xShred=xShredBegin; xShred<=xShredEnd; ++xShred)
+    for (int yShred=yShredBegin; yShred<=yShredEnd; ++yShred) {
+        Shred * const shred = GetShredByPos(xShred, yShred);
+        if ( shred == nullptr ) continue;
+        for (auto shining : shred->GetShiningList()) {
+            const int x_diff = shining->X() - x;
+            const int y_diff = shining->Y() - y;
+            const int z_diff = shining->Z() - z;
+            if ( not tempShiningList.contains(shining)
+                    && x_diff <= MAX_LIGHT_RADIUS - 1
+                    && y_diff <= MAX_LIGHT_RADIUS - 1
+                    && z_diff <= MAX_LIGHT_RADIUS - 1 )
+            {
+                const int radius = shining->LightRadius();
+                Shine(shining->GetXyz(), -radius);
+                tempShiningList.insert(shining, radius);
+            }
+        }
     }
-    const int radius = GetBlock(x, y, z)->LightRadius();
-    if ( radius != 0 ) {
-        Shine({x, y, z}, radius);
+}
+
+void World::ReEnlighten() {
+    for (auto shining  = tempShiningList.cbegin();
+              shining != tempShiningList.cend(); ++shining )
+    {
+        const Xyz xyz = shining.key()->GetXyz();
+        Shine(xyz, shining.value());
+        emit UpdatedAround(XYZ(xyz));
     }
+    tempShiningList.clear();
 }
 
 void World::ReEnlightenAll() {
-    initial_lighting = true;
+    blockSignals(true);
     for (int i=0; i<NumShreds()*NumShreds(); ++i) {
         shreds[i]->ShineAll();
     }
-    initial_lighting = false;
+    blockSignals(false);
 }
 
 void World::ReEnlightenMove(const dirs dir) {
-    initial_lighting = true;
+    blockSignals(true);
     switch ( dir ) {
     case NORTH:
         for (int i=0; i<NumShreds(); ++i) {
@@ -100,12 +119,13 @@ void World::ReEnlightenMove(const dirs dir) {
         break;
     default: Q_UNREACHABLE(); break;
     }
-    initial_lighting = false;
+    blockSignals(false);
 }
 
-void World::AddLight(const_int(x, y, z), const int level) {
-    GetShred(x, y)->
-        AddLight(Shred::CoordInShred(x), Shred::CoordInShred(y), z, level);
+void World::AddLight(const Xyz& xyz, const int level) {
+    GetShred(xyz.X(), xyz.Y())->AddLight(
+        Shred::CoordInShred(xyz.X()),
+        Shred::CoordInShred(xyz.Y()), xyz.Z(), level);
 }
 
 int World::Enlightened(const_int(x, y, z)) const {
@@ -121,39 +141,15 @@ int World::Enlightened(const_int(i, j, k), const dirs dir) const {
 
 // Shred methods
 
-int  Shred::Lightmap   (const_int(x, y, z)) const { return lightMap[x][y][z]; }
-void Shred::AddLightOne(const_int(x, y, z))       {      ++lightMap[x][y][z]; }
-void Shred::AddLight   (const_int(x, y, z), const int level) {
+int  Shred::Lightmap(const_int(x, y, z)) const { return lightMap[x][y][z]; }
+void Shred::AddLight(const_int(x, y, z), const int level) {
     lightMap[x][y][z] += level;
 }
 
-void Shred::SetAllLightMapNull() { memset(lightMap, 0, sizeof(lightMap)); }
-
-/// Makes all shining blocks of shred shine.
 void Shred::ShineAll() {
     World * const world = World::GetWorld();
-    auto shining = shiningList.cbegin();
-    while ( shining != shiningList.cend() ) {
-        world->Shine(shining.key()->GetXyz(), shining.value());
+    for (auto shining : GetShiningList()) {
+        world->Shine(shining->GetXyz(), shining->LightRadius());
         ++shining;
-    }
-    const bool initial = world->GetInitial();
-    FOR_ALL_SHRED_AREA(x, y) {
-        SunShineVertical(x, y, initial);
-    }
-}
-
-void Shred::SunShineVertical(const int x, const int y, const bool initial) {
-    AddLightOne(x, y, HEIGHT-1);
-    for (int z = HEIGHT-2; ; --z) {
-        AddLightOne(x, y, z);
-        switch ( GetBlock(x, y, z)->Transparent() ) {
-        case BLOCK_OPAQUE: return;
-        case BLOCK_TRANSPARENT:
-            if ( not initial ) {
-                emit World::GetWorld()->Updated(x, y, z);
-            }
-            break;
-        }
     }
 }

@@ -44,8 +44,7 @@ class Active : public QObject, public Block, protected Xyz {
     Q_OBJECT
     Q_DISABLE_COPY(Active)
 public:
-    Active(int sub, int id, int transp = UNDEF);
-    Active(QDataStream & str, int sub, int id, int transp = UNDEF);
+    BLOCK_CONSTRUCTORS(Active)
 
     int X() const;
     int Y() const;
@@ -57,16 +56,13 @@ public:
     void ReceiveSignal(QString) override;
     Active * ActiveBlock() override final;
 
-    class Shred * GetShred() const { return shred; }
-
     virtual void ActFrequent();
-    void ActRare();
-
     virtual inner_actions ActInner();
     virtual int ShouldAct() const;
-    virtual void UpdateLightRadius();
 
+    void ActRare();
     void SetShred(class Shred * const new_shred) { shred = new_shred; }
+    class Shred * GetShred() const { return shred; }
 
     void Farewell();
     void Unregister();
@@ -76,6 +72,7 @@ signals:
     void ReceivedText(const QString);
 
 protected:
+    void UpdateLightRadius(int old_radius);
     void SendSignalAround(QString) const;
     void DamageAround() const;
     /// Damages block, if it is broken returns true and destroys block.
@@ -83,6 +80,7 @@ protected:
     /// Returns true if there is at least 1 block of substance sub around.
     bool IsSubAround(int sub) const;
     bool Gravitate(int range, int down, int up, int calmness);
+    bool IsInside() const;
 
     virtual void DoRareAction();
     virtual int  Attractive(int sub) const;
@@ -96,8 +94,7 @@ private:
 class Falling : public Active {
     Q_OBJECT
 public:
-    Falling(int sub, int id, int transp = UNDEF);
-    Falling(QDataStream & str, int sub, int id, int transp = UNDEF);
+    BLOCK_CONSTRUCTORS(Falling)
 
     void Move(dirs dir) override;
     QString FullName() const override;

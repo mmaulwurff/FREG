@@ -48,7 +48,7 @@
 #include "BlockFactory.cpp"
 #include "CraftManager.cpp"
 #include "DeferredAction.cpp"
-#include "Lighting-inertia.cpp"
+#include "Lighting.cpp"
 #include "main.cpp"
 #include "Player.cpp"
 #include "Shred-gen-flat.cpp"

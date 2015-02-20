@@ -25,8 +25,7 @@
 class Accumulator : public Block {
     M_DISABLE_COPY(Accumulator)
 public:
-    Accumulator(int sub, int kind);
-    Accumulator(QDataStream &, int sub, int kind);
+    BLOCK_CONSTRUCTORS(Accumulator)
 
     QString FullName() const override;
     void Damage(int dmg, int dmg_kind) override;

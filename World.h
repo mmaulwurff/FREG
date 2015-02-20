@@ -23,66 +23,47 @@
 #include "header.h"
 #include <QThread>
 #include <QMutex>
+#include <QHash>
 
 class Block;
 class Shred;
 
 class World final : public QThread {
     /** \class World world.h
-     * \brief World provides global physics and shred connection.
+     *  \brief World provides global physics and shred connection.
      *
      * Designed to be single. */
     Q_OBJECT
     Q_DISABLE_COPY(World)
+
 public:
+
      World(QString world_name, bool * error);
     ~World();
 
-     static World * GetWorld();
-
-public: // Block work section
-    Block * GetBlock(int x, int y, int z) const;
-    Shred * GetShred(int i, int j) const;
-    Shred * GetShredByPos(int x, int y) const;
-    Shred * GetNearShred(Shred *, dirs dir) const;
-
-public:
-    ///\name Lighting section
-    ///@{
-
-    int Enlightened(int x, int y, int z) const;
-    /// Provides lighting of block side, not all block.
-    int Enlightened(int x, int y, int z, dirs dir) const;
-
-    /// Makes block emit shining.
-    void Shine(const class Xyz&, int level);
-
-    bool GetInitial()   const { return initial_lighting; }
-    bool GetEvernight() const { return evernight; }
-
-private:
-    void AddLight(int x, int y, int z, int level);
-
-    /// Called when one block is moved, built or destroyed.
-    void ReEnlighten(int x, int y, int z);
-    void ReEnlightenAll();
-    /// Called from ReloadShreds(int), enlightens only needed shreds.
-    void ReEnlightenMove(dirs);
-
-    static const int MAX_LIGHT_RADIUS = 4;
-    ///@}
-
-public: // Information section
+///\name Static information section
+///@{
+    static World * GetWorld();
     static QString WorldName() { return GetWorld()->worldName; }
     static QString WorldPath() { return home_path + WorldName(); }
-    /// False on error, true if focus is received to _targ successfully.
+
+    static dirs TurnRight(dirs dir);
+    static dirs TurnLeft (dirs dir);
+    static dirs Anti(dirs dir);
+    static int GetBound();
+///@}
+
+///\name Information section
+///@{
+    /// Get coordinates near block.
+    /** @param[in] x, y, z Coordinates of block.
+     *  @param[out] x_targ, y_targ, z_targ Received focus coordinates.
+     *  @param[in] dir Direction.
+     *  @returns false on error, true if bound check is passed. */
     bool Focus(int x, int y, int z,
             int * x_targ, int * y_targ, int * z_targ, dirs dir) const;
     int NumShreds() const { return numShreds; }
     bool ShredInCentralZone(qint64 longi, qint64  lati) const;
-    static dirs TurnRight(dirs dir);
-    static dirs TurnLeft (dirs dir);
-    static dirs Anti(dirs dir);
     qint64 Longitude() const;
     qint64 Latitude() const;
 
@@ -90,34 +71,45 @@ public: // Information section
 
     class QByteArray * GetShredData(qint64 longi, qint64 lati) const;
     void SetShredData(class QByteArray *, qint64 longi, qint64 lati);
-private:
-    int ShredPos(int x, int y) const;
+///@}
 
-public: // Visibility section
+///\name Block work section
+///@{
+    Block* GetBlock(int x, int y, int z) const;
+    Shred * GetShred(int i, int j) const;
+    Shred * GetShredByPos(int x, int y) const;
+    Shred * GetNearShred(Shred *, dirs dir) const;
+///@}
+
+///\name Lighting section
+///@{
+    int Enlightened(int x, int y, int z) const;
+    /// Provides lighting of block side, not all block.
+    int Enlightened(int x, int y, int z, dirs dir) const;
+
+    /// Makes block emit shining.
+    void Shine(const class Xyz&, int level);
+///@}
+
+    /// Radius 5 ensures that fully enlightened block (in a cloud of most
+    /// powerful illuminators) will not overfloat lighting storage (8 bit).
+    static const int MAX_LIGHT_RADIUS = 5;
+
+///\name Visibility section
+///@{
     bool DirectlyVisible(int x_from, int y_from, int z_from,
                          int x_to,   int y_to,   int z_to) const;
     /// At least one side of block is visible.
     bool Visible(int x_from, int y_from, int z_from,
                  int x_to,   int y_to,   int z_to) const;
+///@}
 
-public: // Movement section
-    /// Check and move
-    bool Move(int x, int y, int z, dirs dir);
+///\name Movement section
+///@{
+    bool Move(int x, int y, int z, dirs dir); ///< Check and move
     void Jump(int x, int y, int z, dirs dir);
-private:
-    enum can_move_results {
-        CAN_MOVE_OK,
-        CAN_MOVE_CANNOT,
-        CAN_MOVE_DESTROYED
-    };
+///@}
 
-    /// This CAN move blocks, but not xyz block.
-    can_move_results CanMove(int x,    int y,    int z,
-                             int x_to, int y_to, int z_to, dirs dir);
-    void NoCheckMove(int x,    int y,    int z,
-                     int x_to, int y_to, int z_to, dirs dir);
-
-public: // Time section
     enum times {
         SECONDS_IN_HOUR = 60,
         SECONDS_IN_DAY  = 24 * SECONDS_IN_HOUR,
@@ -129,54 +121,48 @@ public: // Time section
         SECONDS_IN_DAYLIGHT = SECONDS_IN_DAY-END_OF_NIGHT
     };
 
-    times_of_day PartOfDay() const;
-    /// This returns seconds from start of current day.
-    int TimeOfDay() const;
-    /// Returns time in seconds since world creation.
-    quint64 Time() const;
+///\name Time section
+///@{
+    int TimeOfDay() const; ///< Get seconds from start of current day.
+    int MiniTime()  const; ///< Get number of time steps since second start.
+    quint64 Time()  const; ///< Get time in seconds since world creation.
     QString TimeOfDayStr() const;
-    /// Returns number of physics steps since second start.
-    int MiniTime() const;
+    times_of_day PartOfDay() const;
+///@}
 
-public: // Interactions section
+///\name Interactions section
+///@{
     /// Returns damaged block result durability.
     int Damage(int x, int y, int z, int level, int dmg_kind);
     /// Does not check target block durability.
     void DestroyAndReplace(int x, int y, int z);
     /// Returns true on successfull build, otherwise false.
-    bool Build(Block * thing, int x, int y, int z,
-            int dir = UP,
-            Block * who = nullptr,
-            bool anyway = false);
+    bool Build(Block* thing, int x, int y, int z, Block* who = nullptr);
     /// Returns true on success. Gets a string and inscribes block.
     bool Inscribe(int x, int y, int z);
+///@}
 
-private: // Inventory functions section
-    /// Returns true if block_from can be put into block_to.
-    bool Exchange(Block * block_from, Block * block_to,
-            int src, int dest, int num);
-public:
+///\name Inventory functions section
+///@{
     /// Returns true on success.
-    bool Drop(Block * from, int x_to, int y_to, int z_to,
+    bool Drop(Block* from, int x_to, int y_to, int z_to,
             int src, int dest, int num);
-    bool Get(Block * to, int x_from, int y_from, int z_from,
+    bool Get(Block* to, int x_from, int y_from, int z_from,
             int src, int dest, int num);
+///@}
 
-public: // Block information section
+///\name Block information section
+///@{
     bool InBounds(int x, int y) const;
     bool InBounds(int x, int y, int z) const;
-    static int GetBound();
 
     int SetNote(QString note);
     int ChangeNote(QString note, int note_id);
     QString GetNote(int note_id) const;
-private:
-    void SaveNotes() const;
-    void LoadNotes();
-    void SaveState() const;
-    void LoadState();
+///@}
 
-public: // World section
+///\name World section
+///@{
     void ReloadAllShreds(QString new_world, qint64 lati, qint64 longi,
             int new_x, int new_y, int new_z);
 
@@ -187,13 +173,13 @@ public: // World section
     void SetReloadShreds(int direction);
     void PhysEvents();
     void ActivateFullReload();
+///@}
 
 signals:
     void Notify(QString) const;
     void GetString(QString &) const;
-    void Updated(int, int, int);
     void UpdatedAll();
-    void UpdatedAround(int x, int y, int z, int range);
+    void UpdatedAround(int x, int y, int z);
     void StartMove(int);
     /// Emitted when world active zone moved to int direction.
     void Moved(int);
@@ -208,16 +194,63 @@ signals:
     void Start();
 
 private:
+
     static const int TIME_STEPS_IN_SEC = 10;
     static const int MIN_WORLD_SIZE    =  5;
+
+///\name private Lighting section
+///@{
+    /// Adds light level to particular coordinate.
+    void AddLight(const class Xyz&, int level);
+
+    /// Takes back all light in area around coordinates xyz.
+    void UnShine(int x, int y, int z);
+
+    /// Updates all unshined lighting.
+    void ReEnlighten();
+
+    /// Updates lighting in all world.
+    void ReEnlightenAll();
+
+    /// Called from ReloadShreds(int), enlightens only needed shreds.
+    void ReEnlightenMove(dirs);
+
+    /// Checks if lighting should be updated after operation on blocks.
+    void ReEnlightenCheck(Block* block1, Block* block2, int x, int y, int z);
+///@}
+
+    enum can_move_results {
+        CAN_MOVE_OK,
+        CAN_MOVE_CANNOT,
+        CAN_MOVE_DESTROYED
+    };
+
+///\name Private movement section
+///@{
+    /// This CAN move blocks, but not xyz block.
+    can_move_results CanMove(int x,    int y,    int z,
+                             int x_to, int y_to, int z_to, dirs dir);
+    void NoCheckMove(int x,    int y,    int z,
+                     int x_to, int y_to, int z_to, dirs dir);
+///@}
 
     static int CorrectNumShreds(int num);
     static int CorrectNumActiveShreds(int num, int max_num);
     void LoadAllShreds();
     void ReloadShreds();
     void run() override;
+    int ShredPos(int x, int y) const;
     Shred ** FindShred(int x, int y) const;
     static unsigned Abs(int x);
+
+    void SaveNotes() const;
+    void LoadNotes();
+    void SaveState() const;
+    void LoadState();
+
+    /// Returns true if block_from can be put into block_to.
+    bool Exchange(Block* block_from, Block* block_to,
+            int src, int dest, int num);
 
     QString worldName;
     class WorldMap * map;
@@ -235,7 +268,6 @@ private:
     const int numShreds; ///< size of loaded zone
     const int numActiveShreds; ///< size of active zone
     QMutex mutex;
-    bool evernight;
     qint64 newLati, newLongi;
     int newX, newY, newZ;
     QString newWorld;
@@ -244,8 +276,10 @@ private:
     class QTimer * timer;
 
     class ShredStorage * shredStorage;
-    bool initial_lighting;
     QList<QString> notes;
+
+    /// storage for found shining objects between UnShine and ReEnlighten.
+    QHash<class Active *, int> tempShiningList;
 
     static World * world;
 };

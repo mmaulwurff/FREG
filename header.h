@@ -116,7 +116,6 @@ enum times_of_day {
  *  Changind kind order will break file compatibility.
  *  Do not use space in strings, use '_'.
  *  Add new kinds to bottom.
- *  Define X as "X(a, b) a," to get column 1 and "X(a, b) b," to get column 2.
  *  \snippet header.h List of kinds */
 /// [List of kinds]
 /// (context, translatable class name), enum element, character, class)
@@ -167,7 +166,6 @@ X(QT_TRANSLATE_NOOP("Block", "Accumulator" ), ACCUMULATOR, '=',  Accumulator,)\
  *  Don't make non-BLOCK blocks from air, otherwise memory leaks are possible.
  *  Don't change order, this will break save file compatibility.
  *  Add new substances to bottom.
- *  Define X as "X(a, b) a," to get column 1 and "X(a, b) b," to get column 2.
  *  \snippet header.h List of subs */
 /// [List of subs]
 /// X(QT_TRANSLATE_NOOP(context, translatable name), enum element, color)
@@ -229,11 +227,9 @@ enum usage_types {
 };
 
 enum transparency {
-    BLOCK_OPAQUE = 0,
+    BLOCK_OPAQUE,
     BLOCK_TRANSPARENT,
     INVISIBLE,
-    NONSTANDARD = 6,
-    UNDEF ///< temporary, doesn't appear in world.
 };
 
 #endif // HEADER_H

@@ -25,8 +25,7 @@
 class Teleport : public Active {
     Q_OBJECT
 public:
-    Teleport(int sub, int kind);
-    Teleport(QDataStream &, int sub, int kind);
+    BLOCK_CONSTRUCTORS(Teleport)
 
     bool Inscribe(QString) override;
     void Damage(int damage, int damage_kind) override;

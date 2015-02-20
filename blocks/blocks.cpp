@@ -54,8 +54,8 @@
     int  Ladder::Weight() const { return Block::Weight()*3; }
     push_reaction Ladder::PushResult(dirs) const { return MOVE_UP; }
 
-    Block * Ladder::DropAfterDamage(bool * const delete_block) {
-        Block * const pile = BlockFactory::NewBlock(BOX, DIFFERENT);
+    Block* Ladder::DropAfterDamage(bool * const delete_block) {
+        Block* const pile = BlockFactory::NewBlock(BOX, DIFFERENT);
         if ( STONE==Sub() || MOSS_STONE==Sub() ) {
             pile->HasInventory()->Get(BlockFactory::Normal(Sub()));
         } else {
@@ -107,7 +107,7 @@
         }
     }
 
-    Block * Liquid::DropAfterDamage(bool *) {
+    Block* Liquid::DropAfterDamage(bool *) {
         return BlockFactory::Normal( ( Sub() == STONE ) ?
             STONE : AIR);
     }
@@ -178,7 +178,7 @@
     int  Grass::ShouldAct() const  { return FREQUENT_RARE; }
     int  Grass::LightRadius() const { return (FIRE == Sub()) ? 5 : 0; }
     inner_actions Grass::ActInner() { return INNER_ACTION_NONE; }
-    Block * Grass::DropAfterDamage(bool *) {return BlockFactory::Normal(AIR);}
+    Block* Grass::DropAfterDamage(bool *) {return BlockFactory::Normal(AIR);}
 
     int Grass::DamageKind() const {
         return (Sub() == FIRE) ? DAMAGE_HEAT : DAMAGE_NO;
@@ -207,8 +207,8 @@
         }
     }
 
-    Block * Bush::DropAfterDamage(bool *) {
-        Block * const pile = BlockFactory::NewBlock(BOX, DIFFERENT);
+    Block* Bush::DropAfterDamage(bool *) {
+        Block* const pile = BlockFactory::NewBlock(BOX, DIFFERENT);
         Inventory * const pile_inv = pile->HasInventory();
         pile_inv->Get(BlockFactory::NewBlock(WEAPON, WOOD));
         pile_inv->Get(BlockFactory::NewBlock(WEAPON, SUB_NUT));
@@ -220,12 +220,12 @@
         Inventory::SaveAttributes(out);
     }
 
-    Bush::Bush(const int kind, const int sub) :
+    Bush::Bush(const kinds kind, const subs sub) :
             Active(kind, sub),
             Inventory(BUSH_SIZE)
     {}
 
-    Bush::Bush(QDataStream & str, const int kind, const int sub) :
+    Bush::Bush(QDataStream& str, const kinds kind, const subs sub) :
             Active(str, kind, sub),
             Inventory(str, BUSH_SIZE)
     {}
@@ -271,16 +271,14 @@
         out << shifted << locked;
     }
 
-    Door::Door(const int kind, const int sub) :
-            Active(kind, sub, ( STONE==sub || MOSS_STONE==sub ) ?
-                BLOCK_OPAQUE : NONSTANDARD),
+    Door::Door(const kinds kind, const subs sub) :
+            Active(kind, sub),
             shifted(false),
             locked(false)
     {}
 
-    Door::Door(QDataStream & str, const int kind, const int sub) :
-            Active(str, kind, sub, ( STONE==sub || MOSS_STONE==sub ) ?
-                BLOCK_OPAQUE : NONSTANDARD),
+    Door::Door(QDataStream& str, const kinds kind, const subs sub) :
+            Active(str, kind, sub),
             shifted(),
             locked()
     {
@@ -378,12 +376,10 @@
         str << alarmTime << timerTime;
     }
 
-    Clock::Clock(const int kind, const int sub) :
-            Active(kind, sub, NONSTANDARD)
-    {}
+    Clock::Clock(const kinds kind, const subs sub) : Active(kind, sub) {}
 
-    Clock::Clock (QDataStream & str, const int kind, const int sub) :
-            Active(str, kind, sub, NONSTANDARD)
+    Clock::Clock(QDataStream& str, const kinds kind, const subs sub) :
+            Active(str, kind, sub)
     {
         str >> alarmTime >> timerTime;
     }
@@ -471,7 +467,7 @@
         out << longiStart << latiStart << savedShift << savedChar;
     }
 
-    Map::Map(const int kind, const int sub) :
+    Map::Map(const kinds kind, const subs sub) :
             Text(kind, sub),
             longiStart(),
             latiStart(),
@@ -479,7 +475,7 @@
             savedChar(0)
     {}
 
-    Map::Map(QDataStream & str, const int kind, const int sub) :
+    Map::Map(QDataStream& str, const kinds kind, const subs sub) :
             Text(str, kind, sub),
             longiStart(),
             latiStart(),
@@ -505,13 +501,13 @@
 // Telegraph:: section
     QString Telegraph::sharedMessage;
 
-    Telegraph::Telegraph(const int sub, const int id) :
-            Active(sub, id, BLOCK_OPAQUE),
+    Telegraph::Telegraph(const kinds kind, const subs sub) :
+            Active(kind, sub),
             isReceiver(true)
     {}
 
-    Telegraph::Telegraph(QDataStream & str, const int sub, const int id) :
-            Active(str, sub, id),
+    Telegraph::Telegraph(QDataStream& str, const kinds kind, const subs sub) :
+            Active(str, kind, sub),
             isReceiver()
     {
         str >> isReceiver;

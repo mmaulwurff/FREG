@@ -26,8 +26,7 @@
 class Dwarf : public Animal, public Inventory {
     Q_OBJECT
 public:
-    Dwarf(int sub, int id);
-    Dwarf(QDataStream & str, int sub, int id);
+    BLOCK_CONSTRUCTORS(Dwarf)
 
     int ShouldAct() const override;
     int DamageKind() const override;
@@ -36,17 +35,17 @@ public:
     int Weight() const override;
     int DamageLevel() const override;
     void Damage(int dmg, int dmg_kind) override;
-    void UpdateLightRadius() override;
     QString FullName() const override;
     QString InvFullName(int slot_number) const override;
+    inner_actions ActInner() override;
 
     bool Access() const override;
     bool Inscribe(QString str) override;
-    bool GetExact(Block *, int to) override;
+    bool GetExact(Block*, int to) override;
     void ReceiveSignal(QString) override;
     int  LightRadius() const override;
     int  NutritionalValue(subs) const override;
-    Block * DropAfterDamage(bool * delete_block) override;
+    Block* DropAfterDamage(bool * delete_block) override;
     Inventory * HasInventory() override;
 
 protected:
@@ -61,7 +60,6 @@ private:
         IN_LEFT,
         SPECIAL_SLOTS_COUNT
     };
-    static const int MIN_DWARF_LIGHT_RADIUS = 1;
 
     int UpdateLightRadiusInner() const;
 

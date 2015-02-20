@@ -55,17 +55,17 @@ BlockFactory::BlockFactory() :
 
 BlockFactory::~BlockFactory() { qDeleteAll(ALL(normals)); }
 
-Block * BlockFactory::NewBlock(const int kind, const int sub) {
+Block* BlockFactory::NewBlock(const kinds kind, const subs sub) {
     //qDebug("kind: %d, sub: %d, valid: %d", kind, sub, IsValid(kind,sub));
     return blockFactory->creates[kind](kind, sub);
 }
 
-Block * BlockFactory::Normal(const int sub) {
+Block* BlockFactory::Normal(const int sub) {
     return blockFactory->normals[sub];
 }
 
-Block * BlockFactory::BlockFromFile(QDataStream & str,
-        const int kind, const int sub)
+Block* BlockFactory::BlockFromFile(QDataStream & str,
+        const kinds kind, const subs sub)
 {
     //qDebug("kind: %d, sub: %d, valid: %d", kind, sub, IsValid(kind,sub));
     return blockFactory->loads[kind](str, kind, sub);
@@ -85,7 +85,7 @@ bool BlockFactory::KindSubFromFile(QDataStream & str,
     }
 }
 
-void BlockFactory::DeleteBlock(Block * const block) {
+void BlockFactory::DeleteBlock(Block* const block) {
     if ( block != blockFactory->Normal(block->Sub()) ) {
         Active * const active = block->ActiveBlock();
         if ( active != nullptr ) {
@@ -95,8 +95,8 @@ void BlockFactory::DeleteBlock(Block * const block) {
     }
 }
 
-Block * BlockFactory::ReplaceWithNormal(Block * const block) {
-    Block * const normal = blockFactory->Normal(block->Sub());
+Block* BlockFactory::ReplaceWithNormal(Block* const block) {
+    Block* const normal = blockFactory->Normal(block->Sub());
     if ( block!=normal && *block==*normal ) {
         delete block;
         return normal;
@@ -105,9 +105,9 @@ Block * BlockFactory::ReplaceWithNormal(Block * const block) {
     }
 }
 
-bool BlockFactory::IsValid(const int kind, const int sub) {
+bool BlockFactory::IsValid(const kinds kind, const subs sub) {
     const sub_groups group = Block::GetSubGroup(sub);
-    switch ( static_cast<enum kinds>(kind) ) {
+    switch ( kind ) {
     case BLOCK:     return true;
     case LAST_KIND: break;
     case DWARF:     return ( sub == DIFFERENT || sub == H_MEAT
@@ -159,12 +159,12 @@ bool BlockFactory::IsValid(const int kind, const int sub) {
 }
 
 template <typename BlockType>
-Block * BlockFactory::Create(const int kind, const int sub) {
+Block* BlockFactory::Create(const kinds kind, const subs sub) {
     return new BlockType(kind, sub);
 }
 
 template <typename BlockType>
-Block * BlockFactory::Load(QDataStream & str, const int kind, const int sub) {
+Block* BlockFactory::Load(QDataStream& str, const kinds kind, const subs sub) {
     return new BlockType(str, kind, sub);
 }
 

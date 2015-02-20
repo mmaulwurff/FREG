@@ -52,8 +52,6 @@ VirtScreen::VirtScreen(Player * const player_) :
         Qt::DirectConnection);
     connect(world, &World::Moved, this, &VirtScreen::Move,
         Qt::DirectConnection);
-    connect(world, &World::Updated, this, &VirtScreen::Update,
-        Qt::DirectConnection);
     connect(world, &World::UpdatedAround, this, &VirtScreen::UpdateAround,
         Qt::DirectConnection);
     connect(world, &World::UpdatesEnded, this, &VirtScreen::UpdatesEnd,
@@ -159,11 +157,10 @@ bool VirtScreen::ProcessCommand(const QString command) {
 }
 
 // Define pure virtual functions to simplify debugging
-void VirtScreen::Move(int)                        { Q_UNREACHABLE(); }
-void VirtScreen::UpdateAll()                      { Q_UNREACHABLE(); }
-void VirtScreen::DeathScreen()                    { Q_UNREACHABLE(); }
-void VirtScreen::UpdatePlayer()                   { Q_UNREACHABLE(); }
-void VirtScreen::Update(int, int, int)            { Q_UNREACHABLE(); }
-void VirtScreen::Notify(QString) const            { Q_UNREACHABLE(); }
-void VirtScreen::PassString(QString &) const      { Q_UNREACHABLE(); }
-void VirtScreen::UpdateAround(int, int, int, int) { Q_UNREACHABLE(); }
+void VirtScreen::Move(int)                   { Q_UNREACHABLE(); }
+void VirtScreen::UpdateAll()                 { Q_UNREACHABLE(); }
+void VirtScreen::DeathScreen()               { Q_UNREACHABLE(); }
+void VirtScreen::UpdatePlayer()              { Q_UNREACHABLE(); }
+void VirtScreen::Notify(QString) const       { Q_UNREACHABLE(); }
+void VirtScreen::PassString(QString &) const { Q_UNREACHABLE(); }
+void VirtScreen::UpdateAround(int, int, int) { Q_UNREACHABLE(); }
