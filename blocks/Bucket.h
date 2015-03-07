@@ -32,11 +32,11 @@ public:
     bool Get(Block* block, int start) override;
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
-    usage_types Use(Active *) override;
+    usage_types Use(Active*) override;
     Inventory * HasInventory() override final;
 
 protected:
-    void SaveAttributes(QDataStream & out) const override;
+    void SaveAttributes(QDataStream& out) const override;
 };
 
 #endif // BUCKET_H

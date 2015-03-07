@@ -39,9 +39,7 @@
     }
 
     void Animal::ActFrequent() {
-        if ( deferredAction != nullptr ) {
-            deferredAction->MakeAction();
-        }
+        if ( deferredAction ) deferredAction->MakeAction();
     }
 
     void Animal::DoRareAction() {
@@ -106,13 +104,13 @@
         }
     }
 
-    void Animal::SaveAttributes(QDataStream & out) const {
+    void Animal::SaveAttributes(QDataStream& out) const {
         Falling::SaveAttributes(out);
         out << breath << satiation;
     }
 
     void Animal::EatAround() {
-        World * const world = World::GetWorld();
+        World* const world = World::GetWorld();
         for (const Xyz& xyz : AroundCoordinates(GetXyz())) {
             const subs sub = world->GetBlock(XYZ(xyz))->Sub();
             if ( Attractive(sub) ) {
@@ -122,7 +120,7 @@
         }
     }
 
-    Block* Animal::DropAfterDamage(bool *) {
+    Block* Animal::DropAfterDamage(bool*) {
         Block* const cadaver = BlockFactory::NewBlock(BOX, Sub());
         cadaver->HasInventory()->Get(BlockFactory::NewBlock(WEAPON, BONE));
         return cadaver;

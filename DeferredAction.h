@@ -29,7 +29,7 @@ class DeferredAction final : private Xyz {
      *
      *  Xyz is action target coordinates. */
 public:
-    explicit DeferredAction(class Animal * attached);
+    explicit DeferredAction(class Animal* attached);
 
     void SetGhostMove(int dir);
     void SetMove(int dir);
@@ -64,7 +64,7 @@ private:
     deferred_actions type;
     int srcSlot, destSlot;
     int num;
-    class Animal * const attachedBlock;
+    class Animal* const attachedBlock;
 
     void GhostMove() const;
     void Move() const;

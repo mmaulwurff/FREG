@@ -10,9 +10,8 @@ QMAKE_TARGET_DESCRIPTION = Freg - open world with text graphics.
 CONFIG += warn_on console c++11 rtti_off exceptions_off
 CONFIG( release, debug|release ):DEFINES += QT_NO_DEBUG_OUTPUT
 
-QMAKE_CXXFLAGS += -pedantic
 QMAKE_CXXFLAGS += -Wfloat-equal -Woverloaded-virtual -Wundef -fstrict-enums
-QMAKE_CXXFLAGS += -Weffc++ -Werror
+QMAKE_CXXFLAGS += -pedantic -Weffc++ -Werror
 
 #QMAKE_CXXFLAGS_DEBUG += -fno-inline
 QMAKE_CXXFLAGS_RELEASE -= -O2
@@ -38,10 +37,10 @@ clang {
 }
 
 unix {
+    QMAKE_CXXFLAGS += -Wold-style-cast
     LIBS += -lncursesw
     target.path += /usr/bin
     INSTALLS += target
-    QMAKE_CXXFLAGS += -Wold-style-cast
 } else {
     LIBS           += $$PWD/pdcurses/libcurses.lib
     PRE_TARGETDEPS += $$PWD/pdcurses/libcurses.lib

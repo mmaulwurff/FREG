@@ -40,10 +40,10 @@ public:
     int  ShouldAct() const override;
     int  Weight() const override;
     void Damage(int dmg, int dmg_kind) override;
-    Block* DropAfterDamage(bool * delete_block) override;
+    Block* DropAfterDamage(bool* delete_block) override;
     QString FullName() const override;
     Inventory * HasInventory() override final;
-    usage_types Use(Active * user) override;
+    usage_types Use(Active* user) override;
     push_reaction PushResult(dirs) const override;
     inner_actions ActInner() override;
 
@@ -69,13 +69,13 @@ public:
     void ReceiveSignal(QString) override;
     void DoRareAction() override;
     QString FullName() const override;
-    Block* DropAfterDamage(bool * delete_block) override;
+    Block* DropAfterDamage(bool* delete_block) override;
     Inventory * HasInventory() override final;
-    usage_types Use(Active * user) override;
+    usage_types Use(Active* user) override;
     inner_actions ActInner() override;
 
 protected:
-    void SaveAttributes(QDataStream & out) const override;
+    void SaveAttributes(QDataStream& out) const override;
 }; // Box
 
 class Workbench : public Container {
@@ -111,7 +111,7 @@ public:
     QString InvFullName(int slot_number) const override;
 
 protected:
-    void SaveAttributes(QDataStream &) const override;
+    void SaveAttributes(QDataStream&) const override;
 
 private:
     static const int CONVERTER_LIGHT_RADIUS = 2;

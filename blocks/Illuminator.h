@@ -30,15 +30,15 @@ public:
     int  ShouldAct() const override;
     int  DamageKind() const override;
     int  LightRadius() const override;
-    Block* DropAfterDamage(bool * delete_block) override;
+    Block* DropAfterDamage(bool* delete_block) override;
     QString FullName() const override;
     wearable Wearable() const override;
-    usage_types Use(Active *) override;
+    usage_types Use(Active*) override;
     inner_actions ActInner() override;
 
 protected:
     void DoRareAction() override;
-    void SaveAttributes(QDataStream & out) const override;
+    void SaveAttributes(QDataStream& out) const override;
 
 private:
     quint16 fuelLevel;

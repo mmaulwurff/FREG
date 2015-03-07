@@ -53,10 +53,10 @@ public:
     static Block* NewBlock(kinds kind, subs sub);
 
     /// Use this to load block from file.
-    static Block* BlockFromFile(QDataStream & str, kinds kind, subs sub);
+    static Block* BlockFromFile(QDataStream& str, kinds kind, subs sub);
 
     /// Returns true if block is normal.
-    static bool KindSubFromFile(QDataStream &, uint8_t * kind, uint8_t * sub);
+    static bool KindSubFromFile(QDataStream&, uint8_t * kind, uint8_t * sub);
 
     /// Does not actually delete normal blocks.
     static void DeleteBlock(Block*);
@@ -85,12 +85,12 @@ private:
     /// Array of pointers to Create functions.
     Block* (* creates[KIND_COUNT])(kinds kind, subs sub);
     /// Array of pointers to Load functions.
-    Block* (*   loads[KIND_COUNT])(QDataStream &, kinds kind, subs sub);
+    Block* (*   loads[KIND_COUNT])(QDataStream&, kinds kind, subs sub);
 
     template <typename BlockType>
     static Block* Create(kinds kind, subs sub);
     template <typename BlockType>
-    static Block* Load(QDataStream & str, kinds kind, subs sub);
+    static Block* Load(QDataStream& str, kinds kind, subs sub);
 
     /// Type list struct for variadic template without formal parameters.
     template <class ...> struct typeList {};

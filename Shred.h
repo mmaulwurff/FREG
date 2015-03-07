@@ -64,19 +64,19 @@ public:
     void PhysEventsFrequent();
     void PhysEventsRare();
 
-    void Register(Active *);
-    void Unregister(Active *);
-    void AddShining(Active *);
-    void RemShining(Active *);
-    void AddToDelete(Active *);
+    void Register(Active*);
+    void Unregister(Active*);
+    void AddShining(Active*);
+    void RemShining(Active*);
+    void AddToDelete(Active*);
     void ReloadTo(dirs);
 
-    const std::forward_list<Active *>& GetShiningList() const;
+    const std::forward_list<Active*>& GetShiningList() const;
 
     void SaveShred(bool isQuitGame);
 
     Block* GetBlock(int x, int y, int z) const;
-    const Block* FindFirstVisible(int x, int y, int * z, int step) const;
+    const Block* FindFirstVisible(int x, int y, int* z, int step) const;
 
     /// Removes last block at xyz, then SetBlock, then makes block normal.
     void SetBlock(Block* block, int x, int y, int z);
@@ -105,7 +105,7 @@ public:
         shred_type GetTypeOfShred() const { return type; }
 
         static QString FileName(qint64 longi, qint64 lati);
-        Shred * GetShredMemory() const;
+        Shred* GetShredMemory() const;
         /// Make global coordinate from local (in loaded zone).
         qint64 GlobalX(int x) const;
         qint64 GlobalY(int y) const;
@@ -128,12 +128,12 @@ private:
     Q_DISABLE_COPY(Shred)
 
     static const quint8 DATASTREAM_VERSION;
-    static const quint8 CURRENT_SHRED_FORMAT_VERSION = 15;
+    static const quint8 CURRENT_SHRED_FORMAT_VERSION = 16;
 
     static const int RAIN_IS_DEW = 1;
 
     bool LoadShred();
-    void RegisterInit(Active *);
+    void RegisterInit(Active*);
 
     /// Builds normal underground. Returns ground level.
     int NormalUnderground(int depth = 0, subs sub = SOIL);
@@ -142,7 +142,7 @@ private:
     /** If on_water is false, this will not drop things on water,
      *  otherwise on water too. */
     void RandomDrop(int num, kinds, subs, bool on_water = false);
-    void DropBlock(Block* bloc, bool on_water);
+    void DropBlock(Block*, bool on_water);
     int FindTopNonAir(int x, int y);
 
     void PlantGrass();
@@ -150,7 +150,7 @@ private:
     void NullMountain();
     void Plain();
     void Forest(bool dead);
-    void Water(subs sub = WATER);
+    void Water(subs = WATER);
     void Pyramid();
     void Mountain();
     void Hill(bool dead);
@@ -165,30 +165,25 @@ private:
     /// Should be placed before any other block generation at the same place.
     bool LoadRoom(int level, int index = 0);
 
-    /// Block combinations section (trees, buildings, etc):
-    bool Tree(int x, int y, int z);
+    ///\name Block combinations section (trees, buildings, etc):
+    ///@{
+        bool Tree(int x, int y, int z);
+        void NormalCube(int x_start, int y_start, int z_start,
+                        int x_size,  int y_size,  int z_size, subs);
+    ///&}
 
-    /// Special land generation
-    void ShredLandAmplitudeAndLevel(qint64 longi, qint64 lati,
-            unsigned * l, float * a) const;
-    void ShredNominalAmplitudeAndLevel(char shred_type,
-            unsigned * l, float * a) const;
-    void AddWater();
-    void NormalCube(int x_start, int y_start, int z_start,
-                    int x_size,  int y_size,  int z_size, subs);
+    void RainBlock(int* kind, int* sub) const;
 
-    void RainBlock(int * kind, int * sub) const;
-
-    Block* blocks[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
+    Block*  blocks[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
     uchar lightMap[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
     const qint64 longitude, latitude;
     int shredX, shredY;
     shred_type type;
 
-    QLinkedList<Active *> activeListFrequent;
-    std::forward_list<Active *> activeListAll;
-    std::forward_list<Active *> shiningList;
-    std::forward_list<class Falling *> fallList;
+    QLinkedList<Active*> activeListFrequent;
+    std::forward_list<Active*> activeListAll;
+    std::forward_list<Active*> shiningList;
+    std::forward_list<class Falling*> fallList;
 };
 
 struct KindSub {

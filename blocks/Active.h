@@ -54,15 +54,15 @@ public:
 
     void Move(dirs dir) override;
     void ReceiveSignal(QString) override;
-    Active * ActiveBlock() override final;
+    Active* ActiveBlock() override final;
 
     virtual void ActFrequent();
     virtual inner_actions ActInner();
     virtual int ShouldAct() const;
 
     void ActRare();
-    void SetShred(class Shred * const new_shred) { shred = new_shred; }
-    class Shred * GetShred() const { return shred; }
+    void SetShred(class Shred* const new_shred) { shred = new_shred; }
+    class Shred* GetShred() const { return shred; }
 
     void Farewell();
     void Unregister();
@@ -72,7 +72,7 @@ signals:
     void ReceivedText(const QString);
 
 protected:
-    void UpdateLightRadius(int old_radius);
+    //void UpdateLightRadius(int old_radius);
     void SendSignalAround(QString) const;
     void DamageAround() const;
     /// Damages block, if it is broken returns true and destroys block.
@@ -88,7 +88,7 @@ protected:
 private:
     void ReRegister(dirs);
 
-    class Shred * shred = nullptr;
+    class Shred* shred = nullptr;
 }; // Active
 
 class Falling : public Active {
@@ -98,7 +98,7 @@ public:
 
     void Move(dirs dir) override;
     QString FullName() const override;
-    Falling * ShouldFall() override final;
+    Falling* ShouldFall() override final;
     push_reaction PushResult(dirs) const override;
 
     void FallDamage();
@@ -106,7 +106,7 @@ public:
     void SetFalling(bool set);
 
 protected:
-    void SaveAttributes(QDataStream & out) const override;
+    void SaveAttributes(QDataStream& out) const override;
 
 private:
     quint8 fallHeight;

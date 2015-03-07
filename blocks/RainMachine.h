@@ -32,10 +32,10 @@ public:
     int  ShouldAct() const override;
     void ReceiveSignal(QString) override;
     void Damage(int dmg, int dmg_kind) override;
-    void SaveAttributes(QDataStream &) const override;
+    void SaveAttributes(QDataStream&) const override;
     QString FullName() const override;
     Inventory * HasInventory() override;
-    usage_types Use(Active * user) override;
+    usage_types Use(Active* user) override;
     inner_actions ActInner();
 
 private:

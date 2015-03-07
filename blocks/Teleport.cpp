@@ -39,7 +39,7 @@ Teleport::Teleport(QDataStream& stream, const kinds kind, const subs sub) :
     stream >> targetWorldName >> targetLongitude >> targetLatitude;
 }
 
-void Teleport::SaveAttributes(QDataStream & stream) const {
+void Teleport::SaveAttributes(QDataStream& stream) const {
     stream << targetWorldName << targetLongitude << targetLatitude;
 }
 
@@ -56,7 +56,7 @@ bool Teleport::Inscribe(QString input) {
 
 void Teleport::Damage(const int damage, const int damage_kind) {
     if ( damage_kind >= DAMAGE_PUSH_UP && damage_kind != DAMAGE_PUSH_DOWN) {
-        World * const world = World::GetWorld();
+        World* const world = World::GetWorld();
         int x, y, z;
         world->Focus(X(), Y(), Z(), &x, &y, &z,
             World::Anti(MakeDirFromDamage(damage_kind)));
@@ -64,10 +64,8 @@ void Teleport::Damage(const int damage, const int damage_kind) {
             targetLatitude, targetLongitude,
             (world->NumShreds() / 2 + 1) * SHRED_WIDTH,
             (world->NumShreds() / 2 + 1) * SHRED_WIDTH, 0);
-        Animal * const animal = world->GetBlock(x, y, z)->IsAnimal();
-        if ( animal != nullptr ) {
-            emit animal->CauseTeleportation();
-        }
+        Animal* const animal = world->GetBlock(x, y, z)->IsAnimal();
+        if ( animal ) emit animal->CauseTeleportation();
     } else {
         Block::Damage(damage, damage_kind);
     }

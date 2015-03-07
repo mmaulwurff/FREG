@@ -34,7 +34,7 @@ Bucket::Bucket(QDataStream& str, const kinds kind, const subs sub) :
 void Bucket::Damage(int, int) { Break(); }
 void Bucket::ReceiveSignal(const QString str) { Block::ReceiveSignal(str); }
 Inventory * Bucket::HasInventory() { return this; }
-usage_types Bucket::Use(Active *) { return USAGE_TYPE_POUR; }
+usage_types Bucket::Use(Active*) { return USAGE_TYPE_POUR; }
 
 QString Bucket::FullName() const {
     QString name;
@@ -64,7 +64,7 @@ bool Bucket::Get(Block* const block, const int start) {
     return false;
 }
 
-void Bucket::SaveAttributes(QDataStream & out) const {
+void Bucket::SaveAttributes(QDataStream& out) const {
     Inventory::SaveAttributes(out);
 }
 

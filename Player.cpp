@@ -45,7 +45,7 @@ dirs Player::GetDir() const { return player->GetDir(); }
 
 qint64 Player::GlobalX() const { return GetShred()->GlobalX(X()); }
 qint64 Player::GlobalY() const { return GetShred()->GlobalY(Y()); }
-Shred * Player::GetShred() const { return player->GetShred(); }
+Shred* Player::GetShred() const { return player->GetShred(); }
 
 void Player::StopUseAll() { usingType = usingSelfType = USAGE_TYPE_NO; }
 int  Player::GetUsingInInventory() const { return usingInInventory; }
@@ -56,7 +56,7 @@ void Player::SetCreativeMode(const bool creative_on) {
     creativeMode = creative_on;
     player->disconnect();
     SaveState();
-    Animal * const prev_player = player;
+    Animal* const prev_player = player;
     SetPlayer(X(), Y(), Z());
     player->SetDir(prev_player->GetDir());
     Inventory * const inv = PlayerInventory();
@@ -78,7 +78,7 @@ int Player::BreathPercent() const {
 
 Inventory * Player::PlayerInventory() const {
     Inventory * const inv = player->HasInventory();
-    if ( inv != nullptr ) {
+    if ( inv ) {
         return inv;
     } else {
         Notify(tr("You have no inventory."));
@@ -163,7 +163,7 @@ void Player::Backpack() {
 }
 
 void Player::Use() {
-    World * const world = World::GetWorld();
+    World* const world = World::GetWorld();
     const QMutexLocker locker(world->GetLock());
     int x, y, z;
     emit GetFocus(&x, &y, &z);
@@ -183,7 +183,7 @@ void Player::Use() {
 }
 
 void Player::Inscribe() const {
-    World * const world = World::GetWorld();
+    World* const world = World::GetWorld();
     const QMutexLocker locker(world->GetLock());
     int x, y, z;
     emit GetFocus(&x, &y, &z);
@@ -255,13 +255,13 @@ void Player::Throw(const int src, const int dest, const int num) {
 }
 
 bool Player::Obtain(const int src, const int dest, const int num) {
-    World * const world = World::GetWorld();
+    World* const world = World::GetWorld();
     const QMutexLocker locker(world->GetLock());
     int x, y, z;
     emit GetFocus(&x, &y, &z);
     bool is_success = world->Get(player, x, y, z, src, dest, num);
     Inventory * const from = world->GetBlock(x, y, z)->HasInventory();
-    if ( from != nullptr && from->IsEmpty() ) {
+    if ( from && from->IsEmpty() ) {
         usingType = USAGE_TYPE_NO;
     }
     emit Updated();
@@ -271,7 +271,7 @@ bool Player::Obtain(const int src, const int dest, const int num) {
 void Player::Wield(const int from) {
     const QMutexLocker locker(World::GetWorld()->GetLock());
     Block* const block = ValidBlock(from);
-    if ( block != nullptr ) {
+    if ( block ) {
         Inventory * const inv = PlayerInventory();
         inv->Pull(from);
         inv->Get(block, (from >= inv->Start()) ? 0 : inv->Start());
@@ -297,12 +297,12 @@ void Player::Inscribe(const int num) {
 }
 
 void Player::Build(const int slot) {
-    World * const world = World::GetWorld();
+    World* const world = World::GetWorld();
     const QMutexLocker locker(world->GetLock());
     int x_targ, y_targ, z_targ;
     emit GetFocus(&x_targ, &y_targ, &z_targ);
     Block* const block = ValidBlock(slot);
-    if ( block != nullptr && (AIR != world->GetBlock(X(), Y(), Z()-1)->Sub()
+    if ( block && (AIR != world->GetBlock(X(), Y(), Z()-1)->Sub()
             || 0 == player->Weight()) )
     {
         player->GetDeferredAction()->SetBuild(x_targ, y_targ, z_targ, slot);
@@ -311,7 +311,7 @@ void Player::Build(const int slot) {
 
 void Player::Craft(const int num) {
     const QMutexLocker locker(World::GetWorld()->GetLock());
-    Inventory * const inv = PlayerInventory();
+    Inventory* const inv = PlayerInventory();
     if ( inv && inv->MiniCraft(num) ) {
         emit Updated();
     }
@@ -330,7 +330,7 @@ void Player::ProcessCommand(QString command) {
     QTextStream comm_stream(&command);
     QString request;
     comm_stream >> request;
-    World * const world = World::GetWorld();
+    World* const world = World::GetWorld();
     const QMutexLocker locker(world->GetLock());
     switch ( UniqueIntFromString(request.toLatin1()) ) {
     case UniqueIntFromString(""): break;
@@ -402,7 +402,7 @@ void Player::ProcessCommand(QString command) {
 } // void Player::ProcessCommand(QString command)
 
 bool Player::Visible(const int x_to, const int y_to, const int z_to) const {
-    World * const world = World::GetWorld();
+    World* const world = World::GetWorld();
     return ( GetCreativeMode()
         || ( world->Enlightened(x_to, y_to, z_to)
             && world->Visible(X(), Y(), Z(), x_to, y_to, z_to)) );
@@ -443,7 +443,7 @@ void Player::BlockDestroy() {
         Notify(tr("You die!"));
         emit Destroyed();
         player = nullptr;
-        World * const world = World::GetWorld();
+        World* const world = World::GetWorld();
         const int plus = world->NumShreds() / 2 * SHRED_WIDTH;
         world->ReloadAllShreds(World::WorldName(),
             homeLati, homeLongi, homeX+plus, homeY+plus, homeZ);
@@ -453,7 +453,7 @@ void Player::BlockDestroy() {
 
 void Player::SetPlayer(int _x, int _y, int _z) {
     LoadState();
-    World * const world = World::GetWorld();
+    World* const world = World::GetWorld();
     if ( _z == -1 ) {
         const int plus = world->NumShreds() / 2;
         _x = Xyz::X() + (latitude  - world->Latitude()  + plus) * SHRED_WIDTH;
@@ -522,7 +522,7 @@ Player::Player() :
         usingInInventory(),
         creativeMode()
 {
-    World * const world = World::GetWorld();
+    World* const world = World::GetWorld();
     SetPlayer(0, 0, -1);
     connect(world, &World::NeedPlayer, this, &Player::SetPlayer,
         Qt::DirectConnection);
@@ -557,7 +557,7 @@ void Player::SaveState() const {
 }
 
 void Player::LoadState() {
-    World * const world = World::GetWorld();
+    World* const world = World::GetWorld();
     const QSettings settings(World::WorldPath() + Str("/player_state.ini"),
         QSettings::IniFormat);
     homeLongi = settings.value(Str("home_longitude"),

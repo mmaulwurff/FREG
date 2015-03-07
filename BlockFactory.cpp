@@ -29,6 +29,7 @@
 #include "blocks/Filter.h"
 #include "blocks/Teleport.h"
 #include "blocks/Accumulator.h"
+#include "blocks/Text.h"
 #include <QDataStream>
 
 #define X_NEWBLOCKSUB(column1, substance, ...) new Block(BLOCK, substance),
@@ -64,14 +65,14 @@ Block* BlockFactory::Normal(const int sub) {
     return blockFactory->normals[sub];
 }
 
-Block* BlockFactory::BlockFromFile(QDataStream & str,
+Block* BlockFactory::BlockFromFile(QDataStream& str,
         const kinds kind, const subs sub)
 {
     //qDebug("kind: %d, sub: %d, valid: %d", kind, sub, IsValid(kind,sub));
     return blockFactory->loads[kind](str, kind, sub);
 }
 
-bool BlockFactory::KindSubFromFile(QDataStream & str,
+bool BlockFactory::KindSubFromFile(QDataStream& str,
         quint8 * kind, quint8 * sub)
 {
     str >> *sub;
@@ -87,10 +88,8 @@ bool BlockFactory::KindSubFromFile(QDataStream & str,
 
 void BlockFactory::DeleteBlock(Block* const block) {
     if ( block != blockFactory->Normal(block->Sub()) ) {
-        Active * const active = block->ActiveBlock();
-        if ( active != nullptr ) {
-            active->Unregister();
-        }
+        Active* const active = block->ActiveBlock();
+        if ( active ) active->Unregister();
         delete block;
     }
 }

@@ -26,7 +26,7 @@
 
 void VirtScreen::UpdatesEnd() {}
 
-VirtScreen::VirtScreen(Player * const player_) :
+VirtScreen::VirtScreen(Player* const player_) :
         player(player_),
         settings(home_path + Str("freg.ini"), QSettings::IniFormat),
         previousCommand(settings.value(Str("last_command"), Str("moo")).
@@ -34,7 +34,7 @@ VirtScreen::VirtScreen(Player * const player_) :
         logFile(home_path + Str("log.txt")),
         logStream(&logFile)
 {
-    World * const world = World::GetWorld();
+    World* const world = World::GetWorld();
     connect( world, &World::Notify, this, &VirtScreen::Notify,
         Qt::DirectConnection);
     connect(player, &Player::ShowFile, this, &VirtScreen::DisplayFile);
@@ -76,7 +76,7 @@ void VirtScreen::Log(const QString message) const {
 
 void VirtScreen::DisplayFile(QString /* path */) {}
 
-void VirtScreen::ActionXyz(int * x, int * y, int * z) const {
+void VirtScreen::ActionXyz(int* const x, int* const y, int* const z) const {
     World::GetWorld()->Focus(player->X(), player->Y(), player->Z(), x, y, z,
         player->GetDir());
 }
@@ -92,7 +92,7 @@ int VirtScreen::Color(const int kind, const int sub) {
     default: return colors[sub];
     case LIQUID: switch ( sub ) {
         case WATER:     return CYAN_BLUE;
-        default:        return RED_YELLOW;
+        default:        return  RED_YELLOW;
         case SUB_CLOUD:
         case ACID:
         case H_MEAT:
@@ -130,7 +130,6 @@ char VirtScreen::CharName(const int kind, const int sub) {
         case ROSE:     return ';';
         case COAL:     return '*';
         case STAR:     return '.';
-        case SKY:
         case AIR:      return ' ';
         } break;
     case WEAPON: switch ( sub ) {

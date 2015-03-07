@@ -146,7 +146,7 @@ signals:
     void GetString(QString &);
     void Destroyed();
     void ShowFile(QString path);
-    void GetFocus(int * x, int * y, int * z) const;
+    void GetFocus(int* x, int* y, int* z) const;
 
 public:
     /// Checks if player walked over the shred border.
@@ -168,7 +168,7 @@ private:
 
     /// Checks player/inventory/block existence, size limits.
     class Block* ValidBlock(int num) const;
-    class Shred * GetShred() const;
+    class Shred* GetShred() const;
     bool ForbiddenAdminCommands() const;
 
     void LoadState();
@@ -176,7 +176,7 @@ private:
     qint64 longitude, latitude;
     qint64 homeLongi, homeLati;
     int homeX, homeY, homeZ;
-    class Animal * player, * const creator;
+    class Animal* player, * const creator;
     int usingType;
     int usingSelfType;
     int usingInInventory;

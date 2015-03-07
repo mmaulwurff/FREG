@@ -41,11 +41,11 @@
 
     void Container::ReceiveSignal(QString) {}
     Inventory * Container::HasInventory() { return this; }
-    usage_types Container::Use(Active *) { return USAGE_TYPE_OPEN; }
+    usage_types Container::Use(Active*) { return USAGE_TYPE_OPEN; }
     push_reaction Container::PushResult(dirs) const { return NOT_MOVABLE; }
     inner_actions Container::ActInner() { return INNER_ACTION_ONLY; }
 
-    Block* Container::DropAfterDamage(bool * const delete_block) {
+    Block* Container::DropAfterDamage(bool* const delete_block) {
         Block* const pile = BlockFactory::NewBlock(BOX, DIFFERENT);
         Inventory * const pile_inv = pile->HasInventory();
         GetAll(pile_inv);
@@ -65,7 +65,7 @@
         }
     }
 
-    void Container::SaveAttributes(QDataStream & out) const {
+    void Container::SaveAttributes(QDataStream& out) const {
         Inventory::SaveAttributes(out);
     }
 
@@ -92,7 +92,7 @@
             Inventory(str, INV_SIZE)
     {}
 
-    void Box::SaveAttributes(QDataStream & str) const {
+    void Box::SaveAttributes(QDataStream& str) const {
         Falling::SaveAttributes(str);
         Inventory::SaveAttributes(str);
     }
@@ -109,7 +109,7 @@
                 World::GetWorld()->DestroyAndReplace(X(), Y(), Z());
             }
         } else if ( Sub() == DIFFERENT ) {
-            World * const world = World::GetWorld();
+            World* const world = World::GetWorld();
             Inventory * const inv =
                 world->GetBlock(X(), Y(), Z()-1)->HasInventory();
             if ( inv ) {
@@ -121,7 +121,7 @@
         }
     }
 
-    Block* Box::DropAfterDamage(bool * const delete_block) {
+    Block* Box::DropAfterDamage(bool* const delete_block) {
         *delete_block = true;
         return BlockFactory::Normal(AIR);
     }
@@ -146,7 +146,7 @@
         }
     }
 
-    usage_types Box::Use(Active *) {
+    usage_types Box::Use(Active*) {
         if ( GROUP_MEAT == GetSubGroup(Sub()) ) {
             World::GetWorld()->DestroyAndReplace(X(), Y(), Z());
             return USAGE_TYPE_NO;
@@ -285,7 +285,7 @@
         InitDamageKinds();
     }
 
-    void Converter::SaveAttributes(QDataStream & out) const {
+    void Converter::SaveAttributes(QDataStream& out) const {
         Container::SaveAttributes(out);
         out << isOn << fuelLevel;
     }
@@ -306,7 +306,7 @@
         if ( isOn && fuelLevel < World::SECONDS_IN_DAY/DamageLevel() ) {
             for (int i=Size()-1; i>=0; --i) {
                 Block* const block = ShowBlock(i);
-                if ( block != nullptr ) {
+                if ( block ) {
                     const int add = ConvertRatio(block->Sub());
                     if ( add > 0 ) {
                         fuelLevel += add;
@@ -317,7 +317,7 @@
                 }
             }
         }
-        World * const world = World::GetWorld();
+        World* const world = World::GetWorld();
         if ( fuelLevel <= 0
                 || ( Sub() == STONE
                     && world->GetBlock(X(), Y(), Z()+1)->Sub() == WATER ) )
@@ -354,7 +354,7 @@
     }
 
     void Converter::Damage(const int dmg, const int dmg_kind) {
-        World * const world = World::GetWorld();
+        World* const world = World::GetWorld();
         if ( dmg_kind == damageKindOn ) {
             if ( not isOn ) {
                 isOn = true;

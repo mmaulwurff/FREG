@@ -38,7 +38,7 @@ bool Filter::Get(Block* const block, int) {
     if ( IsEmpty() ) {
         return Container::Get(block, 0);
     } else {
-        World * const world = World::GetWorld();
+        World* const world = World::GetWorld();
         Container::Get(block, 1);
         if (    block->Kind() == ShowBlock(0)->Kind() &&
                 block->Sub()  == ShowBlock(0)->Sub() )

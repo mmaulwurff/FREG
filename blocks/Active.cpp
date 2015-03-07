@@ -39,10 +39,10 @@ const Xyz Active::GetXyz() const { return {X(), Y(), Z()}; }
 
 int  Active::ShouldAct() const { return FREQUENT_NEVER; }
 bool Active::IsInside()  const { return shred == nullptr; }
-Active * Active::ActiveBlock() { return this; }
+Active* Active::ActiveBlock() { return this; }
 inner_actions Active::ActInner() { return INNER_ACTION_ONLY; }
 
-void Active::UpdateLightRadius(const int old_radius) {
+/*void Active::UpdateLightRadius(const int old_radius) {
     if ( IsInside() ) return;
     const int radius = LightRadius();
     if ( radius != old_radius ) {
@@ -57,7 +57,7 @@ void Active::UpdateLightRadius(const int old_radius) {
     } else if ( old_radius && radius == 0 ) {
         GetShred()->RemShining(this);
     }
-}
+}*/
 
 void Active::ActFrequent() {
     qDebug("Active::ActFrequent called, check ShouldAct\
@@ -82,10 +82,10 @@ void Active::ActRare() {
     for (int i=inv->Size()-1; i; --i) {
         const int number = inv->Number(i);
         if ( number == 0 ) continue;
-        Active * const top_active = inv->ShowBlock(i)->ActiveBlock();
+        Active* const top_active = inv->ShowBlock(i)->ActiveBlock();
         if ( top_active == nullptr ) continue;
         for (int j=0; j<number; ++j) {
-            Active * const active = inv->ShowBlockInSlot(i, j)->ActiveBlock();
+            Active* const active = inv->ShowBlockInSlot(i, j)->ActiveBlock();
             if ( active->ActInner() == INNER_ACTION_MESSAGE ) {
                 ReceiveSignal( tr("%1 in slot '%2': %3").
                     arg(inv->InvFullName(i)).
@@ -126,7 +126,7 @@ void Active::ReRegister(const dirs dir) {
 
 void Active::SendSignalAround(const QString signal) const {
     if ( IsInside() ) return; // for blocks inside inventories
-    World * const world = World::GetWorld();
+    World* const world = World::GetWorld();
     for (const Xyz& xyz : AroundCoordinates(GetXyz())) {
         world->GetBlock(XYZ(xyz))->ReceiveSignal(signal);
     }
@@ -139,7 +139,7 @@ void Active::DamageAround() const {
 }
 
 bool Active::TryDestroy(const int x, const int y, const int z) const {
-    World * const world = World::GetWorld();
+    World* const world = World::GetWorld();
     if ( world->Damage(x, y, z, DamageLevel(), DamageKind()) <= 0 ) {
         world->DestroyAndReplace(x, y, z);
         return true;
@@ -163,7 +163,7 @@ Active::Active(QDataStream& str, const kinds kind, const subs sub) :
 bool Active::Gravitate(const int range, int bottom, int top,
         const int calmness)
 {
-    World * const world = World::GetWorld();
+    World* const world = World::GetWorld();
     const int bound = World::GetBound();
     // analyse world around
     int for_north = 0, for_west = 0;
@@ -174,7 +174,7 @@ bool Active::Gravitate(const int range, int bottom, int top,
     top    = qMin(Z() + top,     HEIGHT-1);
     for (int x=qMax(X()-range, 0); x<=x_end; ++x)
     for (int y=y_start; y<=y_end; ++y) {
-        Shred * const shred = world->GetShred(x, y);
+        Shred* const shred = world->GetShred(x, y);
         for (int z=bottom; z<=top; ++z) {
             const int attractive = Attractive(shred->GetBlock(
                 Shred::CoordInShred(x), Shred::CoordInShred(y), z)->Sub());
@@ -221,7 +221,7 @@ Falling::Falling(QDataStream& str, const kinds kind, const subs sub) :
     str >> fallHeight >> falling;
 }
 
-void Falling::SaveAttributes(QDataStream & out) const {
+void Falling::SaveAttributes(QDataStream& out) const {
     out << fallHeight << falling;
 }
 
@@ -233,14 +233,14 @@ QString Falling::FullName() const {
     }
 }
 
-Falling * Falling::ShouldFall() { return this; }
+Falling* Falling::ShouldFall() { return this; }
 push_reaction Falling::PushResult(dirs) const { return MOVABLE; }
 
 void Falling::FallDamage() {
     const int SAFE_FALL_HEIGHT = 5;
     if ( fallHeight > SAFE_FALL_HEIGHT ) {
         const int dmg = (fallHeight - SAFE_FALL_HEIGHT)*10;
-        World * const world = World::GetWorld();
+        World* const world = World::GetWorld();
         Block* const block_under = world->GetBlock(X(), Y(), Z()-1);
         world->Damage(X(), Y(), Z()-1, dmg, DamageKind());
         if ( block_under->GetDurability() <= 0 ) {

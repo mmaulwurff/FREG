@@ -126,7 +126,7 @@ void Block::Damage(const int dmg, int dmg_kind) {
     }
 } // Block::Damage(const ind dmg, const int dmg_kind)
 
-Block* Block::DropAfterDamage(bool * const delete_block) {
+Block* Block::DropAfterDamage(bool* const delete_block) {
     switch ( Sub() ) {
     case GREENERY:
     case SUB_DUST:
@@ -135,13 +135,15 @@ Block* Block::DropAfterDamage(bool * const delete_block) {
     case STONE: if ( BLOCK==Kind() ) {
         return BlockFactory::NewBlock(LADDER, STONE);
     } // no break;
-    default: {
-        Block* const pile = BlockFactory::NewBlock(BOX, DIFFERENT);
-        pile->HasInventory()->Get(this);
-        *delete_block = false;
-        return pile;
+    default: return DropInto(delete_block);
     }
-    }
+}
+
+Block* Block::DropInto(bool* const delete_block) {
+    Block* const pile = BlockFactory::NewBlock(BOX, DIFFERENT);
+    pile->HasInventory()->Get(this);
+    *delete_block = false;
+    return pile;
 }
 
 push_reaction Block::PushResult(dirs) const {
@@ -158,8 +160,8 @@ int  Block::DamageKind() const { return DAMAGE_CRUSH; }
 int  Block::DamageLevel() const { return 1; }
 int  Block::LightRadius() const { return 0; }
 void Block::ReceiveSignal(QString) {}
-usage_types Block::Use(Active *) { return USAGE_TYPE_NO; }
-usage_types Block::UseOnShredMove(Active *) { return USAGE_TYPE_NO; }
+usage_types Block::Use(Active*) { return USAGE_TYPE_NO; }
+usage_types Block::UseOnShredMove(Active*) { return USAGE_TYPE_NO; }
 
 QString Block::Description() const {
     return QString(Str("Typical object of %1.")).
@@ -234,7 +236,6 @@ sub_groups Block::GetSubGroup(const int sub) {
     switch ( sub ) {
     default:     return GROUP_NONE;
     case AIR:
-    case SKY:
     case STAR:   return GROUP_AIR;
 
     case H_MEAT:
@@ -260,9 +261,9 @@ bool Block::operator==(const Block & block) const {
         && block.GetNote()       == GetNote() );
 }
 
-void Block::SaveAttributes(QDataStream &) const {}
+void Block::SaveAttributes(QDataStream&) const {}
 
-void Block::SaveToFile(QDataStream & out) {
+void Block::SaveToFile(QDataStream& out) {
     if ( this == BlockFactory::Normal(sub) ) {
         SaveNormalToFile(out);
     } else {
@@ -277,7 +278,7 @@ void Block::SaveToFile(QDataStream & out) {
     }
 }
 
-void Block::SaveNormalToFile(QDataStream & out) const {
+void Block::SaveNormalToFile(QDataStream& out) const {
     out << quint8( 0x80 | sub );
 }
 

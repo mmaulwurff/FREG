@@ -52,7 +52,7 @@ class Screen final : public VirtScreen {
     Q_OBJECT
     Q_DISABLE_COPY(Screen)
 public:
-     Screen(Player *, int & error);
+     Screen(Player*, int & error);
     ~Screen() override;
 
     void ControlPlayer();
@@ -67,7 +67,7 @@ public:
     void Move(int) override;
     void DeathScreen() override;
     void DisplayFile(QString path) override;
-    void ActionXyz(int * x, int * y, int * z) const override;
+    void ActionXyz(int* x, int* y, int* z) const override;
 
 private:
     enum windowIndex {
@@ -106,12 +106,12 @@ private:
     char CharNumber(int z) const;
     char CharNumberFront(int x, int y) const;
     char Distance(int distance) const;
-    void Arrows(WINDOW *, int x, int y, dirs, bool is_normal) const;
-    void PrintNormal(WINDOW *, dirs) const;
+    void Arrows(WINDOW*, int x, int y, dirs, bool is_normal) const;
+    void PrintNormal(WINDOW*, dirs) const;
     /// Has two functions: first - when x == -1 - prints front,
     /// second - otherwise - examines block at position x, y.
     void PrintFront(dirs direction, int x = -1, int y = 0) const;
-    void PrintInv(WINDOW *, const Block*, const class Inventory *) const;
+    void PrintInv(WINDOW*, const Block*, const class Inventory *) const;
     void PrintHud() const;
     void PrintMiniMap() const;
     void PrintQuickInventory() const;
@@ -124,16 +124,16 @@ private:
     void MovePlayerDiag(dirs dir1, dirs dir2) const;
 
     /// Can print health, breath and other bars on hudWin.
-    static void PrintBar(WINDOW *, wchar_t ch, int color, int percent);
-    static void PrintBlock(const Block*, WINDOW *, char second);
-    static void DrawBorder(WINDOW *);
+    static void PrintBar(WINDOW*, wchar_t ch, int color, int percent);
+    static void PrintBlock(const Block*, WINDOW*, char second);
+    static void DrawBorder(WINDOW*);
     static int  Color(int kind, int sub);
     static int  ColorShred(shred_type);
     static int  ColoredChar(const Block*);
     static int  RandomBlink();
     static bool RandomBit();
     static bool IsScreenWide();
-    static void Palette(WINDOW *);
+    static void Palette(WINDOW*);
 
     /// Returns nullptr if block is not player->Visible().
     Block* GetFocusedBlock() const;
@@ -145,15 +145,15 @@ private:
     int GetMinimapStartY() const;
     void ExamineOnNormalScreen(int x, int y, int z, int step) const;
 
-    SCREEN * const screen;
+    SCREEN* const screen;
     const int screenWidth, screenHeight;
     const chtype OBSCURE_BLOCK;
-    WINDOW * const windows[WIN_COUNT];
-    WINDOW * const & actionWin  = windows[WIN_ACTION ];
-    WINDOW * const & hudWin     = windows[WIN_HUD    ];
-    WINDOW * const & minimapWin = windows[WIN_MINIMAP];
-    WINDOW * const & leftWin    = windows[WIN_LEFT   ];
-    WINDOW * const & rightWin   = windows[WIN_RIGHT  ];
+    WINDOW* const windows[WIN_COUNT];
+    WINDOW* const & actionWin  = windows[WIN_ACTION ];
+    WINDOW* const & hudWin     = windows[WIN_HUD    ];
+    WINDOW* const & minimapWin = windows[WIN_MINIMAP];
+    WINDOW* const & leftWin    = windows[WIN_LEFT   ];
+    WINDOW* const & rightWin   = windows[WIN_RIGHT  ];
     mutable QString lastNotification;
     class IThread * const input;
     mutable volatile bool updatedHud, updatedMinimap;

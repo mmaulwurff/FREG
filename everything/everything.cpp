@@ -40,6 +40,7 @@
 #include "blocks/RainMachine.cpp"
 #include "blocks/Teleport.cpp"
 #include "blocks/Weapons.cpp"
+#include "blocks/Text.cpp"
 
 #include "screens/CursedScreen.cpp"
 #include "screens/IThread.cpp"
@@ -72,7 +73,6 @@
 #include "moc/moc_IThread.cpp"
 #include "moc/moc_Player.cpp"
 #include "moc/moc_RainMachine.cpp"
-#include "moc/moc_ShredStorage.cpp"
 #include "moc/moc_Teleport.cpp"
 #include "moc/moc_VirtScreen.cpp"
 #include "moc/moc_World.cpp"

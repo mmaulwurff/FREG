@@ -38,12 +38,12 @@ class World final : public QThread {
 
 public:
 
-     World(QString world_name, bool * error);
+     World(QString world_name, bool* error);
     ~World();
 
 ///\name Static information section
 ///@{
-    static World * GetWorld();
+    static World* GetWorld();
     static QString WorldName() { return GetWorld()->worldName; }
     static QString WorldPath() { return home_path + WorldName(); }
 
@@ -61,7 +61,7 @@ public:
      *  @param[in] dir Direction.
      *  @returns false on error, true if bound check is passed. */
     bool Focus(int x, int y, int z,
-            int * x_targ, int * y_targ, int * z_targ, dirs dir) const;
+            int* x_targ, int* y_targ, int* z_targ, dirs dir) const;
     int NumShreds() const { return numShreds; }
     bool ShredInCentralZone(qint64 longi, qint64  lati) const;
     qint64 Longitude() const;
@@ -76,9 +76,9 @@ public:
 ///\name Block work section
 ///@{
     Block* GetBlock(int x, int y, int z) const;
-    Shred * GetShred(int i, int j) const;
-    Shred * GetShredByPos(int x, int y) const;
-    Shred * GetNearShred(Shred *, dirs dir) const;
+    Shred* GetShred(int i, int j) const;
+    Shred* GetShredByPos(int x, int y) const;
+    Shred* GetNearShred(Shred*, dirs dir) const;
 ///@}
 
 ///\name Lighting section
@@ -204,7 +204,7 @@ private:
     void AddLight(const class Xyz&, int level);
 
     /// Takes back all light in area around coordinates xyz.
-    void UnShine(int x, int y, int z);
+    void UnShine(int x, int y, int z, Block* skip_block);
 
     /// Updates all unshined lighting.
     void ReEnlighten();
@@ -215,8 +215,13 @@ private:
     /// Called from ReloadShreds(int), enlightens only needed shreds.
     void ReEnlightenMove(dirs);
 
-    /// Checks if lighting should be updated after operation on blocks.
-    void ReEnlightenCheck(Block* block1, Block* block2, int x, int y, int z);
+    /** @brief Checks if lighting should be updated after operation on blocks.
+     *  @param block1, block2 blocks to compare
+     *  @param x, y, z coordinates of reenlightening center
+     *  @param skipBlock1 to skip or not to skip block1 when reenlighting
+     */
+    void ReEnlightenCheck(Block* block1, Block* block2, int x, int y, int z,
+                          Block* skip_block);
 ///@}
 
     enum can_move_results {
@@ -240,7 +245,7 @@ private:
     void ReloadShreds();
     void run() override;
     int ShredPos(int x, int y) const;
-    Shred ** FindShred(int x, int y) const;
+    Shred** FindShred(int x, int y) const;
     static unsigned Abs(int x);
 
     void SaveNotes() const;
@@ -256,7 +261,7 @@ private:
     class WorldMap * map;
     quint64 time;
     int timeStep;
-    Shred ** shreds;
+    Shred** shreds;
     /**   N
      *    |  E
      * W--+--> latitude ( x for shreds )
@@ -279,9 +284,9 @@ private:
     QList<QString> notes;
 
     /// storage for found shining objects between UnShine and ReEnlighten.
-    QHash<class Active *, int> tempShiningList;
+    QHash<class Active*, int> tempShiningList;
 
-    static World * world;
+    static World* world;
 };
 
 #endif // WORLD_H

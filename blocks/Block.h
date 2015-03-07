@@ -101,15 +101,15 @@ public:
     virtual bool Inscribe(QString str);
     virtual void Move(dirs direction);
     virtual void Damage(int dmg, int dmg_kind);
-    virtual usage_types Use(class Active * user);
-    virtual usage_types UseOnShredMove(class Active * user);
+    virtual usage_types Use(class Active* user);
+    virtual usage_types UseOnShredMove(class Active* user);
     virtual push_reaction PushResult(dirs) const;
     /// Should return dropped block.
     /** It can be pile(BOX, DIFFERENT) containing all dropped blocks, or
      *  block itself.
      *  Set delete_self false if this block itself should not be deleted.
      *  (by default block is deleted, beware). */
-    virtual Block* DropAfterDamage(bool * delete_self);
+    virtual Block* DropAfterDamage(bool* delete_self);
 
     virtual class Inventory * HasInventory();
     virtual class Active    * ActiveBlock();
@@ -120,6 +120,7 @@ public:
     virtual int DamageKind() const;
     virtual int DamageLevel() const;
 
+    /// Get light radius (the same as level). Non-Actives should return 0.
     virtual int LightRadius() const;
     virtual int Weight() const;
     /// Receive text signal.
@@ -146,8 +147,8 @@ public:
 
     /// Important! If block will be used after save,
     /// call RestoreDurabilityAfterSave.
-    void SaveToFile(QDataStream & out);
-    void SaveNormalToFile(class QDataStream & out) const;
+    void SaveToFile(QDataStream& out);
+    void SaveNormalToFile(class QDataStream& out) const;
 
     /// Importart! Use it if block won't be deleted after SaveToFile.
     void RestoreDurabilityAfterSave() { durability >>= 4; }
@@ -159,7 +160,8 @@ public:
     static const int MAX_DURABILITY = 1024;
 
 protected:
-    virtual void SaveAttributes(class QDataStream &) const;
+    virtual void SaveAttributes(class QDataStream&) const;
+    Block* DropInto(bool* delete_block);
 
     uint16_t noteId;
 

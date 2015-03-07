@@ -34,9 +34,7 @@ Accumulator::Accumulator(QDataStream& stream, const kinds kind, const subs sub)
     stream >> charge;
 }
 
-void Accumulator::SaveAttributes(QDataStream & stream) const {
-    stream << charge;
-}
+void Accumulator::SaveAttributes(QDataStream& str) const { str << charge; }
 
 QString Accumulator::FullName() const {
     QString name;

@@ -37,7 +37,7 @@ RainMachine::RainMachine(QDataStream& stream, const kinds kind, const subs sub)
     stream >> isOn;
 }
 
-void RainMachine::SaveAttributes(QDataStream & stream) const {
+void RainMachine::SaveAttributes(QDataStream& stream) const {
     Inventory::SaveAttributes(stream);
     stream << isOn;
 }
@@ -61,7 +61,7 @@ QString RainMachine::FullName() const {
 
 int  RainMachine::ShouldAct() const { return FREQUENT_RARE; }
 void RainMachine::ReceiveSignal(QString str) { Active::ReceiveSignal(str); }
-usage_types RainMachine::Use(Active *) { return USAGE_TYPE_OPEN; }
+usage_types RainMachine::Use(Active*) { return USAGE_TYPE_OPEN; }
 Inventory * RainMachine::HasInventory() { return this; }
 
 void RainMachine::Damage(const int dmg, const int dmg_kind) {

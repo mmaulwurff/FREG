@@ -64,7 +64,7 @@ void Inventory::Pull(const int num) {
     }
 }
 
-void Inventory::SaveAttributes(QDataStream & out) const {
+void Inventory::SaveAttributes(QDataStream& out) const {
     for (int i=0; i<Size(); ++i) {
         out << quint8(Number(i));
         if ( not inventory[i].isEmpty() ) {
@@ -201,15 +201,13 @@ bool Inventory::IsEmpty(const int i) const { return inventory[i].isEmpty(); }
 void Inventory::Push(const int x, const int y, const int z,
         const int push_direction)
 {
-    World * const world = World::GetWorld();
+    World* const world = World::GetWorld();
     int x_targ, y_targ, z_targ;
     world->Focus(x, y, z, &x_targ, &y_targ, &z_targ,
         World::Anti(Block::MakeDirFromDamage(push_direction)));
     Inventory * const inv =
         world->GetBlock(x_targ, y_targ, z_targ)->HasInventory();
-    if ( inv != nullptr ) {
-        inv->GetAll(this);
-    }
+    if ( inv ) inv->GetAll(this);
 }
 
 bool Inventory::MiniCraft(const int num) {
@@ -253,7 +251,7 @@ Inventory::Inventory(const int sz) :
         inventory(new QStack<Block*>[sz])
 {}
 
-Inventory::Inventory(QDataStream & str, const int sz) :
+Inventory::Inventory(QDataStream& str, const int sz) :
         Inventory(sz)
 {
     for (int i=0; i<Size(); ++i) {

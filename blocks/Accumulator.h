@@ -31,7 +31,7 @@ public:
     void Damage(int dmg, int dmg_kind) override;
 
 protected:
-    void SaveAttributes(QDataStream &) const;
+    void SaveAttributes(QDataStream&) const;
 
 private:
     static damage_kinds EnergyType(int substance);

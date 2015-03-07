@@ -48,7 +48,7 @@ const chtype Screen::arrows[] = {
     ACS_LARROW
 };
 
-void Screen::Arrows(WINDOW * const window, const int x, const int y,
+void Screen::Arrows(WINDOW* const window, const int x, const int y,
         const dirs direction, const bool is_normal)
 const {
     wstandend(window);
@@ -413,7 +413,7 @@ void Screen::ControlPlayer(const int ch) {
 } // void Screen::ControlPlayer(int ch)
 
 void Screen::ExamineOnNormalScreen(int x, int y, int z, const int step) const {
-    World * const world = World::GetWorld();
+    World* const world = World::GetWorld();
     x = (x-1)/2 + GetNormalStartX();
     y =  y-1    + GetNormalStartY();
     for ( ; world->GetBlock(x, y, z)->Transparent() == INVISIBLE; z += step);
@@ -459,7 +459,7 @@ void Screen::ProcessMouse() {
         } else {
             const int shred_x = mevent.x/2 + GetMinimapStartX();
             const int shred_y = mevent.y-1 + GetMinimapStartY();
-            World * const world = World::GetWorld();
+            World* const world = World::GetWorld();
             Notify( (0 <= shred_x && shred_x < world->NumShreds() &&
                      0 <= shred_y && shred_y < world->NumShreds() ) ?
                 tr("On minimap: %1.").arg(TrManager::ShredTypeName(
@@ -569,7 +569,7 @@ void Screen::InventoryAction(const int num) const {
     }
 }
 
-void Screen::ActionXyz(int * const x, int * const y, int * const z) const {
+void Screen::ActionXyz(int* const x, int* const y, int* const z) const {
     VirtScreen::ActionXyz(x, y, z);
     if ( player->GetDir() > DOWN &&
             ( AIR == World::GetWorld()->GetBlock(*x, *y, *z)->Sub() ||
@@ -590,7 +590,7 @@ Block* Screen::GetFocusedBlock() const {
         nullptr;
 }
 
-void Screen::PrintBlock(const Block* const block, WINDOW * const window,
+void Screen::PrintBlock(const Block* const block, WINDOW* const window,
         const char second)
 {
     const int kind = block->Kind();
@@ -639,7 +639,7 @@ void Screen::Print() {
         break;
     case USAGE_TYPE_READ: {
         const Block* const focused = GetFocusedBlock();
-        if ( focused != nullptr ) {
+        if ( focused ) {
             DisplayFile(World::WorldPath() + Str("/texts/") +
                 focused->GetNote());
             player->SetUsingTypeNo();
@@ -647,7 +647,7 @@ void Screen::Print() {
         } break;
     case USAGE_TYPE_OPEN: {
         Block* const focused = GetFocusedBlock();
-        if ( focused != nullptr ) {
+        if ( focused ) {
             PrintInv(rightWin, focused, focused->HasInventory());
         }
         } break;
@@ -741,7 +741,7 @@ void Screen::PrintQuickInventory() const {
             break;
         }
         x += 2;
-        if ( i == inv->Start() && i != 0 ) {
+        if ( i == inv->Start()-1 && i != 0 ) {
             mvwaddch(hudWin, 0, x, ACS_VLINE);
             mvwaddch(hudWin, 1, x, ACS_VLINE);
             mvwaddch(hudWin, 2, x, ACS_VLINE);
@@ -763,7 +763,7 @@ void Screen::PrintMiniMap() const {
     (void)wmove(minimapWin, 1, 0);
     const int i_start = GetMinimapStartY();
     const int j_start = GetMinimapStartX();
-    World * const world = World::GetWorld();
+    World* const world = World::GetWorld();
     for (int i=i_start; i <= i_start+4; ++i, waddch(minimapWin, '\n'))
     for (int j=j_start; j <= j_start+4; ++j) {
         if ( i<0 || j<0 || i>=world->NumShreds() || j>=world->NumShreds() ) {
@@ -792,14 +792,14 @@ int Screen::GetNormalStartY() const {
         World::GetBound() - screenHeight - 1);
 }
 
-void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
+void Screen::PrintNormal(WINDOW* const window, const dirs dir) const {
     const int k_step  = ( dir == UP ) ? 1 : -1;
     const int k_start = player->Z() + shiftFocus;
     const int start_x = GetNormalStartX();
     const int start_y = GetNormalStartY();
     const int end_x = start_x + screenWidth/2 - 1;
     const int end_y = start_y + screenHeight  - 2;
-    World * const world = World::GetWorld();
+    World* const world = World::GetWorld();
     (void)wmove(window, 1, 1);
     for (int j=start_y; j<end_y; ++j, waddch(window, 30)) {
         const int j_in = Shred::CoordInShred(j);
@@ -833,9 +833,9 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
         mvwaddch(window, screenHeight-1, screenWidth-1, ch);
     }
     wrefresh(window);
-} // void Screen::PrintNormal(WINDOW * window, int dir)
+} // void Screen::PrintNormal(WINDOW* window, int dir)
 
-void Screen::DrawBorder(WINDOW * const window) {
+void Screen::DrawBorder(WINDOW* const window) {
     static const int BORDER_COLOR = COLOR_PAIR(BLACK_BLACK) | A_BOLD;
     (void)wborder( window,
         ACS_VLINE    | BORDER_COLOR, ACS_VLINE    | BORDER_COLOR,
@@ -854,7 +854,7 @@ const {
     int x_step,  z_step,
         x_start, z_start,
         x_end,   z_end;
-    int * x, * z;
+    int* x, * z;
     int i, j;
     int arrow_X;
     switch ( dir ) {
@@ -908,7 +908,7 @@ const {
         Q_UNREACHABLE();
         return;
     }
-    World * const world = World::GetWorld();
+    World* const world = World::GetWorld();
     const int k_start = GetFrontStartZ();
     if ( block_x > 0 ) {
         // ugly! use print function to get block by screen coordinates.
@@ -928,8 +928,7 @@ const {
                         Transparent()==INVISIBLE;
                     *z += z_step);
             if ( *z == z_end ) {
-                static const int sky_char =
-                    CharName(BLOCK, SKY) | Color(BLOCK, SKY);
+                static const int sky_char = ' ' | Color(BLOCK, SKY);
                 waddch(rightWin, sky_char);
                 waddch(rightWin, ' ');
             } else if ( player->Visible(i, j, k) ) {
@@ -956,7 +955,7 @@ const {
     wrefresh(rightWin);
 } // void Screen::PrintFront(dirs)
 
-void Screen::PrintInv(WINDOW * const window,
+void Screen::PrintInv(WINDOW* const window,
         const Block* const block, const Inventory * const inv)
 const {
     if ( inv == nullptr ) return;
@@ -1018,7 +1017,7 @@ const {
     waddwstr(window, wPrintable( (player->PlayerInventory() == inv) ?
         tr("Your inventory") : block->FullName() ));
     wrefresh(window);
-} // void Screen::PrintInv(WINDOW *, const Block*, const Inventory *)
+} // void Screen::PrintInv(WINDOW*, const Block*, const Inventory *)
 
 void Screen::DisplayFile(const QString path) {
     { QFile(path).open(QIODevice::ReadWrite); } // create file if doesn't exist
@@ -1064,7 +1063,7 @@ void Screen::DeathScreen() {
     updatedNormal = updatedFront = updatedHud = updatedMinimap = true;
 }
 
-Screen::Screen(Player * const pl, int &) :
+Screen::Screen(Player* const pl, int &) :
         VirtScreen(pl),
         screen(newterm(nullptr, stdout, stdin)),
         screenWidth((COLS / 2) - ((COLS/2) & 1)),
@@ -1130,10 +1129,10 @@ Screen::Screen(Player * const pl, int &) :
     Notify(tr("--- Game started. Press 'H' for help. ---"));
 
     input->start();
-} // Screen::Screen(Player * const pl, int & error)
+} // Screen::Screen(Player* const pl, int & error)
 
 Screen::~Screen() {
-    World * const world = World::GetWorld();
+    World* const world = World::GetWorld();
     world->GetLock()->lock();
     disconnect(world, &World::UpdatesEnded, this, &Screen::Print);
     world->GetLock()->unlock();
@@ -1151,7 +1150,7 @@ Screen::~Screen() {
     OPTIONS_TABLE(OPTIONS_SAVE)
 }
 
-void Screen::PrintBar(WINDOW * const window,
+void Screen::PrintBar(WINDOW* const window,
         const wchar_t ch, const int color, const int percent)
 {
     wstandend(window);
@@ -1164,7 +1163,7 @@ void Screen::PrintBar(WINDOW * const window,
     mvwprintw  (window, getcury(window), x + 11, "%3d", percent);
 }
 
-void Screen::Palette(WINDOW * const window) {
+void Screen::Palette(WINDOW* const window) {
     wclear(window);
     const struct {
         chtype attribute;

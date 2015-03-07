@@ -19,12 +19,9 @@
 
 #include "blocks/blocks.h"
 #include "World.h"
-#include "Shred.h"
-#include "worldmap.h"
 #include "BlockFactory.h"
 #include "TrManager.h"
 #include <QTextStream>
-#include <QFile>
 #include <QTime>
 
 // Plate::
@@ -54,7 +51,7 @@
     int  Ladder::Weight() const { return Block::Weight()*3; }
     push_reaction Ladder::PushResult(dirs) const { return MOVE_UP; }
 
-    Block* Ladder::DropAfterDamage(bool * const delete_block) {
+    Block* Ladder::DropAfterDamage(bool* const delete_block) {
         Block* const pile = BlockFactory::NewBlock(BOX, DIFFERENT);
         if ( STONE==Sub() || MOSS_STONE==Sub() ) {
             pile->HasInventory()->Get(BlockFactory::Normal(Sub()));
@@ -68,7 +65,6 @@
 // Liquid::
     void Liquid::DoRareAction() {
         if ( not IsSubAround(Sub()) || Sub()==SUB_CLOUD ) {
-            World::GetWorld()->Notify("no water!");
             Damage(MAX_DURABILITY*2/World::SECONDS_IN_NIGHT, DAMAGE_TIME);
             if ( GetDurability() <= 0 ) {
                 World::GetWorld()->DestroyAndReplace(X(), Y(), Z());
@@ -81,7 +77,8 @@
         }
         const int random = qrand() & 15;
         if ( random < 4 ) {
-            World::GetWorld()->Move(X(), Y(), Z(), static_cast<dirs>(random+2));
+            World::GetWorld()->Move(X(), Y(), Z(),
+                static_cast<dirs>(random+2));
         }
     }
 
@@ -107,7 +104,7 @@
         }
     }
 
-    Block* Liquid::DropAfterDamage(bool *) {
+    Block* Liquid::DropAfterDamage(bool*) {
         return BlockFactory::Normal( ( Sub() == STONE ) ?
             STONE : AIR);
     }
@@ -132,7 +129,7 @@
         case 3: --j; break;
         default: return;
         }
-        World * const world = World::GetWorld();
+        World* const world = World::GetWorld();
         if ( not world->InBounds(i, j) ) return;
         if ( FIRE == Sub() || world->Enlightened(i, j, Z()) ) {
             const int sub_near = world->GetBlock(i, j, Z())->Sub();
@@ -178,7 +175,7 @@
     int  Grass::ShouldAct() const  { return FREQUENT_RARE; }
     int  Grass::LightRadius() const { return (FIRE == Sub()) ? 5 : 0; }
     inner_actions Grass::ActInner() { return INNER_ACTION_NONE; }
-    Block* Grass::DropAfterDamage(bool *) {return BlockFactory::Normal(AIR);}
+    Block* Grass::DropAfterDamage(bool*) {return BlockFactory::Normal(AIR);}
 
     int Grass::DamageKind() const {
         return (Sub() == FIRE) ? DAMAGE_HEAT : DAMAGE_NO;
@@ -189,7 +186,7 @@
     void Bush::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
     int  Bush::Weight() const { return Inventory::Weight() + Block::Weight(); }
     QString Bush::FullName() const { return TrManager::KindName(BUSH); }
-    usage_types Bush::Use(Active *) { return USAGE_TYPE_OPEN; }
+    usage_types Bush::Use(Active*) { return USAGE_TYPE_OPEN; }
     Inventory * Bush::HasInventory() { return this; }
     inner_actions Bush::ActInner() { return INNER_ACTION_NONE; }
 
@@ -207,7 +204,7 @@
         }
     }
 
-    Block* Bush::DropAfterDamage(bool *) {
+    Block* Bush::DropAfterDamage(bool*) {
         Block* const pile = BlockFactory::NewBlock(BOX, DIFFERENT);
         Inventory * const pile_inv = pile->HasInventory();
         pile_inv->Get(BlockFactory::NewBlock(WEAPON, WOOD));
@@ -215,7 +212,7 @@
         return pile;
     }
 
-    void Bush::SaveAttributes(QDataStream & out) const {
+    void Bush::SaveAttributes(QDataStream& out) const {
         Active   ::SaveAttributes(out);
         Inventory::SaveAttributes(out);
     }
@@ -246,7 +243,7 @@
 
     void Door::ActFrequent() {
         if ( shifted ) {
-            World * const world = World::GetWorld();
+            World* const world = World::GetWorld();
             movable = MOVABLE;
             shifted = !world->Move(X(), Y(), Z(), World::Anti(GetDir()));
             movable = NOT_MOVABLE;
@@ -262,12 +259,12 @@
             arg(TrManager::SubName(Sub()));
     }
 
-    usage_types Door::Use(Active *) {
+    usage_types Door::Use(Active*) {
         locked = !locked;
         return USAGE_TYPE_INNER;
     }
 
-    void Door::SaveAttributes(QDataStream & out) const {
+    void Door::SaveAttributes(QDataStream& out) const {
         out << shifted << locked;
     }
 
@@ -286,8 +283,8 @@
     }
 
 // Clock::
-    usage_types Clock::Use(Active * const who) {
-        if ( who != nullptr ) {
+    usage_types Clock::Use(Active* const who) {
+        if ( who ) {
             who->ReceiveSignal( (GetNote().left(4) == Str("real")) ?
                 tr("Outer time is %1.").arg(QTime::currentTime().toString()) :
                 World::GetWorld()->TimeOfDayStr() );
@@ -372,7 +369,7 @@
         return true;
     }
 
-    void Clock::SaveAttributes(QDataStream & str) const {
+    void Clock::SaveAttributes(QDataStream& str) const {
         str << alarmTime << timerTime;
     }
 
@@ -384,107 +381,6 @@
         str >> alarmTime >> timerTime;
     }
 
-// Text::
-    QString Text::FullName() const {
-        switch ( Sub() ) {
-        case PAPER: return QObject::tr("Paper page");
-        case GLASS: return QObject::tr("Screen");
-        default:    return Block::FullName();
-        }
-    }
-
-    usage_types Text::Use(Active * const who) {
-        if ( noteId == 0 ) {
-            who->ReceiveSignal(QObject::tr("Nothing is written here."));
-            return USAGE_TYPE_INNER;
-        } else {
-            return USAGE_TYPE_READ;
-        }
-    }
-
-    bool Text::Inscribe(const QString str) {
-        if ( '.' != str.at(0).toLatin1() && (noteId == 0 || GLASS == Sub()) ) {
-            Block::Inscribe(str);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-// Map::
-    wearable    Map::Wearable() const { return WEARABLE_OTHER; }
-    usage_types Map::UseOnShredMove(Active * const user) { return Use(user); }
-
-    usage_types Map::Use(Active * const user) {
-        if ( user == nullptr ) return USAGE_TYPE_READ;
-        if ( noteId == 0 ) {
-            user->ReceiveSignal(QObject::tr("Set title to this map first."));
-            return USAGE_TYPE_INNER;
-        } // else:
-        QFile map_file(World::WorldPath()+Str("/texts/")+GetNote());
-        if ( not map_file.open(QIODevice::ReadWrite | QIODevice::Text) ) {
-            return USAGE_TYPE_READ;
-        }
-        const qint64  lati = user->GetShred()->Latitude();
-        const qint64 longi = user->GetShred()->Longitude();
-        const int FILE_SIZE_CHARS = 31 + 1;
-        if ( 0 == map_file.size() ) { // new map
-            const char header[FILE_SIZE_CHARS+1] =
-                "+-----------------------------+\n";
-            const char   body[FILE_SIZE_CHARS+1] =
-                "|                             |\n";
-            map_file.write(header, FILE_SIZE_CHARS);
-            for (int i=0; i<FILE_SIZE_CHARS-3; ++i) {
-                map_file.write(body, FILE_SIZE_CHARS);
-            }
-            map_file.write(header, FILE_SIZE_CHARS);
-            longiStart = longi;
-            latiStart  = lati;
-        }
-        const int border_dist = (FILE_SIZE_CHARS - 1) / 2;
-        if (
-                ( qAbs(lati  - latiStart ) > border_dist ) ||
-                ( qAbs(longi - longiStart) > border_dist ) )
-        {
-            return USAGE_TYPE_READ;
-        }
-        if ( savedChar ) {
-            map_file.seek(savedShift);
-            map_file.putChar(savedChar);
-        }
-        map_file.seek( savedShift = FILE_SIZE_CHARS *
-            (longi - longiStart + border_dist ) +
-             lati  - latiStart  + border_dist );
-        map_file.putChar('@');
-        savedChar = World::GetWorld()->GetMap()->TypeOfShred(longi, lati);
-        map_file.seek(FILE_SIZE_CHARS * (FILE_SIZE_CHARS - 1));
-        map_file.write(" @ = ");
-        map_file.putChar(savedChar);
-        return USAGE_TYPE_READ;
-    } // usage_types Map::Use(Active * const user)
-
-    void Map::SaveAttributes(QDataStream & out) const {
-        out << longiStart << latiStart << savedShift << savedChar;
-    }
-
-    Map::Map(const kinds kind, const subs sub) :
-            Text(kind, sub),
-            longiStart(),
-            latiStart(),
-            savedShift(),
-            savedChar(0)
-    {}
-
-    Map::Map(QDataStream& str, const kinds kind, const subs sub) :
-            Text(str, kind, sub),
-            longiStart(),
-            latiStart(),
-            savedShift(),
-            savedChar()
-    {
-        str >> longiStart >> latiStart >> savedShift >> savedChar;
-    }
-
 // Bell:: section
     wearable Bell::Wearable() const { return WEARABLE_OTHER; }
 
@@ -493,7 +389,7 @@
         Break();
     }
 
-    usage_types Bell::Use(Active *) {
+    usage_types Bell::Use(Active*) {
         SendSignalAround(tr("^ Ding! ^"));
         return USAGE_TYPE_INNER;
     }
@@ -513,7 +409,7 @@
         str >> isReceiver;
     }
 
-    void Telegraph::SaveAttributes(QDataStream & str) const {
+    void Telegraph::SaveAttributes(QDataStream& str) const {
         str << isReceiver;
     }
 
@@ -526,7 +422,7 @@
         return Block::Inscribe(str);
     }
 
-    usage_types Telegraph::Use(Active *) {
+    usage_types Telegraph::Use(Active*) {
         isReceiver = not isReceiver;
         return USAGE_TYPE_INNER;
     }
@@ -549,7 +445,7 @@
 // MedKit:: section
     wearable MedKit::Wearable() const { return WEARABLE_OTHER; }
 
-    usage_types MedKit::Use(Active * const user) {
+    usage_types MedKit::Use(Active* const user) {
         if ( user
                 && GROUP_MEAT == GetSubGroup(user->Sub())
                 && GetDurability() > MAX_DURABILITY/10 )
@@ -563,7 +459,7 @@
 // Informer:: section
     wearable Informer::Wearable() const { return WEARABLE_OTHER; }
 
-    usage_types Informer::Use(Active * const user) {
+    usage_types Informer::Use(Active* const user) {
         switch ( Sub() ) {
         case IRON: user->ReceiveSignal(QObject::tr("Your direction: %1.").
             arg(TrManager::DirName(user->GetDir()).toLower())); break;

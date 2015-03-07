@@ -34,8 +34,8 @@ public:
     void ActFrequent() override;
     void DoRareAction() override;
     void Damage(int dmg, int dmg_kind) override;
-    Animal * IsAnimal() override;
-    Block  * DropAfterDamage(bool * delete_block) override;
+    Animal* IsAnimal() override;
+    Block  * DropAfterDamage(bool* delete_block) override;
     QString FullName() const override;
     inner_actions ActInner() override;
 
@@ -54,7 +54,7 @@ signals:
     void CauseTeleportation();
 
 protected:
-    void SaveAttributes(QDataStream & out) const override;
+    void SaveAttributes(QDataStream& out) const override;
     void EatAround();
 
     bool moved_in_this_turn = false;

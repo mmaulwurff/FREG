@@ -31,7 +31,7 @@ public:
     void Damage(int damage, int damage_kind) override;
 
 protected:
-    void SaveAttributes(QDataStream &) const;
+    void SaveAttributes(QDataStream&) const;
 
 private:
     QString targetWorldName;

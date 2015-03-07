@@ -25,7 +25,7 @@
 
 int Dwarf::Weight() const {
     if ( Sub() == DIFFERENT ) return 0;
-    World * const world = World::GetWorld();
+    World* const world = World::GetWorld();
     const AroundCoordinates4 around(GetXyz());
     return std::any_of(ALL(around), [=](const Xyz& xyz) {
             return world->GetBlock(XYZ(xyz))->Catchable();
@@ -33,23 +33,23 @@ int Dwarf::Weight() const {
         0 : Inventory::Weight() + Block::Weight();
 }
 
-Block* Dwarf::DropAfterDamage(bool * const delete_block) {
+Block* Dwarf::DropAfterDamage(bool* const delete_block) {
     Block* const cadaver = Animal::DropAfterDamage(delete_block);
     cadaver->HasInventory()->Get(BlockFactory::NewBlock(WEAPON, BONE));
     return cadaver;
 }
 
-int  Dwarf::ShouldAct() const { return FREQUENT_FIRST | FREQUENT_RARE; }
 int  Dwarf::Start() const { return SPECIAL_SLOTS_COUNT; }
-int  Dwarf::LightRadius() const { return lightRadius; }
 bool Dwarf::Access() const { return false; }
-Inventory * Dwarf::HasInventory() { return this; }
+int  Dwarf::ShouldAct() const { return FREQUENT_FIRST | FREQUENT_RARE; }
+int  Dwarf::LightRadius() const { return UpdateLightRadiusInner(); }
 void Dwarf::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
+Inventory* Dwarf::HasInventory() { return this; }
 
 inner_actions Dwarf::ActInner() {
-    const int old_radius = lightRadius;
+    /*const int old_radius = lightRadius;
     lightRadius = UpdateLightRadiusInner();
-    UpdateLightRadius(old_radius);
+    UpdateLightRadius(old_radius);*/
     return Animal::ActInner();
 }
 
@@ -113,7 +113,7 @@ void Dwarf::Damage(const int dmg, const int dmg_kind) {
 }
 
 void Dwarf::Move(const dirs dir) {
-    Shred * const last_shred = GetShred();
+    Shred* const last_shred = GetShred();
     Falling::Move(dir);
     if ( last_shred != GetShred() ) {
         for (int i=0; i<Size();    ++i)
@@ -144,7 +144,7 @@ bool Dwarf::GetExact(Block* const block, const int to) {
             && Inventory::GetExact(block, to) );
 }
 
-void Dwarf::SaveAttributes(QDataStream & out) const {
+void Dwarf::SaveAttributes(QDataStream& out) const {
     Animal::SaveAttributes(out);
     Inventory::SaveAttributes(out);
 }

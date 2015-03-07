@@ -39,7 +39,7 @@ public:
     bool Catchable() const override;
     int  Weight() const override;
     QString FullName() const override;
-    Block* DropAfterDamage(bool * delete_block) override;
+    Block* DropAfterDamage(bool* delete_block) override;
     push_reaction PushResult(dirs) const override;
 };
 
@@ -55,7 +55,7 @@ public:
     bool Inscribe(QString) override;
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
-    Block* DropAfterDamage(bool * delete_block) override;
+    Block* DropAfterDamage(bool* delete_block) override;
     wearable Wearable() const override;
     push_reaction PushResult(dirs) const override;
     inner_actions ActInner() override;
@@ -73,7 +73,7 @@ public:
     int  DamageKind() const override;
     int  LightRadius() const override;
     QString FullName() const override;
-    Block* DropAfterDamage(bool * delete_block) override;
+    Block* DropAfterDamage(bool* delete_block) override;
     inner_actions ActInner() override;
 
 protected:
@@ -95,14 +95,14 @@ public:
     void ReceiveSignal(QString) override;
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
-    Block* DropAfterDamage(bool * delete_block) override;
+    Block* DropAfterDamage(bool* delete_block) override;
     Inventory * HasInventory() override;
-    usage_types Use(Active * who) override;
+    usage_types Use(Active* who) override;
     inner_actions ActInner() override;
 
 protected:
     void DoRareAction() override;
-    void SaveAttributes(QDataStream & out) const override;
+    void SaveAttributes(QDataStream& out) const override;
 };
 
 class Door : public Active {
@@ -114,11 +114,11 @@ public:
     void ActFrequent() override;
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
-    usage_types Use(Active * who) override;
+    usage_types Use(Active* who) override;
     push_reaction PushResult(dirs) const override;
 
 protected:
-    void SaveAttributes(QDataStream & out) const override;
+    void SaveAttributes(QDataStream& out) const override;
 
 private:
     bool shifted;
@@ -137,42 +137,15 @@ public:
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
     wearable Wearable() const override;
-    usage_types Use(Active * who) override;
+    usage_types Use(Active* who) override;
     inner_actions ActInner() override;
 
 protected:
-    void SaveAttributes(QDataStream &) const override;
+    void SaveAttributes(QDataStream&) const override;
 
 private:
     int alarmTime = -1;
     int timerTime = -1;
-};
-
-class Text : public Block {
-public:
-    using Block::Block;
-
-    bool Inscribe(QString) override;
-    QString FullName() const override;
-    usage_types Use(Active * who) override;
-};
-
-class Map : public Text {
-public:
-    BLOCK_CONSTRUCTORS(Map)
-
-    wearable Wearable() const override;
-    usage_types Use(Active * user) override;
-    usage_types UseOnShredMove(Active * user) override;
-
-protected:
-    void SaveAttributes(QDataStream & out) const override;
-
-private:
-    /// coordinates map titled in. also ~center.
-    qint64 longiStart, latiStart;
-    quint16 savedShift;
-    qint8 savedChar;
 };
 
 class Bell : public Active {
@@ -182,7 +155,7 @@ public:
 
     void Damage(int dmg, int dmg_kind) override;
     wearable Wearable() const override;
-    usage_types Use(Active * who) override;
+    usage_types Use(Active* who) override;
 };
 
 class Telegraph : public Active {
@@ -195,10 +168,10 @@ public:
     void ReceiveSignal(QString) override;
     wearable Wearable() const override;
     inner_actions ActInner() override;
-    usage_types Use(Active * who) override;
+    usage_types Use(Active* who) override;
 
 protected:
-    void SaveAttributes(QDataStream &) const override;
+    void SaveAttributes(QDataStream&) const override;
 
 private:
     static QString sharedMessage;
@@ -209,7 +182,7 @@ class MedKit : public Block {
 public:
     using Block::Block;
     wearable Wearable() const override;
-    usage_types Use(Active * user) override;
+    usage_types Use(Active* user) override;
 };
 
 /** @brief The Informer class, provides various information.
@@ -222,7 +195,7 @@ public:
 
     QString FullName() const override;
     wearable Wearable() const override;
-    usage_types Use(Active * user) override;
+    usage_types Use(Active* user) override;
 };
 
 #endif // BLOCKS_H

@@ -54,7 +54,7 @@ bool Shred::LoadShred() {
         for (int z = 1; ; ++z) {
             quint8 kind, sub;
             if ( BlockFactory::KindSubFromFile(in, &kind, &sub) ) { // normal
-                if ( sub==SKY || sub==STAR ) {
+                if ( sub == SKY ) {
                     std::fill(blocks[x][y] + z, blocks[x][y] + HEIGHT-1, air);
                     PutBlock(BlockFactory::Normal(sub), x, y, HEIGHT-1);
                     break;
@@ -62,14 +62,14 @@ bool Shred::LoadShred() {
                     PutBlock(BlockFactory::Normal(sub), x, y, z);
                 }
             } else {
-                Active * const active = (blocks[x][y][z] =
+                Active* const active = (blocks[x][y][z] =
                     BlockFactory::BlockFromFile(in, static_cast<kinds>(kind),
                         static_cast<subs>(sub)))->ActiveBlock();
-                if ( active != nullptr ) {
+                if ( active ) {
                     active->SetXyz(x, y, z);
                     RegisterInit(active);
-                    Falling * const falling = active->ShouldFall();
-                    if ( falling != nullptr && falling->IsFalling() ) {
+                    Falling* const falling = active->ShouldFall();
+                    if ( falling && falling->IsFalling() ) {
                         fallList.push_front(falling);
                     }
                 }
@@ -101,11 +101,10 @@ Shred::Shred(const int shred_x, const int shred_y,
     Block* const null_stone = BlockFactory::Normal(NULLSTONE);
     Block* const air  = BlockFactory::Normal(AIR);
     Block* const sky  = BlockFactory::Normal(SKY);
-    Block* const star = BlockFactory::Normal(STAR);
     FOR_ALL_SHRED_AREA(x, y) {
         PutBlock(null_stone, x, y, 0);
         std::fill(blocks[x][y] + 1, blocks[x][y] + HEIGHT - 1, air);
-        PutBlock((qrand() & 3) ? sky : star, x, y, HEIGHT - 1);
+        PutBlock(sky, x, y, HEIGHT - 1);
     }
     switch ( type ) {
     case SHRED_WASTE:       WasteShred(); break;
@@ -166,7 +165,7 @@ int Shred::FindTopNonAir(const int x, const int y) {
     return z;
 }
 
-const Block* Shred::FindFirstVisible(const int x, const int y, int * const z,
+const Block* Shred::FindFirstVisible(const int x, const int y, int* const z,
         const int step)
 const {
     for (; GetBlock(x, y, *z)->Transparent() == INVISIBLE; *z += step);
@@ -200,16 +199,14 @@ void Shred::PhysEventsFrequent() {
             i = nullptr;
         }
     }
-    for (const auto i : activeListFrequent) {
-        if ( i != nullptr ) {
-            i->ActFrequent();
-        }
+    for (Active* const i : activeListFrequent) {
+        if ( i ) i->ActFrequent();
     }
 }
 
 void Shred::PhysEventsRare() {
-    for (const auto i : activeListAll) {
-        if ( i != nullptr ) {
+    for (Active* const i : activeListAll) {
+        if ( i ) {
             switch ( i->ActInner() ) {
             case INNER_ACTION_ONLY:    break;
             case INNER_ACTION_NONE: i->ActRare(); break;
@@ -223,7 +220,7 @@ void Shred::PhysEventsRare() {
     fallList.remove(nullptr);
 }
 
-const std::forward_list<Active *>& Shred::GetShiningList() const {
+const std::forward_list<Active*>& Shred::GetShiningList() const {
     return shiningList;
 }
 
@@ -233,7 +230,7 @@ void Shred::PutBlock(Block* const block, const_int(x, y, z)) {
     blocks[x][y][z] = block;
 }
 
-void Shred::RegisterInit(Active * const active) {
+void Shred::RegisterInit(Active* const active) {
     active->SetShred(this);
     activeListAll.push_front(active);
     const int should_act = active->ShouldAct();
@@ -245,38 +242,38 @@ void Shred::RegisterInit(Active * const active) {
     AddShining(active);
 }
 
-void Shred::Register(Active * const active) {
+void Shred::Register(Active* const active) {
     RegisterInit(active);
     AddFalling(active);
 }
 
-void Shred::Unregister(Active * const active) {
-    std::replace(ALL(activeListAll), active, static_cast<Active *>(nullptr));
+void Shred::Unregister(Active* const active) {
+    std::replace(ALL(activeListAll), active, static_cast<Active*>(nullptr));
     std::replace(ALL(activeListFrequent), active,
-        static_cast<Active *>(nullptr));
-    Falling * const falling = active->ShouldFall();
-    if ( falling != nullptr ) {
-        std::replace(ALL(fallList), falling, static_cast<Falling *>(nullptr));
+        static_cast<Active*>(nullptr));
+    Falling* const falling = active->ShouldFall();
+    if ( falling ) {
+        std::replace(ALL(fallList), falling, static_cast<Falling*>(nullptr));
         falling->SetFalling(false);
     }
     RemShining(active);
 }
 
 void Shred::AddFalling(Block* const block) {
-    Falling * const falling = block->ShouldFall();
-    if ( falling != nullptr && not falling->IsFalling() ) {
+    Falling* const falling = block->ShouldFall();
+    if ( falling && not falling->IsFalling() ) {
         falling->SetFalling(true);
         fallList.push_front(falling);
     }
 }
 
-void Shred::AddShining(Active * const active) {
+void Shred::AddShining(Active* const active) {
     if ( active->LightRadius() != 0 ) {
         shiningList.push_front(active);
     }
 }
 
-void Shred::RemShining(Active * const active) { shiningList.remove(active); }
+void Shred::RemShining(Active* const active) { shiningList.remove(active); }
 
 void Shred::ReloadTo(const dirs direction) {
     switch ( direction ) {
@@ -288,20 +285,18 @@ void Shred::ReloadTo(const dirs direction) {
     }
 }
 
-void Shred::SetBlock(Block* block, const int x, const int y, const int z) {
+void Shred::SetBlock(Block* const block, const_int(x, y, z)) {
     Block* const to_delete = GetBlock(x, y, z);
     if ( to_delete != block ) {
-        Active * const active = to_delete->ActiveBlock();
-        if ( active ) {
-            active->Unregister();
-        }
+        Active* const active = to_delete->ActiveBlock();
+        if ( active ) active->Unregister();
         SetBlockNoCheck(block, x, y, z);
     }
 }
 
 void Shred::SetBlockNoCheck(Block* const block, const_int(x, y, z)) {
-    Active * const active = ( blocks[x][y][z]=block )->ActiveBlock();
-    if ( active != nullptr ) {
+    Active* const active = ( blocks[x][y][z]=block )->ActiveBlock();
+    if ( active ) {
         active->SetXyz(x, y, z);
         Register(active);
     }

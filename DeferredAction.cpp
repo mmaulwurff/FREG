@@ -42,7 +42,7 @@ void DeferredAction::Jump() const {
 }
 
 void DeferredAction::Build() const {
-    World * const world = World::GetWorld();
+    World* const world = World::GetWorld();
     int x = X(), y = Y(), z = Z();
     if ( ENVIRONMENT != world->GetBlock(x, y, z)->PushResult(ANYWHERE) ) {
         if ( world->Move(
@@ -61,7 +61,7 @@ void DeferredAction::Build() const {
             return;
         }
     }
-    Inventory * const inv = attachedBlock->HasInventory();
+    Inventory* const inv = attachedBlock->HasInventory();
     Block* const material = inv->ShowBlock(srcSlot);
     if ( not world->Build(material, x, y, z, attachedBlock) ) {
         return; // build not successful
@@ -112,7 +112,7 @@ void DeferredAction::Pour() const {
 }
 
 void DeferredAction::SetFire() const {
-    World * const world = World::GetWorld();
+    World* const world = World::GetWorld();
     if ( world->GetBlock(X(), Y(), Z())->Sub() == AIR ) {
         world->Build(BlockFactory::NewBlock(GRASS, FIRE), X(), Y(), Z());
     } else if ( world->Damage(X(), Y(), Z(), 1, DAMAGE_HEAT) <= 0 ) {
@@ -177,7 +177,7 @@ void DeferredAction::MakeAction() {
     type = DEFERRED_NOTHING;
 }
 
-DeferredAction::DeferredAction(Animal * const attached) :
+DeferredAction::DeferredAction(Animal* const attached) :
         Xyz(),
         type(DEFERRED_NOTHING),
         srcSlot(),

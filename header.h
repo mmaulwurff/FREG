@@ -144,7 +144,7 @@ X(QT_TRANSLATE_NOOP("Block", "Bucket"      ), BUCKET,      'u',  Bucket,     )\
 X(QT_TRANSLATE_NOOP("Block", "Shovel"      ), SHOVEL,      '|',  Shovel,     )\
 X(QT_TRANSLATE_NOOP("Block", "Axe"         ), AXE,         '/',  Axe,        )\
 X(QT_TRANSLATE_NOOP("Block", "Hammer"      ), HAMMER,      'T',  Hammer,     )\
-X(QT_TRANSLATE_NOOP("Block", "Illuminator" ), ILLUMINATOR, 'i',  Illuminator,)\
+X(QT_TRANSLATE_NOOP("Block", "Lantern"     ), ILLUMINATOR, 'i',  Illuminator,)\
 X(QT_TRANSLATE_NOOP("Block", "RainMachine" ), RAIN_MACHINE,'R',  RainMachine,)\
 X(QT_TRANSLATE_NOOP("Block", "Converter"   ), CONVERTER,   'V',  Converter,  )\
 X(QT_TRANSLATE_NOOP("Block", "BodyArmour"  ), ARMOUR,      'A',  Armour,     )\
@@ -161,7 +161,7 @@ X(QT_TRANSLATE_NOOP("Block", "Accumulator" ), ACCUMULATOR, '=',  Accumulator,)\
 /** \page subs List of available substances
  *  Complete list.
  *  These substances can be used as parameters to `get KIND SUB` command.
- *  Don't make blocks (BLOCK kind) from SKY and STAR, they are special for
+ *  Don't make blocks (BLOCK kind) from SKY, they are special for
  *  shred loading and saving.
  *  Don't make non-BLOCK blocks from air, otherwise memory leaks are possible.
  *  Don't change order, this will break save file compatibility.
@@ -173,8 +173,8 @@ X(QT_TRANSLATE_NOOP("Block", "Accumulator" ), ACCUMULATOR, '=',  Accumulator,)\
 X(QT_TRANSLATE_NOOP("Block", "stone"     ), STONE,       BLACK_WHITE,  )\
 X(QT_TRANSLATE_NOOP("Block", "mossStone" ), MOSS_STONE,  GREEN_WHITE,  )\
 X(QT_TRANSLATE_NOOP("Block", "0stone"    ), NULLSTONE, MAGENTA_BLACK,  )\
-X(QT_TRANSLATE_NOOP("Block", "air"       ), SKY,         WHITE_BLACK,  )\
-X(QT_TRANSLATE_NOOP("Block", "air"       ), STAR,        WHITE_BLACK,  )\
+X(QT_TRANSLATE_NOOP("Block", "0stone"    ), SKY,       MAGENTA_BLACK,  )\
+X(QT_TRANSLATE_NOOP("Block", "star"      ), STAR,        WHITE_BLACK,  )\
 X(QT_TRANSLATE_NOOP("Block", "diamond"   ), DIAMOND,      CYAN_WHITE,  )\
 X(QT_TRANSLATE_NOOP("Block", "soil"      ), SOIL,        BLACK_YELLOW, )\
 X(QT_TRANSLATE_NOOP("Block", "meat"      ), H_MEAT,      WHITE_RED,    )\

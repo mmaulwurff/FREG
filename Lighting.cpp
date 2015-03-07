@@ -30,7 +30,7 @@
 
 void World::Shine(const Xyz& xyz, int level) {
     AddLight(xyz, level);
-    level -= (0 < level) - (level < 0); // level sign
+    level -= (level > 0) - (level < 0); // level sign
     if ( level == 0 ) return;
     for (const Xyz& next_xyz : AroundCoordinates(xyz)) {
         if ( GetBlock(XYZ(next_xyz))->Transparent() != BLOCK_OPAQUE ) {
@@ -39,9 +39,10 @@ void World::Shine(const Xyz& xyz, int level) {
             AddLight(next_xyz, level);
         }
     }
+    emit Notify(Str("hello"));
 }
 
-void World::UnShine(const_int(x, y, z)) {
+void World::UnShine(const_int(x, y, z), Block* const skipBlock) {
     // cycle over shreds around xyz, unshine all lights in radius
     const int xShredCenter = Shred::CoordOfShred(x);
     const int yShredCenter = Shred::CoordOfShred(y);
@@ -52,22 +53,28 @@ void World::UnShine(const_int(x, y, z)) {
 
     for (int xShred=xShredBegin; xShred<=xShredEnd; ++xShred)
     for (int yShred=yShredBegin; yShred<=yShredEnd; ++yShred) {
-        Shred * const shred = GetShredByPos(xShred, yShred);
+        Shred* const shred = GetShredByPos(xShred, yShred);
         if ( shred == nullptr ) continue;
         for (auto shining : shred->GetShiningList()) {
             const int x_diff = shining->X() - x;
             const int y_diff = shining->Y() - y;
             const int z_diff = shining->Z() - z;
             if ( not tempShiningList.contains(shining)
-                    && x_diff <= MAX_LIGHT_RADIUS - 1
-                    && y_diff <= MAX_LIGHT_RADIUS - 1
-                    && z_diff <= MAX_LIGHT_RADIUS - 1 )
+                    && Abs(x_diff) <= MAX_LIGHT_RADIUS - 1
+                    && Abs(y_diff) <= MAX_LIGHT_RADIUS - 1
+                    && Abs(z_diff) <= MAX_LIGHT_RADIUS - 1 )
             {
                 const int radius = shining->LightRadius();
                 Shine(shining->GetXyz(), -radius);
-                tempShiningList.insert(shining, radius);
+                if ( shining != skipBlock ) {
+                    tempShiningList.insert(shining, radius);
+                }
             }
         }
+    }
+    emit Notify(Str("%1").arg(tempShiningList.size()));
+    if ( tempShiningList.empty() ) {
+        emit UpdatedAround(x, y, z);
     }
 }
 
@@ -147,7 +154,7 @@ void Shred::AddLight(const_int(x, y, z), const int level) {
 }
 
 void Shred::ShineAll() {
-    World * const world = World::GetWorld();
+    World* const world = World::GetWorld();
     for (auto shining : GetShiningList()) {
         world->Shine(shining->GetXyz(), shining->LightRadius());
         ++shining;

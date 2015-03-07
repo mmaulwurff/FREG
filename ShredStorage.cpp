@@ -84,7 +84,7 @@ void ShredStorage::AddShred(const qint64 longitude, const qint64 latitude) {
 
 void ShredStorage::WriteShred(const qint64 longi, const qint64 lati) const {
     const QByteArray * const data = storage.value(LongLat{longi, lati});
-    if ( data != nullptr ) {
+    if ( data ) {
         QFile file(Shred::FileName(longi, lati));
         if ( file.open(QIODevice::WriteOnly) ) {
             file.write(qCompress(*data, COMPRESSION_LEVEL));

@@ -51,7 +51,7 @@ class VirtScreen : public QObject {
     Q_DISABLE_COPY(VirtScreen)
 public:
     /// Constructor makes player and world connections.
-    VirtScreen(class Player *);
+    VirtScreen(class Player*);
     virtual ~VirtScreen();
 
     static char CharName(int kind, int sub);
@@ -99,7 +99,7 @@ public:
     /** x, y, z are coordinates where player will make action.
      *  May be reimplemented in derivative class to get xyz other than
      *  world direction-based focus. */
-    virtual void ActionXyz(int * x, int * y, int * z) const;
+    virtual void ActionXyz(int* x, int* y, int* z) const;
 
     /// This shows a file by path.
     /** Standard (non-reimpemented) version does nothing. */
@@ -116,23 +116,23 @@ signals:
     void ResumeWorld();
 
 protected:
-    /// All available colors. Format: foreground_background (e.ge WHITE_BLACK)
+    /// All available colors. Format: foreground_background (e.g. WHITE_BLACK)
     enum color_pairs { // do not change colors order!
         UNUSED_ZERO_COLOR, ///< colors should start from 1, so occupy 0 by this
-        COLOR_LIST(BLACK)
-        COLOR_LIST(RED)
-        COLOR_LIST(GREEN)
-        COLOR_LIST(YELLOW)
-        COLOR_LIST(BLUE)
+        COLOR_LIST(BLACK  )
+        COLOR_LIST(RED    )
+        COLOR_LIST(GREEN  )
+        COLOR_LIST(YELLOW )
+        COLOR_LIST(BLUE   )
         COLOR_LIST(MAGENTA)
-        COLOR_LIST(CYAN)
-        COLOR_LIST(WHITE)
+        COLOR_LIST(CYAN   )
+        COLOR_LIST(WHITE  )
     };
 
     /// Returns true if command is recognized and processed.
     bool ProcessCommand(QString command);
 
-    class Player * const player;
+    class Player* const player;
     QSettings settings;
     QString previousCommand;
     mutable QFile logFile;

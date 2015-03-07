@@ -45,11 +45,11 @@ public:
     void ReceiveSignal(QString) override;
     int  LightRadius() const override;
     int  NutritionalValue(subs) const override;
-    Block* DropAfterDamage(bool * delete_block) override;
+    Block* DropAfterDamage(bool* delete_block) override;
     Inventory * HasInventory() override;
 
 protected:
-    void SaveAttributes(QDataStream & out) const override;
+    void SaveAttributes(QDataStream& out) const override;
 
 private:
     enum {

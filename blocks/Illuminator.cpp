@@ -18,7 +18,6 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "blocks/Illuminator.h"
-#include "BlockFactory.h"
 #include "blocks/Inventory.h"
 #include "World.h"
 #include "TrManager.h"
@@ -31,7 +30,7 @@ Illuminator::Illuminator(const kinds kind, const subs sub) :
         isOn(false)
 {}
 
-Illuminator::Illuminator(QDataStream & str, const kinds kind, const subs sub) :
+Illuminator::Illuminator(QDataStream& str, const kinds kind, const subs sub) :
         Active(str, kind, sub),
         fuelLevel(),
         isOn()
@@ -48,45 +47,32 @@ QString Illuminator::FullName() const {
     case WOOD:  return tr("Torch, fuel: %1"        ).arg(fuelLevel);
     case STONE: return tr("Flint, charges: %1"     ).arg(fuelLevel);
     case GLASS: return tr("Flashlight, battery: %1").arg(fuelLevel);
-    default:    return tr("Lantern (%1), fuel: %2" ).
-        arg(TrManager::SubName(Sub())).arg(fuelLevel);
+    default:    return tr("%1 (%2), fuel: %3" ).
+        arg(TrManager::KindName(Kind())).
+        arg(TrManager::SubName(Sub())).
+        arg(fuelLevel);
     }
 }
 
-Block* Illuminator::DropAfterDamage(bool * const delete_block) {
-    *delete_block = false;
-    Block* const pile = BlockFactory::NewBlock(BOX, DIFFERENT);
-    pile->HasInventory()->Get(this);
-    return pile;
+Block* Illuminator::DropAfterDamage(bool* const delete_block) {
+    return DropInto(delete_block);
 }
 
-usage_types Illuminator::Use(Active * /* user */) {
+usage_types Illuminator::Use(Active* /* user */) {
     if ( Sub() == WOOD || Sub() == STONE ) {
         fuelLevel -= ( fuelLevel >= 10 ) ? 10 : 0;
         if ( Sub() == STONE ) {
             return USAGE_TYPE_SET_FIRE;
         }
     }
-    if ( IsInside() ) {
-        isOn = not isOn;
-    } else {
-        const Xyz xyz = GetXyz();
-        int radius = Illuminator::LightRadius();
-        if ( radius ) {
-            World::GetWorld()->Shine(xyz, -Illuminator::LightRadius());
-            GetShred()->RemShining(this);
-        }
-        isOn = not isOn; // can change light radius
-        if ( (radius = Illuminator::LightRadius()) ) {
-            World::GetWorld()->Shine(xyz, radius);
-            GetShred()->AddShining(this);
-        }
-    }
+    //const int old_radius = Illuminator::LightRadius();
+    isOn = not isOn;
+    //UpdateLightRadius(old_radius);
     return USAGE_TYPE_INNER;
 }
 
 int Illuminator::LightRadius() const {
-    if ( fuelLevel == 0 || not isOn ) return 0;
+    //TEMP if ( fuelLevel == 0 || not isOn ) return 0;
     switch ( Sub() ) {
     default:
     case STONE: return 0;
@@ -116,6 +102,6 @@ inner_actions Illuminator::ActInner() {
     return INNER_ACTION_NONE;
 }
 
-void Illuminator::SaveAttributes(QDataStream & out) const {
+void Illuminator::SaveAttributes(QDataStream& out) const {
     out << fuelLevel << isOn;
 }
