@@ -107,10 +107,10 @@ void Shred::Hill(const bool dead) {
     Block* const soil = BlockFactory::Normal(SOIL);
     FOR_ALL_SHRED_AREA(x, y) {
         for (int z=SHRED_WIDTH/2-2; z--; ) {
-            if ( z <= -qAbs(x-SHRED_WIDTH/2) + SHRED_WIDTH/2-2 ) {
+            if ( z <= -abs(x-SHRED_WIDTH/2) + SHRED_WIDTH/2-2 ) {
                 PutBlock(soil, x, y, z+HEIGHT/2); // north-south '^'
             }
-            if ( z <= -qAbs(y-SHRED_WIDTH/2) + SHRED_WIDTH/2-2 ) {
+            if ( z <= -abs(y-SHRED_WIDTH/2) + SHRED_WIDTH/2-2 ) {
                 PutBlock(soil, x, y, z+HEIGHT/2); // east-west '^'
             }
         }

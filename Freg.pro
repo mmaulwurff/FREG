@@ -58,8 +58,7 @@ CONFIG( debug, debug|release ) {
     SOURCES += everything/everything.cpp
 }
 
-TRANSLATIONS =    \
-    freg_ru_RU.ts \
+TRANSLATIONS = *.ts
 
 RESOURCES = resources.qrc
 

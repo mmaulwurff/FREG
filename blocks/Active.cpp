@@ -186,8 +186,8 @@ bool Active::Gravitate(const int range, int bottom, int top,
         }
     }
     // make direction and move there
-    if ( qAbs(for_north)>calmness || qAbs(for_west)>calmness ) {
-        SetDir( ( qAbs(for_north)>qAbs(for_west) ) ?
+    if ( abs(for_north)>calmness || abs(for_west)>calmness ) {
+        SetDir( ( abs(for_north)>abs(for_west) ) ?
             ( ( for_north>0 ) ? NORTH : SOUTH ) :
             ( ( for_west >0 ) ? WEST  : EAST  ) );
         return true;

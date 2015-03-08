@@ -24,6 +24,7 @@
 #include "worldmap.h"
 #include "blocks/Active.h"
 #include "blocks/Inventory.h"
+#include "WaysTree.h"
 #include <QDir>
 #include <QMutexLocker>
 #include <QTimer>
@@ -32,7 +33,7 @@
 World* World::GetWorld() { return world; }
 
 bool World::ShredInCentralZone(const qint64 longi, const qint64  lati) const {
-    return ( qAbs(longi - longitude) <= 1 ) && ( qAbs(lati - latitude) <= 1 );
+    return ( labs(longi - longitude) <= 1 ) && ( labs(lati - latitude) <= 1 );
 }
 
 int World::ShredPos(const int x, const int y) const { return y*NumShreds()+x; }
@@ -317,14 +318,13 @@ void World::PhysEvents() {
     emit UpdatesEnded();
 }
 
-bool World::DirectlyVisible(
-        int x_from, int y_from, int z_from,
-        int x,      int y,      int z)
+bool World::DirectlyVisible(int x_from, int y_from, int z_from,
+                            int x,      int y,      int z)
 const {
     /// optimized DDA line with integers only.
-    unsigned max = Abs(Abs(x-=x_from) > Abs(y-=y_from) ? x : y);
-    if ( Abs(z-=z_from) > max) {
-        max = Abs(z);
+    unsigned max = abs(abs(x-=x_from) > abs(y-=y_from) ? x : y);
+    if ( abs(z-=z_from) > max) {
+        max = abs(z);
     }
     x_from *= max;
     y_from *= max;
@@ -346,9 +346,8 @@ const {
     return true;
 }
 
-bool World::Visible(
-        const_int(x_from, y_from, z_from),
-        const_int(x_to,   y_to,   z_to) )
+bool World::Visible(const_int(x_from, y_from, z_from),
+                    const_int(x_to,   y_to,   z_to  ) )
 const {
     int temp;
     return ( DirectlyVisible(x_from, y_from, z_from, x_to, y_to, z_to)
@@ -646,7 +645,8 @@ World::World(const QString world_name, bool* const error) :
         timer(nullptr),
         shredStorage(),
         notes(),
-        tempShiningList()
+        tempShiningList(),
+        lightWaysTree()
 {
     Q_ASSERT(world == nullptr); // world is a singleton.
     world = this;
@@ -684,6 +684,8 @@ World::~World() {
         setValue(Str("current_world"), worldName);
 
     SaveNotes();
+
+    lightWaysTree.Clear();
 }
 
 void World::SaveState() const {
@@ -724,7 +726,4 @@ void World::LoadState() {
         map->GetSpawnLatitude()).toLongLong();
 }
 
-unsigned World::Abs(const int x) {
-    const unsigned mask = x >> (sizeof(unsigned)*8 - 1);
-    return (x ^ mask) - mask;
-}
+int World::Sign(const int value) { return (value > 0) - (value < 0); }

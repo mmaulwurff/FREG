@@ -401,10 +401,10 @@ void Player::ProcessCommand(QString command) {
     }
 } // void Player::ProcessCommand(QString command)
 
-bool Player::Visible(const int x_to, const int y_to, const int z_to) const {
+bool Player::Visible(const_int(x_to, y_to, z_to)) const {
     World* const world = World::GetWorld();
-    return ( GetCreativeMode()
-        || ( world->Enlightened(x_to, y_to, z_to)
+    return ( GetCreativeMode() ||
+        ( world->Enlightened(x_to, y_to, z_to)
             && world->Visible(X(), Y(), Z(), x_to, y_to, z_to)) );
 }
 

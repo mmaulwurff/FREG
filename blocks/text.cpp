@@ -64,8 +64,8 @@ usage_types Map::Use(Active* const user) {
         latiStart  = lati;
     }
     const int border_dist = (TEXT_WIDTH - 1) / 2;
-    if (    ( qAbs(lati  - latiStart ) > border_dist ) ||
-            ( qAbs(longi - longiStart) > border_dist ) )
+    if (    ( labs(lati  - latiStart ) > border_dist ) ||
+            ( labs(longi - longiStart) > border_dist ) )
     {
         return USAGE_TYPE_READ;
     }

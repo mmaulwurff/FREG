@@ -21,12 +21,14 @@
 #define WORLD_H
 
 #include "header.h"
+#include "WaysTree.h"
 #include <QThread>
 #include <QMutex>
 #include <QHash>
 
 class Block;
 class Shred;
+class Xyz;
 
 class World final : public QThread {
     /** \class World world.h
@@ -88,7 +90,7 @@ public:
     int Enlightened(int x, int y, int z, dirs dir) const;
 
     /// Makes block emit shining.
-    void Shine(const class Xyz&, int level);
+    void Shine(const Xyz&, int level);
 ///@}
 
     /// Radius 5 ensures that fully enlightened block (in a cloud of most
@@ -200,8 +202,11 @@ private:
 
 ///\name private Lighting section
 ///@{
+    /// Make all tree shine.
+    void Shine(const Xyz&, int level, const WaysTree* tree);
+
     /// Adds light level to particular coordinate.
-    void AddLight(const class Xyz&, int level);
+    void AddLight(const Xyz&, int level);
 
     /// Takes back all light in area around coordinates xyz.
     void UnShine(int x, int y, int z, Block* skip_block);
@@ -246,7 +251,8 @@ private:
     void run() override;
     int ShredPos(int x, int y) const;
     Shred** FindShred(int x, int y) const;
-    static unsigned Abs(int x);
+
+    static int Sign(int value);
 
     void SaveNotes() const;
     void LoadNotes();
@@ -254,11 +260,10 @@ private:
     void LoadState();
 
     /// Returns true if block_from can be put into block_to.
-    bool Exchange(Block* block_from, Block* block_to,
-            int src, int dest, int num);
+    bool Exchange(Block* from, Block* to, int src, int dest, int num);
 
     QString worldName;
-    class WorldMap * map;
+    class WorldMap* map;
     quint64 time;
     int timeStep;
     Shred** shreds;
@@ -285,6 +290,8 @@ private:
 
     /// storage for found shining objects between UnShine and ReEnlighten.
     QHash<class Active*, int> tempShiningList;
+
+    const WaysTree lightWaysTree;
 
     static World* world;
 };

@@ -28,18 +28,23 @@
 #include "blocks/Active.h"
 #include "AroundCoordinates.h"
 
-void World::Shine(const Xyz& xyz, int level) {
-    AddLight(xyz, level);
-    level -= (level > 0) - (level < 0); // level sign
+void World::Shine(const Xyz& center, const int level) {
+    Shine(center, level, &lightWaysTree);
+}
+
+void World::Shine(const Xyz& center, int level, const WaysTree* const ways) {
+    const Xyz here{center.X() + ways->X(), center.Y() + ways->Y(),
+                   center.Z() + ways->Z()};
+    AddLight(here, level);
+    level -= Sign(level);
     if ( level == 0 ) return;
-    for (const Xyz& next_xyz : AroundCoordinates(xyz)) {
-        if ( GetBlock(XYZ(next_xyz))->Transparent() != BLOCK_OPAQUE ) {
-            Shine(next_xyz, level);
-        } else {
-            AddLight(next_xyz, level);
-        }
+    if ( not GetBlock(XYZ(here))->Transparent() ) {
+        level = Sign(level);
+        return;
     }
-    emit Notify(Str("hello"));
+    for (const WaysTree* const branch : ways->GetNexts()) {
+        Shine(center, level, branch);
+    }
 }
 
 void World::UnShine(const_int(x, y, z), Block* const skipBlock) {
@@ -60,9 +65,9 @@ void World::UnShine(const_int(x, y, z), Block* const skipBlock) {
             const int y_diff = shining->Y() - y;
             const int z_diff = shining->Z() - z;
             if ( not tempShiningList.contains(shining)
-                    && Abs(x_diff) <= MAX_LIGHT_RADIUS - 1
-                    && Abs(y_diff) <= MAX_LIGHT_RADIUS - 1
-                    && Abs(z_diff) <= MAX_LIGHT_RADIUS - 1 )
+                    && abs(x_diff) <= MAX_LIGHT_RADIUS - 1
+                    && abs(y_diff) <= MAX_LIGHT_RADIUS - 1
+                    && abs(z_diff) <= MAX_LIGHT_RADIUS - 1 )
             {
                 const int radius = shining->LightRadius();
                 Shine(shining->GetXyz(), -radius);
@@ -72,7 +77,6 @@ void World::UnShine(const_int(x, y, z), Block* const skipBlock) {
             }
         }
     }
-    emit Notify(Str("%1").arg(tempShiningList.size()));
     if ( tempShiningList.empty() ) {
         emit UpdatedAround(x, y, z);
     }
