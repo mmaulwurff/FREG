@@ -147,15 +147,15 @@ private:
 
     SCREEN* const screen;
     const int screenWidth, screenHeight;
-    const chtype OBSCURE_BLOCK;
+    const chtype SHADOW;
     WINDOW* const windows[WIN_COUNT];
-    WINDOW* const & actionWin  = windows[WIN_ACTION ];
-    WINDOW* const & hudWin     = windows[WIN_HUD    ];
-    WINDOW* const & minimapWin = windows[WIN_MINIMAP];
-    WINDOW* const & leftWin    = windows[WIN_LEFT   ];
-    WINDOW* const & rightWin   = windows[WIN_RIGHT  ];
+    WINDOW* const& actionWin  = windows[WIN_ACTION ];
+    WINDOW* const& hudWin     = windows[WIN_HUD    ];
+    WINDOW* const& minimapWin = windows[WIN_MINIMAP];
+    WINDOW* const& leftWin    = windows[WIN_LEFT   ];
+    WINDOW* const& rightWin   = windows[WIN_RIGHT  ];
     mutable QString lastNotification;
-    class IThread * const input;
+    class IThread* const input;
     mutable volatile bool updatedHud, updatedMinimap;
     mutable volatile bool updatedNormal, updatedFront;
     actions actionMode;
@@ -165,6 +165,7 @@ private:
     OPTIONS_TABLE(OPTIONS_DECLARE)
     const wchar_t ellipsis[4];
     mmask_t noMouseMask;
+    mutable int xCursor, yCursor; ///< Save cursor position to show player.
 };
 
 #endif // CURSEDSCREEN_H

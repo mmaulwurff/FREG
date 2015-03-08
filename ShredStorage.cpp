@@ -18,7 +18,6 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "ShredStorage.h"
-#include "World.h"
 #include "Shred.h"
 #include <QFile>
 

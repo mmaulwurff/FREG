@@ -68,8 +68,14 @@ public:
     class Block* GetBlock() const;
     const class Block* GetConstBlock() const;
 
-    /// This returns true if block at (x, y, z) is visible to player.
-    bool Visible(int x, int y, int z) const;
+    enum visible {
+        VISIBLE,
+        IN_SHADOW,
+        OBSCURED
+    };
+
+    /// Get block at (x, y, z) visibility to player.
+    visible Visible(int x, int y, int z) const;
 
     /// This returns how player is using something now.
     /** See enum usage_types in header.h. */

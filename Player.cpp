@@ -99,7 +99,7 @@ void Player::Examine() const {
 }
 
 void Player::Examine(const int x, const int y, const int z) const {
-    if ( not Visible(x, y, z) ) {
+    if ( Visible(x, y, z) == VISIBLE ) {
         Notify(tr("You can't see what is there."));
         return;
     }
@@ -401,11 +401,13 @@ void Player::ProcessCommand(QString command) {
     }
 } // void Player::ProcessCommand(QString command)
 
-bool Player::Visible(const_int(x_to, y_to, z_to)) const {
+Player::visible Player::Visible(const_int(x_to, y_to, z_to)) const {
     World* const world = World::GetWorld();
-    return ( GetCreativeMode() ||
-        ( world->Enlightened(x_to, y_to, z_to)
-            && world->Visible(X(), Y(), Z(), x_to, y_to, z_to)) );
+    if ( GetCreativeMode() ) return VISIBLE;
+    return world->Visible(X(), Y(), Z(), x_to, y_to, z_to) ?
+        (world->Enlightened(x_to, y_to, z_to) ?
+            VISIBLE : IN_SHADOW) :
+        OBSCURED;
 }
 
 void Player::SetDir(const dirs direction) {

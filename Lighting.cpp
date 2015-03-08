@@ -40,7 +40,6 @@ void World::Shine(const Xyz& center, int level, const WaysTree* const ways) {
     if ( level == 0 ) return;
     if ( not GetBlock(XYZ(here))->Transparent() ) {
         level = Sign(level);
-        return;
     }
     for (const WaysTree* const branch : ways->GetNexts()) {
         Shine(center, level, branch);

@@ -27,8 +27,7 @@
 int  Inventory::Start() const { return 0; }
 bool Inventory::Access() const { return true; }
 
-bool Inventory::Drop(const int src, int dest, int num,
-        Inventory * const inv_to)
+bool Inventory::Drop(const int src, int dest, int num, Inventory* const inv_to)
 {
     dest = qMax(inv_to->Start(), dest);
     bool ok_flag = false;
@@ -48,7 +47,7 @@ bool Inventory::Drop(const int src, int dest, int num,
     return ok_flag;
 }
 
-bool Inventory::GetAll(Inventory * const from) {
+bool Inventory::GetAll(Inventory* const from) {
     bool flag = false;
     for (int i=0; i<from->Size(); ++i) {
         if ( from->Drop(i, 0, from->Number(i), this) ) {
@@ -198,14 +197,12 @@ bool Inventory::IsEmpty() const {
 
 bool Inventory::IsEmpty(const int i) const { return inventory[i].isEmpty(); }
 
-void Inventory::Push(const int x, const int y, const int z,
-        const int push_direction)
-{
+void Inventory::Push(const_int(x, y, z), const int push_direction) {
     World* const world = World::GetWorld();
     int x_targ, y_targ, z_targ;
     world->Focus(x, y, z, &x_targ, &y_targ, &z_targ,
         World::Anti(Block::MakeDirFromDamage(push_direction)));
-    Inventory * const inv =
+    Inventory* const inv =
         world->GetBlock(x_targ, y_targ, z_targ)->HasInventory();
     if ( inv ) inv->GetAll(this);
 }
@@ -216,7 +213,7 @@ bool Inventory::MiniCraft(const int num) {
             arg(char(num + 'a')));
         return false;
     } // else:
-    CraftItem * crafted =
+    CraftItem* crafted =
         new CraftItem{Number(num), GetInvKind(num), GetInvSub(num)};
     if ( CraftManager::MiniCraft(&crafted) ) {
         while ( not inventory[num].isEmpty() ) {

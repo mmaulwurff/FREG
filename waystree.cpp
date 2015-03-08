@@ -1,3 +1,22 @@
+    /* freg, Free-Roaming Elementary Game with open and interactive world
+    *  Copyright (C) 2012-2015 Alexander 'mmaulwurff' Kromm
+    *  mmaulwurff@gmail.com
+    *
+    * This file is part of FREG.
+    *
+    * FREG is free software: you can redistribute it and/or modify
+    * it under the terms of the GNU General Public License as published by
+    * the Free Software Foundation, either version 3 of the License, or
+    * (at your option) any later version.
+    *
+    * FREG is distributed in the hope that it will be useful,
+    * but WITHOUT ANY WARRANTY; without even the implied warranty of
+    * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    * GNU General Public License for more details.
+    *
+    * You should have received a copy of the GNU General Public License
+    * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
+
 #include "WaysTree.h"
 #include <algorithm>
 
@@ -36,25 +55,21 @@ WaysTree::WaysTree() :
         Xyz(0, 0, 0),
         nexts()
 {
-    const int MAX_RADIUS = 4;
-    for (int x=-MAX_RADIUS; x<=MAX_RADIUS; ++x)
-    for (int y=-MAX_RADIUS; y<=MAX_RADIUS; ++y)
-    for (int z=-MAX_RADIUS; z<=MAX_RADIUS; ++z) {
-        int max = abs(abs(x) > abs(y) ? x : y);
-        if ( abs(z) > max ) {
-            max = abs(z);
-        }
-        if (max == 3) continue;
+    const int MAX = 4;
+    for (int x=-MAX; x<=MAX; ++x)
+    for (int y=-MAX; y<=MAX; ++y)
+    for (int z=-MAX; z<=MAX; ++z) {
+        if ( abs(x)!=MAX && abs(y)!=MAX && abs(z)!=MAX ) continue;
 
-        WaysTree* const root = new WaysTree(0, 0, 0);
+        WaysTree* const root = new WaysTree(0, 0, 0); // new chain
         WaysTree* tail = root;
 
         int i=0, j=0, k=0;
-        while ( not (i==x*max && j==y*max && k==z*max) ) {
+        while ( not (i==x*MAX && j==y*MAX && k==z*MAX) ) {
             i += x;
             j += y;
             k += z;
-            tail->nexts.push_back(new WaysTree(i/max, j/max, k/max));
+            tail->nexts.push_back(new WaysTree(i/MAX, j/MAX, k/MAX));
             tail = tail->nexts[0];
         }
 

@@ -32,13 +32,13 @@ enum dirsBits {
 template<int maxSize>
 class AroundCoordinatesN {
 public:
-    const Xyz * begin() const { return array; }
-    const Xyz *   end() const { return array + size; }
+    const Xyz* begin() const { return array; }
+    const Xyz*   end() const { return array + size; }
 
 protected:
     AroundCoordinatesN() : array(), size(0) {}
 
-    void fill4(const Xyz & center);
+    void fill4(const Xyz& center);
 
     Xyz array[maxSize];
     int size;
@@ -50,17 +50,17 @@ protected:
  */
 class AroundCoordinates : public AroundCoordinatesN<6> {
 public:
-    AroundCoordinates(const Xyz & source);
+    AroundCoordinates(const Xyz& source);
     AroundCoordinates(int dirBits, const Xyz & source);
 };
 
 class AroundCoordinates4 : public AroundCoordinatesN<4> {
 public:
-    AroundCoordinates4(const Xyz & source);
+    AroundCoordinates4(const Xyz& source);
 };
 
 template<int maxSize>
-void AroundCoordinatesN<maxSize>::fill4(const Xyz & xyz) {
+void AroundCoordinatesN<maxSize>::fill4(const Xyz& xyz) {
     if ( xyz.X() > 0 )    array[size++] = { xyz.X()-1, xyz.Y(), xyz.Z() };
     if ( xyz.Y() > 0 )    array[size++] = { xyz.X(), xyz.Y()-1, xyz.Z() };
     const int bound = World::GetWorld()->GetBound();

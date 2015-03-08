@@ -22,7 +22,7 @@
 #include <QSettings>
 #include <QFile>
 
-#define UNDERGROUND_ONLY true
+#define UNDERGROUND_ONLY false
 
 WorldMap::WorldMap(const QString world_name) :
         mapSize(),

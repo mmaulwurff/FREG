@@ -581,7 +581,7 @@ bool Shred::InBounds(const int x, const int y) {
     return (0 <= x && x < SHRED_WIDTH) && (0 <= y && y < SHRED_WIDTH);
 }
 
-bool Shred::InBounds(const int x, const int y, const int z) {
+bool Shred::InBounds(const_int(x, y, z)) {
     return InBounds(x, y) && InBounds(z);
 }
 

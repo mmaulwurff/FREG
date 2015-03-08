@@ -81,7 +81,6 @@ const {
         dir_chars[World::TurnRight(direction)-2].c_str());
     mvwaddch(window, y,             0, arrows[EAST] | ARROWS_COLOR);
     mvwaddch(window, y, screenWidth-1, arrows[WEST] | ARROWS_COLOR);
-    (void)wmove(window, y, x);
 }
 
 void Screen::RePrint() {
@@ -146,17 +145,19 @@ char Screen::Distance(const int dist) const {
 }
 
 char Screen::CharNumber(const int z) const {
-    return ( HEIGHT-1 == z ) ?
-        ' ' : // sky
+    return showDistance ?
         Distance( ( UP == player->GetDir() ) ?
             z - player->Z() :
-            player->Z() - z );
+            player->Z() - z ) :
+        ' ';
 }
 
 char Screen::CharNumberFront(const int i, const int j) const {
-    return Distance( ( ( player->GetDir() & 1 ) ? // east or west
-        abs(player->X() - i) :
-        abs(player->Y() - j) ) - 1 );
+    return showDistance ?
+        Distance( ( ( player->GetDir() & 1 ) ? // east or west
+            abs(player->X() - i) :
+            abs(player->Y() - j) ) - 1 ) :
+        ' ';
 }
 
 int  Screen::RandomBlink() { return (RandomBit() * A_REVERSE); }
@@ -583,7 +584,7 @@ void Screen::ActionXyz(int* const x, int* const y, int* const z) const {
 Block* Screen::GetFocusedBlock() const {
     int x, y, z;
     ActionXyz(&x, &y, &z);
-    return ( player->Visible(x, y, z) ) ?
+    return ( player->Visible(x, y, z) == Player::VISIBLE ) ?
         World::GetWorld()->GetBlock(x, y, z) :
         nullptr;
 }
@@ -654,6 +655,8 @@ void Screen::Print() {
     if ( printed_normal ) {
         updatedNormal = true;
     }
+    (void)wmove(rightWin, yCursor, xCursor);
+    wrefresh(rightWin);
 } // void Screen::Print()
 
 void Screen::PrintHud() const {
@@ -805,11 +808,17 @@ void Screen::PrintNormal(WINDOW* const window, const dirs dir) const {
             int k = k_start;
             const Block* const block = world->GetShred(i, j)->
                 FindFirstVisible(Shred::CoordInShred(i), j_in, &k, k_step);
-            if ( player->Visible(i, j, k) ) {
-                PrintBlock(block, window, showDistance ? CharNumber(k) : ' ');
-            } else {
-                waddch(window, OBSCURE_BLOCK);
-                waddch(window, OBSCURE_BLOCK);
+            switch ( player->Visible(i, j, k) ) {
+            case Player::VISIBLE:
+                PrintBlock(block, window, CharNumber(k));
+                break;
+            case Player::IN_SHADOW:
+                waddch(window, SHADOW);
+                waddch(window, SHADOW);
+                break;
+            case Player::OBSCURED:
+                waddstr(window, "  ");
+                break;
             }
         }
     }
@@ -854,7 +863,6 @@ const {
         x_end,   z_end;
     int* x, * z;
     int i, j;
-    int arrow_X;
     switch ( dir ) {
     case NORTH:
         x = &i;
@@ -865,7 +873,7 @@ const {
         z_step  = -1;
         z_start = player->Y() - 1;
         z_end   = qMax(0, player->Y() - FRONT_MAX_DISTANCE);
-        arrow_X = (player->X() - x_start)*2 + 1;
+        xCursor = (player->X() - x_start)*2 + 1;
         break;
     case EAST:
         x = &j;
@@ -877,7 +885,7 @@ const {
         z_step  = 1;
         z_start = player->X() + 1;
         z_end   = qMin(player->X() + FRONT_MAX_DISTANCE, World::GetBound());
-        arrow_X = (player->Y() - x_start)*2 + 1;
+        xCursor = (player->Y() - x_start)*2 + 1;
         break;
     case SOUTH:
         x = &i;
@@ -888,7 +896,7 @@ const {
         z_step  = 1;
         z_start = player->Y() + 1;
         z_end   = qMin(player->Y() + FRONT_MAX_DISTANCE, World::GetBound());
-        arrow_X = (screenWidth/2 - player->X() + x_end)*2 - 1;
+        xCursor = (screenWidth/2 - player->X() + x_end)*2 - 1;
         break;
     case WEST:
         x = &j;
@@ -900,7 +908,7 @@ const {
         z_step  = -1;
         z_start = player->X() - 1;
         z_end   = qMax(0, player->X() - FRONT_MAX_DISTANCE);
-        arrow_X = (screenWidth/2 - player->Y() + x_end)*2 - 1;
+        xCursor = (screenWidth/2 - player->Y() + x_end)*2 - 1;
         break;
     default:
         Q_UNREACHABLE();
@@ -922,34 +930,42 @@ const {
     (void)wmove(rightWin, 1, 1);
     for (int k=k_start; k>k_end; --k, waddch(rightWin, 30)) {
         for (*x=x_start; *x!=x_end; *x+=x_step) {
-            for (*z=z_start; *z!=z_end && world->GetBlock(i, j, k)->
+            const Block* block;
+            for (*z=z_start; *z!=z_end && (block = world->GetBlock(i, j, k))->
                         Transparent()==INVISIBLE;
                     *z += z_step);
             if ( *z == z_end ) {
                 static const int sky_char = ' ' | Color(BLOCK, SKY);
                 waddch(rightWin, sky_char);
                 waddch(rightWin, ' ');
-            } else if ( player->Visible(i, j, k) ) {
-                PrintBlock(world->GetBlock(i, j, k), rightWin,
-                    showDistance ? CharNumberFront(i, j) : ' ');
             } else {
-                waddch(rightWin, OBSCURE_BLOCK);
-                waddch(rightWin, OBSCURE_BLOCK);
+                switch ( player->Visible(i, j, k) ) {
+                case Player::VISIBLE:
+                    PrintBlock(block, rightWin, CharNumberFront(i, j));
+                    break;
+                case Player::IN_SHADOW:
+                    waddch(rightWin, SHADOW);
+                    waddch(rightWin, SHADOW);
+                    break;
+                case Player::OBSCURED:
+                    waddstr(rightWin, "  ");
+                    break;
+                }
             }
         }
     }
     DrawBorder(rightWin);
-    const int arrow_Y = k_start + 1 - player->Z();
+    yCursor = k_start + 1 - player->Z();
     if ( shiftFocus ) {
         const int ch =
             (( shiftFocus == 1 ) ? '^' : 'v') | COLOR_PAIR(WHITE_BLUE);
-        for (int q=arrow_Y-shiftFocus; 0<q && q<=screenHeight/2; q-=shiftFocus)
+        for (int q=yCursor-shiftFocus; 0<q && q<=screenHeight/2; q-=shiftFocus)
         {
             mvwaddch(rightWin, q,             0, ch);
             mvwaddch(rightWin, q, screenWidth-1, ch);
         }
     }
-    Arrows(rightWin, arrow_X, arrow_Y, dir, false);
+    Arrows(rightWin, xCursor, yCursor, dir, false);
     wrefresh(rightWin);
 } // void Screen::PrintFront(dirs)
 
@@ -1066,7 +1082,7 @@ Screen::Screen(Player* const pl, int &) :
         screen(newterm(nullptr, stdout, stdin)),
         screenWidth((COLS / 2) - ((COLS/2) & 1)),
         screenHeight(LINES - 10),
-        OBSCURE_BLOCK(COLOR_PAIR(BLACK_BLACK) | A_BOLD | ACS_CKBOARD),
+        SHADOW(COLOR_PAIR(BLACK_BLACK) | A_BOLD | ACS_CKBOARD),
         windows {
             newwin(7, ACTIONS_WIDTH, LINES-7, MINIMAP_WIDTH + 1),
             newwin(0, 0, LINES-7, MINIMAP_WIDTH + 1 + ACTIONS_WIDTH + 1),
@@ -1090,7 +1106,9 @@ Screen::Screen(Player* const pl, int &) :
             ascii ? L'.' : L'\00',
             ellipsis[1]
         },
-        noMouseMask()
+        noMouseMask(),
+        xCursor(),
+        yCursor()
 {
     start_color();
     nodelay(stdscr, false);
