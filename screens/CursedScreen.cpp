@@ -655,7 +655,12 @@ void Screen::Print() {
     if ( printed_normal ) {
         updatedNormal = true;
     }
-    (void)wmove(rightWin, yCursor, xCursor);
+    if ( player->GetDir() <= DOWN ) {
+        (void)wmove(rightWin, player->Y() - GetNormalStartY()  + 1,
+                         2 * (player->X() - GetNormalStartX()) + 1);
+    } else {
+        (void)wmove(rightWin, yCursor, xCursor);
+    }
     wrefresh(rightWin);
 } // void Screen::Print()
 
