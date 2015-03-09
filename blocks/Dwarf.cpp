@@ -25,10 +25,9 @@
 
 int Dwarf::Weight() const {
     if ( Sub() == DIFFERENT ) return 0;
-    World* const world = World::GetWorld();
     const AroundCoordinates4 around(GetXyz());
-    return std::any_of(ALL(around), [=](const Xyz& xyz) {
-            return world->GetBlock(XYZ(xyz))->Catchable();
+    return std::any_of(ALL(around), [](const Xyz& xyz) {
+            return World::GetConstWorld()->GetBlock(XYZ(xyz))->Catchable();
         }) ?
         0 : Inventory::Weight() + Block::Weight();
 }
@@ -47,9 +46,9 @@ void Dwarf::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
 Inventory* Dwarf::HasInventory() { return this; }
 
 inner_actions Dwarf::ActInner() {
-    /*const int old_radius = lightRadius;
+    const int old_radius = lightRadius;
     lightRadius = UpdateLightRadiusInner();
-    UpdateLightRadius(old_radius);*/
+    UpdateLightRadius(old_radius);
     return Animal::ActInner();
 }
 
@@ -58,6 +57,8 @@ QString Dwarf::FullName() const {
         tr("Creator") : Animal::FullName();
 }
 
+/// \todo Make all (switching lanterns on/off) light changes synchronous
+/// to avoid [un]shining in wrong place.
 int Dwarf::UpdateLightRadiusInner() const {
     const Block* const in_left  = ShowBlock(IN_LEFT );
     const Block* const in_right = ShowBlock(IN_RIGHT);
@@ -165,6 +166,21 @@ QString Dwarf::InvFullName(const int slot_number) const {
     return ( IsEmpty(slot_number) && slot_number < SPECIAL_SLOTS_COUNT ) ?
         invFullNames[slot_number] :
         Inventory::InvFullName(slot_number);
+}
+
+void Dwarf::Pull(const int slot) {
+    Inventory::Pull(slot);
+    const int old_radius = lightRadius;
+    lightRadius = UpdateLightRadiusInner();
+    UpdateLightRadius(old_radius);
+}
+
+bool Dwarf::Get(Block* const block, const int start) {
+    const bool result = Inventory::Get(block, start);
+    const int old_radius = lightRadius;
+    lightRadius = UpdateLightRadiusInner();
+    UpdateLightRadius(old_radius);
+    return result;
 }
 
 Dwarf::Dwarf(const kinds kind, const subs sub) :

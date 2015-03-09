@@ -27,7 +27,6 @@ class Illuminator final : public Active {
 public:
     BLOCK_CONSTRUCTORS(Illuminator)
 
-    int  ShouldAct() const override;
     int  DamageKind() const override;
     int  LightRadius() const override;
     Block* DropAfterDamage(bool* delete_block) override;
@@ -37,10 +36,12 @@ public:
     inner_actions ActInner() override;
 
 protected:
-    void DoRareAction() override;
     void SaveAttributes(QDataStream& out) const override;
 
 private:
+    static const int MAX_FUEL_LEVEL;
+    static const int TORCH_FULL_LEVEL, TORCH_END_LEVEL;
+
     quint16 fuelLevel;
     bool isOn;
 };

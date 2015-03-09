@@ -42,7 +42,7 @@ bool Active::IsInside()  const { return shred == nullptr; }
 Active* Active::ActiveBlock() { return this; }
 inner_actions Active::ActInner() { return INNER_ACTION_ONLY; }
 
-/*void Active::UpdateLightRadius(const int old_radius) {
+void Active::UpdateLightRadius(const int old_radius) {
     if ( IsInside() ) return;
     const int radius = LightRadius();
     if ( radius != old_radius ) {
@@ -57,7 +57,7 @@ inner_actions Active::ActInner() { return INNER_ACTION_ONLY; }
     } else if ( old_radius && radius == 0 ) {
         GetShred()->RemShining(this);
     }
-}*/
+}
 
 void Active::ActFrequent() {
     qDebug("Active::ActFrequent called, check ShouldAct\
@@ -74,7 +74,7 @@ void Active::DoRareAction() {
 }
 
 void Active::ActRare() {
-    Inventory * const inv = HasInventory();
+    Inventory* const inv = HasInventory();
     if ( inv == nullptr ) {
         DoRareAction();
         return;
@@ -121,12 +121,12 @@ void Active::ReRegister(const dirs dir) {
     x_self &= 0xF;
     y_self &= 0xF;
     shred->Unregister(this);
-    (shred = World::GetWorld()->GetNearShred(shred, dir))->Register(this);
+    (shred = World::GetConstWorld()->GetNearShred(shred, dir))->Register(this);
 }
 
 void Active::SendSignalAround(const QString signal) const {
     if ( IsInside() ) return; // for blocks inside inventories
-    World* const world = World::GetWorld();
+    const World* const world = World::GetConstWorld();
     for (const Xyz& xyz : AroundCoordinates(GetXyz())) {
         world->GetBlock(XYZ(xyz))->ReceiveSignal(signal);
     }
@@ -163,7 +163,7 @@ Active::Active(QDataStream& str, const kinds kind, const subs sub) :
 bool Active::Gravitate(const int range, int bottom, int top,
         const int calmness)
 {
-    World* const world = World::GetWorld();
+    const World* const world = World::GetConstWorld();
     const int bound = World::GetBound();
     // analyse world around
     int for_north = 0, for_west = 0;
@@ -201,7 +201,7 @@ int Active::Attractive(int) const { return 0; }
 bool Active::IsSubAround(const int sub) const {
     const AroundCoordinates coords(GetXyz());
     return std::any_of(ALL(coords), [=](const Xyz& xyz) {
-        return World::GetWorld()->GetBlock(XYZ(xyz))->Sub() == sub;
+        return World::GetConstWorld()->GetBlock(XYZ(xyz))->Sub() == sub;
     });
 }
 

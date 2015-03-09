@@ -46,7 +46,8 @@ public:
 ///\name Static information section
 ///@{
     static World* GetWorld();
-    static QString WorldName() { return GetWorld()->worldName; }
+    static const World* GetConstWorld();
+    static QString WorldName() { return GetConstWorld()->worldName; }
     static QString WorldPath() { return home_path + WorldName(); }
 
     static dirs TurnRight(dirs dir);
@@ -69,10 +70,10 @@ public:
     qint64 Longitude() const;
     qint64 Latitude() const;
 
-    const class WorldMap * GetMap() const;
+    const class WorldMap* GetMap() const;
 
-    class QByteArray * GetShredData(qint64 longi, qint64 lati) const;
-    void SetShredData(class QByteArray *, qint64 longi, qint64 lati);
+    class QByteArray* GetShredData(qint64 longi, qint64 lati) const;
+    void SetShredData(class QByteArray*, qint64 longi, qint64 lati);
 ///@}
 
 ///\name Block work section
@@ -209,7 +210,7 @@ private:
     void AddLight(const Xyz&, int level);
 
     /// Takes back all light in area around coordinates xyz.
-    void UnShine(int x, int y, int z, Block* skip_block);
+    void UnShine(int x, int y, int z, Block* skip_block, Block* add_block);
 
     /// Updates all unshined lighting.
     void ReEnlighten();
@@ -226,7 +227,7 @@ private:
      *  @param skipBlock1 to skip or not to skip block1 when reenlighting
      */
     void ReEnlightenCheck(Block* block1, Block* block2, int x, int y, int z,
-                          Block* skip_block);
+                          Block* skip_block, Block* add_block);
 ///@}
 
     enum can_move_results {
@@ -267,14 +268,14 @@ private:
     quint64 time;
     int timeStep;
     Shred** shreds;
-    /**   N
-     *    |  E
-     * W--+--> latitude ( x for shreds )
-     *    |
-     *  S v longitude ( y for shreds )
+    /**  N
+     *   |
+     * W-+->E
+     *   |  latitude ( x for shreds )
+     * S v longitude ( y for shreds )
      * center of active zone: */
     qint64 longitude, latitude;
-    class QSettings * const gameSettings;
+    class QSettings* const gameSettings;
     const int numShreds; ///< size of loaded zone
     const int numActiveShreds; ///< size of active zone
     QMutex mutex;
@@ -283,9 +284,9 @@ private:
     QString newWorld;
     /// UP for no reset, DOWN for full reset, NSEW for side shift.
     volatile dirs toResetDir;
-    class QTimer * timer;
+    class QTimer* timer;
 
-    class ShredStorage * shredStorage;
+    class ShredStorage* shredStorage;
     QList<QString> notes;
 
     /// storage for found shining objects between UnShine and ReEnlighten.

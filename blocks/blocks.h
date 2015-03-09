@@ -96,7 +96,7 @@ public:
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
     Block* DropAfterDamage(bool* delete_block) override;
-    Inventory * HasInventory() override;
+    Inventory* HasInventory() override;
     usage_types Use(Active* who) override;
     inner_actions ActInner() override;
 

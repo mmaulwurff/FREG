@@ -42,7 +42,6 @@ enum inner_actions {
 
 class Active : public QObject, public Block, protected Xyz {
     Q_OBJECT
-    Q_DISABLE_COPY(Active)
 public:
     BLOCK_CONSTRUCTORS(Active)
 
@@ -72,7 +71,7 @@ signals:
     void ReceivedText(const QString);
 
 protected:
-    //void UpdateLightRadius(int old_radius);
+    void UpdateLightRadius(int old_radius);
     void SendSignalAround(QString) const;
     void DamageAround() const;
     /// Damages block, if it is broken returns true and destroys block.

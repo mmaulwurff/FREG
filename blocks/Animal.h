@@ -24,7 +24,6 @@
 
 class Animal : public Falling {
     Q_OBJECT
-    Q_DISABLE_COPY(Animal)
 public:
     BLOCK_CONSTRUCTORS(Animal)
     ~Animal();

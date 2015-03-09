@@ -28,8 +28,8 @@ public:
      ShredStorage(int size, qint64 longi_center, qint64 lati_center);
     ~ShredStorage();
 
-    class QByteArray * GetShredData(qint64 longi, qint64 lati);
-    void SetShredData(class QByteArray *, qint64 longi, qint64 lati);
+    class QByteArray* GetShredData(qint64 longi, qint64 lati);
+    void SetShredData(class QByteArray*, qint64 longi, qint64 lati);
     void Shift(int direction, qint64 longitude, qint64 latitude);
 
     void WriteToFileAllShredData() const;
@@ -52,7 +52,7 @@ private:
     /// -1 - default, 0 - no compression, 4 - best for CPU, 8 - optimal.
     static const int COMPRESSION_LEVEL = 8;
 
-    QHash<LongLat, class QByteArray *> storage;
+    QHash<LongLat, class QByteArray*> storage;
     const int size;
 
     std::thread * preloadThread;

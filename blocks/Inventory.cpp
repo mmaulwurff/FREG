@@ -81,7 +81,7 @@ bool Inventory::Get(Block* const block, const int start) {
     if ( block->Wearable() == WEARABLE_VESSEL ) {
         for (int i=0; i<Size(); ++i) {
             if ( Number(i)==1 && ShowBlock(i) ) {
-                Inventory * const inner = ShowBlock(i)->HasInventory();
+                Inventory* const inner = ShowBlock(i)->HasInventory();
                 if ( inner && inner->Get(block) ) {
                     return true;
                 }
@@ -198,7 +198,7 @@ bool Inventory::IsEmpty() const {
 bool Inventory::IsEmpty(const int i) const { return inventory[i].isEmpty(); }
 
 void Inventory::Push(const_int(x, y, z), const int push_direction) {
-    World* const world = World::GetWorld();
+    const World* const world = World::GetConstWorld();
     int x_targ, y_targ, z_targ;
     world->Focus(x, y, z, &x_targ, &y_targ, &z_targ,
         World::Anti(Block::MakeDirFromDamage(push_direction)));

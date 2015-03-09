@@ -88,7 +88,7 @@ public:
     int UsingSelfType() const { return usingSelfType; }
 
     /// Returns nullptr if there is no inventory, otherwise returns inventory.
-    class Inventory * PlayerInventory() const;
+    class Inventory* PlayerInventory() const;
 
     qint64 GetLongitude() const;
     qint64 GetLatitude() const;

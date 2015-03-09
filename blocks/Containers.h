@@ -42,7 +42,7 @@ public:
     void Damage(int dmg, int dmg_kind) override;
     Block* DropAfterDamage(bool* delete_block) override;
     QString FullName() const override;
-    Inventory * HasInventory() override final;
+    Inventory* HasInventory() override final;
     usage_types Use(Active* user) override;
     push_reaction PushResult(dirs) const override;
     inner_actions ActInner() override;
@@ -70,7 +70,7 @@ public:
     void DoRareAction() override;
     QString FullName() const override;
     Block* DropAfterDamage(bool* delete_block) override;
-    Inventory * HasInventory() override final;
+    Inventory* HasInventory() override final;
     usage_types Use(Active* user) override;
     inner_actions ActInner() override;
 
@@ -86,9 +86,9 @@ class Workbench : public Container {
 public:
     BLOCK_CONSTRUCTORS(Workbench)
 
-    bool Drop(int src, int dest, int num, Inventory * inv) override;
+    bool Drop(int src, int dest, int num, Inventory* inv) override;
     bool Get(Block* block, int start) override;
-    bool GetAll(Inventory * from) override;
+    bool GetAll(Inventory* from) override;
     int Start() const override;
     QString FullName() const override;
     QString InvFullName(int slot_number) const override;

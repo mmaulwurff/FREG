@@ -46,7 +46,10 @@ public:
     int  LightRadius() const override;
     int  NutritionalValue(subs) const override;
     Block* DropAfterDamage(bool* delete_block) override;
-    Inventory * HasInventory() override;
+    Inventory* HasInventory() override;
+
+    void Pull(int slot) override;
+    bool Get(Block* block, int start = 0) override;
 
 protected:
     void SaveAttributes(QDataStream& out) const override;

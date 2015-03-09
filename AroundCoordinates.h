@@ -63,7 +63,7 @@ template<int maxSize>
 void AroundCoordinatesN<maxSize>::fill4(const Xyz& xyz) {
     if ( xyz.X() > 0 )    array[size++] = { xyz.X()-1, xyz.Y(), xyz.Z() };
     if ( xyz.Y() > 0 )    array[size++] = { xyz.X(), xyz.Y()-1, xyz.Z() };
-    const int bound = World::GetWorld()->GetBound();
+    const int bound = World::GetConstWorld()->GetBound();
     if ( xyz.X() < bound) array[size++] = { xyz.X()+1, xyz.Y(), xyz.Z() };
     if ( xyz.Y() < bound) array[size++] = { xyz.X(), xyz.Y()+1, xyz.Z() };
 }

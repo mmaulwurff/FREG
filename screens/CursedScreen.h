@@ -111,7 +111,7 @@ private:
     /// Has two functions: first - when x == -1 - prints front,
     /// second - otherwise - examines block at position x, y.
     void PrintFront(dirs direction, int x = -1, int y = 0) const;
-    void PrintInv(WINDOW*, const Block*, const class Inventory *) const;
+    void PrintInv(WINDOW*, const Block*, const class Inventory*) const;
     void PrintHud() const;
     void PrintMiniMap() const;
     void PrintQuickInventory() const;

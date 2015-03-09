@@ -412,7 +412,7 @@ void Screen::ControlPlayer(const int ch) {
 } // void Screen::ControlPlayer(int ch)
 
 void Screen::ExamineOnNormalScreen(int x, int y, int z, const int step) const {
-    World* const world = World::GetWorld();
+    const World* const world = World::GetConstWorld();
     x = (x-1)/2 + GetNormalStartX();
     y =  y-1    + GetNormalStartY();
     for ( ; world->GetBlock(x, y, z)->Transparent() == INVISIBLE; z += step);
@@ -439,7 +439,7 @@ void Screen::ProcessMouse() {
             Notify(tr("Information: left - player, right - focused thing."));
             return;
         } else {
-            Inventory * const inv = player->PlayerInventory();
+            Inventory* const inv = player->PlayerInventory();
             if ( inv == nullptr ) return;
             Notify( tr("In inventory at slot '%1': %2.").
                 arg(char(mevent.x + 'a')).
@@ -458,11 +458,12 @@ void Screen::ProcessMouse() {
         } else {
             const int shred_x = mevent.x/2 + GetMinimapStartX();
             const int shred_y = mevent.y-1 + GetMinimapStartY();
-            World* const world = World::GetWorld();
+            const World* const world = World::GetConstWorld();
             Notify( (0 <= shred_x && shred_x < world->NumShreds() &&
                      0 <= shred_y && shred_y < world->NumShreds() ) ?
-                tr("On minimap: %1.").arg(TrManager::ShredTypeName(
-                    world->GetShredByPos(shred_x, shred_y)->GetTypeOfShred())):
+                tr("On minimap: %1.").
+                    arg(TrManager::ShredTypeName(world->
+                        GetShredByPos(shred_x, shred_y)->GetTypeOfShred())) :
                 tr("You can't see that far.") );
         }
         break;
@@ -571,8 +572,8 @@ void Screen::InventoryAction(const int num) const {
 void Screen::ActionXyz(int* const x, int* const y, int* const z) const {
     VirtScreen::ActionXyz(x, y, z);
     if ( player->GetDir() > DOWN &&
-            ( AIR == World::GetWorld()->GetBlock(*x, *y, *z)->Sub() ||
-              AIR == World::GetWorld()->GetBlock(
+            ( AIR == World::GetConstWorld()->GetBlock(*x, *y, *z)->Sub() ||
+              AIR == World::GetConstWorld()->GetBlock(
                 player->X(),
                 player->Y(),
                 player->Z()+shiftFocus)->Sub() ))
@@ -585,7 +586,7 @@ Block* Screen::GetFocusedBlock() const {
     int x, y, z;
     ActionXyz(&x, &y, &z);
     return ( player->Visible(x, y, z) == Player::VISIBLE ) ?
-        World::GetWorld()->GetBlock(x, y, z) :
+        World::GetConstWorld()->GetBlock(x, y, z) :
         nullptr;
 }
 
@@ -732,7 +733,7 @@ void Screen::PrintHud() const {
 } // void Screen::PrintHud()
 
 void Screen::PrintQuickInventory() const {
-    const Inventory * const inv = player->GetBlock()->HasInventory();
+    const Inventory* const inv = player->GetBlock()->HasInventory();
     if ( inv==nullptr || not IsScreenWide() ) return;
 
     wstandend(hudWin);
@@ -748,9 +749,7 @@ void Screen::PrintQuickInventory() const {
         }
         x += 2;
         if ( i == inv->Start()-1 && i != 0 ) {
-            mvwaddch(hudWin, 0, x, ACS_VLINE);
-            mvwaddch(hudWin, 1, x, ACS_VLINE);
-            mvwaddch(hudWin, 2, x, ACS_VLINE);
+            for (int i : {0, 1, 2}) mvwaddch(hudWin, i, x, ACS_VLINE);
             x += 2;
         }
     }
@@ -769,7 +768,7 @@ void Screen::PrintMiniMap() const {
     (void)wmove(minimapWin, 1, 0);
     const int i_start = GetMinimapStartY();
     const int j_start = GetMinimapStartX();
-    World* const world = World::GetWorld();
+    const World* const world = World::GetConstWorld();
     for (int i=i_start; i <= i_start+4; ++i, waddch(minimapWin, '\n'))
     for (int j=j_start; j <= j_start+4; ++j) {
         if ( i<0 || j<0 || i>=world->NumShreds() || j>=world->NumShreds() ) {
@@ -805,7 +804,7 @@ void Screen::PrintNormal(WINDOW* const window, const dirs dir) const {
     const int start_y = GetNormalStartY();
     const int end_x = start_x + screenWidth/2 - 1;
     const int end_y = start_y + screenHeight  - 2;
-    World* const world = World::GetWorld();
+    const World* const world = World::GetConstWorld();
     (void)wmove(window, 1, 1);
     for (int j=start_y; j<end_y; ++j, waddch(window, 30)) {
         const int j_in = Shred::CoordInShred(j);
@@ -822,7 +821,8 @@ void Screen::PrintNormal(WINDOW* const window, const dirs dir) const {
                 waddch(window, SHADOW);
                 break;
             case Player::OBSCURED:
-                waddstr(window, "  ");
+                waddch(window, ' ' | COLOR_PAIR(BLACK_BLACK));
+                waddch(window, ' ' | COLOR_PAIR(BLACK_BLACK));
                 break;
             }
         }
@@ -919,7 +919,7 @@ const {
         Q_UNREACHABLE();
         return;
     }
-    World* const world = World::GetWorld();
+    const World* const world = World::GetConstWorld();
     const int k_start = GetFrontStartZ();
     if ( block_x > 0 ) {
         // ugly! use print function to get block by screen coordinates.
@@ -953,7 +953,8 @@ const {
                     waddch(rightWin, SHADOW);
                     break;
                 case Player::OBSCURED:
-                    waddstr(rightWin, "  ");
+                    waddch(rightWin, ' ' | COLOR_PAIR(BLACK_BLACK));
+                    waddch(rightWin, ' ' | COLOR_PAIR(BLACK_BLACK));
                     break;
                 }
             }
@@ -975,7 +976,7 @@ const {
 } // void Screen::PrintFront(dirs)
 
 void Screen::PrintInv(WINDOW* const window,
-        const Block* const block, const Inventory * const inv)
+        const Block* const block, const Inventory* const inv)
 const {
     if ( inv == nullptr ) return;
     if ( inv == player->PlayerInventory() ) {
@@ -1036,7 +1037,7 @@ const {
     waddwstr(window, wPrintable( (player->PlayerInventory() == inv) ?
         tr("Your inventory") : block->FullName() ));
     wrefresh(window);
-} // void Screen::PrintInv(WINDOW*, const Block*, const Inventory *)
+} // void Screen::PrintInv(WINDOW*, const Block*, const Inventory*)
 
 void Screen::DisplayFile(const QString path) {
     { QFile(path).open(QIODevice::ReadWrite); } // create file if doesn't exist

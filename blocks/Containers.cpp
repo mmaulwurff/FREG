@@ -40,14 +40,14 @@
     }
 
     void Container::ReceiveSignal(QString) {}
-    Inventory * Container::HasInventory() { return this; }
+    Inventory* Container::HasInventory() { return this; }
     usage_types Container::Use(Active*) { return USAGE_TYPE_OPEN; }
     push_reaction Container::PushResult(dirs) const { return NOT_MOVABLE; }
     inner_actions Container::ActInner() { return INNER_ACTION_ONLY; }
 
     Block* Container::DropAfterDamage(bool* const delete_block) {
         Block* const pile = BlockFactory::NewBlock(BOX, DIFFERENT);
-        Inventory * const pile_inv = pile->HasInventory();
+        Inventory* const pile_inv = pile->HasInventory();
         GetAll(pile_inv);
         *delete_block = not pile_inv->Get(this);
         return pile;
@@ -99,7 +99,7 @@
 
     int  Box::ShouldAct() const { return FREQUENT_RARE; }
     void Box::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
-    Inventory * Box::HasInventory() { return this; }
+    Inventory* Box::HasInventory() { return this; }
     inner_actions Box::ActInner() { return INNER_ACTION_NONE; }
 
     void Box::DoRareAction() {
@@ -110,7 +110,7 @@
             }
         } else if ( Sub() == DIFFERENT ) {
             World* const world = World::GetWorld();
-            Inventory * const inv =
+            Inventory* const inv =
                 world->GetBlock(X(), Y(), Z()-1)->HasInventory();
             if ( inv ) {
                 inv->GetAll(this);
@@ -190,7 +190,7 @@
     }
 
     bool Workbench::Drop(const int src, const int dest,
-            const int num, Inventory * const inv_to)
+            const int num, Inventory* const inv_to)
     {
         if ( inv_to == nullptr
                 || src  >= Size()
@@ -243,7 +243,7 @@
         }
     }
 
-    bool Workbench::GetAll(Inventory * const from) {
+    bool Workbench::GetAll(Inventory* const from) {
         if ( Inventory::GetAll(from) ) {
             Craft();
             return true;

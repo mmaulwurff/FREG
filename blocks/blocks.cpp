@@ -187,7 +187,7 @@
     int  Bush::Weight() const { return Inventory::Weight() + Block::Weight(); }
     QString Bush::FullName() const { return TrManager::KindName(BUSH); }
     usage_types Bush::Use(Active*) { return USAGE_TYPE_OPEN; }
-    Inventory * Bush::HasInventory() { return this; }
+    Inventory* Bush::HasInventory() { return this; }
     inner_actions Bush::ActInner() { return INNER_ACTION_NONE; }
 
     void Bush::DoRareAction() {
@@ -206,7 +206,7 @@
 
     Block* Bush::DropAfterDamage(bool*) {
         Block* const pile = BlockFactory::NewBlock(BOX, DIFFERENT);
-        Inventory * const pile_inv = pile->HasInventory();
+        Inventory* const pile_inv = pile->HasInventory();
         pile_inv->Get(BlockFactory::NewBlock(WEAPON, WOOD));
         pile_inv->Get(BlockFactory::NewBlock(WEAPON, SUB_NUT));
         return pile;
@@ -287,7 +287,7 @@
         if ( who ) {
             who->ReceiveSignal( (GetNote().left(4) == Str("real")) ?
                 tr("Outer time is %1.").arg(QTime::currentTime().toString()) :
-                World::GetWorld()->TimeOfDayStr() );
+                World::GetConstWorld()->TimeOfDayStr() );
         } else {
             SendSignalAround(GetNote());
         }
@@ -312,19 +312,18 @@
     wearable Clock::Wearable() const { return WEARABLE_OTHER; }
 
     inner_actions Clock::ActInner() {
-        const int current_time = World::GetWorld()->TimeOfDay();
+        const World* const world = World::GetConstWorld();
+        const int current_time = world->TimeOfDay();
         int notify_flag = 1;
         if ( alarmTime == current_time ) {
-            Block::Inscribe(tr("Alarm. %1").
-                arg(World::GetWorld()->TimeOfDayStr()));
+            Block::Inscribe(tr("Alarm. %1").arg(world->TimeOfDayStr()));
             ++notify_flag;
         } else if ( timerTime > 0 )  {
             --timerTime;
             Block::Inscribe(QString().setNum(timerTime));
         } else if ( timerTime == 0 ) {
             timerTime = -1;
-            Block::Inscribe(tr("Timer fired. %1").
-                arg(World::GetWorld()->TimeOfDayStr()));
+            Block::Inscribe(tr("Timer fired. %1").arg(world->TimeOfDayStr()));
             ++notify_flag;
         }
         if ( Sub()==EXPLOSIVE ) {

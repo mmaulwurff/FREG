@@ -77,8 +77,8 @@ void VirtScreen::Log(const QString message) const {
 void VirtScreen::DisplayFile(QString /* path */) {}
 
 void VirtScreen::ActionXyz(int* const x, int* const y, int* const z) const {
-    World::GetWorld()->Focus(player->X(), player->Y(), player->Z(), x, y, z,
-        player->GetDir());
+    World::GetConstWorld()->Focus(player->X(), player->Y(), player->Z(),
+        x, y, z, player->GetDir());
 }
 
 int VirtScreen::Color(const int kind, const int sub) {

@@ -183,10 +183,10 @@ bool Block::Inscribe(const QString str) {
     return true;
 }
 
-Inventory * Block::HasInventory() { return nullptr; }
-Animal    * Block::IsAnimal()     { return nullptr; }
-Active    * Block::ActiveBlock()  { return nullptr; }
-Falling   * Block::ShouldFall()   { return nullptr; }
+Inventory* Block::HasInventory() { return nullptr; }
+Animal*    Block::IsAnimal()     { return nullptr; }
+Active*    Block::ActiveBlock()  { return nullptr; }
+Falling*   Block::ShouldFall()   { return nullptr; }
 
 void Block::Restore() { durability = MAX_DURABILITY; }
 void Block::Break()   { durability = 0; }
@@ -196,7 +196,7 @@ void Block::Mend(const int plus) {
 }
 
 QString Block::GetNote() const {
-    return noteId ? World::GetWorld()->GetNote(noteId) : QString();
+    return noteId ? World::GetConstWorld()->GetNote(noteId) : QString();
 }
 
 int Block::Weight() const {

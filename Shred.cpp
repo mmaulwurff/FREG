@@ -31,8 +31,8 @@
 const quint8 Shred::DATASTREAM_VERSION = QDataStream::Qt_5_2;
 
 bool Shred::LoadShred() {
-    const QByteArray * const data =
-        World::GetWorld()->GetShredData(longitude, latitude);
+    const QByteArray* const data =
+        World::GetConstWorld()->GetShredData(longitude, latitude);
     if ( data == nullptr ) return false;
     QDataStream in(*data);
     quint8 read;
@@ -90,7 +90,7 @@ Shred::Shred(const int shred_x, const int shred_y,
         shredX(shred_x),
         shredY(shred_y),
         type(static_cast<shred_type>(
-            World::GetWorld()->GetMap()->TypeOfShred(longi, lati) )),
+            World::GetConstWorld()->GetMap()->TypeOfShred(longi, lati) )),
         activeListFrequent(),
         activeListAll(),
         shiningList(),
@@ -133,7 +133,7 @@ Shred::Shred(const int shred_x, const int shred_y,
 Shred::~Shred() { SaveShred(true); }
 
 void Shred::SaveShred(const bool isQuitGame) {
-    QByteArray * const shred_data = new QByteArray();
+    QByteArray* const shred_data = new QByteArray();
     shred_data->reserve(40 * 1024);
     QDataStream outstr(shred_data, QIODevice::WriteOnly);
     outstr << CURRENT_SHRED_FORMAT_VERSION;
@@ -181,7 +181,7 @@ qint64 Shred::GlobalY(const int y) const {
 }
 
 void Shred::PhysEventsFrequent() {
-    for (auto & i : fallList) {
+    for (auto& i : fallList) {
         if ( i == nullptr ) {
             continue;
         } // else:
@@ -440,7 +440,7 @@ void Shred::Pyramid() {
         PutBlock(air, SHRED_WIDTH/2, SHRED_WIDTH/2, z);
     }
     SetNewBlock(CONTAINER, STONE, SHRED_WIDTH-2, SHRED_WIDTH-2, level+1);
-    Inventory * const inv =
+    Inventory* const inv =
         GetBlock(SHRED_WIDTH-2,SHRED_WIDTH-2, level+1)->HasInventory();
     inv->Get(BlockFactory::Normal(GOLD));
     SetNewBlock(PREDATOR, A_MEAT, SHRED_WIDTH-3, SHRED_WIDTH-2, level+1);
@@ -674,7 +674,7 @@ AroundShredTypes::AroundShredTypes(const qint64 longitude, qint64 latitude) :
     int position = 0;
     for (qint64 i=longitude-1; i<=longitude+1; ++i)
     for (qint64 j=latitude -1; j<=latitude +1; ++j) {
-        types[position++] = World::GetWorld()->GetMap()->TypeOfShred(i, j);
+        types[position++] = World::GetConstWorld()->GetMap()->TypeOfShred(i,j);
     }
 }
 

@@ -26,8 +26,8 @@
 Teleport::Teleport(const kinds kind, const subs sub) :
         Active(kind, sub),
         targetWorldName(World::WorldName()),
-        targetLatitude( qrand()%(World::GetWorld()->GetMap()->GetSize())),
-        targetLongitude(qrand()%(World::GetWorld()->GetMap()->GetSize()))
+        targetLatitude( qrand()%(World::GetConstWorld()->GetMap()->GetSize())),
+        targetLongitude(qrand()%(World::GetConstWorld()->GetMap()->GetSize()))
 {}
 
 Teleport::Teleport(QDataStream& stream, const kinds kind, const subs sub) :

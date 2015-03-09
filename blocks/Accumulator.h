@@ -23,7 +23,6 @@
 #include "blocks/Block.h"
 
 class Accumulator : public Block {
-    M_DISABLE_COPY(Accumulator)
 public:
     BLOCK_CONSTRUCTORS(Accumulator)
 

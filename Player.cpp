@@ -59,7 +59,7 @@ void Player::SetCreativeMode(const bool creative_on) {
     Animal* const prev_player = player;
     SetPlayer(X(), Y(), Z());
     player->SetDir(prev_player->GetDir());
-    Inventory * const inv = PlayerInventory();
+    Inventory* const inv = PlayerInventory();
     if ( inv && prev_player->HasInventory() ) {
         inv->GetAll(prev_player->HasInventory());
     }
@@ -76,8 +76,8 @@ int Player::BreathPercent() const {
     return player->Breath() * 100 / Animal::MAX_BREATH;
 }
 
-Inventory * Player::PlayerInventory() const {
-    Inventory * const inv = player->HasInventory();
+Inventory* Player::PlayerInventory() const {
+    Inventory* const inv = player->HasInventory();
     if ( inv ) {
         return inv;
     } else {
@@ -99,14 +99,15 @@ void Player::Examine() const {
 }
 
 void Player::Examine(const int x, const int y, const int z) const {
-    if ( Visible(x, y, z) == VISIBLE ) {
+    if ( Visible(x, y, z) != VISIBLE ) {
         Notify(tr("You can't see what is there."));
         return;
     }
+    const World* const world = World::GetConstWorld();
     if ( DEBUG ) {
-        Notify(Str("Light: %1.").arg(World::GetWorld()->Enlightened(x, y, z)));
+        Notify(Str("Light: %1.").arg(world->Enlightened(x, y, z)));
     }
-    Examine(World::GetWorld()->GetBlock(x, y, z));
+    Examine(world->GetBlock(x, y, z));
 }
 
 void Player::Examine(const Block* const block) const {
@@ -151,7 +152,7 @@ void Player::Move(const dirs direction) {
 }
 
 void Player::Notify(const QString message) const {
-    emit World::GetWorld()->Notify(message);
+    emit World::GetConstWorld()->Notify(message);
 }
 
 void Player::Backpack() {
@@ -196,7 +197,7 @@ void Player::Inscribe() const {
 }
 
 Block* Player::ValidBlock(const int num) const {
-    Inventory * const inv = PlayerInventory();
+    Inventory* const inv = PlayerInventory();
     if ( not inv ) {
         return nullptr;
     } // else:
@@ -260,7 +261,7 @@ bool Player::Obtain(const int src, const int dest, const int num) {
     int x, y, z;
     emit GetFocus(&x, &y, &z);
     bool is_success = world->Get(player, x, y, z, src, dest, num);
-    Inventory * const from = world->GetBlock(x, y, z)->HasInventory();
+    Inventory* const from = world->GetBlock(x, y, z)->HasInventory();
     if ( from && from->IsEmpty() ) {
         usingType = USAGE_TYPE_NO;
     }
@@ -272,7 +273,7 @@ void Player::Wield(const int from) {
     const QMutexLocker locker(World::GetWorld()->GetLock());
     Block* const block = ValidBlock(from);
     if ( block ) {
-        Inventory * const inv = PlayerInventory();
+        Inventory* const inv = PlayerInventory();
         inv->Pull(from);
         inv->Get(block, (from >= inv->Start()) ? 0 : inv->Start());
         emit Updated();
@@ -340,7 +341,7 @@ void Player::ProcessCommand(QString command) {
     case UniqueIntFromString("give"):
     case UniqueIntFromString("get" ): {
         if ( ForbiddenAdminCommands() ) return;
-        Inventory * const inv = PlayerInventory();
+        Inventory* const inv = PlayerInventory();
         if ( inv == nullptr ) return;
         QString kind, sub;
         comm_stream >> kind >> sub;
@@ -402,7 +403,7 @@ void Player::ProcessCommand(QString command) {
 } // void Player::ProcessCommand(QString command)
 
 Player::visible Player::Visible(const_int(x_to, y_to, z_to)) const {
-    World* const world = World::GetWorld();
+    const World* const world = World::GetConstWorld();
     if ( GetCreativeMode() ) return VISIBLE;
     return world->Visible(X(), Y(), Z(), x_to, y_to, z_to) ?
         (world->Enlightened(x_to, y_to, z_to) ?
@@ -419,7 +420,7 @@ void Player::SetDir(const dirs direction) {
 bool Player::Damage() const {
     int x, y, z;
     emit GetFocus(&x, &y, &z);
-    if ( World::GetWorld()->InBounds(x, y, z) ) {
+    if ( World::GetConstWorld()->InBounds(x, y, z) ) {
         player->GetDeferredAction()->SetDamage(x, y, z);
         return true;
     } else {
@@ -431,7 +432,7 @@ void Player::CheckOverstep(const int direction) {
     SetXyz(Shred::CoordInShred(player->X()), Shred::CoordInShred(player->Y()),
         player->Z());
     if ( direction > DOWN
-            && not World::GetWorld()->ShredInCentralZone(
+            && not World::GetConstWorld()->ShredInCentralZone(
                 GetShred()->Longitude(), GetShred()->Latitude()) )
     {
         emit OverstepBorder(direction);
@@ -559,7 +560,7 @@ void Player::SaveState() const {
 }
 
 void Player::LoadState() {
-    World* const world = World::GetWorld();
+    const World* const world = World::GetConstWorld();
     const QSettings settings(World::WorldPath() + Str("/player_state.ini"),
         QSettings::IniFormat);
     homeLongi = settings.value(Str("home_longitude"),

@@ -35,9 +35,9 @@ class Inventory {
 public:
 
     /// Returns true on success.
-    virtual bool Drop(int src, int dest, int num, Inventory * to);
+    virtual bool Drop(int src, int dest, int num, Inventory* to);
     /// Returns true on success.
-    virtual bool GetAll(Inventory * from);
+    virtual bool GetAll(Inventory* from);
     virtual bool Access() const;
     /// Returns true on success.
     virtual bool Get(Block* block, int start = 0);
@@ -48,9 +48,9 @@ public:
     /// Returns true if block found its place.
     virtual bool GetExact(Block* block, int num);
     virtual QString InvFullName(int num) const;
-
     /// Removes block from inventory. Does not delete block.
-    void Pull(int num);
+    virtual void Pull(int slot);
+
     void MoveInside(int num_from, int num_to, int num);
     /// Returns true on success (something has been crafted).
     bool MiniCraft(int num);

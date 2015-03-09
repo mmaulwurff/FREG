@@ -20,7 +20,7 @@
 /**\file Lighting-inertia.cpp
     * \brief This file provides simple lighting for freg.
     *
-    * There is only ulluminator light (no sun). */
+    * There is only illuminator light (no sun). */
 
 #include "World.h"
 #include "Shred.h"
@@ -35,10 +35,11 @@ void World::Shine(const Xyz& center, const int level) {
 void World::Shine(const Xyz& center, int level, const WaysTree* const ways) {
     const Xyz here{center.X() + ways->X(), center.Y() + ways->Y(),
                    center.Z() + ways->Z()};
+    if ( not InBounds(XYZ(here)) ) return;
     AddLight(here, level);
     level -= Sign(level);
     if ( level == 0 ) return;
-    if ( not GetBlock(XYZ(here))->Transparent() ) {
+    if ( not GetBlock(XYZ(here))->Transparent() && ways!=&lightWaysTree ) {
         level = Sign(level);
     }
     for (const WaysTree* const branch : ways->GetNexts()) {
@@ -46,7 +47,9 @@ void World::Shine(const Xyz& center, int level, const WaysTree* const ways) {
     }
 }
 
-void World::UnShine(const_int(x, y, z), Block* const skipBlock) {
+void World::UnShine(const_int(x, y, z),
+        Block* const skipBlock, Block* const add_block)
+{
     // cycle over shreds around xyz, unshine all lights in radius
     const int xShredCenter = Shred::CoordOfShred(x);
     const int yShredCenter = Shred::CoordOfShred(y);
@@ -76,6 +79,14 @@ void World::UnShine(const_int(x, y, z), Block* const skipBlock) {
             }
         }
     }
+
+    if ( add_block ) {
+        const int radius = add_block->LightRadius();
+        if ( radius ) {
+            tempShiningList.insert(add_block->ActiveBlock(), radius);
+        }
+    }
+
     if ( tempShiningList.empty() ) {
         emit UpdatedAround(x, y, z);
     }

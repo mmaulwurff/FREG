@@ -26,9 +26,11 @@
 #include "header.h"
 #include <cstdint>
 
-#define BLOCK_CONSTRUCTORS(BlockClass) \
-BlockClass(kinds, subs); \
-BlockClass(class QDataStream&, kinds, subs);
+#define BLOCK_CONSTRUCTORS(BlockClass)     \
+BlockClass(kinds, subs);                    \
+BlockClass(class QDataStream&, kinds, subs); \
+BlockClass(const BlockClass &) = delete;      \
+BlockClass &operator=(const BlockClass &) = delete;
 
 enum wearable {
     WEARABLE_NOWHERE,
@@ -90,7 +92,6 @@ enum sub_groups {
 class Block {
     /**\class Block Block.h
      * \brief Block without special physics and attributes. */
-    M_DISABLE_COPY(Block)
 public:
     BLOCK_CONSTRUCTORS(Block)
     virtual ~Block();
@@ -111,7 +112,7 @@ public:
      *  (by default block is deleted, beware). */
     virtual Block* DropAfterDamage(bool* delete_self);
 
-    virtual class Inventory * HasInventory();
+    virtual class Inventory* HasInventory();
     virtual class Active    * ActiveBlock();
     virtual class Falling   * ShouldFall();
     virtual class Animal    * IsAnimal();

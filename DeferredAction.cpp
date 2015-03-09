@@ -94,13 +94,13 @@ void DeferredAction::Throw() const {
 }
 
 void DeferredAction::Pour() const {
-    Inventory * const attached_inv = attachedBlock->HasInventory();
+    Inventory* const attached_inv = attachedBlock->HasInventory();
     if ( attached_inv == nullptr ) return;
 
     Block* const vessel = attached_inv->ShowBlock(srcSlot);
     if ( vessel == nullptr ) return;
 
-    Inventory * const vessel_inv = vessel->HasInventory();
+    Inventory* const vessel_inv = vessel->HasInventory();
     if ( vessel_inv == nullptr ) return;
 
     Block* const liquid = vessel_inv->ShowBlock(0);

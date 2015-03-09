@@ -24,9 +24,13 @@
 #include "Shred.h"
 #include <QDataStream>
 
+const int Illuminator::MAX_FUEL_LEVEL = World::SECONDS_IN_DAY;
+const int Illuminator::TORCH_FULL_LEVEL = World::MAX_LIGHT_RADIUS - 2;
+const int Illuminator::TORCH_END_LEVEL  = World::MAX_LIGHT_RADIUS - 3;
+
 Illuminator::Illuminator(const kinds kind, const subs sub) :
         Active(kind, sub),
-        fuelLevel(World::SECONDS_IN_DAY),
+        fuelLevel(MAX_FUEL_LEVEL),
         isOn(false)
 {}
 
@@ -65,41 +69,40 @@ usage_types Illuminator::Use(Active* /* user */) {
             return USAGE_TYPE_SET_FIRE;
         }
     }
-    //const int old_radius = Illuminator::LightRadius();
+    const int old_radius = Illuminator::LightRadius();
     isOn = not isOn;
-    //UpdateLightRadius(old_radius);
+    UpdateLightRadius(old_radius);
     return USAGE_TYPE_INNER;
 }
 
 int Illuminator::LightRadius() const {
-    //TEMP if ( fuelLevel == 0 || not isOn ) return 0;
+    if ( fuelLevel == 0 || not isOn ) return 0;
     switch ( Sub() ) {
     default:
     case STONE: return 0;
-    case WOOD:  return World::MAX_LIGHT_RADIUS - 1;
+    case WOOD:  return ( fuelLevel > MAX_FUEL_LEVEL/4 ) ?
+                    TORCH_FULL_LEVEL : TORCH_END_LEVEL;
     case IRON:  return World::MAX_LIGHT_RADIUS - 1;
     case GLASS: return World::MAX_LIGHT_RADIUS;
     }
 }
 
-int  Illuminator::ShouldAct() const { return FREQUENT_RARE; }
 wearable Illuminator::Wearable() const { return WEARABLE_OTHER; }
 
-void Illuminator::DoRareAction() {
-    /// \todo decrease torch light radius when fuel is low
-}
-
 inner_actions Illuminator::ActInner() {
-    if ( fuelLevel == 0 ) {
+    if ( fuelLevel != 0 ) {
+        if ( isOn && Sub()!=STONE ) {
+            --fuelLevel;
+            if ( Sub()==WOOD && fuelLevel==MAX_FUEL_LEVEL/4 ) {
+                UpdateLightRadius(TORCH_FULL_LEVEL);
+            }
+        }
+    } else {
         if ( Sub() == WOOD ) {
             Break();
         }
-    } else {
-        if ( Sub() != STONE && isOn ) {
-            --fuelLevel;
-        }
     }
-    return INNER_ACTION_NONE;
+    return INNER_ACTION_ONLY;
 }
 
 void Illuminator::SaveAttributes(QDataStream& out) const {
