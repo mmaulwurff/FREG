@@ -99,9 +99,10 @@ void Player::Examine() const {
 }
 
 void Player::Examine(const int x, const int y, const int z) const {
-    if ( Visible(x, y, z) != VISIBLE ) {
-        Notify(tr("You can't see what is there."));
-        return;
+    switch ( Visible(x, y, z) ) {
+    case VISIBLE: break;
+    case IN_SHADOW: Notify(tr("Too dark to see.")); return;
+    case OBSCURED:  Notify(tr("It is obscured by something.")); return;
     }
     const World* const world = World::GetConstWorld();
     if ( DEBUG ) {

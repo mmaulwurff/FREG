@@ -126,6 +126,7 @@ private:
     /// Can print health, breath and other bars on hudWin.
     static void PrintBar(WINDOW*, wchar_t ch, int color, int percent);
     static void PrintBlock(const Block*, WINDOW*, char second);
+    static void PrintShadow(WINDOW*);
     static void DrawBorder(WINDOW*);
     static int  Color(int kind, int sub);
     static int  ColorShred(shred_type);
@@ -147,7 +148,6 @@ private:
 
     SCREEN* const screen;
     const int screenWidth, screenHeight;
-    const chtype SHADOW;
     WINDOW* const windows[WIN_COUNT];
     WINDOW* const& actionWin  = windows[WIN_ACTION ];
     WINDOW* const& hudWin     = windows[WIN_HUD    ];

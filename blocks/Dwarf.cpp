@@ -41,7 +41,7 @@ Block* Dwarf::DropAfterDamage(bool* const delete_block) {
 int  Dwarf::Start() const { return SPECIAL_SLOTS_COUNT; }
 bool Dwarf::Access() const { return false; }
 int  Dwarf::ShouldAct() const { return FREQUENT_FIRST | FREQUENT_RARE; }
-int  Dwarf::LightRadius() const { return UpdateLightRadiusInner(); }
+int  Dwarf::LightRadius() const { return lightRadius; }
 void Dwarf::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
 Inventory* Dwarf::HasInventory() { return this; }
 

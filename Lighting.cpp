@@ -18,7 +18,7 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 /**\file Lighting-inertia.cpp
-    * \brief This file provides simple lighting for freg.
+    * \brief This file provides dynamic lighting for freg.
     *
     * There is only illuminator light (no sun). */
 

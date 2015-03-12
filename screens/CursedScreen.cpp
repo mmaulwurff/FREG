@@ -606,6 +606,12 @@ int Screen::ColoredChar(const Block* const block) {
     return CharName(kind, sub) | Color(kind, sub);
 }
 
+void Screen::PrintShadow(WINDOW* const window) {
+    static const chtype SHADOW = COLOR_PAIR(BLACK_BLACK)|A_BOLD | ACS_CKBOARD;
+    waddch(window, SHADOW);
+    waddch(window, SHADOW);
+}
+
 void Screen::Print() {
     const QMutexLocker locker(World::GetWorld()->GetLock());
     PrintHud();
@@ -817,8 +823,7 @@ void Screen::PrintNormal(WINDOW* const window, const dirs dir) const {
                 PrintBlock(block, window, CharNumber(k));
                 break;
             case Player::IN_SHADOW:
-                waddch(window, SHADOW);
-                waddch(window, SHADOW);
+                PrintShadow(window);
                 break;
             case Player::OBSCURED:
                 waddch(window, ' ' | COLOR_PAIR(BLACK_BLACK));
@@ -940,17 +945,14 @@ const {
                         Transparent()==INVISIBLE;
                     *z += z_step);
             if ( *z == z_end ) {
-                static const int sky_char = ' ' | Color(BLOCK, SKY);
-                waddch(rightWin, sky_char);
-                waddch(rightWin, ' ');
+                PrintShadow(rightWin);
             } else {
                 switch ( player->Visible(i, j, k) ) {
                 case Player::VISIBLE:
                     PrintBlock(block, rightWin, CharNumberFront(i, j));
                     break;
                 case Player::IN_SHADOW:
-                    waddch(rightWin, SHADOW);
-                    waddch(rightWin, SHADOW);
+                    PrintShadow(rightWin);
                     break;
                 case Player::OBSCURED:
                     waddch(rightWin, ' ' | COLOR_PAIR(BLACK_BLACK));
@@ -1088,7 +1090,6 @@ Screen::Screen(Player* const pl, int &) :
         screen(newterm(nullptr, stdout, stdin)),
         screenWidth((COLS / 2) - ((COLS/2) & 1)),
         screenHeight(LINES - 10),
-        SHADOW(COLOR_PAIR(BLACK_BLACK) | A_BOLD | ACS_CKBOARD),
         windows {
             newwin(7, ACTIONS_WIDTH, LINES-7, MINIMAP_WIDTH + 1),
             newwin(0, 0, LINES-7, MINIMAP_WIDTH + 1 + ACTIONS_WIDTH + 1),

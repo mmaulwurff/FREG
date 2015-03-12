@@ -102,7 +102,7 @@ bool World::Drop(Block* const block_from, const_int(x_to, y_to, z_to),
 bool World::Get(Block* const block_to, const_int(x_from, y_from, z_from),
         const_int(src, dest, num))
 {
-    Block     * const block_from = GetBlock(x_from, y_from, z_from);
+    Block*     const block_from = GetBlock(x_from, y_from, z_from);
     Inventory* const inv_from   = block_from->HasInventory();
     if ( inv_from ) {
         if ( inv_from->Access() ) {
@@ -112,11 +112,12 @@ bool World::Get(Block* const block_to, const_int(x_from, y_from, z_from),
         Block* const air = BlockFactory::Normal(AIR);
         ReEnlightenCheck(block_from, air, x_from, y_from, z_from,
                          block_from, nullptr);
-        Shred* const shred = GetShred(x_from, y_from);
-        shred->PutBlock(air,
-            Shred::CoordInShred(x_from), Shred::CoordInShred(y_from), z_from);
+        GET_SHRED_XY(shred, x_from, y_from, x_in, y_in);
+        shred->PutBlock(air, x_in, y_in, z_from);
         if ( block_from->LightRadius() ) {
-            shred->RemShining(block_from->ActiveBlock());
+            Active* const active = block_from->ActiveBlock();
+            shred->Unregister(active);
+            active->SetShred(nullptr);
         }
         return true;
     }
