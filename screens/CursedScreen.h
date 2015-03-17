@@ -31,6 +31,7 @@
 #else
     #define _X_OPEN_SOURCE_EXTENDED
     #include <ncursesw/ncurses.h>
+    #undef timeout // conflict with Qt
 #endif
 
 /// Cursed screen options
@@ -134,6 +135,7 @@ private:
     static int  RandomBlink();
     static bool RandomBit();
     static bool IsScreenWide();
+    static bool IsOutWindow(const MEVENT&, int hor_bound, int vert_bound);
     static void Palette(WINDOW*);
 
     /// Returns nullptr if block is not player->Visible().

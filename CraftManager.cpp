@@ -136,8 +136,8 @@ bool CraftManager::CraftSub(CraftList * const recipe, const int sub) const {
         if ( *tried == *recipe ) {
             recipe->clear();
             for (int i=tried->GetMaterialsNumber(); i<tried->size(); ++i) {
-                *recipe << new CraftItem{
-                    tried->at(i)->number, tried->at(i)->kind, tried->at(i)->sub};
+                *recipe << new CraftItem { tried->at(i)->number,
+                    tried->at(i)->kind, tried->at(i)->sub };
             }
             return true;
         }

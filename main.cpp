@@ -35,10 +35,10 @@
 const QString home_path(QDir::currentPath() + QChar::fromLatin1('/'));
 #else
 //const QString home_path = QDir::homePath() + "/.freg/";
-const QString home_path = QDir::currentPath() + "/";
+const QString home_path = QDir::currentPath() + QChar::fromLatin1('/');
 #endif
 
-int main(int argc, char ** argv) {
+int main(int argc, char** argv) {
     setlocale(LC_CTYPE, "C-UTF-8");
 
     QGuiApplication freg(argc, argv);

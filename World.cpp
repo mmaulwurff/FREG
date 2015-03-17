@@ -35,6 +35,8 @@ Shred* const shred = GetShred(x_out, y_out);\
 const int x_in = Shred::CoordInShred(x_out);\
 const int y_in = Shred::CoordInShred(y_out);\
 
+const int World::MIN_WORLD_SIZE = 5;
+
 World* World::GetWorld() { return world; }
 const World* World::GetConstWorld() { return world; }
 
@@ -331,7 +333,7 @@ bool World::DirectlyVisible(int x_from, int y_from, int z_from,
 const {
     /// optimized DDA line with integers only.
     unsigned max = abs(abs(x-=x_from) > abs(y-=y_from) ? x : y);
-    if ( abs(z-=z_from) > max) {
+    if ( static_cast<unsigned>(abs(z-=z_from)) > max) {
         max = abs(z);
     }
     x_from *= max;

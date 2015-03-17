@@ -24,6 +24,8 @@
 #include "TrManager.h"
 #include <QDataStream>
 
+const int Block::MAX_DURABILITY = 1024;
+
 dirs Block::MakeDirFromDamage(const int dmg_kind) {
     Q_ASSERT(dmg_kind >= DAMAGE_PUSH_UP);
     return static_cast<dirs>(dmg_kind - DAMAGE_PUSH_UP);

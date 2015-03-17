@@ -37,7 +37,9 @@
 BlockFactory * BlockFactory::blockFactory = nullptr;
 
 BlockFactory::BlockFactory() :
-    normals{ SUB_TABLE(X_NEWBLOCKSUB) }
+    normals{ SUB_TABLE(X_NEWBLOCKSUB) },
+    creates(),
+    loads()
 {
     Q_ASSERT(blockFactory == nullptr);
     blockFactory = this;

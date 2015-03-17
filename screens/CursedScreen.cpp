@@ -39,14 +39,7 @@ settings.setValue(QStringLiteral(string), name);
 #define OPTIONS_INIT(string, name, default, ...) \
 name(settings.value(QStringLiteral(string), default).toBool()),
 
-const chtype Screen::arrows[] = {
-    '.',
-    'x',
-    ACS_UARROW,
-    ACS_RARROW,
-    ACS_DARROW,
-    ACS_LARROW
-};
+const chtype Screen::arrows[] = { '.', 'x', '^', '>', 'v', '<' };
 
 void Screen::Arrows(WINDOW* const window, const int x, const int y,
         const dirs direction, const bool is_normal)
@@ -128,7 +121,7 @@ void Screen::PassString(QString & str) const {
     wgetn_wstr(windows[WIN_NOTIFY], temp_str, MAX_NOTE_LENGTH);
     inputActive = false;
     noecho();
-    str = QString::fromUtf16(temp_str);
+    str = QString::fromUcs4(temp_str);
     Log(Str("Input: ") + str);
 }
 
@@ -437,24 +430,20 @@ void Screen::ProcessMouse() {
         mevent.x /= 2;
         if ( not ( IsScreenWide() && 0 <= mevent.x && mevent.x <= 'z'-'a' ) ) {
             Notify(tr("Information: left - player, right - focused thing."));
-            return;
         } else {
-            Inventory* const inv = player->PlayerInventory();
-            if ( inv == nullptr ) return;
-            Notify( tr("In inventory at slot '%1': %2.").
-                arg(char(mevent.x + 'a')).
-                arg( inv->IsEmpty(mevent.x) ?
-                    tr("nothing") :
-                    inv->InvFullName(mevent.x) ) );
+            const Inventory* const inv = player->PlayerInventory();
+            if ( inv ) {
+                Notify( tr("In inventory at slot '%1': %2.").
+                    arg(char(mevent.x + 'a')).
+                    arg( inv->IsEmpty(mevent.x) ?
+                        tr("nothing") :
+                        inv->InvFullName(mevent.x) ) );
+            }
         }
         break;
     case WIN_MINIMAP:
-        if ( not (
-                0 < mevent.x && mevent.x < MINIMAP_WIDTH-1 &&
-                0 < mevent.y && mevent.y < MINIMAP_HEIGHT-1 ) )
-        {
+        if ( IsOutWindow(mevent, MINIMAP_WIDTH-1, MINIMAP_HEIGHT-1) ) {
             Notify(tr("Minimap."));
-            return;
         } else {
             const int shred_x = mevent.x/2 + GetMinimapStartX();
             const int shred_y = mevent.y-1 + GetMinimapStartY();
@@ -470,24 +459,16 @@ void Screen::ProcessMouse() {
     case WIN_LEFT:
         if ( player->UsingSelfType() == USAGE_TYPE_OPEN ) {
             Notify(tr("Your inventory."));
-            return;
-        }
-        if ( not (
-                0 < mevent.x && mevent.x < screenWidth  - 1 &&
-                0 < mevent.y && mevent.y < screenHeight - 1 ) )
-        {
+        } else if ( IsOutWindow(mevent, screenWidth-1, screenHeight-1) ) {
             Notify(tr("Left window, Down view."));
-            return;
+        } else {
+            ExamineOnNormalScreen(mevent.x, mevent.y, player->Z(), -1);
         }
-        ExamineOnNormalScreen(mevent.x, mevent.y, player->Z(), -1);
         break;
     case WIN_RIGHT:
         if (player->UsingType() == USAGE_TYPE_OPEN ) {
             Notify(tr("Opened inventory."));
-        } else if ( not (
-                0 < mevent.x && mevent.x < screenWidth  - 1 &&
-                0 < mevent.y && mevent.y < screenHeight - 1 ) )
-        {
+        } else if ( IsOutWindow(mevent, screenWidth-1, screenHeight-1) ) {
             Notify(tr("Right window, %1 view.").
                 arg(TrManager::DirName(player->GetDir())));
         } else {
@@ -509,6 +490,13 @@ void Screen::ProcessMouse() {
         break;
     }
 } // Screen::ProcessMouse()
+
+bool Screen::IsOutWindow(const MEVENT& mevent,
+                         const int hor_bound, const int vert_bound)
+{
+    return not ( 0 < mevent.x && mevent.x < hor_bound &&
+                 0 < mevent.y && mevent.y < vert_bound );
+}
 
 void Screen::ProcessCommand(const QString command) {
     if ( command.length() == 1 && command.at(0).toLatin1() != '.' ) {

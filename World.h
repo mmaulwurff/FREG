@@ -199,7 +199,7 @@ signals:
 private:
 
     static const int TIME_STEPS_IN_SEC = 10;
-    static const int MIN_WORLD_SIZE    =  5;
+    static const int MIN_WORLD_SIZE;
 
 ///\name private Lighting section
 ///@{

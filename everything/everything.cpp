@@ -61,6 +61,7 @@
 #include "worldmap.cpp"
 #include "Xyz.cpp"
 #include "AroundCoordinates.cpp"
+#include "WaysTree.cpp"
 
 #include "moc/moc_Active.cpp"
 #include "moc/moc_Animal.cpp"

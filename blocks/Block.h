@@ -144,7 +144,7 @@ public:
     kinds Kind() const;
     dirs GetDir() const;
 
-    bool operator==(const Block &) const;
+    bool operator==(const Block&) const;
 
     /// Important! If block will be used after save,
     /// call RestoreDurabilityAfterSave.
@@ -158,7 +158,7 @@ public:
     static dirs MakeDirFromDamage(int damage_kind);
 
     /// 10 bits to store durability in file, signed.
-    static const int MAX_DURABILITY = 1024;
+    static const int MAX_DURABILITY;
 
 protected:
     virtual void SaveAttributes(class QDataStream&) const;

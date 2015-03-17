@@ -84,7 +84,7 @@ Shred::Shred(const int shred_x, const int shred_y,
         const qint64 longi, const qint64 lati)
     :
         Weather(WEATHER_CLEAR),
-        lightMap {0},
+        lightMap { { {0} } },
         longitude(longi),
         latitude(lati),
         shredX(shred_x),
