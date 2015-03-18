@@ -31,20 +31,37 @@ ShredStorage::ShredStorage(const int size_,
     :
         storage(),
         size(size_),
+        emptyWriteBuffers(),
         preloadThread(new std::thread([](){})) // stub, so always joinable.
 {
     storage.reserve(size*size);
+    emptyWriteBuffers.reserve(size*size);
     for (qint64 i=longi_center-size/2; i<=longi_center+size/2; ++i)
     for (qint64 j= lati_center-size/2; j<= lati_center+size/2; ++j) {
+        emptyWriteBuffers.push_back(new QByteArray);
         AddShred(i, j);
     }
+    std::for_each(emptyWriteBuffers.cbegin() + size, emptyWriteBuffers.cend(),
+        [](QByteArray* const array) { array->squeeze(); });
 }
 
 ShredStorage::~ShredStorage() {
     preloadThread->join();
     delete preloadThread;
     WriteToFileAllShredData();
-    qDeleteAll(storage);
+    qDeleteAll(emptyWriteBuffers);
+}
+
+QByteArray* ShredStorage::GetByteArray() {
+    QByteArray* const result = emptyWriteBuffers.back();
+    emptyWriteBuffers.pop_back();
+    result->reserve(40 * 1024);
+    return result;
+}
+
+void ShredStorage::ReleazeByteArray(QByteArray* const array) const {
+    array->clear();
+    emptyWriteBuffers.push_back(array);
 }
 
 void ShredStorage::WriteToFileAllShredData() const {
@@ -76,18 +93,24 @@ void ShredStorage::SetShredData(QByteArray* const data,
 
 void ShredStorage::AddShred(const qint64 longitude, const qint64 latitude) {
     QFile file(Shred::FileName(longitude, latitude));
-    storage.insert(LongLat{longitude, latitude},
-        ( file.open(QIODevice::ReadOnly) ?
-            new QByteArray(qUncompress(file.readAll())) : nullptr ));
+    QByteArray* byteArray;
+    if ( file.open(QIODevice::ReadOnly) ) {
+        byteArray = GetByteArray();
+        *byteArray = qUncompress(file.readAll());
+    } else {
+        byteArray = nullptr;
+    }
+    storage.insert(LongLat{longitude, latitude}, byteArray);
 }
 
 void ShredStorage::WriteShred(const qint64 longi, const qint64 lati) const {
-    const QByteArray* const data = storage.value(LongLat{longi, lati});
+    QByteArray* const data = storage.value(LongLat{longi, lati});
     if ( data ) {
         QFile file(Shred::FileName(longi, lati));
         if ( file.open(QIODevice::WriteOnly) ) {
             file.write(qCompress(*data, COMPRESSION_LEVEL));
         }
+        ReleazeByteArray(data);
     }
 }
 

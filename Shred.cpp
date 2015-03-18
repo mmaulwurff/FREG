@@ -25,14 +25,15 @@
 #include "BlockFactory.h"
 #include "TrManager.h"
 #include "AroundCoordinates.h"
+#include "ShredStorage.h"
 #include <QTextStream>
 #include <QFile>
 
 const quint8 Shred::DATASTREAM_VERSION = QDataStream::Qt_5_2;
 
 bool Shred::LoadShred() {
-    const QByteArray* const data =
-        World::GetConstWorld()->GetShredData(longitude, latitude);
+    ShredStorage* const shredStorage = World::GetWorld()->GetShredStorage();
+    QByteArray* const data = shredStorage->GetShredData(longitude,latitude);
     if ( data == nullptr ) return false;
     QDataStream in(*data);
     quint8 read;
@@ -54,9 +55,9 @@ bool Shred::LoadShred() {
         for (int z = 1; ; ++z) {
             quint8 kind, sub;
             if ( BlockFactory::KindSubFromFile(in, &kind, &sub) ) { // normal
-                if ( sub == SKY ) {
+                if ( Q_UNLIKELY(sub == SKY) ) {
                     std::fill(blocks[x][y] + z, blocks[x][y] + HEIGHT-1, air);
-                    PutBlock(BlockFactory::Normal(sub), x, y, HEIGHT-1);
+                    PutBlock(BlockFactory::Normal(SKY), x, y, HEIGHT-1);
                     break;
                 } else {
                     PutBlock(BlockFactory::Normal(sub), x, y, z);
@@ -69,14 +70,14 @@ bool Shred::LoadShred() {
                     active->SetXyz(x, y, z);
                     RegisterInit(active);
                     Falling* const falling = active->ShouldFall();
-                    if ( falling && falling->IsFalling() ) {
+                    if ( Q_UNLIKELY(falling && falling->IsFalling()) ) {
                         fallList.push_front(falling);
                     }
                 }
             }
         }
     }
-    delete data;
+    shredStorage->ReleazeByteArray(data);
     return true;
 } // bool Shred::LoadShred()
 
@@ -133,15 +134,16 @@ Shred::Shred(const int shred_x, const int shred_y,
 Shred::~Shred() { SaveShred(true); }
 
 void Shred::SaveShred(const bool isQuitGame) {
-    QByteArray* const shred_data = new QByteArray();
-    shred_data->reserve(40 * 1024);
+    ShredStorage* const storage = World::GetWorld()->GetShredStorage();
+    QByteArray* const shred_data = storage->GetByteArray();
     QDataStream outstr(shred_data, QIODevice::WriteOnly);
     outstr << CURRENT_SHRED_FORMAT_VERSION;
     outstr.setVersion(DATASTREAM_VERSION);
     outstr << quint8(GetTypeOfShred()) << quint8(GetWeather());
+    const Block* const sky = BlockFactory::Normal(SKY);
     FOR_ALL_SHRED_AREA(x, y) {
         const int ground_z = FindTopNonAir(x, y);
-        for (int z = 1; z<=ground_z; ++z) {
+        for (int z=1; z<=ground_z; ++z) {
             Block* const block = GetBlock(x, y, z);
             if ( block == BlockFactory::Normal(block->Sub()) ) {
                 block->SaveNormalToFile(outstr);
@@ -154,9 +156,9 @@ void Shred::SaveShred(const bool isQuitGame) {
                 }
             }
         }
-        GetBlock(x, y, HEIGHT-1)->SaveNormalToFile(outstr);
+        sky->SaveNormalToFile(outstr);
     }
-    World::GetWorld()->SetShredData(shred_data, longitude, latitude);
+    storage->SetShredData(shred_data, longitude, latitude);
 }
 
 int Shred::FindTopNonAir(const int x, const int y) {

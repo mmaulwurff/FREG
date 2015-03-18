@@ -71,9 +71,7 @@ public:
     qint64 Latitude() const;
 
     const class WorldMap* GetMap() const;
-
-    class QByteArray* GetShredData(qint64 longi, qint64 lati) const;
-    void SetShredData(class QByteArray*, qint64 longi, qint64 lati);
+    class ShredStorage* GetShredStorage();
 ///@}
 
 ///\name Block work section

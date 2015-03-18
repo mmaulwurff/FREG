@@ -35,7 +35,7 @@ void World::Shine(const Xyz& center, const int level) {
 void World::Shine(const Xyz& center, int level, const WaysTree* const ways) {
     const Xyz here{center.X() + ways->X(), center.Y() + ways->Y(),
                    center.Z() + ways->Z()};
-    if ( not InBounds(XYZ(here)) ) return;
+    if ( Q_UNLIKELY(not InBounds(XYZ(here))) ) return;
     AddLight(here, level);
     level -= Sign(level);
     if ( level == 0 ) return;

@@ -93,7 +93,7 @@ private:
     static Block* Load(QDataStream& str, kinds kind, subs sub);
 
     /// Type list struct for variadic template without formal parameters.
-    template <class ...> struct typeList {};
+    template <typename ...> struct typeList {};
     struct TemplateTerminator {};
 
     ///< Base for variadic template.
@@ -104,7 +104,7 @@ private:
     void RegisterAll(typeList<BlockType, RestBlockTypes...>);
     int kindIndex = 0;
 
-    static BlockFactory * blockFactory;
+    static BlockFactory* blockFactory;
 };
 
 #endif // BLOCKFACTORY_H

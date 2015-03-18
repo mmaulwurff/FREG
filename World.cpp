@@ -70,16 +70,7 @@ quint64 World::Time() const { return time; }
 qint64 World::Longitude() const { return longitude; }
 qint64 World::Latitude()  const { return latitude; }
 const WorldMap * World::GetMap() const { return map; }
-
-QByteArray* World::GetShredData(qint64 longi, qint64 lati) const {
-    return shredStorage->GetShredData(longi, lati);
-}
-
-void World::SetShredData(QByteArray* const data,
-        const qint64 longi, const qint64 lati)
-{
-    shredStorage->SetShredData(data, longi, lati);
-}
+ShredStorage* World::GetShredStorage() { return shredStorage; }
 
 times_of_day World::PartOfDay() const {
     return static_cast<times_of_day>(TimeOfDay() / SECONDS_IN_NIGHT);
