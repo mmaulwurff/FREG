@@ -107,7 +107,7 @@ bool World::Get(Block* const block_to, const_int(x_from, y_from, z_from),
                          block_from, nullptr);
         GET_SHRED_XY(shred, x_from, y_from, x_in, y_in);
         shred->PutBlock(air, x_in, y_in, z_from);
-        if ( block_from->LightRadius() ) {
+        if ( Q_UNLIKELY(block_from->LightRadius()) ) {
             Active* const active = block_from->ActiveBlock();
             shred->Unregister(active);
             active->SetShred(nullptr);
@@ -331,7 +331,7 @@ const {
     y_from *= max;
     z_from *= max;
     for (int i=max; --i > 0; ) { // unsigned / is faster than signed
-        if ( not (GetBlock( // floor
+        if ( Q_UNLIKELY(not (GetBlock( // floor
                     static_cast<unsigned>(x_from+=x)/max,
                     static_cast<unsigned>(y_from+=y)/max,
                     static_cast<unsigned>(z_from+=z)/max )->Transparent()
@@ -339,7 +339,7 @@ const {
                     // force signed / to prevent anti-overflow
                     (x_from-1)/static_cast<int>(max) + 1,
                     (y_from-1)/static_cast<int>(max) + 1,
-                    static_cast<unsigned>(z_from-1)/max + 1)->Transparent()) )
+                    static_cast<unsigned>(z_from-1)/max + 1)->Transparent()) ))
         {
             return false;
         }
@@ -390,12 +390,12 @@ World::can_move_results World::CanMove(
     Block* const block    = GetBlock(x, y, z);
     Block*       block_to = GetBlock(newx, newy, newz);
     Falling* const falling = block->ShouldFall();
-    if ( DOWN != dir
+    if ( Q_UNLIKELY(DOWN != dir
             && block->Weight() != 0
             && falling
             && falling->IsFalling()
             && AIR == GetBlock(x, y, z-1)->Sub()
-            && AIR == GetBlock(newx, newy, newz-1)->Sub() )
+            && AIR == GetBlock(newx, newy, newz-1)->Sub()) )
     { // prevent moving while falling
         return CAN_MOVE_CANNOT;
     }
@@ -403,7 +403,9 @@ World::can_move_results World::CanMove(
     switch ( block->PushResult(dir) ) {
     case DAMAGE:
     case MOVABLE:
-        if ( Damage(newx, newy, newz, 1, DAMAGE_PUSH_UP + dir) <= 0 ) {
+        if ( Q_UNLIKELY(
+                Damage(newx, newy, newz, 1, DAMAGE_PUSH_UP + dir) <= 0 ) )
+        {
             DestroyAndReplace(newx, newy, newz);
         }
         block_to = GetBlock(newx, newy, newz);
@@ -449,12 +451,6 @@ void World::NoCheckMove(const_int(x, y, z),
 {
     GET_SHRED_XY(shred_from,    x,    y,    x_in,    y_in);
     GET_SHRED_XY(shred_to,   newx, newy, newx_in, newy_in);
-    /*Shred* const shred_from = GetShred(   x,    y);
-    Shred* const shred_to   = GetShred(newx, newy);
-    const int    x_in = Shred::CoordInShred(x);
-    const int    y_in = Shred::CoordInShred(y);
-    const int newx_in = Shred::CoordInShred(newx);
-    const int newy_in = Shred::CoordInShred(newy);*/
     Block* const block    = shred_from->GetBlock(   x_in,    y_in,    z);
     Block* const block_to = shred_to  ->GetBlock(newx_in, newy_in, newz);
 
@@ -651,7 +647,7 @@ World::World(const QString world_name, bool* const error) :
     delete gameSettings;
 
     shreds = new Shred*[NumShreds()*NumShreds()];
-    if ( not QDir(home_path).mkpath(worldName + Str("/texts")) ) {
+    if ( Q_UNLIKELY(not QDir(home_path).mkpath(worldName + Str("/texts"))) ) {
         *error = true;
     }
 
@@ -693,19 +689,21 @@ void World::SaveState() const {
 void World::LoadNotes() {
     notes.clear();
     QFile notes_file(WorldPath() + Str("/notes.txt"));
-    if ( not notes_file.open(QIODevice::ReadOnly | QIODevice::Text) ) return;
-    char note[MAX_NOTE_LENGTH*2];
-    while ( notes_file.readLine(note, MAX_NOTE_LENGTH*2) > 0 ) {
-        notes.append(QString::fromUtf8(note).trimmed());
+    if ( notes_file.open(QIODevice::ReadOnly | QIODevice::Text) ) {
+        char note[MAX_NOTE_LENGTH*2];
+        while ( notes_file.readLine(note, MAX_NOTE_LENGTH*2) > 0 ) {
+            notes.append(QString::fromUtf8(note).trimmed());
+        }
     }
 }
 
 void World::SaveNotes() const {
     QFile notes_file(WorldPath() + Str("/notes.txt"));
-    if ( not notes_file.open(QIODevice::WriteOnly | QIODevice::Text) ) return;
-    for (const QString & note : notes) {
-        notes_file.write(note.toUtf8().constData());
-        notes_file.putChar('\n');
+    if ( notes_file.open(QIODevice::WriteOnly | QIODevice::Text) ) {
+        for (const QString & note : notes) {
+            notes_file.write(note.toUtf8().constData());
+            notes_file.putChar('\n');
+        }
     }
 }
 

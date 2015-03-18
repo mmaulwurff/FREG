@@ -236,7 +236,7 @@ void Shred::RegisterInit(Active* const active) {
     active->SetShred(this);
     activeListAll.push_front(active);
     const int should_act = active->ShouldAct();
-    if ( should_act & FREQUENT_FIRST ) {
+    if ( Q_UNLIKELY(should_act & FREQUENT_FIRST) ) {
         activeListFrequent.prepend(active);
     } else if ( should_act & FREQUENT_SECOND ) {
         activeListFrequent.append(active);
@@ -270,7 +270,7 @@ void Shred::AddFalling(Block* const block) {
 }
 
 void Shred::AddShining(Active* const active) {
-    if ( active->LightRadius() != 0 ) {
+    if ( Q_UNLIKELY(active->LightRadius() != 0) ) {
         shiningList.push_front(active);
     }
 }
@@ -571,7 +571,7 @@ bool Shred::Tree(const_int(x, y, z)) {
     // branches
     for (const Xyz& xyz : AroundCoordinates4({x+1, y+1, leaves_level})) {
         if ( (rand >>= 1) & 1 ) {
-            SetBlock(wood, XYZ(xyz));
+            PutBlock(wood, XYZ(xyz));
         }
     }
     return true;

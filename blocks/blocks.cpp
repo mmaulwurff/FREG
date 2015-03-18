@@ -66,17 +66,17 @@
     void Liquid::DoRareAction() {
         if ( not IsSubAround(Sub()) || Sub()==SUB_CLOUD ) {
             Damage(MAX_DURABILITY*2/World::SECONDS_IN_NIGHT, DAMAGE_TIME);
-            if ( GetDurability() <= 0 ) {
+            if ( Q_UNLIKELY(GetDurability() <= 0) ) {
                 World::GetWorld()->DestroyAndReplace(X(), Y(), Z());
                 return;
             }
         }
-        if ( Sub() == SUB_CLOUD ) return;
+        if ( Q_UNLIKELY(Sub() == SUB_CLOUD) ) return;
         if ( Sub() == ACID || Sub() == STONE ) {
             DamageAround();
         }
         const int random = qrand() & 15;
-        if ( random < 4 ) {
+        if ( Q_UNLIKELY(random < 4) ) {
             World::GetWorld()->Move(X(), Y(), Z(),
                 static_cast<dirs>(random+2));
         }
@@ -130,9 +130,9 @@
         default: return;
         }
         World* const world = World::GetWorld();
-        if ( not world->InBounds(i, j) ) return;
+        if ( Q_UNLIKELY(not world->InBounds(i, j)) ) return;
         if ( FIRE == Sub() || world->Enlightened(i, j, Z()) ) {
-            const int sub_near = world->GetBlock(i, j, Z())->Sub();
+            const subs sub_near = world->GetBlock(i, j, Z())->Sub();
             int k = Z();
             if ( (AIR == sub_near
                         && IsBase(Sub(), world->GetBlock(i, j, k-1)->Sub() ) )
@@ -144,7 +144,7 @@
         }
         if ( not IsBase(Sub(), world->GetBlock(X(), Y(), Z()-1)->Sub()) ) {
             world->DestroyAndReplace(X(), Y(), Z());
-        } else if ( FIRE == Sub() ) {
+        } else if ( Q_UNLIKELY(FIRE == Sub()) ) {
             DamageAround();
             if ( (qrand() & 15) || IsSubAround(WATER) ) {
                 Damage(2, DAMAGE_FREEZE);
@@ -152,16 +152,12 @@
         }
     }
 
-    bool Grass::IsBase(const int own_sub, const int ground) {
-        return ( GREENERY==own_sub && SOIL==ground )
-            || ( FIRE==own_sub && (
-                WOOD==ground
-                || GREENERY==ground
-                || H_MEAT==ground
-                || A_MEAT==ground
-                || SUB_NUT==ground
-                || ROSE==ground
-                || PAPER==ground ) );
+    bool Grass::IsBase(const subs own_sub, const subs ground) {
+        static const subs FIRE_BASES[] =
+            { WOOD, GREENERY, H_MEAT, A_MEAT, SUB_NUT, ROSE, PAPER };
+        return ( GREENERY==own_sub && SOIL==ground ) ||
+               ( FIRE    ==own_sub &&
+                   std::find(ALL(FIRE_BASES), ground)!=std::end(FIRE_BASES) );
     }
 
     QString Grass::FullName() const {
@@ -191,7 +187,7 @@
     inner_actions Bush::ActInner() { return INNER_ACTION_NONE; }
 
     void Bush::DoRareAction() {
-        if ( 0 == (qrand() & 255) ) {
+        if ( Q_UNLIKELY(0 == (qrand() & 255)) ) {
             Get(BlockFactory::NewBlock(WEAPON, SUB_NUT));
         }
     }
@@ -242,7 +238,7 @@
     }
 
     void Door::ActFrequent() {
-        if ( shifted ) {
+        if ( Q_UNLIKELY(shifted) ) {
             World* const world = World::GetWorld();
             movable = MOVABLE;
             shifted = !world->Move(X(), Y(), Z(), World::Anti(GetDir()));
@@ -326,7 +322,7 @@
             Block::Inscribe(tr("Timer fired. %1").arg(world->TimeOfDayStr()));
             ++notify_flag;
         }
-        if ( Sub()==EXPLOSIVE ) {
+        if ( Q_UNLIKELY(Sub()==EXPLOSIVE) ) {
             return ( notify_flag>1 ) ?
                 INNER_ACTION_EXPLODE : INNER_ACTION_ONLY;
         }
@@ -337,7 +333,7 @@
         case World::END_OF_NOON:    Inscribe(tr("Evening has come.")); break;
         case World::END_OF_EVENING: Inscribe(tr("Night has come."  )); break;
         }
-        if ( notify_flag > 0 ) {
+        if ( Q_UNLIKELY(notify_flag > 0) ) {
             Use(nullptr);
             return INNER_ACTION_MESSAGE;
         } else {

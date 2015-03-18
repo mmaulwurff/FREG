@@ -80,7 +80,7 @@ protected:
     void DoRareAction() override;
 
 private:
-    static bool IsBase(int ownsub, int ground);
+    static bool IsBase(subs ownsub, subs ground);
 };
 
 class Bush : public Active, public Inventory {

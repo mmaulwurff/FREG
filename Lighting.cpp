@@ -61,7 +61,7 @@ void World::UnShine(const_int(x, y, z),
     for (int xShred=xShredBegin; xShred<=xShredEnd; ++xShred)
     for (int yShred=yShredBegin; yShred<=yShredEnd; ++yShred) {
         Shred* const shred = GetShredByPos(xShred, yShred);
-        if ( shred == nullptr ) continue;
+        if ( Q_UNLIKELY(shred == nullptr) ) continue;
         for (auto shining : shred->GetShiningList()) {
             const int x_diff = shining->X() - x;
             const int y_diff = shining->Y() - y;
@@ -82,7 +82,7 @@ void World::UnShine(const_int(x, y, z),
 
     if ( add_block ) {
         const int radius = add_block->LightRadius();
-        if ( radius ) {
+        if ( Q_UNLIKELY(radius) ) {
             tempShiningList.insert(add_block->ActiveBlock(), radius);
         }
     }

@@ -234,7 +234,7 @@ void Screen::ControlPlayer() { ControlPlayer(getch()); }
 
 void Screen::ControlPlayer(const int ch) {
     static const int ACTIVE_HAND = 3;
-    if ( player->GetConstBlock() == nullptr ) return;
+    if ( Q_UNLIKELY(player->GetConstBlock() == nullptr) ) return;
     if ( 'a'<=ch && ch<='z' ) { // actions with inventory
         InventoryAction(ch - 'a');
         return;
@@ -414,7 +414,7 @@ void Screen::ExamineOnNormalScreen(int x, int y, int z, const int step) const {
 
 void Screen::ProcessMouse() {
     MEVENT mevent;
-    if ( getmouse(&mevent) == ERR ) return;
+    if ( Q_UNLIKELY(getmouse(&mevent) == ERR) ) return;
     int window_index = 0;
     for (; window_index < WIN_COUNT; ++window_index ) {
         if ( wenclose(windows[window_index], mevent.y, mevent.x) ) {
@@ -710,7 +710,7 @@ void Screen::PrintHud() const {
         const QString name = focused->FullName();
         mvwaddwstr(hudWin, 1, left_border - name.length(), wPrintable(name));
         const QString note = focused->GetNote();
-        if ( not note.isEmpty() && IsScreenWide() ) {
+        if ( Q_UNLIKELY(not note.isEmpty() && IsScreenWide()) ) {
             const int width = qMin(34, note.length());
             mvwaddstr(hudWin, 2, left_border - width - 2, "~:");
             if ( note.length() <= width ) {
@@ -742,7 +742,7 @@ void Screen::PrintQuickInventory() const {
             break;
         }
         x += 2;
-        if ( i == inv->Start()-1 && i != 0 ) {
+        if ( Q_UNLIKELY(i == inv->Start()-1 && i != 0) ) {
             for (int i : {0, 1, 2}) mvwaddch(hudWin, i, x, ACS_VLINE);
             x += 2;
         }
@@ -765,14 +765,14 @@ void Screen::PrintMiniMap() const {
     const World* const world = World::GetConstWorld();
     for (int i=i_start; i <= i_start+4; ++i, waddch(minimapWin, '\n'))
     for (int j=j_start; j <= j_start+4; ++j) {
-        if ( i<0 || j<0 || i>=world->NumShreds() || j>=world->NumShreds() ) {
-            waddch(minimapWin, ' ' | COLOR_PAIR(BLACK_BLACK));
-            waddch(minimapWin, ' ' | COLOR_PAIR(BLACK_BLACK));
-        } else {
+        if ( i>=0 && j>=0 && i<world->NumShreds() && j<world->NumShreds() ) {
             const shred_type t = world->GetShredByPos(j, i)->GetTypeOfShred();
             const int color = ColorShred(t);
             waddch(minimapWin, color | ' ');
             waddch(minimapWin, color | t);
+        } else {
+            waddch(minimapWin, ' ' | COLOR_PAIR(BLACK_BLACK));
+            waddch(minimapWin, ' ' | COLOR_PAIR(BLACK_BLACK));
         }
     }
     DrawBorder(minimapWin);
@@ -914,7 +914,7 @@ const {
     }
     const World* const world = World::GetConstWorld();
     const int k_start = GetFrontStartZ();
-    if ( block_x > 0 ) {
+    if ( Q_UNLIKELY(block_x > 0) ) {
         // ugly! use print function to get block by screen coordinates.
         const int k = k_start - block_y + 1;
         *x = x_start + x_step * (block_x-1)/2;
@@ -968,7 +968,7 @@ const {
 void Screen::PrintInv(WINDOW* const window,
         const Block* const block, const Inventory* const inv)
 const {
-    if ( inv == nullptr ) return;
+    if ( Q_UNLIKELY(inv == nullptr) ) return;
     if ( inv == player->PlayerInventory() ) {
         if ( updatedHud ) return;
     } else {
@@ -997,7 +997,7 @@ const {
                 block->GetDurability() * 100 / Block::MAX_DURABILITY);
         }
         const QString str = block->GetNote();
-        if ( not str.isEmpty() ) {
+        if ( Q_UNLIKELY(not str.isEmpty()) ) {
             const int width = screenWidth - getcurx(window) - 3 - 8;
             waddstr(window, " ~:");
             if ( str.length() <= width ) {
