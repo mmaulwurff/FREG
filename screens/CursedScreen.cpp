@@ -519,8 +519,11 @@ void Screen::ProcessCommand(const QString command) {
         Notify(tr("Block blink is now %1.").arg(TrManager::OffOn(blinkOn)));
         break;
     case Player::UniqueIntFromString("size"):
-        Notify(tr("Terminal height: %1 lines, width: %2 chars.").
-            arg(LINES).arg(COLS));
+        Notify(tr("Terminal: %1 rows, %2 columns. Screen: %3x%4 blocks.").
+            arg(LINES).
+            arg(COLS).
+            arg(screenHeight - 2).
+            arg((screenWidth - 2) / 2));
         break;
     case Player::UniqueIntFromString("palette"):
         Palette(windows[WIN_NOTIFY]);

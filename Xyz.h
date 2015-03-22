@@ -22,19 +22,35 @@
 
 #define XYZ(xyz) xyz.X(), xyz.Y(), xyz.Z()
 
-class Xyz {
+template<typename T>
+class TemplateXyz {
 public:
-    Xyz(int x, int y, int z);
-    Xyz();
+    TemplateXyz(const int x, const int y, const int z) :
+            x_self(x), y_self(y), z_self(z)
+    {}
+    TemplateXyz() : x_self(), y_self(), z_self() {}
 
     int X() const { return x_self; }
     int Y() const { return y_self; }
     int Z() const { return z_self; }
 
-    void SetXyz(int x, int y, int z);
+    void SetXyz(const int x, const int y, const int z) {
+        x_self = x;
+        y_self = y;
+        z_self = z;
+    }
+
+    bool operator!=(const TemplateXyz<T>& other) const {
+        return x_self != other.x_self ||
+               y_self != other.y_self ||
+               z_self != other.z_self;
+    }
 
 protected:
-    short x_self, y_self, z_self;
+    T x_self, y_self, z_self;
 };
+
+typedef TemplateXyz<short> Xyz;
+typedef TemplateXyz<char>  XyzChar;
 
 #endif // XYZ_H

@@ -404,9 +404,9 @@ void Player::ProcessCommand(QString command) {
 } // void Player::ProcessCommand(QString command)
 
 Player::visible Player::Visible(const_int(x_to, y_to, z_to)) const {
+    if ( Q_UNLIKELY(GetCreativeMode()) ) return VISIBLE;
     const World* const world = World::GetConstWorld();
-    if ( GetCreativeMode() ) return VISIBLE;
-    return world->Visible(X(), Y(), Z(), x_to, y_to, z_to) ?
+    return world->Visible(Xyz(X(), Y(), Z()), Xyz(x_to, y_to, z_to)) ?
         (world->Enlightened(x_to, y_to, z_to) ?
             VISIBLE : IN_SHADOW) :
         OBSCURED;

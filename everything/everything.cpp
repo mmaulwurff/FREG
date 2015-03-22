@@ -59,9 +59,9 @@
 #include "Weather.cpp"
 #include "World.cpp"
 #include "worldmap.cpp"
-#include "Xyz.cpp"
 #include "AroundCoordinates.cpp"
 #include "WaysTree.cpp"
+#include "LightRay.cpp"
 
 #include "moc/moc_Active.cpp"
 #include "moc/moc_Animal.cpp"

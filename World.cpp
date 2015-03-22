@@ -25,6 +25,7 @@
 #include "blocks/Active.h"
 #include "blocks/Inventory.h"
 #include "WaysTree.h"
+#include "LightRay.h"
 #include <QDir>
 #include <QMutexLocker>
 #include <QTimer>
@@ -95,9 +96,8 @@ bool World::Drop(Block* const block_from, const_int(x_to, y_to, z_to),
 bool World::Get(Block* const block_to, const_int(x_from, y_from, z_from),
         const_int(src, dest, num))
 {
-    Block*     const block_from = GetBlock(x_from, y_from, z_from);
-    Inventory* const inv_from   = block_from->HasInventory();
-    if ( inv_from ) {
+    Block* const block_from = GetBlock(x_from, y_from, z_from);
+    if (Inventory* const inv_from = block_from->HasInventory()) {
         if ( inv_from->Access() ) {
             return Exchange(block_from, block_to, src, dest, num);
         }
@@ -319,27 +319,16 @@ void World::PhysEvents() {
     emit UpdatesEnded();
 }
 
-bool World::DirectlyVisible(int x_from, int y_from, int z_from,
-                            int x,      int y,      int z)
-const {
-    /// optimized DDA line with integers only.
-    unsigned max = abs(abs(x-=x_from) > abs(y-=y_from) ? x : y);
-    if ( static_cast<unsigned>(abs(z-=z_from)) > max) {
-        max = abs(z);
-    }
-    x_from *= max;
-    y_from *= max;
-    z_from *= max;
-    for (int i=max; --i > 0; ) { // unsigned / is faster than signed
-        if ( Q_UNLIKELY(not (GetBlock( // floor
-                    static_cast<unsigned>(x_from+=x)/max,
-                    static_cast<unsigned>(y_from+=y)/max,
-                    static_cast<unsigned>(z_from+=z)/max )->Transparent()
-                && GetBlock( // ceil
-                    // force signed / to prevent anti-overflow
-                    (x_from-1)/static_cast<int>(max) + 1,
-                    (y_from-1)/static_cast<int>(max) + 1,
-                    static_cast<unsigned>(z_from-1)/max + 1)->Transparent()) ))
+bool World::DirectlyVisible(const Xyz& from, const Xyz& to) const {
+    LightRay light_ray(from, to);
+    while (light_ray.nextStep()) {
+        const Xyz coordinate_first = light_ray.getCoordinateFirst();
+        if ( Q_UNLIKELY(not GetBlock(XYZ(coordinate_first))->Transparent()) ) {
+            return false;
+        }
+        const Xyz coordinate_second = light_ray.getCoordinateSecond();
+        if ( coordinate_first != coordinate_second && Q_UNLIKELY(
+                not GetBlock(XYZ(coordinate_second))->Transparent() ) )
         {
             return false;
         }
@@ -347,23 +336,20 @@ const {
     return true;
 }
 
-bool World::Visible(const_int(x_from, y_from, z_from),
-                    const_int(x_to,   y_to,   z_to  ) )
-const {
-    int temp;
-    return ( DirectlyVisible(x_from, y_from, z_from, x_to, y_to, z_to)
-        || (x_to != x_from &&
-            GetBlock(x_to+(temp=(x_to>x_from) ? (-1) : 1), y_to, z_to)->
-                Transparent()
-            && DirectlyVisible(x_from, y_from, z_from, x_to+temp, y_to, z_to))
-        || (y_to != y_from &&
-            GetBlock(x_to, y_to+(temp=(y_to>y_from) ? (-1) : 1), z_to)->
-                Transparent()
-            && DirectlyVisible(x_from, y_from, z_from, x_to, y_to+temp, z_to))
-        || (z_to != z_from &&
-            GetBlock(x_to, y_to, z_to+(temp=(z_to>z_from) ? (-1) : 1))->
-                Transparent()
-            && DirectlyVisible(x_from, y_from, z_from, x_to, y_to, z_to+temp))
+bool World::Visible(const Xyz& from, const Xyz& to) const {
+    return ( DirectlyVisible(from, to)
+        || ( to.X() != from.X() &&
+            GetBlock(DiffSign(to.X(), from.X()), to.Y(), to.Z())->Transparent()
+            && DirectlyVisible(from,
+                Xyz(DiffSign(to.X(), from.X()), to.Y(), to.Z())) )
+        || ( to.Y() != from.Y() &&
+            GetBlock(to.X(), DiffSign(to.Y(), from.Y()), to.Z())->Transparent()
+            && DirectlyVisible(from,
+                Xyz(to.X(), DiffSign(to.Y(), from.Y()), to.Z())) )
+        || ( to.Z() != from.Z() &&
+            GetBlock(to.X(), to.Y(), DiffSign(to.Z(), from.Z()))->Transparent()
+            && DirectlyVisible(from,
+                Xyz(to.X(), to.Y(), DiffSign(to.Z(), from.Z()))) )
         );
 }
 
@@ -518,8 +504,7 @@ void World::DestroyAndReplace(const_int(x, y, z)) {
     if ( delete_block ) {
         BlockFactory::DeleteBlock(block);
     } else {
-        Active* const active = block->ActiveBlock();
-        if ( active ) active->Unregister();
+        if (Active* const active = block->ActiveBlock()) active->Unregister();
     }
     shred->AddFalling(shred->GetBlock(x_in, y_in, z+1));
 }
@@ -719,3 +704,7 @@ void World::LoadState() {
 }
 
 int World::Sign(const int value) { return (value > 0) - (value < 0); }
+
+int World::DiffSign(const int value1, const int value2) {
+    return value1 + (value1 > value2 ? (-1) : 1);
+}

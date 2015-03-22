@@ -178,7 +178,8 @@ bool Active::Gravitate(const int range, int bottom, int top,
         for (int z=bottom; z<=top; ++z) {
             const int attractive = Attractive(shred->GetBlock(
                 Shred::CoordInShred(x), Shred::CoordInShred(y), z)->Sub());
-            if ( attractive && world->DirectlyVisible(X(), Y(), Z(), x, y, z) )
+            if ( attractive &&
+                    world->DirectlyVisible(Xyz(X(), Y(), Z()), Xyz(x, y, z)) )
             {
                 if ( y!=Y() ) for_north += attractive/(Y()-y);
                 if ( x!=X() ) for_west  += attractive/(X()-x);

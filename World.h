@@ -28,7 +28,6 @@
 
 class Block;
 class Shred;
-class Xyz;
 
 class World final : public QThread {
     /** \class World world.h
@@ -98,11 +97,9 @@ public:
 
 ///\name Visibility section
 ///@{
-    bool DirectlyVisible(int x_from, int y_from, int z_from,
-                         int x_to,   int y_to,   int z_to) const;
+    bool DirectlyVisible(const Xyz& from, const Xyz& to) const;
     /// At least one side of block is visible.
-    bool Visible(int x_from, int y_from, int z_from,
-                 int x_to,   int y_to,   int z_to) const;
+    bool Visible(const Xyz& from, const Xyz& to) const;
 ///@}
 
 ///\name Movement section
@@ -252,6 +249,8 @@ private:
     Shred** FindShred(int x, int y) const;
 
     static int Sign(int value);
+    /// Returns value1 plus -1 if value1 is bigger than value2, otherwise 1.
+    static int DiffSign(int value1, int value2);
 
     void SaveNotes() const;
     void LoadNotes();
