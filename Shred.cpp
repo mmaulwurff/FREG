@@ -62,17 +62,16 @@ bool Shred::LoadShred() {
                 } else {
                     PutBlock(BlockFactory::Normal(sub), x, y, z);
                 }
-            } else {
-                Active* const active = (blocks[x][y][z] =
-                    BlockFactory::BlockFromFile(in, static_cast<kinds>(kind),
-                        static_cast<subs>(sub)))->ActiveBlock();
-                if ( active ) {
-                    active->SetXyz(x, y, z);
-                    RegisterInit(active);
-                    Falling* const falling = active->ShouldFall();
-                    if ( Q_UNLIKELY(falling && falling->IsFalling()) ) {
-                        fallList.push_front(falling);
-                    }
+            } else if ( Active* const active = (blocks[x][y][z] =
+                    BlockFactory::BlockFromFile( in,
+                        static_cast<kinds>(kind),
+                        static_cast<subs> (sub)) )->ActiveBlock() )
+            {
+                active->SetXyz(x, y, z);
+                RegisterInit(active);
+                Falling* const falling = active->ShouldFall();
+                if ( Q_UNLIKELY(falling && falling->IsFalling()) ) {
+                    fallList.push_front(falling);
                 }
             }
         }
@@ -253,8 +252,7 @@ void Shred::Unregister(Active* const active) {
     std::replace(ALL(activeListAll), active, static_cast<Active*>(nullptr));
     std::replace(ALL(activeListFrequent), active,
         static_cast<Active*>(nullptr));
-    Falling* const falling = active->ShouldFall();
-    if ( falling ) {
+    if ( Falling* const falling = active->ShouldFall() ) {
         std::replace(ALL(fallList), falling, static_cast<Falling*>(nullptr));
         falling->SetFalling(false);
     }
@@ -297,8 +295,7 @@ void Shred::SetBlock(Block* const block, const_int(x, y, z)) {
 }
 
 void Shred::SetBlockNoCheck(Block* const block, const_int(x, y, z)) {
-    Active* const active = ( blocks[x][y][z]=block )->ActiveBlock();
-    if ( active ) {
+    if ( Active* const active = ( blocks[x][y][z]=block )->ActiveBlock() ) {
         active->SetXyz(x, y, z);
         Register(active);
     }
@@ -577,10 +574,10 @@ bool Shred::Tree(const_int(x, y, z)) {
     return true;
 }
 
-bool Shred::InBounds(const int z) { return (0 <= z && z < HEIGHT-1 ); }
+bool Shred::InBounds(const int z) { return Q_LIKELY(0 <= z && z < HEIGHT-1 ); }
 
 bool Shred::InBounds(const int x, const int y) {
-    return (0 <= x && x < SHRED_WIDTH) && (0 <= y && y < SHRED_WIDTH);
+    return Q_LIKELY(0 <= x && x < SHRED_WIDTH) && (0 <= y && y < SHRED_WIDTH);
 }
 
 bool Shred::InBounds(const_int(x, y, z)) {

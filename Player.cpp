@@ -77,8 +77,7 @@ int Player::BreathPercent() const {
 }
 
 Inventory* Player::PlayerInventory() const {
-    Inventory* const inv = player->HasInventory();
-    if ( inv ) {
+    if ( Inventory* const inv = player->HasInventory() ) {
         return inv;
     } else {
         Notify(tr("You have no inventory."));
@@ -272,8 +271,7 @@ bool Player::Obtain(const int src, const int dest, const int num) {
 
 void Player::Wield(const int from) {
     const QMutexLocker locker(World::GetWorld()->GetLock());
-    Block* const block = ValidBlock(from);
-    if ( block ) {
+    if ( Block* const block = ValidBlock(from) ) {
         Inventory* const inv = PlayerInventory();
         inv->Pull(from);
         inv->Get(block, (from >= inv->Start()) ? 0 : inv->Start());
@@ -404,7 +402,7 @@ void Player::ProcessCommand(QString command) {
 } // void Player::ProcessCommand(QString command)
 
 Player::visible Player::Visible(const_int(x_to, y_to, z_to)) const {
-    if ( Q_UNLIKELY(GetCreativeMode()) ) return VISIBLE;
+    if ( GetCreativeMode() ) return VISIBLE;
     const World* const world = World::GetConstWorld();
     return world->Visible(Xyz(X(), Y(), Z()), Xyz(x_to, y_to, z_to)) ?
         (world->Enlightened(x_to, y_to, z_to) ?

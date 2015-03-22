@@ -430,15 +430,12 @@ void Screen::ProcessMouse() {
         mevent.x /= 2;
         if ( not ( IsScreenWide() && 0 <= mevent.x && mevent.x <= 'z'-'a' ) ) {
             Notify(tr("Information: left - player, right - focused thing."));
-        } else {
-            const Inventory* const inv = player->PlayerInventory();
-            if ( inv ) {
-                Notify( tr("In inventory at slot '%1': %2.").
-                    arg(char(mevent.x + 'a')).
-                    arg( inv->IsEmpty(mevent.x) ?
-                        tr("nothing") :
-                        inv->InvFullName(mevent.x) ) );
-            }
+        } else if ( const Inventory* const inv = player->PlayerInventory() ) {
+            Notify( tr("In inventory at slot '%1': %2.").
+                arg(char(mevent.x + 'a')).
+                arg( inv->IsEmpty(mevent.x) ?
+                    tr("nothing") :
+                    inv->InvFullName(mevent.x) ) );
         }
         break;
     case WIN_MINIMAP:
@@ -634,20 +631,18 @@ void Screen::Print() {
                 player->GetUsingInInventory())->GetNote() );
         player->SetUsingTypeNo();
         break;
-    case USAGE_TYPE_READ: {
-        const Block* const focused = GetFocusedBlock();
-        if ( focused ) {
+    case USAGE_TYPE_READ:
+        if ( const Block* const focused = GetFocusedBlock() ) {
             DisplayFile(World::WorldPath() + Str("/texts/") +
                 focused->GetNote());
             player->SetUsingTypeNo();
         }
-        } break;
-    case USAGE_TYPE_OPEN: {
-        Block* const focused = GetFocusedBlock();
-        if ( focused ) {
+        break;
+    case USAGE_TYPE_OPEN:
+        if ( Block* const focused = GetFocusedBlock() ) {
             PrintInv(rightWin, focused, focused->HasInventory());
         }
-        } break;
+        break;
     }
     updatedFront = true;
     if ( printed_normal ) {

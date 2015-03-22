@@ -118,11 +118,12 @@ bool World::Get(Block* const block_to, const_int(x_from, y_from, z_from),
 }
 
 bool World::InBounds(const int x, const int y) const {
-    return ( (0 <= x && x <= GetBound()) && (0 <= y && y <= GetBound()) );
+    return ( Q_LIKELY( (0 <= x && x <= GetBound()) &&
+                       (0 <= y && y <= GetBound()) ) );
 }
 
 bool World::InBounds(const_int(x, y, z)) const {
-    return ( InBounds(x, y) && Shred::InBounds(z) );
+    return ( Q_LIKELY(InBounds(x, y) && Shred::InBounds(z)) );
 }
 
 int World::GetBound() {

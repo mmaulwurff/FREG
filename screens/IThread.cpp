@@ -20,7 +20,7 @@
 #include "screens/IThread.h"
 #include "screens/CursedScreen.h"
 
-IThread::IThread(Screen * const scr) :
+IThread::IThread(Screen* const scr) :
         screen(scr),
         isRunning(true)
 {}
