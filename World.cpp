@@ -25,7 +25,7 @@
 #include "blocks/Active.h"
 #include "blocks/Inventory.h"
 #include "WaysTree.h"
-#include "LightRay.h"
+#include "VisionRay.h"
 #include <QDir>
 #include <QMutexLocker>
 #include <QTimer>
@@ -321,14 +321,13 @@ void World::PhysEvents() {
 }
 
 bool World::DirectlyVisible(const Xyz& from, const Xyz& to) const {
-    LightRay light_ray(from, to);
-    while (light_ray.nextStep()) {
-        const Xyz coordinate_first = light_ray.getCoordinateFirst();
+    for (VisionRay vision_ray(from, to); vision_ray.nextStep(); ) {
+        const Xyz coordinate_first = vision_ray.getCoordinateFirst();
         if ( Q_UNLIKELY(not GetBlock(XYZ(coordinate_first))->Transparent()) ) {
             return false;
         }
-        const Xyz coordinate_second = light_ray.getCoordinateSecond();
-        if ( coordinate_first != coordinate_second && Q_UNLIKELY(
+        const Xyz coordinate_second = vision_ray.getCoordinateSecond();
+        if ( Q_UNLIKELY(coordinate_first != coordinate_second &&
                 not GetBlock(XYZ(coordinate_second))->Transparent() ) )
         {
             return false;

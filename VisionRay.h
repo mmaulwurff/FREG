@@ -6,9 +6,9 @@
 
 class PreCalculatedLightRays;
 
-class LightRay {
+class VisionRay {
 public:
-    LightRay(const Xyz& from, const Xyz& to, bool force_calculate = false);
+    VisionRay(const Xyz& from, const Xyz& to, bool force_calculate = false);
 
     bool nextStep();
 
@@ -33,13 +33,13 @@ class PreCalculatedLightRays {
 public:
     PreCalculatedLightRays();
 
-    const LightRay::RaySteps* getRaySteps(int x_shift, int y_shift,
+    const VisionRay::RaySteps* getRaySteps(int x_shift, int y_shift,
                                           int z_shift) const;
 
     static const int RADIUS = TABLE_SIZE / 2 - 1;
 
 private:
-    LightRay::RaySteps shifts[TABLE_SIZE][TABLE_SIZE][TABLE_SIZE];
+    VisionRay::RaySteps shifts[TABLE_SIZE][TABLE_SIZE][TABLE_SIZE];
 };
 
 #endif // LIGHTRAY_H

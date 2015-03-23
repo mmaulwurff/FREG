@@ -61,7 +61,7 @@
 #include "worldmap.cpp"
 #include "AroundCoordinates.cpp"
 #include "WaysTree.cpp"
-#include "LightRay.cpp"
+#include "VisionRay.cpp"
 
 #include "moc/moc_Active.cpp"
 #include "moc/moc_Animal.cpp"
