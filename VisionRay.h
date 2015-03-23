@@ -1,10 +1,10 @@
-#ifndef LIGHTRAY_H
-#define LIGHTRAY_H
+#ifndef VISIONRAY_H
+#define VISIONRAY_H
 
 #include "Xyz.h"
 #include <vector>
 
-class PreCalculatedLightRays;
+class PreCalculatedVisionRays;
 
 class VisionRay {
 public:
@@ -24,17 +24,17 @@ private:
     int step;
     const RaySteps* const precalculated;
 
-    static const PreCalculatedLightRays preCalculatedLightRays;
+    static const PreCalculatedVisionRays preCalculatedLightRays;
 };
 
-class PreCalculatedLightRays {
+class PreCalculatedVisionRays {
     static const int TABLE_SIZE = 32;
 
 public:
-    PreCalculatedLightRays();
+    PreCalculatedVisionRays();
 
     const VisionRay::RaySteps* getRaySteps(int x_shift, int y_shift,
-                                          int z_shift) const;
+                                           int z_shift) const;
 
     static const int RADIUS = TABLE_SIZE / 2 - 1;
 
@@ -42,4 +42,4 @@ private:
     VisionRay::RaySteps shifts[TABLE_SIZE][TABLE_SIZE][TABLE_SIZE];
 };
 
-#endif // LIGHTRAY_H
+#endif // VISIONRAY_H

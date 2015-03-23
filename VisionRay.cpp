@@ -13,7 +13,7 @@ VisionRay::VisionRay(const Xyz& from, const Xyz& to, const bool recalculate) :
         z_step(to.Z() - z),
         maximum(std::max(std::max(abs(x_step), abs(y_step)), abs(z_step))),
         step(0),
-        precalculated((recalculate || maximum>PreCalculatedLightRays::RADIUS) ?
+        precalculated((recalculate || maximum>PreCalculatedVisionRays::RADIUS)?
             nullptr :
             preCalculatedLightRays.getRaySteps(-x_step, -y_step, -z_step))
 {
@@ -65,7 +65,7 @@ Xyz VisionRay::getCoordinateSecond() const {
     }
 }
 
-PreCalculatedLightRays::PreCalculatedLightRays() {
+PreCalculatedVisionRays::PreCalculatedVisionRays() {
     const Xyz center(RADIUS, RADIUS, RADIUS);
     for (int i=0; i<TABLE_SIZE-1; ++i)
     for (int j=0; j<TABLE_SIZE-1; ++j)
@@ -89,10 +89,10 @@ PreCalculatedLightRays::PreCalculatedLightRays() {
     }
 }
 
-const VisionRay::RaySteps *PreCalculatedLightRays::getRaySteps(
+const VisionRay::RaySteps* PreCalculatedVisionRays::getRaySteps(
         const int x_shift, const int y_shift, const int z_shift)
 const {
     return &shifts[x_shift + RADIUS][y_shift + RADIUS][z_shift + RADIUS];
 }
 
-const PreCalculatedLightRays VisionRay::preCalculatedLightRays;
+const PreCalculatedVisionRays VisionRay::preCalculatedLightRays;
