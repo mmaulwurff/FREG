@@ -13,11 +13,12 @@ LightRay::LightRay(const Xyz& from, const Xyz& to, const bool force_calculate):
         z_step(to.Z() - z),
         maximum(std::max(std::max(abs(x_step), abs(y_step)), abs(z_step))),
         step(0),
-        recalculate(force_calculate || maximum>PreCalculatedLightRays::RADIUS),
-        precalculated(recalculate ? nullptr :
-            preCalculatedLightRays.getRaySteps(-x_step, -y_step, -z_step))
+        precalculated((force_calculate ||
+            maximum > PreCalculatedLightRays::RADIUS) ?
+                nullptr :
+                preCalculatedLightRays.getRaySteps(-x_step, -y_step, -z_step))
 {
-    if ( recalculate ) {
+    if ( not precalculated ) {
         x *= maximum;
         y *= maximum;
         z *= maximum;
@@ -25,20 +26,22 @@ LightRay::LightRay(const Xyz& from, const Xyz& to, const bool force_calculate):
 }
 
 bool LightRay::nextStep() {
-    if ( not recalculate ) {
-        return static_cast<size_t>(++step) < precalculated->size();
-    } else if ( ++step < maximum ) {
-        x += x_step;
-        y += y_step;
-        z += z_step;
-        return true;
+    if ( ++step < maximum ) {
+        if ( precalculated ) {
+            return true;
+        } else {
+            x += x_step;
+            y += y_step;
+            z += z_step;
+            return true;
+        }
     } else {
         return false;
     }
 }
 
 Xyz LightRay::getCoordinateFirst() const {
-    if ( not recalculate ) {
+    if ( precalculated ) {
         const XyzChar& unshifted = (*precalculated)[step - 1].first;
         return Xyz(unshifted.X() - PreCalculatedLightRays::RADIUS + x_step + x,
                    unshifted.Y() - PreCalculatedLightRays::RADIUS + y_step + y,
@@ -51,7 +54,7 @@ Xyz LightRay::getCoordinateFirst() const {
 }
 
 Xyz LightRay::getCoordinateSecond() const {
-    if ( not recalculate ) {
+    if ( precalculated ) {
         const XyzChar& unshifted = (*precalculated)[step - 1].second;
         return Xyz(unshifted.X() - PreCalculatedLightRays::RADIUS + x_step + x,
                    unshifted.Y() - PreCalculatedLightRays::RADIUS + y_step + y,

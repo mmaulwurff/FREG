@@ -22,7 +22,6 @@ private:
     const int x_step, y_step, z_step;
     const int maximum;
     int step;
-    const bool recalculate;
     const RaySteps* const precalculated;
 
     static const PreCalculatedLightRays preCalculatedLightRays;
