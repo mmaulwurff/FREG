@@ -95,7 +95,7 @@ void Screen::RePrint() {
         waddch(actionWin, '\n');
     }
     mvwchgat(actionWin, actionMode, 0, -1, A_NORMAL, BLACK_WHITE, nullptr);
-    updatedHud = updatedNormal = updatedFront = false;
+    UpdateAll();
     Print();
     wrefresh(actionWin);
 }
@@ -114,11 +114,11 @@ void Screen::UpdateAll() {
 
 void Screen::PassString(QString & str) const {
     inputActive = true;
-    wattrset(windows[WIN_NOTIFY], A_UNDERLINE);
-    waddwstr(windows[WIN_NOTIFY], wPrintable(tr("Enter input: ")));
+    wattrset(notifyWin, A_UNDERLINE);
+    waddwstr(notifyWin, wPrintable(tr("Enter input: ")));
     echo();
     wint_t temp_str[MAX_NOTE_LENGTH + 1];
-    wgetn_wstr(windows[WIN_NOTIFY], temp_str, MAX_NOTE_LENGTH);
+    wgetn_wstr(notifyWin, temp_str, MAX_NOTE_LENGTH);
     inputActive = false;
     noecho();
     str = QString::fromUcs4(temp_str);
@@ -234,6 +234,7 @@ void Screen::ControlPlayer() { ControlPlayer(getch()); }
 
 void Screen::ControlPlayer(const int ch) {
     static const int ACTIVE_HAND = 3;
+    static const int KEY_NOTHING = 'J';
     if ( Q_UNLIKELY(player->GetConstBlock() == nullptr) ) return;
     if ( 'a'<=ch && ch<='z' ) { // actions with inventory
         InventoryAction(ch - 'a');
@@ -246,6 +247,9 @@ void Screen::ControlPlayer(const int ch) {
             Notify(Str("Pressed key code: %1.").arg(ch));
         }
         break;
+
+    case ERR:
+    case KEY_NOTHING: break;
 
     case 'W': case KEY_UP:    case '8': MovePlayer(NORTH);  break;
     case 'S': case KEY_DOWN:  case '2': MovePlayer(SOUTH);  break;
@@ -399,6 +403,24 @@ void Screen::ControlPlayer(const int ch) {
         emit ExitReceived();
         input->Stop();
         break;
+
+    case KEY_RESIZE:
+        screenWidth = (COLS / 2) - ((COLS/2) & 1);
+        screenHeight = LINES - 10;
+        wresize(leftWin,  screenHeight, screenWidth);
+        wresize(rightWin, screenHeight, screenWidth);
+        wresize(notifyWin, 0, 0);
+
+        mvwin(actionWin, LINES-7, MINIMAP_WIDTH + 1);
+        mvwin(notifyWin, LINES-7, MINIMAP_WIDTH + ACTIONS_WIDTH + 2);
+        mvwin(hudWin, screenHeight, 0);
+        mvwin(minimapWin, LINES-7, 0);
+        mvwin(leftWin, 0, (COLS/2) & 1);
+        mvwin(rightWin, 0, COLS/2);
+
+        RePrint();
+        refresh();
+        break;
     }
 
     updatedNormal = updatedFront = updatedHud = false;
@@ -527,9 +549,7 @@ void Screen::ProcessCommand(const QString command) {
             arg(screenHeight - 2).
             arg((screenWidth - 2) / 2));
         break;
-    case Player::UniqueIntFromString("palette"):
-        Palette(windows[WIN_NOTIFY]);
-        break;
+    case Player::UniqueIntFromString("palette"): Palette(notifyWin); break;
     default: player->ProcessCommand(command); break;
     }
 }
@@ -1048,24 +1068,24 @@ void Screen::Notify(const QString str) const {
     if ( str.isEmpty() ) return;
     Log(str);
     if ( inputActive ) return;
-    wstandend(windows[WIN_NOTIFY]);
+    wstandend(notifyWin);
     switch ( str.at(str.size()-1).unicode() ) {
-    case '!': wcolor_set(windows[WIN_NOTIFY], RED_BLACK, nullptr); // no break;
+    case '!': wcolor_set(notifyWin, RED_BLACK, nullptr); // no break;
     case '*': if ( flashOn ) flash(); break;
     case '^': if (  beepOn ) beep();  break;
     }
     static int notification_repeat_count = 1;
     if ( str == lastNotification ) {
         ++notification_repeat_count;
-        mvwaddwstr(windows[WIN_NOTIFY], getcury(windows[WIN_NOTIFY])-1, 0,
+        mvwaddwstr(notifyWin, getcury(windows[WIN_NOTIFY])-1, 0,
             wPrintable(str));
-        wprintw(windows[WIN_NOTIFY], " (x%d)\n", notification_repeat_count);
+        wprintw(notifyWin, " (x%d)\n", notification_repeat_count);
     } else {
         notification_repeat_count = 1;
-        waddwstr(windows[WIN_NOTIFY], wPrintable(lastNotification = str));
-        waddch(windows[WIN_NOTIFY], '\n');
+        waddwstr(notifyWin, wPrintable(lastNotification = str));
+        waddch(notifyWin, '\n');
     }
-    wrefresh(windows[WIN_NOTIFY]);
+    wrefresh(notifyWin);
 }
 
 void Screen::DeathScreen() {
@@ -1115,7 +1135,7 @@ Screen::Screen(Player* const pl, int &) :
         yCursor()
 {
     start_color();
-    nodelay(stdscr, false);
+    halfdelay(10);
     noecho(); // do not print typed symbols
     nonl();
     keypad(stdscr, true); // use arrows
@@ -1131,7 +1151,7 @@ Screen::Screen(Player* const pl, int &) :
         init_pair(i, colors[(i-1)/8], colors[(i-1) & 7]);
     }
 
-    scrollok(windows[WIN_NOTIFY], true);
+    scrollok(notifyWin, true);
 
     connect(World::GetWorld(), &World::UpdatesEnded, this, &Screen::Print,
         Qt::DirectConnection);
@@ -1141,9 +1161,9 @@ Screen::Screen(Player* const pl, int &) :
     Notify(tr("\t[[F][r][e][g]] version %1").arg(VER));
     Notify(tr("Copyright (C) 2012-2015 Alexander 'm8f' Kromm"));
     Notify(Str("(mmaulwurff@gmail.com)\n"));
-    Notify(tr("Press any key to continue."));
+    Notify(tr("Press Space to continue."));
 
-    qsrand(getch());
+    while (getch() != ' ');
 
     RePrint();
     Notify(tr("--- Game started. Press 'H' for help. ---"));

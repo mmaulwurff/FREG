@@ -149,9 +149,10 @@ private:
     void ExamineOnNormalScreen(int x, int y, int z, int step) const;
 
     SCREEN* const screen;
-    const int screenWidth, screenHeight;
+    int screenWidth, screenHeight;
     WINDOW* const windows[WIN_COUNT];
     WINDOW* const& actionWin  = windows[WIN_ACTION ];
+    WINDOW* const& notifyWin  = windows[WIN_NOTIFY ];
     WINDOW* const& hudWin     = windows[WIN_HUD    ];
     WINDOW* const& minimapWin = windows[WIN_MINIMAP];
     WINDOW* const& leftWin    = windows[WIN_LEFT   ];
