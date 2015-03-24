@@ -32,7 +32,14 @@ QString Weapon::FullName() const {
     }
 }
 
-int  Weapon::Weight() const { return Block::Weight()/4; }
+QString Weapon::Description() const {
+    return tr("Damage: %1. Damage type: %2.").
+        arg(DamageLevel()).
+        arg(TrManager::GetDamageString(
+            static_cast<damage_kinds>(DamageKind())));
+}
+
+int  Weapon::Weight() const { return Block::Weight() / 4; }
 wearable Weapon::Wearable() const { return WEARABLE_OTHER; }
 push_reaction Weapon::PushResult(dirs) const { return DAMAGE; }
 

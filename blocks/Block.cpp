@@ -124,8 +124,9 @@ void Block::Damage(const int dmg, int dmg_kind) {
     case FIRE:  mult  = ( DAMAGE_FREEZE == dmg_kind ); break;
     case WATER: mult  = ( DAMAGE_HEAT   == dmg_kind ); break;
     case GLASS: durability *= ( DAMAGE_HEAT == dmg_kind ); return;
-    default:    durability -= mult * dmg;
+    default: break;
     }
+    durability -= mult * dmg;
 } // Block::Damage(const ind dmg, const int dmg_kind)
 
 Block* Block::DropAfterDamage(bool* const delete_block) {
@@ -166,7 +167,14 @@ usage_types Block::Use(Active*) { return USAGE_TYPE_NO; }
 usage_types Block::UseOnShredMove(Active*) { return USAGE_TYPE_NO; }
 
 QString Block::Description() const {
-    return QString(Str("Typical object of %1.")).
+    if ( Kind() == BLOCK ) {
+        switch ( Sub() ) {
+        case STONE: return QObject::tr("Solid wall.");
+        case AIR:   return QObject::tr("Is needed for breathing.");
+        default: break;
+        }
+    }
+    return QObject::tr("Typical object of %1.").
         arg(TrManager::SubName(Sub()));
 }
 
@@ -208,7 +216,6 @@ int Block::Weight() const {
     case AIR:       return WEIGHT_AIR;
     case STONE:     return WEIGHT_STONE;
     case SOIL:      return WEIGHT_SAND + WEIGHT_WATER;
-    case GREENERY:  return WEIGHT_GREENERY;
     case NULLSTONE: return WEIGHT_NULLSTONE;
     case SAND:      return WEIGHT_SAND;
     case GLASS:     return WEIGHT_GLASS;

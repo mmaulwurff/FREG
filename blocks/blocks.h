@@ -73,6 +73,7 @@ public:
     int  DamageKind() const override;
     int  LightRadius() const override;
     QString FullName() const override;
+    QString Description() const override;
     Block* DropAfterDamage(bool* delete_block) override;
     inner_actions ActInner() override;
 
@@ -95,6 +96,7 @@ public:
     void ReceiveSignal(QString) override;
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
+    QString Description() const override;
     Block* DropAfterDamage(bool* delete_block) override;
     Inventory* HasInventory() override;
     usage_types Use(Active* who) override;

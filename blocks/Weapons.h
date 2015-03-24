@@ -36,6 +36,7 @@ public:
     int  DamageLevel() const override;
     int  Weight() const override;
     QString FullName() const override;
+    QString Description() const override;
     wearable Wearable() const override;
     push_reaction PushResult(dirs) const override;
 };

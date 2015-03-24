@@ -57,17 +57,21 @@ public:
     /// Returns translated weather string.
     static QString GetWeatherString(weathers);
 
+    static QString GetDamageString(damage_kinds);
+
 private:
     Q_DISABLE_COPY(TrManager)
 
-    class QTranslator * LoadTranslator() const;
+    class QTranslator* LoadTranslator() const;
 
-    class QTranslator * const translator;
+    static QString& Capitalized(QString&);
+
+    class QTranslator* const translator;
     static const QString rawKinds[KIND_COUNT], rawSubs [SUB_COUNT];
     QString             kindNames[KIND_COUNT], subNames[SUB_COUNT];
     QHash<char, QString> shredTypeNames;
 
-    static TrManager * trManager;
+    static TrManager* trManager;
 };
 
 #endif // TRMANAGER_H

@@ -111,24 +111,27 @@ void Player::Examine(const int x, const int y, const int z) const {
 }
 
 void Player::Examine(const Block* const block) const {
-    Notify( block->FullName() + Str(":") );
+    Notify( block->FullName() + Str(". ") + block->Description());
     if ( DEBUG ) {
-        Notify(Str("Weight: %1. Id: %2. Durability: %3.").
-            arg(block->Weight()).
-            arg(BlockFactory::MakeId(block->Kind(), block->Sub())).
-            arg(block->GetDurability()));
-        Notify(Str("Kind: %1, substance: %2. LightRadius: %3").
+        Notify(Str(
+            "DEBUG. Kind: %1, sub: %2, id: %3. Weight: %4. Light radius: %5.").
             arg(block->Kind()).
             arg(block->Sub()).
+            arg(BlockFactory::MakeId(block->Kind(), block->Sub())).
+            arg(block->Weight()).
             arg(block->LightRadius()));
-        Notify(Str("Norm: %1. Dir: %2. Transparency: %3").
-            arg(block==BlockFactory::Normal(block->Sub())).
+        Notify(Str(
+            "DEBUG. Durability: %1/%2. Norm: %3. Dir: %4. Transparency: %5.").
+            arg(block->GetDurability()).
+            arg(Block::MAX_DURABILITY).
+            arg(block == BlockFactory::Normal(block->Sub())).
             arg(block->GetDir()).
             arg(block->Transparent()));
     }
     if ( Block::GetSubGroup(block->Sub()) == GROUP_AIR ) return;
-    Notify(block->Description());
-    const QString str = block->GetNote();
+    Notify(tr("Durability: %1%.").
+        arg(block->GetDurability() * 100 / Block::MAX_DURABILITY));
+    const QString& str = block->GetNote();
     if ( not str.isEmpty() ) {
         Notify(tr("Inscription: ") + str);
     }
@@ -261,10 +264,6 @@ bool Player::Obtain(const int src, const int dest, const int num) {
     int x, y, z;
     emit GetFocus(&x, &y, &z);
     bool is_success = world->Get(player, x, y, z, src, dest, num);
-    Inventory* const from = world->GetBlock(x, y, z)->HasInventory();
-    if ( from && from->IsEmpty() ) {
-        usingType = USAGE_TYPE_NO;
-    }
     emit Updated();
     return is_success;
 }

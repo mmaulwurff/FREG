@@ -168,6 +168,12 @@
         }
     }
 
+    QString Grass::Description() const {
+        return ( Sub() != FIRE ) ?
+            tr("It grows on soil.") :
+            tr("It burns");
+    }
+
     int  Grass::ShouldAct() const  { return FREQUENT_RARE; }
     int  Grass::LightRadius() const { return (FIRE == Sub()) ? 5 : 0; }
     inner_actions Grass::ActInner() { return INNER_ACTION_NONE; }
@@ -182,6 +188,7 @@
     void Bush::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
     int  Bush::Weight() const { return Inventory::Weight() + Block::Weight(); }
     QString Bush::FullName() const { return TrManager::KindName(BUSH); }
+    QString Bush::Description() const { return tr("Food and wood source."); }
     usage_types Bush::Use(Active*) { return USAGE_TYPE_OPEN; }
     Inventory* Bush::HasInventory() { return this; }
     inner_actions Bush::ActInner() { return INNER_ACTION_NONE; }

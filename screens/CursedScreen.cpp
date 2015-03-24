@@ -431,11 +431,14 @@ void Screen::ProcessMouse() {
         if ( not ( IsScreenWide() && 0 <= mevent.x && mevent.x <= 'z'-'a' ) ) {
             Notify(tr("Information: left - player, right - focused thing."));
         } else if ( const Inventory* const inv = player->PlayerInventory() ) {
-            Notify( tr("In inventory at slot '%1': %2.").
-                arg(char(mevent.x + 'a')).
-                arg( inv->IsEmpty(mevent.x) ?
-                    tr("nothing") :
-                    inv->InvFullName(mevent.x) ) );
+            if ( inv->IsEmpty(mevent.x) ) {
+                Notify(tr("Nothing in inventory at slot '%1'.").
+                    arg(char(mevent.x + 'a')));
+            } else {
+                Notify(tr("In inventory at slot '%1':").
+                    arg(char(mevent.x + 'a')));
+                player->Examine(inv->ShowBlock(mevent.x));
+            }
         }
         break;
     case WIN_MINIMAP:
@@ -455,6 +458,7 @@ void Screen::ProcessMouse() {
         break;
     case WIN_LEFT:
         if ( player->UsingSelfType() == USAGE_TYPE_OPEN ) {
+            /// \todo examine inventory contents.
             Notify(tr("Your inventory."));
         } else if ( IsOutWindow(mevent, screenWidth-1, screenHeight-1) ) {
             Notify(tr("Left window, Down view."));
@@ -464,6 +468,7 @@ void Screen::ProcessMouse() {
         break;
     case WIN_RIGHT:
         if (player->UsingType() == USAGE_TYPE_OPEN ) {
+            /// \todo examine inventory contents.
             Notify(tr("Opened inventory."));
         } else if ( IsOutWindow(mevent, screenWidth-1, screenHeight-1) ) {
             Notify(tr("Right window, %1 view.").
@@ -648,11 +653,15 @@ void Screen::Print() {
     if ( printed_normal ) {
         updatedNormal = true;
     }
-    if ( player->GetDir() <= DOWN ) {
-        (void)wmove(rightWin, player->Y() - GetNormalStartY()  + 1,
-                         2 * (player->X() - GetNormalStartX()) + 1);
+    if ( player->UsingType() != USAGE_TYPE_OPEN ) {
+        if ( player->GetDir() <= DOWN ) {
+            (void)wmove(rightWin, player->Y() - GetNormalStartY()  + 1,
+                             2 * (player->X() - GetNormalStartX()) + 1);
+        } else {
+            (void)wmove(rightWin, yCursor, xCursor);
+        }
     } else {
-        (void)wmove(rightWin, yCursor, xCursor);
+        (void)wmove(rightWin, screenHeight-2, screenWidth-2);
     }
     wrefresh(rightWin);
 } // void Screen::Print()
@@ -741,8 +750,7 @@ void Screen::PrintQuickInventory() const {
         }
         x += 2;
         if ( Q_UNLIKELY(i == inv->Start()-1 && i != 0) ) {
-            for (int i : {0, 1, 2}) mvwaddch(hudWin, i, x, ACS_VLINE);
-            x += 2;
+            for (int i : {0, 1, 2}) mvwaddch(hudWin, i, x-1, ACS_VLINE);
         }
     }
 }
@@ -966,7 +974,12 @@ const {
 void Screen::PrintInv(WINDOW* const window,
         const Block* const block, const Inventory* const inv)
 const {
-    if ( Q_UNLIKELY(inv == nullptr) ) return;
+    if ( Q_UNLIKELY(inv == nullptr) ) {
+        if ( player->UsingType() == USAGE_TYPE_OPEN ) {
+            player->SetUsingTypeNo();
+        }
+        return;
+    }
     if ( inv == player->PlayerInventory() ) {
         if ( updatedHud ) return;
     } else {
@@ -1008,22 +1021,20 @@ const {
         mvwprintw(window, 1 + i + shift, screenWidth - 9, "%5hu mz",
             inv->GetInvWeight(i));
     }
-    wstandend(window);
-    const QString full_weight = tr("Full weight: %1 mz").
-        arg(inv->Weight(), 6, 10, QChar::fromLatin1(' '));
-    mvwaddwstr(window, 1 + inv->Size() + shift,
-        screenWidth - 1 - full_weight.length(),
-        wPrintable(full_weight) );
     wattrset(window, Color(block->Kind(), block->Sub()));
     box(window, 0, 0);
     if ( start != 0 ) {
-        mvwhline(window, 1+start, 1, ACS_HLINE, screenWidth);
-        mvwaddch(window, 1+start, 0, ACS_LTEE);
-        mvwaddch(window, 1+start, screenWidth-1, ACS_RTEE);
+        mvwaddch(window, start+1, 0, ACS_LTEE);
+        whline(window, ACS_HLINE, screenWidth-2);
+        mvwaddch(window, start+1, screenWidth-1, ACS_RTEE);
     }
     mvwprintw(window, 0, 1, "[%c] ", CharName( block->Kind(), block->Sub()));
     waddwstr(window, wPrintable( (player->PlayerInventory() == inv) ?
-        tr("Your inventory") : block->FullName() ));
+        tr("Your inventory") :
+        block->FullName() + Str(". ") + block->Description() ));
+    const QString full_weight = tr("Full weight: %1 mz").arg(inv->Weight());
+    mvwaddwstr(window, screenHeight-1, screenWidth-1-full_weight.length(),
+        wPrintable(full_weight) );
     wrefresh(window);
 } // void Screen::PrintInv(WINDOW*, const Block*, const Inventory*)
 

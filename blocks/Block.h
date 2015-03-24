@@ -41,34 +41,6 @@ enum wearable {
     WEARABLE_VESSEL
 };
 
-enum damage_kinds {
-    // Put new damage kinds before DAMAGE_PUSH_UP.
-    DAMAGE_MINE,    ///<  0
-    DAMAGE_DIG,     ///<  1
-    DAMAGE_CUT,     ///<  2
-    DAMAGE_THRUST,  ///<  3
-    DAMAGE_CRUSH,   ///<  4
-    DAMAGE_HEAT,    ///<  5
-    DAMAGE_FREEZE,  ///<  6
-    DAMAGE_ELECTRO, ///<  7
-    DAMAGE_HUNGER,  ///<  8
-    DAMAGE_BREATH,  ///<  9
-    DAMAGE_BITE,    ///< 10
-    DAMAGE_TIME,    ///< 11
-    DAMAGE_NO,      ///< 12
-    DAMAGE_HANDS,   ///< 13
-    DAMAGE_ACID,    ///< 14
-    DAMAGE_RADIATION,
-    DAMAGE_ULTIMATE,
-    DAMAGE_INVENTORY_ACTION,
-    DAMAGE_PUSH_UP,
-    DAMAGE_PUSH_DOWN,
-    DAMAGE_PUSH_NORTH,
-    DAMAGE_PUSH_SOUTH,
-    DAMAGE_PUSH_EAST,
-    DAMAGE_PUSH_WEST
-};
-
 enum weights { ///< weights in measures - mz (mezuro)
     WEIGHT_NULLSTONE = 1000,
     WEIGHT_WATER     =  500,
@@ -76,8 +48,7 @@ enum weights { ///< weights in measures - mz (mezuro)
     WEIGHT_STONE     =  200,
     WEIGHT_GLASS     =  150,
     WEIGHT_SAND      =  100,
-    WEIGHT_GREENERY  =    3,
-    WEIGHT_MINIMAL   =    1,
+    WEIGHT_MINIMAL   =    4,
     WEIGHT_AIR       =    0,
 };
 

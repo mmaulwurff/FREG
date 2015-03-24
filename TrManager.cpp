@@ -105,17 +105,51 @@ QString TrManager::GetWeatherString(const weathers weather) {
     return weatherStrings[weather];
 }
 
+QString TrManager::GetDamageString(const damage_kinds damage_kind) {
+    static const QString damage_kind_strings[] = {
+        QCoreApplication::translate("Global", "mining"),
+        QCoreApplication::translate("Global", "digging"),
+        QCoreApplication::translate("Global", "cutting"),
+        QCoreApplication::translate("Global", "thrusting"),
+        QCoreApplication::translate("Global", "crushing"),
+        QCoreApplication::translate("Global", "heating"),
+        QCoreApplication::translate("Global", "freezeing"),
+        QCoreApplication::translate("Global", "elecricity"),
+        QCoreApplication::translate("Global", "hunger"),
+        QCoreApplication::translate("Global", "breathing"),
+        QCoreApplication::translate("Global", "biting"),
+        QCoreApplication::translate("Global", "time"),
+        QCoreApplication::translate("Global", "no damage"),
+        QCoreApplication::translate("Global", "by hands"),
+        QCoreApplication::translate("Global", "corrode"),
+        QCoreApplication::translate("Global", "radiation"),
+        QCoreApplication::translate("Global", "ultimate"),
+        QCoreApplication::translate("Global", "inventory"),
+    };
+    static_assert(
+        DAMAGE_PUSH_UP == (sizeof(damage_kind_strings) / sizeof(QString)),
+        "Size of damage_kind_strings should correspond with damage_kinds");
+    return damage_kind < DAMAGE_PUSH_UP ?
+        damage_kind_strings[damage_kind] :
+        QCoreApplication::translate("Global", "pushing");
+}
+
+QString& TrManager::Capitalized(QString& str) {
+    return str.replace(0, 1, str.at(0).toUpper());
+}
+
 QString TrManager::SubNameUpper(const int sub) {
     QString result = trManager->SubName(sub);
-    return result.replace(0, 1, result.at(0).toUpper());
+    return Capitalized(result);
 }
 
 QString TrManager::ShredTypeName(const shred_type type) {
     return trManager->shredTypeNames[type];
 }
 
-kinds TrManager::StrToKind(const QString str) {
-    return static_cast<kinds>(std::find(ALL(rawKinds), str) - rawKinds);
+kinds TrManager::StrToKind(QString str) {
+    return static_cast<kinds>(
+        std::find(ALL(rawKinds), Capitalized(str)) - rawKinds );
 }
 
 subs TrManager::StrToSub(const QString str) {
