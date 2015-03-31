@@ -42,8 +42,6 @@ X("flash_on",        flashOn,      true,  )\
 X("blink_on",        blinkOn,      false, )\
 X("ascii",           ascii,        false, )\
 X("mouse_on",        mouseOn,      true,  )\
-X("show_distance",   showDistance, true,  )\
-X("abcdef_distance", farDistance,  false, )\
 
 #define OPTIONS_DECLARE(string, name, ...) bool name;
 
@@ -101,6 +99,7 @@ private:
 
     static const chtype arrows[LAST_DIR + 1];
     static const int MOUSEMASK = BUTTON1_CLICKED | BUTTON1_RELEASED;
+    static const int MAX_CHAR_DISTANCE;
 
     /// Prints world. Should not be called not within screen.
     void Print();
@@ -166,6 +165,7 @@ private:
     int shiftFocus;
     mutable bool inputActive = false;
     OPTIONS_TABLE(OPTIONS_DECLARE)
+    int showCharDistance;
     const wchar_t ellipsis[4];
     mmask_t noMouseMask;
     mutable int xCursor, yCursor; ///< Save cursor position to show player.

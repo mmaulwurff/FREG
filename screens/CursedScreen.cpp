@@ -40,6 +40,7 @@ settings.setValue(QStringLiteral(string), name);
 name(settings.value(QStringLiteral(string), default).toBool()),
 
 const chtype Screen::arrows[] = { '.', 'x', '^', '>', 'v', '<' };
+const int Screen::MAX_CHAR_DISTANCE = 16;
 
 void Screen::Arrows(WINDOW* const window, const int x, const int y,
         const dirs direction, const bool is_normal)
@@ -112,7 +113,7 @@ void Screen::UpdateAll() {
     updatedNormal = updatedFront = updatedHud = updatedMinimap = false;
 }
 
-void Screen::PassString(QString & str) const {
+void Screen::PassString(QString& str) const {
     inputActive = true;
     wattrset(notifyWin, A_UNDERLINE);
     waddwstr(notifyWin, wPrintable(tr("Enter input: ")));
@@ -126,31 +127,23 @@ void Screen::PassString(QString & str) const {
 }
 
 char Screen::Distance(const int dist) const {
-    return dist ?
-        ( dist < 0 ) ?
-            '-' :
-            ( dist < 10 ) ?
-                dist | '0' : // numbers
-                ( farDistance && dist <= 0xf ) ?
-                    (dist - 9) | 0x60 : // abcdef
-                    '+' :
+    if ( Q_UNLIKELY(dist < 0) ) return '-';
+    static const char dist_chars[MAX_CHAR_DISTANCE+1] = " 123456789abcdef";
+    return showCharDistance ?
+        (dist < showCharDistance ? dist_chars[dist] : '+') :
         ' ';
 }
 
 char Screen::CharNumber(const int z) const {
-    return showDistance ?
-        Distance( ( UP == player->GetDir() ) ?
-            z - player->Z() :
-            player->Z() - z ) :
-        ' ';
+    return Distance( ( UP == player->GetDir() ) ?
+        z - player->Z() :
+        player->Z() - z );
 }
 
 char Screen::CharNumberFront(const int i, const int j) const {
-    return showDistance ?
-        Distance( ( ( player->GetDir() & 1 ) ? // east or west
-            abs(player->X() - i) :
-            abs(player->Y() - j) ) - 1 ) :
-        ' ';
+    return Distance( ( ( player->GetDir() & 1 ) ? // east or west
+        abs(player->X() - i) :
+        abs(player->Y() - j) ) - 1 );
 }
 
 int  Screen::RandomBlink() { return (RandomBit() * A_REVERSE); }
@@ -529,14 +522,13 @@ void Screen::ProcessCommand(const QString command) {
     }
     if ( VirtScreen::ProcessCommand(command) ) return;
     switch ( Player::UniqueIntFromString(qPrintable(command)) ) {
-    case Player::UniqueIntFromString("distance"):
-        showDistance = not showDistance;
-        Notify(tr("Show distance: %1.").arg(TrManager::OffOn(showDistance)));
+    case Player::UniqueIntFromString("plus_distance"):
+        showCharDistance = std::min(showCharDistance+1, MAX_CHAR_DISTANCE);
+        Notify(tr("Show distance: %1.").arg(showCharDistance));
         break;
-    case Player::UniqueIntFromString("far"):
-        farDistance = not farDistance;
-        Notify(tr("Use \"abcdef\" as distance: %1.").
-            arg(TrManager::OffOn(farDistance)));
+    case Player::UniqueIntFromString("minus_distance"):
+        showCharDistance = std::max(showCharDistance-1, 0);
+        Notify(tr("Show distance: %1.").arg(showCharDistance));
         break;
     case Player::UniqueIntFromString("blink"):
         blinkOn = not blinkOn;
@@ -1125,6 +1117,7 @@ Screen::Screen(Player* const pl, int &) :
             Str("action_mode"), ACTION_USE).toInt())),
         shiftFocus(settings.value(Str("focus_shift"), 0).toInt()),
         OPTIONS_TABLE(OPTIONS_INIT)
+        showCharDistance(settings.value(Str("show_char_distance"),10).toInt()),
         ellipsis{
             ascii ? L'.' : L'\U00002026',
             ascii ? L'.' : L'\00',
@@ -1187,7 +1180,8 @@ Screen::~Screen() {
     settings.setValue(Str("focus_shift" ), shiftFocus);
     settings.setValue(Str("action_mode" ), actionMode);
     settings.setValue(Str("last_command"), previousCommand);
-    OPTIONS_TABLE(OPTIONS_SAVE)
+    settings.setValue(Str("show_char_distance"), showCharDistance);
+    OPTIONS_TABLE(OPTIONS_SAVE);
 }
 
 void Screen::PrintBar(WINDOW* const window,
