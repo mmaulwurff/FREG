@@ -132,16 +132,14 @@
         }
         World* const world = World::GetWorld();
         if ( Q_UNLIKELY(not world->InBounds(i, j)) ) return;
-        if ( FIRE == Sub() || world->Enlightened(i, j, Z()) ) {
-            const subs sub_near = world->GetBlock(i, j, Z())->Sub();
-            int k = Z();
-            if ( (AIR == sub_near
-                        && IsBase(Sub(), world->GetBlock(i, j, k-1)->Sub() ) )
-                    || ( IsBase(Sub(), sub_near)
-                        && AIR == world->GetBlock(i, j, ++k)->Sub() ) )
-            {
-                world->Build(BlockFactory::NewBlock(GRASS, Sub()), i, j, k);
-            }
+        const subs sub_near = world->GetBlock(i, j, Z())->Sub();
+        int k = Z();
+        if ( (AIR == sub_near
+                    && IsBase(Sub(), world->GetBlock(i, j, k-1)->Sub() ) )
+                || ( IsBase(Sub(), sub_near)
+                    && AIR == world->GetBlock(i, j, ++k)->Sub() ) )
+        {
+            world->Build(BlockFactory::NewBlock(GRASS, Sub()), i, j, k);
         }
         if ( not IsBase(Sub(), world->GetBlock(X(), Y(), Z()-1)->Sub()) ) {
             world->DestroyAndReplace(X(), Y(), Z());

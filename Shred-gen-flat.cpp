@@ -44,6 +44,10 @@ void Shred::Plain() {
 void Shred::Forest(const bool dead) {
     NormalUnderground();
     RandomDrop(qrand() & 3, BUSH, WOOD);
+    if ( not dead ) {
+        RandomDrop(qrand() & 1, BLOCK, ROSE);
+        PlantGrass();
+    }
     for (int number = AroundShredTypes(longitude, latitude).Count(type);
             number; --number)
     {
@@ -52,13 +56,11 @@ void Shred::Forest(const bool dead) {
         const int z = FindTopNonAir(x, y);
         if ( GetBlock(x, y, z)->Sub() == SOIL ) {
             Tree(x-1, y-1, z+1);
+        } else if ( GetBlock(x, y, z-1)->Sub() == SOIL ) {
+            Tree(x-1, y-1, z);
         }
     }
     RandomDrop(qrand() & 3, WEAPON, WOOD);
-    if ( not dead ) {
-        RandomDrop(qrand() & 1, BLOCK, ROSE);
-        PlantGrass();
-    }
 }
 
 void Shred::Water(const subs sub) {

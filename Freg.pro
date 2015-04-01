@@ -7,7 +7,7 @@ DEFINES += VER=$$VERSION
 QMAKE_TARGET_COPYRIGHT   = (C) 2012-2015 Alexander \'m8f\' Kromm
 QMAKE_TARGET_DESCRIPTION = Freg - open world with text graphics.
 
-CONFIG += warn_on console c++11 rtti_off exceptions_off
+CONFIG += warn_on console c++14 rtti_off exceptions_off
 CONFIG( release, debug|release ):DEFINES += QT_NO_DEBUG_OUTPUT
 
 QMAKE_CXXFLAGS += -Wfloat-equal -Woverloaded-virtual -Wundef -fstrict-enums

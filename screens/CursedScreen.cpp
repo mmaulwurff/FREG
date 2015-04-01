@@ -71,8 +71,8 @@ const {
         TrManager::DirName(SOUTH).left(1).toStdWString(),
         TrManager::DirName(WEST ).left(1).toStdWString()
     };
-    mvwaddwstr(window, y-1,0, dir_chars[World::TurnLeft(direction)-2].c_str());
-    mvwaddwstr(window, y-1, screenWidth-1,
+    mvwaddwstr(window, y-2,0, dir_chars[World::TurnLeft(direction)-2].c_str());
+    mvwaddwstr(window, y-2, screenWidth-1,
         dir_chars[World::TurnRight(direction)-2].c_str());
     mvwaddch(window, y,             0, arrows[EAST] | ARROWS_COLOR);
     mvwaddch(window, y, screenWidth-1, arrows[WEST] | ARROWS_COLOR);
@@ -232,6 +232,8 @@ void Screen::ControlPlayer(const int ch) {
         keyTable[ch](ch);
     } else {
         switch ( ch ) {
+        case ERR: break; // received when idle
+
         case KEY_UP:    keyTable[int('W')](0); break;
         case KEY_DOWN:  keyTable[int('S')](0); break;
         case KEY_RIGHT: keyTable[int('D')](0); break;
@@ -279,11 +281,6 @@ void Screen::ControlPlayer(const int ch) {
             break;
 
         default: keyTable[0](ch); break; // unknown key message
-        case ERR:
-            if ( DEBUG ) {
-                Notify(Str("Received key ERR: %1").arg(ERR));
-            }
-            break;
         }
     }
     updatedNormal = updatedFront = updatedHud = false;
@@ -796,9 +793,7 @@ const {
         z_end   = qMax(0, player->X() - FRONT_MAX_DISTANCE);
         xCursor = (screenWidth/2 - player->Y() + x_end)*2 - 1;
         break;
-    default:
-        Q_UNREACHABLE();
-        return;
+    default: Q_UNREACHABLE(); return;
     }
     const World* const world = World::GetConstWorld();
     const int k_start = GetFrontStartZ();
@@ -820,9 +815,7 @@ const {
             for (*z=z_start; *z!=z_end && (block = world->GetBlock(i, j, k))->
                         Transparent()==INVISIBLE;
                     *z += z_step);
-            if ( *z == z_end ) {
-                PrintShadow(rightWin);
-            } else {
+            if ( *z != z_end ) {
                 switch ( player->Visible(i, j, k) ) {
                 case Player::VISIBLE:
                     PrintBlock(block, rightWin, CharNumberFront(i, j));
@@ -835,21 +828,19 @@ const {
                     waddch(rightWin, ' ' | COLOR_PAIR(BLACK_BLACK));
                     break;
                 }
+            } else {
+                PrintShadow(rightWin);
             }
         }
     }
     DrawBorder(rightWin);
     yCursor = k_start + 1 - player->Z();
-    if ( shiftFocus ) {
-        const int ch =
-            (( shiftFocus == 1 ) ? '^' : 'v') | COLOR_PAIR(WHITE_BLUE);
-        for (int q=yCursor-shiftFocus; 0<q && q<=screenHeight/2; q-=shiftFocus)
-        {
-            mvwaddch(rightWin, q,             0, ch);
-            mvwaddch(rightWin, q, screenWidth-1, ch);
-        }
-    }
     Arrows(rightWin, xCursor, yCursor, dir, false);
+    if ( Q_UNLIKELY(shiftFocus) ) {
+        const int y = yCursor - shiftFocus;
+        mvwaddch(rightWin, y,             0, '>' | COLOR_PAIR(WHITE_BLUE));
+        mvwaddch(rightWin, y, screenWidth-1, '<' | COLOR_PAIR(WHITE_BLUE));
+    }
     wrefresh(rightWin);
 } // void Screen::PrintFront(dirs)
 
@@ -1090,17 +1081,18 @@ void Screen::initializeKeyTable() {
             screen->shiftFocus -= 2;
             screen->keyTable[int('+')](0);
         }},
-        {{'+'}, [](int) { Screen* const scr = GetScreen();
-            ++(scr->shiftFocus);
-            if ( abs(scr->shiftFocus) == 2 ) {
-                scr->shiftFocus = 0;
+        {{'+'}, [](int) { Screen* const screen = GetScreen();
+            ++(screen->shiftFocus);
+            if ( abs(screen->shiftFocus) == 2 ) {
+                screen->shiftFocus = 0;
             }
             static const QString levels[] = {
                 tr("low"),
                 tr("normal"),
                 tr("high")
             };
-            scr->Notify(tr("Focus is set: %1").arg(levels[scr->shiftFocus+1]));
+            screen->Notify( tr("Focus is set: %1.").
+                arg(levels[screen->shiftFocus + 1]) );
         }},
 
         {{'M'}, [](int) { Screen* const scr = GetScreen();

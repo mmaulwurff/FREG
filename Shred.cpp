@@ -551,20 +551,21 @@ bool Shred::Tree(const_int(x, y, z)) {
     const int height = 4 + (qrand() & 7);
     if ( not InBounds(x+2, y+2, height+z) ) return false;
     // check for room
+    const int leaves_level = z+height/2;
     for (int i=x; i<=x+2; ++i)
     for (int j=y; j<=y+2; ++j)
-    for (int k=z; k<z+height; ++k) {
+    for (int k=leaves_level; k<z+height; ++k) {
         if ( AIR != GetBlock(i, j, k)->Sub() ) {
             return false;
         }
     }
-    const int leaves_level = z+height/2;
     if ( GetTypeOfShred() != SHRED_DEAD_FOREST ) {
         NormalCube(x, y, leaves_level, 3, 3, z+height-leaves_level, GREENERY);
     }
     Block* const wood = BlockFactory::Normal(WOOD);
-    std::fill(blocks[x+1][y+1] + qMax(z-1, 1), blocks[x+1][y+1] + z+height-1,
-        wood); // trunk
+    for (int i=qMax(z-1, 1); i<qMin(HEIGHT-2, z+height-1); ++i) { // trunk
+        SetBlock(wood, x+1, y+1, i);
+    }
     // branches
     for (const Xyz& xyz : AroundCoordinates4({x+1, y+1, leaves_level})) {
         if ( (rand >>= 1) & 1 ) {
