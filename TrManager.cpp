@@ -50,7 +50,7 @@ TrManager::TrManager() :
     const char shredChars[] = { SHRED_TABLE(X_CHAR) };
 
     int index = 0;
-    for (const QString & raw : rawShredTypes) {
+    for (const QString& raw : rawShredTypes) {
         shredTypeNames.insert(shredChars[index++],
             QCoreApplication::translate("Shred", raw.toLatin1()));
     }

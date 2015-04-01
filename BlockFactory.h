@@ -71,7 +71,7 @@ public:
     }
 
     static int KindFromId(const int id) { return (id >>   8); }
-    static int SubFromId (const int id) { return (id & 0xFF); }
+    static int SubFromId (const int id) { return (id & 0b1111'1111); }
 
     static bool IsValid(kinds, subs);
 

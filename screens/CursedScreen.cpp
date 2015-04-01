@@ -1136,7 +1136,7 @@ void Screen::initializeKeyTable() {
 
 Screen* Screen::GetScreen() { return staticScreen; }
 
-Screen::Screen(Player* const pl, int &) :
+Screen::Screen(Player* const pl, int&) :
         VirtScreen(pl),
         screen(newterm(nullptr, stdout, stdin)),
         screenWidth((COLS / 2) - ((COLS/2) & 1)),
@@ -1187,7 +1187,7 @@ Screen::Screen(Player* const pl, int &) :
     // initiate all possible color pairs
     const int colors[] = { COLOR_LIST(COLOR) };
     for (int i=BLACK_BLACK; i<=WHITE_WHITE; ++i) {
-        init_pair(i, colors[(i-1)/8], colors[(i-1) & 7]);
+        init_pair(i, colors[(i-1)/8], colors[(i-1) % 8]);
     }
 
     scrollok(notifyWin, true);
@@ -1209,7 +1209,7 @@ Screen::Screen(Player* const pl, int &) :
 
     initializeKeyTable();
     input->start();
-} // Screen::Screen(Player* const pl, int & error)
+} // Screen::Screen(Player* const pl, int& error)
 
 Screen::~Screen() {
     World* const world = World::GetWorld();
@@ -1259,7 +1259,7 @@ void Screen::Palette(WINDOW* const window) {
         {A_UNDERLINE, "A_UNDERLINE "},
         {A_DIM,       "A_DIM       "},
     };
-    for (const auto & type : lines) {
+    for (const auto& type : lines) {
         wstandend(window);
         waddstr(window, type.name.c_str());
         wattrset(window, type.attribute);
@@ -1269,7 +1269,7 @@ void Screen::Palette(WINDOW* const window) {
         }
         waddch(window, '\n');
     }
-    for (const auto & type : words) {
+    for (const auto& type : words) {
         wattrset(window, type.attribute);
         waddstr(window, type.name.c_str());
     }

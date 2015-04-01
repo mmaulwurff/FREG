@@ -158,7 +158,7 @@ int Inventory::GetInvWeight(const int i) const {
     return GetSlotWeight(inventory[i]);
 }
 
-int Inventory::GetSlotWeight(const QStack<Block*> & slot) {
+int Inventory::GetSlotWeight(const QStack<Block*>& slot) {
     return slot.isEmpty() ?
         0 : slot.top()->Weight() * slot.size();
 }
@@ -175,7 +175,7 @@ kinds Inventory::GetInvKind(const int i) const {
 
 int Inventory::Weight() const {
     return std::accumulate(inventory, inventory + Size(), 0,
-        [](const int sum, const QStack<Block*> & slot) {
+        [](const int sum, const QStack<Block*>& slot) {
             return sum + GetSlotWeight(slot);
     });
 }
@@ -192,7 +192,7 @@ Block* Inventory::ShowBlock(const int slot) const {
 
 bool Inventory::IsEmpty() const {
     return std::all_of(inventory + Start(), inventory + Size(),
-        [](const QStack<Block*> & slot) { return slot.isEmpty(); });
+        [](const QStack<Block*>& slot) { return slot.isEmpty(); });
 }
 
 bool Inventory::IsEmpty(const int i) const { return inventory[i].isEmpty(); }
@@ -265,7 +265,7 @@ Inventory::Inventory(QDataStream& str, const int sz) :
 }
 
 Inventory::~Inventory() {
-    std::for_each(inventory, inventory+Size(), [](const QStack<Block*> & inv) {
+    std::for_each(inventory, inventory+Size(), [](const QStack<Block*>& inv) {
         std::for_each(ALL(inv), [](Block* const block) {
             BlockFactory::DeleteBlock(block);
         });

@@ -74,15 +74,14 @@ Block* BlockFactory::BlockFromFile(QDataStream& str,
     return blockFactory->loads[kind](str, kind, sub);
 }
 
-bool BlockFactory::KindSubFromFile(QDataStream& str,
-        quint8 * kind, quint8 * sub)
+bool BlockFactory::KindSubFromFile(QDataStream& str, quint8* kind, quint8* sub)
 {
     str >> *sub;
-    if ( *sub & 0x80 ) { // normal bit
-        *sub &= 0x7F;
+    if ( *sub & 0b1000'0000 ) { // normal bit
+        *sub &= 0b0111'1111;
         return true;
     } else {
-        *sub &= 0x7F;
+        *sub &= 0b0111'1111;
         str >> *kind;
         return false;
     }

@@ -110,7 +110,7 @@ public:
         qint64 GlobalX(int x) const;
         qint64 GlobalY(int y) const;
         /// Get local coordinate.
-        static int CoordInShred(const int x) { return x & 0xF; }
+        static int CoordInShred(const int x) { return x & 0b1111; }
 
         /// Get shred coordinate in loaded zone (from 0 to numShreds).
         static int CoordOfShred(const int x) {return x>>SHRED_WIDTH_BITSHIFT;}

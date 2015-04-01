@@ -41,7 +41,7 @@ public:
     void ReleazeByteArray(QByteArray*) const;
 
     struct LongLat {
-        bool operator==(const LongLat & other) const {
+        bool operator==(const LongLat& other) const {
             return longitude == other.longitude && latitude == other.latitude;
         }
         qint64 longitude, latitude;

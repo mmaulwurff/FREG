@@ -263,7 +263,7 @@ sub_groups Block::GetSubGroup(const int sub) {
     }
 }
 
-bool Block::operator==(const Block & block) const {
+bool Block::operator==(const Block& block) const {
     return ( block.Kind() == Kind()
         && block.Sub()    == Sub()
         && block.GetDurability() == GetDurability()
@@ -309,7 +309,7 @@ Block::Block(QDataStream& str, const kinds kind_, const subs sub_) :
     if ( Q_UNLIKELY(durability & 1) ) {
         str >> noteId;
     }
-    direction = ( durability >>= 1 ) & 0x7;
+    direction = ( durability >>= 1 ) & 0b0111;
     durability >>= 3;
 }
 

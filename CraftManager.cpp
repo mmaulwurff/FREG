@@ -27,7 +27,7 @@
 
 // CraftItem section
 
-bool CraftItem::operator<(const CraftItem &item) const {
+bool CraftItem::operator<(const CraftItem& item) const {
     return
         BlockFactory::MakeId(item.kind, item.sub) <
         BlockFactory::MakeId(     kind,      sub);
@@ -42,21 +42,21 @@ CraftList:: CraftList(const int materials_number) :
 
 CraftList::~CraftList() { clear(); }
 
-void CraftList::operator<<(CraftItem * const new_item) {
+void CraftList::operator<<(CraftItem* const new_item) {
     items.append(new_item);
 }
 
-bool CraftList::operator==(const CraftList & compared) const {
+bool CraftList::operator==(const CraftList& compared) const {
     return ( GetMaterialsNumber() == compared.GetMaterialsNumber() ) &&
         std::equal(items.constBegin(), items.constBegin()+GetMaterialsNumber(),
             compared.items.constBegin(),
-            [](const CraftItem * const first, const CraftItem * const second) {
+            [](const CraftItem* const first, const CraftItem* const second) {
                 return not memcmp(first, second, sizeof(CraftItem));
         });
 }
 
-void CraftList::LoadItems(const QJsonArray & array) {
-    for (const QJsonValue & value : array) {
+void CraftList::LoadItems(const QJsonArray& array) {
+    for (const QJsonValue& value : array) {
         const QJsonObject item = value.toObject();
         items.append( new CraftItem{item[Str("number")].toInt(),
                 TrManager::StrToKind(item[Str("kind")].toString()),
@@ -66,11 +66,11 @@ void CraftList::LoadItems(const QJsonArray & array) {
 
 int CraftList::size() const { return items.size(); }
 int CraftList::GetMaterialsNumber() const { return materialsNumber; }
-const CraftItem * CraftList::at(const int i) const { return items.at(i); }
+const CraftItem* CraftList::at(const int i) const { return items.at(i); }
 
 void CraftList::Sort() {
     std::sort(ALL(items),
-        [](const CraftItem * const item1, const CraftItem * const item2) {
+        [](const CraftItem* const item1, const CraftItem* const item2) {
             return *item1 < *item2;
     });
 }
@@ -97,7 +97,7 @@ CraftManager::CraftManager() : recipesList() {
             const QJsonObject recipeObject(recipes.at(i).toObject());
             const QJsonArray materials(recipeObject[Str("materials")].
                 toArray());
-            CraftList * const recipe = new CraftList(materials.size());
+            CraftList* const recipe = new CraftList(materials.size());
             recipe->LoadItems(materials);
             recipe->Sort();
             recipe->LoadItems(recipeObject[Str("products")].toArray());
@@ -107,7 +107,7 @@ CraftManager::CraftManager() : recipesList() {
 }
 
 CraftManager::~CraftManager() {
-    for (const auto & i : recipesList) {
+    for (const auto& i : recipesList) {
         qDeleteAll(i);
     }
 }
@@ -129,10 +129,10 @@ bool CraftManager::Craft(CraftList * const recipe, const int sub) {
         craftManager->CraftSub(recipe, DIFFERENT) : true;
 }
 
-bool CraftManager::CraftSub(CraftList * const recipe, const int sub) const {
+bool CraftManager::CraftSub(CraftList* const recipe, const int sub) const {
     recipe->Sort();
     // find recipe and copy products from it
-    for (const CraftList * const tried : recipesList[sub]) {
+    for (const CraftList* const tried : recipesList[sub]) {
         if ( *tried == *recipe ) {
             recipe->clear();
             for (int i=tried->GetMaterialsNumber(); i<tried->size(); ++i) {

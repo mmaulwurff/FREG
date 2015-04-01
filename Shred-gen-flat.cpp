@@ -26,7 +26,7 @@ int Shred::NormalUnderground(const int depth, const subs sub) {
     Block* const block = BlockFactory::Normal(sub);
     Block* const stone = BlockFactory::Normal(STONE);
     FOR_ALL_SHRED_AREA(x, y) {
-        PutBlock( ((qrand() & 1) ? stone : block), x, y, HEIGHT/2-depth-6);
+        PutBlock( ((qrand() % 2) ? stone : block), x, y, HEIGHT/2-depth-6);
     }
     NormalCube(0,0,HEIGHT/2-depth-5, SHRED_WIDTH,SHRED_WIDTH,6, sub);
     return HEIGHT/2;
@@ -35,17 +35,17 @@ int Shred::NormalUnderground(const int depth, const subs sub) {
 void Shred::Plain() {
     NormalUnderground();
     LoadRoom(HEIGHT/2);
-    RandomDrop(qrand() & 3, BUSH,   WOOD);
-    RandomDrop(qrand() & 3, BLOCK,  ROSE);
-    RandomDrop(qrand() & 3, RABBIT, A_MEAT);
+    RandomDrop(qrand() % 4, BUSH,   WOOD);
+    RandomDrop(qrand() % 4, BLOCK,  ROSE);
+    RandomDrop(qrand() % 4, RABBIT, A_MEAT);
     PlantGrass();
 }
 
 void Shred::Forest(const bool dead) {
     NormalUnderground();
-    RandomDrop(qrand() & 3, BUSH, WOOD);
+    RandomDrop(qrand() % 4, BUSH, WOOD);
     if ( not dead ) {
-        RandomDrop(qrand() & 1, BLOCK, ROSE);
+        RandomDrop(qrand() % 2, BLOCK, ROSE);
         PlantGrass();
     }
     for (int number = AroundShredTypes(longitude, latitude).Count(type);
@@ -60,7 +60,7 @@ void Shred::Forest(const bool dead) {
             Tree(x-1, y-1, z);
         }
     }
-    RandomDrop(qrand() & 3, WEAPON, WOOD);
+    RandomDrop(qrand() % 4, WEAPON, WOOD);
 }
 
 void Shred::Water(const subs sub) {
@@ -117,12 +117,12 @@ void Shred::Hill(const bool dead) {
             }
         }
     }
-    RandomDrop(qrand() & 3, WEAPON, STONE);
+    RandomDrop(qrand() % 4, WEAPON, STONE);
     if ( not dead ) {
         int rand = qrand();
-        RandomDrop(rand & 3, BLOCK, ROSE);
-        RandomDrop((rand >>= 4) & 3, RABBIT, A_MEAT);
-        RandomDrop((rand >>= 4) & 3, BUSH, WOOD);
+        RandomDrop(rand % 4, BLOCK, ROSE);
+        RandomDrop((rand >>= 4) % 4, RABBIT, A_MEAT);
+        RandomDrop((rand >>= 4) % 4, BUSH, WOOD);
         PlantGrass();
     }
 }
@@ -149,7 +149,7 @@ void Shred::Mountain() {
             SHRED_WIDTH/2, 2, 1, STONE);
     }
     // water pool
-    if ( (qrand() & 7) == 0 ) {
+    if ( (qrand() % 8) == 0 ) {
         for (int i=1; i<SHRED_WIDTH/2-1; ++i)
         for (int j=1; j<SHRED_WIDTH/2-1; ++j)
         for (int k=mount_top-3; k<=mount_top; ++k) {
@@ -157,25 +157,25 @@ void Shred::Mountain() {
         }
     }
     // cavern
-    if ( (qrand() & 7) == 0 ) {
+    if ( (qrand() % 8) == 0 ) {
         NormalCube(SHRED_WIDTH/4-2, SHRED_WIDTH/4-2, HEIGHT/2+1, 4, 4, 3, AIR);
-        const int entries = qrand() & 15;
-        if ( entries & 1 ) { // north entry
+        const int entries = qrand() % 16;
+        if ( entries & 0b0001 ) { // north entry
             NormalCube(SHRED_WIDTH/4-1, 0, HEIGHT/2+1, 2, 2, 2, AIR);
         }
-        if ( entries & 2 ) { // east entry
+        if ( entries & 0b0010 ) { // east entry
             NormalCube(SHRED_WIDTH/2-4, SHRED_WIDTH/4-1,
                 HEIGHT/2+1, 2, 2, 2, AIR);
         }
-        if ( entries & 4 ) { // south entry
+        if ( entries & 0b0100 ) { // south entry
             NormalCube(SHRED_WIDTH/4-1, SHRED_WIDTH/2-2,
                 HEIGHT/2+1, 2, 2, 2, AIR);
         }
-        if ( entries & 8 ) { // west entry
+        if ( entries & 0b1000 ) { // west entry
             NormalCube(0, SHRED_WIDTH/4-1, HEIGHT/2+1, 2, 2, 2, AIR);
         }
     }
-    RandomDrop(qrand() & 7, WEAPON, STONE);
+    RandomDrop(qrand() % 8, WEAPON, STONE);
     PlantGrass();
 } // Shred::Mountain()
 
@@ -193,18 +193,18 @@ void Shred::WasteShred() {
         LoadRoom(HEIGHT/2 + 1, 1);
     }
     int random = qrand();
-    RandomDrop((random & 0x7)+3, FALLING, SUB_DUST);
+    RandomDrop((random % 8)+3, FALLING, SUB_DUST);
     random >>= 3;
-    RandomDrop(random & 0x1, WEAPON, BONE);
-    RandomDrop((random & 0x7)+3, WEAPON, STONE);
+    RandomDrop(random % 2, WEAPON, BONE);
+    RandomDrop((random % 8)+3, WEAPON, STONE);
     random >>= 3;
-    if ( random & 0x1 && not room_loaded ) {
+    if ( random % 2 && not room_loaded ) {
         random >>= 1;
-        const subs pool_sub = ( random & 0x1 ) ? WATER : STONE;
+        const subs pool_sub = ( random % 2 ) ? WATER : STONE;
         random >>= 1;
-        const int x = random & 0xF;
+        const int x = random & 0b1111;
         random >>= 4;
-        const int y = random & 0xF;
+        const int y = random & 0b1111;
         SetNewBlock(LIQUID,  pool_sub, x, y, HEIGHT/2-1);
         SetNewBlock(LIQUID,  pool_sub, x, y, HEIGHT/2  );
         SetNewBlock(FALLING, SUB_DUST, x, y, HEIGHT/2+1);

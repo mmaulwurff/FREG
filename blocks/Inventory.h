@@ -91,7 +91,7 @@ protected:
     virtual void SaveAttributes(QDataStream& out) const;
 
 private:
-    static int GetSlotWeight(const QStack<Block*> & slot);
+    static int GetSlotWeight(const QStack<Block*>& slot);
 
     const quint8 size;
     QStack<Block*> * const inventory;

@@ -51,7 +51,7 @@ class Screen final : public VirtScreen {
     Q_OBJECT
     Q_DISABLE_COPY(Screen)
 public:
-     Screen(Player*, int & error);
+     Screen(Player*, int& error);
     ~Screen() override;
 
     void ControlPlayer();
@@ -59,7 +59,7 @@ public:
 
     /// This is called for a notification to be displayed.
     void Notify(QString) const override;
-    void PassString(QString &) const override;
+    void PassString(QString&) const override;
     void UpdateAll() override;
     void UpdatePlayer() override;
     void UpdateAround(int x, int y, int z) override;

@@ -164,12 +164,12 @@
 
     void Rabbit::DoRareAction() {
         if ( not moved_in_this_turn ) {
-            const int rand = qrand() & 255;
+            const int rand = qrand() % 256;
             if ( rand < 64 ) {
                 World::GetWorld()->Move(X(), Y(), Z(),
-                    static_cast<dirs>(DOWN + (rand & 3)));
+                    static_cast<dirs>(DOWN + (rand % 4)));
             } else if ( Gravitate(4, 1, 3, 4) ) {
-                if ( rand & 1 ) {
+                if ( rand % 2 ) {
                     World::GetWorld()->Jump(X(), Y(), Z(), GetDir());
                 } else {
                     World::GetWorld()->Move(X(), Y(), Z(), GetDir());
@@ -182,7 +182,7 @@
 
     void Rabbit::ActFrequent() {
         if ( Gravitate(2, 1, 2, 4) ) {
-            if ( qrand() & 1 ) {
+            if ( qrand() % 2 ) {
                 World::GetWorld()->Jump(X(), Y(), Z(), GetDir());
             } else {
                 World::GetWorld()->Move(X(), Y(), Z(), GetDir());

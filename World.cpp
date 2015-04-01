@@ -170,17 +170,17 @@ void World::SaveToDisk() const {
 void World::ActivateFullReload() { toResetDir = DOWN; }
 
 dirs World::TurnRight(const dirs dir) {
-    return static_cast<dirs>(((dir - 2 + 1) & 3) + 2);
+    return static_cast<dirs>(((dir - 2 + 1) % 4) + 2);
 }
 
 dirs World::TurnLeft(const dirs dir) {
-    return static_cast<dirs>(((dir + 4 - 2 - 1) & 3) + 2);
+    return static_cast<dirs>(((dir + 4 - 2 - 1) % 4) + 2);
 }
 
 dirs World::Anti(const dirs dir) {
     return static_cast<dirs>( ( dir <= DOWN ) ?
         not dir :
-        (dir & 3) + 2 );
+        (dir % 4) + 2 );
 }
 
 Block* World::GetBlock(const_int(x, y, z)) const {
@@ -685,7 +685,7 @@ void World::LoadNotes() {
 void World::SaveNotes() const {
     QFile notes_file(WorldPath() + Str("/notes.txt"));
     if ( notes_file.open(QIODevice::WriteOnly | QIODevice::Text) ) {
-        for (const QString & note : notes) {
+        for (const QString& note : notes) {
             notes_file.write(note.toUtf8().constData());
             notes_file.putChar('\n');
         }

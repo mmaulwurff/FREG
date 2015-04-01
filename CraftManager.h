@@ -26,7 +26,7 @@
 struct CraftItem final {
     M_DISABLE_COPY(CraftItem)
 
-    bool operator<(const CraftItem & item) const;
+    bool operator<(const CraftItem& item) const;
 
     const int number;
     const int kind, sub;
@@ -48,16 +48,16 @@ public:
     int size() const;
     int GetMaterialsNumber() const;
     void Sort();
-    void LoadItems(const class QJsonArray &);
+    void LoadItems(const class QJsonArray&);
     void clear();
-    const CraftItem * at(int i) const;
+    const CraftItem* at(int i) const;
 
-    void operator<<(CraftItem *);
-    bool operator==(const CraftList &) const;
+    void operator<<(CraftItem*);
+    bool operator==(const CraftList&) const;
 
 private:
     const int materialsNumber;
-    QList<CraftItem *> items;
+    QList<CraftItem*> items;
 }; // CraftList
 
 class CraftManager final {
@@ -66,14 +66,14 @@ public:
     ~CraftManager();
     M_DISABLE_COPY(CraftManager)
 
-    static bool MiniCraft(CraftItem **);
-    static bool Craft(CraftList * items, int sub);
+    static bool MiniCraft(CraftItem**);
+    static bool Craft(CraftList* items, int sub);
 
 private:
-    bool CraftSub(CraftList * items, int sub) const;
+    bool CraftSub(CraftList* items, int sub) const;
 
-    QList<CraftList *> recipesList[SUB_COUNT];
-    static CraftManager * craftManager;
+    QList<CraftList*> recipesList[SUB_COUNT];
+    static CraftManager* craftManager;
 }; // CraftManager
 
 #endif // CRAFTMANAGER_H

@@ -21,7 +21,7 @@
 
 // AroundCoordinates:: section
 
-AroundCoordinates::AroundCoordinates(const int dirsBits, const Xyz & xyz) :
+AroundCoordinates::AroundCoordinates(const int dirsBits, const Xyz& xyz) :
         AroundCoordinatesN<6>()
 {
     if ( dirsBits & B_UP     ) array[size++] = { xyz.X(), xyz.Y(), xyz.Z()+1 };
@@ -31,7 +31,7 @@ AroundCoordinates::AroundCoordinates(const int dirsBits, const Xyz & xyz) :
     }
 }
 
-AroundCoordinates::AroundCoordinates(const Xyz & xyz) :
+AroundCoordinates::AroundCoordinates(const Xyz& xyz) :
         AroundCoordinatesN<6>()
 {
     array[0] = { xyz.X(), xyz.Y(), xyz.Z()+1 };
@@ -42,7 +42,7 @@ AroundCoordinates::AroundCoordinates(const Xyz & xyz) :
 
 // AroundCoordinates4:: section
 
-AroundCoordinates4::AroundCoordinates4(const Xyz & xyz) :
+AroundCoordinates4::AroundCoordinates4(const Xyz& xyz) :
     AroundCoordinatesN<4>()
 {
     fill4(xyz);

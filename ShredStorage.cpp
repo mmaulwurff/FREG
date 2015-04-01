@@ -22,8 +22,8 @@
 #include <QFile>
 
 uint qHash(const ShredStorage::LongLat & longLat) {
-    return  (quint64(longLat.longitude) & 0xff) |
-            (quint64(longLat.latitude ) & 0xff << 1);
+    return  (quint64(longLat.longitude) & 0b1111'1111) |
+            (quint64(longLat.latitude ) & 0b1111'1111 << 1);
 }
 
 ShredStorage::ShredStorage(const int size_,

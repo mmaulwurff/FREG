@@ -548,7 +548,7 @@ void Shred::NormalCube(const_int(x_start, y_start, z_start),
 
 bool Shred::Tree(const_int(x, y, z)) {
     int rand = qrand();
-    const int height = 4 + (qrand() & 7);
+    const int height = 4 + (qrand() % 8);
     if ( not InBounds(x+2, y+2, height+z) ) return false;
     // check for room
     const int leaves_level = z+height/2;
@@ -568,7 +568,7 @@ bool Shred::Tree(const_int(x, y, z)) {
     }
     // branches
     for (const Xyz& xyz : AroundCoordinates4({x+1, y+1, leaves_level})) {
-        if ( (rand >>= 1) & 1 ) {
+        if ( (rand >>= 1) % 2 ) {
             PutBlock(wood, XYZ(xyz));
         }
     }
