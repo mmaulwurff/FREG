@@ -41,6 +41,7 @@ name(settings.value(QStringLiteral(string), default).toBool()),
 
 const chtype Screen::arrows[] = { '.', 'x', '^', '>', 'v', '<' };
 const int Screen::MAX_CHAR_DISTANCE = 16;
+Screen* Screen::staticScreen = nullptr;
 
 void Screen::Arrows(WINDOW* const window, const int x, const int y,
         const dirs direction, const bool is_normal)
@@ -226,196 +227,65 @@ void Screen::MovePlayerDiag(const dirs dir1, const dirs dir2) const {
 void Screen::ControlPlayer() { ControlPlayer(getch()); }
 
 void Screen::ControlPlayer(const int ch) {
-    static const int ACTIVE_HAND = 3;
-    static const int KEY_NOTHING = 'J';
     if ( Q_UNLIKELY(player->GetConstBlock() == nullptr) ) return;
-    if ( 'a'<=ch && ch<='z' ) { // actions with inventory
-        InventoryAction(ch - 'a');
-        return;
-    } // else:
-    switch ( ch ) { // interactions with world
-    default:
-        Notify(tr("Unknown key. Press 'H' for help."));
-        if ( DEBUG ) {
-            Notify(Str("Pressed key code: %1.").arg(ch));
+    if ( 0 < ch && ch < ASCII_SIZE ) {
+        keyTable[ch](ch);
+    } else {
+        switch ( ch ) {
+        case KEY_UP:    keyTable[int('W')](0); break;
+        case KEY_DOWN:  keyTable[int('S')](0); break;
+        case KEY_RIGHT: keyTable[int('D')](0); break;
+        case KEY_LEFT:  keyTable[int('A')](0); break;
+        case KEY_END:   keyTable[int('5')](0); break;
+        case KEY_NPAGE: keyTable[int('V')](0); break;
+        case KEY_PPAGE: keyTable[int('^')](0); break;
+
+        case KEY_HOME:  keyTable[int('I')](0); break;
+        case KEY_BACKSPACE: keyTable[int('K')](0); break;
+
+        case KEY_HELP:
+        case KEY_F(1):  keyTable[int('H')](0); break;
+        case KEY_F(2):  keyTable[int('F')](0); break;
+        case KEY_F(3):  keyTable[int('?')](0); break;
+        case KEY_F(4):  keyTable[int('~')](0); break;
+        case KEY_F(5):  keyTable[int('R')](0); break;
+        case KEY_DC: // delete
+        case KEY_F(8):  keyTable[    8   ](0); break;
+        case KEY_F(9):  keyTable[int(':')](0); break;
+        case KEY_F(10): keyTable[int('Q')](0); break;
+        case KEY_F(12): keyTable[int('!')](0); break;
+
+        case KEY_IC: player->Build(ACTIVE_HAND); break; // insert
+        case KEY_BREAK: keyTable[int('P')](0); break;
+
+        case KEY_MOUSE: ProcessMouse(); break;
+
+        case KEY_RESIZE:
+            screenWidth = (COLS / 2) - ((COLS/2) & 1);
+            screenHeight = LINES - 10;
+            wresize(leftWin,  screenHeight, screenWidth);
+            wresize(rightWin, screenHeight, screenWidth);
+            wresize(notifyWin, 0, 0);
+
+            mvwin(actionWin, LINES-7, MINIMAP_WIDTH + 1);
+            mvwin(notifyWin, LINES-7, MINIMAP_WIDTH + ACTIONS_WIDTH + 2);
+            mvwin(hudWin, screenHeight, 0);
+            mvwin(minimapWin, LINES-7, 0);
+            mvwin(leftWin, 0, (COLS/2) & 1);
+            mvwin(rightWin, 0, COLS/2);
+
+            RePrint();
+            refresh();
+            break;
+
+        default: keyTable[0](ch); break; // unknown key message
+        case ERR:
+            if ( DEBUG ) {
+                Notify(Str("Received key ERR: %1").arg(ERR));
+            }
+            break;
         }
-        break;
-
-    case ERR:
-    case KEY_NOTHING: break;
-
-    case 'W': case KEY_UP:    case '8': MovePlayer(NORTH);  break;
-    case 'S': case KEY_DOWN:  case '2': MovePlayer(SOUTH);  break;
-    case 'D': case KEY_RIGHT: case '6': MovePlayer(EAST);   break;
-    case 'A': case KEY_LEFT:  case '4': MovePlayer(WEST);   break;
-    case KEY_END:   case '5': player->Move(DOWN); break;
-
-    case '7': MovePlayerDiag(NORTH, WEST); break;
-    case '9': MovePlayerDiag(NORTH, EAST); break;
-    case '1': MovePlayerDiag(SOUTH, WEST); break;
-    case '3': MovePlayerDiag(SOUTH, EAST); break;
-    case '=':
-    case '0': MovePlayer(player->GetDir()); break;
-    case ' ': player->Jump(); break;
-
-    case '{': player->Move(World::TurnLeft (player->GetDir())); break; //strafe
-    case '}': player->Move(World::TurnRight(player->GetDir())); break;
-
-    case '>': player->SetDir(World::TurnRight(player->GetDir())); break;
-    case '<': player->SetDir(World::TurnLeft (player->GetDir())); break;
-    case 'V':
-    case KEY_NPAGE: player->SetDir(DOWN); break;
-    case '^':
-    case KEY_PPAGE: player->SetDir(UP);   break;
-
-    case 'K':
-    case KEY_BACKSPACE: player->SetDir(World::Anti(player->GetDir())); break;
-
-    case 'I':
-    case KEY_HOME: player->Backpack(); break;
-
-    case KEY_F(8):
-    case KEY_DC: // delete
-    case 8: player->Damage(); break;
-
-    case 13:
-    case '\n': switch ( actionMode ) {
-        case ACTION_USE:      player->Use();              break;
-        case ACTION_THROW:    player->Throw(ACTIVE_HAND); break;
-        case ACTION_OBTAIN:   player->Obtain(0);          break;
-        case ACTION_INSCRIBE: player->Inscribe();         break;
-        case ACTION_BUILD:    player->Build(ACTIVE_HAND); break;
-        case ACTION_CRAFT:    player->Craft(ACTIVE_HAND); break;
-        case ACTION_WIELD:    player->Wield(ACTIVE_HAND); break;
-        }
-        break;
-
-    case 'F': case KEY_F(2): player->Use();      break;
-    case '?': case KEY_F(3): player->Examine();  break;
-    case '~': case KEY_F(4): player->Inscribe(); break;
-    case 27: /* esc */ player->StopUseAll(); break;
-
-    case KEY_IC: player->Build(ACTIVE_HAND); break; // insert
-    case 'B': SetActionMode(ACTION_BUILD);    break;
-    case 'C': SetActionMode(ACTION_CRAFT);    break;
-    case 'T': SetActionMode(ACTION_THROW);    break;
-    case 'N': SetActionMode(ACTION_INSCRIBE); break;
-    case 'G':
-    case 'O': SetActionMode(ACTION_OBTAIN);   break;
-    case 'E': SetActionMode(ACTION_WIELD);    break;
-    case 'U': SetActionMode(ACTION_USE);      break;
-
-    case '[':
-        SetActionMode((actionMode == ACTION_USE) ?
-            ACTION_WIELD : static_cast<actions>(actionMode-1));
-        break;
-    case ']':
-    case '\t':
-        SetActionMode(actionMode == ACTION_WIELD ?
-            ACTION_USE : static_cast<actions>(actionMode+1));
-        break;
-
-    case 'Z':
-        if ( player->PlayerInventory() ) {
-              player->PlayerInventory()->Shake();
-              Notify(tr("Inventory reorganized."));
-        }
-        break;
-
-    case KEY_HELP:
-    case KEY_F(1):
-    case 'H': ProcessCommand(Str("help")); break;
-
-    case KEY_F(5):
-    case 'R': RePrint(); break;
-
-    case 'L':
-        QDesktopServices::openUrl(
-            QUrl(Str("file:///%1log.txt").arg(home_path)));
-        break;
-
-    case '-': shiftFocus -= 2; // no break;
-    case '+': {
-        ++shiftFocus;
-        if ( abs(shiftFocus) == 2 ) {
-            shiftFocus = 0;
-        }
-        static const QString levels[] = {
-            tr("low"),
-            tr("normal"),
-            tr("high")
-        };
-        Notify(tr("Focus is set: %1").arg(levels[shiftFocus+1]));
-        } break;
-
-    case KEY_F(12):
-    case '!': player->SetCreativeMode( not player->GetCreativeMode() ); break;
-
-    case KEY_F(9):
-    case '\\':
-    case ':':
-    case '/': PassString(previousCommand); // no break
-    case '.': ProcessCommand(previousCommand); break;
-
-    case 'M':
-        mouseOn = not mouseOn;
-        mousemask((mouseOn ? MOUSEMASK : noMouseMask), nullptr);
-        Notify(tr("Mouse: %1.").arg(TrManager::OffOn(mouseOn)));
-        break;
-
-    case KEY_BREAK:
-    case 'P': {
-        static bool isPaused = false;
-        if ( isPaused ) {
-            emit ResumeWorld();
-            Notify(Str("Game is resumed."));
-        } else {
-            emit PauseWorld();
-            Notify(Str("Game is paused."));
-        }
-        isPaused = not isPaused;
-    } break;
-
-    case 'Y':
-        Notify(tr("Saving game..."));
-        World::GetWorld()->SaveToDisk();
-        player->SaveState();
-        Notify( tr("Game saved at location \"%1\".").arg(World::WorldPath()) );
-        break;
-
-    case KEY_MOUSE: ProcessMouse(); break;
-
-    case 'Q':
-    case 3:
-    case 4:
-    case 17:
-    case 24:
-    case 'X':
-    case KEY_F(10):
-        Notify(tr("Exiting game...\n\n"));
-        emit ExitReceived();
-        input->Stop();
-        break;
-
-    case KEY_RESIZE:
-        screenWidth = (COLS / 2) - ((COLS/2) & 1);
-        screenHeight = LINES - 10;
-        wresize(leftWin,  screenHeight, screenWidth);
-        wresize(rightWin, screenHeight, screenWidth);
-        wresize(notifyWin, 0, 0);
-
-        mvwin(actionWin, LINES-7, MINIMAP_WIDTH + 1);
-        mvwin(notifyWin, LINES-7, MINIMAP_WIDTH + ACTIONS_WIDTH + 2);
-        mvwin(hudWin, screenHeight, 0);
-        mvwin(minimapWin, LINES-7, 0);
-        mvwin(leftWin, 0, (COLS/2) & 1);
-        mvwin(rightWin, 0, COLS/2);
-
-        RePrint();
-        refresh();
-        break;
     }
-
     updatedNormal = updatedFront = updatedHud = false;
 } // void Screen::ControlPlayer(int ch)
 
@@ -1094,6 +964,186 @@ void Screen::DeathScreen() {
     updatedNormal = updatedFront = updatedHud = updatedMinimap = true;
 }
 
+void Screen::initializeKeyTable() {
+    std::fill(ALL(keyTable), [](const int key) {
+        GetScreen()->Notify(tr("Unknown key. Press 'H' for help."));
+        if ( DEBUG ) {
+            GetScreen()->Notify(Str("'%1', code %2.").arg(char(key)).arg(key));
+        }
+    });
+
+    std::fill(keyTable + 'a', keyTable + 'z' + 1, [](const int key) {
+        GetScreen()->InventoryAction(key - 'a');
+    });
+
+    const struct {
+        std::initializer_list<char> keys;
+        void(* command)(int);
+    } command_table[] {
+        // moving
+        {{'W', '8'}, [](int) { GetScreen()->MovePlayer(NORTH); }},
+        {{'S', '2'}, [](int) { GetScreen()->MovePlayer(SOUTH); }},
+        {{'D', '6'}, [](int) { GetScreen()->MovePlayer(EAST ); }},
+        {{'A', '4'}, [](int) { GetScreen()->MovePlayer(WEST ); }},
+
+        {{'5'},      [](int) { GetScreen()->player->Move(DOWN); }},
+
+        {{'7'},      [](int) { GetScreen()->MovePlayerDiag(NORTH, WEST); }},
+        {{'9'},      [](int) { GetScreen()->MovePlayerDiag(NORTH, EAST); }},
+        {{'1'},      [](int) { GetScreen()->MovePlayerDiag(SOUTH, WEST); }},
+        {{'3'},      [](int) { GetScreen()->MovePlayerDiag(SOUTH, EAST); }},
+
+        {{'=', '0'}, [](int) { Screen* const screen = GetScreen();
+            screen->MovePlayer(screen->player->GetDir());
+        }},
+        {{' '},      [](int) { GetScreen()->player->Jump(); }},
+
+        // strafe
+        {{'{'},      [](int) { Player* const player = GetScreen()->player;
+            player->Move(World::TurnLeft(player->GetDir()));
+        }},
+        {{'}'},      [](int) { Player* const player = GetScreen()->player;
+            player->Move(World::TurnRight(player->GetDir()));
+        }},
+
+        // turning
+        {{'>'},      [](int) { Player* const player = GetScreen()->player;
+            player->SetDir(World::TurnRight(player->GetDir()));
+        }},
+        {{'<'},      [](int) { Player* const player = GetScreen()->player;
+            player->SetDir(World::TurnLeft(player->GetDir()));
+        }},
+        {{'K'},      [](int) { Player* const player = GetScreen()->player;
+            player->SetDir(World::Anti(player->GetDir()));
+        }},
+
+        {{'V'},      [](int) { GetScreen()->player->SetDir(DOWN); }},
+        {{'^'},      [](int) { GetScreen()->player->SetDir(UP);   }},
+
+        {{'I'},      [](int) { GetScreen()->player->Backpack(); }},
+
+        {{8},        [](int) { GetScreen()->player->Damage(); }},
+
+        {{'F'},      [](int) { GetScreen()->player->Use(); }},
+        {{'?'},      [](int) { GetScreen()->player->Examine(); }},
+        {{'~'},      [](int) { GetScreen()->player->Inscribe(); }},
+        {{27},       [](int) { GetScreen()->player->StopUseAll(); }}, // esc
+
+        {{'B'},      [](int) { GetScreen()->SetActionMode(ACTION_BUILD); }},
+        {{'C'},      [](int) { GetScreen()->SetActionMode(ACTION_CRAFT); }},
+        {{'T'},      [](int) { GetScreen()->SetActionMode(ACTION_THROW); }},
+        {{'N'},      [](int) { GetScreen()->SetActionMode(ACTION_INSCRIBE); }},
+        {{'G', 'O'}, [](int) { GetScreen()->SetActionMode(ACTION_OBTAIN); }},
+        {{'E'},      [](int) { GetScreen()->SetActionMode(ACTION_WIELD); }},
+        {{'U'},      [](int) { GetScreen()->SetActionMode(ACTION_USE); }},
+
+        {{'H'},      [](int) { GetScreen()->ProcessCommand(Str("help")); }},
+
+        {{'R'},      [](int) { GetScreen()->RePrint(); }},
+
+        {{'!'},      [](int) { Player* const player = GetScreen()->player;
+            player->SetCreativeMode( not player->GetCreativeMode() );
+        }},
+
+        {{'L'},      [](int) {
+            QDesktopServices::openUrl(
+                QUrl(Str("file:///%1log.txt").arg(home_path)));
+        }},
+
+        {{'['},      [](int) { Screen* const screen = GetScreen();
+            screen->SetActionMode((screen->actionMode == ACTION_USE) ?
+                ACTION_WIELD : static_cast<actions>(screen->actionMode - 1));
+        }},
+        {{']', '\t'}, [](int) { Screen* const screen = GetScreen();
+            screen->SetActionMode(screen->actionMode == ACTION_WIELD ?
+                ACTION_USE : static_cast<actions>(screen->actionMode + 1));
+        }},
+
+        {{'Z'},      [](int) { Screen* const screen = GetScreen();
+            if ( screen->player->PlayerInventory() ) {
+                  screen->player->PlayerInventory()->Shake();
+                  screen->Notify(tr("Inventory reorganized."));
+            }
+        }},
+
+        {{13, '\n'}, [](int) { Screen* const screen = GetScreen();
+            switch ( screen->actionMode ) {
+            case ACTION_USE:      screen->player->Use();              break;
+            case ACTION_THROW:    screen->player->Throw(ACTIVE_HAND); break;
+            case ACTION_OBTAIN:   screen->player->Obtain(0);          break;
+            case ACTION_INSCRIBE: screen->player->Inscribe();         break;
+            case ACTION_BUILD:    screen->player->Build(ACTIVE_HAND); break;
+            case ACTION_CRAFT:    screen->player->Craft(ACTIVE_HAND); break;
+            case ACTION_WIELD:    screen->player->Wield(ACTIVE_HAND); break;
+            }
+        }},
+
+        {{'\\', ':', '/'}, [](int) { Screen* const screen = GetScreen();
+            screen->PassString(screen->previousCommand);
+            screen->ProcessCommand(screen->previousCommand);
+        }},
+        {{'.'}, [](int) { Screen* const screen = GetScreen();
+            screen->ProcessCommand(screen->previousCommand);
+        }},
+
+        {{'-'}, [](int) { Screen* const screen = GetScreen();
+            screen->shiftFocus -= 2;
+            screen->keyTable[int('+')](0);
+        }},
+        {{'+'}, [](int) { Screen* const scr = GetScreen();
+            ++(scr->shiftFocus);
+            if ( abs(scr->shiftFocus) == 2 ) {
+                scr->shiftFocus = 0;
+            }
+            static const QString levels[] = {
+                tr("low"),
+                tr("normal"),
+                tr("high")
+            };
+            scr->Notify(tr("Focus is set: %1").arg(levels[scr->shiftFocus+1]));
+        }},
+
+        {{'M'}, [](int) { Screen* const scr = GetScreen();
+            scr->mouseOn = not scr->mouseOn;
+            mousemask((scr->mouseOn ? MOUSEMASK : scr->noMouseMask), nullptr);
+            scr->Notify(tr("Mouse: %1.").arg(TrManager::OffOn(scr->mouseOn)));
+        }},
+
+        {{'P'}, [](int) { Screen* const screen = GetScreen();
+            static bool isPaused = false;
+            if ( isPaused ) {
+                emit screen->ResumeWorld();
+                screen->Notify(Str("Game is resumed."));
+            } else {
+                emit screen->PauseWorld();
+                screen->Notify(Str("Game is paused."));
+            }
+            isPaused = not isPaused;
+        }},
+
+        {{'Y'}, [](int) { Screen* const screen = GetScreen();
+            screen->Notify(tr("Saving game..."));
+            World::GetWorld()->SaveToDisk();
+            screen->player->SaveState();
+            screen->Notify( tr("Game saved at location \"%1\".").
+                arg(World::WorldPath()) );
+        }},
+
+        {{'Q', 3, 4, 17, 24, 'X'}, [](int){ Screen* const screen = GetScreen();
+            screen->Notify(tr("Exiting game...\n\n"));
+            emit screen->ExitReceived();
+            screen->input->Stop();
+        }}
+    };
+    for (const auto& keys_command : command_table ) {
+        for (int c : keys_command.keys) {
+            keyTable[c] = keys_command.command;
+        }
+    }
+} // void Screen::initializeKeyTable()
+
+Screen* Screen::GetScreen() { return staticScreen; }
+
 Screen::Screen(Player* const pl, int &) :
         VirtScreen(pl),
         screen(newterm(nullptr, stdout, stdin)),
@@ -1125,8 +1175,12 @@ Screen::Screen(Player* const pl, int &) :
         },
         noMouseMask(),
         xCursor(),
-        yCursor()
+        yCursor(),
+        keyTable()
 {
+    Q_ASSERT(staticScreen == nullptr);
+    staticScreen = this;
+
     start_color();
     halfdelay(10);
     noecho(); // do not print typed symbols
@@ -1161,6 +1215,7 @@ Screen::Screen(Player* const pl, int &) :
     RePrint();
     Notify(tr("--- Game started. Press 'H' for help. ---"));
 
+    initializeKeyTable();
     input->start();
 } // Screen::Screen(Player* const pl, int & error)
 

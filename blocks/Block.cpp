@@ -22,6 +22,7 @@
 #include "World.h"
 #include "Inventory.h"
 #include "TrManager.h"
+#include "SortedArray.h"
 #include <QDataStream>
 
 const int Block::MAX_DURABILITY = 1024;
@@ -66,13 +67,13 @@ void Block::Damage(const int dmg, int dmg_kind) {
     if ( dmg_kind > DAMAGE_PUSH_UP ) {
          dmg_kind = DAMAGE_PUSH_UP;
     }
-    static const int fragiles[] { SUB_DUST, GREENERY, ROSE, SUB_NUT };
-    if (std::find(ALL(fragiles), Sub()) != std::end(fragiles)) {
+    static const SortedArray<subs, SUB_DUST, GREENERY, ROSE, SUB_NUT> fragiles;
+    if ( std::binary_search(ALL(fragiles), Sub()) ) {
         durability = 0;
         return;
     }
-    static const int undestructible[] { NULLSTONE, STAR, AIR, SKY };
-    if (std::find(ALL(undestructible), Sub()) != std::end(undestructible)) {
+    static const SortedArray<subs, NULLSTONE, STAR, AIR, SKY> undestructible;
+    if ( std::binary_search(ALL(undestructible), Sub()) ) {
         return;
     }
     // Special damage kinds:

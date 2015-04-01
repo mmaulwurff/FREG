@@ -21,6 +21,7 @@
 #include "World.h"
 #include "BlockFactory.h"
 #include "TrManager.h"
+#include "SortedArray.h"
 #include <QTextStream>
 #include <QTime>
 
@@ -153,11 +154,11 @@
     }
 
     bool Grass::IsBase(const subs own_sub, const subs ground) {
-        static const subs FIRE_BASES[] =
-            { WOOD, GREENERY, H_MEAT, A_MEAT, SUB_NUT, ROSE, PAPER };
+        static const SortedArray<subs,
+            WOOD, GREENERY, H_MEAT, A_MEAT, SUB_NUT, ROSE, PAPER> FIRE_BASES;
         return ( GREENERY==own_sub && SOIL==ground ) ||
                ( FIRE    ==own_sub &&
-                   std::find(ALL(FIRE_BASES), ground)!=std::end(FIRE_BASES) );
+                   std::binary_search(ALL(FIRE_BASES), ground) );
     }
 
     QString Grass::FullName() const {
