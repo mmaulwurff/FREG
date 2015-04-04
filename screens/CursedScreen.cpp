@@ -32,6 +32,9 @@
 #include <QDesktopServices>
 #include <QUrl>
 
+#undef getmaxx // too dangerous macro, just do not use it.
+#define getmaxx(smth)
+
 #define wPrintable(string) QString(string).toStdWString().c_str()
 
 #define OPTIONS_SAVE(string, name, ...) \
@@ -116,12 +119,14 @@ void Screen::UpdateAll() {
 
 void Screen::PassString(QString& str) const {
     inputActive = true;
+    scroll(notifyWin);
     wattrset(notifyWin, A_UNDERLINE);
-    waddwstr(notifyWin, wPrintable(tr("Enter input: ")));
+    mvwaddwstr(notifyWin, 6, 0, wPrintable(tr("Enter input: ")));
     echo();
     wint_t temp_str[MAX_NOTE_LENGTH + 1];
     wgetn_wstr(notifyWin, temp_str, MAX_NOTE_LENGTH);
     inputActive = false;
+    wscrl(notifyWin, -1);
     noecho();
     str = QString::fromUcs4(temp_str);
     Log(Str("Input: ") + str);
@@ -267,7 +272,8 @@ void Screen::ControlPlayer(const int ch) {
             screenHeight = LINES - 10;
             wresize(leftWin,  screenHeight, screenWidth);
             wresize(rightWin, screenHeight, screenWidth);
-            wresize(notifyWin, 0, 0);
+            wresize(notifyWin, 7, 0);
+            wresize(hudWin,    3, 0);
 
             mvwin(actionWin, LINES-7, MINIMAP_WIDTH + 1);
             mvwin(notifyWin, LINES-7, MINIMAP_WIDTH + ACTIONS_WIDTH + 2);
@@ -308,7 +314,7 @@ void Screen::ProcessMouse() {
     case WIN_ACTION: SetActionMode(static_cast<actions>(mevent.y)); break;
     case WIN_NOTIFY: Notify(tr("Notifications area.")); break;
     case WIN_HUD:
-        mevent.x -= getmaxx(hudWin)/2 - 'z' + 'a' - 1;
+        mevent.x -= screenWidth - 'z' + 'a' - 1;
         mevent.x /= 2;
         if ( not ( IsScreenWide() && 0 <= mevent.x && mevent.x <= 'z'-'a' ) ) {
             Notify(tr("Information: left - player, right - focused thing."));
@@ -409,6 +415,7 @@ void Screen::ProcessCommand(const QString command) {
             arg((screenWidth - 2) / 2));
         break;
     case Player::UniqueIntFromString("palette"): Palette(notifyWin); break;
+    case Player::UniqueIntFromString("test"): TestNotify(); break;
     default: player->ProcessCommand(command); break;
     }
 }
@@ -550,7 +557,7 @@ void Screen::PrintHud() const {
     werase(hudWin);
     if ( player->GetCreativeMode() ) {
         static const QString creativeInfo(
-            tr("Creative Mode\nxyz: %1, %2, %3.\nShred: %4") );
+            tr("Creative Mode. xyz: %1-%2-%3.\nShred:\n%4") );
         mvwaddwstr(hudWin, 0, 0, wPrintable(creativeInfo
             .arg(player->GlobalX()).arg(player->GlobalY()).arg(player->Z())
             .arg(Shred::FileName(
@@ -587,18 +594,18 @@ void Screen::PrintHud() const {
     }
     const Block* const focused = GetFocusedBlock();
     if ( focused && Block::GetSubGroup(focused->Sub()) != GROUP_AIR ) {
-        const int left_border = getmaxx(hudWin);
-        (void)wmove(hudWin, 0, left_border - 15);
+        const int right_border = screenWidth*2;
+        (void)wmove(hudWin, 0, right_border - 15);
         PrintBar(hudWin, CharName(focused->Kind(), focused->Sub()),
             Color(focused->Kind(), focused->Sub()),
             focused->GetDurability()*100/Block::MAX_DURABILITY);
         wstandend(hudWin);
         const QString name = focused->FullName();
-        mvwaddwstr(hudWin, 1, left_border - name.length(), wPrintable(name));
+        mvwaddwstr(hudWin, 1, right_border - name.length(), wPrintable(name));
         const QString note = focused->GetNote();
         if ( Q_UNLIKELY(not note.isEmpty() && IsScreenWide()) ) {
             const int width = qMin(34, note.length());
-            mvwaddstr(hudWin, 2, left_border - width - 2, "~:");
+            mvwaddstr(hudWin, 2, right_border - width - 2, "~:");
             if ( note.length() <= width ) {
                 waddwstr (hudWin, wPrintable(note));
             } else {
@@ -618,7 +625,7 @@ void Screen::PrintQuickInventory() const {
 
     wstandend(hudWin);
     const int inventory_size = inv->Size();
-    int x = getmaxx(hudWin)/2 - inventory_size;
+    int x = screenWidth - inventory_size/2;
     for (int i=0; i<inventory_size; ++i) {
         mvwaddch(hudWin, 0, x, 'a' + i);
         switch ( inv->Number(i) ) {
@@ -930,13 +937,12 @@ void Screen::Notify(const QString str) const {
     static int notification_repeat_count = 1;
     if ( str == lastNotification ) {
         ++notification_repeat_count;
-        mvwaddwstr(notifyWin, getcury(windows[WIN_NOTIFY])-1, 0,
-            wPrintable(str));
-        wprintw(notifyWin, " (x%d)\n", notification_repeat_count);
+        mvwaddwstr(notifyWin, 6, 0, wPrintable(str));
+        wprintw(notifyWin, " (x%d)", notification_repeat_count);
     } else {
         notification_repeat_count = 1;
-        waddwstr(notifyWin, wPrintable(lastNotification = str));
-        waddch(notifyWin, '\n');
+        scroll(notifyWin);
+        mvwaddwstr(notifyWin, 6, 0, wPrintable(lastNotification = str));
     }
     wrefresh(notifyWin);
 }
@@ -1142,12 +1148,12 @@ Screen::Screen(Player* const pl, int&) :
         screenWidth((COLS / 2) - ((COLS/2) & 1)),
         screenHeight(LINES - 10),
         windows {
-            newwin(7, ACTIONS_WIDTH, LINES-7, MINIMAP_WIDTH + 1),
-            newwin(0, 0, LINES-7, MINIMAP_WIDTH + 1 + ACTIONS_WIDTH + 1),
-            newwin(3, 0, screenHeight, 0),
-            newwin(MINIMAP_HEIGHT, MINIMAP_WIDTH, LINES-7, 0),
-            newwin(screenHeight, screenWidth, 0, (COLS/2) & 1),
-            newwin(screenHeight, screenWidth, 0, COLS/2)
+            newwin(7, ACTIONS_WIDTH, LINES-7, MINIMAP_WIDTH + 1), // actions
+            newwin(7, 0, LINES-7, MINIMAP_WIDTH+ACTIONS_WIDTH+2), // notify
+            newwin(3, 0, screenHeight, 0),                        // HUD
+            newwin(MINIMAP_HEIGHT, MINIMAP_WIDTH, LINES-7, 0),    // minimap
+            newwin(screenHeight, screenWidth, 0, (COLS/2) & 1),   // left
+            newwin(screenHeight, screenWidth, 0, COLS/2)          // right
         },
         lastNotification(),
         input(new IThread(this)),
@@ -1191,6 +1197,7 @@ Screen::Screen(Player* const pl, int&) :
     }
 
     scrollok(notifyWin, true);
+    (void)wmove(notifyWin, 6, 0);
 
     connect(World::GetWorld(), &World::UpdatesEnded, this, &Screen::Print,
         Qt::DirectConnection);
@@ -1274,4 +1281,14 @@ void Screen::Palette(WINDOW* const window) {
         waddstr(window, type.name.c_str());
     }
     wrefresh(window);
+}
+
+void Screen::TestNotify() const {
+    Notify(tr("1. Translated line"));
+    Notify(Str("2. Notification window should be able to show"));
+    Notify(Str("3. at least 7 lines."));
+    Notify(Str("4. Line four."));
+    Notify(Str("5. Line five."));
+    Notify(Str("6. Line six."));
+    Notify(Str("7. Line seven."));
 }

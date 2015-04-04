@@ -126,6 +126,7 @@ private:
     void ProcessMouse();
     void MovePlayer(dirs) const;
     void MovePlayerDiag(dirs dir1, dirs dir2) const;
+    void TestNotify() const;
 
     /// Can print health, breath and other bars on hudWin.
     static void PrintBar(WINDOW*, wchar_t ch, int color, int percent);
