@@ -128,7 +128,11 @@ void Screen::PassString(QString& str) const {
     inputActive = false;
     wscrl(notifyWin, -1);
     noecho();
-    str = QString::fromUcs4(temp_str);
+    #ifdef Q_OS_WIN32
+        str = QString::fromUtf16(temp_str);
+    #else
+        str = QString::fromUcs4(temp_str);
+    #endif
     Log(Str("Input: ") + str);
 }
 
@@ -1180,7 +1184,7 @@ Screen::Screen(Player* const pl, int&) :
     staticScreen = this;
 
     start_color();
-    halfdelay(10);
+    cbreak();
     noecho(); // do not print typed symbols
     nonl();
     keypad(stdscr, true); // use arrows
