@@ -96,7 +96,7 @@ public:
         void AddLight(int x, int y, int z, int level);
 
         /// Make all shining block shine.
-        void ShineAll();
+        void ShineAll() const;
     ///@}
 
     ///\name Information section

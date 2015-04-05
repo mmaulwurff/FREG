@@ -167,10 +167,9 @@ void Shred::AddLight(const_int(x, y, z), const int level) {
     lightMap[x][y][z] += level;
 }
 
-void Shred::ShineAll() {
+void Shred::ShineAll() const {
     World* const world = World::GetWorld();
     for (auto shining : GetShiningList()) {
         world->Shine(shining->GetXyz(), shining->LightRadius());
-        ++shining;
     }
 }

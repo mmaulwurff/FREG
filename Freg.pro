@@ -11,7 +11,11 @@ CONFIG += warn_on console rtti_off exceptions_off
 CONFIG( release, debug|release ):DEFINES += QT_NO_DEBUG_OUTPUT
 
 QMAKE_CXXFLAGS += -Wfloat-equal -Woverloaded-virtual -Wundef -fstrict-enums
-QMAKE_CXXFLAGS += -pedantic -Weffc++ -Werror
+QMAKE_CXXFLAGS += -pedantic -Werror
+
+!for_coverity {
+QMAKE_CXXFLAGS += -Weffc++
+}
 
 #QMAKE_CXXFLAGS_DEBUG += -fno-inline
 QMAKE_CXXFLAGS_RELEASE -= -O2
