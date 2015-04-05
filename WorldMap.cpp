@@ -17,14 +17,15 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include "worldmap.h"
+#include "WorldMap.h"
 #include "header.h"
 #include <QSettings>
+#include <QString>
 #include <QFile>
 
 #define UNDERGROUND_ONLY false
 
-WorldMap::WorldMap(const QString world_name) :
+WorldMap::WorldMap(const QString& world_name) :
         mapSize(),
         map(),
         spawnLongitude(),
@@ -68,8 +69,8 @@ WorldMap::WorldMap(const QString world_name) :
 
 WorldMap::~WorldMap() { delete [] map; }
 
-void WorldMap::MakeAndSaveSpawn(const QString world_name, const int size,
-        qint64 * longitude, qint64 * latitude)
+void WorldMap::MakeAndSaveSpawn(const QString& world_name, const int size,
+        qint64* longitude, qint64* latitude)
 {
     QSettings map_info(home_path + world_name + Str("/map.ini"),
         QSettings::IniFormat);
@@ -128,7 +129,7 @@ void WorldMap::Circle(const int min_rad, const int max_rad,
     }
 }
 
-void WorldMap::GenerateMap(const QString world_name,
+void WorldMap::GenerateMap(const QString& world_name,
         int size, const char outer, const int seed)
 {
     if ( seed ) {
@@ -136,7 +137,7 @@ void WorldMap::GenerateMap(const QString world_name,
     }
     size = qMax(10, size);
 
-    char * const map = new char[size * size];
+    char* const map = new char[size * size];
     memset(map, outer, size*size);
 
     const float min_rad = size / 3.0f;

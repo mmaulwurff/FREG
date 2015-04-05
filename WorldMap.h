@@ -17,19 +17,21 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#ifndef WORLDMAP_H
-#define WORLDMAP_H
+#ifndef WORLD_MAP_H
+#define WORLD_MAP_H
 
-#include <QString>
+#include <QtGlobal>
+
+class QString;
 
 class WorldMap final {
 public:
-    explicit WorldMap(QString worldName);
+    explicit WorldMap(const QString& worldName);
     ~WorldMap();
 
-    char TypeOfShred(qint64 longi, qint64 lati) const;
+    char TypeOfShred(qint64 longitude, qint64 latitude) const;
     static void GenerateMap(
-            QString world_name,
+            const QString& world_name,
             int size,
             char outer,
             int seed);
@@ -46,14 +48,14 @@ private:
     static float Deg(int x, int y, int size);
     static float R  (int x, int y, int size);
     static void Circle(int min_rad, int max_rad, char ch, int size, char* map);
-    static void PieceOfEden(qint64 x, qint64 y, char * map, size_t map_size);
-    static void MakeAndSaveSpawn(QString world_name, int size,
-            qint64 * longitude, qint64 * latitude);
+    static void PieceOfEden(qint64 x, qint64 y, char* map, size_t map_size);
+    static void MakeAndSaveSpawn(const QString& world_name, int size,
+            qint64* longitude, qint64* latitude);
 
     int mapSize;
-    char * map;
+    char* map;
     qint64 spawnLongitude, spawnLatitude;
     char defaultShred, outerShred;
 };
 
-#endif // WORLDMAP_H
+#endif // WORLD_MAP_H

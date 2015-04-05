@@ -43,8 +43,7 @@
 #include "blocks/Text.cpp"
 
 #include "screens/CursedScreen.cpp"
-#include "screens/IThread.cpp"
-#include "screens/VirtScreen.cpp"
+#include "screens/VirtualScreen.cpp"
 
 #include "BlockFactory.cpp"
 #include "CraftManager.cpp"
@@ -58,7 +57,7 @@
 #include "TrManager.cpp"
 #include "Weather.cpp"
 #include "World.cpp"
-#include "worldmap.cpp"
+#include "WorldMap.cpp"
 #include "AroundCoordinates.cpp"
 #include "WaysTree.cpp"
 #include "VisionRay.cpp"
@@ -71,11 +70,10 @@
 #include "moc/moc_Dwarf.cpp"
 #include "moc/moc_Filter.cpp"
 #include "moc/moc_Illuminator.cpp"
-#include "moc/moc_IThread.cpp"
 #include "moc/moc_Player.cpp"
 #include "moc/moc_RainMachine.cpp"
 #include "moc/moc_Teleport.cpp"
-#include "moc/moc_VirtScreen.cpp"
+#include "moc/moc_VirtualScreen.cpp"
 #include "moc/moc_World.cpp"
 
 #include "res/qrc_resources.cpp"

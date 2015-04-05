@@ -22,17 +22,18 @@
 
 #include <QHash>
 #include <vector>
-#include <thread>
 
 class QByteArray;
+namespace std { class thread; }
 
 class ShredStorage final {
 public:
-     ShredStorage(int size, qint64 longi_center, qint64 lati_center);
+
+     ShredStorage(int size, qint64 longitude_center, qint64 latitude_center);
     ~ShredStorage();
 
-    class QByteArray* GetShredData(qint64 longi, qint64 lati);
-    void SetShredData(QByteArray*, qint64 longi, qint64 lati);
+    QByteArray* GetShredData(qint64 longitude, qint64 latitude);
+    void SetShredData(QByteArray*, qint64 longitude, qint64 latitude);
     void Shift(int direction, qint64 longitude, qint64 latitude);
 
     void WriteToFileAllShredData() const;
@@ -41,28 +42,29 @@ public:
     void ReleaseByteArray(QByteArray*) const;
 
     struct LongLat {
-        bool operator==(const LongLat& other) const {
-            return longitude == other.longitude && latitude == other.latitude;
-        }
+        bool operator==(const LongLat& other) const;
+
         qint64 longitude, latitude;
     };
+
 private:
+
     Q_DISABLE_COPY(ShredStorage)
 
-    void WriteShred(qint64 longi, qint64 lati) const ;
-    void AddShred  (qint64 longi, qint64 lati);
-    void Remove    (qint64 longi, qint64 lati);
+    void WriteShred(qint64 longitude, qint64 latitude) const ;
+    void AddShred  (qint64 longitude, qint64 latitude);
+    void Remove    (qint64 longitude, qint64 latitude);
 
     void asyncShift(int direction, qint64 longi_center, qint64 lati_center);
 
     /// -1 - default, 0 - no compression, 4 - best for CPU, 8 - optimal.
     static const int COMPRESSION_LEVEL = 8;
 
-    QHash<LongLat, class QByteArray*> storage;
+    QHash<LongLat, QByteArray*> storage;
     const int size;
     mutable std::vector<QByteArray*> emptyWriteBuffers;
 
-    std::thread * preloadThread;
+    std::thread* preloadThread;
 };
 
 #endif // SHRED_STORAGE_H

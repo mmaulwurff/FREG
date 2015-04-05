@@ -207,7 +207,7 @@ private:
     /// Takes back all light in area around coordinates xyz.
     void UnShine(int x, int y, int z, Block* skip_block, Block* add_block);
 
-    /// Updates all unshined lighting.
+    /// Updates and restores lighting after UnShine.
     void ReEnlighten();
 
     /// Updates lighting in all world.

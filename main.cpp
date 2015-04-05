@@ -19,7 +19,7 @@
 
 #include "World.h"
 #include "Player.h"
-#include "worldmap.h"
+#include "WorldMap.h"
 #include "CraftManager.h"
 #include "BlockFactory.h"
 #include "TrManager.h"

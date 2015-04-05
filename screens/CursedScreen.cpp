@@ -21,7 +21,7 @@
  *  \brief This file is related to curses screen for freg. */
 
 #include "screens/CursedScreen.h"
-#include "screens/IThread.h"
+#include <thread>
 #include "Shred.h"
 #include "World.h"
 #include "Player.h"
@@ -163,7 +163,7 @@ bool Screen::RandomBit() {
 }
 
 int Screen::Color(const int kind, const int sub) {
-    const int color = COLOR_PAIR(VirtScreen::Color(kind, sub));
+    const int color = COLOR_PAIR(VirtualScreen::Color(kind, sub));
     switch ( kind ) { // foreground_background
     default: switch ( sub ) {
         default:         return color;
@@ -191,7 +191,7 @@ int Screen::Color(const int kind, const int sub) {
 int Screen::ColorShred(const shred_type type) {
     switch ( type ) { // foreground_background
     case SHRED_UNDERGROUND:
-    case SHRED_TESTSHRED:
+    case SHRED_TEST_SHRED:
     case SHRED_EMPTY:
     case SHRED_FLAT:
     case SHRED_CHAOS:       return COLOR_PAIR( WHITE_BLACK);
@@ -223,7 +223,7 @@ void Screen::MovePlayer(const dirs dir) const {
     }
 }
 
-void Screen::MovePlayerDiag(const dirs dir1, const dirs dir2) const {
+void Screen::MovePlayerDiagonal(const dirs dir1, const dirs dir2) const {
     player->SetDir(dir1);
     static bool step_trigger = true;
     player->Move(step_trigger ? dir1 : dir2);
@@ -394,7 +394,7 @@ void Screen::ProcessCommand(const QString command) {
         ControlPlayer(command.at(0).toLatin1());
         return;
     }
-    if ( VirtScreen::ProcessCommand(command) ) return;
+    if ( VirtualScreen::ProcessCommand(command) ) return;
     switch ( Player::UniqueIntFromString(qPrintable(command)) ) {
     case Player::UniqueIntFromString("plus_distance"):
         showCharDistance = std::min(showCharDistance+1, MAX_CHAR_DISTANCE);
@@ -450,7 +450,7 @@ void Screen::InventoryAction(const int num) const {
 }
 
 void Screen::ActionXyz(int* const x, int* const y, int* const z) const {
-    VirtScreen::ActionXyz(x, y, z);
+    VirtualScreen::ActionXyz(x, y, z);
     if ( player->GetDir() > DOWN &&
             ( AIR == World::GetConstWorld()->GetBlock(*x, *y, *z)->Sub() ||
               AIR == World::GetConstWorld()->GetBlock(
@@ -986,10 +986,10 @@ void Screen::initializeKeyTable() {
 
         {{'5'},      [](int) { GetScreen()->player->Move(DOWN); }},
 
-        {{'7'},      [](int) { GetScreen()->MovePlayerDiag(NORTH, WEST); }},
-        {{'9'},      [](int) { GetScreen()->MovePlayerDiag(NORTH, EAST); }},
-        {{'1'},      [](int) { GetScreen()->MovePlayerDiag(SOUTH, WEST); }},
-        {{'3'},      [](int) { GetScreen()->MovePlayerDiag(SOUTH, EAST); }},
+        {{'7'},     [](int) { GetScreen()->MovePlayerDiagonal(NORTH, WEST); }},
+        {{'9'},     [](int) { GetScreen()->MovePlayerDiagonal(NORTH, EAST); }},
+        {{'1'},     [](int) { GetScreen()->MovePlayerDiagonal(SOUTH, WEST); }},
+        {{'3'},     [](int) { GetScreen()->MovePlayerDiagonal(SOUTH, EAST); }},
 
         {{'=', '0'}, [](int) { Screen* const screen = GetScreen();
             screen->MovePlayer(screen->player->GetDir());
@@ -1131,7 +1131,7 @@ void Screen::initializeKeyTable() {
         {{'Q', 3, 4, 17, 24, 'X'}, [](int){ Screen* const screen = GetScreen();
             screen->Notify(tr("Exiting game...\n\n"));
             emit screen->ExitReceived();
-            screen->input->Stop();
+            screen->inputThreadIsRunning = false;
         }}
     };
     for (const auto& keys_command : command_table ) {
@@ -1143,8 +1143,8 @@ void Screen::initializeKeyTable() {
 
 Screen* Screen::GetScreen() { return staticScreen; }
 
-Screen::Screen(Player* const pl, int&) :
-        VirtScreen(pl),
+Screen::Screen(Player* const player, int&) :
+        VirtualScreen(player),
         screen(newterm(nullptr, stdout, stdin)),
         screenWidth((COLS / 2) - ((COLS/2) & 1)),
         screenHeight(LINES - 10),
@@ -1157,7 +1157,8 @@ Screen::Screen(Player* const pl, int&) :
             newwin(screenHeight, screenWidth, 0, COLS/2)          // right
         },
         lastNotification(),
-        input(new IThread(this)),
+        inputThread(nullptr),
+        inputThreadIsRunning(true),
         updatedHud    (false),
         updatedMinimap(false),
         updatedNormal (false),
@@ -1216,8 +1217,12 @@ Screen::Screen(Player* const pl, int&) :
     Notify(tr("--- Game started. Press 'H' for help. ---"));
 
     initializeKeyTable();
-    input->start();
-} // Screen::Screen(Player* const pl, int& error)
+    inputThread = new std::thread([&]() {
+        while ( inputThreadIsRunning ) {
+            ControlPlayer();
+        }
+    });
+} // Screen::Screen(Player* const player, int& error)
 
 Screen::~Screen() {
     World* const world = World::GetWorld();
@@ -1225,9 +1230,9 @@ Screen::~Screen() {
     disconnect(world, &World::UpdatesEnded, this, &Screen::Print);
     world->GetLock()->unlock();
 
-    input->Stop();
-    input->wait();
-    delete input;
+    inputThreadIsRunning = false;
+    inputThread->join();
+    delete inputThread;
 
     std::for_each(ALL(windows), delwin);
     endwin();

@@ -17,11 +17,12 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#ifndef CURSEDSCREEN_H
-#define CURSEDSCREEN_H
+#ifndef CURSED_SCREEN_H
+#define CURSED_SCREEN_H
 
-#include "screens/VirtScreen.h"
+#include "screens/VirtualScreen.h"
 #include "header.h"
+#include <atomic>
 
 #ifdef Q_OS_WIN32
     #define NCURSES_MOUSE_VERSION 2
@@ -46,8 +47,9 @@ X("mouse_on",        mouseOn,      true,  )\
 #define OPTIONS_DECLARE(string, name, ...) bool name;
 
 class Block;
+namespace std { class thread; }
 
-class Screen final : public VirtScreen {
+class Screen final : public VirtualScreen {
     Q_OBJECT
     Q_DISABLE_COPY(Screen)
 public:
@@ -125,7 +127,7 @@ private:
     void ProcessCommand(QString command);
     void ProcessMouse();
     void MovePlayer(dirs) const;
-    void MovePlayerDiag(dirs dir1, dirs dir2) const;
+    void MovePlayerDiagonal(dirs direction1, dirs direction2) const;
     void TestNotify() const;
 
     /// Can print health, breath and other bars on hudWin.
@@ -164,7 +166,8 @@ private:
     WINDOW* const& leftWin    = windows[WIN_LEFT   ];
     WINDOW* const& rightWin   = windows[WIN_RIGHT  ];
     mutable QString lastNotification;
-    class IThread* const input;
+    std::thread* inputThread;
+    std::atomic<bool> inputThreadIsRunning;
     mutable volatile bool updatedHud, updatedMinimap;
     mutable volatile bool updatedNormal, updatedFront;
     actions actionMode;
@@ -181,4 +184,4 @@ private:
     static Screen* staticScreen;
 };
 
-#endif // CURSEDSCREEN_H
+#endif // CURSED_SCREEN_H

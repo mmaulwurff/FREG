@@ -200,8 +200,8 @@ bool Active::Gravitate(const int range, int bottom, int top,
 int Active::Attractive(int) const { return 0; }
 
 bool Active::IsSubAround(const int sub) const {
-    const AroundCoordinates coords(GetXyz());
-    return std::any_of(ALL(coords), [=](const Xyz& xyz) {
+    const AroundCoordinates coordinates(GetXyz());
+    return std::any_of(ALL(coordinates), [=](const Xyz& xyz) {
         return World::GetConstWorld()->GetBlock(XYZ(xyz))->Sub() == sub;
     });
 }

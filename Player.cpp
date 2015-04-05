@@ -20,7 +20,7 @@
 #include "Player.h"
 #include "World.h"
 #include "Shred.h"
-#include "worldmap.h"
+#include "WorldMap.h"
 #include "BlockFactory.h"
 #include "DeferredAction.h"
 #include "blocks/Animal.h"

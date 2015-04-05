@@ -17,8 +17,8 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#ifndef BLOCKFACTORY_H
-#define BLOCKFACTORY_H
+#ifndef BLOCK_FACTORY_H
+#define BLOCK_FACTORY_H
 
 #include "header.h"
 #include <cstdint>
@@ -107,4 +107,4 @@ private:
     static BlockFactory* blockFactory;
 };
 
-#endif // BLOCKFACTORY_H
+#endif // BLOCK_FACTORY_H

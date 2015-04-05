@@ -19,7 +19,7 @@
 
 #include "blocks/Text.h"
 #include "blocks/Active.h"
-#include "worldmap.h"
+#include "WorldMap.h"
 #include "World.h"
 #include "Shred.h"
 #include <QObject>

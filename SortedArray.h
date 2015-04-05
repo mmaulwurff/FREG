@@ -17,8 +17,8 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#ifndef SORTEDARRAY_H
-#define SORTEDARRAY_H
+#ifndef SORTED_ARRAY_H
+#define SORTED_ARRAY_H
 
 #include <algorithm>
 
@@ -33,4 +33,4 @@ public:
     Type data[sizeof...(elements)];
 };
 
-#endif // SORTEDARRAY_H
+#endif // SORTED_ARRAY_H

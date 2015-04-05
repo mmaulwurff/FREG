@@ -17,8 +17,8 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#ifndef CRAFTMANAGER_H
-#define CRAFTMANAGER_H
+#ifndef CRAFT_MANAGER_H
+#define CRAFT_MANAGER_H
 
 #include "header.h"
 #include <QList>
@@ -76,4 +76,4 @@ private:
     static CraftManager* craftManager;
 }; // CraftManager
 
-#endif // CRAFTMANAGER_H
+#endif // CRAFT_MANAGER_H

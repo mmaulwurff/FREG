@@ -1,5 +1,5 @@
-#ifndef VISIONRAY_H
-#define VISIONRAY_H
+#ifndef VISION_RAY_H
+#define VISION_RAY_H
 
 #include "Xyz.h"
 #include <vector>
@@ -42,4 +42,4 @@ private:
     VisionRay::RaySteps shifts[TABLE_SIZE][TABLE_SIZE][TABLE_SIZE];
 };
 
-#endif // VISIONRAY_H
+#endif // VISION_RAY_H

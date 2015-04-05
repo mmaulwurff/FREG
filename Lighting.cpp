@@ -151,7 +151,7 @@ void World::AddLight(const Xyz& xyz, const int level) {
 
 int World::Enlightened(const_int(x, y, z)) const {
     return GetShred(x, y)->
-        Lightmap(Shred::CoordInShred(x), Shred::CoordInShred(y), z);
+        LightMap(Shred::CoordInShred(x), Shred::CoordInShred(y), z);
 }
 
 int World::Enlightened(const_int(i, j, k), const dirs dir) const {
@@ -162,7 +162,7 @@ int World::Enlightened(const_int(i, j, k), const dirs dir) const {
 
 // Shred methods
 
-int  Shred::Lightmap(const_int(x, y, z)) const { return lightMap[x][y][z]; }
+int  Shred::LightMap(const_int(x, y, z)) const { return lightMap[x][y][z]; }
 void Shred::AddLight(const_int(x, y, z), const int level) {
     lightMap[x][y][z] += level;
 }

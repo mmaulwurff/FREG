@@ -20,6 +20,7 @@
 #include "ShredStorage.h"
 #include "Shred.h"
 #include <QFile>
+#include <thread>
 
 uint qHash(const ShredStorage::LongLat & longLat) {
     return  (quint64(longLat.longitude) & 0b1111'1111) |
@@ -152,4 +153,9 @@ void ShredStorage::asyncShift(const int direction,
         }
         break;
     }
+}
+
+bool ShredStorage::LongLat::operator==(const ShredStorage::LongLat& other)
+const {
+    return longitude == other.longitude && latitude == other.latitude;
 }

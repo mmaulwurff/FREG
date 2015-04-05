@@ -19,7 +19,7 @@
 
 #include "Shred.h"
 #include "World.h"
-#include "worldmap.h"
+#include "WorldMap.h"
 #include "blocks/Active.h"
 #include "blocks/Inventory.h"
 #include "BlockFactory.h"
@@ -117,7 +117,7 @@ Shred::Shred(const int shred_x, const int shred_y,
     case SHRED_FOREST:      Forest(false); break;
     case SHRED_DEAD_FOREST: Forest(true);  break;
     case SHRED_NULLMOUNTAIN: NullMountain(); break;
-    case SHRED_TESTSHRED:   TestShred();  break;
+    case SHRED_TEST_SHRED:  TestShred();  break;
     case SHRED_PYRAMID:     Pyramid();    break;
     case SHRED_CASTLE:      Castle();     break;
     case SHRED_CHAOS:       ChaosShred(); break;
