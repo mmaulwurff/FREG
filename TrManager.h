@@ -29,7 +29,7 @@ class TrManager {
 public:
     TrManager();
 
-    /// Returs translated kind name.
+    /// Returns translated kind name.
     static QString KindName(int kind);
     /// Returns translated substance name.
     static QString SubName(int sub);

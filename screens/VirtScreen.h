@@ -67,7 +67,7 @@ public:
     /** It is connected to world in constructor. */
     virtual void PassString(QString &) const = 0;
 
-    /// This is called when all world should be updated in sceen.
+    /// This is called when all world should be updated in screen.
     /** When implemented, this should work fast.
      *  It is connected to world in constructor. */
     virtual void UpdateAll() = 0;
@@ -102,7 +102,7 @@ public:
     virtual void ActionXyz(int* x, int* y, int* z) const;
 
     /// This shows a file by path.
-    /** Standard (non-reimpemented) version does nothing. */
+    /** Standard (non-reimplemented) version does nothing. */
     virtual void DisplayFile(QString path);
 
 signals:

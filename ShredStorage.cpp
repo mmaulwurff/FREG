@@ -59,7 +59,7 @@ QByteArray* ShredStorage::GetByteArray() {
     return result;
 }
 
-void ShredStorage::ReleazeByteArray(QByteArray* const array) const {
+void ShredStorage::ReleaseByteArray(QByteArray* const array) const {
     array->clear();
     emptyWriteBuffers.push_back(array);
 }
@@ -110,7 +110,7 @@ void ShredStorage::WriteShred(const qint64 longi, const qint64 lati) const {
         if ( file.open(QIODevice::WriteOnly) ) {
             file.write(qCompress(*data, COMPRESSION_LEVEL));
         }
-        ReleazeByteArray(data);
+        ReleaseByteArray(data);
     }
 }
 

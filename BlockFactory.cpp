@@ -32,12 +32,12 @@
 #include "blocks/Text.h"
 #include <QDataStream>
 
-#define X_NEWBLOCKSUB(column1, substance, ...) new Block(BLOCK, substance),
+#define X_NEW_BLOCK_SUB(column1, substance, ...) new Block(BLOCK, substance),
 
 BlockFactory * BlockFactory::blockFactory = nullptr;
 
 BlockFactory::BlockFactory() :
-    normals{ SUB_TABLE(X_NEWBLOCKSUB) },
+    normals{ SUB_TABLE(X_NEW_BLOCK_SUB) },
     creates(),
     loads()
 {

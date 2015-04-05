@@ -76,7 +76,7 @@ bool Shred::LoadShred() {
             }
         }
     }
-    shredStorage->ReleazeByteArray(data);
+    shredStorage->ReleaseByteArray(data);
     return true;
 } // bool Shred::LoadShred()
 
@@ -96,7 +96,7 @@ Shred::Shred(const int shred_x, const int shred_y,
         shiningList(),
         fallList()
 {
-    if ( LoadShred() ) return; // successfull loading
+    if ( LoadShred() ) return; // successful loading
     // new shred generation:
     Block* const null_stone = BlockFactory::Normal(NULLSTONE);
     Block* const air  = BlockFactory::Normal(AIR);
@@ -135,19 +135,19 @@ Shred::~Shred() { SaveShred(true); }
 void Shred::SaveShred(const bool isQuitGame) {
     ShredStorage* const storage = World::GetWorld()->GetShredStorage();
     QByteArray* const shred_data = storage->GetByteArray();
-    QDataStream outstr(shred_data, QIODevice::WriteOnly);
-    outstr << CURRENT_SHRED_FORMAT_VERSION;
-    outstr.setVersion(DATASTREAM_VERSION);
-    outstr << quint8(GetTypeOfShred()) << quint8(GetWeather());
+    QDataStream out_stream(shred_data, QIODevice::WriteOnly);
+    out_stream << CURRENT_SHRED_FORMAT_VERSION;
+    out_stream.setVersion(DATASTREAM_VERSION);
+    out_stream << quint8(GetTypeOfShred()) << quint8(GetWeather());
     const Block* const sky = BlockFactory::Normal(SKY);
     FOR_ALL_SHRED_AREA(x, y) {
         const int ground_z = FindTopNonAir(x, y);
         for (int z=1; z<=ground_z; ++z) {
             Block* const block = GetBlock(x, y, z);
             if ( block == BlockFactory::Normal(block->Sub()) ) {
-                block->SaveNormalToFile(outstr);
+                block->SaveNormalToFile(out_stream);
             } else {
-                block->SaveToFile(outstr);
+                block->SaveToFile(out_stream);
                 if ( isQuitGame ) {
                     delete block; // without unregistering.
                 } else {
@@ -155,7 +155,7 @@ void Shred::SaveShred(const bool isQuitGame) {
                 }
             }
         }
-        sky->SaveNormalToFile(outstr);
+        sky->SaveNormalToFile(out_stream);
     }
     storage->SetShredData(shred_data, longitude, latitude);
 }

@@ -92,7 +92,7 @@ public:
 ///@}
 
     /// Radius 5 ensures that fully enlightened block (in a cloud of most
-    /// powerful illuminators) will not overfloat lighting storage (8 bit).
+    /// powerful illuminators) will not overflow lighting storage (8 bit).
     static const int MAX_LIGHT_RADIUS = 5;
 
 ///\name Visibility section
@@ -134,7 +134,7 @@ public:
     int Damage(int x, int y, int z, int level, int dmg_kind);
     /// Does not check target block durability.
     void DestroyAndReplace(int x, int y, int z);
-    /// Returns true on successfull build, otherwise false.
+    /// Returns true on successful build, otherwise false.
     bool Build(Block* thing, int x, int y, int z, Block* who = nullptr);
     /// Returns true on success. Gets a string and inscribes block.
     bool Inscribe(int x, int y, int z);
@@ -217,9 +217,9 @@ private:
     void ReEnlightenMove(dirs);
 
     /** @brief Checks if lighting should be updated after operation on blocks.
-     *  @param block1, block2 blocks to compare
-     *  @param x, y, z coordinates of reenlightening center
-     *  @param skipBlock1 to skip or not to skip block1 when reenlighting
+     *  @param block1, block2 blocks to compare.
+     *  @param x, y, z coordinates of relighting center.
+     *  @param skipBlock1 to skip or not to skip block1 when relighting.
      */
     void ReEnlightenCheck(Block* block1, Block* block2, int x, int y, int z,
                           Block* skip_block, Block* add_block);
@@ -279,7 +279,7 @@ private:
     qint64 newLati, newLongi;
     int newX, newY, newZ;
     QString newWorld;
-    /// UP for no reset, DOWN for full reset, NSEW for side shift.
+    /// UP for no reset, DOWN for full reset, N-S-E-W for side shift.
     volatile dirs toResetDir;
     class QTimer* timer;
 

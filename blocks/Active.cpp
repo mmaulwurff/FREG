@@ -165,7 +165,7 @@ bool Active::Gravitate(const int range, int bottom, int top,
 {
     const World* const world = World::GetConstWorld();
     const int bound = World::GetBound();
-    // analyse world around
+    // analyze world around
     int for_north = 0, for_west = 0;
     const int y_start = qMax(Y()-range, 0);
     const int y_end   = qMin(Y()+range, bound);

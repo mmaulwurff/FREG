@@ -32,8 +32,9 @@
 #include <QDesktopServices>
 #include <QUrl>
 
-#undef getmaxx // too dangerous macro, just do not use it.
-#define getmaxx(smth)
+#undef getmaxx
+#define getmaxx(something) \
+    static_assert(false, "too dangerous macro, just do not use it")
 
 #define wPrintable(string) QString(string).toStdWString().c_str()
 
@@ -155,10 +156,10 @@ char Screen::CharNumberFront(const int i, const int j) const {
 int  Screen::RandomBlink() { return (RandomBit() * A_REVERSE); }
 
 bool Screen::RandomBit() {
-    static unsigned rands = 0;
-    return 1 & ( rands ?
-        (rands >>= 1) :
-        (rands = qrand()) );
+    static unsigned random = 0;
+    return 1 & ( random ?
+        (random >>= 1) :
+        (random = qrand()) );
 }
 
 int Screen::Color(const int kind, const int sub) {
@@ -563,13 +564,13 @@ void Screen::PrintHud() const {
             .arg(Shred::FileName(
                 player->GetLongitude(), player->GetLatitude()) )));
     } else {
-        const int dur = player->GetConstBlock()->GetDurability();
-        if ( dur > 0 ) { // HitPoints line
+        const int durability = player->GetConstBlock()->GetDurability();
+        if ( durability > 0 ) { // HitPoints line
             static const int player_health_char = ascii ? '@' : 0x2665;
             PrintBar(hudWin, player_health_char,
-                int((dur > Block::MAX_DURABILITY/4) ?
+                int((durability > Block::MAX_DURABILITY/4) ?
                     COLOR_PAIR(RED_BLACK) : COLOR_PAIR(BLACK_RED)) | A_BOLD,
-                dur*100/Block::MAX_DURABILITY);
+                durability*100/Block::MAX_DURABILITY);
         }
         waddstr(hudWin, "   ");
         static const struct {

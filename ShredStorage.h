@@ -38,7 +38,7 @@ public:
     void WriteToFileAllShredData() const;
 
     QByteArray* GetByteArray();
-    void ReleazeByteArray(QByteArray*) const;
+    void ReleaseByteArray(QByteArray*) const;
 
     struct LongLat {
         bool operator==(const LongLat& other) const {
