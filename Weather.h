@@ -36,8 +36,8 @@ public:
     weathers GetWeather() const;
 
 private:
-    Weather(const Weather &) = delete;
-    Weather &operator=(const Weather &) = delete;
+    Weather(const Weather&) = delete;
+    Weather& operator=(const Weather&) = delete;
 
     weathers weather;
 };

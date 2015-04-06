@@ -94,7 +94,7 @@
     int  Liquid::ShouldAct()   const { return FREQUENT_RARE; }
     int  Liquid::DamageLevel() const { return MAX_DURABILITY / 20; }
     int  Liquid::LightRadius() const { return ( STONE==Sub() ) ? 3 : 0; }
-    bool Liquid::Inscribe(QString)   { return false; }
+    bool Liquid::Inscribe(const QString&) { return false; }
     wearable Liquid::Wearable() const { return WEARABLE_VESSEL; }
     inner_actions Liquid::ActInner() { return INNER_ACTION_NONE; }
     push_reaction Liquid::PushResult(dirs) const { return ENVIRONMENT; }
@@ -184,7 +184,7 @@
 
 // Bush::
     int  Bush::ShouldAct() const  { return FREQUENT_RARE; }
-    void Bush::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
+    void Bush::ReceiveSignal(const QString& str){ Active::ReceiveSignal(str); }
     int  Bush::Weight() const { return Inventory::Weight() + Block::Weight(); }
     QString Bush::FullName() const { return TrManager::KindName(BUSH); }
     QString Bush::Description() const { return tr("Food and wood source."); }
@@ -322,7 +322,7 @@
             ++notify_flag;
         } else if ( timerTime > 0 )  {
             --timerTime;
-            Block::Inscribe(QString().setNum(timerTime));
+            Block::Inscribe(QString::number(timerTime));
         } else if ( timerTime == 0 ) {
             timerTime = -1;
             Block::Inscribe(tr("Timer fired. %1").arg(world->TimeOfDayStr()));
@@ -347,10 +347,11 @@
         }
     }
 
-    bool Clock::Inscribe(QString str) {
-        Block::Inscribe(str);
+    bool Clock::Inscribe(const QString& note) {
+        Block::Inscribe(note);
+        QString string(note);
+        QTextStream txt_stream(&string);
         char c;
-        QTextStream txt_stream(&str);
         txt_stream >> c;
         switch ( c ) {
         case 'a': {
@@ -415,10 +416,10 @@
     }
 
     int  Telegraph::ShouldAct() const { return FREQUENT_RARE; }
-    void Telegraph::ReceiveSignal(const QString str) { Inscribe(str); }
+    void Telegraph::ReceiveSignal(const QString& str) { Inscribe(str); }
     wearable Telegraph::Wearable() const { return WEARABLE_OTHER; }
 
-    bool Telegraph::Inscribe(const QString str) {
+    bool Telegraph::Inscribe(const QString& str) {
         isReceiver = false;
         return Block::Inscribe(str);
     }

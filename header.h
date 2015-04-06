@@ -21,8 +21,8 @@
 #define HEADER_H
 
 #define M_DISABLE_COPY(Class) \
-Class(const Class &) = delete; \
-Class &operator=(const Class &) = delete;
+Class(const Class&) = delete; \
+Class& operator=(const Class&) = delete;
 
 #ifdef QT_NO_DEBUG
 const bool DEBUG = false;

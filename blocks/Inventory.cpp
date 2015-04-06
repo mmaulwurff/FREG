@@ -23,6 +23,7 @@
 #include "CraftManager.h"
 #include "BlockFactory.h"
 #include <QDataStream>
+#include <QStack>
 
 int  Inventory::Start() const { return 0; }
 bool Inventory::Access() const { return true; }
@@ -180,6 +181,8 @@ int Inventory::Weight() const {
     });
 }
 
+int Inventory::Number(const int i) const { return inventory[i].size(); }
+
 Block* Inventory::ShowBlockInSlot(const int slot, const int index) const {
     return ( slot >= Size() || index >= Number(slot) ) ?
         nullptr : inventory[slot].at(index);
@@ -274,7 +277,7 @@ Inventory::~Inventory() {
 }
 
 // Define pure virtual functions to simplify debugging
-void Inventory::ReceiveSignal(QString) { Q_UNREACHABLE(); }
+void Inventory::ReceiveSignal(const QString&) { Q_UNREACHABLE(); }
 
 QString Inventory::FullName() const {
     Q_UNREACHABLE();

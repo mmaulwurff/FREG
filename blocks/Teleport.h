@@ -27,7 +27,7 @@ class Teleport : public Active {
 public:
     BLOCK_CONSTRUCTORS(Teleport)
 
-    bool Inscribe(QString) override;
+    bool Inscribe(const QString&) override;
     void Damage(int damage, int damage_kind) override;
 
 protected:

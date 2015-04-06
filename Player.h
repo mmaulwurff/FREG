@@ -149,7 +149,7 @@ signals:
     /// This is emitted when some player property is updated.
     /** It should be connected to screen::UpdatePlayer() signal. */
     void Updated();
-    void GetString(QString &);
+    void GetString(QString&);
     void Destroyed();
     void ShowFile(QString path);
     void GetFocus(int* x, int* y, int* z) const;

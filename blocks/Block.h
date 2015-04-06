@@ -24,13 +24,13 @@
 #define BLOCK_H
 
 #include "header.h"
-#include <cstdint>
+#include <QtGlobal>
 
 #define BLOCK_CONSTRUCTORS(BlockClass)     \
 BlockClass(kinds, subs);                    \
 BlockClass(class QDataStream&, kinds, subs); \
-BlockClass(const BlockClass &) = delete;      \
-BlockClass &operator=(const BlockClass &) = delete;
+BlockClass(const BlockClass&) = delete;      \
+BlockClass& operator=(const BlockClass&) = delete;
 
 enum wearable {
     WEARABLE_NOWHERE,
@@ -70,7 +70,7 @@ public:
     virtual QString FullName() const;
     virtual bool Catchable() const;
     /// Returns true on success.
-    virtual bool Inscribe(QString str);
+    virtual bool Inscribe(const QString& str);
     virtual void Move(dirs direction);
     virtual void Damage(int dmg, int dmg_kind);
     virtual usage_types Use(class Active* user);
@@ -84,9 +84,9 @@ public:
     virtual Block* DropAfterDamage(bool* delete_self);
 
     virtual class Inventory* HasInventory();
-    virtual class Active    * ActiveBlock();
-    virtual class Falling   * ShouldFall();
-    virtual class Animal    * IsAnimal();
+    virtual class Active*    ActiveBlock();
+    virtual class Falling*   ShouldFall();
+    virtual class Animal*    IsAnimal();
 
     virtual wearable Wearable() const;
     virtual int DamageKind() const;
@@ -96,7 +96,7 @@ public:
     virtual int LightRadius() const;
     virtual int Weight() const;
     /// Receive text signal.
-    virtual void ReceiveSignal(QString);
+    virtual void ReceiveSignal(const QString&);
     virtual QString Description() const;
 
     /// Set maximum durability.
@@ -135,16 +135,16 @@ protected:
     virtual void SaveAttributes(class QDataStream&) const;
     Block* DropInto(bool* delete_block);
 
-    uint16_t noteId;
+    quint16 noteId;
 
 private:
     static int Transparency(int sub);
 
-    int16_t durability;
-    const uint8_t transparent;
-    const uint8_t kind;
-    const uint8_t sub;
-    uint8_t direction;
+    qint16 durability;
+    const quint8 transparent;
+    const quint8 kind;
+    const quint8 sub;
+    quint8 direction;
 };
 
 #endif // BLOCK_H

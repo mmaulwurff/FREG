@@ -148,7 +148,7 @@ bool Active::TryDestroy(const int x, const int y, const int z) const {
     }
 }
 
-void Active::ReceiveSignal(const QString str) { emit ReceivedText(str); }
+void Active::ReceiveSignal(const QString& str) { emit ReceivedText(str); }
 
 Active::Active(const kinds kind, const subs sub) :
         Block(kind, sub),

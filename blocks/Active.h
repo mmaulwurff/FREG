@@ -52,7 +52,7 @@ public:
     const Xyz GetXyz() const;
 
     void Move(dirs dir) override;
-    void ReceiveSignal(QString) override;
+    void ReceiveSignal(const QString&) override;
     Active* ActiveBlock() override final;
 
     virtual void ActFrequent();

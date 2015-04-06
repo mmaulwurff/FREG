@@ -31,10 +31,11 @@
 #include "blocks/Accumulator.h"
 #include "blocks/Text.h"
 #include <QDataStream>
+#include <QDebug>
 
 #define X_NEW_BLOCK_SUB(column1, substance, ...) new Block(BLOCK, substance),
 
-BlockFactory * BlockFactory::blockFactory = nullptr;
+BlockFactory* BlockFactory::blockFactory = nullptr;
 
 BlockFactory::BlockFactory() :
     normals{ SUB_TABLE(X_NEW_BLOCK_SUB) },
@@ -46,12 +47,14 @@ BlockFactory::BlockFactory() :
 
     static_assert((SUB_COUNT  <= 64 ), "too many substances, should be < 64.");
     static_assert((KIND_COUNT <= 128), "too many kinds, should be < 128.");
-    /*int sum = 0;
-    for (int kind = 0; kind<LAST_KIND; ++kind)
-    for (int sub  = 0; sub <LAST_SUB;  ++sub) {
-        sum += IsValid(kind, sub);
+    if ( KIND_SUB_PAIR_VALID_CHECK ) {
+        int sum = 0;
+        for (int kind = 0; kind<LAST_KIND; ++kind)
+        for (int sub  = 0; sub <LAST_SUB;  ++sub) {
+            sum += IsValid(static_cast<kinds>(kind), static_cast<subs>(sub));
+        }
+        qDebug() << "valid pairs:" << sum;
     }
-    qDebug() << "valid pairs:" << sum;*/
 
     RegisterAll(typeList< KIND_TABLE(X_CLASS) TemplateTerminator >());
 }
@@ -59,7 +62,9 @@ BlockFactory::BlockFactory() :
 BlockFactory::~BlockFactory() { qDeleteAll(ALL(normals)); }
 
 Block* BlockFactory::NewBlock(const kinds kind, const subs sub) {
-    //qDebug("kind: %d, sub: %d, valid: %d", kind, sub, IsValid(kind,sub));
+    if ( KIND_SUB_PAIR_VALID_CHECK ) {
+        qDebug("kind: %d, sub: %d, valid: %d", kind, sub, IsValid(kind,sub));
+    }
     return blockFactory->creates[kind](kind, sub);
 }
 
@@ -70,18 +75,20 @@ Block* BlockFactory::Normal(const int sub) {
 Block* BlockFactory::BlockFromFile(QDataStream& str,
         const kinds kind, const subs sub)
 {
-    //qDebug("kind: %d, sub: %d, valid: %d", kind, sub, IsValid(kind,sub));
+    if ( KIND_SUB_PAIR_VALID_CHECK ) {
+        qDebug("kind: %d, sub: %d, valid: %d", kind, sub, IsValid(kind,sub));
+    }
     return blockFactory->loads[kind](str, kind, sub);
 }
 
 bool BlockFactory::KindSubFromFile(QDataStream& str, quint8* kind, quint8* sub)
 {
     str >> *sub;
-    if ( *sub & 0b0'1000'0000 ) { // normal bit
-        *sub &= 0b0'0111'1111;
+    if ( *sub & 0b10000000 ) { // normal bit
+        *sub &= 0b01111111;
         return true;
     } else {
-        *sub &= 0b0'0111'1111;
+        *sub &= 0b01111111;
         str >> *kind;
         return false;
     }

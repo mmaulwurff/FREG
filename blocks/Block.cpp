@@ -163,7 +163,7 @@ void Block::Move(dirs) {}
 int  Block::DamageKind() const { return DAMAGE_CRUSH; }
 int  Block::DamageLevel() const { return 1; }
 int  Block::LightRadius() const { return 0; }
-void Block::ReceiveSignal(QString) {}
+void Block::ReceiveSignal(const QString&) {}
 usage_types Block::Use(Active*) { return USAGE_TYPE_NO; }
 usage_types Block::UseOnShredMove(Active*) { return USAGE_TYPE_NO; }
 
@@ -186,7 +186,7 @@ wearable Block::Wearable() const {
     }
 }
 
-bool Block::Inscribe(const QString str) {
+bool Block::Inscribe(const QString& str) {
     if ( Sub() == AIR ) return false;
     noteId = ( noteId == 0 ) ? // new note
         World::GetWorld()->SetNote(str.left(MAX_NOTE_LENGTH)) :

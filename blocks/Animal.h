@@ -34,7 +34,7 @@ public:
     void DoRareAction() override;
     void Damage(int dmg, int dmg_kind) override;
     Animal* IsAnimal() override;
-    Block  * DropAfterDamage(bool* delete_block) override;
+    Block*  DropAfterDamage(bool* delete_block) override;
     QString FullName() const override;
     inner_actions ActInner() override;
 
@@ -42,7 +42,7 @@ public:
     int  Satiation() const { return satiation; }
 
     bool Eat(subs);
-    class DeferredAction * GetDeferredAction();
+    class DeferredAction* GetDeferredAction();
 
     virtual int NutritionalValue(subs) const = 0;
 
@@ -61,7 +61,7 @@ protected:
 private:
     quint8  breath;
     quint16 satiation;
-    class DeferredAction * deferredAction = nullptr;
+    class DeferredAction* deferredAction = nullptr;
 }; // class Animal
 
 // Rabbit

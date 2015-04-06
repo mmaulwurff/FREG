@@ -39,7 +39,7 @@ class World final : public QThread {
 
 public:
 
-     World(QString world_name, bool* error);
+     World(const QString& world_name, bool* error);
     ~World();
 
 ///\name Static information section
@@ -154,14 +154,14 @@ public:
     bool InBounds(int x, int y) const;
     bool InBounds(int x, int y, int z) const;
 
-    int SetNote(QString note);
-    int ChangeNote(QString note, int note_id);
+    int SetNote(const QString& note);
+    int ChangeNote(const QString& note, int note_id);
     QString GetNote(int note_id) const;
 ///@}
 
 ///\name World section
 ///@{
-    void ReloadAllShreds(QString new_world, qint64 lati, qint64 longi,
+    void ReloadAllShreds(const QString& new_world, qint64 lati, qint64 longi,
             int new_x, int new_y, int new_z);
 
     void SaveToDisk() const;
@@ -175,7 +175,7 @@ public:
 
 signals:
     void Notify(QString) const;
-    void GetString(QString &) const;
+    void GetString(QString&) const;
     void UpdatedAll();
     void UpdatedAround(int x, int y, int z);
     void StartMove(int);

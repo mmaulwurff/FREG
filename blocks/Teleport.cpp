@@ -43,7 +43,8 @@ void Teleport::SaveAttributes(QDataStream& stream) const {
     stream << targetWorldName << targetLongitude << targetLatitude;
 }
 
-bool Teleport::Inscribe(QString input) {
+bool Teleport::Inscribe(const QString& note) {
+    QString input(note);
     QTextStream stream(&input);
     stream >> targetLongitude >> targetLatitude >> targetWorldName;
     --targetLatitude;

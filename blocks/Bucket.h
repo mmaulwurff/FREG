@@ -28,7 +28,7 @@ public:
     BLOCK_CONSTRUCTORS(Bucket)
 
     int  Weight() const override;
-    void ReceiveSignal(QString str) override;
+    void ReceiveSignal(const QString& str) override;
     bool Get(Block* block, int start) override;
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;

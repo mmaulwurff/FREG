@@ -131,12 +131,12 @@ int World::GetBound() {
     return bound;
 }
 
-int World::SetNote(const QString note) {
+int World::SetNote(const QString& note) {
     notes.append(note);
     return notes.size();
 }
 
-int World::ChangeNote(const QString note, const int noteId) {
+int World::ChangeNote(const QString& note, const int noteId) {
     if ( noteId > notes.size() ) {
         return SetNote(note);
     } else {
@@ -147,7 +147,7 @@ int World::ChangeNote(const QString note, const int noteId) {
 
 QString World::GetNote(const int noteId) const { return notes.at(noteId-1); }
 
-void World::ReloadAllShreds(const QString new_world,
+void World::ReloadAllShreds(const QString& new_world,
         const qint64 lati, const qint64 longi,
         const int new_x, const int new_y, const int new_z)
 {
@@ -600,7 +600,7 @@ int World::CorrectNumActiveShreds(int num, const int num_shreds) {
 
 World* World::world = nullptr;
 
-World::World(const QString world_name, bool* const error) :
+World::World(const QString& world_name, bool* const error) :
         worldName(world_name),
         map(new WorldMap(world_name)),
         time(), timeStep(),

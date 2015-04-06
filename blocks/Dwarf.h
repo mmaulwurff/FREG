@@ -40,9 +40,9 @@ public:
     inner_actions ActInner() override;
 
     bool Access() const override;
-    bool Inscribe(QString str) override;
+    bool Inscribe(const QString& str) override;
     bool GetExact(Block*, int to) override;
-    void ReceiveSignal(QString) override;
+    void ReceiveSignal(const QString&) override;
     int  LightRadius() const override;
     int  NutritionalValue(subs) const override;
     Block* DropAfterDamage(bool* delete_block) override;

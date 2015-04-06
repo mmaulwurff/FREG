@@ -52,7 +52,7 @@ public:
     int DamageKind() const override;
     int DamageLevel() const override;
     int LightRadius() const override;
-    bool Inscribe(QString) override;
+    bool Inscribe(const QString&) override;
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
     Block* DropAfterDamage(bool* delete_block) override;
@@ -93,7 +93,7 @@ public:
 
     int  Weight() const override;
     int  ShouldAct() const override;
-    void ReceiveSignal(QString) override;
+    void ReceiveSignal(const QString&) override;
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
     QString Description() const override;
@@ -135,7 +135,7 @@ public:
 
     int  Weight() const override;
     int  ShouldAct() const override;
-    bool Inscribe(QString) override;
+    bool Inscribe(const QString&) override;
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
     wearable Wearable() const override;
@@ -166,8 +166,8 @@ public:
     BLOCK_CONSTRUCTORS(Telegraph)
 
     int ShouldAct() const override;
-    bool Inscribe(QString) override;
-    void ReceiveSignal(QString) override;
+    bool Inscribe(const QString&) override;
+    void ReceiveSignal(const QString&) override;
     wearable Wearable() const override;
     inner_actions ActInner() override;
     usage_types Use(Active* who) override;

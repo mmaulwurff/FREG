@@ -65,7 +65,7 @@ public:
 
     /// This is called when string is needed to be received from input.
     /** It is connected to world in constructor. */
-    virtual void PassString(QString &) const = 0;
+    virtual void PassString(QString&) const = 0;
 
     /// This is called when all world should be updated in screen.
     /** When implemented, this should work fast.

@@ -30,7 +30,7 @@ public:
 
     void DoRareAction() override;
     int  ShouldAct() const override;
-    void ReceiveSignal(QString) override;
+    void ReceiveSignal(const QString&) override;
     void Damage(int dmg, int dmg_kind) override;
     void SaveAttributes(QDataStream&) const override;
     QString FullName() const override;

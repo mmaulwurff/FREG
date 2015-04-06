@@ -31,8 +31,8 @@ class DeferredAction final : private Xyz {
 public:
     explicit DeferredAction(class Animal* attached);
 
-    void SetGhostMove(int dir);
-    void SetMove(int dir);
+    void SetGhostMove(int direction);
+    void SetMove(int direction);
     void SetJump();
     void SetDamage (int x, int y, int z);
     void SetPour   (int x, int y, int z, int slot);
@@ -40,7 +40,7 @@ public:
     /// Attached block should have inventory.
     void SetBuild  (int x, int y, int z, int builder_slot);
     void SetThrow  (int x, int y, int z,
-            int src_slot, int dest_slot, int number);
+            int source_slot, int destination_slot, int number);
 
     int  GetActionType() const;
     void MakeAction();
@@ -58,8 +58,8 @@ private:
         DEFERRED_SET_FIRE
     };
 
-    DeferredAction(const DeferredAction &) = delete;
-    DeferredAction &operator=(const DeferredAction &) = delete;
+    DeferredAction(const DeferredAction&) = delete;
+    DeferredAction& operator=(const DeferredAction&) = delete;
 
     deferred_actions type;
     int srcSlot, destSlot;

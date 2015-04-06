@@ -22,18 +22,19 @@
 
 #include "screens/VirtualScreen.h"
 #include "header.h"
-#include <atomic>
 
 #ifdef Q_OS_WIN32
     #define NCURSES_MOUSE_VERSION 2
     #define PDC_WIDE
     #define _LP64 0
     #include "pdcurses/curses.h"
+    #undef bool // pdcurses has its own bool.
 #else
     #define _X_OPEN_SOURCE_EXTENDED
     #include <ncursesw/ncurses.h>
     #undef timeout // conflict with Qt
 #endif
+#include <atomic>
 
 /// Cursed screen options
 /// X(settings_string, variable_name, default_value)

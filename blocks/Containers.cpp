@@ -39,7 +39,7 @@
             FREQUENT_NEVER : FREQUENT_RARE;
     }
 
-    void Container::ReceiveSignal(QString) {}
+    void Container::ReceiveSignal(const QString&) {}
     Inventory* Container::HasInventory() { return this; }
     usage_types Container::Use(Active*) { return USAGE_TYPE_OPEN; }
     push_reaction Container::PushResult(dirs) const { return NOT_MOVABLE; }
@@ -98,7 +98,7 @@
     }
 
     int  Box::ShouldAct() const { return FREQUENT_RARE; }
-    void Box::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
+    void Box::ReceiveSignal(const QString& str) { Active::ReceiveSignal(str); }
     Inventory* Box::HasInventory() { return this; }
     inner_actions Box::ActInner() { return INNER_ACTION_NONE; }
 

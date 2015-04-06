@@ -23,15 +23,16 @@
 #ifndef INVENTORY_H
 #define INVENTORY_H
 
-#include <QStack>
 #include "header.h"
+#include <QtGlobal>
 
 class Block;
+template<typename Block> class QStack;
 
 class Inventory {
     /**\class Inventory Inventory.h
      * \brief Provides block ability to contain other blocks inside. */
-    Q_DISABLE_COPY(Inventory)
+    M_DISABLE_COPY(Inventory)
 public:
 
     /// Returns true on success.
@@ -41,7 +42,7 @@ public:
     virtual bool Access() const;
     /// Returns true on success.
     virtual bool Get(Block* block, int start = 0);
-    virtual void ReceiveSignal(QString) = 0;
+    virtual void ReceiveSignal(const QString&) = 0;
     virtual int Start() const;
     virtual int Weight() const;
     virtual QString FullName() const = 0;
@@ -62,7 +63,7 @@ public:
     kinds GetInvKind(int i) const;
     int Size() const { return size; }
     int GetInvWeight(int i) const;
-    int Number(const int i) const { return inventory[i].size(); }
+    int Number(int i) const;
     Block* ShowBlock(int slot) const;
     /// Don't move block shown by this function.
     Block* ShowBlockInSlot(int slot, int index) const;
@@ -94,7 +95,7 @@ private:
     static int GetSlotWeight(const QStack<Block*>& slot);
 
     const quint8 size;
-    QStack<Block*> * const inventory;
+    QStack<Block*>* const inventory;
 };
 
 #endif // INVENTORY_H

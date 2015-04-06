@@ -42,7 +42,7 @@ int  Dwarf::Start() const { return SPECIAL_SLOTS_COUNT; }
 bool Dwarf::Access() const { return false; }
 int  Dwarf::ShouldAct() const { return FREQUENT_FIRST | FREQUENT_RARE; }
 int  Dwarf::LightRadius() const { return lightRadius; }
-void Dwarf::ReceiveSignal(const QString str) { Active::ReceiveSignal(str); }
+void Dwarf::ReceiveSignal(const QString& str) { Active::ReceiveSignal(str); }
 Inventory* Dwarf::HasInventory() { return this; }
 
 inner_actions Dwarf::ActInner() {
@@ -150,7 +150,7 @@ void Dwarf::SaveAttributes(QDataStream& out) const {
     Inventory::SaveAttributes(out);
 }
 
-bool Dwarf::Inscribe(QString) {
+bool Dwarf::Inscribe(const QString&) {
     SendSignalAround(tr("Don't touch me!"));
     return false;
 }

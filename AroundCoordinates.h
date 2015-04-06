@@ -50,7 +50,7 @@ protected:
 class AroundCoordinates : public AroundCoordinatesN<6> {
 public:
     AroundCoordinates(const Xyz& source);
-    AroundCoordinates(int dirBits, const Xyz& source);
+    AroundCoordinates(int directionBits, const Xyz& source);
 };
 
 class AroundCoordinates4 : public AroundCoordinatesN<4> {

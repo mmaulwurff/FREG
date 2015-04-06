@@ -27,7 +27,7 @@ class Text : public Block {
 public:
     using Block::Block;
 
-    bool Inscribe(QString) override;
+    bool Inscribe(const QString&) override;
     QString FullName() const override;
     usage_types Use(Active* who) override;
 };

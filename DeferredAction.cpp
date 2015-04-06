@@ -24,10 +24,10 @@
 #include "BlockFactory.h"
 
 void DeferredAction::GhostMove() const {
-    const dirs dir = static_cast<dirs>(num);
-    if ( dir == DOWN && attachedBlock->Z() == 1        ) return;
-    if ( dir == UP   && attachedBlock->Z() == HEIGHT-2 ) return;
-    attachedBlock->Move(dir);
+    const dirs direction = static_cast<dirs>(num);
+    if ( direction == DOWN && attachedBlock->Z() == 1        ) return;
+    if ( direction == UP   && attachedBlock->Z() == HEIGHT-2 ) return;
+    attachedBlock->Move(direction);
 }
 
 void DeferredAction::Move() const {
@@ -120,14 +120,14 @@ void DeferredAction::SetFire() const {
     }
 }
 
-void DeferredAction::SetGhostMove(const int dir) {
+void DeferredAction::SetGhostMove(const int direction) {
     type = DEFERRED_GHOST_MOVE;
-    num  = dir;
+    num  = direction;
 }
 
-void DeferredAction::SetMove(const int dir) {
+void DeferredAction::SetMove(const int direction) {
     type = DEFERRED_MOVE;
-    num  = dir;
+    num  = direction;
 }
 
 void DeferredAction::SetJump() { type = DEFERRED_JUMP; }

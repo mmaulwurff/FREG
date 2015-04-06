@@ -44,7 +44,7 @@ usage_types Text::Use(Active* const who) {
     }
 }
 
-bool Text::Inscribe(const QString str) {
+bool Text::Inscribe(const QString& str) {
     if ( '.' != str.at(0).toLatin1() && (noteId == 0 || GLASS == Sub()) ) {
         Block::Inscribe(str);
         return true;

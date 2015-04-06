@@ -21,7 +21,7 @@
 #define BLOCK_FACTORY_H
 
 #include "header.h"
-#include <cstdint>
+#include <QtGlobal>
 
 class Block;
 class QDataStream;
@@ -56,7 +56,7 @@ public:
     static Block* BlockFromFile(QDataStream& str, kinds kind, subs sub);
 
     /// Returns true if block is normal.
-    static bool KindSubFromFile(QDataStream&, uint8_t * kind, uint8_t * sub);
+    static bool KindSubFromFile(QDataStream&, quint8* kind, quint8* sub);
 
     /// Does not actually delete normal blocks.
     static void DeleteBlock(Block*);
@@ -71,12 +71,19 @@ public:
     }
 
     static int KindFromId(const int id) { return (id >>   8); }
-    static int SubFromId (const int id) { return (id & 0b0'1111'1111); }
-
-    static bool IsValid(kinds, subs);
+    static int SubFromId (const int id) { return (id & 0xff); }
 
 private:
     M_DISABLE_COPY(BlockFactory)
+
+    static const int KIND_SUB_PAIR_VALID_CHECK = false;
+    /**
+     * @brief IsValid check if kind-sub pair is valid in game.
+     *
+     * If pair is not valid, it doesn't mean that such block cannot exist.
+     * @return kind-sub pair is valid.
+     */
+    static bool IsValid(kinds, subs);
 
     Block* const normals[SUB_COUNT];
 
