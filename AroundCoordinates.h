@@ -17,13 +17,12 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#ifndef AROUNDCOORDINATES_H
-#define AROUNDCOORDINATES_H
+#ifndef AROUND_COORDINATES_H
+#define AROUND_COORDINATES_H
 
 #include "Xyz.h"
-#include "World.h"
 
-enum dirsBits {
+enum directionBits {
     B_UP     = 1,
     B_DOWN   = 2,
     B_AROUND = 4
@@ -59,13 +58,4 @@ public:
     AroundCoordinates4(const Xyz& source);
 };
 
-template<int maxSize>
-void AroundCoordinatesN<maxSize>::fill4(const Xyz& xyz) {
-    if ( xyz.X() > 0 )    array[size++] = { xyz.X()-1, xyz.Y(), xyz.Z() };
-    if ( xyz.Y() > 0 )    array[size++] = { xyz.X(), xyz.Y()-1, xyz.Z() };
-    const int bound = World::GetConstWorld()->GetBound();
-    if ( xyz.X() < bound) array[size++] = { xyz.X()+1, xyz.Y(), xyz.Z() };
-    if ( xyz.Y() < bound) array[size++] = { xyz.X(), xyz.Y()+1, xyz.Z() };
-}
-
-#endif // AROUNDCOORDINATES_H
+#endif // AROUND_COORDINATES_H

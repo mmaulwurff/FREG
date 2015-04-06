@@ -17,8 +17,8 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#ifndef BLOCKFACTORY_H
-#define BLOCKFACTORY_H
+#ifndef BLOCK_FACTORY_H
+#define BLOCK_FACTORY_H
 
 #include "header.h"
 #include <cstdint>
@@ -71,7 +71,7 @@ public:
     }
 
     static int KindFromId(const int id) { return (id >>   8); }
-    static int SubFromId (const int id) { return (id & 0b1111'1111); }
+    static int SubFromId (const int id) { return (id & 0b0'1111'1111); }
 
     static bool IsValid(kinds, subs);
 
@@ -97,7 +97,7 @@ private:
     struct TemplateTerminator {};
 
     ///< Base for variadic template.
-    void RegisterAll(typeList<TemplateTerminator>) {}
+    static void RegisterAll(typeList<TemplateTerminator>) {}
 
     /// Core of block registration system.
     template <typename BlockType, typename ... RestBlockTypes>
@@ -107,4 +107,4 @@ private:
     static BlockFactory* blockFactory;
 };
 
-#endif // BLOCKFACTORY_H
+#endif // BLOCK_FACTORY_H

@@ -17,16 +17,16 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-/**\file VirtScreen.cpp
+/**\file VirtualScreen.cpp
  * \brief This file provides definitions of code common to all freg screens. */
 
-#include "VirtScreen.h"
+#include "screens/VirtualScreen.h"
 #include "Player.h"
 #include "World.h"
 
-void VirtScreen::UpdatesEnd() {}
+void VirtualScreen::UpdatesEnd() {}
 
-VirtScreen::VirtScreen(Player* const player_) :
+VirtualScreen::VirtualScreen(Player* const player_) :
         player(player_),
         settings(home_path + Str("freg.ini"), QSettings::IniFormat),
         previousCommand(settings.value(Str("last_command"), Str("moo")).
@@ -35,53 +35,53 @@ VirtScreen::VirtScreen(Player* const player_) :
         logStream(&logFile)
 {
     World* const world = World::GetWorld();
-    connect( world, &World::Notify, this, &VirtScreen::Notify,
+    connect( world, &World::Notify, this, &VirtualScreen::Notify,
         Qt::DirectConnection);
-    connect(player, &Player::ShowFile, this, &VirtScreen::DisplayFile);
-    connect(player, &Player::GetFocus, this, &VirtScreen::ActionXyz,
-        Qt::DirectConnection);
-
-    connect( world, &World::GetString, this, &VirtScreen::PassString,
-        Qt::DirectConnection);
-    connect(player, &Player::GetString, this, &VirtScreen::PassString,
+    connect(player, &Player::ShowFile, this, &VirtualScreen::DisplayFile);
+    connect(player, &Player::GetFocus, this, &VirtualScreen::ActionXyz,
         Qt::DirectConnection);
 
-    connect(player, &Player::Updated, this, &VirtScreen::UpdatePlayer,
+    connect( world, &World::GetString, this, &VirtualScreen::PassString,
         Qt::DirectConnection);
-    connect(world, &World::UpdatedAll, this, &VirtScreen::UpdateAll,
+    connect(player, &Player::GetString, this, &VirtualScreen::PassString,
         Qt::DirectConnection);
-    connect(world, &World::Moved, this, &VirtScreen::Move,
-        Qt::DirectConnection);
-    connect(world, &World::UpdatedAround, this, &VirtScreen::UpdateAround,
-        Qt::DirectConnection);
-    connect(world, &World::UpdatesEnded, this, &VirtScreen::UpdatesEnd,
-        Qt::DirectConnection);
-    connect(this, &VirtScreen::PauseWorld,  world, &World::Pause);
-    connect(this, &VirtScreen::ResumeWorld, world, &World::Start);
 
-    connect(player, &Player::Destroyed, this, &VirtScreen::DeathScreen,
+    connect(player, &Player::Updated, this, &VirtualScreen::UpdatePlayer,
+        Qt::DirectConnection);
+    connect(world, &World::UpdatedAll, this, &VirtualScreen::UpdateAll,
+        Qt::DirectConnection);
+    connect(world, &World::Moved, this, &VirtualScreen::Move,
+        Qt::DirectConnection);
+    connect(world, &World::UpdatedAround, this, &VirtualScreen::UpdateAround,
+        Qt::DirectConnection);
+    connect(world, &World::UpdatesEnded, this, &VirtualScreen::UpdatesEnd,
+        Qt::DirectConnection);
+    connect(this, &VirtualScreen::PauseWorld,  world, &World::Pause);
+    connect(this, &VirtualScreen::ResumeWorld, world, &World::Start);
+
+    connect(player, &Player::Destroyed, this, &VirtualScreen::DeathScreen,
         Qt::DirectConnection );
 
     logFile.open(QIODevice::Append | QIODevice::Text);
     logStream.setCodec("UTF-8");
 }
 
-VirtScreen::~VirtScreen() {}
+VirtualScreen::~VirtualScreen() {}
 
-void VirtScreen::Log(const QString message) const {
+void VirtualScreen::Log(const QString message) const {
     if ( logFile.isOpen() ) {
         logStream << message << endl;
     }
 }
 
-void VirtScreen::DisplayFile(QString /* path */) {}
+void VirtualScreen::DisplayFile(QString /* path */) {}
 
-void VirtScreen::ActionXyz(int* const x, int* const y, int* const z) const {
+void VirtualScreen::ActionXyz(int* const x, int* const y, int* const z) const {
     World::GetConstWorld()->Focus(player->X(), player->Y(), player->Z(),
         x, y, z, player->GetDir());
 }
 
-int VirtScreen::Color(const int kind, const int sub) {
+int VirtualScreen::Color(const int kind, const int sub) {
     // default colors are defined in header.h in SUB_TABLE.
     static const int colors[] { SUB_TABLE(X_COLOR) };
     switch ( kind ) { // foreground_background
@@ -110,7 +110,7 @@ int VirtScreen::Color(const int kind, const int sub) {
     }
 }
 
-char VirtScreen::CharName(const int kind, const int sub) {
+char VirtualScreen::CharName(const int kind, const int sub) {
     // do not use abcdef as they can be used as distance specifiers.
     // default characters are defined in header.h in KIND_TABLE.
     switch ( kind ) {
@@ -142,7 +142,7 @@ char VirtScreen::CharName(const int kind, const int sub) {
     return characters[kind];
 }
 
-bool VirtScreen::ProcessCommand(const QString command) {
+bool VirtualScreen::ProcessCommand(const QString command) {
     switch ( Player::UniqueIntFromString(qPrintable(command)) ) {
     case Player::UniqueIntFromString("moo"):
         Notify(Str("^__^"));
@@ -156,10 +156,10 @@ bool VirtScreen::ProcessCommand(const QString command) {
 }
 
 // Define pure virtual functions to simplify debugging
-void VirtScreen::Move(int)                   { Q_UNREACHABLE(); }
-void VirtScreen::UpdateAll()                 { Q_UNREACHABLE(); }
-void VirtScreen::DeathScreen()               { Q_UNREACHABLE(); }
-void VirtScreen::UpdatePlayer()              { Q_UNREACHABLE(); }
-void VirtScreen::Notify(QString) const       { Q_UNREACHABLE(); }
-void VirtScreen::PassString(QString &) const { Q_UNREACHABLE(); }
-void VirtScreen::UpdateAround(int, int, int) { Q_UNREACHABLE(); }
+void VirtualScreen::Move(int)                   { Q_UNREACHABLE(); }
+void VirtualScreen::UpdateAll()                 { Q_UNREACHABLE(); }
+void VirtualScreen::DeathScreen()               { Q_UNREACHABLE(); }
+void VirtualScreen::UpdatePlayer()              { Q_UNREACHABLE(); }
+void VirtualScreen::Notify(QString) const       { Q_UNREACHABLE(); }
+void VirtualScreen::PassString(QString &) const { Q_UNREACHABLE(); }
+void VirtualScreen::UpdateAround(int, int, int) { Q_UNREACHABLE(); }

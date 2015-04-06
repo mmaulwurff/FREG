@@ -90,13 +90,13 @@ public:
     ///\name Lighting section
     ///@{
         /// Get light level in coordinates x, y, z.
-        int Lightmap(int x, int y, int z) const;
+        int LightMap(int x, int y, int z) const;
 
         /// Sets sun light to level in coordinates xyz.
         void AddLight(int x, int y, int z, int level);
 
         /// Make all shining block shine.
-        void ShineAll();
+        void ShineAll() const;
     ///@}
 
     ///\name Information section

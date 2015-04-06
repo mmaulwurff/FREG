@@ -19,7 +19,7 @@
 
 #include "blocks/Teleport.h"
 #include "World.h"
-#include "worldmap.h"
+#include "WorldMap.h"
 #include "blocks/Animal.h"
 #include <QTextStream>
 

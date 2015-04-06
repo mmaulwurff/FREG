@@ -62,9 +62,9 @@
     }
 
     void Animal::Damage(const int dmg, const int dmg_kind) {
-        const int last_dur = GetDurability();
+        const int last_durability = GetDurability();
         Falling::Damage(dmg, dmg_kind);
-        if ( last_dur != GetDurability() ) {
+        if ( last_durability != GetDurability() ) {
             switch ( dmg_kind ) {
             case DAMAGE_HUNGER:
                 ReceiveSignal(tr("You weaken from hunger!"));
@@ -73,7 +73,7 @@
                 ReceiveSignal(tr("You burn!"));
                 break;
             case DAMAGE_BREATH:
-                ReceiveSignal(tr("You choke withot air!"));
+                ReceiveSignal(tr("You choke without air!"));
                 break;
             default:
                 ReceiveSignal(tr("Received damage!"));

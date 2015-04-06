@@ -1,27 +1,25 @@
-# freg Qt project file
-
 TARGET   = freg
 TEMPLATE = app
 VERSION  = 0.3
 DEFINES += VER=$$VERSION
 QMAKE_TARGET_COPYRIGHT   = (C) 2012-2015 Alexander \'m8f\' Kromm
-QMAKE_TARGET_DESCRIPTION = Freg - open world with text graphics.
+QMAKE_TARGET_DESCRIPTION = Freg, 3D game with TUI
 
 CONFIG += warn_on console rtti_off exceptions_off
 CONFIG( release, debug|release ):DEFINES += QT_NO_DEBUG_OUTPUT
-
-QMAKE_CXXFLAGS += -Wfloat-equal -Woverloaded-virtual -Wundef -fstrict-enums
-QMAKE_CXXFLAGS += -pedantic -Weffc++ -Werror
+DEFINES *= QT_USE_QSTRINGBUILDER
 
 #QMAKE_CXXFLAGS_DEBUG += -fno-inline
 QMAKE_CXXFLAGS_RELEASE -= -O2
-QMAKE_CXXFLAGS += -O3
-
-DEFINES *= QT_USE_QSTRINGBUILDER
-
 QMAKE_CXXFLAGS += -isystem $$(QTDIR)/include/QtCore
 QMAKE_CXXFLAGS += -isystem $$(QTDIR)/include/QtGui
-QMAKE_CXXFLAGS += -std=c++14
+QMAKE_CXXFLAGS += -std=c++14 -O3
+QMAKE_CXXFLAGS += -Wfloat-equal -Woverloaded-virtual -Wundef -fstrict-enums
+QMAKE_CXXFLAGS += -pedantic -Werror
+
+!for_coverity {
+    QMAKE_CXXFLAGS += -Weffc++
+}
 
 clang {
     QMAKE_CXX  = clang++
@@ -29,10 +27,6 @@ clang {
 } else {
     QMAKE_CXXFLAGS_RELEASE += -s
     QMAKE_CXXFLAGS += -Wdouble-promotion
-    g++-old {
-        QMAKE_CXX  = g++-4.8
-        QMAKE_LINK = g++-4.8
-    }
 }
 
 unix {

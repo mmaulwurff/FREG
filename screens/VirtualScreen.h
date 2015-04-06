@@ -17,8 +17,8 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#ifndef VIRTSCREEN_H
-#define VIRTSCREEN_H
+#ifndef VIRTUAL_SCREEN_H
+#define VIRTUAL_SCREEN_H
 
 #include <QFile>
 #include <QString>
@@ -42,17 +42,17 @@ enum screen_errors {
     WIDTH_NOT_ENOUGH
 };
 
-class VirtScreen : public QObject {
-    /** \class VirtScreen VirtScreen.h
+class VirtualScreen : public QObject {
+    /** \class VirtualScreen VirtualScreen.h
      *  \brief This class provides base for all screens for freg.
      *
      * Provides interface for world-screen and player-screen communications. */
     Q_OBJECT
-    Q_DISABLE_COPY(VirtScreen)
+    Q_DISABLE_COPY(VirtualScreen)
 public:
     /// Constructor makes player and world connections.
-    VirtScreen(class Player*);
-    virtual ~VirtScreen();
+    VirtualScreen(class Player*);
+    virtual ~VirtualScreen();
 
     static char CharName(int kind, int sub);
     static int  Color   (int kind, int sub);
@@ -67,7 +67,7 @@ public:
     /** It is connected to world in constructor. */
     virtual void PassString(QString &) const = 0;
 
-    /// This is called when all world should be updated in sceen.
+    /// This is called when all world should be updated in screen.
     /** When implemented, this should work fast.
      *  It is connected to world in constructor. */
     virtual void UpdateAll() = 0;
@@ -102,7 +102,7 @@ public:
     virtual void ActionXyz(int* x, int* y, int* z) const;
 
     /// This shows a file by path.
-    /** Standard (non-reimpemented) version does nothing. */
+    /** Standard (non-reimplemented) version does nothing. */
     virtual void DisplayFile(QString path);
 
 signals:
@@ -139,4 +139,4 @@ protected:
     mutable QTextStream logStream;
 };
 
-#endif // VIRTSCREEN_H
+#endif // VIRTUAL_SCREEN_H

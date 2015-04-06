@@ -58,7 +58,7 @@ enum sizes {
 // X(QT_TRANSLATE_NOOP(context, translatable shred name), enum element, symbol)
 #define SHRED_TABLE(X) \
 X(QT_TRANSLATE_NOOP("Shred", "Plain"      ), SHRED_PLAIN,        '.', )\
-X(QT_TRANSLATE_NOOP("Shred", "Test shred" ), SHRED_TESTSHRED,    'T', )\
+X(QT_TRANSLATE_NOOP("Shred", "Test shred" ), SHRED_TEST_SHRED,   'T', )\
 X(QT_TRANSLATE_NOOP("Shred", "Pyramid"    ), SHRED_PYRAMID,      'P', )\
 X(QT_TRANSLATE_NOOP("Shred", "Hill"       ), SHRED_HILL,         '+', )\
 X(QT_TRANSLATE_NOOP("Shred", "Desert"     ), SHRED_DESERT,       ':', )\
@@ -113,7 +113,7 @@ enum times_of_day {
 /** \page kinds List of available block kinds
  *  Complete list.
  *  These kinds can be used as parameters to `get KIND SUB` command.
- *  Changind kind order will break file compatibility.
+ *  Changing kind order will break file compatibility.
  *  Do not use space in strings, use '_'.
  *  Add new kinds to bottom.
  *  \snippet header.h List of kinds */

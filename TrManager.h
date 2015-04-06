@@ -17,8 +17,8 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#ifndef TRMANAGER_H
-#define TRMANAGER_H
+#ifndef TR_MANAGER_H
+#define TR_MANAGER_H
 
 #include "header.h"
 #include "Weather.h"
@@ -29,7 +29,7 @@ class TrManager {
 public:
     TrManager();
 
-    /// Returs translated kind name.
+    /// Returns translated kind name.
     static QString KindName(int kind);
     /// Returns translated substance name.
     static QString SubName(int sub);
@@ -74,4 +74,4 @@ private:
     static TrManager* trManager;
 };
 
-#endif // TRMANAGER_H
+#endif // TR_MANAGER_H

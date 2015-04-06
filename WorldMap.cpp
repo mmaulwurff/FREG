@@ -17,14 +17,15 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include "worldmap.h"
+#include "WorldMap.h"
 #include "header.h"
 #include <QSettings>
+#include <QString>
 #include <QFile>
 
 #define UNDERGROUND_ONLY false
 
-WorldMap::WorldMap(const QString world_name) :
+WorldMap::WorldMap(const QString& world_name) :
         mapSize(),
         map(),
         spawnLongitude(),
@@ -68,8 +69,8 @@ WorldMap::WorldMap(const QString world_name) :
 
 WorldMap::~WorldMap() { delete [] map; }
 
-void WorldMap::MakeAndSaveSpawn(const QString world_name, const int size,
-        qint64 * longitude, qint64 * latitude)
+void WorldMap::MakeAndSaveSpawn(const QString& world_name, const int size,
+        qint64* longitude, qint64* latitude)
 {
     QSettings map_info(home_path + world_name + Str("/map.ini"),
         QSettings::IniFormat);
@@ -113,22 +114,22 @@ void WorldMap::Circle(const int min_rad, const int max_rad,
         const char ch, const int size, char * const map)
 {
     Q_ASSERT(min_rad < max_rad);
-    float maxs[360] = { float(qrand()%(max_rad - min_rad) + min_rad) };
+    float max[360] = { float(qrand()%(max_rad - min_rad) + min_rad) };
     for (int x=1; x<360; ++x) {
-        maxs[x] = ( x > 345 ) ? // connect beginning and end of circle
-            maxs[x-1] + (maxs[0] - maxs[345]) / 15 :
+        max[x] = ( x > 345 ) ? // connect beginning and end of circle
+            max[x-1] + (max[0] - max[345]) / 15 :
             qBound(float(min_rad),
-                maxs[x-1]+(qrand()%400-200)/200.f, float(max_rad));
+                max[x-1]+(qrand()%400-200)/200.f, float(max_rad));
     }
     for (int y=0; y<size; ++y)
     for (int x=0; x<size; ++x) {
-        if ( R(x, y, size) < maxs[qRound(Deg(x, y, size))] ) {
+        if ( R(x, y, size) < max[qRound(Deg(x, y, size))] ) {
             map[x*size+y] = ch;
         }
     }
 }
 
-void WorldMap::GenerateMap(const QString world_name,
+void WorldMap::GenerateMap(const QString& world_name,
         int size, const char outer, const int seed)
 {
     if ( seed ) {
@@ -136,7 +137,7 @@ void WorldMap::GenerateMap(const QString world_name,
     }
     size = qMax(10, size);
 
-    char * const map = new char[size * size];
+    char* const map = new char[size * size];
     memset(map, outer, size*size);
 
     const float min_rad = size / 3.0f;

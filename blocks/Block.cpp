@@ -67,13 +67,13 @@ void Block::Damage(const int dmg, int dmg_kind) {
     if ( dmg_kind > DAMAGE_PUSH_UP ) {
          dmg_kind = DAMAGE_PUSH_UP;
     }
-    static const SortedArray<subs, SUB_DUST, GREENERY, ROSE, SUB_NUT> fragiles;
-    if ( std::binary_search(ALL(fragiles), Sub()) ) {
+    static const SortedArray<subs, SUB_DUST, GREENERY, ROSE, SUB_NUT> fragile;
+    if ( std::binary_search(ALL(fragile), Sub()) ) {
         durability = 0;
         return;
     }
-    static const SortedArray<subs, NULLSTONE, STAR, AIR, SKY> undestructible;
-    if ( std::binary_search(ALL(undestructible), Sub()) ) {
+    static const SortedArray<subs, NULLSTONE, STAR, AIR, SKY> indestructible;
+    if ( std::binary_search(ALL(indestructible), Sub()) ) {
         return;
     }
     // Special damage kinds:
@@ -104,30 +104,30 @@ void Block::Damage(const int dmg, int dmg_kind) {
         } break;
     }
     // Common substances and damage kinds:
-    int mult = 1; // default
+    int multiplier = 1; // default
     switch ( Sub() ) {
     case DIFFERENT: return;
     case MOSS_STONE:
     case STONE: switch ( dmg_kind ) {
         case DAMAGE_HEAT:
         case DAMAGE_CUT: return;
-        case DAMAGE_MINE: mult = 2; break;
+        case DAMAGE_MINE: multiplier = 2; break;
         } break;
-    case WOOD: mult += ( DAMAGE_CUT == dmg_kind ); break;
+    case WOOD: multiplier += ( DAMAGE_CUT == dmg_kind ); break;
     case A_MEAT:
     case H_MEAT: switch ( dmg_kind ) {
         case DAMAGE_HEAT:
-        case DAMAGE_THRUST: mult = 2; break;
+        case DAMAGE_THRUST: multiplier = 2; break;
         } break;
     case SAND:
-    case SOIL:  mult += ( DAMAGE_DIG    == dmg_kind ); break;
+    case SOIL:  multiplier += ( DAMAGE_DIG    == dmg_kind ); break;
     case ADAMANTINE:
-    case FIRE:  mult  = ( DAMAGE_FREEZE == dmg_kind ); break;
-    case WATER: mult  = ( DAMAGE_HEAT   == dmg_kind ); break;
+    case FIRE:  multiplier  = ( DAMAGE_FREEZE == dmg_kind ); break;
+    case WATER: multiplier  = ( DAMAGE_HEAT   == dmg_kind ); break;
     case GLASS: durability *= ( DAMAGE_HEAT == dmg_kind ); return;
     default: break;
     }
-    durability -= mult * dmg;
+    durability -= multiplier * dmg;
 } // Block::Damage(const ind dmg, const int dmg_kind)
 
 Block* Block::DropAfterDamage(bool* const delete_block) {

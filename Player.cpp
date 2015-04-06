@@ -20,7 +20,7 @@
 #include "Player.h"
 #include "World.h"
 #include "Shred.h"
-#include "worldmap.h"
+#include "WorldMap.h"
 #include "BlockFactory.h"
 #include "DeferredAction.h"
 #include "blocks/Animal.h"
@@ -56,12 +56,12 @@ void Player::SetCreativeMode(const bool creative_on) {
     creativeMode = creative_on;
     player->disconnect();
     SaveState();
-    Animal* const prev_player = player;
+    Animal* const previous_player = player;
     SetPlayer(X(), Y(), Z());
-    player->SetDir(prev_player->GetDir());
+    player->SetDir(previous_player->GetDir());
     Inventory* const inv = PlayerInventory();
-    if ( inv && prev_player->HasInventory() ) {
-        inv->GetAll(prev_player->HasInventory());
+    if ( inv && previous_player->HasInventory() ) {
+        inv->GetAll(previous_player->HasInventory());
     }
     emit Updated();
 }
@@ -485,7 +485,7 @@ void Player::SetPlayer(int _x, int _y, int _z) {
                 player = BlockFactory::NewBlock(DWARF, PLAYER_SUB)->IsAnimal();
             }
             world->DestroyAndReplace(_x, _y, Z());
-            world->DestroyAndReplace(_x, _y, Z()); // some blocks drop smth
+            world->DestroyAndReplace(_x, _y, Z()); // blocks can drop something
             world->Build(player, _x, _y, Z());
         }
     }

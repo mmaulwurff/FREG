@@ -21,7 +21,7 @@
 
 // Armour section
     void Armour::Damage(const int dmg, const int dmg_kind) {
-        if ( dmg > TRESHOLD ) {
+        if ( dmg > THRESHOLD ) {
             Block::Damage(dmg/((Kind() == ARMOUR) ? 4 : 2), dmg_kind);
         }
     }

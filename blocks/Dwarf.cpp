@@ -99,10 +99,10 @@ void Dwarf::Damage(const int dmg, const int dmg_kind) {
     for (const int i : places) {
         if ( IsEmpty(i) ) continue;
         Block* const armour = ShowBlock(i);
-        const int dur_before_damage = armour->GetDurability();
+        const int durability_before_damage = armour->GetDurability();
         const int damage_divider = (i == ON_BODY) ? 2 : 4;
         armour->Damage(dmg/damage_divider, dmg_kind);
-        if ( armour->GetDurability() < dur_before_damage ) {
+        if ( armour->GetDurability() < durability_before_damage ) {
             damage_to_self -= dmg/damage_divider;
             if ( armour->GetDurability() <= 0 ) {
                 delete armour;

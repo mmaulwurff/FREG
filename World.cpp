@@ -21,7 +21,7 @@
 #include "Shred.h"
 #include "BlockFactory.h"
 #include "ShredStorage.h"
-#include "worldmap.h"
+#include "WorldMap.h"
 #include "blocks/Active.h"
 #include "blocks/Inventory.h"
 #include "WaysTree.h"

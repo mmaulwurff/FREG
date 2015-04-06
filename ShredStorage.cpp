@@ -20,6 +20,7 @@
 #include "ShredStorage.h"
 #include "Shred.h"
 #include <QFile>
+#include <thread>
 
 uint qHash(const ShredStorage::LongLat & longLat) {
     return  (quint64(longLat.longitude) & 0b1111'1111) |
@@ -59,7 +60,7 @@ QByteArray* ShredStorage::GetByteArray() {
     return result;
 }
 
-void ShredStorage::ReleazeByteArray(QByteArray* const array) const {
+void ShredStorage::ReleaseByteArray(QByteArray* const array) const {
     array->clear();
     emptyWriteBuffers.push_back(array);
 }
@@ -110,7 +111,7 @@ void ShredStorage::WriteShred(const qint64 longi, const qint64 lati) const {
         if ( file.open(QIODevice::WriteOnly) ) {
             file.write(qCompress(*data, COMPRESSION_LEVEL));
         }
-        ReleazeByteArray(data);
+        ReleaseByteArray(data);
     }
 }
 
@@ -152,4 +153,9 @@ void ShredStorage::asyncShift(const int direction,
         }
         break;
     }
+}
+
+bool ShredStorage::LongLat::operator==(const ShredStorage::LongLat& other)
+const {
+    return longitude == other.longitude && latitude == other.latitude;
 }

@@ -147,7 +147,7 @@ signals:
     void OverstepBorder(int);
 
     /// This is emitted when some player property is updated.
-    /** It shoul be connected to screen::UpdatePlayer() signal. */
+    /** It should be connected to screen::UpdatePlayer() signal. */
     void Updated();
     void GetString(QString &);
     void Destroyed();

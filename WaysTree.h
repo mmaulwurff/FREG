@@ -17,8 +17,8 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#ifndef WAYSTREE_H
-#define WAYSTREE_H
+#ifndef WAYS_TREE_H
+#define WAYS_TREE_H
 
 #include <vector>
 #include "Xyz.h"
@@ -42,4 +42,4 @@ private:
     std::vector<WaysTree*> nexts;
 };
 
-#endif // WAYSTREE_H
+#endif // WAYS_TREE_H

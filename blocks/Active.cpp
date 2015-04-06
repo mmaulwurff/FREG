@@ -165,7 +165,7 @@ bool Active::Gravitate(const int range, int bottom, int top,
 {
     const World* const world = World::GetConstWorld();
     const int bound = World::GetBound();
-    // analyse world around
+    // analyze world around
     int for_north = 0, for_west = 0;
     const int y_start = qMax(Y()-range, 0);
     const int y_end   = qMin(Y()+range, bound);
@@ -200,8 +200,8 @@ bool Active::Gravitate(const int range, int bottom, int top,
 int Active::Attractive(int) const { return 0; }
 
 bool Active::IsSubAround(const int sub) const {
-    const AroundCoordinates coords(GetXyz());
-    return std::any_of(ALL(coords), [=](const Xyz& xyz) {
+    const AroundCoordinates coordinates(GetXyz());
+    return std::any_of(ALL(coordinates), [=](const Xyz& xyz) {
         return World::GetConstWorld()->GetBlock(XYZ(xyz))->Sub() == sub;
     });
 }

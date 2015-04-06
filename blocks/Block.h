@@ -122,7 +122,7 @@ public:
     void SaveToFile(QDataStream& out);
     void SaveNormalToFile(class QDataStream& out) const;
 
-    /// Importart! Use it if block won't be deleted after SaveToFile.
+    /// Important! Use it if block won't be deleted after SaveToFile.
     void RestoreDurabilityAfterSave() { durability >>= 4; }
 
     static sub_groups GetSubGroup(int sub);

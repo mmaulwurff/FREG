@@ -17,8 +17,8 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#ifndef ARMOURS_H
-#define ARMOURS_H
+#ifndef ARMOUR_H
+#define ARMOUR_H
 
 #include "blocks/Block.h"
 
@@ -30,7 +30,7 @@ public:
     wearable Wearable() const override;
 
 protected:
-    static const int TRESHOLD = 10;
+    static const int THRESHOLD = 10;
 }; // class Armour
 
 class Helmet : public Armour {
@@ -45,4 +45,4 @@ public:
     wearable Wearable() const override;
 }; // class Boots
 
-#endif // ARMOURS_H
+#endif // ARMOUR_H

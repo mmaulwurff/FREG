@@ -40,7 +40,7 @@ public:
     /// Attached block should have inventory.
     void SetBuild  (int x, int y, int z, int builder_slot);
     void SetThrow  (int x, int y, int z,
-            int src_slot, int dest_slot, int unum);
+            int src_slot, int dest_slot, int number);
 
     int  GetActionType() const;
     void MakeAction();
