@@ -47,7 +47,7 @@ public:
     ~BlockFactory();
 
     /// Use this to receive a pointer to normal block.
-    static Block* Normal(const int sub);
+    static Block* Normal(int sub);
 
     /// Use this to receive a pointer to new not-normal block.
     static Block* NewBlock(kinds kind, subs sub);

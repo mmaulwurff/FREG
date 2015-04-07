@@ -50,17 +50,18 @@ bool Shred::LoadShred() {
     SetWeather(static_cast<weathers>(read));
     Block* const null_stone = BlockFactory::Normal(NULLSTONE);
     Block* const air        = BlockFactory::Normal(AIR);
+    Block* const sky        = BlockFactory::Normal(SKY); // used as column end.
     FOR_ALL_SHRED_AREA(x, y) {
         PutBlock(null_stone, x, y, 0);
         for (int z = 1; ; ++z) {
             quint8 kind, sub;
             if ( BlockFactory::KindSubFromFile(in, &kind, &sub) ) { // normal
-                if ( Q_UNLIKELY(sub == SKY) ) {
-                    std::fill(blocks[x][y] + z, blocks[x][y] + HEIGHT-1, air);
-                    PutBlock(BlockFactory::Normal(SKY), x, y, HEIGHT-1);
-                    break;
-                } else {
+                if ( sub != SKY ) {
                     PutBlock(BlockFactory::Normal(sub), x, y, z);
+                } else {
+                    std::fill(blocks[x][y] + z, blocks[x][y] + HEIGHT-1, air);
+                    PutBlock(sky, x, y, HEIGHT-1);
+                    break;
                 }
             } else if ( Active* const active = (blocks[x][y][z] =
                     BlockFactory::BlockFromFile( in,
@@ -98,13 +99,12 @@ Shred::Shred(const int shred_x, const int shred_y,
 {
     if ( LoadShred() ) return; // successful loading
     // new shred generation:
-    Block* const null_stone = BlockFactory::Normal(NULLSTONE);
-    Block* const air  = BlockFactory::Normal(AIR);
-    Block* const sky  = BlockFactory::Normal(SKY);
+    Block* pattern[HEIGHT];
+    pattern[0] = BlockFactory::Normal(NULLSTONE);
+    std::fill(pattern + 1, pattern + HEIGHT - 1, BlockFactory::Normal(AIR));
+    pattern[HEIGHT - 1] = BlockFactory::Normal(SKY);
     FOR_ALL_SHRED_AREA(x, y) {
-        PutBlock(null_stone, x, y, 0);
-        std::fill(blocks[x][y] + 1, blocks[x][y] + HEIGHT - 1, air);
-        PutBlock(sky, x, y, HEIGHT - 1);
+        memcpy(blocks[x][y], pattern, sizeof(Block*) * HEIGHT);
     }
     switch ( type ) {
     case SHRED_WASTE:       WasteShred(); break;
