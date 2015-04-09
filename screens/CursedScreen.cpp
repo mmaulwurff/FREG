@@ -289,6 +289,8 @@ void Screen::ControlPlayer(const int ch) {
 
             RePrint();
             refresh();
+            Notify(tr("Terminal width: %1 columns, height: %2 lines.")
+                .arg(COLS).arg(LINES));
             break;
 
         default: keyTable[0](ch); break; // unknown key message
@@ -626,11 +628,22 @@ void Screen::PrintHud() const {
 
 void Screen::PrintQuickInventory() const {
     const Inventory* const inv = player->GetBlock()->HasInventory();
-    if ( inv==nullptr || not IsScreenWide() ) return;
+    if ( Q_UNLIKELY(inv == nullptr) ) return;
+
+    const int inventory_size = inv->Size();
+    int step;
+    int x;
+    if ( screenWidth * 2 > inventory_size * 2 + 30 * 2) {
+        step = 2;
+        x = screenWidth - inventory_size;
+    } else if ( screenWidth * 2 > inventory_size + 30 * 2 ) {
+        step = 1;
+        x = screenWidth - inventory_size / 2;
+    } else {
+        return;
+    }
 
     wstandend(hudWin);
-    const int inventory_size = inv->Size();
-    int x = screenWidth - inventory_size/2;
     for (int i=0; i<inventory_size; ++i) {
         mvwaddch(hudWin, 0, x, 'a' + i);
         switch ( inv->Number(i) ) {
@@ -639,9 +652,13 @@ void Screen::PrintQuickInventory() const {
         case  1: mvwaddch(hudWin, 1, x, ColoredChar(inv->ShowBlock(i)));
             break;
         }
-        x += 2;
-        if ( Q_UNLIKELY(i == inv->Start()-1 && i != 0) ) {
-            for (int i : {0, 1, 2}) mvwaddch(hudWin, i, x-1, ACS_VLINE);
+        x += step;
+    }
+    if (step == 2) {
+        const int line_x = inv->Start();
+        if ( line_x != 0 ) {
+            mvwvline(hudWin, 0, line_x * 2 + screenWidth - inventory_size - 1,
+                ACS_VLINE, 3);
         }
     }
 }
@@ -1186,7 +1203,11 @@ Screen::Screen(Player* const player, int&) :
     staticScreen = this;
 
     start_color();
-    cbreak();
+    #ifdef Q_OS_WIN32
+        cbreak();
+    #else
+        halfdelay(10);
+    #endif
     noecho(); // do not print typed symbols
     nonl();
     keypad(stdscr, true); // use arrows
