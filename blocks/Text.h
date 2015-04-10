@@ -28,8 +28,14 @@ public:
     using Block::Block;
 
     bool Inscribe(const QString&) override;
+    void Damage(int damage, int damage_kind) override;
+    void ReceiveSignal(const QString&) override;
     QString FullName() const override;
+    QString Description() const override;
     usage_types Use(Active* who) override;
+
+private:
+    void log(const QString&) const;
 };
 
 class Map : public Text {

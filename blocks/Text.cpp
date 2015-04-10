@@ -22,15 +22,18 @@
 #include "WorldMap.h"
 #include "World.h"
 #include "Shred.h"
+#include "TrManager.h"
 #include <QObject>
 #include <QFile>
 #include <QDataStream>
+#include <QTextStream>
 
 // Text::
 QString Text::FullName() const {
     switch ( Sub() ) {
     case PAPER: return QObject::tr("Paper page");
     case GLASS: return QObject::tr("Screen");
+    case DIFFERENT: return QObject::tr("Logger");
     default:    return Block::FullName();
     }
 }
@@ -40,6 +43,10 @@ usage_types Text::Use(Active* const who) {
         who->ReceiveSignal(QObject::tr("Nothing is written here."));
         return USAGE_TYPE_INNER;
     } else {
+        if ( Sub() == DIFFERENT ) { // logger
+            log(QObject::tr("Used by ") + who->FullName() + Str("."));
+            return USAGE_TYPE_NO;
+        }
         return USAGE_TYPE_READ;
     }
 }
@@ -49,8 +56,38 @@ bool Text::Inscribe(const QString& str) {
         Block::Inscribe(str);
         return true;
     } else {
+        if ( Sub() == DIFFERENT ) {
+            log(QObject::tr("Inscribed: ") + str + Str("."));
+        }
         return false;
     }
+}
+
+void Text::log(const QString& string) const {
+    QFile log(World::WorldPath() + Str("/texts/") +
+        World::GetWorld()->GetNote(noteId));
+    log.open(QIODevice::Append | QIODevice::Text);
+    QTextStream(&log) << string << endl;
+}
+
+void Text::Damage(const int damage, const int damage_kind) {
+    if ( Sub() != DIFFERENT ) return;
+    if ( damage_kind == DAMAGE_ULTIMATE ) {
+        Block::Damage(damage, damage_kind);
+    }
+    log(QObject::tr("Received damage: %1 points, type: ").arg(damage) +
+        TrManager::GetDamageString(static_cast<damage_kinds>(damage_kind)) +
+        Str("."));
+}
+
+void Text::ReceiveSignal(const QString& string) {
+    if ( Sub() != DIFFERENT ) return;
+    log(QObject::tr("Received message: \"") + string + Str("\"."));
+}
+
+QString Text::Description() const {
+    return QObject::tr("Can be inscribed with file name in ") +
+        World::WorldPath() + Str("/texts/.");
 }
 
 // Map::
