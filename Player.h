@@ -131,7 +131,7 @@ public:
 
     /// Turns low-case ASCII chars array (length <= 12) into unique quint64.
     /// Can be used as switch statement for switch on strings.
-    constexpr static quint64 UniqueIntFromString(const char * const chars ) {
+    constexpr static quint64 UniqueIntFromString(const char* const chars ) {
         return chars[0] == '\0' ?
             0 : (UniqueIntFromString(chars + 1) << 5) | (chars[0]-'a');
     }

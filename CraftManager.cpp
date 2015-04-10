@@ -82,7 +82,7 @@ void CraftList::clear() {
 
 // CraftManager section
 
-CraftManager * CraftManager::craftManager = nullptr;
+CraftManager* CraftManager::craftManager = nullptr;
 
 CraftManager::CraftManager() : recipesList() {
     Q_ASSERT(craftManager == nullptr); // CraftManager is a singleton.
@@ -124,7 +124,7 @@ bool CraftManager::MiniCraft(CraftItem ** item) {
     }
 }
 
-bool CraftManager::Craft(CraftList * const recipe, const int sub) {
+bool CraftManager::Craft(CraftList* const recipe, const int sub) {
     return ( sub==DIFFERENT || not craftManager->CraftSub(recipe, sub) ) ?
         craftManager->CraftSub(recipe, DIFFERENT) : true;
 }

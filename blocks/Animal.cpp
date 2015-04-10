@@ -126,7 +126,7 @@
         return cadaver;
     }
 
-    DeferredAction * Animal::GetDeferredAction() {
+    DeferredAction* Animal::GetDeferredAction() {
         return ( deferredAction == nullptr ) ?
             (deferredAction = new DeferredAction(this)) :
             deferredAction;

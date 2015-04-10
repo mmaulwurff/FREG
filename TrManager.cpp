@@ -26,7 +26,7 @@
 const QString TrManager::rawKinds[] = { KIND_TABLE(X_STRING) };
 const QString TrManager::rawSubs [] = {  SUB_TABLE(X_STRING) };
 
-TrManager * TrManager::trManager = nullptr;
+TrManager* TrManager::trManager = nullptr;
 
 TrManager::TrManager() :
         translator(LoadTranslator()),
@@ -56,9 +56,9 @@ TrManager::TrManager() :
     }
 }
 
-QTranslator * TrManager::LoadTranslator() const {
-    QCoreApplication * const application = QCoreApplication::instance();
-    QTranslator * translator = new QTranslator(application);
+QTranslator* TrManager::LoadTranslator() const {
+    QCoreApplication* const application = QCoreApplication::instance();
+    QTranslator* const translator = new QTranslator(application);
     translator->load(Str(":/freg_") + QLocale::system().name());
     application->installTranslator(translator);
     return translator;

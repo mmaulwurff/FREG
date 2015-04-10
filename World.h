@@ -166,7 +166,7 @@ public:
 
     void SaveToDisk() const;
 
-    QMutex * GetLock() { return &mutex; }
+    QMutex* GetLock() { return &mutex; }
 
     void SetReloadShreds(int direction);
     void PhysEvents();

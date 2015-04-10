@@ -180,7 +180,7 @@
         if ( CraftManager::Craft(&list, Sub()) ) {
             for (int i=0; i<list.size(); ++i) {
                 for (int n=0; n<list.at(i)->number; ++n) {
-                    const CraftItem * const item = list.at(i);
+                    const CraftItem* const item = list.at(i);
                     GetExact(BlockFactory::NewBlock(
                         static_cast<kinds>(item->kind),
                         static_cast<subs >(item->sub )), i);

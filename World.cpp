@@ -70,7 +70,7 @@ int World::MiniTime() const { return timeStep; }
 quint64 World::Time() const { return time; }
 qint64 World::Longitude() const { return longitude; }
 qint64 World::Latitude()  const { return latitude; }
-const WorldMap * World::GetMap() const { return map; }
+const WorldMap* World::GetMap() const { return map; }
 ShredStorage* World::GetShredStorage() { return shredStorage; }
 
 times_of_day World::PartOfDay() const {
