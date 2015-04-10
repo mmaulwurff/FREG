@@ -48,6 +48,10 @@ if [ -z "$WORDS" ]
 		echo "$WORDS" >> report.txt
 fi
 
+figlet headers >> report.txt
+echo >> report.txt
+grep -L "Copyright (C) 2012-2015 Alexander 'mmaulwurff' Kromm" $FILES >> report.txt
+
 echo 'start scan-build'
 figlet scan-build >> report.txt
 echo >> report.txt
