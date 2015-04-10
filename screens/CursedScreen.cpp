@@ -277,8 +277,8 @@ void Screen::ControlPlayer(const int ch) {
             screenHeight = LINES - 10;
             wresize(leftWin,  screenHeight, screenWidth);
             wresize(rightWin, screenHeight, screenWidth);
-            wresize(notifyWin, 7, 0);
-            wresize(hudWin,    3, 0);
+            wresize(notifyWin, 7, COLS - MINIMAP_WIDTH - ACTIONS_WIDTH - 2);
+            wresize(hudWin,    3, COLS);
 
             mvwin(actionWin, LINES-7, MINIMAP_WIDTH + 1);
             mvwin(notifyWin, LINES-7, MINIMAP_WIDTH + ACTIONS_WIDTH + 2);
