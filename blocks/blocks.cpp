@@ -384,16 +384,50 @@
     }
 
 // Bell:: section
-    wearable Bell::Wearable() const { return WEARABLE_OTHER; }
+    wearable Signaller::Wearable() const { return WEARABLE_OTHER; }
 
-    void Bell::Damage(int, int) {
-        Bell::Use(nullptr);
-        Break();
+    void Signaller::Damage(const int damage_level, const int damage_kind) {
+        Signal(damage_level);
+        if ( not AbsorbDamage(static_cast<damage_kinds>(damage_kind)) ) {
+            Break();
+        }
     }
 
-    usage_types Bell::Use(Active*) {
-        SendSignalAround(tr("^ Ding! ^"));
+    usage_types Signaller::Use(Active*) {
+        Signal(1);
         return USAGE_TYPE_INNER;
+    }
+
+    bool Signaller::AbsorbDamage(const damage_kinds damage_kind) const {
+        switch ( Sub() ) {
+        case IRON:
+        case WOOD:
+        case STONE: return damage_kind >= DAMAGE_PUSH_UP;
+        default: return false;
+        }
+    }
+
+    void Signaller::Signal(const int level) const {
+        switch ( Sub() ) {
+        case WOOD:
+        case STONE:
+            SendSignalAround(QString(level/4 + 1, QChar::fromLatin1('-')));
+            break;
+        default: SendSignalAround(tr("^ Ding! ^")); break;
+        }
+    }
+
+    QString Signaller::FullName() const {
+        switch ( Sub() ) {
+        case IRON:  return tr("Bell");
+        case WOOD:
+        case STONE: return tr("Button");
+        default:    return Block::FullName();
+        }
+    }
+
+    QString Signaller::Description() const {
+        return tr("Reacts on touch.");
     }
 
 // Telegraph:: section

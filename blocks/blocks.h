@@ -150,14 +150,21 @@ private:
     int timerTime = -1;
 };
 
-class Bell : public Active {
+/// @brief The Signaller class notifies neighbours about impact.
+class Signaller : public Active {
     Q_OBJECT
 public:
     using Active::Active;
 
-    void Damage(int dmg, int dmg_kind) override;
-    wearable Wearable() const override;
+    QString  FullName()    const override;
+    QString  Description() const override;
+    wearable Wearable()    const override;
     usage_types Use(Active* who) override;
+    void Damage(int dmg, int dmg_kind) override;
+
+private:
+    bool AbsorbDamage(damage_kinds) const;
+    void Signal(int level) const;
 };
 
 class Telegraph : public Active {

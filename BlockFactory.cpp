@@ -136,7 +136,7 @@ bool BlockFactory::IsValid(const kinds kind, const subs sub) {
     case MEDKIT:
     case FILTER:
     case INFORMER:
-    case BELL:      return ( group == GROUP_METAL );
+    case SIGNALLER: return ( group == GROUP_METAL );
 
     case BOX:
     case DOOR:

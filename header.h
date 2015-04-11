@@ -121,7 +121,7 @@ enum times_of_day {
 /// (context, translatable class name), enum element, character, class)
 #define KIND_TABLE(X) \
 X(QT_TRANSLATE_NOOP("Block", "Block"       ), BLOCK,       '#',  Block,      )\
-X(QT_TRANSLATE_NOOP("Block", "Bell"        ), BELL,        'B',  Bell,       )\
+X(QT_TRANSLATE_NOOP("Block", "Signaller"   ), SIGNALLER,   'B',  Signaller,  )\
 X(QT_TRANSLATE_NOOP("Block", "Chest"       ), CONTAINER,   '&',  Container,  )\
 X(QT_TRANSLATE_NOOP("Block", "Rational"    ), DWARF,       '@',  Dwarf,      )\
 X(QT_TRANSLATE_NOOP("Block", "Pick"        ), PICK,        '\\', Pick,       )\

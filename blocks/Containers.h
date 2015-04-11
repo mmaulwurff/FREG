@@ -97,6 +97,7 @@ private:
     void Craft();
 }; // Workbench
 
+/// @brief Converter blocks convert fuel into energy.
 class Converter : public Container {
     Q_OBJECT
 public:

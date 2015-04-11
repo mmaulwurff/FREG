@@ -360,7 +360,7 @@ void Shred::TestShred() {
             {BLOCK, SAND}
         }, {
             {BLOCK, WATER}, {FALLING, WATER}, {DOOR, STONE},
-            {BLOCK, CLAY}, {KIND_TEXT, PAPER}, {BELL, IRON},
+            {BLOCK, CLAY}, {KIND_TEXT, PAPER}, {SIGNALLER, IRON},
             {BUCKET, IRON}, {PICK, IRON}, {SHOVEL, IRON},
             {HAMMER, IRON}, {AXE, IRON}, {FALLING, STONE},
             {WEAPON, STONE}, {BLOCK, WOOD}, {KIND_TEXT, GLASS},
@@ -649,7 +649,7 @@ bool Shred::LoadRoom(const int level, const int index) {
             case 't': SetNewBlock(TELEGRAPH,    IRON,  i, lines, level); break;
             case 'c': SetNewBlock(CLOCK,        IRON,  i, lines, level); break;
             case 'V': SetNewBlock(CONVERTER,    STONE, i, lines, level); break;
-            case 'b': SetNewBlock(BELL,         IRON,  i, lines, level); break;
+            case 'b': SetNewBlock(SIGNALLER,    IRON,  i, lines, level); break;
             case 'i': SetNewBlock(ILLUMINATOR,  IRON,  i, lines, level); break;
             case '~': SetNewBlock(LIQUID,       WATER, i, lines, level); break;
             case 'M': SetNewBlock(MEDKIT,       IRON,  i, lines, level); break;
