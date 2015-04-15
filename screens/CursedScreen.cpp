@@ -321,9 +321,11 @@ void Screen::ProcessMouse() {
     case WIN_ACTION: SetActionMode(static_cast<actions>(mevent.y)); break;
     case WIN_NOTIFY: Notify(tr("Notifications area.")); break;
     case WIN_HUD:
-        mevent.x -= screenWidth - 'z' + 'a' - 1;
+        mevent.x -= screenWidth - LETTERS_NUMBER;
         mevent.x /= 2;
-        if ( not ( IsScreenWide() && 0 <= mevent.x && mevent.x <= 'z'-'a' ) ) {
+        if ( not ( IsScreenWide() &&
+                static_cast<uint>(mevent.x) < LETTERS_NUMBER ) )
+        {
             Notify(tr("Information: left - player, right - focused thing."));
         } else if ( const Inventory* const inv = player->PlayerInventory() ) {
             if ( inv->IsEmpty(mevent.x) ) {
@@ -343,8 +345,9 @@ void Screen::ProcessMouse() {
             const int shred_x = mevent.x/2 + GetMinimapStartX();
             const int shred_y = mevent.y-1 + GetMinimapStartY();
             const World* const world = World::GetConstWorld();
-            Notify( (0 <= shred_x && shred_x < world->NumShreds() &&
-                     0 <= shred_y && shred_y < world->NumShreds() ) ?
+            const unsigned num_shreds = world->NumShreds();
+            Notify( (static_cast<uint>(shred_x) < num_shreds &&
+                     static_cast<uint>(shred_y) < num_shreds ) ?
                 tr("On minimap: %1.").
                     arg(TrManager::ShredTypeName(world->
                         GetShredByPos(shred_x, shred_y)->GetTypeOfShred())) :
@@ -611,7 +614,7 @@ void Screen::PrintHud() const {
         mvwaddwstr(hudWin, 1, right_border - name.length(), wPrintable(name));
         const QString note = focused->GetNote();
         if ( Q_UNLIKELY(not note.isEmpty() && IsScreenWide()) ) {
-            const int width = qMin(34, note.length());
+            const int width = std::min(34, note.length());
             mvwaddstr(hudWin, 2, right_border - width - 2, "~:");
             if ( note.length() <= width ) {
                 waddwstr (hudWin, wPrintable(note));
@@ -775,6 +778,7 @@ const {
         x_end,   z_end;
     int* x, * z;
     int i, j;
+    const int bound = World::GetBound();
     switch ( dir ) {
     case NORTH:
         x = &i;
@@ -784,19 +788,19 @@ const {
         z = &j;
         z_step  = -1;
         z_start = player->Y() - 1;
-        z_end   = qMax(0, player->Y() - FRONT_MAX_DISTANCE);
+        z_end   = std::max(0, player->Y() - FRONT_MAX_DISTANCE);
         xCursor = (player->X() - x_start)*2 + 1;
         break;
     case EAST:
         x = &j;
         x_step  = 1;
         x_start = qBound(0, player->Y() - screenWidth/4 - 1,
-            World::GetBound() - screenWidth/2 - 1);
+            bound - screenWidth/2 - 1);
         x_end   = screenWidth/2 - 1 + x_start;
         z = &i;
         z_step  = 1;
         z_start = player->X() + 1;
-        z_end   = qMin(player->X() + FRONT_MAX_DISTANCE, World::GetBound());
+        z_end   = std::min(player->X() + FRONT_MAX_DISTANCE, bound);
         xCursor = (player->Y() - x_start)*2 + 1;
         break;
     case SOUTH:
@@ -807,7 +811,7 @@ const {
         z = &j;
         z_step  = 1;
         z_start = player->Y() + 1;
-        z_end   = qMin(player->Y() + FRONT_MAX_DISTANCE, World::GetBound());
+        z_end   = std::min(player->Y() + FRONT_MAX_DISTANCE, bound);
         xCursor = (screenWidth/2 - player->X() + x_end)*2 - 1;
         break;
     case WEST:
@@ -819,7 +823,7 @@ const {
         z = &i;
         z_step  = -1;
         z_start = player->X() - 1;
-        z_end   = qMax(0, player->X() - FRONT_MAX_DISTANCE);
+        z_end   = std::max(0, player->X() - FRONT_MAX_DISTANCE);
         xCursor = (screenWidth/2 - player->Y() + x_end)*2 - 1;
         break;
     default: Q_UNREACHABLE(); return;
@@ -1102,6 +1106,9 @@ void Screen::initializeKeyTable() {
             screen->ProcessCommand(screen->previousCommand);
         }},
         {{'.'}, [](int) { Screen* const screen = GetScreen();
+            screen->Notify(tr("Repeat: \"")
+                + screen->previousCommand
+                + Str("\"."));
             screen->ProcessCommand(screen->previousCommand);
         }},
 

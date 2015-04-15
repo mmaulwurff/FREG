@@ -43,7 +43,15 @@ bool Dwarf::Access() const { return false; }
 int  Dwarf::ShouldAct() const { return FREQUENT_FIRST | FREQUENT_RARE; }
 int  Dwarf::LightRadius() const { return lightRadius; }
 void Dwarf::ReceiveSignal(const QString& str) { Active::ReceiveSignal(str); }
+bool Dwarf::IsCreator() const { return DIFFERENT == Sub(); }
 Inventory* Dwarf::HasInventory() { return this; }
+
+bool Dwarf::Drop(const int src, const int dest, const int num,
+    Inventory *const to)
+{
+    emit Updated();
+    return Inventory::Drop(src, dest, num, to);
+}
 
 inner_actions Dwarf::ActInner() {
     const int old_radius = lightRadius;
@@ -53,7 +61,7 @@ inner_actions Dwarf::ActInner() {
 }
 
 QString Dwarf::FullName() const {
-    return ( DIFFERENT == Sub() ) ?
+    return IsCreator() ?
         tr("Creator") : Animal::FullName();
 }
 
@@ -62,20 +70,20 @@ QString Dwarf::FullName() const {
 int Dwarf::UpdateLightRadiusInner() const {
     const Block* const in_left  = ShowBlock(IN_LEFT );
     const Block* const in_right = ShowBlock(IN_RIGHT);
-    return qMax(
+    return std::max(
         (in_left  ? in_left ->LightRadius() : 0),
-        (in_right ? in_right->LightRadius() : 0) );
+                (in_right ? in_right->LightRadius() : 0) );
 }
 
 int Dwarf::DamageKind() const {
-    return ( DIFFERENT == Sub() ) ?
-        DAMAGE_ULTIMATE :
-        IsEmpty(IN_RIGHT) ?
-            DAMAGE_HANDS :
-            ShowBlock(IN_RIGHT)->DamageKind();
+    return IsCreator() ?
+        DAMAGE_TIME :
+        (IsEmpty(IN_RIGHT) ? DAMAGE_CRUSH : ShowBlock(IN_RIGHT)->DamageKind())|
+        (IsEmpty(IN_LEFT)  ? DAMAGE_CRUSH : ShowBlock(IN_LEFT )->DamageKind());
 }
 
 int Dwarf::DamageLevel() const {
+    if ( IsCreator() ) return MAX_DURABILITY;
     int level = 1;
     if ( not IsEmpty(IN_RIGHT) ) {
         level += ShowBlock(IN_RIGHT)->DamageLevel();
@@ -87,10 +95,7 @@ int Dwarf::DamageLevel() const {
 }
 
 void Dwarf::Damage(const int dmg, const int dmg_kind) {
-    if ( dmg_kind == DAMAGE_INVENTORY_ACTION ) {
-        emit Updated();
-        return;
-    } else if ( dmg_kind >= DAMAGE_PUSH_UP ) {
+    if ( dmg_kind >= DAMAGE_PUSH_UP ) {
         Animal::Damage(dmg, DAMAGE_PUSH_UP);
         return;
     }

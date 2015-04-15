@@ -232,32 +232,34 @@ enum transparency {
     INVISIBLE,
 };
 
-enum damage_kinds {
-    // Put new damage kinds before DAMAGE_PUSH_UP.
-    DAMAGE_MINE,    ///<  0
-    DAMAGE_DIG,     ///<  1
-    DAMAGE_CUT,     ///<  2
-    DAMAGE_THRUST,  ///<  3
-    DAMAGE_CRUSH,   ///<  4
-    DAMAGE_HEAT,    ///<  5
-    DAMAGE_FREEZE,  ///<  6
-    DAMAGE_ELECTRO, ///<  7
-    DAMAGE_HUNGER,  ///<  8
-    DAMAGE_BREATH,  ///<  9
-    DAMAGE_BITE,    ///< 10
-    DAMAGE_TIME,    ///< 11
-    DAMAGE_NO,      ///< 12
-    DAMAGE_HANDS,   ///< 13
-    DAMAGE_ACID,    ///< 14
-    DAMAGE_RADIATION,
-    DAMAGE_ULTIMATE,
-    DAMAGE_INVENTORY_ACTION,
-    DAMAGE_PUSH_UP,
-    DAMAGE_PUSH_DOWN,
-    DAMAGE_PUSH_NORTH,
-    DAMAGE_PUSH_SOUTH,
-    DAMAGE_PUSH_EAST,
-    DAMAGE_PUSH_WEST
+/// @brief Damage kinds can be combined, except for different DAMAGE_PUSH_.
+enum damage_kinds { // 16 bits used.
+    DAMAGE_NO            = 0b0000000000000000,
+    // weapon damage types:
+    DAMAGE_MINE          = 0b0000000000000001,
+    DAMAGE_DIG           = 0b0000000000000010,
+    DAMAGE_CUT           = 0b0000000000000100,
+    DAMAGE_THRUST        = 0b0000000000001000,
+    DAMAGE_CRUSH         = 0b0000000000010000,
+    // elemental damage types:
+    DAMAGE_HEAT          = 0b0000000000100000,
+    DAMAGE_FREEZE        = 0b0000000001000000,
+    DAMAGE_ELECTRO       = 0b0000000010000000,
+    DAMAGE_ACID          = 0b0000000100000000,
+    // natural damage types:
+    DAMAGE_HUNGER        = 0b0000001000000000,
+    DAMAGE_BREATH        = 0b0000010000000000,
+    DAMAGE_BITE          = 0b0000100000000000,
+    DAMAGE_TIME          = 0b0001000000000000,
+    // pushing to directions damage types:
+    DAMAGE_PUSH_UP       = 0b0010000000000000,
+    DAMAGE_PUSH_DOWN     = 0b0100000000000000,
+    DAMAGE_PUSH_NORTH    = 0b0110000000000000,
+    DAMAGE_PUSH_SOUTH    = 0b1000000000000000,
+    DAMAGE_PUSH_EAST     = 0b1010000000000000,
+    DAMAGE_PUSH_WEST     = 0b1100000000000000,
+    DAMAGE_PUSH_ANYWHERE = 0b1110000000000000, // used only as mask.
+    DAMAGE_ANY           = 0b1111111111111111  // used only as mask.
 };
 
 #endif // HEADER_H

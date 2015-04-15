@@ -51,7 +51,7 @@ QString Accumulator::FullName() const {
 
 void Accumulator::Damage(const int dmg, const int dmg_kind) {
     if ( dmg_kind == EnergyType(Sub()) ) {
-        charge = qMin(charge+dmg, int(MAX_CHARGE));
+        charge = std::min(charge+dmg, int(MAX_CHARGE));
     } else {
         Block::Damage(dmg, dmg_kind);
     }

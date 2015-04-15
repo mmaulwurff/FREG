@@ -394,6 +394,9 @@ void Player::ProcessCommand(QString command) {
     case UniqueIntFromString("about"):
         emit ShowFile(home_path + Str("README.md"));
         break;
+    case UniqueIntFromString("testdamage"):
+        Block::TestDamage();
+        break;
     default:
         Notify(tr("Don't know such command: \"%1\".").arg(command));
         break;

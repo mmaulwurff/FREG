@@ -107,6 +107,7 @@ private:
     static const int MAX_CHAR_DISTANCE;
     static const int ASCII_SIZE = 127;
     static const int ACTIVE_HAND = 3;
+    static const int LETTERS_NUMBER = 'z' - 'a' + 1;
 
     /// Prints world. Should not be called not within screen.
     void Print();

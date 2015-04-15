@@ -45,6 +45,7 @@ public:
     void ReceiveSignal(const QString&) override;
     int  LightRadius() const override;
     int  NutritionalValue(subs) const override;
+    bool Drop(int src, int dest, int num, Inventory *to) override;
     Block* DropAfterDamage(bool* delete_block) override;
     Inventory* HasInventory() override;
 
@@ -65,6 +66,7 @@ private:
     };
 
     int UpdateLightRadiusInner() const;
+    bool IsCreator() const;
 
     int lightRadius;
 };

@@ -72,7 +72,7 @@ void Text::log(const QString& string) const {
 
 void Text::Damage(const int damage, const int damage_kind) {
     if ( Sub() != DIFFERENT ) return;
-    if ( damage_kind == DAMAGE_ULTIMATE ) {
+    if ( damage_kind == DAMAGE_TIME ) {
         Block::Damage(damage, damage_kind);
     }
     log(QObject::tr("Received damage: %1 points, type: ").arg(damage) +

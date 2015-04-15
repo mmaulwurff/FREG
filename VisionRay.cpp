@@ -30,7 +30,7 @@ VisionRay::VisionRay(const Xyz& from, const Xyz& to, const bool recalculate) :
         x_step(to.X() - x),
         y_step(to.Y() - y),
         z_step(to.Z() - z),
-        maximum(std::max(std::max(abs(x_step), abs(y_step)), abs(z_step))),
+        maximum(std::max({abs(x_step), abs(y_step), abs(z_step)})),
         step(0),
         precalculated((recalculate || maximum>PreCalculatedVisionRays::RADIUS)?
             nullptr :

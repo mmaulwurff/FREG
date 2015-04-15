@@ -28,7 +28,7 @@
 
 const std::vector<WaysTree*>& WaysTree::GetNexts() const { return nexts; }
 
-void WaysTree::operator+=(WaysTree* const new_chain) {
+void WaysTree::operator+=(const WaysTree* const new_chain) {
     if ( new_chain->nexts.empty() ) {
         delete new_chain;
         return;

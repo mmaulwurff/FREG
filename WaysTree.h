@@ -34,7 +34,7 @@ public:
 private:
     WaysTree(int x, int y, int z);
 
-    void operator+=(WaysTree* new_chain);
+    void operator+=(const WaysTree* new_chain);
     bool operator==(const WaysTree&) const;
 
     void Print(int level) const;

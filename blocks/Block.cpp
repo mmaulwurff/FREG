@@ -25,6 +25,12 @@
 #include "SortedArray.h"
 #include <QDataStream>
 
+#define TEST_DAMAGE 1
+#if TEST_DAMAGE == 1
+#include <QFile>
+#include <QTextStream>
+#endif
+
 const int Block::MAX_DURABILITY = 1024;
 
 dirs Block::MakeDirFromDamage(const int dmg_kind) {
@@ -63,72 +69,79 @@ int Block::Transparency(const int sub) {
     }
 }
 
-void Block::Damage(const int dmg, int dmg_kind) {
-    if ( dmg_kind > DAMAGE_PUSH_UP ) {
-         dmg_kind = DAMAGE_PUSH_UP;
-    }
-    static const SortedArray<subs, SUB_DUST, GREENERY, ROSE, SUB_NUT> fragile;
-    if ( std::binary_search(ALL(fragile), Sub()) ) {
-        durability = 0;
-        return;
-    }
-    static const SortedArray<subs, NULLSTONE, STAR, AIR, SKY> indestructible;
-    if ( std::binary_search(ALL(indestructible), Sub()) ) {
-        return;
-    }
-    // Special damage kinds:
-    switch ( dmg_kind ) {
-    case DAMAGE_PUSH_UP: switch ( Sub() ) {
-        default: return;
-        case A_MEAT:
-        case H_MEAT: durability -= dmg * ( dmg > 10 ); return;
-        case GLASS:  durability -= dmg * (MAX_DURABILITY+9) / 10; return;
-        } break;
-    case DAMAGE_HANDS: switch ( Sub() ) {
-        default: return;
-        case SOIL:
-        case A_MEAT:
-        case H_MEAT: break;
-        } break;
-    case DAMAGE_ULTIMATE: durability = 0; return;
-    case DAMAGE_INVENTORY_ACTION:
-    case DAMAGE_NO: return;
-    case DAMAGE_TIME: durability -= dmg; return;
-    case DAMAGE_ACID:
-        switch ( Sub() ) {
-        default: durability -= 2 * dmg; return;
-        case DIFFERENT: durability = 0; return;
-        case ACID:
-        case ADAMANTINE:
-        case GLASS: return;
-        } break;
-    }
-    // Common substances and damage kinds:
-    int multiplier = 1; // default
-    switch ( Sub() ) {
-    case DIFFERENT: return;
-    case MOSS_STONE:
-    case STONE: switch ( dmg_kind ) {
-        case DAMAGE_HEAT:
-        case DAMAGE_CUT: return;
-        case DAMAGE_MINE: multiplier = 2; break;
-        } break;
-    case WOOD: multiplier += ( DAMAGE_CUT == dmg_kind ); break;
-    case A_MEAT:
-    case H_MEAT: switch ( dmg_kind ) {
-        case DAMAGE_HEAT:
-        case DAMAGE_THRUST: multiplier = 2; break;
-        } break;
-    case SAND:
-    case SOIL:  multiplier += ( DAMAGE_DIG    == dmg_kind ); break;
-    case ADAMANTINE:
-    case FIRE:  multiplier  = ( DAMAGE_FREEZE == dmg_kind ); break;
-    case WATER: multiplier  = ( DAMAGE_HEAT   == dmg_kind ); break;
-    case GLASS: durability *= ( DAMAGE_HEAT == dmg_kind ); return;
-    default: break;
-    }
-    durability -= multiplier * dmg;
+void Block::Damage(const int dmg, const int dmg_kind) {
+    static const struct Property {
+        const int immunity, vulnerability, destruction;
+    } properties[SUB_COUNT] = {
+        {DAMAGE_CUT | DAMAGE_HEAT, DAMAGE_MINE, DAMAGE_NO}, // STONE
+        properties[STONE],                                  // MOSS_STONE
+        {DAMAGE_ANY, DAMAGE_NO, DAMAGE_NO},                 // NULLSTONE
+        properties[NULLSTONE],                              // SKY
+        properties[NULLSTONE],                              // STAR
+        {DAMAGE_ACID, DAMAGE_NO, DAMAGE_NO},                // DIAMOND
+        {DAMAGE_NO, DAMAGE_DIG, DAMAGE_NO},                 // SOIL
+        {DAMAGE_NO, DAMAGE_THRUST, DAMAGE_NO},              // H_MEAT
+        properties[H_MEAT],                                 // A_MEAT
+        {DAMAGE_ACID | DAMAGE_HEAT, DAMAGE_NO,
+            DAMAGE_ANY & ~(DAMAGE_ACID | DAMAGE_HEAT)},     // GLASS
+        {DAMAGE_NO, DAMAGE_CUT, DAMAGE_NO},                 // WOOD
+        {DAMAGE_ANY & ~DAMAGE_TIME & ~DAMAGE_ACID,
+            DAMAGE_NO, DAMAGE_NO},                          // DIFFERENT
+        {DAMAGE_NO, DAMAGE_NO, DAMAGE_NO},                  // IRON
+        {DAMAGE_ANY & ~DAMAGE_TIME & ~DAMAGE_HEAT,
+            DAMAGE_NO, DAMAGE_NO},                          // WATER
+        {DAMAGE_NO, DAMAGE_NO, DAMAGE_ANY},                 // GREENERY
+        properties[SOIL],                                   // SAND
+        properties[GREENERY],                               // SUB_NUT
+        properties[GREENERY],                               // ROSE
+        properties[SOIL],                                   // CLAY
+        properties[NULLSTONE],                              // AIR
+        {DAMAGE_NO, DAMAGE_HEAT, DAMAGE_NO},                // PAPER
+        properties[IRON],                                   // GOLD
+        {DAMAGE_NO, DAMAGE_NO, DAMAGE_NO},                  // BONE
+        properties[IRON],                                   // STEEL
+        {DAMAGE_ANY & ~DAMAGE_TIME & ~DAMAGE_FREEZE,
+            DAMAGE_NO, DAMAGE_NO},                          // ADAMANTINE
+        properties[ADAMANTINE],                             // FIRE
+        properties[PAPER],                                  // COAL
+        properties[PAPER],                                  // EXPLOSIVE
+        {DAMAGE_ACID, DAMAGE_NO, DAMAGE_NO},                // ACID
+        properties[GREENERY],                               // SUB_CLOUD
+        properties[GREENERY],                               // SUB_DUST
+        //{DAMAGE_NO, DAMAGE_NO, DAMAGE_NO}                   // SUB_PLASTIC
+    };
+    const Property& property = properties[Sub()];
+    durability -= bool(dmg_kind & property.destruction) * durability +
+             (1 + bool(dmg_kind & property.vulnerability) * 4) *
+             (not bool(dmg_kind & property.immunity)) * dmg;
 } // Block::Damage(const ind dmg, const int dmg_kind)
+
+void Block::TestDamage() {
+#if TEST_DAMAGE == 1
+    QFile file(Str("damageTest.csv"));
+    file.open(QIODevice::WriteOnly | QIODevice::Text);
+    QTextStream stream(&file);
+    stream << ";";
+    for (int damage_kind=1; damage_kind<=DAMAGE_PUSH_UP; damage_kind<<=1) {
+        stream <<
+            TrManager::GetDamageString(static_cast<damage_kinds>(damage_kind))
+            << ";";
+    }
+    stream << endl;
+
+    for (int sub=0; sub<SUB_COUNT; ++sub) {
+        stream << TrManager::SubName(sub) << ";";
+        for (int damage_kind=1; damage_kind<=DAMAGE_PUSH_UP; damage_kind<<=1) {
+            Block* const block =
+                BlockFactory::NewBlock(BLOCK, static_cast<subs>(sub));
+            block->Damage(1, damage_kind);
+            stream << MAX_DURABILITY - block->GetDurability() << ";";
+            delete block;
+        }
+        stream << endl;
+    }
+#endif
+}
 
 Block* Block::DropAfterDamage(bool* const delete_block) {
     switch ( Sub() ) {
@@ -203,7 +216,7 @@ void Block::Restore() { durability = MAX_DURABILITY; }
 void Block::Break()   { durability = 0; }
 
 void Block::Mend(const int plus) {
-    durability = qMin(MAX_DURABILITY, durability+plus);
+    durability = std::min(MAX_DURABILITY, durability+plus);
 }
 
 QString Block::GetNote() const {

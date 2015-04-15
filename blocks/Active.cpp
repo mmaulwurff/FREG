@@ -167,12 +167,12 @@ bool Active::Gravitate(const int range, int bottom, int top,
     const int bound = World::GetBound();
     // analyze world around
     int for_north = 0, for_west = 0;
-    const int y_start = qMax(Y()-range, 0);
-    const int y_end   = qMin(Y()+range, bound);
-    const int x_end   = qMin(X()+range, bound);
-    bottom = qMax(Z() - bottom,  0);
-    top    = qMin(Z() + top,     HEIGHT-1);
-    for (int x=qMax(X()-range, 0); x<=x_end; ++x)
+    const int y_start = std::max(Y()-range, 0);
+    const int y_end   = std::min(Y()+range, bound);
+    const int x_end   = std::min(X()+range, bound);
+    bottom = std::max(Z() - bottom,  0);
+    top    = std::min(Z() + top,     HEIGHT-1);
+    for (int x=std::max(X()-range, 0); x<=x_end; ++x)
     for (int y=y_start; y<=y_end; ++y) {
         Shred* const shred = world->GetShred(x, y);
         for (int z=bottom; z<=top; ++z) {

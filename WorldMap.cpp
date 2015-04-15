@@ -84,7 +84,7 @@ void WorldMap::MakeAndSaveSpawn(const QString& world_name, const int size,
 }
 
 qint64 WorldMap::GetSpawnCoordinate(int size) {
-    size = qMax(size/4, 1);
+    size = std::max(size/4, 1);
     return (qrand()%size) + size;
 }
 
@@ -135,7 +135,7 @@ void WorldMap::GenerateMap(const QString& world_name,
     if ( seed ) {
         qsrand(seed);
     }
-    size = qMax(10, size);
+    size = std::max(10, size);
 
     char* const map = new char[size * size];
     memset(map, outer, size*size);

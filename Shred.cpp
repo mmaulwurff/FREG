@@ -417,7 +417,7 @@ void Shred::NullMountain() {
 }
 
 void Shred::Pyramid() {
-    const int level = qMin(NormalUnderground(), HEIGHT-1-16);
+    const int level = std::min(NormalUnderground(), HEIGHT-1-16);
     Block* const stone = BlockFactory::Normal(STONE);
     for (int z=level+1, dz=0; dz<SHRED_WIDTH/2; z+=2, ++dz) { // pyramid
         for (int x=dz, y=dz; x<(SHRED_WIDTH - dz); ++x, ++y) {
@@ -563,8 +563,8 @@ bool Shred::Tree(const_int(x, y, z)) {
         NormalCube(x, y, leaves_level, 3, 3, z+height-leaves_level, GREENERY);
     }
     Block* const wood = BlockFactory::Normal(WOOD);
-    for (int i=qMax(z-1, 1); i<qMin(HEIGHT-2, z+height-1); ++i) { // trunk
-        SetBlock(wood, x+1, y+1, i);
+    for (int i=std::max(z-1, 1); i<std::min(HEIGHT-2, z+height-1); ++i) {
+        SetBlock(wood, x+1, y+1, i); // trunk
     }
     // branches
     for (const Xyz& xyz : AroundCoordinates4({x+1, y+1, leaves_level})) {
@@ -575,10 +575,13 @@ bool Shred::Tree(const_int(x, y, z)) {
     return true;
 }
 
-bool Shred::InBounds(const int z) { return Q_LIKELY(0 <= z && z < HEIGHT-1 ); }
+bool Shred::InBounds(const int z) {
+    return Q_LIKELY(static_cast<unsigned>(z) < HEIGHT-1);
+}
 
 bool Shred::InBounds(const int x, const int y) {
-    return Q_LIKELY(0 <= x && x < SHRED_WIDTH) && (0 <= y && y < SHRED_WIDTH);
+    return ( Q_LIKELY( static_cast<unsigned>(x) < SHRED_WIDTH &&
+                       static_cast<unsigned>(y) < SHRED_WIDTH ) );
 }
 
 bool Shred::InBounds(const_int(x, y, z)) {

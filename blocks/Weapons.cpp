@@ -51,6 +51,7 @@ int Weapon::DamageLevel() const {
     case STONE: return  7;
     case IRON:  return 10;
     case STEEL: return 12;
+    case SKY:   return MAX_DURABILITY;
     case ADAMANTINE: return 20;
     }
 }
@@ -58,7 +59,7 @@ int Weapon::DamageLevel() const {
 int  Weapon::DamageKind() const {
     switch ( Sub() ) {
     case IRON: return DAMAGE_THRUST;
-    case SKY:  return DAMAGE_ULTIMATE;
+    case SKY:  return DAMAGE_TIME;
     default:   return DAMAGE_CRUSH;
     }
 }

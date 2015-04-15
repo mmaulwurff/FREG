@@ -53,10 +53,10 @@ void World::UnShine(const_int(x, y, z),
     // cycle over shreds around xyz, unshine all lights in radius
     const int xShredCenter = Shred::CoordOfShred(x);
     const int yShredCenter = Shred::CoordOfShred(y);
-    const int xShredBegin = qMax(0, xShredCenter-1);
-    const int yShredBegin = qMax(0, yShredCenter-1);
-    const int xShredEnd = qMin(NumShreds()-1, xShredCenter+1);
-    const int yShredEnd = qMin(NumShreds()-1, yShredCenter+1);
+    const int xShredBegin = std::max(0, xShredCenter-1);
+    const int yShredBegin = std::max(0, yShredCenter-1);
+    const int xShredEnd = std::min(NumShreds()-1, xShredCenter+1);
+    const int yShredEnd = std::min(NumShreds()-1, yShredCenter+1);
 
     for (int xShred=xShredBegin; xShred<=xShredEnd; ++xShred)
     for (int yShred=yShredBegin; yShred<=yShredEnd; ++yShred) {
@@ -157,7 +157,7 @@ int World::Enlightened(const_int(x, y, z)) const {
 int World::Enlightened(const_int(i, j, k), const dirs dir) const {
     int x, y, z;
     Focus(i, j, k, &x, &y, &z, dir);
-    return qMax(Enlightened(i, j, k), Enlightened(x, y, z));
+    return std::max(Enlightened(i, j, k), Enlightened(x, y, z));
 }
 
 // Shred methods

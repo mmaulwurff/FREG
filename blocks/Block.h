@@ -131,6 +131,8 @@ public:
     /// 10 bits to store durability in file, signed.
     static const int MAX_DURABILITY;
 
+    static void TestDamage();
+
 protected:
     virtual void SaveAttributes(class QDataStream&) const;
     Block* DropInto(bool* delete_block);

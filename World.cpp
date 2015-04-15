@@ -118,8 +118,8 @@ bool World::Get(Block* const block_to, const_int(x_from, y_from, z_from),
 }
 
 bool World::InBounds(const int x, const int y) const {
-    return ( Q_LIKELY( (0 <= x && x <= GetBound()) &&
-                       (0 <= y && y <= GetBound()) ) );
+    return ( Q_LIKELY(static_cast<uint>(x) <= static_cast<uint>(GetBound()) &&
+                      static_cast<uint>(y) <= static_cast<uint>(GetBound())) );
 }
 
 bool World::InBounds(const_int(x, y, z)) const {
@@ -573,8 +573,6 @@ bool World::Exchange(Block* const block_from, Block* const block_to,
             arg(block_from->FullName()).
             arg(char(src + 'a')));
     } else {
-        block_from->Damage(1, DAMAGE_INVENTORY_ACTION);
-        block_to  ->Damage(1, DAMAGE_INVENTORY_ACTION);
         inv_from->Drop(src, dest, num, inv_to);
     }
     return false;
@@ -590,7 +588,7 @@ void World::LoadAllShreds() {
 
 int World::CorrectNumShreds(int num) {
     num += ( (num & 1) == 0 ); // make odd
-    return qMax(num, MIN_WORLD_SIZE);
+    return std::max(num, MIN_WORLD_SIZE);
 }
 
 int World::CorrectNumActiveShreds(int num, const int num_shreds) {

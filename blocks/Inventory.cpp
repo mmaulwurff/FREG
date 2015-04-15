@@ -30,7 +30,7 @@ bool Inventory::Access() const { return true; }
 
 bool Inventory::Drop(const int src, int dest, int num, Inventory* const inv_to)
 {
-    dest = qMax(inv_to->Start(), dest);
+    dest = std::max(inv_to->Start(), dest);
     bool ok_flag = false;
     while ( num-- ) {
         if ( src < Size()
