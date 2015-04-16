@@ -35,10 +35,12 @@ int Active::Y() const {
     return GetShred()->ShredY() << SHRED_WIDTH_BITSHIFT | Xyz::Y();
 }
 
-const Xyz Active::GetXyz() const { return {X(), Y(), Z()}; }
+const XyzInt Active::GetXyz() const { return {X(), Y(), Z()}; }
 
 int  Active::ShouldAct() const { return FREQUENT_NEVER; }
 bool Active::IsInside()  const { return shred == nullptr; }
+int  Active::Attractive(int) const { return 0; }
+void Active::ReceiveSignal(const QString& str) { emit ReceivedText(str); }
 Active* Active::ActiveBlock() { return this; }
 inner_actions Active::ActInner() { return INNER_ACTION_ONLY; }
 
@@ -46,7 +48,7 @@ void Active::UpdateLightRadius(const int old_radius) {
     if ( IsInside() ) return;
     const int radius = LightRadius();
     if ( radius != old_radius ) {
-        const Xyz xyz = GetXyz();
+        const XyzInt xyz = GetXyz();
         World* const world = World::GetWorld();
         world->Shine(xyz, -old_radius);
         world->Shine(xyz, radius);
@@ -75,22 +77,21 @@ void Active::DoRareAction() {
 
 void Active::ActRare() {
     Inventory* const inv = HasInventory();
-    if ( inv == nullptr ) {
-        DoRareAction();
-        return;
-    } // else:
-    for (int i=inv->Size()-1; i; --i) {
-        const int number = inv->Number(i);
-        if ( number == 0 ) continue;
-        Active* const top_active = inv->ShowBlock(i)->ActiveBlock();
-        if ( top_active == nullptr ) continue;
-        for (int j=0; j<number; ++j) {
-            Active* const active = inv->ShowBlockInSlot(i, j)->ActiveBlock();
-            if ( active->ActInner() == INNER_ACTION_MESSAGE ) {
-                ReceiveSignal( tr("%1 in slot '%2': %3").
-                    arg(inv->InvFullName(i)).
-                    arg(char('a'+i)).
-                    arg(inv->ShowBlockInSlot(i, j)->GetNote()) );
+    if (Q_UNLIKELY(inv != nullptr)) {
+        for (int i=inv->Size()-1; i; --i) {
+            const int number = inv->Number(i);
+            if ( number == 0 ) continue;
+            Active* const top_active = inv->ShowBlock(i)->ActiveBlock();
+            if ( top_active == nullptr ) continue;
+            for (int j=0; j<number; ++j) {
+                Active* const active =
+                    inv->ShowBlockInSlot(i, j)->ActiveBlock();
+                if ( active->ActInner() == INNER_ACTION_MESSAGE ) {
+                    ReceiveSignal( tr("%1 in slot '%2': %3").
+                        arg(inv->InvFullName(i)).
+                        arg(char('a'+i)).
+                        arg(inv->ShowBlockInSlot(i, j)->GetNote()) );
+                }
             }
         }
     }
@@ -127,13 +128,13 @@ void Active::ReRegister(const dirs dir) {
 void Active::SendSignalAround(const QString signal) const {
     if ( IsInside() ) return; // for blocks inside inventories
     const World* const world = World::GetConstWorld();
-    for (const Xyz& xyz : AroundCoordinates(GetXyz())) {
+    for (const XyzInt& xyz : AroundCoordinates(GetXyz())) {
         world->GetBlock(XYZ(xyz))->ReceiveSignal(signal);
     }
 }
 
 void Active::DamageAround() const {
-    for (const Xyz& xyz : AroundCoordinates(GetXyz())) {
+    for (const XyzInt& xyz : AroundCoordinates(GetXyz())) {
         TryDestroy(XYZ(xyz));
     }
 }
@@ -147,8 +148,6 @@ bool Active::TryDestroy(const int x, const int y, const int z) const {
         return false;
     }
 }
-
-void Active::ReceiveSignal(const QString& str) { emit ReceivedText(str); }
 
 Active::Active(const kinds kind, const subs sub) :
         Block(kind, sub),
@@ -197,13 +196,17 @@ bool Active::Gravitate(const int range, int bottom, int top,
     }
 }
 
-int Active::Attractive(int) const { return 0; }
-
 bool Active::IsSubAround(const int sub) const {
-    const AroundCoordinates coordinates(GetXyz());
-    return std::any_of(ALL(coordinates), [=](const Xyz& xyz) {
-        return World::GetConstWorld()->GetBlock(XYZ(xyz))->Sub() == sub;
-    });
+    LazyAroundCoordinates coordinates(GetXyz());
+    const XyzInt* xyz;
+    while ((xyz = coordinates.getNext())) {
+        if (World::GetConstWorld()->
+                GetBlock(xyz->X(), xyz->Y(), xyz->Z())->Sub() == sub)
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 // Falling section

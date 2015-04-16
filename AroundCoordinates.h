@@ -23,23 +23,23 @@
 #include "Xyz.h"
 
 enum directionBits {
-    B_UP     = 1,
-    B_DOWN   = 2,
-    B_AROUND = 4
+    B_UP     = 0b0001,
+    B_DOWN   = 0b0010,
+    B_AROUND = 0b0100
 };
 
 template<int maxSize>
 class AroundCoordinatesN {
 public:
-    const Xyz* begin() const { return array; }
-    const Xyz*   end() const { return array + size; }
+    const XyzInt* begin() const { return array; }
+    const XyzInt*   end() const { return array + size; }
 
 protected:
     AroundCoordinatesN() : array(), size(0) {}
 
-    void fill4(const Xyz& center);
+    void fill4(const XyzInt& center);
 
-    Xyz array[maxSize];
+    XyzInt array[maxSize];
     int size;
 };
 
@@ -49,13 +49,24 @@ protected:
  */
 class AroundCoordinates : public AroundCoordinatesN<6> {
 public:
-    AroundCoordinates(const Xyz& source);
-    AroundCoordinates(int directionBits, const Xyz& source);
+    AroundCoordinates(const XyzInt& source);
+    AroundCoordinates(int directionBits, const XyzInt& source);
 };
 
 class AroundCoordinates4 : public AroundCoordinatesN<4> {
 public:
-    AroundCoordinates4(const Xyz& source);
+    AroundCoordinates4(const XyzInt& source);
+};
+
+class LazyAroundCoordinates : XyzInt {
+public:
+    LazyAroundCoordinates(const XyzInt& source);
+
+    const XyzInt* getNext();
+
+private:
+    int step;
+    static const XyzInt shifts[6];
 };
 
 #endif // AROUND_COORDINATES_H

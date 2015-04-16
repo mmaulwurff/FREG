@@ -65,15 +65,15 @@
 
 // Liquid::
     void Liquid::DoRareAction() {
-        if ( not IsSubAround(Sub()) || Sub()==SUB_CLOUD ) {
+        if ( Q_UNLIKELY(not IsSubAround(Sub()) || Sub()==SUB_CLOUD) ) {
             Damage(MAX_DURABILITY*2/World::SECONDS_IN_NIGHT, DAMAGE_TIME);
             if ( Q_UNLIKELY(GetDurability() <= 0) ) {
                 World::GetWorld()->DestroyAndReplace(X(), Y(), Z());
                 return;
             }
+            if ( Q_UNLIKELY(Sub() == SUB_CLOUD) ) return;
         }
-        if ( Q_UNLIKELY(Sub() == SUB_CLOUD) ) return;
-        if ( Sub() == ACID || Sub() == STONE ) {
+        if ( Q_UNLIKELY(Sub() == ACID || Sub() == STONE) ) {
             DamageAround();
         }
         const int random = qrand() % 16;

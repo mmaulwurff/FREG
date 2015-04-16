@@ -49,7 +49,7 @@ public:
     int Y() const;
     using Xyz::Z;
     using Xyz::SetXyz;
-    const Xyz GetXyz() const;
+    const XyzInt GetXyz() const;
 
     void Move(dirs dir) override;
     void ReceiveSignal(const QString&) override;

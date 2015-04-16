@@ -25,7 +25,7 @@
 #include "SortedArray.h"
 #include <QDataStream>
 
-#define TEST_DAMAGE 1
+#define TEST_DAMAGE 0
 #if TEST_DAMAGE == 1
 #include <QFile>
 #include <QTextStream>
@@ -108,7 +108,7 @@ void Block::Damage(const int dmg, const int dmg_kind) {
         {DAMAGE_ACID, DAMAGE_NO, DAMAGE_NO},                // ACID
         properties[GREENERY],                               // SUB_CLOUD
         properties[GREENERY],                               // SUB_DUST
-        //{DAMAGE_NO, DAMAGE_NO, DAMAGE_NO}                   // SUB_PLASTIC
+        {DAMAGE_NO, DAMAGE_NO, DAMAGE_NO}                   // SUB_PLASTIC
     };
     const Property& property = properties[Sub()];
     durability -= bool(dmg_kind & property.destruction) * durability +

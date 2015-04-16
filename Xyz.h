@@ -52,5 +52,6 @@ protected:
 
 typedef TemplateXyz<short> Xyz;
 typedef TemplateXyz<char>  XyzChar;
+typedef TemplateXyz<int>   XyzInt;
 
 #endif // XYZ_H

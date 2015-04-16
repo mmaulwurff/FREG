@@ -18,7 +18,6 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "VisionRay.h"
-#include <cstdlib>
 #include <algorithm>
 
 // DDA line with integers only.

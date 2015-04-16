@@ -28,13 +28,13 @@
 #include "blocks/Active.h"
 #include "AroundCoordinates.h"
 
-void World::Shine(const Xyz& center, const int level) {
+void World::Shine(const XyzInt& center, const int level) {
     Shine(center, level, &lightWaysTree);
 }
 
-void World::Shine(const Xyz& center, int level, const WaysTree* const ways) {
-    const Xyz here{center.X() + ways->X(), center.Y() + ways->Y(),
-                   center.Z() + ways->Z()};
+void World::Shine(const XyzInt& center, int level, const WaysTree* const ways){
+    const XyzInt here{center.X() + ways->X(), center.Y() + ways->Y(),
+                      center.Z() + ways->Z()};
     if ( Q_UNLIKELY(not InBounds(XYZ(here))) ) return;
     AddLight(here, level);
     level -= Sign(level);
@@ -96,7 +96,7 @@ void World::ReEnlighten() {
     for (auto shining  = tempShiningList.cbegin();
               shining != tempShiningList.cend(); ++shining )
     {
-        const Xyz xyz = shining.key()->GetXyz();
+        const XyzInt xyz = shining.key()->GetXyz();
         Shine(xyz, shining.value());
         emit UpdatedAround(XYZ(xyz));
     }
@@ -143,7 +143,7 @@ void World::ReEnlightenMove(const dirs dir) {
     blockSignals(false);
 }
 
-void World::AddLight(const Xyz& xyz, const int level) {
+void World::AddLight(const XyzInt& xyz, const int level) {
     GetShred(xyz.X(), xyz.Y())->AddLight(
         Shred::CoordInShred(xyz.X()),
         Shred::CoordInShred(xyz.Y()), xyz.Z(), level);

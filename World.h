@@ -88,7 +88,7 @@ public:
     int Enlightened(int x, int y, int z, dirs dir) const;
 
     /// Makes block emit shining.
-    void Shine(const Xyz&, int level);
+    void Shine(const XyzInt&, int level);
 ///@}
 
     /// Radius 5 ensures that fully enlightened block (in a cloud of most
@@ -199,10 +199,10 @@ private:
 ///\name private Lighting section
 ///@{
     /// Make all tree shine.
-    void Shine(const Xyz&, int level, const WaysTree* tree);
+    void Shine(const XyzInt&, int level, const WaysTree* tree);
 
     /// Adds light level to particular coordinate.
-    void AddLight(const Xyz&, int level);
+    void AddLight(const XyzInt&, int level);
 
     /// Takes back all light in area around coordinates xyz.
     void UnShine(int x, int y, int z, Block* skip_block, Block* add_block);

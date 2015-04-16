@@ -91,7 +91,8 @@ enum dirs {
     EAST,   ///< 3
     SOUTH,  ///< 4
     WEST,   ///< 5
-    LAST_DIR = WEST
+    LAST_DIR = WEST,
+    DIRS_COUNT = LAST_DIR
 };
 
 enum push_reaction {

@@ -22,7 +22,7 @@
 
 // AroundCoordinates:: section
 
-AroundCoordinates::AroundCoordinates(const int dirsBits, const Xyz& xyz) :
+AroundCoordinates::AroundCoordinates(const int dirsBits, const XyzInt& xyz) :
         AroundCoordinatesN<6>()
 {
     if ( dirsBits & B_UP     ) array[size++] = { xyz.X(), xyz.Y(), xyz.Z()+1 };
@@ -32,7 +32,7 @@ AroundCoordinates::AroundCoordinates(const int dirsBits, const Xyz& xyz) :
     }
 }
 
-AroundCoordinates::AroundCoordinates(const Xyz& xyz) :
+AroundCoordinates::AroundCoordinates(const XyzInt& xyz) :
         AroundCoordinatesN<6>()
 {
     array[0] = { xyz.X(), xyz.Y(), xyz.Z()+1 };
@@ -43,17 +43,44 @@ AroundCoordinates::AroundCoordinates(const Xyz& xyz) :
 
 // AroundCoordinates4:: section
 
-AroundCoordinates4::AroundCoordinates4(const Xyz& xyz) :
+AroundCoordinates4::AroundCoordinates4(const XyzInt& xyz) :
     AroundCoordinatesN<4>()
 {
     fill4(xyz);
 }
 
 template<int maxSize>
-void AroundCoordinatesN<maxSize>::fill4(const Xyz& xyz) {
+void AroundCoordinatesN<maxSize>::fill4(const XyzInt& xyz) {
     if ( xyz.X() > 0 )    array[size++] = { xyz.X()-1, xyz.Y(), xyz.Z() };
     if ( xyz.Y() > 0 )    array[size++] = { xyz.X(), xyz.Y()-1, xyz.Z() };
     const int bound = World::GetConstWorld()->GetBound();
     if ( xyz.X() < bound) array[size++] = { xyz.X()+1, xyz.Y(), xyz.Z() };
     if ( xyz.Y() < bound) array[size++] = { xyz.X(), xyz.Y()+1, xyz.Z() };
+}
+
+LazyAroundCoordinates::LazyAroundCoordinates(const XyzInt& source) :
+    XyzInt(source),
+    step(-1)
+{}
+
+const XyzInt LazyAroundCoordinates::shifts[] = {
+    { 0,  0,  1},
+    { 0,  0, -2},
+    {-1,  0,  1},
+    { 2,  0,  0},
+    {-1, -1,  0},
+    { 0,  2,  0}
+};
+
+const XyzInt *LazyAroundCoordinates::getNext() {
+    ++step;
+    if (step < DIRS_COUNT) {
+        x_self += shifts[step].X();
+        y_self += shifts[step].Y();
+        z_self += shifts[step].Z();
+        return World::GetConstWorld()->InBounds(x_self, y_self) ?
+            this : getNext();
+    } else {
+        return nullptr;
+    }
 }

@@ -567,7 +567,7 @@ bool Shred::Tree(const_int(x, y, z)) {
         SetBlock(wood, x+1, y+1, i); // trunk
     }
     // branches
-    for (const Xyz& xyz : AroundCoordinates4({x+1, y+1, leaves_level})) {
+    for (const XyzInt& xyz : AroundCoordinates4({x+1, y+1, leaves_level})) {
         if ( (rand >>= 1) % 2 ) {
             PutBlock(wood, XYZ(xyz));
         }
