@@ -42,8 +42,6 @@ ShredStorage::ShredStorage(const int size_,
         emptyWriteBuffers.push_back(new QByteArray);
         AddShred(i, j);
     }
-    std::for_each(emptyWriteBuffers.cbegin() + size, emptyWriteBuffers.cend(),
-        [](QByteArray* const array) { array->squeeze(); });
 }
 
 ShredStorage::~ShredStorage() {
