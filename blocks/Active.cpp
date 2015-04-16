@@ -128,13 +128,13 @@ void Active::ReRegister(const dirs dir) {
 void Active::SendSignalAround(const QString signal) const {
     if ( IsInside() ) return; // for blocks inside inventories
     const World* const world = World::GetConstWorld();
-    for (const XyzInt& xyz : AroundCoordinates(GetXyz())) {
+    for (const XyzInt& xyz : AroundCoordinates(X(), Y(), Z())) {
         world->GetBlock(XYZ(xyz))->ReceiveSignal(signal);
     }
 }
 
 void Active::DamageAround() const {
-    for (const XyzInt& xyz : AroundCoordinates(GetXyz())) {
+    for (const XyzInt& xyz : AroundCoordinates(X(), Y(), Z())) {
         TryDestroy(XYZ(xyz));
     }
 }
@@ -197,7 +197,7 @@ bool Active::Gravitate(const int range, int bottom, int top,
 }
 
 bool Active::IsSubAround(const int sub) const {
-    LazyAroundCoordinates coordinates(GetXyz());
+    LazyAroundCoordinates coordinates(X(), Y(), Z());
     const XyzInt* xyz;
     while ((xyz = coordinates.getNext())) {
         if (World::GetConstWorld()->

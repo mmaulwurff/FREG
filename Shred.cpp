@@ -216,9 +216,14 @@ void Shred::PhysEventsRare() {
             }
         }
     }
-    activeListAll.remove(nullptr);
-    activeListFrequent.removeAll(nullptr);
-    fallList.remove(nullptr);
+
+    static unsigned removeNullsTimer = 0;
+    ++removeNullsTimer;
+    switch (removeNullsTimer & 0b0011) {
+    case 0: activeListAll.remove(nullptr); break;
+    case 1: activeListFrequent.removeAll(nullptr); break;
+    case 2: fallList.remove(nullptr); break;
+    }
 }
 
 const std::forward_list<Active*>& Shred::GetShiningList() const {

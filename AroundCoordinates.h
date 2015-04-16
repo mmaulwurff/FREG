@@ -37,7 +37,7 @@ public:
 protected:
     AroundCoordinatesN() : array(), size(0) {}
 
-    void fill4(const XyzInt& center);
+    void fill4(int x_center, int y_center, int z_center);
 
     XyzInt array[maxSize];
     int size;
@@ -49,18 +49,18 @@ protected:
  */
 class AroundCoordinates : public AroundCoordinatesN<6> {
 public:
-    AroundCoordinates(const XyzInt& source);
-    AroundCoordinates(int directionBits, const XyzInt& source);
+    AroundCoordinates(int x_source, int y_source, int z_source);
+    AroundCoordinates(int directionBits, int x, int y, int z);
 };
 
 class AroundCoordinates4 : public AroundCoordinatesN<4> {
 public:
-    AroundCoordinates4(const XyzInt& source);
+    AroundCoordinates4(int x_source, int y_source, int z_source);
 };
 
 class LazyAroundCoordinates : XyzInt {
 public:
-    LazyAroundCoordinates(const XyzInt& source);
+    LazyAroundCoordinates(int x, int y, int z);
 
     const XyzInt* getNext();
 

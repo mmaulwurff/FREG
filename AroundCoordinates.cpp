@@ -22,44 +22,44 @@
 
 // AroundCoordinates:: section
 
-AroundCoordinates::AroundCoordinates(const int dirsBits, const XyzInt& xyz) :
+AroundCoordinates::AroundCoordinates(const int dirsBits, const_int(x, y, z)) :
         AroundCoordinatesN<6>()
 {
-    if ( dirsBits & B_UP     ) array[size++] = { xyz.X(), xyz.Y(), xyz.Z()+1 };
-    if ( dirsBits & B_DOWN   ) array[size++] = { xyz.X(), xyz.Y(), xyz.Z()-1 };
+    if ( dirsBits & B_UP     ) array[size++] = { x, y, z+1 };
+    if ( dirsBits & B_DOWN   ) array[size++] = { x, y, z-1 };
     if ( dirsBits & B_AROUND ) {
-        fill4(xyz);
+        fill4(x, y, z);
     }
 }
 
-AroundCoordinates::AroundCoordinates(const XyzInt& xyz) :
+AroundCoordinates::AroundCoordinates(const_int(x, y, z)) :
         AroundCoordinatesN<6>()
 {
-    array[0] = { xyz.X(), xyz.Y(), xyz.Z()+1 };
-    array[1] = { xyz.X(), xyz.Y(), xyz.Z()-1 };
+    array[0] = { x, y, z+1 };
+    array[1] = { x, y, z-1 };
     size = 2;
-    fill4(xyz);
+    fill4(x, y, z);
 }
 
 // AroundCoordinates4:: section
 
-AroundCoordinates4::AroundCoordinates4(const XyzInt& xyz) :
+AroundCoordinates4::AroundCoordinates4(const_int(x, y, z)) :
     AroundCoordinatesN<4>()
 {
-    fill4(xyz);
+    fill4(x, y, z);
 }
 
 template<int maxSize>
-void AroundCoordinatesN<maxSize>::fill4(const XyzInt& xyz) {
-    if ( xyz.X() > 0 )    array[size++] = { xyz.X()-1, xyz.Y(), xyz.Z() };
-    if ( xyz.Y() > 0 )    array[size++] = { xyz.X(), xyz.Y()-1, xyz.Z() };
+void AroundCoordinatesN<maxSize>::fill4(const_int(x, y, z)) {
+    if ( x > 0 )    array[size++] = { x-1, y,   z };
+    if ( y > 0 )    array[size++] = { x,   y-1, z };
     const int bound = World::GetConstWorld()->GetBound();
-    if ( xyz.X() < bound) array[size++] = { xyz.X()+1, xyz.Y(), xyz.Z() };
-    if ( xyz.Y() < bound) array[size++] = { xyz.X(), xyz.Y()+1, xyz.Z() };
+    if ( x < bound) array[size++] = { x+1, y,   z };
+    if ( y < bound) array[size++] = { x,   y+1, z };
 }
 
-LazyAroundCoordinates::LazyAroundCoordinates(const XyzInt& source) :
-    XyzInt(source),
+LazyAroundCoordinates::LazyAroundCoordinates(const_int(x, y, z)) :
+    XyzInt(x, y, z),
     step(-1)
 {}
 
