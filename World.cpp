@@ -26,6 +26,7 @@
 #include "blocks/Inventory.h"
 #include "WaysTree.h"
 #include "VisionRay.h"
+#include "LoadingLineThread.h"
 #include <QDir>
 #include <QMutexLocker>
 #include <QTimer>
@@ -642,6 +643,7 @@ World::World(const QString& world_name, bool* const error) :
 }
 
 World::~World() {
+    LoadingLineThread saveLine;
     GetLock()->lock();
     quit();
     wait();
@@ -659,6 +661,7 @@ World::~World() {
     SaveNotes();
 
     lightWaysTree.Clear();
+    saveLine.stop();
 }
 
 void World::SaveState() const {

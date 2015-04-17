@@ -61,6 +61,7 @@
 #include "AroundCoordinates.cpp"
 #include "WaysTree.cpp"
 #include "VisionRay.cpp"
+#include "LoadingLineThread.cpp"
 
 #include "moc/moc_Active.cpp"
 #include "moc/moc_Animal.cpp"

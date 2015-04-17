@@ -30,6 +30,7 @@
 #include <QLockFile>
 #include <QGuiApplication>
 #include <QCommandLineParser>
+#include "LoadingLineThread.h"
 
 #ifdef Q_OS_WIN32
 const QString home_path(QDir::currentPath() + QChar::fromLatin1('/'));
@@ -39,6 +40,7 @@ const QString home_path = QDir::currentPath() + QChar::fromLatin1('/');
 #endif
 
 int main(int argc, char** argv) {
+    LoadingLineThread loadLine;
     setlocale(LC_CTYPE, "C-UTF-8");
 
     QGuiApplication freg(argc, argv);
@@ -114,6 +116,8 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
     Player player;
+
+    loadLine.stop();
     int error = SCREEN_NO_ERROR;
     const Screen screen(&player, error);
 
