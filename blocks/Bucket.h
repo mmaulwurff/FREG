@@ -33,7 +33,6 @@ public:
     void Damage(int dmg, int dmg_kind) override;
     QString FullName() const override;
     usage_types Use(Active*) override;
-    Inventory* HasInventory() override final;
 
 protected:
     void SaveAttributes(QDataStream& out) const override;

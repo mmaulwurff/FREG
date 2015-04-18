@@ -33,7 +33,6 @@ Bucket::Bucket(QDataStream& str, const kinds kind, const subs sub) :
 
 void Bucket::Damage(int, int) { Break(); }
 void Bucket::ReceiveSignal(const QString& str) { Block::ReceiveSignal(str); }
-Inventory* Bucket::HasInventory() { return this; }
 usage_types Bucket::Use(Active*) { return USAGE_TYPE_POUR; }
 
 QString Bucket::FullName() const {

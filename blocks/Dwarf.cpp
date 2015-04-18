@@ -44,7 +44,6 @@ int  Dwarf::ShouldAct() const { return FREQUENT_FIRST | FREQUENT_RARE; }
 int  Dwarf::LightRadius() const { return lightRadius; }
 void Dwarf::ReceiveSignal(const QString& str) { Active::ReceiveSignal(str); }
 bool Dwarf::IsCreator() const { return DIFFERENT == Sub(); }
-Inventory* Dwarf::HasInventory() { return this; }
 
 bool Dwarf::Drop(const int src, const int dest, const int num,
     Inventory *const to)

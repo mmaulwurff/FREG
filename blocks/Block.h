@@ -83,10 +83,13 @@ public:
      *  (by default block is deleted, beware). */
     virtual Block* DropAfterDamage(bool* delete_self);
 
-    virtual class Inventory* HasInventory();
-    virtual class Active*    ActiveBlock();
     virtual class Falling*   ShouldFall();
     virtual class Animal*    IsAnimal();
+    virtual class Active*    ActiveBlock();
+    virtual const class Active* ActiveBlockConst() const;
+
+    class Inventory* HasInventory();
+    const class Inventory* HasConstInventory() const;
 
     virtual wearable Wearable() const;
     virtual int DamageKind() const;

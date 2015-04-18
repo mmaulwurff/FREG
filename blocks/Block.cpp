@@ -207,10 +207,17 @@ bool Block::Inscribe(const QString& str) {
     return true;
 }
 
-Inventory* Block::HasInventory() { return nullptr; }
 Animal*    Block::IsAnimal()     { return nullptr; }
 Active*    Block::ActiveBlock()  { return nullptr; }
 Falling*   Block::ShouldFall()   { return nullptr; }
+
+const Active* Block::ActiveBlockConst() const { return nullptr; }
+
+Inventory* Block::HasInventory() {return BlockFactory::Block2Inventory(this);}
+
+const Inventory* Block::HasConstInventory() const {
+    return const_cast<Block*>(this)->HasInventory();
+}
 
 void Block::Restore() { durability = MAX_DURABILITY; }
 void Block::Break()   { durability = 0; }

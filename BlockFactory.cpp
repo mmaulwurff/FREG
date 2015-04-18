@@ -32,6 +32,7 @@
 #include "blocks/Text.h"
 #include <QDataStream>
 #include <QDebug>
+#include <type_traits>
 
 #define X_NEW_BLOCK_SUB(column1, substance, ...) new Block(BLOCK, substance),
 
@@ -94,10 +95,13 @@ bool BlockFactory::KindSubFromFile(QDataStream& str, quint8* kind, quint8* sub)
     }
 }
 
+Inventory *BlockFactory::Block2Inventory(Block* const block) {
+    return blockFactory->castsToInventory[block->Kind()](block);
+}
+
 void BlockFactory::DeleteBlock(Block* const block) {
     if ( block != blockFactory->Normal(block->Sub()) ) {
-        Active* const active = block->ActiveBlock();
-        if ( active ) active->Unregister();
+        if (Active* const active = block->ActiveBlock()) active->Unregister();
         delete block;
     }
 }
@@ -165,19 +169,25 @@ bool BlockFactory::IsValid(const kinds kind, const subs sub) {
     return false;
 }
 
-template <typename BlockType>
-Block* BlockFactory::Create(const kinds kind, const subs sub) {
-    return new BlockType(kind, sub);
+template <typename BlockType, typename ... Parameters>
+Block* BlockFactory::Create(Parameters ... parameters) {
+    return new BlockType(parameters ...);
 }
 
-template <typename BlockType>
-Block* BlockFactory::Load(QDataStream& str, const kinds kind, const subs sub) {
-    return new BlockType(str, kind, sub);
-}
+template <typename BlockType, typename Base, std::enable_if_t<
+        std::is_base_of<Base, BlockType>::value >* = nullptr>
+Base* castTo(Block* const block) { return static_cast<BlockType*>(block); }
+
+template <typename BlockType, typename Base, std::enable_if_t< not
+        std::is_base_of<Base, BlockType>::value >* = nullptr>
+Base* castTo(Block*) { return nullptr; }
 
 template <typename BlockType, typename ... RestBlockTypes>
 void BlockFactory::RegisterAll(typeList<BlockType, RestBlockTypes...>) {
-    creates[kindIndex  ] = Create<BlockType>;
-    loads  [kindIndex++] = Load  <BlockType>;
+    creates[kindIndex] = Create<BlockType, kinds, subs>;
+    loads  [kindIndex] = Create<BlockType, QDataStream&, kinds, subs>;
+    castsToInventory[kindIndex] = castTo<BlockType, Inventory>;
+
+    ++kindIndex;
     RegisterAll(typeList<RestBlockTypes...>()); // recursive call
 }

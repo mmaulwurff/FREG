@@ -541,7 +541,7 @@ void Screen::Print() {
         break;
     case USAGE_TYPE_OPEN:
         if ( Block* const focused = GetFocusedBlock() ) {
-            PrintInv(rightWin, focused, focused->HasInventory());
+            PrintInv(rightWin, focused, focused->HasConstInventory());
         }
         break;
     }
@@ -630,7 +630,7 @@ void Screen::PrintHud() const {
 } // void Screen::PrintHud()
 
 void Screen::PrintQuickInventory() const {
-    const Inventory* const inv = player->GetBlock()->HasInventory();
+    const Inventory* const inv = player->GetBlock()->HasConstInventory();
     if ( Q_UNLIKELY(inv == nullptr) ) return;
 
     const int inventory_size = inv->Size();

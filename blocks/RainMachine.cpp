@@ -61,7 +61,6 @@ QString RainMachine::FullName() const {
 
 int  RainMachine::ShouldAct() const { return FREQUENT_RARE; }
 usage_types RainMachine::Use(Active*) { return USAGE_TYPE_OPEN; }
-Inventory* RainMachine::HasInventory() { return this; }
 
 void RainMachine::ReceiveSignal(const QString& message) {
     Active::ReceiveSignal(message);

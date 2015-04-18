@@ -524,8 +524,12 @@ bool World::Build(Block* const block, const_int(x, y, z), Block* const who) {
     return true;
 }
 
-void World::ReEnlightenCheck(Block* const block1, Block* const block2,
-        const_int(x, y, z), Block* const skip_block, Block* const add_block)
+void World::ReEnlightenCheck(
+        const Block* const block1,
+        const Block* const block2,
+        const_int(x, y, z),
+        const Block* const skip_block,
+        const Block* const add_block)
 {
     if (    block1->Transparent() != block2->Transparent() ||
             block1->LightRadius() != block2->LightRadius() )

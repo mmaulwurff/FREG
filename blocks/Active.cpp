@@ -43,6 +43,7 @@ int  Active::Attractive(int) const { return 0; }
 void Active::ReceiveSignal(const QString& str) { emit ReceivedText(str); }
 Active* Active::ActiveBlock() { return this; }
 inner_actions Active::ActInner() { return INNER_ACTION_ONLY; }
+const Active *Active::ActiveBlockConst() const { return this; }
 
 void Active::UpdateLightRadius(const int old_radius) {
     if ( IsInside() ) return;

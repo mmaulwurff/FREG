@@ -98,7 +98,6 @@ public:
     QString FullName() const override;
     QString Description() const override;
     Block* DropAfterDamage(bool* delete_block) override;
-    Inventory* HasInventory() override;
     usage_types Use(Active* who) override;
     inner_actions ActInner() override;
 

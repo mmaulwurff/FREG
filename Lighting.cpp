@@ -48,7 +48,7 @@ void World::Shine(const XyzInt& center, int level, const WaysTree* const ways){
 }
 
 void World::UnShine(const_int(x, y, z),
-        Block* const skipBlock, Block* const add_block)
+        const Block* const skipBlock, const Block* const add_block)
 {
     // cycle over shreds around xyz, unshine all lights in radius
     const int xShredCenter = Shred::CoordOfShred(x);
@@ -83,7 +83,7 @@ void World::UnShine(const_int(x, y, z),
     if ( add_block ) {
         const int radius = add_block->LightRadius();
         if ( Q_UNLIKELY(radius) ) {
-            tempShiningList.insert(add_block->ActiveBlock(), radius);
+            tempShiningList.insert(add_block->ActiveBlockConst(), radius);
         }
     }
 

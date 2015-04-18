@@ -189,7 +189,6 @@
     QString Bush::FullName() const { return TrManager::KindName(BUSH); }
     QString Bush::Description() const { return tr("Food and wood source."); }
     usage_types Bush::Use(Active*) { return USAGE_TYPE_OPEN; }
-    Inventory* Bush::HasInventory() { return this; }
     inner_actions Bush::ActInner() { return INNER_ACTION_NONE; }
 
     void Bush::DoRareAction() {

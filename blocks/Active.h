@@ -54,6 +54,7 @@ public:
     void Move(dirs dir) override;
     void ReceiveSignal(const QString&) override;
     Active* ActiveBlock() override final;
+    const Active* ActiveBlockConst() const override final;
 
     virtual void ActFrequent();
     virtual inner_actions ActInner();

@@ -205,7 +205,8 @@ private:
     void AddLight(const XyzInt&, int level);
 
     /// Takes back all light in area around coordinates xyz.
-    void UnShine(int x, int y, int z, Block* skip_block, Block* add_block);
+    void UnShine(int x, int y, int z,
+            const Block* skip_block, const Block* add_block);
 
     /// Updates and restores lighting after UnShine.
     void ReEnlighten();
@@ -221,8 +222,9 @@ private:
      *  @param x, y, z coordinates of relighting center.
      *  @param skipBlock1 to skip or not to skip block1 when relighting.
      */
-    void ReEnlightenCheck(Block* block1, Block* block2, int x, int y, int z,
-                          Block* skip_block, Block* add_block);
+    void ReEnlightenCheck(const Block* block1, const Block* block2,
+            int x, int y, int z,
+            const Block* skip_block, const Block* add_block);
 ///@}
 
     enum can_move_results {
@@ -287,7 +289,7 @@ private:
     QList<QString> notes;
 
     /// storage for found shining objects between UnShine and ReEnlighten.
-    QHash<class Active*, int> tempShiningList;
+    QHash<const class Active*, int> tempShiningList;
 
     const WaysTree lightWaysTree;
 

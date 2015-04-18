@@ -24,6 +24,7 @@
 #include <QtGlobal>
 
 class Block;
+class Inventory;
 class QDataStream;
 
 /** \class BlockFactory BlockFactory.h
@@ -73,6 +74,8 @@ public:
     static int KindFromId(const int id) { return (id >>   8); }
     static int SubFromId (const int id) { return (id & 0xff); }
 
+    static Inventory* Block2Inventory(Block*);
+
 private:
     M_DISABLE_COPY(BlockFactory)
 
@@ -94,10 +97,10 @@ private:
     /// Array of pointers to Load functions.
     Block* (*   loads[KIND_COUNT])(QDataStream&, kinds kind, subs sub);
 
-    template <typename BlockType>
-    static Block* Create(kinds kind, subs sub);
-    template <typename BlockType>
-    static Block* Load(QDataStream& str, kinds kind, subs sub);
+    Inventory* (* castsToInventory[KIND_COUNT])(Block*);
+
+    template <typename BlockType, typename ... Parameters>
+    static Block* Create(Parameters ...);
 
     /// Type list struct for variadic template without formal parameters.
     template <typename ...> struct typeList {};
