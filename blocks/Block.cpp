@@ -22,7 +22,6 @@
 #include "World.h"
 #include "Inventory.h"
 #include "TrManager.h"
-#include "SortedArray.h"
 #include <QDataStream>
 
 #define TEST_DAMAGE 0

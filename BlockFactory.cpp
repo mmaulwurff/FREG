@@ -34,19 +34,20 @@
 #include <QDebug>
 #include <type_traits>
 
-#define X_NEW_BLOCK_SUB(column1, substance, ...) new Block(BLOCK, substance),
+#define X_NEW_BLOCK_SUB(column1, substance, ...) {BLOCK, substance},
 
 BlockFactory* BlockFactory::blockFactory = nullptr;
 
 BlockFactory::BlockFactory() :
     normals{ SUB_TABLE(X_NEW_BLOCK_SUB) },
     creates(),
-    loads()
+    loads(),
+    castsToInventory()
 {
     Q_ASSERT(blockFactory == nullptr);
     blockFactory = this;
 
-    static_assert((SUB_COUNT  <= 64 ), "too many substances, should be < 64.");
+    static_assert((SUB_COUNT  <=  64), "too many substances, should be < 64.");
     static_assert((KIND_COUNT <= 128), "too many kinds, should be < 128.");
     if ( KIND_SUB_PAIR_VALID_CHECK ) {
         int sum = 0;
@@ -57,20 +58,19 @@ BlockFactory::BlockFactory() :
         qDebug() << "valid pairs:" << sum;
     }
 
-    RegisterAll(typeList< KIND_TABLE(X_CLASS) TemplateTerminator >());
+    RegisterAll(typeList< KIND_TABLE(X_CLASS) TemplateTerminator >(),
+                kindList< KIND_TABLE(X_ENUM)  LAST_KIND >());
 }
-
-BlockFactory::~BlockFactory() { qDeleteAll(ALL(normals)); }
 
 Block* BlockFactory::NewBlock(const kinds kind, const subs sub) {
     if ( KIND_SUB_PAIR_VALID_CHECK ) {
         qDebug("kind: %d, sub: %d, valid: %d", kind, sub, IsValid(kind,sub));
     }
-    return blockFactory->creates[kind](kind, sub);
+    return blockFactory->creates[kind](sub);
 }
 
 Block* BlockFactory::Normal(const int sub) {
-    return blockFactory->normals[sub];
+    return blockFactory->normals + sub;
 }
 
 Block* BlockFactory::BlockFromFile(QDataStream& str,
@@ -79,7 +79,7 @@ Block* BlockFactory::BlockFromFile(QDataStream& str,
     if ( KIND_SUB_PAIR_VALID_CHECK ) {
         qDebug("kind: %d, sub: %d, valid: %d", kind, sub, IsValid(kind,sub));
     }
-    return blockFactory->loads[kind](str, kind, sub);
+    return blockFactory->loads[kind](str, sub);
 }
 
 bool BlockFactory::KindSubFromFile(QDataStream& str, quint8* kind, quint8* sub)
@@ -169,9 +169,14 @@ bool BlockFactory::IsValid(const kinds kind, const subs sub) {
     return false;
 }
 
-template <typename BlockType, typename ... Parameters>
-Block* BlockFactory::Create(Parameters ... parameters) {
-    return new BlockType(parameters ...);
+template <typename BlockType, kinds kind>
+Block* BlockFactory::Create(const subs sub) {
+    return new BlockType(kind, sub);
+}
+
+template <typename BlockType, kinds kind>
+Block* BlockFactory::Load(QDataStream& stream, const subs sub) {
+    return new BlockType(stream, kind, sub);
 }
 
 template <typename BlockType, typename Base, std::enable_if_t<
@@ -182,12 +187,14 @@ template <typename BlockType, typename Base, std::enable_if_t< not
         std::is_base_of<Base, BlockType>::value >* = nullptr>
 Base* castTo(Block*) { return nullptr; }
 
-template <typename BlockType, typename ... RestBlockTypes>
-void BlockFactory::RegisterAll(typeList<BlockType, RestBlockTypes...>) {
-    creates[kindIndex] = Create<BlockType, kinds, subs>;
-    loads  [kindIndex] = Create<BlockType, QDataStream&, kinds, subs>;
-    castsToInventory[kindIndex] = castTo<BlockType, Inventory>;
+template <typename BlockType, typename ... RestBlockTypes,
+          kinds kind, kinds ... RestKinds>
+void BlockFactory::RegisterAll(typeList<BlockType, RestBlockTypes...>,
+                               kindList<kind, RestKinds...>)
+{
+    creates[kind] = Create<BlockType, kind>;
+    loads  [kind] = Load  <BlockType, kind>;
+    castsToInventory[kind] = castTo<BlockType, Inventory>;
 
-    ++kindIndex;
-    RegisterAll(typeList<RestBlockTypes...>()); // recursive call
+    RegisterAll(typeList<RestBlockTypes...>(), kindList<RestKinds...>());
 }

@@ -92,7 +92,7 @@ PreCalculatedVisionRays::PreCalculatedVisionRays() {
         while (vision_ray.nextStep()) {
             const Xyz first  = vision_ray.getCoordinateFirst();
             const Xyz second = vision_ray.getCoordinateSecond();
-            shifts[i][j][k].push_back( {
+            shifts[i][j][k].push_back( std::make_pair(
                 XyzChar(
                     first.X() - RADIUS,
                     first.Y() - RADIUS,
@@ -101,7 +101,7 @@ PreCalculatedVisionRays::PreCalculatedVisionRays() {
                     second.X() - RADIUS,
                     second.Y() - RADIUS,
                     second.Z() - RADIUS)
-            } );
+            ) );
         }
         shifts[i][j][k].shrink_to_fit();
     }

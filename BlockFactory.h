@@ -22,8 +22,8 @@
 
 #include "header.h"
 #include <QtGlobal>
+#include "blocks/Block.h"
 
-class Block;
 class Inventory;
 class QDataStream;
 
@@ -44,8 +44,7 @@ class QDataStream;
 
 class BlockFactory final {
 public:
-     BlockFactory();
-    ~BlockFactory();
+    BlockFactory();
 
     /// Use this to receive a pointer to normal block.
     static Block* Normal(int sub);
@@ -88,31 +87,37 @@ private:
      */
     static bool IsValid(kinds, subs);
 
-    Block* const normals[SUB_COUNT];
+    Block normals[SUB_COUNT];
 
     // Block registration system:
 
     /// Array of pointers to Create functions.
-    Block* (* creates[KIND_COUNT])(kinds kind, subs sub);
+    Block* (* creates[KIND_COUNT])(subs sub);
     /// Array of pointers to Load functions.
-    Block* (*   loads[KIND_COUNT])(QDataStream&, kinds kind, subs sub);
+    Block* (*   loads[KIND_COUNT])(QDataStream&, subs sub);
 
     Inventory* (* castsToInventory[KIND_COUNT])(Block*);
 
-    template <typename BlockType, typename ... Parameters>
-    static Block* Create(Parameters ...);
+    template <typename BlockType, kinds>
+    static Block* Create(subs);
+
+    template <typename BlockType, kinds>
+    static Block* Load(QDataStream&, subs);
 
     /// Type list struct for variadic template without formal parameters.
     template <typename ...> struct typeList {};
     struct TemplateTerminator {};
+    template <kinds ... kindList> struct kindList {};
 
     ///< Base for variadic template.
-    static void RegisterAll(typeList<TemplateTerminator>) {}
+    static void RegisterAll(typeList<TemplateTerminator>,
+                            kindList<LAST_KIND>) {}
 
     /// Core of block registration system.
-    template <typename BlockType, typename ... RestBlockTypes>
-    void RegisterAll(typeList<BlockType, RestBlockTypes...>);
-    int kindIndex = 0;
+    template <typename BlockType, typename ... RestBlockTypes,
+              kinds kind, kinds ... RestKinds>
+    void RegisterAll(typeList<BlockType, RestBlockTypes...>,
+                     kindList<kind, RestKinds...>);
 
     static BlockFactory* blockFactory;
 };
