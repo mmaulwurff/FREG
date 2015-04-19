@@ -22,8 +22,8 @@
 
 #include "header.h"
 #include <QtGlobal>
-#include "blocks/Block.h"
 
+class Block;
 class Inventory;
 class QDataStream;
 
@@ -44,7 +44,8 @@ class QDataStream;
 
 class BlockFactory final {
 public:
-    BlockFactory();
+     BlockFactory();
+    ~BlockFactory();
 
     /// Use this to receive a pointer to normal block.
     static Block* Normal(int sub);
@@ -87,7 +88,7 @@ private:
      */
     static bool IsValid(kinds, subs);
 
-    Block normals[SUB_COUNT];
+    Block* const normals[SUB_COUNT];
 
     // Block registration system:
 
@@ -107,7 +108,7 @@ private:
     /// Type list struct for variadic template without formal parameters.
     template <typename ...> struct typeList {};
     struct TemplateTerminator {};
-    template <kinds ... kindList> struct kindList {};
+    template <kinds ... someKinds> struct kindList {};
 
     ///< Base for variadic template.
     static void RegisterAll(typeList<TemplateTerminator>,

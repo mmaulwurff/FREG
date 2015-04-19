@@ -29,7 +29,7 @@
 #define BLOCK_CONSTRUCTORS(BlockClass)     \
 BlockClass(kinds, subs);                    \
 BlockClass(class QDataStream&, kinds, subs); \
-BlockClass(const BlockClass&) = delete;      \
+BlockClass(const BlockClass&) = delete;       \
 BlockClass& operator=(const BlockClass&) = delete;
 
 enum wearable {
