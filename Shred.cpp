@@ -90,8 +90,7 @@ Shred::Shred(const int shred_x, const int shred_y,
         latitude(lati),
         shredX(shred_x),
         shredY(shred_y),
-        type(static_cast<shred_type>(
-            World::GetConstWorld()->GetMap()->TypeOfShred(longi, lati) )),
+        type(),
         activeListFrequent(),
         activeListAll(),
         shiningList(),
@@ -106,6 +105,8 @@ Shred::Shred(const int shred_x, const int shred_y,
     FOR_ALL_SHRED_AREA(x, y) {
         memcpy(blocks[x][y], pattern, sizeof(Block*) * HEIGHT);
     }
+    type = static_cast<shred_type>(
+        World::GetConstWorld()->GetMap()->TypeOfShred(longi, lati) );
     switch ( type ) {
     case SHRED_WASTE:       WasteShred(); break;
     case SHRED_WATER:       Water();      break;

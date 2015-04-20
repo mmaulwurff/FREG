@@ -28,7 +28,7 @@
 
 #define BLOCK_CONSTRUCTORS(BlockClass)     \
 BlockClass(kinds, subs);                    \
-BlockClass(class QDataStream&, kinds, subs); \
+BlockClass(QDataStream&, kinds, subs);       \
 BlockClass(const BlockClass&) = delete;       \
 BlockClass& operator=(const BlockClass&) = delete;
 
@@ -123,7 +123,7 @@ public:
     /// Important! If block will be used after save,
     /// call RestoreDurabilityAfterSave.
     void SaveToFile(QDataStream& out);
-    void SaveNormalToFile(class QDataStream& out) const;
+    void SaveNormalToFile(QDataStream& out) const;
 
     /// Important! Use it if block won't be deleted after SaveToFile.
     void RestoreDurabilityAfterSave() { durability >>= 4; }
@@ -137,7 +137,7 @@ public:
     static void TestDamage();
 
 protected:
-    virtual void SaveAttributes(class QDataStream&) const;
+    virtual void SaveAttributes(QDataStream&) const;
     Block* DropInto(bool* delete_block);
 
     quint16 noteId;

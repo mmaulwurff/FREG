@@ -154,7 +154,7 @@ void Player::Move(const dirs direction) {
     }
 }
 
-void Player::Notify(const QString message) const {
+void Player::Notify(const QString& message) const {
     emit World::GetConstWorld()->Notify(message);
 }
 
@@ -381,7 +381,7 @@ void Player::ProcessCommand(QString command) {
             .arg(DEBUG ? tr("debug") : tr("release")));
         break;
     case UniqueIntFromString("warranty"):
-        comm_stream <<  "warranty";
+        comm_stream << "warranty";
         // no break;
     case UniqueIntFromString("help"):
         comm_stream >> request;
@@ -394,7 +394,7 @@ void Player::ProcessCommand(QString command) {
     case UniqueIntFromString("about"):
         emit ShowFile(home_path + Str("README.md"));
         break;
-    case UniqueIntFromString("testdamage"):
+    case UniqueIntFromString("test_damage"):
         Block::TestDamage();
         break;
     default:

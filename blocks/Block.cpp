@@ -297,7 +297,7 @@ void Block::SaveToFile(QDataStream& out) {
         SaveNormalToFile(out);
     } else {
         out << sub << kind <<
-            ( ( ( ( durability
+            qint16( ( ( ( durability
             <<= 3 ) |= direction )
             <<= 1 ) |= (noteId != 0) );
         if ( Q_UNLIKELY(noteId != 0) ) {
@@ -321,7 +321,12 @@ Block::Block(const kinds kind_, const subs sub_) :
 {}
 
 Block::Block(QDataStream& str, const kinds kind_, const subs sub_) :
-        Block(kind_, sub_)
+        noteId(0),
+        durability(),
+        transparent(Transparency(sub_)),
+        kind(kind_),
+        sub(sub_),
+        direction()
 {
     // use durability as buffer, set actual value in the end:
     str >> durability;

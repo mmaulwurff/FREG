@@ -100,7 +100,7 @@ public:
     void Move(dirs);
     void Jump();
 
-    void Notify(QString) const;
+    void Notify(const QString&) const;
 
     /// Closes backpack, chests, etc.
     void StopUseAll();
