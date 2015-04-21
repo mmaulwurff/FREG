@@ -256,11 +256,7 @@ int Block::Weight() const {
     }
 }
 
-void Block::SetDir(const int dir) {
-    if ( BLOCK!=Kind() || WOOD==Sub() ) {
-        direction = dir;
-    }
-}
+void Block::SetDir(const int dir) { direction = dir; }
 
 sub_groups Block::GetSubGroup(const int sub) {
     switch ( sub ) {

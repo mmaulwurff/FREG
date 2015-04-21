@@ -431,7 +431,9 @@ void Screen::ProcessCommand(const QString command) {
                 free_characters.append(i);
             }
         }
-        Notify(Str("Not used characters: \"") + free_characters + Str("\"."));
+        Notify(Str("Not used characters: \"")
+            + free_characters
+            + Str("\" (%1 characters).").arg(free_characters.size()));
         } break;
     case Player::UniqueIntFromString("palette"): Palette(notifyWin); break;
     case Player::UniqueIntFromString("test"): TestNotify(); break;

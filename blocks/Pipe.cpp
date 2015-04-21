@@ -53,11 +53,13 @@ void Pipe::ActFrequent() {
 }
 
 Pipe::Pipe(const kinds kind, const subs sub) :
-        Active(kind, sub)
+        Active(kind, sub),
+        signal()
 {}
 
 Pipe::Pipe(QDataStream& load_stream, const kinds kind, const subs sub) :
-        Active(load_stream, kind, sub)
+        Active(load_stream, kind, sub),
+        signal()
 {
     load_stream >> signal;
 }

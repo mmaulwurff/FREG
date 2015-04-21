@@ -189,8 +189,15 @@ void Player::Use() {
 void Player::TurnBlockToFace() const {
     int x, y, z;
     emit GetFocus(&x, &y, &z);
-    Block* const block = World::GetWorld()->GetBlock(x, y, z);
+    World* const world = World::GetWorld();
+    Block* block = world->GetBlock(x, y, z);
     if (Block::GetSubGroup(block->Sub()) != GROUP_AIR) {
+        if (block == BlockFactory::Normal(block->Sub())) {
+            block = BlockFactory::NewBlock(block->Kind(), block->Sub());
+            const int x_in = Shred::CoordInShred(x);
+            const int y_in = Shred::CoordInShred(y);
+            world->GetShred(x, y)->SetBlockNoCheck(block, x_in, y_in, z);
+        }
         const dirs dir = World::Anti(GetDir());
         block->SetDir(dir);
         Notify(block->FullName()
@@ -381,8 +388,8 @@ void Player::ProcessCommand(QString command) {
         if ( request.isEmpty() ) {
             request = Str("help");
         }
-        emit ShowFile( QString(home_path + Str("/help_%1/%2.md"))
-            .arg(QLocale::system().name().left(2)).arg(QString(request)) );
+        emit ShowFile( home_path + Str("/help_%1/%2.md")
+            .arg(QLocale::system().name().left(2)).arg(request) );
         break;
     case UniqueIntFromString("about"):
         emit ShowFile(home_path + Str("README.md"));
