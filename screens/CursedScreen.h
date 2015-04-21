@@ -157,6 +157,7 @@ private:
     void ExamineOnNormalScreen(int x, int y, int z, int step) const;
 
     void initializeKeyTable();
+    static void unknownKeyNotification(int key);
 
     SCREEN* const screen;
     int screenWidth, screenHeight;

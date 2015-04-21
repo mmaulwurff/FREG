@@ -424,6 +424,15 @@ void Screen::ProcessCommand(const QString command) {
             arg(screenHeight - 2).
             arg((screenWidth - 2) / 2));
         break;
+    case Player::UniqueIntFromString("freechars"): {
+        QByteArray free_characters;
+        for (int i = 32; i < ASCII_SIZE; ++i) {
+            if (keyTable[i] == unknownKeyNotification) {
+                free_characters.append(i);
+            }
+        }
+        Notify(Str("Not used characters: \"") + free_characters + Str("\"."));
+        } break;
     case Player::UniqueIntFromString("palette"): Palette(notifyWin); break;
     case Player::UniqueIntFromString("test"): TestNotify(); break;
     default: player->ProcessCommand(command); break;
@@ -710,7 +719,7 @@ int Screen::GetNormalStartY() const {
 
 void Screen::PrintNormal(WINDOW* const window, const dirs dir) const {
     const int k_step  = ( dir == UP ) ? 1 : -1;
-    const int k_start = player->Z() + shiftFocus;
+    const int k_start = player->Z() + ((dir == UP) ? 1 : shiftFocus);
     const int start_x = GetNormalStartX();
     const int start_y = GetNormalStartY();
     const int end_x = start_x + screenWidth/2 - 1;
@@ -987,14 +996,15 @@ void Screen::DeathScreen() {
     updatedNormal = updatedFront = updatedHud = updatedMinimap = true;
 }
 
-void Screen::initializeKeyTable() {
-    std::fill(ALL(keyTable), [](const int key) {
-        GetScreen()->Notify(tr("Unknown key. Press 'H' for help."));
-        if ( DEBUG ) {
-            GetScreen()->Notify(Str("'%1', code %2.").arg(char(key)).arg(key));
-        }
-    });
+void Screen::unknownKeyNotification(const int key) {
+    GetScreen()->Notify(tr("Unknown key. Press 'H' for help."));
+    if ( DEBUG ) {
+        GetScreen()->Notify(Str("'%1', code %2.").arg(char(key)).arg(key));
+    }
+}
 
+void Screen::initializeKeyTable() {
+    std::fill(ALL(keyTable), unknownKeyNotification);
     std::fill(keyTable + 'a', keyTable + 'z' + 1, [](const int key) {
         GetScreen()->InventoryAction(key - 'a');
     });
@@ -1019,7 +1029,7 @@ void Screen::initializeKeyTable() {
         {{'=', '0'}, [](int) { Screen* const screen = GetScreen();
             screen->MovePlayer(screen->player->GetDir());
         }},
-        {{' '},      [](int) { GetScreen()->player->Jump(); }},
+        {{' ', '*'}, [](int) { GetScreen()->player->Jump(); }},
 
         // strafe
         {{'{'},      [](int) { Player* const player = GetScreen()->player;
@@ -1067,6 +1077,8 @@ void Screen::initializeKeyTable() {
         {{'!'},      [](int) { Player* const player = GetScreen()->player;
             player->SetCreativeMode( not player->GetCreativeMode() );
         }},
+
+        {{','},      [](int) { GetScreen()->player->TurnBlockToFace(); }},
 
         {{'L'},      [](int) {
             QDesktopServices::openUrl(
@@ -1162,6 +1174,7 @@ void Screen::initializeKeyTable() {
             screen->inputThreadIsRunning = false;
         }}
     };
+
     for (const auto& keys_command : command_table ) {
         for (int c : keys_command.keys) {
             keyTable[c] = keys_command.command;

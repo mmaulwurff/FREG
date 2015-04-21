@@ -115,6 +115,7 @@ public:
     void Use();
     /// Tries to throw (drop out) block number num from inventory.
     void Throw(int src, int dest = 0, int num = 1);
+    void TurnBlockToFace() const;
 
     /// Tries to use block number num in inventory.
     usage_types Use(int num);

@@ -186,6 +186,20 @@ void Player::Use() {
     emit Updated();
 }
 
+void Player::TurnBlockToFace() const {
+    int x, y, z;
+    emit GetFocus(&x, &y, &z);
+    Block* const block = World::GetWorld()->GetBlock(x, y, z);
+    if (Block::GetSubGroup(block->Sub()) != GROUP_AIR) {
+        const dirs dir = World::Anti(GetDir());
+        block->SetDir(dir);
+        Notify(block->FullName()
+            + tr(": new direction: ")
+            + TrManager::DirName(dir).toLower()
+            + Str("."));
+    }
+}
+
 void Player::Inscribe() const {
     World* const world = World::GetWorld();
     const QMutexLocker locker(world->GetLock());

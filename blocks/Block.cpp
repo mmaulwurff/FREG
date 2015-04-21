@@ -72,14 +72,15 @@ void Block::Damage(const int dmg, const int dmg_kind) {
     static const struct Property {
         const int immunity, vulnerability, destruction;
     } properties[SUB_COUNT] = {
-        {DAMAGE_CUT | DAMAGE_HEAT, DAMAGE_MINE, DAMAGE_NO}, // STONE
+        {DAMAGE_CUT | DAMAGE_HEAT | DAMAGE_PUSH_ANYWHERE,   // STONE
+            DAMAGE_MINE, DAMAGE_NO},
         properties[STONE],                                  // MOSS_STONE
         {DAMAGE_ANY, DAMAGE_NO, DAMAGE_NO},                 // NULLSTONE
         properties[NULLSTONE],                              // SKY
         properties[NULLSTONE],                              // STAR
         {DAMAGE_ACID, DAMAGE_NO, DAMAGE_NO},                // DIAMOND
         {DAMAGE_NO, DAMAGE_DIG, DAMAGE_NO},                 // SOIL
-        {DAMAGE_NO, DAMAGE_THRUST, DAMAGE_NO},              // H_MEAT
+        {DAMAGE_PUSH_ANYWHERE, DAMAGE_THRUST, DAMAGE_NO},   // H_MEAT
         properties[H_MEAT],                                 // A_MEAT
         {DAMAGE_ACID | DAMAGE_HEAT, DAMAGE_NO,
             DAMAGE_ANY & ~(DAMAGE_ACID | DAMAGE_HEAT)},     // GLASS
