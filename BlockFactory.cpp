@@ -31,6 +31,7 @@
 #include "blocks/Teleport.h"
 #include "blocks/Accumulator.h"
 #include "blocks/Text.h"
+#include "blocks/Pipe.h"
 #include <QDataStream>
 #include <QDebug>
 #include <type_traits>
@@ -143,6 +144,7 @@ bool BlockFactory::IsValid(const kinds kind, const subs sub) {
     case MEDKIT:
     case FILTER:
     case INFORMER:
+    case PIPE:
     case SIGNALLER: return ( group == GROUP_METAL );
 
     case BOX:

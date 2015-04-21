@@ -142,7 +142,7 @@ X(QT_TRANSLATE_NOOP("Block", "Sign"        ), KIND_TEXT,   '?',  Text,       )\
 X(QT_TRANSLATE_NOOP("Block", "Map"         ), MAP,         '?',  Map,        )\
 X(QT_TRANSLATE_NOOP("Block", "Predator"    ), PREDATOR,    '!',  Predator,   )\
 X(QT_TRANSLATE_NOOP("Block", "Bucket"      ), BUCKET,      'u',  Bucket,     )\
-X(QT_TRANSLATE_NOOP("Block", "Shovel"      ), SHOVEL,      '|',  Shovel,     )\
+X(QT_TRANSLATE_NOOP("Block", "Shovel"      ), SHOVEL,      'Y',  Shovel,     )\
 X(QT_TRANSLATE_NOOP("Block", "Axe"         ), AXE,         '/',  Axe,        )\
 X(QT_TRANSLATE_NOOP("Block", "Hammer"      ), HAMMER,      'T',  Hammer,     )\
 X(QT_TRANSLATE_NOOP("Block", "Lantern"     ), ILLUMINATOR, 'i',  Illuminator,)\
@@ -157,6 +157,7 @@ X(QT_TRANSLATE_NOOP("Block", "Filter"      ), FILTER,      'F',  Filter,     )\
 X(QT_TRANSLATE_NOOP("Block", "Informer"    ), INFORMER,    'I',  Informer,   )\
 X(QT_TRANSLATE_NOOP("Block", "Teleport"    ), TELEPORT,    '0',  Teleport,   )\
 X(QT_TRANSLATE_NOOP("Block", "Accumulator" ), ACCUMULATOR, '=',  Accumulator,)\
+X(QT_TRANSLATE_NOOP("Block", "Pipe"        ), PIPE,        '|',  Pipe,       )\
 /// [List of kinds]
 
 /** \page subs List of available substances
