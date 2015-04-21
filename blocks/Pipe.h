@@ -21,11 +21,22 @@
 #define PIPE_H
 
 #include "blocks/Active.h"
+#include <QString>
 
 class Pipe : public Active {
     Q_OBJECT
 public:
-    using Active::Active;
+    BLOCK_CONSTRUCTORS(Pipe)
+
+    int  ShouldAct() const;
+    void ActFrequent() override;
+    void ReceiveSignal(const QString&) override;
+    void SaveAttributes(QDataStream&) const override;
+    QString Description() const override;
+    usage_types Use(Active* user) override;
+
+private:
+    QString signal;
 };
 
 #endif // PIPE_H
