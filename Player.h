@@ -176,6 +176,7 @@ private:
     class Block* ValidBlock(int num) const;
     class Shred* GetShred() const;
     bool ForbiddenAdminCommands() const;
+    void ProcessGetCommand(class QTextStream&);
 
     void LoadState();
 

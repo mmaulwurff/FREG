@@ -326,9 +326,9 @@ bool Player::ForbiddenAdminCommands() const {
 }
 
 void Player::ProcessCommand(QString command) {
-    QTextStream comm_stream(&command);
+    QTextStream command_stream(&command);
     QString request;
-    comm_stream >> request;
+    command_stream >> request;
     World* const world = World::GetWorld();
     const QMutexLocker locker(world->GetLock());
     switch ( UniqueIntFromString(request.toLatin1()) ) {
@@ -337,33 +337,12 @@ void Player::ProcessCommand(QString command) {
         Notify(TrManager::GetWeatherString(GetShred()->GetWeather()));
         break;
     case UniqueIntFromString("give"):
-    case UniqueIntFromString("get" ): {
-        if ( ForbiddenAdminCommands() ) return;
-        Inventory* const inv = PlayerInventory();
-        if ( inv == nullptr ) return;
-        QString kind, sub;
-        comm_stream >> kind >> sub;
-        const kinds kind_code = TrManager::StrToKind(kind);
-        if ( kind_code == LAST_KIND ) {
-            Notify(tr("%1 command: invalid kind!").arg(QString(request)));
-            return;
-        } // else:
-        const subs sub_code = sub.isEmpty() ?
-            STONE : TrManager::StrToSub(sub);
-        if ( sub_code == LAST_SUB ) {
-            Notify(tr("%1 command: invalid substance!").arg(QString(request)));
-            return;
-        } // else:
-        Block* const block = BlockFactory::NewBlock(kind_code, sub_code);
-        if ( inv->Get(block) ) {
-            emit Updated();
-        } else {
-            BlockFactory::DeleteBlock(block);
-        }
-        } break;
+    case UniqueIntFromString("get" ):
+        ProcessGetCommand(command_stream);
+        break;
     case UniqueIntFromString("move"): {
         int direction;
-        comm_stream >> direction;
+        command_stream >> direction;
         Move(static_cast<dirs>(direction));
         } break;
     case UniqueIntFromString("time"):
@@ -381,10 +360,10 @@ void Player::ProcessCommand(QString command) {
             .arg(DEBUG ? tr("debug") : tr("release")));
         break;
     case UniqueIntFromString("warranty"):
-        comm_stream << "warranty";
+        command_stream << "warranty";
         // no break;
     case UniqueIntFromString("help"):
-        comm_stream >> request;
+        command_stream >> request;
         if ( request.isEmpty() ) {
             request = Str("help");
         }
@@ -402,6 +381,46 @@ void Player::ProcessCommand(QString command) {
         break;
     }
 } // void Player::ProcessCommand(QString command)
+
+void Player::ProcessGetCommand(QTextStream& command_stream) {
+    if ( ForbiddenAdminCommands() ) return;
+    Inventory* const inv = PlayerInventory();
+    if ( inv == nullptr ) return;
+    QString kind, sub;
+    command_stream >> kind >> sub;
+    kinds kind_code;
+    subs sub_code;
+    switch (UniqueIntFromString(kind.toLatin1())) { // aliases
+    case UniqueIntFromString("logger"):
+        kind_code = KIND_TEXT;
+        sub_code = IRON;
+        break;
+    case UniqueIntFromString("button"):
+        kind_code = SIGNALLER;
+        sub_code = WOOD;
+        break;
+    default:
+        kind_code = TrManager::StrToKind(kind);
+        if ( kind_code == LAST_KIND ) {
+            Notify(tr("There is no kind \"") + kind + Str("\"."));
+            return;
+        }
+        sub_code = sub.isEmpty() ?
+            STONE : TrManager::StrToSub(sub);
+        if ( sub_code == LAST_SUB ) {
+            Notify(tr("There is no substance \"") + sub + Str("\"."));
+            return;
+        }
+        break;
+    }
+
+    Block* const block = BlockFactory::NewBlock(kind_code, sub_code);
+    if ( inv->Get(block) ) {
+        emit Updated();
+    } else {
+        BlockFactory::DeleteBlock(block);
+    }
+}
 
 Player::visible Player::Visible(const_int(x_to, y_to, z_to)) const {
     if ( GetCreativeMode() ) return VISIBLE;
