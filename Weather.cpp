@@ -19,8 +19,8 @@
 
 #include "Weather.h"
 
-Weather::Weather(const weathers _weather) :
-        weather(_weather)
+Weather::Weather(const weathers set_weather) :
+        weather(set_weather)
 {}
 
 void Weather::SetWeather(const weathers new_weather) { weather = new_weather; }

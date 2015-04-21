@@ -455,25 +455,25 @@ void Player::BlockDestroy() {
     }
 }
 
-void Player::SetPlayer(int _x, int _y, int _z) {
+void Player::SetPlayer(int x, int y, int z) {
     LoadState();
     World* const world = World::GetWorld();
-    if ( _z == -1 ) {
+    if ( z == -1 ) {
         const int plus = world->NumShreds() / 2;
-        _x = Xyz::X() + (latitude  - world->Latitude()  + plus) * SHRED_WIDTH;
-        _y = Xyz::Y() + (longitude - world->Longitude() + plus) * SHRED_WIDTH;
+        x = Xyz::X() + (latitude  - world->Latitude()  + plus) * SHRED_WIDTH;
+        y = Xyz::Y() + (longitude - world->Longitude() + plus) * SHRED_WIDTH;
     } else {
-        SetXyz(Shred::CoordInShred(_x), Shred::CoordInShred(_y), _z);
+        SetXyz(Shred::CoordInShred(x), Shred::CoordInShred(y), z);
     }
     if ( GetCreativeMode() ) {
         player = creator;
         creator->SetXyz(Xyz::X(), Xyz::Y(), Xyz::Z());
-        world->GetShred(_x, _y)->Register(player);
+        world->GetShred(x, y)->Register(player);
     } else {
         Q_ASSERT(z_self <= HEIGHT-2);
-        Block* candidate = world->GetBlock(_x, _y, z_self);
+        Block* candidate = world->GetBlock(x, y, z_self);
         for ( ; z_self < HEIGHT-2; ++z_self ) {
-            candidate = world->GetBlock(_x, _y, z_self);
+            candidate = world->GetBlock(x, y, z_self);
             if ( AIR == candidate->Sub()
                     || ((player==creator || player==nullptr)
                         && candidate->IsAnimal()) )
@@ -487,9 +487,9 @@ void Player::SetPlayer(int _x, int _y, int _z) {
             if ( player == nullptr || player == creator ) {
                 player = BlockFactory::NewBlock(DWARF, PLAYER_SUB)->IsAnimal();
             }
-            world->DestroyAndReplace(_x, _y, Z());
-            world->DestroyAndReplace(_x, _y, Z()); // blocks can drop something
-            world->Build(player, _x, _y, Z());
+            world->DestroyAndReplace(x, y, Z());
+            world->DestroyAndReplace(x, y, Z()); // blocks can drop something
+            world->Build(player, x, y, Z());
         }
     }
     connect(player, &QObject::destroyed, this, &Player::BlockDestroy,
@@ -502,7 +502,7 @@ void Player::SetPlayer(int _x, int _y, int _z) {
         Qt::DirectConnection);
     connect(player, &Animal::CauseTeleportation,
         world, &World::ActivateFullReload, Qt::DirectConnection);
-} // Player::SetPlayer(int _x, _y, _z)
+} // Player::SetPlayer(int x, y, z)
 
 void Player::Disconnect() {
     if ( player == nullptr ) { // dead player
