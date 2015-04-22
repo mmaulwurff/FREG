@@ -247,7 +247,7 @@ void Inventory::Shake() {
 }
 
 Inventory::Inventory(const int sz) :
-        size(sz),
+        inventorySize(sz),
         inventory(new QStack<Block*>[sz])
 {}
 

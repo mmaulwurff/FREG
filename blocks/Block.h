@@ -147,8 +147,8 @@ private:
 
     qint16 durability;
     const quint8 transparent;
-    const quint8 kind;
-    const quint8 sub;
+    const quint8 blockKind;
+    const quint8 substance;
     quint8 direction;
 };
 

@@ -167,22 +167,23 @@ bool Active::Gravitate(const int range, int bottom, int top,
     const int bound = World::GetBound();
     // analyze world around
     int for_north = 0, for_west = 0;
-    const int y_start = std::max(Y()-range, 0);
-    const int y_end   = std::min(Y()+range, bound);
-    const int x_end   = std::min(X()+range, bound);
+    const int my_x = X();
+    const int my_y = Y();
+    const int y_start = std::max(my_y-range, 0);
+    const int y_end   = std::min(my_y+range, bound);
+    const int x_end   = std::min(my_x+range, bound);
     bottom = std::max(Z() - bottom,  0);
     top    = std::min(Z() + top,     HEIGHT-1);
-    for (int x=std::max(X()-range, 0); x<=x_end; ++x)
+    const Xyz my_place(my_x, my_y, Z());
+    for (int x=std::max(my_x-range, 0); x<=x_end; ++x)
     for (int y=y_start; y<=y_end; ++y) {
-        Shred* const shred = world->GetShred(x, y);
+        Shred* const current_shred = world->GetShred(x, y);
         for (int z=bottom; z<=top; ++z) {
-            const int attractive = Attractive(shred->GetBlock(
+            const int attractive = Attractive(current_shred->GetBlock(
                 Shred::CoordInShred(x), Shred::CoordInShred(y), z)->Sub());
-            if ( attractive &&
-                    world->DirectlyVisible(Xyz(X(), Y(), Z()), Xyz(x, y, z)) )
-            {
-                if ( y!=Y() ) for_north += attractive/(Y()-y);
-                if ( x!=X() ) for_west  += attractive/(X()-x);
+            if (attractive && world->DirectlyVisible(my_place, Xyz(x, y, z))) {
+                if ( y!=my_y ) for_north += attractive / (my_y-y);
+                if ( x!=my_x ) for_west  += attractive / (my_x-x);
             }
         }
     }

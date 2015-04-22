@@ -298,18 +298,18 @@ void World::run() {
 }
 
 void World::PhysEvents() {
-    static const int start = NumShreds()/2 - numActiveShreds/2;
-    static const int end   = start + numActiveShreds;
+    static const int shreds_start = NumShreds()/2 - numActiveShreds/2;
+    static const int shreds_end   = shreds_start + numActiveShreds;
     GetLock()->lock();
-    for (int i=start; i<end; ++i)
-    for (int j=start; j<end; ++j) {
+    for (int i=shreds_start; i<shreds_end; ++i)
+    for (int j=shreds_start; j<shreds_end; ++j) {
         shreds[ShredPos(i, j)]->PhysEventsFrequent();
     }
     if ( TIME_STEPS_IN_SEC > timeStep ) {
         ++timeStep;
     } else {
-        for (int i=start; i<end; ++i)
-        for (int j=start; j<end; ++j) {
+        for (int i=shreds_start; i<shreds_end; ++i)
+        for (int j=shreds_start; j<shreds_end; ++j) {
             shreds[ShredPos(i, j)]->PhysEventsRare();
         }
         timeStep = 0;

@@ -48,6 +48,7 @@ X("mouse_on",        mouseOn,      true,  )\
 #define OPTIONS_DECLARE(string, name, ...) bool name;
 
 class Block;
+class Inventory;
 namespace std { class thread; }
 
 class Screen final : public VirtualScreen {
@@ -119,7 +120,8 @@ private:
     /// Has two functions: first - when x == -1 - prints front,
     /// second - otherwise - examines block at position x, y.
     void PrintFront(dirs direction, int x = -1, int y = 0) const;
-    void PrintInv(WINDOW*, const Block*, const class Inventory*) const;
+    void PrintInv(WINDOW*, const Block*, const Inventory*) const;
+    const Inventory* PlayerInventory() const;
     void PrintHud() const;
     void PrintMiniMap() const;
     void PrintQuickInventory() const;
@@ -159,7 +161,7 @@ private:
     void initializeKeyTable();
     static void unknownKeyNotification(int key);
 
-    SCREEN* const screen;
+    SCREEN* const cursesScreen;
     int screenWidth, screenHeight;
     WINDOW* const windows[WIN_COUNT];
     WINDOW* const& actionWin  = windows[WIN_ACTION ];

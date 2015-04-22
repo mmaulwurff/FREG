@@ -167,8 +167,8 @@ push_reaction Block::PushResult(dirs) const {
     return ( AIR==Sub() ) ? ENVIRONMENT : NOT_MOVABLE;
 }
 
-subs  Block::Sub()    const { return static_cast<subs >(sub ); }
-kinds Block::Kind()   const { return static_cast<kinds>(kind); }
+subs  Block::Sub()    const { return static_cast<subs >(substance); }
+kinds Block::Kind()   const { return static_cast<kinds>(blockKind); }
 dirs  Block::GetDir() const { return static_cast<dirs>(direction); }
 
 bool Block::Catchable() const { return false; }
@@ -290,10 +290,10 @@ bool Block::operator==(const Block& block) const {
 void Block::SaveAttributes(QDataStream&) const {}
 
 void Block::SaveToFile(QDataStream& out) {
-    if ( this == BlockFactory::Normal(sub) ) {
+    if ( this == BlockFactory::Normal(substance) ) {
         SaveNormalToFile(out);
     } else {
-        out << sub << kind <<
+        out << substance << blockKind <<
             qint16( ( ( ( durability
             <<= 3 ) |= direction )
             <<= 1 ) |= (noteId != 0) );
@@ -305,30 +305,30 @@ void Block::SaveToFile(QDataStream& out) {
 }
 
 void Block::SaveNormalToFile(QDataStream& out) const {
-    out << quint8( 0x80 | sub );
+    out << quint8( 0x80 | substance );
 }
 
-Block::Block(const kinds kind_, const subs sub_) :
+Block::Block(const kinds kind, const subs sub) :
         noteId(0),
         durability(MAX_DURABILITY),
-        transparent(Transparency(sub_)),
-        kind(kind_),
-        sub(sub_),
+        transparent(Transparency(sub)),
+        blockKind(kind),
+        substance(sub),
         direction(UP)
 {}
 
-Block::Block(QDataStream& str, const kinds kind_, const subs sub_) :
+Block::Block(QDataStream& stream, const kinds kind, const subs sub) :
         noteId(0),
         durability(),
-        transparent(Transparency(sub_)),
-        kind(kind_),
-        sub(sub_),
+        transparent(Transparency(sub)),
+        blockKind(kind),
+        substance(sub),
         direction()
 {
     // use durability as buffer, set actual value in the end:
-    str >> durability;
+    stream >> durability;
     if ( Q_UNLIKELY(durability & 1) ) {
-        str >> noteId;
+        stream >> noteId;
     }
     direction = ( durability >>= 1 ) & 0b0111;
     durability >>= 3;

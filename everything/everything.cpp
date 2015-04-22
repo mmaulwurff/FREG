@@ -41,6 +41,7 @@
 #include "blocks/Teleport.cpp"
 #include "blocks/Weapons.cpp"
 #include "blocks/Text.cpp"
+#include "blocks/Pipe.cpp"
 
 #include "screens/CursedScreen.cpp"
 #include "screens/VirtualScreen.cpp"
@@ -76,5 +77,6 @@
 #include "moc/moc_Teleport.cpp"
 #include "moc/moc_VirtualScreen.cpp"
 #include "moc/moc_World.cpp"
+#include "moc/moc_Pipe.cpp"
 
 #include "res/qrc_resources.cpp"

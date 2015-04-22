@@ -327,7 +327,7 @@ void Screen::ProcessMouse() {
                 static_cast<uint>(mevent.x) < LETTERS_NUMBER ) )
         {
             Notify(tr("Information: left - player, right - focused thing."));
-        } else if ( const Inventory* const inv = player->PlayerInventory() ) {
+        } else if ( const Inventory* const inv = PlayerInventory() ) {
             if ( inv->IsEmpty(mevent.x) ) {
                 Notify(tr("Nothing in inventory at slot '%1'.").
                     arg(char(mevent.x + 'a')));
@@ -355,7 +355,7 @@ void Screen::ProcessMouse() {
         }
         break;
     case WIN_LEFT:
-        if ( player->UsingSelfType() == USAGE_TYPE_OPEN ) {
+        if (player->UsingSelfType() == USAGE_TYPE_OPEN) {
             /// \todo examine inventory contents.
             Notify(tr("Your inventory."));
         } else if ( IsOutWindow(mevent, screenWidth-1, screenHeight-1) ) {
@@ -365,7 +365,7 @@ void Screen::ProcessMouse() {
         }
         break;
     case WIN_RIGHT:
-        if (player->UsingType() == USAGE_TYPE_OPEN ) {
+        if (player->UsingType() == USAGE_TYPE_OPEN) {
             /// \todo examine inventory contents.
             Notify(tr("Opened inventory."));
         } else if ( IsOutWindow(mevent, screenWidth-1, screenHeight-1) ) {
@@ -425,7 +425,7 @@ void Screen::ProcessCommand(const QString command) {
             arg((screenWidth - 2) / 2));
         break;
     case Player::UniqueIntFromString("freechars"): {
-        QByteArray free_characters;
+        QString free_characters;
         for (int i = 32; i < ASCII_SIZE; ++i) {
             if (keyTable[i] == unknownKeyNotification) {
                 free_characters.append(i);
@@ -524,7 +524,7 @@ void Screen::Print() {
         }
         printed_normal = true;
     } else {
-        PrintInv(leftWin, player->GetConstBlock(), player->PlayerInventory());
+        PrintInv(leftWin, player->GetConstBlock(), PlayerInventory());
     }
     updatedHud = true;
     switch ( player->UsingType() ) {
@@ -539,8 +539,8 @@ void Screen::Print() {
         break;
     case USAGE_TYPE_READ_IN_INVENTORY:
         DisplayFile( World::WorldPath() + Str("/texts/") +
-            player->PlayerInventory()->ShowBlock(
-                player->GetUsingInInventory())->GetNote() );
+            PlayerInventory()->ShowBlock(player->GetUsingInInventory())
+                ->GetNote() );
         player->SetUsingTypeNo();
         break;
     case USAGE_TYPE_READ:
@@ -888,19 +888,23 @@ const {
     wrefresh(rightWin);
 } // void Screen::PrintFront(dirs)
 
+const Inventory* Screen::PlayerInventory() const {
+    return player->PlayerInventory();
+}
+
 void Screen::PrintInv(WINDOW* const window,
         const Block* const block, const Inventory* const inv)
 const {
-    if ( Q_UNLIKELY(inv == nullptr) ) {
-        if ( player->UsingType() == USAGE_TYPE_OPEN ) {
+    if (Q_UNLIKELY(inv == nullptr)) {
+        if (player->UsingType() == USAGE_TYPE_OPEN) {
             player->SetUsingTypeNo();
         }
         return;
     }
-    if ( inv == player->PlayerInventory() ) {
-        if ( updatedHud ) return;
+    if (inv == PlayerInventory()) {
+        if (updatedHud) return;
     } else {
-        if ( updatedFront ) return;
+        if (updatedFront) return;
     }
     werase(window);
     const int start = inv->Start();
@@ -909,23 +913,23 @@ const {
         shift += ( start == i && i != 0 );
         wstandend(window);
         mvwprintw(window, 1+i+shift, 1, "%c) ", 'a'+i);
-        const Block* const block = inv->ShowBlock(i);
-        if ( block == nullptr ) {
+        const Block* const block_in = inv->ShowBlock(i);
+        if (block_in == nullptr) {
             wattrset(window, COLOR_PAIR(BLACK_BLACK) | A_BOLD);
             waddstr (window, "   ");
             waddwstr(window, wPrintable(inv->InvFullName(i)));
             continue;
         }
-        PrintBlock(block, window, ' ');
+        PrintBlock(block_in, window, ' ');
         wstandend(window);
         waddch(window, ' ');
         waddwstr(window, wPrintable(inv->InvFullName(i)));
-        if ( Block::MAX_DURABILITY != block->GetDurability() ) {
+        if (Block::MAX_DURABILITY != block_in->GetDurability()) {
             wprintw(window, "{%d}",
-                block->GetDurability() * 100 / Block::MAX_DURABILITY);
+                block_in->GetDurability() * 100 / Block::MAX_DURABILITY);
         }
-        const QString str = block->GetNote();
-        if ( Q_UNLIKELY(not str.isEmpty()) ) {
+        const QString str = block_in->GetNote();
+        if (Q_UNLIKELY(not str.isEmpty())) {
             const int width = screenWidth - getcurx(window) - 3 - 8;
             waddstr(window, " ~:");
             if ( str.length() <= width ) {
@@ -940,13 +944,13 @@ const {
     }
     wattrset(window, Color(block->Kind(), block->Sub()));
     box(window, 0, 0);
-    if ( start != 0 ) {
+    if (start != 0) {
         mvwaddch(window, start+1, 0, ACS_LTEE);
         whline(window, ACS_HLINE, screenWidth-2);
         mvwaddch(window, start+1, screenWidth-1, ACS_RTEE);
     }
     mvwprintw(window, 0, 1, "[%c] ", CharName( block->Kind(), block->Sub()));
-    waddwstr(window, wPrintable( (player->PlayerInventory() == inv) ?
+    waddwstr(window, wPrintable( (PlayerInventory() == inv) ?
         tr("Your inventory") :
         block->FullName() + Str(". ") + block->Description() ));
     const QString full_weight = tr("Full weight: %1 mz").arg(inv->Weight());
@@ -1034,22 +1038,22 @@ void Screen::initializeKeyTable() {
         {{' ', '*'}, [](int) { GetScreen()->player->Jump(); }},
 
         // strafe
-        {{'{'},      [](int) { Player* const player = GetScreen()->player;
-            player->Move(World::TurnLeft(player->GetDir()));
+        {{'{'},      [](int) { Player* const pl = GetScreen()->player;
+            pl->Move(World::TurnLeft(pl->GetDir()));
         }},
-        {{'}'},      [](int) { Player* const player = GetScreen()->player;
-            player->Move(World::TurnRight(player->GetDir()));
+        {{'}'},      [](int) { Player* const pl = GetScreen()->player;
+            pl->Move(World::TurnRight(pl->GetDir()));
         }},
 
         // turning
-        {{'>'},      [](int) { Player* const player = GetScreen()->player;
-            player->SetDir(World::TurnRight(player->GetDir()));
+        {{'>'},      [](int) { Player* const pl = GetScreen()->player;
+            pl->SetDir(World::TurnRight(pl->GetDir()));
         }},
-        {{'<'},      [](int) { Player* const player = GetScreen()->player;
-            player->SetDir(World::TurnLeft(player->GetDir()));
+        {{'<'},      [](int) { Player* const pl = GetScreen()->player;
+            pl->SetDir(World::TurnLeft(pl->GetDir()));
         }},
-        {{'K'},      [](int) { Player* const player = GetScreen()->player;
-            player->SetDir(World::Anti(player->GetDir()));
+        {{'K'},      [](int) { Player* const pl = GetScreen()->player;
+            pl->SetDir(World::Anti(pl->GetDir()));
         }},
 
         {{'V'},      [](int) { GetScreen()->player->SetDir(DOWN); }},
@@ -1076,8 +1080,8 @@ void Screen::initializeKeyTable() {
 
         {{'R'},      [](int) { GetScreen()->RePrint(); }},
 
-        {{'!'},      [](int) { Player* const player = GetScreen()->player;
-            player->SetCreativeMode( not player->GetCreativeMode() );
+        {{'!'},      [](int) { Player* const pl = GetScreen()->player;
+            pl->SetCreativeMode( not pl->GetCreativeMode() );
         }},
 
         {{','},      [](int) { GetScreen()->player->TurnBlockToFace(); }},
@@ -1097,7 +1101,7 @@ void Screen::initializeKeyTable() {
         }},
 
         {{'Z'},      [](int) { Screen* const screen = GetScreen();
-            if ( screen->player->PlayerInventory() ) {
+            if ( screen->PlayerInventory() ) {
                   screen->player->PlayerInventory()->Shake();
                   screen->Notify(tr("Inventory reorganized."));
             }
@@ -1186,9 +1190,9 @@ void Screen::initializeKeyTable() {
 
 Screen* Screen::GetScreen() { return staticScreen; }
 
-Screen::Screen(Player* const player, int&) :
-        VirtualScreen(player),
-        screen(newterm(nullptr, stdout, stdin)),
+Screen::Screen(Player* const controlledPlayer, int&) :
+        VirtualScreen(controlledPlayer),
+        cursesScreen(newterm(nullptr, stdout, stdin)),
         screenWidth((COLS / 2) - ((COLS/2) & 1)),
         screenHeight(LINES - 10),
         windows {
@@ -1283,7 +1287,7 @@ Screen::~Screen() {
 
     std::for_each(ALL(windows), delwin);
     endwin();
-    delscreen(screen);
+    delscreen(cursesScreen);
     settings.setValue(Str("focus_shift" ), shiftFocus);
     settings.setValue(Str("action_mode" ), actionMode);
     settings.setValue(Str("last_command"), previousCommand);

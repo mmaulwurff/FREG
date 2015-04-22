@@ -64,10 +64,10 @@ bool Text::Inscribe(const QString& str) {
 }
 
 void Text::log(const QString& string) const {
-    QFile log(World::WorldPath() + Str("/texts/") +
+    QFile logFile(World::WorldPath() + Str("/texts/") +
         World::GetWorld()->GetNote(noteId));
-    log.open(QIODevice::Append | QIODevice::Text);
-    QTextStream(&log) << string << endl;
+    logFile.open(QIODevice::Append | QIODevice::Text);
+    QTextStream(&logFile) << string << endl;
 }
 
 void Text::Damage(const int damage, const int damage_kind) {

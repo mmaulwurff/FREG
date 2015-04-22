@@ -11,11 +11,13 @@ DEFINES *= QT_USE_QSTRINGBUILDER
 
 #QMAKE_CXXFLAGS_DEBUG += -fno-inline
 QMAKE_CXXFLAGS_RELEASE -= -O2
-QMAKE_CXXFLAGS += -isystem $$(QTDIR)/include/QtCore
-QMAKE_CXXFLAGS += -isystem $$(QTDIR)/include/QtGui
-QMAKE_CXXFLAGS += -std=c++14 -O3
-QMAKE_CXXFLAGS += -Wfloat-equal -Woverloaded-virtual -Wundef -fstrict-enums
-QMAKE_CXXFLAGS += -pedantic -Werror
+QMAKE_CXXFLAGS += \
+    -isystem $$(QTDIR)/include/QtCore -isystem $$(QTDIR)/include/QtGui \
+    -std=c++14 -O3 \
+    -Wfloat-equal -Woverloaded-virtual -Wundef -fstrict-enums -pedantic \
+    -Werror \
+    -Wdisabled-optimization -Wcast-align -Wcast-qual \
+    -Wmissing-include-dirs -Wredundant-decls -Wshadow
 
 !for_coverity {
     QMAKE_CXXFLAGS += -Weffc++
@@ -26,7 +28,7 @@ clang {
     QMAKE_LINK = clang++
 } else {
     QMAKE_CXXFLAGS_RELEASE += -s
-    QMAKE_CXXFLAGS += -Wdouble-promotion
+    QMAKE_CXXFLAGS += -Wdouble-promotion -Wlogical-op
 }
 
 unix {

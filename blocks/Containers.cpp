@@ -202,10 +202,10 @@
             Pull(src);
             if ( src < Start() ) {
                 // remove materials:
-                for (int i=Start(); i<Size(); ++i) {
-                    while ( not IsEmpty(i) ) {
-                        Block* const to_pull = ShowBlock(i);
-                        Pull(i);
+                for (int slot=Start(); slot<Size(); ++slot) {
+                    while ( not IsEmpty(slot) ) {
+                        Block* const to_pull = ShowBlock(slot);
+                        Pull(slot);
                         BlockFactory::DeleteBlock(to_pull);
                     }
                 }
