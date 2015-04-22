@@ -22,6 +22,7 @@
 #include "BlockFactory.h"
 #include "TrManager.h"
 #include "SortedArray.h"
+#include "Shred.h"
 #include <QTextStream>
 #include <QTime>
 
@@ -251,6 +252,14 @@
         }
     }
 
+    void Door::ReceiveSignal(const QString& signal) {
+        if (Block::GetSubGroup(Sub()) == GROUP_METAL &&
+                signal.contains(QChar::fromLatin1('-')))
+        {
+            Use(nullptr);
+        }
+    }
+
     int  Door::ShouldAct() const { return FREQUENT_SECOND; }
     push_reaction Door::PushResult(dirs) const { return movable; }
 
@@ -261,7 +270,13 @@
     }
 
     usage_types Door::Use(Active*) {
-        locked = !locked;
+        if (not (locked = !locked) && GetShred() != nullptr) {
+            World* const world = World::GetWorld();
+            const int my_x = X();
+            const int my_y = Y();
+            world->GetShred(my_x, my_y)->
+                AddFalling(world->GetBlock(my_x, my_y, Z() + 1));
+        }
         return USAGE_TYPE_INNER;
     }
 
@@ -275,12 +290,12 @@
             locked(false)
     {}
 
-    Door::Door(QDataStream& str, const kinds kind, const subs sub) :
-            Active(str, kind, sub),
+    Door::Door(QDataStream& stream, const kinds kind, const subs sub) :
+            Active(stream, kind, sub),
             shifted(),
             locked()
     {
-        str >> shifted >> locked;
+        stream >> shifted >> locked;
     }
 
 // Clock::

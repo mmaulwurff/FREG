@@ -1035,6 +1035,9 @@ void Screen::initializeKeyTable() {
         {{'=', '0'}, [](int) { Screen* const screen = GetScreen();
             screen->MovePlayer(screen->player->GetDir());
         }},
+        {{'\''},     [](int) { Player* const player = GetScreen()->player;
+            player->Move(World::Anti(player->GetDir()));
+        }},
         {{' ', '*'}, [](int) { GetScreen()->player->Jump(); }},
 
         // strafe

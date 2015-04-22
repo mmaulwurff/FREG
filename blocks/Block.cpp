@@ -87,7 +87,7 @@ void Block::Damage(const int dmg, const int dmg_kind) {
         {DAMAGE_NO, DAMAGE_CUT, DAMAGE_NO},                 // WOOD
         {DAMAGE_ANY & ~DAMAGE_TIME & ~DAMAGE_ACID,
             DAMAGE_NO, DAMAGE_NO},                          // DIFFERENT
-        {DAMAGE_NO, DAMAGE_NO, DAMAGE_NO},                  // IRON
+        {DAMAGE_PUSH_ANYWHERE, DAMAGE_NO, DAMAGE_NO},       // IRON
         {DAMAGE_ANY & ~DAMAGE_TIME & ~DAMAGE_HEAT,
             DAMAGE_NO, DAMAGE_NO},                          // WATER
         {DAMAGE_NO, DAMAGE_NO, DAMAGE_ANY},                 // GREENERY

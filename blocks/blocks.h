@@ -114,6 +114,7 @@ public:
     int  ShouldAct() const override;
     void ActFrequent() override;
     void Damage(int dmg, int dmg_kind) override;
+    void ReceiveSignal(const QString&) override;
     QString FullName() const override;
     usage_types Use(Active* who) override;
     push_reaction PushResult(dirs) const override;

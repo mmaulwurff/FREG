@@ -92,8 +92,8 @@ enum dirs {
     SOUTH,  ///< 4
     WEST,   ///< 5
     LAST_DIR = WEST,
-    DIRS_COUNT = LAST_DIR
 };
+const int DIRS_COUNT = LAST_DIR + 1;
 
 enum push_reaction {
     MOVABLE,
