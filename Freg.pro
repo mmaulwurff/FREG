@@ -53,6 +53,11 @@ CONFIG( debug, debug|release ) {
     SOURCES += everything/everything.cpp
 }
 
+#CONFIG += console_only
+CONFIG(console_only) {
+    DEFINES += CONSOLE
+}
+
 TRANSLATIONS = *.ts
 
 RESOURCES = resources.qrc

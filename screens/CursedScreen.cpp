@@ -29,8 +29,10 @@
 #include "blocks/Block.h"
 #include "blocks/Inventory.h"
 
+#ifndef CONSOLE
 #include <QDesktopServices>
 #include <QUrl>
+#endif
 
 #undef getmaxx
 #define getmaxx(something) \
@@ -960,9 +962,20 @@ const {
 } // void Screen::PrintInv(WINDOW*, const Block*, const Inventory*)
 
 void Screen::DisplayFile(const QString path) {
+    #ifdef CONSOLE
+    QFile file(path);
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        Notify(path + Str(":"));
+        QTextStream textStream(&file);
+        for (int i=0; i<NOTIFY_LINES; ++i) {
+            Notify(textStream.readLine());
+        }
+    }
+    #else
     { QFile(path).open(QIODevice::ReadWrite); } // create file if doesn't exist
     QDesktopServices::openUrl(QUrl(Str("file:///") + path));
     Notify(tr("Open ") + path);
+    #endif
 }
 
 void Screen::Notify(const QString str) const {
@@ -1089,10 +1102,12 @@ void Screen::initializeKeyTable() {
 
         {{','},      [](int) { GetScreen()->player->TurnBlockToFace(); }},
 
+        #ifndef CONSOLE
         {{'L'},      [](int) {
             QDesktopServices::openUrl(
                 QUrl(Str("file:///%1log.txt").arg(home_path)));
         }},
+        #endif
 
         {{'['},      [](int) { Screen* const screen = GetScreen();
             screen->SetActionMode((screen->actionMode == ACTION_USE) ?

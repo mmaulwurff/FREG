@@ -28,9 +28,16 @@
 #include <QTime>
 #include <QSettings>
 #include <QLockFile>
-#include <QGuiApplication>
 #include <QCommandLineParser>
 #include "LoadingLineThread.h"
+
+#ifdef CONSOLE
+#include <QCoreApplication>
+typedef QCoreApplication FregApplication;
+#else
+#include <QGuiApplication>
+typedef QGuiApplication FregApplication;
+#endif
 
 #ifdef Q_OS_WIN32
 const QString home_path(QDir::currentPath() + QChar::fromLatin1('/'));
@@ -43,7 +50,7 @@ int main(int argc, char** argv) {
     LoadingLineThread loadLine;
     setlocale(LC_CTYPE, "C-UTF-8");
 
-    QGuiApplication freg(argc, argv);
+    FregApplication freg(argc, argv);
     QCoreApplication::setOrganizationName(Str("freg-team"));
     QCoreApplication::setApplicationName(Str("freg"));
     QCoreApplication::setApplicationVersion(QString::number(VER));

@@ -99,6 +99,7 @@ private:
         ACTIONS_WIDTH  = 23,
         MINIMAP_WIDTH  = 11,
         MINIMAP_HEIGHT =  7,
+        NOTIFY_LINES   =  7,
         AVERAGE_SCREEN_SIZE = 60,
         FRONT_MAX_DISTANCE = SHRED_WIDTH * 2,
     };
