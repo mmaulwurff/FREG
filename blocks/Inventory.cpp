@@ -227,7 +227,9 @@ bool Inventory::MiniCraft(const int num) {
                 static_cast<kinds>(crafted->kind),
                 static_cast<subs >(crafted->sub)), num);
         }
-        ReceiveSignal(QObject::tr("Craft successful."));
+        ReceiveSignal(QObject::tr("Craft successful: %1 (x%2).").
+            arg(ShowBlock(num)->FullName()).
+            arg(crafted->number));
         delete crafted;
         return true;
     } else {

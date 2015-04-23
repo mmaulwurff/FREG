@@ -103,6 +103,7 @@ void Active::Unregister() {
     if ( not IsInside() ) {
         shred->Unregister(this);
         shred = nullptr;
+        World::GetWorld()->RemoveTempShining(this);
     }
 }
 

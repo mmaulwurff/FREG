@@ -111,9 +111,9 @@ void Block::Damage(const int dmg, const int dmg_kind) {
         {DAMAGE_NO, DAMAGE_NO, DAMAGE_NO}                   // SUB_PLASTIC
     };
     const Property& property = properties[Sub()];
-    durability -= bool(dmg_kind & property.destruction) * durability +
-             (1 + bool(dmg_kind & property.vulnerability) * 4) *
-             (not bool(dmg_kind & property.immunity)) * dmg;
+    durability -= bool(dmg_kind &  property.destruction) * durability +
+             (1 + bool(dmg_kind &  property.vulnerability) * 4) *
+                  bool(dmg_kind & ~property.immunity) * dmg;
 } // Block::Damage(const ind dmg, const int dmg_kind)
 
 void Block::TestDamage() {
@@ -158,6 +158,7 @@ Block* Block::DropAfterDamage(bool* const delete_block) {
 
 Block* Block::DropInto(bool* const delete_block) {
     Block* const pile = BlockFactory::NewBlock(BOX, DIFFERENT);
+    Restore();
     pile->HasInventory()->Get(this);
     *delete_block = false;
     return pile;

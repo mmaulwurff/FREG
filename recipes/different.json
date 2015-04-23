@@ -1,33 +1,94 @@
 [
-    {
-        "materials" : [
-            {
-                "number" : 9,
-                "kind" : "weapon",
-                "sub" : "stone"
-            }
-        ],
-        "products" : [
-            {
-                "number" : 1,
-                "kind" : "illuminator",
-                "sub" : "stone"
-            }
-        ]
-    }, {
-        "materials" : [
-            {
-                "number" : 8,
-                "kind" : "block",
-                "sub" : "stone"
-            }
-        ],
-        "products" : [
-            {
-                "number" : 1,
-                "kind" : "converter",
-                "sub" : "stone"
-            }
-        ]
-    }
+
+{
+    "materials"  : [ {
+        "number" : 9,
+        "kind"   : "stick",
+        "sub"    : "stone"
+    } ],
+    "products"   : [ {
+        "number" : 1,
+        "kind"   : "lantern",
+        "sub"    : "stone"
+    } ]
+},
+
+{
+    "materials"  : [ {
+        "number" : 8,
+        "kind"   : "block",
+        "sub"    : "stone"
+    } ],
+    "products"   : [ {
+        "number" : 1,
+        "kind"   : "converter",
+        "sub"    : "stone"
+    } ]
+},
+
+{
+    "materials"  : [ {
+        "number" : 4,
+        "kind"   : "block",
+        "sub"    : "stone"
+    } ],
+    "products"   : [ {
+        "number" : 1,
+        "kind"   : "workbench",
+        "sub"    : "stone"
+    } ]
+},
+
+{
+    "materials"  : [ {
+        "number" : 4,
+        "kind"   : "block",
+        "sub"    : "wood"
+    } ],
+    "products"   : [ {
+        "number" : 1,
+        "kind"   : "workbench",
+        "sub"    : "wood"
+    } ]
+},
+
+{
+    "materials"  : [ {
+        "number" : 1,
+        "kind"   : "block",
+        "sub"    : "stone"
+    } ],
+    "products"   : [ {
+        "number" : 9,
+        "kind"   : "stick",
+        "sub"    : "stone"
+    } ]
+},
+
+{
+    "materials"  : [ {
+        "number" : 2,
+        "kind"   : "stick",
+        "sub"    : "wood"
+    } ],
+    "products"   : [ {
+        "number" : 1,
+        "kind"   : "lantern",
+        "sub"    : "wood"
+    } ]
+},
+
+{
+    "materials"  : [ {
+        "number" : 1,
+        "kind"   : "block",
+        "sub"    : "wood"
+    } ],
+    "products"   : [ {
+        "number" : 9,
+        "kind"   : "stick",
+        "sub"    : "wood"
+    } ]
+}
+
 ]

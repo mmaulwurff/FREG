@@ -74,6 +74,10 @@ qint64 World::Latitude()  const { return latitude; }
 const WorldMap* World::GetMap() const { return map; }
 ShredStorage* World::GetShredStorage() { return shredStorage; }
 
+void World::RemoveTempShining(Active* const active) {
+    tempShiningList.remove(active);
+}
+
 times_of_day World::PartOfDay() const {
     return static_cast<times_of_day>(TimeOfDay() / SECONDS_IN_NIGHT);
 }

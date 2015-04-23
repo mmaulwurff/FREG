@@ -423,8 +423,14 @@ void Player::ProcessGetCommand(QTextStream& command_stream) {
     default:
         kind_code = TrManager::StrToKind(kind);
         if ( kind_code == LAST_KIND ) {
-            Notify(tr("There is no kind \"") + kind + Str("\"."));
-            return;
+            sub_code = TrManager::StrToSub(kind);
+            if (sub_code != LAST_SUB) {
+                kind_code = BLOCK;
+                break;
+            } else {
+                Notify(tr("There is no kind \"") + kind + Str("\"."));
+                return;
+            }
         }
         sub_code = sub.isEmpty() ?
             STONE : TrManager::StrToSub(sub);

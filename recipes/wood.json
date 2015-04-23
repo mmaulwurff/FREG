@@ -1,0 +1,71 @@
+[
+
+{
+    "materials"  : [ {
+        "number" : 1,
+        "kind"   : "stick",
+        "sub"    : "wood"
+    }, {
+        "number" : 1,
+        "kind"   : "block",
+        "sub"    : "stone"
+    } ],
+    "products"   : [ {
+        "number" : 1,
+        "kind"   : "shovel",
+        "sub"    : "stone"
+    } ]
+},
+
+{
+    "materials"  : [ {
+        "number" : 1,
+        "kind"   : "stick",
+        "sub"    : "wood"
+    }, {
+        "number" : 3,
+        "kind"   : "block",
+        "sub"    : "stone"
+    } ],
+    "products"   : [ {
+        "number" : 1,
+        "kind"   : "pick",
+        "sub"    : "stone"
+    } ]
+},
+
+{
+    "materials"  : [ {
+        "number" : 1,
+        "kind"   : "stick",
+        "sub"    : "wood"
+    }, {
+        "number" : 4,
+        "kind"   : "block",
+        "sub"    : "stone"
+    } ],
+    "products"   : [ {
+        "number" : 1,
+        "kind"   : "hammer",
+        "sub"    : "stone"
+    } ]
+},
+
+{
+    "materials"  : [ {
+        "number" : 1,
+        "kind"   : "stick",
+        "sub"    : "wood"
+    }, {
+        "number" : 3,
+        "kind"   : "stick",
+        "sub"    : "stone"
+    } ],
+    "products"   : [ {
+        "number" : 1,
+        "kind"   : "axe",
+        "sub"    : "stone"
+    } ]
+}
+
+]

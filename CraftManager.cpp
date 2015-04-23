@@ -23,6 +23,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QDebug>
 #include <QFile>
 
 // CraftItem section
@@ -58,9 +59,19 @@ bool CraftList::operator==(const CraftList& compared) const {
 void CraftList::LoadItems(const QJsonArray& array) {
     for (const QJsonValue& value : array) {
         const QJsonObject item = value.toObject();
-        items.append( new CraftItem{item[Str("number")].toInt(),
-                TrManager::StrToKind(item[Str("kind")].toString()),
-                TrManager::StrToSub (item[Str("sub")].toString())});
+        const kinds kind = TrManager::StrToKind(item[Str("kind")].toString());
+        if (kind == LAST_KIND) {
+            qDebug() << Str("Unknown kind in recipe: ")
+                + item[Str("kind")].toString();
+            continue;
+        }
+        const subs sub = TrManager::StrToSub(item[Str("sub")].toString());
+        if (sub == LAST_SUB) {
+            qDebug() << Str("Unknown substance in recipe: ")
+                + item[Str("sub")].toString();
+            continue;
+        }
+        items.append( new CraftItem{item[Str("number")].toInt(), kind, sub});
     }
 }
 
@@ -89,7 +100,7 @@ CraftManager::CraftManager() : recipesList() {
     craftManager = this;
 
     for (int sub=0; sub<SUB_COUNT; ++sub) {
-        QFile file(Str(":/recipes/%1.json").arg(TrManager::SubToString(sub)));
+        QFile file(Str("recipes/%1.json").arg(TrManager::SubToString(sub)));
         if ( not file.open(QIODevice::ReadOnly | QIODevice::Text) ) continue;
         const QJsonArray recipes =
             QJsonDocument::fromJson(file.readAll()).array();
