@@ -24,12 +24,13 @@
 #include "BlockFactory.h"
 #include "TrManager.h"
 #include "screens/CursedScreen.h"
+#include "LoadingLineThread.h"
+
 #include <QDir>
 #include <QTime>
 #include <QSettings>
 #include <QLockFile>
 #include <QCommandLineParser>
-#include "LoadingLineThread.h"
 
 #ifdef CONSOLE
 #include <QCoreApplication>

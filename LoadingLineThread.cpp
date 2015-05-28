@@ -21,7 +21,7 @@
 
 LoadingLineThread::LoadingLineThread() :
     running(true),
-    thread([this]() {
+    thread([this] {
         unsigned c = 0;
         while (running) {
             putchar((c & 0b0111111) + '0');
@@ -38,4 +38,3 @@ void LoadingLineThread::stop() {
     running = false;
     thread.join();
 }
-

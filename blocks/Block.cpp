@@ -23,6 +23,7 @@
 #include "Inventory.h"
 #include "TrManager.h"
 #include <QDataStream>
+#include <memory>
 
 #define TEST_DAMAGE 0
 #if TEST_DAMAGE == 1
@@ -55,7 +56,7 @@ QString Block::FullName() const {
         arg(TrManager::SubName(Sub()));
 }
 
-int Block::Transparency(const int sub) {
+constexpr int Block::Transparency(const int sub) {
     switch ( sub ) {
     default:    return BLOCK_OPAQUE;
     case WATER:
@@ -132,11 +133,10 @@ void Block::TestDamage() {
     for (int sub=0; sub<SUB_COUNT; ++sub) {
         stream << TrManager::SubName(sub) << ";";
         for (int damage_kind=1; damage_kind<=DAMAGE_PUSH_UP; damage_kind<<=1) {
-            Block* const block =
-                BlockFactory::NewBlock(BLOCK, static_cast<subs>(sub));
+            std::unique_ptr<Block> block(
+                BlockFactory::NewBlock(BLOCK, static_cast<subs>(sub)));
             block->Damage(1, damage_kind);
             stream << MAX_DURABILITY - block->GetDurability() << ";";
-            delete block;
         }
         stream << endl;
     }
@@ -258,27 +258,6 @@ int Block::Weight() const {
 }
 
 void Block::SetDir(const int dir) { direction = dir; }
-
-sub_groups Block::GetSubGroup(const int sub) {
-    switch ( sub ) {
-    default:     return GROUP_NONE;
-    case AIR:
-    case STAR:   return GROUP_AIR;
-
-    case H_MEAT:
-    case A_MEAT: return GROUP_MEAT;
-
-    case STONE:
-    case DIAMOND:
-    case WOOD:
-    case BONE:   return GROUP_HANDY;
-
-    case IRON:
-    case GOLD:
-    case ADAMANTINE:
-    case STEEL:  return GROUP_METAL;
-    }
-}
 
 bool Block::operator==(const Block& block) const {
     return ( block.Kind() == Kind()

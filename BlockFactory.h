@@ -49,6 +49,7 @@ public:
 
     /// Use this to receive a pointer to normal block.
     static Block* Normal(int sub);
+    static const Block* ConstNormal(int sub);
 
     /// Use this to receive a pointer to new not-normal block.
     static Block* NewBlock(kinds kind, subs sub);
@@ -71,8 +72,8 @@ public:
         return (kind << 6) | sub;
     }
 
-    static int KindFromId(const int id) { return (id >>   8); }
-    static int SubFromId (const int id) { return (id & 0xff); }
+    constexpr static int KindFromId(const int id) { return (id >>   8); }
+    constexpr static int SubFromId (const int id) { return (id & 0xff); }
 
     static Inventory* Block2Inventory(Block*);
 
@@ -86,7 +87,7 @@ private:
      * If pair is not valid, it doesn't mean that such block cannot exist.
      * @return kind-sub pair is valid.
      */
-    static bool IsValid(kinds, subs);
+    static constexpr bool IsValid(kinds, subs);
 
     Block* const normals[SUB_COUNT];
 

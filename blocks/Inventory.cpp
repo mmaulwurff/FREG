@@ -176,7 +176,7 @@ kinds Inventory::GetInvKind(const int i) const {
 
 int Inventory::Weight() const {
     return std::accumulate(inventory, inventory + Size(), 0,
-        [](const int sum, const QStack<Block*>& slot) {
+        [](const int sum, const auto& slot) {
             return sum + GetSlotWeight(slot);
     });
 }
@@ -195,7 +195,7 @@ Block* Inventory::ShowBlock(const int slot) const {
 
 bool Inventory::IsEmpty() const {
     return std::all_of(inventory + Start(), inventory + Size(),
-        [](const QStack<Block*>& slot) { return slot.isEmpty(); });
+        [](const auto& slot) { return slot.isEmpty(); });
 }
 
 bool Inventory::IsEmpty(const int i) const { return inventory[i].isEmpty(); }
@@ -270,8 +270,8 @@ Inventory::Inventory(QDataStream& str, const int sz) :
 }
 
 Inventory::~Inventory() {
-    std::for_each(inventory, inventory+Size(), [](const QStack<Block*>& inv) {
-        std::for_each(ALL(inv), [](Block* const block) {
+    std::for_each(inventory, inventory+Size(), [](const auto& inv) {
+        std::for_each(ALL(inv), [](const auto block) {
             BlockFactory::DeleteBlock(block);
         });
     });

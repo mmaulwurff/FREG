@@ -23,11 +23,12 @@
 
 int Shred::NormalUnderground(const int depth, const subs sub) {
     NormalCube(0,0,1, SHRED_WIDTH,SHRED_WIDTH,HEIGHT/2-depth-5, STONE);
-    Block* const block = BlockFactory::Normal(sub);
-    Block* const stone = BlockFactory::Normal(STONE);
-    FOR_ALL_SHRED_AREA(x, y) {
-        PutBlock( ((qrand() % 2) ? stone : block), x, y, HEIGHT/2-depth-6);
-    }
+    forAllShredArea([depth, this,
+                     block = BlockFactory::Normal(sub),
+                     stone = BlockFactory::Normal(STONE)] P(const int, x, y)
+    {
+        PutBlock(((qrand() % 2) ? stone : block), x, y, HEIGHT/2-depth-6);
+    });
     NormalCube(0,0,HEIGHT/2-depth-5, SHRED_WIDTH,SHRED_WIDTH,6, sub);
     return HEIGHT/2;
 }
@@ -89,8 +90,9 @@ void Shred::Water(const subs sub) {
     if ( type != shred_types.To(TO_WEST) ) {
         NormalCube(0,0,z_start, 1,SHRED_WIDTH,depth, shore);
     }
-    Block* const air = BlockFactory::Normal(AIR);
-    FOR_ALL_SHRED_AREA(i, j) {
+    forAllShredArea([this, z_start, shore, sub,
+                     air = BlockFactory::Normal(AIR)] P(const int, i, j)
+    {
         Block** const pos = blocks[i][j];
         for (Block** block=pos+z_start; block<=pos+HEIGHT/2; ++block) {
             if ( shore != (*block)->Sub() ) {
@@ -101,13 +103,13 @@ void Shred::Water(const subs sub) {
                 }
             }
         }
-    }
+    });
 }
 
 void Shred::Hill(const bool dead) {
     NormalUnderground();
-    Block* const soil = BlockFactory::Normal(SOIL);
-    FOR_ALL_SHRED_AREA(x, y) {
+    forAllShredArea([this, soil = BlockFactory::Normal(SOIL)]P(const int, x, y)
+    {
         for (int z=SHRED_WIDTH/2-2; z--; ) {
             if ( z <= -abs(x-SHRED_WIDTH/2) + SHRED_WIDTH/2-2 ) {
                 PutBlock(soil, x, y, z+HEIGHT/2); // north-south '^'
@@ -116,7 +118,7 @@ void Shred::Hill(const bool dead) {
                 PutBlock(soil, x, y, z+HEIGHT/2); // east-west '^'
             }
         }
-    }
+    });
     RandomDrop(qrand() % 4, WEAPON, STONE);
     if ( not dead ) {
         int rand = qrand();

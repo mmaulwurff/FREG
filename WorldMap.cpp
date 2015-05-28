@@ -19,9 +19,11 @@
 
 #include "WorldMap.h"
 #include "header.h"
+
 #include <QSettings>
 #include <QString>
 #include <QFile>
+#include <cmath>
 
 #define UNDERGROUND_ONLY false
 
@@ -92,7 +94,7 @@ qint64 WorldMap::GetSize() const { return mapSize; }
 qint64 WorldMap::GetSpawnLongitude() const { return spawnLongitude; }
 qint64 WorldMap::GetSpawnLatitude()  const { return spawnLatitude;  }
 
-char WorldMap::TypeOfShred(const qint64 longi, const qint64 lati) const {
+char WorldMap::TypeOfShred P(const qint64, longi, lati) const {
     return UNDERGROUND_ONLY ?
         SHRED_UNDERGROUND :
         static_cast<shred_type>((longi > mapSize || longi <= 0 ||
@@ -101,17 +103,17 @@ char WorldMap::TypeOfShred(const qint64 longi, const qint64 lati) const {
             map[(longi-1)*mapSize + lati - 1]);
 }
 
-float WorldMap::Deg(const int x, const int y, const int size) {
+float WorldMap::Deg P3(const int, x, y, size) {
     const float PI = 3.141592f;
     return (std::atan2(y-size / 2.f, x-size / 2.f) + PI) * 360 / 2 / PI;
 }
 
-float WorldMap::R(const int x, const int y, const int size) {
-    return sqrtf( (x-size/2.f)*(x-size/2.f) + (y-size/2.f)*(y-size/2.f) );
+float WorldMap::R P3(const int, x, y, size) {
+    return std::hypot(x - size/2.f, y - size/2.f);
 }
 
 void WorldMap::Circle(const int min_rad, const int max_rad,
-        const char ch, const int size, char * const map)
+        const char ch, std::vector<char>& map)
 {
     Q_ASSERT(min_rad < max_rad);
     float max[360] = { float(qrand()%(max_rad - min_rad) + min_rad) };
@@ -121,9 +123,10 @@ void WorldMap::Circle(const int min_rad, const int max_rad,
             qBound(float(min_rad),
                 max[x-1]+(qrand()%400-200)/200.f, float(max_rad));
     }
+    const int size = map.size();
     for (int y=0; y<size; ++y)
     for (int x=0; x<size; ++x) {
-        if ( R(x, y, size) < max[qRound(Deg(x, y, size))] ) {
+        if ( R(x, y, size) < max[int(round(Deg(x, y, size)))] ) {
             map[x*size+y] = ch;
         }
     }
@@ -137,15 +140,14 @@ void WorldMap::GenerateMap(const QString& world_name,
     }
     size = std::max(10, size);
 
-    char* const map = new char[size * size];
-    memset(map, outer, size*size);
+    std::vector<char> map(size * size, outer);
 
     const float min_rad = size / 3.0f;
     const float max_rad = size / 2.0f;
-    Circle(min_rad,   max_rad,     SHRED_WASTE,       size, map);
-    Circle(min_rad/2, max_rad/2,   SHRED_DEAD_FOREST, size, map);
-    Circle(min_rad/3, max_rad/3+1, SHRED_DEAD_HILL,   size, map);
-    Circle(min_rad/4, max_rad/4+1, SHRED_MOUNTAIN,    size, map);
+    Circle(min_rad,   max_rad,     SHRED_WASTE,       map);
+    Circle(min_rad/2, max_rad/2,   SHRED_DEAD_FOREST, map);
+    Circle(min_rad/3, max_rad/3+1, SHRED_DEAD_HILL,   map);
+    Circle(min_rad/4, max_rad/4+1, SHRED_MOUNTAIN,    map);
 
     int lakes_number = (qrand() % size) + 5;
     while ( lakes_number-- ) {
@@ -172,7 +174,7 @@ void WorldMap::GenerateMap(const QString& world_name,
 
     qint64 spawn_longitude, spawn_latitude;
     MakeAndSaveSpawn(world_name, size, &spawn_longitude, &spawn_latitude);
-    PieceOfEden(spawn_latitude-1, spawn_longitude-1, map, size);
+    PieceOfEden(spawn_latitude-1, spawn_longitude-1, map);
 
     QFile file(home_path + world_name + Str("/map.txt"));
     if ( file.open(QIODevice::WriteOnly) ) {
@@ -181,28 +183,29 @@ void WorldMap::GenerateMap(const QString& world_name,
             file.putChar(map[x*size+y]);
         }
     }
-    delete [] map;
 
     QSettings(home_path + world_name + Str("/map.ini"), QSettings::IniFormat).
         setValue(Str("map_size"), size);
 }
 
 void WorldMap::PieceOfEden(const qint64 x, const qint64 y,
-        char * const map, const size_t size)
+        std::vector<char>& map)
 {
     const int EDEN_SIZE = 8;
+    const int size = map.size();
     if ( (x+EDEN_SIZE-1)*size + y+EDEN_SIZE-1 > size*size) return;
-    const char eden[] = {
-        "^~~~~~~^"
-        "~~%%%%~~"
-        "~%%%%%%~"
-        "~%%++%%~"
-        "~%%+C%%~"
-        "~%%%%%%~"
-        "~~%%%%~~"
+    const char eden[EDEN_SIZE][EDEN_SIZE + 1] = {
+        "^~~~~~~^",
+        "~~%%%%~~",
+        "~%%%%%%~",
+        "~%%++%%~",
+        "~%%+C%%~",
+        "~%%%%%%~",
+        "~~%%%%~~",
         "^~~~~~~^"
     };
+    for (int i=0; i<EDEN_SIZE; ++i)
     for (int j=0; j<EDEN_SIZE; ++j) {
-        memcpy(map + (x+j-1) * size + y - 1, eden + j*EDEN_SIZE, EDEN_SIZE);
+        map[(i + y)*EDEN_SIZE + j + x] = eden[i][j];
     }
 }

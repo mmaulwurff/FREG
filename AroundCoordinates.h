@@ -66,7 +66,15 @@ public:
 
 private:
     int step;
-    static const XyzInt shifts[6];
+    static constexpr XyzInt shifts[6] = {
+        { 0,  0,  1},
+        { 0,  0, -2},
+        {-1,  0,  1},
+        { 2,  0,  0},
+        {-1, -1,  0},
+        { 0,  2,  0}
+    };
+
 };
 
 #endif // AROUND_COORDINATES_H

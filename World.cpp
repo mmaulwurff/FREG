@@ -27,10 +27,12 @@
 #include "WaysTree.h"
 #include "VisionRay.h"
 #include "LoadingLineThread.h"
+
 #include <QDir>
 #include <QMutexLocker>
 #include <QTimer>
 #include <QSettings>
+#include <memory>
 
 #define GET_SHRED_XY(shred, x_out, y_out, x_in, y_in) \
 Shred* const shred = GetShred(x_out, y_out);\
@@ -289,16 +291,15 @@ void World::SetReloadShreds(const int direction) {
 }
 
 void World::run() {
-    timer = new QTimer;
+    std::unique_ptr<QTimer> timer(new QTimer);
     timer->setInterval(1000 / TIME_STEPS_IN_SEC);
-    connect(timer, &QTimer::timeout, this, &World::PhysEvents);
-    connect(this, &World::Pause, timer, &QTimer::stop);
-    connect(this, &World::Start, timer,
+    connect(timer.get(), &QTimer::timeout, this, &World::PhysEvents);
+    connect(this, &World::Pause, timer.get(), &QTimer::stop);
+    connect(this, &World::Start, timer.get(),
         static_cast<void (QTimer::*)()>(&QTimer::start));
 
     timer->start();
     exec();
-    delete timer;
 }
 
 void World::PhysEvents() {
@@ -602,7 +603,7 @@ int World::CorrectNumShreds(int num) {
 
 int World::CorrectNumActiveShreds(int num, const int num_shreds) {
     num += ( (num & 1) == 0 ); // make odd
-    return qBound(3, num, num_shreds);
+    return mBound(3, num, num_shreds);
 }
 
 World* World::world = nullptr;
@@ -624,7 +625,6 @@ World::World(const QString& world_name, bool* const error) :
         newX(), newY(), newZ(),
         newWorld(),
         toResetDir(UP),
-        timer(nullptr),
         shredStorage(),
         notes(),
         tempShiningList(),

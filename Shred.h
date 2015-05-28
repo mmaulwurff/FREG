@@ -23,12 +23,8 @@
 #include "Weather.h"
 #include "header.h"
 #include <forward_list>
+#include <functional>
 #include <QLinkedList>
-
-/// Cycles over all shred area.
-#define FOR_ALL_SHRED_AREA(x, y) \
-for (int x = SHRED_WIDTH; x--; ) \
-for (int y = SHRED_WIDTH; y--; )
 
 class Block;
 class Active;
@@ -173,6 +169,8 @@ private:
     ///&}
 
     void RainBlock(int* kind, int* sub) const;
+
+    static void forAllShredArea(std::function<void(int x, int y)>);
 
     Block*  blocks[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
     uchar lightMap[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];

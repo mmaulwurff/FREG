@@ -25,10 +25,10 @@
 template<typename T>
 class TemplateXyz {
 public:
-    TemplateXyz(const int x, const int y, const int z) :
+    constexpr TemplateXyz(const int x, const int y, const int z) :
             x_self(x), y_self(y), z_self(z)
     {}
-    TemplateXyz() : x_self(), y_self(), z_self() {}
+    constexpr TemplateXyz() : x_self(), y_self(), z_self() {}
 
     int X() const { return x_self; }
     int Y() const { return y_self; }

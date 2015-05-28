@@ -63,14 +63,7 @@ LazyAroundCoordinates::LazyAroundCoordinates(const_int(x, y, z)) :
     step(-1)
 {}
 
-const XyzInt LazyAroundCoordinates::shifts[] = {
-    { 0,  0,  1},
-    { 0,  0, -2},
-    {-1,  0,  1},
-    { 2,  0,  0},
-    {-1, -1,  0},
-    { 0,  2,  0}
-};
+constexpr XyzInt LazyAroundCoordinates::shifts[6];
 
 const XyzInt *LazyAroundCoordinates::getNext() {
     ++step;

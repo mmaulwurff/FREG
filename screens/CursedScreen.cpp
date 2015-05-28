@@ -229,7 +229,7 @@ void Screen::MovePlayer(const dirs dir) const {
     }
 }
 
-void Screen::MovePlayerDiagonal(const dirs dir1, const dirs dir2) const {
+void Screen::MovePlayerDiagonal P(const dirs, dir1, dir2) const {
     player->SetDir(dir1);
     static bool step_trigger = true;
     player->Move(step_trigger ? dir1 : dir2);
@@ -471,7 +471,7 @@ void Screen::InventoryAction(const int num) const {
     }
 }
 
-void Screen::ActionXyz(int* const x, int* const y, int* const z) const {
+void Screen::ActionXyz P3(int* const, x, y, z) const {
     VirtualScreen::ActionXyz(x, y, z);
     if ( player->GetDir() > DOWN &&
             ( AIR == World::GetConstWorld()->GetBlock(*x, *y, *z)->Sub() ||
@@ -712,12 +712,12 @@ void Screen::PrintMiniMap() const {
 }
 
 int Screen::GetNormalStartX() const {
-    return qBound(0, player->X() - screenWidth/4 + 1,
+    return mBound(0, player->X() - screenWidth/4 + 1,
         World::GetBound() - screenWidth/2 - 1);
 }
 
 int Screen::GetNormalStartY() const {
-    return qBound(0, player->Y() - screenHeight/2 + 1,
+    return mBound(0, player->Y() - screenHeight/2 + 1,
         World::GetBound() - screenHeight - 1);
 }
 
@@ -780,7 +780,7 @@ void Screen::DrawBorder(WINDOW* const window) {
 }
 
 int Screen::GetFrontStartZ() const {
-    return qBound(screenHeight-3, player->Z()+screenHeight/2, HEIGHT-1);
+    return mBound(screenHeight-3, player->Z()+screenHeight/2, HEIGHT-1);
 }
 
 void Screen::PrintFront(const dirs dir, const int block_x, const int block_y)
@@ -807,7 +807,7 @@ const {
     case EAST:
         x = &j;
         x_step  = 1;
-        x_start = qBound(0, player->Y() - screenWidth/4 - 1,
+        x_start = mBound(0, player->Y() - screenWidth/4 - 1,
             bound - screenWidth/2 - 1);
         x_end   = screenWidth/2 - 1 + x_start;
         z = &i;
@@ -830,7 +830,7 @@ const {
     case WEST:
         x = &j;
         x_step  = -1;
-        x_end   = qBound(0, player->Y() - screenWidth/4 - 1,
+        x_end   = mBound(0, player->Y() - screenWidth/4 - 1,
             World::GetBound() - screenWidth/2 - 1) - 1;
         x_start = screenWidth/2 - 1 + x_end;
         z = &i;
@@ -1286,7 +1286,7 @@ Screen::Screen(Player* const controlledPlayer, int&) :
     Notify(tr("--- Game started. Press 'H' for help. ---"));
 
     initializeKeyTable();
-    inputThread = new std::thread([&]() {
+    inputThread = new std::thread([&] {
         while ( inputThreadIsRunning ) {
             ControlPlayer();
         }

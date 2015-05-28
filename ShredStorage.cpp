@@ -33,7 +33,7 @@ ShredStorage::ShredStorage(const int size_,
         storage(),
         size(size_),
         emptyWriteBuffers(),
-        preloadThread(new std::thread([](){})) // stub, so always joinable.
+        preloadThread(new std::thread([]{})) // stub, so always joinable.
 {
     storage.reserve(size*size);
     emptyWriteBuffers.reserve(size*size);
@@ -80,7 +80,7 @@ void ShredStorage::Shift(const int direction,
         direction, longitude_center, latitude_center);
 }
 
-QByteArray* ShredStorage::GetShredData(const qint64 longi, const qint64 lati) {
+QByteArray* ShredStorage::GetShredData P(const qint64, longi, lati) {
     return storage.take(LongLat{longi, lati});
 }
 
@@ -90,7 +90,7 @@ void ShredStorage::SetShredData(QByteArray* const data,
     storage.insert(LongLat{longi, lati}, data);
 }
 
-void ShredStorage::AddShred(const qint64 longitude, const qint64 latitude) {
+void ShredStorage::AddShred P(const qint64, longitude, latitude) {
     QFile file(Shred::FileName(longitude, latitude));
     QByteArray* byteArray;
     if ( file.open(QIODevice::ReadOnly) ) {
@@ -102,7 +102,7 @@ void ShredStorage::AddShred(const qint64 longitude, const qint64 latitude) {
     storage.insert(LongLat{longitude, latitude}, byteArray);
 }
 
-void ShredStorage::WriteShred(const qint64 longi, const qint64 lati) const {
+void ShredStorage::WriteShred P(const qint64, longi, lati) const {
     QByteArray* const data = storage.value(LongLat{longi, lati});
     if ( data ) {
         QFile file(Shred::FileName(longi, lati));
@@ -113,7 +113,7 @@ void ShredStorage::WriteShred(const qint64 longi, const qint64 lati) const {
     }
 }
 
-void ShredStorage::Remove(const qint64 longi, const qint64 lati) {
+void ShredStorage::Remove P(const qint64, longi, lati) {
     storage.remove(LongLat{longi, lati});
 }
 

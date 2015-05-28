@@ -84,7 +84,7 @@ Xyz VisionRay::getCoordinateSecond() const {
 }
 
 PreCalculatedVisionRays::PreCalculatedVisionRays() {
-    const Xyz center(RADIUS, RADIUS, RADIUS);
+    constexpr Xyz center(RADIUS, RADIUS, RADIUS);
     for (int i=0; i<TABLE_SIZE-1; ++i)
     for (int j=0; j<TABLE_SIZE-1; ++j)
     for (int k=0; k<TABLE_SIZE-1; ++k) {

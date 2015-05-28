@@ -25,6 +25,8 @@
 #include <QThread>
 #include <QMutex>
 #include <QHash>
+#include <algorithm>
+#include <type_traits>
 
 class Block;
 class Shred;
@@ -284,7 +286,6 @@ private:
     QString newWorld;
     /// UP for no reset, DOWN for full reset, N-S-E-W for side shift.
     volatile dirs toResetDir;
-    class QTimer* timer;
 
     class ShredStorage* shredStorage;
     QList<QString> notes;
@@ -296,5 +297,11 @@ private:
 
     static World* world;
 };
+
+template<typename T>
+constexpr T mBound(const T lower, const T n, const T upper) {
+    static_assert(std::is_arithmetic<T>::value, "should be ariphmetic.");
+    return std::max(std::min(n, upper), lower);
+}
 
 #endif // WORLD_H

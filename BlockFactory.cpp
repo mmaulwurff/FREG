@@ -77,6 +77,8 @@ Block* BlockFactory::Normal(const int sub) {
     return blockFactory->normals[sub];
 }
 
+const Block* BlockFactory::ConstNormal(const int sub) { return Normal(sub); }
+
 Block* BlockFactory::BlockFromFile(QDataStream& str,
         const kinds kind, const subs sub)
 {
@@ -120,7 +122,7 @@ Block* BlockFactory::ReplaceWithNormal(Block* const block) {
     }
 }
 
-bool BlockFactory::IsValid(const kinds kind, const subs sub) {
+constexpr bool BlockFactory::IsValid(const kinds kind, const subs sub) {
     const sub_groups group = Block::GetSubGroup(sub);
     switch ( kind ) {
     case BLOCK:     return true;

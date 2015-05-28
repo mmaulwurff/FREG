@@ -21,6 +21,7 @@
 #define WORLD_MAP_H
 
 #include <QtGlobal>
+#include <vector>
 
 class QString;
 
@@ -47,8 +48,9 @@ private:
 
     static float Deg(int x, int y, int size);
     static float R  (int x, int y, int size);
-    static void Circle(int min_rad, int max_rad, char ch, int size, char* map);
-    static void PieceOfEden(qint64 x, qint64 y, char* map, size_t map_size);
+    static void Circle(int min_rad, int max_rad, char ch,
+            std::vector<char>& map);
+    static void PieceOfEden(qint64 x, qint64 y, std::vector<char>& map);
     static void MakeAndSaveSpawn(const QString& world_name, int size,
             qint64* longitude, qint64* latitude);
 
