@@ -303,7 +303,7 @@
         if ( who ) {
             who->ReceiveSignal( (GetNote().left(4) == Str("real")) ?
                 tr("Outer time is %1.").arg(QTime::currentTime().toString()) :
-                World::GetConstWorld()->TimeOfDayStr() );
+                World::GetCWorld()->TimeOfDayStr() );
         } else {
             SendSignalAround(GetNote());
         }
@@ -328,7 +328,7 @@
     wearable Clock::Wearable() const { return WEARABLE_OTHER; }
 
     inner_actions Clock::ActInner() {
-        const World* const world = World::GetConstWorld();
+        const World* const world = World::GetCWorld();
         const int current_time = world->TimeOfDay();
         int notify_flag = 1;
         if ( alarmTime == current_time ) {

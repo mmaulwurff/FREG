@@ -42,7 +42,7 @@ const int y_in = Shred::CoordInShred(y_out);\
 const int World::MIN_WORLD_SIZE = 5;
 
 World* World::GetWorld() { return world; }
-const World* World::GetConstWorld() { return world; }
+const World* World::GetCWorld() { return world; }
 
 bool World::ShredInCentralZone(const qint64 longi, const qint64  lati) const {
     return ( labs(longi - longitude) <= 1 ) && ( labs(lati - latitude) <= 1 );
@@ -134,7 +134,7 @@ bool World::InBounds(const_int(x, y, z)) const {
 }
 
 int World::GetBound() {
-    static const int bound = World::GetConstWorld()->NumShreds()*SHRED_WIDTH-1;
+    static const int bound = World::GetCWorld()->NumShreds() * SHRED_WIDTH - 1;
     return bound;
 }
 

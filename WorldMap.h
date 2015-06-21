@@ -20,15 +20,16 @@
 #ifndef WORLD_MAP_H
 #define WORLD_MAP_H
 
-#include <QtGlobal>
 #include <vector>
 
+#include <QtGlobal>
+
 class QString;
+class QByteArray;
 
 class WorldMap final {
 public:
     explicit WorldMap(const QString& worldName);
-    ~WorldMap();
 
     char TypeOfShred(qint64 longitude, qint64 latitude) const;
     static void GenerateMap(
@@ -36,7 +37,10 @@ public:
             int size,
             char outer,
             int seed);
-    qint64 GetSize() const;
+
+    qint64 GetWidth(qint64 longitude) const;
+    qint64 GetHeight() const;
+
     qint64 GetSpawnLongitude() const;
     qint64 GetSpawnLatitude()  const;
     static qint64 GetSpawnCoordinate(int size);
@@ -49,13 +53,12 @@ private:
     static float Deg(int x, int y, int size);
     static float R  (int x, int y, int size);
     static void Circle(int min_rad, int max_rad, char ch,
-            std::vector<char>& map);
-    static void PieceOfEden(qint64 x, qint64 y, std::vector<char>& map);
-    static void MakeAndSaveSpawn(const QString& world_name, int size,
-            qint64* longitude, qint64* latitude);
+            std::vector<QByteArray>& map);
+    static void PieceOfEden(qint64 x, qint64 y, std::vector<QByteArray>& map);
+    static void MakeAndSaveSpawn(const QString& world_name,
+            int width, int height, qint64* longitude, qint64* latitude);
 
-    int mapSize;
-    char* map;
+    std::vector<QByteArray> map;
     qint64 spawnLongitude, spawnLatitude;
     char defaultShred, outerShred;
 };

@@ -47,8 +47,8 @@ public:
 ///\name Static information section
 ///@{
     static World* GetWorld();
-    static const World* GetConstWorld();
-    static QString WorldName() { return GetConstWorld()->worldName; }
+    static const World* GetCWorld();
+    static QString WorldName() { return GetCWorld()->worldName; }
     static QString WorldPath() { return home_path + WorldName(); }
 
     static dirs TurnRight(dirs dir);

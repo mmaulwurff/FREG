@@ -107,7 +107,7 @@ Shred::Shred(const int shred_x, const int shred_y,
         memcpy(blocks[x][y], pattern, sizeof(Block*) * HEIGHT);
     });
     type = static_cast<shred_type>(
-        World::GetConstWorld()->GetMap()->TypeOfShred(longi, lati) );
+        World::GetCWorld()->GetMap()->TypeOfShred(longi, lati) );
     switch ( type ) {
     case SHRED_WASTE:       WasteShred(); break;
     case SHRED_WATER:       Water();      break;
@@ -693,7 +693,7 @@ AroundShredTypes::AroundShredTypes P(const qint64, longitude, latitude) :
     int position = 0;
     for (qint64 i=longitude-1; i<=longitude+1; ++i)
     for (qint64 j=latitude -1; j<=latitude +1; ++j) {
-        types[position++] = World::GetConstWorld()->GetMap()->TypeOfShred(i,j);
+        types[position++] = World::GetCWorld()->GetMap()->TypeOfShred(i, j);
     }
 }
 

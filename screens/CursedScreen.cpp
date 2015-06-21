@@ -302,7 +302,7 @@ void Screen::ControlPlayer(const int ch) {
 } // void Screen::ControlPlayer(int ch)
 
 void Screen::ExamineOnNormalScreen(int x, int y, int z, const int step) const {
-    const World* const world = World::GetConstWorld();
+    const World* const world = World::GetCWorld();
     x = (x-1)/2 + GetNormalStartX();
     y =  y-1    + GetNormalStartY();
     for ( ; world->GetBlock(x, y, z)->Transparent() == INVISIBLE; z += step);
@@ -346,7 +346,7 @@ void Screen::ProcessMouse() {
         } else {
             const int shred_x = mevent.x/2 + GetMinimapStartX();
             const int shred_y = mevent.y-1 + GetMinimapStartY();
-            const World* const world = World::GetConstWorld();
+            const World* const world = World::GetCWorld();
             const unsigned num_shreds = world->NumShreds();
             Notify( (static_cast<uint>(shred_x) < num_shreds &&
                      static_cast<uint>(shred_y) < num_shreds ) ?
@@ -474,8 +474,8 @@ void Screen::InventoryAction(const int num) const {
 void Screen::ActionXyz P3(int* const, x, y, z) const {
     VirtualScreen::ActionXyz(x, y, z);
     if ( player->GetDir() > DOWN &&
-            ( AIR == World::GetConstWorld()->GetBlock(*x, *y, *z)->Sub() ||
-              AIR == World::GetConstWorld()->GetBlock(
+            ( AIR == World::GetCWorld()->GetBlock(*x, *y, *z)->Sub() ||
+              AIR == World::GetCWorld()->GetBlock(
                 player->X(),
                 player->Y(),
                 player->Z()+shiftFocus)->Sub() ))
@@ -488,7 +488,7 @@ Block* Screen::GetFocusedBlock() const {
     int x, y, z;
     ActionXyz(&x, &y, &z);
     return ( player->Visible(x, y, z) == Player::VISIBLE ) ?
-        World::GetConstWorld()->GetBlock(x, y, z) :
+        World::GetCWorld()->GetBlock(x, y, z) :
         nullptr;
 }
 
@@ -692,7 +692,7 @@ void Screen::PrintMiniMap() const {
     (void)wmove(minimapWin, 1, 0);
     const int i_start = GetMinimapStartY();
     const int j_start = GetMinimapStartX();
-    const World* const world = World::GetConstWorld();
+    const World* const world = World::GetCWorld();
     for (int i=i_start; i <= i_start+4; ++i, waddch(minimapWin, '\n'))
     for (int j=j_start; j <= j_start+4; ++j) {
         if ( i>=0 && j>=0 && i<world->NumShreds() && j<world->NumShreds() ) {
@@ -728,7 +728,7 @@ void Screen::PrintNormal(WINDOW* const window, const dirs dir) const {
     const int start_y = GetNormalStartY();
     const int end_x = start_x + screenWidth/2 - 1;
     const int end_y = start_y + screenHeight  - 2;
-    const World* const world = World::GetConstWorld();
+    const World* const world = World::GetCWorld();
     (void)wmove(window, 1, 1);
     for (int j=start_y; j<end_y; ++j, waddch(window, 30)) {
         const int j_in = Shred::CoordInShred(j);
@@ -841,7 +841,7 @@ const {
         break;
     default: Q_UNREACHABLE(); return;
     }
-    const World* const world = World::GetConstWorld();
+    const World* const world = World::GetCWorld();
     const int k_start = GetFrontStartZ();
     if ( Q_UNLIKELY(block_x > 0) ) {
         // ugly! use print function to get block by screen coordinates.

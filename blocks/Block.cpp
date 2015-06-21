@@ -228,7 +228,7 @@ void Block::Mend(const int plus) {
 }
 
 QString Block::GetNote() const {
-    return noteId ? World::GetConstWorld()->GetNote(noteId) : QString();
+    return noteId ? World::GetCWorld()->GetNote(noteId) : QString();
 }
 
 int Block::Weight() const {

@@ -24,6 +24,7 @@
 
 class Teleport : public Active {
     Q_OBJECT
+
 public:
     BLOCK_CONSTRUCTORS(Teleport)
 
@@ -31,11 +32,11 @@ public:
     void Damage(int damage, int damage_kind) override;
 
 protected:
-    void SaveAttributes(QDataStream&) const;
+    void SaveAttributes(QDataStream&) const override;
 
 private:
     QString targetWorldName;
-    qint64 targetLatitude, targetLongitude;
+    qint64 targetLongitude, targetLatitude;
 };
 
 #endif

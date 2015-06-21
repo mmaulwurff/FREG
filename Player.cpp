@@ -103,7 +103,7 @@ void Player::Examine(const int x, const int y, const int z) const {
     case IN_SHADOW: Notify(tr("Too dark to see.")); return;
     case OBSCURED:  Notify(tr("It is obscured by something.")); return;
     }
-    const World* const world = World::GetConstWorld();
+    const World* const world = World::GetCWorld();
     if ( DEBUG ) {
         Notify(Str("Light: %1.").arg(world->Enlightened(x, y, z)));
     }
@@ -155,7 +155,7 @@ void Player::Move(const dirs direction) {
 }
 
 void Player::Notify(const QString& message) const {
-    emit World::GetConstWorld()->Notify(message);
+    emit World::GetCWorld()->Notify(message);
 }
 
 void Player::Backpack() {
@@ -451,7 +451,7 @@ void Player::ProcessGetCommand(QTextStream& command_stream) {
 
 Player::visible Player::Visible(const_int(x_to, y_to, z_to)) const {
     if ( GetCreativeMode() ) return VISIBLE;
-    const World* const world = World::GetConstWorld();
+    const World* const world = World::GetCWorld();
     return world->Visible(Xyz(X(), Y(), Z()), Xyz(x_to, y_to, z_to)) ?
         (world->Enlightened(x_to, y_to, z_to) ?
             VISIBLE : IN_SHADOW) :
@@ -467,7 +467,7 @@ void Player::SetDir(const dirs direction) {
 bool Player::Damage() const {
     int x, y, z;
     emit GetFocus(&x, &y, &z);
-    if ( World::GetConstWorld()->InBounds(x, y, z) ) {
+    if ( World::GetCWorld()->InBounds(x, y, z) ) {
         player->GetDeferredAction()->SetDamage(x, y, z);
         return true;
     } else {
@@ -479,7 +479,7 @@ void Player::CheckOverstep(const int direction) {
     SetXyz(Shred::CoordInShred(player->X()), Shred::CoordInShred(player->Y()),
         player->Z());
     if ( direction > DOWN
-            && not World::GetConstWorld()->ShredInCentralZone(
+            && not World::GetCWorld()->ShredInCentralZone(
                 GetShred()->Longitude(), GetShred()->Latitude()) )
     {
         emit OverstepBorder(direction);
@@ -512,7 +512,7 @@ void Player::SetPlayer(int x, int y, int z) {
         SetXyz(Shred::CoordInShred(x), Shred::CoordInShred(y), z);
     }
     if ( GetCreativeMode() ) {
-        player = creator;
+        player = creator.get();
         creator->SetXyz(Xyz::X(), Xyz::Y(), Xyz::Z());
         world->GetShred(x, y)->Register(player);
     } else {
@@ -521,7 +521,7 @@ void Player::SetPlayer(int x, int y, int z) {
         for ( ; z_self < HEIGHT-2; ++z_self ) {
             candidate = world->GetBlock(x, y, z_self);
             if ( AIR == candidate->Sub()
-                    || ((player==creator || player==nullptr)
+                    || ((player == creator.get() || player == nullptr)
                         && candidate->IsAnimal()) )
             {
                 break;
@@ -530,7 +530,7 @@ void Player::SetPlayer(int x, int y, int z) {
         if ( candidate->IsAnimal() ) {
             player = candidate->IsAnimal();
         } else {
-            if ( player == nullptr || player == creator ) {
+            if ( player == nullptr || player == creator.get() ) {
                 player = BlockFactory::NewBlock(DWARF, PLAYER_SUB)->IsAnimal();
             }
             world->DestroyAndReplace(x, y, Z());
@@ -584,7 +584,6 @@ Player::Player() :
 
 Player::~Player() {
     SaveState();
-    delete creator;
 }
 
 void Player::SaveState() const {
@@ -607,7 +606,7 @@ void Player::SaveState() const {
 }
 
 void Player::LoadState() {
-    const World* const world = World::GetConstWorld();
+    const World* const world = World::GetCWorld();
     const QSettings settings(World::WorldPath() + Str("/player_state.ini"),
         QSettings::IniFormat);
     homeLongi = settings.value(Str("home_longitude"),

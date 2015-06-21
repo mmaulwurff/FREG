@@ -53,7 +53,7 @@ template<int maxSize>
 void AroundCoordinatesN<maxSize>::fill4(const_int(x, y, z)) {
     if ( x > 0 )    array[size++] = { x-1, y,   z };
     if ( y > 0 )    array[size++] = { x,   y-1, z };
-    const int bound = World::GetConstWorld()->GetBound();
+    const int bound = World::GetCWorld()->GetBound();
     if ( x < bound) array[size++] = { x+1, y,   z };
     if ( y < bound) array[size++] = { x,   y+1, z };
 }
@@ -71,7 +71,7 @@ const XyzInt *LazyAroundCoordinates::getNext() {
         x_self += shifts[step].X();
         y_self += shifts[step].Y();
         z_self += shifts[step].Z();
-        return World::GetConstWorld()->InBounds(x_self, y_self) ?
+        return World::GetCWorld()->InBounds(x_self, y_self) ?
             this : getNext();
     } else {
         return nullptr;

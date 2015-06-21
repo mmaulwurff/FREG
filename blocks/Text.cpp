@@ -132,7 +132,7 @@ usage_types Map::Use(Active* const user) {
         (longi - longiStart + border_dist ) +
          lati  - latiStart  + border_dist );
     map_file.putChar('@');
-    savedChar = World::GetConstWorld()->GetMap()->TypeOfShred(longi, lati);
+    savedChar = World::GetCWorld()->GetMap()->TypeOfShred(longi, lati);
     map_file.seek(TEXT_WIDTH * (TEXT_WIDTH - 1));
     map_file.write(" @ = ");
     map_file.putChar(savedChar);

@@ -201,7 +201,7 @@ bool Inventory::IsEmpty() const {
 bool Inventory::IsEmpty(const int i) const { return inventory[i].isEmpty(); }
 
 void Inventory::Push(const_int(x, y, z), const int push_direction) {
-    const World* const world = World::GetConstWorld();
+    const World* const world = World::GetCWorld();
     int x_targ, y_targ, z_targ;
     world->Focus(x, y, z, &x_targ, &y_targ, &z_targ,
         World::Anti(Block::MakeDirFromDamage(push_direction)));

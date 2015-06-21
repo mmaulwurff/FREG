@@ -124,12 +124,12 @@ void Active::ReRegister(const dirs dir) {
     x_self &= 0xF;
     y_self &= 0xF;
     shred->Unregister(this);
-    (shred = World::GetConstWorld()->GetNearShred(shred, dir))->Register(this);
+    (shred = World::GetCWorld()->GetNearShred(shred, dir))->Register(this);
 }
 
 void Active::SendSignalAround(const QString signal) const {
     if ( IsInside() ) return; // for blocks inside inventories
-    const World* const world = World::GetConstWorld();
+    const World* const world = World::GetCWorld();
     for (const XyzInt& xyz : AroundCoordinates(X(), Y(), Z())) {
         world->GetBlock(XYZ(xyz))->ReceiveSignal(signal);
     }
@@ -164,7 +164,7 @@ Active::Active(QDataStream& str, const kinds kind, const subs sub) :
 bool Active::Gravitate(const int range, int bottom, int top,
         const int calmness)
 {
-    const World* const world = World::GetConstWorld();
+    const World* const world = World::GetCWorld();
     const int bound = World::GetBound();
     // analyze world around
     int for_north = 0, for_west = 0;
@@ -203,7 +203,7 @@ bool Active::IsSubAround(const int sub) const {
     LazyAroundCoordinates coordinates(X(), Y(), Z());
     const XyzInt* xyz;
     while ((xyz = coordinates.getNext())) {
-        if (World::GetConstWorld()->
+        if (World::GetCWorld()->
                 GetBlock(xyz->X(), xyz->Y(), xyz->Z())->Sub() == sub)
         {
             return true;

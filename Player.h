@@ -22,6 +22,9 @@
 
 #include "Xyz.h"
 #include "header.h"
+
+#include <memory>
+
 #include <QObject>
 
 class Player final : public QObject, private Xyz {
@@ -184,7 +187,8 @@ private:
     qint64 longitude, latitude;
     qint64 homeLongi, homeLati;
     int homeX, homeY, homeZ;
-    class Animal* player, * const creator;
+    class Animal* player;
+    const std::unique_ptr<Animal> creator;
     int usingType;
     int usingSelfType;
     int usingInInventory;

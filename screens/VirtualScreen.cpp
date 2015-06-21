@@ -76,8 +76,8 @@ void VirtualScreen::Log(const QString message) const {
 
 void VirtualScreen::DisplayFile(QString /* path */) {}
 
-void VirtualScreen::ActionXyz(int* const x, int* const y, int* const z) const {
-    World::GetConstWorld()->Focus(player->X(), player->Y(), player->Z(),
+void VirtualScreen::ActionXyz P3(int* const, x, y, z) const {
+    World::GetCWorld()->Focus(player->X(), player->Y(), player->Z(),
         x, y, z, player->GetDir());
 }
 

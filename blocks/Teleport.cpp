@@ -17,24 +17,26 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include "blocks/Teleport.h"
 #include "World.h"
 #include "WorldMap.h"
 #include "blocks/Animal.h"
+#include "blocks/Teleport.h"
+
 #include <QTextStream>
 
 Teleport::Teleport(const kinds kind, const subs sub) :
         Active(kind, sub),
         targetWorldName(World::WorldName()),
-        targetLatitude( qrand()%(World::GetConstWorld()->GetMap()->GetSize())),
-        targetLongitude(qrand()%(World::GetConstWorld()->GetMap()->GetSize()))
+        targetLongitude(qrand()%(World::GetCWorld()->GetMap()->GetHeight())),
+        targetLatitude(
+            qrand()%(World::GetCWorld()->GetMap()->GetWidth(targetLongitude)))
 {}
 
 Teleport::Teleport(QDataStream& stream, const kinds kind, const subs sub) :
         Active(stream, kind, sub),
         targetWorldName(),
-        targetLatitude(),
-        targetLongitude()
+        targetLongitude(),
+        targetLatitude()
 {
     stream >> targetWorldName >> targetLongitude >> targetLatitude;
 }
