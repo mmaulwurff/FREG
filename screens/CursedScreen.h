@@ -34,6 +34,8 @@
     #include <ncursesw/ncurses.h>
     #undef timeout // conflict with Qt
 #endif
+
+#include <memory>
 #include <atomic>
 
 /// Cursed screen options
@@ -172,7 +174,7 @@ private:
     WINDOW* const& leftWin    = windows[WIN_LEFT   ];
     WINDOW* const& rightWin   = windows[WIN_RIGHT  ];
     mutable QString lastNotification;
-    std::thread* inputThread;
+    std::unique_ptr<std::thread> inputThread;
     std::atomic<bool> inputThreadIsRunning;
     mutable volatile bool updatedHud, updatedMinimap;
     mutable volatile bool updatedNormal, updatedFront;

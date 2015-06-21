@@ -23,12 +23,19 @@
 #include "WorldMap.h"
 #include "BlockFactory.h"
 #include "DeferredAction.h"
+#include "TrManager.h"
 #include "blocks/Animal.h"
 #include "blocks/Inventory.h"
-#include "TrManager.h"
+
 #include <QSettings>
 #include <QTextStream>
 #include <QMutexLocker>
+
+struct PlayerFocusXyz : public XyzInt {
+    PlayerFocusXyz(const Player* const player) : XyzInt() {
+        emit player->GetFocus(&x_self, &y_self, &z_self);
+    }
+};
 
 int Player::X() const {
     return GetShred()->ShredX() << SHRED_WIDTH_BITSHIFT | Xyz::X();
@@ -92,9 +99,8 @@ void Player::UpdateXYZ() {
 
 void Player::Examine() const {
     const QMutexLocker locker(World::GetWorld()->GetLock());
-    int x, y, z;
-    emit GetFocus(&x, &y, &z);
-    Examine(x, y, z);
+    const PlayerFocusXyz focus(this);
+    Examine(XYZ(focus));
 }
 
 void Player::Examine(const int x, const int y, const int z) const {
@@ -169,9 +175,8 @@ void Player::Backpack() {
 void Player::Use() {
     World* const world = World::GetWorld();
     const QMutexLocker locker(world->GetLock());
-    int x, y, z;
-    emit GetFocus(&x, &y, &z);
-    Block* const block = world->GetBlock(x, y, z);
+    const PlayerFocusXyz focus(this);
+    Block* const block = world->GetBlock(XYZ(focus));
     if ( player->NutritionalValue(block->Sub()) ) {
         Notify(tr("To eat %1, you must first pick it up.").
             arg(block->FullName()));
@@ -187,16 +192,16 @@ void Player::Use() {
 }
 
 void Player::TurnBlockToFace() const {
-    int x, y, z;
-    emit GetFocus(&x, &y, &z);
+    const PlayerFocusXyz focus(this);
     World* const world = World::GetWorld();
-    Block* block = world->GetBlock(x, y, z);
+    Block* block = world->GetBlock(XYZ(focus));
     if (Block::GetSubGroup(block->Sub()) != GROUP_AIR) {
         if (block == BlockFactory::Normal(block->Sub())) {
             block = BlockFactory::NewBlock(block->Kind(), block->Sub());
-            const int x_in = Shred::CoordInShred(x);
-            const int y_in = Shred::CoordInShred(y);
-            world->GetShred(x, y)->SetBlockNoCheck(block, x_in, y_in, z);
+            world->GetShred(XY(focus))->SetBlockNoCheck(block,
+                Shred::CoordInShred(focus.X()),
+                Shred::CoordInShred(focus.Y()),
+                focus.Z());
         }
         const dirs dir = World::Anti(GetDir());
         block->SetDir(dir);
@@ -210,11 +215,10 @@ void Player::TurnBlockToFace() const {
 void Player::Inscribe() const {
     World* const world = World::GetWorld();
     const QMutexLocker locker(world->GetLock());
-    int x, y, z;
-    emit GetFocus(&x, &y, &z);
-    const QString block_name = world->GetBlock(x, y, z)->FullName();
+    const PlayerFocusXyz focus(this);
+    const QString block_name = world->GetBlock(XYZ(focus))->FullName();
     Notify(player ?
-        (world->Inscribe(x, y, z) ?
+        (world->Inscribe(XYZ(focus)) ?
             tr("Inscribed %1.").arg(block_name) :
             tr("Cannot inscribe %1.").arg(block_name)) :
         tr("No player."));
@@ -254,14 +258,12 @@ usage_types Player::Use(const int num) {
         usingType = USAGE_TYPE_READ_IN_INVENTORY;
         break;
     case USAGE_TYPE_POUR: {
-        int x_targ, y_targ, z_targ;
-        emit GetFocus(&x_targ, &y_targ, &z_targ);
-        player->GetDeferredAction()->SetPour(x_targ, y_targ, z_targ, num);
+        const PlayerFocusXyz target(this);
+        player->GetDeferredAction()->SetPour(XYZ(target), num);
         } break;
     case USAGE_TYPE_SET_FIRE: {
-        int x_targ, y_targ, z_targ;
-        emit GetFocus(&x_targ, &y_targ, &z_targ);
-        player->GetDeferredAction()->SetSetFire(x_targ, y_targ, z_targ);
+        const PlayerFocusXyz target(this);
+        player->GetDeferredAction()->SetSetFire(XYZ(target));
         } break;
     case USAGE_TYPE_INNER: break;
     default:
@@ -274,17 +276,15 @@ usage_types Player::Use(const int num) {
 
 void Player::Throw(const int src, const int dest, const int num) {
     if ( ValidBlock(src) == nullptr ) return;
-    int x, y, z;
-    emit GetFocus(&x, &y, &z);
-    player->GetDeferredAction()->SetThrow(x, y, z, src, dest, num);
+    const PlayerFocusXyz focus(this);
+    player->GetDeferredAction()->SetThrow(XYZ(focus), src, dest, num);
 }
 
 bool Player::Obtain(const int src, const int dest, const int num) {
     World* const world = World::GetWorld();
     const QMutexLocker locker(world->GetLock());
-    int x, y, z;
-    emit GetFocus(&x, &y, &z);
-    bool is_success = world->Get(player, x, y, z, src, dest, num);
+    const PlayerFocusXyz focus(this);
+    bool is_success = world->Get(player, XYZ(focus), src, dest, num);
     emit Updated();
     return is_success;
 }
@@ -319,13 +319,12 @@ void Player::Inscribe(const int num) {
 void Player::Build(const int slot) {
     World* const world = World::GetWorld();
     const QMutexLocker locker(world->GetLock());
-    int x_targ, y_targ, z_targ;
-    emit GetFocus(&x_targ, &y_targ, &z_targ);
     Block* const block = ValidBlock(slot);
     if ( block && (AIR != world->GetBlock(X(), Y(), Z()-1)->Sub()
             || 0 == player->Weight()) )
     {
-        player->GetDeferredAction()->SetBuild(x_targ, y_targ, z_targ, slot);
+        const PlayerFocusXyz target(this);
+        player->GetDeferredAction()->SetBuild(XYZ(target), slot);
     }
 }
 
@@ -465,10 +464,9 @@ void Player::SetDir(const dirs direction) {
 }
 
 bool Player::Damage() const {
-    int x, y, z;
-    emit GetFocus(&x, &y, &z);
-    if ( World::GetCWorld()->InBounds(x, y, z) ) {
-        player->GetDeferredAction()->SetDamage(x, y, z);
+    const PlayerFocusXyz focus(this);
+    if ( World::GetCWorld()->InBounds(XYZ(focus)) ) {
+        player->GetDeferredAction()->SetDamage(XYZ(focus));
         return true;
     } else {
         return false;

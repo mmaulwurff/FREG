@@ -1224,7 +1224,7 @@ Screen::Screen(Player* const controlledPlayer, int&) :
             newwin(screenHeight, screenWidth, 0, COLS/2)          // right
         },
         lastNotification(),
-        inputThread(nullptr),
+        inputThread(),
         inputThreadIsRunning(true),
         updatedHud    (false),
         updatedMinimap(false),
@@ -1288,11 +1288,11 @@ Screen::Screen(Player* const controlledPlayer, int&) :
     Notify(tr("--- Game started. Press 'H' for help. ---"));
 
     initializeKeyTable();
-    inputThread = new std::thread([&] {
+    inputThread.reset(new std::thread([this] {
         while ( inputThreadIsRunning ) {
             ControlPlayer();
         }
-    });
+    }));
 } // Screen::Screen(Player* const player, int& error)
 
 Screen::~Screen() {
@@ -1303,7 +1303,6 @@ Screen::~Screen() {
 
     inputThreadIsRunning = false;
     inputThread->join();
-    delete inputThread;
 
     std::for_each(ALL(windows), delwin);
     endwin();

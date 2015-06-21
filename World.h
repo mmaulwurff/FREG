@@ -25,6 +25,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <vector>
 
 #include <QThread>
 #include <QMutex>

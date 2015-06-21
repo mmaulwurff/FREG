@@ -21,6 +21,7 @@
 #define XYZ_H
 
 #define XYZ(xyz) xyz.X(), xyz.Y(), xyz.Z()
+#define XY(xyz) xyz.X(), xyz.Y()
 
 template<typename T>
 class TemplateXyz {
