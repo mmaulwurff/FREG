@@ -22,11 +22,13 @@
 
 #include "header.h"
 #include "WaysTree.h"
+
+#include <algorithm>
+#include <memory>
+
 #include <QThread>
 #include <QMutex>
 #include <QHash>
-#include <algorithm>
-#include <type_traits>
 
 class Block;
 class Shred;
@@ -48,8 +50,8 @@ public:
 ///@{
     static World* GetWorld();
     static const World* GetCWorld();
-    static QString WorldName() { return GetCWorld()->worldName; }
-    static QString WorldPath() { return home_path + WorldName(); }
+    static QString WorldName();
+    static QString WorldPath();
 
     static dirs TurnRight(dirs dir);
     static dirs TurnLeft (dirs dir);
@@ -66,7 +68,7 @@ public:
      *  @returns false on error, true if bound check is passed. */
     bool Focus(int x, int y, int z,
             int* x_targ, int* y_targ, int* z_targ, dirs dir) const;
-    int NumShreds() const { return numShreds; }
+    int NumShreds() const;
     bool ShredInCentralZone(qint64 longi, qint64  lati) const;
     qint64 Longitude() const;
     qint64 Latitude() const;
@@ -79,7 +81,9 @@ public:
 ///@{
     Block* GetBlock(int x, int y, int z) const;
     Shred* GetShred(int i, int j) const;
-    Shred* GetShredByPos(int x, int y) const;
+
+    /// Get shred by position in world;
+    Shred* FindShred(int x, int y) const;
     Shred* GetNearShred(Shred*, dirs dir) const;
 ///@}
 
@@ -251,7 +255,8 @@ private:
     void ReloadShreds();
     void run() override;
     int ShredPos(int x, int y) const;
-    Shred** FindShred(int x, int y) const;
+
+    Shred** ChangeShred(int x, int y);
 
     static int Sign(int value);
     /// Returns value1 plus -1 if value1 is bigger than value2, otherwise 1.
@@ -266,10 +271,10 @@ private:
     bool Exchange(Block* from, Block* to, int src, int dest, int num);
 
     QString worldName;
-    class WorldMap* map;
+    std::unique_ptr<class WorldMap> map;
     quint64 time;
     int timeStep;
-    Shred** shreds;
+    std::vector<Shred*> shreds;
     /**  N
      *   |
      * W-+->E
@@ -287,7 +292,7 @@ private:
     /// UP for no reset, DOWN for full reset, N-S-E-W for side shift.
     volatile dirs toResetDir;
 
-    class ShredStorage* shredStorage;
+    std::unique_ptr<class ShredStorage> shredStorage;
     QList<QString> notes;
 
     /// storage for found shining objects between UnShine and ReEnlighten.
@@ -297,11 +302,5 @@ private:
 
     static World* world;
 };
-
-template<typename T>
-constexpr T mBound(const T lower, const T n, const T upper) {
-    static_assert(std::is_arithmetic<T>::value, "should be ariphmetic.");
-    return std::max(std::min(n, upper), lower);
-}
 
 #endif // WORLD_H

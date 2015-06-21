@@ -60,7 +60,7 @@ void World::UnShine(const_int(x, y, z),
 
     for (int xShred=xShredBegin; xShred<=xShredEnd; ++xShred)
     for (int yShred=yShredBegin; yShred<=yShredEnd; ++yShred) {
-        Shred* const shred = GetShredByPos(xShred, yShred);
+        const Shred* const shred = FindShred(xShred, yShred);
         if ( Q_UNLIKELY(shred == nullptr) ) continue;
         for (auto shining : shred->GetShiningList()) {
             const int x_diff = shining->X() - x;

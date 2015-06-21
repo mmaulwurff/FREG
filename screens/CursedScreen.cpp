@@ -21,13 +21,15 @@
  *  \brief This file is related to curses screen for freg. */
 
 #include "screens/CursedScreen.h"
-#include <thread>
 #include "Shred.h"
 #include "World.h"
 #include "Player.h"
 #include "TrManager.h"
+#include "Utility.h"
 #include "blocks/Block.h"
 #include "blocks/Inventory.h"
+
+#include <thread>
 
 #ifndef CONSOLE
 #include <QDesktopServices>
@@ -352,7 +354,7 @@ void Screen::ProcessMouse() {
                      static_cast<uint>(shred_y) < num_shreds ) ?
                 tr("On minimap: %1.").
                     arg(TrManager::ShredTypeName(world->
-                        GetShredByPos(shred_x, shred_y)->GetTypeOfShred())) :
+                        FindShred(shred_x, shred_y)->GetTypeOfShred())) :
                 tr("You can't see that far.") );
         }
         break;
@@ -696,7 +698,7 @@ void Screen::PrintMiniMap() const {
     for (int i=i_start; i <= i_start+4; ++i, waddch(minimapWin, '\n'))
     for (int j=j_start; j <= j_start+4; ++j) {
         if ( i>=0 && j>=0 && i<world->NumShreds() && j<world->NumShreds() ) {
-            const shred_type t = world->GetShredByPos(j, i)->GetTypeOfShred();
+            const shred_type t = world->FindShred(j, i)->GetTypeOfShred();
             const int color = ColorShred(t);
             waddch(minimapWin, color | ' ');
             waddch(minimapWin, color | t);
