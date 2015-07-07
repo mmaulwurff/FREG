@@ -27,7 +27,6 @@
 #include "LoadingLineThread.h"
 
 #include <QDir>
-#include <QTime>
 #include <QSettings>
 #include <QLockFile>
 #include <QCommandLineParser>
@@ -95,16 +94,14 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
-    qsrand(QTime::currentTime().msec());
     if ( parser.isSet(Str("generate")) ) {
-        WorldMap::GenerateMap( worldName,
+        WorldMap(worldName,
             parser.value(Str("size" )).toUShort(),
             parser.value(Str("outer")).at(0).toLatin1(),
-            parser.value(Str("seed" )).toInt() );
+            parser.value(Str("seed" )).toInt() ).saveToDisk();
         puts(qPrintable(QObject::tr("Map generated successfully.")));
         return EXIT_SUCCESS;
     }
-    qsrand(QTime::currentTime().msec());
 
     // unused as local variables, but important things are in constructors.
     BlockFactory blockManager;

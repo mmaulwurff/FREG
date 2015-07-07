@@ -33,6 +33,9 @@ const bool DEBUG = true;
 #define ALL(container) std::begin(container), std::end(container)
 #define const_int(x, y, z) const int x, const int y, const int z
 
+#define TY(type, x, y) type x, type y
+#define TY3(type, x, y, z) type x, type y, type z
+
 #define P(type, parameter1, parameter2) (type parameter1, type parameter2)
 #define P3(type, par1, par2, par3) (type par1, type par2, type par3)
 

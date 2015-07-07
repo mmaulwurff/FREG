@@ -1,6 +1,7 @@
 #ifndef UTILITY_H
 #define UTILITY_H
 
+#include <algorithm>
 #include <type_traits>
 
 /// Checks if value is in bounds [lowerBound, upperBound).

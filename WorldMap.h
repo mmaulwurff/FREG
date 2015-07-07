@@ -21,46 +21,66 @@
 #define WORLD_MAP_H
 
 #include <vector>
+#include <random>
 
 #include <QtGlobal>
+#include <QString>
 
 class QString;
 class QByteArray;
 
 class WorldMap final {
 public:
-    explicit WorldMap(const QString& worldName);
+
+    /** @brief WorldMap generates new world map.
+     *  @param worldName generated world name.
+     *  @param size generated world size.
+     *  @param outer generated world outer (surrounding) type of shred.
+     *  @param seed for random generation. */
+    WorldMap(const QString& worldName, int size, char outer, int seed);
+
+    /** @brief WorldMap loads world map if it exists, otherwise generates it.
+     *  @param worldName loaded/generated world name. */
+    explicit WorldMap(const QString &worldName);
 
     char TypeOfShred(qint64 longitude, qint64 latitude) const;
-    static void GenerateMap(
-            const QString& world_name,
-            int size,
-            char outer,
-            int seed);
 
     qint64 GetWidth(qint64 longitude) const;
     qint64 GetHeight() const;
 
     qint64 GetSpawnLongitude() const;
     qint64 GetSpawnLatitude()  const;
-    static qint64 GetSpawnCoordinate(int size);
+
+    qint64 GetSpawnCoordinate(int size) const;
+
+    void saveToDisk() const;
 
     static const int DEFAULT_MAP_SIZE = 79;
 
 private:
+
     Q_DISABLE_COPY(WorldMap)
+
+    struct InitialConstructor {};
+
+    WorldMap(const QString &worldName, InitialConstructor);
 
     static float Deg(int x, int y, int size);
     static float R  (int x, int y, int size);
-    static void Circle(int min_rad, int max_rad, char ch,
-            std::vector<QByteArray>& map);
-    static void PieceOfEden(qint64 x, qint64 y, std::vector<QByteArray>& map);
-    static void MakeAndSaveSpawn(const QString& world_name,
-            int width, int height, qint64* longitude, qint64* latitude);
 
+    void Circle(int min_rad, int max_rad, char ch);
+
+    void PieceOfEden(qint64 x, qint64 y);
+
+    void MakeAndSaveSpawn(qint64* longitude, qint64* latitude) const;
+
+    void GenerateMap(int size, char outer, int seed);
+
+    QString worldName;
     std::vector<QByteArray> map;
     qint64 spawnLongitude, spawnLatitude;
     char defaultShred, outerShred;
+    mutable std::minstd_rand randomEngine;
 };
 
 #endif // WORLD_MAP_H

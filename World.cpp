@@ -531,11 +531,9 @@ bool World::Build(Block* const block, const_int(x, y, z), Block* const who) {
 }
 
 void World::ReEnlightenCheck(
-        const Block* const block1,
-        const Block* const block2,
+        TY(const Block* const, block1, block2),
         const_int(x, y, z),
-        const Block* const skip_block,
-        const Block* const add_block)
+        TY(const Block* const, skip_block, add_block))
 {
     if (    block1->Transparent() != block2->Transparent() ||
             block1->LightRadius() != block2->LightRadius() )
@@ -558,7 +556,7 @@ bool World::Inscribe(const_int(x, y, z)) {
     return block->Inscribe(str);
 }
 
-bool World::Exchange(Block* const block_from, Block* const block_to,
+bool World::Exchange(TY(Block* const, block_from, block_to),
         const_int(src, dest, num))
 {
     Inventory* const inv_to = block_to->HasInventory();

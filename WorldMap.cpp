@@ -17,87 +17,96 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include "WorldMap.h"
 #include "header.h"
 #include "Utility.h"
+#include "WorldMap.h"
 
 #include <cmath>
+#include <random>
 
-#include <QSettings>
-#include <QString>
 #include <QFile>
+#include <QDebug>
+#include <QString>
+#include <QSettings>
 #include <QByteArray>
 
 #define UNDERGROUND_ONLY false
 
 class MapSettings : public QSettings {
 public:
-    MapSettings(const QString& worldName) :
-            QSettings(home_path + worldName + Str("/map.ini"),
+    MapSettings(const QString& worldName)
+        :   QSettings(home_path + worldName + Str("/map.ini"),
                 QSettings::IniFormat)
     {}
+
+    QVariant value(const QString& key, const QVariant& defaultValue) {
+        if (contains(key)) {
+            return QSettings::value(key, defaultValue);
+        } else {
+            QSettings::setValue(key, defaultValue);
+            return defaultValue;
+        }
+    }
 };
 
-WorldMap::WorldMap(const QString& world_name) :
+WorldMap::WorldMap(const QString& world_name, InitialConstructor)
+    :   worldName(world_name),
         map(),
         spawnLongitude(),
         spawnLatitude(),
         defaultShred(),
-        outerShred()
+        outerShred(),
+        randomEngine()
+{}
+
+// Generation constructor.
+WorldMap::WorldMap(const QString& world_name,
+                   const int size,
+                   const char outer,
+                   const int seed)
+    :   WorldMap(world_name, InitialConstructor{})
+{
+    GenerateMap(size, outer, seed);
+}
+
+// Loading constructor.
+WorldMap::WorldMap(const QString& world_name)
+    :   WorldMap(world_name, InitialConstructor{})
 {
     MapSettings map_info(world_name);
-    const int mapWidth  =
-        map_info.value(Str("map_width"), DEFAULT_MAP_SIZE).toInt();
-    const int mapHeight =
-        map_info.value(Str("map_height"), DEFAULT_MAP_SIZE).toInt();
     defaultShred = map_info.value(Str("default_shred"), QChar(SHRED_PLAIN)).
         toString().at(0).toLatin1();
     outerShred   = map_info.value(Str("outer_shred"), QChar(SHRED_OUT_BORDER)).
         toString().at(0).toLatin1();
-    map_info.setValue(Str("default_shred"),
-        QString::fromLatin1(&defaultShred, 1));
-    map_info.setValue(Str(  "outer_shred"),
-        QString::fromLatin1(&outerShred, 1));
-    MakeAndSaveSpawn(world_name, mapWidth, mapHeight,
-        &spawnLongitude, &spawnLatitude);
 
     QFile mapFile(home_path + world_name + Str("/map.txt"));
-
-    map.resize(mapHeight);
-
-    if ( not mapFile.open(QIODevice::ReadOnly | QIODevice::Text) ) {
-        GenerateMap(world_name, DEFAULT_MAP_SIZE, SHRED_WATER, 0);
-        // second attempt to open, since file could be created by GenerateMap
-        mapFile.open(QIODevice::ReadOnly | QIODevice::Text);
-    }
-
-    if ( mapFile.isOpen() ) {
-        std::for_each(ALL(map), [&mapFile](QByteArray& line) {
-            line = mapFile.readLine();
-        });
+    if (mapFile.open(QIODevice::ReadOnly | QIODevice::Text) ) {
+        for (;;) {
+            QByteArray line = mapFile.readLine();
+            if ( line.isEmpty() ) {
+                break;
+            } else {
+                map.push_back(line);
+            }
+        }
+        MakeAndSaveSpawn(&spawnLongitude, &spawnLatitude);
     } else {
-        std::for_each(ALL(map), [mapWidth, this](QByteArray& line) {
-            line = QByteArray(mapWidth, outerShred);
-        });
+        GenerateMap(DEFAULT_MAP_SIZE, SHRED_OUT_BORDER, 0);
+        saveToDisk();
     }
 }
 
-void WorldMap::MakeAndSaveSpawn(const QString& world_name,
-        const int width, const int height, qint64* longitude, qint64* latitude)
-{
-    MapSettings map_info(world_name);
+void WorldMap::MakeAndSaveSpawn P(qint64* const, longitude, latitude) const {
+    MapSettings map_info(worldName);
     *longitude = map_info.value(Str("spawn_longitude"),
-        GetSpawnCoordinate(height)).toLongLong();
+        GetSpawnCoordinate(GetHeight())).toLongLong();
     *latitude  = map_info.value(Str("spawn_latitude"),
-        GetSpawnCoordinate(width)).toLongLong();
-
-    map_info.setValue(Str("spawn_longitude"), *longitude);
-    map_info.setValue(Str("spawn_latitude" ), *latitude );
+        GetSpawnCoordinate(GetWidth(*longitude))).toLongLong();
 }
 
-qint64 WorldMap::GetSpawnCoordinate(int size) {
+qint64 WorldMap::GetSpawnCoordinate(int size) const {
     size = std::max(size/4, 1);
-    return (qrand()%size) + size;
+    return (randomEngine()%size) + size;
 }
 
 qint64 WorldMap::GetHeight() const { return map.size(); }
@@ -126,16 +135,14 @@ float WorldMap::R P3(const int, x, y, size) {
     return std::hypot(x - size/2.f, y - size/2.f);
 }
 
-void WorldMap::Circle(const int min_rad, const int max_rad,
-        const char ch, std::vector<QByteArray>& map)
-{
+void WorldMap::Circle(const int min_rad, const int max_rad, const char ch) {
     Q_ASSERT(min_rad < max_rad);
-    float max[360] = { float(qrand()%(max_rad - min_rad) + min_rad) };
+    float max[360] = { float(randomEngine()%(max_rad - min_rad) + min_rad) };
     for (int x=1; x<360; ++x) {
         max[x] = ( x > 345 ) ? // connect beginning and end of circle
             max[x-1] + (max[0] - max[345]) / 15 :
             qBound(float(min_rad),
-                max[x-1]+(qrand()%400-200)/200.f, float(max_rad));
+                max[x-1]+(randomEngine()%400-200)/200.f, float(max_rad));
     }
     const int size = map.size();
     for (size_t y=0; y<map.size();    ++y)
@@ -146,34 +153,36 @@ void WorldMap::Circle(const int min_rad, const int max_rad,
     }
 }
 
-void WorldMap::GenerateMap(const QString& world_name,
-        int size, const char outer, const int seed)
-{
-    if ( seed ) {
-        qsrand(seed);
-    }
+void WorldMap::GenerateMap(int size, const char outer, const int seed) {
     size = std::max(10, size);
 
-    std::vector<QByteArray> map(size, QByteArray(size, outer));
+    if ( seed ) {
+        randomEngine.seed(seed);
+    } else {
+        std::random_device randomDevice;
+        randomEngine.seed(randomDevice());
+    }
+
+    map = std::vector<QByteArray>(size, QByteArray(size, outer));
 
     const float min_rad = size / 3.0f;
     const float max_rad = size / 2.0f;
-    Circle(min_rad,   max_rad,     SHRED_WASTE,       map);
-    Circle(min_rad/2, max_rad/2,   SHRED_DEAD_FOREST, map);
-    Circle(min_rad/3, max_rad/3+1, SHRED_DEAD_HILL,   map);
-    Circle(min_rad/4, max_rad/4+1, SHRED_MOUNTAIN,    map);
+    Circle(min_rad,   max_rad,     SHRED_WASTE);
+    Circle(min_rad/2, max_rad/2,   SHRED_DEAD_FOREST);
+    Circle(min_rad/3, max_rad/3+1, SHRED_DEAD_HILL);
+    Circle(min_rad/4, max_rad/4+1, SHRED_MOUNTAIN);
 
-    int lakes_number = (qrand() % size) + 5;
+    int lakes_number = (randomEngine() % size) + 5;
     while ( lakes_number-- ) {
         char type = SHRED_WATER;
-        switch ( qrand() % 4 ) {
+        switch ( randomEngine() % 4 ) {
         case 0: type = SHRED_ACID_LAKE; break;
         case 1: type = SHRED_LAVA_LAKE; break;
         case 2: type = SHRED_CRATER;    break;
         }
-        const float lake_size  = qrand() % (size/10) + 1;
-        const int lake_start_x = qrand() % int(size-lake_size);
-        const int lake_start_y = qrand() % int(size-lake_size);
+        const float lake_size  = randomEngine() % (size/10) + 1;
+        const int lake_start_x = randomEngine() % int(size-lake_size);
+        const int lake_start_y = randomEngine() % int(size-lake_size);
         const int border = (lake_size-1)*(lake_size-1)/2/2;
         for (int x=lake_start_x; x<lake_start_x+lake_size; ++x)
         for (int y=lake_start_y; y<lake_start_y+lake_size; ++y) {
@@ -186,24 +195,21 @@ void WorldMap::GenerateMap(const QString& world_name,
         }
     }
 
-    qint64 spawn_longitude, spawn_latitude;
-    MakeAndSaveSpawn(world_name, size,size, &spawn_longitude, &spawn_latitude);
-    PieceOfEden(spawn_latitude-1, spawn_longitude-1, map);
+    MakeAndSaveSpawn(&spawnLongitude, &spawnLatitude);
+    PieceOfEden(spawnLatitude-1, spawnLongitude-1);
+}
 
-    QFile file(home_path + world_name + Str("/map.txt"));
+void WorldMap::saveToDisk() const {
+    QFile file(home_path + worldName + Str("/map.txt"));
     if ( file.open(QIODevice::WriteOnly) ) {
-        for (int y=0; y<size; ++y, file.putChar('\n'))
-        for (int x=0; x<size; ++x) {
+        for (qint64 y=0; y<GetHeight(); ++y, file.putChar('\n'))
+        for (qint64 x=0; x<GetWidth(y); ++x) {
             file.putChar(map[y].at(x));
         }
     }
-
-    MapSettings(world_name).setValue(Str("map_size"), size);
 }
 
-void WorldMap::PieceOfEden(const qint64 x, const qint64 y,
-        std::vector<QByteArray>& map)
-{
+void WorldMap::PieceOfEden(const qint64 x, const qint64 y) {
     const int EDEN_SIZE = 8;
     const int size = map.size();
     if ( (x+EDEN_SIZE-1)*size + y+EDEN_SIZE-1 > size*size) return;
