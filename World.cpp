@@ -28,6 +28,7 @@
 #include "VisionRay.h"
 #include "LoadingLineThread.h"
 #include "Utility.h"
+#include "IniSettings.h"
 
 #include <QDir>
 #include <QMutexLocker>
@@ -613,8 +614,7 @@ World::World(const QString& world_name, bool* const error) :
         time(), timeStep(),
         shreds(),
         longitude(), latitude(),
-        gameSettings(new QSettings(home_path + Str("freg.ini"),
-            QSettings::IniFormat)),
+        gameSettings(new IniSettings(Str("freg.ini"))),
         numShreds(CorrectNumShreds(gameSettings->value(
             Str("number_of_shreds"), MIN_WORLD_SIZE + 1).toInt())),
         numActiveShreds(CorrectNumActiveShreds(gameSettings->value(
@@ -633,8 +633,6 @@ World::World(const QString& world_name, bool* const error) :
     world = this;
 
     LoadState();
-    gameSettings->setValue(Str("number_of_shreds"), numShreds);
-    gameSettings->setValue(Str("number_of_active_shreds"), numActiveShreds);
     delete gameSettings;
 
     shreds.resize(NumShreds() * NumShreds());
@@ -660,8 +658,7 @@ World::~World() {
     qDeleteAll(shreds);
 
     SaveState();
-    QSettings(home_path + Str("freg.ini"), QSettings::IniFormat).
-        setValue(Str("current_world"), worldName);
+    IniSettings(Str("freg.ini")).setValue(Str("current_world"), worldName);
 
     SaveNotes();
 

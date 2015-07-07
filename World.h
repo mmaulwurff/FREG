@@ -283,7 +283,7 @@ private:
      * S v longitude ( y for shreds )
      * center of active zone: */
     qint64 longitude, latitude;
-    class QSettings* const gameSettings;
+    class IniSettings* const gameSettings;
     const int numShreds; ///< size of loaded zone
     const int numActiveShreds; ///< size of active zone
     QMutex mutex;

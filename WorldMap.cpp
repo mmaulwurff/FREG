@@ -20,6 +20,7 @@
 #include "header.h"
 #include "Utility.h"
 #include "WorldMap.h"
+#include "IniSettings.h"
 
 #include <cmath>
 #include <random>
@@ -31,23 +32,6 @@
 #include <QByteArray>
 
 #define UNDERGROUND_ONLY false
-
-class MapSettings : public QSettings {
-public:
-    MapSettings(const QString& worldName)
-        :   QSettings(home_path + worldName + Str("/map.ini"),
-                QSettings::IniFormat)
-    {}
-
-    QVariant value(const QString& key, const QVariant& defaultValue) {
-        if (contains(key)) {
-            return QSettings::value(key, defaultValue);
-        } else {
-            QSettings::setValue(key, defaultValue);
-            return defaultValue;
-        }
-    }
-};
 
 WorldMap::WorldMap(const QString& world_name, InitialConstructor)
     :   worldName(world_name),
@@ -73,7 +57,7 @@ WorldMap::WorldMap(const QString& world_name,
 WorldMap::WorldMap(const QString& world_name)
     :   WorldMap(world_name, InitialConstructor{})
 {
-    MapSettings map_info(world_name);
+    IniSettings map_info(world_name + Str("/map.ini"));
     defaultShred = map_info.value(Str("default_shred"), QChar(SHRED_PLAIN)).
         toString().at(0).toLatin1();
     outerShred   = map_info.value(Str("outer_shred"), QChar(SHRED_OUT_BORDER)).
@@ -97,7 +81,7 @@ WorldMap::WorldMap(const QString& world_name)
 }
 
 void WorldMap::MakeAndSaveSpawn P(qint64* const, longitude, latitude) const {
-    MapSettings map_info(worldName);
+    IniSettings map_info(worldName + Str("map.ini"));
     *longitude = map_info.value(Str("spawn_longitude"),
         GetSpawnCoordinate(GetHeight())).toLongLong();
     *latitude  = map_info.value(Str("spawn_latitude"),
