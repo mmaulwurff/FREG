@@ -99,6 +99,7 @@ int main(int argc, char** argv) {
             parser.value(Str("size" )).toUShort(),
             parser.value(Str("outer")).at(0).toLatin1(),
             parser.value(Str("seed" )).toInt() ).saveToDisk();
+        loadLine.stop();
         puts(qPrintable(QObject::tr("Map generated successfully.")));
         return EXIT_SUCCESS;
     }

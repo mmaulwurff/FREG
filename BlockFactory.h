@@ -21,11 +21,11 @@
 #define BLOCK_FACTORY_H
 
 #include "header.h"
-#include <QtGlobal>
 
 class Block;
 class Inventory;
 class QDataStream;
+typedef unsigned char quint8;
 
 /** \class BlockFactory BlockFactory.h
      * \brief This class is used for creating and deleting blocks,
