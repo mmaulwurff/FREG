@@ -17,13 +17,32 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-/**\file everything.cpp
+/**\file
  * \brief This file includes all cpp files of project.
  *
  * This file is used for one-unit compilation (unity build) for release.
  * One-unit compilation provides faster compilation, a smaller executable,
  * and (probably) higher level of optimization, as modules know more about
  * contents of each other. */
+
+#include "AroundCoordinates.cpp"
+#include "BlockFactory.cpp"
+#include "CraftManager.cpp"
+#include "DeferredAction.cpp"
+#include "IniSettings.cpp"
+#include "Lighting.cpp"
+#include "LoadingLineThread.cpp"
+#include "main.cpp"
+#include "Player.cpp"
+#include "Shred.cpp"
+#include "Shred-gen-flat.cpp"
+#include "ShredStorage.cpp"
+#include "TrManager.cpp"
+#include "VisionRay.cpp"
+#include "WaysTree.cpp"
+#include "Weather.cpp"
+#include "World.cpp"
+#include "WorldMap.cpp"
 
 #include "blocks/Accumulator.cpp"
 #include "blocks/Active.cpp"
@@ -37,32 +56,14 @@
 #include "blocks/Filter.cpp"
 #include "blocks/Illuminator.cpp"
 #include "blocks/Inventory.cpp"
+#include "blocks/Pipe.cpp"
 #include "blocks/RainMachine.cpp"
 #include "blocks/Teleport.cpp"
-#include "blocks/Weapons.cpp"
 #include "blocks/Text.cpp"
-#include "blocks/Pipe.cpp"
+#include "blocks/Weapons.cpp"
 
 #include "screens/CursedScreen.cpp"
 #include "screens/VirtualScreen.cpp"
-
-#include "BlockFactory.cpp"
-#include "CraftManager.cpp"
-#include "DeferredAction.cpp"
-#include "Lighting.cpp"
-#include "main.cpp"
-#include "Player.cpp"
-#include "Shred-gen-flat.cpp"
-#include "Shred.cpp"
-#include "ShredStorage.cpp"
-#include "TrManager.cpp"
-#include "Weather.cpp"
-#include "World.cpp"
-#include "WorldMap.cpp"
-#include "AroundCoordinates.cpp"
-#include "WaysTree.cpp"
-#include "VisionRay.cpp"
-#include "LoadingLineThread.cpp"
 
 #include "moc/moc_Active.cpp"
 #include "moc/moc_Animal.cpp"
@@ -72,11 +73,11 @@
 #include "moc/moc_Dwarf.cpp"
 #include "moc/moc_Filter.cpp"
 #include "moc/moc_Illuminator.cpp"
+#include "moc/moc_Pipe.cpp"
 #include "moc/moc_Player.cpp"
 #include "moc/moc_RainMachine.cpp"
 #include "moc/moc_Teleport.cpp"
 #include "moc/moc_VirtualScreen.cpp"
 #include "moc/moc_World.cpp"
-#include "moc/moc_Pipe.cpp"
 
 #include "res/qrc_resources.cpp"

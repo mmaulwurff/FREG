@@ -21,6 +21,7 @@ qrc_*.cpp
 !help_*
 !recipes
 !rooms
+!Tools
 
 */*
 !*/*.cpp
@@ -29,6 +30,8 @@ qrc_*.cpp
 !help_*/*.md
 !rooms/*.room
 !recipes/*.json
+!Tools/*.sh
+Tools/codetest.sh
 
 !debian
 !debian/*
