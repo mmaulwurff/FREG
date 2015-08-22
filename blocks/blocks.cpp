@@ -219,14 +219,14 @@
         Inventory::SaveAttributes(out);
     }
 
-    Bush::Bush(const kinds kind, const subs sub) :
-            Active(kind, sub),
-            Inventory(BUSH_SIZE)
+    Bush::Bush(const kinds kind, const subs sub)
+        : Active(kind, sub)
+        , Inventory(BUSH_SIZE)
     {}
 
-    Bush::Bush(QDataStream& str, const kinds kind, const subs sub) :
-            Active(str, kind, sub),
-            Inventory(str, BUSH_SIZE)
+    Bush::Bush(QDataStream& str, const kinds kind, const subs sub)
+        : Active(str, kind, sub)
+        , Inventory(str, BUSH_SIZE)
     {}
 
 // Door::
@@ -284,16 +284,16 @@
         out << shifted << locked;
     }
 
-    Door::Door(const kinds kind, const subs sub) :
-            Active(kind, sub),
-            shifted(false),
-            locked(false)
+    Door::Door(const kinds kind, const subs sub)
+        : Active(kind, sub)
+        , shifted(false)
+        , locked(false)
     {}
 
-    Door::Door(QDataStream& stream, const kinds kind, const subs sub) :
-            Active(stream, kind, sub),
-            shifted(),
-            locked()
+    Door::Door(QDataStream& stream, const kinds kind, const subs sub)
+        : Active(stream, kind, sub)
+        , shifted()
+        , locked()
     {
         stream >> shifted >> locked;
     }
@@ -389,15 +389,17 @@
         str << alarmTime << timerTime;
     }
 
-    Clock::Clock(const kinds kind, const subs sub) : Active(kind, sub) {}
+    Clock::Clock(const kinds kind, const subs sub)
+        : Active(kind, sub)
+    {}
 
-    Clock::Clock(QDataStream& str, const kinds kind, const subs sub) :
-            Active(str, kind, sub)
+    Clock::Clock(QDataStream& str, const kinds kind, const subs sub)
+        : Active(str, kind, sub)
     {
         str >> alarmTime >> timerTime;
     }
 
-// Bell:: section
+// Signaller:: section
     wearable Signaller::Wearable() const { return WEARABLE_OTHER; }
 
     void Signaller::Damage(const int damage_level, const int damage_kind) {
@@ -447,14 +449,14 @@
 // Telegraph:: section
     QString Telegraph::sharedMessage;
 
-    Telegraph::Telegraph(const kinds kind, const subs sub) :
-            Active(kind, sub),
-            isReceiver(true)
+    Telegraph::Telegraph(const kinds kind, const subs sub)
+        : Active(kind, sub)
+        , isReceiver(true)
     {}
 
-    Telegraph::Telegraph(QDataStream& str, const kinds kind, const subs sub) :
-            Active(str, kind, sub),
-            isReceiver()
+    Telegraph::Telegraph(QDataStream& str, const kinds kind, const subs sub)
+        : Active(str, kind, sub)
+        , isReceiver()
     {
         str >> isReceiver;
     }

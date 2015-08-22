@@ -22,8 +22,8 @@
 
 // AroundCoordinates:: section
 
-AroundCoordinates::AroundCoordinates(const int dirsBits, const_int(x, y, z)) :
-        AroundCoordinatesN<6>()
+AroundCoordinates::AroundCoordinates(const int dirsBits, const_int(x, y, z))
+    : AroundCoordinatesN<6>()
 {
     if ( dirsBits & B_UP     ) array[size++] = { x, y, z+1 };
     if ( dirsBits & B_DOWN   ) array[size++] = { x, y, z-1 };
@@ -43,8 +43,8 @@ AroundCoordinates::AroundCoordinates(const_int(x, y, z)) :
 
 // AroundCoordinates4:: section
 
-AroundCoordinates4::AroundCoordinates4(const_int(x, y, z)) :
-    AroundCoordinatesN<4>()
+AroundCoordinates4::AroundCoordinates4(const_int(x, y, z))
+    : AroundCoordinatesN<4>()
 {
     fill4(x, y, z);
 }
@@ -58,9 +58,9 @@ void AroundCoordinatesN<maxSize>::fill4(const_int(x, y, z)) {
     if ( y < bound) array[size++] = { x,   y+1, z };
 }
 
-LazyAroundCoordinates::LazyAroundCoordinates(const_int(x, y, z)) :
-    XyzInt(x, y, z),
-    step(-1)
+LazyAroundCoordinates::LazyAroundCoordinates(const_int(x, y, z))
+    : XyzInt(x, y, z)
+    , step(-1)
 {}
 
 constexpr XyzInt LazyAroundCoordinates::shifts[6];

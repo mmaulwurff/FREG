@@ -188,14 +188,14 @@ bool Dwarf::Get(Block* const block, const int start) {
     return result;
 }
 
-Dwarf::Dwarf(const kinds kind, const subs sub) :
-        Animal(kind, sub),
-        Inventory(),
-        lightRadius(0)
+Dwarf::Dwarf(const kinds kind, const subs sub)
+    : Animal(kind, sub)
+    , Inventory()
+    , lightRadius(0)
 {}
 
-Dwarf::Dwarf(QDataStream& str, const kinds kind, const subs sub) :
-        Animal(str, kind, sub),
-        Inventory(str),
-        lightRadius(UpdateLightRadiusInner())
+Dwarf::Dwarf(QDataStream& str, const kinds kind, const subs sub)
+    : Animal(str, kind, sub)
+    , Inventory(str)
+    , lightRadius(UpdateLightRadiusInner())
 {}

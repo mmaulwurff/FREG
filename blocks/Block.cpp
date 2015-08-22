@@ -288,22 +288,22 @@ void Block::SaveNormalToFile(QDataStream& out) const {
     out << quint8( 0x80 | substance );
 }
 
-Block::Block(const kinds kind, const subs sub) :
-        noteId(0),
-        durability(MAX_DURABILITY),
-        transparent(Transparency(sub)),
-        blockKind(kind),
-        substance(sub),
-        direction(UP)
+Block::Block(const kinds kind, const subs sub)
+    : noteId(0)
+    , durability(MAX_DURABILITY)
+    , transparent(Transparency(sub))
+    , blockKind(kind)
+    , substance(sub)
+    , direction(UP)
 {}
 
-Block::Block(QDataStream& stream, const kinds kind, const subs sub) :
-        noteId(0),
-        durability(),
-        transparent(Transparency(sub)),
-        blockKind(kind),
-        substance(sub),
-        direction()
+Block::Block(QDataStream& stream, const kinds kind, const subs sub)
+    : noteId(0)
+    , durability()
+    , transparent(Transparency(sub))
+    , blockKind(kind)
+    , substance(sub)
+    , direction()
 {
     // use durability as buffer, set actual value in the end:
     stream >> durability;

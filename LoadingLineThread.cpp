@@ -19,19 +19,19 @@
 
 #include "LoadingLineThread.h"
 
-LoadingLineThread::LoadingLineThread() :
-    running(true),
-    thread([this] {
-        unsigned c = 0;
-        while (running) {
-            putchar((c & 0b0111111) + '0');
-            fflush(stdout);
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            putchar(8);
-            ++c;
-        }
-        putchar(8);
-    })
+LoadingLineThread::LoadingLineThread()
+    : running(true)
+    , thread([this] {
+          unsigned c = 0;
+          while (running) {
+              putchar((c & 0b0111111) + '0');
+              fflush(stdout);
+              std::this_thread::sleep_for(std::chrono::milliseconds(100));
+              putchar(8);
+              ++c;
+          }
+          putchar(8);
+      })
 {}
 
 void LoadingLineThread::stop() {

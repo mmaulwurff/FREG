@@ -21,14 +21,14 @@
 #include "TrManager.h"
 #include <QDataStream>
 
-Bucket::Bucket(const kinds kind, const subs sub) :
-        Block(kind, sub),
-        Inventory(1)
+Bucket::Bucket(const kinds kind, const subs sub)
+    : Block(kind, sub)
+    , Inventory(1)
 {}
 
-Bucket::Bucket(QDataStream& str, const kinds kind, const subs sub) :
-        Block(str, kind, sub),
-        Inventory(str, 1)
+Bucket::Bucket(QDataStream& str, const kinds kind, const subs sub)
+    : Block(str, kind, sub)
+    , Inventory(str, 1)
 {}
 
 void Bucket::Damage(int, int) { Break(); }

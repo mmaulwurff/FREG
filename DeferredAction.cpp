@@ -177,11 +177,11 @@ void DeferredAction::MakeAction() {
     type = DEFERRED_NOTHING;
 }
 
-DeferredAction::DeferredAction(Animal* const attached) :
-        Xyz(),
-        type(DEFERRED_NOTHING),
-        srcSlot(),
-        destSlot(),
-        num(),
-        attachedBlock(attached)
+DeferredAction::DeferredAction(Animal* const attached)
+    : Xyz()
+    , type(DEFERRED_NOTHING)
+    , srcSlot()
+    , destSlot()
+    , num()
+    , attachedBlock(attached)
 {}

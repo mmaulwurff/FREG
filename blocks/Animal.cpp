@@ -132,16 +132,16 @@
             deferredAction;
     }
 
-    Animal::Animal(const kinds kind, const subs sub) :
-            Falling(kind, sub),
-            breath(MAX_BREATH),
-            satiation(World::SECONDS_IN_DAY)
+    Animal::Animal(const kinds kind, const subs sub)
+        : Falling(kind, sub)
+        , breath(MAX_BREATH)
+        , satiation(World::SECONDS_IN_DAY)
     {}
 
-    Animal::Animal(QDataStream& str, const kinds kind, const subs sub) :
-            Falling(str, kind, sub),
-            breath(),
-            satiation()
+    Animal::Animal(QDataStream& str, const kinds kind, const subs sub)
+        : Falling(str, kind, sub)
+        , breath()
+        , satiation()
     {
         str >> breath >> satiation;
     }

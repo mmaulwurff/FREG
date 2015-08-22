@@ -29,11 +29,10 @@ uint qHash(const ShredStorage::LongLat& longLat) {
 
 ShredStorage::ShredStorage(const int size_,
         const qint64 longi_center, const qint64 lati_center)
-    :
-        storage(),
-        size(size_),
-        emptyWriteBuffers(),
-        preloadThread(new std::thread([]{})) // stub, so always joinable.
+    : storage()
+    , size(size_)
+    , emptyWriteBuffers()
+    , preloadThread(new std::thread([]{})) // stub, so always joinable.
 {
     storage.reserve(size*size);
     emptyWriteBuffers.reserve(size*size);

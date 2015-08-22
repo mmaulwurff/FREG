@@ -28,11 +28,11 @@ const QString TrManager::rawSubs [] = {  SUB_TABLE(X_STRING) };
 
 TrManager* TrManager::trManager = nullptr;
 
-TrManager::TrManager() :
-        translator(LoadTranslator()),
-        kindNames(),
-        subNames(),
-        shredTypeNames()
+TrManager::TrManager()
+    : translator(LoadTranslator())
+    , kindNames()
+    , subNames()
+    , shredTypeNames()
 {
     Q_ASSERT(trManager == nullptr);
     trManager = this;

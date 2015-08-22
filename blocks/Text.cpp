@@ -143,20 +143,20 @@ void Map::SaveAttributes(QDataStream& out) const {
     out << longiStart << latiStart << savedShift << savedChar;
 }
 
-Map::Map(const kinds kind, const subs sub) :
-        Text(kind, sub),
-        longiStart(),
-        latiStart(),
-        savedShift(),
-        savedChar(0)
+Map::Map(const kinds kind, const subs sub)
+    : Text(kind, sub)
+    , longiStart()
+    , latiStart()
+    , savedShift()
+    , savedChar(0)
 {}
 
-Map::Map(QDataStream& str, const kinds kind, const subs sub) :
-        Text(str, kind, sub),
-        longiStart(),
-        latiStart(),
-        savedShift(),
-        savedChar()
+Map::Map(QDataStream& str, const kinds kind, const subs sub)
+    : Text(str, kind, sub)
+    , longiStart()
+    , latiStart()
+    , savedShift()
+    , savedChar()
 {
     str >> longiStart >> latiStart >> savedShift >> savedChar;
 }

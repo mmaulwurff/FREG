@@ -68,27 +68,26 @@
         Inventory::SaveAttributes(out);
     }
 
-    Container::Container(const kinds kind, const subs sub, const int size) :
-            Active(kind, sub),
-            Inventory(size)
+    Container::Container(const kinds kind, const subs sub, const int size)
+        : Active(kind, sub)
+        , Inventory(size)
     {}
 
     Container::Container(QDataStream& str, const kinds kind, const subs sub,
-            const int size)
-        :
-            Active(str, kind, sub),
-            Inventory(str, size)
+                         const int size)
+        : Active(str, kind, sub)
+        , Inventory(str, size)
     {}
 
 // Box::
-    Box::Box(const kinds kind, const subs sub) :
-            Falling(kind, sub),
-            Inventory(INV_SIZE)
+    Box::Box(const kinds kind, const subs sub)
+        : Falling(kind, sub)
+        , Inventory(INV_SIZE)
     {}
 
-    Box::Box(QDataStream& str, const kinds kind, const subs sub) :
-            Falling(str, kind, sub),
-            Inventory(str, INV_SIZE)
+    Box::Box(QDataStream& str, const kinds kind, const subs sub)
+        : Falling(str, kind, sub)
+        , Inventory(str, INV_SIZE)
     {}
 
     void Box::SaveAttributes(QDataStream& str) const {
@@ -250,33 +249,33 @@
         }
     }
 
-    Workbench::Workbench(const kinds kind, const subs sub) :
-            Container(kind, sub, WORKBENCH_SIZE)
+    Workbench::Workbench(const kinds kind, const subs sub)
+        : Container(kind, sub, WORKBENCH_SIZE)
     {}
 
-    Workbench::Workbench(QDataStream& str, const kinds kind, const subs sub) :
-            Container(str, kind, sub, WORKBENCH_SIZE)
+    Workbench::Workbench(QDataStream& str, const kinds kind, const subs sub)
+        : Container(str, kind, sub, WORKBENCH_SIZE)
     {}
 
 // Converter
-    Converter::Converter(const kinds kind, const subs sub) :
-            Container(kind, sub, WORKBENCH_SIZE),
-            isOn(false),
-            fuelLevel(0),
-            lightRadius(0),
-            damageKindOn(),
-            damageKindOff()
+    Converter::Converter(const kinds kind, const subs sub)
+        : Container(kind, sub, WORKBENCH_SIZE)
+        , isOn(false)
+        , fuelLevel(0)
+        , lightRadius(0)
+        , damageKindOn()
+        , damageKindOff()
     {
         InitDamageKinds();
     }
 
-    Converter::Converter(QDataStream& str, const kinds kind, const subs sub) :
-            Container(str, kind, sub, WORKBENCH_SIZE),
-            isOn(),
-            fuelLevel(),
-            lightRadius(),
-            damageKindOn(),
-            damageKindOff()
+    Converter::Converter(QDataStream& str, const kinds kind, const subs sub)
+        : Container(str, kind, sub, WORKBENCH_SIZE)
+        , isOn()
+        , fuelLevel()
+        , lightRadius()
+        , damageKindOn()
+        , damageKindOff()
     {
         str >> isOn >> fuelLevel;
         lightRadius = isOn ? CONVERTER_LIGHT_RADIUS : 0;

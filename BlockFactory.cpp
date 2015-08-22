@@ -40,11 +40,11 @@
 
 BlockFactory* BlockFactory::blockFactory = nullptr;
 
-BlockFactory::BlockFactory() :
-        normals{ SUB_TABLE(X_NEW_BLOCK_SUB) },
-        creates(),
-        loads(),
-        castsToInventory()
+BlockFactory::BlockFactory()
+    : normals{ SUB_TABLE(X_NEW_BLOCK_SUB) }
+    , creates()
+    , loads()
+    , castsToInventory()
 {
     Q_ASSERT(blockFactory == nullptr);
     blockFactory = this;

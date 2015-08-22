@@ -21,7 +21,7 @@
 #include "header.h"
 
 IniSettings::IniSettings(const QString& fileName)
-    :   QSettings(home_path + fileName, QSettings::IniFormat)
+    : QSettings(home_path + fileName, QSettings::IniFormat)
 {}
 
 QVariant IniSettings::value(const QString &key, const QVariant &defaultValue) {
