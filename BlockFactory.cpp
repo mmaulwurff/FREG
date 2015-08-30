@@ -60,7 +60,7 @@ BlockFactory::BlockFactory()
         qDebug() << "valid pairs:" << sum;
     }
 
-    RegisterAll<BLOCK>(typeList< KIND_TABLE(X_CLASS) TemplateTerminator >());
+    RegisterAll(typeList< KIND_TABLE(X_CLASS) TemplateTerminator >());
 }
 
 BlockFactory::~BlockFactory() { qDeleteAll(normals, normals + LAST_SUB); }
@@ -193,12 +193,14 @@ template <typename BlockType, typename Base, std::enable_if_t< not
         std::is_base_of<Base, BlockType>::value >* = nullptr>
 Base* castTo(Block*) { return nullptr; }
 
-template <kinds kind, typename BlockType, typename ... RestBlockTypes>
+template <typename BlockType, typename ... RestBlockTypes>
 void BlockFactory::RegisterAll(typeList<BlockType, RestBlockTypes...>)
 {
+    static const kinds kind =
+        static_cast<kinds>(KIND_COUNT - sizeof...(RestBlockTypes));
     creates[kind] = Create<BlockType, kind>;
     loads  [kind] = Load  <BlockType, kind>;
     castsToInventory[kind] = castTo<BlockType, Inventory>;
 
-    RegisterAll<static_cast<kinds>(kind + 1)>(typeList<RestBlockTypes...>());
+    RegisterAll(typeList<RestBlockTypes...>());
 }

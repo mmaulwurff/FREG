@@ -110,12 +110,11 @@ private:
     template <typename ...> struct typeList {};
     struct TemplateTerminator {};
 
-    ///< Base for variadic template.
-    template<kinds>
+    /// Base for variadic template.
     static void RegisterAll(typeList<TemplateTerminator>) {}
 
     /// Core of block registration system.
-    template <kinds, typename BlockType, typename ... RestBlockTypes>
+    template <typename BlockType, typename ... RestBlockTypes>
     void RegisterAll(typeList<BlockType, RestBlockTypes...>);
 
     static BlockFactory* blockFactory;
