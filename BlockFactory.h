@@ -109,17 +109,14 @@ private:
     /// Type list struct for variadic template without formal parameters.
     template <typename ...> struct typeList {};
     struct TemplateTerminator {};
-    template <kinds ... someKinds> struct kindList {};
 
     ///< Base for variadic template.
-    static void RegisterAll(typeList<TemplateTerminator>,
-                            kindList<LAST_KIND>) {}
+    template<kinds>
+    static void RegisterAll(typeList<TemplateTerminator>) {}
 
     /// Core of block registration system.
-    template <typename BlockType, typename ... RestBlockTypes,
-              kinds kind, kinds ... RestKinds>
-    void RegisterAll(typeList<BlockType, RestBlockTypes...>,
-                     kindList<kind, RestKinds...>);
+    template <kinds, typename BlockType, typename ... RestBlockTypes>
+    void RegisterAll(typeList<BlockType, RestBlockTypes...>);
 
     static BlockFactory* blockFactory;
 };
