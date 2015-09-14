@@ -104,15 +104,14 @@ void World::ReEnlighten() {
 }
 
 void World::ReEnlightenAll() {
-    blockSignals(true);
+    const QSignalBlocker signalBlocker(this);
     for (int i=0; i<NumShreds()*NumShreds(); ++i) {
         shreds[i]->ShineAll();
     }
-    blockSignals(false);
 }
 
 void World::ReEnlightenMove(const dirs dir) {
-    blockSignals(true);
+    const QSignalBlocker signalBlocker(this);
     switch ( dir ) {
     case NORTH:
         for (int i=0; i<NumShreds(); ++i) {
@@ -140,7 +139,6 @@ void World::ReEnlightenMove(const dirs dir) {
         break;
     default: Q_UNREACHABLE(); break;
     }
-    blockSignals(false);
 }
 
 void World::AddLight(const XyzInt& xyz, const int level) {
