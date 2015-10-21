@@ -1277,15 +1277,15 @@ Screen::Screen(Player* const controlledPlayer, int&) :
 
     ungetch('0');
     getch();
-    Notify(tr("\t[[F][r][e][g]] version %1").arg(VER));
-    Notify(tr("Copyright (C) 2012-2015 Alexander 'm8f' Kromm"));
+    Notify(QObject::tr("\t[[F][r][e][g]] version %1").arg(VER));
+    Notify(QObject::tr("Copyright (C) 2012-2015 Alexander 'm8f' Kromm"));
     Notify(Str("(mmaulwurff@gmail.com)\n"));
-    Notify(tr("Press Space to continue."));
+    Notify(QObject::tr("Press Space to continue."));
 
     while (getch() != ' ');
 
     RePrint();
-    Notify(tr("--- Game started. Press 'H' for help. ---"));
+    Notify(QObject::tr("--- Game started. Press 'H' for help. ---"));
 
     initializeKeyTable();
     inputThread.reset(new std::thread([this] {

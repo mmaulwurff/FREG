@@ -42,6 +42,8 @@ unix {
     PRE_TARGETDEPS += $$PWD/pdcurses/libcurses.lib
 }
 
+INCLUDEPATH += .
+
 HEADERS +=  *.h \
      blocks/*.h \
     screens/*.h
@@ -59,7 +61,8 @@ CONFIG(console_only) {
     DEFINES += CONSOLE
 }
 
-TRANSLATIONS = *.ts
+TRANSLATIONS = \
+    freg_ru_RU.ts \
 
 RESOURCES = resources.qrc
 

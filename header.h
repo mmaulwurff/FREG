@@ -30,6 +30,9 @@ const bool DEBUG = false;
 const bool DEBUG = true;
 #endif
 
+template <typename T, int N>
+constexpr int sizeofArray(T(&)[N]) { return N; }
+
 #define ALL(container) std::begin(container), std::end(container)
 #define const_int(x, y, z) const int x, const int y, const int z
 

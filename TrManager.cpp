@@ -18,10 +18,12 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "TrManager.h"
+
 #include <QLocale>
 #include <QCoreApplication>
 #include <QObject>
 #include <QTranslator>
+#include <QDebug>
 
 const QString TrManager::rawKinds[] = { KIND_TABLE(X_STRING) };
 const QString TrManager::rawSubs [] = {  SUB_TABLE(X_STRING) };
@@ -106,51 +108,33 @@ QString TrManager::GetWeatherString(const weathers weather) {
 }
 
 QString TrManager::GetDamageString(const damage_kinds damage_kind) {
+    static const QString damageNames[] = {
+        QCoreApplication::translate("Global", "mining"   ),
+        QCoreApplication::translate("Global", "digging"  ),
+        QCoreApplication::translate("Global", "cutting"  ),
+        QCoreApplication::translate("Global", "thrusting"),
+        QCoreApplication::translate("Global", "crushing" ),
+        QCoreApplication::translate("Global", "heating"  ),
+        QCoreApplication::translate("Global", "freezing" ),
+        QCoreApplication::translate("Global", "electricity"),
+        QCoreApplication::translate("Global", "corrode"  ),
+        QCoreApplication::translate("Global", "hunger"   ),
+        QCoreApplication::translate("Global", "breathing"),
+        QCoreApplication::translate("Global", "biting"   ),
+        QCoreApplication::translate("Global", "time"     ),
+        QCoreApplication::translate("Global", "pushing"  )
+    };
     QStringList result;
-    if (damage_kind & DAMAGE_MINE) {
-        result.append(QCoreApplication::translate("Global", "mining"));
-    }
-    if (damage_kind & DAMAGE_DIG) {
-        result.append(QCoreApplication::translate("Global", "digging"));
-    }
-    if (damage_kind & DAMAGE_CUT) {
-        result.append(QCoreApplication::translate("Global", "cutting"));
-    }
-    if (damage_kind & DAMAGE_THRUST) {
-        result.append(QCoreApplication::translate("Global", "thrusting"));
-    }
-    if (damage_kind & DAMAGE_CRUSH) {
-        result.append(QCoreApplication::translate("Global", "crushing"));
-    }
-    if (damage_kind & DAMAGE_HEAT) {
-        result.append(QCoreApplication::translate("Global", "heating"));
-    }
-    if (damage_kind & DAMAGE_FREEZE) {
-        result.append(QCoreApplication::translate("Global", "freezing"));
-    }
-    if (damage_kind & DAMAGE_ELECTRO) {
-        result.append(QCoreApplication::translate("Global", "electricity"));
-    }
-    if (damage_kind & DAMAGE_ACID) {
-        result.append(QCoreApplication::translate("Global", "corrode"));
-    }
-    if (damage_kind & DAMAGE_HUNGER) {
-        result.append(QCoreApplication::translate("Global", "hunger"));
-    }
-    if (damage_kind & DAMAGE_BREATH) {
-        result.append(QCoreApplication::translate("Global", "breathing"));
-    }
-    if (damage_kind & DAMAGE_BITE) {
-        result.append(QCoreApplication::translate("Global", "biting"));
-    }
-    if (damage_kind & DAMAGE_TIME) {
-        result.append(QCoreApplication::translate("Global", "time"));
+    for (int i = 1, c = 0; i < DAMAGE_PUSH_UP; i <<= 1, ++c) {
+        if (damage_kind & i) {
+            result.append(damageNames[c]);
+        }
     }
     if (damage_kind & DAMAGE_PUSH_ANYWHERE) {
-        result.append(QCoreApplication::translate("Global", "pushing"));
+        result.append(damageNames[sizeofArray(damageNames) - 1]);
     }
     return result.join(Str(", "));
-} // QString TrManager::GetDamageString(const damage_kinds damage_kind)
+}
 
 QString& TrManager::Capitalized(QString& str) {
     return str.replace(0, 1, str.at(0).toUpper());
