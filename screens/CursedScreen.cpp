@@ -1328,33 +1328,24 @@ void Screen::PrintBar(WINDOW* const window,
 }
 
 void Screen::Palette(WINDOW* const window) {
-    wclear(window);
     const struct {
-        chtype attribute;
         std::string name;
-    } lines[] {
-        {A_NORMAL,    "A_NORMAL    "},
-        {A_BOLD,      "A_BOLD      "},
-        {A_BLINK,     "A_BLINK     "},
-        {A_REVERSE,   "A_REVERSE   "},
-        {A_STANDOUT,  "A_STANDOUT  "},
-    }, words[] {
-        {A_UNDERLINE, "A_UNDERLINE "},
-        {A_DIM,       "A_DIM       "},
-    };
-    for (const auto& type : lines) {
-        wstandend(window);
-        waddstr(window, type.name.c_str());
-        wattrset(window, type.attribute);
+        chtype character;
+    } lines[] { { " Normal   \n", ACS_DIAMOND | A_NORMAL  }
+              , { " Bold     \n", ACS_DIAMOND | A_BOLD    }
+              , { " Blink    \n", ACS_DIAMOND | A_BLINK   }
+              , { " Reverse  \n", ACS_DIAMOND | A_REVERSE }
+              , { " Dim      \n", ACS_DIAMOND | A_DIM     }
+              , { " Normal ST\n", ACS_CKBOARD | A_NORMAL  }
+              , { " Bold ST    ", ACS_CKBOARD | A_BOLD    } };
+    wclear(window);
+    for (int line = 0; line < sizeofArray(lines); ++line) {
         for (int i=BLACK_BLACK; i<=WHITE_WHITE; ++i) {
             wcolor_set(window, i, nullptr);
-            waddch(window, ACS_DIAMOND);
+            waddch(window, lines[line].character);
         }
-        waddch(window, '\n');
-    }
-    for (const auto& type : words) {
-        wattrset(window, type.attribute);
-        waddstr(window, type.name.c_str());
+        wstandend(window);
+        waddstr(window, lines[line].name.c_str());
     }
     wrefresh(window);
 }
