@@ -46,7 +46,7 @@
         if ( GROUP_MEAT != GetSubGroup(Sub()) ) return;
         EatAround();
         if ( not IsSubAround(AIR) ) {
-            if ( breath <= 0 ) {
+            if ( breath == 0 ) {
                 Damage(10, DAMAGE_BREATH);
             } else {
                 --breath;

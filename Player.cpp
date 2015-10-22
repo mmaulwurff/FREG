@@ -32,7 +32,7 @@
 #include <QMutexLocker>
 
 struct PlayerFocusXyz : public XyzInt {
-    PlayerFocusXyz(const Player* const player) : XyzInt() {
+    explicit PlayerFocusXyz(const Player* const player) : XyzInt() {
         emit player->GetFocus(&x_self, &y_self, &z_self);
     }
 };

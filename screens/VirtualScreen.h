@@ -51,7 +51,7 @@ class VirtualScreen : public QObject {
     Q_DISABLE_COPY(VirtualScreen)
 public:
     /// Constructor makes player and world connections.
-    VirtualScreen(class Player*);
+    explicit VirtualScreen(class Player*);
     virtual ~VirtualScreen();
 
     static char CharName(int kind, int sub);

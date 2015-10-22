@@ -25,7 +25,7 @@
 class IniSettings : public QSettings {
 public:
 
-    IniSettings(const QString& fileName);
+    explicit IniSettings(const QString& fileName);
 
     QVariant value(const QString& key, const QVariant& defaultValue);
 };
