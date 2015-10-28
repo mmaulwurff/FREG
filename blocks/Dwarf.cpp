@@ -65,7 +65,7 @@ QString Dwarf::FullName() const {
         tr("Creator") : Animal::FullName();
 }
 
-/// \todo Make all (switching lanterns on/off) light changes synchronous
+/// @todo Make all (switching lanterns on/off) light changes synchronous
 /// to avoid [un]shining in wrong place.
 int Dwarf::UpdateLightRadiusInner() const {
     const Block* const in_left  = ShowBlock(IN_LEFT );

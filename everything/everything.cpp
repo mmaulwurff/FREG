@@ -17,8 +17,8 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-/**\file
- * \brief This file includes all cpp files of project.
+/** @file
+ * This file includes all cpp files of project.
  *
  * This file is used for one-unit compilation (unity build) for release.
  * One-unit compilation provides faster compilation, a smaller executable,

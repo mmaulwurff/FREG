@@ -213,7 +213,7 @@ void Shred::PhysEventsRare() {
             switch ( i->ActInner() ) {
             case INNER_ACTION_ONLY:    break;
             case INNER_ACTION_NONE: i->ActRare(); break;
-            case INNER_ACTION_EXPLODE: break; /// \todo add explosion
+            case INNER_ACTION_EXPLODE: break; ///< @todo add explosion
             case INNER_ACTION_MESSAGE: break;
             }
         }

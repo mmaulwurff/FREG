@@ -27,9 +27,11 @@
 
 #include <QObject>
 
+class Block;
+
 class Player final : public QObject, private Xyz {
-    /** \class Player Player.h
-     * \brief This class contains information specific to player
+    /** @class Player Player.h
+     * This class contains information specific to player
      * and interface for manipulating him.
      *
      * It receives input from screen, processes it, and dispatches
@@ -68,8 +70,8 @@ public:
     /// Can be > 100 if player is gorged. On error returns -100.
     int SatiationPercent() const;
 
-    class Block* GetBlock() const;
-    const class Block* GetConstBlock() const;
+    Block* GetBlock() const;
+    const Block* GetConstBlock() const;
 
     enum visible {
         VISIBLE,
@@ -112,7 +114,7 @@ public:
     void Inscribe() const;
     void Examine() const;
     void Examine(int x, int y, int z) const;
-    void Examine(const class Block*) const;
+    void Examine(const Block*) const;
     /// Returns true if xyz are in world bounds.
     bool Damage() const;
     void Use();
@@ -177,7 +179,7 @@ private:
     static const subs PLAYER_SUB = H_MEAT;
 
     /// Checks player/inventory/block existence, size limits.
-    class Block* ValidBlock(int num) const;
+    Block* ValidBlock(int num) const;
     class Shred* GetShred() const;
     bool ForbiddenAdminCommands() const;
     void ProcessGetCommand(class QTextStream&);

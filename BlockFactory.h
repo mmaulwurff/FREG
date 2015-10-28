@@ -27,20 +27,19 @@ class Inventory;
 class QDataStream;
 typedef unsigned char quint8;
 
-/** \class BlockFactory BlockFactory.h
-     * \brief This class is used for creating and deleting blocks,
-     * also for loading them from file.
-     *
-     * Memory management, if any, should be implemented in this class.
-     * At the current moment no special memory management is used.
-     *
-     * Normal blocks: blocks that are not special, e.g. usual stone, air, soil
-     * are actually one block (for each substance).
-     * One can receive a pointer to such block with
-     * Block* Normal(int sub).
-     * Normal blocks are not needed to be deleted.
-     * Use Block* NewBlock(int kind, int sub) to receive a pointer to
-     * block that will be changed (damaged, inscribed, etc). */
+/** * This class is used for creating and deleting blocks,
+    * also for loading them from file.
+    *
+    * Memory management, if any, should be implemented in this class.
+    * At the current moment no special memory management is used.
+    *
+    * Normal blocks: blocks that are not special, e.g. usual stone, air, soil
+    * are actually one block (for each substance).
+    * One can receive a pointer to such block with
+    * Block* Normal(int sub).
+    * Normal blocks are not needed to be deleted.
+    * Use Block* NewBlock(int kind, int sub) to receive a pointer to
+    * block that will be changed (damaged, inscribed, etc). */
 
 class BlockFactory final {
 public:
@@ -81,12 +80,10 @@ private:
     M_DISABLE_COPY(BlockFactory)
 
     static const int KIND_SUB_PAIR_VALID_CHECK = false;
-    /**
-     * @brief IsValid check if kind-sub pair is valid in game.
+    /** IsValid check if kind-sub pair is valid in game.
      *
-     * If pair is not valid, it doesn't mean that such block cannot exist.
-     * @return kind-sub pair is valid.
-     */
+     *  If pair is not valid, it doesn't mean that such block cannot exist.
+     *  @return kind-sub pair is valid. */
     static constexpr bool IsValid(kinds, subs);
 
     Block* const normals[SUB_COUNT];

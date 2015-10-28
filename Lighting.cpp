@@ -17,9 +17,8 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-/**\file Lighting-inertia.cpp
-    * \brief This file provides dynamic lighting for freg.
-    *
+/** @file
+    * This file provides dynamic lighting for freg.
     * There is only illuminator light (no sun). */
 
 #include "World.h"

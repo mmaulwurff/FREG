@@ -17,8 +17,8 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-/**\file Block.h
- * \brief Provides definition for class Block. */
+/** @file
+ *  Provides definition for class Block. */
 
 #ifndef BLOCK_H
 #define BLOCK_H
@@ -41,7 +41,8 @@ enum wearable {
     WEARABLE_VESSEL
 };
 
-enum weights { ///< weights in measures - mz (mezuro)
+/// weights in measures - mz (mezuro)
+enum weights {
     WEIGHT_NULLSTONE = 1000,
     WEIGHT_WATER     =  500,
     WEIGHT_IRON      =  300,
@@ -60,9 +61,8 @@ enum sub_groups {
     GROUP_HANDY,
 };
 
+/** Block without special physics and attributes. */
 class Block {
-    /**\class Block Block.h
-     * \brief Block without special physics and attributes. */
 public:
     BLOCK_CONSTRUCTORS(Block)
     virtual ~Block();

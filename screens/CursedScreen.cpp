@@ -17,8 +17,8 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-/** \file CursedScreen.cpp
- *  \brief This file is related to curses screen for freg. */
+/** @file
+ * This file is related to curses screen for freg. */
 
 #include "screens/CursedScreen.h"
 #include "Shred.h"
@@ -360,7 +360,7 @@ void Screen::ProcessMouse() {
         break;
     case WIN_LEFT:
         if (player->UsingSelfType() == USAGE_TYPE_OPEN) {
-            /// \todo examine inventory contents.
+            /// @todo examine inventory contents.
             Notify(tr("Your inventory."));
         } else if ( IsOutWindow(mevent, screenWidth-1, screenHeight-1) ) {
             Notify(tr("Left window, Down view."));
@@ -370,7 +370,7 @@ void Screen::ProcessMouse() {
         break;
     case WIN_RIGHT:
         if (player->UsingType() == USAGE_TYPE_OPEN) {
-            /// \todo examine inventory contents.
+            /// @todo examine inventory contents.
             Notify(tr("Opened inventory."));
         } else if ( IsOutWindow(mevent, screenWidth-1, screenHeight-1) ) {
             Notify(tr("Right window, %1 view.").

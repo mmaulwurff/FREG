@@ -43,10 +43,8 @@ protected:
     int size;
 };
 
-/**
- * @brief The AroundCoordinates class contains coordinates around source.
- * These coordinates are guaranteed to be correct.
- */
+/** The AroundCoordinates class contains coordinates around source.
+ *  These coordinates are guaranteed to be correct. */
 class AroundCoordinates : public AroundCoordinatesN<6> {
 public:
     AroundCoordinates(int x_source, int y_source, int z_source);

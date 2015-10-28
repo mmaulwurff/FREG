@@ -42,11 +42,9 @@ enum screen_errors {
     WIDTH_NOT_ENOUGH
 };
 
+/** This class provides base for all screens for freg.
+ *  Provides interface for world-screen and player-screen communications. */
 class VirtualScreen : public QObject {
-    /** \class VirtualScreen VirtualScreen.h
-     *  \brief This class provides base for all screens for freg.
-     *
-     * Provides interface for world-screen and player-screen communications. */
     Q_OBJECT
     Q_DISABLE_COPY(VirtualScreen)
 public:
@@ -63,51 +61,51 @@ public:
     /// This is called for a notification to be displayed.
     virtual void Notify(QString) const = 0;
 
-    /// This is called when string is needed to be received from input.
-    /** It is connected to world in constructor. */
+    /** This is called when string is needed to be received from input.
+     *  It is connected to world in constructor. */
     virtual void PassString(QString&) const = 0;
 
-    /// This is called when all world should be updated in screen.
-    /** When implemented, this should work fast.
+    /** This is called when all world should be updated in screen.
+     *  When implemented, this should work fast.
      *  It is connected to world in constructor. */
     virtual void UpdateAll() = 0;
 
-    /// Called when world loaded zone is moved to update world in screen.
-    /** When implemented, this should work fast.
+    /** Called when world loaded zone is moved to update world in screen.
+     *  When implemented, this should work fast.
      *  It is connected to world in constructor. */
     virtual void Move(int) = 0;
 
-    /// Called when some player property needs to be updated in screen.
-    /** When implemented, this should work fast.
+    /** Called when some player property needs to be updated in screen.
+     *  When implemented, this should work fast.
      *  It is connected to world in constructor. */
     virtual void UpdatePlayer() = 0;
 
-    /// Called when area around xyz with range MAX_LIGHT_RADIUS + 1 is updated.
-    /** Implementation should be fast.
+    /** Called when area around xyz with range MAX_LIGHT_RADIUS + 1 is updated.
+     *  Implementation should be fast.
      *  It is connected to world in constructor. */
     virtual void UpdateAround(int x, int y, int z) = 0;
 
-    /// This is called when current group of updates is ended.
-    /** This is called from world when pack of world changing is ended.
+    /** This is called when current group of updates is ended.
+     *  This is called from world when pack of world changing is ended.
      *  ( Can be used in screen optimization. ) */
     virtual void UpdatesEnd();
 
     /// This is called when player is dead, and displayed until respawn.
     virtual void DeathScreen();
 
-    /// Used to get player focus coordinates from screen.
-    /** x, y, z are coordinates where player will make action.
+    /** Used to get player focus coordinates from screen.
+     *  x, y, z are coordinates where player will make action.
      *  May be reimplemented in derivative class to get xyz other than
      *  world direction-based focus. */
     virtual void ActionXyz(int* x, int* y, int* z) const;
 
-    /// This shows a file by path.
-    /** Standard (non-reimplemented) version does nothing. */
+    /** This shows a file by path.
+     *  Standard (non-reimplemented) version does nothing. */
     virtual void DisplayFile(QString path);
 
 signals:
-    /// This is emitted when input receives exit key.
-    /** This is connected to application exit. */
+    /** This is emitted when input receives exit key.
+     *  This is connected to application exit. */
     void ExitReceived();
 
     /// Emitted to pause physics in world.

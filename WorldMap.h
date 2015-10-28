@@ -32,14 +32,14 @@ class QByteArray;
 class WorldMap final {
 public:
 
-    /** @brief WorldMap generates new world map.
+    /** generates new world map.
      *  @param worldName generated world name.
      *  @param size generated world size.
      *  @param outer generated world outer (surrounding) type of shred.
      *  @param seed for random generation. */
     WorldMap(const QString& worldName, int size, char outer, int seed);
 
-    /** @brief WorldMap loads world map if it exists, otherwise generates it.
+    /** loads world map if it exists, otherwise generates it.
      *  @param worldName loaded/generated world name. */
     explicit WorldMap(const QString &worldName);
 

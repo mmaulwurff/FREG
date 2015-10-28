@@ -22,12 +22,10 @@
 
 #include "Xyz.h"
 
+/** Deferred Action is used when some action needs to be done at
+ *  next physics turn.
+ *  Xyz is action target coordinates. */
 class DeferredAction final : private Xyz {
-    /** \class DeferredAction DeferredAction.h
-     *  \brief Deferred Action is used when some action needs to be done at
-     *  next physics turn.
-     *
-     *  Xyz is action target coordinates. */
 public:
     explicit DeferredAction(class Animal* attached);
 

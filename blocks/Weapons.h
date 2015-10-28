@@ -22,13 +22,11 @@
 
 #include "blocks/Active.h"
 
+/** Weapon class represents simple weapons as sticks, pebbles and so on.
+ *  Also is used as base class for more special weapons.
+ *  Weapon of SKY substance is abyss block, everything that touches abyss
+ *  will be destroyed. */
 class Weapon : public Falling {
-    /** \class Weapon Weapons.h
-     *  \brief Weapon class represents simple weapons as sticks, pebbles and
-     *  so on.
-     *  Also is used as base class for more special weapons.
-     *  Weapon of SKY substance is abyss block, everything that touches abyss
-     *  will be destroyed. */
 public:
     using Falling::Falling;
 
