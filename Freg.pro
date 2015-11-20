@@ -42,14 +42,14 @@ unix {
     PRE_TARGETDEPS += $$PWD/pdcurses/libcurses.lib
 }
 
-HEADERS +=  *.h \
-     blocks/*.h \
-    screens/*.h
+HEADERS +=          *.h \
+     ../freg/blocks/*.h \
+    ../freg/screens/*.h \
 
 CONFIG( debug, debug|release ) {
-    SOURCES +=  *.cpp \
-         blocks/*.cpp \
-        screens/*.cpp
+    SOURCES +=          *.cpp \
+         ../freg/blocks/*.cpp \
+        ../freg/screens/*.cpp \
 } else {
     SOURCES += everything/everything.cpp
 }

@@ -23,6 +23,8 @@
 #include "TrManager.h"
 #include "SortedArray.h"
 #include "Shred.h"
+
+#include <QDataStream>
 #include <QTextStream>
 #include <QTime>
 
