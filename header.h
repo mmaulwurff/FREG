@@ -220,12 +220,14 @@ enum kinds {
     LAST_KIND, ///< Nothing is LAST_KIND.
     KIND_COUNT = LAST_KIND
 };
+static_assert((KIND_COUNT < 256), "too many kinds, should be < 256.");
 
 enum subs {
     SUB_TABLE(X_ENUM)
     LAST_SUB, ///< Nothing is made from LAST_SUB.
     SUB_COUNT = LAST_SUB
 };
+static_assert((SUB_COUNT < 128), "too many substances, should be < 128.");
 
 enum usage_types {
     USAGE_TYPE_NO,

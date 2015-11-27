@@ -20,10 +20,10 @@
 #ifndef BLOCK_FACTORY_H
 #define BLOCK_FACTORY_H
 
+#include "blocks/Block.h"
 #include "header.h"
 #include <QtCore/qcompilerdetection.h>
 
-class Block;
 class Inventory;
 class QDataStream;
 typedef unsigned char quint8;
@@ -45,7 +45,6 @@ typedef unsigned char quint8;
 class BlockFactory final {
 public:
      BlockFactory();
-    ~BlockFactory();
 
     /// Use this to receive a pointer to normal block.
     static Block* Normal(int sub);
@@ -87,7 +86,7 @@ private:
      *  @return kind-sub pair is valid. */
     static Q_DECL_RELAXED_CONSTEXPR bool IsValid(kinds, subs);
 
-    Block* const normals[SUB_COUNT];
+    static Block normals[SUB_COUNT];
 
     // Block registration system:
 
