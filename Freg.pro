@@ -20,20 +20,14 @@ QMAKE_CXXFLAGS += \
     -Wdisabled-optimization -Wcast-align -Wcast-qual \
     -Wmissing-include-dirs -Wredundant-decls -Wshadow
 
-!for_coverity {
-    QMAKE_CXXFLAGS += -Weffc++
-}
-
-clang {
-    QMAKE_CXX  = clang++
-    QMAKE_LINK = clang++
-} else {
+gcc {
     QMAKE_CXXFLAGS_RELEASE += -s
     QMAKE_CXXFLAGS += -Wdouble-promotion -Wlogical-op
 }
 
 unix {
     QMAKE_CXXFLAGS += -Wold-style-cast
+    QMAKE_CXXFLAGS += -Weffc++
     LIBS += -lncursesw
     target.path += /usr/bin
     INSTALLS += target
@@ -45,13 +39,13 @@ unix {
 INCLUDEPATH += .
 
 HEADERS +=  *.h \
-     blocks/*.h \
-    screens/*.h
+     $$PWD/blocks/*.h \
+    $$PWD/screens/*.h
 
 CONFIG( debug, debug|release ) {
     SOURCES +=  *.cpp \
-         blocks/*.cpp \
-        screens/*.cpp
+         $$PWD/blocks/*.cpp \
+        $$PWD/screens/*.cpp
 } else {
     SOURCES += everything/everything.cpp
 }

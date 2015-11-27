@@ -21,6 +21,7 @@
 #define BLOCK_FACTORY_H
 
 #include "header.h"
+#include <QtCore/qcompilerdetection.h>
 
 class Block;
 class Inventory;
@@ -84,7 +85,7 @@ private:
      *
      *  If pair is not valid, it doesn't mean that such block cannot exist.
      *  @return kind-sub pair is valid. */
-    static constexpr bool IsValid(kinds, subs);
+    static Q_DECL_RELAXED_CONSTEXPR bool IsValid(kinds, subs);
 
     Block* const normals[SUB_COUNT];
 

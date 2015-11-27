@@ -128,7 +128,7 @@ public:
     /// Important! Use it if block won't be deleted after SaveToFile.
     void RestoreDurabilityAfterSave() { durability >>= 4; }
 
-    constexpr static sub_groups GetSubGroup(int sub);
+    Q_DECL_RELAXED_CONSTEXPR static sub_groups GetSubGroup(int sub);
     static dirs MakeDirFromDamage(int damage_kind);
 
     /// 10 bits to store durability in file, signed.
@@ -143,7 +143,7 @@ protected:
     quint16 noteId;
 
 private:
-    constexpr static int Transparency(int sub);
+    Q_DECL_RELAXED_CONSTEXPR static int Transparency(int sub);
 
     qint16 durability;
     const quint8 transparent;
@@ -151,26 +151,5 @@ private:
     const quint8 substance;
     quint8 direction;
 };
-
-constexpr sub_groups Block::GetSubGroup(const int sub) {
-    switch ( sub ) {
-    default:     return GROUP_NONE;
-    case AIR:
-    case STAR:   return GROUP_AIR;
-
-    case H_MEAT:
-    case A_MEAT: return GROUP_MEAT;
-
-    case STONE:
-    case DIAMOND:
-    case WOOD:
-    case BONE:   return GROUP_HANDY;
-
-    case IRON:
-    case GOLD:
-    case ADAMANTINE:
-    case STEEL:  return GROUP_METAL;
-    }
-}
 
 #endif // BLOCK_H

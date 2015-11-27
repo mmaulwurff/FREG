@@ -121,7 +121,9 @@ Block* BlockFactory::ReplaceWithNormal(Block* const block) {
     }
 }
 
-constexpr bool BlockFactory::IsValid(const kinds kind, const subs sub) {
+Q_DECL_RELAXED_CONSTEXPR bool BlockFactory::IsValid(const kinds kind,
+                                                    const subs sub)
+{
     const sub_groups group = Block::GetSubGroup(sub);
     switch ( kind ) {
     case BLOCK:     return true;

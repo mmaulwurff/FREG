@@ -56,7 +56,7 @@ QString Block::FullName() const {
         arg(TrManager::SubName(Sub()));
 }
 
-constexpr int Block::Transparency(const int sub) {
+Q_DECL_RELAXED_CONSTEXPR int Block::Transparency(const int sub) {
     switch ( sub ) {
     default:    return BLOCK_OPAQUE;
     case WATER:
@@ -315,3 +315,24 @@ Block::Block(QDataStream& stream, const kinds kind, const subs sub)
 }
 
 Block::~Block() {}
+
+Q_DECL_RELAXED_CONSTEXPR sub_groups Block::GetSubGroup(const int sub) {
+    switch ( sub ) {
+    default:     return GROUP_NONE;
+    case AIR:
+    case STAR:   return GROUP_AIR;
+
+    case H_MEAT:
+    case A_MEAT: return GROUP_MEAT;
+
+    case STONE:
+    case DIAMOND:
+    case WOOD:
+    case BONE:   return GROUP_HANDY;
+
+    case IRON:
+    case GOLD:
+    case ADAMANTINE:
+    case STEEL:  return GROUP_METAL;
+    }
+}

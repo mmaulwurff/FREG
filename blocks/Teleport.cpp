@@ -22,6 +22,7 @@
 #include "blocks/Animal.h"
 #include "blocks/Teleport.h"
 
+#include <QDataStream>
 #include <QTextStream>
 
 Teleport::Teleport(const kinds kind, const subs sub)

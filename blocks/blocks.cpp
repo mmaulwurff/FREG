@@ -23,6 +23,8 @@
 #include "TrManager.h"
 #include "SortedArray.h"
 #include "Shred.h"
+
+#include <QDataStream>
 #include <QTextStream>
 #include <QTime>
 
@@ -46,7 +48,7 @@
         case STONE:    return QObject::tr("Rock with ledges");
         case GREENERY: return QObject::tr("Liana");
         default:       return Block::FullName();
-    }
+        }
     }
 
     bool Ladder::Catchable() const { return true; }
