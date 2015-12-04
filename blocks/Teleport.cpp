@@ -21,6 +21,7 @@
 #include "WorldMap.h"
 #include "blocks/Animal.h"
 #include "blocks/Teleport.h"
+#include "header.h"
 
 #include <QDataStream>
 #include <QTextStream>

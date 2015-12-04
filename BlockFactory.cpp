@@ -18,6 +18,7 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "BlockFactory.h"
+
 #include "blocks/blocks.h"
 #include "blocks/Dwarf.h"
 #include "blocks/Bucket.h"
@@ -31,6 +32,7 @@
 #include "blocks/Accumulator.h"
 #include "blocks/Text.h"
 #include "blocks/Pipe.h"
+
 #include <QDataStream>
 #include <QDebug>
 #include <type_traits>
@@ -117,9 +119,7 @@ Block* BlockFactory::ReplaceWithNormal(Block* const block) {
     }
 }
 
-Q_DECL_RELAXED_CONSTEXPR bool BlockFactory::IsValid(const kinds kind,
-                                                    const subs sub)
-{
+bool BlockFactory::IsValid(const kinds kind, const subs sub) {
     const sub_groups group = Block::GetSubGroup(sub);
     switch ( kind ) {
     case BLOCK:     return true;

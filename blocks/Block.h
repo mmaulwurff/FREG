@@ -23,7 +23,6 @@
 #ifndef BLOCK_H
 #define BLOCK_H
 
-#include "header.h"
 #include <QtGlobal>
 
 #define BLOCK_CONSTRUCTORS(BlockClass)     \
@@ -60,6 +59,12 @@ enum sub_groups {
     GROUP_METAL,
     GROUP_HANDY,
 };
+
+enum kinds : uint8_t;
+enum subs  : uint8_t;
+enum dirs  : int;
+enum usage_types : int;
+enum push_reaction : int;
 
 /** Block without special physics and attributes. */
 class Block {
@@ -128,7 +133,7 @@ public:
     /// Important! Use it if block won't be deleted after SaveToFile.
     void RestoreDurabilityAfterSave() { durability >>= 4; }
 
-    Q_DECL_RELAXED_CONSTEXPR static sub_groups GetSubGroup(int sub);
+    static sub_groups GetSubGroup(int sub);
     static dirs MakeDirFromDamage(int damage_kind);
 
     /// 10 bits to store durability in file, signed.

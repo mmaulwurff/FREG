@@ -22,6 +22,7 @@
 #include "blocks/Inventory.h"
 #include "DeferredAction.h"
 #include "BlockFactory.h"
+#include "Id.h"
 
 void DeferredAction::GhostMove() const {
     const dirs direction = static_cast<dirs>(num);
@@ -69,12 +70,12 @@ void DeferredAction::Build() const {
     inv->Pull(srcSlot);
     // put more material in building inventory slot:
     if ( not inv->IsEmpty(srcSlot) ) return;
-    const int id = BlockFactory::MakeId(material->Kind(), material->Sub());
+    const Id id(material->Kind(), material->Sub());
     for (int i = srcSlot+1; i < inv->Size() &&
             inv->Number(srcSlot) < Inventory::MAX_STACK_SIZE; ++i)
     {
         const Block* const block = inv->ShowBlock(i);
-        if ( block && id==BlockFactory::MakeId(block->Kind(), block->Sub()) ) {
+        if ( block && id==Id(block->Kind(), block->Sub()) ) {
             inv->MoveInside(i, srcSlot, inv->Number(i));
         }
     }

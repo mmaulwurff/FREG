@@ -26,6 +26,7 @@
 #include "TrManager.h"
 #include "blocks/Animal.h"
 #include "blocks/Inventory.h"
+#include "Id.h"
 
 #include <QSettings>
 #include <QTextStream>
@@ -123,7 +124,7 @@ void Player::Examine(const Block* const block) const {
             "DEBUG. Kind: %1, sub: %2, id: %3. Weight: %4. Light radius: %5.").
             arg(block->Kind()).
             arg(block->Sub()).
-            arg(BlockFactory::MakeId(block->Kind(), block->Sub())).
+            arg(Id(block->Kind(), block->Sub()).id).
             arg(block->Weight()).
             arg(block->LightRadius()));
         Notify(Str(

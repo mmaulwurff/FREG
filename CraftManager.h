@@ -28,8 +28,9 @@ struct CraftItem final {
 
     bool operator<(const CraftItem& item) const;
 
-    const int number;
-    const int kind, sub;
+    const int   number;
+    const kinds kind;
+    const subs  sub;
 }; // CraftItem
 
 /** * This class represents craft recipe.

@@ -22,11 +22,9 @@
 
 #include "blocks/Block.h"
 #include "header.h"
-#include <QtCore/qcompilerdetection.h>
 
 class Inventory;
 class QDataStream;
-typedef unsigned char quint8;
 
 /** * This class is used for creating and deleting blocks,
     * also for loading them from file.
@@ -67,13 +65,6 @@ public:
      *  Can delete block, use carefully. */
     static Block* ReplaceWithNormal(Block* block);
 
-    constexpr static int MakeId(const int kind, const int sub) {
-        return (kind << 6) | sub;
-    }
-
-    constexpr static int KindFromId(const int id) { return (id >>   8); }
-    constexpr static int SubFromId (const int id) { return (id & 0xff); }
-
     static Inventory* Block2Inventory(Block*);
 
 private:
@@ -84,7 +75,7 @@ private:
      *
      *  If pair is not valid, it doesn't mean that such block cannot exist.
      *  @return kind-sub pair is valid. */
-    static Q_DECL_RELAXED_CONSTEXPR bool IsValid(kinds, subs);
+    static bool IsValid(kinds, subs);
 
     static Block normals[SUB_COUNT];
 

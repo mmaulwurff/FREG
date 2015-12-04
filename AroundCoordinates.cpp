@@ -19,6 +19,7 @@
 
 #include "AroundCoordinates.h"
 #include "World.h"
+#include "header.h"
 
 // AroundCoordinates:: section
 

@@ -17,9 +17,10 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include "BlockFactory.h"
 #include "TrManager.h"
 #include "CraftManager.h"
+#include "Id.h"
+
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
@@ -29,9 +30,8 @@
 // CraftItem section
 
 bool CraftItem::operator<(const CraftItem& item) const {
-    return
-        BlockFactory::MakeId(item.kind, item.sub) <
-        BlockFactory::MakeId(     kind,      sub);
+    return Id(item.kind, item.sub).id
+         < Id(     kind,      sub).id;
 }
 
 // CraftList section

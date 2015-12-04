@@ -20,6 +20,8 @@
 #ifndef HEADER_H
 #define HEADER_H
 
+#include <cstdint>
+
 #define M_DISABLE_COPY(Class) \
 Class(const Class&) = delete; \
 Class& operator=(const Class&) = delete;
@@ -92,7 +94,7 @@ enum shred_type {
     SHRED_OUT_BORDER = SHRED_WATER
 };
 
-enum dirs {
+enum dirs : int {
     ANYWHERE = 0,
     UP = 0, ///< 0
     DOWN,   ///< 1
@@ -104,7 +106,7 @@ enum dirs {
 };
 const int DIRS_COUNT = LAST_DIR + 1;
 
-enum push_reaction {
+enum push_reaction : int {
     MOVABLE,
     ENVIRONMENT,
     NOT_MOVABLE,
@@ -113,7 +115,7 @@ enum push_reaction {
     DAMAGE,
 };
 
-enum times_of_day {
+enum times_of_day : int {
     TIME_NIGHT,
     TIME_MORNING,
     TIME_NOON,
@@ -215,21 +217,21 @@ X(QT_TRANSLATE_NOOP("Block", "dust"      ), SUB_DUST,    BLACK_BLACK,  )\
 X(QT_TRANSLATE_NOOP("Block", "plastic"   ), SUB_PLASTIC, GREEN_BLACK,  )\
 /// [List of subs]
 
-enum kinds {
+enum kinds : uint8_t {
     KIND_TABLE(X_ENUM)
     LAST_KIND, ///< Nothing is LAST_KIND.
     KIND_COUNT = LAST_KIND
 };
 static_assert((KIND_COUNT < 256), "too many kinds, should be < 256.");
 
-enum subs {
+enum subs : uint8_t {
     SUB_TABLE(X_ENUM)
     LAST_SUB, ///< Nothing is made from LAST_SUB.
     SUB_COUNT = LAST_SUB
 };
 static_assert((SUB_COUNT < 128), "too many substances, should be < 128.");
 
-enum usage_types {
+enum usage_types : int{
     USAGE_TYPE_NO,
     USAGE_TYPE_OPEN,
     USAGE_TYPE_READ,
@@ -246,7 +248,7 @@ enum transparency {
 };
 
 /// Damage kinds can be combined, except for different DAMAGE_PUSH_.
-enum damage_kinds { // 16 bits used.
+enum damage_kinds : int { // only 16 bits are used.
     DAMAGE_NO            = 0b0000000000000000,
     // weapon damage types:
     DAMAGE_MINE          = 0b0000000000000001,

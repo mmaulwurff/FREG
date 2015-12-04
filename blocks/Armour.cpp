@@ -18,6 +18,7 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "blocks/Armour.h"
+#include "header.h"
 
 // Armour section
     void Armour::Damage(const int dmg, const int dmg_kind) {

@@ -181,9 +181,4 @@ private:
     std::forward_list<class Falling*> fallList;
 };
 
-struct KindSub {
-    kinds kind;
-    subs  sub;
-};
-
 #endif // SHRED_H

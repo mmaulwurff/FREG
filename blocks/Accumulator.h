@@ -22,6 +22,8 @@
 
 #include "blocks/Block.h"
 
+enum damage_kinds : int;
+
 class Accumulator : public Block {
 public:
     BLOCK_CONSTRUCTORS(Accumulator)

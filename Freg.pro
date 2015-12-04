@@ -21,8 +21,10 @@ QMAKE_CXXFLAGS += \
     -Wmissing-include-dirs -Wredundant-decls -Wshadow
 
 gcc {
+!clang {
     QMAKE_CXXFLAGS_RELEASE += -s
     QMAKE_CXXFLAGS += -Wdouble-promotion -Wlogical-op
+}
 }
 
 unix {
@@ -40,7 +42,7 @@ INCLUDEPATH += .
 
 HEADERS +=  *.h \
      $$PWD/blocks/*.h \
-    $$PWD/screens/*.h
+    $$PWD/screens/*.h \
 
 CONFIG( debug, debug|release ) {
     SOURCES +=  *.cpp \

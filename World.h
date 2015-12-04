@@ -20,7 +20,6 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-#include "header.h"
 #include "WaysTree.h"
 
 #include <algorithm>
@@ -33,6 +32,8 @@
 
 class Block;
 class Shred;
+enum dirs : int;
+enum times_of_day : int;
 
 /** World provides global physics and shred connection.
  *  World is a singleton. */

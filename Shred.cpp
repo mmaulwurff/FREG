@@ -26,6 +26,7 @@
 #include "TrManager.h"
 #include "AroundCoordinates.h"
 #include "ShredStorage.h"
+#include "Id.h"
 
 #include <QDataStream>
 #include <QTextStream>

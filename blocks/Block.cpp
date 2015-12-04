@@ -316,7 +316,7 @@ Block::Block(QDataStream& stream, const kinds kind, const subs sub)
 
 Block::~Block() {}
 
-Q_DECL_RELAXED_CONSTEXPR sub_groups Block::GetSubGroup(const int sub) {
+sub_groups Block::GetSubGroup(const int sub) {
     switch ( sub ) {
     default:     return GROUP_NONE;
     case AIR:
