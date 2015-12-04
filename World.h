@@ -34,11 +34,9 @@
 class Block;
 class Shred;
 
+/** World provides global physics and shred connection.
+ *  World is a singleton. */
 class World final : public QThread {
-    /** \class World world.h
-     *  \brief World provides global physics and shred connection.
-     *
-     * Designed to be single. */
     Q_OBJECT
     Q_DISABLE_COPY(World)
 
@@ -47,8 +45,7 @@ public:
      World(const QString& world_name, bool* error);
     ~World();
 
-///\name Static information section
-///@{
+/** @name Static information section */ ///@{
     static World* GetWorld();
     static const World* GetCWorld();
     static QString WorldName();
@@ -60,8 +57,7 @@ public:
     static int GetBound();
 ///@}
 
-///\name Information section
-///@{
+/** @name Information section */ ///@{
     /// Get coordinates near block.
     /** @param[in] x, y, z Coordinates of block.
      *  @param[out] x_targ, y_targ, z_targ Received focus coordinates.
@@ -78,8 +74,7 @@ public:
     class ShredStorage* GetShredStorage();
 ///@}
 
-///\name Block work section
-///@{
+/** @name Block work section */ ///@{
     Block* GetBlock(int x, int y, int z) const;
     Shred* GetShred(int i, int j) const;
 
@@ -88,8 +83,7 @@ public:
     Shred* GetNearShred(Shred*, dirs dir) const;
 ///@}
 
-///\name Lighting section
-///@{
+/** @name Lighting section */ ///@{
     int Enlightened(int x, int y, int z) const;
     /// Provides lighting of block side, not all block.
     int Enlightened(int x, int y, int z, dirs dir) const;
@@ -103,15 +97,13 @@ public:
     /// powerful illuminators) will not overflow lighting storage (8 bit).
     static const int MAX_LIGHT_RADIUS = 5;
 
-///\name Visibility section
-///@{
+/** @name Visibility section */ ///@{
     bool DirectlyVisible(const Xyz& from, const Xyz& to) const;
     /// At least one side of block is visible.
     bool Visible(const Xyz& from, const Xyz& to) const;
 ///@}
 
-///\name Movement section
-///@{
+/** @name Movement section */ ///@{
     bool Move(int x, int y, int z, dirs dir); ///< Check and move
     void Jump(int x, int y, int z, dirs dir);
 ///@}
@@ -127,8 +119,7 @@ public:
         SECONDS_IN_DAYLIGHT = SECONDS_IN_DAY-END_OF_NIGHT
     };
 
-///\name Time section
-///@{
+/** @name Time section */ ///@{
     int TimeOfDay() const; ///< Get seconds from start of current day.
     int MiniTime()  const; ///< Get number of time steps since second start.
     quint64 Time()  const; ///< Get time in seconds since world creation.
@@ -136,8 +127,7 @@ public:
     times_of_day PartOfDay() const;
 ///@}
 
-///\name Interactions section
-///@{
+/** @name Interactions section */ ///@{
     /// Returns damaged block result durability.
     int Damage(int x, int y, int z, int level, int dmg_kind);
     /// Does not check target block durability.
@@ -148,8 +138,7 @@ public:
     bool Inscribe(int x, int y, int z);
 ///@}
 
-///\name Inventory functions section
-///@{
+/** @name Inventory functions section */ ///@{
     /// Returns true on success.
     bool Drop(Block* from, int x_to, int y_to, int z_to,
             int src, int dest, int num);
@@ -157,8 +146,7 @@ public:
             int src, int dest, int num);
 ///@}
 
-///\name Block information section
-///@{
+/** @name Block information section */ ///@{
     bool InBounds(int x, int y) const;
     bool InBounds(int x, int y, int z) const;
 
@@ -167,8 +155,7 @@ public:
     QString GetNote(int note_id) const;
 ///@}
 
-///\name World section
-///@{
+/** @name World section */ ///@{
     void ReloadAllShreds(const QString& new_world, qint64 lati, qint64 longi,
             int new_x, int new_y, int new_z);
 
@@ -204,8 +191,7 @@ private:
     static const int TIME_STEPS_IN_SEC = 10;
     static const int MIN_WORLD_SIZE;
 
-///\name private Lighting section
-///@{
+/** @name private Lighting section */ ///@{
     /// Make all tree shine.
     void Shine(const XyzInt&, int level, const WaysTree* tree);
 
@@ -225,11 +211,11 @@ private:
     /// Called from ReloadShreds(int), enlightens only needed shreds.
     void ReEnlightenMove(dirs);
 
-    /** @brief Checks if lighting should be updated after operation on blocks.
+    /** checks if lighting should be updated after operation on blocks.
      *  @param block1, block2 blocks to compare.
      *  @param x, y, z coordinates of relighting center.
-     *  @param skipBlock1 to skip or not to skip block1 when relighting.
-     */
+     *  @param skip_block to skip or not to skip block1 when relighting.
+     *  @param add_block block added to shining. */
     void ReEnlightenCheck(const Block* block1, const Block* block2,
             int x, int y, int z,
             const Block* skip_block, const Block* add_block);
@@ -241,8 +227,7 @@ private:
         CAN_MOVE_DESTROYED
     };
 
-///\name Private movement section
-///@{
+/** @name Private movement section */ ///@{
     /// This CAN move blocks, but not xyz block.
     can_move_results CanMove(int x,    int y,    int z,
                              int x_to, int y_to, int z_to, dirs dir);

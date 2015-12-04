@@ -248,13 +248,13 @@ void Inventory::Shake() {
     }
 }
 
-Inventory::Inventory(const int sz) :
-        inventorySize(sz),
-        inventory(new QStack<Block*>[sz])
+Inventory::Inventory(const int sz)
+    : inventorySize(sz)
+    , inventory(new QStack<Block*>[sz])
 {}
 
-Inventory::Inventory(QDataStream& str, const int sz) :
-        Inventory(sz)
+Inventory::Inventory(QDataStream& str, const int sz)
+    : Inventory(sz)
 {
     for (int i=0; i<Size(); ++i) {
         quint8 num;

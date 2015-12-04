@@ -34,13 +34,13 @@
 #define UNDERGROUND_ONLY false
 
 WorldMap::WorldMap(const QString& world_name, InitialConstructor)
-    :   worldName(world_name),
-        map(),
-        spawnLongitude(),
-        spawnLatitude(),
-        defaultShred(),
-        outerShred(),
-        randomEngine()
+    : worldName(world_name)
+    , map()
+    , spawnLongitude()
+    , spawnLatitude()
+    , defaultShred()
+    , outerShred()
+    , randomEngine()
 {}
 
 // Generation constructor.
@@ -48,14 +48,14 @@ WorldMap::WorldMap(const QString& world_name,
                    const int size,
                    const char outer,
                    const int seed)
-    :   WorldMap(world_name, InitialConstructor{})
+    : WorldMap(world_name, InitialConstructor{})
 {
     GenerateMap(size, outer, seed);
 }
 
 // Loading constructor.
 WorldMap::WorldMap(const QString& world_name)
-    :   WorldMap(world_name, InitialConstructor{})
+    : WorldMap(world_name, InitialConstructor{})
 {
     IniSettings map_info(world_name + Str("/map.ini"));
     defaultShred = map_info.value(Str("default_shred"), QChar(SHRED_PLAIN)).

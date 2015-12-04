@@ -32,7 +32,7 @@
 #include <QMutexLocker>
 
 struct PlayerFocusXyz : public XyzInt {
-    PlayerFocusXyz(const Player* const player) : XyzInt() {
+    explicit PlayerFocusXyz(const Player* const player) : XyzInt() {
         emit player->GetFocus(&x_self, &y_self, &z_self);
     }
 };
@@ -408,6 +408,20 @@ void Player::ProcessGetCommand(QTextStream& command_stream) {
     if ( inv == nullptr ) return;
     QString kind, sub;
     command_stream >> kind >> sub;
+
+    auto listKindsMessage = [this]() {
+        QStringList kindNames;
+        kindNames.reserve(KIND_COUNT);
+        for (int i = 0; i < KIND_COUNT; ++i) {
+            kindNames.append(TrManager::KindName(i));
+        }
+        Notify(tr("Available kinds: ") + kindNames.join(Str(", ")) + Str("."));
+    };
+
+    if (kind.isEmpty()) {
+        listKindsMessage();
+        return;
+    }
     kinds kind_code;
     subs sub_code;
     switch (UniqueIntFromString(kind.toLatin1())) { // aliases
@@ -428,6 +442,7 @@ void Player::ProcessGetCommand(QTextStream& command_stream) {
                 break;
             } else {
                 Notify(tr("There is no kind \"") + kind + Str("\"."));
+                listKindsMessage();
                 return;
             }
         }

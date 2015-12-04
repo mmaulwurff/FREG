@@ -17,9 +17,8 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-/**\file Lighting-inertia.cpp
-    * \brief This file provides dynamic lighting for freg.
-    *
+/** @file
+    * This file provides dynamic lighting for freg.
     * There is only illuminator light (no sun). */
 
 #include "World.h"
@@ -104,15 +103,14 @@ void World::ReEnlighten() {
 }
 
 void World::ReEnlightenAll() {
-    blockSignals(true);
+    const QSignalBlocker signalBlocker(this);
     for (int i=0; i<NumShreds()*NumShreds(); ++i) {
         shreds[i]->ShineAll();
     }
-    blockSignals(false);
 }
 
 void World::ReEnlightenMove(const dirs dir) {
-    blockSignals(true);
+    const QSignalBlocker signalBlocker(this);
     switch ( dir ) {
     case NORTH:
         for (int i=0; i<NumShreds(); ++i) {
@@ -140,7 +138,6 @@ void World::ReEnlightenMove(const dirs dir) {
         break;
     default: Q_UNREACHABLE(); break;
     }
-    blockSignals(false);
 }
 
 void World::AddLight(const XyzInt& xyz, const int level) {

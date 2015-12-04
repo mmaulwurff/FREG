@@ -23,14 +23,13 @@
 #include "blocks/Active.h"
 #include "blocks/Inventory.h"
 
+/** Multi-purpose container for blocks.
+ *
+ *  Behaviour depends on substance:
+ *  - container from IRON (locker) and WATER (fridge) prevents all activity
+ *    inside;
+ *  - container from other substances are different chests. */
 class Container : public Active, public Inventory {
-    /** \class Container Container.h
-     *  \brief Container is multi-purpose container for blocks.
-     *
-     *  Behaviour depends on substance:
-     *  - container from IRON (locker) and WATER (fridge) prevents all activity
-     *    inside;
-     *  - container from other substances are different chests. */
     Q_OBJECT
 public:
     Container(kinds, subs, int size = INV_SIZE);
@@ -52,13 +51,12 @@ protected:
     void SaveAttributes(QDataStream& out) const override;
 }; // Container
 
+/** Box represents falling inventory.
+ *
+ *  Unlike chests, position of box is not static, it can be moved and falls
+ *  when it can.
+ *  Also, pile is box of substance DIFFERENT, it will disappear if empty.*/
 class Box : public Falling, public Inventory {
-    /** \class Box Box.h
-     *  \brief Box represents falling inventory.
-     *
-     *  Unlike chests, position of box is not static, it can be moved and falls
-     *  when it can.
-     *  Also, pile is box of substance DIFFERENT, it will disappear if empty.*/
     Q_OBJECT
 public:
     BLOCK_CONSTRUCTORS(Box)
@@ -76,10 +74,9 @@ protected:
     void SaveAttributes(QDataStream& out) const override;
 }; // Box
 
+/** Workbench allows craft from multiple sources. There can be up to
+ *  2 products. Also can be used as container of smaller size. */
 class Workbench : public Container {
-    /** \class Workbench Container.h
-     *  \brief Workbench allows craft from multiple sources. There can be up to
-     *  2 products. Also can be used as container of smaller size. */
     Q_OBJECT
 public:
     BLOCK_CONSTRUCTORS(Workbench)
@@ -95,7 +92,7 @@ private:
     void Craft();
 }; // Workbench
 
-/// @brief Converter blocks convert fuel into energy.
+/// Converter blocks convert fuel into energy.
 class Converter : public Container {
     Q_OBJECT
 public:

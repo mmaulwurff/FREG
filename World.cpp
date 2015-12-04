@@ -608,26 +608,31 @@ int World::CorrectNumActiveShreds(int num, const int num_shreds) {
 
 World* World::world = nullptr;
 
-World::World(const QString& world_name, bool* const error) :
-        worldName(world_name),
-        map(new WorldMap(world_name)),
-        time(), timeStep(),
-        shreds(),
-        longitude(), latitude(),
-        gameSettings(new IniSettings(Str("freg.ini"))),
-        numShreds(CorrectNumShreds(gameSettings->value(
-            Str("number_of_shreds"), MIN_WORLD_SIZE + 1).toInt())),
-        numActiveShreds(CorrectNumActiveShreds(gameSettings->value(
-            Str("number_of_active_shreds"), numShreds).toInt(), numShreds)),
-        mutex(),
-        newLati(), newLongi(),
-        newX(), newY(), newZ(),
-        newWorld(),
-        toResetDir(UP),
-        shredStorage(),
-        notes(),
-        tempShiningList(),
-        lightWaysTree()
+World::World(const QString& world_name, bool* const error)
+    : worldName(world_name)
+    , map(new WorldMap(world_name))
+    , time()
+    , timeStep()
+    , shreds()
+    , longitude()
+    , latitude()
+    , gameSettings(new IniSettings(Str("freg.ini")))
+    , numShreds(CorrectNumShreds(gameSettings->value(
+        Str("number_of_shreds"), MIN_WORLD_SIZE + 1).toInt()))
+    , numActiveShreds(CorrectNumActiveShreds(gameSettings->value(
+        Str("number_of_active_shreds"), numShreds).toInt(), numShreds))
+    , mutex()
+    , newLati()
+    , newLongi()
+    , newX()
+    , newY()
+    , newZ()
+    , newWorld()
+    , toResetDir(UP)
+    , shredStorage()
+    , notes()
+    , tempShiningList()
+    , lightWaysTree()
 {
     Q_ASSERT(world == nullptr); // world is a singleton.
     world = this;

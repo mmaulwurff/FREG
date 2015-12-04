@@ -17,8 +17,8 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-/**\file VirtualScreen.cpp
- * \brief This file provides definitions of code common to all freg screens. */
+/** @file
+ * This file provides definitions of code common to all freg screens. */
 
 #include "screens/VirtualScreen.h"
 #include "Player.h"

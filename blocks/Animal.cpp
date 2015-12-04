@@ -46,7 +46,7 @@
         if ( GROUP_MEAT != GetSubGroup(Sub()) ) return;
         EatAround();
         if ( not IsSubAround(AIR) ) {
-            if ( breath <= 0 ) {
+            if ( breath == 0 ) {
                 Damage(10, DAMAGE_BREATH);
             } else {
                 --breath;
@@ -132,16 +132,16 @@
             deferredAction;
     }
 
-    Animal::Animal(const kinds kind, const subs sub) :
-            Falling(kind, sub),
-            breath(MAX_BREATH),
-            satiation(World::SECONDS_IN_DAY)
+    Animal::Animal(const kinds kind, const subs sub)
+        : Falling(kind, sub)
+        , breath(MAX_BREATH)
+        , satiation(World::SECONDS_IN_DAY)
     {}
 
-    Animal::Animal(QDataStream& str, const kinds kind, const subs sub) :
-            Falling(str, kind, sub),
-            breath(),
-            satiation()
+    Animal::Animal(QDataStream& str, const kinds kind, const subs sub)
+        : Falling(str, kind, sub)
+        , breath()
+        , satiation()
     {
         str >> breath >> satiation;
     }

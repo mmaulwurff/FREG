@@ -30,6 +30,9 @@ const bool DEBUG = false;
 const bool DEBUG = true;
 #endif
 
+template <typename T, int N>
+constexpr int sizeofArray(T(&)[N]) { return N; }
+
 #define ALL(container) std::begin(container), std::end(container)
 #define const_int(x, y, z) const int x, const int y, const int z
 
@@ -117,13 +120,13 @@ enum times_of_day {
     TIME_EVENING
 };
 
-/** \page kinds List of available block kinds
+/** @page kinds List of available block kinds
  *  Complete list.
  *  These kinds can be used as parameters to `get KIND SUB` command.
  *  Changing kind order will break file compatibility.
  *  Do not use space in strings, use '_'.
  *  Add new kinds to bottom.
- *  \snippet header.h List of kinds */
+ *  @snippet header.h List of kinds */
 /// [List of kinds]
 /// (context, translatable class name), enum element, character, class)
 #define KIND_TABLE(X) \
@@ -166,7 +169,7 @@ X(QT_TRANSLATE_NOOP("Block", "Accumulator" ), ACCUMULATOR, '=',  Accumulator,)\
 X(QT_TRANSLATE_NOOP("Block", "Pipe"        ), PIPE,        '|',  Pipe,       )\
 /// [List of kinds]
 
-/** \page subs List of available substances
+/** @page subs List of available substances
  *  Complete list.
  *  These substances can be used as parameters to `get KIND SUB` command.
  *  Don't make blocks (BLOCK kind) from SKY, they are special for
@@ -174,7 +177,7 @@ X(QT_TRANSLATE_NOOP("Block", "Pipe"        ), PIPE,        '|',  Pipe,       )\
  *  Don't make non-BLOCK blocks from air, otherwise memory leaks are possible.
  *  Don't change order, this will break save file compatibility.
  *  Add new substances to bottom.
- *  \snippet header.h List of subs */
+ *  @snippet header.h List of subs */
 /// [List of subs]
 /// X(QT_TRANSLATE_NOOP(context, translatable name), enum element, color)
 #define SUB_TABLE(X) \
@@ -217,12 +220,14 @@ enum kinds {
     LAST_KIND, ///< Nothing is LAST_KIND.
     KIND_COUNT = LAST_KIND
 };
+static_assert((KIND_COUNT < 256), "too many kinds, should be < 256.");
 
 enum subs {
     SUB_TABLE(X_ENUM)
     LAST_SUB, ///< Nothing is made from LAST_SUB.
     SUB_COUNT = LAST_SUB
 };
+static_assert((SUB_COUNT < 128), "too many substances, should be < 128.");
 
 enum usage_types {
     USAGE_TYPE_NO,
@@ -240,7 +245,7 @@ enum transparency {
     INVISIBLE,
 };
 
-/// @brief Damage kinds can be combined, except for different DAMAGE_PUSH_.
+/// Damage kinds can be combined, except for different DAMAGE_PUSH_.
 enum damage_kinds { // 16 bits used.
     DAMAGE_NO            = 0b0000000000000000,
     // weapon damage types:

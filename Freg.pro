@@ -20,20 +20,14 @@ QMAKE_CXXFLAGS += \
     -Wdisabled-optimization -Wcast-align -Wcast-qual \
     -Wmissing-include-dirs -Wredundant-decls -Wshadow
 
-!for_coverity {
-    QMAKE_CXXFLAGS += -Weffc++
-}
-
-clang {
-    QMAKE_CXX  = clang++
-    QMAKE_LINK = clang++
-} else {
+gcc {
     QMAKE_CXXFLAGS_RELEASE += -s
     QMAKE_CXXFLAGS += -Wdouble-promotion -Wlogical-op
 }
 
 unix {
     QMAKE_CXXFLAGS += -Wold-style-cast
+    QMAKE_CXXFLAGS += -Weffc++
     LIBS += -lncursesw
     target.path += /usr/bin
     INSTALLS += target
@@ -42,14 +36,16 @@ unix {
     PRE_TARGETDEPS += $$PWD/pdcurses/libcurses.lib
 }
 
-HEADERS +=          *.h \
-     ../freg/blocks/*.h \
-    ../freg/screens/*.h \
+INCLUDEPATH += .
+
+HEADERS +=  *.h \
+     $$PWD/blocks/*.h \
+    $$PWD/screens/*.h
 
 CONFIG( debug, debug|release ) {
-    SOURCES +=          *.cpp \
-         ../freg/blocks/*.cpp \
-        ../freg/screens/*.cpp \
+    SOURCES +=  *.cpp \
+         $$PWD/blocks/*.cpp \
+        $$PWD/screens/*.cpp
 } else {
     SOURCES += everything/everything.cpp
 }
@@ -59,7 +55,8 @@ CONFIG(console_only) {
     DEFINES += CONSOLE
 }
 
-TRANSLATIONS = *.ts
+TRANSLATIONS = \
+    freg_ru_RU.ts \
 
 RESOURCES = resources.qrc
 

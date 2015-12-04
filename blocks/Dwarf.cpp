@@ -65,7 +65,7 @@ QString Dwarf::FullName() const {
         tr("Creator") : Animal::FullName();
 }
 
-/// \todo Make all (switching lanterns on/off) light changes synchronous
+/// @todo Make all (switching lanterns on/off) light changes synchronous
 /// to avoid [un]shining in wrong place.
 int Dwarf::UpdateLightRadiusInner() const {
     const Block* const in_left  = ShowBlock(IN_LEFT );
@@ -188,14 +188,14 @@ bool Dwarf::Get(Block* const block, const int start) {
     return result;
 }
 
-Dwarf::Dwarf(const kinds kind, const subs sub) :
-        Animal(kind, sub),
-        Inventory(),
-        lightRadius(0)
+Dwarf::Dwarf(const kinds kind, const subs sub)
+    : Animal(kind, sub)
+    , Inventory()
+    , lightRadius(0)
 {}
 
-Dwarf::Dwarf(QDataStream& str, const kinds kind, const subs sub) :
-        Animal(str, kind, sub),
-        Inventory(str),
-        lightRadius(UpdateLightRadiusInner())
+Dwarf::Dwarf(QDataStream& str, const kinds kind, const subs sub)
+    : Animal(str, kind, sub)
+    , Inventory(str)
+    , lightRadius(UpdateLightRadiusInner())
 {}

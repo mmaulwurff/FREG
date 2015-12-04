@@ -17,8 +17,8 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-/**\file Block.h
- * \brief Provides definition for class Block. */
+/** @file
+ *  Provides definition for class Block. */
 
 #ifndef BLOCK_H
 #define BLOCK_H
@@ -41,7 +41,8 @@ enum wearable {
     WEARABLE_VESSEL
 };
 
-enum weights { ///< weights in measures - mz (mezuro)
+/// weights in measures - mz (mezuro)
+enum weights {
     WEIGHT_NULLSTONE = 1000,
     WEIGHT_WATER     =  500,
     WEIGHT_IRON      =  300,
@@ -60,9 +61,8 @@ enum sub_groups {
     GROUP_HANDY,
 };
 
+/** Block without special physics and attributes. */
 class Block {
-    /**\class Block Block.h
-     * \brief Block without special physics and attributes. */
 public:
     BLOCK_CONSTRUCTORS(Block)
     virtual ~Block();
@@ -128,7 +128,7 @@ public:
     /// Important! Use it if block won't be deleted after SaveToFile.
     void RestoreDurabilityAfterSave() { durability >>= 4; }
 
-    constexpr static sub_groups GetSubGroup(int sub);
+    Q_DECL_RELAXED_CONSTEXPR static sub_groups GetSubGroup(int sub);
     static dirs MakeDirFromDamage(int damage_kind);
 
     /// 10 bits to store durability in file, signed.
@@ -143,7 +143,7 @@ protected:
     quint16 noteId;
 
 private:
-    constexpr static int Transparency(int sub);
+    Q_DECL_RELAXED_CONSTEXPR static int Transparency(int sub);
 
     qint16 durability;
     const quint8 transparent;
@@ -151,26 +151,5 @@ private:
     const quint8 substance;
     quint8 direction;
 };
-
-constexpr sub_groups Block::GetSubGroup(const int sub) {
-    switch ( sub ) {
-    default:     return GROUP_NONE;
-    case AIR:
-    case STAR:   return GROUP_AIR;
-
-    case H_MEAT:
-    case A_MEAT: return GROUP_MEAT;
-
-    case STONE:
-    case DIAMOND:
-    case WOOD:
-    case BONE:   return GROUP_HANDY;
-
-    case IRON:
-    case GOLD:
-    case ADAMANTINE:
-    case STEEL:  return GROUP_METAL;
-    }
-}
 
 #endif // BLOCK_H

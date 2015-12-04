@@ -150,7 +150,7 @@ private:
     int timerTime = -1;
 };
 
-/// @brief The Signaller class notifies neighbours about impact.
+/// The Signaller class notifies neighbours about impact.
 class Signaller : public Active {
     Q_OBJECT
 public:
@@ -194,10 +194,9 @@ public:
     usage_types Use(Active* user) override;
 };
 
-/** @brief The Informer class, provides various information.
- *
- * Can be used inside inventory and outside.
- * Iron informer is compass. */
+/** The Informer class provides various information.
+ *  Can be used inside inventory and outside.
+ *  Iron informer is compass. */
 class Informer : public Block {
 public:
     using Block::Block;

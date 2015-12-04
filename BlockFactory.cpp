@@ -18,7 +18,6 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "BlockFactory.h"
-#include "blocks/Block.h"
 #include "blocks/blocks.h"
 #include "blocks/Dwarf.h"
 #include "blocks/Bucket.h"
@@ -36,21 +35,20 @@
 #include <QDebug>
 #include <type_traits>
 
-#define X_NEW_BLOCK_SUB(column1, substance, ...) new Block(BLOCK, substance),
+#define X_BLOCK_CONSTRUCT(column1, substance, ...) { BLOCK, substance },
 
 BlockFactory* BlockFactory::blockFactory = nullptr;
 
-BlockFactory::BlockFactory() :
-        normals{ SUB_TABLE(X_NEW_BLOCK_SUB) },
-        creates(),
-        loads(),
-        castsToInventory()
+Block BlockFactory::normals[] = { SUB_TABLE(X_BLOCK_CONSTRUCT) };
+
+BlockFactory::BlockFactory()
+    : creates()
+    , loads()
+    , castsToInventory()
 {
     Q_ASSERT(blockFactory == nullptr);
     blockFactory = this;
 
-    static_assert((SUB_COUNT  <=  64), "too many substances, should be < 64.");
-    static_assert((KIND_COUNT <= 128), "too many kinds, should be < 128.");
     if ( KIND_SUB_PAIR_VALID_CHECK ) {
         int sum = 0;
         for (int kind = 0; kind<LAST_KIND; ++kind)
@@ -60,11 +58,8 @@ BlockFactory::BlockFactory() :
         qDebug() << "valid pairs:" << sum;
     }
 
-    RegisterAll(typeList< KIND_TABLE(X_CLASS) TemplateTerminator >(),
-                kindList< KIND_TABLE(X_ENUM)  LAST_KIND >());
+    RegisterAll(typeList< KIND_TABLE(X_CLASS) TemplateTerminator >());
 }
-
-BlockFactory::~BlockFactory() { qDeleteAll(normals, normals + LAST_SUB); }
 
 Block* BlockFactory::NewBlock(const kinds kind, const subs sub) {
     if ( KIND_SUB_PAIR_VALID_CHECK ) {
@@ -74,7 +69,7 @@ Block* BlockFactory::NewBlock(const kinds kind, const subs sub) {
 }
 
 Block* BlockFactory::Normal(const int sub) {
-    return blockFactory->normals[sub];
+    return &(blockFactory->normals[sub]);
 }
 
 const Block* BlockFactory::ConstNormal(const int sub) { return Normal(sub); }
@@ -122,7 +117,9 @@ Block* BlockFactory::ReplaceWithNormal(Block* const block) {
     }
 }
 
-constexpr bool BlockFactory::IsValid(const kinds kind, const subs sub) {
+Q_DECL_RELAXED_CONSTEXPR bool BlockFactory::IsValid(const kinds kind,
+                                                    const subs sub)
+{
     const sub_groups group = Block::GetSubGroup(sub);
     switch ( kind ) {
     case BLOCK:     return true;
@@ -194,14 +191,14 @@ template <typename BlockType, typename Base, std::enable_if_t< not
         std::is_base_of<Base, BlockType>::value >* = nullptr>
 Base* castTo(Block*) { return nullptr; }
 
-template <typename BlockType, typename ... RestBlockTypes,
-          kinds kind, kinds ... RestKinds>
-void BlockFactory::RegisterAll(typeList<BlockType, RestBlockTypes...>,
-                               kindList<kind, RestKinds...>)
+template <typename BlockType, typename ... RestBlockTypes>
+void BlockFactory::RegisterAll(typeList<BlockType, RestBlockTypes...>)
 {
+    static const kinds kind =
+        static_cast<kinds>(KIND_COUNT - sizeof...(RestBlockTypes));
     creates[kind] = Create<BlockType, kind>;
     loads  [kind] = Load  <BlockType, kind>;
     castsToInventory[kind] = castTo<BlockType, Inventory>;
 
-    RegisterAll(typeList<RestBlockTypes...>(), kindList<RestKinds...>());
+    RegisterAll(typeList<RestBlockTypes...>());
 }

@@ -20,32 +20,31 @@
 #ifndef BLOCK_FACTORY_H
 #define BLOCK_FACTORY_H
 
+#include "blocks/Block.h"
 #include "header.h"
-#include <QtGlobal>
+#include <QtCore/qcompilerdetection.h>
 
-class Block;
 class Inventory;
 class QDataStream;
+typedef unsigned char quint8;
 
-/** \class BlockFactory BlockFactory.h
-     * \brief This class is used for creating and deleting blocks,
-     * also for loading them from file.
-     *
-     * Memory management, if any, should be implemented in this class.
-     * At the current moment no special memory management is used.
-     *
-     * Normal blocks: blocks that are not special, e.g. usual stone, air, soil
-     * are actually one block (for each substance).
-     * One can receive a pointer to such block with
-     * Block* Normal(int sub).
-     * Normal blocks are not needed to be deleted.
-     * Use Block* NewBlock(int kind, int sub) to receive a pointer to
-     * block that will be changed (damaged, inscribed, etc). */
+/** * This class is used for creating and deleting blocks,
+    * also for loading them from file.
+    *
+    * Memory management, if any, should be implemented in this class.
+    * At the current moment no special memory management is used.
+    *
+    * Normal blocks: blocks that are not special, e.g. usual stone, air, soil
+    * are actually one block (for each substance).
+    * One can receive a pointer to such block with
+    * Block* Normal(int sub).
+    * Normal blocks are not needed to be deleted.
+    * Use Block* NewBlock(int kind, int sub) to receive a pointer to
+    * block that will be changed (damaged, inscribed, etc). */
 
 class BlockFactory final {
 public:
      BlockFactory();
-    ~BlockFactory();
 
     /// Use this to receive a pointer to normal block.
     static Block* Normal(int sub);
@@ -81,15 +80,13 @@ private:
     M_DISABLE_COPY(BlockFactory)
 
     static const int KIND_SUB_PAIR_VALID_CHECK = false;
-    /**
-     * @brief IsValid check if kind-sub pair is valid in game.
+    /** IsValid check if kind-sub pair is valid in game.
      *
-     * If pair is not valid, it doesn't mean that such block cannot exist.
-     * @return kind-sub pair is valid.
-     */
-    static constexpr bool IsValid(kinds, subs);
+     *  If pair is not valid, it doesn't mean that such block cannot exist.
+     *  @return kind-sub pair is valid. */
+    static Q_DECL_RELAXED_CONSTEXPR bool IsValid(kinds, subs);
 
-    Block* const normals[SUB_COUNT];
+    static Block normals[SUB_COUNT];
 
     // Block registration system:
 
@@ -109,17 +106,13 @@ private:
     /// Type list struct for variadic template without formal parameters.
     template <typename ...> struct typeList {};
     struct TemplateTerminator {};
-    template <kinds ... someKinds> struct kindList {};
 
-    ///< Base for variadic template.
-    static void RegisterAll(typeList<TemplateTerminator>,
-                            kindList<LAST_KIND>) {}
+    /// Base for variadic template.
+    static void RegisterAll(typeList<TemplateTerminator>) {}
 
     /// Core of block registration system.
-    template <typename BlockType, typename ... RestBlockTypes,
-              kinds kind, kinds ... RestKinds>
-    void RegisterAll(typeList<BlockType, RestBlockTypes...>,
-                     kindList<kind, RestKinds...>);
+    template <typename BlockType, typename ... RestBlockTypes>
+    void RegisterAll(typeList<BlockType, RestBlockTypes...>);
 
     static BlockFactory* blockFactory;
 };

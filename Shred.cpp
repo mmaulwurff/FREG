@@ -85,19 +85,18 @@ bool Shred::LoadShred() {
 } // bool Shred::LoadShred()
 
 Shred::Shred(const int shred_x, const int shred_y,
-        const qint64 longi, const qint64 lati)
-    :
-        Weather(WEATHER_CLEAR),
-        lightMap { { {0} } },
-        longitude(longi),
-        latitude(lati),
-        shredX(shred_x),
-        shredY(shred_y),
-        type(),
-        activeListFrequent(),
-        activeListAll(),
-        shiningList(),
-        fallList()
+             const qint64 longi, const qint64 lati)
+    : Weather(WEATHER_CLEAR)
+    , lightMap { { {0} } }
+    , longitude(longi)
+    , latitude(lati)
+    , shredX(shred_x)
+    , shredY(shred_y)
+    , type()
+    , activeListFrequent()
+    , activeListAll()
+    , shiningList()
+    , fallList()
 {
     if ( LoadShred() ) return; // successful loading
     // new shred generation:
@@ -216,7 +215,7 @@ void Shred::PhysEventsRare() {
             switch ( i->ActInner() ) {
             case INNER_ACTION_ONLY:    break;
             case INNER_ACTION_NONE: i->ActRare(); break;
-            case INNER_ACTION_EXPLODE: break; /// \todo add explosion
+            case INNER_ACTION_EXPLODE: break; ///< @todo add explosion
             case INNER_ACTION_MESSAGE: break;
             }
         }

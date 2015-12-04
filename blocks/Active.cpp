@@ -151,14 +151,14 @@ bool Active::TryDestroy(const int x, const int y, const int z) const {
     }
 }
 
-Active::Active(const kinds kind, const subs sub) :
-        Block(kind, sub),
-        Xyz()
+Active::Active(const kinds kind, const subs sub)
+    : Block(kind, sub)
+    , Xyz()
 {}
 
-Active::Active(QDataStream& str, const kinds kind, const subs sub) :
-        Block(str, kind, sub),
-        Xyz()
+Active::Active(QDataStream& str, const kinds kind, const subs sub)
+    : Block(str, kind, sub)
+    , Xyz()
 {}
 
 bool Active::Gravitate(const int range, int bottom, int top,
@@ -214,16 +214,16 @@ bool Active::IsSubAround(const int sub) const {
 
 // Falling section
 
-Falling::Falling(const kinds kind, const subs sub) :
-        Active(kind, sub),
-        fallHeight(0),
-        falling(false)
+Falling::Falling(const kinds kind, const subs sub)
+    : Active(kind, sub)
+    , fallHeight(0)
+    , falling(false)
 {}
 
-Falling::Falling(QDataStream& str, const kinds kind, const subs sub) :
-        Active(str, kind, sub),
-        fallHeight(),
-        falling()
+Falling::Falling(QDataStream& str, const kinds kind, const subs sub)
+    : Active(str, kind, sub)
+    , fallHeight()
+    , falling()
 {
     str >> fallHeight >> falling;
 }

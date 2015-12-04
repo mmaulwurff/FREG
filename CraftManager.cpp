@@ -36,9 +36,9 @@ bool CraftItem::operator<(const CraftItem& item) const {
 
 // CraftList section
 
-CraftList:: CraftList(const int materials_number) :
-        materialsNumber(materials_number),
-        items()
+CraftList:: CraftList(const int materials_number)
+    : materialsNumber(materials_number)
+    , items()
 {}
 
 CraftList::~CraftList() { clear(); }

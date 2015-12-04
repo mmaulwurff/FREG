@@ -20,8 +20,8 @@
 #include "IniSettings.h"
 #include "header.h"
 
-IniSettings::IniSettings(const QString& fileName)
-    :   QSettings(home_path + fileName, QSettings::IniFormat)
+IniSettings::IniSettings(const QString& settingsFileName)
+    : QSettings(home_path + settingsFileName, QSettings::IniFormat)
 {}
 
 QVariant IniSettings::value(const QString &key, const QVariant &defaultValue) {

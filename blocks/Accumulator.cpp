@@ -21,15 +21,14 @@
 #include "TrManager.h"
 #include <QDataStream>
 
-Accumulator::Accumulator(const kinds kind, const subs sub) :
-        Block(kind, sub),
-        charge(0)
+Accumulator::Accumulator(const kinds kind, const subs sub)
+    : Block(kind, sub)
+    , charge(0)
 {}
 
 Accumulator::Accumulator(QDataStream& stream, const kinds kind, const subs sub)
-    :
-        Block(stream, kind, sub),
-        charge()
+    : Block(stream, kind, sub)
+    , charge()
 {
     stream >> charge;
 }

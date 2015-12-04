@@ -33,7 +33,7 @@ QString Weapon::FullName() const {
 }
 
 QString Weapon::Description() const {
-    return tr("Damage: %1. Damage type: %2.").
+    return QObject::tr("Damage: %1. Damage type: %2.").
         arg(DamageLevel()).
         arg(TrManager::GetDamageString(
             static_cast<damage_kinds>(DamageKind())));

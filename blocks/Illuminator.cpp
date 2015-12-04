@@ -28,16 +28,16 @@ const int Illuminator::MAX_FUEL_LEVEL = World::SECONDS_IN_DAY;
 const int Illuminator::TORCH_FULL_LEVEL = World::MAX_LIGHT_RADIUS - 2;
 const int Illuminator::TORCH_END_LEVEL  = World::MAX_LIGHT_RADIUS - 3;
 
-Illuminator::Illuminator(const kinds kind, const subs sub) :
-        Active(kind, sub),
-        fuelLevel(MAX_FUEL_LEVEL),
-        isOn(false)
+Illuminator::Illuminator(const kinds kind, const subs sub)
+    : Active(kind, sub)
+    , fuelLevel(MAX_FUEL_LEVEL)
+    , isOn(false)
 {}
 
-Illuminator::Illuminator(QDataStream& str, const kinds kind, const subs sub) :
-        Active(str, kind, sub),
-        fuelLevel(),
-        isOn()
+Illuminator::Illuminator(QDataStream& str, const kinds kind, const subs sub)
+    : Active(str, kind, sub)
+    , fuelLevel()
+    , isOn()
 {
     str >> fuelLevel >> isOn;
 }

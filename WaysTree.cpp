@@ -51,9 +51,9 @@ bool WaysTree::operator==(const WaysTree& other) const {
             other.Z() == Z();
 }
 
-WaysTree::WaysTree() :
-        Xyz(0, 0, 0),
-        nexts()
+WaysTree::WaysTree()
+    : Xyz(0, 0, 0)
+    , nexts()
 {
     const int MAX = 4;
     for (int x=-MAX; x<=MAX; ++x)

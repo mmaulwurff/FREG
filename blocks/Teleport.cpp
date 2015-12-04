@@ -25,19 +25,19 @@
 #include <QDataStream>
 #include <QTextStream>
 
-Teleport::Teleport(const kinds kind, const subs sub) :
-        Active(kind, sub),
-        targetWorldName(World::WorldName()),
-        targetLongitude(qrand()%(World::GetCWorld()->GetMap()->GetHeight())),
-        targetLatitude(
-            qrand()%(World::GetCWorld()->GetMap()->GetWidth(targetLongitude)))
+Teleport::Teleport(const kinds kind, const subs sub)
+    : Active(kind, sub)
+    , targetWorldName(World::WorldName())
+    , targetLongitude(qrand()%(World::GetCWorld()->GetMap()->GetHeight()))
+    , targetLatitude(
+        qrand() % (World::GetCWorld()->GetMap()->GetWidth(targetLongitude)))
 {}
 
-Teleport::Teleport(QDataStream& stream, const kinds kind, const subs sub) :
-        Active(stream, kind, sub),
-        targetWorldName(),
-        targetLongitude(),
-        targetLatitude()
+Teleport::Teleport(QDataStream& stream, const kinds kind, const subs sub)
+    : Active(stream, kind, sub)
+    , targetWorldName()
+    , targetLongitude()
+    , targetLatitude()
 {
     stream >> targetWorldName >> targetLongitude >> targetLatitude;
 }

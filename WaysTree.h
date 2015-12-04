@@ -20,8 +20,8 @@
 #ifndef WAYS_TREE_H
 #define WAYS_TREE_H
 
-#include <vector>
 #include "Xyz.h"
+#include <vector>
 
 class WaysTree : public Xyz {
 public:

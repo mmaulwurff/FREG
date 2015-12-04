@@ -83,8 +83,7 @@ public:
     /// Puts block to coordinates, not activates it.
     void PutBlock(Block* block, int x, int y, int z);
 
-    ///\name Lighting section
-    ///@{
+    /** @name Lighting section */ ///@{
         /// Get light level in coordinates x, y, z.
         int LightMap(int x, int y, int z) const;
 
@@ -95,8 +94,7 @@ public:
         void ShineAll() const;
     ///@}
 
-    ///\name Information section
-    ///@{
+    /** @name Information section */ ///@{
         void SetNewBlock(kinds, subs, int x, int y, int z);
         shred_type GetTypeOfShred() const { return type; }
 
@@ -134,8 +132,8 @@ private:
     /// Builds normal underground. Returns ground level.
     int NormalUnderground(int depth = 0, subs sub = SOIL);
     void CoverWith(kinds, subs);
-    /// Puts num things(kind-sub) in random places on shred surface.
-    /** If on_water is false, this will not drop things on water,
+    /** Puts num things(kind-sub) in random places on shred surface.
+     *  If on_water is false, this will not drop things on water,
      *  otherwise on water too. */
     void RandomDrop(int num, kinds, subs, bool on_water = false);
     void DropBlock(Block*, bool on_water);
@@ -157,12 +155,11 @@ private:
     /// For testing purposes.
     void ChaosShred();
 
-    /// Loads room from corresponding .room or -index.room file.
-    /// Should be placed before any other block generation at the same place.
+    /** Loads room from corresponding .room or -index.room file.
+     * Should be placed before any other block generation at the same place. */
     bool LoadRoom(int level, int index = 0);
 
-    ///\name Block combinations section (trees, buildings, etc):
-    ///@{
+    /** @name Block combinations section (trees, buildings, etc): */ ///@{
         bool Tree(int x, int y, int z);
         void NormalCube(int x_start, int y_start, int z_start,
                         int x_size,  int y_size,  int z_size, subs);

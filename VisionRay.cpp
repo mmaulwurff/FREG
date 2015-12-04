@@ -22,18 +22,18 @@
 
 // DDA line with integers only.
 
-VisionRay::VisionRay(const Xyz& from, const Xyz& to, const bool recalculate) :
-        x(from.X()),
-        y(from.Y()),
-        z(from.Z()),
-        x_step(to.X() - x),
-        y_step(to.Y() - y),
-        z_step(to.Z() - z),
-        maximum(std::max({abs(x_step), abs(y_step), abs(z_step)})),
-        step(0),
-        precalculated((recalculate || maximum>PreCalculatedVisionRays::RADIUS)?
-            nullptr :
-            preCalculatedLightRays.getRaySteps(-x_step, -y_step, -z_step))
+VisionRay::VisionRay(const Xyz& from, const Xyz& to, const bool recalculate)
+    : x(from.X())
+    , y(from.Y())
+    , z(from.Z())
+    , x_step(to.X() - x)
+    , y_step(to.Y() - y)
+    , z_step(to.Z() - z)
+    , maximum(std::max({abs(x_step), abs(y_step), abs(z_step)}))
+    , step(0)
+    , precalculated((recalculate || maximum > PreCalculatedVisionRays::RADIUS)?
+        nullptr :
+        preCalculatedLightRays.getRaySteps(-x_step, -y_step, -z_step))
 {
     if ( not precalculated ) {
         x *= maximum;

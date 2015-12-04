@@ -17,8 +17,8 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-/** \file CursedScreen.cpp
- *  \brief This file is related to curses screen for freg. */
+/** @file
+ * This file is related to curses screen for freg. */
 
 #include "screens/CursedScreen.h"
 #include "Shred.h"
@@ -360,7 +360,7 @@ void Screen::ProcessMouse() {
         break;
     case WIN_LEFT:
         if (player->UsingSelfType() == USAGE_TYPE_OPEN) {
-            /// \todo examine inventory contents.
+            /// @todo examine inventory contents.
             Notify(tr("Your inventory."));
         } else if ( IsOutWindow(mevent, screenWidth-1, screenHeight-1) ) {
             Notify(tr("Left window, Down view."));
@@ -370,7 +370,7 @@ void Screen::ProcessMouse() {
         break;
     case WIN_RIGHT:
         if (player->UsingType() == USAGE_TYPE_OPEN) {
-            /// \todo examine inventory contents.
+            /// @todo examine inventory contents.
             Notify(tr("Opened inventory."));
         } else if ( IsOutWindow(mevent, screenWidth-1, screenHeight-1) ) {
             Notify(tr("Right window, %1 view.").
@@ -1277,15 +1277,15 @@ Screen::Screen(Player* const controlledPlayer, int&) :
 
     ungetch('0');
     getch();
-    Notify(tr("\t[[F][r][e][g]] version %1").arg(VER));
-    Notify(tr("Copyright (C) 2012-2015 Alexander 'm8f' Kromm"));
+    Notify(QObject::tr("\t[[F][r][e][g]] version %1").arg(VER));
+    Notify(QObject::tr("Copyright (C) 2012-2015 Alexander 'm8f' Kromm"));
     Notify(Str("(mmaulwurff@gmail.com)\n"));
-    Notify(tr("Press Space to continue."));
+    Notify(QObject::tr("Press Space to continue."));
 
     while (getch() != ' ');
 
     RePrint();
-    Notify(tr("--- Game started. Press 'H' for help. ---"));
+    Notify(QObject::tr("--- Game started. Press 'H' for help. ---"));
 
     initializeKeyTable();
     inputThread.reset(new std::thread([this] {
@@ -1328,33 +1328,24 @@ void Screen::PrintBar(WINDOW* const window,
 }
 
 void Screen::Palette(WINDOW* const window) {
-    wclear(window);
     const struct {
-        chtype attribute;
         std::string name;
-    } lines[] {
-        {A_NORMAL,    "A_NORMAL    "},
-        {A_BOLD,      "A_BOLD      "},
-        {A_BLINK,     "A_BLINK     "},
-        {A_REVERSE,   "A_REVERSE   "},
-        {A_STANDOUT,  "A_STANDOUT  "},
-    }, words[] {
-        {A_UNDERLINE, "A_UNDERLINE "},
-        {A_DIM,       "A_DIM       "},
-    };
-    for (const auto& type : lines) {
-        wstandend(window);
-        waddstr(window, type.name.c_str());
-        wattrset(window, type.attribute);
+        chtype character;
+    } lines[] { { " Normal   \n", ACS_DIAMOND | A_NORMAL  }
+              , { " Bold     \n", ACS_DIAMOND | A_BOLD    }
+              , { " Blink    \n", ACS_DIAMOND | A_BLINK   }
+              , { " Reverse  \n", ACS_DIAMOND | A_REVERSE }
+              , { " Dim      \n", ACS_DIAMOND | A_DIM     }
+              , { " Normal ST\n", ACS_CKBOARD | A_NORMAL  }
+              , { " Bold ST    ", ACS_CKBOARD | A_BOLD    } };
+    wclear(window);
+    for (int line = 0; line < sizeofArray(lines); ++line) {
         for (int i=BLACK_BLACK; i<=WHITE_WHITE; ++i) {
             wcolor_set(window, i, nullptr);
-            waddch(window, ACS_DIAMOND);
+            waddch(window, lines[line].character);
         }
-        waddch(window, '\n');
-    }
-    for (const auto& type : words) {
-        wattrset(window, type.attribute);
-        waddstr(window, type.name.c_str());
+        wstandend(window);
+        waddstr(window, lines[line].name.c_str());
     }
     wrefresh(window);
 }

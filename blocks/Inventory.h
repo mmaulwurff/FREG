@@ -17,8 +17,8 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-/**\file Inventory.h
- * \brief Provides declaration for class Inventory for freg. */
+/** @file
+ *  Provides declaration for class Inventory for freg. */
 
 #ifndef INVENTORY_H
 #define INVENTORY_H
@@ -29,9 +29,8 @@
 class Block;
 template<typename Block> class QStack;
 
+/** Provides block ability to contain other blocks inside. */
 class Inventory {
-    /**\class Inventory Inventory.h
-     * \brief Provides block ability to contain other blocks inside. */
     M_DISABLE_COPY(Inventory)
 public:
 
