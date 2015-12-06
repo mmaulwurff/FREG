@@ -88,10 +88,11 @@ void Active::ActRare() {
                 Active* const active =
                     inv->ShowBlockInSlot(i, j)->ActiveBlock();
                 if ( active->ActInner() == INNER_ACTION_MESSAGE ) {
-                    ReceiveSignal( tr("%1 in slot '%2': %3").
-                        arg(inv->InvFullName(i)).
-                        arg(char('a'+i)).
-                        arg(inv->ShowBlockInSlot(i, j)->GetNote()) );
+                    TrString signalString = tr("%1 in slot '%2': %3");
+                    ReceiveSignal(signalString
+                        .arg(inv->InvFullName(i))
+                        .arg(char('a'+i))
+                        .arg(inv->ShowBlockInSlot(i, j)->GetNote()) );
                 }
             }
         }
@@ -233,10 +234,11 @@ void Falling::SaveAttributes(QDataStream& out) const {
 }
 
 QString Falling::FullName() const {
+    TrString stoneNameString = tr("Masonry");
     switch ( Sub() ) {
     default:    return TrManager::SubNameUpper(Sub());
     case WATER: return TrManager::KindName(FALLING);
-    case STONE: return tr("Masonry");
+    case STONE: return stoneNameString;
     }
 }
 

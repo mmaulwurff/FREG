@@ -88,7 +88,8 @@ Inventory* Player::PlayerInventory() const {
     if ( Inventory* const inv = player->HasInventory() ) {
         return inv;
     } else {
-        Notify(tr("You have no inventory."));
+        TrString noInventoryString = tr("You have no inventory.");
+        Notify(noInventoryString);
         return nullptr;
     }
 }
@@ -105,11 +106,15 @@ void Player::Examine() const {
 }
 
 void Player::Examine(const int x, const int y, const int z) const {
+    TrString tooDarkString  = tr("Too dark to see.");
+    TrString obscuredString = tr("It is obscured by something.");
+
     switch ( Visible(x, y, z) ) {
     case VISIBLE: break;
-    case IN_SHADOW: Notify(tr("Too dark to see.")); return;
-    case OBSCURED:  Notify(tr("It is obscured by something.")); return;
+    case IN_SHADOW: Notify(tooDarkString); return;
+    case OBSCURED:  Notify(obscuredString); return;
     }
+
     const World* const world = World::GetCWorld();
     if ( DEBUG ) {
         Notify(Str("Light: %1.").arg(world->Enlightened(x, y, z)));
@@ -136,11 +141,15 @@ void Player::Examine(const Block* const block) const {
             arg(block->Transparent()));
     }
     if ( Block::GetSubGroup(block->Sub()) == GROUP_AIR ) return;
-    Notify(tr("Durability: %1%.").
+
+    TrString durabilityString  = tr("Durability: %1%.");
+    TrString inscriptionString = tr("Inscription: ");
+
+    Notify(durabilityString.
         arg(block->GetDurability() * 100 / Block::MAX_DURABILITY));
     const QString& str = block->GetNote();
     if ( not str.isEmpty() ) {
-        Notify(tr("Inscription: ") + str);
+        Notify(inscriptionString + str);
     }
 }
 
@@ -179,13 +188,14 @@ void Player::Use() {
     const PlayerFocusXyz focus(this);
     Block* const block = world->GetBlock(XYZ(focus));
     if ( player->NutritionalValue(block->Sub()) ) {
-        Notify(tr("To eat %1, you must first pick it up.").
-            arg(block->FullName()));
+        TrString toEatString = tr("To eat %1, you must first pick it up.");
+        Notify(toEatString.arg(block->FullName()));
         return;
     } // else:
     const int us_type = block->Use(player);
     if ( us_type == USAGE_TYPE_NO ) {
-        Notify(tr("You cannot use %1.").arg(block->FullName()));
+        TrString cannotUseString = tr("You cannot use %1.");
+        Notify(cannotUseString.arg(block->FullName()));
         return;
     }
     usingType = ( us_type==usingType ) ? USAGE_TYPE_NO : us_type;
@@ -206,8 +216,9 @@ void Player::TurnBlockToFace() const {
         }
         const dirs dir = World::Anti(GetDir());
         block->SetDir(dir);
+        TrString newDirectoinString = tr(": new direction: ");
         Notify(block->FullName()
-            + tr(": new direction: ")
+            + newDirectoinString
             + TrManager::DirName(dir).toLower()
             + Str("."));
     }
@@ -218,28 +229,36 @@ void Player::Inscribe() const {
     const QMutexLocker locker(world->GetLock());
     const PlayerFocusXyz focus(this);
     const QString block_name = world->GetBlock(XYZ(focus))->FullName();
+
+    TrString inscribedString      = tr("Inscribed %1.");
+    TrString cannotInscribeString = tr("Cannot inscribe %1.");
+    TrString noPlayerString       = tr("No player.");
+
     Notify(player ?
         (world->Inscribe(XYZ(focus)) ?
-            tr("Inscribed %1.").arg(block_name) :
-            tr("Cannot inscribe %1.").arg(block_name)) :
-        tr("No player."));
+            inscribedString.arg(block_name) :
+            cannotInscribeString.arg(block_name)) :
+        noPlayerString);
 }
 
 Block* Player::ValidBlock(const int num) const {
     Inventory* const inv = PlayerInventory();
     if ( not inv ) {
         return nullptr;
-    } // else:
+    }
+
     if ( num >= inv->Size() ) {
-        Notify(tr("No such place."));
+        TrString noSuchPlaceString = tr("No such place.");
+        Notify(noSuchPlaceString);
         return nullptr;
-    } // else:
-    Block* const block = inv->ShowBlock(num);
-    if ( not block ) {
-        Notify(tr("Nothing at slot '%1'.").arg(char(num + 'a')));
-        return nullptr;
-    } else {
+    }
+
+    if ( Block* const block = inv->ShowBlock(num) ) {
         return block;
+    } else {
+        TrString nothingString = tr("Nothing at slot '%1'.");
+        Notify(nothingString.arg(char(num + 'a')));
+        return nullptr;
     }
 }
 
@@ -251,7 +270,9 @@ usage_types Player::Use(const int num) {
         PlayerInventory()->Pull(num);
         BlockFactory::DeleteBlock(block);
         return USAGE_TYPE_NO;
-    } // else:
+    }
+
+    TrString cannotUseString = tr("You cannot use %1.");
     const usage_types result = block->Use(player);
     switch ( result ) {
     case USAGE_TYPE_READ:
@@ -268,7 +289,7 @@ usage_types Player::Use(const int num) {
         } break;
     case USAGE_TYPE_INNER: break;
     default:
-        Notify(tr("You cannot use %1.").arg(block->FullName()));
+        Notify(cannotUseString.arg(block->FullName()));
         break;
     }
     emit Updated();
@@ -341,7 +362,8 @@ bool Player::ForbiddenAdminCommands() const {
     if ( GetCreativeMode() || DEBUG ) {
         return false;
     } else {
-        Notify(tr("You are not in Creative Mode."));
+        TrString notCreativeString = tr("You are not in Creative Mode.");
+        Notify(notCreativeString);
         return true;
     }
 }
@@ -353,36 +375,49 @@ void Player::ProcessCommand(QString command) {
     World* const world = World::GetWorld();
     const QMutexLocker locker(world->GetLock());
     switch ( UniqueIntFromString(request.toLatin1()) ) {
+
     case UniqueIntFromString(""): break;
+
     case UniqueIntFromString("weather"):
         Notify(TrManager::GetWeatherString(GetShred()->GetWeather()));
         break;
+
     case UniqueIntFromString("give"):
     case UniqueIntFromString("get" ):
         ProcessGetCommand(command_stream);
         break;
+
     case UniqueIntFromString("move"): {
         int direction;
         command_stream >> direction;
         Move(static_cast<dirs>(direction));
         } break;
+
     case UniqueIntFromString("time"):
         if ( ForbiddenAdminCommands() ) return;
         Notify(world->TimeOfDayStr());
         break;
-    case UniqueIntFromString("version"):
-        Notify(tr("freg version: %1. Compiled on %2 at %3 with Qt %4.")
+
+    case UniqueIntFromString("version"): {
+        TrString versionString =
+            tr("freg version: %1. Compiled on %2 at %3 with Qt %4.");
+        TrString buildString   = tr("Current Qt version: %1. Build type: %2.");
+        TrString debugString   = tr("debug");
+        TrString releaseString = tr("release");
+        Notify(versionString
             .arg(VER)
             .arg(Str(__DATE__))
             .arg(Str(__TIME__))
             .arg(Str(QT_VERSION_STR)));
-        Notify(tr("Current Qt version: %1. Build type: %2.")
+        Notify(buildString
             .arg(QString::fromLatin1(qVersion()))
-            .arg(DEBUG ? tr("debug") : tr("release")));
-        break;
+            .arg(DEBUG ? debugString : releaseString));
+        } break;
+
     case UniqueIntFromString("warranty"):
         command_stream << "warranty";
         // no break;
+
     case UniqueIntFromString("help"):
         command_stream >> request;
         if ( request.isEmpty() ) {
@@ -391,15 +426,19 @@ void Player::ProcessCommand(QString command) {
         emit ShowFile( home_path + Str("/help_%1/%2.md")
             .arg(QLocale::system().name().left(2)).arg(request) );
         break;
+
     case UniqueIntFromString("about"):
         emit ShowFile(home_path + Str("README.md"));
         break;
+
     case UniqueIntFromString("test_damage"):
         Block::TestDamage();
         break;
-    default:
-        Notify(tr("Don't know such command: \"%1\".").arg(command));
-        break;
+
+    default: {
+        TrString noCommandString = tr("Don't know such command: \"%1\".");
+        Notify(noCommandString.arg(command));
+        } break;
     }
 } // void Player::ProcessCommand(QString command)
 
@@ -416,7 +455,8 @@ void Player::ProcessGetCommand(QTextStream& command_stream) {
         for (int i = 0; i < KIND_COUNT; ++i) {
             kindNames.append(TrManager::KindName(i));
         }
-        Notify(tr("Available kinds: ") + kindNames.join(Str(", ")) + Str("."));
+        TrString availableString = tr("Available kinds: ");
+        Notify(availableString + kindNames.join(Str(", ")) + Str("."));
     };
 
     if (kind.isEmpty()) {
@@ -442,7 +482,8 @@ void Player::ProcessGetCommand(QTextStream& command_stream) {
                 kind_code = BLOCK;
                 break;
             } else {
-                Notify(tr("There is no kind \"") + kind + Str("\"."));
+                TrString noKindString = tr("There is no kind \"");
+                Notify(noKindString + kind + Str("\"."));
                 listKindsMessage();
                 return;
             }
@@ -450,7 +491,8 @@ void Player::ProcessGetCommand(QTextStream& command_stream) {
         sub_code = sub.isEmpty() ?
             STONE : TrManager::StrToSub(sub);
         if ( sub_code == LAST_SUB ) {
-            Notify(tr("There is no substance \"") + sub + Str("\"."));
+            TrString noSubstanceString = tr("There is no substance \"");
+            Notify(noSubstanceString + sub + Str("\"."));
             return;
         }
         break;
@@ -504,7 +546,8 @@ void Player::CheckOverstep(const int direction) {
 void Player::BlockDestroy() {
     if ( not cleaned ) {
         usingType = usingSelfType = USAGE_TYPE_NO;
-        Notify(tr("You die!"));
+        TrString dieString = tr("You die!");
+        Notify(dieString);
         emit Destroyed();
         player = nullptr;
         World* const world = World::GetWorld();

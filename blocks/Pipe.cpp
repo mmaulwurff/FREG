@@ -29,7 +29,8 @@ void Pipe::SaveAttributes(QDataStream& out_stream) const {
 }
 
 QString Pipe::Description() const {
-    return tr("Direction: ")
+    TrString directionString = tr("Direction: ");
+    return directionString
         + TrManager::DirName(GetDir()).toLower()
         + Str(".");
 }

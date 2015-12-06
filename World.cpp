@@ -85,7 +85,8 @@ times_of_day World::PartOfDay() const {
 }
 
 QString World::TimeOfDayStr() const {
-    return tr("Time is %1:%2.").
+    TrString timeIsString = tr("Time is %1:%2.");
+    return timeIsString.
         arg(TimeOfDay()/60).
         arg(TimeOfDay()%60, 2, 10, QChar::fromLatin1('0'));
 }
@@ -521,7 +522,8 @@ bool World::Build(Block* const block, const_int(x, y, z), Block* const who) {
     GET_SHRED_XY(shred, x, y, x_in, y_in);
     Block* const target_block = shred->GetBlock(x_in, y_in, z);
     if ( ENVIRONMENT != target_block->PushResult(ANYWHERE) ) {
-        if ( who ) who->ReceiveSignal(tr("Cannot build here."));
+        TrString cannotBuildString = tr("Cannot build here.");
+        if ( who ) who->ReceiveSignal(cannotBuildString);
         return false;
     }
     block->Restore();
@@ -562,7 +564,8 @@ bool World::Exchange(TY(Block* const, block_from, block_to),
 {
     Inventory* const inv_to = block_to->HasInventory();
     if ( not inv_to ) {
-        block_from->ReceiveSignal(tr("No room there."));
+        TrString noRoomString = tr("No room there.");
+        block_from->ReceiveSignal(noRoomString);
         return false;
     }
     Inventory* const inv_from = block_from->HasInventory();
@@ -572,16 +575,19 @@ bool World::Exchange(TY(Block* const, block_from, block_to),
         {
             return true;
         } else {
-            block_to->ReceiveSignal(tr("%1 cannot be obtained.").
+            TrString cannotObtainString = tr("%1 cannot be obtained.");
+            block_to->ReceiveSignal(cannotObtainString.
                 arg(block_from->FullName()));
             return false;
         }
     }
     if ( src >= inv_from->Size() || inv_from->IsEmpty(src) ) {
-        block_from->ReceiveSignal(tr("Nothing here."));
-        block_to  ->ReceiveSignal(tr("Nothing in %1 at slot '%2'.").
-            arg(block_from->FullName()).
-            arg(char(src + 'a')));
+        TrString nothingHereString  = tr("Nothing here.");
+        TrString nothingThereString = tr("Nothing in %1 at slot '%2'.");
+        block_from->ReceiveSignal(nothingHereString);
+        block_to  ->ReceiveSignal(nothingThereString
+            .arg(block_from->FullName())
+            .arg(char(src + 'a')));
     } else {
         inv_from->Drop(src, dest, num, inv_to);
     }

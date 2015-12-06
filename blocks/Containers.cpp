@@ -57,9 +57,12 @@
     }
 
     QString Container::FullName() const {
+        TrString ironName  = tr("Locker");
+        TrString waterName = tr("Fridge");
+
         switch ( Sub() ) {
-        case IRON:      return tr("Locker");
-        case WATER:     return tr("Fridge");
+        case IRON:      return ironName;
+        case WATER:     return waterName;
         default:        return Block::FullName();
         }
     }
@@ -135,11 +138,14 @@
     }
 
     QString Box::FullName() const {
+        TrString differentName = tr("Pile");
+        TrString meatName      = tr("Corpse (%1)");
+
         switch ( Sub() ) {
         default:        return Block::FullName();
-        case DIFFERENT: return tr("Pile");
+        case DIFFERENT: return differentName;
         case H_MEAT:
-        case A_MEAT: return tr("Corpse (%1)").arg(TrManager::SubName(Sub()));
+        case A_MEAT:    return meatName.arg(TrManager::SubName(Sub()));
         }
     }
 
@@ -223,9 +229,11 @@
     }
 
     QString Workbench::InvFullName(const int slot_number) const {
+        TrString productString  = tr("-product-");
+        TrString materialString = tr("-material-");
+
         return IsEmpty(slot_number) ?
-            ( slot_number < Start() ) ?
-                tr("-product-") : tr("-material-") :
+            (( slot_number < Start() ) ? productString : materialString) :
             Inventory::InvFullName(slot_number);
     }
 
@@ -291,8 +299,9 @@
     int Converter::LightRadius() const { return lightRadius; }
 
     QString Converter::InvFullName(const int slot_number) const {
+        TrString fuelString = tr("-fuel-");
         return IsEmpty(slot_number) ?
-            tr("-fuel-") : Inventory::InvFullName(slot_number);
+            fuelString : Inventory::InvFullName(slot_number);
     }
 
     int Converter::DamageKind() const {
@@ -330,12 +339,15 @@
     }
 
     QString Converter::FullName() const {
+        TrString stoneName    = tr("Furnace");
+        TrString chargeString = tr(" (charge for %1 s)");
+
         QString name;
         switch ( Sub() ) {
             default:    name = Block::FullName(); break;
-            case STONE: name = tr("Furnace"); break;
+            case STONE: name = stoneName; break;
         }
-        return name + tr(" (charge for %1 s)").arg(fuelLevel/DamageLevel());
+        return name + chargeString.arg(fuelLevel/DamageLevel());
     }
 
     void Converter::InitDamageKinds() {

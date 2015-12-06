@@ -126,7 +126,8 @@ void Screen::PassString(QString& str) const {
     inputActive = true;
     scroll(notifyWin);
     wattrset(notifyWin, A_UNDERLINE);
-    mvwaddwstr(notifyWin, 6, 0, wPrintable(tr("Enter input: ")));
+    TrString enterString = tr("Enter input: ");
+    mvwaddwstr(notifyWin, 6, 0, wPrintable(enterString));
     echo();
     wint_t temp_str[MAX_NOTE_LENGTH + 1];
     wgetn_wstr(notifyWin, temp_str, MAX_NOTE_LENGTH);
@@ -293,8 +294,9 @@ void Screen::ControlPlayer(const int ch) {
 
             RePrint();
             refresh();
-            Notify(tr("Terminal width: %1 columns, height: %2 lines.")
-                .arg(COLS).arg(LINES));
+            TrString sizeString =
+                tr("Terminal width: %1 columns, height: %2 lines.");
+            Notify(sizeString.arg(COLS).arg(LINES));
             break;
 
         default: keyTable[0](ch); break; // unknown key message
@@ -323,47 +325,60 @@ void Screen::ProcessMouse() {
     }
     switch ( static_cast<windowIndex>(window_index) ) {
     case WIN_ACTION: SetActionMode(static_cast<actions>(mevent.y)); break;
-    case WIN_NOTIFY: Notify(tr("Notifications area.")); break;
+
+    case WIN_NOTIFY: {
+        TrString notificationString = tr("Notifications area.");
+        Notify(notificationString);
+        } break;
+
     case WIN_HUD:
         mevent.x -= screenWidth - LETTERS_NUMBER;
         mevent.x /= 2;
         if ( not ( IsScreenWide() &&
                 static_cast<uint>(mevent.x) < LETTERS_NUMBER ) )
         {
-            Notify(tr("Information: left - player, right - focused thing."));
+            TrString information =
+                tr("Information: left - player, right - focused thing.");
+            Notify(information);
         } else if ( const Inventory* const inv = PlayerInventory() ) {
             if ( inv->IsEmpty(mevent.x) ) {
-                Notify(tr("Nothing in inventory at slot '%1'.").
-                    arg(char(mevent.x + 'a')));
+                TrString emptyString = tr("Nothing in inventory at slot '%1'.");
+                Notify(emptyString.arg(char(mevent.x + 'a')));
             } else {
-                Notify(tr("In inventory at slot '%1':").
-                    arg(char(mevent.x + 'a')));
+                TrString inInvString = tr("In inventory at slot '%1':");
+                Notify(inInvString.arg(char(mevent.x + 'a')));
                 player->Examine(inv->ShowBlock(mevent.x));
             }
         }
         break;
     case WIN_MINIMAP:
         if ( IsOutWindow(mevent, MINIMAP_WIDTH-1, MINIMAP_HEIGHT-1) ) {
-            Notify(tr("Minimap."));
+            TrString minimapString = tr("Minimap.");
+            Notify(minimapString);
         } else {
             const int shred_x = mevent.x/2 + GetMinimapStartX();
             const int shred_y = mevent.y-1 + GetMinimapStartY();
             const World* const world = World::GetCWorld();
             const unsigned num_shreds = world->NumShreds();
+            TrString onMapString  = tr("On minimap: %1.");
+            TrString tooFarString = tr("You can't see that far.");
+
             Notify( (static_cast<uint>(shred_x) < num_shreds &&
                      static_cast<uint>(shred_y) < num_shreds ) ?
-                tr("On minimap: %1.").
-                    arg(TrManager::ShredTypeName(world->
+                onMapString
+                    .arg(TrManager::ShredTypeName(world->
                         FindShred(shred_x, shred_y)->GetTypeOfShred())) :
-                tr("You can't see that far.") );
+                tooFarString );
         }
         break;
     case WIN_LEFT:
         if (player->UsingSelfType() == USAGE_TYPE_OPEN) {
             /// @todo examine inventory contents.
-            Notify(tr("Your inventory."));
+            TrString inventoryString = tr("Your inventory.");
+            Notify(inventoryString);
         } else if ( IsOutWindow(mevent, screenWidth-1, screenHeight-1) ) {
-            Notify(tr("Left window, Down view."));
+            TrString leftString = tr("Left window, Down view.");
+            Notify(leftString);
         } else {
             ExamineOnNormalScreen(mevent.x, mevent.y, player->Z(), -1);
         }
@@ -371,10 +386,11 @@ void Screen::ProcessMouse() {
     case WIN_RIGHT:
         if (player->UsingType() == USAGE_TYPE_OPEN) {
             /// @todo examine inventory contents.
-            Notify(tr("Opened inventory."));
+            TrString inventoryString = tr("Opened inventory.");
+            Notify(inventoryString);
         } else if ( IsOutWindow(mevent, screenWidth-1, screenHeight-1) ) {
-            Notify(tr("Right window, %1 view.").
-                arg(TrManager::DirName(player->GetDir())));
+            TrString rightString = tr("Right window, %1 view.");
+            Notify(rightString.arg(TrManager::DirName(player->GetDir())));
         } else {
             switch ( player->GetDir() ) {
             case UP:
@@ -389,9 +405,12 @@ void Screen::ProcessMouse() {
             }
         }
         break;
-    case WIN_COUNT:
-        Notify(tr("Nothing here. Click on something to get information."));
-        break;
+
+    case WIN_COUNT: {
+        TrString nothingString =
+            tr("Nothing here. Click on something to get information.");
+        Notify(nothingString);
+        } break;
     }
 } // Screen::ProcessMouse()
 
@@ -408,26 +427,37 @@ void Screen::ProcessCommand(const QString& command) {
         return;
     }
     if ( VirtualScreen::ProcessCommand(command) ) return;
+
+    TrString distanceString = tr("Show distance: %1.");
+
     switch ( Player::UniqueIntFromString(qPrintable(command)) ) {
+
     case Player::UniqueIntFromString("plus_distance"):
         showCharDistance = std::min(showCharDistance+1, MAX_CHAR_DISTANCE);
-        Notify(tr("Show distance: %1.").arg(showCharDistance));
+        Notify(distanceString.arg(showCharDistance));
         break;
+
     case Player::UniqueIntFromString("minus_distance"):
         showCharDistance = std::max(showCharDistance-1, 0);
-        Notify(tr("Show distance: %1.").arg(showCharDistance));
+        Notify(distanceString.arg(showCharDistance));
         break;
-    case Player::UniqueIntFromString("blink"):
+
+    case Player::UniqueIntFromString("blink"): {
         blinkOn = not blinkOn;
-        Notify(tr("Block blink is now %1.").arg(TrManager::OffOn(blinkOn)));
-        break;
-    case Player::UniqueIntFromString("size"):
-        Notify(tr("Terminal: %1 rows, %2 columns. Screen: %3x%4 blocks.").
-            arg(LINES).
-            arg(COLS).
-            arg(screenHeight - 2).
-            arg((screenWidth - 2) / 2));
-        break;
+        TrString blinkString = tr("Block blink is now %1.");
+        Notify(blinkString.arg(TrManager::OffOn(blinkOn)));
+        } break;
+
+    case Player::UniqueIntFromString("size"): {
+        TrString sizeString =
+            tr("Terminal: %1 rows, %2 columns. Screen: %3x%4 blocks.");
+        Notify(sizeString
+            .arg(LINES)
+            .arg(COLS)
+            .arg(screenHeight - 2)
+            .arg((screenWidth - 2) / 2));
+        } break;
+
     case Player::UniqueIntFromString("freechars"): {
         QString free_characters;
         for (int i = 32; i < ASCII_SIZE; ++i) {
@@ -439,8 +469,11 @@ void Screen::ProcessCommand(const QString& command) {
             + free_characters
             + Str("\" (%1 characters).").arg(free_characters.size()));
         } break;
+
     case Player::UniqueIntFromString("palette"): Palette(notifyWin); break;
+
     case Player::UniqueIntFromString("test"): TestNotify(); break;
+
     default: player->ProcessCommand(command); break;
     }
 }
@@ -449,7 +482,7 @@ void Screen::SetActionMode(const actions mode) {
     mvwchgat(actionWin, actionMode,     0, -1, A_NORMAL, WHITE_BLACK, nullptr);
     mvwchgat(actionWin, actionMode=mode,0, -1, A_NORMAL, BLACK_WHITE, nullptr);
     wrefresh(actionWin);
-    static const QString actionStrings[] = {
+    TrString actionStrings[] = {
         tr("Action: use in inventory."     ),
         tr("Action: throw from inventory." ),
         tr("Action: get to inventory."     ),
@@ -581,8 +614,7 @@ void Screen::PrintHud() const {
     if ( updatedHud ) return;
     werase(hudWin);
     if ( player->GetCreativeMode() ) {
-        static const QString creativeInfo(
-            tr("Creative Mode. xyz: %1-%2-%3.\nShred:\n%4") );
+        TrString creativeInfo = tr("Creative Mode. xyz: %1-%2-%3.\nShred:\n%4");
         mvwaddwstr(hudWin, 0, 0, wPrintable(creativeInfo
             .arg(player->GlobalX()).arg(player->GlobalY()).arg(player->Z())
             .arg(Shred::FileName(
@@ -954,10 +986,13 @@ const {
         mvwaddch(window, start+1, screenWidth-1, ACS_RTEE);
     }
     mvwprintw(window, 0, 1, "[%c] ", CharName( block->Kind(), block->Sub()));
+    TrString inventoryString = tr("Your inventory");
     waddwstr(window, wPrintable( (PlayerInventory() == inv) ?
-        tr("Your inventory") :
+        inventoryString :
         block->FullName() + Str(". ") + block->Description() ));
-    const QString full_weight = tr("Full weight: %1 mz").arg(inv->Weight());
+
+    TrString weightString    = tr("Full weight: %1 mz");
+    const QString full_weight = weightString.arg(inv->Weight());
     mvwaddwstr(window, screenHeight-1, screenWidth-1-full_weight.length(),
         wPrintable(full_weight) );
     wrefresh(window);
@@ -976,7 +1011,8 @@ void Screen::DisplayFile(const QString& path) {
     #else
     { QFile(path).open(QIODevice::ReadWrite); } // create file if doesn't exist
     QDesktopServices::openUrl(QUrl(Str("file:///") + path));
-    Notify(tr("Open ") + path);
+    TrString openString = tr("Open ");
+    Notify(openString + path);
     #endif
 }
 
@@ -1008,7 +1044,8 @@ void Screen::DeathScreen() {
     std::for_each(windows + WIN_HUD, windows + WIN_COUNT, werase);
     wattrset(leftWin,  COLOR_PAIR(WHITE_RED) | A_BOLD);
     wattrset(rightWin, COLOR_PAIR(WHITE_RED) | A_BOLD);
-    Notify(tr("Waiting for respawn..."));
+    TrString respawnString = tr("Waiting for respawn...");
+    Notify(respawnString);
     box( leftWin, 'X', 'X');
     box(rightWin, 'X', 'X');
     wnoutrefresh(windows[WIN_ACTION]);
@@ -1018,7 +1055,8 @@ void Screen::DeathScreen() {
 }
 
 void Screen::unknownKeyNotification(const int key) {
-    GetScreen()->Notify(tr("Unknown key. Press 'H' for help."));
+    TrString unknownString = tr("Unknown key. Press 'H' for help.");
+    GetScreen()->Notify(unknownString);
     if ( DEBUG ) {
         GetScreen()->Notify(Str("'%1', code %2.").arg(char(key)).arg(key));
     }
@@ -1123,7 +1161,8 @@ void Screen::initializeKeyTable() {
         {{'Z'},      [](int) { Screen* const screen = GetScreen();
             if ( screen->PlayerInventory() ) {
                   screen->player->PlayerInventory()->Shake();
-                  screen->Notify(tr("Inventory reorganized."));
+                  TrString reorganizeString = tr("Inventory reorganized.");
+                  screen->Notify(reorganizeString);
             }
         }},
 
@@ -1144,7 +1183,8 @@ void Screen::initializeKeyTable() {
             screen->ProcessCommand(screen->previousCommand);
         }},
         {{'.'}, [](int) { Screen* const screen = GetScreen();
-            screen->Notify(tr("Repeat: \"")
+            TrString repeatString = tr("Repeat: \"");
+            screen->Notify(repeatString
                 + screen->previousCommand
                 + Str("\"."));
             screen->ProcessCommand(screen->previousCommand);
@@ -1159,19 +1199,20 @@ void Screen::initializeKeyTable() {
             if ( abs(screen->shiftFocus) == 2 ) {
                 screen->shiftFocus = 0;
             }
-            static const QString levels[] = {
+            TrString levels[] = {
                 tr("low"),
                 tr("normal"),
                 tr("high")
             };
-            screen->Notify( tr("Focus is set: %1.").
-                arg(levels[screen->shiftFocus + 1]) );
+            TrString focusString = tr("Focus is set: %1.");
+            screen->Notify(focusString.arg(levels[screen->shiftFocus + 1]));
         }},
 
         {{'M'}, [](int) { Screen* const scr = GetScreen();
             scr->mouseOn = not scr->mouseOn;
             mousemask((scr->mouseOn ? MOUSEMASK : scr->noMouseMask), nullptr);
-            scr->Notify(tr("Mouse: %1.").arg(TrManager::OffOn(scr->mouseOn)));
+            TrString mouseString = tr("Mouse: %1.");
+            scr->Notify(mouseString.arg(TrManager::OffOn(scr->mouseOn)));
         }},
 
         {{'P'}, [](int) { Screen* const screen = GetScreen();
@@ -1187,11 +1228,13 @@ void Screen::initializeKeyTable() {
         }},
 
         {{'Y'}, [](int) { Screen* const screen = GetScreen();
-            screen->Notify(tr("Saving game..."));
+            TrString savingString = tr("Saving game...");
+            TrString savedString  = tr("Game saved at location \"%1\".");
+
+            screen->Notify(savingString);
             World::GetWorld()->SaveToDisk();
             screen->player->SaveState();
-            screen->Notify( tr("Game saved at location \"%1\".").
-                arg(World::WorldPath()) );
+            screen->Notify(savedString.arg(World::WorldPath()) );
         }},
 
         {{'Q', 3, 4, 17, 24, 'X'}, [](int){ Screen* const screen = GetScreen();

@@ -30,10 +30,13 @@
 
 // Plate::
     QString Plate::FullName() const {
+        TrString woodName  = QObject::tr("Wooden board");
+        TrString stoneName = QObject::tr("Stone slab");
+
         switch ( Sub() ) {
-        case WOOD:  return QObject::tr("Wooden board");
+        case WOOD:  return woodName;
         case MOSS_STONE:
-        case STONE: return QObject::tr("Stone slab");
+        case STONE: return stoneName;
         default:    return Block::FullName();
         }
     }
@@ -43,10 +46,13 @@
 
 // Ladder::
     QString Ladder::FullName() const {
+        TrString stoneName = QObject::tr("Rock with ledges");
+        TrString greenName = QObject::tr("Liana");
+
         switch ( Sub() ) {
         case MOSS_STONE:
-        case STONE:    return QObject::tr("Rock with ledges");
-        case GREENERY: return QObject::tr("Liana");
+        case STONE:    return stoneName;
+        case GREENERY: return greenName;
         default:       return Block::FullName();
         }
     }
@@ -114,10 +120,13 @@
     }
 
     QString Liquid::FullName() const {
+        TrString stoneName = tr("Lava");
+        TrString meatName  = tr("Blood");
+
         switch ( Sub() ) {
-        case STONE:  return tr("Lava");
+        case STONE:  return stoneName;
         case H_MEAT:
-        case A_MEAT: return tr("Blood");
+        case A_MEAT: return meatName;
         default:     return TrManager::SubNameUpper(Sub());
         }
     }
@@ -163,17 +172,21 @@
     }
 
     QString Grass::FullName() const {
+        TrString fireName = tr("Fire");
+
         switch ( Sub() ) {
         case GREENERY: return TrManager::KindName(GRASS);
-        case FIRE:     return tr("Fire");
+        case FIRE:     return fireName;
         default:       return Block::FullName();
         }
     }
 
     QString Grass::Description() const {
-        return ( Sub() != FIRE ) ?
-            tr("It grows on soil.") :
-            tr("It burns");
+        TrString growDescription = tr("It grows on soil.");
+        TrString fireDescription = tr("It burns");
+
+        return (( Sub() != FIRE ) ?
+            growDescription : fireDescription);
     }
 
     int  Grass::ShouldAct() const  { return FREQUENT_RARE; }
@@ -190,9 +203,13 @@
     void Bush::ReceiveSignal(const QString& str){ Active::ReceiveSignal(str); }
     int  Bush::Weight() const { return Inventory::Weight() + Block::Weight(); }
     QString Bush::FullName() const { return TrManager::KindName(BUSH); }
-    QString Bush::Description() const { return tr("Food and wood source."); }
     usage_types Bush::Use(Active*) { return USAGE_TYPE_OPEN; }
     inner_actions Bush::ActInner() { return INNER_ACTION_NONE; }
+
+    QString Bush::Description() const {
+        TrString description = tr("Food and wood source.");
+        return description;
+    }
 
     void Bush::DoRareAction() {
         if ( Q_UNLIKELY(0 == (qrand() % 256)) ) {
@@ -266,8 +283,9 @@
     push_reaction Door::PushResult(dirs) const { return movable; }
 
     QString Door::FullName() const {
+        TrString lockedName = tr("Locked door");
         return Str("%1 (%2)").
-            arg(locked ? tr("Locked door") : TrManager::KindName(DOOR)).
+            arg(locked ? lockedName : TrManager::KindName(DOOR)).
             arg(TrManager::SubName(Sub()));
     }
 
@@ -303,8 +321,9 @@
 // Clock::
     usage_types Clock::Use(Active* const who) {
         if ( who ) {
+            TrString outerTimeString = tr("Outer time is %1.");
             who->ReceiveSignal( (GetNote().left(4) == Str("real")) ?
-                tr("Outer time is %1.").arg(QTime::currentTime().toString()) :
+                outerTimeString.arg(QTime::currentTime().toString()) :
                 World::GetCWorld()->TimeOfDayStr() );
         } else {
             SendSignalAround(GetNote());
@@ -313,7 +332,8 @@
     }
 
     QString Clock::FullName() const {
-        return ( Sub() == EXPLOSIVE ) ? tr("Bomb") : Block::FullName();
+        TrString explosiveName = tr("Bomb");
+        return (( Sub() == EXPLOSIVE ) ? explosiveName : Block::FullName());
     }
 
     void Clock::Damage(int, const int dmg_kind) {
@@ -334,26 +354,33 @@
         const int current_time = world->TimeOfDay();
         int notify_flag = 1;
         if ( alarmTime == current_time ) {
-            Block::Inscribe(tr("Alarm. %1").arg(world->TimeOfDayStr()));
+            TrString alarmString = tr("Alarm. %1");
+            Block::Inscribe(alarmString.arg(world->TimeOfDayStr()));
             ++notify_flag;
         } else if ( timerTime > 0 )  {
             --timerTime;
             Block::Inscribe(QString::number(timerTime));
         } else if ( timerTime == 0 ) {
             timerTime = -1;
-            Block::Inscribe(tr("Timer fired. %1").arg(world->TimeOfDayStr()));
+            TrString timerString = tr("Timer fired. %1");
+            Block::Inscribe(timerString.arg(world->TimeOfDayStr()));
             ++notify_flag;
         }
         if ( Q_UNLIKELY(Sub()==EXPLOSIVE) ) {
             return ( notify_flag>1 ) ?
                 INNER_ACTION_EXPLODE : INNER_ACTION_ONLY;
         }
+
+        TrString morningString = tr("Morning has come.");
+        TrString dayString     = tr("Day has come.");
+        TrString eveningString = tr("Evening has come.");
+        TrString nightString   = tr("Night has come.");
         switch ( current_time ) {
         default: --notify_flag; break;
-        case World::END_OF_NIGHT:   Inscribe(tr("Morning has come.")); break;
-        case World::END_OF_MORNING: Inscribe(tr("Day has come."    )); break;
-        case World::END_OF_NOON:    Inscribe(tr("Evening has come.")); break;
-        case World::END_OF_EVENING: Inscribe(tr("Night has come."  )); break;
+        case World::END_OF_NIGHT:   Inscribe(morningString); break;
+        case World::END_OF_MORNING: Inscribe(dayString    ); break;
+        case World::END_OF_NOON:    Inscribe(eveningString); break;
+        case World::END_OF_EVENING: Inscribe(nightString  ); break;
         }
         if ( Q_UNLIKELY(notify_flag > 0) ) {
             Use(nullptr);
@@ -426,26 +453,32 @@
     }
 
     void Signaller::Signal(const int level) const {
+        TrString dingString = tr("^ Ding! ^");
+
         switch ( Sub() ) {
         case WOOD:
         case STONE:
             SendSignalAround(QString(level/4 + 1, QChar::fromLatin1('-')));
             break;
-        default: SendSignalAround(tr("^ Ding! ^")); break;
+        default: SendSignalAround(dingString); break;
         }
     }
 
     QString Signaller::FullName() const {
+        TrString ironName  = tr("Bell");
+        TrString stoneName = tr("Button");
+
         switch ( Sub() ) {
-        case IRON:  return tr("Bell");
+        case IRON:  return ironName;
         case WOOD:
-        case STONE: return tr("Button");
+        case STONE: return stoneName;
         default:    return Block::FullName();
         }
     }
 
     QString Signaller::Description() const {
-        return tr("Reacts on touch.");
+        TrString description = tr("Reacts on touch.");
+        return description;
     }
 
 // Telegraph:: section
@@ -514,17 +547,21 @@
     wearable Informer::Wearable() const { return WEARABLE_OTHER; }
 
     usage_types Informer::Use(Active* const user) {
+        TrString compassMessage = QObject::tr("Your direction: %1.");
+
         switch ( Sub() ) {
-        case IRON: user->ReceiveSignal(QObject::tr("Your direction: %1.").
-            arg(TrManager::DirName(user->GetDir()).toLower())); break;
+        case IRON: user->ReceiveSignal(compassMessage
+            .arg(TrManager::DirName(user->GetDir()).toLower())); break;
         default: break;
         }
         return USAGE_TYPE_INNER;
     }
 
     QString Informer::FullName() const {
+        TrString compassName = QObject::tr("Compass");
+
         switch ( Sub() ) {
-        case IRON: return QObject::tr("Compass");
+        case IRON: return compassName;
         default:   return Block::FullName();
         }
     }

@@ -30,21 +30,27 @@
 
 // Text::
 QString Text::FullName() const {
+    TrString paperName     = QObject::tr("Paper page");
+    TrString glassName     = QObject::tr("Screen");
+    TrString diffenentName = QObject::tr("Logger");
+
     switch ( Sub() ) {
-    case PAPER: return QObject::tr("Paper page");
-    case GLASS: return QObject::tr("Screen");
-    case DIFFERENT: return QObject::tr("Logger");
-    default:    return Block::FullName();
+    case PAPER:     return paperName;
+    case GLASS:     return glassName;
+    case DIFFERENT: return diffenentName;
+    default:        return Block::FullName();
     }
 }
 
 usage_types Text::Use(Active* const who) {
     if ( noteId == 0 ) {
-        who->ReceiveSignal(QObject::tr("Nothing is written here."));
+        TrString nothingString = QObject::tr("Nothing is written here.");
+        who->ReceiveSignal(nothingString);
         return USAGE_TYPE_INNER;
     } else {
         if ( Sub() == DIFFERENT ) { // logger
-            log(QObject::tr("Used by ") + who->FullName() + Str("."));
+            TrString usedString = QObject::tr("Used by ");
+            log(usedString + who->FullName() + Str("."));
             return USAGE_TYPE_NO;
         }
         return USAGE_TYPE_READ;
@@ -57,7 +63,8 @@ bool Text::Inscribe(const QString& str) {
         return true;
     } else {
         if ( Sub() == DIFFERENT ) {
-            log(QObject::tr("Inscribed: ") + str + Str("."));
+            TrString inscribedString = QObject::tr("Inscribed: ");
+            log(inscribedString + str + Str("."));
         }
         return false;
     }
@@ -75,19 +82,21 @@ void Text::Damage(const int damage, const int damage_kind) {
     if ( damage_kind == DAMAGE_TIME ) {
         Block::Damage(damage, damage_kind);
     }
-    log(QObject::tr("Received damage: %1 points, type: ").arg(damage) +
-        TrManager::GetDamageString(static_cast<damage_kinds>(damage_kind)) +
-        Str("."));
+    TrString damageString = QObject::tr("Received damage: %1 points, type: ");
+    log(damageString.arg(damage)
+        + TrManager::GetDamageString(static_cast<damage_kinds>(damage_kind))
+        + Str("."));
 }
 
 void Text::ReceiveSignal(const QString& string) {
     if ( Sub() != DIFFERENT ) return;
-    log(QObject::tr("Received message: \"") + string + Str("\"."));
+    TrString messageString = QObject::tr("Received message: \"");
+    log(messageString + string + Str("\"."));
 }
 
 QString Text::Description() const {
-    return QObject::tr("Can be inscribed with file name in ") +
-        World::WorldPath() + Str("/texts/.");
+    TrString instruction = QObject::tr("Can be inscribed with file name in ");
+    return instruction + World::WorldPath() + Str("/texts/.");
 }
 
 // Map::
@@ -97,7 +106,8 @@ usage_types Map::UseOnShredMove(Active* const user) { return Use(user); }
 usage_types Map::Use(Active* const user) {
     if ( user == nullptr ) return USAGE_TYPE_READ;
     if ( noteId == 0 ) {
-        user->ReceiveSignal(QObject::tr("Set title to this map first."));
+        TrString titleString = QObject::tr("Set title to this map first.");
+        user->ReceiveSignal(titleString);
         return USAGE_TYPE_INNER;
     } // else:
     QFile map_file(World::WorldPath() + Str("/texts/") + GetNote());

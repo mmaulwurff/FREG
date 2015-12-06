@@ -36,20 +36,24 @@ void Bucket::ReceiveSignal(const QString& str) { Block::ReceiveSignal(str); }
 usage_types Bucket::Use(Active*) { return USAGE_TYPE_POUR; }
 
 QString Bucket::FullName() const {
+    TrString glassNameString = QObject::tr("Bottle");
+    TrString emptyString     = QObject::tr("(empty)");
+    TrString fullString      = QObject::tr("with %1 (%2/%3 full)");
+
     QString name;
     switch ( Sub() ) {
     default:    name = TrManager::KindName(BUCKET); break;
-    case GLASS: name = QObject::tr("Bottle"); break;
+    case GLASS: name = glassNameString; break;
     }
-    return ( Str("%1 (%2) %3").
-        arg(name).
-        arg(TrManager::SubName(Sub())).
-        arg( IsEmpty(0) ?
-            QObject::tr("(empty)") :
-            QObject::tr("with %1 (%2/%3 full)").
-                arg(ShowBlock(0)->FullName().toLower()).
-                arg(Number(0)).
-                arg(MAX_STACK_SIZE)) );
+    return ( Str("%1 (%2) %3")
+        .arg(name)
+        .arg(TrManager::SubName(Sub()))
+        .arg( IsEmpty(0) ?
+            emptyString :
+            fullString
+                .arg(ShowBlock(0)->FullName().toLower())
+                .arg(Number(0))
+                .arg(MAX_STACK_SIZE)) );
 }
 
 bool Bucket::Get(Block* const block, const int start) {

@@ -38,14 +38,17 @@ void Accumulator::SaveAttributes(QDataStream& str) const { str << charge; }
 QString Accumulator::FullName() const {
     QString name;
     if ( GetSubGroup(Sub()) == GROUP_METAL ) {
-        name = QObject::tr("Battery (%1)").arg(TrManager::SubName(Sub()));
+        TrString batteryString = QObject::tr("Battery (%1)");
+        name = batteryString.arg(TrManager::SubName(Sub()));
     } else {
+        TrString nameString = QObject::tr("Thermos");
         switch ( Sub() ) {
-        case GLASS: name = QObject::tr("Thermos"); break;
+        case GLASS: name = nameString; break;
         default:    name = Block::FullName(); break;
         }
     }
-    return name.append(Str(" (charge: %1%)").arg(100*charge / MAX_CHARGE));
+    TrString chargeString = QObject::tr(" (charge: %1%)");
+    return name.append(chargeString.arg(100*charge / MAX_CHARGE));
 }
 
 void Accumulator::Damage(const int dmg, const int dmg_kind) {

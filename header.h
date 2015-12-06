@@ -48,6 +48,7 @@ constexpr int sizeofArray(T(&)[N]) { return N; }
 #define QT_NO_CAST_TO_ASCII
 
 #define Str(str) QStringLiteral(str)
+#define TrString static const QString
 
 extern const class QString home_path;
 

@@ -22,9 +22,12 @@
 
 QString Weapon::FullName() const {
     if ( Kind() != WEAPON ) return Block::FullName();
+
+    TrString stoneName = QObject::tr("Pebble");
+    TrString ironName  = QObject::tr("Spike");
     switch ( Sub() ) {
-    case STONE: return QObject::tr("Pebble");
-    case IRON:  return QObject::tr("Spike");
+    case STONE: return stoneName;
+    case IRON:  return ironName;
     case BONE:
     case SKY:
     case SUB_NUT: return TrManager::SubNameUpper(Sub());
@@ -33,9 +36,10 @@ QString Weapon::FullName() const {
 }
 
 QString Weapon::Description() const {
-    return QObject::tr("Damage: %1. Damage type: %2.").
-        arg(DamageLevel()).
-        arg(TrManager::GetDamageString(
+    TrString description = QObject::tr("Damage: %1. Damage type: %2.");
+    return description
+        .arg(DamageLevel())
+        .arg(TrManager::GetDamageString(
             static_cast<damage_kinds>(DamageKind())));
 }
 

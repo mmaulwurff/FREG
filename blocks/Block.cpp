@@ -40,12 +40,17 @@ dirs Block::MakeDirFromDamage(const int dmg_kind) {
 
 QString Block::FullName() const {
     if ( Kind() ==  BLOCK ) {
+        TrString waterNameString = QObject::tr("Ice");
+        TrString sandNameString  = QObject::tr("Sandstone");
+        TrString clayNameString  = QObject::tr("Clay brick");
+        TrString acidNameString  = QObject::tr("Acid concentrate");
+
         switch ( Sub() ) {
         default:    return TrManager::SubNameUpper(Sub());
-        case WATER: return QObject::tr("Ice");
-        case SAND:  return QObject::tr("Sandstone");
-        case CLAY:  return QObject::tr("Clay brick");
-        case ACID:  return QObject::tr("Acid concentrate");
+        case WATER: return waterNameString;
+        case SAND:  return sandNameString;
+        case CLAY:  return clayNameString;
+        case ACID:  return acidNameString;
         case IRON:
         case GOLD:
         case COAL: break;
@@ -183,14 +188,18 @@ usage_types Block::UseOnShredMove(Active*) { return USAGE_TYPE_NO; }
 
 QString Block::Description() const {
     if ( Kind() == BLOCK ) {
+        TrString stoneDescription = QObject::tr("Solid wall.");
+        TrString airDescription   = QObject::tr("Is needed for breathing.");
+
         switch ( Sub() ) {
-        case STONE: return QObject::tr("Solid wall.");
-        case AIR:   return QObject::tr("Is needed for breathing.");
+        case STONE: return stoneDescription;
+        case AIR:   return airDescription;
         default: break;
         }
     }
-    return QObject::tr("Typical object of %1.").
-        arg(TrManager::SubName(Sub()));
+
+    TrString typicalDescription = QObject::tr("Typical object of %1.");
+    return typicalDescription.arg(TrManager::SubName(Sub()));
 }
 
 wearable Block::Wearable() const {

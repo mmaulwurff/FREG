@@ -65,19 +65,16 @@
         const int last_durability = GetDurability();
         Falling::Damage(dmg, dmg_kind);
         if ( last_durability != GetDurability() ) {
+            TrString hungerString = tr("You weaken from hunger!");
+            TrString burnString   = tr("You burn!");
+            TrString chokeString  = tr("You choke without air!");
+            TrString damageString = tr("Received damage!");
+
             switch ( dmg_kind ) {
-            case DAMAGE_HUNGER:
-                ReceiveSignal(tr("You weaken from hunger!"));
-                break;
-            case DAMAGE_HEAT:
-                ReceiveSignal(tr("You burn!"));
-                break;
-            case DAMAGE_BREATH:
-                ReceiveSignal(tr("You choke without air!"));
-                break;
-            default:
-                ReceiveSignal(tr("Received damage!"));
-                break;
+            case DAMAGE_HUNGER: ReceiveSignal(hungerString); break;
+            case DAMAGE_HEAT:   ReceiveSignal(burnString);   break;
+            case DAMAGE_BREATH: ReceiveSignal(chokeString);  break;
+            default:            ReceiveSignal(damageString); break;
             }
             emit Updated();
         }
@@ -92,10 +89,12 @@
         const int value = NutritionalValue(sub);
         if ( value ) {
             satiation += value;
-            ReceiveSignal(tr("Ate %1.").arg(TrManager::SubName(sub)));
+            TrString ateString = tr("Ate %1.");
+            ReceiveSignal(ateString.arg(TrManager::SubName(sub)));
             if ( World::SECONDS_IN_DAY < satiation ) {
                 satiation = 1.1 * World::SECONDS_IN_DAY;
-                ReceiveSignal(tr("You have gorged yourself!"));
+                TrString gorgedString = tr("You have gorged yourself!");
+                ReceiveSignal(gorgedString);
             }
             emit Updated();
             return true;

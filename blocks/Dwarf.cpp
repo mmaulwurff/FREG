@@ -61,8 +61,9 @@ inner_actions Dwarf::ActInner() {
 }
 
 QString Dwarf::FullName() const {
-    return IsCreator() ?
-        tr("Creator") : Animal::FullName();
+    TrString creatorString = tr("Creator");
+    return (IsCreator() ?
+        creatorString : Animal::FullName());
 }
 
 /// @todo Make all (switching lanterns on/off) light changes synchronous
@@ -156,7 +157,8 @@ void Dwarf::SaveAttributes(QDataStream& out) const {
 }
 
 bool Dwarf::Inscribe(const QString&) {
-    SendSignalAround(tr("Don't touch me!"));
+    TrString notTouchString = tr("Don't touch me!");
+    SendSignalAround(notTouchString);
     return false;
 }
 

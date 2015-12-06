@@ -43,7 +43,8 @@ bool Inventory::Drop(const int src, int dest, int num, Inventory* const inv_to)
         }
     }
     if ( ok_flag ) {
-        ReceiveSignal(World::tr("Your inventory is lighter now."));
+        TrString lighterString = World::tr("Your inventory is lighter now.");
+        ReceiveSignal(lighterString);
     }
     return ok_flag;
 }
@@ -91,14 +92,16 @@ bool Inventory::Get(Block* const block, const int start) {
     } else {
         for (int i=start; i<Size(); ++i) {
             if ( GetExact(block, i) ) {
-                ReceiveSignal(QObject::tr("You have %1 at slot '%2'.").
-                    arg(block->FullName()).
-                    arg(char(i + 'a')));
+                TrString haveString = QObject::tr("You have %1 at slot '%2'.");
+                ReceiveSignal(haveString
+                    .arg(block->FullName())
+                    .arg(char(i + 'a')));
                 return true;
             }
         }
     }
-    ReceiveSignal(QObject::tr("No room."));
+    TrString noRoomString = QObject::tr("No room.");
+    ReceiveSignal(noRoomString);
     return false;
 }
 
@@ -135,17 +138,18 @@ bool Inventory::InscribeInv(const int num, const QString& str) {
     }
     for (int i=0; i<number; ++i) {
         if ( not inventory[num].at(i)->Inscribe(str) ) {
-            ReceiveSignal(QObject::tr("Cannot inscribe %1.").
-                arg(InvFullName(num)));
+            TrString cannotInscribeString = QObject::tr("Cannot inscribe %1.");
+            ReceiveSignal(cannotInscribeString.arg(InvFullName(num)));
             return false;
         }
     }
-    ReceiveSignal(QObject::tr("Inscribed %1.").arg(InvFullName(num)));
+    TrString inscribedString = QObject::tr("Inscribed %1.");
+    ReceiveSignal(inscribedString.arg(InvFullName(num)));
     return true;
 }
 
 QString Inventory::InvFullName(const int num) const {
-    static const QString emptyString = World::tr("-empty-");
+    TrString emptyString = World::tr("-empty-");
     return inventory[num].isEmpty() ?
         emptyString :
         Str("%1%2").
@@ -212,8 +216,8 @@ void Inventory::Push(const_int(x, y, z), const int push_direction) {
 
 bool Inventory::MiniCraft(const int num) {
     if ( IsEmpty(num) ) {
-        ReceiveSignal(QObject::tr("Nothing at slot '%1'.").
-            arg(char(num + 'a')));
+        TrString nothingString = QObject::tr("Nothing at slot '%1'.");
+        ReceiveSignal(nothingString.arg(char(num + 'a')));
         return false;
     } // else:
     CraftItem* crafted =
@@ -227,13 +231,15 @@ bool Inventory::MiniCraft(const int num) {
                 static_cast<kinds>(crafted->kind),
                 static_cast<subs >(crafted->sub)), num);
         }
-        ReceiveSignal(QObject::tr("Craft successful: %1 (x%2).").
-            arg(ShowBlock(num)->FullName()).
-            arg(crafted->number));
+        TrString successString = QObject::tr("Craft successful: %1 (x%2).");
+        ReceiveSignal(successString
+            .arg(ShowBlock(num)->FullName())
+            .arg(crafted->number));
         delete crafted;
         return true;
     } else {
-        ReceiveSignal(QObject::tr("You don't know how to craft this."));
+        TrString notKnowStr = QObject::tr("You don't know how to craft this.");
+        ReceiveSignal(notKnowStr);
         return false;
     }
 }

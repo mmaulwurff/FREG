@@ -29,9 +29,11 @@ Filter::Filter(QDataStream& str, const kinds kind, const subs sub) :
 {}
 
 QString Filter::InvFullName(const int slot_number) const {
-    return ( slot_number > 0 ) ?
-        Container::InvFullName(slot_number) : IsEmpty(0) ?
-            tr("-example-") : Inventory::InvFullName(0);
+    TrString exampleString = tr("-example-");
+    return ( ( slot_number > 0 ) ?
+        Container::InvFullName(slot_number) :
+        (IsEmpty(0) ?
+            exampleString : Inventory::InvFullName(0)) );
 }
 
 bool Filter::Get(Block* const block, int) {
