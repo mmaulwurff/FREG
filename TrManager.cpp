@@ -136,8 +136,8 @@ QString TrManager::GetDamageString(const damage_kinds damage_kind) {
     return result.join(Str(", "));
 }
 
-QString& TrManager::Capitalized(QString& str) {
-    return str.replace(0, 1, str.at(0).toUpper());
+QString TrManager::Capitalized(const QString& str) {
+    return QString(str).replace(0, 1, str.at(0).toUpper());
 }
 
 QString TrManager::SubNameUpper(const int sub) {
@@ -149,11 +149,11 @@ QString TrManager::ShredTypeName(const shred_type type) {
     return trManager->shredTypeNames[type];
 }
 
-kinds TrManager::StrToKind(QString str) {
+kinds TrManager::StrToKind(const QString& str) {
     return static_cast<kinds>(
         std::find(ALL(rawKinds), Capitalized(str)) - rawKinds );
 }
 
-subs TrManager::StrToSub(const QString str) {
+subs TrManager::StrToSub(const QString& str) {
     return static_cast<subs>(std::find(ALL(rawSubs), str) - rawSubs);
 }

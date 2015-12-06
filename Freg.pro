@@ -12,11 +12,11 @@ DEFINES *= QT_USE_QSTRINGBUILDER
 #QMAKE_CXXFLAGS_DEBUG += -fno-inline
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS += \
-    -isystem $$(QTDIR)/include/QtGui \
-    -isystem $$(QTDIR)/include/QtCore \
+    \#-isystem $$(QTDIR)/include/QtGui \
+    \#-isystem $$(QTDIR)/include/QtCore \
     -std=c++14 -O3 \
     -Wfloat-equal -Woverloaded-virtual -Wundef -fstrict-enums -pedantic \
-    -Werror \
+    -Werror -Wno-error=strict-overflow \
     -Wdisabled-optimization -Wcast-align -Wcast-qual \
     -Wmissing-include-dirs -Wredundant-decls -Wshadow
 

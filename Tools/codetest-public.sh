@@ -51,7 +51,7 @@ if [ -z "$WORDS" ]
 fi
 
 figlet headers >> report.txt
-echo >> report.txt
+echo "Missing disclaimer in files:" >> report.txt
 grep -L "Copyright (C) 2012-2015 Alexander 'mmaulwurff' Kromm" $FILES >> report.txt
 
 echo 'start scan-build'

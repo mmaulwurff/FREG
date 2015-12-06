@@ -64,14 +64,14 @@ public:
     void ControlPlayer(int key);
 
     /// This is called for a notification to be displayed.
-    void Notify(QString) const override;
+    void Notify(const QString&) const override;
     void PassString(QString&) const override;
     void UpdateAll() override;
     void UpdatePlayer() override;
     void UpdateAround(int x, int y, int z) override;
     void Move(int) override;
     void DeathScreen() override;
-    void DisplayFile(QString path) override;
+    void DisplayFile(const QString& path) override;
     void ActionXyz(int* x, int* y, int* z) const override;
 
     static Screen* GetScreen();
@@ -131,7 +131,7 @@ private:
     void RePrint();
     void InventoryAction(int num) const;
     void SetActionMode(actions mode);
-    void ProcessCommand(QString command);
+    void ProcessCommand(const QString& command);
     void ProcessMouse();
     void MovePlayer(dirs) const;
     void MovePlayerDiagonal(dirs direction1, dirs direction2) const;

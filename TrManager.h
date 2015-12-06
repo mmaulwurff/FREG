@@ -47,9 +47,9 @@ public:
     /// If substance is unknown, returns "unknown_sub".
     static QString SubToString(int sub);
     /// If string is not convertible to kind, returns LAST_KIND.
-    static kinds StrToKind(QString);
+    static kinds StrToKind(const QString&);
     /// If string is not convertible to substance, returns LAST_SUB.
-    static subs StrToSub(QString);
+    static subs StrToSub(const QString&);
 
     /// Universal function, returns translated "off" or "on".
     static QString OffOn(bool on);
@@ -64,7 +64,7 @@ private:
 
     class QTranslator* LoadTranslator() const;
 
-    static QString& Capitalized(QString&);
+    static QString Capitalized(const QString&);
 
     class QTranslator* const translator;
     static const QString rawKinds[KIND_COUNT], rawSubs [SUB_COUNT];

@@ -402,7 +402,7 @@ bool Screen::IsOutWindow(const MEVENT& mevent,
                  0 < mevent.y && mevent.y < vert_bound );
 }
 
-void Screen::ProcessCommand(const QString command) {
+void Screen::ProcessCommand(const QString& command) {
     if ( command.length() == 1 && command.at(0).toLatin1() != '.' ) {
         ControlPlayer(command.at(0).toLatin1());
         return;
@@ -963,7 +963,7 @@ const {
     wrefresh(window);
 } // void Screen::PrintInv(WINDOW*, const Block*, const Inventory*)
 
-void Screen::DisplayFile(const QString path) {
+void Screen::DisplayFile(const QString& path) {
     #ifdef CONSOLE
     QFile file(path);
     if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -980,7 +980,7 @@ void Screen::DisplayFile(const QString path) {
     #endif
 }
 
-void Screen::Notify(const QString str) const {
+void Screen::Notify(const QString& str) const {
     if ( str.isEmpty() ) return;
     Log(str);
     if ( inputActive ) return;

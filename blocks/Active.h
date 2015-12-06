@@ -73,7 +73,7 @@ signals:
 
 protected:
     void UpdateLightRadius(int old_radius);
-    void SendSignalAround(QString) const;
+    void SendSignalAround(const QString&) const;
     void DamageAround() const;
     /// Damages block, if it is broken returns true and destroys block.
     bool TryDestroy(int x, int y, int z) const;

@@ -55,7 +55,7 @@ public:
     /// Returns true on success (something has been crafted).
     bool MiniCraft(int num);
     /// Returns true on success.
-    bool InscribeInv(int num, QString str);
+    bool InscribeInv(int num, const QString& str);
     /// Returns AIR if slot number i is empty.
     subs GetInvSub(int i) const;
     /// Returns BLOCK if slot number i is empty.

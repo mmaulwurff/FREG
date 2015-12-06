@@ -56,10 +56,10 @@ public:
     static int  Color   (int kind, int sub);
 
     /// To store message history.
-    void Log(QString message) const;
+    void Log(const QString& message) const;
 
     /// This is called for a notification to be displayed.
-    virtual void Notify(QString) const = 0;
+    virtual void Notify(const QString&) const = 0;
 
     /** This is called when string is needed to be received from input.
      *  It is connected to world in constructor. */
@@ -101,7 +101,7 @@ public:
 
     /** This shows a file by path.
      *  Standard (non-reimplemented) version does nothing. */
-    virtual void DisplayFile(QString path);
+    virtual void DisplayFile(const QString& path);
 
 signals:
     /** This is emitted when input receives exit key.
@@ -128,7 +128,7 @@ protected:
     };
 
     /// Returns true if command is recognized and processed.
-    bool ProcessCommand(QString command);
+    bool ProcessCommand(const QString& command);
 
     class Player* const player;
     QSettings settings;

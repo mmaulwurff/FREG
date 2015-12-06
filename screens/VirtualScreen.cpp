@@ -68,13 +68,13 @@ VirtualScreen::VirtualScreen(Player* const player_) :
 
 VirtualScreen::~VirtualScreen() {}
 
-void VirtualScreen::Log(const QString message) const {
+void VirtualScreen::Log(const QString& message) const {
     if ( logFile.isOpen() ) {
         logStream << message << endl;
     }
 }
 
-void VirtualScreen::DisplayFile(QString /* path */) {}
+void VirtualScreen::DisplayFile(const QString& /* path */) {}
 
 void VirtualScreen::ActionXyz P3(int* const, x, y, z) const {
     World::GetCWorld()->Focus(player->X(), player->Y(), player->Z(),
@@ -142,7 +142,7 @@ char VirtualScreen::CharName(const int kind, const int sub) {
     return characters[kind];
 }
 
-bool VirtualScreen::ProcessCommand(const QString command) {
+bool VirtualScreen::ProcessCommand(const QString& command) {
     switch ( Player::UniqueIntFromString(qPrintable(command)) ) {
     case Player::UniqueIntFromString("moo"):
         Notify(Str("^__^"));
@@ -160,6 +160,6 @@ void VirtualScreen::Move(int)                   { Q_UNREACHABLE(); }
 void VirtualScreen::UpdateAll()                 { Q_UNREACHABLE(); }
 void VirtualScreen::DeathScreen()               { Q_UNREACHABLE(); }
 void VirtualScreen::UpdatePlayer()              { Q_UNREACHABLE(); }
-void VirtualScreen::Notify(QString) const       { Q_UNREACHABLE(); }
 void VirtualScreen::PassString(QString &) const { Q_UNREACHABLE(); }
 void VirtualScreen::UpdateAround(int, int, int) { Q_UNREACHABLE(); }
+void VirtualScreen::Notify(const QString&) const { Q_UNREACHABLE(); }

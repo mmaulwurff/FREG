@@ -127,7 +127,7 @@ void Active::ReRegister(const dirs dir) {
     (shred = World::GetCWorld()->GetNearShred(shred, dir))->Register(this);
 }
 
-void Active::SendSignalAround(const QString signal) const {
+void Active::SendSignalAround(const QString& signal) const {
     if ( IsInside() ) return; // for blocks inside inventories
     const World* const world = World::GetCWorld();
     for (const XyzInt& xyz : AroundCoordinates(X(), Y(), Z())) {

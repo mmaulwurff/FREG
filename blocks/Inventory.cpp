@@ -122,7 +122,7 @@ void Inventory::MoveInside(const int from, const int num_to, const int num) {
     }
 }
 
-bool Inventory::InscribeInv(const int num, const QString str) {
+bool Inventory::InscribeInv(const int num, const QString& str) {
     const int number = Number(num);
     if ( number == 0 ) {
         return false;
