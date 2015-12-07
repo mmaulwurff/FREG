@@ -67,12 +67,17 @@ void Inventory::Pull(const int num) {
 
 void Inventory::SaveAttributes(QDataStream& out) const {
     for (int i=0; i<GetSize(); ++i) {
-        out << quint8(Number(i));
-        if ( not inventory[i].isEmpty() ) {
-            Block* const to_save = inventory[i].top();
-            for (int j=0; j<Number(i); ++j) {
-                to_save->SaveToFile(out);
-                to_save->RestoreDurabilityAfterSave();
+        const int number = Number(i);
+        out << quint8(number);
+        if ( number > 0 ) {
+            /// @todo save each block separately
+            const Block* const to_save = inventory[i].top();
+            for (int j=0; j<number; ++j) {
+                if ( to_save == BlockFactory::ConstNormal(to_save->Sub()) ) {
+                    to_save->SaveNormalToFile(out);
+                } else {
+                    to_save->SaveToFile(out);
+                }
             }
         }
     }

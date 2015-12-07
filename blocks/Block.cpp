@@ -278,19 +278,16 @@ bool Block::operator==(const Block& block) const {
 
 void Block::SaveAttributes(QDataStream&) const {}
 
-void Block::SaveToFile(QDataStream& out) {
-    if ( this == BlockFactory::Normal(substance) ) {
-        SaveNormalToFile(out);
-    } else {
-        out << substance << blockKind <<
-            qint16( ( ( ( durability
-            <<= 3 ) |= direction )
-            <<= 1 ) |= (noteId != 0) );
-        if ( Q_UNLIKELY(noteId != 0) ) {
-            out << noteId;
-        }
-        SaveAttributes(out);
+void Block::SaveToFile(QDataStream& out) const {
+    qint16 buffer = durability;
+    out << substance << blockKind <<
+        qint16( ( ( ( buffer
+        <<= 3 ) |= direction )
+        <<= 1 ) |= (noteId != 0) );
+    if ( Q_UNLIKELY(noteId != 0) ) {
+        out << noteId;
     }
+    SaveAttributes(out);
 }
 
 void Block::SaveNormalToFile(QDataStream& out) const {
