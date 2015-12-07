@@ -33,8 +33,8 @@ bool Inventory::Drop(const int src, int dest, int num, Inventory* const inv_to)
     dest = std::max(inv_to->Start(), dest);
     bool ok_flag = false;
     while ( num-- ) {
-        if ( src < Size()
-                && dest < inv_to->Size()
+        if ( src < GetSize()
+                && dest < inv_to->GetSize()
                 && not inventory[src].isEmpty()
                 && inv_to->Get(inventory[src].top(), dest) )
         {
@@ -51,7 +51,7 @@ bool Inventory::Drop(const int src, int dest, int num, Inventory* const inv_to)
 
 bool Inventory::GetAll(Inventory* const from) {
     bool flag = false;
-    for (int i=0; i<from->Size(); ++i) {
+    for (int i=0; i<from->GetSize(); ++i) {
         if ( from->Drop(i, 0, from->Number(i), this) ) {
             flag = true;
         }
@@ -66,7 +66,7 @@ void Inventory::Pull(const int num) {
 }
 
 void Inventory::SaveAttributes(QDataStream& out) const {
-    for (int i=0; i<Size(); ++i) {
+    for (int i=0; i<GetSize(); ++i) {
         out << quint8(Number(i));
         if ( not inventory[i].isEmpty() ) {
             Block* const to_save = inventory[i].top();
@@ -81,7 +81,7 @@ void Inventory::SaveAttributes(QDataStream& out) const {
 bool Inventory::Get(Block* const block, const int start) {
     if ( block == nullptr ) return true;
     if ( block->Wearable() == WEARABLE_VESSEL ) {
-        for (int i=0; i<Size(); ++i) {
+        for (int i=0; i<GetSize(); ++i) {
             if ( Number(i)==1 && ShowBlock(i) ) {
                 Inventory* const inner = ShowBlock(i)->HasInventory();
                 if ( inner && inner->Get(block) ) {
@@ -90,7 +90,7 @@ bool Inventory::Get(Block* const block, const int start) {
             }
         }
     } else {
-        for (int i=start; i<Size(); ++i) {
+        for (int i=start; i<GetSize(); ++i) {
             if ( GetExact(block, i) ) {
                 TrString haveString = QObject::tr("You have %1 at slot '%2'.");
                 ReceiveSignal(haveString
@@ -179,7 +179,7 @@ kinds Inventory::GetInvKind(const int i) const {
 }
 
 int Inventory::Weight() const {
-    return std::accumulate(inventory, inventory + Size(), 0,
+    return std::accumulate(inventory, inventory + GetSize(), 0,
         [](const int sum, const auto& slot) {
             return sum + GetSlotWeight(slot);
     });
@@ -188,17 +188,17 @@ int Inventory::Weight() const {
 int Inventory::Number(const int i) const { return inventory[i].size(); }
 
 Block* Inventory::ShowBlockInSlot(const int slot, const int index) const {
-    return ( slot >= Size() || index >= Number(slot) ) ?
+    return ( slot >= GetSize() || index >= Number(slot) ) ?
         nullptr : inventory[slot].at(index);
 }
 
 Block* Inventory::ShowBlock(const int slot) const {
-    return ( slot >= Size() || inventory[slot].isEmpty() ) ?
+    return ( slot >= GetSize() || inventory[slot].isEmpty() ) ?
         nullptr : inventory[slot].top();
 }
 
 bool Inventory::IsEmpty() const {
-    return std::all_of(inventory + Start(), inventory + Size(),
+    return std::all_of(inventory + Start(), inventory + GetSize(),
         [](const auto& slot) { return slot.isEmpty(); });
 }
 
@@ -245,9 +245,9 @@ bool Inventory::MiniCraft(const int num) {
 }
 
 void Inventory::Shake() {
-    for (int i=Start(); i<Size()-1; ++i) {
+    for (int i=Start(); i<GetSize()-1; ++i) {
         if ( Number(i) != MAX_STACK_SIZE ) {
-            for (int j=i; j<Size(); ++j) {
+            for (int j=i; j<GetSize(); ++j) {
                 MoveInside(j, i, Number(j));
             }
         }
@@ -262,7 +262,7 @@ Inventory::Inventory(const int sz)
 Inventory::Inventory(QDataStream& str, const int sz)
     : Inventory(sz)
 {
-    for (int i=0; i<Size(); ++i) {
+    for (int i=0; i<GetSize(); ++i) {
         quint8 num;
         str >> num;
         while ( num-- ) {
@@ -276,7 +276,7 @@ Inventory::Inventory(QDataStream& str, const int sz)
 }
 
 Inventory::~Inventory() {
-    std::for_each(inventory, inventory+Size(), [](const auto& inv) {
+    std::for_each(inventory, inventory + GetSize(), [](const auto& inv) {
         std::for_each(ALL(inv), [](const auto block) {
             BlockFactory::DeleteBlock(block);
         });

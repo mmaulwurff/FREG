@@ -71,7 +71,7 @@ void DeferredAction::Build() const {
     // put more material in building inventory slot:
     if ( not inv->IsEmpty(srcSlot) ) return;
     const Id id(material->Kind(), material->Sub());
-    for (int i = srcSlot+1; i < inv->Size() &&
+    for (int i = srcSlot+1; i < inv->GetSize() &&
             inv->Number(srcSlot) < Inventory::MAX_STACK_SIZE; ++i)
     {
         const Block* const block = inv->ShowBlock(i);

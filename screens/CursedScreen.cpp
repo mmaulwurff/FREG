@@ -680,7 +680,7 @@ void Screen::PrintQuickInventory() const {
     const Inventory* const inv = player->GetBlock()->HasConstInventory();
     if ( Q_UNLIKELY(inv == nullptr) ) return;
 
-    const int inventory_size = inv->Size();
+    const int inventory_size = inv->GetSize();
     int step;
     int x;
     if ( screenWidth * 2 > inventory_size * 2 + 30 * 2) {
@@ -945,7 +945,7 @@ const {
     werase(window);
     const int start = inv->Start();
     int shift = 0; // to divide inventory sections
-    for (int i=0; i<inv->Size(); ++i) {
+    for (int i=0; i<inv->GetSize(); ++i) {
         shift += ( start == i && i != 0 );
         wstandend(window);
         mvwprintw(window, 1+i+shift, 1, "%c) ", 'a'+i);

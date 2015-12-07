@@ -60,7 +60,7 @@ public:
     subs GetInvSub(int i) const;
     /// Returns BLOCK if slot number i is empty.
     kinds GetInvKind(int i) const;
-    int Size() const { return inventorySize; }
+    int GetSize() const { return inventorySize; }
     int GetInvWeight(int i) const;
     int Number(int i) const;
     Block* ShowBlock(int slot) const;
