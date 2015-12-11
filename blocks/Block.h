@@ -125,8 +125,6 @@ public:
 
     bool operator==(const Block&) const;
 
-    /// Important! If block will be used after save,
-    /// call RestoreDurabilityAfterSave.
     void SaveToFile(QDataStream& out) const;
     void SaveNormalToFile(QDataStream& out) const;
 
