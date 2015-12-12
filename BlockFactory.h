@@ -42,7 +42,8 @@ class QDataStream;
 
 class BlockFactory final {
 public:
-     BlockFactory();
+
+    BlockFactory();
 
     /// Use this to receive a pointer to normal block.
     static Block* Normal(int sub);

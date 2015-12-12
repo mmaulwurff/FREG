@@ -98,7 +98,7 @@ bool BlockFactory::KindSubFromFile(QDataStream& str, quint8* kind, quint8* sub)
     }
 }
 
-Inventory *BlockFactory::Block2Inventory(Block* const block) {
+Inventory* BlockFactory::Block2Inventory(Block* const block) {
     return blockFactory->castsToInventory[block->Kind()](block);
 }
 

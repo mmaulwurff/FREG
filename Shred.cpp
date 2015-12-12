@@ -154,15 +154,13 @@ void Shred::SaveShred(const bool isQuitGame) {
         const int x = i.X(), y = i.Y();
         const int ground_z = FindTopNonAir(x, y);
         for (int z=1; z<=ground_z; ++z) {
-            Block* const block = GetBlock(x, y, z);
+            const Block* const block = GetBlock(x, y, z);
             if ( block == BlockFactory::ConstNormal(block->Sub()) ) {
                 block->SaveNormalToFile(out_stream);
             } else {
                 block->SaveToFile(out_stream);
                 if ( isQuitGame ) {
                     delete block; // without unregistering.
-                } else {
-                    block->RestoreDurabilityAfterSave();
                 }
             }
         }

@@ -581,7 +581,7 @@ bool World::Exchange(TY(Block* const, block_from, block_to),
             return false;
         }
     }
-    if ( src >= inv_from->Size() || inv_from->IsEmpty(src) ) {
+    if ( src >= inv_from->GetSize() || inv_from->IsEmpty(src) ) {
         TrString nothingHereString  = tr("Nothing here.");
         TrString nothingThereString = tr("Nothing in %1 at slot '%2'.");
         block_from->ReceiveSignal(nothingHereString);

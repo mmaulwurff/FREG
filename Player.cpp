@@ -247,7 +247,7 @@ Block* Player::ValidBlock(const int num) const {
         return nullptr;
     }
 
-    if ( num >= inv->Size() ) {
+    if ( num >= inv->GetSize() ) {
         TrString noSuchPlaceString = tr("No such place.");
         Notify(noSuchPlaceString);
         return nullptr;

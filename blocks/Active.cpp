@@ -79,7 +79,7 @@ void Active::DoRareAction() {
 void Active::ActRare() {
     Inventory* const inv = HasInventory();
     if (Q_UNLIKELY(inv != nullptr)) {
-        for (int i=inv->Size()-1; i; --i) {
+        for (int i=inv->GetSize()-1; i; --i) {
             const int number = inv->Number(i);
             if ( number == 0 ) continue;
             Active* const top_active = inv->ShowBlock(i)->ActiveBlock();

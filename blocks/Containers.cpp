@@ -168,13 +168,13 @@
             }
         }
         int materials_number = 0;
-        for (int i=Start(); i<Size(); ++i) {
+        for (int i=Start(); i<GetSize(); ++i) {
             if ( not IsEmpty(i) ) {
                 ++materials_number;
             }
         }
         CraftList list(materials_number);
-        for (int i=Start(); i<Size(); ++i) {
+        for (int i=Start(); i<GetSize(); ++i) {
             if ( not IsEmpty(i) ) {
                 list << new CraftItem{
                     Number(i), ShowBlock(i)->Kind(), ShowBlock(i)->Sub()};
@@ -196,8 +196,8 @@
             const int num, Inventory* const inv_to)
     {
         if ( inv_to == nullptr
-                || src  >= Size()
-                || dest >= inv_to->Size()
+                || src  >= GetSize()
+                || dest >= inv_to->GetSize()
                 || IsEmpty(src) )
         {
             return false;
@@ -207,7 +207,7 @@
             Pull(src);
             if ( src < Start() ) {
                 // remove materials:
-                for (int slot=Start(); slot<Size(); ++slot) {
+                for (int slot=Start(); slot<GetSize(); ++slot) {
                     while ( not IsEmpty(slot) ) {
                         Block* const to_pull = ShowBlock(slot);
                         Pull(slot);
@@ -310,7 +310,7 @@
 
     void Converter::DoRareAction() {
         if ( isOn && fuelLevel < World::SECONDS_IN_DAY/DamageLevel() ) {
-            for (int i=Size()-1; i>=0; --i) {
+            for (int i=GetSize()-1; i>=0; --i) {
                 Block* const block = ShowBlock(i);
                 if ( block ) {
                     const int add = ConvertRatio(block->Sub());

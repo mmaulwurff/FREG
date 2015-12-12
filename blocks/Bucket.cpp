@@ -58,7 +58,7 @@ QString Bucket::FullName() const {
 
 bool Bucket::Get(Block* const block, const int start) {
     if ( block->Wearable() == WEARABLE_VESSEL ) {
-        for (int i=start; i<Size(); ++i) {
+        for (int i=start; i<GetSize(); ++i) {
             if ( GetExact(block, i) ) {
                 return true;
             }

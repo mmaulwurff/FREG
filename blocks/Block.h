@@ -125,13 +125,8 @@ public:
 
     bool operator==(const Block&) const;
 
-    /// Important! If block will be used after save,
-    /// call RestoreDurabilityAfterSave.
-    void SaveToFile(QDataStream& out);
+    void SaveToFile(QDataStream& out) const;
     void SaveNormalToFile(QDataStream& out) const;
-
-    /// Important! Use it if block won't be deleted after SaveToFile.
-    void RestoreDurabilityAfterSave() { durability >>= 4; }
 
     static sub_groups GetSubGroup(int sub);
     static dirs MakeDirFromDamage(int damage_kind);
