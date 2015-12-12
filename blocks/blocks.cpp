@@ -23,6 +23,7 @@
 #include "TrManager.h"
 #include "SortedArray.h"
 #include "Shred.h"
+#include "RandomManager.h"
 
 #include <QDataStream>
 #include <QTextStream>
@@ -85,7 +86,7 @@
         if ( Q_UNLIKELY(Sub() == ACID || Sub() == STONE) ) {
             DamageAround();
         }
-        const int random = qrand() % 16;
+        const int random = RandomManager::rand() % 16;
         if ( Q_UNLIKELY(random < 4) ) {
             World::GetWorld()->Move(X(), Y(), Z(),
                 static_cast<dirs>(random+2));
@@ -135,7 +136,7 @@
     void Grass::DoRareAction() {
         int i=X(), j=Y();
         // increase this if grass grows too fast
-        switch ( qrand() & (FIRE==Sub() ? 3 : 255) ) {
+        switch ( RandomManager::rand() & (FIRE==Sub() ? 3 : 255) ) {
         case 0: ++i; break;
         case 1: --i; break;
         case 2: ++j; break;
@@ -157,7 +158,7 @@
             world->DestroyAndReplace(X(), Y(), Z());
         } else if ( Q_UNLIKELY(FIRE == Sub()) ) {
             DamageAround();
-            if ( (qrand() % 16) || IsSubAround(WATER) ) {
+            if ( (RandomManager::rand() % 16) || IsSubAround(WATER) ) {
                 Damage(2, DAMAGE_FREEZE);
             }
         }
@@ -212,7 +213,7 @@
     }
 
     void Bush::DoRareAction() {
-        if ( Q_UNLIKELY(0 == (qrand() % 256)) ) {
+        if ( Q_UNLIKELY(0 == (RandomManager::rand() % 256)) ) {
             Get(BlockFactory::NewBlock(WEAPON, SUB_NUT));
         }
     }

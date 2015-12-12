@@ -168,6 +168,7 @@ private:
     void RainBlock(int* kind, int* sub) const;
 
     static Block* Normal(subs sub);
+    static int rand();
 
     class CoordinateIterator {
     public:

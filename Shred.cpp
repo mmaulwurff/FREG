@@ -27,6 +27,7 @@
 #include "AroundCoordinates.h"
 #include "ShredStorage.h"
 #include "Id.h"
+#include "RandomManager.h"
 
 #include <QDataStream>
 #include <QTextStream>
@@ -346,7 +347,7 @@ void Shred::RandomDrop(int num, const kinds kind, const subs sub,
 }
 
 void Shred::DropBlock(Block* const block, const bool on_water) {
-    int y = qrand();
+    int y = rand();
     const int x = CoordInShred(y);
     y = CoordInShred(unsigned(y) >> SHRED_WIDTH_BITSHIFT);
     int z = FindTopNonAir(x, y);
@@ -548,8 +549,8 @@ void Shred::ChaosShred() {
     for (CoordinateIterator i; i.notEnd(); ++i) {
         const int x = i.X(), y = i.Y();
         for (int z=1; z<HEIGHT/2; ++z) {
-            SetNewBlock(static_cast<kinds>(qrand() % LAST_KIND),
-                        static_cast<subs> (qrand() % LAST_SUB ), x, y, z);
+            SetNewBlock(static_cast<kinds>(rand() % LAST_KIND),
+                        static_cast<subs> (rand() % LAST_SUB ), x, y, z);
         }
     }
 }
@@ -567,10 +568,11 @@ void Shred::NormalCube(const_int(x_start, y_start, z_start),
 }
 
 Block* Shred::Normal(const subs sub) { return BlockFactory::Normal(sub); }
+int Shred::rand() { return RandomManager::rand(); }
 
 bool Shred::Tree(const_int(x, y, z)) {
-    int rand = qrand();
-    const int height = 4 + (qrand() % 8);
+    int random = rand();
+    const int height = 4 + (rand() % 8);
     if ( not InBounds(x+2, y+2, height+z) ) return false;
     // check for room
     const int leaves_level = z+height/2;
@@ -590,7 +592,7 @@ bool Shred::Tree(const_int(x, y, z)) {
     }
     // branches
     for (const XyzInt& xyz : AroundCoordinates4({x+1, y+1, leaves_level})) {
-        if ( (rand >>= 1) % 2 ) {
+        if ( (random >>= 1) % 2 ) {
             PutBlock(wood, XYZ(xyz));
         }
     }
@@ -620,7 +622,7 @@ void Shred::Rain(const kinds kind, const subs sub) {
         return;
     } // else:
     const int CLOUD_HEIGHT = HEIGHT*3/4;
-    int y = qrand();
+    int y = rand();
     const int x = CoordInShred(y);
     y = CoordInShred(unsigned(y) >> SHRED_WIDTH_BITSHIFT);
     const int to_replace_sub = GetBlock(x, y, CLOUD_HEIGHT)->Sub();
@@ -644,7 +646,7 @@ bool Shred::LoadRoom(const int level, const int index) {
                 PutBlock(BlockFactory::Normal(STONE), i, lines, level);
                 break;
             case '+':
-                NormalCube(i, lines, level, 1, 1, qrand()%3+5, STONE);
+                NormalCube(i, lines, level, 1, 1, rand()%3+5, STONE);
                 break;
             case '0':
                 NormalCube(i, lines, level, 1, 1, 6, NULLSTONE);

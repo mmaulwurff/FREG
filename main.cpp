@@ -25,11 +25,14 @@
 #include "TrManager.h"
 #include "screens/CursedScreen.h"
 #include "LoadingLineThread.h"
+#include "RandomManager.h"
 
 #include <QDir>
 #include <QSettings>
 #include <QLockFile>
 #include <QCommandLineParser>
+
+#include <random>
 
 #ifdef CONSOLE
 #include <QCoreApplication>
@@ -81,7 +84,7 @@ int main(int argc, char** argv) {
             QObject::tr("map_outer"), QString(QChar(SHRED_OUT_BORDER))},
         {{ Str("d"), Str("seed") },
             QObject::tr("Seed to generate map. Works only with -g."),
-            QObject::tr("map_seed"), QString::number(0)},
+            QObject::tr("map_seed"), QString::number(std::random_device()())},
     });
     parser.process(freg);
 
@@ -94,11 +97,13 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
+    const int seed = parser.value(Str("seed" )).toInt();
     if ( parser.isSet(Str("generate")) ) {
-        WorldMap(worldName,
-            parser.value(Str("size" )).toUShort(),
-            parser.value(Str("outer")).at(0).toLatin1(),
-            parser.value(Str("seed" )).toInt() ).saveToDisk();
+        WorldMap( worldName
+                , parser.value(Str("size" )).toUShort()
+                , parser.value(Str("outer")).at(0).toLatin1()
+                , seed
+                ).saveToDisk();
         loadLine.stop();
         puts(qPrintable(QObject::tr("Map generated successfully.")));
         return EXIT_SUCCESS;
@@ -108,6 +113,7 @@ int main(int argc, char** argv) {
     BlockFactory blockManager;
     CraftManager craftManager;
 
+    RandomManager randomManager(seed);
     bool world_error = false;
     World world(worldName, &world_error);
     if ( world_error ) {

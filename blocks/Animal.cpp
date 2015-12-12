@@ -24,6 +24,8 @@
 #include "World.h"
 #include "TrManager.h"
 #include "AroundCoordinates.h"
+#include "RandomManager.h"
+
 #include <QDataStream>
 
 // Animal:: section
@@ -163,7 +165,7 @@
 
     void Rabbit::DoRareAction() {
         if ( not moved_in_this_turn ) {
-            const int rand = qrand() % 256;
+            const int rand = RandomManager::rand() % 256;
             if ( rand < 64 ) {
                 World::GetWorld()->Move(X(), Y(), Z(),
                     static_cast<dirs>(DOWN + (rand % 4)));
@@ -181,7 +183,7 @@
 
     void Rabbit::ActFrequent() {
         if ( Gravitate(2, 1, 2, 4) ) {
-            if ( qrand() % 2 ) {
+            if ( RandomManager::rand() % 2 ) {
                 World::GetWorld()->Jump(X(), Y(), Z(), GetDir());
             } else {
                 World::GetWorld()->Move(X(), Y(), Z(), GetDir());
