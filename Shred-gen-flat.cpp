@@ -23,12 +23,10 @@
 
 int Shred::NormalUnderground(const int depth, const subs sub) {
     NormalCube(0,0,1, SHRED_WIDTH,SHRED_WIDTH,HEIGHT/2-depth-5, STONE);
-    forAllShredArea([depth, this,
-                     block = BlockFactory::Normal(sub),
-                     stone = BlockFactory::Normal(STONE)] P(const int, x, y)
-    {
-        PutBlock(((qrand() % 2) ? stone : block), x, y, HEIGHT/2-depth-6);
-    });
+    Block* const block = Normal(sub), *stone = Normal(STONE);
+    for (CoordinateIterator i; i.notEnd(); ++i) {
+        PutBlock(((qrand() % 2) ? stone : block), i.X(), i.Y(), HEIGHT/2-depth-6);
+    };
     NormalCube(0,0,HEIGHT/2-depth-5, SHRED_WIDTH,SHRED_WIDTH,6, sub);
     return HEIGHT/2;
 }
@@ -90,26 +88,27 @@ void Shred::Water(const subs sub) {
     if ( type != shred_types.To(TO_WEST) ) {
         NormalCube(0,0,z_start, 1,SHRED_WIDTH,depth, shore);
     }
-    forAllShredArea([this, z_start, shore, sub,
-                     air = BlockFactory::Normal(AIR)] P(const int, i, j)
-    {
-        Block** const pos = blocks[i][j];
+    Block* const air = Normal(AIR);
+    for (CoordinateIterator i; i.notEnd(); ++i) {
+        const int x = i.X(), y = i.Y();
+        Block** const pos = blocks[x][y];
         for (Block** block=pos+z_start; block<=pos+HEIGHT/2; ++block) {
             if ( shore != (*block)->Sub() ) {
                 if ( AIR == sub ) {
                     *block = air;
                 } else {
-                    SetNewBlock(LIQUID, sub, i, j, block - pos);
+                    SetNewBlock(LIQUID, sub, x, y, block - pos);
                 }
             }
         }
-    });
+    }
 }
 
 void Shred::Hill(const bool dead) {
     NormalUnderground();
-    forAllShredArea([this, soil = BlockFactory::Normal(SOIL)]P(const int, x, y)
-    {
+    Block* const soil = Normal(SOIL);
+    for (CoordinateIterator i; i.notEnd(); ++i) {
+        const int x = i.X(), y = i.Y();
         for (int z=SHRED_WIDTH/2-2; z--; ) {
             if ( z <= -abs(x-SHRED_WIDTH/2) + SHRED_WIDTH/2-2 ) {
                 PutBlock(soil, x, y, z+HEIGHT/2); // north-south '^'
@@ -118,7 +117,7 @@ void Shred::Hill(const bool dead) {
                 PutBlock(soil, x, y, z+HEIGHT/2); // east-west '^'
             }
         }
-    });
+    }
     RandomDrop(qrand() % 4, WEAPON, STONE);
     if ( not dead ) {
         int rand = qrand();

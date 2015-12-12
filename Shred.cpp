@@ -31,6 +31,7 @@
 #include <QDataStream>
 #include <QTextStream>
 #include <QFile>
+#include <QDebug>
 
 const quint8 Shred::DATASTREAM_VERSION = QDataStream::Qt_5_2;
 
@@ -51,11 +52,14 @@ bool Shred::LoadShred() {
     type = static_cast<shred_type>(read);
     in >> read;
     SetWeather(static_cast<weathers>(read));
-    forAllShredArea([this, &in,
-                     null_stone = BlockFactory::Normal(NULLSTONE),
-                     air        = BlockFactory::Normal(AIR),
-                     sky        = BlockFactory::Normal(SKY)] P(const int, x, y)
-    {
+
+    Block* const null_stone = BlockFactory::Normal(NULLSTONE);
+    Block* const air        = BlockFactory::Normal(AIR);
+    Block* const sky        = BlockFactory::Normal(SKY);
+    for (CoordinateIterator iter; iter.notEnd(); ++iter) {
+        const int x = iter.X();
+        const int y = iter.Y();
+
         PutBlock(null_stone, x, y, 0);
         for (int z = 1; ; ++z) {
             quint8 kind, sub;
@@ -80,7 +84,7 @@ bool Shred::LoadShred() {
                 }
             }
         }
-    });
+    }
     shredStorage->ReleaseByteArray(data);
     return true;
 } // bool Shred::LoadShred()
@@ -105,9 +109,10 @@ Shred::Shred(const int shred_x, const int shred_y,
     pattern[0] = BlockFactory::Normal(NULLSTONE);
     std::fill_n(pattern + 1, HEIGHT - 2, BlockFactory::Normal(AIR));
     pattern[HEIGHT - 1] = BlockFactory::Normal(SKY);
-    forAllShredArea([this, pattern] P(const int, x, y) {
+    for (CoordinateIterator i; i.notEnd(); ++i) {
+        const int x = i.X(), y = i.Y();
         memcpy(blocks[x][y], pattern, sizeof(Block*) * HEIGHT);
-    });
+    }
     type = static_cast<shred_type>(
         World::GetCWorld()->GetMap()->TypeOfShred(longi, lati) );
     switch ( type ) {
@@ -143,9 +148,9 @@ void Shred::SaveShred(const bool isQuitGame) {
     out_stream << CURRENT_SHRED_FORMAT_VERSION;
     out_stream.setVersion(DATASTREAM_VERSION);
     out_stream << quint8(GetTypeOfShred()) << quint8(GetWeather());
-    forAllShredArea([this, &out_stream, isQuitGame,
-                     sky = BlockFactory::ConstNormal(SKY)] P(const int, x, y)
-    {
+    const Block* const sky = BlockFactory::ConstNormal(SKY);
+    for (CoordinateIterator i; i.notEnd(); ++i) {
+        const int x = i.X(), y = i.Y();
         const int ground_z = FindTopNonAir(x, y);
         for (int z=1; z<=ground_z; ++z) {
             Block* const block = GetBlock(x, y, z);
@@ -161,7 +166,7 @@ void Shred::SaveShred(const bool isQuitGame) {
             }
         }
         sky->SaveNormalToFile(out_stream);
-    });
+    }
     storage->SetShredData(shred_data, longitude, latitude);
 }
 
@@ -325,10 +330,11 @@ QString Shred::FileName(const qint64 longi, const qint64 lati) {
 // so use k from 1 to HEIGHT-2.
 
 void Shred::CoverWith(const kinds kind, const subs sub) {
-    forAllShredArea([this, kind, sub] P(const int, i, j) {
-        SetBlock(BlockFactory::NewBlock(kind, sub), i, j,
-            FindTopNonAir(i, j) + 1);
-    });
+    for (CoordinateIterator i; i.notEnd(); ++i) {
+        const int x = i.X(), y = i.Y();
+        SetBlock(BlockFactory::NewBlock(kind, sub), x, y,
+            FindTopNonAir(x, y) + 1);
+    }
 }
 
 void Shred::RandomDrop(int num, const kinds kind, const subs sub,
@@ -350,12 +356,13 @@ void Shred::DropBlock(Block* const block, const bool on_water) {
 }
 
 void Shred::PlantGrass() {
-    forAllShredArea([this] P(const int, x, y) {
+    for (CoordinateIterator i; i.notEnd(); ++i) {
+        const int x = i.X(), y = i.Y();
         const int z = FindTopNonAir(x, y);
         if ( SOIL == GetBlock(x, y, z)->Sub() ) {
             SetBlock(BlockFactory::NewBlock(GRASS, GREENERY), x, y, z + 1);
         }
-    });
+    }
 }
 
 void Shred::TestShred() {
@@ -399,17 +406,17 @@ void Shred::NullMountain() {
     const int border_level = HEIGHT/2-2;
     NormalCube(0,SHRED_WIDTH/2-1,1, SHRED_WIDTH,2,border_level, NULLSTONE);
     NormalCube(SHRED_WIDTH/2-1,0,1, 2,SHRED_WIDTH,border_level, NULLSTONE);
-    forAllShredArea([this, null_stone = BlockFactory::Normal(NULLSTONE)]
-            (const int i, const int j)
-    {
+    Block* const null_stone = Normal(NULLSTONE);
+    for (CoordinateIterator i; i.notEnd(); ++i) {
+        const int x = i.X(), y = i.Y();
         for (int k=border_level; k < HEIGHT-2; ++k) {
             const int surface =
-                HEIGHT/2 * (pow(1./(i-7.5), 2) * pow(1./(j-7.5), 2)+1);
+                HEIGHT/2 * (pow(1./(x-7.5), 2) * pow(1./(y-7.5), 2)+1);
             if ( HEIGHT/2+1 < surface && surface >= k ) {
-                PutBlock(null_stone, i, j, k);
+                PutBlock(null_stone, x, y, k);
             }
         }
-    });
+    }
     const AroundShredTypes shred_types(longitude, latitude);
     if ( SHRED_NULLMOUNTAIN == shred_types.To(TO_NORTH) ) {
         NormalCube(7,0,HEIGHT/2, 2,SHRED_WIDTH/2-1,HEIGHT/2-2, NULLSTONE);
@@ -529,26 +536,21 @@ void Shred::Layers() {
         std::reverse(ALL(layers));
     }
 
-    forAllShredArea([this] P(const int, x, y) {
+    for (CoordinateIterator iter; iter.notEnd(); ++iter) {
+        const int x = iter.X(), y = iter.Y();
         for (uint z = 1, i = 0; z < HEIGHT-1 && i < layers.size(); ++z, ++i) {
             SetNewBlock(layers[i].kind, layers[i].sub, x, y, z);
         }
-    });
+    }
 }
 
 void Shred::ChaosShred() {
-    forAllShredArea([this] P(const int, x, y) {
+    for (CoordinateIterator i; i.notEnd(); ++i) {
+        const int x = i.X(), y = i.Y();
         for (int z=1; z<HEIGHT/2; ++z) {
             SetNewBlock(static_cast<kinds>(qrand() % LAST_KIND),
                         static_cast<subs> (qrand() % LAST_SUB ), x, y, z);
         }
-    });
-}
-
-void Shred::forAllShredArea(std::function<void(int x, int y)> action) {
-    for (int x = SHRED_WIDTH; x--; )
-    for (int y = SHRED_WIDTH; y--; ) {
-        action(x, y);
     }
 }
 
@@ -563,6 +565,8 @@ void Shred::NormalCube(const_int(x_start, y_start, z_start),
         std::fill(blocks[x][y]+z_start, blocks[x][y]+z_start+z_size, block);
     }
 }
+
+Block* Shred::Normal(const subs sub) { return BlockFactory::Normal(sub); }
 
 bool Shred::Tree(const_int(x, y, z)) {
     int rand = qrand();
@@ -704,3 +708,12 @@ char AroundShredTypes::To(const to_dirs dir) const { return types[dir]; }
 int AroundShredTypes::Count(const char type) const {
     return std::count(ALL(types), type);
 }
+
+void Shred::CoordinateIterator::operator++() {
+    y += (++x) / SHRED_WIDTH;
+    x %= SHRED_WIDTH;
+}
+
+int  Shred::CoordinateIterator::X() const { return x; }
+int  Shred::CoordinateIterator::Y() const { return y; }
+bool Shred::CoordinateIterator::notEnd() const { return y != SHRED_WIDTH; }
