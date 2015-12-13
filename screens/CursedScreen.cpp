@@ -184,6 +184,7 @@ int Screen::Color(const int kind, const int sub) {
         case SUB_DUST:   return color | A_BOLD  | A_REVERSE;
         case FIRE:       return color | A_BLINK | RandomBlink();
         case GOLD:       return color | RandomBlink();
+        case SKY:        return color | A_BOLD;
         } break;
     case LIQUID: switch ( sub ) {
         case H_MEAT:

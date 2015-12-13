@@ -187,7 +187,7 @@ X(QT_TRANSLATE_NOOP("Block", "Pipe"        ), PIPE,        '|',  Pipe,       )\
 X(QT_TRANSLATE_NOOP("Block", "stone"     ), STONE,       BLACK_WHITE,  )\
 X(QT_TRANSLATE_NOOP("Block", "mossStone" ), MOSS_STONE,  GREEN_WHITE,  )\
 X(QT_TRANSLATE_NOOP("Block", "0stone"    ), NULLSTONE, MAGENTA_BLACK,  )\
-X(QT_TRANSLATE_NOOP("Block", "0stone"    ), SKY,       MAGENTA_BLACK,  )\
+X(QT_TRANSLATE_NOOP("Block", "0stone"    ), SKY,         BLACK_BLACK,  )\
 X(QT_TRANSLATE_NOOP("Block", "star"      ), STAR,        WHITE_BLACK,  )\
 X(QT_TRANSLATE_NOOP("Block", "diamond"   ), DIAMOND,      CYAN_WHITE,  )\
 X(QT_TRANSLATE_NOOP("Block", "soil"      ), SOIL,        BLACK_YELLOW, )\
