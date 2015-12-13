@@ -34,6 +34,8 @@
 #include <QFile>
 #include <QDebug>
 
+#include <cstring>
+
 const quint8 Shred::DATASTREAM_VERSION = QDataStream::Qt_5_2;
 
 bool Shred::LoadShred() {
@@ -109,7 +111,7 @@ Shred::Shred(const int shred_x, const int shred_y,
     static const InitialBlockColumn pattern;
     for (CoordinateIterator i; i.notEnd(); ++i) {
         const int x = i.X(), y = i.Y();
-        memcpy(blocks[x][y], pattern.GetColumn(), sizeof(Block*) * HEIGHT);
+        std::memcpy(blocks[x][y], pattern.GetColumn(), sizeof(Block*) * HEIGHT);
     }
     type = static_cast<shred_type>(
         World::GetCWorld()->GetMap()->TypeOfShred(longi, lati) );

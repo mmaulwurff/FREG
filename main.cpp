@@ -33,6 +33,7 @@
 #include <QCommandLineParser>
 
 #include <random>
+#include <cstdio>
 
 #ifdef CONSOLE
 #include <QCoreApplication>
@@ -49,7 +50,9 @@ const QString home_path(QDir::currentPath() + QChar::fromLatin1('/'));
 const QString home_path = QDir::currentPath() + QChar::fromLatin1('/');
 #endif
 
-int main(int argc, char** argv) {
+int main(int argc, char** const argv) {
+    using namespace std;
+
     LoadingLineThread loadLine;
     setlocale(LC_CTYPE, "C-UTF-8");
 
@@ -84,7 +87,7 @@ int main(int argc, char** argv) {
             QObject::tr("map_outer"), QString(QChar(SHRED_OUT_BORDER))},
         {{ Str("d"), Str("seed") },
             QObject::tr("Seed to generate map. Works only with -g."),
-            QObject::tr("map_seed"), QString::number(std::random_device()())},
+            QObject::tr("map_seed"), QString::number(random_device()())},
     });
     parser.process(freg);
 
