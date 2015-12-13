@@ -106,13 +106,10 @@ Shred::Shred(const int shred_x, const int shred_y,
 {
     if ( LoadShred() ) return; // successful loading
     // new shred generation:
-    Block* pattern[HEIGHT];
-    pattern[0] = BlockFactory::Normal(NULLSTONE);
-    std::fill_n(pattern + 1, HEIGHT - 2, BlockFactory::Normal(AIR));
-    pattern[HEIGHT - 1] = BlockFactory::Normal(SKY);
+    static const InitialBlockColumn pattern;
     for (CoordinateIterator i; i.notEnd(); ++i) {
         const int x = i.X(), y = i.Y();
-        memcpy(blocks[x][y], pattern, sizeof(Block*) * HEIGHT);
+        memcpy(blocks[x][y], pattern.GetColumn(), sizeof(Block*) * HEIGHT);
     }
     type = static_cast<shred_type>(
         World::GetCWorld()->GetMap()->TypeOfShred(longi, lati) );
@@ -717,3 +714,12 @@ void Shred::CoordinateIterator::operator++() {
 int  Shred::CoordinateIterator::X() const { return x; }
 int  Shred::CoordinateIterator::Y() const { return y; }
 bool Shred::CoordinateIterator::notEnd() const { return y != SHRED_WIDTH; }
+
+Shred::InitialBlockColumn::InitialBlockColumn()
+{
+    pattern[0] = BlockFactory::Normal(NULLSTONE);
+    std::fill_n(pattern + 1, HEIGHT - 2, BlockFactory::Normal(AIR));
+    pattern[HEIGHT - 1] = BlockFactory::Normal(SKY);
+}
+
+const Block* const* Shred::InitialBlockColumn::GetColumn() const { return pattern; }

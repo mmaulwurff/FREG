@@ -180,6 +180,14 @@ private:
         int x = 0, y = 0;
     };
 
+    class InitialBlockColumn {
+    public:
+        InitialBlockColumn();
+        const Block* const* GetColumn() const;
+    private:
+        Block* pattern[HEIGHT];
+    };
+
     Block*  blocks[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
     uchar lightMap[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
     const qint64 longitude, latitude;
