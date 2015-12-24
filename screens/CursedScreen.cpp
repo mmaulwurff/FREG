@@ -49,7 +49,6 @@ name(settings.value(QStringLiteral(string), default).toBool()),
 
 const chtype Screen::arrows[] = { '.', 'x', '^', '>', 'v', '<' };
 const int Screen::MAX_CHAR_DISTANCE = 16;
-Screen* Screen::staticScreen = nullptr;
 
 void Screen::Arrows(WINDOW* const window, const int x, const int y,
         const dirs direction, const bool is_normal)
@@ -1251,46 +1250,44 @@ void Screen::initializeKeyTable() {
     }
 } // void Screen::initializeKeyTable()
 
-Screen* Screen::GetScreen() { return staticScreen; }
+Screen* Screen::GetScreen() { return GetInstance(); }
 
-Screen::Screen(Player* const controlledPlayer, int&) :
-        VirtualScreen(controlledPlayer),
-        cursesScreen(newterm(nullptr, stdout, stdin)),
-        screenWidth((COLS / 2) - ((COLS/2) & 1)),
-        screenHeight(LINES - 10),
-        windows {
-            newwin(7, ACTIONS_WIDTH, LINES-7, MINIMAP_WIDTH + 1), // actions
-            newwin(7, 0, LINES-7, MINIMAP_WIDTH+ACTIONS_WIDTH+2), // notify
-            newwin(3, 0, screenHeight, 0),                        // HUD
-            newwin(MINIMAP_HEIGHT, MINIMAP_WIDTH, LINES-7, 0),    // minimap
-            newwin(screenHeight, screenWidth, 0, (COLS/2) & 1),   // left
-            newwin(screenHeight, screenWidth, 0, COLS/2)          // right
-        },
-        lastNotification(),
-        inputThread(),
-        inputThreadIsRunning(true),
-        updatedHud    (false),
-        updatedMinimap(false),
-        updatedNormal (false),
-        updatedFront  (false),
-        actionMode(static_cast<actions>(settings.value(
-            Str("action_mode"), ACTION_USE).toInt())),
-        shiftFocus(settings.value(Str("focus_shift"), 0).toInt()),
-        OPTIONS_TABLE(OPTIONS_INIT)
-        showCharDistance(settings.value(Str("show_char_distance"),10).toInt()),
-        ellipsis{
-            ascii ? L'.' : L'\U00002026',
-            ascii ? L'.' : L'\00',
-            ellipsis[1]
-        },
-        noMouseMask(),
-        xCursor(),
-        yCursor(),
-        keyTable()
+Screen::Screen(Player* const controlledPlayer, int&)
+    : VirtualScreen(controlledPlayer)
+    , Singleton(this)
+    , cursesScreen(newterm(nullptr, stdout, stdin))
+    , screenWidth((COLS / 2) - ((COLS/2) & 1))
+    , screenHeight(LINES - 10)
+    , windows {
+        newwin(7, ACTIONS_WIDTH, LINES-7, MINIMAP_WIDTH + 1), // actions
+        newwin(7, 0, LINES-7, MINIMAP_WIDTH+ACTIONS_WIDTH+2), // notify
+        newwin(3, 0, screenHeight, 0),                        // HUD
+        newwin(MINIMAP_HEIGHT, MINIMAP_WIDTH, LINES-7, 0),    // minimap
+        newwin(screenHeight, screenWidth, 0, (COLS/2) & 1),   // left
+        newwin(screenHeight, screenWidth, 0, COLS/2)          // right
+    }
+    , lastNotification()
+    , inputThread()
+    , inputThreadIsRunning(true)
+    , updatedHud    (false)
+    , updatedMinimap(false)
+    , updatedNormal (false)
+    , updatedFront  (false)
+    , actionMode(static_cast<actions>(settings.value(
+        Str("action_mode"), ACTION_USE).toInt()))
+    , shiftFocus(settings.value(Str("focus_shift"), 0).toInt())
+    , OPTIONS_TABLE(OPTIONS_INIT)
+      showCharDistance(settings.value(Str("show_char_distance"),10).toInt())
+    , ellipsis{
+        ascii ? L'.' : L'\U00002026',
+        ascii ? L'.' : L'\00',
+        ellipsis[1]
+    }
+    , noMouseMask()
+    , xCursor()
+    , yCursor()
+    , keyTable()
 {
-    Q_ASSERT(staticScreen == nullptr);
-    staticScreen = this;
-
     start_color();
     #ifdef Q_OS_WIN32
         cbreak();

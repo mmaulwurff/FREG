@@ -22,10 +22,11 @@
 
 #include "header.h"
 #include "Weather.h"
+#include "Singleton.h"
 #include <QHash>
 #include <QString>
 
-class TrManager {
+class TrManager : private Singleton<TrManager> {
 public:
     TrManager();
 
@@ -60,7 +61,6 @@ public:
     static QString GetDamageString(damage_kinds);
 
 private:
-    Q_DISABLE_COPY(TrManager)
 
     class QTranslator* LoadTranslator() const;
 
@@ -70,8 +70,6 @@ private:
     static const QString rawKinds[KIND_COUNT], rawSubs [SUB_COUNT];
     QString             kindNames[KIND_COUNT], subNames[SUB_COUNT];
     QHash<char, QString> shredTypeNames;
-
-    static TrManager* trManager;
 };
 
 #endif // TR_MANAGER_H

@@ -42,8 +42,8 @@ const int y_in = Shred::CoordInShred(y_out);\
 
 const int World::MIN_WORLD_SIZE = 5;
 
-World* World::GetWorld() { return world; }
-const World* World::GetCWorld() { return world; }
+World* World::GetWorld() { return GetInstance(); }
+const World* World::GetCWorld() { return GetInstance(); }
 
 bool World::ShredInCentralZone(const qint64 longi, const qint64  lati) const {
     return ( labs(longi - longitude) <= 1 ) && ( labs(lati - latitude) <= 1 );
@@ -612,10 +612,10 @@ int World::CorrectNumActiveShreds(int num, const int num_shreds) {
     return mBound(3, num, num_shreds);
 }
 
-World* World::world = nullptr;
-
 World::World(const QString& world_name, bool* const error)
-    : worldName(world_name)
+    : QThread()
+    , Singleton(this)
+    , worldName(world_name)
     , map(new WorldMap(world_name))
     , time()
     , timeStep()
@@ -640,9 +640,6 @@ World::World(const QString& world_name, bool* const error)
     , tempShiningList()
     , lightWaysTree()
 {
-    Q_ASSERT(world == nullptr); // world is a singleton.
-    world = this;
-
     LoadState();
     delete gameSettings;
 
