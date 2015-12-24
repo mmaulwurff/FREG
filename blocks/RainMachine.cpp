@@ -19,6 +19,8 @@
 
 #include "blocks/RainMachine.h"
 #include "Shred.h"
+#include "RandomManager.h"
+
 #include <QDataStream>
 #include <TrManager.h>
 
@@ -44,10 +46,10 @@ void RainMachine::SaveAttributes(QDataStream& stream) const {
 void RainMachine::DoRareAction() {
     if ( not isOn ) return;
     if ( AIR == GetInvSub(0) ) {
-        if ( qrand() % 4 ) {
+        if ( RandomManager::rand() % 4 ) {
             GetShred()->Rain(LIQUID, SUB_CLOUD);
         }
-    } else if ( qrand() % (20 - Number(0)*2) ) {
+    } else if ( RandomManager::rand() % (20 - Number(0)*2) ) {
         GetShred()->Rain(LIQUID, GetInvSub(0));
     }
 }

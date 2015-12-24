@@ -23,12 +23,11 @@
 
 int Shred::NormalUnderground(const int depth, const subs sub) {
     NormalCube(0,0,1, SHRED_WIDTH,SHRED_WIDTH,HEIGHT/2-depth-5, STONE);
-    forAllShredArea([depth, this,
-                     block = BlockFactory::Normal(sub),
-                     stone = BlockFactory::Normal(STONE)] P(const int, x, y)
-    {
-        PutBlock(((qrand() % 2) ? stone : block), x, y, HEIGHT/2-depth-6);
-    });
+    Block* const block = Normal(sub), *stone = Normal(STONE);
+    for (CoordinateIterator i; i.notEnd(); ++i) {
+        PutBlock(((rand() % 2) ? stone : block),
+                 i.X(), i.Y(), HEIGHT/2 - depth - 6);
+    };
     NormalCube(0,0,HEIGHT/2-depth-5, SHRED_WIDTH,SHRED_WIDTH,6, sub);
     return HEIGHT/2;
 }
@@ -36,24 +35,24 @@ int Shred::NormalUnderground(const int depth, const subs sub) {
 void Shred::Plain() {
     NormalUnderground();
     LoadRoom(HEIGHT/2);
-    RandomDrop(qrand() % 4, BUSH,   WOOD);
-    RandomDrop(qrand() % 4, BLOCK,  ROSE);
-    RandomDrop(qrand() % 4, RABBIT, A_MEAT);
+    RandomDrop(rand() % 4, BUSH,   WOOD);
+    RandomDrop(rand() % 4, BLOCK,  ROSE);
+    RandomDrop(rand() % 4, RABBIT, A_MEAT);
     PlantGrass();
 }
 
 void Shred::Forest(const bool dead) {
     NormalUnderground();
-    RandomDrop(qrand() % 4, BUSH, WOOD);
+    RandomDrop(rand() % 4, BUSH, WOOD);
     if ( not dead ) {
-        RandomDrop(qrand() % 2, BLOCK, ROSE);
+        RandomDrop(rand() % 2, BLOCK, ROSE);
         PlantGrass();
     }
     for (int number = AroundShredTypes(longitude, latitude).Count(type);
             number; --number)
     {
-        const int x = qrand()%(SHRED_WIDTH-2) + 1;
-        const int y = qrand()%(SHRED_WIDTH-2) + 1;
+        const int x = rand()%(SHRED_WIDTH-2) + 1;
+        const int y = rand()%(SHRED_WIDTH-2) + 1;
         const int z = FindTopNonAir(x, y);
         if ( GetBlock(x, y, z)->Sub() == SOIL ) {
             Tree(x-1, y-1, z+1);
@@ -61,7 +60,7 @@ void Shred::Forest(const bool dead) {
             Tree(x-1, y-1, z);
         }
     }
-    RandomDrop(qrand() % 4, WEAPON, WOOD);
+    RandomDrop(rand() % 4, WEAPON, WOOD);
 }
 
 void Shred::Water(const subs sub) {
@@ -90,26 +89,27 @@ void Shred::Water(const subs sub) {
     if ( type != shred_types.To(TO_WEST) ) {
         NormalCube(0,0,z_start, 1,SHRED_WIDTH,depth, shore);
     }
-    forAllShredArea([this, z_start, shore, sub,
-                     air = BlockFactory::Normal(AIR)] P(const int, i, j)
-    {
-        Block** const pos = blocks[i][j];
+    Block* const air = Normal(AIR);
+    for (CoordinateIterator i; i.notEnd(); ++i) {
+        const int x = i.X(), y = i.Y();
+        Block** const pos = blocks[x][y];
         for (Block** block=pos+z_start; block<=pos+HEIGHT/2; ++block) {
             if ( shore != (*block)->Sub() ) {
                 if ( AIR == sub ) {
                     *block = air;
                 } else {
-                    SetNewBlock(LIQUID, sub, i, j, block - pos);
+                    SetNewBlock(LIQUID, sub, x, y, block - pos);
                 }
             }
         }
-    });
+    }
 }
 
 void Shred::Hill(const bool dead) {
     NormalUnderground();
-    forAllShredArea([this, soil = BlockFactory::Normal(SOIL)]P(const int, x, y)
-    {
+    Block* const soil = Normal(SOIL);
+    for (CoordinateIterator i; i.notEnd(); ++i) {
+        const int x = i.X(), y = i.Y();
         for (int z=SHRED_WIDTH/2-2; z--; ) {
             if ( z <= -abs(x-SHRED_WIDTH/2) + SHRED_WIDTH/2-2 ) {
                 PutBlock(soil, x, y, z+HEIGHT/2); // north-south '^'
@@ -118,13 +118,13 @@ void Shred::Hill(const bool dead) {
                 PutBlock(soil, x, y, z+HEIGHT/2); // east-west '^'
             }
         }
-    });
-    RandomDrop(qrand() % 4, WEAPON, STONE);
+    }
+    RandomDrop(rand() % 4, WEAPON, STONE);
     if ( not dead ) {
-        int rand = qrand();
-        RandomDrop(rand % 4, BLOCK, ROSE);
-        RandomDrop((rand >>= 4) % 4, RABBIT, A_MEAT);
-        RandomDrop((rand >>= 4) % 4, BUSH, WOOD);
+        int random = rand();
+        RandomDrop(random % 4, BLOCK, ROSE);
+        RandomDrop((random >>= 4) % 4, RABBIT, A_MEAT);
+        RandomDrop((random >>= 4) % 4, BUSH, WOOD);
         PlantGrass();
     }
 }
@@ -143,15 +143,15 @@ void Shred::Mountain() {
     NormalCube(0, 0, 1, SHRED_WIDTH/2, SHRED_WIDTH/2, mount_top, STONE);
     // bridges
     if ( SHRED_MOUNTAIN == shred_types.To(TO_SOUTH) ) {
-        NormalCube(qrand()%(SHRED_WIDTH/2-1), SHRED_WIDTH/2, mount_top,
+        NormalCube(rand()%(SHRED_WIDTH/2-1), SHRED_WIDTH/2, mount_top,
             2, SHRED_WIDTH/2, 1, STONE);
     }
     if ( SHRED_MOUNTAIN == shred_types.To(TO_EAST) ) {
-        NormalCube(SHRED_WIDTH/2, qrand()%(SHRED_WIDTH/2-1), mount_top,
+        NormalCube(SHRED_WIDTH/2, rand()%(SHRED_WIDTH/2-1), mount_top,
             SHRED_WIDTH/2, 2, 1, STONE);
     }
     // water pool
-    if ( (qrand() % 8) == 0 ) {
+    if ( (rand() % 8) == 0 ) {
         for (int i=1; i<SHRED_WIDTH/2-1; ++i)
         for (int j=1; j<SHRED_WIDTH/2-1; ++j)
         for (int k=mount_top-3; k<=mount_top; ++k) {
@@ -159,9 +159,9 @@ void Shred::Mountain() {
         }
     }
     // cavern
-    if ( (qrand() % 8) == 0 ) {
+    if ( (rand() % 8) == 0 ) {
         NormalCube(SHRED_WIDTH/4-2, SHRED_WIDTH/4-2, HEIGHT/2+1, 4, 4, 3, AIR);
-        const int entries = qrand() % 16;
+        const int entries = rand() % 16;
         if ( entries & 0b0001 ) { // north entry
             NormalCube(SHRED_WIDTH/4-1, 0, HEIGHT/2+1, 2, 2, 2, AIR);
         }
@@ -177,7 +177,7 @@ void Shred::Mountain() {
             NormalCube(0, SHRED_WIDTH/4-1, HEIGHT/2+1, 2, 2, 2, AIR);
         }
     }
-    RandomDrop(qrand() % 8, WEAPON, STONE);
+    RandomDrop(rand() % 8, WEAPON, STONE);
     PlantGrass();
 } // Shred::Mountain()
 
@@ -194,7 +194,7 @@ void Shred::WasteShred() {
     if ( (room_loaded = LoadRoom(HEIGHT/2)) ) {
         LoadRoom(HEIGHT/2 + 1, 1);
     }
-    int random = qrand();
+    int random = rand();
     RandomDrop((random % 8)+3, FALLING, SUB_DUST);
     random >>= 3;
     RandomDrop(random % 2, WEAPON, BONE);

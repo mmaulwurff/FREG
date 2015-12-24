@@ -22,6 +22,7 @@
 #include "blocks/Animal.h"
 #include "blocks/Teleport.h"
 #include "header.h"
+#include "RandomManager.h"
 
 #include <QDataStream>
 #include <QTextStream>
@@ -29,9 +30,10 @@
 Teleport::Teleport(const kinds kind, const subs sub)
     : Active(kind, sub)
     , targetWorldName(World::WorldName())
-    , targetLongitude(qrand()%(World::GetCWorld()->GetMap()->GetHeight()))
-    , targetLatitude(
-        qrand() % (World::GetCWorld()->GetMap()->GetWidth(targetLongitude)))
+    , targetLongitude( RandomManager::rand()
+                     % World::GetCWorld()->GetMap()->GetHeight() )
+    , targetLatitude(  RandomManager::rand()
+                     % World::GetCWorld()->GetMap()->GetWidth(targetLongitude) )
 {}
 
 Teleport::Teleport(QDataStream& stream, const kinds kind, const subs sub)

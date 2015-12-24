@@ -22,8 +22,8 @@
 
 #include "Weather.h"
 #include "header.h"
+
 #include <forward_list>
-#include <functional>
 #include <QLinkedList>
 
 class Block;
@@ -122,7 +122,7 @@ private:
     Q_DISABLE_COPY(Shred)
 
     static const quint8 DATASTREAM_VERSION;
-    static const quint8 CURRENT_SHRED_FORMAT_VERSION = 16;
+    static const quint8 CURRENT_SHRED_FORMAT_VERSION = 17;
 
     static const int RAIN_IS_DEW = 1;
 
@@ -167,7 +167,18 @@ private:
 
     void RainBlock(int* kind, int* sub) const;
 
-    static void forAllShredArea(std::function<void(int x, int y)>);
+    static Block* Normal(subs sub);
+    static int rand();
+
+    class CoordinateIterator {
+    public:
+        void operator++();
+        int X() const;
+        int Y() const;
+        bool notEnd() const;
+    private:
+        int x = 0, y = 0;
+    };
 
     Block*  blocks[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
     uchar lightMap[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];

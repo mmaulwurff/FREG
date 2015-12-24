@@ -30,11 +30,14 @@
 #include "blocks/Inventory.h"
 
 #include <thread>
+#include <random>
 
 #ifndef CONSOLE
 #include <QDesktopServices>
 #include <QUrl>
 #endif
+
+#include <QDebug>
 
 #undef getmaxx
 #define getmaxx(something) \
@@ -164,10 +167,8 @@ char Screen::CharNumberFront(const int i, const int j) const {
 int  Screen::RandomBlink() { return (RandomBit() * A_REVERSE); }
 
 bool Screen::RandomBit() {
-    static unsigned random = 0;
-    return 1 & ( random ?
-        (random >>= 1) :
-        (random = qrand()) );
+    static std::independent_bits_engine<std::ranlux24, 1, uint> bitEngine;
+    return bitEngine();
 }
 
 int Screen::Color(const int kind, const int sub) {
