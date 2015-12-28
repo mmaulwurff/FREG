@@ -158,7 +158,7 @@ signals:
     void Updated();
     void GetString(QString&);
     void Destroyed();
-    void ShowFile(QString path);
+    void ShowFile(const QString& path);
     void GetFocus(int* x, int* y, int* z) const;
 
 public:

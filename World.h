@@ -170,7 +170,7 @@ public:
 ///@}
 
 signals:
-    void Notify(QString) const;
+    void Notify(const QString&) const;
     void GetString(QString&) const;
     void UpdatedAll();
     void UpdatedAround(int x, int y, int z);

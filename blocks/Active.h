@@ -69,7 +69,7 @@ public:
 
 signals:
     void Moved(int);
-    void ReceivedText(const QString);
+    void ReceivedText(const QString&);
 
 protected:
     void UpdateLightRadius(int old_radius);
