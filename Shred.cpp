@@ -190,18 +190,14 @@ const {
     return GetBlock(x, y, *z);
 }
 
-qint64 Shred::GlobalX(const int x) const {
-    return (Latitude()  - CoordOfShred(x))*SHRED_WIDTH + x;
-}
+qint64 Shred::GlobalX(const int x) const
+{ return (Latitude()  - CoordOfShred(x))*SHRED_WIDTH + x; }
 
-qint64 Shred::GlobalY(const int y) const {
-    return (Longitude() - CoordOfShred(y))*SHRED_WIDTH + y;
-}
+qint64 Shred::GlobalY(const int y) const
+{ return (Longitude() - CoordOfShred(y))*SHRED_WIDTH + y; }
 
 void Shred::PhysEventsFrequent() {
-    debugIndex = -1;
     for (Falling*& i : fallList) {
-        ++debugIndex;
         if ( i == nullptr ) {
             continue;
         } // else:
@@ -245,9 +241,8 @@ void Shred::PhysEventsRare() {
     }
 }
 
-const std::forward_list<Active*>& Shred::GetShiningList() const {
-    return shiningList;
-}
+const std::forward_list<Active*>& Shred::GetShiningList() const
+{ return shiningList; }
 
 Block* Shred::GetBlock(const_int(x, y, z)) const { return blocks[x][y][z]; }
 
@@ -346,9 +341,8 @@ void Shred::PutModifiedBlock(Block*& block, const_int(x, y, z)) {
     PutBlock(block, x, y, z);
 }
 
-void Shred::SetNewBlock(const kinds kind, const subs sub, const_int(x, y, z)) {
-    SetBlock(BlockFactory::NewBlock(kind, sub), x, y, z);
-}
+void Shred::SetNewBlock(const kinds kind, const subs sub, const_int(x, y, z))
+{ SetBlock(BlockFactory::NewBlock(kind, sub), x, y, z); }
 
 QString Shred::FileName(const qint64 longi, const qint64 lati) {
     return Str("%1%2/%3-%4.fm").
@@ -658,22 +652,19 @@ bool Shred::Tree(const_int(x, y, z)) {
     return true;
 }
 
-bool Shred::InBounds(const int z) {
-    return Q_LIKELY(static_cast<unsigned>(z) < HEIGHT-1);
-}
+bool Shred::InBounds(const int z)
+{ return Q_LIKELY(static_cast<unsigned>(z) < HEIGHT-1); }
 
 bool Shred::InBounds(const int x, const int y) {
     return ( Q_LIKELY( static_cast<unsigned>(x) < SHRED_WIDTH &&
                        static_cast<unsigned>(y) < SHRED_WIDTH ) );
 }
 
-bool Shred::InBounds(const_int(x, y, z)) {
-    return InBounds(x, y) && InBounds(z);
-}
+bool Shred::InBounds(const_int(x, y, z))
+{ return InBounds(x, y) && InBounds(z); }
 
-void Shred::Dew(const kinds kind, const subs sub) {
-    DropBlock(BlockFactory::NewBlock(kind, sub), true);
-}
+void Shred::Dew(const kinds kind, const subs sub)
+{ DropBlock(BlockFactory::NewBlock(kind, sub), true); }
 
 void Shred::Rain(const kinds kind, const subs sub) {
     if ( RAIN_IS_DEW == 1 ) { // RAIN_IS_DEW is defined in Freg.pro
