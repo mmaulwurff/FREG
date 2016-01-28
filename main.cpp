@@ -24,7 +24,6 @@
 #include "BlockFactory.h"
 #include "TrManager.h"
 #include "screens/CursedScreen.h"
-#include "LoadingLineThread.h"
 #include "RandomManager.h"
 
 #include <QDir>
@@ -53,8 +52,8 @@ const QString home_path = QDir::currentPath() + QChar::fromLatin1('/');
 int main(int argc, char** const argv) {
     using namespace std;
 
-    LoadingLineThread loadLine;
     setlocale(LC_CTYPE, "C-UTF-8");
+    puts("...");
 
     FregApplication freg(argc, argv);
     QCoreApplication::setOrganizationName(Str("freg-team"));
@@ -107,7 +106,6 @@ int main(int argc, char** const argv) {
                 , parser.value(Str("outer")).at(0).toLatin1()
                 , seed
                 ).saveToDisk();
-        loadLine.stop();
         puts(qPrintable(QObject::tr("Map generated successfully.")));
         return EXIT_SUCCESS;
     }
@@ -132,7 +130,6 @@ int main(int argc, char** const argv) {
     }
     Player player;
 
-    loadLine.stop();
     int error = SCREEN_NO_ERROR;
     const Screen screen(&player, error);
 
