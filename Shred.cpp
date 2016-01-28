@@ -89,13 +89,13 @@ bool Shred::LoadShred() {
         }
     }
     shredStorage->ReleaseByteArray(data);
-    ReloadHeightMap();
-    UpdateSkyLight();
     return true;
 } // bool Shred::LoadShred()
 
-Shred::Shred(const int shred_x, const int shred_y,
-             const qint64 longi, const qint64 lati)
+Shred::Shred( const int shred_x
+            , const int shred_y
+            , const qint64 longi
+            , const qint64 lati)
     : Weather(WEATHER_CLEAR)
     , lightMap { { {0} } }
     , longitude(longi)
@@ -108,15 +108,19 @@ Shred::Shred(const int shred_x, const int shred_y,
     , shiningList()
     , fallList()
 {
-    if ( LoadShred() ) return; // successful loading
-    // new shred generation:
+    if ( not LoadShred() ) {
+        GenerateShred();
+    }
+}
+
+void Shred::GenerateShred() {
     static const InitialBlockColumn pattern;
     for (CoordinateIterator i; i.notEnd(); ++i) {
         const int x = i.X(), y = i.Y();
         std::memcpy(blocks[x][y], pattern.GetColumn(), sizeof(Block*) * HEIGHT);
     }
     type = static_cast<shred_type>(
-        World::GetCWorld()->GetMap()->TypeOfShred(longi, lati) );
+        World::GetCWorld()->GetMap()->TypeOfShred(longitude, latitude) );
     switch ( type ) {
     case SHRED_WASTE:       WasteShred(); break;
     case SHRED_WATER:       Water();      break;
@@ -139,9 +143,7 @@ Shred::Shred(const int shred_x, const int shred_y,
     case SHRED_FLAT:        Layers();     break;
     case SHRED_UNDERGROUND: NormalUnderground(); break;
     }
-    ReloadHeightMap();
-    UpdateSkyLight();
-} // Shred::Shred(int shred_x, shred_y, qint64 longi, lati)
+}
 
 Shred::~Shred() { SaveShred(true); }
 
@@ -247,8 +249,6 @@ const std::forward_list<Active*>& Shred::GetShiningList() const
 Block* Shred::GetBlock(const_int(x, y, z)) const { return blocks[x][y][z]; }
 
 void Shred::PutBlock(Block* const block, const_int(x, y, z)) {
-    //UpdateHeightMap(x, y, z,
-    //                GetBlock(x, y, z)->Transparent(), block->Transparent());
     blocks[x][y][z] = block;
 }
 
@@ -575,37 +575,6 @@ void Shred::ChaosShred() {
                         static_cast<subs> (rand() % LAST_SUB ), x, y, z);
         }
     }
-}
-
-void Shred::ReloadHeightMap() {
-    for (CoordinateIterator i; i.notEnd(); ++i) {
-        const int top = FindTopTransparent(i.X(), i.Y());
-        heightMap[i.X()][i.Y()] = top;
-    }
-}
-
-void Shred::UpdateSkyLight() {
-    const int currentSkyLightLevel = World::GetWorld()->SkyLightLevel();
-    for (CoordinateIterator i; i.notEnd(); ++i) {
-        AddLight(i.X(), i.Y(), heightMap[i.X()][i.Y()], currentSkyLightLevel);
-    }
-}
-
-void Shred::UpdateHeightMap(const int x, const int y, const int z,
-                            const int oldTransparency,
-                            const int newTransparency)
-{
-    if (oldTransparency != BLOCK_OPAQUE) return;
-    if (newTransparency != BLOCK_OPAQUE) return;
-    if (heightMap[x][y] > z) return;
-
-    const int oldTop = heightMap[x][y];
-    const int currentSkyLightLevel = World::GetWorld()->SkyLightLevel();
-    lightMap[x][y][oldTop] -= currentSkyLightLevel;
-
-    const int newTop = FindTopTransparent(x, y, z);
-    heightMap[x][y] = newTop;
-    lightMap[x][y][newTop] += currentSkyLightLevel;
 }
 
 void Shred::NormalCube(const_int(x_start, y_start, z_start),

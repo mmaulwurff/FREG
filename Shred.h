@@ -135,6 +135,7 @@ private:
     static const int RAIN_IS_DEW = 1;
 
     bool LoadShred();
+    void GenerateShred();
     void RegisterInit(Active*);
 
     /// Builds normal underground. Returns ground level.
@@ -167,8 +168,6 @@ private:
     void ChaosShred();
 
     void ReloadHeightMap();
-    void UpdateHeightMap(int x, int y, int z,
-                         int oldTransparency, int newTransparency);
 
     /** Loads room from corresponding .room or -index.room file.
      * Should be placed before any other block generation at the same place. */
@@ -205,7 +204,6 @@ private:
 
     Block*  blocks[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
     uchar lightMap[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
-    uchar heightMap[SHRED_WIDTH][SHRED_WIDTH];
     const qint64 longitude, latitude;
     int shredX, shredY;
     shred_type type;
