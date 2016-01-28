@@ -229,7 +229,7 @@ Falling::Falling(QDataStream& str, const kinds kind, const subs sub)
 { str >> fallHeight >> falling; }
 
 Falling::~Falling() {
-    if ( not IsInside() ) {
+    if ( not IsInside() && falling ) {
         GetShred()->RemFalling(this);
     }
 }
