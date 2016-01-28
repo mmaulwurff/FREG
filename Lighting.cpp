@@ -160,9 +160,9 @@ int World::Enlightened(const_int(i, j, k), const dirs dir) const {
 // Shred methods
 
 int  Shred::LightMap(const_int(x, y, z)) const { return lightMap[x][y][z]; }
-void Shred::AddLight(const_int(x, y, z), const int level) {
-    lightMap[x][y][z] += level;
-}
+
+void Shred::AddLight(const_int(x, y, z), const int level)
+{ lightMap[x][y][z] += level; }
 
 void Shred::ShineAll() const {
     World* const world = World::GetWorld();
@@ -170,3 +170,25 @@ void Shred::ShineAll() const {
         world->Shine(shining->GetXyz(), shining->LightRadius());
     }
 }
+
+template<void (*setter)(uchar&, int)>
+void Shred::SetSkyLight(const int level) {
+    for (CoordinateIterator i; i.notEnd(); ++i) {
+        const int x = i.X(), y = i.Y();
+        setter(lightMap[x][y][HEIGHT - 1], level);
+        int z = HEIGHT - 2;
+        for ( ; GetBlock(x, y, z)->Transparent() != BLOCK_OPAQUE; --z) {
+            setter(lightMap[x][y][z], level);
+        }
+        setter(lightMap[x][y][z], level);
+    }
+}
+
+void Level(uchar& cell, const int set) { cell  = set; }
+void Plus (uchar& cell, const int add) { cell += add; }
+
+void Shred::InitSkyLight(const int level)
+{ SetSkyLight<Level>(level); }
+
+void Shred::ResetSkyLight(const int oldLevel, const int newLevel)
+{ SetSkyLight<Plus>(newLevel - oldLevel); }

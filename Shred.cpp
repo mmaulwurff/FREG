@@ -111,6 +111,7 @@ Shred::Shred( const int shred_x
     if ( not LoadShred() ) {
         GenerateShred();
     }
+    InitSkyLight(World::GetWorld()->SkyLightLevel());
 }
 
 void Shred::GenerateShred() {

@@ -95,12 +95,14 @@ public:
         int LightMap(int x, int y, int z) const;
 
         /// Sets sun light to level in coordinates xyz.
-        void AddLight(int x, int y, int z, int level);
+        void AddLight  (int x, int y, int z, int addLevel);
+        void ResetLight(int x, int y, int z, int removeLevel, int addLevel);
 
         /// Make all shining block shine.
         void ShineAll() const;
 
-        void UpdateSkyLight();
+        void InitSkyLight(int level);
+        void ResetSkyLight(int oldLevel, int newLevel);
     ///@}
 
     /** @name Information section */ ///@{
@@ -167,7 +169,8 @@ private:
     /// For testing purposes.
     void ChaosShred();
 
-    void ReloadHeightMap();
+    template<void (*setter)(uchar&, int)>
+    void SetSkyLight(int level);
 
     /** Loads room from corresponding .room or -index.room file.
      * Should be placed before any other block generation at the same place. */
@@ -212,6 +215,7 @@ private:
     std::forward_list<Active*> activeListAll;
     std::forward_list<Active*> shiningList;
     std::forward_list<class Falling*> fallList;
+
 };
 
 #endif // SHRED_H

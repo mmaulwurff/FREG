@@ -38,13 +38,11 @@ struct PlayerFocusXyz : public XyzInt {
     }
 };
 
-int Player::X() const {
-    return GetShred()->ShredX() << SHRED_WIDTH_BITSHIFT | Xyz::X();
-}
+int Player::X() const
+{ return GetShred()->ShredX() << SHRED_WIDTH_BITSHIFT | Xyz::X(); }
 
-int Player::Y() const {
-    return GetShred()->ShredY() << SHRED_WIDTH_BITSHIFT | Xyz::Y();
-}
+int Player::Y() const
+{ return GetShred()->ShredY() << SHRED_WIDTH_BITSHIFT | Xyz::Y(); }
 
 Block*Player::GetBlock() const { return player; }
 const Block*Player::GetConstBlock() const { return player; }
@@ -80,9 +78,8 @@ int Player::SatiationPercent() const {
         50 : player->Satiation()*100/World::SECONDS_IN_DAY;
 }
 
-int Player::BreathPercent() const {
-    return player->Breath() * 100 / Animal::MAX_BREATH;
-}
+int Player::BreathPercent() const
+{ return player->Breath() * 100 / Animal::MAX_BREATH; }
 
 Inventory* Player::PlayerInventory() const {
     if ( Inventory* const inv = player->HasInventory() ) {
@@ -170,9 +167,8 @@ void Player::Move(const dirs direction) {
     }
 }
 
-void Player::Notify(const QString& message) const {
-    emit World::GetCWorld()->Notify(message);
-}
+void Player::Notify(const QString& message) const
+{ emit World::GetCWorld()->Notify(message); }
 
 void Player::Backpack() {
     if ( PlayerInventory() ) {
@@ -509,10 +505,11 @@ void Player::ProcessGetCommand(QTextStream& command_stream) {
 Player::visible Player::Visible(const_int(x_to, y_to, z_to)) const {
     if ( GetCreativeMode() ) return VISIBLE;
     const World* const world = World::GetCWorld();
-    return world->Visible(Xyz(X(), Y(), Z()), Xyz(x_to, y_to, z_to)) ?
-        (world->Enlightened(x_to, y_to, z_to) ?
-            VISIBLE : IN_SHADOW) :
-        OBSCURED;
+    return world->Visible(Xyz(X(), Y(), Z()), Xyz(x_to, y_to, z_to))
+         ? ( world->Enlightened(x_to, y_to, z_to, World::Anti(GetDir()))
+           ? VISIBLE
+           : IN_SHADOW )
+         : OBSCURED;
 }
 
 void Player::SetDir(const dirs direction) {
