@@ -73,20 +73,27 @@ int main(int argc, char** const argv) {
     parser.addHelpOption();
     parser.addVersionOption();
     parser.addOptions({
-        {{ Str("w"), Str("world") },
-            QObject::tr("Specify world."), QObject::tr("world_name")},
-        {{ Str("g"), Str("generate") },
-            QObject::tr("Generate new map.")},
-        {{ Str("s"), Str("size") },
-            QObject::tr("Generated map size. Works only with -g."),
-            QObject::tr("map_size"),
-            QString::number(WorldMap::DEFAULT_MAP_SIZE)},
-        {{ Str("o"), Str("outer") },
-            QObject::tr("Generated map outer shred. Works only with -g."),
-            QObject::tr("map_outer"), QString(QChar(SHRED_OUT_BORDER))},
-        {{ Str("d"), Str("seed") },
-            QObject::tr("Seed to generate map. Works only with -g."),
-            QObject::tr("map_seed"), QString::number(random_device()())},
+          { { Str("w"), Str("world") }
+          , QObject::tr("Specify world.")
+          , QObject::tr("world_name") }
+
+        , { { Str("g"), Str("generate") }
+          , QObject::tr("Generate new map.") }
+
+        , { { Str("s"), Str("size") }
+          , QObject::tr("Generated map size. Works only with -g.")
+          , QObject::tr("map_size")
+          , QString::number(WorldMap::DEFAULT_MAP_SIZE) }
+
+        , { { Str("o"), Str("outer") }
+          , QObject::tr("Generated map outer shred. Works only with -g.")
+          , QObject::tr("map_outer")
+          , QString(QChar(SHRED_OUT_BORDER)) }
+
+        , { { Str("d"), Str("seed") }
+          , QObject::tr("Seed to generate map. Works only with -g.")
+          , QObject::tr("map_seed")
+          , QString::number(random_device()()) }
     });
     parser.process(freg);
 
