@@ -31,6 +31,7 @@
 #include <QSettings>
 #include <QTextStream>
 #include <QMutexLocker>
+#include <QStringList>
 
 struct PlayerFocusXyz : public XyzInt {
     explicit PlayerFocusXyz(const Player* const player) : XyzInt() {
@@ -449,10 +450,11 @@ void Player::ProcessGetCommand(QTextStream& command_stream) {
         QStringList kindNames;
         kindNames.reserve(KIND_COUNT);
         for (int i = 0; i < KIND_COUNT; ++i) {
-            kindNames.append(TrManager::KindName(i));
+            kindNames.append(TrManager::KindToString(i));
         }
-        TrString availableString = tr("Available kinds: ");
-        Notify(availableString + kindNames.join(Str(", ")) + Str("."));
+        kindNames.sort();
+        TrString availableString = tr("Available kinds: %1.");
+        Notify(availableString.arg(kindNames.join(Str(", "))));
     };
 
     if (kind.isEmpty()) {
@@ -487,8 +489,13 @@ void Player::ProcessGetCommand(QTextStream& command_stream) {
         sub_code = sub.isEmpty() ?
             STONE : TrManager::StrToSub(sub);
         if ( sub_code == LAST_SUB ) {
-            TrString noSubstanceString = tr("There is no substance \"");
-            Notify(noSubstanceString + sub + Str("\"."));
+            QStringList substanceNames;
+            for (int i = 0; i < SUB_COUNT; ++i) {
+                substanceNames.append(TrManager::SubToString(i));
+            }
+            substanceNames.sort();
+            TrString availableSubs = tr("Available substances: %1.");
+            Notify(availableSubs.arg(substanceNames.join(Str(", "))));
             return;
         }
         break;

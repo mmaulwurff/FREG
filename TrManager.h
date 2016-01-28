@@ -42,9 +42,9 @@ public:
     /// Returns translated shred type.
     static QString ShredTypeName(shred_type);
 
-    /// If kind is unknown, returns "unknown_kind".
+    /// Returns untranslated (raw) kind name.
     static QString KindToString(int kind);
-    /// If substance is unknown, returns "unknown_sub".
+    /// Returns untranslated (raw) substance name.
     static QString SubToString(int sub);
     /// If string is not convertible to kind, returns LAST_KIND.
     static kinds StrToKind(const QString&);
@@ -65,6 +65,7 @@ private:
     class QTranslator* LoadTranslator() const;
 
     static QString Capitalized(const QString&);
+    static QString Uncapitalized(const QString&);
 
     class QTranslator* const translator;
     static const QString rawKinds[KIND_COUNT], rawSubs [SUB_COUNT];

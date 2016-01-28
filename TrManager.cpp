@@ -66,13 +66,11 @@ QTranslator* TrManager::LoadTranslator() const {
     return new_translator;
 }
 
-QString TrManager::  SubName(const int  sub) {
-    return trManager->subNames[sub];
-}
+QString TrManager::  SubName(const int  sub)
+{ return trManager->subNames[sub]; }
 
-QString TrManager:: KindName(const int kind) {
-    return trManager->kindNames[kind];
-}
+QString TrManager:: KindName(const int kind)
+{ return trManager->kindNames[kind]; }
 
 QString TrManager::KindToString(const int kind) { return rawKinds[kind]; }
 QString TrManager:: SubToString(const int sub ) { return  rawSubs[sub ]; }
@@ -136,18 +134,19 @@ QString TrManager::GetDamageString(const damage_kinds damage_kind) {
     return result.join(Str(", "));
 }
 
-QString TrManager::Capitalized(const QString& str) {
-    return QString(str).replace(0, 1, str.at(0).toUpper());
-}
+QString TrManager::Capitalized(const QString& str)
+{ return QString(str).replace(0, 1, str.at(0).toUpper()); }
+
+QString TrManager::Uncapitalized(const QString& str)
+{ return QString(str).replace(0, 1, str.at(0).toLower()); }
 
 QString TrManager::SubNameUpper(const int sub) {
     QString result = trManager->SubName(sub);
     return Capitalized(result);
 }
 
-QString TrManager::ShredTypeName(const shred_type type) {
-    return trManager->shredTypeNames[type];
-}
+QString TrManager::ShredTypeName(const shred_type type)
+{ return trManager->shredTypeNames[type]; }
 
 kinds TrManager::StrToKind(const QString& str) {
     return static_cast<kinds>(
@@ -155,5 +154,6 @@ kinds TrManager::StrToKind(const QString& str) {
 }
 
 subs TrManager::StrToSub(const QString& str) {
-    return static_cast<subs>(std::find(ALL(rawSubs), str) - rawSubs);
+    return static_cast<subs>(
+        std::find(ALL(rawSubs), Uncapitalized(str)) - rawSubs);
 }
