@@ -111,6 +111,7 @@ Shred::Shred( const int shred_x
     if ( not LoadShred() ) {
         GenerateShred();
     }
+    ResetOpaqueHeightMap();
     InitSkyLight(World::GetWorld()->SkyLightLevel());
 }
 
@@ -175,13 +176,13 @@ void Shred::SaveShred(const bool isQuitGame) {
     storage->SetShredData(shred_data, longitude, latitude);
 }
 
-int Shred::FindTopNonAir(const int x, const int y) {
+int Shred::FindTopNonAir(const int x, const int y) const {
     int z = HEIGHT - 1;
     while ( blocks[x][y][--z]->Sub() == AIR );
     return z;
 }
 
-int Shred::FindTopTransparent(const int x, const int y, int z) {
+int Shred::FindTopOpaque(const int x, const int y, int z) const {
     while ( blocks[x][y][--z]->Transparent() != BLOCK_OPAQUE );
     return z;
 }
@@ -575,6 +576,13 @@ void Shred::ChaosShred() {
             SetNewBlock(static_cast<kinds>(rand() % LAST_KIND),
                         static_cast<subs> (rand() % LAST_SUB ), x, y, z);
         }
+    }
+}
+
+void Shred::ResetOpaqueHeightMap() {
+    for (CoordinateIterator i; i.notEnd(); ++i) {
+        const int x = i.X(), y = i.Y();
+        opaqueHeightMap[x][y] = FindTopOpaque(x, y);
     }
 }
 

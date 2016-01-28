@@ -91,18 +91,23 @@ public:
     void PutBlock(Block* block, int x, int y, int z);
 
     /** @name Lighting section */ ///@{
-        /// Get light level in coordinates x, y, z.
-        int LightMap(int x, int y, int z) const;
 
-        /// Sets sun light to level in coordinates xyz.
-        void AddLight  (int x, int y, int z, int addLevel);
-        void ResetLight(int x, int y, int z, int removeLevel, int addLevel);
+    /// Get light level in coordinates x, y, z.
+    int LightMap(int x, int y, int z) const;
 
-        /// Make all shining block shine.
-        void ShineAll() const;
+    /// Sets sun light to level in coordinates xyz.
+    void AddLight  (int x, int y, int z, int addLevel);
+    void ResetLight(int x, int y, int z, int removeLevel, int addLevel);
 
-        void InitSkyLight(int level);
-        void ResetSkyLight(int oldLevel, int newLevel);
+    /// Make all shining block shine.
+    void ShineAll() const;
+
+    void InitSkyLight(int level);
+    void ResetSkyLight(int oldLevel, int newLevel);
+
+    /// oldOpaque is not equal to newOpaque.
+    void UpdateSkyLight(int x, int y, int z, bool newOpaque);
+
     ///@}
 
     /** @name Information section */ ///@{
@@ -148,8 +153,9 @@ private:
      *  otherwise on water too. */
     void RandomDrop(int num, kinds, subs, bool on_water = false);
     void DropBlock(Block*, bool on_water);
-    int FindTopNonAir(int x, int y);
-    int FindTopTransparent(int x, int y, int z = HEIGHT - 1);
+
+    int FindTopNonAir(int x, int y) const;
+    int FindTopOpaque(int x, int y, int z = HEIGHT - 2) const;
 
     void SetNewBlock(kinds, subs, int x, int y, int z);
 
@@ -169,8 +175,12 @@ private:
     /// For testing purposes.
     void ChaosShred();
 
+    /** @name Internal lighting section */ ///@{
     template<void (*setter)(uchar&, int)>
     void SetSkyLight(int level);
+
+    void ResetOpaqueHeightMap();
+    ///@}
 
     /** Loads room from corresponding .room or -index.room file.
      * Should be placed before any other block generation at the same place. */
@@ -180,7 +190,7 @@ private:
         bool Tree(int x, int y, int z);
         void NormalCube(int x_start, int y_start, int z_start,
                         int x_size,  int y_size,  int z_size, subs);
-    ///&}
+    ///@}
 
     void RainBlock(int* kind, int* sub) const;
 
@@ -205,8 +215,9 @@ private:
         Block* pattern[HEIGHT];
     };
 
-    Block*  blocks[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
-    uchar lightMap[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
+    Block*  blocks  [SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
+    uint8_t lightMap[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
+    uint8_t opaqueHeightMap[SHRED_WIDTH][SHRED_WIDTH];
     const qint64 longitude, latitude;
     int shredX, shredY;
     shred_type type;

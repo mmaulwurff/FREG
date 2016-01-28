@@ -222,6 +222,8 @@ private:
     void ReEnlightenCheck(const Block* block1, const Block* block2,
             int x, int y, int z,
             const Block* skip_block, const Block* add_block);
+
+    void UpdateSkyLight(int x, int y, int z, bool oldOpaque, bool newOpaque);
 ///@}
 
     enum can_move_results {

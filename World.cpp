@@ -535,17 +535,29 @@ bool World::Build(Block* const block, const_int(x, y, z), Block* const who) {
     return true;
 }
 
-void World::ReEnlightenCheck(
-        TY(const Block* const, block1, block2),
-        const_int(x, y, z),
-        TY(const Block* const, skip_block, add_block))
+void World::ReEnlightenCheck( TY(const Block* const, block1, block2)
+                            , const_int(x, y, z)
+                            , TY(const Block* const, skip_block, add_block) )
 {
-    if (    block1->Transparent() != block2->Transparent() ||
-            block1->LightRadius() != block2->LightRadius() )
+    UpdateSkyLight( x, y, z
+                  , block1->Transparent() == BLOCK_OPAQUE
+                  , block2->Transparent() == BLOCK_OPAQUE );
+
+    if ( block1->Transparent() != block2->Transparent()
+      || block1->LightRadius() != block2->LightRadius() )
     {
         UnShine(x, y, z, skip_block, add_block);
     } else {
         emit UpdatedAround(x, y, z);
+    }
+}
+
+void World::UpdateSkyLight( const_int(x, y, z)
+                          , TY(const bool, oldOpaque, newOpaque) )
+{
+    if (oldOpaque != newOpaque) {
+        GET_SHRED_XY(shred, x, y, x_in, y_in);
+        shred->UpdateSkyLight(x_in, y_in, z, newOpaque);
     }
 }
 

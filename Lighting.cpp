@@ -175,12 +175,10 @@ template<void (*setter)(uchar&, int)>
 void Shred::SetSkyLight(const int level) {
     for (CoordinateIterator i; i.notEnd(); ++i) {
         const int x = i.X(), y = i.Y();
-        setter(lightMap[x][y][HEIGHT - 1], level);
-        int z = HEIGHT - 2;
-        for ( ; GetBlock(x, y, z)->Transparent() != BLOCK_OPAQUE; --z) {
+        const int height = opaqueHeightMap[x][y];
+        for (int z = HEIGHT - 1; z >= height; --z) {
             setter(lightMap[x][y][z], level);
         }
-        setter(lightMap[x][y][z], level);
     }
 }
 
@@ -192,3 +190,27 @@ void Shred::InitSkyLight(const int level)
 
 void Shred::ResetSkyLight(const int oldLevel, const int newLevel)
 { SetSkyLight<Plus>(newLevel - oldLevel); }
+
+void Shred::UpdateSkyLight(const_int(x, y, z), const bool newOpaque) {
+    const int opaqueHeight = opaqueHeightMap[x][y];
+    if (z > opaqueHeight) {
+        if (not newOpaque) return;
+        const int skyLightLevel = World::GetWorld()->SkyLightLevel();
+        for (int k = z - 1; k >= opaqueHeight; --k) {
+            lightMap[x][y][k] -= skyLightLevel;
+        }
+        opaqueHeightMap[x][y] = z;
+
+    } else if (z < opaqueHeight) {
+        return;
+
+    } else /* equals */ {
+        // now it is guaranteed that newOpaque is false, so set new height
+        const int newHeight   = FindTopOpaque(x, y, z - 1);
+        opaqueHeightMap[x][y] = newHeight;
+        const int skyLightLevel = World::GetWorld()->SkyLightLevel();
+        for (int k = z - 1; k >= newHeight; --k) {
+            lightMap[x][y][k] += skyLightLevel;
+        }
+    }
+}
