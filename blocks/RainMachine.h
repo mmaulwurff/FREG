@@ -35,7 +35,7 @@ public:
     void SaveAttributes(QDataStream&) const override;
     QString FullName() const override;
     usage_types Use(Active* user) override;
-    inner_actions ActInner();
+    inner_actions ActInner() override;
 
 private:
     bool isOn;

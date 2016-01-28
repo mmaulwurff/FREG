@@ -76,6 +76,10 @@ Block* BlockFactory::Normal(const int sub) {
 
 const Block* BlockFactory::ConstNormal(const int sub) { return Normal(sub); }
 
+bool BlockFactory::IsNormal(const Block* const block) {
+    return (block == Normal(block->Sub()));
+}
+
 Block* BlockFactory::BlockFromFile(QDataStream& str,
         const kinds kind, const subs sub)
 {
@@ -98,24 +102,17 @@ bool BlockFactory::KindSubFromFile(QDataStream& str, quint8* kind, quint8* sub)
     }
 }
 
+void BlockFactory::DeleteBlock(const Block* const block) { delete block; }
+
 Inventory* BlockFactory::Block2Inventory(Block* const block) {
     return blockFactory->castsToInventory[block->Kind()](block);
 }
 
-void BlockFactory::DeleteBlock(Block* const block) {
-    if ( block != blockFactory->Normal(block->Sub()) ) {
-        if (Active* const active = block->ActiveBlock()) active->Unregister();
-        delete block;
-    }
-}
-
-Block* BlockFactory::ReplaceWithNormal(Block* const block) {
+void BlockFactory::ReplaceWithNormal(Block*& block) {
     Block* const normal = blockFactory->Normal(block->Sub());
     if ( block!=normal && *block==*normal ) {
         delete block;
-        return normal;
-    } else {
-        return block;
+        block = normal;
     }
 }
 

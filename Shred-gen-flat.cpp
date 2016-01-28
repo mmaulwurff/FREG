@@ -44,6 +44,8 @@ void Shred::Plain() {
 void Shred::Forest(const bool dead) {
     NormalUnderground();
     RandomDrop(rand() % 4, BUSH, WOOD);
+    //SetNewBlock(FALLING, STEEL, 0, 0, HEIGHT / 2 + 5);
+    //SetNewBlock(FALLING, GOLD, 0, 0, HEIGHT / 2 + 5);
     if ( not dead ) {
         RandomDrop(rand() % 2, BLOCK, ROSE);
         PlantGrass();

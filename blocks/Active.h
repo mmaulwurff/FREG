@@ -44,6 +44,7 @@ class Active : public QObject, public Block, protected Xyz {
     Q_OBJECT
 public:
     BLOCK_CONSTRUCTORS(Active)
+    ~Active() override;
 
     int X() const;
     int Y() const;
@@ -95,6 +96,7 @@ class Falling : public Active {
     Q_OBJECT
 public:
     BLOCK_CONSTRUCTORS(Falling)
+    ~Falling() override;
 
     void Move(dirs dir) override;
     QString FullName() const override;

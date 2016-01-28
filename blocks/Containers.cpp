@@ -164,7 +164,7 @@
             while ( not IsEmpty(i) ) {
                 Block* const to_pull = ShowBlock(i);
                 Pull(i);
-                BlockFactory::DeleteBlock(to_pull);
+                delete to_pull;
             }
         }
         int materials_number = 0;
@@ -211,7 +211,7 @@
                     while ( not IsEmpty(slot) ) {
                         Block* const to_pull = ShowBlock(slot);
                         Pull(slot);
-                        BlockFactory::DeleteBlock(to_pull);
+                        delete to_pull;
                     }
                 }
             } else {
@@ -317,7 +317,7 @@
                     if ( add > 0 ) {
                         fuelLevel += add;
                         Pull(i);
-                        BlockFactory::DeleteBlock(block);
+                        delete block;
                         break;
                     }
                 }

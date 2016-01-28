@@ -24,16 +24,17 @@
 #include "TrManager.h"
 #include "AroundCoordinates.h"
 #include <QDataStream>
+#include <QDebug>
 
 // Active section
 
-int Active::X() const {
-    return GetShred()->ShredX() << SHRED_WIDTH_BITSHIFT | Xyz::X();
-}
+Active::~Active() { Unregister(); }
 
-int Active::Y() const {
-    return GetShred()->ShredY() << SHRED_WIDTH_BITSHIFT | Xyz::Y();
-}
+int Active::X() const
+{ return GetShred()->ShredX() << SHRED_WIDTH_BITSHIFT | Xyz::X(); }
+
+int Active::Y() const
+{ return GetShred()->ShredY() << SHRED_WIDTH_BITSHIFT | Xyz::Y(); }
 
 const XyzInt Active::GetXyz() const { return {X(), Y(), Z()}; }
 
@@ -225,13 +226,16 @@ Falling::Falling(QDataStream& str, const kinds kind, const subs sub)
     : Active(str, kind, sub)
     , fallHeight()
     , falling()
-{
-    str >> fallHeight >> falling;
+{ str >> fallHeight >> falling; }
+
+Falling::~Falling() {
+    if ( not IsInside() ) {
+        GetShred()->RemFalling(this);
+    }
 }
 
-void Falling::SaveAttributes(QDataStream& out) const {
-    out << fallHeight << falling;
-}
+void Falling::SaveAttributes(QDataStream& out) const
+{ out << fallHeight << falling; }
 
 QString Falling::FullName() const {
     TrString stoneNameString = tr("Masonry");

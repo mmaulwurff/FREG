@@ -92,6 +92,8 @@ public:
     /// Makes block emit shining.
     void Shine(const XyzInt&, int level);
     void RemoveTempShining(class Active*);
+
+    int SkyLightLevel() const;
 ///@}
 
     /// Radius 5 ensures that fully enlightened block (in a cloud of most

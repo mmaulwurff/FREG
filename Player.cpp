@@ -136,7 +136,7 @@ void Player::Examine(const Block* const block) const {
             "DEBUG. Durability: %1/%2. Norm: %3. Dir: %4. Transparency: %5.").
             arg(block->GetDurability()).
             arg(Block::MAX_DURABILITY).
-            arg(block == BlockFactory::Normal(block->Sub())).
+            arg(BlockFactory::IsNormal(block)).
             arg(block->GetDir()).
             arg(block->Transparent()));
     }
@@ -204,23 +204,23 @@ void Player::Use() {
 
 void Player::TurnBlockToFace() const {
     const PlayerFocusXyz focus(this);
-    World* const world = World::GetWorld();
-    Block* block = world->GetBlock(XYZ(focus));
-    if (Block::GetSubGroup(block->Sub()) != GROUP_AIR) {
-        if (block == BlockFactory::Normal(block->Sub())) {
-            block = BlockFactory::NewBlock(block->Kind(), block->Sub());
-            world->GetShred(XY(focus))->SetBlockNoCheck(block,
-                Shred::CoordInShred(focus.X()),
-                Shred::CoordInShred(focus.Y()),
-                focus.Z());
-        }
-        const dirs dir = World::Anti(GetDir());
-        block->SetDir(dir);
-        TrString newDirectoinString = tr(": new direction: ");
-        Notify(block->FullName()
-            + newDirectoinString
-            + TrManager::DirName(dir).toLower()
-            + Str("."));
+    Shred* const shred = World::GetWorld()->GetShred(XY(focus));
+    const int x_in = Shred::CoordInShred(focus.X());
+    const int y_in = Shred::CoordInShred(focus.Y());
+    Block* block = shred->GetModifiableBlock(x_in, y_in, focus.Z());
+
+    const dirs dir = World::Anti(GetDir());
+    const bool successFlag = block->SetDir(dir);
+
+    shred->PutModifiedBlock(block, x_in, y_in, focus.Z());
+
+    if (successFlag) {
+        TrString newDirectionString = tr("%1: new direction: %2.");
+        Notify(newDirectionString.arg( block->FullName()
+                                     , TrManager::DirName(dir).toLower()));
+    } else {
+        TrString cannotTurn = tr("Cannot turn %1.");
+        Notify(cannotTurn.arg(block->FullName()));
     }
 }
 
@@ -569,7 +569,7 @@ void Player::SetPlayer(int x, int y, int z) {
         SetXyz(Shred::CoordInShred(x), Shred::CoordInShred(y), z);
     }
     if ( GetCreativeMode() ) {
-        player = creator.get();
+        player = creator;
         creator->SetXyz(Xyz::X(), Xyz::Y(), Xyz::Z());
         world->GetShred(x, y)->Register(player);
     } else {
@@ -578,7 +578,7 @@ void Player::SetPlayer(int x, int y, int z) {
         for ( ; z_self < HEIGHT-2; ++z_self ) {
             candidate = world->GetBlock(x, y, z_self);
             if ( AIR == candidate->Sub()
-                    || ((player == creator.get() || player == nullptr)
+                    || ((player == creator || player == nullptr)
                         && candidate->IsAnimal()) )
             {
                 break;
@@ -587,7 +587,7 @@ void Player::SetPlayer(int x, int y, int z) {
         if ( candidate->IsAnimal() ) {
             player = candidate->IsAnimal();
         } else {
-            if ( player == nullptr || player == creator.get() ) {
+            if ( player == nullptr || player == creator ) {
                 player = BlockFactory::NewBlock(DWARF, PLAYER_SUB)->IsAnimal();
             }
             world->DestroyAndReplace(x, y, Z());
@@ -612,22 +612,26 @@ void Player::Disconnect() {
         player = BlockFactory::NewBlock(DWARF, PLAYER_SUB)->IsAnimal();
     } else {
         SaveState();
-        GetShred()->SetBlockNoCheck(BlockFactory::Normal(AIR),
-            x_self, y_self, z_self);
+        GetShred()->PutBlock(BlockFactory::Normal(AIR), x_self, y_self, z_self);
         player->Unregister();
         player->disconnect();
     }
 }
 
-Player::Player() :
-        longitude(), latitude(),
-        homeLongi(), homeLati(),
-        homeX(), homeY(), homeZ(),
-        player(nullptr),
-        creator(BlockFactory::NewBlock(DWARF, DIFFERENT)->IsAnimal()),
-        usingType(), usingSelfType(),
-        usingInInventory(),
-        creativeMode()
+Player::Player()
+    : longitude()
+    , latitude()
+    , homeLongi()
+    , homeLati()
+    , homeX()
+    , homeY()
+    , homeZ()
+    , player(nullptr)
+    , creator(BlockFactory::NewBlock(DWARF, DIFFERENT)->IsAnimal())
+    , usingType()
+    , usingSelfType()
+    , usingInInventory()
+    , creativeMode()
 {
     World* const world = World::GetWorld();
     SetPlayer(0, 0, -1);
@@ -641,6 +645,7 @@ Player::Player() :
 
 Player::~Player() {
     SaveState();
+    BlockFactory::DeleteBlock(creator);
 }
 
 void Player::SaveState() const {

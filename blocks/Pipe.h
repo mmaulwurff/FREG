@@ -28,7 +28,7 @@ class Pipe : public Active {
 public:
     BLOCK_CONSTRUCTORS(Pipe)
 
-    int  ShouldAct() const;
+    int  ShouldAct() const override;
     void ActFrequent() override;
     void ReceiveSignal(const QString&) override;
     void SaveAttributes(QDataStream&) const override;

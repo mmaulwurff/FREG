@@ -23,8 +23,6 @@
 #include "Xyz.h"
 #include "header.h"
 
-#include <memory>
-
 #include <QObject>
 
 class Block;
@@ -190,7 +188,7 @@ private:
     qint64 homeLongi, homeLati;
     int homeX, homeY, homeZ;
     class Animal* player;
-    const std::unique_ptr<Animal> creator;
+    class Animal* creator;
     int usingType;
     int usingSelfType;
     int usingInInventory;

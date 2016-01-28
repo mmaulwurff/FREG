@@ -74,7 +74,11 @@ Q_DECL_RELAXED_CONSTEXPR int Block::Transparency(const int sub) {
     }
 }
 
+bool Block::IsNormal() const { return BlockFactory::IsNormal(this); }
+
 void Block::Damage(const int dmg, const int dmg_kind) {
+    Q_ASSERT(not IsNormal());
+
     static const struct Property {
         const int immunity, vulnerability, destruction;
     } properties[SUB_COUNT] = {
@@ -169,6 +173,8 @@ Block* Block::DropInto(bool* const delete_block) {
     return pile;
 }
 
+void* Block::operator new(const std::size_t s) { return ::operator new(s); }
+
 push_reaction Block::PushResult(dirs) const {
     return ( AIR==Sub() ) ? ENVIRONMENT : NOT_MOVABLE;
 }
@@ -210,6 +216,8 @@ wearable Block::Wearable() const {
 }
 
 bool Block::Inscribe(const QString& str) {
+    Q_ASSERT(not IsNormal());
+
     if ( Sub() == AIR ) return false;
     noteId = ( noteId == 0 ) ? // new note
         World::GetWorld()->SetNote(str.left(MAX_NOTE_LENGTH)) :
@@ -230,9 +238,14 @@ const Inventory* Block::HasConstInventory() const {
 }
 
 void Block::Restore() { durability = MAX_DURABILITY; }
-void Block::Break()   { durability = 0; }
+
+void Block::Break() {
+    Q_ASSERT(not IsNormal());
+    durability = 0;
+}
 
 void Block::Mend(const int plus) {
+    Q_ASSERT(not IsNormal());
     durability = std::min(MAX_DURABILITY, durability+plus);
 }
 
@@ -266,14 +279,30 @@ int Block::Weight() const {
     }
 }
 
-void Block::SetDir(const int dir) { direction = dir; }
+bool Block::SetDir(const int dir) {
+    Q_ASSERT(not IsNormal());
+
+    if (GetSubGroup(Sub()) != GROUP_AIR) {
+        direction = dir;
+        return true;
+    } else {
+        return false;
+    }
+}
 
 bool Block::operator==(const Block& block) const {
     return ( block.Kind() == Kind()
         && block.Sub()    == Sub()
         && block.GetDurability() == GetDurability()
         && block.GetDir()        == GetDir()
-        && block.GetNote()       == GetNote() );
+             && block.GetNote()       == GetNote() );
+}
+
+void Block::operator delete(void* const ptr, std::size_t) {
+    Block* const block = reinterpret_cast<Block*>(ptr);
+    if ( not BlockFactory::IsNormal(block) ) {
+        ::operator delete(ptr);
+    }
 }
 
 void Block::SaveAttributes(QDataStream&) const {}

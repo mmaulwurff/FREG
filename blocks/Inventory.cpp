@@ -73,7 +73,7 @@ void Inventory::SaveAttributes(QDataStream& out) const {
             /// @todo save each block separately
             const Block* const to_save = inventory[i].top();
             for (int j=0; j<number; ++j) {
-                if ( to_save == BlockFactory::ConstNormal(to_save->Sub()) ) {
+                if ( BlockFactory::IsNormal(to_save) ) {
                     to_save->SaveNormalToFile(out);
                 } else {
                     to_save->SaveToFile(out);
@@ -136,7 +136,7 @@ bool Inventory::InscribeInv(const int num, const QString& str) {
         return false;
     }
     const int sub = inventory[num].top()->Sub();
-    if ( inventory[num].top() == BlockFactory::Normal(sub) ) {
+    if ( BlockFactory::IsNormal(inventory[num].top()) ) {
         for (int i=0; i<number; ++i) {
             inventory[num].replace(i, BlockFactory::Normal(sub));
         }
@@ -160,7 +160,7 @@ QString Inventory::InvFullName(const int num) const {
         Str("%1%2").
             arg( inventory[num].top()->FullName() ).
             arg( Number(num) <= 1 ?
-                Str("") :
+                QString() :
                 Str(" (x%1)").arg(Number(num)) );
 }
 
@@ -282,7 +282,7 @@ Inventory::Inventory(QDataStream& str, const int sz)
 
 Inventory::~Inventory() {
     std::for_each(inventory, inventory + GetSize(), [](const auto& inv) {
-        std::for_each(ALL(inv), [](const auto block) {
+        std::for_each(ALL(inv), [](Block* const block) {
             BlockFactory::DeleteBlock(block);
         });
     });

@@ -28,6 +28,7 @@
 
 class Block;
 class Active;
+class Falling;
 
 enum to_dirs {
     TO_NORTH_WEST, TO_NORTH, TO_NORTH_EAST,
@@ -64,7 +65,7 @@ public:
     void Unregister(Active*);
     void AddShining(Active*);
     void RemShining(Active*);
-    void AddToDelete(Active*);
+    void RemFalling(Falling*);
     void ReloadTo(dirs);
 
     const std::forward_list<Active*>& GetShiningList() const;
@@ -77,7 +78,13 @@ public:
     /// Removes last block at xyz, then SetBlock, then makes block normal.
     void SetBlock(Block* block, int x, int y, int z);
     /// Puts block to coordinates xyz and activates it.
-    void SetBlockNoCheck(Block*, int x, int y, int z);
+    void PutBlockAndRegister(Block*, int x, int y, int z);
+
+    /** If block block at xyz is normal, replace it with the same but abnormal.
+     *  @returns resulting block at xyz. */
+    Block* GetModifiableBlock(int x, int y, int z) const;
+    void PutModifiedBlock(Block*&, int x, int y, int z);
+
     void AddFalling(Block*);
 
     /// Puts block to coordinates, not activates it.
@@ -92,10 +99,11 @@ public:
 
         /// Make all shining block shine.
         void ShineAll() const;
+
+        void UpdateSkyLight();
     ///@}
 
     /** @name Information section */ ///@{
-        void SetNewBlock(kinds, subs, int x, int y, int z);
         shred_type GetTypeOfShred() const { return type; }
 
         static QString FileName(qint64 longi, qint64 lati);
@@ -138,6 +146,9 @@ private:
     void RandomDrop(int num, kinds, subs, bool on_water = false);
     void DropBlock(Block*, bool on_water);
     int FindTopNonAir(int x, int y);
+    int FindTopTransparent(int x, int y, int z = HEIGHT - 1);
+
+    void SetNewBlock(kinds, subs, int x, int y, int z);
 
     void PlantGrass();
     void TestShred();
@@ -154,6 +165,10 @@ private:
     void Layers();
     /// For testing purposes.
     void ChaosShred();
+
+    void ReloadHeightMap();
+    void UpdateHeightMap(int x, int y, int z,
+                         int oldTransparency, int newTransparency);
 
     /** Loads room from corresponding .room or -index.room file.
      * Should be placed before any other block generation at the same place. */
@@ -190,6 +205,7 @@ private:
 
     Block*  blocks[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
     uchar lightMap[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
+    uchar heightMap[SHRED_WIDTH][SHRED_WIDTH];
     const qint64 longitude, latitude;
     int shredX, shredY;
     shred_type type;

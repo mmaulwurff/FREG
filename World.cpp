@@ -80,6 +80,10 @@ void World::RemoveTempShining(Active* const active) {
     tempShiningList.remove(active);
 }
 
+int World::SkyLightLevel() const {
+    return 6;
+}
+
 times_of_day World::PartOfDay() const {
     return static_cast<times_of_day>(TimeOfDay() / SECONDS_IN_NIGHT);
 }
@@ -94,9 +98,9 @@ QString World::TimeOfDayStr() const {
 bool World::Drop(Block* const block_from, const_int(x_to, y_to, z_to),
         const_int(src, dest, num))
 {
-    Block* const block_to = BlockFactory::NewBlock(BOX, DIFFERENT);
-    if ( not Build(block_to, x_to, y_to, z_to) ) {
-        delete block_to;
+    Block* const destination_box = BlockFactory::NewBlock(BOX, DIFFERENT);
+    if ( not Build(destination_box, x_to, y_to, z_to) ) {
+        BlockFactory::DeleteBlock(destination_box);
     }
     return Exchange(block_from, GetBlock(x_to, y_to, z_to), src, dest, num);
 }
@@ -493,14 +497,12 @@ const {
 
 int World::Damage(const_int(x, y, z), const int dmg, const int dmg_kind) {
     GET_SHRED_XY(shred, x, y, x_in, y_in);
-    Block* temp = shred->GetBlock(x_in, y_in, z);
-    if ( AIR == temp->Sub() ) return Block::MAX_DURABILITY;
-    if ( temp == BlockFactory::Normal(temp->Sub()) ) {
-        temp = BlockFactory::NewBlock(temp->Kind(), temp->Sub());
-        shred->SetBlockNoCheck(temp, x_in, y_in, z);
-    }
-    temp->Damage(dmg, dmg_kind);
-    return temp->GetDurability();
+    Block* block = shred->GetModifiableBlock(x_in, y_in, z);
+
+    block->Damage(dmg, dmg_kind);
+
+    shred->PutModifiedBlock(block, x_in, y_in, z);
+    return block->GetDurability();
 }
 
 void World::DestroyAndReplace P3(const int, x, y, z) {
@@ -509,7 +511,7 @@ void World::DestroyAndReplace P3(const int, x, y, z) {
     bool delete_block = true;
     Block* const new_block = block->DropAfterDamage(&delete_block);
     ReEnlightenCheck(block, new_block, x, y, z, block, nullptr);
-    shred->SetBlockNoCheck(new_block, x_in, y_in, z);
+    shred->PutBlockAndRegister(new_block, x_in, y_in, z);
     if ( delete_block ) {
         BlockFactory::DeleteBlock(block);
     } else {
@@ -549,14 +551,14 @@ void World::ReEnlightenCheck(
 
 bool World::Inscribe(const_int(x, y, z)) {
     GET_SHRED_XY(shred, x, y, x_in, y_in);
-    Block* block  = shred->GetBlock(x_in, y_in, z);
-    if ( block == BlockFactory::Normal(block->Sub()) ) {
-        block = BlockFactory::NewBlock(block->Kind(), block->Sub());
-        shred->SetBlockNoCheck(block, x_in, y_in, z);
-    }
+    Block* block = shred->GetModifiableBlock(x_in, y_in, z);
+
     QString str;
     emit GetString(str);
-    return block->Inscribe(str);
+    const bool successFlag = block->Inscribe(str);
+
+    shred->PutModifiedBlock(block, x_in, y_in, z);
+    return successFlag;
 }
 
 bool World::Exchange(TY(Block* const, block_from, block_to),

@@ -48,6 +48,7 @@ public:
     /// Use this to receive a pointer to normal block.
     static Block* Normal(int sub);
     static const Block* ConstNormal(int sub);
+    static bool IsNormal(const Block* block);
 
     /// Use this to receive a pointer to new not-normal block.
     static Block* NewBlock(kinds kind, subs sub);
@@ -58,13 +59,11 @@ public:
     /// Returns true if block is normal.
     static bool KindSubFromFile(QDataStream&, quint8* kind, quint8* sub);
 
-    /// Does not actually delete normal blocks.
-    static void DeleteBlock(Block*);
+    static void DeleteBlock(const Block* block);
 
     /// For memory economy.
-    /** Checks and replaces block with corresponding normal block.
-     *  Can delete block, use carefully. */
-    static Block* ReplaceWithNormal(Block* block);
+    /** Checks and replaces block with corresponding normal block. */
+    static void ReplaceWithNormal(Block*& block);
 
     static Inventory* Block2Inventory(Block*);
 

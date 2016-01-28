@@ -34,6 +34,7 @@
 #include "LoadingLineThread.cpp"
 #include "main.cpp"
 #include "Player.cpp"
+#include "RandomManager.cpp"
 #include "Shred.cpp"
 #include "Shred-gen-flat.cpp"
 #include "ShredStorage.cpp"

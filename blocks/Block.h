@@ -113,7 +113,7 @@ public:
     void Break();
     /// Increase durability, no more than MAX_DURABILITY.
     void Mend(int plus);
-    void SetDir(int dir);
+    bool SetDir(int dir);
 
     int GetDurability() const { return durability; }
     QString GetNote() const;
@@ -142,8 +142,15 @@ protected:
 
     quint16 noteId;
 
+    static void* operator new(std::size_t size);
+    static void  operator delete(void* ptr, std::size_t size);
+
 private:
     Q_DECL_RELAXED_CONSTEXPR static int Transparency(int sub);
+
+    bool IsNormal() const;
+
+    friend class BlockFactory;
 
     qint16 durability;
     const quint8 transparent;
