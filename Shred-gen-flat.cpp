@@ -24,7 +24,7 @@
 int Shred::NormalUnderground(const int depth, const subs sub) {
     NormalCube(0,0,1, SHRED_WIDTH,SHRED_WIDTH,HEIGHT/2-depth-5, STONE);
     Block* const block = Normal(sub), *stone = Normal(STONE);
-    for (CoordinateIterator i; i.notEnd(); ++i) {
+    for (CoordinateIterator i; i.notEnd(); i.step()) {
         PutBlock(((rand() % 2) ? stone : block),
                  i.X(), i.Y(), HEIGHT/2 - depth - 6);
     };
@@ -92,7 +92,7 @@ void Shred::Water(const subs sub) {
         NormalCube(0,0,z_start, 1,SHRED_WIDTH,depth, shore);
     }
     Block* const air = Normal(AIR);
-    for (CoordinateIterator i; i.notEnd(); ++i) {
+    for (CoordinateIterator i; i.notEnd(); i.step()) {
         const int x = i.X(), y = i.Y();
         Block** const pos = blocks[x][y];
         for (Block** block=pos+z_start; block<=pos+HEIGHT/2; ++block) {
@@ -110,7 +110,7 @@ void Shred::Water(const subs sub) {
 void Shred::Hill(const bool dead) {
     NormalUnderground();
     Block* const soil = Normal(SOIL);
-    for (CoordinateIterator i; i.notEnd(); ++i) {
+    for (CoordinateIterator i; i.notEnd(); i.step()) {
         const int x = i.X(), y = i.Y();
         for (int z=SHRED_WIDTH/2-2; z--; ) {
             if ( z <= -abs(x-SHRED_WIDTH/2) + SHRED_WIDTH/2-2 ) {

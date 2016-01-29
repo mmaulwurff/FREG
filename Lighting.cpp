@@ -173,7 +173,7 @@ void Shred::ShineAll() const {
 
 template<void (*setter)(uchar&, int)>
 void Shred::SetSkyLight(const int level) {
-    for (CoordinateIterator i; i.notEnd(); ++i) {
+    for (CoordinateIterator i; i.notEnd(); i.step()) {
         const int x = i.X(), y = i.Y();
         const int height = opaqueHeightMap[x][y];
         for (int z = HEIGHT - 1; z >= height; --z) {

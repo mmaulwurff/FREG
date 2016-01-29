@@ -191,6 +191,8 @@ signals:
 
 private:
 
+    Q_DISABLE_COPY(World)
+
     static const int TIME_STEPS_IN_SEC = 10;
     static const int MIN_WORLD_SIZE;
 

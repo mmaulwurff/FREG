@@ -198,7 +198,7 @@ private:
 
     class CoordinateIterator {
     public:
-        void operator++();
+        void step();
         int X() const;
         int Y() const;
         bool notEnd() const;

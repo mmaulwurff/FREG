@@ -78,6 +78,9 @@ public:
     static Screen* GetScreen();
 
 private:
+
+    Q_DISABLE_COPY(Screen)
+
     enum windowIndex {
         WIN_ACTION,
         WIN_NOTIFY,

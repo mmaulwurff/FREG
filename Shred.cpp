@@ -59,7 +59,7 @@ bool Shred::LoadShred() {
     Block* const null_stone = Normal(NULLSTONE);
     Block* const air        = Normal(AIR);
     Block* const sky        = Normal(SKY);
-    for (CoordinateIterator iter; iter.notEnd(); ++iter) {
+    for (CoordinateIterator iter; iter.notEnd(); iter.step()) {
         const int x = iter.X();
         const int y = iter.Y();
 
@@ -117,7 +117,7 @@ Shred::Shred( const int shred_x
 
 void Shred::GenerateShred() {
     static const InitialBlockColumn pattern;
-    for (CoordinateIterator i; i.notEnd(); ++i) {
+    for (CoordinateIterator i; i.notEnd(); i.step()) {
         const int x = i.X(), y = i.Y();
         std::memcpy(blocks[x][y], pattern.GetColumn(), sizeof(Block*) * HEIGHT);
     }
@@ -157,7 +157,7 @@ void Shred::SaveShred(const bool isQuitGame) {
     out_stream.setVersion(DATASTREAM_VERSION);
     out_stream << quint8(GetTypeOfShred()) << quint8(GetWeather());
     const Block* const sky = BlockFactory::ConstNormal(SKY);
-    for (CoordinateIterator i; i.notEnd(); ++i) {
+    for (CoordinateIterator i; i.notEnd(); i.step()) {
         const int x = i.X(), y = i.Y();
         const int ground_z = FindTopNonAir(x, y);
         for (int z=1; z<=ground_z; ++z) {
@@ -356,7 +356,7 @@ QString Shred::FileName(const qint64 longi, const qint64 lati) {
 // so use k from 1 to HEIGHT-2.
 
 void Shred::CoverWith(const kinds kind, const subs sub) {
-    for (CoordinateIterator i; i.notEnd(); ++i) {
+    for (CoordinateIterator i; i.notEnd(); i.step()) {
         const int x = i.X(), y = i.Y();
         SetNewBlock(kind, sub, x, y, FindTopNonAir(x, y) + 1);
     }
@@ -381,7 +381,7 @@ void Shred::DropBlock(Block* const block, const bool on_water) {
 }
 
 void Shred::PlantGrass() {
-    for (CoordinateIterator i; i.notEnd(); ++i) {
+    for (CoordinateIterator i; i.notEnd(); i.step()) {
         const int x = i.X(), y = i.Y();
         const int z = FindTopNonAir(x, y);
         if ( SOIL == GetBlock(x, y, z)->Sub() ) {
@@ -432,7 +432,7 @@ void Shred::NullMountain() {
     NormalCube(0,SHRED_WIDTH/2-1,1, SHRED_WIDTH,2,border_level, NULLSTONE);
     NormalCube(SHRED_WIDTH/2-1,0,1, 2,SHRED_WIDTH,border_level, NULLSTONE);
     Block* const null_stone = Normal(NULLSTONE);
-    for (CoordinateIterator i; i.notEnd(); ++i) {
+    for (CoordinateIterator i; i.notEnd(); i.step()) {
         const int x = i.X(), y = i.Y();
         for (int k=border_level; k < HEIGHT-2; ++k) {
             const int surface =
@@ -561,7 +561,7 @@ void Shred::Layers() {
         std::reverse(ALL(layers));
     }
 
-    for (CoordinateIterator iter; iter.notEnd(); ++iter) {
+    for (CoordinateIterator iter; iter.notEnd(); iter.step()) {
         const int x = iter.X(), y = iter.Y();
         for (uint z = 1, i = 0; z < HEIGHT-1 && i < layers.size(); ++z, ++i) {
             SetNewBlock(layers[i].kind, layers[i].sub, x, y, z);
@@ -570,7 +570,7 @@ void Shred::Layers() {
 }
 
 void Shred::ChaosShred() {
-    for (CoordinateIterator i; i.notEnd(); ++i) {
+    for (CoordinateIterator i; i.notEnd(); i.step()) {
         const int x = i.X(), y = i.Y();
         for (int z=1; z<HEIGHT/2; ++z) {
             SetNewBlock(static_cast<kinds>(rand() % LAST_KIND),
@@ -580,7 +580,7 @@ void Shred::ChaosShred() {
 }
 
 void Shred::ResetOpaqueHeightMap() {
-    for (CoordinateIterator i; i.notEnd(); ++i) {
+    for (CoordinateIterator i; i.notEnd(); i.step()) {
         const int x = i.X(), y = i.Y();
         opaqueHeightMap[x][y] = FindTopOpaque(x, y);
     }
@@ -738,7 +738,7 @@ char AroundShredTypes::To(const to_dirs dir) const { return types[dir]; }
 int AroundShredTypes::Count(const char type) const
 { return std::count(ALL(types), type); }
 
-void Shred::CoordinateIterator::operator++() {
+void Shred::CoordinateIterator::step() {
     y += (++x) / SHRED_WIDTH;
     x %= SHRED_WIDTH;
 }

@@ -32,12 +32,12 @@
 QString Text::FullName() const {
     TrString paperName     = QObject::tr("Paper page");
     TrString glassName     = QObject::tr("Screen");
-    TrString diffenentName = QObject::tr("Logger");
+    TrString differentName = QObject::tr("Logger");
 
     switch ( Sub() ) {
     case PAPER:     return paperName;
     case GLASS:     return glassName;
-    case DIFFERENT: return diffenentName;
+    case DIFFERENT: return differentName;
     default:        return Block::FullName();
     }
 }

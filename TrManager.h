@@ -62,6 +62,8 @@ public:
 
 private:
 
+    Q_DISABLE_COPY(TrManager)
+
     class QTranslator* LoadTranslator() const;
 
     static QString Capitalized(const QString&);
