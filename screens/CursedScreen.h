@@ -22,6 +22,7 @@
 
 #include "screens/VirtualScreen.h"
 #include "header.h"
+#include "Singleton.h"
 
 #ifdef Q_OS_WIN32
     #define NCURSES_MOUSE_VERSION 2
@@ -53,9 +54,9 @@ class Block;
 class Inventory;
 namespace std { class thread; }
 
-class Screen final : public VirtualScreen {
+class Screen final : public VirtualScreen, private Singleton<Screen> {
     Q_OBJECT
-    Q_DISABLE_COPY(Screen)
+
 public:
      Screen(Player*, int& error);
     ~Screen() override;
@@ -188,8 +189,6 @@ private:
     mmask_t noMouseMask;
     mutable int xCursor, yCursor; ///< Save cursor position to show player.
     void (*keyTable[ASCII_SIZE])(int);
-
-    static Screen* staticScreen;
 };
 
 #endif // CURSED_SCREEN_H

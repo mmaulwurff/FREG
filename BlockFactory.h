@@ -22,6 +22,7 @@
 
 #include "blocks/Block.h"
 #include "header.h"
+#include "Singleton.h"
 
 class Inventory;
 class QDataStream;
@@ -40,7 +41,7 @@ class QDataStream;
     * Use Block* NewBlock(int kind, int sub) to receive a pointer to
     * block that will be changed (damaged, inscribed, etc). */
 
-class BlockFactory final {
+class BlockFactory final : private Singleton<BlockFactory> {
 public:
 
     BlockFactory();
@@ -68,7 +69,6 @@ public:
     static Inventory* Block2Inventory(Block*);
 
 private:
-    M_DISABLE_COPY(BlockFactory)
 
     static const int KIND_SUB_PAIR_VALID_CHECK = false;
     /** IsValid check if kind-sub pair is valid in game.
@@ -104,8 +104,6 @@ private:
     /// Core of block registration system.
     template <typename BlockType, typename ... RestBlockTypes>
     void RegisterAll(typeList<BlockType, RestBlockTypes...>);
-
-    static BlockFactory* blockFactory;
 };
 
 #endif // BLOCK_FACTORY_H

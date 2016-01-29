@@ -21,6 +21,7 @@
 #define WORLD_H
 
 #include "WaysTree.h"
+#include "Singleton.h"
 
 #include <algorithm>
 #include <memory>
@@ -37,9 +38,8 @@ enum times_of_day : int;
 
 /** World provides global physics and shred connection.
  *  World is a singleton. */
-class World final : public QThread {
+class World final : public QThread, private Singleton<World> {
     Q_OBJECT
-    Q_DISABLE_COPY(World)
 
 public:
 
@@ -172,7 +172,7 @@ public:
 ///@}
 
 signals:
-    void Notify(QString) const;
+    void Notify(const QString&) const;
     void GetString(QString&) const;
     void UpdatedAll();
     void UpdatedAround(int x, int y, int z);
@@ -290,8 +290,6 @@ private:
     QHash<const class Active*, int> tempShiningList;
 
     const WaysTree lightWaysTree;
-
-    static World* world;
 };
 
 #endif // WORLD_H

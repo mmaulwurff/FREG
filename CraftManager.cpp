@@ -91,12 +91,10 @@ void CraftList::clear() {
 
 // CraftManager section
 
-CraftManager* CraftManager::craftManager = nullptr;
-
-CraftManager::CraftManager() : recipesList() {
-    Q_ASSERT(craftManager == nullptr); // CraftManager is a singleton.
-    craftManager = this;
-
+CraftManager::CraftManager()
+    : Singleton(this)
+    , recipesList()
+{
     for (int sub=0; sub<SUB_COUNT; ++sub) {
         QFile file(Str("recipes/%1.json").arg(TrManager::SubToString(sub)));
         if ( not file.open(QIODevice::ReadOnly | QIODevice::Text) ) continue;
@@ -124,7 +122,7 @@ CraftManager::~CraftManager() {
 bool CraftManager::MiniCraft(CraftItem ** item) {
     CraftList recipe(1);
     recipe << *item;
-    if ( craftManager->CraftSub(&recipe, DIFFERENT) ) {
+    if ( GetInstance()->CraftSub(&recipe, DIFFERENT) ) {
         *item = new CraftItem{
             recipe.at(0)->number, recipe.at(0)->kind, recipe.at(0)->sub};
         return true;
@@ -134,8 +132,8 @@ bool CraftManager::MiniCraft(CraftItem ** item) {
 }
 
 bool CraftManager::Craft(CraftList* const recipe, const int sub) {
-    return ( sub==DIFFERENT || not craftManager->CraftSub(recipe, sub) ) ?
-        craftManager->CraftSub(recipe, DIFFERENT) : true;
+    return ( sub==DIFFERENT || not GetInstance()->CraftSub(recipe, sub) ) ?
+        GetInstance()->CraftSub(recipe, DIFFERENT) : true;
 }
 
 bool CraftManager::CraftSub(CraftList* const recipe, const int sub) const {

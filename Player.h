@@ -133,11 +133,12 @@ public:
     void MoveInsideInventory(int num_from, int num_to, int num = 1);
     void ProcessCommand(QString command);
 
-    /// Turns low-case ASCII chars array (length <= 12) into unique quint64.
-    /// Can be used as switch statement for switch on strings.
-    constexpr static quint64 UniqueIntFromString(const char* const chars ) {
+    /** Turns ASCII char array (length <= 12) into unique quint64.
+     *  Case insensitive.
+     *  Can be used as switch statement for switch on strings. */
+    constexpr static quint64 UniqueIntFromString(const char* const chars) {
         return chars[0] == '\0' ?
-            0 : (UniqueIntFromString(chars + 1) << 5) | (chars[0]-'a');
+            0 : (UniqueIntFromString(chars + 1) << 5) | (chars[0] & 0x1f);
     }
 
     void SaveState() const;
@@ -155,7 +156,7 @@ signals:
     void Updated();
     void GetString(QString&);
     void Destroyed();
-    void ShowFile(QString path);
+    void ShowFile(const QString& path);
     void GetFocus(int* x, int* y, int* z) const;
 
 public:

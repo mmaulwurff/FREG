@@ -39,18 +39,14 @@
 
 #define X_BLOCK_CONSTRUCT(column1, substance, ...) { BLOCK, substance },
 
-BlockFactory* BlockFactory::blockFactory = nullptr;
-
 Block BlockFactory::normals[] = { SUB_TABLE(X_BLOCK_CONSTRUCT) };
 
 BlockFactory::BlockFactory()
-    : creates()
+    : Singleton(this)
+    , creates()
     , loads()
     , castsToInventory()
 {
-    Q_ASSERT(blockFactory == nullptr);
-    blockFactory = this;
-
     if ( KIND_SUB_PAIR_VALID_CHECK ) {
         int sum = 0;
         for (int kind = 0; kind<LAST_KIND; ++kind)
@@ -67,11 +63,11 @@ Block* BlockFactory::NewBlock(const kinds kind, const subs sub) {
     if ( KIND_SUB_PAIR_VALID_CHECK ) {
         qDebug("kind: %d, sub: %d, valid: %d", kind, sub, IsValid(kind,sub));
     }
-    return blockFactory->creates[kind](sub);
+    return GetInstance()->creates[kind](sub);
 }
 
 Block* BlockFactory::Normal(const int sub) {
-    return &(blockFactory->normals[sub]);
+    return &(GetInstance()->normals[sub]);
 }
 
 const Block* BlockFactory::ConstNormal(const int sub) { return Normal(sub); }
@@ -86,7 +82,7 @@ Block* BlockFactory::BlockFromFile(QDataStream& str,
     if ( KIND_SUB_PAIR_VALID_CHECK ) {
         qDebug("kind: %d, sub: %d, valid: %d", kind, sub, IsValid(kind,sub));
     }
-    return blockFactory->loads[kind](str, sub);
+    return GetInstance()->loads[kind](str, sub);
 }
 
 bool BlockFactory::KindSubFromFile(QDataStream& str, quint8* kind, quint8* sub)
@@ -105,11 +101,11 @@ bool BlockFactory::KindSubFromFile(QDataStream& str, quint8* kind, quint8* sub)
 void BlockFactory::DeleteBlock(const Block* const block) { delete block; }
 
 Inventory* BlockFactory::Block2Inventory(Block* const block) {
-    return blockFactory->castsToInventory[block->Kind()](block);
+    return GetInstance()->castsToInventory[block->Kind()](block);
 }
 
 void BlockFactory::ReplaceWithNormal(Block*& block) {
-    Block* const normal = blockFactory->Normal(block->Sub());
+    Block* const normal = GetInstance()->Normal(block->Sub());
     if ( block!=normal && *block==*normal ) {
         delete block;
         block = normal;

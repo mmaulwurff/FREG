@@ -21,6 +21,7 @@
 #define CRAFT_MANAGER_H
 
 #include "header.h"
+#include "Singleton.h"
 #include <QList>
 
 struct CraftItem final {
@@ -60,11 +61,10 @@ private:
     QList<CraftItem*> items;
 }; // CraftList
 
-class CraftManager final {
+class CraftManager final : private Singleton<CraftManager> {
 public:
      CraftManager();
     ~CraftManager();
-    M_DISABLE_COPY(CraftManager)
 
     static bool MiniCraft(CraftItem**);
     static bool Craft(CraftList* items, int sub);
@@ -73,7 +73,6 @@ private:
     bool CraftSub(CraftList* items, int sub) const;
 
     QList<CraftList*> recipesList[SUB_COUNT];
-    static CraftManager* craftManager;
 }; // CraftManager
 
 #endif // CRAFT_MANAGER_H

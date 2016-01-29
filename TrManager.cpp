@@ -28,17 +28,13 @@
 const QString TrManager::rawKinds[] = { KIND_TABLE(X_STRING) };
 const QString TrManager::rawSubs [] = {  SUB_TABLE(X_STRING) };
 
-TrManager* TrManager::trManager = nullptr;
-
 TrManager::TrManager()
-    : translator(LoadTranslator())
+    : Singleton(this)
+    , translator(LoadTranslator())
     , kindNames()
     , subNames()
     , shredTypeNames()
 {
-    Q_ASSERT(trManager == nullptr);
-    trManager = this;
-
     for (int i = 0; i < SUB_COUNT; ++i) {
         subNames[i] =
             QCoreApplication::translate("Block", rawSubs[i].toLatin1());
@@ -66,11 +62,11 @@ QTranslator* TrManager::LoadTranslator() const {
     return new_translator;
 }
 
-QString TrManager::  SubName(const int  sub)
-{ return trManager->subNames[sub]; }
+QString TrManager::SubName(const int  sub)
+{ return GetInstance()->subNames[sub]; }
 
-QString TrManager:: KindName(const int kind)
-{ return trManager->kindNames[kind]; }
+QString TrManager::KindName(const int kind)
+{ return GetInstance()->kindNames[kind]; }
 
 QString TrManager::KindToString(const int kind) { return rawKinds[kind]; }
 QString TrManager:: SubToString(const int sub ) { return  rawSubs[sub ]; }
@@ -141,12 +137,12 @@ QString TrManager::Uncapitalized(const QString& str)
 { return QString(str).replace(0, 1, str.at(0).toLower()); }
 
 QString TrManager::SubNameUpper(const int sub) {
-    QString result = trManager->SubName(sub);
+    QString result = GetInstance()->SubName(sub);
     return Capitalized(result);
 }
 
 QString TrManager::ShredTypeName(const shred_type type)
-{ return trManager->shredTypeNames[type]; }
+{ return GetInstance()->shredTypeNames[type]; }
 
 kinds TrManager::StrToKind(const QString& str) {
     return static_cast<kinds>(

@@ -6,7 +6,7 @@ QMAKE_TARGET_COPYRIGHT   = (C) 2012-2015 Alexander \'m8f\' Kromm
 QMAKE_TARGET_DESCRIPTION = Freg, 3D game with TUI
 
 CONFIG += warn_on console rtti_off exceptions_off
-CONFIG( release, debug|release ):DEFINES += QT_NO_DEBUG_OUTPUT
+CONFIG( release, debug|release ):DEFINES += QT_NO_DEBUG_OUTPUT NDEBUG
 DEFINES *= QT_USE_QSTRINGBUILDER
 
 #QMAKE_CXXFLAGS_DEBUG += -fno-inline
