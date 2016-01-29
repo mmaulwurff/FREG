@@ -315,10 +315,7 @@ void Shred::ReloadTo(const dirs direction) {
 void Shred::SetBlock(Block* const block, const_int(x, y, z)) {
     Block* const to_delete = GetBlock(x, y, z);
     if ( to_delete != block ) {
-        //BlockFactory::DeleteBlock(to_delete);
-        if (Active* const active = to_delete->ActiveBlock()) {
-            active->Unregister();
-        }
+        BlockFactory::DeleteBlock(to_delete);
         PutBlockAndRegister(block, x, y, z);
     }
 }
