@@ -1319,7 +1319,7 @@ Screen::Screen(Player* const controlledPlayer, int&)
 
     ungetch('0');
     getch();
-    Notify(QObject::tr("\t[[F][r][e][g]] version %1").arg(VER));
+    Notify(QObject::tr("[[F][r][e][g]] version %1").arg(VER));
     Notify(QObject::tr("Copyright (C) 2012-2015 Alexander 'm8f' Kromm"));
     Notify(Str("(mmaulwurff@gmail.com)\n"));
     Notify(QObject::tr("Press Space to continue."));
