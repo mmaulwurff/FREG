@@ -174,20 +174,20 @@ public:
 signals:
     void Notify(const QString&) const;
     void GetString(QString&) const;
-    void UpdatedAll();
-    void UpdatedAround(int x, int y, int z);
-    void StartMove(int);
+    void UpdatedAll() const;
+    void UpdatedAround(int x, int y, int z) const;
+    void StartMove(int) const;
     /// Emitted when world active zone moved to int direction.
-    void Moved(int);
+    void Moved(int) const;
     /// This is emitted when a pack of updates is complete.
-    void UpdatesEnded();
+    void UpdatesEnded() const;
     void NeedPlayer(int, int, int);
-    void StartReloadAll();
-    void FinishReloadAll();
-    void ExitReceived();
+    void StartReloadAll() const;
+    void FinishReloadAll() const;
+    void ExitReceived() const;
 
-    void Pause();
-    void Start();
+    void Pause() const;
+    void Start() const;
 
 private:
 

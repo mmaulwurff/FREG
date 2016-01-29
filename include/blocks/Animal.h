@@ -49,8 +49,8 @@ public:
     static const int MAX_BREATH = 60;
 
 signals:
-    void Updated();
-    void CauseTeleportation();
+    void Updated() const;
+    void CauseTeleportation() const;
 
 protected:
     void SaveAttributes(QDataStream& out) const override;

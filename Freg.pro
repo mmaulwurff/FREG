@@ -16,6 +16,9 @@ QMAKE_CXXFLAGS += \
     -Wfloat-equal -Woverloaded-virtual -Wundef -fstrict-enums -pedantic \
     -Werror -Wno-error=strict-overflow \
     -Wdisabled-optimization -Wcast-align -Wcast-qual \
+    -Wextra \
+    -Wformat=2 \
+    -Wuninitialized \
     -Wmissing-include-dirs -Wredundant-decls -Wshadow
 
 gcc {

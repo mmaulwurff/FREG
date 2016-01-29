@@ -106,12 +106,12 @@ public:
 signals:
     /** This is emitted when input receives exit key.
      *  This is connected to application exit. */
-    void ExitReceived();
+    void ExitReceived() const;
 
     /// Emitted to pause physics in world.
-    void PauseWorld();
+    void PauseWorld() const;
     /// Emitted to resume paused physics in world.
-    void ResumeWorld();
+    void ResumeWorld() const;
 
 protected:
     /// All available colors. Format: foreground_background (e.g. WHITE_BLACK)

@@ -153,10 +153,10 @@ signals:
 
     /// This is emitted when some player property is updated.
     /** It should be connected to screen::UpdatePlayer() signal. */
-    void Updated();
-    void GetString(QString&);
-    void Destroyed();
-    void ShowFile(const QString& path);
+    void Updated() const;
+    void GetString(QString&) const;
+    void Destroyed() const;
+    void ShowFile(const QString& path) const;
     void GetFocus(int* x, int* y, int* z) const;
 
 public:

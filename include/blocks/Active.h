@@ -69,8 +69,8 @@ public:
     void Unregister();
 
 signals:
-    void Moved(int);
-    void ReceivedText(const QString&);
+    void Moved(int) const;
+    void ReceivedText(const QString&) const;
 
 protected:
     void UpdateLightRadius(int old_radius);
