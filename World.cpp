@@ -454,6 +454,9 @@ void World::NoCheckMove(const_int(x, y, z),
     Block* const block_to = shred_to  ->GetBlock(newx_in, newy_in, newz);
 
     ReEnlightenCheck(block, block_to, x, y, z, nullptr, nullptr);
+    UpdateSkyLight( newx, newy, newz
+                  , block_to->Transparent() == BLOCK_OPAQUE
+                  , block   ->Transparent() == BLOCK_OPAQUE );
 
     shred_from->PutBlock(block_to,    x_in,    y_in,    z);
     shred_to  ->PutBlock(block,    newx_in, newy_in, newz);
