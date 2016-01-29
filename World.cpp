@@ -557,7 +557,7 @@ void World::UpdateSkyLight( const_int(x, y, z)
 {
     if (oldOpaque != newOpaque) {
         GET_SHRED_XY(shred, x, y, x_in, y_in);
-        shred->UpdateSkyLight(x_in, y_in, z, newOpaque);
+        shred->UpdateSkyLight(x_in, y_in, z);
     }
 }
 

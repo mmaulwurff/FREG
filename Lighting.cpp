@@ -191,10 +191,10 @@ void Shred::InitSkyLight(const int level)
 void Shred::ResetSkyLight(const int oldLevel, const int newLevel)
 { SetSkyLight<Plus>(newLevel - oldLevel); }
 
-void Shred::UpdateSkyLight(const_int(x, y, z), const bool newOpaque) {
+void Shred::UpdateSkyLight(const_int(x, y, z)) {
     const int opaqueHeight = opaqueHeightMap[x][y];
     if (z > opaqueHeight) {
-        if (not newOpaque) return;
+        // newOpaque is guaranteed to be true.
         const int skyLightLevel = World::GetWorld()->SkyLightLevel();
         for (int k = z - 1; k >= opaqueHeight; --k) {
             lightMap[x][y][k] -= skyLightLevel;

@@ -105,8 +105,7 @@ public:
     void InitSkyLight(int level);
     void ResetSkyLight(int oldLevel, int newLevel);
 
-    /// oldOpaque is not equal to newOpaque.
-    void UpdateSkyLight(int x, int y, int z, bool newOpaque);
+    void UpdateSkyLight(int x, int y, int z);
 
     ///@}
 
