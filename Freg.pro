@@ -36,16 +36,16 @@ unix {
     PRE_TARGETDEPS += $$PWD/pdcurses/libcurses.lib
 }
 
-INCLUDEPATH += .
+INCLUDEPATH += include include/blocks include/screens
 
-HEADERS +=  *.h \
-     $$PWD/blocks/*.h \
-    $$PWD/screens/*.h \
+HEADERS +=  $$PWD/include/*.h \
+     $$PWD/include/blocks/*.h \
+    $$PWD/include/screens/*.h
 
 CONFIG( debug, debug|release ) {
-    SOURCES +=  *.cpp \
-         $$PWD/blocks/*.cpp \
-        $$PWD/screens/*.cpp
+    SOURCES +=  $$PWD/src/*.cpp \
+         $$PWD/src/blocks/*.cpp \
+        $$PWD/src/screens/*.cpp
 } else {
     SOURCES += everything/everything.cpp
 }

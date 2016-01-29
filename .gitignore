@@ -5,8 +5,6 @@
 # except:
 !.gitignore
 !Freg.pro
-!*.cpp
-!*.h
 !*.ts
 !*.vim
 !*.md
@@ -15,17 +13,27 @@
 !Doxyfile
 qrc_*.cpp
 
-!blocks
-!screens
-!everything
 !help_*
 !recipes
 !rooms
 !Tools
 
-*/*
-!*/*.cpp
-!*/*.h
+!src
+src/*
+!src/*.cpp
+!src/blocks
+!src/screens
+!src/everything
+src/*/*
+!src/*/*.cpp
+
+!include
+include/*
+!include/*.h
+!include/blocks
+!include/screens
+include/*/*
+!include/*/*.h
 
 !help_*/*.md
 !rooms/*.room
