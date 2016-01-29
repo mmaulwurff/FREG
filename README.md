@@ -60,3 +60,8 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with FREG. If not, see <http://www.gnu.org/licenses/>.
+
+<a href="https://scan.coverity.com/projects/freg">
+  <img alt="Coverity Scan Build Status"
+       src="https://scan.coverity.com/projects/402/badge.svg"/>
+</a>
