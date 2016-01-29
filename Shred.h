@@ -143,6 +143,7 @@ private:
     bool LoadShred();
     void GenerateShred();
     void RegisterInit(Active*);
+    void ClearLists();
 
     /// Builds normal underground. Returns ground level.
     int NormalUnderground(int depth = 0, subs sub = SOIL);

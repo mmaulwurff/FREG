@@ -150,6 +150,8 @@ void Shred::GenerateShred() {
 Shred::~Shred() { SaveShred(true); }
 
 void Shred::SaveShred(const bool isQuitGame) {
+    if (isQuitGame) ClearLists();
+
     ShredStorage* const storage = World::GetWorld()->GetShredStorage();
     QByteArray* const shred_data = storage->GetByteArray();
     QDataStream out_stream(shred_data, QIODevice::WriteOnly);
@@ -166,8 +168,8 @@ void Shred::SaveShred(const bool isQuitGame) {
                 block->SaveNormalToFile(out_stream);
             } else {
                 block->SaveToFile(out_stream);
-                if ( Q_UNLIKELY(isQuitGame) ) {
-                    BlockFactory::DeleteBlock(block); // without unregistering.
+                if ( isQuitGame ) {
+                    BlockFactory::DeleteBlock(block);
                 }
             }
         }
@@ -266,15 +268,25 @@ void Shred::RegisterInit(Active* const active) {
     AddShining(active);
 }
 
+void Shred::ClearLists() {
+    activeListFrequent.clear();
+    activeListAll.clear();
+    shiningList.clear();
+    fallList.clear();
+}
+
 void Shred::Register(Active* const active) {
     RegisterInit(active);
     AddFalling(active);
 }
 
 void Shred::Unregister(Active* const active) {
-    std::replace(ALL(activeListAll), active, static_cast<Active*>(nullptr));
-    std::replace(ALL(activeListFrequent), active,
-        static_cast<Active*>(nullptr));
+    const auto inListAll = std::find(ALL(activeListAll),      active);
+    if (inListAll != activeListAll.end()) *inListAll = nullptr;
+
+    const auto inListFrequent = std::find(ALL(activeListFrequent), active);
+    if (inListFrequent != activeListFrequent.end()) *inListFrequent = nullptr;
+
     if ( Falling* const falling = active->ShouldFall() ) {
         RemFalling(falling);
     }
@@ -282,7 +294,9 @@ void Shred::Unregister(Active* const active) {
 }
 
 void Shred::RemFalling(Falling* const falling) {
-    std::replace(ALL(fallList), falling, static_cast<Falling*>(nullptr));
+    const auto inFall = std::find(ALL(fallList), falling);
+    if (inFall != fallList.end()) *inFall = nullptr;
+
     falling->SetFalling(false);
 }
 
@@ -300,7 +314,12 @@ void Shred::AddShining(Active* const active) {
     }
 }
 
-void Shred::RemShining(Active* const active) { shiningList.remove(active); }
+void Shred::RemShining(Active* const active) {
+    const auto inShining = std::find(ALL(shiningList), active);
+    if (inShining != shiningList.end()) {
+        shiningList.erase_after(std::prev(inShining));
+    }
+}
 
 void Shred::ReloadTo(const dirs direction) {
     switch ( direction ) {
