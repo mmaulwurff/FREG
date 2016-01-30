@@ -315,12 +315,7 @@ void Shred::AddShining(Active* const active) {
     }
 }
 
-void Shred::RemShining(Active* const active) {
-    const auto inShining = std::find(ALL(shiningList), active);
-    if (inShining != shiningList.end()) {
-        shiningList.erase_after(std::prev(inShining));
-    }
-}
+void Shred::RemShining(Active* const active) { shiningList.remove(active); }
 
 void Shred::ReloadTo(const dirs direction) {
     switch ( direction ) {
