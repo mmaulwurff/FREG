@@ -18,19 +18,20 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "LoadingLineThread.h"
+#include <cstdio>
 
 LoadingLineThread::LoadingLineThread()
     : running(true)
     , thread([this] {
           unsigned c = 0;
           while (running) {
-              putchar((c & 0b0111111) + '0');
-              fflush(stdout);
+              std::putchar((c & 0b0111111) + '0');
+              std::fflush(stdout);
               std::this_thread::sleep_for(std::chrono::milliseconds(100));
-              putchar(8);
+              std::putchar(8);
               ++c;
           }
-          putchar(8);
+          std::putchar(8);
       })
 {}
 

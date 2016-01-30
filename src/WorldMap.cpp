@@ -28,7 +28,6 @@
 #include <QFile>
 #include <QDebug>
 #include <QString>
-#include <QSettings>
 #include <QByteArray>
 
 #define UNDERGROUND_ONLY false
@@ -58,9 +57,11 @@ WorldMap::WorldMap(const QString& world_name)
     : WorldMap(world_name, InitialConstructor{})
 {
     IniSettings map_info(world_name + Str("/map.ini"));
-    defaultShred = map_info.value(Str("default_shred"), QString(SHRED_PLAIN)).
+    defaultShred = map_info.initValue( Str("default_shred")
+                                     , QString(SHRED_PLAIN)).
         toString().at(0).toLatin1();
-    outerShred = map_info.value(Str("outer_shred"), QString(SHRED_OUT_BORDER)).
+    outerShred = map_info.initValue( Str("outer_shred")
+                                   , QString(SHRED_OUT_BORDER)).
         toString().at(0).toLatin1();
 
     QFile mapFile(home_path + world_name + Str("/map.txt"));
@@ -82,9 +83,9 @@ WorldMap::WorldMap(const QString& world_name)
 
 void WorldMap::MakeAndSaveSpawn P(qint64* const, longitude, latitude) const {
     IniSettings map_info(worldName + Str("/map.ini"));
-    *longitude = map_info.value(Str("spawn_longitude"),
+    *longitude = map_info.initValue(Str("spawn_longitude"),
         GetSpawnCoordinate(GetHeight())).toLongLong();
-    *latitude  = map_info.value(Str("spawn_latitude"),
+    *latitude  = map_info.initValue(Str("spawn_latitude"),
         GetSpawnCoordinate(GetWidth(*longitude))).toLongLong();
 }
 

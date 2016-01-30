@@ -1,7 +1,7 @@
 #!/bin/bash
 # This file helps freg testing.
 
-FILES="*cpp *.h blocks/*cpp blocks/*.h screens/*cpp screens/*.h everything/everything.cpp"
+FILES="src/*.cpp include/*.h src/blocks/*.cpp include/blocks/*.h src/screens/*.cpp include/screens/*.h src/everything/everything.cpp"
 
 date +"%T %Y-%m-%d" > report.txt
 figlet freg scan >> report.txt

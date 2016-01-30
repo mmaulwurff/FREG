@@ -35,6 +35,7 @@
 #include <QDebug>
 
 #include <cstring>
+#include <cmath>
 
 const quint8 Shred::DATASTREAM_VERSION = QDataStream::Qt_5_2;
 
@@ -451,8 +452,8 @@ void Shred::NullMountain() {
     for (CoordinateIterator i; i.notEnd(); i.step()) {
         const int x = i.X(), y = i.Y();
         for (int k=border_level; k < HEIGHT-2; ++k) {
-            const int surface =
-                HEIGHT/2 * (pow(1./(x-7.5), 2) * pow(1./(y-7.5), 2)+1);
+            const int surface = HEIGHT/2 * ( std::pow(1./(x-7.5), 2)
+                                           * std::pow(1./(y-7.5), 2) + 1);
             if ( HEIGHT/2+1 < surface && surface >= k ) {
                 PutBlock(null_stone, x, y, k);
             }

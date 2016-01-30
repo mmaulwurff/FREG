@@ -20,9 +20,10 @@
 #ifndef RANDOM_MANAGER_H
 #define RANDOM_MANAGER_H
 
+#include "Singleton.h"
 #include <random>
 
-class RandomManager {
+class RandomManager : private Singleton<RandomManager> {
 public:
 
     explicit RandomManager(int seed);
@@ -32,8 +33,6 @@ public:
 private:
 
     std::ranlux24 randomEngine;
-
-    static RandomManager* randomManager;
 
 };
 

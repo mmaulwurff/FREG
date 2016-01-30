@@ -23,10 +23,13 @@
 #include "World.h"
 #include "Shred.h"
 #include "TrManager.h"
+
 #include <QObject>
 #include <QFile>
 #include <QDataStream>
 #include <QTextStream>
+
+#include <cstdlib>
 
 // Text::
 QString Text::FullName() const {
@@ -129,8 +132,8 @@ usage_types Map::Use(Active* const user) {
         latiStart  = lati;
     }
     const int border_dist = (TEXT_WIDTH - 1) / 2;
-    if (    ( labs(lati  - latiStart ) > border_dist ) ||
-            ( labs(longi - longiStart) > border_dist ) )
+    if (    ( std::labs(lati  - latiStart ) > border_dist ) ||
+            ( std::labs(longi - longiStart) > border_dist ) )
     {
         return USAGE_TYPE_READ;
     }

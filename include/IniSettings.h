@@ -27,7 +27,7 @@ public:
 
     explicit IniSettings(const QString& fileName);
 
-    QVariant value(const QString& key, const QVariant& defaultValue);
+    QVariant initValue(const QString& key, const QVariant& defaultValue);
 };
 
 #endif // INI_SETTINGS_H

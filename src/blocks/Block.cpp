@@ -23,7 +23,6 @@
 #include "Inventory.h"
 #include "TrManager.h"
 #include <QDataStream>
-#include <memory>
 
 #define TEST_DAMAGE 0
 #if TEST_DAMAGE == 1

@@ -50,7 +50,7 @@ CONFIG( debug, debug|release ) {
          $$PWD/src/blocks/*.cpp \
         $$PWD/src/screens/*.cpp
 } else {
-    SOURCES += everything/everything.cpp
+    SOURCES += src/everything/everything.cpp
 }
 
 #CONFIG += console_only

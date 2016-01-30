@@ -31,6 +31,7 @@
 
 #include <thread>
 #include <random>
+#include <cstdlib>
 
 #ifndef CONSOLE
 #include <QDesktopServices>
@@ -160,8 +161,8 @@ char Screen::CharNumber(const int z) const {
 
 char Screen::CharNumberFront(const int i, const int j) const {
     return Distance( ( ( player->GetDir() & 1 ) ? // east or west
-        abs(player->X() - i) :
-        abs(player->Y() - j) ) - 1 );
+        std::abs(player->X() - i) :
+        std::abs(player->Y() - j) ) - 1 );
 }
 
 int  Screen::RandomBlink() { return (RandomBit() * A_REVERSE); }
@@ -1197,7 +1198,7 @@ void Screen::initializeKeyTable() {
         }},
         {{'+'}, [](int) { Screen* const screen = GetScreen();
             ++(screen->shiftFocus);
-            if ( abs(screen->shiftFocus) == 2 ) {
+            if ( std::abs(screen->shiftFocus) == 2 ) {
                 screen->shiftFocus = 0;
             }
             TrString levels[] = {

@@ -25,7 +25,7 @@
 #include "Shred.h"
 #include "blocks/Block.h"
 #include "blocks/Active.h"
-#include "AroundCoordinates.h"
+#include <cstdlib>
 
 void World::Shine(const XyzInt& center, const int level) {
     Shine(center, level, &lightWaysTree);
@@ -66,9 +66,9 @@ void World::UnShine(const_int(x, y, z),
             const int y_diff = shining->Y() - y;
             const int z_diff = shining->Z() - z;
             if ( not tempShiningList.contains(shining)
-                    && abs(x_diff) <= MAX_LIGHT_RADIUS - 1
-                    && abs(y_diff) <= MAX_LIGHT_RADIUS - 1
-                    && abs(z_diff) <= MAX_LIGHT_RADIUS - 1 )
+                    && std::abs(x_diff) <= MAX_LIGHT_RADIUS - 1
+                    && std::abs(y_diff) <= MAX_LIGHT_RADIUS - 1
+                    && std::abs(z_diff) <= MAX_LIGHT_RADIUS - 1 )
             {
                 const int radius = shining->LightRadius();
                 Shine(shining->GetXyz(), -radius);

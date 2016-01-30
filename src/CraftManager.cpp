@@ -27,6 +27,8 @@
 #include <QDebug>
 #include <QFile>
 
+#include <cstring>
+
 // CraftItem section
 
 bool CraftItem::operator<(const CraftItem& item) const {
@@ -51,7 +53,7 @@ bool CraftList::operator==(const CraftList& compared) const {
     return ( GetMaterialsNumber() == compared.GetMaterialsNumber() ) &&
         std::equal(items.constBegin(), items.constBegin()+GetMaterialsNumber(),
             compared.items.constBegin(), []P(const auto, first, second) {
-                return not memcmp(first, second, sizeof(CraftItem));
+                return not std::memcmp(first, second, sizeof(CraftItem));
         });
 }
 

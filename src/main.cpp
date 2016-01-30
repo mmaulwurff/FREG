@@ -52,8 +52,8 @@ const QString home_path = QDir::currentPath() + QChar::fromLatin1('/');
 int main(int argc, char** const argv) {
     using namespace std;
 
-    setlocale(LC_CTYPE, "C-UTF-8");
-    puts("...");
+    std::setlocale(LC_CTYPE, "C-UTF-8");
+    std::puts("...");
 
     FregApplication freg(argc, argv);
     QCoreApplication::setOrganizationName(Str("freg-team"));
@@ -64,7 +64,8 @@ int main(int argc, char** const argv) {
     TrManager tr_manager;
 
     if ( not QDir::home().mkpath(Str(".freg")) ) {
-        puts(qPrintable(QObject::tr("Error creating game home directory")));
+        std::puts(qPrintable(QObject::tr(
+            "Error creating game home directory")));
         return EXIT_FAILURE;
     }
 
@@ -102,7 +103,7 @@ int main(int argc, char** const argv) {
         QSettings(home_path + Str("freg.ini"), QSettings::IniFormat).
             value(Str("current_world"), Str("mu")).toString();
     if ( not QDir(home_path).mkpath(worldName) ) {
-        puts(qPrintable(QObject::tr("Error generating world.")));
+        std::puts(qPrintable(QObject::tr("Error generating world.")));
         return EXIT_FAILURE;
     }
 
@@ -113,7 +114,7 @@ int main(int argc, char** const argv) {
                 , parser.value(Str("outer")).at(0).toLatin1()
                 , seed
                 ).saveToDisk();
-        puts(qPrintable(QObject::tr("Map generated successfully.")));
+        std::puts(qPrintable(QObject::tr("Map generated successfully.")));
         return EXIT_SUCCESS;
     }
 
@@ -125,12 +126,12 @@ int main(int argc, char** const argv) {
     bool world_error = false;
     World world(worldName, &world_error);
     if ( world_error ) {
-        puts(qPrintable(QObject::tr("Error loading world.")));
+        std::puts(qPrintable(QObject::tr("Error loading world.")));
         return EXIT_FAILURE;
     }
     QLockFile lock_file(home_path + worldName + Str("/lock"));
     if ( not lock_file.tryLock() ) {
-        puts(qPrintable(
+        std::puts(qPrintable(
             QObject::tr("World \"%1\" is used by another instance of freg.")
                 .arg(worldName)));
         return EXIT_FAILURE;

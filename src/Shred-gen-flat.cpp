@@ -19,7 +19,6 @@
 
 #include "Shred.h"
 #include "blocks/Block.h"
-#include "BlockFactory.h"
 
 int Shred::NormalUnderground(const int depth, const subs sub) {
     NormalCube(0,0,1, SHRED_WIDTH,SHRED_WIDTH,HEIGHT/2-depth-5, STONE);

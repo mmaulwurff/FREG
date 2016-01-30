@@ -19,6 +19,7 @@
 
 #include "WaysTree.h"
 #include <algorithm>
+#include <cstdlib>
 
 #define TREE_TEST 0
 #if TREE_TEST
@@ -59,7 +60,9 @@ WaysTree::WaysTree()
     for (int x=-MAX; x<=MAX; ++x)
     for (int y=-MAX; y<=MAX; ++y)
     for (int z=-MAX; z<=MAX; ++z) {
-        if ( abs(x)!=MAX && abs(y)!=MAX && abs(z)!=MAX ) continue;
+        if ( std::abs(x) != MAX
+          && std::abs(y) != MAX
+          && std::abs(z) != MAX ) continue;
 
         WaysTree* const root = new WaysTree(0, 0, 0); // new chain
         WaysTree* tail = root;

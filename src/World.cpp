@@ -31,9 +31,9 @@
 #include "IniSettings.h"
 
 #include <QDir>
-#include <QMutexLocker>
 #include <QTimer>
-#include <QSettings>
+
+#include <cstdlib>
 
 #define GET_SHRED_XY(shred, x_out, y_out, x_in, y_in) \
 Shred* const shred = GetShred(x_out, y_out);\
@@ -46,14 +46,14 @@ World* World::GetWorld() { return GetInstance(); }
 const World* World::GetCWorld() { return GetInstance(); }
 
 bool World::ShredInCentralZone(const qint64 longi, const qint64  lati) const {
-    return ( labs(longi - longitude) <= 1 ) && ( labs(lati - latitude) <= 1 );
+    return ( std::labs(longi - longitude) <= 1 )
+        && ( std::labs(lati  - latitude ) <= 1 );
 }
 
 int World::ShredPos(const int x, const int y) const { return y*NumShreds()+x; }
 
-Shred* World::GetShred(const int x, const int y) const {
-    return shreds[ShredPos(Shred::CoordOfShred(x), Shred::CoordOfShred(y))];
-}
+Shred* World::GetShred(const int x, const int y) const
+{ return shreds[ShredPos(Shred::CoordOfShred(x), Shred::CoordOfShred(y))]; }
 
 Shred* World::GetNearShred(Shred* const shred, const dirs dir) const {
     switch ( dir ) {
@@ -76,17 +76,15 @@ QString World::WorldPath() { return home_path + WorldName(); }
 const WorldMap* World::GetMap() const { return map.get(); }
 ShredStorage* World::GetShredStorage() { return shredStorage.get(); }
 
-void World::RemoveTempShining(Active* const active) {
-    tempShiningList.remove(active);
-}
+void World::RemoveTempShining(Active* const active)
+{ tempShiningList.remove(active); }
 
 int World::SkyLightLevel() const {
     return 6;
 }
 
-times_of_day World::PartOfDay() const {
-    return static_cast<times_of_day>(TimeOfDay() / SECONDS_IN_NIGHT);
-}
+times_of_day World::PartOfDay() const
+{ return static_cast<times_of_day>(TimeOfDay() / SECONDS_IN_NIGHT); }
 
 QString World::TimeOfDayStr() const {
     TrString timeIsString = tr("Time is %1:%2.");
@@ -134,9 +132,8 @@ bool World::InBounds(const int x, const int y) const {
                       static_cast<uint>(y) <= static_cast<uint>(GetBound())) );
 }
 
-bool World::InBounds(const_int(x, y, z)) const {
-    return ( Q_LIKELY(InBounds(x, y) && Shred::InBounds(z)) );
-}
+bool World::InBounds(const_int(x, y, z)) const
+{ return ( Q_LIKELY(InBounds(x, y) && Shred::InBounds(z)) ); }
 
 int World::GetBound() {
     static const int bound = World::GetCWorld()->NumShreds() * SHRED_WIDTH - 1;
@@ -181,13 +178,11 @@ void World::SaveToDisk() const {
 
 void World::ActivateFullReload() { toResetDir = DOWN; }
 
-dirs World::TurnRight(const dirs dir) {
-    return static_cast<dirs>(((dir - 2 + 1) % 4) + 2);
-}
+dirs World::TurnRight(const dirs dir)
+{ return static_cast<dirs>(((dir - 2 + 1) % 4) + 2); }
 
-dirs World::TurnLeft(const dirs dir) {
-    return static_cast<dirs>(((dir + 4 - 2 - 1) % 4) + 2);
-}
+dirs World::TurnLeft(const dirs dir)
+{ return static_cast<dirs>(((dir + 4 - 2 - 1) % 4) + 2); }
 
 dirs World::Anti(const dirs dir) {
     return static_cast<dirs>( ( dir <= DOWN ) ?
@@ -200,13 +195,11 @@ Block* World::GetBlock P3(const int, x, y, z) const {
         GetBlock(Shred::CoordInShred(x), Shred::CoordInShred(y), z);
 }
 
-Shred* World::FindShred P(const int, x, y) const {
-    return shreds[ShredPos(x, y)];
-}
+Shred* World::FindShred P(const int, x, y) const
+{ return shreds[ShredPos(x, y)]; }
 
-Shred** World::ChangeShred P(const int, x, y) {
-    return &shreds[ShredPos(x, y)];
-}
+Shred** World::ChangeShred P(const int, x, y)
+{ return &shreds[ShredPos(x, y)]; }
 
 void World::ReloadShreds() {
     if (toResetDir > DOWN) {
@@ -293,9 +286,8 @@ void World::ReloadShreds() {
     toResetDir = UP; // set no reset
 } // void World::ReloadShreds()
 
-void World::SetReloadShreds(const int direction) {
-    toResetDir = static_cast<dirs>(direction);
-}
+void World::SetReloadShreds(const int direction)
+{ toResetDir = static_cast<dirs>(direction); }
 
 void World::run() {
     std::unique_ptr<QTimer> timer(new QTimer);
@@ -640,9 +632,9 @@ World::World(const QString& world_name, bool* const error)
     , longitude()
     , latitude()
     , gameSettings(new IniSettings(Str("freg.ini")))
-    , numShreds(CorrectNumShreds(gameSettings->value(
+    , numShreds(CorrectNumShreds(gameSettings->initValue(
         Str("number_of_shreds"), MIN_WORLD_SIZE + 1).toInt()))
-    , numActiveShreds(CorrectNumActiveShreds(gameSettings->value(
+    , numActiveShreds(CorrectNumActiveShreds(gameSettings->initValue(
         Str("number_of_active_shreds"), numShreds).toInt(), numShreds))
     , mutex()
     , newLati()
@@ -692,7 +684,7 @@ World::~World() {
 }
 
 void World::SaveState() const {
-    QSettings settings(WorldPath()+Str("/settings.ini"), QSettings::IniFormat);
+    IniSettings settings(WorldName() + Str("/settings.ini"));
     settings.setValue(Str("time"), time);
     settings.setValue(Str("time_step"), timeStep);
     settings.setValue(Str("longitude"), longitude);
@@ -721,9 +713,8 @@ void World::SaveNotes() const {
 }
 
 void World::LoadState() {
-    const QSettings setting(WorldPath() + Str("/settings.ini"),
-        QSettings::IniFormat);
-    time = setting.value(Str("time"), END_OF_NIGHT).toULongLong();
+    const IniSettings setting(WorldName() + Str("/settings.ini"));
+    time      = setting.value(Str("time"), END_OF_NIGHT).toULongLong();
     timeStep  = setting.value(Str("time_step"), 0).toInt();
     longitude = setting.value(Str("longitude"),
         map->GetSpawnLongitude()).toLongLong();
@@ -733,6 +724,5 @@ void World::LoadState() {
 
 int World::Sign(const int value) { return (value > 0) - (value < 0); }
 
-int World::DiffSign(const int value1, const int value2) {
-    return value1 + (value1 > value2 ? (-1) : 1);
-}
+int World::DiffSign(const int value1, const int value2)
+{ return value1 + (value1 > value2 ? (-1) : 1); }

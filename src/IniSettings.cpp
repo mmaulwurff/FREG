@@ -24,7 +24,9 @@ IniSettings::IniSettings(const QString& settingsFileName)
     : QSettings(home_path + settingsFileName, QSettings::IniFormat)
 {}
 
-QVariant IniSettings::value(const QString& key, const QVariant& defaultValue) {
+QVariant IniSettings::initValue( const QString& key
+                               , const QVariant& defaultValue)
+{
     if (contains(key)) {
         return QSettings::value(key, defaultValue);
     } else {

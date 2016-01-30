@@ -19,6 +19,7 @@
 
 #include "VisionRay.h"
 #include <algorithm>
+#include <cstdlib>
 
 // DDA line with integers only.
 
@@ -29,7 +30,7 @@ VisionRay::VisionRay(const Xyz& from, const Xyz& to, const bool recalculate)
     , x_step(to.X() - x)
     , y_step(to.Y() - y)
     , z_step(to.Z() - z)
-    , maximum(std::max({abs(x_step), abs(y_step), abs(z_step)}))
+    , maximum(std::max({std::abs(x_step), std::abs(y_step), std::abs(z_step)}))
     , step(0)
     , precalculated((recalculate || maximum > PreCalculatedVisionRays::RADIUS)?
         nullptr :

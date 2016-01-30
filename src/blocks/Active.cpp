@@ -23,8 +23,11 @@
 #include "blocks/Inventory.h"
 #include "TrManager.h"
 #include "AroundCoordinates.h"
+
 #include <QDataStream>
 #include <QDebug>
+
+#include <cstdlib>
 
 // Active section
 
@@ -191,8 +194,8 @@ bool Active::Gravitate(const int range, int bottom, int top,
         }
     }
     // make direction and move there
-    if ( abs(for_north)>calmness || abs(for_west)>calmness ) {
-        SetDir( ( abs(for_north)>abs(for_west) ) ?
+    if ( std::abs(for_north)>calmness || std::abs(for_west)>calmness ) {
+        SetDir( ( std::abs(for_north)>std::abs(for_west) ) ?
             ( ( for_north>0 ) ? NORTH : SOUTH ) :
             ( ( for_west >0 ) ? WEST  : EAST  ) );
         return true;
