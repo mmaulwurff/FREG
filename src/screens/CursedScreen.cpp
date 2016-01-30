@@ -30,7 +30,6 @@
 #include "blocks/Inventory.h"
 
 #include <thread>
-#include <random>
 #include <cstdlib>
 
 #ifndef CONSOLE
@@ -168,8 +167,18 @@ char Screen::CharNumberFront(const int i, const int j) const {
 int  Screen::RandomBlink() { return (RandomBit() * A_REVERSE); }
 
 bool Screen::RandomBit() {
-    static std::independent_bits_engine<std::ranlux24, 1, uint> bitEngine;
-    return bitEngine();
+    static quint64 mask;
+    static int position = 0;
+
+    if (position) {
+        --position;
+        mask >>= 1;
+        return mask & 1;
+    } else {
+        position = 64;
+        mask = 0xf0f0f0f0;
+        return 0;
+    }
 }
 
 int Screen::Color(const int kind, const int sub) {
