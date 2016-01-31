@@ -165,6 +165,8 @@ private:
     int GetMinimapStartY() const;
     void ExamineOnNormalScreen(int x, int y, int z, int step) const;
 
+    void setSkyColor(int partOfDay);
+
     void initializeKeyTable();
     static void unknownKeyNotification(int key);
 
@@ -192,6 +194,7 @@ private:
     mmask_t noMouseMask;
     mutable int xCursor, yCursor; ///< Save cursor position to show player.
     void (*keyTable[ASCII_SIZE])(int);
+    int skyColor;
 };
 
 #endif // CURSED_SCREEN_H

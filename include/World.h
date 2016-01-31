@@ -114,10 +114,10 @@ public:
     enum times {
         SECONDS_IN_HOUR = 60,
         SECONDS_IN_DAY  = 24 * SECONDS_IN_HOUR,
-        END_OF_NIGHT    =  6 * SECONDS_IN_HOUR,
-        END_OF_MORNING  = 12 * SECONDS_IN_HOUR,
-        END_OF_NOON     = 18 * SECONDS_IN_HOUR,
-        END_OF_EVENING  =  0 * SECONDS_IN_HOUR,
+        END_OF_NIGHT    =  6 * SECONDS_IN_HOUR, //  0:00 -  5:59 - night
+        END_OF_MORNING  = 12 * SECONDS_IN_HOUR, //  6:00 - 11:59 - morning
+        END_OF_NOON     = 18 * SECONDS_IN_HOUR, // 12:00 - 17:59 - day
+        END_OF_EVENING  =  0 * SECONDS_IN_HOUR, // 18:00 - 23:59 - evening
         SECONDS_IN_NIGHT    = END_OF_NIGHT,
         SECONDS_IN_DAYLIGHT = SECONDS_IN_DAY-END_OF_NIGHT
     };
@@ -188,6 +188,8 @@ signals:
 
     void Pause() const;
     void Start() const;
+
+    void NewTimeOfDay(int) const;
 
 private:
 

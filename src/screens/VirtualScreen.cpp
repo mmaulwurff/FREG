@@ -130,6 +130,7 @@ char VirtualScreen::CharName(const int kind, const int sub) {
         case ROSE:     return ';';
         case COAL:     return '*';
         case STAR:     return '.';
+        case SKY:
         case AIR:      return ' ';
         } break;
     case WEAPON: switch ( sub ) {

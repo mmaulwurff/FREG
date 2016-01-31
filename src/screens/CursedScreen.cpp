@@ -193,7 +193,7 @@ int Screen::Color(const int kind, const int sub) {
         case SUB_DUST:   return color | A_BOLD  | A_REVERSE;
         case FIRE:       return color | A_BLINK | RandomBlink();
         case GOLD:       return color | RandomBlink();
-        case SKY:        return color | A_BOLD;
+        case SKY:        return COLOR_PAIR(GetInstance()->skyColor);
         } break;
     case LIQUID: switch ( sub ) {
         case H_MEAT:
@@ -920,7 +920,9 @@ const {
                     break;
                 }
             } else {
-                PrintShadow(rightWin);
+                static const chtype SHADOW = COLOR_PAIR(WHITE_BLUE)|ACS_CKBOARD;
+                waddch(rightWin, SHADOW);
+                waddch(rightWin, SHADOW);
             }
         }
     }
@@ -1299,6 +1301,7 @@ Screen::Screen(Player* const controlledPlayer, int&)
     , xCursor()
     , yCursor()
     , keyTable()
+    , skyColor()
 {
     start_color();
     #ifdef Q_OS_WIN32
@@ -1324,8 +1327,11 @@ Screen::Screen(Player* const controlledPlayer, int&)
     scrollok(notifyWin, true);
     (void)wmove(notifyWin, 6, 0);
 
-    connect(World::GetWorld(), &World::UpdatesEnded, this, &Screen::Print,
+    World* const world = World::GetWorld();
+    connect(world, &World::UpdatesEnded, this, &Screen::Print,
         Qt::DirectConnection);
+    connect(world, &World::NewTimeOfDay, this, &Screen::setSkyColor);
+    setSkyColor(world->PartOfDay());
 
     ungetch('0');
     getch();
@@ -1364,6 +1370,15 @@ Screen::~Screen() {
     settings.setValue(Str("last_command"), previousCommand);
     settings.setValue(Str("show_char_distance"), showCharDistance);
     OPTIONS_TABLE(OPTIONS_SAVE);
+}
+
+void Screen::setSkyColor(const int partOfDay) {
+    switch (partOfDay) {
+    case TIME_NIGHT:   skyColor = BLACK_BLACK;
+    case TIME_MORNING: skyColor = BLUE_BLUE;
+    case TIME_NOON:    skyColor = CYAN_CYAN;
+    case TIME_EVENING: skyColor = BLUE_BLUE;
+    }
 }
 
 void Screen::PrintBar(WINDOW* const window,

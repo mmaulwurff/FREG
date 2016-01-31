@@ -290,6 +290,7 @@ void World::SetReloadShreds(const int direction)
 { toResetDir = static_cast<dirs>(direction); }
 
 void World::run() {
+    emit NewTimeOfDay(PartOfDay());
     std::unique_ptr<QTimer> timer(new QTimer);
     timer->setInterval(1000 / TIME_STEPS_IN_SEC);
     connect(timer.get(), &QTimer::timeout, this, &World::PhysEvents);
@@ -318,6 +319,9 @@ void World::PhysEvents() {
         }
         timeStep = 0;
         ++time;
+        if ((time % (4 * SECONDS_IN_HOUR)) == 0) {
+            emit NewTimeOfDay(PartOfDay());
+        }
     }
     ReEnlighten();
     ReloadShreds();
