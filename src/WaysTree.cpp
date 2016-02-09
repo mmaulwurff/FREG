@@ -34,10 +34,14 @@ void WaysTree::operator+=(const WaysTree* const new_chain) {
         delete new_chain;
         return;
     }
-    const unsigned next_node_index = std::find_if(nexts.cbegin(), nexts.cend(),
-        [&](const WaysTree* const node) {
-            return *node == *new_chain->nexts[0];
-    }) - std::begin(nexts);
+    const unsigned next_node_index = std::distance(
+            std::cbegin(nexts),
+            std::find_if( nexts.cbegin()
+                        , nexts.cend()
+                        , [&new_chain](const WaysTree* const node)
+    {
+        return (*node == *new_chain->nexts[0]);
+    }));
     if ( next_node_index < nexts.size() ) { // found
         *nexts[next_node_index] += new_chain->nexts[0];
     } else {
@@ -47,9 +51,9 @@ void WaysTree::operator+=(const WaysTree* const new_chain) {
 }
 
 bool WaysTree::operator==(const WaysTree& other) const {
-    return  other.X() == X() &&
-            other.Y() == Y() &&
-            other.Z() == Z();
+    return other.X() == X()
+        && other.Y() == Y()
+        && other.Z() == Z();
 }
 
 WaysTree::WaysTree()
@@ -99,9 +103,9 @@ void WaysTree::Print(const int level) const {
 void WaysTree::Print(int) const {}
 #endif
 
-WaysTree::WaysTree(const int x, const int y, const int z) :
-        Xyz(x, y, z),
-        nexts()
+WaysTree::WaysTree(const int x, const int y, const int z)
+    : Xyz(x, y, z)
+    , nexts()
 {}
 
 void WaysTree::Clear() const {
