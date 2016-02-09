@@ -195,8 +195,8 @@ void WorldMap::saveToDisk() const {
 }
 
 void WorldMap::PieceOfEden(const qint64 x, const qint64 y) {
-    const int EDEN_SIZE = 8;
-    const int size = map.size();
+    static const int EDEN_SIZE = 8;
+    const qint64 size = map.size();
     if ( (x+EDEN_SIZE-1)*size + y+EDEN_SIZE-1 > size*size) return;
     const char eden[EDEN_SIZE][EDEN_SIZE + 1] = {
         "^~~~~~~^",
