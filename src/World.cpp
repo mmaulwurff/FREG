@@ -117,8 +117,7 @@ bool World::Get(Block* const block_to, const_int(x_from, y_from, z_from),
                          block_from, nullptr);
         GET_SHRED_XY(shred, x_from, y_from, x_in, y_in);
         shred->PutBlock(air, x_in, y_in, z_from);
-        if ( Q_UNLIKELY(block_from->LightRadius()) ) {
-            Active* const active = block_from->ActiveBlock();
+        if ( Active* const active = block_from->ActiveBlock() ) {
             shred->Unregister(active);
             active->SetShred(nullptr);
         }
