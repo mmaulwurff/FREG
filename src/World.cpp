@@ -24,7 +24,6 @@
 #include "WorldMap.h"
 #include "blocks/Active.h"
 #include "blocks/Inventory.h"
-#include "WaysTree.h"
 #include "VisionRay.h"
 #include "LoadingLineThread.h"
 #include "Utility.h"
@@ -650,7 +649,6 @@ World::World(const QString& world_name, bool* const error)
     , shredStorage()
     , notes()
     , tempShiningList()
-    , lightWaysTree()
 {
     LoadState();
     delete gameSettings;
@@ -682,7 +680,6 @@ World::~World() {
 
     SaveNotes();
 
-    lightWaysTree.Clear();
     saveLine.stop();
 }
 

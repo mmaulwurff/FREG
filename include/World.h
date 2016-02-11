@@ -20,8 +20,8 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-#include "WaysTree.h"
 #include "Singleton.h"
+#include "Xyz.h"
 
 #include <algorithm>
 #include <memory>
@@ -33,6 +33,7 @@
 
 class Block;
 class Shred;
+class WaysTree;
 enum dirs : int;
 enum times_of_day : int;
 
@@ -200,7 +201,7 @@ private:
 
 /** @name private Lighting section */ ///@{
     /// Make all tree shine.
-    void Shine(const XyzInt&, int level, const WaysTree* tree);
+    void Shine(const XyzInt&, int level, WaysTree tree);
 
     /// Adds light level to particular coordinate.
     void AddLight(const XyzInt&, int level);
@@ -292,8 +293,6 @@ private:
 
     /// storage for found shining objects between UnShine and ReEnlighten.
     QHash<const class Active*, int> tempShiningList;
-
-    const WaysTree lightWaysTree;
 };
 
 #endif // WORLD_H

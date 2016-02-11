@@ -23,26 +23,28 @@
 
 #include "World.h"
 #include "Shred.h"
+#include "WaysTree.h"
 #include "blocks/Block.h"
 #include "blocks/Active.h"
 #include <cstdlib>
 
 void World::Shine(const XyzInt& center, const int level) {
-    Shine(center, level, &lightWaysTree);
+    Shine(center, level, WaysTree(WaysTree::CENTER));
 }
 
-void World::Shine(const XyzInt& center, int level, const WaysTree* const ways){
-    const XyzInt here{center.X() + ways->X(), center.Y() + ways->Y(),
-                      center.Z() + ways->Z()};
+void World::Shine(const XyzInt& center, int level, const WaysTree ways) {
+    const XyzInt here { center.X() + ways.X()
+                      , center.Y() + ways.Y()
+                      , center.Z() + ways.Z() };
     if ( Q_UNLIKELY(not InBounds(XYZ(here))) ) return;
     AddLight(here, level);
     level -= Sign(level);
     if ( level == 0 ) return;
-    if ( not GetBlock(XYZ(here))->Transparent() && ways!=&lightWaysTree ) {
+    if ( not GetBlock(XYZ(here))->Transparent() && ways.notCenter() ) {
         level = Sign(level);
     }
-    for (const WaysTree* const branch : ways->GetNexts()) {
-        Shine(center, level, branch);
+    for (const int16_t branch : ways) {
+        Shine(center, level, WaysTree(branch));
     }
 }
 

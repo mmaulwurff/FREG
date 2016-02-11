@@ -20,26 +20,34 @@
 #ifndef WAYS_TREE_H
 #define WAYS_TREE_H
 
-#include "Xyz.h"
 #include <vector>
+#include <cstdint>
 
-class WaysTree : public Xyz {
+class WaysTree {
 public:
-    WaysTree();
 
-    const std::vector<WaysTree*>& GetNexts() const;
+    constexpr WaysTree(const int16_t _start)
+        : start(_start)
+    {}
 
-    void Clear() const;
+    int X() const;
+    int Y() const;
+    int Z() const;
+
+    const int16_t* begin() const;
+    const int16_t* end() const;
+
+    bool notCenter() const;
+
+    enum { CENTER = 0 };
 
 private:
-    WaysTree(int x, int y, int z);
 
-    void operator+=(const WaysTree* new_chain);
-    bool operator==(const WaysTree&) const;
+    int getBranchCount() const;
 
-    void Print(int level) const;
+    const int16_t start;
 
-    std::vector<WaysTree*> nexts;
+    static const int16_t data[];
 };
 
 #endif // WAYS_TREE_H

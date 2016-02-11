@@ -18,99 +18,16 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "WaysTree.h"
-#include <algorithm>
-#include <cstdlib>
+#include "src/WaysTreeData.cpp"
 
-#define TREE_TEST 0
-#if TREE_TEST
-#include <QFile>
-#include <QTextStream>
-#endif
+int WaysTree::X() const { return data[start]; }
+int WaysTree::Y() const { return data[start + 1]; }
+int WaysTree::Z() const { return data[start + 2]; }
 
-const std::vector<WaysTree*>& WaysTree::GetNexts() const { return nexts; }
+int WaysTree::getBranchCount() const { return data[start + 3]; }
 
-void WaysTree::operator+=(const WaysTree* const new_chain) {
-    if ( new_chain->nexts.empty() ) {
-        delete new_chain;
-        return;
-    }
-    const unsigned next_node_index = std::distance(
-            std::cbegin(nexts),
-            std::find_if( nexts.cbegin()
-                        , nexts.cend()
-                        , [&new_chain](const WaysTree* const node)
-    {
-        return (*node == *new_chain->nexts[0]);
-    }));
-    if ( next_node_index < nexts.size() ) { // found
-        *nexts[next_node_index] += new_chain->nexts[0];
-    } else {
-        nexts.push_back(new_chain->nexts[0]);
-    }
-    delete new_chain;
-}
+bool WaysTree::notCenter() const { return start != CENTER; }
 
-bool WaysTree::operator==(const WaysTree& other) const {
-    return other.X() == X()
-        && other.Y() == Y()
-        && other.Z() == Z();
-}
+const int16_t* WaysTree::begin() const { return data + start + 4; }
+const int16_t* WaysTree::end()   const { return begin() + getBranchCount(); }
 
-WaysTree::WaysTree()
-    : Xyz(0, 0, 0)
-    , nexts()
-{
-    const int MAX = 4;
-    for (int x=-MAX; x<=MAX; ++x)
-    for (int y=-MAX; y<=MAX; ++y)
-    for (int z=-MAX; z<=MAX; ++z) {
-        if ( std::abs(x) != MAX
-          && std::abs(y) != MAX
-          && std::abs(z) != MAX ) continue;
-
-        WaysTree* const root = new WaysTree(0, 0, 0); // new chain
-        WaysTree* tail = root;
-
-        int i=0, j=0, k=0;
-        while ( not (i==x*MAX && j==y*MAX && k==z*MAX) ) {
-            i += x;
-            j += y;
-            k += z;
-            tail->nexts.push_back(new WaysTree(i/MAX, j/MAX, k/MAX));
-            tail = tail->nexts[0];
-        }
-
-        *this += root;
-    }
-
-    Print(0);
-}
-
-#if TREE_TEST
-void WaysTree::Print(const int level) const {
-    QFile file("ATreeOut.csv");
-    file.open(QIODevice::Append | QIODevice::Text);
-    QTextStream stream(&file);
-    for (int l=0; l<level; ++l) {
-        stream << ";";
-    }
-    stream << X() << ";" << Y() << ";" << Z() << endl;
-    for (WaysTree* const branch : nexts) {
-        branch->Print(level + 1);
-    }
-}
-#else
-void WaysTree::Print(int) const {}
-#endif
-
-WaysTree::WaysTree(const int x, const int y, const int z)
-    : Xyz(x, y, z)
-    , nexts()
-{}
-
-void WaysTree::Clear() const {
-    for (WaysTree* const branch : nexts) {
-        branch->Clear();
-        delete branch;
-    }
-}
