@@ -39,7 +39,7 @@ Shred* const shred = GetShred(x_out, y_out);\
 const int x_in = Shred::CoordInShred(x_out);\
 const int y_in = Shred::CoordInShred(y_out);\
 
-const int World::MIN_WORLD_SIZE = 5;
+const int World::MIN_WORLD_SIZE = 7;
 
 World* World::GetWorld() { return GetInstance(); }
 const World* World::GetCWorld() { return GetInstance(); }
@@ -329,14 +329,10 @@ void World::PhysEvents() {
 
 bool World::DirectlyVisible(const Xyz& from, const Xyz& to) const {
     for (VisionRay vision_ray(from, to); vision_ray.nextStep(); ) {
-        const Xyz coordinate_first = vision_ray.getCoordinateFirst();
-        if ( Q_UNLIKELY(not GetBlock(XYZ(coordinate_first))->Transparent()) ) {
-            return false;
-        }
-        const Xyz coordinate_second = vision_ray.getCoordinateSecond();
-        if ( Q_UNLIKELY(coordinate_first != coordinate_second &&
-                not GetBlock(XYZ(coordinate_second))->Transparent() ) )
-        {
+        const Xyz coordinate = vision_ray.getCoordinate();
+        if ( Q_UNLIKELY(coordinate == from) ) continue;
+        if ( Q_UNLIKELY(coordinate == to  ) ) return true;
+        if ( Q_UNLIKELY(not GetBlock(XYZ(coordinate))->Transparent()) ) {
             return false;
         }
     }
@@ -344,20 +340,7 @@ bool World::DirectlyVisible(const Xyz& from, const Xyz& to) const {
 }
 
 bool World::Visible(const Xyz& from, const Xyz& to) const {
-    return ( DirectlyVisible(from, to)
-        || ( to.X() != from.X() &&
-            GetBlock(DiffSign(to.X(), from.X()), to.Y(), to.Z())->Transparent()
-            && DirectlyVisible(from,
-                Xyz(DiffSign(to.X(), from.X()), to.Y(), to.Z())) )
-        || ( to.Y() != from.Y() &&
-            GetBlock(to.X(), DiffSign(to.Y(), from.Y()), to.Z())->Transparent()
-            && DirectlyVisible(from,
-                Xyz(to.X(), DiffSign(to.Y(), from.Y()), to.Z())) )
-        || ( to.Z() != from.Z() &&
-            GetBlock(to.X(), to.Y(), DiffSign(to.Z(), from.Z()))->Transparent()
-            && DirectlyVisible(from,
-                Xyz(to.X(), to.Y(), DiffSign(to.Z(), from.Z()))) )
-        );
+    return DirectlyVisible(from, to);
 }
 
 bool World::Move(const_int(x, y, z), const dirs dir) {
@@ -635,7 +618,7 @@ World::World(const QString& world_name, bool* const error)
     , latitude()
     , gameSettings(new IniSettings(Str("freg.ini")))
     , numShreds(CorrectNumShreds(gameSettings->initValue(
-        Str("number_of_shreds"), MIN_WORLD_SIZE + 1).toInt()))
+        Str("number_of_shreds"), MIN_WORLD_SIZE).toInt()))
     , numActiveShreds(CorrectNumActiveShreds(gameSettings->initValue(
         Str("number_of_active_shreds"), numShreds).toInt(), numShreds))
     , mutex()

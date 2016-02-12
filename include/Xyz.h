@@ -26,8 +26,8 @@
 template<typename T>
 class TemplateXyz {
 public:
-    constexpr TemplateXyz(const int x, const int y, const int z) :
-            x_self(x), y_self(y), z_self(z)
+    constexpr TemplateXyz(const int x, const int y, const int z)
+        : x_self(x), y_self(y), z_self(z)
     {}
     constexpr TemplateXyz() : x_self(), y_self(), z_self() {}
 
@@ -42,10 +42,12 @@ public:
     }
 
     bool operator!=(const TemplateXyz<T>& other) const {
-        return x_self != other.x_self ||
-               y_self != other.y_self ||
-               z_self != other.z_self;
+        return x_self != other.x_self
+            || y_self != other.y_self
+            || z_self != other.z_self;
     }
+    bool operator==(const TemplateXyz<T>& other) const
+        { return (not (*this != other)); }
 
 protected:
     T x_self, y_self, z_self;
