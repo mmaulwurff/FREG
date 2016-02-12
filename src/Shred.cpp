@@ -41,9 +41,9 @@ const quint8 Shred::DATASTREAM_VERSION = QDataStream::Qt_5_2;
 
 bool Shred::LoadShred() {
     ShredStorage* const shredStorage = World::GetWorld()->GetShredStorage();
-    QByteArray* const data = shredStorage->GetShredData(longitude,latitude);
-    if ( data == nullptr ) return false;
-    QDataStream in(*data);
+    const QByteArray data = shredStorage->GetShredData(longitude, latitude);
+    if ( data.isNull() ) return false;
+    QDataStream in(data);
     quint8 read;
     in >>  read;
     if ( Q_UNLIKELY(CURRENT_SHRED_FORMAT_VERSION != read) ) {
@@ -89,7 +89,6 @@ bool Shred::LoadShred() {
             }
         }
     }
-    shredStorage->ReleaseByteArray(data);
     return true;
 } // bool Shred::LoadShred()
 
@@ -153,9 +152,9 @@ Shred::~Shred() { SaveShred(true); }
 void Shred::SaveShred(const bool isQuitGame) {
     if (isQuitGame) ClearLists();
 
-    ShredStorage* const storage = World::GetWorld()->GetShredStorage();
-    QByteArray* const shred_data = storage->GetByteArray();
-    QDataStream out_stream(shred_data, QIODevice::WriteOnly);
+    QByteArray shred_data;
+    shred_data.reserve(40 * 1024);
+    QDataStream out_stream(&shred_data, QIODevice::WriteOnly);
     out_stream << CURRENT_SHRED_FORMAT_VERSION;
     out_stream.setVersion(DATASTREAM_VERSION);
     out_stream << quint8(GetTypeOfShred()) << quint8(GetWeather());
@@ -176,6 +175,7 @@ void Shred::SaveShred(const bool isQuitGame) {
         }
         sky->SaveNormalToFile(out_stream);
     }
+    ShredStorage* const storage = World::GetWorld()->GetShredStorage();
     storage->SetShredData(shred_data, longitude, latitude);
 }
 

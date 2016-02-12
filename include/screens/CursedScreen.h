@@ -154,6 +154,7 @@ private:
     static bool IsScreenWide();
     static bool IsOutWindow(const MEVENT&, int hor_bound, int vert_bound);
     static void Palette(WINDOW*);
+    static int  MinScreenSize();
 
     /// Returns nullptr if block is not player->Visible().
     Block* GetFocusedBlock() const;

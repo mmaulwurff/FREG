@@ -21,9 +21,8 @@
 #define SHRED_STORAGE_H
 
 #include <QHash>
-#include <vector>
+#include <QByteArray>
 
-class QByteArray;
 namespace std { class thread; }
 
 class ShredStorage final {
@@ -32,14 +31,12 @@ public:
      ShredStorage(int size, qint64 longitude_center, qint64 latitude_center);
     ~ShredStorage();
 
-    QByteArray* GetShredData(qint64 longitude, qint64 latitude);
-    void SetShredData(QByteArray*, qint64 longitude, qint64 latitude);
+    QByteArray GetShredData(qint64 longitude, qint64 latitude);
+    void SetShredData(const QByteArray&, qint64 longitude, qint64 latitude);
+
     void Shift(int direction, qint64 longitude, qint64 latitude);
 
     void WriteToFileAllShredData() const;
-
-    QByteArray* GetByteArray();
-    void ReleaseByteArray(QByteArray*) const;
 
     struct LongLat {
         bool operator==(const LongLat& other) const;
@@ -60,9 +57,8 @@ private:
     /// -1 - default, 0 - no compression, 4 - best for CPU, 8 - optimal.
     static const int COMPRESSION_LEVEL = 8;
 
-    QHash<LongLat, QByteArray*> storage;
+    QHash<LongLat, QByteArray> storage;
     const int size;
-    mutable std::vector<QByteArray*> emptyWriteBuffers;
 
     std::thread* preloadThread;
 };

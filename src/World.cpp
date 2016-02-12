@@ -39,7 +39,7 @@ Shred* const shred = GetShred(x_out, y_out);\
 const int x_in = Shred::CoordInShred(x_out);\
 const int y_in = Shred::CoordInShred(y_out);\
 
-const int World::MIN_WORLD_SIZE = 7;
+const int World::MIN_WORLD_SIZE = 5;
 
 World* World::GetWorld() { return GetInstance(); }
 const World* World::GetCWorld() { return GetInstance(); }

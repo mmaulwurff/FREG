@@ -27,18 +27,15 @@ uint qHash(const ShredStorage::LongLat& longLat) {
             (quint64(longLat.latitude ) & 0b11111111 << 1);
 }
 
-ShredStorage::ShredStorage(const int size_,
-        const qint64 longi_center, const qint64 lati_center)
+ShredStorage::ShredStorage( const int size_
+                          , TY(const qint64, longi_center, lati_center) )
     : storage()
     , size(size_)
-    , emptyWriteBuffers()
     , preloadThread(new std::thread([]{})) // stub, so always joinable.
 {
     storage.reserve(size*size);
-    emptyWriteBuffers.reserve(size*size);
     for (qint64 i=longi_center-size/2; i<=longi_center+size/2; ++i)
     for (qint64 j= lati_center-size/2; j<= lati_center+size/2; ++j) {
-        emptyWriteBuffers.push_back(new QByteArray);
         AddShred(i, j);
     }
 }
@@ -47,31 +44,16 @@ ShredStorage::~ShredStorage() {
     preloadThread->join();
     delete preloadThread;
     WriteToFileAllShredData();
-    qDeleteAll(emptyWriteBuffers);
-}
-
-QByteArray* ShredStorage::GetByteArray() {
-    QByteArray* const result = emptyWriteBuffers.back();
-    emptyWriteBuffers.pop_back();
-    result->reserve(40 * 1024);
-    return result;
-}
-
-void ShredStorage::ReleaseByteArray(QByteArray* const array) const {
-    array->clear();
-    emptyWriteBuffers.push_back(array);
 }
 
 void ShredStorage::WriteToFileAllShredData() const {
     for (auto i=storage.constBegin(); i!=storage.constEnd(); ++i) {
-        if ( i.value() ) {
-            WriteShred(i.key().longitude, i.key().latitude);
-        }
+        WriteShred(i.key().longitude, i.key().latitude);
     }
 }
 
-void ShredStorage::Shift(const int direction,
-        const qint64 longitude_center, const qint64 latitude_center)
+void ShredStorage::Shift( const int direction
+                        , TY(const qint64, longitude_center, latitude_center) )
 {
     preloadThread->join();
     delete preloadThread;
@@ -79,36 +61,32 @@ void ShredStorage::Shift(const int direction,
         direction, longitude_center, latitude_center);
 }
 
-QByteArray* ShredStorage::GetShredData P(const qint64, longi, lati) {
-    return storage.take(LongLat{longi, lati});
+QByteArray ShredStorage::GetShredData P(const qint64, longi, lati) {
+    return storage.value(LongLat{longi, lati});
 }
 
-void ShredStorage::SetShredData(QByteArray* const data,
-        const qint64 longi, const qint64 lati)
+void ShredStorage::SetShredData( const QByteArray& data
+                               , TY(const qint64, longi, lati) )
 {
     storage.insert(LongLat{longi, lati}, data);
 }
 
 void ShredStorage::AddShred P(const qint64, longitude, latitude) {
     QFile file(Shred::FileName(longitude, latitude));
-    QByteArray* byteArray;
+    QByteArray byteArray;
     if ( file.open(QIODevice::ReadOnly) ) {
-        byteArray = GetByteArray();
-        *byteArray = qUncompress(file.readAll());
-    } else {
-        byteArray = nullptr;
+        byteArray = qUncompress(file.readAll());
     }
     storage.insert(LongLat{longitude, latitude}, byteArray);
 }
 
 void ShredStorage::WriteShred P(const qint64, longi, lati) const {
-    QByteArray* const data = storage.value(LongLat{longi, lati});
-    if ( data ) {
+    const QByteArray& data = storage.value(LongLat{longi, lati});
+    if ( not data.isNull() ) {
         QFile file(Shred::FileName(longi, lati));
         if ( file.open(QIODevice::WriteOnly) ) {
-            file.write(qCompress(*data, COMPRESSION_LEVEL));
+            file.write(qCompress(data, COMPRESSION_LEVEL));
         }
-        ReleaseByteArray(data);
     }
 }
 
@@ -116,8 +94,8 @@ void ShredStorage::Remove P(const qint64, longi, lati) {
     storage.remove(LongLat{longi, lati});
 }
 
-void ShredStorage::asyncShift(const int direction,
-        const qint64 longi_center, const qint64 lati_center)
+void ShredStorage::asyncShift( const int direction
+                             , TY(const qint64, longi_center, lati_center) )
 {
     switch (direction) {
     default: Q_UNREACHABLE(); break;
@@ -154,5 +132,6 @@ void ShredStorage::asyncShift(const int direction,
 
 bool ShredStorage::LongLat::operator==(const ShredStorage::LongLat& other)
 const {
-    return longitude == other.longitude && latitude == other.latitude;
+    return longitude == other.longitude
+        && latitude  == other.latitude;
 }

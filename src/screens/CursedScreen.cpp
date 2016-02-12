@@ -1270,8 +1270,8 @@ Screen::Screen(Player* const controlledPlayer, int&)
     : VirtualScreen(controlledPlayer)
     , Singleton(this)
     , cursesScreen(newterm(nullptr, stdout, stdin))
-    , screenWidth((COLS / 2) - ((COLS/2) & 1))
-    , screenHeight(LINES - 10)
+    , screenWidth (qMin(MinScreenSize() * 2, (COLS / 2) - ((COLS/2) & 1)))
+    , screenHeight(qMin(MinScreenSize(), (LINES - 10)))
     , windows {
         newwin(7, ACTIONS_WIDTH, LINES-7, MINIMAP_WIDTH + 1), // actions
         newwin(7, 0, LINES-7, MINIMAP_WIDTH+ACTIONS_WIDTH+2), // notify
@@ -1415,6 +1415,10 @@ void Screen::Palette(WINDOW* const window) {
         waddstr(window, lines[line].name.c_str());
     }
     wrefresh(window);
+}
+
+int Screen::MinScreenSize() {
+    return SHRED_WIDTH * (World::GetCWorld()->NumShreds() - 3) - 4;
 }
 
 void Screen::TestNotify() const {
