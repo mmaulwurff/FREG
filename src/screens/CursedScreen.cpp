@@ -662,7 +662,7 @@ void Screen::PrintHud() const {
     }
     const Block* const focused = GetFocusedBlock();
     if ( focused && Block::GetSubGroup(focused->Sub()) != GROUP_AIR ) {
-        const int right_border = screenWidth*2;
+        const int right_border = COLS;
         (void)wmove(hudWin, 0, right_border - 15);
         PrintBar(hudWin, CharName(focused->Kind(), focused->Sub()),
             Color(focused->Kind(), focused->Sub()),
@@ -694,12 +694,12 @@ void Screen::PrintQuickInventory() const {
     const int inventory_size = inv->GetSize();
     int step;
     int x;
-    if ( screenWidth * 2 > inventory_size * 2 + 30 * 2) {
+    if ( COLS > inventory_size * 2 + 30 * 2) {
         step = 2;
-        x = screenWidth - inventory_size;
-    } else if ( screenWidth * 2 > inventory_size + 30 * 2 ) {
+        x    = COLS/2 - inventory_size;
+    } else if ( COLS > inventory_size + 30 * 2 ) {
         step = 1;
-        x = screenWidth - inventory_size / 2;
+        x    = COLS/2 - inventory_size / 2;
     } else {
         return;
     }
@@ -718,7 +718,7 @@ void Screen::PrintQuickInventory() const {
     if (step == 2) {
         const int line_x = inv->Start();
         if ( line_x != 0 ) {
-            mvwvline(hudWin, 0, line_x * 2 + screenWidth - inventory_size - 1,
+            mvwvline(hudWin, 0, line_x * 2 + COLS/2 - inventory_size - 1,
                 ACS_VLINE, 3);
         }
     }
@@ -1273,11 +1273,11 @@ Screen::Screen(Player* const controlledPlayer, int&)
     , screenWidth (qMin(MinScreenSize() * 2, (COLS / 2) - ((COLS/2) & 1)))
     , screenHeight(qMin(MinScreenSize(), (LINES - 10)))
     , windows {
-        newwin(7, ACTIONS_WIDTH, LINES-7, MINIMAP_WIDTH + 1), // actions
-        newwin(7, 0, LINES-7, MINIMAP_WIDTH+ACTIONS_WIDTH+2), // notify
+        newwin(7, ACTIONS_WIDTH, screenHeight + 3, MINIMAP_WIDTH + 1), // actions
+        newwin(0, 0, screenHeight + 3, MINIMAP_WIDTH+ACTIONS_WIDTH+2), // notify
         newwin(3, 0, screenHeight, 0),                        // HUD
-        newwin(MINIMAP_HEIGHT, MINIMAP_WIDTH, LINES-7, 0),    // minimap
-        newwin(screenHeight, screenWidth, 0, (COLS/2) & 1),   // left
+        newwin(MINIMAP_HEIGHT, MINIMAP_WIDTH, screenHeight + 3, 0),    // minimap
+        newwin(screenHeight, screenWidth, 0, COLS/2 - screenWidth), // left
         newwin(screenHeight, screenWidth, 0, COLS/2)          // right
     }
     , lastNotification()
