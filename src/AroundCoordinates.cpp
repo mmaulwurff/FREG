@@ -61,20 +61,20 @@ void AroundCoordinatesN<maxSize>::fill4(const_int(x, y, z)) {
 
 LazyAroundCoordinates::LazyAroundCoordinates(const_int(x, y, z))
     : XyzInt(x, y, z)
-    , step(-1)
+    , step(0)
 {}
 
-constexpr XyzInt LazyAroundCoordinates::shifts[6];
-
-const XyzInt *LazyAroundCoordinates::getNext() {
-    ++step;
-    if (step < DIRS_COUNT) {
-        x_self += shifts[step].X();
-        y_self += shifts[step].Y();
-        z_self += shifts[step].Z();
-        return World::GetCWorld()->InBounds(x_self, y_self) ?
-            this : getNext();
-    } else {
-        return nullptr;
+const XyzInt* LazyAroundCoordinates::getNext() {
+    switch (step++) {
+    case UP:                        ++z_self; break;
+    case DOWN:                        z_self -= 2; break;
+    case NORTH:           --y_self; ++z_self; break;
+    case EAST:  ++x_self; ++y_self;           break;
+    case SOUTH: --x_self; ++y_self;           break;
+    case WEST:  --x_self; --y_self;           break;
+    default: return nullptr;
     }
+    return (World::GetCWorld()->InBounds(x_self, y_self)
+            ? this
+            : getNext());
 }
