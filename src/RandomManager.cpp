@@ -22,7 +22,16 @@
 RandomManager::RandomManager(const int seed)
     : Singleton<RandomManager>(this)
     , randomEngine(seed)
+    , engine1Bit(seed)
+    , engine2Bit(seed)
+    , engine4Bit(seed)
+    , engine8Bit(seed)
 {}
 
 int RandomManager::rand() { return GetInstance()->randomEngine(); }
+
+int RandomManager::getRandBit1() { return GetInstance()->engine1Bit(); }
+int RandomManager::getRandBit2() { return GetInstance()->engine2Bit(); }
+int RandomManager::getRandBit4() { return GetInstance()->engine4Bit(); }
+int RandomManager::getRandBit8() { return GetInstance()->engine8Bit(); }
 

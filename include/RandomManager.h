@@ -30,9 +30,18 @@ public:
 
     static int rand();
 
+    static int getRandBit1();
+    static int getRandBit2();
+    static int getRandBit4();
+    static int getRandBit8();
+
 private:
 
     std::ranlux24 randomEngine;
+    std::independent_bits_engine<std::ranlux24, 1, unsigned> engine1Bit;
+    std::independent_bits_engine<std::ranlux24, 2, unsigned> engine2Bit;
+    std::independent_bits_engine<std::ranlux24, 4, unsigned> engine4Bit;
+    std::independent_bits_engine<std::ranlux24, 8, unsigned> engine8Bit;
 
 };
 

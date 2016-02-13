@@ -86,7 +86,7 @@
         if ( Q_UNLIKELY(Sub() == ACID || Sub() == STONE) ) {
             DamageAround();
         }
-        const int random = RandomManager::rand() % 16;
+        const int random = RandomManager::getRandBit4();
         if ( Q_UNLIKELY(random < 4) ) {
             World::GetWorld()->Move(X(), Y(), Z(),
                 static_cast<dirs>(random+2));
@@ -158,7 +158,7 @@
             world->DestroyAndReplace(X(), Y(), Z());
         } else if ( Q_UNLIKELY(FIRE == Sub()) ) {
             DamageAround();
-            if ( (RandomManager::rand() % 16) || IsSubAround(WATER) ) {
+            if ( RandomManager::getRandBit4() || IsSubAround(WATER) ) {
                 Damage(2, DAMAGE_FREEZE);
             }
         }
@@ -213,7 +213,7 @@
     }
 
     void Bush::DoRareAction() {
-        if ( Q_UNLIKELY(0 == (RandomManager::rand() % 256)) ) {
+        if ( Q_UNLIKELY(0 == RandomManager::getRandBit8()) ) {
             Get(BlockFactory::NewBlock(WEAPON, SUB_NUT));
         }
     }
