@@ -1273,12 +1273,12 @@ Screen::Screen(Player* const controlledPlayer, int&)
     , screenWidth (qMin(MinScreenSize() * 2, (COLS / 2) - ((COLS/2) & 1)))
     , screenHeight(qMin(MinScreenSize(), (LINES - 10)))
     , windows {
-        newwin(7, ACTIONS_WIDTH, screenHeight + 3, MINIMAP_WIDTH + 1), // actions
-        newwin(0, 0, screenHeight + 3, MINIMAP_WIDTH+ACTIONS_WIDTH+2), // notify
-        newwin(3, 0, screenHeight, 0),                        // HUD
-        newwin(MINIMAP_HEIGHT, MINIMAP_WIDTH, screenHeight + 3, 0),    // minimap
-        newwin(screenHeight, screenWidth, 0, COLS/2 - screenWidth), // left
-        newwin(screenHeight, screenWidth, 0, COLS/2)          // right
+        newwin(7, ACTIONS_WIDTH, screenHeight+3, MINIMAP_WIDTH+1),   // actions
+        newwin(0, 0, screenHeight+3, MINIMAP_WIDTH+ACTIONS_WIDTH+2), // notify
+        newwin(3, 0, screenHeight, 0),                               // HUD
+        newwin(MINIMAP_HEIGHT, MINIMAP_WIDTH, screenHeight + 3, 0),  // minimap
+        newwin(screenHeight, screenWidth, 0, COLS/2 - screenWidth),  // left
+        newwin(screenHeight, screenWidth, 0, COLS/2)                 // right
     }
     , lastNotification()
     , inputThread()
@@ -1374,10 +1374,10 @@ Screen::~Screen() {
 
 void Screen::setSkyColor(const int partOfDay) {
     switch (partOfDay) {
-    case TIME_NIGHT:   skyColor = BLACK_BLACK;
-    case TIME_MORNING: skyColor = BLUE_BLUE;
-    case TIME_NOON:    skyColor = CYAN_CYAN;
-    case TIME_EVENING: skyColor = BLUE_BLUE;
+    case TIME_NIGHT:   skyColor = BLACK_BLACK; break;
+    case TIME_MORNING: skyColor = BLUE_BLUE;   break;
+    case TIME_NOON:    skyColor = CYAN_CYAN;   break;
+    case TIME_EVENING: skyColor = BLUE_BLUE;   break;
     }
 }
 

@@ -53,7 +53,7 @@ usage_types Text::Use(Active* const who) {
     } else {
         if ( Sub() == DIFFERENT ) { // logger
             TrString usedString = QObject::tr("Used by ");
-            log(usedString + who->FullName() + Str("."));
+            writeLog(usedString + who->FullName() + Str("."));
             return USAGE_TYPE_NO;
         }
         return USAGE_TYPE_READ;
@@ -67,13 +67,13 @@ bool Text::Inscribe(const QString& str) {
     } else {
         if ( Sub() == DIFFERENT ) {
             TrString inscribedString = QObject::tr("Inscribed: ");
-            log(inscribedString + str + Str("."));
+            writeLog(inscribedString + str + Str("."));
         }
         return false;
     }
 }
 
-void Text::log(const QString& string) const {
+void Text::writeLog(const QString& string) const {
     QFile logFile(World::WorldPath() + Str("/texts/") +
         World::GetWorld()->GetNote(noteId));
     logFile.open(QIODevice::Append | QIODevice::Text);
@@ -86,15 +86,15 @@ void Text::Damage(const int damage, const int damage_kind) {
         Block::Damage(damage, damage_kind);
     }
     TrString damageString = QObject::tr("Received damage: %1 points, type: ");
-    log(damageString.arg(damage)
-        + TrManager::GetDamageString(static_cast<damage_kinds>(damage_kind))
-        + Str("."));
+    writeLog( damageString.arg(damage)
+            + TrManager::GetDamageString(static_cast<damage_kinds>(damage_kind))
+            + Str("."));
 }
 
 void Text::ReceiveSignal(const QString& string) {
     if ( Sub() != DIFFERENT ) return;
     TrString messageString = QObject::tr("Received message: \"");
-    log(messageString + string + Str("\"."));
+    writeLog(messageString + string + Str("\"."));
 }
 
 QString Text::Description() const {

@@ -35,7 +35,7 @@ public:
     usage_types Use(Active* who) override;
 
 private:
-    void log(const QString&) const;
+    void writeLog(const QString&) const;
 };
 
 class Map : public Text {
