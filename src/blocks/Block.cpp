@@ -78,45 +78,58 @@ bool Block::IsNormal() const { return BlockFactory::IsNormal(this); }
 void Block::Damage(const int dmg, const int dmg_kind) {
     Q_ASSERT(not IsNormal());
 
-    static const struct Property {
-        const int immunity, vulnerability, destruction;
-    } properties[SUB_COUNT] = {
-        {DAMAGE_CUT | DAMAGE_HEAT | DAMAGE_PUSH_ANYWHERE,   // STONE
-            DAMAGE_MINE, DAMAGE_NO},
-        properties[STONE],                                  // MOSS_STONE
-        {DAMAGE_ANY, DAMAGE_NO, DAMAGE_NO},                 // NULLSTONE
-        properties[NULLSTONE],                              // SKY
-        properties[NULLSTONE],                              // STAR
+    struct _Property {
+        int immunity, vulnerability, destruction;
+    };
+    typedef const _Property Property;
+    static Property stone = { DAMAGE_CUT | DAMAGE_HEAT | DAMAGE_PUSH_ANYWHERE
+                            , DAMAGE_MINE
+                            , DAMAGE_NO };
+    static Property nullstone = { DAMAGE_ANY, DAMAGE_NO, DAMAGE_NO };
+    static Property meat  = { DAMAGE_PUSH_ANYWHERE, DAMAGE_THRUST, DAMAGE_NO };
+    static Property soil  = { DAMAGE_NO, DAMAGE_DIG, DAMAGE_NO };
+    static Property green = { DAMAGE_NO, DAMAGE_NO, DAMAGE_ANY };
+    static Property iron  = { DAMAGE_PUSH_ANYWHERE, DAMAGE_NO, DAMAGE_NO };
+    static Property adamantine = { DAMAGE_ANY & ~DAMAGE_TIME & ~DAMAGE_FREEZE
+                                 , DAMAGE_NO
+                                 , DAMAGE_NO };
+    static Property paper = { DAMAGE_NO, DAMAGE_HEAT, DAMAGE_NO };
+
+    static const Property properties[SUB_COUNT] = {
+        stone,                                              // STONE
+        stone,                                              // MOSS_STONE
+        nullstone,                                          // NULLSTONE
+        nullstone,                                          // SKY
+        nullstone,                                          // STAR
         {DAMAGE_ACID, DAMAGE_NO, DAMAGE_NO},                // DIAMOND
-        {DAMAGE_NO, DAMAGE_DIG, DAMAGE_NO},                 // SOIL
-        {DAMAGE_PUSH_ANYWHERE, DAMAGE_THRUST, DAMAGE_NO},   // H_MEAT
-        properties[H_MEAT],                                 // A_MEAT
+        soil,                                               // SOIL
+        meat,                                               // H_MEAT
+        meat,                                               // A_MEAT
         {DAMAGE_ACID | DAMAGE_HEAT, DAMAGE_NO,
             DAMAGE_ANY & ~(DAMAGE_ACID | DAMAGE_HEAT)},     // GLASS
         {DAMAGE_NO, DAMAGE_CUT, DAMAGE_NO},                 // WOOD
         {DAMAGE_ANY & ~DAMAGE_TIME & ~DAMAGE_ACID,
             DAMAGE_NO, DAMAGE_NO},                          // DIFFERENT
-        {DAMAGE_PUSH_ANYWHERE, DAMAGE_NO, DAMAGE_NO},       // IRON
+        iron,                                               // IRON
         {DAMAGE_ANY & ~DAMAGE_TIME & ~DAMAGE_HEAT,
             DAMAGE_NO, DAMAGE_NO},                          // WATER
-        {DAMAGE_NO, DAMAGE_NO, DAMAGE_ANY},                 // GREENERY
-        properties[SOIL],                                   // SAND
-        properties[GREENERY],                               // SUB_NUT
-        properties[GREENERY],                               // ROSE
-        properties[SOIL],                                   // CLAY
-        properties[NULLSTONE],                              // AIR
-        {DAMAGE_NO, DAMAGE_HEAT, DAMAGE_NO},                // PAPER
-        properties[IRON],                                   // GOLD
+        green,                                              // GREENERY
+        soil,                                               // SAND
+        green,                                              // SUB_NUT
+        green,                                              // ROSE
+        soil,                                               // CLAY
+        nullstone,                                          // AIR
+        paper,                                              // PAPER
+        iron,                                               // GOLD
         {DAMAGE_NO, DAMAGE_NO, DAMAGE_NO},                  // BONE
-        properties[IRON],                                   // STEEL
-        {DAMAGE_ANY & ~DAMAGE_TIME & ~DAMAGE_FREEZE,
-            DAMAGE_NO, DAMAGE_NO},                          // ADAMANTINE
-        properties[ADAMANTINE],                             // FIRE
-        properties[PAPER],                                  // COAL
-        properties[PAPER],                                  // EXPLOSIVE
+        iron,                                               // STEEL
+        adamantine,                                         // ADAMANTINE
+        adamantine,                                         // FIRE
+        paper,                                              // COAL
+        paper,                                              // EXPLOSIVE
         {DAMAGE_ACID, DAMAGE_NO, DAMAGE_NO},                // ACID
-        properties[GREENERY],                               // SUB_CLOUD
-        properties[GREENERY],                               // SUB_DUST
+        green,                                              // SUB_CLOUD
+        green,                                              // SUB_DUST
         {DAMAGE_NO, DAMAGE_NO, DAMAGE_NO}                   // SUB_PLASTIC
     };
     const Property& property = properties[Sub()];

@@ -89,7 +89,7 @@ protected:
 private:
     void ReRegister(dirs);
 
-    class Shred* shred = nullptr;
+    class Shred* shred;
 }; // Active
 
 class Falling : public Active {

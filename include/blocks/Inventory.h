@@ -85,7 +85,7 @@ protected:
     /** Because it will not be convenient to deal with inventory
      *  in console version. */
     explicit Inventory(int sz = INV_SIZE);
-    Inventory(QDataStream& str, int size = INV_SIZE);
+    explicit Inventory(QDataStream& str, int size = INV_SIZE);
     virtual ~Inventory();
 
     virtual void SaveAttributes(QDataStream& out) const;

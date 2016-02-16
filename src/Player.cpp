@@ -636,6 +636,7 @@ Player::Player()
     , usingSelfType()
     , usingInInventory()
     , creativeMode()
+    , cleaned(false)
 {
     World* const world = World::GetWorld();
     SetPlayer(0, 0, -1);

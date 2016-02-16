@@ -26,7 +26,7 @@
 class WaysTree {
 public:
 
-    constexpr WaysTree(const int16_t _start)
+    explicit constexpr WaysTree(const int16_t _start)
         : start(_start)
     {}
 

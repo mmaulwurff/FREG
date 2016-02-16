@@ -59,8 +59,10 @@ const {
     wstandend(window);
     static const int ARROWS_COLOR = COLOR_PAIR(WHITE_RED);
     // vertical
-    const chtype   up_str[] { arrows[SOUTH] | ARROWS_COLOR,   up_str[0] };
-    const chtype down_str[] { arrows[NORTH] | ARROWS_COLOR, down_str[0] };
+    static const chtype   up_arrow = arrows[SOUTH] | ARROWS_COLOR;
+    static const chtype down_arrow = arrows[NORTH] | ARROWS_COLOR;
+    static const chtype   up_str[] {   up_arrow,   up_arrow };
+    static const chtype down_str[] { down_arrow, down_arrow };
     mvwaddchnstr(window,              0, x,   up_str, 2);
     mvwaddchnstr(window, screenHeight-1, x, down_str, 2);
     static const std::wstring north_up[] {
@@ -1280,6 +1282,12 @@ Screen::Screen(Player* const controlledPlayer, int&)
         newwin(screenHeight, screenWidth, 0, COLS/2 - screenWidth),  // left
         newwin(screenHeight, screenWidth, 0, COLS/2)                 // right
     }
+    , actionWin (windows[WIN_ACTION ])
+    , notifyWin (windows[WIN_NOTIFY ])
+    , hudWin    (windows[WIN_HUD    ])
+    , minimapWin(windows[WIN_MINIMAP])
+    , leftWin   (windows[WIN_LEFT   ])
+    , rightWin  (windows[WIN_RIGHT  ])
     , lastNotification()
     , inputThread()
     , inputThreadIsRunning(true)
@@ -1290,6 +1298,7 @@ Screen::Screen(Player* const controlledPlayer, int&)
     , actionMode(static_cast<actions>(settings.value(
         Str("action_mode"), ACTION_USE).toInt()))
     , shiftFocus(settings.value(Str("focus_shift"), 0).toInt())
+    , inputActive(false)
     , OPTIONS_TABLE(OPTIONS_INIT)
       showCharDistance(settings.value(Str("show_char_distance"),10).toInt())
     , ellipsis{

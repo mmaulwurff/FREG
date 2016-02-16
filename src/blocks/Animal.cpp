@@ -135,14 +135,18 @@
 
     Animal::Animal(const kinds kind, const subs sub)
         : Falling(kind, sub)
+        , moved_in_this_turn(false)
         , breath(MAX_BREATH)
         , satiation(World::SECONDS_IN_DAY)
+        , deferredAction(nullptr)
     {}
 
     Animal::Animal(QDataStream& str, const kinds kind, const subs sub)
         : Falling(str, kind, sub)
+        , moved_in_this_turn(false)
         , breath()
         , satiation()
+        , deferredAction(nullptr)
     {
         str >> breath >> satiation;
     }

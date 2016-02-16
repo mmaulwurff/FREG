@@ -159,11 +159,13 @@ bool Active::TryDestroy(const int x, const int y, const int z) const {
 Active::Active(const kinds kind, const subs sub)
     : Block(kind, sub)
     , Xyz()
+    , shred(nullptr)
 {}
 
 Active::Active(QDataStream& str, const kinds kind, const subs sub)
     : Block(str, kind, sub)
     , Xyz()
+    , shred(nullptr)
 {}
 
 bool Active::Gravitate(const int range, int bottom, int top,

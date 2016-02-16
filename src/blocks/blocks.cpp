@@ -309,12 +309,14 @@
         : Active(kind, sub)
         , shifted(false)
         , locked(false)
+        , movable(NOT_MOVABLE)
     {}
 
     Door::Door(QDataStream& stream, const kinds kind, const subs sub)
         : Active(stream, kind, sub)
         , shifted()
         , locked()
+        , movable(NOT_MOVABLE)
     {
         stream >> shifted >> locked;
     }
@@ -421,10 +423,14 @@
 
     Clock::Clock(const kinds kind, const subs sub)
         : Active(kind, sub)
+        , alarmTime(-1)
+        , timerTime(-1)
     {}
 
     Clock::Clock(QDataStream& str, const kinds kind, const subs sub)
         : Active(str, kind, sub)
+        , alarmTime()
+        , timerTime()
     {
         str >> alarmTime >> timerTime;
     }

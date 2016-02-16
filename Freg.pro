@@ -40,6 +40,13 @@ unix {
     PRE_TARGETDEPS += $$PWD/pdcurses/libcurses.lib
 }
 
+linux-icc-64 {
+    QMAKE_CXXFLAGS -= \
+        -fstrict-enums -Wcast-align -Wredundant-decls -Wdouble-promotion \
+        -Wlogical-op -Wold-style-cast -O3
+    QMAKE_CXXFLAGS += -wd2015,2012,2017
+}
+
 INCLUDEPATH += include include/blocks include/screens
 
 HEADERS +=  $$PWD/include/*.h \

@@ -97,7 +97,9 @@ Shred::Shred( const int shred_x
             , const qint64 longi
             , const qint64 lati)
     : Weather(WEATHER_CLEAR)
+    , blocks()
     , lightMap { { {0} } }
+    , opaqueHeightMap()
     , longitude(longi)
     , latitude(lati)
     , shredX(shred_x)
@@ -759,7 +761,7 @@ int  Shred::CoordinateIterator::X() const { return x; }
 int  Shred::CoordinateIterator::Y() const { return y; }
 bool Shred::CoordinateIterator::notEnd() const { return y != SHRED_WIDTH; }
 
-Shred::InitialBlockColumn::InitialBlockColumn() {
+Shred::InitialBlockColumn::InitialBlockColumn() : pattern() {
     pattern[0] = Normal(NULLSTONE);
     std::fill_n(pattern + 1, HEIGHT - 2, Normal(AIR));
     pattern[HEIGHT - 1] = Normal(SKY);

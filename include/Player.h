@@ -194,7 +194,7 @@ private:
     int usingSelfType;
     int usingInInventory;
     bool creativeMode;
-    bool cleaned = false;
+    bool cleaned;
 };
 
 #endif // PLAYER_H

@@ -174,12 +174,12 @@ private:
     SCREEN* const cursesScreen;
     int screenWidth, screenHeight;
     WINDOW* const windows[WIN_COUNT];
-    WINDOW* const& actionWin  = windows[WIN_ACTION ];
-    WINDOW* const& notifyWin  = windows[WIN_NOTIFY ];
-    WINDOW* const& hudWin     = windows[WIN_HUD    ];
-    WINDOW* const& minimapWin = windows[WIN_MINIMAP];
-    WINDOW* const& leftWin    = windows[WIN_LEFT   ];
-    WINDOW* const& rightWin   = windows[WIN_RIGHT  ];
+    WINDOW* const& actionWin;
+    WINDOW* const& notifyWin;
+    WINDOW* const& hudWin;
+    WINDOW* const& minimapWin;
+    WINDOW* const& leftWin;
+    WINDOW* const& rightWin;
     mutable QString lastNotification;
     std::unique_ptr<std::thread> inputThread;
     std::atomic<bool> inputThreadIsRunning;
@@ -188,7 +188,7 @@ private:
     actions actionMode;
     /// Can be -1, 0, 1 for low, normal, and high focus.
     int shiftFocus;
-    mutable bool inputActive = false;
+    mutable bool inputActive;
     OPTIONS_TABLE(OPTIONS_DECLARE)
     int showCharDistance;
     const wchar_t ellipsis[4];

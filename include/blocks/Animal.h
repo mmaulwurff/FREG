@@ -56,12 +56,12 @@ protected:
     void SaveAttributes(QDataStream& out) const override;
     void EatAround();
 
-    bool moved_in_this_turn = false;
+    bool moved_in_this_turn;
 
 private:
     quint8  breath;
     quint16 satiation;
-    class DeferredAction* deferredAction = nullptr;
+    class DeferredAction* deferredAction;
 }; // class Animal
 
 // Rabbit

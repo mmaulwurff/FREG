@@ -59,8 +59,8 @@ void Accumulator::Damage(const int dmg, const int dmg_kind) {
     }
 }
 
-damage_kinds Accumulator::EnergyType(const int substance) {
-    switch ( substance ) {
+damage_kinds Accumulator::EnergyType(const int sub) {
+    switch ( sub ) {
     default:    return DAMAGE_HEAT;
     case IRON:
     case ADAMANTINE:

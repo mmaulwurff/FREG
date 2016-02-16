@@ -125,7 +125,7 @@ protected:
 private:
     bool shifted;
     bool locked;
-    push_reaction movable = NOT_MOVABLE;
+    push_reaction movable;
 };
 
 class Clock : public Active {
@@ -146,8 +146,8 @@ protected:
     void SaveAttributes(QDataStream&) const override;
 
 private:
-    int alarmTime = -1;
-    int timerTime = -1;
+    int alarmTime;
+    int timerTime;
 };
 
 /// The Signaller class notifies neighbours about impact.
