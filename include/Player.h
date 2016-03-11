@@ -26,6 +26,7 @@
 #include <QObject>
 
 class Block;
+class ActiveWatcher;
 
 class Player final : public QObject, private Xyz {
     /** @class Player Player.h
@@ -195,6 +196,7 @@ private:
     int usingInInventory;
     bool creativeMode;
     bool cleaned;
+    ActiveWatcher* const activeWatcher;
 };
 
 #endif // PLAYER_H

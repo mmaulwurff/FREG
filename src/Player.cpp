@@ -27,6 +27,7 @@
 #include "blocks/Animal.h"
 #include "blocks/Inventory.h"
 #include "Id.h"
+#include "ActiveWatcher.h"
 
 #include <QSettings>
 #include <QTextStream>
@@ -61,7 +62,7 @@ qint64 Player::GetLatitude()  const { return GetShred()->Latitude();  }
 
 void Player::SetCreativeMode(const bool creative_on) {
     creativeMode = creative_on;
-    player->disconnect();
+    player->SetWatcher(nullptr);
     SaveState();
     Animal* const previous_player = player;
     SetPlayer(X(), Y(), Z());
@@ -599,16 +600,7 @@ void Player::SetPlayer(int x, int y, int z) {
             world->Build(player, x, y, Z());
         }
     }
-    connect(player, &QObject::destroyed, this, &Player::BlockDestroy,
-        Qt::DirectConnection);
-    connect(player, &Animal::Moved, this, &Player::CheckOverstep,
-        Qt::DirectConnection);
-    connect(player, &Animal::Updated, this, &Player::Updated,
-        Qt::DirectConnection);
-    connect(player, &Animal::ReceivedText, world, &World::Notify,
-        Qt::DirectConnection);
-    connect(player, &Animal::CauseTeleportation,
-        world, &World::ActivateFullReload, Qt::DirectConnection);
+    player->SetWatcher(activeWatcher);
 } // Player::SetPlayer(int x, y, z)
 
 void Player::Disconnect() {
@@ -617,8 +609,8 @@ void Player::Disconnect() {
     } else {
         SaveState();
         GetShred()->PutBlock(BlockFactory::Normal(AIR), x_self, y_self, z_self);
+        player->SetWatcher(nullptr);
         player->Unregister();
-        player->disconnect();
     }
 }
 
@@ -637,6 +629,7 @@ Player::Player()
     , usingInInventory()
     , creativeMode()
     , cleaned(false)
+    , activeWatcher(new ActiveWatcher(this))
 {
     World* const world = World::GetWorld();
     SetPlayer(0, 0, -1);
@@ -646,6 +639,17 @@ Player::Player()
         Qt::DirectConnection);
     connect(world, &World::StartReloadAll, this, &Player::Disconnect,
         Qt::DirectConnection);
+
+    connect(activeWatcher, &ActiveWatcher::Destroyed,
+            this, &Player::BlockDestroy, Qt::DirectConnection);
+    connect(activeWatcher, &ActiveWatcher::Moved, this, &Player::CheckOverstep,
+        Qt::DirectConnection);
+    connect(activeWatcher, &ActiveWatcher::Updated, this, &Player::Updated,
+        Qt::DirectConnection);
+    connect(activeWatcher, &ActiveWatcher::ReceivedText, world, &World::Notify,
+        Qt::DirectConnection);
+    connect(activeWatcher, &ActiveWatcher::CauseTeleportation,
+        world, &World::ActivateFullReload, Qt::DirectConnection);
 }
 
 Player::~Player() {

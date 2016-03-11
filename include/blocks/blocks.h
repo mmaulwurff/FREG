@@ -44,8 +44,8 @@ public:
 };
 
 class Liquid : public Falling {
-    Q_OBJECT
 public:
+
     using Falling::Falling;
 
     int ShouldAct() const override;
@@ -65,8 +65,8 @@ protected:
 };
 
 class Grass : public Active {
-    Q_OBJECT
 public:
+
     using Active::Active;
 
     int  ShouldAct() const override;
@@ -85,10 +85,10 @@ private:
 };
 
 class Bush : public Active, public Inventory {
-    Q_OBJECT
-
     static const int BUSH_SIZE = 3;
+
 public:
+
     BLOCK_CONSTRUCTORS(Bush)
 
     int  Weight() const override;
@@ -107,8 +107,8 @@ protected:
 };
 
 class Door : public Active {
-    Q_OBJECT
 public:
+
     BLOCK_CONSTRUCTORS(Door)
 
     int  ShouldAct() const override;
@@ -129,8 +129,8 @@ private:
 };
 
 class Clock : public Active {
-    Q_OBJECT
 public:
+
     BLOCK_CONSTRUCTORS(Clock)
 
     int  Weight() const override;
@@ -152,8 +152,8 @@ private:
 
 /// The Signaller class notifies neighbours about impact.
 class Signaller : public Active {
-    Q_OBJECT
 public:
+
     using Active::Active;
 
     QString  FullName()    const override;
@@ -168,8 +168,8 @@ private:
 };
 
 class Telegraph : public Active {
-    Q_OBJECT
 public:
+
     BLOCK_CONSTRUCTORS(Telegraph)
 
     int ShouldAct() const override;

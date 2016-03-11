@@ -49,7 +49,7 @@ bool Dwarf::IsCreator() const { return DIFFERENT == Sub(); }
 bool Dwarf::Drop(const int src, const int dest, const int num,
     Inventory *const to)
 {
-    emit Updated();
+    Updated();
     return Inventory::Drop(src, dest, num, to);
 }
 
@@ -61,7 +61,7 @@ inner_actions Dwarf::ActInner() {
 }
 
 QString Dwarf::FullName() const {
-    TrString creatorString = tr("Creator");
+    TrString creatorString = QObject::tr("Creator");
     return (IsCreator() ?
         creatorString : Animal::FullName());
 }
@@ -157,18 +157,18 @@ void Dwarf::SaveAttributes(QDataStream& out) const {
 }
 
 bool Dwarf::Inscribe(const QString&) {
-    TrString notTouchString = tr("Don't touch me!");
+    TrString notTouchString = QObject::tr("Don't touch me!");
     SendSignalAround(notTouchString);
     return false;
 }
 
 QString Dwarf::InvFullName(const int slot_number) const {
     static const QString invFullNames[] = {
-        tr("-head-"),
-        tr("-body-"),
-        tr("-legs-"),
-        tr("-right hand-"),
-        tr("-left  hand-")
+        QObject::tr("-head-"),
+        QObject::tr("-body-"),
+        QObject::tr("-legs-"),
+        QObject::tr("-right hand-"),
+        QObject::tr("-left  hand-")
     };
     return ( IsEmpty(slot_number) && slot_number < SPECIAL_SLOTS_COUNT ) ?
         invFullNames[slot_number] :

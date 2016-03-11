@@ -23,8 +23,8 @@
 #include "blocks/Active.h"
 
 class Illuminator final : public Active {
-    Q_OBJECT
 public:
+
     BLOCK_CONSTRUCTORS(Illuminator)
 
     int  DamageKind() const override;

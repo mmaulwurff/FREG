@@ -57,8 +57,8 @@
     }
 
     QString Container::FullName() const {
-        TrString ironName  = tr("Locker");
-        TrString waterName = tr("Fridge");
+        TrString ironName  = QObject::tr("Locker");
+        TrString waterName = QObject::tr("Fridge");
 
         switch ( Sub() ) {
         case IRON:      return ironName;
@@ -138,8 +138,8 @@
     }
 
     QString Box::FullName() const {
-        TrString differentName = tr("Pile");
-        TrString meatName      = tr("Corpse (%1)");
+        TrString differentName = QObject::tr("Pile");
+        TrString meatName      = QObject::tr("Corpse (%1)");
 
         switch ( Sub() ) {
         default:        return Block::FullName();
@@ -229,8 +229,8 @@
     }
 
     QString Workbench::InvFullName(const int slot_number) const {
-        TrString productString  = tr("-product-");
-        TrString materialString = tr("-material-");
+        TrString productString  = QObject::tr("-product-");
+        TrString materialString = QObject::tr("-material-");
 
         return IsEmpty(slot_number) ?
             (( slot_number < Start() ) ? productString : materialString) :
@@ -299,7 +299,7 @@
     int Converter::LightRadius() const { return lightRadius; }
 
     QString Converter::InvFullName(const int slot_number) const {
-        TrString fuelString = tr("-fuel-");
+        TrString fuelString = QObject::tr("-fuel-");
         return IsEmpty(slot_number) ?
             fuelString : Inventory::InvFullName(slot_number);
     }
@@ -339,8 +339,8 @@
     }
 
     QString Converter::FullName() const {
-        TrString stoneName    = tr("Furnace");
-        TrString chargeString = tr(" (charge for %1 s)");
+        TrString stoneName    = QObject::tr("Furnace");
+        TrString chargeString = QObject::tr(" (charge for %1 s)");
 
         QString name;
         switch ( Sub() ) {

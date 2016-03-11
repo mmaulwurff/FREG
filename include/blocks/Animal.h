@@ -23,8 +23,8 @@
 #include "blocks/Active.h"
 
 class Animal : public Falling {
-    Q_OBJECT
 public:
+
     BLOCK_CONSTRUCTORS(Animal)
     ~Animal();
 
@@ -48,53 +48,57 @@ public:
 
     static const int MAX_BREATH = 60;
 
-signals:
-    void Updated() const;
     void CauseTeleportation() const;
 
 protected:
+
+    void Updated() const;
+
     void SaveAttributes(QDataStream& out) const override;
     void EatAround();
 
     bool moved_in_this_turn;
 
 private:
+
     quint8  breath;
     quint16 satiation;
     class DeferredAction* deferredAction;
 }; // class Animal
 
 // Rabbit
-
 class Rabbit : public Animal {
-    Q_OBJECT
 public:
+
     using Animal::Animal;
 
     void ActFrequent() override;
 
 protected:
+
     void DoRareAction() override;
     int  Attractive(int sub) const override;
 
 private:
+
     int NutritionalValue(subs) const override;
 }; // class Rabbit
 
 // Predator
-
 class Predator : public Animal {
-    Q_OBJECT
 public:
+
     using Animal::Animal;
 
     int DamageLevel() const override;
     void ActFrequent() override;
 
 protected:
+
     int  Attractive(int sub) const override;
 
 private:
+
     int NutritionalValue(subs) const override;
 }; // class Predator
 

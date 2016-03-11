@@ -29,7 +29,7 @@ Filter::Filter(QDataStream& str, const kinds kind, const subs sub) :
 {}
 
 QString Filter::InvFullName(const int slot_number) const {
-    TrString exampleString = tr("-example-");
+    TrString exampleString = QObject::tr("-example-");
     return ( ( slot_number > 0 ) ?
         Container::InvFullName(slot_number) :
         (IsEmpty(0) ?

@@ -47,10 +47,10 @@ int  Illuminator::DamageKind() const {
 }
 
 QString Illuminator::FullName() const {
-    TrString woodName    = tr("Torch, fuel: %1");
-    TrString stoneName   = tr("Flint, charges: %1");
-    TrString glassName   = tr("Flashlight, battery: %1");
-    TrString defaultName = tr("%1 (%2), fuel: %3");
+    TrString woodName    = QObject::tr("Torch, fuel: %1");
+    TrString stoneName   = QObject::tr("Flint, charges: %1");
+    TrString glassName   = QObject::tr("Flashlight, battery: %1");
+    TrString defaultName = QObject::tr("%1 (%2), fuel: %3");
 
     switch ( Sub() ) {
     case WOOD:  return woodName .arg(fuelLevel);

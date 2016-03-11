@@ -30,7 +30,6 @@
  *    inside;
  *  - container from other substances are different chests. */
 class Container : public Active, public Inventory {
-    Q_OBJECT
 public:
     Container(kinds, subs, int size = INV_SIZE);
     Container(QDataStream&, kinds, subs, int size = INV_SIZE);
@@ -57,7 +56,6 @@ protected:
  *  when it can.
  *  Also, pile is box of substance DIFFERENT, it will disappear if empty.*/
 class Box : public Falling, public Inventory {
-    Q_OBJECT
 public:
     BLOCK_CONSTRUCTORS(Box)
 
@@ -77,7 +75,6 @@ protected:
 /** Workbench allows craft from multiple sources. There can be up to
  *  2 products. Also can be used as container of smaller size. */
 class Workbench : public Container {
-    Q_OBJECT
 public:
     BLOCK_CONSTRUCTORS(Workbench)
 
@@ -94,7 +91,6 @@ private:
 
 /// Converter blocks convert fuel into energy.
 class Converter : public Container {
-    Q_OBJECT
 public:
     BLOCK_CONSTRUCTORS(Converter)
 

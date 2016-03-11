@@ -24,8 +24,8 @@
 #include <QString>
 
 class Pipe : public Active {
-    Q_OBJECT
 public:
+
     BLOCK_CONSTRUCTORS(Pipe)
 
     int  ShouldAct() const override;

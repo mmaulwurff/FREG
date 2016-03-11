@@ -21,20 +21,22 @@
 #define TELEPORT_H
 
 #include "blocks/Active.h"
+#include <QString>
 
 class Teleport : public Active {
-    Q_OBJECT
-
 public:
+
     BLOCK_CONSTRUCTORS(Teleport)
 
     bool Inscribe(const QString&) override;
     void Damage(int damage, int damage_kind) override;
 
 protected:
+
     void SaveAttributes(QDataStream&) const override;
 
 private:
+
     QString targetWorldName;
     qint64 targetLongitude, targetLatitude;
 };

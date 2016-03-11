@@ -25,6 +25,7 @@
 #include "TrManager.h"
 #include "AroundCoordinates.h"
 #include "RandomManager.h"
+#include "ActiveWatcher.h"
 
 #include <QDataStream>
 
@@ -59,7 +60,7 @@
         if ( GetDurability() <= 0 ) {
             World::GetWorld()->DestroyAndReplace(X(), Y(), Z());
         } else {
-            emit Updated();
+            Updated();
         }
     }
 
@@ -67,10 +68,10 @@
         const int last_durability = GetDurability();
         Falling::Damage(dmg, dmg_kind);
         if ( last_durability != GetDurability() ) {
-            TrString hungerString = tr("You weaken from hunger!");
-            TrString burnString   = tr("You burn!");
-            TrString chokeString  = tr("You choke without air!");
-            TrString damageString = tr("Received damage!");
+            TrString hungerString = QObject::tr("You weaken from hunger!");
+            TrString burnString   = QObject::tr("You burn!");
+            TrString chokeString  = QObject::tr("You choke without air!");
+            TrString damageString = QObject::tr("Received damage!");
 
             switch ( dmg_kind ) {
             case DAMAGE_HUNGER: ReceiveSignal(hungerString); break;
@@ -78,7 +79,7 @@
             case DAMAGE_BREATH: ReceiveSignal(chokeString);  break;
             default:            ReceiveSignal(damageString); break;
             }
-            emit Updated();
+            Updated();
         }
     }
 
@@ -91,14 +92,14 @@
         const int value = NutritionalValue(sub);
         if ( value ) {
             satiation += value;
-            TrString ateString = tr("Ate %1.");
+            TrString ateString = QObject::tr("Ate %1.");
             ReceiveSignal(ateString.arg(TrManager::SubName(sub)));
             if ( World::SECONDS_IN_DAY < satiation ) {
                 satiation = 1.1 * World::SECONDS_IN_DAY;
-                TrString gorgedString = tr("You have gorged yourself!");
+                TrString gorgedString = QObject::tr("You have gorged yourself!");
                 ReceiveSignal(gorgedString);
             }
-            emit Updated();
+            Updated();
             return true;
         } else {
             return false;
@@ -154,6 +155,11 @@
     Animal::~Animal() {
         delete deferredAction;
         deferredAction = nullptr;
+    }
+
+    void Animal::Updated() const { if (watcher) watcher->Updated(); }
+    void Animal::CauseTeleportation() const {
+        if (watcher) watcher->CauseTeleportation();
     }
 
 // Rabbit::section

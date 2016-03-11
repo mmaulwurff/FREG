@@ -72,7 +72,7 @@ void Teleport::Damage(const int damage, const int damage_kind) {
             (world->NumShreds() / 2 + 1) * SHRED_WIDTH,
             (world->NumShreds() / 2 + 1) * SHRED_WIDTH, 0);
         Animal* const animal = world->GetBlock(x, y, z)->IsAnimal();
-        if ( animal ) emit animal->CauseTeleportation();
+        if ( animal ) animal->CauseTeleportation();
     } else {
         Block::Damage(damage, damage_kind);
     }

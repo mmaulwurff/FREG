@@ -121,8 +121,8 @@
     }
 
     QString Liquid::FullName() const {
-        TrString stoneName = tr("Lava");
-        TrString meatName  = tr("Blood");
+        TrString stoneName = QObject::tr("Lava");
+        TrString meatName  = QObject::tr("Blood");
 
         switch ( Sub() ) {
         case STONE:  return stoneName;
@@ -173,7 +173,7 @@
     }
 
     QString Grass::FullName() const {
-        TrString fireName = tr("Fire");
+        TrString fireName = QObject::tr("Fire");
 
         switch ( Sub() ) {
         case GREENERY: return TrManager::KindName(GRASS);
@@ -183,8 +183,8 @@
     }
 
     QString Grass::Description() const {
-        TrString growDescription = tr("It grows on soil.");
-        TrString fireDescription = tr("It burns");
+        TrString growDescription = QObject::tr("It grows on soil.");
+        TrString fireDescription = QObject::tr("It burns");
 
         return (( Sub() != FIRE ) ?
             growDescription : fireDescription);
@@ -208,7 +208,7 @@
     inner_actions Bush::ActInner() { return INNER_ACTION_NONE; }
 
     QString Bush::Description() const {
-        TrString description = tr("Food and wood source.");
+        TrString description = QObject::tr("Food and wood source.");
         return description;
     }
 
@@ -284,7 +284,7 @@
     push_reaction Door::PushResult(dirs) const { return movable; }
 
     QString Door::FullName() const {
-        TrString lockedName = tr("Locked door");
+        TrString lockedName = QObject::tr("Locked door");
         return Str("%1 (%2)").
             arg(locked ? lockedName : TrManager::KindName(DOOR)).
             arg(TrManager::SubName(Sub()));
@@ -324,7 +324,7 @@
 // Clock::
     usage_types Clock::Use(Active* const who) {
         if ( who ) {
-            TrString outerTimeString = tr("Outer time is %1.");
+            TrString outerTimeString = QObject::tr("Outer time is %1.");
             who->ReceiveSignal( (GetNote().left(4) == Str("real")) ?
                 outerTimeString.arg(QTime::currentTime().toString()) :
                 World::GetCWorld()->TimeOfDayStr() );
@@ -335,7 +335,7 @@
     }
 
     QString Clock::FullName() const {
-        TrString explosiveName = tr("Bomb");
+        TrString explosiveName = QObject::tr("Bomb");
         return (( Sub() == EXPLOSIVE ) ? explosiveName : Block::FullName());
     }
 
@@ -357,7 +357,7 @@
         const int current_time = world->TimeOfDay();
         int notify_flag = 1;
         if ( alarmTime == current_time ) {
-            TrString alarmString = tr("Alarm. %1");
+            TrString alarmString = QObject::tr("Alarm. %1");
             Block::Inscribe(alarmString.arg(world->TimeOfDayStr()));
             ++notify_flag;
         } else if ( timerTime > 0 )  {
@@ -365,7 +365,7 @@
             Block::Inscribe(QString::number(timerTime));
         } else if ( timerTime == 0 ) {
             timerTime = -1;
-            TrString timerString = tr("Timer fired. %1");
+            TrString timerString = QObject::tr("Timer fired. %1");
             Block::Inscribe(timerString.arg(world->TimeOfDayStr()));
             ++notify_flag;
         }
@@ -374,10 +374,10 @@
                 INNER_ACTION_EXPLODE : INNER_ACTION_ONLY;
         }
 
-        TrString morningString = tr("Morning has come.");
-        TrString dayString     = tr("Day has come.");
-        TrString eveningString = tr("Evening has come.");
-        TrString nightString   = tr("Night has come.");
+        TrString morningString = QObject::tr("Morning has come.");
+        TrString dayString     = QObject::tr("Day has come.");
+        TrString eveningString = QObject::tr("Evening has come.");
+        TrString nightString   = QObject::tr("Night has come.");
         switch ( current_time ) {
         default: --notify_flag; break;
         case World::END_OF_NIGHT:   Inscribe(morningString); break;
@@ -460,7 +460,7 @@
     }
 
     void Signaller::Signal(const int level) const {
-        TrString dingString = tr("^ Ding! ^");
+        TrString dingString = QObject::tr("^ Ding! ^");
 
         switch ( Sub() ) {
         case WOOD:
@@ -472,8 +472,8 @@
     }
 
     QString Signaller::FullName() const {
-        TrString ironName  = tr("Bell");
-        TrString stoneName = tr("Button");
+        TrString ironName  = QObject::tr("Bell");
+        TrString stoneName = QObject::tr("Button");
 
         switch ( Sub() ) {
         case IRON:  return ironName;
@@ -484,7 +484,7 @@
     }
 
     QString Signaller::Description() const {
-        TrString description = tr("Reacts on touch.");
+        TrString description = QObject::tr("Reacts on touch.");
         return description;
     }
 

@@ -22,7 +22,6 @@
 
 #include "blocks/Block.h"
 #include "Xyz.h"
-#include <QObject>
 
 /// Frequency can be "never", "rare", "rare | first", "rare | second".
 enum active_frequency {
@@ -40,9 +39,11 @@ enum inner_actions {
     INNER_ACTION_MESSAGE
 };
 
-class Active : public QObject, public Block, protected Xyz {
-    Q_OBJECT
+class ActiveWatcher;
+
+class Active : public Block, protected Xyz {
 public:
+
     BLOCK_CONSTRUCTORS(Active)
     ~Active() override;
 
@@ -68,11 +69,10 @@ public:
     void Farewell();
     void Unregister();
 
-signals:
-    void Moved(int) const;
-    void ReceivedText(const QString&) const;
+    void SetWatcher(ActiveWatcher* watcher);
 
 protected:
+
     void UpdateLightRadius(int old_radius);
     void SendSignalAround(const QString&) const;
     void DamageAround() const;
@@ -86,15 +86,21 @@ protected:
     virtual void DoRareAction();
     virtual int  Attractive(int sub) const;
 
+    class ActiveWatcher* watcher;
+
 private:
+
+    void Moved(int) const;
+    void ReceivedText(const QString&) const;
+
     void ReRegister(dirs);
 
     class Shred* shred;
 }; // Active
 
 class Falling : public Active {
-    Q_OBJECT
 public:
+
     BLOCK_CONSTRUCTORS(Falling)
     ~Falling() override;
 
@@ -108,11 +114,13 @@ public:
     void SetFalling(bool set);
 
 protected:
+
     void SaveAttributes(QDataStream& out) const override;
 
 private:
+
     quint8 fallHeight;
     bool falling;
-}; // Falling
+};
 
 #endif // ACTIVE_H

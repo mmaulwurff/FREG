@@ -23,15 +23,20 @@
 #include "blocks/Inventory.h"
 #include "TrManager.h"
 #include "AroundCoordinates.h"
+#include "ActiveWatcher.h"
 
 #include <QDataStream>
 #include <QDebug>
+#include <QObject>
 
 #include <cstdlib>
 
 // Active section
 
-Active::~Active() { Unregister(); }
+Active::~Active() {
+    Unregister();
+    if (watcher) watcher->Destroyed();
+}
 
 int Active::X() const
 { return GetShred()->ShredX() << SHRED_WIDTH_BITSHIFT | Xyz::X(); }
@@ -44,10 +49,15 @@ const XyzInt Active::GetXyz() const { return {X(), Y(), Z()}; }
 int  Active::ShouldAct() const { return FREQUENT_NEVER; }
 bool Active::IsInside()  const { return shred == nullptr; }
 int  Active::Attractive(int) const { return 0; }
-void Active::ReceiveSignal(const QString& str) { emit ReceivedText(str); }
+void Active::ReceiveSignal(const QString& str) { ReceivedText(str); }
 Active* Active::ActiveBlock() { return this; }
 inner_actions Active::ActInner() { return INNER_ACTION_ONLY; }
 const Active *Active::ActiveBlockConst() const { return this; }
+
+void Active::SetWatcher(ActiveWatcher* const w) {
+    watcher = w;
+    if (w) watcher->SetWatched(this);
+}
 
 void Active::UpdateLightRadius(const int old_radius) {
     if ( IsInside() ) return;
@@ -92,7 +102,7 @@ void Active::ActRare() {
                 Active* const active =
                     inv->ShowBlockInSlot(i, j)->ActiveBlock();
                 if ( active->ActInner() == INNER_ACTION_MESSAGE ) {
-                    TrString signalString = tr("%1 in slot '%2': %3");
+                    TrString signalString = QObject::tr("%1 in slot '%2': %3");
                     ReceiveSignal(signalString
                         .arg(inv->InvFullName(i))
                         .arg(char('a'+i))
@@ -121,7 +131,7 @@ void Active::Move(const dirs dir) {
     case SOUTH: ++y_self; ReRegister(SOUTH); break;
     case WEST:  --x_self; ReRegister(WEST ); break;
     }
-    emit Moved(dir);
+    Moved(dir);
 }
 
 void Active::ReRegister(const dirs dir) {
@@ -159,12 +169,14 @@ bool Active::TryDestroy(const int x, const int y, const int z) const {
 Active::Active(const kinds kind, const subs sub)
     : Block(kind, sub)
     , Xyz()
+    , watcher(nullptr)
     , shred(nullptr)
 {}
 
 Active::Active(QDataStream& str, const kinds kind, const subs sub)
     : Block(str, kind, sub)
     , Xyz()
+    , watcher(nullptr)
     , shred(nullptr)
 {}
 
@@ -219,6 +231,14 @@ bool Active::IsSubAround(const int sub) const {
     return false;
 }
 
+void Active::Moved(const int direction) const {
+    if (watcher) watcher->Moved(direction);
+}
+
+void Active::ReceivedText(const QString& text) const {
+    if (watcher) watcher->ReceivedText(text);
+}
+
 // Falling section
 
 Falling::Falling(const kinds kind, const subs sub)
@@ -243,7 +263,7 @@ void Falling::SaveAttributes(QDataStream& out) const
 { out << fallHeight << falling; }
 
 QString Falling::FullName() const {
-    TrString stoneNameString = tr("Masonry");
+    TrString stoneNameString = QObject::tr("Masonry");
     switch ( Sub() ) {
     default:    return TrManager::SubNameUpper(Sub());
     case WATER: return TrManager::KindName(FALLING);

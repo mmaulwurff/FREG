@@ -19,6 +19,7 @@
 
 #include "blocks/Weapons.h"
 #include "TrManager.h"
+#include <QObject>
 
 QString Weapon::FullName() const {
     if ( Kind() != WEAPON ) return Block::FullName();

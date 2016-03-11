@@ -24,8 +24,8 @@
 #include "blocks/Active.h"
 
 class RainMachine : public Active, public Inventory {
-    Q_OBJECT
 public:
+
     BLOCK_CONSTRUCTORS(RainMachine)
 
     void DoRareAction() override;

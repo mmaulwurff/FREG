@@ -23,14 +23,15 @@
 #include "blocks/Containers.h"
 
 class Filter : public Container {
-    Q_OBJECT
 public:
+
     BLOCK_CONSTRUCTORS(Filter)
 
     bool Get(Block* block, int start) override;
     QString InvFullName(int slot_number) const override;
 
 private:
+
     static const int FILTER_INV_SIZE = 2;
 };
 
