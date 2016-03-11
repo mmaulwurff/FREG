@@ -47,7 +47,7 @@ linux-icc-64 {
     QMAKE_CXXFLAGS += -wd2015,2012,2017
 }
 
-INCLUDEPATH += include include/blocks include/screens
+INCLUDEPATH += include
 
 HEADERS +=  $$PWD/include/*.h \
      $$PWD/include/blocks/*.h \

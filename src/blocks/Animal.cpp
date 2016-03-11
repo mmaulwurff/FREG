@@ -96,8 +96,8 @@
             ReceiveSignal(ateString.arg(TrManager::SubName(sub)));
             if ( World::SECONDS_IN_DAY < satiation ) {
                 satiation = 1.1 * World::SECONDS_IN_DAY;
-                TrString gorgedString = QObject::tr("You have gorged yourself!");
-                ReceiveSignal(gorgedString);
+                TrString gorged = QObject::tr("You have gorged yourself!");
+                ReceiveSignal(gorged);
             }
             Updated();
             return true;

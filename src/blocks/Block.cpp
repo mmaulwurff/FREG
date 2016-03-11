@@ -18,9 +18,9 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "blocks/Block.h"
+#include "blocks/Inventory.h"
 #include "BlockFactory.h"
 #include "World.h"
-#include "Inventory.h"
 #include "TrManager.h"
 #include <QDataStream>
 

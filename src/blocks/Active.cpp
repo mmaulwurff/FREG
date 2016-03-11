@@ -231,8 +231,8 @@ bool Active::IsSubAround(const int sub) const {
     return false;
 }
 
-void Active::Moved(const int direction) const {
-    if (watcher) watcher->Moved(direction);
+void Active::Moved(const int dir) const {
+    if (watcher) watcher->Moved(dir);
 }
 
 void Active::ReceivedText(const QString& text) const {

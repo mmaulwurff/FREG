@@ -123,7 +123,7 @@ void Shred::Hill(const bool dead) {
         int random = rand();
         RandomDrop(random % 4, BLOCK, ROSE);
         RandomDrop((random >>= 4) % 4, RABBIT, A_MEAT);
-        RandomDrop((random >>= 4) % 4, BUSH, WOOD);
+        RandomDrop((random >>  4) % 4, BUSH, WOOD);
         PlantGrass();
     }
 }
