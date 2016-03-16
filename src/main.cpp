@@ -25,6 +25,7 @@
 #include "TrManager.h"
 #include "screens/CursedScreen.h"
 #include "RandomManager.h"
+#include "Logger.h"
 
 #include <QDir>
 #include <QSettings>
@@ -118,9 +119,11 @@ int main(int argc, char** const argv) {
         return EXIT_SUCCESS;
     }
 
-    // unused as local variables, but important things are in constructors.
+    // Initiate singletons.
+    // Unused as local variables, side effects in constructors.
     BlockFactory blockManager;
     CraftManager craftManager;
+    Logger logger(home_path + "log.txt");
 
     RandomManager randomManager(seed);
     bool world_error = false;

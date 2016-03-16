@@ -79,31 +79,40 @@ private:
 
     static Block normals[SUB_COUNT];
 
-    // Block registration system:
+    // Block registration system
+    class FuncArrays {
+    public:
 
-    /// Array of pointers to Create functions.
-    Block* (* creates[KIND_COUNT])(subs sub);
-    /// Array of pointers to Load functions.
-    Block* (*   loads[KIND_COUNT])(QDataStream&, subs sub);
+        FuncArrays();
 
-    Inventory* (* castsToInventory[KIND_COUNT])(Block*);
+        /// Array of pointers to Create functions.
+        Block* (* creates[KIND_COUNT])(subs sub);
+        /// Array of pointers to Load functions.
+        Block* (*   loads[KIND_COUNT])(QDataStream&, subs sub);
 
-    template <typename BlockType, kinds>
-    static Block* Create(subs);
+        Inventory* (* castsToInventory[KIND_COUNT])(Block*);
 
-    template <typename BlockType, kinds>
-    static Block* Load(QDataStream&, subs);
+    private:
 
-    /// Type list struct for variadic template without formal parameters.
-    template <typename ...> struct typeList {};
-    struct TemplateTerminator {};
+        template <typename BlockType, kinds>
+        static Block* Create(subs);
 
-    /// Base for variadic template.
-    static void RegisterAll(typeList<TemplateTerminator>) {}
+        template <typename BlockType, kinds>
+        static Block* Load(QDataStream&, subs);
 
-    /// Core of block registration system.
-    template <typename BlockType, typename ... RestBlockTypes>
-    void RegisterAll(typeList<BlockType, RestBlockTypes...>);
+        /// Type list struct for variadic template without formal parameters.
+        template <typename ...> struct typeList {};
+        struct TemplateTerminator {};
+
+        /// Base for variadic template.
+        static void RegisterAll(typeList<TemplateTerminator>) {}
+
+        /// Core of block registration system.
+        template <typename BlockType, typename ... RestBlockTypes>
+        void RegisterAll(typeList<BlockType, RestBlockTypes...>);
+    };
+
+    const FuncArrays funcArrays;
 };
 
 #endif // BLOCK_FACTORY_H

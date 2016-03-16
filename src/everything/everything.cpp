@@ -32,6 +32,7 @@
 #include "src/IniSettings.cpp"
 #include "src/Lighting.cpp"
 #include "src/LoadingLineThread.cpp"
+#include "src/Logger.cpp"
 #include "src/main.cpp"
 #include "src/Player.cpp"
 #include "src/RandomManager.cpp"
@@ -68,6 +69,7 @@
 
 #include "moc/moc_ActiveWatcher.cpp"
 #include "moc/moc_CursedScreen.cpp"
+#include "moc/moc_Logger.cpp"
 #include "moc/moc_Player.cpp"
 #include "moc/moc_VirtualScreen.cpp"
 #include "moc/moc_World.cpp"

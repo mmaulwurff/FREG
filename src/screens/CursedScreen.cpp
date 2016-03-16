@@ -28,6 +28,7 @@
 #include "Utility.h"
 #include "blocks/Block.h"
 #include "blocks/Inventory.h"
+#include "Logger.h"
 
 #include <thread>
 #include <cstdlib>
@@ -143,7 +144,7 @@ void Screen::PassString(QString& str) const {
     #else
         str = QString::fromUcs4(temp_str);
     #endif
-    Log(Str("Input: ") + str);
+    Logger::GetInstance()->Log(Str("Input: ") + str);
 }
 
 char Screen::Distance(const int dist) const {
@@ -1033,7 +1034,7 @@ void Screen::DisplayFile(const QString& path) {
 
 void Screen::Notify(const QString& str) const {
     if ( str.isEmpty() ) return;
-    Log(str);
+    Logger::GetInstance()->Log(str);
     if ( inputActive ) return;
     wstandend(notifyWin);
     switch ( str.at(str.size()-1).unicode() ) {

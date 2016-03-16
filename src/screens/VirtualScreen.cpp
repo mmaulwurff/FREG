@@ -26,13 +26,11 @@
 
 void VirtualScreen::UpdatesEnd() {}
 
-VirtualScreen::VirtualScreen(Player* const player_) :
-        player(player_),
-        settings(home_path + Str("freg.ini"), QSettings::IniFormat),
-        previousCommand(settings.value(Str("last_command"), Str("moo")).
-            toString()),
-        logFile(home_path + Str("log.txt")),
-        logStream(&logFile)
+VirtualScreen::VirtualScreen(Player* const player_)
+    : player(player_)
+    , settings(home_path + Str("freg.ini"), QSettings::IniFormat)
+    , previousCommand(settings.value( Str("last_command")
+                                    , Str("moo") ).toString())
 {
     World* const world = World::GetWorld();
     connect( world, &World::Notify, this, &VirtualScreen::Notify,
@@ -61,18 +59,9 @@ VirtualScreen::VirtualScreen(Player* const player_) :
 
     connect(player, &Player::Destroyed, this, &VirtualScreen::DeathScreen,
         Qt::DirectConnection );
-
-    logFile.open(QIODevice::Append | QIODevice::Text);
-    logStream.setCodec("UTF-8");
 }
 
 VirtualScreen::~VirtualScreen() {}
-
-void VirtualScreen::Log(const QString& message) const {
-    if ( logFile.isOpen() ) {
-        logStream << message << endl;
-    }
-}
 
 void VirtualScreen::DisplayFile(const QString& /* path */) {}
 

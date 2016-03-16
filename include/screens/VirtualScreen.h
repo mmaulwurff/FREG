@@ -20,11 +20,9 @@
 #ifndef VIRTUAL_SCREEN_H
 #define VIRTUAL_SCREEN_H
 
-#include <QFile>
 #include <QString>
 #include <QObject>
 #include <QSettings>
-#include <QTextStream>
 
 #define COLOR_LIST(color) \
     color ## _BLACK,  \
@@ -133,8 +131,6 @@ protected:
     class Player* const player;
     QSettings settings;
     QString previousCommand;
-    mutable QFile logFile;
-    mutable QTextStream logStream;
 };
 
 #endif // VIRTUAL_SCREEN_H

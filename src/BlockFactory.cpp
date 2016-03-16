@@ -43,9 +43,7 @@ Block BlockFactory::normals[] = { SUB_TABLE(X_BLOCK_CONSTRUCT) };
 
 BlockFactory::BlockFactory()
     : Singleton(this)
-    , creates()
-    , loads()
-    , castsToInventory()
+    , funcArrays()
 {
     if ( KIND_SUB_PAIR_VALID_CHECK ) {
         int sum = 0;
@@ -55,15 +53,13 @@ BlockFactory::BlockFactory()
         }
         qDebug() << "valid pairs:" << sum;
     }
-
-    RegisterAll(typeList< KIND_TABLE(X_CLASS) TemplateTerminator >());
 }
 
 Block* BlockFactory::NewBlock(const kinds kind, const subs sub) {
     if ( KIND_SUB_PAIR_VALID_CHECK ) {
         qDebug("kind: %d, sub: %d, valid: %d", kind, sub, IsValid(kind,sub));
     }
-    return GetInstance()->creates[kind](sub);
+    return GetInstance()->funcArrays.creates[kind](sub);
 }
 
 Block* BlockFactory::Normal(const int sub) {
@@ -82,7 +78,7 @@ Block* BlockFactory::BlockFromFile(QDataStream& str,
     if ( KIND_SUB_PAIR_VALID_CHECK ) {
         qDebug("kind: %d, sub: %d, valid: %d", kind, sub, IsValid(kind,sub));
     }
-    return GetInstance()->loads[kind](str, sub);
+    return GetInstance()->funcArrays.loads[kind](str, sub);
 }
 
 bool BlockFactory::KindSubFromFile(QDataStream& str, quint8* kind, quint8* sub)
@@ -101,7 +97,7 @@ bool BlockFactory::KindSubFromFile(QDataStream& str, quint8* kind, quint8* sub)
 void BlockFactory::DeleteBlock(const Block* const block) { delete block; }
 
 Inventory* BlockFactory::Block2Inventory(Block* const block) {
-    return GetInstance()->castsToInventory[block->Kind()](block);
+    return GetInstance()->funcArrays.castsToInventory[block->Kind()](block);
 }
 
 void BlockFactory::ReplaceWithNormal(Block*& block) {
@@ -167,12 +163,12 @@ bool BlockFactory::IsValid(const kinds kind, const subs sub) {
 }
 
 template <typename BlockType, kinds kind>
-Block* BlockFactory::Create(const subs sub) {
+Block* BlockFactory::FuncArrays::Create(const subs sub) {
     return new BlockType(kind, sub);
 }
 
 template <typename BlockType, kinds kind>
-Block* BlockFactory::Load(QDataStream& stream, const subs sub) {
+Block* BlockFactory::FuncArrays::Load(QDataStream& stream, const subs sub) {
     return new BlockType(stream, kind, sub);
 }
 
@@ -184,14 +180,22 @@ template <typename BlockType, typename Base, std::enable_if_t< not
         std::is_base_of<Base, BlockType>::value >* = nullptr>
 Base* castTo(Block*) { return nullptr; }
 
-template <typename BlockType, typename ... RestBlockTypes>
-void BlockFactory::RegisterAll(typeList<BlockType, RestBlockTypes...>)
+template <typename BlockType, typename ... TailTypes>
+void BlockFactory::FuncArrays::RegisterAll(typeList<BlockType, TailTypes...>)
 {
     static const kinds kind =
-        static_cast<kinds>(KIND_COUNT - sizeof...(RestBlockTypes));
+        static_cast<kinds>(KIND_COUNT - sizeof...(TailTypes));
     creates[kind] = Create<BlockType, kind>;
     loads  [kind] = Load  <BlockType, kind>;
     castsToInventory[kind] = castTo<BlockType, Inventory>;
 
-    RegisterAll(typeList<RestBlockTypes...>());
+    RegisterAll(typeList<TailTypes...>());
+}
+
+BlockFactory::FuncArrays::FuncArrays()
+    : creates()
+    , loads()
+    , castsToInventory()
+{
+    RegisterAll(typeList< KIND_TABLE(X_CLASS) TemplateTerminator >());
 }
