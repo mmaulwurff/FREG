@@ -33,8 +33,8 @@ AroundCoordinates::AroundCoordinates(const int dirsBits, const_int(x, y, z))
     }
 }
 
-AroundCoordinates::AroundCoordinates(const_int(x, y, z)) :
-        AroundCoordinatesN<6>()
+AroundCoordinates::AroundCoordinates(const_int(x, y, z))
+    : AroundCoordinatesN<6>()
 {
     array[0] = { x, y, z+1 };
     array[1] = { x, y, z-1 };

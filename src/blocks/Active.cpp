@@ -145,13 +145,15 @@ void Active::ReRegister(const dirs dir) {
 void Active::SendSignalAround(const QString& signal) const {
     if ( IsInside() ) return; // for blocks inside inventories
     const World* const world = World::GetCWorld();
-    for (const XyzInt& xyz : AroundCoordinates(X(), Y(), Z())) {
+    const AroundCoordinates arounds(X(), Y(), Z());
+    for (const XyzInt& xyz : arounds) {
         world->GetBlock(XYZ(xyz))->ReceiveSignal(signal);
     }
 }
 
 void Active::DamageAround() const {
-    for (const XyzInt& xyz : AroundCoordinates(X(), Y(), Z())) {
+    const AroundCoordinates arounds(X(), Y(), Z());
+    for (const XyzInt& xyz : arounds) {
         TryDestroy(XYZ(xyz));
     }
 }
