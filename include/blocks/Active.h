@@ -45,6 +45,7 @@ class Active : public Block, protected Xyz {
 public:
 
     BLOCK_CONSTRUCTORS(Active)
+    Active(const Active&);
     ~Active() override;
 
     int X() const;

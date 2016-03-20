@@ -33,6 +33,13 @@
 
 // Active section
 
+Active::Active(const Active& origin)
+    : Block(origin)
+    , Xyz(origin)
+    , watcher(nullptr)
+    , shred(origin.shred)
+{}
+
 Active::~Active() {
     Unregister();
     if (watcher) watcher->Destroyed();

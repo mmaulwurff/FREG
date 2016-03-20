@@ -172,6 +172,11 @@ Block* BlockFactory::FuncArrays::Load(QDataStream& stream, const subs sub) {
     return new BlockType(stream, kind, sub);
 }
 
+template <typename BlockType>
+Block* BlockFactory::FuncArrays::Copy(const Block& origin) {
+    return new BlockType(static_cast<const BlockType&>(origin));
+}
+
 template <typename BlockType, typename Base, std::enable_if_t<
         std::is_base_of<Base, BlockType>::value >* = nullptr>
 Base* castTo(Block* const block) { return static_cast<BlockType*>(block); }
@@ -192,9 +197,12 @@ void BlockFactory::FuncArrays::RegisterAll(typeList<BlockType, TailTypes...>)
     RegisterAll(typeList<TailTypes...>());
 }
 
+#define X_BLOCK_COPY(col1, col2, col3, BlockType, ...) Copy<BlockType>,
+
 BlockFactory::FuncArrays::FuncArrays()
     : creates()
     , loads()
+    , copies{ KIND_TABLE(X_BLOCK_COPY) }
     , castsToInventory()
 {
     RegisterAll(typeList< KIND_TABLE(X_CLASS) TemplateTerminator >());

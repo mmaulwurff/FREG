@@ -31,7 +31,8 @@ template<typename Block> class QStack;
 
 /** Provides block ability to contain other blocks inside. */
 class Inventory {
-    M_DISABLE_COPY(Inventory)
+    Inventory& operator=(const Inventory&) = delete;
+
 public:
 
     /// Returns true on success.
@@ -86,6 +87,7 @@ protected:
      *  in console version. */
     explicit Inventory(int sz = INV_SIZE);
     explicit Inventory(QDataStream& str, int size = INV_SIZE);
+    Inventory(const Inventory&);
     virtual ~Inventory();
 
     virtual void SaveAttributes(QDataStream& out) const;

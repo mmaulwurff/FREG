@@ -280,6 +280,10 @@ Inventory::Inventory(QDataStream& str, const int sz)
     }
 }
 
+Inventory::Inventory(const Inventory& origin)
+    : Inventory(origin.inventorySize)
+{}
+
 Inventory::~Inventory() {
     std::for_each(inventory, inventory + GetSize(), [](const auto& inv) {
         std::for_each(ALL(inv), [](Block* const block) {

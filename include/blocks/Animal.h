@@ -26,6 +26,7 @@ class Animal : public Falling {
 public:
 
     BLOCK_CONSTRUCTORS(Animal)
+    Animal(const Animal&);
     ~Animal();
 
     int  DamageKind() const override;

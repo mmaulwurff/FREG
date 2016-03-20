@@ -25,10 +25,9 @@
 
 #include <QtGlobal>
 
-#define BLOCK_CONSTRUCTORS(BlockClass)     \
-BlockClass(kinds, subs);                    \
-BlockClass(QDataStream&, kinds, subs);       \
-BlockClass(const BlockClass&) = delete;       \
+#define BLOCK_CONSTRUCTORS(BlockClass) \
+BlockClass(kinds, subs);                \
+BlockClass(QDataStream&, kinds, subs);   \
 BlockClass& operator=(const BlockClass&) = delete;
 
 enum wearable {

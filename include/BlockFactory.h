@@ -89,6 +89,8 @@ private:
         Block* (* creates[KIND_COUNT])(subs sub);
         /// Array of pointers to Load functions.
         Block* (*   loads[KIND_COUNT])(QDataStream&, subs sub);
+        /// Array of pointers to Copy functions
+        Block* (*const  copies[KIND_COUNT])(const Block& origin);
 
         Inventory* (* castsToInventory[KIND_COUNT])(Block*);
 
@@ -99,6 +101,9 @@ private:
 
         template <typename BlockType, kinds>
         static Block* Load(QDataStream&, subs);
+
+        template <typename BlockType>
+        static Block* Copy(const Block& origin);
 
         /// Type list struct for variadic template without formal parameters.
         template <typename ...> struct typeList {};

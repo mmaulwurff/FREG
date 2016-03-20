@@ -153,6 +153,14 @@
         str >> breath >> satiation;
     }
 
+    Animal::Animal(const Animal& origin)
+        : Falling(origin)
+        , moved_in_this_turn(origin.moved_in_this_turn)
+        , breath(origin.breath)
+        , satiation(origin.satiation)
+        , deferredAction(nullptr)
+    {}
+
     Animal::~Animal() {
         delete deferredAction;
         deferredAction = nullptr;
