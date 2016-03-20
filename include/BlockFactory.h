@@ -62,6 +62,8 @@ public:
 
     static void DeleteBlock(const Block* block);
 
+    static Block* CopyBlock(const Block& block);
+
     /// For memory economy.
     /** Checks and replaces block with corresponding normal block. */
     static void ReplaceWithNormal(Block*& block);
@@ -86,13 +88,13 @@ private:
         FuncArrays();
 
         /// Array of pointers to Create functions.
-        Block* (* creates[KIND_COUNT])(subs sub);
+        Block* (*const creates[KIND_COUNT])(subs sub);
         /// Array of pointers to Load functions.
-        Block* (*   loads[KIND_COUNT])(QDataStream&, subs sub);
+        Block* (*const   loads[KIND_COUNT])(QDataStream&, subs sub);
         /// Array of pointers to Copy functions
         Block* (*const  copies[KIND_COUNT])(const Block& origin);
 
-        Inventory* (* castsToInventory[KIND_COUNT])(Block*);
+        Inventory* (*const castsToInventory[KIND_COUNT])(Block*);
 
     private:
 
@@ -104,17 +106,6 @@ private:
 
         template <typename BlockType>
         static Block* Copy(const Block& origin);
-
-        /// Type list struct for variadic template without formal parameters.
-        template <typename ...> struct typeList {};
-        struct TemplateTerminator {};
-
-        /// Base for variadic template.
-        static void RegisterAll(typeList<TemplateTerminator>) {}
-
-        /// Core of block registration system.
-        template <typename BlockType, typename ... RestBlockTypes>
-        void RegisterAll(typeList<BlockType, RestBlockTypes...>);
     };
 
     const FuncArrays funcArrays;

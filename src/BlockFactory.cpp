@@ -96,6 +96,10 @@ bool BlockFactory::KindSubFromFile(QDataStream& str, quint8* kind, quint8* sub)
 
 void BlockFactory::DeleteBlock(const Block* const block) { delete block; }
 
+Block*BlockFactory::CopyBlock(const Block& block) {
+    return GetInstance()->funcArrays.copies[block.Kind()](block);
+}
+
 Inventory* BlockFactory::Block2Inventory(Block* const block) {
     return GetInstance()->funcArrays.castsToInventory[block->Kind()](block);
 }
@@ -177,33 +181,24 @@ Block* BlockFactory::FuncArrays::Copy(const Block& origin) {
     return new BlockType(static_cast<const BlockType&>(origin));
 }
 
-template <typename BlockType, typename Base, std::enable_if_t<
-        std::is_base_of<Base, BlockType>::value >* = nullptr>
+using namespace std;
+
+template < typename BlockType, typename Base
+         , enable_if_t<is_base_of<Base, BlockType>::value>* = nullptr>
 Base* castTo(Block* const block) { return static_cast<BlockType*>(block); }
 
-template <typename BlockType, typename Base, std::enable_if_t< not
-        std::is_base_of<Base, BlockType>::value >* = nullptr>
+template < typename BlockType, typename Base
+         , enable_if_t<not is_base_of<Base, BlockType>::value>* = nullptr>
 Base* castTo(Block*) { return nullptr; }
 
-template <typename BlockType, typename ... TailTypes>
-void BlockFactory::FuncArrays::RegisterAll(typeList<BlockType, TailTypes...>)
-{
-    static const kinds kind =
-        static_cast<kinds>(KIND_COUNT - sizeof...(TailTypes));
-    creates[kind] = Create<BlockType, kind>;
-    loads  [kind] = Load  <BlockType, kind>;
-    castsToInventory[kind] = castTo<BlockType, Inventory>;
-
-    RegisterAll(typeList<TailTypes...>());
-}
-
-#define X_BLOCK_COPY(col1, col2, col3, BlockType, ...) Copy<BlockType>,
+#define X_BLOCK_COPY(  col1, kind, col3, b_type, ...) Copy  <b_type>,
+#define X_BLOCK_CREATE(col1, kind, col3, b_type, ...) Create<b_type, kind>,
+#define X_BLOCK_LOAD(  col1, kind, col3, b_type, ...) Load  <b_type, kind>,
+#define X_BLOCK_TO_INV(col1, kind, col3, b_type, ...) castTo<b_type, Inventory>,
 
 BlockFactory::FuncArrays::FuncArrays()
-    : creates()
-    , loads()
-    , copies{ KIND_TABLE(X_BLOCK_COPY) }
-    , castsToInventory()
-{
-    RegisterAll(typeList< KIND_TABLE(X_CLASS) TemplateTerminator >());
-}
+    : creates{ KIND_TABLE(X_BLOCK_CREATE) }
+    , loads  { KIND_TABLE(X_BLOCK_LOAD  ) }
+    , copies { KIND_TABLE(X_BLOCK_COPY  ) }
+    , castsToInventory{ KIND_TABLE(X_BLOCK_TO_INV) }
+{}
