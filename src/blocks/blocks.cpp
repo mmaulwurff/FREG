@@ -18,6 +18,9 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "blocks/blocks.h"
+#include "blocks/Containers.h"
+#include "blocks/Weapons.h"
+
 #include "World.h"
 #include "BlockFactory.h"
 #include "TrManager.h"
@@ -30,6 +33,8 @@
 #include <QTime>
 
 // Plate::
+    CONSTRUCT_AS_PARENT(Plate, Block)
+
     QString Plate::FullName() const {
         TrString woodName  = QObject::tr("Wooden board");
         TrString stoneName = QObject::tr("Stone slab");
@@ -46,6 +51,8 @@
     push_reaction Plate::PushResult(dirs) const { return JUMP; }
 
 // Ladder::
+    CONSTRUCT_AS_PARENT(Ladder, Block)
+
     QString Ladder::FullName() const {
         TrString stoneName = QObject::tr("Rock with ledges");
         TrString greenName = QObject::tr("Liana");
@@ -63,7 +70,7 @@
     push_reaction Ladder::PushResult(dirs) const { return MOVE_UP; }
 
     Block* Ladder::DropAfterDamage(bool* const delete_block) {
-        Block* const pile = BlockFactory::NewBlock(BOX, DIFFERENT);
+        Block* const pile = new Box(DIFFERENT);
         if ( STONE==Sub() || MOSS_STONE==Sub() ) {
             pile->HasInventory()->Get(BlockFactory::Normal(Sub()));
         } else {
@@ -74,6 +81,8 @@
     }
 
 // Liquid::
+    CONSTRUCT_AS_PARENT(Liquid, Falling)
+
     void Liquid::DoRareAction() {
         if ( Q_UNLIKELY(not IsSubAround(Sub()) || Sub()==SUB_CLOUD) ) {
             Damage(MAX_DURABILITY*2/World::SECONDS_IN_NIGHT, DAMAGE_TIME);
@@ -133,6 +142,8 @@
     }
 
 // Grass::
+    CONSTRUCT_AS_PARENT(Grass, Active)
+
     void Grass::DoRareAction() {
         int i=X(), j=Y();
         // increase this if grass grows too fast
@@ -152,7 +163,7 @@
                 || ( IsBase(Sub(), sub_near)
                     && AIR == world->GetBlock(i, j, ++k)->Sub() ) )
         {
-            world->Build(BlockFactory::NewBlock(GRASS, Sub()), i, j, k);
+            world->Build(new Grass(Sub()), i, j, k);
         }
         if ( not IsBase(Sub(), world->GetBlock(X(), Y(), Z()-1)->Sub()) ) {
             world->DestroyAndReplace(X(), Y(), Z());
@@ -214,7 +225,7 @@
 
     void Bush::DoRareAction() {
         if ( Q_UNLIKELY(0 == RandomManager::getRandBit8()) ) {
-            Get(BlockFactory::NewBlock(WEAPON, SUB_NUT));
+            Get(new Weapon(SUB_NUT));
         }
     }
 
@@ -227,10 +238,10 @@
     }
 
     Block* Bush::DropAfterDamage(bool*) {
-        Block* const pile = BlockFactory::NewBlock(BOX, DIFFERENT);
+        Block* const pile = new Box(DIFFERENT);
         Inventory* const pile_inv = pile->HasInventory();
-        pile_inv->Get(BlockFactory::NewBlock(WEAPON, WOOD));
-        pile_inv->Get(BlockFactory::NewBlock(WEAPON, SUB_NUT));
+        pile_inv->Get(new Weapon(WOOD));
+        pile_inv->Get(new Weapon(SUB_NUT));
         return pile;
     }
 
@@ -436,6 +447,8 @@
     }
 
 // Signaller:: section
+    CONSTRUCT_AS_PARENT(Signaller, Active)
+
     wearable Signaller::Wearable() const { return WEARABLE_OTHER; }
 
     void Signaller::Damage(const int damage_level, const int damage_kind) {
@@ -537,6 +550,8 @@
     }
 
 // MedKit:: section
+    CONSTRUCT_AS_PARENT(MedKit, Block)
+
     wearable MedKit::Wearable() const { return WEARABLE_OTHER; }
 
     usage_types MedKit::Use(Active* const user) {
@@ -551,6 +566,8 @@
     }
 
 // Informer:: section
+    CONSTRUCT_AS_PARENT(Informer, Block)
+
     wearable Informer::Wearable() const { return WEARABLE_OTHER; }
 
     usage_types Informer::Use(Active* const user) {

@@ -25,7 +25,8 @@
 
 class Text : public Block {
 public:
-    using Block::Block;
+
+    BLOCK_CONSTRUCTORS(Text)
 
     bool Inscribe(const QString&) override;
     void Damage(int damage, int damage_kind) override;

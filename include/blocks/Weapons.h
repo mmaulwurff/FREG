@@ -28,7 +28,8 @@
  *  will be destroyed. */
 class Weapon : public Falling {
 public:
-    using Falling::Falling;
+
+    BLOCK_CONSTRUCTORS(Weapon)
 
     int  DamageKind() const override;
     int  DamageLevel() const override;
@@ -41,28 +42,28 @@ public:
 
 class Pick : public Weapon {
 public:
-    using Weapon::Weapon;
+    BLOCK_CONSTRUCTORS(Pick)
 
     int  DamageKind() const override;
 };
 
 class Shovel : public Weapon {
 public:
-    using Weapon::Weapon;
+    BLOCK_CONSTRUCTORS(Shovel)
 
     int  DamageKind() const override;
 };
 
 class Hammer : public Weapon {
 public:
-    using Weapon::Weapon;
+    BLOCK_CONSTRUCTORS(Hammer)
 
     int  DamageKind() const override;
 };
 
 class Axe : public Weapon {
 public:
-    using Weapon::Weapon;
+    BLOCK_CONSTRUCTORS(Axe)
 
     int  DamageKind() const override;
 };

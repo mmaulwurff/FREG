@@ -25,7 +25,8 @@
 
 class Plate : public Block {
 public:
-    using Block::Block;
+
+    BLOCK_CONSTRUCTORS(Plate)
 
     int Weight() const override;
     QString FullName() const override;
@@ -34,7 +35,8 @@ public:
 
 class Ladder : public Block {
 public:
-    using Block::Block;
+
+    BLOCK_CONSTRUCTORS(Ladder)
 
     bool Catchable() const override;
     int  Weight() const override;
@@ -46,7 +48,7 @@ public:
 class Liquid : public Falling {
 public:
 
-    using Falling::Falling;
+    BLOCK_CONSTRUCTORS(Liquid)
 
     int ShouldAct() const override;
     int DamageKind() const override;
@@ -67,7 +69,7 @@ protected:
 class Grass : public Active {
 public:
 
-    using Active::Active;
+    BLOCK_CONSTRUCTORS(Grass)
 
     int  ShouldAct() const override;
     int  DamageKind() const override;
@@ -154,7 +156,7 @@ private:
 class Signaller : public Active {
 public:
 
-    using Active::Active;
+    BLOCK_CONSTRUCTORS(Signaller)
 
     QString  FullName()    const override;
     QString  Description() const override;
@@ -189,7 +191,8 @@ private:
 
 class MedKit : public Block {
 public:
-    using Block::Block;
+    BLOCK_CONSTRUCTORS(MedKit)
+
     wearable Wearable() const override;
     usage_types Use(Active* user) override;
 };
@@ -199,7 +202,7 @@ public:
  *  Iron informer is compass. */
 class Informer : public Block {
 public:
-    using Block::Block;
+    BLOCK_CONSTRUCTORS(Informer)
 
     QString FullName() const override;
     wearable Wearable() const override;

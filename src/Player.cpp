@@ -24,10 +24,12 @@
 #include "BlockFactory.h"
 #include "DeferredAction.h"
 #include "TrManager.h"
-#include "blocks/Animal.h"
-#include "blocks/Inventory.h"
 #include "Id.h"
 #include "ActiveWatcher.h"
+
+#include "blocks/Animal.h"
+#include "blocks/Inventory.h"
+#include "blocks/Dwarf.h"
 
 #include <QSettings>
 #include <QTextStream>
@@ -266,7 +268,7 @@ usage_types Player::Use(const int num) {
     if ( block == nullptr ) return USAGE_TYPE_NO;
     if ( player->Eat(block->Sub()) ) {
         PlayerInventory()->Pull(num);
-        BlockFactory::DeleteBlock(block);
+        delete block;
         return USAGE_TYPE_NO;
     }
 
@@ -506,7 +508,7 @@ void Player::ProcessGetCommand(QTextStream& command_stream) {
     if ( inv->Get(block) ) {
         emit Updated();
     } else {
-        BlockFactory::DeleteBlock(block);
+        delete block;
     }
 }
 
@@ -593,7 +595,7 @@ void Player::SetPlayer(int x, int y, int z) {
             player = candidate->IsAnimal();
         } else {
             if ( player == nullptr || player == creator ) {
-                player = BlockFactory::NewBlock(DWARF, PLAYER_SUB)->IsAnimal();
+                player = new Dwarf(DWARF, PLAYER_SUB);
             }
             world->DestroyAndReplace(x, y, Z());
             world->DestroyAndReplace(x, y, Z()); // blocks can drop something
@@ -605,7 +607,7 @@ void Player::SetPlayer(int x, int y, int z) {
 
 void Player::Disconnect() {
     if ( player == nullptr ) { // dead player
-        player = BlockFactory::NewBlock(DWARF, PLAYER_SUB)->IsAnimal();
+        player = new Dwarf(DWARF, PLAYER_SUB);
     } else {
         SaveState();
         GetShred()->PutBlock(BlockFactory::Normal(AIR), x_self, y_self, z_self);
@@ -623,7 +625,7 @@ Player::Player()
     , homeY()
     , homeZ()
     , player(nullptr)
-    , creator(BlockFactory::NewBlock(DWARF, DIFFERENT)->IsAnimal())
+    , creator(new Dwarf(DWARF, DIFFERENT))
     , usingType()
     , usingSelfType()
     , usingInInventory()
@@ -654,7 +656,7 @@ Player::Player()
 
 Player::~Player() {
     SaveState();
-    BlockFactory::DeleteBlock(creator);
+    delete creator;
 }
 
 void Player::SaveState() const {

@@ -22,12 +22,14 @@
 #include "BlockFactory.h"
 #include "ShredStorage.h"
 #include "WorldMap.h"
-#include "blocks/Active.h"
-#include "blocks/Inventory.h"
 #include "VisionRay.h"
 #include "LoadingLineThread.h"
 #include "Utility.h"
 #include "IniSettings.h"
+
+#include "blocks/Active.h"
+#include "blocks/Inventory.h"
+#include "blocks/Containers.h"
 
 #include <QDir>
 #include <QTimer>
@@ -95,9 +97,9 @@ QString World::TimeOfDayStr() const {
 bool World::Drop(Block* const block_from, const_int(x_to, y_to, z_to),
         const_int(src, dest, num))
 {
-    Block* const destination_box = BlockFactory::NewBlock(BOX, DIFFERENT);
+    Block* const destination_box = new Box(DIFFERENT);
     if ( not Build(destination_box, x_to, y_to, z_to) ) {
-        BlockFactory::DeleteBlock(destination_box);
+        delete destination_box;
     }
     return Exchange(block_from, GetBlock(x_to, y_to, z_to), src, dest, num);
 }
@@ -493,7 +495,7 @@ void World::DestroyAndReplace P3(const int, x, y, z) {
     ReEnlightenCheck(block, new_block, x, y, z, block, nullptr);
     shred->PutBlockAndRegister(new_block, x_in, y_in, z);
     if ( delete_block ) {
-        BlockFactory::DeleteBlock(block);
+        delete block;
     } else {
         if (Active* const active = block->ActiveBlock()) active->Unregister();
     }

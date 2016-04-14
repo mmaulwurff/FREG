@@ -45,7 +45,7 @@
     inner_actions Container::ActInner() { return INNER_ACTION_ONLY; }
 
     Block* Container::DropAfterDamage(bool* const delete_block) {
-        Block* const pile = BlockFactory::NewBlock(BOX, DIFFERENT);
+        Block* const pile = new Box(DIFFERENT);
         Inventory* const pile_inv = pile->HasInventory();
         GetAll(pile_inv);
         *delete_block = not pile_inv->Get(this);

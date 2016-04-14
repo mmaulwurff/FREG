@@ -32,6 +32,8 @@
 #include <cstdlib>
 
 // Text::
+CONSTRUCT_AS_PARENT(Text, Block)
+
 QString Text::FullName() const {
     TrString paperName     = QObject::tr("Paper page");
     TrString glassName     = QObject::tr("Screen");

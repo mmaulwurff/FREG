@@ -18,11 +18,12 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "World.h"
+#include "DeferredAction.h"
+#include "Id.h"
+
 #include "blocks/Animal.h"
 #include "blocks/Inventory.h"
-#include "DeferredAction.h"
-#include "BlockFactory.h"
-#include "Id.h"
+#include "blocks/blocks.h"
 
 void DeferredAction::GhostMove() const {
     const dirs direction = static_cast<dirs>(num);
@@ -115,7 +116,7 @@ void DeferredAction::Pour() const {
 void DeferredAction::SetFire() const {
     World* const world = World::GetWorld();
     if ( world->GetBlock(X(), Y(), Z())->Sub() == AIR ) {
-        world->Build(BlockFactory::NewBlock(GRASS, FIRE), X(), Y(), Z());
+        world->Build(new Grass(GRASS, FIRE), X(), Y(), Z());
     } else if ( world->Damage(X(), Y(), Z(), 1, DAMAGE_HEAT) <= 0 ) {
         world->DestroyAndReplace(X(), Y(), Z());
     }

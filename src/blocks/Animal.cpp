@@ -17,15 +17,17 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#include "blocks/Animal.h"
-#include "blocks/Inventory.h"
 #include "DeferredAction.h"
-#include "BlockFactory.h"
 #include "World.h"
 #include "TrManager.h"
 #include "AroundCoordinates.h"
 #include "RandomManager.h"
 #include "ActiveWatcher.h"
+
+#include "blocks/Animal.h"
+#include "blocks/Inventory.h"
+#include "blocks/Containers.h"
+#include "blocks/Weapons.h"
 
 #include <QDataStream>
 
@@ -124,8 +126,8 @@
     }
 
     Block* Animal::DropAfterDamage(bool*) {
-        Block* const cadaver = BlockFactory::NewBlock(BOX, Sub());
-        cadaver->HasInventory()->Get(BlockFactory::NewBlock(WEAPON, BONE));
+        Block* const cadaver = new Box(Sub());
+        cadaver->HasInventory()->Get(new Weapon(BONE));
         return cadaver;
     }
 
@@ -172,6 +174,8 @@
     }
 
 // Rabbit::section
+    CONSTRUCT_AS_PARENT(Rabbit, Animal)
+
     int Rabbit::Attractive(const int sub) const {
         switch ( sub ) {
         case GREENERY: return Satiation() < World::SECONDS_IN_DAY/2;
@@ -217,6 +221,8 @@
     }
 
 // Predator:: section
+    CONSTRUCT_AS_PARENT(Predator, Animal)
+
     int Predator::DamageLevel() const { return 10; }
 
     int Predator::NutritionalValue(const subs sub) const {

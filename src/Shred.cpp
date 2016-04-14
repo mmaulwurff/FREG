@@ -20,14 +20,21 @@
 #include "Shred.h"
 #include "World.h"
 #include "WorldMap.h"
-#include "blocks/Active.h"
-#include "blocks/Inventory.h"
-#include "BlockFactory.h"
 #include "TrManager.h"
 #include "AroundCoordinates.h"
 #include "ShredStorage.h"
 #include "Id.h"
 #include "RandomManager.h"
+#include "BlockFactory.h"
+
+#include "blocks/Active.h"
+#include "blocks/Inventory.h"
+#include "blocks/Containers.h"
+#include "blocks/Animal.h"
+#include "blocks/blocks.h"
+#include "blocks/Filter.h"
+#include "blocks/Illuminator.h"
+#include "blocks/RainMachine.h"
 
 #include <QDataStream>
 #include <QTextStream>
@@ -171,7 +178,7 @@ void Shred::SaveShred(const bool isQuitGame) {
             } else {
                 block->SaveToFile(out_stream);
                 if ( isQuitGame ) {
-                    BlockFactory::DeleteBlock(block);
+                    delete block;
                 }
             }
         }
@@ -332,7 +339,7 @@ void Shred::ReloadTo(const dirs direction) {
 void Shred::SetBlock(Block* const block, const_int(x, y, z)) {
     Block* const to_delete = GetBlock(x, y, z);
     if ( to_delete != block ) {
-        BlockFactory::DeleteBlock(to_delete);
+        delete to_delete;
         PutBlockAndRegister(block, x, y, z);
     }
 }
@@ -357,8 +364,9 @@ void Shred::PutModifiedBlock(Block*& block, const_int(x, y, z)) {
     PutBlock(block, x, y, z);
 }
 
-void Shred::SetNewBlock(const kinds kind, const subs sub, const_int(x, y, z))
-{ SetBlock(BlockFactory::NewBlock(kind, sub), x, y, z); }
+void Shred::SetNewBlock(const kinds kind, const subs sub, const_int(x, y, z)) {
+    SetBlock(BlockFactory::NewBlock(kind, sub), x, y, z);
+}
 
 QString Shred::FileName(const qint64 longi, const qint64 lati) {
     return Str("%1%2/%3-%4.fm").
@@ -399,7 +407,7 @@ void Shred::PlantGrass() {
         const int x = i.X(), y = i.Y();
         const int z = FindTopNonAir(x, y);
         if ( SOIL == GetBlock(x, y, z)->Sub() ) {
-            SetBlock(BlockFactory::NewBlock(GRASS, GREENERY), x, y, z + 1);
+            SetBlock(new Grass(GREENERY), x, y, z + 1);
         }
     }
 }
@@ -495,11 +503,11 @@ void Shred::Pyramid() {
     for (int z=HEIGHT/2-52; z<=level; ++z) { // horizontal tunnel
         PutBlock(air, SHRED_WIDTH/2, SHRED_WIDTH/2, z);
     }
-    SetNewBlock(CONTAINER, STONE, SHRED_WIDTH-2, SHRED_WIDTH-2, level+1);
+    SetBlock(new Container(STONE), SHRED_WIDTH-2, SHRED_WIDTH-2, level+1);
     Inventory* const inv =
         GetBlock(SHRED_WIDTH-2,SHRED_WIDTH-2, level+1)->HasInventory();
     inv->Get(Normal(GOLD));
-    SetNewBlock(PREDATOR, A_MEAT, SHRED_WIDTH-3, SHRED_WIDTH-2, level+1);
+    SetBlock(new Predator(A_MEAT), SHRED_WIDTH-3, SHRED_WIDTH-2, level+1);
 }
 
 void Shred::Castle() {
@@ -519,7 +527,7 @@ void Shred::Castle() {
         NormalCube(4,2,level, 5,2,2, AIR);
         for (int y=2; y<=3; ++y) {
             for (int step=0; step<5; ++step) {
-                SetNewBlock(PLATE, STONE, 4+step, y, level-3+step);
+                SetBlock(new Plate(STONE), 4+step, y, level-3+step);
             }
         }
         if ( floors == 1 ) return; // roof
@@ -655,8 +663,9 @@ bool Shred::InBounds(const int x, const int y) {
 bool Shred::InBounds(const_int(x, y, z))
 { return InBounds(x, y) && InBounds(z); }
 
-void Shred::Dew(const kinds kind, const subs sub)
-{ DropBlock(BlockFactory::NewBlock(kind, sub), true); }
+void Shred::Dew(const kinds kind, const subs sub) {
+    DropBlock(BlockFactory::NewBlock(kind, sub), true);
+}
 
 void Shred::Rain(const kinds kind, const subs sub) {
     if ( RAIN_IS_DEW == 1 ) { // RAIN_IS_DEW is defined in Freg.pro
@@ -709,21 +718,21 @@ bool Shred::LoadRoom(const int level, const int index) {
                 break;
             case '^':
                 for (int z=level; z<level+5; ++z) {
-                    SetNewBlock(LADDER, WOOD, i, lines, z);
+                    SetBlock(new Ladder(WOOD), i, lines, z);
                 }
                 break;
 
-            case '*': SetNewBlock(WORKBENCH,    IRON,  i, lines, level); break;
-            case '&': SetNewBlock(CONTAINER,    WOOD,  i, lines, level); break;
-            case 't': SetNewBlock(TELEGRAPH,    IRON,  i, lines, level); break;
-            case 'c': SetNewBlock(CLOCK,        IRON,  i, lines, level); break;
-            case 'V': SetNewBlock(CONVERTER,    STONE, i, lines, level); break;
-            case 'b': SetNewBlock(SIGNALLER,    IRON,  i, lines, level); break;
-            case 'i': SetNewBlock(ILLUMINATOR,  IRON,  i, lines, level); break;
-            case '~': SetNewBlock(LIQUID,       WATER, i, lines, level); break;
-            case 'M': SetNewBlock(MEDKIT,       IRON,  i, lines, level); break;
-            case 'R': SetNewBlock(RAIN_MACHINE, IRON,  i, lines, level); break;
-            case 'F': SetNewBlock(FILTER,       IRON,  i, lines, level); break;
+            case '*': SetBlock(new Workbench   (IRON ), i, lines, level); break;
+            case '&': SetBlock(new Container   (WOOD ), i, lines, level); break;
+            case 't': SetBlock(new Telegraph   (IRON ), i, lines, level); break;
+            case 'c': SetBlock(new Clock       (IRON ), i, lines, level); break;
+            case 'V': SetBlock(new Converter   (STONE), i, lines, level); break;
+            case 'b': SetBlock(new Signaller   (IRON ), i, lines, level); break;
+            case 'i': SetBlock(new Illuminator (IRON ), i, lines, level); break;
+            case '~': SetBlock(new Liquid      (WATER), i, lines, level); break;
+            case 'M': SetBlock(new MedKit      (IRON ), i, lines, level); break;
+            case 'R': SetBlock(new RainMachine (IRON ), i, lines, level); break;
+            case 'F': SetBlock(new Filter      (IRON ), i, lines, level); break;
 
             case '.': // reserved for nothing
             case 0:

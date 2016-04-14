@@ -26,9 +26,16 @@
 #include <QtGlobal>
 
 #define BLOCK_CONSTRUCTORS(BlockClass) \
-BlockClass(kinds, subs);                \
-BlockClass(QDataStream&, kinds, subs);   \
+BlockClass(subs);                       \
+BlockClass(kinds, subs);                 \
+BlockClass(QDataStream&, kinds, subs);    \
 BlockClass& operator=(const BlockClass&) = delete;
+
+#define CONSTRUCT_AS_PARENT(BlockClass, ParentClass) \
+BlockClass::BlockClass(const kinds kind, const subs sub) \
+    : ParentClass(kind, sub) {} \
+BlockClass::BlockClass(QDataStream& stream, const kinds kind, const subs sub) \
+    : ParentClass(stream, kind, sub) {}
 
 enum wearable {
     WEARABLE_NOWHERE,
@@ -135,16 +142,17 @@ public:
 
     static void TestDamage();
 
+    static void operator delete(void* ptr, std::size_t size);
+
 protected:
+
     virtual void SaveAttributes(QDataStream&) const;
     Block* DropInto(bool* delete_block);
 
     quint16 noteId;
 
-    static void* operator new(std::size_t size);
-    static void  operator delete(void* ptr, std::size_t size);
-
 private:
+
     Q_DECL_RELAXED_CONSTEXPR static int Transparency(int sub);
 
     bool IsNormal() const;

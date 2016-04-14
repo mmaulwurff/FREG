@@ -18,7 +18,9 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "Shred.h"
+
 #include "blocks/Block.h"
+#include "blocks/blocks.h"
 
 int Shred::NormalUnderground(const int depth, const subs sub) {
     NormalCube(0,0,1, SHRED_WIDTH,SHRED_WIDTH,HEIGHT/2-depth-5, STONE);
@@ -97,7 +99,7 @@ void Shred::Water(const subs sub) {
                 if ( AIR == sub ) {
                     *block = air;
                 } else {
-                    SetNewBlock(LIQUID, sub, x, y, block - pos);
+                    SetBlock(new Liquid(sub), x, y, block - pos);
                 }
             }
         }
@@ -154,7 +156,7 @@ void Shred::Mountain() {
         for (int i=1; i<SHRED_WIDTH/2-1; ++i)
         for (int j=1; j<SHRED_WIDTH/2-1; ++j)
         for (int k=mount_top-3; k<=mount_top; ++k) {
-            SetNewBlock(LIQUID, WATER, i, j, k);
+            SetBlock(new Liquid(WATER), i, j, k);
         }
     }
     // cavern
@@ -206,9 +208,9 @@ void Shred::WasteShred() {
         const int x = random & 0b1111;
         random >>= 4;
         const int y = random & 0b1111;
-        SetNewBlock(LIQUID,  pool_sub, x, y, HEIGHT/2-1);
-        SetNewBlock(LIQUID,  pool_sub, x, y, HEIGHT/2  );
-        SetNewBlock(FALLING, SUB_DUST, x, y, HEIGHT/2+1);
-        SetNewBlock(FALLING, SUB_DUST, x, y, HEIGHT/2+2);
+        SetBlock(new Liquid(pool_sub), x, y, HEIGHT/2-1);
+        SetBlock(new Liquid(pool_sub), x, y, HEIGHT/2  );
+        SetBlock(new Falling(SUB_DUST), x, y, HEIGHT/2+1);
+        SetBlock(new Falling(SUB_DUST), x, y, HEIGHT/2+2);
     }
 }

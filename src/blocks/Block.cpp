@@ -19,9 +19,13 @@
 
 #include "blocks/Block.h"
 #include "blocks/Inventory.h"
+#include "blocks/blocks.h"
+#include "blocks/Containers.h"
+
 #include "BlockFactory.h"
 #include "World.h"
 #include "TrManager.h"
+
 #include <QDataStream>
 
 #define TEST_DAMAGE 0
@@ -155,7 +159,7 @@ void Block::TestDamage() {
         stream << TrManager::SubName(sub) << ";";
         for (int damage_kind=1; damage_kind<=DAMAGE_PUSH_UP; damage_kind<<=1) {
             std::unique_ptr<Block> block(
-                BlockFactory::NewBlock(BLOCK, static_cast<subs>(sub)));
+                new Block(static_cast<subs>(sub)));
             block->Damage(1, damage_kind);
             stream << MAX_DURABILITY - block->GetDurability() << ";";
         }
@@ -171,21 +175,19 @@ Block* Block::DropAfterDamage(bool* const delete_block) {
     case GLASS:
     case AIR: return BlockFactory::Normal(AIR);
     case STONE: if ( BLOCK==Kind() ) {
-        return BlockFactory::NewBlock(LADDER, STONE);
+        return new Ladder(STONE);
     } // no break;
     default: return DropInto(delete_block);
     }
 }
 
 Block* Block::DropInto(bool* const delete_block) {
-    Block* const pile = BlockFactory::NewBlock(BOX, DIFFERENT);
+    Block* const pile = new Box(DIFFERENT);
     Restore();
     pile->HasInventory()->Get(this);
     *delete_block = false;
     return pile;
 }
-
-void* Block::operator new(const std::size_t s) { return ::operator new(s); }
 
 push_reaction Block::PushResult(dirs) const {
     return ( AIR==Sub() ) ? ENVIRONMENT : NOT_MOVABLE;

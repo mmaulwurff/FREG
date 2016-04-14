@@ -21,6 +21,8 @@
 #include "TrManager.h"
 #include <QObject>
 
+CONSTRUCT_AS_PARENT(Weapon, Falling)
+
 QString Weapon::FullName() const {
     if ( Kind() != WEAPON ) return Block::FullName();
 
@@ -68,6 +70,11 @@ int  Weapon::DamageKind() const {
     default:   return DAMAGE_CRUSH;
     }
 }
+
+CONSTRUCT_AS_PARENT(Pick  , Weapon)
+CONSTRUCT_AS_PARENT(Shovel, Weapon)
+CONSTRUCT_AS_PARENT(Hammer, Weapon)
+CONSTRUCT_AS_PARENT(Axe   , Weapon)
 
 int Pick  ::DamageKind() const { return DAMAGE_MINE;  }
 int Shovel::DamageKind() const { return DAMAGE_DIG;   }

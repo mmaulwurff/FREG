@@ -18,9 +18,10 @@
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "blocks/Dwarf.h"
+#include "blocks/Weapons.h"
+
 #include "World.h"
 #include "Shred.h"
-#include "BlockFactory.h"
 #include "AroundCoordinates.h"
 
 int Dwarf::Weight() const {
@@ -35,7 +36,7 @@ int Dwarf::Weight() const {
 
 Block* Dwarf::DropAfterDamage(bool* const delete_block) {
     Block* const cadaver = Animal::DropAfterDamage(delete_block);
-    cadaver->HasInventory()->Get(BlockFactory::NewBlock(WEAPON, BONE));
+    cadaver->HasInventory()->Get(new Weapon(BONE));
     return cadaver;
 }
 

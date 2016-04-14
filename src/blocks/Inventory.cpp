@@ -22,6 +22,7 @@
 #include "blocks/Inventory.h"
 #include "CraftManager.h"
 #include "BlockFactory.h"
+
 #include <QDataStream>
 #include <QStack>
 
@@ -229,7 +230,7 @@ bool Inventory::MiniCraft(const int num) {
         new CraftItem{Number(num), GetInvKind(num), GetInvSub(num)};
     if ( CraftManager::MiniCraft(&crafted) ) {
         while ( not inventory[num].isEmpty() ) {
-            BlockFactory::DeleteBlock(inventory[num].pop());
+            delete inventory[num].pop();
         }
         for (int i=0; i<crafted->number; ++i) {
             GetExact(BlockFactory::NewBlock(
@@ -286,9 +287,7 @@ Inventory::Inventory(const Inventory& origin)
 
 Inventory::~Inventory() {
     std::for_each(inventory, inventory + GetSize(), [](const auto& inv) {
-        std::for_each(ALL(inv), [](Block* const block) {
-            BlockFactory::DeleteBlock(block);
-        });
+        qDeleteAll(inv);
     });
     delete [] inventory;
 }

@@ -21,17 +21,21 @@
 #include "header.h"
 
 // Armour section
-    void Armour::Damage(const int dmg, const int dmg_kind) {
-        if ( dmg > THRESHOLD ) {
-            Block::Damage(dmg/((Kind() == ARMOUR) ? 4 : 2), dmg_kind);
-        }
+void Armour::Damage(const int dmg, const int dmg_kind) {
+    if ( dmg > THRESHOLD ) {
+        Block::Damage(dmg/((Kind() == ARMOUR) ? 4 : 2), dmg_kind);
     }
+}
 
-    int Armour::DamageLevel() const { return 0; }
-    wearable Armour::Wearable() const { return WEARABLE_BODY; }
+int Armour::DamageLevel() const { return 0; }
+wearable Armour::Wearable() const { return WEARABLE_BODY; }
 
 // Helmet section
-    wearable Helmet::Wearable() const { return WEARABLE_HEAD; }
+wearable Helmet::Wearable() const { return WEARABLE_HEAD; }
 
 // Boots section
-    wearable Boots::Wearable() const { return WEARABLE_LEGS; }
+wearable Boots::Wearable() const { return WEARABLE_LEGS; }
+
+CONSTRUCT_AS_PARENT(Armour, Block)
+CONSTRUCT_AS_PARENT(Helmet, Armour)
+CONSTRUCT_AS_PARENT(Boots,  Armour)

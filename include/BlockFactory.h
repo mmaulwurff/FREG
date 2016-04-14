@@ -60,8 +60,6 @@ public:
     /// Returns true if block is normal.
     static bool KindSubFromFile(QDataStream&, quint8* kind, quint8* sub);
 
-    static void DeleteBlock(const Block* block);
-
     static Block* CopyBlock(const Block& block);
 
     /// For memory economy.

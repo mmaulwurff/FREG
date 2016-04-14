@@ -94,8 +94,6 @@ bool BlockFactory::KindSubFromFile(QDataStream& str, quint8* kind, quint8* sub)
     }
 }
 
-void BlockFactory::DeleteBlock(const Block* const block) { delete block; }
-
 Block*BlockFactory::CopyBlock(const Block& block) {
     return GetInstance()->funcArrays.copies[block.Kind()](block);
 }
@@ -202,3 +200,8 @@ BlockFactory::FuncArrays::FuncArrays()
     , copies { KIND_TABLE(X_BLOCK_COPY  ) }
     , castsToInventory{ KIND_TABLE(X_BLOCK_TO_INV) }
 {}
+
+// definitions of short block constructors
+#define X_CONSTRUCTOR(col1, kind, col3, b_type, ...) \
+b_type::b_type(const subs sub) : b_type(kind, sub) {}
+KIND_TABLE(X_CONSTRUCTOR)

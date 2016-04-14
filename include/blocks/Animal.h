@@ -71,7 +71,7 @@ private:
 class Rabbit : public Animal {
 public:
 
-    using Animal::Animal;
+    BLOCK_CONSTRUCTORS(Rabbit)
 
     void ActFrequent() override;
 
@@ -89,7 +89,7 @@ private:
 class Predator : public Animal {
 public:
 
-    using Animal::Animal;
+    BLOCK_CONSTRUCTORS(Predator)
 
     int DamageLevel() const override;
     void ActFrequent() override;

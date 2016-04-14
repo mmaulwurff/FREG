@@ -31,6 +31,7 @@
  *  - container from other substances are different chests. */
 class Container : public Active, public Inventory {
 public:
+    Container(subs);
     Container(kinds, subs, int size = INV_SIZE);
     Container(QDataStream&, kinds, subs, int size = INV_SIZE);
 
