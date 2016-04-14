@@ -369,8 +369,10 @@ void Shred::SetNewBlock(const kinds kind, const subs sub, const_int(x, y, z)) {
 }
 
 QString Shred::FileName(const qint64 longi, const qint64 lati) {
-    return Str("%1%2/%3-%4.fm").
-        arg(home_path).arg(World::WorldName()).arg(longi).arg(lati);
+    static const QString path = home_path
+                              + World::WorldName()
+                              + Str("/%3-%4.fm");
+    return path.arg(longi).arg(lati);
 }
 
 // shred generators section
