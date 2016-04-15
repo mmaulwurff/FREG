@@ -52,7 +52,7 @@ QString Bucket::FullName() const {
             emptyString :
             fullString
                 .arg(ShowBlock(0)->FullName().toLower())
-                .arg(Number(0))
+                .arg(Count(0))
                 .arg(MAX_STACK_SIZE)) );
 }
 

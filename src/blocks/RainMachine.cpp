@@ -49,7 +49,7 @@ void RainMachine::DoRareAction() {
         if ( RandomManager::getRandBit2() ) {
             GetShred()->Rain(LIQUID, SUB_CLOUD);
         }
-    } else if ( RandomManager::rand() % (20 - Number(0)*2) ) {
+    } else if ( RandomManager::rand() % (20 - Count(0)*2) ) {
         GetShred()->Rain(LIQUID, GetInvSub(0));
     }
 }

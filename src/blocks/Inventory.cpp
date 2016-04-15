@@ -53,7 +53,7 @@ bool Inventory::Drop(const int src, int dest, int num, Inventory* const inv_to)
 bool Inventory::GetAll(Inventory* const from) {
     bool flag = false;
     for (int i=0; i<from->GetSize(); ++i) {
-        if ( from->Drop(i, 0, from->Number(i), this) ) {
+        if ( from->Drop(i, 0, from->Count(i), this) ) {
             flag = true;
         }
     }
@@ -68,7 +68,7 @@ void Inventory::Pull(const int num) {
 
 void Inventory::SaveAttributes(QDataStream& out) const {
     for (int i=0; i<GetSize(); ++i) {
-        const int number = Number(i);
+        const int number = Count(i);
         out << quint8(number);
         if ( number > 0 ) {
             /// @todo save each block separately
@@ -88,7 +88,7 @@ bool Inventory::Get(Block* const block, const int start) {
     if ( block == nullptr ) return true;
     if ( block->Wearable() == WEARABLE_VESSEL ) {
         for (int i=0; i<GetSize(); ++i) {
-            if ( Number(i)==1 && ShowBlock(i) ) {
+            if ( Count(i)==1 && ShowBlock(i) ) {
                 Inventory* const inner = ShowBlock(i)->HasInventory();
                 if ( inner && inner->Get(block) ) {
                     return true;
@@ -114,7 +114,7 @@ bool Inventory::Get(Block* const block, const int start) {
 bool Inventory::GetExact(Block* const block, const int num) {
     if ( block == nullptr) return true;
     if ( inventory[num].isEmpty() ||
-            (*block == *inventory[num].top() && Number(num)<MAX_STACK_SIZE) )
+            (*block == *inventory[num].top() && Count(num)<MAX_STACK_SIZE) )
     {
         inventory[num].push(block);
         return true;
@@ -132,7 +132,7 @@ void Inventory::MoveInside(const int from, const int num_to, const int num) {
 }
 
 bool Inventory::InscribeInv(const int num, const QString& str) {
-    const int number = Number(num);
+    const int number = Count(num);
     if ( number == 0 ) {
         return false;
     }
@@ -160,9 +160,9 @@ QString Inventory::InvFullName(const int num) const {
         emptyString :
         Str("%1%2").
             arg( inventory[num].top()->FullName() ).
-            arg( Number(num) <= 1 ?
+            arg( Count(num) <= 1 ?
                 QString() :
-                Str(" (x%1)").arg(Number(num)) );
+                Str(" (x%1)").arg(Count(num)) );
 }
 
 int Inventory::GetInvWeight(const int i) const {
@@ -191,12 +191,7 @@ int Inventory::Weight() const {
     });
 }
 
-int Inventory::Number(const int i) const { return inventory[i].size(); }
-
-Block* Inventory::ShowBlockInSlot(const int slot, const int index) const {
-    return ( slot >= GetSize() || index >= Number(slot) ) ?
-        nullptr : inventory[slot].at(index);
-}
+int Inventory::Count(const int i) const { return inventory[i].size(); }
 
 Block* Inventory::ShowBlock(const int slot) const {
     return ( slot >= GetSize() || inventory[slot].isEmpty() ) ?
@@ -227,7 +222,7 @@ bool Inventory::MiniCraft(const int num) {
         return false;
     } // else:
     CraftItem* crafted =
-        new CraftItem{Number(num), GetInvKind(num), GetInvSub(num)};
+        new CraftItem{Count(num), GetInvKind(num), GetInvSub(num)};
     if ( CraftManager::MiniCraft(&crafted) ) {
         while ( not inventory[num].isEmpty() ) {
             delete inventory[num].pop();
@@ -252,9 +247,9 @@ bool Inventory::MiniCraft(const int num) {
 
 void Inventory::Shake() {
     for (int i=Start(); i<GetSize()-1; ++i) {
-        if ( Number(i) != MAX_STACK_SIZE ) {
+        if ( Count(i) != MAX_STACK_SIZE ) {
             for (int j=i; j<GetSize(); ++j) {
-                MoveInside(j, i, Number(j));
+                MoveInside(j, i, Count(j));
             }
         }
     }

@@ -35,17 +35,30 @@ class Inventory {
 
 public:
 
+    virtual QString FullName() const = 0;
+
+    /** @name Information section */ ///@{
+    virtual bool Access() const;
+    virtual int Weight() const;
+
+    int Count(int i) const;
+
+    /// Returns true if all inventory slots are empty.
+    bool IsEmpty() const;
+    /// Returns true if particular inventory slot is empty.
+    bool IsEmpty(int slot_index) const;
+
+    int GetSize() const { return inventorySize; }
+    ///@} // < Information section
+
     /// Returns true on success.
     virtual bool Drop(int src, int dest, int num, Inventory* to);
     /// Returns true on success.
     virtual bool GetAll(Inventory* from);
-    virtual bool Access() const;
     /// Returns true on success.
     virtual bool Get(Block* block, int start = 0);
     virtual void ReceiveSignal(const QString&) = 0;
     virtual int Start() const;
-    virtual int Weight() const;
-    virtual QString FullName() const = 0;
     /// Returns true if block found its place.
     virtual bool GetExact(Block* block, int num);
     virtual QString InvFullName(int num) const;
@@ -61,17 +74,8 @@ public:
     subs GetInvSub(int i) const;
     /// Returns BLOCK if slot number i is empty.
     kinds GetInvKind(int i) const;
-    int GetSize() const { return inventorySize; }
     int GetInvWeight(int i) const;
-    int Number(int i) const;
     Block* ShowBlock(int slot) const;
-    /// Don't move block shown by this function.
-    Block* ShowBlockInSlot(int slot, int index) const;
-
-    /// Returns true if all inventory slots are empty.
-    bool IsEmpty() const;
-    /// Returns true if particular inventory slot is empty.
-    bool IsEmpty(int slot_index) const;
 
     void Push(int x, int y, int z, int push_direction);
     /// Stacks items in inventory if possible.

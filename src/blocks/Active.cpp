@@ -101,20 +101,13 @@ void Active::ActRare() {
     Inventory* const inv = HasInventory();
     if (Q_UNLIKELY(inv != nullptr)) {
         for (int i=inv->GetSize()-1; i; --i) {
-            const int number = inv->Number(i);
-            if ( number == 0 ) continue;
-            Active* const top_active = inv->ShowBlock(i)->ActiveBlock();
-            if ( top_active == nullptr ) continue;
-            for (int j=0; j<number; ++j) {
-                Active* const active =
-                    inv->ShowBlockInSlot(i, j)->ActiveBlock();
-                if ( active->ActInner() == INNER_ACTION_MESSAGE ) {
-                    TrString signalString = QObject::tr("%1 in slot '%2': %3");
-                    ReceiveSignal(signalString
-                        .arg(inv->InvFullName(i))
-                        .arg(char('a'+i))
-                        .arg(inv->ShowBlockInSlot(i, j)->GetNote()) );
-                }
+            if ( inv->IsEmpty(i) ) continue;
+            Active* const active = inv->ShowBlock(i)->ActiveBlock();
+            if ( active && active->ActInner() == INNER_ACTION_MESSAGE ) {
+                TrString signalString = QObject::tr("%1 in slot '%2': %3");
+                ReceiveSignal( signalString.arg(inv->InvFullName(i))
+                                           .arg(char('a'+i))
+                                           .arg(active->GetNote()) );
             }
         }
     }

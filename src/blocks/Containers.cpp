@@ -177,7 +177,7 @@
         for (int i=Start(); i<GetSize(); ++i) {
             if ( not IsEmpty(i) ) {
                 list << new CraftItem{
-                    Number(i), ShowBlock(i)->Kind(), ShowBlock(i)->Sub()};
+                    Count(i), ShowBlock(i)->Kind(), ShowBlock(i)->Sub()};
             }
         }
         if ( CraftManager::Craft(&list, Sub()) ) {

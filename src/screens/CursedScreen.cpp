@@ -710,9 +710,10 @@ void Screen::PrintQuickInventory() const {
     wstandend(hudWin);
     for (int i=0; i<inventory_size; ++i) {
         mvwaddch(hudWin, 0, x, 'a' + i);
-        switch ( inv->Number(i) ) {
+        const int count = inv->Count(i);
+        switch ( count ) {
         case  0: break;
-        default: mvwaddch(hudWin, 2, x, inv->Number(i)+'0'); // no break;
+        default: mvwaddch(hudWin, 2, x, count + '0'); // no break;
         case  1: mvwaddch(hudWin, 1, x, ColoredChar(inv->ShowBlock(i)));
             break;
         }

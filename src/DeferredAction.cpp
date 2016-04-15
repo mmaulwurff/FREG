@@ -73,11 +73,11 @@ void DeferredAction::Build() const {
     if ( not inv->IsEmpty(srcSlot) ) return;
     const Id id(material->Kind(), material->Sub());
     for (int i = srcSlot+1; i < inv->GetSize() &&
-            inv->Number(srcSlot) < Inventory::MAX_STACK_SIZE; ++i)
+            inv->Count(srcSlot) < Inventory::MAX_STACK_SIZE; ++i)
     {
         const Block* const block = inv->ShowBlock(i);
         if ( block && id==Id(block->Kind(), block->Sub()) ) {
-            inv->MoveInside(i, srcSlot, inv->Number(i));
+            inv->MoveInside(i, srcSlot, inv->Count(i));
         }
     }
 } // void DeferredAction::Build()
