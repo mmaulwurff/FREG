@@ -51,6 +51,11 @@ public:
     int GetSize() const { return inventorySize; }
     ///@} // < Information section
 
+    /** @name Modifications section */ ///@{
+
+
+    ///@}
+
     /// Returns true on success.
     virtual bool Drop(int src, int dest, int num, Inventory* to);
     /// Returns true on success.
