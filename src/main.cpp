@@ -20,7 +20,6 @@
 #include "World.h"
 #include "Player.h"
 #include "WorldMap.h"
-#include "CraftManager.h"
 #include "BlockFactory.h"
 #include "TrManager.h"
 #include "screens/CursedScreen.h"
@@ -122,7 +121,6 @@ int main(int argc, char** const argv) {
     // Initiate singletons.
     // Unused as local variables, side effects in constructors.
     BlockFactory blockManager;
-    CraftManager craftManager;
     Logger logger(home_path + "log.txt");
 
     RandomManager randomManager(seed);

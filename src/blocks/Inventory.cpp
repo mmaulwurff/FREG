@@ -20,7 +20,6 @@
 #include "blocks/Block.h"
 #include "World.h"
 #include "blocks/Inventory.h"
-#include "CraftManager.h"
 #include "BlockFactory.h"
 
 #include <QDataStream>
@@ -216,36 +215,6 @@ void Inventory::Push(const_int(x, y, z), const int push_direction) {
     Inventory* const inv =
         world->GetBlock(x_targ, y_targ, z_targ)->HasInventory();
     if ( inv ) inv->GetAll(this);
-}
-
-bool Inventory::MiniCraft(const int num) {
-    if ( IsEmpty(num) ) {
-        TrString nothingString = QObject::tr("Nothing at slot '%1'.");
-        ReceiveSignal(nothingString.arg(char(num + 'a')));
-        return false;
-    } // else:
-    CraftItem* crafted =
-        new CraftItem{Count(num), GetInvKind(num), GetInvSub(num)};
-    if ( CraftManager::MiniCraft(&crafted) ) {
-        while ( not inventory[num].isEmpty() ) {
-            delete inventory[num].pop();
-        }
-        for (int i=0; i<crafted->number; ++i) {
-            GetExact(BlockFactory::NewBlock(
-                static_cast<kinds>(crafted->kind),
-                static_cast<subs >(crafted->sub)), num);
-        }
-        TrString successString = QObject::tr("Craft successful: %1 (x%2).");
-        ReceiveSignal(successString
-            .arg(ShowBlock(num)->FullName())
-            .arg(crafted->number));
-        delete crafted;
-        return true;
-    } else {
-        TrString notKnowStr = QObject::tr("You don't know how to craft this.");
-        ReceiveSignal(notKnowStr);
-        return false;
-    }
 }
 
 void Inventory::Shake() {

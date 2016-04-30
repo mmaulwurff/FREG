@@ -21,8 +21,8 @@
 #include "World.h"
 #include "Shred.h"
 #include "BlockFactory.h"
-#include "CraftManager.h"
 #include "TrManager.h"
+
 #include <QDataStream>
 
 // Container::
@@ -160,36 +160,7 @@
 
 // Workbench::
     void Workbench::Craft() {
-        for (int i=0; i<Start(); ++i) { // remove previous products
-            while ( not IsEmpty(i) ) {
-                Block* const to_pull = ShowBlock(i);
-                Pull(i);
-                delete to_pull;
-            }
-        }
-        int materials_number = 0;
-        for (int i=Start(); i<GetSize(); ++i) {
-            if ( not IsEmpty(i) ) {
-                ++materials_number;
-            }
-        }
-        CraftList list(materials_number);
-        for (int i=Start(); i<GetSize(); ++i) {
-            if ( not IsEmpty(i) ) {
-                list << new CraftItem{
-                    Count(i), ShowBlock(i)->Kind(), ShowBlock(i)->Sub()};
-            }
-        }
-        if ( CraftManager::Craft(&list, Sub()) ) {
-            for (int i=0; i<list.size(); ++i) {
-                for (int n=0; n<list.at(i)->number; ++n) {
-                    const CraftItem* const item = list.at(i);
-                    GetExact(BlockFactory::NewBlock(
-                        static_cast<kinds>(item->kind),
-                        static_cast<subs >(item->sub )), i);
-                }
-            }
-        }
+        ///@todo implement craft
     }
 
     bool Workbench::Drop(const int src, const int dest,

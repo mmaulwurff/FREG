@@ -79,8 +79,6 @@ public:
     virtual void Pull(int slot);
 
     void MoveInside(int num_from, int num_to, int num);
-    /// Returns true on success (something has been crafted).
-    bool MiniCraft(int num);
     /// Returns true on success.
     bool InscribeInv(int num, const QString& str);
     /// Returns AIR if slot number i is empty.
