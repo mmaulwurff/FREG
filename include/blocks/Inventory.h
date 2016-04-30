@@ -27,6 +27,7 @@
 #include <QtGlobal>
 
 class Block;
+class InvIterator;
 template<typename Block> class QStack;
 
 /** Provides block ability to contain other blocks inside. */
@@ -53,6 +54,13 @@ public:
 
     /** @name Modifications section */ ///@{
 
+
+    ///@}
+
+    /** @name Iterators section */ ///@{
+
+    InvIterator begin() const;
+    InvIterator end()   const;
 
     ///@}
 
@@ -106,6 +114,25 @@ private:
 
     const quint8 inventorySize;
     QStack<Block*>* const inventory;
+};
+
+class InvIterator {
+public:
+
+    bool operator!=(const InvIterator& other) const;
+    Block* operator*() const;
+
+    void operator++();
+
+private:
+
+    InvIterator(const Inventory* iterated, int index);
+
+    const Inventory* iterated;
+    int index;
+
+    friend InvIterator Inventory::begin() const;
+    friend InvIterator Inventory::end() const;
 };
 
 #endif // INVENTORY_H

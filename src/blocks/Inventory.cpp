@@ -205,6 +205,9 @@ bool Inventory::IsEmpty() const {
 
 bool Inventory::IsEmpty(const int i) const { return inventory[i].isEmpty(); }
 
+InvIterator Inventory::begin() const { return InvIterator(this,           -1); }
+InvIterator Inventory::end()   const { return InvIterator(this, GetSize() -1); }
+
 void Inventory::Push(const_int(x, y, z), const int push_direction) {
     const World* const world = World::GetCWorld();
     int x_targ, y_targ, z_targ;
@@ -293,4 +296,24 @@ void Inventory::ReceiveSignal(const QString&) { Q_UNREACHABLE(); }
 QString Inventory::FullName() const {
     Q_UNREACHABLE();
     return QString();
+}
+
+bool InvIterator::operator!=(const InvIterator& other) const {
+    return ( other.index    != index
+          || other.iterated != iterated );
+}
+
+void InvIterator::operator++()
+{
+    const int size = iterated->GetSize();
+    do { ++index; } while (index < size && iterated->IsEmpty(index));
+}
+
+Block* InvIterator::operator*() const { return iterated->ShowBlock(index); }
+
+InvIterator::InvIterator(const Inventory* const _iterated, const int i)
+    : iterated(_iterated)
+    , index(i)
+{
+    operator++();
 }
