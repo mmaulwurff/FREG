@@ -24,7 +24,6 @@
 #define INVENTORY_H
 
 #include "header.h"
-#include <QtGlobal>
 
 class Block;
 template<typename Block> class QStack;

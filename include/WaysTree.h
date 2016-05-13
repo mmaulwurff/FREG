@@ -20,13 +20,12 @@
 #ifndef WAYS_TREE_H
 #define WAYS_TREE_H
 
-#include <vector>
-#include <cstdint>
+#include <QtGlobal>
 
 class WaysTree {
 public:
 
-    explicit constexpr WaysTree(const int16_t _start)
+    explicit constexpr WaysTree(const qint16 _start)
         : start(_start)
     {}
 
@@ -34,8 +33,8 @@ public:
     int Y() const;
     int Z() const;
 
-    const int16_t* begin() const;
-    const int16_t* end() const;
+    const qint16* begin() const;
+    const qint16* end() const;
 
     bool notCenter() const;
 
@@ -45,9 +44,9 @@ private:
 
     int getBranchCount() const;
 
-    const int16_t start;
+    const qint16 start;
 
-    static const int16_t data[];
+    static const qint16 data[];
 };
 
 #endif // WAYS_TREE_H

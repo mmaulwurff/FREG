@@ -20,13 +20,9 @@
 #ifndef HEADER_H
 #define HEADER_H
 
-#include <cstdint>
+#include <QtGlobal>
 
-#define M_DISABLE_COPY(Class) \
-Class(const Class&) = delete; \
-Class& operator=(const Class&) = delete;
-
-#ifdef QT_NO_DEBUG
+#ifdef NDEBUG
 const bool DEBUG = false;
 #else
 const bool DEBUG = true;
@@ -43,9 +39,6 @@ constexpr int sizeofArray(T(&)[N]) { return N; }
 
 #define P(type, parameter1, parameter2) (type parameter1, type parameter2)
 #define P3(type, par1, par2, par3) (type par1, type par2, type par3)
-
-#define QT_NO_CAST_FROM_ASCII
-#define QT_NO_CAST_TO_ASCII
 
 #define Str(str) QStringLiteral(str)
 #define TrString static const QString
@@ -218,14 +211,14 @@ X(QT_TRANSLATE_NOOP("Block", "dust"      ), SUB_DUST,    BLACK_BLACK,  )\
 X(QT_TRANSLATE_NOOP("Block", "plastic"   ), SUB_PLASTIC, GREEN_BLACK,  )\
 /// [List of subs]
 
-enum kinds : uint8_t {
+enum kinds : quint8 {
     KIND_TABLE(X_ENUM)
     LAST_KIND, ///< Nothing is LAST_KIND.
     KIND_COUNT = LAST_KIND
 };
 static_assert((KIND_COUNT < 256), "too many kinds, should be < 256.");
 
-enum subs : uint8_t {
+enum subs : quint8 {
     SUB_TABLE(X_ENUM)
     LAST_SUB, ///< Nothing is made from LAST_SUB.
     SUB_COUNT = LAST_SUB

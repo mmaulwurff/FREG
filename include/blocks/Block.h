@@ -66,8 +66,8 @@ enum sub_groups {
     GROUP_HANDY,
 };
 
-enum kinds : uint8_t;
-enum subs  : uint8_t;
+enum kinds : quint8;
+enum subs  : quint8;
 enum dirs  : int;
 enum usage_types : int;
 enum push_reaction : int;

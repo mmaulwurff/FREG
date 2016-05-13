@@ -123,7 +123,7 @@ int main(int argc, char** const argv) {
     // Unused as local variables, side effects in constructors.
     BlockFactory blockManager;
     CraftManager craftManager;
-    Logger logger(home_path + "log.txt");
+    Logger logger(home_path + Str("log.txt"));
 
     RandomManager randomManager(seed);
     bool world_error = false;

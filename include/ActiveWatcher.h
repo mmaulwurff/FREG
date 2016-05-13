@@ -50,7 +50,7 @@ signals:
 
 private:
 
-    M_DISABLE_COPY(ActiveWatcher)
+    Q_DISABLE_COPY(ActiveWatcher)
 
     Active* watched;
 };

@@ -37,9 +37,9 @@ protected:
 private:
     static damage_kinds EnergyType(int substance);
 
-    static const uint16_t MAX_CHARGE = 0xffff;
+    static const quint16 MAX_CHARGE = 0xffff;
 
-    int16_t charge;
+    qint16 charge;
 };
 
 #endif // ACCUMULATOR_H

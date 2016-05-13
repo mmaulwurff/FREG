@@ -25,7 +25,7 @@
 #include <QList>
 
 struct CraftItem final {
-    M_DISABLE_COPY(CraftItem)
+    Q_DISABLE_COPY(CraftItem)
 
     bool operator<(const CraftItem& item) const;
 
@@ -44,7 +44,7 @@ class CraftList final {
 public:
     explicit CraftList(int materials_number);
     ~CraftList();
-    M_DISABLE_COPY(CraftList)
+    Q_DISABLE_COPY(CraftList)
 
     int size() const;
     int GetMaterialsNumber() const;
