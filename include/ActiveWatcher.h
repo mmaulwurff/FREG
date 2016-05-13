@@ -30,8 +30,8 @@ class ActiveWatcher : public QObject {
     Q_OBJECT
 public:
 
-    explicit ActiveWatcher(QObject* const parent)
-        : QObject(parent)
+    explicit ActiveWatcher(QObject* const _parent)
+        : QObject(_parent)
         , watched(nullptr)
     {}
     ~ActiveWatcher() { if (watched) watched->SetWatcher(nullptr); }

@@ -350,12 +350,8 @@ void Player::Build(const int slot) {
     }
 }
 
-void Player::Craft(const int num) {
-    const QMutexLocker locker(World::GetWorld()->GetLock());
-    Inventory* const inv = PlayerInventory();
-    if ( inv && inv->MiniCraft(num) ) {
-        emit Updated();
-    }
+void Player::Craft(int) {
+    Notify(QStringLiteral("Craft is disabled in this version."));
 }
 
 bool Player::ForbiddenAdminCommands() const {

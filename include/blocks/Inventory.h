@@ -26,6 +26,7 @@
 #include "header.h"
 
 class Block;
+class InvIterator;
 template<typename Block> class QStack;
 
 /** Provides block ability to contain other blocks inside. */
@@ -55,6 +56,13 @@ public:
 
     ///@}
 
+    /** @name Iterators section */ ///@{
+
+    InvIterator begin() const;
+    InvIterator end()   const;
+
+    ///@}
+
     /// Returns true on success.
     virtual bool Drop(int src, int dest, int num, Inventory* to);
     /// Returns true on success.
@@ -70,8 +78,6 @@ public:
     virtual void Pull(int slot);
 
     void MoveInside(int num_from, int num_to, int num);
-    /// Returns true on success (something has been crafted).
-    bool MiniCraft(int num);
     /// Returns true on success.
     bool InscribeInv(int num, const QString& str);
     /// Returns AIR if slot number i is empty.
@@ -105,6 +111,25 @@ private:
 
     const quint8 inventorySize;
     QStack<Block*>* const inventory;
+};
+
+class InvIterator {
+public:
+
+    bool operator!=(const InvIterator& other) const;
+    Block* operator*() const;
+
+    void operator++();
+
+private:
+
+    InvIterator(const Inventory* iterated, int index);
+
+    const Inventory* iterated;
+    int index;
+
+    friend InvIterator Inventory::begin() const;
+    friend InvIterator Inventory::end() const;
 };
 
 #endif // INVENTORY_H

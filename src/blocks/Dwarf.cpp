@@ -124,8 +124,8 @@ void Dwarf::Move(const dirs dir) {
     Shred* const last_shred = GetShred();
     Falling::Move(dir);
     if ( last_shred != GetShred() ) {
-        for (int i=0; i<GetSize(); ++i) {
-            ShowBlock(i)->UseOnShredMove(this);
+        for (Block* const block : *this) {
+            block->UseOnShredMove(this);
         }
     }
 }
