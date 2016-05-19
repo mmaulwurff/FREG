@@ -119,7 +119,7 @@ public:
     bool operator!=(const InvIterator& other) const;
     Block* operator*() const;
 
-    void operator++();
+    InvIterator& operator++();
 
 private:
 

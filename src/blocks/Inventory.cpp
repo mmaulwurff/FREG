@@ -272,10 +272,11 @@ bool InvIterator::operator!=(const InvIterator& other) const {
           || other.iterated != iterated );
 }
 
-void InvIterator::operator++()
+InvIterator& InvIterator::operator++()
 {
     const int size = iterated->GetSize();
     do { ++index; } while (index < size && iterated->IsEmpty(index));
+    return *this;
 }
 
 Block* InvIterator::operator*() const { return iterated->ShowBlock(index); }
