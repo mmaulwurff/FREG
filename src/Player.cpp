@@ -396,14 +396,12 @@ void Player::ProcessCommand(QString command) {
 
     case UniqueIntFromString("version"): {
         TrString versionString =
-            tr("freg version: %1. Compiled on %2 at %3 with Qt %4.");
+            tr("freg version: %1. Compiled with Qt %2.");
         TrString buildString   = tr("Current Qt version: %1. Build type: %2.");
         TrString debugString   = tr("debug");
         TrString releaseString = tr("release");
         Notify(versionString
             .arg(VER)
-            .arg(Str(__DATE__))
-            .arg(Str(__TIME__))
             .arg(Str(QT_VERSION_STR)));
         Notify(buildString
             .arg(QString::fromLatin1(qVersion()))
